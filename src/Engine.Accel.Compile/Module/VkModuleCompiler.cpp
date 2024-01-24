@@ -56,6 +56,6 @@ uptr<CompiledModule> VkModuleCompiler::compile(
 
     return make_uptr<VkCompiledModule>(
         reinterpret_cast<_::VkShaderModule>(vkModule.operator VkShaderModule()),
-        _STD move(source->bindings)
+        std::move(source->bindings)
     );
 }

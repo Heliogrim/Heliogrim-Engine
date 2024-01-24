@@ -19,15 +19,15 @@ namespace hg {
             hash(static_cast<Hash_&>(*this)(value_)),
             data(value_) {}
 
-        template <typename Ty_ = Type_> requires _STD is_same_v<Ty_, Type_> && _STD is_copy_constructible_v<Ty_>
+        template <typename Ty_ = Type_> requires std::is_same_v<Ty_, Type_> && std::is_copy_constructible_v<Ty_>
         constexpr CompileTableHashKey(const Ty_& other_) noexcept :
             hash(other_.hash),
             data(other_.data) {}
 
-        template <typename Ty_ = Type_> requires _STD is_same_v<Ty_, Type_> && _STD is_move_constructible_v<Ty_>
+        template <typename Ty_ = Type_> requires std::is_same_v<Ty_, Type_> && std::is_move_constructible_v<Ty_>
         constexpr CompileTableHashKey(Ty_&& other_) noexcept :
             hash(other_.hash),
-            data(_STD move(other_.data)) {}
+            data(std::move(other_.data)) {}
 
         constexpr ~CompileTableHashKey() noexcept = default;
 
@@ -37,9 +37,9 @@ namespace hg {
 
     public:
         template <typename Ty_ = type> requires
-            _STD is_same_v<Ty_, type> && _STD is_copy_assignable_v<typename Ty_::value_type>
+            std::is_same_v<Ty_, type> && std::is_copy_assignable_v<typename Ty_::value_type>
         constexpr type& operator=(const Ty_& other_) noexcept {
-            if (_STD addressof(other_) != this) {
+            if (std::addressof(other_) != this) {
                 hash = other_.hash;
                 data = other_.data;
             }
@@ -47,11 +47,11 @@ namespace hg {
         }
 
         template <typename Ty_ = type> requires
-            _STD is_same_v<Ty_, type> && _STD is_move_assignable_v<typename Ty_::value_type>
+            std::is_same_v<Ty_, type> && std::is_move_assignable_v<typename Ty_::value_type>
         constexpr type& operator=(Ty_&& other_) noexcept {
-            if (_STD addressof(other_) != this) {
+            if (std::addressof(other_) != this) {
                 hash = other_.hash;
-                data = _STD move(other_.data);
+                data = std::move(other_.data);
             }
             return *this;
         }
@@ -81,7 +81,7 @@ namespace hg {
             return hash != other_.hash;
         }
 
-        [[nodiscard]] constexpr _STD strong_ordering operator<=>(const type& other_) const noexcept {
+        [[nodiscard]] constexpr std::strong_ordering operator<=>(const type& other_) const noexcept {
             return hash <=> other_.hash;
         }
     };
@@ -103,7 +103,7 @@ namespace hg {
             using node_type = CompileTableNode<key_type, value_type>;
 
             [[nodiscard]] constexpr bool operator()(cref<node_type> left_, cref<node_type> right_) const noexcept {
-                return _STD less {}(left_->first, right_->first);
+                return std::less {}(left_->first, right_->first);
             }
         };
 
@@ -115,7 +115,7 @@ namespace hg {
         constexpr CompileHashMap(const typename table_type::node_type (&pairs_)[Size_]) :
             _table(pairs_) {}
 
-        constexpr CompileHashMap(const _STD pair<key_type, value_type> (&pairs_)[Size_]) :
+        constexpr CompileHashMap(const std::pair<key_type, value_type> (&pairs_)[Size_]) :
             _table(pairs_) {}
 
     private:
@@ -162,7 +162,7 @@ namespace hg {
             // Threshold where to switch between linear search and binary hash probing
             constexpr size_t threshold = 56;
             if constexpr (Size_ < threshold) {
-                return _STD ranges::find_if(
+                return std::ranges::find_if(
                     _table,
                     [key_](cref<typename table_type::node_type> node_) {
                         return node_->first == key_;
@@ -170,7 +170,7 @@ namespace hg {
                 );
             } else {
                 // TODO: Rework hashing for constexpr tables
-                return _STD ranges::lower_bound(
+                return std::ranges::lower_bound(
                     _table,
                     key_,
                     CompileLess<key_type> {},
@@ -202,7 +202,7 @@ namespace hg {
                 // __noop();
             }
 
-            return _STD distance(start, it);
+            return std::distance(start, it);
         }
 
         [[nodiscard]] constexpr size_t count(const typename key_type::value_type& key_) const noexcept {
@@ -223,7 +223,7 @@ namespace hg {
 
     template <typename Key_, typename Value_, typename Hash_ = CompileHash<Key_>, size_t Size_>
     [[nodiscard]] constexpr auto make_compile_hash_map(
-        const _STD pair<typename CompileHashMap<Key_, Value_, Size_, Hash_>::key_type, Value_> (&pairs_)[Size_]
+        const std::pair<typename CompileHashMap<Key_, Value_, Size_, Hash_>::key_type, Value_> (&pairs_)[Size_]
     ) {
         return CompileHashMap<Key_, Value_, Size_, Hash_> { pairs_ };
     }
@@ -246,7 +246,7 @@ namespace hg {
             "Requires at least one pair to construct compile map via vardiac factoring."
         );
 
-        _STD pair<typename map_type::key_type, Value_> tmp[sizeof...(pairs_)] {
+        std::pair<typename map_type::key_type, Value_> tmp[sizeof...(pairs_)] {
             { { pairs_.first }, { pairs_.second } }...
         };
         return CompileHashMap<Key_, Value_, sizeof...(pairs_), Hash_> { tmp };

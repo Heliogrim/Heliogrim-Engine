@@ -13,13 +13,13 @@ void hg::delay(mref<execute_function_type> function_, ticks delay_) {
      * Generate task to schedule
      */
     auto task = engine::scheduler::task::make_task(
-        _STD forward<execute_function_type>(function_),
+        std::forward<execute_function_type>(function_),
         engine::scheduler::task::TaskMask::eNormal
     );
     /**
      * Schedule task
      */
-    engine::Engine::getEngine()->getScheduler()->exec(_STD move(task));
+    engine::Engine::getEngine()->getScheduler()->exec(std::move(task));
 }
 
 void hg::delay(execute_function_pointer_type function_, ticks delay_) {
@@ -29,14 +29,14 @@ void hg::delay(execute_function_pointer_type function_, ticks delay_) {
      * Generate task to schedule
      */
     auto task = engine::scheduler::task::make_task(
-        _STD forward<execute_function_type>(function_),
+        std::forward<execute_function_type>(function_),
         engine::scheduler::task::TaskMask::eNormal
     );
 
     /**
      * Schedule task
      */
-    engine::Engine::getEngine()->getScheduler()->exec(_STD move(task));
+    engine::Engine::getEngine()->getScheduler()->exec(std::move(task));
 }
 
 void hg::execute(mref<execute_function_type> function_) {
@@ -44,14 +44,14 @@ void hg::execute(mref<execute_function_type> function_) {
      * Generate task to schedule
      */
     auto task = engine::scheduler::task::make_task(
-        _STD forward<execute_function_type>(function_),
+        std::forward<execute_function_type>(function_),
         engine::scheduler::task::TaskMask::eNormal
     );
 
     /**
      * Schedule task
      */
-    engine::Engine::getEngine()->getScheduler()->exec(_STD move(task));
+    engine::Engine::getEngine()->getScheduler()->exec(std::move(task));
 }
 
 void hg::execute(const execute_function_pointer_type function_) {
@@ -59,14 +59,14 @@ void hg::execute(const execute_function_pointer_type function_) {
      * Generate task to schedule
      */
     auto task = engine::scheduler::task::make_task(
-        _STD forward<execute_function_type>(function_),
+        std::forward<execute_function_type>(function_),
         engine::scheduler::task::TaskMask::eNormal
     );
 
     /**
      * Schedule task
      */
-    engine::Engine::getEngine()->getScheduler()->exec(_STD move(task));
+    engine::Engine::getEngine()->getScheduler()->exec(std::move(task));
 }
 
 void hg::execute(mref<Task> task_) {
@@ -74,14 +74,14 @@ void hg::execute(mref<Task> task_) {
      * Generate task to schedule
      */
     auto task = engine::scheduler::task::make_task(
-        _STD forward<Task::function_type>(task_.fnc()),
+        std::forward<Task::function_type>(task_.fnc()),
         engine::scheduler::task::TaskMask::eNormal
     );
 
     /**
      * Schedule task
      */
-    engine::Engine::getEngine()->getScheduler()->exec(_STD move(task));
+    engine::Engine::getEngine()->getScheduler()->exec(std::move(task));
 }
 
 void hg::execute(mref<RepetitiveTask> task_) {
@@ -89,14 +89,14 @@ void hg::execute(mref<RepetitiveTask> task_) {
      * Generate task to schedule
      */
     auto task = engine::scheduler::task::make_repetitive_task(
-        _STD forward<RepetitiveTask::function_type>(task_.fnc()),
+        std::forward<RepetitiveTask::function_type>(task_.fnc()),
         engine::scheduler::task::TaskMask::eNormal
     );
 
     /**
      * Schedule task
      */
-    engine::Engine::getEngine()->getScheduler()->exec(_STD move(task));
+    engine::Engine::getEngine()->getScheduler()->exec(std::move(task));
 }
 
 void hg::execute(mref<TickTask> task_) {
@@ -104,14 +104,14 @@ void hg::execute(mref<TickTask> task_) {
      * Generate task to schedule
      */
     auto task = engine::scheduler::task::make_task(
-        _STD forward<TickTask::function_type>(task_.fnc()),
+        std::forward<TickTask::function_type>(task_.fnc()),
         engine::scheduler::task::TaskMask::eNormal
     );
 
     /**
      * Schedule task
      */
-    engine::Engine::getEngine()->getScheduler()->exec(_STD move(task));
+    engine::Engine::getEngine()->getScheduler()->exec(std::move(task));
 }
 
 void hg::await(const ptr<await_signal_sub_type> signal_) {

@@ -36,11 +36,11 @@ AllocationResult LocalPooledAllocator::allocate(
 
 void LocalPooledAllocator::free(mref<uptr<AllocatedMemory>> mem_) {
 
-    if (_cache.free(_STD move(mem_))) {
+    if (_cache.free(std::move(mem_))) {
         return;
     }
 
-    _global->free(_STD move(mem_));
+    _global->free(std::move(mem_));
 }
 
 #include "../Device/Device.hpp"

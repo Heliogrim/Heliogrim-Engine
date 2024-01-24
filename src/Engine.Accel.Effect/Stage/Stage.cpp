@@ -4,7 +4,7 @@ using namespace hg::engine::accel;
 using namespace hg;
 
 Stage::Stage(mref<StageFlagBits> flagBits_) :
-    _flagBits(_STD move(flagBits_)) {}
+    _flagBits(std::move(flagBits_)) {}
 
 Stage::~Stage() = default;
 
@@ -27,5 +27,5 @@ smr<lang::Intermediate> Stage::getIntermediate() const noexcept {
 }
 
 void Stage::setIntermediate(mref<smr<lang::Intermediate>> intermediate_) {
-    _intermediate = _STD move(intermediate_);
+    _intermediate = std::move(intermediate_);
 }

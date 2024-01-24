@@ -8,5 +8,5 @@ cref<DenseSet<Provision>> ProviderComponent::getProvided() const noexcept {
 }
 
 void ProviderComponent::setProvided(mref<DenseSet<Provision>> provided_) {
-    _provided = _STD move(provided_);
+    _provided = std::move(provided_);
 }

@@ -130,7 +130,7 @@ void testLoad(cref<sptr<engine::gfx::Device>> device_) {
         auto* request = static_cast<ptr<engine::assets::TextureAsset>>(asset);
         testTexture = engine::Engine::getEngine()->getResources()->loader().load<
             engine::assets::TextureAsset, engine::gfx::TextureResource
-        >(_STD move(request), engine::gfx::loader::TextureLoadOptions {});
+        >(std::move(request), engine::gfx::loader::TextureLoadOptions {});
 
         /*
         testTexture = make_sptr<engine::gfx::Texture>(loader.__tmp__load({ ""sv, R"(R:\\test.ktx)" }));
@@ -335,7 +335,7 @@ void buildTestUI(
                 FocusEvent focusEvent { lck };
                 auto root { self.lock()->root() };
 
-                WindowManager::get()->dispatch(_STD static_pointer_cast<Window, Widget>(root), focusEvent);
+                WindowManager::get()->dispatch(std::static_pointer_cast<Window, Widget>(root), focusEvent);
             }
         }
     );
@@ -512,7 +512,7 @@ void buildTestUI(
         for (auto iter = storage.cbegin(); iter != end; ++iter) {
             if (iter.get_key() != invalid_actor_guid) {
                 const auto& actor = iter.get_value();
-                actors.push_back(_STD addressof(const_cast<ref<Actor>>(actor)));
+                actors.push_back(std::addressof(const_cast<ref<Actor>>(actor)));
             }
         }
 
@@ -544,7 +544,7 @@ const hg::ptr<hg::engine::reflow::Font> getDefaultFont() {
             engine::assets::Font,
             engine::gfx::FontResource
         >(
-            _STD move(font),
+            std::move(font),
             engine::gfx::loader::FontLoadOptions {
                 .ranges = { engine::reflow::BasicLatin, engine::reflow::Latin1Supplement },
                 .glyphs = {},
@@ -640,7 +640,7 @@ void storeHierarchyActor(cref<Vector<ptr<Actor>>> targets_) {
     for (const auto& actor : targets_) {
         auto sve { make_sptr<SceneViewEntry>() };
         sve->storeTarget<Actor>(actor);
-        sources.push_back(_STD move(sve));
+        sources.push_back(std::move(sve));
     }
 
     panel->setHierarchyTarget<SceneViewEntry>("sptr<SceneViewEntry>"_typeId, sources);

@@ -69,7 +69,7 @@ namespace EventModule {
 
             //
             auto callback = [](cref<TickEvent> event_) { };
-            const auto handle = emitter.on(_STD move(callback));
+            const auto handle = emitter.on(std::move(callback));
 
             EXPECT_TRUE(handle);
 
@@ -99,7 +99,7 @@ namespace EventModule {
             auto callback = [&](cref<TickEvent> event_) {
                 checkValue = event_.tick;
             };
-            const auto handle = emitter.on(_STD move(callback));
+            const auto handle = emitter.on(std::move(callback));
 
             //
             const TickEvent event { value };

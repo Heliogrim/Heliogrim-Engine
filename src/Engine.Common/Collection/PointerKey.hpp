@@ -16,7 +16,7 @@ namespace hg {
     struct PointerKey {
         using this_type = PointerKey<PointerType_>;
 
-        using raw_type = _STD remove_all_extents_t<PointerType_>;
+        using raw_type = std::remove_all_extents_t<PointerType_>;
         using pointer_type = ptr<raw_type>;
 
     public:
@@ -27,8 +27,8 @@ namespace hg {
             value(value_) {}
 
         template <typename Type_> requires
-            _STD is_same_v<Type_, PointerType_> &&
-            _STD is_nothrow_convertible_v<Type_, pointer_type>
+            std::is_same_v<Type_, PointerType_> &&
+            std::is_nothrow_convertible_v<Type_, pointer_type>
         constexpr PointerKey(Type_&& value_) noexcept :
             value(static_cast<pointer_type>(value_)) {}
 
@@ -66,7 +66,7 @@ namespace hg {
             return value == other_.value;
         }
 
-        [[nodiscard]] constexpr _STD strong_ordering operator<=>(cref<this_type> other_) const noexcept {
+        [[nodiscard]] constexpr std::strong_ordering operator<=>(cref<this_type> other_) const noexcept {
             return value <=> other_.value;
         }
 

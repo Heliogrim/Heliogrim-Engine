@@ -58,7 +58,7 @@ AllocationResult GlobalPooledAllocator::allocate(
         #else
         auto* const pool { _cache.getOrCreatePool(layout_) };
         if (pool == nullptr) {
-            throw _STD runtime_error("Failed to allocate pooled memory.");
+            throw std::runtime_error("Failed to allocate pooled memory.");
             return AllocationResult::eFailed;
         }
 
@@ -108,16 +108,16 @@ void GlobalPooledAllocator::augmentPool(ptr<MemoryPool> pool_, const u64 size_) 
     const auto allocRes { _alloc->allocate(pool_->layout(), poolSize, mem) };
 
     assert(allocRes == AllocationResult::eSuccess);
-    pool_->push(_STD move(mem));
+    pool_->push(std::move(mem));
 }
 
 void GlobalPooledAllocator::free(mref<uptr<AllocatedMemory>> mem_) {
 
-    if (_cache.free(_STD move(mem_))) {
+    if (_cache.free(std::move(mem_))) {
         return;
     }
 
-    _alloc->free(_STD move(mem_));
+    _alloc->free(std::move(mem_));
 }
 
 #include "../Buffer/Buffer.hpp"

@@ -49,9 +49,9 @@ RenderCommandBuffer::RenderCommandBuffer() noexcept :
     _last(nullptr) {}
 
 RenderCommandBuffer::RenderCommandBuffer(mref<this_type> other_) noexcept :
-    RenderCommandAllocator(_STD move(other_)),
-    _begin(_STD exchange(other_._begin, nullptr)),
-    _last(_STD exchange(other_._last, nullptr)) {}
+    RenderCommandAllocator(std::move(other_)),
+    _begin(std::exchange(other_._begin, nullptr)),
+    _last(std::exchange(other_._last, nullptr)) {}
 
 RenderCommandBuffer::~RenderCommandBuffer() noexcept {
     release();
@@ -74,7 +74,7 @@ void RenderCommandBuffer::release(ptr<RenderResourceTable> resourceTable_) {
     // TODO: Move stored resources into provided resource table if not null
 
     _last = nullptr;
-    RenderCommandIterator iter { _STD exchange(_begin, nmpt<RenderCommand> { nullptr }).get() };
+    RenderCommandIterator iter { std::exchange(_begin, nmpt<RenderCommand> { nullptr }).get() };
 
     while (iter.valid()) {
         (iter++)->~RenderCommand();
@@ -98,12 +98,12 @@ void RenderCommandBuffer::begin() noexcept {
 }
 
 void RenderCommandBuffer::beginAccelPass(mref<BeginAccelerationPassStruct> data_) noexcept {
-    const auto result = alloc().allocateCommand<BeginAccelerationPassRCmd>(_STD move(data_));
+    const auto result = alloc().allocateCommand<BeginAccelerationPassRCmd>(std::move(data_));
     link(_last, result.value());
 }
 
 void RenderCommandBuffer::beginSubPass(mref<BeginSubPassStruct> data_) noexcept {
-    const auto result = alloc().allocateCommand<BeginSubPassRCmd>(_STD move(data_));
+    const auto result = alloc().allocateCommand<BeginSubPassRCmd>(std::move(data_));
     link(_last, result.value());
 }
 
@@ -144,7 +144,7 @@ void RenderCommandBuffer::bindGraphicsPipeline(mref<smr<const accel::GraphicsPip
 }
 
 void RenderCommandBuffer::bindStaticMesh(const nmpt<const gfx::Mesh> mesh_) noexcept {
-    const auto result = alloc().allocateCommand<BindStaticMeshRCmd>(_STD move(mesh_));
+    const auto result = alloc().allocateCommand<BindStaticMeshRCmd>(std::move(mesh_));
     link(_last, result.value());
 }
 
@@ -153,7 +153,7 @@ void RenderCommandBuffer::bindStaticMeshInstance(const nmpt<const gfx::MeshInsta
     if constexpr (true) {
 
         const gfx::StorageBufferView* const sbv {};
-        const auto result = alloc().allocateCommand<BindStorageBufferRCmd>(accel::lang::SymbolId {}, _STD move(sbv));
+        const auto result = alloc().allocateCommand<BindStorageBufferRCmd>(accel::lang::SymbolId {}, std::move(sbv));
         link(_last, result.value());
 
     } else {
@@ -166,7 +166,7 @@ void RenderCommandBuffer::bindStaticMeshInstance(const nmpt<const gfx::MeshInsta
 }
 
 void RenderCommandBuffer::bindSkeletalMesh(const nmpt<const gfx::Mesh> mesh_) noexcept {
-    const auto result = alloc().allocateCommand<BindSkeletalMeshRCmd>(_STD move(mesh_));
+    const auto result = alloc().allocateCommand<BindSkeletalMeshRCmd>(std::move(mesh_));
     link(_last, result.value());
 }
 
@@ -182,13 +182,13 @@ void RenderCommandBuffer::bindSkeletalMeshInstance(
 
         const auto instanceResult = alloc().allocateCommand<BindStorageBufferRCmd>(
             accel::lang::SymbolId {},
-            _STD move(isbv)
+            std::move(isbv)
         );
         link(_last, instanceResult.value());
 
         const auto boneResult = alloc().allocateCommand<BindStorageBufferRCmd>(
             accel::lang::SymbolId {},
-            _STD move(bsbv)
+            std::move(bsbv)
         );
         link(_last, boneResult.value());
 
@@ -204,7 +204,7 @@ void RenderCommandBuffer::bindSkeletalMeshInstance(
 
         const auto boneResult = alloc().allocateCommand<BindStorageBufferRCmd>(
             accel::lang::SymbolId {},
-            _STD move(bsbv)
+            std::move(bsbv)
         );
         link(_last, boneResult.value());
     }
@@ -230,8 +230,8 @@ void RenderCommandBuffer::bindStorage(
     const nmpt<const gfx::StorageBufferView> storageView_
 ) noexcept {
     const auto result = alloc().allocateCommand<BindStorageBufferRCmd>(
-        _STD move(symbolId_),
-        _STD move(storageView_)
+        std::move(symbolId_),
+        std::move(storageView_)
     );
     link(_last, result.value());
 }
@@ -269,15 +269,15 @@ void RenderCommandBuffer::bindUniform(
     const nmpt<const gfx::UniformBufferView> uniformView_
 ) noexcept {
     const auto result = alloc().allocateCommand<BindUniformBufferRCmd>(
-        _STD move(symbolId_),
-        _STD move(uniformView_)
+        std::move(symbolId_),
+        std::move(uniformView_)
     );
     link(_last, result.value());
 }
 
 void RenderCommandBuffer::bind(mref<smr<engine::render::ResourceTable>> table_) noexcept {
     const auto result = alloc().allocateCommand<BindResourceTableRCmd>(
-        _STD move(table_)
+        std::move(table_)
     );
     link(_last, result.value());
 }
@@ -398,7 +398,7 @@ void RenderCommandBuffer::drawDispatch(
 
 void RenderCommandBuffer::lambda(mref<std::function<void(ref<accel::AccelCommandBuffer>)>> lambda_) noexcept {
     const auto result = alloc().allocateCommand<LambdaRCmd>(
-        _STD move(lambda_)
+        std::move(lambda_)
     );
     link(_last, result.value());
 }

@@ -16,7 +16,7 @@ namespace hg::engine::gfx::loader {
     using MaterialLoaderType = resource::loader::LoaderChain<
         assets::GfxMaterial,
         MaterialResource,
-        resource::loader::MetaTypeWrapperList<_STD type_identity_t, _STD type_identity_t, _STD type_identity_t, sptr>,
+        resource::loader::MetaTypeWrapperList<std::type_identity_t, std::type_identity_t, std::type_identity_t, sptr>,
         MaterialCache,
         MaterialFeedback,
         MaterialTransformer,

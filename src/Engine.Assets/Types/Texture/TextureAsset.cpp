@@ -39,11 +39,11 @@ void TextureAsset::addSourceImage(const asset_guid imageGuid_) {
 }
 
 bool TextureAsset::hasSourceImage(const asset_guid imageGuid_) {
-    return _STD find(_images.begin(), _images.end(), imageGuid_) != _images.end();
+    return std::find(_images.begin(), _images.end(), imageGuid_) != _images.end();
 }
 
 void TextureAsset::removeSourceImage(const asset_guid imageGuid_) {
-    const auto where { _STD remove(_images.begin(), _images.end(), imageGuid_) };
+    const auto where { std::remove(_images.begin(), _images.end(), imageGuid_) };
     _images.erase(where, _images.end());
 }
 

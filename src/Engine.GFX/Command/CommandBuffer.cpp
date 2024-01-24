@@ -25,10 +25,10 @@ CommandBuffer::CommandBuffer(mref<CommandBuffer> other_) noexcept :
     _valid(other_._valid),
     _faf(other_._faf),
     _root(other_._root),
-    _pipelineLayout(_STD exchange(other_._pipelineLayout, nullptr)),
+    _pipelineLayout(std::exchange(other_._pipelineLayout, nullptr)),
     _pipelineBindPoint(other_._pipelineBindPoint),
-    _pool(_STD exchange(other_._pool, nullptr)),
-    _vkCmd(_STD exchange(other_._vkCmd, nullptr)) {
+    _pool(std::exchange(other_._pool, nullptr)),
+    _vkCmd(std::exchange(other_._vkCmd, nullptr)) {
     /**/
     other_._initialized = false;
     other_._recording = false;

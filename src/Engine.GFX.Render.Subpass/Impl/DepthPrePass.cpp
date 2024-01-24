@@ -44,7 +44,7 @@ void DepthPrePass::destroy() noexcept {
 
     auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
 
-    device->vkDevice().destroySemaphore(_STD exchange(_tmpSemaphore, nullptr));
+    device->vkDevice().destroySemaphore(std::exchange(_tmpSemaphore, nullptr));
 
     _framebuffer->destroy();
     _framebuffer.reset();
@@ -71,7 +71,7 @@ void DepthPrePass::iterate(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
     {
         graph::SceneWalker walker {};
         Vector<ptr<const MetaClass>> typeList = { GeometryModel::getStaticMetaClass() };
-        walker.addHookFilter(make_uptr<graph::ModelTypeFilter>(_STD move(typeList)));
+        walker.addHookFilter(make_uptr<graph::ModelTypeFilter>(std::move(typeList)));
         walker.setHook(
             [ci = createCaptureObject()](const auto* const model_) {
                 static_cast<const ptr<const GeometryModel>>(model_)->capture(ci);
@@ -212,13 +212,13 @@ smr<AccelerationEffect> build_test_effect() {
 
     vertexStage->setIntermediate(make_smr<lang::Intermediate>());
     vertexStage->getIntermediate()->lang.dialect = lang::Dialect::eVulkanGlsl460;
-    vertexStage->getIntermediate()->lang.text.emplace_back(_STD move(vertexShaderCode));
+    vertexStage->getIntermediate()->lang.text.emplace_back(std::move(vertexShaderCode));
 
     const auto fragmentShaderCode = read_shader_file("__test__predepth.fs");
 
     fragmentStage->setIntermediate(make_smr<lang::Intermediate>());
     fragmentStage->getIntermediate()->lang.dialect = lang::Dialect::eVulkanGlsl460;
-    fragmentStage->getIntermediate()->lang.text.emplace_back(_STD move(fragmentShaderCode));
+    fragmentStage->getIntermediate()->lang.text.emplace_back(std::move(fragmentShaderCode));
 
     /**/
 
@@ -226,9 +226,9 @@ smr<AccelerationEffect> build_test_effect() {
 
     tmpVar = make_uptr<lang::Variable>();
     tmpVar->annotation = make_uptr<lang::SimpleAnnotation<lang::AnnotationType::eForwardLinkage>>();
-    tmpVar->annotation = make_uptr<lang::SymbolIdAnnotation>("depth", _STD move(tmpVar->annotation));
+    tmpVar->annotation = make_uptr<lang::SymbolIdAnnotation>("depth", std::move(tmpVar->annotation));
 
-    fragmentStage->getIntermediate()->rep.globalScope.outbound.emplace_back(_STD move(tmpVar));
+    fragmentStage->getIntermediate()->rep.globalScope.outbound.emplace_back(std::move(tmpVar));
 
     /**/
 
@@ -236,9 +236,9 @@ smr<AccelerationEffect> build_test_effect() {
     GuidGenerate(guid);
 
     return make_smr<AccelerationEffect>(
-        _STD move(guid),
+        std::move(guid),
         "test-predepth-effect",
-        Vector<smr<Stage>> { _STD move(vertexStage), _STD move(fragmentStage) }
+        Vector<smr<Stage>> { std::move(vertexStage), std::move(fragmentStage) }
         // Vector<smr<const Symbol>> {},
         // Vector<smr<const Symbol>> { makeSceneDepthSymbol() }
     );
@@ -295,9 +295,9 @@ EffectCompileResult build_test_pipeline(
     const auto compiler = makeVkAccCompiler();
     auto result = compiler->compile(
         {
-            .effect = _STD move(effect_),
-            .profile = _STD move(profile),
-            .spec = _STD move(spec)
+            .effect = std::move(effect_),
+            .profile = std::move(profile),
+            .spec = std::move(spec)
         }
     );
 

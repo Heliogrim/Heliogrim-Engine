@@ -53,7 +53,7 @@ ptr<Fiber> FiberPool::acquire() {
         return fiber;
     }
 
-    throw _STD runtime_error("Could not acquire fiber. Failed to reuse and failed to acquire new.");
+    throw std::runtime_error("Could not acquire fiber. Failed to reuse and failed to acquire new.");
 }
 
 void FiberPool::release(mref<ptr<Fiber>> fiber_) {
@@ -116,7 +116,7 @@ ptr<Fiber> FiberPool::acquireReuse() noexcept {
     /**
      *
      */
-    if (_acqMtx.test_and_set(_STD memory_order::acq_rel)) {
+    if (_acqMtx.test_and_set(std::memory_order::acq_rel)) {
         return nullptr;
     }
 
@@ -129,7 +129,7 @@ ptr<Fiber> FiberPool::acquireReuse() noexcept {
     /**
      *
      */
-    _acqMtx.clear(_STD memory_order::release);
+    _acqMtx.clear(std::memory_order::release);
     return fiber;
 }
 
@@ -138,14 +138,14 @@ bool FiberPool::restore(ptr<Fiber> fiber_) noexcept {
     /**
      *
      */
-    if (_relMtx.test_and_set(_STD memory_order::acq_rel)) {
+    if (_relMtx.test_and_set(std::memory_order::acq_rel)) {
         return false;
     }
 
     /**
      *
      */
-    const auto result = _pool.try_push(_STD forward<ptr<Fiber>>(fiber_));
-    _relMtx.clear(_STD memory_order::release);
+    const auto result = _pool.try_push(std::forward<ptr<Fiber>>(fiber_));
+    _relMtx.clear(std::memory_order::release);
     return result;
 }

@@ -28,14 +28,14 @@ AllocatedMemory::AllocatedMemory(
     mapping(mapping_) {}
 
 AllocatedMemory::AllocatedMemory(mref<AllocatedMemory> other_) noexcept :
-    allocator(_STD exchange(other_.allocator, nullptr)),
-    parent(_STD exchange(other_.parent, nullptr)),
-    layout(_STD exchange(other_.layout, {})),
-    size(_STD exchange(other_.size, 0)),
-    offset(_STD exchange(other_.offset, 0)),
-    vkDevice(_STD exchange(other_.vkDevice, nullptr)),
-    vkMemory(_STD exchange(other_.vkMemory, nullptr)),
-    mapping(_STD exchange(other_.mapping, nullptr)) {}
+    allocator(std::exchange(other_.allocator, nullptr)),
+    parent(std::exchange(other_.parent, nullptr)),
+    layout(std::exchange(other_.layout, {})),
+    size(std::exchange(other_.size, 0)),
+    offset(std::exchange(other_.offset, 0)),
+    vkDevice(std::exchange(other_.vkDevice, nullptr)),
+    vkMemory(std::exchange(other_.vkMemory, nullptr)),
+    mapping(std::exchange(other_.mapping, nullptr)) {}
 
 AllocatedMemory::~AllocatedMemory() {
     if (mapping) {
@@ -48,7 +48,7 @@ AllocatedMemory::~AllocatedMemory() {
     }
     #else
     if (vkMemory && (parent || allocator)) {
-        throw _STD runtime_error("Possible memory leak due to missing hierarchical release report.");
+        throw std::runtime_error("Possible memory leak due to missing hierarchical release report.");
     }
     #endif
 
@@ -59,14 +59,14 @@ AllocatedMemory::~AllocatedMemory() {
 
 ref<AllocatedMemory> AllocatedMemory::operator=(mref<AllocatedMemory> other_) noexcept {
 
-    if (_STD addressof(other_) != this) {
-        _STD swap(allocator, other_.allocator);
-        _STD swap(parent, other_.parent);
-        _STD swap(layout, other_.layout);
-        _STD swap(size, other_.size);
-        _STD swap(mapping, other_.mapping);
-        _STD swap(vkMemory, other_.vkMemory);
-        _STD swap(vkDevice, other_.vkDevice);
+    if (std::addressof(other_) != this) {
+        std::swap(allocator, other_.allocator);
+        std::swap(parent, other_.parent);
+        std::swap(layout, other_.layout);
+        std::swap(size, other_.size);
+        std::swap(mapping, other_.mapping);
+        std::swap(vkMemory, other_.vkMemory);
+        std::swap(vkDevice, other_.vkDevice);
     }
 
     return *this;
@@ -119,7 +119,7 @@ void AllocatedMemory::free(mref<uptr<AllocatedMemory>> memory_) {
     }
 
     if (memory_->allocator) {
-        return memory_->allocator->free(_STD move(memory_));
+        return memory_->allocator->free(std::move(memory_));
     }
 
     memory_.reset();

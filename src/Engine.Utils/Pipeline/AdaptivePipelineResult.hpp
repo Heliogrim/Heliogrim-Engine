@@ -4,14 +4,14 @@
 namespace hg::engine::utils::pipeline::adaptive {
     template <typename Type_>
     class AdaptivePipelineResult :
-        protected concurrent::future<_STD remove_cvref_t<Type_>> {
+        protected concurrent::future<std::remove_cvref_t<Type_>> {
     private:
         friend class AdaptivePipeline;
 
     public:
-        using base_type = concurrent::future<_STD remove_cvref_t<Type_>>;
+        using base_type = concurrent::future<std::remove_cvref_t<Type_>>;
 
-        using value_type = _STD remove_cvref_t<Type_>;
+        using value_type = std::remove_cvref_t<Type_>;
         using reference_type = ref<value_type>;
         using const_reference_type = cref<value_type>;
 
@@ -36,7 +36,7 @@ namespace hg::engine::utils::pipeline::adaptive {
          *
          * @param  base_ The base.
          */
-        AdaptivePipelineResult(mref<base_type> base_) noexcept(_STD is_nothrow_move_constructible_v<base_type>);
+        AdaptivePipelineResult(mref<base_type> base_) noexcept(std::is_nothrow_move_constructible_v<base_type>);
 
     public:
         /**
@@ -48,17 +48,17 @@ namespace hg::engine::utils::pipeline::adaptive {
         ~AdaptivePipelineResult() noexcept = default;
 
     public:
-        void operator>>(IN OUT ptr<value_type> ptr_) noexcept(_STD is_nothrow_move_constructible_v<value_type>) {
+        void operator>>(IN OUT ptr<value_type> ptr_) noexcept(std::is_nothrow_move_constructible_v<value_type>) {
 
-            using allocator_type = _STD allocator<value_type>;
-            using allocator_traits = _STD allocator_traits<allocator_type>;
+            using allocator_type = std::allocator<value_type>;
+            using allocator_traits = std::allocator_traits<allocator_type>;
 
             allocator_type alloc {};
-            allocator_traits::construct(alloc, ptr_, _STD forward<value_type>(this->get()));
+            allocator_traits::construct(alloc, ptr_, std::forward<value_type>(this->get()));
         }
 
-        void operator>>(IN OUT reference_type ref_) noexcept(_STD is_nothrow_move_assignable_v<value_type>) {
-            ref_ = _STD move(this->get());
+        void operator>>(IN OUT reference_type ref_) noexcept(std::is_nothrow_move_assignable_v<value_type>) {
+            ref_ = std::move(this->get());
         }
     };
 

@@ -9,8 +9,8 @@ using namespace hg;
 
 EffectLoader::EffectLoader(mref<smr<GlobalStorage>> storage_, mref<sptr<EffectSourceLoader>> sourceLoader_):
     InheritMeta(
-        EffectCache(_STD move(storage_)),
+        EffectCache(std::move(storage_)),
         EffectFeedback(),
         EffectTransformer(),
-        _STD move(sourceLoader_)
+        std::move(sourceLoader_)
     ) {}

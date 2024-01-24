@@ -6,7 +6,7 @@ using namespace hg;
 constexpr File::File() = default;
 
 File::File(mref<path_type> path_) noexcept :
-    _path(_STD move(path_)) {}
+    _path(std::move(path_)) {}
 
 File::File(cref<path_type> path_) noexcept :
     _path(path_) {}
@@ -15,10 +15,10 @@ File::File(cref<string> url_) :
     _path(url_) { }
 
 File::File(cref<string_view> url_) :
-    _path(_STD string(url_)) {}
+    _path(std::string(url_)) {}
 
 File::File(mref<File> other_) noexcept :
-    _path(_STD move(other_._path)) {}
+    _path(std::move(other_._path)) {}
 
 File::File(cref<File> other_) noexcept :
     _path(other_._path) {}
@@ -26,14 +26,14 @@ File::File(cref<File> other_) noexcept :
 File::~File() noexcept = default;
 
 ref<File> File::operator=(mref<File> other_) noexcept {
-    if (_STD addressof(other_) != this) {
-        _path = _STD move(other_._path);
+    if (std::addressof(other_) != this) {
+        _path = std::move(other_._path);
     }
     return *this;
 }
 
 ref<File> File::operator=(cref<File> other_) noexcept {
-    if (_STD addressof(other_) != this) {
+    if (std::addressof(other_) != this) {
         _path = other_._path;
     }
     return *this;
@@ -44,15 +44,15 @@ cref<File::path_type> File::path() const {
 }
 
 bool File::exists() const {
-    return _STD filesystem::exists(_path);
+    return std::filesystem::exists(_path);
 }
 
 bool File::isDirectory() const {
-    return _STD filesystem::is_directory(_path);
+    return std::filesystem::is_directory(_path);
 }
 
 streamsize File::size() const {
-    return _STD filesystem::file_size(_path);
+    return std::filesystem::file_size(_path);
 }
 
 File File::parent() const {
@@ -66,7 +66,7 @@ Vector<File> File::files() const {
     }
 
     Vector<File> files = Vector<File>(0);
-    const auto iter = _STD filesystem::directory_iterator { _path };
+    const auto iter = std::filesystem::directory_iterator { _path };
 
     for (const auto& entry : iter) {
         if (entry.is_regular_file()) {
@@ -86,11 +86,11 @@ void File::mkdir() const {
         throw std::exception("Directory already exists");
     }
 
-    _STD filesystem::create_directory(_path);
+    std::filesystem::create_directory(_path);
 }
 
 void File::mkdirs() const {
-    _STD filesystem::create_directories(_path);
+    std::filesystem::create_directories(_path);
 }
 
 void File::createFile() const {
@@ -108,7 +108,7 @@ void File::move(const File& dst_) {
         throw std::exception("Target is not a existing directory.");
     }
 
-    const auto copyResult = _STD filesystem::copy_file(_path, dst_._path, _STD filesystem::copy_options {});
+    const auto copyResult = std::filesystem::copy_file(_path, dst_._path, std::filesystem::copy_options {});
 
     if (not copyResult) {
         return;
@@ -116,7 +116,7 @@ void File::move(const File& dst_) {
 
     /**/
 
-    _STD filesystem::remove(_path);
+    std::filesystem::remove(_path);
 }
 
 File::operator std::string() const noexcept {

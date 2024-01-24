@@ -13,7 +13,7 @@ FontTransformer::FontTransformer(const non_owning_rptr<pool::GlobalResourcePool>
 }
 
 FontTransformer::FontTransformer(mref<this_type> other_) noexcept :
-    _pool(_STD move(other_._pool)) {
+    _pool(std::move(other_._pool)) {
     transformer::prepareFreeType();
 }
 
@@ -33,12 +33,12 @@ FontTransformer::response_type::type FontTransformer::operator()(
 ) const {
 
     auto* asset = static_cast<non_owning_rptr<const assets::Asset>>(request_);
-    auto src = next_(_STD move(asset), next_type::next_request_type::options {});
+    auto src = next_(std::move(asset), next_type::next_request_type::options {});
 
     /**/
 
     using derived_type = resource::UniqueResource<FontResource::value_type>;
-    auto dst = make_smr<derived_type>(_STD in_place).into<FontResource>();
+    auto dst = make_smr<derived_type>(std::in_place).into<FontResource>();
     auto guard = dst->acquire(resource::ResourceUsageFlag::eAll);
 
     /**/

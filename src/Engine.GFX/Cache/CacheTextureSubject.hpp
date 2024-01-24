@@ -149,7 +149,7 @@ namespace hg::engine::gfx::cache {
         }
     };
 
-    static_assert(_STD totally_ordered<CacheTextureSubject>);
+    static_assert(std::totally_ordered<CacheTextureSubject>);
 
     using TextureSubResource = CacheTextureSubject;
 }

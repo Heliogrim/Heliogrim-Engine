@@ -17,7 +17,7 @@ namespace hg {
          * @tparam SizeType_ Type of the size type.
          * @tparam GrowthFactor Type of the growth factor.
          */
-        template <typename SizeType_ = _STD size_t, SizeType_ GrowthFactor = 2uLL>
+        template <typename SizeType_ = std::size_t, SizeType_ GrowthFactor = 2uLL>
         struct exp2_growth_policy {
             using size_type = SizeType_;
 
@@ -42,16 +42,16 @@ namespace hg {
 
     template <typename Type_>
     concept IsProxyVectorType =
-        _STD is_nothrow_destructible_v<Type_> &&
-        (_STD is_nothrow_move_constructible_v<Type_>) &&
-        (_STD is_nothrow_move_assignable_v<Type_>);
+        std::is_nothrow_destructible_v<Type_> &&
+        (std::is_nothrow_move_constructible_v<Type_>) &&
+        (std::is_nothrow_move_assignable_v<Type_>);
 
     /**
      * Forward Declaration
      */
     template <
         typename Type_,
-        typename SizeType_ = _STD size_t,
+        typename SizeType_ = std::size_t,
         typename GrowthPolicy_ = proxyvector::exp2_growth_policy<>,
         bool Stable_ = false,
         bool Realloc_ = true
@@ -59,7 +59,7 @@ namespace hg {
     class TypedProxyVector;
 
     template <
-        typename SizeType_ = _STD size_t,
+        typename SizeType_ = std::size_t,
         typename GrowthPolicy_ = proxyvector::exp2_growth_policy<>,
         bool Stable_ = false,
         bool Realloc_ = true
@@ -110,10 +110,10 @@ namespace hg {
          * @param  other_ The other.
          */
         ProxyVector(mref<value_type> other_) noexcept :
-            _proxy(_STD move(other_._proxy)),
-            _base(_STD exchange(other_._base, nullptr)),
-            _last(_STD exchange(other_._last, nullptr)),
-            _end(_STD exchange(other_._end, nullptr)) { }
+            _proxy(std::move(other_._proxy)),
+            _base(std::exchange(other_._base, nullptr)),
+            _last(std::exchange(other_._last, nullptr)),
+            _end(std::exchange(other_._end, nullptr)) { }
 
         /**
          * Copy Constructor
@@ -156,13 +156,13 @@ namespace hg {
     private:
         template <typename Type_, typename First_>
         constexpr void apply_unfolded_make(mref<First_> first_) {
-            emplace_back(_STD forward<Type_>(first_));
+            emplace_back(std::forward<Type_>(first_));
         }
 
         template <typename Type_, typename First_, typename... Args_>
         constexpr void apply_unfolded_make(mref<First_> first_, mref<Args_>... args_) {
-            emplace_back(_STD forward<Type_>(first_));
-            apply_unfolded_make<Type_, Args_...>(_STD forward<Args_>(args_)...);
+            emplace_back(std::forward<Type_>(first_));
+            apply_unfolded_make<Type_, Args_...>(std::forward<Args_>(args_)...);
         }
 
     public:
@@ -181,7 +181,7 @@ namespace hg {
         [[nodiscard]] constexpr static value_type make(cref<proxy_holder_type> proxy_, Args_... args_) {
             auto self { make(proxy_) };
             self.reserve(sizeof...(Args_));
-            self.template apply_unfolded_make<Type_, Args_...>(_STD forward<Args_>(args_)...);
+            self.template apply_unfolded_make<Type_, Args_...>(std::forward<Args_>(args_)...);
             return self;
         }
 
@@ -200,7 +200,7 @@ namespace hg {
         void tidy() noexcept {
             if (_base) {
                 destroy_range(_base, _last);
-                _STD free(_base);
+                std::free(_base);
 
                 _base = nullptr;
                 _last = nullptr;
@@ -213,8 +213,8 @@ namespace hg {
             if (_base) {
                 destroy_range<Type_>(_base, _last);
 
-                using allocator_type = _STD allocator<Type_>;
-                using allocator_trait = _STD allocator_traits<allocator_type>;
+                using allocator_type = std::allocator<Type_>;
+                using allocator_trait = std::allocator_traits<allocator_type>;
 
                 allocator_type alloc {};
                 alloc.deallocate(
@@ -259,7 +259,7 @@ namespace hg {
          */
         template <typename Type_>
         [[nodiscard]] count_type size() const noexcept {
-            return _STD ranges::distance(
+            return std::ranges::distance(
                 static_cast<ptr<Type_>>(_base),
                 static_cast<ptr<Type_>>(_last)
             );
@@ -288,7 +288,7 @@ namespace hg {
          */
         template <typename Type_>
         [[nodiscard]] count_type capacity() const noexcept {
-            return _STD ranges::distance(
+            return std::ranges::distance(
                 static_cast<ptr<Type_>>(_base),
                 static_cast<ptr<Type_>>(_end)
             );
@@ -323,15 +323,15 @@ namespace hg {
             using pointer_type = ptr<value_type>;
 
             // Iterator Traits
-            using difference_type = _STD ptrdiff_t;
+            using difference_type = std::ptrdiff_t;
             using pointer = pointer_type;
             using reference = reference_type;
 
             #ifdef __cpp_lib_concepts
-            using iterator_concept = _STD contiguous_iterator_tag;
+            using iterator_concept = std::contiguous_iterator_tag;
             #endif
 
-            using iterator_category = _STD random_access_iterator_tag;
+            using iterator_category = std::random_access_iterator_tag;
 
         public:
             ProxyVectorIterator() = delete;
@@ -340,7 +340,7 @@ namespace hg {
                 _cur(other_._cur) {}
 
             ProxyVectorIterator(this_type&& other_) noexcept :
-                _cur(_STD move(other_._cur)) {}
+                _cur(std::move(other_._cur)) {}
 
             ProxyVectorIterator(pointer_type pos_) noexcept :
                 _cur(pos_) {}
@@ -354,7 +354,7 @@ namespace hg {
 
             reference_this_type operator=(this_type&& other_) noexcept {
                 if (this != &other_) {
-                    _cur = _STD move(other_._cur);
+                    _cur = std::move(other_._cur);
                 }
                 return *this;
             }
@@ -459,8 +459,8 @@ namespace hg {
                 return _cur >= other_._cur;
             }
 
-            [[nodiscard]] _STD strong_ordering operator<=>(const_reference_this_type other_) const noexcept {
-                return _STD _Unfancy(_cur) <=> _STD _Unfancy(other_._cur);
+            [[nodiscard]] std::strong_ordering operator<=>(const_reference_this_type other_) const noexcept {
+                return std::_Unfancy(_cur) <=> std::_Unfancy(other_._cur);
             }
         };
 
@@ -481,7 +481,7 @@ namespace hg {
          */
         template <typename Type_>
         [[nodiscard]] iterator_type<Type_> begin() noexcept {
-            return { static_cast<typename iterator_type<Type_>::pointer_type>(_STD _Unfancy(_base)) };
+            return { static_cast<typename iterator_type<Type_>::pointer_type>(std::_Unfancy(_base)) };
         }
 
         /**
@@ -493,7 +493,7 @@ namespace hg {
          */
         template <typename Type_>
         [[nodiscard]] const_iterator_type<Type_> begin() const noexcept {
-            return { static_cast<typename const_iterator_type<Type_>::pointer_type>(_STD _Unfancy(_base)) };
+            return { static_cast<typename const_iterator_type<Type_>::pointer_type>(std::_Unfancy(_base)) };
         }
 
         /**
@@ -505,7 +505,7 @@ namespace hg {
          */
         template <typename Type_>
         [[nodiscard]] const_iterator_type<Type_> cbegin() noexcept {
-            return { static_cast<typename const_iterator_type<Type_>::pointer_type>(_STD _Unfancy(_base)) };
+            return { static_cast<typename const_iterator_type<Type_>::pointer_type>(std::_Unfancy(_base)) };
         }
 
         /**
@@ -517,7 +517,7 @@ namespace hg {
          */
         template <typename Type_>
         [[nodiscard]] iterator_type<Type_> end() noexcept {
-            return { static_cast<typename iterator_type<Type_>::pointer_type>(_STD _Unfancy(_last)) };
+            return { static_cast<typename iterator_type<Type_>::pointer_type>(std::_Unfancy(_last)) };
         }
 
         /**
@@ -529,7 +529,7 @@ namespace hg {
          */
         template <typename Type_>
         [[nodiscard]] const_iterator_type<Type_> end() const noexcept {
-            return { static_cast<typename const_iterator_type<Type_>::pointer_type>(_STD _Unfancy(_last)) };
+            return { static_cast<typename const_iterator_type<Type_>::pointer_type>(std::_Unfancy(_last)) };
         }
 
         /**
@@ -541,7 +541,7 @@ namespace hg {
          */
         template <typename Type_>
         [[nodiscard]] const_iterator_type<Type_> cend() const noexcept {
-            return { static_cast<typename const_iterator_type<Type_>::pointer_type>(_STD _Unfancy(_last)) };
+            return { static_cast<typename const_iterator_type<Type_>::pointer_type>(std::_Unfancy(_last)) };
         }
 
     public:
@@ -640,7 +640,7 @@ namespace hg {
 
     private:
         void push_back(mref<ptr<void>> value_) noexcept {
-            emplace_back(_STD forward<ptr<void>>(value_));
+            emplace_back(std::forward<ptr<void>>(value_));
         }
 
     public:
@@ -650,9 +650,9 @@ namespace hg {
          * @tparam Type_ Type of the type.
          * @param  value_ The value.
          */
-        template <typename Type_> requires _STD is_move_constructible_v<Type_>
-        void push_back(mref<Type_> value_) noexcept (_STD is_nothrow_move_constructible_v<Type_>) {
-            [[maybe_unused]] auto _ = emplace_back<Type_>(_STD forward<Type_>(value_));
+        template <typename Type_> requires std::is_move_constructible_v<Type_>
+        void push_back(mref<Type_> value_) noexcept (std::is_nothrow_move_constructible_v<Type_>) {
+            [[maybe_unused]] auto _ = emplace_back<Type_>(std::forward<Type_>(value_));
         }
 
     private:
@@ -667,8 +667,8 @@ namespace hg {
          * @tparam Type_ Type of the type.
          * @param  value_ The value.
          */
-        template <typename Type_> requires _STD is_copy_constructible_v<Type_>
-        void push_back(cref<Type_> value_) noexcept (_STD is_nothrow_copy_constructible_v<Type_>) {
+        template <typename Type_> requires std::is_copy_constructible_v<Type_>
+        void push_back(cref<Type_> value_) noexcept (std::is_nothrow_copy_constructible_v<Type_>) {
             [[maybe_unused]] auto _ = emplace_back<Type_>(value_);
         }
 
@@ -704,10 +704,10 @@ namespace hg {
             cref<pointer_type> fst { static_cast<pointer_type>(from_) };
             cref<pointer_type> lst { static_cast<pointer_type>(to_) };
 
-            using allocator_type = _STD allocator<Type_>;
+            using allocator_type = std::allocator<Type_>;
 
             allocator_type alloc {};
-            _STD _Destroy_range(fst, lst, alloc);
+            std::_Destroy_range(fst, lst, alloc);
         }
 
         void change_internal(ptr<void> newFst_, const count_type newSize_, const count_type newCapacity_) {
@@ -718,7 +718,7 @@ namespace hg {
 
             if (myFst) {
                 destroy_range(myFst, myLst);
-                _STD free(_base);
+                std::free(_base);
             }
 
             _base = newFst_;
@@ -730,7 +730,7 @@ namespace hg {
             ptr<void> newFst_,
             const count_type newSize_,
             const count_type newCapacity_,
-            [[maybe_unused]] _STD false_type
+            [[maybe_unused]] std::false_type
         ) {
             _base = newFst_;
             _last = static_cast<ptr<void>>(static_cast<ptr<char>>(newFst_) + (newSize_ * _proxy.align));
@@ -745,7 +745,7 @@ namespace hg {
             cref<pointer_type> myLst { static_cast<pointer_type>(_last) };
             cref<pointer_type> myEnd { static_cast<pointer_type>(_end) };
 
-            using allocator_type = _STD allocator<Type_>;
+            using allocator_type = std::allocator<Type_>;
 
             allocator_type alloc {};
             if (myFst) {
@@ -763,7 +763,7 @@ namespace hg {
             ptr<Type_> newFst_,
             const count_type newSize_,
             const count_type newCapacity_,
-            [[maybe_unused]] _STD false_type
+            [[maybe_unused]] std::false_type
         ) {
             _base = newFst_;
             _last = newFst_ + newSize_;
@@ -789,11 +789,11 @@ namespace hg {
             using pointer_type = ptr<Type_>;
             cref<pointer_type> myLst { static_cast<pointer_type>(_last) };
 
-            using allocator_type = _STD allocator<Type_>;
-            using allocator_trait = _STD allocator_traits<allocator_type>;
+            using allocator_type = std::allocator<Type_>;
+            using allocator_trait = std::allocator_traits<allocator_type>;
 
             allocator_type alloc {};
-            allocator_trait::construct(alloc, myLst, _STD forward<Type_>(value_));
+            allocator_trait::construct(alloc, myLst, std::forward<Type_>(value_));
 
             pointer_type result = myLst;
             _last = myLst + 1;
@@ -811,10 +811,10 @@ namespace hg {
             using pointer_type = decltype(_base);
 
             pointer_type newFst, reallocBase;
-            newFst = reallocBase = _STD realloc(_base, newCapacity_ * _proxy.align);
+            newFst = reallocBase = std::realloc(_base, newCapacity_ * _proxy.align);
 
             if (reallocBase == nullptr) {
-                newFst = _STD malloc(newCapacity_ * _proxy.align);
+                newFst = std::malloc(newCapacity_ * _proxy.align);
 
                 ptr<char> myFst { static_cast<ptr<char>>(_base) };
                 cref<pointer_type> myLst { static_cast<pointer_type>(_last) };
@@ -830,10 +830,10 @@ namespace hg {
 
             if (reallocBase != newFst && _base) {
                 destroy_range(_base, _last);
-                _STD free(_base);
+                std::free(_base);
             }
 
-            constexpr _STD false_type _no_auto_dealloc_ {};
+            constexpr std::false_type _no_auto_dealloc_ {};
             change_internal(newFst, newSize_, newCapacity_, _no_auto_dealloc_);
         }
 
@@ -846,7 +846,7 @@ namespace hg {
 
             using pointer_type = decltype(_base);
 
-            const pointer_type newFst = _STD malloc(newCapacity_ * _proxy.align);
+            const pointer_type newFst = std::malloc(newCapacity_ * _proxy.align);
             const pointer_type newLst = static_cast<ptr<char>>(newFst) + oldSize_ * _proxy.align;
 
             ptr<char> myFst { static_cast<ptr<char>>(_base) };
@@ -869,10 +869,10 @@ namespace hg {
             const count_type newCapacity = calculate_grow(newSize);
 
             if constexpr (Realloc_) {
-                realloc_base_eb(oldSize, newSize, newCapacity, _STD forward<ptr<void>>(value_));
+                realloc_base_eb(oldSize, newSize, newCapacity, std::forward<ptr<void>>(value_));
 
             } else {
-                alloc_base_eb(oldSize, newSize, newCapacity, _STD forward<ptr<void>>(value_));
+                alloc_base_eb(oldSize, newSize, newCapacity, std::forward<ptr<void>>(value_));
             }
         }
 
@@ -893,15 +893,15 @@ namespace hg {
             const count_type newSize = oldSize + 1;
             const count_type newCapacity = calculate_grow(newSize);
 
-            using allocator_type = _STD allocator<Type_>;
-            using allocator_trait = _STD allocator_traits<allocator_type>;
+            using allocator_type = std::allocator<Type_>;
+            using allocator_trait = std::allocator_traits<allocator_type>;
 
             allocator_type alloc {};
             const pointer_type newFst = alloc.allocate(newCapacity);
             const pointer_type newLst = newFst + oldSize;
 
-            _STD _Uninitialized_move(myFst, myLst, newFst, alloc);
-            allocator_trait::construct(alloc, newLst, _STD forward<Type_>(value_));
+            std::_Uninitialized_move(myFst, myLst, newFst, alloc);
+            allocator_trait::construct(alloc, newLst, std::forward<Type_>(value_));
 
             change_internal<Type_>(newFst, newSize, newCapacity);
             return { newLst };
@@ -915,11 +915,11 @@ namespace hg {
             const pointer_type& myEnd { _end };
 
             if (myLst != myEnd) {
-                emplace_back_unused(_STD forward<ptr<void>>(value_));
+                emplace_back_unused(std::forward<ptr<void>>(value_));
                 return;
             }
 
-            emplace_back_reallocate(_STD forward<ptr<void>>(value_));
+            emplace_back_reallocate(std::forward<ptr<void>>(value_));
         }
 
     public:
@@ -931,18 +931,18 @@ namespace hg {
          *
          * @returns An iterator to the stored value_
          */
-        template <typename Type_> requires _STD is_move_constructible_v<Type_>
-        iterator_type<Type_> emplace_back(mref<Type_> value_) noexcept (_STD is_nothrow_move_constructible_v<Type_>) {
+        template <typename Type_> requires std::is_move_constructible_v<Type_>
+        iterator_type<Type_> emplace_back(mref<Type_> value_) noexcept (std::is_nothrow_move_constructible_v<Type_>) {
 
             using pointer_type = ptr<Type_>;
             const pointer_type& myLst { static_cast<pointer_type>(_last) };
             const pointer_type& myEnd { static_cast<pointer_type>(_end) };
 
             if (myLst != myEnd) {
-                return emplace_back_unused<Type_>(_STD forward<Type_>(value_));
+                return emplace_back_unused<Type_>(std::forward<Type_>(value_));
             }
 
-            return emplace_back_reallocate<Type_>(_STD forward<Type_>(value_));
+            return emplace_back_reallocate<Type_>(std::forward<Type_>(value_));
         }
 
         void emplace_back(cref<ptr<void>> value_) {
@@ -952,11 +952,11 @@ namespace hg {
             cref<pointer_type> myEnd { _end };
 
             if (myLst != myEnd) {
-                emplace_back_unused(_STD forward<ptr<void>>(value_));
+                emplace_back_unused(std::forward<ptr<void>>(value_));
                 return;
             }
 
-            emplace_back_reallocate(_STD forward<ptr<void>>(value_));
+            emplace_back_reallocate(std::forward<ptr<void>>(value_));
         }
 
         /**
@@ -967,32 +967,32 @@ namespace hg {
          *
          * @returns An iterator to the stored value_
          */
-        template <typename Type_> requires _STD is_copy_constructible_v<Type_>
-        iterator_type<Type_> emplace_back(cref<Type_> value_) noexcept (_STD is_nothrow_copy_constructible_v<Type_>) {
+        template <typename Type_> requires std::is_copy_constructible_v<Type_>
+        iterator_type<Type_> emplace_back(cref<Type_> value_) noexcept (std::is_nothrow_copy_constructible_v<Type_>) {
 
             using pointer_type = ptr<Type_>;
             cref<pointer_type> myLst { static_cast<pointer_type>(_last) };
             cref<pointer_type> myEnd { static_cast<pointer_type>(_end) };
 
             if (myLst != myEnd) {
-                return emplace_back_unused<Type_>(_STD forward<Type_>(value_));
+                return emplace_back_unused<Type_>(std::forward<Type_>(value_));
             }
 
-            return emplace_back_reallocate<Type_>(_STD forward<Type_>(value_));
+            return emplace_back_reallocate<Type_>(std::forward<Type_>(value_));
         }
 
     public:
-        template <typename Type_> requires _STD is_move_constructible_v<Type_> && _STD is_move_assignable_v<Type_>
+        template <typename Type_> requires std::is_move_constructible_v<Type_> && std::is_move_assignable_v<Type_>
         iterator_type<Type_> insert_or_assign(
             const_iterator_type<Type_> where_,
             mref<Type_> value_
-        ) noexcept (_STD is_nothrow_move_constructible_v<Type_> && _STD is_nothrow_move_assignable_v<Type_>) { }
+        ) noexcept (std::is_nothrow_move_constructible_v<Type_> && std::is_nothrow_move_assignable_v<Type_>) { }
 
-        template <typename Type_> requires _STD is_copy_constructible_v<Type_> && _STD is_copy_assignable_v<Type_>
+        template <typename Type_> requires std::is_copy_constructible_v<Type_> && std::is_copy_assignable_v<Type_>
         iterator_type<Type_> insert_or_assign(
             const_iterator_type<Type_> where_,
             cref<Type_> value_
-        ) noexcept (_STD is_nothrow_copy_constructible_v<Type_> && _STD is_nothrow_copy_assignable_v<Type_>) { }
+        ) noexcept (std::is_nothrow_copy_constructible_v<Type_> && std::is_nothrow_copy_assignable_v<Type_>) { }
 
     public:
         /**
@@ -1016,13 +1016,13 @@ namespace hg {
          * @tparam Type_ Type of the type.
          */
         template <typename Type_>
-        void pop_back() noexcept(_STD is_nothrow_destructible_v<Type_>) {
+        void pop_back() noexcept(std::is_nothrow_destructible_v<Type_>) {
 
             using pointer_type = ptr<Type_>;
             cref<pointer_type> myLst { static_cast<pointer_type>(_last) };
 
-            using allocator_type = _STD allocator<Type_>;
-            using allocator_traits = _STD allocator_traits<allocator_type>;
+            using allocator_type = std::allocator<Type_>;
+            using allocator_traits = std::allocator_traits<allocator_type>;
             allocator_type alloc {};
 
             allocator_traits::destroy(alloc, myLst);
@@ -1067,7 +1067,7 @@ namespace hg {
          * @tparam Type_ Type of the type.
          */
         template <typename Type_>
-        void pop_front() noexcept(_STD is_nothrow_move_assignable_v<Type_> && _STD is_nothrow_destructible_v<Type_>) {
+        void pop_front() noexcept(std::is_nothrow_move_assignable_v<Type_> && std::is_nothrow_destructible_v<Type_>) {
 
             using pointer_type = ptr<Type_>;
             cref<pointer_type> myFst { static_cast<pointer_type>(_base) };
@@ -1078,11 +1078,11 @@ namespace hg {
                 pointer_type prev { myFst };
                 pointer_type next { prev + 1 };
                 for (; prev != myLst; prev = next, ++next) {
-                    *prev = _STD move(*next);
+                    *prev = std::move(*next);
                 }
 
-                using allocator_type = _STD allocator<Type_>;
-                using allocator_traits = _STD allocator_traits<allocator_type>;
+                using allocator_type = std::allocator<Type_>;
+                using allocator_traits = std::allocator_traits<allocator_type>;
                 allocator_type alloc {};
 
                 allocator_traits::destroy(alloc, myLst);
@@ -1091,10 +1091,10 @@ namespace hg {
             } else {
                 cref<pointer_type> myLst { static_cast<pointer_type>(_last) };
 
-                *myFst = _STD move(*myLst);
+                *myFst = std::move(*myLst);
 
-                using allocator_type = _STD allocator<Type_>;
-                using allocator_traits = _STD allocator_traits<allocator_type>;
+                using allocator_type = std::allocator<Type_>;
+                using allocator_traits = std::allocator_traits<allocator_type>;
                 allocator_type alloc {};
 
                 allocator_traits::destroy(alloc, myLst);
@@ -1187,21 +1187,21 @@ namespace hg {
                 pointer_type next { prev + 1 };
 
                 for (; prev != myLst; prev = next, ++next) {
-                    *prev = _STD move(*next);
+                    *prev = std::move(*next);
                 }
 
-                using allocator_type = _STD allocator<Type_>;
-                using allocator_traits = _STD allocator_traits<allocator_type>;
+                using allocator_type = std::allocator<Type_>;
+                using allocator_traits = std::allocator_traits<allocator_type>;
                 allocator_type alloc {};
 
                 allocator_traits::destroy(alloc, newLst);
                 _last = newLst;
 
             } else {
-                *wherePtr = _STD move(*newLst);
+                *wherePtr = std::move(*newLst);
 
-                using allocator_type = _STD allocator<Type_>;
-                using allocator_traits = _STD allocator_traits<allocator_type>;
+                using allocator_type = std::allocator<Type_>;
+                using allocator_traits = std::allocator_traits<allocator_type>;
                 allocator_type alloc {};
 
                 allocator_traits::destroy(alloc, newLst);
@@ -1223,11 +1223,11 @@ namespace hg {
             pointer_type reader { whereLst };
 
             for (; reader != myLst; ++writer, ++reader) {
-                *writer = _STD move(*reader);
+                *writer = std::move(*reader);
             }
 
-            using allocator_type = _STD allocator<Type_>;
-            using allocator_traits = _STD allocator_traits<allocator_type>;
+            using allocator_type = std::allocator<Type_>;
+            using allocator_traits = std::allocator_traits<allocator_type>;
             allocator_type alloc {};
 
             count_type remove { static_cast<size_type>(whereLst - whereFst) };
@@ -1272,7 +1272,7 @@ namespace hg {
         template <typename Type_>
         void copy_assign(
             const_reference_type other_
-        ) noexcept(_STD is_nothrow_copy_constructible_v<Type_> && _STD is_nothrow_copy_assignable_v<Type_>) {
+        ) noexcept(std::is_nothrow_copy_constructible_v<Type_> && std::is_nothrow_copy_assignable_v<Type_>) {
 
             using pointer_type = ptr<Type_>;
             cref<pointer_type> myFst { static_cast<pointer_type>(_base) };
@@ -1301,10 +1301,10 @@ namespace hg {
 
     private:
         void swap_internal(reference_type other_) noexcept {
-            _proxy = _STD exchange(other_._proxy, _proxy);
-            _base = _STD exchange(other_._base, _base);
-            _end = _STD exchange(other_._end, _end);
-            _last = _STD exchange(other_._last, _last);
+            _proxy = std::exchange(other_._proxy, _proxy);
+            _base = std::exchange(other_._base, _base);
+            _end = std::exchange(other_._end, _end);
+            _last = std::exchange(other_._last, _last);
         }
 
         void move_assign_override(reference_type other_) {
@@ -1330,7 +1330,7 @@ namespace hg {
             reserve(other_.size());
 
             for (; fst != lst; fst += _proxy.align) {
-                push_back(_STD move(static_cast<ptr<void>>(fst)));
+                push_back(std::move(static_cast<ptr<void>>(fst)));
             }
 
             /**
@@ -1342,7 +1342,7 @@ namespace hg {
         template <typename Type_>
         void move_assign_override(
             reference_type other_
-        ) noexcept(_STD is_nothrow_move_constructible_v<Type_> && _STD is_nothrow_move_assignable_v<Type_>) {
+        ) noexcept(std::is_nothrow_move_constructible_v<Type_> && std::is_nothrow_move_assignable_v<Type_>) {
 
             using pointer_type = ptr<Type_>;
             cref<pointer_type> myFst { static_cast<pointer_type>(_base) };
@@ -1356,7 +1356,7 @@ namespace hg {
              */
             pointer_type next { myFst };
             for (; fst != lst && next != myLst; ++fst, ++next) {
-                *next = _STD move(*fst);
+                *next = std::move(*fst);
             }
 
             /**
@@ -1365,7 +1365,7 @@ namespace hg {
             reserve<Type_>(other_.size<Type_>());
 
             for (; fst != lst; ++fst) {
-                push_back<Type_>(_STD move(*fst));
+                push_back<Type_>(std::move(*fst));
             }
 
             /**
@@ -1385,10 +1385,10 @@ namespace hg {
             using pointer_type = decltype(_base);
 
             pointer_type newFst, reallocBase;
-            newFst = reallocBase = _STD realloc(_base, newCapacity_ * _proxy.align);
+            newFst = reallocBase = std::realloc(_base, newCapacity_ * _proxy.align);
 
             if (reallocBase == nullptr) {
-                newFst = _STD malloc(newCapacity_ * _proxy.align);
+                newFst = std::malloc(newCapacity_ * _proxy.align);
 
                 ptr<char> myFst { static_cast<ptr<char>>(_base) };
                 cref<pointer_type> myLst { static_cast<pointer_type>(_last) };
@@ -1409,10 +1409,10 @@ namespace hg {
 
             if (reallocBase != newFst && _base) {
                 destroy_range(_base, _last);
-                _STD free(_base);
+                std::free(_base);
             }
 
-            constexpr _STD false_type _no_auto_dealloc_ {};
+            constexpr std::false_type _no_auto_dealloc_ {};
             change_internal(newFst, newSize_, newCapacity_, _no_auto_dealloc_);
         }
 
@@ -1425,7 +1425,7 @@ namespace hg {
 
             using pointer_type = decltype(_base);
 
-            const pointer_type newFst = _STD malloc(newCapacity_ * _proxy.align);
+            const pointer_type newFst = std::malloc(newCapacity_ * _proxy.align);
             const pointer_type prevLst = static_cast<ptr<char>>(newFst) + oldSize_ * _proxy.align;
             const pointer_type newLst = static_cast<ptr<char>>(newFst) + newSize_ * _proxy.align;
 
@@ -1458,7 +1458,7 @@ namespace hg {
             }
         }
 
-        template <typename Type_> requires _STD is_move_constructible_v<Type_> && _STD is_copy_constructible_v<Type_>
+        template <typename Type_> requires std::is_move_constructible_v<Type_> && std::is_copy_constructible_v<Type_>
         void reallocate_resize(const size_type size_, cref<Type_> value_) {
 
             #ifdef _DEBUG
@@ -1473,20 +1473,20 @@ namespace hg {
             const count_type oldSize = size<Type_>();
             const count_type newCapacity = calculate_grow(size_);
 
-            using allocator_type = _STD allocator<Type_>;
-            using allocator_traits = _STD allocator_traits<allocator_type>;
+            using allocator_type = std::allocator<Type_>;
+            using allocator_traits = std::allocator_traits<allocator_type>;
 
             allocator_type alloc {};
             const pointer_type newFst = alloc.allocate(newCapacity);
             const pointer_type prevLst = newFst + oldSize;
 
-            _STD _Uninitialized_move(myFst, myLst, newFst, alloc);
-            _STD _Uninitialized_fill_n(prevLst, oldSize - size_, value_, alloc);
+            std::_Uninitialized_move(myFst, myLst, newFst, alloc);
+            std::_Uninitialized_fill_n(prevLst, oldSize - size_, value_, alloc);
 
             change_internal<Type_>(newFst, size_, newCapacity);
         }
 
-        template <typename Type_> requires _STD is_copy_constructible_v<Type_>
+        template <typename Type_> requires std::is_copy_constructible_v<Type_>
         void resize_internal(const count_type size_, cref<Type_> value_) {
 
             using pointer_type = ptr<Type_>;
@@ -1516,11 +1516,11 @@ namespace hg {
                     return;
                 }
 
-                using allocator_type = _STD allocator<Type_>;
+                using allocator_type = std::allocator<Type_>;
                 allocator_type alloc {};
 
                 const pointer_type oldLst = myLst;
-                myLst = _STD _Uninitialized_fill_n(oldLst, size_ - oldSize, value_, alloc);
+                myLst = std::_Uninitialized_fill_n(oldLst, size_ - oldSize, value_, alloc);
             }
         }
 
@@ -1529,10 +1529,10 @@ namespace hg {
             using pointer_type = decltype(_base);
 
             pointer_type newFst, reallocBase;
-            newFst = reallocBase = _STD realloc(_base, newCapacity_ * _proxy.align);
+            newFst = reallocBase = std::realloc(_base, newCapacity_ * _proxy.align);
 
             if (reallocBase == nullptr) {
-                newFst = _STD malloc(newCapacity_ * _proxy.align);
+                newFst = std::malloc(newCapacity_ * _proxy.align);
 
                 ptr<char> myFst { static_cast<ptr<char>>(_base) };
                 cref<pointer_type> myLst { static_cast<pointer_type>(_last) };
@@ -1545,10 +1545,10 @@ namespace hg {
 
             if (reallocBase != newFst && _base) {
                 destroy_range(_base, _last);
-                _STD free(_base);
+                std::free(_base);
             }
 
-            constexpr _STD false_type _no_auto_dealloc {};
+            constexpr std::false_type _no_auto_dealloc {};
             change_internal(newFst, size_, newCapacity_, _no_auto_dealloc);
         }
 
@@ -1556,7 +1556,7 @@ namespace hg {
 
             using pointer_type = decltype(_base);
 
-            const pointer_type newFst = _STD malloc(newCapacity_ * _proxy.align);
+            const pointer_type newFst = std::malloc(newCapacity_ * _proxy.align);
 
             ptr<char> myFst { static_cast<ptr<char>>(_base) };
             cref<pointer_type> myLst { static_cast<pointer_type>(_last) };
@@ -1602,7 +1602,7 @@ namespace hg {
          * @tparam Type_ Type of the type.
          * @param  newCapacity_ The new capacity.
          */
-        template <typename Type_> requires _STD is_move_constructible_v<Type_>
+        template <typename Type_> requires std::is_move_constructible_v<Type_>
         void reserve(count_type newCapacity_) {
             if (newCapacity_ > capacity<Type_>()) {
                 reallocate_exactly<Type_>(newCapacity_);
@@ -1613,12 +1613,12 @@ namespace hg {
             resize_internal(newSize_, value_);
         }
 
-        template <typename Type_> requires _STD is_default_constructible_v<Type_> && _STD is_copy_constructible_v<Type_>
+        template <typename Type_> requires std::is_default_constructible_v<Type_> && std::is_copy_constructible_v<Type_>
         void resize(count_type newSize_) {
             resize_internal<Type_>(newSize_, {});
         }
 
-        template <typename Type_> requires _STD is_copy_constructible_v<Type_>
+        template <typename Type_> requires std::is_copy_constructible_v<Type_>
         void resize(count_type newSize_, cref<Type_> value_) {
             resize_internal<Type_>(newSize_, value_);
         }
@@ -1652,7 +1652,7 @@ namespace hg {
          * ### author Julius
          * ### date 27.08.2021
          */
-        template <typename Type_> requires _STD is_move_constructible_v<Type_>
+        template <typename Type_> requires std::is_move_constructible_v<Type_>
         void shrink_to_fit() {
             using pointer_type = ptr<Type_>;
 
@@ -1670,7 +1670,7 @@ namespace hg {
 
     public:
         reference_type operator=(const_reference_type other_) {
-            if (this != _STD addressof(other_)) {
+            if (this != std::addressof(other_)) {
                 copy_assign(other_);
             }
             return *this;
@@ -1678,14 +1678,14 @@ namespace hg {
 
         template <typename Type_>
         reference_type operator=(const_reference_type other_) {
-            if (this != _STD addressof(other_)) {
+            if (this != std::addressof(other_)) {
                 copy_assign<Type_>(other_);
             }
             return *this;
         }
 
         reference_type operator=(mref<value_type> other_) noexcept {
-            if (this != _STD addressof(other_)) {
+            if (this != std::addressof(other_)) {
                 // move_assign_override(other_);
                 swap_internal(other_);
             }
@@ -1694,7 +1694,7 @@ namespace hg {
 
         template <typename Type_>
         reference_type operator=(mref<value_type> other_) noexcept {
-            if (this != _STD addressof(other_)) {
+            if (this != std::addressof(other_)) {
                 // move_assign_override<Type_>(other_);
                 swap_internal(other_);
             }
@@ -1702,7 +1702,7 @@ namespace hg {
         }
 
         void swap(const_reference_type other_) noexcept {
-            if (this != _STD addressof(other_)) {
+            if (this != std::addressof(other_)) {
                 swap_internal(other_);
             }
         }
@@ -1745,7 +1745,7 @@ namespace hg {
         /**
          * Lookup value the given pos_
          *
-         * @exception _STD Thrown when pos_ is out of range.
+         * @exception std::Thrown when pos_ is out of range.
          *
          * @tparam Type_ Type of the type.
          * @param  pos_ The position.
@@ -1755,7 +1755,7 @@ namespace hg {
         template <typename Type_>
         [[nodiscard]] cref<Type_> at(const count_type pos_) const {
             if (pos_ > size()) {
-                throw _STD out_of_range("invalid vector subscript");
+                throw std::out_of_range("invalid vector subscript");
             }
             return static_cast<ptr<Type_>>(_base)[pos_];
         }
@@ -1763,7 +1763,7 @@ namespace hg {
         /**
          * Lookup value the given pos_
          *
-         * @exception _STD Thrown when pos_ is out of range.
+         * @exception std::Thrown when pos_ is out of range.
          *
          * @tparam Type_ Type of the type.
          * @param  pos_ The position.
@@ -1773,7 +1773,7 @@ namespace hg {
         template <typename Type_>
         [[nodiscard]] ref<Type_> at(const count_type pos_) {
             if (pos_ > size()) {
-                throw _STD out_of_range("invalid vector subscript");
+                throw std::out_of_range("invalid vector subscript");
             }
             return static_cast<ptr<Type_>>(_base)[pos_];
         }
@@ -1853,33 +1853,33 @@ namespace hg {
         }
 
     public:
-        FORCE_INLINE void push_back(mref<Type_> value_) noexcept(_STD is_nothrow_move_constructible_v<Type_>) {
-            return this->base_type::template push_back<Type_>(_STD forward<Type_>(value_));
+        FORCE_INLINE void push_back(mref<Type_> value_) noexcept(std::is_nothrow_move_constructible_v<Type_>) {
+            return this->base_type::template push_back<Type_>(std::forward<Type_>(value_));
         }
 
-        FORCE_INLINE void push_back(cref<Type_> value_) noexcept(_STD is_nothrow_copy_constructible_v<Type_>) {
+        FORCE_INLINE void push_back(cref<Type_> value_) noexcept(std::is_nothrow_copy_constructible_v<Type_>) {
             return this->base_type::template push_back<Type_>(value_);
         }
 
         [[nodiscard]] FORCE_INLINE iterator_type emplace_back(
             mref<Type_> value_
-        ) noexcept (_STD is_nothrow_move_constructible_v<Type_>) {
-            return this->base_type::template emplace_back<Type_>(_STD forward<Type_>(value_));
+        ) noexcept (std::is_nothrow_move_constructible_v<Type_>) {
+            return this->base_type::template emplace_back<Type_>(std::forward<Type_>(value_));
         }
 
         [[nodiscard]] FORCE_INLINE iterator_type emplace_back(
             cref<Type_> value_
-        ) noexcept (_STD is_nothrow_copy_constructible_v<Type_>) {
+        ) noexcept (std::is_nothrow_copy_constructible_v<Type_>) {
             return this->base_type::template emplace_back<Type_>(value_);
         }
 
     public:
-        FORCE_INLINE void pop_back() noexcept(_STD is_nothrow_destructible_v<Type_>) {
+        FORCE_INLINE void pop_back() noexcept(std::is_nothrow_destructible_v<Type_>) {
             this->base_type::template pop_back<Type_>();
         }
 
-        FORCE_INLINE void pop_front() noexcept(_STD is_nothrow_move_assignable_v<Type_> &&
-            _STD is_nothrow_destructible_v<Type_>) {
+        FORCE_INLINE void pop_front() noexcept(std::is_nothrow_move_assignable_v<Type_> &&
+            std::is_nothrow_destructible_v<Type_>) {
             this->base_type::template pop_front<Type_>();
         }
 
@@ -1905,7 +1905,7 @@ namespace hg {
             this->base_type::template resize<Type_>(newSize_, value_);
         }
 
-        FORCE_INLINE void shrink_to_fit() noexcept(_STD is_nothrow_move_assignable_v<Type_>) {
+        FORCE_INLINE void shrink_to_fit() noexcept(std::is_nothrow_move_assignable_v<Type_>) {
             this->base_type::template shrink_to_fit<Type_>();
         }
 

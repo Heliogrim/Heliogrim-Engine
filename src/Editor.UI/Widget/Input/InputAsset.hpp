@@ -99,6 +99,6 @@ namespace hg::editor::ui {
 
     private:
     public:
-        _STD function<void(input_type)> _callback = nullptr;
+        std::function<void(input_type)> _callback = nullptr;
     };
 }

@@ -69,7 +69,7 @@ Future<World> hg::CreateWorld() noexcept {
                 auto defaultScene = make_uptr<engine::scene::GameScene>();
                 defaultScene->prepare();
 
-                const auto world { make_sptr<engine::core::World>(_STD move(defaultScene)) };
+                const auto world { make_sptr<engine::core::World>(std::move(defaultScene)) };
 
                 engine::Engine::getEngine()->addWorld(world);
 
@@ -103,8 +103,8 @@ Future<World> hg::GetWorld(cref<asset_guid> guid_) noexcept {
 Future<bool> hg::Destroy(mref<World> world_) {
     auto prom {
         hg::concurrent::promise<bool>(
-            [world_ = _STD move(world_)]() {
-                const auto world { _STD static_pointer_cast<engine::core::World, void>(world_.unwrap()) };
+            [world_ = std::move(world_)]() {
+                const auto world { std::static_pointer_cast<engine::core::World, void>(world_.unwrap()) };
 
                 // TODO: Remove world from every context / session where it might be used currently
                 // TODO: Check whether we want to auto handle session's world transition when engine propagated world erase happens
@@ -125,7 +125,7 @@ Future<bool> hg::Destroy(mref<World> world_) {
 void hg::SetWorld(cref<Session> session_, cref<World> world_) {
     const auto* const session { static_cast<ptr<engine::core::Session>>(session_.unwrap().get()) };
     auto* const context { session->getWorldContext() };
-    const sptr<engine::core::World> world { _STD static_pointer_cast<engine::core::World, void>(world_.unwrap()) };
+    const sptr<engine::core::World> world { std::static_pointer_cast<engine::core::World, void>(world_.unwrap()) };
 
     if (context->getCurrentWorld() == world) {
         return;

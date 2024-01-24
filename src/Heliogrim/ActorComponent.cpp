@@ -7,15 +7,15 @@ ActorComponent::ActorComponent(
     mref<CachedActorPointer> owner_,
     mref<ptr<ActorComponent>> parent_
 ) :
-    InheritMeta(_STD move(typeId_)),
-    _owner(_STD move(owner_)),
-    _parent(_STD move(parent_)),
+    InheritMeta(std::move(typeId_)),
+    _owner(std::move(owner_)),
+    _parent(std::move(parent_)),
     _worldTransform({}, {}, math::vec3 { 1.F }) {}
 
 ActorComponent::ActorComponent(mref<CachedActorPointer> owner_, mref<ptr<ActorComponent>> parent_) :
     InheritMeta(component_type_id { typeId }),
-    _owner(_STD move(owner_)),
-    _parent(_STD move(parent_)),
+    _owner(std::move(owner_)),
+    _parent(std::move(parent_)),
     _worldTransform({}, {}, math::vec3 { 1.F }) {}
 
 ptr<Actor> ActorComponent::getOwner() const noexcept {

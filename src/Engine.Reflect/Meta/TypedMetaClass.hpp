@@ -37,7 +37,7 @@ namespace hg {
 
     private:
         CompileMap<type_id, nullptr_t, sizeof...(InheritTypes_)> _inheritance = make_compile_map<type_id, nullptr_t>(
-            _STD make_pair<type_id, nullptr_t>(
+            std::make_pair<type_id, nullptr_t>(
                 (typename reflect::query_type_id<InheritTypes_>::result {})(),
                 nullptr
             )...

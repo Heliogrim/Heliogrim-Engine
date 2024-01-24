@@ -48,7 +48,7 @@ namespace hg::engine::resource::loader {
         /**/
 
         template <typename Type_>
-        using options_wrapper_type = _STD type_identity_t<Type_>;
+        using options_wrapper_type = std::type_identity_t<Type_>;
         using options_type = typename RequestOptions<this_type>::type;
 
         using options = options_wrapper_type<options_type>;
@@ -80,7 +80,7 @@ namespace hg::engine::resource::loader {
         /**/
 
         template <typename Type_>
-        using options_wrapper_type = _STD type_identity_t<Type_>;
+        using options_wrapper_type = std::type_identity_t<Type_>;
         using options_type = typename StreamOptions<this_type>::type;
 
         using options = options_wrapper_type<options_type>;

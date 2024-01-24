@@ -77,7 +77,7 @@ const non_owning_rptr<Schedule> CompositePipeline::getSchedule() const noexcept 
 const non_owning_rptr<const Stage> CompositePipeline::registerStage(mref<uptr<PipelineStage>> stage_) {
 
     const auto& identifier = stage_->stageIdentifier();
-    _pipelineStages.push_back(_STD move(stage_));
+    _pipelineStages.push_back(std::move(stage_));
 
     /**/
 
@@ -98,9 +98,9 @@ const non_owning_rptr<const Stage> CompositePipeline::registerStage(mref<uptr<Pi
         nullptr
     );
 
-    const auto slotIter = _slots.insert(_slots.end(), _STD move(slot));
+    const auto slotIter = _slots.insert(_slots.end(), std::move(slot));
     const auto slotBegin = _slots.begin();
-    const auto slotIdx = _STD distance(slotBegin, slotIter);
+    const auto slotIdx = std::distance(slotBegin, slotIter);
 
     /**/
 
@@ -127,7 +127,7 @@ void CompositePipeline::removeStage(cref<string> identifier_) {
     auto* const stage = where->second.get();
     if (stage->decRef()) {
 
-        const auto pss = _STD ranges::remove(
+        const auto pss = std::ranges::remove(
             _pipelineStages,
             stage->getIdentifier(),
             [](const auto& entry_) {
@@ -157,7 +157,7 @@ void CompositePipeline::removeStage(mref<non_owning_rptr<Stage>> stage_) {
 
     if (where->second->decRef()) {
 
-        const auto pss = _STD ranges::remove(
+        const auto pss = std::ranges::remove(
             _pipelineStages,
             where->second->getIdentifier(),
             [](const auto& entry_) {
@@ -172,12 +172,12 @@ void CompositePipeline::removeStage(mref<non_owning_rptr<Stage>> stage_) {
 
 const non_owning_rptr<const StagePipeline> CompositePipeline::addPipeline(mref<uptr<StagePipeline>> pipeline_) {
     const auto* const result = pipeline_.get();
-    _pipelines.push_back(_STD move(pipeline_));
+    _pipelines.push_back(std::move(pipeline_));
     return result;
 }
 
 void CompositePipeline::removePipeline(const non_owning_rptr<StagePipeline> pipeline_) {
-    auto where = _STD ranges::remove(
+    auto where = std::ranges::remove(
         _pipelines,
         pipeline_,
         [](cref<uptr<StagePipeline>> entry_) {
@@ -214,7 +214,7 @@ void CompositePipeline::dispatch(const non_owning_rptr<CompositeSlot> slot_) {
 void CompositePipeline::complete(const non_owning_rptr<CompositeSlot> slot_) {
 
     auto* const stage = slot_->getCompositeStage();
-    auto compIter = _STD ranges::find(
+    auto compIter = std::ranges::find(
         _compositeStages,
         stage,
         [](cref<uptr<CompositeStage>> entry_) {
@@ -257,7 +257,7 @@ void CompositePipeline::pushTask(
     const non_owning_rptr<const Stage> stage_,
     mref<task_handle_type> task_
 ) {
-    //_slots[stage_->getSlot()]->dynamicEnqueue(_STD move(task_));
+    //_slots[stage_->getSlot()]->dynamicEnqueue(std::move(task_));
     IM_CORE_WARN("Tried to push a task dynamically to a stage slot. (Not Implemented)");
 }
 
@@ -275,7 +275,7 @@ void CompositePipeline::inverseDependencies(
 
         for (const auto* const requirement : dependency.required) {
 
-            auto invIter = _STD ranges::find(
+            auto invIter = std::ranges::find(
                 inverse_,
                 requirement,
                 [](cref<StageDependency> entry_) {
@@ -330,7 +330,7 @@ void CompositePipeline::transformOrdersToDependencies(
         while (head != order->end()) {
 
             StageDependency dep { { *tail }, nullptr, *head };
-            dependencies_.insert(_STD move(dep));
+            dependencies_.insert(std::move(dep));
 
             ++head;
             ++tail;
@@ -355,7 +355,7 @@ bool CompositePipeline::defineCompositeStage(
     auto cs = make_uptr<CompositeStage>(
         CompositeStage {
             stage_,
-            _STD move(pipelineStages),
+            std::move(pipelineStages),
             0ui64,
             CompactSet<CompositeDependency> {}
         }
@@ -379,7 +379,7 @@ bool CompositePipeline::defineCompositeStage(
 
             auto* const compStage = getCompositeStage(requirement);
             if (compStage == nullptr) {
-                throw _STD runtime_error("");
+                throw std::runtime_error("");
             }
 
             cs->dependencies.insert(CompositeDependency { compStage, 0ui64 });
@@ -389,9 +389,9 @@ bool CompositePipeline::defineCompositeStage(
     /**/
 
     if (where_ >= 0) {
-        _compositeStages.insert(_compositeStages.begin() + where_, _STD move(cs));
+        _compositeStages.insert(_compositeStages.begin() + where_, std::move(cs));
     } else {
-        _compositeStages.push_back(_STD move(cs));
+        _compositeStages.push_back(std::move(cs));
     }
 
     return true;
@@ -399,7 +399,7 @@ bool CompositePipeline::defineCompositeStage(
 
 non_owning_rptr<CompositeStage> CompositePipeline::getCompositeStage(const ptr<const Stage> stage_) const {
 
-    const auto compIter = _STD ranges::find(
+    const auto compIter = std::ranges::find(
         _compositeStages,
         stage_,
         [](cref<uptr<CompositeStage>> compStage_) {
@@ -461,7 +461,7 @@ bool CompositePipeline::resolveCanInsertStage(
 
     for (const auto* const order : internalOrders_) {
 
-        const auto stageMark = _STD ranges::find(*order, stage_);
+        const auto stageMark = std::ranges::find(*order, stage_);
         if (stageMark == order->end()) {
             continue;
         }
@@ -572,7 +572,7 @@ void CompositePipeline::resolve() {
 
     if (sorted.size() != stages.size()) {
         IM_CORE_ERROR("Failed to resolve scheduling stages.");
-        throw _STD runtime_error("");
+        throw std::runtime_error("");
     }
 
     /* Optimize Stage Order */
@@ -645,7 +645,7 @@ void CompositePipeline::resolve() {
                     continue;
                 }
 
-                auto beginIter = _STD ranges::find(
+                auto beginIter = std::ranges::find(
                     _compositeStages,
                     begin,
                     [](const auto& entry_) {
@@ -653,7 +653,7 @@ void CompositePipeline::resolve() {
                     }
                 );
 
-                auto endIter = _STD ranges::find(
+                auto endIter = std::ranges::find(
                     _compositeStages,
                     end,
                     [](const auto& entry_) {
@@ -709,7 +709,7 @@ void CompositePipeline::resolve() {
             for (u64 fromIdx = endCompStage; fromIdx > beginCompStage; --fromIdx) {
                 _compositeStages.insert(
                     _compositeStages.begin() + forwardCompIdx,
-                    _STD move(_compositeStages[fromIdx - 1])
+                    std::move(_compositeStages[fromIdx - 1])
                 );
             }
 

@@ -99,7 +99,7 @@ namespace hg::editor::gfx::graph {
 
     /**/
 
-    typedef _STD variant<
+    typedef std::variant<
         /**/
         ConstantNodeParameterTypeStorage<NodeLinkValueType::u8>::type,
         ConstantNodeParameterTypeStorage<NodeLinkValueType::u16>::type,

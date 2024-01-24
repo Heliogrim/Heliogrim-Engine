@@ -35,7 +35,7 @@ namespace hg::engine::utils {
         /**
          * Running State
          */
-        _STD atomic_bool _running;
+        std::atomic_bool _running;
 
     public:
         bool running() const;

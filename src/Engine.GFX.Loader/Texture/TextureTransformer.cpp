@@ -80,11 +80,11 @@ TextureTransformer::response_type::type TextureTransformer::operator()(
     cref<next_type> next_
 ) const {
     const auto* asset = static_cast<non_owning_rptr<const assets::Asset>>(request_);
-    auto src = next_(_STD move(asset), next_type::next_request_type::options {});
+    auto src = next_(std::move(asset), next_type::next_request_type::options {});
 
     /**/
 
-    return transpose(_STD move(request_), _STD move(options_), _STD move(src));
+    return transpose(std::move(request_), std::move(options_), std::move(src));
 }
 
 engine::resource::loader::CacheStreamResponse<engine::assets::TextureAsset>::type TextureTransformer::operator()(
@@ -94,11 +94,11 @@ engine::resource::loader::CacheStreamResponse<engine::assets::TextureAsset>::typ
 ) const {
 
     const auto* asset = static_cast<non_owning_rptr<const assets::Asset>>(request_->getAssociation());
-    auto src = next_(_STD move(asset), next_type::next_request_type::options {});
+    auto src = next_(std::move(asset), next_type::next_request_type::options {});
 
     /**/
 
     auto cpy = request_;
-    partialTranspose(_STD move(request_), _STD move(options_), _STD move(src), cpy.into<TextureResource>());
+    partialTranspose(std::move(request_), std::move(options_), std::move(src), cpy.into<TextureResource>());
     // return (void);
 }

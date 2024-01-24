@@ -50,7 +50,7 @@ void ReflowFlowStage::staticDispatch(const non_owning_rptr<const scheduler::Stag
                      */
 
                     const math::vec2 clientSize = boundWnd->window->getClientSize();
-                    auto start = _STD chrono::high_resolution_clock::now();
+                    auto start = std::chrono::high_resolution_clock::now();
 
                     ReflowState state {};
                     auto layoutContext = reflow::LayoutContext {
@@ -58,12 +58,12 @@ void ReflowFlowStage::staticDispatch(const non_owning_rptr<const scheduler::Stag
                         math::vec2 { clientSize.x, clientSize.y },
                         1.F
                     };
-                    ReflowEngine::tick(state, boundWnd->window, _STD move(layoutContext));
+                    ReflowEngine::tick(state, boundWnd->window, std::move(layoutContext));
 
-                    auto end = _STD chrono::high_resolution_clock::now();
+                    auto end = std::chrono::high_resolution_clock::now();
                     IM_DEBUG_LOGF(
                         "Next Flex-Flow took: {}",
-                        _STD chrono::duration_cast<_STD chrono::microseconds>(end - start)
+                        std::chrono::duration_cast<std::chrono::microseconds>(end - start)
                     );
                 }
 

@@ -25,8 +25,8 @@ EditorRenderer::EditorRenderer(
         "Editor-Renderer",
         makeCompileGraph(),
         nullptr,
-        _STD move(globalCache_),
-        _STD move(globalGfxAllocator_)
+        std::move(globalCache_),
+        std::move(globalGfxAllocator_)
     ) {}
 
 EditorRenderer::~EditorRenderer() noexcept = default;
@@ -80,19 +80,19 @@ uptr<engine::render::graph::CompileGraph> EditorRenderer::makeCompileGraph() noe
     /**/
 
     nmpt<graph::Node> nextCursor = beforeBarrier.get();
-    graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(beforeBarrier));
+    graph = graph::Builder::insertNode(std::move(graph), cursor, end, std::move(beforeBarrier));
 
-    cursor = _STD exchange(nextCursor, beginPass.get());
-    graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(beginPass));
+    cursor = std::exchange(nextCursor, beginPass.get());
+    graph = graph::Builder::insertNode(std::move(graph), cursor, end, std::move(beginPass));
 
-    cursor = _STD exchange(nextCursor, uiPass.get());
-    graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(uiPass));
+    cursor = std::exchange(nextCursor, uiPass.get());
+    graph = graph::Builder::insertNode(std::move(graph), cursor, end, std::move(uiPass));
 
-    cursor = _STD exchange(nextCursor, endPass.get());
-    graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(endPass));
+    cursor = std::exchange(nextCursor, endPass.get());
+    graph = graph::Builder::insertNode(std::move(graph), cursor, end, std::move(endPass));
 
-    cursor = _STD exchange(nextCursor, afterBarrier.get());
-    graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(afterBarrier));
+    cursor = std::exchange(nextCursor, afterBarrier.get());
+    graph = graph::Builder::insertNode(std::move(graph), cursor, end, std::move(afterBarrier));
 
     /**/
 

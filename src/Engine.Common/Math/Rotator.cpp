@@ -13,25 +13,25 @@ Rotator::Rotator(const value_type pitch_, const value_type yaw_, const value_typ
     math_type(pitch_, yaw_, roll_) {}
 
 Rotator::Rotator(mref<math::quaternion> quatern_) noexcept :
-    math_type(math::as<math::Rotator>(_STD move(quatern_))) {}
+    math_type(math::as<math::Rotator>(std::move(quatern_))) {}
 
 Rotator::Rotator(mref<this_type> other_) noexcept :
-    math_type(_STD move(other_)) {}
+    math_type(std::move(other_)) {}
 
 Rotator::Rotator(cref<this_type> other_) noexcept :
     math_type(other_) {}
 
 ref<Rotator::this_type> Rotator::operator=(mref<this_type> other_) noexcept {
-    if (this != _STD addressof(other_)) {
-        math_type::x = _STD move(other_.x);
-        math_type::y = _STD move(other_.y);
-        math_type::z = _STD move(other_.z);
+    if (this != std::addressof(other_)) {
+        math_type::x = std::move(other_.x);
+        math_type::y = std::move(other_.y);
+        math_type::z = std::move(other_.z);
     }
     return *this;
 }
 
 ref<Rotator::this_type> Rotator::operator=(cref<this_type> other_) noexcept {
-    if (this != _STD addressof(other_)) {
+    if (this != std::addressof(other_)) {
         math_type::x = other_.x;
         math_type::y = other_.y;
         math_type::z = other_.z;
@@ -95,7 +95,7 @@ ref<Rotator::this_type> Rotator::inverseRotator() noexcept {
 
 Rotator::value_type Rotator::normalizeAxis(float angle_) const noexcept {
     const auto factor = (angle_ + pi_f/*180.F*/) / pi2_f/*360.F*/;
-    return angle_ - (_STD floorf(factor) * pi2_f/*360.F*/);
+    return angle_ - (std::floorf(factor) * pi2_f/*360.F*/);
 }
 
 Rotator::this_type Rotator::normalizedRotator() const noexcept {
@@ -115,7 +115,7 @@ ref<Rotator::this_type> Rotator::normalizeRotator() noexcept {
 
 Rotator::value_type Rotator::denormalizeAxis(float angle_) const noexcept {
     const auto factor = angle_ / pi2_f /*360.F*/;
-    return angle_ - (_STD floorf(factor) * pi2_f/*360.F*/);
+    return angle_ - (std::floorf(factor) * pi2_f/*360.F*/);
 }
 
 Rotator::this_type Rotator::denormalizedRotator() const noexcept {

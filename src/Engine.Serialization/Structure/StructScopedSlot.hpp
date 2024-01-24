@@ -22,12 +22,12 @@ namespace hg::engine::serialization {
         [[nodiscard]] RecordScopedSlot insertRecordSlot(cref<record_key_type> key_);
 
     public:
-        template <typename VoidType_> requires _STD is_void_v<VoidType_>
+        template <typename VoidType_> requires std::is_void_v<VoidType_>
         [[nodiscard]] RecordScopedSlot insertSlot(cref<record_key_type> key_) {
             return insertRecordSlot(key_);
         }
 
-        template <typename StringType_> requires _STD is_same_v<StringType_, string>
+        template <typename StringType_> requires std::is_same_v<StringType_, string>
         [[nodiscard]] StringScopedSlot insertSlot(cref<record_key_type> key_) {
             return insertRecordSlot(key_).intoString();
         }
@@ -60,12 +60,12 @@ namespace hg::engine::serialization {
         [[nodiscard]] RecordScopedSlot getRecordSlot(const size_t index_) const;
 
     public:
-        template <typename VoidType_> requires _STD is_void_v<VoidType_>
+        template <typename VoidType_> requires std::is_void_v<VoidType_>
         [[nodiscard]] RecordScopedSlot getSlot(cref<record_key_type> key_) const {
             return getRecordSlot(key_);
         }
 
-        template <typename StringType_> requires _STD is_same_v<StringType_, string>
+        template <typename StringType_> requires std::is_same_v<StringType_, string>
         [[nodiscard]] const StringScopedSlot getSlot(cref<record_key_type> key_) const {
             return getRecordSlot(key_).intoString();
         }

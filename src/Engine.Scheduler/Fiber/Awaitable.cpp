@@ -13,7 +13,7 @@ bool FiberAwaitable::ready() const noexcept {
 
     switch (mask) {
         case FiberAwaitableBits::eSignal: {
-            return signal->test(_STD memory_order::consume);
+            return signal->test(std::memory_order::consume);
         }
         case FiberAwaitableBits::eSignalCall: {
             return ((*static_cast<ptr<self_type>>(self)).*call)();

@@ -95,7 +95,7 @@ namespace AssetModule {
             EXPECT_FALSE(db.has(guid));
 
             //
-            HeliogrimObject::destroy(_STD move(payload));
+            HeliogrimObject::destroy(std::move(payload));
             db.tidy();
         }
 
@@ -178,7 +178,7 @@ namespace AssetModule {
             EXPECT_EQ(query.remove(), payload);
 
             //
-            HeliogrimObject::destroy(_STD move(payload));
+            HeliogrimObject::destroy(std::move(payload));
             db.tidy();
         }
 

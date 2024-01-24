@@ -28,13 +28,13 @@ Window::~Window() {
 }
 
 string Window::getTag() const noexcept {
-    return _STD format(R"(Window <{:#x}>)", reinterpret_cast<u64>(this));
+    return std::format(R"(Window <{:#x}>)", reinterpret_cast<u64>(this));
 }
 
 void Window::tidy() {
 
     Vector<uptr<PopupLayer>> tmp {};
-    _STD swap(tmp, _popupLayers);
+    std::swap(tmp, _popupLayers);
 
     tmp.clear();
 }
@@ -77,14 +77,14 @@ non_owning_rptr<PopupLayer> Window::pushPopLayer(cref<sptr<Popup>> popup_) {
 
     auto layer {
         make_uptr<PopupLayer>(
-            _STD static_pointer_cast<Window, Widget>(shared_from_this()),
+            std::static_pointer_cast<Window, Widget>(shared_from_this()),
             popup_
         )
     };
 
     /**/
 
-    _popupLayers.push_back(_STD move(layer));
+    _popupLayers.push_back(std::move(layer));
     _children.emplace_back(popup_);
 
     /**/
@@ -100,10 +100,10 @@ void Window::dropPopLayer(const non_owning_rptr<PopupLayer> layer_) {
 
     if (layer_ == nullptr) {
 
-        const auto last = _STD move(_popupLayers.back());
+        const auto last = std::move(_popupLayers.back());
         _popupLayers.pop_back();
 
-        _STD erase_if(
+        std::erase_if(
             _children,
             [key = last->getContent().get()](const auto& entry_) {
                 return entry_.get() == key;
@@ -114,7 +114,7 @@ void Window::dropPopLayer(const non_owning_rptr<PopupLayer> layer_) {
 
     /**/
 
-    _STD erase_if(
+    std::erase_if(
         _children,
         [key = layer_->getContent().get()](const auto& entry_) {
             return entry_.get() == key;
@@ -122,7 +122,7 @@ void Window::dropPopLayer(const non_owning_rptr<PopupLayer> layer_) {
     );
 
     const auto where {
-        _STD ranges::remove(
+        std::ranges::remove(
             _popupLayers.begin(),
             _popupLayers.end(),
             layer_,

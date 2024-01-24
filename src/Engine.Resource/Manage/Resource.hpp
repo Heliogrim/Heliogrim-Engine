@@ -31,8 +31,8 @@ namespace hg::engine::resource {
             ResourceBase(),
             _value(nullptr) {}
 
-        template <typename Type_ = ManagedType_> requires _STD is_default_constructible_v<Type_>
-        constexpr Resource(_STD in_place_t) noexcept(_STD is_nothrow_default_constructible_v<Type_>) :
+        template <typename Type_ = ManagedType_> requires std::is_default_constructible_v<Type_>
+        constexpr Resource(std::in_place_t) noexcept(std::is_nothrow_default_constructible_v<Type_>) :
             ResourceBase(),
             _value(make_ptr<value_type>()) {}
 
@@ -40,10 +40,10 @@ namespace hg::engine::resource {
             ResourceBase(),
             _value(value_) {}
 
-        template <typename... Args_> requires _STD is_constructible_v<value_type, Args_...>
-        constexpr Resource(Args_&&... args_) noexcept(_STD is_nothrow_constructible_v<value_type, Args_...>) :
+        template <typename... Args_> requires std::is_constructible_v<value_type, Args_...>
+        constexpr Resource(Args_&&... args_) noexcept(std::is_nothrow_constructible_v<value_type, Args_...>) :
             ResourceBase(),
-            _value(make_ptr<value_type, Args_...>(_STD forward<Args_>(args_)...)) {}
+            _value(make_ptr<value_type, Args_...>(std::forward<Args_>(args_)...)) {}
 
     public:
         /**
@@ -78,7 +78,7 @@ namespace hg::engine::resource {
          *
          * @returns A TypedManageGuard instance.
          */
-        template <typename Type_ = ManagedType_> requires _STD is_same_v<Type_, ManagedType_>
+        template <typename Type_ = ManagedType_> requires std::is_same_v<Type_, ManagedType_>
         [[nodiscard]] TypedManageGuard<Type_> acquire(
             const ResourceUsageFlags flags_ = ResourceUsageFlag::eDefault
         ) {
@@ -97,7 +97,7 @@ namespace hg::engine::resource {
          *
          * @returns True if it succeeds, false if it fails.
          */
-        template <typename Type_ = ManagedType_> requires _STD is_same_v<Type_, ManagedType_>
+        template <typename Type_ = ManagedType_> requires std::is_same_v<Type_, ManagedType_>
         [[nodiscard]] bool try_acquire(
             _Out_ ref<TypedManageGuard<Type_>> guard_,
             const ResourceUsageFlags flags_ = ResourceUsageFlag::eDefault

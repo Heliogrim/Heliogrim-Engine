@@ -46,8 +46,8 @@ namespace hg::engine::reflow {
         void setValue(const input_type value_);
 
         void setLimits(
-            const input_type lower_ = _STD numeric_limits<input_type>::min(),
-            const input_type upper_ = _STD numeric_limits<input_type>::max()
+            const input_type lower_ = std::numeric_limits<input_type>::min(),
+            const input_type upper_ = std::numeric_limits<input_type>::max()
         );
 
         void setStepSize(const input_type stepSize_);
@@ -58,7 +58,7 @@ namespace hg::engine::reflow {
         void updateValueAndValidity(const bool propagate_, const bool emit_) override;
 
     public:
-        _STD function<void(input_type)> _callback = nullptr;
+        std::function<void(input_type)> _callback = nullptr;
 
     public:
         [[nodiscard]] input_type value() const noexcept override;

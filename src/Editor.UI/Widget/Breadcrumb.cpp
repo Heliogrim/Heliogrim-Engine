@@ -29,7 +29,7 @@ void Breadcrumb::addNavEntry(cref<AssocKey<string>> key_, cref<string> title_, c
 
     const auto* const theme = Theme::get();
 
-    if (_STD ranges::find(
+    if (std::ranges::find(
         _entries.begin(),
         _entries.end(),
         key_,
@@ -71,7 +71,7 @@ void Breadcrumb::addNavEntry(cref<AssocKey<string>> key_, cref<string> title_, c
                 return;
             }
 
-            _STD static_pointer_cast<Breadcrumb, Widget>(breadcrumb.lock())->handleAction(url);
+            std::static_pointer_cast<Breadcrumb, Widget>(breadcrumb.lock())->handleAction(url);
         }
     );
 
@@ -87,7 +87,7 @@ void Breadcrumb::addNavEntry(cref<AssocKey<string>> key_, cref<string> title_, c
 void Breadcrumb::removeNavEntry(cref<AssocKey<string>> key_) {
 
     const auto where {
-        _STD ranges::find(
+        std::ranges::find(
             _entries.begin(),
             _entries.end(),
             key_,
@@ -104,7 +104,7 @@ void Breadcrumb::removeNavEntry(cref<AssocKey<string>> key_) {
     /**/
 
     const auto button { where->widget.lock() };
-    const auto whereChild { _STD ranges::find(_children.begin(), _children.end(), button) };
+    const auto whereChild { std::ranges::find(_children.begin(), _children.end(), button) };
 
     if (whereChild == _children.end()) {
         __debugbreak();
@@ -132,13 +132,13 @@ void Breadcrumb::handleAction(cref<fs::Url> url_) {
 
 u64 Breadcrumb::onAction(mref<action_fnc_type> fnc_) {
     const auto next { ++_areg };
-    _actions.push_back(_STD make_pair(next, _STD move(fnc_)));
+    _actions.push_back(std::make_pair(next, std::move(fnc_)));
     return next;
 }
 
 void Breadcrumb::offAction(u64 action_) {
 
-    const auto where = _STD ranges::remove(
+    const auto where = std::ranges::remove(
         _actions.begin(),
         _actions.end(),
         action_,

@@ -38,7 +38,7 @@ UniformGridPanel::UniformGridPanel() :
 UniformGridPanel::~UniformGridPanel() = default;
 
 string UniformGridPanel::getTag() const noexcept {
-    return _STD format(R"(UniformGridPanel <{:#x}>)", reinterpret_cast<u64>(this));
+    return std::format(R"(UniformGridPanel <{:#x}>)", reinterpret_cast<u64>(this));
 }
 
 math::vec2 UniformGridPanel::computeGridItemSize() const {
@@ -107,7 +107,7 @@ math::vec2 UniformGridPanel::computeDesiredSize(cref<ReflowPassState> passState_
     math::vec2 innerSize { 0.F };
     if (attr.orientation.getValue() == algorithm::FlexLineOrientation::eVertical) {
 
-        const u32 itemPerLine = MAX(static_cast<u32>(_STD floorf(itemsPerAxis.y)), 1ui32);
+        const u32 itemPerLine = MAX(static_cast<u32>(std::floorf(itemsPerAxis.y)), 1ui32);
         const u32 lineCount = gridItemCount / itemPerLine + (gridItemCount % itemPerLine == 0 ? 0ui32 : 1ui32);
 
         innerSize.x = compoundSize.x * static_cast<float>(lineCount) - attr.colGap.getValue();
@@ -115,7 +115,7 @@ math::vec2 UniformGridPanel::computeDesiredSize(cref<ReflowPassState> passState_
 
     } else {
 
-        const u32 itemPerLine = MAX(static_cast<u32>(_STD floorf(itemsPerAxis.x)), 1ui32);
+        const u32 itemPerLine = MAX(static_cast<u32>(std::floorf(itemsPerAxis.x)), 1ui32);
         const u32 lineCount = gridItemCount / itemPerLine + (gridItemCount % itemPerLine == 0 ? 0ui32 : 1ui32);
 
         innerSize.x = compoundSize.x * static_cast<float>(itemPerLine) - attr.colGap.getValue();
@@ -152,10 +152,10 @@ void UniformGridPanel::applyLayout(ref<ReflowState> state_, mref<LayoutContext> 
     math::uivec2 lineLayout { 0 };
 
     if (attr.orientation.getValue() == algorithm::FlexLineOrientation::eVertical) {
-        lineLayout.x = MAX(static_cast<u32>(_STD floorf(itemsPerAxis.y)), 1ui32);
+        lineLayout.x = MAX(static_cast<u32>(std::floorf(itemsPerAxis.y)), 1ui32);
         lineLayout.y = gridItemCount / lineLayout.x + (gridItemCount % lineLayout.x == 0 ? 0ui32 : 1ui32);
     } else {
-        lineLayout.x = MAX(static_cast<u32>(_STD floorf(itemsPerAxis.x)), 1ui32);
+        lineLayout.x = MAX(static_cast<u32>(std::floorf(itemsPerAxis.x)), 1ui32);
         lineLayout.y = gridItemCount / lineLayout.x + (gridItemCount % lineLayout.x == 0 ? 0ui32 : 1ui32);
     }
 

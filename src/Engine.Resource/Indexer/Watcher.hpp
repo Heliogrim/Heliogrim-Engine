@@ -89,11 +89,11 @@ namespace hg::engine::res {
         HANDLE _waitHandle;
 
     private:
-        _STD unordered_map<hg::fs::File, _STD filesystem::file_time_type> _state;
+        std::unordered_map<hg::fs::File, std::filesystem::file_time_type> _state;
 
-        _STD function<void(hg::fs::File)> _createCallback;
-        _STD function<void(hg::fs::File)> _modifiedCallback;
-        _STD function<void(hg::fs::File)> _eraseCallback;
+        std::function<void(hg::fs::File)> _createCallback;
+        std::function<void(hg::fs::File)> _modifiedCallback;
+        std::function<void(hg::fs::File)> _eraseCallback;
 
     public:
         void setCreateCallback(cref<std::function<void(hg::fs::File file_)>> callback_) noexcept;

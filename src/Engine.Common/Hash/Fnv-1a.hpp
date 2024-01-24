@@ -17,7 +17,7 @@ namespace hg::hash {
          *
          * @returns A type_id.
          */
-        constexpr u64 fnv1a_86(const char* str_, const _STD size_t count_) {
+        constexpr u64 fnv1a_86(const char* str_, const std::size_t count_) {
             u64 acc = 2166136261u;
             for (size_t idx = 0; idx < count_; ++idx) {
                 const auto tmp = acc ^ str_[idx];
@@ -27,11 +27,11 @@ namespace hg::hash {
         }
     }
 
-    constexpr u64 operator"" _fnv1a(const char* str_, const _STD size_t count_) {
+    constexpr u64 operator"" _fnv1a(const char* str_, const std::size_t count_) {
         return fnv1a_86(str_, count_);
     }
 
-    [[nodiscard]] constexpr u64 fnv1a(const char* str_, const _STD size_t count_) noexcept {
+    [[nodiscard]] constexpr u64 fnv1a(const char* str_, const std::size_t count_) noexcept {
         return fnv1a_86(str_, count_);
     }
 

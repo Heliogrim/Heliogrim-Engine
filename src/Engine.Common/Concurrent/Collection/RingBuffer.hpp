@@ -15,7 +15,7 @@ namespace hg::engine::concurrent {
      * @tparam Allocator Type of the allocator.
      * @tparam ContainerType Type of the container type.
      */
-    template <class Ty, class Allocator = _STD allocator<Ty>, class ContainerType = hg::Vector<Ty, Allocator>>
+    template <class Ty, class Allocator = std::allocator<Ty>, class ContainerType = hg::Vector<Ty, Allocator>>
     class RingBuffer {
     public:
         using size_type = u32;
@@ -52,10 +52,10 @@ namespace hg::engine::concurrent {
          * @returns True if it succeeds, false if it fails.
          */
         bool try_push(Ty&& value_) {
-            const size_type h = _head.load(_STD memory_order::acquire);
+            const size_type h = _head.load(std::memory_order::acquire);
             const size_type n = inc(h);
 
-            if (n != _tail.load(_STD memory_order_consume)) {
+            if (n != _tail.load(std::memory_order_consume)) {
                 _container[n] = value_;
                 _head.store(n, std::memory_order::release);
                 return true;
@@ -75,8 +75,8 @@ namespace hg::engine::concurrent {
          * @returns True if it succeeds, false if it fails.
          */
         bool try_pop(Ty& value_) {
-            const size_type t = _tail.load(_STD memory_order_consume);
-            const size_type h = _head.load(_STD memory_order_consume);
+            const size_type t = _tail.load(std::memory_order_consume);
+            const size_type h = _head.load(std::memory_order_consume);
             const size_type n = inc(t);
 
             /**
@@ -87,8 +87,8 @@ namespace hg::engine::concurrent {
              * Head [3] < Tail [31] && Head [3] >= n[0] => Pass
              */
             if (h > t || (h < t && (h >= n || n > t))) {
-                value_ = _STD move(_container[n]);
-                _tail.store(n, _STD memory_order::release);
+                value_ = std::move(_container[n]);
+                _tail.store(n, std::memory_order::release);
                 return true;
             }
 
@@ -104,7 +104,7 @@ namespace hg::engine::concurrent {
          * @returns True if it succeeds, false if it fails.
          */
         [[nodiscard]] bool empty() const {
-            const size_t h = _head.load(_STD memory_order::consume), t = _tail.load(_STD memory_order::consume);
+            const size_t h = _head.load(std::memory_order::consume), t = _tail.load(std::memory_order::consume);
             return (h - t) == 0;
         }
 
@@ -117,8 +117,8 @@ namespace hg::engine::concurrent {
          * @returns True if it succeeds, false if it fails.
          */
         [[nodiscard]] bool full() const {
-            const size_type h = _head.load(_STD memory_order_consume);
-            return inc(h) == _tail.load(_STD memory_order_consume);
+            const size_type h = _head.load(std::memory_order_consume);
+            return inc(h) == _tail.load(std::memory_order_consume);
         }
 
         /**
@@ -148,8 +148,8 @@ namespace hg::engine::concurrent {
     private:
         container_type _container;
 
-        ALIGNED(_STD atomic<size_type>, CACHE_LINE_SIZE) _head;
-        ALIGNED(_STD atomic<size_type>, CACHE_LINE_SIZE) _tail;
+        ALIGNED(std::atomic<size_type>, CACHE_LINE_SIZE) _head;
+        ALIGNED(std::atomic<size_type>, CACHE_LINE_SIZE) _tail;
 
         /**
          * Increments the given value

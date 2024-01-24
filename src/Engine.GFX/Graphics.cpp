@@ -171,7 +171,7 @@ void Graphics::setup() {
      * Create Utilities
      */
     auto globalCache = make_uptr<cache::GlobalResourceCache>(_device);
-    _cacheCtrl = make_uptr<cache::GlobalCacheCtrl>(_STD move(globalCache));
+    _cacheCtrl = make_uptr<cache::GlobalCacheCtrl>(std::move(globalCache));
 
     _pool = make_uptr<pool::GlobalResourcePool>(_device);
     _pool->setup();
@@ -204,19 +204,19 @@ void Graphics::setup() {
      */
     {
         auto renderer = make_smr<render::TestRenderer>(_cacheCtrl.get(), _device->allocator());
-        _cachedRenderer.insert_or_assign("Test-Renderer", _STD move(renderer));
+        _cachedRenderer.insert_or_assign("Test-Renderer", std::move(renderer));
     }
 
     {
         auto renderer = make_smr<editor::render::EditorRenderer>(_cacheCtrl.get(), _device->allocator());
-        _cachedRenderer.insert_or_assign("Editor-Renderer", _STD move(renderer));
+        _cachedRenderer.insert_or_assign("Editor-Renderer", std::move(renderer));
     }
 
     /**
      * Scheduling Pipelines
      */
     auto renderScenePipeline = make_uptr<gfx::schedule::RenderScenePipeline>();
-    _engine->getScheduler()->getCompositePipeline()->addPipeline(_STD move(renderScenePipeline));
+    _engine->getScheduler()->getCompositePipeline()->addPipeline(std::move(renderScenePipeline));
 }
 
 void Graphics::start() {}

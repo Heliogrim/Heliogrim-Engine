@@ -34,10 +34,10 @@ namespace hg::editor::gfx::graph {
         CompactArray<ptr<NodeLink>> links;
 
         template <class NodeLinkType_ = NodeLink, typename... Args_> requires
-            _STD derived_from<NodeLinkType_, NodeLink> &&
-            _STD is_constructible_v<NodeLinkType_, Args_...>
+            std::derived_from<NodeLinkType_, NodeLink> &&
+            std::is_constructible_v<NodeLinkType_, Args_...>
         [[nodiscard]] non_owning_rptr<NodeLinkType_> makeNodeLink(Args_&&... args_) {
-            auto* tmp = make_ptr<NodeLinkType_, Args_...>(_STD forward<Args_>(args_)...);
+            auto* tmp = make_ptr<NodeLinkType_, Args_...>(std::forward<Args_>(args_)...);
             links.push_back(tmp);
             return tmp;
         }

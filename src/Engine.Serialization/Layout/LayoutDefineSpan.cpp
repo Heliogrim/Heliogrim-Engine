@@ -20,7 +20,7 @@ LayoutDefineSpan::LayoutDefineSpan(const u64 offset_, cref<sptr<DataLayoutBase>>
 ref<engine::serialization::Archive> LayoutDefineSpan::loadImpl(
     ref<serialization::Archive> archive_,
     cref<LayoutDefine> define_,
-    cref<std::span<u8, _STD dynamic_extent>> dst_
+    cref<std::span<u8, std::dynamic_extent>> dst_
 ) {
 
     const auto& layout { define_._sub };
@@ -32,7 +32,7 @@ ref<engine::serialization::Archive> LayoutDefineSpan::loadImpl(
         const auto off { static_cast<s64>(define_._offset) + i * size };
 
         layout->reflect().constructInPlace(&dst_[off]);
-        layout->dispatch().load(archive_, dst_.subspan(off, _STD dynamic_extent));
+        layout->dispatch().load(archive_, dst_.subspan(off, std::dynamic_extent));
     }
 
     return archive_;
@@ -41,7 +41,7 @@ ref<engine::serialization::Archive> LayoutDefineSpan::loadImpl(
 ref<engine::serialization::Archive> LayoutDefineSpan::storeImpl(
     ref<serialization::Archive> archive_,
     cref<LayoutDefine> define_,
-    cref<std::span<u8, _STD dynamic_extent>> src_
+    cref<std::span<u8, std::dynamic_extent>> src_
 ) {
 
     const auto& layout { define_._sub };
@@ -51,7 +51,7 @@ ref<engine::serialization::Archive> LayoutDefineSpan::storeImpl(
     for (s64 i { 0i64 }; i < count; ++i) {
 
         const auto off { static_cast<s64>(define_._offset) + i * size };
-        layout->dispatch().store(archive_, src_.subspan(off, _STD dynamic_extent));
+        layout->dispatch().store(archive_, src_.subspan(off, std::dynamic_extent));
     }
 
     return archive_;

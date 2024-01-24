@@ -39,17 +39,17 @@ namespace hg::engine::utils::pipeline::adaptive {
         ~ParallelPipelineStage() noexcept = default;
 
     public:
-        template <typename = _STD enable_if_t<!_STD is_void_v<PushCtxType_>>>
+        template <typename = std::enable_if_t<!std::is_void_v<PushCtxType_>>>
         [[nodiscard]] concurrent::future<result_type> push(ptr<push_value_type> ptr_, mref<push_ctx_type> ctx_) { }
 
-        template <typename = _STD enable_if_t<_STD is_void_v<PushCtxType_>>>
+        template <typename = std::enable_if_t<std::is_void_v<PushCtxType_>>>
         [[nodiscard]] concurrent::future<result_type> push(ptr<push_value_type> ptr_) = 0;
 
     public:
-        template <typename = _STD enable_if_t<!_STD is_void_v<PullCtxType_>>>
+        template <typename = std::enable_if_t<!std::is_void_v<PullCtxType_>>>
         [[nodiscard]] concurrent::future<result_type> pull(mref<pull_ctx_type> ctx_) = 0;
 
-        template <typename = _STD enable_if_t<_STD is_void_v<PullCtxType_>>>
+        template <typename = std::enable_if_t<std::is_void_v<PullCtxType_>>>
         [[nodiscard]] concurrent::future<result_type> pull() = 0;
     };
 }

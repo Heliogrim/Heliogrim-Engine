@@ -37,7 +37,7 @@ ptr<Actor> Registry::createActor(const ptr<const ActorClass> actorClass_, cref<A
     //  that Actor is based on ClassMetaBase
     static_assert(sizeof(ClassMetaBase) == sizeof(ptr<MetaClass>));
     const auto** classLocator = reinterpret_cast<ptr<ptr<const ActorClass>>>(
-        _STD addressof(*static_cast<ptr<ClassMetaBase>>(actor))
+        std::addressof(*static_cast<ptr<ClassMetaBase>>(actor))
     );
     *classLocator = actorClass_;
 
@@ -82,7 +82,7 @@ ptr<Actor> Registry::createActor(
     //  that Actor is based on HeliogrimObject
     static_assert(sizeof(ClassMetaBase) == sizeof(ptr<MetaClass>));
     const auto** classLocator = reinterpret_cast<ptr<ptr<const ActorClass>>>(
-        _STD addressof(*static_cast<ptr<ClassMetaBase>>(actor))
+        std::addressof(*static_cast<ptr<ClassMetaBase>>(actor))
     );
     *classLocator = actorClass_;
 
@@ -118,7 +118,7 @@ ptr<Actor> Registry::createActor(cref<ActorInitializer> initializer_) noexcept {
     //  that Actor is based on HeliogrimObject
     static_assert(sizeof(ClassMetaBase) == sizeof(ptr<MetaClass>));
     const auto** classLocator = reinterpret_cast<ptr<ptr<const ActorClass>>>(
-        _STD addressof(*static_cast<ptr<ClassMetaBase>>(actor))
+        std::addressof(*static_cast<ptr<ClassMetaBase>>(actor))
     );
     *classLocator = TypedMetaClass<Actor>::get();
 

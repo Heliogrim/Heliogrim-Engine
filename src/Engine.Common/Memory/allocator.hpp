@@ -9,8 +9,8 @@ namespace hg::engine::memory {
     template <class Ty, size_t Align>
     class aligned_allocator {
     public:
-        using size_type = _STD size_t;
-        using difference_type = _STD ptrdiff_t;
+        using size_type = std::size_t;
+        using difference_type = std::ptrdiff_t;
 
         using value_type = Ty;
         using reference_type = Ty&;
@@ -73,7 +73,7 @@ namespace hg::engine::memory {
          * @returns A pointer_type.
          */
         [[nodiscard]] FORCE_INLINE pointer_type address(reference_type value_) const noexcept {
-            return _STD addressof(value_);
+            return std::addressof(value_);
         }
 
         /**
@@ -87,7 +87,7 @@ namespace hg::engine::memory {
          * @returns A const_pointer_type.
          */
         [[nodiscard]] FORCE_INLINE const_pointer_type address(const_reference_type value_) const noexcept {
-            return _STD addressof(value_);
+            return std::addressof(value_);
         }
 
         /**
@@ -132,7 +132,7 @@ namespace hg::engine::memory {
             #endif
 
             if (ptr == nullptr) {
-                throw _STD bad_alloc();
+                throw std::bad_alloc();
             }
 
             return static_cast<pointer_type>(ptr);

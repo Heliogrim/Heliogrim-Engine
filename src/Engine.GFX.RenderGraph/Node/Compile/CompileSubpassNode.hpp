@@ -38,7 +38,7 @@ namespace hg::engine::render::graph {
     public:
         /**/
     private:
-        _STD function<uptr<SubPassNodeBase>(cref<CompilePassContext> ctx_)> _subPassBuilder;
+        std::function<uptr<SubPassNodeBase>(cref<CompilePassContext> ctx_)> _subPassBuilder;
 
     public:
         void setSubPassBuilder(mref<decltype(_subPassBuilder)> subPassBuilder_) noexcept;

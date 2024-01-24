@@ -157,14 +157,14 @@ namespace std {
     template <>
     struct hash<hg::fs::File> {
         [[nodiscard]] size_t operator()(const hg::fs::File& value_) const noexcept {
-            return _STD hash<string> {}(value_.path().string());
+            return std::hash<string> {}(value_.path().string());
         }
     };
 
     template <>
     struct less<hg::fs::File> {
         [[nodiscard]] bool operator()(const hg::fs::File& left_, const hg::fs::File& right_) const noexcept {
-            return _STD less<_STD filesystem::path> {}(left_.path(), right_.path());
+            return std::less<std::filesystem::path> {}(left_.path(), right_.path());
         }
     };
 }

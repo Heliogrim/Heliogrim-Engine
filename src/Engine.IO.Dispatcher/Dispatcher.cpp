@@ -18,7 +18,7 @@ Dispatcher::Dispatcher() = default;
 
 void Dispatcher::operator()(mref<std::function<void()>> fnc_, sync_t) const {
     // TODO: Dispatch as IO task and block current execution scope until finished
-    return (void)((_STD move(fnc_))());
+    return (void)((std::move(fnc_))());
 }
 
 smr<signal_type> Dispatcher::operator()(
@@ -28,8 +28,8 @@ smr<signal_type> Dispatcher::operator()(
 
     // TODO: Dispatch as IO task and return fiber awaitable signal
     auto signal = make_smr<signal_type>();
-    (void)((_STD move(fnc_))());
-    signal->test_and_set(_STD memory_order::relaxed);
+    (void)((std::move(fnc_))());
+    signal->test_and_set(std::memory_order::relaxed);
 
     return signal;
 }

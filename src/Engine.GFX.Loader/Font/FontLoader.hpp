@@ -16,7 +16,7 @@ namespace hg::engine::gfx::loader {
     using FontLoaderType = resource::loader::LoaderChain<
         assets::Font,
         FontResource,
-        resource::loader::MetaTypeWrapperList<_STD type_identity_t, _STD type_identity_t, _STD type_identity_t, sptr>,
+        resource::loader::MetaTypeWrapperList<std::type_identity_t, std::type_identity_t, std::type_identity_t, sptr>,
         FontCache,
         FontFeedback,
         FontTransformer,

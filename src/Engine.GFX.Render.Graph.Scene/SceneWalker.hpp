@@ -38,7 +38,7 @@ namespace hg::engine::render::graph {
         Vector<uptr<SceneWalkerFilter>> _walkFilter;
         Vector<uptr<SceneHookFilter>> _hookFilter;
 
-        _STD function<void(const ptr<const RenderSceneSystemModel> model_)> _hook;
+        std::function<void(const ptr<const RenderSceneSystemModel> model_)> _hook;
 
     public:
         void addWalkerFilter(mref<uptr<SceneWalkerFilter>> walkerFilter_);
@@ -53,7 +53,7 @@ namespace hg::engine::render::graph {
         }
 
     protected:
-        void stream(_STD span<ptr<RenderSceneSystemModel>> models_) const noexcept;
+        void stream(std::span<ptr<RenderSceneSystemModel>> models_) const noexcept;
 
         [[nodiscard]] bool operator()(const void* node_) const;
 

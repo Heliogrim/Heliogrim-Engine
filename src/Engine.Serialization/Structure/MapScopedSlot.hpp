@@ -17,8 +17,8 @@ namespace hg::engine::serialization {
     public:
         MapScopedSlot(mref<ScopedSlotState> scopedState_, mref<StructureSlotState> state_) :
             underlying_type(
-                _STD move(scopedState_),
-                make_sptr<MapSlot<KeyType_, ValueType_, MapType_>>(_STD move(state_))
+                std::move(scopedState_),
+                make_sptr<MapSlot<KeyType_, ValueType_, MapType_>>(std::move(state_))
             ) {}
 
         ~MapScopedSlot() override = default;

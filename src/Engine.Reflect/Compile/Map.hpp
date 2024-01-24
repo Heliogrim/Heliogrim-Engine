@@ -45,7 +45,7 @@ namespace hg {
         constexpr CompileMap(const typename table_type::node_type (&pairs_)[Size_]) :
             _table(pairs_) {}
 
-        constexpr CompileMap(const _STD pair<key_type, value_type> (&pairs_)[Size_]) :
+        constexpr CompileMap(const std::pair<key_type, value_type> (&pairs_)[Size_]) :
             _table(pairs_) {}
 
     private:
@@ -92,14 +92,14 @@ namespace hg {
             // Threshold where to switch between linear and binary search
             constexpr size_t threshold = 56;
             if constexpr (Size_ < threshold) {
-                return _STD ranges::find_if(
+                return std::ranges::find_if(
                     _table,
                     [key_](cref<typename table_type::node_type> node_) {
                         return node_->first == key_;
                     }
                 );
             } else {
-                return _STD ranges::lower_bound(
+                return std::ranges::lower_bound(
                     _table,
                     key_,
                     CompileLess<key_type> {},
@@ -123,7 +123,7 @@ namespace hg {
                 // __noop();
             }
 
-            return _STD distance(start, it);
+            return std::distance(start, it);
         }
 
     public:
@@ -225,7 +225,7 @@ namespace hg {
 
     template <typename Key_, typename Value_, typename Comparator_ = CompileLess<Key_>, size_t Size_>
     [[nodiscard]] constexpr auto make_compile_map(
-        const _STD pair<Key_, Value_> (&pairs_)[Size_]
+        const std::pair<Key_, Value_> (&pairs_)[Size_]
     ) {
         return CompileMap<Key_, Value_, Size_, Comparator_> { pairs_ };
     }
@@ -247,7 +247,7 @@ namespace hg {
             "Requires at least one pair to construct compile map via vardiac factoring."
         );
 
-        _STD pair<Key_, Value_> tmp[sizeof...(pairs_)] {
+        std::pair<Key_, Value_> tmp[sizeof...(pairs_)] {
             { pairs_ }...
         };
         return CompileMap<Key_, Value_, sizeof...(pairs_), Comparator_> { tmp };

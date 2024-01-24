@@ -15,19 +15,19 @@ namespace hg::engine::scheduler {
 namespace std {
     template <>
     struct hash<::hg::engine::scheduler::StageDependency> :
-        public _STD hash<::hg::ptr<void>>,
-        public _STD hash<::hg::ptr<const void>> {
+        public std::hash<::hg::ptr<void>>,
+        public std::hash<::hg::ptr<const void>> {
         [[nodiscard]] size_t operator()(
             ::hg::cref<::hg::engine::scheduler::StageDependency> value_
         ) const noexcept {
             size_t seed = 0;
             ::hg::hash::hash_combine(
                 seed,
-                static_cast<::hg::cref<_STD hash<::hg::ptr<void>>>>(*this)(value_.pipeline)
+                static_cast<::hg::cref<std::hash<::hg::ptr<void>>>>(*this)(value_.pipeline)
             );
             ::hg::hash::hash_combine(
                 seed,
-                static_cast<::hg::cref<_STD hash<::hg::ptr<const void>>>>(*this)(value_.stage)
+                static_cast<::hg::cref<std::hash<::hg::ptr<const void>>>>(*this)(value_.stage)
             );
             return seed;
         }

@@ -4,4 +4,4 @@ using namespace hg::engine::assets;
 using namespace hg;
 
 GfxMaterialPrototype::GfxMaterialPrototype(cref<asset_guid> guid_) :
-    InheritMeta(_STD move(guid_), GfxMaterialPrototype::typeId) {}
+    InheritMeta(std::move(guid_), GfxMaterialPrototype::typeId) {}

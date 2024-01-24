@@ -11,7 +11,7 @@ TransientCache::TransientCache() :
     _mapping() {}
 
 TransientCache::TransientCache(mref<this_type> other_) noexcept :
-    _mapping(_STD move(other_._mapping)) {}
+    _mapping(std::move(other_._mapping)) {}
 
 TransientCache::~TransientCache() {
     tidy();
@@ -19,8 +19,8 @@ TransientCache::~TransientCache() {
 
 ref<TransientCache::this_type> TransientCache::operator=(mref<this_type> other_) noexcept {
 
-    if (_STD addressof(other_) != this) {
-        _mapping = _STD move(other_._mapping);
+    if (std::addressof(other_) != this) {
+        _mapping = std::move(other_._mapping);
     }
 
     return *this;
@@ -28,14 +28,14 @@ ref<TransientCache::this_type> TransientCache::operator=(mref<this_type> other_)
 
 void TransientCache::tidy() {
     for (auto& entry : _mapping) {
-        // TODO: HeliogrimObject::destroy(_STD move(entry.second));
+        // TODO: HeliogrimObject::destroy(std::move(entry.second));
         // Warning: May be unsafe and possible memory leak
         delete entry.second;
     }
     _mapping.clear();
 }
 
-CacheResult TransientCache::get(cref<_STD ptrdiff_t> key_, ref<ptr<ModelBatch>> dst_) {
+CacheResult TransientCache::get(cref<std::ptrdiff_t> key_, ref<ptr<ModelBatch>> dst_) {
     const auto it { _mapping.find(key_) };
 
     if (it != _mapping.end()) {
@@ -46,7 +46,7 @@ CacheResult TransientCache::get(cref<_STD ptrdiff_t> key_, ref<ptr<ModelBatch>> 
     return CacheResult::eMiss;
 }
 
-void TransientCache::insert(cref<_STD ptrdiff_t> key_, mref<ptr<ModelBatch>> obj_) {
+void TransientCache::insert(cref<std::ptrdiff_t> key_, mref<ptr<ModelBatch>> obj_) {
 
     const auto it { _mapping.find(key_) };
     if (it != _mapping.end()) {
@@ -54,10 +54,10 @@ void TransientCache::insert(cref<_STD ptrdiff_t> key_, mref<ptr<ModelBatch>> obj
         delete it->second;
     }
 
-    _mapping.insert_or_assign(key_, _STD move(obj_));
+    _mapping.insert_or_assign(key_, std::move(obj_));
 }
 
-void TransientCache::remove(cref<_STD ptrdiff_t> key_) {
+void TransientCache::remove(cref<std::ptrdiff_t> key_) {
 
     const auto it { _mapping.find(key_) };
 
@@ -70,7 +70,7 @@ void TransientCache::remove(cref<_STD ptrdiff_t> key_) {
     _mapping.erase(it);
 }
 
-void TransientCache::remove(cref<_STD ptrdiff_t> key_, const bool tidy_) {
+void TransientCache::remove(cref<std::ptrdiff_t> key_, const bool tidy_) {
 
     const auto it { _mapping.find(key_) };
 

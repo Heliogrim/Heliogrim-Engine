@@ -254,7 +254,7 @@ void RevVirtualMarkerTexture::setup() {
     _extent = { 8192ui32, 8192ui32, 1ui32 };
 
     //
-    const auto mipLimit { static_cast<u32>(_STD log2(MAX(MAX(_extent.x, _extent.y), _extent.z)) + 1.F) };
+    const auto mipLimit { static_cast<u32>(std::log2(MAX(MAX(_extent.x, _extent.y), _extent.z)) + 1.F) };
 
     _supportedMips = { 0ui32, mipLimit };
 
@@ -392,10 +392,10 @@ std::pair<s32, math::uivec3> RevVirtualMarkerTexture::tileFromIndex(const u16 in
     // Warning: Z-Collapsed :: const auto tilesPerLayer { (extent.z / _tileExtent.z) + ((extent.z % _tileExtent.z) ? 1ui32 : 0ui32) };
 
     if (not isSupportedMip(mip) || dx >= tilesPerRow || dy >= tilesPerCol) {
-        return _STD make_pair(-1i32, math::uivec3 {});
+        return std::make_pair(-1i32, math::uivec3 {});
     }
 
-    return _STD make_pair(
+    return std::make_pair(
         mip,
         math::uivec3 {
             dx * _tileExtent.x,

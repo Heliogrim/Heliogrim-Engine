@@ -34,7 +34,7 @@ sptr<AssetBrowserPanel> AssetBrowser::makePanel() {
 }
 
 void AssetBrowser::addProvider(mref<uptr<AssetBrowserProvider>> provider_) {
-    _providers.push_back(_STD move(provider_));
+    _providers.push_back(std::move(provider_));
 }
 
 fs::Url AssetBrowser::getBrowserRoot() const noexcept {

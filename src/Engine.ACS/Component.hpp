@@ -5,11 +5,11 @@
 namespace hg::engine::acs {
     template <typename Ty>
     concept IsComponent = hg::HasStaticType<Ty> &&
-        _STD is_object_v<Ty> &&
-        _STD is_nothrow_default_constructible_v<Ty>;
+        std::is_object_v<Ty> &&
+        std::is_nothrow_default_constructible_v<Ty>;
     /* This will require the default constructor for a object to be noexcept attributed *///&&
-    //_STD is_trivially_move_assignable_v<Ty> &&
-    //_STD is_trivially_move_constructible_v<Ty>;
+    //std::is_trivially_move_assignable_v<Ty> &&
+    //std::is_trivially_move_constructible_v<Ty>;
 
     /**
      * A component handle which will be force by type cast of component reference using undefined behaviour to control pooled references.
@@ -98,7 +98,7 @@ namespace hg::engine::acs {
          * @param [in,out] other_ The other.
          */
         component_handle(value_type&& other_) :
-            ref(_STD move(other_.ref)) {}
+            ref(std::move(other_.ref)) {}
 
         /**
          * Copy Constructor
@@ -124,7 +124,7 @@ namespace hg::engine::acs {
          */
         template <IsComponent OtherType>
         component_handle(typename component_handle<OtherType>::value_type&& other_) :
-            ref(_STD move(other_.ref)) {}
+            ref(std::move(other_.ref)) {}
 
         /**
          * Check whether this is valid pointer

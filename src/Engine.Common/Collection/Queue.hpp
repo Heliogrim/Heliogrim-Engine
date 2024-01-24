@@ -6,8 +6,8 @@
 
 namespace hg {
     template <class Type_>
-    using queue = _STD queue<Type_>;
+    using queue = std::queue<Type_>;
 
     template <class Type_>
-    using Queue = _STD queue<Type_>;
+    using Queue = std::queue<Type_>;
 }

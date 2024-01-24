@@ -7,4 +7,4 @@ RuntimeNode::RuntimeNode() noexcept :
     Node() {}
 
 RuntimeNode::RuntimeNode(mref<smr<Auxiliary>> auxiliary_) noexcept :
-    Node(_STD move(auxiliary_)) {}
+    Node(std::move(auxiliary_)) {}

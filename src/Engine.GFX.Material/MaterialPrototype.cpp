@@ -14,10 +14,10 @@ MaterialPrototype::MaterialPrototype(
     mref<InlineAutoArray<MaterialEffect>> effects_,
     mref<Vector<MaterialPrototypeParameter>> parameters_
 ) noexcept :
-    _guid(_STD move(guid_)),
-    _name(_STD move(name_)),
-    _materialEffects(_STD move(effects_)),
-    _parameters(_STD move(parameters_)) {}
+    _guid(std::move(guid_)),
+    _name(std::move(name_)),
+    _materialEffects(std::move(effects_)),
+    _parameters(std::move(parameters_)) {}
 
 MaterialPrototype::~MaterialPrototype() = default;
 
@@ -39,7 +39,7 @@ cref<Vector<MaterialPrototypeParameter>> MaterialPrototype::getParameters() cons
 
 bool MaterialPrototype::addParameter(mref<MaterialPrototypeParameter> param_) {
 
-    const auto iter = _STD ranges::find(
+    const auto iter = std::ranges::find(
         _parameters,
         param_.getId(),
         [](cref<MaterialPrototypeParameter> entry_) {
@@ -51,14 +51,14 @@ bool MaterialPrototype::addParameter(mref<MaterialPrototypeParameter> param_) {
         return false;
     }
 
-    _parameters.push_back(_STD move(param_));
+    _parameters.push_back(std::move(param_));
     return true;
 }
 
 tl::optional<cref<MaterialPrototypeParameter>> MaterialPrototype::getParameter(
     ParameterIdentifier identifier_
 ) const noexcept {
-    const auto it = _STD ranges::find(
+    const auto it = std::ranges::find(
         _parameters,
         identifier_,
         [](const auto& param_) {
@@ -75,7 +75,7 @@ tl::optional<cref<MaterialPrototypeParameter>> MaterialPrototype::getFirstParame
     string_view name_
 ) const noexcept {
 
-    const auto it = _STD ranges::find_if(
+    const auto it = std::ranges::find_if(
         _parameters,
         [name_](const auto& param_) {
             return param_.getName() == name_;
@@ -89,7 +89,7 @@ tl::optional<cref<MaterialPrototypeParameter>> MaterialPrototype::getFirstParame
 
 bool MaterialPrototype::removeParameter(ParameterIdentifier identifier_) {
 
-    const auto range = _STD ranges::remove(
+    const auto range = std::ranges::remove(
         _parameters,
         identifier_,
         [](const auto& param_) {
@@ -103,7 +103,7 @@ bool MaterialPrototype::removeParameter(ParameterIdentifier identifier_) {
 
 bool MaterialPrototype::removeFirstParameter(StringView name_) {
 
-    const auto range = _STD ranges::remove(
+    const auto range = std::ranges::remove(
         _parameters,
         name_,
         [](const auto& param_) {

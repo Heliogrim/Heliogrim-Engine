@@ -34,11 +34,11 @@ namespace hg::editor::gfx::graph {
         CompactArray<ptr<Node>> nodes;
 
         template <class NodeType_, typename... Args_> requires
-            _STD derived_from<NodeType_, Node> &&
-            _STD is_constructible_v<NodeType_, Args_...>
+            std::derived_from<NodeType_, Node> &&
+            std::is_constructible_v<NodeType_, Args_...>
         [[nodiscard]] non_owning_rptr<NodeType_> makeNode(Args_&&... args_) {
 
-            ptr<NodeType_> tmp = make_ptr<NodeType_, Args_...>(_STD forward<Args_>(args_)...);
+            ptr<NodeType_> tmp = make_ptr<NodeType_, Args_...>(std::forward<Args_>(args_)...);
             tmp->regenerate();
 
             /**/

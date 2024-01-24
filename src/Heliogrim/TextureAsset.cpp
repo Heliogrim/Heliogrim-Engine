@@ -29,7 +29,7 @@ TextureAsset::TextureAsset(
         engine::Engine::getEngine()->getAssets()->getFactory()->createTextureAsset(
             guid_,
             baseImage_,
-            _STD forward<Vector<asset_guid>>(images_),
+            std::forward<Vector<asset_guid>>(images_),
             extent_,
             format_,
             mipLevel_,

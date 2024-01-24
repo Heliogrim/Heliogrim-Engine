@@ -46,9 +46,9 @@ namespace hg::engine::render::graph {
             })
         > _resources;
         Vector<
-            _STD pair<
+            std::pair<
                 smr<const Symbol>,
-                Vector<_STD variant<const ptr<observe_type>, const ptr<subscribe_type>>>
+                Vector<std::variant<const ptr<observe_type>, const ptr<subscribe_type>>>
             >
         > _register;
 

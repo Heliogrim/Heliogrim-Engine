@@ -44,7 +44,7 @@ void Reflow::setup() {
      * Scheduling Pipelines
      */
     auto reflowPipeline = make_uptr<reflow::schedule::ReflowPipeline>();
-    _engine->getScheduler()->getCompositePipeline()->addPipeline(_STD move(reflowPipeline));
+    _engine->getScheduler()->getCompositePipeline()->addPipeline(std::move(reflowPipeline));
 }
 
 void Reflow::start() {

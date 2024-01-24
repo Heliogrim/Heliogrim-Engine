@@ -93,8 +93,8 @@ namespace hg::engine::render {
     private:
         #pragma region Render Pass Synchronization
         /* Previous Synchronization State */
-        _STD atomic_ptrdiff_t _sync;
-        _STD atomic_flag _reset;
+        std::atomic_ptrdiff_t _sync;
+        std::atomic_flag _reset;
 
         // May be used to synchronize command buffer submission related to swapchain dispatching
         Vector<vk::Semaphore> _targetWaitSignals;

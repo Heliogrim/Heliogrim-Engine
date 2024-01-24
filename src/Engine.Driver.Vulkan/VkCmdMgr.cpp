@@ -6,7 +6,7 @@
 using namespace hg::driver::vk;
 using namespace hg;
 
-_STD span<const Vector<engine::accel::AccelCommandBuffer>> VkCmdMgr::getCommitted() const noexcept {
+std::span<const Vector<engine::accel::AccelCommandBuffer>> VkCmdMgr::getCommitted() const noexcept {
     return {
         committed.data(),
         committed.size()
@@ -18,7 +18,7 @@ size_t VkCmdMgr::getCommitCount() const noexcept {
 }
 
 size_t VkCmdMgr::getCommittedCount() const noexcept {
-    return _STD accumulate(
+    return std::accumulate(
         committed.begin(),
         committed.end(),
         0uLL,
@@ -28,7 +28,7 @@ size_t VkCmdMgr::getCommittedCount() const noexcept {
     );
 }
 
-_STD span<const engine::accel::AccelCommandBuffer> VkCmdMgr::getPending() const noexcept {
+std::span<const engine::accel::AccelCommandBuffer> VkCmdMgr::getPending() const noexcept {
     return pending;
 }
 
@@ -48,11 +48,11 @@ ref<engine::accel::AccelCommandBuffer> VkCmdMgr::allocate() {
 
     const auto pool = queues.front().front()->pool();
 
-    _STD scoped_lock<concurrent::UnfairSpinLock> lck { pool->lck() };
+    std::scoped_lock<concurrent::UnfairSpinLock> lck { pool->lck() };
     auto result = pool->make();
 
     active.emplace_back(
-        _STD move(static_cast<engine::accel::AccelCommandBuffer&&>(result))
+        std::move(static_cast<engine::accel::AccelCommandBuffer&&>(result))
     );
 
     return active.back();
@@ -62,27 +62,27 @@ void VkCmdMgr::submit() {
 
     assert(not active.empty());
 
-    auto buffer = _STD move(active.back());
+    auto buffer = std::move(active.back());
     active.pop_back();
 
-    pending.push_back(_STD move(buffer));
+    pending.push_back(std::move(buffer));
 }
 
 void VkCmdMgr::commit() {
 
     assert(not pending.empty());
 
-    auto enqueue = _STD move(pending);
+    auto enqueue = std::move(pending);
     const auto queue = queues.front().front();
 
     const auto batch = engine::gfx::CommandBatch {
-        _STD move(reinterpret_cast<Vector<engine::gfx::CommandBuffer>&&>(enqueue))
+        std::move(reinterpret_cast<Vector<engine::gfx::CommandBuffer>&&>(enqueue))
     };
     const auto fence = device->vkDevice().createFence({});
 
     queue->submit(batch, fence);
 
-    // TODO: committed.push_back(_STD move(batch));
+    // TODO: committed.push_back(std::move(batch));
 
     // Warning: Temporary
     [[maybe_unused]] const auto waitResult = device->vkDevice().waitForFences(1, &fence, true, UINT64_MAX);

@@ -34,7 +34,7 @@ namespace hg::engine::scheduler {
     public:
         FORCE_INLINE void enqueue(_In_ mref<non_owning_rptr<const task::TaskDelegate>> task_) const {
             (void)(static_cast<ptr<StageDispatcher>>(_self)->*_fnc)(
-                _STD forward<non_owning_rptr<const task::TaskDelegate>>(task_)
+                std::forward<non_owning_rptr<const task::TaskDelegate>>(task_)
             );
         }
     };

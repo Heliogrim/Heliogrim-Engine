@@ -16,7 +16,7 @@ namespace hg::engine::render::graph {
         using this_type = CompileGraph;
 
     private:
-        _STD allocator<Node> _alloc;
+        std::allocator<Node> _alloc;
         smr<AnchorNode> _begin;
         smr<AnchorNode> _end;
 
@@ -55,8 +55,8 @@ namespace hg::engine::render::graph {
         bool addExpectedRequirement(mref<Requirement> expected_);
 
     public:
-        [[nodiscard]] _STD span<const Provision> expectedProvision() const noexcept;
+        [[nodiscard]] std::span<const Provision> expectedProvision() const noexcept;
 
-        [[nodiscard, deprecated]] _STD span<const Requirement> expectedRequirement() const noexcept;
+        [[nodiscard, deprecated]] std::span<const Requirement> expectedRequirement() const noexcept;
     };
 }

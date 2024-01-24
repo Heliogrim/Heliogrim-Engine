@@ -40,8 +40,8 @@ namespace hg::engine {
     private:
         GlobalEventEmitter _emitter;
 
-        _STD mutex _bufferMtx;
-        Vector<_STD pair<event_type_id, uptr<Event>>> _buffered;
+        std::mutex _bufferMtx;
+        Vector<std::pair<event_type_id, uptr<Event>>> _buffered;
 
     public:
         [[nodiscard]] cref<GlobalEventEmitter> emitter() const noexcept;

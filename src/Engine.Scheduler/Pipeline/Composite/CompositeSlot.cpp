@@ -39,7 +39,7 @@ void CompositeSlot::staticEnqueue(mref<non_owning_rptr<const task::TaskDelegate>
     const_cast<ptr<task::TaskDelegate>>(task_)->ctrl() = static_cast<ptr<TaskCtrl>>(this);
 
     concurrent::SpinLock lck { _mtx };
-    _staticTasks.push_back(_STD move(task_));
+    _staticTasks.push_back(std::move(task_));
 }
 
 void CompositeSlot::dynamicEnqueue(mref<non_owning_rptr<const task::TaskDelegate>> task_) {
@@ -48,7 +48,7 @@ void CompositeSlot::dynamicEnqueue(mref<non_owning_rptr<const task::TaskDelegate
     const_cast<ptr<task::TaskDelegate>>(task_)->ctrl() = static_cast<ptr<TaskCtrl>>(this);
 
     concurrent::SpinLock lck { _mtx };
-    _dynamicTasks.push_back(_STD move(task_));
+    _dynamicTasks.push_back(std::move(task_));
 }
 
 StageDispatcher CompositeSlot::getStaticDispatcher() const noexcept {
@@ -88,11 +88,11 @@ static void disposeTask(const non_owning_rptr<const task::TaskDelegate> task_) {
 
 void CompositeSlot::onComplete(const non_owning_rptr<const task::TaskDelegate> task_) {
 
-    const auto prev = _signals.fetch_sub(1, _STD memory_order_release);
+    const auto prev = _signals.fetch_sub(1, std::memory_order_release);
 
     /**/
 
-    const bool isStaticTask = _STD ranges::contains(_staticTasks, task_);
+    const bool isStaticTask = std::ranges::contains(_staticTasks, task_);
     if (not isStaticTask) {
         // TODO: Dispose
         disposeTask(task_);
@@ -116,36 +116,36 @@ void CompositeSlot::submit() {
     for (const auto* const task : _staticTasks) {
 
         if (task->type() == task::TaskType::eBatch) {
-            // TODO: _signals.fetch_add( << batch size >>, _STD memory_order_relaxed);
-            _signals.fetch_add(1ui16, _STD memory_order_relaxed);
+            // TODO: _signals.fetch_add( << batch size >>, std::memory_order_relaxed);
+            _signals.fetch_add(1ui16, std::memory_order_relaxed);
 
         } else {
 
-            _signals.fetch_add(1ui16, _STD memory_order_relaxed);
+            _signals.fetch_add(1ui16, std::memory_order_relaxed);
         }
     }
 
     for (const auto* const task : _dynamicTasks) {
 
         if (task->type() == task::TaskType::eBatch) {
-            // TODO: _signals.fetch_add( << batch size >>, _STD memory_order_relaxed);
-            _signals.fetch_add(1ui16, _STD memory_order_relaxed);
+            // TODO: _signals.fetch_add( << batch size >>, std::memory_order_relaxed);
+            _signals.fetch_add(1ui16, std::memory_order_relaxed);
 
         } else {
 
-            _signals.fetch_add(1ui16, _STD memory_order_relaxed);
+            _signals.fetch_add(1ui16, std::memory_order_relaxed);
         }
     }
 
     /* TODO: Rewrite quickfix */
 
-    if (_signals.load(_STD memory_order_relaxed) == 0ui16) {
+    if (_signals.load(std::memory_order_relaxed) == 0ui16) {
         // Attention: Currently using a dummy to guarantee progress
-        _signals.fetch_add(1ui16, _STD memory_order_relaxed);
+        _signals.fetch_add(1ui16, std::memory_order_relaxed);
 
         const auto* dummy = task::make_task([] {});
         const_cast<ptr<task::TaskDelegate>>(dummy)->ctrl() = static_cast<ptr<TaskCtrl>>(this);
-        _schedule->push(_STD move(dummy));
+        _schedule->push(std::move(dummy));
         return;
     }
 
@@ -156,7 +156,7 @@ void CompositeSlot::submit() {
     }
 
     for (auto&& task : _dynamicTasks) {
-        _schedule->push(_STD move(task));
+        _schedule->push(std::move(task));
     }
     _dynamicTasks.clear();
 }

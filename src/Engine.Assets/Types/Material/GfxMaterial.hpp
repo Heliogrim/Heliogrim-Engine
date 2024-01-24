@@ -35,7 +35,7 @@ namespace hg::engine::assets {
             gfx::material::ParameterIdentifier identifier;
             string name;
             accel::TransferDataType dataType;
-            _STD variant<
+            std::variant<
                 asset_guid,
                 u8,
                 u16,

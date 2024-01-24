@@ -67,7 +67,7 @@ void MatTestPass::destroy() noexcept {
     MeshSubPass::destroy();
 
     auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
-    device->vkDevice().destroySemaphore(_STD exchange(_tmpSignal, nullptr));
+    device->vkDevice().destroySemaphore(std::exchange(_tmpSignal, nullptr));
 
     _cameraBufferView.reset();
     if (_cameraBuffer.memory && _cameraBuffer.memory->mapping) {
@@ -122,7 +122,7 @@ void MatTestPass::iterate(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
     /**/
 
-    for (auto& batch : _STD ranges::views::values(_batches)) {
+    for (auto& batch : std::ranges::views::values(_batches)) {
         batch.materials.clear();
         batch.models.clear();
     }
@@ -176,7 +176,7 @@ void MatTestPass::iterate(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
 void MatTestPass::resolve() noexcept {
 
-    for (auto& batch : _STD ranges::views::values(_batches)) {
+    for (auto& batch : std::ranges::views::values(_batches)) {
         if (batch.compiled.flag == EffectCompileResultFlag::eUnknown) {
             batch.compiled = build_test_pipeline(clone(batch.effect.effect), clone(_pass));
         }
@@ -349,7 +349,7 @@ void MatTestPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
     cmd.beginAccelPass({ _pass.get(), _framebuffer.get() });
     cmd.beginSubPass({});
 
-    for (const auto& batch : _STD ranges::views::values(_batches)) {
+    for (const auto& batch : std::ranges::views::values(_batches)) {
 
         const auto& compiled = batch.compiled;
         const auto& effect = batch.effect;
@@ -384,7 +384,7 @@ void MatTestPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
                     const auto symbolId = element.symbol->symbolId;
                     const auto aliasId = alias.aliasOrValue(symbolId);
 
-                    const auto iter = _STD ranges::find(
+                    const auto iter = std::ranges::find(
                         effect.pattern->st.pairs,
                         aliasId,
                         [](const auto& pair_) {
@@ -667,9 +667,9 @@ EffectCompileResult build_test_pipeline(
     const auto compiler = makeVkAccCompiler();
     auto result = compiler->compile(
         {
-            .effect = _STD move(effect_),
-            .profile = _STD move(profile),
-            .spec = _STD move(spec)
+            .effect = std::move(effect_),
+            .profile = std::move(profile),
+            .spec = std::move(spec)
         }
     );
 

@@ -21,7 +21,7 @@ VorbisImporter::import_result_type VorbisImporter::import(cref<res::FileTypeId> 
     OggVorbis_File vf;
     if (ov_fopen(file_.path().string().c_str(), &vf) < 0) {
         // Error opening
-        throw _STD runtime_error("Could not open file to parse vorbis data.");
+        throw std::runtime_error("Could not open file to parse vorbis data.");
     }
 
     auto& info = *vf.vi;
@@ -47,7 +47,7 @@ VorbisImporter::import_result_type VorbisImporter::import(cref<res::FileTypeId> 
 
         } else if (read < 0) {
             if (read == OV_EBADLINK) {
-                throw _STD runtime_error("Corrupt bitstream section while reading vorbis file.");
+                throw std::runtime_error("Corrupt bitstream section while reading vorbis file.");
             }
 
             // .. any other error, might not be problematic
@@ -74,7 +74,7 @@ VorbisImporter::import_result_type VorbisImporter::import(cref<res::FileTypeId> 
 
     //
     auto state { make_sptr<concurrent::future_state<import_type>>() };
-    state->set(_STD move(result));
+    state->set(std::move(result));
 
     return import_result_type { state };
 }

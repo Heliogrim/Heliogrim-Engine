@@ -40,13 +40,13 @@ namespace hg::engine::gfx::cache {
         void reset(const bool fully_);
 
     private:
-        _STD array<TransientCache, 2> _caches;
-        _STD array<ptr<TransientCache>, 2> _shifting;
+        std::array<TransientCache, 2> _caches;
+        std::array<ptr<TransientCache>, 2> _shifting;
 
     public:
-        [[nodiscard]] CacheResult fetch(cref<_STD ptrdiff_t> key_, _Out_ ref<ptr<ModelBatch>> dst_);
+        [[nodiscard]] CacheResult fetch(cref<std::ptrdiff_t> key_, _Out_ ref<ptr<ModelBatch>> dst_);
 
-        void store(cref<_STD ptrdiff_t> key_, mref<ptr<ModelBatch>> obj_);
+        void store(cref<std::ptrdiff_t> key_, mref<ptr<ModelBatch>> obj_);
 
     private:
         void shift();

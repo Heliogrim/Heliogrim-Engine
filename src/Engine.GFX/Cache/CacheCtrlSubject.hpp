@@ -22,22 +22,22 @@ namespace hg::engine::gfx::cache {
             locked() { }
 
         CacheCtrlSubject(mref<SubjectType_> subject_, const u16 initialMarks_ = 0ui16) noexcept :
-            subject(_STD move(subject_)),
+            subject(std::move(subject_)),
             marks(initialMarks_),
             locked() { }
 
         CacheCtrlSubject(cref<this_type>) = delete;
 
         CacheCtrlSubject(mref<this_type> other_) noexcept :
-            subject(_STD move(other_.subject)),
-            marks(_STD move(other_.marks)),
+            subject(std::move(other_.subject)),
+            marks(std::move(other_.marks)),
             locked() {
 
             /**
              * Copy lock state
              */
-            if (other_.locked.test(_STD memory_order::consume)) {
-                locked.test_and_set(_STD memory_order::relaxed);
+            if (other_.locked.test(std::memory_order::consume)) {
+                locked.test_and_set(std::memory_order::relaxed);
             }
         }
 
@@ -50,8 +50,8 @@ namespace hg::engine::gfx::cache {
 
     public:
         SubjectType_ subject;
-        _STD atomic_uint16_t marks;
-        _STD atomic_flag locked;
+        std::atomic_uint16_t marks;
+        std::atomic_flag locked;
 
     public:
         [[nodiscard]] bool operator==(cref<this_type> other_) const noexcept {

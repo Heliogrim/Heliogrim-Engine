@@ -8,7 +8,7 @@ Font::Font(cref<asset_guid> guid_) :
 
 Font::Font(cref<asset_guid> guid_, mref<Vector<fs::Url>> sources_) :
     InheritMeta(guid_, Font::typeId),
-    _sources(_STD move(sources_)) {}
+    _sources(std::move(sources_)) {}
 
 cref<Vector<fs::Url>> Font::sources() const noexcept {
     return _sources;

@@ -26,7 +26,7 @@ void ConvergeNode::rtraverse(ref<Visitor> visitor_) const {
 }
 
 void ConvergeNode::setNext(mref<smr<Node>> next_) {
-    _next = _STD move(next_);
+    _next = std::move(next_);
 }
 
 smr<Node> ConvergeNode::getNext() const noexcept {
@@ -34,16 +34,16 @@ smr<Node> ConvergeNode::getNext() const noexcept {
 }
 
 void ConvergeNode::addPrev(mref<nmpt<const Node>> prev_) {
-    _prev.push_back(_STD move(prev_));
+    _prev.push_back(std::move(prev_));
 }
 
 void ConvergeNode::setPrev(mref<Vector<nmpt<const Node>>> prev_) {
-    _prev = _STD move(prev_);
+    _prev = std::move(prev_);
 }
 
 void ConvergeNode::removePrev(cref<nmpt<const Node>> prev_) {
     _prev.erase(
-        _STD remove_if(
+        std::remove_if(
             _prev.begin(),
             _prev.end(),
             [prev_](const auto node_) {

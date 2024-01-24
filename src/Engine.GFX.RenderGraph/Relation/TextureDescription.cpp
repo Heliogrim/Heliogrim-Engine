@@ -28,7 +28,7 @@ TextureDescription::TextureDescription(
     _textureFormat(textureFormat_),
     _textureLayers(textureLayers_),
     //_textureExtent(textureExtent_),
-    _textureMips(_STD move(textureMips_)) {}
+    _textureMips(std::move(textureMips_)) {}
 
 TextureDescription::~TextureDescription() noexcept = default;
 

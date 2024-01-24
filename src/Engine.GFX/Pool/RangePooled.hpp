@@ -62,7 +62,7 @@ namespace hg::engine::gfx {
             };
 
             auto memory = make_uptr<VirtualMemory>(_allocator, layout, req.size);
-            auto buffer = make_uptr<SparseBuffer>(_STD move(memory), reserved_, vkBuffer, bci.usage);
+            auto buffer = make_uptr<SparseBuffer>(std::move(memory), reserved_, vkBuffer, bci.usage);
 
             buffer->updateBindingData();
 
@@ -71,7 +71,7 @@ namespace hg::engine::gfx {
             buffer->enqueueBindingSync(_device->graphicsQueue());
             #pragma warning(pop)
 
-            _buffer = _STD move(buffer);
+            _buffer = std::move(buffer);
         }
 
         void destroy() {
@@ -93,7 +93,7 @@ namespace hg::engine::gfx {
         uptr<SparseBuffer> _buffer;
 
         u64 _monotonicOffset;
-        Vector<_STD pair<u64, u64>> _releasedList;
+        Vector<std::pair<u64, u64>> _releasedList;
 
     private:
         void grow(u64 required_) {
@@ -125,7 +125,7 @@ namespace hg::engine::gfx {
             };
 
             auto memory = make_uptr<VirtualMemory>(_allocator, layout, req.size);
-            auto buffer = make_uptr<SparseBuffer>(_STD move(memory), nextSize, vkBuffer, bci.usage);
+            auto buffer = make_uptr<SparseBuffer>(std::move(memory), nextSize, vkBuffer, bci.usage);
 
             const auto requiredPages = (nextSize / req.alignment) + ((nextSize % req.alignment) ? 1uLL : 0uLL);
 
@@ -149,7 +149,7 @@ namespace hg::engine::gfx {
             auto cmd = cmdPool->make();
 
             cmd.begin();
-            _STD array<vk::BufferMemoryBarrier, 2uLL> before {
+            std::array<vk::BufferMemoryBarrier, 2uLL> before {
                 vk::BufferMemoryBarrier {
                     vk::AccessFlagBits::eShaderRead, vk::AccessFlagBits::eTransferRead, 0uL, 0uL, _buffer->vkBuffer(),
                     0uL, prevSize
@@ -173,7 +173,7 @@ namespace hg::engine::gfx {
             const vk::BufferCopy region { 0uL, 0uL, prevSize };
             cmd.vkCommandBuffer().copyBuffer(_buffer->vkBuffer(), buffer->vkBuffer(), 1uL, &region);
 
-            _STD array<vk::BufferMemoryBarrier, 2uLL> after {
+            std::array<vk::BufferMemoryBarrier, 2uLL> after {
                 vk::BufferMemoryBarrier {
                     vk::AccessFlagBits::eTransferRead, vk::AccessFlagBits::eShaderRead, 0uL, 0uL, _buffer->vkBuffer(),
                     0uL, prevSize
@@ -203,7 +203,7 @@ namespace hg::engine::gfx {
 
             /**/
 
-            _buffer = _STD move(buffer);
+            _buffer = std::move(buffer);
         }
 
     public:
@@ -234,7 +234,7 @@ namespace hg::engine::gfx {
             /**/
 
             _monotonicOffset += requestSize_;
-            const auto range = _STD pair(_monotonicOffset - requestSize_, _monotonicOffset);
+            const auto range = std::pair(_monotonicOffset - requestSize_, _monotonicOffset);
 
             assert(_buffer->memorySize() > _monotonicOffset);
 

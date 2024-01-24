@@ -22,7 +22,7 @@ namespace hg::engine::render {
             }
 
             [[nodiscard]] auto operator()(auto&&... args_) noexcept {
-                return self()(_STD forward<decltype(args_)>(args_)...);
+                return self()(std::forward<decltype(args_)>(args_)...);
             }
         };
 
@@ -30,7 +30,7 @@ namespace hg::engine::render {
         struct ForbiddenDynamicResolved :
             public DynamicResolved<ForbiddenDynamicResolved<Type_>, Type_> {
             [[nodiscard]] auto operator()(auto&&...) noexcept {
-                _STD unreachable();
+                std::unreachable();
             }
         };
 

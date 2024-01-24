@@ -19,16 +19,16 @@ namespace hg {
             data(other_.data) {}
 
         constexpr Guid(Guid&& other_) noexcept :
-            data(_STD move(other_.data)) {}
+            data(std::move(other_.data)) {}
 
         constexpr Guid(const uint128_t& data_) noexcept :
             data(data_) {}
 
         template <
-            _STD integral PreType_,
-            _STD integral C0Type_,
-            _STD integral C1Type_,
-            _STD integral PostType_
+            std::integral PreType_,
+            std::integral C0Type_,
+            std::integral C1Type_,
+            std::integral PostType_
         >
         constexpr Guid(const PreType_& pre_, const C0Type_& c0_, const C1Type_& c1_, const PostType_& post_) :
             pre(pre_),
@@ -40,7 +40,7 @@ namespace hg {
             const u8 (&bytes_)[16]
         ) :
             Guid() {
-            _STD memcpy(bytes, bytes_, 16);
+            std::memcpy(bytes, bytes_, 16);
         }
 
         #ifdef _WIN32
@@ -53,7 +53,7 @@ namespace hg {
         }
 
         constexpr ref<Guid> operator=(mref<Guid> other_) noexcept {
-            data = _STD move(other_.data);
+            data = std::move(other_.data);
             return *this;
         }
 
@@ -113,7 +113,7 @@ namespace hg {
 namespace std {
     template <>
     struct hash<::hg::Guid> {
-        [[nodiscard]] _STD size_t operator()(::hg::cref<::hg::Guid> value_) const noexcept {
+        [[nodiscard]] std::size_t operator()(::hg::cref<::hg::Guid> value_) const noexcept {
 
             size_t seed = 31587166197;
 

@@ -20,6 +20,6 @@ namespace hg::engine::resource {
     };
     #pragma pack(pop)
 
-    static_assert(_STD is_trivial_v<PackageFooter>);
+    static_assert(std::is_trivial_v<PackageFooter>);
     static_assert(sizeof(PackageFooter) == 0x18);
 }

@@ -9,7 +9,7 @@ namespace hg {
 
     /**/
 
-    template <typename Type_> requires _STD is_integral_v<Type_>
+    template <typename Type_> requires std::is_integral_v<Type_>
     struct CompileHash<Type_> {
         [[nodiscard]] constexpr size_t operator()(const Type_& value_) const noexcept {
             // TODO: Make compile-time hash for integral values
@@ -24,7 +24,7 @@ namespace hg {
         }
     };
 
-    // static_assert(_STD _Always_false<const char*>, "Please use std::string_view instead.");
+    // static_assert(std::_Always_false<const char*>, "Please use std::string_view instead.");
 
     template <>
     struct CompileHash<string_view> {

@@ -9,8 +9,8 @@ void engine::accel::register_loader(
     ref<resource::LoaderManager> manager_,
     mref<smr<GlobalStorage>> globalStorage_
 ) {
-    auto el = make_sptr<loader::EffectLoader>(_STD move(globalStorage_), manager_.sharedSourceLoader());
-    manager_.registerLoader<assets::AccelEffect, EffectResource>(_STD move(el));
+    auto el = make_sptr<loader::EffectLoader>(std::move(globalStorage_), manager_.sharedSourceLoader());
+    manager_.registerLoader<assets::AccelEffect, EffectResource>(std::move(el));
 }
 
 void engine::accel::unregister_loader(

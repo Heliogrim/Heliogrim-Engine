@@ -30,7 +30,7 @@ namespace hg::engine::serialization {
         [[nodiscard]] cref<non_owning_rptr<DataLayoutBase>> getDataLayout() const noexcept;
     };
 
-    template <typename SerializationType_> requires _STD is_constructible_v<DataLayout<SerializationType_>>
+    template <typename SerializationType_> requires std::is_constructible_v<DataLayout<SerializationType_>>
     class TypedLayoutArchive final :
         public LayoutArchiveBase {
     public:
@@ -50,7 +50,7 @@ namespace hg::engine::serialization {
     protected:
         void serialize(_In_ const ptr<const SerializationType_> value_) {
 
-            _STD span<u8, _STD dynamic_extent> src {
+            std::span<u8, std::dynamic_extent> src {
                 reinterpret_cast<ptr<u8>>(
                     const_cast<ptr<SerializationType_>>(
                         &const_cast<ref<SerializationType_>>(*value_)
@@ -68,7 +68,7 @@ namespace hg::engine::serialization {
 
         void deserialize(_Inout_ const ptr<SerializationType_> value_) {
 
-            _STD span<u8, _STD dynamic_extent> src {
+            std::span<u8, std::dynamic_extent> src {
                 reinterpret_cast<ptr<u8>>(value_),
                 sizeof(SerializationType_)
             };
@@ -92,7 +92,7 @@ namespace hg::engine::serialization {
         }
     };
 
-    template <typename LayoutType_> requires _STD derived_from<LayoutType_, DataLayoutBase>
+    template <typename LayoutType_> requires std::derived_from<LayoutType_, DataLayoutBase>
     class LayoutArchive final :
         public LayoutArchiveBase {
     public:
@@ -112,7 +112,7 @@ namespace hg::engine::serialization {
         template <typename Type_>
         void serialize(_In_ const ptr<const Type_> value_) {
 
-            _STD span<u8, _STD dynamic_extent> src {
+            std::span<u8, std::dynamic_extent> src {
                 reinterpret_cast<ptr<u8>>(
                     const_cast<ptr<Type_>>(
                         &const_cast<ref<Type_>>(*value_)
@@ -127,7 +127,7 @@ namespace hg::engine::serialization {
         template <typename Type_>
         void deserialize(_Inout_ const ptr<Type_> value_) {
 
-            _STD span<u8, _STD dynamic_extent> dst {
+            std::span<u8, std::dynamic_extent> dst {
                 reinterpret_cast<ptr<u8>>(value_),
                 sizeof(Type_)
             };
@@ -136,13 +136,13 @@ namespace hg::engine::serialization {
         }
 
     public:
-        template <typename Type_> requires _STD is_constructible_v<DataLayout<Type_>>
+        template <typename Type_> requires std::is_constructible_v<DataLayout<Type_>>
         ref<this_type> operator<<(const ptr<const Type_> object_) {
             serialize<Type_>(object_);
             return *this;
         }
 
-        template <typename Type_> requires _STD is_constructible_v<DataLayout<Type_>>
+        template <typename Type_> requires std::is_constructible_v<DataLayout<Type_>>
         ref<this_type> operator>>(const ptr<Type_> object_) {
             deserialize<Type_>(object_);
             return *this;

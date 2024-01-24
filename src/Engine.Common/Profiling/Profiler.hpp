@@ -10,7 +10,7 @@
 
 namespace hg::profiling {
     struct ProfileResult {
-        _STD string name;
+        std::string name;
         u64 start;
         u64 end;
         u64 thread;
@@ -100,7 +100,7 @@ namespace hg::profiling {
          *
          * @returns A const ptr&lt;value_type&gt;
          */
-        static const ptr<value_type> get(_STD nothrow_t) noexcept;
+        static const ptr<value_type> get(std::nothrow_t) noexcept;
 
         /**
          * Gets a reference to the internal stored singleton instance or created one
@@ -120,7 +120,7 @@ namespace hg::profiling {
          *
          * @returns A reference_type.
          */
-        static const ptr<value_type> make(_STD nothrow_t) noexcept;
+        static const ptr<value_type> make(std::nothrow_t) noexcept;
 
         /**
          * Destroys the internal stored singleton instance
@@ -131,8 +131,8 @@ namespace hg::profiling {
         static void destroy();
 
     private:
-        _STD string _name;
-        ptr<_STD ostream> _output;
+        std::string _name;
+        ptr<std::ostream> _output;
         u64 _count;
 
     private:

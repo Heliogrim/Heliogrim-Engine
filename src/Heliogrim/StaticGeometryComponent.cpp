@@ -3,7 +3,7 @@
 using namespace hg;
 
 StaticGeometryComponent::StaticGeometryComponent(mref<CachedActorPointer> owner_, mref<ptr<ActorComponent>> parent_) :
-    InheritMeta(component_type_id { typeId }, _STD move(owner_), _STD move(parent_)),
+    InheritMeta(component_type_id { typeId }, std::move(owner_), std::move(parent_)),
     _staticGeometry(invalid_asset_guid),
     _overrideMaterials() {}
 

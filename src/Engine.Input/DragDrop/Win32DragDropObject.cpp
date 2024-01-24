@@ -7,12 +7,12 @@
 namespace hg::engine::input {
     // @see https://learn.microsoft.com/en-us/windows/win32/shell/clipboard#cf_hdrop
     struct DragDropObjectFilePayload {
-        _STD wstring paths;
+        std::wstring paths;
     };
 
     // CF_UNICODETEXT (13) | Unicode text | Text | Null Terminated
     struct DragDropObjectTextPayload {
-        _STD wstring data;
+        std::wstring data;
     };
 }
 
@@ -52,7 +52,7 @@ bool Win32DragDropObject::storeFiles(cref<Vector<string>> paths_) {
     // @see https://learn.microsoft.com/en-us/windows/win32/shell/clipboard#cf_hdrop
     _type = DragDropObjectType::eFileType;
 
-    _STD wstringstream stream {};
+    std::wstringstream stream {};
     for (const auto& path : paths_) {
 
         const auto wsize = MultiByteToWideChar(
@@ -64,7 +64,7 @@ bool Win32DragDropObject::storeFiles(cref<Vector<string>> paths_) {
             0
         );
 
-        _STD wstring wpath(wsize, NULL);
+        std::wstring wpath(wsize, NULL);
 
         MultiByteToWideChar(
             CP_UTF8,
@@ -88,7 +88,7 @@ bool Win32DragDropObject::storeFiles(cref<Vector<string>> paths_) {
 
     /**/
 
-    _payload.files = new DragDropObjectFilePayload { _STD move(stream.str()) };
+    _payload.files = new DragDropObjectFilePayload { std::move(stream.str()) };
 
     FORMATETC format {
         CF_HDROP,
@@ -117,7 +117,7 @@ bool Win32DragDropObject::storeFiles(cref<Vector<string>> paths_) {
     pDropFile->fNC = FALSE;
     pDropFile->fWide = TRUE;
 
-    _STD memcpy(
+    std::memcpy(
         (static_cast<ptr<char>>(hdata) + sizeof(DROPFILES)),
         _payload.files->paths.data(),
         _payload.files->paths.size() * sizeof(wchar_t)
@@ -151,7 +151,7 @@ bool Win32DragDropObject::storeText(cref<string> text_) {
         0
     );
 
-    _STD wstring wtext(wsize, NULL);
+    std::wstring wtext(wsize, NULL);
 
     MultiByteToWideChar(
         CP_UTF8,
@@ -166,7 +166,7 @@ bool Win32DragDropObject::storeText(cref<string> text_) {
 
     /**/
 
-    _payload.text = new DragDropObjectTextPayload { _STD move(wtext) };
+    _payload.text = new DragDropObjectTextPayload { std::move(wtext) };
 
     FORMATETC format {
         CF_UNICODETEXT,
@@ -187,7 +187,7 @@ bool Win32DragDropObject::storeText(cref<string> text_) {
     medium.hGlobal = GlobalAlloc(GMEM_MOVEABLE, _payload.text->data.size() * sizeof(wchar_t));
 
     LPVOID hdata = GlobalLock(medium.hGlobal);
-    _STD memcpy(hdata, _payload.text->data.data(), _payload.text->data.size() * sizeof(wchar_t));
+    std::memcpy(hdata, _payload.text->data.data(), _payload.text->data.size() * sizeof(wchar_t));
     GlobalUnlock(hdata);
 
     /**/

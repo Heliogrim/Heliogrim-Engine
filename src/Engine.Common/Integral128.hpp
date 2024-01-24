@@ -12,7 +12,7 @@ namespace hg {
 
         constexpr uint128_t(uint128_t&& other_) noexcept = default;
 
-        template <_STD integral HighType_, _STD integral LowType_>
+        template <std::integral HighType_, std::integral LowType_>
         uint128_t(const HighType_& high_, const LowType_& low_) :
             low(low_),
             high(high_) {}
@@ -21,10 +21,10 @@ namespace hg {
 
         uint128_t& operator=(uint128_t&& other_) noexcept = default;
 
-        template <_STD integral Type_>
+        template <std::integral Type_>
         uint128_t& operator=(const Type_& other_) {
 
-            if constexpr (_STD is_signed_v<Type_>) {
+            if constexpr (std::is_signed_v<Type_>) {
                 high = other_ < 0 ? -1 : 0;
                 low = other_;
 
@@ -74,7 +74,7 @@ namespace hg {
     };
 
     /*
-    constexpr uint128_t operator"" _ui128(const char* bytes_, _STD size_t length_) {
+    constexpr uint128_t operator"" _ui128(const char* bytes_, std::size_t length_) {
         // 0x?? || 0o?? || 0b?? || ??
         return uint128_t(bytes_);
     }
@@ -83,8 +83,8 @@ namespace hg {
 
 namespace std {
     template <>
-    struct is_integral<::hg::uint128_t> : _STD true_type {};
+    struct is_integral<::hg::uint128_t> : std::true_type {};
 
     template <>
-    struct is_unsigned<::hg::uint128_t> : _STD true_type {};
+    struct is_unsigned<::hg::uint128_t> : std::true_type {};
 }

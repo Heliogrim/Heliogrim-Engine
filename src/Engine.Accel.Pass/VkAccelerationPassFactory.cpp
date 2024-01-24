@@ -64,7 +64,7 @@ tl::expected<smr<const GraphicsPass>, AccelerationPassFactoryError> VkAccelerati
         const render::graph::TextureDescription* itd = nullptr;
 
         {
-            const auto inputIt = _STD ranges::find_if(
+            const auto inputIt = std::ranges::find_if(
                 inputSymbols_,
                 [name = symbol->name](const auto& inputSymbol_) {
                     return inputSymbol_->name == name;
@@ -149,7 +149,7 @@ tl::expected<smr<const GraphicsPass>, AccelerationPassFactoryError> VkAccelerati
 
         /**/
 
-        if (_STD ranges::find_if(
+        if (std::ranges::find_if(
             outputSymbols_,
             [name = symbol->name](const auto& outputSymbol_) {
                 return outputSymbol_->name == name;

@@ -15,14 +15,14 @@ DelegateAction::DelegateAction() :
 
 DelegateAction::DelegateAction(mref<delegate_type> fwd_, mref<delegate_type> bwd_) :
     SimpleAction(DelegateAction::typeId),
-    _fwd(_STD move(fwd_)),
-    _bwd(_STD move(bwd_)) {}
+    _fwd(std::move(fwd_)),
+    _bwd(std::move(bwd_)) {}
 
 DelegateAction::~DelegateAction() = default;
 
 void DelegateAction::store(mref<delegate_type> fwd_, mref<delegate_type> bwd_) {
-    _fwd = _STD move(fwd_);
-    _bwd = _STD move(bwd_);
+    _fwd = std::move(fwd_);
+    _bwd = std::move(bwd_);
 }
 
 bool DelegateAction::isReversible() const noexcept {

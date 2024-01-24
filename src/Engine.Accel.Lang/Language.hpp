@@ -20,6 +20,6 @@ namespace hg::engine::accel::lang {
         Language(mref<Language> other_) noexcept = default;
 
         Dialect dialect;
-        InlineAutoArray<TextBlock> text;
+        InlineAutoArray<TextBlock, 1uLL> text;
     };
 }

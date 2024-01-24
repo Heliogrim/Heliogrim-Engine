@@ -16,7 +16,7 @@ namespace hg::engine::serialization {
 
     public:
         SliceScopedSlot(mref<ScopedSlotState> scopedState_, mref<StructureSlotState> state_) :
-            underlying_type(_STD move(scopedState_), make_sptr<SliceSlot<ValueType_, SliceType_>>(_STD move(state_))) {}
+            underlying_type(std::move(scopedState_), make_sptr<SliceSlot<ValueType_, SliceType_>>(std::move(state_))) {}
 
         ~SliceScopedSlot() override = default;
 
@@ -51,7 +51,7 @@ namespace hg::engine::serialization {
         }
 
         SliceScopedSlot(mref<ScopedSlotState> state_) :
-            ScopedStructureSlot<slice_type>(_STD move(state_)) {
+            ScopedStructureSlot<slice_type>(std::move(state_)) {
             this_type::ensureEntered(not this_type::_state.isScopedImmutable());
         }
 
@@ -143,8 +143,8 @@ namespace hg::engine::serialization {
 
             /**/
 
-            auto begin = _STD ranges::begin(object_);
-            const auto end = _STD ranges::end(object_);
+            auto begin = std::ranges::begin(object_);
+            const auto end = std::ranges::end(object_);
 
             for (auto it = begin; it != end; ++it) {
 
@@ -153,7 +153,7 @@ namespace hg::engine::serialization {
                     *this,
                     this_type::_state.rootState
                 };
-                scoped_entry_type slot { _STD move(state) };
+                scoped_entry_type slot { std::move(state) };
 
                 /**/
 
@@ -189,8 +189,8 @@ namespace hg::engine::serialization {
             // TODO: This might be not available depending on the sub type and container type
             object_.resize(storedCount);
 
-            auto begin = _STD ranges::begin(object_);
-            const auto end = _STD ranges::end(object_);
+            auto begin = std::ranges::begin(object_);
+            const auto end = std::ranges::end(object_);
 
             for (auto it = begin; it != end; ++it) {
 
@@ -199,7 +199,7 @@ namespace hg::engine::serialization {
                     *this,
                     this_type::_state.rootState
                 };
-                scoped_entry_type slot { _STD move(state) };
+                scoped_entry_type slot { std::move(state) };
 
                 /**/
 

@@ -49,7 +49,7 @@ namespace hg::engine::render::graph {
     public:
         template <typename ComponentType_>
         [[nodiscard]] nmpt<ComponentType_> getFirstOfType() const noexcept {
-            const auto compIt = _STD ranges::find_if(
+            const auto compIt = std::ranges::find_if(
                 _comps,
                 [](const auto comp_) {
                     return IsType<ComponentType_>(*comp_);

@@ -37,7 +37,7 @@ namespace hg::engine::acs {
 
     public:
         void insert(cref<actor_guid> key_) override {
-            if constexpr (_STD is_default_constructible_v<typename pool_type::assign_value_type>) {
+            if constexpr (std::is_default_constructible_v<typename pool_type::assign_value_type>) {
                 _actual->insert(key_);
             }
         }

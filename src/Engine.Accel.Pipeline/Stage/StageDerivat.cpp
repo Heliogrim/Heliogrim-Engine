@@ -13,10 +13,10 @@ StageDerivat::StageDerivat(
     mref<smr<StageModule>> stageModule_,
     mref<StageFlagBits> flagBits_
 ) :
-    Stage(_STD move(flagBits_)),
-    _owner(_STD move(owner_)),
-    _supersedes(_STD move(supersedes_)),
-    _stageModule(_STD move(stageModule_)) {}
+    Stage(std::move(flagBits_)),
+    _owner(std::move(owner_)),
+    _supersedes(std::move(supersedes_)),
+    _stageModule(std::move(stageModule_)) {}
 
 StageDerivat::~StageDerivat() = default;
 
@@ -29,11 +29,11 @@ Vector<smr<Stage>> StageDerivat::supersedes() const noexcept {
 }
 
 void StageDerivat::setStageFlagBits(mref<StageFlagBits> flagBits_) {
-    _flagBits = _STD move(flagBits_);
+    _flagBits = std::move(flagBits_);
 }
 
 void StageDerivat::setStageModule(mref<smr<StageModule>> module_) {
-    _stageModule = _STD move(module_);
+    _stageModule = std::move(module_);
 }
 
 smr<StageModule> StageDerivat::getStageModule() const noexcept {

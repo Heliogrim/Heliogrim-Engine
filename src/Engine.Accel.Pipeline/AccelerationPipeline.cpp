@@ -8,7 +8,7 @@ using namespace hg;
 AccelerationPipeline::AccelerationPipeline(
     mref<smr<const AccelerationEffect>> effect_
 ) noexcept :
-    _effect(_STD move(effect_)),
+    _effect(std::move(effect_)),
     _stages() {}
 
 AccelerationPipeline::~AccelerationPipeline() = default;
@@ -26,5 +26,5 @@ cref<BindLayout> AccelerationPipeline::getBindingLayout() const noexcept {
 }
 
 void AccelerationPipeline::setBindingLayout(mref<BindLayout> layout_) noexcept {
-    _bindLayout = _STD move(layout_);
+    _bindLayout = std::move(layout_);
 }

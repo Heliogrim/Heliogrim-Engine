@@ -41,10 +41,10 @@ namespace hg::engine::gfx::material {
         template <typename Type_>
         void set(Type_&& value_) {
             assert(_storage->getMetaClass()->exact<mpts_t<Type_>>());
-            static_cast<ptr<mpts_t<Type_>>>(_storage.get())->template set<Type_>(_STD forward<Type_>(value_));
+            static_cast<ptr<mpts_t<Type_>>>(_storage.get())->template set<Type_>(std::forward<Type_>(value_));
         }
 
-        template <typename Type_> requires _STD is_trivially_copy_constructible_v<Type_>
+        template <typename Type_> requires std::is_trivially_copy_constructible_v<Type_>
         void set(cref<Type_> value_) {
             assert(_storage->getMetaClass()->exact<mpts_t<Type_>>());
             static_cast<ptr<mpts_t<Type_>>>(_storage.get())->template set<Type_>(value_);

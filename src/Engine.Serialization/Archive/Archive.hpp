@@ -122,15 +122,15 @@ namespace hg::engine::serialization {
         template <typename Type_>
         ref<this_type> serializeByteOrdered(Type_&& value_, const ArchiveStreamMode mode_) {
 
-            static_assert(not _STD is_signed_v<Type_>, "");
+            static_assert(not std::is_signed_v<Type_>, "");
 
             if (not shouldSwapBytes()) {
                 serializeBytes(&value_, sizeof(value_), mode_);
                 return *this;
             }
 
-            if constexpr (_STD is_integral_v<Type_>) {
-                serializeBytesSwapped(_STD forward<Type_>(value_), mode_);
+            if constexpr (std::is_integral_v<Type_>) {
+                serializeBytesSwapped(std::forward<Type_>(value_), mode_);
             } else {
                 serializeBytesSwapped(&value_, sizeof(value_), mode_);
             }
@@ -207,12 +207,12 @@ namespace hg::engine::serialization {
             return self_;
         }
 
-        template <typename EnumType_> requires _STD is_enum_v<EnumType_>
+        template <typename EnumType_> requires std::is_enum_v<EnumType_>
         FORCE_INLINE friend ref<this_type> operator>>(ref<this_type> self_, ref<EnumType_> value_) {
 
-            using enum_raw_type = _STD underlying_type_t<EnumType_>;
+            using enum_raw_type = std::underlying_type_t<EnumType_>;
             static_assert(
-                _STD is_integral_v<enum_raw_type>,
+                std::is_integral_v<enum_raw_type>,
                 "Enum is required to be based on an integral underlying type while serialization."
             );
 
@@ -309,12 +309,12 @@ namespace hg::engine::serialization {
             return self_;
         }
 
-        template <typename EnumType_> requires _STD is_enum_v<EnumType_>
+        template <typename EnumType_> requires std::is_enum_v<EnumType_>
         FORCE_INLINE friend ref<this_type> operator<<(ref<this_type> self_, cref<EnumType_> value_) {
 
-            using enum_raw_type = _STD underlying_type_t<EnumType_>;
+            using enum_raw_type = std::underlying_type_t<EnumType_>;
             static_assert(
-                _STD is_integral_v<enum_raw_type>,
+                std::is_integral_v<enum_raw_type>,
                 "Enum is required to be based on an integral underlying type while serialization."
             );
 

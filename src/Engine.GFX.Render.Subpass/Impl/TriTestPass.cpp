@@ -42,7 +42,7 @@ void TriTestPass::destroy() noexcept {
 
     auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
 
-    device->vkDevice().destroySemaphore(_STD exchange(_tmpSignal, nullptr));
+    device->vkDevice().destroySemaphore(std::exchange(_tmpSignal, nullptr));
 
     _framebuffer->destroy();
     _framebuffer.reset();
@@ -238,13 +238,13 @@ smr<AccelerationEffect> build_test_effect() {
 
     vertexStage->setIntermediate(make_smr<lang::Intermediate>());
     vertexStage->getIntermediate()->lang.dialect = lang::Dialect::eVulkanGlsl460;
-    vertexStage->getIntermediate()->lang.text.emplace_back(_STD move(vertexShaderCode));
+    vertexStage->getIntermediate()->lang.text.emplace_back(std::move(vertexShaderCode));
 
     const auto fragmentShaderCode = read_shader_file("__test__render.fs");
 
     fragmentStage->setIntermediate(make_smr<lang::Intermediate>());
     fragmentStage->getIntermediate()->lang.dialect = lang::Dialect::eVulkanGlsl460;
-    fragmentStage->getIntermediate()->lang.text.emplace_back(_STD move(fragmentShaderCode));
+    fragmentStage->getIntermediate()->lang.text.emplace_back(std::move(fragmentShaderCode));
 
     uptr<lang::Variable> tmpVar {};
     uptr<lang::Symbol> tmpSym {};
@@ -256,8 +256,8 @@ smr<AccelerationEffect> build_test_effect() {
         lang::VariableSymbol { lang::SymbolType::eVariableSymbol, tmpVar.get() }
     );
 
-    fragmentStage->getIntermediate()->rep.globalScope.outbound.emplace_back(_STD move(tmpVar));
-    fragmentStage->getIntermediate()->rep.symbolTable.emplace(_STD move(tmpSym));
+    fragmentStage->getIntermediate()->rep.globalScope.outbound.emplace_back(std::move(tmpVar));
+    fragmentStage->getIntermediate()->rep.symbolTable.emplace(std::move(tmpSym));
 
     /**/
 
@@ -265,9 +265,9 @@ smr<AccelerationEffect> build_test_effect() {
     GuidGenerate(guid);
 
     return make_smr<AccelerationEffect>(
-        _STD move(guid),
+        std::move(guid),
         "test-render-effect",
-        Vector<smr<Stage>> { _STD move(vertexStage), _STD move(fragmentStage) }
+        Vector<smr<Stage>> { std::move(vertexStage), std::move(fragmentStage) }
         // Vector<smr<const Symbol>> { /*makeSceneDepthSymbol()*/ },
         // Vector<smr<const Symbol>> { makeSceneColorSymbol() }
     );
@@ -326,9 +326,9 @@ EffectCompileResult build_test_pipeline(
     const auto compiler = makeVkAccCompiler();
     auto result = compiler->compile(
         {
-            .effect = _STD move(effect_),
-            .profile = _STD move(profile),
-            .spec = _STD move(spec)
+            .effect = std::move(effect_),
+            .profile = std::move(profile),
+            .spec = std::move(spec)
         }
     );
 

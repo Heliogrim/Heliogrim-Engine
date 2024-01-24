@@ -22,7 +22,7 @@ uptr<Material> MaterialFactory::buildMaterial(mref<smr<MaterialPrototype>> proto
 
     for (const auto& protoParam : prototype_->getParameters()) {
         auto param = buildMaterialParameter(protoParam);
-        params.push_back(_STD move(param));
+        params.push_back(std::move(param));
     }
 
     /**/
@@ -31,9 +31,9 @@ uptr<Material> MaterialFactory::buildMaterial(mref<smr<MaterialPrototype>> proto
     GuidGenerate(guid);
 
     return make_uptr<Material>(
-        _STD move(guid),
+        std::move(guid),
         clone(prototype_),
-        _STD move(params)
+        std::move(params)
     );
 }
 
@@ -48,10 +48,10 @@ MaterialPrototypeParameter MaterialFactory::buildMaterialPrototypeParameter(
 ) const {
     auto storage = buildMaterialParameterStorage(dataType_);
     return MaterialPrototypeParameter(
-        _STD move(identifier_),
-        _STD move(name_),
-        _STD move(dataType_),
-        _STD move(storage)
+        std::move(identifier_),
+        std::move(name_),
+        std::move(dataType_),
+        std::move(storage)
     );
 }
 

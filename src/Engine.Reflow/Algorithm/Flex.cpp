@@ -116,7 +116,7 @@ static FlexLine solvePreserve(
             continue;
         }
 
-        constexpr auto inf = math::vec2 { _STD numeric_limits<float>::infinity() };
+        constexpr auto inf = math::vec2 { std::numeric_limits<float>::infinity() };
         constexpr auto zero = math::vec2 { 0.F };
 
         const auto widgetState = reflowState_.getStateOf(widget);

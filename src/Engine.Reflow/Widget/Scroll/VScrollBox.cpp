@@ -15,7 +15,7 @@ VScrollBox::VScrollBox() :
 VScrollBox::~VScrollBox() = default;
 
 string VScrollBox::getTag() const noexcept {
-    return _STD format(R"(VScrollBox <{:#x}>)", reinterpret_cast<u64>(this));
+    return std::format(R"(VScrollBox <{:#x}>)", reinterpret_cast<u64>(this));
 }
 
 void VScrollBox::setScrollTrack(cref<sptr<Widget>> track_) {
@@ -153,7 +153,7 @@ void VScrollBox::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) 
         for (const auto& flexItem : flexLine.items) {
 
             const auto dummy = flexItem.widget.lock();
-            const auto widgetState = state_.getStateOf(_STD static_pointer_cast<Widget, void>(dummy));
+            const auto widgetState = state_.getStateOf(std::static_pointer_cast<Widget, void>(dummy));
 
             widgetState->layoutOffset = flexItem.offset + offset;
             widgetState->layoutSize = flexItem.flexSize;

@@ -9,9 +9,9 @@ SourceReadonlyArchive::SourceReadonlyArchive(
     mref<streamsize> srcSize_
 ) :
     SourceBaseArchive(
-        _STD move(source_),
-        _STD move(srcOff_),
-        _STD move(srcSize_)
+        std::move(source_),
+        std::move(srcOff_),
+        std::move(srcSize_)
     ) {
     assert(_source->isReadable());
 }

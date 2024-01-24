@@ -30,7 +30,7 @@ Task::Task() noexcept :
 
 Task::Task(mref<function_type> fnc_) noexcept :
     TaskBase(TaskType::eTask),
-    _fnc(_STD move(fnc_)) {}
+    _fnc(std::move(fnc_)) {}
 
 Task::Task(cref<Task> other_) noexcept :
     TaskBase(TaskType::eTask),
@@ -38,7 +38,7 @@ Task::Task(cref<Task> other_) noexcept :
 
 Task::Task(mref<Task> other_) noexcept :
     TaskBase(TaskType::eTask),
-    _fnc(_STD move(other_._fnc)) {}
+    _fnc(std::move(other_._fnc)) {}
 
 Task::~Task() noexcept = default;
 
@@ -56,15 +56,15 @@ RepetitiveTask::RepetitiveTask() noexcept :
 
 RepetitiveTask::RepetitiveTask(mref<function_type> fnc_) noexcept :
     TaskBase(TaskType::eRepetitive),
-    _fnc(_STD move(fnc_)) {}
+    _fnc(std::move(fnc_)) {}
 
 RepetitiveTask::RepetitiveTask(cref<RepetitiveTask> other_) noexcept :
     TaskBase(TaskType::eRepetitive),
     _fnc(other_._fnc) {}
 
 RepetitiveTask::RepetitiveTask(mref<RepetitiveTask> other_) noexcept :
-    TaskBase(_STD move(other_)),
-    _fnc(_STD move(other_._fnc)) {}
+    TaskBase(std::move(other_)),
+    _fnc(std::move(other_._fnc)) {}
 
 RepetitiveTask::~RepetitiveTask() noexcept = default;
 
@@ -82,7 +82,7 @@ TickTask::TickTask() noexcept :
 
 TickTask::TickTask(mref<function_type> fnc_) noexcept :
     TaskBase(TaskType::eTickTask),
-    _fnc(_STD move(fnc_)) {}
+    _fnc(std::move(fnc_)) {}
 
 TickTask::TickTask(cref<TickTask> other_) noexcept :
     TaskBase(TaskType::eTickTask),
@@ -90,7 +90,7 @@ TickTask::TickTask(cref<TickTask> other_) noexcept :
 
 TickTask::TickTask(mref<TickTask> other_) noexcept :
     TaskBase(TaskType::eTickTask),
-    _fnc(_STD move(other_._fnc)) {}
+    _fnc(std::move(other_._fnc)) {}
 
 TickTask::~TickTask() noexcept = default;
 

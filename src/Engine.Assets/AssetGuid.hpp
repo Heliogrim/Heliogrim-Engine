@@ -38,7 +38,7 @@ namespace hg {
 namespace std {
     template <>
     struct hash<hg::asset_guid> {
-        _STD size_t operator()(const hg::asset_guid& value_) const noexcept {
+        std::size_t operator()(const hg::asset_guid& value_) const noexcept {
 
             constexpr hg::u64 size = sizeof(hg::asset_guid);
 

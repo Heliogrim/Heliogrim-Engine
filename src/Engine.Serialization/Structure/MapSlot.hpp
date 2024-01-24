@@ -19,7 +19,7 @@ namespace hg::engine::serialization {
 
     public:
         MapSlot(mref<StructureSlotState> state_) :
-            underlying_type(_STD move(state_)) {
+            underlying_type(std::move(state_)) {
             this_type::_state.header = StructureSlotHeader::from<StructureSlotType::eMap>();
         }
 
@@ -50,8 +50,8 @@ namespace hg::engine::serialization {
 
             /**/
 
-            auto begin = _STD ranges::begin(value_);
-            const auto end = _STD ranges::end(value_);
+            auto begin = std::ranges::begin(value_);
+            const auto end = std::ranges::end(value_);
 
             const s64 off = sizeof(StructureSlotHeader::type) + sizeof(StructureSlotHeader::size);
             const s64 ioff = sizeof(count);
@@ -68,7 +68,7 @@ namespace hg::engine::serialization {
                     this_type::_state.root
                 };
 
-                auto slot = make_sptr<entry_type>(_STD move(state));
+                auto slot = make_sptr<entry_type>(std::move(state));
 
                 /**/
 
@@ -77,11 +77,11 @@ namespace hg::engine::serialization {
 
                 using map_iterator_type = typename value_type::iterator;
                 using map_iterator_value_type = typename map_iterator_type::value_type;
-                if constexpr (_STD is_convertible_v<map_iterator_value_type, typename entry_type::value_type>) {
+                if constexpr (std::is_convertible_v<map_iterator_value_type, typename entry_type::value_type>) {
                     (*slot) << *it;
 
                 } else {
-                    static_assert(_STD is_convertible_v<map_iterator_value_type, typename entry_type::value_type>,
+                    static_assert(std::is_convertible_v<map_iterator_value_type, typename entry_type::value_type>,
                         "Failed to decay iterator value type to matching pair type for serializable map entry.");
                 }
 
@@ -129,8 +129,8 @@ namespace hg::engine::serialization {
 
             /**/
 
-            auto end = _STD ranges::end(value_);
-            _STD insert_iterator<_STD remove_reference_t<decltype(value_)>> inserter { value_, end };
+            auto end = std::ranges::end(value_);
+            std::insert_iterator<std::remove_reference_t<decltype(value_)>> inserter { value_, end };
 
             constexpr s64 off = sizeof(StructureSlotHeader::type) + sizeof(StructureSlotHeader::size);
             constexpr s64 ioff = sizeof(storedCount);
@@ -147,7 +147,7 @@ namespace hg::engine::serialization {
                     this_type::_state.root
                 };
 
-                auto slot = make_sptr<entry_type>(_STD move(state));
+                auto slot = make_sptr<entry_type>(std::move(state));
 
                 /**/
 
@@ -156,7 +156,7 @@ namespace hg::engine::serialization {
 
                 typename entry_type::value_type dummy {};
                 if (((*slot) >> dummy) == SlotOpResult::eSuccess) {
-                    inserter = _STD move(dummy);
+                    inserter = std::move(dummy);
                 }
 
                 slot->leave();

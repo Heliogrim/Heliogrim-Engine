@@ -38,7 +38,7 @@ void CollapseHeader::setup() {
     this->addChild(_indicator);
 
     _content = make_sptr<Text>();
-    theme->applyLabel(_STD static_pointer_cast<Text, Widget>(_content));
+    theme->applyLabel(std::static_pointer_cast<Text, Widget>(_content));
     static_cast<ptr<Text>>(_content.get())->setText(R"(Collapse)");
     this->addChild(_content);
 }
@@ -65,7 +65,7 @@ EventResponse CollapseHeader::onMouseButtonDown(cref<MouseEvent> event_) {
 }
 
 string CollapseHeader::getTag() const noexcept {
-    return _STD format(R"(CollapseHeader <{:#x}>)", reinterpret_cast<u64>(this));
+    return std::format(R"(CollapseHeader <{:#x}>)", reinterpret_cast<u64>(this));
 }
 
 Collapse::Collapse() :
@@ -88,7 +88,7 @@ void Collapse::setup() {
     auto header = make_sptr<CollapseHeader>(this);
     header->setup();
     header->setParent(shared_from_this());
-    _children.setChild<0>(_STD move(header));
+    _children.setChild<0>(std::move(header));
 
     collapse();
 }
@@ -120,7 +120,7 @@ const ptr<const engine::reflow::Children> Collapse::children() const {
 }
 
 sptr<CollapseHeader> Collapse::getHeader() noexcept {
-    return _STD static_pointer_cast<CollapseHeader, Widget>(_children.getChild<0>());
+    return std::static_pointer_cast<CollapseHeader, Widget>(_children.getChild<0>());
 }
 
 sptr<Widget> Collapse::getContent() const noexcept {
@@ -134,7 +134,7 @@ void Collapse::setContent(cref<sptr<Widget>> widget_) {
 }
 
 string Collapse::getTag() const noexcept {
-    return _STD format(R"(Collapse <{:#x}>)", reinterpret_cast<u64>(this));
+    return std::format(R"(Collapse <{:#x}>)", reinterpret_cast<u64>(this));
 }
 
 void Collapse::render(const ptr<engine::reflow::ReflowCommandBuffer> cmd_) {
@@ -202,7 +202,7 @@ void Collapse::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) {
         for (const auto& flexItem : flexLine.items) {
 
             const auto dummy = flexItem.widget.lock();
-            const auto widgetState = state_.getStateOf(_STD static_pointer_cast<Widget, void>(dummy));
+            const auto widgetState = state_.getStateOf(std::static_pointer_cast<Widget, void>(dummy));
 
             widgetState->layoutOffset = flexItem.offset + ctx_.localOffset;
             widgetState->layoutSize = flexItem.flexSize;

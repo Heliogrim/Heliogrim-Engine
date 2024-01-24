@@ -17,7 +17,7 @@ GfxMaterialAsset::GfxMaterialAsset(
         engine::assets::GfxMaterial::typeId,
         engine::Engine::getEngine()->getAssets()->getFactory()->createGfxMaterialAsset(
             guid_,
-            _STD move(prototypeGuid_)
+            std::move(prototypeGuid_)
         )
     ) {}
 

@@ -13,8 +13,8 @@ FilesystemBrowserProvider::FilesystemBrowserProvider() :
 
 string FilesystemBrowserProvider::normalizeFsPath(mref<string> unnormalized_) {
 
-    const _STD filesystem::path root { _root.path() };
-    _STD filesystem::path tmp { _STD move(unnormalized_) };
+    const std::filesystem::path root { _root.path() };
+    std::filesystem::path tmp { std::move(unnormalized_) };
 
     if (tmp.has_stem()) {
 
@@ -22,7 +22,7 @@ string FilesystemBrowserProvider::normalizeFsPath(mref<string> unnormalized_) {
             return "";
         }
 
-        tmp = _STD filesystem::relative(tmp, root);
+        tmp = std::filesystem::relative(tmp, root);
     }
 
     if (tmp.wstring().starts_with(L"..")) {
@@ -34,8 +34,8 @@ string FilesystemBrowserProvider::normalizeFsPath(mref<string> unnormalized_) {
 
 string FilesystemBrowserProvider::expandPath(mref<string> normalized_) {
 
-    _STD filesystem::path tmp = _root.path();
-    const _STD filesystem::path norm = _STD move(normalized_);
+    std::filesystem::path tmp = _root.path();
+    const std::filesystem::path norm = std::move(normalized_);
 
     if (norm.has_root_path()) {
         tmp += norm;
@@ -51,14 +51,14 @@ bool FilesystemBrowserProvider::retrieveFs(
     const bool directories_,
     ref<Vector<AssetBrowserEntry>> entries_
 ) {
-    const _STD filesystem::path fsPath = expandPath(string { url_.path() });
-    if (not _STD filesystem::is_directory(fsPath)) {
+    const std::filesystem::path fsPath = expandPath(string { url_.path() });
+    if (not std::filesystem::is_directory(fsPath)) {
         return false;
     }
 
-    const auto fsIt = _STD filesystem::directory_iterator {
+    const auto fsIt = std::filesystem::directory_iterator {
         fsPath,
-        _STD filesystem::directory_options::follow_directory_symlink
+        std::filesystem::directory_options::follow_directory_symlink
     };
 
     for (const auto& fsEntry : fsIt) {
@@ -76,7 +76,7 @@ bool FilesystemBrowserProvider::retrieveFs(
             AssetBrowserEntry {
                 .type = (fsEntry.is_directory() ? AssetBrowserEntryType::eDirectory : AssetBrowserEntryType::eFile),
                 .title = fsEntry.path().filename().string(),
-                .path = fs::Url { "file"sv, _STD move(subPath) }
+                .path = fs::Url { "file"sv, std::move(subPath) }
             }
         );
     }

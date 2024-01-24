@@ -92,7 +92,7 @@ namespace std {
         [[nodiscard]] size_t operator()(
             ::hg::cref<hg::editor::ui::SceneViewEntry> entry_
         ) const noexcept {
-            return _STD hash<hg::u64> {}(reinterpret_cast<hg::u64>(entry_.target<void>()));
+            return std::hash<hg::u64> {}(reinterpret_cast<hg::u64>(entry_.target<void>()));
         }
     };
 }

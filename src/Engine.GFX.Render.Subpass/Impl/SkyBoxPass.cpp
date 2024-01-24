@@ -48,7 +48,7 @@ void SkyBoxPass::destroy() noexcept {
 
     auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
 
-    device->vkDevice().destroySemaphore(_STD exchange(_tmpSignal, nullptr));
+    device->vkDevice().destroySemaphore(std::exchange(_tmpSignal, nullptr));
 
     if (_cameraBuffer.memory) {
         _cameraBuffer.unmap();
@@ -265,7 +265,7 @@ void SkyBoxPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
             static auto matSym = lang::SymbolId::from(/*"skybox"*/"mat-static-0"sv);
             if (aliasId == matSym) {
 
-                const auto iter = _STD ranges::find(
+                const auto iter = std::ranges::find(
                     _materialEffect.pattern->st.pairs,
                     aliasId,
                     [](const auto& pair_) {
@@ -405,9 +405,9 @@ EffectCompileResult build_test_pipeline(
     const auto compiler = makeVkAccCompiler();
     auto result = compiler->compile(
         {
-            .effect = _STD move(effect_),
-            .profile = _STD move(profile),
-            .spec = _STD move(spec)
+            .effect = std::move(effect_),
+            .profile = std::move(profile),
+            .spec = std::move(spec)
         }
     );
 

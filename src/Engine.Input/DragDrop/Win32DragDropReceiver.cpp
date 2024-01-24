@@ -131,7 +131,7 @@ static Vector<string> handleFileDrop(ptr<IDataObject> data_, cref<FORMATETC> for
             LPVOID dataPtr { GlobalLock(medium_.hGlobal) };
             LPDROPFILES dropFiles { static_cast<LPDROPFILES>(dataPtr) };
 
-            _STD wstringstream ss {};
+            std::wstringstream ss {};
             const wchar_t* base {
                 reinterpret_cast<ptr<wchar_t>>(reinterpret_cast<ptr<char>>(dropFiles) + dropFiles->pFiles)
             };
@@ -156,7 +156,7 @@ static Vector<string> handleFileDrop(ptr<IDataObject> data_, cref<FORMATETC> for
                             nullptr
                         );
 
-                        _STD string fileName(dstSize, (NULL));
+                        std::string fileName(dstSize, (NULL));
                         WideCharToMultiByte(
                             CP_UTF8,
                             NULL,
@@ -295,7 +295,7 @@ HRESULT Win32DragDropReceiver::Drop(IDataObject* pDataObj, DWORD grfKeyState, PO
 
             if (not files.empty()) {
                 event->_type = event::DragDropEventType::eFileType;
-                event->_data.files = new event::DragDropEventFilePayload { _STD move(files) };
+                event->_data.files = new event::DragDropEventFilePayload { std::move(files) };
             }
         }
 
@@ -308,7 +308,7 @@ HRESULT Win32DragDropReceiver::Drop(IDataObject* pDataObj, DWORD grfKeyState, PO
 
             if (not text.empty()) {
                 event->_type = event::DragDropEventType::eTextType;
-                event->_data.text = new event::DragDropEventTextPayload { _STD move(text) };
+                event->_data.text = new event::DragDropEventTextPayload { std::move(text) };
             }
         }
 
@@ -323,7 +323,7 @@ HRESULT Win32DragDropReceiver::Drop(IDataObject* pDataObj, DWORD grfKeyState, PO
 
     /**/
 
-    if (_onDrop && _onDrop(_STD move(event))) {
+    if (_onDrop && _onDrop(std::move(event))) {
         *pdwEffect = DROPEFFECT_COPY;
         return S_OK;
     }

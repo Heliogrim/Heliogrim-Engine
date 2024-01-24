@@ -66,7 +66,7 @@ namespace hg::engine {
         void tidy();
 
     private:
-        Vector<_STD pair<u64, u64>> _hooks;
+        Vector<std::pair<u64, u64>> _hooks;
 
         void hookEngineState();
 
@@ -163,7 +163,7 @@ namespace hg::engine {
         /**
          *
          */
-        _STD map<string, smr<render::Renderer>> _cachedRenderer;
+        std::map<string, smr<render::Renderer>> _cachedRenderer;
 
     public:
         [[nodiscard]] smr<render::Renderer> getRenderer(StringView key_) const;

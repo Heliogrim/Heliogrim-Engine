@@ -28,14 +28,14 @@ namespace hg::engine::render {
         >
         [[nodiscard]] cmd::RCmdRef<AccessType_<ResourceType_>> allocate(mref<smr<const ResourceType_>> resource_) {
 
-            auto val = make_smr<AccessType_<ResourceType_>>(_STD move(resource_));
+            auto val = make_smr<AccessType_<ResourceType_>>(std::move(resource_));
             resources.push_back(val);
 
             return val;
         }
          */
 
-        template <typename ResourceType_, template <typename...> typename AccessType_ = _STD type_identity_t>
+        template <typename ResourceType_, template <typename...> typename AccessType_ = std::type_identity_t>
         [[nodiscard]] cmd::RCmdRef<ResourceType_> allocate() {
 
             auto val = make_smr<AccessType_<ResourceType_>>();

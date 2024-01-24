@@ -125,8 +125,8 @@ namespace hg::engine::gfx {
         /**
          * Vulkan API
          */
-        u32 _idx = ~0;
-        u32 _familyIdx = ~0;
+        u32 _idx = ~0uL;
+        u32 _familyIdx = ~0uL;
 
         vk::Queue _vkQueue;
 

@@ -18,8 +18,8 @@ namespace hg::engine::render::cmd {
             mref<const nmpt<const gfx::UniformBufferView>> uniformView_
         ) noexcept :
             RenderCommand(),
-            _symbolId(_STD move(symbolId_)),
-            _uniformView(_STD move(uniformView_)) {}
+            _symbolId(std::move(symbolId_)),
+            _uniformView(std::move(uniformView_)) {}
 
         constexpr ~BindUniformBufferRCmd() noexcept override = default;
 

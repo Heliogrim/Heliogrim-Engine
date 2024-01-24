@@ -12,7 +12,7 @@ Session HeliogrimEditor::getEditorSession() noexcept {
 
     managed<void> dummy {};
     return Session {
-        managed<void> { _STD move(dummy), session }
+        managed<void> { std::move(dummy), session }
     };
 }
 
@@ -23,7 +23,7 @@ Session HeliogrimEditor::getSession() {
 
     managed<void> dummy {};
     return Session {
-        managed<void> { _STD move(dummy), session }
+        managed<void> { std::move(dummy), session }
     };
 }
 

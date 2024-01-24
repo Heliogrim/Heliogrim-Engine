@@ -7,7 +7,7 @@
 
 namespace hg::engine::resource {
     template <class Type_>
-    concept IsResource = _STD derived_from<Type_, ResourceBase>;
+    concept IsResource = std::derived_from<Type_, ResourceBase>;
 
     template <typename ValueType_>
     concept IsResourceValue = true;

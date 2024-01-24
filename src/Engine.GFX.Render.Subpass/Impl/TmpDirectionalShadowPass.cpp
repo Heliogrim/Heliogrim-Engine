@@ -121,7 +121,7 @@ void TmpDirectionalShadowPass::destroy() noexcept {
 
     auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
 
-    device->vkDevice().destroySemaphore(_STD exchange(_tmpSemaphore, nullptr));
+    device->vkDevice().destroySemaphore(std::exchange(_tmpSemaphore, nullptr));
 
     for (auto&& cascadeFramebuffer : _framebuffer) {
         if (not cascadeFramebuffer.empty()) {
@@ -228,7 +228,7 @@ void TmpDirectionalShadowPass::execute(cref<graph::ScopedSymbolContext> symCtx_)
 
         constexpr float ZNEAR = 0.5F;
         constexpr float ZFAR = 48.F;
-        const auto clipRange = _STD abs(ZFAR - ZNEAR);
+        const auto clipRange = std::abs(ZFAR - ZNEAR);
 
         const auto minZ = ZNEAR;
         const auto maxZ = ZNEAR + clipRange;
@@ -239,7 +239,7 @@ void TmpDirectionalShadowPass::execute(cref<graph::ScopedSymbolContext> symCtx_)
         for (auto i = 0u; i < cascadeCount; ++i) {
 
             const auto p = (i + 1u) / static_cast<f32>(cascadeCount);
-            const auto log = minZ * _STD powf(ratio, p);
+            const auto log = minZ * std::powf(ratio, p);
             const auto uniform = minZ + clipRange * p;
             const auto d = lambda * (log - uniform) + uniform;
 
@@ -301,7 +301,7 @@ void TmpDirectionalShadowPass::execute(cref<graph::ScopedSymbolContext> symCtx_)
                 const auto dist = (orthoFrustum[i] - orthoCenter).length();
                 radius = MAX(radius, dist);
             }
-            radius = _STD ceilf(radius * 16.F) / 16.F;
+            radius = std::ceilf(radius * 16.F) / 16.F;
 
             const auto maxExt = math::fvec3 { radius };
             const auto minExt = -maxExt;
@@ -433,7 +433,7 @@ void TmpDirectionalShadowPass::execute(cref<graph::ScopedSymbolContext> symCtx_)
                 const auto symbolId = element.symbol->symbolId;
                 const auto aliasId = _compiled.alias.aliasOrValue(symbolId);
 
-                const auto iter = _STD ranges::find(
+                const auto iter = std::ranges::find(
                     _effect->pattern->st.pairs,
                     aliasId,
                     [](const auto& pair_) {
@@ -597,10 +597,10 @@ smr<material::MaterialEffect> build_test_effect() {
     fragmentStage->setIntermediate(make_smr<lang::Intermediate>());
 
     vertexStage->getIntermediate()->lang.dialect = Dialect::eVulkanGlsl460;
-    vertexStage->getIntermediate()->lang.text.emplace_back(_STD move(vertexShaderCode));
+    vertexStage->getIntermediate()->lang.text.emplace_back(std::move(vertexShaderCode));
 
     fragmentStage->getIntermediate()->lang.dialect = Dialect::eVulkanGlsl460;
-    fragmentStage->getIntermediate()->lang.text.emplace_back(_STD move(fragmentShaderCode));
+    fragmentStage->getIntermediate()->lang.text.emplace_back(std::move(fragmentShaderCode));
 
     /**/
 
@@ -608,12 +608,12 @@ smr<material::MaterialEffect> build_test_effect() {
         auto var = make_uptr<Variable>();
         var->type = Type { .category = TypeCategory::eScalar, .scalarType = ScalarType::eF32Vec3 };
         var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eForwardLinkage>>();
-        var->annotation = make_uptr<SymbolIdAnnotation>("vertex-position", _STD move(var->annotation));
+        var->annotation = make_uptr<SymbolIdAnnotation>("vertex-position", std::move(var->annotation));
         var->annotation = make_uptr<VkBindLocationAnnotation>(
             -1L,
             0L,
             offsetof(engine::gfx::vertex, position),
-            _STD move(var->annotation)
+            std::move(var->annotation)
         );
 
         auto sym = make_uptr<Symbol>(
@@ -621,8 +621,8 @@ smr<material::MaterialEffect> build_test_effect() {
             VariableSymbol { SymbolType::eVariableSymbol, var.get() }
         );
 
-        vertexStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(var));
-        vertexStage->getIntermediate()->rep.symbolTable.insert(_STD move(sym));
+        vertexStage->getIntermediate()->rep.globalScope.inbound.emplace_back(std::move(var));
+        vertexStage->getIntermediate()->rep.symbolTable.insert(std::move(sym));
     }
 
     /**/
@@ -631,16 +631,16 @@ smr<material::MaterialEffect> build_test_effect() {
         auto var = make_uptr<Variable>();
         var->type = Type { .category = TypeCategory::eObject, .objectType = ObjectType::eUnknown };
         var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eExternalLinkage>>();
-        var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eStorage>>(_STD move(var->annotation));
-        var->annotation = make_uptr<SymbolIdAnnotation>("view", _STD move(var->annotation));
+        var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eStorage>>(std::move(var->annotation));
+        var->annotation = make_uptr<SymbolIdAnnotation>("view", std::move(var->annotation));
 
         auto sym = make_uptr<Symbol>(
             SymbolId::from("view"sv),
             VariableSymbol { SymbolType::eVariableSymbol, var.get() }
         );
 
-        vertexStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(var));
-        vertexStage->getIntermediate()->rep.symbolTable.insert(_STD move(sym));
+        vertexStage->getIntermediate()->rep.globalScope.inbound.emplace_back(std::move(var));
+        vertexStage->getIntermediate()->rep.symbolTable.insert(std::move(sym));
     }
 
     /**/
@@ -649,16 +649,16 @@ smr<material::MaterialEffect> build_test_effect() {
         auto var = make_uptr<Variable>();
         var->type = Type { .category = TypeCategory::eObject, .objectType = ObjectType::eUnknown };
         var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eExternalLinkage>>();
-        var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eStorage>>(_STD move(var->annotation));
-        var->annotation = make_uptr<SymbolIdAnnotation>("model", _STD move(var->annotation));
+        var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eStorage>>(std::move(var->annotation));
+        var->annotation = make_uptr<SymbolIdAnnotation>("model", std::move(var->annotation));
 
         auto sym = make_uptr<Symbol>(
             SymbolId::from("model"sv),
             VariableSymbol { SymbolType::eVariableSymbol, var.get() }
         );
 
-        vertexStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(var));
-        vertexStage->getIntermediate()->rep.symbolTable.insert(_STD move(sym));
+        vertexStage->getIntermediate()->rep.globalScope.inbound.emplace_back(std::move(var));
+        vertexStage->getIntermediate()->rep.symbolTable.insert(std::move(sym));
     }
 
     /**/
@@ -669,16 +669,16 @@ smr<material::MaterialEffect> build_test_effect() {
 
         var->type = Type { .category = TypeCategory::eObject, .objectType = ObjectType::eUnknown };
         var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eExternalLinkage>>();
-        var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eConstant>>(_STD move(var->annotation));
-        var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eReadonly>>(_STD move(var->annotation));
-        var->annotation = make_uptr<SymbolIdAnnotation>("block", _STD move(var->annotation));
+        var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eConstant>>(std::move(var->annotation));
+        var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eReadonly>>(std::move(var->annotation));
+        var->annotation = make_uptr<SymbolIdAnnotation>("block", std::move(var->annotation));
 
         sym->symbolId = SymbolId::from("block"sv);
         sym->var.type = SymbolType::eVariableSymbol;
         sym->var.data = var.get();
 
-        vertexStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(var));
-        vertexStage->getIntermediate()->rep.symbolTable.insert(_STD move(sym));
+        vertexStage->getIntermediate()->rep.globalScope.inbound.emplace_back(std::move(var));
+        vertexStage->getIntermediate()->rep.symbolTable.insert(std::move(sym));
     }
 
     /**/
@@ -687,15 +687,15 @@ smr<material::MaterialEffect> build_test_effect() {
         auto var = make_uptr<Variable>();
         var->type = Type { .category = TypeCategory::eScalar, .scalarType = ScalarType::eF32 };
         var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eForwardLinkage>>();
-        var->annotation = make_uptr<SymbolIdAnnotation>("depth", _STD move(var->annotation));
+        var->annotation = make_uptr<SymbolIdAnnotation>("depth", std::move(var->annotation));
 
         auto sym = make_uptr<Symbol>(
             SymbolId::from("depth"sv),
             VariableSymbol { SymbolType::eVariableSymbol, var.get() }
         );
 
-        fragmentStage->getIntermediate()->rep.globalScope.outbound.emplace_back(_STD move(var));
-        fragmentStage->getIntermediate()->rep.symbolTable.insert(_STD move(sym));
+        fragmentStage->getIntermediate()->rep.globalScope.outbound.emplace_back(std::move(var));
+        fragmentStage->getIntermediate()->rep.symbolTable.insert(std::move(sym));
     }
 
     /**/
@@ -704,9 +704,9 @@ smr<material::MaterialEffect> build_test_effect() {
     GuidGenerate(guid);
 
     auto effect = make_smr<AccelerationEffect>(
-        _STD move(guid),
+        std::move(guid),
         "test-shadow-dir-effect",
-        Vector { _STD move(vertexStage), _STD move(fragmentStage) }
+        Vector { std::move(vertexStage), std::move(fragmentStage) }
     );
 
     /**/
@@ -715,7 +715,7 @@ smr<material::MaterialEffect> build_test_effect() {
 
     /**/
 
-    return make_smr<material::MaterialEffect>(_STD move(effect), _STD move(usagePattern));
+    return make_smr<material::MaterialEffect>(std::move(effect), std::move(usagePattern));
 }
 
 smr<const GraphicsPass> build_test_pass() {
@@ -773,9 +773,9 @@ EffectCompileResult build_test_pipeline(
     const auto compiler = makeVkAccCompiler();
     auto result = compiler->compile(
         {
-            .effect = _STD move(effect_),
-            .profile = _STD move(profile),
-            .spec = _STD move(spec)
+            .effect = std::move(effect_),
+            .profile = std::move(profile),
+            .spec = std::move(spec)
         }
     );
 

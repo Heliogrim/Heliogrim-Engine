@@ -131,7 +131,7 @@ uptr<ModuleSource> VkModuleBuilder::build(
 
                 if (annotation->type == lang::AnnotationType::eForwardLinkage) {
                     ms->bindings.inbound.push_back(
-                        _STD make_pair(
+                        std::make_pair(
                             sib.symbol,
                             VkBindingLocation {
                                 invalidSet,
@@ -189,7 +189,7 @@ uptr<ModuleSource> VkModuleBuilder::build(
             }
 
             ms->bindings.inbound.push_back(
-                _STD make_pair(
+                std::make_pair(
                     sib.symbol,
                     prev->bindings.outboundLocation(matched)
                 )
@@ -219,7 +219,7 @@ uptr<ModuleSource> VkModuleBuilder::build(
 
             if (annotation->type == lang::AnnotationType::eForwardLinkage) {
                 ms->bindings.outbound.push_back(
-                    _STD make_pair(
+                    std::make_pair(
                         sob.symbol,
                         VkBindingLocation {
                             invalidSet,
@@ -236,7 +236,7 @@ uptr<ModuleSource> VkModuleBuilder::build(
     /* Transform IL shader source code to platform shader source code. */
 
     assert(stage_->getIntermediate());
-    ms = transpile(stage_, _STD move(ms));
+    ms = transpile(stage_, std::move(ms));
 
     /**/
 
@@ -323,5 +323,5 @@ uptr<VkModuleSource> VkModuleBuilder::transpile(
 
     /**/
 
-    return _STD move(module_);
+    return std::move(module_);
 }

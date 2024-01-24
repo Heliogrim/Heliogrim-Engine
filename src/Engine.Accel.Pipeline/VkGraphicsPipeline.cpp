@@ -8,7 +8,7 @@ using namespace hg::engine::accel;
 using namespace hg;
 
 VkGraphicsPipeline::VkGraphicsPipeline(mref<smr<const AccelerationEffect>> effect_) :
-    InheritMeta(_STD move(effect_)),
+    InheritMeta(std::move(effect_)),
     _vkPipeLayout(nullptr),
     _vkPipe(nullptr) {}
 
@@ -42,17 +42,17 @@ void VkGraphicsPipeline::tidy() {
 void VkGraphicsPipeline::setStageDerivat(const size_t idx_, mref<smr<StageDerivat>> derivat_) {
 
     if (idx_ > _stages.size()) {
-        throw _STD runtime_error("");
+        throw std::runtime_error("");
     }
 
     auto where = _stages.begin() + idx_;
-    _stages.insert(where, _STD move(derivat_));
+    _stages.insert(where, std::move(derivat_));
 }
 
 void VkGraphicsPipeline::setVkPipeLayout(mref<_::VkGraphicsPipelineLayout> vkPipeLayout_) {
-    _vkPipeLayout = _STD move(vkPipeLayout_);
+    _vkPipeLayout = std::move(vkPipeLayout_);
 }
 
 void VkGraphicsPipeline::setVkPipe(mref<_::VkGraphicsPipeline> vkPipe_) {
-    _vkPipe = _STD move(vkPipe_);
+    _vkPipe = std::move(vkPipe_);
 }

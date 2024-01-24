@@ -10,15 +10,15 @@ using namespace hg::engine::serialization;
 using namespace hg;
 
 RecordScopedSlot::RecordScopedSlot(mref<ScopedSlotState> scopedState_, mref<sptr<RecordSlot>> slot_) :
-    ScopedSlot(_STD move(scopedState_), _STD move(slot_)) {}
+    ScopedSlot(std::move(scopedState_), std::move(slot_)) {}
 
 RecordScopedSlot::RecordScopedSlot(mref<ScopedSlotState> scopedState_, mref<StructureSlotState> state_) :
-    ScopedSlot(_STD move(scopedState_), make_sptr<RecordSlot>(_STD move(state_))) {}
+    ScopedSlot(std::move(scopedState_), make_sptr<RecordSlot>(std::move(state_))) {}
 
 RecordScopedSlot::~RecordScopedSlot() = default;
 
 StructScopedSlot RecordScopedSlot::intoStruct() {
-    return StructScopedSlot { _STD move(_state), _STD move(_slot->getState()) };
+    return StructScopedSlot { std::move(_state), std::move(_slot->getState()) };
 }
 
 StructScopedSlot RecordScopedSlot::asStruct() const {
@@ -26,7 +26,7 @@ StructScopedSlot RecordScopedSlot::asStruct() const {
     StructureSlotState aliasState { _slot->getState() };
     aliasState.flags = StructureSlotStateFlag::eImmutable;
 
-    return StructScopedSlot(ScopedSlotState { _state }, _STD move(aliasState));
+    return StructScopedSlot(ScopedSlotState { _state }, std::move(aliasState));
 }
 
 SeqScopedSlot RecordScopedSlot::asSeq() const {
@@ -34,13 +34,13 @@ SeqScopedSlot RecordScopedSlot::asSeq() const {
     StructureSlotState aliasState { _slot->getState() };
     aliasState.flags = StructureSlotStateFlag::eImmutable;
 
-    return SeqScopedSlot(ScopedSlotState { _state }, _STD move(aliasState));
+    return SeqScopedSlot(ScopedSlotState { _state }, std::move(aliasState));
 }
 
 SeqScopedSlot RecordScopedSlot::intoSeq() {
-    return SeqScopedSlot { _STD move(_state), _STD move(_slot->getState()) };
+    return SeqScopedSlot { std::move(_state), std::move(_slot->getState()) };
 }
 
 StringScopedSlot RecordScopedSlot::intoString() {
-    return StringScopedSlot { _STD move(_state), _STD move(_slot->getState()) };
+    return StringScopedSlot { std::move(_state), std::move(_slot->getState()) };
 }

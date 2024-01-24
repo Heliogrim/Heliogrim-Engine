@@ -130,7 +130,7 @@ void WindowManager::tidy() {
     /**/
 
     for (auto&& entry : left) {
-        destroyWindow(_STD move(entry));
+        destroyWindow(std::move(entry));
     }
 
 }
@@ -189,10 +189,10 @@ void WindowManager::handleWindowResize(const ptr<BoundWindow> wnd_, cref<math::i
 
 void WindowManager::destroyWindow(mref<sptr<Window>> window_) {
 
-    const auto wnd { _STD move(window_) };
+    const auto wnd { std::move(window_) };
 
     const auto iter {
-        _STD find_if(
+        std::find_if(
             _windows.begin(),
             _windows.end(),
             [wnd](const auto& entry_) {
@@ -206,7 +206,7 @@ void WindowManager::destroyWindow(mref<sptr<Window>> window_) {
         return;
     }
 
-    auto bound = _STD move(*iter);
+    auto bound = std::move(*iter);
     _windows.erase(iter);
 
     /**/
@@ -229,7 +229,7 @@ void WindowManager::destroyWindow(mref<sptr<Window>> window_) {
     gfx->getSceneManager()->dropPrimaryTarget(bound->renderTarget);
 
     bound->renderTarget.reset();
-    gfx->getSurfaceManager()->destroySurface(_STD move(bound->surface));
+    gfx->getSurfaceManager()->destroySurface(std::move(bound->surface));
 
     bound.reset();
 
@@ -277,7 +277,7 @@ sptr<Window> WindowManager::requestWindow(
 
     /**/
 
-    auto surface = gfx->getSurfaceManager()->makeSurface(_STD move(window));
+    auto surface = gfx->getSurfaceManager()->makeSurface(std::move(window));
     surface->setup();
 
     auto swapchain = make_smr<gfx::VkSurfaceSwapchain>(surface);
@@ -341,7 +341,7 @@ sptr<Window> WindowManager::requestWindow(
 
     /**/
 
-    _windows.emplace_back(_STD move(bound));
+    _windows.emplace_back(std::move(bound));
     return wnd;
 }
 
@@ -353,7 +353,7 @@ void WindowManager::interceptFocusEvent(cref<sptr<Window>> window_, cref<FocusEv
             return;
         }
 
-        auto where = _STD ranges::remove_if(
+        auto where = std::ranges::remove_if(
             _focusOrder,
             [window_](const auto& entry_) {
                 if (entry_.expired()) {

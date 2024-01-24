@@ -14,9 +14,9 @@ Package::Package(
     mref<PackageHeader> header_,
     mref<PackageFooter> footer_
 ) :
-    _header(_STD move(header_)),
-    _footer(_STD move(footer_)),
-    _source(make_smr<Source>(_STD move(source_))) {
+    _header(std::move(header_)),
+    _footer(std::move(footer_)),
+    _source(make_smr<Source>(std::move(source_))) {
 
     makeLinker();
 }
@@ -49,7 +49,7 @@ const non_owning_rptr<PackageLinker> Package::getLinker() const noexcept {
 }
 
 void Package::unsafeReleaseSource(ref<smr<Source>> dst_) {
-    dst_ = _STD move(_source);
+    dst_ = std::move(_source);
 }
 
 void Package::unsafeWrite() {

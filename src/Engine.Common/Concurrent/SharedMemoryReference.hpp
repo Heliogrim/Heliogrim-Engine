@@ -11,8 +11,8 @@
 
 namespace hg {
     namespace {
-        using packed_type = _STD uintptr_t;
-        using atomic_packed_type = _STD atomic_uintptr_t;
+        using packed_type = std::uintptr_t;
+        using atomic_packed_type = std::atomic_uintptr_t;
 
         constexpr packed_type packed_shift = 16ui64;
         constexpr packed_type packed_ref_mask =
@@ -21,7 +21,7 @@ namespace hg {
             0b11111111'11111111'11111111'11111111'11111111'11111111'00000000'00000000;
     };
 
-    template <typename PayloadType_, typename DeleterType_ = _STD default_delete<PayloadType_>>
+    template <typename PayloadType_, typename DeleterType_ = std::default_delete<PayloadType_>>
     class SharedMemoryReferenceCtrlBlock;
 
     template <typename PayloadType_>
@@ -30,10 +30,10 @@ namespace hg {
     /**/
 
     template <class Fty_, class Tty_>
-    concept IsSmrBiPointerCompatible = _STD is_convertible_v<ptr<Fty_>, ptr<Tty_>> || _STD derived_from<Tty_, Fty_>;
+    concept IsSmrBiPointerCompatible = std::is_convertible_v<ptr<Fty_>, ptr<Tty_>> || std::derived_from<Tty_, Fty_>;
 
     template <class Fty_, class Tty_>
-    concept IsSmrPointerCompatible = _STD is_convertible_v<ptr<Fty_>, ptr<Tty_>>;
+    concept IsSmrPointerCompatible = std::is_convertible_v<ptr<Fty_>, ptr<Tty_>>;
 
     /**/
 
@@ -45,7 +45,7 @@ namespace hg {
 
     public:
         using this_type = SharedMemoryReference<PayloadType_>;
-        using value_type = _STD remove_reference_t<PayloadType_>;
+        using value_type = std::remove_reference_t<PayloadType_>;
 
         using ctrl_block_type = SharedMemoryReferenceCtrlBlock<value_type>;
 
@@ -58,7 +58,7 @@ namespace hg {
             _ctrlBlock(nullptr),
             _packed(0) {}
 
-        template <typename CtrlBlockType_ = ctrl_block_type> requires _STD is_same_v<CtrlBlockType_, ctrl_block_type>
+        template <typename CtrlBlockType_ = ctrl_block_type> requires std::is_same_v<CtrlBlockType_, ctrl_block_type>
         constexpr SharedMemoryReference(
             _In_ const non_owning_rptr<CtrlBlockType_> ctrlBlock_,
             _In_ const packed_type packed_
@@ -70,35 +70,35 @@ namespace hg {
             SharedMemoryReference() {
 
             if (not other_.empty()) {
-                *this = _STD move(other_._ctrlBlock->acq());
+                *this = std::move(other_._ctrlBlock->acq());
             }
         }
 
-        template <class Tx_> requires _STD is_const_v<PayloadType_> &&
-            _STD is_same_v<_STD add_const_t<Tx_>, PayloadType_>
+        template <class Tx_> requires std::is_const_v<PayloadType_> &&
+            std::is_same_v<std::add_const_t<Tx_>, PayloadType_>
         SharedMemoryReference(_In_ cref<SharedMemoryReference<Tx_>> other_) :
             SharedMemoryReference() {
 
             if (not other_.empty()) {
-                *this = _STD move(other_._ctrlBlock->acq());
+                *this = std::move(other_._ctrlBlock->acq());
             }
         }
 
         constexpr SharedMemoryReference(_Inout_ this_type&& other_) noexcept :
-            _ctrlBlock(_STD exchange(other_._ctrlBlock, nullptr)),
-            _packed(_STD exchange(other_._packed, 0)) {}
+            _ctrlBlock(std::exchange(other_._ctrlBlock, nullptr)),
+            _packed(std::exchange(other_._packed, 0)) {}
 
         template <class Fty_> requires IsSmrPointerCompatible<Fty_, PayloadType_>
         SharedMemoryReference(_Inout_ mref<SharedMemoryReference<Fty_>> other_) noexcept :
-            _ctrlBlock(_void_cast<ctrl_block_type>(_STD exchange(other_._ctrlBlock, nullptr))),
-            _packed(_STD exchange(other_._packed, 0)) {}
+            _ctrlBlock(_void_cast<ctrl_block_type>(std::exchange(other_._ctrlBlock, nullptr))),
+            _packed(std::exchange(other_._packed, 0)) {}
 
     protected:
         template <class Fty_> requires IsSmrBiPointerCompatible<Fty_, PayloadType_> &&
             (not IsSmrPointerCompatible<Fty_, PayloadType_>)
         explicit SharedMemoryReference(_Inout_ mref<SharedMemoryReference<Fty_>> other_) noexcept :
-            _ctrlBlock(_void_cast<ctrl_block_type>(_STD exchange(other_._ctrlBlock, nullptr))),
-            _packed(_STD exchange(other_._packed, 0)) {}
+            _ctrlBlock(_void_cast<ctrl_block_type>(std::exchange(other_._ctrlBlock, nullptr))),
+            _packed(std::exchange(other_._packed, 0)) {}
 
     public:
         ~SharedMemoryReference() {
@@ -111,19 +111,19 @@ namespace hg {
         ref<this_type> operator=(cref<this_type>) = delete;
 
         ref<this_type> operator=(_Inout_ mref<this_type> other_) noexcept {
-            if (_STD addressof(other_) != this) {
-                _STD swap(_ctrlBlock, other_._ctrlBlock);
-                _STD swap(_packed, other_._packed);
+            if (std::addressof(other_) != this) {
+                std::swap(_ctrlBlock, other_._ctrlBlock);
+                std::swap(_packed, other_._packed);
             }
             return *this;
         }
 
         template <class Fty_> requires IsSmrPointerCompatible<Fty_, PayloadType_>
         ref<this_type> operator=(_Inout_ mref<SharedMemoryReference<Fty_>> other_) noexcept {
-            if (static_cast<void*>(_STD addressof(other_)) != this) {
+            if (static_cast<void*>(std::addressof(other_)) != this) {
                 reset();
-                _ctrlBlock = _void_cast<ctrl_block_type>(_STD exchange(other_._ctrlBlock, nullptr));
-                _packed = _STD exchange(other_._packed, 0);
+                _ctrlBlock = _void_cast<ctrl_block_type>(std::exchange(other_._ctrlBlock, nullptr));
+                _packed = std::exchange(other_._packed, 0);
             }
             return *this;
         }
@@ -131,19 +131,19 @@ namespace hg {
     public:
         void swap(ref<this_type> other_) noexcept {
 
-            if (_STD addressof(other_) == this) {
+            if (std::addressof(other_) == this) {
                 return;
             }
 
-            _STD swap(_ctrlBlock, other_._ctrlBlock);
-            _STD swap(_packed, other_._packed);
+            std::swap(_ctrlBlock, other_._ctrlBlock);
+            std::swap(_packed, other_._packed);
         }
 
     public:
         template <class Fty_> requires IsSmrBiPointerCompatible<PayloadType_, Fty_>
         [[nodiscard]] SharedMemoryReference<Fty_> into() {
             static_assert(sizeof(Fty_) > 0uLL, "Requires complete type for casting.");
-            return SharedMemoryReference<Fty_> { _STD move(*this) };
+            return SharedMemoryReference<Fty_> { std::move(*this) };
         }
 
     private:
@@ -159,7 +159,7 @@ namespace hg {
          *
          * @returns The counts of references.
          */
-        [[nodiscard]] _STD uint16_t refs() const noexcept {
+        [[nodiscard]] std::uint16_t refs() const noexcept {
             return _packed;
         }
 
@@ -206,7 +206,7 @@ namespace hg {
         }
 
     public:
-        template <typename Ty_ = value_type> requires (!_STD is_void_v<Ty_>) && (!_STD is_array_v<Ty_>)
+        template <typename Ty_ = value_type> requires (!std::is_void_v<Ty_>) && (!std::is_array_v<Ty_>)
         [[nodiscard]] ref<Ty_> operator*() const noexcept {
             return *get();
         }
@@ -245,8 +245,8 @@ namespace hg {
     public:
         using this_type = SharedMemoryReferenceCtrlBlock<PayloadType_, DeleterType_>;
 
-        using vty = _STD remove_reference_t<PayloadType_>;
-        using ivty = _STD remove_const_t<_STD remove_reference_t<PayloadType_>>;
+        using vty = std::remove_reference_t<PayloadType_>;
+        using ivty = std::remove_const_t<std::remove_reference_t<PayloadType_>>;
 
         using smr_type = SharedMemoryReference<vty>;
 
@@ -255,12 +255,12 @@ namespace hg {
             VirtualBase(),
             _packed(0) {}
 
-        template <typename Type_ = vty> requires _STD is_same_v<Type_, vty>
+        template <typename Type_ = vty> requires std::is_same_v<Type_, vty>
         SharedMemoryReferenceCtrlBlock(_In_ mref<ptr<Type_>> payload_) :
             VirtualBase(),
             _packed(0) {
             static_assert(sizeof(ivty) > 0, "Prevent handling of incomplete types.");
-            this_type::store(_STD move(payload_));
+            this_type::store(std::move(payload_));
         }
 
         SharedMemoryReferenceCtrlBlock(cref<this_type>) = delete;
@@ -283,7 +283,7 @@ namespace hg {
          */
         void tidy() noexcept {
 
-            const auto packed = _packed.load(_STD memory_order_relaxed);
+            const auto packed = _packed.load(std::memory_order_relaxed);
 
             /**/
             auto* ctrlp = reinterpret_cast<ptr<ivty>>(packed >> packed_shift);
@@ -295,7 +295,7 @@ namespace hg {
             // IM_CORE_WARN("Destructing atomic ctrl block with active store resource.");
 
             /**/
-            this->destroy(_STD move(ctrlp));
+            this->destroy(std::move(ctrlp));
         }
 
         void delete_this() const {
@@ -303,7 +303,11 @@ namespace hg {
         }
 
         void destroy(mref<ptr<void>> obj_) override {
-            delete static_cast<ptr<ivty>>(obj_);
+            if constexpr (std::is_void_v<std::decay_t<ivty>>) {
+                std::unreachable();
+            } else {
+                delete static_cast<ptr<ivty>>(obj_);
+            }
         }
 
         [[nodiscard]] constexpr ptr<VirtualBase> vdb() noexcept {
@@ -321,7 +325,7 @@ namespace hg {
          */
         [[nodiscard]] smr_type acq() {
 
-            auto packed = _packed.fetch_add(1, _STD memory_order_release);
+            auto packed = _packed.fetch_add(1, std::memory_order_release);
 
             /**/
             if ((packed >> packed_shift) == 0) {
@@ -341,14 +345,14 @@ namespace hg {
          */
         void rel() {
 
-            const auto packed = _packed.fetch_sub(1, _STD memory_order_release);
+            const auto packed = _packed.fetch_sub(1, std::memory_order_release);
 
             /**
              * Check if this was last reference
              */
             if ((packed & packed_ref_mask) == 0x1) {
 
-                auto expect = _packed.fetch_and(packed_ref_mask, _STD memory_order_release);
+                auto expect = _packed.fetch_and(packed_ref_mask, std::memory_order_release);
                 const auto maskedPtr = expect & packed_ptr_mask;
 
                 /**
@@ -369,8 +373,8 @@ namespace hg {
                         !_packed.compare_exchange_weak(
                             expect,
                             (expect & packed_ref_mask) | maskedPtr,
-                            _STD memory_order_release,
-                            _STD memory_order_relaxed
+                            std::memory_order_release,
+                            std::memory_order_relaxed
                         )
                     ) {}
 
@@ -385,7 +389,7 @@ namespace hg {
 
                     // Prevent final override polymorphic optimization
                     //  ~> otherwise will break virtual deleter overload
-                    vdb()->destroy(_STD move(ctrlp));
+                    vdb()->destroy(std::move(ctrlp));
                     delete_this();
                 }
             }
@@ -405,8 +409,8 @@ namespace hg {
 
             DEBUG_ASSERT(original == (packed >> packed_shift), "Exceeded addressable memory of shifted memory address.")
 
-            _packed.fetch_and(packed_ref_mask, _STD memory_order_release);
-            _packed.fetch_or(packed, _STD memory_order_release);
+            _packed.fetch_and(packed_ref_mask, std::memory_order_release);
+            _packed.fetch_or(packed, std::memory_order_release);
         }
 
         /**
@@ -443,8 +447,8 @@ namespace hg {
             return _packed.compare_exchange_strong(
                 expect,
                 packed,
-                _STD memory_order_release,
-                _STD memory_order_relaxed
+                std::memory_order_release,
+                std::memory_order_relaxed
             );
         }
     };

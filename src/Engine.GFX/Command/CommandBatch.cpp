@@ -8,11 +8,11 @@ CommandBatch::CommandBatch(mref<CommandBuffer> buffer_) :
     _barriers(),
     _barrierStages(),
     _signals() {
-    _buffers.emplace_back(_STD move(buffer_));
+    _buffers.emplace_back(std::move(buffer_));
 }
 
 CommandBatch::CommandBatch(mref<Vector<CommandBuffer>> buffers_) :
-    _buffers(_STD move(buffers_)),
+    _buffers(std::move(buffers_)),
     _barriers(),
     _barrierStages(),
     _signals() {}
@@ -33,7 +33,7 @@ const std::vector<CommandBuffer>& CommandBatch::buffers() const noexcept {
 }
 
 void CommandBatch::push(CommandBuffer&& buffer_) {
-    _buffers.push_back(_STD forward<CommandBuffer>(buffer_));
+    _buffers.push_back(std::forward<CommandBuffer>(buffer_));
 }
 
 const Vector<vk::Semaphore>& CommandBatch::barriers() const noexcept {

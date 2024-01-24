@@ -13,12 +13,12 @@ Texture::Texture() noexcept :
     _view(vk::ImageView {}) {}
 
 Texture::Texture(value_type&& other_) noexcept :
-    _buffer(_STD exchange(other_._buffer, {})),
-    _extent(_STD exchange(other_._extent, math::uivec3 { 0ui32 })),
-    _format(_STD exchange(other_._format, TextureFormat::eUndefined)),
-    _mipLevels(_STD exchange(other_._mipLevels, 0)),
-    _type(_STD exchange(other_._type, TextureType::eUndefined)),
-    _view(_STD exchange(other_._view, {})) {}
+    _buffer(std::exchange(other_._buffer, {})),
+    _extent(std::exchange(other_._extent, math::uivec3 { 0ui32 })),
+    _format(std::exchange(other_._format, TextureFormat::eUndefined)),
+    _mipLevels(std::exchange(other_._mipLevels, 0)),
+    _type(std::exchange(other_._type, TextureType::eUndefined)),
+    _view(std::exchange(other_._view, {})) {}
 
 Texture::~Texture() noexcept {
     destroy();
@@ -26,12 +26,12 @@ Texture::~Texture() noexcept {
 
 Texture& Texture::operator=(value_type&& other_) noexcept {
     if (this != &other_) {
-        _buffer = _STD exchange(other_._buffer, {});
-        _extent = _STD exchange(other_._extent, math::uivec3 { 0ui32 });
-        _format = _STD exchange(other_._format, TextureFormat::eUndefined);
-        _mipLevels = _STD exchange(other_._mipLevels, 0);
-        _type = _STD exchange(other_._type, TextureType::eUndefined);
-        _view = _STD exchange(other_._view, {});
+        _buffer = std::exchange(other_._buffer, {});
+        _extent = std::exchange(other_._extent, math::uivec3 { 0ui32 });
+        _format = std::exchange(other_._format, TextureFormat::eUndefined);
+        _mipLevels = std::exchange(other_._mipLevels, 0);
+        _type = std::exchange(other_._type, TextureType::eUndefined);
+        _view = std::exchange(other_._view, {});
     }
 
     return *this;
@@ -84,7 +84,7 @@ hg::uptr<TextureView> Texture::makeView(math::uivec2 layers_, math::uExtent3D ex
     const auto view {
         new TextureView(this, layers, extent, mipLevels)
     };
-    return _STD unique_ptr<TextureView>(view);
+    return std::unique_ptr<TextureView>(view);
 }
 
 TextureBuffer& Texture::buffer() noexcept {

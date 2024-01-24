@@ -38,7 +38,7 @@ void TmpBrdfLutPass::destroy() noexcept {
     SubPass::destroy();
 
     auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
-    device->vkDevice().destroySemaphore(static_cast<VkSemaphore>(_STD exchange(_tmpSignal, nullptr)));
+    device->vkDevice().destroySemaphore(static_cast<VkSemaphore>(std::exchange(_tmpSignal, nullptr)));
 
     _resources.outBrdfLutTexture->destroy<smr<TextureLikeObject>, graph::TextureDescription>();
 
@@ -90,7 +90,7 @@ void TmpBrdfLutPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept 
         );
         factory->buildView(brdfLut, { .layers = { 0L, 1L }, .type = TextureType::e2d, .mipLevels = { 0L, 1L } });
 
-        _brdfLut = make_smr<Texture>(_STD move(brdfLut));
+        _brdfLut = make_smr<Texture>(std::move(brdfLut));
     }
 
     /**/
@@ -276,13 +276,13 @@ smr<AccelerationEffect> build_test_effect() {
 
     vertexStage->setIntermediate(make_smr<lang::Intermediate>());
     vertexStage->getIntermediate()->lang.dialect = lang::Dialect::eVulkanGlsl460;
-    vertexStage->getIntermediate()->lang.text.emplace_back(_STD move(vertexShaderCode));
+    vertexStage->getIntermediate()->lang.text.emplace_back(std::move(vertexShaderCode));
 
     const auto fragmentShaderCode = read_shader_file("__test__brdfLut.gen.fs");
 
     fragmentStage->setIntermediate(make_smr<lang::Intermediate>());
     fragmentStage->getIntermediate()->lang.dialect = lang::Dialect::eVulkanGlsl460;
-    fragmentStage->getIntermediate()->lang.text.emplace_back(_STD move(fragmentShaderCode));
+    fragmentStage->getIntermediate()->lang.text.emplace_back(std::move(fragmentShaderCode));
 
     /**/
 
@@ -294,19 +294,19 @@ smr<AccelerationEffect> build_test_effect() {
     };
     tmpVar->annotation = make_uptr<lang::SimpleAnnotation<lang::AnnotationType::eForwardLinkage>>();
     tmpVar->annotation = make_uptr<lang::SimpleAnnotation<lang::AnnotationType::eWriteonly>>(
-        _STD move(tmpVar->annotation)
+        std::move(tmpVar->annotation)
     );
     tmpVar->annotation = make_uptr<lang::SymbolIdAnnotation>(
         "color",
-        _STD move(tmpVar->annotation)
+        std::move(tmpVar->annotation)
     );
 
     tmpSym->symbolId = lang::SymbolId::from("color"sv);
     tmpSym->var.type = lang::SymbolType::eVariableSymbol;
     tmpSym->var.data = tmpVar.get();
 
-    fragmentStage->getIntermediate()->rep.globalScope.outbound.emplace_back(_STD move(tmpVar));
-    fragmentStage->getIntermediate()->rep.symbolTable.insert(_STD move(tmpSym));
+    fragmentStage->getIntermediate()->rep.globalScope.outbound.emplace_back(std::move(tmpVar));
+    fragmentStage->getIntermediate()->rep.symbolTable.insert(std::move(tmpSym));
 
     /**/
 
@@ -314,9 +314,9 @@ smr<AccelerationEffect> build_test_effect() {
     GuidGenerate(guid);
 
     return make_smr<AccelerationEffect>(
-        _STD move(guid),
+        std::move(guid),
         "test-brdf-lut-effect",
-        Vector<smr<Stage>> { _STD move(vertexStage), _STD move(fragmentStage) }
+        Vector<smr<Stage>> { std::move(vertexStage), std::move(fragmentStage) }
     );
 }
 
@@ -369,9 +369,9 @@ EffectCompileResult build_test_pipeline(
     const auto compiler = makeVkAccCompiler();
     auto result = compiler->compile(
         {
-            .effect = _STD move(effect_),
-            .profile = _STD move(profile),
-            .spec = _STD move(spec)
+            .effect = std::move(effect_),
+            .profile = std::move(profile),
+            .spec = std::move(spec)
         }
     );
 

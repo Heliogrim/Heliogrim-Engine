@@ -38,7 +38,7 @@ void Input::setup() {
      * Scheduling Pipelines
      */
     auto inputPipeline = make_uptr<schedule::InputPipeline>();
-    _engine->getScheduler()->getCompositePipeline()->addPipeline(_STD move(inputPipeline));
+    _engine->getScheduler()->getCompositePipeline()->addPipeline(std::move(inputPipeline));
 }
 
 void Input::start() {}
@@ -63,7 +63,7 @@ void Input::destroy() {
 
 void Input::tick() {
 
-    _STD unique_lock<_STD mutex> lck { _bufferMtx };
+    std::unique_lock<std::mutex> lck { _bufferMtx };
 
     for (const auto& entry : _buffered) {
 
@@ -116,18 +116,18 @@ ref<GlobalEventEmitter> Input::emitter() noexcept {
 
 bool Input::tryBufferEvent(const event_type_id eventType_, mref<uptr<Event>> event_) {
 
-    _STD unique_lock<_STD mutex> lck { _bufferMtx, _STD defer_lock };
+    std::unique_lock<std::mutex> lck { _bufferMtx, std::defer_lock };
     if (not lck.try_lock()) {
         return false;
     }
 
-    _buffered.emplace_back(eventType_, _STD move(event_));
+    _buffered.emplace_back(eventType_, std::move(event_));
     return true;
 }
 
 void Input::bufferEvent(const event_type_id eventType_, mref<uptr<Event>> event_) {
-    _STD unique_lock<_STD mutex> lck { _bufferMtx };
-    _buffered.emplace_back(eventType_, _STD move(event_));
+    std::unique_lock<std::mutex> lck { _bufferMtx };
+    _buffered.emplace_back(eventType_, std::move(event_));
 }
 
 const ptr<input::DragDropSender> Input::dragDropSender() const noexcept {
@@ -154,7 +154,7 @@ void Input::captureWindow(const non_owning_rptr<platform::NativeWindow> nativeWi
         [this](mref<uptr<event::DragDropEvent>> event_) {
             // Attention: This function callback is actual external thread context
             // Attention: Not allowed to use default/fiber control flow
-            bufferEvent(event::DragDropEvent::typeId, _STD move(event_));
+            bufferEvent(event::DragDropEvent::typeId, std::move(event_));
             return false;
         }
     );

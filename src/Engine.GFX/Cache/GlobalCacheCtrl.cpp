@@ -20,7 +20,7 @@ using namespace hg::engine::gfx::cache;
 using namespace hg;
 
 GlobalCacheCtrl::GlobalCacheCtrl(mref<uptr<GlobalResourceCache>> cache_) :
-    _cache(_STD move(cache_)),
+    _cache(std::move(cache_)),
     _loader(Engine::getEngine()->getResources()->loader(traits::nothrow)) {}
 
 GlobalCacheCtrl::~GlobalCacheCtrl() = default;
@@ -37,7 +37,7 @@ GlobalCacheCtrl::stream_result_type<> GlobalCacheCtrl::markLoadedAsUsed(
     mref<smr<TextureResource>> resource_,
     mref<TextureSubResource> subresource_
 ) {
-    return markLoadedAsUsed(_STD move(resource_), AssocKey<TextureSubResource>::from(_STD move(subresource_)));
+    return markLoadedAsUsed(std::move(resource_), AssocKey<TextureSubResource>::from(std::move(subresource_)));
 }
 
 GlobalCacheCtrl::stream_result_type<> GlobalCacheCtrl::markLoadedAsUsed(
@@ -64,7 +64,7 @@ GlobalCacheCtrl::stream_result_type<> GlobalCacheCtrl::markLoadedAsUsed(
 
     _loader->streamImmediately<assets::TextureAsset, TextureResource>(
         smr<TextureResource> { resource_ },
-        _STD move(options)
+        std::move(options)
     );
 
     /**/
@@ -74,7 +74,7 @@ GlobalCacheCtrl::stream_result_type<> GlobalCacheCtrl::markLoadedAsUsed(
 
     {
         using SubjectType = CacheCtrlSubject<TextureSubResource>;
-        using SubMapType = RobinMap<AssocKey<TextureSubResource>, ptr<SubjectType>>;
+        using SubMapType = DenseMap<AssocKey<TextureSubResource>, ptr<SubjectType>>;
 
         const auto resEntry { _textures.find(resource_.get()) };
         auto& ctrls { const_cast<SubMapType&>(resEntry->second) };
@@ -82,7 +82,7 @@ GlobalCacheCtrl::stream_result_type<> GlobalCacheCtrl::markLoadedAsUsed(
         /**
          * Create new ctrl object by given subject with intial mark count of 1ui16
          */
-        ctrls.insert_or_assign(subresource_, new SubjectType { _STD move(subresource_), 1ui16 });
+        ctrls.insert_or_assign(subresource_, new SubjectType { std::move(subresource_), 1ui16 });
     }
 
     return { StreamCacheResultType::eTransient /* eResidential */ };
@@ -99,7 +99,7 @@ GlobalCacheCtrl::stream_result_type<> GlobalCacheCtrl::markAsUsed(
     const non_owning_rptr<TextureResource> resource_,
     mref<TextureSubResource> subresource_
 ) {
-    return markAsUsed(resource_, AssocKey<TextureSubResource>::from(_STD move(subresource_)));
+    return markAsUsed(resource_, AssocKey<TextureSubResource>::from(std::move(subresource_)));
 }
 
 GlobalCacheCtrl::stream_result_type<> GlobalCacheCtrl::markAsUsed(
@@ -108,7 +108,7 @@ GlobalCacheCtrl::stream_result_type<> GlobalCacheCtrl::markAsUsed(
 ) {
 
     using SubjectType = CacheCtrlSubject<TextureSubResource>;
-    using SubMapType = RobinMap<AssocKey<TextureSubResource>, ptr<SubjectType>>;
+    using SubMapType = DenseMap<AssocKey<TextureSubResource>, ptr<SubjectType>>;
 
     /**
      * Ensure that resource is already present within controls
@@ -118,7 +118,7 @@ GlobalCacheCtrl::stream_result_type<> GlobalCacheCtrl::markAsUsed(
         auto [entry, assigned] = _textures.insert_or_assign(resource_, SubMapType {});
         assert(assigned);
 
-        resEntry = _STD move(entry);
+        resEntry = std::move(entry);
     }
 
     /**
@@ -181,13 +181,13 @@ void GlobalCacheCtrl::unmark(
 }
 
 void GlobalCacheCtrl::unmark(mref<smr<TextureResource>> resource_, mref<TextureSubResource> subresource_) {
-    unmark(_STD move(resource_), AssocKey<TextureSubResource>::from(_STD move(subresource_)));
+    unmark(std::move(resource_), AssocKey<TextureSubResource>::from(std::move(subresource_)));
 }
 
 void GlobalCacheCtrl::unmark(mref<smr<TextureResource>> resource_, cref<AssocKey<TextureSubResource>> subresource_) {
 
     using SubjectType = CacheCtrlSubject<CacheTextureSubject>;
-    using SubMapType = RobinMap<AssocKey<CacheTextureSubject>, ptr<SubjectType>>;
+    using SubMapType = DenseMap<AssocKey<CacheTextureSubject>, ptr<SubjectType>>;
 
     /**
      * Check whether resource is present within controls
@@ -237,8 +237,8 @@ void GlobalCacheCtrl::unmark(mref<smr<TextureResource>> resource_, cref<AssocKey
         };
 
         _loader->streamImmediately<assets::TextureAsset, TextureResource>(
-            _STD move(resource_),
-            _STD move(options)
+            std::move(resource_),
+            std::move(options)
         );
     }
 
@@ -267,13 +267,13 @@ void GlobalCacheCtrl::unmark(ptr<StaticGeometryResource> resource_, mref<CacheSt
 #pragma region Materials
 
 void GlobalCacheCtrl::markAsUsed(
-    const __restricted_ptr<const void> spec_,
+    const material_spec_type spec_,
     mref<smr<MaterialResource>> material_,
     mref<smr<const accel::AccelerationPipeline>> accelerationPipeline_
 ) {
 
-    using SubjectType = CacheCtrlSubject<_STD pair<smr<MaterialResource>, smr<const accel::AccelerationPipeline>>>;
-    using SubMapType = RobinMap<__restricted_ptr<MaterialResource>, uptr<SubjectType>>;
+    using SubjectType = CacheCtrlSubject<std::pair<smr<MaterialResource>, smr<const accel::AccelerationPipeline>>>;
+    using SubMapType = decltype(_materialPasses)::value_type::second_type;
 
     if (not material_->isLoaded()) {
         IM_CORE_ERROR("Tried to cache mark material resource which is still unloaded.");
@@ -296,7 +296,7 @@ void GlobalCacheCtrl::markAsUsed(
     auto specIt = _materialPasses.find(spec_);
     if (specIt == _materialPasses.end()) {
 
-        const auto insertResult = _materialPasses.insert(_STD make_pair(spec_, SubMapType {}));
+        const auto insertResult = _materialPasses.insert(std::make_pair(spec_, SubMapType {}));
         specIt = insertResult.first;
 
         assert(insertResult.second);
@@ -311,14 +311,14 @@ void GlobalCacheCtrl::markAsUsed(
 
         auto key = material_.get();
         auto val = make_uptr<SubjectType>(
-            _STD make_pair(_STD move(material_), _STD move(accelerationPipeline_)),
+            std::make_pair(std::move(material_), std::move(accelerationPipeline_)),
             1ui16
         );
 
         subMap.insert(
-            _STD make_pair(
-                _STD move(key),
-                _STD move(val)
+            std::make_pair(
+                std::move(key),
+                std::move(val)
             )
         );
         return;
@@ -330,12 +330,12 @@ void GlobalCacheCtrl::markAsUsed(
 }
 
 void GlobalCacheCtrl::unmark(
-    const __restricted_ptr<const material_spec_type> spec_,
+    const material_spec_type spec_,
     const __restricted_ptr<MaterialResource> resource_
 ) {
 
-    using SubjectType = CacheCtrlSubject<_STD pair<smr<MaterialResource>, smr<const accel::AccelerationPipeline>>>;
-    using SubMapType = RobinMap<__restricted_ptr<MaterialResource>, uptr<SubjectType>>;
+    using SubjectType = CacheCtrlSubject<std::pair<smr<MaterialResource>, smr<const accel::AccelerationPipeline>>>;
+    using SubMapType = decltype(_materialPasses)::value_type::second_type;
 
     if (not resource_->isLoaded()) {
         IM_CORE_ERROR("Tried to unmark material resource with is not loaded.");
@@ -372,7 +372,7 @@ void GlobalCacheCtrl::unmark(
 }
 
 GlobalCacheCtrl::query_result_type<smr<const engine::accel::AccelerationPipeline>> GlobalCacheCtrl::query(
-    const __restricted_ptr<const void> spec_,
+    const material_spec_type spec_,
     const __restricted_ptr<MaterialResource> material_
 ) const noexcept {
 
@@ -393,7 +393,7 @@ GlobalCacheCtrl::query_result_type<smr<const engine::accel::AccelerationPipeline
 
 void GlobalCacheCtrl::drop(mref<material_spec_type> spec_) {
     // Warning: This could break, due to concurrent access
-    _materialPasses.erase(_STD move(spec_));
+    _materialPasses.erase(std::move(spec_));
 }
 
 #pragma endregion

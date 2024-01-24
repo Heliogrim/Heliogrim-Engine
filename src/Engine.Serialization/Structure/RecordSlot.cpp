@@ -9,7 +9,7 @@ RecordSlot::RecordSlot(cref<StructureSlotState> state_) :
 }
 
 RecordSlot::RecordSlot(mref<StructureSlotState> state_) :
-    StructureSlotBase(_STD move(state_)) {
+    StructureSlotBase(std::move(state_)) {
     _state.header = StructureSlotHeader::from<StructureSlotType::eRecord>();
 }
 

@@ -27,7 +27,7 @@ Whiteboard::Whiteboard() :
 Whiteboard::~Whiteboard() = default;
 
 string Whiteboard::getTag() const noexcept {
-    return _STD format(R"(Whiteboard <{:#x}>)", reinterpret_cast<u64>(this));
+    return std::format(R"(Whiteboard <{:#x}>)", reinterpret_cast<u64>(this));
 }
 
 EventResponse Whiteboard::onFocus(cref<FocusEvent> event_) {
@@ -56,7 +56,7 @@ sptr<Board> Whiteboard::getBoard() const noexcept {
     if (_children.empty()) {
         return {};
     }
-    return _STD static_pointer_cast<Board, Widget>(_children[0]);
+    return std::static_pointer_cast<Board, Widget>(_children[0]);
 }
 
 void Whiteboard::setBoard(cref<sptr<Widget>> board_) {

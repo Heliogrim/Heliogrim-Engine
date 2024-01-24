@@ -5,7 +5,7 @@ using namespace hg;
 
 BarrierComponent::BarrierComponent(mref<string> barrierName_) noexcept :
     InheritMeta(),
-    _name(_STD move(barrierName_)) {}
+    _name(std::move(barrierName_)) {}
 
 string_view BarrierComponent::getBarrierName() const noexcept {
     return _name;

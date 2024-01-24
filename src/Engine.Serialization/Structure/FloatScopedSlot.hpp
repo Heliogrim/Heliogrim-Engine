@@ -9,7 +9,7 @@
 #include "FloatSlot.hpp"
 
 namespace hg::engine::serialization {
-    template <_STD floating_point FloatType_>
+    template <std::floating_point FloatType_>
     class FloatScopedSlot final :
         public TypeScopedSlot<FloatType_> {
     public:
@@ -20,7 +20,7 @@ namespace hg::engine::serialization {
 
     public:
         FloatScopedSlot(mref<ScopedSlotState> scopedState_, mref<StructureSlotState> state_) :
-            underlying_type(_STD move(scopedState_), make_sptr<FloatSlot<FloatType_>>(_STD move(state_))) {}
+            underlying_type(std::move(scopedState_), make_sptr<FloatSlot<FloatType_>>(std::move(state_))) {}
 
         ~FloatScopedSlot() override = default;
 

@@ -13,7 +13,7 @@ StringSlot::StringSlot(cref<StructureSlotState> state_) :
 }
 
 StringSlot::StringSlot(mref<StructureSlotState> state_) :
-    TypedStructureSlotBase(_STD move(state_)) {
+    TypedStructureSlotBase(std::move(state_)) {
     _state.header = StructureSlotHeader::from<StructureSlotType::eString>();
 }
 
@@ -27,7 +27,7 @@ bool StringSlot::validateType() const noexcept {
 
 void StringSlot::operator<<(cref<value_type> value_) {
 
-    const auto src = _STD span<u8, _STD dynamic_extent>(
+    const auto src = std::span<u8, std::dynamic_extent>(
         reinterpret_cast<ptr<u8>>(const_cast<ref<value_type>>(value_).data()),
         value_.size() * sizeof(value_type::value_type)
     );
@@ -44,7 +44,7 @@ SlotOpResult StringSlot::operator>>(ref<value_type> value_) {
 
     value_.resize(_state.header.size / sizeof(value_type::value_type));
 
-    const auto dst = _STD span<u8, _STD dynamic_extent>(
+    const auto dst = std::span<u8, std::dynamic_extent>(
         reinterpret_cast<ptr<u8>>(value_.data()),
         _state.header.size
     );

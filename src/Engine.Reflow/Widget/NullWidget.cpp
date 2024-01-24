@@ -19,7 +19,7 @@ sptr<NullWidget> NullWidget::instance() {
 }
 
 string NullWidget::getTag() const noexcept {
-    return _STD format(R"(NullWidget <{:#x}>)", reinterpret_cast<u64>(this));
+    return std::format(R"(NullWidget <{:#x}>)", reinterpret_cast<u64>(this));
 }
 
 const ptr<const Children> NullWidget::children() const {

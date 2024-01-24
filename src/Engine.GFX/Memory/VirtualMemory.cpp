@@ -39,14 +39,14 @@ nmpt<VirtualMemoryPage> VirtualMemory::definePage(const u64 offset_, const u64 s
     auto page = make_uptr<VirtualMemoryPage>(this, offset_, size_);
     auto result = page.get();
 
-    _pages.emplace_back(_STD move(page));
+    _pages.emplace_back(std::move(page));
     return result;
 }
 
 void VirtualMemory::undefinePage(mref<nmpt<VirtualMemoryPage>> page_) {
 
     // TODO: replace naïve implementation
-    auto last = _STD ranges::remove(
+    auto last = std::ranges::remove(
         _pages,
         page_,
         [](const uptr<VirtualMemoryPage>& vmp_) {

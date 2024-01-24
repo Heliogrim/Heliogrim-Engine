@@ -12,7 +12,7 @@ using namespace hg::engine::resource::loader;
 using namespace hg;
 
 [[nodiscard]] static string to_string(cref<asset_guid> guid_) {
-    return _STD format(R"({:08x}-{:04x}-{:04x}-{:016x})", guid_.pre, guid_.c0, guid_.c1, guid_.post);
+    return std::format(R"({:08x}-{:04x}-{:04x}-{:016x})", guid_.pre, guid_.c0, guid_.c1, guid_.post);
 }
 
 [[nodiscard]] static fs::Url getLfsUrl(const non_owning_rptr<const engine::assets::Asset> asset_);
@@ -26,7 +26,7 @@ SourceLoaderResponse<void>::type SourceLoader::operator()(
     mref<request_type::options> options_
 ) const {
 
-    static_assert(_STD is_same_v<SourceLoaderResponse<void>::type, smr<Source>>);
+    static_assert(std::is_same_v<SourceLoaderResponse<void>::type, smr<Source>>);
 
     /**/
 
@@ -34,7 +34,7 @@ SourceLoaderResponse<void>::type SourceLoader::operator()(
     if (lfsUrl.empty()) {
         IM_CORE_WARNF(
             R"(Could not find source data at lfs for asset `{} -> {}`.)",
-            _STD to_string(request_->get_guid()),
+            std::to_string(request_->get_guid()),
             request_->getAssetName()
         );
         return smr<Source> {};
@@ -46,7 +46,7 @@ SourceLoaderResponse<void>::type SourceLoader::operator()(
     if (not file.exists() || file.isDirectory()) {
         IM_CORE_ERRORF(
             R"(Lfs source data for asset `{} -> {}` does not exist.)",
-            _STD to_string(request_->get_guid()),
+            std::to_string(request_->get_guid()),
             request_->getAssetName()
         );
         return smr<Source> {};
@@ -54,7 +54,7 @@ SourceLoaderResponse<void>::type SourceLoader::operator()(
 
     /**/
 
-    return make_smr<FileSource>(_STD move(file));
+    return make_smr<FileSource>(std::move(file));
 }
 
 SourceLoaderStreamResponse<void>::type SourceLoader::operator()(
@@ -62,7 +62,7 @@ SourceLoaderStreamResponse<void>::type SourceLoader::operator()(
     mref<stream_request_type::options> options_
 ) const {
 
-    static_assert(_STD is_same_v<SourceLoaderStreamResponse<void>::type, smr<Source>>);
+    static_assert(std::is_same_v<SourceLoaderStreamResponse<void>::type, smr<Source>>);
 
     return {};
 }

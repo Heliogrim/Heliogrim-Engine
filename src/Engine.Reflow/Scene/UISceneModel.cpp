@@ -19,7 +19,7 @@ void UISceneModel::destroy(const ptr<render::RenderSceneSystem> system_) {}
 
 ref<Window> UISceneModel::getWindow() const noexcept {
     if (owner() == nullptr) {
-        _STD unreachable();
+        std::unreachable();
     }
 
     return *Cast<UIComponent>(owner())->getWindow();

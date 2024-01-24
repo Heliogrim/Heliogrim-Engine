@@ -82,8 +82,8 @@ namespace hg {
     /**/
 
     namespace {
-        using arci_packed_type = _STD uintptr_t;
-        using arci_atomic_packed_type = _STD atomic_uintptr_t;
+        using arci_packed_type = std::uintptr_t;
+        using arci_atomic_packed_type = std::atomic_uintptr_t;
 
         constexpr packed_type arci_packed_shift = 16ui64;
         constexpr packed_type arci_packed_ref_mask =

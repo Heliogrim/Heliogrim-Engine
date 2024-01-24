@@ -36,7 +36,7 @@ namespace hg::editor::ui {
 
         template <HasStaticType SourceType_, typename ResolveType_ = SourceType_>
         bool storeTypedResolver(mref<uptr<HierarchyResolver<SourceType_, ResolveType_>>> resolver_) {
-            return storeResolver(SourceType_::type_id, _STD move(resolver_));
+            return storeResolver(SourceType_::type_id, std::move(resolver_));
         }
 
         [[nodiscard]] ptr<HierarchyResolverBase> getResolver(const type_id typeId_);
@@ -53,17 +53,17 @@ namespace hg::editor::ui {
         bool storeGenerator(const type_id typeId_, mref<uptr<HierarchyGeneratorBase>> resolver_);
 
         template <typename SourceType_> requires
-            (HasStaticType<SourceType_> || HasStaticType<_STD decay_t<SourceType_>>)
+            (HasStaticType<SourceType_> || HasStaticType<std::decay_t<SourceType_>>)
         bool storeTypedGenerator(mref<uptr<HierarchyGenerator<SourceType_>>> resolver_) {
-            return storeGenerator(_STD decay_t<SourceType_>::type_id, _STD move(resolver_));
+            return storeGenerator(std::decay_t<SourceType_>::type_id, std::move(resolver_));
         }
 
         [[nodiscard]] ptr<HierarchyGeneratorBase> getGenerator(const type_id typeId_);
 
         template <typename SourceType_> requires
-            (HasStaticType<SourceType_> || HasStaticType<_STD decay_t<SourceType_>>)
+            (HasStaticType<SourceType_> || HasStaticType<std::decay_t<SourceType_>>)
         [[nodiscard]] ptr<HierarchyGenerator<SourceType_>> getTypedGenerator() {
-            return getGenerator(_STD decay_t<SourceType_>::type_id);
+            return getGenerator(std::decay_t<SourceType_>::type_id);
         }
     };
 }

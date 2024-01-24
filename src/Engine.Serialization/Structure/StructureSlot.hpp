@@ -11,7 +11,7 @@
 
 namespace hg::engine::serialization {
     class __declspec(novtable) StructureSlotBase :
-        public _STD enable_shared_from_this<StructureSlotBase> {
+        public std::enable_shared_from_this<StructureSlotBase> {
     public:
         using this_type = StructureSlotBase;
 
@@ -58,14 +58,14 @@ namespace hg::engine::serialization {
         public StructureSlotBase {
     public:
         using this_type = TypedStructureSlotBase<ValueType_>;
-        using value_type = _STD decay_t<ValueType_>;
+        using value_type = std::decay_t<ValueType_>;
 
     protected:
         TypedStructureSlotBase(cref<StructureSlotState> state_) :
             StructureSlotBase(state_) {}
 
         TypedStructureSlotBase(mref<StructureSlotState> state_) :
-            StructureSlotBase(_STD move(state_)) {}
+            StructureSlotBase(std::move(state_)) {}
 
     public:
         virtual void operator<<(cref<value_type> value_) = 0;

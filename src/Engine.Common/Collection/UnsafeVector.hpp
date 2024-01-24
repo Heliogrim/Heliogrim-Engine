@@ -6,12 +6,12 @@
 #include "../Wrapper.hpp"
 
 namespace hg {
-    template <class Type_, class Allocator_ = _STD allocator<Type_>>
+    template <class Type_, class Allocator_ = std::allocator<Type_>>
     class UnsafeVector {
     public:
         using this_type = UnsafeVector<Type_, Allocator_>;
         using allocator_type = Allocator_;
-        using allocator_traits = _STD allocator_traits<allocator_type>;
+        using allocator_traits = std::allocator_traits<allocator_type>;
 
     public:
         UnsafeVector() :
@@ -22,9 +22,9 @@ namespace hg {
         UnsafeVector(cref<this_type> other_) = delete;
 
         UnsafeVector(mref<this_type> other_) noexcept :
-            _first(_STD exchange(other_._first, nullptr)),
-            _last(_STD exchange(other_._last, nullptr)),
-            _end(_STD exchange(other_._end, nullptr)),
+            _first(std::exchange(other_._first, nullptr)),
+            _last(std::exchange(other_._last, nullptr)),
+            _end(std::exchange(other_._end, nullptr)),
             _alloc(other_._alloc) {}
 
         ~UnsafeVector() {
@@ -36,11 +36,11 @@ namespace hg {
 
         ref<this_type> operator=(mref<this_type> other_) noexcept {
 
-            if (_STD addressof(other_) != this) {
-                _STD swap(_first, other_._first);
-                _STD swap(_last, other_._last);
-                _STD swap(_end, other_._end);
-                _STD swap(_alloc, other_._alloc);
+            if (std::addressof(other_) != this) {
+                std::swap(_first, other_._first);
+                std::swap(_last, other_._last);
+                std::swap(_end, other_._end);
+                std::swap(_alloc, other_._alloc);
             }
 
             return *this;
@@ -72,7 +72,7 @@ namespace hg {
 
         template <typename Fnc_>
         void tidy(mref<Fnc_> destructor_) {
-            clear<Fnc_>(_STD move(destructor_));
+            clear<Fnc_>(std::move(destructor_));
             _alloc.deallocate(_first);
 
             _first = nullptr;
@@ -85,10 +85,10 @@ namespace hg {
 
             auto* newFirst { _alloc.allocate(newCapacity_) };
 
-            if constexpr (_STD is_nothrow_move_constructible_v<Type_> || !_STD is_copy_constructible_v<Type_>) {
-                _STD _Uninitialized_move(_first, _last, newFirst, _alloc);
+            if constexpr (std::is_nothrow_move_constructible_v<Type_> || !std::is_copy_constructible_v<Type_>) {
+                std::_Uninitialized_move(_first, _last, newFirst, _alloc);
             } else {
-                _STD _Uninitialized_copy(_first, _last, newFirst, _alloc);
+                std::_Uninitialized_copy(_first, _last, newFirst, _alloc);
             }
 
             _alloc.deallocate(_first, capacity());
@@ -104,13 +104,13 @@ namespace hg {
 
             const auto* newFirst { _alloc.allocate(newCapacity_) };
 
-            if constexpr (_STD is_nothrow_move_constructible_v<Type_> || !_STD is_copy_constructible_v<Type_>) {
-                _STD _Uninitialized_move(_first, _last, newFirst, _alloc);
+            if constexpr (std::is_nothrow_move_constructible_v<Type_> || !std::is_copy_constructible_v<Type_>) {
+                std::_Uninitialized_move(_first, _last, newFirst, _alloc);
             } else {
-                _STD _Uninitialized_copy(_first, _last, newFirst, _alloc);
+                std::_Uninitialized_copy(_first, _last, newFirst, _alloc);
             }
 
-            each<Fnc_>(_STD move(destructor_));
+            each<Fnc_>(std::move(destructor_));
             _alloc.deallocate(_first, capacity());
 
             _last = newFirst + size();
@@ -138,8 +138,8 @@ namespace hg {
                 grow((flr << 1) | 1ui64);
             }
 
-            if constexpr (_STD is_nothrow_move_constructible_v<Type_> || !_STD is_copy_constructible_v<Type_>) {
-                allocator_traits::construct(_alloc, _last++, _STD move(value_));
+            if constexpr (std::is_nothrow_move_constructible_v<Type_> || !std::is_copy_constructible_v<Type_>) {
+                allocator_traits::construct(_alloc, _last++, std::move(value_));
             } else {
                 allocator_traits::construct(_alloc, _last++, value_);
             }
@@ -157,7 +157,7 @@ namespace hg {
 
         template <typename Fnc_>
         void clear(mref<Fnc_> destructor_) {
-            each<Fnc_>(_STD move(destructor_));
+            each<Fnc_>(std::move(destructor_));
             clear();
         }
 

@@ -82,7 +82,7 @@ sptr<UniformGridPanel> AssetBrowserPanel::getItemContainer() const {
 
 void AssetBrowserPanel::dropNav() {
     const auto nav { getNavContainer() };
-    const auto bread { _STD static_pointer_cast<Breadcrumb, Widget>(nav->children()->front()) };
+    const auto bread { std::static_pointer_cast<Breadcrumb, Widget>(nav->children()->front()) };
 
     bread->clearNavEntries();
 }
@@ -90,11 +90,11 @@ void AssetBrowserPanel::dropNav() {
 void AssetBrowserPanel::buildNav() {
 
     const auto nav { getNavContainer() };
-    const auto bread { _STD static_pointer_cast<Breadcrumb, Widget>(nav->children()->front()) };
+    const auto bread { std::static_pointer_cast<Breadcrumb, Widget>(nav->children()->front()) };
 
     /**/
 
-    _STD filesystem::path proxyUrl { _browserCwd.path() };
+    std::filesystem::path proxyUrl { _browserCwd.path() };
     Vector<string> proxyParts {};
 
     while (not proxyUrl.empty() && proxyUrl != proxyUrl.parent_path()) {
@@ -120,13 +120,13 @@ void AssetBrowserPanel::buildNav() {
         if (part == _browserRoot.path().string()) {
             fwd = _browserRoot;
         } else if (fwd.path() == _browserRoot.path()) {
-            fwd = fs::Url { fwd.scheme(), _STD filesystem::path { part }.string() };
+            fwd = fs::Url { fwd.scheme(), std::filesystem::path { part }.string() };
         } else {
-            fwd = fs::Url { fwd.scheme(), _STD filesystem::path { fwd.path() }.append(part).string() };
+            fwd = fs::Url { fwd.scheme(), std::filesystem::path { fwd.path() }.append(part).string() };
         }
 
         const string title { (part == _browserRoot.path().string()) ? "Root" : part };
-        const string key { title + _STD to_string(_STD distance(it, proxyParts.rend())) };
+        const string key { title + std::to_string(std::distance(it, proxyParts.rend())) };
 
         bread->addNavEntry(AssocKey<string>::from(key), title, fwd);
 
@@ -203,8 +203,8 @@ void AssetBrowserPanel::buildItems() {
 
         items->addChild(
             AssetBrowserItem::make(
-                _STD static_pointer_cast<AssetBrowserPanel, Widget>(shared_from_this()),
-                _STD move(entry)
+                std::static_pointer_cast<AssetBrowserPanel, Widget>(shared_from_this()),
+                std::move(entry)
             )
         );
     }
@@ -217,7 +217,7 @@ void AssetBrowserPanel::closeImportDialog() {
     }
 
     const auto dialog = _dialog.lock();
-    const auto window { _STD static_pointer_cast<Window, Widget>(dialog->root()) };
+    const auto window { std::static_pointer_cast<Window, Widget>(dialog->root()) };
 
     if (window && dialog->getPopupLayer()) {
         window->dropPopLayer(dialog->getPopupLayer());
@@ -234,10 +234,10 @@ void AssetBrowserPanel::openImportDialog(cref<fs::Url> fqUrlSource_) {
 
     /**/
 
-    const _STD filesystem::path fsSrc { fqUrlSource_.path() };
+    const std::filesystem::path fsSrc { fqUrlSource_.path() };
     const auto ext { fsSrc.has_extension() ? fsSrc.extension().string().substr(1) : "" };
 
-    _STD filesystem::path cwd { _browserCwd.path() };
+    std::filesystem::path cwd { _browserCwd.path() };
     const auto importRoot { _browser->getImportRoot() };
     const fs::Url targetRoot {
         importRoot.scheme(), fs::Path(string { importRoot.path() }.append(fs::Path::separator).append(ext))
@@ -265,7 +265,7 @@ void AssetBrowserPanel::openImportDialog(cref<fs::Url> fqUrlSource_) {
         return;
     }
 
-    const auto window { _STD static_pointer_cast<Window, Widget>(panelRoot) };
+    const auto window { std::static_pointer_cast<Window, Widget>(panelRoot) };
     auto layer = window->pushPopLayer(dialog);
 
     const auto off { window->layoutState().layoutOffset };
@@ -376,7 +376,7 @@ engine::reflow::EventResponse AssetBrowserPanel::onDrop(cref<engine::reflow::Dra
 
         for (const auto& path : event_._data.files->paths) {
 
-            _STD filesystem::path cwd { _browserCwd.path() };
+            std::filesystem::path cwd { _browserCwd.path() };
             const auto action {
                 make_sptr<SimpleImportAction>(
                     fs::Url { "file"sv, fs::Path { path } },
@@ -472,7 +472,7 @@ static void configureNav(cref<sptr<AssetBrowserPanel>> root_, cref<sptr<Horizont
 
 sptr<AssetBrowserPanel> AssetBrowserPanel::make(const non_owning_rptr<AssetBrowser> browser_, cref<fs::Url> root_) {
 
-    auto panel { _STD shared_ptr<AssetBrowserPanel>(new AssetBrowserPanel()) };
+    auto panel { std::shared_ptr<AssetBrowserPanel>(new AssetBrowserPanel()) };
 
     /**/
 

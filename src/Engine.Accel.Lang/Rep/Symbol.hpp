@@ -67,14 +67,14 @@ namespace hg::engine::accel::lang {
             var() {}
 
         Symbol(mref<SymbolId> symbolId_, mref<VariableSymbol> var_) :
-            symbolId(_STD move(symbolId_)),
+            symbolId(std::move(symbolId_)),
             symbolName(),
-            var(_STD move(var_)) {}
+            var(std::move(var_)) {}
 
         Symbol(mref<SymbolId> symbolId_, mref<FunctionSymbol> fn_) :
-            symbolId(_STD move(symbolId_)),
+            symbolId(std::move(symbolId_)),
             symbolName(),
-            fn(_STD move(fn_)) {}
+            fn(std::move(fn_)) {}
 
         Symbol(cref<this_type> other_) noexcept :
             symbolId(other_.symbolId),
@@ -89,14 +89,14 @@ namespace hg::engine::accel::lang {
         }
 
         Symbol(mref<this_type> other_) noexcept :
-            symbolId(_STD move(other_.symbolId)),
+            symbolId(std::move(other_.symbolId)),
             symbolName(std::move(other_.symbolName)) {
             if (other_.var.type == SymbolType::eVariableSymbol) {
                 var.type = SymbolType::eVariableSymbol;
-                var.data = _STD move(other_.var.data);
+                var.data = std::move(other_.var.data);
             } else {
                 fn.type = SymbolType::eFunctionSymbol;
-                fn.data = _STD move(other_.fn.data);
+                fn.data = std::move(other_.fn.data);
             }
         }
 

@@ -11,7 +11,7 @@ namespace hg::engine::utils {
     namespace {
         template <u64 Idx_, u64 ArgIdx_, typename Type_, typename... Args_>
         struct unpack_nth_indexed {
-            using type = _STD conditional_t<
+            using type = std::conditional_t<
                 Idx_ == ArgIdx_,
                 Type_,
                 unpack_nth_indexed<Idx_, ArgIdx_ + 1, Args_...>

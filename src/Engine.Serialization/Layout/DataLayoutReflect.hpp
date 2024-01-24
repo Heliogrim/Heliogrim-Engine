@@ -59,7 +59,7 @@ namespace hg::engine::serialization {
         }
 
     public:
-        template <typename SubjectType_> requires _STD is_default_constructible_v<SubjectType_>
+        template <typename SubjectType_> requires std::is_default_constructible_v<SubjectType_>
         void storeType() {
 
             if constexpr (ClassHasMeta<SubjectType_>) {

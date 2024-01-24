@@ -19,7 +19,10 @@
 // #define VULKAN_HPP_NO_SETTERS
 // #define VULKAN_HPP_NO_STRUCT_CONSTRUCTORS
 #define VULKAN_HPP_NO_SPACESHIP_OPERATOR
+
+START_SUPPRESS_WARNINGS
 #include <vulkan/vulkan.hpp>
+STOP_SUPPRESS_WARNINGS
 
 namespace hg::engine::gfx {
     // TODO: Refactor / Move to other location

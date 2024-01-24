@@ -13,7 +13,7 @@
 
 using namespace hg;
 
-inline static _STD atomic_flag suspended {};
+inline static std::atomic_flag suspended {};
 
 #pragma region Heliogrim Injection Declarations
 
@@ -53,7 +53,7 @@ void ember_main_entry() {
      */
     engine::Engine::getEngine()->getEmitter().on<engine::core::SignalShutdownEvent>(
         [](cref<engine::core::SignalShutdownEvent> event_) {
-            suspended.test_and_set(_STD memory_order::release);
+            suspended.test_and_set(std::memory_order::release);
         }
     );
 }

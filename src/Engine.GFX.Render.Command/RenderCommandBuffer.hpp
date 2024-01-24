@@ -119,7 +119,7 @@ namespace hg::engine::render::cmd {
         ) noexcept override;
 
         void bind(
-            _STD initializer_list<_STD pair<accel::lang::SymbolId, Resource>> list_
+            std::initializer_list<std::pair<accel::lang::SymbolId, Resource>> list_
         ) noexcept {
 
             __debugbreak();
@@ -127,11 +127,11 @@ namespace hg::engine::render::cmd {
 
             auto* tmp = static_cast<ptr<engine::render::ResourceTable>>(nullptr);
             //tmp->bind(list_);
-            //bind(_STD move(tmp));
+            //bind(std::move(tmp));
         }
 
         template <typename... Types_>
-        void bind(_STD pair<accel::lang::SymbolId, Types_>&&... args_) noexcept {
+        void bind(std::pair<accel::lang::SymbolId, Types_>&&... args_) noexcept {
 
             __debugbreak();
             return;
@@ -139,13 +139,13 @@ namespace hg::engine::render::cmd {
             auto* tmp = static_cast<ptr<engine::render::ResourceTable>>(nullptr);
 
             //(tmp->bind(
-            //    _STD make_pair<accel::lang::SymbolId, Resource>(
-            //        _STD move(args_.first),
-            //        Resource(_STD move(args_.second))
+            //    std::make_pair<accel::lang::SymbolId, Resource>(
+            //        std::move(args_.first),
+            //        Resource(std::move(args_.second))
             //    )
             //), ...);
 
-            //bind(_STD move(tmp));
+            //bind(std::move(tmp));
         }
 
     public:
@@ -202,7 +202,7 @@ namespace hg::engine::render::cmd {
 
     public:
         void lambda(
-            mref<_STD function<void(ref<accel::AccelCommandBuffer>)>> lambda_
+            mref<std::function<void(ref<accel::AccelCommandBuffer>)>> lambda_
         ) noexcept override;
 
     public:

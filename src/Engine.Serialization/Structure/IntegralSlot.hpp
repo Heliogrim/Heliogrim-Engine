@@ -3,10 +3,10 @@
 #include "StructureSlot.hpp"
 
 namespace hg::engine::serialization {
-    template <_STD integral Type_>
+    template <std::integral Type_>
     struct IntegralSlotTraits;
 
-    template <_STD integral IntegralType_>
+    template <std::integral IntegralType_>
     class IntegralSlot :
         public TypedStructureSlotBase<IntegralType_> {
     public:
@@ -23,7 +23,7 @@ namespace hg::engine::serialization {
         }
 
         IntegralSlot(mref<StructureSlotState> state_) :
-            underlying_type(_STD move(state_)) {
+            underlying_type(std::move(state_)) {
             this_type::_state.header = StructureSlotHeader::from<trait_type::slot_type>();
         }
 

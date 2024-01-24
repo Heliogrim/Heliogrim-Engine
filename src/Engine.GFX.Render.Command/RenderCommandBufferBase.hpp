@@ -140,8 +140,8 @@ namespace hg::engine::render::cmd {
         ) noexcept = 0;
 
         template <typename MeshDescType_ = gfx::MeshDescription> requires
-            _STD derived_from<MeshDescType_, gfx::MeshDescription> &&
-            _STD is_nothrow_convertible_v<MeshDescType_, gfx::MeshDescription>
+            std::derived_from<MeshDescType_, gfx::MeshDescription> &&
+            std::is_nothrow_convertible_v<MeshDescType_, gfx::MeshDescription>
         void drawMesh(
             const nmpt<const MeshDescType_> meshDescription_,
             u32 instanceCount_,
@@ -167,8 +167,8 @@ namespace hg::engine::render::cmd {
         ) noexcept = 0;
 
         template <typename MeshDescType_ = gfx::MeshDescription> requires
-            _STD derived_from<MeshDescType_, gfx::MeshDescription> &&
-            _STD is_nothrow_convertible_v<MeshDescType_, gfx::MeshDescription>
+            std::derived_from<MeshDescType_, gfx::MeshDescription> &&
+            std::is_nothrow_convertible_v<MeshDescType_, gfx::MeshDescription>
         void drawMeshIdx(
             const nmpt<const MeshDescType_> meshDescription_,
             u32 instanceCount_,
@@ -194,7 +194,7 @@ namespace hg::engine::render::cmd {
 
     public:
         virtual void lambda(
-            mref<_STD function<void(ref<accel::AccelCommandBuffer>)>> lambda_
+            mref<std::function<void(ref<accel::AccelCommandBuffer>)>> lambda_
         ) noexcept = 0;
 
     public:

@@ -14,7 +14,7 @@ using namespace hg::engine::resource;
 using namespace hg;
 
 FileSource::FileSource(mref<fs::File> file_, const streamsize size_, const streamoff offset_) noexcept :
-    _file(_STD move(file_)),
+    _file(std::move(file_)),
     _fptr(nullptr),
     _size(size_),
     _offset(offset_) {}
@@ -26,9 +26,9 @@ FileSource::~FileSource() noexcept {
 }
 
 FileSource::reference_type FileSource::operator=(mref<value_type> other_) noexcept {
-    if (this != _STD addressof(other_)) {
-        _file = _STD move(other_._file);
-        _fptr = _STD exchange(other_._fptr, nullptr);
+    if (this != std::addressof(other_)) {
+        _file = std::move(other_._file);
+        _fptr = std::exchange(other_._fptr, nullptr);
         _size = other_._size;
         _offset = other_._offset;
     }
@@ -105,11 +105,11 @@ bool FileSource::isWritable() const noexcept {
 }
 
 streamsize FileSource::size() const {
-    return _STD filesystem::file_size(_file.path());
+    return std::filesystem::file_size(_file.path());
 }
 
 streamsize FileSource::estimatedSize() const noexcept {
-    return _STD filesystem::file_size(_file.path());
+    return std::filesystem::file_size(_file.path());
 }
 
 bool FileSource::get(streamoff offset_, streamsize size_, ptr<void> dst_, ref<streamsize> actualSize_) {

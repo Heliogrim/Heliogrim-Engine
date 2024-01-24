@@ -22,9 +22,9 @@ namespace hg::engine::input {
         virtual void destroy() = 0;
 
     protected:
-        _STD function<bool(mref<uptr<event::DragDropEvent>> event_)> _onDrag;
-        _STD function<bool(mref<uptr<event::DragDropEvent>> event_)> _onDrop;
-        _STD function<bool(mref<uptr<event::DragDropEvent>> event_)> _onMove;
+        std::function<bool(mref<uptr<event::DragDropEvent>> event_)> _onDrag;
+        std::function<bool(mref<uptr<event::DragDropEvent>> event_)> _onDrop;
+        std::function<bool(mref<uptr<event::DragDropEvent>> event_)> _onMove;
 
     public:
         void setOnDrag(mref<decltype(_onDrag)> onDrag_);

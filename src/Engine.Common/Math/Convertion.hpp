@@ -78,13 +78,13 @@ namespace hg::math {
 
         if (test > singularity/* * unit */) {
 
-            heading = 2.F * _STD atan2(data.x, data.w);
+            heading = 2.F * std::atan2(data.x, data.w);
             attitude = math::pih_f /* North Pole :: Pitch == 90Deg */;
             bank = 0.F;
 
         } else if (test < -singularity/* * unit */) {
 
-            heading = -2.F * _STD atan2(data.x, data.w);
+            heading = -2.F * std::atan2(data.x, data.w);
             attitude = -math::pih_f /* South Pole :: Pitch == -90Deg */;
             bank = 0.F;
 
@@ -92,14 +92,14 @@ namespace hg::math {
 
             const auto zp2 = data.z * data.z;
 
-            heading = _STD atan2(
+            heading = std::atan2(
                 2.F * data.y * data.w - 2.F * data.x * data.z,
                 1.F - 2.F * data.y * data.y - 2 * zp2
             );
 
-            attitude = _STD asin(2.F * test);
+            attitude = std::asin(2.F * test);
 
-            bank = _STD atan2(
+            bank = std::atan2(
                 2.F * data.x * data.w - 2.F * data.y * data.z,
                 1 - 2.F * data.x * data.x - 2.F * zp2
             );
@@ -165,7 +165,7 @@ namespace hg::math {
                     biggestVal
                 };
             default:
-                _STD unreachable();
+                std::unreachable();
         }
     }
 }

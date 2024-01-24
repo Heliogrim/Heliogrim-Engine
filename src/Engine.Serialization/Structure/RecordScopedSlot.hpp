@@ -31,27 +31,27 @@ namespace hg::engine::serialization {
 
         template <typename IntegralType_>
         [[nodiscard]] IntegralScopedSlot<IntegralType_> intoIntegral() {
-            return IntegralScopedSlot<IntegralType_>(_STD move(_state), _STD move(_slot->getState()));
+            return IntegralScopedSlot<IntegralType_>(std::move(_state), std::move(_slot->getState()));
         }
 
         template <typename FloatType_>
         [[nodiscard]] FloatScopedSlot<FloatType_> intoFloat() {
-            return FloatScopedSlot<FloatType_>(_STD move(_state), _STD move(_slot->getState()));
+            return FloatScopedSlot<FloatType_>(std::move(_state), std::move(_slot->getState()));
         }
 
         template <typename ValueType_, template <typename...> typename SliceType_>
         [[nodiscard]] SliceScopedSlot<ValueType_, SliceType_> intoSlice() {
-            return SliceScopedSlot<ValueType_, SliceType_> { _STD move(_state), _STD move(_slot->getState()) };
+            return SliceScopedSlot<ValueType_, SliceType_> { std::move(_state), std::move(_slot->getState()) };
         }
 
         template <typename Key_, typename Value_, template <typename, typename...> typename MapType_>
         [[nodiscard]] MapScopedSlot<Key_, Value_, MapType_> intoMap() {
-            return MapScopedSlot<Key_, Value_, MapType_> { _STD move(_state), _STD move(_slot->getState()) };
+            return MapScopedSlot<Key_, Value_, MapType_> { std::move(_state), std::move(_slot->getState()) };
         }
 
-        template <typename Key_, typename Value_, template <typename, typename...> typename PackType_ = _STD pair>
+        template <typename Key_, typename Value_, template <typename, typename...> typename PackType_ = std::pair>
         [[nodiscard]] MapEntryScopedSlot<Key_, Value_, PackType_> intoMapEntry() {
-            return MapEntryScopedSlot<Key_, Value_, PackType_> { _STD move(_state), _STD move(_slot->getState()) };
+            return MapEntryScopedSlot<Key_, Value_, PackType_> { std::move(_state), std::move(_slot->getState()) };
         }
     };
 }

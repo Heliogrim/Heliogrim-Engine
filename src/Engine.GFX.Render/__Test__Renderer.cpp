@@ -41,8 +41,8 @@ TestRenderer::TestRenderer(
         "Test-Renderer",
         makeCompileGraph(),
         nullptr,
-        _STD move(globalCache_),
-        _STD move(globalGfxAllocator_)
+        std::move(globalCache_),
+        std::move(globalGfxAllocator_)
     ) {}
 
 TestRenderer::~TestRenderer() noexcept = default;
@@ -181,49 +181,49 @@ uptr<graph::CompileGraph> TestRenderer::makeCompileGraph() noexcept {
     /**/
 
     nmpt<graph::Node> nextCursor = beforeBarrier.get();
-    graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(beforeBarrier));
+    graph = graph::Builder::insertNode(std::move(graph), cursor, end, std::move(beforeBarrier));
 
-    cursor = _STD exchange(nextCursor, brdfLutGen.get());
-    graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(brdfLutGen));
+    cursor = std::exchange(nextCursor, brdfLutGen.get());
+    graph = graph::Builder::insertNode(std::move(graph), cursor, end, std::move(brdfLutGen));
 
-    cursor = _STD exchange(nextCursor, brdfPrefGen.get());
-    graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(brdfPrefGen));
+    cursor = std::exchange(nextCursor, brdfPrefGen.get());
+    graph = graph::Builder::insertNode(std::move(graph), cursor, end, std::move(brdfPrefGen));
 
-    cursor = _STD exchange(nextCursor, brdfIrradGen.get());
-    graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(brdfIrradGen));
+    cursor = std::exchange(nextCursor, brdfIrradGen.get());
+    graph = graph::Builder::insertNode(std::move(graph), cursor, end, std::move(brdfIrradGen));
 
-    cursor = _STD exchange(nextCursor, dummyProvider.get());
-    graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(dummyProvider));
+    cursor = std::exchange(nextCursor, dummyProvider.get());
+    graph = graph::Builder::insertNode(std::move(graph), cursor, end, std::move(dummyProvider));
 
-    cursor = _STD exchange(nextCursor, depthPrePass.get());
-    graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(depthPrePass));
+    cursor = std::exchange(nextCursor, depthPrePass.get());
+    graph = graph::Builder::insertNode(std::move(graph), cursor, end, std::move(depthPrePass));
 
-    cursor = _STD exchange(nextCursor, skyBoxPass.get());
-    graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(skyBoxPass));
+    cursor = std::exchange(nextCursor, skyBoxPass.get());
+    graph = graph::Builder::insertNode(std::move(graph), cursor, end, std::move(skyBoxPass));
 
-    //cursor = _STD exchange(nextCursor, subpass.get());
-    //graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(subpass));
+    //cursor = std::exchange(nextCursor, subpass.get());
+    //graph = graph::Builder::insertNode(std::move(graph), cursor, end, std::move(subpass));
 
-    cursor = _STD exchange(nextCursor, dirShadowPass.get());
-    graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(dirShadowPass));
+    cursor = std::exchange(nextCursor, dirShadowPass.get());
+    graph = graph::Builder::insertNode(std::move(graph), cursor, end, std::move(dirShadowPass));
 
-    cursor = _STD exchange(nextCursor, matPass.get());
-    graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(matPass));
+    cursor = std::exchange(nextCursor, matPass.get());
+    graph = graph::Builder::insertNode(std::move(graph), cursor, end, std::move(matPass));
 
-    //cursor = _STD exchange(nextCursor, ppPass.get());
-    //graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(ppPass));
+    //cursor = std::exchange(nextCursor, ppPass.get());
+    //graph = graph::Builder::insertNode(std::move(graph), cursor, end, std::move(ppPass));
 
-    //cursor = _STD exchange(nextCursor, visualizePass.get());
-    //graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(visualizePass));
+    //cursor = std::exchange(nextCursor, visualizePass.get());
+    //graph = graph::Builder::insertNode(std::move(graph), cursor, end, std::move(visualizePass));
 
-    //cursor = _STD exchange(nextCursor, uiPass.get());
-    //graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(uiPass));
+    //cursor = std::exchange(nextCursor, uiPass.get());
+    //graph = graph::Builder::insertNode(std::move(graph), cursor, end, std::move(uiPass));
 
-    cursor = _STD exchange(nextCursor, endPass.get());
-    graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(endPass));
+    cursor = std::exchange(nextCursor, endPass.get());
+    graph = graph::Builder::insertNode(std::move(graph), cursor, end, std::move(endPass));
 
-    cursor = _STD exchange(nextCursor, afterBarrier.get());
-    graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(afterBarrier));
+    cursor = std::exchange(nextCursor, afterBarrier.get());
+    graph = graph::Builder::insertNode(std::move(graph), cursor, end, std::move(afterBarrier));
 
     /**/
 
@@ -260,13 +260,13 @@ smr<engine::accel::AccelerationEffect> build_test_effect() {
 
     vertexStage->setIntermediate(make_smr<engine::accel::lang::Intermediate>());
     vertexStage->getIntermediate()->lang.dialect = engine::accel::lang::Dialect::eVulkanGlsl460;
-    vertexStage->getIntermediate()->lang.text.emplace_back(_STD move(vertexShaderCode));
+    vertexStage->getIntermediate()->lang.text.emplace_back(std::move(vertexShaderCode));
 
     const auto fragmentShaderCode = read_shader_file("__test__render.fs");
 
     fragmentStage->setIntermediate(make_smr<engine::accel::lang::Intermediate>());
     fragmentStage->getIntermediate()->lang.dialect = engine::accel::lang::Dialect::eVulkanGlsl460;
-    fragmentStage->getIntermediate()->lang.text.emplace_back(_STD move(fragmentShaderCode));
+    fragmentStage->getIntermediate()->lang.text.emplace_back(std::move(fragmentShaderCode));
 
     /**/
 
@@ -274,9 +274,9 @@ smr<engine::accel::AccelerationEffect> build_test_effect() {
     GuidGenerate(guid);
 
     return make_smr<engine::accel::AccelerationEffect>(
-        _STD move(guid),
+        std::move(guid),
         "test-render-effect",
-        Vector<smr<engine::accel::Stage>> { _STD move(vertexStage), _STD move(fragmentStage) }
+        Vector<smr<engine::accel::Stage>> { std::move(vertexStage), std::move(fragmentStage) }
         // Vector<smr<const Symbol>> {},
         // Vector<smr<const Symbol>> { makeSceneColorSymbol() }
     );

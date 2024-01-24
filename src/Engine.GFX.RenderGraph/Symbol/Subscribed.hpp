@@ -8,14 +8,14 @@ namespace hg::engine::render::graph {
 }
 
 namespace hg::engine::render::graph {
-    template <class Type_ = SymbolizedResource> requires (not _STD is_void_v<Type_>)
+    template <class Type_ = SymbolizedResource> requires (not std::is_void_v<Type_>)
     struct ALIGNED(Subscribed, sizeof(ptr<Type_>)) {
     public:
         using this_type = Subscribed<Type_>;
 
         using value_type = Type_;
-        using const_value_type = _STD conditional_t<_STD is_const_v<Type_>, Type_, _STD add_const_t<Type_>>;
-        using ref_type = _STD conditional_t<_STD is_const_v<Type_>, cref<Type_>, ref<Type_>>;
+        using const_value_type = std::conditional_t<std::is_const_v<Type_>, Type_, std::add_const_t<Type_>>;
+        using ref_type = std::conditional_t<std::is_const_v<Type_>, cref<Type_>, ref<Type_>>;
         using const_ref_type = cref<Type_>;
 
     public:

@@ -10,9 +10,9 @@ AccelerationEffect::AccelerationEffect(
     mref<string> name_,
     mref<Vector<smr<Stage>>> stages_
 ) :
-    _guid(_STD move(guid_)),
-    _name(_STD move(name_)),
-    _stages(_STD move(stages_)) {}
+    _guid(std::move(guid_)),
+    _name(std::move(name_)),
+    _stages(std::move(stages_)) {}
 
 AccelerationEffect::~AccelerationEffect() = default;
 
@@ -42,7 +42,7 @@ void AccelerationEffect::enumerateImportSymbols(ref<Vector<StageInput>> imports_
 
         for (const auto& out : tmpOut) {
 
-            const auto result = _STD ranges::remove_if(
+            const auto result = std::ranges::remove_if(
                 tmpBeg,
                 tmpEnd,
                 [&out](const auto& stageIn) {
@@ -85,7 +85,7 @@ void AccelerationEffect::enumerateExportSymbols(ref<Vector<StageOutput>> exports
 
         for (const auto& in : tmpIn) {
 
-            const auto result = _STD ranges::remove_if(
+            const auto result = std::ranges::remove_if(
                 tmpBeg,
                 tmpEnd,
                 [&in](const auto& stageOut) {

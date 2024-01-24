@@ -87,5 +87,5 @@ cref<decltype(DataLayoutBase::_defines)> DataLayoutBase::defines() const noexcep
 }
 
 void DataLayoutBase::define(mref<ptr<layout::LayoutDefine>> define_) {
-    _defines.push_back(_STD move(define_));
+    _defines.push_back(std::move(define_));
 }

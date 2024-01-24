@@ -65,19 +65,19 @@ ref<VkScopedResourceTable::this_type> VkScopedResourceTable::replaceWith(mref<Re
     auto&& other = static_cast<mref<VkScopedResourceTable>>(table_);
 
     table.clear();
-    table = _STD move(other.table);
+    table = std::move(other.table);
     ++_dynamicBindVersion;
 
     return *this;
 }
 
 void VkScopedResourceTable::attach(mref<Holder> obj_) {
-    // TODO: _mayOwned.emplace_back(_STD move(obj_));
-    _owned.emplace_back(_STD move(obj_));
+    // TODO: _mayOwned.emplace_back(std::move(obj_));
+    _owned.emplace_back(std::move(obj_));
 }
 
 void VkScopedResourceTable::detach(cref<Holder> obj_) {
-    _STD unreachable();
+    std::unreachable();
 }
 
 Vector<driver::vk::VkDescriptorPoolSize> VkScopedResourceTable::nextAllocSizes() const noexcept {
@@ -131,7 +131,7 @@ bool VkScopedResourceTable::allocateAndCommit(
 
             assert(static_cast<u32>(vkdt) >= 0uL && static_cast<u32>(vkdt) < 32uL);
 
-            auto iter = _STD ranges::find(
+            auto iter = std::ranges::find(
                 allocationLayout_,
                 vkdt,
                 [](const auto& size_) {
@@ -159,10 +159,10 @@ bool VkScopedResourceTable::allocateAndCommit(
     };
 
     pool.vkPool = device->vkDevice().createDescriptorPool(dpci);
-    pool.pooled = _STD move(allocationLayout_);
+    pool.pooled = std::move(allocationLayout_);
 
     assert(pool.vkPool);
-    _commitPools.emplace_back(_STD move(pool));
+    _commitPools.emplace_back(std::move(pool));
     _committedSets.emplace_back();
 
     /* Select and ensure pool availability and remaining size */
@@ -207,7 +207,7 @@ void VkScopedResourceTable::updateSets(
 
     const auto device = engine::Engine::getEngine()->getGraphics()->getCurrentDevice()->vkDevice();
 
-    for (auto [group, set] : _STD ranges::views::zip(layout_.groups, descriptorSets_)) {
+    for (auto [group, set] : std::ranges::views::zip(layout_.groups, descriptorSets_)) {
 
         DescriptorWriter writer { reinterpret_cast<::VkDescriptorSet>(set) };
 

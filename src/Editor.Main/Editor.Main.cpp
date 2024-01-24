@@ -35,12 +35,12 @@ int main_impl() {
     /**
      * Register Shutdown Sequence
      */
-    _STD atomic_flag sleepFlag {};
-    sleepFlag.test_and_set(_STD memory_order::release);
+    std::atomic_flag sleepFlag {};
+    sleepFlag.test_and_set(std::memory_order::release);
 
     engine->getEmitter().on<SignalShutdownEvent>(
-        [sleepFlag = ptr<_STD atomic_flag> { &sleepFlag }](cref<SignalShutdownEvent>) {
-            sleepFlag->clear(_STD memory_order::relaxed);
+        [sleepFlag = ptr<std::atomic_flag> { &sleepFlag }](cref<SignalShutdownEvent>) {
+            sleepFlag->clear(std::memory_order::relaxed);
             sleepFlag->notify_one();
         }
     );

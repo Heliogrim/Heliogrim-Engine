@@ -19,14 +19,14 @@ void PooledBuffer::release() {
     /**
      *
      */
-    _pool->release(_STD move(this));
+    _pool->release(std::move(this));
 }
 
 bool PooledBuffer::try_pop(ref<non_owning_rptr<const task::TaskDelegate>> value_) {
     /**
      *
      */
-    if (_reader.test_and_set(_STD memory_order_release)) {
+    if (_reader.test_and_set(std::memory_order_release)) {
         return false;
     }
 
@@ -35,7 +35,7 @@ bool PooledBuffer::try_pop(ref<non_owning_rptr<const task::TaskDelegate>> value_
     /**
      *
      */
-    _reader.clear(_STD memory_order_release);
+    _reader.clear(std::memory_order_release);
     return result;
 }
 
@@ -43,16 +43,16 @@ bool PooledBuffer::try_push(mref<non_owning_rptr<const task::TaskDelegate>> valu
     /**
      *
      */
-    if (_writer.test_and_set(_STD memory_order_release)) {
+    if (_writer.test_and_set(std::memory_order_release)) {
         return false;
     }
 
-    auto result = underlying_type::try_push(_STD move(value_));
+    auto result = underlying_type::try_push(std::move(value_));
 
     /**
      *
      */
-    _writer.clear(_STD memory_order_release);
+    _writer.clear(std::memory_order_release);
     return result;
 }
 

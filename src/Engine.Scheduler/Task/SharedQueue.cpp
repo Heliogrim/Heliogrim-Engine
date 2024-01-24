@@ -12,7 +12,7 @@ bool SharedSubQueue::try_acquire() {
     const auto tid = thread::self::getId();
 
     thread::thread_id expect { 0 };
-    return owner.compare_exchange_weak(expect, tid, _STD memory_order::relaxed, _STD memory_order::relaxed);
+    return owner.compare_exchange_weak(expect, tid, std::memory_order::relaxed, std::memory_order::relaxed);
 }
 
 void SharedSubQueue::acquire() {
@@ -20,7 +20,7 @@ void SharedSubQueue::acquire() {
 
     u8 tries { 0 };
     thread::thread_id expect { 0 };
-    while (!owner.compare_exchange_weak(expect, tid, _STD memory_order::release, _STD memory_order::relaxed)) {
+    while (!owner.compare_exchange_weak(expect, tid, std::memory_order::release, std::memory_order::relaxed)) {
         expect = 0;
 
         if (++tries > retry_threshold) {
@@ -35,12 +35,12 @@ void SharedSubQueue::release() {
     const auto result = owner.compare_exchange_strong(
         expect,
         thread::thread_id { 0 },
-        _STD memory_order::release,
-        _STD memory_order::acquire
+        std::memory_order::release,
+        std::memory_order::acquire
     );
     assert(result);
     #else
-    owner.store(thread::thread_id { 0 }, _STD memory_order::relaxed);
+    owner.store(thread::thread_id { 0 }, std::memory_order::relaxed);
     #endif
 }
 
@@ -92,7 +92,7 @@ void SharedQueue::push(mref<non_owning_rptr<const task::TaskDelegate>> task_) {
             if (cur.mask & task_->mask()) {
 
                 cur.acquire();
-                done = cur.buffer.try_push(_STD forward<non_owning_rptr<const task::TaskDelegate>>(task_));
+                done = cur.buffer.try_push(std::forward<non_owning_rptr<const task::TaskDelegate>>(task_));
                 cur.release();
 
                 if (done) {

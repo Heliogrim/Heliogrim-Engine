@@ -23,7 +23,7 @@ void SLNode::rtraverse(ref<Visitor> visitor_) const {
 }
 
 void SLNode::setNext(mref<smr<Node>> next_) {
-    _next = _STD move(next_);
+    _next = std::move(next_);
 }
 
 smr<Node> SLNode::getNext() const noexcept {
@@ -31,7 +31,7 @@ smr<Node> SLNode::getNext() const noexcept {
 }
 
 void SLNode::setPrev(mref<nmpt<const Node>> prev_) {
-    _prev = _STD move(prev_);
+    _prev = std::move(prev_);
 }
 
 nmpt<const Node> SLNode::getPrev() const noexcept {

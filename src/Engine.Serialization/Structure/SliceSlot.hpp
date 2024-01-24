@@ -24,11 +24,11 @@ namespace hg::engine::serialization {
 
         using entry_type = typename SubstitutionSlot<ValueType_>::type;
         using slice_type = value_type;
-        using slice_value_type = _STD decay_t<ValueType_>;
+        using slice_value_type = std::decay_t<ValueType_>;
 
     public:
         SliceSlot(mref<StructureSlotState> state_) :
-            underlying_type(_STD move(state_)) {
+            underlying_type(std::move(state_)) {
             this_type::_state.header = StructureSlotHeader::from<StructureSlotType::eSlice>();
         }
 
@@ -59,8 +59,8 @@ namespace hg::engine::serialization {
 
             /**/
 
-            auto begin = _STD ranges::begin(value_);
-            const auto end = _STD ranges::end(value_);
+            auto begin = std::ranges::begin(value_);
+            const auto end = std::ranges::end(value_);
 
             constexpr s64 off = sizeof(/* StructureSlotHeader::type */StructureSlotType) + sizeof(
                 /* StructureSlotHeader::size */s64);
@@ -78,7 +78,7 @@ namespace hg::engine::serialization {
                     this_type::_state.root
                 };
 
-                entry_type slot { _STD move(state) };
+                entry_type slot { std::move(state) };
 
                 /**/
 
@@ -135,7 +135,7 @@ namespace hg::engine::serialization {
 
             /**/
 
-            // TODO: if constexpr (_STD is_constructible_v<slice_value_type, ...>)
+            // TODO: if constexpr (std::is_constructible_v<slice_value_type, ...>)
 
             if constexpr (HasResizeFnc<value_type>) {
                 value_.resize(storedCount);
@@ -143,8 +143,8 @@ namespace hg::engine::serialization {
                 assert(value_.size() >= storedCount);
             }
 
-            auto begin = _STD ranges::begin(value_);
-            const auto end = _STD ranges::end(value_);
+            auto begin = std::ranges::begin(value_);
+            const auto end = std::ranges::end(value_);
 
             constexpr s64 off = sizeof(/* StructureSlotHeader::type */StructureSlotType) + sizeof(
                 /* StructureSlotHeader::size */s64);
@@ -164,7 +164,7 @@ namespace hg::engine::serialization {
                     this_type::_state.root
                 };
 
-                entry_type slot { _STD move(state) };
+                entry_type slot { std::move(state) };
 
                 /**/
 

@@ -11,7 +11,7 @@ using namespace hg;
 
 EffectCache::EffectCache(mref<smr<GlobalStorage>> storage_) :
     Cache(),
-    _storage(_STD move(storage_)) {}
+    _storage(std::move(storage_)) {}
 
 EffectCache::~EffectCache() = default;
 
@@ -25,10 +25,10 @@ EffectCache::response_type::type EffectCache::operator()(
 
     if (_storage->hasAccelEffect(guid)) {
         auto stored = _storage->getAccelEffect(guid);
-        return make_smr<resource::UniqueResource<AccelEffectWrapper>>(_STD move(stored));
+        return make_smr<resource::UniqueResource<AccelEffectWrapper>>(std::move(stored));
     }
 
-    auto prevResponse = next_(_STD move(request_), _STD move(options_));
+    auto prevResponse = next_(std::move(request_), std::move(options_));
 
     if (not prevResponse.empty()) {
         const auto guard = prevResponse->acquire(resource::ResourceUsageFlag::eRead);

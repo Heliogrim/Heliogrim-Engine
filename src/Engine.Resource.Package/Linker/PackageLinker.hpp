@@ -49,7 +49,7 @@ namespace hg::engine::resource {
     public:
         bool store(mref<ArchiveHeader> header_, mref<uptr<serialization::Archive>> archive_);
 
-        bool store(_STD initializer_list<_STD pair<ArchiveHeader, uptr<serialization::Archive>>> archives_);
+        bool store(std::initializer_list<std::pair<ArchiveHeader, uptr<serialization::Archive>>> archives_);
 
         [[nodiscard]] uptr<serialization::SourceReadonlyArchive> load(
             const Guid archiveGuid_

@@ -33,7 +33,7 @@ DefaultBrdfMaterialPrototype::DefaultBrdfMaterialPrototype() :
 
     auto submodule = engine::Engine::getEngine()->getModules().getSubModule(engine::AccelDepKey);
     auto accel = static_cast<ptr<engine::Accel>>(submodule);
-    accel->getGlobalStorage()->insertAccelEffect(engine::accel::calcStorageHash(*predefined), _STD move(predefined));
+    accel->getGlobalStorage()->insertAccelEffect(engine::accel::calcStorageHash(*predefined), std::move(predefined));
 
     asset->_params.push_back(
         engine::assets::GfxMaterialPrototype::TmpParam {

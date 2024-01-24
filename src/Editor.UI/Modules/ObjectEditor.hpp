@@ -34,7 +34,7 @@ namespace hg::editor::ui {
 
         template <HasStaticType ObjectType_>
         bool storeTypeMapper(mref<uptr<ObjectValueMapper<ObjectType_>>> mapper_) {
-            return storeObjectMapper(ObjectType_::type_id, _STD move(mapper_));
+            return storeObjectMapper(ObjectType_::type_id, std::move(mapper_));
         }
 
         [[nodiscard]] ptr<ObjectValueMapperBase> getObjectMapper(const type_id typeId_);

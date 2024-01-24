@@ -27,16 +27,16 @@ namespace hg {
     using non_owning_rptr = Type_*;
 
     template <class Ty>
-    using sptr = _STD shared_ptr<Ty>;
+    using sptr = std::shared_ptr<Ty>;
 
     template <class Ty>
-    using wptr = _STD weak_ptr<Ty>;
+    using wptr = std::weak_ptr<Ty>;
 
     template <class Ty>
-    using uptr = _STD unique_ptr<Ty>;
+    using uptr = std::unique_ptr<Ty>;
 
     template <class Ty>
-    using managed = _STD shared_ptr<Ty>;
+    using managed = std::shared_ptr<Ty>;
 
     /* C++ Language Extensions */
 

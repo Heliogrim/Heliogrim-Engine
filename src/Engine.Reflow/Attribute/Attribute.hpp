@@ -15,7 +15,7 @@ namespace hg::engine::reflow {
         using value_type = ValueType_;
 
     public:
-        template <typename Type_ = ValueType_> requires _STD is_default_constructible_v<Type_>
+        template <typename Type_ = ValueType_> requires std::is_default_constructible_v<Type_>
         Attribute(const non_owning_rptr<const Widget> widget_) :
             _widget(widget_),
             _value() {}
@@ -23,7 +23,7 @@ namespace hg::engine::reflow {
         template <typename Type_ = ValueType_>
         Attribute(const non_owning_rptr<const Widget> widget_, Type_&& value_) :
             _widget(widget_),
-            _value(_STD forward<Type_>(value_)) {}
+            _value(std::forward<Type_>(value_)) {}
 
     protected:
         non_owning_rptr<const Widget> _widget;
@@ -36,17 +36,17 @@ namespace hg::engine::reflow {
 
         template <typename Type_ = ValueType_>
         void setValue(Type_&& value_) {
-            _value = _STD forward<Type_>(value_);
+            _value = std::forward<Type_>(value_);
         }
 
         template <typename Type_ = ValueType_, typename... Args_> requires
-            _STD is_aggregate_v<Type_> ||
-            (_STD is_constructible_v<Type_, Args_...> && _STD is_move_assignable_v<Type_>)
+            std::is_aggregate_v<Type_> ||
+            (std::is_constructible_v<Type_, Args_...> && std::is_move_assignable_v<Type_>)
         void setValue(Args_&&... args_) {
-            if constexpr (_STD is_aggregate_v<Type_>) {
-                _value = { _STD forward<Args_>(args_)... };
+            if constexpr (std::is_aggregate_v<Type_>) {
+                _value = { std::forward<Args_>(args_)... };
             } else {
-                _value = Type_(_STD forward<Args_>(args_)...);
+                _value = Type_(std::forward<Args_>(args_)...);
             }
         }
 

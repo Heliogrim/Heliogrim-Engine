@@ -15,7 +15,7 @@ SeqSlot::SeqSlot(cref<StructureSlotState> state_) :
 }
 
 SeqSlot::SeqSlot(mref<StructureSlotState> state_) :
-    StructureSlotBase(_STD move(state_)) {
+    StructureSlotBase(std::move(state_)) {
     _state.header = StructureSlotHeader::from<StructureSlotType::eSeq>();
 }
 
@@ -89,7 +89,7 @@ sptr<RecordSlot> SeqSlot::addRecord() {
         _state.root
     };
 
-    return make_sptr<RecordSlot>(_STD move(state));
+    return make_sptr<RecordSlot>(std::move(state));
 }
 
 sptr<RecordSlot> SeqSlot::getRecord(const u64 index_) {
@@ -168,7 +168,7 @@ sptr<RecordSlot> SeqSlot::getRecord(const u64 index_) {
         _state.root
     };
 
-    return make_sptr<RecordSlot>(_STD move(state));
+    return make_sptr<RecordSlot>(std::move(state));
 }
 
 s64 SeqSlot::getRecordCount() {

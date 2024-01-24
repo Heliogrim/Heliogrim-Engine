@@ -4,7 +4,7 @@ namespace hg {
     template <typename From_, typename To_, typename VoidType = void>
     struct void_cast {
         [[nodiscard]] constexpr To_ operator()(From_ value_) const noexcept {
-            return *reinterpret_cast<_STD remove_reference_t<To_>*>(
+            return *reinterpret_cast<std::remove_reference_t<To_>*>(
                 reinterpret_cast<VoidType*>(&value_)
             );
         }
@@ -25,11 +25,11 @@ namespace hg {
     }
 
     template <typename Ty_, typename Ux_, typename Vy_ = void>
-    [[nodiscard]] constexpr _STD remove_pointer_t<Ty_>* _void_cast(
-        _STD remove_pointer_t<_STD remove_reference_t<Ux_>>*&& ptr_
+    [[nodiscard]] constexpr std::remove_pointer_t<Ty_>* _void_cast(
+        std::remove_pointer_t<std::remove_reference_t<Ux_>>*&& ptr_
     ) noexcept {
-        using ty = _STD remove_pointer_t<Ty_>;
-        using ux = _STD remove_pointer_t<_STD remove_reference_t<Ux_>>;
-        return reinterpret_cast<ty*>(reinterpret_cast<Vy_*>(_STD forward<ux*>(ptr_)));
+        using ty = std::remove_pointer_t<Ty_>;
+        using ux = std::remove_pointer_t<std::remove_reference_t<Ux_>>;
+        return reinterpret_cast<ty*>(reinterpret_cast<Vy_*>(std::forward<ux*>(ptr_)));
     }
 }

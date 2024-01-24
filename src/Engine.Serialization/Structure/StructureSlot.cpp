@@ -9,7 +9,7 @@ StructureSlotBase::StructureSlotBase(cref<StructureSlotState> state_) :
     _state(state_) {}
 
 StructureSlotBase::StructureSlotBase(mref<StructureSlotState> state_) :
-    _state(_STD move(state_)) {}
+    _state(std::move(state_)) {}
 
 cref<StructureSlotHeader> StructureSlotBase::getSlotHeader() const noexcept {
     return _state.header;

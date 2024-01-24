@@ -69,7 +69,7 @@ std::string FileResource::getCurrentDir() {
     GetCurrentDirectoryA(sizeof(wdir), wdir);
     #ifdef _DEBUG
     std::string temp = std::string(wdir);
-    if (temp.compare(temp.length() - _STD string("Debug").length(), _STD string("Debug").length(), "Debug") == 0) {
+    if (temp.compare(temp.length() - std::string("Debug").length(), std::string("Debug").length(), "Debug") == 0) {
     } else {
         temp = temp.substr(0, temp.find_last_of("/\\"));
     }

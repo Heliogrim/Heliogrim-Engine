@@ -9,7 +9,7 @@ namespace hg::editor {
         public SimpleAction {
     public:
         using this_type = DelegateAction;
-        using delegate_type = _STD function<void()>;
+        using delegate_type = std::function<void()>;
 
     public:
         inline constexpr static action_type_id typeId { "DelegateAction"_typeId };

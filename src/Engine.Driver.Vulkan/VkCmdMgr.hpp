@@ -27,13 +27,13 @@ namespace hg::driver::vk {
         InlineAutoArray<engine::accel::AccelCommandBuffer, 2uLL> active;
 
     public:
-        [[nodiscard]] _STD span<const Vector<engine::accel::AccelCommandBuffer>> getCommitted() const noexcept;
+        [[nodiscard]] std::span<const Vector<engine::accel::AccelCommandBuffer>> getCommitted() const noexcept;
 
         [[nodiscard]] size_t getCommitCount() const noexcept;
 
         [[nodiscard]] size_t getCommittedCount() const noexcept;
 
-        [[nodiscard]] _STD span<const engine::accel::AccelCommandBuffer> getPending() const noexcept;
+        [[nodiscard]] std::span<const engine::accel::AccelCommandBuffer> getPending() const noexcept;
 
         [[nodiscard]] size_t getPendingCount() const noexcept;
 

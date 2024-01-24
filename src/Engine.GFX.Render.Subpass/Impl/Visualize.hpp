@@ -18,7 +18,7 @@ namespace hg::engine::render {
     class Visualize :
         public SubPass {
     private:
-        _STD map<smr<const graph::Symbol>, _STD function<void()>> _available;
+        std::map<smr<const graph::Symbol>, std::function<void()>> _available;
         smr<const graph::Symbol> _selected;
 
         struct Resources {

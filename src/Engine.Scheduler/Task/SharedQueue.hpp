@@ -31,7 +31,7 @@ namespace hg::engine::scheduler {
 
             const TaskMask mask;
 
-            _STD atomic<thread::thread_id> owner { 0 };
+            std::atomic<thread::thread_id> owner { 0 };
 
             concurrent::RingBuffer<non_owning_rptr<const task::TaskDelegate>> buffer;
 

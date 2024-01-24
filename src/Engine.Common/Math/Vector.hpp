@@ -141,15 +141,15 @@ namespace hg::math {
             x(xyzw_.x),
             y(xyzw_.y) {}
 
-        template <typename Ty_> requires _STD is_integral_v<Ty_> || _STD is_floating_point_v<Ty_>
+        template <typename Ty_> requires std::is_integral_v<Ty_> || std::is_floating_point_v<Ty_>
         constexpr vec2_t(const vec3_t<Ty_> xy_) noexcept :
-            x((value_type)xy_.x),
-            y((value_type)xy_.y) {}
+            x(static_cast<value_type>(xy_.x)),
+            y(static_cast<value_type>(xy_.y)) {}
 
-        template <typename Ty_> requires _STD is_integral_v<Ty_> || _STD is_floating_point_v<Ty_>
+        template <typename Ty_> requires std::is_integral_v<Ty_> || std::is_floating_point_v<Ty_>
         constexpr vec2_t(const vec2_t<Ty_> xy_) noexcept :
-            x((value_type)xy_.x),
-            y((value_type)xy_.y) {}
+            x(static_cast<value_type>(xy_.x)),
+            y(static_cast<value_type>(xy_.y)) {}
 
         /**
          * Sets an x coordinate
@@ -642,11 +642,11 @@ namespace hg::math {
          * @param y_
          * @param z_
          */
-        template <typename Ty_> requires _STD is_integral_v<Ty_> || _STD is_floating_point_v<Ty_>
+        template <typename Ty_> requires std::is_integral_v<Ty_> || std::is_floating_point_v<Ty_>
         explicit constexpr vec3_t(const Ty_& x_, const Ty_& y_, const Ty_& z_) :
-            x((value_type)x_),
-            y((value_type)y_),
-            z((value_type)z_) {}
+            x(static_cast<value_type>(x_)),
+            y(static_cast<value_type>(y_)),
+            z(static_cast<value_type>(z_)) {}
 
         /**
          * Cast Constructor
@@ -658,11 +658,11 @@ namespace hg::math {
          *
          * @param other_ The foreign vector to cast the values from.
          */
-        template <typename Ty_> requires _STD is_integral_v<Ty_> || _STD is_floating_point_v<Ty_>
+        template <typename Ty_> requires std::is_integral_v<Ty_> || std::is_floating_point_v<Ty_>
         explicit constexpr vec3_t(const vec3_t<Ty_>& other_) :
-            x((value_type)(other_.x)),
-            y((value_type)(other_.y)),
-            z((value_type)(other_.z)) {}
+            x(static_cast<value_type>(other_.x)),
+            y(static_cast<value_type>(other_.y)),
+            z(static_cast<value_type>(other_.z)) {}
 
         /**
          * Cast Constructor
@@ -674,11 +674,11 @@ namespace hg::math {
          *
          * @param other_ The foreign vector to cast the values from.
          */
-        template <typename Ty_> requires _STD is_integral_v<Ty_> || _STD is_floating_point_v<Ty_>
+        template <typename Ty_> requires std::is_integral_v<Ty_> || std::is_floating_point_v<Ty_>
         explicit constexpr vec3_t(vec3_t<Ty_>&& other_) :
-            x((value_type)(other_.x)),
-            y((value_type)(other_.y)),
-            z((value_type)(other_.z)) {}
+            x(static_cast<value_type>(other_.x)),
+            y(static_cast<value_type>(other_.y)),
+            z(static_cast<value_type>(other_.z)) {}
 
         /**
          * Sets an x coordinate
@@ -696,7 +696,7 @@ namespace hg::math {
         }
 
         ref<this_type> setX(auto&& x_) {
-            x = _STD forward<decltype(x_)>(x_);
+            x = std::forward<decltype(x_)>(x_);
             return *this;
         }
 
@@ -949,10 +949,10 @@ namespace hg::math {
             return *this;
         }
 
-        template <typename Ty_> requires _STD is_integral_v<Ty_> || _STD is_floating_point_v<Ty_>
+        template <typename Ty_> requires std::is_integral_v<Ty_> || std::is_floating_point_v<Ty_>
         constexpr reference_type operator+=(const vec2_t<Ty_>& xy_) {
-            x += (value_type)xy_.x;
-            y += (value_type)xy_.y;
+            x += static_cast<value_type>(xy_.x);
+            y += static_cast<value_type>(xy_.y);
             return *this;
         }
 
@@ -1083,7 +1083,7 @@ namespace hg::math {
             return !(x == other_.x && y == other_.y && z == other_.z);
         }
 
-        template <typename NumericType_ = T, _STD enable_if_t<!_STD is_floating_point_v<NumericType_>, bool>  = true>
+        template <typename NumericType_ = T, std::enable_if_t<!std::is_floating_point_v<NumericType_>, bool>  = true>
         constexpr type operator>>(const NumericType_& shift_) const {
             return type {
                 x >> shift_,
@@ -1285,12 +1285,12 @@ namespace hg::math {
          *
          * @param other_ The foreign vector to cast the values from.
          */
-        template <typename Ty_> requires _STD is_integral_v<Ty_> || _STD is_floating_point_v<Ty_>
+        template <typename Ty_> requires std::is_integral_v<Ty_> || std::is_floating_point_v<Ty_>
         explicit constexpr vec4_t(const vec4_t<Ty_>& other_) :
-            x((value_type)(other_.x)),
-            y((value_type)(other_.y)),
-            z((value_type)(other_.z)),
-            w((value_type)(other_.w)) {}
+            x(static_cast<value_type>(other_.x)),
+            y(static_cast<value_type>(other_.y)),
+            z(static_cast<value_type>(other_.z)),
+            w(static_cast<value_type>(other_.w)) {}
 
         /**
          * Sets an x coordinate

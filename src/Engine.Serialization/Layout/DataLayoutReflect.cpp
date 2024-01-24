@@ -24,7 +24,7 @@ void DataLayoutReflect::destroy(mref<ptr<ClassMetaBase>> obj_) const {
     // TODO:
     // WARNING:
     // ERROR:
-    //_rclass->destroy(_STD move(obj_));
+    //_rclass->destroy(std::move(obj_));
 }
 
 void DataLayoutReflect::constructInPlace(const ptr<void> dst_) const {

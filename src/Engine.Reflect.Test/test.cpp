@@ -1,7 +1,6 @@
 #include "pch.h"
 
 #include <Engine.Common/Meta/Constexpr.hpp>
-#include <Engine.GFX.Glow/Texture/RevVirtualMarkerTexture.hpp>
 #include <Engine.Reflect/Compile/Map.hpp>
 #include <Engine.Reflect/Compile/HashMap.hpp>
 #include <Engine.Reflect/CompileTypeId.hpp>
@@ -207,30 +206,30 @@ struct mapped_load {
 
 constexpr auto test_gen_map() {
     auto tmp = make_compile_map<string_view, mapped_load>(
-        _STD pair<string_view, mapped_load> { "a"sv, {} },
-        _STD pair<string_view, mapped_load> { "b"sv, {} },
-        _STD pair<string_view, mapped_load> { "c"sv, {} },
-        _STD pair<string_view, mapped_load> { "d"sv, {} },
-        _STD pair<string_view, mapped_load> { "e"sv, {} },
-        _STD pair<string_view, mapped_load> { "f"sv, {} },
+        std::pair<string_view, mapped_load> { "b"sv, {} },
+        std::pair<string_view, mapped_load> { "c"sv, {} },
+        std::pair<string_view, mapped_load> { "a"sv, {} },
+        std::pair<string_view, mapped_load> { "d"sv, {} },
+        std::pair<string_view, mapped_load> { "f"sv, {} },
+        std::pair<string_view, mapped_load> { "e"sv, {} },
         //
-        _STD pair<string_view, mapped_load> { "y"sv, {} },
-        _STD pair<string_view, mapped_load> { "y"sv, {} }
+        std::pair<string_view, mapped_load> { "y"sv, {} },
+        std::pair<string_view, mapped_load> { "y"sv, {} }
     );
     return tmp;
 }
 
 constexpr auto test_gen_hash_map() {
     auto tmp = make_compile_hash_map<string_view, mapped_load>(
-        _STD pair<string_view, mapped_load> { "a"sv, {} },
-        _STD pair<string_view, mapped_load> { "b"sv, {} },
-        _STD pair<string_view, mapped_load> { "c"sv, {} },
-        _STD pair<string_view, mapped_load> { "d"sv, {} },
-        _STD pair<string_view, mapped_load> { "e"sv, {} },
-        _STD pair<string_view, mapped_load> { "f"sv, {} },
+        std::pair<string_view, mapped_load> { "b"sv, {} },
+        std::pair<string_view, mapped_load> { "c"sv, {} },
+        std::pair<string_view, mapped_load> { "a"sv, {} },
+        std::pair<string_view, mapped_load> { "d"sv, {} },
+        std::pair<string_view, mapped_load> { "f"sv, {} },
+        std::pair<string_view, mapped_load> { "e"sv, {} },
         //
-        _STD pair<string_view, mapped_load> { "y"sv, {} },
-        _STD pair<string_view, mapped_load> { "y"sv, {} }
+        std::pair<string_view, mapped_load> { "y"sv, {} },
+        std::pair<string_view, mapped_load> { "y"sv, {} }
     );
     return tmp;
 }

@@ -3,10 +3,10 @@
 #include "StructureSlot.hpp"
 
 namespace hg::engine::serialization {
-    template <_STD floating_point Type_>
+    template <std::floating_point Type_>
     struct FloatSlotTraits;
 
-    template <_STD floating_point FloatType_>
+    template <std::floating_point FloatType_>
     class FloatSlot :
         public TypedStructureSlotBase<FloatType_> {
     public:
@@ -23,7 +23,7 @@ namespace hg::engine::serialization {
         }
 
         FloatSlot(mref<StructureSlotState> state_) :
-            underlying_type(_STD move(state_)) {
+            underlying_type(std::move(state_)) {
             this_type::_state.header = StructureSlotHeader::from<trait_type::slot_type>();
         }
 

@@ -23,9 +23,9 @@ non_owning_rptr<ReflowPassState> ReflowState::record(cref<sptr<Widget>> widget_)
     }
 
     const auto result = _recorded.insert(
-        _STD make_pair(
+        std::make_pair(
             widget_.get(),
-            _STD addressof(widget_->layoutState())
+            std::addressof(widget_->layoutState())
         )
     );
 

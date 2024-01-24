@@ -40,7 +40,7 @@ namespace hg::engine::assets::system {
         [[nodiscard]] decltype(_entries)::const_iterator end() const noexcept;
 
     public:
-        template <typename AssetType_> requires _STD derived_from<AssetType_, Asset>
+        template <typename AssetType_> requires std::derived_from<AssetType_, Asset>
         [[nodiscard]] const non_owning_rptr<AssetType_> storeAsset(_In_ mref<ptr<AssetType_>> owningPtr_) {
 
             const auto key = owningPtr_->get_guid();
@@ -49,10 +49,10 @@ namespace hg::engine::assets::system {
             }
 
             const auto result = _entries.insert(
-                _STD make_pair(
+                std::make_pair(
                     key,
                     AssetRepositoryItem {
-                        uptr<AssetType_>(_STD move(owningPtr_))
+                        uptr<AssetType_>(std::move(owningPtr_))
                     }
                 )
             );
@@ -62,7 +62,7 @@ namespace hg::engine::assets::system {
 
         // TODO: Replace with better memory management
         template <IsAsset AssetType_, typename... ConstructArgs_> requires
-            _STD is_constructible_v<AssetType_, asset_guid, ConstructArgs_...>
+            std::is_constructible_v<AssetType_, asset_guid, ConstructArgs_...>
         [[nodiscard]] const non_owning_rptr<AssetType_> createAsset(
             _In_ mref<asset_guid> guid_,
             _In_ ConstructArgs_&&... args_
@@ -73,12 +73,12 @@ namespace hg::engine::assets::system {
             }
 
             const auto result = _entries.insert(
-                _STD make_pair(
+                std::make_pair(
                     guid_,
                     AssetRepositoryItem {
                         make_uptr<AssetType_, asset_guid, ConstructArgs_...>(
-                            _STD forward<asset_guid>(guid_),
-                            _STD forward<ConstructArgs_>(args_)...
+                            std::forward<asset_guid>(guid_),
+                            std::forward<ConstructArgs_>(args_)...
                         )
                     }
                 )

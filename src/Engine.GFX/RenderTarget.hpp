@@ -108,7 +108,7 @@ namespace hg::engine::gfx {
         void nextSync();
 
     private:
-        /*_STD atomic_flag*/
+        /*std::atomic_flag*/
         bool _active;
 
     public:

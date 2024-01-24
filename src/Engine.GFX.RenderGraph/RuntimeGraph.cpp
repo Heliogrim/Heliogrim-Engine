@@ -5,9 +5,9 @@
 using namespace hg::engine::render::graph;
 using namespace hg;
 
-[[nodiscard]] static _STD pair<smr<AnchorNode>, smr<AnchorNode>> generateMinimalGraph() {
+[[nodiscard]] static std::pair<smr<AnchorNode>, smr<AnchorNode>> generateMinimalGraph() {
 
-    auto pair = _STD make_pair(
+    auto pair = std::make_pair(
         make_smr<AnchorNode>(),
         make_smr<AnchorNode>()
     );
@@ -18,13 +18,13 @@ using namespace hg;
 
 RuntimeGraph::RuntimeGraph() {
     auto pair = generateMinimalGraph();
-    _begin = _STD move(pair.first);
-    _end = _STD move(pair.second);
+    _begin = std::move(pair.first);
+    _end = std::move(pair.second);
 }
 
 RuntimeGraph::RuntimeGraph(mref<smr<AnchorNode>> begin_, mref<smr<AnchorNode>> end_) noexcept :
-    _begin(_STD move(begin_)),
-    _end(_STD move(end_)) {}
+    _begin(std::move(begin_)),
+    _end(std::move(end_)) {}
 
 nmpt<const AnchorNode> RuntimeGraph::begin() const noexcept {
     return _begin.get();

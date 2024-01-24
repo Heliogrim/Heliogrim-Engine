@@ -20,7 +20,7 @@ namespace hg::engine::render::graph {
         [[nodiscard]] virtual ptr<SubPass> subpass() noexcept = 0;
     };
 
-    template <typename SubPassType_> requires _STD derived_from<SubPassType_, SubPass>
+    template <typename SubPassType_> requires std::derived_from<SubPassType_, SubPass>
     class SubPassNode :
         public SubPassNodeBase {
     public:

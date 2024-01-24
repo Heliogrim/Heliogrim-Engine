@@ -14,7 +14,7 @@ namespace hg::concurrent {
     /**
      * \brief 
      */
-    using SpinMutex = _STD atomic_flag;
+    using SpinMutex = std::atomic_flag;
 
     /**
      * \brief 
@@ -35,7 +35,7 @@ namespace hg::concurrent {
          * \brief 
          * \param mtx_ 
          */
-        explicit SpinLock(SpinMutex& mtx_, _STD defer_lock_t) noexcept :
+        explicit SpinLock(SpinMutex& mtx_, std::defer_lock_t) noexcept :
             _flag(mtx_),
             _owns(false) { }
 
@@ -53,10 +53,10 @@ namespace hg::concurrent {
          */
         void lock() {
             if (_owns) {
-                _Throw_system_error(_STD errc::operation_not_permitted);
+                _Throw_system_error(std::errc::operation_not_permitted);
             }
 
-            while (_flag.test_and_set(_STD memory_order_seq_cst))
+            while (_flag.test_and_set(std::memory_order_seq_cst))
                 /* spinning */;
             _owns = true;
         }
@@ -67,10 +67,10 @@ namespace hg::concurrent {
          */
         bool try_lock() {
             if (_owns) {
-                std::_Throw_system_error(_STD errc::operation_not_permitted);
+                std::_Throw_system_error(std::errc::operation_not_permitted);
             }
 
-            if (!_flag.test_and_set(_STD memory_order_seq_cst)) {
+            if (!_flag.test_and_set(std::memory_order_seq_cst)) {
                 _owns = true;
                 return true;
             }
@@ -83,10 +83,10 @@ namespace hg::concurrent {
          */
         void unlock() {
             if (!_owns) {
-                _Throw_system_error(_STD errc::operation_not_permitted);
+                _Throw_system_error(std::errc::operation_not_permitted);
             }
 
-            _flag.clear(_STD memory_order_seq_cst);
+            _flag.clear(std::memory_order_seq_cst);
         }
 
         /**
@@ -99,7 +99,7 @@ namespace hg::concurrent {
         /**
          * \brief 
          */
-        _STD atomic_flag& _flag;
+        std::atomic_flag& _flag;
 
         /**
          * \brief 
@@ -194,7 +194,7 @@ namespace hg::concurrent {
 
     private:
         /** The gate */
-        _STD atomic<hg::engine::scheduler::thread::thread_id> _gate;
+        std::atomic<hg::engine::scheduler::thread::thread_id> _gate;
 
         /**
          * Spins this 

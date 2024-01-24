@@ -7,18 +7,18 @@
 
 namespace hg {
     template <typename To_, typename From_>
-    struct into_impl<_STD shared_ptr<To_>, _STD shared_ptr<From_>> {
-        [[nodiscard]] constexpr _STD shared_ptr<To_> operator()(_STD shared_ptr<From_>&& obj_) noexcept {
-            return _STD shared_ptr<To_> { _STD move(obj_) };
+    struct into_impl<std::shared_ptr<To_>, std::shared_ptr<From_>> {
+        [[nodiscard]] constexpr std::shared_ptr<To_> operator()(std::shared_ptr<From_>&& obj_) noexcept {
+            return std::shared_ptr<To_> { std::move(obj_) };
         }
     };
 
     /**/
 
     template <typename To_, typename From_>
-    struct into_impl<_STD shared_ptr<To_>, _STD unique_ptr<From_>> {
-        [[nodiscard]] constexpr _STD shared_ptr<To_> operator()(_STD unique_ptr<From_>&& obj_) noexcept {
-            return _STD shared_ptr<To_> { _STD move(obj_) };
+    struct into_impl<std::shared_ptr<To_>, std::unique_ptr<From_>> {
+        [[nodiscard]] constexpr std::shared_ptr<To_> operator()(std::unique_ptr<From_>&& obj_) noexcept {
+            return std::shared_ptr<To_> { std::move(obj_) };
         }
     };
 }

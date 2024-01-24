@@ -53,7 +53,7 @@ void Profiler::flush() {}
 void Profiler::startSession(cref<string_view> name_, cref<string_view> file_) {
 
     _name = name_;
-    _output = new _STD ofstream { file_.data() };
+    _output = new std::ofstream { file_.data() };
 
     writeHeader();
 }
@@ -62,7 +62,7 @@ void Profiler::stopSession() {
 
     writeFooter();
 
-    static_cast<ptr<_STD ofstream>>(_output)->close();
+    static_cast<ptr<std::ofstream>>(_output)->close();
     delete _output;
     _output = nullptr;
 
@@ -79,7 +79,7 @@ void Profiler::writeProfile(cref<ProfileResult> result_) {
     }
 
     string name { result_.name };
-    _STD ranges::replace(name, '"', '\'');
+    std::ranges::replace(name, '"', '\'');
 
     *_output << '{';
     *_output << R"("cat": "function",)";

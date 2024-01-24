@@ -13,7 +13,7 @@ static constexpr float ident_per_level = 12.F;
 static constexpr float row_min_height = 20.F;
 
 string TreeViewBase::getTag() const noexcept {
-    return _STD format(R"(TreeView <{:#x}>)", reinterpret_cast<u64>(this));
+    return std::format(R"(TreeView <{:#x}>)", reinterpret_cast<u64>(this));
 }
 
 sptr<Widget> TreeViewBase::generateRow(cref<TreeViewItem> view_, cref<sptr<Widget>> content_) {

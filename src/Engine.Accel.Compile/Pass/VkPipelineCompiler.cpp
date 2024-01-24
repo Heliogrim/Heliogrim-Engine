@@ -43,18 +43,18 @@ Vector<smr<StageDerivat>> VkPipelineCompiler::hydrateStages(
     for (size_t idx = 0; idx < size; ++idx) {
 
         const auto& stage = stages_[idx];
-        auto compModule = _STD move(modules_[idx]);
+        auto compModule = std::move(modules_[idx]);
 
         /* Build acceleration stage module from compiler module */
 
-        auto accModule = make_smr<StageModule>(_STD move(compModule));
+        auto accModule = make_smr<StageModule>(std::move(compModule));
 
         /* Hydrate stage derivat with modules */
 
-        stage->setStageModule(_STD move(accModule));
+        stage->setStageModule(std::move(accModule));
     }
 
-    return _STD move(stages_);
+    return std::move(stages_);
 }
 
 void VkPipelineCompiler::resolveBindLayouts(
@@ -132,7 +132,7 @@ void VkPipelineCompiler::resolveBindLayouts(
                 }
             }
 
-            vkBindings.push_back(_STD move(vkDslb));
+            vkBindings.push_back(std::move(vkDslb));
         }
 
         dslci.setBindings(vkBindings);
@@ -243,8 +243,8 @@ smr<const AccelerationPipeline> VkPipelineCompiler::compileTypeSpec(
     SpecificationType_ specification_
 ) const {
     auto pass = pass_.into<Type_>();
-    pass = linkStages(_STD move(pass), _STD move(stages_));
-    return linkVk(_STD move(specification_), _STD move(pass));
+    pass = linkStages(std::move(pass), std::move(stages_));
+    return linkVk(std::move(specification_), std::move(pass));
 }
 
 smr<const AccelerationPipeline> VkPipelineCompiler::compile(
@@ -255,8 +255,8 @@ smr<const AccelerationPipeline> VkPipelineCompiler::compile(
 ) const {
 
     auto stages = hydrateStages(
-        _STD move(stages_),
-        _STD move(reinterpret_cast<Vector<uptr<VkCompiledModule>>&&>(modules_))
+        std::move(stages_),
+        std::move(reinterpret_cast<Vector<uptr<VkCompiledModule>>&&>(modules_))
     );
 
     /**/
@@ -264,29 +264,29 @@ smr<const AccelerationPipeline> VkPipelineCompiler::compile(
     switch (source_->getMetaClass()->typeId().data) {
         case VkComputePipeline::typeId.data: {
             return compileTypeSpec<VkComputePipeline>(
-                _STD move(source_),
-                _STD move(stages),
+                std::move(source_),
+                std::move(stages),
                 specifications_->getPassSpec<ComputePassSpecification>()
             );
         }
         case VkGraphicsPipeline::typeId.data: {
             return compileTypeSpec<VkGraphicsPipeline>(
-                _STD move(source_),
-                _STD move(stages),
+                std::move(source_),
+                std::move(stages),
                 specifications_->getPassSpec<GraphicsPassSpecification>()
             );
         }
         case VkMeshPipeline::typeId.data: {
             return compileTypeSpec<VkMeshPipeline>(
-                _STD move(source_),
-                _STD move(stages),
+                std::move(source_),
+                std::move(stages),
                 specifications_->getPassSpec<MeshPassSpecification>()
             );
         }
         case VkRaytracingPipeline::typeId.data: {
             return compileTypeSpec<VkRaytracingPipeline>(
-                _STD move(source_),
-                _STD move(stages),
+                std::move(source_),
+                std::move(stages),
                 specifications_->getPassSpec<RaytracingPassSpecification>()
             );
         }
@@ -302,14 +302,14 @@ smr<VkComputePipeline> VkPipelineCompiler::linkStages(
     mref<smr<VkComputePipeline>> pass_,
     mref<Vector<smr<StageDerivat>>> stages_
 ) const {
-    return _STD move(pass_);
+    return std::move(pass_);
 }
 
 smr<VkComputePipeline> VkPipelineCompiler::linkVk(
     mref<struct ComputePassSpecification> specification_,
     mref<smr<VkComputePipeline>> pass_
 ) const {
-    return _STD move(pass_);
+    return std::move(pass_);
 }
 
 #pragma endregion
@@ -324,10 +324,10 @@ smr<VkGraphicsPipeline> VkPipelineCompiler::linkStages(
     assert(stages_.size() >= 2 && stages_.size() < 6);
 
     for (size_t i = 0; i < stages_.size(); ++i) {
-        pass_->setStageDerivat(i, _STD move(stages_[i]));
+        pass_->setStageDerivat(i, std::move(stages_[i]));
     }
 
-    return _STD move(pass_);
+    return std::move(pass_);
 }
 
 smr<VkGraphicsPipeline> VkPipelineCompiler::linkVk(
@@ -538,14 +538,14 @@ smr<VkGraphicsPipeline> VkPipelineCompiler::linkVk(
     bool hasTessEval = false;
 
     {
-        hasTessCtrl = _STD ranges::find_if(
+        hasTessCtrl = std::ranges::find_if(
             pass_->getStageDerivates(),
             [](cref<smr<StageDerivat>> stage_) {
                 return stage_->getFlagBits() == StageFlagBits::eTessellationCtrl;
             }
         ) != pass_->getStageDerivates().end();
 
-        hasTessEval = _STD ranges::find_if(
+        hasTessEval = std::ranges::find_if(
             pass_->getStageDerivates(),
             [](cref<smr<StageDerivat>> stage_) {
                 return stage_->getFlagBits() == StageFlagBits::eTessellationEval;
@@ -784,14 +784,14 @@ smr<VkGraphicsPipeline> VkPipelineCompiler::linkVk(
     /**/
 
     pass_->setVkPipeLayout(
-        _STD move(reinterpret_cast<_::VkGraphicsPipelineLayout>(gpci.layout.operator VkPipelineLayout()))
+        std::move(reinterpret_cast<_::VkGraphicsPipelineLayout>(gpci.layout.operator VkPipelineLayout()))
     );
-    pass_->setVkPipe(_STD move(reinterpret_cast<_::VkGraphicsPipeline>(result.value.operator VkPipeline())));
+    pass_->setVkPipe(std::move(reinterpret_cast<_::VkGraphicsPipeline>(result.value.operator VkPipeline())));
 
     // Warning: Temporary
-    pass_->_vkDescLayouts = _STD move(bindLayouts);
+    pass_->_vkDescLayouts = std::move(bindLayouts);
 
-    return _STD move(pass_);
+    return std::move(pass_);
 }
 
 #pragma endregion
@@ -802,14 +802,14 @@ smr<VkMeshPipeline> VkPipelineCompiler::linkStages(
     mref<smr<VkMeshPipeline>> pass_,
     mref<Vector<smr<StageDerivat>>> stages_
 ) const {
-    return _STD move(pass_);
+    return std::move(pass_);
 }
 
 smr<VkMeshPipeline> VkPipelineCompiler::linkVk(
     mref<struct MeshPassSpecification> specification_,
     mref<smr<VkMeshPipeline>> pass_
 ) const {
-    return _STD move(pass_);
+    return std::move(pass_);
 }
 
 #pragma endregion
@@ -820,14 +820,14 @@ smr<VkRaytracingPipeline> VkPipelineCompiler::linkStages(
     mref<smr<VkRaytracingPipeline>> pass_,
     mref<Vector<smr<StageDerivat>>> stages_
 ) const {
-    return _STD move(pass_);
+    return std::move(pass_);
 }
 
 smr<VkRaytracingPipeline> VkPipelineCompiler::linkVk(
     mref<struct RaytracingPassSpecification> specification_,
     mref<smr<VkRaytracingPipeline>> pass_
 ) const {
-    return _STD move(pass_);
+    return std::move(pass_);
 }
 
 #pragma endregion

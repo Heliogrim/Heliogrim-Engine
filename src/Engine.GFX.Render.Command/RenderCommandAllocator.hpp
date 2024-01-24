@@ -9,7 +9,7 @@ namespace hg::engine::render::cmd {
     public:
         using this_type = RenderCommandAllocator;
 
-        using memory_type = _STD pmr::memory_resource;
+        using memory_type = std::pmr::memory_resource;
 
         constexpr static size_type initial_memory_size = 1024uLL;
 

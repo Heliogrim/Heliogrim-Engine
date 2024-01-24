@@ -109,12 +109,12 @@ namespace hg::engine::acs {
          * @returns A tuple&lt;First_&amp;,Second_&amp;,Args_&amp;...&gt;
          */
         template <typename First_, typename Second_, typename... Args_>
-        _STD tuple<First_&, Second_&, Args_&...> unsafe_get(const actor_guid& key_) {
+        std::tuple<First_&, Second_&, Args_&...> unsafe_get(const actor_guid& key_) {
 
             using pool_type = pool_type<First_>;
 
             const typename pool_type::hash_type hash = typename pool_type::assign_hasher()(key_);
-            return _STD forward_as_tuple(get<First_>(key_, hash), get<Second_>(key_, hash), get<Args_>(key_, hash)...);
+            return std::forward_as_tuple(get<First_>(key_, hash), get<Second_>(key_, hash), get<Args_>(key_, hash)...);
         }
 
         /**
@@ -141,12 +141,12 @@ namespace hg::engine::acs {
          * @returns A tuple&lt;First_,Second_,args_...&gt;
          */
         template <typename First_, typename Second_, typename... Args_>
-        _STD tuple<First_*, Second_*, Args_*...> get(const actor_guid& key_) {
+        std::tuple<First_*, Second_*, Args_*...> get(const actor_guid& key_) {
 
             using pool_type = pool_type<First_>;
 
             const typename pool_type::hash_type hash = typename pool_type::assign_hasher()(key_);
-            return _STD forward_as_tuple(get<First_>(key_, hash), get<Second_>(key_, hash), get<Args_>(key_, hash)...);
+            return std::forward_as_tuple(get<First_>(key_, hash), get<Second_>(key_, hash), get<Args_>(key_, hash)...);
         }
 
     private:
@@ -157,7 +157,7 @@ namespace hg::engine::acs {
         [[nodiscard]] ptr<ValueType_> acquireActorComponent(cref<actor_guid> guid_, Args_&&... args_) {
 
             auto& pool { getOrCreatePool<ValueType_>() };
-            const auto result = pool.emplace(guid_, _STD forward<Args_>(args_)...);
+            const auto result = pool.emplace(guid_, std::forward<Args_>(args_)...);
 
             return result.second ? result.first : nullptr;
         }
@@ -194,7 +194,7 @@ namespace hg::engine::acs {
         }
 
     public:
-        template <ClassHasMeta ActorType_> requires _STD derived_from<ActorType_, Actor>
+        template <ClassHasMeta ActorType_> requires std::derived_from<ActorType_, Actor>
         [[nodiscard]] ptr<ActorType_> createActor(cref<ActorInitializer> initializer_) noexcept {
 
             const auto guid = generate_actor_guid();
@@ -217,7 +217,7 @@ namespace hg::engine::acs {
         [[nodiscard]] ptr<Actor> createActor(
             const ptr<const ActorClass> actorClass_,
             cref<ActorInitializer> initializer_,
-            _STD nothrow_t
+            std::nothrow_t
         ) noexcept;
 
     public:

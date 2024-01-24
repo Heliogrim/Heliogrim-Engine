@@ -10,14 +10,14 @@ Intermediate::Intermediate(cref<this_type> other_) = default;
 Intermediate::Intermediate(mref<this_type> other_) noexcept = default;
 
 void Intermediate::applyMask(u8 mask_) {
-    _STD unreachable();
+    std::unreachable();
 }
 
 void Intermediate::enumerateOutboundSymbols(ref<Vector<nmpt<const Symbol>>> outbound_, u8 mask_) const noexcept {
 
     for (const auto& outVar : rep.globalScope.outbound) {
 
-        auto symbol = _STD ranges::find_if(
+        auto symbol = std::ranges::find_if(
             rep.symbolTable,
             [&outVar](const auto& entry_) {
 
@@ -54,7 +54,7 @@ void Intermediate::enumerateOutboundSymbols(ref<Vector<nmpt<const Symbol>>> outb
         );
 
         outbound_.emplace_back(next.get());
-        const_cast<ref<DenseSet<uptr<Symbol>>>>(rep.symbolTable).emplace(_STD move(next));
+        const_cast<ref<DenseSet<uptr<Symbol>>>>(rep.symbolTable).emplace(std::move(next));
     }
 }
 
@@ -62,7 +62,7 @@ void Intermediate::enumerateInboundSymbols(ref<Vector<nmpt<const Symbol>>> inbou
 
     for (const auto& inVar : rep.globalScope.inbound) {
 
-        auto symbol = _STD ranges::find_if(
+        auto symbol = std::ranges::find_if(
             rep.symbolTable,
             [&inVar](const auto& entry_) {
 
@@ -99,6 +99,6 @@ void Intermediate::enumerateInboundSymbols(ref<Vector<nmpt<const Symbol>>> inbou
         );
 
         inbound_.emplace_back(next.get());
-        const_cast<ref<DenseSet<uptr<Symbol>>>>(rep.symbolTable).emplace(_STD move(next));
+        const_cast<ref<DenseSet<uptr<Symbol>>>>(rep.symbolTable).emplace(std::move(next));
     }
 }

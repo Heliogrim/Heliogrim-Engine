@@ -7,12 +7,12 @@ SceneWalker::SceneWalker(
     mref<Vector<uptr<SceneWalkerFilter>>> walkFilter_,
     mref<Vector<uptr<SceneHookFilter>>> hookFilter_
 ) :
-    _walkFilter(_STD move(walkFilter_)),
-    _hookFilter(_STD move(hookFilter_)),
+    _walkFilter(std::move(walkFilter_)),
+    _hookFilter(std::move(hookFilter_)),
     _hook() {}
 
 void SceneWalker::setHook(mref<decltype(_hook)> hook_) {
-    _hook = _STD move(hook_);
+    _hook = std::move(hook_);
 }
 
 void SceneWalker::stream(std::span<ptr<RenderSceneSystemModel>> models_) const noexcept {
@@ -76,7 +76,7 @@ ref<SceneWalker::this_type> SceneWalker::operator()(cref<gfx::scene::SceneView> 
 
     //sceneView_.getScene()->renderGraph()->traversal(
     //    [this](auto&&... args_) {
-    //        return this->operator()(_STD forward<decltype(args_)>(args_)...);
+    //        return this->operator()(std::forward<decltype(args_)>(args_)...);
     //    }
     //);
     return *this;
@@ -106,7 +106,7 @@ ref<SceneWalker::this_type> SceneWalker::operator()(cref<gfx::scene::SceneView> 
     //sceneView_.getScene()->renderGraph()->traversalBatched(
     //    maxBatches_,
     //    [this](auto&&... args_) {
-    //        return this->operator()(_STD forward<decltype(args_)>(args_)...);
+    //        return this->operator()(std::forward<decltype(args_)>(args_)...);
     //    }
     //);
     return *this;

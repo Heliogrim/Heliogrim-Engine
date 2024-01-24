@@ -109,7 +109,7 @@ namespace hg::engine::res {
             const sptr<ImporterBase> im = importer(fileType_, file_);
 
             if (im == nullptr) {
-                throw _STD runtime_error("No suitable importer found for FileTypeId and File.");
+                throw std::runtime_error("No suitable importer found for FileTypeId and File.");
             }
 
             return static_cast<const ptr<Importer<ImportType_, void>>>(im.get())->import(fileType_, file_);

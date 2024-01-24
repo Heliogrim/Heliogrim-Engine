@@ -20,11 +20,11 @@ FORCE_INLINE thread_id cast_ntid_tid(const std::thread::id& ntid_) {
 }
 
 // Warning: This function is called multiple times each round trip. Should be readable as fast as possible.
-thread_local static thread_id __threadId { cast_ntid_tid(_STD this_thread::get_id()) };
+thread_local static thread_id __threadId { cast_ntid_tid(std::this_thread::get_id()) };
 
 [[nodiscard]] uint64_t generate_thread_idx() {
-    static _STD atomic_uint64_t idx = { 0 };
-    return idx.fetch_add(1, _STD memory_order_relaxed);
+    static std::atomic_uint64_t idx = { 0 };
+    return idx.fetch_add(1, std::memory_order_relaxed);
 }
 
 thread_local static uint64_t __threadIdx { generate_thread_idx() };
@@ -63,13 +63,13 @@ Thread::~Thread() {
     destroy();
 }
 
-bool Thread::start(const _STD function<void(void*)>& fnc_, void* args_) {
+bool Thread::start(const std::function<void(void*)>& fnc_, void* args_) {
     if (_handle) {
         DEBUG_ASSERT(FALSE, "Thread has already valid 'handle_'")
         return false;
     }
 
-    _handle = new _STD thread(fnc_, args_);
+    _handle = new std::thread(fnc_, args_);
 
     DEBUG_ASSERT(_handle, "Failed to create valid 'handle_'")
     return _handle;
@@ -111,11 +111,11 @@ void Thread::setName(cstr name_) {
 }
 
 void self::yield() {
-    _STD this_thread::yield();
+    std::this_thread::yield();
 }
 
 void self::sleepFor(u64 milliseconds_) {
-    _STD this_thread::sleep_for(_STD chrono::milliseconds(milliseconds_));
+    std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds_));
 }
 
 thread_id self::getId() noexcept {
@@ -127,7 +127,7 @@ hg::u64 self::getIdx() noexcept {
 }
 
 hg::u32 hg::engine::scheduler::thread::getNativeThreadCount() {
-    return _STD thread::hardware_concurrency();
+    return std::thread::hardware_concurrency();
 }
 
 #if 0
@@ -139,7 +139,7 @@ Thread::Thread(DWORD parent_, TaskQueue& queue_) :
 	_interrupt(false),
 	_queue(queue_),
 	_parentId(parent_) {
-	_thread = _STD thread(&Thread::process, this);
+	_thread = std::thread(&Thread::process, this);
 }
 
 Thread::~Thread() {

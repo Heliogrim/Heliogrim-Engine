@@ -60,9 +60,9 @@ namespace hg::driver::vk {
     };
 
     static_assert(
-        _STD is_same_v<
+        std::is_same_v<
             VkQueueMask::value_type,
-            _STD make_unsigned_t<_STD underlying_type_t<VkQueueTypeBits>>
+            std::make_unsigned_t<std::underlying_type_t<VkQueueTypeBits>>
         >
     );
 

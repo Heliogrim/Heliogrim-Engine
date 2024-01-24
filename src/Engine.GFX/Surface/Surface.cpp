@@ -26,7 +26,7 @@ Surface::Surface() noexcept :
     _swapchain(nullptr) {}
 
 Surface::Surface(mref<uptr<platform::NativeWindow>> window_, ptr<Application> application_) :
-    _window(_STD move(window_)),
+    _window(std::move(window_)),
     _application(application_),
     _swapchain(nullptr) {}
 
@@ -65,7 +65,7 @@ void Surface::destroy() {
 
     /**/
 
-    const auto pending = Engine::getEngine()->getPlatform()->destroyNativeWindow(_STD move(_window));
+    const auto pending = Engine::getEngine()->getPlatform()->destroyNativeWindow(std::move(_window));
     scheduler::fiber::self::await_signal(pending.signal());
 }
 
@@ -116,7 +116,7 @@ vk::SurfaceKHR Surface::createApiSurface() {
 
     VkSurfaceKHR tmp {};
     if (!SDL_Vulkan_CreateSurface(sdlWnd, static_cast<vk::Instance>(*_application), &tmp)) {
-        throw _STD runtime_error("Could not get vulkan surface from window.");
+        throw std::runtime_error("Could not get vulkan surface from window.");
     }
 
     return tmp;

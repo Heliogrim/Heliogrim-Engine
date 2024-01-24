@@ -54,7 +54,7 @@ namespace hg::engine::resource {
         /**
          * Constructor
          *
-         * @details `_STD adopt_lock_t` will assume that the resource and provided
+         * @details `std::adopt_lock_t` will assume that the resource and provided
          *  behaviour flags are already acquired by the caller and stored exclusively
          *  to this instance.
          *
@@ -67,9 +67,9 @@ namespace hg::engine::resource {
         TypedManageGuard(
             const ptr<typed_resource_type> resource_,
             const ResourceUsageFlags flags_,
-            const _STD adopt_lock_t
+            const std::adopt_lock_t
         ) :
-            ManageGuard(resource_, flags_, _STD adopt_lock) {}
+            ManageGuard(resource_, flags_, std::adopt_lock) {}
 
         /**
          * Constructor
@@ -83,9 +83,9 @@ namespace hg::engine::resource {
         TypedManageGuard(
             const ptr<typed_resource_type> resource_,
             const ResourceUsageFlags flags_,
-            const _STD defer_lock_t
+            const std::defer_lock_t
         ) :
-            ManageGuard(resource_, flags_, _STD defer_lock) {}
+            ManageGuard(resource_, flags_, std::defer_lock) {}
 
         /**
          * Copy Constructor
@@ -104,7 +104,7 @@ namespace hg::engine::resource {
          * @param  other_ The other.
          */
         [[nodiscard]] TypedManageGuard(mref<this_type> other_) noexcept :
-            ManageGuard(_STD move(other_)) {}
+            ManageGuard(std::move(other_)) {}
 
         /**
          * Destructor

@@ -44,7 +44,7 @@ void StaticGeometryModel::create(const ptr<render::RenderSceneSystem> system_) {
     for (const auto& material : origin->overrideMaterials()) {
         auto* wrapped { static_cast<ptr<assets::GfxMaterial>>(material.internal()) };
         auto resource = Engine::getEngine()->getResources()->loader().load<assets::GfxMaterial, MaterialResource>(
-            _STD move(wrapped),
+            std::move(wrapped),
             {}
         );
 
@@ -120,7 +120,7 @@ void StaticGeometryModel::update(const ptr<render::RenderSceneSystem> system_) {
             _overrideMaterials[matIdx] = Engine::getEngine()->getResources()->loader().load<
                 assets::GfxMaterial, MaterialResource
             >(
-                _STD move(outer),
+                std::move(outer),
                 {}
             );
 

@@ -58,7 +58,7 @@ void render::ReflowPass::destroy() noexcept {
     SubPass::destroy();
 
     const auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
-    device->vkDevice().destroySemaphore(_STD exchange(_tmpSignal, nullptr));
+    device->vkDevice().destroySemaphore(std::exchange(_tmpSignal, nullptr));
 
     if (_framebuffer) {
         _framebuffer->destroy();
@@ -468,7 +468,7 @@ void render::ReflowPass::ensureDefaultImage() {
 
     auto request = static_cast<ptr<assets::TextureAsset>>(asset);
     auto resource = Engine::getEngine()->getResources()->loader().load<assets::TextureAsset, gfx::TextureResource>(
-        _STD move(request)
+        std::move(request)
     );
 
     auto guard = resource->acquire(resource::ResourceUsageFlag::eAll);
@@ -479,7 +479,7 @@ void render::ReflowPass::ensureDefaultImage() {
         engine::gfx::TextureFactory::get()->buildView(*image, { .type = TextureType::e2d });
     }
 
-    _defaultImage = _STD move(resource);
+    _defaultImage = std::move(resource);
 }
 
 void render::ReflowPass::ensureGraphicsPass() {
@@ -671,9 +671,9 @@ engine::accel::EffectCompileResult build_test_base_pipeline(mref<smr<const engin
     const auto compiler = engine::accel::makeVkAccCompiler();
     return compiler->compile(
         {
-            .effect = _STD move(effect),
-            .profile = _STD move(profile),
-            .spec = _STD move(spec)
+            .effect = std::move(effect),
+            .profile = std::move(profile),
+            .spec = std::move(spec)
         }
     );
 }

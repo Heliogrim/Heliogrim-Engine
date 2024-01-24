@@ -7,13 +7,13 @@
 
 namespace hg::engine::resource::loader {
     template <typename Type_>
-    concept IsRequestValueType = _STD is_void_v<Type_> || assets::IsAsset<Type_> || assets::IsStreamableAsset<Type_>;
+    concept IsRequestValueType = std::is_void_v<Type_> || assets::IsAsset<Type_> || assets::IsStreamableAsset<Type_>;
 
     template <typename Type_>
     concept IsStreamRequestSubjectType = assets::IsStreamableAsset<Type_>;
 
     template <typename Type_>
-    concept IsResponseValueType = _STD is_void_v<Type_> || IsResource<Type_>;
+    concept IsResponseValueType = std::is_void_v<Type_> || IsResource<Type_>;
 
     template <typename Type_>
     concept IsStreamResponseSubjectType = assets::IsStreamableAsset<Type_>;

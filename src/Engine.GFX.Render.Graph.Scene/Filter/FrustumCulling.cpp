@@ -17,7 +17,7 @@ bool FrustumCullingFilter::operator()(const void* node_) const noexcept {
     /**/
 
     //const auto& bounding = node_->bounding();
-    //const auto radius = _STD max({ bounding.extent().x, bounding.extent().y, bounding.extent().z });
+    //const auto radius = std::max({ bounding.extent().x, bounding.extent().y, bounding.extent().z });
 
     //return _frustum.checkSpherical(bounding.center(), radius);
     return false;

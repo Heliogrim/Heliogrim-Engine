@@ -34,21 +34,21 @@ namespace hg::math {
         [[nodiscard]] value_type pitch() const noexcept;
 
         ref<this_type> setPitch(auto&& pitch_) noexcept {
-            x = _STD forward<decltype(pitch_)>(pitch_);
+            x = std::forward<decltype(pitch_)>(pitch_);
             return *this;
         }
 
         [[nodiscard]] value_type yaw() const noexcept;
 
         ref<this_type> setYaw(auto&& yaw_) noexcept {
-            y = _STD forward<decltype(yaw_)>(yaw_);
+            y = std::forward<decltype(yaw_)>(yaw_);
             return *this;
         }
 
         [[nodiscard]] value_type roll() const noexcept;
 
         ref<this_type> setRoll(auto&& roll_) noexcept {
-            z = _STD forward<decltype(roll_)>(roll_);
+            z = std::forward<decltype(roll_)>(roll_);
             return *this;
         }
 

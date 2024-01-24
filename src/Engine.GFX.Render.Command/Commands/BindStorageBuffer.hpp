@@ -18,8 +18,8 @@ namespace hg::engine::render::cmd {
             mref<const nmpt<const gfx::StorageBufferView>> storageView_
         ) noexcept :
             RenderCommand(),
-            _symbolId(_STD move(symbolId_)),
-            _storageView(_STD move(storageView_)) {}
+            _symbolId(std::move(symbolId_)),
+            _storageView(std::move(storageView_)) {}
 
         constexpr ~BindStorageBufferRCmd() noexcept override = default;
 

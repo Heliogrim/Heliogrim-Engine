@@ -12,7 +12,7 @@ namespace hg::engine::gfx::material {
      */
     struct ContextUsagePattern {
         /**/
-        Vector<_STD pair<smr<const render::graph::Description>, accel::lang::SymbolId>> pairs;
+        Vector<std::pair<smr<const render::graph::Description>, accel::lang::SymbolId>> pairs;
         // i.e. pair< SceneViewDescription <-> SymbolId >
     };
 
@@ -27,7 +27,7 @@ namespace hg::engine::gfx::material {
      * Used for static material bindings to target effects
      */
     struct StaticUsagePattern {
-        Vector<_STD pair<ParameterIdentifier, accel::lang::SymbolId>> pairs;
+        Vector<std::pair<ParameterIdentifier, accel::lang::SymbolId>> pairs;
     };
 
     /**/

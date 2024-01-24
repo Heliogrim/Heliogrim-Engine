@@ -4,8 +4,8 @@ using namespace hg::engine::resource;
 using namespace hg;
 
 Locator::reference_type Locator::operator=(mref<value_type> other_) noexcept {
-    if (this != _STD addressof(other_)) {
-        _mapping = _STD move(other_._mapping);
+    if (this != std::addressof(other_)) {
+        _mapping = std::move(other_._mapping);
     }
 
     return *this;

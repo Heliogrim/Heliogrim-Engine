@@ -12,7 +12,7 @@ InputFloat::InputFloat() :
     _wrapper(make_sptr<HorizontalPanel>()),
     _text(make_sptr<Text>()),
     _value(R"(0)"),
-    _limits(_STD numeric_limits<input_type>::min(), _STD numeric_limits<input_type>::max()),
+    _limits(std::numeric_limits<input_type>::min(), std::numeric_limits<input_type>::max()),
     _stepSize(0),
     _precision(InputFloatPrecision::eFloat),
     _children() {
@@ -24,7 +24,7 @@ InputFloat::InputFloat() :
 InputFloat::~InputFloat() = default;
 
 string InputFloat::getTag() const noexcept {
-    return _STD format(R"(InputFloat <{:#x}>)", reinterpret_cast<u64>(this));
+    return std::format(R"(InputFloat <{:#x}>)", reinterpret_cast<u64>(this));
 }
 
 void InputFloat::valueToText() {
@@ -33,9 +33,9 @@ void InputFloat::valueToText() {
 
     string txt {};
     if (_precision == InputFloatPrecision::eFloat) {
-        txt = _STD format(R"({:f})", static_cast<float>(val));
+        txt = std::format(R"({:f})", static_cast<float>(val));
     } else {
-        txt = _STD format(R"({:f})", static_cast<long double>(val));
+        txt = std::format(R"({:f})", static_cast<long double>(val));
     }
 
     auto it { txt.rbegin() };
@@ -55,7 +55,7 @@ void InputFloat::valueToText() {
 }
 
 void InputFloat::setValue(const input_type value_) {
-    _value = _STD format(R"({:})", value_);
+    _value = std::format(R"({:})", value_);
     valueToText();
 }
 
@@ -79,9 +79,9 @@ void InputFloat::updateValueAndValidity(const bool propagate_, const bool emit_)
     const auto val { value() };
 
     if (_precision == InputFloatPrecision::eFloat) {
-        _value = _STD format(R"({})", static_cast<float>(val));
+        _value = std::format(R"({})", static_cast<float>(val));
     } else if (_precision == InputFloatPrecision::eDouble) {
-        _value = _STD format(R"({})", static_cast<long double>(val));
+        _value = std::format(R"({})", static_cast<long double>(val));
     }
 
     if (val < _limits.min || _limits.max < val) {
@@ -101,7 +101,7 @@ InputFloat::input_type InputFloat::value() const noexcept {
         return 0.0;
     }
 
-    return _STD stold(_value);
+    return std::stold(_value);
 }
 
 const ptr<const SingleChildren> InputFloat::children() const {
@@ -173,11 +173,11 @@ EventResponse InputFloat::onKeyDown(cref<KeyboardEvent> event_) {
 
     } else if (event_._key == 0x2C || event_._key == 0x2E) {
 
-        if (_value.find(0x2C) != _STD string::npos) {
+        if (_value.find(0x2C) != std::string::npos) {
             return EventResponse::eConsumed;
         }
 
-        if (_value.find(0x2E) != _STD string::npos) {
+        if (_value.find(0x2E) != std::string::npos) {
             return EventResponse::eConsumed;
         }
 
@@ -187,7 +187,7 @@ EventResponse InputFloat::onKeyDown(cref<KeyboardEvent> event_) {
 
     } else if (event_._key >= 0x30 && event_._key <= 0x39) {
 
-        const auto maxChars { static_cast<u64>(_STD floor(_STD log10(static_cast<long double>(_limits.max)))) + 1ui64 };
+        const auto maxChars { static_cast<u64>(std::floor(std::log10(static_cast<long double>(_limits.max)))) + 1ui64 };
 
         if (_value.size() >= maxChars) {
             return EventResponse::eConsumed;
@@ -216,7 +216,7 @@ EventResponse InputFloat::onKeyDown(cref<KeyboardEvent> event_) {
         const auto window { root() };
         const FocusEvent focusEvent { window };
 
-        WindowManager::get()->dispatch<FocusEvent>(_STD static_pointer_cast<Window, Widget>(window), focusEvent);
+        WindowManager::get()->dispatch<FocusEvent>(std::static_pointer_cast<Window, Widget>(window), focusEvent);
         return EventResponse::eConsumed;
     }
 

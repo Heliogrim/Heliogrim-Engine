@@ -38,7 +38,7 @@ namespace hg::engine::gfx::glow {
         [[nodiscard]] s32 tileIndex(const math::uivec3 uvw_, const u32 level_) const noexcept;
 
         // pair.first < 0 :: tile index out of bound
-        [[nodiscard]] _STD pair<s32, math::uivec3> tileFromIndex(const u16 index_) const noexcept;
+        [[nodiscard]] std::pair<s32, math::uivec3> tileFromIndex(const u16 index_) const noexcept;
 
     public:
         [[nodiscard]] static Vector<u16> tileBitToIndex(const ptr<const u32> bitmask_) noexcept;

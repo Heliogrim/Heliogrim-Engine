@@ -20,10 +20,10 @@ namespace hg::concurrent {
         class promise_state {
         public:
             using future_state_type = typename future<Ry>::state_type;
-            using shared_type = _STD shared_ptr<promise_state<Ry, Args...>>;
+            using shared_type = std::shared_ptr<promise_state<Ry, Args...>>;
 
-            using fnc_type = _STD function<Ry(Args...)>;
-            using next_fnc_type = _STD function<void(Ry&&)>;
+            using fnc_type = std::function<Ry(Args...)>;
+            using next_fnc_type = std::function<void(Ry&&)>;
 
             /**
              * Constructor
@@ -34,7 +34,7 @@ namespace hg::concurrent {
              * @param [in,out] fnc_ The function.
              */
             promise_state(fnc_type&& fnc_) :
-                _fnc(_STD move(fnc_)),
+                _fnc(std::move(fnc_)),
                 _next(nullptr),
                 _future(nullptr) {}
 
@@ -47,7 +47,7 @@ namespace hg::concurrent {
              * @param  fnc_ The function.
              */
             promise_state(const fnc_type& fnc_) :
-                _fnc(_STD move(fnc_)),
+                _fnc(std::move(fnc_)),
                 _next(nullptr),
                 _future(nullptr) {}
 
@@ -69,7 +69,7 @@ namespace hg::concurrent {
              */
             future_state_type& future() {
                 if (_next != nullptr)
-                    throw _STD logic_error(
+                    throw std::logic_error(
                         "You can not capture the returned value of promise intersecting the promise chain."
                     );
                 if (!_future)
@@ -90,9 +90,9 @@ namespace hg::concurrent {
                     // Store result to internal future
                     _future->set(
                         // Forward invocation result to storage
-                        _STD forward<Ry>(
+                        std::forward<Ry>(
                             // Invoke function with forwarded parameter list
-                            _fnc(_STD forward<Args>(args_)...)
+                            _fnc(std::forward<Args>(args_)...)
                         )
                     );
                     // Reset function to unlink context
@@ -104,9 +104,9 @@ namespace hg::concurrent {
                     // Invoke next function with forwarded result
                     _next(
                         // Forward invocation result to next function
-                        _STD forward<Ry>(
+                        std::forward<Ry>(
                             // Invoke function with forwarded parameter list
-                            _fnc(_STD forward<Args>(args_)...)
+                            _fnc(std::forward<Args>(args_)...)
                         )
                     );
                     // Reset function to unlink context
@@ -117,7 +117,7 @@ namespace hg::concurrent {
                 }
 
                 // TODO: create future state and store
-                _fnc(_STD forward<Args>(args_)...);
+                _fnc(std::forward<Args>(args_)...);
                 // Reset function to unlink context
                 _fnc = nullptr;
             }
@@ -130,8 +130,8 @@ namespace hg::concurrent {
              *
              * @param  next_ The next.
              */
-            void stack(const _STD function<void(Ry&&)>&& next_) {
-                _next = _STD move(next_);
+            void stack(const std::function<void(Ry&&)>&& next_) {
+                _next = std::move(next_);
             }
 
         protected:
@@ -145,10 +145,10 @@ namespace hg::concurrent {
         class promise_state<void, Args...> {
         public:
             using future_state_type = typename future<void>::state_type;
-            using shared_type = _STD shared_ptr<promise_state<void, Args...>>;
+            using shared_type = std::shared_ptr<promise_state<void, Args...>>;
 
-            using fnc_type = _STD function<void(Args...)>;
-            using next_fnc_type = _STD function<void()>;
+            using fnc_type = std::function<void(Args...)>;
+            using next_fnc_type = std::function<void()>;
 
             /**
              * Constructor
@@ -159,7 +159,7 @@ namespace hg::concurrent {
              * @param [in,out] fnc_ The function.
              */
             promise_state(fnc_type&& fnc_) :
-                _fnc(_STD move(fnc_)),
+                _fnc(std::move(fnc_)),
                 _next(nullptr),
                 _future(nullptr) {}
 
@@ -172,7 +172,7 @@ namespace hg::concurrent {
              * @param  fnc_ The function.
              */
             promise_state(const fnc_type& fnc_) :
-                _fnc(_STD move(fnc_)),
+                _fnc(std::move(fnc_)),
                 _next(nullptr),
                 _future(nullptr) {}
 
@@ -211,7 +211,7 @@ namespace hg::concurrent {
                     // Store state to internal future
                     _future->set(
                         // Invoke function with forwarded parameter list
-                        _fnc(_STD forward(args_)...)
+                        _fnc(std::forward(args_)...)
                     );
                     // Reset function to unlink context
                     _fnc = nullptr;
@@ -222,9 +222,9 @@ namespace hg::concurrent {
                     // Invoke next function
                     _next(
                         // Forward invocation result to next function
-                        _STD forward(
+                        std::forward(
                             // Invoke function with forwarded parameter list
-                            _fnc(_STD forward(args_)...)
+                            _fnc(std::forward(args_)...)
                         )
                     );
                     // Reset function to unlink context
@@ -235,7 +235,7 @@ namespace hg::concurrent {
                 }
 
                 // TODO: create future state and store
-                _fnc(_STD forward(args_)...);
+                _fnc(std::forward(args_)...);
                 // Reset function to unlink context
                 _fnc = nullptr;
             }
@@ -248,8 +248,8 @@ namespace hg::concurrent {
              *
              * @param  next_ The next.
              */
-            void stack(const _STD function<void()>&& next_) {
-                _next = _STD move(next_);
+            void stack(const std::function<void()>&& next_) {
+                _next = std::move(next_);
             }
 
         protected:
@@ -263,10 +263,10 @@ namespace hg::concurrent {
         class promise_state<void, void> {
         public:
             using future_state_type = typename future<void>::state_type;
-            using shared_type = _STD shared_ptr<promise_state<void, void>>;
+            using shared_type = std::shared_ptr<promise_state<void, void>>;
 
-            using fnc_type = _STD function<void(void)>;
-            using next_fnc_type = _STD function<void()>;
+            using fnc_type = std::function<void(void)>;
+            using next_fnc_type = std::function<void()>;
 
             /**
              * Constructor
@@ -277,7 +277,7 @@ namespace hg::concurrent {
              * @param [in,out] fnc_ The function.
              */
             promise_state(fnc_type&& fnc_) :
-                _fnc(_STD move(fnc_)),
+                _fnc(std::move(fnc_)),
                 _next(nullptr),
                 _future(nullptr) {}
 
@@ -290,7 +290,7 @@ namespace hg::concurrent {
              * @param  fnc_ The function.
              */
             promise_state(const fnc_type& fnc_) :
-                _fnc(_STD move(fnc_)),
+                _fnc(std::move(fnc_)),
                 _next(nullptr),
                 _future(nullptr) {}
 
@@ -359,8 +359,8 @@ namespace hg::concurrent {
              *
              * @param  next_ The next.
              */
-            void stack(const _STD function<void()>&& next_) {
-                _next = _STD move(next_);
+            void stack(const std::function<void()>&& next_) {
+                _next = std::move(next_);
             }
 
         protected:
@@ -387,7 +387,7 @@ namespace hg::concurrent {
         using reference_type = nxpromise<Ret, Args...>&;
         using const_reference_type = const nxpromise<Ret, Args...>&;
 
-        using fnc_type = _STD function<Ret(Args...)>;
+        using fnc_type = std::function<Ret(Args...)>;
 
         /**
          * Destructor
@@ -406,17 +406,17 @@ namespace hg::concurrent {
          * @returns A chained promise instance of type nxpromise<NxRet, Ret>
          */
         template <typename NxRet>
-        [[nodiscard]] nxpromise<NxRet, Ret> then(_STD function<NxRet(Ret)>&& fnc_) {
-            nxpromise<NxRet, Ret> next(_STD move(fnc_));
+        [[nodiscard]] nxpromise<NxRet, Ret> then(std::function<NxRet(Ret)>&& fnc_) {
+            nxpromise<NxRet, Ret> next(std::move(fnc_));
 
             // Anonymous Subscriber
             _state->stack(
                 [nxs = next._state](Ret&& args_) {
-                    nxs->step(_STD forward<Ret>(args_));
+                    nxs->step(std::forward<Ret>(args_));
                 }
             );
 
-            return _STD forward<nxpromise<NxRet, Ret>>(next);
+            return std::forward<nxpromise<NxRet, Ret>>(next);
         }
 
         /**
@@ -428,17 +428,17 @@ namespace hg::concurrent {
          * @returns A chained promise instance of type nxpromise<NxRet, Ret>
          */
         template <typename NxRet>
-        [[nodiscard]] nxpromise<NxRet, Ret> then(const _STD function<NxRet(Ret)>& fnc_) {
-            nxpromise<NxRet, Ret> next(_STD move(fnc_));
+        [[nodiscard]] nxpromise<NxRet, Ret> then(const std::function<NxRet(Ret)>& fnc_) {
+            nxpromise<NxRet, Ret> next(std::move(fnc_));
 
             // Anonymous Subscriber
             _state->stack(
                 [nxs = next._state](Ret&& args_) {
-                    nxs->step(_STD forward(args_));
+                    nxs->step(std::forward(args_));
                 }
             );
 
-            return _STD forward(next);
+            return std::forward(next);
         }
 
         /**
@@ -449,8 +449,8 @@ namespace hg::concurrent {
          *
          * @param  fnc_ The function.
          */
-        void finally(const _STD function<void(Ret)>&& fnc_) {
-            _state->stack(_STD move(fnc_));
+        void finally(const std::function<void(Ret)>&& fnc_) {
+            _state->stack(std::move(fnc_));
         }
 
         /**
@@ -465,7 +465,7 @@ namespace hg::concurrent {
          */
         future<Ret> get() {
             typename future<Ret>::state_type& fs = _state->future();
-            return _STD move(future<Ret>(fs));
+            return std::move(future<Ret>(fs));
         }
 
     protected:
@@ -478,7 +478,7 @@ namespace hg::concurrent {
          * @param [in,out] fnc_ The function.
          */
         nxpromise(fnc_type&& fnc_) :
-            _state(make_sptr<promise_state<Ret, Args...>>(_STD move(fnc_))) {}
+            _state(make_sptr<promise_state<Ret, Args...>>(std::move(fnc_))) {}
 
         /**
          * Constructor
@@ -489,7 +489,7 @@ namespace hg::concurrent {
          * @param  fnc_ The function.
          */
         nxpromise(const fnc_type& fnc_) :
-            _state(make_sptr<promise_state<Ret, Args...>>(_STD move(fnc_))) {}
+            _state(make_sptr<promise_state<Ret, Args...>>(std::move(fnc_))) {}
 
     private:
         mutable typename promise_state<Ret, Args...>::shared_type _state;
@@ -505,7 +505,7 @@ namespace hg::concurrent {
         using reference_type = promise<Ret>&;
         using const_reference_type = const promise<Ret>&;
 
-        using fnc_type = _STD function<Ret()>;
+        using fnc_type = std::function<Ret()>;
 
         /**
          * Constructor
@@ -516,7 +516,7 @@ namespace hg::concurrent {
          * @param [in,out] fnc_ The function.
          */
         promise(fnc_type&& fnc_) :
-            _state(make_sptr<promise_state<Ret>>(_STD move(fnc_))) {}
+            _state(make_sptr<promise_state<Ret>>(std::move(fnc_))) {}
 
         /**
          * Constructor
@@ -527,7 +527,7 @@ namespace hg::concurrent {
          * @param  fnc_ The function.
          */
         promise(const fnc_type& fnc_) :
-            _state(make_sptr<promise_state<Ret>>(_STD move(fnc_))) {}
+            _state(make_sptr<promise_state<Ret>>(std::move(fnc_))) {}
 
         /**
          * Destructor
@@ -546,17 +546,17 @@ namespace hg::concurrent {
          * @returns A chained promise instance of type nxpromise<NxRet, Ret>
          */
         template <typename NxRet>
-        [[nodiscard]] nxpromise<NxRet, Ret> then(_STD function<NxRet(Ret)>&& fnc_) {
-            nxpromise<NxRet, Ret> next(_STD move(fnc_));
+        [[nodiscard]] nxpromise<NxRet, Ret> then(std::function<NxRet(Ret)>&& fnc_) {
+            nxpromise<NxRet, Ret> next(std::move(fnc_));
 
             // Anonymous Subscriber
             _state->stack(
                 [nxs = next._state](Ret&& args_) {
-                    return nxs->step(_STD forward<Ret>(args_));
+                    return nxs->step(std::forward<Ret>(args_));
                 }
             );
 
-            return _STD forward<nxpromise<NxRet, Ret>>(next);
+            return std::forward<nxpromise<NxRet, Ret>>(next);
         }
 
         /**
@@ -568,17 +568,17 @@ namespace hg::concurrent {
          * @returns A chained promise instance of type nxpromise<NxRet, Ret>
          */
         template <typename NxRet>
-        [[nodiscard]] nxpromise<NxRet, Ret> then(const _STD function<NxRet(Ret)>& fnc_) {
-            nxpromise<NxRet, Ret> next(_STD move(fnc_));
+        [[nodiscard]] nxpromise<NxRet, Ret> then(const std::function<NxRet(Ret)>& fnc_) {
+            nxpromise<NxRet, Ret> next(std::move(fnc_));
 
             // Anonymous Subscriber
             _state->stack(
                 [nxs = next._state](Ret&& args_) {
-                    return nxs->step(_STD forward(args_));
+                    return nxs->step(std::forward(args_));
                 }
             );
 
-            return _STD forward(next);
+            return std::forward(next);
         }
 
         /**
@@ -589,8 +589,8 @@ namespace hg::concurrent {
          *
          * @param fnc_ The function.
          */
-        void finally(const _STD function<void(Ret)>&& fnc_) {
-            _state->stack(_STD move(fnc_));
+        void finally(const std::function<void(Ret)>&& fnc_) {
+            _state->stack(std::move(fnc_));
         }
 
         /**
@@ -605,7 +605,7 @@ namespace hg::concurrent {
          */
         future<Ret> get() {
             typename future<Ret>::state_type& fs = _state->future();
-            return _STD move(future<Ret>(fs));
+            return std::move(future<Ret>(fs));
         }
 
         /**
@@ -629,7 +629,7 @@ namespace hg::concurrent {
         using reference_type = promise<void>&;
         using const_reference_type = const promise<void>&;
 
-        using fnc_type = _STD function<void()>;
+        using fnc_type = std::function<void()>;
 
         /**
          * Constructor
@@ -640,7 +640,7 @@ namespace hg::concurrent {
          * @param [in,out] fnc_ The function.
          */
         promise(fnc_type&& fnc_) :
-            _state(make_sptr<promise_state<void, void>>(_STD move(fnc_))) {}
+            _state(make_sptr<promise_state<void, void>>(std::move(fnc_))) {}
 
         /**
          * Constructor
@@ -651,7 +651,7 @@ namespace hg::concurrent {
          * @param  fnc_ The function.
          */
         promise(const fnc_type& fnc_) :
-            _state(make_sptr<promise_state<void, void>>(_STD move(fnc_))) {}
+            _state(make_sptr<promise_state<void, void>>(std::move(fnc_))) {}
 
         /**
          * Destructor
@@ -670,8 +670,8 @@ namespace hg::concurrent {
          * @returns A chained promise instance of type nxpromise<NxRet, Ret>
          */
         template <typename NxRet>
-        [[nodiscard]] nxpromise<NxRet, void> then(_STD function<NxRet(void)>&& fnc_) {
-            nxpromise<NxRet, void> next(_STD move(fnc_));
+        [[nodiscard]] nxpromise<NxRet, void> then(std::function<NxRet(void)>&& fnc_) {
+            nxpromise<NxRet, void> next(std::move(fnc_));
 
             // Anonymous Subscriber
             _state->stack(
@@ -680,7 +680,7 @@ namespace hg::concurrent {
                 }
             );
 
-            return _STD forward<nxpromise<NxRet, void>>(next);
+            return std::forward<nxpromise<NxRet, void>>(next);
         }
 
         /**
@@ -692,8 +692,8 @@ namespace hg::concurrent {
          * @returns A chained promise instance of type nxpromise<NxRet, Ret>
          */
         template <typename NxRet>
-        [[nodiscard]] nxpromise<NxRet, void> then(const _STD function<NxRet(void)>& fnc_) {
-            nxpromise<NxRet, void> next(_STD move(fnc_));
+        [[nodiscard]] nxpromise<NxRet, void> then(const std::function<NxRet(void)>& fnc_) {
+            nxpromise<NxRet, void> next(std::move(fnc_));
 
             // Anonymous Subscriber
             _state->stack(
@@ -702,7 +702,7 @@ namespace hg::concurrent {
                 }
             );
 
-            return _STD forward(next);
+            return std::forward(next);
         }
 
         /**
@@ -713,8 +713,8 @@ namespace hg::concurrent {
          *
          * @param fnc_ The function.
          */
-        void finally(const _STD function<void(void)>&& fnc_) {
-            _state->stack(_STD move(fnc_));
+        void finally(const std::function<void(void)>&& fnc_) {
+            _state->stack(std::move(fnc_));
         }
 
         /**

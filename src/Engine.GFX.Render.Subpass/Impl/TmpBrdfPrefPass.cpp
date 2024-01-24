@@ -48,7 +48,7 @@ void TmpBrdfPrefPass::destroy() noexcept {
     SubPass::destroy();
 
     auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
-    device->vkDevice().destroySemaphore(static_cast<VkSemaphore>(_STD exchange(_tmpSignal, nullptr)));
+    device->vkDevice().destroySemaphore(static_cast<VkSemaphore>(std::exchange(_tmpSignal, nullptr)));
 
     _resources.outBrdfPrefTexture->destroy<smr<TextureLikeObject>, graph::TextureDescription>();
 
@@ -116,7 +116,7 @@ void TmpBrdfPrefPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept
             {
                 math::uivec3 { 512uL, 512uL, 1uL },
                 TextureFormat::eR16G16B16A16Sfloat,
-                MAX(static_cast<u32>(_STD floorf(_STD log2f(512.F))) + 1uL, 1uL),
+                MAX(static_cast<u32>(std::floorf(std::log2f(512.F))) + 1uL, 1uL),
                 TextureType::eCube,
                 vk::ImageAspectFlagBits::eColor,
                 vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled,
@@ -132,7 +132,7 @@ void TmpBrdfPrefPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept
             }
         );
 
-        _brdfPref = make_smr<Texture>(_STD move(brdfPref));
+        _brdfPref = make_smr<Texture>(std::move(brdfPref));
     }
 
     /**/
@@ -535,13 +535,13 @@ smr<AccelerationEffect> build_test_effect() {
 
     vertexStage->setIntermediate(make_smr<Intermediate>());
     vertexStage->getIntermediate()->lang.dialect = Dialect::eVulkanGlsl460;
-    vertexStage->getIntermediate()->lang.text.emplace_back(_STD move(vertexShaderCode));
+    vertexStage->getIntermediate()->lang.text.emplace_back(std::move(vertexShaderCode));
 
     const auto fragmentShaderCode = read_shader_file("__test__brdfPref.gen.fs");
 
     fragmentStage->setIntermediate(make_smr<Intermediate>());
     fragmentStage->getIntermediate()->lang.dialect = Dialect::eVulkanGlsl460;
-    fragmentStage->getIntermediate()->lang.text.emplace_back(_STD move(fragmentShaderCode));
+    fragmentStage->getIntermediate()->lang.text.emplace_back(std::move(fragmentShaderCode));
 
     /**/
 
@@ -551,17 +551,17 @@ smr<AccelerationEffect> build_test_effect() {
 
         var->type = Type { .category = TypeCategory::eObject, .objectType = ObjectType::eUnknown };
         var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eExternalLinkage>>();
-        var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eReadonly>>(_STD move(var->annotation));
-        var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eUniform>>(_STD move(var->annotation));
-        var->annotation = make_uptr<SymbolIdAnnotation>("view-matrix", _STD move(var->annotation));
-        var->annotation = make_uptr<VkBindLocationAnnotation>(0L, 0L, 0L, _STD move(var->annotation));
+        var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eReadonly>>(std::move(var->annotation));
+        var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eUniform>>(std::move(var->annotation));
+        var->annotation = make_uptr<SymbolIdAnnotation>("view-matrix", std::move(var->annotation));
+        var->annotation = make_uptr<VkBindLocationAnnotation>(0L, 0L, 0L, std::move(var->annotation));
 
         sym->symbolId = SymbolId::from("view-matrix"sv);
         sym->var.type = SymbolType::eVariableSymbol;
         sym->var.data = var.get();
 
-        vertexStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(var));
-        vertexStage->getIntermediate()->rep.symbolTable.insert(_STD move(sym));
+        vertexStage->getIntermediate()->rep.globalScope.inbound.emplace_back(std::move(var));
+        vertexStage->getIntermediate()->rep.symbolTable.insert(std::move(sym));
     }
 
     {
@@ -572,32 +572,32 @@ smr<AccelerationEffect> build_test_effect() {
             .category = TypeCategory::eTexture, .textureType = lang::TextureType::eTextureCube
         };
         var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eExternalLinkage>>();
-        var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eReadonly>>(_STD move(var->annotation));
-        var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eUniform>>(_STD move(var->annotation));
-        var->annotation = make_uptr<SymbolIdAnnotation>("skybox", _STD move(var->annotation));
-        var->annotation = make_uptr<VkBindLocationAnnotation>(1L, 0L, 0L, _STD move(var->annotation));
+        var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eReadonly>>(std::move(var->annotation));
+        var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eUniform>>(std::move(var->annotation));
+        var->annotation = make_uptr<SymbolIdAnnotation>("skybox", std::move(var->annotation));
+        var->annotation = make_uptr<VkBindLocationAnnotation>(1L, 0L, 0L, std::move(var->annotation));
 
         sym->symbolId = SymbolId::from("skybox"sv);
         sym->var.type = SymbolType::eVariableSymbol;
         sym->var.data = var.get();
 
-        fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(var));
-        fragmentStage->getIntermediate()->rep.symbolTable.insert(_STD move(sym));
+        fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(std::move(var));
+        fragmentStage->getIntermediate()->rep.symbolTable.insert(std::move(sym));
     }
 
     {
         auto tmpVar = make_uptr<Variable>();
         tmpVar->type = Type { .category = TypeCategory::eObject, .objectType = ObjectType::eSampler };
         tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eExternalLinkage>>();
-        tmpVar->annotation = make_uptr<SymbolIdAnnotation>("skybox-sampler", _STD move(tmpVar->annotation));
+        tmpVar->annotation = make_uptr<SymbolIdAnnotation>("skybox-sampler", std::move(tmpVar->annotation));
 
         auto tmpSym = make_uptr<Symbol>(
             SymbolId::from("skybox-sampler"sv),
             VariableSymbol { SymbolType::eVariableSymbol, tmpVar.get() }
         );
 
-        fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(tmpVar));
-        fragmentStage->getIntermediate()->rep.symbolTable.insert(_STD move(tmpSym));
+        fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(std::move(tmpVar));
+        fragmentStage->getIntermediate()->rep.symbolTable.insert(std::move(tmpSym));
     }
 
     {
@@ -608,16 +608,16 @@ smr<AccelerationEffect> build_test_effect() {
             .category = TypeCategory::eObject, .objectType = ObjectType::eUnknown
         };
         var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eExternalLinkage>>();
-        var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eConstant>>(_STD move(var->annotation));
-        var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eReadonly>>(_STD move(var->annotation));
-        var->annotation = make_uptr<SymbolIdAnnotation>("block", _STD move(var->annotation));
+        var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eConstant>>(std::move(var->annotation));
+        var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eReadonly>>(std::move(var->annotation));
+        var->annotation = make_uptr<SymbolIdAnnotation>("block", std::move(var->annotation));
 
         sym->symbolId = SymbolId::from("block"sv);
         sym->var.type = SymbolType::eVariableSymbol;
         sym->var.data = var.get();
 
-        fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(var));
-        fragmentStage->getIntermediate()->rep.symbolTable.insert(_STD move(sym));
+        fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(std::move(var));
+        fragmentStage->getIntermediate()->rep.symbolTable.insert(std::move(sym));
     }
 
     auto tmpVar = make_uptr<Variable>();
@@ -628,19 +628,19 @@ smr<AccelerationEffect> build_test_effect() {
     };
     tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eForwardLinkage>>();
     tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eWriteonly>>(
-        _STD move(tmpVar->annotation)
+        std::move(tmpVar->annotation)
     );
     tmpVar->annotation = make_uptr<SymbolIdAnnotation>(
         "color",
-        _STD move(tmpVar->annotation)
+        std::move(tmpVar->annotation)
     );
 
     tmpSym->symbolId = SymbolId::from("color"sv);
     tmpSym->var.type = SymbolType::eVariableSymbol;
     tmpSym->var.data = tmpVar.get();
 
-    fragmentStage->getIntermediate()->rep.globalScope.outbound.emplace_back(_STD move(tmpVar));
-    fragmentStage->getIntermediate()->rep.symbolTable.insert(_STD move(tmpSym));
+    fragmentStage->getIntermediate()->rep.globalScope.outbound.emplace_back(std::move(tmpVar));
+    fragmentStage->getIntermediate()->rep.symbolTable.insert(std::move(tmpSym));
 
     /**/
 
@@ -648,9 +648,9 @@ smr<AccelerationEffect> build_test_effect() {
     GuidGenerate(guid);
 
     return make_smr<AccelerationEffect>(
-        _STD move(guid),
+        std::move(guid),
         "test-brdf-pref-effect",
-        Vector<smr<Stage>> { _STD move(vertexStage), _STD move(fragmentStage) }
+        Vector<smr<Stage>> { std::move(vertexStage), std::move(fragmentStage) }
     );
 }
 
@@ -706,9 +706,9 @@ EffectCompileResult build_test_pipeline(
     const auto compiler = makeVkAccCompiler();
     auto result = compiler->compile(
         {
-            .effect = _STD move(effect_),
-            .profile = _STD move(profile),
-            .spec = _STD move(spec)
+            .effect = std::move(effect_),
+            .profile = std::move(profile),
+            .spec = std::move(spec)
         }
     );
 

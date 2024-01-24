@@ -24,7 +24,7 @@ Dialog::Dialog() :
 Dialog::~Dialog() = default;
 
 string Dialog::getTag() const noexcept {
-    return _STD format(R"(Dialog <{:#x}>)", reinterpret_cast<u64>(this));
+    return std::format(R"(Dialog <{:#x}>)", reinterpret_cast<u64>(this));
 }
 
 const ptr<const Children> Dialog::children() const {

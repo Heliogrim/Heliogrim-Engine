@@ -6,7 +6,7 @@ using namespace hg::engine::fs;
 using namespace hg;
 
 Path::Path(mref<this_type> other_) noexcept :
-    _value(_STD move(other_._value)) {}
+    _value(std::move(other_._value)) {}
 
 Path::Path(cref<this_type> other_) :
     _value(other_._value) {}
@@ -15,10 +15,10 @@ Path::Path(cref<std_fs_path> path_) :
     _value(path_) {}
 
 Path::Path(mref<std_fs_path> path_) :
-    _value(_STD move(path_)) {}
+    _value(std::move(path_)) {}
 
 Path::Path(mref<hg::string> str_) :
-    _value(_STD move(str_)) {}
+    _value(std::move(str_)) {}
 
 Path::Path(cref<hg::string> str_) :
     _value(str_) {}
@@ -27,14 +27,14 @@ Path::Path(string_view view_) :
     _value(view_) {}
 
 ref<Path::this_type> Path::operator=(mref<this_type> other_) noexcept {
-    if (_STD addressof(other_) != this) {
-        _value = _STD move(other_._value);
+    if (std::addressof(other_) != this) {
+        _value = std::move(other_._value);
     }
     return *this;
 }
 
 ref<Path::this_type> Path::operator=(cref<this_type> other_) {
-    if (_STD addressof(other_) != this) {
+    if (std::addressof(other_) != this) {
         _value = other_._value;
     }
     return *this;
@@ -61,10 +61,10 @@ string Path::name() const {
 
     /**/
 
-    const _STD basic_string_view<std_fs_path::value_type> subView { &(val.c_str()[ls]), val.size() - ls };
+    const std::basic_string_view<std_fs_path::value_type> subView { &(val.c_str()[ls]), val.size() - ls };
     ::hg::string tmp(val.size() - ls, 0);
 
-    _STD transform(
+    std::transform(
         subView.begin(),
         subView.end(),
         tmp.begin(),
@@ -94,7 +94,7 @@ bool Path::empty() const noexcept {
 
 u32 Path::segments() const noexcept {
     const auto& val = _value.native();
-    return _STD count(val.begin(), val.end(), std_fs_path::preferred_separator);
+    return std::count(val.begin(), val.end(), std_fs_path::preferred_separator);
 }
 
 ref<Path::this_type> Path::push(cref<this_type> path_) {
@@ -134,7 +134,7 @@ bool Path::contains(cref<this_type> path_) const {
         return false;
     }
 
-    return _value.native() == _STD basic_string_view<std_fs_path::value_type> {
+    return _value.native() == std::basic_string_view<std_fs_path::value_type> {
         path_._value.native().c_str(), relSize
     };
 }
@@ -143,7 +143,7 @@ bool Path::equals(cref<this_type> path_) const {
     return _value == path_._value;
 }
 
-_STD strong_ordering Path::compareLexical(cref<this_type> other_) const {
+std::strong_ordering Path::compareLexical(cref<this_type> other_) const {
     return _value <=> other_._value;
 }
 

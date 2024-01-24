@@ -63,72 +63,72 @@ namespace hg {
     template <typename Type_, typename Return_, typename... Args_>
     struct function_helper<bound_tuple_fnc<Type_, Return_, Args_...>> {
         template <Return_(Type_::*Fnc)(Args_...)>
-        static Return_ launch_pad(ref<_STD remove_cvref_t<Type_>> self_, Args_&&... args_) {
-            return (self_.*Fnc)(_STD forward<Args_>(args_)...);
+        static Return_ launch_pad(ref<std::remove_cvref_t<Type_>> self_, Args_&&... args_) {
+            return (self_.*Fnc)(std::forward<Args_>(args_)...);
         }
 
         template <Return_(Type_::*Fnc)(Args_...)>
         static Return_ unsafe_launch_pad(ptr<void> self_, Args_&&... args_) {
-            return (static_cast<Type_*>(self_)->*Fnc)(_STD forward<Args_>(args_)...);
+            return (static_cast<Type_*>(self_)->*Fnc)(std::forward<Args_>(args_)...);
         }
 
         template <Return_(Type_::*Fnc)(Args_...)>
         static void unsafe_void_launch_pad(ptr<void> self_, Args_&&... args_) {
-            (void)(static_cast<Type_*>(self_)->*Fnc)(_STD forward<Args_>(args_)...);
+            (void)(static_cast<Type_*>(self_)->*Fnc)(std::forward<Args_>(args_)...);
         }
     };
 
     template <typename Type_, typename Return_, typename... Args_>
     struct function_helper_ne<Return_ (Type_::*)(Args_...) noexcept> {
         template <Return_(Type_::*Fnc)(Args_...) noexcept>
-        static Return_ launch_pad(ref<_STD remove_cvref_t<Type_>> self_, Args_&&... args_) noexcept {
-            return (self_.*Fnc)(_STD forward<Args_>(args_)...);
+        static Return_ launch_pad(ref<std::remove_cvref_t<Type_>> self_, Args_&&... args_) noexcept {
+            return (self_.*Fnc)(std::forward<Args_>(args_)...);
         }
 
         template <Return_(Type_::*Fnc)(Args_...) noexcept>
         static Return_ unsafe_launch_pad(ptr<void> self_, Args_&&... args_) noexcept {
-            return (static_cast<Type_*>(self_)->*Fnc)(_STD forward<Args_>(args_)...);
+            return (static_cast<Type_*>(self_)->*Fnc)(std::forward<Args_>(args_)...);
         }
 
         template <Return_(Type_::*Fnc)(Args_...) noexcept>
         static void unsafe_void_launch_pad(ptr<void> self_, Args_&&... args_) noexcept {
-            (void)(static_cast<Type_*>(self_)->*Fnc)(_STD forward<Args_>(args_)...);
+            (void)(static_cast<Type_*>(self_)->*Fnc)(std::forward<Args_>(args_)...);
         }
     };
 
     template <typename Type_, typename Return_, typename... Args_>
     struct function_helper<bound_tuple_fnc<Type_, Return_, Args_...> const> {
         template <Return_(Type_::*Fnc)(Args_...) const>
-        static Return_ launch_pad(cref<_STD remove_cvref_t<Type_>> self_, Args_&&... args_) {
-            return (self_.*Fnc)(_STD forward<Args_>(args_)...);
+        static Return_ launch_pad(cref<std::remove_cvref_t<Type_>> self_, Args_&&... args_) {
+            return (self_.*Fnc)(std::forward<Args_>(args_)...);
         }
 
         template <Return_(Type_::*Fnc)(Args_...) const>
         static Return_ unsafe_launch_pad(ptr<void> self_, Args_&&... args_) {
-            return (static_cast<Type_*>(self_)->*Fnc)(_STD forward<Args_>(args_)...);
+            return (static_cast<Type_*>(self_)->*Fnc)(std::forward<Args_>(args_)...);
         }
 
         template <Return_(Type_::*Fnc)(Args_...) const>
         static void unsafe_void_launch_pad(ptr<void> self_, Args_&&... args_) {
-            (void)(static_cast<Type_*>(self_)->*Fnc)(_STD forward<Args_>(args_)...);
+            (void)(static_cast<Type_*>(self_)->*Fnc)(std::forward<Args_>(args_)...);
         }
     };
 
     template <typename Type_, typename Return_, typename... Args_>
     struct function_helper_ne<Return_ (Type_::*)(Args_...) const noexcept> {
         template <Return_(Type_::*Fnc)(Args_...) const noexcept>
-        static Return_ launch_pad(cref<_STD remove_cvref_t<Type_>> self_, Args_&&... args_) noexcept {
-            return (self_.*Fnc)(_STD forward<Args_>(args_)...);
+        static Return_ launch_pad(cref<std::remove_cvref_t<Type_>> self_, Args_&&... args_) noexcept {
+            return (self_.*Fnc)(std::forward<Args_>(args_)...);
         }
 
         template <Return_(Type_::*Fnc)(Args_...) const noexcept>
         static Return_ unsafe_launch_pad(ptr<void> self_, Args_&&... args_) noexcept {
-            return (static_cast<Type_*>(self_)->*Fnc)(_STD forward<Args_>(args_)...);
+            return (static_cast<Type_*>(self_)->*Fnc)(std::forward<Args_>(args_)...);
         }
 
         template <Return_(Type_::*Fnc)(Args_...) const noexcept>
         static void unsafe_void_launch_pad(ptr<void> self_, Args_&&... args_) noexcept {
-            (void)(static_cast<Type_*>(self_)->*Fnc)(_STD forward<Args_>(args_)...);
+            (void)(static_cast<Type_*>(self_)->*Fnc)(std::forward<Args_>(args_)...);
         }
     };
 }

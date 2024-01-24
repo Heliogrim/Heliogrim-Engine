@@ -35,7 +35,7 @@ VerticalPanel::VerticalPanel():
 VerticalPanel::~VerticalPanel() = default;
 
 string VerticalPanel::getTag() const noexcept {
-    return _STD format(R"(VerticalPanel <{:#x}>)", reinterpret_cast<u64>(this));
+    return std::format(R"(VerticalPanel <{:#x}>)", reinterpret_cast<u64>(this));
 }
 
 const ptr<const Children> VerticalPanel::children() const {
@@ -188,7 +188,7 @@ void VerticalPanel::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx
         for (const auto& flexItem : flexLine.items) {
 
             const auto dummy = flexItem.widget.lock();
-            const auto widgetState = state_.getStateOf(_STD static_pointer_cast<Widget, void>(dummy));
+            const auto widgetState = state_.getStateOf(std::static_pointer_cast<Widget, void>(dummy));
 
             widgetState->layoutOffset = flexItem.offset + offset;
             widgetState->layoutSize = flexItem.flexSize;

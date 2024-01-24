@@ -24,7 +24,7 @@ namespace hg::engine {
         void setup() override;
 
     private:
-        _STD thread _thread;
+        std::thread _thread;
         scheduler::task::SignaledQueue _platformQueue;
 
         Vector<ptr<platform::NativeWindow>> _windows;

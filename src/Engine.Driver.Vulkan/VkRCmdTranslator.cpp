@@ -55,12 +55,12 @@ uptr<cmd::NativeBatch> VkRCmdTranslator::operator()(const ptr<const cmd::RenderC
         (*iter++)(state, this);
     }
 
-    rt.store(_STD move(state->srt));
+    rt.store(std::move(state->srt));
     delete state;
 
     /**/
-    batch->add(make_uptr<AccelCommandBuffer>(_STD move(eccmd)));
-    batch->add(make_uptr<VkResourceTable>(_STD move(rt)));
+    batch->add(make_uptr<AccelCommandBuffer>(std::move(eccmd)));
+    batch->add(make_uptr<VkResourceTable>(std::move(rt)));
     /**/
 
     return batch;

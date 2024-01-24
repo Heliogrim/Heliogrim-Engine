@@ -38,17 +38,17 @@ void Stopwatch::start() noexcept {
     }
 
     _stopped = false;
-    _timestamp = _STD chrono::high_resolution_clock::now();
+    _timestamp = std::chrono::high_resolution_clock::now();
 }
 
 void Stopwatch::stop() noexcept {
 
-    const auto endTimestamp = _STD chrono::high_resolution_clock::now();
+    const auto endTimestamp = std::chrono::high_resolution_clock::now();
 
-    const u64 start = _STD chrono::time_point_cast<_STD chrono::microseconds>(_timestamp).time_since_epoch().count();
-    const u64 end = _STD chrono::time_point_cast<_STD chrono::microseconds>(endTimestamp).time_since_epoch().count();
+    const u64 start = std::chrono::time_point_cast<std::chrono::microseconds>(_timestamp).time_since_epoch().count();
+    const u64 end = std::chrono::time_point_cast<std::chrono::microseconds>(endTimestamp).time_since_epoch().count();
 
-    const u64 tid = _STD hash<_STD thread::id> {}(_STD this_thread::get_id());
+    const u64 tid = std::hash<std::thread::id> {}(std::this_thread::get_id());
 
     auto* profiler = Profiler::get();
     if (profiler) {

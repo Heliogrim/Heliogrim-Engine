@@ -24,7 +24,7 @@ namespace hg::engine::gfx {
     class Surface;
 
     class Device final :
-        public _STD enable_shared_from_this<Device> {
+        public std::enable_shared_from_this<Device> {
     public:
         /**
          * Constructor

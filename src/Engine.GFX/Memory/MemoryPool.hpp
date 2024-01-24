@@ -37,8 +37,8 @@ namespace hg::engine::gfx::memory {
         Vector<uptr<AllocatedMemory>> _memory;
 
         u64 _totalMemory;
-        _STD atomic_uint_fast64_t _totalUsedMemory;
-        _STD atomic_uint_fast32_t _totalAlloc;
+        std::atomic_uint_fast64_t _totalUsedMemory;
+        std::atomic_uint_fast32_t _totalAlloc;
 
     public:
         [[nodiscard]] u64 totalMemory() const noexcept;

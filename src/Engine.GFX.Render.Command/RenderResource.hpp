@@ -5,7 +5,7 @@
 #include <Engine.Reflect/Inherit/ClassMetaBase.hpp>
 
 namespace hg::engine::render::cmd {
-    //template <typename Type_> requires _STD derived_from<Type_, ClassMetaBase>
+    //template <typename Type_> requires std::derived_from<Type_, ClassMetaBase>
     template <typename Type_>
     using RCmdRef = Arc<Type_>;
 }

@@ -66,7 +66,7 @@ GlobalResourceCache::store_result_type GlobalResourceCache::store(
     /**
      * Store hooked resource
      */
-    _mapped.insert_or_assign(guid_, _STD move(resource_));
+    _mapped.insert_or_assign(guid_, std::move(resource_));
     return { StoreResultType::eSuccess };
 }
 
@@ -84,7 +84,7 @@ bool GlobalResourceCache::remove(
         return false;
     }
 
-    resource_ = _STD move(it->second);
+    resource_ = std::move(it->second);
     _mapped.erase(it);
 
     return true;

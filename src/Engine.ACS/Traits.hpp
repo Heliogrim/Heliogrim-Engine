@@ -30,9 +30,9 @@ namespace hg {
      * @returns The actor unique identifier.
      */
     [[maybe_unused]] static actor_guid generate_actor_guid() {
-        static _STD atomic_uint_fast32_t ai { 1 };
-        const auto pre = ai.fetch_add(1, _STD memory_order_relaxed);
-        const auto post = _STD chrono::high_resolution_clock::now().time_since_epoch().count();
+        static std::atomic_uint_fast32_t ai { 1 };
+        const auto pre = ai.fetch_add(1, std::memory_order_relaxed);
+        const auto post = std::chrono::high_resolution_clock::now().time_since_epoch().count();
         return { pre, 0, 0, post };
     }
 }
@@ -46,7 +46,7 @@ namespace std {
      */
     template <>
     struct hash<hg::actor_guid> {
-        _STD size_t operator()(const hg::actor_guid& value_) const noexcept {
+        std::size_t operator()(const hg::actor_guid& value_) const noexcept {
             /**
              * !important! don't use identity
              */

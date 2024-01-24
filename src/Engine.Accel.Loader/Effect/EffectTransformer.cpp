@@ -26,7 +26,7 @@ EffectTransformer::response_type::type EffectTransformer::operator()(
 
     /**/
 
-    return make_smr<resource::UniqueResource<AccelEffectWrapper>>(_STD move(effect));
+    return make_smr<resource::UniqueResource<AccelEffectWrapper>>(std::move(effect));
 }
 
 /**/
@@ -39,7 +39,7 @@ void dummy_initialize_effect(Guid guid_, ref<smr<const engine::accel::AccelEffec
         auto se = engine::render::makeSkyboxEffect();
         guid_ == se->getGuid()
     ) {
-        effect_ = _STD move(se);
+        effect_ = std::move(se);
         return;
     }
 

@@ -6,8 +6,8 @@ using namespace hg::engine::gfx;
 using namespace hg;
 
 PolygonMesh::PolygonMesh(mref<vertex_buffer_type> vertices_, mref<index_buffer_type> indices_) noexcept :
-    _vertices(_STD move(vertices_)),
-    _indices(_STD move(indices_)) {}
+    _vertices(std::move(vertices_)),
+    _indices(std::move(indices_)) {}
 
 PolygonMesh::~PolygonMesh() = default;
 

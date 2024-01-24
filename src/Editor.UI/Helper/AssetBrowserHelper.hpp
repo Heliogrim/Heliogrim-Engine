@@ -44,7 +44,7 @@ namespace hg::editor::ui {
 
     private:
         ptr<engine::assets::TextureAsset> _directoryIcon;
-        Vector<_STD pair<string, ptr<engine::assets::TextureAsset>>> _directoryIcons;
+        Vector<std::pair<string, ptr<engine::assets::TextureAsset>>> _directoryIcons;
 
     public:
         [[nodiscard]] ptr<engine::assets::TextureAsset> getItemIconByAssetType(cref<asset_type_id> typeId_) const noexcept;

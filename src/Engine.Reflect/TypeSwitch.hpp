@@ -35,16 +35,16 @@ namespace hg {
         decltype(__decompose_fx_args(&Fx_::operator())) __decompose_fx_args(Fx_);
 
         template <typename Callable_>
-        using decompose_subject_type = decltype(__decompose_fx_args(_STD declval<Callable_>()));
+        using decompose_subject_type = decltype(__decompose_fx_args(std::declval<Callable_>()));
 
         template <typename Callable_>
         struct decompose {
             using subject_type = decompose_subject_type<Callable_>;
-            using return_type = decltype(_STD declval<Callable_>()(_STD declval<subject_type>()));
+            using return_type = decltype(std::declval<Callable_>()(std::declval<subject_type>()));
         };
 
         template <typename Subject_, typename ReturnType_>
-        struct decompose<_STD function<ReturnType_(Subject_)>> {
+        struct decompose<std::function<ReturnType_(Subject_)>> {
             using subject_type = Subject_;
             using return_type = ReturnType_;
         };
@@ -58,21 +58,21 @@ namespace hg {
         typename ReturnType_,
         typename Fn_,
         typename... Rest_
-    > requires (ClassHasMeta<_STD remove_const_t<Value_>>)
+    > requires (ClassHasMeta<std::remove_const_t<Value_>>)
     ReturnType_ switchTypeImpl(
         Value_* value_,
         Fn_&& fn_,
         Rest_&&... rest_
     ) {
 
-        using check_type = _STD remove_pointer_t<typename decompose<Fn_>::subject_type>;
+        using check_type = std::remove_pointer_t<typename decompose<Fn_>::subject_type>;
 
-        if (value_->getMetaClass()->typeId().data == reflect::typeId<_STD remove_const_t<check_type>>().data) {
+        if (value_->getMetaClass()->typeId().data == reflect::typeId<std::remove_const_t<check_type>>().data) {
             return std::forward<Fn_>(fn_)(static_cast<check_type*>(value_));
         }
         return switchTypeImpl<Value_, ReturnType_, Rest_...>(
             value_,
-            _STD forward<Rest_>(rest_)...
+            std::forward<Rest_>(rest_)...
         );
     }
 
@@ -80,15 +80,15 @@ namespace hg {
         class Value_,
         typename ReturnType_,
         typename Fn_
-    > requires (ClassHasMeta<_STD remove_const_t<Value_>>) && (not _STD is_void_v<ReturnType_>)
+    > requires (ClassHasMeta<std::remove_const_t<Value_>>) && (not std::is_void_v<ReturnType_>)
     ReturnType_ switchTypeImpl(
         Value_* value_,
         Fn_&& fn_
     ) {
 
-        using check_type = _STD remove_pointer_t<typename decompose<Fn_>::subject_type>;
+        using check_type = std::remove_pointer_t<typename decompose<Fn_>::subject_type>;
 
-        if (value_->getMetaClass()->typeId().data == reflect::typeId<_STD remove_const_t<check_type>>().data) {
+        if (value_->getMetaClass()->typeId().data == reflect::typeId<std::remove_const_t<check_type>>().data) {
             return std::forward<Fn_>(fn_)(static_cast<check_type*>(value_));
         }
 
@@ -99,15 +99,15 @@ namespace hg {
         class Value_,
         typename ReturnType_,
         typename Fn_
-    > requires (ClassHasMeta<_STD remove_const_t<Value_>>) && (_STD is_void_v<ReturnType_>)
+    > requires (ClassHasMeta<std::remove_const_t<Value_>>) && (std::is_void_v<ReturnType_>)
     void switchTypeImpl(
         Value_* value_,
         Fn_&& fn_
     ) {
 
-        using check_type = _STD remove_pointer_t<typename decompose<Fn_>::subject_type>;
+        using check_type = std::remove_pointer_t<typename decompose<Fn_>::subject_type>;
 
-        if (value_->getMetaClass()->typeId().data == reflect::typeId<_STD remove_const_t<check_type>>().data) {
+        if (value_->getMetaClass()->typeId().data == reflect::typeId<std::remove_const_t<check_type>>().data) {
             return std::forward<Fn_>(fn_)(static_cast<check_type*>(value_));
         }
     }
@@ -138,10 +138,10 @@ namespace hg {
 
     /*
     template <ClassHasMeta Ty_, reflect::TypeQueryable ...Types_, typename ReturnType_>
-    ReturnType_ switchType(Ty_* value_, _STD function<ReturnType_(Types_*)>... fn_) {
+    ReturnType_ switchType(Ty_* value_, std::function<ReturnType_(Types_*)>... fn_) {
         return switchTypeImpl<Ty_, ReturnType_, Types_...>(
             value_,
-            _STD forward<_STD function<ReturnType_(Types_*)>>(fn_)...
+            std::forward<std::function<ReturnType_(Types_*)>>(fn_)...
         );
     }
     */

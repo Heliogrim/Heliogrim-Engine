@@ -24,7 +24,7 @@ bool TextureCache::store(
     const non_owning_rptr<const assets::TextureAsset> asset_,
     mref<smr<TextureResource>> resource_
 ) const noexcept {
-    _cacheCtrl->cache()->store(asset_->get_guid(), _STD move(resource_));
+    _cacheCtrl->cache()->store(asset_->get_guid(), std::move(resource_));
     return true;
 }
 
@@ -65,7 +65,7 @@ TextureCache::response_type::type TextureCache::operator()(
      *  Further we need to clone the cache key to store the responding resource object to the cache
      */
     cache_key_type cacheKey = request_;
-    auto response = next_(_STD move(request_), _STD move(options_));
+    auto response = next_(std::move(request_), std::move(options_));
 
     /**
      * Clone responding object as cache value
@@ -89,7 +89,7 @@ TextureCache::stream_response_type::type TextureCache::operator()(
     if (
         _cacheCtrl->markAsUsed(
             static_cast<non_owning_rptr<TextureResource>>(request_.get()),
-            _STD move(sub)
+            std::move(sub)
         ) == cache::StreamCacheResultType::eResidential
     ) {
         //return result.value();
@@ -101,7 +101,7 @@ TextureCache::stream_response_type::type TextureCache::operator()(
      *  Due to the fact, that the texture should query the resource itself to check for residential segments
      *  we are not required to introduce another store invocation, cause the chain will implicitly manipulate the resource.
      */
-    return next_(_STD move(request_), _STD move(options_));
+    return next_(std::move(request_), std::move(options_));
 }
 
 #if FALSE
@@ -120,7 +120,7 @@ TextureCache::response_type::type TextureCache::operator()(
          * On cache miss, we need to loader the whole resource object with stream parameters
          *  Further we need to store the responding resource object to the cache
          */
-        auto response = next_(_STD move(request_), _STD move(options_));
+        auto response = next_(std::move(request_), std::move(options_));
 
         /**
          * Clone responding object as cache value
@@ -138,7 +138,7 @@ TextureCache::response_type::type TextureCache::operator()(
      *  If present, we just need to mark the required sub-resource ranges and return the cache response
      */
     cache::TextureSubResource sub = {};
-    if (_cacheCtrl->markAsUsed(result->get(), _STD move(sub)) == cache::StreamCacheResultType::eResidential) {
+    if (_cacheCtrl->markAsUsed(result->get(), std::move(sub)) == cache::StreamCacheResultType::eResidential) {
         return result.value();
     }
 
@@ -147,6 +147,6 @@ TextureCache::response_type::type TextureCache::operator()(
      *  Due to the fact, that the texture should query the resource itself to check for residential segments
      *  we are not required to introduce another store invocation, cause the chain will implicitly manipulate the resource.
      */
-    return next_(_STD move(request_), _STD move(options_));
+    return next_(std::move(request_), std::move(options_));
 }
 #endif

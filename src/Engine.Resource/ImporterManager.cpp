@@ -13,7 +13,7 @@ bool ImporterManager::registerImporter(cref<FileTypeId> fileTypeId_, cref<sptr<I
 
 bool ImporterManager::unregisterImporter(sptr<ImporterBase> importer_) noexcept {
 
-    const auto iter = _STD ranges::find_if(
+    const auto iter = std::ranges::find_if(
         _mapping,
         [importer_](const auto& pair_) {
             return pair_.second == importer_;

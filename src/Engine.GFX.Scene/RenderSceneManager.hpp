@@ -99,7 +99,7 @@ namespace hg::engine::gfx::scene {
         void selectPrimaryTargets(
             _Inout_ ref<CompactArray<smr<RenderTarget>>> targets_,
             Selector_&& selector_
-        ) const noexcept(_STD is_nothrow_invocable_v<Selector_, cref<smr<RenderTarget>>>) {
+        ) const noexcept(std::is_nothrow_invocable_v<Selector_, cref<smr<RenderTarget>>>) {
             for (const auto& target : _primaryTargets) {
                 if (selector_(target)) {
                     targets_.emplace_back(clone(target));
@@ -111,8 +111,8 @@ namespace hg::engine::gfx::scene {
         void selectTargets(
             _Inout_ ref<CompactArray<smr<RenderTarget>>> targets_,
             Selector_&& selector_
-        ) const noexcept(_STD is_nothrow_invocable_v<Selector_, cref<smr<RenderTarget>>>) {
-            selectPrimaryTargets<Selector_>(targets_, _STD forward<Selector_>(selector_));
+        ) const noexcept(std::is_nothrow_invocable_v<Selector_, cref<smr<RenderTarget>>>) {
+            selectPrimaryTargets<Selector_>(targets_, std::forward<Selector_>(selector_));
         }
     };
 }

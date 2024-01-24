@@ -14,7 +14,7 @@ bool GlobalStorage::hasAccelStage(cref<HashedState<Stage>> hashedState_) noexcep
 }
 
 bool GlobalStorage::hasAccelStage(cref<smr<const Stage>> stage_) noexcept {
-    return _STD ranges::contains(
+    return std::ranges::contains(
         _stages.values(),
         stage_,
         [](const auto& value_) {
@@ -32,7 +32,7 @@ smr<const Stage> GlobalStorage::insertAccelStage(
     cref<HashedState<Stage>> hashedState_,
     mref<smr<const Stage>> stage_
 ) noexcept {
-    const auto iter = _stages.emplace(hashedState_, _STD move(stage_));
+    const auto iter = _stages.emplace(hashedState_, std::move(stage_));
     return iter.first->second;
 }
 
@@ -41,7 +41,7 @@ bool GlobalStorage::hasAccelEffect(cref<HashedState<AccelerationEffect>> hashedS
 }
 
 bool GlobalStorage::hasAccelEffect(cref<Guid> effectGuid_) noexcept {
-    return _STD ranges::contains(
+    return std::ranges::contains(
         _effects.values(),
         effectGuid_,
         [](const auto& value_) {
@@ -51,7 +51,7 @@ bool GlobalStorage::hasAccelEffect(cref<Guid> effectGuid_) noexcept {
 }
 
 bool GlobalStorage::hasAccelEffect(cref<smr<const AccelerationEffect>> effect_) noexcept {
-    return _STD ranges::contains(
+    return std::ranges::contains(
         _effects.values(),
         effect_,
         [](const auto& value_) {
@@ -61,7 +61,7 @@ bool GlobalStorage::hasAccelEffect(cref<smr<const AccelerationEffect>> effect_) 
 }
 
 smr<const AccelerationEffect> GlobalStorage::getAccelEffect(cref<Guid> effectGuid_) noexcept {
-    const auto iter = _STD ranges::find(
+    const auto iter = std::ranges::find(
         _effects.values(),
         effectGuid_,
         [](const auto& value_) {
@@ -82,7 +82,7 @@ smr<const AccelerationEffect> GlobalStorage::insertAccelEffect(
     cref<HashedState<AccelerationEffect>> hashedState_,
     mref<smr<const AccelerationEffect>> effect_
 ) noexcept {
-    const auto iter = _effects.emplace(hashedState_, _STD move(effect_));
+    const auto iter = _effects.emplace(hashedState_, std::move(effect_));
     return iter.first->second;
 }
 
@@ -91,7 +91,7 @@ bool GlobalStorage::hasAccelPipeline(cref<HashedState<AccelerationPipeline>> has
 }
 
 bool GlobalStorage::hasAccelPipeline(cref<smr<const AccelerationPipeline>> pipeline_) noexcept {
-    return _STD ranges::contains(
+    return std::ranges::contains(
         _pipelines.values(),
         pipeline_,
         [](const auto& value_) {

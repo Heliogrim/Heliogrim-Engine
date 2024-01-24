@@ -5,7 +5,7 @@
 
 namespace hg::reflect {
     template <typename Type_>
-    concept TypeQueryable = _STD true_type::value;
+    concept TypeQueryable = std::true_type::value;
 
     template <typename Type_>
     concept IsUdTypeQuery = HasStaticType<Type_>;

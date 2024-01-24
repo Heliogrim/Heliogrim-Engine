@@ -27,11 +27,11 @@ namespace hg::engine::gfx::cache {
         eTransient/* eVolatile */ = 0x2,
     };
 
-    template <typename ResultTypeType_, typename ValueType_ = void> requires _STD is_integral_v<ResultTypeType_> ||
-        _STD is_enum_v<ResultTypeType_>
+    template <typename ResultTypeType_, typename ValueType_ = void> requires std::is_integral_v<ResultTypeType_> ||
+        std::is_enum_v<ResultTypeType_>
     struct Result {
     public:
-        template <typename Rx_, typename Vx_> requires _STD is_integral_v<Rx_> || _STD is_enum_v<Rx_>
+        template <typename Rx_, typename Vx_> requires std::is_integral_v<Rx_> || std::is_enum_v<Rx_>
         friend struct Result;
 
     public:
@@ -40,47 +40,47 @@ namespace hg::engine::gfx::cache {
         using result_type = ResultTypeType_;
         using value_type = ValueType_;
 
-        using store_cnd_type = _STD conjunction<_STD is_void<ValueType_>/*, _STD is_empty<ValueType_>*/>;
+        using store_cnd_type = std::conjunction<std::is_void<ValueType_>/*, std::is_empty<ValueType_>*/>;
 
-        using store_type = _STD conditional_t<store_cnd_type::value,
-            _STD type_identity_t<ResultTypeType_>,
-            _STD _Compressed_pair<ResultTypeType_, _STD conditional_t<_STD is_void_v<ValueType_>, int, ValueType_>>
+        using store_type = std::conditional_t<store_cnd_type::value,
+            std::type_identity_t<ResultTypeType_>,
+            std::_Compressed_pair<ResultTypeType_, std::conditional_t<std::is_void_v<ValueType_>, int, ValueType_>>
         >;
 
     public:
-        template <typename Rtt_ = ResultTypeType_, typename Vt_ = ValueType_> requires _STD is_same_v<Vt_, ValueType_>
-            && _STD is_void_v<Vt_> && _STD is_convertible_v<Rtt_, ResultTypeType_>
+        template <typename Rtt_ = ResultTypeType_, typename Vt_ = ValueType_> requires std::is_same_v<Vt_, ValueType_>
+            && std::is_void_v<Vt_> && std::is_convertible_v<Rtt_, ResultTypeType_>
         constexpr Result(Rtt_&& result_) noexcept :
-            data(_STD forward<Rtt_>(result_)) {}
+            data(std::forward<Rtt_>(result_)) {}
 
         template <
             typename Rtt_ = ResultTypeType_,
-            typename Vt_ = ValueType_> requires (not _STD is_void_v<Vt_>) && _STD is_convertible_v<Rtt_,
+            typename Vt_ = ValueType_> requires (not std::is_void_v<Vt_>) && std::is_convertible_v<Rtt_,
                 ResultTypeType_> &&
-            _STD is_convertible_v<Vt_, ValueType_>
+            std::is_convertible_v<Vt_, ValueType_>
         constexpr Result(Rtt_&& result_, Vt_&& value_) :
-            data(_STD _One_then_variadic_args_t {}, _STD forward<Rtt_>(result_), _STD forward<Vt_>(value_)) {}
+            data(std::_One_then_variadic_args_t {}, std::forward<Rtt_>(result_), std::forward<Vt_>(value_)) {}
 
         template <
             typename Rtt_ = ResultTypeType_,
-            typename Vt_ = ValueType_> requires ((not _STD is_void_v<Vt_>) && _STD is_default_constructible_v<
-            ValueType_>) && _STD is_convertible_v<Rtt_, ResultTypeType_>
+            typename Vt_ = ValueType_> requires ((not std::is_void_v<Vt_>) && std::is_default_constructible_v<
+            ValueType_>) && std::is_convertible_v<Rtt_, ResultTypeType_>
         constexpr Result(Rtt_&& result_) :
-            Result<Rtt_, ValueType_>(_STD forward<Rtt_>(result_), {}) {}
+            Result<Rtt_, ValueType_>(std::forward<Rtt_>(result_), {}) {}
 
     public:
         store_type data;
 
     protected:
         template <typename Type_>
-        using result_compatible = _STD conjunction<
-            _STD is_convertible<result_type, Type_>,
-            _STD negation<store_cnd_type>
+        using result_compatible = std::conjunction<
+            std::is_convertible<result_type, Type_>,
+            std::negation<store_cnd_type>
         >;
 
         template <typename Type_>
-        using exclusive_result_compatible = _STD conjunction<
-            _STD is_convertible<result_type, Type_>,
+        using exclusive_result_compatible = std::conjunction<
+            std::is_convertible<result_type, Type_>,
             store_cnd_type
         >;
 
@@ -107,18 +107,18 @@ namespace hg::engine::gfx::cache {
 
     protected:
         template <typename Type_>
-        using is_constexpr_comparator = _STD conjunction<
-            _STD is_empty<Type_>,
-            _STD is_trivially_default_constructible<Type_>
+        using is_constexpr_comparator = std::conjunction<
+            std::is_empty<Type_>,
+            std::is_trivially_default_constructible<Type_>
         >;
 
         template <typename Type_>
-        using constant_comparator = _STD integral_constant<Type_, Type_ {}>;
+        using constant_comparator = std::integral_constant<Type_, Type_ {}>;
 
     public:
         template <
             typename Type_ = ResultTypeType_,
-            typename Comparator_ = _STD equal_to<ResultTypeType_>> requires is_constexpr_comparator<Comparator_>::value
+            typename Comparator_ = std::equal_to<ResultTypeType_>> requires is_constexpr_comparator<Comparator_>::value
         [[nodiscard]] constexpr bool operator==(const auto& rhs_) const noexcept {
             return (this_type::template constant_comparator<Comparator_>::value)(
                 this_type::template type<result_type>(),
@@ -128,29 +128,29 @@ namespace hg::engine::gfx::cache {
 
         template <
             typename Type_ = ResultTypeType_,
-            typename Comparator_ = _STD equal_to<ResultTypeType_>> requires _STD negation_v<is_constexpr_comparator<
+            typename Comparator_ = std::equal_to<ResultTypeType_>> requires std::negation_v<is_constexpr_comparator<
             Comparator_>>
         [[nodiscard]] constexpr bool operator==(const auto& rhs_) const noexcept {
             return Comparator_ {}(this_type::template type<result_type>(), rhs_);
         }
 
-        template <typename Type_ = ResultTypeType_, typename Comparator_ = _STD equal_to<ResultTypeType_>>
+        template <typename Type_ = ResultTypeType_, typename Comparator_ = std::equal_to<ResultTypeType_>>
         [[nodiscard]] constexpr bool operator!=(const auto& rhs_) const noexcept {
             return not this_type::template operator==<Type_, Comparator_>(rhs_);
         }
 
     protected:
         template <typename Type_>
-        using supplement = _STD conjunction<
-            _STD is_convertible<ValueType_, Type_>,
-            _STD negation<store_cnd_type>
+        using supplement = std::conjunction<
+            std::is_convertible<ValueType_, Type_>,
+            std::negation<store_cnd_type>
         >;
 
         template <typename Type_>
-        using exclusive_supplement = _STD conjunction<
-            _STD negation<_STD is_convertible<ResultTypeType_, Type_>>,
-            _STD is_convertible<ValueType_, Type_>,
-            _STD negation<store_cnd_type>
+        using exclusive_supplement = std::conjunction<
+            std::negation<std::is_convertible<ResultTypeType_, Type_>>,
+            std::is_convertible<ValueType_, Type_>,
+            std::negation<store_cnd_type>
         >;
 
     public:

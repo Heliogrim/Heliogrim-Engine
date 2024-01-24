@@ -35,8 +35,8 @@ namespace hg::engine::accel {
         StencilOp stencilPassOp;
         StencilOp stencilDepthFailOp;
 
-        _STD bitset<32> stencilCompareMask;
-        _STD bitset<32> stencilWriteMask;
+        std::bitset<32> stencilCompareMask;
+        std::bitset<32> stencilWriteMask;
 
         /**/
 

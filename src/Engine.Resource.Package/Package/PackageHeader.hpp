@@ -43,6 +43,6 @@ namespace hg::engine::resource {
     };
     #pragma pack(pop)
 
-    static_assert(_STD is_trivial_v<PackageHeader>);
+    static_assert(std::is_trivial_v<PackageHeader>);
     static_assert(sizeof(PackageHeader) == 0x64);
 }

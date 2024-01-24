@@ -9,21 +9,21 @@ Transform::Transform() noexcept :
     _scale(1.F) {}
 
 Transform::Transform(mref<Location> location_, mref<Rotator> rotator_, mref<fvec3> scale_) noexcept :
-    _location(_STD move(location_)),
-    _rotator(_STD move(rotator_)),
-    _scale(_STD move(scale_)) {}
+    _location(std::move(location_)),
+    _rotator(std::move(rotator_)),
+    _scale(std::move(scale_)) {}
 
 ref<Transform> Transform::operator=(mref<Transform> other_) noexcept {
-    if (this != _STD addressof(other_)) {
-        _location = _STD move(other_._location);
-        _rotator = _STD move(other_._rotator);
-        _scale = _STD move(other_._scale);
+    if (this != std::addressof(other_)) {
+        _location = std::move(other_._location);
+        _rotator = std::move(other_._rotator);
+        _scale = std::move(other_._scale);
     }
     return *this;
 }
 
 ref<Transform> Transform::operator=(cref<Transform> other_) noexcept {
-    if (this != _STD addressof(other_)) {
+    if (this != std::addressof(other_)) {
         _location = other_._location;
         _rotator = other_._rotator;
         _scale = other_._scale;
@@ -40,7 +40,7 @@ ref<Location> Transform::location() noexcept {
 }
 
 ref<Transform::this_type> Transform::setLocation(mref<Location> location_) noexcept {
-    _location = _STD move(location_);
+    _location = std::move(location_);
     return *this;
 }
 
@@ -53,7 +53,7 @@ ref<Rotator> Transform::rotator() noexcept {
 }
 
 ref<Transform::this_type> Transform::setRotator(mref<Rotator> rotator_) noexcept {
-    _rotator = _STD move(rotator_);
+    _rotator = std::move(rotator_);
     return *this;
 }
 
@@ -66,6 +66,6 @@ ref<fvec3> Transform::scale() noexcept {
 }
 
 ref<Transform::this_type> Transform::setScale(mref<fvec3> scale_) noexcept {
-    _scale = _STD move(scale_);
+    _scale = std::move(scale_);
     return *this;
 }

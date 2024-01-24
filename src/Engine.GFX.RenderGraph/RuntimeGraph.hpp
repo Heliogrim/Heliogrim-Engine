@@ -16,7 +16,7 @@ namespace hg::engine::render::graph {
         using this_type = RuntimeGraph;
 
     private:
-        _STD allocator<Node> _alloc;
+        std::allocator<Node> _alloc;
         smr<AnchorNode> _begin;
         smr<AnchorNode> _end;
 

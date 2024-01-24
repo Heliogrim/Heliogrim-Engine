@@ -17,7 +17,7 @@ smr<const AccelerationEffect> engine::render::makeUiBaseEffect() {
     const auto vertexShaderCode = read_shader_file("__test__ui.vs");
 
     vertexStage->getIntermediate()->lang.dialect = Dialect::eVulkanGlsl460;
-    vertexStage->getIntermediate()->lang.text.emplace_back(_STD move(vertexShaderCode));
+    vertexStage->getIntermediate()->lang.text.emplace_back(std::move(vertexShaderCode));
 
     /**/
 
@@ -27,84 +27,84 @@ smr<const AccelerationEffect> engine::render::makeUiBaseEffect() {
     const auto fragmentShaderCode = read_shader_file("__test__ui.fs");
 
     fragmentStage->getIntermediate()->lang.dialect = Dialect::eVulkanGlsl460;
-    fragmentStage->getIntermediate()->lang.text.emplace_back(_STD move(fragmentShaderCode));
+    fragmentStage->getIntermediate()->lang.text.emplace_back(std::move(fragmentShaderCode));
 
     /**/
 
     auto tmpVar = make_uptr<Variable>();
     tmpVar->type = Type { .category = TypeCategory::eObject, .objectType = ObjectType::eUnknown };
     tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eExternalLinkage>>();
-    tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eConstant>>(_STD move(tmpVar->annotation));
-    tmpVar->annotation = make_uptr<SymbolIdAnnotation>("block", _STD move(tmpVar->annotation));
+    tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eConstant>>(std::move(tmpVar->annotation));
+    tmpVar->annotation = make_uptr<SymbolIdAnnotation>("block", std::move(tmpVar->annotation));
 
     auto tmpSym = make_uptr<Symbol>(
         SymbolId::from("block"sv),
         VariableSymbol { SymbolType::eVariableSymbol, tmpVar.get() }
     );
 
-    vertexStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(tmpVar));
-    vertexStage->getIntermediate()->rep.symbolTable.insert(_STD move(tmpSym));
+    vertexStage->getIntermediate()->rep.globalScope.inbound.emplace_back(std::move(tmpVar));
+    vertexStage->getIntermediate()->rep.symbolTable.insert(std::move(tmpSym));
 
     /**/
 
     tmpVar = make_uptr<Variable>();
     tmpVar->type = Type { .category = TypeCategory::eScalar, .scalarType = ScalarType::eF32Vec3 };
     tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eForwardLinkage>>();
-    tmpVar->annotation = make_uptr<SymbolIdAnnotation>("vertex-position", _STD move(tmpVar->annotation));
+    tmpVar->annotation = make_uptr<SymbolIdAnnotation>("vertex-position", std::move(tmpVar->annotation));
     tmpVar->annotation = make_uptr<VkBindLocationAnnotation>(
         -1L,
         0L,
         offsetof(gfx::uivertex, position),
-        _STD move(tmpVar->annotation)
+        std::move(tmpVar->annotation)
     );
 
-    vertexStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(tmpVar));
+    vertexStage->getIntermediate()->rep.globalScope.inbound.emplace_back(std::move(tmpVar));
 
     /**/
 
     tmpVar = make_uptr<Variable>();
     tmpVar->type = Type { .category = TypeCategory::eScalar, .scalarType = ScalarType::eU8Vec4 };
     tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eForwardLinkage>>();
-    tmpVar->annotation = make_uptr<SymbolIdAnnotation>("vertex-color", _STD move(tmpVar->annotation));
+    tmpVar->annotation = make_uptr<SymbolIdAnnotation>("vertex-color", std::move(tmpVar->annotation));
     tmpVar->annotation = make_uptr<VkBindLocationAnnotation>(
         -1L,
         1L,
         offsetof(gfx::uivertex, color),
-        _STD move(tmpVar->annotation)
+        std::move(tmpVar->annotation)
     );
 
-    vertexStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(tmpVar));
+    vertexStage->getIntermediate()->rep.globalScope.inbound.emplace_back(std::move(tmpVar));
 
     /**/
 
     tmpVar = make_uptr<Variable>();
     tmpVar->type = Type { .category = TypeCategory::eScalar, .scalarType = ScalarType::eF32Vec3 };
     tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eForwardLinkage>>();
-    tmpVar->annotation = make_uptr<SymbolIdAnnotation>("vertex-uv", _STD move(tmpVar->annotation));
+    tmpVar->annotation = make_uptr<SymbolIdAnnotation>("vertex-uv", std::move(tmpVar->annotation));
     tmpVar->annotation = make_uptr<VkBindLocationAnnotation>(
         -1L,
         2L,
         offsetof(gfx::uivertex, uvm),
-        _STD move(tmpVar->annotation)
+        std::move(tmpVar->annotation)
     );
 
-    vertexStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(tmpVar));
+    vertexStage->getIntermediate()->rep.globalScope.inbound.emplace_back(std::move(tmpVar));
 
     /**/
 
     tmpVar = make_uptr<Variable>();
     tmpVar->type = Type { .category = TypeCategory::eTexture, .textureType = TextureType::eTexture2d };
     tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eExternalLinkage>>();
-    tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eUniform>>(_STD move(tmpVar->annotation));
-    tmpVar->annotation = make_uptr<SymbolIdAnnotation>("ui-image", _STD move(tmpVar->annotation));
+    tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eUniform>>(std::move(tmpVar->annotation));
+    tmpVar->annotation = make_uptr<SymbolIdAnnotation>("ui-image", std::move(tmpVar->annotation));
 
     tmpSym = make_uptr<Symbol>(
         SymbolId::from("ui-image"sv),
         VariableSymbol { SymbolType::eVariableSymbol, tmpVar.get() }
     );
 
-    fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(tmpVar));
-    fragmentStage->getIntermediate()->rep.symbolTable.insert(_STD move(tmpSym));
+    fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(std::move(tmpVar));
+    fragmentStage->getIntermediate()->rep.symbolTable.insert(std::move(tmpSym));
 
     /**/
 
@@ -112,13 +112,13 @@ smr<const AccelerationEffect> engine::render::makeUiBaseEffect() {
         auto tmpVar = make_uptr<Variable>();
         tmpVar->type = Type { .category = TypeCategory::eObject, .objectType = ObjectType::eSampler };
         tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eExternalLinkage>>();
-        tmpVar->annotation = make_uptr<SymbolIdAnnotation>("ui-image-sampler", _STD move(tmpVar->annotation));
+        tmpVar->annotation = make_uptr<SymbolIdAnnotation>("ui-image-sampler", std::move(tmpVar->annotation));
         tmpSym = make_uptr<Symbol>(
             SymbolId::from("ui-image-sampler"sv),
             VariableSymbol { SymbolType::eVariableSymbol, tmpVar.get() }
         );
-        fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(tmpVar));
-        fragmentStage->getIntermediate()->rep.symbolTable.insert(_STD move(tmpSym));
+        fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(std::move(tmpVar));
+        fragmentStage->getIntermediate()->rep.symbolTable.insert(std::move(tmpSym));
     }
 
     /**/
@@ -126,15 +126,15 @@ smr<const AccelerationEffect> engine::render::makeUiBaseEffect() {
     tmpVar = make_uptr<Variable>();
     tmpVar->type = Type { .category = TypeCategory::eTexture, .textureType = TextureType::eTexture2d };
     tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eForwardLinkage>>();
-    tmpVar->annotation = make_uptr<SymbolIdAnnotation>("color", _STD move(tmpVar->annotation));
+    tmpVar->annotation = make_uptr<SymbolIdAnnotation>("color", std::move(tmpVar->annotation));
 
     tmpSym = make_uptr<Symbol>(
         SymbolId::from("color"sv),
         VariableSymbol { SymbolType::eVariableSymbol, tmpVar.get() }
     );
 
-    fragmentStage->getIntermediate()->rep.globalScope.outbound.emplace_back(_STD move(tmpVar));
-    fragmentStage->getIntermediate()->rep.symbolTable.insert(_STD move(tmpSym));
+    fragmentStage->getIntermediate()->rep.globalScope.outbound.emplace_back(std::move(tmpVar));
+    fragmentStage->getIntermediate()->rep.symbolTable.insert(std::move(tmpSym));
 
     /**/
 
@@ -145,8 +145,8 @@ smr<const AccelerationEffect> engine::render::makeUiBaseEffect() {
     };
 
     return make_smr<AccelerationEffect>(
-        _STD move(guid),
+        std::move(guid),
         "test-ui-base-effect",
-        Vector { _STD move(vertexStage), _STD move(fragmentStage) }
+        Vector { std::move(vertexStage), std::move(fragmentStage) }
     );
 }

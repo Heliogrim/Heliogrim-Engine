@@ -15,7 +15,7 @@ namespace hg::engine::render::cmd {
     public:
         BindResourceTableRCmd(mref<smr<const ResourceTable>> table_) noexcept :
             RenderCommand(),
-            _table(_STD move(table_)) {}
+            _table(std::move(table_)) {}
 
         ~BindResourceTableRCmd() noexcept override = default;
 

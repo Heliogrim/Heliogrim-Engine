@@ -20,12 +20,12 @@ namespace hg::engine::render::cmd {
         LambdaRCmd(Fn_&& fn_) noexcept :
             fn(std::forward<Fn_>(fn_)) {}
 
-        LambdaRCmd(mref<_STD function<signature>> fn_) noexcept :
+        LambdaRCmd(mref<std::function<signature>> fn_) noexcept :
             fn(std::move(fn_)) {}
 
     private:
     public:
-        _STD function<signature> fn;
+        std::function<signature> fn;
 
     public:
         void operator()(

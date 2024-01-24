@@ -12,15 +12,15 @@ namespace hg::engine::serialization {
         using underlying_type = MemoryBaseArchive;
 
     public:
-        MemoryReadonlyArchive(_In_ ref<_STD span<u8, _STD dynamic_extent>> bytes_);
+        MemoryReadonlyArchive(_In_ ref<std::span<u8, std::dynamic_extent>> bytes_);
 
-        MemoryReadonlyArchive(_In_ ref<_STD span<u8, _STD dynamic_extent>> bytes_, const s64 limit_);
+        MemoryReadonlyArchive(_In_ ref<std::span<u8, std::dynamic_extent>> bytes_, const s64 limit_);
 
     public:
         [[nodiscard]] fs::Url getArchiveUrl() const noexcept override;
 
     protected:
-        ref<_STD span<u8, _STD dynamic_extent>> _bytes;
+        ref<std::span<u8, std::dynamic_extent>> _bytes;
         s64 _limit;
 
     public:

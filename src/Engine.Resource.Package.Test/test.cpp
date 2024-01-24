@@ -20,15 +20,15 @@ TEST(__DummyTest__, Exists) {
 }
 
 namespace PackageModule {
-    [[nodiscard]] _STD pair<BufferArchive, uptr<BufferSource>> makeTestSource(const size_t size_ = 4096) {
+    [[nodiscard]] std::pair<BufferArchive, uptr<BufferSource>> makeTestSource(const size_t size_ = 4096) {
 
         auto helper = BufferArchive {};
         helper.resize(size_, 0ui8);
 
         auto* const ptr = helper.data();
 
-        return _STD make_pair<>(
-            _STD move(helper),
+        return std::make_pair<>(
+            std::move(helper),
             make_uptr<BufferSource>(
                 Buffer {
                     size_,
@@ -41,8 +41,8 @@ namespace PackageModule {
 
     void generatePayload(ref<BufferArchive> archive_, const u64 size_ = 48ui64) {
 
-        _STD random_device device {};
-        _STD mt19937 mt { device() };
+        std::random_device device {};
+        std::mt19937 mt { device() };
 
         for (u64 i = 0; i < size_; ++i) {
             archive_ << mt();
@@ -55,7 +55,7 @@ namespace PackageModule {
 
         auto [helper, source] = makeTestSource();
 
-        auto upackage = PackageFactory::createEmptyPackage(_STD move(source));
+        auto upackage = PackageFactory::createEmptyPackage(std::move(source));
         ref<Package> package = *upackage;
 
         auto* const linker = package.getLinker();
@@ -152,7 +152,7 @@ namespace PackageModule {
 
         auto [helper, source] = makeTestSource();
 
-        auto upackage = PackageFactory::createEmptyPackage(_STD move(source));
+        auto upackage = PackageFactory::createEmptyPackage(std::move(source));
         ref<Package> package = *upackage;
 
         auto* const linker = package.getLinker();
@@ -197,7 +197,7 @@ namespace PackageModule {
             }
         );
 
-        auto udst = PackageFactory::createFromSource(_STD move(dstSource));
+        auto udst = PackageFactory::createFromSource(std::move(dstSource));
         auto& dst = *udst;
 
         const auto* const storedHeader = &dst.header();
@@ -257,7 +257,7 @@ namespace PackageModule {
 
         auto [helper, source] = makeTestSource();
 
-        auto upackage = PackageFactory::createEmptyPackage(_STD move(source));
+        auto upackage = PackageFactory::createEmptyPackage(std::move(source));
         ref<Package> package = *upackage;
 
         /**/
@@ -281,7 +281,7 @@ namespace PackageModule {
                 ArchiveHeaderType::eRaw,
                 payloadGuid
             },
-            _STD move(payload)
+            std::move(payload)
         );
 
         // Write Package data
@@ -301,7 +301,7 @@ namespace PackageModule {
             }
         );
 
-        auto udst = PackageFactory::createFromSource(_STD move(dstSource));
+        auto udst = PackageFactory::createFromSource(std::move(dstSource));
         auto& dst = *udst;
 
         const auto* const dstLinker = package.getLinker();
@@ -326,7 +326,7 @@ namespace PackageModule {
         replica.seek(0);
         for (size_t i = 0; i < valCount; ++i) {
 
-            using value_type = _STD mt19937::result_type;
+            using value_type = std::mt19937::result_type;
 
             value_type value {};
             (*storedArchive) >> value;
@@ -358,7 +358,7 @@ namespace PackageModule {
 
         auto [helper, source] = makeTestSource(buffer_size);
 
-        auto upackage = PackageFactory::createEmptyPackage(_STD move(source));
+        auto upackage = PackageFactory::createEmptyPackage(std::move(source));
         auto& package = *upackage;
 
         /**/
@@ -398,7 +398,7 @@ namespace PackageModule {
                     ArchiveHeaderType::eRaw,
                     payloadGuid
                 },
-                _STD move(payload)
+                std::move(payload)
             );
         }
 
@@ -419,7 +419,7 @@ namespace PackageModule {
             }
         );
 
-        auto udst = PackageFactory::createFromSource(_STD move(dstSource));
+        auto udst = PackageFactory::createFromSource(std::move(dstSource));
         auto& dst = *udst;
 
         const auto* const dstLinker = package.getLinker();
@@ -447,7 +447,7 @@ namespace PackageModule {
             replica.seek(0);
             for (size_t i = 0; i < value_count; ++i) {
 
-                using value_type = _STD mt19937::result_type;
+                using value_type = std::mt19937::result_type;
 
                 value_type value {};
                 (*storedArchive) >> value;

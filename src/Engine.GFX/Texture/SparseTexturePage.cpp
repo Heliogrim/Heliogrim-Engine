@@ -32,7 +32,7 @@ const SparseTexturePageFlags SparseTexturePage::flags() const noexcept {
 }
 
 nmpt<VirtualMemoryPage> SparseTexturePage::release() noexcept {
-    return _STD exchange(_memory, nullptr);
+    return std::exchange(_memory, nullptr);
 }
 
 nmpt<VirtualMemoryPage> SparseTexturePage::memory() const noexcept {
