@@ -81,28 +81,28 @@ namespace ReflectModule {
 namespace ReflectModule {
     class TestMetaBase : public InheritBase<TestMetaBase> {
     public:
-        TestMetaBase() :
+        constexpr TestMetaBase() :
             InheritBase<TestMetaBase>() {}
     };
 
     class TestMetaDerived : public InheritMeta<TestMetaDerived, TestMetaBase> {
     public:
-        TestMetaDerived() = default;
+        constexpr TestMetaDerived() = default;
     };
 
     class TestExtBase {
     public:
-        TestExtBase() = default;
+        constexpr TestExtBase() = default;
     };
 
     class TestMetaPolyDerived : public InheritMeta<TestMetaPolyDerived, TestMetaBase, TestExtBase> {
     public:
-        TestMetaPolyDerived() = default;
+        constexpr TestMetaPolyDerived() = default;
     };
 
     class TestMetaBase2 : public InheritBase<TestMetaBase2> {
     public:
-        TestMetaBase2() :
+        constexpr TestMetaBase2() :
             InheritBase<TestMetaBase2>() {}
     };
 

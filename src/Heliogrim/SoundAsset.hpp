@@ -21,7 +21,7 @@ namespace hg {
          *
          * @param  guid_ Unique identifier.
          */
-        SoundAsset(cref<asset_guid> guid_) noexcept;
+        SoundAsset(mref<asset_guid> guid_) noexcept;
 
     public:
         /**

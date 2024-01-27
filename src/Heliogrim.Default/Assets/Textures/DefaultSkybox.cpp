@@ -8,7 +8,7 @@ using namespace hg;
 
 texture::DefaultSkybox::DefaultSkybox() :
     TextureAsset(
-        texture::DefaultSkybox::unstable_auto_guid(),
+        clone(texture::DefaultSkybox::unstable_auto_guid()),
         image::DefaultSkybox::unstable_auto_guid(),
         {},
         { 2048ui32, 2048ui32, 1ui32 },

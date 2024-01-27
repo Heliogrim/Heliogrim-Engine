@@ -22,20 +22,12 @@ namespace hg::engine::render::graph {
         using storage_type = StorageType_<value_type>;
 
     public:
-        template <class Tx_ = storage_type> requires std::is_default_constructible_v<Tx_>
-        constexpr Observed() noexcept(std::is_nothrow_default_constructible_v<Tx_>) :
+        constexpr Observed() noexcept(std::is_nothrow_default_constructible_v<storage_type>) requires
+            std::is_default_constructible_v<storage_type> :
             _obj() {}
 
-        template <class Tx_ = storage_type> requires std::is_move_constructible_v<Tx_>
-        constexpr Observed(mref<Tx_> subject_) noexcept(std::is_nothrow_move_constructible_v<Tx_>) :
-            _obj(std::move(subject_)) {}
-
-        template <class Tx_ = storage_type> requires std::is_copy_constructible_v<Tx_>
-        constexpr Observed(cref<Tx_> subject_) noexcept(std::is_nothrow_copy_constructible_v<Tx_>) :
-            _obj(subject_) {}
-
-        template <class Tx_ = storage_type, typename... Args_> requires std::is_constructible_v<Tx_, Args_...>
-        constexpr Observed(Args_&&... args_) noexcept(std::is_nothrow_constructible_v<Tx_, Args_...>) :
+        template <typename... Args_> requires std::is_constructible_v<storage_type, Args_...>
+        constexpr Observed(Args_&&... args_) noexcept(std::is_nothrow_constructible_v<storage_type, Args_...>) :
             _obj(std::forward<Args_>(args_)...) {}
 
         Observed(mref<this_type>) = delete;

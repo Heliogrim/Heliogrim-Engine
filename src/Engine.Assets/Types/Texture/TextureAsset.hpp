@@ -25,11 +25,11 @@ namespace hg::engine::assets {
         TextureAsset();
 
     protected:
-        TextureAsset(cref<asset_guid> guid_);
+        TextureAsset(mref<asset_guid> guid_);
 
     public:
         TextureAsset(
-            cref<asset_guid> guid_,
+            mref<asset_guid> guid_,
             cref<asset_guid> baseImage_,
             mref<Vector<asset_guid>> images_,
             cref<math::uivec3> extent_,

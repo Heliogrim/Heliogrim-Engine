@@ -3,19 +3,20 @@
 #include <Engine.Assets/AssetFactory.hpp>
 #include <Engine.Assets/Types/Material/GfxMaterial.hpp>
 #include <Engine.Core/Engine.hpp>
+#include <Engine.Pedantic/Clone/Clone.hpp>
 
 #include "Engine.Assets/Assets.hpp"
 
 using namespace hg;
 
 GfxMatProtoAsset::GfxMatProtoAsset(
-    cref<asset_guid> guid_
+    mref<asset_guid> guid_
 ) noexcept :
     Asset(
-        guid_,
+        clone(guid_),
         engine::assets::GfxMaterial::typeId,
         engine::Engine::getEngine()->getAssets()->getFactory()->createGfxMaterialPrototypeAsset(
-            guid_
+            clone(guid_)
         )
     ) {}
 

@@ -6,6 +6,7 @@
 #include <Engine.Assets/Types/Asset.hpp>
 #include <Engine.Assets/AssetFactory.hpp>
 #include <Engine.Core/Engine.hpp>
+#include <Engine.Pedantic/Clone/Clone.hpp>
 
 using namespace hg;
 
@@ -28,7 +29,7 @@ AssetDatabaseResult<Asset> AssetDatabase::operator[](cref<asset_guid> guid_) con
     if (asset == nullptr) {
         return AssetDatabaseResult<Asset> {
             { AssetDatabaseResultType::eFailed },
-            hg::Asset { invalid_asset_guid, asset_type_id { 0 }, nullptr }
+            hg::Asset { clone(invalid_asset_guid), asset_type_id { 0 }, nullptr }
         };
     }
 

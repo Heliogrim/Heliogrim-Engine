@@ -13,8 +13,8 @@ SkyboxComponent::SkyboxComponent(
         std::move(owner_),
         std::move(parent_)
     ),
-    _skyboxGeometry(invalid_asset_guid),
-    _skyboxMaterial(invalid_asset_guid, clone(invalid_asset_guid)) {}
+    _skyboxGeometry(clone(invalid_asset_guid)),
+    _skyboxMaterial(clone(invalid_asset_guid), clone(invalid_asset_guid)) {}
 
 cref<StaticGeometryAsset> SkyboxComponent::getSkyboxGeometryAsset() const noexcept {
     return _skyboxGeometry;

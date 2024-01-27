@@ -450,7 +450,7 @@ void render::ReflowPass::ensureDefaultImage() {
 
     if (not registry->hasAsset(game::assets::image::UIDummy::unstable_auto_guid())) {
         factory->createImageAsset(
-            game::assets::image::UIDummy::unstable_auto_guid(),
+            clone(game::assets::image::UIDummy::unstable_auto_guid()),
             R"(resources\imports\ktx\default_ui.ktx)"
         );
     }

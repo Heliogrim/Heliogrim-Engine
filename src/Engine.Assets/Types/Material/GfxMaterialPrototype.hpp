@@ -21,7 +21,7 @@ namespace hg::engine::assets {
         inline static constexpr asset_type_id typeId { "GfxMaterialPrototype"_typeId };
 
     public:
-        GfxMaterialPrototype(cref<asset_guid> guid_);
+        GfxMaterialPrototype(mref<asset_guid> guid_);
 
     private:
     public:

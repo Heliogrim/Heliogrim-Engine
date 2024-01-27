@@ -28,7 +28,7 @@ namespace hg {
          * @param  typeId_ Identifier for the type.
          * @param  internal_ The internal state.
          */
-        Asset(cref<asset_guid> guid_, cref<asset_type_id> typeId_, ptr<void> internal_) noexcept;
+        Asset(mref<asset_guid> guid_, cref<asset_type_id> typeId_, ptr<void> internal_) noexcept;
 
     public:
         Asset(mref<this_type> other_) noexcept;

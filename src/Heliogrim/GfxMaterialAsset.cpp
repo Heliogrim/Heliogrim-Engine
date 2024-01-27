@@ -3,20 +3,21 @@
 #include <Engine.Assets/AssetFactory.hpp>
 #include <Engine.Assets/Types/Material/GfxMaterial.hpp>
 #include <Engine.Core/Engine.hpp>
+#include <Engine.Pedantic/Clone/Clone.hpp>
 
 #include "Engine.Assets/Assets.hpp"
 
 using namespace hg;
 
 GfxMaterialAsset::GfxMaterialAsset(
-    cref<asset_guid> guid_,
+    mref<asset_guid> guid_,
     mref<asset_guid> prototypeGuid_
 ) noexcept :
     StreamableRenderableAsset(
-        guid_,
+        clone(guid_),
         engine::assets::GfxMaterial::typeId,
         engine::Engine::getEngine()->getAssets()->getFactory()->createGfxMaterialAsset(
-            guid_,
+            clone(guid_),
             std::move(prototypeGuid_)
         )
     ) {}

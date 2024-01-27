@@ -22,7 +22,7 @@ namespace hg {
          *
          * @param  guid_ Unique identifier.
          */
-        SfxMaterialAsset(cref<asset_guid> guid_) noexcept;
+        SfxMaterialAsset(mref<asset_guid> guid_) noexcept;
 
     public:
         /**

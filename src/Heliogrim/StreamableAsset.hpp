@@ -23,7 +23,7 @@ namespace hg {
          * @param  guid_ Unique identifier.
          * @param  typeId_ Identifier for the type.
          */
-        StreamableAsset(cref<asset_guid> guid_, cref<asset_type_id> typeId_) noexcept;
+        StreamableAsset(mref<asset_guid> guid_, cref<asset_type_id> typeId_) noexcept;
 
     public:
         /**

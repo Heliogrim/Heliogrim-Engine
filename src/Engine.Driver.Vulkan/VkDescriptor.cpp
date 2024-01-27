@@ -3,7 +3,6 @@
 #include <Engine.Core/Engine.hpp>
 #include <Engine.GFX/Graphics.hpp>
 
-using namespace hg::driver::vk;
 using namespace hg;
 
 driver::vk::VkDescriptorPool::VkDescriptorPool() noexcept :

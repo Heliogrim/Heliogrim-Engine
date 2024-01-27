@@ -13,6 +13,7 @@
 
 #include <filesystem>
 #include <fstream>
+#include <Engine.Pedantic/Clone/Clone.hpp>
 
 #include "Heliogrim.Default/Assets/Fonts/CascadiaCode.hpp"
 #include "Heliogrim.Default/Assets/GfxMaterials/DefaultMaterial.hpp"
@@ -247,12 +248,12 @@ static void initMaterialDefaults() {
     const auto* const factory = Engine::getEngine()->getAssets()->getFactory();
 
     factory->createImageAsset(
-        image::DefaultAlpha::unstable_auto_guid(),
+        clone(image::DefaultAlpha::unstable_auto_guid()),
         R"(resources\imports\ktx\default_alpha.ktx)"
     );
 
     factory->createImageAsset(
-        image::DefaultAO::unstable_auto_guid(),
+        clone(image::DefaultAO::unstable_auto_guid()),
         R"(resources\imports\ktx\default_ao.ktx)"
     );
 
@@ -262,17 +263,17 @@ static void initMaterialDefaults() {
     );
 
     factory->createImageAsset(
-        image::DefaultMetalness::unstable_auto_guid(),
+        clone(image::DefaultMetalness::unstable_auto_guid()),
         R"(resources\imports\ktx\default_metalness.ktx)"
     );
 
     factory->createImageAsset(
-        image::DefaultNormal::unstable_auto_guid(),
+        clone(image::DefaultNormal::unstable_auto_guid()),
         R"(resources\imports\ktx\default_normal.ktx)"
     );
 
     factory->createImageAsset(
-        image::DefaultRoughness::unstable_auto_guid(),
+        clone(image::DefaultRoughness::unstable_auto_guid()),
         R"(resources\imports\ktx\default_roughness.ktx)"
     );
 
@@ -309,7 +310,7 @@ static void initSkyboxDefaults() {
     const auto* const factory = Engine::getEngine()->getAssets()->getFactory();
 
     factory->createImageAsset(
-        image::DefaultSkybox::unstable_auto_guid(),
+        clone(image::DefaultSkybox::unstable_auto_guid()),
         R"(resources\imports\ktx\default_skybox.ktx)"
     );
 
@@ -329,52 +330,52 @@ static void initDirectoryIcons() {
     const auto* const factory = Engine::getEngine()->getAssets()->getFactory();
 
     factory->createImageAsset(
-        image::Directory::unstable_auto_guid(),
+        clone(image::Directory::unstable_auto_guid()),
         R"(resources\imports\ktx\icons8-folder-144.ktx)"
     );
 
     factory->createImageAsset(
-        image::FolderAudio::unstable_auto_guid(),
+        clone(image::FolderAudio::unstable_auto_guid()),
         R"(resources\imports\ktx\folder-audio.ktx)"
     );
 
     factory->createImageAsset(
-        image::FolderEnvironment::unstable_auto_guid(),
+        clone(image::FolderEnvironment::unstable_auto_guid()),
         R"(resources\imports\ktx\folder-environment.ktx)"
     );
 
     factory->createImageAsset(
-        image::FolderFont::unstable_auto_guid(),
+        clone(image::FolderFont::unstable_auto_guid()),
         R"(resources\imports\ktx\folder-font.ktx)"
     );
 
     factory->createImageAsset(
-        image::FolderImages::unstable_auto_guid(),
+        clone(image::FolderImages::unstable_auto_guid()),
         R"(resources\imports\ktx\folder-images.ktx)"
     );
 
     factory->createImageAsset(
-        image::FolderImport::unstable_auto_guid(),
+        clone(image::FolderImport::unstable_auto_guid()),
         R"(resources\imports\ktx\folder-import.ktx)"
     );
 
     factory->createImageAsset(
-        image::FolderLog::unstable_auto_guid(),
+        clone(image::FolderLog::unstable_auto_guid()),
         R"(resources\imports\ktx\folder-log.ktx)"
     );
 
     factory->createImageAsset(
-        image::FolderResource::unstable_auto_guid(),
+        clone(image::FolderResource::unstable_auto_guid()),
         R"(resources\imports\ktx\folder-resource.ktx)"
     );
 
     factory->createImageAsset(
-        image::FolderShader::unstable_auto_guid(),
+        clone(image::FolderShader::unstable_auto_guid()),
         R"(resources\imports\ktx\folder-shader.ktx)"
     );
 
     factory->createImageAsset(
-        image::FolderVideo::unstable_auto_guid(),
+        clone(image::FolderVideo::unstable_auto_guid()),
         R"(resources\imports\ktx\folder-video.ktx)"
     );
 
@@ -398,7 +399,7 @@ static void initFileIcons() {
     const auto* const factory = Engine::getEngine()->getAssets()->getFactory();
 
     factory->createImageAsset(
-        image::Brand::unstable_auto_guid(),
+        clone(image::Brand::unstable_auto_guid()),
         R"(resources\imports\ktx\brand.ktx)"
     );
 }
@@ -409,7 +410,7 @@ static void initFontDefaults() {
     const auto* const factory = Engine::getEngine()->getAssets()->getFactory();
 
     factory->createFontAsset(
-        font::CascadiaCode::unstable_auto_guid(),
+        clone(font::CascadiaCode::unstable_auto_guid()),
         R"(resources\imports\ttf\CascadiaCode.ttf)"
 
     );
@@ -421,7 +422,7 @@ static void initStaticGeometryDefaults() {
     const auto* const factory = Engine::getEngine()->getAssets()->getFactory();
 
     factory->createStaticGeometryAsset(
-        meshes::Sphere::unstable_auto_guid(),
+        clone(meshes::Sphere::unstable_auto_guid()),
         R"(resources\imports\obj\sphere.obj)",
         11520ui64,
         11520ui64
@@ -429,7 +430,7 @@ static void initStaticGeometryDefaults() {
     );
 
     factory->createStaticGeometryAsset(
-        meshes::PlaneD128::unstable_auto_guid(),
+        clone(meshes::PlaneD128::unstable_auto_guid()),
         R"(resources\imports\obj\plane_d128.obj)",
         98304ui64,
         98304ui64

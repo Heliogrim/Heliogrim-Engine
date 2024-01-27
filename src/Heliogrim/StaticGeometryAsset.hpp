@@ -21,7 +21,7 @@ namespace hg {
          *
          * @param  guid_ Unique identifier.
          */
-        StaticGeometryAsset(cref<asset_guid> guid_) noexcept;
+        StaticGeometryAsset(mref<asset_guid> guid_) noexcept;
 
         /**
          * Constructor
@@ -35,7 +35,7 @@ namespace hg {
          * @param  indexCount_ The number of indices within the source geometry
          */
         StaticGeometryAsset(
-            cref<asset_guid> guid_,
+            mref<asset_guid> guid_,
             cref<string> url_,
             cref<u64> vertexCount_,
             cref<u64> indexCount_

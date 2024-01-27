@@ -73,22 +73,22 @@ namespace hg::engine::assets {
         void prepare();
 
     public:
-        [[nodiscard]] ptr<Font> createFontAsset(cref<asset_guid> guid_) const;
+        [[nodiscard]] ptr<Font> createFontAsset(mref<asset_guid> guid_) const;
 
-        [[nodiscard]] ptr<Font> createFontAsset(cref<asset_guid> guid_, cref<string> url_) const;
+        [[nodiscard]] ptr<Font> createFontAsset(mref<asset_guid> guid_, cref<string> url_) const;
 
-        [[nodiscard]] ptr<AccelEffect> createAccelEffectAsset(cref<asset_guid> guid_) const;
+        [[nodiscard]] ptr<AccelEffect> createAccelEffectAsset(mref<asset_guid> guid_) const;
 
         [[nodiscard]] ptr<GfxMaterial> createGfxMaterialAsset(
             mref<asset_guid> prototypeGuid_
         ) const;
 
         [[nodiscard]] ptr<GfxMaterial> createGfxMaterialAsset(
-            cref<asset_guid> guid_,
+            mref<asset_guid> guid_,
             mref<asset_guid> prototypeGuid_
         ) const;
 
-        [[nodiscard]] ptr<GfxMaterialPrototype> createGfxMaterialPrototypeAsset(cref<asset_guid> guid_) const;
+        [[nodiscard]] ptr<GfxMaterialPrototype> createGfxMaterialPrototypeAsset(mref<asset_guid> guid_) const;
 
     public:
         /**
@@ -111,7 +111,7 @@ namespace hg::engine::assets {
          *
          * @returns The new image asset.
          */
-        [[nodiscard]] ptr<Image> createImageAsset(cref<asset_guid> guid_) const;
+        [[nodiscard]] ptr<Image> createImageAsset(mref<asset_guid> guid_) const;
 
         /**
          * Creates a image asset
@@ -124,7 +124,7 @@ namespace hg::engine::assets {
          *
          * @returns The new image asset.
          */
-        [[nodiscard]] ptr<Image> createImageAsset(cref<asset_guid> guid_, cref<string> url_) const;
+        [[nodiscard]] ptr<Image> createImageAsset(mref<asset_guid> guid_, cref<string> url_) const;
 
     public:
         /**
@@ -147,7 +147,7 @@ namespace hg::engine::assets {
          *
          * @returns The new texture asset.
          */
-        [[nodiscard]] ptr<TextureAsset> createTextureAsset(cref<asset_guid> guid_) const;
+        [[nodiscard]] ptr<TextureAsset> createTextureAsset(mref<asset_guid> guid_) const;
 
         /**
          * Creates a texture asset
@@ -166,7 +166,7 @@ namespace hg::engine::assets {
          * @returns The new texture asset.
          */
         [[nodiscard]] ptr<TextureAsset> createTextureAsset(
-            cref<asset_guid> guid_,
+            mref<asset_guid> guid_,
             cref<asset_guid> baseImage_,
             mref<Vector<asset_guid>> images_,
             cref<math::uivec3> extent_,
@@ -177,15 +177,15 @@ namespace hg::engine::assets {
 
         // TODO:
     public:
-        [[nodiscard]] ptr<StaticGeometry> createStaticGeometryAsset(cref<asset_guid> guid_) const;
+        [[nodiscard]] ptr<StaticGeometry> createStaticGeometryAsset(mref<asset_guid> guid_) const;
 
         [[nodiscard]] ptr<StaticGeometry> createStaticGeometryAsset(
-            cref<asset_guid> guid_,
+            mref<asset_guid> guid_,
             cref<string> url_,
             cref<u64> vertexCount_,
             cref<u64> indexCount_
         ) const;
 
-        [[nodiscard]] ptr<LandscapeGeometry> createLandscapeGeometryAsset(cref<asset_guid> guid_) const;
+        [[nodiscard]] ptr<LandscapeGeometry> createLandscapeGeometryAsset(mref<asset_guid> guid_) const;
     };
 }

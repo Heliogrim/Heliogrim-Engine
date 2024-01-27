@@ -5,8 +5,6 @@
 #include <Engine.GFX/vkinc.hpp>
 #include <Engine.Common/Math/Vector.hpp>
 
-typedef struct VkDescriptorPool_T* VkDescriptorPool;
-
 namespace hg::driver::vk {
     struct VkDescriptorPoolSize {
         ::vk::DescriptorType type;

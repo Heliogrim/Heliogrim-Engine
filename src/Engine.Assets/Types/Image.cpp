@@ -1,18 +1,19 @@
 #include "Image.hpp"
 
 #include <algorithm>
+#include <Engine.Pedantic/Clone/Clone.hpp>
 
 using namespace hg::engine::assets;
 using namespace hg;
 
 Image::Image() :
-    InheritMeta(invalid_asset_guid, Image::typeId) {}
+    InheritMeta(clone(invalid_asset_guid), Image::typeId) {}
 
-Image::Image(cref<asset_guid> guid_) :
-    InheritMeta(guid_, Image::typeId) {}
+Image::Image(mref<asset_guid> guid_) :
+    InheritMeta(std::move(guid_), Image::typeId) {}
 
-Image::Image(cref<asset_guid> guid_, mref<Vector<fs::Url>> sources_) :
-    InheritMeta(guid_, Image::typeId),
+Image::Image(mref<asset_guid> guid_, mref<Vector<fs::Url>> sources_) :
+    InheritMeta(std::move(guid_), Image::typeId),
     _sources(std::move(sources_)) {}
 
 cref<Vector<fs::Url>> Image::sources() const noexcept {

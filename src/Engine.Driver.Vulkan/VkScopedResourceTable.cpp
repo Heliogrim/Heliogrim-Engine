@@ -7,10 +7,9 @@
 #include <Engine.GFX/vkinc.hpp>
 #include <Engine.GFX.RenderGraph/Node/Runtime/Helper/VkDescriptorWriter.hpp>
 
-using namespace hg::driver::vk;
 using namespace hg;
 
-VkScopedResourceTable::VkScopedResourceTable() noexcept :
+driver::vk::VkScopedResourceTable::VkScopedResourceTable() noexcept :
     ResourceTable(),
     _activePipeline(),
     _mayOwned(),
@@ -20,18 +19,20 @@ VkScopedResourceTable::VkScopedResourceTable() noexcept :
     _dynamicBindVersion(0uLL),
     _dynamicCommitVersion(0uLL) {}
 
-VkScopedResourceTable::~VkScopedResourceTable() noexcept = default;
+driver::vk::VkScopedResourceTable::~VkScopedResourceTable() noexcept = default;
 
-nmpt<const engine::accel::AccelerationPipeline> VkScopedResourceTable::getActivePipeline() const noexcept {
+nmpt<const engine::accel::AccelerationPipeline> driver::vk::VkScopedResourceTable::getActivePipeline() const noexcept {
     return _activePipeline;
 }
 
-void VkScopedResourceTable::replaceActivePipeline(nmpt<const engine::accel::AccelerationPipeline> pipeline_) noexcept {
+void driver::vk::VkScopedResourceTable::replaceActivePipeline(
+    nmpt<const engine::accel::AccelerationPipeline> pipeline_
+) noexcept {
     _activePipeline = pipeline_;
     ++_dynamicBindVersion;
 }
 
-void VkScopedResourceTable::bind(cref<SymbolId> symbolId_, mref<Resource> resource_) {
+void driver::vk::VkScopedResourceTable::bind(cref<SymbolId> symbolId_, mref<Resource> resource_) {
 
     auto iter = table.find(symbolId_);
     bool changed = true;
@@ -49,7 +50,9 @@ void VkScopedResourceTable::bind(cref<SymbolId> symbolId_, mref<Resource> resour
     }
 }
 
-ref<VkScopedResourceTable::this_type> VkScopedResourceTable::replaceWith(cref<ResourceTable> table_) noexcept {
+ref<driver::vk::VkScopedResourceTable::this_type> driver::vk::VkScopedResourceTable::replaceWith(
+    cref<ResourceTable> table_
+) noexcept {
 
     const auto& other = static_cast<cref<VkScopedResourceTable>>(table_);
 
@@ -60,7 +63,9 @@ ref<VkScopedResourceTable::this_type> VkScopedResourceTable::replaceWith(cref<Re
     return *this;
 }
 
-ref<VkScopedResourceTable::this_type> VkScopedResourceTable::replaceWith(mref<ResourceTable> table_) noexcept {
+ref<driver::vk::VkScopedResourceTable::this_type> driver::vk::VkScopedResourceTable::replaceWith(
+    mref<ResourceTable> table_
+) noexcept {
 
     auto&& other = static_cast<mref<VkScopedResourceTable>>(table_);
 
@@ -71,20 +76,20 @@ ref<VkScopedResourceTable::this_type> VkScopedResourceTable::replaceWith(mref<Re
     return *this;
 }
 
-void VkScopedResourceTable::attach(mref<Holder> obj_) {
+void driver::vk::VkScopedResourceTable::attach(mref<Holder> obj_) {
     // TODO: _mayOwned.emplace_back(std::move(obj_));
     _owned.emplace_back(std::move(obj_));
 }
 
-void VkScopedResourceTable::detach(cref<Holder> obj_) {
+void driver::vk::VkScopedResourceTable::detach(cref<Holder> obj_) {
     std::unreachable();
 }
 
-Vector<driver::vk::VkDescriptorPoolSize> VkScopedResourceTable::nextAllocSizes() const noexcept {
+Vector<driver::vk::VkDescriptorPoolSize> driver::vk::VkScopedResourceTable::nextAllocSizes() const noexcept {
     return {};
 }
 
-bool VkScopedResourceTable::allocateAndCommit(
+bool driver::vk::VkScopedResourceTable::allocateAndCommit(
     mref<Vector<VkDescriptorPoolSize>> allocationLayout_,
     cref<engine::accel::BindLayout> commitLayout_,
     ref<Vector<_::VkDescriptorSet>> descriptorSets_
@@ -198,7 +203,7 @@ bool VkScopedResourceTable::allocateAndCommit(
     return true;
 }
 
-void VkScopedResourceTable::updateSets(
+void driver::vk::VkScopedResourceTable::updateSets(
     cref<engine::accel::BindLayout> layout_,
     ref<Vector<_::VkDescriptorSet>> descriptorSets_
 ) {
@@ -257,16 +262,16 @@ void VkScopedResourceTable::updateSets(
 
 }
 
-bool VkScopedResourceTable::isDirty() const noexcept {
+bool driver::vk::VkScopedResourceTable::isDirty() const noexcept {
     return _dynamicBindVersion > _dynamicCommitVersion;
 }
 
-bool VkScopedResourceTable::isEffectivelyDirty(cref<engine::accel::BindLayout> layout_) const noexcept {
+bool driver::vk::VkScopedResourceTable::isEffectivelyDirty(cref<engine::accel::BindLayout> layout_) const noexcept {
     // TODO:
     return isDirty();
 }
 
-bool VkScopedResourceTable::commit(
+bool driver::vk::VkScopedResourceTable::commit(
     ref<Vector<_::VkDescriptorSet>> descriptorSets_
 ) noexcept {
 

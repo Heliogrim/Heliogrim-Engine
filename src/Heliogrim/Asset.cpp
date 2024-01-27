@@ -4,8 +4,8 @@
 
 using namespace hg;
 
-Asset::Asset(cref<asset_guid> guid_, cref<asset_type_id> typeId_, ptr<void> internal_) noexcept :
-    _guid(guid_),
+Asset::Asset(mref<asset_guid> guid_, cref<asset_type_id> typeId_, ptr<void> internal_) noexcept :
+    _guid(std::move(guid_)),
     _typeId(typeId_),
     _internal(internal_) {}
 

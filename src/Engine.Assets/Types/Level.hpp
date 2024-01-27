@@ -15,7 +15,7 @@ namespace hg::engine::assets {
         inline static constexpr asset_type_id typeId { "Level"_typeId };
 
     protected:
-        Level(cref<asset_guid> guid_);
+        Level(mref<asset_guid> guid_);
 
     private:
         Vector<asset_guid> _entities;

@@ -130,6 +130,7 @@ namespace hg::engine::resource::loader {
             TransformerTx_&& transformer_,
             SourceLoaderTx_&& sourceLoader_
         ) :
+            InheritMeta<this_type, underlying_type>(),
             cache(std::forward<CacheTx_>(cache_)),
             feedback(std::forward<FeedbackTx_>(feedback_)),
             transformer(std::forward<TransformerTx_>(transformer_)),

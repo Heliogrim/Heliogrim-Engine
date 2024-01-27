@@ -1,5 +1,6 @@
 #pragma once
 #include <Heliogrim/FontAsset.hpp>
+#include <Engine.Pedantic/Clone/Clone.hpp>
 
 namespace hg::game::assets::font {
     class CascadiaCode :
@@ -8,7 +9,7 @@ namespace hg::game::assets::font {
     public:
         CascadiaCode() :
             FontAsset(
-                CascadiaCode::unstable_auto_guid(),
+                clone(CascadiaCode::unstable_auto_guid()),
                 R"(resources\imports\ttf\CascadiaCode.ttf)"
             ) {}
     };

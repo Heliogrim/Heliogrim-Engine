@@ -8,6 +8,7 @@
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Module/Modules.hpp>
 #include <Engine.GFX.Render.Predefined/Effects/BrdfBase.hpp>
+#include <Engine.Pedantic/Clone/Clone.hpp>
 
 #include "Heliogrim.Default/Assets/Textures/DefaultDiffuse.hpp"
 #include "Heliogrim.Default/Assets/Textures/DefaultNormal.hpp"
@@ -17,7 +18,7 @@ using namespace hg::game::assets::material;
 using namespace hg;
 
 DefaultBrdfMaterialPrototype::DefaultBrdfMaterialPrototype() :
-    GfxMatProtoAsset(DefaultBrdfMaterialPrototype::unstable_auto_guid()) {
+    GfxMatProtoAsset(clone(DefaultBrdfMaterialPrototype::unstable_auto_guid())) {
 
     /* Warning: Temporary Cross-Fix */
 

@@ -1,10 +1,12 @@
 #include "StaticGeometryComponent.hpp"
 
+#include <Engine.Pedantic/Clone/Clone.hpp>
+
 using namespace hg;
 
 StaticGeometryComponent::StaticGeometryComponent(mref<CachedActorPointer> owner_, mref<ptr<ActorComponent>> parent_) :
     InheritMeta(component_type_id { typeId }, std::move(owner_), std::move(parent_)),
-    _staticGeometry(invalid_asset_guid),
+    _staticGeometry(clone(invalid_asset_guid)),
     _overrideMaterials() {}
 
 asset_guid StaticGeometryComponent::getStaticGeometryGuid() const noexcept {

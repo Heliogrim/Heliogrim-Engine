@@ -3,23 +3,24 @@
 #include <Engine.Assets/AssetFactory.hpp>
 #include <Engine.Assets/Types/Image.hpp>
 #include <Engine.Core/Engine.hpp>
+#include <Engine.Pedantic/Clone/Clone.hpp>
 
 #include "Engine.Assets/Assets.hpp"
 
 using namespace hg;
 
-ImageAsset::ImageAsset(cref<asset_guid> guid_) noexcept :
+ImageAsset::ImageAsset(mref<asset_guid> guid_) noexcept :
     Asset(
-        guid_,
+        clone(guid_),
         engine::assets::Image::typeId,
-        engine::Engine::getEngine()->getAssets()->getFactory()->createImageAsset(guid_)
+        engine::Engine::getEngine()->getAssets()->getFactory()->createImageAsset(clone(guid_))
     ) {}
 
-ImageAsset::ImageAsset(cref<asset_guid> guid_, cref<string> url_) noexcept :
+ImageAsset::ImageAsset(mref<asset_guid> guid_, cref<string> url_) noexcept :
     Asset(
-        guid_,
+        clone(guid_),
         engine::assets::Image::typeId,
-        engine::Engine::getEngine()->getAssets()->getFactory()->createImageAsset(guid_, url_)
+        engine::Engine::getEngine()->getAssets()->getFactory()->createImageAsset(clone(guid_), url_)
     ) {}
 
 ImageAsset::~ImageAsset() noexcept = default;

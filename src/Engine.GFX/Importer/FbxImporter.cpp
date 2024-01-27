@@ -128,9 +128,8 @@ FbxImporter::import_result_type FbxImporter::import(cref<res::FileTypeId> typeId
 
     auto& factory { *Engine::getEngine()->getAssets()->getFactory() };
 
-    auto guid = generate_asset_guid();
     auto* asset = factory.createStaticGeometryAsset(
-        guid,
+        generate_asset_guid(),
         srcPath.string(),
         data.vertexCount,
         data.indexCount
