@@ -1,4 +1,5 @@
 #pragma once
+#include <Engine.Pedantic/Clone/Clone.hpp>
 #include <Heliogrim/ImageAsset.hpp>
 
 namespace hg::game::assets::image {
@@ -7,7 +8,9 @@ namespace hg::game::assets::image {
         public AssetAutoGuid<DefaultSkybox> {
     public:
         DefaultSkybox():
-            ImageAsset(DefaultSkybox::unstable_auto_guid(),
-                R"(resources\imports\ktx\default_skybox.ktx)") {}
+            ImageAsset(
+                clone(DefaultSkybox::unstable_auto_guid()),
+                R"(resources\imports\ktx\default_skybox.ktx)"
+            ) {}
     };
 }
