@@ -4,18 +4,19 @@
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets/Types/Texture/TextureAsset.hpp>
 #include <Engine.Core/Engine.hpp>
+#include <Engine.Pedantic/Clone/Clone.hpp>
 
 using namespace hg;
 
-TextureAsset::TextureAsset(cref<asset_guid> guid_) noexcept :
+TextureAsset::TextureAsset(mref<asset_guid> guid_) noexcept :
     StreamableRenderableAsset(
-        guid_,
+        clone(guid_),
         engine::assets::TextureAsset::typeId,
-        engine::Engine::getEngine()->getAssets()->getFactory()->createTextureAsset(guid_)
+        engine::Engine::getEngine()->getAssets()->getFactory()->createTextureAsset(clone(guid_))
     ) {}
 
 TextureAsset::TextureAsset(
-    cref<asset_guid> guid_,
+    mref<asset_guid> guid_,
     cref<asset_guid> baseImage_,
     mref<Vector<asset_guid>> images_,
     cref<math::uivec3> extent_,
@@ -24,10 +25,10 @@ TextureAsset::TextureAsset(
     cref<TextureType> type_
 ) noexcept :
     StreamableRenderableAsset(
-        guid_,
+        clone(guid_),
         engine::assets::TextureAsset::typeId,
         engine::Engine::getEngine()->getAssets()->getFactory()->createTextureAsset(
-            guid_,
+            clone(guid_),
             baseImage_,
             std::forward<Vector<asset_guid>>(images_),
             extent_,

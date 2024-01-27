@@ -20,7 +20,7 @@
 
 using namespace hg;
 
-Actor::Actor([[maybe_unused]] cref<ActorInitializer> initializer_) noexcept :
+Actor::Actor(cref<ActorInitializer> initializer_) noexcept :
     _guid(initializer_._guid),
     _rootComponent(nullptr),
     _components() {}

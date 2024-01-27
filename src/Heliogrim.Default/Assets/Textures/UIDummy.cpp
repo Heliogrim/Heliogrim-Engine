@@ -8,7 +8,7 @@ using namespace hg;
 
 texture::UIDummy::UIDummy() :
     TextureAsset(
-        texture::UIDummy::unstable_auto_guid(),
+        clone(texture::UIDummy::unstable_auto_guid()),
         image::UIDummy::unstable_auto_guid(),
         {},
         { 1ui32, 1ui32, 1ui32 },

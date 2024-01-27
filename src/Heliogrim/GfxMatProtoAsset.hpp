@@ -14,7 +14,7 @@ namespace hg {
         using const_reference_type = cref<value_type>;
 
     public:
-        GfxMatProtoAsset(cref<asset_guid> guid_) noexcept;
+        GfxMatProtoAsset(mref<asset_guid> guid_) noexcept;
 
         ~GfxMatProtoAsset() noexcept;
 

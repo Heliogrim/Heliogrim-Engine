@@ -4,9 +4,9 @@
 
 using namespace hg;
 
-PfxMaterialAsset::PfxMaterialAsset(cref<asset_guid> guid_) noexcept :
+PfxMaterialAsset::PfxMaterialAsset(mref<asset_guid> guid_) noexcept :
     Asset(
-        guid_,
+        std::move(guid_),
         engine::assets::PfxMaterial::typeId,
         nullptr
     ) {}

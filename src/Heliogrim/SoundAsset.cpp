@@ -4,8 +4,8 @@
 
 using namespace hg;
 
-SoundAsset::SoundAsset(cref<asset_guid> guid_) noexcept :
-    StreamableAsset(guid_, engine::assets::Sound::typeId) {}
+SoundAsset::SoundAsset(mref<asset_guid> guid_) noexcept :
+    StreamableAsset(std::move(guid_), engine::assets::Sound::typeId) {}
 
 SoundAsset::~SoundAsset() noexcept = default;
 

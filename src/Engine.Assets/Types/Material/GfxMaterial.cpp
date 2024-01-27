@@ -3,10 +3,10 @@
 using namespace hg::engine::assets;
 using namespace hg;
 
-GfxMaterial::GfxMaterial(cref<asset_guid> guid_) :
+GfxMaterial::GfxMaterial(mref<asset_guid> guid_) :
     InheritMeta(std::move(guid_), GfxMaterial::typeId) {}
 
-GfxMaterial::GfxMaterial(cref<asset_guid> guid_, mref<asset_guid> prototypeGuid_) :
+GfxMaterial::GfxMaterial(mref<asset_guid> guid_, mref<asset_guid> prototypeGuid_) :
     InheritMeta(std::move(guid_), GfxMaterial::typeId),
     _prototype(std::move(prototypeGuid_)) {}
 

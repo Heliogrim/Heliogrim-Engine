@@ -21,7 +21,7 @@ namespace hg {
          *
          * @param  guid_ Unique identifier.
          */
-        SkeletalGeometryAsset(cref<asset_guid> guid_) noexcept;
+        SkeletalGeometryAsset(mref<asset_guid> guid_) noexcept;
 
     public:
         /**

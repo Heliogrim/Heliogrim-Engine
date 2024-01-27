@@ -153,16 +153,16 @@ void AssetFactory::prepare() {
     layouts.storeLayout(TypedMetaClass<Image>::get(), cur);
 }
 
-ptr<Font> AssetFactory::createFontAsset(cref<asset_guid> guid_) const {
+ptr<Font> AssetFactory::createFontAsset(mref<asset_guid> guid_) const {
 
-    auto* instance = new Font(guid_, Vector<fs::Url> {});
+    auto* instance = new Font(std::move(guid_), Vector<fs::Url> {});
 
     storeDefaultNameAndUrl(instance, {});
     _registry->insert({ instance });
     return instance;
 }
 
-ptr<Font> AssetFactory::createFontAsset(cref<asset_guid> guid_, cref<string> url_) const {
+ptr<Font> AssetFactory::createFontAsset(mref<asset_guid> guid_, cref<string> url_) const {
 
     auto src { resolveAsSource(url_) };
     Vector<fs::Url> sources {};
@@ -171,16 +171,16 @@ ptr<Font> AssetFactory::createFontAsset(cref<asset_guid> guid_, cref<string> url
         sources.push_back(src);
     }
 
-    auto* instance = new Font(guid_, std::move(sources));
+    auto* instance = new Font(std::move(guid_), std::move(sources));
 
     storeDefaultNameAndUrl(instance, url_);
     _registry->insert({ instance });
     return instance;
 }
 
-ptr<AccelEffect> AssetFactory::createAccelEffectAsset(cref<asset_guid> guid_) const {
+ptr<AccelEffect> AssetFactory::createAccelEffectAsset(mref<asset_guid> guid_) const {
 
-    auto* instance = new AccelEffect(clone(guid_));
+    auto* instance = new AccelEffect(std::move(guid_));
 
     storeDefaultNameAndUrl(instance, {});
     _registry->insert({ instance });
@@ -190,24 +190,24 @@ ptr<AccelEffect> AssetFactory::createAccelEffectAsset(cref<asset_guid> guid_) co
 ptr<GfxMaterial> AssetFactory::createGfxMaterialAsset(mref<asset_guid> prototypeGuid_) const {
 
     auto guid = generate_asset_guid();
-    return createGfxMaterialAsset(guid, std::move(prototypeGuid_));
+    return createGfxMaterialAsset(std::move(guid), std::move(prototypeGuid_));
 }
 
 ptr<GfxMaterial> AssetFactory::createGfxMaterialAsset(
-    cref<asset_guid> guid_,
+    mref<asset_guid> guid_,
     mref<asset_guid> prototypeGuid_
 ) const {
 
-    auto* instance = new GfxMaterial(guid_, std::move(prototypeGuid_));
+    auto* instance = new GfxMaterial(std::move(guid_), std::move(prototypeGuid_));
 
     storeDefaultNameAndUrl(instance, {});
     _registry->insert({ instance });
     return instance;
 }
 
-ptr<GfxMaterialPrototype> AssetFactory::createGfxMaterialPrototypeAsset(cref<asset_guid> guid_) const {
+ptr<GfxMaterialPrototype> AssetFactory::createGfxMaterialPrototypeAsset(mref<asset_guid> guid_) const {
 
-    auto* instance = new GfxMaterialPrototype(guid_);
+    auto* instance = new GfxMaterialPrototype(std::move(guid_));
 
     storeDefaultNameAndUrl(instance, {});
     _registry->insert({ instance });
@@ -217,19 +217,19 @@ ptr<GfxMaterialPrototype> AssetFactory::createGfxMaterialPrototypeAsset(cref<ass
 ptr<Image> AssetFactory::createImageAsset() const {
 
     auto guid = generate_asset_guid();
-    return createImageAsset(guid);
+    return createImageAsset(std::move(guid));
 }
 
-ptr<Image> AssetFactory::createImageAsset(cref<asset_guid> guid_) const {
+ptr<Image> AssetFactory::createImageAsset(mref<asset_guid> guid_) const {
 
-    auto* instance = new Image(guid_, Vector<fs::Url> {});
+    auto* instance = new Image(std::move(guid_), Vector<fs::Url> {});
 
     storeDefaultNameAndUrl(instance, {});
     _registry->insert({ instance });
     return instance;
 }
 
-ptr<Image> AssetFactory::createImageAsset(cref<asset_guid> guid_, cref<string> url_) const {
+ptr<Image> AssetFactory::createImageAsset(mref<asset_guid> guid_, cref<string> url_) const {
 
     auto src { resolveAsSource(url_) };
     Vector<fs::Url> sources {};
@@ -238,26 +238,26 @@ ptr<Image> AssetFactory::createImageAsset(cref<asset_guid> guid_, cref<string> u
         sources.push_back(src);
     }
 
-    auto* instance = new Image(guid_, std::move(sources));
+    auto* instance = new Image(std::move(guid_), std::move(sources));
 
     storeDefaultNameAndUrl(instance, string { src.path() });
     _registry->insert({ instance });
     return instance;
 }
 
-ptr<LandscapeGeometry> AssetFactory::createLandscapeGeometryAsset(cref<asset_guid> guid_) const {
+ptr<LandscapeGeometry> AssetFactory::createLandscapeGeometryAsset(mref<asset_guid> guid_) const {
 
-    auto* instance = new LandscapeGeometry(guid_, Vector<fs::Url> {});
+    auto* instance = new LandscapeGeometry(std::move(guid_), Vector<fs::Url> {});
 
     storeDefaultNameAndUrl(instance, {});
     _registry->insert({ instance });
     return instance;
 }
 
-ptr<StaticGeometry> AssetFactory::createStaticGeometryAsset(cref<asset_guid> guid_) const {
+ptr<StaticGeometry> AssetFactory::createStaticGeometryAsset(mref<asset_guid> guid_) const {
 
     auto* instance = new StaticGeometry(
-        guid_,
+        std::move(guid_),
         Vector<fs::Url> {},
         0ui64,
         0ui64
@@ -269,7 +269,7 @@ ptr<StaticGeometry> AssetFactory::createStaticGeometryAsset(cref<asset_guid> gui
 }
 
 ptr<StaticGeometry> AssetFactory::createStaticGeometryAsset(
-    cref<asset_guid> guid_,
+    mref<asset_guid> guid_,
     cref<string> url_,
     cref<u64> vertexCount_,
     cref<u64> indexCount_
@@ -283,7 +283,7 @@ ptr<StaticGeometry> AssetFactory::createStaticGeometryAsset(
     }
 
     auto* instance = new StaticGeometry(
-        guid_,
+        std::move(guid_),
         std::move(sources),
         vertexCount_,
         indexCount_
@@ -297,13 +297,13 @@ ptr<StaticGeometry> AssetFactory::createStaticGeometryAsset(
 ptr<TextureAsset> AssetFactory::createTextureAsset() const {
 
     auto guid = generate_asset_guid();
-    return createTextureAsset(guid);
+    return createTextureAsset(std::move(guid));
 }
 
-ptr<TextureAsset> AssetFactory::createTextureAsset(cref<asset_guid> guid_) const {
+ptr<TextureAsset> AssetFactory::createTextureAsset(mref<asset_guid> guid_) const {
 
     auto* instance = new TextureAsset(
-        guid_,
+        std::move(guid_),
         invalid_asset_guid,
         Vector<asset_guid> { invalid_asset_guid },
         math::uivec3 {},
@@ -318,7 +318,7 @@ ptr<TextureAsset> AssetFactory::createTextureAsset(cref<asset_guid> guid_) const
 }
 
 ptr<TextureAsset> AssetFactory::createTextureAsset(
-    cref<asset_guid> guid_,
+    mref<asset_guid> guid_,
     cref<asset_guid> baseImage_,
     mref<Vector<asset_guid>> images_,
     cref<math::uivec3> extent_,
@@ -327,7 +327,7 @@ ptr<TextureAsset> AssetFactory::createTextureAsset(
     cref<gfx::TextureType> type_
 ) const {
     auto* instance = new TextureAsset(
-        guid_,
+        std::move(guid_),
         baseImage_,
         std::forward<Vector<asset_guid>>(images_),
         extent_,

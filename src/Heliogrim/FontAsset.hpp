@@ -13,9 +13,9 @@ namespace hg {
         using this_type = FontAsset;
 
     protected:
-        FontAsset(cref<asset_guid> guid_) noexcept;
+        FontAsset(mref<asset_guid> guid_) noexcept;
 
-        FontAsset(cref<asset_guid> guid_, cref<string> url_) noexcept;
+        FontAsset(mref<asset_guid> guid_, cref<string> url_) noexcept;
 
     public:
         ~FontAsset() noexcept;

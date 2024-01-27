@@ -15,6 +15,7 @@ message(STATUS "| Url: https://git.neogc.net/heliogrim-workgroup/engine         
 message(STATUS "------------------------------------------------------------------")
 
 # CMake Tools
+include(cmake/Architecture.cmake)
 include(cmake/Tools.cmake)
 include(cmake/HealthCheck.cmake)
 include(cmake/MakeLibraryProject.cmake)

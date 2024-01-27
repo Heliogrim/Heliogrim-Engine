@@ -9,6 +9,6 @@ using namespace hg;
 
 DefaultSkybox::DefaultSkybox() :
     GfxMaterialAsset(
-        DefaultSkybox::unstable_auto_guid(),
+        clone(DefaultSkybox::unstable_auto_guid()),
         clone(DefaultSkyboxPrototype::unstable_auto_guid())
     ) {}

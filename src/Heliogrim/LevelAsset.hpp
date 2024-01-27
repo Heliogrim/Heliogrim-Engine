@@ -22,7 +22,7 @@ namespace hg {
          *
          * @param  guid_ Unique identifier.
          */
-        LevelAsset(cref<asset_guid> guid_) noexcept;
+        LevelAsset(mref<asset_guid> guid_) noexcept;
 
     public:
         /**

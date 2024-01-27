@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <Engine.Pedantic/Clone/Clone.hpp>
 #include <Heliogrim/ImageAsset.hpp>
 
 namespace hg::game::assets::image {
@@ -8,7 +9,7 @@ namespace hg::game::assets::image {
     public:
         FolderVideo():
             ImageAsset(
-                FolderVideo::unstable_auto_guid(),
+                clone(FolderVideo::unstable_auto_guid()),
                 R"(resources\imports\ktx\folder-video.ktx)"
             ) {}
     };

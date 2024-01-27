@@ -7,6 +7,7 @@
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Module/Modules.hpp>
 #include <Engine.GFX.Render.Predefined/Effects/Skybox.hpp>
+#include <Engine.Pedantic/Clone/Clone.hpp>
 
 #include "../Textures/DefaultSkybox.hpp"
 
@@ -14,7 +15,7 @@ using namespace hg::game::assets::material;
 using namespace hg;
 
 DefaultSkyboxPrototype::DefaultSkyboxPrototype() :
-    GfxMatProtoAsset(DefaultSkyboxPrototype::unstable_auto_guid()) {
+    GfxMatProtoAsset(clone(DefaultSkyboxPrototype::unstable_auto_guid())) {
 
     /* Warning: Temporary Cross-Fix */
 

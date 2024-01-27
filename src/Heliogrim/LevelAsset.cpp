@@ -4,9 +4,9 @@
 
 using namespace hg;
 
-LevelAsset::LevelAsset(cref<asset_guid> guid_) noexcept :
+LevelAsset::LevelAsset(mref<asset_guid> guid_) noexcept :
     Asset(
-        guid_,
+        std::move(guid_),
         engine::assets::Level::typeId,
         nullptr
     ) {}

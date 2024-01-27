@@ -16,10 +16,10 @@ namespace hg::engine::assets {
         inline static constexpr asset_type_id typeId { "LandscapeGeometry"_typeId };
 
     protected:
-        LandscapeGeometry(cref<asset_guid> guid_);
+        LandscapeGeometry(mref<asset_guid> guid_);
 
     public:
-        LandscapeGeometry(cref<asset_guid> guid_, mref<Vector<fs::Url>> sources_);
+        LandscapeGeometry(mref<asset_guid> guid_, mref<Vector<fs::Url>> sources_);
 
     private:
         Vector<fs::Url> _sources;

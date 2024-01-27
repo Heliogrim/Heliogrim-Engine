@@ -25,11 +25,11 @@ namespace hg::engine::assets {
         StaticGeometry();
 
     protected:
-        StaticGeometry(cref<asset_guid> guid_);
+        StaticGeometry(mref<asset_guid> guid_);
 
     public:
         StaticGeometry(
-            cref<asset_guid> guid_,
+            mref<asset_guid> guid_,
             mref<Vector<fs::Url>> sources_,
             cref<u64> vertexCount_,
             cref<u64> indexCount_

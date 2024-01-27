@@ -18,10 +18,10 @@ namespace hg::engine::assets {
         inline static constexpr asset_type_id typeId { "Font"_typeId };
 
     protected:
-        Font(cref<asset_guid> guid_);
+        Font(mref<asset_guid> guid_);
 
     public:
-        Font(cref<asset_guid> guid_, mref<Vector<fs::Url>> sources_);
+        Font(mref<asset_guid> guid_, mref<Vector<fs::Url>> sources_);
 
     private:
         Vector<fs::Url> _sources;

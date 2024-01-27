@@ -48,41 +48,41 @@ set(DEFAULT_INCLUDE_DIRECTORIES
     "${lib_dir}/vorbis")
 
 set(TEST_INCLUDE_DIRECTORIES
-        "${lib_dir}/gtest")
+    "${lib_dir}/gtest")
 
 #
 # Libraries
 #
 set(DEFAULT_LIBRARIES
-        "${Vulkan_LIBRARY}"
-        "${lib_dir}/bin/SDL2/${CMAKE_BUILD_TYPE}/SDL2.lib"
-        "${lib_dir}/bin/vorbis/${CMAKE_BUILD_TYPE}/ogg.lib"
-        "${lib_dir}/bin/vorbis/${CMAKE_BUILD_TYPE}/vorbis.lib"
-        "${lib_dir}/bin/vorbis/${CMAKE_BUILD_TYPE}/vorbisenc.lib"
-        "${lib_dir}/bin/vorbis/${CMAKE_BUILD_TYPE}/vorbisfile.lib")
+    "${Vulkan_LIBRARY}"
+    "${lib_dir}/bin/SDL2/${CMAKE_BUILD_TYPE}/SDL2.lib"
+    "${lib_dir}/bin/vorbis/${CMAKE_BUILD_TYPE}/ogg.lib"
+    "${lib_dir}/bin/vorbis/${CMAKE_BUILD_TYPE}/vorbis.lib"
+    "${lib_dir}/bin/vorbis/${CMAKE_BUILD_TYPE}/vorbisenc.lib"
+    "${lib_dir}/bin/vorbis/${CMAKE_BUILD_TYPE}/vorbisfile.lib")
 
 set(TEST_LIBRARIES
-        "${lib_dir}/bin/gtest/${CMAKE_BUILD_TYPE}/gtestd.lib"
-        "${lib_dir}/bin/gtest/${CMAKE_BUILD_TYPE}/gtest_maind.lib"
-        "${lib_dir}/bin/gtest/${CMAKE_BUILD_TYPE}/gmockd.lib"
-        "${lib_dir}/bin/gtest/${CMAKE_BUILD_TYPE}/gmock_maind.lib")
+    "${lib_dir}/bin/gtest/${CMAKE_BUILD_TYPE}/gtestd.lib"
+    "${lib_dir}/bin/gtest/${CMAKE_BUILD_TYPE}/gtest_maind.lib"
+    "${lib_dir}/bin/gtest/${CMAKE_BUILD_TYPE}/gmockd.lib"
+    "${lib_dir}/bin/gtest/${CMAKE_BUILD_TYPE}/gmock_maind.lib")
 
 if (${CMAKE_BUILD_TYPE} MATCHES "Debug")
     set(DEFAULT_LIBRARIES
-            ${DEFAULT_LIBRARIES}
-            "${lib_dir}/bin/freetype2/${CMAKE_BUILD_TYPE}/freetyped.lib"
-            "${lib_dir}/bin/assimp/${CMAKE_BUILD_TYPE}/assimp-vc142-mtd.lib"
-            "${lib_dir}/bin/spdlog/${CMAKE_BUILD_TYPE}/spdlogd.lib"
-            #
-            "${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/GenericCodeGend.lib"
-            "${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/glslang-default-resource-limitsd.lib"
-            "${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/glslangd.lib"
-            "${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/HLSLd.lib"
-            "${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/MachineIndependentd.lib"
-            "${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/OGLCompilerd.lib"
-            "${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/OSDependentd.lib"
-            "${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/SPIRVd.lib"
-            "${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/SPVRemapperd.lib")
+        ${DEFAULT_LIBRARIES}
+        "${lib_dir}/bin/freetype2/${CMAKE_BUILD_TYPE}/freetyped.lib"
+        "${lib_dir}/bin/assimp/${CMAKE_BUILD_TYPE}/assimp-vc142-mtd.lib"
+        "${lib_dir}/bin/spdlog/${CMAKE_BUILD_TYPE}/spdlogd.lib"
+        #
+        "${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/GenericCodeGend.lib"
+        "${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/glslang-default-resource-limitsd.lib"
+        "${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/glslangd.lib"
+        "${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/HLSLd.lib"
+        "${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/MachineIndependentd.lib"
+        "${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/OGLCompilerd.lib"
+        "${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/OSDependentd.lib"
+        "${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/SPIRVd.lib"
+        "${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/SPVRemapperd.lib")
 
 else ()
     set(DEFAULT_LIBRARIES
@@ -154,7 +154,8 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC")
     set(DEFAULT_COMPILE_OPTIONS ${DEFAULT_COMPILE_OPTIONS}
             PRIVATE
             /MP           # -> build with multiple processes
-            /W4           # -> warning level 4
+            # Warning: /W4 will currently crash the msvc compiler with ICE 1001
+            /W3           # -> warning level 4
             # /WX         # -> treat warnings as errors
 
             # Compiler Shared Options

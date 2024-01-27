@@ -40,7 +40,9 @@ namespace hg::engine::assets {
          * @param  guid_ Unique identifier.
          * @param  type_ The type.
          */
-        Asset(cref<asset_guid> guid_, cref<asset_type_id> type_);
+        Asset(mref<asset_guid> guid_, mref<asset_type_id> type_);
+
+        Asset(mref<asset_guid> guid_, cref<asset_type_id> type_);
 
     public:
         /**

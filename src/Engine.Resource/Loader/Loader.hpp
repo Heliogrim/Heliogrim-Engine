@@ -3,6 +3,7 @@
 #include <Engine.Assets/Types/Asset.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
+#include <Engine.Reflect/Inherit/InheritBase.hpp>
 
 #include "LoaderTraits.hpp"
 #include "__fwd.hpp"

@@ -147,6 +147,6 @@ smr<const AccelerationEffect> engine::render::makeUiBaseEffect() {
     return make_smr<AccelerationEffect>(
         std::move(guid),
         "test-ui-base-effect",
-        Vector { std::move(vertexStage), std::move(fragmentStage) }
+        std::vector { std::move(vertexStage), std::move(fragmentStage) }
     );
 }

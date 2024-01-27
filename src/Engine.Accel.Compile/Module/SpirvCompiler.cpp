@@ -139,10 +139,13 @@ SpirvByteCode SpirvCompiler::compile(cref<ModuleSource> module_, cref<InlineAuto
 
         glslang::GlslangToSpv(*intermediate, reinterpret_cast<ref<Vector<u32>>>(byteCode), &spvLog, &spvOpts);
 
-        if (not spvLog.errors.empty()) {
-            for (auto&& error : spvLog.errors) {
-                IM_CORE_ERROR(std::move(error));
-            }
+        auto errorMsg = spvLog.getAllMessages();
+        //if (not spvLog.errors.empty()) {
+        if (not errorMsg.empty()) {
+            //for (auto&& error : spvLog.errors) {
+            //    IM_CORE_ERROR(std::move(error));
+            //}
+            IM_CORE_ERROR(std::move(errorMsg));
             __debugbreak();
             status = false;
             byteCode.clear();

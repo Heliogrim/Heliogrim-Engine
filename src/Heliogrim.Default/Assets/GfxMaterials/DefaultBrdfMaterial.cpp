@@ -9,6 +9,6 @@ using namespace hg;
 
 DefaultBrdfMaterial::DefaultBrdfMaterial() :
     GfxMaterialAsset(
-        DefaultBrdfMaterial::unstable_auto_guid(),
+        clone(DefaultBrdfMaterial::unstable_auto_guid()),
         clone(DefaultBrdfMaterialPrototype::unstable_auto_guid())
     ) {}

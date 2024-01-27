@@ -1,16 +1,30 @@
 #include "TextureAsset.hpp"
 
+#include <Engine.Pedantic/Clone/Clone.hpp>
+
 using namespace hg::engine::assets;
 using namespace hg;
 
 TextureAsset::TextureAsset() :
-    InheritMeta(invalid_asset_guid, typeId) {}
+    InheritMeta(clone(invalid_asset_guid), typeId),
+    _baseImage(invalid_asset_guid),
+    _images(),
+    _extent(),
+    _format(gfx::TextureFormat::eUndefined),
+    _mipLevel(0uL),
+    _textureType(gfx::TextureType::eUndefined) {}
 
-TextureAsset::TextureAsset(cref<asset_guid> guid_) :
-    InheritMeta(guid_, typeId) {}
+TextureAsset::TextureAsset(mref<asset_guid> guid_) :
+    InheritMeta(std::move(guid_), typeId),
+    _baseImage(invalid_asset_guid),
+    _images(),
+    _extent(),
+    _format(gfx::TextureFormat::eUndefined),
+    _mipLevel(0uL),
+    _textureType(gfx::TextureType::eUndefined) {}
 
 TextureAsset::TextureAsset(
-    cref<asset_guid> guid_,
+    mref<asset_guid> guid_,
     cref<asset_guid> baseImage_,
     mref<Vector<asset_guid>> images_,
     cref<math::uivec3> extent_,
@@ -18,7 +32,7 @@ TextureAsset::TextureAsset(
     cref<u32> mipLevel_,
     cref<gfx::TextureType> type_
 ) :
-    InheritMeta(guid_, typeId),
+    InheritMeta(std::move(guid_), typeId),
     _baseImage(baseImage_),
     _images(images_),
     _extent(extent_),

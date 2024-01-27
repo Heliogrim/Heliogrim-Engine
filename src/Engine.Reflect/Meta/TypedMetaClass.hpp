@@ -1,6 +1,7 @@
 #pragma once
 
 #include "MetaClass.hpp"
+#include "TypeId.hpp"
 #include "../Compile/Map.hpp"
 #include "../Inherit/Compile.hpp"
 

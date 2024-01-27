@@ -404,7 +404,7 @@ smr<AccelerationEffect> build_test_effect() {
     return make_smr<AccelerationEffect>(
         std::move(guid),
         "test-pp-effect",
-        Vector { std::move(vertexStage), std::move(fragmentStage) }
+        std::vector { std::move(vertexStage), std::move(fragmentStage) }
     );
 }
 

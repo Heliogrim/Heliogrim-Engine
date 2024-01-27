@@ -16,7 +16,7 @@ namespace hg {
 
     public:
         GfxMaterialAsset(
-            cref<asset_guid> guid_,
+            mref<asset_guid> guid_,
             mref<asset_guid> prototypeGuid_
         ) noexcept;
 

@@ -8,11 +8,11 @@ using namespace hg;
 
 texture::DefaultAlpha::DefaultAlpha() :
     TextureAsset(
-        texture::DefaultAlpha::unstable_auto_guid(),
+        clone(texture::DefaultAlpha::unstable_auto_guid()),
         image::DefaultAlpha::unstable_auto_guid(),
         {},
         { 1ui32, 1ui32, 1ui32 },
         TextureFormat::eR16Sfloat,
         1ui32,
         engine::gfx::TextureType::e2d
-    ) { }
+    ) {}

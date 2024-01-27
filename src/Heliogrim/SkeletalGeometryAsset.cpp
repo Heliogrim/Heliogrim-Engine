@@ -4,9 +4,9 @@
 
 using namespace hg;
 
-SkeletalGeometryAsset::SkeletalGeometryAsset(cref<asset_guid> guid_) noexcept :
+SkeletalGeometryAsset::SkeletalGeometryAsset(mref<asset_guid> guid_) noexcept :
     StreamableRenderableAsset(
-        guid_,
+        std::move(guid_),
         engine::assets::SkeletalGeometry::typeId,
         nullptr
     ) {}

@@ -28,7 +28,7 @@ namespace hg {
          *
          * @param  guid_ Unique identifier.
          */
-        TextureAsset(cref<asset_guid> guid_) noexcept;
+        TextureAsset(mref<asset_guid> guid_) noexcept;
 
         /**
          * Constructor
@@ -45,7 +45,7 @@ namespace hg {
          * @param  type_ The texture type.
          */
         TextureAsset(
-            cref<asset_guid> guid_,
+            mref<asset_guid> guid_,
             cref<asset_guid> baseImage_,
             mref<Vector<asset_guid>> images_,
             cref<math::uivec3> extent_,
