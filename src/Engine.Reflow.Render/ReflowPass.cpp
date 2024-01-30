@@ -54,6 +54,10 @@ using namespace hg;
 
 /**/
 
+render::ReflowPass::ReflowPass() = default;
+
+render::ReflowPass::~ReflowPass() = default;
+
 void render::ReflowPass::destroy() noexcept {
     SubPass::destroy();
 
@@ -410,10 +414,15 @@ void render::ReflowPass::execute(cref<engine::render::graph::ScopedSymbolContext
     /**/
 
     const auto translator = make_uptr<driver::vk::VkRCmdTranslator>();
-    auto nativeBatch = (*translator)(&cmd);
-    const auto batch = static_cast<ptr<driver::vk::VkNativeBatch>>(nativeBatch.get());
+    auto prevNativeBatch = std::move(_nativeBatch);
+
+    auto nextNativeBatch = (*translator)(&cmd, std::move(prevNativeBatch));
+
+    /**/
 
     {
+        const auto batch = static_cast<ptr<driver::vk::VkNativeBatch>>(nextNativeBatch.get());
+
         batch->_tmpWaits.insert_range(
             batch->_tmpWaits.end(),
             reinterpret_cast<Vector<VkSemaphore>&>(sceneColor->barriers)
@@ -439,8 +448,11 @@ void render::ReflowPass::execute(cref<engine::render::graph::ScopedSymbolContext
         sceneColor->barriers.emplace_back(_tmpSignal.operator VkSemaphore());
     }
 
-    batch->commitAndDispose();
-    nativeBatch.reset();
+    nextNativeBatch->commitAndDispose();
+
+    /**/
+
+    _nativeBatch = std::move(nextNativeBatch);
 }
 
 void render::ReflowPass::ensureDefaultImage() {

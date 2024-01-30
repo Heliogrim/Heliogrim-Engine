@@ -39,6 +39,12 @@ namespace hg::driver::vk {
         Vector<Vector<_::VkDescriptorSet>> _committedSets;
 
     public:
+        [[nodiscard]] uptr<VkScopedResourceTable> makeScoped() noexcept;
+
+        void merge(mref<uptr<VkScopedResourceTable>> scopedTable_) noexcept;
+
         void store(mref<VkScopedResourceTable> scopedTable_) noexcept;
+
+        void reset() noexcept;
     };
 }

@@ -23,3 +23,9 @@ driver::vk::VkDescriptorPool::~VkDescriptorPool() noexcept {
     device->vkDevice().destroyDescriptorPool(reinterpret_cast<::VkDescriptorPool>(vkPool));
     vkPool = nullptr;
 }
+
+void driver::vk::VkDescriptorPool::reset() noexcept {
+
+    const auto device = engine::Engine::getEngine()->getGraphics()->getCurrentDevice();
+    device->vkDevice().resetDescriptorPool(reinterpret_cast<::VkDescriptorPool>(vkPool));
+}

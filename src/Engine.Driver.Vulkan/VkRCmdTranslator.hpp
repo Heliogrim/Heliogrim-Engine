@@ -19,6 +19,11 @@ namespace hg::driver::vk {
             const ptr<const engine::render::cmd::RenderCommandBuffer> commands_
         ) noexcept override;
 
+        [[nodiscard]] uptr<engine::render::cmd::NativeBatch> operator()(
+            const ptr<const engine::render::cmd::RenderCommandBuffer> commands_,
+            mref<uptr<engine::render::cmd::NativeBatch>> reuse_
+        ) noexcept override;
+
     public:
         class VkState :
             public State {
@@ -29,6 +34,11 @@ namespace hg::driver::vk {
             VkState(mref<VkScopedCmdMgr> cmd_) noexcept :
                 State(),
                 cmd(std::move(cmd_)) {}
+
+            VkState(mref<VkScopedCmdMgr> cmd_, mref<VkScopedResourceTable> srt_) noexcept :
+                State(),
+                cmd(std::move(cmd_)),
+                srt(std::move(srt_)) {}
 
             ~VkState() noexcept = default;
 

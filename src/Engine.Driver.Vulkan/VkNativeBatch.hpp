@@ -56,5 +56,10 @@ namespace hg::driver::vk {
         Vector<VkSemaphore> _tmpWaits;
         Vector<VkPipelineStageFlags> _tmpWaitFlags;
         Vector<VkSemaphore> _tmpSignals;
+
+        /* Note: Temporary */
+
+    public:
+        [[nodiscard]] ref<decltype(_rtable)> getResourceTables() noexcept;
     };
 }

@@ -83,6 +83,17 @@ void VkDescriptorWriter::update(cref<vk::Device> device_) {
     );
 }
 
+void VkDescriptorWriter::reset(cref<vk::DescriptorSet> nextVkSet_) {
+
+    _vkSet = nextVkSet_;
+
+    _addressPatched = false;
+    _descriptorBufferInfos.clear();
+    _descriptorImageInfos.clear();
+    _descriptorSamplerInfos.clear();
+    _writes.clear();
+}
+
 void VkDescriptorWriter::storeUniform(index_type idx_, cref<Buffer> buffer_) {
 
     const auto marker = emplaceBufferInfo(
@@ -472,7 +483,7 @@ void VkDescriptorWriter::storeTextureSampler(index_type idx_, nmpt<const gfx::Te
         }
     );
 
-    auto write = vk::WriteDescriptorSet {
+    _writes.emplace_back(
         _vkSet,
         idx_,
         0uL,
@@ -481,9 +492,7 @@ void VkDescriptorWriter::storeTextureSampler(index_type idx_, nmpt<const gfx::Te
         reinterpret_cast<ptr<vk::DescriptorImageInfo>>(marker),
         nullptr,
         nullptr
-    };
-
-    _writes.emplace_back(std::move(write));
+    );
 }
 
 void VkDescriptorWriter::store(index_type idx_, cref<Texture> texture_, cref<vk::Sampler> sampler_) {

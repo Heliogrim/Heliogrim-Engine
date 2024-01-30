@@ -7,6 +7,10 @@
 #include <Engine.GFX/Texture/TextureSampler.hpp>
 #include <Engine.GFX.Render.Subpass/SubPass.hpp>
 
+namespace hg::engine::render::cmd {
+    class NativeBatch;
+}
+
 namespace hg::engine::gfx {
     class Texture;
 }
@@ -18,9 +22,9 @@ namespace hg::engine::reflow::render {
         using this_type = ReflowPass;
 
     public:
-        ReflowPass() = default;
+        ReflowPass();
 
-        ~ReflowPass() override = default;
+        ~ReflowPass() override;
 
     public:
         void destroy() noexcept override;
@@ -40,6 +44,8 @@ namespace hg::engine::reflow::render {
         smr<const accel::GraphicsPass> _graphicsPass;
         uptr<gfx::Framebuffer> _framebuffer;
         vk::Semaphore _tmpSignal;
+
+        uptr<engine::render::cmd::NativeBatch> _nativeBatch;
 
     public:
         void iterate(cref<engine::render::graph::ScopedSymbolContext> symCtx_) noexcept override;

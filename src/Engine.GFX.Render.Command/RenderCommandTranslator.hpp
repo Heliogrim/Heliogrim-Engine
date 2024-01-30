@@ -15,7 +15,14 @@ namespace hg::engine::render::cmd {
         constexpr virtual ~RenderCommandTranslator() noexcept = default;
 
     public:
-        [[nodiscard]] virtual uptr<NativeBatch> operator()(const ptr<const RenderCommandBuffer> commands_) noexcept = 0;
+        [[nodiscard]] virtual uptr<NativeBatch> operator()(
+            const ptr<const RenderCommandBuffer> commands_
+        ) noexcept = 0;
+
+        [[nodiscard]] virtual uptr<NativeBatch> operator()(
+            const ptr<const RenderCommandBuffer> commands_,
+            mref<uptr<NativeBatch>> reuse_
+        ) noexcept = 0;
 
     public:
         struct State {
