@@ -2,6 +2,7 @@
 
 #include <Engine.Accel.Pass/VkGraphicsPass.hpp>
 #include <Engine.Accel.Pipeline/VkGraphicsPipeline.hpp>
+#include <Engine.Common/Make.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.GFX.Render.Command/RenderCommandBuffer.hpp>
 #include <Engine.GFX.Render.Command/RenderCommandIterator.hpp>
@@ -33,7 +34,9 @@ using namespace hg::engine::render;
 using namespace hg::engine::accel;
 using namespace hg;
 
-uptr<cmd::NativeBatch> VkRCmdTranslator::operator()(const ptr<const cmd::RenderCommandBuffer> commands_) noexcept {
+uptr<cmd::NativeBatch> VkRCmdTranslator::operator()(
+    const ptr<const cmd::RenderCommandBuffer> commands_
+) noexcept {
 
     assert(commands_->root());
 
@@ -64,6 +67,65 @@ uptr<cmd::NativeBatch> VkRCmdTranslator::operator()(const ptr<const cmd::RenderC
     /**/
 
     return batch;
+}
+
+uptr<engine::render::cmd::NativeBatch> VkRCmdTranslator::operator()(
+    const ptr<const engine::render::cmd::RenderCommandBuffer> commands_,
+    mref<uptr<engine::render::cmd::NativeBatch>> reuse_
+) noexcept {
+
+    if (reuse_ == nullptr) {
+        return (*this)(commands_);
+    }
+
+    /**/
+
+    assert(commands_->root());
+    assert(not reuse_->isFaf());
+
+    /**/
+
+    auto next = std::move(reuse_);
+    auto* const batch = static_cast<const ptr<VkNativeBatch>>(next.get());
+
+    /**/
+
+    const auto device = engine::Engine::getEngine()->getGraphics()->getCurrentDevice();
+    auto* const ecpool = device->graphicsQueue()->pool();
+
+    AccelCommandBuffer eccmd = ecpool->make();
+
+    /**/
+
+    auto& tables = batch->getResourceTables();
+    while (tables.size() > 1) {
+        tables.pop_back();
+    }
+
+    auto& rt = tables.front();
+    rt->reset();
+    auto srt = rt->makeScoped();
+
+    /**/
+
+    auto state = make_uptr<VkState>(VkScopedCmdMgr { 0u, eccmd }, std::move(*srt));
+    auto iter = cmd::RenderCommandIterator { commands_->root().get() };
+
+    while (iter.valid()) {
+        (*iter++)(state.get(), this);
+    }
+
+    *srt = std::move(state->srt);
+    rt->merge(std::move(srt));
+    state.reset();
+
+    /**/
+
+    batch->add(make_uptr<AccelCommandBuffer>(std::move(eccmd)));
+
+    /**/
+
+    return next;
 }
 
 void VkRCmdTranslator::translate(ptr<State> state_, ptr<const cmd::RenderCommand>) noexcept {}

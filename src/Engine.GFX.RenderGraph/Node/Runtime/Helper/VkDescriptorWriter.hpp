@@ -49,6 +49,8 @@ namespace hg::engine::render::graph {
     public:
         void update(cref<vk::Device> device_);
 
+        void reset(cref<vk::DescriptorSet> nextVkSet_);
+
     public:
         void storeUniform(index_type idx_, cref<gfx::Buffer> buffer_);
 

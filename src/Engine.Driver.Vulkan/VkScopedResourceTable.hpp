@@ -22,7 +22,19 @@ namespace hg::driver::vk {
     public:
         VkScopedResourceTable() noexcept;
 
+        VkScopedResourceTable(
+            mref<VkDescriptorPool> initialPool_,
+            mref<Vector<_::VkDescriptorSet>> initialSets_
+        ) noexcept;
+
+        VkScopedResourceTable(cref<this_type>) = delete;
+
+        VkScopedResourceTable(mref<this_type> other_) noexcept;
+
         ~VkScopedResourceTable() noexcept override;
+
+    public:
+        ref<this_type> operator=(mref<this_type> other_) noexcept;
 
     private:
         DenseMap<SymbolId, Resource> table;
@@ -60,10 +72,10 @@ namespace hg::driver::vk {
         uint64_t _dynamicCommitVersion;
 
     private:
-        [[nodiscard]] Vector<VkDescriptorPoolSize> nextAllocSizes() const noexcept;
+        [[nodiscard]] VkDescriptorPoolAllocationLayout nextAllocSizes() const noexcept;
 
         [[nodiscard]] bool allocateAndCommit(
-            _In_ mref<Vector<VkDescriptorPoolSize>> allocationLayout_,
+            _In_ mref<VkDescriptorPoolAllocationLayout> allocationLayout_,
             _In_ cref<engine::accel::BindLayout> commitLayout_,
             _Out_ ref<Vector<_::VkDescriptorSet>> descriptorSets_
         ) noexcept;

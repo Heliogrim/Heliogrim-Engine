@@ -6,6 +6,7 @@
 #include <Engine.GFX/Graphics.hpp>
 #include <Engine.GFX/vkinc.hpp>
 #include <Engine.GFX.RenderGraph/Node/Runtime/Helper/VkDescriptorWriter.hpp>
+#include <Engine.Logging/Logger.hpp>
 
 using namespace hg;
 
@@ -19,7 +20,29 @@ driver::vk::VkScopedResourceTable::VkScopedResourceTable() noexcept :
     _dynamicBindVersion(0uLL),
     _dynamicCommitVersion(0uLL) {}
 
+driver::vk::VkScopedResourceTable::VkScopedResourceTable(
+    mref<VkDescriptorPool> initialPool_,
+    mref<Vector<_::VkDescriptorSet>> initialSets_
+) noexcept :
+    ResourceTable(),
+    _activePipeline(),
+    _mayOwned(),
+    _owned(),
+    _commitPools(),
+    _committedSets(),
+    _dynamicBindVersion(0uLL),
+    _dynamicCommitVersion(0uLL) {
+    _commitPools.emplace_back(std::move(initialPool_));
+    _committedSets.emplace_back(std::move(initialSets_));
+}
+
+driver::vk::VkScopedResourceTable::VkScopedResourceTable(mref<this_type> other_) noexcept = default;
+
 driver::vk::VkScopedResourceTable::~VkScopedResourceTable() noexcept = default;
+
+ref<driver::vk::VkScopedResourceTable::this_type> driver::vk::VkScopedResourceTable::operator=(
+    mref<this_type> other_
+) noexcept = default;
 
 nmpt<const engine::accel::AccelerationPipeline> driver::vk::VkScopedResourceTable::getActivePipeline() const noexcept {
     return _activePipeline;
@@ -85,12 +108,71 @@ void driver::vk::VkScopedResourceTable::detach(cref<Holder> obj_) {
     std::unreachable();
 }
 
-Vector<driver::vk::VkDescriptorPoolSize> driver::vk::VkScopedResourceTable::nextAllocSizes() const noexcept {
-    return {};
+driver::vk::VkDescriptorPoolAllocationLayout driver::vk::VkScopedResourceTable::nextAllocSizes() const noexcept {
+
+    // TODO: Replace with better scaling function
+
+    VkDescriptorPoolAllocationLayout layout {};
+
+    /**/
+
+    for (const auto& pool : _commitPools) {
+        for (const auto& type : pool.pooled) {
+            auto it = std::ranges::find(
+                layout.sizes,
+                type.type,
+                [](const auto& entry_) {
+                    return entry_.type;
+                }
+            );
+            if (it != layout.sizes.end()) {
+                it->capacity += type.capacity;
+            } else {
+                layout.sizes.emplace_back(type);
+            }
+        }
+    }
+
+    /**/
+
+    for (const auto& sets : _committedSets) {
+        layout.maxSets += sets.size();
+    }
+
+    /**/
+
+    #if _DEBUG
+    const auto maxTypeCount = layout.sizes.empty() ?
+                                  0uL :
+                                  std::ranges::max(
+                                      layout.sizes,
+                                      {},
+                                      [](const auto& entry_) {
+                                          return entry_.capacity;
+                                      }
+                                  ).capacity;
+    if (maxTypeCount >= 1024uL) {
+        IM_CORE_WARN("High demand on typed descriptors may indicate unexpected behaviour.");
+    } else if (maxTypeCount >= 1024uL * 1024uL) {
+        IM_CORE_ERROR("Excessive requirement of typed descriptors. Throwing error before submitting to api.");
+        assert(false);
+    }
+
+    if (layout.maxSets >= 1024uL) {
+        IM_CORE_WARN("High demand on descriptor sets may indicate unexpected behaviour.");
+    } else if (layout.maxSets >= 1024uL * 1024uL) {
+        IM_CORE_ERROR("Excessive requirement of descriptor sets. Throwing error before submitting to api.");
+        assert(false);
+    }
+    #endif
+
+    /**/
+
+    return layout;
 }
 
 bool driver::vk::VkScopedResourceTable::allocateAndCommit(
-    mref<Vector<VkDescriptorPoolSize>> allocationLayout_,
+    mref<VkDescriptorPoolAllocationLayout> allocationLayout_,
     cref<engine::accel::BindLayout> commitLayout_,
     ref<Vector<_::VkDescriptorSet>> descriptorSets_
 ) noexcept {
@@ -137,17 +219,17 @@ bool driver::vk::VkScopedResourceTable::allocateAndCommit(
             assert(static_cast<u32>(vkdt) >= 0uL && static_cast<u32>(vkdt) < 32uL);
 
             auto iter = std::ranges::find(
-                allocationLayout_,
+                allocationLayout_.sizes,
                 vkdt,
                 [](const auto& size_) {
                     return size_.type;
                 }
             );
 
-            if (iter != allocationLayout_.end()) {
+            if (iter != allocationLayout_.sizes.end()) {
                 ++iter->capacity;
             } else {
-                allocationLayout_.emplace_back(vkdt, 1uL);
+                allocationLayout_.sizes.emplace_back(vkdt, 1uL);
             }
         }
     }
@@ -158,13 +240,14 @@ bool driver::vk::VkScopedResourceTable::allocateAndCommit(
 
     const ::vk::DescriptorPoolCreateInfo dpci {
         ::vk::DescriptorPoolCreateFlagBits::eUpdateAfterBind,
-        /* Warning: We have to determine the max set count */static_cast<u32>(commitLayout_.groups.size()),
-        static_cast<u32>(allocationLayout_.size()),
-        reinterpret_cast<const ::vk::DescriptorPoolSize*>(allocationLayout_.data())
+        /* Warning: We have to determine the max set count */
+        allocationLayout_.maxSets + static_cast<u32>(commitLayout_.groups.size()),
+        static_cast<u32>(allocationLayout_.sizes.size()),
+        reinterpret_cast<const ::vk::DescriptorPoolSize*>(allocationLayout_.sizes.data())
     };
 
     pool.vkPool = device->vkDevice().createDescriptorPool(dpci);
-    pool.pooled = std::move(allocationLayout_);
+    pool.pooled = std::move(allocationLayout_.sizes);
 
     assert(pool.vkPool);
     _commitPools.emplace_back(std::move(pool));
@@ -211,10 +294,11 @@ void driver::vk::VkScopedResourceTable::updateSets(
     using DescriptorWriter = engine::render::graph::VkDescriptorWriter;
 
     const auto device = engine::Engine::getEngine()->getGraphics()->getCurrentDevice()->vkDevice();
+    auto writer = DescriptorWriter { nullptr };
 
     for (auto [group, set] : std::ranges::views::zip(layout_.groups, descriptorSets_)) {
 
-        DescriptorWriter writer { reinterpret_cast<::VkDescriptorSet>(set) };
+        writer.reset(reinterpret_cast<::VkDescriptorSet>(set));
 
         u32 idx = 0;
         for (const engine::accel::BindElement& element : group.elements) {

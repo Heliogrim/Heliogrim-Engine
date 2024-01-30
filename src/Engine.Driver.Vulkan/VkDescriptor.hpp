@@ -32,5 +32,15 @@ namespace hg::driver::vk {
     public:
         Vector<VkDescriptorPoolSize> pooled;
         ::VkDescriptorPool vkPool;
+
+    public:
+        void reset() noexcept;
+    };
+
+    /**/
+
+    struct VkDescriptorPoolAllocationLayout {
+        u32 maxSets;
+        Vector<VkDescriptorPoolSize> sizes;
     };
 }

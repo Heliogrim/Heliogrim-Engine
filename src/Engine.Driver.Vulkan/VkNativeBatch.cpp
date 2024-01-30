@@ -129,6 +129,12 @@ void VkNativeBatch::commitAndDispose() {
             pool->lck().release();
         }
     );
+
+    /**/
+
+    _tmpWaits.clear();
+    _tmpWaitFlags.clear();
+    _tmpSignals.clear();
 }
 
 bool VkNativeBatch::enumerateNativeQueues(
@@ -172,4 +178,8 @@ void VkNativeBatch::enumerateWaitSignals(
 
 void VkNativeBatch::enumerateReadySignals(ref<Vector<VkSemaphore>> readySignals_) {
     readySignals_.insert_range(readySignals_.end(), _tmpSignals);
+}
+
+ref<decltype(VkNativeBatch::_rtable)> VkNativeBatch::getResourceTables() noexcept {
+    return _rtable;
 }
