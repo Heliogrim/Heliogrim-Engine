@@ -28,26 +28,30 @@ build.windows.msvc:
 
         # CMake - Debug
         - cmake -S . -B build/Debug -A x64 -D CMAKE_BUILD_TYPE=Debug
-        - cmake --build build/Debug -t Game --clean-first
+        - cmake --build build/Debug -t Heliogrim-Heliogrim --clean-first
+        - cmake --build build/Debug -t Heliogrim-Editor
 
         # CMake - Profile
         #- cmake -S . -B build/Profile -A x64 -D CMAKE_BUILD_TYPE=Profile
-        #- cmake --build build/Profile -t Game --clean-first
+        #- cmake --build build/Profile -t Heliogrim-Heliogrim --clean-first
+        #- cmake --build build/Profile -t Heliogrim-Editor
 
         # CMake - Release
         #- cmake -S . -B build/Release -A x64 -D CMAKE_BUILD_TYPE=Release
-        #- cmake --build build/Release -t Game --clean-first
+        #- cmake --build build/Release -t Heliogrim-Heliogrim --clean-first
+        #- cmake --build build/Release -t Heliogrim-Editor
 
         # Linking Resources
 
         #- rm -rf dist/Debug/resources
-        #- if (Test-Path ".\dist\Debug\resources") { Remove-Item ".\dist\Debug\resources" -Recurse -Force -Confirm:$False }
+        - if (Test-Path ".\dist\Debug\resources") { Remove-Item ".\dist\Debug\resources" -Recurse -Force -Confirm:$False }
         #- rm -rf dist/Profile/resources
         #- if (Test-Path ".\dist\Profile\resources") { Remove-Item ".\dist\Profile\resources" -Recurse -Force -Confirm:$False }
         #- rm -rf dist/Release/resources
         #- if (Test-Path ".\dist\Release\resources") { Remove-Item ".\dist\Release\resources" -Recurse -Force -Confirm:$False }
+
         #- ln -sfrn resources dist/Debug/resources
-        #- New-Item -ItemType Junction -Path ".\dist\Debug\resources" -Target ".\resources"
+        - New-Item -ItemType Junction -Path ".\dist\Debug\resources" -Target ".\resources"
         #- ln -sfrn resources dist/Profile/resources
         #- New-Item -ItemType Junction -Path ".\dist\Profile\resources" -Target ".\resources"
         #- ln -sfrn resources dist/Release/resources
@@ -61,6 +65,68 @@ build.windows.msvc:
     
     artifacts:
         name: Heliogrim-Win-MSVC-$CI_COMMIT_REF_NAME
+        paths:
+            - dist/Debug/
+            #- dist/Release/
+            #- dist/Profile/
+        expire_in: 15min
+        reports:
+            dotenv: build.report.env
+
+build.windows.clang:
+    stage: build
+    tags:
+        - windows
+        - vulkan
+        - amd64
+    
+    # Preparation
+    before_script:
+        - cmake --version
+    
+    # Process
+    script:
+        # Building
+
+        # CMake - Debug
+        - cmake -S . -B build/Debug -T ClangCL -A x64 -D CMAKE_BUILD_TYPE=Debug
+        - cmake --build build/Debug -t Heliogrim-Heliogrim --clean-first
+        - cmake --build build/Debug -t Heliogrim-Editor
+
+        # CMake - Profile
+        #- cmake -S . -B build/Profile -T ClangCL -A x64 -D CMAKE_BUILD_TYPE=Profile
+        #- cmake --build build/Profile -t Heliogrim-Heliogrim --clean-first
+        #- cmake --build build/Profile -t Heliogrim-Editor
+
+        # CMake - Release
+        #- cmake -S . -B build/Release -T ClangCL -A x64 -D CMAKE_BUILD_TYPE=Release
+        #- cmake --build build/Release -t Heliogrim-Heliogrim --clean-first
+        #- cmake --build build/Release -t Heliogrim-Editor
+
+        # Linking Resources
+
+        #- rm -rf dist/Debug/resources
+        - if (Test-Path ".\dist\Debug\resources") { Remove-Item ".\dist\Debug\resources" -Recurse -Force -Confirm:$False }
+        #- rm -rf dist/Profile/resources
+        #- if (Test-Path ".\dist\Profile\resources") { Remove-Item ".\dist\Profile\resources" -Recurse -Force -Confirm:$False }
+        #- rm -rf dist/Release/resources
+        #- if (Test-Path ".\dist\Release\resources") { Remove-Item ".\dist\Release\resources" -Recurse -Force -Confirm:$False }
+
+        #- ln -sfrn resources dist/Debug/resources
+        - New-Item -ItemType Junction -Path ".\dist\Debug\resources" -Target ".\resources"
+        #- ln -sfrn resources dist/Profile/resources
+        #- New-Item -ItemType Junction -Path ".\dist\Profile\resources" -Target ".\resources"
+        #- ln -sfrn resources dist/Release/resources
+        #- New-Item -ItemType Junction -Path ".\dist\Release\resources" -Target ".\resources"
+
+    # Cleanup / Referencing
+    after_script:
+        #- CI_JOB_NAME=$CI_JOB_NAME
+        #- echo "JOB_${CI_JOB_NAME//./_}_ID=$CI_JOB_ID" >> build.report.env
+        - echo "JOB_build_windows_clang_ID=$CI_JOB_ID" >> build.report.env
+    
+    artifacts:
+        name: Heliogrim-Win-Clang-$CI_COMMIT_REF_NAME
         paths:
             - dist/Debug/
             #- dist/Release/
@@ -92,7 +158,8 @@ build.linux.gcc:
 
         # CMake - Debug
         - cmake -S . -B build/Debug -D CMAKE_C_COMPILER=/usr/bin/gcc -D CMAKE_CXX_COMPILER=/usr/bin/g++ -D CMAKE_BUILD_TYPE=Debug
-        - cmake --build build/Debug -t Game --clean-first
+        - cmake --build build/Debug -t Heliogrim-Heliogrim --clean-first
+        - cmake --build build/Debug -t Heliogrim-Editor
 
         # CMake - Profile
         #- cmake -S . -B build/Profile -A x64 -D CMAKE_C_COMPILER=/usr/bin/gcc -D CMAKE_CXX_COMPILER=/usr/bin/g++ -D CMAKE_BUILD_TYPE=Profile
@@ -147,7 +214,8 @@ build.linux.clang:
 
         # CMake - Debug
         - cmake -S . -B build/Debug -D CMAKE_C_COMPILER=/usr/bin/clang-16 -D CMAKE_CXX_COMPILER=/usr/bin/clang++-16 -D CMAKE_BUILD_TYPE=Debug
-        - cmake --build build/Debug -t Game --clean-first
+        - cmake --build build/Debug -t Heliogrim-Heliogrim --clean-first
+        - cmake --build build/Debug -t Heliogrim-Editor
 
         # CMake - Profile
         #- cmake -S . -B build/Profile -A x64 -D CMAKE_C_COMPILER=/usr/bin/clang -D CMAKE_CXX_COMPILER=/usr/bin/clang++ -D CMAKE_BUILD_TYPE=Profile
@@ -198,6 +266,8 @@ release:
             artifacts: true
         -   job: build.windows.msvc
             artifacts: true
+        -   job: build.windows.clang
+            artifacts: true
     before_script:
         # Prepare Commands
         - |-
@@ -212,7 +282,7 @@ release:
                 source ~/.bashrc
             }
     script:
-        - echo "Release '$CI_COMMIT_TAG' using jobs '$JOB_build_linux_gcc_ID', '$JOB_build_linux_clang_ID', '$JOB_build_windows_msvc_ID'"
+        - echo "Release '$CI_COMMIT_TAG' using jobs '$JOB_build_linux_gcc_ID', '$JOB_build_linux_clang_ID', '$JOB_build_windows_msvc_ID', '$JOB_build_windows_clang_ID'"
     release:
         tag_name: '$CI_COMMIT_TAG'
         name: "Release '$CI_COMMIT_TAG'"
@@ -220,8 +290,10 @@ release:
         assets:
             links:
                 -   name: "Linux GCC Build"
-                    url: 'https://git.neogc.net/root/cpp-ci-cd-test/-/jobs/$JOB_build_linux_gcc_ID/artifacts/download'
+                    url: 'https://git.neogc.net/heliogrim-workgroup/engine/-/jobs/$JOB_build_linux_gcc_ID/artifacts/download'
                 -   name: "Linux Clang Build"
-                    url: 'https://git.neogc.net/root/cpp-ci-cd-test/-/jobs/$JOB_build_linux_clang_ID/artifacts/download'
+                    url: 'https://git.neogc.net/heliogrim-workgroup/engine/-/jobs/$JOB_build_linux_clang_ID/artifacts/download'
                 -   name: "Windows MSVC Build"
-                    url: 'https://git.neogc.net/root/cpp-ci-cd-test/-/jobs/$JOB_build_windows_msvc_ID/artifacts/download'
+                    url: 'https://git.neogc.net/heliogrim-workgroup/engine/-/jobs/$JOB_build_windows_msvc_ID/artifacts/download'
+                -   name: "Windows Clang Build"
+                    url: 'https://git.neogc.net/heliogrim-workgroup/engine/-/jobs/$JOB_build_windows_clang_ID/artifacts/download'
