@@ -167,23 +167,30 @@ nmpt<engine::render::RenderSceneSystem> WindowManager::resolveRenderSystem(cref<
 
 void WindowManager::handleWindowResize(const ptr<BoundWindow> wnd_, cref<math::ivec2> nextSize_) const {
 
+    if (
+        math::ivec2 { wnd_->window->getClientSize() } == nextSize_ &&
+        math::ivec2 { wnd_->surface->swapchain()->extent() } == nextSize_
+    ) {
+        return;
+    }
+
+    /**/
+
     const auto* const gfx = Engine::getEngine()->getGraphics();
 
     /**/
 
-    auto nextSwapchain = make_smr<gfx::VkSurfaceSwapchain>(wnd_->surface);
-    nextSwapchain->setup(gfx->getCurrentDevice());
+    auto nextSwapChain = make_smr<gfx::VkSurfaceSwapchain>(wnd_->surface);
+    nextSwapChain->setup(gfx->getCurrentDevice());
 
-    const auto prevSwapchain = wnd_->surface->swapchain();
-    wnd_->surface->setSwapchain(clone(nextSwapchain));
+    auto prevSwapChain = wnd_->surface->swapchain();
+    wnd_->surface->setSwapchain(clone(nextSwapChain));
 
-    const auto nextWindowExtent = nextSwapchain->extent();
+    const auto nextWindowExtent = nextSwapChain->extent();
 
     /**/
 
-    const auto targetTransition = wnd_->renderTarget->transitionToTarget(std::move(nextSwapchain), wnd_->surface);
-    assert(targetTransition.has_value());
-
+    gfx->getSceneManager()->transitionToTarget(std::move(prevSwapChain), std::move(nextSwapChain), wnd_->surface);
     wnd_->window->setClientSize(math::vec2 { nextWindowExtent });
 }
 

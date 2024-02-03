@@ -46,7 +46,7 @@ void VkSurfaceSwapchain::setup(cref<sptr<Device>> device_) {
     const auto capabilities = _device->vkPhysicalDevice().getSurfaceCapabilitiesKHR(*_surface);
     const auto modes = _device->vkPhysicalDevice().getSurfacePresentModesKHR(*_surface);
 
-    _extent = clampExtent({ 1920, 1080 }, capabilities);
+    _extent = clampExtent({ capabilities.currentExtent.width, capabilities.currentExtent.height }, capabilities);
     const auto mode = selectPresentMode(modes);
 
     _format = _surface->getImageFormat(*_device);
@@ -284,26 +284,18 @@ void VkSurfaceSwapchain::restoreSignal(const vk::Semaphore signal_) {
 #include <Engine.GFX/Command/CommandBuffer.hpp>
 
 math::uivec2 clampExtent(math::uivec2 extent_, cref<vk::SurfaceCapabilitiesKHR> capabilities_) noexcept {
-    if (capabilities_.currentExtent.width == 0xFFFFFFFF) {
 
-        if (extent_.x < capabilities_.minImageExtent.width) {
-            extent_.x = capabilities_.minImageExtent.width;
-        } else if (extent_.x > capabilities_.maxImageExtent.width) {
-            extent_.x = capabilities_.maxImageExtent.width;
-        }
+    extent_ = math::compMin(
+        extent_,
+        math::uivec2 { capabilities_.maxImageExtent.width, capabilities_.maxImageExtent.height }
+    );
 
-        if (extent_.y < capabilities_.minImageExtent.height) {
-            extent_.y = capabilities_.minImageExtent.height;
-        } else if (extent_.x > capabilities_.maxImageExtent.height) {
-            extent_.y = capabilities_.maxImageExtent.height;
-        }
+    extent_ = math::compMax(
+        extent_,
+        math::uivec2 { capabilities_.minImageExtent.width, capabilities_.minImageExtent.height }
+    );
 
-    } else {
-        extent_ = {
-            capabilities_.currentExtent.width,
-            capabilities_.currentExtent.height
-        };
-    }
+    // extent_ = math::compMax(extent_, math::uivec2 { 1uL });
 
     return extent_;
 }
