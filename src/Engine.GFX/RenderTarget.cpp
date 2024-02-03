@@ -131,7 +131,6 @@ RenderTarget::transitionToTarget(
     nmpt<Surface> surface_
 ) {
 
-    assert(_chainSwapChain == nullptr);
     assert(_swapchain != swapchain_);
 
     const auto reqImg = _onTheFlight ? 1uL : 2uL;
@@ -146,11 +145,29 @@ RenderTarget::transitionToTarget(
 
     /**/
 
-    _chainSwapChainMask = 0u;
+    u8 fullSwapChainMask = 0u;
     for (u8 i = static_cast<u8>(_renderPasses.size()); i > 0u; --i) {
-        _chainSwapChainMask |= (0x1u << (i - 1u));
+        fullSwapChainMask |= (0x1u << (i - 1u));
     }
 
+    if (_chainSwapChain != nullptr) {
+
+        /* Check for possible forceful override of untouched transition */
+        if (_chainSwapChainMask != fullSwapChainMask) {
+            IM_CORE_WARN("Tried to override ongoing transition at render target.");
+            return tl::make_unexpected(std::runtime_error("Failed to override transition state."));
+        }
+
+        _swapchain = std::move(swapchain_);
+        _surface = std::move(surface_);
+
+        // Attention: At this point the internal future state has some shared ownership
+        return _chainSwapChain->get();
+    }
+
+    /**/
+
+    _chainSwapChainMask = fullSwapChainMask;
     _chainSwapChain = make_uptr<concurrent::Promise<std::pair<nmpt<Swapchain>, nmpt<Surface>>>>(
         concurrent::Promise<std::pair<nmpt<Swapchain>, nmpt<Surface>>>(
             // Warning: We are explicitly expanding the lifetime of the previous object
@@ -379,7 +396,6 @@ nmpt<RenderPass> RenderTarget::next() {
         const auto previous = renderPass->unbindTarget(makeSceneColorSymbol());
         const auto bindResult = renderPass->bindTarget(makeSceneColorSymbol(), clone(_swapchain->at(nextIdx)));
         assert(bindResult);
-        _chainSwapChainMask &= ~(1u << nextIdx);
     }
 
     /**/
@@ -390,6 +406,15 @@ nmpt<RenderPass> RenderTarget::next() {
 void RenderTarget::update() {
 
     auto& renderPass = _renderPasses[_syncIdx];
+
+    /**/
+
+    if (_chainSwapChainMask & (1u << _swapIdx)) {
+        renderPass->clearTargetWaitSignals(makeSceneColorSymbol());
+        _chainSwapChainMask &= ~(1u << _swapIdx);
+    }
+
+    /**/
 
     if (_onTheFlight && _swapSignal) {
         renderPass->clearTargetWaitSignals(makeSceneColorSymbol());

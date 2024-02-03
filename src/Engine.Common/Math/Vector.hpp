@@ -254,17 +254,14 @@ namespace hg::math {
             return *this;
         }
 
-        /**
-         * Check zero vector
-         *
-         * @author Julius
-         * @date 16.01.2020
-         *
-         * @returns whether vector is zero.
-         */
-        [[nodiscard]] constexpr bool zero() const {
+        [[nodiscard]] constexpr bool allZero() const noexcept {
             // TODO: Unsafe possible float point equality operation
             return x == 0 && y == 0;
+        }
+
+        [[nodiscard]] constexpr bool anyZero() const noexcept {
+            // TODO: Unsafe possible float point equality operation
+            return x == 0 || y == 0;
         }
 
         /**
@@ -1816,8 +1813,8 @@ namespace hg::math {
      */
     template <typename T>
     constexpr vec2_t<T> compMax(
-        typename vec2_t<T>::const_reference_type vec0_,
-        typename vec2_t<T>::const_reference_type vec1_
+        const vec2_t<T>& vec0_,
+        const vec2_t<T>& vec1_
     ) {
         return vec2_t<T> {
             MAX(vec0_.x, vec1_.x),
@@ -1861,8 +1858,8 @@ namespace hg::math {
      */
     template <typename T>
     constexpr vec2_t<T> compMin(
-        typename vec2_t<T>::const_reference_type vec0_,
-        typename vec2_t<T>::const_reference_type vec1_
+        const vec2_t<T>& vec0_,
+        const vec2_t<T>& vec1_
     ) {
         return vec2_t<T> {
             MIN(vec0_.x, vec1_.x),

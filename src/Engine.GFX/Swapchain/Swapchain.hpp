@@ -11,11 +11,11 @@
 namespace hg::engine::gfx {
     struct SwapchainImage {
         /**/
-        smr<Texture> image;
+        smr<Texture> image = {};
         /**/
-        vk::Semaphore readySignal;
+        vk::Semaphore readySignal = nullptr;
         /**/
-        Vector<vk::Semaphore> presentWaits;
+        Vector<vk::Semaphore> presentWaits = {};
     };
 
     class __declspec(novtable) Swapchain {

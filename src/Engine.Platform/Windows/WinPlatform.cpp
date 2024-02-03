@@ -128,8 +128,11 @@ hg::concurrent::future<uptr<NativeWindow>> WinPlatform::makeNativeWindow(
             assert(wnd && wnd->sdl());
 
             /**/
+
+            SDL_SetWindowMinimumSize(wnd->sdl(), 128L, 128L);
             Engine::getEngine()->getInput()->captureWindow(wnd.get());
             _windows.push_back(wnd.get());
+
             /**/
 
             return wnd;

@@ -90,7 +90,7 @@ void Viewport::setViewportTarget(StringView renderer_, World world_, ptr<CameraA
 }
 
 math::uivec2 Viewport::actualViewExtent() const noexcept {
-    if (_viewSize.zero()) {
+    if (_viewSize.allZero()) {
         return math::uivec2 {
             static_cast<u32>(_layoutState.layoutSize.x),
             static_cast<u32>(_layoutState.layoutSize.y)
@@ -171,7 +171,7 @@ void Viewport::rebuildView() {
     // Error: Will cause nullpointer exceptions
     // TODO: Introduce Empty/Null-Swapchain or deal with zero-dimension case
     auto extent { actualViewExtent() };
-    if (extent.zero()) {
+    if (extent.anyZero()) {
         IM_CORE_WARNF(
             "Tried to rebuild Swapchain for Viewport (`{:#x}`) with zero dimension.",
             reinterpret_cast<volatile ptrdiff_t>(this)
@@ -222,7 +222,7 @@ const ptr<const NullChildren> Viewport::children() const {
 
 void Viewport::render(const ptr<ReflowCommandBuffer> cmd_) {
 
-    if (_layoutState.layoutSize.zero()) {
+    if (_layoutState.layoutSize.anyZero()) {
         return;
     }
 
