@@ -6,6 +6,7 @@ workflow:
 
 variables:
     GIT_DEPTH: 0
+    VULKAN_VERSION: 1.3.275.0
 
 stages:
     - build
@@ -27,17 +28,17 @@ build.windows.msvc:
         # Building
 
         # CMake - Debug
-        - cmake -S . -B build/Debug -A x64 -D CMAKE_BUILD_TYPE=Debug
+        - cmake -S . -B build/Debug -A x64 -D CMAKE_BUILD_TYPE=Debug --fresh
         - cmake --build build/Debug -t Heliogrim-Heliogrim --clean-first
         - cmake --build build/Debug -t Heliogrim-Editor
 
         # CMake - Profile
-        #- cmake -S . -B build/Profile -A x64 -D CMAKE_BUILD_TYPE=Profile
+        #- cmake -S . -B build/Profile -A x64 -D CMAKE_BUILD_TYPE=Profile --fresh
         #- cmake --build build/Profile -t Heliogrim-Heliogrim --clean-first
         #- cmake --build build/Profile -t Heliogrim-Editor
 
         # CMake - Release
-        #- cmake -S . -B build/Release -A x64 -D CMAKE_BUILD_TYPE=Release
+        #- cmake -S . -B build/Release -A x64 -D CMAKE_BUILD_TYPE=Release --fresh
         #- cmake --build build/Release -t Heliogrim-Heliogrim --clean-first
         #- cmake --build build/Release -t Heliogrim-Editor
 
@@ -89,17 +90,17 @@ build.windows.clang:
         # Building
 
         # CMake - Debug
-        - cmake -S . -B build/Debug -T ClangCL -A x64 -D CMAKE_BUILD_TYPE=Debug
+        - cmake -S . -B build/Debug -T ClangCL -A x64 -D CMAKE_BUILD_TYPE=Debug --fresh
         - cmake --build build/Debug -t Heliogrim-Heliogrim --clean-first
         - cmake --build build/Debug -t Heliogrim-Editor
 
         # CMake - Profile
-        #- cmake -S . -B build/Profile -T ClangCL -A x64 -D CMAKE_BUILD_TYPE=Profile
+        #- cmake -S . -B build/Profile -T ClangCL -A x64 -D CMAKE_BUILD_TYPE=Profile --fresh
         #- cmake --build build/Profile -t Heliogrim-Heliogrim --clean-first
         #- cmake --build build/Profile -t Heliogrim-Editor
 
         # CMake - Release
-        #- cmake -S . -B build/Release -T ClangCL -A x64 -D CMAKE_BUILD_TYPE=Release
+        #- cmake -S . -B build/Release -T ClangCL -A x64 -D CMAKE_BUILD_TYPE=Release --fresh
         #- cmake --build build/Release -t Heliogrim-Heliogrim --clean-first
         #- cmake --build build/Release -t Heliogrim-Editor
 
@@ -144,9 +145,16 @@ build.linux.gcc:
     # Preparation
     before_script:
         # Prepare Commands
-        - command -v make 2>&1 || { echo >&2 "Required unavailable command make, try to recover."; sudo apt-get install make -y; }
+        - command -v make 2>&1 || { echo >&2 "Required unavailable command make, try to recover."; sudo apt-get install build-essential -y; }
         - command -v cmake 2>&1 || { echo >&2 "Required unavailable command cmake, try to recover."; sudo apt-get install cmake -y; }
         - command -v g++ 2>&1 || { echo >&2 "Required unavailable command g++, try to recover."; sudo apt-get install build-essential -y; }
+        - command -v xz 2>&1 || { echo >&2 "Required unavailable command xz, try to recover."; sudo apt-get install xz-utils -y; }
+        # Ensure Vulkan SDK
+        - rm -r ~/vulkan 2> /dev/null || true
+        - mkdir ~/vulkan
+        - curl "https://sdk.lunarg.com/sdk/download/$VULKAN_VERSION/linux/vulkansdk-linux-x86_64-$VULKAN_VERSION.tar.xz" --output ~/vulkan/sdk.tar.xz
+        - tar -xf ~/vulkan/sdk.tar.xz -C ~/vulkan
+        - source "$HOME/vulkan/$VULKAN_VERSION/setup-env.sh"
         # Check Versions
         - cmake --version
     
@@ -157,16 +165,16 @@ build.linux.gcc:
         # Generator: Makefiles ~ '-A x64' by default
 
         # CMake - Debug
-        - cmake -S . -B build/Debug -D CMAKE_C_COMPILER=/usr/bin/gcc -D CMAKE_CXX_COMPILER=/usr/bin/g++ -D CMAKE_BUILD_TYPE=Debug
+        - cmake -S . -B build/Debug -D CMAKE_C_COMPILER=/usr/bin/gcc -D CMAKE_CXX_COMPILER=/usr/bin/g++ -D CMAKE_BUILD_TYPE=Debug --fresh
         - cmake --build build/Debug -t Heliogrim-Heliogrim --clean-first
         - cmake --build build/Debug -t Heliogrim-Editor
 
         # CMake - Profile
-        #- cmake -S . -B build/Profile -A x64 -D CMAKE_C_COMPILER=/usr/bin/gcc -D CMAKE_CXX_COMPILER=/usr/bin/g++ -D CMAKE_BUILD_TYPE=Profile
+        #- cmake -S . -B build/Profile -A x64 -D CMAKE_C_COMPILER=/usr/bin/gcc -D CMAKE_CXX_COMPILER=/usr/bin/g++ -D CMAKE_BUILD_TYPE=Profile --fresh
         #- cmake --build build/Profile -t Game --clean-first
 
         # CMake - Release
-        #- cmake -S . -B build/Release -A x64 -D CMAKE_C_COMPILER=/usr/bin/gcc -D CMAKE_CXX_COMPILER=/usr/bin/g++ -D CMAKE_BUILD_TYPE=Release
+        #- cmake -S . -B build/Release -A x64 -D CMAKE_C_COMPILER=/usr/bin/gcc -D CMAKE_CXX_COMPILER=/usr/bin/g++ -D CMAKE_BUILD_TYPE=Release --fresh
         #- cmake --build build/Release -t Game --clean-first
 
         # Linking Resources
@@ -195,7 +203,7 @@ build.linux.clang:
     # Preparation
     before_script:
         # Prepare Commands
-        - command -v make 2>&1 || { echo >&2 "Required unavailable command make, try to recover."; sudo apt-get install make -y; }
+        - command -v make 2>&1 || { echo >&2 "Required unavailable command make, try to recover."; sudo apt-get install build-essential -y; }
         - command -v cmake 2>&1 || { echo >&2 "Required unavailable command cmake, try to recover."; sudo apt-get install cmake -y; }
         - |-
             command -v clang 2>&1 || {
@@ -203,6 +211,13 @@ build.linux.clang:
                 sudo apt-get install lsb-release wget software-properties-common gnupg -y
                 sudo bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
             }
+        - command -v xz 2>&1 || { echo >&2 "Required unavailable command xz, try to recover."; sudo apt-get install xz-utils -y; }
+        # Ensure Vulkan SDK
+        - rm -r ~/vulkan 2> /dev/null || true
+        - mkdir ~/vulkan
+        - curl "https://sdk.lunarg.com/sdk/download/$VULKAN_VERSION/linux/vulkansdk-linux-x86_64-$VULKAN_VERSION.tar.xz" --output ~/vulkan/sdk.tar.xz
+        - tar -xf ~/vulkan/sdk.tar.xz -C ~/vulkan
+        - source "$HOME/vulkan/$VULKAN_VERSION/setup-env.sh"
         # Check Versions
         - cmake --version
     
@@ -213,16 +228,16 @@ build.linux.clang:
         # Generator: Makefiles ~ '-A x64' by default
 
         # CMake - Debug
-        - cmake -S . -B build/Debug -D CMAKE_C_COMPILER=/usr/bin/clang-16 -D CMAKE_CXX_COMPILER=/usr/bin/clang++-16 -D CMAKE_BUILD_TYPE=Debug
+        - cmake -S . -B build/Debug -D CMAKE_C_COMPILER=/usr/bin/clang-16 -D CMAKE_CXX_COMPILER=/usr/bin/clang++-16 -D CMAKE_BUILD_TYPE=Debug --fresh
         - cmake --build build/Debug -t Heliogrim-Heliogrim --clean-first
         - cmake --build build/Debug -t Heliogrim-Editor
 
         # CMake - Profile
-        #- cmake -S . -B build/Profile -A x64 -D CMAKE_C_COMPILER=/usr/bin/clang -D CMAKE_CXX_COMPILER=/usr/bin/clang++ -D CMAKE_BUILD_TYPE=Profile
+        #- cmake -S . -B build/Profile -A x64 -D CMAKE_C_COMPILER=/usr/bin/clang -D CMAKE_CXX_COMPILER=/usr/bin/clang++ -D CMAKE_BUILD_TYPE=Profile --fresh
         #- cmake --build build/Profile -t Game --clean-first
 
         # CMake - Release
-        #- cmake -S . -B build/Release -A x64 -D CMAKE_C_COMPILER=/usr/bin/clang -D CMAKE_CXX_COMPILER=/usr/bin/clang++ -D CMAKE_BUILD_TYPE=Release
+        #- cmake -S . -B build/Release -A x64 -D CMAKE_C_COMPILER=/usr/bin/clang -D CMAKE_CXX_COMPILER=/usr/bin/clang++ -D CMAKE_BUILD_TYPE=Release --fresh
         #- cmake --build build/Release -t Game --clean-first
 
         # Linking Resources
