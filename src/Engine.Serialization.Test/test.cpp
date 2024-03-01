@@ -199,7 +199,7 @@ namespace SerializationModule {
 
 	public:
 		TestSerialAsset() :
-			InheritMeta({}, typeId) {}
+			InheritMeta(asset_guid {}, typeId) {}
 
 	public:
 		u8 t0 = 0x0;
@@ -297,7 +297,7 @@ namespace SerializationModule {
 
 	public:
 		TestSerialDataBaseAsset() :
-			InheritMeta({}, typeId) {}
+			InheritMeta(asset_guid {}, typeId) {}
 
 	public:
 		void setGuid(asset_guid guid_) {
@@ -317,7 +317,10 @@ namespace hg::engine::serialization {
 		using namespace ::SerializationModule;
 		using namespace ::hg::engine::serialization::layout;
 
-		defineValue<LayoutDefineValueType::eUInt64>(offsetof(TestSerialDataBaseAsset, _guid));
+		defineValue<LayoutDefineValueType::eUInt32>(offsetof(TestSerialDataBaseAsset, _guid.pre));
+		defineValue<LayoutDefineValueType::eUInt16>(offsetof(TestSerialDataBaseAsset, _guid.c0));
+		defineValue<LayoutDefineValueType::eUInt16>(offsetof(TestSerialDataBaseAsset, _guid.c1));
+		defineValue<LayoutDefineValueType::eUInt64>(offsetof(TestSerialDataBaseAsset, _guid.post));
 		defineValue<LayoutDefineValueType::eUInt64>(offsetof(TestSerialDataBaseAsset, _type));
 	}
 }
@@ -369,7 +372,8 @@ namespace SerializationModule {
 
 	public:
 		TestSerialSubTypeAsset() :
-			InheritMeta({}, typeId) {}
+			InheritMeta(asset_guid {}, typeId),
+			payload() {}
 
 	public:
 		TestSubTypePayload payload;
@@ -450,7 +454,8 @@ namespace SerializationModule {
 
 	public:
 		TestSerialSubTypeSpanAsset() :
-			InheritMeta({}, typeId) {}
+			InheritMeta(asset_guid {}, typeId),
+			payload() {}
 
 	public:
 		Array<TestSubTypePayload, 5> payload;
@@ -517,7 +522,7 @@ namespace SerializationModule {
 
 	public:
 		TestSerialSubTypeSliceAsset() :
-			InheritMeta({}, typeId) {}
+			InheritMeta(asset_guid {}, typeId) {}
 
 	public:
 		std::list<TestSubTypePayload> payload;
@@ -584,7 +589,7 @@ namespace SerializationModule {
 
 	public:
 		TestSerialSubTypeVectorizedSliceAsset() :
-			InheritMeta({}, typeId) {}
+			InheritMeta(asset_guid {}, typeId) {}
 
 	public:
 		Vector<TestSubTypePayload> payload;
@@ -688,7 +693,7 @@ namespace SerializationModule {
 
 	public:
 		TestSerialSubTypeStringAsset() :
-			InheritMeta({}, typeId) {}
+			InheritMeta(asset_guid {}, typeId) {}
 
 	public:
 		string payload;
@@ -767,7 +772,7 @@ namespace SerializationModule {
 
 		archive.seek(0);
 		archive << StructureSlotType::eU32;
-		archive << 267586uL;
+		archive << 267586u;
 		archive.seek(0);
 
 		/**/
