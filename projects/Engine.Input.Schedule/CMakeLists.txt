@@ -1,8 +1,6 @@
-# Target Name
-set(target Engine.Input.Schedule)
-
-# Linker
-set(link_libraries ${PROJECT_NAME}::Engine.Common)
 
 # Setup
-make_library_project(${target} "${link_libraries}")
+make_library_project(
+		LIB_NAME Engine.Input.Schedule
+		LIBRARIES ${PROJECT_NAME}::Engine.Common
+)
