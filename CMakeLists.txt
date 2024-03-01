@@ -14,10 +14,18 @@ message(STATUS "| License: Private                                              
 message(STATUS "| Url: https://git.neogc.net/heliogrim-workgroup/engine          |")
 message(STATUS "------------------------------------------------------------------")
 
+# Project Declaration
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+set(IDE_FOLDER "")
+
+project("Heliogrim" VERSION 1.0)
+
 # CMake Tools
 include(cmake/Architecture.cmake)
+include(cmake/BuildType.cmake)
 include(cmake/Tools.cmake)
 include(cmake/HealthCheck.cmake)
+include(cmake/MakeExecutableProject.cmake)
 include(cmake/MakeLibraryProject.cmake)
 include(cmake/MakeTestProject.cmake)
 include(cmake/DeployDynLibs.cmake)
@@ -32,12 +40,6 @@ set(CMAKE_CONFIGURATION_TYPES "Debug;Release;Profile")
 # Project Options
 
 include(cmake/Dependencies.cmake)
-
-# Project Declaration
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-set(IDE_FOLDER "")
-
-project("Heliogrim" VERSION 1.0)
 
 # Project Directories
 ## Deployment / Distribution directories will be configured within make library/test functions

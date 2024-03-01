@@ -1,10 +1,8 @@
-# Target Name
-set(target Heliogrim.Test)
-
-# Linker
-set(link_libraries
-        ${PROJECT_NAME}::Heliogrim
-        ${PROJECT_NAME}::Engine.Common)
 
 # Setup
-make_test_project(${target} "${link_libraries}")
+make_test_project(
+		TEST_NAME Heliogrim.Test
+		LIBRARIES
+		${PROJECT_NAME}::Engine.Common
+		${PROJECT_NAME}::Heliogrim
+)

@@ -1,8 +1,6 @@
-# Target Name
-set(target Engine.Assets.System)
-
-# Linker
-set(link_libraries ${PROJECT_NAME}::Engine.Common)
 
 # Setup
-make_library_project(${target} "${link_libraries}")
+make_library_project(
+		LIB_NAME Engine.Assets.System
+		LIBRARIES ${PROJECT_NAME}::Engine.Common
+)

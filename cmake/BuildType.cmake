@@ -1,0 +1,9 @@
+
+set(DEFAULT_BUILD_TYPE "Release")
+
+if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+	set(CMAKE_BUILD_TYPE "${DEFAULT_BUILD_TYPE}" CACHE STRING "Choose a build type." FORCE)
+	set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Profile" "Release")
+endif ()
+
+set(CMAKE_CONFIGURATION_TYPES "Debug;Release;Profile")

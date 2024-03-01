@@ -1,8 +1,6 @@
-# Target Name
-set(target Editor.Render)
-
-# Linker
-set(link_libraries ${PROJECT_NAME}::Heliogrim)
 
 # Setup
-make_library_project(${target} "${link_libraries}")
+make_library_project(
+		LIB_NAME "Editor.Render"
+		LIBRARIES ${PROJECT_NAME}::Heliogrim
+)
