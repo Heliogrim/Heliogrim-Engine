@@ -154,7 +154,11 @@
 
 // Inline
 #ifndef FORCE_INLINE
+#if defined (ENV_MSVC)
 #define FORCE_INLINE __forceinline
+#elif defined(ENV_GCC) || defined(ENV_CLANG)
+#define FORCE_INLINE __attribute__((always_inline))
+#endif
 #endif
 
 // Restrict

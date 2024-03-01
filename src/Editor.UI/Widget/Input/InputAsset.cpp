@@ -139,7 +139,7 @@ void InputAsset::setup() {
 
     theme->applyText(_input->_text);
     _input->_text->attr.textAlign.setValue(TextAlign::eLeftMiddle);
-    _input->_text->attr.textEllipse.setValue(1ui32);
+    _input->_text->attr.textEllipse.setValue(1uL);
 
     lower->addChild(_input);
 }

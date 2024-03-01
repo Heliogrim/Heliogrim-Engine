@@ -342,7 +342,7 @@ namespace hg::engine::reflow {
             this->clearChildren();
 
             const auto size { _linearizedData.size() };
-            for (u64 idx { 0ui64 }; idx < size; ++idx) {
+            for (u64 idx { 0uLL }; idx < size; ++idx) {
 
                 const auto& curData { _linearizedData[idx] };
                 auto& curView { _linearizedView[idx] };
@@ -570,7 +570,7 @@ namespace hg::engine::reflow {
 
             if (not adv_ || _selectionMode == TreeViewSelectionMode::eSingle) {
 
-                if (isSelected && _selected.size() <= 1ui64) {
+                if (isSelected && _selected.size() <= 1uLL) {
                     return;
 
                 } else {
@@ -828,7 +828,7 @@ namespace hg::engine::reflow {
 
             if (not value_) {
                 // TODO: What should hash return when unwrapped type is empty
-                return 0ui64;
+                return 0uLL;
             }
 
             return static_cast<cref<base_hash_type>>(*this)(*value_);

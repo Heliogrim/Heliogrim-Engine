@@ -42,7 +42,7 @@ math::uivec2::value_type SparseTextureView::baseLayer() const noexcept {
 }
 
 math::uivec2::value_type SparseTextureView::layers() const noexcept {
-    return (_layers.max - _layers.min) + 1ui32;
+    return (_layers.max - _layers.min) + 1uL;
 }
 
 math::uivec3 SparseTextureView::extent() const noexcept {
@@ -70,7 +70,7 @@ math::uivec2::value_type SparseTextureView::minMipLevel() const noexcept {
 }
 
 math::uivec2::value_type SparseTextureView::mipLevels() const noexcept {
-    return (_mipLevels.max - _mipLevels.min) + 1ui32;
+    return (_mipLevels.max - _mipLevels.min) + 1uL;
 }
 
 math::uivec2::value_type SparseTextureView::maxMipLevel() const noexcept {

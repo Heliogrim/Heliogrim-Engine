@@ -3,7 +3,7 @@
 using namespace hg::engine::scheduler::task;
 using namespace hg;
 
-constexpr u8 retry_threshold = 16ui8;
+constexpr u8 retry_threshold = 16u;
 
 SharedSubQueue::SharedSubQueue(TaskMask mask_) noexcept :
     mask(mask_) { }

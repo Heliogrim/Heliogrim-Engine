@@ -105,7 +105,7 @@ bool Viewport::viewHasChanged() const noexcept {
         return true;
     }
 
-    const auto size = math::compMax<u32>(actualViewExtent(), math::uivec2 { 1ui32 });
+    const auto size = math::compMax<u32>(actualViewExtent(), math::uivec2 { 1uL });
     return _swapChain->extent() != size;
 }
 
@@ -115,7 +115,7 @@ smr<engine::gfx::VkSwapchain> Viewport::buildNextView(cref<math::uivec2> extent_
 
     next->setExtent(extent_);
     next->setFormat(gfx::TextureFormat::eB8G8R8A8Unorm);
-    next->setDesiredImages(2ui32);
+    next->setDesiredImages(2uL);
 
     const auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
     next->setup(device);
@@ -176,7 +176,7 @@ void Viewport::rebuildView() {
             "Tried to rebuild Swapchain for Viewport (`{:#x}`) with zero dimension.",
             reinterpret_cast<volatile ptrdiff_t>(this)
         );
-        extent = math::compMax<u32>(extent, math::uivec2 { 1ui32 });
+        extent = math::compMax<u32>(extent, math::uivec2 { 1uL });
     }
 
     auto next = buildNextView(extent);

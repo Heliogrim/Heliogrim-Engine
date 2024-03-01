@@ -6,7 +6,7 @@
 #include <Engine.GFX.Render.Command/NativeQueue.hpp>
 
 namespace hg::driver::vk {
-    enum class VkQueueTypeBits {
+    enum class VkQueueTypeBits: u32 {
         eGraphics = 0x1 << 28,
         eCompute = 0x1 << 29,
         eTransfer = 0x1 << 30

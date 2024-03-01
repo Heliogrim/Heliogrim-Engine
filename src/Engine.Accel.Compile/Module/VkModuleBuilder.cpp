@@ -75,8 +75,8 @@ uptr<ModuleSource> VkModuleBuilder::build(
 
     /* Resolve tokenized binding layouts to platform specific location bindings */
 
-    s32 dsetIndex = 0i32;
-    s32 dsetLocation = 0i32;
+    s32 dsetIndex = 0L;
+    s32 dsetLocation = 0L;
 
     // Warning: This has to be invariant over all stages within one target pass
     for (const auto& bindGroup : targetPass_->getBindingLayout().groups) {
@@ -104,7 +104,7 @@ uptr<ModuleSource> VkModuleBuilder::build(
             ++dsetLocation;
         }
 
-        dsetLocation = 0i32;
+        dsetLocation = 0L;
         ++dsetIndex;
     }
 
@@ -113,8 +113,8 @@ uptr<ModuleSource> VkModuleBuilder::build(
     if (isFirstStage(targetPass_, stage_)) {
 
         // If we are the first stage within the effect pipe, we are required to generate our own input locations
-        constexpr s32 invalidSet = -1i32;
-        s32 location = 0i32;
+        constexpr s32 invalidSet = -1L;
+        s32 location = 0L;
 
         Vector<StageInput> stageInputs {};
         stage_->enumerateStageInputs(stageInputs);
@@ -201,8 +201,8 @@ uptr<ModuleSource> VkModuleBuilder::build(
 
     /**/
 
-    constexpr s32 invalidSet = -1i32;
-    s32 location = 0i32;
+    constexpr s32 invalidSet = -1L;
+    s32 location = 0L;
 
     Vector<StageOutput> stageOutputs {};
     stage_->enumerateStageOutputs(stageOutputs);

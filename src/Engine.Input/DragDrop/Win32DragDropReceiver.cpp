@@ -18,10 +18,10 @@ using namespace hg;
 Win32DragDropReceiver::Win32DragDropReceiver(const HWND hwnd_) :
     DragDropReceiver(),
     _hwnd(hwnd_),
-    _cursorPos(-1i32, -1i32),
+    _cursorPos(-1L, -1L),
     _data(),
     _valid(false),
-    _useCount(1ui32) {}
+    _useCount(1uL) {}
 
 Win32DragDropReceiver::~Win32DragDropReceiver() noexcept = default;
 
@@ -136,10 +136,10 @@ static Vector<string> handleFileDrop(ptr<IDataObject> data_, cref<FORMATETC> for
                 reinterpret_cast<ptr<wchar_t>>(reinterpret_cast<ptr<char>>(dropFiles) + dropFiles->pFiles)
             };
 
-            u8 terminating { 0ui8 };
-            u64 idx { 0ui64 };
+            u8 terminating { 0u };
+            u64 idx { 0uLL };
 
-            while (terminating < 2ui8) {
+            while (terminating < 2u) {
 
                 if (base[idx] == '\0') {
 

@@ -382,7 +382,7 @@ ref<SparseTextureView> VkTextureFactory::buildView(
             case TextureType::eCube: {
                 assert(type == TextureType::eCube);
                 // Ensure 6 planar image layers
-                assert((layers.max - layers.max) == 5ui32);
+                assert((layers.max - layers.max) == 5uL);
                 break;
             }
         }
@@ -395,9 +395,9 @@ ref<SparseTextureView> VkTextureFactory::buildView(
     const vk::ImageSubresourceRange isr {
         /*texture_.buffer()._vkAspect,*/ vk::ImageAspectFlagBits::eColor,
         mipLevels.min,
-        (mipLevels.max - mipLevels.min) + 1ui32,
+        (mipLevels.max - mipLevels.min) + 1uL,
         layers.min,
-        (layers.max - layers.min) + 1ui32
+        (layers.max - layers.min) + 1uL
     };
 
     const vk::ImageViewCreateInfo ivci {
@@ -433,21 +433,21 @@ ptr<SparseTexture> VkTextureFactory::buildVirtual(const SparseTextureBuildPayloa
 
     vk::ImageCreateFlags create { vk::ImageCreateFlagBits::eSparseBinding | vk::ImageCreateFlagBits::eSparseResidency };
 
-    u32 layers { 0ui32 };
+    u32 layers { 0uL };
     if (payload_.type == TextureType::e2d) {
 
         #ifdef _DEBUG
-        assert(payload_.extent.z == 1ui32);
-        assert(payload_.layers <= 1ui32);
+        assert(payload_.extent.z == 1uL);
+        assert(payload_.layers <= 1uL);
         #endif
 
-        layers = 1ui32;
+        layers = 1uL;
 
     } else if (payload_.type == TextureType::e2dArray) {
 
         #ifdef _DEBUG
-        assert(payload_.extent.z == 1ui32);
-        assert(payload_.layers >= 1ui32);
+        assert(payload_.extent.z == 1uL);
+        assert(payload_.layers >= 1uL);
         #endif
 
         layers = payload_.layers;
@@ -455,7 +455,7 @@ ptr<SparseTexture> VkTextureFactory::buildVirtual(const SparseTextureBuildPayloa
     } else if (payload_.type == TextureType::eCube) {
 
         #ifdef _DEBUG
-        assert(payload_.layers >= 6ui32);
+        assert(payload_.layers >= 6uL);
         assert(payload_.extent.x == payload_.extent.y);
         #endif
 
@@ -475,7 +475,7 @@ ptr<SparseTexture> VkTextureFactory::buildVirtual(const SparseTextureBuildPayloa
             payload_.extent.y,
             payload_.extent.z
         },
-        payload_.mipLevels.max + 1ui32,
+        payload_.mipLevels.max + 1uL,
         layers,
         vk::SampleCountFlagBits::e1,
         vk::ImageTiling::eOptimal,
@@ -495,7 +495,7 @@ ptr<SparseTexture> VkTextureFactory::buildVirtual(const SparseTextureBuildPayloa
      */
     const vk::MemoryRequirements mr = _device->vkDevice().getImageMemoryRequirements(image);
 
-    u32 simReqCount { 16ui32 };
+    u32 simReqCount { 16uL };
     std::array<vk::SparseImageMemoryRequirements, 16> simReqs {};
     _device->vkDevice().getImageSparseMemoryRequirements(image, &simReqCount, simReqs.data());
     assert(simReqCount);
@@ -575,7 +575,7 @@ ptr<SparseTexture> VkTextureFactory::buildVirtual(const SparseTextureBuildPayloa
         const vk::ImageSubresourceRange isr {
             vk::ImageAspectFlagBits::eColor,
             0,
-            static_cast<u32>(payload_.mipLevels.max - payload_.mipLevels.min) + 1ui32,
+            static_cast<u32>(payload_.mipLevels.max - payload_.mipLevels.min) + 1uL,
             0,
             layers
         };

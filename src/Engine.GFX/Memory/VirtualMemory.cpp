@@ -35,7 +35,7 @@ cref<memory::MemoryLayout> VirtualMemory::layout() const noexcept {
 
 nmpt<VirtualMemoryPage> VirtualMemory::definePage(const u64 offset_, const u64 size_) {
 
-    // TODO: replace naïve implementation
+    // TODO: replace naï¿½ve implementation
     auto page = make_uptr<VirtualMemoryPage>(this, offset_, size_);
     auto result = page.get();
 
@@ -45,7 +45,7 @@ nmpt<VirtualMemoryPage> VirtualMemory::definePage(const u64 offset_, const u64 s
 
 void VirtualMemory::undefinePage(mref<nmpt<VirtualMemoryPage>> page_) {
 
-    // TODO: replace naïve implementation
+    // TODO: replace naï¿½ve implementation
     auto last = std::ranges::remove(
         _pages,
         page_,
@@ -62,7 +62,7 @@ u64 VirtualMemory::size() const noexcept {
 
 u64 VirtualMemory::allocatedSize() const noexcept {
 
-    u64 allocated { 0ui64 };
+    u64 allocated { 0uLL };
     for (const auto& entry : _pages) {
         if (entry->state() == VirtualMemoryPageState::eLoaded) {
             allocated += entry->size();

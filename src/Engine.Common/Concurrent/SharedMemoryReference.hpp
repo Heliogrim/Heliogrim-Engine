@@ -14,7 +14,7 @@ namespace hg {
         using packed_type = std::uintptr_t;
         using atomic_packed_type = std::atomic_uintptr_t;
 
-        constexpr packed_type packed_shift = 16ui64;
+        constexpr packed_type packed_shift = 16uLL;
         constexpr packed_type packed_ref_mask =
             0b00000000'00000000'00000000'00000000'00000000'00000000'11111111'11111111;
         constexpr packed_type packed_ptr_mask =

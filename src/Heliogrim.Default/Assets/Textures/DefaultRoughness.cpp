@@ -11,8 +11,8 @@ texture::DefaultRoughness::DefaultRoughness() :
         clone(texture::DefaultRoughness::unstable_auto_guid()),
         image::DefaultRoughness::unstable_auto_guid(),
         {},
-        { 1ui32, 1ui32, 1ui32 },
+        { 1u, 1u, 1u },
         TextureFormat::eR16Sfloat,
-        1ui32,
+        1uL,
         engine::gfx::TextureType::e2d
     ) {}

@@ -28,7 +28,7 @@ CommandBuffer CommandPool::make() {
     const vk::CommandBufferAllocateInfo info {
         _vkPool,
         vk::CommandBufferLevel::ePrimary,
-        1ui32
+        1uL
     };
 
     auto vkCmds = _queue->device()->vkDevice().allocateCommandBuffers(info);
@@ -45,7 +45,7 @@ CommandBuffer CommandPool::make(bool secondary_) {
     const vk::CommandBufferAllocateInfo info {
         _vkPool,
         secondary_ ? vk::CommandBufferLevel::eSecondary : vk::CommandBufferLevel::ePrimary,
-        1ui32
+        1uL
     };
 
     auto vkCmds = _queue->device()->vkDevice().allocateCommandBuffers(info);

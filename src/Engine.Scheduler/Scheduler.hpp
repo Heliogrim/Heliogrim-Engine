@@ -12,7 +12,7 @@ namespace hg::engine {
         using task_type = ::hg::engine::scheduler::task::TaskDelegate;
         using task_handle_type = non_owning_rptr<const task_type>;
 
-        constexpr static inline u32 auto_worker_count { 0ui32 };
+        constexpr static inline u32 auto_worker_count { 0uL };
 
     protected:
         Scheduler() noexcept = default;

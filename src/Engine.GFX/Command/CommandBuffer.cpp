@@ -141,7 +141,7 @@ void CommandBuffer::bindVertexBuffer(const u32 binding_, const VertexBuffer& buf
 }
 
 void CommandBuffer::bindVertexBuffer(const u32 binding_, const ptr<const SparseBuffer> buffer_, u64 offset_) {
-    _vkCmd.bindVertexBuffers(binding_, 1ui32, &buffer_->vkBuffer(), &offset_);
+    _vkCmd.bindVertexBuffers(binding_, 1uL, &buffer_->vkBuffer(), &offset_);
 }
 
 void CommandBuffer::bindVertexBuffer(const u32 binding_, const ptr<const SparseBufferView> bufferView_) {
@@ -153,7 +153,7 @@ void CommandBuffer::bindVertexBuffer(const u32 index_, cref<VertexBufferView> ve
     vkCmdBindVertexBuffers(
         _vkCmd,
         index_,
-        1ui32,
+        1uL,
         &reinterpret_cast<const VkBuffer&>(vertexBufferView_.buffer),
         &static_cast<const VkDeviceSize&>(vertexBufferView_.offset)
     );

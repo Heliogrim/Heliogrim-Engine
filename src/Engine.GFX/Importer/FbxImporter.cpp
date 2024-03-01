@@ -223,7 +223,7 @@ FbxAssimpImportData assimpGetImportData(cref<fs::File> file_) {
 
     /**/
 
-    FbxAssimpImportData data { 0ui64, 0ui64, 0ui64 };
+    FbxAssimpImportData data { 0uLL, 0uLL, 0uLL };
 
     auto** meshes = scene->mMeshes;
     const auto meshCount = scene->mNumMeshes;
@@ -234,7 +234,7 @@ FbxAssimpImportData assimpGetImportData(cref<fs::File> file_) {
         const auto fc = mesh->mNumFaces;
         const auto vc = mesh->mNumVertices;
 
-        data.indexCount += fc * 3ui64;
+        data.indexCount += fc * 3uLL;
         data.vertexCount += vc;
     }
 

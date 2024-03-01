@@ -4,11 +4,11 @@
 
 namespace hg::engine::reflow {
     enum class ReflowSpacing : u8 {
-        eSpaceAround = 0ui8,
-        eSpaceBetween = 1ui8,
-        eSpaceEvenly = 2ui8,
+        eSpaceAround = 0u,
+        eSpaceBetween = 1u,
+        eSpaceEvenly = 2u,
         //
-        eStart = 5ui8,
-        eEnd = 6ui8,
+        eStart = 5u,
+        eEnd = 6u,
     };
 }

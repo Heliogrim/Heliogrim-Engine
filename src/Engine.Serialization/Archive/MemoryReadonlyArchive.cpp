@@ -32,7 +32,7 @@ s64 MemoryReadonlyArchive::totalSize() const noexcept {
 }
 
 bool MemoryReadonlyArchive::hasSizeLimit() const noexcept {
-    return _limit >= 0i64;
+    return _limit >= 0LL;
 }
 
 s64 MemoryReadonlyArchive::sizeLimit() const noexcept {

@@ -22,8 +22,8 @@ namespace std {
     template <>
     struct hash<hg::engine::gfx::memory::MemoryLayout> {
         [[nodiscard]] size_t operator()(hg::cref<hg::engine::gfx::memory::MemoryLayout> obj_) const noexcept {
-            return (hg::u64 { obj_.typeBits } << 32ui64) ^
-                (obj_.align << 6ui64) ^
+            return (hg::u64 { obj_.typeBits } << 32uLL) ^
+                (obj_.align << 6uLL) ^
                 static_cast<hg::u64>(obj_.props.unwrap);
         }
     };

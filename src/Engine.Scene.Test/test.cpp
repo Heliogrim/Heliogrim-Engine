@@ -279,7 +279,7 @@ namespace SceneModule {
             EXPECT_TRUE(node->isLeaf());
 
             constexpr u64 mnpl = shared_type_trait::max_nodes_per_layer;
-            constexpr u64 count = mnpl * mnpl + 1ui64;
+            constexpr u64 count = mnpl * mnpl + 1uLL;
             for (u64 idx = 0; idx < count; ++idx) {
                 auto child = factory->assembleShadow();
                 EXPECT_TRUE(node->push(std::move(*child)));
@@ -287,7 +287,7 @@ namespace SceneModule {
 
             EXPECT_FALSE(node->isLeaf());
             EXPECT_TRUE(node->depth() == 2);
-            EXPECT_TRUE(node->size() == count + /* + Base Parent Node */1ui64);
+            EXPECT_TRUE(node->size() == count + /* + Base Parent Node */1uLL);
             EXPECT_TRUE(node->children().size() == shared_type_trait::max_nodes_per_layer);
 
             //
@@ -342,14 +342,14 @@ namespace SceneModule {
 
             //
             EXPECT_EQ(node->children().size(), shared_type_trait::max_nodes_per_layer);
-            EXPECT_EQ(node->size(), count + 1ui64);
+            EXPECT_EQ(node->size(), count + 1uLL);
 
             auto result = node->pull(*testNode);
             EXPECT_TRUE(result);
             EXPECT_TRUE(result.value != nullptr);
 
             EXPECT_EQ(node->children().size(), shared_type_trait::max_nodes_per_layer);
-            EXPECT_EQ(node->size(), count + 1ui64 - 1ui64);
+            EXPECT_EQ(node->size(), count + 1uLL - 1uLL);
 
             //
             delete result.value;

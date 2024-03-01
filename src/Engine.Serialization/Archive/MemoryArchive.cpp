@@ -5,7 +5,7 @@ using namespace hg;
 
 MemoryBaseArchive::MemoryBaseArchive() :
     Archive(),
-    _pos(0i64) {}
+    _pos(0LL) {}
 
 string_view MemoryBaseArchive::getArchiveName() const noexcept {
     return "MemoryArchive"sv;

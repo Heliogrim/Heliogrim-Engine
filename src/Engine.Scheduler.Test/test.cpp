@@ -35,7 +35,7 @@ namespace SchedulerModule {
         EXPECT_EQ(pool.size().load(std::memory_order_relaxed), 0);
 
         //
-        pool.reserve(32ui32);
+        pool.reserve(32uL);
 
         //
         EXPECT_EQ(pool.capacity(), 32);
@@ -50,11 +50,11 @@ namespace SchedulerModule {
         auto* const scheduler = engine->getScheduler();
 
         //
-        EXPECT_EQ(scheduler->getWorkerCount(), 0ui32);
+        EXPECT_EQ(scheduler->getWorkerCount(), 0uL);
 
         //
         engine->init();
-        EXPECT_NE(scheduler->getWorkerCount(), 0ui32);
+        EXPECT_NE(scheduler->getWorkerCount(), 0uL);
 
         //
         engine->postInit();
@@ -99,7 +99,7 @@ namespace SchedulerModule {
             /**
              *
              */
-            u32 retry { 0ui32 };
+            u32 retry { 0uL };
             while (!signal.test() && retry < 200) {
                 thread::self::sleepFor(5);
                 ++retry;
@@ -130,7 +130,7 @@ namespace SchedulerModule {
             /**
              *
              */
-            u32 retry { 0ui32 };
+            u32 retry { 0uL };
             while (!res.ready() && retry < 200) {
                 thread::self::sleepFor(5);
                 ++retry;
@@ -169,7 +169,7 @@ namespace SchedulerModule {
             /**
              *
              */
-            u32 retry { 0ui32 };
+            u32 retry { 0uL };
             while (!signal.test() && retry < 200) {
                 thread::self::sleepFor(5);
                 ++retry;
@@ -208,7 +208,7 @@ namespace SchedulerModule {
             /**
              *
              */
-            u32 retry { 0ui32 };
+            u32 retry { 0uL };
             while (!signal.test() && retry < 200) {
                 thread::self::sleepFor(5);
                 ++retry;
@@ -248,7 +248,7 @@ namespace SchedulerModule {
             /**
              *
              */
-            u32 retry { 0ui32 };
+            u32 retry { 0uL };
             while (!signal.test() && retry < 200) {
                 thread::self::sleepFor(5);
                 ++retry;
@@ -303,7 +303,7 @@ namespace SchedulerModule {
             /**
              *
              */
-            u32 retry { 0ui32 };
+            u32 retry { 0uL };
             while (!signal.test() && retry < 200) {
                 thread::self::sleepFor(5);
                 ++retry;
@@ -322,8 +322,8 @@ namespace SchedulerModule {
             /**
              *
              */
-            std::atomic_uint64_t t0 { 0ui64 };
-            std::atomic_uint64_t t1 { 0ui64 };
+            std::atomic_uint64_t t0 { 0uLL };
+            std::atomic_uint64_t t1 { 0uLL };
 
             auto task0 {
                 task::make_task(
@@ -356,8 +356,8 @@ namespace SchedulerModule {
 
                         thread::self::sleepFor(5);
 
-                        EXPECT_EQ(t0.load(), 0ui64);
-                        EXPECT_EQ(t1.load(), 0ui64);
+                        EXPECT_EQ(t0.load(), 0uLL);
+                        EXPECT_EQ(t1.load(), 0uLL);
                     },
                     task::TaskMask::eUndefined,
                     ScheduleStageBarriers::eTopStrong,
@@ -373,7 +373,7 @@ namespace SchedulerModule {
             /**
              *
              */
-            u32 retry { 0ui32 };
+            u32 retry { 0uL };
             while ((t0.load() == 0 || t1.load() == 0) && retry < 200) {
                 thread::self::sleepFor(5);
                 ++retry;
@@ -392,8 +392,8 @@ namespace SchedulerModule {
             /**
              *
              */
-            std::atomic_uint64_t t0 { 0ui64 };
-            std::atomic_uint64_t t1 { 0ui64 };
+            std::atomic_uint64_t t0 { 0uLL };
+            std::atomic_uint64_t t1 { 0uLL };
 
             auto task0 {
                 task::make_task(
@@ -437,7 +437,7 @@ namespace SchedulerModule {
             /**
              *
              */
-            u32 retry { 0ui32 };
+            u32 retry { 0uL };
             while ((t0.load() == 0 || t1.load() == 0) && retry < 200) {
                 thread::self::sleepFor(5);
                 ++retry;
@@ -456,8 +456,8 @@ namespace SchedulerModule {
             /**
              *
              */
-            std::atomic_uint64_t t0 { 0ui64 };
-            std::atomic_uint64_t t1 { 0ui64 };
+            std::atomic_uint64_t t0 { 0uLL };
+            std::atomic_uint64_t t1 { 0uLL };
 
             auto task0 {
                 task::make_task(
@@ -501,7 +501,7 @@ namespace SchedulerModule {
             /**
              *
              */
-            u32 retry { 0ui32 };
+            u32 retry { 0uL };
             while ((t0.load() == 0 || t1.load() == 0) && retry < 200) {
                 thread::self::sleepFor(5);
                 ++retry;
@@ -520,8 +520,8 @@ namespace SchedulerModule {
             /**
              *
              */
-            std::atomic_uint64_t t0 { 0ui64 };
-            std::atomic_uint64_t t1 { 0ui64 };
+            std::atomic_uint64_t t0 { 0uLL };
+            std::atomic_uint64_t t1 { 0uLL };
 
             auto task0 {
                 task::make_task(
@@ -565,7 +565,7 @@ namespace SchedulerModule {
             /**
              *
              */
-            u32 retry { 0ui32 };
+            u32 retry { 0uL };
             while ((t0.load() == 0 || t1.load() == 0) && retry < 200) {
                 thread::self::sleepFor(5);
                 ++retry;
@@ -584,8 +584,8 @@ namespace SchedulerModule {
             /**
              *
              */
-            std::atomic_uint64_t t0 { 0ui64 };
-            std::atomic_uint64_t t1 { 0ui64 };
+            std::atomic_uint64_t t0 { 0uLL };
+            std::atomic_uint64_t t1 { 0uLL };
 
             auto task0 {
                 task::make_task(
@@ -602,7 +602,7 @@ namespace SchedulerModule {
                 task::make_task(
                     [&t1, &t0]() {
 
-                        while (t0.load() <= 0ui64) {
+                        while (t0.load() <= 0uLL) {
                             thread::self::sleepFor(5);
                         }
 
@@ -634,7 +634,7 @@ namespace SchedulerModule {
             /**
              *
              */
-            u32 retry { 0ui32 };
+            u32 retry { 0uL };
             while ((t0.load() == 0 || t1.load() == 0) && retry < 200) {
                 thread::self::sleepFor(5);
                 ++retry;
@@ -682,7 +682,7 @@ namespace SchedulerModule {
             /**
              *
              */
-            engine::scheduler::waitUntilAtomic(done, 3ui8);
+            engine::scheduler::waitUntilAtomic(done, 3u);
         });
 
         EXPECT_LT(majorTimestamp, minorTimestamp);
@@ -710,7 +710,7 @@ namespace SchedulerModule {
             }, task::TaskMask::eHigher);
 
             auto barrierTask = engine::scheduler::task::make_repetitive_task([&done]() {
-                return done.load() != 3ui8;
+                return done.load() != 3u;
             }, task::TaskMask::eAll, ScheduleStageBarriers::eTopStrong, ScheduleStageBarriers::eBottomStrong);
 
             /**/
@@ -729,7 +729,7 @@ namespace SchedulerModule {
             /**
              *
              */
-            engine::scheduler::waitUntilAtomic(done, 3ui8);
+            engine::scheduler::waitUntilAtomic(done, 3u);
         });
 
         EXPECT_LT(majorTimestamp, minorTimestamp);

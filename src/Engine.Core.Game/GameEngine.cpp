@@ -79,7 +79,7 @@ bool GameEngine::init() {
     setupCorePipelines();
 
     /* Core modules should always interact with a guaranteed fiber context and non-sequential execution */
-    std::atomic_uint_fast8_t setupCounter { 0ui8 };
+    std::atomic_uint_fast8_t setupCounter { 0u };
 
     scheduler::exec(
         [this, &setupCounter] {
@@ -130,8 +130,8 @@ bool GameEngine::init() {
     );
 
     /**/
-    scheduler::waitUntilAtomic(setupCounter, 6ui8);
-    setupCounter.store(0ui8, std::memory_order::relaxed);
+    scheduler::waitUntilAtomic(setupCounter, 6u);
+    setupCounter.store(0u, std::memory_order::relaxed);
 
     scheduler::exec(
         [this, &setupCounter] {
@@ -314,7 +314,7 @@ bool GameEngine::shutdown() {
     scheduler::waitOnAtomic(subModuleFlag, false);
 
     /* Core modules should always interact with a guaranteed fiber context and non-sequential execution */
-    std::atomic_uint_fast8_t moduleCount { 0ui8 };
+    std::atomic_uint_fast8_t moduleCount { 0u };
 
     scheduler::exec(
         [this, &moduleCount] {
@@ -365,7 +365,7 @@ bool GameEngine::shutdown() {
     );
 
     /**/
-    scheduler::waitUntilAtomic(moduleCount, 6ui8);
+    scheduler::waitUntilAtomic(moduleCount, 6u);
 
     /* Base module are setup via direct call without fiber context guarantee (which is unlikely) */
     _resources->destroy();

@@ -87,7 +87,7 @@ vk::SparseImageMemoryBind SparseTexturePage::vkSparseImageMemoryBind() const noe
         vk::Offset3D { INT32_T(_offset.x), INT32_T(_offset.y), INT32_T(_offset.z) },
         vk::Extent3D { _extent.x, _extent.y, _extent.z },
         isMemoryBacking ? _memory->allocated()->vkMemory : nullptr,
-        isMemoryBacking ? _memory->allocated()->offset : 0ui64,
+        isMemoryBacking ? _memory->allocated()->offset : 0uLL,
         vk::SparseMemoryBindFlags {}
     };
 }
@@ -100,7 +100,7 @@ vk::SparseMemoryBind SparseTexturePage::vkSparseMemoryBind() const noexcept {
         _memory->offset(),
         _memory->size(),
         isMemoryBacking ? _memory->allocated()->vkMemory : nullptr,
-        isMemoryBacking ? _memory->allocated()->offset : 0ui64,
+        isMemoryBacking ? _memory->allocated()->offset : 0uLL,
         vk::SparseMemoryBindFlags {}
     };
 

@@ -16,7 +16,7 @@ Text::Text() :
             .fontSize = { this, 16.F },
             .lineHeight = { this, 1.F },
             .textAlign = { this, TextAlign::eLeftTop },
-            .textEllipse = { this, 0ui32 },
+            .textEllipse = { this, 0uL },
             .textWrap = { this, ReflowWrap::eNone },
             .color = { this, engine::color { 255.F, 255.F, 255.F, 255.F } },
             .text = { this, "" }
@@ -46,7 +46,7 @@ math::vec2 Text::contentSize(cref<math::vec2> space_) const {
     float lineBound = space_.x;
 
     float fwd { 0.F };
-    u32 lines { 0ui32 };
+    u32 lines { 0uL };
     math::vec2 size { 0.F };
 
     for (const auto& letter : attr.text.getValue()) {
@@ -70,7 +70,7 @@ math::vec2 Text::contentSize(cref<math::vec2> space_) const {
     /**/
 
     if (attr.textWrap.getValue() == ReflowWrap::eNoWrap) {
-        lines = 1ui32;
+        lines = 1uL;
     } else if (attr.textEllipse.getValue()) {
         lines = MIN(lines, attr.textEllipse.getValue());
     }
@@ -98,36 +98,36 @@ void Text::render(const ptr<ReflowCommandBuffer> cmd_) {
     /**/
 
     const u8 align { static_cast<u8>(attr.textAlign.getValue()) };
-    if ((align & 0b0000'1110ui8) == 0x0ui8) {
+    if ((align & 0b0000'1110u) == 0x0u) {
 
         /* Align Left */
         // off.x += _computedStyle.margin.x;
 
-    } else if ((align & 0b0000'1111ui8) == 0x2ui8) {
+    } else if ((align & 0b0000'1111u) == 0x2u) {
 
         /* Align Center */
         const math::vec2 diff { innerSize.x - occupied.x, innerSize.y - occupied.y };
         innerOffset.x += diff.x * 0.5F;
 
-    } else if ((align & 0b0000'1111ui8) == 0x4ui8) {
+    } else if ((align & 0b0000'1111u) == 0x4u) {
 
         /* Align Right */
         const math::vec2 diff { innerSize.x - occupied.x, innerSize.y - occupied.y };
         innerOffset.x += diff.x;
     }
 
-    if ((align & 0b1110'0000ui8) == 0x0ui8) {
+    if ((align & 0b1110'0000u) == 0x0u) {
 
         /* Vertical Align Top */
         // off.y += _computedStyle.margin.y;
 
-    } else if ((align & 0b1111'0000ui8) == 0x20ui8) {
+    } else if ((align & 0b1111'0000u) == 0x20u) {
 
         /* Vertical Align Middle */
         const math::vec2 diff { innerSize.x - occupied.x, innerSize.y - occupied.y };
         innerOffset.y += diff.y * 0.5F;
 
-    } else if ((align & 0b1111'0000ui8) == 0x40ui8) {
+    } else if ((align & 0b1111'0000u) == 0x40u) {
 
         /* Vertical Align Bottom */
         const math::vec2 diff { innerSize.x - occupied.x, innerSize.y - occupied.y };
@@ -152,10 +152,10 @@ void Text::render(const ptr<ReflowCommandBuffer> cmd_) {
         const auto lineBound { occupied.x };
 
         float fccw { 0.F };
-        u32 wraps { 0ui32 };
-        u32 j { 0ui32 };
+        u32 wraps { 0uL };
+        u32 j { 0uL };
 
-        for (u32 i { 0ui32 }; i < attr.text->length(); ++i) {
+        for (u32 i { 0uL }; i < attr.text->length(); ++i) {
 
             const auto& letter { attr.text.getValue()[i] };
             const auto* glyph { (attr.font.getValue())->glyph(static_cast<u32>(letter), fss) };

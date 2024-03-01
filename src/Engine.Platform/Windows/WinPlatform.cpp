@@ -256,7 +256,7 @@ void WinPlatform::processInternal() {
                         point,
                         delta,
                         button,
-                        0ui32
+                        0uL
                     )
                 );
                 break;
@@ -275,7 +275,7 @@ void WinPlatform::processInternal() {
                         point,
                         button,
                         down,
-                        0ui32
+                        0uL
                     )
                 );
                 break;

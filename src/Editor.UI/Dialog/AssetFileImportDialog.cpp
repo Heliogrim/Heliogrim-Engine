@@ -111,7 +111,7 @@ void configureImportTypeEntry(cref<sptr<AssetImportTypeItem>> parent_, cref<stri
 
     auto title = make_sptr<Text>();
     theme->applyLabel(title);
-    title->attr.textEllipse.setValue(2ui32);
+    title->attr.textEllipse.setValue(2uL);
     title->attr.textWrap.setValue(ReflowWrap::eWrap);
 
     /**/

@@ -420,7 +420,7 @@ static Buffer createStageBuffer(cref<hg::external::ktx::InternalContext> ctx_, c
      */
     vk::BufferCreateInfo bci {
         vk::BufferCreateFlags(),
-        MAX(totalSize, 128ui64),
+        MAX(totalSize, 128uLL),
         vk::BufferUsageFlagBits::eTransferSrc,
         vk::SharingMode::eExclusive,
         0,
@@ -486,7 +486,7 @@ static Buffer createStageBuffer(cref<sptr<Device>> device_, const u64 byteSize_)
      */
     vk::BufferCreateInfo bci {
         vk::BufferCreateFlags(),
-        MAX(byteSize_, 128ui64),
+        MAX(byteSize_, 128uLL),
         vk::BufferUsageFlagBits::eTransferSrc,
         vk::SharingMode::eExclusive,
         0,
@@ -658,7 +658,7 @@ void transformer::convertKtx10Gli(
 
         const gli::texture_cube ct { glitex };
 
-        assert(dst_->depth() == 1ui32);
+        assert(dst_->depth() == 1uL);
 
         for (uint32_t face = 0; face < glitex.faces(); face++) {
             for (uint32_t level = minMipLevel; level <= maxMipLevel; ++level) {
@@ -673,13 +673,13 @@ void transformer::convertKtx10Gli(
                         aspect,
                         level,
                         face,
-                        1ui32
+                        1uL
                     },
                     vk::Offset3D(),
                     vk::Extent3D {
                         static_cast<uint32_t>(se.x),
                         static_cast<uint32_t>(se.y),
-                        1ui32
+                        1uL
                     }
                 };
 
@@ -1154,9 +1154,9 @@ void transformer::convertKtx20Partial(
         // We assume that the pages of each texture have a geometric distribution, therefore we might skip the first subset
         // Warning: Only when using 8k Textures :: 8192 / 128 ~> 64 ~> 4096 Pages
 
-        auto estSkip { 0ui64 };
-        if (dst_->pages().size() >= 5200ui64) {
-            estSkip = 4095ui64;
+        auto estSkip { 0uLL };
+        if (dst_->pages().size() >= 5200uLL) {
+            estSkip = 4095uLL;
         }
 
         const auto flbe {
@@ -1194,18 +1194,18 @@ void transformer::convertKtx20Partial(
 
     if (options_.mip < dst_->owner()->mipTailFirstLod()) {
 
-        //constexpr auto pageExt { 128ui32 };
+        //constexpr auto pageExt { 128uL };
         const math::uivec3 pageExt { dst_->owner()->granularity() };
 
         const math::uivec3 acc {
             math::compMax<math::uivec3::value_type>(
                 (dst_->extent() >> options_.mip) / pageExt,
-                math::uivec3 { 1ui32 }
+                math::uivec3 { 1uL }
             )
         };
         const math::uivec3 off { reqOffset / pageExt };
         const math::uivec3 ext {
-            math::compMax<math::uivec3::value_type>(reqExtent / pageExt, math::uivec3 { 1ui32 })
+            math::compMax<math::uivec3::value_type>(reqExtent / pageExt, math::uivec3 { 1uL })
         };
 
         /**
@@ -1223,7 +1223,7 @@ void transformer::convertKtx20Partial(
 
         while (oi < out) {
 
-            for (u32 ix { 0ui32 }; ix < ext.x; ++ix) {
+            for (u32 ix { 0uL }; ix < ext.x; ++ix) {
 
                 u32 idx { mipOff + oi + ix };
                 auto page { dst_->pages()[idx] };
@@ -1286,7 +1286,7 @@ void transformer::convertKtx20Partial(
          */
 
     #if FALSE
-        constexpr auto pageExt{ 128ui32 };
+        constexpr auto pageExt{ 128uL };
         const math::uivec3 acc{ (dst_->width() >> options_.mip) / pageExt };
         const math::uivec3 off{ options_.offset / pageExt };
         const math::uivec3 ext{ options_.extent / pageExt };
@@ -1295,7 +1295,7 @@ void transformer::convertKtx20Partial(
         const auto out{ (off.x + ext.x) + (off.y + ext.y) * acc.x };
 
         while (oi < out) {
-            for (u32 ix{ 0ui32 }; ix < ext.x; ++ix) {
+            for (u32 ix{ 0uL }; ix < ext.x; ++ix) {
                 u32 idx{ oi + ix };
             }
             oi += acc.x;
@@ -1440,7 +1440,7 @@ void transformer::convertKtx20Partial(
     }
 
     #ifdef _DEBUG
-    if (stageSize <= 0 || stageSize >= ~0ui64) {
+    if (stageSize <= 0 || stageSize >= ~0uLL) {
         __debugbreak();
         return;
     }
@@ -1529,7 +1529,7 @@ void transformer::convertKtx20Partial(
         const ptr<_::byte> memory = reinterpret_cast<ptr<_::byte>>(stage.memory->mapping);
         streampos memPos = 0;
 
-        // for (u32 face { 0ui32 }; face < faceCount; ++face) {
+        // for (u32 face { 0uL }; face < faceCount; ++face) {
         for (u32 slice { minExt.z }; slice < maxExt.z; ++slice) {
 
             const streamoff sliceOff = slice * planeSize;
@@ -1566,14 +1566,14 @@ void transformer::convertKtx20Partial(
     */
     regions.push_back(
         vk::BufferImageCopy {
-            0ui64,
-            0ui32,
-            0ui32,
+            0uLL,
+            0uL,
+            0uL,
             vk::ImageSubresourceLayers {
                 vk::ImageAspectFlagBits::eColor,
                 options_.mip,
                 options_.layer,
-                1ui32
+                1uL
             },
             vk::Offset3D(
                 static_cast<s32>(reqOffset.x),
@@ -1613,9 +1613,9 @@ void transformer::convertKtx20Partial(
         vk::ImageSubresourceRange {
             vk::ImageAspectFlagBits::eColor,
             options_.mip,
-            1ui32,
+            1uL,
             options_.layer,
-            1ui32
+            1uL
         }
     };
 
@@ -1653,9 +1653,9 @@ void transformer::convertKtx20Partial(
         vk::ImageSubresourceRange {
             vk::ImageAspectFlagBits::eColor,
             options_.mip,
-            1ui32,
+            1uL,
             options_.layer,
-            1ui32
+            1uL
         }
     };
 
@@ -2009,20 +2009,20 @@ bool external::ktx::readData(cref<InternalContext> ctx_, level_type level_, std:
 
 s32 calcMipDiff(cref<math::uivec3> left_, cref<math::uivec3> right_) {
 
-    s32 mipDiff = 0i32;
+    s32 mipDiff = 0L;
     math::uivec3 mipTestExtent = right_;
 
     if (left_.x >= mipTestExtent.x || left_.y >= mipTestExtent.y) {
         while (left_.x > mipTestExtent.x || left_.y > mipTestExtent.y) {
-            mipTestExtent.x >>= 1ui32;
-            mipTestExtent.y >>= 1ui32;
+            mipTestExtent.x >>= 1uL;
+            mipTestExtent.y >>= 1uL;
             ++mipDiff;
         }
 
     } else {
         while (left_.x < mipTestExtent.x || left_.y < mipTestExtent.y) {
-            mipTestExtent.x <<= 1ui32;
-            mipTestExtent.y <<= 1ui32;
+            mipTestExtent.x <<= 1uL;
+            mipTestExtent.y <<= 1uL;
             --mipDiff;
         }
     }

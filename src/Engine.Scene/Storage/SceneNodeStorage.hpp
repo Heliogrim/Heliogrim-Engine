@@ -1449,9 +1449,9 @@ namespace hg::engine::scene {
         using this_type = scene_node_storage<ValueType, KeyType>;
         using value_type = ValueType;
 
-        inline constexpr static u64 index_page_mask = 0xFFFFFFFF00000000ui64;
-        inline constexpr static u64 index_value_mask = 0x00000000FFFFFFFFui64;
-        inline constexpr static u8 index_page_shift = 32ui8;
+        inline constexpr static u64 index_page_mask = 0xFFFFFFFF00000000uLL;
+        inline constexpr static u64 index_value_mask = 0x00000000FFFFFFFFuLL;
+        inline constexpr static u8 index_page_shift = 32u;
 
         using page_index_type = u32;
         using value_index_type = u32;

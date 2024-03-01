@@ -45,7 +45,7 @@ namespace hg::engine::serialization {
 
             /* Write placeholder to archive and safe position */
             const auto countMarker = archive->tell();
-            u64 count = 0ui64;
+            u64 count = 0uLL;
             (*archive) << count;
 
             /**/
@@ -122,10 +122,10 @@ namespace hg::engine::serialization {
 
             /**/
 
-            u64 storedCount = ~0ui64;
+            u64 storedCount = ~0uLL;
             (*archive) >> storedCount;
 
-            assert(storedCount != ~0ui64);
+            assert(storedCount != ~0uLL);
 
             /**/
 

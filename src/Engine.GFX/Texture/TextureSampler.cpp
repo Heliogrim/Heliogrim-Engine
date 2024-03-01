@@ -6,7 +6,7 @@ using namespace hg;
 TextureSampler::TextureSampler() noexcept :
     _device(nullptr),
     _anisotropy(16.F),
-    _lods(1ui8),
+    _lods(1u),
     _magnification(vk::Filter::eLinear),
     _minification(vk::Filter::eLinear),
     _mipMode(vk::SamplerMipmapMode::eLinear),

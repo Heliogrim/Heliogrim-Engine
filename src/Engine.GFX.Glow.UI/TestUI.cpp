@@ -549,7 +549,7 @@ const hg::ptr<hg::engine::reflow::Font> getDefaultFont() {
                 .ranges = { engine::reflow::BasicLatin, engine::reflow::Latin1Supplement },
                 .glyphs = {},
                 //
-                .fontSizes = { 12ui32, 16ui32, 24ui32 }
+                .fontSizes = { 12uL, 16uL, 24uL }
             }
         );
     }

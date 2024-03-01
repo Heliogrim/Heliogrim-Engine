@@ -82,7 +82,7 @@ namespace EventModule {
             auto emitter = StatelessEventEmitter<TickEvent> {};
 
             //
-            const TickEvent event { 1ui64 };
+            const TickEvent event { 1uLL };
             emitter.emit(event);
 
             //
@@ -92,8 +92,8 @@ namespace EventModule {
             //
             auto emitter = StatelessEventEmitter<TickEvent> {};
 
-            constexpr u64 value { 326326ui64 };
-            u64 checkValue { 0ui64 };
+            constexpr u64 value { 326326uLL };
+            u64 checkValue { 0uLL };
 
             //
             auto callback = [&](cref<TickEvent> event_) {

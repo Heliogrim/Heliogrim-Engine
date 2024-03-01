@@ -56,7 +56,7 @@ string Path::name() const {
             return {};
         }
 
-        ls = 0ui64;
+        ls = 0uLL;
     }
 
     /**/

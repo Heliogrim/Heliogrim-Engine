@@ -35,7 +35,7 @@ void CompositePipeline::start() {
 
     for (const auto& stage : _compositeStages) {
         for (const auto& dependency : stage->dependencies) {
-            const_cast<CompositeDependency&>(dependency).requiredGeneration = 1ui64;
+            const_cast<CompositeDependency&>(dependency).requiredGeneration = 1uLL;
         }
     }
 
@@ -43,7 +43,7 @@ void CompositePipeline::start() {
 
     const auto& firstStage = _compositeStages.front();
     for (const auto& dependency : firstStage->dependencies) {
-        const_cast<ref<CompositeDependency>>(dependency).requiredGeneration = 0ui64;
+        const_cast<ref<CompositeDependency>>(dependency).requiredGeneration = 0uLL;
     }
 
     assert(firstStage->ready());
@@ -356,7 +356,7 @@ bool CompositePipeline::defineCompositeStage(
         CompositeStage {
             stage_,
             std::move(pipelineStages),
-            0ui64,
+            0uLL,
             CompactSet<CompositeDependency> {}
         }
     );
@@ -382,7 +382,7 @@ bool CompositePipeline::defineCompositeStage(
                 throw std::runtime_error("");
             }
 
-            cs->dependencies.insert(CompositeDependency { compStage, 0ui64 });
+            cs->dependencies.insert(CompositeDependency { compStage, 0uLL });
         }
     }
 
@@ -514,7 +514,7 @@ void CompositePipeline::resolve() {
 
     /**/
 
-    const u64 maxIteration = stages.size() + 1ui64;
+    const u64 maxIteration = stages.size() + 1uLL;
     u64 iteration = 0;
     while (stages.size() != sorted.size() && iteration <= maxIteration) {
 

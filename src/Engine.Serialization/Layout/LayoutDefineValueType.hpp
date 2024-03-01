@@ -26,8 +26,8 @@ namespace hg::engine::serialization::layout {
     struct LayoutDefineValueTrait {
         using type = void;
 
-        inline static constexpr u64 size = 0ui64;
-        inline static constexpr u64 padding = 0ui64;
+        inline static constexpr u64 size = 0uLL;
+        inline static constexpr u64 padding = 0uLL;
 
         inline static constexpr bool is_inline = false;
         inline static constexpr bool is_constant_size = false;
@@ -40,7 +40,7 @@ namespace hg::engine::serialization::layout {
         using type = s8;
 
         inline static constexpr u64 size = sizeof(type);
-        inline static constexpr u64 padding = 0ui64;
+        inline static constexpr u64 padding = 0uLL;
 
         inline static constexpr bool is_inline = true;
         inline static constexpr bool is_constant_size = true;
@@ -53,7 +53,7 @@ namespace hg::engine::serialization::layout {
         using type = s16;
 
         inline static constexpr u64 size = sizeof(type);
-        inline static constexpr u64 padding = 0ui64;
+        inline static constexpr u64 padding = 0uLL;
 
         inline static constexpr bool is_inline = true;
         inline static constexpr bool is_constant_size = true;
@@ -66,7 +66,7 @@ namespace hg::engine::serialization::layout {
         using type = s32;
 
         inline static constexpr u64 size = sizeof(type);
-        inline static constexpr u64 padding = 0ui64;
+        inline static constexpr u64 padding = 0uLL;
 
         inline static constexpr bool is_inline = true;
         inline static constexpr bool is_constant_size = true;
@@ -79,7 +79,7 @@ namespace hg::engine::serialization::layout {
         using type = s64;
 
         inline static constexpr u64 size = sizeof(type);
-        inline static constexpr u64 padding = 0ui64;
+        inline static constexpr u64 padding = 0uLL;
 
         inline static constexpr bool is_inline = true;
         inline static constexpr bool is_constant_size = true;
@@ -92,7 +92,7 @@ namespace hg::engine::serialization::layout {
         using type = u8;
 
         inline static constexpr u64 size = sizeof(type);
-        inline static constexpr u64 padding = 0ui64;
+        inline static constexpr u64 padding = 0uLL;
 
         inline static constexpr bool is_inline = true;
         inline static constexpr bool is_constant_size = true;
@@ -105,7 +105,7 @@ namespace hg::engine::serialization::layout {
         using type = u16;
 
         inline static constexpr u64 size = sizeof(type);
-        inline static constexpr u64 padding = 0ui64;
+        inline static constexpr u64 padding = 0uLL;
 
         inline static constexpr bool is_inline = true;
         inline static constexpr bool is_constant_size = true;
@@ -118,7 +118,7 @@ namespace hg::engine::serialization::layout {
         using type = u32;
 
         inline static constexpr u64 size = sizeof(type);
-        inline static constexpr u64 padding = 0ui64;
+        inline static constexpr u64 padding = 0uLL;
 
         inline static constexpr bool is_inline = true;
         inline static constexpr bool is_constant_size = true;
@@ -131,7 +131,7 @@ namespace hg::engine::serialization::layout {
         using type = u64;
 
         inline static constexpr u64 size = sizeof(type);
-        inline static constexpr u64 padding = 0ui64;
+        inline static constexpr u64 padding = 0uLL;
 
         inline static constexpr bool is_inline = true;
         inline static constexpr bool is_constant_size = true;
@@ -144,7 +144,7 @@ namespace hg::engine::serialization::layout {
         using type = float;
 
         inline static constexpr u64 size = sizeof(type);
-        inline static constexpr u64 padding = 0ui64;
+        inline static constexpr u64 padding = 0uLL;
 
         inline static constexpr bool is_inline = true;
         inline static constexpr bool is_constant_size = true;
@@ -157,7 +157,7 @@ namespace hg::engine::serialization::layout {
         using type = double;
 
         inline static constexpr u64 size = sizeof(type);
-        inline static constexpr u64 padding = 0ui64;
+        inline static constexpr u64 padding = 0uLL;
 
         inline static constexpr bool is_inline = true;
         inline static constexpr bool is_constant_size = true;
@@ -170,7 +170,7 @@ namespace hg::engine::serialization::layout {
         using type = bool;
 
         inline static constexpr u64 size = sizeof(bool);
-        inline static constexpr u64 padding = 7ui64;
+        inline static constexpr u64 padding = 7uLL;
 
         inline static constexpr bool is_inline = true;
         inline static constexpr bool is_constant_size = true;
@@ -192,7 +192,7 @@ namespace hg::engine::serialization::layout {
     struct LayoutDefineValueTrait<LayoutDefineValueType::eSlice> {
         using type = void;
 
-        inline static constexpr u64 size = sizeof(std::ptrdiff_t) * 2ui64;
+        inline static constexpr u64 size = sizeof(std::ptrdiff_t) * 2uLL;
 
         inline static constexpr bool is_inline = false;
         inline static constexpr bool is_constant_size = false;

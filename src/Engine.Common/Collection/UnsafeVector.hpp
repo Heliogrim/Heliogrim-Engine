@@ -135,7 +135,7 @@ namespace hg {
         void push_back(mref<Type_> value_) {
 
             if (const auto flr { size() }; flr >= capacity()) {
-                grow((flr << 1) | 1ui64);
+                grow((flr << 1) | 1uLL);
             }
 
             if constexpr (std::is_nothrow_move_constructible_v<Type_> || !std::is_copy_constructible_v<Type_>) {

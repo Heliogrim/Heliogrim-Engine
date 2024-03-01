@@ -35,7 +35,7 @@ WavImporter::import_result_type WavImporter::import(cref<res::FileTypeId> typeId
 
     Buffer buffer {
         .size = wav.totalPCMFrameCount * wav.channels * sizeof(float),
-        .align = 0ui64,
+        .align = 0uLL,
         .mem = malloc(wav.totalPCMFrameCount * wav.channels * sizeof(float))
     };
 

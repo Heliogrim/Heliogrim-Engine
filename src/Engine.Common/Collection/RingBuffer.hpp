@@ -35,7 +35,7 @@ namespace hg {
          *
          * @param  reserved_ (Optional) The reserved.
          */
-        RingBuffer(size_type reserved_ = 0x20ui32) :
+        RingBuffer(size_type reserved_ = 0x20uL) :
             _container(reserved_),
             _head(0),
             _tail(0) {}

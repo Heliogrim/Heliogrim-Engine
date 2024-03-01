@@ -20,35 +20,35 @@ namespace hg::engine::serialization {
     struct StructureSlotTypeTraits<StructureSlotType::eUndefined> {
         inline constexpr static string_view canonical = "Undefined"sv;
 
-        inline constexpr static s64 const_size = -1i64;
+        inline constexpr static s64 const_size = -1LL;
     };
 
     template <>
     struct StructureSlotTypeTraits<StructureSlotType::eU8> {
         inline constexpr static string_view canonical = "U8"sv;
 
-        inline constexpr static s64 const_size = 1i64;
+        inline constexpr static s64 const_size = 1LL;
     };
 
     template <>
     struct StructureSlotTypeTraits<StructureSlotType::eU16> {
         inline constexpr static string_view canonical = "U16"sv;
 
-        inline constexpr static s64 const_size = 2i64;
+        inline constexpr static s64 const_size = 2LL;
     };
 
     template <>
     struct StructureSlotTypeTraits<StructureSlotType::eU32> {
         inline constexpr static string_view canonical = "U32"sv;
 
-        inline constexpr static s64 const_size = 4i64;
+        inline constexpr static s64 const_size = 4LL;
     };
 
     template <>
     struct StructureSlotTypeTraits<StructureSlotType::eU64> {
         inline constexpr static string_view canonical = "U64"sv;
 
-        inline constexpr static s64 const_size = 8i64;
+        inline constexpr static s64 const_size = 8LL;
     };
 
     template <>
@@ -90,62 +90,62 @@ namespace hg::engine::serialization {
     struct StructureSlotTypeTraits<StructureSlotType::eFloat> {
         inline constexpr static string_view canonical = "Float"sv;
 
-        inline constexpr static s64 const_size = 4i64;
+        inline constexpr static s64 const_size = 4LL;
     };
 
     template <>
     struct StructureSlotTypeTraits<StructureSlotType::eDouble> {
         inline constexpr static string_view canonical = "Double"sv;
 
-        inline constexpr static s64 const_size = 8i64;
+        inline constexpr static s64 const_size = 8LL;
     };
 
     template <>
     struct StructureSlotTypeTraits<StructureSlotType::eString> {
         inline constexpr static string_view canonical = "String"sv;
 
-        inline constexpr static s64 const_size = 0i64;
+        inline constexpr static s64 const_size = 0LL;
     };
 
     template <>
     struct StructureSlotTypeTraits<StructureSlotType::eSlice> {
         inline constexpr static string_view canonical = "Slice"sv;
 
-        inline constexpr static s64 const_size = 0i64;
+        inline constexpr static s64 const_size = 0LL;
     };
 
     template <>
     struct StructureSlotTypeTraits<StructureSlotType::eMap> {
         inline constexpr static string_view canonical = "Map"sv;
 
-        inline constexpr static s64 const_size = 0i64;
+        inline constexpr static s64 const_size = 0LL;
     };
 
     template <>
     struct StructureSlotTypeTraits<StructureSlotType::eMapEntry> {
         inline constexpr static string_view canonical = "MapEntry"sv;
 
-        inline constexpr static s64 const_size = 0i64;
+        inline constexpr static s64 const_size = 0LL;
     };
 
     template <>
     struct StructureSlotTypeTraits<StructureSlotType::eRecord> {
         inline constexpr static string_view canonical = "Record"sv;
 
-        inline constexpr static s64 const_size = 0i64;
+        inline constexpr static s64 const_size = 0LL;
     };
 
     template <>
     struct StructureSlotTypeTraits<StructureSlotType::eStruct> {
         inline constexpr static string_view canonical = "Struct"sv;
 
-        inline constexpr static s64 const_size = 0i64;
+        inline constexpr static s64 const_size = 0LL;
     };
 
     template <>
     struct StructureSlotTypeTraits<StructureSlotType::eSeq> {
         inline constexpr static string_view canonical = "Seq"sv;
 
-        inline constexpr static s64 const_size = 0i64;
+        inline constexpr static s64 const_size = 0LL;
     };
 }

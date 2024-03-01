@@ -14,7 +14,7 @@ TreeItem::TreeItem() :
     HorizontalPanel(),
     attr(
         Attributes {
-            .level = { this, 0ui32 }
+            .level = { this, 0uL }
         }
     ),
     _selected(false) {}

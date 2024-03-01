@@ -8,11 +8,11 @@ using namespace hg;
 
 texture::DefaultSkybox::DefaultSkybox() :
     TextureAsset(
-        texture::DefaultSkybox::unstable_auto_guid(),
+        clone(texture::DefaultSkybox::unstable_auto_guid()),
         image::DefaultSkybox::unstable_auto_guid(),
         {},
-        { 1ui32, 1ui32, 1ui32 },
+        { 1u, 1u, 1u },
         TextureFormat::eR16G16B16A16Sfloat,
-        1ui32,
+        1uL,
         engine::gfx::TextureType::eCube
     ) { }

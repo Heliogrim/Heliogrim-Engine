@@ -47,7 +47,7 @@ namespace hg::engine::gfx {
                 reserved_,
                 _vkBufferUsage,
                 vk::SharingMode::eExclusive,
-                0ui32,
+                0uL,
                 nullptr,
                 nullptr
             };
@@ -110,7 +110,7 @@ namespace hg::engine::gfx {
                 nextSize,
                 _vkBufferUsage,
                 vk::SharingMode::eExclusive,
-                0ui32,
+                0uL,
                 nullptr,
                 nullptr
             };

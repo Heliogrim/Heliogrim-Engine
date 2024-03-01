@@ -100,28 +100,28 @@ void SparseTexture::tidy() {
     switch (format_) {
         case TextureFormat::eR16Sfloat: {
             return {
-                16ui64/* Bits per Channel */
-                * 1ui64/* Channels */
-                / 8ui64/* Bits to Bytes*/
+                16uLL/* Bits per Channel */
+                * 1uLL/* Channels */
+                / 8uLL/* Bits to Bytes*/
             };
         }
         case TextureFormat::eR8G8B8A8Unorm: {
             return {
-                8ui64/* Bits per Channel */
-                * 4ui64/* Channels */
-                / 8ui64/* Bits to Bytes*/
+                8uLL/* Bits per Channel */
+                * 4uLL/* Channels */
+                / 8uLL/* Bits to Bytes*/
             };
         }
         case TextureFormat::eR32G32B32A32Sfloat: {
             return {
-                32ui64/* Bits per Channel */
-                * 4ui64/* Channels */
-                / 8ui64/* Bits to Bytes*/
+                32uLL/* Bits per Channel */
+                * 4uLL/* Channels */
+                / 8uLL/* Bits to Bytes*/
             };
         }
         default: {
             __debugbreak();
-            return 0ui64;
+            return 0uLL;
         }
     }
 }
@@ -159,7 +159,7 @@ nmpt<SparseTexturePage> SparseTexture::makePage(
     const auto memorySize {
         formatSize * (tileExtent_.x * tileExtent_.y * tileExtent_.z)
     };
-    const auto memoryOffset { ~0ui64 };
+    const auto memoryOffset { ~0uLL };
 
     memory = _memory->definePage(memoryOffset, memorySize);
     assert(!!memory);
@@ -190,9 +190,9 @@ nmpt<SparseTexturePage> SparseTexture::makeOpaquePage(u32 layer_) {
 
     auto extent { _extent };
     for (u32 mip { 0 }; mip < _mipTailFirstLod; ++mip) {
-        extent.x >>= 1ui32;
-        extent.y >>= 1ui32;
-        //extent.z >>= 1ui32;
+        extent.x >>= 1uL;
+        extent.y >>= 1uL;
+        //extent.z >>= 1uL;
     }
 
     /**
@@ -233,7 +233,7 @@ void SparseTexture::assureTiledPages(u32 layer_, math::uivec2 mipLevels_, math::
     /**
      * Sanitize request values
      */
-    const u32 maxTiledMipLevel { std::min(mipLevels_.max + 1ui32, _mipTailFirstLod) };
+    const u32 maxTiledMipLevel { std::min(mipLevels_.max + 1u, _mipTailFirstLod) };
 
     /**
      * Collect pages of targeted region
@@ -259,8 +259,8 @@ void SparseTexture::assureTiledPages(u32 layer_, math::uivec2 mipLevels_, math::
      */
     for (u32 mip { mipLevels_.min }; mip < maxTiledMipLevel; ++mip) {
 
-        math::uivec3 mipSize { _extent.x >> mip, _extent.y >> mip, 1ui32 };
-        math::uivec3 desiredTiles { mipSize.x / _granularity.x, mipSize.y / _granularity.y, 1ui32 };
+        math::uivec3 mipSize { _extent.x >> mip, _extent.y >> mip, 1uL };
+        math::uivec3 desiredTiles { mipSize.x / _granularity.x, mipSize.y / _granularity.y, 1uL };
 
         if (mipSize.x > _granularity.x * desiredTiles.x) {
             ++desiredTiles.x;
@@ -276,9 +276,9 @@ void SparseTexture::assureTiledPages(u32 layer_, math::uivec2 mipLevels_, math::
             continue;
         }
 
-        for (u32 tz { 0ui32 }; tz < desiredTiles.z; ++tz) {
-            for (u32 ty { 0ui32 }; ty < desiredTiles.y; ++ty) {
-                for (u32 tx { 0ui32 }; tx < desiredTiles.x; ++tx) {
+        for (u32 tz { 0uL }; tz < desiredTiles.z; ++tz) {
+            for (u32 ty { 0uL }; ty < desiredTiles.y; ++ty) {
+                for (u32 tx { 0uL }; tx < desiredTiles.x; ++tx) {
 
                     const math::uivec3 tileOffset {
                         tx * _granularity.x,
@@ -286,13 +286,13 @@ void SparseTexture::assureTiledPages(u32 layer_, math::uivec2 mipLevels_, math::
                         tz * _granularity.z
                     };
                     const math::uivec3 tileExtent {
-                        (tx + 1ui32 > desiredTiles.x && mipSize.x % _granularity.x) ?
+                        (tx + 1uL > desiredTiles.x && mipSize.x % _granularity.x) ?
                             mipSize.x % _granularity.x :
                             _granularity.x,
-                        (ty + 1ui32 > desiredTiles.y && mipSize.y % _granularity.y) ?
+                        (ty + 1uL > desiredTiles.y && mipSize.y % _granularity.y) ?
                             mipSize.y % _granularity.y :
                             _granularity.y,
-                        (tz + 1ui32 > desiredTiles.z && mipSize.z % _granularity.z) ?
+                        (tz + 1uL > desiredTiles.z && mipSize.z % _granularity.z) ?
                             mipSize.z % _granularity.z :
                             _granularity.z,
                     };
@@ -388,7 +388,7 @@ uptr<SparseTextureView> SparseTexture::makeView(math::uivec2 layers_, math::uive
     }
 
     Vector<nmpt<SparseTexturePage>> pages {};
-    selectPages({ layers_.min, layers_.max + 1ui32 }, mipLevels, {}, _extent, pages);
+    selectPages({ layers_.min, layers_.max + 1uL }, mipLevels, {}, _extent, pages);
 
     /**
      * Take the time to sort the pages by it's mip level (virtual backing)
@@ -454,7 +454,7 @@ math::uivec2::value_type SparseTexture::minMipLevel() const noexcept {
 }
 
 math::uivec2::value_type SparseTexture::mipLevels() const noexcept {
-    return (_mipLevels.max - _mipLevels.min) + 1ui32;
+    return (_mipLevels.max - _mipLevels.min) + 1uL;
 }
 
 math::uivec2::value_type SparseTexture::maxMipLevel() const noexcept {
@@ -592,9 +592,9 @@ void SparseTexture::enqueueBindingSync(const ptr<CommandQueue> queue_) {
         nullptr,
         0,
         nullptr,
-        _opaqueBindData.bindCount > 0 ? 1ui32 : 0ui32,
+        _opaqueBindData.bindCount > 0 ? 1uL : 0uL,
         &_opaqueBindData,
-        _bindData.bindCount > 0 ? 1ui32 : 0ui32,
+        _bindData.bindCount > 0 ? 1uL : 0uL,
         &_bindData,
         0,
         nullptr,
@@ -610,7 +610,7 @@ void SparseTexture::enqueueBindingSync(const ptr<CommandQueue> queue_) {
     [[maybe_unused]] auto res { queue_->vkQueue().bindSparse(1, &bsi, fence) };
     #endif
 
-    res = queue_->device()->vkDevice().waitForFences(1ui32, &fence, VK_TRUE, UINT64_MAX);
+    res = queue_->device()->vkDevice().waitForFences(1uL, &fence, VK_TRUE, UINT64_MAX);
     queue_->device()->vkDevice().destroyFence(fence);
 
     assert(res == vk::Result::eSuccess);

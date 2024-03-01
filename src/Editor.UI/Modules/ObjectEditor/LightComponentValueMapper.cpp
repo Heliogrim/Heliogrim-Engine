@@ -50,8 +50,8 @@ void ObjectValueMapper<PointLightComponent>::build(cref<sptr<engine::reflow::Ver
         wrapper->attr.height.setValue({ ReflowUnitType::eAuto, 0.F });
         wrapper->attr.colGap.setValue(4.F);
         wrapper->attr.justify.setValue(ReflowSpacing::eStart);
-        wrapper->attr.flexGrow.setValue(1);
-        wrapper->attr.flexShrink.setValue(1);
+        wrapper->attr.flexGrow.setValue(1.F);
+        wrapper->attr.flexShrink.setValue(1.F);
         wrapper->attr.style.setValue(PanelStyle { .backgroundColor = engine::color { 255.F, 20.F, 20.F, 255.F } });
 
         auto pos = make_sptr<InputVec3>();
@@ -94,8 +94,8 @@ void ObjectValueMapper<PointLightComponent>::build(cref<sptr<engine::reflow::Ver
         wrapper->attr.height.setValue({ ReflowUnitType::eAuto, 0.F });
         wrapper->attr.colGap.setValue(4.F);
         wrapper->attr.justify.setValue(ReflowSpacing::eStart);
-        wrapper->attr.flexGrow.setValue(1);
-        wrapper->attr.flexShrink.setValue(1);
+        wrapper->attr.flexGrow.setValue(1.F);
+        wrapper->attr.flexShrink.setValue(1.F);
         wrapper->attr.style.setValue(PanelStyle { .backgroundColor = engine::color { 255.F, 20.F, 20.F, 255.F } });
 
         auto luminance = make_sptr<InputVec3>();

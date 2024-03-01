@@ -13,7 +13,7 @@ InputIntegral::InputIntegral() :
     _text(make_sptr<Text>()),
     _value(R"(0)"),
     _limits(std::numeric_limits<s64>::min(), std::numeric_limits<s64>::max()),
-    _stepSize(1i64),
+    _stepSize(1LL),
     _children() {
     /**/
     _wrapper->addChild(_text);
@@ -131,7 +131,7 @@ EventResponse InputIntegral::onKeyDown(cref<KeyboardEvent> event_) {
 
     } else if (event_._key >= 0x30 && event_._key <= 0x39) {
 
-        const auto maxChars { static_cast<u64>(std::floor(std::log10(static_cast<long double>(_limits.max)))) + 1ui64 };
+        const auto maxChars { static_cast<u64>(std::floor(std::log10(static_cast<long double>(_limits.max)))) + 1uLL };
 
         if (_value.size() >= maxChars) {
             return EventResponse::eConsumed;

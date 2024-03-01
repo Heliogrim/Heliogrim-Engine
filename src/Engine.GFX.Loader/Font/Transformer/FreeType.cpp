@@ -22,7 +22,7 @@ std::atomic_uint_fast8_t ftRefCount {};
 FT_Library freeTypeLibrary {};
 FT_Face cascadiaMonoFace {};
 
-constexpr static math::uivec2 font_texture_padding { 1ui32 };
+constexpr static math::uivec2 font_texture_padding { 1uL };
 
 /**/
 
@@ -77,9 +77,9 @@ void transformer::convertFreeType(
     const auto* const factory = engine::gfx::TextureFactory::get();
     auto atlas = factory->build(
         TextureBuildPayload {
-            math::uivec3 { reqExt, 1ui32 },
+            math::uivec3 { reqExt, 1uL },
             TextureFormat::eR8G8B8A8Unorm,
-            1ui32,
+            1uL,
             TextureType::e2d,
             vk::ImageAspectFlagBits::eColor,
             vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled,
@@ -120,7 +120,7 @@ void transformer::convertFreeType(
     font->_name = "Cascadia Mono"sv;
     font->_atlas = make_sptr<Texture>(std::move(atlas));
     font->_extent = reqExt;
-    font->_fontSize = 16ui32;
+    font->_fontSize = 16uL;
     font->_glyphCount = 0;
 
     // Warning: !!Important!!
@@ -154,7 +154,7 @@ void transformer::convertFreeType(
             font->atlas()->buffer().image(),
             vk::ImageSubresourceRange {
                 vk::ImageAspectFlagBits::eColor,
-                0, std::max(font->atlas()->mipLevels(), 1ui32), 0, font->atlas()->layer()
+                0, std::max(font->atlas()->mipLevels(), 1u), 0, font->atlas()->layer()
             }
         }
     );
@@ -178,8 +178,8 @@ void transformer::convertFreeType(
         buffer,
         font->atlas()->buffer(),
         vk::BufferImageCopy {
-            0ui64, 0, 0, vk::ImageSubresourceLayers { vk::ImageAspectFlagBits::eColor, 0ui32, 0ui32, 1ui32 },
-            vk::Offset3D {}, vk::Extent3D { font->_atlas->width(), font->_atlas->height(), 1ui32 }
+            0uLL, 0, 0, vk::ImageSubresourceLayers { vk::ImageAspectFlagBits::eColor, 0uL, 0uL, 1uL },
+            vk::Offset3D {}, vk::Extent3D { font->_atlas->width(), font->_atlas->height(), 1uL }
         }
     );
 
@@ -197,7 +197,7 @@ void transformer::convertFreeType(
             font->atlas()->buffer().image(),
             vk::ImageSubresourceRange {
                 vk::ImageAspectFlagBits::eColor,
-                0, std::max(atlas.mipLevels(), 1ui32), 0, atlas.layer()
+                0, std::max(atlas.mipLevels(), 1u), 0, atlas.layer()
             }
         }
     );
@@ -358,8 +358,8 @@ void writeToMemory(cref<FT_GlyphSlot> slot_, cref<math::uivec2> ext_, cref<math:
 
     auto* cur { dst_ };
 
-    cur += off_.y * ext_.x * 4ui32;
-    cur += off_.x * 4ui32;
+    cur += off_.y * ext_.x * 4uL;
+    cur += off_.x * 4uL;
 
     const auto wrapDiff { ext_.x - slot_->bitmap.width };
 
@@ -376,11 +376,11 @@ void writeToMemory(cref<FT_GlyphSlot> slot_, cref<math::uivec2> ext_, cref<math:
             const auto val { *src };
             ++src;
 
-            *cur = 0xFFui8;
+            *cur = 0xFFu;
             ++cur;
-            *cur = 0xFFui8;
+            *cur = 0xFFu;
             ++cur;
-            *cur = 0xFFui8;
+            *cur = 0xFFu;
             ++cur;
             *cur = val;
             ++cur;
@@ -408,7 +408,7 @@ void storeFontToTexture(
     u32 curSize { std::numeric_limits<u32>::max() };
     for (u32 i { 0 }; i < options_.fontSizes.size(); ++i) {
 
-        u32 nextSize { 0ui32 };
+        u32 nextSize { 0uL };
         for (const auto& entry : options_.fontSizes) {
             if (entry < curSize && entry > nextSize) {
                 nextSize = entry;
@@ -449,7 +449,7 @@ void storeFontToTexture(
                 /**/
                 const auto nfwd { fwd.x + /*face->glyph->advance.x*/face->glyph->bitmap.width };
                 if (nfwd > atlas->width()) {
-                    fwd.x = 0ui32;
+                    fwd.x = 0uL;
                     fwd.y += step.y + font_texture_padding.y;
                 }
 

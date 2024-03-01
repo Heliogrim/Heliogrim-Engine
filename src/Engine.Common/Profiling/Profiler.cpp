@@ -11,7 +11,7 @@ ptr<Profiler> Profiler::_instance = nullptr;
 Profiler::Profiler() noexcept :
     _name(),
     _output(nullptr),
-    _count(0ui64) {}
+    _count(0uLL) {}
 
 Profiler::~Profiler() noexcept {
     if (_output != nullptr) {

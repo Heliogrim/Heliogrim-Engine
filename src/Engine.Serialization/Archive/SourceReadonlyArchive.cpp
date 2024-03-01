@@ -26,7 +26,7 @@ void SourceReadonlyArchive::serializeBytes(const ptr<void> value_, u64 size_, co
     }
 
     auto* const source = _source.get();
-    streamsize readSize = 0ui64;
+    streamsize readSize = 0uLL;
 
     const auto success = source->get(_srcOff + _pos, size_, value_, readSize);
 

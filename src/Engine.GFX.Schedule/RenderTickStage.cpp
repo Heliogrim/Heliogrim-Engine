@@ -74,7 +74,7 @@ void RenderTickStage::tickTargets() {
     /**/
 
     std::chrono::nanoseconds accValue {};
-    u32 accCount { 0ui32 };
+    u32 accCount { 0uL };
     for (const auto& entry : timeBuffer.unsafe_container()) {
         if (entry.count() > 0) {
             accValue += entry;

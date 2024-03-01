@@ -51,7 +51,7 @@ sptr<RecordSlot> SeqSlot::addRecord() {
 
     constexpr s64 off = sizeof(StructureSlotHeader::type) + sizeof(StructureSlotHeader::size);
 
-    u64 count = 0ui64;
+    u64 count = 0uLL;
     if (_state.header.size > sizeof(u64)) {
 
         archive->seek(_state.offset + off);
@@ -107,10 +107,10 @@ sptr<RecordSlot> SeqSlot::getRecord(const u64 index_) {
 
     /**/
 
-    u64 storedCount = ~0ui64;
+    u64 storedCount = ~0uLL;
     (*archive) >> storedCount;
 
-    assert(storedCount != ~0ui64);
+    assert(storedCount != ~0uLL);
 
     /**/
 
@@ -174,7 +174,7 @@ sptr<RecordSlot> SeqSlot::getRecord(const u64 index_) {
 s64 SeqSlot::getRecordCount() {
 
     if (_state.header.size <= sizeof(u64)) {
-        return -1i64;
+        return -1LL;
     }
 
     /**/
@@ -186,8 +186,8 @@ s64 SeqSlot::getRecordCount() {
 
     /**/
 
-    u64 storedCount = ~0ui64;
+    u64 storedCount = ~0uLL;
     (*archive) >> storedCount;
 
-    return storedCount != ~0ui64 ? static_cast<s64>(storedCount) : -1i64;
+    return storedCount != ~0uLL ? static_cast<s64>(storedCount) : -1LL;
 }

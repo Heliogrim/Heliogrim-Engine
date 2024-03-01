@@ -24,7 +24,7 @@ void TickPipeline::mount(const non_owning_rptr<StageRegister> register_) {
 
     /**/
 
-    _orderedStages.reserve(2ui64);
+    _orderedStages.reserve(2uLL);
     _orderedStages.push_back(beginStage);
     //_orderedStages.push_back(eventStage);
     _orderedStages.push_back(endStage);

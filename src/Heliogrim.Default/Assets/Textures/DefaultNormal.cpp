@@ -11,8 +11,8 @@ texture::DefaultNormal::DefaultNormal() :
         clone(texture::DefaultNormal::unstable_auto_guid()),
         image::DefaultNormal::unstable_auto_guid(),
         {},
-        { 1ui32, 1ui32, 1ui32 },
+        { 1u, 1u, 1u },
         TextureFormat::eR32G32B32A32Sfloat,
-        1ui32,
+        1uL,
         engine::gfx::TextureType::e2d
     ) {}

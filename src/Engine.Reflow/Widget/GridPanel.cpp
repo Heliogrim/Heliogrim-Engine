@@ -39,7 +39,7 @@ void GridPanel::setChild(const u32 idx_, cref<sptr<Widget>> child_) {
 
 void GridPanel::removeChild(cref<sptr<Widget>> child_) {
 
-    s32 found = -1i32;
+    s32 found = -1L;
     for (u32 idx = 0; idx < _children.size(); ++idx) {
         if (_children[idx] == child_) {
             found = idx;

@@ -114,8 +114,8 @@ void VkSurfaceSwapchain::setup(cref<sptr<Device>> device_) {
          */
         texture->type() = TextureType::e2d;
         texture->format() = _format;
-        texture->extent() = { _extent, 1ui32 };
-        texture->mipLevels() = 1ui32;
+        texture->extent() = { _extent, 1uL };
+        texture->mipLevels() = 1uL;
         texture->buffer()._vkAspect = vk::ImageAspectFlagBits::eColor;
         texture->buffer().vkDevice() = _device->vkDevice();
         texture->buffer().image() = swapImages[i];
@@ -173,7 +173,7 @@ bool VkSurfaceSwapchain::acquireNext(ref<s64> idx_, ref<smr<Texture>> image_, re
 
     const auto nxtSig { nextSignal() };
 
-    u32 nextIdx { ~0ui32 };
+    u32 nextIdx { ~0uL };
     // TODO: Handle next result while acquiring next image
     [[maybe_unused]] auto nextResult {
         _device->vkDevice().acquireNextImageKHR(
@@ -211,7 +211,7 @@ vk::Result VkSurfaceSwapchain::presentNext(u64 idx_) {
     const vk::PresentInfoKHR info {
         static_cast<u32>(image.presentWaits.size()),
         image.presentWaits.data(),
-        1ui32,
+        1uL,
         &_vkSwapchain,
         &idx
     };
@@ -234,7 +234,7 @@ vk::Result VkSurfaceSwapchain::presentNext(u64 idx_, cref<Vector<vk::Semaphore>>
     const vk::PresentInfoKHR info {
         static_cast<u32>(image.presentWaits.size()),
         image.presentWaits.data(),
-        1ui32,
+        1uL,
         &_vkSwapchain,
         &idx
     };

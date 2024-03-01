@@ -48,7 +48,7 @@ namespace hg::engine::gfx {
                 vk::BufferUsageFlagBits::eStorageBuffer | vk::BufferUsageFlagBits::eTransferSrc |
                 vk::BufferUsageFlagBits::eTransferDst,
                 vk::SharingMode::eExclusive,
-                0ui32,
+                0uL,
                 nullptr,
                 nullptr
             };
@@ -121,7 +121,7 @@ namespace hg::engine::gfx {
                 vk::BufferUsageFlagBits::eStorageBuffer | vk::BufferUsageFlagBits::eTransferSrc |
                 vk::BufferUsageFlagBits::eTransferDst,
                 vk::SharingMode::eExclusive,
-                0ui32,
+                0uL,
                 nullptr,
                 nullptr
             };

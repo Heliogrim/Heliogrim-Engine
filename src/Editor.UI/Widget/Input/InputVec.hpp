@@ -68,10 +68,10 @@ namespace hg::editor::ui {
 
             /**/
 
-            for (u64 i = 0ui64; i < vector_dim; ++i) {
+            for (u64 i = 0uLL; i < vector_dim; ++i) {
 
                 _labels[i] = make_sptr<engine::reflow::Text>();
-                _labels[i]->attr.textEllipse.setValue(1ui32);
+                _labels[i]->attr.textEllipse.setValue(1uL);
                 theme->applyLabel(_labels[i]);
 
                 _inputs[i] = make_sptr<input_widget_type>();
@@ -100,7 +100,7 @@ namespace hg::editor::ui {
 
             /**/
 
-            for (u64 i { 0ui64 }; i < vector_dim; ++i) {
+            for (u64 i { 0uLL }; i < vector_dim; ++i) {
                 _inputs[i]->_callback = [this](auto) {
                     this->onInternalChange();
                 };
@@ -251,7 +251,7 @@ namespace hg::editor::ui {
 
             const auto frac = 1.F / ((float)vector_dim);
 
-            for (u64 i { 0ui64 }; i < vector_dim; ++i) {
+            for (u64 i { 0uLL }; i < vector_dim; ++i) {
 
                 const auto& label { _labels[i] };
                 const auto& input { _inputs[i] };

@@ -22,11 +22,11 @@ void GlobalPooledAllocator::tidy() {
 
 bool GlobalPooledAllocator::shouldPool(cref<MemoryLayout> layout_, const u64 size_) const noexcept {
 
-    if (size_ == 4096i64 || size_ == 65536i64) {
+    if (size_ == 4096LL || size_ == 65536LL) {
         return true;
     }
 
-    if ((size_ == 64ui64 || size_ == 4ui64) && layout_.props & MemoryProperty::eHostVisible) {
+    if ((size_ == 64uLL || size_ == 4uLL) && layout_.props & MemoryProperty::eHostVisible) {
         return true;
     }
 
@@ -93,7 +93,7 @@ u64 GlobalPooledAllocator::nextPoolSize(const ptr<const MemoryPool> pool_, const
 
     const auto targetSize { totalSize < requestedSize_ ? requestedSize_ : totalSize };
     const auto alignedSize {
-        (targetSize / layout.align) * layout.align + (targetSize % layout.align ? layout.align : 0ui64)
+        (targetSize / layout.align) * layout.align + (targetSize % layout.align ? layout.align : 0uLL)
     };
 
     // (2^n)-1
@@ -150,13 +150,13 @@ AllocationResult engine::gfx::memory::allocate(
     if (atomicNonCoherent) {
 
         // vkPhysicalDeviceLimits::nonCoherentAtomSize <-> Required for flushing
-        constexpr auto align { 0x80ui64 };
-        constexpr auto shift { 7ui64 };
-        constexpr auto mask { 0b0111'1111ui64 };
+        constexpr auto align { 0x80uLL };
+        constexpr auto shift { 7uLL };
+        constexpr auto mask { 0b0111'1111uLL };
 
         const auto aligned {
             ((size >> shift) << shift) +
-            ((size & mask) ? 1ui64 << shift : 0ui64)
+            ((size & mask) ? 1uLL << shift : 0uLL)
         };
 
         size = aligned;

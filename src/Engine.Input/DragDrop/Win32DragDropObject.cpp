@@ -21,7 +21,7 @@ using namespace hg;
 
 Win32DragDropObject::Win32DragDropObject() :
     DragDropObject(),
-    _useCount(1ui32),
+    _useCount(1uL),
     _formats(),
     _mediums() {}
 
@@ -227,7 +227,7 @@ ULONG Win32DragDropObject::Release() {
 
 s64 Win32DragDropObject::queryFormatIdx(ptr<FORMATETC> format_) const noexcept {
 
-    for (s64 i { 0i64 }; i < _formats.size(); ++i) {
+    for (s64 i { 0LL }; i < _formats.size(); ++i) {
         if (
             _formats[i].cfFormat == format_->cfFormat &&
             _formats[i].dwAspect == format_->dwAspect &&
@@ -237,7 +237,7 @@ s64 Win32DragDropObject::queryFormatIdx(ptr<FORMATETC> format_) const noexcept {
         }
     }
 
-    return -1i64;
+    return -1LL;
 }
 
 HGLOBAL Win32DragDropObject::makeHGlobalCopy(HGLOBAL src_) {
@@ -257,8 +257,8 @@ HGLOBAL Win32DragDropObject::makeHGlobalCopy(HGLOBAL src_) {
 
 HRESULT Win32DragDropObject::GetData(FORMATETC* pformatetcIn, STGMEDIUM* pmedium) {
 
-    s64 formatIdx { -1i64 };
-    if ((formatIdx = queryFormatIdx(pformatetcIn)) == -1i64) {
+    s64 formatIdx { -1LL };
+    if ((formatIdx = queryFormatIdx(pformatetcIn)) == -1LL) {
         return DV_E_FORMATETC;
     }
 
@@ -282,7 +282,7 @@ HRESULT Win32DragDropObject::GetDataHere(FORMATETC* pformatetc, STGMEDIUM* pmedi
 
 HRESULT Win32DragDropObject::QueryGetData(FORMATETC* pformatetc) {
 
-    if (queryFormatIdx(pformatetc) >= 0i64) {
+    if (queryFormatIdx(pformatetc) >= 0LL) {
         return S_OK;
     }
 

@@ -11,8 +11,8 @@ texture::UIDummy::UIDummy() :
         clone(texture::UIDummy::unstable_auto_guid()),
         image::UIDummy::unstable_auto_guid(),
         {},
-        { 1ui32, 1ui32, 1ui32 },
+        { 1u, 1u, 1u },
         TextureFormat::eR8G8B8A8Unorm,
-        1ui32,
+        1uL,
         engine::gfx::TextureType::e2d
     ) {}

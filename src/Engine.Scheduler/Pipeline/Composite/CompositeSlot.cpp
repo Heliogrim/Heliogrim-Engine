@@ -100,7 +100,7 @@ void CompositeSlot::onComplete(const non_owning_rptr<const task::TaskDelegate> t
 
     /**/
 
-    if (prev != 1ui16) {
+    if (prev != 1uL) {
         return;
     }
 
@@ -117,11 +117,11 @@ void CompositeSlot::submit() {
 
         if (task->type() == task::TaskType::eBatch) {
             // TODO: _signals.fetch_add( << batch size >>, std::memory_order_relaxed);
-            _signals.fetch_add(1ui16, std::memory_order_relaxed);
+            _signals.fetch_add(1uL, std::memory_order_relaxed);
 
         } else {
 
-            _signals.fetch_add(1ui16, std::memory_order_relaxed);
+            _signals.fetch_add(1uL, std::memory_order_relaxed);
         }
     }
 
@@ -129,19 +129,19 @@ void CompositeSlot::submit() {
 
         if (task->type() == task::TaskType::eBatch) {
             // TODO: _signals.fetch_add( << batch size >>, std::memory_order_relaxed);
-            _signals.fetch_add(1ui16, std::memory_order_relaxed);
+            _signals.fetch_add(1uL, std::memory_order_relaxed);
 
         } else {
 
-            _signals.fetch_add(1ui16, std::memory_order_relaxed);
+            _signals.fetch_add(1uL, std::memory_order_relaxed);
         }
     }
 
     /* TODO: Rewrite quickfix */
 
-    if (_signals.load(std::memory_order_relaxed) == 0ui16) {
+    if (_signals.load(std::memory_order_relaxed) == 0uL) {
         // Attention: Currently using a dummy to guarantee progress
-        _signals.fetch_add(1ui16, std::memory_order_relaxed);
+        _signals.fetch_add(1uL, std::memory_order_relaxed);
 
         const auto* dummy = task::make_task([] {});
         const_cast<ptr<task::TaskDelegate>>(dummy)->ctrl() = static_cast<ptr<TaskCtrl>>(this);

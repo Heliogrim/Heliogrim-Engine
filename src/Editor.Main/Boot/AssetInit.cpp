@@ -105,7 +105,7 @@ void dispatchLoad(cref<path> path_) {
             ifs.seekg(0, std::ios::beg);
 
             serialization::BufferArchive archive {};
-            archive.resize(minLength, 0ui8);
+            archive.resize(minLength, 0u);
 
             auto start { ifs.tellg() };
             ifs.read(reinterpret_cast<char*>(archive.data()), archive.size());
@@ -158,7 +158,7 @@ void dispatchLoad(cref<path> path_) {
             start = ifs.tellg();
 
             archive.seek(0);
-            archive.resize(end - start, 0ui8);
+            archive.resize(end - start, 0u);
 
             ifs.read(reinterpret_cast<ptr<char>>(archive.data()), archive.size());
 
@@ -424,16 +424,16 @@ static void initStaticGeometryDefaults() {
     factory->createStaticGeometryAsset(
         clone(meshes::Sphere::unstable_auto_guid()),
         R"(resources\imports\obj\sphere.obj)",
-        11520ui64,
-        11520ui64
+        11520uLL,
+        11520uLL
 
     );
 
     factory->createStaticGeometryAsset(
         clone(meshes::PlaneD128::unstable_auto_guid()),
         R"(resources\imports\obj\plane_d128.obj)",
-        98304ui64,
-        98304ui64
+        98304uLL,
+        98304uLL
 
     );
 }

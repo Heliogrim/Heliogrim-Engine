@@ -23,7 +23,7 @@ namespace PackageModule {
     [[nodiscard]] std::pair<BufferArchive, uptr<BufferSource>> makeTestSource(const size_t size_ = 4096) {
 
         auto helper = BufferArchive {};
-        helper.resize(size_, 0ui8);
+        helper.resize(size_, 0u);
 
         auto* const ptr = helper.data();
 
@@ -39,7 +39,7 @@ namespace PackageModule {
         );
     }
 
-    void generatePayload(ref<BufferArchive> archive_, const u64 size_ = 48ui64) {
+    void generatePayload(ref<BufferArchive> archive_, const u64 size_ = 48uLL) {
 
         std::random_device device {};
         std::mt19937 mt { device() };
@@ -71,8 +71,8 @@ namespace PackageModule {
 
         /**/
 
-        PackageVersion version { 27859368927ui64 };
-        PackageGuid guid { 278608376ui32, 11632ui16, 7635ui16, 36758197986519ui64 };
+        PackageVersion version { 27859368927uLL };
+        PackageGuid guid { 278608376uL, 11632uL, 7635uL, 36758197986519uLL };
 
         /**/
 
@@ -87,14 +87,14 @@ namespace PackageModule {
         memcpy(header.guid, guid.bytes, sizeof(PackageGuid));
 
         header.compression = PackageCompression::eNone;
-        header.packageSize = 0ui64;
-        header.inflatedSize = 0ui64;
-        header.indexOffset = 0ui64;
-        header.indexSize = 0ui64;
-        header.metaOffset = 0ui64;
-        header.metaSize = 0ui64;
-        header.compDataOffset = 0ui64;
-        header.compDataSize = 0ui64;
+        header.packageSize = 0uLL;
+        header.inflatedSize = 0uLL;
+        header.indexOffset = 0uLL;
+        header.indexSize = 0uLL;
+        header.metaOffset = 0uLL;
+        header.metaSize = 0uLL;
+        header.compDataOffset = 0uLL;
+        header.compDataSize = 0uLL;
 
         // Write Package data
         package.unsafeWrite();// ??
@@ -159,8 +159,8 @@ namespace PackageModule {
 
         /**/
 
-        PackageVersion version { 27859368927ui64 };
-        PackageGuid guid { 278608376ui32, 11632ui16, 7635ui16, 36758197986519ui64 };
+        PackageVersion version { 27859368927uLL };
+        PackageGuid guid { 278608376uL, 11632uL, 7635uL, 36758197986519uLL };
 
         /**/
 
@@ -175,14 +175,14 @@ namespace PackageModule {
         memcpy(header.guid, guid.bytes, sizeof(PackageGuid));
 
         header.compression = PackageCompression::eNone;
-        header.packageSize = 0ui64;
-        header.inflatedSize = 0ui64;
-        header.indexOffset = 0ui64;
-        header.indexSize = 0ui64;
-        header.metaOffset = 0ui64;
-        header.metaSize = 0ui64;
-        header.compDataOffset = 0ui64;
-        header.compDataSize = 0ui64;
+        header.packageSize = 0uLL;
+        header.inflatedSize = 0uLL;
+        header.indexOffset = 0uLL;
+        header.indexSize = 0uLL;
+        header.metaOffset = 0uLL;
+        header.metaSize = 0uLL;
+        header.compDataOffset = 0uLL;
+        header.compDataSize = 0uLL;
 
         // Write Package data
         package.unsafeWrite();// ??
@@ -191,8 +191,8 @@ namespace PackageModule {
 
         uptr<Source> dstSource = make_uptr<BufferSource>(
             Buffer {
-                4096ui64,
-                0ui64,
+                4096uLL,
+                0uLL,
                 helper.data()
             }
         );
@@ -268,7 +268,7 @@ namespace PackageModule {
 
         auto payload = make_uptr<BufferArchive>();
 
-        const auto valCount = 48ui64;
+        const auto valCount = 48uLL;
         generatePayload(*payload, valCount);
 
         BufferArchive replica {};
@@ -295,8 +295,8 @@ namespace PackageModule {
 
         uptr<Source> dstSource = make_uptr<BufferSource>(
             Buffer {
-                4096ui64,
-                0ui64,
+                4096uLL,
+                0uLL,
                 helper.data()
             }
         );
@@ -414,7 +414,7 @@ namespace PackageModule {
         uptr<Source> dstSource = make_uptr<BufferSource>(
             Buffer {
                 buffer_size,
-                0ui64,
+                0uLL,
                 helper.data()
             }
         );

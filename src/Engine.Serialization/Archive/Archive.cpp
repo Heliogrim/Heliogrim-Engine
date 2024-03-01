@@ -26,15 +26,15 @@ void Archive::clearError() noexcept {
 void Archive::seek(const s64 pos_) {}
 
 s64 Archive::tell() const noexcept {
-    return -1i64;
+    return -1LL;
 }
 
 s64 Archive::totalSize() const noexcept {
-    return -1i64;
+    return -1LL;
 }
 
 bool Archive::isEOA() const noexcept {
-    return (totalSize() == -1i64) || tell() >= totalSize();
+    return (totalSize() == -1LL) || tell() >= totalSize();
 }
 
 void Archive::flush() {}

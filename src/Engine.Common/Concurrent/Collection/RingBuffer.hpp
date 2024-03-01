@@ -36,7 +36,7 @@ namespace hg::engine::concurrent {
          *
          * @param  capacity_ (Optional) The fixed capacity of contained elements `[0..N(`.
          */
-        RingBuffer(size_type capacity_ = 0x20ui32) :
+        RingBuffer(size_type capacity_ = 0x20uL) :
             _container(capacity_),
             _head(0),
             _tail(0) {}

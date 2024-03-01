@@ -204,7 +204,7 @@ ptr<engine::assets::TextureAsset> AssetBrowserHelper::getItemIconForDirectory(cr
     for (const auto& entry : _directoryIcons) {
         if (name.contains(entry.first) && entry.first.size() > length) {
 
-            length = entry.first.size();
+            length = static_cast<s32>(entry.first.size());
             tex = entry.second;
 
             if (length == name.size()) {

@@ -208,7 +208,7 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
     ifs.seekg(0, std::ios::beg);
     const auto beg { ifs.tellg() };
 
-    constexpr auto mem_block_size { 4096ui64 };
+    constexpr auto mem_block_size { 4096uLL };
     std::vector<char> raw(mem_block_size);
 
     ifs.read(raw.data(), mem_block_size);
@@ -220,7 +220,7 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
     constexpr auto headerSize { sizeof(InternalKtxHeader) };
     assert(readSize >= headerSize + /* Magic Offset */12);
 
-    auto* cursor { raw.data() + 12ui64 };
+    auto* cursor { raw.data() + 12uLL };
     cref<InternalKtxHeader> header { *reinterpret_cast<ptr<const InternalKtxHeader>>(cursor) };
 
     /**/
@@ -231,20 +231,20 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
     tex->setExtent(
         {
             static_cast<u32>(header.pixelWidth),
-            std::max(static_cast<u32>(header.pixelHeight), 1ui32),
-            std::max(static_cast<u32>(header.pixelDepth), 1ui32)
+            std::max(static_cast<u32>(header.pixelHeight), 1u),
+            std::max(static_cast<u32>(header.pixelDepth), 1u)
         }
     );
 
     tex->setTextureFormat(api::vkTranslateFormat(*reinterpret_cast<const vk::Format*>(&header.vkFormat)));
-    tex->setMipLevelCount(std::max(header.levelCount, 1ui32));
+    tex->setMipLevelCount(std::max(header.levelCount, 1u));
 
     // TODO: Replace with actual/correct type resolving for textures
-    if (header.faceCount <= 1ui32) {
+    if (header.faceCount <= 1uL) {
         tex->setTextureType(TextureType::e2d);
-    } else if (header.faceCount == 6ui32) {
+    } else if (header.faceCount == 6uL) {
         tex->setTextureType(TextureType::eCube);
-    } else if (header.faceCount > 1ui32) {
+    } else if (header.faceCount > 1uL) {
         tex->setTextureType(TextureType::e2dArray);
     }
 

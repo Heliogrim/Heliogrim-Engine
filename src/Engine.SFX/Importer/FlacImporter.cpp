@@ -29,7 +29,7 @@ FlacImporter::import_result_type FlacImporter::import(cref<res::FileTypeId> type
 
     Buffer buffer {
         .size = flac->totalPCMFrameCount * flac->channels * sizeof(float),
-        .align = 0ui64,
+        .align = 0uLL,
         .mem = malloc(flac->totalPCMFrameCount * flac->channels * sizeof(float))
     };
 

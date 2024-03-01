@@ -58,10 +58,10 @@ void MipMapGenerator::generate(Texture& texture_, cref<sptr<Device>> device_, Co
     vk::ImageBlit blit {};
 
     blit.srcSubresource.aspectMask = vk::ImageAspectFlagBits::eColor;
-    blit.srcSubresource.layerCount = 1ui32;
+    blit.srcSubresource.layerCount = 1uL;
     blit.srcSubresource.mipLevel = 0;
     blit.srcOffsets[0] = vk::Offset3D();
-    blit.srcOffsets[1] = vk::Offset3D(texture_.width(), texture_.height(), 1ui32);
+    blit.srcOffsets[1] = vk::Offset3D(texture_.width(), texture_.height(), 1uL);
 
     for (u32 level = 1; level < texture_.mipLevels(); ++level) {
 
@@ -69,10 +69,10 @@ void MipMapGenerator::generate(Texture& texture_, cref<sptr<Device>> device_, Co
         const u32 dstH = texture_.height() >> level;
 
         blit.dstSubresource.aspectMask = vk::ImageAspectFlagBits::eColor;
-        blit.dstSubresource.layerCount = 1ui32;
+        blit.dstSubresource.layerCount = 1uL;
         blit.dstSubresource.mipLevel = level;
         blit.dstOffsets[0] = vk::Offset3D();
-        blit.dstOffsets[1] = vk::Offset3D(dstW, dstH, 1ui32);
+        blit.dstOffsets[1] = vk::Offset3D(dstW, dstH, 1uL);
 
         cmd.blit(blit, texture_.buffer(), dst);
     }

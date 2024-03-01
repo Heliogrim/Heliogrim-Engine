@@ -80,9 +80,9 @@ GlobalCacheCtrl::stream_result_type<> GlobalCacheCtrl::markLoadedAsUsed(
         auto& ctrls { const_cast<SubMapType&>(resEntry->second) };
 
         /**
-         * Create new ctrl object by given subject with intial mark count of 1ui16
+         * Create new ctrl object by given subject with intial mark count of 1uL
          */
-        ctrls.insert_or_assign(subresource_, new SubjectType { std::move(subresource_), 1ui16 });
+        ctrls.insert_or_assign(subresource_, new SubjectType { std::move(subresource_), 1uL });
     }
 
     return { StreamCacheResultType::eTransient /* eResidential */ };
@@ -216,7 +216,7 @@ void GlobalCacheCtrl::unmark(mref<smr<TextureResource>> resource_, cref<AssocKey
     const auto left { (existing->second)->marks.operator--() };
 
     #if _DEBUG
-    if (left > 128ui16) {
+    if (left > 128uL) {
         __debugbreak();
     }
     #endif
@@ -224,7 +224,7 @@ void GlobalCacheCtrl::unmark(mref<smr<TextureResource>> resource_, cref<AssocKey
     /**
      * Dispatch unloading of texture (stream unloading if possible/available)
      */
-    if (left <= 0ui16) {
+    if (left <= 0uL) {
         using stream_loader = loader::TextureLoader;
         using stream_options = stream_loader::traits::stream_request::options;
 
@@ -243,7 +243,7 @@ void GlobalCacheCtrl::unmark(mref<smr<TextureResource>> resource_, cref<AssocKey
     }
 
     // TODO: Check whether we want to erase subjects with no left marks
-    if (left <= 0ui16) {
+    if (left <= 0uL) {
 
         const auto* subject { existing->second };
         delete subject;
@@ -312,7 +312,7 @@ void GlobalCacheCtrl::markAsUsed(
         auto key = material_.get();
         auto val = make_uptr<SubjectType>(
             std::make_pair(std::move(material_), std::move(accelerationPipeline_)),
-            1ui16
+            1uL
         );
 
         subMap.insert(
@@ -358,13 +358,13 @@ void GlobalCacheCtrl::unmark(
 
     #if _DEBUG
     // No constexpr, just debug expression
-    static const u16 wrapTest { 0xFFFEui16 };
+    static const u16 wrapTest { 0xFFFEuL };
     if (left >= wrapTest) {
         __debugbreak();
     }
     #endif
 
-    if (left > 0ui16) {
+    if (left > 0uL) {
         return;
     }
 
