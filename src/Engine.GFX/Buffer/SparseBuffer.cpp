@@ -134,7 +134,7 @@ non_owning_rptr<SparseBufferPage> SparseBuffer::addPage(const u64 size_, const u
     #endif
 
     // Warning: Replace virtual memory page offset
-    const auto memPage = _memory->definePage(0ui64, size_);
+    const auto memPage = _memory->definePage(0uLL, size_);
     assert(memPage);
 
     const auto page = new SparseBufferPage {
@@ -223,7 +223,7 @@ void SparseBuffer::enqueueBinding(const ptr<CommandQueue> queue_) {
     vk::BindSparseInfo bsi {
         0,
         nullptr,
-        1ui32,
+        1uL,
         &_bindData,
         0,
         nullptr,
@@ -250,7 +250,7 @@ void SparseBuffer::enqueueBinding(
     vk::BindSparseInfo bsi {
         static_cast<u32>(waits_.size()),
         waits_.data(),
-        1ui32,
+        1uL,
         &_bindData,
         0,
         nullptr,
@@ -273,7 +273,7 @@ void SparseBuffer::enqueueBindingSync(const ptr<CommandQueue> queue_) {
     vk::BindSparseInfo bsi {
         0,
         nullptr,
-        1ui32,
+        1uL,
         &_bindData,
         0,
         nullptr,
@@ -293,6 +293,6 @@ void SparseBuffer::enqueueBindingSync(const ptr<CommandQueue> queue_) {
     [[maybe_unused]] auto res { queue_->vkQueue().bindSparse(1, &bsi, fence) };
     #endif
 
-    res = queue_->device()->vkDevice().waitForFences(1ui32, &fence, VK_TRUE, UINT64_MAX);
+    res = queue_->device()->vkDevice().waitForFences(1uL, &fence, VK_TRUE, UINT64_MAX);
     assert(res == vk::Result::eSuccess);
 }

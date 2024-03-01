@@ -26,10 +26,10 @@ smr<TextureResource> TextureTransformer::transpose(
     const non_owning_rptr<const assets::TextureAsset> asset = request_;
     auto view = _pool->allocateSparseTexture(
         pool::SparseTextureAllocation {
-            .layers = 1ui32,
+            .layers = 1uL,
             .extent = asset->getExtent(),
             .format = asset->getTextureFormat(),
-            .mipLevels = { 0ui32, asset->getMipLevelCount() - 1ui32 },
+            .mipLevels = { 0uL, asset->getMipLevelCount() - 1uL },
             .type = asset->getTextureType()
         }
     );

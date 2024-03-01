@@ -11,8 +11,8 @@ texture::FolderAudio::FolderAudio() :
         clone(texture::FolderAudio::unstable_auto_guid()),
         image::FolderAudio::unstable_auto_guid(),
         {},
-        { 144ui32, 144ui32, 1ui32 },
+        { 144u, 144u, 1u },
         TextureFormat::eR8G8B8A8Srgb,
-        1ui32,
+        1uL,
         engine::gfx::TextureType::e2d
     ) {}

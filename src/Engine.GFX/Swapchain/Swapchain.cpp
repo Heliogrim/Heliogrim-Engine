@@ -16,7 +16,7 @@ cref<math::uivec2> Swapchain::extent() const noexcept {
 }
 
 s64 Swapchain::imageCount() const noexcept {
-    return -1i64;
+    return -1LL;
 }
 
 cref<smr<Texture>> Swapchain::at(u64 idx_) const {

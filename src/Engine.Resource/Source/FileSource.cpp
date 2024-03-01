@@ -101,7 +101,7 @@ bool FileSource::isReadable() const noexcept {
 }
 
 bool FileSource::isWritable() const noexcept {
-    return _size <= 0ui64;
+    return _size <= 0uLL;
 }
 
 streamsize FileSource::size() const {

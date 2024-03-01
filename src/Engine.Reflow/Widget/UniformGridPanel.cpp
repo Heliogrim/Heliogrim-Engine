@@ -107,16 +107,16 @@ math::vec2 UniformGridPanel::computeDesiredSize(cref<ReflowPassState> passState_
     math::vec2 innerSize { 0.F };
     if (attr.orientation.getValue() == algorithm::FlexLineOrientation::eVertical) {
 
-        const u32 itemPerLine = MAX(static_cast<u32>(std::floorf(itemsPerAxis.y)), 1ui32);
-        const u32 lineCount = gridItemCount / itemPerLine + (gridItemCount % itemPerLine == 0 ? 0ui32 : 1ui32);
+        const u32 itemPerLine = MAX(static_cast<u32>(std::floorf(itemsPerAxis.y)), 1uL);
+        const u32 lineCount = gridItemCount / itemPerLine + (gridItemCount % itemPerLine == 0 ? 0uL : 1uL);
 
         innerSize.x = compoundSize.x * static_cast<float>(lineCount) - attr.colGap.getValue();
         innerSize.y = compoundSize.y * static_cast<float>(itemPerLine) - attr.rowGap.getValue();
 
     } else {
 
-        const u32 itemPerLine = MAX(static_cast<u32>(std::floorf(itemsPerAxis.x)), 1ui32);
-        const u32 lineCount = gridItemCount / itemPerLine + (gridItemCount % itemPerLine == 0 ? 0ui32 : 1ui32);
+        const u32 itemPerLine = MAX(static_cast<u32>(std::floorf(itemsPerAxis.x)), 1uL);
+        const u32 lineCount = gridItemCount / itemPerLine + (gridItemCount % itemPerLine == 0 ? 0uL : 1uL);
 
         innerSize.x = compoundSize.x * static_cast<float>(itemPerLine) - attr.colGap.getValue();
         innerSize.y = compoundSize.y * static_cast<float>(lineCount) - attr.rowGap.getValue();
@@ -152,11 +152,11 @@ void UniformGridPanel::applyLayout(ref<ReflowState> state_, mref<LayoutContext> 
     math::uivec2 lineLayout { 0 };
 
     if (attr.orientation.getValue() == algorithm::FlexLineOrientation::eVertical) {
-        lineLayout.x = MAX(static_cast<u32>(std::floorf(itemsPerAxis.y)), 1ui32);
-        lineLayout.y = gridItemCount / lineLayout.x + (gridItemCount % lineLayout.x == 0 ? 0ui32 : 1ui32);
+        lineLayout.x = MAX(static_cast<u32>(std::floorf(itemsPerAxis.y)), 1uL);
+        lineLayout.y = gridItemCount / lineLayout.x + (gridItemCount % lineLayout.x == 0 ? 0uL : 1uL);
     } else {
-        lineLayout.x = MAX(static_cast<u32>(std::floorf(itemsPerAxis.x)), 1ui32);
-        lineLayout.y = gridItemCount / lineLayout.x + (gridItemCount % lineLayout.x == 0 ? 0ui32 : 1ui32);
+        lineLayout.x = MAX(static_cast<u32>(std::floorf(itemsPerAxis.x)), 1uL);
+        lineLayout.y = gridItemCount / lineLayout.x + (gridItemCount % lineLayout.x == 0 ? 0uL : 1uL);
     }
 
     const math::vec2 mainLineOff = isVertical ? math::vec2 { 0.F, compoundSize.y } : math::vec2 { compoundSize.x, 0.F };

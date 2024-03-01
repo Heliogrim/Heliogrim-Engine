@@ -10,7 +10,7 @@ namespace hg::engine::gfx {
         /**
          * Extent ( Width | Height | Depth )
          */
-        math::uivec3 extent { 0ui32 };
+        math::uivec3 extent { 0uL };
 
         /**
          * Format
@@ -97,7 +97,7 @@ namespace hg::engine::gfx {
         /**
          * Range of layers `[min, max)`
          */
-        math::ivec2 layers = { -1i32, -1i32 };
+        math::ivec2 layers = { -1L, -1L };
 
         /**
          * Texture View Type
@@ -118,7 +118,7 @@ namespace hg::engine::gfx {
         /**
          * Range of mip levels `[min, max)`
          */
-        math::ivec2 mipLevels = { -1i32, -1i32 };
+        math::ivec2 mipLevels = { -1L, -1L };
 
         /*
          * TODO: Check for support:

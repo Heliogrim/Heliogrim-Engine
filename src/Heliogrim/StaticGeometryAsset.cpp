@@ -41,7 +41,7 @@ bool StaticGeometryAsset::isValidType() const noexcept {
 u32 StaticGeometryAsset::getMaterialCount() const {
 
     if (not internal()) {
-        return 0ui32;
+        return 0uL;
     }
 
     return static_cast<ptr<engine::assets::StaticGeometry>>(internal())->getMaterialCount();

@@ -29,7 +29,7 @@ VorbisImporter::import_result_type VorbisImporter::import(cref<res::FileTypeId> 
 
     Buffer buffer {
         .size = samples * info.channels * sizeof(float),
-        .align = 0ui64,
+        .align = 0uLL,
         .mem = malloc(samples * info.channels * sizeof(float))
     };
 

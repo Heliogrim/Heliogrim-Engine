@@ -324,7 +324,7 @@ tl::expected<smr<const GraphicsPass>, AccelerationPassFactoryError> VkAccelerati
         vk::RenderPassCreateFlags(),
         static_cast<u32>(result->_attachments.size()),
         result->_attachments.data(),
-        1ui32,
+        1uL,
         &subpass,
         static_cast<u32>(result->_dependencies.size()),
         result->_dependencies.data()

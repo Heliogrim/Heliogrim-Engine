@@ -187,7 +187,7 @@ EventResponse InputFloat::onKeyDown(cref<KeyboardEvent> event_) {
 
     } else if (event_._key >= 0x30 && event_._key <= 0x39) {
 
-        const auto maxChars { static_cast<u64>(std::floor(std::log10(static_cast<long double>(_limits.max)))) + 1ui64 };
+        const auto maxChars { static_cast<u64>(std::floor(std::log10(static_cast<long double>(_limits.max)))) + 1uLL };
 
         if (_value.size() >= maxChars) {
             return EventResponse::eConsumed;

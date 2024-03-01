@@ -49,12 +49,12 @@ namespace hg::engine::gfx::memory {
         //
         MemoryMapping mapping;
 
-        MemoryMapping map(const u64 size_, const u64 offset_ = 0ui64);
+        MemoryMapping map(const u64 size_, const u64 offset_ = 0uLL);
 
         void unmap();
 
         //
-        void flush(const u64 size_, const u64 offset_ = 0ui64);
+        void flush(const u64 size_, const u64 offset_ = 0uLL);
 
         bool write(const ptr<const void> data_, const u64 size_);
 

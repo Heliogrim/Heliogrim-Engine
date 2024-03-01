@@ -61,7 +61,7 @@ AllocationResult VkAllocator::allocate(
         nullptr,
         layout_,
         size_,
-        0ui64,
+        0uLL,
         _device->vkDevice(),
         vk::DeviceMemory { mem }
     );

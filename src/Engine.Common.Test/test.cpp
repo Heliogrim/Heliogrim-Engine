@@ -34,9 +34,9 @@ namespace Common {
             mp0.create();
 
             ASSERT_TRUE(mp0);
-            ASSERT_EQ(*mp0, 0ui64);
+            ASSERT_EQ(*mp0, 0uLL);
 
-            u64 test = 4379689246ui64;
+            u64 test = 4379689246uLL;
             mp0.store(test);
 
             ASSERT_EQ(*mp0, test);
@@ -130,9 +130,9 @@ namespace Common {
             mp0.create();
 
             ASSERT_TRUE(mp0);
-            ASSERT_EQ(*mp0, 0ui64);
+            ASSERT_EQ(*mp0, 0uLL);
 
-            u64 test = 4379689246ui64;
+            u64 test = 4379689246uLL;
             mp0.store(test);
 
             ASSERT_EQ(*mp0, test);

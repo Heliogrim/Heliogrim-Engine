@@ -49,13 +49,13 @@ sptr<Widget> HierarchyGenerator<sptr<SceneViewEntry>>::operator()(
         auto txt = make_sptr<Text>();
         theme->applyLabel(txt);
 
-        u64 depth { 0ui64 };
+        u64 depth { 0uLL };
         auto parent { comp };
         while ((parent = parent->getParentComponent())) {
             ++depth;
         }
 
-        if (depth <= 0ui64) {
+        if (depth <= 0uLL) {
             txt->setText(std::format(R"(Root Component << {} >>)", comp->getTypeId().data));
         } else {
             txt->setText(std::format(R"(Component [D{}] << {} >>)", depth, comp->getTypeId().data));

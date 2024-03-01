@@ -53,7 +53,7 @@ namespace hg::engine::reflow {
         void enable() override {
 
             const auto& children { *_content->children() };
-            for (size_t i { 1ui64 }; i < children.size(); i += 2ui64) {
+            for (size_t i { 1uLL }; i < children.size(); i += 2uLL) {
                 const auto& child { children[i] };
                 std::static_pointer_cast<InputBase, Widget>(child)->enable();
             }
@@ -62,7 +62,7 @@ namespace hg::engine::reflow {
         void disable() override {
 
             const auto& children { *_content->children() };
-            for (size_t i { 1ui64 }; i < children.size(); i += 2ui64) {
+            for (size_t i { 1uLL }; i < children.size(); i += 2uLL) {
                 const auto& child { children[i] };
                 std::static_pointer_cast<InputBase, Widget>(child)->disable();
             }
@@ -71,7 +71,7 @@ namespace hg::engine::reflow {
         void markAsDirty() override {
 
             const auto& children { *_content->children() };
-            for (size_t i { 1ui64 }; i < children.size(); i += 2ui64) {
+            for (size_t i { 1uLL }; i < children.size(); i += 2uLL) {
                 const auto& child { children[i] };
                 std::static_pointer_cast<InputBase, Widget>(child)->markAsDirty();
             }
@@ -80,7 +80,7 @@ namespace hg::engine::reflow {
         void markAsPristine() override {
 
             const auto& children { *_content->children() };
-            for (size_t i { 1ui64 }; i < children.size(); i += 2ui64) {
+            for (size_t i { 1uLL }; i < children.size(); i += 2uLL) {
                 const auto& child { children[i] };
                 std::static_pointer_cast<InputBase, Widget>(child)->markAsPristine();
             }
@@ -88,7 +88,7 @@ namespace hg::engine::reflow {
 
         void markAsTouched() override {
             const auto& children { *_content->children() };
-            for (size_t i { 1ui64 }; i < children.size(); i += 2ui64) {
+            for (size_t i { 1uLL }; i < children.size(); i += 2uLL) {
                 const auto& child { children[i] };
                 std::static_pointer_cast<InputBase, Widget>(child)->markAsTouched();
             }
@@ -97,7 +97,7 @@ namespace hg::engine::reflow {
         void markAsUntouched() override {
 
             const auto& children { *_content->children() };
-            for (size_t i { 1ui64 }; i < children.size(); i += 2ui64) {
+            for (size_t i { 1uLL }; i < children.size(); i += 2uLL) {
                 const auto& child { children[i] };
                 std::static_pointer_cast<InputBase, Widget>(child)->markAsTouched();
             }
@@ -106,7 +106,7 @@ namespace hg::engine::reflow {
         void reset() override {
 
             const auto& children { *_content->children() };
-            for (size_t i { 1ui64 }; i < children.size(); i += 2ui64) {
+            for (size_t i { 1uLL }; i < children.size(); i += 2uLL) {
                 const auto& child { children[i] };
                 std::static_pointer_cast<InputBase, Widget>(child)->reset();
             }
@@ -115,7 +115,7 @@ namespace hg::engine::reflow {
         void updateValueAndValidity(const bool propagate_, const bool emit_) override {
 
             const auto& children { *_content->children() };
-            for (size_t i { 1ui64 }; i < children.size(); i += 2ui64) {
+            for (size_t i { 1uLL }; i < children.size(); i += 2uLL) {
                 const auto& child { children[i] };
                 std::static_pointer_cast<InputBase, Widget>(child)->updateValueAndValidity(true, emit_);
             }

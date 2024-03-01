@@ -171,7 +171,7 @@ void MemoryPool::treeSplice(mref<uptr<AllocatedMemory>> memory_, const u64 targe
     uptr<AllocatedMemory> next { std::move(memory_) };
     while (next->size > targetSize_) {
 
-        const auto size { next->size >> 1ui64 };
+        const auto size { next->size >> 1uLL };
         const auto baseOffset { next->offset };
 
         // Prevent too much splitting under target size

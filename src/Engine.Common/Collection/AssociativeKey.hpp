@@ -16,7 +16,7 @@ namespace hg {
     public:
         template <typename KeyTx_ = KeyType_> requires std::is_default_constructible_v<KeyTx_>
         constexpr AssocKey() noexcept(std::is_nothrow_default_constructible_v<KeyTx_>) :
-            hash(~0ui64),
+            hash(~0uLL),
             value() {}
 
         constexpr AssocKey(mref<hash_type> hash_, mref<value_type> key_) :
@@ -37,7 +37,7 @@ namespace hg {
             hash(std::move(other_.hash)),
             value(std::move(other_.value)) {}
 
-        hash_type hash { ~0ui64 };
+        hash_type hash { ~0uLL };
         value_type value;
 
         [[nodiscard]] explicit operator value_type() const noexcept {

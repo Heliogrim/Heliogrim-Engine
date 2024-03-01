@@ -76,7 +76,7 @@ void VkPipelineCompiler::resolveBindLayouts(
             vk::DescriptorSetLayoutBinding vkDslb {
                 dsetLocation++,
                 vk::DescriptorType::eSampler,
-                1ui32,
+                1uL,
                 vk::ShaderStageFlagBits::eAll,
                 nullptr
             };
@@ -470,8 +470,8 @@ smr<VkGraphicsPipeline> VkPipelineCompiler::linkVk(
             isFrontFaceCulled ? vk::StencilOp::eKeep : api::stencilOp(specification_.stencilPassOp),
             isFrontFaceCulled ? vk::StencilOp::eKeep : api::stencilOp(specification_.stencilDepthFailOp),
             isFrontFaceCulled ? vk::CompareOp::eNever : api::stencilCompareOp(specification_.stencilCompareOp),
-            isFrontFaceCulled ? 0ui32 : specification_.stencilCompareMask.to_ulong(),
-            isFrontFaceCulled ? 0ui32 : specification_.stencilWriteMask.to_ulong(),
+            isFrontFaceCulled ? 0uL : specification_.stencilCompareMask.to_ulong(),
+            isFrontFaceCulled ? 0uL : specification_.stencilWriteMask.to_ulong(),
             {}
         };
         pdssci.back = vk::StencilOpState {
@@ -479,8 +479,8 @@ smr<VkGraphicsPipeline> VkPipelineCompiler::linkVk(
             isBackFaceCulled ? vk::StencilOp::eKeep : api::stencilOp(specification_.stencilPassOp),
             isBackFaceCulled ? vk::StencilOp::eKeep : api::stencilOp(specification_.stencilDepthFailOp),
             isBackFaceCulled ? vk::CompareOp::eNever : api::stencilCompareOp(specification_.stencilCompareOp),
-            isBackFaceCulled ? 0ui32 : specification_.stencilCompareMask.to_ulong(),
-            isBackFaceCulled ? 0ui32 : specification_.stencilWriteMask.to_ulong(),
+            isBackFaceCulled ? 0uL : specification_.stencilCompareMask.to_ulong(),
+            isBackFaceCulled ? 0uL : specification_.stencilWriteMask.to_ulong(),
             {}
         };
     }
@@ -553,7 +553,7 @@ smr<VkGraphicsPipeline> VkPipelineCompiler::linkVk(
         ) != pass_->getStageDerivates().end();
     }
 
-    ptsci.patchControlPoints = 0ui32;
+    ptsci.patchControlPoints = 0uL;
 
     if (not hasTessCtrl || not hasTessEval) {
         gpci.pTessellationState = nullptr;
@@ -677,8 +677,8 @@ smr<VkGraphicsPipeline> VkPipelineCompiler::linkVk(
     /* Viewport State */
 
     vk::Rect2D scissor {
-        { 0ui32, 0ui32 },
-        { 0ui32, 0ui32 }
+        { 0uL, 0uL },
+        { 0uL, 0uL }
     };
     vk::Viewport viewport {
         0.F, 0.F,
@@ -686,10 +686,10 @@ smr<VkGraphicsPipeline> VkPipelineCompiler::linkVk(
         0.F, 1.F
     };
 
-    pvsci.scissorCount = 1ui32;
+    pvsci.scissorCount = 1uL;
     pvsci.pScissors = &scissor;
 
-    pvsci.viewportCount = 1ui32;
+    pvsci.viewportCount = 1uL;
     pvsci.pViewports = &viewport;
 
     /**/
@@ -776,7 +776,7 @@ smr<VkGraphicsPipeline> VkPipelineCompiler::linkVk(
     /**/
 
     gpci.basePipelineHandle = nullptr;
-    gpci.basePipelineIndex = -1i32;
+    gpci.basePipelineIndex = -1L;
 
     const auto result = device->vkDevice().createGraphicsPipeline({}, gpci);
     assert(result.result == vk::Result::eSuccess);

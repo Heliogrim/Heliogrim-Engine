@@ -48,5 +48,5 @@ u64 StaticGeometry::getIndexCount() const {
 
 u32 StaticGeometry::getMaterialCount() const {
     // TODO:
-    return 1ui32;
+    return 1uL;
 }

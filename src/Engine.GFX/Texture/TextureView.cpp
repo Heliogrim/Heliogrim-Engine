@@ -32,7 +32,7 @@ math::uivec2::value_type TextureView::baseLayer() const noexcept {
 }
 
 math::uivec2::value_type TextureView::layers() const noexcept {
-    return (_layers.max - _layers.min) + 1ui32;
+    return (_layers.max - _layers.min) + 1uL;
 }
 
 math::uExtent3D::off_type TextureView::offsetX() const noexcept {
@@ -82,7 +82,7 @@ math::uivec2::value_type TextureView::minMipLevel() const noexcept {
 }
 
 math::uivec2::value_type TextureView::mipLevels() const noexcept {
-    return (_mipLevels.max - _mipLevels.min) + 1ui32;
+    return (_mipLevels.max - _mipLevels.min) + 1uL;
 }
 
 math::uivec2::value_type TextureView::maxMipLevel() const noexcept {

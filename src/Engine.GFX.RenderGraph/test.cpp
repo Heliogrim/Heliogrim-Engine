@@ -99,7 +99,7 @@ void setup_descriptions(ref<std::map<string, smr<graph::Description>>> map_) {
             graph::TextureDescription {
                 { graph::DescriptionValueMatchingMode::eInvariant, engine::gfx::TextureType::e2d },
                 { graph::DescriptionValueMatchingMode::eCovariant, engine::gfx::TextureFormat::eD32Sfloat },
-                { graph::DescriptionValueMatchingMode::eInvariant, 1ui32 },
+                { graph::DescriptionValueMatchingMode::eInvariant, 1uL },
                 {}
             }
         )
@@ -109,7 +109,7 @@ void setup_descriptions(ref<std::map<string, smr<graph::Description>>> map_) {
             graph::TextureDescription {
                 { graph::DescriptionValueMatchingMode::eInvariant, engine::gfx::TextureType::e2d },
                 { graph::DescriptionValueMatchingMode::eInvariant, engine::gfx::TextureFormat::eR8G8B8A8Unorm },
-                { graph::DescriptionValueMatchingMode::eCovariant, 1ui32 },
+                { graph::DescriptionValueMatchingMode::eCovariant, 1uL },
                 {}
             }
         )
@@ -119,7 +119,7 @@ void setup_descriptions(ref<std::map<string, smr<graph::Description>>> map_) {
             graph::TextureDescription {
                 { graph::DescriptionValueMatchingMode::eInvariant, engine::gfx::TextureType::e2d },
                 { graph::DescriptionValueMatchingMode::eInvariant, engine::gfx::TextureFormat::eB8G8R8A8Unorm },
-                { graph::DescriptionValueMatchingMode::eCovariant, 1ui32 },
+                { graph::DescriptionValueMatchingMode::eCovariant, 1uL },
                 {}
             }
         )
@@ -132,7 +132,7 @@ void setup_descriptions(ref<std::map<string, smr<graph::Description>>> map_) {
             graph::TextureDescription {
                 { graph::DescriptionValueMatchingMode::eInvariant, engine::gfx::TextureType::e2d },
                 { graph::DescriptionValueMatchingMode::eInvariant, engine::gfx::TextureFormat::eR16G16Sfloat },
-                { graph::DescriptionValueMatchingMode::eInvariant, 1ui32 },
+                { graph::DescriptionValueMatchingMode::eInvariant, 1uL },
                 {}
             }
         )
@@ -143,7 +143,7 @@ void setup_descriptions(ref<std::map<string, smr<graph::Description>>> map_) {
             graph::TextureDescription {
                 { graph::DescriptionValueMatchingMode::eInvariant, engine::gfx::TextureType::e2d },
                 { graph::DescriptionValueMatchingMode::eInvariant, engine::gfx::TextureFormat::eR16G16B16A16Sfloat },
-                { graph::DescriptionValueMatchingMode::eInvariant, 1ui32 },
+                { graph::DescriptionValueMatchingMode::eInvariant, 1uL },
                 {}
             }
         )
@@ -154,7 +154,7 @@ void setup_descriptions(ref<std::map<string, smr<graph::Description>>> map_) {
             graph::TextureDescription {
                 { graph::DescriptionValueMatchingMode::eInvariant, engine::gfx::TextureType::e2d },
                 { graph::DescriptionValueMatchingMode::eInvariant, engine::gfx::TextureFormat::eR32G32B32A32Sfloat },
-                { graph::DescriptionValueMatchingMode::eInvariant, 1ui32 },
+                { graph::DescriptionValueMatchingMode::eInvariant, 1uL },
                 {}
             }
         )

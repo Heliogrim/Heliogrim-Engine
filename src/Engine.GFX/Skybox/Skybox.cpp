@@ -16,13 +16,13 @@ Skybox::Skybox(cref<sptr<Device>> device_) :
 
     Cube cube {};
     cube.scale() = math::fvec2 { 1.F };
-    cube.segments() = math::uivec2 { 1ui32 };
+    cube.segments() = math::uivec2 { 1uL };
 
     _geometry = cube.convert();
 
     _cubemap = TextureFactory::get()->build(
         {
-            { 1024ui32, 1024ui32, 1ui32 },
+            { 1024u, 1024u, 1u },
             TextureFormat::eR8G8B8A8Unorm,
             1,
             TextureType::eCube,

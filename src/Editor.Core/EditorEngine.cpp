@@ -104,7 +104,7 @@ bool EditorEngine::init() {
     setupCorePipelines();
 
     /* Core modules should always interact with a guaranteed fiber context and non-sequential execution */
-    std::atomic_uint_fast8_t setupCounter { 0ui8 };
+    std::atomic_uint_fast8_t setupCounter { 0u };
 
     scheduler::exec(
         [this, &setupCounter] {
@@ -155,8 +155,8 @@ bool EditorEngine::init() {
     );
 
     /**/
-    scheduler::waitUntilAtomic(setupCounter, 6ui8);
-    setupCounter.store(0ui8, std::memory_order_relaxed);
+    scheduler::waitUntilAtomic(setupCounter, 6u);
+    setupCounter.store(0u, std::memory_order_relaxed);
 
     scheduler::exec(
         [this, &setupCounter] {
@@ -171,7 +171,7 @@ bool EditorEngine::init() {
     );
 
     /**/
-    scheduler::waitUntilAtomic(setupCounter, 1ui8);
+    scheduler::waitUntilAtomic(setupCounter, 1u);
     return setEngineState(EngineState::eInitialized);
 }
 
@@ -353,7 +353,7 @@ bool EditorEngine::shutdown() {
     scheduler::waitOnAtomic(subModuleFlag, false);
 
     /* Core modules should always interact with a guaranteed fiber context and non-sequential execution */
-    std::atomic_uint_fast8_t moduleCount { 0ui8 };
+    std::atomic_uint_fast8_t moduleCount { 0u };
 
     scheduler::exec(
         [this, &moduleCount] {
@@ -404,7 +404,7 @@ bool EditorEngine::shutdown() {
     );
 
     /**/
-    scheduler::waitUntilAtomic(moduleCount, 6ui8);
+    scheduler::waitUntilAtomic(moduleCount, 6u);
 
     /* Base module are setup via direct call without fiber context guarantee (which is unlikely) */
     _resources->destroy();

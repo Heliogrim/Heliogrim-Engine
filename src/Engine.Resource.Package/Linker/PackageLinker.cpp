@@ -193,11 +193,11 @@ u64 PackageLinker::getArchiveCount() const noexcept {
 
 s64 PackageLinker::getArchiveSize() const noexcept {
     if (not _package) {
-        return -1i64;
+        return -1LL;
     }
 
     if (_links.empty()) {
-        return 0i64;
+        return 0LL;
     }
 
     const auto firstByte = _links.front().index.offset;

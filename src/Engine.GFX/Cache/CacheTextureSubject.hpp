@@ -171,8 +171,8 @@ namespace std {
                 obj_.extent.z,
             };
 
-            ::hg::u64 dst { ~0ui64 };
-            ::hg::hash::murmur3_x64_64(data, sizeof(data), 0x351678ui32, dst);
+            ::hg::u64 dst { ~0uLL };
+            ::hg::hash::murmur3_x64_64(data, sizeof(data), 0x351678uL, dst);
 
             return dst;
         }

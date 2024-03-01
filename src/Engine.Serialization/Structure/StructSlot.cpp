@@ -112,7 +112,7 @@ s64 StructSlot::findRecord(cref<record_key_type> key_) const {
 
     /**/
 
-    return tmp == key_ ? offset : -1i64;
+    return tmp == key_ ? offset : -1LL;
 }
 
 sptr<RecordSlot> StructSlot::insertRecord(cref<record_key_type> key_) {

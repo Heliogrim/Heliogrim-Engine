@@ -11,8 +11,8 @@ texture::DefaultSkybox::DefaultSkybox() :
         clone(texture::DefaultSkybox::unstable_auto_guid()),
         image::DefaultSkybox::unstable_auto_guid(),
         {},
-        { 2048ui32, 2048ui32, 1ui32 },
+        { 2048u, 2048u, 1u },
         TextureFormat::eR16G16B16A16Sfloat,
-        12ui32,
+        12uL,
         engine::gfx::TextureType::eCube
     ) {}

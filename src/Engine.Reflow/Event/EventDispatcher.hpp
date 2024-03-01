@@ -84,7 +84,7 @@ namespace hg::engine::reflow {
 
             backlog.push(window_);
 
-            u64 size { 0ui64 };
+            u64 size { 0uLL };
             while (size != backlog.size()) {
 
                 size = backlog.size();
@@ -199,7 +199,7 @@ namespace hg::engine::reflow {
 
             backlog.push(window_);
 
-            u64 size { 0ui64 };
+            u64 size { 0uLL };
             while (size != backlog.size()) {
 
                 size = backlog.size();
@@ -249,7 +249,7 @@ namespace hg::engine::reflow {
 
             backlog.push(window_);
 
-            u64 size { 0ui64 };
+            u64 size { 0uLL };
             while (size != backlog.size()) {
 
                 size = backlog.size();
@@ -298,7 +298,7 @@ namespace hg::engine::reflow {
 
             backlog.push(event_._target);
 
-            u64 size { 0ui64 };
+            u64 size { 0uLL };
             while (size != backlog.size()) {
 
                 size = backlog.size();

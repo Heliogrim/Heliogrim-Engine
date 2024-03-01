@@ -40,12 +40,12 @@ bool engine::gfx::isDepthStencilFormat(cref<TextureFormat> format_) noexcept {
 s64 engine::gfx::formatDataSize(const TextureFormat format_) noexcept {
     switch (format_) {
         case TextureFormat::eR8Unorm: {
-            return 1i64;
+            return 1LL;
         }
         case TextureFormat::eR16Uint:
         case TextureFormat::eR16Unorm:
         case TextureFormat::eR16Sfloat: {
-            return 2i64;
+            return 2LL;
         }
         case TextureFormat::eR8G8B8Unorm: {
             return 3L;
@@ -55,21 +55,21 @@ s64 engine::gfx::formatDataSize(const TextureFormat format_) noexcept {
         case TextureFormat::eR16G16Uint:
         case TextureFormat::eR8G8B8A8Unorm:
         case TextureFormat::eR8G8B8A8Srgb: {
-            return 4i64;
+            return 4LL;
         }
         case TextureFormat::eR32G32Unorm:
         case TextureFormat::eR16G16B16A16Sfloat: {
-            return 8i64;
+            return 8LL;
         }
         case TextureFormat::eR32G32B32Unorm: {
-            return 12i64;
+            return 12LL;
         }
         case TextureFormat::eR32G32B32A32Unorm:
         case TextureFormat::eR32G32B32A32Sfloat: {
-            return 16i64;
+            return 16LL;
         }
         default: {
-            return -1i64;
+            return -1LL;
         }
     }
 }

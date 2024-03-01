@@ -9,13 +9,13 @@ using namespace hg::engine::gfx::glow;
 using namespace hg::engine::gfx;
 using namespace hg;
 
-constexpr u16 internal_mip_mask { 0b1111'000000'000000ui16 };
-constexpr u16 internal_mip_shift { 12ui16 };
+constexpr u16 internal_mip_mask { 0b1111'000000'000000uL };
+constexpr u16 internal_mip_shift { 12uL };
 
-constexpr u16 internal_uvw_bit_per_dim { 6ui16 };
-constexpr u16 internal_uvw_dim_mask { 0b0000'000000'111111ui16 };
-constexpr u16 internal_uvw_mask { 0b0000'111111'111111ui16 };
-constexpr u16 internal_uvw_shift { 0ui16 };
+constexpr u16 internal_uvw_bit_per_dim { 6uL };
+constexpr u16 internal_uvw_dim_mask { 0b0000'000000'111111uL };
+constexpr u16 internal_uvw_mask { 0b0000'111111'111111uL };
+constexpr u16 internal_uvw_shift { 0uL };
 
 RevVirtualMarkerTexture::~RevVirtualMarkerTexture() {
     if (_texture) {
@@ -103,8 +103,8 @@ void RevVirtualMarkerTexture::generateMarkers() {
             vk::ImageAspectFlagBits::eColor,
             0,
             _supportedMips.max,
-            0ui32,
-            1ui32
+            0uL,
+            1uL
         }
     };
 
@@ -131,20 +131,20 @@ void RevVirtualMarkerTexture::generateMarkers() {
 
         //
         auto extent { _extent >> mip };
-        extent.x = extent.x > 0ui32 ? extent.x : 1ui32;
-        extent.y = extent.y > 0ui32 ? extent.y : 1ui32;
-        extent.z = extent.z > 0ui32 ? extent.z : 1ui32;
+        extent.x = extent.x > 0uL ? extent.x : 1uL;
+        extent.y = extent.y > 0uL ? extent.y : 1uL;
+        extent.z = extent.z > 0uL ? extent.z : 1uL;
 
         const math::uivec3 tile {
-            (extent.x / _tileExtent.x) + ((extent.x % _tileExtent.x) ? 1ui32 : 0ui32),
-            (extent.y / _tileExtent.y) + ((extent.y % _tileExtent.y) ? 1ui32 : 0ui32),
-            (extent.z / _tileExtent.z) + ((extent.z % _tileExtent.z) ? 1ui32 : 0ui32)
+            (extent.x / _tileExtent.x) + ((extent.x % _tileExtent.x) ? 1uL : 0uL),
+            (extent.y / _tileExtent.y) + ((extent.y % _tileExtent.y) ? 1uL : 0uL),
+            (extent.z / _tileExtent.z) + ((extent.z % _tileExtent.z) ? 1uL : 0uL)
         };
 
         //
-        for (u32 tileZ { 0ui32 }; tileZ < tile.z; ++tileZ) {
-            for (u32 tileY { 0ui32 }; tileY < tile.y; ++tileY) {
-                for (u32 tileX { 0ui32 }; tileX < tile.x; ++tileX) {
+        for (u32 tileZ { 0uL }; tileZ < tile.z; ++tileZ) {
+            for (u32 tileY { 0uL }; tileY < tile.y; ++tileY) {
+                for (u32 tileX { 0uL }; tileX < tile.x; ++tileX) {
 
                     cmd.reset();
                     cmd.begin();
@@ -153,21 +153,21 @@ void RevVirtualMarkerTexture::generateMarkers() {
                         tileIndex({ tileX * _tileExtent.x, tileY * _tileExtent.y, tileZ * _tileExtent.z }, mip)
                     };
 
-                    for (u32 i { 0ui32 }; i < tileDataSize / sizeof(u16); ++i) {
+                    for (u32 i { 0uL }; i < tileDataSize / sizeof(u16); ++i) {
                         static_cast<ptr<u16>>(stage.memory->mapping)[i] = static_cast<u16>(encoded);
                     }
 
                     stage.flushAligned(tileDataSize);
 
                     const vk::BufferImageCopy region {
-                        0ui32,
-                        0ui32,
-                        0ui32,
+                        0uL,
+                        0uL,
+                        0uL,
                         vk::ImageSubresourceLayers {
                             vk::ImageAspectFlagBits::eColor,
                             mip,
-                            0ui32,
-                            1ui32
+                            0uL,
+                            1uL
                         },
                         vk::Offset3D {
                             static_cast<s32>(tileX * _tileExtent.x),
@@ -185,7 +185,7 @@ void RevVirtualMarkerTexture::generateMarkers() {
                         stage.buffer,
                         _texture.buffer().image(),
                         vk::ImageLayout::eTransferDstOptimal,
-                        1ui32,
+                        1uL,
                         &region
                     );
 
@@ -214,8 +214,8 @@ void RevVirtualMarkerTexture::generateMarkers() {
             vk::ImageAspectFlagBits::eColor,
             0,
             _supportedMips.max,
-            0ui32,
-            1ui32
+            0uL,
+            1uL
         }
     };
 
@@ -250,23 +250,23 @@ void RevVirtualMarkerTexture::generateMarkers() {
 void RevVirtualMarkerTexture::setup() {
 
     // TODO: Query device limits and sparse sizes
-    _tileExtent = { 128ui32, 128ui32, 1ui32 };
-    _extent = { 8192ui32, 8192ui32, 1ui32 };
+    _tileExtent = { 128u, 128u, 1u };
+    _extent = { 8192u, 8192u, 1u };
 
     //
     const auto mipLimit { static_cast<u32>(std::log2(MAX(MAX(_extent.x, _extent.y), _extent.z)) + 1.F) };
 
-    _supportedMips = { 0ui32, mipLimit };
+    _supportedMips = { 0uL, mipLimit };
 
     _tilesPerLayer.clear();
     _tilesPerLayer.reserve(mipLimit);
 
-    for (u32 mip { 0ui32 }; mip < mipLimit; ++mip) {
+    for (u32 mip { 0uL }; mip < mipLimit; ++mip) {
 
         const auto extent { _extent >> mip };
-        const auto tilesPerRow { (extent.x / _tileExtent.x) + ((extent.x % _tileExtent.x) ? 1ui32 : 0ui32) };
-        const auto tilesPerCol { (extent.y / _tileExtent.y) + ((extent.y % _tileExtent.y) ? 1ui32 : 0ui32) };
-        const auto tilesPerLayer { (extent.z / _tileExtent.z) + ((extent.z % _tileExtent.z) ? 1ui32 : 0ui32) };
+        const auto tilesPerRow { (extent.x / _tileExtent.x) + ((extent.x % _tileExtent.x) ? 1uL : 0uL) };
+        const auto tilesPerCol { (extent.y / _tileExtent.y) + ((extent.y % _tileExtent.y) ? 1uL : 0uL) };
+        const auto tilesPerLayer { (extent.z / _tileExtent.z) + ((extent.z % _tileExtent.z) ? 1uL : 0uL) };
 
         const auto tiles { tilesPerRow * tilesPerCol * tilesPerLayer };
 
@@ -307,18 +307,18 @@ void RevVirtualMarkerTexture::destroy() {
 
 math::uivec3 RevVirtualMarkerTexture::tileExtent(const u32 level_) const noexcept {
 
-    if (level_ < 6ui32) {
+    if (level_ < 6uL) {
         return _tileExtent;
     }
 
     auto ext { math::uivec3 { _extent } >> level_ };
-    ext.z = 1ui32;
+    ext.z = 1uL;
     return ext;
 }
 
 u32 RevVirtualMarkerTexture::tileCount() const noexcept {
 
-    u32 tiles { 0ui32 };
+    u32 tiles { 0uL };
     for (const auto& entry : _tilesPerLayer) {
         tiles += entry;
     }
@@ -343,13 +343,13 @@ s64 RevVirtualMarkerTexture::estimateTileDataSize(const TextureFormat format_) c
 s32 RevVirtualMarkerTexture::tileIndex(const math::uivec3 uvw_, const u32 level_) const noexcept {
 
     auto extent { _extent >> level_ };
-    extent.x = extent.x > 0ui32 ? extent.x : 1ui32;
-    extent.y = extent.y > 0ui32 ? extent.y : 1ui32;
-    extent.z = extent.z > 0ui32 ? extent.z : 1ui32;
+    extent.x = extent.x > 0uL ? extent.x : 1uL;
+    extent.y = extent.y > 0uL ? extent.y : 1uL;
+    extent.z = extent.z > 0uL ? extent.z : 1uL;
 
-    const auto tilesPerRow { (extent.x / _tileExtent.x) + ((extent.x % _tileExtent.x) ? 1ui32 : 0ui32) };
-    const auto tilesPerCol { (extent.y / _tileExtent.y) + ((extent.y % _tileExtent.y) ? 1ui32 : 0ui32) };
-    const auto tilesPerLayer { (extent.z / _tileExtent.z) + ((extent.z % _tileExtent.z) ? 1ui32 : 0ui32) };
+    const auto tilesPerRow { (extent.x / _tileExtent.x) + ((extent.x % _tileExtent.x) ? 1uL : 0uL) };
+    const auto tilesPerCol { (extent.y / _tileExtent.y) + ((extent.y % _tileExtent.y) ? 1uL : 0uL) };
+    const auto tilesPerLayer { (extent.z / _tileExtent.z) + ((extent.z % _tileExtent.z) ? 1uL : 0uL) };
 
     const auto result { static_cast<u16>((static_cast<u16>(level_) << internal_mip_shift) & internal_mip_mask) };
 
@@ -361,10 +361,10 @@ s32 RevVirtualMarkerTexture::tileIndex(const math::uivec3 uvw_, const u32 level_
         rowTile >= tilesPerRow ||
         colTile >= tilesPerCol ||
         layerTile >= tilesPerLayer) {
-        return -1i32;
+        return -1L;
     }
 
-    u16 idx { 0ui16 };
+    u16 idx { 0uL };
     // Store X-Dimension to lower 6 Bits
     idx |= rowTile;
     // Store Y-Dimension to upper 6 Bits
@@ -383,16 +383,16 @@ std::pair<s32, math::uivec3> RevVirtualMarkerTexture::tileFromIndex(const u16 in
     const auto dy { (index_ >> internal_uvw_bit_per_dim) & internal_uvw_dim_mask };
 
     auto extent { _extent >> mip };
-    extent.x = extent.x > 0ui32 ? extent.x : 1ui32;
-    extent.y = extent.y > 0ui32 ? extent.y : 1ui32;
-    extent.z = extent.z > 0ui32 ? extent.z : 1ui32;
+    extent.x = extent.x > 0uL ? extent.x : 1uL;
+    extent.y = extent.y > 0uL ? extent.y : 1uL;
+    extent.z = extent.z > 0uL ? extent.z : 1uL;
 
-    const auto tilesPerRow { (extent.x / _tileExtent.x) + ((extent.x % _tileExtent.x) ? 1ui32 : 0ui32) };
-    const auto tilesPerCol { (extent.y / _tileExtent.y) + ((extent.y % _tileExtent.y) ? 1ui32 : 0ui32) };
-    // Warning: Z-Collapsed :: const auto tilesPerLayer { (extent.z / _tileExtent.z) + ((extent.z % _tileExtent.z) ? 1ui32 : 0ui32) };
+    const auto tilesPerRow { (extent.x / _tileExtent.x) + ((extent.x % _tileExtent.x) ? 1uL : 0uL) };
+    const auto tilesPerCol { (extent.y / _tileExtent.y) + ((extent.y % _tileExtent.y) ? 1uL : 0uL) };
+    // Warning: Z-Collapsed :: const auto tilesPerLayer { (extent.z / _tileExtent.z) + ((extent.z % _tileExtent.z) ? 1uL : 0uL) };
 
     if (not isSupportedMip(mip) || dx >= tilesPerRow || dy >= tilesPerCol) {
-        return std::make_pair(-1i32, math::uivec3 {});
+        return std::make_pair(-1L, math::uivec3 {});
     }
 
     return std::make_pair(
@@ -401,110 +401,110 @@ std::pair<s32, math::uivec3> RevVirtualMarkerTexture::tileFromIndex(const u16 in
             dx * _tileExtent.x,
             dy * _tileExtent.y,
             // Warning: Z-Collapse :: Suppress third dimension
-            0ui32
+            0uL
         }
     );
 }
 
 u16 tileBitOffsetToIndex(u16 offset_) {
 
-    if (offset_ < 1ui32) {
-        return static_cast<u16>((13ui16 << internal_mip_shift) & internal_mip_mask);
+    if (offset_ < 1uL) {
+        return static_cast<u16>((13uL << internal_mip_shift) & internal_mip_mask);
     }
 
-    if (offset_ < 2ui32) {
-        return static_cast<u16>((12ui16 << internal_mip_shift) & internal_mip_mask);
+    if (offset_ < 2uL) {
+        return static_cast<u16>((12uL << internal_mip_shift) & internal_mip_mask);
     }
 
-    if (offset_ < 3ui32) {
-        return static_cast<u16>((11ui16 << internal_mip_shift) & internal_mip_mask);
+    if (offset_ < 3uL) {
+        return static_cast<u16>((11uL << internal_mip_shift) & internal_mip_mask);
     }
 
-    if (offset_ < 4ui32) {
-        return static_cast<u16>((10ui16 << internal_mip_shift) & internal_mip_mask);
+    if (offset_ < 4uL) {
+        return static_cast<u16>((10uL << internal_mip_shift) & internal_mip_mask);
     }
 
-    if (offset_ < 5ui32) {
-        return static_cast<u16>((9ui16 << internal_mip_shift) & internal_mip_mask);
+    if (offset_ < 5uL) {
+        return static_cast<u16>((9uL << internal_mip_shift) & internal_mip_mask);
     }
 
-    if (offset_ < 6ui32) {
-        return static_cast<u16>((8ui16 << internal_mip_shift) & internal_mip_mask);
+    if (offset_ < 6uL) {
+        return static_cast<u16>((8uL << internal_mip_shift) & internal_mip_mask);
     }
 
-    if (offset_ < 7ui32) {
-        return static_cast<u16>((7ui16 << internal_mip_shift) & internal_mip_mask);
+    if (offset_ < 7uL) {
+        return static_cast<u16>((7uL << internal_mip_shift) & internal_mip_mask);
     }
 
-    if (offset_ < 8ui32) {
-        return static_cast<u16>((6ui16 << internal_mip_shift) & internal_mip_mask);
+    if (offset_ < 8uL) {
+        return static_cast<u16>((6uL << internal_mip_shift) & internal_mip_mask);
     }
 
-    if (offset_ < 12ui32) {
+    if (offset_ < 12uL) {
 
-        constexpr u16 dim { 2ui16 };
-        const auto inner { offset_ - 8ui16 };
+        constexpr u16 dim { 2uL };
+        const auto inner { offset_ - 8uL };
 
         return static_cast<u16>(
-            static_cast<u16>((5ui16 << internal_mip_shift) & internal_mip_mask) |
+            static_cast<u16>((5uL << internal_mip_shift) & internal_mip_mask) |
             (inner /* (modulo) */ % dim) |
             (inner /* (div) */ / dim) << internal_uvw_bit_per_dim
         );
     }
 
-    if (offset_ < 28ui32) {
+    if (offset_ < 28uL) {
 
-        constexpr u16 dim { 4ui16 };
-        const auto inner { offset_ - 12ui16 };
+        constexpr u16 dim { 4uL };
+        const auto inner { offset_ - 12uL };
 
         return static_cast<u16>(
-            static_cast<u16>((4ui16 << internal_mip_shift) & internal_mip_mask) |
+            static_cast<u16>((4uL << internal_mip_shift) & internal_mip_mask) |
             (inner /* (modulo) */ % dim) |
             (inner /* (div) */ / dim) << internal_uvw_bit_per_dim
         );
     }
 
-    if (offset_ < 92ui32) {
+    if (offset_ < 92uL) {
 
-        constexpr u16 dim { 8ui16 };
-        const auto inner { offset_ - 28ui16 };
+        constexpr u16 dim { 8uL };
+        const auto inner { offset_ - 28uL };
 
         return static_cast<u16>(
-            static_cast<u16>((3ui16 << internal_mip_shift) & internal_mip_mask) |
+            static_cast<u16>((3uL << internal_mip_shift) & internal_mip_mask) |
             (inner /* (modulo) */ % dim) |
             (inner /* (div) */ / dim) << internal_uvw_bit_per_dim
         );
     }
 
-    if (offset_ < 348ui32) {
+    if (offset_ < 348uL) {
 
-        constexpr u16 dim { 16ui16 };
-        const auto inner { offset_ - 92ui16 };
+        constexpr u16 dim { 16uL };
+        const auto inner { offset_ - 92uL };
 
         return static_cast<u16>(
-            static_cast<u16>((2ui16 << internal_mip_shift) & internal_mip_mask) |
+            static_cast<u16>((2uL << internal_mip_shift) & internal_mip_mask) |
             (inner /* (modulo) */ % dim) |
             (inner /* (div) */ / dim) << internal_uvw_bit_per_dim
         );
     }
 
-    if (offset_ < 1372ui32) {
+    if (offset_ < 1372uL) {
 
-        constexpr u16 dim { 32ui16 };
-        const auto inner { offset_ - 348ui16 };
+        constexpr u16 dim { 32uL };
+        const auto inner { offset_ - 348uL };
 
         return static_cast<u16>(
-            static_cast<u16>((1ui16 << internal_mip_shift) & internal_mip_mask) |
+            static_cast<u16>((1uL << internal_mip_shift) & internal_mip_mask) |
             (inner /* (modulo) */ % dim) |
             (inner /* (div) */ / dim) << internal_uvw_bit_per_dim
         );
     }
 
-    constexpr u16 dim { 64ui16 };
-    const auto inner { offset_ - 1372ui16 };
+    constexpr u16 dim { 64uL };
+    const auto inner { offset_ - 1372uL };
 
     return static_cast<u16>(
-        static_cast<u16>((0ui16 << internal_mip_shift) & internal_mip_mask) |
+        static_cast<u16>((0uL << internal_mip_shift) & internal_mip_mask) |
         (inner /* (modulo) */ % dim) |
         (inner /* (div) */ / dim) << internal_uvw_bit_per_dim
     );
@@ -540,9 +540,9 @@ Vector<u16> RevVirtualMarkerTexture::tileBitToIndex(const ptr<const u32> bitmask
      * 8k x 8k  ::  0.0/13 -> [1372..5468)
      */
 
-    constexpr auto decisions { 5468ui16 };
-    constexpr auto patchSize { 128ui16 };
-    constexpr auto childsPerNode { 8ui16 };
+    constexpr u16 decisions { 5468uL };
+    constexpr u16 patchSize { 128uL };
+    constexpr u16 childsPerNode { 8uL };
 
     // Octree - Primary level counter
     constexpr auto __ploctC__ { decisions / patchSize / childsPerNode };
@@ -568,14 +568,14 @@ Vector<u16> RevVirtualMarkerTexture::tileBitToIndex(const ptr<const u32> bitmask
     #define USE_HEADER_TREE
 
     #ifdef USE_HEADER_TREE
-    u16 outerOffset { 0ui16 };
+    u16 outerOffset { 0uL };
     const ptr<const u8> cursor {
         static_cast<const ptr<const u8>>(
-            static_cast<const ptr<const void>>(bitmask_ + (2ui32 /* add offset of header */))
+            static_cast<const ptr<const void>>(bitmask_ + (2uL /* add offset of header */))
         )
     };
 
-    for (u16 pli { 0ui16 }; pli < ploctC; ++pli) {
+    for (u16 pli { 0uL }; pli < ploctC; ++pli) {
 
         if (not(*oct & (1 << pli))) {
             outerOffset += dpsn;
@@ -583,19 +583,19 @@ Vector<u16> RevVirtualMarkerTexture::tileBitToIndex(const ptr<const u32> bitmask
         }
 
         const auto slie { pli == (ploctC - 1) ? lloctC : sloctC };
-        for (u16 sli { 0ui16 }; sli < slie; ++sli) {
+        for (u16 sli { 0uL }; sli < slie; ++sli) {
 
-            if (not(*(oct + 1ui16 + pli) & (1 << sli))) {
+            if (not(*(oct + 1uL + pli) & (1 << sli))) {
                 outerOffset += patchSize;
                 continue;
             }
 
             const auto blie { (pli == (ploctC - 1)) && (sli == (slie - 1)) ? lps : patchSize };
             for (
-                u16 bit { 0ui16 };
+                u16 bit { 0uL };
                 bit < blie;
                 #ifdef __AVX2__
-                bit += 8ui16
+                bit += 8uL
                 #else
                 ++bit
                 #endif
@@ -685,9 +685,9 @@ Vector<u16> RevVirtualMarkerTexture::tileBitToIndex(const ptr<const u32> bitmask
                 // Optimize (Nr.1) :: Use const bit before byte conversion
 
                 const auto bitOffset { outerOffset + bit };
-                const auto byteOffset { bitOffset / 8ui16 };
-                /* Attention: `(byteOffset * 8ui16)` can not be replaced, cause of int 'div' dropping 'rest' */
-                const auto innerBitOffset { bitOffset - (byteOffset * 8ui16) };
+                const auto byteOffset { bitOffset / 8uL };
+                /* Attention: `(byteOffset * 8uL)` can not be replaced, cause of int 'div' dropping 'rest' */
+                const auto innerBitOffset { bitOffset - (byteOffset * 8uL) };
 
                 if (*(cursor + byteOffset) >> innerBitOffset & 0b1) {
                     const auto index = tileBitOffsetToIndex(static_cast<u16>(bitOffset));
@@ -704,11 +704,11 @@ Vector<u16> RevVirtualMarkerTexture::tileBitToIndex(const ptr<const u32> bitmask
 
     #else
 
-    u16 outerOffset { 0ui16 };
-    auto* cursor { bitmask_ + (2ui32 /* add offset of header */) };
-    while (outerOffset < 5468ui16) {
+    u16 outerOffset { 0uL };
+    auto* cursor { bitmask_ + (2uL /* add offset of header */) };
+    while (outerOffset < 5468uL) {
 
-        for (u16 bit { 0ui16 }; bit < (sizeof(u32) * 8ui16); ++bit) {
+        for (u16 bit { 0uL }; bit < (sizeof(u32) * 8uL); ++bit) {
 
             if ((*cursor >> bit) & 0b1) {
                 const auto index = tileBitOffsetToIndex(outerOffset + bit);
@@ -716,7 +716,7 @@ Vector<u16> RevVirtualMarkerTexture::tileBitToIndex(const ptr<const u32> bitmask
             }
         }
 
-        outerOffset += (sizeof(u32) * 8ui16);
+        outerOffset += (sizeof(u32) * 8uL);
         ++cursor;
     }
     #endif

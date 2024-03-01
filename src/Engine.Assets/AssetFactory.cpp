@@ -259,8 +259,8 @@ ptr<StaticGeometry> AssetFactory::createStaticGeometryAsset(mref<asset_guid> gui
     auto* instance = new StaticGeometry(
         std::move(guid_),
         Vector<fs::Url> {},
-        0ui64,
-        0ui64
+        0uLL,
+        0uLL
     );
 
     storeDefaultNameAndUrl(instance, {});

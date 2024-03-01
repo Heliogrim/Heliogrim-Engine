@@ -161,14 +161,14 @@ sptr<AssetBrowserItem> AssetBrowserItem::make(
 
     const auto assetTitle { make_sptr<Text>() };
     theme->applyLabel(assetTitle);
-    assetTitle->attr.textEllipse.setValue(2ui32);
+    assetTitle->attr.textEllipse.setValue(2uL);
 
     assetTitle->setText(self->_value.title);
     infoWrapper->addChild(assetTitle);
 
     const auto assetTypeTitle { make_sptr<Text>() };
     theme->applyLabel(assetTypeTitle);
-    assetTypeTitle->attr.textEllipse.setValue(1ui32);
+    assetTypeTitle->attr.textEllipse.setValue(1uL);
 
     assetTypeTitle->setText(typeTitle);
     infoWrapper->addChild(assetTypeTitle);

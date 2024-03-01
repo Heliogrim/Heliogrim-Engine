@@ -16,12 +16,12 @@ namespace hg::engine::gfx::cache {
     public:
         CacheCtrlSubject() = default;
 
-        CacheCtrlSubject(cref<SubjectType_> subject_, const u16 initialMarks_ = 0ui16) noexcept :
+        CacheCtrlSubject(cref<SubjectType_> subject_, const u16 initialMarks_ = 0uL) noexcept :
             subject(subject_),
             marks(initialMarks_),
             locked() { }
 
-        CacheCtrlSubject(mref<SubjectType_> subject_, const u16 initialMarks_ = 0ui16) noexcept :
+        CacheCtrlSubject(mref<SubjectType_> subject_, const u16 initialMarks_ = 0uL) noexcept :
             subject(std::move(subject_)),
             marks(initialMarks_),
             locked() { }

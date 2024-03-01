@@ -14,7 +14,7 @@ Win32DragDropSender::Win32DragDropSender() :
     DragDropSender(),
     _grfKeyState(NULL),
     _cur(nullptr),
-    _useCount(1ui32) {}
+    _useCount(1uL) {}
 
 Win32DragDropSender::~Win32DragDropSender() noexcept = default;
 
@@ -99,7 +99,7 @@ void Win32DragDropSender::tidyDragDrop() {
         return;
     }
 
-    if (static_cast<ptr<Win32DragDropObject>>(_cur)->useCount() >= 1ui32) {
+    if (static_cast<ptr<Win32DragDropObject>>(_cur)->useCount() >= 1uL) {
         IM_CORE_WARN("Cannot cleanup drag-drop process due so missing resource usage releases");
         // TODO:
     }

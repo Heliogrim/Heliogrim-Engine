@@ -66,10 +66,10 @@ namespace hg::engine::serialization::layout {
 
             /**/
 
-            u64 storedCount { ~0ui64 };
+            u64 storedCount { ~0uLL };
             archive_ >> storedCount;
 
-            assert(storedCount != ~0ui64);
+            assert(storedCount != ~0uLL);
 
             /**/
 
@@ -100,7 +100,7 @@ namespace hg::engine::serialization::layout {
                     // TODO: If `std::is_trivial_v<Type_::value_type>` and contiguous memory, than we can memcpy directly and assume elements as `constructed`
                 }
 
-                auto tmp { calloc(1ui64, /*layout->size()*/sizeof(typename Type_::value_type)) };
+                auto tmp { calloc(1uLL, /*layout->size()*/sizeof(typename Type_::value_type)) };
                 const std::span<u8, std::dynamic_extent> view {
                     static_cast<ptr<u8>>(tmp),
                     static_cast<u64>(layout->size()/*sizeof(typename Type_::value_type)*/)
@@ -108,7 +108,7 @@ namespace hg::engine::serialization::layout {
 
                 std::insert_iterator<Type_> inserter { *container, container->end() };
 
-                for (s64 i { 0i64 }; i < storedCount; ++i) {
+                for (s64 i { 0LL }; i < storedCount; ++i) {
 
                     // Warning: Experimental temporary solution
                     if constexpr (not std::is_trivial_v<typename Type_::value_type>) {
@@ -146,7 +146,7 @@ namespace hg::engine::serialization::layout {
             /**/
 
             const auto markCountPos { archive_.tell() };
-            u64 count { 0ui64 };
+            u64 count { 0uLL };
             archive_ << count;
 
             /**/

@@ -4,8 +4,8 @@
 
 namespace hg {
     struct Buffer {
-        u64 size = 0ui64;
-        u64 align = 0ui64;
+        u64 size = 0uLL;
+        u64 align = 0uLL;
 
         void* mem = nullptr;
     };

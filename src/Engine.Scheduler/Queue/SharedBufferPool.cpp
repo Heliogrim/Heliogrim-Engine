@@ -128,7 +128,7 @@ void SharedBufferPool::release(mref<ptr<aligned_buffer>> buffer_) {
         return;
     }
 
-    grow(_poolCapacity + 1ui16);
+    grow(_poolCapacity + 1uL);
 
     /**
      * Release

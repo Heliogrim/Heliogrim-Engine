@@ -41,7 +41,7 @@ float Font::fontSize() const noexcept {
 
 u32 Font::nextFontSize(const u32 size_) const noexcept {
     if (_sizes.empty()) {
-        return 0ui32;
+        return 0uL;
     }
 
     u32 nextSize { _sizes.front() };

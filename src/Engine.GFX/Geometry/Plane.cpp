@@ -34,7 +34,7 @@ ptr<Mesh> Plane::convert() const {
         for (u32 u = 0; u <= _grid.u; ++u) {
             *vp = vertex {
                 vertex::position_type { static_cast<float>(u) * stepU, 0.F, static_cast<float>(v) * stepV },
-                vertex::color_type { 0ui8 },
+                vertex::color_type { 0u },
                 vertex::uvm_type {
                     static_cast<float>(u) / static_cast<float>(_grid.u),
                     static_cast<float>(v) / static_cast<float>(_grid.v),

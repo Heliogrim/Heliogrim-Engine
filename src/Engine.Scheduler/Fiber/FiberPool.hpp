@@ -23,7 +23,7 @@ namespace hg::engine::scheduler::fiber {
          * @param  reserved_ (Optional) The reserved amount of slots.
          *                   If value of reserved_ equals null, fiber pool will determine pool size by itself
          */
-        FiberPool(_In_opt_ pool_container_type::size_type reserved_ = 0ui32);
+        FiberPool(_In_opt_ pool_container_type::size_type reserved_ = 0uL);
 
         /**
          * Copy Constructor

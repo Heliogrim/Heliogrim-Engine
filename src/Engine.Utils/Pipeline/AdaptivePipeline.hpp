@@ -44,7 +44,7 @@ namespace hg::engine::utils {
         using reference_type = ref<value_type>;
         using const_reference_type = cref<value_type>;
 
-        static constexpr u64 stage_count = sizeof...(Args_) - 2ui64;
+        static constexpr u64 stage_count = sizeof...(Args_) - 2uLL;
 
     protected:
         /**

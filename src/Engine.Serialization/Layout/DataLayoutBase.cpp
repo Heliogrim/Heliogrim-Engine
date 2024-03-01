@@ -70,7 +70,7 @@ bool DataLayoutBase::justConstantDefines() const noexcept {
 
 s64 DataLayoutBase::size() const noexcept {
 
-    s64 size { 0i64 };
+    s64 size { 0LL };
     for (const auto& entry : _defines) {
 
         const auto last { entry->_offset + entry->size() };

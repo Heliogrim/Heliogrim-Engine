@@ -55,11 +55,11 @@ void access::Structure<StaticGeometry>::deserialize(StaticGeometry* const self_,
     self_->_sources.reserve(sources.size());
     for (const auto& entry : sources) {
 
-        if (entry.size() < 8ui64) {
+        if (entry.size() < 8uLL) {
             continue;
         }
 
-        self_->_sources.push_back(fs::Url { "file"sv, entry.substr(7ui64) });
+        self_->_sources.push_back(fs::Url { "file"sv, entry.substr(7uLL) });
     }
 
     root.getSlot<u64>("vertexCount") >> self_->_vertexCount;

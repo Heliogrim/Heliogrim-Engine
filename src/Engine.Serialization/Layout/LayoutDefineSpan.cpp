@@ -27,7 +27,7 @@ ref<engine::serialization::Archive> LayoutDefineSpan::loadImpl(
     const auto size { layout->size() };
     const auto count { define_.size() / size };
 
-    for (s64 i { 0i64 }; i < count; ++i) {
+    for (s64 i { 0LL }; i < count; ++i) {
 
         const auto off { static_cast<s64>(define_._offset) + i * size };
 
@@ -48,7 +48,7 @@ ref<engine::serialization::Archive> LayoutDefineSpan::storeImpl(
     const auto size { layout->size() };
     const auto count { define_.size() / size };
 
-    for (s64 i { 0i64 }; i < count; ++i) {
+    for (s64 i { 0LL }; i < count; ++i) {
 
         const auto off { static_cast<s64>(define_._offset) + i * size };
         layout->dispatch().store(archive_, src_.subspan(off, std::dynamic_extent));

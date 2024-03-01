@@ -53,7 +53,7 @@ vk::SparseMemoryBind SparseBufferPage::vkSparseMemoryBind() const noexcept {
         _resourceOffset,
         _resourceSize,
         isMemoryBacking ? _memory->allocated()->vkMemory : nullptr,
-        isMemoryBacking ? _memory->allocated()->offset : 0ui64,
+        isMemoryBacking ? _memory->allocated()->offset : 0uLL,
         vk::SparseMemoryBindFlags {}
     };
 }

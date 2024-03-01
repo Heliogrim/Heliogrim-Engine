@@ -7,7 +7,7 @@ ResourceBase::ResourceBase() noexcept :
     _association(nullptr) {}
 
 bool ResourceBase::isLoaded() const noexcept {
-    return this->loaded() != 0x0ui8;
+    return this->loaded() != 0x0u;
 }
 
 non_owning_rptr<const ClassMetaBase> ResourceBase::getAssociation() const noexcept {

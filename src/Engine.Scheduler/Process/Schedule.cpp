@@ -57,20 +57,20 @@ void Schedule::tidy() {
 
 u64 Schedule::maskToPriority(const task::TaskMask mask_) const noexcept {
     if (mask_ & task::TaskMask::eCritical) {
-        return 0ui64;
+        return 0uLL;
 
     } else if (mask_ & task::TaskMask::eHigher) {
-        return 1ui64;
+        return 1uLL;
 
     } else if (mask_ & task::TaskMask::eNormal) {
-        return 2ui64;
+        return 2uLL;
 
     } else if (mask_ & task::TaskMask::eLower) {
-        return 3ui64;
+        return 3uLL;
 
     } else {
         // Default to normal priority
-        return 2ui64;
+        return 2uLL;
     }
 }
 

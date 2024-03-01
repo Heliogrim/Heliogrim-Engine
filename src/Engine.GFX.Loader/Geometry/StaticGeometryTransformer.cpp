@@ -122,7 +122,7 @@ static smr<StaticGeometryResource> loadWithAssimp(
 
             /**/
 
-            indices.reserve(indices.size() + fc * 3ui32);
+            indices.reserve(indices.size() + fc * 3uL);
             const auto idxOff = indices.size();
 
             for (u32 j = 0; j < fc; ++j) {
@@ -144,7 +144,7 @@ static smr<StaticGeometryResource> loadWithAssimp(
 
             using Vertex = vertex;
 
-            constexpr Vertex::color_type white = Vertex::color_type { 255ui8 };
+            constexpr Vertex::color_type white = Vertex::color_type { 255u };
 
             for (u32 j = 0; j < vc; ++j) {
 
@@ -215,11 +215,11 @@ static smr<StaticGeometryResource> loadWithAssimp(
         vk::PipelineStageFlagBits::eAllCommands,
         vk::PipelineStageFlagBits::eTransfer,
         vk::DependencyFlags {},
-        0ui32,
+        0uL,
         nullptr,
         static_cast<u32>(prevBarriers.size()),
         prevBarriers.data(),
-        0ui32,
+        0uL,
         nullptr
     );
 
@@ -230,7 +230,7 @@ static smr<StaticGeometryResource> loadWithAssimp(
         const auto* const firstPage = indexBuffer->pages().front();
         const auto alignment = firstPage->memory()->allocated()->layout.align;
 
-        const auto required = (indexSize / alignment) + ((indexSize % alignment) ? 1ui64 : 0ui64);
+        const auto required = (indexSize / alignment) + ((indexSize % alignment) ? 1uLL : 0uLL);
 
         /**/
 
@@ -243,10 +243,10 @@ static smr<StaticGeometryResource> loadWithAssimp(
 
             const auto pageSize = std::min(indexSize - (page * alignment), alignment);
 
-            constexpr auto shift = 7ui64;
-            constexpr auto mask = 0b0111'1111ui64;
+            constexpr auto shift = 7uLL;
+            constexpr auto mask = 0b0111'1111uLL;
 
-            const auto aligned = ((pageSize >> shift) << shift) + ((pageSize & mask) ? +1ui64 << shift : 0ui64);
+            const auto aligned = ((pageSize >> shift) << shift) + ((pageSize & mask) ? +1uLL << shift : 0uLL);
 
             auto memory = indexBuffer->pages()[page]->memory()->allocated();
             const auto patchSize = std::min(aligned, memory->size);
@@ -256,7 +256,7 @@ static smr<StaticGeometryResource> loadWithAssimp(
             auto patchOff = (page * alignment);
 
             vk::BufferCopy cpyData { patchOff, indexBuffer->offset() + patchOff, patchSize };
-            cmd.vkCommandBuffer().copyBuffer(indexStage.buffer, indexBuffer->owner()->vkBuffer(), 1ui32, &cpyData);
+            cmd.vkCommandBuffer().copyBuffer(indexStage.buffer, indexBuffer->owner()->vkBuffer(), 1uL, &cpyData);
         }
     }
 
@@ -267,7 +267,7 @@ static smr<StaticGeometryResource> loadWithAssimp(
         const auto* const firstPage = vertexBuffer->pages().front();
         const auto alignment = firstPage->memory()->allocated()->layout.align;
 
-        const auto required = (vertexSize / alignment) + ((vertexSize % alignment) ? 1ui64 : 0ui64);
+        const auto required = (vertexSize / alignment) + ((vertexSize % alignment) ? 1uLL : 0uLL);
 
         /**/
 
@@ -280,10 +280,10 @@ static smr<StaticGeometryResource> loadWithAssimp(
 
             const auto pageSize = std::min(vertexSize - (page * alignment), alignment);
 
-            constexpr auto shift = 7ui64;
-            constexpr auto mask = 0b0111'1111ui64;
+            constexpr auto shift = 7uLL;
+            constexpr auto mask = 0b0111'1111uLL;
 
-            const auto aligned = ((pageSize >> shift) << shift) + ((pageSize & mask) ? +1ui64 << shift : 0ui64);
+            const auto aligned = ((pageSize >> shift) << shift) + ((pageSize & mask) ? +1uLL << shift : 0uLL);
 
             auto memory = vertexBuffer->pages()[page]->memory()->allocated();
             const auto patchSize = std::min(aligned, memory->size);
@@ -293,7 +293,7 @@ static smr<StaticGeometryResource> loadWithAssimp(
             auto patchOff = (page * alignment);
 
             vk::BufferCopy cpyData { patchOff, vertexBuffer->offset() + patchOff, patchSize };
-            cmd.vkCommandBuffer().copyBuffer(vertexStage.buffer, vertexBuffer->owner()->vkBuffer(), 1ui32, &cpyData);
+            cmd.vkCommandBuffer().copyBuffer(vertexStage.buffer, vertexBuffer->owner()->vkBuffer(), 1uL, &cpyData);
         }
     }
 
@@ -315,11 +315,11 @@ static smr<StaticGeometryResource> loadWithAssimp(
         vk::PipelineStageFlagBits::eTransfer,
         vk::PipelineStageFlagBits::eAllCommands,
         vk::DependencyFlags {},
-        0ui32,
+        0uL,
         nullptr,
         static_cast<u32>(nextBarriers.size()),
         nextBarriers.data(),
-        0ui32,
+        0uL,
         nullptr
     );
 
@@ -358,7 +358,7 @@ static Buffer createStageBuffer(cref<sptr<Device>> device_, const u64 byteSize_)
      */
     vk::BufferCreateInfo bci {
         vk::BufferCreateFlags(),
-        MAX(byteSize_, 128ui64),
+        MAX(byteSize_, 128uLL),
         vk::BufferUsageFlagBits::eTransferSrc,
         vk::SharingMode::eExclusive,
         0,

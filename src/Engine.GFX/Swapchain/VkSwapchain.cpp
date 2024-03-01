@@ -10,9 +10,9 @@ using namespace hg;
 
 VkSwapchain::VkSwapchain() :
     Swapchain(),
-    _rQueue(3ui32),
-    _pQueue(3ui32),
-    _desiredImages(2ui32) {}
+    _rQueue(3uL),
+    _pQueue(3uL),
+    _desiredImages(2uL) {}
 
 VkSwapchain::~VkSwapchain() {
     destroy();
@@ -25,9 +25,9 @@ void VkSwapchain::setup(cref<sptr<Device>> device_) {
     /**/
     assert(_device);
 
-    assert(_extent.x > 0ui32 && _extent.y > 0ui32);
+    assert(_extent.x > 0uL && _extent.y > 0uL);
     assert(_format != TextureFormat::eUndefined);
-    assert(_desiredImages > 0ui32 && _desiredImages <= 2ui32);
+    assert(_desiredImages > 0uL && _desiredImages <= 2uL);
 
     /**/
     auto* factory { TextureFactory::get() };
@@ -61,7 +61,7 @@ void VkSwapchain::setup(cref<sptr<Device>> device_) {
     const TextureBuildPayload payload {
         math::uivec3 { _extent.x, _extent.y, 1 },
         _format,
-        1ui32,
+        1uL,
         // TODO: Check whether we want isolated images or texture array
         TextureType::e2d,
         iaf,
@@ -71,7 +71,7 @@ void VkSwapchain::setup(cref<sptr<Device>> device_) {
     };
 
     _images.resize(_desiredImages);
-    for (u32 i { 0ui32 }; i < _desiredImages; ++i) {
+    for (u32 i { 0uL }; i < _desiredImages; ++i) {
 
         /**/
         auto instance { factory->build(payload) };
@@ -121,7 +121,7 @@ void VkSwapchain::destroy() {
 
 bool VkSwapchain::acquireNext(ref<s64> idx_, ref<smr<Texture>> image_, ref<vk::Semaphore> signal_) {
 
-    u64 ridx { ~0ui64 };
+    u64 ridx { ~0uLL };
     /*
     while (!_rQueue.try_pop(qidx)) {
         scheduler::fiber::self::yield();
@@ -186,7 +186,7 @@ bool VkSwapchain::consumeNext(
     ref<Vector<vk::Semaphore>> waits_
 ) {
 
-    u64 pidx { ~0ui64 };
+    u64 pidx { ~0uLL };
     if (!_pQueue.try_pop(pidx)) {
         return false;
     }

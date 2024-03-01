@@ -62,7 +62,7 @@ void ReflowCommandBuffer::pushScissor(cref<math::fExtent2D> scissor_) {
     if (usedPrevScissor) {
         _scissorIndices.back().second = lastRunningIdx;
 
-        _scissorIndices.push_back({ lastRunningIdx, 0ui32 });
+        _scissorIndices.push_back({ lastRunningIdx, 0uL });
         _scissors.push_back(scissor_);
 
     } else if (not _scissors.empty()) {
@@ -72,7 +72,7 @@ void ReflowCommandBuffer::pushScissor(cref<math::fExtent2D> scissor_) {
 
     } else {
 
-        _scissorIndices.push_back({ lastRunningIdx, 0ui32 });
+        _scissorIndices.push_back({ lastRunningIdx, 0uL });
         _scissors.push_back(scissor_);
     }
 
@@ -131,7 +131,7 @@ math::fExtent2D ReflowCommandBuffer::popScissor() {
             _scissors.back() = _scissorStack.top();
 
         } else {
-            _scissorIndices.push_back({ lastRunningIdx, 0ui32 });
+            _scissorIndices.push_back({ lastRunningIdx, 0uL });
             _scissors.push_back(_scissorStack.top());
         }
     }
@@ -212,11 +212,11 @@ void ReflowCommandBuffer::drawLine(math::vec2 p0_, math::vec2 p1_, const float s
     /**
      *
      */
-    constexpr u32 cqi[] { 0ui32, 1ui32, 2ui32, 2ui32, 3ui32, 0ui32 };
+    constexpr u32 cqi[] { 0uL, 1uL, 2uL, 2uL, 3uL, 0uL };
     _runningIndexes.reserve(_runningIndexes.size() + (sizeof(cqi) / sizeof(u32)));
 
     const u32 baseIdx { static_cast<u32>(_runningVertices.size()) };
-    _runningVertices.reserve(baseIdx + 4ui32);
+    _runningVertices.reserve(baseIdx + 4uL);
 
     /**
      *
@@ -270,13 +270,13 @@ void ReflowCommandBuffer::drawQuad(math::vec2 p0_, math::vec2 p1_, math::vec2 p2
     /**
      *
      */
-    constexpr u32 cqi[] { 0ui32, 1ui32, 2ui32, 2ui32, 3ui32, 0ui32 };
+    constexpr u32 cqi[] { 0uL, 1uL, 2uL, 2uL, 3uL, 0uL };
 
     const u32 baseVdx = static_cast<u32>(_runningVertices.size());
     const u32 baseIdx = static_cast<u32>(_runningIndexes.size());
 
     _runningIndexes.resize(baseIdx + (sizeof(cqi) / sizeof(u32)));
-    _runningVertices.resize(baseVdx + 4ui32);
+    _runningVertices.resize(baseVdx + 4uL);
 
     /**
      *
@@ -361,7 +361,7 @@ void ReflowCommandBuffer::drawArc(
     /* Result  :: [2*PI*r] * [(tt-ft)/(2*PI)] */
     /*         :: [r] * [(tt-ft)] */
 
-    u32 segments { MIN(static_cast<u32>(radius_ * (toTheta_ - fromTheta_)), 11ui32) };
+    u32 segments { MIN(static_cast<u32>(radius_ * (toTheta_ - fromTheta_)), 11uL) };
 
     // Enforce odd segment count to prevent rounding / flattening of corner tip
     if (not segments & 0x1) {
@@ -370,8 +370,8 @@ void ReflowCommandBuffer::drawArc(
 
     const float dtPs { (toTheta_ - fromTheta_) / static_cast<float>(segments) };
 
-    const u32 reqVtx { 1ui32 + segments + 1ui32 };
-    const u32 reqIdx { segments * 3ui32 };
+    const u32 reqVtx { 1uL + segments + 1uL };
+    const u32 reqIdx { segments * 3uL };
 
     /**
      *
@@ -397,7 +397,7 @@ void ReflowCommandBuffer::drawArc(
     );
 
     /**/
-    for (u32 seg { 0ui32 }; seg <= segments; ++seg) {
+    for (u32 seg { 0uL }; seg <= segments; ++seg) {
         float theta { fromTheta_ + static_cast<float>(seg) * dtPs };
         theta = MIN(theta, toTheta_);
 
@@ -418,10 +418,10 @@ void ReflowCommandBuffer::drawArc(
     }
 
     /**/
-    for (u32 seg { 0ui32 }; seg < segments; ++seg) {
+    for (u32 seg { 0uL }; seg < segments; ++seg) {
         _runningIndexes.push_back(baseVtx);
-        _runningIndexes.push_back(baseVtx + seg + 1ui32);
-        _runningIndexes.push_back(baseVtx + seg + 2ui32);
+        _runningIndexes.push_back(baseVtx + seg + 1uL);
+        _runningIndexes.push_back(baseVtx + seg + 2uL);
     }
 }
 
@@ -446,8 +446,8 @@ void ReflowCommandBuffer::drawText(
     const u32 baseIdx { static_cast<u32>(_runningIndexes.size()) };
     const u32 baseVtx { static_cast<u32>(_runningVertices.size()) };
 
-    const u32 reqIdx { static_cast<u32>(text_.size()) * 6ui32 };
-    const u32 reqVtx { static_cast<u32>(text_.size()) * 4ui32 };
+    const u32 reqIdx { static_cast<u32>(text_.size()) * 6uL };
+    const u32 reqVtx { static_cast<u32>(text_.size()) * 4uL };
 
     //_runningIndexes.reserve(baseIdx + reqIdx);
     //_runningVertices.reserve(baseVtx + reqVtx);
@@ -458,7 +458,7 @@ void ReflowCommandBuffer::drawText(
     /**
      *
      */
-    constexpr u32 cqi[] { 0ui32, 1ui32, 2ui32, 2ui32, 3ui32, 0ui32 };
+    constexpr u32 cqi[] { 0uL, 1uL, 2uL, 2uL, 3uL, 0uL };
 
     math::vec2 fwd { pos_ + math::vec2 { 0.F, -0.25F * static_cast<float>(fss) * charScale.y } };
     fwd.x = std::floorf(fwd.x);
@@ -616,13 +616,13 @@ void ReflowCommandBuffer::drawImageAsync(
     /**
      *
      */
-    constexpr u32 cqi[] { 0ui32, 1ui32, 2ui32, 2ui32, 3ui32, 0ui32 };
+    constexpr u32 cqi[] { 0uL, 1uL, 2uL, 2uL, 3uL, 0uL };
 
     const u32 baseVdx = static_cast<u32>(_runningVertices.size());
     const u32 baseIdx = static_cast<u32>(_runningIndexes.size());
 
     _runningIndexes.resize(baseIdx + (sizeof(cqi) / sizeof(u32)));
-    _runningVertices.resize(baseVdx + 4ui32);
+    _runningVertices.resize(baseVdx + 4uL);
 
     /**
      *

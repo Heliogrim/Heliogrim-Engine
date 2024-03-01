@@ -28,7 +28,7 @@ fs::Url MemoryReadWriteArchive::getArchiveUrl() const noexcept {
 }
 
 s64 MemoryReadWriteArchive::totalSize() const noexcept {
-    return _limit >= 0i64 ? MIN(_limit, static_cast<s64>(_bytes.size())) : _bytes.size();
+    return _limit >= 0LL ? MIN(_limit, static_cast<s64>(_bytes.size())) : _bytes.size();
 }
 
 bool MemoryReadWriteArchive::hasSizeLimit() const noexcept {

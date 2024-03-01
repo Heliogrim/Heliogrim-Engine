@@ -52,7 +52,7 @@ bool Engine::setEngineState(core::EngineState state_) {
     }
 
     if (prev < value) {
-        u8 expect { static_cast<u8>(value - 1ui8) };
+        u8 expect { static_cast<u8>(value - 1u) };
         return _engineState.compare_exchange_strong(expect, value);
     }
 

@@ -24,14 +24,14 @@ void Buffer::destroy() {
 
 void Buffer::flushAligned(const u64 size_, const u64 offset_) {
 
-    constexpr auto shift { 7ui64 };
-    constexpr auto mask { 0b0111'1111ui64 };
+    constexpr auto shift { 7uLL };
+    constexpr auto mask { 0b0111'1111uLL };
 
     const auto range { (size_ >= VK_WHOLE_SIZE ? size : size_) - offset_ };
 
     const auto aligned {
         ((range >> shift) << shift) +
-        ((range & mask) ? +1ui64 << shift : 0ui64)
+        ((range & mask) ? +1uLL << shift : 0uLL)
     };
 
     memory->flush(
@@ -49,14 +49,14 @@ void Buffer::map(const u64 size_, const u64 offset_) {
 
 void Buffer::mapAligned(const u64 size_, const u64 offset_) {
 
-    constexpr auto shift { 7ui64 };
-    constexpr auto mask { 0b0111'1111ui64 };
+    constexpr auto shift { 7uLL };
+    constexpr auto mask { 0b0111'1111uLL };
 
     const auto range { (size_ >= VK_WHOLE_SIZE ? size : size_) - offset_ };
 
     const auto aligned {
         ((range >> shift) << shift) +
-        ((range & mask) ? +1ui64 << shift : 0ui64)
+        ((range & mask) ? +1uLL << shift : 0uLL)
     };
 
     memory->map(

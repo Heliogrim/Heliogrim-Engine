@@ -11,7 +11,7 @@ using namespace hg;
 FiberPool::FiberPool(pool_container_type::size_type reserved_) :
     _acqMtx(),
     _relMtx(),
-    _pool(reserved_ > 0 ? reserved_ : thread::getNativeThreadCount() * 4ui32) {}
+    _pool(reserved_ > 0 ? reserved_ : thread::getNativeThreadCount() * 4uL) {}
 
 FiberPool::~FiberPool() {
     tidy();

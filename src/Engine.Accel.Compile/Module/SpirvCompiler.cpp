@@ -15,7 +15,7 @@
 using namespace hg::engine::accel;
 using namespace hg;
 
-std::atomic_uint_fast32_t hg::engine::accel::extern_compiler_ref_count { 0ui32 };
+std::atomic_uint_fast32_t hg::engine::accel::extern_compiler_ref_count { 0uL };
 
 /**/
 
@@ -24,13 +24,13 @@ SpirvCompiler::SpirvCompiler() :
     _dialect(SpirvDialect::eVulkan),
     _targetClient(SpirvTargetClient::eVulkan13),
     _targetVersion(SpirvTargetVersion::eSpv16) {
-    if (extern_compiler_ref_count.fetch_add(1ui32) == 0) {
+    if (extern_compiler_ref_count.fetch_add(1uL) == 0) {
         glslang::InitializeProcess();
     }
 }
 
 SpirvCompiler::~SpirvCompiler() {
-    if (extern_compiler_ref_count.fetch_sub(1ui32) == 1ui32) {
+    if (extern_compiler_ref_count.fetch_sub(1uL) == 1uL) {
         glslang::FinalizeProcess();
     }
 }
@@ -137,7 +137,7 @@ SpirvByteCode SpirvCompiler::compile(cref<ModuleSource> module_, cref<InlineAuto
         };
         spv::SpvBuildLogger spvLog {};
 
-        glslang::GlslangToSpv(*intermediate, reinterpret_cast<ref<Vector<u32>>>(byteCode), &spvLog, &spvOpts);
+        glslang::GlslangToSpv(*intermediate, reinterpret_cast<ref<Vector<unsigned int>>>(byteCode), &spvLog, &spvOpts);
 
         auto errorMsg = spvLog.getAllMessages();
         //if (not spvLog.errors.empty()) {

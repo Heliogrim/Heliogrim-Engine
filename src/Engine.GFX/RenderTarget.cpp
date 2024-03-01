@@ -33,8 +33,8 @@ RenderTarget::RenderTarget(mref<sptr<Device>> device_, const nmpt<const render::
     _otfCpuGpu(),
     _enforceCpuGpuSync(true),
     _onTheFlight(true),
-    _syncIdx(0ui32),
-    _swapIdx(~0ui32),
+    _syncIdx(0uL),
+    _swapIdx(~0uL),
     _swapSignal(),
     _active(false) {}
 
@@ -44,7 +44,7 @@ RenderTarget::~RenderTarget() {
 
 void RenderTarget::tidy() {
 
-    const auto req { _onTheFlight ? 2ui32 : 1ui32 };
+    const auto req { _onTheFlight ? 2uL : 1uL };
 
     /**/
 

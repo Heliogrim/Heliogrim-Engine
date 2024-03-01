@@ -2156,7 +2156,7 @@ namespace ska {
 
         int8_t next_size_over(size_t& size) const {
             size = (std::max)(size_t(2), detailv3::next_power_of_two(size));
-            return 64i8 - detailv3::log2(size);
+            return int8_t{64} - detailv3::log2(size);
         }
 
         void commit(int8_t shift_) {

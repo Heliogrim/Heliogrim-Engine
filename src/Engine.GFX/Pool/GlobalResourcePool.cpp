@@ -12,11 +12,11 @@ GlobalResourcePool::GlobalResourcePool(cref<sptr<Device>> device_) :
     _device(device_),
     _globalVertexBuffer(device_),
     _globalIndexBuffer(device_),
-    _atlasMaxLayers(128ui32),
-    _atlasMaxLayerExtent({ 8192ui32 }),
-    _atlasMinLayerExtent({ 16ui32 }),
-    _atlasMaxSpatialExtent({ 0ui32 }),
-    _atlasMinSpatialExtent({ 0ui32 }) {}
+    _atlasMaxLayers(128uL),
+    _atlasMaxLayerExtent({ 8192uL }),
+    _atlasMinLayerExtent({ 16uL }),
+    _atlasMaxSpatialExtent({ 0uL }),
+    _atlasMinSpatialExtent({ 0uL }) {}
 
 GlobalResourcePool::~GlobalResourcePool() = default;
 
@@ -79,7 +79,7 @@ uptr<engine::gfx::SparseBufferView> GlobalResourcePool::allocateIndexBuffer(
     mref<IndexBufferAllocation> allocation_
 ) {
 
-    assert(allocation_.size > 0ui64);
+    assert(allocation_.size > 0uLL);
     auto result = _globalIndexBuffer.acquire(allocation_.size);
     if (result != nullptr) {
         return result;
@@ -97,7 +97,7 @@ uptr<engine::gfx::SparseBufferView> GlobalResourcePool::allocateIndexBuffer(
         allocation_.size,
         vk::BufferUsageFlagBits::eIndexBuffer | vk::BufferUsageFlagBits::eTransferDst,
         vk::SharingMode::eExclusive,
-        0ui32,
+        0uL,
         nullptr,
         nullptr
     };
@@ -140,7 +140,7 @@ uptr<engine::gfx::SparseBufferView> GlobalResourcePool::allocateIndexBuffer(
     };
 
     /*
-    u64 offset { 0ui64 };
+    u64 offset { 0uLL };
     s64 leftPageSize { static_cast<s64>(req.alignment) };
     for (const auto pageSize : pageSizes_) {
 
@@ -155,10 +155,10 @@ uptr<engine::gfx::SparseBufferView> GlobalResourcePool::allocateIndexBuffer(
 
     const auto required {
         (allocation_.size / req.alignment) +
-        ((allocation_.size % req.alignment) ? 1ui64 : 0ui64)
+        ((allocation_.size % req.alignment) ? 1uLL : 0uLL)
     };
 
-    for (u64 page { 0ui64 }; page < required; ++page) {
+    for (u64 page { 0uLL }; page < required; ++page) {
         auto vp { vb->addPage(req.alignment, req.alignment * page) };
 
         #ifdef _DEBUG
@@ -184,15 +184,15 @@ uptr<engine::gfx::SparseBufferView> GlobalResourcePool::allocateIndexBuffer(
     auto* ptr { vb.get() };
     _indexBuffers.push_back(std::move(vb));
 
-    //return ptr->makeView(/*offset*/0ui64, /*size*/ptr->memory()->size());
-    return ptr->makeView(/*offset*/0ui64, /*size*/allocation_.size);
+    //return ptr->makeView(/*offset*/0uLL, /*size*/ptr->memory()->size());
+    return ptr->makeView(/*offset*/0uLL, /*size*/allocation_.size);
 }
 
 uptr<engine::gfx::SparseBufferView> GlobalResourcePool::allocateVertexBuffer(
     mref<VertexBufferAllocation> allocation_
 ) {
 
-    assert(allocation_.size > 0ui64);
+    assert(allocation_.size > 0uLL);
     auto result = _globalVertexBuffer.acquire(allocation_.size);
     if (result != nullptr) {
         return result;
@@ -210,7 +210,7 @@ uptr<engine::gfx::SparseBufferView> GlobalResourcePool::allocateVertexBuffer(
         allocation_.size,
         vk::BufferUsageFlagBits::eVertexBuffer | vk::BufferUsageFlagBits::eTransferDst,
         vk::SharingMode::eExclusive,
-        0ui32,
+        0uL,
         nullptr,
         nullptr
     };
@@ -253,7 +253,7 @@ uptr<engine::gfx::SparseBufferView> GlobalResourcePool::allocateVertexBuffer(
     };
 
     /*
-    u64 offset { 0ui64 };
+    u64 offset { 0uLL };
     s64 leftPageSize { static_cast<s64>(req.alignment) };
     for (const auto pageSize : pageSizes_) {
 
@@ -268,10 +268,10 @@ uptr<engine::gfx::SparseBufferView> GlobalResourcePool::allocateVertexBuffer(
 
     const auto required {
         (allocation_.size / req.alignment) +
-        ((allocation_.size % req.alignment) ? 1ui64 : 0ui64)
+        ((allocation_.size % req.alignment) ? 1uLL : 0uLL)
     };
 
-    for (u64 page { 0ui64 }; page < required; ++page) {
+    for (u64 page { 0uLL }; page < required; ++page) {
         auto vp { vb->addPage(req.alignment, req.alignment * page) };
 
         #ifdef _DEBUG
@@ -297,19 +297,19 @@ uptr<engine::gfx::SparseBufferView> GlobalResourcePool::allocateVertexBuffer(
     auto* ptr { vb.get() };
     _vertexBuffers.push_back(std::move(vb));
 
-    //return ptr->makeView(/*offset*/0ui64, /*size*/ptr->memory()->size());
-    return ptr->makeView(/*offset*/0ui64, /*size*/allocation_.size);
+    //return ptr->makeView(/*offset*/0uLL, /*size*/ptr->memory()->size());
+    return ptr->makeView(/*offset*/0uLL, /*size*/allocation_.size);
 }
 
 uptr<engine::gfx::SparseTextureView> GlobalResourcePool::allocateSparseTexture(
     mref<SparseTextureAllocation> allocation_
 ) {
-    u32 layers { 1ui32 };
+    u32 layers { 1uL };
 
     // Warning: Temporary Solution
-    if (allocation_.type == TextureType::eCube && allocation_.extent.z == 1ui32) {
-        layers = 6ui32;
-    } else if (allocation_.extent.z != 1ui32 || allocation_.type != TextureType::e2d) {
+    if (allocation_.type == TextureType::eCube && allocation_.extent.z == 1uL) {
+        layers = 6uL;
+    } else if (allocation_.extent.z != 1uL || allocation_.type != TextureType::e2d) {
         // Warning: Currently only support single layer 2d images
         __debugbreak();
         return {};
@@ -325,7 +325,7 @@ uptr<engine::gfx::SparseTextureView> GlobalResourcePool::allocateSparseTexture(
 
     for (const auto& candidate : _textureAtlas) {
 
-        const auto hasMip { candidate->mipLevels() > 1ui32 };
+        const auto hasMip { candidate->mipLevels() > 1uL };
         const auto isFormat { candidate->format() == allocation_.format };
         const auto isExtent {
             hasMip ?
@@ -372,7 +372,7 @@ uptr<engine::gfx::SparseTextureView> GlobalResourcePool::allocateSparseTexture(
 
     /**/
 
-    auto view = atlas->makeView({ 0ui32, layers - 1ui32 }, allocation_.mipLevels);
+    auto view = atlas->makeView({ 0uL, layers - 1uL }, allocation_.mipLevels);
 
     // Attention: This is just a workaround to prevent unfitting view bindings. We need to checkout a better solution...
     if (allocation_.type == TextureType::e2d && atlas->type() == TextureType::e2dArray) {

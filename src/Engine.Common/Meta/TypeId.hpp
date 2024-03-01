@@ -149,7 +149,7 @@ namespace std {
             hg::hash::murmur3_x64_128(
                 &value_,
                 sizeof(decltype(hg::type_id::data)),
-                0x9FB21C651E98DF25ui32,
+                0x9FB21C651E98DF25uL,
                 &dst
             );
             return dst[0];

@@ -43,11 +43,11 @@ void access::Structure<Image>::deserialize(Image* const self_, mref<RecordScoped
     self_->_sources.reserve(sources.size());
     for (const auto& entry : sources) {
 
-        if (entry.size() < 8ui64) {
+        if (entry.size() < 8uLL) {
             continue;
         }
 
-        self_->_sources.push_back(fs::Url { "file"sv, entry.substr(7ui64) });
+        self_->_sources.push_back(fs::Url { "file"sv, entry.substr(7uLL) });
     }
 
 }

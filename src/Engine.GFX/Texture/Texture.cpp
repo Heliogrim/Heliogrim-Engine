@@ -6,7 +6,7 @@ using namespace hg::engine::gfx;
 
 Texture::Texture() noexcept :
     _buffer(),
-    _extent(0ui32),
+    _extent(0uL),
     _format(TextureFormat::eUndefined),
     _mipLevels(0),
     _type(TextureType::eUndefined),
@@ -14,7 +14,7 @@ Texture::Texture() noexcept :
 
 Texture::Texture(value_type&& other_) noexcept :
     _buffer(std::exchange(other_._buffer, {})),
-    _extent(std::exchange(other_._extent, math::uivec3 { 0ui32 })),
+    _extent(std::exchange(other_._extent, math::uivec3 { 0uL })),
     _format(std::exchange(other_._format, TextureFormat::eUndefined)),
     _mipLevels(std::exchange(other_._mipLevels, 0)),
     _type(std::exchange(other_._type, TextureType::eUndefined)),
@@ -27,7 +27,7 @@ Texture::~Texture() noexcept {
 Texture& Texture::operator=(value_type&& other_) noexcept {
     if (this != &other_) {
         _buffer = std::exchange(other_._buffer, {});
-        _extent = std::exchange(other_._extent, math::uivec3 { 0ui32 });
+        _extent = std::exchange(other_._extent, math::uivec3 { 0uL });
         _format = std::exchange(other_._format, TextureFormat::eUndefined);
         _mipLevels = std::exchange(other_._mipLevels, 0);
         _type = std::exchange(other_._type, TextureType::eUndefined);
@@ -108,7 +108,7 @@ hg::math::uivec3::value_type Texture::depth() const noexcept {
         return _extent.z;
     }
 
-    return 1ui32;
+    return 1uL;
 }
 
 hg::math::uivec3::value_type Texture::height() const noexcept {
@@ -125,10 +125,10 @@ hg::math::vec3_t<unsigned>::value_type Texture::layer() const noexcept {
     }
 
     if (_type == TextureType::eCube) {
-        return 6ui32;
+        return 6uL;
     }
 
-    return 1ui32;
+    return 1uL;
 }
 
 TextureFormat& Texture::format() noexcept {

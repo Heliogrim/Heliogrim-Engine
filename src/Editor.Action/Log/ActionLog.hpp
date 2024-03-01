@@ -13,7 +13,7 @@ namespace hg::editor {
     public:
         using this_type = ActionLog;
 
-        inline constexpr static u64 action_log_size { 50ui64 };
+        inline constexpr static u64 action_log_size { 50uLL };
 
     public:
         ActionLog();

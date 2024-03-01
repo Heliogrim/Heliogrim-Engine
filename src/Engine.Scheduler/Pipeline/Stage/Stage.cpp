@@ -4,7 +4,7 @@ using namespace hg::engine::scheduler;
 using namespace hg;
 
 Stage::Stage(mref<string> identifier_, const s8 slot_) noexcept :
-    _refCount(1ui16),
+    _refCount(1uL),
     _identifier(std::move(identifier_)),
     _slot(slot_) {}
 

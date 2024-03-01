@@ -364,7 +364,7 @@ engine::reflow::EventResponse AssetBrowserPanel::onDrop(cref<engine::reflow::Dra
         return result;
     }
 
-    if (event_._data.files->paths.size() == 1ui64) {
+    if (event_._data.files->paths.size() == 1uLL) {
         const fs::Url source { "file"sv, fs::Path(event_._data.files->paths.front()) };
         openImportDialog(source);
 
@@ -454,7 +454,7 @@ static void configureNav(cref<sptr<AssetBrowserPanel>> root_, cref<sptr<Horizont
         auto& style = searchbar->_text->attr;
 
         theme->applyLabel(searchbar->_text);
-        style.textEllipse.setValue(1ui32);
+        style.textEllipse.setValue(1uL);
         style.textAlign.setValue(TextAlign::eLeftMiddle);
     }
 
