@@ -63,7 +63,7 @@ function(make_test_project)
 			PRIVATE
 			${DEFAULT_LIBRARIES}
 			${TEST_LIBRARIES}
-			${link_libraries}
+			${make_lib_vars_LIBRARIES}
 	)
 
 	# Compile
