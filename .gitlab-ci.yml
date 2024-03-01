@@ -228,7 +228,7 @@ build.linux.clang:
         # Generator: Makefiles ~ '-A x64' by default
 
         # CMake - Debug
-        - cmake -S . -B build/Debug -D CMAKE_C_COMPILER=/usr/bin/clang-16 -D CMAKE_CXX_COMPILER=/usr/bin/clang++-16 -D CMAKE_BUILD_TYPE=Debug --fresh
+        - cmake -S . -B build/Debug -D CMAKE_C_COMPILER=/usr/bin/clang -D CMAKE_CXX_COMPILER=/usr/bin/clang++ -D CMAKE_BUILD_TYPE=Debug --fresh
         - cmake --build build/Debug -t Heliogrim-Heliogrim --clean-first
         - cmake --build build/Debug -t Heliogrim-Editor
 
