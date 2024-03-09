@@ -102,7 +102,7 @@ void hash::murmur3_x64_64(const void* data_, const u32 length_, const u32 seed_,
 	dst_ = tmp[0];
 }
 
-void hash::murmur3_x64_128(const void* data_, const u32 length_, const u32 seed_, void* dst_) {
+void hash::murmur3_x64_128(const void* data_, const u32 length_, const u64 seed_, void* dst_) {
 	const u8* block = (const u8*)data_;
 	const u32 nblocks = length_ / 16uL;
 
