@@ -20,9 +20,14 @@ namespace hg::engine::reflow {
         void reset();
 
     private:
+        u16 _renderTick;
         DenseMap<ptr<void>, non_owning_rptr<ReflowPassState>> _recorded;
 
     public:
+        [[nodiscard]] u16 getRenderTick() const noexcept;
+
+        void setRenderTick(u16 renderTick_) noexcept;
+
         [[nodiscard]] non_owning_rptr<ReflowPassState> record(cref<sptr<Widget>> widget_);
 
         [[nodiscard]] const non_owning_rptr<const ReflowPassState> getStateOf(cref<sptr<Widget>> widget_) const;

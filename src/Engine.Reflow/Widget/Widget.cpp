@@ -1,15 +1,14 @@
 #include "Widget.hpp"
 
+#include "../Children.hpp"
+
 using namespace hg::engine::reflow;
 using namespace hg;
 
 constexpr static WidgetState defaultWidgetState = WidgetState {
     static_cast<WidgetState::value_type>(WidgetStateFlagBits::eVisible) |
     static_cast<WidgetState::value_type>(WidgetStateFlagBits::ePending) |
-    static_cast<WidgetState::value_type>(WidgetStateFlagBits::ePendingInherit) |
-    static_cast<WidgetState::value_type>(WidgetStateFlagBits::eShift) |
-    static_cast<WidgetState::value_type>(WidgetStateFlagBits::eShiftInherit) |
-    static_cast<WidgetState::value_type>(WidgetStateFlagBits::eCapture)
+    static_cast<WidgetState::value_type>(WidgetStateFlagBits::ePendingInherit)
 };
 
 Widget::Widget() :
@@ -174,6 +173,23 @@ bool Widget::willChangeLayout(cref<math::vec2> space_) const noexcept {
     return _state.isProxyPending();
 }
 
+void Widget::enumerateDistinctCapture(
+    const u16 compareVersion_,
+    ref<Vector<nmpt<const Widget>>> capture_
+) const noexcept {
+
+    if (_state.shouldRenderSelf(compareVersion_)) {
+        capture_.emplace_back(this);
+        return;
+    }
+
+    for (const auto& child : *children()) {
+        if (child->state().shouldRender(compareVersion_)) {
+            child->enumerateDistinctCapture(compareVersion_, capture_);
+        }
+    }
+}
+
 void Widget::markAsPending(const bool inherited_, const bool suppress_) {
 
     /*
@@ -184,10 +200,8 @@ void Widget::markAsPending(const bool inherited_, const bool suppress_) {
 
     if (inherited_) {
         _state |= WidgetStateFlagBits::ePendingInherit;
-        _state |= WidgetStateFlagBits::eShiftInherit;
     } else {
         _state |= WidgetStateFlagBits::ePending;
-        _state |= WidgetStateFlagBits::eShift;
     }
 
     if (suppress_) {
@@ -199,31 +213,51 @@ void Widget::markAsPending(const bool inherited_, const bool suppress_) {
     }
 }
 
-void Widget::clearPending() {
+WidgetStateFlag Widget::clearPending() {
+
+    const WidgetStateFlag result { _state };
     _state.unwrap &= ~(
         static_cast<WidgetState::value_type>(WidgetStateFlagBits::ePending) |
         static_cast<WidgetState::value_type>(WidgetStateFlagBits::ePendingInherit)
     );
+
+    return result;
 }
 
-void Widget::clearShiftState() {
-    _state.unwrap &= ~(
-        static_cast<WidgetState::value_type>(WidgetStateFlagBits::eShift) |
-        static_cast<WidgetState::value_type>(WidgetStateFlagBits::eShiftInherit)
-    );
-}
+void Widget::updateRenderVersion(const u16 version_, const bool inherited_) {
 
-void Widget::markCaptureState(const bool inherited_) {
-
-    _state |= WidgetStateFlagBits::eCapture;
+    if (inherited_) {
+        _state.setProxyRenderVersion(version_);
+    } else {
+        _state.setRenderVersion(version_);
+    }
 
     if (hasParent()) {
-        parent()->markCaptureState(true);
+        parent()->updateRenderVersion(version_, true);
     }
+
 }
 
-void Widget::clearCaptureState() {
-    _state.unwrap &= ~(
-        static_cast<WidgetState::value_type>(WidgetStateFlagBits::eCapture)
-    );
+void Widget::cascadeRenderVersion(const u16 version_, cref<Aabb2d> aabb_) {
+
+    bool forwarded = false;
+    for (const auto& child : *children()) {
+
+        const auto& childLayout = child->layoutState();
+        const auto childAabb = Aabb2d { childLayout.layoutOffset, childLayout.layoutOffset + childLayout.layoutSize };
+
+        if (childAabb.contains(aabb_)) {
+            child->cascadeRenderVersion(version_, aabb_);
+            forwarded = true;
+            continue;
+        }
+
+        if (childAabb.intersects(aabb_)) {
+            child->updateRenderVersion(version_);
+        }
+    }
+
+    if (not forwarded) {
+        updateRenderVersion(version_);
+    }
 }

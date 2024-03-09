@@ -41,6 +41,7 @@
 #include <Engine.GFX/Texture/TextureFactory.hpp>
 #include <Engine.GFX/Texture/TextureView.hpp>
 #include <Engine.Reflect/TypeSwitch.hpp>
+#include <Engine.Reflow/ReflowEngine.hpp>
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
 #include <Heliogrim.Default/Assets/Images/UIDummy.hpp>
 
@@ -183,10 +184,50 @@ void render::ReflowPass::execute(cref<engine::render::graph::ScopedSymbolContext
 
 	/**/
 
-	auto& wnd = uiModel->getWindow();
-	wnd.render(&uiCmd);
+    auto& wnd = uiModel->getWindow();
+    //wnd.render(&uiCmd);
 
-	assert(rootScissor == uiCmd.popScissor());
+    {
+        const auto poppedRoot = uiCmd.popScissor();
+        assert(rootScissor == poppedRoot);
+    }
+
+    /**/
+
+    const auto globalRenderTick = ReflowEngine::getGlobalRenderTick();
+    if (_lastRenderTick > globalRenderTick || (globalRenderTick - _lastRenderTick) > 56u) {
+        /* If render tick rolled or diff is too large, force a full redraw */
+        _lastRenderTick = 0u;
+    }
+
+    auto markForCapture = Vector<nmpt<const Widget>> {};
+    wnd.enumerateDistinctCapture(_lastRenderTick, markForCapture);
+
+    _lastRenderTick = globalRenderTick;
+
+    /**/
+
+    for (auto marked : markForCapture) {
+
+        if (marked->layoutState().layoutSize.anyZero()) {
+            continue;
+        }
+
+        /**/
+
+        const math::fExtent2D markScissor {
+            marked->layoutState().layoutSize.x,
+            marked->layoutState().layoutSize.y,
+            marked->layoutState().layoutOffset.x,
+            marked->layoutState().layoutOffset.y
+        };
+
+        uiCmd.pushScissor(markScissor);
+        wnd.render(&uiCmd);
+        [[maybe_unused]] auto poppedRoot = uiCmd.popScissor();
+
+        assert(poppedRoot == markScissor);
+    }
 
 	/**/
 

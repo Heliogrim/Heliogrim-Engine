@@ -25,31 +25,34 @@ using namespace hg::engine::reflow;
 using namespace hg;
 
 Viewport::Viewport() :
-	Widget(),
-	attr(
-		Attributes {
-			.minWidth = { this, { ReflowUnitType::eAuto, 0.F } },
-			.width = { this, { ReflowUnitType::eAuto, 0.F } },
-			.maxWidth = { this, { ReflowUnitType::eAuto, 0.F } },
-			.minHeight = { this, { ReflowUnitType::eAuto, 0.F } },
-			.height = { this, { ReflowUnitType::eAuto, 0.F } },
-			.maxHeight = { this, { ReflowUnitType::eAuto, 0.F } }
-		}
-	),
-	_swapChain(nullptr),
-	_cameraActor(nullptr),
-	_renderer(),
-	_renderTarget(nullptr),
-	_uvs(
-		{
-			math::vec2 { 0.F, 0.F },
-			math::vec2 { 1.F, 0.F },
-			math::vec2 { 1.F, 1.F },
-			math::vec2 { 0.F, 1.F }
-		}
-	),
-	_viewSize(),
-	_viewListen() {}
+    Widget(),
+    attr(
+        Attributes {
+            .minWidth = { this, { ReflowUnitType::eAuto, 0.F } },
+            .width = { this, { ReflowUnitType::eAuto, 0.F } },
+            .maxWidth = { this, { ReflowUnitType::eAuto, 0.F } },
+            .minHeight = { this, { ReflowUnitType::eAuto, 0.F } },
+            .height = { this, { ReflowUnitType::eAuto, 0.F } },
+            .maxHeight = { this, { ReflowUnitType::eAuto, 0.F } }
+        }
+    ),
+    _swapChain(nullptr),
+    _renderTarget(nullptr),
+    _currentSwapChainImage(),
+    _currentImageSignal(nullptr),
+    _currentImageWaits(),
+    _renderer(),
+    _cameraActor(nullptr),
+    _uvs(
+        {
+            math::vec2 { 0.F, 0.F },
+            math::vec2 { 1.F, 0.F },
+            math::vec2 { 1.F, 1.F },
+            math::vec2 { 0.F, 1.F }
+        }
+    ),
+    _viewSize(),
+    _viewListen() {}
 
 Viewport::~Viewport() {
 	tidy();
@@ -57,6 +60,46 @@ Viewport::~Viewport() {
 
 string Viewport::getTag() const noexcept {
 	return std::format(R"(Viewport <{:#x}>)", reinterpret_cast<u64>(this));
+}
+
+bool Viewport::shouldTick() const noexcept {
+    return true;
+}
+
+void Viewport::tick() {
+    Widget::tick();
+
+    /**/
+
+    if (_currentImageSignal != nullptr) {
+        __debugbreak();
+    }
+
+    /**/
+
+    smr<gfx::Texture> image {};
+    vk::Semaphore imageSignal {};
+    Vector<vk::Semaphore> imageWaits {};
+
+    const auto result { _swapChain->consumeNext(image, imageSignal, imageWaits) };
+    if (not result) {
+        IM_CORE_ERROR("Skipping viewport draw due to missing next swapchain frame.");
+
+        _currentSwapChainImage = nullptr;
+        _currentImageSignal = nullptr;
+        _currentImageWaits.clear();
+        return;
+    }
+
+    /**/
+
+    _currentSwapChainImage = std::move(image);
+    _currentImageSignal = reinterpret_cast<_::VkSemaphore>(imageSignal.operator VkSemaphore());
+
+    _currentImageWaits.clear();
+    for (auto&& wait : imageWaits) {
+        _currentImageWaits.emplace_back(reinterpret_cast<_::VkSemaphore>(wait.operator VkSemaphore()));
+    }
 }
 
 void Viewport::tidy() {
@@ -248,37 +291,35 @@ void Viewport::render(const ptr<ReflowCommandBuffer> cmd_) {
 	const auto offset = _layoutState.layoutOffset;
 	const auto size = _layoutState.layoutSize;
 
-	smr<gfx::Texture> image {};
-	vk::Semaphore imageSignal {};
-	Vector<vk::Semaphore> imageWaits {};
+    if (_currentSwapChainImage.empty()) {
+        return;
+    }
 
-	const auto result { _swapChain->consumeNext(image, imageSignal, imageWaits) };
-	if (!result) {
-		IM_CORE_ERROR("Skipping viewport draw due to missing next swapchain frame.");
-	}
+    /**/
 
-	if (result) {
+    _currentSwapChainImage->buffer()._vkLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
 
-		image->buffer()._vkLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
+    cmd_->drawImageAsync(
+        math::vec2 { offset.x, offset.y },
+        _uvs[0],
+        math::vec2 { offset.x + size.x, offset.y },
+        _uvs[1],
+        math::vec2 { offset.x + size.x, offset.y + size.y },
+        _uvs[2],
+        math::vec2 { offset.x, offset.y + size.y },
+        _uvs[3],
+        _currentSwapChainImage.get(),
+        _currentImageWaits.empty() ? nullptr : _currentImageWaits.back(),
+        _currentImageSignal,
+		{
+			ReflowAlphaMode::eNone,
+			engine::color { 255.F, 255.F, 255.F, 255.F }
+		}
+    );
 
-		cmd_->drawImageAsync(
-			math::vec2 { offset.x, offset.y },
-			_uvs[0],
-			math::vec2 { offset.x + size.x, offset.y },
-			_uvs[1],
-			math::vec2 { offset.x + size.x, offset.y + size.y },
-			_uvs[2],
-			math::vec2 { offset.x, offset.y + size.y },
-			_uvs[3],
-			image.get(),
-			reinterpret_cast<_::VkSemaphore>(imageWaits.empty() ? nullptr : imageWaits.back().operator VkSemaphore()),
-			reinterpret_cast<_::VkSemaphore>(imageSignal.operator VkSemaphore()),
-			{
-				ReflowAlphaMode::eNone,
-				engine::color { 255.F, 255.F, 255.F, 255.F }
-			}
-		);
-	}
+    // Error: This will break any asynchronous processing
+    _currentImageWaits.clear();
+    _currentImageSignal = nullptr;
 }
 
 math::vec2 Viewport::prefetchDesiredSize(cref<ReflowState> state_, float scale_) const {

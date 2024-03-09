@@ -32,6 +32,10 @@ void ReflowFlowStage::staticDispatch(const non_owning_rptr<const scheduler::Stag
                 const auto* const engine = Engine::getEngine();
                 const auto& manager = ::hg::engine::reflow::WindowManager::get();
 
+                ReflowEngine::updateTickVersion();
+
+                /**/
+
                 if (!manager) {
                     // TODO: return false;
                     return true;
@@ -58,6 +62,8 @@ void ReflowFlowStage::staticDispatch(const non_owning_rptr<const scheduler::Stag
                         math::vec2 { clientSize.x, clientSize.y },
                         1.F
                     };
+
+                    state.setRenderTick(ReflowEngine::getGlobalRenderTick());
                     ReflowEngine::tick(state, boundWnd->window, std::move(layoutContext));
 
                     auto end = std::chrono::high_resolution_clock::now();

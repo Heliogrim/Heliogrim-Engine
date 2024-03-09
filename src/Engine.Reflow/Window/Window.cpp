@@ -185,9 +185,16 @@ math::vec2 Window::computeDesiredSize(cref<ReflowPassState> passState_) const {
 void Window::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) {
 
     // TODO: Implement
-    for (const auto& child : *children()) {
+    if (_children.getChild<0uL>() != NullWidget::instance()) {
 
-        const auto state = state_.getStateOf(child);
+        const auto state = state_.getStateOf(_children.getChild<0uL>());
+        state->layoutOffset = ctx_.localOffset;
+        state->layoutSize = ctx_.localSize;
+    }
+
+    if (_children.getChild<1uL>() != NullWidget::instance()) {
+
+        const auto state = state_.getStateOf(_children.getChild<1uL>());
         state->layoutOffset = ctx_.localOffset;
         state->layoutSize = ctx_.localSize;
     }
