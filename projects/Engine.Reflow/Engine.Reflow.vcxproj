@@ -126,6 +126,7 @@
     <ClInclude Include="..\..\src\Engine.Reflow\Padding.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Reflow.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\ReflowAlignment.hpp" />
+    <ClInclude Include="..\..\src\Engine.Reflow\ReflowAlpha.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\ReflowEngine.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\ReflowOrientation.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\ReflowPassState.hpp" />

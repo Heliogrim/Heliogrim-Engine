@@ -48,8 +48,12 @@ using namespace hg::engine::reflow;
 using namespace hg::engine::render;
 using namespace hg;
 
-[[nodiscard]] static engine::accel::EffectCompileResult build_test_base_pipeline(
-    mref<smr<const engine::accel::GraphicsPass>> pass_
+[[nodiscard]] static engine::accel::EffectCompileResult build_test_opaque_pipeline(
+	mref<smr<const engine::accel::GraphicsPass>> pass_
+);
+
+[[nodiscard]] static engine::accel::EffectCompileResult build_test_alpha_pipeline(
+	mref<smr<const engine::accel::GraphicsPass>> pass_
 );
 
 /**/
@@ -59,633 +63,903 @@ render::ReflowPass::ReflowPass() = default;
 render::ReflowPass::~ReflowPass() = default;
 
 void render::ReflowPass::destroy() noexcept {
-    SubPass::destroy();
+	SubPass::destroy();
 
-    const auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
-    device->vkDevice().destroySemaphore(std::exchange(_tmpSignal, nullptr));
+	const auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
+	device->vkDevice().destroySemaphore(std::exchange(_tmpSignal, nullptr));
 
-    if (_framebuffer) {
-        _framebuffer->destroy();
-        _framebuffer.reset();
-    }
+	if (_framebuffer) {
+		_framebuffer->destroy();
+		_framebuffer.reset();
+	}
 
-    if (_uiVertexBuffer) {
-        Cast<gfx::Buffer>(_uiVertexBuffer.get())->destroy();
-        _uiVertexBuffer.reset();
-    }
+	if (_uiVertexBuffer) {
+		Cast<gfx::Buffer>(_uiVertexBuffer.get())->destroy();
+		_uiVertexBuffer.reset();
+	}
 
-    if (_uiIndexBuffer) {
-        Cast<gfx::Buffer>(_uiIndexBuffer.get())->destroy();
-        _uiIndexBuffer.reset();
-    }
+	if (_uiIndexBuffer) {
+		Cast<gfx::Buffer>(_uiIndexBuffer.get())->destroy();
+		_uiIndexBuffer.reset();
+	}
 
-    if (_uiImageSampler) {
-        _uiImageSampler->destroy();
-        _uiImageSampler.reset();
-    }
+	_opaqueSubPass.imageSampler.reset();
+	_alphaSubPass.imageSampler.reset();
+	_msdfSubPass.imageSampler.reset();
 
-    if (_uiMsdfSampler) {
-        _uiMsdfSampler->destroy();
-        _uiMsdfSampler.reset();
-    }
+	_opaqueSubPass.compiled.pipeline.reset();
+	_alphaSubPass.compiled.pipeline.reset();
+	_msdfSubPass.compiled.pipeline.reset();
 
-    _uiBaseCompiled.pipeline.reset();
-    _uiMsdfCompiled.pipeline.reset();
-
-    _graphicsPass.reset();
+	_graphicsPass.reset();
 }
 
 void render::ReflowPass::iterate(cref<engine::render::graph::ScopedSymbolContext> symCtx_) noexcept {
 
-    ensureGraphicsPass();
+	ensureGraphicsPass();
 
 }
 
 void render::ReflowPass::resolve() noexcept {
 
-    if (_uiBaseCompiled.flag == accel::EffectCompileResultFlag::eUnknown) {
-        _uiBaseCompiled = build_test_base_pipeline(clone(_graphicsPass));
-    }
+	if (_opaqueSubPass.compiled.flag == accel::EffectCompileResultFlag::eUnknown) {
+		_opaqueSubPass.compiled = build_test_opaque_pipeline(clone(_graphicsPass));
 
-    if (_uiMsdfCompiled.flag == accel::EffectCompileResultFlag::eUnknown) {
-        //_uiMsdfCompiled = build_test_msdf_pipeline(clone(_graphicsPass));
-    }
+		if (_opaqueSubPass.imageSampler == nullptr) {
+			_opaqueSubPass.imageSampler = make_uptr<gfx::TextureSampler>();
+			_opaqueSubPass.imageSampler->setup(Engine::getEngine()->getGraphics()->getCurrentDevice());
+		}
+	}
 
-    if (_uiImageSampler == nullptr) {
-        _uiImageSampler = make_uptr<gfx::TextureSampler>();
-        _uiImageSampler->setup(Engine::getEngine()->getGraphics()->getCurrentDevice());
-    }
+	if (_alphaSubPass.compiled.flag == accel::EffectCompileResultFlag::eUnknown) {
+		_alphaSubPass.compiled = build_test_alpha_pipeline(clone(_graphicsPass));
 
-    if (_uiMsdfSampler == nullptr) {}
+		if (_alphaSubPass.imageSampler == nullptr) {
+			_alphaSubPass.imageSampler = make_uptr<gfx::TextureSampler>();
+			_alphaSubPass.imageSampler->setup(Engine::getEngine()->getGraphics()->getCurrentDevice());
+		}
+	}
+
+	if (_msdfSubPass.compiled.flag == accel::EffectCompileResultFlag::eUnknown) {
+		//_msdfSubPass.compiled = build_test_msdf_pipeline(clone(_graphicsPass));
+
+		if (_msdfSubPass.imageSampler == nullptr) {
+			_msdfSubPass.imageSampler = make_uptr<gfx::TextureSampler>();
+			_msdfSubPass.imageSampler->setup(Engine::getEngine()->getGraphics()->getCurrentDevice());
+		}
+	}
 }
 
 void render::ReflowPass::execute(cref<engine::render::graph::ScopedSymbolContext> symCtx_) noexcept {
 
-    const auto sceneColor = symCtx_.getExportSymbol(makeSceneColorSymbol());
-    const auto sceneColorRes = sceneColor->load<smr<gfx::TextureLikeObject>>();
-    const auto sceneColorTex = Cast<gfx::Texture>(sceneColorRes.get());
+	const auto sceneColor = symCtx_.getExportSymbol(makeSceneColorSymbol());
+	const auto sceneColorRes = sceneColor->load<smr<gfx::TextureLikeObject>>();
+	const auto sceneColorTex = Cast<gfx::Texture>(sceneColorRes.get());
 
-    /**/
+	/**/
 
-    assert(not sceneColor->empty());
-    ensureFramebuffer(clone(sceneColorRes));
+	assert(not sceneColor->empty());
+	ensureFramebuffer(clone(sceneColorRes));
 
-    /**/
+	/**/
 
-    ptr<const UISceneModel> uiModel = nullptr;
+	ptr<const UISceneModel> uiModel = nullptr;
 
-    {
-        auto sceneViewRes = symCtx_.getImportSymbol(makeSceneViewSymbol());
-        auto sceneView = sceneViewRes->load<smr<const gfx::scene::SceneView>>();
+	{
+		auto sceneViewRes = symCtx_.getImportSymbol(makeSceneViewSymbol());
+		auto sceneView = sceneViewRes->load<smr<const gfx::scene::SceneView>>();
 
-        const auto sys = sceneView->getRenderSceneSystem();
-        sys->getRegistry().forEach<UISceneModel>(
-            [&uiModel](const auto& model_) {
-                uiModel = std::addressof(model_);
-            }
-        );
-    }
+		const auto sys = sceneView->getRenderSceneSystem();
+		sys->getRegistry().forEach<UISceneModel>(
+			[&uiModel](const auto& model_) {
+				uiModel = std::addressof(model_);
+			}
+		);
+	}
 
-    if (uiModel == nullptr) {
-        return;
-    }
+	if (uiModel == nullptr) {
+		return;
+	}
 
-    /**/
+	/**/
 
-    ReflowCommandBuffer uiCmd {};
-    uiCmd._runningIndexes.reserve(32uLL * 1024uLL);
-    uiCmd._runningVertices.reserve(32uLL * 1024uLL);
+	ReflowCommandBuffer uiCmd {};
+	uiCmd._opaque.indices.reserve(16uLL * 1024uLL);
+	uiCmd._opaque.vertices.reserve(16uLL * 1024uLL);
+	uiCmd._alpha.indices.reserve(16uLL * 1024uLL);
+	uiCmd._alpha.vertices.reserve(16uLL * 1024uLL);
 
-    math::vec2 available {
-        static_cast<float>(sceneColorTex->width()),
-        static_cast<float>(sceneColorTex->height())
-    };
-    const FlowContext fctx {
-        math::fExtent2D { available.x, available.y, 0.F, 0.F },
-        math::fExtent2D { available.x, available.y, 0.F, 0.F }
-    };
+	math::vec2 available {
+		static_cast<float>(sceneColorTex->width()),
+		static_cast<float>(sceneColorTex->height())
+	};
+	const FlowContext fctx {
+		math::fExtent2D { available.x, available.y, 0.F, 0.F },
+		math::fExtent2D { available.x, available.y, 0.F, 0.F }
+	};
 
-    const math::fExtent2D rootScissor { fctx.scissor };
-    uiCmd.pushScissor(rootScissor);
+	const math::fExtent2D rootScissor { fctx.scissor };
+	uiCmd.pushRootScissor(rootScissor);
 
-    /**/
+	/**/
 
-    auto& wnd = uiModel->getWindow();
-    wnd.render(&uiCmd);
+	auto& wnd = uiModel->getWindow();
+	wnd.render(&uiCmd);
 
-    assert(rootScissor == uiCmd.popScissor());
+	assert(rootScissor == uiCmd.popScissor());
 
-    /**/
+	/**/
 
-    const auto& uiRv = uiCmd._runningVertices;
-    const auto& uiRi = uiCmd._runningIndexes;
+	if (uiCmd._alpha.vertices.empty() && uiCmd._opaque.vertices.empty()) {
+		return;
+	}
 
-    /**/
+	updateVertices(uiCmd._opaque.vertices, uiCmd._alpha.vertices, {});
+	updateIndices(uiCmd._opaque.indices, uiCmd._alpha.indices, {});
 
-    if (uiRv.empty() || uiRi.empty()) {
-        return;
-    }
+	/**/
 
-    updateVertices(uiRv);
-    updateIndices(uiRi);
+	cmd::RenderCommandBuffer cmd {};
 
-    /**/
+	cmd.begin();
+	cmd.beginAccelPass({ .pass = _graphicsPass.get(), .framebuffer = _framebuffer.get() });
+	cmd.beginSubPass();
 
-    cmd::RenderCommandBuffer cmd {};
+	/**/
 
-    cmd.begin();
-    cmd.beginAccelPass({ .pass = _graphicsPass.get(), .framebuffer = _framebuffer.get() });
-    cmd.beginSubPass();
+	cmd.bindGraphicsPipeline(clone(_opaqueSubPass.compiled.pipeline).into<accel::GraphicsPipeline>());
+	captureOpaque(uiCmd, rootScissor, cmd);
 
-    cmd.bindGraphicsPipeline(clone(_uiBaseCompiled.pipeline).into<accel::GraphicsPipeline>());
+	/**/
 
-    cmd.lambda(
-        [this, available](ref<accel::AccelCommandBuffer> cmd_) {
+	//cmd.nextSubPass();
 
-            struct UiTransformBlock {
-                math::vec2 extent;
-                math::vec2 center;
-            };
+	/**/
 
-            const auto block = UiTransformBlock {
-                math::vec2 { -1.F },
-                math::vec2 { 2.F / available.x, 2.F / available.y }
-            };
+	cmd.bindGraphicsPipeline(clone(_alphaSubPass.compiled.pipeline).into<accel::GraphicsPipeline>());
+	captureAlpha(uiCmd, rootScissor, cmd);
 
-            cmd_.vkCommandBuffer().pushConstants(
-                reinterpret_cast<VkPipelineLayout>(
-                    Cast<accel::VkGraphicsPipeline>(_uiBaseCompiled.pipeline.get())->_vkPipeLayout
-                ),
-                vk::ShaderStageFlagBits::eVertex,
-                0uL,
-                sizeof(UiTransformBlock),
-                &block
-            );
+	/**/
 
-            auto* vb = Cast<gfx::Buffer>(_uiVertexBuffer.get());
-            auto* ib = Cast<gfx::Buffer>(_uiIndexBuffer.get());
+	cmd.endSubPass();
+	cmd.endAccelPass();
+	cmd.end();
 
-            cmd_.bindVertexBuffer(0uL, *vb, 0uLL);
-            cmd_.bindIndexBuffer(static_cast<ref<gfx::IndexBuffer>>(*ib), 0uLL);
-        }
-    );
+	/**/
 
-    /* Bind default image */
+	const auto translator = make_uptr<driver::vk::VkRCmdTranslator>();
+	auto prevNativeBatch = std::move(_nativeBatch);
 
-    if (_defaultImage.empty()) {
-        ensureDefaultImage();
-    }
+	auto nextNativeBatch = (*translator)(&cmd, std::move(prevNativeBatch));
 
-    const auto defaultImageGuard = _defaultImage->acquire(resource::ResourceUsageFlag::eRead);
-    const auto* const defaultImage = Cast<gfx::SparseTextureView>(defaultImageGuard->get());
+	/**/
 
-    // UIDummy
+	{
+		const auto batch = static_cast<ptr<driver::vk::VkNativeBatch>>(nextNativeBatch.get());
 
-    cmd.bindTexture(accel::lang::SymbolId::from("ui-image"sv), defaultImage);
-    cmd.bindTextureSampler(accel::lang::SymbolId::from("ui-image-sampler"sv), _uiImageSampler.get());
+		batch->_tmpWaits.insert_range(
+			batch->_tmpWaits.end(),
+			reinterpret_cast<Vector<VkSemaphore>&>(sceneColor->barriers)
+		);
+		batch->_tmpWaits.insert_range(
+			batch->_tmpWaits.end(),
+			reinterpret_cast<Vector<VkSemaphore>&>(uiCmd._imageWait)
+		);
 
-    /**/
+		for (auto i = batch->_tmpWaitFlags.size(); i < batch->_tmpWaits.size(); ++i) {
+			batch->_tmpWaitFlags.emplace_back(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+		}
 
-    {
+		batch->_tmpSignals.emplace_back(_tmpSignal);
+		batch->_tmpSignals.insert_range(
+			batch->_tmpSignals.end(),
+			reinterpret_cast<Vector<VkSemaphore>&>(uiCmd._imageSignal)
+		);
 
-        u32 firstIndices = static_cast<u32>(uiRi.size());
-        if (not uiCmd._scissorIndices.empty() && uiCmd._scissorIndices.front().first < firstIndices) {
-            firstIndices = uiCmd._scissorIndices.front().first;
-        }
+		/**/
 
-        if (not uiCmd._imageIndices.empty() && uiCmd._imageIndices.front().first < firstIndices) {
-            firstIndices = uiCmd._imageIndices.front().first;
-        }
+		sceneColor->barriers.clear();
+		sceneColor->barriers.emplace_back(_tmpSignal.operator VkSemaphore());
+	}
 
-        /**/
+	nextNativeBatch->commitAndDispose();
 
-        u32 lastStartIndices = static_cast<u32>(uiRi.size());
-        if (not uiCmd._scissorIndices.empty() && uiCmd._scissorIndices.back().second < lastStartIndices) {
-            lastStartIndices = uiCmd._scissorIndices.back().second;
-        }
+	/**/
 
-        if (not uiCmd._imageIndices.empty() && uiCmd._imageIndices.back().second < lastStartIndices) {
-            lastStartIndices = uiCmd._imageIndices.back().second;
-        }
-
-        /**/
-
-        if (uiCmd._scissorIndices.empty()) {
-            uiCmd._scissorIndices.emplace_back(~0uL, ~0uL);
-        }
-
-        if (uiCmd._imageIndices.empty()) {
-            uiCmd._imageIndices.emplace_back(~0uL, ~0uL);
-        }
-
-        /**/
-
-        auto sciIdxIt = 0uL;
-        auto imgIdxIt = 0uL;
-
-        vk::Rect2D vkScissor {
-            vk::Offset2D { static_cast<s32>(rootScissor.offsetX), static_cast<s32>(rootScissor.offsetY) },
-            vk::Extent2D { static_cast<u32>(rootScissor.width), static_cast<u32>(rootScissor.height) }
-        };
-
-        /**/
-
-        cmd.lambda(
-            [vkScissor, firstIndices](ref<accel::AccelCommandBuffer> cmd_) {
-                cmd_.vkCommandBuffer().setScissor(0, 1, &vkScissor);
-            }
-        );
-        cmd.drawStaticMeshIdx(1uL, 0uL, firstIndices / 3uL, 0uL);
-
-        /**/
-
-        u32 idx = firstIndices;
-        while (idx < lastStartIndices) {
-
-            const auto sciIdx = idx >= uiCmd._scissorIndices[sciIdxIt].second ? ++sciIdxIt : sciIdxIt;
-            const auto imgIdx = idx >= uiCmd._imageIndices[imgIdxIt].second ? ++imgIdxIt : imgIdxIt;
-
-            auto nextStride = MIN(uiCmd._scissorIndices[sciIdx].second, uiCmd._imageIndices[imgIdxIt].second);
-
-            if (uiCmd._scissorIndices[sciIdx].first > idx && uiCmd._scissorIndices[sciIdx].first < nextStride) {
-                nextStride = uiCmd._scissorIndices[sciIdx].first;
-            }
-
-            if (uiCmd._imageIndices[imgIdx].first > idx && uiCmd._imageIndices[imgIdx].first < nextStride) {
-                nextStride = uiCmd._imageIndices[imgIdx].first;
-            }
-
-            /**/
-
-            const auto& recs = uiCmd._scissors[sciIdx];
-
-            vkScissor.offset.x = static_cast<s32>(recs.offsetX);
-            vkScissor.offset.y = static_cast<s32>(recs.offsetY);
-            vkScissor.extent.width = static_cast<u32>(recs.width);
-            vkScissor.extent.height = static_cast<u32>(recs.height);
-
-            cmd.lambda(
-                [vkScissor](ref<accel::AccelCommandBuffer> cmd_) {
-                    cmd_.vkCommandBuffer().setScissor(0, 1, &vkScissor);
-                }
-            );
-
-            if (uiCmd._imageIndices[imgIdxIt].first <= idx && idx < uiCmd._imageIndices[imgIdxIt].second) {
-
-                /* Warning: Temporary Solution */
-                switchType(
-                    uiCmd._images[imgIdx].get(),
-                    [](const ptr<gfx::Texture> texture_) {
-                        if (not texture_->vkView()) {
-                            gfx::TextureFactory::get()->buildView(*texture_);
-                        }
-                    },
-                    [](const ptr<gfx::TextureView> view_) {
-                        if (not view_->owner()->vkView()) {
-                            gfx::TextureFactory::get()->buildView(*view_->owner());
-                        }
-                    },
-                    [](const ptr<gfx::SparseTexture> texture_) {
-                        if (not texture_->_vkImageView) {
-                            gfx::TextureFactory::get()->buildView(*texture_);
-                        }
-                    },
-                    [](const ptr<gfx::SparseTextureView> view_) {
-                        if (not view_->vkImageView()) {
-                            gfx::TextureFactory::get()->buildView(*view_);
-                        }
-                    }
-                );
-
-                /**/
-
-                cmd.bindTexture(
-                    accel::lang::SymbolId::from("ui-image"sv),
-                    uiCmd._images[imgIdx].get()
-                );
-
-            } else {
-
-                /* Not in scope -> Bind default image */
-                cmd.bindTexture(
-                    accel::lang::SymbolId::from("ui-image"sv),
-                    defaultImage
-                );
-            }
-
-            cmd.drawStaticMeshIdx(1uL, 0uL, (nextStride - idx) / 3uL, idx / 3uL);
-
-            /**/
-
-            idx = nextStride;
-        }
-
-        /**/
-
-        if (lastStartIndices < uiCmd._runningIndexes.size()) {
-
-            vkScissor.offset.x = static_cast<s32>(rootScissor.offsetX);
-            vkScissor.offset.y = static_cast<s32>(rootScissor.offsetY);
-            vkScissor.extent.width = static_cast<u32>(rootScissor.width);
-            vkScissor.extent.height = static_cast<u32>(rootScissor.height);
-
-            /* Rebind default image for tail stride */
-            cmd.bindTexture(
-                accel::lang::SymbolId::from("ui-image"sv),
-                defaultImage
-            );
-
-            cmd.lambda(
-                [vkScissor](ref<accel::AccelCommandBuffer> cmd_) {
-                    cmd_.vkCommandBuffer().setScissor(0, 1, &vkScissor);
-                }
-            );
-
-            cmd.drawStaticMeshIdx(1uL, 0uL, (uiRi.size() - lastStartIndices) / 3uL, lastStartIndices / 3uL);
-        }
-    }
-
-    /**/
-
-    cmd.endSubPass();
-    cmd.endAccelPass();
-    cmd.end();
-
-    /**/
-
-    const auto translator = make_uptr<driver::vk::VkRCmdTranslator>();
-    auto prevNativeBatch = std::move(_nativeBatch);
-
-    auto nextNativeBatch = (*translator)(&cmd, std::move(prevNativeBatch));
-
-    /**/
-
-    {
-        const auto batch = static_cast<ptr<driver::vk::VkNativeBatch>>(nextNativeBatch.get());
-
-        batch->_tmpWaits.insert_range(
-            batch->_tmpWaits.end(),
-            reinterpret_cast<Vector<VkSemaphore>&>(sceneColor->barriers)
-        );
-        batch->_tmpWaits.insert_range(
-            batch->_tmpWaits.end(),
-            reinterpret_cast<Vector<VkSemaphore>&>(uiCmd._imageWait)
-        );
-
-        for (auto i = batch->_tmpWaitFlags.size(); i < batch->_tmpWaits.size(); ++i) {
-            batch->_tmpWaitFlags.emplace_back(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
-        }
-
-        batch->_tmpSignals.emplace_back(_tmpSignal);
-        batch->_tmpSignals.insert_range(
-            batch->_tmpSignals.end(),
-            reinterpret_cast<Vector<VkSemaphore>&>(uiCmd._imageSignal)
-        );
-
-        /**/
-
-        sceneColor->barriers.clear();
-        sceneColor->barriers.emplace_back(_tmpSignal.operator VkSemaphore());
-    }
-
-    nextNativeBatch->commitAndDispose();
-
-    /**/
-
-    _nativeBatch = std::move(nextNativeBatch);
+	_nativeBatch = std::move(nextNativeBatch);
 }
 
 void render::ReflowPass::ensureDefaultImage() {
 
-    const auto* const factory = Engine::getEngine()->getAssets()->getFactory();
-    auto* const registry = Engine::getEngine()->getAssets()->getRegistry();
+	const auto* const factory = Engine::getEngine()->getAssets()->getFactory();
+	auto* const registry = Engine::getEngine()->getAssets()->getRegistry();
 
-    if (not registry->hasAsset(game::assets::image::UIDummy::unstable_auto_guid())) {
-        factory->createImageAsset(
-            clone(game::assets::image::UIDummy::unstable_auto_guid()),
-            R"(resources\imports\ktx\default_ui.ktx)"
-        );
-    }
+	if (not registry->hasAsset(game::assets::image::UIDummy::unstable_auto_guid())) {
+		factory->createImageAsset(
+			clone(game::assets::image::UIDummy::unstable_auto_guid()),
+			R"(resources\imports\ktx\default_ui.ktx)"
+		);
+	}
 
-    if (not registry->hasAsset(game::assets::texture::UIDummy::unstable_auto_guid())) {
-        delete(new(game::assets::texture::UIDummy));
-    }
+	if (not registry->hasAsset(game::assets::texture::UIDummy::unstable_auto_guid())) {
+		delete(new(game::assets::texture::UIDummy));
+	}
 
-    /**/
+	/**/
 
-    auto* const asset = registry->findAssetByGuid(game::assets::texture::UIDummy::unstable_auto_guid());
-    assert(asset != nullptr);
+	auto* const asset = registry->findAssetByGuid(game::assets::texture::UIDummy::unstable_auto_guid());
+	assert(asset != nullptr);
 
-    /**/
+	/**/
 
-    auto request = static_cast<ptr<assets::TextureAsset>>(asset);
-    auto resource = Engine::getEngine()->getResources()->loader().load<assets::TextureAsset, gfx::TextureResource>(
-        std::move(request)
-    );
+	auto request = static_cast<ptr<assets::TextureAsset>>(asset);
+	auto resource = Engine::getEngine()->getResources()->loader().load<assets::TextureAsset, gfx::TextureResource>(
+		std::move(request)
+	);
 
-    auto guard = resource->acquire(resource::ResourceUsageFlag::eAll);
-    auto* const image = Cast<gfx::SparseTextureView>(guard->get());
-    assert(image);
+	auto guard = resource->acquire(resource::ResourceUsageFlag::eAll);
+	auto* const image = Cast<gfx::SparseTextureView>(guard->get());
+	assert(image);
 
-    if (not image->vkImageView()) {
-        engine::gfx::TextureFactory::get()->buildView(*image, { .type = TextureType::e2d });
-    }
+	if (not image->vkImageView()) {
+		engine::gfx::TextureFactory::get()->buildView(*image, { .type = TextureType::e2d });
+	}
 
-    _defaultImage = std::move(resource);
+	_defaultImage = std::move(resource);
 }
 
 void render::ReflowPass::ensureGraphicsPass() {
 
-    if (not _graphicsPass.empty()) {
-        return;
-    }
+	if (not _graphicsPass.empty()) {
+		return;
+	}
 
-    constexpr auto factory = accel::VkAccelerationPassFactory();
-    _graphicsPass = factory.buildGraphicsPass(
-        {
-            makeSceneColorSymbol()
-        },
-        {
-            makeSceneColorSymbol()
-        }
-    ).value();
+	constexpr auto factory = accel::VkAccelerationPassFactory();
+	_graphicsPass = factory.buildGraphicsPass(
+		{
+			makeSceneColorSymbol()
+		},
+		{
+			makeSceneColorSymbol()
+		}
+	).value();
 }
 
 void render::ReflowPass::ensureFramebuffer(mref<smr<gfx::TextureLikeObject>> colorTarget_) {
 
-    if (_framebuffer != nullptr && _framebuffer->attachments().front() != colorTarget_) {
-        _framebuffer->device()->vkDevice().destroySemaphore(_tmpSignal);
-        _framebuffer->destroy();
-        _framebuffer.reset();
-    }
+	if (_framebuffer != nullptr && _framebuffer->attachments().front() != colorTarget_) {
+		_framebuffer->device()->vkDevice().destroySemaphore(_tmpSignal);
+		_framebuffer->destroy();
+		_framebuffer.reset();
+	}
 
-    if (_framebuffer != nullptr) {
-        return;
-    }
+	if (_framebuffer != nullptr) {
+		return;
+	}
 
-    _framebuffer = make_uptr<gfx::Framebuffer>(Engine::getEngine()->getGraphics()->getCurrentDevice());
+	_framebuffer = make_uptr<gfx::Framebuffer>(Engine::getEngine()->getGraphics()->getCurrentDevice());
 
-    const auto* const texture = Cast<gfx::Texture>(colorTarget_.get());
-    _framebuffer->addAttachment(clone(colorTarget_));
+	const auto* const texture = Cast<gfx::Texture>(colorTarget_.get());
+	_framebuffer->addAttachment(clone(colorTarget_));
 
-    _framebuffer->setExtent(texture->extent());
-    _framebuffer->setRenderPass(clone(_graphicsPass));
+	_framebuffer->setExtent(texture->extent());
+	_framebuffer->setRenderPass(clone(_graphicsPass));
 
-    _framebuffer->setup();
-    _tmpSignal = _framebuffer->device()->vkDevice().createSemaphore({});
+	_framebuffer->setup();
+	_tmpSignal = _framebuffer->device()->vkDevice().createSemaphore({});
 }
 
-void render::ReflowPass::updateVertices(cref<Vector<gfx::uivertex>> vertices_) {
+void render::ReflowPass::updateVertices(
+	cref<std::span<gfx::uivertex>> opaque_,
+	cref<std::span<gfx::uivertex>> alpha_,
+	cref<std::span<gfx::uivertex>> msdf_
+) {
 
-    const auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
-    const auto vertexSize = sizeof(gfx::uivertex) * vertices_.size();
+	const auto alphaVertexSize = alpha_.size() * sizeof(gfx::uivertex);
+	const auto opaqueVertexSize = opaque_.size() * sizeof(gfx::uivertex);
 
-    if (_uiVertexBuffer == nullptr || Cast<gfx::Buffer>(_uiVertexBuffer.get())->size < vertexSize) {
+	const auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
+	const auto vertexSize = alphaVertexSize + opaqueVertexSize;
 
-        if (_uiVertexBuffer) {
-            Cast<gfx::Buffer>(_uiVertexBuffer.get())->destroy();
-            _uiVertexBuffer.reset();
-        }
+	if (_uiVertexBuffer == nullptr || Cast<gfx::Buffer>(_uiVertexBuffer.get())->size < vertexSize) {
 
-        _uiVertexBuffer = make_uptr<gfx::Buffer>();
-        auto& next = *Cast<gfx::Buffer>(_uiVertexBuffer.get());
+		if (_uiVertexBuffer) {
+			Cast<gfx::Buffer>(_uiVertexBuffer.get())->destroy();
+			_uiVertexBuffer.reset();
+		}
 
-        next.size = vertexSize;
-        next.usageFlags = vk::BufferUsageFlagBits::eVertexBuffer;
-        next.device = device->vkDevice();
+		_uiVertexBuffer = make_uptr<gfx::Buffer>();
+		auto& next = *Cast<gfx::Buffer>(_uiVertexBuffer.get());
 
-        const vk::BufferCreateInfo bci {
-            vk::BufferCreateFlags {},
-            next.size, next.usageFlags, vk::SharingMode::eExclusive, 0, nullptr
-        };
+		next.size = vertexSize;
+		next.usageFlags = vk::BufferUsageFlagBits::eVertexBuffer;
+		next.device = device->vkDevice();
 
-        next.buffer = device->vkDevice().createBuffer(bci);
-        assert(next.buffer);
+		const vk::BufferCreateInfo bci {
+			vk::BufferCreateFlags {},
+			next.size, next.usageFlags, vk::SharingMode::eExclusive, 0, nullptr
+		};
 
-        [[maybe_unused]] auto allocResult = gfx::memory::allocate(
-            device->allocator(),
-            device,
-            next.buffer,
-            gfx::MemoryProperty::eHostVisible,
-            next.memory
-        );
-        next.bind();
-    }
+		next.buffer = device->vkDevice().createBuffer(bci);
+		assert(next.buffer);
 
-    /**/
+		[[maybe_unused]] auto allocResult = gfx::memory::allocate(
+			device->allocator(),
+			device,
+			next.buffer,
+			gfx::MemoryProperty::eHostVisible,
+			next.memory
+		);
+		next.bind();
+	}
 
-    Cast<gfx::Buffer>(_uiVertexBuffer.get())->write<gfx::uivertex>(
-        vertices_.data(),
-        vertices_.size()
-    );
+	/**/
+
+	ref<gfx::Buffer> target = *Cast<gfx::Buffer>(_uiVertexBuffer.get());
+	target.map(vertexSize, 0uLL);
+
+	/**/
+
+	_opaqueSubPass.vertexOffset = 0LL;
+	memcpy(target.memory->mapping, opaque_.data(), opaque_.size() * sizeof(gfx::uivertex));
+
+	/**/
+
+	_alphaSubPass.vertexOffset = _opaqueSubPass.vertexOffset + opaque_.size() * sizeof(gfx::uivertex);
+	memcpy(
+		static_cast<const ptr<char>>(target.memory->mapping) + _alphaSubPass.vertexOffset,
+		alpha_.data(),
+		alpha_.size() * sizeof(gfx::uivertex)
+	);
+
+	/**/
+
+	_msdfSubPass.vertexOffset = _alphaSubPass.vertexOffset + alpha_.size() * sizeof(gfx::uivertex);
+	memcpy(
+		static_cast<const ptr<char>>(target.memory->mapping) + _msdfSubPass.vertexOffset,
+		msdf_.data(),
+		msdf_.size() * sizeof(gfx::uivertex)
+	);
+
+	/**/
+
+	target.unmap();
 }
 
-void render::ReflowPass::updateIndices(cref<Vector<u32>> indices_) {
+void render::ReflowPass::updateIndices(
+	cref<std::span<u32>> opaque_,
+	cref<std::span<u32>> alpha_,
+	cref<std::span<u32>> msdf_
+) {
 
-    const auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
-    const auto indexSize = sizeof(u32) * indices_.size();
+	const auto opaqueIndexSize = opaque_.size_bytes();
+	const auto alphaIndexSize = alpha_.size_bytes();
+	const auto msdfIndexSize = msdf_.size_bytes();
 
-    if (_uiIndexBuffer == nullptr || Cast<gfx::Buffer>(_uiIndexBuffer.get())->size < indexSize) {
+	const auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
+	const auto indexSize = opaqueIndexSize + alphaIndexSize + msdfIndexSize;
 
-        if (_uiIndexBuffer) {
-            Cast<gfx::Buffer>(_uiIndexBuffer.get())->destroy();
-            _uiIndexBuffer.reset();
-        }
+	if (_uiIndexBuffer == nullptr || Cast<gfx::Buffer>(_uiIndexBuffer.get())->size < indexSize) {
 
-        _uiIndexBuffer = make_uptr<gfx::Buffer>();
-        auto& next = *Cast<gfx::Buffer>(_uiIndexBuffer.get());
+		if (_uiIndexBuffer) {
+			Cast<gfx::Buffer>(_uiIndexBuffer.get())->destroy();
+			_uiIndexBuffer.reset();
+		}
 
-        next.size = indexSize;
-        next.usageFlags = vk::BufferUsageFlagBits::eIndexBuffer;
-        next.device = device->vkDevice();
+		_uiIndexBuffer = make_uptr<gfx::Buffer>();
+		auto& next = *Cast<gfx::Buffer>(_uiIndexBuffer.get());
 
-        const vk::BufferCreateInfo bci {
-            vk::BufferCreateFlags {},
-            next.size, next.usageFlags, vk::SharingMode::eExclusive, 0, nullptr
-        };
+		next.size = indexSize;
+		next.usageFlags = vk::BufferUsageFlagBits::eIndexBuffer;
+		next.device = device->vkDevice();
 
-        next.buffer = device->vkDevice().createBuffer(bci);
-        assert(next.buffer);
+		const vk::BufferCreateInfo bci {
+			vk::BufferCreateFlags {},
+			next.size, next.usageFlags, vk::SharingMode::eExclusive, 0, nullptr
+		};
 
-        [[maybe_unused]] auto allocResult = gfx::memory::allocate(
-            device->allocator(),
-            device,
-            next.buffer,
-            gfx::MemoryProperty::eHostVisible,
-            next.memory
-        );
-        next.bind();
-    }
+		next.buffer = device->vkDevice().createBuffer(bci);
+		assert(next.buffer);
 
-    /**/
+		[[maybe_unused]] auto allocResult = gfx::memory::allocate(
+			device->allocator(),
+			device,
+			next.buffer,
+			gfx::MemoryProperty::eHostVisible,
+			next.memory
+		);
+		next.bind();
+	}
 
-    Cast<gfx::Buffer>(_uiIndexBuffer.get())->write<u32>(
-        indices_.data(),
-        indices_.size()
-    );
+	/**/
+
+	auto& target = *Cast<gfx::Buffer>(_uiIndexBuffer.get());
+	target.map(indexSize, 0uLL);
+
+	/**/
+
+	_opaqueSubPass.indexOffset = 0LL;
+	_opaqueSubPass.indexSize = opaque_.size_bytes();
+
+	memcpy(
+		target.memory->mapping,
+		opaque_.data(),
+		opaque_.size_bytes()
+	);
+
+	/**/
+
+	_alphaSubPass.indexOffset = _opaqueSubPass.indexOffset + _opaqueSubPass.indexSize;
+	_alphaSubPass.indexSize = alpha_.size_bytes();
+
+	memcpy(
+		static_cast<const ptr<char>>(target.memory->mapping) + _alphaSubPass.indexOffset,
+		alpha_.data(),
+		alpha_.size_bytes()
+	);
+
+	/**/
+
+	_msdfSubPass.indexOffset = _alphaSubPass.indexOffset + _alphaSubPass.indexSize;
+	_msdfSubPass.indexSize = msdf_.size_bytes();
+
+	memcpy(
+		static_cast<const ptr<char>>(target.memory->mapping) + _msdfSubPass.indexOffset,
+		msdf_.data(),
+		msdf_.size_bytes()
+	);
+
+	/**/
+
+	target.unmap();
+}
+
+void render::ReflowPass::captureOpaque(
+	cref<ReflowCommandBuffer> records_,
+	cref<math::fExtent2D> scope_,
+	ref<engine::render::cmd::RenderCommandBuffer> cmd_
+) {
+
+	cmd_.lambda(
+		[this, scope_](ref<accel::AccelCommandBuffer> cmd_) {
+
+			struct UiTransformBlock {
+				math::vec2 extent;
+				math::vec2 center;
+			};
+
+			const auto block = UiTransformBlock {
+				math::vec2 { -1.F },
+				math::vec2 { 2.F / scope_.width, 2.F / scope_.height }
+			};
+
+			cmd_.vkCommandBuffer().pushConstants(
+				reinterpret_cast<VkPipelineLayout>(
+					Cast<accel::VkGraphicsPipeline>(_opaqueSubPass.compiled.pipeline.get())->_vkPipeLayout
+				),
+				vk::ShaderStageFlagBits::eVertex,
+				0uL,
+				sizeof(UiTransformBlock),
+				&block
+			);
+
+			/**/
+
+			auto* vb = Cast<gfx::Buffer>(_uiVertexBuffer.get());
+			auto* ib = Cast<gfx::Buffer>(_uiIndexBuffer.get());
+
+			cmd_.bindVertexBuffer(0uL, *vb, _opaqueSubPass.vertexOffset);
+			cmd_.bindIndexBuffer(static_cast<ref<gfx::IndexBuffer>>(*ib), _opaqueSubPass.indexOffset);
+		}
+	);
+
+	/* Bind default image */
+
+	if (_defaultImage.empty()) {
+		ensureDefaultImage();
+	}
+
+	const auto defaultImageGuard = _defaultImage->acquire(resource::ResourceUsageFlag::eRead);
+	auto* const defaultImage = Cast<gfx::SparseTextureView>(defaultImageGuard->get());
+
+	// UIDummy
+
+	cmd_.bindTexture(accel::lang::SymbolId::from("ui-image"sv), defaultImage);
+	cmd_.bindTextureSampler(accel::lang::SymbolId::from("ui-image-sampler"sv), _opaqueSubPass.imageSampler.get());
+
+	/**/
+
+	if (records_._scissors.empty()) {
+		return;
+	}
+
+	/* Warning: Dirty Hack for Sanitizing */
+
+	if (records_._opaque.imageSpan.empty()) {
+		const_cast<Vector<ImageSpan>&>(records_._opaque.imageSpan).emplace_back(
+			records_._opaque.scissorSpan.back().last,
+			records_._opaque.scissorSpan.back().last,
+			~0uL
+		);
+	}
+
+	/**/
+
+	const auto& firstScissorSpan = records_._opaque.scissorSpan.front();
+	const auto& lastScissorSpan = records_._opaque.scissorSpan.back();
+
+	auto scissorIt = records_._opaque.scissorSpan.begin();
+	auto imageIt = records_._opaque.imageSpan.begin();
+
+	u32 idx = firstScissorSpan.first;
+	while (idx < lastScissorSpan.last) {
+
+		const auto startIdx = idx;
+		const auto endIdx = (std::min)(
+			idx < scissorIt->first ? scissorIt->first : scissorIt->last,
+			idx < imageIt->first ? imageIt->first : imageIt->last
+		);
+
+		const auto& scissor = records_._scissors[scissorIt->idx];
+
+		/**/
+
+		const auto image = [&]() -> nmpt<gfx::TextureLikeObject> {
+
+			if (idx < imageIt->first || idx >= imageIt->last) {
+				return defaultImage;
+			}
+
+			return records_._images[imageIt->idx];
+		}();
+
+		/**/
+
+		const auto vkScissor = vk::Rect2D {
+			vk::Offset2D { static_cast<s32>(scissor.offsetX), static_cast<s32>(scissor.offsetY) },
+			vk::Extent2D { static_cast<u32>(scissor.width), static_cast<u32>(scissor.height) }
+		};
+
+		cmd_.lambda(
+			[vkScissor](ref<accel::AccelCommandBuffer> accel_) {
+				accel_.vkCommandBuffer().setScissor(0, 1, &vkScissor);
+			}
+		);
+
+		/**/
+
+		switchType(
+			image.get(),
+			[](const ptr<gfx::Texture> texture_) {
+				if (not texture_->vkView()) {
+					gfx::TextureFactory::get()->buildView(*texture_);
+				}
+			},
+			[](const ptr<gfx::TextureView> view_) {
+				if (not view_->owner()->vkView()) {
+					gfx::TextureFactory::get()->buildView(*view_->owner());
+				}
+			},
+			[](const ptr<gfx::SparseTexture> texture_) {
+				if (not texture_->_vkImageView) {
+					gfx::TextureFactory::get()->buildView(*texture_);
+				}
+			},
+			[](const ptr<gfx::SparseTextureView> view_) {
+				if (not view_->vkImageView()) {
+					gfx::TextureFactory::get()->buildView(*view_);
+				}
+			}
+		);
+
+		cmd_.bindTexture(
+			accel::lang::SymbolId::from("ui-image"sv),
+			image.get()
+		);
+
+		/**/
+
+		cmd_.drawStaticMeshIdx(1uL, 0uL, (endIdx - startIdx) / 3uL, startIdx / 3uL);
+
+		/**/
+
+		if (scissorIt->last == endIdx) {
+			++scissorIt;
+		}
+
+		if (imageIt->last == endIdx) {
+			++imageIt;
+		}
+
+		idx = endIdx;
+	}
+}
+
+void render::ReflowPass::captureAlpha(
+	cref<ReflowCommandBuffer> records_,
+	cref<math::fExtent2D> scope_,
+	ref<engine::render::cmd::RenderCommandBuffer> cmd_
+) {
+
+	cmd_.lambda(
+		[this, scope_](ref<accel::AccelCommandBuffer> cmd_) {
+
+			struct UiTransformBlock {
+				math::vec2 extent;
+				math::vec2 center;
+			};
+
+			const auto block = UiTransformBlock {
+				math::vec2 { -1.F },
+				math::vec2 { 2.F / scope_.width, 2.F / scope_.height }
+			};
+
+			cmd_.vkCommandBuffer().pushConstants(
+				reinterpret_cast<VkPipelineLayout>(
+					Cast<accel::VkGraphicsPipeline>(_alphaSubPass.compiled.pipeline.get())->_vkPipeLayout
+				),
+				vk::ShaderStageFlagBits::eVertex,
+				0uL,
+				sizeof(UiTransformBlock),
+				&block
+			);
+
+			/**/
+
+			auto* vb = Cast<gfx::Buffer>(_uiVertexBuffer.get());
+			auto* ib = Cast<gfx::Buffer>(_uiIndexBuffer.get());
+
+			cmd_.bindVertexBuffer(0uL, *vb, _alphaSubPass.vertexOffset);
+			cmd_.bindIndexBuffer(static_cast<ref<gfx::IndexBuffer>>(*ib), _alphaSubPass.indexOffset);
+		}
+	);
+
+	/* Bind default image */
+
+	if (_defaultImage.empty()) {
+		ensureDefaultImage();
+	}
+
+	const auto defaultImageGuard = _defaultImage->acquire(resource::ResourceUsageFlag::eRead);
+	auto* const defaultImage = Cast<gfx::SparseTextureView>(defaultImageGuard->get());
+
+	// UIDummy
+
+	cmd_.bindTexture(accel::lang::SymbolId::from("ui-image"sv), defaultImage);
+	cmd_.bindTextureSampler(accel::lang::SymbolId::from("ui-image-sampler"sv), _alphaSubPass.imageSampler.get());
+
+	/**/
+
+	if (records_._scissors.empty()) {
+		return;
+	}
+
+	/* Warning: Dirty Hack for Sanitizing */
+
+	if (records_._alpha.imageSpan.empty()) {
+		const_cast<Vector<ImageSpan>&>(records_._alpha.imageSpan).emplace_back(
+			records_._alpha.scissorSpan.back().last,
+			records_._alpha.scissorSpan.back().last,
+			~0uL
+		);
+	}
+
+	/**/
+
+	const auto& firstScissorSpan = records_._alpha.scissorSpan.front();
+	const auto& lastScissorSpan = records_._alpha.scissorSpan.back();
+
+	auto scissorIt = records_._alpha.scissorSpan.begin();
+	auto imageIt = records_._alpha.imageSpan.begin();
+
+	u32 idx = firstScissorSpan.first;
+	while (idx < lastScissorSpan.last) {
+
+		const auto startIdx = idx;
+		const auto endIdx = (std::min)(
+			idx < scissorIt->first ? scissorIt->first : scissorIt->last,
+			idx < imageIt->first ? imageIt->first : imageIt->last
+		);
+
+		const auto& scissor = records_._scissors[scissorIt->idx];
+
+		/**/
+
+		const auto image = [&]() -> nmpt<gfx::TextureLikeObject> {
+
+			if (idx < imageIt->first || idx >= imageIt->last) {
+				return defaultImage;
+			}
+
+			return records_._images[imageIt->idx];
+		}();
+
+		/**/
+
+		const auto vkScissor = vk::Rect2D {
+			vk::Offset2D { static_cast<s32>(scissor.offsetX), static_cast<s32>(scissor.offsetY) },
+			vk::Extent2D { static_cast<u32>(scissor.width), static_cast<u32>(scissor.height) }
+		};
+
+		cmd_.lambda(
+			[vkScissor](ref<accel::AccelCommandBuffer> accel_) {
+				accel_.vkCommandBuffer().setScissor(0, 1, &vkScissor);
+			}
+		);
+
+		/**/
+
+		switchType(
+			image.get(),
+			[](const ptr<gfx::Texture> texture_) {
+				if (not texture_->vkView()) {
+					gfx::TextureFactory::get()->buildView(*texture_);
+				}
+			},
+			[](const ptr<gfx::TextureView> view_) {
+				if (not view_->owner()->vkView()) {
+					gfx::TextureFactory::get()->buildView(*view_->owner());
+				}
+			},
+			[](const ptr<gfx::SparseTexture> texture_) {
+				if (not texture_->_vkImageView) {
+					gfx::TextureFactory::get()->buildView(*texture_);
+				}
+			},
+			[](const ptr<gfx::SparseTextureView> view_) {
+				if (not view_->vkImageView()) {
+					gfx::TextureFactory::get()->buildView(*view_);
+				}
+			}
+		);
+
+		cmd_.bindTexture(
+			accel::lang::SymbolId::from("ui-image"sv),
+			image.get()
+		);
+
+		/**/
+
+		cmd_.drawStaticMeshIdx(1uL, 0uL, (endIdx - startIdx) / 3uL, startIdx / 3uL);
+
+		/**/
+
+		if (scissorIt->last == endIdx) {
+			++scissorIt;
+		}
+
+		if (imageIt->last == endIdx) {
+			++imageIt;
+		}
+
+		idx = endIdx;
+	}
 }
 
 /**/
 
-engine::accel::EffectCompileResult build_test_base_pipeline(mref<smr<const engine::accel::GraphicsPass>> pass_) {
+engine::accel::EffectCompileResult build_test_opaque_pipeline(mref<smr<const engine::accel::GraphicsPass>> pass_) {
 
-    auto effect = makeUiBaseEffect();
+	auto effect = makeUiBaseEffect();
 
-    auto profile = make_smr<engine::accel::EffectProfile>(
-        engine::accel::EffectProfile {
-            ._name = "Test-UI-Profile",
-            ._definitions = {}
-        }
-    );
+	auto profile = make_smr<engine::accel::EffectProfile>(
+		engine::accel::EffectProfile {
+			._name = "Test-UI-Profile",
+			._definitions = {}
+		}
+	);
 
-    /**/
+	/**/
 
-    auto spec = make_smr<engine::accel::SimpleEffectSpecification>();
-    spec->setPassSpec(
-        make_uptr<engine::accel::GraphicsPassSpecification>(
-            engine::accel::GraphicsPassSpecification {
-                .depthCompareOp = engine::accel::DepthCompareOp::eNever,
-                .stencilCompareOp = engine::accel::StencilCompareOp::eNever,
-                .stencilFailOp = engine::accel::StencilOp::eKeep,
-                .stencilPassOp = engine::accel::StencilOp::eKeep,
-                .stencilDepthFailOp = engine::accel::StencilOp::eKeep,
-                .stencilCompareMask = 0uL,
-                .stencilWriteMask = 0uL,
-                .primitiveTopology = engine::accel::PrimitiveTopology::eTriangleList,
-                .faceCulling = engine::accel::FaceCulling::eFront,
-                .faceMode = engine::accel::FaceMode::eFill,
-                .faceWinding = engine::accel::FaceWinding::eCcw,
-                .pass = pass_.get(),
-                .blendState = {
-                    engine::accel::BlendState {
-                        .defaulted = false,
-                        .vkState = {
-                            VK_TRUE,
-                            vk::BlendFactor::eSrcAlpha,
-                            vk::BlendFactor::eOneMinusSrcAlpha,
-                            vk::BlendOp::eAdd,
-                            vk::BlendFactor::eZero,
-                            vk::BlendFactor::eZero,
-                            vk::BlendOp::eAdd,
-                            vk::ColorComponentFlagBits::eR |
-                            vk::ColorComponentFlagBits::eG |
-                            vk::ColorComponentFlagBits::eB |
-                            vk::ColorComponentFlagBits::eA
-                        }
-                    }
-                }
-            }
-        )
-    );
+	auto spec = make_smr<engine::accel::SimpleEffectSpecification>();
+	spec->setPassSpec(
+		make_uptr<engine::accel::GraphicsPassSpecification>(
+			engine::accel::GraphicsPassSpecification {
+				.depthCompareOp = engine::accel::DepthCompareOp::eNever,
+				.stencilCompareOp = engine::accel::StencilCompareOp::eNever,
+				.stencilFailOp = engine::accel::StencilOp::eKeep,
+				.stencilPassOp = engine::accel::StencilOp::eKeep,
+				.stencilDepthFailOp = engine::accel::StencilOp::eKeep,
+				.stencilCompareMask = 0uL,
+				.stencilWriteMask = 0uL,
+				.primitiveTopology = engine::accel::PrimitiveTopology::eTriangleList,
+				.faceCulling = engine::accel::FaceCulling::eFront,
+				.faceMode = engine::accel::FaceMode::eFill,
+				.faceWinding = engine::accel::FaceWinding::eCcw,
+				.pass = pass_.get(),
+				.blendState = {
+					engine::accel::BlendState {
+						.defaulted = false,
+						.vkState = {
+							VK_FALSE,
+							vk::BlendFactor::eOne,
+							vk::BlendFactor::eZero,
+							vk::BlendOp::eAdd,
+							vk::BlendFactor::eOne,
+							vk::BlendFactor::eZero,
+							vk::BlendOp::eAdd,
+							vk::ColorComponentFlagBits::eR |
+							vk::ColorComponentFlagBits::eG |
+							vk::ColorComponentFlagBits::eB |
+							vk::ColorComponentFlagBits::eA
+						}
+					}
+				}
+			}
+		)
+	);
 
-    /**/
+	/**/
 
-    const auto compiler = engine::accel::makeVkAccCompiler();
-    return compiler->compile(
-        {
-            .effect = std::move(effect),
-            .profile = std::move(profile),
-            .spec = std::move(spec)
-        }
-    );
+	const auto compiler = engine::accel::makeVkAccCompiler();
+	return compiler->compile(
+		{
+			.effect = std::move(effect),
+			.profile = std::move(profile),
+			.spec = std::move(spec)
+		}
+	);
+}
+
+engine::accel::EffectCompileResult build_test_alpha_pipeline(mref<smr<const engine::accel::GraphicsPass>> pass_) {
+
+	auto effect = makeUiBaseEffect();
+
+	auto profile = make_smr<engine::accel::EffectProfile>(
+		engine::accel::EffectProfile {
+			._name = "Test-UI-Profile",
+			._definitions = {}
+		}
+	);
+
+	/**/
+
+	auto spec = make_smr<engine::accel::SimpleEffectSpecification>();
+	spec->setPassSpec(
+		make_uptr<engine::accel::GraphicsPassSpecification>(
+			engine::accel::GraphicsPassSpecification {
+				.depthCompareOp = engine::accel::DepthCompareOp::eNever,
+				.stencilCompareOp = engine::accel::StencilCompareOp::eNever,
+				.stencilFailOp = engine::accel::StencilOp::eKeep,
+				.stencilPassOp = engine::accel::StencilOp::eKeep,
+				.stencilDepthFailOp = engine::accel::StencilOp::eKeep,
+				.stencilCompareMask = 0uL,
+				.stencilWriteMask = 0uL,
+				.primitiveTopology = engine::accel::PrimitiveTopology::eTriangleList,
+				.faceCulling = engine::accel::FaceCulling::eFront,
+				.faceMode = engine::accel::FaceMode::eFill,
+				.faceWinding = engine::accel::FaceWinding::eCcw,
+				.pass = pass_.get(),
+				.blendState = {
+					engine::accel::BlendState {
+						.defaulted = false,
+						.vkState = {
+							VK_TRUE,
+							vk::BlendFactor::eSrcAlpha,
+							vk::BlendFactor::eOneMinusSrcAlpha,
+							vk::BlendOp::eAdd,
+							vk::BlendFactor::eZero,
+							vk::BlendFactor::eZero,
+							vk::BlendOp::eAdd,
+							vk::ColorComponentFlagBits::eR |
+							vk::ColorComponentFlagBits::eG |
+							vk::ColorComponentFlagBits::eB |
+							vk::ColorComponentFlagBits::eA
+						}
+					}
+				}
+			}
+		)
+	);
+
+	/**/
+
+	const auto compiler = engine::accel::makeVkAccCompiler();
+	return compiler->compile(
+		{
+			.effect = std::move(effect),
+			.profile = std::move(profile),
+			.spec = std::move(spec)
+		}
+	);
 }
