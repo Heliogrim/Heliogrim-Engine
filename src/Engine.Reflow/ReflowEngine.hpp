@@ -6,6 +6,14 @@
 
 namespace hg::engine::reflow {
     class ReflowEngine {
+    private:
+        static std::atomic_uint_fast16_t _globalReflowTick;
+
+    public:
+        static void updateTickVersion() noexcept;
+
+        [[nodiscard]] static u16 getGlobalRenderTick() noexcept;
+
     public:
         static void tick(
             _Inout_ ref<ReflowState> state_,

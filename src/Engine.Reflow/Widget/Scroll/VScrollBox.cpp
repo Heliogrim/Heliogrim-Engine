@@ -206,5 +206,6 @@ EventResponse VScrollBox::onWheel(cref<WheelEvent> event_) {
     _scrollValue.x = math::clamp(_scrollValue.x, 0.F, 1.F);
     _scrollValue.y = math::clamp(_scrollValue.y, 0.F, 1.F);
 
+    markAsPending();
     return EventResponse::eConsumed;
 }

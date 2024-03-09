@@ -64,9 +64,11 @@ namespace hg::engine::reflow::render {
 	public:
 		void destroy() noexcept override;
 
-	private:
-		uptr<gfx::BufferLikeObject> _uiVertexBuffer;
-		uptr<gfx::BufferLikeObject> _uiIndexBuffer;
+    private:
+        u16 _lastRenderTick;
+
+        uptr<gfx::BufferLikeObject> _uiVertexBuffer;
+        uptr<gfx::BufferLikeObject> _uiIndexBuffer;
 
 		ReflowOpaqueSubPassData _opaqueSubPass;
 		ReflowAlphaSubPassData _alphaSubPass;

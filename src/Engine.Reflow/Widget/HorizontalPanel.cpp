@@ -62,6 +62,8 @@ void HorizontalPanel::setChild(const u32 idx_, cref<sptr<Widget>> child_) {
     child_->setParent(shared_from_this());
     _children[idx_]->setParent(nullptr);
     _children[idx_] = child_;
+
+    markAsPending();
 }
 
 void HorizontalPanel::removeChild(cref<sptr<Widget>> child_) {

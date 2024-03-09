@@ -2,6 +2,7 @@
 
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Managed/SharedFromThis.hpp>
+#include <Engine.GFX/Aabb.hpp>
 
 #include "WidgetState.hpp"
 #include "../FlowContext.hpp"
@@ -29,6 +30,8 @@ namespace hg::engine::reflow {
         public SharedFromThis<Widget> {
     public:
         using this_type = Widget;
+
+        using Aabb2d = ::hg::engine::gfx::Aabb2d;
 
     protected:
         Widget();
@@ -160,12 +163,15 @@ namespace hg::engine::reflow {
 
         void markAsPending(const bool inherited_ = false, const bool suppress_ = false);
 
-        void clearPending();
+        WidgetStateFlag clearPending();
 
-        void clearShiftState();
+        virtual void enumerateDistinctCapture(
+            _In_ const u16 compareVersion_,
+            _Inout_ ref<Vector<nmpt<const Widget>>> capture_
+        ) const noexcept;
 
-        void markCaptureState(const bool inherited_ = false);
+        void updateRenderVersion(const u16 version_, const bool inherited_ = false);
 
-        void clearCaptureState();
+        virtual void cascadeRenderVersion(const u16 version_, cref<Aabb2d> aabb_);
     };
 }

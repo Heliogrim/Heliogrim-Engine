@@ -15,6 +15,14 @@ void ReflowState::reset() {
     _recorded.clear();
 }
 
+u16 ReflowState::getRenderTick() const noexcept {
+    return _renderTick;
+}
+
+void ReflowState::setRenderTick(const u16 renderTick_) noexcept {
+    _renderTick = renderTick_;
+}
+
 non_owning_rptr<ReflowPassState> ReflowState::record(cref<sptr<Widget>> widget_) {
 
     const auto iter = _recorded.find(widget_.get());

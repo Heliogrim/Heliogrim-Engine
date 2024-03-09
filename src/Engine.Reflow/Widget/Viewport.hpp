@@ -2,6 +2,7 @@
 
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 #include <Heliogrim/World.hpp>
+#include <Engine.GFX/API/__vkFwd.hpp>
 
 #include "Widget.hpp"
 #include "../Children.hpp"
@@ -32,6 +33,11 @@ namespace hg::engine::reflow {
         [[nodiscard]] string getTag() const noexcept override;
 
     public:
+        bool shouldTick() const noexcept override;
+
+        void tick() override;
+
+    public:
         struct Attributes {
             Attribute<ReflowUnit> minWidth;
             Attribute<ReflowUnit> width;
@@ -48,6 +54,12 @@ namespace hg::engine::reflow {
     private:
         smr<gfx::VkSwapchain> _swapChain;
         nmpt<gfx::RenderTarget> _renderTarget;
+
+        smr<gfx::Texture> _currentSwapChainImage;
+        ::hg::_::VkSemaphore _currentImageSignal;
+        Vector<::hg::_::VkSemaphore> _currentImageWaits;
+
+        /**/
 
         StringView _renderer;
         ptr<CameraActor> _cameraActor;
