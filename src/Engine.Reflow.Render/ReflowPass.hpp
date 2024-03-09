@@ -1,5 +1,6 @@
 #pragma once
 #include <Engine.Accel.Compile/EffectCompileResult.hpp>
+#include <Engine.Common/Math/Extent.hpp>
 #include <Engine.GFX.Loader/Texture/TextureResource.hpp>
 #include <Engine.GFX/Buffer/BufferLikeObject.hpp>
 #include <Engine.GFX/Framebuffer/Framebuffer.hpp>
@@ -7,62 +8,114 @@
 #include <Engine.GFX/Texture/TextureSampler.hpp>
 #include <Engine.GFX.Render.Subpass/SubPass.hpp>
 
+namespace hg::engine::reflow {
+	class ReflowCommandBuffer;
+}
+
 namespace hg::engine::render::cmd {
-    class NativeBatch;
+	class RenderCommandBuffer;
+	class NativeBatch;
 }
 
 namespace hg::engine::gfx {
-    class Texture;
+	class Texture;
 }
 
 namespace hg::engine::reflow::render {
-    class ReflowPass final :
-        public engine::render::SubPass {
-    public:
-        using this_type = ReflowPass;
+	struct ReflowOpaqueSubPassData {
+		accel::EffectCompileResult compiled = {};
+		uptr<gfx::TextureSampler> imageSampler = nullptr;
 
-    public:
-        ReflowPass();
+		streamoff vertexOffset = 0LL;
+		streamoff indexOffset = 0LL;
+		streamsize indexSize = 0uLL;
+	};
 
-        ~ReflowPass() override;
+	struct ReflowAlphaSubPassData {
+		accel::EffectCompileResult compiled = {};
+		uptr<gfx::TextureSampler> imageSampler = nullptr;
 
-    public:
-        void destroy() noexcept override;
+		streamoff vertexOffset = 0LL;
+		streamoff indexOffset = 0LL;
+		streamsize indexSize = 0uLL;
+	};
 
-    private:
-        uptr<gfx::BufferLikeObject> _uiVertexBuffer;
-        uptr<gfx::BufferLikeObject> _uiIndexBuffer;
+	struct ReflowMsdfSubPassData {
+		accel::EffectCompileResult compiled = {};
+		uptr<gfx::TextureSampler> imageSampler = nullptr;
 
-        accel::EffectCompileResult _uiBaseCompiled;
-        accel::EffectCompileResult _uiMsdfCompiled;
+		streamoff vertexOffset = 0LL;
+		streamoff indexOffset = 0LL;
+		streamsize indexSize = 0uLL;
+	};
 
-        uptr<gfx::TextureSampler> _uiImageSampler;
-        uptr<gfx::TextureSampler> _uiMsdfSampler;
+	/**/
 
-        smr<gfx::TextureResource> _defaultImage;
+	class ReflowPass final :
+		public engine::render::SubPass {
+	public:
+		using this_type = ReflowPass;
 
-        smr<const accel::GraphicsPass> _graphicsPass;
-        uptr<gfx::Framebuffer> _framebuffer;
-        vk::Semaphore _tmpSignal;
+	public:
+		ReflowPass();
 
-        uptr<engine::render::cmd::NativeBatch> _nativeBatch;
+		~ReflowPass() override;
 
-    public:
-        void iterate(cref<engine::render::graph::ScopedSymbolContext> symCtx_) noexcept override;
+	public:
+		void destroy() noexcept override;
 
-        void resolve() noexcept override;
+	private:
+		uptr<gfx::BufferLikeObject> _uiVertexBuffer;
+		uptr<gfx::BufferLikeObject> _uiIndexBuffer;
 
-        void execute(cref<engine::render::graph::ScopedSymbolContext> symCtx_) noexcept override;
+		ReflowOpaqueSubPassData _opaqueSubPass;
+		ReflowAlphaSubPassData _alphaSubPass;
+		ReflowMsdfSubPassData _msdfSubPass;
 
-    private:
-        void ensureDefaultImage();
+		smr<gfx::TextureResource> _defaultImage;
 
-        void ensureGraphicsPass();
+		smr<const accel::GraphicsPass> _graphicsPass;
+		uptr<gfx::Framebuffer> _framebuffer;
+		vk::Semaphore _tmpSignal;
 
-        void ensureFramebuffer(mref<smr<gfx::TextureLikeObject>> colorTarget_);
+		uptr<engine::render::cmd::NativeBatch> _nativeBatch;
 
-        void updateVertices(cref<Vector<gfx::uivertex>> vertices_);
+	public:
+		void iterate(cref<engine::render::graph::ScopedSymbolContext> symCtx_) noexcept override;
 
-        void updateIndices(cref<Vector<u32>> indices_);
-    };
+		void resolve() noexcept override;
+
+		void execute(cref<engine::render::graph::ScopedSymbolContext> symCtx_) noexcept override;
+
+	private:
+		void ensureDefaultImage();
+
+		void ensureGraphicsPass();
+
+		void ensureFramebuffer(mref<smr<gfx::TextureLikeObject>> colorTarget_);
+
+		void updateVertices(
+			cref<std::span<gfx::uivertex>> opaque_,
+			cref<std::span<gfx::uivertex>> alpha_,
+			cref<std::span<gfx::uivertex>> msdf_
+		);
+
+		void updateIndices(
+			cref<std::span<u32>> opaque_,
+			cref<std::span<u32>> alpha_,
+			cref<std::span<u32>> msdf_
+		);
+
+		void captureOpaque(
+			cref<ReflowCommandBuffer> records_,
+			cref<math::fExtent2D> scope_,
+			_Inout_ ref<engine::render::cmd::RenderCommandBuffer> cmd_
+		);
+
+		void captureAlpha(
+			cref<ReflowCommandBuffer> records_,
+			cref<math::fExtent2D> scope_,
+			_Inout_ ref<engine::render::cmd::RenderCommandBuffer> cmd_
+		);
+	};
 }

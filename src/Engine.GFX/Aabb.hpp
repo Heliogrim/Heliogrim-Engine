@@ -3,147 +3,158 @@
 #include <Engine.Common/Math/Vector.hpp>
 
 namespace hg::engine::gfx {
-    struct Aabb2d {
-        math::fvec2 min;
-        math::fvec2 max;
+	struct Aabb2d {
+		math::fvec2 min;
+		math::fvec2 max;
 
-    public:
-        [[nodiscard]] constexpr bool intersects(
-            cref<Aabb2d> other_
-        ) const noexcept {
-            return (
-                (min.x <= other_.max.x && max.x >= other_.min.x) &&
-                (min.y <= other_.max.y && max.y >= other_.min.y)
-            );
-        }
+	public:
+		[[nodiscard]] constexpr bool intersects(
+			cref<Aabb2d> other_
+		) const noexcept {
+			return (
+				(min.x <= other_.max.x && max.x >= other_.min.x) &&
+				(min.y <= other_.max.y && max.y >= other_.min.y)
+			);
+		}
 
-        [[nodiscard]] constexpr bool intersects(
-            cref<math::fvec2> point_
-        ) const noexcept {
-            return (
-                (min.x <= point_.x && point_.x <= max.x) &&
-                (min.y <= point_.y && point_.y <= max.y)
-            );
-        }
+		[[nodiscard]] constexpr bool intersects(
+			cref<math::fvec2> point_
+		) const noexcept {
+			return (
+				(min.x <= point_.x && point_.x <= max.x) &&
+				(min.y <= point_.y && point_.y <= max.y)
+			);
+		}
 
-        [[nodiscard]] constexpr bool sphericalIntersects(
-            math::fvec2 point_
-        ) const noexcept {
+		[[nodiscard]] constexpr bool sphericalIntersects(
+			math::fvec2 point_
+		) const noexcept {
 
-            const auto halfExtent = (max / 2.F) - (min / 2.F);
-            const auto delta = (min + halfExtent) - point_;
-            // dot ( delta, delta ) < dot ( halfExtent, halfExtent )
-            return (
-                (delta.x * delta.x < halfExtent.x * halfExtent.x) ||
-                (delta.y * delta.y < halfExtent.y * halfExtent.y)
-            );
-        }
+			const auto halfExtent = (max / 2.F) - (min / 2.F);
+			const auto delta = (min + halfExtent) - point_;
+			// dot ( delta, delta ) < dot ( halfExtent, halfExtent )
+			return (
+				(delta.x * delta.x < halfExtent.x * halfExtent.x) ||
+				(delta.y * delta.y < halfExtent.y * halfExtent.y)
+			);
+		}
 
-        [[nodiscard]] constexpr bool sphericalIntersects(
-            cref<math::fvec2> point_,
-            math::fvec2::value_type radius_
-        ) const noexcept {
+		[[nodiscard]] constexpr bool sphericalIntersects(
+			cref<math::fvec2> point_,
+			math::fvec2::value_type radius_
+		) const noexcept {
 
-            const auto halfExtent = (max / 2.F) - (min / 2.F);
-            const auto delta = (min + halfExtent) - point_;
-            const auto sqr = radius_ * radius_;
+			const auto halfExtent = (max / 2.F) - (min / 2.F);
+			const auto delta = (min + halfExtent) - point_;
+			const auto sqr = radius_ * radius_;
 
-            // dot ( delta, delta ) + ( radius * radius ) < dot ( halfExtent, halfExtent )
-            return (
-                ((delta.x * delta.x - sqr) < halfExtent.x * halfExtent.x) ||
-                ((delta.y * delta.y - sqr) < halfExtent.y * halfExtent.y)
-            );
-        }
+			// dot ( delta, delta ) + ( radius * radius ) < dot ( halfExtent, halfExtent )
+			return (
+				((delta.x * delta.x - sqr) < halfExtent.x * halfExtent.x) ||
+				((delta.y * delta.y - sqr) < halfExtent.y * halfExtent.y)
+			);
+		}
 
-    public:
-        [[nodiscard]] constexpr Aabb2d join(cref<Aabb2d> other_) const noexcept {
-            return {
-                math::compMin<math::fvec2::value_type>(min, other_.min),
-                math::compMax<math::fvec2::value_type>(max, other_.max)
-            };
-        }
+		[[nodiscard]] constexpr bool contains(cref<Aabb2d> other_) const noexcept {
+			return min.x <= other_.min.x && min.y <= other_.min.y &&
+				max.x >= other_.max.x && max.y >= other_.max.y;
+		}
 
-        [[nodiscard]] constexpr Aabb2d overlap(cref<Aabb2d> other_) const noexcept {
-            // Warning: This will return min > max for not intersecting aabbs
-            return {
-                math::compMax<math::fvec2::value_type>(min, other_.min),
-                math::compMin<math::fvec2::value_type>(max, other_.max)
-            };
-        }
-    };
+	public:
+		[[nodiscard]] constexpr Aabb2d join(cref<Aabb2d> other_) const noexcept {
+			return {
+				math::compMin<math::fvec2::value_type>(min, other_.min),
+				math::compMax<math::fvec2::value_type>(max, other_.max)
+			};
+		}
 
-    struct Aabb {
-        math::fvec3 min;
-        math::fvec3 max;
+		[[nodiscard]] constexpr Aabb2d overlap(cref<Aabb2d> other_) const noexcept {
+			// Warning: This will return min > max for not intersecting aabbs
+			return {
+				math::compMax<math::fvec2::value_type>(min, other_.min),
+				math::compMin<math::fvec2::value_type>(max, other_.max)
+			};
+		}
 
-    public:
-        [[nodiscard]] constexpr bool intersects(
-            cref<Aabb> other_
-        ) const noexcept {
-            return (
-                (min.x <= other_.max.x && max.x >= other_.min.x) &&
-                (min.y <= other_.max.y && max.y >= other_.min.y) &&
-                (min.z <= other_.max.z && max.z >= other_.min.z)
-            );
-        }
+	public:
+		[[nodiscard]] constexpr bool operator==(cref<Aabb2d> other_) const noexcept {
+			// Warning: Replace float-point comparison with epsilon check
+			return min == other_.min && max == other_.max;
+		}
+	};
 
-        [[nodiscard]] constexpr bool intersects(
-            cref<math::fvec3> point_
-        ) const noexcept {
-            return (
-                (min.x <= point_.x && point_.x <= max.x) &&
-                (min.y <= point_.y && point_.y <= max.y) &&
-                (min.z <= point_.z && point_.z <= max.z)
-            );
-        }
+	struct Aabb {
+		math::fvec3 min;
+		math::fvec3 max;
 
-        [[nodiscard]] constexpr bool sphericalIntersects(
-            cref<math::fvec3> point_
-        ) const noexcept {
+	public:
+		[[nodiscard]] constexpr bool intersects(
+			cref<Aabb> other_
+		) const noexcept {
+			return (
+				(min.x <= other_.max.x && max.x >= other_.min.x) &&
+				(min.y <= other_.max.y && max.y >= other_.min.y) &&
+				(min.z <= other_.max.z && max.z >= other_.min.z)
+			);
+		}
 
-            const auto halfExtent = (max / 2.F) - (min / 2.F);
-            const auto delta = (min + halfExtent) - point_;
-            // dot ( delta, delta ) < dot ( halfExtent, halfExtent )
-            return (
-                (delta.x * delta.x < halfExtent.x * halfExtent.x) ||
-                (delta.y * delta.y < halfExtent.y * halfExtent.y) ||
-                (delta.z * delta.z < halfExtent.z * halfExtent.z)
-            );
-        }
+		[[nodiscard]] constexpr bool intersects(
+			cref<math::fvec3> point_
+		) const noexcept {
+			return (
+				(min.x <= point_.x && point_.x <= max.x) &&
+				(min.y <= point_.y && point_.y <= max.y) &&
+				(min.z <= point_.z && point_.z <= max.z)
+			);
+		}
 
-        [[nodiscard]] constexpr bool sphericalIntersects(
-            cref<math::fvec3> point_,
-            math::fvec3::value_type radius_
-        ) const noexcept {
+		[[nodiscard]] constexpr bool sphericalIntersects(
+			cref<math::fvec3> point_
+		) const noexcept {
 
-            const auto halfExtent = (max / 2.F) - (min / 2.F);
-            const auto delta = (min + halfExtent) - point_;
-            const auto sqr = radius_ * radius_;
+			const auto halfExtent = (max / 2.F) - (min / 2.F);
+			const auto delta = (min + halfExtent) - point_;
+			// dot ( delta, delta ) < dot ( halfExtent, halfExtent )
+			return (
+				(delta.x * delta.x < halfExtent.x * halfExtent.x) ||
+				(delta.y * delta.y < halfExtent.y * halfExtent.y) ||
+				(delta.z * delta.z < halfExtent.z * halfExtent.z)
+			);
+		}
 
-            // dot ( delta, delta ) + ( radius * radius ) < dot ( halfExtent, halfExtent )
-            return (
-                ((delta.x * delta.x - sqr) < halfExtent.x * halfExtent.x) ||
-                ((delta.y * delta.y - sqr) < halfExtent.y * halfExtent.y) ||
-                ((delta.z * delta.z - sqr) < halfExtent.z * halfExtent.z)
-            );
-        }
+		[[nodiscard]] constexpr bool sphericalIntersects(
+			cref<math::fvec3> point_,
+			math::fvec3::value_type radius_
+		) const noexcept {
 
-    public:
-        [[nodiscard]] constexpr Aabb join(cref<Aabb> other_) const noexcept {
-            return {
-                math::compMin<math::fvec3::value_type>(min, other_.min),
-                math::compMax<math::fvec3::value_type>(max, other_.max)
-            };
-        }
+			const auto halfExtent = (max / 2.F) - (min / 2.F);
+			const auto delta = (min + halfExtent) - point_;
+			const auto sqr = radius_ * radius_;
 
-        [[nodiscard]] constexpr Aabb overlap(cref<Aabb> other_) const noexcept {
-            // Warning: This will return min > max for not intersecting aabbs
-            return {
-                math::compMax<math::fvec3::value_type>(min, other_.min),
-                math::compMin<math::fvec3::value_type>(max, other_.max)
-            };
-        }
-    };
+			// dot ( delta, delta ) + ( radius * radius ) < dot ( halfExtent, halfExtent )
+			return (
+				((delta.x * delta.x - sqr) < halfExtent.x * halfExtent.x) ||
+				((delta.y * delta.y - sqr) < halfExtent.y * halfExtent.y) ||
+				((delta.z * delta.z - sqr) < halfExtent.z * halfExtent.z)
+			);
+		}
 
-    using Aabb3d = Aabb;
+	public:
+		[[nodiscard]] constexpr Aabb join(cref<Aabb> other_) const noexcept {
+			return {
+				math::compMin<math::fvec3::value_type>(min, other_.min),
+				math::compMax<math::fvec3::value_type>(max, other_.max)
+			};
+		}
+
+		[[nodiscard]] constexpr Aabb overlap(cref<Aabb> other_) const noexcept {
+			// Warning: This will return min > max for not intersecting aabbs
+			return {
+				math::compMax<math::fvec3::value_type>(min, other_.min),
+				math::compMin<math::fvec3::value_type>(max, other_.max)
+			};
+		}
+	};
+
+	using Aabb3d = Aabb;
 }

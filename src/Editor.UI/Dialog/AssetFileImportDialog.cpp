@@ -13,6 +13,7 @@
 #include "Editor.UI/Color/Dark.hpp"
 #include "Editor.UI/Theme/Theme.hpp"
 #include "Editor.UI/Widget/AssetImportTypeItem.hpp"
+#include "Editor.UI/Widget/Input/InputVec.hpp"
 #include "Heliogrim/Heliogrim.hpp"
 #include "Engine.Common/Make.hpp"
 #include "Engine.GFX.Glow.UI/TestUI.hpp"
@@ -36,10 +37,17 @@ using namespace hg::editor::ui;
 using namespace hg::engine::reflow;
 using namespace hg;
 
+/**/
+
+void makeImageImportOptions(cref<sptr<VScrollBox>> parent_);
+
+/**/
+
 AssetFileImportDialog::AssetFileImportDialog(cref<fs::Url> source_, cref<fs::Url> target_) :
     Dialog(),
     _source(source_),
-    _target(target_) {}
+    _target(target_),
+    _assetBrowser(nullptr) {}
 
 void configureNav(cref<sptr<Dialog>> dialog_, cref<sptr<HorizontalPanel>> parent_) {
 
@@ -410,6 +418,10 @@ void configureContent(
 
     /**/
 
+    makeImageImportOptions(parent_);
+
+    /**/
+
     auto sourceDomain = make_sptr<VerticalPanel>();
     sourceDomain->attr.width.setValue({ ReflowUnitType::eRelative, 1.F });
     configureSourceDomain(sourceDomain, source_);
@@ -521,4 +533,176 @@ sptr<Dialog> AssetFileImportDialog::make(
     configureFooter(dialog, form, footer);
 
     return dialog;
+}
+
+/**/
+
+void makeImageImportOptions(cref<sptr<VScrollBox>> parent_) {
+
+    const auto* const theme = Theme::get();
+    auto* font { getDefaultFont() };
+
+    /**/
+
+    {
+        auto row = make_sptr<VerticalPanel>();
+        parent_->addChild(row);
+
+        auto label = make_sptr<Text>();
+        row->addChild(label);
+
+        auto typeInput = make_sptr<InputText>();
+        row->addChild(typeInput);
+
+        /**/
+
+        label->setText("Image Type");
+        typeInput->setPlaceholder("2D | 2D Array | 3D | 3D Array | Cube");
+
+        /**/
+
+        row->attr.width.setValue(ReflowUnitType::eRelative, 1.F);
+        row->attr.maxWidth.setValue(ReflowUnitType::eRelative, 1.F);
+        row->attr.rowGap.setValue(2.F);
+
+        label->attr.font.setValue(font);
+        label->attr.fontSize.setValue(12.F);
+
+        typeInput->_text->attr.font.setValue(font);
+        typeInput->_text->attr.fontSize.setValue(12.F);
+    }
+
+    /**/
+
+    {
+        auto row = make_sptr<VerticalPanel>();
+        parent_->addChild(row);
+
+        auto label = make_sptr<Text>();
+        row->addChild(label);
+
+        auto extentInput = make_sptr<InputUiVec3>();
+        row->addChild(extentInput);
+
+        /**/
+
+        label->setText("Image Extent");
+
+        extentInput->setLabel(0uLL, "X");
+        extentInput->setLabel(1uLL, "Y");
+        extentInput->setLabel(2uLL, "Z");
+        extentInput->setValue(math::uivec3 { 1024uL, 1024uL, 1uL });
+
+        /**/
+
+        label->attr.font.setValue(font);
+        label->attr.fontSize.setValue(12.F);
+
+        row->attr.width.setValue(ReflowUnitType::eRelative, 1.F);
+        row->attr.maxWidth.setValue(ReflowUnitType::eRelative, 1.F);
+        row->attr.rowGap.setValue(2.F);
+    }
+
+    /**/
+
+    {
+        auto row = make_sptr<VerticalPanel>();
+        parent_->addChild(row);
+
+        auto label = make_sptr<Text>();
+        row->addChild(label);
+
+        auto mipInput = make_sptr<InputUiVec2>();
+        row->addChild(mipInput);
+
+        /**/
+
+        label->setText("Mip Levels");
+
+        mipInput->setLabel(0uLL, "min");
+        mipInput->setLabel(1uLL, "max");
+        mipInput->setValue(math::uivec2 { 0uL, 0uL });
+
+        /**/
+
+        label->attr.font.setValue(font);
+        label->attr.fontSize.setValue(12.F);
+
+        row->attr.width.setValue(ReflowUnitType::eRelative, 1.F);
+        row->attr.maxWidth.setValue(ReflowUnitType::eRelative, 1.F);
+        row->attr.rowGap.setValue(2.F);
+    }
+
+    /**/
+
+    {
+        auto row = make_sptr<HorizontalPanel>();
+        parent_->addChild(row);
+
+        /**/
+
+        auto usageCol = make_sptr<VerticalPanel>();
+        row->addChild(usageCol);
+
+        auto usageLabel = make_sptr<Text>();
+        usageCol->addChild(usageLabel);
+
+        auto usageInput = make_sptr<InputText>();
+        usageCol->addChild(usageInput);
+
+        /**/
+
+        auto encodingCol = make_sptr<VerticalPanel>();
+        row->addChild(encodingCol);
+
+        auto encodingLabel = make_sptr<Text>();
+        encodingCol->addChild(encodingLabel);
+
+        auto encodingInput = make_sptr<InputText>();
+        encodingCol->addChild(encodingInput);
+
+        /**/
+
+        usageLabel->setText("Usage");
+        usageInput->setPlaceholder("Data | Color");
+
+        encodingLabel->setText("Encoding");
+        encodingInput->setPlaceholder("R8 G8 B8 A8 Unorm | R32 G32 B32 A32 Sfloat");
+
+        /**/
+
+        row->attr.width.setValue(ReflowUnitType::eRelative, 1.F);
+        row->attr.maxWidth.setValue(ReflowUnitType::eRelative, 1.F);
+        row->attr.colGap.setValue(4.F);
+
+        /**/
+
+        usageCol->attr.minWidth.setValue(ReflowUnitType::eAbsolute, 32.F);
+        usageCol->attr.width.setValue(ReflowUnitType::eAuto, 0.F);
+        usageCol->attr.maxWidth.setValue(ReflowUnitType::eRelative, 1.F);
+        usageCol->attr.rowGap.setValue(2.F);
+
+        usageLabel->attr.font.setValue(font);
+        usageLabel->attr.fontSize.setValue(12.F);
+
+        usageInput->_wrapper->attr.minWidth.setValue(ReflowUnitType::eAbsolute, 32.F);
+        usageInput->_wrapper->attr.maxWidth.setValue(ReflowUnitType::eAbsolute, 32.F);
+        usageInput->_text->attr.font.setValue(font);
+        usageInput->_text->attr.fontSize.setValue(12.F);
+
+        /**/
+
+        encodingCol->attr.minWidth.setValue(ReflowUnitType::eAbsolute, 86.F);
+        encodingCol->attr.width.setValue(ReflowUnitType::eAuto, 0.F);
+        encodingCol->attr.maxWidth.setValue(ReflowUnitType::eRelative, 1.F);
+        encodingCol->attr.rowGap.setValue(2.F);
+
+        encodingLabel->attr.font.setValue(font);
+        encodingLabel->attr.fontSize.setValue(12.F);
+
+        encodingInput->_wrapper->attr.minWidth.setValue(ReflowUnitType::eAbsolute, 86.F);
+        encodingInput->_wrapper->attr.maxWidth.setValue(ReflowUnitType::eAbsolute, 86.F);
+        encodingInput->_text->attr.font.setValue(font);
+        encodingInput->_text->attr.fontSize.setValue(12.F);
+    }
 }

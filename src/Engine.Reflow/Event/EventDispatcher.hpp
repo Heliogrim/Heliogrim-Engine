@@ -18,6 +18,9 @@ namespace hg::engine::reflow {
     public:
         using this_type = EventDispatcher;
 
+    public:
+        constexpr virtual ~EventDispatcher() noexcept = default;
+
     protected:
         [[nodiscard]] bool intersects(
             cref<math::vec2> off_,
