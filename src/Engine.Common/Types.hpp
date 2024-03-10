@@ -1,6 +1,8 @@
 #pragma once
 
 namespace hg {
+	#if defined(_MSC_VER)
+
 	typedef signed char s8;
 	typedef short s16;
 	typedef int s32;
@@ -13,6 +15,23 @@ namespace hg {
 	typedef unsigned short u16;
 	typedef unsigned int u32;
 	typedef unsigned long long u64;
+
+	#else
+
+	typedef signed char s8;
+	typedef short s16;
+	typedef int s32;
+	typedef long long s64;
+
+	typedef long L;
+	typedef long long LL;
+
+	typedef unsigned char u8;
+	typedef unsigned short u16;
+	typedef unsigned int u32;
+	typedef unsigned long int u64;
+
+	#endif
 
 	/**/
 
@@ -34,32 +53,32 @@ namespace hg {
 
 	#if defined(_MSC_VER)
 
-    constexpr s8 s8_min = -127i8 - 1;
-    constexpr s16 s16_min = -32767i16 - 1;
-    constexpr s32 s32_min = -2147483647i32 - 1;
-    constexpr s64 s64_min = -9223372036854775807i64 - 1;
+	constexpr s8 s8_min = -127i8 - 1;
+	constexpr s16 s16_min = -32767i16 - 1;
+	constexpr s32 s32_min = -2147483647i32 - 1;
+	constexpr s64 s64_min = -9223372036854775807i64 - 1;
 
-    constexpr s8 s8_max = 127i8;
-    constexpr s16 s16_max = 32767i16;
-    constexpr s32 s32_max = 2147483647i32;
-    constexpr s64 s64_max = 9223372036854775807i64;
+	constexpr s8 s8_max = 127i8;
+	constexpr s16 s16_max = 32767i16;
+	constexpr s32 s32_max = 2147483647i32;
+	constexpr s64 s64_max = 9223372036854775807i64;
 
 	constexpr u8 u8_min = 0x0ui8;
 	constexpr u16 u16_min = 0x0ui16;
 	constexpr u32 u32_min = 0x0ui32;
 	constexpr u64 u64_min = 0x0ui64;
 
-    constexpr u8 u8_max = 0xFFui8;
-    constexpr u16 u16_max = 0xFFFFui16;
-    constexpr u32 u32_max = 0xFFFFFFFFui32;
-    constexpr u64 u64_max = 0xFFFFFFFFFFFFFFFFui64;
+	constexpr u8 u8_max = 0xFFui8;
+	constexpr u16 u16_max = 0xFFFFui16;
+	constexpr u32 u32_max = 0xFFFFFFFFui32;
+	constexpr u64 u64_max = 0xFFFFFFFFFFFFFFFFui64;
 
 	#else
 
-	constexpr s8 s8_min = -128;
-	constexpr s16 s16_min = -32768;
-	constexpr s32 s32_min = -2147483648L;
-	constexpr s64 s64_min = -9223372036854775808LL;
+	constexpr s8 s8_min = -127;
+	constexpr s16 s16_min = -32767;
+	constexpr s32 s32_min = -2147483647L;
+	constexpr s64 s64_min = -9223372036854775807LL;
 
 	constexpr s8 s8_max = 127;
 	constexpr s16 s16_max = 32767;
