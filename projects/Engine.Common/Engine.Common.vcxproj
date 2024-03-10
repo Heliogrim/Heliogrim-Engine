@@ -97,6 +97,7 @@
     <ClInclude Include="..\..\src\Engine.Common\Profiling\Stopwatch.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Result.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\RingBuffer.hpp" />
+    <ClInclude Include="..\..\src\Engine.Common\Sal.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\SDL2.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Singleton.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\stdafx.h" />
