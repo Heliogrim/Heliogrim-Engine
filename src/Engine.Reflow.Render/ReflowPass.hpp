@@ -1,5 +1,7 @@
 #pragma once
+
 #include <Engine.Accel.Compile/EffectCompileResult.hpp>
+#include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Math/Extent.hpp>
 #include <Engine.GFX.Loader/Texture/TextureResource.hpp>
 #include <Engine.GFX/Buffer/BufferLikeObject.hpp>
@@ -64,11 +66,11 @@ namespace hg::engine::reflow::render {
 	public:
 		void destroy() noexcept override;
 
-    private:
-        u16 _lastRenderTick;
+	private:
+		u16 _lastRenderTick;
 
-        uptr<gfx::BufferLikeObject> _uiVertexBuffer;
-        uptr<gfx::BufferLikeObject> _uiIndexBuffer;
+		uptr<gfx::BufferLikeObject> _uiVertexBuffer;
+		uptr<gfx::BufferLikeObject> _uiIndexBuffer;
 
 		ReflowOpaqueSubPassData _opaqueSubPass;
 		ReflowAlphaSubPassData _alphaSubPass;

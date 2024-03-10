@@ -342,6 +342,9 @@
     <ClInclude Include="..\..\src\Engine.Common\Managed\AtomicRefCountedIntrusive.hpp">
       <Filter>Headerdateien\Managed</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Sal.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Common\stdafx.cpp">

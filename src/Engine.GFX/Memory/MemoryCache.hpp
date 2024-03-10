@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/DenseMap.hpp>
 
@@ -7,30 +8,30 @@
 #include "MemoryLayout.hpp"
 
 namespace hg::engine::gfx::memory {
-    class MemoryCache {
-    public:
-        using this_type = MemoryCache;
+	class MemoryCache {
+	public:
+		using this_type = MemoryCache;
 
-    public:
-        MemoryCache() noexcept;
+	public:
+		MemoryCache() noexcept;
 
-        ~MemoryCache();
+		~MemoryCache();
 
-    public:
-        void tidy();
+	public:
+		void tidy();
 
-    private:
-        DenseMap<MemoryLayout, ptr<MemoryPool>> _pools;
+	private:
+		DenseMap<MemoryLayout, ptr<MemoryPool>> _pools;
 
-    public:
-        [[nodiscard]] non_owning_rptr<MemoryPool> getOrCreatePool(cref<MemoryLayout> layout_);
+	public:
+		[[nodiscard]] non_owning_rptr<MemoryPool> getOrCreatePool(cref<MemoryLayout> layout_);
 
-        [[nodiscard]] AllocationResult allocate(
-            cref<MemoryLayout> layout_,
-            const u64 size_,
-            _Out_ ref<uptr<AllocatedMemory>> dst_
-        );
+		[[nodiscard]] AllocationResult allocate(
+			cref<MemoryLayout> layout_,
+			const u64 size_,
+			_Out_ ref<uptr<AllocatedMemory>> dst_
+		);
 
-        bool free(mref<uptr<AllocatedMemory>> mem_);
-    };
+		bool free(mref<uptr<AllocatedMemory>> mem_);
+	};
 }

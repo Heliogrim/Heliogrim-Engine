@@ -1,65 +1,66 @@
 #pragma once
 #include <Engine.Accel.Command/CommandBuffer.hpp>
+#include <Engine.Common/Sal.hpp>
 #include <Engine.GFX.Render.Command/NativeBatch.hpp>
 
 namespace hg::driver::vk {
-    class VkResourceTable;
+	class VkResourceTable;
 }
 
 namespace hg::driver::vk {
-    class VkNativeBatch final :
-        public engine::render::cmd::NativeBatch {
-    public:
-        using this_type = VkNativeBatch;
+	class VkNativeBatch final :
+		public engine::render::cmd::NativeBatch {
+	public:
+		using this_type = VkNativeBatch;
 
-    public:
-        VkNativeBatch() noexcept;
+	public:
+		VkNativeBatch() noexcept;
 
-        ~VkNativeBatch() noexcept override;
+		~VkNativeBatch() noexcept override;
 
-    private:
-        InlineAutoArray<uptr<VkResourceTable>> _rtable;
-        InlineAutoArray<uptr<engine::accel::AccelCommandBuffer>, 2uLL> _batched;
+	private:
+		InlineAutoArray<uptr<VkResourceTable>> _rtable;
+		InlineAutoArray<uptr<engine::accel::AccelCommandBuffer>, 2uLL> _batched;
 
-    public:
-        [[nodiscard]] bool ready() const noexcept override;
+	public:
+		[[nodiscard]] bool ready() const noexcept override;
 
-        [[nodiscard]] bool isFaf() const noexcept override;
+		[[nodiscard]] bool isFaf() const noexcept override;
 
-    public:
-        void commit() override;
+	public:
+		void commit() override;
 
-        void commitAndDispose() override;
+		void commitAndDispose() override;
 
-    public:
-        bool enumerateNativeQueues(
-            ref<InlineAutoArray<ptr<engine::render::cmd::NativeQueue>, 2>> queues_
-        ) const noexcept override;
+	public:
+		bool enumerateNativeQueues(
+			ref<InlineAutoArray<ptr<engine::render::cmd::NativeQueue>, 2>> queues_
+		) const noexcept override;
 
-    public:
-        void add(mref<uptr<engine::accel::AccelCommandBuffer>> cmd_) noexcept;
+	public:
+		void add(mref<uptr<engine::accel::AccelCommandBuffer>> cmd_) noexcept;
 
-        void add(mref<uptr<VkResourceTable>> rt_) noexcept;
+		void add(mref<uptr<VkResourceTable>> rt_) noexcept;
 
-    private:
-        void enumerateWaitSignals(
-            _Out_ ref<Vector<VkSemaphore>> waitSignals_,
-            _Out_ ref<Vector<VkPipelineStageFlags>> waitStages_
-        );
+	private:
+		void enumerateWaitSignals(
+			_Out_ ref<Vector<VkSemaphore>> waitSignals_,
+			_Out_ ref<Vector<VkPipelineStageFlags>> waitStages_
+		);
 
-        void enumerateReadySignals(
-            _Out_ ref<Vector<VkSemaphore>> readySignals_
-        );
+		void enumerateReadySignals(
+			_Out_ ref<Vector<VkSemaphore>> readySignals_
+		);
 
-        /**/
-    public:
-        Vector<VkSemaphore> _tmpWaits;
-        Vector<VkPipelineStageFlags> _tmpWaitFlags;
-        Vector<VkSemaphore> _tmpSignals;
+		/**/
+	public:
+		Vector<VkSemaphore> _tmpWaits;
+		Vector<VkPipelineStageFlags> _tmpWaitFlags;
+		Vector<VkSemaphore> _tmpSignals;
 
-        /* Note: Temporary */
+		/* Note: Temporary */
 
-    public:
-        [[nodiscard]] ref<decltype(_rtable)> getResourceTables() noexcept;
-    };
+	public:
+		[[nodiscard]] ref<decltype(_rtable)> getResourceTables() noexcept;
+	};
 }
