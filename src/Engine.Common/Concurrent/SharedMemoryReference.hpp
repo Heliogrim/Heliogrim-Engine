@@ -3,7 +3,9 @@
 #include <atomic>
 #include <cassert>
 #include <concepts>
+#include <cstdint>
 #include <type_traits>
+#include <utility>
 
 #include "../Cast.hpp"
 #include "../Sal.hpp"
