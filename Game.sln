@@ -258,6 +258,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.Render.Scene", "proj
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.Render.Scene.Model", "projects\Engine.Render.Scene.Model\Engine.Render.Scene.Model.vcxproj", "{2E4DF34B-610E-4689-ABE4-2E9CEFB81E7E}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.Asserts", "projects\Engine.Asserts\Engine.Asserts.vcxproj", "{BF4447EB-4F5C-4FF3-84CC-E3DABFAEF4C8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -736,6 +738,12 @@ Global
 		{2E4DF34B-610E-4689-ABE4-2E9CEFB81E7E}.Profile|x64.Build.0 = Profile|x64
 		{2E4DF34B-610E-4689-ABE4-2E9CEFB81E7E}.Release|x64.ActiveCfg = Release|x64
 		{2E4DF34B-610E-4689-ABE4-2E9CEFB81E7E}.Release|x64.Build.0 = Release|x64
+		{BF4447EB-4F5C-4FF3-84CC-E3DABFAEF4C8}.Debug|x64.ActiveCfg = Debug|x64
+		{BF4447EB-4F5C-4FF3-84CC-E3DABFAEF4C8}.Debug|x64.Build.0 = Debug|x64
+		{BF4447EB-4F5C-4FF3-84CC-E3DABFAEF4C8}.Profile|x64.ActiveCfg = Profile|x64
+		{BF4447EB-4F5C-4FF3-84CC-E3DABFAEF4C8}.Profile|x64.Build.0 = Profile|x64
+		{BF4447EB-4F5C-4FF3-84CC-E3DABFAEF4C8}.Release|x64.ActiveCfg = Release|x64
+		{BF4447EB-4F5C-4FF3-84CC-E3DABFAEF4C8}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -832,6 +840,7 @@ Global
 		{BAA7ED9E-E3D3-4BC7-A4E6-44EE1D675420} = {91C8E24A-47B1-45BA-9359-AAF445955F73}
 		{95C6B2CB-ABE2-4D02-988A-4EB32F77D591} = {95A51D0F-5438-4BDB-AD9D-AFB6E36EAE8C}
 		{2E4DF34B-610E-4689-ABE4-2E9CEFB81E7E} = {95A51D0F-5438-4BDB-AD9D-AFB6E36EAE8C}
+		{BF4447EB-4F5C-4FF3-84CC-E3DABFAEF4C8} = {24E08083-0467-4F93-8003-58332292857F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {045F3307-C3BE-45A8-88A0-BB88AD5695BE}

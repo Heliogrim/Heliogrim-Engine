@@ -13,6 +13,7 @@ make_library_project(
 		${PROJECT_NAME}::Engine.Accel.Pass
 		${PROJECT_NAME}::Engine.Accel.Pipeline
 		${PROJECT_NAME}::Engine.Accel.Storage
+		${PROJECT_NAME}::Engine.Asserts
 		${PROJECT_NAME}::Engine.Assets
 		${PROJECT_NAME}::Engine.Assets.System
 		${PROJECT_NAME}::Engine.Common
