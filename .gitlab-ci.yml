@@ -7,6 +7,10 @@ workflow:
 variables:
     GIT_DEPTH: 0
     VULKAN_VERSION: 1.3.275.0
+    C_CLANG_TARGET: clang-18
+    CXX_CLANG_TARGET: clang++-18
+    C_GCC_TARGET: gcc-13
+    CXX_GCC_TARGET: g++-13
 
 stages:
     - build
@@ -22,6 +26,7 @@ build.windows.msvc:
     # Preparation
     before_script:
         - cmake --version
+        - $logical_core_count = (Get-CimInstance Win32_ComputerSystem).NumberOfLogicalProcessors
     
     # Process
     script:
@@ -29,18 +34,18 @@ build.windows.msvc:
 
         # CMake - Debug
         - cmake -S . -B build/Debug -A x64 -D CMAKE_BUILD_TYPE=Debug --fresh
-        - cmake --build build/Debug -t Heliogrim-Heliogrim --clean-first
-        - cmake --build build/Debug -t Heliogrim-Editor
+        - cmake --build build/Debug -t Heliogrim-Heliogrim --parallel $logical_core_count --clean-first
+        - cmake --build build/Debug -t Heliogrim-Editor --parallel $logical_core_count
 
         # CMake - Profile
         #- cmake -S . -B build/Profile -A x64 -D CMAKE_BUILD_TYPE=Profile --fresh
-        #- cmake --build build/Profile -t Heliogrim-Heliogrim --clean-first
-        #- cmake --build build/Profile -t Heliogrim-Editor
+        #- cmake --build build/Profile -t Heliogrim-Heliogrim --parallel $logical_core_count --clean-first
+        #- cmake --build build/Profile -t Heliogrim-Editor --parallel $logical_core_count
 
         # CMake - Release
         #- cmake -S . -B build/Release -A x64 -D CMAKE_BUILD_TYPE=Release --fresh
-        #- cmake --build build/Release -t Heliogrim-Heliogrim --clean-first
-        #- cmake --build build/Release -t Heliogrim-Editor
+        #- cmake --build build/Release -t Heliogrim-Heliogrim --parallel $logical_core_count --clean-first
+        #- cmake --build build/Release -t Heliogrim-Editor --parallel $logical_core_count
 
         # Linking Resources
 
@@ -84,6 +89,7 @@ build.windows.clang:
     # Preparation
     before_script:
         - cmake --version
+        - $logical_core_count = (Get-CimInstance Win32_ComputerSystem).NumberOfLogicalProcessors
     
     # Process
     script:
@@ -91,18 +97,18 @@ build.windows.clang:
 
         # CMake - Debug
         - cmake -S . -B build/Debug -T ClangCL -A x64 -D CMAKE_BUILD_TYPE=Debug --fresh
-        - cmake --build build/Debug -t Heliogrim-Heliogrim --clean-first
-        - cmake --build build/Debug -t Heliogrim-Editor
+        - cmake --build build/Debug -t Heliogrim-Heliogrim --parallel $logical_core_count --clean-first
+        - cmake --build build/Debug -t Heliogrim-Editor --parallel $logical_core_count
 
         # CMake - Profile
         #- cmake -S . -B build/Profile -T ClangCL -A x64 -D CMAKE_BUILD_TYPE=Profile --fresh
-        #- cmake --build build/Profile -t Heliogrim-Heliogrim --clean-first
-        #- cmake --build build/Profile -t Heliogrim-Editor
+        #- cmake --build build/Profile -t Heliogrim-Heliogrim --parallel $logical_core_count --clean-first
+        #- cmake --build build/Profile -t Heliogrim-Editor --parallel $logical_core_count
 
         # CMake - Release
         #- cmake -S . -B build/Release -T ClangCL -A x64 -D CMAKE_BUILD_TYPE=Release --fresh
-        #- cmake --build build/Release -t Heliogrim-Heliogrim --clean-first
-        #- cmake --build build/Release -t Heliogrim-Editor
+        #- cmake --build build/Release -t Heliogrim-Heliogrim --parallel $logical_core_count --clean-first
+        #- cmake --build build/Release -t Heliogrim-Editor --parallel $logical_core_count
 
         # Linking Resources
 
@@ -149,6 +155,8 @@ build.linux.gcc:
         - command -v cmake 2>&1 || { echo >&2 "Required unavailable command cmake, try to recover."; sudo apt-get install cmake -y; }
         - command -v g++ 2>&1 || { echo >&2 "Required unavailable command g++, try to recover."; sudo apt-get install build-essential -y; }
         - command -v xz 2>&1 || { echo >&2 "Required unavailable command xz, try to recover."; sudo apt-get install xz-utils -y; }
+        # Optional Commands
+        - command -v ninja 2>&1 || { echo >&2 "Optional unavailable command ninja, try to recover."; sudo apt-get install ninja-build -y; }
         # Ensure Vulkan SDK
         - rm -r ~/vulkan 2> /dev/null || true
         - mkdir ~/vulkan
@@ -165,17 +173,17 @@ build.linux.gcc:
         # Generator: Makefiles ~ '-A x64' by default
 
         # CMake - Debug
-        - cmake -S . -B build/Debug -D CMAKE_C_COMPILER=/usr/bin/gcc -D CMAKE_CXX_COMPILER=/usr/bin/g++ -D CMAKE_BUILD_TYPE=Debug --fresh
-        - cmake --build build/Debug -t Heliogrim-Heliogrim --clean-first
-        - cmake --build build/Debug -t Heliogrim-Editor
+        - cmake -S . -B build/Debug -D CMAKE_C_COMPILER=`which gcc` -D CMAKE_CXX_COMPILER=`which g++` -D CMAKE_BUILD_TYPE=Debug --fresh
+        - cmake --build build/Debug --parallel $(nproc) -t Heliogrim-Heliogrim --clean-first
+        - cmake --build build/Debug --parallel $(nproc) -t Heliogrim-Editor
 
         # CMake - Profile
-        #- cmake -S . -B build/Profile -A x64 -D CMAKE_C_COMPILER=/usr/bin/gcc -D CMAKE_CXX_COMPILER=/usr/bin/g++ -D CMAKE_BUILD_TYPE=Profile --fresh
-        #- cmake --build build/Profile -t Game --clean-first
+        #- cmake -S . -B build/Profile -A x64 -D CMAKE_C_COMPILER=`which gcc` -D CMAKE_CXX_COMPILER=`which g++` -D CMAKE_BUILD_TYPE=Profile --fresh
+        #- cmake --build build/Profile --parallel $(nproc) -t Game --clean-first
 
         # CMake - Release
-        #- cmake -S . -B build/Release -A x64 -D CMAKE_C_COMPILER=/usr/bin/gcc -D CMAKE_CXX_COMPILER=/usr/bin/g++ -D CMAKE_BUILD_TYPE=Release --fresh
-        #- cmake --build build/Release -t Game --clean-first
+        #- cmake -S . -B build/Release -A x64 -D CMAKE_C_COMPILER=`which gcc` -D CMAKE_CXX_COMPILER=`which g++` -D CMAKE_BUILD_TYPE=Release --fresh
+        #- cmake --build build/Release --parallel $(nproc) -t Game --clean-first
 
         # Linking Resources
 
@@ -206,12 +214,14 @@ build.linux.clang:
         - command -v make 2>&1 || { echo >&2 "Required unavailable command make, try to recover."; sudo apt-get install build-essential -y; }
         - command -v cmake 2>&1 || { echo >&2 "Required unavailable command cmake, try to recover."; sudo apt-get install cmake -y; }
         - |-
-            command -v clang 2>&1 || {
+            command -v $C_CLANG_TARGET 2>&1 || {
                 echo >&2 "Required unavailable command clang, try to recover."
                 sudo apt-get install lsb-release wget software-properties-common gnupg -y
                 sudo bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
             }
         - command -v xz 2>&1 || { echo >&2 "Required unavailable command xz, try to recover."; sudo apt-get install xz-utils -y; }
+        # Optional Commands
+        - command -v ninja 2>&1 || { echo >&2 "Optional unavailable command ninja, try to recover."; sudo apt-get install ninja-build -y; }
         # Ensure Vulkan SDK
         - rm -r ~/vulkan 2> /dev/null || true
         - mkdir ~/vulkan
@@ -228,17 +238,17 @@ build.linux.clang:
         # Generator: Makefiles ~ '-A x64' by default
 
         # CMake - Debug
-        - cmake -S . -B build/Debug -D CMAKE_C_COMPILER=/usr/bin/clang -D CMAKE_CXX_COMPILER=/usr/bin/clang++ -D CMAKE_BUILD_TYPE=Debug --fresh
-        - cmake --build build/Debug -t Heliogrim-Heliogrim --clean-first
-        - cmake --build build/Debug -t Heliogrim-Editor
+        - cmake -S . -B build/Debug -D CMAKE_C_COMPILER=`which $C_CLANG_TARGET` -D CMAKE_CXX_COMPILER=`which $CXX_CLANG_TARGET` -D CMAKE_BUILD_TYPE=Debug --fresh
+        - cmake --build build/Debug --parallel $(nproc) -t Heliogrim-Heliogrim --clean-first
+        - cmake --build build/Debug --parallel $(nproc) -t Heliogrim-Editor
 
         # CMake - Profile
-        #- cmake -S . -B build/Profile -A x64 -D CMAKE_C_COMPILER=/usr/bin/clang -D CMAKE_CXX_COMPILER=/usr/bin/clang++ -D CMAKE_BUILD_TYPE=Profile --fresh
-        #- cmake --build build/Profile -t Game --clean-first
+        #- cmake -S . -B build/Profile -A x64 -D CMAKE_C_COMPILER=`which $C_CLANG_TARGET` -D CMAKE_CXX_COMPILER=`which $CXX_CLANG_TARGET` -D CMAKE_BUILD_TYPE=Profile --fresh
+        #- cmake --build build/Profile --parallel $(nproc) -t Game --clean-first
 
         # CMake - Release
-        #- cmake -S . -B build/Release -A x64 -D CMAKE_C_COMPILER=/usr/bin/clang -D CMAKE_CXX_COMPILER=/usr/bin/clang++ -D CMAKE_BUILD_TYPE=Release --fresh
-        #- cmake --build build/Release -t Game --clean-first
+        #- cmake -S . -B build/Release -A x64 -D CMAKE_C_COMPILER=`which $C_CLANG_TARGET` -D CMAKE_CXX_COMPILER=`which $CXX_CLANG_TARGET` -D CMAKE_BUILD_TYPE=Release --fresh
+        #- cmake --build build/Release --parallel $(nproc) -t Game --clean-first
 
         # Linking Resources
 
