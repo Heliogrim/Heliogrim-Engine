@@ -16,7 +16,6 @@
 #include <windowsx.h>
 #endif
 
-#include "Exception/__macro.hpp"
 #include "Make.hpp"
 
 // Math
@@ -30,14 +29,6 @@ using size64_t = uint64_t;
 
 // Time
 #include <ctime>
-
-/**
- * Error Includes
- */
-#include "./Exception/NotImplementedException.hpp"
-/**
- *
- */
 
 /**
  * Graphic includes

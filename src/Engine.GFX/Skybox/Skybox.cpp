@@ -1,12 +1,12 @@
 ﻿#include "Skybox.hpp"
 
+#include <Engine.Asserts/Todo.hpp>
 #include <Engine.Resource/FileResource.hpp>
 #include <Engine.Scheduler/Async.hpp>
 
 #include "../Command/CommandBuffer.hpp"
 #include "../Geometry/Cube.hpp"
 #include "../Texture/TextureFactory.hpp"
-#include "Engine.Common/Exception/NotImplementedException.hpp"
 
 using namespace hg::engine::gfx;
 using namespace hg;
@@ -86,7 +86,7 @@ Skybox::Skybox(cref<sptr<Device>> device_) :
 	const auto rootUrl = FileResource::getRootDir() + R"(\world\)";
 	//const Url url { "file"sv, rootUrl + R"(skybox.ktx)" };
 
-	throw NotImplementedException {};
+	::hg::todo_panic();
 	/*
 	auto src = loader::TextureLoader::get().load(url);
 	src.finally([&, device_ = device_](Texture&& texture_) -> void {

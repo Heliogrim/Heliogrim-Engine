@@ -1,6 +1,6 @@
 #include "UISceneModel.hpp"
 
-#include <utility>
+#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.GFX/Cache/ModelBatch.hpp>
 #include <Engine.Reflect/Cast.hpp>
 #include <Heliogrim/UIComponent.hpp>
@@ -19,9 +19,6 @@ void UISceneModel::update(const ptr<render::RenderSceneSystem> system_) {}
 void UISceneModel::destroy(const ptr<render::RenderSceneSystem> system_) {}
 
 ref<Window> UISceneModel::getWindow() const noexcept {
-	if (owner() == nullptr) {
-		std::unreachable();
-	}
-
+	::hg::assertrt(owner() != nullptr);
 	return *Cast<UIComponent>(owner())->getWindow();
 }

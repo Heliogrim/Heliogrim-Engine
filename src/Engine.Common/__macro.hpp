@@ -98,15 +98,6 @@
 #define INT32_T(var_) static_cast<int32_t>(var_)
 #define UINT32_T(var_) static_cast<uint32_t>(var_)
 
-#define ASSERT(var_) if (!(var_)) { throw std::exception("Assertation failed."); }
-#ifdef _DEBUG
-#define DEBUG_ASSERT(var_, msg_) assert(var_ && msg_);
-#define DEBUG_STATIC_ASSERT(var_, msg_) static_assert(var_, msg_);
-#else
-#define DEBUG_ASSERT(var_, msg_)
-#define DEBUG_STATIC_ASSERT(var_, msg_)
-#endif
-
 // Warnings
 #if __clang__
 #define START_SUPPRESS_WARNINGS \
@@ -147,6 +138,8 @@
 #define FORCE_INLINE __forceinline
 #elif defined(ENV_GCC) || defined(ENV_CLANG)
 #define FORCE_INLINE __attribute__((always_inline))
+#else
+#define FORCE_INLINE inline
 #endif
 #endif
 

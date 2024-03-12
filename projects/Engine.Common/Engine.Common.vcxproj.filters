@@ -16,9 +16,6 @@
     <Filter Include="Headerdateien\Collection">
       <UniqueIdentifier>{74bfb58c-71f8-48e0-9333-91bc391f5443}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Headerdateien\Exception">
-      <UniqueIdentifier>{3010830f-0a9d-4593-811e-aa8c169c94a8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Headerdateien\Math">
       <UniqueIdentifier>{44b20a02-8be3-40a6-a70a-3c6f9a2e2ed9}</UniqueIdentifier>
     </Filter>
@@ -77,9 +74,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Common\Collection\List.hpp">
       <Filter>Headerdateien\Collection</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Common\Exception\NotImplementedException.hpp">
-      <Filter>Headerdateien\Exception</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Common\Math\Bezier.hpp">
       <Filter>Headerdateien\Math</Filter>
@@ -149,9 +143,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Common\String.hpp">
       <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Common\Exception\__macro.hpp">
-      <Filter>Headerdateien\Exception</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Common\__macro.hpp">
       <Filter>Headerdateien</Filter>

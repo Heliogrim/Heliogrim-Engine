@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cmath>
-#include <utility>
+#include <Engine.Asserts/Todo.hpp>
 
 #include "MathDefaultDefine.hpp"
 #include "Vector.hpp"
@@ -462,7 +462,7 @@ namespace hg::math {
 		 * \return 
 		 */
 		matq4_t<T>& operator*=(const matq4_t<T>& right_) {
-			std::unreachable();
+			todo_panic();
 		}
 
 		/**

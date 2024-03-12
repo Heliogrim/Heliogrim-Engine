@@ -1,5 +1,6 @@
 #include "VkSurfaceSwapchain.hpp"
 
+#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 
 #include "Engine.GFX/API/VkTranslate.hpp"
@@ -24,256 +25,259 @@ void pretransform(cref<sptr<Device>> device_, cref<Vector<SwapchainImage>> textu
  */
 
 VkSurfaceSwapchain::VkSurfaceSwapchain(const nmpt<Surface> owner_) :
-    Swapchain(),
-    _signals(),
-    _vkSwapchain(),
-    _surface(owner_) {}
+	Swapchain(),
+	_signals(),
+	_vkSwapchain(),
+	_surface(owner_) {}
 
 VkSurfaceSwapchain::~VkSurfaceSwapchain() {
-    destroy();
+	destroy();
 }
 
 void VkSurfaceSwapchain::setup(cref<sptr<Device>> device_) {
-    /**/
-    Swapchain::setup(device_);
 
-    /**/
-    assert(_device);
-    assert(/*_surface*/true);
+	::hg::assertrt(device_.get());
 
-    /**/
+	/**/
+	Swapchain::setup(device_);
 
-    const auto capabilities = _device->vkPhysicalDevice().getSurfaceCapabilitiesKHR(*_surface);
-    const auto modes = _device->vkPhysicalDevice().getSurfacePresentModesKHR(*_surface);
+	/**/
 
-    _extent = clampExtent({ capabilities.currentExtent.width, capabilities.currentExtent.height }, capabilities);
-    const auto mode = selectPresentMode(modes);
+	assert(/*_surface*/true);
 
-    _format = _surface->getImageFormat(*_device);
+	/**/
 
-    vk::SurfaceTransformFlagBitsKHR surfaceTransform;
-    if (capabilities.supportedTransforms & vk::SurfaceTransformFlagBitsKHR::eIdentity) {
-        surfaceTransform = vk::SurfaceTransformFlagBitsKHR::eIdentity;
-    } else {
-        surfaceTransform = capabilities.currentTransform;
-    }
+	const auto capabilities = _device->vkPhysicalDevice().getSurfaceCapabilitiesKHR(*_surface);
+	const auto modes = _device->vkPhysicalDevice().getSurfacePresentModesKHR(*_surface);
 
-    u32 length = capabilities.minImageCount + 1;
-    if (capabilities.maxImageCount > 0 && length > capabilities.maxImageCount) {
-        length = capabilities.maxImageCount;
-    }
+	_extent = clampExtent({ capabilities.currentExtent.width, capabilities.currentExtent.height }, capabilities);
+	const auto mode = selectPresentMode(modes);
 
-    vk::SwapchainCreateInfoKHR sci {
-        vk::SwapchainCreateFlagsKHR(),
-        *_surface,
-        length,
-        api::vkTranslateFormat(_format),
-        vk::ColorSpaceKHR::eSrgbNonlinear,
-        vk::Extent2D { _extent.x, _extent.y },
-        1,
-        vk::ImageUsageFlagBits::eColorAttachment,
-        vk::SharingMode::eExclusive,
-        0,
-        nullptr,
-        surfaceTransform,
-        vk::CompositeAlphaFlagBitsKHR::eOpaque,
-        mode,
-        VK_TRUE,
-        nullptr
-    };
+	_format = _surface->getImageFormat(*_device);
 
-    if (capabilities.supportedUsageFlags & vk::ImageUsageFlagBits::eTransferSrc) {
-        sci.imageUsage |= vk::ImageUsageFlagBits::eTransferSrc;
-    }
+	vk::SurfaceTransformFlagBitsKHR surfaceTransform;
+	if (capabilities.supportedTransforms & vk::SurfaceTransformFlagBitsKHR::eIdentity) {
+		surfaceTransform = vk::SurfaceTransformFlagBitsKHR::eIdentity;
+	} else {
+		surfaceTransform = capabilities.currentTransform;
+	}
 
-    if (capabilities.supportedUsageFlags & vk::ImageUsageFlagBits::eTransferDst) {
-        sci.imageUsage |= vk::ImageUsageFlagBits::eTransferDst;
-    }
+	u32 length = capabilities.minImageCount + 1;
+	if (capabilities.maxImageCount > 0 && length > capabilities.maxImageCount) {
+		length = capabilities.maxImageCount;
+	}
 
-    if (capabilities.supportedUsageFlags & vk::ImageUsageFlagBits::eSampled) {
-        sci.imageUsage |= vk::ImageUsageFlagBits::eSampled;
-    }
+	vk::SwapchainCreateInfoKHR sci {
+		vk::SwapchainCreateFlagsKHR(),
+		*_surface,
+		length,
+		api::vkTranslateFormat(_format),
+		vk::ColorSpaceKHR::eSrgbNonlinear,
+		vk::Extent2D { _extent.x, _extent.y },
+		1,
+		vk::ImageUsageFlagBits::eColorAttachment,
+		vk::SharingMode::eExclusive,
+		0,
+		nullptr,
+		surfaceTransform,
+		vk::CompositeAlphaFlagBitsKHR::eOpaque,
+		mode,
+		VK_TRUE,
+		nullptr
+	};
 
-    _vkSwapchain = _device->vkDevice().createSwapchainKHR(sci);
-    assert(_vkSwapchain);
+	if (capabilities.supportedUsageFlags & vk::ImageUsageFlagBits::eTransferSrc) {
+		sci.imageUsage |= vk::ImageUsageFlagBits::eTransferSrc;
+	}
 
-    const auto swapImages = _device->vkDevice().getSwapchainImagesKHR(_vkSwapchain);
-    _images.resize(swapImages.size(), {});
+	if (capabilities.supportedUsageFlags & vk::ImageUsageFlagBits::eTransferDst) {
+		sci.imageUsage |= vk::ImageUsageFlagBits::eTransferDst;
+	}
 
-    for (u32 i = 0; i < swapImages.size(); ++i) {
-        /**
-         *
-         */
-        _images[i].image = make_smr<Texture>();
-        auto& texture = _images[i].image;
+	if (capabilities.supportedUsageFlags & vk::ImageUsageFlagBits::eSampled) {
+		sci.imageUsage |= vk::ImageUsageFlagBits::eSampled;
+	}
 
-        assert(texture);
+	_vkSwapchain = _device->vkDevice().createSwapchainKHR(sci);
+	::hg::assertd(_vkSwapchain);
 
-        /**
-         *
-         */
-        texture->type() = TextureType::e2d;
-        texture->format() = _format;
-        texture->extent() = { _extent, 1uL };
-        texture->mipLevels() = 1uL;
-        texture->buffer()._vkAspect = vk::ImageAspectFlagBits::eColor;
-        texture->buffer().vkDevice() = _device->vkDevice();
-        texture->buffer().image() = swapImages[i];
+	const auto swapImages = _device->vkDevice().getSwapchainImagesKHR(_vkSwapchain);
+	_images.resize(swapImages.size(), {});
 
-        TextureFactory::get()->buildView(*texture);
+	for (u32 i = 0; i < swapImages.size(); ++i) {
+		/**
+		 *
+		 */
+		_images[i].image = make_smr<Texture>();
+		auto& texture = _images[i].image;
 
-        assert(texture->vkView());
-        assert(texture->buffer().image());
-    }
+		assert(texture);
 
-    /**
-     *
-     */
-    pretransform(_device, _images);
+		/**
+		 *
+		 */
+		texture->type() = TextureType::e2d;
+		texture->format() = _format;
+		texture->extent() = { _extent, 1uL };
+		texture->mipLevels() = 1uL;
+		texture->buffer()._vkAspect = vk::ImageAspectFlagBits::eColor;
+		texture->buffer().vkDevice() = _device->vkDevice();
+		texture->buffer().image() = swapImages[i];
+
+		TextureFactory::get()->buildView(*texture);
+
+		assert(texture->vkView());
+		assert(texture->buffer().image());
+	}
+
+	/**
+	 *
+	 */
+	pretransform(_device, _images);
 }
 
 void VkSurfaceSwapchain::destroy() {
 
-    /**/
-    for (auto&& signal : _signals) {
-        _device->vkDevice().destroySemaphore(signal);
-    }
-    _signals.clear();
+	/**/
+	for (auto&& signal : _signals) {
+		_device->vkDevice().destroySemaphore(signal);
+	}
+	_signals.clear();
 
-    /**
-     * We are must not destroy/delete the swapchain acquired images
-     */
-    for (auto& entry : _images) {
-        entry.image->buffer().image() = VK_NULL_HANDLE;
-    }
+	/**
+	 * We are must not destroy/delete the swapchain acquired images
+	 */
+	for (auto& entry : _images) {
+		entry.image->buffer().image() = VK_NULL_HANDLE;
+	}
 
-    /**
-     *
-     */
-    for (auto& entry : _images) {
-        /**/
-        entry.image->destroy();
-        /**/
-        if (entry.readySignal) {
-            _device->vkDevice().destroySemaphore(entry.readySignal);
-        }
-    }
+	/**
+	 *
+	 */
+	for (auto& entry : _images) {
+		/**/
+		entry.image->destroy();
+		/**/
+		if (entry.readySignal) {
+			_device->vkDevice().destroySemaphore(entry.readySignal);
+		}
+	}
 
-    _images.clear();
+	_images.clear();
 
-    _device->vkDevice().destroySwapchainKHR(_vkSwapchain);
-    _vkSwapchain = VK_NULL_HANDLE;
+	_device->vkDevice().destroySwapchainKHR(_vkSwapchain);
+	_vkSwapchain = VK_NULL_HANDLE;
 }
 
 s64 VkSurfaceSwapchain::imageCount() const noexcept {
-    return _images.size();
+	return _images.size();
 }
 
 bool VkSurfaceSwapchain::acquireNext(ref<s64> idx_, ref<smr<Texture>> image_, ref<vk::Semaphore> signal_) {
 
-    const auto nxtSig { nextSignal() };
+	const auto nxtSig { nextSignal() };
 
-    u32 nextIdx { ~0uL };
-    // TODO: Handle next result while acquiring next image
-    [[maybe_unused]] auto nextResult {
-        _device->vkDevice().acquireNextImageKHR(
-            _vkSwapchain,
-            UINT64_MAX,
-            nxtSig,
-            VK_NULL_HANDLE,
-            &nextIdx
-        )
-    };
+	u32 nextIdx { ~0uL };
+	// TODO: Handle next result while acquiring next image
+	[[maybe_unused]] auto nextResult {
+		_device->vkDevice().acquireNextImageKHR(
+			_vkSwapchain,
+			UINT64_MAX,
+			nxtSig,
+			VK_NULL_HANDLE,
+			&nextIdx
+		)
+	};
 
-    /**
-     * Store local
-     */
-    restoreSignal(_images[nextIdx].readySignal);
+	/**
+	 * Store local
+	 */
+	restoreSignal(_images[nextIdx].readySignal);
 
-    _images[nextIdx].readySignal = nxtSig;
-    _images[nextIdx].presentWaits.clear();
+	_images[nextIdx].readySignal = nxtSig;
+	_images[nextIdx].presentWaits.clear();
 
-    /**
-     * Store output
-     */
-    idx_ = static_cast<s64>(nextIdx);
-    image_ = clone(_images[nextIdx].image);
-    signal_ = nxtSig;
+	/**
+	 * Store output
+	 */
+	idx_ = static_cast<s64>(nextIdx);
+	image_ = clone(_images[nextIdx].image);
+	signal_ = nxtSig;
 
-    return true;
+	return true;
 }
 
 vk::Result VkSurfaceSwapchain::presentNext(u64 idx_) {
 
-    const u32 idx { static_cast<u32>(idx_) };
-    ref<SwapchainImage> image { _images[idx_] };
+	const u32 idx { static_cast<u32>(idx_) };
+	ref<SwapchainImage> image { _images[idx_] };
 
-    const vk::PresentInfoKHR info {
-        static_cast<u32>(image.presentWaits.size()),
-        image.presentWaits.data(),
-        1uL,
-        &_vkSwapchain,
-        &idx
-    };
+	const vk::PresentInfoKHR info {
+		static_cast<u32>(image.presentWaits.size()),
+		image.presentWaits.data(),
+		1uL,
+		&_vkSwapchain,
+		&idx
+	};
 
-    const auto vkResult {
-        _device->graphicsQueue()->vkQueue().presentKHR(info)
-    };
+	const auto vkResult {
+		_device->graphicsQueue()->vkQueue().presentKHR(info)
+	};
 
-    return vkResult;
+	return vkResult;
 }
 
 vk::Result VkSurfaceSwapchain::presentNext(u64 idx_, cref<Vector<vk::Semaphore>> waits_) {
 
-    const u32 idx { static_cast<u32>(idx_) };
-    ref<SwapchainImage> image { _images[idx_] };
+	const u32 idx { static_cast<u32>(idx_) };
+	ref<SwapchainImage> image { _images[idx_] };
 
-    /**/
-    image.presentWaits.insert(image.presentWaits.end(), waits_.begin(), waits_.end());
+	/**/
+	image.presentWaits.insert(image.presentWaits.end(), waits_.begin(), waits_.end());
 
-    const vk::PresentInfoKHR info {
-        static_cast<u32>(image.presentWaits.size()),
-        image.presentWaits.data(),
-        1uL,
-        &_vkSwapchain,
-        &idx
-    };
+	const vk::PresentInfoKHR info {
+		static_cast<u32>(image.presentWaits.size()),
+		image.presentWaits.data(),
+		1uL,
+		&_vkSwapchain,
+		&idx
+	};
 
-    const auto vkResult {
-        _device->graphicsQueue()->vkQueue().presentKHR(info)
-    };
+	const auto vkResult {
+		_device->graphicsQueue()->vkQueue().presentKHR(info)
+	};
 
-    return vkResult;
+	return vkResult;
 }
 
 bool VkSurfaceSwapchain::consumeNext(
-    ref<smr<Texture>> image_,
-    ref<vk::Semaphore> signal_,
-    ref<Vector<vk::Semaphore>> waits_
+	ref<smr<Texture>> image_,
+	ref<vk::Semaphore> signal_,
+	ref<Vector<vk::Semaphore>> waits_
 ) {
-    return false;
+	return false;
 }
 
 vk::Semaphore VkSurfaceSwapchain::nextSignal() {
 
-    if (!_signals.empty()) {
-        auto signal { _signals.back() };
-        _signals.pop_back();
-        return signal;
-    }
+	if (!_signals.empty()) {
+		auto signal { _signals.back() };
+		_signals.pop_back();
+		return signal;
+	}
 
-    vk::SemaphoreCreateInfo info {};
-    const auto signal { _device->vkDevice().createSemaphore(info) };
-    return signal;
+	vk::SemaphoreCreateInfo info {};
+	const auto signal { _device->vkDevice().createSemaphore(info) };
+	return signal;
 }
 
 void VkSurfaceSwapchain::restoreSignal(const vk::Semaphore signal_) {
 
-    if (!signal_) {
-        return;
-    }
+	if (!signal_) {
+		return;
+	}
 
-    _signals.push_back(signal_);
+	_signals.push_back(signal_);
 }
 
 /**
@@ -285,90 +289,90 @@ void VkSurfaceSwapchain::restoreSignal(const vk::Semaphore signal_) {
 
 math::uivec2 clampExtent(math::uivec2 extent_, cref<vk::SurfaceCapabilitiesKHR> capabilities_) noexcept {
 
-    extent_ = math::compMin(
-        extent_,
-        math::uivec2 { capabilities_.maxImageExtent.width, capabilities_.maxImageExtent.height }
-    );
+	extent_ = math::compMin(
+		extent_,
+		math::uivec2 { capabilities_.maxImageExtent.width, capabilities_.maxImageExtent.height }
+	);
 
-    extent_ = math::compMax(
-        extent_,
-        math::uivec2 { capabilities_.minImageExtent.width, capabilities_.minImageExtent.height }
-    );
+	extent_ = math::compMax(
+		extent_,
+		math::uivec2 { capabilities_.minImageExtent.width, capabilities_.minImageExtent.height }
+	);
 
-    // extent_ = math::compMax(extent_, math::uivec2 { 1uL });
+	// extent_ = math::compMax(extent_, math::uivec2 { 1uL });
 
-    return extent_;
+	return extent_;
 }
 
 vk::PresentModeKHR selectPresentMode(cref<Vector<vk::PresentModeKHR>> modes_) noexcept {
-    vk::PresentModeKHR pm { vk::PresentModeKHR::eFifo };
+	vk::PresentModeKHR pm { vk::PresentModeKHR::eFifo };
 
-    for (u32 i = 0; i < modes_.size(); ++i) {
-        if (modes_[i] == vk::PresentModeKHR::eMailbox) {
-            pm = vk::PresentModeKHR::eMailbox;
-            break;
-        }
+	for (u32 i = 0; i < modes_.size(); ++i) {
+		if (modes_[i] == vk::PresentModeKHR::eMailbox) {
+			pm = vk::PresentModeKHR::eMailbox;
+			break;
+		}
 
-        if (modes_[i] == vk::PresentModeKHR::eImmediate) {
-            pm = vk::PresentModeKHR::eImmediate;
-        }
-    }
+		if (modes_[i] == vk::PresentModeKHR::eImmediate) {
+			pm = vk::PresentModeKHR::eImmediate;
+		}
+	}
 
-    return pm;
+	return pm;
 }
 
 void pretransform(cref<sptr<Device>> device_, cref<Vector<SwapchainImage>> textures_) {
 
-    Vector<vk::ImageMemoryBarrier> imgBarriers {};
-    for (const auto& entry : textures_) {
+	Vector<vk::ImageMemoryBarrier> imgBarriers {};
+	for (const auto& entry : textures_) {
 
-        if (isDepthFormat(entry.image->format()) || isStencilFormat(entry.image->format())) {
-            continue;
-        }
+		if (isDepthFormat(entry.image->format()) || isStencilFormat(entry.image->format())) {
+			continue;
+		}
 
-        imgBarriers.push_back(
-            {
-                vk::AccessFlags {},
-                vk::AccessFlags {},
-                vk::ImageLayout::eUndefined,
-                vk::ImageLayout::ePresentSrcKHR,
-                VK_QUEUE_FAMILY_IGNORED,
-                VK_QUEUE_FAMILY_IGNORED,
-                entry.image->buffer().image(),
-                vk::ImageSubresourceRange {
-                    vk::ImageAspectFlagBits::eColor,
-                    0,
-                    entry.image->mipLevels(),
-                    0,
-                    entry.image->layer()
-                }
-            }
-        );
-    }
+		imgBarriers.push_back(
+			{
+				vk::AccessFlags {},
+				vk::AccessFlags {},
+				vk::ImageLayout::eUndefined,
+				vk::ImageLayout::ePresentSrcKHR,
+				VK_QUEUE_FAMILY_IGNORED,
+				VK_QUEUE_FAMILY_IGNORED,
+				entry.image->buffer().image(),
+				vk::ImageSubresourceRange {
+					vk::ImageAspectFlagBits::eColor,
+					0,
+					entry.image->mipLevels(),
+					0,
+					entry.image->layer()
+				}
+			}
+		);
+	}
 
-    const auto pool = device_->graphicsQueue()->pool();
-    pool->lck().acquire();
-    CommandBuffer cmd = pool->make();
-    cmd.begin();
+	const auto pool = device_->graphicsQueue()->pool();
+	pool->lck().acquire();
+	CommandBuffer cmd = pool->make();
+	cmd.begin();
 
-    /**
-     * Transform
-     */
-    cmd.vkCommandBuffer().pipelineBarrier(
-        vk::PipelineStageFlagBits::eAllCommands,
-        vk::PipelineStageFlagBits::eAllCommands,
-        vk::DependencyFlags {},
-        0,
-        nullptr,
-        0,
-        nullptr,
-        static_cast<u32>(imgBarriers.size()),
-        imgBarriers.data()
-    );
+	/**
+	 * Transform
+	 */
+	cmd.vkCommandBuffer().pipelineBarrier(
+		vk::PipelineStageFlagBits::eAllCommands,
+		vk::PipelineStageFlagBits::eAllCommands,
+		vk::DependencyFlags {},
+		0,
+		nullptr,
+		0,
+		nullptr,
+		static_cast<u32>(imgBarriers.size()),
+		imgBarriers.data()
+	);
 
-    cmd.end();
-    cmd.submitWait();
-    cmd.release();
+	cmd.end();
+	cmd.submitWait();
+	cmd.release();
 
-    pool->lck().release();
+	pool->lck().release();
 }

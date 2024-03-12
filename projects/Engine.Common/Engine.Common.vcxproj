@@ -44,8 +44,6 @@
     <ClInclude Include="..\..\src\Engine.Common\Concurrent\Promise.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Concurrent\SharedMemoryReference.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Concurrent\SpinLock.hpp" />
-    <ClInclude Include="..\..\src\Engine.Common\Exception\NotImplementedException.hpp" />
-    <ClInclude Include="..\..\src\Engine.Common\Exception\__macro.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Flag.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Functional\Function.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\GLM.hpp" />

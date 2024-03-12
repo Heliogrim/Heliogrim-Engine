@@ -1,6 +1,6 @@
 #include "GameScene.hpp"
 
-#include <utility>
+#include <Engine.Asserts/Todo.hpp>
 #include <Engine.Reflect/Cast.hpp>
 #include <Heliogrim/ActorComponent.hpp>
 #include <Heliogrim/SceneComponent.hpp>
@@ -15,7 +15,7 @@ void GameScene::add(const ptr<ActorComponent> component_) {
 }
 
 void GameScene::add(cref<ComponentHierarchy> hierarchy_) {
-	std::unreachable();
+	::hg::todo_panic();
 }
 
 nmpt<IComponentRegisterContext> GameScene::registerContext() noexcept {

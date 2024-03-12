@@ -1,7 +1,6 @@
 #include "MatTestPass.hpp"
 
 #include <ranges>
-#include <utility>
 #include <Engine.Accel.Command/CommandBuffer.hpp>
 #include <Engine.Accel.Compile/VkEffectCompiler.hpp>
 #include <Engine.Accel.Compile/Profile/EffectProfile.hpp>
@@ -564,7 +563,9 @@ void MatTestPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 						continue;
 					}
 
-					std::unreachable();
+					/**/
+
+					todo_panic();
 				}
 			}
 

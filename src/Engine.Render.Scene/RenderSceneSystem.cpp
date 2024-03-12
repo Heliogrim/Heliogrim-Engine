@@ -1,6 +1,5 @@
 #include "RenderSceneSystem.hpp"
 
-#include <utility>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.GFX/Graphics.hpp>
 #include <Engine.GFX/Pool/SceneResourcePool.hpp>
@@ -73,9 +72,9 @@ void RenderSceneSystem::add(const ptr<const MetaClass> meta_, std::span<const pt
 }
 
 void RenderSceneSystem::remove(const ptr<const MetaClass> meta_, std::span<const ptr<const SceneComponent>> batch_) {
-	std::unreachable();
+	::hg::todo_panic();
 }
 
 void RenderSceneSystem::clear() {
-	std::unreachable();
+	::hg::todo_panic();
 }

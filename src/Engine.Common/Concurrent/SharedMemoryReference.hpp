@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <type_traits>
 #include <utility>
+#include <Engine.Asserts/Asserts.hpp>
 
 #include "../Cast.hpp"
 #include "../Sal.hpp"
@@ -410,7 +411,9 @@ namespace hg {
 			const auto original = reinterpret_cast<packed_type>(ptr_);
 			const auto packed = original << packed_shift;
 
-			DEBUG_ASSERT(original == (packed >> packed_shift), "Exceeded addressable memory of shifted memory address.")
+			::hg::assertd(
+				original == (packed >> packed_shift)/* "Exceeded addressable memory of shifted memory address." */
+			);
 
 			_packed.fetch_and(packed_ref_mask, std::memory_order_release);
 			_packed.fetch_or(packed, std::memory_order_release);
@@ -444,7 +447,9 @@ namespace hg {
 			const auto original = reinterpret_cast<packed_type>(ptr_);
 			const auto packed = (original << packed_shift) | 0x1;
 
-			DEBUG_ASSERT(original == (packed >> packed_shift), "Exceeded adressable memory of shifted memory address.")
+			::hg::assertd(
+				original == (packed >> packed_shift)/* "Exceeded adressable memory of shifted memory address." */
+			);
 
 			packed_type expect { 0 };
 			return _packed.compare_exchange_strong(

@@ -10,6 +10,7 @@
 #include <Engine.Accel.Pipeline/VkRaytracingPipeline.hpp>
 #include <Engine.Accel.Pipeline/Stage/StageDerivat.hpp>
 #include <Engine.Accel.Pipeline/Stage/StageModule.hpp>
+#include <Engine.Asserts/Panic.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Collection/Array.hpp>
@@ -19,8 +20,8 @@
 #include <Engine.GFX/Geometry/UIVertex.hpp>
 #include <Engine.GFX/Geometry/Vertex.hpp>
 #include <Engine.Logging/Logger.hpp>
-#include <Engine.Reflect/IsType.hpp>
 #include <Engine.Reflect/Cast.hpp>
+#include <Engine.Reflect/IsType.hpp>
 #include <Engine.Reflect/TypeSwitch.hpp>
 
 #include "../VkApi.hpp"
@@ -621,7 +622,7 @@ smr<VkGraphicsPipeline> VkPipelineCompiler::linkVk(
                 break;
             }
             default: {
-                assert(false);
+				::hg::panic();
             }
         }
 

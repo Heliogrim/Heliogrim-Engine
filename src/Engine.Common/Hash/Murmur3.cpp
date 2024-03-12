@@ -11,11 +11,11 @@ using namespace hg;
 
 #else
 
-FORCE_INLINE u32 rotl32(u32 v_, s8 r_) {
+static u32 rotl32(u32 v_, s8 r_) {
 	return (v_ << r_) | (v_ >> (s8 {32} - r_));
 }
 
-FORCE_INLINE u64 rotl64(u64 v_, s8 r_) {
+static u64 rotl64(u64 v_, s8 r_) {
 	return (v_ << r_) | (v_ >> (s8 {64} - r_));
 }
 
@@ -24,15 +24,15 @@ FORCE_INLINE u64 rotl64(u64 v_, s8 r_) {
 
 #endif
 
-FORCE_INLINE u32 get_block_32(const u32* ptr_, const u32 idx_) {
+static u32 get_block_32(const u32* ptr_, const u32 idx_) {
 	return ptr_[idx_];
 }
 
-FORCE_INLINE u64 get_block_64(const u64* ptr_, const u32 idx_) {
+static u64 get_block_64(const u64* ptr_, const u32 idx_) {
 	return ptr_[idx_];
 }
 
-FORCE_INLINE u32 fmix_32(u32 value_) {
+static u32 fmix_32(u32 value_) {
 	value_ ^= value_ >> 16;
 	value_ *= 0x85ebca6buL;
 	value_ ^= value_ >> 13;
@@ -42,7 +42,7 @@ FORCE_INLINE u32 fmix_32(u32 value_) {
 	return value_;
 }
 
-FORCE_INLINE u64 fmix_64(u64 value_) {
+static u64 fmix_64(u64 value_) {
 	value_ ^= value_ >> 33;
 	value_ *= 0xff51afd7ed558ccduLL;
 	value_ ^= value_ >> 33;
