@@ -5,7 +5,7 @@
 namespace hg {
 	#if defined(_DEBUG) && not defined(NDEBUG)
 
-	FORCE_INLINE inline void breakpoint() {
+	FORCE_INLINE void breakpoint() {
 		#if defined(ENV_WIN)
 		__debugbreak();
 		#elif defined(__clang__)
@@ -23,7 +23,7 @@ namespace hg {
 
 	#else
 
-	FORCE_INLINE inline void breakpoint() {
+	FORCE_INLINE void breakpoint() {
 		// noop();
 	}
 
