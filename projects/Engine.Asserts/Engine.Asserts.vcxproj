@@ -16,11 +16,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Asserts\Asserts.cpp" />
+    <ClCompile Include="..\..\src\Engine.Asserts\Panic.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.Asserts\Asserts.hpp" />
     <ClInclude Include="..\..\src\Engine.Asserts\Breakpoint.hpp" />
+    <ClInclude Include="..\..\src\Engine.Asserts\Pal.hpp" />
     <ClInclude Include="..\..\src\Engine.Asserts\Panic.hpp" />
+    <ClInclude Include="..\..\src\Engine.Asserts\Todo.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
