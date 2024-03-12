@@ -1,7 +1,6 @@
 #include "VkScopedResourceTable.hpp"
 
 #include <ranges>
-#include <utility>
 #include <Engine.Accel.Pipeline/AccelerationPipeline.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.GFX/Graphics.hpp>
@@ -106,7 +105,7 @@ void driver::vk::VkScopedResourceTable::attach(mref<Holder> obj_) {
 }
 
 void driver::vk::VkScopedResourceTable::detach(cref<Holder> obj_) {
-	std::unreachable();
+	todo_panic();
 }
 
 driver::vk::VkDescriptorPoolAllocationLayout driver::vk::VkScopedResourceTable::nextAllocSizes() const noexcept {

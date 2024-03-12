@@ -1,7 +1,6 @@
 #include "PackageManager.hpp"
 
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Common/Exception/NotImplementedException.hpp>
 #include <Engine.Logging/Logger.hpp>
 
 #include <Engine.Resource/File.hpp>
