@@ -10,6 +10,8 @@ using namespace hg;
 
 ReflowCommandBuffer::ReflowCommandBuffer() noexcept :
 	_scissorStack(),
+	_maxLayer(0),
+	_layer(0),
 	_opaque(),
 	_alpha(),
 	_scissors(),
@@ -313,6 +315,26 @@ bool ReflowCommandBuffer::scissorCull(cref<math::fExtent2D> rect_) const noexcep
 	return false;
 }
 
+void ReflowCommandBuffer::pushLayer() noexcept {
+	_maxLayer = (std::max)(_maxLayer, ++_layer);
+}
+
+void ReflowCommandBuffer::pushLayer(const u8 count_) noexcept {
+	_maxLayer = (std::max)(_maxLayer, (_layer += count_));
+}
+
+void ReflowCommandBuffer::popLayer() noexcept {
+	--_layer;
+}
+
+void ReflowCommandBuffer::popLayer(const u8 count_) noexcept {
+	_layer -= count_;
+}
+
+u8 ReflowCommandBuffer::getCurrentMaxLayer() const noexcept {
+	return _maxLayer;
+}
+
 bool ReflowCommandBuffer::isAnyAlpha(std::span<gfx::uivertex> vertices_) const noexcept {
 	return std::ranges::any_of(
 		vertices_,
@@ -360,22 +382,22 @@ void ReflowCommandBuffer::drawLine(math::vec2 p0_, math::vec2 p1_, const float s
 
 	capture.vertices.push_back(
 		uivertex {
-			math::vec2 { p0_ + ortho * hs }, math::vec4_t<u8>(strokeColor), math::vec3 {}
+			math::vec2 { p0_ + ortho * hs }, math::vec4_t<u8>(strokeColor), math::vec3 {}, _layer
 		}
 	);
 	capture.vertices.push_back(
 		uivertex {
-			math::vec2 { p1_ + ortho * hs }, math::vec4_t<u8>(strokeColor), math::vec3 {}
+			math::vec2 { p1_ + ortho * hs }, math::vec4_t<u8>(strokeColor), math::vec3 {}, _layer
 		}
 	);
 	capture.vertices.push_back(
 		uivertex {
-			math::vec2 { p1_ - ortho * hs }, math::vec4_t<u8>(strokeColor), math::vec3 {}
+			math::vec2 { p1_ - ortho * hs }, math::vec4_t<u8>(strokeColor), math::vec3 {}, _layer
 		}
 	);
 	capture.vertices.push_back(
 		uivertex {
-			math::vec2 { p0_ - ortho * hs }, math::vec4_t<u8>(strokeColor), math::vec3 {}
+			math::vec2 { p0_ - ortho * hs }, math::vec4_t<u8>(strokeColor), math::vec3 {}, _layer
 		}
 	);
 
@@ -428,7 +450,8 @@ void ReflowCommandBuffer::drawQuad(math::vec2 p0_, math::vec2 p1_, math::vec2 p2
 			static_cast<u8>(color_.b),
 			static_cast<u8>(color_.a)
 		},
-		math::vec3 {}
+		math::vec3 {},
+		_layer
 	};
 	capture.vertices[baseVdx + 1uL] = uivertex {
 		math::vec2 { p1_ },
@@ -438,7 +461,8 @@ void ReflowCommandBuffer::drawQuad(math::vec2 p0_, math::vec2 p1_, math::vec2 p2
 			static_cast<u8>(color_.b),
 			static_cast<u8>(color_.a)
 		},
-		math::vec3 {}
+		math::vec3 {},
+		_layer
 	};
 	capture.vertices[baseVdx + 2uL] = uivertex {
 		math::vec2 { p2_ },
@@ -448,7 +472,8 @@ void ReflowCommandBuffer::drawQuad(math::vec2 p0_, math::vec2 p1_, math::vec2 p2
 			static_cast<u8>(color_.b),
 			static_cast<u8>(color_.a)
 		},
-		math::vec3 {}
+		math::vec3 {},
+		_layer
 	};
 	capture.vertices[baseVdx + 3uL] = uivertex {
 		math::vec2 { p3_ },
@@ -458,7 +483,8 @@ void ReflowCommandBuffer::drawQuad(math::vec2 p0_, math::vec2 p1_, math::vec2 p2
 			static_cast<u8>(color_.b),
 			static_cast<u8>(color_.a)
 		},
-		math::vec3 {}
+		math::vec3 {},
+		_layer
 	};
 }
 
@@ -528,7 +554,8 @@ void ReflowCommandBuffer::drawArc(
 				static_cast<u8>(color_.b),
 				static_cast<u8>(color_.a)
 			},
-			math::vec3 {}
+			math::vec3 {},
+			_layer
 		}
 	);
 
@@ -548,7 +575,8 @@ void ReflowCommandBuffer::drawArc(
 					static_cast<u8>(color_.b),
 					static_cast<u8>(color_.a)
 				},
-				math::vec3 {}
+				math::vec3 {},
+				_layer
 			}
 		);
 	}
@@ -652,7 +680,8 @@ void ReflowCommandBuffer::drawText(
 				static_cast<u8>(color_.b),
 				static_cast<u8>(color_.a)
 			},
-			math::vec3 { glyph->_minSt, 0.F }
+			math::vec3 { glyph->_minSt, 0.F },
+			_layer
 		};
 		capture.vertices[cvi + 1] = uivertex {
 			math::vec2 {
@@ -665,7 +694,8 @@ void ReflowCommandBuffer::drawText(
 				static_cast<u8>(color_.b),
 				static_cast<u8>(color_.a)
 			},
-			math::vec3 { glyph->_maxSt.s, glyph->_minSt.t, 0.F }
+			math::vec3 { glyph->_maxSt.s, glyph->_minSt.t, 0.F },
+			_layer
 		};
 		capture.vertices[cvi + 2] = uivertex {
 			math::vec2 {
@@ -678,7 +708,8 @@ void ReflowCommandBuffer::drawText(
 				static_cast<u8>(color_.b),
 				static_cast<u8>(color_.a)
 			},
-			math::vec3 { glyph->_maxSt, 0.F }
+			math::vec3 { glyph->_maxSt, 0.F },
+			_layer
 		};
 		capture.vertices[cvi + 3] = uivertex {
 			math::vec2 {
@@ -691,7 +722,8 @@ void ReflowCommandBuffer::drawText(
 				static_cast<u8>(color_.b),
 				static_cast<u8>(color_.a)
 			},
-			math::vec3 { glyph->_minSt.s, glyph->_maxSt.t, 0.F }
+			math::vec3 { glyph->_minSt.s, glyph->_maxSt.t, 0.F },
+			_layer
 		};
 
 		cvi += 4uL;
@@ -786,7 +818,8 @@ void ReflowCommandBuffer::drawImageAsync(
 			static_cast<u8>(options_.tint.b),
 			static_cast<u8>(options_.tint.a)
 		},
-		math::vec3 { uv0_, 0.F }
+		math::vec3 { uv0_, 0.F },
+		_layer
 	};
 	capture.vertices[baseVdx + 1uL] = uivertex {
 		math::vec2 { p1_ },
@@ -796,7 +829,8 @@ void ReflowCommandBuffer::drawImageAsync(
 			static_cast<u8>(options_.tint.b),
 			static_cast<u8>(options_.tint.a)
 		},
-		math::vec3 { uv1_, 0.F }
+		math::vec3 { uv1_, 0.F },
+		_layer
 	};
 	capture.vertices[baseVdx + 2uL] = uivertex {
 		math::vec2 { p2_ },
@@ -806,7 +840,8 @@ void ReflowCommandBuffer::drawImageAsync(
 			static_cast<u8>(options_.tint.b),
 			static_cast<u8>(options_.tint.a)
 		},
-		math::vec3 { uv2_, 0.F }
+		math::vec3 { uv2_, 0.F },
+		_layer
 	};
 	capture.vertices[baseVdx + 3uL] = uivertex {
 		math::vec2 { p3_ },
@@ -816,7 +851,8 @@ void ReflowCommandBuffer::drawImageAsync(
 			static_cast<u8>(options_.tint.b),
 			static_cast<u8>(options_.tint.a)
 		},
-		math::vec3 { uv3_, 0.F }
+		math::vec3 { uv3_, 0.F },
+		_layer
 	};
 
 	/**/

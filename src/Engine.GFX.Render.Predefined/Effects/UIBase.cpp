@@ -92,6 +92,23 @@ smr<const AccelerationEffect> engine::render::makeUiBaseEffect() {
 
 	/**/
 
+	{
+		auto var = make_uptr<Variable>();
+		var->type = Type { .category = TypeCategory::eScalar, .scalarType = ScalarType::eU8 };
+		var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eForwardLinkage>>();
+		var->annotation = make_uptr<SymbolIdAnnotation>("vertex-layer", std::move(var->annotation));
+		var->annotation = make_uptr<VkBindLocationAnnotation>(
+			-1L,
+			3L,
+			offsetof(gfx::uivertex, layer),
+			std::move(var->annotation)
+		);
+
+		vertexStage->getIntermediate()->rep.globalScope.inbound.emplace_back(std::move(var));
+	}
+
+	/**/
+
 	tmpVar = make_uptr<Variable>();
 	tmpVar->type = Type { .category = TypeCategory::eTexture, .textureType = TextureType::eTexture2d };
 	tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eExternalLinkage>>();
@@ -135,6 +152,20 @@ smr<const AccelerationEffect> engine::render::makeUiBaseEffect() {
 
 	fragmentStage->getIntermediate()->rep.globalScope.outbound.emplace_back(std::move(tmpVar));
 	fragmentStage->getIntermediate()->rep.symbolTable.insert(std::move(tmpSym));
+
+	{
+		auto var = make_uptr<Variable>();
+		var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eForwardLinkage>>();
+		var->annotation = make_uptr<SymbolIdAnnotation>("depth", std::move(var->annotation));
+
+		auto sym = make_uptr<Symbol>(
+			SymbolId::from("depth"sv),
+			VariableSymbol { SymbolType::eVariableSymbol, var.get() }
+		);
+
+		fragmentStage->getIntermediate()->rep.globalScope.outbound.emplace_back(std::move(var));
+		fragmentStage->getIntermediate()->rep.symbolTable.insert(std::move(sym));
+	}
 
 	/**/
 

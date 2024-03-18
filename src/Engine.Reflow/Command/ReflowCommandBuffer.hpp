@@ -96,6 +96,21 @@ namespace hg::engine::reflow {
 
 		[[nodiscard]] bool scissorCull(cref<math::fExtent2D> rect_) const noexcept;
 
+	private:
+		u8 _maxLayer;
+		u8 _layer;
+
+	public:
+		void pushLayer() noexcept;
+
+		void pushLayer(const u8 count_) noexcept;
+
+		void popLayer() noexcept;
+
+		void popLayer(const u8 count_) noexcept;
+
+		[[nodiscard]] u8 getCurrentMaxLayer() const noexcept;
+
 		//private:
 	public:
 		CaptureData _opaque;
