@@ -7,6 +7,9 @@
 namespace hg {
 	struct asset_guid : public Guid {
 		using Guid::Guid;
+
+		asset_guid(cref<Guid> other_) noexcept :
+			Guid(other_) {}
 	};
 
 	/**

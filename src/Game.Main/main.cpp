@@ -1,3 +1,4 @@
+#define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <Engine.Common/__macro.hpp>
 
@@ -48,12 +49,12 @@ void afterRoutine() {}
  * @date 20.10.2021
  */
 void ember_main_entry() {
-    /**
-     * Create suspend callback for event emitter
-     */
-    engine::Engine::getEngine()->getEmitter().on<engine::core::SignalShutdownEvent>(
-        [](cref<engine::core::SignalShutdownEvent> event_) {
-            suspended.test_and_set(std::memory_order::release);
-        }
-    );
+	/**
+	 * Create suspend callback for event emitter
+	 */
+	engine::Engine::getEngine()->getEmitter().on<engine::core::SignalShutdownEvent>(
+		[](cref<engine::core::SignalShutdownEvent> event_) {
+			suspended.test_and_set(std::memory_order::release);
+		}
+	);
 }
