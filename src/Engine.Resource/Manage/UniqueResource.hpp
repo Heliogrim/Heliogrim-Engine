@@ -19,7 +19,7 @@ namespace hg::engine::resource {
 		constexpr UniqueResource() noexcept :
 			underlying_type() {}
 
-		constexpr UniqueResource(nullptr_t) noexcept :
+		constexpr UniqueResource(::std::nullptr_t) noexcept :
 			underlying_type() {}
 
 		template <typename Type_ = ManagedType_> requires std::is_default_constructible_v<Type_>

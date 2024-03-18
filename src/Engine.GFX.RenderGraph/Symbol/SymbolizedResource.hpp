@@ -47,11 +47,11 @@ namespace hg::engine::render::graph {
 		[[nodiscard]] bool valid() const noexcept {
 
 			if (empty()) {
-				return std::is_same_v<Type_, nullptr_t>;
+				return std::is_same_v<Type_, ::std::nullptr_t>;
 			}
 
 			if constexpr (std::is_void_v<Validation_>) {
-				return not std::is_same_v<Type_, nullptr_t>;
+				return not std::is_same_v<Type_, ::std::nullptr_t>;
 			}
 
 			if constexpr (/* Type strengthening */not std::is_void_v<Validation_>) {
