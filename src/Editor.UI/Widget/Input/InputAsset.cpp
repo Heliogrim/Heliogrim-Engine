@@ -173,7 +173,7 @@ EventResponse InputAsset::onDrop(cref<DragDropEvent> event_) {
         return EventResponse::eConsumed;
     }
 
-    const asset_guid guid = decodeGuid4228(parsed.path().string()).data;
+    const asset_guid guid = decodeGuid4228(parsed.path().string());
     if (guid == invalid_asset_guid) {
         IM_CORE_WARN("Invalid asset guid.");
         return EventResponse::eConsumed;

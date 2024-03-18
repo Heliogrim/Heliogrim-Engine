@@ -15,30 +15,30 @@ using namespace hg::game::assets::material;
 using namespace hg;
 
 DefaultSkyboxPrototype::DefaultSkyboxPrototype() :
-    GfxMatProtoAsset(clone(DefaultSkyboxPrototype::unstable_auto_guid())) {
+	GfxMatProtoAsset(clone(DefaultSkyboxPrototype::unstable_auto_guid())) {
 
-    /* Warning: Temporary Cross-Fix */
+	/* Warning: Temporary Cross-Fix */
 
-    auto asset = static_cast<ptr<engine::assets::GfxMaterialPrototype>>(internal());
-    if (not asset->_effects.empty()) {
-        return;
-    }
+	auto asset = static_cast<ptr<engine::assets::GfxMaterialPrototype>>(internal());
+	if (not asset->_effects.empty()) {
+		return;
+	}
 
-    auto predefined = engine::render::makeSkyboxEffect();
+	auto predefined = engine::render::makeSkyboxEffect();
 
-    asset->_effects.emplace_back(predefined->getGuid().data);
-    engine::Engine::getEngine()->getAssets()->getFactory()->createAccelEffectAsset(predefined->getGuid().data);
+	asset->_effects.emplace_back(predefined->getGuid());
+	engine::Engine::getEngine()->getAssets()->getFactory()->createAccelEffectAsset(predefined->getGuid());
 
-    auto submodule = engine::Engine::getEngine()->getModules().getSubModule(engine::AccelDepKey);
-    auto accel = static_cast<ptr<engine::Accel>>(submodule);
-    accel->getGlobalStorage()->insertAccelEffect(engine::accel::calcStorageHash(*predefined), std::move(predefined));
+	auto submodule = engine::Engine::getEngine()->getModules().getSubModule(engine::AccelDepKey);
+	auto accel = static_cast<ptr<engine::Accel>>(submodule);
+	accel->getGlobalStorage()->insertAccelEffect(engine::accel::calcStorageHash(*predefined), std::move(predefined));
 
-    asset->_params.push_back(
-        engine::assets::GfxMaterialPrototype::TmpParam {
-            .identifier = engine::gfx::material::ParameterIdentifier { 0u },
-            .name = "Texture",
-            .dataType = engine::accel::TransferDataType::eSampler,
-            .defaultValue = asset_guid { texture::DefaultSkybox::unstable_auto_guid() }
-        }
-    );
+	asset->_params.push_back(
+		engine::assets::GfxMaterialPrototype::TmpParam {
+			.identifier = engine::gfx::material::ParameterIdentifier { 0u },
+			.name = "Texture",
+			.dataType = engine::accel::TransferDataType::eSampler,
+			.defaultValue = asset_guid { texture::DefaultSkybox::unstable_auto_guid() }
+		}
+	);
 }
