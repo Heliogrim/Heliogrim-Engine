@@ -1,6 +1,7 @@
 #include "Guid.hpp"
 
 #include <bit>
+#include <utility>
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN

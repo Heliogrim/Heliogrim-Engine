@@ -494,7 +494,7 @@ namespace hg::engine::acs {
 				_keys(nullptr),
 				_values(nullptr) {}
 
-			constexpr hybrid_key_value_iterator(nullptr_t) noexcept :
+			constexpr hybrid_key_value_iterator(::std::nullptr_t) noexcept :
 				_keys(nullptr),
 				_values(nullptr) {}
 

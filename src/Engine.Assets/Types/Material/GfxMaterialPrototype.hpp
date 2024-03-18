@@ -9,56 +9,56 @@
 #include <Engine.Serialization/Access/__fwd.hpp>
 
 namespace hg::engine::assets {
-    class GfxMaterialPrototype :
-        public InheritMeta<GfxMaterialPrototype, Asset> {
-    public:
-        using this_type = GfxMaterialPrototype;
+	class GfxMaterialPrototype :
+		public InheritMeta<GfxMaterialPrototype, Asset> {
+	public:
+		using this_type = GfxMaterialPrototype;
 
-        ACCESS_LAYOUT
-        ACCESS_STRUCTURE
+		ACCESS_LAYOUT
+		ACCESS_STRUCTURE
 
-    public:
-        inline static constexpr asset_type_id typeId { "GfxMaterialPrototype"_typeId };
+	public:
+		inline static constexpr asset_type_id typeId { "GfxMaterialPrototype"_typeId };
 
-    public:
-        GfxMaterialPrototype(mref<asset_guid> guid_);
+	public:
+		GfxMaterialPrototype(mref<asset_guid> guid_);
 
-    private:
-    public:
-        struct TmpParam {
-            gfx::material::ParameterIdentifier identifier;
-            string name;
-            accel::TransferDataType dataType;
-            std::variant<
-                asset_guid,
-                u8,
-                u16,
-                u32,
-                u64,
-                float,
-                math::vec2_t<u8>,
-                math::vec2_t<u16>,
-                math::vec2_t<u32>,
-                math::vec2_t<u64>,
-                math::vec2_t<float>,
-                math::vec3_t<u8>,
-                math::vec3_t<u16>,
-                math::vec3_t<u32>,
-                math::vec3_t<u64>,
-                math::vec3_t<float>,
-                math::vec4_t<u8>,
-                math::vec4_t<u16>,
-                math::vec4_t<u32>,
-                math::vec4_t<u64>,
-                math::vec4_t<float>,
-                math::matq3_t<float>,
-                math::matq4_t<float>,
-                nullptr_t
-            > defaultValue;
-        };
+	private:
+	public:
+		struct TmpParam {
+			gfx::material::ParameterIdentifier identifier;
+			string name;
+			accel::TransferDataType dataType;
+			std::variant<
+				asset_guid,
+				u8,
+				u16,
+				u32,
+				u64,
+				float,
+				math::vec2_t<u8>,
+				math::vec2_t<u16>,
+				math::vec2_t<u32>,
+				math::vec2_t<u64>,
+				math::vec2_t<float>,
+				math::vec3_t<u8>,
+				math::vec3_t<u16>,
+				math::vec3_t<u32>,
+				math::vec3_t<u64>,
+				math::vec3_t<float>,
+				math::vec4_t<u8>,
+				math::vec4_t<u16>,
+				math::vec4_t<u32>,
+				math::vec4_t<u64>,
+				math::vec4_t<float>,
+				math::matq3_t<float>,
+				math::matq4_t<float>,
+				::std::nullptr_t
+			> defaultValue;
+		};
 
-        // TODO: Serialize/Map instantiated parameters
-        Vector<asset_guid> _effects;
-        Vector<TmpParam> _params;
-    };
+		// TODO: Serialize/Map instantiated parameters
+		Vector<asset_guid> _effects;
+		Vector<TmpParam> _params;
+	};
 }

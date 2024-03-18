@@ -57,7 +57,7 @@ namespace hg {
 			_ctrlBlock(nullptr),
 			_packed(0) {}
 
-		constexpr SharedMemoryReference(nullptr_t) noexcept :
+		constexpr SharedMemoryReference(::std::nullptr_t) noexcept :
 			_ctrlBlock(nullptr),
 			_packed(0) {}
 
