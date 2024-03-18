@@ -104,6 +104,7 @@
     <ClInclude Include="..\..\src\Engine.Reflow\BorderRadius.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Children.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Command\ReflowCommandBuffer.hpp" />
+    <ClInclude Include="..\..\src\Engine.Reflow\Command\ReflowCommandLayer.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Event\DragDropEvent.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Event\EventDispatcher.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Event\EventResponse.hpp" />

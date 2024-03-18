@@ -22,6 +22,7 @@
 #include <Engine.Reflow/Window/Window.hpp>
 #include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
 #include <Engine.Accel.Pipeline/VkGraphicsPipeline.hpp>
+#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets/AssetFactory.hpp>
 #include <Engine.Assets/Assets.hpp>
@@ -38,6 +39,8 @@
 #include <Engine.GFX.Loader/Texture/TextureResource.hpp>
 #include <Engine.Assets/Types/Texture/TextureAsset.hpp>
 #include <Engine.GFX.Loader/Texture/TextureLoader.hpp>
+#include <Engine.GFX.Render.Predefined/Symbols/SceneDepth.hpp>
+#include <Engine.GFX.RenderGraph/Relation/TextureDescription.hpp>
 #include <Engine.GFX/Texture/TextureFactory.hpp>
 #include <Engine.GFX/Texture/TextureView.hpp>
 #include <Engine.Reflect/TypeSwitch.hpp>
@@ -57,6 +60,10 @@ using namespace hg;
 	mref<smr<const engine::accel::GraphicsPass>> pass_
 );
 
+[[nodiscard]] static smr<const graph::Description> makeLocalDepthDescription();
+
+[[nodiscard]] static smr<graph::Symbol> makeLocalDepthSymbol();
+
 /**/
 
 render::ReflowPass::ReflowPass() = default;
@@ -72,6 +79,11 @@ void render::ReflowPass::destroy() noexcept {
 	if (_framebuffer) {
 		_framebuffer->destroy();
 		_framebuffer.reset();
+	}
+
+	if (_depthImage) {
+		_depthImage->destroy();
+		_depthImage.reset();
 	}
 
 	if (_uiVertexBuffer) {
@@ -140,7 +152,11 @@ void render::ReflowPass::execute(cref<engine::render::graph::ScopedSymbolContext
 	/**/
 
 	assert(not sceneColor->empty());
-	ensureFramebuffer(clone(sceneColorRes));
+
+	if (shouldChangeFrame(sceneColorRes)) {
+		ensureDepthBuffer(*sceneColorRes);
+		ensureFramebuffer(clone(sceneColorRes));
+	}
 
 	/**/
 
@@ -184,50 +200,50 @@ void render::ReflowPass::execute(cref<engine::render::graph::ScopedSymbolContext
 
 	/**/
 
-    auto& wnd = uiModel->getWindow();
-    //wnd.render(&uiCmd);
+	auto& wnd = uiModel->getWindow();
+	//wnd.render(&uiCmd);
 
-    {
-        const auto poppedRoot = uiCmd.popScissor();
-        assert(rootScissor == poppedRoot);
-    }
+	{
+		const auto poppedRoot = uiCmd.popScissor();
+		assert(rootScissor == poppedRoot);
+	}
 
-    /**/
+	/**/
 
-    const auto globalRenderTick = ReflowEngine::getGlobalRenderTick();
-    if (_lastRenderTick > globalRenderTick || (globalRenderTick - _lastRenderTick) > 56u) {
-        /* If render tick rolled or diff is too large, force a full redraw */
-        _lastRenderTick = 0u;
-    }
+	const auto globalRenderTick = ReflowEngine::getGlobalRenderTick();
+	if (_lastRenderTick > globalRenderTick || (globalRenderTick - _lastRenderTick) > 56u) {
+		/* If render tick rolled or diff is too large, force a full redraw */
+		_lastRenderTick = 0u;
+	}
 
-    auto markForCapture = Vector<nmpt<const Widget>> {};
-    wnd.enumerateDistinctCapture(_lastRenderTick, markForCapture);
+	auto markForCapture = Vector<nmpt<const Widget>> {};
+	wnd.enumerateDistinctCapture(_lastRenderTick, markForCapture);
 
-    _lastRenderTick = globalRenderTick;
+	_lastRenderTick = globalRenderTick;
 
-    /**/
+	/**/
 
-    for (auto marked : markForCapture) {
+	for (auto marked : markForCapture) {
 
-        if (marked->layoutState().layoutSize.anyZero()) {
-            continue;
-        }
+		if (marked->layoutState().layoutSize.anyZero()) {
+			continue;
+		}
 
-        /**/
+		/**/
 
-        const math::fExtent2D markScissor {
-            marked->layoutState().layoutSize.x,
-            marked->layoutState().layoutSize.y,
-            marked->layoutState().layoutOffset.x,
-            marked->layoutState().layoutOffset.y
-        };
+		const math::fExtent2D markScissor {
+			marked->layoutState().layoutSize.x,
+			marked->layoutState().layoutSize.y,
+			marked->layoutState().layoutOffset.x,
+			marked->layoutState().layoutOffset.y
+		};
 
-        uiCmd.pushScissor(markScissor);
-        wnd.render(&uiCmd);
-        [[maybe_unused]] auto poppedRoot = uiCmd.popScissor();
+		uiCmd.pushScissor(markScissor);
+		wnd.render(&uiCmd);
+		[[maybe_unused]] auto poppedRoot = uiCmd.popScissor();
 
-        assert(poppedRoot == markScissor);
-    }
+		assert(poppedRoot == markScissor);
+	}
 
 	/**/
 
@@ -243,12 +259,19 @@ void render::ReflowPass::execute(cref<engine::render::graph::ScopedSymbolContext
 	cmd::RenderCommandBuffer cmd {};
 
 	cmd.begin();
-	cmd.beginAccelPass({ .pass = _graphicsPass.get(), .framebuffer = _framebuffer.get() });
+	cmd.beginAccelPass(
+		{
+			.pass = _graphicsPass.get(), .framebuffer = _framebuffer.get(),
+			.clearValues = { vk::ClearColorValue { 0.F, 0.F, 0.F, 1.F }, vk::ClearDepthStencilValue { 0.F, 0uL } }
+		}
+	);
 	cmd.beginSubPass();
 
 	/**/
 
 	cmd.bindGraphicsPipeline(clone(_opaqueSubPass.compiled.pipeline).into<accel::GraphicsPipeline>());
+	cmd.bindTexture(accel::lang::SymbolId::from("depth"sv), _depthImage.get());
+
 	captureOpaque(uiCmd, rootScissor, cmd);
 
 	/**/
@@ -258,6 +281,8 @@ void render::ReflowPass::execute(cref<engine::render::graph::ScopedSymbolContext
 	/**/
 
 	cmd.bindGraphicsPipeline(clone(_alphaSubPass.compiled.pipeline).into<accel::GraphicsPipeline>());
+	cmd.bindTexture(accel::lang::SymbolId::from("depth"sv), _depthImage.get());
+
 	captureAlpha(uiCmd, rootScissor, cmd);
 
 	/**/
@@ -358,7 +383,8 @@ void render::ReflowPass::ensureGraphicsPass() {
 	constexpr auto factory = accel::VkAccelerationPassFactory();
 	_graphicsPass = factory.buildGraphicsPass(
 		{
-			makeSceneColorSymbol()
+			makeSceneColorSymbol(),
+			makeLocalDepthSymbol()
 		},
 		{
 			makeSceneColorSymbol()
@@ -366,22 +392,73 @@ void render::ReflowPass::ensureGraphicsPass() {
 	).value();
 }
 
+bool render::ReflowPass::shouldChangeFrame(cref<smr<gfx::TextureLikeObject>> colorTarget_) const noexcept {
+
+	if (_framebuffer == nullptr) {
+		return true;
+	}
+
+	if (_depthImage == nullptr) {
+		return true;
+	}
+
+	if (_framebuffer->attachments().front() != colorTarget_) {
+		return true;
+	}
+
+	return false;
+}
+
+void render::ReflowPass::ensureDepthBuffer(cref<gfx::TextureLikeObject> colorTarget_) {
+
+	if (_depthImage != nullptr) {
+		_depthImage.reset();
+	}
+
+	/**/
+
+	const auto* const factory = gfx::TextureFactory::get();
+	auto texture = switchType(
+		std::addressof(colorTarget_),
+		[factory](const ptr<const gfx::Texture> texture_) {
+			return factory->build(
+				{
+					math::uivec3 { texture_->width(), texture_->height(), 1uL },
+					TextureFormat::eD16Unorm,
+					1uL,
+					TextureType::e2d,
+					vk::ImageAspectFlagBits::eDepth,
+					vk::ImageUsageFlagBits::eDepthStencilAttachment,
+					vk::MemoryPropertyFlagBits::eDeviceLocal,
+					vk::SharingMode::eExclusive
+				}
+			);
+		}
+	);
+
+	::hg::assertrt(
+		[&texture]() {
+			return std::addressof(texture) != nullptr;
+		}
+	);
+
+	factory->buildView(texture, { .layers = { 0L, 1L }, .type = TextureType::e2d, .mipLevels = { 0L, 1L } });
+	_depthImage = make_smr<gfx::Texture>(std::move(texture));
+}
+
 void render::ReflowPass::ensureFramebuffer(mref<smr<gfx::TextureLikeObject>> colorTarget_) {
 
-	if (_framebuffer != nullptr && _framebuffer->attachments().front() != colorTarget_) {
+	if (_framebuffer != nullptr) {
 		_framebuffer->device()->vkDevice().destroySemaphore(_tmpSignal);
 		_framebuffer->destroy();
 		_framebuffer.reset();
-	}
-
-	if (_framebuffer != nullptr) {
-		return;
 	}
 
 	_framebuffer = make_uptr<gfx::Framebuffer>(Engine::getEngine()->getGraphics()->getCurrentDevice());
 
 	const auto* const texture = Cast<gfx::Texture>(colorTarget_.get());
 	_framebuffer->addAttachment(clone(colorTarget_));
+	_framebuffer->addAttachment(clone(_depthImage));
 
 	_framebuffer->setExtent(texture->extent());
 	_framebuffer->setRenderPass(clone(_graphicsPass));
@@ -896,7 +973,7 @@ engine::accel::EffectCompileResult build_test_opaque_pipeline(mref<smr<const eng
 	spec->setPassSpec(
 		make_uptr<engine::accel::GraphicsPassSpecification>(
 			engine::accel::GraphicsPassSpecification {
-				.depthCompareOp = engine::accel::DepthCompareOp::eNever,
+				.depthCompareOp = engine::accel::DepthCompareOp::eGreaterEqual,
 				.stencilCompareOp = engine::accel::StencilCompareOp::eNever,
 				.stencilFailOp = engine::accel::StencilOp::eKeep,
 				.stencilPassOp = engine::accel::StencilOp::eKeep,
@@ -959,7 +1036,7 @@ engine::accel::EffectCompileResult build_test_alpha_pipeline(mref<smr<const engi
 	spec->setPassSpec(
 		make_uptr<engine::accel::GraphicsPassSpecification>(
 			engine::accel::GraphicsPassSpecification {
-				.depthCompareOp = engine::accel::DepthCompareOp::eNever,
+				.depthCompareOp = engine::accel::DepthCompareOp::eGreaterEqual,
 				.stencilCompareOp = engine::accel::StencilCompareOp::eNever,
 				.stencilFailOp = engine::accel::StencilOp::eKeep,
 				.stencilPassOp = engine::accel::StencilOp::eKeep,
@@ -1002,5 +1079,27 @@ engine::accel::EffectCompileResult build_test_alpha_pipeline(mref<smr<const engi
 			.profile = std::move(profile),
 			.spec = std::move(spec)
 		}
+	);
+}
+
+smr<const graph::Description> makeLocalDepthDescription() {
+	static auto obj = make_smr<graph::TextureDescription>(
+		graph::DescriptionValue { graph::DescriptionValueMatchingMode::eCovariant, TextureType::e2d },
+		graph::DescriptionValue { graph::DescriptionValueMatchingMode::eInvariant, TextureFormat::eD16Unorm },
+		graph::DescriptionValue { graph::DescriptionValueMatchingMode::eInvariant, 1u },
+		graph::DescriptionValue { graph::DescriptionValueMatchingMode::eIgnored, graph::ActiveMipBitMask {} }
+	);
+	return clone(obj).into<const graph::Description>();
+}
+
+smr<graph::Symbol> makeLocalDepthSymbol() {
+	return make_smr<graph::Symbol>(
+		graph::SymbolFlagBits::eUndefined,
+		graph::SymbolScope {
+			.type = graph::SymbolScopeType::eLocal,
+			.layer = ""
+		},
+		"local::depth",
+		makeLocalDepthDescription()
 	);
 }

@@ -76,6 +76,7 @@ namespace hg::engine::reflow::render {
 		ReflowAlphaSubPassData _alphaSubPass;
 		ReflowMsdfSubPassData _msdfSubPass;
 
+		smr<gfx::Texture> _depthImage;
 		smr<gfx::TextureResource> _defaultImage;
 
 		smr<const accel::GraphicsPass> _graphicsPass;
@@ -95,6 +96,10 @@ namespace hg::engine::reflow::render {
 		void ensureDefaultImage();
 
 		void ensureGraphicsPass();
+
+		bool shouldChangeFrame(cref<smr<gfx::TextureLikeObject>> colorTarget_) const noexcept;
+
+		void ensureDepthBuffer(cref<gfx::TextureLikeObject> colorTarget_);
 
 		void ensureFramebuffer(mref<smr<gfx::TextureLikeObject>> colorTarget_);
 

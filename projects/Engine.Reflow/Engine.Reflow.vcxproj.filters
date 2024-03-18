@@ -342,6 +342,9 @@
     <ClInclude Include="..\..\src\Engine.Reflow\ReflowAlpha.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflow\Command\ReflowCommandLayer.hpp">
+      <Filter>Headerdateien\Command</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Reflow\Window\WindowManager.cpp">
