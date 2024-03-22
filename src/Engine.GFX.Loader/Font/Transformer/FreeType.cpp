@@ -2,6 +2,7 @@
 
 #include <filesystem>
 #include <Engine.Common/Sal.hpp>
+#include <Engine.Common/Math/Compat.inl>
 #include <Engine.GFX/Buffer/Buffer.hpp>
 #include <Engine.GFX/Command/CommandBuffer.hpp>
 #include <Engine.GFX/Command/CommandPool.hpp>
@@ -63,7 +64,7 @@ void transformer::convertFreeType(
 
 		const auto coverSize = repExt.x * repExt.y;
 		const auto expCoverSize = static_cast<float>(coverSize) * 1.2F;
-		const auto expCoverSqrf = std::sqrtf(expCoverSize);
+		const auto expCoverSqrf = math::sqrtf(expCoverSize);
 
 		u32 nextDim { 0x1 };
 		while (nextDim < static_cast<u32>(expCoverSqrf)) {

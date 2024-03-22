@@ -393,11 +393,11 @@ EventResponse Viewport::onKeyDown(cref<KeyboardEvent> event_) {
 
 			ref<Transform> rtf { _cameraActor->getRootComponent()->getLocalTransform() };
 
-			auto rlwd = rtf.rotator().quaternion()._left();
+			auto rlwd = rtf.rotator().into()._left();
 
 			rtf.setLocation(
 				math::Location(
-					rtf.location().fvec3() + rlwd.normalize() * factor
+					rtf.location().into() + rlwd.normalize() * factor
 				)
 			);
 			break;
@@ -407,11 +407,11 @@ EventResponse Viewport::onKeyDown(cref<KeyboardEvent> event_) {
 
 			ref<Transform> rtf { _cameraActor->getRootComponent()->getLocalTransform() };
 
-			auto rrwd = -rtf.rotator().quaternion()._left();
+			auto rrwd = -rtf.rotator().into()._left();
 
 			rtf.setLocation(
 				math::Location(
-					rtf.location().fvec3() + rrwd.normalize() * factor
+					rtf.location().into() + rrwd.normalize() * factor
 				)
 			);
 			break;
@@ -423,12 +423,12 @@ EventResponse Viewport::onKeyDown(cref<KeyboardEvent> event_) {
 			cref<Transform> ctf = _cameraActor->getCameraComponent()->getLocalTransform();
 
 			const auto rotator = math::Rotator::combine(rtf.rotator(), ctf.rotator());
-			auto rbwd = -rotator.quaternion().__forward();
+			auto rbwd = -rotator.into().__forward();
 			rbwd.x *= -1.F;
 
 			rtf.setLocation(
 				math::Location(
-					rtf.location().fvec3() + rbwd.normalize() * factor
+					rtf.location().into() + rbwd.normalize() * factor
 				)
 			);
 			break;
@@ -440,12 +440,12 @@ EventResponse Viewport::onKeyDown(cref<KeyboardEvent> event_) {
 			cref<Transform> ctf = _cameraActor->getCameraComponent()->getLocalTransform();
 
 			const auto rotator = math::Rotator::combine(rtf.rotator(), ctf.rotator());
-			auto rfwd = rotator.quaternion().__forward();
+			auto rfwd = rotator.into().__forward();
 			rfwd.x *= -1.F;
 
 			rtf.setLocation(
 				math::Location(
-					rtf.location().fvec3() + rfwd.normalize() * factor
+					rtf.location().into() + rfwd.normalize() * factor
 				)
 			);
 			break;
@@ -457,7 +457,7 @@ EventResponse Viewport::onKeyDown(cref<KeyboardEvent> event_) {
 
 			tf.setLocation(
 				math::Location(
-					tf.location().fvec3() + math::vec3_down * factor
+					tf.location().into() + math::vec3_down * factor
 				)
 			);
 			break;
@@ -470,7 +470,7 @@ EventResponse Viewport::onKeyDown(cref<KeyboardEvent> event_) {
 
 			tf.setLocation(
 				math::Location(
-					tf.location().fvec3() + math::vec3_up * factor
+					tf.location().into() + math::vec3_up * factor
 				)
 			);
 			break;

@@ -24,8 +24,8 @@ void SkeletalGeometryModel::destroy(const ptr<render::RenderSceneSystem> system_
 void SkeletalGeometryModel::capture(nmpt<render::MeshCaptureInterface> mci_) const noexcept {
 
     const auto worldTransform = _owner->getWorldTransform();
-    const auto pos = math::mat4::make_identity().translate(worldTransform.location().fvec3());
-    const auto rotation = math::as<math::mat4>(worldTransform.rotator().quaternion());
+    const auto pos = math::mat4::make_identity().translate(worldTransform.location().into());
+    const auto rotation = math::as<math::mat4>(worldTransform.rotator().into());
     const auto scale = math::mat4::make_identity().unchecked_scale(worldTransform.scale());
 
     #if FALSE

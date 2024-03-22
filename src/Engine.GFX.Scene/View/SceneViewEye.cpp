@@ -39,7 +39,7 @@ void SceneViewEye::updateView(cref<math::Location> origin_, cref<math::Rotator> 
 
     _location = origin_;
 
-    auto translation = origin_.fvec3();
+    auto translation = origin_.into();
 
     if (_vkFlipY) {
         //translation.y *= -1.F;

@@ -126,6 +126,7 @@
     <ClCompile Include="..\..\src\Engine.Common\stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\src\Engine.Common\Math\Compat.inl" />
     <None Include="..\..\src\Engine.Common\Math\__default.inl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

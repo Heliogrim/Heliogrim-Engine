@@ -4,6 +4,7 @@
 
 #include "__macro.hpp"
 #include "__const.hpp"
+#include "Compat.inl"
 #include "Bounding.hpp"
 #include "Extent.hpp"
 #include "Hash.hpp"

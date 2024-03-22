@@ -113,6 +113,6 @@ namespace hg::math {
         [[nodiscard]] static Rotator fromEulerRaw(cref<fvec3> euler_) noexcept;
 
     public:
-        [[nodiscard]] quaternion quaternion() const noexcept;
+        [[nodiscard]] quaternion into() const noexcept;
     };
 }

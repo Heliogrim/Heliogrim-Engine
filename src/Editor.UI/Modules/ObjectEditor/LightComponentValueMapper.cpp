@@ -147,7 +147,7 @@ void ObjectValueMapper<PointLightComponent>::update(
     {
         const auto wrapper = std::static_pointer_cast<VerticalPanel, Widget>(transform->getContent());
 
-        std::static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(0))->setValue(mat.location().fvec3());
+        std::static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(0))->setValue(mat.location().into());
         std::static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(1))->setValue(mat.rotator().euler());
         std::static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(2))->setValue(mat.scale());
 
@@ -312,7 +312,7 @@ void ObjectValueMapper<DirectionalLightComponent>::update(
     {
         const auto wrapper = std::static_pointer_cast<VerticalPanel, Widget>(transform->getContent());
 
-        std::static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(0))->setValue(mat.location().fvec3());
+        std::static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(0))->setValue(mat.location().into());
         std::static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(1))->setValue(mat.rotator().euler());
         std::static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(2))->setValue(mat.scale());
 
