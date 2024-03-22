@@ -2,22 +2,21 @@
 
 #include <utility>
 
-#include "../Wrapper.hpp"
-
-#include "__const.hpp"
+#include "Compat.inl"
 #include "MathDefaultDefine.hpp"
-
-#include "Vector.hpp"
 #include "Matrix.hpp"
 #include "Quaternion.hpp"
 #include "Rotator.hpp"
+#include "Vector.hpp"
+#include "__const.hpp"
+#include "../Wrapper.hpp"
 
 namespace hg::math {
 	template <class To_, class From_>
-	inline static To_ as(cref<From_> from_) noexcept;
+	To_ as(cref<From_> from_) noexcept;
 
 	template <>
-	inline static mat3 as(cref<quaternion> from_) noexcept {
+	inline mat3 as(cref<quaternion> from_) noexcept {
 
 		mat3 mat {};
 
@@ -50,12 +49,12 @@ namespace hg::math {
 	}
 
 	template <>
-	inline static mat4 as(cref<quaternion> from_) noexcept {
+	inline mat4 as(cref<quaternion> from_) noexcept {
 		return mat4 { as<mat3, quaternion>(from_) };
 	}
 
 	template <>
-	inline static Rotator as(cref<quaternion> from_) noexcept {
+	inline Rotator as(cref<quaternion> from_) noexcept {
 
 		const auto& data = from_._quat;
 
@@ -80,13 +79,13 @@ namespace hg::math {
 
 		if (test > singularity/* * unit */) {
 
-			heading = 2.F * std::atan2(data.x, data.w);
+			heading = 2.F * math::atan2f(data.x, data.w);
 			attitude = math::pih_f /* North Pole :: Pitch == 90Deg */;
 			bank = 0.F;
 
 		} else if (test < -singularity/* * unit */) {
 
-			heading = -2.F * std::atan2(data.x, data.w);
+			heading = -2.F * math::atan2f(data.x, data.w);
 			attitude = -math::pih_f /* South Pole :: Pitch == -90Deg */;
 			bank = 0.F;
 
@@ -94,14 +93,14 @@ namespace hg::math {
 
 			const auto zp2 = data.z * data.z;
 
-			heading = std::atan2(
+			heading = math::atan2f(
 				2.F * data.y * data.w - 2.F * data.x * data.z,
 				1.F - 2.F * data.y * data.y - 2 * zp2
 			);
 
-			attitude = std::asin(2.F * test);
+			attitude = math::asinf(2.F * test);
 
-			bank = std::atan2(
+			bank = math::atan2f(
 				2.F * data.x * data.w - 2.F * data.y * data.z,
 				1 - 2.F * data.x * data.x - 2.F * zp2
 			);
@@ -116,7 +115,7 @@ namespace hg::math {
 	}
 
 	template <>
-	static fquaternion as(cref<math::fmat3> from_) noexcept {
+	inline fquaternion as(cref<math::fmat3> from_) noexcept {
 
 		const auto fourXSquaredMinus1 = from_[0][0] - from_[1][1] - from_[2][2];
 		const auto fourYSquaredMinus1 = from_[1][1] - from_[0][0] - from_[2][2];

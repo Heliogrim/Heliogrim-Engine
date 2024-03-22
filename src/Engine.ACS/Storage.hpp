@@ -2154,7 +2154,7 @@ namespace hg::engine::acs {
 		[[nodiscard]] iterator begin() noexcept {
 			auto pb = _pages.cbegin();
 
-			constexpr auto null_iter = iterator::template storage_page_iterator_type {};
+			constexpr auto null_iter = typename iterator::storage_page_iterator_type {};
 			return iterator {
 				pb,
 				pb._Unwrapped() != nullptr ? pb->cbegin() : null_iter
@@ -2172,7 +2172,7 @@ namespace hg::engine::acs {
 		[[nodiscard]] iterator end() noexcept {
 			auto pe = _pages.end();
 
-			constexpr auto null_iter = iterator::template storage_page_iterator_type {};
+			constexpr auto null_iter = typename iterator::storage_page_iterator_type {};
 			return iterator {
 				pe,
 				pe._Unwrapped() != nullptr ? (--pe)->end() : null_iter
@@ -2190,7 +2190,7 @@ namespace hg::engine::acs {
 		[[nodiscard]] const_iterator begin() const noexcept {
 			auto pb = _pages.cbegin();
 
-			constexpr auto null_iter = const_iterator::template storage_page_iterator_type {};
+			constexpr auto null_iter = typename const_iterator::storage_page_iterator_type {};
 			return const_iterator {
 				pb,
 				pb._Unwrapped() != nullptr ? pb->cbegin() : null_iter
@@ -2208,7 +2208,7 @@ namespace hg::engine::acs {
 		[[nodiscard]] const_iterator end() const noexcept {
 			auto pe = _pages.cend();
 
-			constexpr auto null_iter = const_iterator::template storage_page_iterator_type {};
+			constexpr auto null_iter = typename const_iterator::storage_page_iterator_type {};
 			return const_iterator {
 				pe,
 				pe._Unwrapped() != nullptr ? (--pe)->end() : null_iter
@@ -2226,7 +2226,7 @@ namespace hg::engine::acs {
 		[[nodiscard]] const_iterator cbegin() const noexcept {
 			auto pb = _pages.cbegin();
 
-			constexpr auto null_iter = const_iterator::template storage_page_iterator_type {};
+			constexpr auto null_iter = typename const_iterator::storage_page_iterator_type {};
 			return const_iterator {
 				pb,
 				pb._Unwrapped() != nullptr ? pb->cbegin() : null_iter
@@ -2244,7 +2244,7 @@ namespace hg::engine::acs {
 		[[nodiscard]] const_iterator cend() const noexcept {
 			auto pe = _pages.cend();
 
-			constexpr auto null_iter = const_iterator::template storage_page_iterator_type {};
+			constexpr auto null_iter = typename const_iterator::storage_page_iterator_type {};
 			return const_iterator {
 				pe,
 				pe._Unwrapped() != nullptr ? (--pe)->end() : null_iter

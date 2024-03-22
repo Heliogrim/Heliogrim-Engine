@@ -51,7 +51,7 @@ using namespace hg;
 
 /**/
 
-constexpr static Array possibleSampler = {
+constexpr static Array<lang::SymbolId, 7uLL> possibleSampler = {
 	lang::SymbolId::from("brdf-lut-sampler"sv),
 	lang::SymbolId::from("brdf-pref-sampler"sv),
 	lang::SymbolId::from("brdf-irrad-sampler"sv),
@@ -213,7 +213,7 @@ void MatTestPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
 	if (_framebuffer.empty()) {
 
-		const Vector outputSymbols { makeSceneColorSymbol(), makeSceneDepthSymbol() };
+		const Vector<smr<const graph::Symbol>> outputSymbols { makeSceneColorSymbol(), makeSceneDepthSymbol() };
 		_framebuffer = make_smr<Framebuffer>(Engine::getEngine()->getGraphics()->getCurrentDevice());
 
 		for (const auto& output : outputSymbols) {

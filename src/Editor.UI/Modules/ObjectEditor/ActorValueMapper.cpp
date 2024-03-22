@@ -56,7 +56,7 @@ void ObjectValueMapper<Actor>::update(cref<sptr<VerticalPanel>> parent_, const p
         std::format(R"({}-{}-{}-{})", actorGuid.pre, actorGuid.c0, actorGuid.c1, actorGuid.post)
     );
 
-    std::static_pointer_cast<InputVec3, Widget>(children[1])->setValue(mat.location().fvec3());
+    std::static_pointer_cast<InputVec3, Widget>(children[1])->setValue(mat.location().into());
     std::static_pointer_cast<InputVec3, Widget>(children[2])->setValue(mat.rotator().euler());
     std::static_pointer_cast<InputVec3, Widget>(children[3])->setValue(mat.scale());
 

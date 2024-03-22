@@ -1,5 +1,6 @@
 #include "ReflowCommandBuffer.hpp"
 
+#include <Engine.Common/Math/Compat.inl>
 #include <Engine.GFX/Texture/Texture.hpp>
 #include <Engine.GFX/Texture/TextureLikeObject.hpp>
 #include <Engine.GFX/Texture/TextureView.hpp>
@@ -564,7 +565,7 @@ void ReflowCommandBuffer::drawArc(
 		float theta { fromTheta_ + static_cast<float>(seg) * dtPs };
 		theta = MIN(theta, toTheta_);
 
-		const math::vec2 nd { std::cosf(theta), std::sinf(theta) };
+		const math::vec2 nd { math::cosf(theta), math::sinf(theta) };
 
 		capture.vertices.push_back(
 			uivertex {
@@ -631,8 +632,8 @@ void ReflowCommandBuffer::drawText(
 	constexpr u32 cqi[] { 0uL, 1uL, 2uL, 2uL, 3uL, 0uL };
 
 	math::vec2 fwd { pos_ + math::vec2 { 0.F, -0.25F * static_cast<float>(fss) * charScale.y } };
-	fwd.x = std::floorf(fwd.x);
-	fwd.y = std::floorf(fwd.y);
+	fwd.x = math::floorf(fwd.x);
+	fwd.y = math::floorf(fwd.y);
 
 	/**/
 
