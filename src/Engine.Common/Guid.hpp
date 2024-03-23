@@ -69,20 +69,75 @@ namespace hg {
 		[[nodiscard]] static Guid ntoh(cref<u8[16]> src_) noexcept;
 
 	public:
-		[[nodiscard]] operator bool() const noexcept {
+		[[nodiscard]] constexpr explicit operator bool() const noexcept {
 			return pre || c0 || c1 || post;
 		}
 
-		[[nodiscard]] bool operator!() const noexcept {
+		[[nodiscard]] constexpr bool operator!() const noexcept {
 			return not static_cast<bool>(*this);
 		}
 
-		[[nodiscard]] FORCE_INLINE bool operator==(const Guid& other_) const noexcept {
+		[[nodiscard]] FORCE_INLINE constexpr bool operator==(const Guid& other_) const noexcept {
 			return pre == other_.pre && c0 == other_.c0 && c1 == other_.c1 && post == other_.post;
 		}
 
-		[[nodiscard]] FORCE_INLINE bool operator!=(const Guid& other_) const noexcept {
+		[[nodiscard]] FORCE_INLINE constexpr bool operator!=(const Guid& other_) const noexcept {
 			return pre != other_.pre || c0 != other_.c0 || c1 != other_.c1 || post != other_.post;
+		}
+
+		[[nodiscard]] FORCE_INLINE constexpr bool operator>(const Guid& other_) const noexcept {
+
+			static_assert(sizeof(decltype(*this)) == sizeof(u64) * 2u);
+			static_assert(alignof(decltype(*this)) == alignof(u64));
+
+			const auto* const self = *static_cast<const ptr<const ptr<const u64>>>(
+				static_cast<const void* const>(this)
+			);
+			const auto* const other = *static_cast<const ptr<const ptr<const u64>>>(
+				static_cast<const void* const>(std::addressof(other_))
+			);
+
+			return (self[0] > other[0]) || (self[0] == other[0] && self[1] > other[1]);
+		}
+
+		[[nodiscard]] FORCE_INLINE constexpr bool operator<(const Guid& other_) const noexcept {
+
+			static_assert(sizeof(decltype(*this)) == sizeof(u64) * 2u);
+			static_assert(alignof(decltype(*this)) == alignof(u64));
+
+			const auto* const self = *static_cast<const ptr<const ptr<const u64>>>(
+				static_cast<const void* const>(this)
+			);
+			const auto* const other = *static_cast<const ptr<const ptr<const u64>>>(
+				static_cast<const void* const>(std::addressof(other_))
+			);
+
+			return (self[0] < other[0]) || (self[0] == other[0] && self[1] < other[1]);
+		}
+
+		[[nodiscard]] FORCE_INLINE constexpr std::strong_ordering operator <=>(const Guid& other_) const noexcept {
+
+			static_assert(sizeof(decltype(*this)) == sizeof(u64) * 2u);
+			static_assert(alignof(decltype(*this)) == alignof(u64));
+
+			const auto* const self = *static_cast<const ptr<const ptr<const u64>>>(
+				static_cast<const void* const>(this)
+			);
+			const auto* const other = *static_cast<const ptr<const ptr<const u64>>>(
+				static_cast<const void* const>(std::addressof(other_))
+			);
+
+			/**/
+
+			if (*this < other_) {
+				return std::strong_ordering::less;
+			}
+
+			if (*this == other_) {
+				return std::strong_ordering::equal;
+			}
+
+			return std::strong_ordering::greater;
 		}
 
 	public:

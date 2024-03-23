@@ -5,19 +5,19 @@
 #include <Engine.Common/Types.hpp>
 
 namespace hg::engine::gfx::cache {
-    class GlobalCacheCtrl;
-    class LocalCacheCtrl;
-    class GlobalResourceCache;
-    class LocalResourceCache;
-    class TransientCache;
+	class GlobalCacheCtrl;
+	class LocalCacheCtrl;
+	class GlobalResourceCache;
+	class LocalResourceCache;
+	class TransientCache;
 
-    struct ModelBatch;
+	struct ModelBatch;
 
-    enum CacheResult: u8;
+	enum CacheResult: u8;
 
-    template <std::totally_ordered SubjectType_>
-    class CacheCtrlSubject;
+	template <std::equality_comparable SubjectType_>
+	class CacheCtrlSubject;
 
-    struct CacheStaticGeometrySubject;
-    struct CacheTextureSubject;
+	struct CacheStaticGeometrySubject;
+	struct CacheTextureSubject;
 }

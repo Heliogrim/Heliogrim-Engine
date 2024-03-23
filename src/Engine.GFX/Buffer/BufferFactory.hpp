@@ -4,46 +4,46 @@
 #include "Engine.GFX/Device/Device.hpp"
 
 namespace hg::engine::gfx {
-    struct BufferBuildPayload {
-        size_t byteSize = 0uLL;
-        align_t byteAlign = 0uLL;
+	struct BufferBuildPayload {
+		size_t byteSize = 0uLL;
+		align_t byteAlign = 0uLL;
 
-        /**/
+		/**/
 
-        MemoryProperties memoryProperties;
+		MemoryProperties memoryProperties;
 
-        /**/
+		/**/
 
-        vk::BufferCreateFlags vkFlags;
-        vk::BufferUsageFlags vkUsage;
-        vk::SharingMode vkSharing = vk::SharingMode::eExclusive;
+		vk::BufferCreateFlags vkFlags;
+		vk::BufferUsageFlags vkUsage;
+		vk::SharingMode vkSharing = vk::SharingMode::eExclusive;
 
-        [[nodiscard]] operator bool() const noexcept;
-    };
+		[[nodiscard]] explicit operator bool() const noexcept;
+	};
 
-    /**/
+	/**/
 
-    class __declspec(novtable) BufferFactory {
-    public:
-        static nmpt<BufferFactory> get();
+	class __declspec(novtable) BufferFactory {
+	public:
+		static nmpt<BufferFactory> get();
 
-        static void destroy();
+		static void destroy();
 
-    protected:
-        static uptr<BufferFactory> _instance;
+	protected:
+		static uptr<BufferFactory> _instance;
 
-    protected:
-        BufferFactory(cref<sptr<Device>> device_);
+	protected:
+		BufferFactory(cref<sptr<Device>> device_);
 
-    public:
-        virtual ~BufferFactory() noexcept;
+	public:
+		virtual ~BufferFactory() noexcept;
 
-    protected:
-        sptr<Device> _device;
+	protected:
+		sptr<Device> _device;
 
-    public:
-        [[nodiscard]] virtual Buffer build(
-            mref<BufferBuildPayload> payload_
-        ) const = 0;
-    };
+	public:
+		[[nodiscard]] virtual Buffer build(
+			mref<BufferBuildPayload> payload_
+		) const = 0;
+	};
 }

@@ -153,7 +153,7 @@ void SkyBoxPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
 	if (_framebuffer.empty()) {
 
-		const Vector<smr<graph::Symbol>> outputSymbols { makeSceneColorSymbol() };
+		const Vector<smr<const graph::Symbol>> outputSymbols { makeSceneColorSymbol() };
 		_framebuffer = make_smr<Framebuffer>(Engine::getEngine()->getGraphics()->getCurrentDevice());
 
 		for (const auto& output : outputSymbols) {

@@ -403,7 +403,7 @@ void deduceFromFormat(cref<vk::Format> format_, ref<vk::Format> vkFormat_, ref<v
 	vkFormat_ = format_;
 }
 
-static [[nodiscard]] s32 calcMipDiff(cref<math::uivec3> left_, cref<math::uivec3> right_);
+static s32 calcMipDiff(cref<math::uivec3> left_, cref<math::uivec3> right_);
 
 static Buffer createStageBuffer(cref<hg::external::ktx::InternalContext> ctx_, cref<sptr<Device>> device_) {
 
