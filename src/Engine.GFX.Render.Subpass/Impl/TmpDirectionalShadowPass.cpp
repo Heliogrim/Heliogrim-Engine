@@ -706,7 +706,7 @@ smr<material::MaterialEffect> build_test_effect() {
 	auto effect = make_smr<AccelerationEffect>(
 		std::move(guid),
 		"test-shadow-dir-effect",
-		Vector { std::move(vertexStage), std::move(fragmentStage) }
+		Vector<smr<Stage>> { std::move(vertexStage), std::move(fragmentStage) }
 	);
 
 	/**/

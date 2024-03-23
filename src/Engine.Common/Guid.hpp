@@ -120,13 +120,6 @@ namespace hg {
 			static_assert(sizeof(decltype(*this)) == sizeof(u64) * 2u);
 			static_assert(alignof(decltype(*this)) == alignof(u64));
 
-			const auto* const self = *static_cast<const ptr<const ptr<const u64>>>(
-				static_cast<const void* const>(this)
-			);
-			const auto* const other = *static_cast<const ptr<const ptr<const u64>>>(
-				static_cast<const void* const>(std::addressof(other_))
-			);
-
 			/**/
 
 			if (*this < other_) {
