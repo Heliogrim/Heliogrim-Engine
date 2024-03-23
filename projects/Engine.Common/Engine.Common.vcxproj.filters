@@ -336,6 +336,9 @@
     <ClInclude Include="..\..\src\Engine.Common\Sal.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Meta\Type.hpp">
+      <Filter>Headerdateien\Meta</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Common\stdafx.cpp">

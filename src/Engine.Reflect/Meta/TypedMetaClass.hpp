@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Engine.Common/Meta/Type.hpp>
+
 #include "MetaClass.hpp"
 #include "TypeId.hpp"
 #include "../Compile/Map.hpp"
@@ -16,7 +18,7 @@ namespace hg {
 	template <typename TargetType_, typename TypeList_ = reflect::__type_list_lookup<TargetType_>>
 	class TypedMetaClass;
 
-	template <typename TargetType_, typename... InheritTypes_>
+	template <CompleteType TargetType_, typename... InheritTypes_>
 	class TypedMetaClass<TargetType_, reflect::__type_list<InheritTypes_...>> final :
 		public MetaClass {
 	public:
@@ -62,7 +64,7 @@ namespace hg {
 		constexpr static TypedMetaClass<TargetType_, TypeList_> instance {};
 	};
 
-	template <typename TargetType_, typename... InheritTypes_>
+	template <CompleteType TargetType_, typename... InheritTypes_>
 	constexpr const __restricted_ptr<
 		const typename TypedMetaClass<
 			TargetType_, reflect::__type_list<InheritTypes_...>
