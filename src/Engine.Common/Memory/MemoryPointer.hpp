@@ -447,7 +447,7 @@ namespace hg {
 			return storage.template load<Ty_>() == nullptr;
 		}
 
-		[[nodiscard]] operator bool() const noexcept {
+		[[nodiscard]] explicit operator bool() const noexcept {
 			return storage.template load<Ty_>() != nullptr;
 		}
 

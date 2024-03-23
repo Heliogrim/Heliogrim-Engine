@@ -134,7 +134,7 @@ namespace hg::engine::acs {
 		 *
 		 * @returns The result of the operation.
 		 */
-		operator bool() const {
+		explicit operator bool() const noexcept {
 			return ref != nullptr;
 		}
 

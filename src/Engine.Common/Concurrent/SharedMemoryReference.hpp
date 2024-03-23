@@ -205,7 +205,7 @@ namespace hg {
 			return empty();
 		}
 
-		[[nodiscard]] operator bool() const noexcept {
+		[[nodiscard]] explicit operator bool() const noexcept {
 			return _ctrlBlock != nullptr;
 		}
 

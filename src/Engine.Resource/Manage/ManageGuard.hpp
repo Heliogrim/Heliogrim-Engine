@@ -87,7 +87,7 @@ namespace hg::engine::resource {
 		[[nodiscard]] ResourceUsageFlags owned_flags() const noexcept;
 
 	public:
-		[[nodiscard]] operator bool() const noexcept;
+		[[nodiscard]] explicit operator bool() const noexcept;
 
 	public:
 		[[nodiscard]] const non_owning_rptr<const value_type> imm() const noexcept;
