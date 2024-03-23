@@ -12,6 +12,7 @@
 #include "../Sal.hpp"
 #include "../Wrapper.hpp"
 #include "../__macro.hpp"
+#include "../Meta/Concept.hpp"
 
 namespace hg {
 	namespace {
@@ -192,12 +193,22 @@ namespace hg {
 		}
 
 	public:
-		[[nodiscard]] constexpr bool operator==(const this_type& other_) const noexcept {
-			return _ctrlBlock == other_._ctrlBlock;
+		template <typename Ux_ = PayloadType_> requires similar_to<Ux_, PayloadType_>
+		[[nodiscard]] constexpr bool operator==(cref<SharedMemoryReference<Ux_>> other_) const noexcept {
+			return _ctrlBlock == std::bit_cast<decltype(_ctrlBlock)>(other_._ctrlBlock);
 		}
 
-		[[nodiscard]] constexpr bool operator!=(const this_type& other_) const noexcept {
-			return _ctrlBlock != other_._ctrlBlock;
+		[[nodiscard]] constexpr bool operator==(std::nullptr_t) const noexcept {
+			return empty();
+		}
+
+		template <typename Ux_ = PayloadType_> requires similar_to<Ux_, PayloadType_>
+		[[nodiscard]] constexpr bool operator!=(cref<SharedMemoryReference<Ux_>> other_) const noexcept {
+			return _ctrlBlock != std::bit_cast<decltype(_ctrlBlock)>(other_._ctrlBlock);
+		}
+
+		[[nodiscard]] constexpr bool operator!=(std::nullptr_t) const noexcept {
+			return not empty();
 		}
 
 	public:
@@ -229,6 +240,46 @@ namespace hg {
 			_packed = 0;
 		}
 	};
+
+	/**/
+
+	template <typename Ty_, typename Tx_> requires similar_to<Ty_, Tx_>
+	[[nodiscard]] constexpr bool operator<(
+		cref<SharedMemoryReference<Ty_>> left_,
+		cref<SharedMemoryReference<Tx_>> right_
+	) {
+		using left_type = decltype(left_.get());
+		using right_type = decltype(right_.get());
+		using common_type = std::common_type_t<left_type, right_type>;
+
+		return std::less<common_type> {}(left_.get(), right_.get());
+	}
+
+	template <typename Ty_, typename Tx_> requires similar_to<Ty_, Tx_>
+	[[nodiscard]] constexpr bool operator>(
+		cref<SharedMemoryReference<Ty_>> left_,
+		cref<SharedMemoryReference<Tx_>> right_
+	) {
+		using left_type = decltype(left_.get());
+		using right_type = decltype(right_.get());
+		using common_type = std::common_type_t<left_type, right_type>;
+
+		return std::greater<common_type> {}(left_.get(), right_.get());
+	}
+
+	template <typename Ty_, typename Tx_> requires
+		similar_to<Ty_, Tx_> &&
+		std::three_way_comparable_with<
+			decltype(SharedMemoryReference<Ty_>::get()),
+			decltype(SharedMemoryReference<Tx_>::get())
+		>
+	[[nodiscard]] constexpr std::compare_three_way_result_t<decltype(SharedMemoryReference<Ty_>::get()), decltype(
+		SharedMemoryReference<Tx_>::get())> operator<=>(
+		cref<SharedMemoryReference<Ty_>> left_,
+		cref<SharedMemoryReference<Tx_>> right_
+	) {
+		return left_.get() <=> right_.get();
+	}
 
 	/**/
 

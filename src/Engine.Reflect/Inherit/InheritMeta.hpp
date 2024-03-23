@@ -55,7 +55,7 @@ namespace hg {
 			Base_(),
 			Rest_()... {
 			__each_base(
-				[this](ref<ClassMetaBase> base_) noexcept {
+				[](ref<ClassMetaBase> base_) noexcept {
 					base_._meta = meta_class::get();
 				}
 			);
@@ -66,7 +66,7 @@ namespace hg {
 			Base_(std::forward<Args_>(args_)...),
 			Rest_()... {
 			__each_base(
-				[this](ref<ClassMetaBase> base_) noexcept {
+				[](ref<ClassMetaBase> base_) noexcept {
 					base_._meta = meta_class::get();
 				}
 			);
