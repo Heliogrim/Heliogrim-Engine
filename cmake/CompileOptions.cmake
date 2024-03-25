@@ -224,6 +224,9 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU" OR "${CMAKE_CXX_COMPILER_ID}" MATCH
 			-Wno-c++14-compat
 			-Wno-c++17-compat
 
+            -Wno-reserved-identifier
+            -Wno-reserved-macro-identifier
+
             $<$<CXX_COMPILER_ID:GNU>:
             -Wmaybe-uninitialized
 
