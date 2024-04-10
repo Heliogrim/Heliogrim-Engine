@@ -316,6 +316,12 @@
       <Project>{3977a969-6595-4086-a6cc-97dea9935877}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="..\..\common.natvis" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\common.natstepfilter" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>

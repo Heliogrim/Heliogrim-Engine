@@ -366,4 +366,10 @@
       <Filter>Quelldateien\Actors</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="..\..\common.natvis" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\common.natstepfilter" />
+  </ItemGroup>
 </Project>
