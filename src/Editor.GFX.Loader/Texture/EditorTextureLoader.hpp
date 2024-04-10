@@ -13,9 +13,9 @@ namespace hg::editor::gfx::loader {
 	/**/
 
 	using TextureSourceLoader = ::hg::engine::resource::loader::SourceLoader;
-	using EditorTextureLoaderType = engine::resource::loader::LoaderChain<
+	using EditorTextureLoaderType = ::hg::engine::resource::loader::LoaderChain<
 		::hg::engine::assets::TextureAsset,
-		engine::gfx::TextureResource,
+		::hg::engine::gfx::TextureResource,
 		::hg::engine::resource::loader::MetaTypeWrapperList<
 			std::type_identity_t,
 			std::type_identity_t,
@@ -37,8 +37,8 @@ namespace hg::editor::gfx::loader {
 
 	public:
 		EditorTextureLoader(
-			nmpt<engine::gfx::cache::GlobalCacheCtrl> cache_,
-			nmpt<engine::gfx::pool::GlobalResourcePool> pool_,
+			ref<::hg::engine::gfx::cache::GlobalCacheCtrl> cache_,
+			ref<::hg::engine::gfx::pool::GlobalResourcePool> pool_,
 			mref<sptr<TextureSourceLoader>> sourceLoader_
 		);
 	};

@@ -52,30 +52,26 @@ namespace hg {
 
 	template <CompleteType Ty>
 	smr<Ty> make_smr(mref<uptr<Ty>> unique_) {
-		auto* const ctrl = new SharedMemoryReferenceCtrlBlock<Ty>(unique_.release());
-		return ctrl->acq();
+		return (new SharedMemoryReferenceCtrlBlock<Ty>(unique_.release()))->acq();
 	}
 
 	template <CompleteType Ty> requires decayed_as<Ty, Ty>
 	smr<Ty> make_smr(mref<ptr<Ty>> ptr_) {
-		auto* const ctrl = new SharedMemoryReferenceCtrlBlock<Ty>(std::move(ptr_));
-		return ctrl->acq();
+		return (new SharedMemoryReferenceCtrlBlock<Ty>(std::move(ptr_)))->acq();
 	}
 
 	template <CompleteType Ty_, class Tx_> requires
 		(not std::is_same_v<Ty_, Tx_>) &&
 		(std::is_nothrow_convertible_v<ptr<Tx_>, ptr<Ty_>>)
 	smr<Ty_> make_smr(mref<ptr<Tx_>> ptrTx_) {
-		const auto ctrl = new SharedMemoryReferenceCtrlBlock<Tx_>(std::move(ptrTx_));
-		return ctrl->acq().template into<Ty_>();
+		return (new SharedMemoryReferenceCtrlBlock<Tx_>(std::move(ptrTx_)))->acq().template into<Ty_>();
 	}
 
 	template <CompleteType Ty, class... Args> requires std::is_constructible_v<Ty, Args...>
 	smr<Ty> make_smr(Args&&... args_) {
-		auto* const ctrl = new SharedMemoryReferenceCtrlBlock<Ty>(
+		return (new SharedMemoryReferenceCtrlBlock<Ty>(
 			// TODO: Check whether we get problems with types which differ between aggregate and list construction e.g std::vector<...>
 			new Ty { std::forward<Args>(args_)... }
-		);
-		return ctrl->acq();
+		))->acq();
 	}
 }

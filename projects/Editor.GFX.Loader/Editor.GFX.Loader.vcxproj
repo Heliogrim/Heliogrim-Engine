@@ -18,7 +18,14 @@
     <ClCompile Include="..\..\src\Editor.GFX.Loader\Texture\EditorTextureCache.cpp" />
     <ClCompile Include="..\..\src\Editor.GFX.Loader\Texture\EditorTextureFeedback.cpp" />
     <ClCompile Include="..\..\src\Editor.GFX.Loader\Texture\EditorTextureLoader.cpp" />
+    <ClCompile Include="..\..\src\Editor.GFX.Loader\Texture\EditorTextureSubTransformer.cpp" />
     <ClCompile Include="..\..\src\Editor.GFX.Loader\Texture\EditorTextureTransformer.cpp" />
+    <ClCompile Include="..\..\src\Editor.GFX.Loader\Texture\Transformer\Bmp.cpp" />
+    <ClCompile Include="..\..\src\Editor.GFX.Loader\Texture\Transformer\Exr.cpp" />
+    <ClCompile Include="..\..\src\Editor.GFX.Loader\Texture\Transformer\Jpeg.cpp" />
+    <ClCompile Include="..\..\src\Editor.GFX.Loader\Texture\Transformer\Png.cpp" />
+    <ClCompile Include="..\..\src\Editor.GFX.Loader\Texture\Transformer\Tga.cpp" />
+    <ClCompile Include="..\..\src\Editor.GFX.Loader\Texture\Transformer\Tiff.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Editor.GFX.Loader\Texture\EditorTextureCache.hpp" />
@@ -27,9 +34,11 @@
     <ClInclude Include="..\..\src\Editor.GFX.Loader\Texture\EditorTextureLoader.hpp" />
     <ClInclude Include="..\..\src\Editor.GFX.Loader\Texture\EditorTextureTransformer.hpp" />
     <ClInclude Include="..\..\src\Editor.GFX.Loader\Texture\Traits.hpp" />
+    <ClInclude Include="..\..\src\Editor.GFX.Loader\Texture\Transformer\Bmp.hpp" />
     <ClInclude Include="..\..\src\Editor.GFX.Loader\Texture\Transformer\Exr.hpp" />
     <ClInclude Include="..\..\src\Editor.GFX.Loader\Texture\Transformer\Jpeg.hpp" />
     <ClInclude Include="..\..\src\Editor.GFX.Loader\Texture\Transformer\Png.hpp" />
+    <ClInclude Include="..\..\src\Editor.GFX.Loader\Texture\Transformer\Tga.hpp" />
     <ClInclude Include="..\..\src\Editor.GFX.Loader\Texture\Transformer\Tiff.hpp" />
     <ClInclude Include="..\..\src\Editor.GFX.Loader\Texture\__fwd.hpp" />
   </ItemGroup>

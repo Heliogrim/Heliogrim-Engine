@@ -4,8 +4,8 @@ using namespace ::hg::editor::gfx::loader;
 using namespace ::hg;
 
 EditorTextureLoader::EditorTextureLoader(
-	nmpt<engine::gfx::cache::GlobalCacheCtrl> cache_,
-	nmpt<engine::gfx::pool::GlobalResourcePool> pool_,
+	ref<engine::gfx::cache::GlobalCacheCtrl> cache_,
+	ref<engine::gfx::pool::GlobalResourcePool> pool_,
 	mref<sptr<TextureSourceLoader>> sourceLoader_
 ) :
 	EditorTextureLoaderType(

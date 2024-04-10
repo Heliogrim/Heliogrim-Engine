@@ -8,83 +8,88 @@ using namespace hg::engine::resource;
 using namespace hg;
 
 LoaderManager::LoaderManager() :
-    _sharedSourceLoader(make_sptr<loader::SourceLoader>()),
-    _loader() {}
+	_sharedSourceLoader(make_sptr<loader::SourceLoader>()),
+	_loader() {}
 
 LoaderManager::~LoaderManager() = default;
 
 sptr<loader::SourceLoader> LoaderManager::sharedSourceLoader() const {
-    return _sharedSourceLoader;
+	return _sharedSourceLoader;
 }
 
 sptr<loader::LoaderBase> LoaderManager::selectLoader(cref<asset_type_id> typeId_, ptr<void> options_) const noexcept {
 
-    const auto result { _loader.find(typeId_) };
-    if (result == _loader.end()) {
-        return nullptr;
-    }
+	const auto result { _loader.find(typeId_) };
+	if (result == _loader.end()) {
+		return nullptr;
+	}
 
-    // TODO: evaluate correct loader (requires multiple mapped loaders per type)
+	// TODO: evaluate correct loader (requires multiple mapped loaders per type)
 
-    return result->second;
+	return result->second;
+}
+
+bool LoaderManager::hasLoader(cref<asset_type_id> typeId_) const noexcept {
+	const auto iter = _loader.find(typeId_);
+	return iter != _loader.end() && iter->second.get() != nullptr;
 }
 
 bool LoaderManager::registerLoader(cref<asset_type_id> typeId_, cref<sptr<loader::LoaderBase>> loader_) noexcept {
-    const auto result { _loader.insert({ typeId_, loader_ }) };
-    return result.second;
+	const auto result { _loader.insert({ typeId_, loader_ }) };
+	return result.second;
 }
 
 bool LoaderManager::unregisterLoader(mref<sptr<loader::LoaderBase>> loader_) noexcept {
 
-    const auto iter = std::ranges::find_if(
-        _loader,
-        [loader_](const auto& pair_) {
-            return pair_.second == loader_;
-        }
-    );
+	const auto iter = std::ranges::find_if(
+		_loader,
+		[loader_](const auto& pair_) {
+			return pair_.second == loader_;
+		}
+	);
 
-    if (iter == _loader.cend()) {
-        return false;
-    }
+	if (iter == _loader.cend()) {
+		return false;
+	}
 
-    _loader.erase(iter);
-    return true;
+	_loader.erase(iter);
+	return true;
 }
 
 bool LoaderManager::unregisterLoader(cref<asset_type_id> typeId_) noexcept {
 
-    const auto iter = _loader.find(typeId_);
-    if (iter == _loader.cend()) {
-        return false;
-    }
+	const auto iter = _loader.find(typeId_);
+	if (iter == _loader.cend()) {
+		return false;
+	}
 
-    _loader.erase(iter);
-    return true;
+	_loader.erase(iter);
+	return true;
 }
 
 LoaderManager::response_base_type LoaderManager::preload(const ptr<assets::Asset> asset_, ptr<void> options_) const {
-    // TODO:
-    return load(asset_, options_);
+	// TODO:
+	return load(asset_, options_);
 }
 
 LoaderManager::response_base_type LoaderManager::load(const ptr<assets::Asset> asset_, ptr<void> options_) const {
-    /**
-     *
-     */
-    const auto loader { selectLoader(asset_->getTypeId(), options_) };
+	/**
+	 *
+	 */
+	const auto loader { selectLoader(asset_->getTypeId(), options_) };
 
-    if (loader == nullptr) {
-        return {};
-    }
+	if (loader == nullptr) {
+		return {};
+	}
 
-    /**/
-    return loader->operator()(asset_, options_);
+	/**/
+	return loader->operator()(asset_, options_);
 }
 
 LoaderManager::response_base_type LoaderManager::loadImmediately(
-    const ptr<assets::Asset> asset_,
-    ptr<void> options_
+	const ptr<assets::Asset> asset_,
+	ptr<void> options_
 ) const {
-    // TODO:
-    return load(asset_, options_);
+	// TODO:
+	return load(asset_, options_);
 }

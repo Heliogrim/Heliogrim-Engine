@@ -16,43 +16,43 @@ using namespace hg::engine::core;
 using namespace hg;
 
 Editor::Editor(const non_owning_rptr<engine::Engine> engine_) :
-    SubModule(engine_),
-    _dependencies(
-        {
-            SubModuleDependency {
-                AssetsDepKey,
-                SubModuleOrder::eSuccessor,
-                true
-            },
-            SubModuleDependency {
-                engine::ReflowDepKey,
-                SubModuleOrder::eSuccessor,
-                true
-            }
-        }
-    ) {}
+	SubModule(engine_),
+	_dependencies(
+		{
+			SubModuleDependency {
+				AssetsDepKey,
+				SubModuleOrder::eSuccessor,
+				true
+			},
+			SubModuleDependency {
+				engine::ReflowDepKey,
+				SubModuleOrder::eSuccessor,
+				true
+			}
+		}
+	) {}
 
 Editor::~Editor() = default;
 
 DependencyKey Editor::moduleKey() const noexcept {
-    return EditorDepKey;
+	return EditorDepKey;
 }
 
 cref<CompactSet<engine::core::SubModuleDependency>> Editor::dependencies() const noexcept {
-    return _dependencies;
+	return _dependencies;
 }
 
 void Editor::setup() {}
 
 void Editor::start() {
-    boot::initAssets();
-    boot::initEditorWorld();
-    boot::initPrimaryWorld();
-    boot::initGfx();
+	boot::initAssets();
+	boot::initEditorWorld();
+	boot::initPrimaryWorld();
+	boot::initGfx();
 }
 
 void Editor::stop() {
-    destroyLoaded();
+	destroyLoaded();
 }
 
 void Editor::destroy() {}

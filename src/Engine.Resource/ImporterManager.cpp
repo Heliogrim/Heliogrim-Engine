@@ -5,6 +5,11 @@ using namespace hg;
 
 ImporterManager::~ImporterManager() noexcept = default;
 
+bool ImporterManager::hasImporter(cref<FileTypeId> fileTypeId_) const noexcept {
+	const auto iter = _mapping.find(fileTypeId_);
+	return iter != _mapping.end() && iter->second.get() != nullptr;
+}
+
 bool ImporterManager::registerImporter(cref<FileTypeId> fileTypeId_, cref<sptr<ImporterBase>> importer_) noexcept {
 	return _mapping.insert({ fileTypeId_, importer_ }).second;
 }

@@ -22,6 +22,9 @@
     <Filter Include="Quelldateien\Texture">
       <UniqueIdentifier>{58d2ca87-c146-4680-a231-0e037caf981f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\Texture\Transformer">
+      <UniqueIdentifier>{66ecbdab-4e9e-4775-a7c8-fa85a5a92bb8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Editor.GFX.Loader\Texture\EditorTextureFeedback.cpp">
@@ -35,6 +38,27 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Editor.GFX.Loader\Texture\EditorTextureLoader.cpp">
       <Filter>Quelldateien\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Editor.GFX.Loader\Texture\EditorTextureSubTransformer.cpp">
+      <Filter>Quelldateien\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Editor.GFX.Loader\Texture\Transformer\Png.cpp">
+      <Filter>Quelldateien\Texture\Transformer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Editor.GFX.Loader\Texture\Transformer\Jpeg.cpp">
+      <Filter>Quelldateien\Texture\Transformer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Editor.GFX.Loader\Texture\Transformer\Exr.cpp">
+      <Filter>Quelldateien\Texture\Transformer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Editor.GFX.Loader\Texture\Transformer\Bmp.cpp">
+      <Filter>Quelldateien\Texture\Transformer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Editor.GFX.Loader\Texture\Transformer\Tga.cpp">
+      <Filter>Quelldateien\Texture\Transformer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Editor.GFX.Loader\Texture\Transformer\Tiff.cpp">
+      <Filter>Quelldateien\Texture\Transformer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -70,6 +94,12 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Editor.GFX.Loader\Texture\EditorTextureSubTransformer.hpp">
       <Filter>Headerdateien\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Loader\Texture\Transformer\Tga.hpp">
+      <Filter>Headerdateien\Texture\Transformer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Loader\Texture\Transformer\Bmp.hpp">
+      <Filter>Headerdateien\Texture\Transformer</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

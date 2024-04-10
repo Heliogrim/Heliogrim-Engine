@@ -108,7 +108,6 @@
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Geometry\StaticGeometryTransformer.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Geometry\Traits.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Geometry\__fwd.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Loader\Manager.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Material\MaterialCache.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Material\MaterialFeedback.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Material\MaterialLoader.hpp" />
@@ -144,7 +143,6 @@
     <ClCompile Include="..\..\src\Engine.GFX.Loader\Geometry\StaticGeometryFeedback.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Loader\Geometry\StaticGeometryLoader.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Loader\Geometry\StaticGeometryTransformer.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX.Loader\Manager.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Loader\Material\MaterialCache.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Loader\Material\MaterialFeedback.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Loader\Material\MaterialLoader.cpp" />

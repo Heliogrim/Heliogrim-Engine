@@ -8,8 +8,8 @@
 using namespace ::hg::editor::gfx::loader;
 using namespace ::hg;
 
-EditorTextureCache::EditorTextureCache(nmpt<engine::gfx::cache::GlobalCacheCtrl> cacheCtrl_) :
-	_cacheCtrl(cacheCtrl_) {}
+EditorTextureCache::EditorTextureCache(ref<engine::gfx::cache::GlobalCacheCtrl> cacheCtrl_) :
+	_cacheCtrl(std::addressof(cacheCtrl_)) {}
 
 EditorTextureCache::~EditorTextureCache() = default;
 
