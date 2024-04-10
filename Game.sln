@@ -268,6 +268,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utils", "Utils", "{FDB06A07
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Event", "Event", "{597EE085-3C5A-4F2B-9888-F3653CA9F705}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "VS", "VS", "{0A8592E1-AF9C-4BB8-A1FE-DDEA5ABEC4CC}"
+	ProjectSection(SolutionItems) = preProject
+		common.natstepfilter = common.natstepfilter
+		common.natvis = common.natvis
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
