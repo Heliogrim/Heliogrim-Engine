@@ -1,6 +1,12 @@
 #include "EditorTextureTransformer.hpp"
 
+#include <Engine.Asserts/Todo.hpp>
+#include <Engine.Assets.System/IAssetRegistry.hpp>
+#include <Engine.Assets/Assets.hpp>
+#include <Engine.Assets/Types/Image.hpp>
+#include <Engine.Core/Engine.hpp>
 #include <Engine.Reflect/Cast.hpp>
+#include <Heliogrim/ImageAsset.hpp>
 
 using namespace ::hg::editor::gfx::loader;
 using namespace ::hg;
@@ -13,12 +19,23 @@ using namespace ::hg;
 
 /**/
 
-EditorTextureTransformer::EditorTextureTransformer(nmpt<engine::gfx::pool::GlobalResourcePool> pool_) :
-	_pool(pool_),
-	_mainTransformer(pool_.get()),
+EditorTextureTransformer::EditorTextureTransformer(ref<engine::gfx::pool::GlobalResourcePool> pool_) :
+	_pool(std::addressof(pool_)),
+	_mainTransformer(std::addressof(pool_)),
 	_transformers() {
 	/**/
 	_transformers.emplace_back(build_proxy_transformer(std::addressof(_mainTransformer)));
+}
+
+EditorTextureTransformer::EditorTextureTransformer(mref<EditorTextureTransformer> other_) noexcept :
+	Transformer(std::move(other_)),
+	_pool(std::exchange(other_._pool, nullptr)),
+	_mainTransformer(std::move(other_._mainTransformer)),
+	_transformers(std::move(other_._transformers)) {
+	/**/
+	if (not _transformers.empty()) {
+		_transformers.front() = build_proxy_transformer(std::addressof(_mainTransformer));
+	}
 }
 
 EditorTextureTransformer::~EditorTextureTransformer() = default;
@@ -36,6 +53,21 @@ nmpt<const EditorTextureSubTransformer> EditorTextureTransformer::select(
 	}
 
 	return nullptr;
+}
+
+ref<EditorTextureTransformer::this_type> EditorTextureTransformer::put(
+	mref<uptr<EditorTextureSubTransformer>> transformer_
+) & {
+	_transformers.emplace_back(std::move(transformer_));
+	return *this;
+}
+
+void EditorTextureTransformer::put(mref<uptr<EditorTextureSubTransformer>> transformer_) && {
+	_transformers.emplace_back(std::move(transformer_));
+}
+
+void EditorTextureTransformer::drop(...) {
+	::hg::todo_panic();
 }
 
 EditorTextureTransformer::response_type::type EditorTextureTransformer::operator()(
@@ -82,16 +114,44 @@ EditorTextureTransformer::stream_response_type::type EditorTextureTransformer::o
 class EditorTextureMainTransformer final :
 	public EditorTextureSubTransformer {
 public:
-	EditorTextureMainTransformer(const ptr<engine::gfx::loader::TextureTransformer> proxy_) :
+	EditorTextureMainTransformer(const ptr<engine::gfx::loader::TextureTransformer> proxy_) noexcept :
 		_proxy(proxy_) {}
 
-	~EditorTextureMainTransformer() override = default;
+	~EditorTextureMainTransformer() noexcept override = default;
 
 private:
 	nmpt<engine::gfx::loader::TextureTransformer> _proxy;
 
 public:
 	[[nodiscard]] bool canUse(nmpt<const engine::assets::TextureAsset> asset_) const noexcept override {
+
+		const auto* const registry = engine::Engine::getEngine()->getAssets()->getRegistry();
+		const auto* const asset = registry->findAssetByGuid(asset_->baseImage());
+
+		if (asset == nullptr) {
+			return false;
+		}
+
+		/**/
+
+		const auto* const image = Cast<engine::assets::Image>(asset);
+		if (image == nullptr) {
+			return false;
+		}
+
+		/**/
+
+		for (const auto& source : image->sources()) {
+			if (source.path().name().ends_with(".ktx")) {
+				return true;
+			}
+			if (source.path().name().ends_with(".ktx2")) {
+				return true;
+			}
+		}
+
+		/**/
+
 		return false;
 	}
 

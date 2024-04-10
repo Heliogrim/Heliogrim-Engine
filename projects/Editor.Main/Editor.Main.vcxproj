@@ -116,8 +116,17 @@
     <ProjectReference Include="..\Editor.Core\Editor.Core.vcxproj">
       <Project>{fba11ae8-1072-48a0-8508-910405a46795}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Editor.GFX.Event\Editor.GFX.Event.vcxproj">
+      <Project>{98fac751-d936-4ea1-b9c6-277104902c89}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Editor.GFX.Graphs\Editor.GFX.Graphs.vcxproj">
       <Project>{245a4b15-84d6-4504-a766-c1eaa11f4829}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Editor.GFX.IO\Editor.GFX.IO.vcxproj">
+      <Project>{d7b3e5d2-9e0c-442c-a515-2e2504572bf9}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Editor.GFX.Loader\Editor.GFX.Loader.vcxproj">
+      <Project>{cbcf3446-c6e7-4b31-bf2a-e81bf40a4dc8}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Editor.Render\Editor.Render.vcxproj">
       <Project>{62701c25-6e78-425e-bae5-73922ce3c731}</Project>

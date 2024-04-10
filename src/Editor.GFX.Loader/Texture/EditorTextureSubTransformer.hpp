@@ -21,10 +21,10 @@ namespace hg::editor::gfx::loader {
 		using underlying_type::stream_response_type;
 
 	protected:
-		EditorTextureSubTransformer();
+		EditorTextureSubTransformer() noexcept;
 
 	public:
-		~EditorTextureSubTransformer() override;
+		~EditorTextureSubTransformer() noexcept override;
 
 	public:
 		[[nodiscard]] virtual bool canUse(nmpt<const engine::assets::TextureAsset> asset_) const noexcept = 0;

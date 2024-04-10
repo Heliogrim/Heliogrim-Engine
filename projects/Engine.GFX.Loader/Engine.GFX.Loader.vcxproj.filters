@@ -75,9 +75,6 @@
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Texture\TextureStreamOptions.hpp">
       <Filter>Headerdateien\Texture</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Loader\Manager.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Texture\Traits.hpp">
       <Filter>Headerdateien\Texture</Filter>
     </ClInclude>
@@ -193,9 +190,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.Loader\Texture\TextureFeedback.cpp">
       <Filter>Quelldateien\Texture</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.Loader\Manager.cpp">
-      <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.Loader\Texture\Transformer\Ktx.cpp">
       <Filter>Quelldateien\Texture\Transformer</Filter>

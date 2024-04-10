@@ -25,9 +25,9 @@ using namespace hg::engine::gfx;
 using namespace hg;
 
 struct FbxAssimpImportData {
-    u64 indexCount;
-    u64 vertexCount;
-    u32 materialCount;
+	u64 indexCount;
+	u64 vertexCount;
+	u32 materialCount;
 };
 
 static FbxAssimpImportData assimpGetImportData(cref<fs::File> file_);
@@ -36,16 +36,16 @@ static FbxAssimpImportData assimpGetImportData(cref<fs::File> file_);
 
 static FbxImporter::import_result_type makeImportResult(mref<FbxImporter::import_type> value_) {
 
-    ::hg::concurrent::promise<FbxImporter::import_type> prom {
-        [value = std::move(value_)]() {
-            return value;
-        }
-    };
+	::hg::concurrent::promise<FbxImporter::import_type> prom {
+		[value = std::move(value_)]() {
+			return value;
+		}
+	};
 
-    auto result { prom.get() };
-    prom();
+	auto result { prom.get() };
+	prom();
 
-    return result;
+	return result;
 }
 
 FbxImporter::FbxImporter() {}
@@ -54,147 +54,147 @@ FbxImporter::~FbxImporter() {}
 
 bool FbxImporter::canImport(cref<res::FileTypeId> typeId_, cref<hg::fs::File> file_) const noexcept {
 
-    if (typeId_.ext != ".fbx") {
-        return false;
-    }
+	if (typeId_.ext != ".fbx") {
+		return false;
+	}
 
-    if (not file_.exists()) {
-        return false;
-    }
+	if (not file_.exists()) {
+		return false;
+	}
 
-    return true;
+	return true;
 }
 
 FbxImporter::descriptor_type FbxImporter::descriptor() const noexcept {
-    return nullptr;
+	return nullptr;
 }
 
 FbxImporter::import_result_type FbxImporter::import(cref<res::FileTypeId> typeId_, cref<hg::fs::File> file_) const {
 
-    const auto rootCwd { std::filesystem::current_path().append(R"(..\..)") };
-    const auto rootAssetPath { std::filesystem::path(R"(resources\assets\geometry)") };
-    const auto rootImportPath { std::filesystem::path(R"(resources\imports)") };
+	const auto rootCwd { std::filesystem::current_path().append(R"(..\..)") };
+	const auto rootAssetPath { std::filesystem::path(R"(resources\assets\geometry)") };
+	const auto rootImportPath { std::filesystem::path(R"(resources\imports)") };
 
-    /**/
+	/**/
 
-    fs::Url targetUrl { fs::Path { rootAssetPath } };
+	fs::Url targetUrl { fs::Path { rootAssetPath } };
 
-    /**/
+	/**/
 
-    const auto sourcePath { file_.path() };
-    const auto sourceFileName { sourcePath.filename().string() };
-    const auto sourceExt { sourcePath.extension().string() };
-    const auto sourceName { sourceFileName.substr(0, sourceFileName.size() - sourceExt.size()) };
+	const auto sourcePath { file_.path() };
+	const auto sourceFileName { sourcePath.filename().string() };
+	const auto sourceExt { sourcePath.extension().string() };
+	const auto sourceName { sourceFileName.substr(0, sourceFileName.size() - sourceExt.size()) };
 
-    /**/
-    const auto targetSubDir { sourceName };
-    const auto targetDirPath { std::filesystem::path(targetUrl.path()).append(targetSubDir) };
+	/**/
+	const auto targetSubDir { sourceName };
+	const auto targetDirPath { std::filesystem::path(targetUrl.path()).append(targetSubDir) };
 
-    const auto subRelativePath { std::filesystem::relative(targetDirPath, rootAssetPath) };
+	const auto subRelativePath { std::filesystem::relative(targetDirPath, rootAssetPath) };
 
-    const auto storePath {
-        std::filesystem::path { rootCwd }
-        .append(rootImportPath.string())
-        .append(R"(fbx)")
-        .append(subRelativePath.string())
-        .append(sourceFileName)
-    };
+	const auto storePath {
+		std::filesystem::path { rootCwd }
+		.append(rootImportPath.string())
+		.append(R"(fbx)")
+		.append(subRelativePath.string())
+		.append(sourceFileName)
+	};
 
-    /**/
+	/**/
 
-    if (/* std::filesystem::exists(targetDirPath) || */std::filesystem::exists(storePath)) {
-        return makeImportResult({ nullptr });
-    }
+	if (/* std::filesystem::exists(targetDirPath) || */std::filesystem::exists(storePath)) {
+		return makeImportResult({ nullptr });
+	}
 
-    /**/
+	/**/
 
-    const auto data = assimpGetImportData(file_);
-    if (data.indexCount == 0 && data.vertexCount == 0) {
-        return makeImportResult({ nullptr });
-    }
+	const auto data = assimpGetImportData(file_);
+	if (data.indexCount == 0 && data.vertexCount == 0) {
+		return makeImportResult({ nullptr });
+	}
 
-    const auto srcPath = std::filesystem::relative(storePath, rootCwd);
+	const auto srcPath = std::filesystem::relative(storePath, rootCwd);
 
-    /**/
+	/**/
 
-    IM_CORE_LOGF("Copying file to {:}", storePath.string());
-    std::filesystem::create_directories(storePath.parent_path());
-    std::filesystem::copy(sourcePath, storePath);
+	IM_CORE_LOGF("Copying file to {:}", storePath.string());
+	std::filesystem::create_directories(storePath.parent_path());
+	std::filesystem::copy(sourcePath, storePath);
 
-    /**/
+	/**/
 
-    using namespace ::hg::engine::serialization;
-    using namespace ::hg::engine::assets;
+	using namespace ::hg::engine::serialization;
+	using namespace ::hg::engine::assets;
 
-    auto& factory { *Engine::getEngine()->getAssets()->getFactory() };
+	auto& factory { *Engine::getEngine()->getAssets()->getFactory() };
 
-    auto* asset = factory.createStaticGeometryAsset(
-        generate_asset_guid(),
-        srcPath.string(),
-        data.vertexCount,
-        data.indexCount
-    );
+	auto* asset = factory.createStaticGeometryAsset(
+		generate_asset_guid(),
+		srcPath.string(),
+		data.vertexCount,
+		data.indexCount
+	);
 
-    /**/
+	/**/
 
-    auto* geom = static_cast<ptr<StaticGeometry>>(asset);
-    geom->setAssetName(sourceName);
+	auto* geom = static_cast<ptr<StaticGeometry>>(asset);
+	geom->setAssetName(sourceName);
 
-    IM_CORE_LOGF(
-        "Created new static geometry asset `{}` -> `{}`",
-        asset->getAssetName(),
-        encodeGuid4228(asset->get_guid())
-    );
+	IM_CORE_LOGF(
+		"Created new static geometry asset `{}` -> `{}`",
+		asset->getAssetName(),
+		encodeGuid4228(asset->get_guid())
+	);
 
-    /**/
+	/**/
 
-    auto memBuffer = make_uptr<BufferArchive>();
-    auto arch = StructuredArchive(memBuffer.get());
+	auto memBuffer = make_uptr<BufferArchive>();
+	auto arch = StructuredArchive(memBuffer.get());
 
-    {
-        auto root = arch.insertRootSlot();
-        access::Structure<StaticGeometry>::serialize(geom, std::move(root));
-    }
+	{
+		auto root = arch.insertRootSlot();
+		access::Structure<StaticGeometry>::serialize(geom, std::move(root));
+	}
 
-    /**/
+	/**/
 
-    Guid archGuid {};
-    GuidGenerate(archGuid);
+	Guid archGuid {};
+	GuidGenerate(archGuid);
 
-    /**/
+	/**/
 
-    const auto packagePath = std::filesystem::path(rootCwd).append(targetDirPath.string()).append(sourceName).concat(
-        R"(.impackage)"
-    );
+	const auto packagePath = std::filesystem::path(rootCwd).append(targetDirPath.string()).append(sourceName).concat(
+		R"(.impackage)"
+	);
 
-    if (not std::filesystem::exists(packagePath.parent_path())) {
-        std::filesystem::create_directories(packagePath.parent_path());
-    }
+	if (not std::filesystem::exists(packagePath.parent_path())) {
+		std::filesystem::create_directories(packagePath.parent_path());
+	}
 
-    /**/
+	/**/
 
-    hg::fs::File packageFile { packagePath };
-    auto source = make_uptr<resource::FileSource>(std::move(packageFile));
+	hg::fs::File packageFile { packagePath };
+	auto source = make_uptr<resource::FileSource>(std::move(packageFile));
 
-    auto package = resource::PackageFactory::createEmptyPackage(std::move(source));
-    auto* const linker = package->getLinker();
+	auto package = resource::PackageFactory::createEmptyPackage(std::move(source));
+	auto* const linker = package->getLinker();
 
-    /**/
+	/**/
 
-    linker->store(
-        resource::ArchiveHeader { resource::ArchiveHeaderType::eSerializedStructure, clone(archGuid) },
-        std::move(memBuffer)
-    );
+	linker->store(
+		resource::ArchiveHeader { resource::ArchiveHeaderType::eSerializedStructure, clone(archGuid) },
+		std::move(memBuffer)
+	);
 
-    /**/
+	/**/
 
-    package->unsafeWrite();
+	package->unsafeWrite();
 
-    IM_CORE_LOGF("Wrote new package file with archive `{}` for asset.", encodeGuid4228(archGuid));
+	IM_CORE_LOGF("Wrote new package file with archive `{}` for asset.", encodeGuid4228(archGuid));
 
-    /**/
+	/**/
 
-    return makeImportResult(std::move(geom));
+	return makeImportResult(std::move(geom));
 }
 
 #include <assimp/Importer.hpp>
@@ -203,44 +203,44 @@ FbxImporter::import_result_type FbxImporter::import(cref<res::FileTypeId> typeId
 
 FbxAssimpImportData assimpGetImportData(cref<fs::File> file_) {
 
-    Assimp::Importer importer {};
-    const u32 ppFlags = { aiProcess_PreTransformVertices };
+	Assimp::Importer importer {};
+	const u32 ppFlags = { aiProcess_PreTransformVertices };
 
-    /**/
+	/**/
 
-    const streamsize size = file_.size();
-    if (size < 0) {
-        __debugbreak();
-        return {};
-    }
+	const streamsize size = file_.size();
+	if (size < 0) {
+		__debugbreak();
+		return {};
+	}
 
-    auto* const scene = importer.ReadFile(file_.path().string(), ppFlags);
+	auto* const scene = importer.ReadFile(file_.path().string(), ppFlags);
 
-    if (scene == nullptr) {
-        __debugbreak();
-        return {};
-    }
+	if (scene == nullptr) {
+		__debugbreak();
+		return {};
+	}
 
-    /**/
+	/**/
 
-    FbxAssimpImportData data { 0uLL, 0uLL, 0uLL };
+	FbxAssimpImportData data { 0uLL, 0uLL, 0uLL };
 
-    auto** meshes = scene->mMeshes;
-    const auto meshCount = scene->mNumMeshes;
+	auto** meshes = scene->mMeshes;
+	const auto meshCount = scene->mNumMeshes;
 
-    for (auto meshIdx = 0; meshIdx < meshCount; ++meshIdx) {
+	for (auto meshIdx = 0; meshIdx < meshCount; ++meshIdx) {
 
-        const auto* const mesh = meshes[meshIdx];
-        const auto fc = mesh->mNumFaces;
-        const auto vc = mesh->mNumVertices;
+		const auto* const mesh = meshes[meshIdx];
+		const auto fc = mesh->mNumFaces;
+		const auto vc = mesh->mNumVertices;
 
-        data.indexCount += fc * 3uLL;
-        data.vertexCount += vc;
-    }
+		data.indexCount += fc * 3uLL;
+		data.vertexCount += vc;
+	}
 
-    data.materialCount = scene->mNumMaterials;
+	data.materialCount = scene->mNumMaterials;
 
-    /**/
+	/**/
 
-    return data;
+	return data;
 }

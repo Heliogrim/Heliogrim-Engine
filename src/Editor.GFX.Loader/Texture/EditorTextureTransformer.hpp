@@ -25,11 +25,11 @@ namespace hg::editor::gfx::loader {
 		using underlying_type::stream_response_type;
 
 	public:
-		EditorTextureTransformer(nmpt<engine::gfx::pool::GlobalResourcePool> pool_);
+		EditorTextureTransformer(ref<engine::gfx::pool::GlobalResourcePool> pool_);
 
 		EditorTextureTransformer(const EditorTextureTransformer&) = delete;
 
-		EditorTextureTransformer(mref<EditorTextureTransformer> other_) noexcept = default;
+		EditorTextureTransformer(mref<EditorTextureTransformer> other_) noexcept;
 
 		~EditorTextureTransformer() override;
 
@@ -43,6 +43,13 @@ namespace hg::editor::gfx::loader {
 		[[nodiscard]] _Success_(return != nullptr) nmpt<const EditorTextureSubTransformer> select(
 			nmpt<const engine::assets::TextureAsset> asset_
 		) const;
+
+	public:
+		ref<this_type> put(_In_ mref<uptr<EditorTextureSubTransformer>> transformer_) &;
+
+		void put(_In_ mref<uptr<EditorTextureSubTransformer>> transformer_) &&;
+
+		void drop(...);
 
 	public:
 		[[nodiscard]] loader_traits::response::type operator()(

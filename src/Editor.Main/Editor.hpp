@@ -3,31 +3,31 @@
 #include <Engine.Core/Module/SubModule.hpp>
 
 namespace hg::editor {
-    class Editor :
-        public engine::core::SubModule {
-    public:
-        using this_type = Editor;
+	class Editor :
+		public engine::core::SubModule {
+	public:
+		using this_type = Editor;
 
-    public:
-        Editor(const non_owning_rptr<engine::Engine> engine_);
+	public:
+		Editor(const non_owning_rptr<engine::Engine> engine_);
 
-        ~Editor() override;
+		~Editor() override;
 
-    private:
-        CompactSet<engine::core::SubModuleDependency> _dependencies;
+	private:
+		CompactSet<engine::core::SubModuleDependency> _dependencies;
 
-    public:
-        [[nodiscard]] engine::core::DependencyKey moduleKey() const noexcept override;
+	public:
+		[[nodiscard]] engine::core::DependencyKey moduleKey() const noexcept override;
 
-        [[nodiscard]] cref<CompactSet<engine::core::SubModuleDependency>> dependencies() const noexcept override;
+		[[nodiscard]] cref<CompactSet<engine::core::SubModuleDependency>> dependencies() const noexcept override;
 
-    public:
-        void setup() override;
+	public:
+		void setup() override;
 
-        void start() override;
+		void start() override;
 
-        void stop() override;
+		void stop() override;
 
-        void destroy() override;
-    };
+		void destroy() override;
+	};
 }

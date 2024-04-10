@@ -30,7 +30,7 @@ namespace hg::editor::gfx::loader {
 		using cache_result_type = engine::gfx::cache::Result<engine::gfx::cache::QueryResultType, cache_value_type>;
 
 	public:
-		EditorTextureCache(nmpt<engine::gfx::cache::GlobalCacheCtrl> cacheCtrl_);
+		EditorTextureCache(ref<engine::gfx::cache::GlobalCacheCtrl> cacheCtrl_);
 
 		~EditorTextureCache() override;
 
