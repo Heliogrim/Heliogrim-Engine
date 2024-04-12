@@ -60,6 +60,12 @@
     <ClCompile Include="..\..\src\Editor.GFX.Loader\Texture\Transformer\Tiff.cpp">
       <Filter>Quelldateien\Texture\Transformer</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Editor.GFX.Loader\Texture\Transformer\__stb.cpp">
+      <Filter>Quelldateien\Texture\Transformer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Editor.GFX.Loader\Texture\Transformer\Hdr.cpp">
+      <Filter>Quelldateien\Texture\Transformer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Editor.GFX.Loader\Texture\Transformer\Exr.hpp">
@@ -99,6 +105,9 @@
       <Filter>Headerdateien\Texture\Transformer</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Editor.GFX.Loader\Texture\Transformer\Bmp.hpp">
+      <Filter>Headerdateien\Texture\Transformer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Loader\Texture\Transformer\Hdr.hpp">
       <Filter>Headerdateien\Texture\Transformer</Filter>
     </ClInclude>
   </ItemGroup>

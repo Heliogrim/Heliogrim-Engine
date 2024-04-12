@@ -1,6 +1,10 @@
 #pragma once
 #include "../EditorTextureSubTransformer.hpp"
 
+namespace hg::engine::gfx::pool {
+	class GlobalResourcePool;
+}
+
 namespace hg::editor::gfx::loader {
 	class EditorBmpTextureTransformer final :
 		public EditorTextureSubTransformer {
@@ -8,9 +12,12 @@ namespace hg::editor::gfx::loader {
 		using this_type = EditorBmpTextureTransformer;
 
 	public:
-		EditorBmpTextureTransformer() noexcept;
+		EditorBmpTextureTransformer(ref<engine::gfx::pool::GlobalResourcePool> pool_) noexcept;
 
 		~EditorBmpTextureTransformer() noexcept override;
+
+	private:
+		nmpt<engine::gfx::pool::GlobalResourcePool> _pool;
 
 	public:
 		[[nodiscard]] bool canUse(nmpt<const engine::assets::TextureAsset> asset_) const noexcept override;

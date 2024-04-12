@@ -6,15 +6,15 @@ namespace hg::engine::gfx::pool {
 }
 
 namespace hg::editor::gfx::loader {
-	class EditorTgaTextureTransformer final :
+	class EditorHdrTextureTransformer final :
 		public EditorTextureSubTransformer {
 	public:
-		using this_type = EditorTgaTextureTransformer;
+		using this_type = EditorHdrTextureTransformer;
 
 	public:
-		EditorTgaTextureTransformer(ref<engine::gfx::pool::GlobalResourcePool> pool_) noexcept;
+		EditorHdrTextureTransformer(ref<engine::gfx::pool::GlobalResourcePool> pool_) noexcept;
 
-		~EditorTgaTextureTransformer() noexcept override;
+		~EditorHdrTextureTransformer() noexcept override;
 
 	private:
 		nmpt<engine::gfx::pool::GlobalResourcePool> _pool;

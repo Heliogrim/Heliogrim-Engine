@@ -44,6 +44,7 @@ set(DEFAULT_INCLUDE_DIRECTORIES
     "${lib_dir}/SDL2"
     "${lib_dir}/spdlog"
     "${lib_dir}/spng"
+    "${lib_dir}/stb"
     "${lib_dir}/tsl"
     "${lib_dir}/tl"
     "${lib_dir}/vorbis")
