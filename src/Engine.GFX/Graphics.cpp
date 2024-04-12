@@ -308,6 +308,10 @@ const non_owning_rptr<gfx::cache::GlobalCacheCtrl> Graphics::cacheCtrl() const n
 	return _cacheCtrl.get();
 }
 
+const non_owning_rptr<gfx::pool::GlobalResourcePool> Graphics::pool() const noexcept {
+	return _pool.get();
+}
+
 smr<render::Renderer> Graphics::getRenderer(StringView key_) const {
 	return _cachedRenderer.at(String { key_ });
 }

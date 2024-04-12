@@ -15,6 +15,7 @@
 #include <Engine.Event/GlobalEventEmitter.hpp>
 #include <Engine.GFX.Event/GraphicRegisterImporterEvent.hpp>
 #include <Engine.GFX.Event/GraphicRegisterLoaderEvent.hpp>
+#include <Engine.GFX/Graphics.hpp>
 #include <Engine.GFX.Loader/Texture/TextureResource.hpp>
 #include <Engine.Resource/LoaderManager.hpp>
 
@@ -61,11 +62,13 @@ void EditorGraphicsIo::hookGraphicsEvents() noexcept {
 
 			using namespace ::hg::editor::gfx::loader;
 
+			auto& pool = *_engine->getGraphics()->pool();
+
 			event_.getProxy()
 			      .put(make_uptr<EditorBmpTextureTransformer>())
 			      .put(make_uptr<EditorExrTextureTransformer>())
 			      .put(make_uptr<EditorJpegTextureTransformer>())
-			      .put(make_uptr<EditorPngTextureTransformer>())
+			      .put(make_uptr<EditorPngTextureTransformer>(pool))
 			      .put(make_uptr<EditorTgaTextureTransformer>())
 			      .put(make_uptr<EditorTiffTextureTransformer>());
 		}
@@ -85,6 +88,10 @@ void EditorGraphicsIo::hookGraphicsEvents() noexcept {
 					event_.getLoaderManager().sharedSourceLoader()
 				);
 				event_.getLoaderManager().registerLoader<engine::assets::TextureAsset, TextureResource>(loader);
+
+				/* Warning: Temporary */
+				auto ev = EditorGraphicsRegisterTransformerEvent { loader->transformer };
+				_engine->getEmitter().emit<EditorGraphicsRegisterTransformerEvent>(ev);
 			}
 
 		}

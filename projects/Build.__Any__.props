@@ -17,7 +17,7 @@
       <EnableModules>false</EnableModules>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(SolutionDir)library\bin\assimp\$(Configuration)\;$(SolutionDir)library\bin\ryml\$(Configuration)\;$(SolutionDir)library\bin\vorbis\$(Configuration)\;$(SolutionDir)library\bin\glslang\$(Configuration)\;$(SolutionDir)library\bin\freetype2\$(Configuration)\;$(SolutionDir)library\bin\spdlog\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)library\bin\assimp\$(Configuration)\;$(SolutionDir)library\bin\ryml\$(Configuration)\;$(SolutionDir)library\bin\vorbis\$(Configuration)\;$(SolutionDir)library\bin\glslang\$(Configuration)\;$(SolutionDir)library\bin\freetype2\$(Configuration)\;$(SolutionDir)library\bin\spdlog\$(Configuration)\;$(SolutionDir)library\bin\spng\$(Configuration)\;$(SolutionDir)library\bin\zlib\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

@@ -43,6 +43,7 @@ set(DEFAULT_INCLUDE_DIRECTORIES
     "${lib_dir}/ryml"
     "${lib_dir}/SDL2"
     "${lib_dir}/spdlog"
+    "${lib_dir}/spng"
     "${lib_dir}/tsl"
     "${lib_dir}/tl"
     "${lib_dir}/vorbis")
@@ -56,6 +57,7 @@ set(TEST_INCLUDE_DIRECTORIES
 set(DEFAULT_LIBRARIES
     "${Vulkan_LIBRARY}"
     "${lib_dir}/bin/SDL2/${CMAKE_BUILD_TYPE}/SDL2.lib"
+    "${lib_dir}/bin/spng/${CMAKE_BUILD_TYPE}/spng_static.lib"
     "${lib_dir}/bin/vorbis/${CMAKE_BUILD_TYPE}/ogg.lib"
     "${lib_dir}/bin/vorbis/${CMAKE_BUILD_TYPE}/vorbis.lib"
     "${lib_dir}/bin/vorbis/${CMAKE_BUILD_TYPE}/vorbisenc.lib"
@@ -82,7 +84,9 @@ if (${CMAKE_BUILD_TYPE} MATCHES "Debug")
         "${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/OGLCompilerd.lib"
         "${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/OSDependentd.lib"
         "${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/SPIRVd.lib"
-        "${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/SPVRemapperd.lib")
+        "${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/SPVRemapperd.lib"
+        #
+        "${lib_dir}/bin/zlib/${CMAKE_BUILD_TYPE}/zlibstaticd.lib")
 
 else ()
     set(DEFAULT_LIBRARIES
@@ -99,7 +103,9 @@ else ()
 		"${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/OGLCompiler.lib"
 		"${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/OSDependent.lib"
 		"${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/SPIRV.lib"
-		"${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/SPVRemapper.lib")
+		"${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/SPVRemapper.lib"
+        #
+        "${lib_dir}/bin/zlib/${CMAKE_BUILD_TYPE}/zlibstatic.lib")
 endif ()
 
 #

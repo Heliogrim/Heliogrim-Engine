@@ -32,8 +32,8 @@ namespace hg {
 	template <class Ty>
 	using wptr = std::weak_ptr<Ty>;
 
-	template <class Ty>
-	using uptr = std::unique_ptr<Ty>;
+	template <class Ty_, class Dy_ = ::std::default_delete<Ty_>>
+	using uptr = std::unique_ptr<Ty_, Dy_>;
 
 	template <class Ty>
 	using managed = std::shared_ptr<Ty>;
