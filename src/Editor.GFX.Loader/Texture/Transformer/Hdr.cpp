@@ -1,11 +1,10 @@
-#include "Bmp.hpp"
+#include "Hdr.hpp"
 
 #include <Engine.Asserts/Todo.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets/Types/Image.hpp>
 #include <Engine.Core/Engine.hpp>
-#include <Engine.GFX/Buffer/Buffer.hpp>
 #include <Engine.GFX/Buffer/BufferFactory.hpp>
 #include <Engine.GFX/Device/Device.hpp>
 #include <Engine.GFX/Pool/GlobalResourcePool.hpp>
@@ -24,13 +23,13 @@ static engine::gfx::Buffer createStageBuffer(cref<sptr<engine::gfx::Device>> dev
 
 /**/
 
-EditorBmpTextureTransformer::EditorBmpTextureTransformer(ref<engine::gfx::pool::GlobalResourcePool> pool_) noexcept :
+EditorHdrTextureTransformer::EditorHdrTextureTransformer(ref<engine::gfx::pool::GlobalResourcePool> pool_) noexcept :
 	EditorTextureSubTransformer(),
 	_pool(std::addressof(pool_)) {}
 
-EditorBmpTextureTransformer::~EditorBmpTextureTransformer() noexcept = default;
+EditorHdrTextureTransformer::~EditorHdrTextureTransformer() noexcept = default;
 
-bool EditorBmpTextureTransformer::canUse(nmpt<const engine::assets::TextureAsset> asset_) const noexcept {
+bool EditorHdrTextureTransformer::canUse(nmpt<const engine::assets::TextureAsset> asset_) const noexcept {
 
 	const auto* const registry = engine::Engine::getEngine()->getAssets()->getRegistry();
 	const auto* const asset = registry->findAssetByGuid(asset_->baseImage());
@@ -50,8 +49,8 @@ bool EditorBmpTextureTransformer::canUse(nmpt<const engine::assets::TextureAsset
 
 	for (const auto& source : image->sources()) {
 
-		// /^(.+)\.(bmp)$/gi
-		if (source.path().name().ends_with(".bmp")) {
+		// /^(.+)\.(hdr)$/gi
+		if (source.path().name().ends_with(".hdr")) {
 			return true;
 		}
 	}
@@ -61,7 +60,7 @@ bool EditorBmpTextureTransformer::canUse(nmpt<const engine::assets::TextureAsset
 	return false;
 }
 
-EditorBmpTextureTransformer::loader_traits::response::type EditorBmpTextureTransformer::operator()(
+EditorHdrTextureTransformer::loader_traits::response::type EditorHdrTextureTransformer::operator()(
 	mref<loader_traits::request::type> request_,
 	mref<loader_traits::request::options> options_,
 	cref<next_type> next_
@@ -265,7 +264,7 @@ EditorBmpTextureTransformer::loader_traits::response::type EditorBmpTextureTrans
 	return dst;
 }
 
-EditorBmpTextureTransformer::loader_traits::stream_response::type EditorBmpTextureTransformer::operator()(
+EditorHdrTextureTransformer::loader_traits::stream_response::type EditorHdrTextureTransformer::operator()(
 	mref<loader_traits::stream_request::type> request_,
 	mref<loader_traits::stream_request::options> options_,
 	cref<next_type> next_
