@@ -5,7 +5,7 @@
  *   FreeType glyph image formats and default raster interface
  *   (specification).
  *
- * Copyright (C) 1996-2022 by
+ * Copyright (C) 1996-2024 by
  * David Turner, Robert Wilhelm, and Werner Lemberg.
  *
  * This file is part of the FreeType project, and may only be used,
@@ -19,7 +19,7 @@
   /**************************************************************************
    *
    * Note: A 'raster' is simply a scan-line converter, used to render
-   *       FT_Outlines into FT_Bitmaps.
+   *       `FT_Outline`s into `FT_Bitmap`s.
    *
    */
 
@@ -256,6 +256,12 @@ FT_BEGIN_HEADER
    *   palette ::
    *     A typeless pointer to the bitmap palette; this field is intended for
    *     paletted pixel modes.  Not used currently.
+   *
+   * @note:
+   *   `width` and `rows` refer to the *physical* size of the bitmap, not the
+   *   *logical* one.  For example, if @FT_Pixel_Mode is set to
+   *   `FT_PIXEL_MODE_LCD`, the logical width is a just a third of the
+   *   physical one.
    */
   typedef struct  FT_Bitmap_
   {
@@ -312,7 +318,7 @@ FT_BEGIN_HEADER
    *
    *     If bit~2 is set, bits 5-7 contain the drop-out mode (as defined in
    *     the OpenType specification; the value is the same as the argument to
-   *     the 'SCANMODE' instruction).
+   *     the 'SCANTYPE' instruction).
    *
    *     Bits 3 and~4 are reserved for internal purposes.
    *
@@ -428,8 +434,8 @@ FT_BEGIN_HEADER
    *   rasterizer; see the `tags` field in @FT_Outline.
    *
    *   Please refer to the description of the 'SCANTYPE' instruction in the
-   *   OpenType specification (in file `ttinst1.doc`) how simple drop-outs,
-   *   smart drop-outs, and stubs are defined.
+   *   [OpenType specification](https://learn.microsoft.com/en-us/typography/opentype/spec/tt_instructions#scantype)
+   *   how simple drop-outs, smart drop-outs, and stubs are defined.
    */
 #define FT_OUTLINE_NONE             0x0
 #define FT_OUTLINE_OWNER            0x1
@@ -856,7 +862,7 @@ FT_BEGIN_HEADER
    *   @FT_SpanFunc that takes the y~coordinate of the span as a parameter.
    *
    *   The anti-aliased rasterizer produces coverage values from 0 to 255,
-   *   this is, from completely transparent to completely opaque.
+   *   that is, from completely transparent to completely opaque.
    */
   typedef struct  FT_Span_
   {

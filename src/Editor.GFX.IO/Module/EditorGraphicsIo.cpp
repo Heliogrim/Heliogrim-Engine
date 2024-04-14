@@ -67,7 +67,7 @@ void EditorGraphicsIo::hookGraphicsEvents() noexcept {
 
 			event_.getProxy()
 			      .put(make_uptr<EditorBmpTextureTransformer>(pool))
-			      .put(make_uptr<EditorExrTextureTransformer>())
+			      .put(make_uptr<EditorExrTextureTransformer>(pool))
 			      .put(make_uptr<EditorHdrTextureTransformer>(pool))
 			      .put(make_uptr<EditorJpegTextureTransformer>(pool))
 			      .put(make_uptr<EditorPngTextureTransformer>(pool))

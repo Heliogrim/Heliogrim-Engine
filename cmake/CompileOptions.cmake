@@ -45,9 +45,11 @@ set(DEFAULT_INCLUDE_DIRECTORIES
     "${lib_dir}/spdlog"
     "${lib_dir}/spng"
     "${lib_dir}/stb"
-    "${lib_dir}/tsl"
+    "${lib_dir}/tinyexr"
     "${lib_dir}/tl"
-    "${lib_dir}/vorbis")
+    "${lib_dir}/tsl"
+    "${lib_dir}/vorbis"
+    "${lib_dir}/zlib")
 
 set(TEST_INCLUDE_DIRECTORIES
     "${lib_dir}/gtest")

@@ -28,6 +28,7 @@
     <ClCompile Include="..\..\src\Editor.GFX.Loader\Texture\Transformer\Tga.cpp" />
     <ClCompile Include="..\..\src\Editor.GFX.Loader\Texture\Transformer\Tiff.cpp" />
     <ClCompile Include="..\..\src\Editor.GFX.Loader\Texture\Transformer\__stb.cpp" />
+    <ClCompile Include="..\..\src\Editor.GFX.Loader\Texture\Transformer\__tinyexr.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Editor.GFX.Loader\Texture\EditorTextureCache.hpp" />
