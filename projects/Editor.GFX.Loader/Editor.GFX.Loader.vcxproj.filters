@@ -66,6 +66,9 @@
     <ClCompile Include="..\..\src\Editor.GFX.Loader\Texture\Transformer\Hdr.cpp">
       <Filter>Quelldateien\Texture\Transformer</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Editor.GFX.Loader\Texture\Transformer\__tinyexr.cpp">
+      <Filter>Quelldateien\Texture\Transformer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Editor.GFX.Loader\Texture\Transformer\Exr.hpp">
