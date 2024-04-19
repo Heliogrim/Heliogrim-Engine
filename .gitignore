@@ -2,9 +2,7 @@
 *.slo
 *.lo
 *.o
-#*.obj
-[Bb]in/
-![Ll]ibrary/[Bb]in/
+*.obj
 
 # Precompiled Headers
 *.gch
@@ -12,14 +10,8 @@
 
 # Compiled Dynamic libraries
 *.so
-![Ll]ibrary/*.so
-![Ll]ibrary/**/*.so
 *.dylib
-![Ll]ibrary/*.dylib
-![Ll]ibrary/**/*.dylib
 *.dll
-![Ll]ibrary/*.dll
-![Ll]ibrary/**/*.dll
 
 # Fortran module files
 *.mod
@@ -30,8 +22,6 @@
 *.la
 *.a
 *.lib
-![Ll]ibrary/*.lib
-![Ll]ibrary/**/*.lib
 
 # Executables
 *.exe
@@ -47,9 +37,15 @@
 *.TMP
 
 /.idea
-/cmake-build-debug
-/cmake-build-release
+/cmake-build-*/
 [Bb]uild/
 [Dd]ist/
 
-!src/**/[Bb]uild/
+# Don't fetch external dependencies
+[Ll]ibrary/*/**
+![Ll]ibrary/*/CMakeLists.txt
+![Ll]ibrary/*/*.patch
+
+# Weaken Rules for special cases
+!**/src/**/[Bb]uild/
+!**/resources/**/*.obj
