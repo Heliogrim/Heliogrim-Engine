@@ -4,7 +4,7 @@
 #include <Engine.Common/Make.hpp>
 
 #define DR_FLAC_IMPLEMENTATION
-#include <dr_flac/dr_flac.h>
+#include <dr_libs/dr_flac.h>
 
 #include "AudioFileTypes.hpp"
 
@@ -21,7 +21,7 @@ FlacImporter::descriptor_type FlacImporter::descriptor() const noexcept {
 
 FlacImporter::import_result_type FlacImporter::import(cref<res::FileTypeId> typeId_, cref<fs::File> file_) const {
 
-    const ptr<drflac> flac = drflac_open_file(file_.path().string().c_str(), {});
+    const ptr<drflac> flac = drflac_open_file(file_.path().string().c_str(), nullptr);
     if (flac == nullptr) {
         // Error opening
         throw std::runtime_error("Could not open file to parse flac data.");

@@ -3,7 +3,7 @@
 #include <map>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/RobinMap.hpp>
+#include <Engine.Common/Collection/DenseMap.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 
 #include "../__fwd.hpp"
@@ -88,7 +88,7 @@ namespace hg::engine::assets::system {
 
 		template <>
 		struct AutoMappingSelector<true, false> {
-			using table_type = RobinMap<
+			using table_type = DenseMap<
 				typename trait_type::data_type,
 				non_owning_rptr<Asset>,
 				typename trait_type::hash_type

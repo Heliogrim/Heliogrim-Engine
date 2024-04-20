@@ -101,7 +101,7 @@ void PackageManager::addPackage(mref<smr<PackageResource>> package_) {
 smr<PackageResource> PackageManager::getPackage(cref<PackageGuid> guid_) const noexcept {
 	const auto entry = _packages.find(guid_);
 	if (entry != _packages.end()) {
-		return { entry.value() };
+		return { entry->second };
 	}
 
 	return {};

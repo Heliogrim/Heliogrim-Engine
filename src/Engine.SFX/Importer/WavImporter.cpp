@@ -8,7 +8,8 @@
 #endif
 
 #define DR_WAV_IMPLEMENTATION
-#include <dr_wav/dr_wav.hpp>
+#define DR_WAV_NO_WCHAR
+#include <dr_libs/dr_wav.h>
 
 #include "AudioFileTypes.hpp"
 
@@ -28,7 +29,7 @@ WavImporter::import_result_type WavImporter::import(cref<res::FileTypeId> typeId
     SCOPED_STOPWATCH
 
     drwav wav;
-    if (!drwav_init_file(&wav, file_.path().string().c_str())) {
+    if (!drwav_init_file(&wav, file_.path().string().c_str(), nullptr)) {
         // Error opening
         throw std::runtime_error("Could not open file to parse wav data.");
     }
