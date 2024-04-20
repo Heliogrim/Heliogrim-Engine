@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.24)
+cmake_minimum_required(VERSION 3.27.7)
 
 message(STATUS "------------------------------------------------------------------")
 message(STATUS "                                                                  ")
@@ -24,6 +24,7 @@ project("Heliogrim" VERSION 1.0)
 include(cmake/Architecture.cmake)
 include(cmake/BuildType.cmake)
 include(cmake/Tools.cmake)
+include(cmake/Managed.cmake)
 include(cmake/HealthCheck.cmake)
 include(cmake/MakeExecutableProject.cmake)
 include(cmake/MakeLibraryProject.cmake)
@@ -53,6 +54,14 @@ enable_deploy(ON)
 include(cmake/PreprocDefinitions.cmake)
 include(cmake/CompileOptions.cmake)
 
+# Handle external dependencies
+get_library_path(project_library_directory)
+file(GLOB externals CONFIGURE_DEPENDS LIST_DIRECTORIES true "${project_library_directory}/*")
+foreach (external ${externals})
+	add_subdirectory("${external}")
+endforeach ()
+finalize_managed_libraries()
+
 # Modules
 set(libraries "")
 get_projects_path(projects_directory)
@@ -65,8 +74,8 @@ list(FILTER libraries EXCLUDE REGEX "(\\.Main)|(Main$)")
 list(FILTER tests INCLUDE REGEX "\\.Test")
 
 foreach (lib IN LISTS libraries tests)
-    message(STATUS "${lib}")
-    add_subdirectory(${lib})
+	message(STATUS "${lib}")
+	add_subdirectory(${lib})
 endforeach ()
 
 add_subdirectory("${projects_directory}/Heliogrim.Main")
