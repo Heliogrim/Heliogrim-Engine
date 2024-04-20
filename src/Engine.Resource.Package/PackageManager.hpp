@@ -1,6 +1,6 @@
 #pragma once
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/Collection/RobinMap.hpp>
+#include <Engine.Common/Collection/DenseMap.hpp>
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 
 #include <ranges>
@@ -31,7 +31,7 @@ namespace hg::engine::resource {
 		[[nodiscard]] bool isPackageSource(const non_owning_rptr<Source> source_) const noexcept;
 
 	private:
-		RobinMap<PackageGuid, smr<PackageResource>> _packages;
+		DenseMap<PackageGuid, smr<PackageResource>> _packages;
 
 		/* Temporary Solution */
 	public:

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/Collection/RobinMap.hpp>
+#include <Engine.Common/Collection/DenseMap.hpp>
 
 #include "CompositeDispatcher.hpp"
 #include "StagePipeline.hpp"
@@ -45,7 +45,7 @@ namespace hg::engine::scheduler {
 		/**
 		 * Registered unique schedule stages
 		 */
-		RobinMap<string, uptr<Stage>> _stages;
+		DenseMap<string, uptr<Stage>> _stages;
 		Vector<uptr<PipelineStage>> _pipelineStages;
 
 	public:

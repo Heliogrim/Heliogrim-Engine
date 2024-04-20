@@ -4,10 +4,10 @@
 
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/RobinMap.hpp>
 #include <Engine.Assets/AssetTypeId.hpp>
 #include <Engine.Assets/Types/Texture/TextureAsset.hpp>
 #include <Engine.Assets.System/__fwd.hpp>
+#include <Engine.Common/Collection/DenseMap.hpp>
 
 namespace hg::editor::ui {
     class AssetBrowserHelper final {
@@ -40,7 +40,7 @@ namespace hg::editor::ui {
 
     private:
         ptr<engine::assets::TextureAsset> _defaultTypeIcon;
-        RobinMap<asset_type_id, ptr<engine::assets::TextureAsset>> _typeIconMap;
+        DenseMap<asset_type_id, ptr<engine::assets::TextureAsset>> _typeIconMap;
 
     private:
         ptr<engine::assets::TextureAsset> _directoryIcon;

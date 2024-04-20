@@ -84,7 +84,7 @@ namespace PackageModule {
         header.endianness = PackageEndianness::eBigEndian;
 
         header.version = version;
-        memcpy(header.guid, guid.bytes, sizeof(PackageGuid));
+        memcpy(header.guid, &guid.pre, sizeof(PackageGuid));
 
         header.compression = PackageCompression::eNone;
         header.packageSize = 0uLL;
@@ -119,7 +119,7 @@ namespace PackageModule {
         // Check Package Guid
         {
             for (auto i = 0; i < sizeof(PackageGuid); ++i) {
-                EXPECT_EQ(storedHeader->guid[i], guid.bytes[i]);
+                EXPECT_EQ(storedHeader->guid[i], std::bit_cast<u8*>(&guid.pre)[i]);
             }
         }
 
@@ -172,7 +172,7 @@ namespace PackageModule {
         header.endianness = PackageEndianness::eBigEndian;
 
         header.version = version;
-        memcpy(header.guid, guid.bytes, sizeof(PackageGuid));
+        memcpy(header.guid, &guid.pre, sizeof(PackageGuid));
 
         header.compression = PackageCompression::eNone;
         header.packageSize = 0uLL;
@@ -222,7 +222,7 @@ namespace PackageModule {
         // Check Package Guid
         {
             for (auto i = 0; i < sizeof(PackageGuid); ++i) {
-                EXPECT_EQ(storedHeader->guid[i], guid.bytes[i]);
+                EXPECT_EQ(storedHeader->guid[i], std::bit_cast<u8*>(&guid.pre)[i]);
             }
         }
 

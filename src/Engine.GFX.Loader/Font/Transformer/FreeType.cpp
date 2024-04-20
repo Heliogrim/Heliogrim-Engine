@@ -11,7 +11,7 @@
 #include <Engine.Logging/Logger.hpp>
 
 /**/
-#include <freetype/ft2build.h>
+#include <ft2build.h>
 
 #include FT_FREETYPE_H
 /**/

@@ -4,7 +4,7 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Meta/TypeId.hpp>
 #include <Engine.Common/Collection/AssociativeKey.hpp>
-#include <Engine.Common/Collection/RobinMap.hpp>
+#include <Engine.Common/Collection/DenseMap.hpp>
 #include <Engine.Reflect/Meta/MetaClass.hpp>
 #include <Engine.Serialization/Layout/__fwd.hpp>
 
@@ -48,9 +48,9 @@ namespace hg::engine::serialization {
     private:
         sptr<DataLayoutBase> _nullLayout;
 
-        RobinMap<type_id, sptr<DataLayoutBase>> _typeMapping;
-        RobinMap<ptr<const MetaClass>, sptr<DataLayoutBase>> _classMapping;
-        RobinMap<AssocKey<string>, sptr<DataLayoutBase>> _symbolMapping;
+        DenseMap<type_id, sptr<DataLayoutBase>> _typeMapping;
+		DenseMap<ptr<const MetaClass>, sptr<DataLayoutBase>> _classMapping;
+		DenseMap<AssocKey<string>, sptr<DataLayoutBase>> _symbolMapping;
 
     public:
         bool storeLayout(cref<string> symbol_, cref<sptr<DataLayoutBase>> layout_);
