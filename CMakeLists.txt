@@ -16,7 +16,9 @@ message(STATUS "----------------------------------------------------------------
 
 # Project Declaration
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-set(IDE_FOLDER "")
+set_property(GLOBAL PROPERTY CMAKE_FOLDER "External")
+set(CMAKE_FOLDER "External")
+set(IDE_FOLDER "Heliogrim")
 
 project("Heliogrim" VERSION 1.0)
 
@@ -58,7 +60,7 @@ include(cmake/CompileOptions.cmake)
 get_library_path(project_library_directory)
 file(GLOB externals CONFIGURE_DEPENDS LIST_DIRECTORIES true "${project_library_directory}/*")
 foreach (external ${externals})
-	add_subdirectory("${external}")
+    add_subdirectory("${external}")
 endforeach ()
 finalize_managed_libraries()
 
@@ -74,8 +76,8 @@ list(FILTER libraries EXCLUDE REGEX "(\\.Main)|(Main$)")
 list(FILTER tests INCLUDE REGEX "\\.Test")
 
 foreach (lib IN LISTS libraries tests)
-	message(STATUS "${lib}")
-	add_subdirectory(${lib})
+    message(STATUS "${lib}")
+    add_subdirectory(${lib})
 endforeach ()
 
 add_subdirectory("${projects_directory}/Heliogrim.Main")
