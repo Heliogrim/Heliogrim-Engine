@@ -6,47 +6,51 @@ endfunction()
 
 function(make_test_project)
 
-    set(__single_var_options TEST_NAME SOURCE)
+    set(__single_var_options TEST_NAME TEST_FOLDER SOURCE)
     set(__multi_var_options LIBRARIES)
-    cmake_parse_arguments(make_lib_vars "" "${__single_var_options}" "${__multi_var_options}" ${ARGN})
+    cmake_parse_arguments(args "" "${__single_var_options}" "${__multi_var_options}" ${ARGN})
 
-    if (NOT DEFINED make_lib_vars_TEST_NAME)
-        message(FATAL_ERROR "Target `${make_lib_vars_TEST_NAME}` is required parameter name to generate setup.")
+    if (NOT DEFINED args_TEST_NAME)
+        message(FATAL_ERROR "Target `${args_TEST_NAME}` is required parameter name to generate setup.")
         return()
     endif ()
 
-    message(STATUS "Setup library project for target `${make_lib_vars_TEST_NAME}`.")
-    name_to_target(target "${make_lib_vars_TEST_NAME}")
+    message(STATUS "Setup library project for target `${args_TEST_NAME}`.")
+    name_to_target(target "${args_TEST_NAME}")
 
-    list(LENGTH make_lib_vars_LIBRARIES link_libraries_size)
+    list(LENGTH args_LIBRARIES link_libraries_size)
     if (link_libraries_size GREATER 0)
-        __prepare_link_libs(${make_lib_vars_LIBRARIES} make_lib_vars_LIBRARIES)
-        list(LENGTH make_lib_vars_LIBRARIES link_libraries_size)
+        __prepare_link_libs(${args_LIBRARIES} args_LIBRARIES)
+        list(LENGTH args_LIBRARIES link_libraries_size)
     endif ()
     message(STATUS "Using `${link_libraries_size}` libraries at linker.")
 
     # Discover Sources
     get_src_path(proj_src_dir)
 
-    if (DEFINED make_lib_vars_SOURCE)
-        set(source_directory "${proj_src_dir}/${make_lib_vars_SOURCE}")
+    if (DEFINED args_SOURCE)
+        set(source_directory "${proj_src_dir}/${args_SOURCE}")
     else ()
-        set(source_directory "${proj_src_dir}/${make_lib_vars_TEST_NAME}")
+        set(source_directory "${proj_src_dir}/${args_TEST_NAME}")
     endif ()
 
     file(GLOB_RECURSE header_files CONFIGURE_DEPENDS ${source_directory}/*.hpp ${source_directory}/*.h ${source_directory}/*.hh)
     file(GLOB_RECURSE source_files CONFIGURE_DEPENDS ${source_directory}/*.cpp ${source_directory}/*.c ${source_directory}/*.cc)
 
     # Sources
-    set(headers ${header_files})
-    set(sources ${source_files})
+    map_source_groups(BASE_PATH "${source_directory}" SOURCES ${source_files} ${header_files})
 
     # Executable
-    add_executable(${target} EXCLUDE_FROM_ALL ${sources} ${headers})
-    add_executable(${PROJECT_NAME}::${make_lib_vars_TEST_NAME} ALIAS ${target})
+    add_executable(${target} EXCLUDE_FROM_ALL ${source_files} ${header_files})
+    add_executable(${PROJECT_NAME}::${args_TEST_NAME} ALIAS ${target})
 
     # Project Options
-    set_target_properties(${target} PROPERTIES ${DEFAULT_PROJECT_OPTIONS} FOLDER "${IDE_FOLDER}")
+    set_target_properties(${target} PROPERTIES ${DEFAULT_PROJECT_OPTIONS})
+    if (NOT DEFINED args_TEST_FOLDER)
+        set_target_properties(${target} PROPERTIES FOLDER "${IDE_FOLDER}/Tests")
+    elseif (DEFINED args_TEST_FOLDER)
+        set_target_properties(${target} PROPERTIES FOLDER "${args_TEST_FOLDER}")
+    endif ()
 
     # Include Directories
     target_include_directories(
@@ -63,7 +67,7 @@ function(make_test_project)
             PRIVATE
             ${DEFAULT_LIBRARIES}
             ${TEST_LIBRARIES}
-            ${make_lib_vars_LIBRARIES}
+            ${args_LIBRARIES}
     )
 
     # Compile
@@ -90,9 +94,7 @@ function(make_test_project)
     # Target Health
     # Deployment
     get_shared_dist_path(proj_dist_path)
-    set_target_properties(${target} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${proj_dist_path})
-    set_target_properties(${target} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${proj_dist_path})
-    set_target_properties(${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${proj_dist_path})
+    set_batch_target_properties(${target} ${proj_dist_path})
 
     # Register Tests
     include(GoogleTest)
