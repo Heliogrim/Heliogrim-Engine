@@ -76,7 +76,6 @@ list(FILTER libraries EXCLUDE REGEX "(\\.Main)|(Main$)")
 list(FILTER tests INCLUDE REGEX "\\.Test")
 
 foreach (lib IN LISTS libraries tests)
-    message(STATUS "${lib}")
     add_subdirectory(${lib})
 endforeach ()
 

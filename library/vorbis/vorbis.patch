@@ -1,0 +1,115 @@
+﻿diff --git a/cmake/FindOgg.cmake b/cmake/FindOgg.cmake
+index ebcd7d4e..448b9d6b 100644
+--- a/cmake/FindOgg.cmake
++++ b/cmake/FindOgg.cmake
+@@ -33,10 +33,31 @@ A user may set ``OGG_ROOT`` to a ogg installation root to tell this
+ module where to look.
+ #]=======================================================================]
+ 
+-if(OGG_INCLUDE_DIR)
+-  # Already in cache, be silent
+-  set(OGG_FIND_QUIETLY TRUE)
+-endif()
++if (OGG_INCLUDE_DIR)
++    # Already in cache, be silent
++    set(OGG_FIND_QUIETLY TRUE)
++endif ()
++
++string(SHA256 checksum "${ARGN}")
++if (DEFINED _OGG_CHECKSUM AND DEFINED _OGG_FOUND AND DEFINED _OGG_INCLUDE_DIR AND DEFINED _OGG_LIBRARY)
++    if ("${checksum}" STREQUAL "${_OGG_CHECKSUM}")
++        set(OGG_FOUND ${_OGG_FOUND})
++        set(OGG_INCLUDE_DIR ${_OGG_INCLUDE_DIR})
++        set(OGG_LIBRARY ${_OGG_LIBRARY})
++        set(OGG_VERSION_STRING ${_OGG_VERSION_STRING})
++
++        # Assume already present due to cache presence
++        if (NOT TARGET Ogg::ogg)
++            add_library(Ogg::ogg UNKNOWN IMPORTED)
++            set_target_properties(Ogg::ogg PROPERTIES
++                    INTERFACE_INCLUDE_DIRECTORIES "${OGG_INCLUDE_DIRS}"
++                    IMPORTED_LOCATION "${OGG_LIBRARIES}"
++            )
++        endif ()
++
++        return()
++    endif ()
++endif ()
+ 
+ find_package(PkgConfig QUIET)
+ pkg_check_modules(PC_OGG QUIET ogg)
+@@ -44,26 +65,26 @@ pkg_check_modules(PC_OGG QUIET ogg)
+ set(OGG_VERSION_STRING ${PC_OGG_VERSION})
+ 
+ find_path(OGG_INCLUDE_DIR ogg/ogg.h
+-    HINTS
++        HINTS
+         ${PC_OGG_INCLUDEDIR}
+         ${PC_OGG_INCLUDE_DIRS}
+         ${OGG_ROOT}
+-    PATH_SUFFIXES
++        PATH_SUFFIXES
+         include
+ )
+ # MSVC built ogg may be named ogg_static.
+ # The provided project files name the library with the lib prefix.
+ find_library(OGG_LIBRARY
+-    NAMES
++        NAMES
+         ogg
+         ogg_static
+         libogg
+         libogg_static
+-    HINTS
++        HINTS
+         ${PC_OGG_LIBDIR}
+         ${PC_OGG_LIBRARY_DIRS}
+         ${OGG_ROOT}
+-    PATH_SUFFIXES
++        PATH_SUFFIXES
+         lib
+ )
+ 
+@@ -71,24 +92,32 @@ find_library(OGG_LIBRARY
+ # to TRUE if all listed variables are TRUE.
+ include(FindPackageHandleStandardArgs)
+ find_package_handle_standard_args(Ogg
+-    REQUIRED_VARS
++        REQUIRED_VARS
+         OGG_LIBRARY
+         OGG_INCLUDE_DIR
+-    VERSION_VAR
++        VERSION_VAR
+         OGG_VERSION_STRING
+ )
+ 
+-if(OGG_FOUND)
++if (OGG_FOUND)
+     set(OGG_LIBRARIES ${OGG_LIBRARY})
+     set(OGG_INCLUDE_DIRS ${OGG_INCLUDE_DIR})
+ 
+-    if(NOT TARGET Ogg::ogg)
+-    add_library(Ogg::ogg UNKNOWN IMPORTED)
++    if (NOT TARGET Ogg::ogg)
++        add_library(Ogg::ogg UNKNOWN IMPORTED)
+         set_target_properties(Ogg::ogg PROPERTIES
+-            INTERFACE_INCLUDE_DIRECTORIES "${OGG_INCLUDE_DIRS}"
+-            IMPORTED_LOCATION "${OGG_LIBRARIES}"
++                INTERFACE_INCLUDE_DIRECTORIES "${OGG_INCLUDE_DIRS}"
++                IMPORTED_LOCATION "${OGG_LIBRARIES}"
+         )
+-  endif()
+-endif()
++    endif ()
++endif ()
+ 
+ mark_as_advanced(OGG_INCLUDE_DIR OGG_LIBRARY)
++
++# Hydrate Cache
++
++set(_OGG_CHECKSUM "${checksum}" CACHE INTERNAL "" FORCE)
++set(_OGG_FOUND ${OGG_FOUND} CACHE INTERNAL "" FORCE)
++set(_OGG_INCLUDE_DIR "${OGG_INCLUDE_DIR}" CACHE INTERNAL "" FORCE)
++set(_OGG_LIBRARY ${OGG_LIBRARY} CACHE INTERNAL "" FORCE)
++set(_OGG_VERSION_STRING "${OGG_VERSION_STRING}" CACHE INTERNAL "" FORCE)
+\ No newline at end of file

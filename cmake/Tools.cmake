@@ -1,3 +1,12 @@
+include_guard(GLOBAL)
+
+# Internal Cached Variables
+
+if ("${CMAKE_GENERATOR}" MATCHES "Visual Studio")
+    set(_IS_VS_GENERATOR ON CACHE INTERNAL "" FORCE)
+else ()
+    set(_IS_VS_GENERATOR OFF CACHE INTERNAL "" FORCE)
+endif ()
 
 macro(list_directories retval cwd)
 
@@ -56,6 +65,11 @@ endmacro()
 # IDE Directories
 
 function(map_source_groups)
+
+    # Check whether generator target supports source groups
+    if (NOT ${_IS_VS_GENERATOR})
+        return()
+    endif ()
 
     # Parse Arguments
     set(__single_var_options BASE_PATH)

@@ -1,32 +1,31 @@
 function(library_dr_libs_init)
 
-	cmake_minimum_required(VERSION 3.27.7)
-	include(FetchContent)
+    cmake_minimum_required(VERSION 3.27.7)
+    include(FetchContent)
 
-	name_to_external_alias(alias "drlibs")
+    name_to_external_alias(alias "drlibs")
 
-	# Include Sub-Project
-	get_external_include_path(lib_inc_path "dr_libs")
-	get_external_source_path(lib_src_path "dr_libs")
+    # Include Sub-Project
+    get_external_include_path(lib_inc_path "dr_libs")
+    get_external_source_path(lib_src_path "dr_libs")
 
-	FetchContent_Declare(
-			drlibs
-			GIT_REPOSITORY https://github.com/mackron/dr_libs.git
-			GIT_SUBMODULES_RECURSE OFF
-			GIT_SHALLOW ON
-			SOURCE_DIR "${lib_src_path}"
-			LOG_DOWNLOAD ON
-			EXCLUDE_FROM_ALL
-	)
-	FetchContent_MakeAvailable(
-			drlibs
-	)
+    CachedFetchContent_Declare(
+            drlibs
+            GIT_REPOSITORY https://github.com/mackron/dr_libs.git
+            GIT_SUBMODULES_RECURSE OFF
+            GIT_SHALLOW ON
+            SOURCE_DIR "${lib_src_path}"
+            EXCLUDE_FROM_ALL
+    )
+    FetchContent_MakeAvailable(
+            drlibs
+    )
 
-	# Setup Library
-	install_includes(
-			SOURCE "${lib_src_path}/dr_flac.h" "${lib_src_path}/dr_wav.h"
-			DESTINATION "${lib_inc_path}/dr_libs/"
-	)
+    # Setup Library
+    install_includes(
+            SOURCE "${lib_src_path}/dr_flac.h" "${lib_src_path}/dr_wav.h"
+            DESTINATION "${lib_inc_path}/dr_libs/"
+    )
 
 endfunction()
 
