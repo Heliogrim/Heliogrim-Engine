@@ -1,6 +1,7 @@
 #pragma once
 
 #include <mutex>
+#include <Engine.Common/Memory/MemoryPointer.hpp>
 
 #include "../ResourceUsageFlag.hpp"
 
@@ -90,12 +91,12 @@ namespace hg::engine::resource {
 		[[nodiscard]] explicit operator bool() const noexcept;
 
 	public:
-		[[nodiscard]] const non_owning_rptr<const value_type> imm() const noexcept;
+		[[nodiscard]] nmpt<const value_type> imm() const noexcept;
 
-		[[nodiscard]] const non_owning_rptr<const value_type> imm() noexcept;
+		[[nodiscard]] nmpt<const value_type> imm() noexcept;
 
-		[[nodiscard]] const ptr<value_type> mut() const noexcept;
+		[[nodiscard]] nmpt<value_type> mut() const noexcept;
 
-		[[nodiscard]] const ptr<value_type> mut() noexcept;
+		[[nodiscard]] nmpt<value_type> mut() noexcept;
 	};
 }

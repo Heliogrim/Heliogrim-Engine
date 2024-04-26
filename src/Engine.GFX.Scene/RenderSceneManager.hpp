@@ -65,12 +65,12 @@ namespace hg::engine::gfx::scene {
 		_CTRL_OBJ(_ctrl);
 
 	private:
-		void injectSceneHooks(const ptr<engine::scene::SceneBase> renderableScene_);
+		void injectSceneHooks(nmpt<engine::scene::SceneBase> renderableScene_);
 
 	public:
-		void registerScene(const ptr<engine::scene::SceneBase> renderableScene_);
+		void registerScene(nmpt<engine::scene::SceneBase> renderableScene_);
 
-		bool unregisterScene(const ptr<engine::scene::SceneBase> renderableScene_);
+		bool unregisterScene(nmpt<engine::scene::SceneBase> renderableScene_);
 
 	private:
 		CompactSet<smr<RenderTarget>> _primaryTargets;

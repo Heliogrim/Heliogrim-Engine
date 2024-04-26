@@ -396,8 +396,7 @@ namespace hg::math {
 		}
 
 		/**
-		 * \brief 
-		 * \return 
+		 * @returns An instance of a 4x4 quadratic identity matrix.
 		 */
 		constexpr static matq4_t<T> make_identity() {
 			return matq4_t(1);

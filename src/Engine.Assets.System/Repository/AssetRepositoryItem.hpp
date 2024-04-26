@@ -1,12 +1,10 @@
 #pragma once
 
-#include <Engine.Common/Wrapper.hpp>
 #include <Engine.Assets/Types/Asset.hpp>
-#include <Engine.Assets/AssetTypeId.hpp>
-#include <Engine.Assets/AssetGuid.hpp>
+#include <Engine.Common/Managed/Rc.hpp>
 
 namespace hg::engine::assets::system {
-    struct AssetRepositoryItem {
-        uptr<Asset> asset;
-    };
+	struct AssetRepositoryItem {
+		Arci<Asset> asset;
+	};
 }

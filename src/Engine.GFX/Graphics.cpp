@@ -68,7 +68,7 @@ void Graphics::hookEngineState() {
 	const auto owae = _engine->getEmitter().on<core::WorldAddedEvent>(
 		[this](cref<core::WorldAddedEvent> event_) {
 
-			auto* const scene { event_.getWorld()->getScene() };
+			const auto scene = event_.getWorld()->getScene();
 
 			/*
 			if (not sceneClass->isType<scene::IRenderScene>()) {
@@ -88,7 +88,7 @@ void Graphics::hookEngineState() {
 	const auto owre = _engine->getEmitter().on<core::WorldRemoveEvent>(
 		[this](cref<core::WorldRemoveEvent> event_) {
 
-			auto* const scene { event_.getWorld()->getScene() };
+			const auto scene { event_.getWorld()->getScene() };
 			const auto* const sceneClass { scene->getMetaClass() };
 
 			/*
@@ -207,9 +207,7 @@ void Graphics::setup() {
 	{
 		auto renderer = make_smr<render::TestRenderer>(_cacheCtrl.get(), _device->allocator());
 		_cachedRenderer.insert_or_assign("Test-Renderer", std::move(renderer));
-	}
-
-	{
+	} {
 		auto renderer = make_smr<editor::render::EditorRenderer>(_cacheCtrl.get(), _device->allocator());
 		_cachedRenderer.insert_or_assign("Editor-Renderer", std::move(renderer));
 	}
@@ -333,7 +331,7 @@ const non_owning_rptr<gfx::scene::RenderSceneManager> Graphics::getSceneManager(
 	return _sceneManager;
 }
 
-void Graphics::cleanupTargetsByScene(const ptr<engine::scene::SceneBase> renderableScene_) {
+void Graphics::cleanupTargetsByScene(nmpt<engine::scene::SceneBase> renderableScene_) {
 
 	CompactArray<smr<RenderTarget>> targets {};
 	_sceneManager->selectPrimaryTargets(

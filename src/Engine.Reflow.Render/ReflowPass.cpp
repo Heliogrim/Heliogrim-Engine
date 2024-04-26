@@ -26,6 +26,7 @@
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets/AssetFactory.hpp>
 #include <Engine.Assets/Assets.hpp>
+#include <Engine.Assets/Types/Image.hpp>
 #include <Engine.Assets/Types/Texture/TextureAsset.hpp>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
 #include <Engine.GFX.Loader/Texture/TextureResource.hpp>
@@ -160,9 +161,7 @@ void render::ReflowPass::execute(cref<engine::render::graph::ScopedSymbolContext
 
 	/**/
 
-	ptr<const UISceneModel> uiModel = nullptr;
-
-	{
+	ptr<const UISceneModel> uiModel = nullptr; {
 		auto sceneViewRes = symCtx_.getImportSymbol(makeSceneViewSymbol());
 		auto sceneView = sceneViewRes->load<smr<const gfx::scene::SceneView>>();
 
@@ -337,8 +336,8 @@ void render::ReflowPass::execute(cref<engine::render::graph::ScopedSymbolContext
 
 void render::ReflowPass::ensureDefaultImage() {
 
-	const auto* const factory = Engine::getEngine()->getAssets()->getFactory();
-	auto* const registry = Engine::getEngine()->getAssets()->getRegistry();
+	const auto factory = Engine::getEngine()->getAssets()->getFactory();
+	const auto registry = Engine::getEngine()->getAssets()->getRegistry();
 
 	if (not registry->hasAsset(game::assets::image::UIDummy::unstable_auto_guid())) {
 		factory->createImageAsset(
@@ -353,12 +352,12 @@ void render::ReflowPass::ensureDefaultImage() {
 
 	/**/
 
-	auto* const asset = registry->findAssetByGuid(game::assets::texture::UIDummy::unstable_auto_guid());
+	const auto asset = registry->findAssetByGuid(game::assets::texture::UIDummy::unstable_auto_guid());
 	assert(asset != nullptr);
 
 	/**/
 
-	auto request = static_cast<ptr<assets::TextureAsset>>(asset);
+	auto request = static_cast<ptr<assets::TextureAsset>>(asset.get());
 	auto resource = Engine::getEngine()->getResources()->loader().load<assets::TextureAsset, gfx::TextureResource>(
 		std::move(request)
 	);

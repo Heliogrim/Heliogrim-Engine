@@ -89,31 +89,24 @@ function(make_app_project)
     endif ()
 
     # Include Directories
-    target_include_directories(
-            ${app_target}
-            PRIVATE
-            ${DEFAULT_INCLUDE_DIRECTORIES}
-            ${proj_src_dir}
-    )
-    target_include_directories(
-            ${lib_target}
-            PRIVATE
-            ${DEFAULT_INCLUDE_DIRECTORIES}
-            ${proj_src_dir}
-    )
+    target_include_directories(${app_target} PRIVATE ${proj_src_dir})
+    target_include_directories(${app_target} SYSTEM PUBLIC ${DEFAULT_INCLUDE_DIRECTORIES})
+
+    target_include_directories(${lib_target} PRIVATE ${proj_src_dir})
+    target_include_directories(${lib_target} SYSTEM PUBLIC ${DEFAULT_INCLUDE_DIRECTORIES})
 
     # Link Libraries
     target_link_libraries(
             ${app_target}
             PRIVATE
-            ${DEFAULT_LIBRARIES}
             ${args_LIBRARIES}
+            ${DEFAULT_LIBRARIES}
     )
     target_link_libraries(
             ${lib_target}
             PRIVATE
-            ${DEFAULT_LIBRARIES}
             ${args_LIBRARIES}
+            ${DEFAULT_LIBRARIES}
     )
 
     # Compile Definitions

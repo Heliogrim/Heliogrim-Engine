@@ -4,33 +4,35 @@
 #include "Compile.hpp"
 
 namespace hg {
-    class __declspec(novtable) ClassMetaBase {
-    public:
-        template <typename>
-        friend class InheritBase;
+	class __declspec(novtable) ClassMetaBase {
+	public:
+		template <typename>
+		friend class InheritBase;
 
-        template <typename, typename, typename...>
-        friend class InheritMeta;
+		template <typename, typename, typename...>
+		friend class InheritMeta;
 
-        template <typename>
-        friend struct lookup;
+		template <typename>
+		friend struct lookup;
 
-        constexpr static const char* name = "ClassMetaBase";
+		constexpr static const char* name = "ClassMetaBase";
 
-    public:
-        using this_type = ClassMetaBase;
+	public:
+		using this_type = ClassMetaBase;
 
-        using __inherit_types = reflect::__type_list<>;
+		using __inherit_types = reflect::__type_list<>;
 
-    public:
-        constexpr ClassMetaBase() noexcept = default;
+	public:
+		constexpr ClassMetaBase() noexcept = default;
 
-    private:
-        __restricted_ptr<const class MetaClass> _meta = nullptr;
+	private:
+		__restricted_ptr<const class MetaClass> _meta = nullptr;
 
-    public:
-        [[nodiscard]] const __restricted_ptr<const class MetaClass> getMetaClass() const noexcept {
-            return _meta;
-        }
-    };
+	public:
+		// NOLINTBEGIN(*-const-return-type)
+		[[nodiscard]] const __restricted_ptr<const class MetaClass> getMetaClass() const noexcept {
+			// NOLINTEND(*-const-return-type)
+			return _meta;
+		}
+	};
 }

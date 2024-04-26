@@ -12,59 +12,59 @@ ReflowState::ReflowState() = default;
 ReflowState::~ReflowState() = default;
 
 void ReflowState::reset() {
-    _recorded.clear();
+	_recorded.clear();
 }
 
 u16 ReflowState::getRenderTick() const noexcept {
-    return _renderTick;
+	return _renderTick;
 }
 
 void ReflowState::setRenderTick(const u16 renderTick_) noexcept {
-    _renderTick = renderTick_;
+	_renderTick = renderTick_;
 }
 
-non_owning_rptr<ReflowPassState> ReflowState::record(cref<sptr<Widget>> widget_) {
+nmpt<ReflowPassState> ReflowState::record(cref<sptr<Widget>> widget_) {
 
-    const auto iter = _recorded.find(widget_.get());
-    if (iter != _recorded.end()) {
-        return iter->second;
-    }
+	const auto iter = _recorded.find(widget_.get());
+	if (iter != _recorded.end()) {
+		return iter->second;
+	}
 
-    const auto result = _recorded.insert(
-        std::make_pair(
-            widget_.get(),
-            std::addressof(widget_->layoutState())
-        )
-    );
+	const auto result = _recorded.insert(
+		std::make_pair(
+			widget_.get(),
+			std::addressof(widget_->layoutState())
+		)
+	);
 
-    /**/
+	/**/
 
-    ref<ReflowPassState> state = *result.first->second;
-    return result.first->second;
+	ref<ReflowPassState> state = *result.first->second;
+	return result.first->second;
 }
 
-const non_owning_rptr<const ReflowPassState> ReflowState::getStateOf(cref<sptr<Widget>> widget_) const {
-    const auto iter = _recorded.find(widget_.get());
-    if (iter != _recorded.end()) {
-        return iter->second;
-    }
-    return nullptr;
+nmpt<const ReflowPassState> ReflowState::getStateOf(cref<sptr<Widget>> widget_) const {
+	const auto iter = _recorded.find(widget_.get());
+	if (iter != _recorded.end()) {
+		return iter->second;
+	}
+	return nullptr;
 }
 
-const non_owning_rptr<const ReflowPassState> ReflowState::getStateOf(
-    const non_owning_rptr<const Widget> widget_
+nmpt<const ReflowPassState> ReflowState::getStateOf(
+	nmpt<const Widget> widget_
 ) const {
-    const auto iter = _recorded.find(const_cast<const ptr<Widget>>(widget_));
-    if (iter != _recorded.end()) {
-        return iter->second;
-    }
-    return nullptr;
+	const auto iter = _recorded.find(const_cast<const ptr<Widget>>(widget_.get()));
+	if (iter != _recorded.end()) {
+		return iter->second;
+	}
+	return nullptr;
 }
 
-const non_owning_rptr<ReflowPassState> ReflowState::getStateOf(cref<sptr<Widget>> widget_) {
-    const auto iter = _recorded.find(widget_.get());
-    if (iter != _recorded.end()) {
-        return iter->second;
-    }
-    return nullptr;
+nmpt<ReflowPassState> ReflowState::getStateOf(cref<sptr<Widget>> widget_) {
+	const auto iter = _recorded.find(widget_.get());
+	if (iter != _recorded.end()) {
+		return iter->second;
+	}
+	return nullptr;
 }

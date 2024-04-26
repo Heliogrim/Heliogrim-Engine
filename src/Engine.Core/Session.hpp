@@ -1,28 +1,29 @@
 #pragma once
 
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Memory/MemoryPointer.hpp>
 
 namespace hg::engine::core {
-    class Session {
-    public:
-        using this_type = Session;
+	class Session {
+	public:
+		using this_type = Session;
 
-    public:
-        Session();
+	public:
+		Session();
 
-        Session(cref<this_type>) = delete;
+		Session(cref<this_type>) = delete;
 
-        Session(mref<this_type>) noexcept = delete;
+		Session(mref<this_type>) noexcept = delete;
 
-        ~Session();
+		~Session();
 
-    private:
-        uptr<class SessionState> _state;
-        uptr<class WorldContext> _worldContext;
+	private:
+		uptr<class SessionState> _state;
+		uptr<class WorldContext> _worldContext;
 
-    public:
-        [[nodiscard]] const non_owning_rptr<class SessionState> getState() const noexcept;
+	public:
+		[[nodiscard]] nmpt<class SessionState> getState() const noexcept;
 
-        [[nodiscard]] const non_owning_rptr<class WorldContext> getWorldContext() const noexcept;
-    };
+		[[nodiscard]] nmpt<class WorldContext> getWorldContext() const noexcept;
+	};
 }

@@ -87,8 +87,8 @@ fs::Url getLfsUrl(const non_owning_rptr<const engine::assets::Asset> asset_) {
 			const auto* const texture = static_cast<const ptr<const engine::assets::TextureAsset>>(asset_);
 			const auto baseImageGuid = texture->baseImage();
 
-			const auto* const registry = engine::Engine::getEngine()->getAssets()->getRegistry();
-			const auto* const asset = registry->findAssetByGuid(baseImageGuid);
+			const auto registry = engine::Engine::getEngine()->getAssets()->getRegistry();
+			const auto asset = registry->findAssetByGuid(baseImageGuid);
 
 			if (asset == nullptr) {
 				return fs::Url {};
@@ -96,7 +96,7 @@ fs::Url getLfsUrl(const non_owning_rptr<const engine::assets::Asset> asset_) {
 
 			fs::Url lfsUrl {};
 			//const auto* const image = Cast<engine::assets::Image, engine::assets::Asset, false>(asset);
-			const auto* const image = static_cast<const ptr<const engine::assets::Image>>(asset);
+			const auto image = Cast<engine::assets::Image>(asset.get());
 
 			for (const auto& sourceUrl : image->sources()) {
 				if (sourceUrl.scheme() == "file") {

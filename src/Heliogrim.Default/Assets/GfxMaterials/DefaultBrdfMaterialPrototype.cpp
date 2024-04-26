@@ -3,6 +3,7 @@
 #include <Engine.Accel/Accel.hpp>
 #include <Engine.Assets/AssetFactory.hpp>
 #include <Engine.Assets/Assets.hpp>
+#include <Engine.Assets/Types/AccelEffect.hpp>
 #include <Engine.Assets/Types/Material/GfxMaterialPrototype.hpp>
 #include <Engine.Common/GuidFormat.hpp>
 #include <Engine.Core/Engine.hpp>
@@ -33,7 +34,7 @@ DefaultBrdfMaterialPrototype::DefaultBrdfMaterialPrototype() :
 	engine::Engine::getEngine()->getAssets()->getFactory()->createAccelEffectAsset(predefined->getGuid());
 
 	auto submodule = engine::Engine::getEngine()->getModules().getSubModule(engine::AccelDepKey);
-	auto accel = static_cast<ptr<engine::Accel>>(submodule);
+	auto accel = static_cast<ptr<engine::Accel>>(submodule.get());
 	accel->getGlobalStorage()->insertAccelEffect(engine::accel::calcStorageHash(*predefined), std::move(predefined));
 
 	asset->_params.push_back(

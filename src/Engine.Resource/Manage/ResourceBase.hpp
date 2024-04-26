@@ -4,6 +4,7 @@
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.Reflect/Inherit/ClassMetaBase.hpp>
 
 #include "__fwd.hpp"
@@ -90,7 +91,7 @@ namespace hg::engine::resource {
 		virtual void release(const ResourceUsageFlags flags_) = 0;
 
 	protected:
-		[[nodiscard]] virtual const non_owning_rptr<void> value() const noexcept = 0;
+		[[nodiscard]] virtual nmpt<void> value() const noexcept = 0;
 
 	protected:
 		/**/

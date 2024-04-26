@@ -39,7 +39,7 @@ namespace hg::engine::acs {
 			return _storage.size();
 		}
 
-		const bool canConsolidate() const {
+		bool canConsolidate() const {
 			// TODO:
 			return false;
 		}

@@ -3,6 +3,7 @@
 #include <concepts>
 
 #include "../Types.hpp"
+#include "../Wrapper.hpp"
 #include "../Hash/Murmur3.hpp"
 
 namespace hg {
@@ -73,8 +74,8 @@ namespace hg {
 		constexpr type_id fnv1a_86(const char* str_, const std::size_t count_) {
 			return type_id {
 				(
-					(count_ ? fnv1a_86(str_, count_ - 1).data : 2166136261u) ^ str_[count_]
-				) * 16777619u
+					(count_ ? fnv1a_86(str_, count_ - 1).data : 2166136261uLL) ^ static_cast<cref<u64>>(str_[count_])
+				) * 16777619uLL
 			};
 		}
 	}

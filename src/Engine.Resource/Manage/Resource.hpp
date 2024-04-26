@@ -59,12 +59,12 @@ namespace hg::engine::resource {
 		__restricted_ptr<value_type> _value;
 
 	public:
-		loaded_flag_type loaded() const noexcept override {
-			return (loaded_flag_type)(_value != nullptr);
+		[[nodiscard]] loaded_flag_type loaded() const noexcept override {
+			return static_cast<loaded_flag_type>(_value != nullptr);
 		}
 
 	protected:
-		[[nodiscard]] const non_owning_rptr<void> value() const noexcept override {
+		[[nodiscard]] nmpt<void> value() const noexcept override {
 			return _value;
 		}
 

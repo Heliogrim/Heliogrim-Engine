@@ -5,21 +5,21 @@
 #include "Lang/TextBlock.hpp"
 
 namespace hg::engine::accel::lang {
-    class Language {
-    public:
-        constexpr Language() noexcept = default;
+	class Language {
+	public:
+		constexpr Language() noexcept = default;
 
-        Language(cref<Language> other_) :
-            dialect(other_.dialect),
-            text() {
-            for (const auto& val : other_.text) {
-                text.emplace_back(val);
-            }
-        }
+		Language(cref<Language> other_) :
+			dialect(other_.dialect),
+			text() {
+			for (const auto& val : other_.text) {
+				text.emplace_back(val);
+			}
+		}
 
-        Language(mref<Language> other_) noexcept = default;
+		Language(mref<Language> other_) noexcept = default;
 
-        Dialect dialect;
-        InlineAutoArray<TextBlock, 1uLL> text;
-    };
+		Dialect dialect;
+		InlineAutoArray<TextBlock, 1uLL> text;
+	};
 }

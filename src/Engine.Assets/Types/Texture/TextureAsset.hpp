@@ -8,89 +8,89 @@
 #include "../AssetConcept.hpp"
 
 namespace hg::engine::assets {
-    class TextureAsset :
-        public InheritMeta<TextureAsset, Asset> {
-    public:
-        template <typename>
-        friend class serialization::DataLayout;
+	class TextureAsset :
+		public InheritMeta<TextureAsset, Asset> {
+	public:
+		template <typename>
+		friend class serialization::DataLayout;
 
-        ACCESS_LAYOUT
-        ACCESS_STRUCTURE
+		ACCESS_LAYOUT
+		ACCESS_STRUCTURE
 
-    public:
-        static constexpr asset_type_id typeId { "Texture"_typeId };
+	public:
+		static constexpr asset_type_id typeId { "Texture"_typeId };
 
-    private:
-    public:
-        TextureAsset();
+	private:
+	public:
+		TextureAsset();
 
-    protected:
-        TextureAsset(mref<asset_guid> guid_);
+	protected:
+		explicit TextureAsset(mref<asset_guid> guid_);
 
-    public:
-        TextureAsset(
-            mref<asset_guid> guid_,
-            cref<asset_guid> baseImage_,
-            mref<Vector<asset_guid>> images_,
-            cref<math::uivec3> extent_,
-            cref<gfx::TextureFormat> format_,
-            cref<u32> mipLevel_,
-            cref<gfx::TextureType> type_
-        );
+	public:
+		TextureAsset(
+			mref<asset_guid> guid_,
+			cref<asset_guid> baseImage_,
+			mref<Vector<asset_guid>> images_,
+			cref<math::uivec3> extent_,
+			cref<gfx::TextureFormat> format_,
+			cref<u32> mipLevel_,
+			cref<gfx::TextureType> type_
+		);
 
-    private:
-        asset_guid _baseImage;
-        Vector<asset_guid> _images;
+	private:
+		asset_guid _baseImage;
+		Vector<asset_guid> _images;
 
-    public:
-        [[nodiscard]] cref<asset_guid> baseImage() const noexcept;
+	public:
+		[[nodiscard]] cref<asset_guid> baseImage() const noexcept;
 
-        void setBaseImage(const asset_guid imageGuid_);
+		void setBaseImage(const asset_guid imageGuid_);
 
-        void addSourceImage(const asset_guid imageGuid_);
+		void addSourceImage(const asset_guid imageGuid_);
 
-        [[nodiscard]] bool hasSourceImage(const asset_guid imageGuid_);
+		[[nodiscard]] bool hasSourceImage(const asset_guid imageGuid_);
 
-        void removeSourceImage(const asset_guid imageGuid_);
+		void removeSourceImage(const asset_guid imageGuid_);
 
-    private:
-        math::uivec3 _extent;
+	private:
+		math::uivec3 _extent;
 
-    public:
-        [[nodiscard]] cref<math::uivec3> getExtent() const noexcept;
+	public:
+		[[nodiscard]] cref<math::uivec3> getExtent() const noexcept;
 
-        void setExtent(cref<math::uivec3> extent_);
+		void setExtent(cref<math::uivec3> extent_);
 
-    private:
-        gfx::TextureFormat _format;
+	private:
+		gfx::TextureFormat _format;
 
-    public:
-        [[nodiscard]] gfx::TextureFormat getTextureFormat() const noexcept;
+	public:
+		[[nodiscard]] gfx::TextureFormat getTextureFormat() const noexcept;
 
-        void setTextureFormat(const gfx::TextureFormat format_);
+		void setTextureFormat(const gfx::TextureFormat format_);
 
-    private:
-        u32 _mipLevel;
+	private:
+		u32 _mipLevel;
 
-    public:
-        [[nodiscard]] u32 getMipLevelCount() const noexcept;
+	public:
+		[[nodiscard]] u32 getMipLevelCount() const noexcept;
 
-        void setMipLevelCount(const u32 levels_);
+		void setMipLevelCount(const u32 levels_);
 
-    private:
-        gfx::TextureType _textureType;
+	private:
+		gfx::TextureType _textureType;
 
-    public:
-        [[nodiscard]] gfx::TextureType getTextureType() const noexcept;
+	public:
+		[[nodiscard]] gfx::TextureType getTextureType() const noexcept;
 
-        void setTextureType(const gfx::TextureType type_);
-    };
+		void setTextureType(const gfx::TextureType type_);
+	};
 }
 
 namespace hg::engine::assets {
-    template <>
-    struct MetaStreamLoaderAsset<::hg::engine::assets::TextureAsset> {
-        using type = ::hg::engine::assets::TextureAsset;
-        inline static constexpr bool value = true;
-    };
+	template <>
+	struct MetaStreamLoaderAsset<::hg::engine::assets::TextureAsset> {
+		using type = ::hg::engine::assets::TextureAsset;
+		inline static constexpr bool value = true;
+	};
 }

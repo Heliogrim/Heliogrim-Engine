@@ -53,12 +53,12 @@ namespace hg::engine::gfx::cache {
 
 	private:
 		uptr<GlobalResourceCache> _cache;
-		const non_owning_rptr<const resource::LoaderManager> _loader;
+		nmpt<const resource::LoaderManager> _loader;
 
 	public:
-		[[nodiscard]] const non_owning_rptr<GlobalResourceCache> cache() const noexcept;
+		[[nodiscard]] nmpt<GlobalResourceCache> cache() const noexcept;
 
-		[[nodiscard]] const non_owning_rptr<const resource::LoaderManager> loader() const noexcept;
+		[[nodiscard]] nmpt<const resource::LoaderManager> loader() const noexcept;
 
 	private:
 		/**

@@ -95,8 +95,8 @@ void engine::gfx::loader::register_loader(
 
 	registerIfNotPresent<FontLoader, assets::Font, FontResource>(
 		manager_,
-		std::addressof(cacheCtrl_),
-		std::addressof(pool_),
+		cacheCtrl_,
+		pool_,
 		manager_.sharedSourceLoader()
 	);
 }

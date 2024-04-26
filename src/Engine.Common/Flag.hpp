@@ -61,7 +61,7 @@ namespace hg {
 		 * @author Julius
 		 * @date 14.11.2022
 		 *
-		 * @params initial_ The initial underlying value
+		 * @param initial_ The initial underlying value
 		 */
 		constexpr Flag(const value_type& initial_) noexcept :
 			unwrap(initial_) {}

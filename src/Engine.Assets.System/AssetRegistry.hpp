@@ -50,7 +50,7 @@ namespace hg::engine::assets {
 		void addRepository(_In_ mref<uptr<system::AssetRepository>> repository_) override;
 
 		bool removeRepository(
-			_In_ mref<std::function<bool(const non_owning_rptr<system::AssetRepository> repository_)>> selector_
+			_In_ mref<std::function<bool(nmpt<system::AssetRepository> repository_)>> selector_
 		) override;
 
 		/**
@@ -59,13 +59,13 @@ namespace hg::engine::assets {
 	public:
 		[[nodiscard]] bool hasAsset(cref<asset_guid> guid_) const noexcept override;
 
-		[[nodiscard]] non_owning_rptr<Asset> getAssetByGuid(cref<asset_guid> guid_) const override;
+		[[nodiscard]] nmpt<Asset> getAssetByGuid(cref<asset_guid> guid_) const override;
 
-		[[nodiscard]] non_owning_rptr<Asset> findAssetByGuid(cref<asset_guid> guid_) const noexcept override;
+		[[nodiscard]] nmpt<Asset> findAssetByGuid(cref<asset_guid> guid_) const noexcept override;
 
-		[[nodiscard]] non_owning_rptr<Asset> getAssetByPath(cref<fs::Path> path_) const override;
+		[[nodiscard]] nmpt<Asset> getAssetByPath(cref<fs::Path> path_) const override;
 
-		[[nodiscard]] non_owning_rptr<Asset> findAssetByPath(cref<fs::Path> path_) const noexcept override;
+		[[nodiscard]] nmpt<Asset> findAssetByPath(cref<fs::Path> path_) const noexcept override;
 
 		/**
 		 * Multi-Asset Operations
@@ -73,33 +73,33 @@ namespace hg::engine::assets {
 	public:
 		void findAssetsByPath(
 			cref<fs::Path> path_,
-			_Out_ ref<Vector<non_owning_rptr<Asset>>> assets_
+			_Out_ ref<Vector<nmpt<Asset>>> assets_
 		) override;
 
 		void findAssetsByPath(
 			cref<fs::Path> path_,
 			system::FindPathOptions options_,
-			_Out_ ref<Vector<non_owning_rptr<Asset>>> assets_
+			_Out_ ref<Vector<nmpt<Asset>>> assets_
 		) override;
 
 		void findAssetsByPaths(
 			cref<std::span<fs::Path>> paths_,
-			_Out_ ref<Vector<non_owning_rptr<Asset>>> asset_
+			_Out_ ref<Vector<nmpt<Asset>>> asset_
 		) override;
 
 		void findAssetsByPaths(
 			cref<std::span<fs::Path>> paths_,
 			system::FindPathsOptions options_,
-			_Out_ ref<Vector<non_owning_rptr<Asset>>> asset_
+			_Out_ ref<Vector<nmpt<Asset>>> asset_
 		) override;
 
 		/**
 		 * Registry Mutation Operations
 		 */
 	protected:
-		void indexAsset(const non_owning_rptr<Asset> asset_);
+		void indexAsset(nmpt<Asset> asset_);
 
-		[[nodiscard]] const non_owning_rptr<system::AssetRepository> selectRepository(
+		[[nodiscard]] nmpt<system::AssetRepository> selectRepository(
 			cref<system::AssetDescriptor> descriptor_
 		) const noexcept;
 
@@ -107,7 +107,7 @@ namespace hg::engine::assets {
 		bool insert(_In_ mref<system::AssetDescriptor> descriptor_) override;
 
 	protected:
-		void dropAssetIndex(const non_owning_rptr<Asset> asset_);
+		void dropAssetIndex(nmpt<Asset> asset_);
 
 	public:
 		bool removeAssetByGuid(cref<asset_guid> guid_) override;
@@ -132,15 +132,15 @@ namespace hg::engine::assets {
 	protected:
 		bool addIndexTable(mref<uptr<system::IndexTableBase>> table_);
 
-		void rebuildIndex(const non_owning_rptr<system::IndexTableBase> indexTable_);
+		void rebuildIndex(nmpt<system::IndexTableBase> indexTable_);
 
 		void rebuildIndexes();
 
-		void clearIndex(const non_owning_rptr<system::IndexTableBase> indexTable_);
+		void clearIndex(nmpt<system::IndexTableBase> indexTable_);
 
 		void clearIndexes();
 
-		bool dropIndexTable(mref<non_owning_rptr<const system::IndexTableBase>> indexTable_);
+		bool dropIndexTable(mref<nmpt<const system::IndexTableBase>> indexTable_);
 
 	public:
 		template <typename Index_>

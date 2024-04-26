@@ -12,17 +12,17 @@ namespace hg::editor::ui {
 	public:
 		using this_type = AssetRegistryBrowserProvider;
 
-		using data_list_type = Vector<ptr<engine::assets::Asset>>;
+		using data_list_type = Vector<nmpt<engine::assets::Asset>>;
 
 	public:
 		AssetRegistryBrowserProvider(
-			const non_owning_rptr<engine::assets::IAssetRegistry> registry_
+			nmpt<engine::assets::IAssetRegistry> registry_
 		) noexcept;
 
 		~AssetRegistryBrowserProvider() override;
 
 	private:
-		non_owning_rptr<engine::assets::IAssetRegistry> _registry;
+		nmpt<engine::assets::IAssetRegistry> _registry;
 
 	private:
 		[[nodiscard]] data_list_type::iterator filterByType(

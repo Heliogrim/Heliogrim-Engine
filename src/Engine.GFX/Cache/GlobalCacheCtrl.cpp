@@ -25,11 +25,11 @@ GlobalCacheCtrl::GlobalCacheCtrl(mref<uptr<GlobalResourceCache>> cache_) :
 
 GlobalCacheCtrl::~GlobalCacheCtrl() = default;
 
-const non_owning_rptr<GlobalResourceCache> GlobalCacheCtrl::cache() const noexcept {
+nmpt<GlobalResourceCache> GlobalCacheCtrl::cache() const noexcept {
 	return _cache.get();
 }
 
-const non_owning_rptr<const engine::resource::LoaderManager> GlobalCacheCtrl::loader() const noexcept {
+nmpt<const engine::resource::LoaderManager> GlobalCacheCtrl::loader() const noexcept {
 	return _loader;
 }
 
@@ -172,10 +172,10 @@ void GlobalCacheCtrl::unmark(
 
 	#else
 
-    auto texture = static_cast<non_owning_rptr<const assets::TextureAsset>>(resource_->getAssociation());
-    auto result = _cache->query(texture->get_guid());
+	auto texture = static_cast<non_owning_rptr<const assets::TextureAsset>>(resource_->getAssociation());
+	auto result = _cache->query(texture->get_guid());
 
-    unmark(smr<resource::ResourceBase> { result.value<>() }.into<TextureResource>(), subresource_);
+	unmark(smr<resource::ResourceBase> { result.value<>() }.into<TextureResource>(), subresource_);
 
 	#endif
 }

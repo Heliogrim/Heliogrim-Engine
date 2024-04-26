@@ -28,7 +28,16 @@ namespace hg {
 			reflect::__type_list<Base_, Rest_...>,
 			typename reflect::__type_list_aggregate<Base_, Rest_...>::type
 		>::type;
-		using meta_class = TypedMetaClass<Derived_, __inherit_types>;
+		/**
+		 * Meta-Class Substitution
+		 *	Note: We need to defer the template instantiation, as Derived_ is incomplete
+		 *			while we instantiate the inheritance helper class.
+		 */
+		template <typename DerivedType_ = Derived_>
+		using meta_class = TypedMetaClass<DerivedType_, __inherit_types>;
+
+		template <typename DerivedType_ = Derived_>
+		using meta_class_ret_type = const __restricted_ptr<const meta_class<DerivedType_>>;
 
 	private:
 		template <typename Fn_, typename Type_>
@@ -56,7 +65,7 @@ namespace hg {
 			Rest_()... {
 			__each_base(
 				[](ref<ClassMetaBase> base_) noexcept {
-					base_._meta = meta_class::get();
+					base_._meta = meta_class<>::get();
 				}
 			);
 		}
@@ -67,13 +76,15 @@ namespace hg {
 			Rest_()... {
 			__each_base(
 				[](ref<ClassMetaBase> base_) noexcept {
-					base_._meta = meta_class::get();
+					base_._meta = meta_class<>::get();
 				}
 			);
 		}
 
 	private:
+		// NOLINTBEGIN(*-const-return-type)
 		[[nodiscard]] constexpr const __restricted_ptr<const MetaClass> getMetaClassBase() const noexcept {
+			// NOLINTEND(*-const-return-type)
 			return static_cast<const ptr<const Base_>>(this)->getMetaClassBase();
 		}
 
@@ -84,8 +95,11 @@ namespace hg {
 		 * @warning You shall be strictly prevent writing access to the returned data.
 		 * @returns A pointer to the compile-time object.
 		 */
-		[[nodiscard]] const __restricted_ptr<const meta_class> getMetaClass() const noexcept {
-			return static_cast<const __restricted_ptr<const meta_class>>(getMetaClassBase());
+		// NOLINTBEGIN(*-const-return-type)
+		template <typename DerivedType_ = Derived_>
+		[[nodiscard]] meta_class_ret_type<DerivedType_> getMetaClass() const noexcept {
+			// NOLINTEND(*-const-return-type)
+			return static_cast<meta_class_ret_type<DerivedType_>>(getMetaClassBase());
 		}
 
 		/**
@@ -94,8 +108,11 @@ namespace hg {
 		 * @warning You shall be strictly prevent writing access to the returned data.
 		 * @returns A pointer to the compile-time object.
 		 */
-		[[nodiscard]] constexpr static const __restricted_ptr<const meta_class> getStaticMetaClass() noexcept {
-			return meta_class::get();
+		// NOLINTBEGIN(*-const-return-type)
+		template <typename DerivedType_ = Derived_>
+		[[nodiscard]] constexpr static meta_class_ret_type<DerivedType_> getStaticMetaClass() noexcept {
+			// NOLINTEND(*-const-return-type)
+			return meta_class<>::get();
 		}
 	};
 }

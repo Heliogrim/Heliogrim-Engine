@@ -113,7 +113,7 @@ namespace hg::engine::gfx {
 		 * Create an sub-resource view of this virtual buffer
 		 *
 		 * @author Julius
-		 * @datte 03.08.20222
+		 * @date 03.08.20222
 		 *
 		 * @returns A unique pointer to the created view
 		 */

@@ -9,37 +9,39 @@
 using namespace hg;
 
 TextureAsset::TextureAsset(mref<asset_guid> guid_) noexcept :
-    StreamableRenderableAsset(
-        clone(guid_),
-        engine::assets::TextureAsset::typeId,
-        engine::Engine::getEngine()->getAssets()->getFactory()->createTextureAsset(clone(guid_))
-    ) {}
+	StreamableRenderableAsset(
+		clone(guid_),
+		engine::assets::TextureAsset::typeId,
+		// Warning: Reference out of Scope | Use-After-Free
+		engine::Engine::getEngine()->getAssets()->getFactory()->createTextureAsset(clone(guid_)).get()
+	) {}
 
 TextureAsset::TextureAsset(
-    mref<asset_guid> guid_,
-    cref<asset_guid> baseImage_,
-    mref<Vector<asset_guid>> images_,
-    cref<math::uivec3> extent_,
-    cref<TextureFormat> format_,
-    cref<u32> mipLevel_,
-    cref<TextureType> type_
+	mref<asset_guid> guid_,
+	cref<asset_guid> baseImage_,
+	mref<Vector<asset_guid>> images_,
+	cref<math::uivec3> extent_,
+	cref<TextureFormat> format_,
+	cref<u32> mipLevel_,
+	cref<TextureType> type_
 ) noexcept :
-    StreamableRenderableAsset(
-        clone(guid_),
-        engine::assets::TextureAsset::typeId,
-        engine::Engine::getEngine()->getAssets()->getFactory()->createTextureAsset(
-            clone(guid_),
-            baseImage_,
-            std::forward<Vector<asset_guid>>(images_),
-            extent_,
-            format_,
-            mipLevel_,
-            type_
-        )
-    ) {}
+	StreamableRenderableAsset(
+		clone(guid_),
+		engine::assets::TextureAsset::typeId,
+		// Warning: Reference out of Scope | Use-After-Free
+		engine::Engine::getEngine()->getAssets()->getFactory()->createTextureAsset(
+			clone(guid_),
+			baseImage_,
+			std::forward<Vector<asset_guid>>(images_),
+			extent_,
+			format_,
+			mipLevel_,
+			type_
+		).get()
+	) {}
 
 TextureAsset::~TextureAsset() noexcept = default;
 
 bool TextureAsset::isValidType() const noexcept {
-    return _typeId == engine::assets::TextureAsset::typeId;
+	return _typeId == engine::assets::TextureAsset::typeId;
 }

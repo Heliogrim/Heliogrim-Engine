@@ -185,7 +185,7 @@ namespace hg::engine {
 		[[nodiscard]] const non_owning_rptr<gfx::scene::RenderSceneManager> getSceneManager() const noexcept;
 
 	private:
-		void cleanupTargetsByScene(const ptr<engine::scene::SceneBase> renderableScene_);
+		void cleanupTargetsByScene(nmpt<engine::scene::SceneBase> renderableScene_);
 
 	private:
 		uptr<gfx::SurfaceManager> _surfaceManager;

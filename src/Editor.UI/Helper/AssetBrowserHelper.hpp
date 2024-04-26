@@ -1,56 +1,58 @@
 #pragma once
 
 #include <filesystem>
-
-#include <Engine.Common/String.hpp>
-#include <Engine.Common/Wrapper.hpp>
 #include <Engine.Assets/AssetTypeId.hpp>
 #include <Engine.Assets/Types/Texture/TextureAsset.hpp>
 #include <Engine.Assets.System/__fwd.hpp>
+#include <Engine.Common/String.hpp>
+#include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/DenseMap.hpp>
+#include <Engine.Common/Memory/MemoryPointer.hpp>
 
 namespace hg::editor::ui {
-    class AssetBrowserHelper final {
-    public:
-        using this_type = AssetBrowserHelper;
+	class AssetBrowserHelper final {
+	public:
+		using this_type = AssetBrowserHelper;
 
-    public:
-        [[nodiscard]] static const ptr<this_type> get();
+	public:
+		[[nodiscard]] static nmpt<this_type> get();
 
-        static const ptr<this_type> make();
+		static nmpt<this_type> make();
 
-        static void destroy();
+		static void destroy();
 
-    protected:
-        /**
-         * Singleton Instance
-         */
-        static uptr<AssetBrowserHelper> _instance;
+	protected:
+		/**
+		 * Singleton Instance
+		 */
+		static uptr<AssetBrowserHelper> _instance;
 
-        AssetBrowserHelper();
+		AssetBrowserHelper();
 
-    public:
-        ~AssetBrowserHelper() noexcept;
+	public:
+		~AssetBrowserHelper() noexcept;
 
-    protected:
-        void setup();
+	protected:
+		void setup();
 
-    private:
-        ptr<engine::assets::IAssetRegistry> _assetRegistry;
+	private:
+		nmpt<engine::assets::IAssetRegistry> _assetRegistry;
 
-    private:
-        ptr<engine::assets::TextureAsset> _defaultTypeIcon;
-        DenseMap<asset_type_id, ptr<engine::assets::TextureAsset>> _typeIconMap;
+	private:
+		ptr<engine::assets::TextureAsset> _defaultTypeIcon;
+		DenseMap<asset_type_id, ptr<engine::assets::TextureAsset>> _typeIconMap;
 
-    private:
-        ptr<engine::assets::TextureAsset> _directoryIcon;
-        Vector<std::pair<string, ptr<engine::assets::TextureAsset>>> _directoryIcons;
+	private:
+		ptr<engine::assets::TextureAsset> _directoryIcon;
+		Vector<std::pair<string, ptr<engine::assets::TextureAsset>>> _directoryIcons;
 
-    public:
-        [[nodiscard]] ptr<engine::assets::TextureAsset> getItemIconByAssetType(cref<asset_type_id> typeId_) const noexcept;
+	public:
+		[[nodiscard]] ptr<engine::assets::TextureAsset> getItemIconByAssetType(
+			cref<asset_type_id> typeId_
+		) const noexcept;
 
-        [[nodiscard]] ptr<engine::assets::TextureAsset> getItemIconForDirectory(cref<string_view> name_) const noexcept;
+		[[nodiscard]] ptr<engine::assets::TextureAsset> getItemIconForDirectory(cref<string_view> name_) const noexcept;
 
-        [[nodiscard]] string getAssetTypeName(cref<asset_type_id> typeId_) const noexcept;
-    };
+		[[nodiscard]] string getAssetTypeName(cref<asset_type_id> typeId_) const noexcept;
+	};
 }

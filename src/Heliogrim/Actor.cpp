@@ -140,11 +140,11 @@ ptr<Actor> hg::CreateActor(cref<World> activeWorld_) {
 		return nullptr;
 	}
 
-	auto* const session { (*where)->getOwner() };
-	auto* const registry { session->getState()->getRegistry() };
+	const auto session { (*where)->getOwner() };
+	const auto registry { session->getState()->getRegistry() };
 
 	managed<void> dummy {};
-	managed<void> alias { std::move(dummy), session };
+	managed<void> alias { std::move(dummy), session.get() };
 
 	auto* actor { registry->createActor(ActorInitializer { alias }) };
 	return actor;
@@ -182,7 +182,7 @@ Future<ptr<Actor>> hg::CreateActor(cref<World> activeWorld_, async_t) {
 		}
 	);
 
-	auto* const session { where == std::ranges::end(ctxs) ? nullptr : (*where)->getOwner() };
+	const auto session { where == std::ranges::end(ctxs) ? nullptr : (*where)->getOwner() };
 	concurrent::promise<ptr<Actor>> p {
 		[session]() -> ptr<Actor> {
 			if (session) [[likely]]
@@ -190,7 +190,7 @@ Future<ptr<Actor>> hg::CreateActor(cref<World> activeWorld_, async_t) {
 				auto* registry { session->getState()->getRegistry() };
 
 				managed<void> dummy {};
-				managed<void> alias { std::move(dummy), session };
+				managed<void> alias { std::move(dummy), session.get() };
 
 				auto* actor { registry->createActor(ActorInitializer { alias }) };
 				return actor;
@@ -259,8 +259,8 @@ Future<ptr<Actor>> hg::SpawnActor(
 Future<bool> hg::Destroy(mref<ptr<Actor>> actor_, cref<Session> session_) noexcept {
 	const auto* const session { static_cast<ptr<engine::core::Session>>(session_.unwrap().get()) };
 
-	auto* const scene = session->getWorldContext()->getCurrentWorld()->getScene();
-	auto* const registry { session->getState()->getRegistry() };
+	const auto scene = session->getWorldContext()->getCurrentWorld()->getScene();
+	const auto registry { session->getState()->getRegistry() };
 
 	const auto guid { actor_->guid() };
 	// Warning: Check modify-on-read condition
@@ -304,11 +304,11 @@ Future<bool> hg::Destroy(mref<ptr<Actor>> actor_, cref<World> activeWorld_) noex
 		}
 	);
 
-	auto* coreSession { where == std::ranges::end(ctxs) ? nullptr : (*where)->getOwner() };
+	auto coreSession { where == std::ranges::end(ctxs) ? nullptr : (*where)->getOwner() };
 
 	managed<void> dummy {};
 	const Session session {
-		managed<void> { std::move(dummy), coreSession }
+		managed<void> { std::move(dummy), coreSession.get() }
 	};
 
 	return Destroy(std::move(actor_), session);

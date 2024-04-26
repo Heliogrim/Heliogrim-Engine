@@ -4,6 +4,7 @@
 #include <stdexcept>
 
 #include "../Wrapper.hpp"
+#include "../Meta/Type.hpp"
 
 namespace hg {
 	template <typename Ty_>
@@ -15,9 +16,12 @@ namespace hg {
 			{ obj_.ref_count() } -> std::convertible_to<u16>;
 		};
 
+	template <typename Ty_>
+	concept IncompleteOrAtomicIntrusiveRefCountable = (not CompleteType<Ty_>) || (IsAtomicIntrusiveRefCountable<Ty_>);
+
 	/**/
 
-	template <IsAtomicIntrusiveRefCountable Ty_>
+	template <IncompleteOrAtomicIntrusiveRefCountable Ty_>
 	class AtomicRefCountedIntrusive;
 
 	/**/
@@ -25,7 +29,7 @@ namespace hg {
 	template <class Derived_>
 	class ArcFromThis {
 	public:
-		template <IsAtomicIntrusiveRefCountable Ux_>
+		template <IncompleteOrAtomicIntrusiveRefCountable Ux_>
 		friend class AtomicRefCountedIntrusive;
 
 	public:
@@ -35,10 +39,11 @@ namespace hg {
 		using derived_type = Derived_;
 
 	public:
+		template <typename DerivedType_ = Derived_>
 		constexpr ArcFromThis() noexcept :
 			_refs(1) {
 			static_assert(
-				std::derived_from<Derived_, this_type>,
+				std::derived_from<DerivedType_, this_type>,
 				"Used crtp helper class for ref counting incorrectly."
 			);
 		}
@@ -58,15 +63,15 @@ namespace hg {
 		counter_type _refs;
 
 	public:
-		[[nodiscard]] auto ref_inc() noexcept {
+		auto ref_inc() noexcept {
 			return ++_refs;
 		}
 
-		[[nodiscard]] auto ref_dec() noexcept {
+		auto ref_dec() noexcept {
 			return --_refs;
 		}
 
-		[[nodiscard]] auto ref_dec(const u16 refs_) noexcept {
+		auto ref_dec(const u16 refs_) noexcept {
 			return _refs -= refs_;
 		}
 
@@ -92,7 +97,7 @@ namespace hg {
 			0b11111111'11111111'11111111'11111111'11111111'11111111'00000000'00000000;
 	};
 
-	template <IsAtomicIntrusiveRefCountable Ty_>
+	template <IncompleteOrAtomicIntrusiveRefCountable Ty_>
 	class AtomicRefCountedIntrusive final {
 	public:
 		using this_type = AtomicRefCountedIntrusive<Ty_>;
@@ -166,17 +171,25 @@ namespace hg {
 
 		// TODO:
 		constexpr AtomicRefCountedIntrusive(this_type&& other_) noexcept :
-			_obj(other_._obj.exchange(packed_type { 0 }, std::memory_order::release)) {
+			_obj(++other_._obj) {
 
-			auto* const subject = decode_pointer(_obj.load(std::memory_order::relaxed));
+			// Erase previous ownership of other_ subject
 			const auto old_refs = decode_counter(_obj.load(std::memory_order::relaxed));
+			if (old_refs >= 2u) {
+				other_._obj.fetch_and(arci_packed_ref_mask, std::memory_order::release);
 
-			if (subject != nullptr) {
-				subject->ref_inc();
-				subject->ref_dec(old_refs);
+				// Release bumped reference
+				other_._obj.fetch_sub(1u, std::memory_order::release);
+
+				// Sanitize encoded value
+				auto* const subject = decode_pointer(_obj.load(std::memory_order::relaxed));
+				_obj.store(encode(subject, 1u), std::memory_order::relaxed);
+				return;
 			}
 
-			_obj.store(encode(subject, 1u), std::memory_order::relaxed);
+			// If old_refs < 2u, we got a inactive or uninitialized pointer
+			other_._obj.fetch_sub(1u, std::memory_order::relaxed);
+			_obj.store(0uLL, std::memory_order::relaxed);
 		}
 
 		constexpr ~AtomicRefCountedIntrusive() {
@@ -184,7 +197,93 @@ namespace hg {
 		}
 
 	public:
-		ref<this_type> operator=(this_type&& other_) noexcept = delete;
+		ref<this_type> operator=(this_type&& other_) noexcept {
+			if (std::addressof(other_) != this) {
+
+				/* "Lock" other local encoded pointer */
+
+				// Alias: ~fetch_add (..., std::memory_order::acq_rel)
+				auto source = ++other_._obj;
+				while (decode_counter(source) > 2u) {
+					other_._obj.fetch_sub(1u, std::memory_order::release);
+					// TODO: yield
+					source = ++other_._obj;
+				}
+
+				/* Exclusively extract remote pointer */
+
+				const auto remote_refs = decode_counter(source);
+
+				other_._obj.fetch_and(arci_packed_ref_mask, std::memory_order::release);
+				other_._obj.fetch_sub(remote_refs, std::memory_order::release);
+
+				auto* const remote = decode_pointer(source);
+
+				/* "Lock" local encoded pointer */
+
+				// Alias: ~fetch_add (..., std::memory_order::acq_rel)
+				auto target = ++_obj;
+				while (decode_counter(target) > 2u) {
+					_obj.fetch_sub(1u, std::memory_order::release);
+					// TODO: yield;
+					target = ++_obj;
+				}
+
+				/**/
+
+				auto* local = decode_pointer(target);
+				const auto local_refs = decode_counter(target);
+
+				// Note: local_refs == 1u -> inactive pointer ( got moved )
+				//			local_refs == 2u -> active pointer ( still owned )
+				if (local != nullptr && local_refs == 2u) {
+					// Modify local intrusive counter to pseudo-holder
+					_obj.fetch_and(arci_packed_ref_mask, std::memory_order::release);
+				}
+
+				if (local_refs == 1u) {
+
+					// Note: As the previous value is an inactive pointer
+					//			we are required to "relock" as an active one
+
+					target = ++_obj;
+					while (decode_counter(target) != 2u) {
+						_obj.fetch_sub(1u, std::memory_order::release);
+						// TODO: yield
+						target = ++_obj;
+					}
+
+					// Note: We may end up inbetween multiple asignments which could potentially
+					//			store a pointer before the lock expansion
+					if (auto recursive = decode_pointer(target); recursive != nullptr) {
+						// Modify local intrusive counter to pseudo-holder
+						_obj.fetch_and(arci_packed_ref_mask, std::memory_order::release);
+						// Note: As local_refs was originally 1u, we can assume that the initial local was nullptr
+						local = recursive;
+					}
+				}
+
+				/* Store remote to local */
+				_obj.fetch_or(encode_pointer(remote), std::memory_order_acq_rel);
+
+				/* Release local "lock" */
+
+				// Note: We will only release one reference bump, as the second one was required
+				//			to lift the inactive to and active pointer state
+				_obj.fetch_sub(1u, std::memory_order::release);
+
+				/* Cleanup deferred destruction */
+				if (local != nullptr) {
+					// Drop stored object with exclusive ownership
+					if (local->ref_dec() == 0) {
+						auto alloc = std::allocator<Ty_> {};
+						auto alloc_traits = std::allocator_traits<std::allocator<Ty_>> {};
+						alloc_traits.destroy(alloc, local);
+					}
+				}
+			}
+			return *this;
+		}
 
 		ref<this_type> operator=(const this_type& other_) noexcept = delete;
 
@@ -202,7 +301,7 @@ namespace hg {
 		}
 
 		constexpr void cascade_dec(const ptr<Ty_> obj_) {
-			if (obj_->ref_dec() == 0) {
+			if (obj_ != nullptr && obj_->ref_dec() == 0) {
 				destroy_obj(obj_);
 			}
 		}
@@ -233,8 +332,14 @@ namespace hg {
 			return subject == nullptr ? ref_count_type { 0 } : subject->ref_count();
 		}
 
-		// TODO:
-		void reset() = delete;
+		[[nodiscard]] constexpr ptr<Ty_> get() const noexcept {
+			const auto packed = _obj.load(std::memory_order::consume);
+			return decode_pointer(packed);
+		}
+
+		constexpr void reset() {
+			dec_not_null();
+		}
 
 		// TODO:
 		[[nodiscard]] auto release() noexcept = delete;
@@ -257,6 +362,50 @@ namespace hg {
 			throw_if_null(packed);
 			return *decode_pointer(packed);
 		}
+
+	public:
+		[[nodiscard]] constexpr bool operator==(nullptr_t) const noexcept {
+			const auto stored = _obj.load(std::memory_order::consume);
+			return stored || decode_pointer(stored) == nullptr;
+		}
+
+		[[nodiscard]] constexpr bool operator==(cref<this_type> other_) const noexcept {
+			const auto selfStored = _obj.load(std::memory_order::consume);
+			const auto otherStored = other_._obj.load(std::memory_order::consume);
+			return selfStored == otherStored || decode_pointer(selfStored) == decode_pointer(otherStored);
+		}
+
+		[[nodiscard]] constexpr bool operator!=(cref<this_type> other_) const noexcept {
+			const auto selfStored = _obj.load(std::memory_order::consume);
+			const auto otherStored = other_._obj.load(std::memory_order::consume);
+			return selfStored != otherStored && decode_pointer(selfStored) != decode_pointer(otherStored);
+		}
+
+	public:
+		/**
+		 * Pedantic Support
+		 */
+		template <IsAtomicIntrusiveRefCountable ToType_> requires
+			std::is_convertible_v<ptr<Ty_>, ptr<ToType_>> ||
+			std::derived_from<ToType_, Ty_>
+		[[nodiscard]] AtomicRefCountedIntrusive<ToType_> into() & noexcept {
+			return static_cast<AtomicRefCountedIntrusive<ToType_>>(*this);
+		}
+
+		template <IsAtomicIntrusiveRefCountable ToType_> requires
+			std::is_convertible_v<ptr<Ty_>, ptr<ToType_>> ||
+			std::derived_from<ToType_, Ty_>
+		[[nodiscard]] AtomicRefCountedIntrusive<ToType_> into() && noexcept {
+			return static_cast<AtomicRefCountedIntrusive<ToType_>&&>(*this);
+		}
+
+	private:
+		template <IsAtomicIntrusiveRefCountable ToType_> requires
+			std::is_convertible_v<ptr<Ty_>, ptr<ToType_>> ||
+			std::derived_from<ToType_, Ty_>
+		[[nodiscard]] explicit operator AtomicRefCountedIntrusive<ToType_>() & noexcept {
+			return reinterpret_cast<AtomicRefCountedIntrusive<ToType_>&&>(*this);
+		}
 	};
 
 	/**/
@@ -268,4 +417,18 @@ namespace hg {
 		assert(result);
 		return AtomicRefCountedIntrusive<Proxy_>::create_from_storage(static_cast<ptr<Derived_>>(this));
 	}
+}
+
+/**/
+
+namespace std {
+	template <class Type_>
+	struct hash<::hg::AtomicRefCountedIntrusive<Type_>> :
+		public ::std::hash<::std::uintptr_t> {
+		[[nodiscard]] size_t operator()(::hg::cref<::hg::AtomicRefCountedIntrusive<Type_>> value_) const noexcept {
+			return static_cast<const ::std::hash<::std::uintptr_t>&>(*this)(
+				reinterpret_cast<::std::uintptr_t>(std::addressof(*value_))
+			);
+		}
+	};
 }

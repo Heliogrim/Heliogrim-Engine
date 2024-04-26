@@ -126,34 +126,31 @@ FbxImporter::import_result_type FbxImporter::import(cref<res::FileTypeId> typeId
 	using namespace ::hg::engine::serialization;
 	using namespace ::hg::engine::assets;
 
-	auto& factory { *Engine::getEngine()->getAssets()->getFactory() };
-
-	auto* asset = factory.createStaticGeometryAsset(
-		generate_asset_guid(),
-		srcPath.string(),
-		data.vertexCount,
-		data.indexCount
-	);
-
 	/**/
 
-	auto* geom = static_cast<ptr<StaticGeometry>>(asset);
+	auto geom = [](const auto& path_, const auto& data_) {
+		auto& factory { *Engine::getEngine()->getAssets()->getFactory() };
+		return factory.createStaticGeometryAsset(
+			generate_asset_guid(),
+			path_.string(),
+			data_.vertexCount,
+			data_.indexCount
+		);
+	}(srcPath, data);
 	geom->setAssetName(sourceName);
 
 	IM_CORE_LOGF(
 		"Created new static geometry asset `{}` -> `{}`",
-		asset->getAssetName(),
-		encodeGuid4228(asset->get_guid())
+		geom->getAssetName(),
+		encodeGuid4228(geom->get_guid())
 	);
 
 	/**/
 
 	auto memBuffer = make_uptr<BufferArchive>();
-	auto arch = StructuredArchive(memBuffer.get());
-
-	{
+	auto arch = StructuredArchive(memBuffer.get()); {
 		auto root = arch.insertRootSlot();
-		access::Structure<StaticGeometry>::serialize(geom, std::move(root));
+		access::Structure<StaticGeometry>::serialize(geom.get(), std::move(root));
 	}
 
 	/**/

@@ -42,9 +42,9 @@ namespace hg::engine::assets::system {
 	public:
 		virtual void clear() = 0;
 
-		virtual void store(const non_owning_rptr<Asset> asset_) = 0;
+		virtual void store(nmpt<Asset> asset_) = 0;
 
-		virtual void remove(const non_owning_rptr<Asset> asset_) = 0;
+		virtual void remove(nmpt<Asset> asset_) = 0;
 	};
 
 	template <typename Index_>
@@ -90,7 +90,7 @@ namespace hg::engine::assets::system {
 		struct AutoMappingSelector<true, false> {
 			using table_type = DenseMap<
 				typename trait_type::data_type,
-				non_owning_rptr<Asset>,
+				nmpt<Asset>,
 				typename trait_type::hash_type
 			>;
 		};
@@ -99,7 +99,7 @@ namespace hg::engine::assets::system {
 		struct AutoMappingSelector<true, true> {
 			using table_type = std::map<
 				typename trait_type::data_type,
-				non_owning_rptr<Asset>,
+				nmpt<Asset>,
 				typename trait_type::relation_type
 			>;
 		};
@@ -108,7 +108,7 @@ namespace hg::engine::assets::system {
 		struct AutoMappingSelector<false, true> {
 			using table_type = std::map<
 				typename trait_type::data_type,
-				Vector<non_owning_rptr<Asset>>,
+				Vector<nmpt<Asset>>,
 				typename trait_type::relation_type
 			>;
 		};
@@ -155,33 +155,33 @@ namespace hg::engine::assets::system {
 	public:
 		template <typename IndexType_ = Index_> requires IndexTrait<IndexType_>::unique &&
 			(!IndexTrait<IndexType_>::multiple)
-		void store(const non_owning_rptr<Asset> asset_) {
+		void store(nmpt<Asset> asset_) {
 			using index_trait_type = IndexTrait<IndexType_>;
 
 			#ifdef _DEBUG
 			const auto result = _table.insert_or_assign(index_trait_type::project(asset_), asset_);
 			assert(result.second);
 			#else
-            _table.insert_or_assign(index_trait_type::project(asset_), asset_);
+			_table.insert_or_assign(index_trait_type::project(asset_), asset_);
 			#endif
 		}
 
 		template <typename IndexType_ = Index_> requires IndexTrait<IndexType_>::unique &&
 			IndexTrait<IndexType_>::multiple
-		void store(const non_owning_rptr<Asset> asset_) {
+		void store(nmpt<Asset> asset_) {
 			using index_trait_type = IndexTrait<IndexType_>;
 
 			#ifdef _DEBUG
 			const auto result = _table.insert_or_assign(index_trait_type::project(asset_), asset_);
 			assert(result.second);
 			#else
-            _table.insert_or_assign(index_trait_type::project(asset_), asset_);
+			_table.insert_or_assign(index_trait_type::project(asset_), asset_);
 			#endif
 		}
 
 		template <typename IndexType_ = Index_> requires (!IndexTrait<IndexType_>::unique) &&
 			IndexTrait<IndexType_>::multiple
-		void store(const non_owning_rptr<Asset> asset_) {
+		void store(nmpt<Asset> asset_) {
 			using index_trait_type = IndexTrait<IndexType_>;
 
 			auto iter = _table.find(index_trait_type::project(asset_));
@@ -194,12 +194,12 @@ namespace hg::engine::assets::system {
 
 			_table.insert_or_assign(
 				index_trait_type::project(asset_),
-				Vector<non_owning_rptr<Asset>>({ asset_ })
+				Vector<nmpt<Asset>>({ asset_ })
 			);
 		}
 
 	public:
-		void store(const non_owning_rptr<Asset> asset_) override {
+		void store(nmpt<Asset> asset_) override {
 			store<index_type>(asset_);
 		}
 
@@ -209,21 +209,21 @@ namespace hg::engine::assets::system {
 	public:
 		template <typename IndexType_ = Index_> requires IndexTrait<IndexType_>::unique &&
 			(!IndexTrait<IndexType_>::multiple)
-		void remove(const non_owning_rptr<Asset> asset_) {
+		void remove(nmpt<Asset> asset_) {
 			using index_trait_type = IndexTrait<IndexType_>;
 			_table.erase(index_trait_type::project(asset_));
 		}
 
 		template <typename IndexType_ = Index_> requires IndexTrait<IndexType_>::unique &&
 			IndexTrait<IndexType_>::multiple
-		void remove(const non_owning_rptr<Asset> asset_) {
+		void remove(nmpt<Asset> asset_) {
 			using index_trait_type = IndexTrait<IndexType_>;
 			_table.erase(index_trait_type::project(asset_));
 		}
 
 		template <typename IndexType_ = Index_> requires (!IndexTrait<IndexType_>::unique) &&
 			IndexTrait<IndexType_>::multiple
-		void remove(const non_owning_rptr<Asset> asset_) {
+		void remove(nmpt<Asset> asset_) {
 			using index_trait_type = IndexTrait<IndexType_>;
 
 			auto iter = _table.find(index_trait_type::project(asset_));
@@ -241,7 +241,7 @@ namespace hg::engine::assets::system {
 		}
 
 	public:
-		void remove(const non_owning_rptr<Asset> asset_) override {
+		void remove(nmpt<Asset> asset_) override {
 			remove<index_type>(asset_);
 		}
 
@@ -254,14 +254,14 @@ namespace hg::engine::assets::system {
 		 */
 
 		template <typename IndexType_ = Index_> requires IndexTrait<IndexType_>::unique
-		[[nodiscard]] non_owning_rptr<Asset> get(
+		[[nodiscard]] nmpt<Asset> get(
 			cref<typename IndexTrait<IndexType_>::data_type> index_
 		) const noexcept {
 			return _table.at(index_);
 		}
 
 		template <typename IndexType_ = Index_> requires IndexTrait<IndexType_>::unique
-		[[nodiscard]] non_owning_rptr<Asset> find(
+		[[nodiscard]] nmpt<Asset> find(
 			cref<typename IndexTrait<IndexType_>::data_type> index_
 		) const noexcept {
 			auto iter = _table.find(index_);
@@ -280,7 +280,7 @@ namespace hg::engine::assets::system {
 			std::is_void_v<typename IndexTrait<IndexType_>::multiple_options_type>
 		void get(
 			cref<typename IndexTrait<IndexType_>::data_type> index_,
-			_Out_ ref<Vector<non_owning_rptr<Asset>>> assets_
+			_Out_ ref<Vector<nmpt<Asset>>> assets_
 		) const {
 
 			using trait_type = IndexTrait<IndexType_>;
@@ -317,7 +317,7 @@ namespace hg::engine::assets::system {
 		void get(
 			cref<typename IndexTrait<IndexType_>::data_type> index_,
 			typename IndexTrait<IndexType_>::multiple_options_type options_,
-			_Out_ ref<Vector<non_owning_rptr<Asset>>> assets_
+			_Out_ ref<Vector<nmpt<Asset>>> assets_
 		) const {
 
 			using index_trait_type = IndexTrait<IndexType_>;
@@ -356,7 +356,7 @@ namespace hg::engine::assets::system {
 			std::is_void_v<typename IndexTrait<IndexType_>::multiple_options_type>
 		void get(
 			cref<typename IndexTrait<IndexType_>::data_type> index_,
-			_Out_ ref<Vector<non_owning_rptr<Asset>>> assets_
+			_Out_ ref<Vector<nmpt<Asset>>> assets_
 		) const {
 			const auto iter = _table.find(index_);
 			if (iter == _table.end()) {
@@ -373,7 +373,7 @@ namespace hg::engine::assets::system {
 		void get(
 			cref<typename IndexTrait<IndexType_>::data_type> index_,
 			typename IndexTrait<IndexType_>::multiple_options_type options_,
-			_Out_ ref<Vector<non_owning_rptr<Asset>>> assets_
+			_Out_ ref<Vector<nmpt<Asset>>> assets_
 		) const {
 
 			using index_trait_type = IndexTrait<IndexType_>;

@@ -479,7 +479,7 @@ ref<engine::core::Modules> EditorEngine::getModules() const noexcept {
 	return const_cast<ref<engine::core::Modules>>(_modules);
 }
 
-Vector<non_owning_rptr<engine::core::WorldContext>> EditorEngine::getWorldContexts() const noexcept {
+Vector<nmpt<engine::core::WorldContext>> EditorEngine::getWorldContexts() const noexcept {
 	return _worldContexts;
 }
 
@@ -491,11 +491,11 @@ void EditorEngine::removeWorld(cref<sptr<engine::core::World>> world_) {
 	_emitter.emit<WorldRemoveEvent>(world_);
 }
 
-const non_owning_rptr<engine::core::Session> EditorEngine::getEditorSession() const noexcept {
+nmpt<engine::core::Session> EditorEngine::getEditorSession() const noexcept {
 	return _editorSession.get();
 }
 
-const non_owning_rptr<engine::core::Session> EditorEngine::getPrimaryGameSession() const noexcept {
+nmpt<engine::core::Session> EditorEngine::getPrimaryGameSession() const noexcept {
 	return _primaryGameSession.get();
 }
 
