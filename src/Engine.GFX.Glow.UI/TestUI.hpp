@@ -1,20 +1,22 @@
 #pragma once
 
-#include "Engine.Reflow/Widget/Panel.hpp"
+#include <Engine.Assets/Types/Font.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.GFX.Loader/Font/FontResource.hpp>
+#include <Engine.GFX.Loader/Texture/TextureResource.hpp>
 #include <Engine.Reflow/Widget/Widget.hpp>
 #include <Engine.Reflow/Window/Window.hpp>
-#include <Engine.GFX.Loader/Texture/TextureResource.hpp>
-#include <Engine.GFX.Loader/Font/FontResource.hpp>
+
+#include "Engine.Reflow/Widget/Panel.hpp"
 
 namespace hg {
-    class Actor;
-    class ActorComponent;
+	class Actor;
+	class ActorComponent;
 }
 
 namespace hg::engine::gfx {
-    class Device;
+	class Device;
 }
 
 extern hg::smr<hg::engine::gfx::TextureResource> testTexture;
@@ -36,8 +38,10 @@ void testLoad(hg::cref<hg::sptr<hg::engine::gfx::Device>> device_);
 void destroyLoaded();
 
 void buildTestUI(
-    hg::cref<hg::sptr<hg::engine::gfx::Device>> device_,
-    const hg::non_owning_rptr<hg::engine::reflow::Window> window_
+	hg::cref<hg::sptr<hg::engine::gfx::Device>> device_,
+	const hg::non_owning_rptr<hg::engine::reflow::Window> window_
 );
 
-const hg::ptr<hg::engine::reflow::Font> getDefaultFont();
+hg::nmpt<hg::engine::assets::Font> getDefaultFont();
+
+hg::nmpt<hg::engine::reflow::Font> getDefaultFontInstance();

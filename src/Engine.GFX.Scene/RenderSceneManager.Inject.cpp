@@ -21,25 +21,25 @@ using namespace hg::engine::gfx::scene;
 using namespace hg::engine::gfx;
 using namespace hg;
 
-void RenderSceneManager::injectSceneHooks(const ptr<engine::scene::SceneBase> renderableScene_) {
+void RenderSceneManager::injectSceneHooks(nmpt<engine::scene::SceneBase> renderableScene_) {
 
-    const auto sys = renderableScene_->getSceneSystem<render::RenderSceneSystem>();
-    auto& rss = sys->getRegistry();
+	const auto sys = renderableScene_->getSceneSystem<render::RenderSceneSystem>();
+	auto& rss = sys->getRegistry();
 
-    /**/
+	/**/
 
-    rss.addTypeMapping<CameraComponent, render::CameraModel>();
+	rss.addTypeMapping<CameraComponent, render::CameraModel>();
 
-    /**/
+	/**/
 
-    rss.addTypeMapping<StaticGeometryComponent, StaticGeometryModel>();
-    rss.addTypeMapping<SkyboxComponent, SkyboxModel>();
+	rss.addTypeMapping<StaticGeometryComponent, StaticGeometryModel>();
+	rss.addTypeMapping<SkyboxComponent, SkyboxModel>();
 
-    rss.addTypeMapping<PointLightComponent, PointLightModel>();
-    rss.addTypeMapping<DirectionalLightComponent, DirectionalLightModel>();
-    rss.addTypeMapping<SpotLightComponent, SpotLightModel>();
+	rss.addTypeMapping<PointLightComponent, PointLightModel>();
+	rss.addTypeMapping<DirectionalLightComponent, DirectionalLightModel>();
+	rss.addTypeMapping<SpotLightComponent, SpotLightModel>();
 
-    /**/
+	/**/
 
-    rss.addTypeMapping<UIComponent, reflow::UISceneModel>();
+	rss.addTypeMapping<UIComponent, reflow::UISceneModel>();
 }

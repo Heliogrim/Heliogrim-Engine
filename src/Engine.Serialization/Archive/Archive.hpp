@@ -1,16 +1,16 @@
 #pragma once
 
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Filesystem/__fwd.hpp>
+#include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.Filesystem/Url.hpp>
-
+#include <Engine.Filesystem/__fwd.hpp>
 #include <Engine.Reflect/Inherit/ClassMetaBase.hpp>
 #include <Engine.Reflect/Inherit/Concept.hpp>
 
-#include "../Compression/__fwd.hpp"
-#include "../Filter/__fwd.hpp"
 #include "ArchiveStreamMode.hpp"
 #include "ArchiveVersion.hpp"
+#include "../Compression/__fwd.hpp"
+#include "../Filter/__fwd.hpp"
 
 namespace hg::engine::serialization {
 	class __declspec(novtable) Archive {
@@ -73,24 +73,24 @@ namespace hg::engine::serialization {
 		[[nodiscard]] virtual bool close();
 
 	protected:
-		ptr<ArchiveFilter> _filter;
+		nmpt<ArchiveFilter> _filter;
 
 	public:
 		[[nodiscard]] bool hasFilter() const noexcept;
 
-		[[nodiscard]] const ptr<ArchiveFilter> getArchiveFilter() const noexcept;
+		[[nodiscard]] nmpt<ArchiveFilter> getArchiveFilter() const noexcept;
 
-		void setFilter(const ptr<ArchiveFilter> filter_);
+		void setFilter(nmpt<ArchiveFilter> filter_);
 
 	protected:
-		ptr<ArchiveCompression> _compression;
+		nmpt<ArchiveCompression> _compression;
 
 	public:
 		[[nodiscard]] bool hasCompression() const noexcept;
 
-		[[nodiscard]] const ptr<ArchiveCompression> getArchiveCompression() const noexcept;
+		[[nodiscard]] nmpt<ArchiveCompression> getArchiveCompression() const noexcept;
 
-		void setCompression(const ptr<ArchiveCompression> compression_);
+		void setCompression(nmpt<ArchiveCompression> compression_);
 
 		#pragma endregion
 		#pragma region Integrity

@@ -4,23 +4,23 @@ using namespace hg::engine::core;
 using namespace hg;
 
 WorldChangeEvent::WorldChangeEvent(
-    const non_owning_rptr<Session> session_,
-    cref<sptr<World>> prevWorld_,
-    cref<sptr<World>> nextWorld_
+	nmpt<Session> session_,
+	cref<sptr<World>> prevWorld_,
+	cref<sptr<World>> nextWorld_
 ) :
-    StatelessEvent(),
-    _session(session_),
-    _prevWorld(prevWorld_),
-    _nextWorld(nextWorld_) {}
+	StatelessEvent(),
+	_session(session_),
+	_prevWorld(prevWorld_),
+	_nextWorld(nextWorld_) {}
 
-const non_owning_rptr<Session> WorldChangeEvent::getSession() const noexcept {
-    return _session;
+nmpt<Session> WorldChangeEvent::getSession() const noexcept {
+	return _session;
 }
 
 cref<sptr<World>> WorldChangeEvent::getPrevWorld() const noexcept {
-    return _prevWorld;
+	return _prevWorld;
 }
 
 cref<sptr<World>> WorldChangeEvent::getNextWorld() const noexcept {
-    return _nextWorld;
+	return _nextWorld;
 }

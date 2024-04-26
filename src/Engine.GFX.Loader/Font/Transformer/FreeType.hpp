@@ -12,7 +12,7 @@ namespace hg::engine::gfx::loader::transformer {
     extern void convertFreeType(
         const non_owning_rptr<const assets::Font> assets_,
         cref<smr<resource::Source>> src_,
-        const non_owning_rptr<reflow::Font> dst_,
+        nmpt<reflow::Font> dst_,
         cref<sptr<Device>> device_,
         const FontLoadOptions options_
     );

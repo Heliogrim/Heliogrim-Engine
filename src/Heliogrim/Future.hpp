@@ -53,7 +53,8 @@ namespace hg {
 		 * @returns A pointer to the awaitable signal.
 		 */
 		[[nodiscard]] operator ptr<await_signal_sub_type>() const noexcept {
-			return underlying_type::signal();
+			// TODO: Rework
+			return underlying_type::signal().get();
 		}
 	};
 }

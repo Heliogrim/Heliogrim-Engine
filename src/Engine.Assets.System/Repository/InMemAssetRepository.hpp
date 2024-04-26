@@ -30,7 +30,7 @@ namespace hg::engine::assets::system {
 		DenseMap<asset_guid, AssetRepositoryItem> _entries;
 
 	public:
-		[[nodiscard]] bool destroyAsset(mref<non_owning_rptr<Asset>> asset_) override;
+		[[nodiscard]] bool destroyAsset(mref<nmpt<Asset>> asset_) override;
 
 	public:
 		// TODO: Check whether we want something like a `LockedView` to prevent mutation within a sub-sequence
@@ -42,7 +42,7 @@ namespace hg::engine::assets::system {
 
 	public:
 		template <typename AssetType_> requires std::derived_from<AssetType_, Asset>
-		[[nodiscard]] const non_owning_rptr<AssetType_> storeAsset(_In_ mref<ptr<AssetType_>> owningPtr_) {
+		[[nodiscard]] nmpt<AssetType_> storeAsset(_In_ mref<Arci<AssetType_>> owningPtr_) {
 
 			const auto key = owningPtr_->get_guid();
 			if (_entries.contains(key)) {
@@ -53,7 +53,7 @@ namespace hg::engine::assets::system {
 				std::make_pair(
 					key,
 					AssetRepositoryItem {
-						uptr<AssetType_>(std::move(owningPtr_))
+						std::move(owningPtr_)
 					}
 				)
 			);
@@ -64,7 +64,7 @@ namespace hg::engine::assets::system {
 		// TODO: Replace with better memory management
 		template <IsAsset AssetType_, typename... ConstructArgs_> requires
 			std::is_constructible_v<AssetType_, asset_guid, ConstructArgs_...>
-		[[nodiscard]] const non_owning_rptr<AssetType_> createAsset(
+		[[nodiscard]] nmpt<AssetType_> createAsset(
 			_In_ mref<asset_guid> guid_,
 			_In_ ConstructArgs_&&... args_
 		) {
@@ -77,7 +77,7 @@ namespace hg::engine::assets::system {
 				std::make_pair(
 					guid_,
 					AssetRepositoryItem {
-						make_uptr<AssetType_, asset_guid, ConstructArgs_...>(
+						Arci<AssetType_>::template create<asset_guid, ConstructArgs_...>(
 							std::forward<asset_guid>(guid_),
 							std::forward<ConstructArgs_>(args_)...
 						)

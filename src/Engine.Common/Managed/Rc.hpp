@@ -7,27 +7,27 @@
 #include "AtomicRefCountedIntrusive.hpp"
 
 namespace hg {
-    /**
-     * Reference Counted < Type_ >
-     */
-    template <typename Type_>
-    using Rc = RefCounted<Type_>;
+	/**
+	 * Reference Counted < Type_ >
+	 */
+	template <typename Type_>
+	using Rc = RefCounted<Type_>;
 
-    /**
-     * Intrusive Reference Counted < Type_ >
-     */
-    template <IsIntrusiveRefCountable Type_>
-    using Rci = RefCountedIntrusive<Type_>;
+	/**
+	 * Intrusive Reference Counted < Type_ >
+	 */
+	template <IsIntrusiveRefCountable Type_>
+	using Rci = RefCountedIntrusive<Type_>;
 
-    /**
-     * Atomic Reference Counted < Type_ >
-     */
-    template <typename Type_>
-    using Arc = smr<Type_>;
+	/**
+	 * Atomic Reference Counted < Type_ >
+	 */
+	template <typename Type_>
+	using Arc = smr<Type_>;
 
-    /**
-     * Atomic Intrusive Reference Counted < Type_ >
-     */
-    template <IsAtomicIntrusiveRefCountable Type_>
-    using Arci = AtomicRefCountedIntrusive<Type_>;
+	/**
+	 * Atomic Intrusive Reference Counted < Type_ >
+	 */
+	template <IncompleteOrAtomicIntrusiveRefCountable Type_>
+	using Arci = AtomicRefCountedIntrusive<Type_>;
 }

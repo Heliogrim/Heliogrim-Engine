@@ -1,11 +1,11 @@
 #pragma once
 
-#include <Engine.Common/Wrapper.hpp>
+#include <Engine.Assets/Types/Asset.hpp>
 
 #include "__fwd.hpp"
 
 namespace hg::engine::assets::system {
-    struct AssetDescriptor {
-        ptr<Asset> asset;
-    };
+	struct AssetDescriptor {
+		Arci<Asset> asset;
+	};
 }

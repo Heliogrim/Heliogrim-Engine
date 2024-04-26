@@ -122,28 +122,28 @@ ManageGuard::operator bool() const noexcept {
 	return not empty() && owns();
 }
 
-const non_owning_rptr<const ManageGuard::value_type> ManageGuard::imm() const noexcept {
+nmpt<const ManageGuard::value_type> ManageGuard::imm() const noexcept {
 	if (_ownedFlags != ResourceUsageFlag::eNone) {
 		return _resource->value();
 	}
 	return nullptr;
 }
 
-const non_owning_rptr<const ManageGuard::value_type> ManageGuard::imm() noexcept {
+nmpt<const ManageGuard::value_type> ManageGuard::imm() noexcept {
 	if (_ownedFlags != ResourceUsageFlag::eNone) {
 		return _resource->value();
 	}
 	return nullptr;
 }
 
-const ptr<ManageGuard::value_type> ManageGuard::mut() const noexcept {
+nmpt<ManageGuard::value_type> ManageGuard::mut() const noexcept {
 	if (_ownedFlags & ResourceUsageFlag::eWrite) {
 		return _resource->value();
 	}
 	return nullptr;
 }
 
-const ptr<ManageGuard::value_type> ManageGuard::mut() noexcept {
+nmpt<ManageGuard::value_type> ManageGuard::mut() noexcept {
 	if (_ownedFlags & ResourceUsageFlag::eWrite) {
 		return _resource->value();
 	}

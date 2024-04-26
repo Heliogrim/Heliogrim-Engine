@@ -632,12 +632,6 @@ namespace hg::math {
 		 *
 		 * @author Julius
 		 * @date 05.03.2023
-		 *
-		 * @tparam Ty_ The typename to cast the values from
-		 *
-		 * @param x_
-		 * @param y_
-		 * @param z_
 		 */
 		template <typename Ty_> requires std::is_integral_v<Ty_> || std::is_floating_point_v<Ty_>
 		explicit constexpr vec3_t(const Ty_& x_, const Ty_& y_, const Ty_& z_) :

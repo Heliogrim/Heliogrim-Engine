@@ -176,16 +176,18 @@ namespace hg {
 		constexpr MemoryPointerStorage(mem_type value_) noexcept :
 			mem(value_) {}
 
-		template <typename Tx_, typename AllocTx_> requires std::is_convertible_v<Tx_*, Ty_*>
+		template <typename Tx_, typename AllocTx_>
+			requires (std::is_void_v<Tx_> || std::is_convertible_v<Tx_*, Ty_*>)
 		constexpr MemoryPointerStorage(cref<MemoryPointerStorage<Tx_, AllocTx_, false>> other_) noexcept :
 			mem(other_.mem) {}
 
 		constexpr MemoryPointerStorage(cref<this_type> other_) noexcept :
 			mem(other_.mem) {}
 
-		template <typename Tx_, typename AllocTx_> requires std::is_nothrow_convertible_v<Tx_*, Ty_*>
+		template <typename Tx_, typename AllocTx_>
+			requires (std::is_void_v<Tx_> || std::is_nothrow_convertible_v<Tx_*, Ty_*>)
 		constexpr MemoryPointerStorage(mref<MemoryPointerStorage<Tx_, AllocTx_, false>> other_) noexcept :
-			mem(std::exchange(other_.mem, nullptr)) {}
+			mem(static_cast<decltype(mem)>(std::exchange(other_.mem, nullptr))) {}
 
 		constexpr MemoryPointerStorage(mref<this_type> other_) noexcept :
 			mem(std::exchange(other_.mem, nullptr)) {}
@@ -419,6 +421,10 @@ namespace hg {
 			return storage.compare_exchange(std::forward<Ty_*>(expect_), std::forward<Ptx_>(next_));
 		}
 
+		[[nodiscard]] Ty_* release() noexcept {
+			return this->exchange(nullptr)._Myval2;
+		}
+
 	public:
 		template <typename Tx_ = Ty_> requires (not similar_to<Tx_, void>) && std::is_same_v<Tx_, Ty_>
 		[[nodiscard]] cref<std::remove_const_t<Tx_>> operator*() const noexcept {
@@ -506,15 +512,15 @@ namespace hg {
 
 		template <
 			typename Tx_ = Ty_,
-			typename StorageTx_ = typename MemoryPointer<Tx_>::storage_type> requires std::is_nothrow_convertible_v<Tx_*
-			, Ty_*>
+			typename StorageTx_ = typename MemoryPointer<Tx_>::storage_type>
+			requires std::is_nothrow_convertible_v<Tx_*, Ty_*>
 		constexpr NonOwningMemoryPointer(cref<NonOwningMemoryPointer<Tx_, StorageTx_>> other_) noexcept :
 			storage(other_.storage) {}
 
 		constexpr NonOwningMemoryPointer(const this_type& other_) noexcept :
 			storage(other_.storage) {}
 
-		template <typename Tx_ = Ty_> requires std::is_nothrow_convertible_v<Tx_*, Ty_*>
+		template <typename Tx_ = Ty_> requires (std::is_void_v<Tx_> || std::is_nothrow_convertible_v<Tx_*, Ty_*>)
 		constexpr NonOwningMemoryPointer(mref<NonOwningMemoryPointer<Tx_>> other_) noexcept :
 			storage(std::move(other_.storage)) {}
 

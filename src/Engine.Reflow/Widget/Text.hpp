@@ -1,71 +1,78 @@
 #pragma once
+#include <Engine.Assets/Types/Font.hpp>
+#include <Heliogrim/TypedAssetGuid.hpp>
+
 #include "Widget.hpp"
 #include "../Children.hpp"
 #include "../ReflowUnit.hpp"
-#include "../TextAlign.hpp"
 #include "../ReflowWrap.hpp"
+#include "../TextAlign.hpp"
 
 namespace hg::engine::reflow {
-    class Text :
-        public Widget {
-    public:
-        using this_type = Text;
+	class Font;
+}
 
-    public:
-        Text();
+namespace hg::engine::reflow {
+	class Text :
+		public Widget {
+	public:
+		using this_type = Text;
 
-        ~Text() override;
+	public:
+		Text();
 
-    public:
-        [[nodiscard]] string getTag() const noexcept override;
+		~Text() override;
 
-    public:
-        struct Attributes {
-            Attribute<ReflowUnit> width;
-            Attribute<ReflowUnit> height;
+	public:
+		[[nodiscard]] string getTag() const noexcept override;
 
-            Attribute<ptr<Font>> font;
-            Attribute<float> fontSize;
-            Attribute<float> lineHeight;
+	public:
+		struct Attributes {
+			Attribute<ReflowUnit> width;
+			Attribute<ReflowUnit> height;
 
-            Attribute<TextAlign> textAlign;
-            Attribute<u32> textEllipse;
-            Attribute<ReflowWrap> textWrap;
+			Attribute<TypedAssetGuid<engine::assets::Font>> font;
+			Attribute<float> fontSize;
+			Attribute<float> lineHeight;
 
-            Attribute<engine::color> color;
+			Attribute<TextAlign> textAlign;
+			Attribute<u32> textEllipse;
+			Attribute<ReflowWrap> textWrap;
 
-            /**/
+			Attribute<engine::color> color;
 
-            Attribute<string> text;
-        } attr;
+			/**/
 
-    public:
-        [[nodiscard]] string getText() const noexcept;
+			Attribute<string> text;
+		} attr;
 
-        void setText(cref<string> text_);
+	public:
+		[[nodiscard]] string getText() const noexcept;
 
-    private:
-        math::vec2 contentSize(cref<math::vec2> space_) const;
+		void setText(cref<string> text_);
 
-    private:
-        NullChildren _children;
+	private:
+		math::vec2 contentSize(cref<reflow::Font> font_, cref<math::vec2> space_) const;
 
-    public:
-        const ptr<const NullChildren> children() const override;
+	private:
+		NullChildren _children;
 
-    public:
-        void render(const ptr<ReflowCommandBuffer> cmd_) override;
+	public:
+		const ptr<const NullChildren> children() const override;
 
-    public:
-        math::vec2 prefetchDesiredSize(cref<ReflowState> state_, float scale_) const override;
+	public:
+		void render(const ptr<ReflowCommandBuffer> cmd_) override;
 
-        math::vec2 computeDesiredSize(cref<ReflowPassState> passState_) const override;
+	public:
+		math::vec2 prefetchDesiredSize(cref<ReflowState> state_, float scale_) const override;
 
-        void applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) override;
+		math::vec2 computeDesiredSize(cref<ReflowPassState> passState_) const override;
 
-    public:
-        [[nodiscard]] bool willChangeLayout(
-            cref<math::vec2> space_
-        ) const noexcept override;
-    };
+		void applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) override;
+
+	public:
+		[[nodiscard]] bool willChangeLayout(
+			cref<math::vec2> space_
+		) const noexcept override;
+	};
 }

@@ -7,10 +7,10 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Functional/Function.hpp>
+#include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.Filesystem/Url.hpp>
 
 #include "__fwd.hpp"
-
 #include "Options/FindPathOptions.hpp"
 #include "Options/FindPathsOptions.hpp"
 #include "Options/RemovePathOptions.hpp"
@@ -38,7 +38,7 @@ namespace hg::engine::assets {
 		virtual void addRepository(_In_ mref<uptr<system::AssetRepository>> repository_) = 0;
 
 		virtual bool removeRepository(
-			_In_ mref<std::function<bool(const non_owning_rptr<system::AssetRepository> repository_)>> selector_
+			_In_ mref<std::function<bool(nmpt<system::AssetRepository> repository_)>> selector_
 		) = 0;
 
 		/**
@@ -47,13 +47,13 @@ namespace hg::engine::assets {
 	public:
 		[[nodiscard]] virtual bool hasAsset(cref<asset_guid> guid_) const noexcept = 0;
 
-		[[nodiscard]] virtual non_owning_rptr<Asset> getAssetByGuid(cref<asset_guid> guid_) const = 0;
+		[[nodiscard]] virtual nmpt<Asset> getAssetByGuid(cref<asset_guid> guid_) const = 0;
 
-		[[nodiscard]] virtual non_owning_rptr<Asset> findAssetByGuid(cref<asset_guid> guid_) const noexcept = 0;
+		[[nodiscard]] virtual nmpt<Asset> findAssetByGuid(cref<asset_guid> guid_) const noexcept = 0;
 
-		[[nodiscard]] virtual non_owning_rptr<Asset> getAssetByPath(cref<fs::Path> path_) const = 0;
+		[[nodiscard]] virtual nmpt<Asset> getAssetByPath(cref<fs::Path> path_) const = 0;
 
-		[[nodiscard]] virtual non_owning_rptr<Asset> findAssetByPath(cref<fs::Path> path_) const noexcept = 0;
+		[[nodiscard]] virtual nmpt<Asset> findAssetByPath(cref<fs::Path> path_) const noexcept = 0;
 
 		/**
 		 * Multi-Asset Operations
@@ -61,24 +61,24 @@ namespace hg::engine::assets {
 	public:
 		virtual void findAssetsByPath(
 			cref<fs::Path> path_,
-			_Out_ ref<Vector<non_owning_rptr<Asset>>> assets_
+			_Out_ ref<Vector<nmpt<Asset>>> assets_
 		) = 0;
 
 		virtual void findAssetsByPath(
 			cref<fs::Path> path_,
 			system::FindPathOptions options_,
-			_Out_ ref<Vector<non_owning_rptr<Asset>>> assets_
+			_Out_ ref<Vector<nmpt<Asset>>> assets_
 		) = 0;
 
 		virtual void findAssetsByPaths(
 			cref<std::span<fs::Path>> paths_,
-			_Out_ ref<Vector<non_owning_rptr<Asset>>> asset_
+			_Out_ ref<Vector<nmpt<Asset>>> asset_
 		) = 0;
 
 		virtual void findAssetsByPaths(
 			cref<std::span<fs::Path>> paths_,
 			system::FindPathsOptions options_,
-			_Out_ ref<Vector<non_owning_rptr<Asset>>> asset_
+			_Out_ ref<Vector<nmpt<Asset>>> asset_
 		) = 0;
 
 		/**

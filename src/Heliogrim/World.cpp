@@ -39,7 +39,7 @@ bool World::removeLevel(const ptr<Level> level_) {
 
 bool World::addActor(const ptr<Actor> actor_) {
 	const auto* const world { static_cast<ptr<engine::core::World>>(_internal.get()) };
-	auto* const scene { world->getScene() };
+	const auto scene { world->getScene() };
 	const auto ctx = scene->registerContext();
 	actor_->registerComponents(ctx.get());
 
@@ -51,7 +51,7 @@ bool World::addActor(const ptr<Actor> actor_) {
 
 bool World::removeActor(const ptr<Actor> actor_) {
 	const auto* const world { static_cast<ptr<engine::core::World>>(_internal.get()) };
-	auto* const scene { world->getScene() };
+	const auto scene { world->getScene() };
 	const auto ctx = scene->registerContext();
 	// actor_->unregisterComponents(ctx);
 
@@ -85,7 +85,7 @@ Future<World> hg::CreateWorld() noexcept {
 
 World hg::GetWorld(cref<Session> session_) noexcept {
 	const auto* session { static_cast<ptr<::hg::engine::core::Session>>(session_.unwrap().get()) };
-	const auto* context { session->getWorldContext() };
+	const auto context { session->getWorldContext() };
 	const auto world { context->getCurrentWorld() };
 
 	return World { world };
@@ -123,7 +123,7 @@ Future<bool> hg::Destroy(mref<World> world_) {
 
 void hg::SetWorld(cref<Session> session_, cref<World> world_) {
 	const auto* const session { static_cast<ptr<engine::core::Session>>(session_.unwrap().get()) };
-	auto* const context { session->getWorldContext() };
+	const auto context { session->getWorldContext() };
 	const sptr<engine::core::World> world { std::static_pointer_cast<engine::core::World, void>(world_.unwrap()) };
 
 	if (context->getCurrentWorld() == world) {

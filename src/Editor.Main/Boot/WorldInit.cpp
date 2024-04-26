@@ -17,38 +17,38 @@ static void addDefaultSkybox();
 
 void editor::boot::initEditorWorld() {
 
-    auto* const engine { EditorEngine::getEngine() };
-    const auto* const editor { engine->getEditorSession() };
+	auto* const engine { EditorEngine::getEngine() };
+	const auto editor { engine->getEditorSession() };
 
-    /**/
+	/**/
 
-    auto scene = SceneFactory::createEditorScene();
-    scene->prepare();
+	auto scene = SceneFactory::createEditorScene();
+	scene->prepare();
 
-    const auto world { make_sptr<core::World>(std::move(scene)) };
+	const auto world { make_sptr<core::World>(std::move(scene)) };
 
-    engine->addWorld(world);
-    editor->getWorldContext()->setCurrentWorld(world);
+	engine->addWorld(world);
+	editor->getWorldContext()->setCurrentWorld(world);
 }
 
 void editor::boot::initPrimaryWorld() {
 
-    auto* const engine { EditorEngine::getEngine() };
-    const auto* const primary { engine->getPrimaryGameSession() };
+	auto* const engine { EditorEngine::getEngine() };
+	const auto primary { engine->getPrimaryGameSession() };
 
-    /**/
+	/**/
 
-    auto scene = SceneFactory::createGameScene();
-    scene->prepare();
+	auto scene = SceneFactory::createGameScene();
+	scene->prepare();
 
-    const auto world { make_sptr<core::World>(std::move(scene)) };
+	const auto world { make_sptr<core::World>(std::move(scene)) };
 
-    engine->addWorld(world);
-    primary->getWorldContext()->setCurrentWorld(world);
+	engine->addWorld(world);
+	primary->getWorldContext()->setCurrentWorld(world);
 
-    /**/
+	/**/
 
-    addDefaultSkybox();
+	addDefaultSkybox();
 }
 
 #include <Game.Main/Assets/Meshes/Sphere.hpp>
@@ -62,22 +62,22 @@ void editor::boot::initPrimaryWorld() {
 
 static void addDefaultSkybox() {
 
-    auto session = GetSession();
-    auto primaryWorld = GetWorld(session);
+	auto session = GetSession();
+	auto primaryWorld = GetWorld(session);
 
-    auto* actor { CreateActor(session) };
-    auto init { session.getActorInitializer() };
-    auto sc = init.createComponent<SkyboxComponent>(actor);
+	auto* actor { CreateActor(session) };
+	auto init { session.getActorInitializer() };
+	auto sc = init.createComponent<SkyboxComponent>(actor);
 
-    /**/
+	/**/
 
-    auto query = Heliogrim::assets()[game::assets::material::DefaultSkybox::unstable_auto_guid()];
-    sc->setSkyboxMaterialByAsset(static_cast<ref<GfxMaterialAsset>>(query.value));
+	auto query = Heliogrim::assets()[game::assets::material::DefaultSkybox::unstable_auto_guid()];
+	sc->setSkyboxMaterialByAsset(static_cast<ref<GfxMaterialAsset>>(query.value));
 
-    query = Heliogrim::assets()[game::assets::meshes::Sphere::unstable_auto_guid()];
-    sc->setSkyboxGeometryByAsset(static_cast<ref<StaticGeometryAsset>>(query.value));
+	query = Heliogrim::assets()[game::assets::meshes::Sphere::unstable_auto_guid()];
+	sc->setSkyboxGeometryByAsset(static_cast<ref<StaticGeometryAsset>>(query.value));
 
-    /**/
+	/**/
 
-    primaryWorld.addActor(actor);
+	primaryWorld.addActor(actor);
 }

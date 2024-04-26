@@ -1,7 +1,9 @@
 #pragma once
 
-#include "__fwd.hpp"
 #include <Engine.Common/Sal.hpp>
+#include <Engine.Common/Memory/MemoryPointer.hpp>
+
+#include "__fwd.hpp"
 
 namespace hg::engine::assets::system {
 	class __declspec(novtable) AssetRepository {
@@ -15,6 +17,6 @@ namespace hg::engine::assets::system {
 		virtual ~AssetRepository() = default;
 
 	public:
-		[[nodiscard]] virtual bool destroyAsset(_In_ mref<non_owning_rptr<Asset>> asset_) = 0;
+		[[nodiscard]] virtual bool destroyAsset(_In_ mref<nmpt<Asset>> asset_) = 0;
 	};
 }

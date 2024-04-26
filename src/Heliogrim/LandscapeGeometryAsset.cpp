@@ -10,14 +10,15 @@
 using namespace hg;
 
 LandscapeGeometryAsset::LandscapeGeometryAsset(mref<asset_guid> guid_) noexcept :
-    StreamableRenderableAsset(
-        clone(guid_),
-        engine::assets::LandscapeGeometry::typeId,
-        engine::Engine::getEngine()->getAssets()->getFactory()->createLandscapeGeometryAsset(clone(guid_))
-    ) {}
+	StreamableRenderableAsset(
+		clone(guid_),
+		engine::assets::LandscapeGeometry::typeId,
+		// Warning: Reference out of Scope | Use-After-Free
+		engine::Engine::getEngine()->getAssets()->getFactory()->createLandscapeGeometryAsset(clone(guid_)).get()
+	) {}
 
 LandscapeGeometryAsset::~LandscapeGeometryAsset() noexcept = default;
 
 bool LandscapeGeometryAsset::isValidType() const noexcept {
-    return _typeId == engine::assets::LandscapeGeometry::typeId;
+	return _typeId == engine::assets::LandscapeGeometry::typeId;
 }

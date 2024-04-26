@@ -6,6 +6,7 @@
 
 #include "Asset.hpp"
 #include "AssetDatabaseResult.hpp"
+#include "Engine.Common/Memory/MemoryPointer.hpp"
 
 namespace hg {
 	class AssetDatabase {
@@ -22,10 +23,10 @@ namespace hg {
 		~AssetDatabase();
 
 	private:
-		const non_owning_rptr<void> _internal;
+		nmpt<void> _internal;
 
 	public:
-		[[nodiscard]] const non_owning_rptr<void> unwrap() const noexcept;
+		[[nodiscard]] nmpt<void> unwrap() const noexcept;
 
 	public:
 		/**
@@ -62,7 +63,7 @@ namespace hg {
 
 			#else
 
-            return operator[](guid_);
+			return operator[](guid_);
 			#endif
 		}
 

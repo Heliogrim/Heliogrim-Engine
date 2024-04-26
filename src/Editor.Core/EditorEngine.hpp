@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Module/Modules.hpp>
 #include <Engine.Event/GlobalEventEmitter.hpp>
@@ -75,10 +76,10 @@ namespace hg::editor {
 		[[nodiscard]] ref<engine::core::Modules> getModules() const noexcept override;
 
 	private:
-		Vector<non_owning_rptr<engine::core::WorldContext>> _worldContexts;
+		Vector<nmpt<engine::core::WorldContext>> _worldContexts;
 
 	public:
-		[[nodiscard]] Vector<non_owning_rptr<engine::core::WorldContext>> getWorldContexts() const noexcept override;
+		[[nodiscard]] Vector<nmpt<engine::core::WorldContext>> getWorldContexts() const noexcept override;
 
 	public:
 		void addWorld(cref<sptr<engine::core::World>> world_) override;
@@ -98,9 +99,9 @@ namespace hg::editor {
 		uptr<engine::core::Session> _primaryGameSession;
 
 	public:
-		[[nodiscard]] const non_owning_rptr<engine::core::Session> getEditorSession() const noexcept;
+		[[nodiscard]] nmpt<engine::core::Session> getEditorSession() const noexcept;
 
-		[[nodiscard]] const non_owning_rptr<engine::core::Session> getPrimaryGameSession() const noexcept;
+		[[nodiscard]] nmpt<engine::core::Session> getPrimaryGameSession() const noexcept;
 
 	private:
 		void setupCorePipelines();

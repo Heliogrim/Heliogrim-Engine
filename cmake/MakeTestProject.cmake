@@ -53,21 +53,16 @@ function(make_test_project)
     endif ()
 
     # Include Directories
-    target_include_directories(
-            ${target}
-            PRIVATE
-            ${DEFAULT_INCLUDE_DIRECTORIES}
-            ${TEST_INCLUDE_DIRECTORIES}
-            ${proj_src_dir}
-    )
+    target_include_directories(${target} PRIVATE ${proj_src_dir})
+    target_include_directories(${target} SYSTEM PUBLIC ${DEFAULT_INCLUDE_DIRECTORIES} ${TEST_INCLUDE_DIRECTORIES})
 
     # Libraries
     target_link_libraries(
             ${target}
             PRIVATE
+            ${args_LIBRARIES}
             ${DEFAULT_LIBRARIES}
             ${TEST_LIBRARIES}
-            ${args_LIBRARIES}
     )
 
     # Compile

@@ -21,7 +21,7 @@ EditorRenderer::EditorRenderer(
 	mref<nmpt<engine::gfx::memory::GlobalPooledAllocator>> globalGfxAllocator_
 ) noexcept :
 	Renderer(
-		Guid { "__Static__Proxy"_typeId.data, 0, 0, "Editor-Renderer"_typeId.data },
+		Guid { "__Static__Proxy"_typeId.data, 0u, 0u, "Editor-Renderer"_typeId.data },
 		"Editor-Renderer",
 		makeCompileGraph(),
 		nullptr,

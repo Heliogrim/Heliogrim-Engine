@@ -53,7 +53,7 @@ namespace hg::editor::ui {
 	public:
 		void prepare() {
 
-			const auto* const theme = Theme::get();
+			const auto theme = Theme::get();
 
 			_content = make_sptr<engine::reflow::HorizontalPanel>();
 			_content->attr.width.setValue({ engine::reflow::ReflowUnitType::eRelative, 1.F });
@@ -68,15 +68,13 @@ namespace hg::editor::ui {
 
 			/**/
 
-            for (u64 i = 0uLL; i < vector_dim; ++i) {
+			for (u64 i = 0uLL; i < vector_dim; ++i) {
 
-                _labels[i] = make_sptr<engine::reflow::Text>();
-                _labels[i]->attr.textEllipse.setValue(1uL);
-                theme->applyLabel(_labels[i]);
+				_labels[i] = make_sptr<engine::reflow::Text>();
+				_labels[i]->attr.textEllipse.setValue(1uL);
+				theme->applyLabel(_labels[i]);
 
-				_inputs[i] = make_sptr<input_widget_type>();
-
-				{
+				_inputs[i] = make_sptr<input_widget_type>(); {
 					auto& style = _inputs[i]->_wrapper->attr;
 
 					style.minWidth.setValue({ engine::reflow::ReflowUnitType::eRelative, 1.F });
@@ -100,11 +98,11 @@ namespace hg::editor::ui {
 
 			/**/
 
-            for (u64 i { 0uLL }; i < vector_dim; ++i) {
-                _inputs[i]->_callback = [this](auto) {
-                    this->onInternalChange();
-                };
-            }
+			for (u64 i { 0uLL }; i < vector_dim; ++i) {
+				_inputs[i]->_callback = [this](auto) {
+					this->onInternalChange();
+				};
+			}
 
 			/**/
 
@@ -251,7 +249,7 @@ namespace hg::editor::ui {
 
 			const auto frac = 1.F / ((float)vector_dim);
 
-            for (u64 i { 0uLL }; i < vector_dim; ++i) {
+			for (u64 i { 0uLL }; i < vector_dim; ++i) {
 
 				const auto& label { _labels[i] };
 				const auto& input { _inputs[i] };
@@ -299,17 +297,20 @@ namespace hg::editor::ui {
 		}
 
 	public:
-		math::vec2 prefetchDesiredSize(cref<engine::reflow::ReflowState> state_, float scale_) const override {
+		[[nodiscard]] math::vec2 prefetchDesiredSize(
+			cref<engine::reflow::ReflowState> state_,
+			const float scale_
+		) const override {
 			_content->setParent(const_cast<this_type*>(this)->shared_from_this());
 			return _content->prefetchDesiredSize(state_, scale_);
 		}
 
-		math::vec2 computeDesiredSize(cref<engine::reflow::ReflowPassState> passState_) const override {
+		[[nodiscard]] math::vec2 computeDesiredSize(cref<engine::reflow::ReflowPassState> passState_) const override {
 			return _content->computeDesiredSize(passState_);
 		}
 
 		void applyLayout(ref<engine::reflow::ReflowState> state_, mref<engine::reflow::LayoutContext> ctx_) override {
-			auto* const state = state_.getStateOf(_content);
+			const auto state = state_.getStateOf(_content);
 			state->layoutOffset = ctx_.localOffset;
 			state->layoutSize = ctx_.localSize;
 		}

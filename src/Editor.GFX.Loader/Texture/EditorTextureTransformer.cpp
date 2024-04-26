@@ -125,8 +125,8 @@ private:
 public:
 	[[nodiscard]] bool canUse(nmpt<const engine::assets::TextureAsset> asset_) const noexcept override {
 
-		const auto* const registry = engine::Engine::getEngine()->getAssets()->getRegistry();
-		const auto* const asset = registry->findAssetByGuid(asset_->baseImage());
+		const auto registry = engine::Engine::getEngine()->getAssets()->getRegistry();
+		const auto asset = registry->findAssetByGuid(asset_->baseImage());
 
 		if (asset == nullptr) {
 			return false;
@@ -134,7 +134,7 @@ public:
 
 		/**/
 
-		const auto* const image = Cast<engine::assets::Image>(asset);
+		const auto* const image = Cast<engine::assets::Image>(asset.get());
 		if (image == nullptr) {
 			return false;
 		}

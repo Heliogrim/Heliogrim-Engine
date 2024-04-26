@@ -1,29 +1,30 @@
 #pragma once
 
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Memory/MemoryPointer.hpp>
 
 namespace hg::engine::scene {
-    class SceneBase;
+	class SceneBase;
 }
 
 namespace hg::engine::core {
-    class World {
-    public:
-        using this_type = World;
+	class World {
+	public:
+		using this_type = World;
 
-    public:
-        World(mref<uptr<scene::SceneBase>> scene_);
+	public:
+		explicit World(mref<uptr<scene::SceneBase>> scene_);
 
-        World(cref<this_type>) = delete;
+		World(cref<this_type>) = delete;
 
-        World(mref<this_type>) noexcept = delete;
+		World(mref<this_type>) noexcept = delete;
 
-        ~World();
+		~World();
 
-    private:
-        uptr<scene::SceneBase> _scene;
+	private:
+		uptr<scene::SceneBase> _scene;
 
-    public:
-        [[nodiscard]] const non_owning_rptr<scene::SceneBase> getScene() const noexcept;
-    };
+	public:
+		[[nodiscard]] nmpt<scene::SceneBase> getScene() const noexcept;
+	};
 }

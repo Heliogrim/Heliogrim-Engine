@@ -47,11 +47,11 @@ bool Archive::hasFilter() const noexcept {
 	return _filter != nullptr;
 }
 
-const ptr<ArchiveFilter> Archive::getArchiveFilter() const noexcept {
+nmpt<ArchiveFilter> Archive::getArchiveFilter() const noexcept {
 	return _filter;
 }
 
-void Archive::setFilter(const ptr<ArchiveFilter> filter_) {
+void Archive::setFilter(nmpt<ArchiveFilter> filter_) {
 	_filter = filter_;
 }
 
@@ -59,11 +59,11 @@ bool Archive::hasCompression() const noexcept {
 	return _compression != nullptr;
 }
 
-const ptr<ArchiveCompression> Archive::getArchiveCompression() const noexcept {
+nmpt<ArchiveCompression> Archive::getArchiveCompression() const noexcept {
 	return _compression;
 }
 
-void Archive::setCompression(const ptr<ArchiveCompression> compression_) {
+void Archive::setCompression(nmpt<ArchiveCompression> compression_) {
 	_compression = compression_;
 }
 

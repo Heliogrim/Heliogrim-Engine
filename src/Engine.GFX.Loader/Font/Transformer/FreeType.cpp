@@ -39,7 +39,7 @@ static void writeToMemory(
 );
 
 static void storeFontToTexture(
-	const non_owning_rptr<FontResource::value_type> font_,
+	nmpt<FontResource::value_type> font_,
 	cref<FontLoadOptions> options_,
 	cref<math::uivec2> report_,
 	_Inout_ ptr<u8> dst_
@@ -50,7 +50,7 @@ static void storeFontToTexture(
 void transformer::convertFreeType(
 	const non_owning_rptr<const assets::Font> assets_,
 	cref<smr<resource::Source>> src_,
-	const non_owning_rptr<reflow::Font> dst_,
+	nmpt<reflow::Font> dst_,
 	cref<sptr<Device>> device_,
 	const FontLoadOptions options_
 ) {
@@ -119,7 +119,7 @@ void transformer::convertFreeType(
 
 	/**/
 
-	auto* const font = dst_;
+	const auto font = dst_;
 	font->_name = "Cascadia Mono"sv;
 	font->_atlas = make_sptr<Texture>(std::move(atlas));
 	font->_extent = reqExt;
@@ -395,7 +395,7 @@ void writeToMemory(cref<FT_GlyphSlot> slot_, cref<math::uivec2> ext_, cref<math:
 }
 
 void storeFontToTexture(
-	const non_owning_rptr<FontResource::value_type> font_,
+	nmpt<FontResource::value_type> font_,
 	cref<FontLoadOptions> options_,
 	cref<math::uivec2> report_,
 	ptr<u8> dst_

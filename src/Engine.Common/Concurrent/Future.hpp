@@ -7,6 +7,7 @@
 
 #include "../__macro.hpp"
 #include "../Wrapper.hpp"
+#include "../Memory/MemoryPointer.hpp"
 
 namespace hg::concurrent {
 	namespace {
@@ -151,7 +152,7 @@ namespace hg::concurrent {
 			 * @author Julius
 			 * @date 20.08.2020
 			 */
-			~future_state() {}
+			~future_state() = default;
 
 			/**
 			 * Set the returned state and notify all waiters
@@ -193,7 +194,7 @@ namespace hg::concurrent {
 			}
 
 		public:
-			[[nodiscard]] const non_owning_rptr<const std::atomic_flag> signal() const {
+			[[nodiscard]] nmpt<const std::atomic_flag> signal() const {
 				return &_returned;
 			}
 
@@ -282,7 +283,7 @@ namespace hg::concurrent {
 		}
 
 	public:
-		[[nodiscard]] const non_owning_rptr<const std::atomic_flag> signal() const {
+		[[nodiscard]] nmpt<const std::atomic_flag> signal() const {
 			return _state->signal();
 		}
 
@@ -325,7 +326,7 @@ namespace hg::concurrent {
 		 * @date 20.08.2020
 		 *       
 		 */
-		[[maybe_unused]] void retrieve() const noexcept {
+		[[maybe_unused, noreturn]] void retrieve() const noexcept {
 			std::unreachable();
 		}
 
@@ -362,7 +363,7 @@ namespace hg::concurrent {
 		}
 
 	public:
-		[[nodiscard]] const non_owning_rptr<const std::atomic_flag> signal() const {
+		[[nodiscard]] nmpt<const std::atomic_flag> signal() const {
 			return _state->signal();
 		}
 

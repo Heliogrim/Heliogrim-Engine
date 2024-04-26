@@ -182,11 +182,11 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
 
 	auto& factory { *Engine::getEngine()->getAssets()->getFactory() };
 
-	auto* imgAsset { factory.createImageAsset() };
-	auto* img { static_cast<ptr<Image>>(imgAsset) };
+	auto imgAsset { factory.createImageAsset() };
+	auto* img { static_cast<ptr<Image>>(imgAsset.get()) };
 
 	auto texAsset { factory.createTextureAsset() };
-	auto* tex { static_cast<ptr<TextureAsset>>(texAsset) };
+	auto* tex { static_cast<ptr<TextureAsset>>(texAsset.get()) };
 
 	/**/
 
@@ -263,9 +263,7 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
 	/* Serialize Image */
 
 	auto imgBuffer = make_uptr<BufferArchive>();
-	StructuredArchive imgArch { imgBuffer.get() };
-
-	{
+	StructuredArchive imgArch { imgBuffer.get() }; {
 		auto root = imgArch.insertRootSlot();
 		access::Structure<Image>::serialize(img, std::move(root));
 	}
@@ -276,9 +274,7 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
 	/* Serialize Texture */
 
 	auto texBuffer = make_uptr<BufferArchive>();
-	StructuredArchive texArch { texBuffer.get() };
-
-	{
+	StructuredArchive texArch { texBuffer.get() }; {
 		auto root = texArch.insertRootSlot();
 		access::Structure<TextureAsset>::serialize(tex, std::move(root));
 	}

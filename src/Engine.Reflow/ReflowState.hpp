@@ -5,37 +5,38 @@
 #include "Widget/__fwd.hpp"
 #include "Widget/WidgetState.hpp"
 #include "ReflowPassState.hpp"
+#include "Engine.Common/Memory/MemoryPointer.hpp"
 
 namespace hg::engine::reflow {
-    class ReflowState {
-    public:
-        using this_type = ReflowState;
+	class ReflowState {
+	public:
+		using this_type = ReflowState;
 
-    public:
-        ReflowState();
+	public:
+		ReflowState();
 
-        ~ReflowState();
+		~ReflowState();
 
-    public:
-        void reset();
+	public:
+		void reset();
 
-    private:
-        u16 _renderTick;
-        DenseMap<ptr<void>, non_owning_rptr<ReflowPassState>> _recorded;
+	private:
+		u16 _renderTick;
+		DenseMap<ptr<void>, non_owning_rptr<ReflowPassState>> _recorded;
 
-    public:
-        [[nodiscard]] u16 getRenderTick() const noexcept;
+	public:
+		[[nodiscard]] u16 getRenderTick() const noexcept;
 
-        void setRenderTick(u16 renderTick_) noexcept;
+		void setRenderTick(u16 renderTick_) noexcept;
 
-        [[nodiscard]] non_owning_rptr<ReflowPassState> record(cref<sptr<Widget>> widget_);
+		[[nodiscard]] nmpt<ReflowPassState> record(cref<sptr<Widget>> widget_);
 
-        [[nodiscard]] const non_owning_rptr<const ReflowPassState> getStateOf(cref<sptr<Widget>> widget_) const;
+		[[nodiscard]] nmpt<const ReflowPassState> getStateOf(cref<sptr<Widget>> widget_) const;
 
-        [[nodiscard]] const non_owning_rptr<const ReflowPassState> getStateOf(
-            const non_owning_rptr<const Widget> widget_
-        ) const;
+		[[nodiscard]] nmpt<const ReflowPassState> getStateOf(
+			nmpt<const Widget> widget_
+		) const;
 
-        [[nodiscard]] const non_owning_rptr<ReflowPassState> getStateOf(cref<sptr<Widget>> widget_);
-    };
+		[[nodiscard]] nmpt<ReflowPassState> getStateOf(cref<sptr<Widget>> widget_);
+	};
 }

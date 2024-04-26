@@ -34,8 +34,8 @@ function(make_library_project)
         set(source_directory "${proj_src_dir}/${args_LIB_NAME}")
     endif ()
 
-    file(GLOB_RECURSE header_files ${source_directory}/*.hpp ${source_directory}/*.h ${source_directory}/*.hh)
-    file(GLOB_RECURSE source_files ${source_directory}/*.cpp ${source_directory}/*.c ${source_directory}/*.cc)
+    file(GLOB_RECURSE header_files CONFIGURE_DEPENDS ${source_directory}/*.hpp ${source_directory}/*.h ${source_directory}/*.hh)
+    file(GLOB_RECURSE source_files CONFIGURE_DEPENDS ${source_directory}/*.cpp ${source_directory}/*.c ${source_directory}/*.cc)
 
     # Sources
     map_source_groups(BASE_PATH "${source_directory}" SOURCES ${source_files} ${header_files})
@@ -60,19 +60,15 @@ function(make_library_project)
     endif ()
 
     # Include Directories
-    target_include_directories(
-            ${target}
-            PRIVATE
-            ${DEFAULT_INCLUDE_DIRECTORIES}
-            ${proj_src_dir}
-    )
+    target_include_directories(${target} PRIVATE ${proj_src_dir})
+    target_include_directories(${target} SYSTEM PUBLIC ${DEFAULT_INCLUDE_DIRECTORIES})
 
     # Libraries
     target_link_libraries(
             ${target}
             PRIVATE
-            ${DEFAULT_LIBRARIES}
             ${args_LIBRARIES}
+            ${DEFAULT_LIBRARIES}
     )
 
     # Compile

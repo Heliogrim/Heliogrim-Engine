@@ -37,8 +37,8 @@ EditorPngTextureTransformer::~EditorPngTextureTransformer() noexcept = default;
 
 bool EditorPngTextureTransformer::canUse(nmpt<const engine::assets::TextureAsset> asset_) const noexcept {
 
-	const auto* const registry = engine::Engine::getEngine()->getAssets()->getRegistry();
-	const auto* const asset = registry->findAssetByGuid(asset_->baseImage());
+	const auto registry = engine::Engine::getEngine()->getAssets()->getRegistry();
+	const auto asset = registry->findAssetByGuid(asset_->baseImage());
 
 	if (asset == nullptr) {
 		return false;
@@ -46,7 +46,7 @@ bool EditorPngTextureTransformer::canUse(nmpt<const engine::assets::TextureAsset
 
 	/**/
 
-	const auto* const image = Cast<engine::assets::Image>(asset);
+	const auto* const image = Cast<engine::assets::Image>(asset.get());
 	if (image == nullptr) {
 		return false;
 	}

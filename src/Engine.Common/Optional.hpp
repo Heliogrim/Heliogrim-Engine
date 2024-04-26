@@ -3,8 +3,6 @@
 #include <tl/optional.hpp>
 
 namespace hg {
-
-    template <typename Ty_>
-    using Optional = tl::optional<Ty_>;
-
+	template <typename Ty_>
+	using Optional = tl::optional<Ty_>;
 }

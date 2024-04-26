@@ -7,10 +7,10 @@
 
 namespace hg::engine::gfx {
 	class FbxImporter :
-		public res::Importer<non_owning_rptr<assets::StaticGeometry>, ptr<void>> {
+		public res::Importer<Arci<assets::StaticGeometry>, ptr<void>> {
 	public:
 		using this_type = FbxImporter;
-		using importer_type = res::Importer<non_owning_rptr<assets::StaticGeometry>, ptr<void>>;
+		using importer_type = res::Importer<Arci<assets::StaticGeometry>, ptr<void>>;
 
 		using importer_type::import_result_type;
 

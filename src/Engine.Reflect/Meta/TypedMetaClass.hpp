@@ -15,7 +15,7 @@ namespace hg {
 }
 
 namespace hg {
-	template <typename TargetType_, typename TypeList_ = reflect::__type_list_lookup<TargetType_>>
+	template <CompleteType TargetType_, typename TypeList_ = reflect::__type_list_lookup<TargetType_>>
 	class TypedMetaClass;
 
 	template <CompleteType TargetType_, typename... InheritTypes_>

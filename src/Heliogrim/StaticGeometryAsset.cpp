@@ -9,40 +9,42 @@
 using namespace hg;
 
 StaticGeometryAsset::StaticGeometryAsset(mref<asset_guid> guid_) noexcept :
-    StreamableRenderableAsset(
-        clone(guid_),
-        engine::assets::StaticGeometry::typeId,
-        engine::Engine::getEngine()->getAssets()->getFactory()->createStaticGeometryAsset(clone(guid_))
-    ) {}
+	StreamableRenderableAsset(
+		clone(guid_),
+		engine::assets::StaticGeometry::typeId,
+		// Warning: Reference out of Scope | Use-After-Free
+		engine::Engine::getEngine()->getAssets()->getFactory()->createStaticGeometryAsset(clone(guid_)).get()
+	) {}
 
 StaticGeometryAsset::StaticGeometryAsset(
-    mref<asset_guid> guid_,
-    cref<string> url_,
-    cref<u64> vertexCount_,
-    cref<u64> indexCount_
+	mref<asset_guid> guid_,
+	cref<string> url_,
+	cref<u64> vertexCount_,
+	cref<u64> indexCount_
 ) noexcept :
-    StreamableRenderableAsset(
-        clone(guid_),
-        engine::assets::StaticGeometry::typeId,
-        engine::Engine::getEngine()->getAssets()->getFactory()->createStaticGeometryAsset(
-            clone(guid_),
-            url_,
-            vertexCount_,
-            indexCount_
-        )
-    ) {}
+	StreamableRenderableAsset(
+		clone(guid_),
+		engine::assets::StaticGeometry::typeId,
+		// Warning: Reference out of Scope | Use-After-Free
+		engine::Engine::getEngine()->getAssets()->getFactory()->createStaticGeometryAsset(
+			clone(guid_),
+			url_,
+			vertexCount_,
+			indexCount_
+		).get()
+	) {}
 
 StaticGeometryAsset::~StaticGeometryAsset() noexcept = default;
 
 bool StaticGeometryAsset::isValidType() const noexcept {
-    return _typeId == engine::assets::StaticGeometry::typeId;
+	return _typeId == engine::assets::StaticGeometry::typeId;
 }
 
 u32 StaticGeometryAsset::getMaterialCount() const {
 
-    if (not internal()) {
-        return 0uL;
-    }
+	if (not internal()) {
+		return 0uL;
+	}
 
-    return static_cast<ptr<engine::assets::StaticGeometry>>(internal())->getMaterialCount();
+	return static_cast<ptr<engine::assets::StaticGeometry>>(internal())->getMaterialCount();
 }

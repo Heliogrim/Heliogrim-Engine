@@ -53,7 +53,7 @@ namespace hg::engine::gfx::loader {
 			_In_ cref<next_type> next_
 		) const override;
 
-		[[nodiscard]] stream_response_type::type operator()(
+		stream_response_type::type operator()(
 			_In_ mref<stream_request_type::type> request_,
 			_In_ mref<stream_request_type::options> options_,
 			_In_ cref<next_type> next_
