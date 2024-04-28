@@ -1,6 +1,7 @@
 #pragma once
 
 #include <concepts>
+#include <span>
 
 #include "Types.hpp"
 #include "Wrapper.hpp"
@@ -90,12 +91,18 @@ namespace hg {
 			static_assert(sizeof(decltype(*this)) == sizeof(u64) * 2u);
 			static_assert(alignof(decltype(*this)) == alignof(u64));
 
-			const auto* const self = *static_cast<const ptr<const ptr<const u64>>>(
-				static_cast<const void* const>(this)
-			);
-			const auto* const other = *static_cast<const ptr<const ptr<const u64>>>(
-				static_cast<const void* const>(std::addressof(other_))
-			);
+			const auto self = std::span<const u64, 2uLL> {
+				*static_cast<const ptr<const ptr<const u64>>>(
+					static_cast<const void* const>(this)
+				),
+				2uLL
+			};
+			const auto other = std::span<const u64, 2uLL> {
+				*static_cast<const ptr<const ptr<const u64>>>(
+					static_cast<const void* const>(std::addressof(other_))
+				),
+				2uLL
+			};
 
 			return (self[0] > other[0]) || (self[0] == other[0] && self[1] > other[1]);
 		}
@@ -105,12 +112,18 @@ namespace hg {
 			static_assert(sizeof(decltype(*this)) == sizeof(u64) * 2u);
 			static_assert(alignof(decltype(*this)) == alignof(u64));
 
-			const auto* const self = *static_cast<const ptr<const ptr<const u64>>>(
-				static_cast<const void* const>(this)
-			);
-			const auto* const other = *static_cast<const ptr<const ptr<const u64>>>(
-				static_cast<const void* const>(std::addressof(other_))
-			);
+			const auto self = std::span<const u64, 2uLL> {
+				*static_cast<const ptr<const ptr<const u64>>>(
+					static_cast<const void* const>(this)
+				),
+				2uLL
+			};
+			const auto other = std::span<const u64, 2uLL> {
+				*static_cast<const ptr<const ptr<const u64>>>(
+					static_cast<const void* const>(std::addressof(other_))
+				),
+				2uLL
+			};
 
 			return (self[0] < other[0]) || (self[0] == other[0] && self[1] < other[1]);
 		}

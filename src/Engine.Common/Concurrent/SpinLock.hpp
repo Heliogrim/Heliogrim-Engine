@@ -6,51 +6,29 @@
 #include "../__macro.hpp"
 
 namespace hg::concurrent {
-	/**
-	 * \brief 
-	 */
 	constexpr static inline std::defer_lock_t defer_lock {};
-
-	/**
-	 * \brief 
-	 */
 	using SpinMutex = std::atomic_flag;
 
-	/**
-	 * \brief 
-	 */
+	/**/
+
 	class SpinLock {
 	public:
-		/**
-		 * \brief
-		 * \param mtx_ 
-		 */
 		explicit SpinLock(SpinMutex& mtx_) :
 			_flag(mtx_),
 			_owns(false) {
 			lock();
 		}
 
-		/**
-		 * \brief 
-		 * \param mtx_ 
-		 */
 		explicit SpinLock(SpinMutex& mtx_, std::defer_lock_t) noexcept :
 			_flag(mtx_),
 			_owns(false) {}
 
-		/**
-		 * \brief 
-		 */
 		~SpinLock() {
 			if (_owns) {
 				_flag.clear();
 			}
 		}
 
-		/**
-		 * \brief 
-		 */
 		void lock() {
 			if (_owns) {
 				throw std::runtime_error(
@@ -63,10 +41,6 @@ namespace hg::concurrent {
 			_owns = true;
 		}
 
-		/**
-		 * \brief 
-		 * \return 
-		 */
 		bool try_lock() {
 			if (_owns) {
 				throw std::runtime_error(
@@ -82,9 +56,6 @@ namespace hg::concurrent {
 			return false;
 		}
 
-		/**
-		 * \brief 
-		 */
 		void unlock() {
 			if (!_owns) {
 				throw std::runtime_error(
@@ -95,21 +66,10 @@ namespace hg::concurrent {
 			_flag.clear(std::memory_order_seq_cst);
 		}
 
-		/**
-		 * \brief 
-		 * \return 
-		 */
 		SpinLock operator=(const SpinLock&) = delete;
 
 	private:
-		/**
-		 * \brief 
-		 */
 		std::atomic_flag& _flag;
-
-		/**
-		 * \brief 
-		 */
 		bool _owns;
 	};
 

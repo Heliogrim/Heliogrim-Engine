@@ -6,7 +6,7 @@ using namespace hg::engine::gfx::scene;
 using namespace hg::engine::gfx;
 using namespace hg;
 
-uptr<RenderSceneManager> RenderSceneManager::_instance = nullptr;
+[[clang::always_destroy]] uptr<RenderSceneManager> RenderSceneManager::_instance = nullptr;
 
 non_owning_rptr<RenderSceneManager::this_type> RenderSceneManager::get() noexcept {
 	return _instance.get();
