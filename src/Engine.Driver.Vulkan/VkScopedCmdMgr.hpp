@@ -5,23 +5,27 @@
 #include <Engine.Common/Types.hpp>
 
 namespace hg::driver::vk {
-    class VkScopedCmdMgr {
-    public:
-        constexpr VkScopedCmdMgr() noexcept = default;
+	class VkScopedCmdMgr {
+	public:
+		constexpr VkScopedCmdMgr() noexcept = default;
 
-        constexpr VkScopedCmdMgr(u16 scopeId_, ref<engine::accel::AccelCommandBuffer> cmd_) noexcept :
-            _scopeId(scopeId_),
-            _cmdBuf(cmd_) {}
+		constexpr VkScopedCmdMgr(u16 scopeId_, ref<engine::accel::AccelCommandBuffer> cmd_) noexcept :
+			_scopeId(scopeId_),
+			_cmdBuf(cmd_) {}
 
-        constexpr ~VkScopedCmdMgr() noexcept = default;
+		VkScopedCmdMgr(cref<VkScopedCmdMgr>) = delete;
 
-    private:
-        u16 _scopeId;
-        tl::optional<engine::accel::AccelCommandBuffer&> _cmdBuf;
+		constexpr VkScopedCmdMgr(mref<VkScopedCmdMgr> other_) noexcept = default;
 
-    public:
-        [[nodiscard]] u16 scopeId() const noexcept;
+		constexpr ~VkScopedCmdMgr() noexcept = default;
 
-        [[nodiscard]] tl::optional<engine::accel::AccelCommandBuffer&> active() const noexcept;
-    };
+	private:
+		u16 _scopeId;
+		tl::optional<engine::accel::AccelCommandBuffer&> _cmdBuf;
+
+	public:
+		[[nodiscard]] u16 scopeId() const noexcept;
+
+		[[nodiscard]] tl::optional<engine::accel::AccelCommandBuffer&> active() const noexcept;
+	};
 }
