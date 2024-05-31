@@ -15,7 +15,7 @@ void RenderSceneSystem::prepare() {
 
 	assert(_sceneResourcePool == nullptr);
 
-	const auto* const graphics = Engine::getEngine()->getGraphics();
+	const auto graphics = Engine::getEngine()->getGraphics();
 	_sceneResourcePool = make_uptr<gfx::SceneResourcePool>(graphics->getCurrentDevice());
 
 	_sceneResourcePool->setup();

@@ -11,52 +11,52 @@ using namespace hg::engine::scheduler;
 using namespace hg;
 
 CorePipeline::CorePipeline() :
-    StagePipeline(identifier_type::from("::Core::CorePipeline")) {}
+	StagePipeline(identifier_type::from("::Core::CorePipeline")) {}
 
 CorePipeline::~CorePipeline() = default;
 
-void CorePipeline::mount(const non_owning_rptr<scheduler::StageRegister> register_) {
+void CorePipeline::mount(ref<StageRegister> register_) {
 
-    const auto actorUpdate = register_->registerStage(
-        make_uptr<ActorUpdateStage>(ActorUpdate, this)
-    );
+	const auto actorUpdate = register_.registerStage(
+		make_uptr<ActorUpdateStage>(ActorUpdate, this)
+	);
 
-    /**/
+	/**/
 
-    _orderedStages.push_back(actorUpdate);
+	_orderedStages.push_back(actorUpdate);
 }
 
 void CorePipeline::declareDependencies(
-    const non_owning_rptr<const scheduler::StageRegister> register_,
-    ref<CompactSet<StageDependency>> collection_
+	cref<StageRegister> register_,
+	ref<CompactSet<StageDependency>> collection_
 ) {
-    const auto* const beginTick = register_->getStage(TickPipeline::TickBegin);
-    const auto* const inputTick = register_->getStage(input::schedule::InputPipeline::InputTick);
+	const auto* const beginTick = register_.getStage(TickPipeline::TickBegin);
+	const auto* const inputTick = register_.getStage(input::schedule::InputPipeline::InputTick);
 
-    /**/
+	/**/
 
-    const auto* const actorUpdate = _orderedStages.front();
+	const auto* const actorUpdate = _orderedStages.front();
 
-    /**/
+	/**/
 
-    collection_.insert(
-        StageDependency {
-            { beginTick, inputTick },
-            this,
-            actorUpdate
-        }
-    );
+	collection_.insert(
+		StageDependency {
+			{ beginTick, inputTick },
+			this,
+			actorUpdate
+		}
+	);
 }
 
-void CorePipeline::dismount(const non_owning_rptr<scheduler::StageRegister> register_) {
+void CorePipeline::dismount(ref<StageRegister> register_) {
 
-    register_->removeStage(ActorUpdate);
+	register_.removeStage(ActorUpdate);
 
-    /**/
+	/**/
 
-    _orderedStages.clear();
+	_orderedStages.clear();
 }
 
 bool CorePipeline::isSkippable() const noexcept {
-    return false;
+	return false;
 }

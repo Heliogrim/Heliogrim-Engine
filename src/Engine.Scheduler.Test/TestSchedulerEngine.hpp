@@ -52,39 +52,39 @@ namespace hg::test {
 		}
 
 	public:
-		[[nodiscard]] non_owning_rptr<engine::Assets> getAssets() const noexcept override {
+		[[nodiscard]] nmpt<engine::Assets> getAssets() const noexcept override {
 			return nullptr;
 		}
 
-		[[nodiscard]] non_owning_rptr<engine::Audio> getAudio() const noexcept override {
+		[[nodiscard]] nmpt<engine::Audio> getAudio() const noexcept override {
 			return nullptr;
 		}
 
-		[[nodiscard]] non_owning_rptr<engine::Graphics> getGraphics() const noexcept override {
+		[[nodiscard]] nmpt<engine::Graphics> getGraphics() const noexcept override {
 			return nullptr;
 		}
 
-		[[nodiscard]] non_owning_rptr<engine::Input> getInput() const noexcept override {
+		[[nodiscard]] nmpt<engine::Input> getInput() const noexcept override {
 			return nullptr;
 		}
 
-		[[nodiscard]] non_owning_rptr<engine::Network> getNetwork() const noexcept override {
+		[[nodiscard]] nmpt<engine::Network> getNetwork() const noexcept override {
 			return nullptr;
 		}
 
-		[[nodiscard]] non_owning_rptr<engine::Physics> getPhysics() const noexcept override {
+		[[nodiscard]] nmpt<engine::Physics> getPhysics() const noexcept override {
 			return nullptr;
 		}
 
-		[[nodiscard]] non_owning_rptr<engine::Platform> getPlatform() const noexcept override {
+		[[nodiscard]] nmpt<engine::Platform> getPlatform() const noexcept override {
 			return nullptr;
 		}
 
-		[[nodiscard]] non_owning_rptr<engine::ResourceManager> getResources() const noexcept override {
+		[[nodiscard]] nmpt<engine::ResourceManager> getResources() const noexcept override {
 			return nullptr;
 		}
 
-		[[nodiscard]] non_owning_rptr<engine::Scheduler> getScheduler() const noexcept override {
+		[[nodiscard]] nmpt<engine::Scheduler> getScheduler() const noexcept override {
 			return _scheduler.get();
 		}
 
@@ -102,9 +102,9 @@ namespace hg::test {
 		}
 
 	private:
-		Vector<non_owning_rptr<engine::core::WorldContext>> _worldContexts;
+		Vector<nmpt<engine::core::WorldContext>> _worldContexts;
 
-		[[nodiscard]] Vector<non_owning_rptr<engine::core::WorldContext>> getWorldContexts() const noexcept override {
+		[[nodiscard]] Vector<nmpt<engine::core::WorldContext>> getWorldContexts() const noexcept override {
 			return _worldContexts;
 		}
 

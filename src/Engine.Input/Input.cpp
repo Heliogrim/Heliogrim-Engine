@@ -21,7 +21,7 @@ using namespace hg::engine::input;
 using namespace hg::engine;
 using namespace hg;
 
-Input::Input(const non_owning_rptr<Engine> engine_) noexcept :
+Input::Input(ref<Engine> engine_) noexcept :
 	CoreModule(engine_),
 	_dragDropReceiver(nullptr),
 	_dragDropSender(nullptr) {}

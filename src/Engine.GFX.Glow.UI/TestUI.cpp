@@ -742,7 +742,7 @@ void configureMainViewport(
 
 	/**/
 
-	const auto* const gfx { editor::EditorEngine::getEngine()->getGraphics() };
+	const auto gfx { editor::EditorEngine::getEngine()->getGraphics() };
 	const auto coreSession = editor::EditorEngine::getEngine()->getPrimaryGameSession();
 	const auto coreWorld { coreSession->getWorldContext()->getCurrentWorld() };
 	const auto scene { coreWorld->getScene() };

@@ -17,25 +17,25 @@ RenderScenePipeline::RenderScenePipeline() :
 
 RenderScenePipeline::~RenderScenePipeline() = default;
 
-void RenderScenePipeline::mount(const non_owning_rptr<StageRegister> register_) {
+void RenderScenePipeline::mount(ref<StageRegister> register_) {
 
-    const auto* const renderTick = register_->registerStage(
+    const auto* const renderTick = register_.registerStage(
         make_uptr<RenderTickStage>(RenderTick, this)
     );
     _orderedStages.push_back(renderTick);
 }
 
 void RenderScenePipeline::declareDependencies(
-    const non_owning_rptr<const StageRegister> register_,
+    cref<StageRegister> register_,
     ref<CompactSet<StageDependency>> collection_
 ) {
-    const auto* const beginTick = register_->getStage(TickPipeline::TickBegin);
-    const auto* const actorUpdate = register_->getStage(core::schedule::CorePipeline::ActorUpdate);
-    const auto* const reflowTick = register_->getStage(reflow::schedule::ReflowPipeline::Tick);
+    const auto* const beginTick = register_.getStage(TickPipeline::TickBegin);
+    const auto* const actorUpdate = register_.getStage(core::schedule::CorePipeline::ActorUpdate);
+    const auto* const reflowTick = register_.getStage(reflow::schedule::ReflowPipeline::Tick);
     // TODO:
-    const auto* const physicsTick = register_->getStage("__PhysicsTick__");
-    const auto* const animatorTick = register_->getStage("__AnimatorTick__");
-    const auto* const ikTick = register_->getStage("__IKTick__");
+    const auto* const physicsTick = register_.getStage("__PhysicsTick__");
+    const auto* const animatorTick = register_.getStage("__AnimatorTick__");
+    const auto* const ikTick = register_.getStage("__IKTick__");
 
     const auto* const renderTick = _orderedStages.front();
 
@@ -48,8 +48,8 @@ void RenderScenePipeline::declareDependencies(
     );
 }
 
-void RenderScenePipeline::dismount(const non_owning_rptr<StageRegister> register_) {
-    register_->removeStage(RenderTick);
+void RenderScenePipeline::dismount(ref<StageRegister> register_) {
+    register_.removeStage(RenderTick);
     _orderedStages.clear();
 }
 

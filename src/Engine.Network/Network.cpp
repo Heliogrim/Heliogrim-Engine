@@ -9,13 +9,13 @@
 using namespace hg::engine;
 using namespace hg;
 
-Network::Network(const non_owning_rptr<Engine> engine_) noexcept :
-    CoreModule(engine_) {}
+Network::Network(ref<Engine> engine_) noexcept :
+	CoreModule(engine_) {}
 
 Network::~Network() = default;
 
 void Network::setup() {
-    SCOPED_STOPWATCH
+	SCOPED_STOPWATCH
 }
 
 void Network::start() {}

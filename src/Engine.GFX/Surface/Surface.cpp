@@ -25,9 +25,9 @@ Surface::Surface() noexcept :
 	_application(nullptr),
 	_swapchain(nullptr) {}
 
-Surface::Surface(mref<uptr<platform::NativeWindow>> window_, ptr<Application> application_) :
+Surface::Surface(mref<uptr<platform::NativeWindow>> window_, ref<Application> application_) :
 	_window(std::move(window_)),
-	_application(application_),
+	_application(std::addressof(application_)),
 	_swapchain(nullptr) {}
 
 Surface::~Surface() {
@@ -91,11 +91,11 @@ TextureFormat Surface::getImageFormat(const Device& device_) const {
 	return api::vkTranslateFormat(format);
 }
 
-const ptr<Application> Surface::getApplication() const noexcept {
+nmpt<Application> Surface::getApplication() const noexcept {
 	return _application;
 }
 
-const ptr<engine::platform::NativeWindow> Surface::getNativeWindow() const noexcept {
+nmpt<engine::platform::NativeWindow> Surface::getNativeWindow() const noexcept {
 	return _window.get();
 }
 

@@ -22,7 +22,7 @@ void ActorUpdateStage::staticDispatch(const non_owning_rptr<const scheduler::Sta
 		task::make_repetitive_task(
 			[]() {
 
-				const auto* const engine = Engine::getEngine();
+				const auto engine = Engine::getEngine();
 				const auto& ctxs = engine->getWorldContexts();
 
 				for (const auto worldContext : ctxs) {

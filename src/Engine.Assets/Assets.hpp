@@ -19,7 +19,7 @@ namespace hg::engine {
 		using AssetFactory = ::hg::engine::assets::AssetFactory;
 
 	public:
-		Assets(nmpt<Engine> engine_);
+		explicit Assets(ref<Engine> engine_);
 
 		Assets(cref<this_type>) = delete;
 

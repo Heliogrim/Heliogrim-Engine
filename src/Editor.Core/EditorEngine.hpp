@@ -51,28 +51,27 @@ namespace hg::editor {
 		engine::core::Modules _modules;
 
 	public:
-		[[nodiscard]] non_owning_rptr<engine::Assets> getAssets() const noexcept override;
+		[[nodiscard]] nmpt<engine::Assets> getAssets() const noexcept override;
 
-		[[nodiscard]] non_owning_rptr<engine::Audio> getAudio() const noexcept override;
+		[[nodiscard]] nmpt<engine::Audio> getAudio() const noexcept override;
 
-		[[nodiscard]] non_owning_rptr<engine::Graphics> getGraphics() const noexcept override;
+		[[nodiscard]] nmpt<engine::Graphics> getGraphics() const noexcept override;
 
-		[[nodiscard]] non_owning_rptr<engine::Input> getInput() const noexcept override;
+		[[nodiscard]] nmpt<engine::Input> getInput() const noexcept override;
 
-		[[nodiscard]] non_owning_rptr<engine::Network> getNetwork() const noexcept override;
+		[[nodiscard]] nmpt<engine::Network> getNetwork() const noexcept override;
 
-		[[nodiscard]] non_owning_rptr<engine::Physics> getPhysics() const noexcept override;
+		[[nodiscard]] nmpt<engine::Physics> getPhysics() const noexcept override;
 
-		[[nodiscard]] non_owning_rptr<engine::Platform> getPlatform() const noexcept override;
+		[[nodiscard]] nmpt<engine::Platform> getPlatform() const noexcept override;
 
-		[[nodiscard]] non_owning_rptr<engine::ResourceManager> getResources() const noexcept override;
+		[[nodiscard]] nmpt<engine::ResourceManager> getResources() const noexcept override;
 
-		[[nodiscard]] non_owning_rptr<engine::Scheduler> getScheduler() const noexcept override;
+		[[nodiscard]] nmpt<engine::Scheduler> getScheduler() const noexcept override;
 
 	public:
 		[[nodiscard]] ref<GlobalEventEmitter> getEmitter() const noexcept override;
 
-	public:
 		[[nodiscard]] ref<engine::core::Modules> getModules() const noexcept override;
 
 	private:

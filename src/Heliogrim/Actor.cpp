@@ -125,7 +125,7 @@ ptr<Actor> hg::CreateActor(cref<Session> session_) {
 ptr<Actor> hg::CreateActor(cref<World> activeWorld_) {
 	const auto* world { activeWorld_.unwrap().get() };
 
-	const auto* engine { engine::Engine::getEngine() };
+	const auto engine { engine::Engine::getEngine() };
 	const auto ctxs { engine->getWorldContexts() };// TODO: Check whether really want to copy the set
 
 	const auto where = std::ranges::find_if(
@@ -172,7 +172,7 @@ Future<ptr<Actor>> hg::CreateActor(cref<Session> session_, async_t) {
 Future<ptr<Actor>> hg::CreateActor(cref<World> activeWorld_, async_t) {
 	const auto* world { activeWorld_.unwrap().get() };
 
-	const auto* engine { engine::Engine::getEngine() };
+	const auto engine { engine::Engine::getEngine() };
 	const auto ctxs { engine->getWorldContexts() };// TODO: Check whether really want to copy the set
 
 	const auto where = std::ranges::find_if(
@@ -294,7 +294,7 @@ Future<bool> hg::Destroy(mref<ptr<Actor>> actor_, cref<Session> session_) noexce
 Future<bool> hg::Destroy(mref<ptr<Actor>> actor_, cref<World> activeWorld_) noexcept {
 	const auto* world { activeWorld_.unwrap().get() };
 
-	const auto* engine { engine::Engine::getEngine() };
+	const auto engine { engine::Engine::getEngine() };
 	const auto ctxs { engine->getWorldContexts() };// TODO: Check whether really want to copy the set
 
 	const auto where = std::ranges::find_if(

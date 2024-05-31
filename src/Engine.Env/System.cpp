@@ -8,10 +8,10 @@ using namespace hg::env;
 
 #include <sysinfoapi.h>
 
-size_t get_memory_page_size() {
-    SYSTEM_INFO info;
-    GetSystemInfo(&info);
-    return info.dwPageSize;
+size_t hg::env::get_memory_page_size() {
+	SYSTEM_INFO info;
+	GetSystemInfo(&info);
+	return info.dwPageSize;
 }
 
 #elif __linux__ || __unix__ || defined(_POSIX_SOURCE)

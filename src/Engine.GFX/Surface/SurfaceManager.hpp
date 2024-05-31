@@ -5,54 +5,54 @@
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 
 namespace hg::engine::platform {
-    class NativeWindow;
+	class NativeWindow;
 }
 
 namespace hg::engine::gfx {
-    class Application;
-    class Surface;
-    class Swapchain;
+	class Application;
+	class Surface;
+	class Swapchain;
 }
 
 namespace hg::engine::gfx {
-    class SurfaceManager {
-    public:
-        using this_type = SurfaceManager;
+	class SurfaceManager {
+	public:
+		using this_type = SurfaceManager;
 
-    public:
-        SurfaceManager(const non_owning_rptr<Application> application_);
+	public:
+		SurfaceManager(ref<Application> application_);
 
-        ~SurfaceManager();
+		~SurfaceManager();
 
-    private:
-        void tidy();
+	private:
+		void tidy();
 
-    private:
-        const non_owning_rptr<Application> _application;
+	private:
+		nmpt<Application> _application;
 
-        StableUnorderedMap<
-            non_owning_rptr<platform::NativeWindow>, uptr<Surface>
-        > _surfaces;
+		StableUnorderedMap<
+			nmpt<platform::NativeWindow>, uptr<Surface>
+		> _surfaces;
 
-    public:
-        /**
-         *
-         * @returns A pointer to the bound surface, otherwise nullptr.
-         */
-        [[nodiscard]] nmpt<Surface> getSurface(const non_owning_rptr<platform::NativeWindow> window_);
+	public:
+		/**
+		 *
+		 * @returns A pointer to the bound surface, otherwise nullptr.
+		 */
+		[[nodiscard]] nmpt<Surface> getSurface(nmpt<platform::NativeWindow> window_);
 
-        /**
-         *
-         * @returns A pointer to the newly create surface, otherwise nullptr.
-         */
-        [[nodiscard]] nmpt<Surface> makeSurface(mref<uptr<platform::NativeWindow>> window_);
+		/**
+		 *
+		 * @returns A pointer to the newly create surface, otherwise nullptr.
+		 */
+		[[nodiscard]] nmpt<Surface> makeSurface(mref<uptr<platform::NativeWindow>> window_);
 
-    private:
-        bool destroySurface(mref<uptr<Surface>> surface_);
+	private:
+		bool destroySurface(mref<uptr<Surface>> surface_);
 
-    public:
-        bool destroySurface(const non_owning_rptr<platform::NativeWindow> window_);
+	public:
+		bool destroySurface(nmpt<platform::NativeWindow> window_);
 
-        bool destroySurface(mref<nmpt<Surface>> surface_);
-    };
+		bool destroySurface(mref<nmpt<Surface>> surface_);
+	};
 }

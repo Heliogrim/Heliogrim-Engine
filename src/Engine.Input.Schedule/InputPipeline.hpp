@@ -20,14 +20,14 @@ namespace hg::engine::input::schedule {
         ~InputPipeline() override;
 
     public:
-        void mount(const non_owning_rptr<scheduler::StageRegister> register_) override;
+        void mount(ref<scheduler::StageRegister> register_) override;
 
         void declareDependencies(
-            const non_owning_rptr<const scheduler::StageRegister> register_,
+            cref<scheduler::StageRegister> register_,
             ref<CompactSet<StageDependency>> collection_
         ) override;
 
-        void dismount(const non_owning_rptr<scheduler::StageRegister> register_) override;
+        void dismount(ref<scheduler::StageRegister> register_) override;
 
     public:
         [[nodiscard]] bool isSkippable() const noexcept override;
