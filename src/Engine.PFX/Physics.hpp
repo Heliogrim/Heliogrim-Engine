@@ -3,20 +3,20 @@
 #include <Engine.Core/Module/CoreModule.hpp>
 
 namespace hg::engine {
-    class Physics :
-        public core::CoreModule {
-    public:
-        Physics(const non_owning_rptr<Engine> engine_) noexcept;
+	class Physics :
+		public core::CoreModule {
+	public:
+		Physics(ref<Engine> engine_) noexcept;
 
-        ~Physics() override;
+		~Physics() override;
 
-    public:
-        void setup() override;
+	public:
+		void setup() override;
 
-        void start() override;
+		void start() override;
 
-        void stop() override;
+		void stop() override;
 
-        void destroy() override;
-    };
+		void destroy() override;
+	};
 }

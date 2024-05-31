@@ -56,7 +56,7 @@ namespace hg::engine {
 		/**
 		 * Get the cached engine instance pointer
 		 */
-		[[nodiscard]] static non_owning_rptr<Engine> getEngine() noexcept;
+		[[nodiscard]] static nmpt<Engine> getEngine() noexcept;
 
 	private:
 		/**
@@ -226,23 +226,23 @@ namespace hg::engine {
 		virtual bool exit() = 0;
 
 	public:
-		[[nodiscard]] virtual non_owning_rptr<Assets> getAssets() const noexcept = 0;
+		[[nodiscard]] virtual nmpt<Assets> getAssets() const noexcept = 0;
 
-		[[nodiscard]] virtual non_owning_rptr<Audio> getAudio() const noexcept = 0;
+		[[nodiscard]] virtual nmpt<Audio> getAudio() const noexcept = 0;
 
-		[[nodiscard]] virtual non_owning_rptr<Graphics> getGraphics() const noexcept = 0;
+		[[nodiscard]] virtual nmpt<Graphics> getGraphics() const noexcept = 0;
 
-		[[nodiscard]] virtual non_owning_rptr<Input> getInput() const noexcept = 0;
+		[[nodiscard]] virtual nmpt<Input> getInput() const noexcept = 0;
 
-		[[nodiscard]] virtual non_owning_rptr<Network> getNetwork() const noexcept = 0;
+		[[nodiscard]] virtual nmpt<Network> getNetwork() const noexcept = 0;
 
-		[[nodiscard]] virtual non_owning_rptr<Physics> getPhysics() const noexcept = 0;
+		[[nodiscard]] virtual nmpt<Physics> getPhysics() const noexcept = 0;
 
-		[[nodiscard]] virtual non_owning_rptr<Platform> getPlatform() const noexcept = 0;
+		[[nodiscard]] virtual nmpt<Platform> getPlatform() const noexcept = 0;
 
-		[[nodiscard]] virtual non_owning_rptr<ResourceManager> getResources() const noexcept = 0;
+		[[nodiscard]] virtual nmpt<ResourceManager> getResources() const noexcept = 0;
 
-		[[nodiscard]] virtual non_owning_rptr<Scheduler> getScheduler() const noexcept = 0;
+		[[nodiscard]] virtual nmpt<Scheduler> getScheduler() const noexcept = 0;
 
 	public:
 		[[nodiscard]] virtual ref<GlobalEventEmitter> getEmitter() const noexcept = 0;

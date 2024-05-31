@@ -12,13 +12,13 @@ TickPipeline::TickPipeline() :
 
 TickPipeline::~TickPipeline() noexcept = default;
 
-void TickPipeline::mount(const non_owning_rptr<StageRegister> register_) {
+void TickPipeline::mount(ref<StageRegister> register_) {
 
-    const auto* const beginStage = register_->registerStage(
+    const auto* const beginStage = register_.registerStage(
         make_uptr<EmptyPipelineStage>(PipelineStage::identifier_type::from(TickBegin), this)
     );
     //const auto eventStage = register_->registerStage(TickEvent);
-    const auto* const endStage = register_->registerStage(
+    const auto* const endStage = register_.registerStage(
         make_uptr<EmptyPipelineStage>(PipelineStage::identifier_type::from(TickEnd), this)
     );
 
@@ -31,14 +31,14 @@ void TickPipeline::mount(const non_owning_rptr<StageRegister> register_) {
 }
 
 void TickPipeline::declareDependencies(
-    const non_owning_rptr<const StageRegister> register_,
+    cref<StageRegister> register_,
     ref<CompactSet<StageDependency>> collection_
 ) {
 
     // TODO: Guarantee that tick end stage is latest within dependent chain
     // Attention: Hotfix
 
-    const auto* const renderScene = register_->getStage(gfx::schedule::RenderScenePipeline::RenderTick);
+    const auto* const renderScene = register_.getStage(gfx::schedule::RenderScenePipeline::RenderTick);
 
     /**/
 
@@ -55,11 +55,11 @@ void TickPipeline::declareDependencies(
     );
 }
 
-void TickPipeline::dismount(const non_owning_rptr<StageRegister> register_) {
+void TickPipeline::dismount(ref<StageRegister> register_) {
 
-    register_->removeStage(TickEnd);
+    register_.removeStage(TickEnd);
     //register_->removeStage(TickEvent);
-    register_->removeStage(TickEnd);
+    register_.removeStage(TickEnd);
 
     /**/
 

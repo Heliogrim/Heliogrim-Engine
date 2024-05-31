@@ -14,9 +14,9 @@ InputPipeline::InputPipeline() :
 
 InputPipeline::~InputPipeline() = default;
 
-void InputPipeline::mount(const non_owning_rptr<scheduler::StageRegister> register_) {
+void InputPipeline::mount(ref<StageRegister> register_) {
 
-    const auto* const inputTick = register_->registerStage(
+    const auto* const inputTick = register_.registerStage(
         make_uptr<InputTickStage>(InputTick, this)
     );
 
@@ -26,10 +26,10 @@ void InputPipeline::mount(const non_owning_rptr<scheduler::StageRegister> regist
 }
 
 void InputPipeline::declareDependencies(
-    const non_owning_rptr<const scheduler::StageRegister> register_,
+    cref<StageRegister> register_,
     ref<CompactSet<StageDependency>> collection_
 ) {
-    const auto* const beginTick = register_->getStage(TickPipeline::TickBegin);
+    const auto* const beginTick = register_.getStage(TickPipeline::TickBegin);
 
     /**/
 
@@ -46,9 +46,9 @@ void InputPipeline::declareDependencies(
     );
 }
 
-void InputPipeline::dismount(const non_owning_rptr<scheduler::StageRegister> register_) {
+void InputPipeline::dismount(ref<StageRegister> register_) {
 
-    register_->removeStage(InputTick);
+    register_.removeStage(InputTick);
 
     /**/
 

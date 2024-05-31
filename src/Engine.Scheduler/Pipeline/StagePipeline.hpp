@@ -40,14 +40,14 @@ namespace hg::engine::scheduler {
 		 */
 
 	public:
-		virtual void mount(const non_owning_rptr<StageRegister> register_) = 0;
+		virtual void mount(_In_ ref<StageRegister> register_) = 0;
 
 		virtual void declareDependencies(
-			const non_owning_rptr<const StageRegister> register_,
+			cref<StageRegister> register_,
 			_Inout_ ref<CompactSet<StageDependency>> collection_
 		) = 0;
 
-		virtual void dismount(const non_owning_rptr<StageRegister> register_) = 0;
+		virtual void dismount(_In_ ref<StageRegister> register_) = 0;
 
 	protected:
 		/**

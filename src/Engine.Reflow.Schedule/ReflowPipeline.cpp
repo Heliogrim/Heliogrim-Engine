@@ -16,9 +16,9 @@ ReflowPipeline::ReflowPipeline() :
 
 ReflowPipeline::~ReflowPipeline() = default;
 
-void ReflowPipeline::mount(const non_owning_rptr<scheduler::StageRegister> register_) {
+void ReflowPipeline::mount(ref<StageRegister> register_) {
 
-    const auto* const tick = register_->registerStage(
+    const auto* const tick = register_.registerStage(
         make_uptr<ReflowFlowStage>(Tick, this)
     );
 
@@ -28,12 +28,12 @@ void ReflowPipeline::mount(const non_owning_rptr<scheduler::StageRegister> regis
 }
 
 void ReflowPipeline::declareDependencies(
-    const non_owning_rptr<const scheduler::StageRegister> register_,
+    cref<StageRegister> register_,
     ref<CompactSet<StageDependency>> collection_
 ) {
-    const auto* const beginTick = register_->getStage(TickPipeline::TickBegin);
-    const auto* const actorUpdate = register_->getStage(core::schedule::CorePipeline::ActorUpdate);
-    const auto* const inputTick = register_->getStage(input::schedule::InputPipeline::InputTick);
+    const auto* const beginTick = register_.getStage(TickPipeline::TickBegin);
+    const auto* const actorUpdate = register_.getStage(core::schedule::CorePipeline::ActorUpdate);
+    const auto* const inputTick = register_.getStage(input::schedule::InputPipeline::InputTick);
 
     /**/
 
@@ -50,9 +50,9 @@ void ReflowPipeline::declareDependencies(
     );
 }
 
-void ReflowPipeline::dismount(const non_owning_rptr<scheduler::StageRegister> register_) {
+void ReflowPipeline::dismount(ref<StageRegister> register_) {
 
-    register_->removeStage(Tick);
+    register_.removeStage(Tick);
 
     /**/
 

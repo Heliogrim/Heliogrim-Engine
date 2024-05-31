@@ -9,16 +9,16 @@
 using namespace hg::engine;
 using namespace hg;
 
-Physics::Physics(const non_owning_rptr<Engine> engine_) noexcept :
-    CoreModule(engine_) {}
+Physics::Physics(ref<Engine> engine_) noexcept :
+	CoreModule(engine_) {}
 
 Physics::~Physics() = default;
 
 void Physics::setup() {
-    SCOPED_STOPWATCH
+	SCOPED_STOPWATCH
 }
 
-void Physics::start() { }
+void Physics::start() {}
 
 void Physics::stop() {}
 

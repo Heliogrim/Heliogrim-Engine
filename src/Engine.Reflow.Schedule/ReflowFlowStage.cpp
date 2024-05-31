@@ -17,68 +17,68 @@ using namespace hg::engine::scheduler;
 using namespace hg;
 
 ReflowFlowStage::ReflowFlowStage(
-    cref<StageIdentifier> identifier_,
-    pipeline_handle_type pipeline_
+	cref<StageIdentifier> identifier_,
+	pipeline_handle_type pipeline_
 ) :
-    PipelineStage(identifier_type::from(identifier_), pipeline_) {}
+	PipelineStage(identifier_type::from(identifier_), pipeline_) {}
 
 ReflowFlowStage::~ReflowFlowStage() = default;
 
 void ReflowFlowStage::staticDispatch(const non_owning_rptr<const scheduler::StageDispatcher> dispatcher_) {
-    dispatcher_->enqueue(
-        task::make_repetitive_task(
-            []() {
+	dispatcher_->enqueue(
+		task::make_repetitive_task(
+			[]() {
 
-                const auto* const engine = Engine::getEngine();
-                const auto& manager = ::hg::engine::reflow::WindowManager::get();
+				const auto engine = Engine::getEngine();
+				const auto& manager = ::hg::engine::reflow::WindowManager::get();
 
-                ReflowEngine::updateTickVersion();
+				ReflowEngine::updateTickVersion();
 
-                /**/
+				/**/
 
-                if (!manager) {
-                    // TODO: return false;
-                    return true;
-                }
+				if (!manager) {
+					// TODO: return false;
+					return true;
+				}
 
-                /**/
+				/**/
 
-                const auto& wnds = manager->_windows;
-                for (const auto& boundWnd : wnds) {
+				const auto& wnds = manager->_windows;
+				for (const auto& boundWnd : wnds) {
 
-                    SCOPED_STOPWATCH_V(__reflow__singleFlow)
+					SCOPED_STOPWATCH_V(__reflow__singleFlow)
 
-                    /*
-                    reflow::StyleKeyStack stack {};
-                    boundWnd->window->flow(ctx, clientSize, clientSize, stack);
-                     */
+					/*
+					reflow::StyleKeyStack stack {};
+					boundWnd->window->flow(ctx, clientSize, clientSize, stack);
+					 */
 
-                    const math::vec2 clientSize = boundWnd->window->getClientSize();
-                    auto start = std::chrono::high_resolution_clock::now();
+					const math::vec2 clientSize = boundWnd->window->getClientSize();
+					auto start = std::chrono::high_resolution_clock::now();
 
-                    ReflowState state {};
-                    auto layoutContext = reflow::LayoutContext {
-                        math::vec2 { 0.F },
-                        math::vec2 { clientSize.x, clientSize.y },
-                        1.F
-                    };
+					ReflowState state {};
+					auto layoutContext = reflow::LayoutContext {
+						math::vec2 { 0.F },
+						math::vec2 { clientSize.x, clientSize.y },
+						1.F
+					};
 
-                    state.setRenderTick(ReflowEngine::getGlobalRenderTick());
-                    ReflowEngine::tick(state, boundWnd->window, std::move(layoutContext));
+					state.setRenderTick(ReflowEngine::getGlobalRenderTick());
+					ReflowEngine::tick(state, boundWnd->window, std::move(layoutContext));
 
-                    auto end = std::chrono::high_resolution_clock::now();
-                    IM_DEBUG_LOGF(
-                        "Next Flex-Flow took: {}",
-                        std::chrono::duration_cast<std::chrono::microseconds>(end - start)
-                    );
-                }
+					auto end = std::chrono::high_resolution_clock::now();
+					IM_DEBUG_LOGF(
+						"Next Flex-Flow took: {}",
+						std::chrono::duration_cast<std::chrono::microseconds>(end - start)
+					);
+				}
 
-                return true;
-            }
-        )
-    );
+				return true;
+			}
+		)
+	);
 }
 
 void ReflowFlowStage::dynamicDispatch(const non_owning_rptr<const scheduler::StageDispatcher> dispatcher_) {
-    // TODO:
+	// TODO:
 }

@@ -18,14 +18,14 @@ namespace hg::engine::scheduler {
         ~TickPipeline() noexcept override;
 
     public:
-        void mount(const non_owning_rptr<StageRegister> register_) override;
+        void mount(ref<StageRegister> register_) override;
 
         void declareDependencies(
-            const non_owning_rptr<const StageRegister> register_,
+            cref<StageRegister> register_,
             ref<CompactSet<StageDependency>> collection_
         ) override;
 
-        void dismount(const non_owning_rptr<StageRegister> register_) override;
+        void dismount(ref<StageRegister> register_) override;
 
     public:
         [[nodiscard]] bool isSkippable() const noexcept override;

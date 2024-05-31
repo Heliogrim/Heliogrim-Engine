@@ -64,12 +64,12 @@ bool EditorEngine::preInit() {
 
 	/**/
 
-	_assets = make_uptr<Assets>(this);
-	_audio = make_uptr<Audio>(this);
-	_graphics = make_uptr<Graphics>(this);
-	_input = make_uptr<Input>(this);
-	_network = make_uptr<Network>(this);
-	_physics = make_uptr<Physics>(this);
+	_assets = make_uptr<Assets>(*this);
+	_audio = make_uptr<Audio>(*this);
+	_graphics = make_uptr<Graphics>(*this);
+	_input = make_uptr<Input>(*this);
+	_network = make_uptr<Network>(*this);
+	_physics = make_uptr<Physics>(*this);
 
 	/**/
 
@@ -435,39 +435,39 @@ bool EditorEngine::exit() {
 	return setEngineState(EngineState::eExited);
 }
 
-non_owning_rptr<engine::Assets> EditorEngine::getAssets() const noexcept {
+nmpt<engine::Assets> EditorEngine::getAssets() const noexcept {
 	return _assets.get();
 }
 
-non_owning_rptr<engine::Audio> EditorEngine::getAudio() const noexcept {
+nmpt<engine::Audio> EditorEngine::getAudio() const noexcept {
 	return _audio.get();
 }
 
-non_owning_rptr<engine::Graphics> EditorEngine::getGraphics() const noexcept {
+nmpt<engine::Graphics> EditorEngine::getGraphics() const noexcept {
 	return _graphics.get();
 }
 
-non_owning_rptr<engine::Input> EditorEngine::getInput() const noexcept {
+nmpt<engine::Input> EditorEngine::getInput() const noexcept {
 	return _input.get();
 }
 
-non_owning_rptr<engine::Network> EditorEngine::getNetwork() const noexcept {
+nmpt<engine::Network> EditorEngine::getNetwork() const noexcept {
 	return _network.get();
 }
 
-non_owning_rptr<engine::Physics> EditorEngine::getPhysics() const noexcept {
+nmpt<engine::Physics> EditorEngine::getPhysics() const noexcept {
 	return _physics.get();
 }
 
-non_owning_rptr<engine::Platform> EditorEngine::getPlatform() const noexcept {
+nmpt<engine::Platform> EditorEngine::getPlatform() const noexcept {
 	return _platform.get();
 }
 
-non_owning_rptr<engine::ResourceManager> EditorEngine::getResources() const noexcept {
+nmpt<engine::ResourceManager> EditorEngine::getResources() const noexcept {
 	return _resources.get();
 }
 
-non_owning_rptr<engine::Scheduler> EditorEngine::getScheduler() const noexcept {
+nmpt<engine::Scheduler> EditorEngine::getScheduler() const noexcept {
 	return _scheduler.get();
 }
 

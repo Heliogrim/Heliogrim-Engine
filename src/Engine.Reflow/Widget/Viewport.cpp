@@ -170,7 +170,7 @@ void Viewport::remountRenderTarget() {
 
 	// Warning: Temporary Internal Linking
 
-	const auto* const gfx = Engine::getEngine()->getGraphics();
+	const auto gfx = Engine::getEngine()->getGraphics();
 	auto* const manager = gfx->getSceneManager();
 
 	const auto renderer = gfx->getRenderer(_renderer, std::nothrow);

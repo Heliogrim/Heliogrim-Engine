@@ -45,7 +45,7 @@ namespace hg::engine {
 		 * @author Julius
 		 * @date 09.11.2020
 		 */
-		Graphics(const non_owning_rptr<Engine> engine_) noexcept;
+		Graphics(ref<Engine> engine_) noexcept;
 
 		/**
 		 * Destructor

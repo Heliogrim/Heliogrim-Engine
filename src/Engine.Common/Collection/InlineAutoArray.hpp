@@ -192,7 +192,7 @@ namespace hg {
 				if (_idx < element_capacity) {
 					return &_inlineBase[_idx];
 				}
-				return &_externalBase[_idx - element_capacity];
+				return &_externalBase[_idx - static_cast<difference_type>(element_capacity)];
 			}
 
 		public:

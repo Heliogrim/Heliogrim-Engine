@@ -155,14 +155,14 @@ namespace hg {
 
 		// TODO:
 		constexpr AtomicRefCountedIntrusive(const this_type& other_) noexcept :
-			_obj(++const_cast<volatile ref<arci_atomic_packed_type>>(other_._obj)) {
+			_obj(++const_cast<ref<arci_atomic_packed_type>>(other_._obj)) {
 
 			auto* const subject = decode_pointer(_obj.load(std::memory_order::relaxed));
 
 			if (subject != nullptr) {
 				subject->ref_inc();
 			}
-			--const_cast<volatile ref<arci_atomic_packed_type>>(other_._obj);
+			--const_cast<ref<arci_atomic_packed_type>>(other_._obj);
 
 			/**/
 
@@ -366,7 +366,7 @@ namespace hg {
 	public:
 		[[nodiscard]] constexpr bool operator==(nullptr_t) const noexcept {
 			const auto stored = _obj.load(std::memory_order::consume);
-			return stored || decode_pointer(stored) == nullptr;
+			return stored == 0 || decode_pointer(stored) == nullptr;
 		}
 
 		[[nodiscard]] constexpr bool operator==(cref<this_type> other_) const noexcept {

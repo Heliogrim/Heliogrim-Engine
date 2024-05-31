@@ -30,9 +30,11 @@ namespace hg {
 
 	public:
 		// NOLINTBEGIN(*-const-return-type)
+		// ReSharper disable once CppConstValueFunctionReturnType
 		[[nodiscard]] const __restricted_ptr<const class MetaClass> getMetaClass() const noexcept {
-			// NOLINTEND(*-const-return-type)
 			return _meta;
 		}
+
+		// NOLINTEND(*-const-return-type)
 	};
 }

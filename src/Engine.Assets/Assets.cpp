@@ -10,7 +10,7 @@ using namespace hg::engine::assets;
 using namespace hg::engine;
 using namespace hg;
 
-Assets::Assets(nmpt<Engine> engine_) :
+Assets::Assets(ref<Engine> engine_) :
 	CoreModule(engine_),
 	_registry(nullptr),
 	_factory(nullptr) {}

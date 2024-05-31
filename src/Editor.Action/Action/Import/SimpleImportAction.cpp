@@ -77,7 +77,7 @@ void SimpleImportAction::apply() {
 	setRunning();
 	_failed = false;
 
-	const auto* const manager { engine::Engine::getEngine()->getResources() };
+	const auto manager { engine::Engine::getEngine()->getResources() };
 	const auto& importer { manager->importer() };
 
 	/**/

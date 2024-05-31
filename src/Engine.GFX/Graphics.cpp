@@ -46,7 +46,7 @@ using namespace hg::engine::gfx;
 using namespace hg::engine;
 using namespace hg;
 
-Graphics::Graphics(const non_owning_rptr<Engine> engine_) noexcept :
+Graphics::Graphics(ref<Engine> engine_) noexcept :
 	CoreModule(engine_),
 	_computeQueue(nullptr),
 	_graphicsQueue(nullptr),
@@ -153,7 +153,7 @@ void Graphics::setup() {
 	/**
 	 * Surfaces
 	 */
-	_surfaceManager = make_uptr<SurfaceManager>(&_application);
+	_surfaceManager = make_uptr<SurfaceManager>(_application);
 
 	/**
 	 * Prepare rendering specific data structures

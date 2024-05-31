@@ -4,20 +4,20 @@
 #include <Engine.Core/Module/CoreModule.hpp>
 
 namespace hg::engine {
-    class Network :
-        public core::CoreModule {
-    public:
-        Network(const non_owning_rptr<Engine> engine_) noexcept;
+	class Network :
+		public core::CoreModule {
+	public:
+		Network(ref<Engine> engine_) noexcept;
 
-        ~Network() override;
+		~Network() override;
 
-    public:
-        void setup() override;
+	public:
+		void setup() override;
 
-        void start() override;
+		void start() override;
 
-        void stop() override;
+		void stop() override;
 
-        void destroy() override;
-    };
+		void destroy() override;
+	};
 }
