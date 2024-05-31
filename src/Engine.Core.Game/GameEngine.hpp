@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Engine.Config/Config.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Module/Modules.hpp>
 #include <Engine.Event/GlobalEventEmitter.hpp>
@@ -39,8 +40,9 @@ namespace hg::engine {
 		uptr<ResourceManager> _resources;
 		uptr<Scheduler> _scheduler;
 
-        GlobalEventEmitter _emitter;
-        core::Modules _modules;
+		Config _config;
+		GlobalEventEmitter _emitter;
+		core::Modules _modules;
 
 	public:
 		[[nodiscard]] nmpt<Assets> getAssets() const noexcept override;
@@ -61,8 +63,10 @@ namespace hg::engine {
 
 		[[nodiscard]] nmpt<Scheduler> getScheduler() const noexcept override;
 
-    public:
-        [[nodiscard]] ref<GlobalEventEmitter> getEmitter() const noexcept override;
+	public:
+		[[nodiscard]] ref<Config> getConfig() const noexcept override;
+
+		[[nodiscard]] ref<GlobalEventEmitter> getEmitter() const noexcept override;
 
 		[[nodiscard]] ref<core::Modules> getModules() const noexcept override;
 

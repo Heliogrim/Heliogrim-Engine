@@ -471,6 +471,10 @@ nmpt<engine::Scheduler> EditorEngine::getScheduler() const noexcept {
 	return _scheduler.get();
 }
 
+ref<engine::Config> EditorEngine::getConfig() const noexcept {
+	return const_cast<ref<engine::Config>>(_config);
+}
+
 ref<GlobalEventEmitter> EditorEngine::getEmitter() const noexcept {
 	return const_cast<ref<GlobalEventEmitter>>(_emitter);
 }

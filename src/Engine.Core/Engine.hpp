@@ -19,6 +19,8 @@ namespace hg::engine {
 	class ResourceManager;
 	class Scheduler;
 	class Platform;
+
+	class Config;
 }
 
 namespace hg::engine::core {
@@ -245,6 +247,8 @@ namespace hg::engine {
 		[[nodiscard]] virtual nmpt<Scheduler> getScheduler() const noexcept = 0;
 
 	public:
+		[[nodiscard]] virtual ref<Config> getConfig() const noexcept = 0;
+
 		[[nodiscard]] virtual ref<GlobalEventEmitter> getEmitter() const noexcept = 0;
 
 		[[nodiscard]] virtual ref<core::Modules> getModules() const noexcept = 0;
