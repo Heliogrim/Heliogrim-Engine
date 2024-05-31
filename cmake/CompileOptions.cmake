@@ -80,6 +80,11 @@ set(DEFAULT_LIBRARIES
         # External Libraries (Legacy)
         "${Vulkan_LIBRARY}")
 
+# Append Sanitizer Options
+if (SANITIZER_LINK_LIBS)
+    list(APPEND DEFAULT_LIBRARIES ${SANITIZER_LINK_LIBS})
+endif ()
+
 set(TEST_LIBRARIES
         # External Targets
         ${PROJECT_NAME}::External-gtest
@@ -117,6 +122,11 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC")
             _SCL_SECURE_NO_WARNINGS  # Calling any one of the potentially unsafe methods in the Standard C++ Library
             _CRT_SECURE_NO_WARNINGS  # Calling any one of the potentially unsafe methods in the CRT Library
     )
+endif ()
+
+# Append Sanitizer Options
+if (SANITIZER_COMPILE_DEFINITIONS)
+    list(APPEND DEFAULT_COMPILE_DEFINITIONS ${SANITIZER_COMPILE_DEFINITIONS})
 endif ()
 
 #
@@ -201,6 +211,7 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU" OR "${CMAKE_CXX_COMPILER_ID}" MATCH
             -Wall
             -Wextra
             -Wunused
+            -Weffc++
 
             -Wreorder
             -Wmissing-braces
@@ -214,6 +225,7 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU" OR "${CMAKE_CXX_COMPILER_ID}" MATCH
             -Wno-c++11-compat
             -Wno-c++14-compat
             -Wno-c++17-compat
+            -Wno-c++20-compat
 
             -Wno-reserved-identifier
             -Wno-reserved-macro-identifier
@@ -257,6 +269,11 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU" OR "${CMAKE_CXX_COMPILER_ID}" MATCH
             -std=c++23
             >
     )
+endif ()
+
+# Append Sanitizer Options
+if (SANITIZER_COMPILE_OPTIONS)
+    list(APPEND DEFAULT_COMPILE_OPTIONS ${SANITIZER_COMPILE_OPTIONS})
 endif ()
 
 

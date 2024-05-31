@@ -36,8 +36,17 @@ function(add_deploy_to_target target)
     get_library_path(proj_lib_dir)
     gen_target_name_id(name_id)
     file(GLOB_RECURSE deployable "${proj_lib_dir}/bin/**/$<CONFIG>**/${name_id}**/*.dll")
-    list(LENGTH deployable deployable_size)
 
+    # Append Sanitizer DLLs
+    if (SANITIZER_DEPLOY_DLLS)
+        foreach (pattern IN LISTS SANITIZER_DEPLOY_DLLS)
+            file(GLOB tmp "${pattern}")
+            list(APPEND deployable ${tmp})
+        endforeach ()
+    endif ()
+
+
+    list(LENGTH deployable deployable_size)
     if (deployable_size LESS_EQUAL 0)
         message(STATUS "Exit dynamic lib deployment, cause there are none.")
         return()

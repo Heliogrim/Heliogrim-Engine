@@ -87,12 +87,15 @@ function(make_test_project)
     )
 
     # Target Health
-    # Deployment
     get_shared_dist_path(proj_dist_path)
     set_batch_target_properties(${target} ${proj_dist_path})
 
+    # Deployment
+    add_deploy_to_target(${target})
+
     # Register Tests
+    include(CTest)
     include(GoogleTest)
-    gtest_discover_tests(${target} DISCOVERY_MODE PRE_TEST)
+    gtest_discover_tests(${target})
 
 endfunction()

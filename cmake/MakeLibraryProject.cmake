@@ -91,6 +91,7 @@ function(make_library_project)
             PRIVATE
             ${DEFAULT_LINKER_OPTIONS}
     )
+    set_target_lto(${target})
 
     # Target Health
     # Deployment

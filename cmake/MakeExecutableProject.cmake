@@ -134,11 +134,14 @@ function(make_app_project)
             PRIVATE
             ${DEFAULT_LINKER_OPTIONS}
     )
+    set_target_lto(${app_target})
+
     target_link_options(
             ${lib_target}
             PRIVATE
             ${DEFAULT_LINKER_OPTIONS}
     )
+    set_target_lto(${lib_target})
 
     # Target Health
     get_shared_dist_path(proj_dist_dir)
