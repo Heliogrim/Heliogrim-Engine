@@ -432,6 +432,10 @@ nmpt<Scheduler> GameEngine::getScheduler() const noexcept {
 	return _scheduler.get();
 }
 
+ref<Config> GameEngine::getConfig() const noexcept {
+	return const_cast<ref<engine::Config>>(_config);
+}
+
 ref<GlobalEventEmitter> GameEngine::getEmitter() const noexcept {
 	return const_cast<ref<GlobalEventEmitter>>(_emitter);
 }

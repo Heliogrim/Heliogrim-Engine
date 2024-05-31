@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Engine.Common/Memory/MemoryPointer.hpp>
+#include <Engine.Config/Config.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Module/Modules.hpp>
 #include <Engine.Event/GlobalEventEmitter.hpp>
@@ -46,6 +47,7 @@ namespace hg::editor {
 		uptr<engine::ResourceManager> _resources;
 		uptr<engine::Scheduler> _scheduler;
 
+		engine::Config _config;
 		GlobalEventEmitter _emitter;
 
 		engine::core::Modules _modules;
@@ -70,6 +72,8 @@ namespace hg::editor {
 		[[nodiscard]] nmpt<engine::Scheduler> getScheduler() const noexcept override;
 
 	public:
+		[[nodiscard]] ref<engine::Config> getConfig() const noexcept override;
+
 		[[nodiscard]] ref<GlobalEventEmitter> getEmitter() const noexcept override;
 
 		[[nodiscard]] ref<engine::core::Modules> getModules() const noexcept override;
