@@ -1,10 +1,5 @@
 #include "Heliogrim.Main.hpp"
 
-#ifdef _PROFILING
-#include <Engine.Common/Profiling/Profiler.hpp>
-#include <Engine.Common/Profiling/Stopwatch.hpp>
-#endif
-
 #include <Heliogrim/Heliogrim.hpp>
 #include <Heliogrim/HeliogrimStatic.hpp>
 
@@ -16,11 +11,7 @@ using namespace hg;
 
 using SignalShutdownEvent = ::hg::engine::core::SignalShutdownEvent;
 
-int main() {
-	#ifdef _PROFILING
-    profiling::Profiler::make().startSession("main");
-    SCOPED_STOPWATCH_V(__main__stopwatch)
-	#endif
+int main_impl() {
 
 	#if USE_MAIN_THREAD_INJECTION
 	beforeRoutine();
@@ -62,22 +53,22 @@ int main() {
 	/**
 	 * Boot Engine
 	 */
-	engine->preInit();
+	auto success = engine->preInit();
 	#if USE_MAIN_THREAD_INJECTION
 	onEnginePreInit(engine);
 	#endif
 
-	engine->init();
+	success &= engine->init();
 	#if USE_MAIN_THREAD_INJECTION
 	onEngineInit(engine);
 	#endif
 
-	engine->postInit();
+	success &= engine->postInit();
 	#if USE_MAIN_THREAD_INJECTION
 	onEnginePostInit(engine);
 	#endif
 
-	engine->start();
+	success &= engine->start();
 	#if USE_MAIN_THREAD_INJECTION
 	onEngineStart(engine);
 	#endif
@@ -99,17 +90,17 @@ int main() {
 	/**
 	 * Shutdown Engine
 	 */
-	engine->stop();
+	success &= engine->stop();
 	#if USE_MAIN_THREAD_INJECTION
 	onEngineStop(engine);
 	#endif
 
-	engine->shutdown();
+	success &= engine->shutdown();
 	#if USE_MAIN_THREAD_INJECTION
 	onEngineShutdown(engine);
 	#endif
 
-	engine->exit();
+	success &= engine->exit();
 	#if USE_MAIN_THREAD_INJECTION
 	onEngineExit(engine);
 	#endif
@@ -123,8 +114,17 @@ int main() {
 	afterRoutine();
 	#endif
 
-	#ifdef _PROFILING
-    __main__stopwatch.stop();
-    profiling::Profiler::destroy();
-	#endif
+	return success ? EXIT_SUCCESS : EXIT_FAILURE;
 }
+
+int main() {
+	return main_impl();
+}
+
+#if defined(_MSC_VER)
+#include <Windows.h>
+
+int WinMain(HINSTANCE hInstance_, HINSTANCE hPrevInstance_, char*, int nsCmd_) {
+	return main_impl();
+}
+#endif

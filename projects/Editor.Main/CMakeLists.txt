@@ -8,6 +8,7 @@ make_app_project(
         SOURCE "Editor.Main"
         LIBRARIES
         ${PROJECT_NAME}::Editor.Action
+        ${PROJECT_NAME}::Editor.Assets.Default
         ${PROJECT_NAME}::Editor.Core
         ${PROJECT_NAME}::Editor.GFX.Event
         ${PROJECT_NAME}::Editor.GFX.Graphs
@@ -17,5 +18,4 @@ make_app_project(
         ${PROJECT_NAME}::Editor.Scene
         ${PROJECT_NAME}::Editor.UI
         ${PROJECT_NAME}::Heliogrim
-        ${PROJECT_NAME}::Heliogrim.Default
 )

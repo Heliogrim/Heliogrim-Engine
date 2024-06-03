@@ -49,14 +49,14 @@ void editor::boot::initPrimaryWorld() {
 	addDefaultSkybox();
 }
 
-#include <Game.Main/Assets/Meshes/Sphere.hpp>
+#include <Editor.Assets.Default/GfxMaterials/DefaultSkybox.hpp>
+#include <Editor.Assets.Default/Meshes/Sphere.hpp>
 #include <Heliogrim/Actor.hpp>
 #include <Heliogrim/ActorInitializer.hpp>
 #include <Heliogrim/Heliogrim.hpp>
 #include <Heliogrim/Session.hpp>
 #include <Heliogrim/SkyboxComponent.hpp>
 #include <Heliogrim/World.hpp>
-#include <Heliogrim.Default/Assets/GfxMaterials/DefaultSkybox.hpp>
 
 static void addDefaultSkybox() {
 

@@ -4,17 +4,17 @@
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Reflect/Cast.hpp>
-#include <Heliogrim.Default/Assets/Textures/Brand.hpp>
-#include <Heliogrim.Default/Assets/Textures/Directory.hpp>
-#include <Heliogrim.Default/Assets/Textures/FolderAudio.hpp>
-#include <Heliogrim.Default/Assets/Textures/FolderEnvironment.hpp>
-#include <Heliogrim.Default/Assets/Textures/FolderFont.hpp>
-#include <Heliogrim.Default/Assets/Textures/FolderImages.hpp>
-#include <Heliogrim.Default/Assets/Textures/FolderImport.hpp>
-#include <Heliogrim.Default/Assets/Textures/FolderLog.hpp>
-#include <Heliogrim.Default/Assets/Textures/FolderResource.hpp>
-#include <Heliogrim.Default/Assets/Textures/FolderShader.hpp>
-#include <Heliogrim.Default/Assets/Textures/FolderVideo.hpp>
+#include <Editor.Assets.Default/Textures/Brand.hpp>
+#include <Editor.Assets.Default/Textures/Directory.hpp>
+#include <Editor.Assets.Default/Textures/FolderAudio.hpp>
+#include <Editor.Assets.Default/Textures/FolderEnvironment.hpp>
+#include <Editor.Assets.Default/Textures/FolderFont.hpp>
+#include <Editor.Assets.Default/Textures/FolderImages.hpp>
+#include <Editor.Assets.Default/Textures/FolderImport.hpp>
+#include <Editor.Assets.Default/Textures/FolderLog.hpp>
+#include <Editor.Assets.Default/Textures/FolderResource.hpp>
+#include <Editor.Assets.Default/Textures/FolderShader.hpp>
+#include <Editor.Assets.Default/Textures/FolderVideo.hpp>
 
 using namespace hg::editor::ui;
 using namespace hg;

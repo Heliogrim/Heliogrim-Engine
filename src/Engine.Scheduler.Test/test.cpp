@@ -42,12 +42,12 @@ namespace SchedulerModule {
 		EXPECT_EQ(pool.size().load(std::memory_order_relaxed), 32);
 	}
 
-	void structuredRuntimeTest(std::function<void(const ptr<engine::Scheduler>)> callback_) {
-		//
+	void structuredRuntimeTest(std::function<void(nmpt<engine::Scheduler>)> callback_) {
+
 		auto engine = make_uptr<test::TestSchedulerEngine>();
 		engine->preInit();
 
-		auto* const scheduler = engine->getScheduler();
+		const auto scheduler = engine->getScheduler();
 
 		//
 		EXPECT_EQ(scheduler->getWorkerCount(), 0uL);
