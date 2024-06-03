@@ -45,6 +45,7 @@ set(CMAKE_CONFIGURATION_TYPES "Debug;Release;Profile")
 # Project Options
 
 include(cmake/Dependencies.cmake)
+include(Options.cmake)
 
 # Project Directories
 ## Deployment / Distribution directories will be configured within make library/test functions
@@ -82,6 +83,4 @@ foreach (lib IN LISTS libraries tests)
 endforeach ()
 
 add_subdirectory("${projects_directory}/Heliogrim.Main")
-
 add_subdirectory("${projects_directory}/Editor.Main")
-add_subdirectory("${projects_directory}/Game.Main")

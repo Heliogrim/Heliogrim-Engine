@@ -5,7 +5,7 @@
 #include <Engine.Common/__macro.hpp>
 
 #ifndef USE_MAIN_THREAD_INJECTION
-#define USE_MAIN_THREAD_INJECTION TRUE
+#define USE_MAIN_THREAD_INJECTION FALSE
 #endif
 
 #ifndef PREVENT_MAIN_AUTO_SLEEP

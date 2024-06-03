@@ -1,12 +1,13 @@
 #pragma once
 
 #include <Engine.Common/Make.hpp>
+#include <Engine.Config/Config.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/EngineState.hpp>
 #include <Engine.Core/Module/Modules.hpp>
-#include <Engine.Scheduler/Scheduler.hpp>
-#include <Engine.Scheduler/CompScheduler.hpp>
 #include <Engine.Event/GlobalEventEmitter.hpp>
+#include <Engine.Scheduler/CompScheduler.hpp>
+#include <Engine.Scheduler/Scheduler.hpp>
 
 namespace hg::test {
 	class TestSchedulerEngine final :
@@ -89,10 +90,15 @@ namespace hg::test {
 		}
 
 	private:
+		mutable engine::Config _config;
 		mutable GlobalEventEmitter _emitter;
 		engine::core::Modules _modules;
 
 	public:
+		[[nodiscard]] ref<engine::Config> getConfig() const noexcept override {
+			return _config;
+		}
+
 		[[nodiscard]] ref<GlobalEventEmitter> getEmitter() const noexcept override {
 			return _emitter;
 		}

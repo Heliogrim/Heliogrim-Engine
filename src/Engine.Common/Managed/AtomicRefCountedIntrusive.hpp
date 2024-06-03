@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <stdexcept>
+#include <Engine.Pedantic/Clone/Clone.hpp>
 
 #include "../Wrapper.hpp"
 #include "../Meta/Type.hpp"
@@ -388,8 +389,8 @@ namespace hg {
 		template <IsAtomicIntrusiveRefCountable ToType_> requires
 			std::is_convertible_v<ptr<Ty_>, ptr<ToType_>> ||
 			std::derived_from<ToType_, Ty_>
-		[[nodiscard]] AtomicRefCountedIntrusive<ToType_> into() & noexcept {
-			return static_cast<AtomicRefCountedIntrusive<ToType_>>(*this);
+		[[nodiscard]] AtomicRefCountedIntrusive<ToType_> into() const & noexcept {
+			return clone(*this).template into<ToType_>();
 		}
 
 		template <IsAtomicIntrusiveRefCountable ToType_> requires

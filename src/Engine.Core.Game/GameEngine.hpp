@@ -89,7 +89,7 @@ namespace hg::engine {
 		/**
 		 * As long as we use a GameEngine instance we can expect to have at least one major world
 		 *  We still have the possibility to execute multiple game sessions at once, but this should
-		 *  be manage explicitly to model the interaction of multiple worlds.
+		 *  be managed explicitly to model the interaction of multiple worlds.
 		 */
 		uptr<core::Session> _gameSession;
 

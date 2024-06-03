@@ -9,16 +9,13 @@
 #include <Heliogrim/Components/DirectionalLightComponent.hpp>
 #include <Heliogrim/Components/PointLightComponent.hpp>
 
+#include "Editor.Assets.Default/Fonts/CascadiaCode.hpp"
+#include "Editor.Assets.Default/Textures/Brand.hpp"
 #include "Editor.Core/EditorEngine.hpp"
 #include "Editor.Core/HeliogrimEditor.hpp"
 #include "Editor.UI/Color/Dark.hpp"
-#include "Editor.UI/Panel/SceneHierarchyPanel.hpp"
 #include "Editor.UI/Panel/ObjectEditorPanel.hpp"
-#include "Heliogrim/Heliogrim.hpp"
-#include "Heliogrim/World.hpp"
-#include "Heliogrim/Actors/CameraActor.hpp"
-#include "Heliogrim.Default/Assets/Fonts/CascadiaCode.hpp"
-#include "Heliogrim.Default/Assets/Textures/Brand.hpp"
+#include "Editor.UI/Panel/SceneHierarchyPanel.hpp"
 #include "Engine.Assets/Assets.hpp"
 #include "Engine.Core/World.hpp"
 #include "Engine.Core/WorldContext.hpp"
@@ -27,45 +24,48 @@
 #include "Engine.GFX/Swapchain/VkSwapchain.hpp"
 #include "Engine.GFX/Texture/SparseTextureView.hpp"
 #include "Engine.GFX.Scene/RenderSceneManager.hpp"
-#include "Engine.Resource/ResourceManager.hpp"
 #include "Engine.Reflow/Widget/Button.hpp"
+#include "Engine.Reflow/Widget/HorizontalPanel.hpp"
 #include "Engine.Reflow/Widget/Image.hpp"
 #include "Engine.Reflow/Widget/Menu.hpp"
-#include "Engine.Reflow/Widget/Text.hpp"
-#include "Engine.Reflow/Widget/Viewport.hpp"
-#include "Engine.Reflow/Widget/HorizontalPanel.hpp"
-#include "Engine.Reflow/Widget/VerticalPanel.hpp"
 #include "Engine.Reflow/Widget/Overlay.hpp"
+#include "Engine.Reflow/Widget/Text.hpp"
+#include "Engine.Reflow/Widget/VerticalPanel.hpp"
+#include "Engine.Reflow/Widget/Viewport.hpp"
+#include "Engine.Resource/ResourceManager.hpp"
+#include "Heliogrim/Heliogrim.hpp"
+#include "Heliogrim/World.hpp"
+#include "Heliogrim/Actors/CameraActor.hpp"
 
-#include "Engine.Reflow/Window/WindowManager.hpp"
-#include "Engine.Scene/Scene.hpp"
-#include "Engine.ACS/Registry.hpp"
+#include <Engine.GFX.Scene/View/SceneView.hpp>
+#include <Engine.Render.Scene/RenderSceneSystem.hpp>
 #include "Engine.ACS/Pool.hpp"
+#include "Engine.ACS/Registry.hpp"
 #include "Engine.ACS/Storage.hpp"
 #include "Engine.Assets.System/IAssetRegistry.hpp"
-#include <Engine.Render.Scene/RenderSceneSystem.hpp>
-#include <Engine.GFX.Scene/View/SceneView.hpp>
+#include "Engine.Reflow/Window/WindowManager.hpp"
+#include "Engine.Scene/Scene.hpp"
 
 #if TRUE
+#include "Engine.Assets/Types/Font.hpp"
+#include "Engine.GFX/Graphics.hpp"
+#include "Engine.GFX.Loader/Font/FontResource.hpp"
+#include "Engine.GFX.Loader/Font/Traits.hpp"
+#include "Engine.GFX.Loader/Texture/Traits.hpp"
 #include "Engine.GFX/Command/CommandBuffer.hpp"
 #include "Engine.GFX/Texture/TextureFactory.hpp"
-#include "Engine.GFX/Graphics.hpp"
-#include "Engine.Scheduler/Async.hpp"
-#include "Engine.Assets/Types/Font.hpp"
 #include "Engine.Resource/LoaderManager.hpp"
-#include "Engine.GFX.Loader/Texture/Traits.hpp"
-#include "Engine.GFX.Loader/Font/Traits.hpp"
-#include "Engine.GFX.Loader/Font/FontResource.hpp"
+#include "Engine.Scheduler/Async.hpp"
 #endif
 
 #if TRUE
-#include "Editor.UI/Panel/AssetBrowserPanel.hpp"
-#include "Editor.UI/Modules/AssetBrowser.hpp"
 #include "Editor.UI/Helper/AssetBrowserHelper.hpp"
+#include "Editor.UI/Modules/AssetBrowser.hpp"
 #include "Editor.UI/Modules/SceneHierarchy.hpp"
 #include "Editor.UI/Modules/SceneHierarchy/HierarchyGenerator.hpp"
 #include "Editor.UI/Modules/SceneHierarchy/HierarchyResolver.hpp"
 #include "Editor.UI/Modules/SceneHierarchy/SceneViewEntry.hpp"
+#include "Editor.UI/Panel/AssetBrowserPanel.hpp"
 #endif
 
 using namespace hg::editor::ui;
@@ -840,13 +840,13 @@ void configureMainViewport(
 
 }
 
-#include <Editor.UI/Widget/Board/Whiteboard.hpp>
+#include <Editor.GFX.Graphs/Node/Input/SubGraphInputNode.hpp>
+#include <Editor.GFX.Graphs/Node/Math/ScalarPowMathNode.hpp>
+#include <Editor.GFX.Graphs/Node/Math/ScalarSubMathNode.hpp>
+#include <Editor.GFX.Graphs/Node/Output/SubGraphOutputNode.hpp>
 #include <Editor.UI/Widget/Board/Board.hpp>
 #include <Editor.UI/Widget/Board/BoardNode.hpp>
-#include <Editor.GFX.Graphs/Node/Input/SubGraphInputNode.hpp>
-#include <Editor.GFX.Graphs/Node/Math/ScalarSubMathNode.hpp>
-#include <Editor.GFX.Graphs/Node/Math/ScalarPowMathNode.hpp>
-#include <Editor.GFX.Graphs/Node/Output/SubGraphOutputNode.hpp>
+#include <Editor.UI/Widget/Board/Whiteboard.hpp>
 
 void configureMainGraph(
 	sptr<VerticalPanel> parent_
