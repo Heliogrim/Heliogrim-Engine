@@ -18,7 +18,7 @@ namespace hg::editor {
 		/**
 		 * Get the cached engine instance pointer
 		 */
-		[[nodiscard]] static non_owning_rptr<EditorEngine> getEngine() noexcept;
+		[[nodiscard]] static nmpt<EditorEngine> getEngine() noexcept;
 
 	public:
 		bool preInit() override;

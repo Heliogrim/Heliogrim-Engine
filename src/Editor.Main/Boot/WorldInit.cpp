@@ -6,8 +6,6 @@
 #include <Engine.Core/Session.hpp>
 #include <Engine.Core/World.hpp>
 #include <Engine.Core/WorldContext.hpp>
-#include <Heliogrim/StaticGeometryComponent.hpp>
-#include <Heliogrim.Default/Assets/GfxMaterials/DefaultBrdfMaterial.hpp>
 
 using namespace hg::editor::boot;
 using namespace hg::engine;
@@ -17,7 +15,7 @@ static void addDefaultSkybox();
 
 void editor::boot::initEditorWorld() {
 
-	auto* const engine { EditorEngine::getEngine() };
+	const auto engine { EditorEngine::getEngine() };
 	const auto editor { engine->getEditorSession() };
 
 	/**/
@@ -33,7 +31,7 @@ void editor::boot::initEditorWorld() {
 
 void editor::boot::initPrimaryWorld() {
 
-	auto* const engine { EditorEngine::getEngine() };
+	const auto engine { EditorEngine::getEngine() };
 	const auto primary { engine->getPrimaryGameSession() };
 
 	/**/
