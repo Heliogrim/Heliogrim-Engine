@@ -90,10 +90,10 @@ namespace hg {
 		using arci_packed_type = std::uintptr_t;
 		using arci_atomic_packed_type = std::atomic_uintptr_t;
 
-		constexpr packed_type arci_packed_shift = 16uLL;
-		constexpr packed_type arci_packed_ref_mask =
+		constexpr arci_packed_type arci_packed_shift = 16uLL;
+		constexpr arci_packed_type arci_packed_ref_mask =
 			0b00000000'00000000'00000000'00000000'00000000'00000000'11111111'11111111;
-		constexpr packed_type arci_packed_ptr_mask =
+		constexpr arci_packed_type arci_packed_ptr_mask =
 			0b11111111'11111111'11111111'11111111'11111111'11111111'00000000'00000000;
 	};
 
@@ -105,28 +105,28 @@ namespace hg {
 		using storage_type = arci_atomic_packed_type;
 
 	private:
-		[[nodiscard]] static packed_type encode_pointer(const ptr<Ty_> pt_) noexcept {
-			return reinterpret_cast<packed_type>(pt_) << packed_shift;
+		[[nodiscard]] static arci_packed_type encode_pointer(const ptr<Ty_> pt_) noexcept {
+			return reinterpret_cast<arci_packed_type>(pt_) << packed_shift;
 		}
 
-		[[nodiscard]] static packed_type encode_counter(const u16 refs_) noexcept {
-			return packed_type { refs_ };
+		[[nodiscard]] static arci_packed_type encode_counter(const u16 refs_) noexcept {
+			return arci_packed_type { refs_ };
 		}
 
-		[[nodiscard]] static Ty_* decode_pointer(const packed_type& packed_) noexcept {
+		[[nodiscard]] static Ty_* decode_pointer(const arci_packed_type& packed_) noexcept {
 			return reinterpret_cast<Ty_*>((packed_ & arci_packed_ptr_mask) >> arci_packed_shift);
 		}
 
-		[[nodiscard]] static u16 decode_counter(const packed_type& packed_) noexcept {
+		[[nodiscard]] static u16 decode_counter(const arci_packed_type& packed_) noexcept {
 			return static_cast<u16>(packed_ & arci_packed_ref_mask);
 		}
 
-		[[nodiscard]] static packed_type encode(const ptr<Ty_> pt_, const u16 refs_) noexcept {
+		[[nodiscard]] static arci_packed_type encode(const ptr<Ty_> pt_, const u16 refs_) noexcept {
 			return encode_pointer(pt_) | encode_counter(refs_);
 		}
 
 	public:
-		template <typename... Args_>
+		template <typename... Args_> requires std::is_constructible_v<Ty_, Args_...>
 		[[nodiscard]] constexpr static this_type create(Args_&&... args_) noexcept {
 
 			auto alloc = std::allocator<Ty_> {};
@@ -143,7 +143,7 @@ namespace hg {
 		}
 
 	private:
-		explicit constexpr AtomicRefCountedIntrusive(mref<packed_type> storage_) noexcept :
+		explicit constexpr AtomicRefCountedIntrusive(mref<arci_packed_type> storage_) noexcept :
 			_obj(storage_) {}
 
 	public:
@@ -297,7 +297,7 @@ namespace hg {
 			auto alloc_traits = std::allocator_traits<std::allocator<Ty_>> {};
 
 			alloc_traits.destroy(alloc, obj_);
-			_obj.store(packed_type { 0 }, std::memory_order::relaxed);
+			_obj.store(arci_packed_type { 0 }, std::memory_order::relaxed);
 		}
 
 		constexpr void cascade_dec(const ptr<Ty_> obj_) {
@@ -319,7 +319,7 @@ namespace hg {
 			}
 		}
 
-		constexpr void throw_if_null(const packed_type packed_) const {
+		constexpr void throw_if_null(const arci_packed_type packed_) const {
 			if (decode_pointer(packed_) == nullptr) {
 				throw std::runtime_error("Failed to access ref counted object with ref count of zero.");
 			}
