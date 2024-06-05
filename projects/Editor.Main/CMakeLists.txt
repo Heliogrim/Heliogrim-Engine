@@ -13,6 +13,7 @@ make_app_project(
         ${PROJECT_NAME}::Editor.GFX.Graphs
         ${PROJECT_NAME}::Editor.GFX.IO
         ${PROJECT_NAME}::Editor.GFX.Loader
+        ${PROJECT_NAME}::Editor.Project.Generate
         ${PROJECT_NAME}::Editor.Render
         ${PROJECT_NAME}::Editor.Scene
         ${PROJECT_NAME}::Editor.UI
