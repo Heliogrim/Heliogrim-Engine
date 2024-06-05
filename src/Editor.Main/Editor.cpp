@@ -9,6 +9,7 @@
 
 #include "Boot/AssetInit.hpp"
 #include "Boot/GfxInit.hpp"
+#include "Boot/ProjectInit.hpp"
 #include "Boot/WorldInit.hpp"
 
 using namespace hg::editor;
@@ -45,6 +46,7 @@ cref<CompactSet<engine::core::SubModuleDependency>> Editor::dependencies() const
 void Editor::setup() {}
 
 void Editor::start() {
+	boot::initProject();
 	boot::initAssets();
 	boot::initEditorWorld();
 	boot::initPrimaryWorld();
