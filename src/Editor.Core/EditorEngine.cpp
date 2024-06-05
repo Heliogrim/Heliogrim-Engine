@@ -38,7 +38,7 @@ EditorEngine::EditorEngine() = default;
 
 EditorEngine::~EditorEngine() = default;
 
-non_owning_rptr<EditorEngine> EditorEngine::getEngine() noexcept {
+nmpt<EditorEngine> EditorEngine::getEngine() noexcept {
 	return static_cast<ptr<EditorEngine>>(_cached);
 }
 

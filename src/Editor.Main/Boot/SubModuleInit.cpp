@@ -13,15 +13,15 @@ using namespace hg;
 
 void editor::boot::preInitSubModules() {
 
-	auto* const engine = EditorEngine::getEngine();
+	const auto engine = EditorEngine::getEngine();
 	auto& modules = engine->getModules();
 
 	/**/
 
-	auto result = modules.addSubModule(make_uptr<engine::Accel>(engine));
+	auto result = modules.addSubModule(make_uptr<engine::Accel>(engine.get()));
 	::hg::assertrt(result == engine::core::DependencyValidationResult::eSuccess);
 
-	result = modules.addSubModule(make_uptr<engine::Reflow>(engine));
+	result = modules.addSubModule(make_uptr<engine::Reflow>(engine.get()));
 	::hg::assertrt(result == engine::core::DependencyValidationResult::eSuccess);
 
 	/**/
@@ -29,6 +29,6 @@ void editor::boot::preInitSubModules() {
 	result = modules.addSubModule(make_uptr<EditorGraphicsIo>(engine));
 	::hg::assertrt(result == engine::core::DependencyValidationResult::eSuccess);
 
-	result = modules.addSubModule(make_uptr<Editor>(engine));
+	result = modules.addSubModule(make_uptr<Editor>(engine.get()));
 	::hg::assertrt(result == engine::core::DependencyValidationResult::eSuccess);
 }
