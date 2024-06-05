@@ -5,6 +5,7 @@
 #include "Engine.Assets.Type/Texture/Font.hpp"
 #include "Engine.Assets.Type/Texture/Image.hpp"
 #include "Engine.Assets.Type/Texture/TextureAsset.hpp"
+#include "Editor.Action/Action/Action.hpp"
 /**/
 
 #include <algorithm>
@@ -692,10 +693,10 @@ bool autoImport(ref<Indexed> indexed_) {
 
 	/**/
 
-	auto importAction = make_sptr<editor::AutoImportAction>(
+	auto importAction = Arci<editor::AutoImportAction>::create(
 		storage::FileUrl { clone(storage::FileScheme), engine::fs::Path { indexed_.primary } }
 	);
-	actions->apply(importAction);
+	actions->apply(clone(importAction));
 
 	/**/
 

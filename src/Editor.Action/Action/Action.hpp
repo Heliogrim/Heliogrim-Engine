@@ -1,26 +1,27 @@
 #pragma once
 
+#include <Engine.Common/Managed/AtomicRefCountedIntrusive.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Reflect/Inherit/InheritBase.hpp>
 #include <Heliogrim/Async/AwaitSignal.hpp>
 
 #include "ActionTypeId.hpp"
 
 namespace hg::editor {
-	class macro_novtable Action {
+	class macro_novtable Action :
+		public InheritBase<Action>,
+		public ArcFromThis<Action> {
 	public:
 		using this_type = Action;
 
 	protected:
-		Action(cref<action_type_id> typeId_);
+		constexpr Action() noexcept = default;
 
 	public:
-		virtual ~Action() noexcept = default;
-
-	private:
-		action_type_id _typeId;
+		constexpr ~Action() noexcept override = default;
 
 	public:
-		[[nodiscard]] const action_type_id getTypeId() const noexcept;
+		[[nodiscard]] action_type_id getTypeId() const noexcept;
 
 	public:
 		[[nodiscard]] virtual bool isReversible() const noexcept = 0;
@@ -42,4 +43,4 @@ namespace hg::editor {
 	public:
 		[[nodiscard]] virtual bool failed() const noexcept = 0;
 	};
-}
+}// namespace hg::editor

@@ -12,7 +12,7 @@ using namespace hg::editor;
 using namespace hg;
 
 SimpleImportAction::SimpleImportAction() :
-	ImportAction(typeId),
+	InheritMeta(),
 	_source(),
 	_target(),
 	_assets(),
@@ -21,7 +21,7 @@ SimpleImportAction::SimpleImportAction() :
 	_failed() {}
 
 SimpleImportAction::SimpleImportAction(cref<fs::Url> source_, cref<fs::Url> target_) :
-	ImportAction(typeId),
+	InheritMeta(),
 	_source(source_),
 	_target(target_),
 	_assets(),

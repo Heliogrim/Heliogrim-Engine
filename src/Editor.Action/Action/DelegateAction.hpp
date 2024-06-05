@@ -5,41 +5,35 @@
 #include "SimpleAction.hpp"
 
 namespace hg::editor {
-    class DelegateAction :
-        public SimpleAction {
-    public:
-        using this_type = DelegateAction;
-        using delegate_type = std::function<void()>;
+	class DelegateAction :
+		public InheritMeta<DelegateAction, SimpleAction> {
+	public:
+		using this_type = DelegateAction;
+		using delegate_type = std::function<void()>;
 
-    public:
-        inline constexpr static action_type_id typeId { "DelegateAction"_typeId };
+	public:
+		DelegateAction() noexcept = default;
 
-    protected:
-        DelegateAction(cref<action_type_id> typeId_);
+		DelegateAction(mref<delegate_type> fwd_, mref<delegate_type> bwd_);
 
-    public:
-        DelegateAction();
+		~DelegateAction() override;
 
-        DelegateAction(mref<delegate_type> fwd_, mref<delegate_type> bwd_);
+	private:
+		delegate_type _fwd;
+		delegate_type _bwd;
 
-        ~DelegateAction() override;
+	public:
+		void store(mref<delegate_type> fwd_, mref<delegate_type> bwd_);
 
-    private:
-        delegate_type _fwd;
-        delegate_type _bwd;
+	public:
+		[[nodiscard]] bool isReversible() const noexcept override;
 
-    public:
-        void store(mref<delegate_type> fwd_, mref<delegate_type> bwd_);
+	public:
+		void apply() override;
 
-    public:
-        [[nodiscard]] bool isReversible() const noexcept override;
+		void reverse() override;
 
-    public:
-        void apply() override;
-
-        void reverse() override;
-
-    public:
-        [[nodiscard]] bool failed() const noexcept override;
-    };
+	public:
+		[[nodiscard]] bool failed() const noexcept override;
+	};
 }

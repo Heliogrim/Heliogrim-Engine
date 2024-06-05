@@ -1,3 +1,7 @@
+#include "../Action/Action.hpp"
+
+/**/
+
 #include "ActionDispatcher.hpp"
 
 #include <Heliogrim/Async/Await.hpp>
@@ -8,7 +12,7 @@ using namespace hg;
 
 ActionDispatcher::ActionDispatcher() = default;
 
-bool ActionDispatcher::operator()(cref<sptr<Action>> action_, const bool reverting_) const {
+bool ActionDispatcher::operator()(mref<Arci<Action>> action_, const bool reverting_) const {
 
 	if (reverting_ && not action_->isReversible()) {
 		return false;

@@ -1,72 +1,74 @@
 #pragma once
 
+#include <atomic>
+#include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Deque.hpp>
 #include <Engine.Common/Collection/Stack.hpp>
-#include <Engine.Common/Wrapper.hpp>
-
-#include <atomic>
-
-#include "../Action/Action.hpp"
+#include <Engine.Common/Managed/Rc.hpp>
 
 namespace hg::editor {
-    class ActionLog {
-    public:
-        using this_type = ActionLog;
+	class Action;
+}
 
-        inline constexpr static u64 action_log_size { 50uLL };
+namespace hg::editor {
+	class ActionLog {
+	public:
+		using this_type = ActionLog;
 
-    public:
-        ActionLog();
+		inline constexpr static u64 action_log_size { 50uLL };
 
-        ~ActionLog() noexcept = default;
+	public:
+		ActionLog();
 
-    private:
-        Deque<sptr<Action>> _log;
-        Stack<sptr<Action>> _relog;
+		~ActionLog() noexcept = default;
 
-        std::atomic_uintptr_t _saveState;
+	private:
+		Deque<Arci<Action>> _log;
+		Stack<Arci<Action>> _relog;
 
-    private:
-        void storeLog(cref<sptr<Action>> entry_);
+		std::atomic_uintptr_t _saveState;
 
-        sptr<Action> popLog();
+	private:
+		void storeLog(mref<Arci<Action>> entry_);
 
-        void storeRevertLog(cref<sptr<Action>> entry_);
+		Arci<Action> popLog();
 
-        sptr<Action> popRevertLog();
+		void storeRevertLog(mref<Arci<Action>> entry_);
 
-    private:
-        void storeActionState(cref<sptr<Action>> action_);
+		Arci<Action> popRevertLog();
 
-        void dropActionState();
+	private:
+		void storeActionState(mref<Arci<Action>> action_);
 
-        bool revertActionState(cref<sptr<Action>> action_);
+		void dropActionState();
 
-    public:
-        /**
-         * Will log the provided action to forward log
-         *
-         * @param action_ The action to apply within forward progress
-         */
-        void apply(cref<sptr<Action>> action_);
+		bool revertActionState(mref<Arci<Action>> action_);
 
-        /**
-         * Will rearrange the action and will return the first reverting action
-         *
-         * @returns A shared pointer to the reverting action
-         */
-        sptr<Action> revert();
+	public:
+		/**
+		 * Will log the provided action to forward log
+		 *
+		 * @param action_ The action to apply within forward progress
+		 */
+		void apply(mref<Arci<Action>> action_);
 
-        /**
-         * Will rearrange the action and will return the first action to apply from reverted log
-         *
-         * @returns A shared pointer to the applying action
-         */
-        sptr<Action> reapply();
+		/**
+		 * Will rearrange the action and will return the first reverting action
+		 *
+		 * @returns A shared pointer to the reverting action
+		 */
+		Arci<Action> revert();
 
-    public:
-        void succeed(cref<sptr<Action>> action_);
+		/**
+		 * Will rearrange the action and will return the first action to apply from reverted log
+		 *
+		 * @returns A shared pointer to the applying action
+		 */
+		Arci<Action> reapply();
 
-        void fail(cref<sptr<Action>> action_);
-    };
+	public:
+		void succeed(mref<Arci<Action>> action_);
+
+		void fail(mref<Arci<Action>> action_);
+	};
 }

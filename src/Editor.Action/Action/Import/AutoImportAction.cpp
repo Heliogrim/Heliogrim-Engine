@@ -9,8 +9,6 @@
 using namespace hg::editor;
 using namespace hg;
 
-constexpr static auto actionTypeId = action_type_id { "AutoImportAction"_typeId };
-
 /**/
 
 // @formatter:off
@@ -21,10 +19,10 @@ constexpr static auto actionTypeId = action_type_id { "AutoImportAction"_typeId 
 /**/
 
 AutoImportAction::AutoImportAction() noexcept :
-	ImportAction(actionTypeId) {}
+	InheritMeta() {}
 
 AutoImportAction::AutoImportAction(mref<engine::storage::FileUrl> importFile_) noexcept :
-	ImportAction(actionTypeId),
+	InheritMeta(),
 	_importFile(std::move(importFile_)),
 	_generatedAssets() {}
 

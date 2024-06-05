@@ -1,8 +1,12 @@
+#include "Action/Action.hpp"
+
+/**/
+
 #include "ActionManager.hpp"
 
 #include <Engine.Logging/Logger.hpp>
+#include <Engine.Pedantic/Clone/Clone.hpp>
 
-#include "Engine.Common/Make.hpp"
 #include "Log/ActionDispatcher.hpp"
 #include "Log/ActionLog.hpp"
 
@@ -43,49 +47,50 @@ void ActionManager::destroy() {
 	_log.reset();
 }
 
-void ActionManager::apply(cref<sptr<Action>> action_) const {
+cref<ActionManager> ActionManager::apply(mref<Arci<Action>> action_) const {
 
 	// TODO: Check whether we need to synchronize
-	_log->apply(action_);
-	const auto result = (*_dispatcher)(action_);
+	_log->apply(clone(action_));
+	const auto result = (*_dispatcher)(clone(action_));
 
 	if (result) {
-		_log->succeed(action_);
+		_log->succeed(std::move(action_));
 	} else {
-		_log->fail(action_);
+		_log->fail(std::move(action_));
 	}
+	return *this;
 }
 
 void ActionManager::revert() const {
 
-	const auto action = _log->revert();
-	if (not action) {
+	auto action = _log->revert();
+	if (action == nullptr) {
 		IM_CORE_WARN("Tried to revert on empty action log.");
 		return;
 	}
 
-	const auto result = (*_dispatcher)(action);
+	const auto result = (*_dispatcher)(clone(action));
 
 	if (result) {
-		_log->succeed(action);
+		_log->succeed(std::move(action));
 	} else {
-		_log->fail(action);
+		_log->fail(std::move(action));
 	}
 }
 
 void ActionManager::reapply() const {
 
-	const auto action = _log->reapply();
-	if (not action) {
+	auto action = _log->reapply();
+	if (action != nullptr) {
 		IM_CORE_WARN("Tried to reapply on empty reverted action log.");
 		return;
 	}
 
-	const auto result = (*_dispatcher)(action);
+	const auto result = (*_dispatcher)(clone(action));
 
 	if (result) {
-		_log->succeed(action);
+		_log->succeed(std::move(action));
 	} else {
-		_log->fail(action);
+		_log->fail(std::move(action));
 	}
 }

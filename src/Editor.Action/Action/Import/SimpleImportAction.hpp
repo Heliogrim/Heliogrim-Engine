@@ -7,18 +7,16 @@
 
 namespace hg::editor {
 	class SimpleImportAction :
-		public ImportAction {
+		public InheritMeta<SimpleImportAction, ImportAction> {
 	public:
 		using this_type = SimpleImportAction;
-
-		inline constexpr static action_type_id typeId { "SimpleImportAction"_typeId };
 
 	public:
 		SimpleImportAction();
 
 		SimpleImportAction(cref<fs::Url> source_, cref<fs::Url> target_);
 
-		~SimpleImportAction();
+		~SimpleImportAction() override;
 
 	private:
 		fs::Url _source;
@@ -38,8 +36,8 @@ namespace hg::editor {
 		[[nodiscard]] cref<decltype(_assets)> importedAssets() const noexcept;
 
 	private:
-		std::atomic_flag _running;
-		std::atomic_flag _finished;
+		std::atomic_flag _running {};
+		std::atomic_flag _finished {};
 
 	protected:
 		void setRunning();
@@ -64,7 +62,7 @@ namespace hg::editor {
 		[[nodiscard]] operator ptr<await_signal_sub_type>() const noexcept;
 
 	private:
-		bool _failed;
+		bool _failed = false;
 
 	public:
 		[[nodiscard]] bool failed() const noexcept override;

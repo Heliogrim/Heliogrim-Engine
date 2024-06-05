@@ -3,15 +3,15 @@
 #include "../Action.hpp"
 
 namespace hg::editor {
-    class ImportAction :
-        public Action {
-    public:
-        using this_type = ImportAction;
+	class ImportAction :
+		public InheritMeta<ImportAction, Action> {
+	public:
+		using this_type = ImportAction;
 
-    protected:
-        ImportAction(cref<action_type_id> typeId_);
+	protected:
+		constexpr ImportAction() noexcept = default;
 
-    public:
-        ~ImportAction() noexcept override;
-    };
+	public:
+		~ImportAction() noexcept override;
+	};
 }

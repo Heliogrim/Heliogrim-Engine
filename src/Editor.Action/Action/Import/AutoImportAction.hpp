@@ -10,7 +10,7 @@
 
 namespace hg::editor {
 	class AutoImportAction :
-		public ImportAction {
+		public InheritMeta<AutoImportAction, ImportAction> {
 	public:
 		AutoImportAction() noexcept;
 
