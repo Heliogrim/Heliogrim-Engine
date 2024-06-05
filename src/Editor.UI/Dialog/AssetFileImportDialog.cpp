@@ -476,11 +476,11 @@ sptr<Dialog> AssetFileImportDialog::make(
 				ActionManager::make();
 			}
 
-			const auto action { make_sptr<SimpleImportAction>(diag->_source, diag->_target) };
+			auto action = Arci<SimpleImportAction>::create(diag->_source, diag->_target);
 
 			execute(
-				[action]() {
-					ActionManager::get()->apply(action);
+				[action = std::move(action)]() {
+					ActionManager::get()->apply(clone(action));
 
 					for (const auto& asset : action->importedAssets()) {
 						auto cpy = clone(asset);

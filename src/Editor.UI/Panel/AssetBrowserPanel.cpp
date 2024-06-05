@@ -379,16 +379,14 @@ engine::reflow::EventResponse AssetBrowserPanel::onDrop(cref<engine::reflow::Dra
 		for (const auto& path : event_._data.files->paths) {
 
 			std::filesystem::path cwd { _browserCwd.path() };
-			const auto action {
-				make_sptr<SimpleImportAction>(
-					fs::Url { "file"sv, fs::Path { path } },
-					fs::Url { ""sv, fs::Path { cwd.string() } }
-				)
-			};
+			auto action = Arci<SimpleImportAction>::create(
+				fs::Url { "file"sv, fs::Path { path } },
+				fs::Url { ""sv, fs::Path { cwd.string() } }
+			);
 
 			execute(
-				[action]() {
-					ActionManager::get()->apply(action);
+				[action = std::move(action)]() {
+					ActionManager::get()->apply(clone(action));
 
 					for (const auto& asset : action->importedAssets()) {
 						auto cpy = clone(asset);

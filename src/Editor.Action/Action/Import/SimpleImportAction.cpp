@@ -1,28 +1,19 @@
 #include "SimpleImportAction.hpp"
 
 #include <Engine.Core/Engine.hpp>
-#include <Engine.Resource/ResourceManager.hpp>
-#include <Engine.Resource/ImporterManager.hpp>
 #include <Engine.Resource/File.hpp>
+#include <Engine.Resource/ImporterManager.hpp>
+#include <Engine.Resource/ResourceManager.hpp>
 
-#include "Engine.Assets/Types/Texture/TextureAsset.hpp"
 #include "Engine.Assets/Types/Image.hpp"
 #include "Engine.Assets/Types/Geometry/StaticGeometry.hpp"
+#include "Engine.Assets/Types/Texture/TextureAsset.hpp"
 
 using namespace hg::editor;
 using namespace hg;
 
-SimpleImportAction::SimpleImportAction() :
-	ImportAction(typeId),
-	_source(),
-	_target(),
-	_assets(),
-	_running(),
-	_finished(),
-	_failed() {}
-
 SimpleImportAction::SimpleImportAction(cref<fs::Url> source_, cref<fs::Url> target_) :
-	ImportAction(typeId),
+	InheritMeta(),
 	_source(source_),
 	_target(target_),
 	_assets(),
