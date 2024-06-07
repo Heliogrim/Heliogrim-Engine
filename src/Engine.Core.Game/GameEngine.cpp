@@ -207,7 +207,7 @@ bool GameEngine::start() {
 	scheduler::exec(
 		[this, &next] {
 			_gameSession = make_uptr<core::Session>();
-			_worldContexts.push_back(_gameSession->getWorldContext());
+			_worldContexts.emplace_back(std::addressof(_gameSession->getWorldContext()));
 
 			/**/
 
@@ -243,7 +243,10 @@ bool GameEngine::stop() {
 
 			/**/
 
-			auto where = std::ranges::remove(_worldContexts, _gameSession->getWorldContext());
+			auto where = std::ranges::remove(
+				_worldContexts,
+				nmpt<core::WorldContext> { std::addressof(_gameSession->getWorldContext()) }
+			);
 			_worldContexts.erase(where.begin(), where.end());
 			_gameSession.reset();
 

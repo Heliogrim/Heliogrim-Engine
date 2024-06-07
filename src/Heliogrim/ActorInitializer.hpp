@@ -51,9 +51,9 @@ namespace hg {
 		ptr<Component> createComponent(_Inout_ const ptr<Actor> actor_) const {
 
 			/**/
-			auto* registry { getCoreSession().getState()->getRegistry() };
+			auto& registry { getCoreSession().getState().getRegistry() };
 
-			auto* component = registry->acquireActorComponent<
+			auto* component = registry.acquireActorComponent<
 				Component,
 				CachedActorPointer,
 				ptr<ActorComponent>
@@ -76,11 +76,11 @@ namespace hg {
 		ptr<Component> createSubComponent(_Inout_ const ptr<Actor> actor_, ptr<ActorComponent> parent_) const {
 
 			/**/
-			auto* registry { getCoreSession().getState()->getRegistry() };
+			auto& registry { getCoreSession().getState().getRegistry() };
 
 			auto* actor { actor_ ? actor_ : parent_->getOwner() };
 
-			auto* component = registry->acquireActorComponent<
+			auto* component = registry.acquireActorComponent<
 				Component,
 				CachedActorPointer,
 				ptr<ActorComponent>

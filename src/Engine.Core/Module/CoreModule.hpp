@@ -10,10 +10,10 @@ namespace hg::engine {
 namespace hg::engine::core {
 	class __declspec(novtable) CoreModule {
 	public:
-		explicit CoreModule(ref<Engine> engine_) :
+		explicit constexpr CoreModule(ref<Engine> engine_) :
 			_engine(std::addressof(engine_)) {}
 
-		virtual ~CoreModule() = default;
+		constexpr virtual ~CoreModule() = default;
 
 	protected:
 		nmpt<Engine> _engine;

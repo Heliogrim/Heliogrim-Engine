@@ -85,8 +85,8 @@ Future<World> hg::CreateWorld() noexcept {
 
 World hg::GetWorld(cref<Session> session_) noexcept {
 	const auto* session { static_cast<ptr<::hg::engine::core::Session>>(session_.unwrap().get()) };
-	const auto context { session->getWorldContext() };
-	const auto world { context->getCurrentWorld() };
+	const auto& context { session->getWorldContext() };
+	const auto world { context.getCurrentWorld() };
 
 	return World { world };
 }
@@ -123,14 +123,14 @@ Future<bool> hg::Destroy(mref<World> world_) {
 
 void hg::SetWorld(cref<Session> session_, cref<World> world_) {
 	const auto* const session { static_cast<ptr<engine::core::Session>>(session_.unwrap().get()) };
-	const auto context { session->getWorldContext() };
+	auto& context { session->getWorldContext() };
 	const sptr<engine::core::World> world { std::static_pointer_cast<engine::core::World, void>(world_.unwrap()) };
 
-	if (context->getCurrentWorld() == world) {
+	if (context.getCurrentWorld() == world) {
 		return;
 	}
 
-	context->setCurrentWorld(world);
+	context.setCurrentWorld(world);
 }
 
 void hg::TransitionToWorld(cref<Session> session_, cref<World> world_) {

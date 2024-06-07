@@ -11,7 +11,7 @@ namespace hg::engine::core {
 		using this_type = WorldContext;
 
 	public:
-		explicit WorldContext(nmpt<class Session> owner_);
+		explicit WorldContext(ref<class Session> owner_);
 
 		WorldContext(cref<this_type>) = delete;
 
@@ -27,7 +27,7 @@ namespace hg::engine::core {
 		WorldType _worldType;
 
 	public:
-		[[nodiscard]] nmpt<class Session> getOwner() const noexcept;
+		[[nodiscard]] ref<class Session> getOwner() const noexcept;
 
 		[[nodiscard]] cref<sptr<World>> getCurrentWorld() const noexcept;
 
