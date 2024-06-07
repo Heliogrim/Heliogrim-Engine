@@ -94,7 +94,7 @@ namespace hg::engine {
 		uptr<core::Session> _gameSession;
 
 	public:
-		[[nodiscard]] const non_owning_rptr<core::Session> getGameSession() const noexcept;
+		[[nodiscard]] nmpt<core::Session> getGameSession() const noexcept;
 
 	private:
 		void setupCorePipelines();
