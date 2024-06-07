@@ -2,10 +2,10 @@
 #include <Heliogrim/GfxMatProtoAsset.hpp>
 
 namespace hg::game::assets::material {
-    class DefaultBrdfMaterialPrototype :
-        public GfxMatProtoAsset,
-        public AssetAutoGuid<DefaultBrdfMaterialPrototype> {
-    public:
-        DefaultBrdfMaterialPrototype();
-    };
+	class DefaultBrdfMaterialPrototype :
+		public GfxMatProtoAsset,
+		public AssetAutoGuid<DefaultBrdfMaterialPrototype> {
+	public:
+		DefaultBrdfMaterialPrototype();
+	};
 }
