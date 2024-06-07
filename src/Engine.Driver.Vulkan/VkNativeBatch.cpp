@@ -93,6 +93,7 @@ void VkNativeBatch::commit() {
     assert(result == VK_SUCCESS);
 
     /* Warning: Dummy */
+    // Error (HE-19): When shutdown occurs while current context passed render pass acquisition, this will block "indefinitely"
     [[maybe_unused]] const auto waitResult = vkDevice.waitForFences(1uL, &fence, true, UINT64_MAX);
     vkDevice.destroy(fence);
 }
