@@ -8,7 +8,7 @@ using namespace hg::game::assets::material;
 using namespace hg;
 
 DefaultBrdfMaterial::DefaultBrdfMaterial() :
-    GfxMaterialAsset(
-        clone(DefaultBrdfMaterial::unstable_auto_guid()),
-        clone(DefaultBrdfMaterialPrototype::unstable_auto_guid())
-    ) {}
+	GfxMaterialAsset(
+		clone(DefaultBrdfMaterial::unstable_auto_guid()),
+		clone(DefaultBrdfMaterialPrototype::unstable_auto_guid())
+	) {}

@@ -18,8 +18,6 @@
 #include "Editor.Assets.Default/Fonts/CascadiaCode.hpp"
 #include "Editor.Assets.Default/GfxMaterials/DefaultBrdfMaterial.hpp"
 #include "Editor.Assets.Default/GfxMaterials/DefaultBrdfMaterialPrototype.hpp"
-#include "Editor.Assets.Default/GfxMaterials/DefaultMaterial.hpp"
-#include "Editor.Assets.Default/GfxMaterials/DefaultMaterial2.hpp"
 #include "Editor.Assets.Default/GfxMaterials/DefaultSkybox.hpp"
 #include "Editor.Assets.Default/GfxMaterials/DefaultSkyboxPrototype.hpp"
 #include "Editor.Assets.Default/Images/Brand.hpp"
@@ -40,7 +38,6 @@
 #include "Editor.Assets.Default/Images/FolderResource.hpp"
 #include "Editor.Assets.Default/Images/FolderShader.hpp"
 #include "Editor.Assets.Default/Images/FolderVideo.hpp"
-#include "Editor.Assets.Default/Meshes/PlaneD128.hpp"
 #include "Editor.Assets.Default/Meshes/Sphere.hpp"
 #include "Editor.Assets.Default/Textures/DefaultAlpha.hpp"
 #include "Editor.Assets.Default/Textures/DefaultAO.hpp"
@@ -290,16 +287,6 @@ static void initMaterialDefaults() {
 
 	/**/
 
-	{
-		auto* tmp = new(material::DefaultMaterial);
-		tmp->setAssetName("Default Material"sv);
-		delete tmp;
-	} {
-		auto* tmp = new(material::DefaultMaterial2);
-		tmp->setAssetName("Default Material 2"sv);
-		delete tmp;
-	}
-
 	delete(new(material::DefaultBrdfMaterialPrototype));
 	delete(new(material::DefaultBrdfMaterial));
 }
@@ -426,14 +413,6 @@ static void initStaticGeometryDefaults() {
 		R"(resources\imports\obj\sphere.obj)",
 		11520uLL,
 		11520uLL
-
-	);
-
-	factory->createStaticGeometryAsset(
-		clone(meshes::PlaneD128::unstable_auto_guid()),
-		R"(resources\imports\obj\plane_d128.obj)",
-		98304uLL,
-		98304uLL
 
 	);
 }
