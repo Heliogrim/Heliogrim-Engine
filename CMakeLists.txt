@@ -25,6 +25,7 @@ project("Heliogrim" VERSION 1.0)
 # CMake Tools
 include(cmake/Architecture.cmake)
 include(cmake/BuildType.cmake)
+include(cmake/ConfigDart.cmake)
 include(cmake/Tools.cmake)
 include(cmake/Managed.cmake)
 include(cmake/HealthCheck.cmake)

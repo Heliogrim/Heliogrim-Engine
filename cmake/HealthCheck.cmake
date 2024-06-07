@@ -1,3 +1,5 @@
+include_guard(GLOBAL)
+
 include(${CMAKE_CURRENT_LIST_DIR}/CppCheck.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/ClangTidy.cmake)
 
@@ -13,7 +15,7 @@ function(perform_health_checks target)
                 PROPERTIES
                 FOLDER "Maintenance"
                 EXCLUDE_FROM_DEFAULT_BUILD 1
-                )
+        )
     endif ()
 
     add_custom_target(check-${target})
@@ -22,7 +24,7 @@ function(perform_health_checks target)
             PROPERTIES
             FOLDER "Maintenance"
             EXCLUDE_FROM_DEFAULT_BUILD 1
-            )
+    )
 
     if (OPTION_CPPCHECK_ENABLED)
         perform_cppcheck(cppcheck-${target} ${target} ${ARGN})
@@ -99,5 +101,5 @@ function(add_check_template_target current_template_sha)
             PROPERTIES
             FOLDER "Maintenance"
             EXCLUDE_FROM_DEFAULT_BUILD 1
-            )
+    )
 endfunction()

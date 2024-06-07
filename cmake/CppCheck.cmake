@@ -1,3 +1,5 @@
+include_guard(GLOBAL)
+
 # Function to register a target for cppcheck
 function(perform_cppcheck check_target target)
     set(includes "$<TARGET_PROPERTY:${target},INCLUDE_DIRECTORIES>")
@@ -19,7 +21,7 @@ function(perform_cppcheck check_target target)
             PROPERTIES
             FOLDER "Maintenance"
             EXCLUDE_FROM_DEFAULT_BUILD 1
-            )
+    )
 
     add_dependencies(${check_target} ${target})
 endfunction()

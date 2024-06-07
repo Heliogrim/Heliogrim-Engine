@@ -1,0 +1,24 @@
+include_guard(GLOBAL)
+
+# Dart Testing Configuration
+
+if (NOT MEMORYCHECK_TYPE)
+    set(MEMORYCHECK_TYPE ${CTEST_MEMORYCHECK_TYPE})
+endif ()
+if (NOT MEMORYCHECK_TYPE AND WIN32)
+    find_program(CHECK_DRMEMORY_COMMAND NAMES drmemory)
+    if (CHECK_DRMEMORY_COMMAND)
+        set(MEMORYCHECK_TYPE "DrMemory" CACHE STRING "")
+    endif ()
+    unset(CHECK_DRMEMORY_COMMAND)
+endif ()
+
+if ("${MEMORYCHECK_TYPE}" MATCHES "DrMemory")
+    set(MEMORYCHECK_TYPE DrMemory)
+
+    find_program(MEMORYCHECK_COMMAND NAMES drmemory REQUIRED)
+    set(DRMEMORY_COMMAND ${MEMORYCHECK_COMMAND} CACHE INTERNAL "")
+
+    set(MEMORYCHECK_COMMAND_OPTIONS -ignore_kernel CACHE STRING "")
+    set(DRMEMORY_COMMAND_OPTIONS -ignore_kernel CACHE STRING "")
+endif ()

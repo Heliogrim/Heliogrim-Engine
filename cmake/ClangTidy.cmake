@@ -1,3 +1,5 @@
+include_guard(GLOBAL)
+
 # Function to register a target for clang-tidy
 function(perform_clang_tidy check_target target)
     set(includes "$<TARGET_PROPERTY:${target},INCLUDE_DIRECTORIES>")
@@ -17,7 +19,7 @@ function(perform_clang_tidy check_target target)
             PROPERTIES
             FOLDER "Maintenance"
             EXCLUDE_FROM_DEFAULT_BUILD 1
-            )
+    )
 
     add_dependencies(${check_target} ${target})
 endfunction()
