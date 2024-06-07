@@ -22,8 +22,8 @@ namespace hg::engine::core {
 		uptr<class WorldContext> _worldContext;
 
 	public:
-		[[nodiscard]] nmpt<class SessionState> getState() const noexcept;
+		[[nodiscard]] ref<class SessionState> getState() const noexcept;
 
-		[[nodiscard]] nmpt<class WorldContext> getWorldContext() const noexcept;
+		[[nodiscard]] ref<class WorldContext> getWorldContext() const noexcept;
 	};
 }

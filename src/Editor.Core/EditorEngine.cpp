@@ -232,10 +232,10 @@ bool EditorEngine::start() {
 	scheduler::exec(
 		[this, &next] {
 			_editorSession = make_uptr<core::Session>();
-			_worldContexts.push_back(_editorSession->getWorldContext());
+			_worldContexts.emplace_back(std::addressof(_editorSession->getWorldContext()));
 
 			_primaryGameSession = make_uptr<core::Session>();
-			_worldContexts.push_back(_primaryGameSession->getWorldContext());
+			_worldContexts.emplace_back(std::addressof(_primaryGameSession->getWorldContext()));
 
 			/**/
 
@@ -289,21 +289,27 @@ bool EditorEngine::stop() {
 
 			/**/
 
-			auto prevWorld = _primaryGameSession->getWorldContext()->getCurrentWorld();
-			_primaryGameSession->getWorldContext()->setCurrentWorld(nullptr);
+			auto prevWorld = _primaryGameSession->getWorldContext().getCurrentWorld();
+			_primaryGameSession->getWorldContext().setCurrentWorld(nullptr);
 			removeWorld(prevWorld);
 
-			auto where = std::ranges::remove(_worldContexts, _primaryGameSession->getWorldContext());
+			auto where = std::ranges::remove(
+				_worldContexts,
+				nmpt<core::WorldContext>(std::addressof(_primaryGameSession->getWorldContext()))
+			);
 			_worldContexts.erase(where.begin(), where.end());
 			_primaryGameSession.reset();
 
 			/**/
 
-			prevWorld = _editorSession->getWorldContext()->getCurrentWorld();
-			_editorSession->getWorldContext()->setCurrentWorld(nullptr);
+			prevWorld = _editorSession->getWorldContext().getCurrentWorld();
+			_editorSession->getWorldContext().setCurrentWorld(nullptr);
 			removeWorld(prevWorld);
 
-			where = std::ranges::remove(_worldContexts, _editorSession->getWorldContext());
+			where = std::ranges::remove(
+				_worldContexts,
+				nmpt<core::WorldContext> { std::addressof(_editorSession->getWorldContext()) }
+			);
 			_worldContexts.erase(where.begin(), where.end());
 			_editorSession.reset();
 

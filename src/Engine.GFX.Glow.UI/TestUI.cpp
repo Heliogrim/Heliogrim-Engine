@@ -500,11 +500,11 @@ void buildTestUI(
 
 	{
 		auto* session = static_cast<ptr<engine::core::Session>>(GetSession().unwrap().get());
-		auto* registry = session->getState()->getRegistry();
+		auto& registry = session->getState().getRegistry();
 
 		Vector<ptr<Actor>> actors {};
 
-		auto* const pool = registry->getOrCreateActorPool<Actor>();
+		auto* const pool = registry.getOrCreateActorPool<Actor>();
 		const auto& storage = pool->__get_storage();
 
 		// Error: Dual-Layer Iterators are broken
@@ -744,11 +744,11 @@ void configureMainViewport(
 
 	const auto gfx { editor::EditorEngine::getEngine()->getGraphics() };
 	const auto coreSession = editor::EditorEngine::getEngine()->getPrimaryGameSession();
-	const auto coreWorld { coreSession->getWorldContext()->getCurrentWorld() };
+	const auto coreWorld { coreSession->getWorldContext().getCurrentWorld() };
 	const auto scene { coreWorld->getScene() };
 
 	//RegisterActorClass<CameraActor>();
-	coreSession->getState()->getRegistry()->getOrCreateActorPool<CameraActor>();
+	coreSession->getState().getRegistry().getOrCreateActorPool<CameraActor>();
 
 	auto session = HeliogrimEditor::getSession();
 	ptr<CameraActor> camera { CreateActor<CameraActor>(session) };

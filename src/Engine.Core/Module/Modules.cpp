@@ -2,9 +2,9 @@
 
 #include <algorithm>
 
+#include "CoreDependencies.hpp"
 #include "SubModule.hpp"
 #include "SubModuleDependency.hpp"
-#include "CoreDependencies.hpp"
 
 using namespace hg::engine::core;
 using namespace hg;

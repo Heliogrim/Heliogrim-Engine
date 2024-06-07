@@ -10,14 +10,14 @@ using namespace hg;
 
 Session::Session() :
 	_state(uptr<SessionState>(new SessionState())),
-	_worldContext(make_uptr<WorldContext>(this)) {}
+	_worldContext(make_uptr<WorldContext>(*this)) {}
 
 Session::~Session() = default;
 
-nmpt<SessionState> Session::getState() const noexcept {
-	return _state.get();
+ref<class SessionState> Session::getState() const noexcept {
+	return *_state;
 }
 
-nmpt<WorldContext> Session::getWorldContext() const noexcept {
-	return _worldContext.get();
+ref<class WorldContext> Session::getWorldContext() const noexcept {
+	return *_worldContext;
 }

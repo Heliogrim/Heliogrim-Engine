@@ -38,8 +38,8 @@ namespace hg::engine::core {
 	public:
 		[[nodiscard]] nmpt<Session> getSession() const noexcept;
 
-		[[nodiscard]] cref<sptr<World>> getPrevWorld() const noexcept;
+		[[nodiscard]] sptr<World> getPrevWorld() const noexcept;
 
-		[[nodiscard]] cref<sptr<World>> getNextWorld() const noexcept;
+		[[nodiscard]] sptr<World> getNextWorld() const noexcept;
 	};
 }

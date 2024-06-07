@@ -9,15 +9,15 @@
 using namespace hg::engine::core;
 using namespace hg;
 
-WorldContext::WorldContext(nmpt<Session> owner_) :
-	_owner(owner_),
+WorldContext::WorldContext(ref<Session> owner_) :
+	_owner(std::addressof(owner_)),
 	_world(nullptr),
 	_worldType(WorldType::eUndefined) {}
 
 WorldContext::~WorldContext() = default;
 
-nmpt<Session> WorldContext::getOwner() const noexcept {
-	return _owner;
+ref<Session> WorldContext::getOwner() const noexcept {
+	return *_owner.get();
 }
 
 cref<sptr<World>> WorldContext::getCurrentWorld() const noexcept {

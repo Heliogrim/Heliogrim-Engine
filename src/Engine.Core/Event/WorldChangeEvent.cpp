@@ -17,10 +17,10 @@ nmpt<Session> WorldChangeEvent::getSession() const noexcept {
 	return _session;
 }
 
-cref<sptr<World>> WorldChangeEvent::getPrevWorld() const noexcept {
+sptr<World> WorldChangeEvent::getPrevWorld() const noexcept {
 	return _prevWorld;
 }
 
-cref<sptr<World>> WorldChangeEvent::getNextWorld() const noexcept {
+sptr<World> WorldChangeEvent::getNextWorld() const noexcept {
 	return _nextWorld;
 }

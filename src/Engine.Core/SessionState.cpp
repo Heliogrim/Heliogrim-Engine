@@ -7,10 +7,10 @@ using namespace hg::engine::core;
 using namespace hg;
 
 SessionState::SessionState() :
-    _registry(make_uptr<::hg::engine::acs::Registry>()) {}
+	_registry(make_uptr<::hg::engine::acs::Registry>()) {}
 
 SessionState::~SessionState() = default;
 
-const non_owning_rptr<hg::engine::acs::Registry> SessionState::getRegistry() const noexcept {
-    return _registry.get();
+ref<hg::engine::acs::Registry> SessionState::getRegistry() const noexcept {
+	return *_registry;
 }
