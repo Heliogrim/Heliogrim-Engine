@@ -456,7 +456,7 @@ void GameEngine::removeWorld(cref<sptr<core::World>> world_) {
 	_emitter.emit<WorldRemoveEvent>(world_);
 }
 
-const non_owning_rptr<core::Session> GameEngine::getGameSession() const noexcept {
+nmpt<core::Session> GameEngine::getGameSession() const noexcept {
 	return _gameSession.get();
 }
 
