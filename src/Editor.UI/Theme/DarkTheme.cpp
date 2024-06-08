@@ -1,10 +1,12 @@
 #include "DarkTheme.hpp"
 
-#include "Engine.GFX.Glow.UI/TestUI.hpp"
+#include <Editor.UI.Main/EditorUI.hpp>
+#include <Editor.UI.Main/Module/EditorUI.hpp>
+#include <Engine.Core/Engine.hpp>
+#include <Engine.Core/Module/Modules.hpp>
+#include <Engine.Reflow/Widget/Button.hpp>
+#include <Engine.Reflow/Widget/Image.hpp>
 #include <Engine.Reflow/Widget/Text.hpp>
-
-#include "Engine.Reflow/Widget/Button.hpp"
-#include "Engine.Reflow/Widget/Image.hpp"
 
 using namespace hg::editor::ui;
 using namespace hg::engine::reflow;
@@ -25,7 +27,11 @@ void DarkTheme::applyTextButton(cref<sptr<engine::reflow::Button>> button_) cons
 
 void DarkTheme::applyText(cref<sptr<engine::reflow::Text>> text_) const {
 
-	auto font { getDefaultFont() };
+	auto font {
+		static_cast<ptr<EditorUI>>(
+			engine::Engine::getEngine()->getModules().getSubModule(EditorUIDepKey).get()
+		)->getDefaultFont()
+	};
 
 	text_->attr.color.setValue(engine::color { 255.F, 255.F, 255.F, 255.F });
 	text_->attr.font.setValue(*font);
@@ -34,7 +40,11 @@ void DarkTheme::applyText(cref<sptr<engine::reflow::Text>> text_) const {
 
 void DarkTheme::applyLabel(cref<sptr<engine::reflow::Text>> text_) const {
 
-	auto font { getDefaultFont() };
+	auto font {
+		static_cast<ptr<EditorUI>>(
+			engine::Engine::getEngine()->getModules().getSubModule(EditorUIDepKey).get()
+		)->getDefaultFont()
+	};
 
 	text_->attr.color.setValue(engine::color { 255.F, 255.F, 255.F, 255.F });
 	text_->attr.font.setValue(*font);

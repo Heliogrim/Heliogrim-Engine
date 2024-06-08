@@ -1,13 +1,14 @@
 #include "AssetBrowserItem.hpp"
 
 #include <iostream>
-
+#include <Engine.Assets.System/IAssetRegistry.hpp>
+#include <Engine.Assets/Assets.hpp>
 #include <Engine.Common/GuidFormat.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Core/Engine.hpp>
-#include <Engine.GFX.Glow.UI/TestUI.hpp>
 #include <Engine.GFX.Loader/Texture/TextureResource.hpp>
 #include <Engine.GFX.Loader/Texture/Traits.hpp>
+#include <Engine.Input/Input.hpp>
 #include <Engine.Reflow/Widget/Image.hpp>
 #include <Engine.Reflow/Widget/Text.hpp>
 #include <Engine.Resource/LoaderManager.hpp>
@@ -16,10 +17,7 @@
 #include "../Color/Dark.hpp"
 #include "../Helper/AssetBrowserHelper.hpp"
 #include "../Panel/AssetBrowserPanel.hpp"
-#include "Editor.UI/Theme/Theme.hpp"
-#include "Engine.Assets.System/IAssetRegistry.hpp"
-#include "Engine.Assets/Assets.hpp"
-#include "Engine.Input/Input.hpp"
+#include "../Theme/Theme.hpp"
 
 using namespace hg::engine::reflow;
 using namespace hg::editor::ui;
@@ -42,7 +40,6 @@ sptr<AssetBrowserItem> AssetBrowserItem::make(
 	/**/
 
 	const auto theme = Theme::get();
-	auto font { getDefaultFont() };
 	const auto helper { AssetBrowserHelper::get() };
 
 	/**/

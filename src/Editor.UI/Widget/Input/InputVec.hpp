@@ -1,21 +1,19 @@
 #pragma once
 
 #include <format>
-#include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Make.hpp>
-#include <Engine.Common/Math/Vector.hpp>
+#include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Array.hpp>
-#include <Engine.Reflow/Widget/Input.hpp>
-#include <Engine.Reflow/Widget/Input/InputIntegral.hpp>
-#include <Engine.Reflow/Widget/Input/InputFloat.hpp>
+#include <Engine.Common/Math/Vector.hpp>
 #include <Engine.Reflow/Widget/BoxPanel.hpp>
 #include <Engine.Reflow/Widget/HorizontalPanel.hpp>
+#include <Engine.Reflow/Widget/Input.hpp>
 #include <Engine.Reflow/Widget/Text.hpp>
+#include <Engine.Reflow/Widget/Input/InputFloat.hpp>
+#include <Engine.Reflow/Widget/Input/InputIntegral.hpp>
 
 #include "../../Color/Dark.hpp"
-#include "Editor.UI/Theme/Theme.hpp"
-
-#include "Engine.GFX.Glow.UI/TestUI.hpp"
+#include "../../Theme/Theme.hpp"
 
 namespace hg::editor::ui {
 	template <typename VectorType_>

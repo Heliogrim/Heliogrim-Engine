@@ -1,34 +1,36 @@
 #include "AssetFileImportDialog.hpp"
 
 #include <filesystem>
+#include <Editor.Action/ActionManager.hpp>
+#include <Editor.Action/Action/Import/SimpleImportAction.hpp>
+#include <Editor.UI.Main/EditorUI.hpp>
+#include <Editor.UI.Main/Module/EditorUI.hpp>
 #include <Engine.Assets.System/AssetDescriptor.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
+#include <Engine.Assets/AssetFactory.hpp>
 #include <Engine.Assets/Assets.hpp>
+#include <Engine.Common/Make.hpp>
+#include <Engine.Common/Wrapper.hpp>
 #include <Engine.Core/Engine.hpp>
+#include <Engine.Core/Module/Modules.hpp>
+#include <Engine.GFX.Loader/Texture/TextureResource.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
+#include <Engine.Reflow/Widget/Button.hpp>
+#include <Engine.Reflow/Widget/Image.hpp>
+#include <Engine.Reflow/Widget/Text.hpp>
+#include <Engine.Reflow/Widget/Input/Form.hpp>
+#include <Engine.Reflow/Widget/Input/InputText.hpp>
+#include <Engine.Reflow/Widget/Scroll/VScrollBox.hpp>
+#include <Engine.Reflow/Window/PopupLayer.hpp>
+#include <Engine.Reflow/Window/Window.hpp>
+#include <Heliogrim/Heliogrim.hpp>
 
+#include "../Color/Dark.hpp"
 #include "../Modules/AssetBrowser.hpp"
-#include "Editor.Action/ActionManager.hpp"
-#include "Editor.Action/Action/Import/SimpleImportAction.hpp"
-#include "Editor.UI/Color/Dark.hpp"
-#include "Editor.UI/Theme/Theme.hpp"
-#include "Editor.UI/Widget/AssetImportTypeItem.hpp"
-#include "Editor.UI/Widget/Input/InputVec.hpp"
-#include "Engine.Assets/AssetFactory.hpp"
-#include "Engine.Common/Make.hpp"
-#include "Engine.Common/Wrapper.hpp"
-#include "Engine.GFX.Glow.UI/TestUI.hpp"
-#include "Engine.GFX.Loader/Texture/TextureResource.hpp"
-#include "Engine.Reflow/Widget/Button.hpp"
-#include "Engine.Reflow/Widget/Image.hpp"
-#include "Engine.Reflow/Widget/Text.hpp"
-#include "Engine.Reflow/Widget/Input/Form.hpp"
-#include "Engine.Reflow/Widget/Input/InputText.hpp"
-#include "Engine.Reflow/Widget/Scroll/VScrollBox.hpp"
-#include "Engine.Reflow/Window/PopupLayer.hpp"
-#include "Engine.Reflow/Window/Window.hpp"
-#include "Heliogrim/Heliogrim.hpp"
+#include "../Theme/Theme.hpp"
+#include "../Widget/AssetImportTypeItem.hpp"
+#include "../Widget/Input/InputVec.hpp"
 
 #if TRUE
 void testCreateAsset(hg::cref<hg::fs::Url> target_);
@@ -40,7 +42,7 @@ using namespace hg;
 
 /**/
 
-void makeImageImportOptions(cref<sptr<VScrollBox>> parent_);
+static void makeImageImportOptions(ref<editor::EditorUI> editorUI_, cref<sptr<VScrollBox>> parent_);
 
 /**/
 
@@ -50,10 +52,13 @@ AssetFileImportDialog::AssetFileImportDialog(cref<fs::Url> source_, cref<fs::Url
 	_target(target_),
 	_assetBrowser(nullptr) {}
 
-void configureNav(cref<sptr<Dialog>> dialog_, cref<sptr<HorizontalPanel>> parent_) {
+static void configureNav(
+	ref<editor::EditorUI> editorUI_,
+	cref<sptr<Dialog>> dialog_,
+	cref<sptr<HorizontalPanel>> parent_
+) {
 
 	const auto theme = Theme::get();
-	auto font { getDefaultFont() };
 
 	/**/
 
@@ -99,11 +104,14 @@ void configureNav(cref<sptr<Dialog>> dialog_, cref<sptr<HorizontalPanel>> parent
 	);
 }
 
-void configureImportTypeEntry(cref<sptr<AssetImportTypeItem>> parent_, cref<string_view> typeTitle_) {
+static void configureImportTypeEntry(
+	ref<editor::EditorUI> editorUI_,
+	cref<sptr<AssetImportTypeItem>> parent_,
+	cref<string_view> typeTitle_
+) {
 
 	const auto theme = Theme::get();
-	auto font { getDefaultFont() };
-	const auto& image { testTexture };
+	const auto image { editorUI_.getPlaceholderImage() };
 
 	/**/
 
@@ -137,9 +145,13 @@ void configureImportTypeEntry(cref<sptr<AssetImportTypeItem>> parent_, cref<stri
 	wrapper->addChild(title);
 }
 
-void configureImportAs(cref<sptr<VerticalPanel>> parent_, cref<fs::Url> source_) {
+static void configureImportAs(
+	ref<editor::EditorUI> editorUI_,
+	cref<sptr<VerticalPanel>> parent_,
+	cref<fs::Url> source_
+) {
 
-	auto font { getDefaultFont() };
+	auto font { editorUI_.getDefaultFont() };
 
 	/**/
 
@@ -171,16 +183,20 @@ void configureImportAs(cref<sptr<VerticalPanel>> parent_, cref<fs::Url> source_)
 	for (const auto& entry : types) {
 
 		auto uiEntry = make_sptr<AssetImportTypeItem>();
-		configureImportTypeEntry(uiEntry, entry);
+		configureImportTypeEntry(editorUI_, uiEntry, entry);
 		container->addChild(uiEntry);
 
 	}
 }
 
-void configureSourceDomain(cref<sptr<VerticalPanel>> parent_, cref<fs::Url> source_) {
+static void configureSourceDomain(
+	ref<editor::EditorUI> editorUI_,
+	cref<sptr<VerticalPanel>> parent_,
+	cref<fs::Url> source_
+) {
 
 	const auto theme = Theme::get();
-	auto font { getDefaultFont() };
+	auto font { editorUI_.getDefaultFont() };
 
 	/**/
 
@@ -253,10 +269,14 @@ void configureSourceDomain(cref<sptr<VerticalPanel>> parent_, cref<fs::Url> sour
 	container->addChild(sourceButton);
 }
 
-void configureTargetDomain(cref<sptr<VerticalPanel>> parent_, cref<fs::Url> source_, cref<fs::Url> path_) {
+static void configureTargetDomain(
+	ref<editor::EditorUI> editorUI_,
+	cref<sptr<VerticalPanel>> parent_,
+	cref<fs::Url> source_,
+	cref<fs::Url> path_
+) {
 
 	const auto theme = Theme::get();
-	auto font { getDefaultFont() };
 
 	/**/
 
@@ -324,10 +344,14 @@ void configureTargetDomain(cref<sptr<VerticalPanel>> parent_, cref<fs::Url> sour
 
 }
 
-void configureFooter(cref<sptr<Dialog>> dialog_, cref<sptr<Form>> form_, cref<sptr<HorizontalPanel>> parent_) {
+static void configureFooter(
+	ref<editor::EditorUI> editorUI_,
+	cref<sptr<Dialog>> dialog_,
+	cref<sptr<Form>> form_,
+	cref<sptr<HorizontalPanel>> parent_
+) {
 
 	const auto theme = Theme::get();
-	auto font { getDefaultFont() };
 
 	/**/
 
@@ -388,7 +412,8 @@ void configureFooter(cref<sptr<Dialog>> dialog_, cref<sptr<Form>> form_, cref<sp
 	);
 }
 
-void configureContent(
+static void configureContent(
+	ref<editor::EditorUI> editorUI_,
 	cref<sptr<Dialog>> dialog_,
 	cref<sptr<Form>> form_,
 	cref<sptr<VScrollBox>> parent_,
@@ -396,25 +421,21 @@ void configureContent(
 	cref<fs::Url> target_
 ) {
 
-	auto font { getDefaultFont() };
-
-	/**/
-
 	auto importAs = make_sptr<VerticalPanel>();
 	importAs->attr.width.setValue({ ReflowUnitType::eRelative, 1.F });
-	configureImportAs(importAs, source_);
+	configureImportAs(editorUI_, importAs, source_);
 
 	parent_->addChild(importAs);
 
 	/**/
 
-	makeImageImportOptions(parent_);
+	makeImageImportOptions(editorUI_, parent_);
 
 	/**/
 
 	auto sourceDomain = make_sptr<VerticalPanel>();
 	sourceDomain->attr.width.setValue({ ReflowUnitType::eRelative, 1.F });
-	configureSourceDomain(sourceDomain, source_);
+	configureSourceDomain(editorUI_, sourceDomain, source_);
 
 	parent_->addChild(sourceDomain);
 
@@ -422,7 +443,7 @@ void configureContent(
 
 	auto targetDomain = make_sptr<VerticalPanel>();
 	targetDomain->attr.width.setValue({ ReflowUnitType::eRelative, 1.F });
-	configureTargetDomain(targetDomain, source_, target_);
+	configureTargetDomain(editorUI_, targetDomain, source_, target_);
 
 	parent_->addChild(targetDomain);
 }
@@ -519,19 +540,27 @@ sptr<Dialog> AssetFileImportDialog::make(
 	formContent->addChild(content);
 	formContent->addChild(footer);
 
-	configureNav(dialog, nav);
-	configureContent(dialog, form, content, source_, target_);
-	configureFooter(dialog, form, footer);
+	/**/
+
+	auto* const editorUI = static_cast<ptr<::hg::editor::EditorUI>>(
+		engine::Engine::getEngine()->getModules().getSubModule(EditorUIDepKey).get()
+	);
+	::hg::assertrt(editorUI != nullptr);
+
+	/**/
+
+	configureNav(*editorUI, dialog, nav);
+	configureContent(*editorUI, dialog, form, content, source_, target_);
+	configureFooter(*editorUI, dialog, form, footer);
 
 	return dialog;
 }
 
 /**/
 
-void makeImageImportOptions(cref<sptr<VScrollBox>> parent_) {
+static void makeImageImportOptions(ref<editor::EditorUI> editorUI_, cref<sptr<VScrollBox>> parent_) {
 
-	const auto theme = Theme::get();
-	auto font { getDefaultFont() };
+	auto font { editorUI_.getDefaultFont() };
 
 	/**/
 

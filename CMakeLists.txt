@@ -68,19 +68,13 @@ endforeach ()
 finalize_managed_libraries()
 
 # Modules
-set(libraries "")
 get_projects_path(projects_directory)
-list_directories("libraries" "${projects_directory}")
+list_directories("projects" "${projects_directory}")
 
-set(tests ${libraries})
-
-list(FILTER libraries EXCLUDE REGEX "\\.Test")
-list(FILTER libraries EXCLUDE REGEX "(\\.Main)|(Main$)")
+set(tests ${projects})
+list(FILTER projects EXCLUDE REGEX "(\\.Test)")
 list(FILTER tests INCLUDE REGEX "\\.Test")
 
-foreach (lib IN LISTS libraries tests)
+foreach (lib IN LISTS projects tests)
     add_subdirectory(${lib})
 endforeach ()
-
-add_subdirectory("${projects_directory}/Heliogrim.Main")
-add_subdirectory("${projects_directory}/Editor.Main")

@@ -2,13 +2,12 @@
 
 #include <Engine.Common/Make.hpp>
 #include <Engine.Reflow/Widget/Button.hpp>
+#include <Engine.Reflow/Widget/HorizontalPanel.hpp>
 #include <Engine.Reflow/Widget/Text.hpp>
-#include "Engine.Reflow/Widget/Viewport.hpp"
+#include <Engine.Reflow/Widget/Viewport.hpp>
 
-#include "Editor.UI/Color/Dark.hpp"
-#include "Editor.UI/Theme/Theme.hpp"
-#include "Engine.GFX.Glow.UI/TestUI.hpp"
-#include "Engine.Reflow/Widget/HorizontalPanel.hpp"
+#include "../Color/Dark.hpp"
+#include "../Theme/Theme.hpp"
 
 using namespace hg::editor::ui;
 using namespace hg::engine::reflow;
