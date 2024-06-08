@@ -1,8 +1,14 @@
 #include "AssetBrowserPanel.hpp"
 
 #include <filesystem>
+#include <Engine.Assets.System/AssetDescriptor.hpp>
+#include <Engine.Assets.System/AssetRegistry.hpp>
+#include <Engine.Assets.System/IAssetRegistry.hpp>
+#include <Engine.Assets/AssetFactory.hpp>
+#include <Engine.Assets/Assets.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Math/Coordinates.hpp>
+#include <Engine.Core/Engine.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 #include <Engine.Reflow/Style/PanelStyle.hpp>
 #include <Engine.Reflow/Widget/Button.hpp>
@@ -11,30 +17,24 @@
 #include <Engine.Reflow/Widget/UniformGridPanel.hpp>
 #include <Engine.Reflow/Widget/Input/InputText.hpp>
 #include <Engine.Reflow/Widget/Scroll/VScrollBox.hpp>
+#include <Engine.Reflow/Window/Window.hpp>
+#include <Engine.Reflow/Window/WindowManager.hpp>
 
+#include "../Color/Dark.hpp"
+#include "../Dialog/AssetFileImportDialog.hpp"
 #include "../Modules/AssetBrowser.hpp"
 #include "../Modules/AssetBrowser/AssetBrowserEntry.hpp"
+#include "../Theme/Theme.hpp"
+#include "../Widget/AssetBrowserItem.hpp"
 #include "../Widget/Breadcrumb.hpp"
-#include "Editor.UI/Color/Dark.hpp"
-#include "Editor.UI/Dialog/AssetFileImportDialog.hpp"
-#include "Editor.UI/Theme/Theme.hpp"
-#include "Editor.UI/Widget/AssetBrowserItem.hpp"
-#include "Engine.Assets.System/AssetDescriptor.hpp"
-#include "Engine.Assets.System/AssetRegistry.hpp"
-#include "Engine.Assets.System/IAssetRegistry.hpp"
-#include "Engine.Assets/AssetFactory.hpp"
-#include "Engine.Assets/Assets.hpp"
-#include "Engine.Core/Engine.hpp"
-#include "Engine.Reflow/Window/Window.hpp"
-#include "Engine.Reflow/Window/WindowManager.hpp"
 
 #if TRUE
-#include <Engine.GFX.Glow.UI/TestUI.hpp>
+
+#include <Editor.Action/ActionManager.hpp>
+#include <Editor.Action/Action/Import/SimpleImportAction.hpp>
+#include <Heliogrim/Heliogrim.hpp>
 
 #include "../Menu/ContextMenu.hpp"
-#include "Editor.Action/ActionManager.hpp"
-#include "Editor.Action/Action/Import/SimpleImportAction.hpp"
-#include "Heliogrim/Heliogrim.hpp"
 #endif
 
 using namespace hg::editor::ui;
@@ -114,7 +114,6 @@ void AssetBrowserPanel::buildNav() {
 
 	/**/
 
-	auto font { getDefaultFont() };
 	fs::Url fwd { _browserRoot.scheme(), ""sv };
 	for (auto it { proxyParts.rbegin() }; it != proxyParts.rend(); ++it) {
 
@@ -133,6 +132,7 @@ void AssetBrowserPanel::buildNav() {
 		bread->addNavEntry(AssocKey<string>::from(key), title, fwd);
 
 		#if FALSE
+		auto font { getDefaultFont() };
         auto text {
             make_sptr<Text>(BoundStyleSheet::make(StyleSheet {
                 .color = { true, color::Dark::grey },
@@ -408,7 +408,6 @@ engine::reflow::EventResponse AssetBrowserPanel::onDrop(cref<engine::reflow::Dra
 static void configureNav(cref<sptr<AssetBrowserPanel>> root_, cref<sptr<HorizontalPanel>> parent_) {
 
 	const auto theme = Theme::get();
-	auto font { getDefaultFont() };
 
 	/**/
 

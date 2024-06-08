@@ -2,6 +2,7 @@
 
 #include <Editor.Core/EditorEngine.hpp>
 #include <Editor.GFX.IO/Module/EditorGraphicsIo.hpp>
+#include <Editor.UI.Main/EditorUI.hpp>
 #include <Engine.Accel/Accel.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Reflow/Reflow.hpp>
@@ -30,5 +31,8 @@ void editor::boot::preInitSubModules() {
 	::hg::assertrt(result == engine::core::DependencyValidationResult::eSuccess);
 
 	result = modules.addSubModule(make_uptr<Editor>(engine.get()));
+	::hg::assertrt(result == engine::core::DependencyValidationResult::eSuccess);
+
+	result = modules.addSubModule(make_uptr<EditorUI>(*engine.get()));
 	::hg::assertrt(result == engine::core::DependencyValidationResult::eSuccess);
 }

@@ -17,5 +17,7 @@ make_app_project(
         ${PROJECT_NAME}::Editor.Render
         ${PROJECT_NAME}::Editor.Scene
         ${PROJECT_NAME}::Editor.UI
+        ${PROJECT_NAME}::Editor.UI.Init
+        ${PROJECT_NAME}::Editor.UI.Main
         ${PROJECT_NAME}::Heliogrim
 )

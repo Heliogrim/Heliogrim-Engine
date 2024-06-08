@@ -29,7 +29,6 @@ make_library_project(
         ${PROJECT_NAME}::Engine.GFX.Event
         ${PROJECT_NAME}::Engine.GFX.Geometry
         ${PROJECT_NAME}::Engine.GFX.Glow
-        ${PROJECT_NAME}::Engine.GFX.Glow.UI
         ${PROJECT_NAME}::Engine.GFX.IO
         ${PROJECT_NAME}::Engine.GFX.Loader
         ${PROJECT_NAME}::Engine.GFX.Material

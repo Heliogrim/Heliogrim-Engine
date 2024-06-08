@@ -1,20 +1,18 @@
+#include <Engine.Assets/Types/Geometry/StaticGeometry.hpp>
+#include <Engine.Assets/Types/Material/GfxMaterial.hpp>
+#include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Reflow/Widget/Text.hpp>
 #include <Engine.Reflow/Widget/Input/InputFloat.hpp>
 #include <Engine.Reflow/Widget/Input/InputIntegral.hpp>
-#include <Engine.Assets/Types/Geometry/StaticGeometry.hpp>
+#include <Heliogrim/Heliogrim.hpp>
 #include <Heliogrim/Components/DirectionalLightComponent.hpp>
 #include <Heliogrim/Components/PointLightComponent.hpp>
 
-#include "Engine.GFX.Glow.UI/TestUI.hpp"
-
 #include "ObjectValueMapper.hpp"
 #include "../../Color/Dark.hpp"
-#include "../../Widget/Input/InputVec.hpp"
+#include "../../Theme/Theme.hpp"
 #include "../../Widget/Collapse.hpp"
-#include "Editor.UI/Theme/Theme.hpp"
-#include "Heliogrim/Heliogrim.hpp"
-#include "Engine.Assets/Types/Material/GfxMaterial.hpp"
-#include "Engine.Assets.System/IAssetRegistry.hpp"
+#include "../../Widget/Input/InputVec.hpp"
 
 using namespace hg::editor::ui;
 using namespace hg::engine::reflow;

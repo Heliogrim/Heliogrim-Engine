@@ -1,18 +1,23 @@
 #pragma once
+#include <Editor.UI.Init/EditorInit.hpp>
+#include <Editor.UI.Main/EditorUI.hpp>
+#include <Editor.UI.Main/Module/EditorUI.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Sal.hpp>
+#include <Engine.Core/Engine.hpp>
+#include <Engine.Core/Module/Modules.hpp>
+#include <Engine.Reflow/ReflowUnit.hpp>
 #include <Engine.Reflow/Widget/VerticalPanel.hpp>
 #include <Engine.Reflow/Widget/Scroll/VScrollBox.hpp>
 #include <Engine.Reflow/Widget/Tree/TreeView.hpp>
 
 #include "../Color/Dark.hpp"
 #include "../Modules/SceneHierarchy.hpp"
-#include "Engine.Reflow/ReflowUnit.hpp"
 
 #if TRUE
+#include <Heliogrim/Actor.hpp>
+
 #include "../Modules/SceneHierarchy/SceneViewEntry.hpp"
-#include "Engine.GFX.Glow.UI/TestUI.hpp"
-#include "Heliogrim/Actor.hpp"
 #endif
 
 namespace hg::editor::ui {
@@ -102,13 +107,19 @@ namespace hg::editor::ui {
 					const auto& sel { *(data_.begin()) };
 					if (sel->type() == SceneViewEntryType::eActor) {
 						auto* actor { sel->template target<void>() };
-						storeEditorSelectedTarget(static_cast<const ptr<Actor>>(actor));
+						auto* const editorUI = static_cast<ptr<EditorUI>>(
+							engine::Engine::getEngine()->getModules().getSubModule(EditorUIDepKey).get()
+						);
+						storeEditorSelectedTarget(*editorUI, static_cast<const ptr<Actor>>(actor));
 						return;
 					}
 
 					if (sel->type() == SceneViewEntryType::eComponent) {
 						auto* actor { sel->template target<void>() };
-						storeEditorSelectedTarget(static_cast<const ptr<ActorComponent>>(actor));
+						auto* const editorUI = static_cast<ptr<EditorUI>>(
+							engine::Engine::getEngine()->getModules().getSubModule(EditorUIDepKey).get()
+						);
+						storeEditorSelectedTarget(*editorUI, static_cast<const ptr<ActorComponent>>(actor));
 						return;
 					}
 				};

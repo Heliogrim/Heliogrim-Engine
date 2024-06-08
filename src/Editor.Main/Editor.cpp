@@ -4,11 +4,9 @@
 #include <Engine.Core/Module/CoreDependencies.hpp>
 #include <Engine.Core/Module/DependencyKey.hpp>
 #include <Engine.Core/Module/SubModuleDependency.hpp>
-#include <Engine.GFX.Glow.UI/TestUI.hpp>
 #include <Engine.Reflow/Module/Reflow.hpp>
 
 #include "Boot/AssetInit.hpp"
-#include "Boot/GfxInit.hpp"
 #include "Boot/WorldInit.hpp"
 
 using namespace hg::editor;
@@ -48,11 +46,8 @@ void Editor::start() {
 	boot::initAssets();
 	boot::initEditorWorld();
 	boot::initPrimaryWorld();
-	boot::initGfx();
 }
 
-void Editor::stop() {
-	destroyLoaded();
-}
+void Editor::stop() {}
 
 void Editor::destroy() {}
