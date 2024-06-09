@@ -1,324 +1,413 @@
 workflow:
-    rules:
-        # Only protected branches
-        -   if: '$CI_COMMIT_REF_PROTECTED == "true"'
-        -   if: '$CI_COMMIT_TAG != null'
+  rules:
+    # Only protected branches
+    - if: '$CI_COMMIT_REF_PROTECTED == "true"'
+    - if: '$CI_COMMIT_TAG != null'
 
 variables:
-    GIT_DEPTH: 0
-    VULKAN_VERSION: 1.3.275.0
-    C_CLANG_TARGET: clang-18
-    CXX_CLANG_TARGET: clang++-18
-    C_GCC_TARGET: gcc-13
-    CXX_GCC_TARGET: g++-13
+  GIT_DEPTH: 0
+  VULKAN_VERSION: 1.3.275.0
+  C_CLANG_TARGET: clang-18
+  CXX_CLANG_TARGET: clang++-18
+  C_GCC_TARGET: gcc-13
+  CXX_GCC_TARGET: g++-13
 
 stages:
-    - build
-    - release
+  - build
+  - test
+  - release
 
 build.windows.msvc:
-    stage: build
-    tags:
-        - windows
-        - vulkan
-        - amd64
-    
-    # Preparation
-    before_script:
-        - cmake --version
-        - $logical_core_count = (Get-CimInstance Win32_ComputerSystem).NumberOfLogicalProcessors
-    
-    # Process
-    script:
-        # Building
+  stage: build
+  tags:
+    - windows
+    - vulkan
+    - amd64
 
-        # CMake - Debug
-        - cmake -S . -B build/Debug -A x64 -D CMAKE_BUILD_TYPE=Debug --fresh
-        - cmake --build build/Debug -t Heliogrim-Heliogrim --parallel $logical_core_count --clean-first
-        - cmake --build build/Debug -t Heliogrim-Editor --parallel $logical_core_count
+  cache:
+    - key: cmake-cache-build-windows-msvc
+      paths:
+        - build/Debug
+        - build/Profile
+        - build/Release
+    - key: cmake-cache-deps-windows-msvc
+      untracked: true
+      paths:
+        - library/
 
-        # CMake - Profile
-        #- cmake -S . -B build/Profile -A x64 -D CMAKE_BUILD_TYPE=Profile --fresh
-        #- cmake --build build/Profile -t Heliogrim-Heliogrim --parallel $logical_core_count --clean-first
-        #- cmake --build build/Profile -t Heliogrim-Editor --parallel $logical_core_count
+  # Preparation
+  before_script:
+    - cmake --version
+    - $logical_core_count = (Get-CimInstance Win32_ComputerSystem).NumberOfLogicalProcessors
 
-        # CMake - Release
-        #- cmake -S . -B build/Release -A x64 -D CMAKE_BUILD_TYPE=Release --fresh
-        #- cmake --build build/Release -t Heliogrim-Heliogrim --parallel $logical_core_count --clean-first
-        #- cmake --build build/Release -t Heliogrim-Editor --parallel $logical_core_count
+  # Process
+  script:
+    # Building
 
-        # Linking Resources
+    # CMake - Debug
+    - cmake -S . -B build/Debug -A x64 -D CMAKE_BUILD_TYPE=Debug
+    - cmake --build build/Debug -t Heliogrim-Heliogrim --parallel $logical_core_count
+    - cmake --build build/Debug -t Heliogrim-Editor --parallel $logical_core_count
+    - cmake --build build/Debug -t Heliogrim-AllTests --parallel $logical_core_count
 
-        #- rm -rf dist/Debug/resources
-        - if (Test-Path ".\dist\Debug\resources") { Remove-Item ".\dist\Debug\resources" -Recurse -Force -Confirm:$False }
-        #- rm -rf dist/Profile/resources
-        #- if (Test-Path ".\dist\Profile\resources") { Remove-Item ".\dist\Profile\resources" -Recurse -Force -Confirm:$False }
-        #- rm -rf dist/Release/resources
-        #- if (Test-Path ".\dist\Release\resources") { Remove-Item ".\dist\Release\resources" -Recurse -Force -Confirm:$False }
+    # CMake - Profile
+    #- cmake -S . -B build/Profile -A x64 -D CMAKE_BUILD_TYPE=Profile --fresh
+    #- cmake --build build/Profile -t Heliogrim-Heliogrim --parallel $logical_core_count --clean-first
+    #- cmake --build build/Profile -t Heliogrim-Editor --parallel $logical_core_count
 
-        #- ln -sfrn resources dist/Debug/resources
-        - New-Item -ItemType Junction -Path ".\dist\Debug\resources" -Target ".\resources"
-        #- ln -sfrn resources dist/Profile/resources
-        #- New-Item -ItemType Junction -Path ".\dist\Profile\resources" -Target ".\resources"
-        #- ln -sfrn resources dist/Release/resources
-        #- New-Item -ItemType Junction -Path ".\dist\Release\resources" -Target ".\resources"
+    # CMake - Release
+    #- cmake -S . -B build/Release -A x64 -D CMAKE_BUILD_TYPE=Release --fresh
+    #- cmake --build build/Release -t Heliogrim-Heliogrim --parallel $logical_core_count --clean-first
+    #- cmake --build build/Release -t Heliogrim-Editor --parallel $logical_core_count
 
-    # Cleanup / Referencing
-    after_script:
-        #- CI_JOB_NAME=$CI_JOB_NAME
-        #- echo "JOB_${CI_JOB_NAME//./_}_ID=$CI_JOB_ID" >> build.report.env
-        - echo "JOB_build_windows_msvc_ID=$CI_JOB_ID" >> build.report.env
-    
-    artifacts:
-        name: Heliogrim-Win-MSVC-$CI_COMMIT_REF_NAME
-        paths:
-            - dist/Debug/
-            #- dist/Release/
-            #- dist/Profile/
-        expire_in: 15min
-        reports:
-            dotenv: build.report.env
+    # Linking Resources
+
+    #- rm -rf dist/Debug/resources
+    - if (Test-Path ".\dist\Debug\resources") { Remove-Item ".\dist\Debug\resources" -Recurse -Force -Confirm:$False }
+    #- rm -rf dist/Profile/resources
+    #- if (Test-Path ".\dist\Profile\resources") { Remove-Item ".\dist\Profile\resources" -Recurse -Force -Confirm:$False }
+    #- rm -rf dist/Release/resources
+    #- if (Test-Path ".\dist\Release\resources") { Remove-Item ".\dist\Release\resources" -Recurse -Force -Confirm:$False }
+
+    #- ln -sfrn resources dist/Debug/resources
+    - New-Item -ItemType Junction -Path ".\dist\Debug\resources" -Target ".\resources"
+    #- ln -sfrn resources dist/Profile/resources
+    #- New-Item -ItemType Junction -Path ".\dist\Profile\resources" -Target ".\resources"
+    #- ln -sfrn resources dist/Release/resources
+    #- New-Item -ItemType Junction -Path ".\dist\Release\resources" -Target ".\resources"
+
+  # Cleanup / Referencing
+  after_script:
+    #- CI_JOB_NAME=$CI_JOB_NAME
+    #- echo "JOB_${CI_JOB_NAME//./_}_ID=$CI_JOB_ID" >> build.report.env
+    - echo "JOB_build_windows_msvc_ID=$CI_JOB_ID" >> build.report.env
+
+  artifacts:
+    name: Heliogrim-Win-MSVC-$CI_COMMIT_REF_NAME
+    paths:
+      - build/Debug/
+      #- build/Release/
+      #- build/Profile/
+      - dist/Debug/
+      #- dist/Release/
+      #- dist/Profile/
+    expire_in: 15min
+    reports:
+      dotenv: build.report.env
 
 build.windows.clang:
-    stage: build
-    tags:
-        - windows
-        - vulkan
-        - amd64
-    
-    # Preparation
-    before_script:
-        - cmake --version
-        - $logical_core_count = (Get-CimInstance Win32_ComputerSystem).NumberOfLogicalProcessors
-    
-    # Process
-    script:
-        # Building
+  stage: build
+  tags:
+    - windows
+    - vulkan
+    - amd64
 
-        # CMake - Debug
-        - cmake -S . -B build/Debug -T ClangCL -A x64 -D CMAKE_BUILD_TYPE=Debug --fresh
-        - cmake --build build/Debug -t Heliogrim-Heliogrim --parallel $logical_core_count --clean-first
-        - cmake --build build/Debug -t Heliogrim-Editor --parallel $logical_core_count
+  cache:
+    - key: cmake-cache-build-windows-clang
+      paths:
+        - build/Debug
+        - build/Profile
+        - build/Release
+    - key: cmake-cache-deps-windows-clang
+      untracked: true
+      paths:
+        - library/
 
-        # CMake - Profile
-        #- cmake -S . -B build/Profile -T ClangCL -A x64 -D CMAKE_BUILD_TYPE=Profile --fresh
-        #- cmake --build build/Profile -t Heliogrim-Heliogrim --parallel $logical_core_count --clean-first
-        #- cmake --build build/Profile -t Heliogrim-Editor --parallel $logical_core_count
+  # Preparation
+  before_script:
+    - cmake --version
+    - $logical_core_count = (Get-CimInstance Win32_ComputerSystem).NumberOfLogicalProcessors
 
-        # CMake - Release
-        #- cmake -S . -B build/Release -T ClangCL -A x64 -D CMAKE_BUILD_TYPE=Release --fresh
-        #- cmake --build build/Release -t Heliogrim-Heliogrim --parallel $logical_core_count --clean-first
-        #- cmake --build build/Release -t Heliogrim-Editor --parallel $logical_core_count
+  # Process
+  script:
+    # Building
 
-        # Linking Resources
+    # CMake - Debug
+    - cmake -S . -B build/Debug -T ClangCL -A x64 -D CMAKE_BUILD_TYPE=Debug
+    - cmake --build build/Debug -t Heliogrim-Heliogrim --parallel $logical_core_count
+    - cmake --build build/Debug -t Heliogrim-Editor --parallel $logical_core_count
+    - cmake --build build/Debug -t Heliogrim-AllTests --parallel $logical_core_count
 
-        #- rm -rf dist/Debug/resources
-        - if (Test-Path ".\dist\Debug\resources") { Remove-Item ".\dist\Debug\resources" -Recurse -Force -Confirm:$False }
-        #- rm -rf dist/Profile/resources
-        #- if (Test-Path ".\dist\Profile\resources") { Remove-Item ".\dist\Profile\resources" -Recurse -Force -Confirm:$False }
-        #- rm -rf dist/Release/resources
-        #- if (Test-Path ".\dist\Release\resources") { Remove-Item ".\dist\Release\resources" -Recurse -Force -Confirm:$False }
+    # CMake - Profile
+    #- cmake -S . -B build/Profile -T ClangCL -A x64 -D CMAKE_BUILD_TYPE=Profile --fresh
+    #- cmake --build build/Profile -t Heliogrim-Heliogrim --parallel $logical_core_count --clean-first
+    #- cmake --build build/Profile -t Heliogrim-Editor --parallel $logical_core_count
 
-        #- ln -sfrn resources dist/Debug/resources
-        - New-Item -ItemType Junction -Path ".\dist\Debug\resources" -Target ".\resources"
-        #- ln -sfrn resources dist/Profile/resources
-        #- New-Item -ItemType Junction -Path ".\dist\Profile\resources" -Target ".\resources"
-        #- ln -sfrn resources dist/Release/resources
-        #- New-Item -ItemType Junction -Path ".\dist\Release\resources" -Target ".\resources"
+    # CMake - Release
+    #- cmake -S . -B build/Release -T ClangCL -A x64 -D CMAKE_BUILD_TYPE=Release --fresh
+    #- cmake --build build/Release -t Heliogrim-Heliogrim --parallel $logical_core_count --clean-first
+    #- cmake --build build/Release -t Heliogrim-Editor --parallel $logical_core_count
 
-    # Cleanup / Referencing
-    after_script:
-        #- CI_JOB_NAME=$CI_JOB_NAME
-        #- echo "JOB_${CI_JOB_NAME//./_}_ID=$CI_JOB_ID" >> build.report.env
-        - echo "JOB_build_windows_clang_ID=$CI_JOB_ID" >> build.report.env
-    
-    artifacts:
-        name: Heliogrim-Win-Clang-$CI_COMMIT_REF_NAME
-        paths:
-            - dist/Debug/
-            #- dist/Release/
-            #- dist/Profile/
-        expire_in: 15min
-        reports:
-            dotenv: build.report.env
+    # Linking Resources
+
+    #- rm -rf dist/Debug/resources
+    - if (Test-Path ".\dist\Debug\resources") { Remove-Item ".\dist\Debug\resources" -Recurse -Force -Confirm:$False }
+    #- rm -rf dist/Profile/resources
+    #- if (Test-Path ".\dist\Profile\resources") { Remove-Item ".\dist\Profile\resources" -Recurse -Force -Confirm:$False }
+    #- rm -rf dist/Release/resources
+    #- if (Test-Path ".\dist\Release\resources") { Remove-Item ".\dist\Release\resources" -Recurse -Force -Confirm:$False }
+
+    #- ln -sfrn resources dist/Debug/resources
+    - New-Item -ItemType Junction -Path ".\dist\Debug\resources" -Target ".\resources"
+    #- ln -sfrn resources dist/Profile/resources
+    #- New-Item -ItemType Junction -Path ".\dist\Profile\resources" -Target ".\resources"
+    #- ln -sfrn resources dist/Release/resources
+    #- New-Item -ItemType Junction -Path ".\dist\Release\resources" -Target ".\resources"
+
+  # Cleanup / Referencing
+  after_script:
+    #- CI_JOB_NAME=$CI_JOB_NAME
+    #- echo "JOB_${CI_JOB_NAME//./_}_ID=$CI_JOB_ID" >> build.report.env
+    - echo "JOB_build_windows_clang_ID=$CI_JOB_ID" >> build.report.env
+
+  artifacts:
+    name: Heliogrim-Win-Clang-$CI_COMMIT_REF_NAME
+    paths:
+      - build/Debug/
+      #- build/Release/
+      #- build/Profile/
+      - dist/Debug/
+      #- dist/Release/
+      #- dist/Profile/
+    expire_in: 15min
+    reports:
+      dotenv: build.report.env
 
 build.linux.gcc:
-    stage: build
-    tags:
-        - linux
-        - amd64
-    
-    # Preparation
-    before_script:
-        # Prepare Commands
-        - command -v make 2>&1 || { echo >&2 "Required unavailable command make, try to recover."; sudo apt-get install build-essential -y; }
-        - command -v cmake 2>&1 || { echo >&2 "Required unavailable command cmake, try to recover."; sudo apt-get install cmake -y; }
-        - command -v g++ 2>&1 || { echo >&2 "Required unavailable command g++, try to recover."; sudo apt-get install build-essential -y; }
-        - command -v xz 2>&1 || { echo >&2 "Required unavailable command xz, try to recover."; sudo apt-get install xz-utils -y; }
-        # Optional Commands
-        - command -v ninja 2>&1 || { echo >&2 "Optional unavailable command ninja, try to recover."; sudo apt-get install ninja-build -y; }
-        # Ensure Vulkan SDK
-        - rm -r ~/vulkan 2> /dev/null || true
-        - mkdir ~/vulkan
-        - curl "https://sdk.lunarg.com/sdk/download/$VULKAN_VERSION/linux/vulkansdk-linux-x86_64-$VULKAN_VERSION.tar.xz" --output ~/vulkan/sdk.tar.xz
-        - tar -xf ~/vulkan/sdk.tar.xz -C ~/vulkan
-        - source "$HOME/vulkan/$VULKAN_VERSION/setup-env.sh"
-        # Check Versions
-        - cmake --version
-    
-    # Process
-    script:
-        # Building
+  stage: build
+  tags:
+    - linux
+    - amd64
+  rules:
+    - when: never
 
-        # Generator: Makefiles ~ '-A x64' by default
+  # Preparation
+  before_script:
+    # Prepare Commands
+    - command -v make 2>&1 || { echo >&2 "Required unavailable command make, try to recover."; sudo apt-get install build-essential -y; }
+    - command -v cmake 2>&1 || { echo >&2 "Required unavailable command cmake, try to recover."; sudo apt-get install cmake -y; }
+    - command -v g++ 2>&1 || { echo >&2 "Required unavailable command g++, try to recover."; sudo apt-get install build-essential -y; }
+    - command -v xz 2>&1 || { echo >&2 "Required unavailable command xz, try to recover."; sudo apt-get install xz-utils -y; }
+    # Optional Commands
+    - command -v ninja 2>&1 || { echo >&2 "Optional unavailable command ninja, try to recover."; sudo apt-get install ninja-build -y; }
+    # Ensure Vulkan SDK
+    - rm -r ~/vulkan 2> /dev/null || true
+    - mkdir ~/vulkan
+    - curl "https://sdk.lunarg.com/sdk/download/$VULKAN_VERSION/linux/vulkansdk-linux-x86_64-$VULKAN_VERSION.tar.xz" --output ~/vulkan/sdk.tar.xz
+    - tar -xf ~/vulkan/sdk.tar.xz -C ~/vulkan
+    - source "$HOME/vulkan/$VULKAN_VERSION/setup-env.sh"
+    # Check Versions
+    - cmake --version
 
-        # CMake - Debug
-        - cmake -S . -B build/Debug -D CMAKE_C_COMPILER=`which gcc` -D CMAKE_CXX_COMPILER=`which g++` -D CMAKE_BUILD_TYPE=Debug --fresh
-        - cmake --build build/Debug --parallel $(nproc) -t Heliogrim-Heliogrim --clean-first
-        - cmake --build build/Debug --parallel $(nproc) -t Heliogrim-Editor
+  # Process
+  script:
+    # Building
 
-        # CMake - Profile
-        #- cmake -S . -B build/Profile -A x64 -D CMAKE_C_COMPILER=`which gcc` -D CMAKE_CXX_COMPILER=`which g++` -D CMAKE_BUILD_TYPE=Profile --fresh
-        #- cmake --build build/Profile --parallel $(nproc) -t Game --clean-first
+    # Generator: Makefiles ~ '-A x64' by default
 
-        # CMake - Release
-        #- cmake -S . -B build/Release -A x64 -D CMAKE_C_COMPILER=`which gcc` -D CMAKE_CXX_COMPILER=`which g++` -D CMAKE_BUILD_TYPE=Release --fresh
-        #- cmake --build build/Release --parallel $(nproc) -t Game --clean-first
+    # CMake - Debug
+    - cmake -S . -B build/Debug -D CMAKE_C_COMPILER=`which gcc` -D CMAKE_CXX_COMPILER=`which g++` -D CMAKE_BUILD_TYPE=Debug --fresh
+    - cmake --build build/Debug --parallel $(nproc) -t Heliogrim-Heliogrim --clean-first
+    - cmake --build build/Debug --parallel $(nproc) -t Heliogrim-Editor
 
-        # Linking Resources
+    # CMake - Profile
+    #- cmake -S . -B build/Profile -A x64 -D CMAKE_C_COMPILER=`which gcc` -D CMAKE_CXX_COMPILER=`which g++` -D CMAKE_BUILD_TYPE=Profile --fresh
+    #- cmake --build build/Profile --parallel $(nproc) -t Game --clean-first
 
-    # Cleanup / Referencing
-    after_script:
-        - CI_JOB_NAME=$CI_JOB_NAME
-        - echo "JOB_${CI_JOB_NAME//./_}_ID=$CI_JOB_ID" >> build.report.env
-    
-    artifacts:
-        name: Heliogrim-Unix-GCC-$CI_COMMIT_REF_NAME
-        paths:
-            - dist/Debug/
-            #- dist/Release/
-            #- dist/Profile/
-        expire_in: 15min
-        reports:
-            dotenv: build.report.env
+    # CMake - Release
+    #- cmake -S . -B build/Release -A x64 -D CMAKE_C_COMPILER=`which gcc` -D CMAKE_CXX_COMPILER=`which g++` -D CMAKE_BUILD_TYPE=Release --fresh
+    #- cmake --build build/Release --parallel $(nproc) -t Game --clean-first
+
+    # Linking Resources
+
+  # Cleanup / Referencing
+  after_script:
+    - CI_JOB_NAME=$CI_JOB_NAME
+    - echo "JOB_${CI_JOB_NAME//./_}_ID=$CI_JOB_ID" >> build.report.env
+
+  artifacts:
+    name: Heliogrim-Unix-GCC-$CI_COMMIT_REF_NAME
+    paths:
+      - dist/Debug/
+      #- dist/Release/
+      #- dist/Profile/
+    expire_in: 15min
+    reports:
+      dotenv: build.report.env
 
 build.linux.clang:
-    stage: build
-    tags:
-        - linux
-        - amd64
-    
-    # Preparation
-    before_script:
-        # Prepare Commands
-        - command -v make 2>&1 || { echo >&2 "Required unavailable command make, try to recover."; sudo apt-get install build-essential -y; }
-        - command -v cmake 2>&1 || { echo >&2 "Required unavailable command cmake, try to recover."; sudo apt-get install cmake -y; }
-        - |-
-            command -v $C_CLANG_TARGET 2>&1 || {
-                echo >&2 "Required unavailable command clang, try to recover."
-                sudo apt-get install lsb-release wget software-properties-common gnupg -y
-                sudo bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
-            }
-        - command -v xz 2>&1 || { echo >&2 "Required unavailable command xz, try to recover."; sudo apt-get install xz-utils -y; }
-        # Optional Commands
-        - command -v ninja 2>&1 || { echo >&2 "Optional unavailable command ninja, try to recover."; sudo apt-get install ninja-build -y; }
-        # Ensure Vulkan SDK
-        - rm -r ~/vulkan 2> /dev/null || true
-        - mkdir ~/vulkan
-        - curl "https://sdk.lunarg.com/sdk/download/$VULKAN_VERSION/linux/vulkansdk-linux-x86_64-$VULKAN_VERSION.tar.xz" --output ~/vulkan/sdk.tar.xz
-        - tar -xf ~/vulkan/sdk.tar.xz -C ~/vulkan
-        - source "$HOME/vulkan/$VULKAN_VERSION/setup-env.sh"
-        # Check Versions
-        - cmake --version
-    
-    # Process
-    script:
-        # Building
+  stage: build
+  tags:
+    - linux
+    - amd64
+  rules:
+    - when: never
 
-        # Generator: Makefiles ~ '-A x64' by default
+  # Preparation
+  before_script:
+    # Prepare Commands
+    - command -v make 2>&1 || { echo >&2 "Required unavailable command make, try to recover."; sudo apt-get install build-essential -y; }
+    - command -v cmake 2>&1 || { echo >&2 "Required unavailable command cmake, try to recover."; sudo apt-get install cmake -y; }
+    - |-
+      command -v $C_CLANG_TARGET 2>&1 || {
+          echo >&2 "Required unavailable command clang, try to recover."
+          sudo apt-get install lsb-release wget software-properties-common gnupg -y
+          sudo bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
+      }
+    - command -v xz 2>&1 || { echo >&2 "Required unavailable command xz, try to recover."; sudo apt-get install xz-utils -y; }
+    # Optional Commands
+    - command -v ninja 2>&1 || { echo >&2 "Optional unavailable command ninja, try to recover."; sudo apt-get install ninja-build -y; }
+    # Ensure Vulkan SDK
+    - rm -r ~/vulkan 2> /dev/null || true
+    - mkdir ~/vulkan
+    - curl "https://sdk.lunarg.com/sdk/download/$VULKAN_VERSION/linux/vulkansdk-linux-x86_64-$VULKAN_VERSION.tar.xz" --output ~/vulkan/sdk.tar.xz
+    - tar -xf ~/vulkan/sdk.tar.xz -C ~/vulkan
+    - source "$HOME/vulkan/$VULKAN_VERSION/setup-env.sh"
+    # Check Versions
+    - cmake --version
 
-        # CMake - Debug
-        - cmake -S . -B build/Debug -D CMAKE_C_COMPILER=`which $C_CLANG_TARGET` -D CMAKE_CXX_COMPILER=`which $CXX_CLANG_TARGET` -D CMAKE_BUILD_TYPE=Debug --fresh
-        - cmake --build build/Debug --parallel $(nproc) -t Heliogrim-Heliogrim --clean-first
-        - cmake --build build/Debug --parallel $(nproc) -t Heliogrim-Editor
+  # Process
+  script:
+    # Building
 
-        # CMake - Profile
-        #- cmake -S . -B build/Profile -A x64 -D CMAKE_C_COMPILER=`which $C_CLANG_TARGET` -D CMAKE_CXX_COMPILER=`which $CXX_CLANG_TARGET` -D CMAKE_BUILD_TYPE=Profile --fresh
-        #- cmake --build build/Profile --parallel $(nproc) -t Game --clean-first
+    # Generator: Makefiles ~ '-A x64' by default
 
-        # CMake - Release
-        #- cmake -S . -B build/Release -A x64 -D CMAKE_C_COMPILER=`which $C_CLANG_TARGET` -D CMAKE_CXX_COMPILER=`which $CXX_CLANG_TARGET` -D CMAKE_BUILD_TYPE=Release --fresh
-        #- cmake --build build/Release --parallel $(nproc) -t Game --clean-first
+    # CMake - Debug
+    - cmake -S . -B build/Debug -D CMAKE_C_COMPILER=`which $C_CLANG_TARGET` -D CMAKE_CXX_COMPILER=`which $CXX_CLANG_TARGET` -D CMAKE_BUILD_TYPE=Debug --fresh
+    - cmake --build build/Debug --parallel $(nproc) -t Heliogrim-Heliogrim --clean-first
+    - cmake --build build/Debug --parallel $(nproc) -t Heliogrim-Editor
 
-        # Linking Resources
+    # CMake - Profile
+    #- cmake -S . -B build/Profile -A x64 -D CMAKE_C_COMPILER=`which $C_CLANG_TARGET` -D CMAKE_CXX_COMPILER=`which $CXX_CLANG_TARGET` -D CMAKE_BUILD_TYPE=Profile --fresh
+    #- cmake --build build/Profile --parallel $(nproc) -t Game --clean-first
 
-    # Cleanup / Referencing
-    after_script:
-        - CI_JOB_NAME=$CI_JOB_NAME
-        - echo "JOB_${CI_JOB_NAME//./_}_ID=$CI_JOB_ID" >> build.report.env
-    
-    artifacts:
-        name: Heliogrim-Unix-Clang-$CI_COMMIT_REF_NAME
-        paths:
-            - dist/Debug/
-            #- dist/Release/
-            #- dist/Profile/
-        expire_in: 15min
-        reports:
-            dotenv: build.report.env
+    # CMake - Release
+    #- cmake -S . -B build/Release -A x64 -D CMAKE_C_COMPILER=`which $C_CLANG_TARGET` -D CMAKE_CXX_COMPILER=`which $CXX_CLANG_TARGET` -D CMAKE_BUILD_TYPE=Release --fresh
+    #- cmake --build build/Release --parallel $(nproc) -t Game --clean-first
 
-#test:
-#    stage: test
-#    script:
-#        - echo "Test"
+    # Linking Resources
 
-#deploy:
-#    stage: deploy
-#    script:
-#        - echo "Deploy"
+  # Cleanup / Referencing
+  after_script:
+    - CI_JOB_NAME=$CI_JOB_NAME
+    - echo "JOB_${CI_JOB_NAME//./_}_ID=$CI_JOB_ID" >> build.report.env
+
+  artifacts:
+    name: Heliogrim-Unix-Clang-$CI_COMMIT_REF_NAME
+    paths:
+      - dist/Debug/
+      #- dist/Release/
+      #- dist/Profile/
+    expire_in: 15min
+    reports:
+      dotenv: build.report.env
+
+# Testing Section
+
+test.windows.msvc:
+  stage: test
+  tags:
+    - windows
+    - vulkan
+    - amd64
+  needs:
+    - job: build.windows.msvc
+      artifacts: true
+
+  # Preparation
+  before_script:
+    - cmake --version
+    - $logical_core_count = (Get-CimInstance Win32_ComputerSystem).NumberOfLogicalProcessors
+
+  # Process
+  script:
+    # Testing
+
+    # CMake - Debug
+    - ctest --test-dir build/Debug --output-junit "$PWD/ctest-report.xml" --parallel $logical_core_count
+
+  artifacts:
+    when: always
+    paths:
+      - ctest-report.xml
+    reports:
+      junit: ctest-report.xml
+
+test.windows.clang:
+  stage: test
+  tags:
+    - windows
+    - vulkan
+    - amd64
+  needs:
+    - job: build.windows.clang
+      artifacts: true
+
+  # Preparation
+  before_script:
+    - cmake --version
+    - $logical_core_count = (Get-CimInstance Win32_ComputerSystem).NumberOfLogicalProcessors
+
+  # Process
+  script:
+    # Testing
+
+    # CMake - Debug
+    - ctest --test-dir build/Debug --output-junit "$PWD/ctest-report.xml" --parallel $logical_core_count
+
+  artifacts:
+    when: always
+    paths:
+      - ctest-report.xml
+    reports:
+      junit: ctest-report.xml
+
+# Release / Deployment Section
 
 release:
-    stage: release
-    tags:
-        - linux
-        - amd64
-    rules:
-        -   if: '$CI_COMMIT_TAG != null'
-    needs:
-        -   job: build.linux.gcc
-            artifacts: true
-        -   job: build.linux.clang
-            artifacts: true
-        -   job: build.windows.msvc
-            artifacts: true
-        -   job: build.windows.clang
-            artifacts: true
-    before_script:
-        # Prepare Commands
-        - |-
-            command -v release-cli 2>&1 || {
-                echo >&2 "Required unavailable command release-cli, try to recover."
-                wget https://go.dev/dl/go1.20.5.linux-amd64.tar.gz
-                sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.20.5.linux-amd64.tar.gz
-                export PATH=$PATH:/usr/local/go/bin
-                source ~/.bashrc
-                sudo curl --location --output /usr/local/bin/release-cli "https://gitlab.com/api/v4/projects/gitlab-org%2Frelease-cli/packages/generic/release-cli/latest/release-cli-linux-amd64"
-                sudo chmod +x /usr/local/bin/release-cli
-                source ~/.bashrc
-            }
-    script:
-        - echo "Release '$CI_COMMIT_TAG' using jobs '$JOB_build_linux_gcc_ID', '$JOB_build_linux_clang_ID', '$JOB_build_windows_msvc_ID', '$JOB_build_windows_clang_ID'"
-    release:
-        tag_name: '$CI_COMMIT_TAG'
-        name: "Release '$CI_COMMIT_TAG'"
-        description: 'CI automatic tagged release.'
-        assets:
-            links:
-                -   name: "Linux GCC Build"
-                    url: 'https://git.neogc.net/heliogrim-workgroup/engine/-/jobs/$JOB_build_linux_gcc_ID/artifacts/download'
-                -   name: "Linux Clang Build"
-                    url: 'https://git.neogc.net/heliogrim-workgroup/engine/-/jobs/$JOB_build_linux_clang_ID/artifacts/download'
-                -   name: "Windows MSVC Build"
-                    url: 'https://git.neogc.net/heliogrim-workgroup/engine/-/jobs/$JOB_build_windows_msvc_ID/artifacts/download'
-                -   name: "Windows Clang Build"
-                    url: 'https://git.neogc.net/heliogrim-workgroup/engine/-/jobs/$JOB_build_windows_clang_ID/artifacts/download'
+  stage: release
+  tags:
+    - linux
+    - amd64
+  rules:
+    - if: '$CI_COMMIT_TAG != null'
+  needs:
+    - job: build.linux.gcc
+      artifacts: true
+      optional: true
+    - job: build.linux.clang
+      artifacts: true
+      optional: true
+    - job: build.windows.msvc
+      artifacts: true
+    - job: build.windows.clang
+      artifacts: true
+  before_script:
+    # Prepare Commands
+    - |-
+      command -v release-cli 2>&1 || {
+          echo >&2 "Required unavailable command release-cli, try to recover."
+          wget https://go.dev/dl/go1.20.5.linux-amd64.tar.gz
+          sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.20.5.linux-amd64.tar.gz
+          export PATH=$PATH:/usr/local/go/bin
+          source ~/.bashrc
+          sudo curl --location --output /usr/local/bin/release-cli "https://gitlab.com/api/v4/projects/gitlab-org%2Frelease-cli/packages/generic/release-cli/latest/release-cli-linux-amd64"
+          sudo chmod +x /usr/local/bin/release-cli
+          source ~/.bashrc
+      }
+  script:
+    - echo "Release '$CI_COMMIT_TAG' using jobs '$JOB_build_linux_gcc_ID', '$JOB_build_linux_clang_ID', '$JOB_build_windows_msvc_ID', '$JOB_build_windows_clang_ID'"
+  release:
+    tag_name: '$CI_COMMIT_TAG'
+    name: "Release '$CI_COMMIT_TAG'"
+    description: 'CI automatic tagged release.'
+    assets:
+      links:
+        - name: "Linux GCC Build"
+          url: 'https://git.neogc.net/heliogrim-workgroup/engine/-/jobs/$JOB_build_linux_gcc_ID/artifacts/download'
+        - name: "Linux Clang Build"
+          url: 'https://git.neogc.net/heliogrim-workgroup/engine/-/jobs/$JOB_build_linux_clang_ID/artifacts/download'
+        - name: "Windows MSVC Build"
+          url: 'https://git.neogc.net/heliogrim-workgroup/engine/-/jobs/$JOB_build_windows_msvc_ID/artifacts/download'
+        - name: "Windows Clang Build"
+          url: 'https://git.neogc.net/heliogrim-workgroup/engine/-/jobs/$JOB_build_windows_clang_ID/artifacts/download'
