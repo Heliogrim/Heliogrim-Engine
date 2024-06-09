@@ -1,3 +1,28 @@
+include_guard(GLOBAL)
+
+#
+
+macro(_load_global_test_target out)
+    get_property(__global_test_target GLOBAL PROPERTY global_factory_all_tests_target)
+    set(${out} "${__global_test_target}")
+endmacro()
+
+set_property(GLOBAL PROPERTY global_factory_all_tests_target "")
+function(_generate_global_test_target)
+    include(CTest)
+
+    name_to_target(target "AllTests")
+    add_custom_target(${target})
+
+    set_property(GLOBAL PROPERTY global_factory_all_tests_target "${target}")
+endfunction()
+
+_load_global_test_target(global_test_target)
+if (NOT "${global_test_target}")
+    _generate_global_test_target()
+endif ()
+
+#
 
 function(__prepare_link_libs libs out)
     list(TRANSFORM libs STRIP)
@@ -97,5 +122,9 @@ function(make_test_project)
     include(CTest)
     include(GoogleTest)
     gtest_discover_tests(${target})
+
+    # Add Tests to global target
+    _load_global_test_target(global_test_target)
+    add_dependencies(${global_test_target} ${target})
 
 endfunction()

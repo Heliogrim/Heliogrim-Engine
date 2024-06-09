@@ -1,3 +1,4 @@
+include_guard(GLOBAL)
 
 function(__prepare_link_libs libs out)
     list(TRANSFORM libs STRIP)
