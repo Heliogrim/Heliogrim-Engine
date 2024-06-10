@@ -3,6 +3,8 @@ workflow:
     # Only protected branches
     - if: '$CI_COMMIT_REF_PROTECTED == "true"'
     - if: '$CI_COMMIT_TAG != null'
+    # Merge Requests
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event' && $CI_MERGE_REQUEST_TARGET_BRANCH_PROTECTED
 
 variables:
   GIT_DEPTH: 0
