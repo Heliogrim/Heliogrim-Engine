@@ -41,6 +41,10 @@ build.windows.msvc:
 
   # Preparation
   before_script:
+    - Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
+    - $vsinstalldir = $(If(Test-Path -Path 'C:\Program Files\Microsoft Visual Studio\2022\') { 'C:\Program Files\Microsoft Visual Studio\2022\' } Else { 'C:\Program Files (x86)\Microsoft Visual Studio\2022\' })
+    - echo "Mounting"; & (Get-ChildItem -Path $vsinstalldir -Filter 'Launch-VsDevShell.ps1' -Recurse -ErrorAction SilentlyContinue).FullName -Arch amd64
+
     - cmake --version
     - $logical_core_count = (Get-CimInstance Win32_ComputerSystem).NumberOfLogicalProcessors
 
@@ -49,7 +53,7 @@ build.windows.msvc:
     # Building
 
     # CMake - Debug
-    - cmake -S . -B build/Debug -A x64 -D CMAKE_BUILD_TYPE=Debug
+    - cmake -S . -B build/Debug -G Ninja -DCMAKE_BUILD_TYPE=Debug
     - cmake --build build/Debug -t Heliogrim-Heliogrim --parallel $logical_core_count
     - cmake --build build/Debug -t Heliogrim-Editor --parallel $logical_core_count
     - cmake --build build/Debug -t Heliogrim-AllTests --parallel $logical_core_count
@@ -121,6 +125,11 @@ build.windows.clang:
 
   # Preparation
   before_script:
+    - Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
+    - $vsinstalldir = $(If(Test-Path -Path 'C:\Program Files\Microsoft Visual Studio\2022\') { 'C:\Program Files\Microsoft Visual Studio\2022\' } Else { 'C:\Program Files (x86)\Microsoft Visual Studio\2022\' })
+    - echo "Mounting"; & (Get-ChildItem -Path $vsinstalldir -Filter 'Launch-VsDevShell.ps1' -Recurse -ErrorAction SilentlyContinue).FullName -Arch amd64
+    - $vsclangcl = (Get-ChildItem -Path $vsinstalldir -Recurse -ErrorAction SilentlyContinue | Where-Object { $_.FullName -Match 'Llvm\\x64\\bin\\clang-cl.exe$'}).FullName
+
     - cmake --version
     - $logical_core_count = (Get-CimInstance Win32_ComputerSystem).NumberOfLogicalProcessors
 
@@ -129,7 +138,7 @@ build.windows.clang:
     # Building
 
     # CMake - Debug
-    - cmake -S . -B build/Debug -T ClangCL -A x64 -D CMAKE_BUILD_TYPE=Debug
+    - cmake -S . -B build/Debug -G Ninja "$("-DCMAKE_C_COMPILER=" + $vsclangcl)" "$("-DCMAKE_CXX_COMPILER=" + $vsclangcl)" -DCMAKE_BUILD_TYPE=Debug
     - cmake --build build/Debug -t Heliogrim-Heliogrim --parallel $logical_core_count
     - cmake --build build/Debug -t Heliogrim-Editor --parallel $logical_core_count
     - cmake --build build/Debug -t Heliogrim-AllTests --parallel $logical_core_count
