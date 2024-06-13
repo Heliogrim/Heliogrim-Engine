@@ -1,6 +1,7 @@
 #pragma once
 
 #include "IStorageDescriptor.hpp"
+#include "../IStorage.hpp"
 #include "../Url/ArchiveUrl.hpp"
 
 namespace hg::engine::storage {
@@ -10,10 +11,14 @@ namespace hg::engine::storage {
 		using this_type = ArchiveStorageDescriptor;
 
 	public:
-		constexpr ArchiveStorageDescriptor() noexcept = default;
+		ArchiveStorageDescriptor() = delete;
 
-		explicit constexpr ArchiveStorageDescriptor(mref<ArchiveUrl> archiveUrl_) noexcept :
-			_archiveUrl(std::move(archiveUrl_)) {}
+		explicit constexpr ArchiveStorageDescriptor(
+			mref<ArchiveUrl> archiveUrl_,
+			mref<Arci<IStorage>> archiveBacking_
+		) noexcept :
+			_archiveUrl(std::move(archiveUrl_)),
+			_archiveBacking(std::move(archiveBacking_)) {}
 
 		constexpr ArchiveStorageDescriptor(cref<this_type>) = delete;
 
@@ -23,6 +28,7 @@ namespace hg::engine::storage {
 
 	private:
 		ArchiveUrl _archiveUrl;
+		Arci<IStorage> _archiveBacking;
 
 	public:
 		[[nodiscard]] constexpr UrlScheme targetScheme() const noexcept {
@@ -33,8 +39,12 @@ namespace hg::engine::storage {
 			return _archiveUrl.guid();
 		}
 
+		[[nodiscard]] Arci<IStorage> archiveBacking() const noexcept {
+			return _archiveBacking;
+		}
+
 		[[nodiscard]] constexpr bool valid() const noexcept {
-			return true;
+			return (_archiveUrl.guid() != Guid {}) && _archiveBacking != nullptr;
 		}
 	};
 }

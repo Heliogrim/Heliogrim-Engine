@@ -11,11 +11,22 @@ namespace hg::engine::storage::system {
 		using this_type = ArchiveStorage;
 
 	public:
-		ArchiveStorage() noexcept;
+		ArchiveStorage() = delete;
 
-		ArchiveStorage(bool readable_, bool writeable_, bool randomReadable_, bool randomWritable_) noexcept;
+		ArchiveStorage(
+			mref<Arci<IStorage>> backing_,
+			bool readable_,
+			bool writeable_,
+			bool randomReadable_,
+			bool randomWritable_
+		) noexcept;
 
 		~ArchiveStorage() override = default;
+
+	public:
+		[[nodiscard]] constexpr bool isPrimaryStorage() const noexcept override {
+			return false;
+		}
 
 	private:
 		u8 _readable : 1;
@@ -33,5 +44,8 @@ namespace hg::engine::storage::system {
 		[[nodiscard]] bool isRandomReadable() const noexcept override;
 
 		[[nodiscard]] bool isRandomWritable() const noexcept override;
+
+	private:
+		Arci<IStorage> _backing;
 	};
 }

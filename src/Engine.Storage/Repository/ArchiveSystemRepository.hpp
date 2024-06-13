@@ -1,7 +1,8 @@
 #pragma once
 
+#include <Engine.Common/Guid.hpp>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Filesystem/Url.hpp>
+#include <Engine.Common/Collection/DenseMap.hpp>
 
 #include "../IStorageRepository.hpp"
 
@@ -26,6 +27,7 @@ namespace hg::engine::storage::system {
 
 	private:
 		nmpt<PackageSystemProvider> _spp;
+		DenseMap<Guid, Arci<ArchiveStorage>> _storages;
 
 	public:
 		[[nodiscard]] std::span<const nmpt<const IStorageProvider>> getProviders() const noexcept override;

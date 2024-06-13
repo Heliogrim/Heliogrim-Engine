@@ -25,6 +25,11 @@ namespace hg::engine::storage::system {
 
 		~MemoryStorage() override = default;
 
+	public:
+		[[nodiscard]] constexpr bool isPrimaryStorage() const noexcept override {
+			return true;
+		}
+
 	private:
 		u8 _readable : 1;
 		u8 _writeable : 1;

@@ -14,6 +14,9 @@ namespace hg::engine::storage {
 		constexpr virtual ~IStorage() = default;
 
 	public:
+		[[nodiscard]] virtual bool isPrimaryStorage() const noexcept = 0;
+
+	public:
 		[[nodiscard]] virtual bool isReadable() const noexcept = 0;
 
 		[[nodiscard]] virtual bool isWriteable() const noexcept = 0;

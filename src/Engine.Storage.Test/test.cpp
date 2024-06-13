@@ -271,12 +271,14 @@ namespace StorageModule {
 
 	TEST_F(StorageRegistryFixture, ArchiveBaseMemoryLifecycle) {
 
+		constexpr size_t memorySize = 1024uLL;
 		auto memoryGuid = Guid {};
 		GuidGenerate(memoryGuid);
 
 		auto memoryStorage = _registry->insert(
 			engine::storage::MemoryStorageDescriptor {
-				engine::storage::MemoryUrl { clone(memoryGuid) }
+				engine::storage::MemoryUrl { clone(memoryGuid) },
+				memorySize
 			}
 		);
 
@@ -289,14 +291,49 @@ namespace StorageModule {
 
 		/**/
 
-		auto descriptor = engine::storage::ArchiveStorageDescriptor {};
-		ASSERT_TRUE(_registry->insert(std::move(descriptor)) != nullptr);
-		ASSERT_TRUE(_registry->hasStorage(engine::storage::ArchiveUrl { clone(archiveGuid) }));
+		auto descriptor = engine::storage::ArchiveStorageDescriptor {
+			engine::storage::ArchiveUrl { clone(archiveGuid) },
+			std::move(memoryStorage)
+		};
+		EXPECT_TRUE(_registry->insert(std::move(descriptor)) != nullptr);
+		EXPECT_TRUE(_registry->hasStorage(engine::storage::ArchiveUrl { clone(archiveGuid) }));
 
 		/**/
 
-		ASSERT_TRUE(_registry->removeStorageByUrl(engine::storage::ArchiveUrl { clone(archiveGuid) }) != nullptr);
-		ASSERT_FALSE(_registry->hasStorage(engine::storage::ArchiveUrl { clone(archiveGuid) }));
+		EXPECT_TRUE(_registry->removeStorageByUrl(engine::storage::ArchiveUrl { clone(archiveGuid) }) != nullptr);
+		EXPECT_FALSE(_registry->hasStorage(engine::storage::ArchiveUrl { clone(archiveGuid) }));
+	}
+
+	TEST_F(StorageRegistryFixture, PackageBaseMemoryLifecycle) {
+
+		constexpr size_t memorySize = 1024uLL;
+		auto memoryGuid = Guid {};
+		GuidGenerate(memoryGuid);
+
+		auto memoryStorage = _registry->insert(
+			engine::storage::MemoryStorageDescriptor { engine::storage::MemoryUrl { clone(memoryGuid) }, memorySize }
+		);
+
+		/**/
+
+		auto packageGuid = Guid {};
+		GuidGenerate(packageGuid);
+
+		ASSERT_FALSE(_registry->hasStorage(engine::storage::PackageUrl { clone(packageGuid) }));
+
+		/**/
+
+		auto descriptor = engine::storage::PackageStorageDescriptor {
+			engine::storage::PackageUrl { clone(packageGuid) },
+			std::move(memoryStorage)
+		};
+		EXPECT_TRUE(_registry->insert(std::move(descriptor)) != nullptr);
+		EXPECT_TRUE(_registry->hasStorage(engine::storage::PackageUrl { clone(packageGuid) }));
+
+		/**/
+
+		EXPECT_TRUE(_registry->removeStorageByUrl(engine::storage::PackageUrl { clone(packageGuid) }) != nullptr);
+		EXPECT_FALSE(_registry->hasStorage(engine::storage::PackageUrl { clone(packageGuid) }));
 	}
 
 	TEST_F(StorageRegistryFixture, PackageMountLifecycle) {}
