@@ -1,7 +1,11 @@
 #include "PackageSystemProvider.hpp"
 
+#include "../Options/ArchiveStorageDescriptor.hpp"
+#include "../Options/PackageStorageDescriptor.hpp"
+#include "../Repository/ArchiveSystemRepository.hpp"
 #include "../Repository/PackageSystemRepository.hpp"
-#include "Engine.Storage/Repository/ArchiveSystemRepository.hpp"
+#include "../Storage/ArchiveStorage.hpp"
+#include "../Storage/PackageStorage.hpp"
 
 using namespace hg::engine::storage::system;
 using namespace hg;
@@ -10,6 +14,26 @@ PackageSystemProvider::PackageSystemProvider(ref<IStorageRegistry> registry_) no
 	_registry(std::addressof(registry_)) {}
 
 PackageSystemProvider::~PackageSystemProvider() noexcept = default;
+
+Arci<ArchiveStorage> PackageSystemProvider::makeStorageObject(mref<ArchiveStorageDescriptor> descriptor_) {
+	return Arci<ArchiveStorage>::create(
+		std::move(descriptor_).archiveBacking(),
+		true,
+		true,
+		true,
+		true
+	);
+}
+
+Arci<PackageStorage> PackageSystemProvider::makeStorageObject(mref<PackageStorageDescriptor> descriptor_) {
+	return Arci<PackageStorage>::create(
+		std::move(descriptor_).packageBacking(),
+		true,
+		true,
+		true,
+		true
+	);
+}
 
 nmpt<PackageSystemRepository> PackageSystemProvider::makePackageRepository() {
 	::hg::assertrt(_packageRepositories.empty());

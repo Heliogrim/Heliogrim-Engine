@@ -3,14 +3,8 @@
 using namespace hg::engine::storage::system;
 using namespace hg;
 
-ArchiveStorage::ArchiveStorage() noexcept :
-	IStorage(),
-	_readable(),
-	_writeable(),
-	_randomReadable(),
-	_randomWritable() {}
-
 ArchiveStorage::ArchiveStorage(
+	mref<Arci<IStorage>> backing_,
 	bool readable_,
 	bool writeable_,
 	bool randomReadable_,
@@ -20,7 +14,11 @@ ArchiveStorage::ArchiveStorage(
 	_readable(readable_),
 	_writeable(writeable_),
 	_randomReadable(randomReadable_),
-	_randomWritable(randomWritable_) {}
+	_randomWritable(randomWritable_),
+	_backing(std::move(backing_)) {
+	// Warning: Just a temporary explicit error
+	::hg::assertrt(_backing == nullptr || _backing->isPrimaryStorage());
+}
 
 bool ArchiveStorage::isReadable() const noexcept {
 	return _readable;
