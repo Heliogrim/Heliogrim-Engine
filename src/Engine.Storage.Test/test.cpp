@@ -1,7 +1,6 @@
 #include "pch.h"
 
 #include <Engine.Common/Guid.hpp>
-#include <Engine.Common/GuidFormat.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Config/Config.hpp>
 #include <Engine.Config/Enums.hpp>
@@ -10,7 +9,6 @@
 #include <Engine.Config/Provider/RuntimeProvider.hpp>
 #include <Engine.Config/Provider/SystemProvider.hpp>
 #include <Engine.Filesystem/Path.hpp>
-#include <Engine.Filesystem/Url.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 #include <Engine.Storage/IStorage.hpp>
 #include <Engine.Storage/Options/StorageDescriptor.hpp>
@@ -266,8 +264,8 @@ namespace StorageModule {
 
 	#pragma endregion Memory Repository Tests
 
-	/* Packagesystem Repository Tests */
-	#pragma region Packagesystem Repository Tests
+	/* Package System Repository Tests */
+	#pragma region Package System Repository Tests
 
 	TEST_F(StorageRegistryFixture, ArchiveBaseMemoryLifecycle) {
 
@@ -336,9 +334,5 @@ namespace StorageModule {
 		EXPECT_FALSE(_registry->hasStorage(engine::storage::PackageUrl { clone(packageGuid) }));
 	}
 
-	TEST_F(StorageRegistryFixture, PackageMountLifecycle) {}
-
-	TEST_F(StorageRegistryFixture, PackageContentLifecycle) {}
-
-	#pragma endregion Packagesystem Repository Tests
+	#pragma endregion Package System Repository Tests
 }
