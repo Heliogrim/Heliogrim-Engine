@@ -282,12 +282,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Event", "Event", "{1A15E2FB
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Editor.GFX.Event", "projects\Editor.GFX.Event\Editor.GFX.Event.vcxproj", "{98FAC751-D936-4EA1-B9C6-277104902C89}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.Pedantic.Resource", "projects\Engine.Pedantic.Resource\Engine.Pedantic.Resource.vcxproj", "{7A8A21F2-C6C4-43BB-9D1E-4BBBEA54AF94}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.Pedantic.Resource.Test", "projects\Engine.Pedantic.Resource.Test\Engine.Pedantic.Resource.Test.vcxproj", "{E89E4830-0296-4AD3-8F3A-EC4E445E3A75}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "VS", "VS", "{0A8592E1-AF9C-4BB8-A1FE-DDEA5ABEC4CC}"
 	ProjectSection(SolutionItems) = preProject
 		common.natstepfilter = common.natstepfilter
 		common.natvis = common.natvis
 	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -802,6 +805,15 @@ Global
 		{98FAC751-D936-4EA1-B9C6-277104902C89}.Profile|x64.Build.0 = Profile|x64
 		{98FAC751-D936-4EA1-B9C6-277104902C89}.Release|x64.ActiveCfg = Release|x64
 		{98FAC751-D936-4EA1-B9C6-277104902C89}.Release|x64.Build.0 = Release|x64
+		{7A8A21F2-C6C4-43BB-9D1E-4BBBEA54AF94}.Debug|x64.ActiveCfg = Debug|x64
+		{7A8A21F2-C6C4-43BB-9D1E-4BBBEA54AF94}.Debug|x64.Build.0 = Debug|x64
+		{7A8A21F2-C6C4-43BB-9D1E-4BBBEA54AF94}.Profile|x64.ActiveCfg = Profile|x64
+		{7A8A21F2-C6C4-43BB-9D1E-4BBBEA54AF94}.Profile|x64.Build.0 = Profile|x64
+		{7A8A21F2-C6C4-43BB-9D1E-4BBBEA54AF94}.Release|x64.ActiveCfg = Release|x64
+		{7A8A21F2-C6C4-43BB-9D1E-4BBBEA54AF94}.Release|x64.Build.0 = Release|x64
+		{E89E4830-0296-4AD3-8F3A-EC4E445E3A75}.Debug|x64.ActiveCfg = Debug|x64
+		{E89E4830-0296-4AD3-8F3A-EC4E445E3A75}.Profile|x64.ActiveCfg = Profile|x64
+		{E89E4830-0296-4AD3-8F3A-EC4E445E3A75}.Release|x64.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -910,6 +922,8 @@ Global
 		{D7B3E5D2-9E0C-442C-A515-2E2504572BF9} = {A2D28682-6AC0-4114-AA57-9BF208C37966}
 		{1A15E2FB-D12E-4ACE-ABE5-55254DBE6D37} = {91C8E24A-47B1-45BA-9359-AAF445955F73}
 		{98FAC751-D936-4EA1-B9C6-277104902C89} = {1A15E2FB-D12E-4ACE-ABE5-55254DBE6D37}
+		{7A8A21F2-C6C4-43BB-9D1E-4BBBEA54AF94} = {24E08083-0467-4F93-8003-58332292857F}
+		{E89E4830-0296-4AD3-8F3A-EC4E445E3A75} = {DE2B2DC5-BF87-4E97-A168-C82D8103723E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {045F3307-C3BE-45A8-88A0-BB88AD5695BE}
