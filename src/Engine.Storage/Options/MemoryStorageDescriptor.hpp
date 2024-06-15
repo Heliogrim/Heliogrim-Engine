@@ -13,7 +13,7 @@ namespace hg::engine::storage {
 		using this_type = MemoryStorageDescriptor;
 
 	public:
-		constexpr MemoryStorageDescriptor() noexcept = default;
+		MemoryStorageDescriptor() = delete;
 
 		explicit constexpr MemoryStorageDescriptor(mref<MemoryUrl> memoryUrl_) noexcept :
 			_memoryUrl(std::move(memoryUrl_)) {}

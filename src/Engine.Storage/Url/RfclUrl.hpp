@@ -21,5 +21,7 @@ namespace hg::engine::storage {
 		[[nodiscard]] constexpr UrlScheme scheme() const noexcept {
 			return _scheme;
 		}
+
+		[[nodiscard]] String encode() const;
 	};
 }
