@@ -10,7 +10,7 @@ namespace hg::engine::storage {
 		using this_type = FileStorageDescriptor;
 
 	public:
-		constexpr FileStorageDescriptor() noexcept = default;
+		FileStorageDescriptor() = delete;
 
 		explicit constexpr FileStorageDescriptor(mref<FileUrl> fileUrl_) noexcept :
 			IStorageDescriptor(),
