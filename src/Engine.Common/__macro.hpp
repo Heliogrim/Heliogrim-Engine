@@ -108,7 +108,7 @@
     _Pragma("clang diagnostic pop")
 #elif defined(_MSC_VER)
 #define START_SUPPRESS_WARNINGS \
-    __pragma(warning(push))
+    __pragma(warning(push, 0))
 #define STOP_SUPPRESS_WARNINGS \
     __pragma(warning(pop))
 #else
