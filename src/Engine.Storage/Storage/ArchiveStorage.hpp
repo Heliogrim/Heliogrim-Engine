@@ -6,7 +6,7 @@
 
 namespace hg::engine::storage::system {
 	class ArchiveStorage final :
-		public IStorage {
+		public InheritMeta<ArchiveStorage, IStorage> {
 	public:
 		using this_type = ArchiveStorage;
 

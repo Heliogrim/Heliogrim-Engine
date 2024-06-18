@@ -1,5 +1,6 @@
 #include "StorageRegistry.hpp"
 
+#include <ranges>
 #include <Engine.Asserts/Todo.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Config/Config.hpp>
@@ -103,6 +104,13 @@ void StorageRegistry::tidy() {
 	/**/
 
 	_repositories.clear();
+
+	std::ranges::for_each(
+		std::ranges::reverse_view(_provider),
+		[](auto& provider_) {
+			provider_.reset();
+		}
+	);
 	_provider.clear();
 }
 
@@ -120,7 +128,7 @@ void StorageRegistry::addRepository(nmpt<system::IStorageRepository> repository_
 	_SCTRL_GATE(_mtx);
 
 	const auto providers = repository_->getProviders();
-	for (const auto& required : providers) {
+	for (auto required : providers) {
 		// Verify that this registry has ownership of the required providers
 		::hg::assertrt(
 			std::ranges::find(
@@ -129,7 +137,7 @@ void StorageRegistry::addRepository(nmpt<system::IStorageRepository> repository_
 				[](const auto& owned_) {
 					return owned_.get();
 				}
-			) == std::ranges::end(_provider)
+			) != std::ranges::end(_provider)
 		);
 	}
 

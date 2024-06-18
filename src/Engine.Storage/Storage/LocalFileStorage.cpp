@@ -3,20 +3,13 @@
 using namespace hg::engine::storage::system;
 using namespace hg;
 
-LocalFileStorage::LocalFileStorage() noexcept :
-	IStorage(),
-	_readable(),
-	_writeable(),
-	_randomReadable(),
-	_randomWritable() {}
-
 LocalFileStorage::LocalFileStorage(
 	bool readable_,
 	bool writeable_,
 	bool randomReadable_,
 	bool randomWritable_
 ) noexcept :
-	IStorage(),
+	InheritMeta(),
 	_readable(readable_),
 	_writeable(writeable_),
 	_randomReadable(randomReadable_),

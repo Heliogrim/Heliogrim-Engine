@@ -20,7 +20,7 @@ LocalFileSystemProvider::LocalFileSystemProvider() noexcept = default;
 LocalFileSystemProvider::~LocalFileSystemProvider() noexcept = default;
 
 Arci<LocalFileStorage> LocalFileSystemProvider::makeStorageObject() const noexcept {
-	return Arci<LocalFileStorage>::create();
+	return Arci<LocalFileStorage>::create(false, false, false, false);
 }
 
 nmpt<CacheFileSystemRepository> LocalFileSystemProvider::makeCacheRepository(

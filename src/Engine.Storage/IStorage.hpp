@@ -1,8 +1,10 @@
 #pragma once
 #include <Engine.Common/Managed/Rc.hpp>
+#include <Engine.Reflect/Inherit/InheritBase.hpp>
 
 namespace hg::engine::storage {
 	class __declspec(novtable) IStorage :
+		public InheritBase<IStorage>,
 		public ArcFromThis<IStorage> {
 	public:
 		using this_type = IStorage;

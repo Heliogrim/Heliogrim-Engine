@@ -8,6 +8,7 @@
 namespace hg::engine::storage::system {
 	class MemoryStorage final :
 		public IStorage {
+		public InheritMeta<MemoryStorage, IStorage> {
 	public:
 		using this_type = MemoryStorage;
 		class MemoryObject;

@@ -24,7 +24,7 @@ EditorReadOnlyRepository::EditorReadOnlyRepository(
 EditorReadOnlyRepository::~EditorReadOnlyRepository() = default;
 
 std::span<const nmpt<const IStorageProvider>> EditorReadOnlyRepository::getProviders() const noexcept {
-	return { std::addressof(static_cast<const nmpt<const IStorageProvider>&>(_lfs)), 1uLL };
+	return { std::bit_cast<ptr<const nmpt<const IStorageProvider>>>(std::addressof(_lfs)), 1uLL };
 }
 
 std::span<const engine::storage::UrlScheme> EditorReadOnlyRepository::getUrlScheme() const noexcept {

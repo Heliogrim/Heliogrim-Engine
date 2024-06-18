@@ -4,7 +4,7 @@ using namespace hg::engine::storage::system;
 using namespace hg;
 
 MemoryStorage::MemoryStorage() noexcept :
-	IStorage(),
+	InheritMeta(),
 	_readable(),
 	_writeable(),
 	_randomReadable(),
@@ -17,7 +17,7 @@ MemoryStorage::MemoryStorage(
 	bool randomReadable_,
 	bool randomWritable_
 ) noexcept :
-	IStorage(),
+	InheritMeta(),
 	_readable(readable_),
 	_writeable(writeable_),
 	_randomReadable(randomReadable_),

@@ -20,7 +20,7 @@ PackageSystemRepository::PackageSystemRepository(ref<PackageSystemProvider> prov
 PackageSystemRepository::~PackageSystemRepository() = default;
 
 std::span<const nmpt<const IStorageProvider>> PackageSystemRepository::getProviders() const noexcept {
-	return { std::addressof(static_cast<const nmpt<const IStorageProvider>&>(_spp)), 1uLL };
+	return { std::bit_cast<ptr<const nmpt<const IStorageProvider>>>(std::addressof(_spp)), 1uLL };
 }
 
 std::span<const engine::storage::UrlScheme> PackageSystemRepository::getUrlScheme() const noexcept {

@@ -25,7 +25,7 @@ ProjectFileSystemRepository::ProjectFileSystemRepository(
 ProjectFileSystemRepository::~ProjectFileSystemRepository() = default;
 
 std::span<const nmpt<const IStorageProvider>> ProjectFileSystemRepository::getProviders() const noexcept {
-	return { std::addressof(static_cast<const nmpt<const IStorageProvider>&>(_lfs)), 1uLL };
+	return { std::bit_cast<ptr<const nmpt<const IStorageProvider>>>(std::addressof(_lfs)), 1uLL };
 }
 
 std::span<const engine::storage::UrlScheme> ProjectFileSystemRepository::getUrlScheme() const noexcept {
