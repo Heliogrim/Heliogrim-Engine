@@ -6,12 +6,12 @@
 
 namespace hg::engine::storage::system {
 	class LocalFileStorage final :
-		public IStorage {
+		public InheritMeta<LocalFileStorage, IStorage> {
 	public:
 		using this_type = LocalFileStorage;
 
 	public:
-		LocalFileStorage() noexcept;
+		LocalFileStorage() = delete;
 
 		LocalFileStorage(bool readable_, bool writeable_, bool randomReadable_, bool randomWritable_) noexcept;
 

@@ -10,7 +10,7 @@ PackageStorage::PackageStorage(
 	bool randomReadable_,
 	bool randomWritable_
 ) noexcept :
-	IStorage(),
+	InheritMeta(),
 	_readable(readable_),
 	_writeable(writeable_),
 	_randomReadable(randomReadable_),

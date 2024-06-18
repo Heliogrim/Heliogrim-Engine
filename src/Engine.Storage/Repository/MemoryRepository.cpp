@@ -21,7 +21,7 @@ MemoryRepository::MemoryRepository(ref<MemoryProvider> provider_) :
 MemoryRepository::~MemoryRepository() = default;
 
 std::span<const nmpt<const IStorageProvider>> MemoryRepository::getProviders() const noexcept {
-	return { std::addressof(static_cast<const nmpt<const IStorageProvider>&>(_provider)), 1uLL };
+	return { std::bit_cast<ptr<const nmpt<const IStorageProvider>>>(std::addressof(_provider)), 1uLL };
 }
 
 std::span<const engine::storage::UrlScheme> MemoryRepository::getUrlScheme() const noexcept {
