@@ -16,10 +16,6 @@ using namespace ::hg;
 
 /**/
 
-Config::Config() = default;
-
-Config::~Config() = default;
-
 tl::expected<void, cfg::ConfigInitError> Config::init(mref<cfg::ConfigEntry> entry_) {
 	if (_providers.empty()) {
 		return tl::make_unexpected(cfg::ConfigInitError { "" });
