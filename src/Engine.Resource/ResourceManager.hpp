@@ -6,7 +6,6 @@
 
 #include "ImporterManager.hpp"
 #include "LoaderManager.hpp"
-#include "Locator.hpp"
 
 #ifdef _EDITOR
 #include "Indexer/Indexer.hpp"
@@ -91,26 +90,6 @@ namespace hg::engine {
 
 		[[nodiscard]] ref<resource::LoaderManager> loader();
 
-        [[nodiscard]] ptr<resource::LoaderManager> loader(nothrow_t) noexcept;
-
-    private:
-        uptr<resource::Locator> _locator;
-
-    public:
-        [[nodiscard]] cref<resource::Locator> locator() const;
-
-        [[nodiscard]] ptr<const resource::Locator> locator(nothrow_t) const noexcept;
-
-        [[nodiscard]] ref<resource::Locator> locator();
-
-        [[nodiscard]] ptr<resource::Locator> locator(nothrow_t) noexcept;
-
-    private:
-        uptr<resource::PackageManager> _packages;
-
-    public:
-        [[nodiscard]] const ptr<const resource::PackageManager> packages(nothrow_t) const noexcept;
-
-        [[nodiscard]] const ptr<resource::PackageManager> packages(nothrow_t) noexcept;
-    };
+		[[nodiscard]] ptr<resource::LoaderManager> loader(nothrow_t) noexcept;
+	};
 }
