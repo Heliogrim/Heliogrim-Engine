@@ -1,6 +1,8 @@
 #pragma once
 
 #include <Engine.Common/Managed/Rc.hpp>
+#include <Engine.Common/Meta/TypeId.hpp>
+#include <Engine.Filesystem/__fwd.hpp>
 #include <Engine.Resource/File.hpp>
 
 #include "../IStorageProvider.hpp"
@@ -26,10 +28,21 @@ namespace hg::engine::storage::system {
 		~LocalFileSystemProvider() noexcept override;
 
 	private:
-		Vector<uptr<IStorageFileRepository>> _repositories;
+		struct ProviderRepository {
+			type_id typeId;
+			uptr<IStorageFileRepository> repository;
+		};
+
+		Vector<ProviderRepository> _repositories;
+
+		template <typename RepType_>
+		[[nodiscard]] nmpt<RepType_> makeUniqueRepository(
+			_Inout_ auto& repositories_,
+			_In_ mref<hg::fs::File::path_type> basePath_
+		);
 
 	public:
-		[[nodiscard]] Arci<LocalFileStorage> makeStorageObject() const noexcept;
+		[[nodiscard]] Arci<LocalFileStorage> makeStorageObject(mref<hg::fs::Path> storagePath_) const noexcept;
 
 	public:
 		[[nodiscard]] nmpt<CacheFileSystemRepository> makeCacheRepository(
