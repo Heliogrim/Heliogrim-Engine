@@ -1,6 +1,7 @@
 #include "EditorEngine.hpp"
 
 #include <Editor.Main/Boot/ConfigInit.hpp>
+#include <Editor.Main/Boot/StorageInit.hpp>
 #include <Editor.Main/Boot/SubModuleInit.hpp>
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Config/Provider/EditorProvider.hpp>
@@ -129,10 +130,12 @@ bool EditorEngine::init() {
 	/* Note: Root modules are setup via direct call without fiber context guarantee. */
 	_platform->setup();
 	_scheduler->setup(Scheduler::auto_worker_count);
+	_storage.setup(_config);
 	_resources->setup();
 
 	/**/
 
+	boot::initStorage(_config, _storage);
 	setupCorePipelines();
 
 	/* Core modules should always interact with a guaranteed fiber context and non-sequential execution */
