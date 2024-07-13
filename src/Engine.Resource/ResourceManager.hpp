@@ -2,6 +2,7 @@
 
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Meta/NoThrow.hpp>
+#include <Engine.Core/Module/RootModule.hpp>
 
 #include "ImporterManager.hpp"
 #include "LoaderManager.hpp"
@@ -12,15 +13,16 @@
 #endif
 
 namespace hg::engine::resource {
-    class PackageManager;
+	class PackageManager;
 }
 
 namespace hg::engine {
-    class ResourceManager {
-    public:
-        using value_type = ResourceManager;
-        using reference_type = ref<value_type>;
-        using const_reference_type = cref<value_type>;
+	class ResourceManager :
+		public core::RootModule {
+	public:
+		using value_type = ResourceManager;
+		using reference_type = ref<value_type>;
+		using const_reference_type = cref<value_type>;
 
     public:
         /**
