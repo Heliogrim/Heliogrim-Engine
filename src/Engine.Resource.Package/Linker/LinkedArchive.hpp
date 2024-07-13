@@ -1,14 +1,11 @@
 #pragma once
 
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Serialization/Archive/__fwd.hpp>
+#include "PackageArchiveHeader.hpp"
+#include "../Index/PackageIndexEntry.hpp"
 
-#include "../Archive/ArchiveHeader.hpp"
-#include "../Package/PackageIndexEntry.hpp"
-
-namespace hg::engine::resource {
-    struct LinkedArchive {
-        ArchiveHeader header;
-        PackageIndexEntry index;
-    };
+namespace hg::engine::resource::package {
+	struct LinkedArchive {
+		PackageArchiveHeader header;
+		PackageIndexEntry index;
+	};
 }
