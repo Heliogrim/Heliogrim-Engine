@@ -6,6 +6,7 @@
 #include <Engine.Config/Config.hpp>
 #include <Engine.Config/Enums.hpp>
 #include <Engine.Env/Check.hpp>
+#include <Engine.Logging/Logger.hpp>
 #include <Engine.Storage/Url/Url.hpp>
 
 #include "../IStorage.hpp"
@@ -140,6 +141,19 @@ void StorageRegistry::addRepository(nmpt<system::IStorageRepository> repository_
 			) != std::ranges::end(_provider)
 		);
 	}
+
+	/**/
+
+	const auto found = std::ranges::find(_repositories, repository_);
+	if (found != _repositories.end()) {
+		IM_DEBUG_LOGF(
+			"Tried to add repository `{:x}` to storage registry which already exists.",
+			reinterpret_cast<intptr_t>(repository_.get())
+		);
+		return;
+	}
+
+	/**/
 
 	_repositories.emplace_back(std::move(repository_));
 }
