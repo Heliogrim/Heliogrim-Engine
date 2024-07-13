@@ -29,17 +29,21 @@ namespace hg {
 		using meta_class_ret_type = const __restricted_ptr<const meta_class<ThisType_>>;
 
 	public:
-		constexpr InheritBase() :
+		constexpr InheritBase() noexcept :
 			ClassMetaBase() {
 			ClassMetaBase::_meta = meta_class<>::get();
 		}
 
 	private:
+		START_SUPPRESS_WARNINGS
 		// NOLINTBEGIN(*-const-return-type)
+
 		[[nodiscard]] constexpr const __restricted_ptr<const MetaClass> getMetaClassBase() const noexcept {
-			// NOLINTEND(*-const-return-type)
 			return ClassMetaBase::getMetaClass();
 		}
+
+		// NOLINTEND(*-const-return-type)
+		STOP_SUPPRESS_WARNINGS
 
 	public:
 		/**
