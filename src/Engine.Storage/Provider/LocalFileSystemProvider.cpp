@@ -11,46 +11,66 @@
 #include "../Repository/ProjectFileSystemRepository.hpp"
 #include "../Repository/RuntimeFileSystemRepository.hpp"
 #include "../Storage/LocalFileStorage.hpp"
+#include "Engine.Reflect/Cast.hpp"
+#include "Heliogrim/Components/PointLightComponent.hpp"
 
 using namespace hg::engine::storage::system;
 using namespace hg;
+
+/**/
 
 LocalFileSystemProvider::LocalFileSystemProvider() noexcept = default;
 
 LocalFileSystemProvider::~LocalFileSystemProvider() noexcept = default;
 
-Arci<LocalFileStorage> LocalFileSystemProvider::makeStorageObject() const noexcept {
-	return Arci<LocalFileStorage>::create(false, false, false, false);
+template <typename RepType_>
+nmpt<RepType_> LocalFileSystemProvider::makeUniqueRepository(
+	auto& repositories_,
+	mref<hg::fs::File::path_type> basePath_
+) {
+
+	constexpr auto repoTypeId = reflect::typeId<RepType_>();
+	for (auto& entry : repositories_) {
+		if (entry.typeId != repoTypeId) {
+			continue;
+		}
+
+		auto* const rep = static_cast<ptr<RepType_>>(entry.repository.get());
+		if (rep->_basePath == basePath_) {
+			return { rep };
+		}
+	}
+
+	return static_cast<ptr<RepType_>>(repositories_.emplace_back(
+		repoTypeId,
+		uptr<RepType_> { new RepType_(*this, std::move(basePath_)) }
+	).repository.get());
+}
+
+Arci<LocalFileStorage> LocalFileSystemProvider::makeStorageObject(mref<fs::Path> storagePath_) const noexcept {
+	return Arci<LocalFileStorage>::create(std::move(storagePath_), false, false, false, false);
 }
 
 nmpt<CacheFileSystemRepository> LocalFileSystemProvider::makeCacheRepository(
 	mref<hg::fs::File::path_type> basePath_
 ) {
-	return static_cast<ptr<CacheFileSystemRepository>>(_repositories.emplace_back(
-		new CacheFileSystemRepository(*this, std::move(basePath_))
-	).get());
+	return makeUniqueRepository<CacheFileSystemRepository>(_repositories, std::move(basePath_));
 }
 
 nmpt<ProjectFileSystemRepository> LocalFileSystemProvider::makeProjectRepository(
 	mref<hg::fs::File::path_type> basePath_
 ) {
-	return static_cast<ptr<ProjectFileSystemRepository>>(_repositories.emplace_back(
-		new ProjectFileSystemRepository(*this, std::move(basePath_))
-	).get());
+	return makeUniqueRepository<ProjectFileSystemRepository>(_repositories, std::move(basePath_));
 }
 
 nmpt<RuntimeFileSystemRepository> LocalFileSystemProvider::makeRuntimeRepository(
 	mref<hg::fs::File::path_type> basePath_
 ) {
-	return static_cast<ptr<RuntimeFileSystemRepository>>(_repositories.emplace_back(
-		new RuntimeFileSystemRepository(*this, std::move(basePath_))
-	).get());
+	return makeUniqueRepository<RuntimeFileSystemRepository>(_repositories, std::move(basePath_));
 }
 
 nmpt<EditorReadOnlyRepository> LocalFileSystemProvider::makeEditorRepository(
 	mref<hg::fs::File::path_type> basePath_
 ) {
-	return static_cast<ptr<EditorReadOnlyRepository>>(_repositories.emplace_back(
-		new EditorReadOnlyRepository(*this, std::move(basePath_))
-	).get());
+	return makeUniqueRepository<EditorReadOnlyRepository>(_repositories, std::move(basePath_));
 }
