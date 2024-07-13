@@ -1,14 +1,21 @@
 #pragma once
 
 #include <functional>
+#include <span>
 #include <Engine.Common/Types.hpp>
 
 #include "../IStorage.hpp"
 
+namespace hg::engine::storage {
+	class StorageIo;
+}
+
 namespace hg::engine::storage::system {
 	class MemoryStorage final :
-		public IStorage {
 		public InheritMeta<MemoryStorage, IStorage> {
+	public:
+		friend class ::hg::engine::storage::StorageIo;
+
 	public:
 		using this_type = MemoryStorage;
 		class MemoryObject;
@@ -94,6 +101,10 @@ namespace hg::engine::storage::system {
 
 			void destroy() {
 				_dealloc(std::exchange(_base, nullptr), std::exchange(_size, 0uLL));
+			}
+
+			[[nodiscard]] std::span<_::byte> span() const noexcept {
+				return std::span<_::byte> { _base, _size };
 			}
 		};
 

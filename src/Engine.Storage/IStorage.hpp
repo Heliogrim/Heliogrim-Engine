@@ -13,7 +13,7 @@ namespace hg::engine::storage {
 		IStorage() noexcept = default;
 
 	public:
-		constexpr virtual ~IStorage() = default;
+		constexpr ~IStorage() override = default;
 
 	public:
 		[[nodiscard]] virtual bool isPrimaryStorage() const noexcept = 0;
