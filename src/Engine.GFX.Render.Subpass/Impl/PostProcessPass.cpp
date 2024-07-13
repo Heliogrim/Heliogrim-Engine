@@ -306,9 +306,7 @@ void PostProcessPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept
 
 	auto translator = make_uptr<driver::vk::VkRCmdTranslator>();
 	auto nativeBatch = (*translator)(&cmd);
-	const auto batch = static_cast<ptr<driver::vk::VkNativeBatch>>(nativeBatch.get());
-
-	{
+	const auto batch = static_cast<ptr<driver::vk::VkNativeBatch>>(nativeBatch.get()); {
 		batch->_tmpWaits.insert_range(
 			batch->_tmpWaits.end(),
 			reinterpret_cast<Vector<VkSemaphore>&>(sceneColorRes->barriers)
@@ -395,7 +393,7 @@ smr<AccelerationEffect> build_test_effect() {
 
 	/**/
 
-	Guid guid { "__Test__Proxy"_typeId.data, 0, 0, "PostProcessEffect"_typeId.data };
+	Guid guid { static_cast<u32>("__Test__Proxy"_typeId.data), 0, 0, "PostProcessEffect"_typeId.data };
 
 	return make_smr<AccelerationEffect>(
 		std::move(guid),

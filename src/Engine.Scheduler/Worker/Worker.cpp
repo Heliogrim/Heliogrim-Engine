@@ -27,7 +27,7 @@ Worker::~Worker() {
 	#ifdef _DEBUG
 	assert(destroy());
 	#else
-    [[maybe_unused]] auto result { destroy() };
+	[[maybe_unused]] auto result { destroy() };
 	#endif
 };
 

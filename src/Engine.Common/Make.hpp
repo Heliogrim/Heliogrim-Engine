@@ -74,4 +74,9 @@ namespace hg {
 			new Ty { std::forward<Args>(args_)... }
 		))->acq();
 	}
+
+	template <CompleteType Type_>
+	smr<Type_> make_smr(Type_&& initial_) requires std::is_move_constructible_v<Type_> {
+		return (new SharedMemoryReferenceCtrlBlock<Type_>(new Type_(std::forward<Type_>(initial_))))->acq();
+	}
 }

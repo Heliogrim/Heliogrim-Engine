@@ -38,9 +38,9 @@ namespace hg::engine::fs {
 		std::filesystem::path _value;
 
 	public:
-		ref<this_type> operator=(mref<this_type> other_) noexcept;
+		constexpr ref<this_type> operator=(mref<this_type> other_) noexcept = default;
 
-		ref<this_type> operator=(cref<this_type> other_);
+		constexpr ref<this_type> operator=(cref<this_type> other_) noexcept = default;
 
 	public:
 		[[nodiscard]] bool hasName() const noexcept;

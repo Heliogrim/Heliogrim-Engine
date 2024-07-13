@@ -216,7 +216,7 @@ void ObjectValueMapper<StaticGeometryComponent>::update(
 
 			//AssetDatabaseResult<GfxMaterialAsset> next = Heliogrim::assets()[value_]; // Will break due to conversion
 			auto next = Heliogrim::assets()[value_];
-			ref<GfxMaterialAsset> slot = const_cast<ref<Vector<GfxMaterialAsset>>>(sgc->overrideMaterials())[matIdx];
+			ref<GfxMaterialAsset> slot = const_cast<ref<AutoArray<GfxMaterialAsset>>>(sgc->overrideMaterials())[matIdx];
 
 			// TODO: Remove assert and handle invalid case ~ reset input field ?!?
 			assert(next.flags & AssetDatabaseResultType::eSuccess);

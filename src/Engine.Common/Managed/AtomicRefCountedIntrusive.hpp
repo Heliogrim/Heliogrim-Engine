@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <stdexcept>
+#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 
 #include "../Wrapper.hpp"
@@ -321,9 +322,12 @@ namespace hg {
 		}
 
 		constexpr void throw_if_null(const arci_packed_type packed_) const {
+			/*
 			if (decode_pointer(packed_) == nullptr) {
 				throw std::runtime_error("Failed to access ref counted object with ref count of zero.");
 			}
+			 */
+			::hg::assertrt(decode_pointer(packed_) != nullptr);
 		}
 
 	public:
@@ -415,7 +419,7 @@ namespace hg {
 	template <typename Proxy_>
 	AtomicRefCountedIntrusive<Proxy_> ArcFromThis<Derived_>::arci_from_this() noexcept {
 		const auto result = ref_inc();
-		assert(result);
+		::hg::assertd(result);
 		return AtomicRefCountedIntrusive<Proxy_>::create_from_storage(static_cast<ptr<Derived_>>(this));
 	}
 }

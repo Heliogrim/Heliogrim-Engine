@@ -12,27 +12,27 @@
 #include "Spirv/SpirvTargetVersion.hpp"
 
 namespace hg::engine::accel {
-    extern std::atomic_uint_fast32_t extern_compiler_ref_count;
+	extern std::atomic_uint_fast32_t extern_compiler_ref_count;
 
-    class SpirvCompiler {
-    public:
-        using this_type = SpirvCompiler;
+	class SpirvCompiler {
+	public:
+		using this_type = SpirvCompiler;
 
-    public:
-        SpirvCompiler();
+	public:
+		SpirvCompiler();
 
-        ~SpirvCompiler();
+		~SpirvCompiler();
 
-    public:
-        SpirvSrcLang _srcLang;
-        SpirvDialect _dialect;
-        SpirvTargetClient _targetClient;
-        SpirvTargetVersion _targetVersion;
+	public:
+		SpirvSrcLang _srcLang;
+		SpirvDialect _dialect;
+		SpirvTargetClient _targetClient;
+		SpirvTargetVersion _targetVersion;
 
-    public:
-        [[nodiscard]] SpirvByteCode compile(
-            cref<ModuleSource> module_,
-            cref<InlineAutoArray<lang::TextBlock>> source_
-        ) const;
-    };
+	public:
+		[[nodiscard]] SpirvByteCode compile(
+			cref<ModuleSource> module_,
+			cref<InlineAutoArray<lang::TextBlock>> source_
+		) const;
+	};
 }

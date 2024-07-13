@@ -39,8 +39,9 @@ namespace hg::engine::render {
 
 	protected:
 	public:
-		RenderPassState _state;
+		// Attention: Order-Dependent destruction
 		uptr<graph::RuntimeGraph> _graph;
+		RenderPassState _state;
 
 	protected:
 		bool alloc();
