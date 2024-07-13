@@ -15,6 +15,7 @@ StorageModule::StorageModule(ref<Engine> engine_) :
 StorageModule::~StorageModule() = default;
 
 void StorageModule::setup(cref<Config> config_) {
+	static_cast<ptr<storage::StorageRegistry>>(_registry.get())->setup(config_);
 }
 
 nmpt<storage::IStorageRegistry> StorageModule::getRegistry() const noexcept {
