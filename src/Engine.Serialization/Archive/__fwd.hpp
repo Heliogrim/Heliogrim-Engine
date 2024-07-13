@@ -1,24 +1,17 @@
 #pragma once
 
+namespace hg::engine::resource {
+	class Archive;
+	class BufferArchive;
+
+	class MemoryReadWriteArchive;
+	using MemoryArchive = MemoryReadWriteArchive;
+
+	class StorageReadWriteArchive;
+	using StorageArchive = StorageReadWriteArchive;
+}
+
 namespace hg::engine::serialization {
-    class Archive;
-
-    class MemoryBaseArchive;
-    class MemoryReadonlyArchive;
-    class MemoryWriteonlyArchive;
-    class MemoryReadWriteArchive;
-
-    using MemoryArchive = MemoryReadWriteArchive;
-
-    class BufferArchive;
-
-    class SourceBaseArchive;
-    class SourceReadonlyArchive;
-    class SourceWriteonlyArchive;
-    class SourceReadWriteArchive;
-
-    using SourceArchive = SourceReadWriteArchive;
-
-    class LayoutArchiveBase;
-    class StructuredArchive;
+	class LayoutArchiveBase;
+	class StructuredArchive;
 }
