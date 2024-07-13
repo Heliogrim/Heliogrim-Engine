@@ -25,9 +25,9 @@ namespace hg::engine::storage {
 		constexpr ~FileUrl() noexcept = default;
 
 	public:
-		ref<FileUrl> operator=(cref<FileUrl> other_) noexcept;
+		constexpr ref<FileUrl> operator=(cref<FileUrl> other_) noexcept = default;
 
-		ref<FileUrl> operator=(mref<FileUrl> other_) noexcept;
+		constexpr ref<FileUrl> operator=(mref<FileUrl> other_) noexcept = default;
 
 	private:
 		UrlScheme _scheme;
