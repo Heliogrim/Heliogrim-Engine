@@ -82,11 +82,15 @@ namespace hg {
 		}
 
 	private:
+		START_SUPPRESS_WARNINGS
 		// NOLINTBEGIN(*-const-return-type)
+
 		[[nodiscard]] constexpr const __restricted_ptr<const MetaClass> getMetaClassBase() const noexcept {
-			// NOLINTEND(*-const-return-type)
 			return static_cast<const ptr<const Base_>>(this)->getMetaClassBase();
 		}
+
+		// NOLINTEND(*-const-return-type)
+		STOP_SUPPRESS_WARNINGS
 
 	public:
 		/**

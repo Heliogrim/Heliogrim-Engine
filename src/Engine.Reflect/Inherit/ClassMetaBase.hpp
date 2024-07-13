@@ -25,6 +25,8 @@ namespace hg {
 	public:
 		constexpr ClassMetaBase() noexcept = default;
 
+		constexpr virtual ~ClassMetaBase() noexcept = default;
+
 	private:
 		__restricted_ptr<const class MetaClass> _meta = nullptr;
 
