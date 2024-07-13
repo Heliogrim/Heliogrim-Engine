@@ -4,10 +4,16 @@
 
 #include "../IStorage.hpp"
 
+namespace hg::engine::storage {
+	class StorageIo;
+}
+
 namespace hg::engine::storage::system {
 	class PackageStorage final :
-		public IStorage {
 		public InheritMeta<PackageStorage, IStorage> {
+	public:
+		friend class ::hg::engine::storage::StorageIo;
+
 	public:
 		using this_type = PackageStorage;
 
