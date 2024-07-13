@@ -1,7 +1,10 @@
 #include "EffectCompiler.hpp"
 
+#include <chrono>
 #include <Engine.Accel.Pipeline/Stage/StageModule.hpp>
 #include <Engine.Asserts/Asserts.hpp>
+#include <Engine.Env/Check.hpp>
+#include <Engine.Logging/Logger.hpp>
 
 #include "Module/ModuleBuilder.hpp"
 #include "Module/ModuleCompiler.hpp"
@@ -54,9 +57,7 @@ EffectCompileResult EffectCompiler::compile(
 
 	// Warning: Move into stage composer
 	// Warning: Temporary Solution
-	EffectCompileResultAlias aliasing {};
-
-	{
+	EffectCompileResultAlias aliasing {}; {
 		Vector<nmpt<const lang::Symbol>> symbols {};
 		request_.effect->enumerateImportSymbols(reinterpret_cast<ref<Vector<StageInput>>>(symbols));
 		request_.effect->enumerateExportSymbols(reinterpret_cast<ref<Vector<StageOutput>>>(symbols));
@@ -129,8 +130,19 @@ EffectCompileResult EffectCompiler::compile(
 
 	for (auto&& source : sources) {
 
-		auto cmodule = _moduleCompiler->compile(pass, request_.spec, std::move(source));
-		modules.push_back(std::move(cmodule));
+		if constexpr (env::check<env::EnvProps::eIsEditor>()) {
+
+			const auto start = std::chrono::high_resolution_clock::now();
+			modules.emplace_back(_moduleCompiler->compile(pass, request_.spec, std::move(source)));
+			const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
+				std::chrono::high_resolution_clock::now() - start
+			);
+
+			IM_CORE_LOGF("Took {}ms to compile shader module.", duration.count());
+
+		} else {
+			modules.emplace_back(_moduleCompiler->compile(pass, request_.spec, std::move(source)));
+		}
 	}
 
 	/* Finalize acceleration stage derivates */
