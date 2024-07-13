@@ -38,40 +38,11 @@ StorageRegistry::~StorageRegistry() noexcept = default;
 
 void StorageRegistry::setup(cref<Config> config_) {
 
-	// TODO: Get meta information
-	constexpr auto isEditor = env::check<env::EnvProps::eIsEditor>();
-	constexpr auto isShipment = env::check<env::EnvProps::eIsShipment>();
-	constexpr auto isEditorShipment = isEditor and isShipment;
-
-	/**/
-
-	// TODO: Set by project settings or editor installation
-	auto cacheBasePath = hg::fs::File::path_type {
-		config_.getTyped<String>(cfg::EditorConfigProperty::eLocalCachePath).value<>().value()
-	};
-	// TODO: Set by project settings
-	auto projectBasePath = hg::fs::File::path_type {
-		config_.getTyped<String>(cfg::ProjectConfigProperty::eLocalBasePath).value<>().value()
-	};
-	// TODO: Set by build-process and shipment
-	auto runtimeBasePath = hg::fs::File::path_type {
-		config_.getTyped<String>(cfg::RuntimeConfigProperty::eLocalBasePath).value<>().value()
-	};
-	// TODO: Set by project settings or editor installation
-	auto editorBasePath = hg::fs::File::path_type {
-		config_.getTyped<String>(cfg::EditorConfigProperty::eLocalEditorPath).value<>().value()
-	};
-
-	/**/
-
 	auto* const basePmrAllocator = std::pmr::new_delete_resource();
 	auto pmrAlloc = make_uptr<std::pmr::unsynchronized_pool_resource>(basePmrAllocator);
 
 	auto memOwned = make_uptr<system::MemoryProvider>(std::move(pmrAlloc));
 	auto mem = memOwned.get();
-
-	auto lfsOwned = make_uptr<system::LocalFileSystemProvider>();
-	auto lfs = lfsOwned.get();
 
 	auto pkgOwner = make_uptr<system::PackageSystemProvider>(*this);
 	auto pkg = pkgOwner.get();
@@ -79,7 +50,6 @@ void StorageRegistry::setup(cref<Config> config_) {
 	/**/
 
 	addProvider(std::move(memOwned));
-	addProvider(std::move(lfsOwned));
 	addProvider(std::move(pkgOwner));
 	// TODO (Optional) : addProvider(make_uptr<FtpSystemProvider>());
 	// TODO (Optional) : addProvider(make_uptr<SourceVersionControlSystemProvider>());
@@ -91,11 +61,6 @@ void StorageRegistry::setup(cref<Config> config_) {
 
 	addRepository(pkg->makeArchiveRepository());
 	addRepository(pkg->makePackageRepository());
-
-	addRepository(lfs->makeCacheRepository(std::move(cacheBasePath)));
-	addRepository(lfs->makeProjectRepository(std::move(projectBasePath)));
-	addRepository(lfs->makeRuntimeRepository(std::move(runtimeBasePath)));
-	addRepository(lfs->makeEditorRepository(std::move(editorBasePath)));
 }
 
 void StorageRegistry::tidy() {
