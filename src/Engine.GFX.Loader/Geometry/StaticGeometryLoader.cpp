@@ -8,13 +8,13 @@ using namespace hg::engine::gfx::loader;
 using namespace hg;
 
 StaticGeometryLoader::StaticGeometryLoader(
-    const non_owning_rptr<cache::GlobalCacheCtrl> cache_,
-    const non_owning_rptr<pool::GlobalResourcePool> pool_,
-    mref<sptr<StaticGeometrySourceLoader>> sourceLoader_
+	const non_owning_rptr<cache::GlobalCacheCtrl> cache_,
+	const non_owning_rptr<pool::GlobalResourcePool> pool_,
+	mref<sptr<StaticGeometrySourceLoader>> sourceLoader_
 ) :
-    InheritMeta(
-        StaticGeometryCache(cache_),
-        StaticGeometryFeedback(),
-        StaticGeometryTransformer(pool_),
-        std::move(sourceLoader_)
-    ) {}
+	InheritMeta(
+		StaticGeometryCache(cache_),
+		StaticGeometryFeedback(),
+		StaticGeometryTransformer(pool_),
+		std::move(sourceLoader_)
+	) {}

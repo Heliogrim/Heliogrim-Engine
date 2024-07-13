@@ -49,7 +49,7 @@ static void storeFontToTexture(
 
 void transformer::convertFreeType(
 	const non_owning_rptr<const assets::Font> assets_,
-	cref<smr<resource::Source>> src_,
+	mref<storage::AccessBlobReadonly> src_,
 	nmpt<reflow::Font> dst_,
 	cref<sptr<Device>> device_,
 	const FontLoadOptions options_

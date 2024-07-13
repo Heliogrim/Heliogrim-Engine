@@ -9,6 +9,10 @@
 #include "Loader/Loader.hpp"
 #include "Manage/Resource.hpp"
 
+namespace hg::engine {
+	class StorageModule;
+}
+
 namespace hg::engine::resource::loader {
 	class SourceLoader;
 }
@@ -29,7 +33,7 @@ namespace hg::engine::resource {
 		 * @author Julius
 		 * @date 30.08.2021
 		 */
-		LoaderManager();
+		explicit LoaderManager(_In_ cref<StorageModule> storageModule_);
 
 		/**
 		 * Destructor

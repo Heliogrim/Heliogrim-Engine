@@ -4,10 +4,14 @@
 #include <Engine.Common/Make.hpp>
 #include <Engine.Logging/Logger.hpp>
 
-#include "../../Source/FileSource.hpp"
 #include "Engine.Assets.System/IAssetRegistry.hpp"
 #include "Engine.Filesystem/Url.hpp"
 #include "Engine.Resource/File.hpp"
+#include "Engine.Storage/IStorageRegistry.hpp"
+#include "Engine.Storage/StorageModule.hpp"
+#include "Engine.Storage/Url/FileUrl.hpp"
+#include "Engine.Storage/Url/Url.hpp"
+#include "Engine.Storage.IO/StorageIo.hpp"
 
 using namespace hg::engine::resource::loader;
 using namespace hg;
@@ -16,56 +20,56 @@ using namespace hg;
 	return std::format(R"({:08x}-{:04x}-{:04x}-{:016x})", guid_.pre, guid_.c0, guid_.c1, guid_.post);
 }
 
-[[nodiscard]] static fs::Url getLfsUrl(const non_owning_rptr<const engine::assets::Asset> asset_);
+[[nodiscard]] static engine::storage::FileUrl getLfsUrl(const non_owning_rptr<const engine::assets::Asset> asset_);
 
-SourceLoader::SourceLoader() = default;
-
-SourceLoader::~SourceLoader() noexcept = default;
+SourceLoader::SourceLoader(_In_ cref<StorageModule> storageModule_) noexcept :
+	SourceLoaderStage(),
+	_storage(std::addressof(storageModule_)) {}
 
 SourceLoaderResponse<void>::type SourceLoader::operator()(
 	mref<request_type::type> request_,
 	mref<request_type::options> options_
 ) const {
 
-	static_assert(std::is_same_v<SourceLoaderResponse<void>::type, smr<Source>>);
+	static_assert(std::is_same_v<SourceLoaderResponse<void>::type, storage::AccessBlobReadonly>);
 
 	/**/
 
-	const auto lfsUrl = getLfsUrl(request_);
-	if (lfsUrl.empty()) {
+	auto lfsUrl = getLfsUrl(request_);
+	if (lfsUrl.path().empty()) {
 		IM_CORE_WARNF(
 			R"(Could not find source data at lfs for asset `{} -> {}`.)",
 			encodeGuid4228(request_->get_guid()),
 			request_->getAssetName()
 		);
-		return smr<Source> {};
+		return {};
 	}
 
 	/**/
 
-	hg::fs::File file { lfsUrl.path().string() };
+	auto file = ::hg::fs::File { lfsUrl.path().stdFsPath() };
 	if (not file.exists() || file.isDirectory()) {
 		IM_CORE_ERRORF(
 			R"(Lfs source data for asset `{} -> {}` does not exist.)",
 			encodeGuid4228(request_->get_guid()),
 			request_->getAssetName()
 		);
-		return smr<Source> {};
+		return {};
 	}
 
 	/**/
 
-	return make_smr<FileSource>(std::move(file));
+	return _storage->getIo()->accessReadonlyBlob(
+		_storage->getRegistry()->getStorageByUrl(std::move(lfsUrl))
+	);
 }
 
 SourceLoaderStreamResponse<void>::type SourceLoader::operator()(
 	mref<stream_request_type::type> request_,
 	mref<stream_request_type::options> options_
 ) const {
-
-	static_assert(std::is_same_v<SourceLoaderStreamResponse<void>::type, smr<Source>>);
-
-	return {};
+	static_assert(std::is_same_v<SourceLoaderStreamResponse<void>::type, storage::AccessBlobReadonly>);
+	::hg::todo_panic();
 }
 
 /* Asset Specific Implementation */
@@ -79,7 +83,7 @@ SourceLoaderStreamResponse<void>::type SourceLoader::operator()(
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Reflect/Cast.hpp>
 
-fs::Url getLfsUrl(const non_owning_rptr<const engine::assets::Asset> asset_) {
+engine::storage::FileUrl getLfsUrl(const non_owning_rptr<const engine::assets::Asset> asset_) {
 
 	switch (asset_->getTypeId().data) {
 		case engine::assets::TextureAsset::typeId.data: {
@@ -91,16 +95,19 @@ fs::Url getLfsUrl(const non_owning_rptr<const engine::assets::Asset> asset_) {
 			const auto asset = registry->findAssetByGuid(baseImageGuid);
 
 			if (asset == nullptr) {
-				return fs::Url {};
+				return engine::storage::FileUrl {};
 			}
 
-			fs::Url lfsUrl {};
+			engine::storage::FileUrl lfsUrl {};
 			//const auto* const image = Cast<engine::assets::Image, engine::assets::Asset, false>(asset);
 			const auto image = Cast<engine::assets::Image>(asset.get());
 
 			for (const auto& sourceUrl : image->sources()) {
 				if (sourceUrl.scheme() == "file") {
-					lfsUrl = sourceUrl;
+					lfsUrl = engine::storage::FileUrl {
+						clone(engine::storage::FileScheme),
+						clone(sourceUrl.path())
+					};
 					break;
 				}
 			}
@@ -111,10 +118,13 @@ fs::Url getLfsUrl(const non_owning_rptr<const engine::assets::Asset> asset_) {
 
 			const auto* const geom = static_cast<const ptr<const engine::assets::StaticGeometry>>(asset_);
 
-			fs::Url lfsUrl {};
+			engine::storage::FileUrl lfsUrl {};
 			for (const auto& sourceUrl : geom->sources()) {
 				if (sourceUrl.scheme() == "file") {
-					lfsUrl = sourceUrl;
+					lfsUrl = engine::storage::FileUrl {
+						clone(engine::storage::FileScheme),
+						clone(sourceUrl.path())
+					};
 					break;
 				}
 			}
@@ -125,10 +135,13 @@ fs::Url getLfsUrl(const non_owning_rptr<const engine::assets::Asset> asset_) {
 
 			const auto* const font = static_cast<const ptr<const engine::assets::Font>>(asset_);
 
-			fs::Url lfsUrl {};
+			engine::storage::FileUrl lfsUrl {};
 			for (const auto& sourceUrl : font->sources()) {
 				if (sourceUrl.scheme() == "file") {
-					lfsUrl = sourceUrl;
+					lfsUrl = engine::storage::FileUrl {
+						clone(engine::storage::FileScheme),
+						clone(sourceUrl.path())
+					};
 					break;
 				}
 			}
@@ -136,7 +149,7 @@ fs::Url getLfsUrl(const non_owning_rptr<const engine::assets::Asset> asset_) {
 			return lfsUrl;
 		}
 		default: {
-			return fs::Url {};
+			return {};
 		}
 	}
 
