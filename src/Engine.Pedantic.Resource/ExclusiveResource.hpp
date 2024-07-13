@@ -127,7 +127,8 @@ namespace hg {
 
 	template <typename DeducedType_>
 	struct sanitize_resource_type {
-		using type = std::remove_cvref_t<DeducedType_>;
+		using base_type = std::remove_cvref_t<DeducedType_>;
+		using type = std::conditional_t<std::is_const_v<DeducedType_>, std::add_const_t<base_type>, base_type>;
 	};
 
 	template <
