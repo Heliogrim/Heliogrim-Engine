@@ -16,13 +16,13 @@ namespace hg::engine::core {
 		inline static constexpr event_type_id typeId { "WorldRemoveEvent"_typeId };
 
 	public:
-		WorldRemoveEvent(cref<sptr<::hg::engine::core::World>> world_);
+		explicit WorldRemoveEvent(cref<sptr<::hg::engine::core::World>> world_);
 
 		WorldRemoveEvent(cref<this_type> other_) noexcept = default;
 
 		WorldRemoveEvent(mref<this_type> other_) noexcept = default;
 
-		~WorldRemoveEvent() = default;
+		~WorldRemoveEvent() override = default;
 
 	private:
 		sptr<::hg::engine::core::World> _world;

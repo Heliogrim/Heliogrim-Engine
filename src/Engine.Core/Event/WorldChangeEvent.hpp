@@ -28,7 +28,7 @@ namespace hg::engine::core {
 
 		WorldChangeEvent(mref<this_type> other_) noexcept = default;
 
-		~WorldChangeEvent() = default;
+		~WorldChangeEvent() override = default;
 
 	private:
 		nmpt<Session> _session;

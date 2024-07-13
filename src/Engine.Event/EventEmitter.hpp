@@ -15,6 +15,9 @@ namespace hg {
 		 * The data type for the listener handle to remove listener from emitter
 		 */
 		using handle_type = u64;
+
+	public:
+		constexpr virtual ~EventEmitter() noexcept = default;
 	};
 
 	template <IsStatefulEvent EventType_>
@@ -64,6 +67,8 @@ namespace hg {
 			_lhc(0),
 			_listener(),
 			_mtx(mtx_) {}
+
+		~StatefulEventEmitterBase() override = default;
 
 	public:
 		/**
@@ -208,12 +213,14 @@ namespace hg {
 			_listener(),
 			_mtx() {}
 
-		StatelessEventEmitterBase(
+		explicit StatelessEventEmitterBase(
 			std::conditional_t<ExternalMtx_, ref<std::remove_cvref_t<MtxType_>>, std::remove_cvref_t<MtxType_>> mtx_
 		) :
 			_lhc(0),
 			_listener(),
 			_mtx(mtx_) {}
+
+		~StatelessEventEmitterBase() override = default;
 
 	public:
 		/**

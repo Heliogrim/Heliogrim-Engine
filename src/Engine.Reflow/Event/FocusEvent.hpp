@@ -20,7 +20,7 @@ namespace hg::engine::reflow {
     public:
         explicit FocusEvent(cref<sptr<Widget>> widget_) noexcept;
 
-        ~FocusEvent() noexcept = default;
+        ~FocusEvent() noexcept override = default;
 
     private:
     public:

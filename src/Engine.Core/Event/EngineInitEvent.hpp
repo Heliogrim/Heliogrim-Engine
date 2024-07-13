@@ -3,17 +3,17 @@
 #include <Engine.Event/Event.hpp>
 
 namespace hg::engine::core {
-    class EngineInitEvent final :
-        public StatelessEvent {
-    public:
-        using this_type = EngineInitEvent;
+	class EngineInitEvent final :
+		public StatelessEvent {
+	public:
+		using this_type = EngineInitEvent;
 
-    public:
-        inline static constexpr event_type_id typeId { "EngineInitEvent"_typeId };
+	public:
+		inline static constexpr event_type_id typeId { "EngineInitEvent"_typeId };
 
-    public:
-        EngineInitEvent() = default;
+	public:
+		constexpr EngineInitEvent() noexcept = default;
 
-        ~EngineInitEvent() = default;
-    };
+		constexpr ~EngineInitEvent() noexcept override = default;
+	};
 }
