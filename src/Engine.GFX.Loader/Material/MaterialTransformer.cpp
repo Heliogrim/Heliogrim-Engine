@@ -359,11 +359,11 @@ smr<engine::gfx::TextureResource> resolveTexture(
 	const auto asset = registry_->findAssetByGuid(guid_);
 
 	#ifdef _DEBUG
-    assert(asset != nullptr);
+	assert(asset != nullptr);
 
-    if (!asset->getMetaClass()->exact<engine::assets::TextureAsset>()) {
-        __debugbreak();
-    }
+	if (!asset->getMetaClass()->exact<engine::assets::TextureAsset>()) {
+		__debugbreak();
+	}
 	#endif
 
 	/**
@@ -376,8 +376,8 @@ smr<engine::gfx::TextureResource> resolveTexture(
 		std::move(textureAsset),
 		TextureLoadOptions {
 			textureAsset->getExtent().x >= 8192 ?
-				TextureLoadDataFlagBits::eLazyDataLoading :
-				TextureLoadDataFlagBits::eNone
+			TextureLoadDataFlagBits::eLazyDataLoading :
+			TextureLoadDataFlagBits::eNone
 		}
 	);
 

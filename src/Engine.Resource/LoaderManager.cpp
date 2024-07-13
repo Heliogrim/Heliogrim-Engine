@@ -7,8 +7,8 @@
 using namespace hg::engine::resource;
 using namespace hg;
 
-LoaderManager::LoaderManager() :
-	_sharedSourceLoader(make_sptr<loader::SourceLoader>()),
+LoaderManager::LoaderManager(cref<StorageModule> storageModule_) :
+	_sharedSourceLoader(make_sptr<loader::SourceLoader>(storageModule_)),
 	_loader() {}
 
 LoaderManager::~LoaderManager() = default;

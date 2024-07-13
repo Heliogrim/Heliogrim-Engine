@@ -18,7 +18,7 @@ namespace hg::engine::resource::loader {
 		using stream_response_type = SourceLoaderStreamResponse<void>;
 
 	public:
-		virtual ~SourceLoaderStage() noexcept = default;
+		constexpr virtual ~SourceLoaderStage() noexcept = default;
 
 	public:
 		[[nodiscard]] virtual response_type::type operator()(
