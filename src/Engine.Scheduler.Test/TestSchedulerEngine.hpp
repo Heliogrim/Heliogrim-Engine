@@ -89,6 +89,10 @@ namespace hg::test {
 			return _scheduler.get();
 		}
 
+		[[nodiscard]] nmpt<const engine::StorageModule> getStorage() const noexcept override {
+			return nullptr;
+		}
+
 	private:
 		mutable engine::Config _config;
 		mutable GlobalEventEmitter _emitter;

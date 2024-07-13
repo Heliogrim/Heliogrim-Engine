@@ -5,18 +5,19 @@
 #include <Engine.Core/Session.hpp>
 #include <Engine.Core/Event/WorldAddedEvent.hpp>
 #include <Engine.Core/Event/WorldRemoveEvent.hpp>
+#include <Engine.Core/Module/CoreDependencies.hpp>
 #include <Engine.Core/Module/SubModule.hpp>
+#include <Engine.Core.Schedule/CorePipeline.hpp>
 #include <Engine.GFX/Graphics.hpp>
 #include <Engine.Input/Input.hpp>
 #include <Engine.Network/Network.hpp>
 #include <Engine.PFX/Physics.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
-#include <Engine.Scheduler/CompScheduler.hpp>
 #include <Engine.Scheduler/Async.hpp>
+#include <Engine.Scheduler/CompScheduler.hpp>
 #include <Engine.Scheduler/Helper/Wait.hpp>
-#include <Engine.SFX/Audio.hpp>
-#include <Engine.Core.Schedule/CorePipeline.hpp>
 #include <Engine.Scheduler/Pipeline/CompositePipeline.hpp>
+#include <Engine.SFX/Audio.hpp>
 
 #ifdef WIN32
 #include <Engine.Platform/Windows/WinPlatform.hpp>
@@ -28,7 +29,8 @@ using namespace hg::engine::core;
 using namespace hg::engine;
 using namespace hg;
 
-GameEngine::GameEngine() = default;
+GameEngine::GameEngine() :
+	_storage(*this) {}
 
 GameEngine::~GameEngine() = default;
 
@@ -52,6 +54,12 @@ bool GameEngine::preInit() {
 	_resources = make_uptr<ResourceManager>();
 	_scheduler = make_uptr<CompScheduler>();
 
+	/* Register Root Modules */
+	_modules.addRootModule(*_platform);
+	_modules.addRootModule(*_resources);
+	_modules.addRootModule(*_scheduler);
+	_modules.addRootModule(_storage);
+
 	/**/
 
 	_assets = make_uptr<Assets>(*this);
@@ -60,6 +68,14 @@ bool GameEngine::preInit() {
 	_input = make_uptr<Input>(*this);
 	_network = make_uptr<Network>(*this);
 	_physics = make_uptr<Physics>(*this);
+
+	/* Register Core Modules */
+	_modules.addCoreModule(*_assets, AssetsDepKey);
+	_modules.addCoreModule(*_audio, AudioDepKey);
+	_modules.addCoreModule(*_graphics, GraphicsDepKey);
+	_modules.addCoreModule(*_input, InputDepKey);
+	_modules.addCoreModule(*_network, NetworkDepKey);
+	_modules.addCoreModule(*_physics, PhysicsDepKey);
 
 	return setEngineState(EngineState::ePreInitialized);
 }
@@ -383,6 +399,14 @@ bool GameEngine::exit() {
 		return false;
 	}
 
+	/* Unregister Core Modules */
+	_modules.removeCoreModule(*_physics);
+	_modules.removeCoreModule(*_network);
+	_modules.removeCoreModule(*_input);
+	_modules.removeCoreModule(*_graphics);
+	_modules.removeCoreModule(*_audio);
+	_modules.removeCoreModule(*_assets);
+
 	/**/
 	_physics.reset();
 	_network.reset();
@@ -390,6 +414,12 @@ bool GameEngine::exit() {
 	_graphics.reset();
 	_audio.reset();
 	_assets.reset();
+
+	/* Unregister Root Modules */
+	_modules.removeRootModule(_storage);
+	_modules.removeRootModule(*_scheduler);
+	_modules.removeRootModule(*_resources);
+	_modules.removeRootModule(*_platform);
 
 	/**/
 	_resources.reset();
@@ -433,6 +463,10 @@ nmpt<ResourceManager> GameEngine::getResources() const noexcept {
 
 nmpt<Scheduler> GameEngine::getScheduler() const noexcept {
 	return _scheduler.get();
+}
+
+nmpt<const StorageModule> GameEngine::getStorage() const noexcept {
+	return std::addressof(_storage);
 }
 
 ref<Config> GameEngine::getConfig() const noexcept {

@@ -6,6 +6,10 @@
 #include <Engine.Core/Module/Modules.hpp>
 #include <Engine.Event/GlobalEventEmitter.hpp>
 
+/**/
+#include <Engine.Storage/StorageModule.hpp>
+/**/
+
 namespace hg::editor {
 	class EditorEngine :
 		public InheritMeta<EditorEngine, ::hg::engine::Engine> {
@@ -46,6 +50,7 @@ namespace hg::editor {
 		uptr<engine::Platform> _platform;
 		uptr<engine::ResourceManager> _resources;
 		uptr<engine::Scheduler> _scheduler;
+		engine::StorageModule _storage;
 
 		engine::Config _config;
 		GlobalEventEmitter _emitter;
@@ -65,11 +70,14 @@ namespace hg::editor {
 
 		[[nodiscard]] nmpt<engine::Physics> getPhysics() const noexcept override;
 
+	public:
 		[[nodiscard]] nmpt<engine::Platform> getPlatform() const noexcept override;
 
 		[[nodiscard]] nmpt<engine::ResourceManager> getResources() const noexcept override;
 
 		[[nodiscard]] nmpt<engine::Scheduler> getScheduler() const noexcept override;
+
+		[[nodiscard]] nmpt<const engine::StorageModule> getStorage() const noexcept override;
 
 	public:
 		[[nodiscard]] ref<engine::Config> getConfig() const noexcept override;

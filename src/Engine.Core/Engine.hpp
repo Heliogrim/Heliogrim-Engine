@@ -19,6 +19,7 @@ namespace hg::engine {
 	class ResourceManager;
 	class Scheduler;
 	class Platform;
+	class StorageModule;
 
 	class Config;
 }
@@ -240,11 +241,16 @@ namespace hg::engine {
 
 		[[nodiscard]] virtual nmpt<Physics> getPhysics() const noexcept = 0;
 
+	public:
+		// TODO: Check whether root modules should be accessible by reference, as they should bind tightly with the engine object lifecycle
+
 		[[nodiscard]] virtual nmpt<Platform> getPlatform() const noexcept = 0;
 
 		[[nodiscard]] virtual nmpt<ResourceManager> getResources() const noexcept = 0;
 
 		[[nodiscard]] virtual nmpt<Scheduler> getScheduler() const noexcept = 0;
+
+		[[nodiscard]] virtual nmpt<const StorageModule> getStorage() const noexcept = 0;
 
 	public:
 		[[nodiscard]] virtual ref<Config> getConfig() const noexcept = 0;

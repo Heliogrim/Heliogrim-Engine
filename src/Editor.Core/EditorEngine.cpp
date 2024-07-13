@@ -2,12 +2,14 @@
 
 #include <Editor.Main/Boot/SubModuleInit.hpp>
 #include <Engine.Assets/Assets.hpp>
-#include <Engine.Core/Event/WorldAddedEvent.hpp>
-#include <Engine.Core/Event/WorldRemoveEvent.hpp>
-#include <Engine.Core/Module/SubModule.hpp>
+#include <Engine.Config/Provider/SystemProvider.hpp>
 #include <Engine.Core.Schedule/CorePipeline.hpp>
 #include <Engine.Core/EngineState.hpp>
 #include <Engine.Core/Session.hpp>
+#include <Engine.Core/Event/WorldAddedEvent.hpp>
+#include <Engine.Core/Event/WorldRemoveEvent.hpp>
+#include <Engine.Core/Module/CoreDependencies.hpp>
+#include <Engine.Core/Module/SubModule.hpp>
 #include <Engine.GFX/Graphics.hpp>
 #include <Engine.Input/Input.hpp>
 #include <Engine.Logging/Logger.hpp>
@@ -34,7 +36,9 @@ using namespace hg::engine::core;
 using namespace hg::engine;
 using namespace hg;
 
-EditorEngine::EditorEngine() = default;
+EditorEngine::EditorEngine() :
+	_storage(*this),
+	_config(make_uptr<engine::cfg::SystemProvider>()) {}
 
 EditorEngine::~EditorEngine() = default;
 
@@ -62,6 +66,12 @@ bool EditorEngine::preInit() {
 	_resources = make_uptr<ResourceManager>();
 	_scheduler = make_uptr<CompScheduler>();
 
+	/* Register Root Modules */
+	_modules.addRootModule(*_platform);
+	_modules.addRootModule(*_resources);
+	_modules.addRootModule(*_scheduler);
+	_modules.addRootModule(_storage);
+
 	/**/
 
 	_assets = make_uptr<Assets>(*this);
@@ -70,6 +80,14 @@ bool EditorEngine::preInit() {
 	_input = make_uptr<Input>(*this);
 	_network = make_uptr<Network>(*this);
 	_physics = make_uptr<Physics>(*this);
+
+	/* Register Core Modules */
+	_modules.addCoreModule(*_assets, AssetsDepKey);
+	_modules.addCoreModule(*_audio, AudioDepKey);
+	_modules.addCoreModule(*_graphics, GraphicsDepKey);
+	_modules.addCoreModule(*_input, InputDepKey);
+	_modules.addCoreModule(*_network, NetworkDepKey);
+	_modules.addCoreModule(*_physics, PhysicsDepKey);
 
 	/**/
 
@@ -94,7 +112,7 @@ bool EditorEngine::init() {
 		return false;
 	}
 
-	/* Base module are setup via direct call without fiber context guarantee (which is unlikely) */
+	/* Note: Root modules are setup via direct call without fiber context guarantee. */
 	_platform->setup();
 	_scheduler->setup(Scheduler::auto_worker_count);
 	_resources->setup();
@@ -347,8 +365,10 @@ bool EditorEngine::shutdown() {
 		[this, &subModuleFlag] {
 
 			const auto& modules = _modules.getSubModules();
-			for (auto iter = modules.rbegin(); iter != modules.rend(); ++iter) {
-				(*iter)->destroy();
+			while (not modules.empty()) {
+				auto& module = modules.back();
+				module->destroy();
+				_modules.removeSubModule(module.get());
 			}
 
 			subModuleFlag.test_and_set(std::memory_order_relaxed);
@@ -425,6 +445,14 @@ bool EditorEngine::exit() {
 		return false;
 	}
 
+	/* Unregister Core Modules */
+	_modules.removeCoreModule(*_physics);
+	_modules.removeCoreModule(*_network);
+	_modules.removeCoreModule(*_input);
+	_modules.removeCoreModule(*_graphics);
+	_modules.removeCoreModule(*_audio);
+	_modules.removeCoreModule(*_assets);
+
 	/**/
 	_physics.reset();
 	_network.reset();
@@ -432,6 +460,12 @@ bool EditorEngine::exit() {
 	_graphics.reset();
 	_audio.reset();
 	_assets.reset();
+
+	/* Unregister Root Modules */
+	_modules.removeRootModule(_storage);
+	_modules.removeRootModule(*_scheduler);
+	_modules.removeRootModule(*_resources);
+	_modules.removeRootModule(*_platform);
 
 	/**/
 	_platform.reset();
@@ -475,6 +509,10 @@ nmpt<engine::ResourceManager> EditorEngine::getResources() const noexcept {
 
 nmpt<engine::Scheduler> EditorEngine::getScheduler() const noexcept {
 	return _scheduler.get();
+}
+
+nmpt<const engine::StorageModule> EditorEngine::getStorage() const noexcept {
+	return std::addressof(_storage);
 }
 
 ref<engine::Config> EditorEngine::getConfig() const noexcept {
