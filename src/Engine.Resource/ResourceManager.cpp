@@ -41,10 +41,6 @@ void ResourceManager::setup() {
 	}
 	#endif
 
-
-    if (!_locator) {
-        _locator = make_uptr<Locator>();
-    }
 	if (!_loader) {
 		auto engine = Engine::getEngine();
 		_loader = make_uptr<LoaderManager>(*engine->getStorage());
@@ -52,7 +48,6 @@ void ResourceManager::setup() {
 }
 
 void ResourceManager::destroy() {
-    _locator.reset();
 	_importer.reset();
 	_indexer.reset();
 	_loader.reset();
