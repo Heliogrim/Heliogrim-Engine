@@ -9,19 +9,13 @@ using namespace hg::engine;
 using namespace hg;
 
 StorageModule::StorageModule(ref<Engine> engine_) :
-	CoreModule(engine_),
 	_registry(make_uptr<storage::StorageRegistry>()),
 	_io(make_uptr<StorageIo>(engine_)) {}
 
 StorageModule::~StorageModule() = default;
 
-void StorageModule::setup() {}
-
-void StorageModule::start() {}
-
-void StorageModule::stop() {}
-
-void StorageModule::destroy() {}
+void StorageModule::setup(cref<Config> config_) {
+}
 
 nmpt<storage::IStorageRegistry> StorageModule::getRegistry() const noexcept {
 	return _registry.get();

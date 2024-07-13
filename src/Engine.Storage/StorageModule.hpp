@@ -1,8 +1,13 @@
 #pragma once
 
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Memory/MemoryPointer.hpp>
+#include <Engine.Core/Module/RootModule.hpp>
 
-#include <Engine.Core/Module/CoreModule.hpp>
+namespace hg::engine {
+	class Config;
+	class Engine;
+}
 
 namespace hg::engine::storage {
 	class IStorageRegistry;
@@ -11,7 +16,7 @@ namespace hg::engine::storage {
 
 namespace hg::engine {
 	class StorageModule final :
-		public core::CoreModule {
+		public core::RootModule {
 	public:
 		using this_type = StorageModule;
 
@@ -25,16 +30,10 @@ namespace hg::engine {
 
 		StorageModule(mref<this_type>) = delete;
 
-		~StorageModule() override;
+		~StorageModule();
 
 	public:
-		void setup() override;
-
-		void start() override;
-
-		void stop() override;
-
-		void destroy() override;
+		void setup(_In_ cref<Config> config_);
 
 	private:
 		uptr<IStorageRegistry> _registry;
