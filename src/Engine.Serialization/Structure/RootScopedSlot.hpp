@@ -4,15 +4,15 @@
 #include "RecordScopedSlot.hpp"
 
 namespace hg::engine::serialization {
-    class RootScopedSlot final :
-        public RecordScopedSlot {
-    public:
-        friend class StructuredArchive;
+	class RootScopedSlot final :
+		public RecordScopedSlot {
+	public:
+		friend class StructuredArchive;
 
-    public:
-        using this_type = RootScopedSlot;
+	public:
+		using this_type = RootScopedSlot;
 
-    public:
-        RootScopedSlot(const non_owning_rptr<Archive> archive_, const ScopedSlotStateFlags flags_);
-    };
+	public:
+		RootScopedSlot(_Inout_ ref<resource::Archive> archive_, const ScopedSlotStateFlags flags_);
+	};
 }

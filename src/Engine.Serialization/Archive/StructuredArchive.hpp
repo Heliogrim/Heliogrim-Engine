@@ -5,28 +5,28 @@
 #include "../Structure/RootScopedSlot.hpp"
 
 namespace hg::engine::serialization {
-    class StructuredArchive {
-    public:
-        using this_type = StructuredArchive;
+	class StructuredArchive {
+	public:
+		using this_type = StructuredArchive;
 
-    public:
-        StructuredArchive(const ptr<Archive> archive_);
+	public:
+		StructuredArchive(_Inout_ ref<resource::Archive> archive_);
 
-        StructuredArchive(cref<this_type>) = delete;
+		StructuredArchive(cref<this_type>) = delete;
 
-        StructuredArchive(mref<this_type>) noexcept = delete;
+		StructuredArchive(mref<this_type>) noexcept = delete;
 
-        ~StructuredArchive() = default;
+		~StructuredArchive() = default;
 
-    private:
-        const ptr<Archive> _archive;
+	private:
+		nmpt<resource::Archive> _archive;
 
-    public:
-        [[nodiscard]] const ptr<Archive> getArchive() const noexcept;
+	public:
+		[[nodiscard]] nmpt<resource::Archive> getArchive() const noexcept;
 
-    public:
-        [[nodiscard]] RootScopedSlot getRootSlot() const;
+	public:
+		[[nodiscard]] RootScopedSlot getRootSlot() const;
 
-        [[nodiscard]] RootScopedSlot insertRootSlot();
-    };
+		[[nodiscard]] RootScopedSlot insertRootSlot();
+	};
 }
