@@ -1,7 +1,10 @@
 #include "EditorEngine.hpp"
 
+#include <Editor.Main/Boot/ConfigInit.hpp>
 #include <Editor.Main/Boot/SubModuleInit.hpp>
 #include <Engine.Assets/Assets.hpp>
+#include <Engine.Config/Provider/EditorProvider.hpp>
+#include <Engine.Config/Provider/ProjectProvider.hpp>
 #include <Engine.Config/Provider/SystemProvider.hpp>
 #include <Engine.Core.Schedule/CorePipeline.hpp>
 #include <Engine.Core/EngineState.hpp>
@@ -56,6 +59,17 @@ bool EditorEngine::preInit() {
 		return false;
 	}
 	#endif
+
+	/**/
+
+	// Note: Changing order will effect query lookup priority, which may change value reports and impact performance.
+	auto& editorConfigProvider = _config.registerProvider(make_uptr<cfg::EditorProvider>());
+	auto& projectConfigProvider = _config.registerProvider(make_uptr<engine::cfg::ProjectProvider>());
+
+	boot::initEditorConfig(_config, editorConfigProvider);
+	boot::initProjectConfig(_config, projectConfigProvider);
+
+	/**/
 
 	#ifdef WIN32
 	_platform = make_uptr<WinPlatform>();

@@ -23,6 +23,7 @@ namespace hg::engine::cfg {
 
 	enum class RuntimeConfigProperty {
 		/**/
-		eLocalBasePath
+		eLocalBasePath,
+		eLocalCachePath
 	};
 }
