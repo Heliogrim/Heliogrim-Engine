@@ -322,7 +322,7 @@ smr<AccelerationEffect> build_test_effect() {
 
 	/**/
 
-	Guid guid { "__Test__Proxy"_typeId.data, 0, 0, "VisualizeEffect"_typeId.data };
+	Guid guid { static_cast<u32>("__Test__Proxy"_typeId.data), 0, 0, "VisualizeEffect"_typeId.data };
 
 	return make_smr<AccelerationEffect>(
 		std::move(guid),

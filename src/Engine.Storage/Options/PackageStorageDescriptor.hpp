@@ -44,7 +44,7 @@ namespace hg::engine::storage {
 		}
 
 		[[nodiscard]] constexpr bool valid() const noexcept {
-			return (_packageUrl.guid() != Guid {}) & (_packageBacking != nullptr);
+			return (_packageUrl.guid() != Guid {}) && (_packageBacking != nullptr);
 		}
 	};
 }

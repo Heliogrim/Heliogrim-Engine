@@ -7,6 +7,7 @@
 #include <type_traits>
 #include <utility>
 #include <Engine.Asserts/Asserts.hpp>
+#include <Engine.Common/Meta/Type.hpp>
 
 #include "../Cast.hpp"
 #include "../Sal.hpp"
@@ -165,7 +166,7 @@ namespace hg {
 		 * @returns The counts of references.
 		 */
 		[[nodiscard]] std::uint16_t refs() const noexcept {
-			return _packed;
+			return static_cast<std::uint16_t>(_packed);
 		}
 
 		/**
@@ -306,9 +307,12 @@ namespace hg {
 		using smr_type = SharedMemoryReference<vty>;
 
 	public:
+		template <typename Type_ = vty> requires std::is_same_v<Type_, vty>
 		constexpr SharedMemoryReferenceCtrlBlock() noexcept :
 			VirtualBase(),
-			_packed(0) {}
+			_packed(0) {
+			static_assert(CompleteType<Type_>, "Prevent handling of incomplete types.");
+		}
 
 		template <typename Type_ = vty> requires std::is_same_v<Type_, vty>
 		SharedMemoryReferenceCtrlBlock(_In_ mref<ptr<Type_>> payload_) :
@@ -361,7 +365,9 @@ namespace hg {
 			if constexpr (std::is_void_v<std::decay_t<ivty>>) {
 				std::unreachable();
 			} else {
+				START_SUPPRESS_WARNINGS
 				delete static_cast<ptr<ivty>>(obj_);
+				STOP_SUPPRESS_WARNINGS
 			}
 		}
 

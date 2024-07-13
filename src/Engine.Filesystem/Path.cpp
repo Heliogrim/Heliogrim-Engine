@@ -20,20 +20,6 @@ Path::Path(cref<hg::string> str_) :
 Path::Path(string_view view_) :
 	_value(view_) {}
 
-ref<Path::this_type> Path::operator=(mref<this_type> other_) noexcept {
-	if (std::addressof(other_) != this) {
-		_value = std::move(other_._value);
-	}
-	return *this;
-}
-
-ref<Path::this_type> Path::operator=(cref<this_type> other_) {
-	if (std::addressof(other_) != this) {
-		_value = other_._value;
-	}
-	return *this;
-}
-
 bool Path::hasName() const noexcept {
 	// TODO:
 	return not empty();

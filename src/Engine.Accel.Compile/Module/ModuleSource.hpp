@@ -5,8 +5,10 @@
 #include "ModuleTargetStage.hpp"
 
 namespace hg::engine::accel {
-    struct ModuleSource {
-        ModuleTargetStage targetStage;
-        lang::Language code;
-    };
+	struct ModuleSource {
+		constexpr virtual ~ModuleSource() noexcept = default;
+
+		ModuleTargetStage targetStage;
+		lang::Language code;
+	};
 }
