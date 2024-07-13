@@ -162,9 +162,11 @@ void Text::render(const ptr<ReflowCommandBuffer> cmd_) {
 		u32 wraps { 0uL };
 		u32 j { 0uL };
 
-		for (u32 i { 0uL }; i < attr.text->length(); ++i) {
+		// Warning: We need to use references or string_views instead of string copies
+		auto text = attr.text.getValue();
+		for (u32 i { 0uL }; i < text.length(); ++i) {
 
-			const auto& letter { attr.text.getValue()[i] };
+			const auto& letter = text[i];
 			const auto* glyph { font->glyph(static_cast<u32>(letter), fss) };
 
 			if (glyph == nullptr) {
@@ -180,7 +182,7 @@ void Text::render(const ptr<ReflowCommandBuffer> cmd_) {
 
 				cmd_->drawText(
 					innerOffset,
-					string_view { attr.text->begin() + j, attr.text->begin() + i },
+					string_view { text.begin() + j, text.begin() + i },
 					*font,
 					attr.fontSize.getValue(),
 					attr.color.getValue()
@@ -198,7 +200,7 @@ void Text::render(const ptr<ReflowCommandBuffer> cmd_) {
 		if (fccw <= lineBound && wraps < attr.textEllipse.getValue()) {
 			cmd_->drawText(
 				innerOffset,
-				string_view { attr.text->begin() + j, attr.text->end() },
+				string_view { text.begin() + j, text.end() },
 				*font,
 				attr.fontSize.getValue(),
 				attr.color.getValue()

@@ -104,9 +104,11 @@ const non_owning_rptr<const Stage> CompositePipeline::registerStage(mref<uptr<Pi
 
 	/**/
 
+	::hg::assertrt(0LL <= slotIdx && slotIdx <= 127LL);
+
 	const auto result = _stages.insert_or_assign(
 		identifier.value,
-		make_uptr<Stage>(clone(identifier.value), slotIdx)
+		make_uptr<Stage>(clone(identifier.value), static_cast<s8>(slotIdx))
 	);
 
 	return result.first->second.get();

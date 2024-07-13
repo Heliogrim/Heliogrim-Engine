@@ -21,7 +21,7 @@ EditorRenderer::EditorRenderer(
 	mref<nmpt<engine::gfx::memory::GlobalPooledAllocator>> globalGfxAllocator_
 ) noexcept :
 	Renderer(
-		Guid { "__Static__Proxy"_typeId.data, 0u, 0u, "Editor-Renderer"_typeId.data },
+		Guid { static_cast<u32>("__Static__Proxy"_typeId.data), 0u, 0u, "Editor-Renderer"_typeId.data },
 		"Editor-Renderer",
 		makeCompileGraph(),
 		nullptr,
@@ -56,7 +56,7 @@ uptr<engine::render::graph::CompileGraph> EditorRenderer::makeCompileGraph() noe
 	beginPass->setSubPassBuilder(
 		[](cref<graph::CompilePassContext> ctx_) -> uptr<graph::SubPassNodeBase> {
 			auto node = ctx_.getGraphNodeAllocator()
-			                ->allocate<graph::SubPassNode<DummyProvider>>();
+				->allocate<graph::SubPassNode<DummyProvider>>();
 			return node;
 		}
 	);
@@ -64,7 +64,7 @@ uptr<engine::render::graph::CompileGraph> EditorRenderer::makeCompileGraph() noe
 	uiPass->setSubPassBuilder(
 		[](cref<graph::CompilePassContext> ctx_) -> uptr<graph::SubPassNodeBase> {
 			auto node = ctx_.getGraphNodeAllocator()
-			                ->allocate<graph::SubPassNode<engine::reflow::render::ReflowPass>>();
+				->allocate<graph::SubPassNode<engine::reflow::render::ReflowPass>>();
 			return node;
 		}
 	);
@@ -72,7 +72,7 @@ uptr<engine::render::graph::CompileGraph> EditorRenderer::makeCompileGraph() noe
 	endPass->setSubPassBuilder(
 		[](cref<graph::CompilePassContext> ctx_) -> uptr<graph::SubPassNodeBase> {
 			auto node = ctx_.getGraphNodeAllocator()
-			                ->allocate<graph::SubPassNode<TmpEndPass>>(vk::ImageLayout::ePresentSrcKHR);
+				->allocate<graph::SubPassNode<TmpEndPass>>(vk::ImageLayout::ePresentSrcKHR);
 			return node;
 		}
 	);

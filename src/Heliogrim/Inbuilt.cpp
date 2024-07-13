@@ -126,7 +126,7 @@ void hg::sleep(const u64 milliseconds_) {
 
 	#else
 
-    ::hg::todo_panic();
+	::hg::todo_panic();
 
 	#endif
 }

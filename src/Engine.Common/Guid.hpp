@@ -32,13 +32,7 @@ namespace hg {
 			c1(other_.c1),
 			post(other_.post) {}
 
-		template <
-			std::integral PreType_,
-			std::integral C0Type_,
-			std::integral C1Type_,
-			std::integral PostType_
-		>
-		constexpr Guid(const PreType_& pre_, const C0Type_& c0_, const C1Type_& c1_, const PostType_& post_) :
+		constexpr Guid(const u32 pre_, const u16 c0_, const u16 c1_, const u64 post_) noexcept :
 			pre(pre_),
 			c0(c0_),
 			c1(c1_),

@@ -117,7 +117,7 @@ void self::yield() {
 	::hg::assertd(entry != nullptr);
 	static_cast<ptr<Fiber>>(entry)->yield();
 	#else
-    static_cast<ptr<Fiber>>(::GetFiberData())->yield();
+	static_cast<ptr<Fiber>>(::GetFiberData())->yield();
 	#endif
 
 	#else
@@ -141,7 +141,7 @@ void self::await(mref<FiberAwaitable> awaitable_) {
 	static_cast<ptr<Fiber>>(entry)->await(std::forward<FiberAwaitable>(awaitable_));
 
 	#else
-    static_cast<ptr<Fiber>>(::GetFiberData())->await(std::forward<FiberAwaitable>(awaitable_));
+	static_cast<ptr<Fiber>>(::GetFiberData())->await(std::forward<FiberAwaitable>(awaitable_));
 
 	#endif
 

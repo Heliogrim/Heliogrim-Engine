@@ -16,46 +16,46 @@ using namespace hg;
 VkModuleCompiler::~VkModuleCompiler() noexcept = default;
 
 uptr<CompiledModule> VkModuleCompiler::compile(
-    cref<smr<AccelerationPipeline>> targetPass_,
-    cref<smr<const EffectSpecification>> specifications_,
-    mref<uptr<ModuleSource>> source_
+	cref<smr<AccelerationPipeline>> targetPass_,
+	cref<smr<const EffectSpecification>> specifications_,
+	mref<uptr<ModuleSource>> source_
 ) const {
 
-    auto* const source = static_cast<const ptr<VkModuleSource>>(source_.get());
+	auto* const source = static_cast<const ptr<VkModuleSource>>(source_.get());
 
-    /* Assert module source and sanitize */
+	/* Assert module source and sanitize */
 
-    if (source->targetStage <= ModuleTargetStage::eUndefined || source->targetStage > ModuleTargetStage::eMesh) {
-        return nullptr;
-    }
+	if (source->targetStage <= ModuleTargetStage::eUndefined || source->targetStage > ModuleTargetStage::eMesh) {
+		return nullptr;
+	}
 
-    /* Fetch source code and transpile into spirv */
+	/* Fetch source code and transpile into spirv */
 
-    assert(not source->code.text.empty());
-    auto byteCode = _spirvCompiler.compile(*source, source->code.text);
+	::hg::assertd(not source->code.text.empty());
+	auto byteCode = _spirvCompiler.compile(*source, source->code.text);
 
-    /**/
+	/**/
 
-    if (byteCode.empty()) {
-        IM_CORE_ERROR("Failed to compile spirv module from source code.");
-        __debugbreak();
-        return {};
-    }
+	if (byteCode.empty()) {
+		IM_CORE_ERROR("Failed to compile spirv module from source code.");
+		breakpoint();
+		return {};
+	}
 
-    /* Compile spirv byte code to vk shader module */
+	/* Compile spirv byte code to vk shader module */
 
-    sptr<gfx::Device> device = Engine::getEngine()->getGraphics()->getCurrentDevice();
+	sptr<gfx::Device> device = Engine::getEngine()->getGraphics()->getCurrentDevice();
 
-    vk::ShaderModuleCreateInfo smci {
-        vk::ShaderModuleCreateFlags {}, byteCode.size() * sizeof(SpirvWord), reinterpret_cast<u32*>(byteCode.data()),
-        nullptr
-    };
-    const auto vkModule = device->vkDevice().createShaderModule(smci);
+	vk::ShaderModuleCreateInfo smci {
+		vk::ShaderModuleCreateFlags {}, byteCode.size() * sizeof(SpirvWord), reinterpret_cast<u32*>(byteCode.data()),
+		nullptr
+	};
+	const auto vkModule = device->vkDevice().createShaderModule(smci);
 
-    /**/
+	/**/
 
-    return make_uptr<VkCompiledModule>(
-        reinterpret_cast<_::VkShaderModule>(vkModule.operator VkShaderModule()),
-        std::move(source->bindings)
-    );
+	return make_uptr<VkCompiledModule>(
+		reinterpret_cast<_::VkShaderModule>(vkModule.operator VkShaderModule()),
+		std::move(source->bindings)
+	);
 }

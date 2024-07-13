@@ -37,7 +37,7 @@ namespace hg::engine::storage {
 		>;
 
 	public:
-		using underlying_type::underlying_type;
+		using underlying_type::Variant;
 
 	public:
 		[[nodiscard]] constexpr UrlScheme targetScheme() const {
