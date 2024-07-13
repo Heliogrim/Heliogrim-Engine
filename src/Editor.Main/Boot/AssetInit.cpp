@@ -8,7 +8,6 @@
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Scheduler/Async.hpp>
-#include <Engine.Serialization/Archive/BufferArchive.hpp>
 #include <Heliogrim/Heliogrim.hpp>
 
 #include <filesystem>
@@ -62,13 +61,22 @@
 #include "Engine.Assets/Types/Image.hpp"
 #include "Engine.Assets/Types/Geometry/StaticGeometry.hpp"
 #include "Engine.Assets/Types/Texture/TextureAsset.hpp"
-#include "Engine.Resource/Source/FileSource.hpp"
-#include "Engine.Resource.Package/PackageFactory.hpp"
-#include "Engine.Resource.Package/PackageManager.hpp"
+#include "Engine.Resource.Archive/BufferArchive.hpp"
+#include "Engine.Resource.Archive/StorageReadonlyArchive.hpp"
 #include "Engine.Resource/ResourceManager.hpp"
+#include "Engine.Resource.Package/Attribute/PackageGuid.hpp"
+#include "Engine.Resource.Package/External/PackageIo.hpp"
 #include "Engine.Resource.Package/Linker/PackageLinker.hpp"
 #include "Engine.Serialization/Layout/DataLayoutBase.hpp"
 #include "Engine.Serialization.Layouts/LayoutManager.hpp"
+#include "Engine.Storage/IStorageRegistry.hpp"
+#include "Engine.Storage/StorageModule.hpp"
+#include "Engine.Storage/IStorage.hpp"
+#include "Engine.Storage/Storage/PackageStorage.hpp"
+#include "Engine.Storage/Storage/LocalFileStorage.hpp"
+#include "Engine.Storage/Options/FileStorageDescriptor.hpp"
+#include "Engine.Storage/Options/PackageStorageDescriptor.hpp"
+#include "Engine.Storage/Options/StorageDescriptor.hpp"
 
 using namespace hg::editor::boot;
 using namespace hg::engine;
@@ -81,17 +89,17 @@ namespace hg::engine::serialization {
 }
 
 /**/
-void packageDiscoverAssets();
+static void packageDiscoverAssets(mref<Arci<storage::system::PackageStorage>> packStore_);
 
-bool isArchivedAsset(mref<serialization::RecordScopedSlot> record_);
+static bool isArchivedAsset(mref<serialization::RecordScopedSlot> record_);
 
-bool tryLoadArchivedAsset(mref<serialization::RecordScopedSlot> record_);
+static bool tryLoadArchivedAsset(mref<serialization::RecordScopedSlot> record_);
 
 /**/
 
 #pragma region File System Loading
 
-void dispatchLoad(cref<path> path_) {
+static void dispatchLoad(cref<path> path_) {
 	scheduler::exec(
 		[file = path_]() {
 			// TODO:
@@ -101,8 +109,8 @@ void dispatchLoad(cref<path> path_) {
 			std::ifstream ifs { file, std::ios::in | std::ios::binary };
 			ifs.seekg(0, std::ios::beg);
 
-			serialization::BufferArchive archive {};
-			archive.resize(minLength, 0u);
+			resource::BufferArchive archive {};
+			archive.resize(minLength, {});
 
 			auto start { ifs.tellg() };
 			ifs.read(reinterpret_cast<char*>(archive.data()), archive.size());
@@ -155,7 +163,7 @@ void dispatchLoad(cref<path> path_) {
 			start = ifs.tellg();
 
 			archive.seek(0);
-			archive.resize(end - start, 0u);
+			archive.resize(end - start, {});
 
 			ifs.read(reinterpret_cast<ptr<char>>(archive.data()), archive.size());
 
@@ -186,38 +194,64 @@ void dispatchLoad(cref<path> path_) {
 	);
 }
 
-void tryDispatchLoad(cref<path> path_) {
+static Optional<concurrent::future<void>> tryDispatchLoad(cref<path> path_) {
 
 	const auto extension = path_.extension().string();
 
 	if (extension.empty()) {
-		return;
+		return tl::nullopt;
 	}
 
-	auto* const pm = Engine::getEngine()->getResources()->packages(traits::nothrow);
-	hg::fs::File file { path_ };
+	const auto reg = Engine::getEngine()->getStorage()->getRegistry();
+	auto io = Engine::getEngine()->getStorage()->getIo();
+	auto packIo = storage::PackageIo { *io };
 
-	if (pm->isPackageFile(file)) {
+	if (extension.ends_with(".imp") || extension.ends_with(".impackage")) {
 
-		// TODO: Load Package from file
-		auto source = make_uptr<resource::FileSource>(std::move(file));
-		auto package = resource::PackageFactory::createFromSource(std::move(source));
+		// TODO: Rework
+		auto storeFileUrl = storage::FileUrl { clone(storage::FileScheme), engine::fs::Path { path_ } };
+		auto storeFile = reg->insert(storage::FileStorageDescriptor { clone(storeFileUrl) });
 
-		/**/
+		// Validate
+		if (not packIo.isPackageFile(storeFileUrl, storeFile)) {
+			IM_CORE_WARNF(
+				"Encountered file `{}` which is not identifiable as package upon inspection.",
+				path_.string()
+			);
+			return tl::nullopt;
+		}
 
-		auto managed = make_smr<resource::UniqueResource<resource::PackageResource::value_type>>(package.release());
+		// Question: How to communicate that we want to load the package from backing storage internally?
+		auto accessFile = io->accessReadonlyBlob(storeFile.into<storage::system::LocalFileStorage>());
+		auto package = packIo.create_package_from_storage(accessFile);
 
-		/**/
+		auto storePackUrl = storage::PackageUrl { resource::PackageGuid::ntoh(package->header().guid) };
+		auto storePack = reg->insert(
+			storage::PackageStorageDescriptor { std::move(storePackUrl), std::move(storeFile) }
+		).into<storage::system::PackageStorage>();
 
-		pm->addPackage(std::move(managed));
+		/* Discover data within package */
+		return tl::make_optional(
+			scheduler::async<void>(
+				[storePack = std::move(storePack)]()mutable {
+					packageDiscoverAssets(std::move(storePack));
+				}
+			)
+		);
 
 	} else if (extension.ends_with(".ima") || extension.ends_with(".imasset")) {
 
 		dispatchLoad(path_);
 	}
+
+	return tl::nullopt;
 }
 
-void indexLoadable(cref<path> path_, ref<Vector<path>> backlog_) {
+static void indexLoadable(
+	_In_ cref<path> path_,
+	_Inout_ ref<Vector<path>> backlog_,
+	_Inout_ ref<Vector<concurrent::future<void>>> awaits_
+) {
 
 	const auto directory {
 		std::filesystem::directory_iterator { path_, std::filesystem::directory_options::follow_directory_symlink }
@@ -231,7 +265,11 @@ void indexLoadable(cref<path> path_, ref<Vector<path>> backlog_) {
 		}
 
 		if (entry.is_regular_file()) {
-			tryDispatchLoad(entry.path());
+			auto mayAsync = tryDispatchLoad(entry.path());
+			if (mayAsync.has_value()) {
+				awaits_.emplace_back(std::move(mayAsync.value()));
+				mayAsync.reset();
+			}
 			//continue;
 		}
 	}
@@ -436,20 +474,31 @@ void editor::boot::initAssets() {
 	}
 
 	Vector<path> backlog {};
+	Vector<concurrent::future<void>> awaits {};
 
 	backlog.push_back(root);
 	while (not backlog.empty()) {
 
+		auto rit = std::ranges::remove_if(
+			awaits,
+			[](auto& awaiting_) {
+				return awaiting_.ready();
+			}
+		);
+		awaits.erase(rit.begin(), rit.end());
+
+		/**/
+
 		const auto cur { backlog.back() };
 		backlog.pop_back();
 
-		indexLoadable(cur, backlog);
+		indexLoadable(cur, backlog, awaits);
 	}
 
-	/**/
-
-	packageDiscoverAssets();
-
+	for (auto&& awaiting_ : awaits) {
+		await(awaiting_.signal().get());
+	}
+	awaits.clear();
 }
 
 /**/
@@ -459,81 +508,79 @@ void editor::boot::initAssets() {
 #include <Engine.Resource.Package/Linker/LinkedArchiveIterator.hpp>
 #include <Engine.Resource.Package/Linker/PackageLinker.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
-#include <Engine.Serialization/Archive/SourceReadonlyArchive.hpp>
 #include <Engine.Serialization/Archive/StructuredArchive.hpp>
 #include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>
 #include <Engine.Serialization/Structure/RootScopedSlot.hpp>
 #include <Engine.Serialization/Structure/SeqScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 
-void packageDiscoverAssets() {
+void packageDiscoverAssets(mref<Arci<storage::system::PackageStorage>> packStore_) {
 
-	const auto* const pm = Engine::getEngine()->getResources()->packages(traits::nothrow);
-	const auto view = pm->packages();
+	auto storeIo = Engine::getEngine()->getStorage()->getIo();
+	auto packIo = storage::PackageIo { *storeIo };
 
-	for (const auto& resource : view) {
+	// TODO: We need some iterator over the storages by a certain filter ( package storages in this case )
+	// Question: Do we need a global lock to iterate the stored storage objects?
 
-		const auto guard = resource->acquire(resource::ResourceUsageFlag::eRead);
-		const auto package = guard.imm();
-		const auto* const linker = package->getLinker();
+	auto packAccess = storeIo->accessReadonly(std::move(packStore_));
+	auto linker = packIo.create_linker_from_package(packAccess);
 
-		/* Check for stored archives */
+	/* Check for stored archives */
 
-		if (linker->getArchiveCount() <= 0) {
+	if (linker->getArchiveCount() <= 0) {
+		return;
+	}
+
+	/* Index / Load data from archives */
+
+	const auto end = linker->cend();
+	for (auto iter = linker->cbegin(); iter != end; ++iter) {
+
+		if (iter.header().type != resource::package::PackageArchiveType::eSerializedStructure) {
 			continue;
 		}
 
-		/* Index / Load data from archives */
+		auto archive = iter.archive();
+		auto structured = serialization::StructuredArchive { *archive };
 
-		const auto end = linker->cend();
-		for (auto iter = linker->cbegin(); iter != end; ++iter) {
+		/* Check for root stored assets */
 
-			if (iter.header().type != resource::ArchiveHeaderType::eSerializedStructure) {
+		if (isArchivedAsset(structured.getRootSlot())) {
+
+			archive->seek(0LL);
+			tryLoadArchivedAsset(structured.getRootSlot());
+
+			continue;
+		}
+
+		/* Check for a sequence of stored assets */
+
+		{
+			archive->seek(0);
+			auto root = structured.getRootSlot();
+
+			root.slot()->readHeader();
+			if (root.slot()->getSlotHeader().type != serialization::StructureSlotType::eSeq) {
 				continue;
 			}
 
-			const auto linkedArchive = iter.archive();
-			const serialization::StructuredArchive archive { linkedArchive.get() };
+			/* Check whether first element is asset, otherwise treat as unknown sequence */
 
-			/* Check for root stored assets */
+			const auto seq = root.intoSeq();
+			const auto count = seq.getRecordCount();
 
-			if (isArchivedAsset(archive.getRootSlot())) {
-
-				linkedArchive->seek(0);
-				tryLoadArchivedAsset(archive.getRootSlot());
-
+			if (count <= 0) {
 				continue;
 			}
 
-			/* Check for a sequence of stored assets */
+			if (not isArchivedAsset(seq.getRecordSlot(0))) {
+				continue;
+			}
 
-			{
-				linkedArchive->seek(0);
-				auto root = archive.getRootSlot();
+			/* Iterate over archives and try to load */
 
-				root.slot()->readHeader();
-				if (root.slot()->getSlotHeader().type != serialization::StructureSlotType::eSeq) {
-					continue;
-				}
-
-				/* Check whether first element is asset, otherwise treat as unknown sequence */
-
-				const auto seq = root.intoSeq();
-				const auto count = seq.getRecordCount();
-
-				if (count <= 0) {
-					continue;
-				}
-
-				if (not isArchivedAsset(seq.getRecordSlot(0))) {
-					continue;
-				}
-
-				/* Iterate over archives and try to load */
-
-				for (s64 idx = 0; idx < count; ++idx) {
-					tryLoadArchivedAsset(seq.getRecordSlot(idx));
-				}
+			for (s64 idx = 0; idx < count; ++idx) {
+				tryLoadArchivedAsset(seq.getRecordSlot(idx));
 			}
 		}
 	}

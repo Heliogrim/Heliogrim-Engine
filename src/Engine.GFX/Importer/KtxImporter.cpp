@@ -6,21 +6,28 @@
 #include <Engine.Assets/Types/Texture/TextureAsset.hpp>
 #include <Engine.Common/GuidFormat.hpp>
 #include <Engine.Common/Concurrent/Promise.hpp>
-#include <Engine.Serialization/Archive/Archive.hpp>
-#include <Engine.Serialization/Archive/BufferArchive.hpp>
-#include <Engine.Serialization/Archive/LayoutArchive.hpp>
-#include <Engine.Serialization/Layout/DataLayout.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Logging/Logger.hpp>
+#include <Engine.Resource.Archive/BufferArchive.hpp>
+#include <Engine.Serialization/Archive/LayoutArchive.hpp>
+#include <Engine.Serialization/Layout/DataLayout.hpp>
+#include <Engine.Storage/Url/Url.hpp>
 
 #include "ImageImporter.hpp"
 #include "../API/VkTranslate.hpp"
 #include "Engine.Assets/Assets.hpp"
-#include "Engine.Resource/Source/FileSource.hpp"
-#include "Engine.Resource.Package/PackageFactory.hpp"
+#include "Engine.Resource.Package/Attribute/PackageGuid.hpp"
+#include "Engine.Resource.Package/External/PackageIo.hpp"
 #include "Engine.Resource.Package/Linker/PackageLinker.hpp"
 #include "Engine.Serialization/Access/Structure.hpp"
 #include "Engine.Serialization/Archive/StructuredArchive.hpp"
+#include "Engine.Storage/IStorageRegistry.hpp"
+#include "Engine.Storage/StorageModule.hpp"
+#include "Engine.Storage/Options/FileStorageDescriptor.hpp"
+#include "Engine.Storage/Options/PackageStorageDescriptor.hpp"
+#include "Engine.Storage/Options/StorageDescriptor.hpp"
+#include "Engine.Storage/Storage/PackageStorage.hpp"
+#include "Engine.Storage/Url/FileUrl.hpp"
 
 using namespace hg::engine::gfx;
 using namespace hg;
@@ -262,8 +269,12 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
 
 	/* Serialize Image */
 
-	auto imgBuffer = make_uptr<BufferArchive>();
-	StructuredArchive imgArch { imgBuffer.get() }; {
+	auto imgBuffer = make_uptr<resource::BufferArchive>();
+
+	/**/
+
+	{
+		StructuredArchive imgArch { *imgBuffer };
 		auto root = imgArch.insertRootSlot();
 		access::Structure<Image>::serialize(img, std::move(root));
 	}
@@ -273,8 +284,12 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
 
 	/* Serialize Texture */
 
-	auto texBuffer = make_uptr<BufferArchive>();
-	StructuredArchive texArch { texBuffer.get() }; {
+	auto texBuffer = make_uptr<resource::BufferArchive>();
+
+	/**/
+
+	{
+		StructuredArchive texArch { *texBuffer };
 		auto root = texArch.insertRootSlot();
 		access::Structure<TextureAsset>::serialize(tex, std::move(root));
 	}
@@ -294,27 +309,64 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
 
 	/* Generate Package */
 
-	hg::fs::File packageFile { packagePath };
-	auto source = make_uptr<resource::FileSource>(std::move(packageFile));
+	auto engine = Engine::getEngine();
+	auto storageEngine = engine->getStorage();
+	auto storageRegistry = storageEngine->getRegistry();
+	auto storageIo = storageEngine->getIo();
 
-	auto package = resource::PackageFactory::createEmptyPackage(std::move(source));
-	auto* const linker = package->getLinker();
+	const auto storageFileUrl = storage::FileUrl { clone(storage::FileScheme), fs::Path { packagePath } };
+	auto storageUnit = [](decltype(storageRegistry) registry_, const auto& fileUrl_) {
+
+		if (registry_->hasStorage(clone(fileUrl_))) {
+			return registry_->getStorageByUrl(clone(fileUrl_));
+		}
+
+		return registry_->insert(storage::FileStorageDescriptor { clone(fileUrl_) });
+
+	}(storageRegistry, storageFileUrl);
+
+	// TODO: Break
+	::hg::assertrt(storageUnit != nullptr);
+
+	/**/
+
+	resource::PackageGuid packageGuid {};
+	GuidGenerate(packageGuid);
+
+	// Question: Should happen implicitly? -> packageIo.create_empty_package();
+	auto packageUnit = storageRegistry->insert(
+		storage::PackageStorageDescriptor {
+			storage::PackageUrl { clone(packageGuid) },
+			std::move(storageUnit)
+		}
+	).into<storage::system::PackageStorage>();
+	auto packageAccess = storageIo->accessReadWrite(clone(packageUnit));
 
 	/* Store Data to Package */
 
+	auto packageIo = storage::PackageIo { *storageIo };
+	auto linker = packageIo.create_empty_linker(packageAccess);
+
 	linker->store(
-		resource::ArchiveHeader { resource::ArchiveHeaderType::eSerializedStructure, std::move(imgArchGuid) },
+		{ .type = resource::package::PackageArchiveType::eSerializedStructure, .guid = std::move(imgArchGuid) },
 		std::move(imgBuffer)
 	);
 
 	linker->store(
-		resource::ArchiveHeader { resource::ArchiveHeaderType::eSerializedStructure, std::move(texArchGuid) },
+		{ .type = resource::package::PackageArchiveType::eSerializedStructure, .guid = std::move(texArchGuid) },
 		std::move(texBuffer)
 	);
 
 	/* Flush/Write the package */
 
-	package->unsafeWrite();
+	packageIo.storeLinkerData(*linker);
+
+	auto& packageHeader = packageAccess->fully().header();
+	packageHeader.packageSize = packageHeader.indexOffset + packageHeader.indexSize - sizeof(resource::PackageHeader);
+	packageIo.writeHeader(packageAccess->fully(), streamoff {});
+
+	auto footerOffset = packageHeader.indexOffset + packageHeader.indexSize;
+	packageIo.writeFooter(packageAccess->fully(), static_cast<streamoff>(footerOffset));
 
 	#endif
 
