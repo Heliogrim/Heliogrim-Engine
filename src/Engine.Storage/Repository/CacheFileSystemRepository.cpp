@@ -28,14 +28,14 @@ std::span<const nmpt<const IStorageProvider>> CacheFileSystemRepository::getProv
 }
 
 std::span<const engine::storage::UrlScheme> CacheFileSystemRepository::getUrlScheme() const noexcept {
-	constexpr auto scheme = std::array<UrlScheme, 2uLL> { FileCacheScheme, FileScheme };
+	constexpr static auto scheme = std::array<UrlScheme, 2uLL> { FileCacheScheme, FileScheme };
 	// Attention: We just use the specific scheme to prevent general purpose access to high-priority cache.
 	return std::span { scheme.data(), 1uLL };
 }
 
 std::span<const u64> CacheFileSystemRepository::getRegisteredUrlScheme() const noexcept {
 	// Warning: We just assume that we register the "mem" scheme with the fnv1a compile-time hash...
-	constexpr auto scheme = std::array<u64, 2uLL> { "file+cache"_cs.hash(), "file"_cs.hash() };
+	constexpr static auto scheme = std::array<u64, 2uLL> { "file+cache"_cs.hash(), "file"_cs.hash() };
 	// Attention: We just use the specific scheme to prevent general purpose access to high-priority cache.
 	return std::span { scheme.data(), 1uLL };
 }
@@ -46,9 +46,11 @@ StringView CacheFileSystemRepository::getVfsMountPoint() const noexcept {
 
 Arci<engine::storage::IStorage> CacheFileSystemRepository::createStorage(mref<StorageDescriptor> descriptor_) {
 	::hg::assertrt(std::holds_alternative<FileStorageDescriptor>(descriptor_));
+
+	auto lfsStore = descriptor_.as<FileStorageDescriptor>().url.path();
 	const auto [it, success] = _storages.emplace(
 		std::get<FileStorageDescriptor>(std::move(descriptor_)).url.path().string(),
-		_lfs->makeStorageObject()
+		_lfs->makeStorageObject(std::move(lfsStore))
 	);
 	return it->second.into<IStorage>();
 }
