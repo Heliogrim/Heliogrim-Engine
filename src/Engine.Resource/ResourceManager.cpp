@@ -14,12 +14,11 @@ using namespace hg::engine;
 using namespace hg;
 
 ResourceManager::ResourceManager() noexcept :
-    _importer(nullptr),
-    _loader(nullptr),
-    _locator(nullptr) {
-    /**/
-    serialization::LayoutManager::make();
-    /**/
+	_importer(nullptr),
+	_loader(nullptr) {
+	/**/
+	serialization::LayoutManager::make();
+	/**/
 }
 
 ResourceManager::~ResourceManager() noexcept {
