@@ -35,11 +35,11 @@ namespace hg {
 			_In_ ref<engine::gfx::pool::GlobalResourcePool> globalResourcePool_
 		) noexcept;
 
-		GraphicUnregisterLoaderEvent(cref<this_type> other_) noexcept = default;
+		constexpr GraphicUnregisterLoaderEvent(cref<this_type> other_) noexcept = default;
 
-		GraphicUnregisterLoaderEvent(mref<this_type> other_) noexcept = default;
+		constexpr GraphicUnregisterLoaderEvent(mref<this_type> other_) noexcept = default;
 
-		~GraphicUnregisterLoaderEvent() noexcept override = default;
+		constexpr ~GraphicUnregisterLoaderEvent() noexcept override = default;
 
 	public:
 		[[nodiscard]] bool canceled() const noexcept override;

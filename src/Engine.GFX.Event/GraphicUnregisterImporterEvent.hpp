@@ -26,11 +26,11 @@ namespace hg {
 			_In_ ref<engine::Graphics> graphics_
 		) noexcept;
 
-		GraphicUnregisterImporterEvent(cref<this_type> other_) noexcept = default;
+		constexpr GraphicUnregisterImporterEvent(cref<this_type> other_) noexcept = default;
 
-		GraphicUnregisterImporterEvent(mref<this_type> other_) noexcept = default;
+		constexpr GraphicUnregisterImporterEvent(mref<this_type> other_) noexcept = default;
 
-		~GraphicUnregisterImporterEvent() noexcept override = default;
+		constexpr ~GraphicUnregisterImporterEvent() noexcept override = default;
 
 	public:
 		[[nodiscard]] bool canceled() const noexcept override;
