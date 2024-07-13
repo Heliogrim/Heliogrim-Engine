@@ -1,15 +1,17 @@
 #include "pch.h"
 
-#include <Engine.Common/Collection/Array.hpp>
+/**/
 #include <Engine.Assets/Types/Asset.hpp>
+#include <Engine.Common/Collection/Array.hpp>
+#include <Engine.Resource.Archive/BufferArchive.hpp>
+#include <Engine.Serialization/Archive/LayoutArchive.hpp>
+#include <Engine.Serialization/Archive/StructuredArchive.hpp>
 #include <Engine.Serialization/Layout/DataLayout.hpp>
 #include <Engine.Serialization/Layout/LayoutDefine.hpp>
 #include <Engine.Serialization/Layout/LayoutDefineSpan.hpp>
 #include <Engine.Serialization/Layout/LayoutDefineValue.hpp>
-#include <Engine.Serialization/Archive/BufferArchive.hpp>
-#include <Engine.Serialization/Archive/LayoutArchive.hpp>
-#include <Engine.Serialization/Archive/StructuredArchive.hpp>
 
+#include "Engine.Serialization/Structure/FloatScopedSlot.hpp"
 #include "Engine.Serialization/Structure/IntegralScopedSlot.hpp"
 #include "Engine.Serialization/Structure/MapEntryScopedSlot.hpp"
 #include "Engine.Serialization/Structure/MapScopedSlot.hpp"
@@ -18,87 +20,12 @@
 #include "Engine.Serialization/Structure/SliceScopedSlot.hpp"
 #include "Engine.Serialization/Structure/StringScopedSlot.hpp"
 #include "Engine.Serialization/Structure/StructScopedSlot.hpp"
-#include "Engine.Serialization/Structure/FloatScopedSlot.hpp"
 
+using namespace hg::engine::resource;
 using namespace hg::engine::serialization;
 using namespace hg;
 
-TEST(__DummyTest__, Exists) {
-	EXPECT_TRUE(true);
-}
-
 namespace SerializationModule {
-	template <typename ValueType_>
-	void simpleBufferTest() {
-
-		BufferArchive archive {};
-
-		using type = ValueType_;
-		const type testValue { static_cast<type>(0xA2A2'A2A2'A2A2'A2A2) };
-
-		type write { testValue };
-		archive << write;
-
-		archive.seek(0);
-
-		type read { 0 };
-		archive >> read;
-
-		EXPECT_EQ(testValue, read);
-	}
-
-	TEST(BufferArchive, ReadWriteByte) {
-		simpleBufferTest<u8>();
-	}
-
-	TEST(BufferArchive, ReadWriteU16) {
-		simpleBufferTest<u16>();
-	}
-
-	TEST(BufferArchive, ReadWriteU32) {
-		simpleBufferTest<u32>();
-	}
-
-	TEST(BufferArchive, ReadWriteU64) {
-		simpleBufferTest<u64>();
-	}
-
-	TEST(BufferArchive, ReadWriteFloat) {
-		simpleBufferTest<float>();
-	}
-
-	TEST(BufferArchive, ReadWriteDouble) {
-		simpleBufferTest<double>();
-	}
-
-	TEST(BufferArchive, ReadWriteBool) {
-
-		BufferArchive archive {};
-
-		bool write { false };
-		archive << write;
-
-		archive.seek(0);
-
-		bool read { true };
-		archive >> read;
-
-		EXPECT_FALSE(read);
-		archive.seek(0);
-
-		/**/
-
-		write = true;
-		archive << write;
-
-		archive.seek(0);
-
-		read = false;
-		archive >> read;
-
-		EXPECT_TRUE(read);
-	}
-
 	enum class EnumValueType {
 		eEntryZero,
 		eEntryOne,
@@ -128,65 +55,6 @@ namespace SerializationModule {
 		eEntryOne = 0xFFFF'0000'0000'0001uLL,
 		eEntryTwo = 0xFFFF'0000'0000'0002uLL
 	};
-
-	template <typename EnumType>
-	void simpleEnumTest() {
-
-		BufferArchive archive {};
-
-		using type = EnumType;
-
-		type write { EnumType::eEntryTwo };
-		archive << write;
-
-		archive.seek(0);
-
-		type read { EnumType::eEntryZero };
-		archive >> read;
-
-		EXPECT_EQ(read, EnumType::eEntryTwo);
-		archive.seek(0);
-
-		/**/
-
-		type writeN[3] { EnumType::eEntryOne, EnumType::eEntryTwo, EnumType::eEntryZero };
-		archive << writeN[0];
-		archive << writeN[1];
-		archive << writeN[2];
-
-		archive.seek(0);
-		read = EnumType::eEntryZero;
-
-		archive >> read;
-		EXPECT_EQ(read, EnumType::eEntryOne);
-
-		archive >> read;
-		EXPECT_EQ(read, EnumType::eEntryTwo);
-
-		archive >> read;
-		EXPECT_EQ(read, EnumType::eEntryZero);
-
-	}
-
-	TEST(BufferArchive, ReadWriteEnumType) {
-		simpleEnumTest<EnumValueType>();
-	}
-
-	TEST(BufferArchive, ReadWriteEnumU8) {
-		simpleEnumTest<EnumValueU8>();
-	}
-
-	TEST(BufferArchive, ReadWriteEnumU16) {
-		simpleEnumTest<EnumValueU16>();
-	}
-
-	TEST(BufferArchive, ReadWriteEnumU32) {
-		simpleEnumTest<EnumValueU32>();
-	}
-
-	TEST(BufferArchive, ReadWriteEnumU64) {
-		simpleEnumTest<EnumValueU64>();
-	}
 
 	class TestSerialAsset :
 		public InheritMeta<TestSerialAsset, ::hg::engine::assets::Asset> {
@@ -246,7 +114,7 @@ namespace SerializationModule {
 		DataLayout<TestSerialAsset> layout {};
 		layout.describe();
 
-		TypedLayoutArchive<TestSerialAsset> arch { &archive, &layout };
+		TypedLayoutArchive<TestSerialAsset> arch { archive, &layout };
 
 		auto writeAsset = new TestSerialAsset();
 
@@ -332,7 +200,7 @@ namespace SerializationModule {
 		DataLayout<TestSerialDataBaseAsset> layout {};
 		layout.describe();
 
-		TypedLayoutArchive<TestSerialDataBaseAsset> arch { &archive, &layout };
+		TypedLayoutArchive<TestSerialDataBaseAsset> arch { archive, &layout };
 
 		constexpr auto testGuid = asset_guid { 0x2356uL, 0x12, 0x56, 0x68537136uL };
 		constexpr auto testType = asset_type_id { "TestBaseAsset_Changed"_typeId };
@@ -416,7 +284,7 @@ namespace SerializationModule {
 		DataLayout<TestSerialSubTypeAsset> layout {};
 		layout.describe();
 
-		TypedLayoutArchive<TestSerialSubTypeAsset> arch { &archive, &layout };
+		TypedLayoutArchive<TestSerialSubTypeAsset> arch { archive, &layout };
 
 		auto writeAsset = new TestSerialSubTypeAsset();
 		auto readAsset = new TestSerialSubTypeAsset();
@@ -485,7 +353,7 @@ namespace SerializationModule {
 		DataLayout<TestSerialSubTypeSpanAsset> layout {};
 		layout.describe();
 
-		TypedLayoutArchive<TestSerialSubTypeSpanAsset> arch { &archive, &layout };
+		TypedLayoutArchive<TestSerialSubTypeSpanAsset> arch { archive, &layout };
 
 		auto writeAsset = new TestSerialSubTypeSpanAsset();
 		writeAsset->payload[0] = { 32uLL };
@@ -552,7 +420,7 @@ namespace SerializationModule {
 		DataLayout<TestSerialSubTypeSliceAsset> layout {};
 		layout.describe();
 
-		TypedLayoutArchive<TestSerialSubTypeSliceAsset> arch { &archive, &layout };
+		TypedLayoutArchive<TestSerialSubTypeSliceAsset> arch { archive, &layout };
 
 		auto writeAsset = new TestSerialSubTypeSliceAsset();
 		writeAsset->payload.push_back({ 32uLL });
@@ -619,7 +487,7 @@ namespace SerializationModule {
 		DataLayout<TestSerialSubTypeVectorizedSliceAsset> layout {};
 		layout.describe();
 
-		TypedLayoutArchive<TestSerialSubTypeVectorizedSliceAsset> arch { &archive, &layout };
+		TypedLayoutArchive<TestSerialSubTypeVectorizedSliceAsset> arch { archive, &layout };
 
 		auto writeAsset = new TestSerialSubTypeVectorizedSliceAsset();
 		//writeAsset->payload.resize(200'000'000, { 1231uLL, 738956uLL, 2.32906F, 9230.35F });
@@ -723,7 +591,7 @@ namespace SerializationModule {
 		DataLayout<TestSerialSubTypeStringAsset> layout {};
 		layout.describe();
 
-		TypedLayoutArchive<TestSerialSubTypeStringAsset> arch { &archive, &layout };
+		TypedLayoutArchive<TestSerialSubTypeStringAsset> arch { archive, &layout };
 
 		auto writeAsset = new TestSerialSubTypeStringAsset();
 		writeAsset->payload = "I'm just a string test.";
@@ -746,7 +614,7 @@ namespace SerializationModule {
 	TEST(StructureArchive, IntegralRead) {
 
 		BufferArchive archive {};
-		StructuredArchive arch { &archive };
+		StructuredArchive arch { archive };
 
 		/**/
 
@@ -812,7 +680,7 @@ namespace SerializationModule {
 	TEST(StructureArchive, StringRead) {
 
 		BufferArchive archive {};
-		StructuredArchive arch { &archive };
+		StructuredArchive arch { archive };
 
 		/**/
 
@@ -820,7 +688,7 @@ namespace SerializationModule {
 		archive << StructureSlotType::eString;
 		archive << value.size();
 
-		archive.serializeBytes(value.data(), value.size(), ArchiveStreamMode::eIn);
+		archive.serializeBytes(value.data(), value.size(), ArchiveStreamMode::eStore);
 
 		archive.seek(0);
 
@@ -841,7 +709,7 @@ namespace SerializationModule {
 	TEST(StructureArchive, StringReadWrite) {
 
 		BufferArchive archive {};
-		StructuredArchive arch { &archive };
+		StructuredArchive arch { archive };
 
 		const string src { "String Test" }; {
 			auto write = arch.getRootSlot();
@@ -869,7 +737,7 @@ namespace SerializationModule {
 	TEST(StructureArchive, EmptyStruct) {
 
 		BufferArchive archive {};
-		StructuredArchive arch { &archive }; {
+		StructuredArchive arch { archive }; {
 			auto write = arch.insertRootSlot();
 			write.intoStruct();
 		}
@@ -883,7 +751,7 @@ namespace SerializationModule {
 	TEST(StructureArchive, EmptyRecordStruct) {
 
 		BufferArchive archive {};
-		StructuredArchive arch { &archive }; {
+		StructuredArchive arch { archive }; {
 			auto write = arch.insertRootSlot();
 			write.intoStruct().insertSlot<void>("test");
 		}
@@ -900,7 +768,7 @@ namespace SerializationModule {
 	TEST(StructureArchive, IntegralStructReadWrite) {
 
 		BufferArchive archive {};
-		StructuredArchive arch { &archive };
+		StructuredArchive arch { archive };
 
 		const u64 src = 62788267uLL; {
 			auto write = arch.insertRootSlot();
@@ -926,7 +794,7 @@ namespace SerializationModule {
 	TEST(StructureArchive, StringStructReadWrite) {
 
 		BufferArchive archive {};
-		StructuredArchive arch { &archive };
+		StructuredArchive arch { archive };
 
 		const string src { "Test String" }; {
 			auto write = arch.insertRootSlot();
@@ -952,7 +820,7 @@ namespace SerializationModule {
 	TEST(StructureArchive, NativeStructReadWrite) {
 
 		BufferArchive archive {};
-		StructuredArchive arch { &archive };
+		StructuredArchive arch { archive };
 
 		const u64 src0 = 26785626uLL;
 		const string src1 { "Test String" }; {
@@ -985,7 +853,7 @@ namespace SerializationModule {
 	TEST(StructureArchive, SwappingNativeStructReadWrite) {
 
 		BufferArchive archive {};
-		StructuredArchive arch { &archive };
+		StructuredArchive arch { archive };
 
 		const u64 src0 = 637861891uLL;
 		const string src1 { "Swap String" }; {
@@ -1018,7 +886,7 @@ namespace SerializationModule {
 	TEST(StructureArchive, NestedStructReadWrite) {
 
 		BufferArchive archive {};
-		StructuredArchive arch { &archive };
+		StructuredArchive arch { archive };
 
 		const u64 src = 46262747uLL; {
 			auto write = arch.insertRootSlot();
@@ -1044,7 +912,7 @@ namespace SerializationModule {
 	TEST(StructureArchive, NestedStructReadWrite2) {
 
 		BufferArchive archive {};
-		StructuredArchive arch { &archive };
+		StructuredArchive arch { archive };
 
 		const u64 src1 = 126784uLL;
 		const u64 src2 = 6312785uLL; {
@@ -1087,7 +955,7 @@ namespace SerializationModule {
 	TEST(StructureArchive, SliceReadWrite) {
 
 		BufferArchive archive {};
-		StructuredArchive arch { &archive };
+		StructuredArchive arch { archive };
 
 		const Vector<u64> src { { 2165787uLL, 7826523uLL, 32597698uLL } }; {
 			auto write = arch.getRootSlot();
@@ -1119,7 +987,7 @@ namespace SerializationModule {
 	TEST(StructureArchive, StringSliceReadWrite) {
 
 		BufferArchive archive {};
-		StructuredArchive arch { &archive };
+		StructuredArchive arch { archive };
 
 		const Vector<string> src { { "$0::Test String", "$1::Test String", "$2::Test String" } }; {
 			auto write = arch.getRootSlot();
@@ -1151,7 +1019,7 @@ namespace SerializationModule {
 	TEST(StructureArchive, MapReadWrite) {
 
 		BufferArchive archive {};
-		StructuredArchive arch { &archive };
+		StructuredArchive arch { archive };
 
 		std::map<string, u64> src {
 			{ "$0::key", 3657876uLL },
@@ -1191,7 +1059,7 @@ namespace SerializationModule {
 	TEST(StructureArchive, SeqReadWrite) {
 
 		BufferArchive archive {};
-		StructuredArchive arch { &archive };
+		StructuredArchive arch { archive };
 
 		struct Obj0 {
 			string name;
@@ -1219,7 +1087,7 @@ namespace SerializationModule {
 			}
 
 			bool operator==(cref<Obj0> other_) const {
-				return name == other_.name && surname == other_.surname & age == other_.age && money == other_.money;
+				return name == other_.name && surname == other_.surname && age == other_.age && money == other_.money;
 			}
 		};
 
@@ -1309,7 +1177,7 @@ namespace SerializationModule {
 	TEST(StructureArchive, SimpleReadWrite) {
 
 		BufferArchive archive {};
-		StructuredArchive arch { &archive };
+		StructuredArchive arch { archive };
 
 		struct TI3Obj {
 			string data0;
@@ -1518,7 +1386,7 @@ namespace SerializationModule {
 	TEST(StructureArchive, StructUnknownIdentifier) {
 
 		BufferArchive archive {};
-		StructuredArchive arch { &archive }; {
+		StructuredArchive arch { archive }; {
 			auto write = arch.insertRootSlot();
 			auto slot = write.intoStruct();
 
