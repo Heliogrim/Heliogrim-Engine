@@ -41,9 +41,17 @@ namespace hg {
 			_owned(std::exchange(other_._owned, nullptr)) {}
 
 		~ResourceAccessor() noexcept override {
-			if (owns()) {
-				scopedRelease();
+			reset();
+		}
+
+	public:
+		constexpr ref<this_type> operator=(mref<this_type> other_) noexcept {
+			if (std::addressof(other_) != this) {
+				reset();
+				_resource = std::exchange(other_._resource, nullptr);
+				_owned = std::exchange(other_._owned, nullptr);
 			}
+			return *this;
 		}
 
 	private:
@@ -73,6 +81,17 @@ namespace hg {
 			return _owned != nullptr;
 		}
 
+		[[nodiscard]] cref<resource_type> owner() const {
+			::hg::assertrt(valid());
+			return *_resource;
+		}
+
+		void reset() {
+			if (owns()) {
+				scopedRelease();
+			}
+		}
+
 	public:
 		[[nodiscard]] ref<managed_type> get() const {
 			::hg::assertrt(valid());
@@ -80,6 +99,25 @@ namespace hg {
 		}
 
 		[[nodiscard]] ref<managed_type> get(std::nothrow_t) const noexcept {
+			return *_owned;
+		}
+
+	public:
+		[[nodiscard]] ref<managed_type> operator*() const {
+			return get();
+		}
+
+		[[nodiscard]] ref<managed_type> operator*() {
+			return get();
+		}
+
+		[[nodiscard]] ref<managed_type> operator->() const {
+			::hg::assertrt(valid());
+			return *_owned;
+		}
+
+		[[nodiscard]] ref<managed_type> operator->() {
+			::hg::assertrt(valid());
 			return *_owned;
 		}
 	};
