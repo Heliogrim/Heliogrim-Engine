@@ -1,19 +1,33 @@
 #pragma once
 
 #include <Engine.Common/Types.hpp>
+#include <Engine.Filesystem/Path.hpp>
 
 #include "../IStorage.hpp"
+
+namespace hg::engine::storage {
+	class StorageIo;
+}
 
 namespace hg::engine::storage::system {
 	class LocalFileStorage final :
 		public InheritMeta<LocalFileStorage, IStorage> {
+	public:
+		friend class ::hg::engine::storage::StorageIo;
+
 	public:
 		using this_type = LocalFileStorage;
 
 	public:
 		LocalFileStorage() = delete;
 
-		LocalFileStorage(bool readable_, bool writeable_, bool randomReadable_, bool randomWritable_) noexcept;
+		LocalFileStorage(
+			mref<fs::Path> lfsPath_,
+			bool readable_,
+			bool writeable_,
+			bool randomReadable_,
+			bool randomWritable_
+		) noexcept;
 
 		~LocalFileStorage() override = default;
 
@@ -38,5 +52,8 @@ namespace hg::engine::storage::system {
 		[[nodiscard]] bool isRandomReadable() const noexcept override;
 
 		[[nodiscard]] bool isRandomWritable() const noexcept override;
+
+	private:
+		fs::Path _lfsPath;
 	};
 }
