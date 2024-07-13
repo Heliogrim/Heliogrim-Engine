@@ -34,5 +34,10 @@ namespace hg::engine::storage {
 		constexpr IUrlComp(IUrlComp&&) noexcept = default;
 
 		constexpr ~IUrlComp() noexcept = default;
+
+	public:
+		constexpr ref<IUrlComp> operator=(cref<IUrlComp>) noexcept = default;
+
+		constexpr ref<IUrlComp> operator=(mref<IUrlComp>) noexcept = default;
 	};
 }

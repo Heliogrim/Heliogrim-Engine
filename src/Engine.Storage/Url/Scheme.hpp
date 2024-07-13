@@ -13,7 +13,7 @@ namespace hg::engine::storage {
 	class UrlScheme :
 		public StringView {
 	public:
-		using this_Type = UrlScheme;
+		using this_type = UrlScheme;
 		using underlying_type = StringView;
 
 	public:
@@ -21,6 +21,14 @@ namespace hg::engine::storage {
 
 		constexpr UrlScheme(mref<underlying_type> value_) noexcept :// NOLINT(*-explicit-constructor)
 			underlying_type(value_) {}
+
+		constexpr UrlScheme(cref<this_type>) noexcept = default;
+
+		constexpr UrlScheme(mref<this_type>) noexcept = default;
+
+		constexpr ref<UrlScheme> operator=(cref<this_type>) noexcept = default;
+
+		constexpr ref<UrlScheme> operator=(mref<this_type>) noexcept = default;
 	};
 
 	constexpr static UrlScheme ArchiveScheme = UrlScheme { "archive" };
