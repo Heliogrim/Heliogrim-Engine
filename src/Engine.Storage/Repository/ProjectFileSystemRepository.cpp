@@ -2,6 +2,7 @@
 
 #include <array>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Env/Check.hpp>
 #include <Engine.Filesystem/Url.hpp>
 #include <Engine.Reflect/CompileString.hpp>
 
@@ -13,6 +14,12 @@
 
 using namespace hg::engine::storage::system;
 using namespace hg;
+
+/**/
+
+[[nodiscard]] static bool is_sub_path(cref<std::filesystem::path> base_, cref<std::filesystem::path> check_);
+
+/**/
 
 ProjectFileSystemRepository::ProjectFileSystemRepository(
 	ref<LocalFileSystemProvider> provider_,
@@ -29,13 +36,13 @@ std::span<const nmpt<const IStorageProvider>> ProjectFileSystemRepository::getPr
 }
 
 std::span<const engine::storage::UrlScheme> ProjectFileSystemRepository::getUrlScheme() const noexcept {
-	constexpr auto scheme = std::array<UrlScheme, 2uLL> { FileProjectScheme, FileScheme };
+	constexpr static auto scheme = std::array<UrlScheme, 2uLL> { FileProjectScheme, FileScheme };
 	return std::span { scheme.data(), 2uLL };
 }
 
 std::span<const u64> ProjectFileSystemRepository::getRegisteredUrlScheme() const noexcept {
 	// Warning: We just assume that we register the "mem" scheme with the fnv1a compile-time hash...
-	constexpr auto scheme = std::array<u64, 2uLL> { "file+project"_cs.hash(), "file"_cs.hash() };
+	constexpr static auto scheme = std::array<u64, 2uLL> { "file+project"_cs.hash(), "file"_cs.hash() };
 	return std::span { scheme.data(), 2uLL };
 }
 
@@ -45,9 +52,11 @@ StringView ProjectFileSystemRepository::getVfsMountPoint() const noexcept {
 
 Arci<engine::storage::IStorage> ProjectFileSystemRepository::createStorage(mref<StorageDescriptor> descriptor_) {
 	::hg::assertrt(std::holds_alternative<FileStorageDescriptor>(descriptor_));
+
+	auto lfsStore = descriptor_.as<FileStorageDescriptor>().url.path();
 	const auto [it, success] = _storages.emplace(
 		std::get<FileStorageDescriptor>(std::move(descriptor_)).url.path().string(),
-		_lfs->makeStorageObject()
+		_lfs->makeStorageObject(std::move(lfsStore))
 	);
 	return it->second.into<IStorage>();
 }
@@ -56,7 +65,29 @@ bool ProjectFileSystemRepository::hasStorage(cref<Url> url_) const {
 	if (not url_.is<FileUrl>())
 		return false;
 
-	const auto it = _storages.find(url_.as<FileUrl>().path().string());
+	auto stringized = url_.as<FileUrl>().path().string();
+	const auto it = _storages.find(stringized);
+
+	/**/
+
+	if constexpr (env::check<env::EnvProps::eIsEditor>()) {
+		if (it != _storages.end()) {
+			return true;
+		}
+
+		const auto lookup = [](const auto& url_, const auto& basePath_) {
+			auto stdFsPath = url_.template as<FileUrl>().path().stdFsPath();
+			if (stdFsPath.is_absolute() && is_sub_path(basePath_, stdFsPath)) {
+				return stdFsPath;
+			}
+			return clone(basePath_).append(stdFsPath.string());
+		}(url_, _basePath);
+
+		return std::filesystem::exists(lookup);
+	}
+
+	/**/
+
 	return it != _storages.end();
 }
 
@@ -64,7 +95,38 @@ Arci<engine::storage::IStorage> ProjectFileSystemRepository::getStorageByUrl(cre
 	if (not url_.is<FileUrl>())
 		return {};
 
-	const auto it = _storages.find(url_.as<FileUrl>().path().string());
+	auto stringized = url_.as<FileUrl>().path().string();
+	const auto it = _storages.find(stringized);
+
+	/**/
+
+	// TODO: Check whether we can mark the difference of editor and runtime in a better way.
+	if constexpr (env::check<env::EnvProps::eIsEditor>()) {
+		if (it != _storages.end()) {
+			return it->second.into<IStorage>();
+		}
+
+		auto lookup = [](const auto& url_, const auto& basePath_) {
+			auto stdFsPath = url_.template as<FileUrl>().path().stdFsPath();
+			if (stdFsPath.is_absolute() && is_sub_path(basePath_, stdFsPath)) {
+				return stdFsPath;
+			}
+			return clone(basePath_).append(stdFsPath.string());
+		}(url_, _basePath);
+
+		if (std::filesystem::exists(lookup)) {
+
+			// Problem: The following upsert will break the constness rules and may cause corruption in a concurrent environment
+			return const_cast<ref<ProjectFileSystemRepository>>(*this).createStorage(
+				FileStorageDescriptor { FileUrl { clone(FileScheme), fs::Path { std::move(lookup) } } }
+			);
+		}
+
+		return Arci<engine::storage::IStorage> {};
+	}
+
+	/**/
+
 	return it != _storages.end() ? it->second.into<IStorage>() : Arci<engine::storage::IStorage> {};
 }
 
@@ -78,4 +140,11 @@ bool ProjectFileSystemRepository::removeStorage(mref<nmpt<IStorage>> storage_) {
 		return _storages.erase(vecIt->first);
 	}
 	return false;
+}
+
+/**/
+
+bool is_sub_path(cref<std::filesystem::path> base_, cref<std::filesystem::path> check_) {
+	const auto rel = std::filesystem::relative(check_, base_);
+	return rel.empty() || rel.native().front() != '.';
 }

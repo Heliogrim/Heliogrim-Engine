@@ -28,13 +28,13 @@ std::span<const nmpt<const IStorageProvider>> RuntimeFileSystemRepository::getPr
 }
 
 std::span<const engine::storage::UrlScheme> RuntimeFileSystemRepository::getUrlScheme() const noexcept {
-	constexpr auto scheme = std::array<UrlScheme, 2uLL> { FileRuntimeScheme, FileScheme };
+	constexpr static auto scheme = std::array<UrlScheme, 2uLL> { FileRuntimeScheme, FileScheme };
 	return std::span { scheme.data(), 2uLL };
 }
 
 std::span<const u64> RuntimeFileSystemRepository::getRegisteredUrlScheme() const noexcept {
 	// Warning: We just assume that we register the "mem" scheme with the fnv1a compile-time hash...
-	constexpr auto scheme = std::array<u64, 2uLL> { "file+runtime"_cs.hash(), "file"_cs.hash() };
+	constexpr static auto scheme = std::array<u64, 2uLL> { "file+runtime"_cs.hash(), "file"_cs.hash() };
 	return std::span { scheme.data(), 2uLL };
 }
 
@@ -44,9 +44,11 @@ StringView RuntimeFileSystemRepository::getVfsMountPoint() const noexcept {
 
 Arci<engine::storage::IStorage> RuntimeFileSystemRepository::createStorage(mref<StorageDescriptor> descriptor_) {
 	::hg::assertrt(std::holds_alternative<FileStorageDescriptor>(descriptor_));
+
+	auto lfsStore = descriptor_.as<FileStorageDescriptor>().url.path();
 	const auto [it, success] = _storages.emplace(
 		std::get<FileStorageDescriptor>(std::move(descriptor_)).url.path().string(),
-		_lfs->makeStorageObject()
+		_lfs->makeStorageObject(std::move(lfsStore))
 	);
 	return it->second.into<IStorage>();
 }
