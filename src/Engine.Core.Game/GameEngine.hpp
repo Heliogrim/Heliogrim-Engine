@@ -5,6 +5,10 @@
 #include <Engine.Core/Module/Modules.hpp>
 #include <Engine.Event/GlobalEventEmitter.hpp>
 
+/**/
+#include <Engine.Storage/StorageModule.hpp>
+/**/
+
 namespace hg::engine {
 	class GameEngine :
 		public InheritMeta<GameEngine, Engine> {
@@ -29,6 +33,8 @@ namespace hg::engine {
 		bool exit() override;
 
 	private:
+		/* Core Module */
+
 		uptr<Assets> _assets;
 		uptr<Audio> _audio;
 		uptr<Graphics> _graphics;
@@ -36,9 +42,14 @@ namespace hg::engine {
 		uptr<Network> _network;
 		uptr<Physics> _physics;
 
+		/* Root Modules */
+
 		uptr<Platform> _platform;
 		uptr<ResourceManager> _resources;
 		uptr<Scheduler> _scheduler;
+		StorageModule _storage;
+
+		/**/
 
 		Config _config;
 		GlobalEventEmitter _emitter;
@@ -57,11 +68,14 @@ namespace hg::engine {
 
 		[[nodiscard]] nmpt<Physics> getPhysics() const noexcept override;
 
+	public:
 		[[nodiscard]] nmpt<Platform> getPlatform() const noexcept override;
 
 		[[nodiscard]] nmpt<ResourceManager> getResources() const noexcept override;
 
 		[[nodiscard]] nmpt<Scheduler> getScheduler() const noexcept override;
+
+		[[nodiscard]] nmpt<const StorageModule> getStorage() const noexcept override;
 
 	public:
 		[[nodiscard]] ref<Config> getConfig() const noexcept override;
