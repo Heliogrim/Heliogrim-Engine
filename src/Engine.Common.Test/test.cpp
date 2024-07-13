@@ -10,6 +10,8 @@
 #include <Engine.Common/Math/Vector.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 
+#include "Engine.Common/UniqueValue.hpp"
+
 using namespace hg;
 
 TEST(__DummyTest__, Exists) {
@@ -864,6 +866,115 @@ namespace Common {
 			tmp.emplace_back(inner_type {});
 		}
 	}
+
+	/**/
+
+	TEST(UniqueValue, TrivialDefault) {
+		using type = UniqueValue<size_t>;
+		auto obj = type {};
+		EXPECT_TRUE(obj.empty());
+	}
+
+	TEST(UniqueValue, TrivialConstruct) {
+		using type = UniqueValue<size_t>;
+		auto obj = type { std::in_place };
+		EXPECT_FALSE(obj.empty());
+	}
+
+	TEST(UniqueValue, TrivialValueConstruct) {
+		using type = UniqueValue<size_t>;
+		auto obj = type { 657776296707uLL };
+		EXPECT_FALSE(obj.empty());
+		EXPECT_EQ(obj.get(), 657776296707uLL);
+	}
+
+	TEST(UniqueValue, StringDefault) {
+		using type = UniqueValue<String>;
+		auto obj = type {};
+		EXPECT_TRUE(obj.empty());
+	}
+
+	TEST(UniqueValue, StringConstruct) {
+		using type = UniqueValue<String>;
+		auto obj = type { std::in_place };
+		EXPECT_FALSE(obj.empty());
+	}
+
+	TEST(UniqueValue, StringValueConstruct) {
+		using type = UniqueValue<String>;
+		auto obj = type { "Hello World" };
+		EXPECT_FALSE(obj.empty());
+		EXPECT_EQ(obj.get(), "Hello World");
+	}
+
+	TEST(UniqueValue, DestroyerDefault) {
+
+		bool ack = false;
+
+		struct Destroyer {
+			ptr<bool> ackRef = nullptr;
+
+			void operator()([[maybe_unused]] const ptr<std::monostate> val_) const noexcept {
+				ASSERT_NE(ackRef, nullptr);
+				EXPECT_FALSE(*ackRef);
+				*ackRef = true;
+			}
+		};
+
+		/**/
+
+		{
+			using type = UniqueValue<std::monostate, Destroyer>;
+			auto dest = Destroyer { std::addressof(ack) };
+			auto obj = type { std::move(dest) };
+
+			EXPECT_FALSE(obj.empty());
+		}
+
+		/**/
+
+		EXPECT_TRUE(ack);
+	}
+
+	TEST(UniqueValue, ComplexMove) {
+
+		size_t invocationCount = 0uLL;
+
+		struct Destroyer {
+			ptr<decltype(invocationCount)> _invCountRef;
+
+			void operator()(const ptr<String> val_) const noexcept {
+				EXPECT_EQ(*val_, "Hello World");
+				std::ignore = std::move(*val_);
+				++(*_invCountRef);
+			}
+		};
+
+		/**/
+
+		{
+			using type = UniqueValue<String, Destroyer>;
+
+			auto dest = Destroyer { std::addressof(invocationCount) };
+			auto obj0 = type { std::move(dest), "Hello World" };
+			auto obj1 = type {};
+
+			EXPECT_FALSE(obj0.empty());
+			EXPECT_TRUE(obj1.empty());
+
+			obj1 = std::move(obj0);
+
+			EXPECT_TRUE(obj0.empty());
+			EXPECT_FALSE(obj1.empty());
+		}
+
+		/**/
+
+		EXPECT_EQ(invocationCount, 1uLL);
+
+	}
+
+	/**/
 
 	TEST(Variant, Default) {
 		auto obj = Variant<std::monostate> {};
