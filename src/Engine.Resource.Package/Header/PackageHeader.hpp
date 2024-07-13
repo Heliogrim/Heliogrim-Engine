@@ -3,9 +3,9 @@
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Guid.hpp>
 
-#include "PackageVersion.hpp"
-#include "PackageCompression.hpp"
-#include "PackageEndianness.hpp"
+#include "../Attribute/PackageVersion.hpp"
+#include "../Attribute/PackageCompression.hpp"
+#include "../Attribute/PackageEndianness.hpp"
 
 namespace hg::engine::resource {
 	#pragma pack(push)
