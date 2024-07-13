@@ -35,13 +35,19 @@ namespace hg::engine {
 		using this_type = Config;
 
 	public:
-		Config();
+		constexpr Config() noexcept = default;
+
+		template <class... InitialProvider_>
+		constexpr explicit Config(uptr<InitialProvider_>&&... initial_) noexcept :
+			Config() {
+			(registerProvider(std::forward<decltype(initial_)>(initial_)), ...);
+		}
 
 		Config(mref<this_type>) = delete;
 
 		Config(cref<this_type>) = delete;
 
-		~Config();
+		constexpr ~Config() noexcept = default;
 
 	private:
 		Vector<std::pair<cfg::ProviderId, uptr<cfg::Provider>>> _providers;
