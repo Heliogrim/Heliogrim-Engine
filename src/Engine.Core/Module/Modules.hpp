@@ -11,11 +11,7 @@
 #include "DependencyKey.hpp"
 #include "DependencyValidationResult.hpp"
 #include "RootModule.hpp"
-
-namespace hg::engine::core {
-	class SubModule;
-	struct SubModuleDependency;
-}
+#include "SubModule.hpp"
 
 namespace hg::engine::core {
 	class Modules {
