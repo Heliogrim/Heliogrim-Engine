@@ -221,6 +221,7 @@ namespace hg {
 		void reset() {
 			_obj = nullptr;
 			dec_not_null();
+			_base = nullptr;
 		}
 
 		[[nodiscard]] typename block_type::storage_type release() noexcept {
