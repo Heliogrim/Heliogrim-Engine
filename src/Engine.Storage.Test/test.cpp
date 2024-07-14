@@ -12,7 +12,12 @@
 #include <Engine.Pedantic/Clone/Clone.hpp>
 #include <Engine.Storage/IStorage.hpp>
 #include <Engine.Storage/Options/StorageDescriptor.hpp>
+#include <Engine.Storage/Provider/LocalFileSystemProvider.hpp>
 #include <Engine.Storage/Registry/StorageRegistry.hpp>
+#include <Engine.Storage/Repository/CacheFileSystemRepository.hpp>
+#include <Engine.Storage/Repository/EditorReadOnlyRepository.hpp>
+#include <Engine.Storage/Repository/ProjectFileSystemRepository.hpp>
+#include <Engine.Storage/Repository/RuntimeFileSystemRepository.hpp>
 #include <Engine.Storage/Url/Url.hpp>
 
 using namespace hg;
@@ -129,6 +134,31 @@ namespace StorageModule {
 
 			_registry = make_uptr<engine::storage::StorageRegistry>();
 			_registry->setup(*_config);
+
+			/**/
+
+			auto cacheBasePath = hg::fs::File::path_type {
+				_config->getTyped<String>(engine::cfg::EditorConfigProperty::eLocalCachePath).value<>().value()
+			};
+			auto projectBasePath = hg::fs::File::path_type {
+				_config->getTyped<String>(engine::cfg::ProjectConfigProperty::eLocalBasePath).value<>().value()
+			};
+			auto runtimeBasePath = hg::fs::File::path_type {
+				_config->getTyped<String>(engine::cfg::RuntimeConfigProperty::eLocalBasePath).value<>().value()
+			};
+			auto editorBasePath = hg::fs::File::path_type {
+				_config->getTyped<String>(engine::cfg::EditorConfigProperty::eLocalEditorPath).value<>().value()
+			};
+
+			auto lfsOwned = make_uptr<engine::storage::system::LocalFileSystemProvider>();
+			auto lfs = lfsOwned.get();
+
+			_registry->addProvider(std::move(lfsOwned));
+
+			_registry->addRepository(lfs->makeCacheRepository(std::move(cacheBasePath)));
+			_registry->addRepository(lfs->makeProjectRepository(std::move(projectBasePath)));
+			_registry->addRepository(lfs->makeRuntimeRepository(std::move(runtimeBasePath)));
+			_registry->addRepository(lfs->makeEditorRepository(std::move(editorBasePath)));
 		}
 
 		void TearDown() override {
