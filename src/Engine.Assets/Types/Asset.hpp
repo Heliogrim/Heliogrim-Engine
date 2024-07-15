@@ -53,7 +53,7 @@ namespace hg::engine::assets {
 		 * @author Julius
 		 * @date 09.01.2021
 		 */
-		~Asset() noexcept;
+		constexpr ~Asset() noexcept override = default;
 
 	protected:
 		/**
