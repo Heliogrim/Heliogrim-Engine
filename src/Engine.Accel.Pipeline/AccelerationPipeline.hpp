@@ -9,36 +9,36 @@
 #include "Bind/BindLayout.hpp"
 
 namespace hg::engine::accel {
-    class AccelerationPipeline :
-        public InheritBase<AccelerationPipeline> {
-    public:
-        using this_type = AccelerationPipeline;
+	class AccelerationPipeline :
+		public InheritBase<AccelerationPipeline> {
+	public:
+		using this_type = AccelerationPipeline;
 
-    protected:
-        AccelerationPipeline(mref<smr<const AccelerationEffect>> effect_) noexcept;
+	protected:
+		AccelerationPipeline(mref<smr<const AccelerationEffect>> effect_) noexcept;
 
-    public:
-        AccelerationPipeline(mref<this_type> other_) noexcept = delete;
+	public:
+		AccelerationPipeline(mref<this_type> other_) noexcept = delete;
 
-        AccelerationPipeline(cref<this_type> other_) = delete;
+		AccelerationPipeline(cref<this_type> other_) = delete;
 
-        virtual ~AccelerationPipeline();
+		~AccelerationPipeline() override;
 
-    protected:
-        smr<const AccelerationEffect> _effect;
-        Vector<smr<StageDerivat>> _stages;
+	protected:
+		smr<const AccelerationEffect> _effect;
+		Vector<smr<StageDerivat>> _stages;
 
-    public:
-        [[nodiscard]] smr<const AccelerationEffect> getEffect() const noexcept;
+	public:
+		[[nodiscard]] smr<const AccelerationEffect> getEffect() const noexcept;
 
-        [[nodiscard]] cref<Vector<smr<StageDerivat>>> getStageDerivates() const noexcept;
+		[[nodiscard]] cref<Vector<smr<StageDerivat>>> getStageDerivates() const noexcept;
 
-    protected:
-        BindLayout _bindLayout;
+	protected:
+		BindLayout _bindLayout;
 
-    public:
-        [[nodiscard]] cref<BindLayout> getBindingLayout() const noexcept;
+	public:
+		[[nodiscard]] cref<BindLayout> getBindingLayout() const noexcept;
 
-        void setBindingLayout(mref<BindLayout> layout_) noexcept;
-    };
+		void setBindingLayout(mref<BindLayout> layout_) noexcept;
+	};
 }

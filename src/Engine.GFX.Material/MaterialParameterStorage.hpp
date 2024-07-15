@@ -35,10 +35,10 @@ namespace hg::engine::gfx::material {
 		using this_type = MaterialParameterStorageBase;
 
 	protected:
-		MaterialParameterStorageBase() noexcept = default;
+		constexpr MaterialParameterStorageBase() noexcept = default;
 
 	public:
-		virtual ~MaterialParameterStorageBase() noexcept = default;
+		constexpr ~MaterialParameterStorageBase() noexcept override = default;
 	};
 
 	template <typename StoredType_>

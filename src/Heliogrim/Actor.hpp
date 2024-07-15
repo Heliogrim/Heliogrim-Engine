@@ -58,7 +58,7 @@ namespace hg {
 		 * @author Julius
 		 * @date 25.11.2021
 		 */
-		~Actor() noexcept;
+		~Actor() noexcept override;
 
 	public:
 		/**
