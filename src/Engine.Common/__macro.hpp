@@ -99,22 +99,7 @@
 #define UINT32_T(var_) static_cast<uint32_t>(var_)
 
 // Warnings
-#if __clang__
-#define START_SUPPRESS_WARNINGS \
-    _Pragma("clang diagnostic push") \
-    _Pragma("clang diagnostic ignored \"-Wall\"") \
-    _Pragma("clang diagnostic ignored \"-Weverything\"")
-#define STOP_SUPPRESS_WARNINGS \
-    _Pragma("clang diagnostic pop")
-#elif defined(_MSC_VER)
-#define START_SUPPRESS_WARNINGS \
-    __pragma(warning(push, 0))
-#define STOP_SUPPRESS_WARNINGS \
-    __pragma(warning(pop))
-#else
-#define START_SUPPRESS_WARNINGS
-#define STOP_SUPPRESS_WARNINGS
-#endif
+#include "__warning.hpp"
 
 // Alignment
 #ifdef __GNUC__
@@ -196,11 +181,13 @@
 #define IM_CORE_ERROR(msg_) ::hg::Logger::error(msg_)
 #define IM_DEBUG_LOG(msg_) ::hg::Logger::debug(msg_)
 
+START_SUPPRESS_WARNINGS
 #define IM_CORE_LOGF(format_, ...) ::hg::Logger::info(format_, ##__VA_ARGS__)
 #define IM_CORE_INFOF(format_, ...) ::hg::Logger::info(format_, ##__VA_ARGS__)
 #define IM_CORE_WARNF(format_, ...) ::hg::Logger::warn(format_, ##__VA_ARGS__)
 #define IM_CORE_ERRORF(format_, ...) ::hg::Logger::error(format_, ##__VA_ARGS__)
 #define IM_DEBUG_LOGF(format_, ...) ::hg::Logger::debug(format_, ##__VA_ARGS__)
+STOP_SUPPRESS_WARNINGS
 #else
 #define IM_CORE_LOG(msg_) ::hg::Logger::info(msg_)
 #define IM_CORE_INFO(msg_) ::hg::Logger::info(msg_)
@@ -208,9 +195,11 @@
 #define IM_CORE_ERROR(msg_) ::hg::Logger::error(msg_)
 #define IM_DEBUG_LOG(msg_)
 
+START_SUPPRESS_WARNINGS
 #define IM_CORE_LOGF(format_, ...) ::hg::Logger::info(format_, ##__VA_ARGS__)
 #define IM_CORE_INFOF(format_, ...) ::hg::Logger::info(format_, ##__VA_ARGS__)
 #define IM_CORE_WARNF(format_, ...) ::hg::Logger::warn(format_, ##__VA_ARGS__)
 #define IM_CORE_ERRORF(format_, ...) ::hg::Logger::error(format_, ##__VA_ARGS__)
 #define IM_DEBUG_LOGF(format_, ...)
+STOP_SUPPRESS_WARNINGS
 #endif
