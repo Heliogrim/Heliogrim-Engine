@@ -4,18 +4,18 @@
 #include <Engine.Reflect/Inherit/InheritBase.hpp>
 
 namespace hg::engine::gfx::cache {
-    // Warning: Do NOT instantiate ModelBatch itself (it might fail anyway cause of `novtable` annotation)
-    struct __declspec(novtable) ModelBatch :
-        public InheritBase<ModelBatch> {
-    public:
-        virtual ~ModelBatch() = default;
+	// Warning: Do NOT instantiate ModelBatch itself (it might fail anyway cause of `novtable` annotation)
+	struct __declspec(novtable) ModelBatch :
+		public InheritBase<ModelBatch> {
+	public:
+		~ModelBatch() override = default;
 
-    public:
-        ref<ModelBatch> operator=(cref<ModelBatch>) = delete;
+	public:
+		ref<ModelBatch> operator=(cref<ModelBatch>) = delete;
 
-        ref<ModelBatch> operator=(mref<ModelBatch>) noexcept = default;
+		ref<ModelBatch> operator=(mref<ModelBatch>) noexcept = default;
 
-    public:
-        virtual ptr<ModelBatch> clone() = 0;
-    };
+	public:
+		virtual ptr<ModelBatch> clone() = 0;
+	};
 }

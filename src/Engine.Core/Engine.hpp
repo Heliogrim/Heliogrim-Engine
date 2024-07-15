@@ -46,7 +46,7 @@ namespace hg::engine {
 		Engine();
 
 	public:
-		virtual ~Engine();
+		~Engine() override;
 
 	protected:
 		/**

@@ -47,7 +47,7 @@ namespace hg {
 		 * @author Julius
 		 * @date 24.10.2021
 		 */
-		~Level() noexcept;
+		~Level() noexcept override;
 
 	public:
 		/**

@@ -4,68 +4,68 @@
 #include "Inbuilt.hpp"
 
 namespace hg {
-    /**
-     * Forward Declaration
-     */
-    class Actor;
+	/**
+	 * Forward Declaration
+	 */
+	class Actor;
 
-    class ActorComponent :
-        public InheritMeta<ActorComponent, LogicComponent> {
-    public:
-        using this_type = ActorComponent;
-        using underlying_type = LogicComponent;
+	class ActorComponent :
+		public InheritMeta<ActorComponent, LogicComponent> {
+	public:
+		using this_type = ActorComponent;
+		using underlying_type = LogicComponent;
 
-        inline constexpr static component_type_id typeId { "ActorComponent"_typeId };
+		inline constexpr static component_type_id typeId { "ActorComponent"_typeId };
 
-    public:
-        ActorComponent(
-            mref<component_type_id> typeId_,
-            mref<CachedActorPointer> owner_,
-            mref<ptr<ActorComponent>> parent_
-        );
+	public:
+		ActorComponent(
+			mref<component_type_id> typeId_,
+			mref<CachedActorPointer> owner_,
+			mref<ptr<ActorComponent>> parent_
+		);
 
-        ActorComponent(mref<CachedActorPointer> owner_, mref<ptr<ActorComponent>> parent_);
+		ActorComponent(mref<CachedActorPointer> owner_, mref<ptr<ActorComponent>> parent_);
 
-        ActorComponent(mref<ActorComponent> other_) noexcept = default;
+		ActorComponent(mref<ActorComponent> other_) noexcept = default;
 
-        ActorComponent(cref<ActorComponent>) = delete;
+		ActorComponent(cref<ActorComponent>) = delete;
 
-        ~ActorComponent() = default;
+		~ActorComponent() override = default;
 
-    private:
-        CachedActorPointer _owner;
+	private:
+		CachedActorPointer _owner;
 
-    public:
-        [[nodiscard]] ptr<Actor> getOwner() const noexcept;
+	public:
+		[[nodiscard]] ptr<Actor> getOwner() const noexcept;
 
-    private:
-        ptr<ActorComponent> _parent;
+	private:
+		ptr<ActorComponent> _parent;
 
-    public:
-        [[nodiscard]] ptr<Actor> getRootActor() const noexcept;
+	public:
+		[[nodiscard]] ptr<Actor> getRootActor() const noexcept;
 
-        [[nodiscard]] ptr<ActorComponent> getRootComponent() const noexcept;
+		[[nodiscard]] ptr<ActorComponent> getRootComponent() const noexcept;
 
-        [[nodiscard]] ptr<ActorComponent> getParentComponent() const noexcept;
+		[[nodiscard]] ptr<ActorComponent> getParentComponent() const noexcept;
 
-    private:
-        math::Bounding _boundaries;
+	private:
+		math::Bounding _boundaries;
 
-    public:
-        [[nodiscard]] cref<math::Bounding> getBoundaries() const noexcept;
+	public:
+		[[nodiscard]] cref<math::Bounding> getBoundaries() const noexcept;
 
-    private:
-        Transform _localTransform;
+	private:
+		Transform _localTransform;
 
-    public:
-        [[nodiscard]] cref<Transform> getLocalTransform() const noexcept;
+	public:
+		[[nodiscard]] cref<Transform> getLocalTransform() const noexcept;
 
-        [[nodiscard]] ref<Transform> getLocalTransform() noexcept;
+		[[nodiscard]] ref<Transform> getLocalTransform() noexcept;
 
-    private:
-        Transform _worldTransform;
+	private:
+		Transform _worldTransform;
 
-    public:
-        [[nodiscard]] cref<Transform> getWorldTransform() const noexcept;
-    };
+	public:
+		[[nodiscard]] cref<Transform> getWorldTransform() const noexcept;
+	};
 }

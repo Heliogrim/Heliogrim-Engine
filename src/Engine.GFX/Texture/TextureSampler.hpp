@@ -24,7 +24,7 @@ namespace hg::engine::gfx {
 		 * @author Julius
 		 * @date 20.11.2020
 		 */
-		~TextureSampler() noexcept;
+		~TextureSampler() noexcept override;
 
 		/**
 		 * Setups with given device

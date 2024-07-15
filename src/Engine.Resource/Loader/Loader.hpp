@@ -35,7 +35,7 @@ namespace hg::engine::resource::loader {
 		LoaderBase() noexcept = default;
 
 	public:
-		virtual ~LoaderBase() noexcept = default;
+		~LoaderBase() noexcept override = default;
 
 	public:
 		[[nodiscard]] virtual smr<ResourceBase> operator()(
