@@ -77,7 +77,7 @@ namespace hg::engine {
 
 			} else if constexpr (std::is_same_v<CheckType, StringView>) {
 				if (std::is_constant_evaluated()) {
-					return CompileString { key_.data(), key_.length() }.hash();
+					return CompileString { &key_.front(), &key_.back() }.hash();
 				}
 				return hash::fnv1a(std::forward<KeyType_>(key_));
 
