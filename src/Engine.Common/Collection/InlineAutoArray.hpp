@@ -5,6 +5,7 @@
 
 #include "InlineArray.hpp"
 #include "../Wrapper.hpp"
+#include "../__macro.hpp"
 
 namespace hg {
 	/*
@@ -95,11 +96,14 @@ namespace hg {
 			_inlineEnd(inline_begin()),
 			_externalStorage(std::exchange(other_._externalStorage, nullptr)),
 			_externalEnd(std::exchange(other_._externalEnd, nullptr)) {
+			/**/
+			BEGIN_REGION_UNCHECKED_LLVL
 			for (auto* iIt = other_.inline_begin(); iIt < other_._inlineEnd; ++iIt) {
 				inline_emplace_back(std::move(*iIt));
 			}
 			std::_Destroy_range(other_.inline_begin(), other_._inlineEnd, _alloc);
 			other_._inlineEnd = other_.inline_begin();
+			END_REGION_UNCHECKED_LLVL
 		}
 
 		constexpr InlineAutoArray(cref<this_type>) = delete;
@@ -182,17 +186,21 @@ namespace hg {
 
 		private:
 			[[nodiscard]] constexpr pointer retrieve() const noexcept {
-				if (_idx < element_capacity) {
-					return &_inlineBase[_idx];
-				}
-				return &_externalBase[_idx - element_capacity];
-			}
-
-			[[nodiscard]] constexpr pointer retrieve() noexcept {
-				if (_idx < element_capacity) {
+				BEGIN_REGION_UNCHECKED_LLVL
+				if (_idx < static_cast<difference_type>(element_capacity)) {
 					return &_inlineBase[_idx];
 				}
 				return &_externalBase[_idx - static_cast<difference_type>(element_capacity)];
+				END_REGION_UNCHECKED_LLVL
+			}
+
+			[[nodiscard]] constexpr pointer retrieve() noexcept {
+				BEGIN_REGION_UNCHECKED_LLVL
+				if (_idx < static_cast<difference_type>(element_capacity)) {
+					return &_inlineBase[_idx];
+				}
+				return &_externalBase[_idx - static_cast<difference_type>(element_capacity)];
+				END_REGION_UNCHECKED_LLVL
 			}
 
 		public:
@@ -315,7 +323,7 @@ namespace hg {
 		}
 
 		[[nodiscard]] constexpr ptr<Type_> inline_last() const noexcept {
-			return _inlineEnd != inline_begin() ? _inlineEnd - 1 : _inlineEnd;
+			GUARD_UNCHECKED_LLVL(return _inlineEnd != inline_begin() ? _inlineEnd - 1 : _inlineEnd);
 		}
 
 		[[nodiscard]] constexpr size_type inline_size() const noexcept {
@@ -343,7 +351,7 @@ namespace hg {
 				_inlineEnd,
 				std::forward<decltype(args_)>(args_)...
 			);
-			return ++_inlineEnd;
+			GUARD_UNCHECKED_LLVL(return ++_inlineEnd);
 		}
 
 		constexpr void inline_pop_back() {
@@ -376,8 +384,10 @@ namespace hg {
 				_alloc.deallocate(_externalStorage, external_size());
 			}
 
+			BEGIN_REGION_UNCHECKED_LLVL
 			_externalStorage = newPt_;
 			_externalEnd = newPt_ + newSize_;
+			END_REGION_UNCHECKED_LLVL
 		}
 
 		constexpr void external_realloc_emplace(auto&&... args_) {
@@ -395,7 +405,10 @@ namespace hg {
 				}
 			}
 
+			BEGIN_REGION_UNCHECKED_LLVL
 			_traits.construct(_alloc, newPt + oldSize, std::forward<decltype(args_)>(args_)...);
+			END_REGION_UNCHECKED_LLVL
+
 			_Xchange_external(newPt, newSize);
 		}
 
