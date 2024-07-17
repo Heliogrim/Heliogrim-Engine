@@ -42,9 +42,9 @@
 [Dd]ist/
 
 # Don't fetch external dependencies
-[Ll]ibrary/*/**
-![Ll]ibrary/*/CMakeLists.txt
-![Ll]ibrary/*/*.patch
+[Vv]endor/*/**
+![Vv]endor/*/CMakeLists.txt
+![Vv]endor/*/*.patch
 
 # Weaken Rules for special cases
 !**/src/**/[Bb]uild/
