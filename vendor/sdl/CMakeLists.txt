@@ -1,79 +1,99 @@
 function(library_sdl_init)
 
-    cmake_minimum_required(VERSION 3.27.7)
-    include(FetchContent)
+	cmake_minimum_required(VERSION 3.27.7)
+	include(FetchContent)
 
-    name_to_external_alias(alias "sdl")
+	name_to_external_alias(alias "sdl")
 
-    #
-    set(SDL_DISABLE_INSTALL ON CACHE INTERNAL "" FORCE)
-    set(SDL_DISABLE_UNINSTALL ON CACHE INTERNAL "" FORCE)
+	#
 
-    set(SDL_OPENGL OFF CACHE INTERNAL "" FORCE)
-    set(SDL_OPENGLES OFF CACHE INTERNAL "" FORCE)
-    set(SDL_X11 OFF CACHE INTERNAL "" FORCE)
-    set(SDL_WAYLAND OFF CACHE INTERNAL "" FORCE)
-    set(SDL_RPI OFF CACHE INTERNAL "" FORCE)
-    set(SDL_ROCKCHIP OFF CACHE INTERNAL "" FORCE)
-    set(SDL_COCOA OFF CACHE INTERNAL "" FORCE)
-    set(SDL_DIRECTX OFF CACHE INTERNAL "" FORCE)
-    set(SDL_XINPUT OFF CACHE INTERNAL "" FORCE)
-    set(SDL_RENDER_D3D OFF CACHE INTERNAL "" FORCE)
-    set(SDL_RENDER_METAL OFF CACHE INTERNAL "" FORCE)
-    set(SDL_VIVANTE OFF CACHE INTERNAL "" FORCE)
-    set(SDL_METAL OFF CACHE INTERNAL "" FORCE)
-    set(SDL_KMSDRM OFF CACHE INTERNAL "" FORCE)
-    set(SDL_OFFSCREEN OFF CACHE INTERNAL "" FORCE)
-    set(SDL_DUMMYCAMERA OFF CACHE INTERNAL "" FORCE)
-    set(SDL_HIDAPI OFF CACHE INTERNAL "" FORCE)
-    set(SDL_HIDAPI_LIBUSB OFF CACHE INTERNAL "" FORCE)
-    set(SDL_VIRTUAL_JOYSTICK OFF CACHE INTERNAL "" FORCE)
-    set(SDL_HAPTIC OFF CACHE INTERNAL "" FORCE)
-    set(SDL_JOYSTICK OFF CACHE INTERNAL "" FORCE)
+	set(__USE_SHARED_LINKING ON)
+	set(__USE_STATIC_LINKING OFF)
+	if (DEFINED HELIOGRIM_FULL_STATIC_LINKING AND ${HELIOGRIM_FULL_STATIC_LINKING})
+		set(__USE_SHARED_LINKING OFF)
+		set(__USE_STATIC_LINKING ON)
+	endif ()
 
-    set(SDL_LIBUDEV OFF CACHE INTERNAL "" FORCE)
-    set(SDL_ASAN OFF CACHE INTERNAL "" FORCE)
-    set(SDL_CLANG_TIDY OFF CACHE INTERNAL "" FORCE)
-    set(SDL_CCACHE ON CACHE INTERNAL "" FORCE)
+	#
+	set(SDL_DISABLE_INSTALL ON CACHE INTERNAL "" FORCE)
+	set(SDL_DISABLE_UNINSTALL ON CACHE INTERNAL "" FORCE)
 
-    set(SDL_VULKAN ON CACHE INTERNAL "" FORCE)
-    set(SDL_RENDER_VULKAN ON CACHE INTERNAL "" FORCE)
+	set(SDL_OPENGL OFF CACHE INTERNAL "" FORCE)
+	set(SDL_OPENGLES OFF CACHE INTERNAL "" FORCE)
+	set(SDL_X11 OFF CACHE INTERNAL "" FORCE)
+	set(SDL_WAYLAND OFF CACHE INTERNAL "" FORCE)
+	set(SDL_RPI OFF CACHE INTERNAL "" FORCE)
+	set(SDL_ROCKCHIP OFF CACHE INTERNAL "" FORCE)
+	set(SDL_COCOA OFF CACHE INTERNAL "" FORCE)
+	set(SDL_DIRECTX OFF CACHE INTERNAL "" FORCE)
+	set(SDL_XINPUT OFF CACHE INTERNAL "" FORCE)
+	set(SDL_RENDER_D3D OFF CACHE INTERNAL "" FORCE)
+	set(SDL_RENDER_METAL OFF CACHE INTERNAL "" FORCE)
+	set(SDL_VIVANTE OFF CACHE INTERNAL "" FORCE)
+	set(SDL_METAL OFF CACHE INTERNAL "" FORCE)
+	set(SDL_KMSDRM OFF CACHE INTERNAL "" FORCE)
+	set(SDL_OFFSCREEN OFF CACHE INTERNAL "" FORCE)
+	set(SDL_DUMMYCAMERA OFF CACHE INTERNAL "" FORCE)
+	set(SDL_HIDAPI OFF CACHE INTERNAL "" FORCE)
+	set(SDL_HIDAPI_LIBUSB OFF CACHE INTERNAL "" FORCE)
+	set(SDL_VIRTUAL_JOYSTICK OFF CACHE INTERNAL "" FORCE)
+	set(SDL_HAPTIC OFF CACHE INTERNAL "" FORCE)
+	set(SDL_JOYSTICK OFF CACHE INTERNAL "" FORCE)
 
-    set(SDL_SHARED ON CACHE INTERNAL "" FORCE)
-    set(SDL_TEST OFF CACHE INTERNAL "" FORCE)
-    set(SDL_TEST_LIBRARY OFF CACHE INTERNAL "" FORCE)
-    set(SDL2_DISABLE_SDL2MAIN ON CACHE INTERNAL "" FORCE)
+	set(SDL_LIBUDEV OFF CACHE INTERNAL "" FORCE)
+	set(SDL_ASAN OFF CACHE INTERNAL "" FORCE)
+	set(SDL_CLANG_TIDY OFF CACHE INTERNAL "" FORCE)
+	set(SDL_CCACHE ON CACHE INTERNAL "" FORCE)
 
-    # Include Sub-Project
-    get_external_include_path(vendor_inc_path "sdl")
-    get_external_source_path(vendor_src_path "sdl")
+	set(SDL_VULKAN ON CACHE INTERNAL "" FORCE)
+	set(SDL_RENDER_VULKAN ON CACHE INTERNAL "" FORCE)
 
-    CachedFetchContent_Declare(
-            libsdl
-            GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-            GIT_TAG release-2.30.2
-            GIT_SHALLOW ON
-            GIT_PROGRESS ON
-            SOURCE_DIR "${vendor_src_path}"
-            EXCLUDE_FROM_ALL
-    )
-    FetchContent_MakeAvailable(
-            libsdl
-    )
+	set(SDL_SHARED ${__USE_SHARED_LINKING} CACHE INTERNAL "" FORCE)
+	set(SDL_STATIC ${__USE_STATIC_LINKING} CACHE INTERNAL "" FORCE)
+	set(SDL_TEST OFF CACHE INTERNAL "" FORCE)
+	set(SDL_TEST_LIBRARY OFF CACHE INTERNAL "" FORCE)
+	set(SDL2_DISABLE_SDL2MAIN ON CACHE INTERNAL "" FORCE)
 
-    # Setup Library
-    add_library(${PROJECT_NAME}::${alias} ALIAS SDL2)
+	# Include Sub-Project
+	get_external_include_path(vendor_inc_path "sdl")
+	get_external_source_path(vendor_src_path "sdl")
 
-    install_includes(
-            DIRECTORY "${vendor_src_path}/include/"
-            DESTINATION "${vendor_inc_path}/sdl/"
-    )
+	CachedFetchContent_Declare(
+			libsdl
+			GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
+			GIT_TAG release-2.30.2
+			GIT_SHALLOW ON
+			GIT_PROGRESS ON
+			SOURCE_DIR "${vendor_src_path}"
+			EXCLUDE_FROM_ALL
+			OVERRIDE_FIND_PACKAGE
+	)
+	FetchContent_MakeAvailable(
+			libsdl
+	)
 
-    export(TARGETS SDL2 NAMESPACE External:: FILE ${PROJECT_BINARY_DIR}/cmake/${alias}/${alias}-export.cmake)
+	# Resolve Export Target
 
-    # Deployment
-    get_external_lib_path(vendor_dist_path "sdl")
-    set_batch_target_properties(SDL2 ${vendor_dist_path})
+	set(__EXPOSED_TARGET SDL2)
+	set(__EXPOSED_AUX_TARGETS)
+	if (${__USE_STATIC_LINKING})
+		set(__EXPOSED_TARGET SDL2-static)
+		set(__EXPOSED_AUX_TARGETS sdl-build-options)
+	endif ()
+
+	# Setup Library
+	add_library(${PROJECT_NAME}::${alias} ALIAS ${__EXPOSED_TARGET})
+
+	install_includes(
+			DIRECTORY "${vendor_src_path}/include/"
+			DESTINATION "${vendor_inc_path}/sdl/"
+	)
+
+	export(TARGETS ${__EXPOSED_TARGET} ${__EXPOSED_AUX_TARGETS} NAMESPACE External:: FILE ${PROJECT_BINARY_DIR}/cmake/${alias}/${alias}-export.cmake)
+
+	# Deployment
+	get_external_lib_path(vendor_dist_path "sdl")
+	set_batch_target_properties(${__EXPOSED_TARGET} ${vendor_dist_path})
 
 endfunction()
 
