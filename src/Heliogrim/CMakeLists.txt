@@ -60,6 +60,8 @@ make_library_project(
 		${PROJECT_NAME}::Engine.Resource
 		${PROJECT_NAME}::Engine.Resource.Archive
 		${PROJECT_NAME}::Engine.Resource.Blob
+		${PROJECT_NAME}::Engine.Resource.Import
+		${PROJECT_NAME}::Engine.Resource.Load
 		${PROJECT_NAME}::Engine.Resource.Package
 		${PROJECT_NAME}::Engine.Scene
 		${PROJECT_NAME}::Engine.Scene.Game

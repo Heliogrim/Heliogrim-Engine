@@ -24,10 +24,6 @@ endmacro()
 
 # Directories
 
-macro(get_projects_path out)
-	set(${out} "${PROJECT_SOURCE_DIR}/projects")
-endmacro()
-
 macro(get_src_path out)
 	set(${out} "${PROJECT_SOURCE_DIR}/src")
 endmacro()
