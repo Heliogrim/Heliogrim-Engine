@@ -68,7 +68,7 @@ endforeach ()
 finalize_managed_libraries()
 
 # Modules
-get_projects_path(projects_directory)
+get_src_path(projects_directory)
 list_directories("projects" "${projects_directory}")
 
 set(tests ${projects})
