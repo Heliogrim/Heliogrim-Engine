@@ -29,30 +29,30 @@ set(DEFAULT_PROJECT_OPTIONS
 #
 # Include directories
 #
-get_library_path(lib_dir)
+get_vendor_path(vendor)
 set(DEFAULT_INCLUDE_DIRECTORIES
 		"${Vulkan_INCLUDE_DIR}"
-		"${lib_dir}/ankerl/include"
-		"${lib_dir}/assimp/include"
-		"${lib_dir}/dr_libs/include"
-		"${lib_dir}/expected/include"
-		"${lib_dir}/freetype2/include"
-		"${lib_dir}/gli/include"
-		"${lib_dir}/glm/include"
-		"${lib_dir}/glslang/include"
-		"${lib_dir}/ogg/include"
-		"${lib_dir}/optional/include"
-		"${lib_dir}/ryml/include"
-		"${lib_dir}/sdl/include"
-		"${lib_dir}/spdlog/include"
-		"${lib_dir}/spng/include"
-		"${lib_dir}/stb/include"
-		"${lib_dir}/tinyexr/include"
-		"${lib_dir}/vorbis/include"
-		"${lib_dir}/zlib/include")
+		"${vendor}/ankerl/include"
+		"${vendor}/assimp/include"
+		"${vendor}/dr_libs/include"
+		"${vendor}/expected/include"
+		"${vendor}/freetype2/include"
+		"${vendor}/gli/include"
+		"${vendor}/glm/include"
+		"${vendor}/glslang/include"
+		"${vendor}/ogg/include"
+		"${vendor}/optional/include"
+		"${vendor}/ryml/include"
+		"${vendor}/sdl/include"
+		"${vendor}/spdlog/include"
+		"${vendor}/spng/include"
+		"${vendor}/stb/include"
+		"${vendor}/tinyexr/include"
+		"${vendor}/vorbis/include"
+		"${vendor}/zlib/include")
 
 set(TEST_INCLUDE_DIRECTORIES
-		"${lib_dir}/gtest/include")
+		"${vendor}/gtest/include")
 
 #
 # Libraries
