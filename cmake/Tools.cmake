@@ -32,8 +32,8 @@ macro(get_src_path out)
 	set(${out} "${PROJECT_SOURCE_DIR}/src")
 endmacro()
 
-macro(get_library_path out)
-	set(${out} "${PROJECT_SOURCE_DIR}/library")
+macro(get_vendor_path out)
+	set(${out} "${PROJECT_SOURCE_DIR}/vendor")
 endmacro()
 
 macro(get_dist_base_path out)
@@ -57,18 +57,18 @@ macro(get_shared_dist_path out)
 endmacro()
 
 macro(get_external_lib_path out name)
-	get_library_path(base_path)
+	get_vendor_path(base_path)
 	gen_target_name_id(name_id)
 	set(${out} "${base_path}/${name}/bin/$<CONFIG>/${name_id}")
 endmacro()
 
 macro(get_external_include_path out name)
-	get_library_path(base_path)
+	get_vendor_path(base_path)
 	set(${out} "${base_path}/${name}/include")
 endmacro()
 
 macro(get_external_source_path out name)
-	get_library_path(base_path)
+	get_vendor_path(base_path)
 	set(${out} "${base_path}/${name}/compile")
 endmacro()
 

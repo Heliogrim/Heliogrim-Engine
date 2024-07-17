@@ -60,10 +60,10 @@ include(cmake/PreprocDefinitions.cmake)
 include(cmake/CompileOptions.cmake)
 
 # Handle external dependencies
-get_library_path(project_library_directory)
-file(GLOB externals CONFIGURE_DEPENDS LIST_DIRECTORIES true "${project_library_directory}/*")
+get_vendor_path(project_vendor_path)
+file(GLOB externals CONFIGURE_DEPENDS LIST_DIRECTORIES true "${project_vendor_path}/*")
 foreach (external ${externals})
-    add_subdirectory("${external}")
+	add_subdirectory("${external}")
 endforeach ()
 finalize_managed_libraries()
 
@@ -76,5 +76,5 @@ list(FILTER projects EXCLUDE REGEX "(\\.Test)")
 list(FILTER tests INCLUDE REGEX "\\.Test")
 
 foreach (lib IN LISTS projects tests)
-    add_subdirectory(${lib})
+	add_subdirectory(${lib})
 endforeach ()

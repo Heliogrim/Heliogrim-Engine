@@ -127,8 +127,8 @@
 			<ExpandedItem Condition="m_value != nullptr">m_value</ExpandedItem>
 		</Expand>
 	</Type>
-	
-	<Type Name="ankerl::unordered_dense::v4_1_2::detail::table&lt;*&gt;" ExcludeView="stl">
+
+	<Type Name="ankerl::unordered_dense::v4_4_0::detail::table&lt;*&gt;" ExcludeView="stl">
 		<Expand>
 			<ExpandedItem>m_values</ExpandedItem>
 		</Expand>

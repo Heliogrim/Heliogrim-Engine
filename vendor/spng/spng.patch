@@ -1,0 +1,13 @@
+﻿diff --git a/CMakeLists.txt b/CMakeLists.txt
+index da1917e..6cafe00 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -53,7 +53,7 @@ foreach(spng_TARGET ${spng_TARGETS})
+       $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/spng>
+       $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+     )
+-    target_link_libraries(${spng_TARGET} PRIVATE ZLIB::ZLIB)
++    target_link_libraries(${spng_TARGET} PRIVATE ${ZLIB_LIBRARIES})
+     target_link_libraries(${spng_TARGET} PRIVATE ${MATH_LIBRARY})
+ endforeach()
+ 
