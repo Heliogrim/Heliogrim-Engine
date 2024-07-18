@@ -1,0 +1,13 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index f33780f..c373398 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -52,8 +52,6 @@ if(WIN32)
+     set(BUILD_DLL_VERSIONINFO "" CACHE STRING "Set the version to be used in the loader.rc file. Default value is the currently generated header version")
+ endif()
+ 
+-find_package(VulkanHeaders CONFIG QUIET)
+-
+ include(GNUInstallDirs)
+ 
+ set(GIT_BRANCH_NAME "--unknown--")
