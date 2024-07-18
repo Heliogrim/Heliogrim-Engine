@@ -17,7 +17,7 @@ namespace hg::engine::render {
 
 		constexpr ResourceTable(const this_type&) noexcept = default;
 
-		constexpr ResourceTable(const this_type&&) noexcept = default;
+		constexpr ResourceTable(this_type&&) noexcept = default;
 
 		constexpr virtual ~ResourceTable() noexcept = default;
 
