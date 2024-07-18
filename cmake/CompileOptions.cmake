@@ -31,7 +31,6 @@ set(DEFAULT_PROJECT_OPTIONS
 #
 get_vendor_path(vendor)
 set(DEFAULT_INCLUDE_DIRECTORIES
-		"${Vulkan_INCLUDE_DIR}"
 		"${vendor}/ankerl/include"
 		"${vendor}/assimp/include"
 		"${vendor}/dr_libs/include"
@@ -49,10 +48,13 @@ set(DEFAULT_INCLUDE_DIRECTORIES
 		"${vendor}/stb/include"
 		"${vendor}/tinyexr/include"
 		"${vendor}/vorbis/include"
-		"${vendor}/zlib/include")
+		"${vendor}/vulkan-headers/include"
+		"${vendor}/zlib/include"
+)
 
 set(TEST_INCLUDE_DIRECTORIES
-		"${vendor}/gtest/include")
+		"${vendor}/gtest/include"
+)
 
 #
 # Libraries
@@ -76,9 +78,8 @@ set(DEFAULT_LIBRARIES
 		${PROJECT_NAME}::External-OSDependent
 		${PROJECT_NAME}::External-SPIRV
 		${PROJECT_NAME}::External-SPVRemapper
-
-		# External Libraries (Legacy)
-		"${Vulkan_LIBRARY}")
+		${PROJECT_NAME}::External-vulkan-loader
+)
 
 # Append Sanitizer Options
 if (SANITIZER_LINK_LIBS)
@@ -90,7 +91,8 @@ set(TEST_LIBRARIES
 		${PROJECT_NAME}::External-gtest
 		${PROJECT_NAME}::External-gtest_main
 		${PROJECT_NAME}::External-gmock
-		${PROJECT_NAME}::External-gmock_main)
+		${PROJECT_NAME}::External-gmock_main
+)
 
 if (${CMAKE_BUILD_TYPE} MATCHES "Debug")
 	set(DEFAULT_LIBRARIES ${DEFAULT_LIBRARIES})
