@@ -6,12 +6,15 @@
 /**
  * Graphic includes
  */
+#if not(defined(VK_USE_PLATFORM_ANDROID_KHR) || defined(VK_USE_PLATFORM_XLIB_KHR) || defined(VK_USE_PLATFORM_WAYLAND_KHR) || defined(VK_USE_PLATFORM_WIN32_KHR))
 #if defined(__ANDROID__)
 #define VK_USE_PLATFORM_ANDROID_KHR
 #elif defined(__linux__)
+// TODO: Check how we want to deal with X11 vs Wayland
 #define VK_USE_PLATFORM_XLIB_KHR
 #elif defined(_WIN32)
 #define VK_USE_PLATFORM_WIN32_KHR
+#endif
 #endif
 
 // #define VULKAN_HPP_DISABLE_ENHANCED_MODE
@@ -19,6 +22,10 @@
 // #define VULKAN_HPP_NO_SETTERS
 // #define VULKAN_HPP_NO_STRUCT_CONSTRUCTORS
 #define VULKAN_HPP_NO_SPACESHIP_OPERATOR
+
+#ifndef VK_NULL_HANDLE
+#define VK_NULL_HANDLE nullptr
+#endif
 
 START_SUPPRESS_WARNINGS
 #include <vulkan/vulkan.hpp>
