@@ -1,34 +1,14 @@
 #include <filesystem>
-#include <regex>
-#include <sstream>
 #include <Engine.Assets/AssetFactory.hpp>
+#include <Engine.Assets/Assets.hpp>
 #include <Engine.Common/GuidFormat.hpp>
 #include <Engine.Common/Concurrent/Promise.hpp>
-#include <Engine.Serialization/Archive/LayoutArchive.hpp>
-#include <Engine.Serialization/Layout/DataLayout.hpp>
 #include <Engine.Core/Engine.hpp>
+#include <Engine.GFX/Importer/ModelImporter.hpp>
 #include <Engine.Logging/Logger.hpp>
-#include <Engine.Pedantic/Clone/Clone.hpp>
-
-#include "ModelImporter.hpp"
-#include "../API/VkTranslate.hpp"
-#include "Engine.Assets/Assets.hpp"
-#include "Engine.Resource.Package/Linker/PackageLinker.hpp"
-#include "Engine.Serialization/Access/Structure.hpp"
-#include "Engine.Serialization/Archive/StructuredArchive.hpp"
-#include <Engine.Resource.Archive/BufferArchive.hpp>
-
-#include "Engine.Resource.Package/Attribute/PackageGuid.hpp"
-#include "Engine.Resource.Package/External/PackageIo.hpp"
-#include "Engine.Storage/IStorageRegistry.hpp"
-#include "Engine.Storage/StorageModule.hpp"
-#include "Engine.Storage/Options/StorageDescriptor.hpp"
-#include "Engine.Storage/Options/FileStorageDescriptor.hpp"
-#include "Engine.Storage/Options/PackageStorageDescriptor.hpp"
-#include "Engine.Storage/Storage/LocalFileStorage.hpp"
-#include "Engine.Storage/Storage/PackageStorage.hpp"
-#include "Engine.Storage/Url/FileUrl.hpp"
-#include "Engine.Storage/Url/Url.hpp"
+#include <Engine.Resource.Package/Linker/PackageLinker.hpp>
+#include <Engine.Storage/IStorageRegistry.hpp>
+#include <Engine.Storage/Storage/PackageStorage.hpp>
 
 using namespace hg::engine::gfx;
 using namespace hg;
@@ -63,7 +43,7 @@ FbxImporter::~FbxImporter() {}
 
 bool FbxImporter::canImport(cref<res::FileTypeId> typeId_, cref<hg::fs::File> file_) const noexcept {
 
-	if (typeId_.ext != ".fbx") {
+	if (typeId_.ext != ".fbx" && typeId_.ext != ".obj") {
 		return false;
 	}
 
@@ -80,40 +60,11 @@ FbxImporter::descriptor_type FbxImporter::descriptor() const noexcept {
 
 FbxImporter::import_result_type FbxImporter::import(cref<res::FileTypeId> typeId_, cref<hg::fs::File> file_) const {
 
-	const auto rootCwd { std::filesystem::current_path().append(R"(..\..)") };
-	const auto rootAssetPath { std::filesystem::path(R"(resources\assets\geometry)") };
-	const auto rootImportPath { std::filesystem::path(R"(resources\imports)") };
-
 	/**/
 
-	fs::Url targetUrl { fs::Path { rootAssetPath } };
-
-	/**/
-
-	const auto sourcePath { file_.path() };
-	const auto sourceFileName { sourcePath.filename().string() };
-	const auto sourceExt { sourcePath.extension().string() };
+	const auto sourceFileName { file_.path().filename().string() };
+	const auto sourceExt { file_.path().extension().string() };
 	const auto sourceName { sourceFileName.substr(0, sourceFileName.size() - sourceExt.size()) };
-
-	/**/
-	const auto targetSubDir { sourceName };
-	const auto targetDirPath { std::filesystem::path(targetUrl.path()).append(targetSubDir) };
-
-	const auto subRelativePath { std::filesystem::relative(targetDirPath, rootAssetPath) };
-
-	const auto storePath {
-		std::filesystem::path { rootCwd }
-		.append(rootImportPath.string())
-		.append(R"(fbx)")
-		.append(subRelativePath.string())
-		.append(sourceFileName)
-	};
-
-	/**/
-
-	if (/* std::filesystem::exists(targetDirPath) || */std::filesystem::exists(storePath)) {
-		return makeImportResult({ nullptr });
-	}
 
 	/**/
 
@@ -121,14 +72,6 @@ FbxImporter::import_result_type FbxImporter::import(cref<res::FileTypeId> typeId
 	if (data.indexCount == 0 && data.vertexCount == 0) {
 		return makeImportResult({ nullptr });
 	}
-
-	const auto srcPath = std::filesystem::relative(storePath, rootCwd);
-
-	/**/
-
-	IM_CORE_LOGF("Copying file to {:}", storePath.string());
-	std::filesystem::create_directories(storePath.parent_path());
-	std::filesystem::copy(sourcePath, storePath);
 
 	/**/
 
@@ -145,7 +88,7 @@ FbxImporter::import_result_type FbxImporter::import(cref<res::FileTypeId> typeId
 			data_.vertexCount,
 			data_.indexCount
 		);
-	}(srcPath, data);
+	}(file_.path(), data);
 	geom->setAssetName(sourceName);
 
 	IM_CORE_LOGF(
@@ -156,95 +99,6 @@ FbxImporter::import_result_type FbxImporter::import(cref<res::FileTypeId> typeId
 
 	/**/
 
-	auto memBuffer = make_uptr<resource::BufferArchive>();
-	auto arch = StructuredArchive(*memBuffer);
-
-	/**/
-
-	{
-		auto root = arch.insertRootSlot();
-		access::Structure<StaticGeometry>::serialize(geom.get(), std::move(root));
-	}
-
-	/**/
-
-	Guid archGuid {};
-	GuidGenerate(archGuid);
-
-	/**/
-
-	const auto packagePath = std::filesystem::path(rootCwd)
-		.append(targetDirPath.string())
-		.append(sourceName)
-		.concat(R"(.impackage)");
-
-	if (not std::filesystem::exists(packagePath.parent_path())) {
-		std::filesystem::create_directories(packagePath.parent_path());
-	}
-
-	/**/
-
-	auto engine = Engine::getEngine();
-	auto storageEngine = engine->getStorage();
-	auto storageRegistry = storageEngine->getRegistry();
-	auto storageIo = storageEngine->getIo();
-
-	const auto storageFileUrl = storage::FileUrl { clone(storage::FileScheme), fs::Path { packagePath } };
-	auto storageUnit = [](decltype(storageRegistry) registry_, const auto& fileUrl_) {
-
-		if (registry_->hasStorage(clone(fileUrl_))) {
-			return registry_->getStorageByUrl(clone(fileUrl_));
-		}
-
-		return registry_->insert(storage::FileStorageDescriptor { clone(fileUrl_) });
-
-	}(storageRegistry, storageFileUrl);
-
-	// TODO: Break
-	::hg::assertrt(storageUnit != nullptr);
-
-	/**/
-
-	resource::PackageGuid packageGuid {};
-	GuidGenerate(packageGuid);
-
-	// Question: Should happen implicitly? -> packageIo.create_empty_package();
-	auto packageUnit = storageRegistry->insert(
-		storage::PackageStorageDescriptor {
-			storage::PackageUrl { clone(packageGuid) },
-			std::move(storageUnit)
-		}
-	).into<storage::system::PackageStorage>();
-	auto packageAccess = storageIo->accessReadWrite(clone(packageUnit));
-
-	/**/
-
-	auto packageIo = storage::PackageIo { *storageIo };
-
-	auto linker = packageIo.create_empty_linker(packageAccess);
-	linker->store(
-		{ .type = resource::package::PackageArchiveType::eSerializedStructure, .guid = clone(archGuid) },
-		std::move(memBuffer)
-	);
-
-	/**/
-
-	packageIo.storeLinkerData(*linker);
-
-	auto& header = packageAccess->fully().header();
-	header.packageSize = header.indexOffset + header.indexSize - sizeof(resource::PackageHeader);
-	packageIo.writeHeader(packageAccess->fully(), streamoff {});
-
-	auto footerOffset = header.indexOffset + header.indexSize;
-	packageIo.writeFooter(packageAccess->fully(), static_cast<streamoff>(footerOffset));
-
-	/**/
-
-	IM_CORE_LOGF(
-		"Wrote new package `{}` file with archive `{}` for asset.",
-		encodeGuid4228(packageGuid),
-		encodeGuid4228(archGuid)
-	);
 	return makeImportResult(std::move(geom));
 }
 
