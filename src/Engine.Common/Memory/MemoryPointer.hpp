@@ -590,11 +590,11 @@ namespace hg {
 			return *(storage.template load<Ty_>());
 		}
 
-		[[nodiscard]] auto get() const noexcept {
+		[[nodiscard]] constexpr auto get() const noexcept {
 			return storage.template load<Ty_>();
 		}
 
-		[[nodiscard]] auto get() noexcept {
+		[[nodiscard]] constexpr auto get() noexcept {
 			return storage.template load<Ty_>();
 		}
 
