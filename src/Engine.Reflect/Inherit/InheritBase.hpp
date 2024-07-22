@@ -35,15 +35,9 @@ namespace hg {
 		}
 
 	private:
-		START_SUPPRESS_WARNINGS
-		// NOLINTBEGIN(*-const-return-type)
-
-		[[nodiscard]] constexpr const __restricted_ptr<const MetaClass> getMetaClassBase() const noexcept {
+		[[nodiscard]] constexpr std::add_const_t<__restricted_ptr<const MetaClass>> getMetaClassBase() const noexcept {
 			return ClassMetaBase::getMetaClass();
 		}
-
-		// NOLINTEND(*-const-return-type)
-		STOP_SUPPRESS_WARNINGS
 
 	public:
 		/**
