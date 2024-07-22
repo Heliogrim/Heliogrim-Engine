@@ -7,15 +7,17 @@
 #include "CompileString.hpp"
 
 namespace hg {
-    namespace {
-        template <typename Type_>
-        constexpr CompileString compile_type_name() {
-            return { __FUNCSIG__ };
-        }
-    }
+	namespace {
+		template <typename Type_>
+		constexpr CompileString compile_type_name() {
+			START_SUPPRESS_WARNINGS
+			return { __FUNCSIG__ };
+			STOP_SUPPRESS_WARNINGS
+		}
+	}
 
-    template <typename Type_>
-    constexpr type_id ctid() {
-        return type_id { force_constexpr<compile_type_name<Type_>().hash()> };
-    }
+	template <typename Type_>
+	constexpr type_id ctid() {
+		return type_id { force_constexpr<compile_type_name<Type_>().hash()> };
+	}
 }
