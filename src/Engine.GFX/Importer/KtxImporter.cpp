@@ -8,29 +8,29 @@
 #include <Engine.Common/Concurrent/Promise.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Logging/Logger.hpp>
-#include <Engine.Resource.Archive/BufferArchive.hpp>
 #include <Engine.Serialization/Archive/LayoutArchive.hpp>
 #include <Engine.Serialization/Layout/DataLayout.hpp>
-#include <Engine.Storage/Url/Url.hpp>
 
 #include "ImageImporter.hpp"
 #include "../API/VkTranslate.hpp"
 #include "Engine.Assets/Assets.hpp"
-#include "Engine.Resource.Package/Attribute/PackageGuid.hpp"
-#include "Engine.Resource.Package/External/PackageIo.hpp"
-#include "Engine.Resource.Package/Linker/PackageLinker.hpp"
-#include "Engine.Serialization/Access/Structure.hpp"
-#include "Engine.Serialization/Archive/StructuredArchive.hpp"
+#include "Engine.Common/Optional.hpp"
 #include "Engine.Storage/IStorageRegistry.hpp"
-#include "Engine.Storage/StorageModule.hpp"
-#include "Engine.Storage/Options/FileStorageDescriptor.hpp"
-#include "Engine.Storage/Options/PackageStorageDescriptor.hpp"
 #include "Engine.Storage/Options/StorageDescriptor.hpp"
 #include "Engine.Storage/Storage/PackageStorage.hpp"
 #include "Engine.Storage/Url/FileUrl.hpp"
 
+/**/
+#include <Engine.Common/GLM.hpp>
+#include <gli/load_ktx.hpp>
+#include <gli/texture.hpp>
+
 using namespace hg::engine::gfx;
 using namespace hg;
+
+/**/
+
+static Opt<vk::Format> deduceFromFormat(cref<gli::format> format_);
 
 /**/
 #pragma region KTX Format Specification
@@ -53,6 +53,22 @@ struct InternalKtxHeader {
 	u32 kvdSize;
 	u32 sgdOff;
 	u32 sgdSize;
+};
+
+struct InternalKtx11Header {
+	u32 endianess;
+	u32 glType;
+	u32 glTypeSize;
+	u32 glFormat;
+	u32 glInternalFormat;
+	u32 glBaseInternalFormat;
+	u32 pixelWidth;
+	u32 pixelHeight;
+	u32 pixelDepth;
+	u32 arrayCount;
+	u32 faceCount;
+	u32 mipLevelCount;
+	u32 kvdSize;
 };
 
 struct InternalKtxLevel {
@@ -91,7 +107,10 @@ bool KtxImporter::canImport(cref<res::FileTypeId> typeId_, cref<hg::fs::File> fi
 		return false;
 	}
 
-	constexpr auto headerSize { sizeof(ktx20Identifier) + sizeof(InternalKtxHeader) };
+	constexpr auto headerSize {
+		MAX(sizeof(ktx20Identifier), sizeof(gli::detail::FOURCC_KTX10)) +
+		MAX(sizeof(InternalKtxHeader), sizeof(InternalKtx11Header))
+	};
 	if (file_.size() < headerSize) {
 		return false;
 	}
@@ -117,7 +136,7 @@ static KtxImporter::import_result_type makeImportResult(mref<KtxImporter::import
 	return result;
 }
 
-static string normalizeDirName(cref<string> value_) {
+[[maybe_unused]] static string normalizeDirName(cref<string> value_) {
 
 	// sandstone_blocks_05_8k_png
 	// cobblestone_large_01_8k_png
@@ -140,47 +159,11 @@ static string normalizeDirName(cref<string> value_) {
 
 KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId_, cref<hg::fs::File> file_) const {
 
-	const auto rootCwd { std::filesystem::current_path().append(R"(..\..)") };
-	const auto rootAssetPath { std::filesystem::path(R"(resources\assets\texture)") };
-	const auto rootImportPath { std::filesystem::path(R"(resources\imports)") };
-
 	/**/
 
-	fs::Url targetUrl { fs::Path { rootAssetPath } };
-
-	// TODO:
-	const auto sourcePath { file_.path() };
-	const auto sourceFileName { sourcePath.filename().string() };
-	const auto sourceExt { sourcePath.extension().string() };
+	const auto sourceFileName { file_.path().filename().string() };
+	const auto sourceExt { file_.path().extension().string() };
 	const auto sourceName { sourceFileName.substr(0, sourceFileName.size() - sourceExt.size()) };
-
-	const bool isKtx2 { sourceExt.contains("ktx2") };
-
-	/**/
-	const auto targetSubDir { normalizeDirName(sourceName) };
-	const auto targetDirPath { std::filesystem::path(targetUrl.path()).append(targetSubDir) };
-
-	const auto subRelativePath { std::filesystem::relative(targetDirPath, rootAssetPath) };
-
-	const auto storePath {
-		std::filesystem::path { rootCwd }
-		.append(rootImportPath.string())
-		.append(isKtx2 ? R"(ktx2)" : R"(ktx)")
-		.append(subRelativePath.string())
-		.append(sourceFileName)
-	};
-
-	/**/
-
-	if (/* std::filesystem::exists(targetDirPath) || */std::filesystem::exists(storePath)) {
-		return makeImportResult({ nullptr, nullptr });
-	}
-
-	/**/
-
-	IM_CORE_LOGF("Copying file to {:}", storePath.string());
-	std::filesystem::create_directories(storePath.parent_path());
-	std::filesystem::copy(sourcePath, storePath);
 
 	/**/
 
@@ -190,16 +173,16 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
 	auto& factory { *Engine::getEngine()->getAssets()->getFactory() };
 
 	auto imgAsset { factory.createImageAsset() };
-	auto* img { static_cast<ptr<Image>>(imgAsset.get()) };
+	auto& image = *imgAsset;
 
 	auto texAsset { factory.createTextureAsset() };
-	auto* tex { static_cast<ptr<TextureAsset>>(texAsset.get()) };
+	auto& texture = *texAsset;
 
 	/**/
 
-	const auto imgSrcPath { std::filesystem::relative(storePath, rootCwd) };
-	img->setAssetName(sourceName);
-	img->addSource(fs::Url { "file"sv, imgSrcPath.string() });
+	// TODO: Remap the source file url.
+	image.setAssetName(sourceName);
+	image.addSource(fs::Url { "file"sv, file_.path().string() });
 
 	IM_CORE_LOGF(
 		"Created new image asset `{}` -> `{}`",
@@ -209,52 +192,94 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
 
 	/**/
 
-	std::ifstream ifs { sourcePath, std::ios::in | std::ios::binary };
+	std::ifstream ifs { file_.path(), std::ios::in | std::ios::binary };
 	assert(ifs);
 
 	ifs.seekg(0, std::ios::beg);
-	const auto beg { ifs.tellg() };
 
-	constexpr auto mem_block_size { 4096uLL };
-	std::vector<char> raw(mem_block_size);
+	char internalIdentifier[sizeof(ktx20Identifier)] {};
+	ifs.read(internalIdentifier, sizeof(internalIdentifier));
 
-	ifs.read(raw.data(), mem_block_size);
-	const auto end { ifs.tellg() };
+	if (std::memcmp(internalIdentifier, ktx20Identifier, sizeof(ktx20Identifier)) == 0) {
 
-	ifs.close();
-	const auto readSize { end - beg };
+		InternalKtxHeader internalHeader {};
+		ifs.read(std::bit_cast<char*>(&internalHeader), sizeof(internalHeader));
+		::hg::assertrt(not ifs.fail() && not ifs.bad());
 
-	constexpr auto headerSize { sizeof(InternalKtxHeader) };
-	assert(readSize >= headerSize + /* Magic Offset */12);
+		/**/
 
-	auto* cursor { raw.data() + 12uLL };
-	cref<InternalKtxHeader> header { *reinterpret_cast<ptr<const InternalKtxHeader>>(cursor) };
+		texture.setAssetName(sourceName);
+		texture.setBaseImage(image.get_guid());
+
+		texture.setExtent(
+			{
+				static_cast<u32>(internalHeader.pixelWidth),
+				std::max(static_cast<u32>(internalHeader.pixelHeight), 1u),
+				std::max(static_cast<u32>(internalHeader.pixelDepth), 1u)
+			}
+		);
+
+		texture.setTextureFormat(
+			api::vkTranslateFormat(*reinterpret_cast<const vk::Format*>(&internalHeader.vkFormat))
+		);
+		texture.setMipLevelCount(std::max(internalHeader.levelCount, 1u));
+
+		// TODO: Replace with actual/correct type resolving for textures
+		if (internalHeader.faceCount <= 1uL) {
+			texture.setTextureType(TextureType::e2d);
+		} else if (internalHeader.faceCount == 6uL) {
+			texture.setTextureType(TextureType::eCube);
+		} else if (internalHeader.faceCount > 1uL) {
+			texture.setTextureType(TextureType::e2dArray);
+		}
+
+	} else if (std::memcmp(internalIdentifier, gli::detail::FOURCC_KTX10, sizeof(gli::detail::FOURCC_KTX10)) == 0) {
+
+		InternalKtx11Header internalHeader {};
+		ifs.read(std::bit_cast<char*>(&internalHeader), sizeof(internalHeader));
+		::hg::assertrt(not ifs.fail() && not ifs.bad());
+
+		/**/
+
+		gli::texture glitex = gli::load_ktx(file_.path().string());
+
+		/**/
+
+		texture.setAssetName(sourceName);
+		texture.setBaseImage(image.get_guid());
+
+		const auto lvlZeroExt = glitex.extent(0);
+		texture.setExtent(
+			{
+				static_cast<u32>(lvlZeroExt.x),
+				std::max(static_cast<u32>(lvlZeroExt.y), 1u),
+				std::max(static_cast<u32>(lvlZeroExt.z), 1u)
+			}
+		);
+
+		const auto lvlZeroForm = glitex.format();
+		const auto format = deduceFromFormat(lvlZeroForm);
+		::hg::assertrt(format.has_value());
+
+		texture.setTextureFormat(api::vkTranslateFormat(format.value()));
+		texture.setMipLevelCount(std::max(internalHeader.mipLevelCount, 1u));
+
+		// TODO: Replace with actual/correct type resolving for textures
+		if (glitex.faces() <= 1uL) {
+			texture.setTextureType(TextureType::e2d);
+		} else if (glitex.faces() == 6uL) {
+			texture.setTextureType(TextureType::eCube);
+		} else if (glitex.faces() > 1uL) {
+			texture.setTextureType(TextureType::e2dArray);
+		}
+
+	} else {
+		::hg::panic();
+	}
 
 	/**/
 
-	tex->setAssetName(sourceName);
-	tex->setBaseImage(img->get_guid());
-
-	tex->setExtent(
-		{
-			static_cast<u32>(header.pixelWidth),
-			std::max(static_cast<u32>(header.pixelHeight), 1u),
-			std::max(static_cast<u32>(header.pixelDepth), 1u)
-		}
-	);
-
-	tex->setTextureFormat(api::vkTranslateFormat(*reinterpret_cast<const vk::Format*>(&header.vkFormat)));
-	tex->setMipLevelCount(std::max(header.levelCount, 1u));
-
-	// TODO: Replace with actual/correct type resolving for textures
-	if (header.faceCount <= 1uL) {
-		tex->setTextureType(TextureType::e2d);
-	} else if (header.faceCount == 6uL) {
-		tex->setTextureType(TextureType::eCube);
-	} else if (header.faceCount > 1uL) {
-		tex->setTextureType(TextureType::e2dArray);
-	}
-
+	ifs.close();
 	IM_CORE_LOGF(
 		"Created new texture asset `{}` -> `{}`",
 		texAsset->getAssetName(),
@@ -263,113 +288,113 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
 
 	/**/
 
-	#define EDITOR TRUE
+	return makeImportResult({ std::move(texAsset), std::move(imgAsset) });
+}
 
-	#ifdef EDITOR
+/**/
 
-	/* Serialize Image */
+Opt<vk::Format> deduceFromFormat(cref<gli::format> format_) {
 
-	auto imgBuffer = make_uptr<resource::BufferArchive>();
-
-	/**/
-
-	{
-		StructuredArchive imgArch { *imgBuffer };
-		auto root = imgArch.insertRootSlot();
-		access::Structure<Image>::serialize(img, std::move(root));
-	}
-
-	Guid imgArchGuid {};
-	GuidGenerate(imgArchGuid);
-
-	/* Serialize Texture */
-
-	auto texBuffer = make_uptr<resource::BufferArchive>();
-
-	/**/
-
-	{
-		StructuredArchive texArch { *texBuffer };
-		auto root = texArch.insertRootSlot();
-		access::Structure<TextureAsset>::serialize(tex, std::move(root));
-	}
-
-	Guid texArchGuid {};
-	GuidGenerate(texArchGuid);
-
-	/* Generate Target Path */
-
-	const auto packagePath {
-		std::filesystem::path { rootCwd }.append(targetDirPath.string()).append(sourceName).concat(R"(.impackage)")
-	};
-
-	if (not std::filesystem::exists(packagePath.parent_path())) {
-		std::filesystem::create_directories(packagePath.parent_path());
-	}
-
-	/* Generate Package */
-
-	auto engine = Engine::getEngine();
-	auto storageEngine = engine->getStorage();
-	auto storageRegistry = storageEngine->getRegistry();
-	auto storageIo = storageEngine->getIo();
-
-	const auto storageFileUrl = storage::FileUrl { clone(storage::FileScheme), fs::Path { packagePath } };
-	auto storageUnit = [](decltype(storageRegistry) registry_, const auto& fileUrl_) {
-
-		if (registry_->hasStorage(clone(fileUrl_))) {
-			return registry_->getStorageByUrl(clone(fileUrl_));
+	switch (format_) {
+		/**
+		 * R Formats (2D Images)
+		 *
+		 * Used for alpha, roughness, displacement
+		 */
+		case gli::FORMAT_R16_SFLOAT_PACK16: {
+			return Some(vk::Format::eR16Sfloat);
+		}
+		case gli::FORMAT_R32_SFLOAT_PACK32: {
+			return Some(vk::Format::eR32Sfloat);
 		}
 
-		return registry_->insert(storage::FileStorageDescriptor { clone(fileUrl_) });
-
-	}(storageRegistry, storageFileUrl);
-
-	// TODO: Break
-	::hg::assertrt(storageUnit != nullptr);
-
-	/**/
-
-	resource::PackageGuid packageGuid {};
-	GuidGenerate(packageGuid);
-
-	// Question: Should happen implicitly? -> packageIo.create_empty_package();
-	auto packageUnit = storageRegistry->insert(
-		storage::PackageStorageDescriptor {
-			storage::PackageUrl { clone(packageGuid) },
-			std::move(storageUnit)
+		/**
+		 * D Formats (2D Images)
+		 *
+		 * Used for depth images or possible for alpha blending
+		 */
+		case gli::FORMAT_D16_UNORM_PACK16: {
+			return Some(vk::Format::eD16Unorm);
 		}
-	).into<storage::system::PackageStorage>();
-	auto packageAccess = storageIo->accessReadWrite(clone(packageUnit));
+		case gli::FORMAT_D32_SFLOAT_PACK32: {
+			return Some(vk::Format::eD32Sfloat);
+		}
 
-	/* Store Data to Package */
+		/**
+		 * DS Formats (2D Images)
+		 *
+		 * Used for depth stencil images
+		 */
+		case gli::FORMAT_D16_UNORM_S8_UINT_PACK32: {
+			return Some(vk::Format::eD16UnormS8Uint);
+		}
+		case gli::FORMAT_D32_SFLOAT_S8_UINT_PACK64: {
+			return Some(vk::Format::eD32SfloatS8Uint);
+		}
 
-	auto packageIo = storage::PackageIo { *storageIo };
-	auto linker = packageIo.create_empty_linker(packageAccess);
+		/**
+		 * RGB Formats (2D Images)
+		 *
+		 * Used for color textures like albedo, sample maps or general image
+		 */
+		case gli::FORMAT_RGB8_UNORM_PACK8: {
+			return Some(vk::Format::eR8G8B8Unorm);
+		}
+		case gli::FORMAT_RGB8_SNORM_PACK8: {
+			return Some(vk::Format::eR8G8B8Snorm);
+		}
+		case gli::FORMAT_RGB16_UNORM_PACK16: {
+			return Some(vk::Format::eR16G16B16A16Unorm);
+		}
+		case gli::FORMAT_RGB32_UINT_PACK32: {
+			return Some(vk::Format::eR32G32B32Uint);
+		}
+		case gli::FORMAT_RGB32_SFLOAT_PACK32: {
+			return Some(vk::Format::eR32G32B32Sfloat);
+		}
 
-	linker->store(
-		{ .type = resource::package::PackageArchiveType::eSerializedStructure, .guid = std::move(imgArchGuid) },
-		std::move(imgBuffer)
-	);
+		/**
+		* RGBA Formats (2D Images)
+		*
+		* Used for color textures with alpha like albedo + blending or sample maps
+		*/
+		case gli::FORMAT_RGBA8_UNORM_PACK8: {
+			return Some(vk::Format::eR8G8B8A8Unorm);
+		}
+		case gli::FORMAT_RGBA8_SRGB_PACK8: {
+			return Some(vk::Format::eR8G8B8A8Srgb);
+		}
+		case gli::FORMAT_RGBA8_SNORM_PACK8: {
+			return Some(vk::Format::eR8G8B8A8Snorm);
+		}
+		case gli::FORMAT_RGBA16_UNORM_PACK16: {
+			return Some(vk::Format::eR16G16B16A16Unorm);
+		}
+		case gli::FORMAT_RGBA16_SFLOAT_PACK16: {
+			return Some(vk::Format::eR16G16B16A16Sfloat);
+		}
+		case gli::FORMAT_RGBA32_UINT_PACK32: {
+			return Some(vk::Format::eR32G32B32A32Uint);
+		}
+		case gli::FORMAT_RGBA32_SFLOAT_PACK32: {
+			return Some(vk::Format::eR32G32B32A32Sfloat);
+		}
 
-	linker->store(
-		{ .type = resource::package::PackageArchiveType::eSerializedStructure, .guid = std::move(texArchGuid) },
-		std::move(texBuffer)
-	);
-
-	/* Flush/Write the package */
-
-	packageIo.storeLinkerData(*linker);
-
-	auto& packageHeader = packageAccess->fully().header();
-	packageHeader.packageSize = packageHeader.indexOffset + packageHeader.indexSize - sizeof(resource::PackageHeader);
-	packageIo.writeHeader(packageAccess->fully(), streamoff {});
-
-	auto footerOffset = packageHeader.indexOffset + packageHeader.indexSize;
-	packageIo.writeFooter(packageAccess->fully(), static_cast<streamoff>(footerOffset));
-
-	#endif
-
-	/**/
-	return makeImportResult({ tex, img });
+		/**
+		* RGB(A) Formats (Compressed Cube Images)
+		*/
+		case gli::FORMAT_RGBA_ASTC_8X8_UNORM_BLOCK16: {
+			return Some(vk::Format::eAstc8x8UnormBlock);
+		}
+		case gli::FORMAT_RGB_ETC2_UNORM_BLOCK8: {
+			return Some(vk::Format::eEtc2R8G8B8UnormBlock);
+		}
+		case gli::FORMAT_RGBA_DXT5_UNORM_BLOCK16: {
+			// TODO: Temporary
+			return Some(vk::Format::eBc2UnormBlock);
+		}
+		default: {
+			return None;
+		}
+	}
 }
