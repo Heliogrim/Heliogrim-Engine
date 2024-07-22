@@ -26,9 +26,11 @@
 #include "Engine.Assets/Types/Image.hpp"
 #include "Engine.Assets/Types/Geometry/StaticGeometry.hpp"
 #include "Engine.Assets/Types/Texture/TextureAsset.hpp"
+#include "Engine.Core/Module/Modules.hpp"
 #include "Engine.Resource.Archive/BufferArchive.hpp"
 #include "Engine.Resource.Archive/StorageReadonlyArchive.hpp"
 #include "Engine.Resource/ResourceManager.hpp"
+#include "Engine.Resource.Package/Attribute/MagicBytes.hpp"
 #include "Engine.Resource.Package/Attribute/PackageGuid.hpp"
 #include "Engine.Resource.Package/External/PackageIo.hpp"
 #include "Engine.Resource.Package/Linker/PackageLinker.hpp"
@@ -53,189 +55,379 @@ namespace hg::engine::serialization {
 	class RecordScopedSlot;
 }
 
+struct Indexed {
+	std::filesystem::path primary;
+	size_t primaryCount;
+
+	std::filesystem::path meta;
+	Opt<concurrent::future<void>> scheduled;
+};
+
 /**/
+
+// @formatter:off
 static void packageDiscoverAssets(mref<Arci<storage::system::PackageStorage>> packStore_);
-
 static bool isArchivedAsset(mref<serialization::RecordScopedSlot> record_);
-
 static bool tryLoadArchivedAsset(mref<serialization::RecordScopedSlot> record_);
+static bool autoImport(ref<Indexed> indexed_);
+// @formatter:on
 
 /**/
 
 #pragma region File System Loading
 
-static void dispatchLoad(cref<path> path_) {
-	scheduler::exec(
-		[file = path_]() {
-			// TODO:
+#if ENV_WIN
+constexpr static auto prefix_extension = L'.';
+constexpr static auto packed_extension = std::wstring_view { L".imp" };
+#else
+constexpr static auto prefix_extension = '.';
+constexpr static auto packed_extension = std::string_view { R"(.imp)" };
+#endif
 
-			constexpr auto minLength = sizeof(asset_guid) + sizeof(asset_type_id);
+// @formatter:off
+[[nodiscard]] static bool matchingMagicBytes(cref<path> lfs_);
+[[nodiscard]] static bool isPackedFile(cref<path> lfs_);
+[[nodiscard]] static bool convergentBundleName(cref<path> lfsBundle_);
+// @formatter:on
 
-			std::ifstream ifs { file, std::ios::in | std::ios::binary };
-			ifs.seekg(0, std::ios::beg);
+// @formatter:off
+[[nodiscard]] static bool isPackedAsset(cref<path> lfs_);
+[[nodiscard]] static bool isMetaAsset(cref<path> lfs_);
+[[nodiscard]] static bool isOpaqueAsset(cref<path> lfs_);
+[[nodiscard]] static bool isBundleAsset(cref<path> lfs_);
+// @formatter:on
 
-			resource::BufferArchive archive {};
-			archive.resize(minLength, {});
+// @formatter:off
+[[nodiscard]] static Opt<path> getMetaAssetFor(cref<path> lfsBundleOrOpaque_);
+[[nodiscard]] static Opt<path> getBundleOrOpaqueFor(cref<path> lfsMeta_);
+// @formatter:on
 
-			auto start { ifs.tellg() };
-			ifs.read(reinterpret_cast<char*>(archive.data()), archive.size());
-			auto end { ifs.tellg() };
+/**/
 
-			if (ifs.bad()) {
-				// Can't even read asset guid or type id, so no viable data
-				return;
-			}
-
-			const auto length = end - start;
-			if (length < minLength) {
-				// Can't even read asset guid or type id, so no viable data
-				return;
-			}
-
-			/**/
-
-			asset_guid possibleGuid { invalid_asset_guid };
-			asset_type_id possibleTypeId {};
-
-			// TODO: Use predefined data layouts to deserialize guid and type id, cause they are not representable as u64 at every platform
-			archive >> reinterpret_cast<ref<u64>>(possibleGuid);
-			archive >> reinterpret_cast<ref<u64>>(possibleTypeId);
-
-			if (possibleGuid == invalid_asset_guid) {
-				return;
-			}
-
-			if (possibleTypeId.data == 0) {
-				return;
-			}
-
-			/**/
-
-			const auto& layouts = serialization::LayoutManager::get();
-			const auto layout = layouts.getLayout(possibleTypeId);
-
-			if (not layout || not layout->hasClass()) {
-				// Seams not to be a valid data package, asset type was not bootstrapped correctly or asset is not generically reconstructable
-				return;
-			}
-
-			/**/
-
-			ifs.seekg(0, std::ios::end);
-			end = ifs.tellg();
-
-			ifs.seekg(0, std::ios::beg);
-			start = ifs.tellg();
-
-			archive.seek(0);
-			archive.resize(end - start, {});
-
-			ifs.read(reinterpret_cast<ptr<char>>(archive.data()), archive.size());
-
-			if (ifs.bad()) {
-				// Something went wrong while reading the actual data
-				IM_CORE_ERRORF("Received an error while reading possible asset file `{}`", file.string());
-				return;
-			}
-
-			/**/
-
-			::hg::todo_panic();
-
-			// Warning: Unsafe operation, should be capsulated within io system
-			auto* obj { layout->reflect().instantiate() };
-			const std::span<u8, std::dynamic_extent> view {
-				reinterpret_cast<ptr<u8>>(obj),
-				static_cast<u64>(layout->size())
-			};
-
-			layout->dispatch().load(archive, view);
-
-			/**/
-
-			//auto* asset { static_cast<ptr<engine::assets::Asset>>(obj) };
-			//Engine::getEngine()->getAssets()->getRegistry()->insert({ asset });
-		}
-	);
+bool matchingMagicBytes(cref<path> lfs_) {
+	auto fstream = std::fstream { lfs_, std::ios::in | std::ios::binary };
+	Array<_::byte, resource::PackageMagicBytes.size()> buffer {};
+	fstream.read(std::bit_cast<char*>(buffer.data()), buffer.size());
+	return std::memcmp(buffer.data(), resource::PackageMagicBytes.data(), resource::PackageMagicBytes.size()) == 0;
 }
 
-static Optional<concurrent::future<void>> tryDispatchLoad(cref<path> path_) {
-
-	const auto extension = path_.extension().string();
-
-	if (extension.empty()) {
-		return tl::nullopt;
-	}
-
-	const auto reg = Engine::getEngine()->getStorage()->getRegistry();
-	auto io = Engine::getEngine()->getStorage()->getIo();
-	auto packIo = storage::PackageIo { *io };
-
-	if (extension.ends_with(".imp") || extension.ends_with(".impackage")) {
-
-		// TODO: Rework
-		auto storeFileUrl = storage::FileUrl { clone(storage::FileScheme), engine::fs::Path { path_ } };
-		auto storeFile = reg->insert(storage::FileStorageDescriptor { clone(storeFileUrl) });
-
-		// Validate
-		if (not packIo.isPackageFile(storeFileUrl, storeFile)) {
-			IM_CORE_WARNF(
-				"Encountered file `{}` which is not identifiable as package upon inspection.",
-				path_.string()
-			);
-			return tl::nullopt;
-		}
-
-		// Question: How to communicate that we want to load the package from backing storage internally?
-		auto accessFile = io->accessReadonlyBlob(storeFile.into<storage::system::LocalFileStorage>());
-		auto package = packIo.create_package_from_storage(accessFile);
-
-		auto storePackUrl = storage::PackageUrl { resource::PackageGuid::ntoh(package->header().guid) };
-		auto storePack = reg->insert(
-			storage::PackageStorageDescriptor { std::move(storePackUrl), std::move(storeFile) }
-		).into<storage::system::PackageStorage>();
-
-		/* Discover data within package */
-		return tl::make_optional(
-			scheduler::async<void>(
-				[storePack = std::move(storePack)]()mutable {
-					packageDiscoverAssets(std::move(storePack));
-				}
-			)
-		);
-
-	} else if (extension.ends_with(".ima") || extension.ends_with(".imasset")) {
-
-		dispatchLoad(path_);
-	}
-
-	return tl::nullopt;
+bool isPackedFile(cref<path> lfs_) {
+	return lfs_.native().ends_with(packed_extension) && matchingMagicBytes(lfs_);
 }
 
-static void indexLoadable(
-	_In_ cref<path> path_,
-	_Inout_ ref<Vector<path>> backlog_,
-	_Inout_ ref<Vector<concurrent::future<void>>> awaits_
-) {
+bool convergentBundleName(cref<path> lfsBundle_) {
 
-	const auto directory {
-		std::filesystem::directory_iterator { path_, std::filesystem::directory_options::follow_directory_symlink }
+	const auto range = std::filesystem::directory_iterator {
+		lfsBundle_, std::filesystem::directory_options::follow_directory_symlink
 	};
 
-	for (const auto& entry : directory) {
+	const auto candidate = clone(lfsBundle_).append(lfsBundle_.filename().native()).native();
+	auto accounted = 0uLL;
 
-		if (entry.is_directory()) {
-			backlog_.push_back(entry.path());
-			continue;
+	for (auto& effector : range) {
+
+		if (effector.is_directory()) {
+			// Note: Fail on nested structure.
+			return false;
 		}
 
-		if (entry.is_regular_file()) {
-			auto mayAsync = tryDispatchLoad(entry.path());
-			if (mayAsync.has_value()) {
-				awaits_.emplace_back(std::move(mayAsync.value()));
-				mayAsync.reset();
+		if (not isOpaqueAsset(effector)) {
+			// Note: We expect to only discover opaque assets within a bundle.
+			return false;
+		}
+
+		const auto& epn = effector.path().native();
+		if (not epn.starts_with(candidate)) {
+			return false;
+		}
+
+		if (epn.size() > candidate.size() && epn.at(candidate.size()) != prefix_extension) {
+			// Note: We expect all opaque assets to shared the bundle name, but will allow multiple extension suffixes.
+			return false;
+		}
+
+		++accounted;
+	}
+
+	// Note: We expect a bundle to consist of more than one opaque asset.
+	return accounted > 1uLL;
+}
+
+/**/
+
+bool isPackedAsset(cref<path> lfs_) {
+	return std::filesystem::is_regular_file(lfs_) && isPackedFile(lfs_) && not getBundleOrOpaqueFor(lfs_).has_value();
+}
+
+bool isMetaAsset(cref<path> lfs_) {
+	return std::filesystem::is_regular_file(lfs_) && isPackedFile(lfs_) && getBundleOrOpaqueFor(lfs_).has_value();
+}
+
+bool isOpaqueAsset(cref<path> lfs_) {
+	return std::filesystem::is_regular_file(lfs_) && not isPackedFile(lfs_);
+}
+
+bool isBundleAsset(cref<path> lfs_) {
+	return std::filesystem::is_directory(lfs_) && (getMetaAssetFor(lfs_).has_value() || convergentBundleName(lfs_));
+}
+
+/**/
+
+Opt<path> getMetaAssetFor(cref<path> lfsBundleOrOpaque_) {
+	auto expanded = clone(lfsBundleOrOpaque_) += packed_extension;
+	return std::filesystem::exists(expanded) ? Some(std::move(expanded)) : None;
+}
+
+Opt<path> getBundleOrOpaqueFor(cref<path> lfsMeta_) {
+	auto stripped = path { lfsMeta_.native().substr(0uLL, lfsMeta_.native().size() - packed_extension.size()) };
+	return (isOpaqueAsset(stripped) || isBundleAsset(stripped)) ? Some(std::move(stripped)) : None;
+}
+
+/**/
+
+using LoadAwait = concurrent::future<void>;
+
+// @formatter:off
+[[nodiscard]] static Opt<Indexed> buildIndexedFrom(cref<path> lfs_);
+[[nodiscard]] static Opt<LoadAwait> enqueueIndexedLoad(cref<Indexed> indexed_);
+// @formatter:on
+
+// @formatter:off
+static ref<Indexed> upsertIndexed(ref<Vector<Indexed>> set_, mref<Indexed> indexed_);
+// @formatter:on
+
+/**/
+
+Opt<Indexed> buildIndexedFrom(cref<path> lfs_) {
+
+	if (isOpaqueAsset(lfs_)) {
+		return Some(Indexed { .primary = lfs_, .primaryCount = 1uLL, .meta = {}, .scheduled = None });
+	}
+
+	if (isBundleAsset(lfs_)) {
+		return Some(Indexed { .primary = lfs_, .primaryCount = 1uLL, .meta = {}, .scheduled = None });
+	}
+
+	if (isPackedAsset(lfs_)) {
+		return Some(Indexed { .primary = lfs_, .primaryCount = 1uLL, .meta = lfs_, .scheduled = None });
+	}
+
+	if (isMetaAsset(lfs_)) {
+		return Some(Indexed { .primary = {}, .primaryCount = 0uLL, .meta = lfs_, .scheduled = None });
+	}
+
+	return None;
+}
+
+Opt<LoadAwait> enqueueIndexedLoad(cref<Indexed> indexed_) {
+
+	const auto engine = Engine::getEngine();
+	const auto storeReg = engine->getStorage()->getRegistry();
+	auto storeIo = engine->getStorage()->getIo();
+	auto packIo = storage::PackageIo { *storeIo };
+
+	/**/
+
+	auto storeMetaFile = storeReg->insert(
+		storage::FileStorageDescriptor {
+			storage::FileUrl {
+				clone(storage::FileProjectScheme),
+				engine::fs::Path { indexed_.meta }
 			}
-			//continue;
+		}
+	);
+
+	/**/
+
+	auto accessMetaFile = storeIo->accessReadonlyBlob(storeMetaFile.into<storage::system::LocalFileStorage>());
+	if (not packIo.isPackageBlob(accessMetaFile)) {
+		IM_CORE_ERRORF(
+			"Encountered indexed meta file `{}` which is not identifiable as package upon inspection.",
+			indexed_.meta.string()
+		);
+		return None;
+	}
+
+	/**/
+
+	auto package = packIo.create_package_from_storage(accessMetaFile);
+
+	auto storePack = storeReg->insert(
+		storage::PackageStorageDescriptor {
+			storage::PackageUrl { resource::PackageGuid::ntoh(package->header().guid) },
+			std::move(storeMetaFile)
+		}
+	).into<storage::system::PackageStorage>();
+
+	/**/
+
+	// @formatter:off
+	return Some(scheduler::async<void>([storePack = std::move(storePack)]() mutable {
+		packageDiscoverAssets(std::move(storePack));
+	}));
+	// @formatter:on
+}
+
+/**/
+
+ref<Indexed> upsertIndexed(ref<Vector<Indexed>> set_, mref<Indexed> indexed_) {
+
+	const auto primaryKey = indexed_.primary.empty() ?
+		getBundleOrOpaqueFor(indexed_.meta) :
+		Some(clone(indexed_.primary));
+	const auto metaKey = indexed_.meta.empty() ?
+		getMetaAssetFor(indexed_.primary) :
+		Some(clone(indexed_.meta));
+
+	auto existsByPrimary = primaryKey.has_value() ?
+		std::ranges::find(
+			set_,
+			primaryKey.value(),
+			[](const auto& stored_) { return stored_.primary; }
+		) :
+		std::ranges::end(set_);
+
+	auto existsByMeta = metaKey.has_value() ?
+		std::ranges::find(
+			set_,
+			metaKey.value(),
+			[](const auto& stored_) { return stored_.meta; }
+		) :
+		std::ranges::end(set_);
+
+	/**/
+
+	if (not indexed_.primary.empty() && not indexed_.meta.empty()) {
+		::hg::assertrt(existsByPrimary == set_.end());
+		::hg::assertrt(existsByMeta == set_.end());
+
+		return set_.emplace_back(std::move(indexed_));
+	}
+
+	if (not indexed_.primary.empty() && indexed_.meta.empty()) {
+		::hg::assertrt(existsByPrimary == set_.end());
+
+		if (existsByMeta != set_.end()) {
+			existsByMeta->primary = indexed_.primary;
+			existsByMeta->primaryCount = indexed_.primaryCount;
+			return *existsByMeta;
+		}
+
+		return set_.emplace_back(std::move(indexed_));
+	}
+
+	if (indexed_.primary.empty() && not indexed_.meta.empty()) {
+		::hg::assertrt(existsByMeta == set_.end());
+
+		if (existsByPrimary != set_.end()) {
+			existsByPrimary->meta = indexed_.meta;
+			return *existsByPrimary;
+		}
+
+		return set_.emplace_back(std::move(indexed_));
+	}
+
+	/**/
+
+	::panic();
+}
+
+/**/
+
+static void indexDirectory(
+	_In_ cref<path> path_,
+	_Inout_ ref<Vector<path>> backlog_,
+	_Inout_ ref<Vector<Indexed>> indexSet_
+);
+
+static void autoIndex(_In_ cref<path> root_);
+
+/**/
+
+void indexDirectory(cref<path> path_, ref<Vector<path>> backlog_, ref<Vector<Indexed>> indexSet_) {
+
+	auto range = std::filesystem::directory_iterator {
+		path_, std::filesystem::directory_options::follow_directory_symlink
+	};
+
+	for (const auto& candidate : range) {
+
+		buildIndexedFrom(candidate.path()).map_or_else(
+			[&indexSet_](mref<Indexed> indexed_) {
+				upsertIndexed(indexSet_, std::move(indexed_));
+			},
+			[&backlog_, &candidate]() {
+				backlog_.emplace_back(candidate.path());
+			}
+		);
+
+	}
+}
+
+void autoIndex(cref<path> root_) {
+
+	Vector<path> backlog {};
+	Vector<Indexed> indexSet {};
+
+	backlog.emplace_back(root_);
+	while (not backlog.empty()) {
+
+		const auto cur { backlog.back() };
+		backlog.pop_back();
+
+		indexDirectory(cur, backlog, indexSet);
+
+		auto rit = std::ranges::remove_if(
+			indexSet,
+			[](auto& data_) {
+				return not data_.meta.empty() && data_.scheduled.has_value() && data_.scheduled.value().ready();
+			}
+		);
+		indexSet.erase(rit.begin(), rit.end());
+	}
+
+	/**/
+
+	auto drop = [](ref<Indexed> indexed_) {
+		const auto primaryExists = not indexed_.primary.empty();
+		const auto metaExists = not indexed_.meta.empty();
+
+		if (not primaryExists && not metaExists) {
+			IM_CORE_WARNF("Encountered auto-indexed object without meta or primary path.");
+			return true;
+		}
+
+		if (primaryExists && metaExists) {
+			indexed_.scheduled = enqueueIndexedLoad(indexed_);
+			IM_DEBUG_LOGF("Enqueued indexed loading of `{}`.", indexed_.primary.string());
+			return false;
+		}
+
+		if (primaryExists && not metaExists) {
+
+			if (autoImport(indexed_)) {
+				// Note: We currently don't schedule async, so we don't need to wait
+				return true;
+			}
+
+			IM_CORE_WARNF("Failed to auto-import `{}`.", indexed_.primary.string());
+			return true;
+		}
+
+		IM_CORE_WARNF("Encountered auto-indexed meta file without an associated primary object.");
+		return true;
+	};
+
+	/**/
+
+	auto remove = std::ranges::remove_if(indexSet, std::move(drop));
+	indexSet.erase(remove.begin(), remove.end());
+
+	/**/
+
+	for (auto&& indexed : indexSet) {
+		if (indexed.scheduled) {
+			await(std::move(indexed.scheduled)->signal().get());
 		}
 	}
 }
@@ -269,6 +461,17 @@ static void initSkyboxDefaults() {
 #pragma endregion
 
 void editor::boot::initAssets() {
+
+	const auto relative = std::filesystem::current_path().append(R"(../../../assets)");
+	if (not std::filesystem::exists(relative)) {
+		std::filesystem::create_directories(relative);
+	}
+	auto root = std::filesystem::canonical(relative);
+
+	autoIndex(root);
+	::hg::breakpoint();
+
+	/**/
 
 	initMaterialDefaults();
 	initSkyboxDefaults();
@@ -409,128 +612,83 @@ bool tryLoadArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
 
 	/**/
 
+	auto genericLoad = []<class AssetType_>(
+		asset_guid guid_,
+		mref<serialization::RecordScopedSlot> record_
+	) -> Opt<Arci<AssetType_>> {
+
+		const auto registry = Engine::getEngine()->getAssets()->getRegistry();
+		const auto asset = registry->findAssetByGuid(guid_);
+
+		if (asset != nullptr) { return None; }
+
+		/**/
+
+		auto nextAsset = Arci<AssetType_>::template create();
+		serialization::access::Structure<AssetType_>::deserialize(nextAsset.get(), std::move(record_));
+
+		engine::assets::storeDefaultNameAndUrl(*nextAsset, {});
+		const auto succeeded = registry->insert({ clone(nextAsset).template into<assets::Asset>() });
+
+		/**/
+
+		if (not succeeded) {
+			IM_CORE_WARNF(
+				"Tried to load asset (`{}` -> `{}`) from package, but it is already present.",
+				nextAsset->getAssetName(),
+				encodeGuid4228(guid_)
+			);
+			::hg::breakpoint();
+			nextAsset.reset();
+			return None;
+
+		}
+
+		IM_CORE_LOGF(
+			"Successfully loaded asset `{}` -> `{}` from package.",
+			nextAsset->getAssetName(),
+			nextAsset->getVirtualUrl()
+		);
+		return Some(std::move(nextAsset));
+	};
+
 	switch (typeId.data) {
+		case assets::Font::typeId.data: {
+			return genericLoad.operator()<assets::Font>(guid, std::move(record_)).has_value();
+		}
 		case assets::Image::typeId.data: {
-
-			const auto registry = Engine::getEngine()->getAssets()->getRegistry();
-			const auto asset = registry->findAssetByGuid(guid);
-
-			if (asset != nullptr) {
-				return false;
-			}
-
-			/**/
-
-			auto image = Arci<assets::Image>::create();
-			serialization::access::Structure<assets::Image>::deserialize(image.get(), std::move(record_));
-
-			engine::assets::storeDefaultNameAndUrl(*image, {});
-			const auto succeeded = registry->insert({ clone(image).into<assets::Asset>() });
-
-			if (not succeeded) {
-
-				IM_CORE_WARNF(
-					"Tried to load Image (`{}` -> `{}`) from package, but it is already present.",
-					image->getAssetName(),
-					encodeGuid4228(guid)
-				);
-
-				__debugbreak();
-				image.reset();
-
-			} else {
-				IM_CORE_LOGF(
-					"Successfully loaded Image (`{}` -> `{}`) from package.",
-					image->getAssetName(),
-					encodeGuid4228(guid)
-				);
-			}
-
-			/**/
-
-			break;
+			return genericLoad.operator()<assets::Image>(guid, std::move(record_)).has_value();
 		}
 		case assets::TextureAsset::typeId.data: {
-
-			const auto registry = Engine::getEngine()->getAssets()->getRegistry();
-			const auto asset = registry->findAssetByGuid(guid);
-
-			if (asset != nullptr) {
-				return false;
-			}
-
-			/**/
-
-			auto texture = Arci<assets::TextureAsset>::create();
-			serialization::access::Structure<assets::TextureAsset>::deserialize(texture.get(), std::move(record_));
-
-			engine::assets::storeDefaultNameAndUrl(*texture, {});
-			const auto succeeded = registry->insert({ clone(texture).into<assets::Asset>() });
-
-			if (not succeeded) {
-
-				IM_CORE_WARNF(
-					"Tried to load Texture (`{}` -> `{}`) from package, but it is already present.",
-					texture->getAssetName(),
-					encodeGuid4228(guid)
-				);
-
-				__debugbreak();
-				texture.reset();
-
-			} else {
-				IM_CORE_LOGF(
-					"Successfully loaded Texture (`{}` -> `{}`) from package.",
-					texture->getAssetName(),
-					encodeGuid4228(guid)
-				);
-			}
-
-			/**/
-
-			break;
+			return genericLoad.operator()<assets::TextureAsset>(guid, std::move(record_)).has_value();
 		}
 		case assets::StaticGeometry::typeId.data: {
-
-			const auto registry = Engine::getEngine()->getAssets()->getRegistry();
-			const auto asset = registry->findAssetByGuid(guid);
-
-			if (asset != nullptr) {
-				return false;
-			}
-
-			/**/
-
-			auto geom = Arci<assets::StaticGeometry>::create();
-			serialization::access::Structure<assets::StaticGeometry>::deserialize(geom.get(), std::move(record_));
-
-			engine::assets::storeDefaultNameAndUrl(*geom, {});
-			const auto succeeded = registry->insert({ clone(geom).into<assets::Asset>() });
-
-			if (not succeeded) {
-
-				IM_CORE_WARNF(
-					"Tried to load Static Geometry (`{}` -> `{}`) from package, but it is already present.",
-					geom->getAssetName(),
-					encodeGuid4228(guid)
-				);
-
-				__debugbreak();
-				geom.reset();
-
-			} else {
-				IM_CORE_LOGF(
-					"Successfully loaded Static Geometry (`{}` -> `{}`) from package.",
-					geom->getAssetName(),
-					encodeGuid4228(guid)
-				);
-			}
-
-			/**/
-
-			break;
+			return genericLoad.operator()<assets::StaticGeometry>(guid, std::move(record_)).has_value();
+		}
+		default: {
+			return false;
 		}
 	}
 
-	return true;
+	std::unreachable();
+}
+
+bool autoImport(ref<Indexed> indexed_) {
+
+	const auto actions = nmpt<editor::ActionManager> {
+		static_cast<ptr<editor::ActionManager>>(
+			Engine::getEngine()->getModules().getSubModule(editor::ActionDepKey).get()
+		)
+	};
+
+	/**/
+
+	auto importAction = make_sptr<editor::AutoImportAction>(
+		storage::FileUrl { clone(storage::FileScheme), engine::fs::Path { indexed_.primary } }
+	);
+	actions->apply(importAction);
+
+	/**/
+
+	return not importAction->failed();
 }
