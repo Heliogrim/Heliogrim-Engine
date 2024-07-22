@@ -151,10 +151,19 @@
 #define __restrict RESTRICT
 #endif
 
-// Function Helper
+// Attributes
+#if not defined(support_no_unique_address)
+#if __has_cpp_attribute(no_unique_address)
+#define support_no_unique_address no_unique_address
+#endif
 
-#if not defined(Fn)
-#define Fn(fn_) [](auto&&... fnArgs_) { return fn_(std::forward<decltype(fnArgs_)>(fnArgs_)...); }
+#if not defined(support_no_unique_address) && ENV_MSVC && __has_cpp_attribute(msvc::no_unique_address)
+#define support_no_unique_address msvc::no_unique_address
+#endif
+
+#if not defined(support_no_unique_address)
+#define support_no_unique_address
+#endif
 #endif
 
 // Profiling
