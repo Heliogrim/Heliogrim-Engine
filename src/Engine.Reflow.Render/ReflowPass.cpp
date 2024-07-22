@@ -1,8 +1,8 @@
 #include "ReflowPass.hpp"
 
 #include <cassert>
-#include <Editor.Assets.Default/Images/UIDummy.hpp>
-#include <Editor.Assets.Default/Textures/UIDummy.hpp>
+#include <Editor.Assets.Default/Images/Default.hpp>
+#include <Editor.Assets.Default/Textures/Default.hpp>
 #include <Engine.Accel.Command/CommandBuffer.hpp>
 #include <Engine.Accel.Compile/VkEffectCompiler.hpp>
 #include <Engine.Accel.Compile/Profile/EffectProfile.hpp>
@@ -20,11 +20,11 @@
 #include <Engine.Common/Make.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
+#include <Engine.GFX.Render.Command/RenderCommandBuffer.hpp>
+#include <Engine.GFX/Graphics.hpp>
 #include <Engine.GFX.Loader/Texture/TextureLoader.hpp>
 #include <Engine.GFX.Loader/Texture/TextureResource.hpp>
 #include <Engine.GFX.Loader/Texture/TextureResource.hpp>
-#include <Engine.GFX.Render.Command/RenderCommandBuffer.hpp>
-#include <Engine.GFX/Graphics.hpp>
 #include <Engine.GFX.Render.Predefined/Effects/UIBase.hpp>
 #include <Engine.GFX.Render.Predefined/Symbols/SceneColor.hpp>
 #include <Engine.GFX.Render.Predefined/Symbols/SceneDepth.hpp>
@@ -48,6 +48,8 @@
 #include <Engine.Reflow/Window/Window.hpp>
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
+#include <Heliogrim/TextureFormat.hpp>
+#include <Heliogrim/TextureType.hpp>
 
 using namespace hg::engine::reflow;
 using namespace hg::engine::render;
@@ -339,21 +341,8 @@ void render::ReflowPass::ensureDefaultImage() {
 	const auto factory = Engine::getEngine()->getAssets()->getFactory();
 	const auto registry = Engine::getEngine()->getAssets()->getRegistry();
 
-	if (not registry->hasAsset(game::assets::image::UIDummy::unstable_auto_guid())) {
-		factory->createImageAsset(
-			clone(game::assets::image::UIDummy::unstable_auto_guid()),
-			R"(resources\imports\ktx\default_ui.ktx)"
-		);
-	}
-
-	if (not registry->hasAsset(game::assets::texture::UIDummy::unstable_auto_guid())) {
-		delete(new(game::assets::texture::UIDummy));
-	}
-
-	/**/
-
-	const auto asset = registry->findAssetByGuid(game::assets::texture::UIDummy::unstable_auto_guid());
-	assert(asset != nullptr);
+	const auto asset = editor::assets::texture::get_default_ui();
+	::hg::assertrt(asset != nullptr);
 
 	/**/
 
