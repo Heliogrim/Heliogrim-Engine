@@ -1794,13 +1794,15 @@ external::ktx::SuperCompressionScheme external::ktx::getSCS(cref<header_type> he
 
 bool external::ktx::is1d(cref<header_type> header_) {
 
+	// Note: KTX 2.0 will use pixelWidth of 0 and pixelHeight of 1 for 1d [1x1x1 * 1] textures.
+
 	// Required
 	if (header_.pixelWidth <= 0 || header_.faceCount != 1) {
 		return false;
 	}
 
 	// Denied
-	if (header_.pixelHeight > 0 || header_.pixelDepth > 0) {
+	if (header_.pixelHeight > 1 || header_.pixelDepth > 0) {
 		return false;
 	}
 
@@ -1809,8 +1811,10 @@ bool external::ktx::is1d(cref<header_type> header_) {
 
 bool external::ktx::is2d(cref<header_type> header_) {
 
+	// Note: KTX 2.0 will use pixelWidth of 1 and pixelHeight of 0 for 2d [1x1x1 * 1] textures.
+
 	// Required
-	if (header_.pixelWidth <= 0 || header_.pixelHeight <= 0 || header_.faceCount != 1) {
+	if (header_.pixelWidth <= 0 || (header_.pixelHeight <= 0 && header_.pixelWidth <= 0) || header_.faceCount != 1) {
 		return false;
 	}
 
