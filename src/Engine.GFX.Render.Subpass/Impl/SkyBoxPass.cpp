@@ -162,9 +162,7 @@ void SkyBoxPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
 			const auto& texture = data->load<smr<TextureLikeObject>>();
 			_framebuffer->addAttachment(clone(texture));
-		}
-
-		{
+		} {
 			const auto texture = Cast<Texture>(sceneColorTex.get());
 			_framebuffer->setExtent(texture->extent());
 		}
@@ -197,7 +195,7 @@ void SkyBoxPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 		_cameraBuffer.device = device->vkDevice();
 
 		const auto allocResult = memory::allocate(
-			device->allocator(),
+			*device->allocator(),
 			device,
 			_cameraBuffer.buffer,
 			MemoryProperties { MemoryProperty::eHostVisible },
@@ -322,9 +320,7 @@ void SkyBoxPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
 	auto translator = make_uptr<driver::vk::VkRCmdTranslator>();
 	auto nativeBatch = (*translator)(&cmd);
-	const auto batch = static_cast<ptr<driver::vk::VkNativeBatch>>(nativeBatch.get());
-
-	{
+	const auto batch = static_cast<ptr<driver::vk::VkNativeBatch>>(nativeBatch.get()); {
 		batch->_tmpWaits.insert_range(
 			batch->_tmpWaits.end(),
 			reinterpret_cast<Vector<VkSemaphore>&>(sceneColorRes->barriers)

@@ -501,7 +501,7 @@ void render::ReflowPass::updateVertices(
 		assert(next.buffer);
 
 		[[maybe_unused]] auto allocResult = gfx::memory::allocate(
-			device->allocator(),
+			*device->allocator(),
 			device,
 			next.buffer,
 			gfx::MemoryProperty::eHostVisible,
@@ -579,7 +579,7 @@ void render::ReflowPass::updateIndices(
 		assert(next.buffer);
 
 		[[maybe_unused]] auto allocResult = gfx::memory::allocate(
-			device->allocator(),
+			*device->allocator(),
 			device,
 			next.buffer,
 			gfx::MemoryProperty::eHostVisible,
