@@ -431,7 +431,7 @@ static Buffer createStageBuffer(cref<hg::external::ktx::InternalContext> ctx_, c
 
 	const auto allocResult {
 		memory::allocate(
-			device_->allocator(),
+			*device_->allocator(),
 			device_,
 			stage.buffer,
 			MemoryProperties { MemoryProperty::eHostVisible },
@@ -497,7 +497,7 @@ static Buffer createStageBuffer(cref<sptr<Device>> device_, const u64 byteSize_)
 
 	const auto allocResult {
 		memory::allocate(
-			device_->allocator(),
+			*device_->allocator(),
 			device_,
 			stage.buffer,
 			MemoryProperties { MemoryProperty::eHostVisible },
@@ -604,7 +604,7 @@ void transformer::convertKtx10Gli(
 
 	const auto allocResult {
 		memory::allocate(
-			device_->allocator(),
+			*device_->allocator(),
 			device_,
 			stage.buffer,
 			MemoryProperties { MemoryProperty::eHostVisible } | MemoryProperty::eHostCoherent,
@@ -945,6 +945,7 @@ void transformer::convertKtx20(
 
 	if (not validType) {
 		stage.destroy();
+		::hg::panic();
 	}
 
 	/**/
@@ -1901,7 +1902,10 @@ bool external::ktx::readHeader(ref<InternalContext> ctx_) {
 
 	/**/
 
-	auto read = ctx_.blob->fully().read(streamoff {}, std::span { std::bit_cast<_::byte*>(&ctx_.header), header_size });
+	auto read = ctx_.blob->fully().read(
+		streamoff {},
+		std::span { std::bit_cast<_::byte*>(&ctx_.header), header_size }
+	);
 
 	if (read.size() < header_size) {
 		return false;

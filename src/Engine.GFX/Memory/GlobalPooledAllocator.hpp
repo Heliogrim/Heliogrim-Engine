@@ -2,6 +2,7 @@
 
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Memory/MemoryPointer.hpp>
 
 #include "Allocator.hpp"
 #include "MemoryCache.hpp"
@@ -66,14 +67,14 @@ namespace hg::engine::gfx {
 
 namespace hg::engine::gfx::memory {
 	[[nodiscard]] AllocationResult allocate(
-		const ptr<GlobalPooledAllocator> alloc_,
+		_In_ ref<GlobalPooledAllocator> alloc_,
 		cref<sptr<Device>> device_,
 		cref<MemoryProperties> props_,
 		_Inout_ ref<Buffer> buffer_
 	);
 
 	[[nodiscard]] AllocationResult allocate(
-		const ptr<GlobalPooledAllocator> alloc_,
+		_In_ ref<GlobalPooledAllocator> alloc_,
 		cref<sptr<Device>> device_,
 		cref<vk::Buffer> buffer_,
 		cref<MemoryProperties> props_,
@@ -81,7 +82,7 @@ namespace hg::engine::gfx::memory {
 	);
 
 	[[nodiscard]] AllocationResult allocate(
-		const ptr<GlobalPooledAllocator> alloc_,
+		_In_ ref<GlobalPooledAllocator> alloc_,
 		cref<sptr<Device>> device_,
 		vk::Image image_,
 		cref<MemoryProperties> props_,
