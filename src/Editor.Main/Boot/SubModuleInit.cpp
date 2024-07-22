@@ -1,5 +1,6 @@
 #include "SubModuleInit.hpp"
 
+#include <Editor.Action/ActionManager.hpp>
 #include <Editor.Core/EditorEngine.hpp>
 #include <Editor.GFX.IO/Module/EditorGraphicsIo.hpp>
 #include <Editor.UI.Main/EditorUI.hpp>
@@ -23,6 +24,9 @@ void editor::boot::preInitSubModules() {
 	::hg::assertrt(result == engine::core::DependencyValidationResult::eSuccess);
 
 	result = modules.addSubModule(make_uptr<engine::Reflow>(engine.get()));
+	::hg::assertrt(result == engine::core::DependencyValidationResult::eSuccess);
+
+	result = modules.addSubModule(make_uptr<ActionManager>(*engine.get()));
 	::hg::assertrt(result == engine::core::DependencyValidationResult::eSuccess);
 
 	/**/
