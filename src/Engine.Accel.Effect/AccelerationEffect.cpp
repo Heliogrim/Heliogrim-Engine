@@ -16,10 +16,6 @@ AccelerationEffect::AccelerationEffect(
 
 AccelerationEffect::~AccelerationEffect() = default;
 
-Guid AccelerationEffect::getGuid() const noexcept {
-	return _guid;
-}
-
 string AccelerationEffect::getName() const noexcept {
 	return _name;
 }

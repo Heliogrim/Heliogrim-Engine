@@ -29,7 +29,9 @@ namespace hg::engine::accel {
 		Guid _guid;
 
 	public:
-		[[nodiscard]] Guid getGuid() const noexcept;
+		[[nodiscard]] constexpr Guid getGuid() const noexcept {
+			return _guid;
+		}
 
 	private:
 		string _name;
