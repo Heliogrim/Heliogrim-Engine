@@ -8,25 +8,31 @@
 #include "Asset.hpp"
 
 namespace hg::engine::assets {
-    class Font :
-        public InheritMeta<Font, Asset> {
-    public:
-        template <typename>
-        friend class serialization::DataLayout;
+	class Font :
+		public InheritMeta<Font, Asset> {
+	public:
+		template <typename>
+		friend class serialization::DataLayout;
 
-    public:
-        inline static constexpr asset_type_id typeId { "Font"_typeId };
+		ACCESS_LAYOUT
+		ACCESS_STRUCTURE
 
-    protected:
-        Font(mref<asset_guid> guid_);
+	public:
+		inline static constexpr asset_type_id typeId { "Font"_typeId };
 
-    public:
-        Font(mref<asset_guid> guid_, mref<Vector<fs::Url>> sources_);
+	public:
+		Font();
 
-    private:
-        Vector<fs::Url> _sources;
+	protected:
+		Font(mref<asset_guid> guid_);
 
-    public:
-        [[nodiscard]] cref<Vector<fs::Url>> sources() const noexcept;
-    };
+	public:
+		Font(mref<asset_guid> guid_, mref<Vector<fs::Url>> sources_);
+
+	private:
+		Vector<fs::Url> _sources;
+
+	public:
+		[[nodiscard]] cref<Vector<fs::Url>> sources() const noexcept;
+	};
 }
