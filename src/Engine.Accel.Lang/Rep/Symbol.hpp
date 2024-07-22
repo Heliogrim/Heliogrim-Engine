@@ -66,12 +66,12 @@ namespace hg::engine::accel::lang {
 			symbolName(),
 			var() {}
 
-		constexpr Symbol(mref<SymbolId> symbolId_, mref<VariableSymbol> var_) noexcept :
+		[[maybe_unused]] constexpr Symbol(mref<SymbolId> symbolId_, mref<VariableSymbol> var_) noexcept :
 			symbolId(std::move(symbolId_)),
 			symbolName(),
 			var(std::move(var_)) {}
 
-		constexpr Symbol(mref<SymbolId> symbolId_, mref<FunctionSymbol> fn_) noexcept:
+		[[maybe_unused]] constexpr Symbol(mref<SymbolId> symbolId_, mref<FunctionSymbol> fn_) noexcept:
 			symbolId(std::move(symbolId_)),
 			symbolName(),
 			fn(std::move(fn_)) {}

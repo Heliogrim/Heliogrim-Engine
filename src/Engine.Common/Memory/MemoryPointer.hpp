@@ -556,7 +556,7 @@ namespace hg {
 		}
 
 		ref<this_type> operator=(::std::nullptr_t) noexcept {
-			storage.template exchange<::std::nullptr_t>(nullptr);
+			std::ignore = storage.template exchange<::std::nullptr_t>(nullptr);
 			return *this;
 		}
 
