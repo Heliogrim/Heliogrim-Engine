@@ -135,7 +135,7 @@ namespace hg {
 
 	template <typename Expr_>
 		requires std::is_invocable_r_v<bool, Expr_>
-	constexpr void assertd(Expr_&& expr_) noexcept {
+	constexpr void assertd([[maybe_unused]] Expr_&& expr_) noexcept {
 		// noop();
 	}
 
@@ -143,14 +143,14 @@ namespace hg {
 		requires (not std::is_invocable_r_v<bool, Expr_>) &&
 		std::is_invocable_v<Expr_> &&
 		std::is_convertible_v<std::invoke_result_t<Expr_>, bool>
-	constexpr void assertd(Expr_&& expr_) noexcept {
+	constexpr void assertd([[maybe_unused]] Expr_&& expr_) noexcept {
 		// noop();
 	}
 
 	template <typename Expr_>
 		requires (not std::is_invocable_v<Expr_>) &&
 		std::is_nothrow_convertible_v<Expr_, bool>
-	constexpr void assertd(Expr_&& expr_) noexcept {
+	constexpr void assertd([[maybe_unused]] Expr_&& expr_) noexcept {
 		// noop();
 	}
 

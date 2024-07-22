@@ -23,16 +23,16 @@ namespace hg {
 		};
 
 		template <typename Ret_, typename Arg_, typename... Rest_>
-		Arg_ __decompose_fx_args(tuple_fnc<Ret_, Arg_, Rest_...>);
+		[[maybe_unused]] Arg_ __decompose_fx_args(tuple_fnc<Ret_, Arg_, Rest_...>);
 
 		template <typename Fx_, typename Ret_, typename Arg_, typename... Rest_>
-		Arg_ __decompose_fx_args(bound_tuple_fnc<Fx_, Ret_, Arg_, Rest_...>);
+		[[maybe_unused]] Arg_ __decompose_fx_args(bound_tuple_fnc<Fx_, Ret_, Arg_, Rest_...>);
 
 		template <typename Fx_, typename Ret_, typename Arg_, typename... Rest_>
-		Arg_ __decompose_fx_args(const_bound_tuple_fnc<Fx_, Ret_, Arg_, Rest_...>);
+		[[maybe_unused]] Arg_ __decompose_fx_args(const_bound_tuple_fnc<Fx_, Ret_, Arg_, Rest_...>);
 
 		template <typename Fx_>
-		decltype(__decompose_fx_args(&Fx_::operator())) __decompose_fx_args(Fx_);
+		[[maybe_unused]] decltype(__decompose_fx_args(&Fx_::operator())) __decompose_fx_args(Fx_);
 
 		template <typename Callable_>
 		using decompose_subject_type = decltype(__decompose_fx_args(std::declval<Callable_>()));
