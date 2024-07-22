@@ -32,10 +32,10 @@ UniqueResourceAccessor<Io<engine::resource::MemoryBuffer>> StorageIo::accessRead
 
 	return UniqueResourceAccessor<Io<engine::resource::MemoryBuffer>> {
 		resource->acquireReadWrite(),
-		[resource = std::move(resource), storage = std::move(storage_)](auto* accessor_) mutable -> void {
-			::hg::assertrt(accessor_ != nullptr && resource != nullptr);
+		[resourceKeepAlive = std::move(resource), storage = std::move(storage_)](auto* accessor_) mutable -> void {
+			::hg::assertrt(accessor_ != nullptr && resourceKeepAlive != nullptr);
 			static_cast<ptr<decltype(resource->acquireReadWrite())>>(accessor_)->reset();
-			resource.reset();
+			resourceKeepAlive.reset();
 			storage.reset();
 		}
 	};
@@ -53,10 +53,10 @@ UniqueResourceAccessor<const Io<const engine::resource::MemoryBuffer>> StorageIo
 
 	return UniqueResourceAccessor<io_type> {
 		resource->acquireReadonly(),
-		[resource = std::move(resource), storage = std::move(storage_)](auto* accessor_) mutable -> void {
-			::hg::assertrt(accessor_ != nullptr && resource != nullptr);
-			static_cast<ptr<decltype(resource->acquireReadonly())>>(accessor_)->reset();
-			resource.reset();
+		[resourceKeepAlive = std::move(resource), storage = std::move(storage_)](auto* accessor_) mutable -> void {
+			::hg::assertrt(accessor_ != nullptr && resourceKeepAlive != nullptr);
+			static_cast<ptr<decltype(resourceKeepAlive->acquireReadonly())>>(accessor_)->reset();
+			resourceKeepAlive.reset();
 			storage.reset();
 		}
 	};
@@ -86,20 +86,20 @@ AccessPackageReadonly StorageIo::accessReadonly(
 	return AccessPackageReadonly {
 		sharedResource->acquireReadonly(),
 		[
-			resource = std::move(sharedResource),
-			package = std::move(sharedPackage),
+			resourceKeepAlive = std::move(sharedResource),
+			packageKeepAlive = std::move(sharedPackage),
 			// Note: Actually obsolete, as the active accessor will lock the storage object
 			blob = std::move(sharedBlobAccess),
 			storage = std::move(storage_)
 		](auto* accessor_) mutable -> void {
 			// Warning: Temporary indirect "release" of the buffer used within the deprecated buffer source
-			::hg::assertrt(package != nullptr);
+			::hg::assertrt(packageKeepAlive != nullptr);
 
-			package.reset();
+			packageKeepAlive.reset();
 
-			::hg::assertrt(accessor_ != nullptr && resource != nullptr && storage != nullptr);
-			static_cast<ptr<decltype(resource->acquireReadonly())>>(accessor_)->reset();
-			resource.reset();
+			::hg::assertrt(accessor_ != nullptr && resourceKeepAlive != nullptr && storage != nullptr);
+			static_cast<ptr<decltype(resourceKeepAlive->acquireReadonly())>>(accessor_)->reset();
+			resourceKeepAlive.reset();
 			blob.reset();
 			storage.reset();
 		}
@@ -129,20 +129,20 @@ AccessPackageReadWrite StorageIo::accessReadWrite(
 	return AccessPackageReadWrite {
 		sharedResource->acquireReadWrite(),
 		[
-			resource = std::move(sharedResource),
-			package = std::move(sharedPackage),
+			resourceKeepAlive = std::move(sharedResource),
+			packageKeepAlive = std::move(sharedPackage),
 			// Note: Actually obsolete, as the active accessor will lock the storage object
 			blob = std::move(sharedBlobAccess),
 			storage = std::move(storage_)
 		](auto* accessor_) mutable -> void {
 			// Warning: Temporary indirect "release" of the buffer used within the deprecated buffer source
-			::hg::assertrt(package != nullptr);
+			::hg::assertrt(packageKeepAlive != nullptr);
 
-			package.reset();
+			packageKeepAlive.reset();
 
-			::hg::assertrt(accessor_ != nullptr && resource != nullptr && storage != nullptr);
-			static_cast<ptr<decltype(resource->acquireReadWrite())>>(accessor_)->reset();
-			resource.reset();
+			::hg::assertrt(accessor_ != nullptr && resourceKeepAlive != nullptr && storage != nullptr);
+			static_cast<ptr<decltype(resourceKeepAlive->acquireReadWrite())>>(accessor_)->reset();
+			resourceKeepAlive.reset();
 			blob.reset();
 			storage.reset();
 		}
