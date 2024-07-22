@@ -19,8 +19,8 @@ namespace hg {
 	class ExclusiveResource final :
 		public Resource<ManagedType_> {
 	public:
-		template <typename ManagedType_, typename StorageType_, typename... Args_>
-		friend ExclusiveResource<ManagedType_, StorageType_> make_exclusive_resource(Args_&&... args_);
+		template <typename FriendManagedType_, typename FriendStorageType_, typename... Args_>
+		friend ExclusiveResource<FriendManagedType_, FriendStorageType_> make_exclusive_resource(Args_&&... args_);
 
 	public:
 		using this_type = ExclusiveResource<ManagedType_, StorageType_>;
@@ -101,14 +101,14 @@ namespace hg {
 
 		[[nodiscard]] tl::optional<readonly_accessor_type> tryAcquireReadonly() const noexcept override {
 			return tryAcquireLock() ?
-				       tl::make_optional<readonly_accessor_type>(*this, _storage.getConstValueReference()) :
-				       tl::nullopt;
+				tl::make_optional<readonly_accessor_type>(*this, _storage.getConstValueReference()) :
+				tl::nullopt;
 		}
 
 		[[nodiscard]] tl::optional<readwrite_accessor_type> tryAcquireReadWrite() const noexcept override {
 			return tryAcquireLock() ?
-				       tl::make_optional<readwrite_accessor_type>(*this, _storage.getValueReference()) :
-				       tl::nullopt;
+				tl::make_optional<readwrite_accessor_type>(*this, _storage.getValueReference()) :
+				tl::nullopt;
 		}
 
 	protected:
