@@ -493,15 +493,13 @@ sptr<Dialog> AssetFileImportDialog::make(
 
 			/**/
 			//testCreateAsset(diag->_source);
-			if (not ActionManager::get()) {
-				ActionManager::make();
-			}
 
 			const auto action { make_sptr<SimpleImportAction>(diag->_source, diag->_target) };
 
 			execute(
 				[action]() {
-					ActionManager::get()->apply(action);
+					const auto subModule = engine::Engine::getEngine()->getModules().getSubModule(ActionDepKey);
+					static_cast<ptr<ActionManager>>(subModule.get())->apply(action);
 
 					for (const auto& asset : action->importedAssets()) {
 						auto cpy = clone(asset);

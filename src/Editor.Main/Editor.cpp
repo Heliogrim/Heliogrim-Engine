@@ -1,6 +1,7 @@
 #include "Editor.hpp"
 #include "Module/Editor.hpp"
 
+#include <Editor.Action/ActionManager.hpp>
 #include <Engine.Core/Module/CoreDependencies.hpp>
 #include <Engine.Core/Module/DependencyKey.hpp>
 #include <Engine.Core/Module/SubModuleDependency.hpp>
@@ -18,14 +19,19 @@ Editor::Editor(const non_owning_rptr<engine::Engine> engine_) :
 	_dependencies(
 		{
 			SubModuleDependency {
-				AssetsDepKey,
-				SubModuleOrder::eSuccessor,
-				true
+				.key = ActionDepKey,
+				.order = SubModuleOrder::eSuccessor,
+				.required = true
 			},
 			SubModuleDependency {
-				engine::ReflowDepKey,
-				SubModuleOrder::eSuccessor,
-				true
+				.key = AssetsDepKey,
+				.order = SubModuleOrder::eSuccessor,
+				.required = true
+			},
+			SubModuleDependency {
+				.key = engine::ReflowDepKey,
+				.order = SubModuleOrder::eSuccessor,
+				.required = true
 			}
 		}
 	) {}

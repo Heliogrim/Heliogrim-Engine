@@ -9,6 +9,7 @@
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Math/Coordinates.hpp>
 #include <Engine.Core/Engine.hpp>
+#include <Engine.Core/Module/Modules.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 #include <Engine.Reflow/Style/PanelStyle.hpp>
 #include <Engine.Reflow/Widget/Button.hpp>
@@ -372,10 +373,6 @@ engine::reflow::EventResponse AssetBrowserPanel::onDrop(cref<engine::reflow::Dra
 
 	} else {
 
-		if (not ActionManager::get()) {
-			ActionManager::make();
-		}
-
 		for (const auto& path : event_._data.files->paths) {
 
 			std::filesystem::path cwd { _browserCwd.path() };
@@ -388,7 +385,8 @@ engine::reflow::EventResponse AssetBrowserPanel::onDrop(cref<engine::reflow::Dra
 
 			execute(
 				[action]() {
-					ActionManager::get()->apply(action);
+					const auto subModule = engine::Engine::getEngine()->getModules().getSubModule(ActionDepKey);
+					static_cast<ptr<ActionManager>>(subModule.get())->apply(action);
 
 					for (const auto& asset : action->importedAssets()) {
 						auto cpy = clone(asset);
