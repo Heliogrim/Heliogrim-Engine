@@ -109,7 +109,7 @@ void transformer::convertFreeType(
 	assert(buffer.buffer);
 
 	[[maybe_unused]] auto allocRes = memory::allocate(
-		device_->allocator(),
+		*device_->allocator(),
 		device_,
 		buffer.buffer,
 		MemoryProperty::eHostVisible | MemoryProperty::eHostCoherent,

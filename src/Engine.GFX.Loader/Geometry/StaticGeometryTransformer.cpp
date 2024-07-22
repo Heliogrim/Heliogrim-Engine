@@ -364,7 +364,7 @@ static Buffer createStageBuffer(cref<sptr<Device>> device_, const u64 byteSize_)
 
 	const auto allocResult {
 		memory::allocate(
-			device_->allocator(),
+			*device_->allocator(),
 			device_,
 			stage.buffer,
 			MemoryProperties { MemoryProperty::eHostVisible | MemoryProperty::eHostCoherent },
