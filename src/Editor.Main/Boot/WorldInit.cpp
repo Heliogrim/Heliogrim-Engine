@@ -50,7 +50,7 @@ void editor::boot::initPrimaryWorld() {
 }
 
 #include <Editor.Assets.Default/GfxMaterials/DefaultSkybox.hpp>
-#include <Editor.Assets.Default/Meshes/Sphere.hpp>
+#include <Editor.Assets.Default/Meshes/Default.hpp>
 #include <Heliogrim/Actor.hpp>
 #include <Heliogrim/ActorInitializer.hpp>
 #include <Heliogrim/Heliogrim.hpp>
@@ -72,7 +72,7 @@ static void addDefaultSkybox() {
 	auto query = Heliogrim::assets()[game::assets::material::DefaultSkybox::unstable_auto_guid()];
 	sc->setSkyboxMaterialByAsset(static_cast<ref<GfxMaterialAsset>>(query.value));
 
-	query = Heliogrim::assets()[game::assets::meshes::Sphere::unstable_auto_guid()];
+	query = Heliogrim::assets()[editor::assets::meshes::default_sphere_guid];
 	sc->setSkyboxGeometryByAsset(static_cast<ref<StaticGeometryAsset>>(query.value));
 
 	/**/

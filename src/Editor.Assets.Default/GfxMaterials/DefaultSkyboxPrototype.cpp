@@ -10,7 +10,7 @@
 #include <Engine.GFX.Render.Predefined/Effects/Skybox.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 
-#include "../Textures/DefaultSkybox.hpp"
+#include "../Textures/Default.hpp"
 
 using namespace hg::game::assets::material;
 using namespace hg;
@@ -39,7 +39,7 @@ DefaultSkyboxPrototype::DefaultSkyboxPrototype() :
 			.identifier = engine::gfx::material::ParameterIdentifier { 0u },
 			.name = "Texture",
 			.dataType = engine::accel::TransferDataType::eSampler,
-			.defaultValue = asset_guid { texture::DefaultSkybox::unstable_auto_guid() }
+			.defaultValue = editor::assets::texture::default_skybox_guid
 		}
 	);
 }
