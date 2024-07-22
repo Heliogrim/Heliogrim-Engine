@@ -14,47 +14,12 @@
 #include <fstream>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 
-#include "Editor.Assets.Default/Fonts/CascadiaCode.hpp"
+#include "Editor.Action/ActionManager.hpp"
+#include "Editor.Action/Action/Import/AutoImportAction.hpp"
 #include "Editor.Assets.Default/GfxMaterials/DefaultBrdfMaterial.hpp"
 #include "Editor.Assets.Default/GfxMaterials/DefaultBrdfMaterialPrototype.hpp"
 #include "Editor.Assets.Default/GfxMaterials/DefaultSkybox.hpp"
 #include "Editor.Assets.Default/GfxMaterials/DefaultSkyboxPrototype.hpp"
-#include "Editor.Assets.Default/Images/Brand.hpp"
-#include "Editor.Assets.Default/Images/DefaultAlpha.hpp"
-#include "Editor.Assets.Default/Images/DefaultAO.hpp"
-#include "Editor.Assets.Default/Images/DefaultDiffuse.hpp"
-#include "Editor.Assets.Default/Images/DefaultMetalness.hpp"
-#include "Editor.Assets.Default/Images/DefaultNormal.hpp"
-#include "Editor.Assets.Default/Images/DefaultRoughness.hpp"
-#include "Editor.Assets.Default/Images/DefaultSkybox.hpp"
-#include "Editor.Assets.Default/Images/Directory.hpp"
-#include "Editor.Assets.Default/Images/FolderAudio.hpp"
-#include "Editor.Assets.Default/Images/FolderEnvironment.hpp"
-#include "Editor.Assets.Default/Images/FolderFont.hpp"
-#include "Editor.Assets.Default/Images/FolderImages.hpp"
-#include "Editor.Assets.Default/Images/FolderImport.hpp"
-#include "Editor.Assets.Default/Images/FolderLog.hpp"
-#include "Editor.Assets.Default/Images/FolderResource.hpp"
-#include "Editor.Assets.Default/Images/FolderShader.hpp"
-#include "Editor.Assets.Default/Images/FolderVideo.hpp"
-#include "Editor.Assets.Default/Meshes/Sphere.hpp"
-#include "Editor.Assets.Default/Textures/DefaultAlpha.hpp"
-#include "Editor.Assets.Default/Textures/DefaultAO.hpp"
-#include "Editor.Assets.Default/Textures/DefaultDiffuse.hpp"
-#include "Editor.Assets.Default/Textures/DefaultMetalness.hpp"
-#include "Editor.Assets.Default/Textures/DefaultNormal.hpp"
-#include "Editor.Assets.Default/Textures/DefaultRoughness.hpp"
-#include "Editor.Assets.Default/Textures/DefaultSkybox.hpp"
-#include "Editor.Assets.Default/Textures/Directory.hpp"
-#include "Editor.Assets.Default/Textures/FolderAudio.hpp"
-#include "Editor.Assets.Default/Textures/FolderEnvironment.hpp"
-#include "Editor.Assets.Default/Textures/FolderFont.hpp"
-#include "Editor.Assets.Default/Textures/FolderImages.hpp"
-#include "Editor.Assets.Default/Textures/FolderImport.hpp"
-#include "Editor.Assets.Default/Textures/FolderLog.hpp"
-#include "Editor.Assets.Default/Textures/FolderResource.hpp"
-#include "Editor.Assets.Default/Textures/FolderShader.hpp"
-#include "Editor.Assets.Default/Textures/FolderVideo.hpp"
 #include "Engine.Assets/AssetFactory.hpp"
 #include "Engine.Assets/Assets.hpp"
 #include "Engine.Assets/Types/Font.hpp"
@@ -284,45 +249,6 @@ static void initMaterialDefaults() {
 	using namespace ::hg::game::assets;
 	const auto factory = Engine::getEngine()->getAssets()->getFactory();
 
-	factory->createImageAsset(
-		clone(image::DefaultAlpha::unstable_auto_guid()),
-		R"(resources\imports\ktx\default_alpha.ktx)"
-	);
-
-	factory->createImageAsset(
-		clone(image::DefaultAO::unstable_auto_guid()),
-		R"(resources\imports\ktx\default_ao.ktx)"
-	);
-
-	factory->createImageAsset(
-		image::DefaultDiffuse::auto_guid(),
-		R"(resources\imports\ktx\default_diffuse.ktx)"
-	);
-
-	factory->createImageAsset(
-		clone(image::DefaultMetalness::unstable_auto_guid()),
-		R"(resources\imports\ktx\default_metalness.ktx)"
-	);
-
-	factory->createImageAsset(
-		clone(image::DefaultNormal::unstable_auto_guid()),
-		R"(resources\imports\ktx\default_normal.ktx)"
-	);
-
-	factory->createImageAsset(
-		clone(image::DefaultRoughness::unstable_auto_guid()),
-		R"(resources\imports\ktx\default_roughness.ktx)"
-	);
-
-	/**/
-
-	delete(new(texture::DefaultAlpha));
-	delete(new(texture::DefaultAO));
-	delete(new(texture::DefaultDiffuse));
-	delete(new(texture::DefaultMetalness));
-	delete(new(texture::DefaultNormal));
-	delete(new(texture::DefaultRoughness));
-
 	/**/
 
 	delete(new(material::DefaultBrdfMaterialPrototype));
@@ -334,125 +260,10 @@ static void initSkyboxDefaults() {
 	using namespace ::hg::game::assets;
 	const auto factory = Engine::getEngine()->getAssets()->getFactory();
 
-	factory->createImageAsset(
-		clone(image::DefaultSkybox::unstable_auto_guid()),
-		R"(resources\imports\ktx\default_skybox.ktx)"
-	);
-
-	/**/
-
-	delete(new(texture::DefaultSkybox));
-
 	/**/
 
 	delete(new(material::DefaultSkyboxPrototype));
 	delete(new(material::DefaultSkybox));
-}
-
-static void initDirectoryIcons() {
-
-	using namespace ::hg::game::assets;
-	const auto factory = Engine::getEngine()->getAssets()->getFactory();
-
-	factory->createImageAsset(
-		clone(image::Directory::unstable_auto_guid()),
-		R"(resources\imports\ktx\icons8-folder-144.ktx)"
-	);
-
-	factory->createImageAsset(
-		clone(image::FolderAudio::unstable_auto_guid()),
-		R"(resources\imports\ktx\folder-audio.ktx)"
-	);
-
-	factory->createImageAsset(
-		clone(image::FolderEnvironment::unstable_auto_guid()),
-		R"(resources\imports\ktx\folder-environment.ktx)"
-	);
-
-	factory->createImageAsset(
-		clone(image::FolderFont::unstable_auto_guid()),
-		R"(resources\imports\ktx\folder-font.ktx)"
-	);
-
-	factory->createImageAsset(
-		clone(image::FolderImages::unstable_auto_guid()),
-		R"(resources\imports\ktx\folder-images.ktx)"
-	);
-
-	factory->createImageAsset(
-		clone(image::FolderImport::unstable_auto_guid()),
-		R"(resources\imports\ktx\folder-import.ktx)"
-	);
-
-	factory->createImageAsset(
-		clone(image::FolderLog::unstable_auto_guid()),
-		R"(resources\imports\ktx\folder-log.ktx)"
-	);
-
-	factory->createImageAsset(
-		clone(image::FolderResource::unstable_auto_guid()),
-		R"(resources\imports\ktx\folder-resource.ktx)"
-	);
-
-	factory->createImageAsset(
-		clone(image::FolderShader::unstable_auto_guid()),
-		R"(resources\imports\ktx\folder-shader.ktx)"
-	);
-
-	factory->createImageAsset(
-		clone(image::FolderVideo::unstable_auto_guid()),
-		R"(resources\imports\ktx\folder-video.ktx)"
-	);
-
-	/**/
-
-	delete(new(texture::Directory));
-	delete(new(texture::FolderAudio));
-	delete(new(texture::FolderEnvironment));
-	delete(new(texture::FolderFont));
-	delete(new(texture::FolderImages));
-	delete(new(texture::FolderImport));
-	delete(new(texture::FolderLog));
-	delete(new(texture::FolderResource));
-	delete(new(texture::FolderShader));
-	delete(new(texture::FolderVideo));
-}
-
-static void initFileIcons() {
-
-	using namespace ::hg::game::assets;
-	const auto factory = Engine::getEngine()->getAssets()->getFactory();
-
-	factory->createImageAsset(
-		clone(image::Brand::unstable_auto_guid()),
-		R"(resources\imports\ktx\brand.ktx)"
-	);
-}
-
-static void initFontDefaults() {
-
-	using namespace ::hg::game::assets;
-	const auto factory = Engine::getEngine()->getAssets()->getFactory();
-
-	factory->createFontAsset(
-		clone(font::CascadiaCode::unstable_auto_guid()),
-		R"(resources\imports\ttf\CascadiaCode.ttf)"
-
-	);
-}
-
-static void initStaticGeometryDefaults() {
-
-	using namespace ::hg::game::assets;
-	const auto factory = Engine::getEngine()->getAssets()->getFactory();
-
-	factory->createStaticGeometryAsset(
-		clone(meshes::Sphere::unstable_auto_guid()),
-		R"(resources\imports\obj\sphere.obj)",
-		11520uLL,
-		11520uLL
-
-	);
 }
 
 #pragma endregion
@@ -461,44 +272,6 @@ void editor::boot::initAssets() {
 
 	initMaterialDefaults();
 	initSkyboxDefaults();
-	initDirectoryIcons();
-	initFileIcons();
-	initFontDefaults();
-	initStaticGeometryDefaults();
-
-	/**/
-
-	const auto root { std::filesystem::current_path().append(R"(resources\assets)") };
-	if (not std::filesystem::exists(root)) {
-		std::filesystem::create_directories(root);
-	}
-
-	Vector<path> backlog {};
-	Vector<concurrent::future<void>> awaits {};
-
-	backlog.push_back(root);
-	while (not backlog.empty()) {
-
-		auto rit = std::ranges::remove_if(
-			awaits,
-			[](auto& awaiting_) {
-				return awaiting_.ready();
-			}
-		);
-		awaits.erase(rit.begin(), rit.end());
-
-		/**/
-
-		const auto cur { backlog.back() };
-		backlog.pop_back();
-
-		indexLoadable(cur, backlog, awaits);
-	}
-
-	for (auto&& awaiting_ : awaits) {
-		await(awaiting_.signal().get());
-	}
-	awaits.clear();
 }
 
 /**/

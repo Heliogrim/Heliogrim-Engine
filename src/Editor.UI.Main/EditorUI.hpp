@@ -66,6 +66,6 @@ namespace hg::editor {
 		// Warning: Error prone
 		mutable smr<hg::engine::gfx::TextureResource> placeholderHolder = nullptr;
 
-		[[nodiscard] ] smr<engine::gfx::TextureResource> getPlaceholderImage() const noexcept;
+		[[nodiscard]] smr<engine::gfx::TextureResource> getPlaceholderImage() const noexcept;
 	};
 }
