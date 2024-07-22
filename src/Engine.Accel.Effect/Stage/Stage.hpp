@@ -16,17 +16,21 @@ namespace hg::engine::accel {
 		using this_type = Stage;
 
 	public:
-		Stage() noexcept = default;
+		constexpr Stage() noexcept = default;
 
-		Stage(mref<StageFlagBits> flagBits_);
+		constexpr explicit Stage(mref<StageFlagBits> flagBits_) noexcept :
+			_flagBits(std::move(flagBits_)),
+			_intermediate() {}
 
-		virtual ~Stage();
+		virtual ~Stage() noexcept = default;
 
 	protected:
 		StageFlagBits _flagBits;
 
 	public:
-		[[nodiscard]] StageFlagBits getFlagBits() const noexcept;
+		[[nodiscard]] constexpr StageFlagBits getFlagBits() const noexcept {
+			return _flagBits;
+		}
 
 	public:
 		void enumerateStageInputs(_Out_ ref<Vector<StageInput>> inputs_) const noexcept;
@@ -37,8 +41,12 @@ namespace hg::engine::accel {
 		smr<lang::Intermediate> _intermediate;
 
 	public:
-		[[nodiscard]] smr<lang::Intermediate> getIntermediate() const noexcept;
+		[[nodiscard]] smr<lang::Intermediate> getIntermediate() const noexcept {
+			return _intermediate;
+		}
 
-		void setIntermediate(mref<smr<lang::Intermediate>> intermediate_);
+		void setIntermediate(mref<smr<lang::Intermediate>> intermediate_) {
+			_intermediate = std::move(intermediate_);
+		}
 	};
 }

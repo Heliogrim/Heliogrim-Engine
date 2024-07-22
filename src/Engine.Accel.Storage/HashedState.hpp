@@ -26,14 +26,36 @@ namespace hg::engine::accel {
 }
 
 namespace hg::engine::accel {
+	namespace {
+		template <typename Type_>
+		[[nodiscard]] constexpr u64 hash_from_address(cref<Type_> obj_) noexcept {
+			using pointer_type = decltype(std::addressof(obj_));
+			const auto address = std::addressof(obj_);
+			return ::hg::hash::fnv1a(
+				std::span<char, sizeof(pointer_type)> {
+					std::bit_cast<char*>(&address),
+					sizeof(pointer_type)
+				}
+			);
+		}
+
+		[[nodiscard]] constexpr u64 hash_from_address(void* subject_) noexcept {
+			return ::hg::hash::fnv1a(
+				std::span<char, sizeof(subject_)> {
+					std::bit_cast<char*>(&subject_), sizeof(subject_)
+				}
+			);
+		}
+	}
+
 	constexpr HashedState<Permutation> calcStorageHash(cref<Permutation> value_) noexcept {
 		constexpr auto h = std::hash<std::uintptr_t> {};
 		const auto sub = std::span<const nmpt<const void>, 2uLL> {
 			std::bit_cast<const ptr<const nmpt<const void>>>(std::addressof(value_)),
 			2uLL
 		};
-		auto combined = h(std::bit_cast<std::uintptr_t>(sub.front().get()));
-		hash::hashCombine(combined, h(std::bit_cast<std::uintptr_t>(sub.back().get())));
+		auto combined = hash_from_address(sub.front().get());
+		hash::hashCombine(combined, hash_from_address(sub.back().get()));
 		return { .value = combined };
 	}
 
@@ -46,24 +68,24 @@ namespace hg::engine::accel {
 	constexpr HashedState<AccelerationPipeline> calcStorageHash(
 		cref<AccelerationPipeline> value_
 	) noexcept {
-		return { .value = std::hash<std::uintptr_t> {}(std::bit_cast<std::uintptr_t>(std::addressof(value_))) };
+		return { .value = hash_from_address(value_) };
 	}
 
 	constexpr HashedState<EffectProfile> calcStorageHash(cref<EffectProfile> value_) noexcept {
-		return { .value = std::hash<string> {}(value_._name) };
+		return { .value = hasher::fnv1a<decltype(value_._name)> {}(value_._name) };
 	}
 
 	constexpr HashedState<EffectSpecification> calcStorageHash(
 		cref<EffectSpecification> value_
 	) noexcept {
-		return { .value = std::hash<std::uintptr_t> {}(std::bit_cast<std::uintptr_t>(std::addressof(value_))) };
+		return { .value = hash_from_address(value_) };
 	}
 
 	inline HashedState<Stage> calcStorageHash(cref<Stage> value_) noexcept {
 		auto combined = static_cast<size_t>(value_.getFlagBits());
 		hash::hashCombine(
 			combined,
-			std::hash<std::uintptr_t> {}(std::bit_cast<std::uintptr_t>(value_.getIntermediate().get()))
+			hash_from_address(*value_.getIntermediate())
 		);
 		return { .value = combined };
 	}
