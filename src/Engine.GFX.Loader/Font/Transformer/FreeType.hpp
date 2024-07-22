@@ -19,5 +19,7 @@ namespace hg::engine::gfx::loader::transformer {
 
 	extern void prepareFreeType();
 
+	extern void initFaceFromAsset(cref<assets::Font> asset_);
+
 	extern void cleanupFreeType();
 }
