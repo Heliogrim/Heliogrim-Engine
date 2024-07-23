@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Engine.Common/Pair.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
 #include "__fwd.hpp"
@@ -46,7 +47,7 @@ namespace hg::engine::gfx::cache {
 
 		using store_type = std::conditional_t<store_cnd_type::value,
 			std::type_identity_t<ResultTypeType_>,
-			std::_Compressed_pair<ResultTypeType_, std::conditional_t<std::is_void_v<ValueType_>, int, ValueType_>>
+			CompressedPair<ResultTypeType_, std::conditional_t<std::is_void_v<ValueType_>, int, ValueType_>>
 		>;
 
 	public:
@@ -61,7 +62,7 @@ namespace hg::engine::gfx::cache {
 				ResultTypeType_> &&
 			std::is_convertible_v<Vt_, ValueType_>
 		constexpr Result(Rtt_&& result_, Vt_&& value_) :
-			data(std::_One_then_variadic_args_t {}, std::forward<Rtt_>(result_), std::forward<Vt_>(value_)) {}
+			data(one_then_variadic_args_t {}, std::forward<Rtt_>(result_), std::forward<Vt_>(value_)) {}
 
 		template <
 			typename Rtt_ = ResultTypeType_,
@@ -94,7 +95,7 @@ namespace hg::engine::gfx::cache {
 
 		template <typename Type_ = ResultTypeType_> requires result_compatible<Type_>::value
 		[[nodiscard]] constexpr operator Type_() const noexcept {
-			return data._Get_first();
+			return data.getFirst();
 		}
 
 		template <typename Type_ = ResultTypeType_> requires exclusive_result_compatible<Type_>::value
@@ -104,7 +105,7 @@ namespace hg::engine::gfx::cache {
 
 		template <typename Type_ = ResultTypeType_> requires result_compatible<Type_>::value
 		[[nodiscard]] constexpr Type_ type() const noexcept {
-			return data._Get_first();
+			return data.getFirst();
 		}
 
 	protected:
@@ -158,33 +159,33 @@ namespace hg::engine::gfx::cache {
 	public:
 		template <typename Type_ = ValueType_> requires exclusive_supplement<Type_>::value
 		[[nodiscard]] constexpr operator Type_() const noexcept {
-			return data._Myval2;
+			return data.second;
 		}
 
 		template <typename Type_ = ValueType_> requires supplement<Type_>::value
 		[[nodiscard]] constexpr Type_ value() const noexcept {
-			return data._Myval2;
+			return data.second;
 		}
 
 	public:
 		template <typename Type_ = ValueType_> requires supplement<Type_>::value
 		[[nodiscard]] cref<Type_> operator*() const noexcept {
-			return data._Myval2;
+			return data.second;
 		}
 
 		template <typename Type_ = ValueType_> requires supplement<Type_>::value
 		[[nodiscard]] ref<Type_> operator*() noexcept {
-			return data._Myval2;
+			return data.second;
 		}
 
 		template <typename Type_ = ValueType_> requires supplement<Type_>::value
 		[[nodiscard]] const ptr<Type_> operator->() const noexcept {
-			return &data._Myval2;
+			return &data.second;
 		}
 
 		template <typename Type_ = ValueType_> requires supplement<Type_>::value
 		[[nodiscard]] const ptr<Type_> operator->() noexcept {
-			return &data._Myval2;
+			return &data.second;
 		}
 	};
 }
