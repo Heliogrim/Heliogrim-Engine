@@ -20,7 +20,7 @@
 #define OUT
 #endif
 
-#if !defined(__FUNCSIG__) && defined(__PRETTY_FUNCTION__)
+#if !defined(__FUNCSIG__)
 #define __FUNCSIG__ __PRETTY_FUNCTION__
 #endif
 
@@ -163,6 +163,14 @@
 
 #if not defined(support_no_unique_address)
 #define support_no_unique_address
+#endif
+#endif
+
+#if not defined(macro_novtable)
+#if defined(ENV_MSVC)
+#define macro_novtable __declspec(novtable)
+#else
+#define macro_novtable
 #endif
 #endif
 
