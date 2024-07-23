@@ -6,6 +6,7 @@
 #include "InlineArray.hpp"
 #include "../Wrapper.hpp"
 #include "../__macro.hpp"
+#include "../Memory/Destroy.hpp"
 
 namespace hg {
 	/*
@@ -101,7 +102,7 @@ namespace hg {
 			for (auto* iIt = other_.inline_begin(); iIt < other_._inlineEnd; ++iIt) {
 				inline_emplace_back(std::move(*iIt));
 			}
-			std::_Destroy_range(other_.inline_begin(), other_._inlineEnd, _alloc);
+			destroy_range(other_.inline_begin(), other_._inlineEnd, _alloc);
 			other_._inlineEnd = other_.inline_begin();
 			END_REGION_UNCHECKED_LLVL
 		}
@@ -299,12 +300,12 @@ namespace hg {
 
 			/* Destroy inline allocated objects */
 
-			std::_Destroy_range(inline_begin(), _inlineEnd, _alloc);
+			destroy_range(inline_begin(), _inlineEnd, _alloc);
 			_inlineEnd = inline_begin();
 
 			/* Destroy external allocated objects */
 
-			std::_Destroy_range(external_begin(), _externalEnd, _alloc);
+			destroy_range(external_begin(), _externalEnd, _alloc);
 			_traits.deallocate(
 				_alloc,
 				_externalStorage,
@@ -380,7 +381,7 @@ namespace hg {
 		constexpr void _Xchange_external(const ptr<Type_> newPt_, const size_type newSize_) {
 
 			if (external_begin()) {
-				std::_Destroy_range(external_begin(), _externalEnd, _alloc);
+				destroy_range(external_begin(), _externalEnd, _alloc);
 				_alloc.deallocate(_externalStorage, external_size());
 			}
 
@@ -399,9 +400,9 @@ namespace hg {
 
 			if (external_begin()) {
 				if constexpr (std::is_nothrow_move_constructible_v<Type_> || not std::is_copy_constructible_v<Type_>) {
-					std::_Uninitialized_move(external_begin(), _externalEnd, newPt, _alloc);
+					std::uninitialized_move(external_begin(), _externalEnd, newPt/* TODO: , _alloc*/);
 				} else {
-					std::_Uninitialized_copy(external_begin(), _externalEnd, newPt, _alloc);
+					std::uninitialized_copy(external_begin(), _externalEnd, newPt/* TODO: , _alloc*/);
 				}
 			}
 
@@ -428,9 +429,9 @@ namespace hg {
 			auto newPt = _traits.allocate(_alloc, newSize);
 
 			if constexpr (std::is_nothrow_move_constructible_v<Type_> || not std::is_copy_constructible_v<Type_>) {
-				std::_Uninitialized_move(external_begin(), oldLast, newPt, _alloc);
+				std::uninitialized_move(external_begin(), oldLast, newPt/* TODO: , _alloc*/);
 			} else {
-				std::_Uninitialized_copy(external_begin(), oldLast, newPt, _alloc);
+				std::uninitialized_copy(external_begin(), oldLast, newPt/* TODO: , _alloc*/);
 			}
 
 			//_traits.destroy(_alloc, oldLast);
@@ -462,11 +463,11 @@ namespace hg {
 			auto newPt = _traits.allocate(_alloc, newSize);
 
 			if constexpr (std::is_nothrow_move_constructible_v<Type_> || not std::is_copy_constructible_v<Type_>) {
-				std::_Uninitialized_move(prevBegin, prevBegin + where_, newPt, _alloc);
-				std::_Uninitialized_move(prevBegin + where_ + 1, _externalEnd, newPt, _alloc);
+				std::uninitialized_move(prevBegin, prevBegin + where_, newPt, _alloc);
+				std::uninitialized_move(prevBegin + where_ + 1, _externalEnd, newPt, _alloc);
 			} else {
-				std::_Uninitialized_copy(prevBegin, prevBegin + where_, newPt, _alloc);
-				std::_Uninitialized_copy(prevBegin + where_ + 1, _externalEnd, newPt, _alloc);
+				std::uninitialized_copy(prevBegin, prevBegin + where_, newPt, _alloc);
+				std::uninitialized_copy(prevBegin + where_ + 1, _externalEnd, newPt, _alloc);
 			}
 
 			//_traits.destroy(_alloc, oldLast);
