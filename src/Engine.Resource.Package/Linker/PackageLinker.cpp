@@ -163,21 +163,25 @@ PackageLinker::tracked_locked_writer PackageLinker::store(mref<PackageArchiveHea
 	// Warning: Random magic number...
 	const streamsize capacity = 1024LL;
 
+	auto* rwa = make_ptr<StorageReadWriteArchive>(
+		// Note: We move the accessor ownership from the underlying package into the exposed writer
+		std::move(*package._blob.as<nmpt<storage::AccessBlobReadWrite>>()),
+		nextOffset + sizeof(PackageArchiveHeader),
+		clone(capacity)
+	);
+	const auto initialSize = rwa->totalSize();
+
 	return tracked_locked_writer {
-		make_ptr<StorageReadWriteArchive>(
-			// Note: We move the accessor ownership from the underlying package into the exposed writer
-			std::move(*package._blob.as<nmpt<storage::AccessBlobReadWrite>>()),
-			nextOffset + sizeof(PackageArchiveHeader),
-			clone(capacity)
-		),
-		[this](ptr<StorageReadWriteArchive> obj_) {
+		std::move(rwa),
+		[this, /* Problem: This is just a quick fix */initialSize](ptr<StorageReadWriteArchive> obj_) {
+
+			// Problem: This is just an assumption
+			const auto finalizeSize = obj_->totalSize();
+			const auto writtenBytes = finalizeSize - initialSize;
+
 			// Note: After RAII finalization triggers, we need to restore the package's blob accessor
 			auto& package = _package.as<nmpt<storage::AccessPackageReadWrite>>()->get().get().fully();
 			*package._blob.as<nmpt<storage::AccessBlobReadWrite>>() = std::move(*obj_).release();
-
-			// Problem: This is just an assumption
-			const auto cursor = obj_->tell();
-			const auto writtenBytes = cursor;
 
 			/**/
 
