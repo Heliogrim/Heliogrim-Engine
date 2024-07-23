@@ -1,6 +1,5 @@
 #pragma once
 
-#include <direct.h>
 #include <filesystem>
 #include <fstream>
 #include <Engine.Common/String.hpp>
