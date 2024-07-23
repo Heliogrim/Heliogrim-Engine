@@ -7,6 +7,7 @@
 
 #include "__fwd.hpp"
 
+#include "../Pair.hpp"
 #include "../Wrapper.hpp"
 #include "../Meta/Concept.hpp"
 
@@ -111,18 +112,18 @@ namespace hg {
 		}
 
 		template <typename Tx_ = Ty_>
-		const Tx_* const load() const noexcept {
+		std::add_const_t<const Tx_*> load() const noexcept {
 			return mem.load(std::memory_order::consume);
 		}
 
 		template <typename Tx_ = Ty_>
-		Tx_* const load() noexcept {
+		std::add_const_t<Tx_*> load() noexcept {
 			return mem.load(std::memory_order::consume);
 		}
 
 	public:
 		template <typename Tx_ = Ty_> requires std::is_same_v<Tx_, Ty_> && std::is_default_constructible_v<Tx_>
-		Tx_* const loadOrAllocate() {
+		std::add_const_t<Tx_*> loadOrAllocate() {
 
 			if (mem.load(std::memory_order_consume) == nullptr) {
 				allocate<>();
@@ -257,18 +258,18 @@ namespace hg {
 		}
 
 		template <typename Tx_ = Ty_>
-		constexpr Tx_* const load() const noexcept {
+		constexpr std::add_const_t<Tx_*> load() const noexcept {
 			return mem;
 		}
 
 		template <typename Tx_ = Ty_> requires (not std::is_const_v<Ty_>)
-		constexpr Tx_* const load() noexcept {
+		constexpr std::add_const_t<Tx_*> load() noexcept {
 			return mem;
 		}
 
 	public:
 		template <typename Tx_ = Ty_> requires std::is_same_v<Tx_, Ty_> && std::is_default_constructible_v<Tx_>
-		Tx_* const loadOrAllocate() {
+		std::add_const_t<Tx_*> loadOrAllocate() {
 
 			if (mem == nullptr) {
 				allocate<>();
@@ -405,9 +406,9 @@ namespace hg {
 
 	public:
 		template <typename Ptx_ = Ty_*> requires std::is_nothrow_convertible_v<std::remove_cvref_t<Ptx_>, Ty_*>
-		[[nodiscard]] std::_Compressed_pair<allocator_type, Ty_*> exchange(Ptx_&& next_) {
-			return std::_Compressed_pair<allocator_type, Ty_*>(
-				std::_One_then_variadic_args_t {},
+		[[nodiscard]] CompressedPair<allocator_type, Ty_*> exchange(Ptx_&& next_) {
+			return CompressedPair<allocator_type, Ty_*>(
+				one_then_variadic_args_t {},
 				allocator_type {},
 				storage.exchange(std::forward<Ptx_>(next_))
 			);
@@ -422,7 +423,7 @@ namespace hg {
 		}
 
 		[[nodiscard]] Ty_* release() noexcept {
-			return this->exchange(nullptr)._Myval2;
+			return this->exchange(nullptr).second;
 		}
 
 	public:
@@ -611,12 +612,12 @@ namespace hg {
 		}
 
 		template <typename Tx_ = Ty_> requires std::is_same_v<Tx_, Ty_>
-		[[nodiscard]] Tx_* const operator->() const noexcept {
+		[[nodiscard]] std::add_const_t<Tx_*> operator->() const noexcept {
 			return storage.template load<Ty_>();
 		}
 
 		template <typename Tx_ = Ty_> requires (not std::is_const_v<Ty_>) && std::is_same_v<Tx_, Ty_>
-		[[nodiscard]] Tx_* const operator->() noexcept {
+		[[nodiscard]] std::add_const_t<Tx_*> operator->() noexcept {
 			return storage.template load<Ty_>();
 		}
 
