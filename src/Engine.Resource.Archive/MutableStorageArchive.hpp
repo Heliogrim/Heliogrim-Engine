@@ -2,7 +2,7 @@
 #include "StorageBaseArchive.hpp"
 
 namespace hg::engine::resource {
-	class __declspec(novtable) MutableStorageArchive :
+	class macro_novtable MutableStorageArchive :
 		public StorageBaseArchive {
 	public:
 		using this_type = MutableStorageArchive;

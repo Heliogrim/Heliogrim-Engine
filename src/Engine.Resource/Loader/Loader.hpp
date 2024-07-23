@@ -16,7 +16,7 @@ namespace hg::engine::resource::loader {
 	template <class Type_>
 	concept IsLoader = std::derived_from<Type_, LoaderBase>;
 
-	class __declspec(novtable) LoaderBase :
+	class macro_novtable LoaderBase :
 		public InheritBase<LoaderBase> {
 	public:
 		template <typename, typename, typename...>
@@ -88,7 +88,7 @@ namespace hg::engine::resource::loader {
 	/**/
 
 	template <IsRequestValueType RequestType_, IsResponseValueType ResponseType_>
-	class __declspec(novtable) Loader :
+	class macro_novtable Loader :
 		public InheritMeta<
 			Loader<RequestType_, ResponseType_>,
 			LoaderBase,

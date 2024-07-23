@@ -5,7 +5,7 @@
 #include "Traits.hpp"
 
 namespace hg::engine::acs {
-    class __declspec(novtable) ActorPoolWrapperBase {
+    class macro_novtable ActorPoolWrapperBase {
     public:
         virtual ~ActorPoolWrapperBase() = default;
 

@@ -13,7 +13,7 @@ namespace hg::engine::platform {
      * TODO: Check whether we want to handle DPI and therefore new a certain granularity
      *  to determine where to apply the dpi and in which way.
      */
-    class __declspec(novtable) NativeWindow {
+    class macro_novtable NativeWindow {
     public:
         using this_type = NativeWindow;
 

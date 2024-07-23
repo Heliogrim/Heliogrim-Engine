@@ -23,7 +23,7 @@ namespace hg::engine::gfx {
 
 	/**/
 
-	class __declspec(novtable) BufferFactory {
+	class macro_novtable BufferFactory {
 	public:
 		static nmpt<BufferFactory> get();
 

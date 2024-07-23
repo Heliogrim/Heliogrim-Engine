@@ -9,7 +9,7 @@ namespace hg::engine::render::cmd {
 }
 
 namespace hg::engine::render::cmd {
-	class __declspec(novtable) RenderCommandTranslator {
+	class macro_novtable RenderCommandTranslator {
 	public:
 		using this_type = RenderCommandTranslator;
 

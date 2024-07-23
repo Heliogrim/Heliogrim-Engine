@@ -7,7 +7,7 @@ namespace hg::engine::render {
 }
 
 namespace hg::engine::render::graph {
-	class __declspec(novtable) SceneHookFilter :
+	class macro_novtable SceneHookFilter :
 		public InheritBase<SceneHookFilter> {
 	public:
 		using this_type = SceneHookFilter;

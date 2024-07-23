@@ -16,7 +16,7 @@ namespace hg::engine::render::graph {
 
     typedef Flag<IterationResultBits> IterationResult;
 
-    class __declspec(novtable) RuntimeNode :
+    class macro_novtable RuntimeNode :
         public Node {
     protected:
         RuntimeNode() noexcept;

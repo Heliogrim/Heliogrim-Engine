@@ -9,7 +9,7 @@
 
 namespace hg {
 	template <typename ManagedType_>
-	class __declspec(novtable) Resource :
+	class macro_novtable Resource :
 		public ResourceBase {
 	public:
 		friend class ResourceAccessor<std::add_const_t<ManagedType_>>;

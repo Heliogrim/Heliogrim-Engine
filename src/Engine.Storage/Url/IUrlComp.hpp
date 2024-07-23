@@ -21,7 +21,7 @@ namespace hg::engine::storage {
 	/**/
 
 	template <class Derived_>
-	class __declspec(novtable) IUrlComp {
+	class macro_novtable IUrlComp {
 	protected:
 		// Attention: We may need to defer the constructor instantiation...
 		constexpr IUrlComp() noexcept {

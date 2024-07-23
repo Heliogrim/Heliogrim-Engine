@@ -6,7 +6,7 @@
 #include "ActionTypeId.hpp"
 
 namespace hg::editor {
-    class __declspec(novtable) Action {
+    class macro_novtable Action {
     public:
         using this_type = Action;
 

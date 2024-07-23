@@ -9,7 +9,7 @@
 #include "DataLayoutDispatch.hpp"
 
 namespace hg::engine::serialization {
-    class __declspec(novtable) DataLayoutBase :
+    class macro_novtable DataLayoutBase :
         public DataLayoutReflect,
         public DataLayoutDispatch {
     public:

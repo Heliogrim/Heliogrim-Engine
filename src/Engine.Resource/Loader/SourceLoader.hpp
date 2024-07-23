@@ -7,7 +7,7 @@
 #include "SourceLoaderTraits.hpp"
 
 namespace hg::engine::resource::loader {
-	class __declspec(novtable) SourceLoaderStage {
+	class macro_novtable SourceLoaderStage {
 	public:
 		using this_type = SourceLoaderStage;
 

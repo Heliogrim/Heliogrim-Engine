@@ -10,7 +10,7 @@ namespace hg::engine::core {
 
 	/**/
 
-	class __declspec(novtable) RootModule {
+	class macro_novtable RootModule {
 	public:
 		explicit constexpr RootModule() noexcept = default;
 

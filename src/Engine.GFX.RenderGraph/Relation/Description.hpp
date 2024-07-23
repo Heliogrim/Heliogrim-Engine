@@ -21,7 +21,7 @@ namespace hg::engine::render::graph {
 	template <typename Type_>
 	DescriptionValue(DescriptionValueMatchingMode, Type_) -> DescriptionValue<Type_, DescriptionValueMatchingMode>;
 
-	class __declspec(novtable) Description :
+	class macro_novtable Description :
 		public InheritBase<Description> {
 	public:
 		using this_type = Description;

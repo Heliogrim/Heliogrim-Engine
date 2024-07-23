@@ -5,7 +5,7 @@
 
 namespace hg::engine::gfx::cache {
 	// Warning: Do NOT instantiate ModelBatch itself (it might fail anyway cause of `novtable` annotation)
-	struct __declspec(novtable) ModelBatch :
+	struct macro_novtable ModelBatch :
 		public InheritBase<ModelBatch> {
 	public:
 		~ModelBatch() override = default;

@@ -12,7 +12,7 @@
 #include "Stage/StageRegister.hpp"
 
 namespace hg::engine::scheduler {
-	class __declspec(novtable) StagePipeline {
+	class macro_novtable StagePipeline {
 	public:
 		using this_type = StagePipeline;
 

@@ -6,7 +6,7 @@
 #include "ModuleSource.hpp"
 
 namespace hg::engine::accel {
-    class __declspec(novtable) ModuleBuilder {
+    class macro_novtable ModuleBuilder {
     public:
         using this_type = ModuleBuilder;
 

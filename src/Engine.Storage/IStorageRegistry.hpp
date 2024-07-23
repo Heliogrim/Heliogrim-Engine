@@ -18,7 +18,7 @@ namespace hg::engine::storage::system {
 }
 
 namespace hg::engine::storage {
-	class __declspec(novtable) IStorageRegistry {
+	class macro_novtable IStorageRegistry {
 	public:
 		using this_type = IStorageRegistry;
 

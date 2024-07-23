@@ -3,7 +3,7 @@
 #include <Engine.Common/Wrapper.hpp>
 
 namespace hg::engine::resource {
-	class __declspec(novtable) ArchiveFilter {
+	class macro_novtable ArchiveFilter {
 	public:
 		using this_type = ArchiveFilter;
 

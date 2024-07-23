@@ -5,7 +5,7 @@
 #include "EventTypeId.hpp"
 
 namespace hg {
-	class __declspec(novtable) Event {
+	class macro_novtable Event {
 	public:
 		/**
 		 * Problem: Artifact due to stateful events which are handled like a stateless call-graph
@@ -24,9 +24,9 @@ namespace hg {
 		constexpr Event& operator=(const Event&) noexcept = default;
 	};
 
-	class __declspec(novtable) StatelessEvent : public Event {};
+	class macro_novtable StatelessEvent : public Event {};
 
-	class __declspec(novtable) StatefulEvent : public Event {
+	class macro_novtable StatefulEvent : public Event {
 	public:
 		constexpr ~StatefulEvent() noexcept override = default;
 

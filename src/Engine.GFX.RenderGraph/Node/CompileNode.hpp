@@ -8,7 +8,7 @@ namespace hg::engine::render::graph {
 }
 
 namespace hg::engine::render::graph {
-    class __declspec(novtable) CompileNode :
+    class macro_novtable CompileNode :
         public Node {
     public:
         using this_type = CompileNode;

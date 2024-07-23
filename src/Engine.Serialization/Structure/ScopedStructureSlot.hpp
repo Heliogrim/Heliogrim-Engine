@@ -4,7 +4,7 @@
 #include "ScopedSlotState.hpp"
 
 namespace hg::engine::serialization {
-	class __declspec(novtable) ScopedSlot {
+	class macro_novtable ScopedSlot {
 	public:
 		using this_type = ScopedSlot;
 
@@ -41,7 +41,7 @@ namespace hg::engine::serialization {
 	};
 
 	template <typename ValueType_>
-	class __declspec(novtable) TypeScopedSlot :
+	class macro_novtable TypeScopedSlot :
 		public ScopedSlot {
 	public:
 		using this_type = TypeScopedSlot<ValueType_>;

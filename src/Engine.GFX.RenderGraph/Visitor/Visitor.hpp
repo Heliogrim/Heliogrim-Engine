@@ -4,7 +4,7 @@
 #include "../__fwd.hpp"
 
 namespace hg::engine::render::graph {
-    class __declspec(novtable) Visitor {
+    class macro_novtable Visitor {
     public:
         using this_type = Visitor;
 

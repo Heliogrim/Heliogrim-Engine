@@ -19,7 +19,7 @@ namespace hg::engine::gfx {
 		Vector<vk::Semaphore> presentWaits = {};
 	};
 
-	class __declspec(novtable) Swapchain {
+	class macro_novtable Swapchain {
 	public:
 		using value_type = Swapchain;
 

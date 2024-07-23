@@ -3,7 +3,7 @@
 #include <Engine.Common/Wrapper.hpp>
 
 namespace hg::engine::storage::system {
-	class __declspec(novtable) IStorageProvider {
+	class macro_novtable IStorageProvider {
 	public:
 		using this_type = IStorageProvider;
 
