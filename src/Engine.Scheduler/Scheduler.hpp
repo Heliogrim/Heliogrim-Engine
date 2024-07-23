@@ -10,7 +10,7 @@ namespace hg::engine::scheduler {
 }
 
 namespace hg::engine {
-	class __declspec(novtable) Scheduler :
+	class macro_novtable Scheduler :
 		public core::RootModule {
 	public:
 		using task_type = ::hg::engine::scheduler::task::TaskDelegate;

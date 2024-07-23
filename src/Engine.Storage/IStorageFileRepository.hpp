@@ -4,7 +4,7 @@
 #include "IStorageRepository.hpp"
 
 namespace hg::engine::storage::system {
-	class __declspec(novtable) IStorageFileRepository :
+	class macro_novtable IStorageFileRepository :
 		public IStorageRepository {
 	public:
 		using this_type = IStorageFileRepository;

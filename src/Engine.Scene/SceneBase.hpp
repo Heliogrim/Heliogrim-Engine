@@ -18,7 +18,7 @@ namespace hg::engine::scene {
 }
 
 namespace hg::engine::scene {
-	class __declspec(novtable) SceneBase :
+	class macro_novtable SceneBase :
 		public InheritBase<SceneBase> {
 	public:
 		using this_type = SceneBase;

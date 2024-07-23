@@ -5,7 +5,7 @@
 #include "../RenderCommandTranslator.hpp"
 
 namespace hg::engine::render::cmd {
-	class __declspec(novtable) UnreachableCmdTl :
+	class macro_novtable UnreachableCmdTl :
 		public RenderCommandTranslator {
 	public:
 		using this_type = UnreachableCmdTl;

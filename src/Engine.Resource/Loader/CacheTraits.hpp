@@ -74,7 +74,7 @@ namespace hg::engine::resource::loader {
 	/**/
 
 	template <typename AssetType_, typename ResourceType_, bool Streamable_>
-	struct __declspec(novtable) CacheNextLink {
+	struct macro_novtable CacheNextLink {
 		using this_type = CacheNextLink<AssetType_, ResourceType_, Streamable_>;
 
 		using cache_type = Cache<AssetType_, ResourceType_>;
@@ -100,7 +100,7 @@ namespace hg::engine::resource::loader {
 	};
 
 	template <typename AssetType_, typename ResourceType_>
-	struct __declspec(novtable) CacheNextLink<AssetType_, ResourceType_, true> {
+	struct CacheNextLink<AssetType_, ResourceType_, true> {
 		using this_type = CacheNextLink<AssetType_, ResourceType_, true>;
 
 		using cache_type = Cache<AssetType_, ResourceType_>;

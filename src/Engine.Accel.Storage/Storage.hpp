@@ -34,7 +34,7 @@ namespace std {
 }
 
 namespace hg::engine::accel {
-	class __declspec(novtable) AccelStorage {
+	class macro_novtable AccelStorage {
 	public:
 		using this_type = AccelStorage;
 

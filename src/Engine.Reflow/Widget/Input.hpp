@@ -10,7 +10,7 @@ namespace hg::engine::reflow {
         eDisabled
     };
 
-    class __declspec(novtable) InputBase : public Widget {
+    class macro_novtable InputBase : public Widget {
     protected:
         bool _resettable = false;
 

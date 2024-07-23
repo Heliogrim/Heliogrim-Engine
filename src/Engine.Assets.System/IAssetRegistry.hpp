@@ -17,7 +17,7 @@
 #include "Options/RemovePathsOptions.hpp"
 
 namespace hg::engine::assets {
-	class __declspec(novtable) IAssetRegistry {
+	class macro_novtable IAssetRegistry {
 	public:
 		using this_type = IAssetRegistry;
 

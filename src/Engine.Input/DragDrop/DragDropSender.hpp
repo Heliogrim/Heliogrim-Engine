@@ -4,7 +4,7 @@
 #include <Engine.Common/Collection/Vector.hpp>
 
 namespace hg::engine::input {
-    class __declspec(novtable) DragDropSender {
+    class macro_novtable DragDropSender {
     public:
         using this_type = DragDropSender;
 

@@ -7,7 +7,7 @@
 #include "Representation.hpp"
 
 namespace hg::engine::accel::lang {
-	class __declspec(novtable) Emitter {
+	class macro_novtable Emitter {
 	public:
 		[[nodiscard]] virtual bool supportsDialect(Dialect dialect_) const noexcept = 0;
 

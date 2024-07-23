@@ -2,7 +2,7 @@
 #include <Engine.Common/Wrapper.hpp>
 
 namespace hg::engine::render {
-    class __declspec(novtable) LightCaptureInterface {
+    class macro_novtable LightCaptureInterface {
     public:
         using this_type = LightCaptureInterface;
 

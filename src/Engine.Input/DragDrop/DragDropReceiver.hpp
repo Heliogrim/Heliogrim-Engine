@@ -6,7 +6,7 @@
 #include "../DragDropEvent.hpp"
 
 namespace hg::engine::input {
-    class __declspec(novtable) DragDropReceiver {
+    class macro_novtable DragDropReceiver {
     public:
         using this_type = DragDropReceiver;
 

@@ -8,7 +8,7 @@
 #include "../Module/CompiledModule.hpp"
 
 namespace hg::engine::accel {
-	class __declspec(novtable) PassCompiler {
+	class macro_novtable PassCompiler {
 	public:
 		using this_type = PassCompiler;
 

@@ -76,7 +76,7 @@ namespace hg::engine::resource::loader {
 	/**/
 
 	template <typename AssetType_, typename ResourceType_, bool Streamable_ = IsStreamRequestSubjectType<AssetType_>>
-	struct __declspec(novtable) FeedbackNextLink {
+	struct macro_novtable FeedbackNextLink {
 		using this_type = FeedbackNextLink<AssetType_, ResourceType_, Streamable_>;
 
 		using feedback_type = Feedback<AssetType_, ResourceType_>;
@@ -102,7 +102,7 @@ namespace hg::engine::resource::loader {
 	};
 
 	template <typename AssetType_, typename ResourceType_>
-	struct __declspec(novtable) FeedbackNextLink<AssetType_, ResourceType_, true> {
+	struct FeedbackNextLink<AssetType_, ResourceType_, true> {
 		using this_type = FeedbackNextLink<AssetType_, ResourceType_, true>;
 
 		using feedback_type = Feedback<AssetType_, ResourceType_>;

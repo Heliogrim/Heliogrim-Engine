@@ -15,7 +15,7 @@ namespace hg::engine::core {
 
 	/**/
 
-	class __declspec(novtable) CoreModule {
+	class macro_novtable CoreModule {
 	public:
 		explicit constexpr CoreModule(ref<Engine> engine_) :
 			_engine(std::addressof(engine_)) {}

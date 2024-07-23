@@ -3,7 +3,7 @@
 #include "../Task/Task.hpp"
 
 namespace hg::engine::scheduler {
-    class __declspec(novtable) CompositeDispatcher {
+    class macro_novtable CompositeDispatcher {
     public:
         using task_type = task::TaskDelegate;
         using task_handle_type = non_owning_rptr<const task_type>;

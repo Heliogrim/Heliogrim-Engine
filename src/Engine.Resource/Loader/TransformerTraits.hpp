@@ -76,7 +76,7 @@ namespace hg::engine::resource::loader {
 	/**/
 
 	template <typename AssetType_, typename ResourceType_, bool Streamable_>
-	struct __declspec(novtable) TransformerNextLink {
+	struct macro_novtable TransformerNextLink {
 		using this_type = TransformerNextLink<AssetType_, ResourceType_, Streamable_>;
 
 		using transformer_type = Transformer<AssetType_, ResourceType_>;
@@ -102,7 +102,7 @@ namespace hg::engine::resource::loader {
 	};
 
 	template <typename AssetType_, typename ResourceType_>
-	struct __declspec(novtable) TransformerNextLink<AssetType_, ResourceType_, true> {
+	struct TransformerNextLink<AssetType_, ResourceType_, true> {
 		using this_type = TransformerNextLink<AssetType_, ResourceType_, true>;
 
 		using transformer_type = Transformer<AssetType_, ResourceType_>;

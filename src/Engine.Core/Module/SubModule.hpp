@@ -11,7 +11,7 @@ namespace hg::engine {
 }
 
 namespace hg::engine::core {
-	class __declspec(novtable) SubModule {
+	class macro_novtable SubModule {
 	public:
 		explicit constexpr SubModule(const non_owning_rptr<Engine> engine_) :
 			_engine(engine_) {}

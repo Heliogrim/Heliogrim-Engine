@@ -13,7 +13,7 @@ namespace hg {
 
 	/**/
 
-	class __declspec(novtable) RefCountedBlockBase {
+	class macro_novtable RefCountedBlockBase {
 	public:
 		constexpr virtual ~RefCountedBlockBase() noexcept = default;
 

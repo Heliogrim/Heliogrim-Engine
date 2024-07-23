@@ -6,7 +6,7 @@
 #include "../StagePipeline.hpp"
 
 namespace hg::engine::scheduler {
-    class __declspec(novtable) PipelineStage {
+    class macro_novtable PipelineStage {
     public:
         using this_type = PipelineStage;
 

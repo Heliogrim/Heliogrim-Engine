@@ -22,7 +22,7 @@ namespace hg::engine::accel::lang {
 		eVkBindLocation
 	};
 
-	struct __declspec(novtable) Annotation {
+	struct macro_novtable Annotation {
 	public:
 		using this_type = Annotation;
 
@@ -71,7 +71,7 @@ namespace hg::engine::accel::lang {
 	};
 
 	template <typename Derived_>
-	struct __declspec(novtable) AnnotationBase : public Annotation {
+	struct macro_novtable AnnotationBase : public Annotation {
 		using this_type = AnnotationBase<Derived_>;
 
 		constexpr AnnotationBase(AnnotationType type_, mref<uptr<Annotation>> next_) noexcept:

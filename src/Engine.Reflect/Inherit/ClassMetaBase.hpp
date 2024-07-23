@@ -4,7 +4,7 @@
 #include "Compile.hpp"
 
 namespace hg {
-	class __declspec(novtable) ClassMetaBase {
+	class macro_novtable ClassMetaBase {
 	public:
 		template <typename>
 		friend class InheritBase;

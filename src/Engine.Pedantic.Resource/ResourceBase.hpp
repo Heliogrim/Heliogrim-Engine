@@ -1,7 +1,7 @@
 #pragma once
 
 namespace hg {
-	class __declspec(novtable) ResourceBase {
+	class macro_novtable ResourceBase {
 	public:
 		constexpr ResourceBase() noexcept = default;
 

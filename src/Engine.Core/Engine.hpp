@@ -37,7 +37,7 @@ namespace hg::engine::core {
 }
 
 namespace hg::engine {
-	class __declspec(novtable) Engine :
+	class macro_novtable Engine :
 		public InheritBase<Engine> {
 	public:
 		using this_type = Engine;

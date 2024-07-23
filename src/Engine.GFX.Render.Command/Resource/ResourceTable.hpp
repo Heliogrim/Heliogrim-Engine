@@ -5,7 +5,7 @@
 #include "Resource.hpp"
 
 namespace hg::engine::render {
-	class __declspec(novtable) ResourceTable {
+	class macro_novtable ResourceTable {
 	public:
 		using this_type = ResourceTable;
 

@@ -11,7 +11,7 @@ namespace hg::engine::render {
 }
 
 namespace hg::engine::render {
-	class __declspec(novtable) RenderSceneSystemModel :
+	class macro_novtable RenderSceneSystemModel :
 		public InheritBase<RenderSceneSystemModel> {
 	public:
 		using this_type = RenderSceneSystemModel;

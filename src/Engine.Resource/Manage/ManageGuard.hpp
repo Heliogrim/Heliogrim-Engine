@@ -10,7 +10,7 @@ namespace hg::engine::resource {
 }
 
 namespace hg::engine::resource {
-	class __declspec(novtable) ManageGuard {
+	class macro_novtable ManageGuard {
 	public:
 		using this_type = ManageGuard;
 
@@ -67,9 +67,9 @@ namespace hg::engine::resource {
 		// ReSharper disable once CppHiddenFunction
 		ref<this_type> release();
 
-		const ptr<resource_type> reset(const ptr<resource_type> next_);
+		std::add_const_t<ptr<resource_type>> reset(const ptr<resource_type> next_);
 
-		const ptr<resource_type> reset(::std::nullptr_t);
+		std::add_const_t<ptr<resource_type>> reset(::std::nullptr_t);
 
 	public:
 		/**
