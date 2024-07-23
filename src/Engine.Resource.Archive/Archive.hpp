@@ -13,7 +13,7 @@
 #include "Filter/__fwd.hpp"
 
 namespace hg::engine::resource {
-	class __declspec(novtable) Archive {
+	class macro_novtable Archive {
 	public:
 		using this_type = Archive;
 

@@ -10,7 +10,7 @@
 #include "SlotOpResult.hpp"
 
 namespace hg::engine::serialization {
-    class __declspec(novtable) StructureSlotBase :
+    class macro_novtable StructureSlotBase :
         public std::enable_shared_from_this<StructureSlotBase> {
     public:
         using this_type = StructureSlotBase;
@@ -54,7 +54,7 @@ namespace hg::engine::serialization {
     };
 
     template <typename ValueType_>
-    class __declspec(novtable) TypedStructureSlotBase :
+    class macro_novtable TypedStructureSlotBase :
         public StructureSlotBase {
     public:
         using this_type = TypedStructureSlotBase<ValueType_>;

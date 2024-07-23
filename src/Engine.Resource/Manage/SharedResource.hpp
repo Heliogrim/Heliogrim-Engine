@@ -3,7 +3,7 @@
 
 namespace hg::engine::resource {
     template <typename ManagedType_>
-    class __declspec(novtable) SharedResource :
+    class macro_novtable SharedResource :
         public Resource<ManagedType_> {
     public:
         using this_type = SharedResource<ManagedType_>;

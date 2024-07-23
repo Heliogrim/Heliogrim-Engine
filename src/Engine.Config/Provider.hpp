@@ -7,7 +7,7 @@
 #include "ConfigKey.hpp"
 
 namespace hg::engine::cfg {
-	class __declspec(novtable) Provider {
+	class macro_novtable Provider {
 	public:
 		constexpr virtual ~Provider() noexcept = default;
 

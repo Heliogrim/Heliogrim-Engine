@@ -4,7 +4,7 @@
 #include <Engine.Common/Sal.hpp>
 
 namespace hg::engine::accel {
-	class __declspec(novtable) PassBuilder {
+	class macro_novtable PassBuilder {
 	public:
 		using this_type = PassBuilder;
 

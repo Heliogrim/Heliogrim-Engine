@@ -3,7 +3,7 @@
 #include "__fwd.hpp"
 
 namespace hg::engine::accel {
-	class __declspec(novtable) AccelerationPass :
+	class macro_novtable AccelerationPass :
 		public InheritBase<AccelerationPass> {
 	public:
 		using this_type = AccelerationPass;

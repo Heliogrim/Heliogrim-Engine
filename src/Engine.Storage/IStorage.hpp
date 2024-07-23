@@ -3,7 +3,7 @@
 #include <Engine.Reflect/Inherit/InheritBase.hpp>
 
 namespace hg::engine::storage {
-	class __declspec(novtable) IStorage :
+	class macro_novtable IStorage :
 		public InheritBase<IStorage>,
 		public ArcFromThis<IStorage> {
 	public:

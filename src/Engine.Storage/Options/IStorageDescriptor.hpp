@@ -18,7 +18,7 @@ namespace hg::engine::storage {
 	/**/
 
 	template <class Derived_>
-	class __declspec(novtable) IStorageDescriptor {
+	class macro_novtable IStorageDescriptor {
 	protected:
 		// Attention: We may need to defer the constructor instantiation...
 		constexpr IStorageDescriptor() noexcept {

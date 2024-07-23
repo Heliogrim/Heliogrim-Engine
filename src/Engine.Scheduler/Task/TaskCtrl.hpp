@@ -3,7 +3,7 @@
 #include <Engine.Common/Wrapper.hpp>
 
 namespace hg::engine::scheduler::task {
-    class __declspec(novtable) TaskCtrl {
+    class macro_novtable TaskCtrl {
     public:
         using this_type = TaskCtrl;
 

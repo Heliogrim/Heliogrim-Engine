@@ -4,7 +4,7 @@
 #include <Engine.Reflect/Inherit/InheritBase.hpp>
 
 namespace hg::engine::render::graph {
-	class __declspec(novtable) SceneWalkerFilter :
+	class macro_novtable SceneWalkerFilter :
 		public InheritBase<SceneWalkerFilter> {
 	public:
 		using this_type = SceneWalkerFilter;

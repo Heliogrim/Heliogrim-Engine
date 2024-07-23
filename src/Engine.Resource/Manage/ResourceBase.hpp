@@ -11,7 +11,7 @@
 #include "../ResourceUsageFlag.hpp"
 
 namespace hg::engine::resource {
-	class __declspec(novtable) ResourceBase {
+	class macro_novtable ResourceBase {
 	public:
 		friend class ManageGuard;
 

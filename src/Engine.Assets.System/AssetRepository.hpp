@@ -6,7 +6,7 @@
 #include "__fwd.hpp"
 
 namespace hg::engine::assets::system {
-	class __declspec(novtable) AssetRepository {
+	class macro_novtable AssetRepository {
 	public:
 		using this_type = AssetRepository;
 

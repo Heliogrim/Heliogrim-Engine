@@ -7,7 +7,7 @@ namespace hg::engine::scheduler {
 }
 
 namespace hg::engine::scheduler {
-    class __declspec(novtable) StageRegister {
+    class macro_novtable StageRegister {
     public:
         using this_type = StageRegister;
 

@@ -9,7 +9,7 @@
 
 namespace hg {
 	/** The event emitter */
-	class __declspec(novtable) EventEmitter {
+	class macro_novtable EventEmitter {
 	public:
 		/**
 		 * The data type for the listener handle to remove listener from emitter

@@ -12,7 +12,7 @@ namespace hg::engine::platform {
 }
 
 namespace hg::engine {
-	class __declspec(novtable) Platform :
+	class macro_novtable Platform :
 		public core::RootModule {
 	public:
 		using this_type = Platform;

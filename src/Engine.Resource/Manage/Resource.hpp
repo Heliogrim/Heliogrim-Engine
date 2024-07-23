@@ -13,7 +13,7 @@
 
 namespace hg::engine::resource {
 	template <typename ManagedType_>
-	class __declspec(novtable) Resource :
+	class macro_novtable Resource :
 		public ResourceBase {
 	public:
 		using this_type = Resource<ManagedType_>;

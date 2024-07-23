@@ -2,7 +2,7 @@
 #include "../RuntimeNode.hpp"
 
 namespace hg::engine::render::graph {
-    class __declspec(novtable) SLNode :
+    class macro_novtable SLNode :
         public RuntimeNode {
     public:
         using this_type = SLNode;

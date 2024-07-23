@@ -2,7 +2,7 @@
 #include "Archive.hpp"
 
 namespace hg::engine::resource {
-	class __declspec(novtable) MemoryBaseArchive :
+	class macro_novtable MemoryBaseArchive :
 		public Archive {
 	public:
 		using this_type = MemoryBaseArchive;

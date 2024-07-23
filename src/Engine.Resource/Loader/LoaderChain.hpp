@@ -205,7 +205,7 @@ namespace hg::engine::resource::loader {
 					std::move(request_),
 					std::move(options_)
 				);
-			};
+			}
 		};
 
 		template <typename RequestType_>

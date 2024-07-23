@@ -4,7 +4,7 @@
 
 namespace hg {
 	template <typename ManagedType_>
-	class __declspec(novtable) ResourceAccessorBase {
+	class macro_novtable ResourceAccessorBase {
 	public:
 		using this_type = ResourceAccessorBase<ManagedType_>;
 

@@ -4,7 +4,7 @@
 #include "Traits.hpp"
 
 namespace hg::editor::gfx::loader {
-	class __declspec(novtable) EditorTextureSubTransformer :
+	class macro_novtable EditorTextureSubTransformer :
 		public ::hg::engine::resource::loader::Transformer<engine::assets::TextureAsset, engine::gfx::TextureResource> {
 	public:
 		using this_type = EditorTextureSubTransformer;

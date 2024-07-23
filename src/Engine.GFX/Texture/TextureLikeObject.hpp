@@ -4,7 +4,7 @@
 #include <Engine.Reflect/Inherit/InheritBase.hpp>
 
 namespace hg::engine::gfx {
-	class __declspec(novtable) TextureLikeObject :
+	class macro_novtable TextureLikeObject :
 		public InheritBase<TextureLikeObject> {
 	public:
 		using this_type = TextureLikeObject;

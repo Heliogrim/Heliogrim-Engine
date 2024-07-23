@@ -42,7 +42,7 @@ namespace hg::engine::reflow {
 		wptr<Widget> widget;
 	};
 
-	class __declspec(novtable) TreeViewBase :
+	class macro_novtable TreeViewBase :
 		public VScrollBox {
 	public:
 		using this_type = TreeViewBase;

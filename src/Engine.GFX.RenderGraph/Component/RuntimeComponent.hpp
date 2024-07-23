@@ -3,7 +3,7 @@
 #include "Component.hpp"
 
 namespace hg::engine::render::graph {
-    class __declspec(novtable) RuntimeComponent :
+    class macro_novtable RuntimeComponent :
         public InheritMeta<RuntimeComponent, Component> {
     public:
         using this_type = RuntimeComponent;

@@ -5,7 +5,7 @@
 #include "../../Symbol/ScopedSymbolContext.hpp"
 
 namespace hg::engine::render::graph {
-    class __declspec(novtable) SubPassNodeBase :
+    class macro_novtable SubPassNodeBase :
         public SLNode {
     public:
         using this_type = SubPassNodeBase;

@@ -7,7 +7,7 @@
 #include <Engine.Common/Wrapper.hpp>
 
 namespace hg::engine::resource {
-	class __declspec(novtable) Blob {
+	class macro_novtable Blob {
 	public:
 		constexpr virtual ~Blob() noexcept = default;
 
@@ -20,6 +20,6 @@ namespace hg::engine::resource {
 		// Question: Which attributes and functions should be exposed by blob.
 		[[nodiscard]] constexpr virtual streamsize size() const noexcept {
 			return streamsize { -1LL };
-		};
+		}
 	};
 }
