@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Engine.Common/__macro.hpp>
+#include <Engine.Common/Memory/Address.hpp>
 #include <Engine.Common/Meta/Concept.hpp>
 
 #include "Relation.hpp"
@@ -261,7 +262,7 @@ namespace hg {
 			[[nodiscard]] constexpr bool operator!=(const ConstIterator& other_) const noexcept;
 
 			[[nodiscard]] constexpr std::strong_ordering operator<=>(const this_type& other_) const noexcept {
-				return std::_Unfancy(_cursor) <=> std::_Unfancy(other_._cursor);
+				return ::hg::unfancy(_cursor) <=> ::hg::unfancy(other_._cursor);
 			}
 
 			[[nodiscard]] constexpr std::strong_ordering operator<=>(const ConstIterator& other_) const noexcept;
@@ -403,7 +404,7 @@ namespace hg {
 			[[nodiscard]] constexpr bool operator!=(const Iterator& other_) const noexcept;
 
 			[[nodiscard]] constexpr std::strong_ordering operator<=>(const this_type& other_) const noexcept {
-				return std::_Unfancy(_cursor) <=> std::_Unfancy(other_._cursor);
+				return ::hg::unfancy(_cursor) <=> ::hg::unfancy(other_._cursor);
 			}
 
 			[[nodiscard]] constexpr std::strong_ordering operator<=>(const Iterator& other_) const noexcept;
