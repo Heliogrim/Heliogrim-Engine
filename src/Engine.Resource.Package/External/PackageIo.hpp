@@ -134,7 +134,7 @@ namespace hg::engine::storage {
 		 */
 		[[nodiscard]] UniqueValue<PackageLinker> create_empty_linker(
 			_In_ ref<AccessPackageReadonly> packageAccessor_
-		);
+		) = delete;
 
 		// TODO:
 	private:
