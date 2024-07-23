@@ -10,7 +10,10 @@ namespace hg::engine::assets {
 
 namespace hg::engine::assets::system {
 	namespace detail {
-		template <typename IndexDataType_> requires std::_Is_nothrow_hashable<IndexDataType_>::value
+		template <typename ValueType_>
+		concept IsNoThrowHashable = noexcept(::std::hash<ValueType_> {}(::std::declval<const ValueType_&>()));
+
+		template <typename IndexDataType_> requires IsNoThrowHashable<IndexDataType_>
 		using projection = unary_fnc<IndexDataType_, nmpt<const Asset>>;
 
 		/**/
