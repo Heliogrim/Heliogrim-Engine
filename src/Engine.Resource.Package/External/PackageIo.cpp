@@ -128,10 +128,12 @@ uptr<Package> PackageIo::create_empty_package(ref<AccessBlobReadWrite> blobAcces
 			.endianness = PackageEndianness::eBigEndian,
 			.version = 0x1,
 			.guid = {
+				START_SUPPRESS_WARNINGS
 				htonGuid[0], htonGuid[1], htonGuid[2], htonGuid[3],
 				htonGuid[4], htonGuid[5], htonGuid[6], htonGuid[7],
 				htonGuid[8], htonGuid[9], htonGuid[10], htonGuid[11],
 				htonGuid[12], htonGuid[13], htonGuid[14], htonGuid[15]
+				STOP_SUPPRESS_WARNINGS
 			},
 			.compression = PackageCompression::eNone
 		},
@@ -315,13 +317,6 @@ UniqueValue<PackageLinker> PackageIo::create_empty_linker(
 	return UniqueValue<PackageLinker> { PackageLinker { *_storageIo, packageAccessor_ } };
 }
 
-UniqueValue<PackageLinker> PackageIo::create_empty_linker(
-	ref<AccessPackageReadonly> packageAccessor_
-) {
-	// TODO: Remove this function, as is has no semantic value.
-	::hg::panic();
-}
-
 /**/
 
 ref<PackageLinker> PackageIo::loadLinkerData(ref<PackageLinker> linker_) {
@@ -349,7 +344,10 @@ ref<PackageLinker> PackageIo::loadLinkerData(ref<PackageLinker> linker_) {
 
 			blob.apply(
 				[&indexArchive, &package](auto blob_) {
-					blob_->get()->read(package.header().indexOffset, indexArchive.getByteSpan());
+					blob_->get()->read(
+						static_cast<streamoff>(package.header().indexOffset),
+						indexArchive.getByteSpan()
+					);
 				}
 			);
 
@@ -545,7 +543,7 @@ void PackageIo::experimental_full_package_store(
 	auto compressorData = std::span<_::byte> {};
 
 	package._blob.as<nmpt<AccessBlobReadWrite>>().get()->get()->write(
-		compressorOffset,
+		static_cast<streamoff>(compressorOffset),
 		clone(compressorData)
 	);
 
