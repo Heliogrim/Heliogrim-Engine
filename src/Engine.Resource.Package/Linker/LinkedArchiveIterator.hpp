@@ -166,7 +166,7 @@ namespace hg::engine::resource::package {
 		}
 
 		[[nodiscard]] std::strong_ordering operator<=>(cref<this_type> other_) const noexcept {
-			return std::_Unfancy(_cursor) <=> std::_Unfancy(other_._cursor);
+			return ::hg::unfancy(_cursor) <=> ::hg::unfancy(other_._cursor);
 		}
 	};
 
