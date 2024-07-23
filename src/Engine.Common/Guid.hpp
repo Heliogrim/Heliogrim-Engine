@@ -153,7 +153,7 @@ namespace hg {
 namespace std {
 	template <>
 	struct hash<::hg::Guid> {
-		[[nodiscard]] std::size_t operator()(::hg::cref<::hg::Guid> value_) const noexcept {
+		[[nodiscard]] constexpr std::size_t operator()(::hg::cref<::hg::Guid> value_) const noexcept {
 
 			size_t seed = 31587166197;
 
