@@ -24,11 +24,18 @@ Guid::Guid(const _GUID& value_) :
 void hg::GuidGenerate(ref<Guid> guid_) {
 	#ifdef _WIN32
 
-	static_assert(sizeof(Guid) == sizeof(GUID));
-	auto* rg = std::bit_cast<GUID*>(&guid_);
-	CoCreateGuid(rg);
+	if constexpr (sizeof(Guid) != sizeof(GUID)) {
+		GUID tmp {};
+		CoCreateGuid(&tmp);
+		guid_ = Guid { static_cast<u32>(tmp.Data1), tmp.Data2, tmp.Data3, *std::bit_cast<u64*>(tmp.Data4) };
+
+	} else if constexpr (sizeof(Guid) == sizeof(GUID)) {
+		auto* rg = std::bit_cast<GUID*>(&guid_);
+		CoCreateGuid(rg);
+	}
+
 	#else
-        #pragma error("Not implemented uuid generator.")
+        #error "Not implemented uuid generator."
 	#endif
 }
 
@@ -42,7 +49,7 @@ void Guid::hton(ref<u8[16]> dst_) noexcept {
 
 Guid Guid::ntoh(cref<u8[16]> src_) noexcept {
 	return {
-		::ntohl(*std::bit_cast<u32*>(&src_[0])),
+		static_cast<u32>(::ntohl(*std::bit_cast<u32*>(&src_[0]))),
 		::ntohs(*std::bit_cast<u16*>(&src_[4])),
 		::ntohs(*std::bit_cast<u16*>(&src_[6])),
 		::ntohll(*std::bit_cast<u64*>(&src_[8]))
