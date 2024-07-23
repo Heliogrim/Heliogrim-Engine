@@ -23,6 +23,8 @@ namespace hg::engine::resource {
 		storage::AccessBlobReadWrite _storage;
 
 	public:
+		[[nodiscard]] s64 totalSize() const noexcept override;
+
 		[[nodiscard]] storage::AccessBlobReadWrite release() && {
 			// BUG: Breaks
 			return std::move(_storage);
