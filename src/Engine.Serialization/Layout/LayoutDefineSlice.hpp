@@ -78,7 +78,7 @@ namespace hg::engine::serialization::layout {
 
 			// Warning: Experimental temporary speed-up solution
 			if constexpr (
-				std::_Iterator_is_contiguous<typename Type_::iterator> &&
+				std::contiguous_iterator<typename Type_::iterator> &&
 				HasReserveFnc<Type_> &&
 				std::is_trivial_v<typename Type_::value_type>
 			) {
@@ -96,7 +96,7 @@ namespace hg::engine::serialization::layout {
 
 			} else {
 
-				if constexpr (std::_Iterator_is_contiguous<typename Type_::iterator> && HasReserveFnc<Type_>) {
+				if constexpr (std::contiguous_iterator<typename Type_::iterator> && HasReserveFnc<Type_>) {
 					container->reserve(storedCount);
 					// TODO: If `std::is_trivial_v<Type_::value_type>` and contiguous memory, than we can memcpy directly and assume elements as `constructed`
 				}
