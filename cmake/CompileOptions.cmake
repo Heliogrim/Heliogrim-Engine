@@ -81,6 +81,13 @@ set(DEFAULT_LIBRARIES
 		${PROJECT_NAME}::External-vulkan-loader
 )
 
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU" OR "${CMAKE_SYSTEM_NAME}" MATCHES "Linux")
+	set(DEFAULT_LIBRARIES
+			${DEFAULT_LIBRARIES}
+			${PROJECT_NAME}::External-libuuid
+	)
+endif ()
+
 # Append Sanitizer Options
 if (SANITIZER_LINK_LIBS)
 	list(APPEND DEFAULT_LIBRARIES ${SANITIZER_LINK_LIBS})
