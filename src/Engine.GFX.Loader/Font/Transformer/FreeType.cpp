@@ -1,6 +1,7 @@
 #include "FreeType.hpp"
 
 #include <filesystem>
+#include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Common/Discard.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Math/Compat.inl>
@@ -249,7 +250,7 @@ void transformer::prepareFreeType() {
 	auto error = FT_Init_FreeType(&freeTypeLibrary);
 	if (error) {
 		IM_CORE_ERROR("Failed to initialize FreeType library.");
-		__debugbreak();
+		::hg::breakpoint();
 		return;
 	}
 
@@ -272,13 +273,13 @@ void transformer::initFaceFromAsset(cref<assets::Font> asset_) {
 
 	if (error == FT_Err_Unknown_File_Format) {
 		IM_CORE_ERRORF("Font face file `{}` has an unknown file format.", srcPath.path().string());
-		__debugbreak();
+		::hg::breakpoint();
 		return;
 	}
 
 	if (error) {
 		IM_CORE_ERROR("Failed to load font face.");
-		__debugbreak();
+		::hg::breakpoint();
 		return;
 	}
 

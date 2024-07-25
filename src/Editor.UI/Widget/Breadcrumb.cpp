@@ -1,8 +1,9 @@
 #include "Breadcrumb.hpp"
 
-#include <Engine.Reflow/Widget/Text.hpp>
-#include <Engine.Reflow/Widget/Button.hpp>
+#include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Common/Make.hpp>
+#include <Engine.Reflow/Widget/Button.hpp>
+#include <Engine.Reflow/Widget/Text.hpp>
 
 #include "Editor.UI/Theme/Theme.hpp"
 
@@ -107,7 +108,7 @@ void Breadcrumb::removeNavEntry(cref<AssocKey<string>> key_) {
 	const auto whereChild { std::ranges::find(_children.begin(), _children.end(), button) };
 
 	if (whereChild == _children.end()) {
-		__debugbreak();
+		::hg::breakpoint();
 		return;
 	}
 

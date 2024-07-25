@@ -1,10 +1,12 @@
+#include "ModelImporter.hpp"
+
 #include <filesystem>
+#include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Assets/AssetFactory.hpp>
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Common/GuidFormat.hpp>
 #include <Engine.Common/Concurrent/Promise.hpp>
 #include <Engine.Core/Engine.hpp>
-#include <Engine.GFX/Importer/ModelImporter.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Resource.Package/Linker/PackageLinker.hpp>
 #include <Engine.Storage/IStorageRegistry.hpp>
@@ -115,14 +117,14 @@ FbxAssimpImportData assimpGetImportData(cref<fs::File> file_) {
 
 	const streamsize size = file_.size();
 	if (size < 0) {
-		__debugbreak();
+		::hg::breakpoint();
 		return {};
 	}
 
 	auto* const scene = importer.ReadFile(file_.path().string(), ppFlags);
 
 	if (scene == nullptr) {
-		__debugbreak();
+		::hg::breakpoint();
 		return {};
 	}
 

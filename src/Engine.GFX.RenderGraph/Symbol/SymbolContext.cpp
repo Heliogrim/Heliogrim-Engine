@@ -1,9 +1,10 @@
 #include "SymbolContext.hpp"
 
 #include <ranges>
+#include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Pedantic/Clone/Clone.hpp>
 #include <Engine.Logging/Logger.hpp>
+#include <Engine.Pedantic/Clone/Clone.hpp>
 
 using namespace hg::engine::render::graph;
 using namespace hg;
@@ -146,7 +147,7 @@ bool SymbolContext::eraseExposedSymbol(mref<smr<const Symbol>> symbol_) {
 
 	if (not stored->owned) {
 		IM_CORE_ERROR("Tried to erase resource as exposed symbol, while subject is internally owned.");
-		__debugbreak();
+		::hg::breakpoint();
 		return false;
 	}
 
@@ -168,7 +169,7 @@ bool SymbolContext::eraseExposedSymbol(mref<nmpt<SymbolizedResource>> resource_)
 
 	if (stored != resource_) {
 		IM_CORE_ERROR("Unexpected stored subject while trying to erase exposed symbolized resource.");
-		__debugbreak();
+		::hg::breakpoint();
 		return false;
 	}
 
@@ -189,13 +190,13 @@ bool SymbolContext::eraseExportSymbol(mref<smr<const Symbol>> symbol_) {
 
 	if (stored->owned) {
 		IM_CORE_ERROR("Tried to erase resource as export symbol, while subject is externaly owned.");
-		__debugbreak();
+		::hg::breakpoint();
 		return false;
 	}
 
 	if (stored->data != nullptr) {
 		IM_CORE_ERROR("Encountered invalid data state (!= nullptr) while erasing subject.");
-		__debugbreak();
+		::hg::breakpoint();
 		return false;
 	}
 
@@ -219,13 +220,13 @@ bool SymbolContext::eraseExportSymbol(mref<nmpt<SymbolizedResource>> resource_) 
 
 	if (stored != resource_) {
 		IM_CORE_ERROR("Unexpected stored subject while trying to erase symbolized resource.");
-		__debugbreak();
+		::hg::breakpoint();
 		return false;
 	}
 
 	if (stored->data != nullptr) {
 		IM_CORE_ERROR("Encountered invalid data state (!= nullptr) while erasing subject.");
-		__debugbreak();
+		::hg::breakpoint();
 		return false;
 	}
 

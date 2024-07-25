@@ -1,3 +1,17 @@
+#include "AssetFactory.hpp"
+
+#include <filesystem>
+#include <sstream>
+#include <Engine.Asserts/Breakpoint.hpp>
+#include <Engine.Assets.System/AssetDescriptor.hpp>
+#include <Engine.Assets.System/AssetRegistry.hpp>
+#include <Engine.Assets.System/Repository/InMemAssetRepository.hpp>
+#include <Engine.Pedantic/Clone/Clone.hpp>
+#include <Engine.Reflect/Meta/TypedMetaClass.hpp>
+#include <Engine.Serialization/Layout/DataLayout.hpp>
+#include <Engine.Serialization.Layouts/LayoutManager.hpp>
+
+#include "Types/AccelEffect.hpp"
 #include "Types/Asset.hpp"
 #include "Types/Font.hpp"
 #include "Types/Image.hpp"
@@ -11,21 +25,6 @@
 #include "Types/Material/GfxMaterial.hpp"
 #include "Types/Material/GfxMaterialPrototype.hpp"
 #include "Types/Texture/TextureAsset.hpp"
-
-#include "AssetFactory.hpp"
-
-#include <filesystem>
-#include <Engine.Assets.System/AssetDescriptor.hpp>
-#include <Engine.Assets.System/AssetRegistry.hpp>
-#include <Engine.Assets.System/Repository/InMemAssetRepository.hpp>
-#include <Engine.Reflect/Meta/TypedMetaClass.hpp>
-#include <Engine.Serialization/Layout/DataLayout.hpp>
-#include <Engine.Serialization.Layouts/LayoutManager.hpp>
-
-#include <sstream>
-#include <Engine.Pedantic/Clone/Clone.hpp>
-
-#include "Types/AccelEffect.hpp"
 
 using namespace hg::engine::assets;
 using namespace hg;
@@ -359,7 +358,7 @@ Arci<TextureAsset> AssetFactory::createTextureAsset(
 		#ifdef _DEBUG
         // TODO: We need to handle a missed insertion call to the asset database
         // Important: Move from asset factory to another place, cause factory is just instantiation, and not database management
-        __debugbreak();
+		::hg::breakpoint();
 		#else
 		throw std::runtime_error("Failed to insert texture asset into database.");
 		#endif

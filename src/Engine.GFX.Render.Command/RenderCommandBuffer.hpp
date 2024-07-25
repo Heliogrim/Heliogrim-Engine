@@ -123,7 +123,7 @@ namespace hg::engine::render::cmd {
 			std::initializer_list<std::pair<accel::lang::SymbolId, Resource>> list_
 		) noexcept {
 
-			__debugbreak();
+			::hg::breakpoint();
 			return;
 
 			auto* tmp = static_cast<ptr<engine::render::ResourceTable>>(nullptr);
@@ -134,7 +134,7 @@ namespace hg::engine::render::cmd {
 		template <typename... Types_>
 		void bind(std::pair<accel::lang::SymbolId, Types_>&&... args_) noexcept {
 
-			__debugbreak();
+			::hg::breakpoint();
 			return;
 
 			auto* tmp = static_cast<ptr<engine::render::ResourceTable>>(nullptr);

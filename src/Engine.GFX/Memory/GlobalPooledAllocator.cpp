@@ -52,7 +52,7 @@ AllocationResult GlobalPooledAllocator::allocate(
 		#ifdef _DEBUG
         auto* const pool { _cache.getOrCreatePool(layout_) };
         if (pool == nullptr) {
-            __debugbreak();
+        	::hg::breakpoint();
             return AllocationResult::eFailed;
         }
 		#else
