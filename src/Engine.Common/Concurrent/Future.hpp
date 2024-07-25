@@ -5,6 +5,8 @@
 #include <memory>
 #include <utility>
 
+#include <condition_variable>
+
 #include "../__macro.hpp"
 #include "../Wrapper.hpp"
 #include "../Memory/MemoryPointer.hpp"

@@ -369,7 +369,7 @@ namespace hg {
 		}
 
 	public:
-		[[nodiscard]] constexpr bool operator==(nullptr_t) const noexcept {
+		[[nodiscard]] constexpr bool operator==(std::nullptr_t) const noexcept {
 			const auto stored = _obj.load(std::memory_order::consume);
 			return stored == 0 || decode_pointer(stored) == nullptr;
 		}

@@ -85,9 +85,11 @@ namespace hg::engine::res {
 
 		[[nodiscard]] operator hg::fs::File() noexcept;
 
+	#ifdef _WIN32
 	private:
 		HANDLE _handle;
 		HANDLE _waitHandle;
+	#endif
 
 	private:
 		std::unordered_map<hg::fs::File, std::filesystem::file_time_type> _state;

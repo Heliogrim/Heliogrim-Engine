@@ -16,6 +16,7 @@ Watcher::~Watcher() {
     tidy();
 }
 
+#ifdef _WIN32
 void Watcher::tidy() {
 
     if (_handle) {
@@ -79,6 +80,7 @@ void Watcher::setup() {
      */
     notify(false);
 }
+#endif
 
 void Watcher::notify(const bool publish_) {
 
