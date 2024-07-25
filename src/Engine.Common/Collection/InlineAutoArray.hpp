@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <memory>
+#include <utility>
 
 #include "InlineArray.hpp"
 #include "../Wrapper.hpp"
