@@ -8,8 +8,11 @@
 #ifdef ENV_MSVC
 #include <Engine.Common/__macro.hpp>
 #define WIN32_LEAN_AND_MEAN
-#include <Fileapi.h>
+/**/
 #include <Windows.h>
+/* Note: Order dependent `windows header -> fileapi header` */
+#include <Fileapi.h>
+/**/
 #endif
 
 #include "../File.hpp"
