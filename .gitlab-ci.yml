@@ -68,22 +68,6 @@ build.windows.msvc:
     #- cmake --build build/Release -t Heliogrim-Heliogrim --parallel $logical_core_count --clean-first
     #- cmake --build build/Release -t Heliogrim-Editor --parallel $logical_core_count
 
-    # Linking Resources
-
-    #- rm -rf dist/Debug/resources
-    - if (Test-Path ".\dist\Debug\resources") { Remove-Item ".\dist\Debug\resources" -Recurse -Force -Confirm:$False }
-    #- rm -rf dist/Profile/resources
-    #- if (Test-Path ".\dist\Profile\resources") { Remove-Item ".\dist\Profile\resources" -Recurse -Force -Confirm:$False }
-    #- rm -rf dist/Release/resources
-    #- if (Test-Path ".\dist\Release\resources") { Remove-Item ".\dist\Release\resources" -Recurse -Force -Confirm:$False }
-
-    #- ln -sfrn resources dist/Debug/resources
-    - New-Item -ItemType Junction -Path ".\dist\Debug\resources" -Target ".\resources"
-    #- ln -sfrn resources dist/Profile/resources
-    #- New-Item -ItemType Junction -Path ".\dist\Profile\resources" -Target ".\resources"
-    #- ln -sfrn resources dist/Release/resources
-    #- New-Item -ItemType Junction -Path ".\dist\Release\resources" -Target ".\resources"
-
   # Cleanup / Referencing
   after_script:
     #- CI_JOB_NAME=$CI_JOB_NAME
@@ -153,22 +137,6 @@ build.windows.clang:
     #- cmake --build build/Release -t Heliogrim-Heliogrim --parallel $logical_core_count --clean-first
     #- cmake --build build/Release -t Heliogrim-Editor --parallel $logical_core_count
 
-    # Linking Resources
-
-    #- rm -rf dist/Debug/resources
-    - if (Test-Path ".\dist\Debug\resources") { Remove-Item ".\dist\Debug\resources" -Recurse -Force -Confirm:$False }
-    #- rm -rf dist/Profile/resources
-    #- if (Test-Path ".\dist\Profile\resources") { Remove-Item ".\dist\Profile\resources" -Recurse -Force -Confirm:$False }
-    #- rm -rf dist/Release/resources
-    #- if (Test-Path ".\dist\Release\resources") { Remove-Item ".\dist\Release\resources" -Recurse -Force -Confirm:$False }
-
-    #- ln -sfrn resources dist/Debug/resources
-    - New-Item -ItemType Junction -Path ".\dist\Debug\resources" -Target ".\resources"
-    #- ln -sfrn resources dist/Profile/resources
-    #- New-Item -ItemType Junction -Path ".\dist\Profile\resources" -Target ".\resources"
-    #- ln -sfrn resources dist/Release/resources
-    #- New-Item -ItemType Junction -Path ".\dist\Release\resources" -Target ".\resources"
-
   # Cleanup / Referencing
   after_script:
     #- CI_JOB_NAME=$CI_JOB_NAME
@@ -193,8 +161,6 @@ build.linux.gcc:
   tags:
     - linux
     - amd64
-  rules:
-    - when: never
 
   # Preparation
   before_script:
@@ -205,14 +171,13 @@ build.linux.gcc:
     - command -v xz 2>&1 || { echo >&2 "Required unavailable command xz, try to recover."; sudo apt-get install xz-utils -y; }
     # Optional Commands
     - command -v ninja 2>&1 || { echo >&2 "Optional unavailable command ninja, try to recover."; sudo apt-get install ninja-build -y; }
-    # Ensure Vulkan SDK
-    - rm -r ~/vulkan 2> /dev/null || true
-    - mkdir ~/vulkan
-    - curl "https://sdk.lunarg.com/sdk/download/$VULKAN_VERSION/linux/vulkansdk-linux-x86_64-$VULKAN_VERSION.tar.xz" --output ~/vulkan/sdk.tar.xz
-    - tar -xf ~/vulkan/sdk.tar.xz -C ~/vulkan
-    - source "$HOME/vulkan/$VULKAN_VERSION/setup-env.sh"
     # Check Versions
     - cmake --version
+    # Install System Dependencies
+    - sudo apt-get -qq install pkg-config cmake-data mesa-vulkan-drivers -y
+    - sudo apt-get -qq install xcb libx11-xcb1 libxcb1-dev libxcb-xfixes0 libxcb-xfixes0-dev libx11-dev libx11-xcb-dev libxext-dev libxfixes-dev libxcursor1 libxcursor-dev libxrandr2 libxrandr-dev libxrender1 libxrender-dev libxss1 libxss-dev libxi6 x11proto-dev xorg-sgml-doctools libxi-dev -y
+    - sudo apt-get -qq install libwayland-dev libwayland-client0 libwayland-cursor0 libegl1-mesa-dev libegl-mesa0 libwayland-egl-backend-dev libwayland-egl1 libxkbcommon-dev libxkbcommon0 libdecor-0-dev libdecor-0-0 -y
+    - sudo apt-get -qq install libuuid1 uuid-dev -y
 
   # Process
   script:
@@ -221,9 +186,10 @@ build.linux.gcc:
     # Generator: Makefiles ~ '-A x64' by default
 
     # CMake - Debug
-    - cmake -S . -B build/Debug -D CMAKE_C_COMPILER=`which gcc` -D CMAKE_CXX_COMPILER=`which g++` -D CMAKE_BUILD_TYPE=Debug --fresh
-    - cmake --build build/Debug --parallel $(nproc) -t Heliogrim-Heliogrim --clean-first
-    - cmake --build build/Debug --parallel $(nproc) -t Heliogrim-Editor
+    - cmake -S . -B build/Debug -D CMAKE_C_COMPILER=`which gcc` -D CMAKE_CXX_COMPILER=`which g++` -D CMAKE_BUILD_TYPE=Debug
+    - cmake --build build/Debug -t Heliogrim-Heliogrim --parallel $(nproc)
+    - cmake --build build/Debug -t Heliogrim-Editor --parallel $(nproc)
+    - cmake --build build/Debug -t Heliogrim-AllTests --parallel $(nproc)
 
     # CMake - Profile
     #- cmake -S . -B build/Profile -A x64 -D CMAKE_C_COMPILER=`which gcc` -D CMAKE_CXX_COMPILER=`which g++` -D CMAKE_BUILD_TYPE=Profile --fresh
@@ -233,16 +199,17 @@ build.linux.gcc:
     #- cmake -S . -B build/Release -A x64 -D CMAKE_C_COMPILER=`which gcc` -D CMAKE_CXX_COMPILER=`which g++` -D CMAKE_BUILD_TYPE=Release --fresh
     #- cmake --build build/Release --parallel $(nproc) -t Game --clean-first
 
-    # Linking Resources
-
   # Cleanup / Referencing
   after_script:
-    - CI_JOB_NAME=$CI_JOB_NAME
-    - echo "JOB_${CI_JOB_NAME//./_}_ID=$CI_JOB_ID" >> build.report.env
+    #- CI_JOB_NAME=$CI_JOB_NAME
+    - echo "JOB_build_linux_gcc_ID=$CI_JOB_ID" >> build.report.env
 
   artifacts:
     name: Heliogrim-Unix-GCC-$CI_COMMIT_REF_NAME
     paths:
+      - build/Debug/
+      #- build/Profile/
+      #- build/Release/
       - dist/Debug/
       #- dist/Release/
       #- dist/Profile/
@@ -255,8 +222,6 @@ build.linux.clang:
   tags:
     - linux
     - amd64
-  rules:
-    - when: never
 
   # Preparation
   before_script:
@@ -272,14 +237,13 @@ build.linux.clang:
     - command -v xz 2>&1 || { echo >&2 "Required unavailable command xz, try to recover."; sudo apt-get install xz-utils -y; }
     # Optional Commands
     - command -v ninja 2>&1 || { echo >&2 "Optional unavailable command ninja, try to recover."; sudo apt-get install ninja-build -y; }
-    # Ensure Vulkan SDK
-    - rm -r ~/vulkan 2> /dev/null || true
-    - mkdir ~/vulkan
-    - curl "https://sdk.lunarg.com/sdk/download/$VULKAN_VERSION/linux/vulkansdk-linux-x86_64-$VULKAN_VERSION.tar.xz" --output ~/vulkan/sdk.tar.xz
-    - tar -xf ~/vulkan/sdk.tar.xz -C ~/vulkan
-    - source "$HOME/vulkan/$VULKAN_VERSION/setup-env.sh"
     # Check Versions
     - cmake --version
+    # Install System Dependencies
+    - sudo apt-get -qq install pkg-config cmake-data mesa-vulkan-drivers -y
+    - sudo apt-get -qq install xcb libx11-xcb1 libxcb1-dev libxcb-xfixes0 libxcb-xfixes0-dev libx11-dev libx11-xcb-dev libxext-dev libxfixes-dev libxcursor1 libxcursor-dev libxrandr2 libxrandr-dev libxrender1 libxrender-dev libxss1 libxss-dev libxi6 x11proto-dev xorg-sgml-doctools libxi-dev -y
+    - sudo apt-get -qq install libwayland-dev libwayland-client0 libwayland-cursor0 libegl1-mesa-dev libegl-mesa0 libwayland-egl-backend-dev libwayland-egl1 libxkbcommon-dev libxkbcommon0 libdecor-0-dev libdecor-0-0 -y
+    - sudo apt-get -qq install libuuid1 uuid-dev -y
 
   # Process
   script:
@@ -288,9 +252,10 @@ build.linux.clang:
     # Generator: Makefiles ~ '-A x64' by default
 
     # CMake - Debug
-    - cmake -S . -B build/Debug -D CMAKE_C_COMPILER=`which $C_CLANG_TARGET` -D CMAKE_CXX_COMPILER=`which $CXX_CLANG_TARGET` -D CMAKE_BUILD_TYPE=Debug --fresh
-    - cmake --build build/Debug --parallel $(nproc) -t Heliogrim-Heliogrim --clean-first
-    - cmake --build build/Debug --parallel $(nproc) -t Heliogrim-Editor
+    - cmake -S . -B build/Debug -D CMAKE_C_COMPILER=`which $C_CLANG_TARGET` -D CMAKE_CXX_COMPILER=`which $CXX_CLANG_TARGET` -D CMAKE_BUILD_TYPE=Debug
+    - cmake --build build/Debug -t Heliogrim-Heliogrim --parallel $(nproc)
+    - cmake --build build/Debug -t Heliogrim-Editor --parallel $(nproc)
+    - cmake --build build/Debug -t Heliogrim-AllTests --parallel $(nproc)
 
     # CMake - Profile
     #- cmake -S . -B build/Profile -A x64 -D CMAKE_C_COMPILER=`which $C_CLANG_TARGET` -D CMAKE_CXX_COMPILER=`which $CXX_CLANG_TARGET` -D CMAKE_BUILD_TYPE=Profile --fresh
@@ -300,16 +265,17 @@ build.linux.clang:
     #- cmake -S . -B build/Release -A x64 -D CMAKE_C_COMPILER=`which $C_CLANG_TARGET` -D CMAKE_CXX_COMPILER=`which $CXX_CLANG_TARGET` -D CMAKE_BUILD_TYPE=Release --fresh
     #- cmake --build build/Release --parallel $(nproc) -t Game --clean-first
 
-    # Linking Resources
-
   # Cleanup / Referencing
   after_script:
     - CI_JOB_NAME=$CI_JOB_NAME
-    - echo "JOB_${CI_JOB_NAME//./_}_ID=$CI_JOB_ID" >> build.report.env
+    - echo "JOB_build_linux_clang_ID=$CI_JOB_ID" >> build.report.env
 
   artifacts:
     name: Heliogrim-Unix-Clang-$CI_COMMIT_REF_NAME
     paths:
+      - build/Debug/
+      #- build/Profile/
+      #- build/Release/
       - dist/Debug/
       #- dist/Release/
       #- dist/Profile/
@@ -377,6 +343,72 @@ test.windows.clang:
     reports:
       junit: ctest-report.xml
 
+test.linux.gcc:
+  stage: test
+  tags:
+    - linux
+    - amd64
+  needs:
+    - job: build.linux.gcc
+      artifacts: true
+
+  # Preparation
+  before_script:
+    - cmake --version
+    - $logical_core_count = (Get-CimInstance Win32_ComputerSystem).NumberOfLogicalProcessors
+    # Install System Dependencies
+    - sudo apt-get -qq install pkg-config cmake-data mesa-vulkan-drivers -y
+    - sudo apt-get -qq install xcb libx11-xcb1 libxcb1-dev libxcb-xfixes0 libxcb-xfixes0-dev libx11-dev libx11-xcb-dev libxext-dev libxfixes-dev libxcursor1 libxcursor-dev libxrandr2 libxrandr-dev libxrender1 libxrender-dev libxss1 libxss-dev libxi6 x11proto-dev xorg-sgml-doctools libxi-dev -y
+    - sudo apt-get -qq install libwayland-dev libwayland-client0 libwayland-cursor0 libegl1-mesa-dev libegl-mesa0 libwayland-egl-backend-dev libwayland-egl1 libxkbcommon-dev libxkbcommon0 libdecor-0-dev libdecor-0-0 -y
+    - sudo apt-get -qq install libuuid1 uuid-dev -y
+
+  # Process
+  script:
+    # Testing
+
+    # CMake - Debug
+    - ctest --test-dir build/Debug --output-junit "$PWD/ctest-report.xml" --parallel $logical_core_count
+
+  artifacts:
+    when: always
+    paths:
+      - ctest-report.xml
+    reports:
+      junit: ctest-report.xml
+
+test.linux.clang:
+  stage: test
+  tags:
+    - linux
+    - amd64
+  needs:
+    - job: build.linux.clang
+      artifacts: true
+
+  # Preparation
+  before_script:
+    - cmake --version
+    - $logical_core_count = (Get-CimInstance Win32_ComputerSystem).NumberOfLogicalProcessors
+    # Install System Dependencies
+    - sudo apt-get -qq install pkg-config cmake-data mesa-vulkan-drivers -y
+    - sudo apt-get -qq install xcb libx11-xcb1 libxcb1-dev libxcb-xfixes0 libxcb-xfixes0-dev libx11-dev libx11-xcb-dev libxext-dev libxfixes-dev libxcursor1 libxcursor-dev libxrandr2 libxrandr-dev libxrender1 libxrender-dev libxss1 libxss-dev libxi6 x11proto-dev xorg-sgml-doctools libxi-dev -y
+    - sudo apt-get -qq install libwayland-dev libwayland-client0 libwayland-cursor0 libegl1-mesa-dev libegl-mesa0 libwayland-egl-backend-dev libwayland-egl1 libxkbcommon-dev libxkbcommon0 libdecor-0-dev libdecor-0-0 -y
+    - sudo apt-get -qq install libuuid1 uuid-dev -y
+
+  # Process
+  script:
+    # Testing
+
+    # CMake - Debug
+    - ctest --test-dir build/Debug --output-junit "$PWD/ctest-report.xml" --parallel $logical_core_count
+
+  artifacts:
+    when: always
+    paths:
+      - ctest-report.xml
+    reports:
+      junit: ctest-report.xml
+
 # Release / Deployment Section
 
 release:
@@ -389,10 +421,8 @@ release:
   needs:
     - job: build.linux.gcc
       artifacts: true
-      optional: true
     - job: build.linux.clang
       artifacts: true
-      optional: true
     - job: build.windows.msvc
       artifacts: true
     - job: build.windows.clang
