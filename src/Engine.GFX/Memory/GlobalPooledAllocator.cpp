@@ -1,5 +1,7 @@
 ﻿#include "GlobalPooledAllocator.hpp"
 
+#include <Engine.Asserts/Breakpoint.hpp>
+
 #include "AllocatedMemory.hpp"
 #include "AllocationResult.hpp"
 #include "Allocator.hpp"
@@ -52,7 +54,7 @@ AllocationResult GlobalPooledAllocator::allocate(
 		#ifdef _DEBUG
         auto* const pool { _cache.getOrCreatePool(layout_) };
         if (pool == nullptr) {
-            __debugbreak();
+        	::hg::breakpoint();
             return AllocationResult::eFailed;
         }
 		#else

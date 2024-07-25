@@ -1,6 +1,7 @@
 #include "Ktx.hpp"
 
 #include <filesystem>
+#include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Math/Coordinates.hpp>
 #include <Engine.Filesystem/Url.hpp>
@@ -569,15 +570,15 @@ void transformer::convertKtx10Gli(
 	#ifdef _DEBUG
 
 	if (dst_->format() != api::vkTranslateFormat(format)) {
-		__debugbreak();
+		::hg::breakpoint();
 	}
 
 	if (dst_->mipLevels() < glitex.levels()) {
-		__debugbreak();
+		::hg::breakpoint();
 	}
 
 	if (create & vk::ImageCreateFlagBits::eCubeCompatible && dst_->type() != TextureType::eCube) {
-		__debugbreak();
+		::hg::breakpoint();
 	}
 
 	// Validate Aspect Flag Bits
@@ -1406,7 +1407,7 @@ void transformer::convertKtx20Partial(
 	if (srcMip > ktx::getLevelCount(ctx.header)) {
 		#ifdef _DEBUG
 		// We can't load data into a mip level which is not present within the source data
-		__debugbreak();
+		::hg::breakpoint();
 		#endif
 		return;
 	}
@@ -1424,7 +1425,7 @@ void transformer::convertKtx20Partial(
 	if (blockSize.x != 1 || blockSize.y != 1 || blockSize.z != 1) {
 		#ifdef _DEBUG
 		// We currently don't support (compressed) block encoding.
-		__debugbreak();
+		::hg::breakpoint();
 		#endif
 		return;
 	}
@@ -1440,7 +1441,7 @@ void transformer::convertKtx20Partial(
 
 	#ifdef _DEBUG
 	if (stageSize <= 0 || stageSize >= ~0uLL) {
-		__debugbreak();
+		::hg::breakpoint();
 		return;
 	}
 	#endif
@@ -1472,7 +1473,7 @@ void transformer::convertKtx20Partial(
 		if (ktx::getSCS(ctx.header) != ktx::SuperCompressionScheme::eNone) {
 			#ifdef _DEBUG
 			// We can't use block loading with super compression
-			__debugbreak();
+			::hg::breakpoint();
 			#endif
 			return;
 		}
@@ -1481,7 +1482,7 @@ void transformer::convertKtx20Partial(
 			#ifdef _DEBUG
 			// Missing block size is indicator for unsupported sparse loading
 			// TODO: Check whether we can break up at least ASTC formats
-			__debugbreak();
+			::hg::breakpoint();
 			#endif
 			return;
 		}

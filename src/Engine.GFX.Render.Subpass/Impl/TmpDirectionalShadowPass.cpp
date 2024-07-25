@@ -457,7 +457,7 @@ void TmpDirectionalShadowPass::execute(cref<graph::ScopedSymbolContext> symCtx_)
 					continue;
 				}
 
-				__debugbreak();
+				::hg::breakpoint();
 			}
 
 		}
@@ -552,9 +552,7 @@ void TmpDirectionalShadowPass::execute(cref<graph::ScopedSymbolContext> symCtx_)
 
 	auto translator = make_uptr<driver::vk::VkRCmdTranslator>();
 	auto nativeBatch = (*translator)(&cmd);
-	const auto batch = static_cast<ptr<driver::vk::VkNativeBatch>>(nativeBatch.get());
-
-	{
+	const auto batch = static_cast<ptr<driver::vk::VkNativeBatch>>(nativeBatch.get()); {
 		batch->_tmpWaits.insert_range(
 			batch->_tmpWaits.end(),
 			reinterpret_cast<Vector<VkSemaphore>&>(_resources.outDirShadows->barriers)

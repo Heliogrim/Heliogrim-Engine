@@ -1,6 +1,7 @@
 #include "MaterialTransformer.hpp"
 
 #include <ranges>
+#include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets/Types/Material/GfxMaterialPrototype.hpp>
 #include <Engine.Assets/Types/Texture/TextureAsset.hpp>
@@ -362,7 +363,7 @@ smr<engine::gfx::TextureResource> resolveTexture(
 	assert(asset != nullptr);
 
 	if (!asset->getMetaClass()->exact<engine::assets::TextureAsset>()) {
-		__debugbreak();
+		::hg::breakpoint();
 	}
 	#endif
 

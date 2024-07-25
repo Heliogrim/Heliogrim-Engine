@@ -1,5 +1,6 @@
 #include "RenderGraphCompiler.hpp"
 
+#include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.GFX.RenderGraph/RuntimeGraph.hpp>
 
@@ -10,36 +11,36 @@ using namespace hg;
 
 uptr<RuntimeGraph> RenderGraphCompiler::operator()(mref<CompileRequest> request_) const {
 
-    if (request_.targetSymbols.empty()) {
-        return nullptr;
-    }
+	if (request_.targetSymbols.empty()) {
+		return nullptr;
+	}
 
-    for (const auto& target : request_.targetSymbols) {
+	for (const auto& target : request_.targetSymbols) {
 
-        bool exists = false;
-        for (const auto& provision : request_.graph->expectedProvision()) {
+		bool exists = false;
+		for (const auto& provision : request_.graph->expectedProvision()) {
 
-            if (
-                provision.symbol->scope == target->scope &&
-                provision.symbol->name == target->name
-            ) {
-                exists = true;
-                break;
-            }
-        }
+			if (
+				provision.symbol->scope == target->scope &&
+				provision.symbol->name == target->name
+			) {
+				exists = true;
+				break;
+			}
+		}
 
-        if (!exists) {
-            __debugbreak();
-            return nullptr;
-        }
-    }
+		if (!exists) {
+			::hg::breakpoint();
+			return nullptr;
+		}
+	}
 
-    /**/
+	/**/
 
-    auto runtime = make_uptr<RuntimeGraph>();
-    auto visitor = graph::CompileVisitor(runtime.get());
+	auto runtime = make_uptr<RuntimeGraph>();
+	auto visitor = graph::CompileVisitor(runtime.get());
 
-    request_.graph->reverse(visitor);
+	request_.graph->reverse(visitor);
 
-    return runtime;
+	return runtime;
 }

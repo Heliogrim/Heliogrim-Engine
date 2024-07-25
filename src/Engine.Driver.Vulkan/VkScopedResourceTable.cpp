@@ -2,6 +2,7 @@
 
 #include <ranges>
 #include <Engine.Accel.Pipeline/AccelerationPipeline.hpp>
+#include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.GFX/Graphics.hpp>
 #include <Engine.GFX/vkinc.hpp>
@@ -270,7 +271,7 @@ bool driver::vk::VkScopedResourceTable::allocateAndCommit(
 	);
 
 	if (result != ::vk::Result::eSuccess) {
-		__debugbreak();
+		::hg::breakpoint();
 		return false;
 	}
 
@@ -417,7 +418,7 @@ bool driver::vk::VkScopedResourceTable::commit(
 	}
 
 	if (result != ::vk::Result::eSuccess) {
-		__debugbreak();
+		::hg::breakpoint();
 		return false;
 	}
 

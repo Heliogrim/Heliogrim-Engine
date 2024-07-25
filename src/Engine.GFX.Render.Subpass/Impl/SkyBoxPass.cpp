@@ -305,7 +305,7 @@ void SkyBoxPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 				continue;
 			}
 
-			__debugbreak();
+			::hg::breakpoint();
 		}
 
 	}
