@@ -3,6 +3,7 @@
 #include <map>
 #include <ranges>
 #include <Engine.Accel.Effect/AccelerationEffect.hpp>
+#include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
@@ -246,7 +247,7 @@ static void preprocessStageDerivat(
 			break;
 		}
 		default: {
-			__debugbreak();
+			::hg::breakpoint();
 		}
 	}
 

@@ -17,6 +17,7 @@
 #include <Editor.UI/Widget/Board/BoardNode.hpp>
 #include <Editor.UI/Widget/Board/Whiteboard.hpp>
 #include <Editor.UI.Main/EditorUI.hpp>
+#include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Core/Session.hpp>
 #include <Engine.Core/World.hpp>
 #include <Engine.Core/WorldContext.hpp>
@@ -96,7 +97,7 @@ static void loadActorMappingExp(
 	cref<sptr<ObjectEditorPanel>> panel_
 ) {
 	if (not editorUI_.editorSelectedTarget) {
-		__debugbreak();
+		::hg::breakpoint();
 		return;
 	}
 

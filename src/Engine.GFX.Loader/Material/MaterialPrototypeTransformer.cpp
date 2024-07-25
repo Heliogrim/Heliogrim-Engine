@@ -289,7 +289,7 @@ smr<engine::gfx::TextureResource> resolveTexture(
     assert(asset != nullptr);
 
     if (!asset->getMetaClass()->exact<engine::assets::TextureAsset>()) {
-        __debugbreak();
+    	::hg::breakpoint();
     }
 	#endif
 
@@ -303,8 +303,8 @@ smr<engine::gfx::TextureResource> resolveTexture(
 		std::move(textureAsset),
 		TextureLoadOptions {
 			textureAsset->getExtent().x >= 8192 ?
-				TextureLoadDataFlagBits::eLazyDataLoading :
-				TextureLoadDataFlagBits::eNone
+			TextureLoadDataFlagBits::eLazyDataLoading :
+			TextureLoadDataFlagBits::eNone
 		}
 	);
 

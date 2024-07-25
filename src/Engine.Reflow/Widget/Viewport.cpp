@@ -4,14 +4,16 @@
 #include "Engine.GFX/Swapchain/VkSwapchain.hpp"
 
 #if TRUE
-#include <Engine.Logging/Logger.hpp>
-#include <Engine.GFX/Graphics.hpp>
-#include "Engine.GFX/RenderTarget.hpp"
 #include <Engine.Common/Math/Coordinates.hpp>
-#include <Heliogrim/Actors/CameraActor.hpp>
 #include <Engine.Core/Engine.hpp>
+#include <Engine.GFX/Graphics.hpp>
+#include <Engine.Logging/Logger.hpp>
+#include <Heliogrim/Actors/CameraActor.hpp>
+#include "Engine.GFX/RenderTarget.hpp"
 #endif
 
+#include <Engine.Asserts/Breakpoint.hpp>
+#include <Engine.Asserts/Todo.hpp>
 #include <Engine.Core/World.hpp>
 #include <Engine.GFX.Scene/RenderSceneManager.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
@@ -72,7 +74,7 @@ void Viewport::tick() {
 	/**/
 
 	if (_currentImageSignal != nullptr) {
-		__debugbreak();
+		::hg::breakpoint();
 	}
 
 	/**/
@@ -256,7 +258,7 @@ void Viewport::addResizeListener(
 }
 
 void Viewport::removeResizeListener() {
-	__debugbreak();
+	::hg::todo_panic();
 }
 
 const ptr<const NullChildren> Viewport::children() const {
