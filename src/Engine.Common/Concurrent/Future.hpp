@@ -1,14 +1,13 @@
 #pragma once
 
 #include <atomic>
-#include <mutex>
+#include <condition_variable>
 #include <memory>
+#include <mutex>
 #include <utility>
 
-#include <condition_variable>
-
-#include "../__macro.hpp"
 #include "../Wrapper.hpp"
+#include "../__macro.hpp"
 #include "../Memory/MemoryPointer.hpp"
 
 namespace hg::concurrent {
@@ -326,7 +325,7 @@ namespace hg::concurrent {
 		 *
 		 * @author Julius
 		 * @date 20.08.2020
-		 *       
+		 *
 		 */
 		[[maybe_unused, noreturn]] void retrieve() const noexcept {
 			std::unreachable();
@@ -337,7 +336,7 @@ namespace hg::concurrent {
 		 *
 		 * @author Julius
 		 * @date 20.08.2020
-		 *       
+		 *
 		 */
 		void get() const {
 			if (!_state->returned())

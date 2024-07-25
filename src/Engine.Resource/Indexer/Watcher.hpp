@@ -1,17 +1,16 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
+#include <functional>
+#include <unordered_map>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #ifdef ENV_MSVC
 #include <Engine.Common/__macro.hpp>
 #define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
 #include <Fileapi.h>
+#include <Windows.h>
 #endif
-
-#include <functional>
-#include <unordered_map>
 
 #include "../File.hpp"
 
@@ -70,26 +69,27 @@ namespace hg::engine::res {
 	private:
 		void setup();
 
-		void notify(const bool publish_ = true);
+		void notify(bool publish_ = true);
 
 	private:
 		hg::fs::File _root;
 
 	public:
-		cref<hg::fs::File> root() const noexcept;
+		[[nodiscard]] cref<hg::fs::File> root() const noexcept;
 
-		hg::fs::File root() noexcept;
+		[[nodiscard]] hg::fs::File root() noexcept;
 
 	public:
 		[[nodiscard]] operator const hg::fs::File() const noexcept;
 
 		[[nodiscard]] operator hg::fs::File() noexcept;
 
-	#ifdef _WIN32
+		#ifdef _WIN32
+
 	private:
 		HANDLE _handle;
 		HANDLE _waitHandle;
-	#endif
+		#endif
 
 	private:
 		std::unordered_map<hg::fs::File, std::filesystem::file_time_type> _state;
