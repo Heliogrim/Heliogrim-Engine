@@ -1,16 +1,4 @@
-#include "AssetFactory.hpp"
-
-#include <filesystem>
-#include <sstream>
-#include <Engine.Asserts/Breakpoint.hpp>
-#include <Engine.Assets.System/AssetDescriptor.hpp>
-#include <Engine.Assets.System/AssetRegistry.hpp>
-#include <Engine.Assets.System/Repository/InMemAssetRepository.hpp>
-#include <Engine.Pedantic/Clone/Clone.hpp>
-#include <Engine.Reflect/Meta/TypedMetaClass.hpp>
-#include <Engine.Serialization/Layout/DataLayout.hpp>
-#include <Engine.Serialization.Layouts/LayoutManager.hpp>
-
+/* Note: Why-so-ever, this is order dependent... */
 #include "Types/AccelEffect.hpp"
 #include "Types/Asset.hpp"
 #include "Types/Font.hpp"
@@ -25,12 +13,26 @@
 #include "Types/Material/GfxMaterial.hpp"
 #include "Types/Material/GfxMaterialPrototype.hpp"
 #include "Types/Texture/TextureAsset.hpp"
+/* Note: Why-so-ever, this is order dependent... */
+
+#include "AssetFactory.hpp"
+
+#include <filesystem>
+#include <sstream>
+#include <Engine.Asserts/Breakpoint.hpp>
+#include <Engine.Assets.System/AssetDescriptor.hpp>
+#include <Engine.Assets.System/AssetRegistry.hpp>
+#include <Engine.Assets.System/Repository/InMemAssetRepository.hpp>
+#include <Engine.Common/Meta/Type.hpp>
+#include <Engine.Pedantic/Clone/Clone.hpp>
+#include <Engine.Reflect/Meta/TypedMetaClass.hpp>
+#include <Engine.Serialization/Layout/DataLayout.hpp>
+#include <Engine.Serialization.Layouts/LayoutManager.hpp>
 
 using namespace hg::engine::assets;
 using namespace hg;
 
 static_assert(CompleteType<Asset>);
-static_assert(CompleteType<::hg::engine::assets::StaticGeometry>);
 static_assert(CompleteType<Font>);
 static_assert(CompleteType<GfxMaterialPrototype>);
 static_assert(CompleteType<Image>);

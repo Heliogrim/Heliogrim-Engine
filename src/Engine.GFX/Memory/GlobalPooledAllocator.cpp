@@ -1,5 +1,7 @@
 ﻿#include "GlobalPooledAllocator.hpp"
 
+#include <Engine.Asserts/Breakpoint.hpp>
+
 #include "AllocatedMemory.hpp"
 #include "AllocationResult.hpp"
 #include "Allocator.hpp"
