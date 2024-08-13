@@ -174,9 +174,9 @@ build.linux.gcc:
     # Check Versions
     - cmake --version
     # Install System Dependencies
-    - sudo apt-get install xcb libx11-xcb1 libxcb1-dev libx11-dev libx11-xcb-dev -y
-    - sudo apt-get install libwayland-dev -y
-    - sudo apt-get install libuuid1 uuid-dev -y
+    - sudo apt-get -qq install xcb libx11-xcb1 libxcb1-dev libx11-dev libx11-xcb-dev -y
+    - sudo apt-get -qq install libwayland-dev -y
+    - sudo apt-get -qq install libuuid1 uuid-dev -y
 
   # Process
   script:
@@ -239,9 +239,9 @@ build.linux.clang:
     # Check Versions
     - cmake --version
     # Install System Dependencies
-    - sudo apt-get install xcb libx11-xcb1 libxcb1-dev libx11-dev libx11-xcb-dev -y
-    - sudo apt-get install libwayland-dev -y
-    - sudo apt-get install libuuid1 uuid-dev -y
+    - sudo apt-get -qq install xcb libx11-xcb1 libxcb1-dev libx11-dev libx11-xcb-dev -y
+    - sudo apt-get -qq install libwayland-dev -y
+    - sudo apt-get -qq install libuuid1 uuid-dev -y
 
   # Process
   script:
@@ -355,9 +355,9 @@ test.linux.gcc:
     - cmake --version
     - $logical_core_count = (Get-CimInstance Win32_ComputerSystem).NumberOfLogicalProcessors
     # Install System Dependencies
-    - sudo apt-get install xcb libx11-xcb1 libxcb1-dev libx11-dev libx11-xcb-dev -y
-    - sudo apt-get install libwayland-dev -y
-    - sudo apt-get install libuuid1 uuid-dev -y
+    - sudo apt-get -qq install xcb libx11-xcb1 libxcb1-dev libx11-dev libx11-xcb-dev -y
+    - sudo apt-get -qq install libwayland-dev -y
+    - sudo apt-get -qq install libuuid1 uuid-dev -y
 
   # Process
   script:
@@ -387,9 +387,9 @@ test.linux.clang:
     - cmake --version
     - $logical_core_count = (Get-CimInstance Win32_ComputerSystem).NumberOfLogicalProcessors
     # Install System Dependencies
-    - sudo apt-get install xcb libx11-xcb1 libxcb1-dev libx11-dev libx11-xcb-dev -y
-    - sudo apt-get install libwayland-dev -y
-    - sudo apt-get install libuuid1 uuid-dev -y
+    - sudo apt-get -qq install xcb libx11-xcb1 libxcb1-dev libx11-dev libx11-xcb-dev -y
+    - sudo apt-get -qq install libwayland-dev -y
+    - sudo apt-get -qq install libuuid1 uuid-dev -y
 
   # Process
   script:
