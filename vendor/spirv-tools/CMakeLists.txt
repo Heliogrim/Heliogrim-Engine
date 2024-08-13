@@ -1,6 +1,6 @@
 function(library_spirv_tools_init)
 
-    cmake_minimum_required(VERSION 3.27.7)
+    cmake_minimum_required(VERSION 3.25.1)
     include(FetchContent)
 
     name_to_external_alias(static_alias "spirv-static")

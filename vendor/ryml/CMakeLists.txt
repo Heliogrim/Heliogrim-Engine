@@ -1,6 +1,6 @@
 function(library_ryml_init)
 
-    cmake_minimum_required(VERSION 3.27.7)
+    cmake_minimum_required(VERSION 3.25.1)
     include(FetchContent)
 
     name_to_external_alias(c4core_alias "c4core")
