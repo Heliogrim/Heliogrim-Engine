@@ -55,7 +55,7 @@ Arci<engine::storage::IStorage> ProjectFileSystemRepository::createStorage(mref<
 
 	auto lfsStore = descriptor_.as<FileStorageDescriptor>().url.path();
 	const auto [it, success] = _storages.emplace(
-		std::get<FileStorageDescriptor>(std::move(descriptor_)).url.path().string(),
+		std::get<FileStorageDescriptor>(std::move(descriptor_)).url.path(),
 		_lfs->makeStorageObject(std::move(lfsStore))
 	);
 	return it->second.into<IStorage>();
@@ -65,8 +65,7 @@ bool ProjectFileSystemRepository::hasStorage(cref<Url> url_) const {
 	if (not url_.is<FileUrl>())
 		return false;
 
-	auto stringized = url_.as<FileUrl>().path().string();
-	const auto it = _storages.find(stringized);
+	const auto it = _storages.find(static_cast<String>(url_.as<FileUrl>().path()));
 
 	/**/
 
@@ -76,7 +75,7 @@ bool ProjectFileSystemRepository::hasStorage(cref<Url> url_) const {
 		}
 
 		const auto lookup = [](const auto& url_, const auto& basePath_) {
-			auto stdFsPath = url_.template as<FileUrl>().path().stdFsPath();
+			auto stdFsPath = static_cast<std::filesystem::path>(url_.template as<FileUrl>().path());
 			if (stdFsPath.is_absolute() && is_sub_path(basePath_, stdFsPath)) {
 				return stdFsPath;
 			}
@@ -95,8 +94,7 @@ Arci<engine::storage::IStorage> ProjectFileSystemRepository::getStorageByUrl(cre
 	if (not url_.is<FileUrl>())
 		return {};
 
-	auto stringized = url_.as<FileUrl>().path().string();
-	const auto it = _storages.find(stringized);
+	const auto it = _storages.find(static_cast<String>(url_.as<FileUrl>().path()));
 
 	/**/
 
@@ -107,7 +105,7 @@ Arci<engine::storage::IStorage> ProjectFileSystemRepository::getStorageByUrl(cre
 		}
 
 		auto lookup = [](const auto& url_, const auto& basePath_) {
-			auto stdFsPath = url_.template as<FileUrl>().path().stdFsPath();
+			auto stdFsPath = static_cast<std::filesystem::path>(url_.template as<FileUrl>().path());
 			if (stdFsPath.is_absolute() && is_sub_path(basePath_, stdFsPath)) {
 				return stdFsPath;
 			}

@@ -12,42 +12,42 @@ using namespace hg;
 template <>
 void access::Structure<Image>::serialize(const Image* const self_, mref<RecordScopedSlot> slot_) {
 
-    auto slot = slot_.intoStruct();
+	auto slot = slot_.intoStruct();
 
-    Structure<Guid>::serialize(&self_->_guid, slot.insertSlot<void>("__guid__"));
-    slot.insertSlot<u64>("__type__") << self_->_type.data;
-    slot.insertSlot<string>("name") << self_->_assetName;
+	Structure<Guid>::serialize(&self_->_guid, slot.insertSlot<void>("__guid__"));
+	slot.insertSlot<u64>("__type__") << self_->_type.data;
+	slot.insertSlot<string>("name") << self_->_assetName;
 
-    Vector<string> sources {};
-    sources.reserve(self_->_sources.size());
+	Vector<string> sources {};
+	sources.reserve(self_->_sources.size());
 
-    for (const auto& entry : self_->_sources) {
-        sources.push_back(string { entry.encode() });
-    }
+	for (const auto& entry : self_->_sources) {
+		sources.push_back(string { entry.encode() });
+	}
 
-    slot.insertSlot<string, Vector>("sources") << sources;
+	slot.insertSlot<string, Vector>("sources") << sources;
 }
 
 template <>
 void access::Structure<Image>::deserialize(Image* const self_, mref<RecordScopedSlot> slot_) {
 
-    const auto slot = slot_.intoStruct();
+	const auto slot = slot_.intoStruct();
 
-    Structure<Guid>::deserialize(&self_->_guid, slot.getSlot<void>("__guid__"));
-    slot.getSlot<u64>("__type__") >> self_->_type.data;
-    slot.getSlot<string>("name") >> self_->_assetName;
+	Structure<Guid>::deserialize(&self_->_guid, slot.getSlot<void>("__guid__"));
+	slot.getSlot<u64>("__type__") >> self_->_type.data;
+	slot.getSlot<string>("name") >> self_->_assetName;
 
-    Vector<string> sources {};
-    slot.getSlot<string, Vector>("sources") >> sources;
+	Vector<string> sources {};
+	slot.getSlot<string, Vector>("sources") >> sources;
 
-    self_->_sources.reserve(sources.size());
-    for (const auto& entry : sources) {
+	self_->_sources.reserve(sources.size());
+	for (const auto& entry : sources) {
 
-        if (entry.size() < 8uLL) {
-            continue;
-        }
+		if (entry.size() < 8uLL) {
+			continue;
+		}
 
-        self_->_sources.push_back(fs::Url { "file"sv, entry.substr(7uLL) });
-    }
+		self_->_sources.push_back(fs::Url { "file"sv, entry.substr(7uLL) });
+	}
 
 }

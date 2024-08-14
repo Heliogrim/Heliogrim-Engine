@@ -45,7 +45,7 @@ bool Url::empty() const noexcept {
 
 string Url::encode() const noexcept {
 	if (not _scheme.empty()) {
-		return _scheme + "://" + _path.string();
+		return _scheme + "://" + static_cast<String>(_path);
 	}
-	return _path.string();
+	return static_cast<String>(_path);
 }

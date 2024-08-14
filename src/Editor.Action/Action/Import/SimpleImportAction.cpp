@@ -82,7 +82,7 @@ void SimpleImportAction::apply() {
 
 	/**/
 
-	const auto srcPath { _source.path().string() };
+	const auto srcPath = static_cast<String>(_source.path());
 	const ::hg::fs::File file { srcPath };
 
 	if (srcPath.ends_with(".ktx2")) {

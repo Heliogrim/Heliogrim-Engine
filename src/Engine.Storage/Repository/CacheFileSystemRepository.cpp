@@ -49,7 +49,7 @@ Arci<engine::storage::IStorage> CacheFileSystemRepository::createStorage(mref<St
 
 	auto lfsStore = descriptor_.as<FileStorageDescriptor>().url.path();
 	const auto [it, success] = _storages.emplace(
-		std::get<FileStorageDescriptor>(std::move(descriptor_)).url.path().string(),
+		std::get<FileStorageDescriptor>(std::move(descriptor_)).url.path(),
 		_lfs->makeStorageObject(std::move(lfsStore))
 	);
 	return it->second.into<IStorage>();
@@ -59,7 +59,7 @@ bool CacheFileSystemRepository::hasStorage(cref<Url> url_) const {
 	if (not url_.is<FileUrl>())
 		return false;
 
-	const auto it = _storages.find(url_.as<FileUrl>().path().string());
+	const auto it = _storages.find(static_cast<String>(url_.as<FileUrl>().path()));
 	return it != _storages.end();
 }
 
@@ -67,7 +67,7 @@ Arci<engine::storage::IStorage> CacheFileSystemRepository::getStorageByUrl(cref<
 	if (not url_.is<FileUrl>())
 		return {};
 
-	const auto it = _storages.find(url_.as<FileUrl>().path().string());
+	const auto it = _storages.find(static_cast<String>(url_.as<FileUrl>().path()));
 	return it != _storages.end() ? it->second.into<IStorage>() : Arci<engine::storage::IStorage> {};
 }
 

@@ -170,7 +170,7 @@ EventResponse InputAsset::onDrop(cref<DragDropEvent> event_) {
 		return EventResponse::eConsumed;
 	}
 
-	const asset_guid guid = decodeGuid4228(parsed.path().string());
+	const asset_guid guid = decodeGuid4228(static_cast<String>(parsed.path()));
 	if (guid == invalid_asset_guid) {
 		IM_CORE_WARN("Invalid asset guid.");
 		return EventResponse::eConsumed;
@@ -181,7 +181,7 @@ EventResponse InputAsset::onDrop(cref<DragDropEvent> event_) {
 	const auto asset = engine::Engine::getEngine()->getAssets()->getRegistry()->findAssetByGuid(guid);
 
 	if (asset == nullptr) {
-		IM_CORE_WARNF("Unknown asset guid `{}`.", parsed.path().string());
+		IM_CORE_WARNF("Unknown asset guid `{}`.", static_cast<String>(parsed.path()));
 		return EventResponse::eConsumed;
 	}
 

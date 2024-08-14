@@ -47,7 +47,7 @@ SourceLoaderResponse<void>::type SourceLoader::operator()(
 
 	/**/
 
-	auto file = ::hg::fs::File { lfsUrl.path().stdFsPath() };
+	auto file = ::hg::fs::File { lfsUrl.path() };
 	if (not file.exists() || file.isDirectory()) {
 		IM_CORE_ERRORF(
 			R"(Lfs source data for asset `{} -> {}` does not exist.)",

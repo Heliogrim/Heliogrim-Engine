@@ -79,9 +79,9 @@ static smr<StaticGeometryResource> loadWithAssimp(
 
 	// Attention: Temporary workaround, cause assimp can not fetch splitted files while using load from memory
 	const char* pHint = "";
-	if (request_->sources().front().path().string().ends_with(R"(.obj)")) {
+	if (static_cast<String>(request_->sources().front().path()).ends_with(R"(.obj)")) {
 		pHint = "obj";
-	} else if (request_->sources().front().path().string().ends_with(R"(.gltf)")) {
+	} else if (static_cast<String>(request_->sources().front().path()).ends_with(R"(.gltf)")) {
 		pHint = "gltf";
 	}
 

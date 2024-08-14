@@ -38,7 +38,7 @@ namespace hg::engine::storage {
 			return _scheme;
 		}
 
-		[[nodiscard]] constexpr fs::Path path() const noexcept {
+		[[nodiscard]] constexpr cref<fs::Path> path() const noexcept {
 			return _path;
 		}
 
