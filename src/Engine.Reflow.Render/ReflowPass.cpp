@@ -304,12 +304,10 @@ void render::ReflowPass::execute(cref<engine::render::graph::ScopedSymbolContext
 	{
 		const auto batch = static_cast<ptr<driver::vk::VkNativeBatch>>(nextNativeBatch.get());
 
-		batch->_tmpWaits.insert_range(
-			batch->_tmpWaits.end(),
+		batch->_tmpWaits.append_range(
 			reinterpret_cast<Vector<VkSemaphore>&>(sceneColor->barriers)
 		);
-		batch->_tmpWaits.insert_range(
-			batch->_tmpWaits.end(),
+		batch->_tmpWaits.append_range(
 			reinterpret_cast<Vector<VkSemaphore>&>(uiCmd._imageWait)
 		);
 
@@ -318,8 +316,7 @@ void render::ReflowPass::execute(cref<engine::render::graph::ScopedSymbolContext
 		}
 
 		batch->_tmpSignals.emplace_back(_tmpSignal);
-		batch->_tmpSignals.insert_range(
-			batch->_tmpSignals.end(),
+		batch->_tmpSignals.append_range(
 			reinterpret_cast<Vector<VkSemaphore>&>(uiCmd._imageSignal)
 		);
 

@@ -33,155 +33,152 @@ using namespace hg;
 [[nodiscard]] static smr<const GraphicsPass> build_test_pass();
 
 [[nodiscard]] static EffectCompileResult build_test_pipeline(
-    mref<smr<const AccelerationEffect>> effect_,
-    mref<smr<const GraphicsPass>> pass_
+	mref<smr<const AccelerationEffect>> effect_,
+	mref<smr<const GraphicsPass>> pass_
 );
 
 /**/
 
 void DepthPrePass::destroy() noexcept {
-    MeshSubPass::destroy();
+	MeshSubPass::destroy();
 
-    auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
+	auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
 
-    device->vkDevice().destroySemaphore(std::exchange(_tmpSemaphore, nullptr));
+	device->vkDevice().destroySemaphore(std::exchange(_tmpSemaphore, nullptr));
 
-    _framebuffer->destroy();
-    _framebuffer.reset();
+	_framebuffer->destroy();
+	_framebuffer.reset();
 
-    _compiled.pipeline.reset();
-    _pass.reset();
-    _effect.reset();
+	_compiled.pipeline.reset();
+	_pass.reset();
+	_effect.reset();
 }
 
 void DepthPrePass::declareInputs(ref<graph::ScopedSymbolContext> symCtx_) noexcept {
-    symCtx_.registerImportSymbol(makeSceneViewSymbol(), &_resources.inSceneView);
+	symCtx_.registerImportSymbol(makeSceneViewSymbol(), &_resources.inSceneView);
 }
 
 void DepthPrePass::declareOutputs(ref<graph::ScopedSymbolContext> symCtx_) noexcept {
-    symCtx_.registerExportSymbol(makeSceneDepthSymbol(), &_resources.outSceneDepth);
+	symCtx_.registerExportSymbol(makeSceneDepthSymbol(), &_resources.outSceneDepth);
 }
 
 void DepthPrePass::iterate(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
-    /*
-    assert(not _resources.inSceneView.empty());
-    auto lSceneView = _resources.inSceneView->load<smr<const scene::SceneView>, graph::SceneViewDescription>();
+	/*
+	assert(not _resources.inSceneView.empty());
+	auto lSceneView = _resources.inSceneView->load<smr<const scene::SceneView>, graph::SceneViewDescription>();
 
-    {
-        graph::SceneWalker walker {};
-        Vector<ptr<const MetaClass>> typeList = { GeometryModel::getStaticMetaClass() };
-        walker.addHookFilter(make_uptr<graph::ModelTypeFilter>(std::move(typeList)));
-        walker.setHook(
-            [ci = createCaptureObject()](const auto* const model_) {
-                static_cast<const ptr<const GeometryModel>>(model_)->capture(ci);
-            }
-        );
+	{
+	    graph::SceneWalker walker {};
+	    Vector<ptr<const MetaClass>> typeList = { GeometryModel::getStaticMetaClass() };
+	    walker.addHookFilter(make_uptr<graph::ModelTypeFilter>(std::move(typeList)));
+	    walker.setHook(
+	        [ci = createCaptureObject()](const auto* const model_) {
+	            static_cast<const ptr<const GeometryModel>>(model_)->capture(ci);
+	        }
+	    );
 
-        walker(*lSceneView);
-    }
-     */
+	    walker(*lSceneView);
+	}
+	 */
 
-    /**/
+	/**/
 
-    if (_effect.empty()) {
-        _effect = build_test_effect();
-    }
+	if (_effect.empty()) {
+		_effect = build_test_effect();
+	}
 
-    if (_pass.empty()) {
-        _pass = build_test_pass();
-    }
+	if (_pass.empty()) {
+		_pass = build_test_pass();
+	}
 }
 
 void DepthPrePass::resolve() noexcept {
-    if (_effect && _compiled.flag == EffectCompileResultFlag::eUnknown) {
-        _compiled = build_test_pipeline(clone(_effect), clone(_pass));
-    }
+	if (_effect && _compiled.flag == EffectCompileResultFlag::eUnknown) {
+		_compiled = build_test_pipeline(clone(_effect), clone(_pass));
+	}
 }
 
 void DepthPrePass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
-    assert(_effect);
-    assert(_compiled.pipeline);
+	assert(_effect);
+	assert(_compiled.pipeline);
 
-    /**/
+	/**/
 
-    //auto lSceneDepth = _resources.outSceneDepth->load<smr<TextureLikeObject>, graph::TextureDescription>();
-    auto rSceneDepth = symCtx_.getExportSymbol(makeSceneDepthSymbol());
-    auto lrSceneDepth = rSceneDepth->load<smr<TextureLikeObject>, graph::TextureDescription>();
+	//auto lSceneDepth = _resources.outSceneDepth->load<smr<TextureLikeObject>, graph::TextureDescription>();
+	auto rSceneDepth = symCtx_.getExportSymbol(makeSceneDepthSymbol());
+	auto lrSceneDepth = rSceneDepth->load<smr<TextureLikeObject>, graph::TextureDescription>();
 
-    if (!_framebuffer.empty() && _framebuffer->attachments().front() != lrSceneDepth) {
-        _framebuffer->device()->vkDevice().destroySemaphore(_tmpSemaphore);
-        _framebuffer->destroy();
-        _framebuffer.reset();
-    }
+	if (!_framebuffer.empty() && _framebuffer->attachments().front() != lrSceneDepth) {
+		_framebuffer->device()->vkDevice().destroySemaphore(_tmpSemaphore);
+		_framebuffer->destroy();
+		_framebuffer.reset();
+	}
 
-    if (_framebuffer.empty()) {
+	if (_framebuffer.empty()) {
 
-        const Vector<smr<const graph::Symbol>> outputSymbols { makeSceneDepthSymbol() };
-        _framebuffer = make_smr<Framebuffer>(Engine::getEngine()->getGraphics()->getCurrentDevice());
+		const Vector<smr<const graph::Symbol>> outputSymbols { makeSceneDepthSymbol() };
+		_framebuffer = make_smr<Framebuffer>(Engine::getEngine()->getGraphics()->getCurrentDevice());
 
-        for (const auto& output : outputSymbols) {
+		for (const auto& output : outputSymbols) {
 
-            auto data = symCtx_.getExportSymbol(clone(output));
+			auto data = symCtx_.getExportSymbol(clone(output));
 
-            const auto& texture = data->load<smr<TextureLikeObject>>();
-            _framebuffer->addAttachment(clone(texture));
-        }
+			const auto& texture = data->load<smr<TextureLikeObject>>();
+			_framebuffer->addAttachment(clone(texture));
+		} {
+			const auto sceneDepthExtent = Cast<Texture>(lrSceneDepth.get())->extent();
+			_framebuffer->setExtent(sceneDepthExtent);
+		}
 
-        {
-            const auto sceneDepthExtent = Cast<Texture>(lrSceneDepth.get())->extent();
-            _framebuffer->setExtent(sceneDepthExtent);
-        }
+		_framebuffer->setRenderPass(clone(_pass));
+		_framebuffer->setup();
 
-        _framebuffer->setRenderPass(clone(_pass));
-        _framebuffer->setup();
+		_tmpSemaphore = _framebuffer->device()->vkDevice().createSemaphore({});
+	}
 
-        _tmpSemaphore = _framebuffer->device()->vkDevice().createSemaphore({});
-    }
+	/**/
 
-    /**/
+	cmd::RenderCommandBuffer cmd {};
+	cmd.begin();
+	cmd.beginAccelPass({ _pass.get(), _framebuffer.get() });
+	cmd.beginSubPass({});
 
-    cmd::RenderCommandBuffer cmd {};
-    cmd.begin();
-    cmd.beginAccelPass({ _pass.get(), _framebuffer.get() });
-    cmd.beginSubPass({});
+	cmd.bindGraphicsPipeline(clone(_compiled.pipeline).into<GraphicsPipeline>());
+	//cmd.drawDispatch(1uL, 0uL, 3uL, 0uL);
 
-    cmd.bindGraphicsPipeline(clone(_compiled.pipeline).into<GraphicsPipeline>());
-    //cmd.drawDispatch(1uL, 0uL, 3uL, 0uL);
+	cmd.endSubPass();
+	cmd.endAccelPass();
+	cmd.end();
 
-    cmd.endSubPass();
-    cmd.endAccelPass();
-    cmd.end();
+	/**/
 
-    /**/
+	auto translator = make_uptr<driver::vk::VkRCmdTranslator>();
+	auto nativeBatch = (*translator)(&cmd);
+	auto* const batch = static_cast<ptr<driver::vk::VkNativeBatch>>(nativeBatch.get());
 
-    auto translator = make_uptr<driver::vk::VkRCmdTranslator>();
-    auto nativeBatch = (*translator)(&cmd);
-    auto* const batch = static_cast<ptr<driver::vk::VkNativeBatch>>(nativeBatch.get());
+	if (not rSceneDepth->barriers.empty()) {
 
-    if (not rSceneDepth->barriers.empty()) {
+		batch->_tmpWaits.append_range(
+			reinterpret_cast<Vector<VkSemaphore>&>(rSceneDepth->barriers)
+		);
 
-        batch->_tmpWaits.insert_range(
-            batch->_tmpWaits.end(),
-            reinterpret_cast<Vector<VkSemaphore>&>(rSceneDepth->barriers)
-        );
+		for (auto i = batch->_tmpWaitFlags.size(); i < batch->_tmpWaits.size(); ++i) {
+			batch->_tmpWaitFlags.push_back(
+				VkPipelineStageFlagBits::VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT |
+				VkPipelineStageFlagBits::VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT
+			);
+		}
 
-        for (auto i = batch->_tmpWaitFlags.size(); i < batch->_tmpWaits.size(); ++i) {
-            batch->_tmpWaitFlags.push_back(
-                VkPipelineStageFlagBits::VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT |
-                VkPipelineStageFlagBits::VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT
-            );
-        }
+		batch->_tmpSignals.push_back(_tmpSemaphore);
 
-        batch->_tmpSignals.push_back(_tmpSemaphore);
+		rSceneDepth->barriers.clear();
+		rSceneDepth->barriers.push_back(_tmpSemaphore.operator VkSemaphore());
+	}
 
-        rSceneDepth->barriers.clear();
-        rSceneDepth->barriers.push_back(_tmpSemaphore.operator VkSemaphore());
-    }
-
-    batch->commitAndDispose();
-    nativeBatch.reset();
+	batch->commitAndDispose();
+	nativeBatch.reset();
 }
 
 /**/
@@ -190,116 +187,116 @@ void DepthPrePass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
 smr<AccelerationEffect> build_test_effect() {
 
-    auto vertexStage = make_smr<Stage>(
-        StageFlagBits::eVertex
-        // Vector<StageInput> {},
-        // Vector<StageOutput> {}
-    );
+	auto vertexStage = make_smr<Stage>(
+		StageFlagBits::eVertex
+		// Vector<StageInput> {},
+		// Vector<StageOutput> {}
+	);
 
-    auto fragmentStage = make_smr<Stage>(
-        StageFlagBits::eFragment
-        // Vector<StageInput> {},
-        // Vector<StageOutput> {
-        //     StageOutput {
-        //         TransferToken::from("depth"), TransferType::eForward, TransferDataType::eF32, DataOutputRate {}
-        //     }
-        // }
-    );
+	auto fragmentStage = make_smr<Stage>(
+		StageFlagBits::eFragment
+		// Vector<StageInput> {},
+		// Vector<StageOutput> {
+		//     StageOutput {
+		//         TransferToken::from("depth"), TransferType::eForward, TransferDataType::eF32, DataOutputRate {}
+		//     }
+		// }
+	);
 
-    /**/
+	/**/
 
-    const auto vertexShaderCode = read_shader_file("__test__predepth.vs");
+	const auto vertexShaderCode = read_shader_file("__test__predepth.vs");
 
-    vertexStage->setIntermediate(make_smr<lang::Intermediate>());
-    vertexStage->getIntermediate()->lang.dialect = lang::Dialect::eVulkanGlsl460;
-    vertexStage->getIntermediate()->lang.text.emplace_back(std::move(vertexShaderCode));
+	vertexStage->setIntermediate(make_smr<lang::Intermediate>());
+	vertexStage->getIntermediate()->lang.dialect = lang::Dialect::eVulkanGlsl460;
+	vertexStage->getIntermediate()->lang.text.emplace_back(std::move(vertexShaderCode));
 
-    const auto fragmentShaderCode = read_shader_file("__test__predepth.fs");
+	const auto fragmentShaderCode = read_shader_file("__test__predepth.fs");
 
-    fragmentStage->setIntermediate(make_smr<lang::Intermediate>());
-    fragmentStage->getIntermediate()->lang.dialect = lang::Dialect::eVulkanGlsl460;
-    fragmentStage->getIntermediate()->lang.text.emplace_back(std::move(fragmentShaderCode));
+	fragmentStage->setIntermediate(make_smr<lang::Intermediate>());
+	fragmentStage->getIntermediate()->lang.dialect = lang::Dialect::eVulkanGlsl460;
+	fragmentStage->getIntermediate()->lang.text.emplace_back(std::move(fragmentShaderCode));
 
-    /**/
+	/**/
 
-    uptr<lang::Variable> tmpVar {};
+	uptr<lang::Variable> tmpVar {};
 
-    tmpVar = make_uptr<lang::Variable>();
-    tmpVar->annotation = make_uptr<lang::SimpleAnnotation<lang::AnnotationType::eForwardLinkage>>();
-    tmpVar->annotation = make_uptr<lang::SymbolIdAnnotation>("depth", std::move(tmpVar->annotation));
+	tmpVar = make_uptr<lang::Variable>();
+	tmpVar->annotation = make_uptr<lang::SimpleAnnotation<lang::AnnotationType::eForwardLinkage>>();
+	tmpVar->annotation = make_uptr<lang::SymbolIdAnnotation>("depth", std::move(tmpVar->annotation));
 
-    fragmentStage->getIntermediate()->rep.globalScope.outbound.emplace_back(std::move(tmpVar));
+	fragmentStage->getIntermediate()->rep.globalScope.outbound.emplace_back(std::move(tmpVar));
 
-    /**/
+	/**/
 
-    Guid guid;
-    GuidGenerate(guid);
+	Guid guid;
+	GuidGenerate(guid);
 
-    return make_smr<AccelerationEffect>(
-        std::move(guid),
-        "test-predepth-effect",
-        Vector<smr<Stage>> { std::move(vertexStage), std::move(fragmentStage) }
-        // Vector<smr<const Symbol>> {},
-        // Vector<smr<const Symbol>> { makeSceneDepthSymbol() }
-    );
+	return make_smr<AccelerationEffect>(
+		std::move(guid),
+		"test-predepth-effect",
+		Vector<smr<Stage>> { std::move(vertexStage), std::move(fragmentStage) }
+		// Vector<smr<const Symbol>> {},
+		// Vector<smr<const Symbol>> { makeSceneDepthSymbol() }
+	);
 }
 
 smr<const GraphicsPass> build_test_pass() {
 
-    constexpr auto passFactory = VkAccelerationPassFactory();
-    auto graphicsPass = passFactory.buildGraphicsPass(
-        {
-            makeSceneDepthSymbol()
-        },
-        {}
-    ).value();
+	constexpr auto passFactory = VkAccelerationPassFactory();
+	auto graphicsPass = passFactory.buildGraphicsPass(
+		{
+			makeSceneDepthSymbol()
+		},
+		{}
+	).value();
 
-    return graphicsPass;
+	return graphicsPass;
 }
 
 EffectCompileResult build_test_pipeline(
-    mref<smr<const AccelerationEffect>> effect_,
-    mref<smr<const GraphicsPass>> pass_
+	mref<smr<const AccelerationEffect>> effect_,
+	mref<smr<const GraphicsPass>> pass_
 ) {
 
-    auto profile = make_smr<EffectProfile>(
-        EffectProfile {
-            ._name = "Test-PreDepth-Profile",
-            ._definitions = {}
-        }
-    );
+	auto profile = make_smr<EffectProfile>(
+		EffectProfile {
+			._name = "Test-PreDepth-Profile",
+			._definitions = {}
+		}
+	);
 
-    /**/
+	/**/
 
-    auto spec = make_smr<SimpleEffectSpecification>(
-        Vector<smr<const lang::Symbol>> {}
-    );
-    spec->setPassSpec(
-        make_uptr<GraphicsPassSpecification>(
-            GraphicsPassSpecification {
-                .depthCompareOp = DepthCompareOp::eLessEqual,
-                .stencilCompareOp = StencilCompareOp::eNever,
-                .stencilFailOp = StencilOp::eKeep,
-                .stencilPassOp = StencilOp::eKeep,
-                .stencilDepthFailOp = StencilOp::eKeep,
-                .stencilCompareMask = 0ul,
-                .stencilWriteMask = 0ul,
-                .primitiveTopology = PrimitiveTopology::eTriangleList,
-                .pass = pass_.get()
-            }
-        )
-    );
+	auto spec = make_smr<SimpleEffectSpecification>(
+		Vector<smr<const lang::Symbol>> {}
+	);
+	spec->setPassSpec(
+		make_uptr<GraphicsPassSpecification>(
+			GraphicsPassSpecification {
+				.depthCompareOp = DepthCompareOp::eLessEqual,
+				.stencilCompareOp = StencilCompareOp::eNever,
+				.stencilFailOp = StencilOp::eKeep,
+				.stencilPassOp = StencilOp::eKeep,
+				.stencilDepthFailOp = StencilOp::eKeep,
+				.stencilCompareMask = 0ul,
+				.stencilWriteMask = 0ul,
+				.primitiveTopology = PrimitiveTopology::eTriangleList,
+				.pass = pass_.get()
+			}
+		)
+	);
 
-    /**/
+	/**/
 
-    const auto compiler = makeVkAccCompiler();
-    auto result = compiler->compile(
-        {
-            .effect = std::move(effect_),
-            .profile = std::move(profile),
-            .spec = std::move(spec)
-        }
-    );
+	const auto compiler = makeVkAccCompiler();
+	auto result = compiler->compile(
+		{
+			.effect = std::move(effect_),
+			.profile = std::move(profile),
+			.spec = std::move(spec)
+		}
+	);
 
-    return result;
+	return result;
 }
