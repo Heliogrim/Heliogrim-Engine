@@ -278,7 +278,7 @@ bool driver::vk::VkScopedResourceTable::allocateAndCommit(
 	/* Store allocated descriptor for resource tracking */
 
 	auto& cms = *(_committedSets.begin() + poolIdx);
-	cms.insert_range(cms.end(), descriptorSets_);
+	cms.append_range(descriptorSets_);
 
 	/* Update allocated descriptors with stored resources */
 
@@ -425,7 +425,7 @@ bool driver::vk::VkScopedResourceTable::commit(
 	/* Store allocated descriptor for resource tracking */
 
 	auto& cms = *(_committedSets.begin() + poolIdx);
-	cms.insert_range(cms.end(), descriptorSets_);
+	cms.append_range(descriptorSets_);
 
 	/* Update allocated descriptors with stored resources */
 

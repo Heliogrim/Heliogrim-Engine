@@ -48,10 +48,9 @@ void VkSurfaceSwapchain::setup(cref<sptr<Device>> device_) {
 	/**/
 
 	const auto capabilities = _device->vkPhysicalDevice().getSurfaceCapabilitiesKHR(*_surface);
-	const auto modes = _device->vkPhysicalDevice().getSurfacePresentModesKHR(*_surface);
 
 	_extent = clampExtent({ capabilities.currentExtent.width, capabilities.currentExtent.height }, capabilities);
-	const auto mode = selectPresentMode(modes);
+	const auto mode = selectPresentMode(_device->vkPhysicalDevice().getSurfacePresentModesKHR(*_surface));
 
 	_format = _surface->getImageFormat(*_device);
 

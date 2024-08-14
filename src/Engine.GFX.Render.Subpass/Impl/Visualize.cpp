@@ -241,9 +241,12 @@ void Visualize::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
 	auto translator = make_uptr<driver::vk::VkRCmdTranslator>();
 	auto nativeBatch = (*translator)(&cmd);
-	auto* const batch = static_cast<ptr<driver::vk::VkNativeBatch>>(nativeBatch.get()); {
-		batch->_tmpWaits.insert_range(
-			batch->_tmpWaits.end(),
+	auto* const batch = static_cast<ptr<driver::vk::VkNativeBatch>>(nativeBatch.get());
+
+	/**/
+
+	{
+		batch->_tmpWaits.append_range(
 			reinterpret_cast<Vector<VkSemaphore>&>(sceneColorRes->barriers)
 		);
 		for (auto i = batch->_tmpWaitFlags.size(); i < batch->_tmpWaits.size(); ++i) {
