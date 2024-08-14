@@ -6,6 +6,11 @@ function(library_vulkan_loader_init)
 	name_to_external_alias(alias "vulkan-loader")
 
 	#
+	set(BUILD_WSI_XCB_SUPPORT ${HELIOGRIM_PLATFORM_X11} CACHE INTERNAL "" FORCE)
+	set(BUILD_WSI_XLIB_SUPPORT ${HELIOGRIM_PLATFORM_X11} CACHE INTERNAL "" FORCE)
+	set(BUILD_WSI_WAYLAND_SUPPORT ${HELIOGRIM_PLATFORM_WAYLAND} CACHE INTERNAL "" FORCE)
+
+	#
 	get_external_include_path(vulkan_headers_include_path "vulkan-headers")
 	name_to_external_alias(vulkan_header_alias "vulkan-headers")
 	set(VULKAN_HEADERS_INSTALL_DIR "${vulkan_headers_include_path}/" CACHE INTERNAL "" FORCE)
