@@ -6,12 +6,12 @@ using namespace hg;
 LfsSyncBlob::LfsSyncBlob(mref<fs::Path> path_) noexcept :
 	Blob(),
 	_stream(std::in_place) {
-	if (not std::filesystem::exists(path_.stdFsPath())) {
-		std::filesystem::create_directories(path_.stdFsPath().parent_path());
-		_stream->open(path_.stdFsPath(), std::ios::out);
+	if (not std::filesystem::exists(path_)) {
+		std::filesystem::create_directories(path_.parentPath());
+		_stream->open(path_, std::ios::out);
 		_stream->close();
 	}
-	_stream->open(path_.stdFsPath(), std::ios::in | std::ios::out | std::ios::binary);
+	_stream->open(path_, std::ios::in | std::ios::out | std::ios::binary);
 	::hg::assertrt(_stream->is_open());
 }
 

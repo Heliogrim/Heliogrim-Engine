@@ -210,7 +210,7 @@ nmpt<Asset> AssetRegistry::getAssetByPath(cref<fs::Path> path_) const {
 	_SCTRL_SGATE(_mtx);
 
 	const auto* const table = static_cast<const ptr<const AutoIndexTable<UrlIndex>>>(_indexUrl);
-	return table->get(path_);
+	return table->get(static_cast<String>(path_));
 }
 
 nmpt<Asset> AssetRegistry::findAssetByPath(cref<fs::Path> path_) const noexcept {
@@ -218,7 +218,7 @@ nmpt<Asset> AssetRegistry::findAssetByPath(cref<fs::Path> path_) const noexcept 
 	_SCTRL_SGATE(_mtx);
 
 	const auto* const table = static_cast<const ptr<const AutoIndexTable<UrlIndex>>>(_indexUrl);
-	return table->get(path_);
+	return table->get(static_cast<String>(path_));
 }
 
 void AssetRegistry::findAssetsByPath(cref<fs::Path> path_, ref<Vector<nmpt<Asset>>> assets_) {
@@ -234,10 +234,9 @@ void AssetRegistry::findAssetsByPath(
 	_SCTRL_SGATE(_mtx);
 
 	//const auto encoded = path_.encode();
-	const string encoded { path_.string() };
 
 	const auto* const table = static_cast<const ptr<const AutoIndexTable<UrlIndex>>>(_indexUrl);
-	table->get(encoded, options_, assets_);
+	table->get(static_cast<String>(path_), options_, assets_);
 }
 
 void AssetRegistry::findAssetsByPaths(cref<std::span<fs::Path>> paths_, ref<Vector<nmpt<Asset>>> asset_) {}
@@ -447,6 +446,6 @@ void AssetRegistry::getIndexedPaths(ref<CompactSet<string>> paths_) const {
 
 	for (const auto& key : keys) {
 		const auto path = fs::Path(string_view { key });
-		paths_.insert(path.parentPath().string());
+		paths_.insert(path.parentPath());
 	}
 }

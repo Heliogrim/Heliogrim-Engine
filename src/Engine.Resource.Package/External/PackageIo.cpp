@@ -574,7 +574,7 @@ bool PackageIo::isPackageFile(
 	cref<Arci<IStorage>> fileStorage_
 ) {
 
-	const auto extension = fileUrl_.path().stdFsPath().extension();
+	const auto extension = static_cast<std::filesystem::path>(fileUrl_.path()).extension();
 	if (not extension.empty()) {
 		const auto str = extension.string();
 		if (not str.ends_with(".imp") && not str.ends_with(".impackage")) {

@@ -26,6 +26,10 @@ namespace hg::engine::fs {
 
 		Url(string_view scheme_, mref<Path> path_);
 
+		template <typename PathStringType_> requires std::is_constructible_v<fs::Path, PathStringType_>
+		Url(string_view scheme_, PathStringType_&& pathString_) :
+			Url(scheme_, fs::Path { std::forward<PathStringType_>(pathString_) }) {}
+
 		~Url();
 
 	public:

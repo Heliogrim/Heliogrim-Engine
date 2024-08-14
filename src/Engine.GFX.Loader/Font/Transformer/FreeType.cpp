@@ -269,10 +269,10 @@ void transformer::initFaceFromAsset(cref<assets::Font> asset_) {
 	/**/
 
 	// error = FT_New_Face(freeTypeLibrary, srcPath.string().c_str(), -1, &cascadiaMonoFace);
-	auto error = FT_New_Face(freeTypeLibrary, srcPath.path().string().c_str(), 0, &faceIt->second);
+	auto error = FT_New_Face(freeTypeLibrary, static_cast<String>(srcPath.path()).c_str(), 0, &faceIt->second);
 
 	if (error == FT_Err_Unknown_File_Format) {
-		IM_CORE_ERRORF("Font face file `{}` has an unknown file format.", srcPath.path().string());
+		IM_CORE_ERRORF("Font face file `{}` has an unknown file format.", static_cast<String>(srcPath.path()));
 		::hg::breakpoint();
 		return;
 	}

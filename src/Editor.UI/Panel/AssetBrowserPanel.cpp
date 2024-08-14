@@ -107,7 +107,9 @@ void AssetBrowserPanel::buildNav() {
 
 	if (proxyUrl.has_root_name() && proxyUrl.root_name().native().size() != _browserRoot.path().name().size()) {
 		proxyParts.push_back(
-			proxyUrl.root_name().string().substr(_browserRoot.path().string().size() + 1/* Separator Size */)
+			proxyUrl.root_name().string().substr(
+				static_cast<String>(_browserRoot.path()).size() + 1/* Separator Size */
+			)
 		);
 	}
 
@@ -119,7 +121,7 @@ void AssetBrowserPanel::buildNav() {
 	for (auto it { proxyParts.rbegin() }; it != proxyParts.rend(); ++it) {
 
 		const auto& part { *it };
-		if (part == _browserRoot.path().string()) {
+		if (part == static_cast<String>(_browserRoot.path())) {
 			fwd = _browserRoot;
 		} else if (fwd.path() == _browserRoot.path()) {
 			fwd = fs::Url { fwd.scheme(), std::filesystem::path { part }.string() };
@@ -127,7 +129,7 @@ void AssetBrowserPanel::buildNav() {
 			fwd = fs::Url { fwd.scheme(), std::filesystem::path { fwd.path() }.append(part).string() };
 		}
 
-		const string title { (part == _browserRoot.path().string()) ? "Root" : part };
+		const string title { (part == static_cast<String>(_browserRoot.path())) ? "Root" : part };
 		const string key { title + std::to_string(std::distance(it, proxyParts.rend())) };
 
 		bread->addNavEntry(AssocKey<string>::from(key), title, fwd);
@@ -238,17 +240,18 @@ void AssetBrowserPanel::openImportDialog(cref<fs::Url> fqUrlSource_) {
 	/**/
 
 	const std::filesystem::path fsSrc { fqUrlSource_.path() };
-	const auto ext { fsSrc.has_extension() ? fsSrc.extension().string().substr(1) : "" };
+	const auto ext { fsSrc.has_extension() ? fsSrc.extension().native().substr(1) : fs::Path::string_type {} };
 
 	std::filesystem::path cwd { _browserCwd.path() };
 	const auto importRoot { _browser->getImportRoot() };
 	const fs::Url targetRoot {
-		importRoot.scheme(), fs::Path(string { importRoot.path() }.append(fs::Path::separator).append(ext))
+		importRoot.scheme(),
+		fs::Path(fs::Path::string_type { importRoot.path() }.append(fs::Path::separator_type::value).append(ext))
 	};
 
 	bool isImportSubPath { false };
 	while (not cwd.empty() && cwd.parent_path() != cwd) {
-		if (cwd.string() == targetRoot.path().string()) {
+		if (cwd == targetRoot.path()) {
 			isImportSubPath = true;
 			break;
 		}

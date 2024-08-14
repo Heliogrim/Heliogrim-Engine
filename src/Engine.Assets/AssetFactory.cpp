@@ -136,7 +136,7 @@ fs::Url AssetFactory::resolveAsSource(cref<string> url_) const noexcept {
 	auto cwd { std::filesystem::current_path() };
 	cwd.append(url_);
 
-	return fs::Url { "file"sv, cwd.generic_string() };
+	return fs::Url { "file"sv, cwd };
 }
 
 void AssetFactory::prepare() {
@@ -257,7 +257,7 @@ Arci<Image> AssetFactory::createImageAsset(mref<asset_guid> guid_, cref<string> 
 
 	auto instance = Arci<Image>::create(std::move(guid_), std::move(sources));
 
-	storeDefaultNameAndUrl(*instance, string { src.path() });
+	storeDefaultNameAndUrl(*instance, String { src.path() });
 	_registry->insert({ clone(instance).into<Asset>() });
 	return instance;
 }
