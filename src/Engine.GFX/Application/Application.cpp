@@ -94,26 +94,26 @@ void Application::destroy() {
 	_instance = nullptr;
 }
 
-std::vector<const char*> Application::getExtensions() {
-	std::vector<const char*> extensions;
+Vector<const char*> Application::getExtensions() {
+	Vector<const char*> extensions;
 	extensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
 	extensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
 
 	#if defined(VK_USE_PLATFORM_ANDROID_KHR)
-			extensions.push_back(VK_KHR_ANDROID_SURFACE_EXTENSION_NAME);
+		extensions.push_back(VK_KHR_ANDROID_SURFACE_EXTENSION_NAME);
 	#elif defined(VK_USE_PLATFORM_MIR_KHR)
-			extensions.push_back(VK_KHR_MIR_SURFACE_EXTENSION_NAME);
+		extensions.push_back(VK_KHR_MIR_SURFACE_EXTENSION_NAME);
 	#elif defined(VK_USE_PLATFORM_WAYLAND_KHR)
-			extensions.push_back(VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME);
+		extensions.push_back(VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME);
 	#elif defined(VK_USE_PLATFORM_WIN32_KHR)
-	extensions.push_back(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
+		extensions.push_back(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
 	#elif defined(VK_USE_PLATFORM_XLIB_KHR)
-			extensions.push_back(VK_KHR_XLIB_SURFACE_EXTENSION_NAME);
+		extensions.push_back(VK_KHR_XLIB_SURFACE_EXTENSION_NAME);
 	#endif
 
 	#ifdef _DEBUG
-    extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-    extensions.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
+    	extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+    	extensions.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
 	#endif
 
 	return extensions;
