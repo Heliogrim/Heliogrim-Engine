@@ -1,10 +1,6 @@
 #pragma once
 
-#include <bit>
-#include <span>
-
 #include "Vector.hpp"
-#include "../Wrapper.hpp"
 
 namespace hg {
 	// TODO: Custom Implementation
@@ -14,10 +10,5 @@ namespace hg {
 		public Vector<Type_, Allocator_> {
 	public:
 		using Vector<Type_, Allocator_>::Vector;
-
-	public:
-		[[nodiscard]] std::span<_::byte> getByteSpan() noexcept requires (std::is_trivial_v<Type_>) {
-			return std::span { std::bit_cast<ptr<_::byte>>(this->data()), this->size() * sizeof(Type_) };
-		}
 	};
 }
