@@ -174,8 +174,8 @@ build.linux.gcc:
     # Check Versions
     - cmake --version
     # Install System Dependencies
-    - sudo apt-get -qq install xcb libx11-xcb1 libxcb1-dev libx11-dev libx11-xcb-dev -y
-    - sudo apt-get -qq install libwayland-dev -y
+    - sudo apt-get -qq install xcb libx11-xcb1 libxcb1-dev libxcb-xfixes0 libxcb-xfixes0-dev libx11-dev libx11-xcb-dev libxext-dev libxfixes-dev libxcursor1 libxcursor-dev libxrandr2 libxrandr-dev libxrender1 libxrender-dev libxss1 libxss-dev libxi6 x11proto-dev xorg-sgml-doctools libxi-dev -y
+    - sudo apt-get -qq install libwayland-dev libegl-mesa0 libxkbcommon-dev libxkbcommon0 libdecor-0-dev libdecor-0-0 -y
     - sudo apt-get -qq install libuuid1 uuid-dev -y
 
   # Process
@@ -239,8 +239,8 @@ build.linux.clang:
     # Check Versions
     - cmake --version
     # Install System Dependencies
-    - sudo apt-get -qq install xcb libx11-xcb1 libxcb1-dev libx11-dev libx11-xcb-dev -y
-    - sudo apt-get -qq install libwayland-dev -y
+    - sudo apt-get -qq install xcb libx11-xcb1 libxcb1-dev libxcb-xfixes0 libxcb-xfixes0-dev libx11-dev libx11-xcb-dev libxext-dev libxfixes-dev libxcursor1 libxcursor-dev libxrandr2 libxrandr-dev libxrender1 libxrender-dev libxss1 libxss-dev libxi6 x11proto-dev xorg-sgml-doctools libxi-dev -y
+    - sudo apt-get -qq install libwayland-dev libegl-mesa0 libxkbcommon-dev libxkbcommon0 libdecor-0-dev libdecor-0-0 -y
     - sudo apt-get -qq install libuuid1 uuid-dev -y
 
   # Process
@@ -355,8 +355,8 @@ test.linux.gcc:
     - cmake --version
     - $logical_core_count = (Get-CimInstance Win32_ComputerSystem).NumberOfLogicalProcessors
     # Install System Dependencies
-    - sudo apt-get -qq install xcb libx11-xcb1 libxcb1-dev libx11-dev libx11-xcb-dev -y
-    - sudo apt-get -qq install libwayland-dev -y
+    - sudo apt-get -qq install xcb libx11-xcb1 libxcb1-dev libxcb-xfixes0 libxcb-xfixes0-dev libx11-dev libx11-xcb-dev libxext-dev libxfixes-dev libxcursor1 libxcursor-dev libxrandr2 libxrandr-dev libxrender1 libxrender-dev libxss1 libxss-dev libxi6 x11proto-dev xorg-sgml-doctools libxi-dev -y
+    - sudo apt-get -qq install libwayland-dev libegl-mesa0 libxkbcommon-dev libxkbcommon0 libdecor-0-dev libdecor-0-0 -y
     - sudo apt-get -qq install libuuid1 uuid-dev -y
 
   # Process
@@ -387,8 +387,8 @@ test.linux.clang:
     - cmake --version
     - $logical_core_count = (Get-CimInstance Win32_ComputerSystem).NumberOfLogicalProcessors
     # Install System Dependencies
-    - sudo apt-get -qq install xcb libx11-xcb1 libxcb1-dev libx11-dev libx11-xcb-dev -y
-    - sudo apt-get -qq install libwayland-dev -y
+    - sudo apt-get -qq install xcb libx11-xcb1 libxcb1-dev libxcb-xfixes0 libxcb-xfixes0-dev libx11-dev libx11-xcb-dev libxext-dev libxfixes-dev libxcursor1 libxcursor-dev libxrandr2 libxrandr-dev libxrender1 libxrender-dev libxss1 libxss-dev libxi6 x11proto-dev xorg-sgml-doctools libxi-dev -y
+    - sudo apt-get -qq install libwayland-dev libegl-mesa0 libxkbcommon-dev libxkbcommon0 libdecor-0-dev libdecor-0-0 -y
     - sudo apt-get -qq install libuuid1 uuid-dev -y
 
   # Process
