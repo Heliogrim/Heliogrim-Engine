@@ -299,7 +299,7 @@ Opt<Vector<Arci<engine::assets::Asset>>> autoImportCombinedImageTexture(
 
 	const auto result = importer.import<std::pair<Arci<engine::assets::TextureAsset>, Arci<engine::assets::Image>>>(
 		fileTypeId_,
-		{ fileUrl_.path().stdFsPath() }
+		{ fileUrl_.path() }
 	).get();
 
 	if (result.first == nullptr || result.second == nullptr) {
@@ -331,7 +331,7 @@ Opt<Vector<Arci<engine::assets::Asset>>> autoImportFont(
 
 	const auto result = importer.import<Arci<engine::assets::Font>>(
 		fileTypeId_,
-		{ fileUrl_.path().stdFsPath() }
+		{ fileUrl_.path() }
 	).get();
 
 	if (result != nullptr) {
@@ -355,7 +355,7 @@ Opt<Vector<Arci<engine::assets::Asset>>> autoImportStaticGeometry(
 
 	const auto result = importer.import<Arci<engine::assets::StaticGeometry>>(
 		fileTypeId_,
-		{ fileUrl_.path().stdFsPath() }
+		{ fileUrl_.path() }
 	).get();
 
 	if (result != nullptr) {
@@ -378,7 +378,7 @@ Opt<Arci<engine::storage::system::PackageStorage>> autoStoreAssets(
 	cref<Vector<Arci<engine::assets::Asset>>> assets_
 ) {
 
-	const auto packageFileUrl = clone(baseFileUrl_.path().stdFsPath()).concat(packed_extension);
+	const auto packageFileUrl = std::filesystem::path { baseFileUrl_.path() }.concat(packed_extension);
 	if (std::filesystem::exists(packageFileUrl)) {
 		IM_CORE_ERRORF(
 			"Failed to auto generate the package file `{}`, cause the targeted package file does already exist.",

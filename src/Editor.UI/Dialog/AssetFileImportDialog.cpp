@@ -325,7 +325,7 @@ static void configureTargetDomain(
 	const auto& dst { path_.path() };
 
 	std::string edst { dst };
-	edst.append(fs::Path::separator);
+	edst.append(static_cast<const char>(*fs::Path::separator_type::value), 1);
 	edst.append(filename);
 
 	targetInput->setPlaceholder(edst);
@@ -487,8 +487,8 @@ sptr<Dialog> AssetFileImportDialog::make(
 
 			IM_CORE_LOGF(
 				"Importing new asset from `{}` to `{}`.",
-				diag->_source.path().string(),
-				diag->_target.path().string()
+				static_cast<String>(diag->_source.path()),
+				static_cast<String>(diag->_target.path())
 			);
 
 			/**/

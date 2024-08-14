@@ -11,17 +11,17 @@ using namespace hg;
 
 template <>
 void access::Structure<Url>::serialize(const ptr<const Url> self_, mref<RecordScopedSlot> slot_) {
-    auto slot = slot_.intoStruct();
-    slot.insertSlot<string>("scheme") << self_->_scheme;
-    slot.insertSlot<string>("path") << self_->_path.string();
+	auto slot = slot_.intoStruct();
+	slot.insertSlot<string>("scheme") << self_->_scheme;
+	slot.insertSlot<string>("path") << static_cast<String>(self_->_path);
 }
 
 template <>
 void access::Structure<Url>::deserialize(const ptr<Url> self_, mref<RecordScopedSlot> slot_) {
-    auto slot = slot_.intoStruct();
-    slot.getSlot<string>("scheme") >> self_->_scheme;
+	auto slot = slot_.intoStruct();
+	slot.getSlot<string>("scheme") >> self_->_scheme;
 
-    string tmp {};
-    slot.getSlot<string>("path") >> tmp;
-    self_->setPath(std::move(tmp));
+	string tmp {};
+	slot.getSlot<string>("path") >> tmp;
+	self_->setPath(fs::Path { std::move(tmp) });
 }
