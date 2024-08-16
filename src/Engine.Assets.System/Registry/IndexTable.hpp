@@ -1,6 +1,7 @@
 #pragma once
 
 #include <map>
+#include <ranges>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/DenseMap.hpp>
@@ -67,6 +68,47 @@ namespace hg::engine::assets::system {
 		~IndexTable() override = default;
 	};
 
+	/**/
+
+	namespace {
+		template <typename TypeTraits_, bool TestUnique_, bool TestMultiple_>
+		struct AutoMappingSelector;
+
+		template <typename TypeTraits_>
+		struct AutoMappingSelector<TypeTraits_, true, false> {
+			using table_type = DenseMap<
+				typename TypeTraits_::data_type,
+				nmpt<Asset>,
+				typename TypeTraits_::hash_type
+			>;
+		};
+
+		template <typename TypeTraits_>
+		struct AutoMappingSelector<TypeTraits_, true, true> {
+			using table_type = std::map<
+				typename TypeTraits_::data_type,
+				nmpt<Asset>,
+				typename TypeTraits_::relation_type
+			>;
+		};
+
+		template <typename TypeTraits_>
+		struct AutoMappingSelector<TypeTraits_, false, true> {
+			using table_type = std::map<
+				typename TypeTraits_::data_type,
+				Vector<nmpt<Asset>>,
+				typename TypeTraits_::relation_type
+			>;
+		};
+
+		template <typename TypeTraits_>
+		struct AutoMappingSelector<TypeTraits_, false, false> {
+			static_assert(TypeTraits_::unique || TypeTraits_::multiple);
+		};
+	};
+
+	/**/
+
 	template <typename Index_>
 	class AutoIndexTable :
 		public IndexTable<Index_> {
@@ -83,44 +125,7 @@ namespace hg::engine::assets::system {
 
 		/**/
 
-		template <bool TestUnique_, bool TestMultiple_>
-		struct AutoMappingSelector;
-
-		template <>
-		struct AutoMappingSelector<true, false> {
-			using table_type = DenseMap<
-				typename trait_type::data_type,
-				nmpt<Asset>,
-				typename trait_type::hash_type
-			>;
-		};
-
-		template <>
-		struct AutoMappingSelector<true, true> {
-			using table_type = std::map<
-				typename trait_type::data_type,
-				nmpt<Asset>,
-				typename trait_type::relation_type
-			>;
-		};
-
-		template <>
-		struct AutoMappingSelector<false, true> {
-			using table_type = std::map<
-				typename trait_type::data_type,
-				Vector<nmpt<Asset>>,
-				typename trait_type::relation_type
-			>;
-		};
-
-		template <>
-		struct AutoMappingSelector<false, false> {
-			static_assert(trait_type::unique || trait_type::multiple);
-		};
-
-		/**/
-
-		using auto_type = AutoMappingSelector<trait_type::unique, trait_type::multiple>;
+		using auto_type = AutoMappingSelector<trait_type, trait_type::unique, trait_type::multiple>;
 		using auto_table_type = typename auto_type::table_type;
 
 	public:
