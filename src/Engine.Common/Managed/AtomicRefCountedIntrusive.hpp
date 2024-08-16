@@ -401,15 +401,19 @@ namespace hg {
 			std::is_convertible_v<ptr<Ty_>, ptr<ToType_>> ||
 			std::derived_from<ToType_, Ty_>
 		[[nodiscard]] AtomicRefCountedIntrusive<ToType_> into() && noexcept {
-			return static_cast<AtomicRefCountedIntrusive<ToType_>&&>(*this);
+			return static_cast<mref<AtomicRefCountedIntrusive<ToType_>>>(
+				*reinterpret_cast<ptr<AtomicRefCountedIntrusive<ToType_>>>(this)
+			);
 		}
 
 	private:
 		template <IsAtomicIntrusiveRefCountable ToType_> requires
 			std::is_convertible_v<ptr<Ty_>, ptr<ToType_>> ||
 			std::derived_from<ToType_, Ty_>
-		[[nodiscard]] explicit operator AtomicRefCountedIntrusive<ToType_>() & noexcept {
-			return reinterpret_cast<AtomicRefCountedIntrusive<ToType_>&&>(*this);
+		[[nodiscard]] explicit operator AtomicRefCountedIntrusive<ToType_>() && noexcept {
+			return static_cast<mref<AtomicRefCountedIntrusive<ToType_>>>(
+				*reinterpret_cast<ptr<AtomicRefCountedIntrusive<ToType_>>>(this)
+			);
 		}
 	};
 
