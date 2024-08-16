@@ -13,71 +13,71 @@
 #include "StaticGeometryStreamOptions.hpp"
 
 namespace hg::engine::resource::loader {
-    using namespace ::hg::engine::gfx::loader;
+	using namespace ::hg::engine::gfx::loader;
 
-    template <>
-    struct resource::loader::RequestOptions<LoaderRequest<assets::StaticGeometry>> {
-        using type = StaticGeometryLoadOptions;
-    };
+	template <>
+	struct RequestOptions<LoaderRequest<assets::StaticGeometry>> {
+		using type = StaticGeometryLoadOptions;
+	};
 
-    template <>
-    struct resource::loader::StreamOptions<LoaderRequest<assets::StaticGeometry>> {
-        using type = StaticGeometryStreamOptions;
-    };
+	template <>
+	struct StreamOptions<LoaderRequest<assets::StaticGeometry>> {
+		using type = StaticGeometryStreamOptions;
+	};
 }
 
 namespace hg::engine::resource::loader {
-    using namespace ::hg::engine::gfx::loader;
+	using namespace ::hg::engine::gfx::loader;
 
-    template <>
-    struct resource::loader::RequestOptions<CacheRequest<assets::StaticGeometry>> {
-        using type = StaticGeometryLoadOptions;
-    };
+	template <>
+	struct RequestOptions<CacheRequest<assets::StaticGeometry>> {
+		using type = StaticGeometryLoadOptions;
+	};
 
-    template <>
-    struct resource::loader::StreamOptions<CacheRequest<assets::StaticGeometry>> {
-        using type = StaticGeometryStreamOptions;
-    };
+	template <>
+	struct StreamOptions<CacheRequest<assets::StaticGeometry>> {
+		using type = StaticGeometryStreamOptions;
+	};
 }
 
 namespace hg::engine::resource::loader {
-    using namespace ::hg::engine::gfx::loader;
+	using namespace ::hg::engine::gfx::loader;
 
-    template <>
-    struct resource::loader::RequestOptions<FeedbackRequest<assets::StaticGeometry>> {
-        using type = StaticGeometryLoadOptions;
-    };
+	template <>
+	struct RequestOptions<FeedbackRequest<assets::StaticGeometry>> {
+		using type = StaticGeometryLoadOptions;
+	};
 
-    template <>
-    struct resource::loader::StreamOptions<FeedbackRequest<assets::StaticGeometry>> {
-        using type = StaticGeometryStreamOptions;
-    };
+	template <>
+	struct StreamOptions<FeedbackRequest<assets::StaticGeometry>> {
+		using type = StaticGeometryStreamOptions;
+	};
 }
 
 namespace hg::engine::resource::loader {
-    using namespace ::hg::engine::gfx::loader;
+	using namespace ::hg::engine::gfx::loader;
 
-    template <>
-    struct RequestOptions<SourceLoaderRequest<assets::StaticGeometry>> {
-        using type = RequestOptions<SourceLoaderRequest<void>>::type;
-    };
+	template <>
+	struct RequestOptions<SourceLoaderRequest<assets::StaticGeometry>> {
+		using type = RequestOptions<SourceLoaderRequest<void>>::type;
+	};
 
-    template <>
-    struct StreamOptions<SourceLoaderStreamRequest<assets::StaticGeometry>> {
-        using type = StreamOptions<SourceLoaderStreamRequest<void>>::type;
-    };
+	template <>
+	struct StreamOptions<SourceLoaderStreamRequest<assets::StaticGeometry>> {
+		using type = StreamOptions<SourceLoaderStreamRequest<void>>::type;
+	};
 }
 
 namespace hg::engine::resource::loader {
-    using namespace ::hg::engine::gfx::loader;
+	using namespace ::hg::engine::gfx::loader;
 
-    template <>
-    struct RequestOptions<TransformerRequest<assets::StaticGeometry>> {
-        using type = StaticGeometryLoadOptions;
-    };
+	template <>
+	struct RequestOptions<TransformerRequest<assets::StaticGeometry>> {
+		using type = StaticGeometryLoadOptions;
+	};
 
-    template <>
-    struct StreamOptions<TransformerRequest<assets::StaticGeometry>> {
-        using type = StaticGeometryStreamOptions;
-    };
+	template <>
+	struct StreamOptions<TransformerRequest<assets::StaticGeometry>> {
+		using type = StaticGeometryStreamOptions;
+	};
 }

@@ -3,9 +3,9 @@
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
-#include <Engine.Resource/Loader/Cache.hpp>
-#include <Engine.GFX/Cache/__fwd.hpp>
 #include <Engine.GFX/Cache/CacheResult.hpp>
+#include <Engine.GFX/Cache/__fwd.hpp>
+#include <Engine.Resource/Loader/Cache.hpp>
 
 #include "Traits.hpp"
 

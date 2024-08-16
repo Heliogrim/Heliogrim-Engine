@@ -15,24 +15,24 @@ namespace hg::engine::resource::loader {
 	/**/
 
 	template <>
-	struct resource::loader::RequestOptions<SourceLoaderRequest<void>> {
+	struct RequestOptions<SourceLoaderRequest<void>> {
 		using this_type = RequestOptions<SourceLoaderRequest<void>>;
 		using type = SourceLoadOptions;
 	};
 
 	template <typename AssetType_>
-	struct resource::loader::RequestOptions<SourceLoaderRequest<AssetType_>> {
+	struct RequestOptions<SourceLoaderRequest<AssetType_>> {
 		using type = RequestOptions<SourceLoaderRequest<void>>::type;
 	};
 
 	template <>
-	struct resource::loader::StreamOptions<SourceLoaderStreamRequest<void>> {
+	struct StreamOptions<SourceLoaderStreamRequest<void>> {
 		using this_type = StreamOptions<SourceLoaderStreamRequest<void>>;
 		using type = SourceStreamOptions;
 	};
 
 	template <typename AssetType_>
-	struct resource::loader::StreamOptions<SourceLoaderStreamRequest<AssetType_>> {
+	struct StreamOptions<SourceLoaderStreamRequest<AssetType_>> {
 		using type = StreamOptions<SourceLoaderStreamRequest<void>>::type;
 	};
 
