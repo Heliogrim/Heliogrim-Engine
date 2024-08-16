@@ -8,7 +8,7 @@
 
 using namespace hg::engine::scheduler::thread;
 
-FORCE_INLINE thread_id cast_ntid_tid(const std::thread::id& ntid_) {
+FORCE_INLINE static inline thread_id cast_ntid_tid(const std::thread::id& ntid_) {
 	if constexpr (sizeof(ntid_) == sizeof(hg::u64)) {
 		return *static_cast<const hg::u64*>(
 			static_cast<const void*>(&ntid_)
@@ -30,7 +30,7 @@ thread_local static thread_id __threadId { cast_ntid_tid(std::this_thread::get_i
 
 thread_local static uint64_t __threadIdx { generate_thread_idx() };
 
-FORCE_INLINE bool set_priority(HANDLE handle_, priority priority_) {
+FORCE_INLINE inline static bool set_priority(HANDLE handle_, priority priority_) {
 	#if defined(_WIN32) || defined(_WIN64)
 	auto tr = 0;
 

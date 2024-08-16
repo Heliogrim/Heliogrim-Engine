@@ -39,28 +39,28 @@ namespace hg {
 		static void debug(mref<string> msg_);
 
 		template <typename... Args_>
-		static FORCE_INLINE void debug(format_type<Args_...> format_, Args_&&... args_) {
+		static void debug(format_type<Args_...> format_, Args_&&... args_) {
 			Logger::debug(std::format(format_, std::forward<Args_>(args_)...));
 		}
 
 		static void info(mref<string> msg_);
 
 		template <typename... Args_>
-		static FORCE_INLINE void info(format_type<Args_...> format_, Args_&&... args_) {
+		static void info(format_type<Args_...> format_, Args_&&... args_) {
 			Logger::info(std::format(format_, std::forward<Args_>(args_)...));
 		}
 
 		static void warn(mref<string> msg_);
 
 		template <typename... Args_>
-		static FORCE_INLINE void warn(format_type<Args_...> format_, Args_&&... args_) {
+		static void warn(format_type<Args_...> format_, Args_&&... args_) {
 			Logger::warn(std::format(format_, std::forward<Args_>(args_)...));
 		}
 
 		static void error(mref<string> msg_);
 
 		template <typename... Args_>
-		static FORCE_INLINE void error(format_type<Args_...> format_, Args_&&... args_) {
+		static void error(format_type<Args_...> format_, Args_&&... args_) {
 			Logger::error(std::format(format_, std::forward<Args_>(args_)...));
 		}
 	};

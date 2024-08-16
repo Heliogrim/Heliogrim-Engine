@@ -33,7 +33,7 @@ namespace hg::engine::scheduler {
 		dispatch_fnc_type _fnc;
 
 	public:
-		FORCE_INLINE void enqueue(_In_ mref<non_owning_rptr<const task::TaskDelegate>> task_) const {
+		FORCE_INLINE inline void enqueue(_In_ mref<non_owning_rptr<const task::TaskDelegate>> task_) const {
 			(void)(static_cast<ptr<StageDispatcher>>(_self)->*_fnc)(
 				std::forward<non_owning_rptr<const task::TaskDelegate>>(task_)
 			);

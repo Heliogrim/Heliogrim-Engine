@@ -22,7 +22,7 @@ namespace hg::engine::serialization::layout {
 		}
 
 	protected:
-		FORCE_INLINE static ref<resource::Archive> loadImpl(
+		static ref<resource::Archive> loadImpl(
 			ref<resource::Archive> archive_,
 			cref<LayoutDefine> define_,
 			cref<std::span<u8, std::dynamic_extent>> dst_
@@ -34,7 +34,7 @@ namespace hg::engine::serialization::layout {
 			return archive_ >> (*reinterpret_cast<value_ptr_type>(&dst_[define_._offset]));
 		}
 
-		FORCE_INLINE static ref<resource::Archive> storeImpl(
+		static ref<resource::Archive> storeImpl(
 			ref<resource::Archive> archive_,
 			cref<LayoutDefine> define_,
 			cref<std::span<u8, std::dynamic_extent>> src_

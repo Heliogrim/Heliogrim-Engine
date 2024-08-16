@@ -145,12 +145,12 @@ namespace hg::engine::resource::loader {
 		/* Stage Invoker Helper */
 
 		template <typename Stage_, typename Result_, typename... Args_>
-		[[nodiscard]] FORCE_INLINE static Result_ invoke_stage(cref<std::decay_t<Stage_>> stage_, Args_&&... args_) {
+		[[nodiscard]] static Result_ invoke_stage(cref<std::decay_t<Stage_>> stage_, Args_&&... args_) {
 			return stage_(std::forward<Args_>(args_)...);
 		}
 
 		template <typename Stage_, typename Result_, typename... Args_>
-		[[nodiscard]] FORCE_INLINE static Result_ invoke_stage(
+		[[nodiscard]] static Result_ invoke_stage(
 			cref<uptr<std::decay_t<Stage_>>> stage_,
 			Args_&&... args_
 		) {
@@ -158,7 +158,7 @@ namespace hg::engine::resource::loader {
 		}
 
 		template <typename Stage_, typename Result_, typename... Args_>
-		[[nodiscard]] FORCE_INLINE static Result_ invoke_stage(
+		[[nodiscard]] static Result_ invoke_stage(
 			cref<sptr<std::decay_t<Stage_>>> stage_,
 			Args_&&... args_
 		) {
@@ -166,7 +166,7 @@ namespace hg::engine::resource::loader {
 		}
 
 		template <typename Stage_, typename Result_, typename... Args_>
-		[[nodiscard]] FORCE_INLINE static Result_ invoke_stage(
+		[[nodiscard]] static Result_ invoke_stage(
 			cref<smr<std::decay_t<Stage_>>> stage_,
 			Args_&&... args_
 		) {

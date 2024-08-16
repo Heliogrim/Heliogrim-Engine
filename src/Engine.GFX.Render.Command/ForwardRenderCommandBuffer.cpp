@@ -11,69 +11,69 @@ using namespace hg::engine::render::cmd;
 using namespace hg::engine::gfx;
 using namespace hg;
 
-FORCE_INLINE static void link(ref<nmpt<RenderCommand>> prev_, mref<ptr<RenderCommand>> next_);
+static void link(ref<nmpt<RenderCommand>> prev_, mref<ptr<RenderCommand>> next_);
 
 /**/
 
 ForwardRenderCommandBuffer::ForwardRenderCommandBuffer() noexcept :
-    RenderCommandBuffer() {}
+	RenderCommandBuffer() {}
 
 ForwardRenderCommandBuffer::ForwardRenderCommandBuffer(mref<this_type> other_) noexcept :
-    RenderCommandBuffer(std::move(other_)) {}
+	RenderCommandBuffer(std::move(other_)) {}
 
 GraphicsPipelineRComRef ForwardRenderCommandBuffer::createGraphicsPipelineImmediately(
-    mref<smr<const accel::AccelerationEffect>> effect_,
-    nmpt<void> specification_,
-    nmpt<void> profile_
+	mref<smr<const accel::AccelerationEffect>> effect_,
+	nmpt<void> specification_,
+	nmpt<void> profile_
 ) {
 
-    ptr<accel::AccelStorage> storage {};
-    const accel::Permutation permutation {
-        static_cast<accel::EffectProfile*>(profile_.get()),
-        static_cast<accel::EffectSpecification*>(specification_.get())
-    };
+	ptr<accel::AccelStorage> storage {};
+	const accel::Permutation permutation {
+		static_cast<accel::EffectProfile*>(profile_.get()),
+		static_cast<accel::EffectSpecification*>(specification_.get())
+	};
 
-    auto pipeline = storage->getAccelPipeline(
-        accel::calcStorageHash(permutation),
-        accel::calcStorageHash(*effect_)
-    );
+	auto pipeline = storage->getAccelPipeline(
+		accel::calcStorageHash(permutation),
+		accel::calcStorageHash(*effect_)
+	);
 
-    GraphicsPipelineRComRef rtr {};
-    if (pipeline.empty()) {
+	GraphicsPipelineRComRef rtr {};
+	if (pipeline.empty()) {
 
-        /*
-         rtr = _resourceTable.allocate<
-            const acc::GraphicsPipeline,
-            //ConcurrentSharedResource
-            smr
-        >();
-         */
+		/*
+		 rtr = _resourceTable.allocate<
+		    const acc::GraphicsPipeline,
+		    //ConcurrentSharedResource
+		    smr
+		>();
+		 */
 
-        // TODO: Compilation Request
-        // auto compiler = ...;
-        // auto result = compiler.compile( request { ... } );
-        // store( rtr, result.value );
+		// TODO: Compilation Request
+		// auto compiler = ...;
+		// auto result = compiler.compile( request { ... } );
+		// store( rtr, result.value );
 
-    } else {
+	} else {
 
-        /*
-        rtr = _resourceTable.allocate<
-            const acc::GraphicsPipeline,
-            //ConcurrentSharedResource
-            smr
-        >(
-            pipeline.into<acc::GraphicsPipeline>()
-        );
-         */
+		/*
+		rtr = _resourceTable.allocate<
+		    const acc::GraphicsPipeline,
+		    //ConcurrentSharedResource
+		    smr
+		>(
+		    pipeline.into<acc::GraphicsPipeline>()
+		);
+		 */
 
-    }
+	}
 
-    return rtr;
+	return rtr;
 }
 
 /**/
 
 void link(ref<nmpt<RenderCommand>> prev_, mref<ptr<RenderCommand>> next_) {
-    prev_->next = next_;
-    prev_ = next_;
+	prev_->next = next_;
+	prev_ = next_;
 }

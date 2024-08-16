@@ -161,7 +161,7 @@ namespace hg::engine::concurrent {
 		 *
 		 * @returns A size_type.
 		 */
-		[[nodiscard]] FORCE_INLINE size_type inc(size_t value_) const noexcept {
+		[[nodiscard]] size_type inc(size_t value_) const noexcept {
 			return (++value_) % reserved();
 		}
 
@@ -175,7 +175,7 @@ namespace hg::engine::concurrent {
 		 *
 		 * @returns A size_type.
 		 */
-		[[nodiscard]] FORCE_INLINE size_type idx(size_t value_) noexcept {
+		[[nodiscard]] size_type idx(size_t value_) noexcept {
 			return value_ % reserved();
 		}
 	};
