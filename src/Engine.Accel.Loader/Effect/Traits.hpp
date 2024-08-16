@@ -12,46 +12,46 @@
 #include "EffectLoadOptions.hpp"
 
 namespace hg::engine::resource::loader {
-    using namespace ::hg::engine::accel::loader;
+	using namespace ::hg::engine::accel::loader;
 
-    template <>
-    struct resource::loader::RequestOptions<LoaderRequest<assets::AccelEffect>> {
-        using type = EffectLoadOptions;
-    };
+	template <>
+	struct RequestOptions<LoaderRequest<assets::AccelEffect>> {
+		using type = EffectLoadOptions;
+	};
 }
 
 namespace hg::engine::resource::loader {
-    using namespace ::hg::engine::accel::loader;
+	using namespace ::hg::engine::accel::loader;
 
-    template <>
-    struct resource::loader::RequestOptions<CacheRequest<assets::AccelEffect>> {
-        using type = EffectLoadOptions;
-    };
+	template <>
+	struct RequestOptions<CacheRequest<assets::AccelEffect>> {
+		using type = EffectLoadOptions;
+	};
 }
 
 namespace hg::engine::resource::loader {
-    using namespace ::hg::engine::accel::loader;
+	using namespace ::hg::engine::accel::loader;
 
-    template <>
-    struct resource::loader::RequestOptions<FeedbackRequest<assets::AccelEffect>> {
-        using type = EffectLoadOptions;
-    };
+	template <>
+	struct RequestOptions<FeedbackRequest<assets::AccelEffect>> {
+		using type = EffectLoadOptions;
+	};
 }
 
 namespace hg::engine::resource::loader {
-    using namespace ::hg::engine::accel::loader;
+	using namespace ::hg::engine::accel::loader;
 
-    template <>
-    struct resource::loader::RequestOptions<SourceLoaderRequest<assets::AccelEffect>> {
-        using type = RequestOptions<SourceLoaderRequest<void>>::type;
-    };
+	template <>
+	struct RequestOptions<SourceLoaderRequest<assets::AccelEffect>> {
+		using type = RequestOptions<SourceLoaderRequest<void>>::type;
+	};
 }
 
 namespace hg::engine::resource::loader {
-    using namespace ::hg::engine::accel::loader;
+	using namespace ::hg::engine::accel::loader;
 
-    template <>
-    struct RequestOptions<TransformerRequest<assets::AccelEffect>> {
-        using type = EffectLoadOptions;
-    };
+	template <>
+	struct RequestOptions<TransformerRequest<assets::AccelEffect>> {
+		using type = EffectLoadOptions;
+	};
 }
