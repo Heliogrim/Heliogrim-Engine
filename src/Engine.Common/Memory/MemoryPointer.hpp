@@ -2,8 +2,8 @@
 
 #include <atomic>
 #include <concepts>
-#include <type_traits>
 #include <memory>
+#include <type_traits>
 #include <utility>
 
 #include "__fwd.hpp"
@@ -335,7 +335,7 @@ namespace hg {
 		}
 
 		ref<this_type> operator=(::std::nullptr_t) {
-			storage.template exchange<::std::nullptr_t>(nullptr);
+			std::ignore = storage.template exchange<::std::nullptr_t>(nullptr);
 			return *this;
 		}
 

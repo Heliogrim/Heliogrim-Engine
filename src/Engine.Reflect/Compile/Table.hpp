@@ -1,5 +1,8 @@
 #pragma once
 
+#include <concepts>
+#include <iterator>
+#include <type_traits>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Memory/Address.hpp>
 #include <Engine.Common/Meta/Concept.hpp>
