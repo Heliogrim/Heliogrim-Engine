@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Engine.Common/Optional.hpp>
+#include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Deque.hpp>
 #include <Engine.Common/Collection/Vector.hpp>

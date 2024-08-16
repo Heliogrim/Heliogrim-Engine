@@ -1,5 +1,7 @@
 #include "Config.hpp"
 
+#include <algorithm>
+#include <ranges>
 #include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Asserts/Todo.hpp>
 

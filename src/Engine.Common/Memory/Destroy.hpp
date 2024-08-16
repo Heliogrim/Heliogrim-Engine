@@ -1,5 +1,7 @@
 #pragma once
 
+#include <type_traits>
+
 #include "Address.hpp"
 
 namespace hg {
@@ -10,7 +12,7 @@ namespace hg {
 
 	template <class Allocator_, typename PointerType_>
 	concept AllocHasDestroy = requires(Allocator_& alloc_) {
-		{ alloc_.destory(std::declval<PointerType_>()) };
+		{ alloc_.destroy(std::declval<PointerType_>()) };
 	};
 
 	template <class Allocator_>
