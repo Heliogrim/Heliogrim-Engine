@@ -2,8 +2,8 @@
 
 #include <Engine.Common/Sal.hpp>
 
-#include "__fwd.hpp"
 #include "LoaderTraits.hpp"
+#include "__fwd.hpp"
 
 namespace hg::engine::resource::loader {
 	template <typename AssetType_, typename ResourceType_>

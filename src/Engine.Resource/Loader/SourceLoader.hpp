@@ -3,8 +3,8 @@
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
-#include "__fwd.hpp"
 #include "SourceLoaderTraits.hpp"
+#include "__fwd.hpp"
 
 namespace hg::engine::resource::loader {
 	class macro_novtable SourceLoaderStage {

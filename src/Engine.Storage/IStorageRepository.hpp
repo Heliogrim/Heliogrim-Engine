@@ -1,4 +1,5 @@
 #pragma once
+
 #include <span>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/String.hpp>

@@ -1,11 +1,12 @@
 #include "GlobalResourceCache.hpp"
 
+#include <Engine.Common/Sal.hpp>
+#include <Engine.GFX.Loader/Geometry/Traits.hpp>
+#include <Engine.GFX.Loader/Texture/Traits.hpp>
+
+#include "../Texture/TextureFactory.hpp"
 #include "Engine.GFX/Geometry/Vertex.hpp"
 #include "Engine.GFX/Memory/AllocationResult.hpp"
-#include "../Texture/TextureFactory.hpp"
-
-#include <Engine.GFX.Loader/Texture/Traits.hpp>
-#include <Engine.GFX.Loader/Geometry/Traits.hpp>
 
 using namespace hg::engine::gfx::cache;
 using namespace hg::engine::gfx;

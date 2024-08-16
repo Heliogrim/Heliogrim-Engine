@@ -3,6 +3,7 @@
 #include <Engine.Assets/Types/Asset.hpp>
 #include <Engine.Assets/Types/AssetConcept.hpp>
 #include <Engine.Assets/Types/Font.hpp>
+#include <Engine.Common/Sal.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Reflect/Cast.hpp>
 

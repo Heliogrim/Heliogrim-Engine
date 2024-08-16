@@ -1,6 +1,7 @@
 #pragma once
 
 #include <functional>
+#include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Variant.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Vector.hpp>

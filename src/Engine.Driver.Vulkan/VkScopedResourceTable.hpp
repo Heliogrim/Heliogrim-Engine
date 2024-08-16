@@ -1,4 +1,5 @@
 #pragma once
+
 #include <Engine.Accel.Pipeline/__fwd.hpp>
 #include <Engine.Accel.Pipeline/Bind/BindLayout.hpp>
 #include <Engine.Common/Sal.hpp>

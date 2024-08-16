@@ -72,11 +72,11 @@ namespace hg {
 		 * @returns A type_id.
 		 */
 		constexpr type_id fnv1a_86(const char* str_, const std::size_t count_) {
-			return type_id {
-				(
+			return GUARD_UNCHECKED_LLVL(
+				type_id { (
 					(count_ ? fnv1a_86(str_, count_ - 1).data : 2166136261uLL) ^ static_cast<cref<u64>>(str_[count_])
-				) * 16777619uLL
-			};
+				)* 16777619uLL }
+			);
 		}
 	}
 

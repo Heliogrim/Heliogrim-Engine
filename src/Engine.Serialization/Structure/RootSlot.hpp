@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Engine.Common/Sal.hpp>
+
 #include "RecordSlot.hpp"
 
 namespace hg::engine::serialization {

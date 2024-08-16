@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Engine.Common/Sal.hpp>
+
 #include "../SourceLoader.hpp"
 
 namespace hg::engine {

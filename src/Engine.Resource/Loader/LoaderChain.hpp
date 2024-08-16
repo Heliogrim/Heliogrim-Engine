@@ -6,9 +6,9 @@
 
 #include "LoaderTraits.hpp"
 
-#include "Loader.hpp"
 #include "Cache.hpp"
 #include "Feedback.hpp"
+#include "Loader.hpp"
 #include "Transformer.hpp"
 #include "SourceLoader/SourceLoader.hpp"
 

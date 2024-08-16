@@ -1,9 +1,9 @@
 #pragma once
 
 #include <Engine.Common/Sal.hpp>
+#include <Engine.GFX/Graphics.hpp>
 #include <Engine.GFX/Cache/__fwd.hpp>
 #include <Engine.GFX/Pool/__fwd.hpp>
-#include <Engine.GFX/Graphics.hpp>
 #include <Engine.Resource/ImporterManager.hpp>
 #include <Engine.Resource/LoaderManager.hpp>
 

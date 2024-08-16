@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Engine.Common/Guid.hpp>
+#include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Collection/DenseMap.hpp>
 
 #include "../IStorageRepository.hpp"

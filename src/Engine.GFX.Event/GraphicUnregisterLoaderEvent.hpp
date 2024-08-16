@@ -1,4 +1,6 @@
 #pragma once
+
+#include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.Event/Event.hpp>
 

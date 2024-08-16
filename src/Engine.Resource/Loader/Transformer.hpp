@@ -2,9 +2,9 @@
 
 #include <Engine.Common/Sal.hpp>
 
-#include "__fwd.hpp"
-#include "TransformerTraits.hpp"
 #include "SourceLoaderTraits.hpp"
+#include "TransformerTraits.hpp"
+#include "__fwd.hpp"
 
 namespace hg::engine::resource::loader {
 	template <typename AssetType_, typename ResourceType_>
