@@ -1,5 +1,7 @@
 #include "EditorEngine.hpp"
 
+#include <algorithm>
+#include <ranges>
 #include <Editor.Main/Boot/ConfigInit.hpp>
 #include <Editor.Main/Boot/StorageInit.hpp>
 #include <Editor.Main/Boot/SubModuleInit.hpp>

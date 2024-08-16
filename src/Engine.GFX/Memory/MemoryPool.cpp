@@ -1,5 +1,6 @@
 ﻿#include "MemoryPool.hpp"
 
+#include <algorithm>
 #include <cassert>
 #include <ranges>
 #include <Engine.Asserts/Breakpoint.hpp>

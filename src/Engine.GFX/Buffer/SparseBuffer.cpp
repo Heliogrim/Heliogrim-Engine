@@ -1,12 +1,14 @@
 #include "SparseBuffer.hpp"
 
-#include "../Memory/VirtualMemory.hpp"
-#include "../Command/CommandQueue.hpp"
+#include <algorithm>
+#include <ranges>
 #include "SparseBufferView.hpp"
+#include "../Command/CommandQueue.hpp"
+#include "../Memory/VirtualMemory.hpp"
 
 // TODO: Remove
-#include "Engine.GFX/Graphics.hpp"
 #include <Engine.Core/Engine.hpp>
+#include "Engine.GFX/Graphics.hpp"
 
 using namespace hg::engine::gfx;
 using namespace hg;

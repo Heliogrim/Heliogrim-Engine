@@ -1,5 +1,7 @@
 #include "Indexer.hpp"
 
+#include <algorithm>
+#include <ranges>
 #include <Engine.Common/Collection/Queue.hpp>
 
 using namespace hg::engine::res;

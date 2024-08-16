@@ -1,5 +1,6 @@
 #include "SymbolContext.hpp"
 
+#include <algorithm>
 #include <ranges>
 #include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Common/__macro.hpp>

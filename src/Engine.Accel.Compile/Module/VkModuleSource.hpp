@@ -1,4 +1,5 @@
 #pragma once
+#include <algorithm>
 #include <ranges>
 #include <Engine.Accel.Lang/Rep/Symbol.hpp>
 #include <Engine.Common/Collection/DenseMap.hpp>
@@ -26,12 +27,12 @@ namespace hg::engine::accel {
 			assert(iter != inbound.end());
 			return iter->second;
 			#else
-            return std::ranges::find_if(
-                inbound,
-                [&inbound_](const auto& pair_) {
-                    return inbound_ == pair_.first || inbound_->symbolId == pair_.first->symbolId;
-                }
-            )->second;
+			return std::ranges::find_if(
+				inbound,
+				[&inbound_](const auto& pair_) {
+					return inbound_ == pair_.first || inbound_->symbolId == pair_.first->symbolId;
+				}
+			)->second;
 			#endif
 		}
 
@@ -66,12 +67,12 @@ namespace hg::engine::accel {
 			assert(iter != outbound.end());
 			return iter->second;
 			#else
-            return std::ranges::find_if(
-                outbound,
-                [&outbound_](const auto& pair_) {
-                    return outbound_ == pair_.first || outbound_->symbolId == pair_.first->symbolId;
-                }
-            )->second;
+			return std::ranges::find_if(
+				outbound,
+				[&outbound_](const auto& pair_) {
+					return outbound_ == pair_.first || outbound_->symbolId == pair_.first->symbolId;
+				}
+			)->second;
 			#endif
 		}
 

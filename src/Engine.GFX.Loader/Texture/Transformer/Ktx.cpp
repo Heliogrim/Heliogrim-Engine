@@ -1,6 +1,8 @@
 #include "Ktx.hpp"
 
+#include <algorithm>
 #include <filesystem>
+#include <ranges>
 #include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Math/Coordinates.hpp>

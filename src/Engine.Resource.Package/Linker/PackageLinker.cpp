@@ -1,6 +1,7 @@
 #include "PackageLinker.hpp"
 
-#include <corecrt_io.h>
+#include <algorithm>
+#include <ranges>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Resource.Archive/StorageReadonlyArchive.hpp>
 #include <Engine.Resource.Archive/StorageReadWriteArchive.hpp>

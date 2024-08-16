@@ -1,5 +1,6 @@
 #include "CompositePipeline.hpp"
 
+#include <algorithm>
 #include <ranges>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Logging/Logger.hpp>

@@ -1,5 +1,7 @@
 #include "SurfaceManager.hpp"
 
+#include <algorithm>
+#include <ranges>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Platform/NativeWindow.hpp>
 #include <Engine.Logging/Logger.hpp>

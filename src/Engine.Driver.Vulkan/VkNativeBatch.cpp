@@ -1,5 +1,7 @@
 #include "VkNativeBatch.hpp"
 
+#include <algorithm>
+#include <ranges>
 #include <Engine.GFX/Command/CommandPool.hpp>
 #include <Engine.GFX/Command/CommandQueue.hpp>
 

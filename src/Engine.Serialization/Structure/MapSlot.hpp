@@ -1,9 +1,11 @@
 #pragma once
 
+#include <algorithm>
+#include <ranges>
 #include <Engine.Common/Meta/Concept.hpp>
 
-#include "StructureSlot.hpp"
 #include "MapEntrySlot.hpp"
+#include "StructureSlot.hpp"
 
 namespace hg::engine::serialization {
 	template <typename KeyType_, typename ValueType_, template <typename, typename...> typename MapType_>

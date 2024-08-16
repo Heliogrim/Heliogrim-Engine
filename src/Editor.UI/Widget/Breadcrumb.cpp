@@ -1,5 +1,7 @@
 #include "Breadcrumb.hpp"
 
+#include <algorithm>
+#include <ranges>
 #include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Reflow/Widget/Button.hpp>
