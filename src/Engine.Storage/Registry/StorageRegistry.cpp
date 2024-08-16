@@ -1,5 +1,6 @@
 #include "StorageRegistry.hpp"
 
+#include <algorithm>
 #include <ranges>
 #include <Engine.Asserts/Todo.hpp>
 #include <Engine.Common/Make.hpp>

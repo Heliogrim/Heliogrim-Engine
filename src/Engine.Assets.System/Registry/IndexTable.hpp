@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <map>
 #include <ranges>
 #include <Engine.Common/Sal.hpp>
@@ -7,10 +8,9 @@
 #include <Engine.Common/Collection/DenseMap.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 
-#include "../__fwd.hpp"
-
 #include "Index.hpp"
 #include "IndexTrait.hpp"
+#include "../__fwd.hpp"
 
 namespace hg::engine::assets::system {
 	class IndexTableBase {

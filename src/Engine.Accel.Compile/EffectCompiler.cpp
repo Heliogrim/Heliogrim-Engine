@@ -1,6 +1,8 @@
 #include "EffectCompiler.hpp"
 
+#include <algorithm>
 #include <chrono>
+#include <ranges>
 #include <Engine.Accel.Pipeline/Stage/StageModule.hpp>
 #include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Env/Check.hpp>

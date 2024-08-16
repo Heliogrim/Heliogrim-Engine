@@ -10,8 +10,10 @@
 #include <Engine.Scheduler/Async.hpp>
 #include <Heliogrim/Heliogrim.hpp>
 
+#include <algorithm>
 #include <filesystem>
 #include <fstream>
+#include <ranges>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 
 #include "Editor.Action/ActionManager.hpp"
@@ -36,14 +38,14 @@
 #include "Engine.Resource.Package/Linker/PackageLinker.hpp"
 #include "Engine.Serialization/Layout/DataLayoutBase.hpp"
 #include "Engine.Serialization.Layouts/LayoutManager.hpp"
+#include "Engine.Storage/IStorage.hpp"
 #include "Engine.Storage/IStorageRegistry.hpp"
 #include "Engine.Storage/StorageModule.hpp"
-#include "Engine.Storage/IStorage.hpp"
-#include "Engine.Storage/Storage/PackageStorage.hpp"
-#include "Engine.Storage/Storage/LocalFileStorage.hpp"
 #include "Engine.Storage/Options/FileStorageDescriptor.hpp"
 #include "Engine.Storage/Options/PackageStorageDescriptor.hpp"
 #include "Engine.Storage/Options/StorageDescriptor.hpp"
+#include "Engine.Storage/Storage/LocalFileStorage.hpp"
+#include "Engine.Storage/Storage/PackageStorage.hpp"
 
 using namespace hg::editor::boot;
 using namespace hg::engine;

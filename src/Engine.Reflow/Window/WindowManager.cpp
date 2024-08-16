@@ -1,5 +1,7 @@
 #include "WindowManager.hpp"
 
+#include <algorithm>
+#include <ranges>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.GFX/RenderTarget.hpp>
 #include <Engine.GFX/Surface/Surface.hpp>

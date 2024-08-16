@@ -1,5 +1,6 @@
 #include "VkPipelineCompiler.hpp"
 
+#include <algorithm>
 #include <ranges>
 #include <variant>
 #include <Engine.Accel.Effect/AccelerationEffect.hpp>
@@ -537,6 +538,8 @@ smr<VkGraphicsPipeline> VkPipelineCompiler::linkVk(
 
 	bool hasTessCtrl = false;
 	bool hasTessEval = false;
+
+	/**/
 
 	{
 		hasTessCtrl = std::ranges::find_if(

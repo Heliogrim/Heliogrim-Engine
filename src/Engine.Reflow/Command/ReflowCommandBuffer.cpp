@@ -1,5 +1,7 @@
 #include "ReflowCommandBuffer.hpp"
 
+#include <algorithm>
+#include <ranges>
 #include <Engine.Common/Math/Compat.inl>
 #include <Engine.GFX/Texture/Texture.hpp>
 #include <Engine.GFX/Texture/TextureLikeObject.hpp>

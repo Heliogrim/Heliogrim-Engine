@@ -2,10 +2,11 @@
 
 #include <algorithm>
 #include <format>
+#include <ranges>
 #include <Engine.Common/Make.hpp>
 
-#include "../Widget/Popup.hpp"
 #include "../Command/ReflowCommandLayer.hpp"
+#include "../Widget/Popup.hpp"
 
 using namespace hg::engine::reflow;
 using namespace hg;

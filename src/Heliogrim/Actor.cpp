@@ -1,5 +1,7 @@
 #include "Actor.hpp"
 
+#include <algorithm>
+#include <ranges>
 #include <Engine.ACS/Registry.hpp>
 #include <Engine.Common/Concurrent/Promise.hpp>
 #include <Engine.Core/Engine.hpp>
@@ -10,9 +12,8 @@
 #include <Engine.Reflect/IsType.hpp>
 #include <Engine.Scene/SceneBase.hpp>
 
-#include "IComponentRegisterContext.hpp"
-
 #include "ActorComponent.hpp"
+#include "IComponentRegisterContext.hpp"
 #include "SceneComponent.hpp"
 #include "Session.hpp"
 #include "World.hpp"

@@ -1,5 +1,7 @@
 #include "Logger.hpp"
 
+#include <algorithm>
+#include <ranges>
 #include <Engine.Common/Make.hpp>
 
 #if TRUE

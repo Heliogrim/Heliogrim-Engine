@@ -1,6 +1,7 @@
 #include "AccelerationEffect.hpp"
 
 #include <algorithm>
+#include <ranges>
 
 using namespace hg::engine::accel;
 using namespace hg;

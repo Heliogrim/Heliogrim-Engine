@@ -1,6 +1,8 @@
 #include "CacheFileSystemRepository.hpp"
 
+#include <algorithm>
 #include <array>
+#include <ranges>
 #include <Engine.Filesystem/Url.hpp>
 #include <Engine.Reflect/CompileString.hpp>
 

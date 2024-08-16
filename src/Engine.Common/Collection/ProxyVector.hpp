@@ -1,6 +1,8 @@
 #pragma once
 
+#include <algorithm>
 #include <cstdlib>
+#include <ranges>
 
 #include "../Wrapper.hpp"
 #include "../__macro.hpp"
@@ -175,7 +177,7 @@ namespace hg {
 		 * @tparam Type_ Type of the type.
 		 * @tparam Args_ Type of the arguments.
 		 * @param  proxy_ The proxy.
-		 * @param  ...args_ The .. .args.
+		 * @param  args_ The args.
 		 *
 		 * @returns The ProxyVector<...> instance.
 		 */

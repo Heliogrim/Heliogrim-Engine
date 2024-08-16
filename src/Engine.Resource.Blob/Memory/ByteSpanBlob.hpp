@@ -1,8 +1,10 @@
 #pragma once
 
+#include <algorithm>
+#include <ranges>
 #include <span>
-#include <Engine.Common/Types.hpp>
 #include <Engine.Asserts/Asserts.hpp>
+#include <Engine.Common/Types.hpp>
 
 #include "../Blob.hpp"
 

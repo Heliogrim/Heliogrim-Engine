@@ -1,5 +1,6 @@
 #include "SparseTexture.hpp"
 
+#include <algorithm>
 #include <ranges>
 #include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Asserts/Todo.hpp>

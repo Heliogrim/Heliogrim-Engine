@@ -1,5 +1,6 @@
 #include "MatTestPass.hpp"
 
+#include <algorithm>
 #include <ranges>
 #include <Engine.Accel.Command/CommandBuffer.hpp>
 #include <Engine.Accel.Compile/VkEffectCompiler.hpp>

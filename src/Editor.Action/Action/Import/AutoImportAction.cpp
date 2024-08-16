@@ -1,5 +1,7 @@
 #include "AutoImportAction.hpp"
 
+#include <algorithm>
+#include <ranges>
 #include <Engine.Common/Optional.hpp>
 
 using namespace hg::editor;

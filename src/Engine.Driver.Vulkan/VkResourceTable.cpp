@@ -1,5 +1,7 @@
 #include "VkResourceTable.hpp"
 
+#include <algorithm>
+#include <ranges>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.GFX/Graphics.hpp>
