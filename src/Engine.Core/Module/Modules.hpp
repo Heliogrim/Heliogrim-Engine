@@ -62,7 +62,7 @@ namespace hg::engine::core {
 		void addRootModule(_In_ ref<ModuleType_> module_);
 
 		template <IsRootModule ModuleType_>
-		[[nodiscard]] Optional<ref<ModuleType_>> getRootModule() const noexcept;
+		[[nodiscard]] Opt<ref<ModuleType_>> getRootModule() const noexcept;
 
 		template <IsRootModule ModuleType_>
 		void removeRootModule(_In_ ref<ModuleType_> module_);
@@ -94,10 +94,10 @@ namespace hg::engine::core {
 		void addCoreModule(_In_ ref<ModuleType_> module_, _In_ cref<DependencyKey> key_);
 
 		template <IsCoreModule ModuleType_>
-		[[nodiscard]] Optional<ref<ModuleType_>> getCoreModule() const noexcept;
+		[[nodiscard]] Opt<ref<ModuleType_>> getCoreModule() const noexcept;
 
 		template <IsCoreModule ModuleType_>
-		[[nodiscard]] Optional<ref<ModuleType_>> getCoreModuleUnsafe(_In_ cref<DependencyKey> key_) const noexcept;
+		[[nodiscard]] Opt<ref<ModuleType_>> getCoreModuleUnsafe(_In_ cref<DependencyKey> key_) const noexcept;
 
 		template <IsCoreModule ModuleType_>
 		void removeCoreModule(_In_ ref<ModuleType_> module_);
@@ -125,9 +125,9 @@ namespace hg::engine::core {
 	}
 
 	template <IsRootModule ModuleType_>
-	Optional<ref<ModuleType_>> Modules::getRootModule() const noexcept {
+	Opt<ref<ModuleType_>> Modules::getRootModule() const noexcept {
 		auto val = getRootModule(reflect::typeId<ModuleType_>());
-		return (val != nullptr) ? Optional { static_cast<ref<ModuleType_>>(*val) } : Optional { tl::nullopt };
+		return (val != nullptr) ? Some(static_cast<ref<ModuleType_>>(*val)) : None;
 	}
 
 	template <IsRootModule ModuleType_>
@@ -143,15 +143,15 @@ namespace hg::engine::core {
 	}
 
 	template <IsCoreModule ModuleType_>
-	Optional<ref<ModuleType_>> Modules::getCoreModule() const noexcept {
+	Opt<ref<ModuleType_>> Modules::getCoreModule() const noexcept {
 		auto val = getCoreModule(reflect::typeId<ModuleType_>());
-		return (val != nullptr) ? Optional { static_cast<ref<ModuleType_>>(*val) } : Optional { tl::nullopt };
+		return (val != nullptr) ? Some(static_cast<ref<ModuleType_>>(*val)) : None;
 	}
 
 	template <IsCoreModule ModuleType_>
-	Optional<ref<ModuleType_>> Modules::getCoreModuleUnsafe(cref<DependencyKey> key_) const noexcept {
+	Opt<ref<ModuleType_>> Modules::getCoreModuleUnsafe(cref<DependencyKey> key_) const noexcept {
 		auto val = getCoreModule(key_);
-		return (val != nullptr) ? Optional { static_cast<ref<ModuleType_>>(*val) } : Optional { tl::nullopt };
+		return (val != nullptr) ? Some(static_cast<ref<ModuleType_>>(*val)) : None;
 	}
 
 	template <IsCoreModule ModuleType_>
