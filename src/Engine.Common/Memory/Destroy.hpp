@@ -3,6 +3,7 @@
 #include <type_traits>
 
 #include "Address.hpp"
+#include "../__macro.hpp"
 
 namespace hg {
 	/* Note: This is a straight copy from the msvc xmemory header... */
@@ -26,7 +27,7 @@ namespace hg {
 			std::is_trivially_destructible_v<value_type> &&
 			(AllocIsDefault<Allocator_, value_type> || not AllocHasDestroy<Allocator_, value_type*>)
 		)) {
-			for (; first_ != last_; ++first_) {
+			for (; first_ != last_; GUARD_UNCHECKED_LLVL(++first_)) {
 				std::allocator_traits<Allocator_>::destroy(alloc_, ::hg::unfancy(first_));
 			}
 		}

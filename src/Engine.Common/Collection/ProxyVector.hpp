@@ -805,7 +805,7 @@ namespace hg {
 			return { result };
 		}
 
-		FORCE_INLINE void realloc_base_eb(
+		void realloc_base_eb(
 			const count_type oldSize_,
 			const count_type newSize_,
 			const count_type newCapacity_,
@@ -841,7 +841,7 @@ namespace hg {
 			change_internal(newFst, newSize_, newCapacity_, _no_auto_dealloc_);
 		}
 
-		FORCE_INLINE void alloc_base_eb(
+		void alloc_base_eb(
 			const count_type oldSize_,
 			const count_type newSize_,
 			const count_type newCapacity_,
@@ -1379,7 +1379,7 @@ namespace hg {
 		}
 
 	private:
-		FORCE_INLINE void realloc_base_r(
+		void realloc_base_r(
 			const count_type oldSize_,
 			const count_type newSize_,
 			const count_type newCapacity_,
@@ -1420,7 +1420,7 @@ namespace hg {
 			change_internal(newFst, newSize_, newCapacity_, _no_auto_dealloc_);
 		}
 
-		FORCE_INLINE void alloc_base_r(
+		void alloc_base_r(
 			const count_type oldSize_,
 			const count_type newSize_,
 			const count_type newCapacity_,
@@ -1528,7 +1528,7 @@ namespace hg {
 			}
 		}
 
-		FORCE_INLINE void realloc_base(const count_type size_, const count_type newCapacity_) {
+		void realloc_base(const count_type size_, const count_type newCapacity_) {
 
 			using pointer_type = decltype(_base);
 
@@ -1556,7 +1556,7 @@ namespace hg {
 			change_internal(newFst, size_, newCapacity_, _no_auto_dealloc);
 		}
 
-		FORCE_INLINE void alloc_base(const count_type size_, const count_type newCapacity_) {
+		void alloc_base(const count_type size_, const count_type newCapacity_) {
 
 			using pointer_type = decltype(_base);
 
@@ -1819,114 +1819,110 @@ namespace hg {
 		reference_type operator=(mref<value_type>) noexcept = delete;
 
 	public:
-		[[nodiscard]] FORCE_INLINE
-
-		typename base_type::count_type capacity() const noexcept {
+		[[nodiscard]] typename base_type::count_type capacity() const noexcept {
 			return this->base_type::template capacity<Type_>();
 		}
 
-		[[nodiscard]] FORCE_INLINE
-
-		typename base_type::count_type size() const noexcept {
+		[[nodiscard]] typename base_type::count_type size() const noexcept {
 			return this->base_type::template size<Type_>();
 		}
 
 	public:
-		[[nodiscard]] FORCE_INLINE iterator_type begin() noexcept {
+		[[nodiscard]] iterator_type begin() noexcept {
 			return this->base_type::template begin<Type_>();
 		}
 
-		[[nodiscard]] FORCE_INLINE const_iterator_type begin() const noexcept {
+		[[nodiscard]] const_iterator_type begin() const noexcept {
 			return this->base_type::template begin<Type_>();
 		}
 
-		[[nodiscard]] FORCE_INLINE const_iterator_type cbegin() const noexcept {
+		[[nodiscard]] const_iterator_type cbegin() const noexcept {
 			return this->base_type::template cbegin<Type_>();
 		}
 
-		[[nodiscard]] FORCE_INLINE iterator_type end() noexcept {
+		[[nodiscard]] iterator_type end() noexcept {
 			return this->base_type::template end<Type_>();
 		}
 
-		[[nodiscard]] FORCE_INLINE const_iterator_type end() const noexcept {
+		[[nodiscard]] const_iterator_type end() const noexcept {
 			return this->base_type::template end<Type_>();
 		}
 
-		[[nodiscard]] FORCE_INLINE const_iterator_type cend() const noexcept {
+		[[nodiscard]] const_iterator_type cend() const noexcept {
 			return this->base_type::template cend<Type_>();
 		}
 
 	public:
-		FORCE_INLINE void push_back(mref<Type_> value_) noexcept(std::is_nothrow_move_constructible_v<Type_>) {
+		void push_back(mref<Type_> value_) noexcept(std::is_nothrow_move_constructible_v<Type_>) {
 			return this->base_type::template push_back<Type_>(std::forward<Type_>(value_));
 		}
 
-		FORCE_INLINE void push_back(cref<Type_> value_) noexcept(std::is_nothrow_copy_constructible_v<Type_>) {
+		void push_back(cref<Type_> value_) noexcept(std::is_nothrow_copy_constructible_v<Type_>) {
 			return this->base_type::template push_back<Type_>(value_);
 		}
 
-		[[nodiscard]] FORCE_INLINE iterator_type emplace_back(
+		[[nodiscard]] iterator_type emplace_back(
 			mref<Type_> value_
 		) noexcept (std::is_nothrow_move_constructible_v<Type_>) {
 			return this->base_type::template emplace_back<Type_>(std::forward<Type_>(value_));
 		}
 
-		[[nodiscard]] FORCE_INLINE iterator_type emplace_back(
+		[[nodiscard]] iterator_type emplace_back(
 			cref<Type_> value_
 		) noexcept (std::is_nothrow_copy_constructible_v<Type_>) {
 			return this->base_type::template emplace_back<Type_>(value_);
 		}
 
 	public:
-		FORCE_INLINE void pop_back() noexcept(std::is_nothrow_destructible_v<Type_>) {
+		void pop_back() noexcept(std::is_nothrow_destructible_v<Type_>) {
 			this->base_type::template pop_back<Type_>();
 		}
 
-		FORCE_INLINE void pop_front() noexcept(std::is_nothrow_move_assignable_v<Type_> &&
+		void pop_front() noexcept(std::is_nothrow_move_assignable_v<Type_> &&
 			std::is_nothrow_destructible_v<Type_>) {
 			this->base_type::template pop_front<Type_>();
 		}
 
 	public:
-		FORCE_INLINE iterator_type erase(const_iterator_type where_) noexcept {
+		iterator_type erase(const_iterator_type where_) noexcept {
 			return this->base_type::template erase<Type_>(where_);
 		}
 
-		FORCE_INLINE iterator_type erase(const_iterator_type first_, const_iterator_type last_) noexcept {
+		iterator_type erase(const_iterator_type first_, const_iterator_type last_) noexcept {
 			return this->base_type::template erase<Type_>(first_, last_);
 		}
 
 	public:
-		FORCE_INLINE void reserve(const typename base_type::count_type newCapacity_) {
+		void reserve(const typename base_type::count_type newCapacity_) {
 			this->base_type::template reserve<Type_>(newCapacity_);
 		}
 
-		FORCE_INLINE void resize(const typename base_type::count_type newSize_) {
+		void resize(const typename base_type::count_type newSize_) {
 			this->base_type::template resize<Type_>(newSize_);
 		}
 
-		FORCE_INLINE void resize(const typename base_type::count_type newSize_, cref<Type_> value_) {
+		void resize(const typename base_type::count_type newSize_, cref<Type_> value_) {
 			this->base_type::template resize<Type_>(newSize_, value_);
 		}
 
-		FORCE_INLINE void shrink_to_fit() noexcept(std::is_nothrow_move_assignable_v<Type_>) {
+		void shrink_to_fit() noexcept(std::is_nothrow_move_assignable_v<Type_>) {
 			this->base_type::template shrink_to_fit<Type_>();
 		}
 
 	public:
-		[[nodiscard]] FORCE_INLINE cref<Type_> operator[](const typename base_type::count_type pos_) const noexcept {
+		[[nodiscard]] cref<Type_> operator[](const typename base_type::count_type pos_) const noexcept {
 			return this->base_type::template operator[]<Type_>(pos_);
 		}
 
-		[[nodiscard]] FORCE_INLINE ref<Type_> operator[](const typename base_type::count_type pos_) noexcept {
+		[[nodiscard]] ref<Type_> operator[](const typename base_type::count_type pos_) noexcept {
 			return this->base_type::template operator[]<Type_>(pos_);
 		}
 
-		[[nodiscard]] FORCE_INLINE cref<Type_> at(const typename base_type::count_type pos_) const {
+		[[nodiscard]] cref<Type_> at(const typename base_type::count_type pos_) const {
 			return this->base_type::template at<Type_>(pos_);
 		}
 
-		[[nodiscard]] FORCE_INLINE ref<Type_> at(const typename base_type::count_type pos_) {
+		[[nodiscard]] ref<Type_> at(const typename base_type::count_type pos_) {
 			return this->base_type::template at<Type_>(pos_);
 		}
 	};

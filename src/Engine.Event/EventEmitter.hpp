@@ -22,7 +22,7 @@ namespace hg {
 
 	template <IsStatefulEvent EventType_>
 	struct StatefulEventExecutor {
-		FORCE_INLINE void operator()(cref<std::function<void(ref<EventType_>)>> fnc_, ref<EventType_> event_) const {
+		void operator()(cref<std::function<void(ref<EventType_>)>> fnc_, ref<EventType_> event_) const {
 			fnc_(event_);
 		}
 	};
@@ -149,7 +149,7 @@ namespace hg {
 
 	template <IsStatelessEvent EventType_>
 	struct StatelessEventExecutor {
-		FORCE_INLINE void operator()(cref<std::function<void(cref<EventType_>)>> fnc_, cref<EventType_> event_) const {
+		void operator()(cref<std::function<void(cref<EventType_>)>> fnc_, cref<EventType_> event_) const {
 			fnc_(event_);
 		}
 	};

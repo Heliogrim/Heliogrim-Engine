@@ -7,22 +7,22 @@
 
 namespace hg::engine::acs {
 	template <typename Ty>
-	FORCE_INLINE Ty* construct_inplace(void* destination_) {
+	Ty* construct_inplace(void* destination_) {
 		return new(destination_) Ty;
 	}
 
 	template <typename Ty>
-	FORCE_INLINE Ty* construct_inplace(void* destination_, const Ty& source_) {
+	Ty* construct_inplace(void* destination_, const Ty& source_) {
 		return new(destination_) Ty(source_);
 	}
 
 	template <typename Ty>
-	FORCE_INLINE Ty* construct_inplace(void* destination_, Ty&& source_) {
+	Ty* construct_inplace(void* destination_, Ty&& source_) {
 		return new(destination_) Ty(std::forward<Ty>(source_));
 	}
 
 	template <typename Ty>
-	FORCE_INLINE void destruct_inplace(Ty* destination_) {
+	void destruct_inplace(Ty* destination_) {
 		destination_->~Ty();
 	}
 
@@ -1063,7 +1063,7 @@ namespace hg::engine::acs {
 		 *
 		 * @returns An index_type.
 		 */
-		[[nodiscard]] FORCE_INLINE index_type pop_slot() {
+		[[nodiscard]] FORCE_INLINE inline index_type pop_slot() {
 
 			/**
 			 * Check whether sequence is available
@@ -1101,7 +1101,7 @@ namespace hg::engine::acs {
 		 *
 		 * @param  idx_ Zero-based index of the.
 		 */
-		FORCE_INLINE void pop_slot(const index_type& idx_) {
+		FORCE_INLINE inline void pop_slot(const index_type& idx_) {
 
 			/**
 			 * Find sequence
@@ -1173,7 +1173,7 @@ namespace hg::engine::acs {
 		 * @param args_ The packed parameter list to construct element.
 		 */
 		template <typename... Args_>
-		FORCE_INLINE void place(const index_type& idx_, const key_type& key_, Args_&&... args_) {
+		FORCE_INLINE inline void place(const index_type& idx_, const key_type& key_, Args_&&... args_) {
 			/**
 			 *
 			 */
@@ -1195,7 +1195,11 @@ namespace hg::engine::acs {
 		 * @param 		   key_ The key.
 		 * @param [in,out] value_ The value.
 		 */
-		FORCE_INLINE void replace(const index_type& idx_, const key_type& key_, IN value_type&& value_) noexcept {
+		FORCE_INLINE inline void replace(
+			const index_type& idx_,
+			const key_type& key_,
+			IN value_type&& value_
+		) noexcept {
 			_keys[idx_] = key_;
 			destruct_inplace<value_type>(&_values[idx_]);
 			construct_inplace<value_type>(&_values[idx_], std::forward<value_type>(value_));
@@ -2258,7 +2262,7 @@ namespace hg::engine::acs {
 		 *
 		 * @returns A size_t.
 		 */
-		FORCE_INLINE static page_index_type unmask_page_index(const uint64_t masked_) {
+		FORCE_INLINE static inline page_index_type unmask_page_index(const uint64_t masked_) {
 			return static_cast<page_index_type>((masked_ & index_page_mask) >> index_page_shift);
 		}
 
@@ -2272,7 +2276,7 @@ namespace hg::engine::acs {
 		 *
 		 * @returns A size_t.
 		 */
-		FORCE_INLINE static value_index_type unmask_value_index(const uint64_t masked_) {
+		FORCE_INLINE static inline value_index_type unmask_value_index(const uint64_t masked_) {
 			return static_cast<value_index_type>(masked_ & index_value_mask);
 		}
 
@@ -2286,7 +2290,7 @@ namespace hg::engine::acs {
 		 * @param [in,out] page_ The page.
 		 * @param [in,out] value_ The value.
 		 */
-		FORCE_INLINE static void unmask(IN const uint64_t masked_, OUT uint64_t& page_, OUT uint64_t& value_) {
+		FORCE_INLINE static inline void unmask(IN const uint64_t masked_, OUT uint64_t& page_, OUT uint64_t& value_) {
 			page_ = (masked_ & index_page_mask) >> index_page_shift;
 			value_ = (masked_ & index_value_mask);
 		}

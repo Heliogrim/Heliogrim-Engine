@@ -31,27 +31,27 @@ namespace hg {
 
 		type_id& operator=(type_id&& other_) noexcept = default;
 
-		[[nodiscard]] FORCE_INLINE constexpr bool operator>(const type_id& other_) const noexcept {
+		[[nodiscard]] constexpr bool operator>(const type_id& other_) const noexcept {
 			return data > other_.data;
 		}
 
-		[[nodiscard]] FORCE_INLINE constexpr bool operator<(const type_id& other_) const noexcept {
+		[[nodiscard]] constexpr bool operator<(const type_id& other_) const noexcept {
 			return data < other_.data;
 		}
 
-		[[nodiscard]] FORCE_INLINE constexpr bool operator>=(const type_id& other_) const noexcept {
+		[[nodiscard]] constexpr bool operator>=(const type_id& other_) const noexcept {
 			return data >= other_.data;
 		}
 
-		[[nodiscard]] FORCE_INLINE constexpr bool operator<=(const type_id& other_) const noexcept {
+		[[nodiscard]] constexpr bool operator<=(const type_id& other_) const noexcept {
 			return data <= other_.data;
 		}
 
-		[[nodiscard]] FORCE_INLINE constexpr bool operator==(const type_id& other_) const noexcept {
+		[[nodiscard]] constexpr bool operator==(const type_id& other_) const noexcept {
 			return data == other_.data;
 		}
 
-		[[nodiscard]] FORCE_INLINE constexpr bool operator!=(const type_id& other_) const noexcept {
+		[[nodiscard]] constexpr bool operator!=(const type_id& other_) const noexcept {
 			return data != other_.data;
 		}
 

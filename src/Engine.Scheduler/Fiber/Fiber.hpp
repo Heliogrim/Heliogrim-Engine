@@ -90,7 +90,7 @@ namespace hg::engine::scheduler::fiber {
 		extern void await(_Inout_ mref<FiberAwaitable> awaitable_);
 
 		template <IsAwaitableSignal AwaitableType_>
-		FORCE_INLINE void await_signal(_In_ const ptr<AwaitableType_> awaitable_) {
+		void await_signal(_In_ const ptr<AwaitableType_> awaitable_) {
 			await(
 				{
 					.mask = FiberAwaitableBits::eSignal,
@@ -100,7 +100,7 @@ namespace hg::engine::scheduler::fiber {
 		}
 
 		template <IsAwaitableSignalCall AwaitableType_>
-		FORCE_INLINE void await_signal_call(cref<AwaitableType_> awaitable_) {
+		void await_signal_call(cref<AwaitableType_> awaitable_) {
 			await(
 				{
 					.mask = FiberAwaitableBits::eSignalCall,
@@ -110,7 +110,7 @@ namespace hg::engine::scheduler::fiber {
 		}
 
 		template <IsAwaitable AwaitableType_>
-		FORCE_INLINE void await(
+		void await(
 			_In_ std::conditional_t<IsAwaitableSignal<AwaitableType_>, const ptr<AwaitableType_>, cref<AwaitableType_>>
 			awaitable_
 		) {

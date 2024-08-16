@@ -73,17 +73,17 @@ namespace hg {
 		mutable std::atomic_flag _lck;
 
 	private:
-		FORCE_INLINE void acquireLock() const noexcept {
+		void acquireLock() const noexcept {
 			while (_lck.test_and_set(std::memory_order::release)) {
 				::hg::engine::scheduler::waitOnAtomic(_lck, true);
 			}
 		}
 
-		FORCE_INLINE bool tryAcquireLock() const noexcept {
+		bool tryAcquireLock() const noexcept {
 			return not _lck.test_and_set(std::memory_order::release);
 		}
 
-		FORCE_INLINE void releaseLock() const noexcept {
+		void releaseLock() const noexcept {
 			_lck.clear(std::memory_order::release);
 			_lck.notify_one();
 		}
