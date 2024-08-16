@@ -40,37 +40,29 @@ namespace hg {
 
 	public:
 		template <ResourceAccessMode Mode_>
-		[[nodiscard]] auto acquire() const noexcept;
-
-		template <>
-		[[nodiscard]] auto acquire<ResourceAccessMode::eRead>() const noexcept {
-			return acquireReadonly();
-		}
-
-		template <>
-		[[nodiscard]] auto acquire<ResourceAccessMode::eReadWrite>() const noexcept {
-			static_assert(
-				not std::is_const_v<managed_type>,
-				"Cannot acquire read-write access to immutable resource."
-			);
-			return acquireReadWrite();
+		[[nodiscard]] auto acquire() const noexcept {
+			if constexpr (Mode_ == ResourceAccessMode::eRead) {
+				return acquireReadonly();
+			} else {
+				static_assert(
+					not std::is_const_v<managed_type> || Mode_ != ResourceAccessMode::eReadWrite,
+					"Cannot acquire read-write access to immutable resource."
+				);
+				return acquireReadWrite();
+			}
 		}
 
 		template <ResourceAccessMode Mode_>
-		[[nodiscard]] auto tryAcquire() const noexcept;
-
-		template <>
-		[[nodiscard]] auto tryAcquire<ResourceAccessMode::eRead>() const noexcept {
-			return tryAcquireReadonly();
-		}
-
-		template <>
-		[[nodiscard]] auto tryAcquire<ResourceAccessMode::eReadWrite>() const noexcept {
-			static_assert(
-				not std::is_const_v<managed_type>,
-				"Cannot acquire read-write access to immutable resource."
-			);
-			return tryAcquireReadWrite();
+		[[nodiscard]] auto tryAcquire() const noexcept {
+			if constexpr (Mode_ == ResourceAccessMode::eReadWrite) {
+				return tryAcquireReadonly();
+			} else {
+				static_assert(
+					not std::is_const_v<managed_type> || Mode_ != ResourceAccessMode::eReadWrite,
+					"Cannot acquire read-write access to immutable resource."
+				);
+				return tryAcquireReadWrite();
+			}
 		}
 
 	protected:
