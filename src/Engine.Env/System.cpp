@@ -8,7 +8,7 @@ using namespace hg::env;
 
 #include <sysinfoapi.h>
 
-size_t hg::env::get_memory_page_size() {
+hg::size_t hg::env::get_memory_page_size() {
 	SYSTEM_INFO info;
 	GetSystemInfo(&info);
 	return info.dwPageSize;
@@ -18,14 +18,14 @@ size_t hg::env::get_memory_page_size() {
 
 #include <unistd.h>
 
-size_t hg::env::get_memory_page_size() {
+hg::size_t hg::env::get_memory_page_size() {
 	return sysconf(_SC_PAGESIZE);
 }
 
 #else
 
-size_t hg::env::get_memory_page_size() {
-	size_t n;
+hg::size_t hg::env::get_memory_page_size() {
+	hg::size_t n;
 	char* ptr;
 	int u;
 

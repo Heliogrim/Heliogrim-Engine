@@ -2,10 +2,10 @@
 
 #include "__macro.hpp"
 
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <stdexcept>
-#include <stddef.h>
 #include <type_traits>
 
 #include <cassert>
