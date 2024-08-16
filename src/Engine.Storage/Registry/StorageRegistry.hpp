@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Utils/_CTRL.hpp>
 

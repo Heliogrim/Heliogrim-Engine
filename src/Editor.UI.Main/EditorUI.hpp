@@ -1,4 +1,6 @@
 #pragma once
+
+#include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.Core/Module/SubModule.hpp>

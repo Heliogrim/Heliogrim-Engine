@@ -1,4 +1,5 @@
 #pragma once
+
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Collection/Vector.hpp>

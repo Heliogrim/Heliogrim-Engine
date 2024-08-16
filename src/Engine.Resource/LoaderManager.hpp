@@ -2,6 +2,7 @@
 
 #include <Engine.Assets/AssetGuid.hpp>
 #include <Engine.Assets/Types/Asset.hpp>
+#include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/StableUnorderedMap.hpp>
 #include <Engine.Common/Concurrent/Future.hpp>

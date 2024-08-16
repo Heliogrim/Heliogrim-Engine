@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Managed/Rc.hpp>
 #include <Engine.Common/Meta/TypeId.hpp>
 #include <Engine.Filesystem/__fwd.hpp>

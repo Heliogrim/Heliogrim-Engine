@@ -1,20 +1,20 @@
 #include "AssetInit.hpp"
 
+#include <algorithm>
+#include <filesystem>
+#include <fstream>
+#include <ranges>
 #include <Engine.Assets.System/AssetDescriptor.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets/AssetFactory.hpp>
 #include <Engine.Assets/AssetTypeId.hpp>
 #include <Engine.Common/GuidFormat.hpp>
+#include <Engine.Common/Sal.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Logging/Logger.hpp>
+#include <Engine.Pedantic/Clone/Clone.hpp>
 #include <Engine.Scheduler/Async.hpp>
 #include <Heliogrim/Heliogrim.hpp>
-
-#include <algorithm>
-#include <filesystem>
-#include <fstream>
-#include <ranges>
-#include <Engine.Pedantic/Clone/Clone.hpp>
 
 #include "Editor.Action/ActionManager.hpp"
 #include "Editor.Action/Action/Import/AutoImportAction.hpp"

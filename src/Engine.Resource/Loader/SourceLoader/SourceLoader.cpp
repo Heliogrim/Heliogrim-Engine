@@ -2,6 +2,7 @@
 
 #include <Engine.Common/GuidFormat.hpp>
 #include <Engine.Common/Make.hpp>
+#include <Engine.Common/Sal.hpp>
 #include <Engine.Logging/Logger.hpp>
 
 #include "Engine.Assets.System/IAssetRegistry.hpp"

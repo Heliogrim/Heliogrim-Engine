@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <ranges>
 #include <Engine.Common/Optional.hpp>
+#include <Engine.Common/Sal.hpp>
 
 using namespace hg::editor;
 using namespace hg;

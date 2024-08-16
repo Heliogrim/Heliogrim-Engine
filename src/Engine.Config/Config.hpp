@@ -1,6 +1,8 @@
 #pragma once
+
 #include <stdexcept>
 #include <Engine.Asserts/Asserts.hpp>
+#include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Math/Hash.hpp>

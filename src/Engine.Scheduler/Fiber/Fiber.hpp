@@ -1,6 +1,6 @@
 #pragma once
 
-#include <intrin.h>
+#include <Engine.Asserts/Panic.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
@@ -116,12 +116,12 @@ namespace hg::engine::scheduler::fiber {
 		) {
 			if constexpr (IsAwaitableSignal<AwaitableType_>) {
 				return await_signal<AwaitableType_>(awaitable_);
-			} else if (IsAwaitableSignalRet<AwaitableType_>) {
+			} else if constexpr (IsAwaitableSignalRet<AwaitableType_>) {
 				return await_signal<await_signal_sub_type>(awaitable_.await());
-			} else if (IsAwaitableSignalCall<AwaitableType_>) {
+			} else if constexpr (IsAwaitableSignalCall<AwaitableType_>) {
 				return await_signal_call<AwaitableType_>(awaitable_);
 			} else {
-				__ud2();
+				::hg::panic();
 			}
 		}
 	}

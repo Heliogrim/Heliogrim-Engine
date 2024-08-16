@@ -1,6 +1,7 @@
 #include "RootSlot.hpp"
 
 #include <Engine.Common/Make.hpp>
+#include <Engine.Common/Sal.hpp>
 #include <Engine.Resource.Archive/Archive.hpp>
 
 using namespace hg::engine::serialization;
