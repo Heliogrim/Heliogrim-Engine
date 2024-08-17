@@ -3,6 +3,7 @@
 #include <concepts>
 #include <type_traits>
 
+#include "../Types.hpp"
 #include "../__macro.hpp"
 
 /** . */
