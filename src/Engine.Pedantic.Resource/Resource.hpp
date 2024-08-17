@@ -38,33 +38,6 @@ namespace hg {
 
 		[[nodiscard]] virtual tl::optional<readwrite_accessor_type> tryAcquireReadWrite() const noexcept = 0;
 
-	public:
-		template <ResourceAccessMode Mode_>
-		[[nodiscard]] auto acquire() const noexcept {
-			if constexpr (Mode_ == ResourceAccessMode::eRead) {
-				return acquireReadonly();
-			} else {
-				static_assert(
-					not std::is_const_v<managed_type> || Mode_ != ResourceAccessMode::eReadWrite,
-					"Cannot acquire read-write access to immutable resource."
-				);
-				return acquireReadWrite();
-			}
-		}
-
-		template <ResourceAccessMode Mode_>
-		[[nodiscard]] auto tryAcquire() const noexcept {
-			if constexpr (Mode_ == ResourceAccessMode::eReadWrite) {
-				return tryAcquireReadonly();
-			} else {
-				static_assert(
-					not std::is_const_v<managed_type> || Mode_ != ResourceAccessMode::eReadWrite,
-					"Cannot acquire read-write access to immutable resource."
-				);
-				return tryAcquireReadWrite();
-			}
-		}
-
 	protected:
 		virtual void release(ResourceAccessMode mode_) const noexcept = 0;
 
@@ -80,7 +53,7 @@ namespace hg {
 	public:
 		template <typename Fn_> requires std::is_invocable_v<Fn_, cref<managed_type>>
 		decltype(auto) apply(Fn_&& fn_) const noexcept {
-			const auto accessor = acquire<ResourceAccessMode::eRead>();
+			const auto accessor = acquireReadonly();
 			return fn_(accessor.get());
 		}
 
@@ -89,7 +62,7 @@ namespace hg {
 			std::is_invocable_v<Fn_, ref<managed_type>> &&
 			(not std::is_invocable_v<Fn_, cref<managed_type>>)
 		decltype(auto) apply(Fn_&& fn_) const noexcept {
-			const auto accessor = acquire<ResourceAccessMode::eReadWrite>();
+			const auto accessor = acquireReadWrite();
 			return fn_(accessor.get());
 		}
 
@@ -97,7 +70,7 @@ namespace hg {
 		decltype(auto) tryApply(Fn_&& fn_) const noexcept
 			requires std::is_void_v<std::invoke_result_t<Fn_, cref<managed_type>>> {
 
-			return tryAcquire<ResourceAccessMode::eRead>().and_then(
+			return tryAcquireReadonly().and_then(
 				[fn = std::forward<Fn_>(fn_)](auto accessor_) {
 					fn(accessor_.get());
 					return tl::make_optional<>(true);
@@ -112,7 +85,7 @@ namespace hg {
 		decltype(auto) tryApply(Fn_&& fn_) const noexcept
 			requires std::is_void_v<std::invoke_result_t<Fn_, ref<managed_type>>> {
 
-			return tryAcquire<ResourceAccessMode::eReadWrite>().and_then(
+			return tryAcquireReadWrite().and_then(
 				[fn = std::forward<Fn_>(fn_)](auto accessor_) {
 					fn(accessor_.get());
 					return tl::make_optional<>(true);
@@ -125,7 +98,7 @@ namespace hg {
 			requires (not std::is_void_v<std::invoke_result_t<Fn_, cref<managed_type>>>) {
 
 			using result_type = std::invoke_result_t<Fn_, cref<managed_type>>;
-			return tryAcquire<ResourceAccessMode::eRead>().and_then(
+			return tryAcquireReadonly().and_then(
 				[fn = std::forward<Fn_>(fn_)](auto accessor_) {
 					return tl::make_optional<>(
 						std::make_pair<bool, tl::optional<result_type>>(
@@ -145,7 +118,7 @@ namespace hg {
 			requires (not std::is_void_v<std::invoke_result_t<Fn_, ref<managed_type>>>) {
 
 			using result_type = std::invoke_result_t<Fn_, ref<managed_type>>;
-			return tryAcquire<ResourceAccessMode::eReadWrite>().and_then(
+			return tryAcquireReadWrite().and_then(
 				[fn = std::forward<Fn_>(fn_)](auto accessor_) {
 					return tl::make_optional<>(
 						std::make_pair<bool, tl::optional<result_type>>(
