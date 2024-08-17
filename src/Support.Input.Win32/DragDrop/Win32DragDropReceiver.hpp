@@ -1,9 +1,12 @@
 #pragma once
 
+/**/
 #define WIN32_LEAN_AND_MEAN
+#define STRICT
 #include <Windows.h>
+/**/
 #include <ole2.h>
-#include "DragDropReceiver.hpp"
+#include <Engine.Input/DragDrop/DragDropReceiver.hpp>
 
 namespace hg::engine::input {
 	class Win32DragDropReceiver :

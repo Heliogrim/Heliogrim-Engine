@@ -1,9 +1,10 @@
 #pragma once
 
 #include <Engine.Common/stdafx.h>
-#include <objidl.h>
+#include <Engine.Input/DragDrop/DragDropObject.hpp>
 
-#include "DragDropObject.hpp"
+/**/
+#include <objidl.h>
 
 namespace hg::engine::input {
 	class Win32DragDropObject :

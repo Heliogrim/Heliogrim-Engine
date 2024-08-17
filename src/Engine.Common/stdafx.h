@@ -11,8 +11,14 @@
 #include <cassert>
 
 #if _WIN32 || _WIN64
+#ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
+#endif
+
+#ifndef STRICT
 #define STRICT
+#endif
+
 #include <Windows.h>
 #include <windowsx.h>
 #endif

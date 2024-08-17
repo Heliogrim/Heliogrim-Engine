@@ -5,8 +5,7 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/__macro.hpp>
 
-#ifdef ENV_MSVC
-#include <Engine.Common/__macro.hpp>
+#if defined(ENV_MSVC) && defined(WIN32)
 #define WIN32_LEAN_AND_MEAN
 /**/
 #include <Windows.h>

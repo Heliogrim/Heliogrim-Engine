@@ -10,12 +10,15 @@
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Platform/Platform.hpp>
-#include <Engine.Platform/Windows/Win32Window.hpp>
 #include <Engine.Scheduler/Fiber/Fiber.hpp>
 #include <Heliogrim/Future.hpp>
 #include "../__macro.hpp"
 #include "../API/VkTranslate.hpp"
 #include "../Swapchain/Swapchain.hpp"
+
+#ifdef WIN32
+#include <Support.Platform.Win32/Win32Window.hpp>
+#endif
 
 using namespace hg::engine::gfx;
 using namespace hg;
