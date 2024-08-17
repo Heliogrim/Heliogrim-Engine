@@ -1,31 +1,32 @@
 #include "VkDescriptor.hpp"
 
+#include <utility>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.GFX/Graphics.hpp>
 
 using namespace hg;
 
 driver::vk::VkDescriptorPool::VkDescriptorPool() noexcept :
-    pooled(),
-    vkPool(nullptr) {}
+	pooled(),
+	vkPool(nullptr) {}
 
 driver::vk::VkDescriptorPool::VkDescriptorPool(mref<this_type> other_) noexcept :
-    pooled(std::move(other_.pooled)),
-    vkPool(std::exchange(other_.vkPool, nullptr)) {}
+	pooled(std::move(other_.pooled)),
+	vkPool(std::exchange(other_.vkPool, nullptr)) {}
 
 driver::vk::VkDescriptorPool::~VkDescriptorPool() noexcept {
 
-    if (vkPool == nullptr) {
-        return;
-    }
+	if (vkPool == nullptr) {
+		return;
+	}
 
-    const auto device = engine::Engine::getEngine()->getGraphics()->getCurrentDevice();
-    device->vkDevice().destroyDescriptorPool(reinterpret_cast<::VkDescriptorPool>(vkPool));
-    vkPool = nullptr;
+	const auto device = engine::Engine::getEngine()->getGraphics()->getCurrentDevice();
+	device->vkDevice().destroyDescriptorPool(reinterpret_cast<::VkDescriptorPool>(vkPool));
+	vkPool = nullptr;
 }
 
 void driver::vk::VkDescriptorPool::reset() noexcept {
 
-    const auto device = engine::Engine::getEngine()->getGraphics()->getCurrentDevice();
-    device->vkDevice().resetDescriptorPool(reinterpret_cast<::VkDescriptorPool>(vkPool));
+	const auto device = engine::Engine::getEngine()->getGraphics()->getCurrentDevice();
+	device->vkDevice().resetDescriptorPool(reinterpret_cast<::VkDescriptorPool>(vkPool));
 }

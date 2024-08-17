@@ -1,6 +1,7 @@
 #pragma once
 
 #include <mutex>
+#include <utility>
 #include <Engine.Asserts/Asserts.hpp>
 
 #include "ResourceAccessorBase.hpp"

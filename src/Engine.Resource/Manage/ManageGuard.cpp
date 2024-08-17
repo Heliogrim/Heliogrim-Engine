@@ -1,5 +1,7 @@
 #include "ManageGuard.hpp"
 
+#include <utility>
+
 #include "ResourceBase.hpp"
 
 using namespace hg::engine::resource;

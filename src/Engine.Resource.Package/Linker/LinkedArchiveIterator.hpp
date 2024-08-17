@@ -1,5 +1,6 @@
 #pragma once
 
+#include <utility>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 

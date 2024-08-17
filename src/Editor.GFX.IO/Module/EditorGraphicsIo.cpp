@@ -1,5 +1,6 @@
 #include "EditorGraphicsIo.hpp"
 
+#include <utility>
 #include <Editor.GFX.Event/EditorGraphicsRegisterTransformerEvent.hpp>
 #include <Editor.GFX.Loader/Texture/EditorTextureLoader.hpp>
 #include <Editor.GFX.Loader/Texture/Transformer/Bmp.hpp>
@@ -66,13 +67,13 @@ void EditorGraphicsIo::hookGraphicsEvents() noexcept {
 			auto& pool = *_engine->getGraphics()->pool();
 
 			event_.getProxy()
-			      .put(make_uptr<EditorBmpTextureTransformer>(pool))
-			      .put(make_uptr<EditorExrTextureTransformer>(pool))
-			      .put(make_uptr<EditorHdrTextureTransformer>(pool))
-			      .put(make_uptr<EditorJpegTextureTransformer>(pool))
-			      .put(make_uptr<EditorPngTextureTransformer>(pool))
-			      .put(make_uptr<EditorTgaTextureTransformer>(pool))
-			      .put(make_uptr<EditorTiffTextureTransformer>());
+				.put(make_uptr<EditorBmpTextureTransformer>(pool))
+				.put(make_uptr<EditorExrTextureTransformer>(pool))
+				.put(make_uptr<EditorHdrTextureTransformer>(pool))
+				.put(make_uptr<EditorJpegTextureTransformer>(pool))
+				.put(make_uptr<EditorPngTextureTransformer>(pool))
+				.put(make_uptr<EditorTgaTextureTransformer>(pool))
+				.put(make_uptr<EditorTiffTextureTransformer>());
 		}
 	);
 

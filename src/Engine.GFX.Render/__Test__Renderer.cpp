@@ -1,5 +1,6 @@
 #include "__Test__Renderer.hpp"
 
+#include <utility>
 #include <Engine.Accel.Effect/AccelerationEffect.hpp>
 #include <Engine.Accel.Effect/Stage/Stage.hpp>
 #include <Engine.Accel.Effect/Stage/StageFlags.hpp>

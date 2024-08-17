@@ -2,10 +2,11 @@
 
 #include <memory>
 #include <stdexcept>
+#include <utility>
 
 #include "RefCounted.hpp"
-#include "../Memory/MemoryPointer.hpp"
 #include "../Wrapper.hpp"
+#include "../Memory/MemoryPointer.hpp"
 
 namespace hg {
 	template <typename Ty_>

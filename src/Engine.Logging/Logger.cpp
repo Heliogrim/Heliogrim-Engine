@@ -1,16 +1,16 @@
 #include "Logger.hpp"
 
 #include <algorithm>
-#include <ranges>
-#include <Engine.Common/Make.hpp>
-
-#if TRUE
-#include <Engine.Common/__macro.hpp>
 #include <ctime>
-#include <mutex>
 #include <iostream>
+#include <mutex>
+#include <ranges>
 #include <sstream>
-#include <Windows.h>
+#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
+
+#if defined(WIN32)
+#include <Engine.Common/stdafx.h>
 #endif
 
 #if not defined(SPDLOG_USE_STD_FORMAT)
@@ -18,12 +18,12 @@
 #endif
 
 #include <filesystem>
+#include <spdlog/async.h>
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
-#include <spdlog/async.h>
 
 /*
-#if defined(_DEBUG) && defined(_MSC_VER)
+#if defined(_DEBUG) && defined(_MSC_VER) && defined(WIN32)
 #include <spdlog/sinks/msvc_sink.h>
 #endif
 */
@@ -67,7 +67,7 @@ void Logger::setup() {
 	staticLogger->_native = spdlog::basic_logger_mt<spdlog::async_factory>("LogFile", cwd.string());
 
 	/*
-	#if defined(_DEBUG) && defined(_MSC_VER)
+	#if defined(_DEBUG) && defined(_MSC_VER) && defined(WIN32)
 	auto msvcSink = std::make_shared<spdlog::sinks::msvc_sink_mt>();
 	static_cast<const ptr<spdlog::logger>>(staticLogger->_native.get())->sinks().emplace_back(std::move(msvcSink));
 	#endif
