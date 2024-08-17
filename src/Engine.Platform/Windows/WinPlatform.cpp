@@ -144,7 +144,7 @@ hg::concurrent::future<uptr<NativeWindow>> WinPlatform::makeNativeWindow(
 
 	const auto future { promise.get() };
 	while (!_platformQueue.finalized() && not _platformQueue.try_push(std::move(promise))) {
-		__noop();
+		// __noop();
 	}
 
 	return future;
@@ -173,7 +173,7 @@ hg::concurrent::future<bool> WinPlatform::destroyNativeWindow(
 
 	const auto future { promise.get() };
 	while (!_platformQueue.finalized() && not _platformQueue.try_push(std::move(promise))) {
-		__noop();
+		// __noop();
 	}
 
 	return future;

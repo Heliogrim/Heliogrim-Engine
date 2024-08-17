@@ -15,7 +15,7 @@ bool GraphicRegisterImporterEvent::canceled() const noexcept {
 }
 
 void GraphicRegisterImporterEvent::cancel() noexcept {
-	//__noop;
+	// __noop;
 }
 
 ref<engine::res::ImporterManager> GraphicRegisterImporterEvent::getLoaderManager() const noexcept {
