@@ -1,7 +1,12 @@
+/* Note: Order dependent */
+#define VK_IMPL_PLATFORM
+#include "../vkinc.hpp"
+#undef None
+/**/
 #include "Application.hpp"
 
-#include <Engine.Logging/Logger.hpp>
 #include <Engine.Common/stdafx.h>
+#include <Engine.Logging/Logger.hpp>
 
 #ifdef _PROFILING
 #include <Engine.Common/Profiling/Stopwatch.hpp>
@@ -41,10 +46,10 @@ void Application::setup() {
 	free(layers);
 
 	count = 0;
-	vkEnumerateInstanceExtensionProperties(NULL, &count, NULL);
+	vkEnumerateInstanceExtensionProperties(nullptr, &count, nullptr);
 
 	auto* props = static_cast<VkExtensionProperties*>(malloc(sizeof(VkExtensionProperties) * count));
-	vkEnumerateInstanceExtensionProperties(NULL, &count, props);
+	vkEnumerateInstanceExtensionProperties(nullptr, &count, props);
 
 	std::vector<VkExtensionProperties> ve { count };
 	for (uint32_t i = 0; i < count; i++)
@@ -100,20 +105,20 @@ Vector<const char*> Application::getExtensions() {
 	extensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
 
 	#if defined(VK_USE_PLATFORM_ANDROID_KHR)
-		extensions.push_back(VK_KHR_ANDROID_SURFACE_EXTENSION_NAME);
+	extensions.push_back(VK_KHR_ANDROID_SURFACE_EXTENSION_NAME);
 	#elif defined(VK_USE_PLATFORM_MIR_KHR)
-		extensions.push_back(VK_KHR_MIR_SURFACE_EXTENSION_NAME);
+	extensions.push_back(VK_KHR_MIR_SURFACE_EXTENSION_NAME);
 	#elif defined(VK_USE_PLATFORM_WAYLAND_KHR)
-		extensions.push_back(VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME);
+	extensions.push_back(VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME);
 	#elif defined(VK_USE_PLATFORM_WIN32_KHR)
-		extensions.push_back(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
+	extensions.push_back(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
 	#elif defined(VK_USE_PLATFORM_XLIB_KHR)
-		extensions.push_back(VK_KHR_XLIB_SURFACE_EXTENSION_NAME);
+	extensions.push_back(VK_KHR_XLIB_SURFACE_EXTENSION_NAME);
 	#endif
 
 	#ifdef _DEBUG
-    	extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-    	extensions.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
+	extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+	extensions.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
 	#endif
 
 	return extensions;
