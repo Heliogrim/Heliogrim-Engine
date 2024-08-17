@@ -1,18 +1,19 @@
 #include "StaticGeometryTransformer.hpp"
 
+#include <algorithm>
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Common/Math/Coordinates.hpp>
 #include <Engine.Common/Collection/Array.hpp>
+#include <Engine.Common/Math/Coordinates.hpp>
+#include <Engine.GFX/Buffer/Buffer.hpp>
 #include <Engine.GFX/Buffer/SparseBufferPage.hpp>
 #include <Engine.GFX/Buffer/SparseBufferView.hpp>
 #include <Engine.GFX/Geometry/Vertex.hpp>
-#include <Engine.GFX/Memory/AllocationResult.hpp>
 #include <Engine.GFX/Memory/AllocatedMemory.hpp>
+#include <Engine.GFX/Memory/AllocationResult.hpp>
 #include <Engine.GFX/Memory/VkAllocator.hpp>
 #include <Engine.GFX/Pool/GlobalResourcePool.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Resource/Manage/UniqueResource.hpp>
-#include <Engine.GFX/Buffer/Buffer.hpp>
 
 #include "Engine.GFX/Command/CommandBuffer.hpp"
 
@@ -243,13 +244,13 @@ static smr<StaticGeometryResource> loadWithAssimp(
 			const auto aligned = ((pageSize >> shift) << shift) + ((pageSize & mask) ? +1uLL << shift : 0uLL);
 
 			auto memory = indexBuffer->pages()[page]->memory()->allocated();
-			const auto patchSize = std::min(aligned, memory->size);
+			const auto patchSize = std::min(static_cast<u64>(aligned), memory->size);
 
 			/**/
 
 			auto patchOff = (page * alignment);
 
-			vk::BufferCopy cpyData { patchOff, indexBuffer->offset() + patchOff, patchSize };
+			auto cpyData = vk::BufferCopy { patchOff, indexBuffer->offset() + patchOff, patchSize };
 			cmd.vkCommandBuffer().copyBuffer(indexStage.buffer, indexBuffer->owner()->vkBuffer(), 1uL, &cpyData);
 		}
 	}
@@ -280,13 +281,13 @@ static smr<StaticGeometryResource> loadWithAssimp(
 			const auto aligned = ((pageSize >> shift) << shift) + ((pageSize & mask) ? +1uLL << shift : 0uLL);
 
 			auto memory = vertexBuffer->pages()[page]->memory()->allocated();
-			const auto patchSize = std::min(aligned, memory->size);
+			const auto patchSize = std::min(static_cast<u64>(aligned), memory->size);
 
 			/**/
 
 			auto patchOff = (page * alignment);
 
-			vk::BufferCopy cpyData { patchOff, vertexBuffer->offset() + patchOff, patchSize };
+			auto cpyData = vk::BufferCopy { patchOff, vertexBuffer->offset() + patchOff, patchSize };
 			cmd.vkCommandBuffer().copyBuffer(vertexStage.buffer, vertexBuffer->owner()->vkBuffer(), 1uL, &cpyData);
 		}
 	}

@@ -1,9 +1,10 @@
 #pragma once
 
 #include <cmath>
+#include <utility>
 
-#include "../__macro.hpp"
 #include "../Types.hpp"
+#include "../__macro.hpp"
 
 #if defined(_MSC_VER)
 

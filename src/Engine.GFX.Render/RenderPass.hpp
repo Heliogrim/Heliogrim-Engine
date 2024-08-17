@@ -14,6 +14,10 @@
 #include "RenderPassState.hpp"
 
 namespace hg::engine::render {
+	class Renderer;
+}
+
+namespace hg::engine::render {
 	class RenderPass final {
 	public:
 		friend class Renderer;
