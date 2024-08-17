@@ -13,7 +13,7 @@ namespace hg::engine::io {
 }
 
 namespace hg::engine {
-	[[nodiscard]] extern __declspec(restrict) const ptr<io::Dispatcher> _io_ptr() noexcept;
+	[[nodiscard]] extern const ptr<io::Dispatcher> _io_ptr() noexcept;
 
 	[[nodiscard]] cref<io::Dispatcher> _io_() {
 		return *_io_ptr();
