@@ -100,7 +100,7 @@ void SharedBufferPool::release(mref<ptr<aligned_buffer>> buffer_) {
 	 * Acquire
 	 */
 	while (_blocked.test_and_set(std::memory_order_acq_rel)) {
-		__noop();// Spinning
+		// __noop(); // Spinning
 	}
 
 	/**

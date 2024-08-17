@@ -36,7 +36,7 @@ void MemoryPool::tidy() {
 			poolContains(entry->parent) &&
 			free(std::move(entry))
 		) {
-			__noop();
+			// __noop();
 		} else {
 			AllocatedMemory::free(std::move(entry));
 		}
@@ -325,7 +325,7 @@ bool MemoryPool::free(mref<uptr<AllocatedMemory>> mem_, bool cascade_) {
 		std::ranges::distance(ube, lbe) > 0LL &&
 		treeMerge(ube, lbe, mem_)
 	) {
-		__noop();
+		// __noop();
 	} else {
 		_memory.insert(ube, std::move(mem_));
 	}

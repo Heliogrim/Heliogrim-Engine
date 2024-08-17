@@ -60,7 +60,7 @@ Graphics::~Graphics() {
 }
 
 void Graphics::tidy() {
-	__noop();
+	// __noop();
 }
 
 void Graphics::hookEngineState() {
