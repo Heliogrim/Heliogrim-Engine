@@ -22,9 +22,9 @@
 #include <Engine.SFX/Audio.hpp>
 
 #ifdef WIN32
-#include <Engine.Platform/Windows/WinPlatform.hpp>
+#include <Support.Platform.Win32/WinPlatform.hpp>
 #else
-#include <Engine.Platform/Linux>
+//#include <Engine.Platform/Linux>
 #endif
 
 using namespace hg::engine::core;

@@ -1,3 +1,13 @@
+# Configure support libraries
+set(__support_libraries "")
+if ("${CMAKE_SYSTEM_NAME}" MATCHES "Windows")
+	list(
+			APPEND __support_libraries
+			${PROJECT_NAME}::Support.Input.Win32
+			${PROJECT_NAME}::Support.Platform.Win32
+	)
+endif ()
+
 
 # Setup
 make_library_project(
@@ -72,4 +82,5 @@ make_library_project(
 		${PROJECT_NAME}::Engine.Storage.IO
 		${PROJECT_NAME}::Engine.SFX
 		${PROJECT_NAME}::Engine.Utils
+		${__support_libraries}
 )

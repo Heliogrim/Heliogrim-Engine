@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../NativeWindow.hpp"
+#include <Engine.Platform/NativeWindow.hpp>
 
 struct SDL_Window;
 

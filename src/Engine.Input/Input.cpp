@@ -4,7 +4,6 @@
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Event/GlobalEventEmitter.hpp>
 #include <Engine.Input.Schedule/InputPipeline.hpp>
-#include <Engine.Platform/Windows/Win32Window.hpp>
 #include <Engine.Scheduler/Async.hpp>
 #include <Engine.Scheduler/Fiber/Fiber.hpp>
 #include <Engine.Scheduler/Pipeline/CompositePipeline.hpp>
@@ -14,8 +13,12 @@
 #include "MouseButtonEvent.hpp"
 #include "MouseMoveEvent.hpp"
 #include "MouseWheelEvent.hpp"
-#include "DragDrop/Win32DragDropReceiver.hpp"
-#include "DragDrop/Win32DragDropSender.hpp"
+
+#ifdef WIN32
+#include <Support.Input.Win32/DragDrop/Win32DragDropReceiver.hpp>
+#include <Support.Input.Win32/DragDrop/Win32DragDropSender.hpp>
+#include <Support.Platform.Win32/Win32Window.hpp>
+#endif
 
 using namespace hg::engine::input;
 using namespace hg::engine;
@@ -31,8 +34,10 @@ Input::~Input() {
 }
 
 void Input::setup() {
+	#ifdef WIN32
 	_dragDropSender = new Win32DragDropSender();
 	_dragDropSender->setup();
+	#endif
 
 	/**
 	 * Scheduling Pipelines
@@ -90,13 +95,10 @@ void Input::tick() {
 			}
 			case platform::PlatformResizeEvent::typeId.data: {
 
-				auto* const event = static_cast<
-					const ptr<platform::PlatformResizeEvent>>(entry.second.get());
+				auto* const event = static_cast<const ptr<platform::PlatformResizeEvent>>(entry.second.get());
 				event->getWindow()->resizeEmitter().emit(event);
 
-				_emitter.emit<platform::PlatformResizeEvent>(
-					*event
-				);
+				_emitter.emit<platform::PlatformResizeEvent>(*event);
 				break;
 			}
 			default: {}
