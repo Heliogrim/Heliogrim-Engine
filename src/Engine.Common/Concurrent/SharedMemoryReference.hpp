@@ -114,7 +114,15 @@ namespace hg {
 		}
 
 	public:
-		ref<this_type> operator=(cref<this_type>) = delete;
+		ref<this_type> operator=(_In_ cref<this_type> other_) {
+			if (std::addressof(other_) != this) {
+				reset();
+				if (not other_.empty()) {
+					*this = static_cast<this_type&&>(other_._ctrlBlock->acq());
+				}
+			}
+			return *this;
+		}
 
 		ref<this_type> operator=(_Inout_ mref<this_type> other_) noexcept {
 			if (std::addressof(other_) != this) {
