@@ -1,5 +1,6 @@
 #include "EditorTextureTransformer.hpp"
 
+#include <utility>
 #include <Engine.Asserts/Todo.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets/Assets.hpp>

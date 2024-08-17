@@ -2,9 +2,10 @@
 
 #include <memory>
 #include <stdexcept>
+#include <utility>
 
-#include "../Memory/MemoryPointer.hpp"
 #include "../Wrapper.hpp"
+#include "../Memory/MemoryPointer.hpp"
 
 namespace hg {
 	template <typename Ty_>

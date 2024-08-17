@@ -1,7 +1,7 @@
 #pragma once
 
 #include <concepts>
-
+#include <utility>
 #include <Engine.Assets/AssetGuid.hpp>
 
 namespace hg::engine::assets {

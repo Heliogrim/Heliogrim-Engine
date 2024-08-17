@@ -2,6 +2,7 @@
 
 #include <stdexcept>
 #include <unordered_set>
+#include <utility>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 

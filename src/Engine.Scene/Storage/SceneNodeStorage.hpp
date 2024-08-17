@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <map>
 #include <stdexcept>
+#include <utility>
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Vector.hpp>

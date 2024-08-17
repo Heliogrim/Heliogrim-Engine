@@ -1,5 +1,6 @@
 #include "EditorRenderer.hpp"
 
+#include <utility>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Meta/TypeId.hpp>
 #include <Engine.GFX.Render.Predefined/Symbols/SceneColor.hpp>
