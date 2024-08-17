@@ -6,6 +6,8 @@
 /**
  * Graphic includes
  */
+#if defined(VK_IMPL_PLATFORM)
+
 #if not(defined(VK_USE_PLATFORM_ANDROID_KHR) || defined(VK_USE_PLATFORM_XLIB_KHR) || defined(VK_USE_PLATFORM_WAYLAND_KHR) || defined(VK_USE_PLATFORM_WIN32_KHR))
 #if defined(__ANDROID__)
 #define VK_USE_PLATFORM_ANDROID_KHR
@@ -15,6 +17,15 @@
 #elif defined(_WIN32)
 #define VK_USE_PLATFORM_WIN32_KHR
 #endif
+#endif
+
+#else
+
+#undef VK_USE_PLATFORM_WIN32_KHR
+#undef VK_USE_PLATFORM_XLIB_KHR
+#undef VK_USE_PLATFORM_WAYLAND_KHR
+#undef VK_USE_PLATFORM_ANDROID_KHR
+#undef VK_USE_PLATFORM_XCB_KHR
 #endif
 
 // #define VULKAN_HPP_DISABLE_ENHANCED_MODE
