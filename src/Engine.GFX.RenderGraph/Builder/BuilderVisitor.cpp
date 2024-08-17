@@ -5,7 +5,7 @@
 #include "Linker.hpp"
 #include "../Node/CompileNode.hpp"
 #include "../Node/Node.hpp"
-#include "../Node/Compile/CompileSubPassNode.hpp"
+#include "../Node/Compile/CompileSubpassNode.hpp"
 #include "../Node/Runtime/AnchorNode.hpp"
 #include "../Node/Runtime/BarrierNode.hpp"
 #include "../Node/Runtime/ConvergeNode.hpp"
@@ -18,7 +18,7 @@ using namespace hg::engine::render::graph;
 using namespace hg;
 
 template <typename TargetType_, typename SourceType_>
-constexpr cref<TargetType_> override_cast(cref<SourceType_> val_) noexcept {
+constexpr static cref<TargetType_> override_cast(cref<SourceType_> val_) noexcept {
 	return *reinterpret_cast<const TargetType_*>(reinterpret_cast<const void*>(&val_));
 }
 

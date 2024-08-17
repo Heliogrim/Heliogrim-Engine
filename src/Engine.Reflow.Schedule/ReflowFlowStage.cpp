@@ -67,10 +67,10 @@ void ReflowFlowStage::staticDispatch(const non_owning_rptr<const scheduler::Stag
 					ReflowEngine::tick(state, boundWnd->window, std::move(layoutContext));
 
 					auto end = std::chrono::high_resolution_clock::now();
-					IM_DEBUG_LOGF(
-						"Next Flex-Flow took: {}",
-						std::chrono::duration_cast<std::chrono::microseconds>(end - start)
-					);
+					//IM_DEBUG_LOGF(
+					//	"Next Flex-Flow took: {}",
+					//	std::chrono::duration_cast<std::chrono::microseconds>(end - start)
+					//);
 				}
 
 				return true;

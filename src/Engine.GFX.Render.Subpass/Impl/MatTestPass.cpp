@@ -27,9 +27,9 @@
 #include <Engine.GFX/Cache/GlobalCacheCtrl.hpp>
 #include <Engine.GFX/Pool/SceneResourcePool.hpp>
 #include <Engine.GFX/Texture/SparseTexturePage.hpp>
-#include <Engine.Gfx/Texture/SparseTextureView.hpp>
+#include <Engine.GFX/Texture/SparseTextureView.hpp>
 #include <Engine.GFX/Texture/TextureFactory.hpp>
-#include <Engine.Gfx/Texture/TextureView.hpp>
+#include <Engine.GFX/Texture/TextureView.hpp>
 #include <Engine.GFX.Render.Command/RenderCommandBuffer.hpp>
 #include <Engine.GFX.Scene.Model/StaticGeometryModel.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>

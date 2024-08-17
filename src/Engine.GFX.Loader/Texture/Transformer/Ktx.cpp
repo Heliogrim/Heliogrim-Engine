@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <filesystem>
 #include <ranges>
+#include <stdexcept>
 #include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Math/Coordinates.hpp>
@@ -382,7 +383,7 @@ void deduceFromFormat(cref<gli::format> format_, ref<vk::Format> vkFormat_, ref<
 			break;
 		}
 		default: {
-			throw std::exception("Unresolved texture format.");
+			throw std::runtime_error("Unresolved texture format.");
 		}
 	}
 }
