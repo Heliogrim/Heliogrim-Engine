@@ -148,8 +148,8 @@ namespace hg::engine::concurrent {
 	private:
 		container_type _container;
 
-		ALIGNED(std::atomic<size_type>, CACHE_LINE_SIZE) _head;
-		ALIGNED(std::atomic<size_type>, CACHE_LINE_SIZE) _tail;
+		alignas(CACHE_LINE_SIZE) std::atomic<size_t> _head;
+		alignas(CACHE_LINE_SIZE) std::atomic<size_t> _tail;
 
 		/**
 		 * Increments the given value

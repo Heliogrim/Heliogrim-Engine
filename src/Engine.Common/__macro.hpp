@@ -102,10 +102,13 @@
 #include "__warning.hpp"
 
 // Alignment
-#ifdef __GNUC__
-#define ALIGNED(struct_, alignment_) struct_ __attribute__ ((aligned (alignment_)))
-#else
+#if defined(ENV_MSVC)
 #define ALIGNED(struct_, alignment_) __declspec(align(alignment_)) struct_
+#elif defined(ENV_GCC) || defined(ENV_CLANG)
+#define ALIGNED(struct_, alignment_) __attribute__ ((aligned (alignment_))) struct_
+#else
+// TODO: Deal with error case
+#defined ALIGNED(struct_, alignment_) struct_
 #endif
 
 // Comparison

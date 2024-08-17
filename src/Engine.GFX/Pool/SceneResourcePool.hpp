@@ -4,58 +4,58 @@
 #include <Engine.Scene/Scene.hpp>
 
 #include "InstancePooled.hpp"
-#include "../Device/Device.hpp"
 #include "../Aabb.hpp"
+#include "../Device/Device.hpp"
 #include "../Light/Light.hpp"
 #include "../Light/Shadow.hpp"
 
 namespace hg::engine::render {
-    class RenderSceneSystem;
+	class RenderSceneSystem;
 }
 
 namespace hg::engine::gfx {
-    class SceneResourcePool {
-    public:
-        using this_type = SceneResourcePool;
+	class SceneResourcePool {
+	public:
+		using this_type = SceneResourcePool;
 
-    public:
-        SceneResourcePool(cref<sptr<Device>> device_);
+	public:
+		SceneResourcePool(cref<sptr<Device>> device_);
 
-        SceneResourcePool(cref<this_type>) = delete;
+		SceneResourcePool(cref<this_type>) = delete;
 
-        SceneResourcePool(mref<this_type>) = delete;
+		SceneResourcePool(mref<this_type>) = delete;
 
-        ~SceneResourcePool();
+		~SceneResourcePool();
 
-    public:
-        void setup();
+	public:
+		void setup();
 
-        void destroy();
+		void destroy();
 
-    private:
-        sptr<Device> _device;
-        nmpt<render::RenderSceneSystem> _system;
+	private:
+		sptr<Device> _device;
+		nmpt<render::RenderSceneSystem> _system;
 
-    public:
-        [[nodiscard]] sptr<Device> device() const noexcept;
+	public:
+		[[nodiscard]] sptr<Device> device() const noexcept;
 
-        [[nodiscard]] nmpt<render::RenderSceneSystem> system() const noexcept;
+		[[nodiscard]] nmpt<render::RenderSceneSystem> system() const noexcept;
 
-    private:
-    public:
-        InstancePooled<math::mat4> staticInstancePool;
-        InstancePooled<Aabb3d> staticAabbPool;
+	private:
+	public:
+		InstancePooled<math::mat4> staticInstancePool;
+		InstancePooled<Aabb3d> staticAabbPool;
 
-    private:
-    public:
-        GlslSceneLightInfo sceneLightInfo;
+	private:
+	public:
+		GlslSceneLightInfo sceneLightInfo;
 
-        TypeBuffer<GlslSceneLightInfo> sceneLightInfoBuffer;
-        InstancePooled<GlslLight> lightSourcePool;
+		TypeBuffer<GlslSceneLightInfo> sceneLightInfoBuffer;
+		InstancePooled<GlslLight> lightSourcePool;
 
-        GlslDirectionalShadowInfo sceneShadowInfo;
+		GlslDirectionalShadowInfo sceneShadowInfo;
 
-        TypeBuffer<GlslDirectionalShadowInfo> sceneShadowInfoBuffer;
-        InstancePooled<GlslDirectionalShadow> shadowSourcePool;
-    };
+		TypeBuffer<GlslDirectionalShadowInfo> sceneShadowInfoBuffer;
+		InstancePooled<GlslDirectionalShadow> shadowSourcePool;
+	};
 }
