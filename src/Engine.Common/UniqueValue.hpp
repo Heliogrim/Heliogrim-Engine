@@ -99,7 +99,7 @@ namespace hg {
 
 	private:
 		Optional<value_type> _value;
-		[[no_unique_address]] destroy_type _deleter;
+		destroy_type _deleter;
 
 	private:
 		constexpr void tidy() noexcept {
