@@ -1,7 +1,7 @@
 #pragma once
 
-#include "StructureSlot.hpp"
 #include "ScopedSlotState.hpp"
+#include "StructureSlot.hpp"
 
 namespace hg::engine::serialization {
 	class macro_novtable ScopedSlot {

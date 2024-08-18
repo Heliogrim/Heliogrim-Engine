@@ -4,11 +4,10 @@
 #include <type_traits>
 #include <Engine.Common/Make.hpp>
 
-#include "ScopedStructureSlot.hpp"
-#include "ScopedSlotGuard.hpp"
-
-#include "__fwd.hpp"
 #include "IntegralSlot.hpp"
+#include "ScopedSlotGuard.hpp"
+#include "ScopedStructureSlot.hpp"
+#include "__fwd.hpp"
 
 namespace hg::engine::serialization {
 	template <IsIntegralSlotType IntegralType_>
