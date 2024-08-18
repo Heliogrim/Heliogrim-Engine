@@ -8,10 +8,10 @@ LfsSyncBlob::LfsSyncBlob(mref<fs::Path> path_) noexcept :
 	_stream(std::in_place) {
 	if (not std::filesystem::exists(path_)) {
 		std::filesystem::create_directories(path_.parentPath());
-		_stream->open(path_, std::ios::out);
+		_stream->open(static_cast<cref<std::filesystem::path>>(path_), std::ios::out);
 		_stream->close();
 	}
-	_stream->open(path_, std::ios::in | std::ios::out | std::ios::binary);
+	_stream->open(static_cast<cref<std::filesystem::path>>(path_), std::ios::in | std::ios::out | std::ios::binary);
 	::hg::assertrt(_stream->is_open());
 }
 

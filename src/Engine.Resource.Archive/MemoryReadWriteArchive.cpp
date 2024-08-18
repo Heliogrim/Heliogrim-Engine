@@ -1,5 +1,8 @@
 #include "MemoryReadWriteArchive.hpp"
 
+#include <cstring>
+#include <utility>
+
 using namespace hg::engine::resource;
 using namespace hg;
 
@@ -14,7 +17,7 @@ MemoryReadWriteArchive::MemoryReadWriteArchive(ref<AutoArray<_::byte>> bytes_, c
 	_limit(limit_) {}
 
 s64 MemoryReadWriteArchive::totalSize() const noexcept {
-	return _limit >= 0LL ? MIN(_limit, static_cast<s64>(_bytes.size())) : _bytes.size();
+	return _limit >= 0LL ? std::min(_limit, static_cast<s64>(_bytes.size())) : static_cast<s64>(_bytes.size());
 }
 
 bool MemoryReadWriteArchive::hasSizeLimit() const noexcept {
