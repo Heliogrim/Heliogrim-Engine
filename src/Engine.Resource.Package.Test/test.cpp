@@ -2,6 +2,7 @@
 
 /**/
 
+#include <cstring>
 #include <random>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/UniqueValue.hpp>
@@ -190,12 +191,12 @@ namespace PackageModule {
 			ref<PackageHeader> header = package->header();
 			ref<PackageFooter> footer = package->footer();
 
-			memcpy(header.magicBytes, PackageMagicBytes.data(), PackageMagicBytes.size());
+			std::memcpy(header.magicBytes, PackageMagicBytes.data(), PackageMagicBytes.size());
 			header.magicVersion = PackageMagicVersion[0];
 			header.endianness = PackageEndianness::eBigEndian;
 
 			header.version = version;
-			memcpy(header.guid, &guid.pre, sizeof(PackageGuid));
+			std::memcpy(header.guid, &guid.pre, sizeof(PackageGuid));
 
 			header.compression = PackageCompression::eNone;
 			header.packageSize = 0uLL;
@@ -226,7 +227,7 @@ namespace PackageModule {
 			// Check Magic Bytes
 			{
 				for (auto i = 0; i < PackageMagicBytes.size(); ++i) {
-					EXPECT_EQ(_::byte {storedHeader->magicBytes[i]}, PackageMagicBytes[i]);
+					EXPECT_EQ(_::byte { storedHeader->magicBytes[i] }, PackageMagicBytes[i]);
 				}
 
 				EXPECT_EQ(storedHeader->magicVersion, PackageMagicVersion[0]);
@@ -316,8 +317,8 @@ namespace PackageModule {
 			auto dst = memoryAccess->fully().span();
 			ASSERT_GE(dst.size(), sizeof(header) + sizeof(footer));
 
-			memcpy(dst.data(), &header, sizeof(header));
-			memcpy(dst.data() + sizeof(header), &footer, sizeof(footer));
+			std::memcpy(dst.data(), &header, sizeof(header));
+			std::memcpy(dst.data() + sizeof(header), &footer, sizeof(footer));
 
 			// Attention: We need to release the mutable memory accessor, otherwise the memory integrity check won't be able to acquire access.
 		}
@@ -335,7 +336,7 @@ namespace PackageModule {
 			// Check Magic Bytes
 			{
 				for (auto i = 0; i < PackageMagicBytes.size(); ++i) {
-					EXPECT_EQ(_::byte {header.magicBytes[i]}, PackageMagicBytes[i]);
+					EXPECT_EQ(_::byte { header.magicBytes[i] }, PackageMagicBytes[i]);
 				}
 
 				EXPECT_EQ(header.magicVersion, PackageMagicVersion[0]);
@@ -547,7 +548,7 @@ namespace PackageModule {
 
 			EXPECT_NE(storedArchive, nullptr);
 
-			// TODO: Check whether `memcmp(...)` might be possible with `storedArchive` and `replica`
+			// TODO: Check whether `std::memcmp(...)` might be possible with `storedArchive` and `replica`
 			// TODO: Currently value iterated compare to prevent source loading issue cause there are not memory blocks at SourceArchive
 
 			storedArchive->seek(0);
@@ -660,7 +661,7 @@ namespace PackageModule {
 
 				EXPECT_NE(storedArchive, nullptr);
 
-				// TODO: Check whether `memcmp(...)` might be possible with `storedArchive` and `replica`
+				// TODO: Check whether `std::memcmp(...)` might be possible with `storedArchive` and `replica`
 				// TODO: Currently value iterated compare to prevent source loading issue cause there are not memory blocks at SourceArchive
 
 				auto& replica = *replicas[idx];

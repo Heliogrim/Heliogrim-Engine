@@ -8,13 +8,13 @@ using namespace hg::engine::gfx;
 using namespace hg;
 
 Plane::Plane() :
-    _grid({ 1 }),
-    _scale({ 1.F }) {}
+	_grid({ 1 }),
+	_scale({ 1.F }) {}
 
 Plane::~Plane() = default;
 
 ptr<Mesh> Plane::convert() const {
-    #if FALSE
+	#if FALSE
     const auto device = Graphics::get()->getCurrentDevice().get();
 
     const u64 gridCount = _grid.u * _grid.v;
@@ -108,7 +108,7 @@ ptr<Mesh> Plane::convert() const {
     vertexBuffer.bind();
     vertexBuffer.map();
 
-    memcpy(vertexBuffer.mapped, vpt, vertexCount * sizeof(vertex));
+    std::memcpy(vertexBuffer.mapped, vpt, vertexCount * sizeof(vertex));
 
     vertexBuffer.unmap();
     delete[] vpt;
@@ -143,20 +143,20 @@ ptr<Mesh> Plane::convert() const {
     indexBuffer.bind();
     indexBuffer.map();
 
-    memcpy(indexBuffer.mapped, ipt, indexCount * sizeof(u32));
+    std::memcpy(indexBuffer.mapped, ipt, indexCount * sizeof(u32));
 
     indexBuffer.unmap();
     delete[] ipt;
 
     return mesh;
-    #endif
-    return nullptr;
+	#endif
+	return nullptr;
 }
 
 ref<math::uivec2> Plane::grid() noexcept {
-    return _grid;
+	return _grid;
 }
 
 ref<math::fvec2> Plane::scale() noexcept {
-    return _scale;
+	return _scale;
 }

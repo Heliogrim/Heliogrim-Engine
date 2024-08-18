@@ -1,5 +1,6 @@
 #include "PackageIo.hpp"
 
+#include <cstring>
 #include <Engine.Asserts/Todo.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Collection/AutoArray.hpp>
@@ -50,7 +51,7 @@ uptr<Package> PackageIo::create_package_from_storage(ref<AccessBlobReadWrite> bl
 	readHeader(*package, streamoff {});
 
 	::hg::assertrt(package->header().magicVersion == PackageMagicVersion[0]);
-	::hg::assertrt(memcmp(package->header().magicBytes, PackageMagicBytes.data(), PackageMagicBytes.size()) == 0);
+	::hg::assertrt(std::memcmp(package->header().magicBytes, PackageMagicBytes.data(), PackageMagicBytes.size()) == 0);
 
 	/**/
 
@@ -59,7 +60,7 @@ uptr<Package> PackageIo::create_package_from_storage(ref<AccessBlobReadWrite> bl
 
 	// TODO: Validate Package creation ( maybe calc and check crc-32 of footer )
 	::hg::assertrt(package->footer().magicVersion == PackageMagicVersion[0]);
-	::hg::assertrt(memcmp(package->footer().magicBytes, PackageMagicBytes.data(), PackageMagicBytes.size()) == 0);
+	::hg::assertrt(std::memcmp(package->footer().magicBytes, PackageMagicBytes.data(), PackageMagicBytes.size()) == 0);
 
 	/**/
 
@@ -89,7 +90,7 @@ uptr<Package> PackageIo::create_package_from_storage(ref<AccessBlobReadonly> blo
 	readHeader(*package, streamoff {});
 
 	::hg::assertrt(package->header().magicVersion == PackageMagicVersion[0]);
-	::hg::assertrt(memcmp(package->header().magicBytes, PackageMagicBytes.data(), PackageMagicBytes.size()) == 0);
+	::hg::assertrt(std::memcmp(package->header().magicBytes, PackageMagicBytes.data(), PackageMagicBytes.size()) == 0);
 
 	/**/
 
@@ -98,7 +99,7 @@ uptr<Package> PackageIo::create_package_from_storage(ref<AccessBlobReadonly> blo
 
 	// TODO: Validate Package creation ( maybe calc and check crc-32 of footer )
 	::hg::assertrt(package->footer().magicVersion == PackageMagicVersion[0]);
-	::hg::assertrt(memcmp(package->footer().magicBytes, PackageMagicBytes.data(), PackageMagicBytes.size()) == 0);
+	::hg::assertrt(std::memcmp(package->footer().magicBytes, PackageMagicBytes.data(), PackageMagicBytes.size()) == 0);
 
 	/**/
 
@@ -599,7 +600,7 @@ bool PackageIo::isPackageBlob(ref<AccessBlobReadonly> blob_) {
 	);
 
 	// Question: Even though this is deprecated, should we actually check for data integrity and/or matching header <-> footers?
-	return read.size() >= PackageMagicBytes.size() && memcmp(
+	return read.size() >= PackageMagicBytes.size() && std::memcmp(
 		header.magicBytes,
 		PackageMagicBytes.data(),
 		PackageMagicBytes.size()

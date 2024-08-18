@@ -1,6 +1,7 @@
 #include "pch.h"
 
 /**/
+#include <cstring>
 #include <Engine.Assets/Types/Asset.hpp>
 #include <Engine.Common/Collection/Array.hpp>
 #include <Engine.Resource.Archive/BufferArchive.hpp>
@@ -513,7 +514,7 @@ namespace SerializationModule {
 		const auto memCpyStart { std::chrono::high_resolution_clock::now() };
 		Vector<TestSubTypePayload> memCpyTarget {};
 		memCpyTarget.resize(writeAsset->payload.size());
-		memcpy(
+		std::memcpy(
 			memCpyTarget.data(),
 			writeAsset->payload.data(),
 			writeAsset->payload.size() * sizeof(TestSubTypePayload)

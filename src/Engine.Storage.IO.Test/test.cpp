@@ -1,6 +1,7 @@
 #include "pch.h"
 
 /**/
+#include <cstring>
 #include <fstream>
 #include <Engine.Common/Guid.hpp>
 #include <Engine.Common/GuidFormat.hpp>
@@ -372,7 +373,7 @@ namespace StorageModule {
 			Array<_::byte, 16uLL> readRaw {};
 			iter.archive()->serializeBytes(readRaw.data(), readRaw.size(), engine::resource::ArchiveStreamMode::eLoad);
 
-			EXPECT_EQ(memcmp(bufferArchive->getByteSpan().data(), readRaw.data(), readRaw.size()), 0L);
+			EXPECT_EQ(std::memcmp(bufferArchive->getByteSpan().data(), readRaw.data(), readRaw.size()), 0L);
 		}
 	}
 }

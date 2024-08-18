@@ -346,7 +346,7 @@ void TmpDirectionalShadowPass::execute(cref<graph::ScopedSymbolContext> symCtx_)
 
 		allocated->map(allocated->size);
 		const auto innerOffset = dataView->offset() - page->resourceOffset();
-		memcpy(static_cast<ptr<char>>(allocated->mapping) + innerOffset, &storeShadow, sizeof(storeShadow));
+		std::memcpy(static_cast<ptr<char>>(allocated->mapping) + innerOffset, &storeShadow, sizeof(storeShadow));
 		allocated->flush(VK_WHOLE_SIZE);
 		allocated->unmap();
 	}

@@ -1,6 +1,7 @@
 #include "ReflowPass.hpp"
 
 #include <cassert>
+#include <cstring>
 #include <utility>
 #include <Editor.Assets.Default/Images/Default.hpp>
 #include <Editor.Assets.Default/Textures/Default.hpp>
@@ -505,12 +506,12 @@ void render::ReflowPass::updateVertices(
 	/**/
 
 	_opaqueSubPass.vertexOffset = 0LL;
-	memcpy(target.memory->mapping, opaque_.data(), opaque_.size() * sizeof(gfx::uivertex));
+	std::memcpy(target.memory->mapping, opaque_.data(), opaque_.size() * sizeof(gfx::uivertex));
 
 	/**/
 
 	_alphaSubPass.vertexOffset = _opaqueSubPass.vertexOffset + opaque_.size() * sizeof(gfx::uivertex);
-	memcpy(
+	std::memcpy(
 		static_cast<const ptr<char>>(target.memory->mapping) + _alphaSubPass.vertexOffset,
 		alpha_.data(),
 		alpha_.size() * sizeof(gfx::uivertex)
@@ -519,7 +520,7 @@ void render::ReflowPass::updateVertices(
 	/**/
 
 	_msdfSubPass.vertexOffset = _alphaSubPass.vertexOffset + alpha_.size() * sizeof(gfx::uivertex);
-	memcpy(
+	std::memcpy(
 		static_cast<const ptr<char>>(target.memory->mapping) + _msdfSubPass.vertexOffset,
 		msdf_.data(),
 		msdf_.size() * sizeof(gfx::uivertex)
@@ -585,7 +586,7 @@ void render::ReflowPass::updateIndices(
 	_opaqueSubPass.indexOffset = 0LL;
 	_opaqueSubPass.indexSize = opaque_.size_bytes();
 
-	memcpy(
+	std::memcpy(
 		target.memory->mapping,
 		opaque_.data(),
 		opaque_.size_bytes()
@@ -596,7 +597,7 @@ void render::ReflowPass::updateIndices(
 	_alphaSubPass.indexOffset = _opaqueSubPass.indexOffset + _opaqueSubPass.indexSize;
 	_alphaSubPass.indexSize = alpha_.size_bytes();
 
-	memcpy(
+	std::memcpy(
 		static_cast<const ptr<char>>(target.memory->mapping) + _alphaSubPass.indexOffset,
 		alpha_.data(),
 		alpha_.size_bytes()
@@ -607,7 +608,7 @@ void render::ReflowPass::updateIndices(
 	_msdfSubPass.indexOffset = _alphaSubPass.indexOffset + _alphaSubPass.indexSize;
 	_msdfSubPass.indexSize = msdf_.size_bytes();
 
-	memcpy(
+	std::memcpy(
 		static_cast<const ptr<char>>(target.memory->mapping) + _msdfSubPass.indexOffset,
 		msdf_.data(),
 		msdf_.size_bytes()
