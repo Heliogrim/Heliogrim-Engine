@@ -1,7 +1,6 @@
 ﻿#include "Skybox.hpp"
 
 #include <Engine.Asserts/Todo.hpp>
-#include <Engine.Resource/FileResource.hpp>
 #include <Engine.Scheduler/Async.hpp>
 
 #include "../Command/CommandBuffer.hpp"
@@ -82,9 +81,6 @@ Skybox::Skybox(cref<sptr<Device>> device_) :
 	cmd.release();
 
 	pool->lck().release();
-
-	const auto rootUrl = FileResource::getRootDir() + R"(\world\)";
-	//const Url url { "file"sv, rootUrl + R"(skybox.ktx)" };
 
 	::hg::todo_panic();
 	/*

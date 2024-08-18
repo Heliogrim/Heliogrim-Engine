@@ -3,6 +3,7 @@
 #include <Engine.Assets/AssetFactory.hpp>
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Common/GuidFormat.hpp>
+#include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Concurrent/Promise.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Logging/Logger.hpp>
@@ -40,8 +41,8 @@ engine::res::Importer<AtomicRefCountedIntrusive<engine::assets::Font>, void*>::i
 
 	/**/
 
-	const auto sourceFileName { file_.path().filename().string() };
-	const auto sourceExt { file_.path().extension().string() };
+	const auto sourceFileName { static_cast<cref<std::filesystem::path>>(file_.path()).filename().string() };
+	const auto sourceExt { static_cast<cref<std::filesystem::path>>(file_.path()).extension().string() };
 	const auto sourceName { sourceFileName.substr(0, sourceFileName.size() - sourceExt.size()) };
 
 	/**/
@@ -52,7 +53,7 @@ engine::res::Importer<AtomicRefCountedIntrusive<engine::assets::Font>, void*>::i
 	/**/
 
 	auto& factory = *Engine::getEngine()->getAssets()->getFactory();
-	auto font = factory.createFontAsset(generate_asset_guid(), file_.path().string());
+	auto font = factory.createFontAsset(generate_asset_guid(), static_cast<std::string>(file_.path()));
 	font->setAssetName(sourceName);
 
 	/**/

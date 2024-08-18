@@ -8,7 +8,7 @@
 using namespace hg::engine::res;
 using namespace hg;
 
-Watcher::Watcher(cref<fs::File> root_) :
+Watcher::Watcher(cref<::hg::fs::File> root_) :
 	_root(root_) {
 	setup();
 }
@@ -43,7 +43,7 @@ void Watcher::setup() {
 	/**
 	 * Setup Notification Handle
 	 */
-	_handle = FindFirstChangeNotification(_root.path().string().c_str(), TRUE, mask);
+	_handle = FindFirstChangeNotification(static_cast<std::string>(_root.path()).c_str(), TRUE, mask);
 	assert(_handle != INVALID_HANDLE_VALUE);
 
 	/**
@@ -54,7 +54,7 @@ void Watcher::setup() {
 	RegisterWaitForSingleObject(
 		&_waitHandle,
 		_handle,
-		[](IN PVOID self_, IN BOOLEAN timerOrWait_) {
+		[](_In_ PVOID self_, _In_ BOOLEAN timerOrWait_) {
 
 			/**
 			 * Guard from timeout
@@ -111,7 +111,7 @@ void Watcher::notify(const bool publish_) {
 
 	for (const auto& entry : std::filesystem::recursive_directory_iterator { _root.path() }) {
 
-		const fs::File file { entry.path().string() };
+		const ::hg::fs::File file { fs::Path { entry.path() } };
 		const auto lastWrite = std::filesystem::last_write_time(entry);
 
 		/**
@@ -142,28 +142,28 @@ fs::File Watcher::root() noexcept {
 	return _root;
 }
 
-Watcher::operator const fs::File() const noexcept {
+Watcher::operator const ::hg::fs::File() const noexcept {
 	return _root;
 }
 
-Watcher::operator fs::File() noexcept {
+Watcher::operator ::hg::fs::File() noexcept {
 	return _root;
 }
 
 void Watcher::setCreateCallback(
-	cref<std::function<void(fs::File file_)>> callback_
+	cref<std::function<void(::hg::fs::File file_)>> callback_
 ) noexcept {
 	_createCallback = callback_;
 }
 
 void Watcher::setModifiedCallback(
-	cref<std::function<void(fs::File file_)>> callback_
+	cref<std::function<void(::hg::fs::File file_)>> callback_
 ) noexcept {
 	_modifiedCallback = callback_;
 }
 
 void Watcher::setEraseCallback(
-	cref<std::function<void(fs::File file_)>> callback_
+	cref<std::function<void(::hg::fs::File file_)>> callback_
 ) noexcept {
 	_eraseCallback = callback_;
 }

@@ -75,11 +75,11 @@ bool ProjectFileSystemRepository::hasStorage(cref<Url> url_) const {
 		}
 
 		const auto lookup = [](const auto& url_, const auto& basePath_) {
-			auto stdFsPath = static_cast<std::filesystem::path>(url_.template as<FileUrl>().path());
+			const auto& stdFsPath = static_cast<cref<std::filesystem::path>>(url_.template as<FileUrl>().path());
 			if (stdFsPath.is_absolute() && is_sub_path(basePath_, stdFsPath)) {
 				return stdFsPath;
 			}
-			return clone(basePath_).append(stdFsPath.string());
+			return clone(static_cast<cref<std::filesystem::path>>(basePath_)).append(stdFsPath.string());
 		}(url_, _basePath);
 
 		return std::filesystem::exists(lookup);
@@ -105,11 +105,11 @@ Arci<engine::storage::IStorage> ProjectFileSystemRepository::getStorageByUrl(cre
 		}
 
 		auto lookup = [](const auto& url_, const auto& basePath_) {
-			auto stdFsPath = static_cast<std::filesystem::path>(url_.template as<FileUrl>().path());
+			const auto& stdFsPath = static_cast<cref<std::filesystem::path>>(url_.template as<FileUrl>().path());
 			if (stdFsPath.is_absolute() && is_sub_path(basePath_, stdFsPath)) {
 				return stdFsPath;
 			}
-			return clone(basePath_).append(stdFsPath.string());
+			return clone(static_cast<cref<std::filesystem::path>>(basePath_)).append(stdFsPath.string());
 		}(url_, _basePath);
 
 		if (std::filesystem::exists(lookup)) {

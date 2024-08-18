@@ -5,6 +5,7 @@
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.Filesystem/Path.hpp>
 
 namespace hg::fs {
 	/** Values that represent file types */
@@ -17,13 +18,10 @@ namespace hg::fs {
 
 	class File {
 	public:
-		using path_type = std::filesystem::path;
+		using path_type = ::hg::engine::fs::Path;
 
 	public:
-		/**
-		 * Default Constructor
-		 */
-		constexpr File();
+		constexpr File() = default;
 
 		File(mref<path_type> path_) noexcept;
 
@@ -140,10 +138,8 @@ namespace hg::fs {
 		 */
 		[[nodiscard]] operator string() const noexcept;
 
-		const static char seperator = '\\';
-
 	protected:
-		std::filesystem::path _path;
+		path_type _path;
 
 	public:
 		[[nodiscard]] bool operator==(cref<File> other_) const noexcept;
@@ -156,7 +152,9 @@ namespace std {
 	template <>
 	struct hash<hg::fs::File> {
 		[[nodiscard]] size_t operator()(const hg::fs::File& value_) const noexcept {
-			return std::hash<string> {}(value_.path().string());
+			return std::hash<typename ::hg::fs::File::path_type::string_type> {}(
+				static_cast<::hg::fs::File::path_type::string_type>(value_.path())
+			);
 		}
 	};
 

@@ -28,7 +28,7 @@ void editor::boot::initStorage(cref<engine::Config> cfg_, ref<engine::StorageMod
 		auto cachePath = cfg_.getTyped<String>(engine::cfg::ProjectConfigProperty::eLocalCachePath);
 		::hg::assertrt(cachePath.has_value() && cachePath.value().has_value());
 
-		registry.addRepository(lfs->makeCacheRepository(cachePath->value()));
+		registry.addRepository(lfs->makeCacheRepository(fs::Path { cachePath->value() }));
 	}
 
 	/**/
@@ -37,7 +37,7 @@ void editor::boot::initStorage(cref<engine::Config> cfg_, ref<engine::StorageMod
 		auto projectPath = cfg_.getTyped<String>(engine::cfg::ProjectConfigProperty::eLocalBasePath);
 		::hg::assertrt(projectPath.has_value() && projectPath.value().has_value());
 
-		registry.addRepository(lfs->makeProjectRepository(projectPath->value()));
+		registry.addRepository(lfs->makeProjectRepository(fs::Path { projectPath->value() }));
 	}
 
 	/**/
@@ -46,7 +46,7 @@ void editor::boot::initStorage(cref<engine::Config> cfg_, ref<engine::StorageMod
 		auto cachePath = cfg_.getTyped<String>(engine::cfg::EditorConfigProperty::eLocalCachePath);
 		::hg::assertrt(cachePath.has_value() && cachePath.value().has_value());
 
-		registry.addRepository(lfs->makeCacheRepository(cachePath->value()));
+		registry.addRepository(lfs->makeCacheRepository(fs::Path { cachePath->value() }));
 	}
 
 	/**/
@@ -55,6 +55,6 @@ void editor::boot::initStorage(cref<engine::Config> cfg_, ref<engine::StorageMod
 		auto editorPath = cfg_.getTyped<String>(engine::cfg::EditorConfigProperty::eLocalEditorPath);
 		::hg::assertrt(editorPath.has_value() && editorPath.value().has_value());
 
-		registry.addRepository(lfs->makeEditorRepository(editorPath->value()));
+		registry.addRepository(lfs->makeEditorRepository(fs::Path { editorPath->value() }));
 	}
 }
