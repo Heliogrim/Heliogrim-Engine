@@ -151,7 +151,7 @@ namespace hg::engine::scheduler::fiber {
 	 *
 	 * @returns An u64.
 	 */
-	extern constexpr u64 default_fiber_stack_size() noexcept;
+	extern u64 default_fiber_stack_size() noexcept;
 
 	/**
 	 * Switch thread to fiber
