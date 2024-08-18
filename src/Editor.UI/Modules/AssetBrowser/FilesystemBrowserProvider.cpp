@@ -2,14 +2,17 @@
 
 #include <filesystem>
 
-#include "Engine.Resource/FileResource.hpp"
-
 using namespace hg::editor::ui;
 using namespace hg;
 
 FilesystemBrowserProvider::FilesystemBrowserProvider() :
 	AssetBrowserProvider(),
-	_root("file"sv, fs::Path { FileResource::getRootDir() }) {}
+	_root(
+		"file"sv,
+		fs::Path {
+			/* <root> */
+		}
+	) {}
 
 string FilesystemBrowserProvider::normalizeFsPath(mref<string> unnormalized_) {
 

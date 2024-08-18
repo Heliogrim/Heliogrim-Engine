@@ -5,6 +5,7 @@
 #include <Engine.Assets/Types/Image.hpp>
 #include <Engine.Assets/Types/Texture/TextureAsset.hpp>
 #include <Engine.Common/GuidFormat.hpp>
+#include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Concurrent/Promise.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Logging/Logger.hpp>
@@ -161,8 +162,8 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
 
 	/**/
 
-	const auto sourceFileName { file_.path().filename().string() };
-	const auto sourceExt { file_.path().extension().string() };
+	const auto sourceFileName { static_cast<cref<std::filesystem::path>>(file_.path()).filename().string() };
+	const auto sourceExt { static_cast<cref<std::filesystem::path>>(file_.path()).extension().string() };
 	const auto sourceName { sourceFileName.substr(0, sourceFileName.size() - sourceExt.size()) };
 
 	/**/
@@ -182,7 +183,7 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
 
 	// TODO: Remap the source file url.
 	image.setAssetName(sourceName);
-	image.addSource(fs::Url { "file"sv, file_.path().string() });
+	image.addSource(fs::Url { "file"sv, file_.path() });
 
 	IM_CORE_LOGF(
 		"Created new image asset `{}` -> `{}`",
@@ -192,7 +193,7 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
 
 	/**/
 
-	std::ifstream ifs { file_.path(), std::ios::in | std::ios::binary };
+	std::ifstream ifs { static_cast<cref<std::filesystem::path>>(file_.path()), std::ios::in | std::ios::binary };
 	assert(ifs);
 
 	ifs.seekg(0, std::ios::beg);
@@ -241,7 +242,7 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
 
 		/**/
 
-		gli::texture glitex = gli::load_ktx(file_.path().string());
+		gli::texture glitex = gli::load_ktx(static_cast<std::string>(file_.path()));
 
 		/**/
 

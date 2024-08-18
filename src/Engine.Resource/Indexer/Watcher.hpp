@@ -24,7 +24,7 @@ namespace hg::engine::res {
 		using const_reference_type = cref<value_type>;
 
 	public:
-		Watcher(cref<hg::fs::File> root_);
+		Watcher(cref<::hg::fs::File> root_);
 
 		/**
 		 * Copy Constructor

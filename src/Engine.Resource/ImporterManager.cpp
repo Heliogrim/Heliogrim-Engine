@@ -44,7 +44,7 @@ bool ImporterManager::unregisterImporter(cref<FileTypeId> fileTypeId_) noexcept 
 	return true;
 }
 
-sptr<ImporterBase> ImporterManager::importer(cref<FileTypeId> fileType_, cref<fs::File> file_) const {
+sptr<ImporterBase> ImporterManager::importer(cref<FileTypeId> fileType_, cref<::hg::fs::File> file_) const {
 
 	auto mapped = _mapping.find(fileType_);
 	if (mapped == _mapping.cend()) {

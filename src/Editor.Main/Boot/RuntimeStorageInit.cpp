@@ -28,7 +28,7 @@ void editor::boot::initRuntimeStorage(cref<engine::Config> cfg_, ref<engine::Sto
 		auto cachePath = cfg_.getTyped<String>(engine::cfg::RuntimeConfigProperty::eLocalCachePath);
 		::hg::assertrt(cachePath.has_value() && cachePath.value().has_value());
 
-		registry.addRepository(lfs->makeCacheRepository(cachePath->value()));
+		registry.addRepository(lfs->makeCacheRepository(fs::Path { cachePath->value() }));
 	}
 
 	/**/
@@ -37,6 +37,6 @@ void editor::boot::initRuntimeStorage(cref<engine::Config> cfg_, ref<engine::Sto
 		auto runtimePath = cfg_.getTyped<String>(engine::cfg::RuntimeConfigProperty::eLocalBasePath);
 		::hg::assertrt(runtimePath.has_value() && runtimePath.value().has_value());
 
-		registry.addRepository(lfs->makeRuntimeRepository(runtimePath->value()));
+		registry.addRepository(lfs->makeRuntimeRepository(fs::Path { runtimePath->value() }));
 	}
 }

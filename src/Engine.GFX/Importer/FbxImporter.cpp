@@ -5,6 +5,7 @@
 #include <Engine.Assets/AssetFactory.hpp>
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Common/GuidFormat.hpp>
+#include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Concurrent/Promise.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Logging/Logger.hpp>
@@ -64,8 +65,8 @@ FbxImporter::import_result_type FbxImporter::import(cref<res::FileTypeId> typeId
 
 	/**/
 
-	const auto sourceFileName { file_.path().filename().string() };
-	const auto sourceExt { file_.path().extension().string() };
+	const auto sourceFileName { static_cast<cref<std::filesystem::path>>(file_.path()).filename().string() };
+	const auto sourceExt { static_cast<cref<std::filesystem::path>>(file_.path()).extension().string() };
 	const auto sourceName { sourceFileName.substr(0, sourceFileName.size() - sourceExt.size()) };
 
 	/**/
@@ -86,7 +87,7 @@ FbxImporter::import_result_type FbxImporter::import(cref<res::FileTypeId> typeId
 		auto& factory { *Engine::getEngine()->getAssets()->getFactory() };
 		return factory.createStaticGeometryAsset(
 			generate_asset_guid(),
-			path_.string(),
+			static_cast<std::string>(path_),
 			data_.vertexCount,
 			data_.indexCount
 		);
@@ -121,7 +122,7 @@ FbxAssimpImportData assimpGetImportData(cref<fs::File> file_) {
 		return {};
 	}
 
-	auto* const scene = importer.ReadFile(file_.path().string(), ppFlags);
+	auto* const scene = importer.ReadFile(static_cast<std::string>(file_.path()), ppFlags);
 
 	if (scene == nullptr) {
 		::hg::breakpoint();

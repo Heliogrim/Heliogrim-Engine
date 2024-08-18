@@ -1,9 +1,9 @@
 #include "File.hpp"
 
+#include <stdexcept>
+
 using namespace hg::fs;
 using namespace hg;
-
-constexpr File::File() = default;
 
 File::File(mref<path_type> path_) noexcept :
 	_path(std::move(path_)) {}
@@ -56,13 +56,13 @@ streamsize File::size() const {
 }
 
 File File::parent() const {
-	return File { _path.parent_path() };
+	return File { _path.parentPath() };
 }
 
 Vector<File> File::files() const {
 	// Could return without effect
 	if (!isDirectory()) {
-		throw std::exception("URL is not a directory. Can not fetch files.");
+		throw std::runtime_error("URL is not a directory. Can not fetch files.");
 	}
 
 	Vector<File> files = Vector<File>(0);
@@ -83,7 +83,7 @@ void File::setPath(cref<File::path_type> path_) {
 
 void File::mkdir() const {
 	if (exists()) {
-		throw std::exception("Directory already exists");
+		throw std::runtime_error("Directory already exists");
 	}
 
 	std::filesystem::create_directory(_path);
@@ -95,17 +95,17 @@ void File::mkdirs() const {
 
 void File::createFile() const {
 	if (exists() || isDirectory()) {
-		throw std::exception("File already exists or is a directory.");
+		throw std::runtime_error("File already exists or is a directory.");
 	}
 
 	/* at the moment std::ofstream will create our file for us */
-	std::ofstream stream { _path };
+	std::ofstream stream { static_cast<std::filesystem::path>(_path) };
 	stream.close();
 }
 
 void File::move(const File& dst_) {
 	if (!dst_.exists() || !dst_.isDirectory()) {
-		throw std::exception("Target is not a existing directory.");
+		throw std::runtime_error("Target is not a existing directory.");
 	}
 
 	const auto copyResult = std::filesystem::copy_file(_path, dst_._path, std::filesystem::copy_options {});
@@ -120,7 +120,7 @@ void File::move(const File& dst_) {
 }
 
 File::operator std::string() const noexcept {
-	return _path.string();
+	return static_cast<std::string>(_path);
 }
 
 bool File::operator==(cref<File> other_) const noexcept {

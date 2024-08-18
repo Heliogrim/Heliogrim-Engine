@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <ranges>
+#include <utility>
 #include <Engine.Common/Collection/Queue.hpp>
 
 using namespace hg::engine::res;
@@ -19,12 +20,12 @@ void Indexer::tidy() {
 	}
 }
 
-void Indexer::addRoot(cref<fs::File> root_) noexcept {
+void Indexer::addRoot(cref<::hg::fs::File> root_) noexcept {
 
 	const auto found = std::find_if(
 		_roots.begin(),
 		_roots.end(),
-		[&root_](cref<fs::File> entry_) {
+		[&root_](cref<::hg::fs::File> entry_) {
 			return root_ == entry_;
 		}
 	);
@@ -36,12 +37,12 @@ void Indexer::addRoot(cref<fs::File> root_) noexcept {
 	_roots.push_back(root_);
 }
 
-bool Indexer::removeRoot(cref<fs::File> root_) noexcept {
+bool Indexer::removeRoot(cref<::hg::fs::File> root_) noexcept {
 
 	const auto where = std::find_if(
 		_roots.begin(),
 		_roots.end(),
-		[&root_](cref<fs::File> entry_) {
+		[&root_](cref<::hg::fs::File> entry_) {
 			return root_ == entry_;
 		}
 	);
@@ -54,14 +55,14 @@ bool Indexer::removeRoot(cref<fs::File> root_) noexcept {
 	return true;
 }
 
-void Indexer::scan(cref<fs::File> root_) {
+void Indexer::scan(cref<::hg::fs::File> root_) {
 
-	queue<fs::File> backlog {};
+	queue<::hg::fs::File> backlog {};
 	backlog.push(root_);
 
 	while (!backlog.empty()) {
 
-		const fs::File entry = backlog.front();
+		const ::hg::fs::File entry = backlog.front();
 
 		if (entry.isDirectory()) {
 			/**
@@ -88,7 +89,7 @@ void Indexer::scan() {
 	}
 }
 
-void Indexer::watch(cref<fs::File> root_) {
+void Indexer::watch(cref<::hg::fs::File> root_) {
 
 	auto* watcher = new Watcher {
 		root_
@@ -126,15 +127,15 @@ void Indexer::watch() {
 	}
 }
 
-void Indexer::on(cref<std::function<bool(cref<fs::File> file_)>> callback_) {
+void Indexer::on(cref<std::function<bool(cref<::hg::fs::File> file_)>> callback_) {
 	_callbacks.push_back(callback_);
 }
 
-void Indexer::on(mref<std::function<bool(cref<fs::File> file_)>> callback_) {
+void Indexer::on(mref<std::function<bool(cref<::hg::fs::File> file_)>> callback_) {
 	_callbacks.push_back(std::move(callback_));
 }
 
-void Indexer::reindex(cref<fs::File> file_) {
+void Indexer::reindex(cref<::hg::fs::File> file_) {
 
 	if (std::ranges::any_of(
 		_callbacks.begin(),
@@ -147,4 +148,4 @@ void Indexer::reindex(cref<fs::File> file_) {
 	}
 }
 
-void Indexer::removeIndex(cref<fs::File> file_) {}
+void Indexer::removeIndex(cref<::hg::fs::File> file_) {}

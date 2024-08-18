@@ -90,7 +90,7 @@ namespace hg::engine::res {
 		 *
 		 * @returns A ptr&lt;ImporterBase&gt;
 		 */
-		[[nodiscard]] sptr<ImporterBase> importer(cref<FileTypeId> fileType_, cref<hg::fs::File> file_) const;
+		[[nodiscard]] sptr<ImporterBase> importer(cref<FileTypeId> fileType_, cref<::hg::fs::File> file_) const;
 
 	public:
 		/**
