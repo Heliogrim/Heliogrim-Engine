@@ -4,6 +4,11 @@
 #include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Common/stdafx.h>
 
+#if not defined(WIN32)
+#include <ucontext.h>
+#include <signal.h>
+#endif
+
 #include "../Fiber/FiberLaunchPad.hpp"
 #include "../Fiber/FiberPool.hpp"
 
@@ -101,11 +106,17 @@ void Worker::handle(void* args_) {
 	/**
 	 * Convert this thread to fiber
 	 */
+	#if defined(WIN32)
 	auto* fiber { ConvertThreadToFiber(nullptr) };
 
 	if (fiber == nullptr) {
 		throw std::runtime_error("Could not convert this thread to fiber.");
 	}
+
+	#else
+	auto* fiber = new ucontext_t {};
+
+	#endif
 
 	worker->setFiberHandle(fiber);
 
@@ -208,6 +219,12 @@ void Worker::handle(void* args_) {
 	/**
 	 * Convert this fiber back to a thread and exit as intended
 	 */
+	#if defined(WIN32)
 	[[maybe_unused]] const auto result = ConvertFiberToThread();
 	::hg::assertd(result /* "Failed to convert fiber back to thread." */);
+
+	#else
+	delete fiber;
+
+	#endif
 }

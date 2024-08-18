@@ -29,6 +29,7 @@ namespace hg::engine::scheduler::fiber {
 		FiberAwaitable awaiter;
 
 	public:
+		#if defined(WIN32)
 		/**
 		 * Creates a new ptr&lt;Fiber&gt;
 		 *
@@ -37,9 +38,25 @@ namespace hg::engine::scheduler::fiber {
 		 *
 		 * @param      self_ The self.
 		 * @param [in] proc_ If non-null, the procedure.
-		 * @param [in] param_ (Optional) If non-null, the parameter.
 		 */
-		static void create(_Out_ ptr<Fiber> self_, _In_ void (*proc_)(void*), _In_opt_ void* param_ = nullptr);
+		static void create(_Inout_ ptr<Fiber> self_, _In_ void (*proc_)(void*));
+
+		#else
+		/**
+		 * Creates a new ptr&lt;Fiber&gt;
+		 *
+		 * @author Julius
+		 * @date 23.10.2021
+		 *
+		 * @param      self_ The self.
+		 * @param [in] proc_ If non-null, the procedure.
+		 */
+		static void create(
+			_Inout_ ptr<Fiber> self_,
+			_In_ void (*proc_)(int ptrLow_, int ptrHigh_)
+		);
+
+		#endif
 
 		/**
 		 * Destroys this fiber
