@@ -16,7 +16,7 @@ namespace hg::editor::ui {
 namespace hg::editor::ui {
 	class AssetBrowser final {
 	public:
-		friend class ::hg::editor::ui::AssetBrowserPanel;
+		friend class AssetBrowserPanel;
 
 	public:
 		using this_type = AssetBrowser;

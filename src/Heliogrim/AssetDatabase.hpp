@@ -9,6 +9,10 @@
 #include "Engine.Common/Memory/MemoryPointer.hpp"
 
 namespace hg {
+	class Heliogrim;
+}
+
+namespace hg {
 	class AssetDatabase {
 	public:
 		using value_type = AssetDatabase;

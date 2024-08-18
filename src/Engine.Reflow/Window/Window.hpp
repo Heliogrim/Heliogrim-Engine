@@ -15,6 +15,10 @@
 #include "../Widget/__fwd.hpp"
 
 namespace hg::engine::reflow {
+	class EventDispatcher;
+}
+
+namespace hg::engine::reflow {
 	class Window :
 		public Widget {
 	public:

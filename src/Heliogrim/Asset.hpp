@@ -2,8 +2,12 @@
 
 #include <Engine.Assets/AssetGuid.hpp>
 #include <Engine.Assets/AssetTypeId.hpp>
-#include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/String.hpp>
+#include <Engine.Common/Wrapper.hpp>
+
+namespace hg {
+	class AssetDatabase;
+}
 
 namespace hg {
 	class Asset {

@@ -8,6 +8,7 @@
 
 namespace hg::engine::storage::system {
 	class ArchiveStorage;
+	class PackageSystemProvider;
 };
 
 namespace hg::engine::storage::system {

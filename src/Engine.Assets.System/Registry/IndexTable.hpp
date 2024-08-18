@@ -13,6 +13,11 @@
 #include "../__fwd.hpp"
 
 namespace hg::engine::assets::system {
+	template <typename>
+	class IndexTable;
+}
+
+namespace hg::engine::assets::system {
 	class IndexTableBase {
 	public:
 		template <typename>

@@ -5,6 +5,11 @@
 #include <Engine.Common/Collection/Vector.hpp>
 
 namespace hg::editor::ui {
+	template <typename SourceType_, typename ResolveType_>
+	class HierarchyResolver;
+}
+
+namespace hg::editor::ui {
 	class HierarchyResolverBase {
 	public:
 		template <typename SourceType_, typename ResolveType_>

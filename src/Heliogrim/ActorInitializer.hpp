@@ -14,6 +14,7 @@ namespace hg {
 	 * Forward Declaration
 	 */
 	class ActorComponent;
+	class Session;
 
 	class ActorInitializer {
 	public:

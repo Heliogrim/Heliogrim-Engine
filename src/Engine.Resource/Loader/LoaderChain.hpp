@@ -39,6 +39,17 @@ namespace hg::engine::resource::loader {
 		}
 	};
 
+	template <
+		IsRequestValueType,
+		IsResponseValueType,
+		typename,
+		class,
+		class,
+		class,
+		class,
+		bool>
+	class LoaderChain;
+
 	/**/
 
 	template <
