@@ -11,7 +11,6 @@ namespace hg::engine::render::graph {
 	class IterationPass :
 		public RenderGraphPass {
 	public:
-		class VolatileIterationVisitor;
 		friend class VolatileIterationVisitor;
 
 	public:

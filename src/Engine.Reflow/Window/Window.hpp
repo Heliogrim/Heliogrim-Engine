@@ -22,7 +22,7 @@ namespace hg::engine::reflow {
 	class Window :
 		public Widget {
 	public:
-		friend class EventDispatcher;
+		friend class ::hg::engine::reflow::EventDispatcher;
 
 	public:
 		using this_type = Window;

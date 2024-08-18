@@ -21,10 +21,10 @@ namespace hg::engine::resource {
 namespace hg::engine::resource::package {
 	class PackageLinker final {
 	public:
-		friend class storage::PackageIo;
+		friend class ::hg::engine::storage::PackageIo;
 
 		template <bool Const_>
-		friend class LinkedArchiveIterator;
+		friend class ::hg::engine::resource::package::LinkedArchiveIterator;
 
 	public:
 		using this_type = PackageLinker;

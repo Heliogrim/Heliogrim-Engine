@@ -12,7 +12,7 @@ namespace hg::engine::assets {
 		public InheritMeta<StaticGeometry, Geometry> {
 	public:
 		template <typename>
-		friend class serialization::DataLayout;
+		friend class ::hg::engine::serialization::DataLayout;
 
 		ACCESS_LAYOUT
 		ACCESS_STRUCTURE

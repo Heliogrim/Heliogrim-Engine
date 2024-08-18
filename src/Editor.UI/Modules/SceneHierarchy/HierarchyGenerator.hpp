@@ -16,7 +16,7 @@ namespace hg::editor::ui {
 	class HierarchyGeneratorBase {
 	public:
 		template <typename SourceType_>
-		friend class HierarchyGenerator;
+		friend class ::hg::editor::ui::HierarchyGenerator;
 
 	public:
 		using this_type = HierarchyGeneratorBase;

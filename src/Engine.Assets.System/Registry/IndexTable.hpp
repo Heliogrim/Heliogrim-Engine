@@ -21,7 +21,7 @@ namespace hg::engine::assets::system {
 	class IndexTableBase {
 	public:
 		template <typename>
-		friend class IndexTable;
+		friend class ::hg::engine::assets::system::IndexTable;
 
 	public:
 		using this_type = IndexTableBase;

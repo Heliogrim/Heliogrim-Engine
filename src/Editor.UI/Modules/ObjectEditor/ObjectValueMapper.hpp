@@ -12,7 +12,7 @@ namespace hg::editor::ui {
 	class ObjectValueMapperBase {
 	public:
 		template <typename ObjectType_>
-		friend class ObjectValueMapper;
+		friend class ::hg::editor::ui::ObjectValueMapper;
 
 	public:
 		using this_type = ObjectValueMapperBase;

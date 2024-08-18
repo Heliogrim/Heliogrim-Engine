@@ -14,7 +14,7 @@ namespace hg::engine::serialization {
 		public DataLayoutDispatch {
 	public:
 		template <typename>
-		friend class DataLayout;
+		friend class ::hg::engine::serialization::DataLayout;
 
 	public:
 		using this_type = DataLayoutBase;

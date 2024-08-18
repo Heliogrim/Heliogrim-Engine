@@ -56,7 +56,7 @@ namespace hg::engine::acs {
 	 */
 	template <typename ValueType, typename KeyType, KeyType InvalidKey, typename IndexType = size_t>
 	class hybrid_storage_page final {
-		friend class hybrid_storage<KeyType, ValueType, InvalidKey>;
+		friend class ::hg::engine::acs::hybrid_storage<KeyType, ValueType, InvalidKey>;
 
 	public:
 		using this_type = hybrid_storage_page<ValueType, KeyType, InvalidKey, IndexType>;
@@ -480,7 +480,7 @@ namespace hg::engine::acs {
 		template <bool Const>
 		class hybrid_key_value_iterator final {
 		public:
-			friend class hybrid_storage<KeyType, ValueType, InvalidKey>;
+			friend class ::hg::engine::acs::hybrid_storage<KeyType, ValueType, InvalidKey>;
 
 		public:
 			using iterator_key_type = const key_type;

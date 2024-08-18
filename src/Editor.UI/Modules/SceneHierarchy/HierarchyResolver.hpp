@@ -13,7 +13,7 @@ namespace hg::editor::ui {
 	class HierarchyResolverBase {
 	public:
 		template <typename SourceType_, typename ResolveType_>
-		friend class HierarchyResolver;
+		friend class ::hg::editor::ui::HierarchyResolver;
 
 	public:
 		using this_type = HierarchyResolverBase;

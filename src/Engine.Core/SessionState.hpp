@@ -13,7 +13,7 @@ namespace hg::engine::core {
 namespace hg::engine::core {
 	class SessionState {
 	public:
-		friend class Session;
+		friend class ::hg::engine::core::Session;
 
 	public:
 		using this_type = SessionState;

@@ -32,7 +32,7 @@ namespace hg {
 	class ArcFromThis {
 	public:
 		template <IncompleteOrAtomicIntrusiveRefCountable Ux_>
-		friend class AtomicRefCountedIntrusive;
+		friend class ::hg::AtomicRefCountedIntrusive;
 
 	public:
 		using this_type = ArcFromThis<Derived_>;

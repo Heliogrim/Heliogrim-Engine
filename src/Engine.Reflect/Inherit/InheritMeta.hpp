@@ -16,10 +16,10 @@ namespace hg {
 		public Rest_... {
 	public:
 		template <typename>
-		friend class InheritBase;
+		friend class ::hg::InheritBase;
 
 		template <typename, typename, typename...>
-		friend class InheritMeta;
+		friend class ::hg::InheritMeta;
 
 	public:
 		using this_type = InheritMeta<Derived_, Base_, Rest_...>;

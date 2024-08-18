@@ -13,7 +13,7 @@ namespace hg::engine::storage::system {
 	class LocalFileStorage final :
 		public InheritMeta<LocalFileStorage, IStorage> {
 	public:
-		friend class StorageIo;
+		friend class ::hg::engine::storage::StorageIo;
 
 	public:
 		using this_type = LocalFileStorage;

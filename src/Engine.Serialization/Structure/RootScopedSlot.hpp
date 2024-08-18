@@ -7,7 +7,7 @@ namespace hg::engine::serialization {
 	class RootScopedSlot final :
 		public RecordScopedSlot {
 	public:
-		friend class StructuredArchive;
+		friend class ::hg::engine::serialization::StructuredArchive;
 
 	public:
 		using this_type = RootScopedSlot;

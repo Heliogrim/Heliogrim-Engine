@@ -1,6 +1,7 @@
 #include "AssetInit.hpp"
 
 #include <algorithm>
+#include <cstring>
 #include <filesystem>
 #include <fstream>
 #include <ranges>
@@ -471,7 +472,6 @@ void editor::boot::initAssets() {
 	auto root = std::filesystem::canonical(relative);
 
 	autoIndex(root);
-	::hg::breakpoint();
 
 	/**/
 

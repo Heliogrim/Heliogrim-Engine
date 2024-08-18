@@ -35,7 +35,7 @@ namespace hg::engine::gfx::cache {
 	struct Result {
 	public:
 		template <typename Rx_, typename Vx_> requires std::is_integral_v<Rx_> || std::is_enum_v<Rx_>
-		friend struct Result;
+		friend struct ::hg::engine::gfx::cache::Result;
 
 	public:
 		using this_type = Result<ResultTypeType_, ValueType_>;

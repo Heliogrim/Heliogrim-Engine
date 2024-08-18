@@ -15,7 +15,7 @@ namespace hg::engine::storage::system {
 	class PackageSystemRepository final :
 		public IStorageRepository {
 	public:
-		friend class PackageSystemProvider;
+		friend class ::hg::engine::storage::system::PackageSystemProvider;
 
 	public:
 		using this_type = IStorageRepository;

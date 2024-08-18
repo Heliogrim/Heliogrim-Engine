@@ -47,7 +47,7 @@ namespace hg {
 	class SharedMemoryReference final {
 	public:
 		template <typename Ux_>
-		friend class SharedMemoryReference;
+		friend class ::hg::SharedMemoryReference;
 
 	public:
 		using this_type = SharedMemoryReference<PayloadType_>;

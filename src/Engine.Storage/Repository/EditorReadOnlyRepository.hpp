@@ -15,7 +15,7 @@ namespace hg::engine::storage::system {
 	class EditorReadOnlyRepository final :
 		public IStorageFileRepository {
 	public:
-		friend class LocalFileSystemProvider;
+		friend class ::hg::engine::storage::system::LocalFileSystemProvider;
 
 	public:
 		using this_type = EditorReadOnlyRepository;

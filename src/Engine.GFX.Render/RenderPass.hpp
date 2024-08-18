@@ -20,7 +20,7 @@ namespace hg::engine::render {
 namespace hg::engine::render {
 	class RenderPass final {
 	public:
-		friend class Renderer;
+		friend class ::hg::engine::render::Renderer;
 
 	public:
 		using this_type = RenderPass;

@@ -5,19 +5,19 @@
 #include "Asset.hpp"
 
 namespace hg::engine::assets {
-    class Level :
-        public InheritMeta<Level, Asset> {
-    public:
-        template <typename>
-        friend class serialization::DataLayout;
+	class Level :
+		public InheritMeta<Level, Asset> {
+	public:
+		template <typename>
+		friend class ::hg::engine::serialization::DataLayout;
 
-    public:
-        inline static constexpr asset_type_id typeId { "Level"_typeId };
+	public:
+		inline static constexpr asset_type_id typeId { "Level"_typeId };
 
-    protected:
-        Level(mref<asset_guid> guid_);
+	protected:
+		Level(mref<asset_guid> guid_);
 
-    private:
-        Vector<asset_guid> _entities;
-    };
+	private:
+		Vector<asset_guid> _entities;
+	};
 }

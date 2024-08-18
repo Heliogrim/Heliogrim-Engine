@@ -12,7 +12,7 @@ namespace hg {
 namespace hg {
 	class Asset {
 	public:
-		friend class AssetDatabase;
+		friend class ::hg::AssetDatabase;
 
 	public:
 		using this_type = Asset;

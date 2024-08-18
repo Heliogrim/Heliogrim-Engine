@@ -17,7 +17,7 @@ namespace hg::engine::resource {
 namespace hg::engine::resource {
 	class macro_novtable ResourceBase {
 	public:
-		friend class ManageGuard;
+		friend class ::hg::engine::resource::ManageGuard;
 
 	public:
 		using this_type = ResourceBase;

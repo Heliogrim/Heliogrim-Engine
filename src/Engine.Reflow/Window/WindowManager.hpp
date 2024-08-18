@@ -24,8 +24,8 @@ namespace hg::engine::reflow {
 	class WindowManager :
 		public EventDispatcher {
 	public:
-		friend class schedule::ReflowFlowStage;
-		friend class schedule::ReflowShiftStage;
+		friend class ::hg::engine::reflow::schedule::ReflowFlowStage;
+		friend class ::hg::engine::reflow::schedule::ReflowShiftStage;
 
 	public:
 		using this_type = WindowManager;

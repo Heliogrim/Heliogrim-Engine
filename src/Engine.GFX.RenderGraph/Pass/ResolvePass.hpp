@@ -11,7 +11,6 @@ namespace hg::engine::render::graph {
 	class ResolvePass final :
 		public RenderGraphPass {
 	public:
-		class VolatileResolveVisitor;
 		friend class VolatileResolveVisitor;
 
 	public:

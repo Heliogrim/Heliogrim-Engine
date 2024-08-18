@@ -11,8 +11,8 @@
 namespace hg::engine::resource {
 	class Package final {
 	public:
-		friend class storage::PackageIo;
-		friend class package::PackageLinker;
+		friend class ::hg::engine::storage::PackageIo;
+		friend class ::hg::engine::resource::package::PackageLinker;
 
 	public:
 		using this_type = Package;
