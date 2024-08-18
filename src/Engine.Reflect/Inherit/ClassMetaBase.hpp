@@ -4,6 +4,17 @@
 #include "Compile.hpp"
 
 namespace hg {
+	template <typename>
+	class InheritBase;
+
+	template <typename, typename, typename...>
+	class InheritMeta;
+
+	template <typename>
+	struct lookup;
+}
+
+namespace hg {
 	class macro_novtable ClassMetaBase {
 	public:
 		template <typename>

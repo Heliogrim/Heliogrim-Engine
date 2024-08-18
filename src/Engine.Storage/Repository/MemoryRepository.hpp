@@ -8,6 +8,7 @@
 
 namespace hg::engine::storage::system {
 	class MemoryStorage;
+	class MemoryProvider;
 }
 
 namespace hg::engine::storage::system {

@@ -18,7 +18,7 @@ namespace hg::engine::gfx {
 	class SparseTexture final :
 		public InheritMeta<SparseTexture, TextureObject> {
 	public:
-		friend class ::hg::engine::gfx::loader::TextureLoader;
+		friend class loader::TextureLoader;
 
 	public:
 		using this_type = SparseTexture;

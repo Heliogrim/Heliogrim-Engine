@@ -8,56 +8,57 @@
 #include "../Node/RuntimeNode.hpp"
 
 namespace hg::engine::render::graph {
-    class ResolvePass final :
-        public RenderGraphPass {
-    public:
-        friend class VolatileResolveVisitor;
+	class ResolvePass final :
+		public RenderGraphPass {
+	public:
+		class VolatileResolveVisitor;
+		friend class VolatileResolveVisitor;
 
-    public:
-        using this_type = ResolvePass;
+	public:
+		using this_type = ResolvePass;
 
-    public:
-        constexpr ResolvePass(ref<SymbolContext> symbolContext_) noexcept :
-            RenderGraphPass(),
-            _context(symbolContext_) {}
+	public:
+		constexpr ResolvePass(ref<SymbolContext> symbolContext_) noexcept :
+			RenderGraphPass(),
+			_context(symbolContext_) {}
 
-        constexpr ~ResolvePass() noexcept = default;
+		constexpr ~ResolvePass() noexcept = default;
 
-    private:
-        ResolvePassContext _context;
+	private:
+		ResolvePassContext _context;
 
-    public:
-        class VolatileResolveVisitor final :
-            public Visitor {
-        public:
-            using this_type = VolatileResolveVisitor;
+	public:
+		class VolatileResolveVisitor final :
+			public Visitor {
+		public:
+			using this_type = VolatileResolveVisitor;
 
-        public:
-            VolatileResolveVisitor(const ptr<ResolvePass> owner_) noexcept;
+		public:
+			VolatileResolveVisitor(const ptr<ResolvePass> owner_) noexcept;
 
-            ~VolatileResolveVisitor() noexcept override;
+			~VolatileResolveVisitor() noexcept override;
 
-        private:
-            const ptr<ResolvePass> _owner;
+		private:
+			const ptr<ResolvePass> _owner;
 
-        private:
-            Queue<nmpt<Node>> _backlog;
+		private:
+			Queue<nmpt<Node>> _backlog;
 
-            void step();
+			void step();
 
-            void unroll();
+			void unroll();
 
-        public:
-            void operator()(cref<Node> node_) override;
+		public:
+			void operator()(cref<Node> node_) override;
 
-            void operator()(cref<CompileNode> node_) override {
-                assert(false);
-            }
-        };
+			void operator()(cref<CompileNode> node_) override {
+				assert(false);
+			}
+		};
 
-    public:
-        [[nodiscard]] VolatileResolveVisitor visitor() noexcept {
-            return VolatileResolveVisitor { this };
-        }
-    };
+	public:
+		[[nodiscard]] VolatileResolveVisitor visitor() noexcept {
+			return VolatileResolveVisitor { this };
+		}
+	};
 }

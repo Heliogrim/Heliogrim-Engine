@@ -7,6 +7,10 @@ namespace hg::engine::acs {
 }
 
 namespace hg::engine::core {
+	class Session;
+}
+
+namespace hg::engine::core {
 	class SessionState {
 	public:
 		friend class Session;

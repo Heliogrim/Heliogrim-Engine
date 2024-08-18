@@ -7,6 +7,11 @@
 #include "../FileTypeId.hpp"
 
 namespace hg::engine::res {
+	template <class ImportType_, class DescriptorType_>
+	class Importer;
+}
+
+namespace hg::engine::res {
 	class macro_novtable ImporterBase {
 	public:
 		template <class ImportType_, class DescriptorType_>

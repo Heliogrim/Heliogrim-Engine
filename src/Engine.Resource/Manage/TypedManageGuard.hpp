@@ -1,7 +1,12 @@
 #pragma once
 
-#include "__fwd.hpp"
 #include "ManageGuard.hpp"
+#include "__fwd.hpp"
+
+namespace hg::engine::resource {
+	template <typename>
+	class MutTypedManageGuard;
+}
 
 namespace hg::engine::resource {
 	template <typename ValueType_>

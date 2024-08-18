@@ -12,7 +12,7 @@ namespace hg::engine::storage::system {
 	class PackageStorage final :
 		public InheritMeta<PackageStorage, IStorage> {
 	public:
-		friend class ::hg::engine::storage::StorageIo;
+		friend class StorageIo;
 
 	public:
 		using this_type = PackageStorage;

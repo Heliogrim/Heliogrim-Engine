@@ -8,6 +8,7 @@
 
 namespace hg::engine::storage::system {
 	class LocalFileStorage;
+	class LocalFileSystemProvider;
 }
 
 namespace hg::engine::storage::system {

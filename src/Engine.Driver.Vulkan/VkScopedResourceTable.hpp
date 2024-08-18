@@ -10,6 +10,10 @@
 #include "VkDescriptor.hpp"
 
 namespace hg::driver::vk {
+	class VkResourceTable;
+}
+
+namespace hg::driver::vk {
 	class VkScopedResourceTable :
 		public engine::render::ResourceTable {
 	public:

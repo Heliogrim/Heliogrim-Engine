@@ -13,8 +13,24 @@
 namespace hg::engine::resource::loader {
 	class LoaderBase;
 
+	template <IsRequestValueType, IsResponseValueType>
+	class Loader;
+
+	template <
+		IsRequestValueType,
+		IsResponseValueType,
+		typename,
+		class,
+		class,
+		class,
+		class
+	>
+	class LoaderChainBase;
+
 	template <class Type_>
 	concept IsLoader = std::derived_from<Type_, LoaderBase>;
+
+	/**/
 
 	class macro_novtable LoaderBase :
 		public InheritBase<LoaderBase> {
