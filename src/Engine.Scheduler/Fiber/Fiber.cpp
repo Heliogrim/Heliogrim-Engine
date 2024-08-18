@@ -166,10 +166,10 @@ void self::await(mref<FiberAwaitable> awaitable_) {
 	#endif
 }
 
-constexpr u64 engine::scheduler::fiber::default_fiber_stack_size() noexcept {
+u64 engine::scheduler::fiber::default_fiber_stack_size() noexcept {
 	#ifdef ENV_MSVC
 	return 4096ui64;
 	#else
-    return SIGSTKSZ;
+    return static_cast<u64>(SIGSTKSZ);
 	#endif
 }
