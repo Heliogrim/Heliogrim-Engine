@@ -116,12 +116,12 @@ set(DEFAULT_COMPILE_DEFINITIONS
 
 if (${CMAKE_BUILD_TYPE} MATCHES "Debug")
 	set(DEFAULT_COMPILE_DEFINITIONS ${DEFAULT_COMPILE_DEFINITIONS}
-			_Debug # Custom Debug Preprocessor Flag
+			_DEBUG # Custom Debug Preprocessor Flag
 	)
 endif ()
 if (${CMAKE_BUILD_TYPE} MATCHES "Profile")
 	set(DEFAULT_COMPILE_DEFINITIONS ${DEFAULT_COMPILE_DEFINITIONS}
-			_Profiling # Custom Debug Preprocessor Flag
+			_PROFILING # Custom Debug Preprocessor Flag
 	)
 endif ()
 
