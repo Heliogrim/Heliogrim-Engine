@@ -1,5 +1,8 @@
 #include "MemoryWriteonlyArchive.hpp"
 
+#include <cstring>
+#include <utility>
+
 using namespace hg::engine::resource;
 using namespace hg;
 

@@ -1,5 +1,8 @@
 #include "MemoryReadonlyArchive.hpp"
 
+#include <cstring>
+#include <utility>
+
 using namespace hg::engine::resource;
 using namespace hg;
 
@@ -14,7 +17,7 @@ MemoryReadonlyArchive::MemoryReadonlyArchive(ref<std::span<u8, std::dynamic_exte
 	_limit(limit_) {}
 
 s64 MemoryReadonlyArchive::totalSize() const noexcept {
-	return _limit >= 0 ? MIN(_limit, static_cast<s64>(_bytes.size())) : static_cast<s64>(_bytes.size());
+	return _limit >= 0 ? std::min(_limit, static_cast<s64>(_bytes.size())) : static_cast<s64>(_bytes.size());
 }
 
 bool MemoryReadonlyArchive::hasSizeLimit() const noexcept {
