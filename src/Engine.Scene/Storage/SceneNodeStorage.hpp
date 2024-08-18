@@ -104,7 +104,7 @@ namespace hg::engine::scene {
 	 */
 	template <typename ValueType, typename KeyType, typename IndexType = u64>
 	class scene_node_storage_page final {
-		friend class scene_node_storage<ValueType, KeyType>;
+		friend class ::hg::engine::scene::scene_node_storage<ValueType, KeyType>;
 
 	public:
 		using this_type = scene_node_storage_page<ValueType, KeyType, IndexType>;

@@ -18,7 +18,7 @@ namespace hg {
 		using value_type = AssetDatabase;
 
 	public:
-		friend class Heliogrim;
+		friend class ::hg::Heliogrim;
 
 	private:
 		AssetDatabase(const non_owning_rptr<void> internal_);

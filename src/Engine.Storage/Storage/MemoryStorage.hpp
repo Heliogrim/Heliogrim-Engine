@@ -15,7 +15,7 @@ namespace hg::engine::storage::system {
 	class MemoryStorage final :
 		public InheritMeta<MemoryStorage, IStorage> {
 	public:
-		friend class StorageIo;
+		friend class ::hg::engine::storage::StorageIo;
 
 	public:
 		using this_type = MemoryStorage;

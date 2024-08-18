@@ -25,7 +25,7 @@ namespace hg {
 	class RefCountedBlock final :
 		public RefCountedBlockBase {
 	public:
-		friend class RefCounted<Ty_>;
+		friend class ::hg::RefCounted<Ty_>;
 
 	public:
 		using this_type = RefCountedBlock<Ty_>;

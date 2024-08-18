@@ -42,7 +42,7 @@ namespace hg::engine::resource::loader {
 		friend class ::hg::InheritBase;
 
 		template <IsRequestValueType, IsResponseValueType>
-		friend class Loader;
+		friend class ::hg::engine::resource::loader::Loader;
 
 	public:
 		using this_type = LoaderBase;
@@ -126,7 +126,7 @@ namespace hg::engine::resource::loader {
 			class,
 			class
 		>
-		friend class LoaderChainBase;
+		friend class ::hg::engine::resource::loader::LoaderChainBase;
 
 	public:
 		using this_type = Loader<RequestType_, ResponseType_>;

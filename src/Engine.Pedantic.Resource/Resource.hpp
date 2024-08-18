@@ -12,8 +12,8 @@ namespace hg {
 	class macro_novtable Resource :
 		public ResourceBase {
 	public:
-		friend class ResourceAccessor<std::add_const_t<ManagedType_>>;
-		friend class ResourceAccessor<ManagedType_>;
+		friend class ::hg::ResourceAccessor<std::add_const_t<ManagedType_>>;
+		friend class ::hg::ResourceAccessor<ManagedType_>;
 
 	public:
 		using this_type = Resource<ManagedType_>;

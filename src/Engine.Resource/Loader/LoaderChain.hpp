@@ -78,7 +78,7 @@ namespace hg::engine::resource::loader {
 			class,
 			class,
 			bool>
-		friend class LoaderChain;
+		friend class ::hg::engine::resource::loader::LoaderChain;
 
 	public:
 		using this_type = LoaderChainBase<

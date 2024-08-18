@@ -315,7 +315,8 @@ namespace hg {
 		template <typename Type_>
 		class ProxyVectorIterator {
 		private:
-			friend class ProxyVector;
+			template <typename, typename, bool, bool>
+			friend class ::hg::ProxyVector;
 
 		public:
 			using this_type = ProxyVectorIterator<Type_>;
@@ -624,7 +625,7 @@ namespace hg {
 
 	private:
 		template <typename Type_, typename SizeType_, typename GrowthPolicy_, bool Stable_, bool Realloc_>
-		friend class TypedProxyVector;
+		friend class ::hg::TypedProxyVector;
 
 		template <typename Type_>
 		using typed_wrapper_type = TypedProxyVector<Type_, SizeType_, GrowthPolicy_, Stable_, Realloc_>;

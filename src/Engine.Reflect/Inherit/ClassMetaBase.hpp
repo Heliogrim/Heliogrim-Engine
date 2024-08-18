@@ -18,13 +18,13 @@ namespace hg {
 	class macro_novtable ClassMetaBase {
 	public:
 		template <typename>
-		friend class InheritBase;
+		friend class ::hg::InheritBase;
 
 		template <typename, typename, typename...>
-		friend class InheritMeta;
+		friend class ::hg::InheritMeta;
 
 		template <typename>
-		friend struct lookup;
+		friend struct ::hg::lookup;
 
 		constexpr static const char* name = "ClassMetaBase";
 

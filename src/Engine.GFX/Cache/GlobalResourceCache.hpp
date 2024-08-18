@@ -13,8 +13,8 @@
 namespace hg::engine::gfx::cache {
 	class GlobalResourceCache final {
 	public:
-		friend class GlobalCacheCtrl;
-		friend class LocalResourceCache;
+		friend class ::hg::engine::gfx::cache::GlobalCacheCtrl;
+		friend class ::hg::engine::gfx::cache::LocalResourceCache;
 
 	public:
 		using this_type = GlobalResourceCache;

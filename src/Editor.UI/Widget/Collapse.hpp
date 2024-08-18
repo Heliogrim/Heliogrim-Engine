@@ -16,7 +16,7 @@ namespace hg::editor::ui {
 	class CollapseHeader :
 		public engine::reflow::HorizontalPanel {
 	public:
-		friend class Collapse;
+		friend class ::hg::editor::ui::Collapse;
 
 	public:
 		using this_type = CollapseHeader;
@@ -49,7 +49,7 @@ namespace hg::editor::ui {
 	class Collapse :
 		public engine::reflow::Widget {
 	public:
-		friend class CollapseHeader;
+		friend class ::hg::editor::ui::CollapseHeader;
 
 	public:
 		using this_type = Collapse;

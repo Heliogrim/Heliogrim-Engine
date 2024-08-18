@@ -27,7 +27,7 @@ namespace hg {
 	class RcFromThis {
 	public:
 		template <IsIntrusiveRefCountable Ux_>
-		friend class RefCountedIntrusive;
+		friend class ::hg::RefCountedIntrusive;
 
 	public:
 		using this_type = RcFromThis<Derived_>;

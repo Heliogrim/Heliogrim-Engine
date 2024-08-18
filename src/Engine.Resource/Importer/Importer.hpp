@@ -15,7 +15,7 @@ namespace hg::engine::res {
 	class macro_novtable ImporterBase {
 	public:
 		template <class ImportType_, class DescriptorType_>
-		friend class Importer;
+		friend class ::hg::engine::res::Importer;
 
 	public:
 		using value_type = ImporterBase;

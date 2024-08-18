@@ -17,7 +17,7 @@ namespace hg::driver::vk {
 	class VkScopedResourceTable :
 		public engine::render::ResourceTable {
 	public:
-		friend class VkResourceTable;
+		friend class ::hg::driver::vk::VkResourceTable;
 
 	public:
 		using this_type = VkScopedResourceTable;

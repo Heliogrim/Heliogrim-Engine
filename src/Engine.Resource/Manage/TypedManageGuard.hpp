@@ -14,7 +14,7 @@ namespace hg::engine::resource {
 		public ManageGuard {
 	public:
 		template <typename>
-		friend class MutTypedManageGuard;
+		friend class ::hg::engine::resource::MutTypedManageGuard;
 
 	public:
 		using this_type = TypedManageGuard<ValueType_>;

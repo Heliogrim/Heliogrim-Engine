@@ -10,7 +10,7 @@ namespace hg::engine::resource::package {
 	template <bool Const_>
 	class LinkedArchiveIterator {
 	public:
-		friend class PackageLinker;
+		friend class ::hg::engine::resource::package::PackageLinker;
 
 	public:
 		using this_type = LinkedArchiveIterator<Const_>;

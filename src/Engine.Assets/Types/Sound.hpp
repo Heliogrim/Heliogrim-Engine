@@ -6,31 +6,31 @@
 #include "Asset.hpp"
 
 namespace hg::engine::assets {
-    class Sound :
-        public InheritMeta<Sound, Asset> {
-    public:
-        template <typename>
-        friend class serialization::DataLayout;
+	class Sound :
+		public InheritMeta<Sound, Asset> {
+	public:
+		template <typename>
+		friend class ::hg::engine::serialization::DataLayout;
 
-    public:
-        inline static constexpr asset_type_id typeId { "Sound"_typeId };
+	public:
+		inline static constexpr asset_type_id typeId { "Sound"_typeId };
 
-    protected:
-        Sound(mref<asset_guid> guid_);
+	protected:
+		Sound(mref<asset_guid> guid_);
 
-    private:
-        string _url;
+	private:
+		string _url;
 
-    private:
-        u8 _channel;
+	private:
+		u8 _channel;
 
-    private:
-        sfx::AudioFormat _format;
+	private:
+		sfx::AudioFormat _format;
 
-    private:
-        u32 _sampleRate;
+	private:
+		u32 _sampleRate;
 
-    private:
-        u64 _samples;
-    };
+	private:
+		u64 _samples;
+	};
 }

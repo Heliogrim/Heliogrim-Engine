@@ -18,7 +18,7 @@ namespace hg {
 
 	class ActorInitializer {
 	public:
-		friend class Session;
+		friend class ::hg::Session;
 
 	public:
 		using this_type = ActorInitializer;
