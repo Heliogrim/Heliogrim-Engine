@@ -1,5 +1,8 @@
 #include "CompScheduler.hpp"
 
+#include <cmath>
+#include <cstdlib>
+#include <utility>
 #include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Logging/Logger.hpp>

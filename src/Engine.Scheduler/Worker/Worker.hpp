@@ -198,6 +198,6 @@ namespace hg::engine::scheduler::worker {
 		task::TaskMask _mask;
 
 	private:
-		static void __stdcall handle(void* args_);
+		static void handle(void* args_);
 	};
 }
