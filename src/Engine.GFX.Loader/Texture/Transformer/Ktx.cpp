@@ -1,6 +1,7 @@
 #include "Ktx.hpp"
 
 #include <algorithm>
+#include <cstring>
 #include <filesystem>
 #include <ranges>
 #include <stdexcept>
@@ -179,7 +180,7 @@ void transformer::convertKtx(
 
 	/**/
 
-	bool isKtx20 = memcmp(raw.data(), ktx20Identifier, sizeof(ktx20Identifier)) == 0;
+	bool isKtx20 = std::memcmp(raw.data(), ktx20Identifier, sizeof(ktx20Identifier)) == 0;
 
 	if (isKtx20) {
 		convertKtx20(asset_, std::move(src_), dst_, device_, options_);
@@ -1921,7 +1922,7 @@ bool external::ktx::readHeader(ref<InternalContext> ctx_) {
 
 	/**/
 
-	if (memcmp(ctx_.header.identifier, ktx20Identifier, sizeof(ktx20Identifier)) != 0) {
+	if (std::memcmp(ctx_.header.identifier, ktx20Identifier, sizeof(ktx20Identifier)) != 0) {
 		return false;
 	}
 

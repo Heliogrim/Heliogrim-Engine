@@ -1,4 +1,6 @@
 #pragma once
+
+#include <cstring>
 #include <utility>
 
 #include "stdafx.h"
@@ -17,7 +19,7 @@ namespace hg::__internal::types {
 		 */
 		basic_istream(const std::basic_istream<Type, Traits>&& stream_) :
 			_stream(static_cast<std::basic_istream<Type, Traits>*>(malloc(sizeof(stream_)))) {
-			memcpy(_stream, &(std::move(stream_)), sizeof(stream_));
+			std::memcpy(_stream, &(std::move(stream_)), sizeof(stream_));
 		}
 
 		/**
@@ -94,7 +96,7 @@ namespace hg::__internal::types {
 		 */
 		basic_ostream(const std::basic_ostream<Type, Traits>&& stream_) :
 			_stream(static_cast<std::basic_ostream<Type, Traits>*>(malloc(sizeof(stream_)))) {
-			memcpy(_stream, &(std::move(stream_)), sizeof(stream_));
+			std::memcpy(_stream, &(std::move(stream_)), sizeof(stream_));
 		}
 
 		/**

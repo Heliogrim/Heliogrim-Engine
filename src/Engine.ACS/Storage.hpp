@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstring>
 #include <stdexcept>
 #include <unordered_set>
 #include <utility>
@@ -1232,7 +1233,7 @@ namespace hg::engine::acs {
 			/**
 			 * 
 			 */
-			memset(key_ptr, 0, key_length);
+			std::memset(key_ptr, 0, key_length);
 
 			/**
 			 * 

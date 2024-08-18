@@ -1,6 +1,7 @@
 #include "AllocatedMemory.hpp"
 
 #include <cassert>
+#include <cstring>
 #include <utility>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 
@@ -109,7 +110,7 @@ bool AllocatedMemory::write(const ptr<const void> data_, const u64 size_) {
 		return false;
 	}
 
-	memcpy(mapping, data_, static_cast<size_t>(size_));
+	std::memcpy(mapping, data_, static_cast<size_t>(size_));
 	return true;
 }
 

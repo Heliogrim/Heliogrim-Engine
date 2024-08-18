@@ -1,5 +1,6 @@
 #include "Win32DragDropObject.hpp"
 
+#include <cstring>
 #include <ShlObj_core.h>
 #include <sstream>
 #include <Engine.Logging/Logger.hpp>
@@ -248,7 +249,7 @@ HGLOBAL Win32DragDropObject::makeHGlobalCopy(HGLOBAL src_) {
 	auto* const dst { GlobalAlloc(GMEM_MOVEABLE, length) };
 	const PVOID pDst { GlobalLock(dst) };
 
-	memcpy(pDst, pSrc, length);
+	std::memcpy(pDst, pSrc, length);
 	GlobalUnlock(src_);
 
 	GlobalUnlock(dst);

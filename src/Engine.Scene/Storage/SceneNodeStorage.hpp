@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <cstring>
 #include <map>
 #include <stdexcept>
 #include <utility>
@@ -209,7 +210,7 @@ namespace hg::engine::scene {
 			/**
 			 * Cleanup memory block with empty data
 			 */
-			memset(key_ptr, 0, key_length);
+			std::memset(key_ptr, 0, key_length);
 
 			/**
 			 *

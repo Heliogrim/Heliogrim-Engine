@@ -9,7 +9,7 @@ using namespace hg;
 Cube::~Cube() {}
 
 ptr<Mesh> Cube::convert() const {
-    #if FALSE
+	#if FALSE
     auto device = Graphics::get()->getCurrentDevice();
 
     /*
@@ -168,7 +168,7 @@ ptr<Mesh> Cube::convert() const {
     vertexBuffer.bind();
     vertexBuffer.map();
 
-    memcpy(vertexBuffer.mapped, vpt, vertexCount * sizeof(vertex));
+    std::memcpy(vertexBuffer.mapped, vpt, vertexCount * sizeof(vertex));
 
     vertexBuffer.unmap();
     delete[] vpt;
@@ -203,20 +203,20 @@ ptr<Mesh> Cube::convert() const {
     indexBuffer.bind();
     indexBuffer.map();
 
-    memcpy(indexBuffer.mapped, ipt, indexCount * sizeof(u32));
+    std::memcpy(indexBuffer.mapped, ipt, indexCount * sizeof(u32));
 
     indexBuffer.unmap();
     delete[] ipt;
 
     return mesh;
-    #endif
-    return nullptr;
+	#endif
+	return nullptr;
 }
 
 ref<math::uivec2> Cube::segments() noexcept {
-    return _segment;
+	return _segment;
 }
 
 ref<math::fvec2> Cube::scale() noexcept {
-    return _scale;
+	return _scale;
 }

@@ -1,5 +1,6 @@
 #include "VorbisImporter.hpp"
 
+#include <cstring>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/String.hpp>
 #include <vorbis/vorbisfile.h>
@@ -56,7 +57,7 @@ VorbisImporter::import_result_type VorbisImporter::import(
 
 			// .. any other error, might not be problematic
 		} else {
-			memcpy(
+			std::memcpy(
 				&(static_cast<ptr<char>>(buffer.mem)[dstOffset]),
 				chunk,
 				read

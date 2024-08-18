@@ -34,7 +34,10 @@ namespace hg::engine::resource {
 			mref<std::span<_::byte>> dst_
 		) const override {
 			::hg::assertrt(offset_ >= 0LL && offset_ <= _bytes.size());
-			auto copyrange = _bytes.subspan(offset_, std::min(dst_.size(), _bytes.size() - offset_));
+			auto copyrange = _bytes.subspan(
+				offset_,
+				std::min(dst_.size(), static_cast<std::size_t>(_bytes.size() - offset_))
+			);
 			std::ranges::copy(copyrange, dst_.data());
 			return std::move(dst_).subspan(0, copyrange.size());
 		}
