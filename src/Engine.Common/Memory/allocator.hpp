@@ -113,7 +113,7 @@ namespace hg::engine::memory {
 		 *
 		 * @returns A pointer_type.
 		 */
-		[[nodiscard]] pointer_type allocate(_CRT_GUARDOVERFLOW const size_t count_, const void* = nullptr) {
+		[[nodiscard]] pointer_type allocate(const size_t count_, const void* = nullptr) {
 			static_assert(Align >= sizeof(void*));
 
 			if (count_ == 0) {
