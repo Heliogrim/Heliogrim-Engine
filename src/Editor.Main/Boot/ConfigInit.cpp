@@ -1,6 +1,7 @@
 #include "ConfigInit.hpp"
 
 #include <filesystem>
+#include <Engine.Common/Types.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Collection/Array.hpp>
 #include <Engine.Config/Config.hpp>
@@ -189,4 +190,54 @@ tl::expected<std::filesystem::path, RegReadError> readPathFromReg(std::wstring_v
 	};
 	return std::filesystem::path { regDataView };
 }
+#else
+
+std::filesystem::path getProjectRootPath() {
+	// Question: How should we determine the root path, as we need the installation path for the runtime installation or editor, or the project path for a project setup?
+	const auto cwd = std::filesystem::current_path();
+	return clone(cwd);
+}
+
+std::filesystem::path getProjectCachePath() {
+	return getProjectRootPath().append(R"(.cache)");
+}
+
+std::filesystem::path getEditorInstallPath() {
+	return getProcessModulePath();
+	//return getCommonInstallPath().value<>().append(R"(Heliogrim\Editor)");
+}
+
+std::filesystem::path getEditorUserCachePath() {
+	return getProjectRootPath().append(R"(.cache)");
+}
+
+/**/
+
+#include <libgen.h>
+#include <string.h>
+#include <unistd.h>
+
+std::filesystem::path getProcessModulePath() {
+	Array<_::byte, 256> tmpData {};
+
+	s64 readSize = readlink(
+		"/proc/self/exe",
+		std::bit_cast<char*>(tmpData.data()),
+		(tmpData.size() / sizeof(char)) - 1
+	);
+	if (readSize != -1) {
+		tmpData[readSize] = std::bit_cast<_::byte>('\0');
+		dirname(std::bit_cast<char*>(tmpData.data()));
+		strcat(std::bit_cast<char*>(tmpData.data()), "/");
+		return std::filesystem::path { std::string_view { std::bit_cast<char*>(tmpData.data()) } };
+	}
+
+	if (getcwd(std::bit_cast<char*>(tmpData.data()), tmpData.size() / sizeof(char)) == NULL) {
+		return std::filesystem::path {};
+	}
+
+	strcat(std::bit_cast<char*>(tmpData.data()), "/");
+	return std::filesystem::path { std::string_view { std::bit_cast<char*>(tmpData.data()) } };
+}
+
 #endif
