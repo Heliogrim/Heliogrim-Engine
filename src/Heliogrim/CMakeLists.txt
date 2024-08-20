@@ -13,6 +13,7 @@ endif ()
 make_library_project(
 		LIB_NAME Heliogrim
 		LIB_FOLDER "${IDE_FOLDER}"
+		FORCE_TYPE_STATIC ON
 		LIBRARIES
 		${PROJECT_NAME}::Engine.ACS
 		${PROJECT_NAME}::Engine.Accel
