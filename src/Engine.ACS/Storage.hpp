@@ -6,6 +6,7 @@
 #include <utility>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.Common/Memory/Address.hpp>
 
 namespace hg::engine::acs {
 	template <typename Ty>
@@ -2163,7 +2164,7 @@ namespace hg::engine::acs {
 			constexpr auto null_iter = typename iterator::storage_page_iterator_type {};
 			return iterator {
 				pb,
-				pb._Unwrapped() != nullptr ? pb->cbegin() : null_iter
+				::hg::unfancyNullable(&*pb) != nullptr ? pb->cbegin() : null_iter
 			};
 		}
 
@@ -2179,7 +2180,7 @@ namespace hg::engine::acs {
 			auto pe = _pages.end();
 
 			constexpr auto null_iter = typename iterator::storage_page_iterator_type {};
-			auto pair_iter = pe._Unwrapped() != nullptr ? (--pe)->end() : null_iter;
+			auto pair_iter = pe != _pages.begin() ? (--pe)->end() : null_iter;
 			return iterator { pe, std::move(pair_iter) };
 		}
 
@@ -2197,7 +2198,7 @@ namespace hg::engine::acs {
 			constexpr auto null_iter = typename const_iterator::storage_page_iterator_type {};
 			return const_iterator {
 				pb,
-				pb._Unwrapped() != nullptr ? pb->cbegin() : null_iter
+				::hg::unfancyNullable(&*pb) != nullptr ? pb->cbegin() : null_iter
 			};
 		}
 
@@ -2213,7 +2214,7 @@ namespace hg::engine::acs {
 			auto pe = _pages.cend();
 
 			constexpr auto null_iter = typename const_iterator::storage_page_iterator_type {};
-			auto pair_iter = pe._Unwrapped() != nullptr ? (--pe)->end() : null_iter;
+			auto pair_iter = pe != _pages.cbegin() ? (--pe)->end() : null_iter;
 			return const_iterator { pe, std::move(pair_iter) };
 		}
 
@@ -2231,7 +2232,7 @@ namespace hg::engine::acs {
 			constexpr auto null_iter = typename const_iterator::storage_page_iterator_type {};
 			return const_iterator {
 				pb,
-				pb._Unwrapped() != nullptr ? pb->cbegin() : null_iter
+				::hg::unfancyNullable(&*pb) != nullptr ? pb->cbegin() : null_iter
 			};
 		}
 
@@ -2247,7 +2248,7 @@ namespace hg::engine::acs {
 			auto pe = _pages.cend();
 
 			constexpr auto null_iter = typename const_iterator::storage_page_iterator_type {};
-			auto pair_iter = pe._Unwrapped() != nullptr ? (--pe)->end() : null_iter;
+			auto pair_iter = pe != _pages.cbegin() ? (--pe)->end() : null_iter;
 			return const_iterator { pe, std::move(pair_iter) };
 		}
 

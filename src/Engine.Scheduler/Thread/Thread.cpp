@@ -35,7 +35,7 @@ thread_local static thread_id __threadId { cast_ntid_tid(std::this_thread::get_i
 
 thread_local static uint64_t __threadIdx { generate_thread_idx() };
 
-FORCE_INLINE inline static bool set_priority(HANDLE handle_, priority priority_) {
+FORCE_INLINE inline static bool set_priority(std::thread::native_handle_type handle_, priority priority_) {
 	#if defined(_WIN32) || defined(_WIN64)
 	auto tr = 0;
 

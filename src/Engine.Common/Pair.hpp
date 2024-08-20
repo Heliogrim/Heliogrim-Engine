@@ -1,6 +1,7 @@
 #pragma once
 
 #include <type_traits>
+#include <utility>
 
 namespace hg {
 	/* Note: This is a straight copy from the msvc xmemory header... */
