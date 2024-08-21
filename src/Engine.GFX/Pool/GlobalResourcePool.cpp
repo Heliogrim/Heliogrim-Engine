@@ -164,7 +164,7 @@ uptr<engine::gfx::SparseBufferView> GlobalResourcePool::allocateIndexBuffer(
 		auto vp { vb->addPage(req.alignment, req.alignment * page) };
 
 		#ifdef _DEBUG
-        assert(vp->load());
+		assert(vp->load());
 		#else
 		vp->load();
 		#endif
@@ -174,11 +174,7 @@ uptr<engine::gfx::SparseBufferView> GlobalResourcePool::allocateIndexBuffer(
 	 * Bind buffer and allocated memory
 	 */
 	vb->updateBindingData();
-
-	#pragma warning(push)
-	#pragma warning(disable : 4996)
 	vb->enqueueBindingSync(_device->graphicsQueue());
-	#pragma warning(pop)
 
 	/**
 	 * Store and return virtual buffer
@@ -277,7 +273,7 @@ uptr<engine::gfx::SparseBufferView> GlobalResourcePool::allocateVertexBuffer(
 		auto vp { vb->addPage(req.alignment, req.alignment * page) };
 
 		#ifdef _DEBUG
-        assert(vp->load());
+		assert(vp->load());
 		#else
 		vp->load();
 		#endif
@@ -287,11 +283,7 @@ uptr<engine::gfx::SparseBufferView> GlobalResourcePool::allocateVertexBuffer(
 	 * Bind buffer and allocated memory
 	 */
 	vb->updateBindingData();
-
-	#pragma warning(push)
-	#pragma warning(disable : 4996)
 	vb->enqueueBindingSync(_device->graphicsQueue());
-	#pragma warning(pop)
 
 	/**
 	 * Store and return virtual buffer

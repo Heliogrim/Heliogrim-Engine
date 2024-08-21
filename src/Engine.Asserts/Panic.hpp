@@ -87,7 +87,7 @@ namespace hg {
 
 	#endif
 
-	[[noreturn]] FORCE_INLINE inline void panic() noexcept {
+	[[noreturn]] inline void panic() noexcept {
 		::hg::panic_stacktrace();
 		::std::abort();
 	}

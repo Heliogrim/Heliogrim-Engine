@@ -138,6 +138,7 @@ namespace hg::engine::gfx {
 			cref<Vector<vk::Semaphore>> signals_
 		);
 
-		[[deprecated]] void enqueueBindingSync(const ptr<CommandQueue> queue_);
+		// TODO: Remove / Deprecated
+		void enqueueBindingSync(const ptr<CommandQueue> queue_);
 	};
 }
