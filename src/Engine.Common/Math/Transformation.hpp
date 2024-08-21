@@ -36,6 +36,7 @@ namespace hg::math {
 		 */
 		Transformation(const vec3& position_, const vec3& rotation_, const vec3& scale_) :
 			_rotation(rotation_),
+			_matrix(),
 			_quaternion(0),
 			_position(position_),
 			_scale(scale_) {}
@@ -99,7 +100,7 @@ namespace hg::math {
 		 * \brief
 		 * \return
 		 */
-		const vec3& position() const {
+		[[nodiscard]] const vec3& position() const {
 			return _position;
 		}
 
@@ -107,7 +108,7 @@ namespace hg::math {
 		 * \brief
 		 * \return
 		 */
-		vec3& position() {
+		[[nodiscard]] vec3& position() {
 			return _position;
 		}
 
@@ -115,7 +116,7 @@ namespace hg::math {
 		 * \brief
 		 * \return
 		 */
-		const vec3& rotation() const {
+		[[nodiscard]] const vec3& rotation() const {
 			return _rotation;
 		}
 
@@ -123,7 +124,7 @@ namespace hg::math {
 		 * \brief
 		 * \return
 		 */
-		vec3& rotation() {
+		[[nodiscard]] vec3& rotation() {
 			return _rotation;
 		}
 
@@ -131,7 +132,7 @@ namespace hg::math {
 		 * \brief
 		 * \return
 		 */
-		[[nodiscard]] quaternion::const_reference_type quaternion() const {
+		[[nodiscard]] const ::hg::math::quaternion& quaternion() const {
 			return _quaternion;
 		}
 
@@ -139,7 +140,7 @@ namespace hg::math {
 		 * \brief
 		 * \return
 		 */
-		quaternion::reference_type quaternion() {
+		[[nodiscard]] ::hg::math::quaternion& quaternion() {
 			return _quaternion;
 		}
 
@@ -147,7 +148,7 @@ namespace hg::math {
 		 * \brief
 		 * \return
 		 */
-		const vec3& scale() const {
+		[[nodiscard]] const vec3& scale() const {
 			return _scale;
 		}
 
@@ -155,7 +156,7 @@ namespace hg::math {
 		 * \brief
 		 * \return
 		 */
-		vec3& scale() {
+		[[nodiscard]] vec3& scale() {
 			return _scale;
 		}
 
@@ -163,7 +164,7 @@ namespace hg::math {
 		 * \brief
 		 * \return
 		 */
-		const mat4& matrix() const {
+		[[nodiscard]] const mat4& matrix() const {
 			return _matrix;
 		}
 
@@ -171,7 +172,7 @@ namespace hg::math {
 		 * \brief
 		 * \return
 		 */
-		mat4& matrix() {
+		[[nodiscard]] mat4& matrix() {
 			return _matrix;
 		}
 
@@ -242,7 +243,7 @@ namespace hg::math {
 		/**
 		 *
 		 */
-		quaternion::type _quaternion;
+		::hg::math::quaternion _quaternion;
 		vec3 _position;
 		vec3 _scale;
 	};
