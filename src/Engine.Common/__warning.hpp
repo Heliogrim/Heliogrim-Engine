@@ -41,11 +41,9 @@ __pragma(warning(disable: 26481))
 #define END_REGION_UNCHECKED_LLVL \
 __pragma(warning(pop))
 #elif __GNUC__
-#define BEGIN_REGION_UNCHECKED_LLVL \
-_Pragma("GCC diagnostic push") \
-_Pragma("GCC diagnostic ignored \"-Wunsafe-buffer-usage\"")
-#define END_REGION_UNCHECKED_LLVL \
-_Pragma("GCC diagnostic pop")
+// GCC does not allow pragma inside functions, don't care anymore at this point
+#define BEGIN_REGION_UNCHECKED_LLVL
+#define END_REGION_UNCHECKED_LLVL
 #else
 #define BEGIN_REGION_UNCHECKED_LLVL
 #define END_REGION_UNCHECKED_LLVL
