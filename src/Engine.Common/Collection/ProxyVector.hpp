@@ -624,7 +624,7 @@ namespace hg {
 		}
 
 	private:
-		template <typename Type_, typename SizeType_, typename GrowthPolicy_, bool Stable_, bool Realloc_>
+		template <typename, typename, typename, bool, bool>
 		friend class ::hg::TypedProxyVector;
 
 		template <typename Type_>
@@ -958,11 +958,11 @@ namespace hg {
 			cref<pointer_type> myEnd { _end };
 
 			if (myLst != myEnd) {
-				emplace_back_unused(std::forward<ptr<void>>(value_));
+				emplace_back_unused(value_);
 				return;
 			}
 
-			emplace_back_reallocate(std::forward<ptr<void>>(value_));
+			emplace_back_reallocate(value_);
 		}
 
 		/**
