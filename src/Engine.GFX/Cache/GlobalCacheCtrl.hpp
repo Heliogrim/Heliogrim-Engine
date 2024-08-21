@@ -113,7 +113,8 @@ namespace hg::engine::gfx::cache {
 			cref<AssocKey<TextureSubResource>> subresource_
 		);
 
-		[[deprecated]] stream_result_type<> markAsUsed(
+		// TODO: Remove / Deprecated
+		stream_result_type<> markAsUsed(
 			_In_ const non_owning_rptr<TextureResource> resource_,
 			_In_ mref<TextureSubResourceRange> range_
 		);
@@ -128,7 +129,8 @@ namespace hg::engine::gfx::cache {
 
 		void unmark(_In_ mref<smr<TextureResource>> resource_, cref<AssocKey<TextureSubResource>> subresource_);
 
-		[[deprecated]] void unmark(_In_ mref<smr<TextureResource>>, mref<TextureSubResourceRange> subresourceRange_);
+		// TODO: Remove
+		void unmark(_In_ mref<smr<TextureResource>>, mref<TextureSubResourceRange> subresourceRange_);
 
 	private:
 		/**
@@ -138,12 +140,14 @@ namespace hg::engine::gfx::cache {
 		_staticGeometries;
 
 	public:
-		[[deprecated]] void markAsUsed(
+		// TODO: Remove / Deprecated
+		void markAsUsed(
 			ptr<StaticGeometryResource> resource_,
 			mref<StaticGeometrySubResource> subresource_
 		);
 
-		[[deprecated]] void unmark(ptr<StaticGeometryResource> resource_, mref<StaticGeometrySubResource> subresource_);
+		// TODO: Remove / Deprecated
+		void unmark(ptr<StaticGeometryResource> resource_, mref<StaticGeometrySubResource> subresource_);
 
 	private:
 		/**

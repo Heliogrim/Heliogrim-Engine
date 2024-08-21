@@ -739,10 +739,7 @@ void transformer::convertKtx10Gli(
 	*/
 	auto tex { dst_->owner() };
 	const_cast<SparseTexture*>(tex.get())->updateBindingData();
-	#pragma warning(push)
-	#pragma warning(disable: 4996)
 	const_cast<SparseTexture*>(tex.get())->enqueueBindingSync(device_->graphicsQueue());
-	#pragma warning(pop)
 
 	/**
 	 * Capture commands to copy data to image
@@ -1009,10 +1006,7 @@ void transformer::convertKtx20(
 	*/
 	const auto tex { dst_->owner() };
 	const_cast<SparseTexture*>(tex.get())->updateBindingData();
-	#pragma warning(push)
-	#pragma warning(disable: 4996)
 	const_cast<SparseTexture*>(tex.get())->enqueueBindingSync(device_->graphicsQueue());
-	#pragma warning(pop)
 
 	/**
 	* Transform and data transfer
@@ -1351,10 +1345,7 @@ void transformer::convertKtx20Partial(
 	if (changedMemory) {
 		auto tex { dst_->owner() };
 		const_cast<SparseTexture*>(tex.get())->updateBindingData();
-		#pragma warning(push)
-		#pragma warning(disable: 4996)
 		const_cast<SparseTexture*>(tex.get())->enqueueBindingSync(device_->transferQueue());
-		#pragma warning(pop)
 	}
 
 	#pragma endregion
@@ -1754,10 +1745,7 @@ void transformer::unloadPartialTmp(
 	if (changedMemory) {
 		auto tex { dst_->owner() };
 		const_cast<SparseTexture*>(tex.get())->updateBindingData();
-		#pragma warning(push)
-		#pragma warning(disable: 4996)
 		const_cast<SparseTexture*>(tex.get())->enqueueBindingSync(device_->transferQueue());
-		#pragma warning(pop)
 	}
 }
 

@@ -183,10 +183,7 @@ EditorBmpTextureTransformer::loader_traits::response::type EditorBmpTextureTrans
 
 	// Warning: Unsafe force update virtual bindings
 	view->owner()->updateBindingData();
-	#pragma warning(push)
-	#pragma warning(disable: 4996)
 	view->owner()->enqueueBindingSync(device->graphicsQueue());
-	#pragma warning(pop)
 
 	/**
 	 * Transform and transfer data

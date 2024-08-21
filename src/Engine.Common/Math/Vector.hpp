@@ -9,7 +9,9 @@
 #include "../Wrapper.hpp"
 #include "../__macro.hpp"
 
+#if defined(ENV_WIN)
 #pragma warning (disable: 4201)
+#endif
 
 namespace hg::math {
 	/* Class Forward */

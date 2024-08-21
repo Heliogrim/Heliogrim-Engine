@@ -11,262 +11,250 @@
 #include "Engine.GFX/Command/CommandQueue.hpp"
 
 namespace hg::engine::gfx {
-    template <typename ValueType_>
-    class RangePooled {
-    public:
-        using this_type = RangePooled<ValueType_>;
+	template <typename ValueType_>
+	class RangePooled {
+	public:
+		using this_type = RangePooled<ValueType_>;
 
-    public:
-        RangePooled(cref<sptr<Device>> device_) :
-            _device(device_),
-            _allocator(_device->allocator()),
-            _buffer(nullptr),
-            _monotonicOffset(0uL),
-            _releasedList() {}
+	public:
+		RangePooled(cref<sptr<Device>> device_) :
+			_device(device_),
+			_allocator(_device->allocator()),
+			_buffer(nullptr),
+			_monotonicOffset(0uL),
+			_releasedList() {}
 
-        RangePooled(cref<this_type>) = delete;
+		RangePooled(cref<this_type>) = delete;
 
-        RangePooled(mref<this_type>) = delete;
+		RangePooled(mref<this_type>) = delete;
 
-        ~RangePooled() = default;
+		~RangePooled() = default;
 
-    private:
-    public:
-        vk::BufferCreateFlags _vkBufferCreate;
-        vk::BufferUsageFlags _vkBufferUsage;
+	private:
+	public:
+		vk::BufferCreateFlags _vkBufferCreate;
+		vk::BufferUsageFlags _vkBufferUsage;
 
-    public:
-        void setup(u64 reserved_) {
+	public:
+		void setup(u64 reserved_) {
 
-            assert(_buffer == nullptr);
+			assert(_buffer == nullptr);
 
-            /**/
+			/**/
 
-            vk::BufferCreateInfo bci {
-                vk::BufferCreateFlagBits::eSparseBinding | vk::BufferCreateFlagBits::eSparseResidency | _vkBufferCreate,
-                reserved_,
-                _vkBufferUsage,
-                vk::SharingMode::eExclusive,
-                0uL,
-                nullptr,
-                nullptr
-            };
+			vk::BufferCreateInfo bci {
+				vk::BufferCreateFlagBits::eSparseBinding | vk::BufferCreateFlagBits::eSparseResidency | _vkBufferCreate,
+				reserved_,
+				_vkBufferUsage,
+				vk::SharingMode::eExclusive,
+				0uL,
+				nullptr,
+				nullptr
+			};
 
-            auto vkBuffer = _device->vkDevice().createBuffer(bci);
+			auto vkBuffer = _device->vkDevice().createBuffer(bci);
 
-            const auto req = _device->vkDevice().getBufferMemoryRequirements(vkBuffer);
-            const auto layout = memory::MemoryLayout {
-                req.alignment,
-                MemoryProperty::eDeviceLocal,
-                req.memoryTypeBits
-            };
+			const auto req = _device->vkDevice().getBufferMemoryRequirements(vkBuffer);
+			const auto layout = memory::MemoryLayout {
+				req.alignment,
+				MemoryProperty::eDeviceLocal,
+				req.memoryTypeBits
+			};
 
-            auto memory = make_uptr<VirtualMemory>(_allocator, layout, req.size);
-            auto buffer = make_uptr<SparseBuffer>(std::move(memory), reserved_, vkBuffer, bci.usage);
+			auto memory = make_uptr<VirtualMemory>(_allocator, layout, req.size);
+			auto buffer = make_uptr<SparseBuffer>(std::move(memory), reserved_, vkBuffer, bci.usage);
 
-            buffer->updateBindingData();
+			buffer->updateBindingData();
+			buffer->enqueueBindingSync(_device->graphicsQueue());
 
-            #pragma warning(push)
-            #pragma warning(disable : 4996)
-            buffer->enqueueBindingSync(_device->graphicsQueue());
-            #pragma warning(pop)
+			_buffer = std::move(buffer);
+		}
 
-            _buffer = std::move(buffer);
-        }
+		void destroy() {
 
-        void destroy() {
+			if (not _buffer) {
+				return;
+			}
 
-            if (not _buffer) {
-                return;
-            }
+			_buffer.reset();
+			_monotonicOffset = 0uL;
+			_releasedList.clear();
+		}
 
-            _buffer.reset();
-            _monotonicOffset = 0uL;
-            _releasedList.clear();
-        }
+	private:
+		sptr<Device> _device;
+		nmpt<memory::GlobalPooledAllocator> _allocator;
 
-    private:
-        sptr<Device> _device;
-        nmpt<memory::GlobalPooledAllocator> _allocator;
+	private:
+		uptr<SparseBuffer> _buffer;
 
-    private:
-        uptr<SparseBuffer> _buffer;
+		u64 _monotonicOffset;
+		Vector<std::pair<u64, u64>> _releasedList;
 
-        u64 _monotonicOffset;
-        Vector<std::pair<u64, u64>> _releasedList;
+	private:
+		void grow(u64 required_) {
 
-    private:
-        void grow(u64 required_) {
+			const auto alignment = _buffer->memory()->layout().align;
 
-            const auto alignment = _buffer->memory()->layout().align;
+			const auto prevSize = _buffer->memorySize();
+			const auto nextSize = (required_ / alignment) * alignment + ((required_ % alignment) ? alignment : 0uLL);
 
-            const auto prevSize = _buffer->memorySize();
-            const auto nextSize = (required_ / alignment) * alignment + ((required_ % alignment) ? alignment : 0uLL);
+			/**/
 
-            /**/
+			vk::BufferCreateInfo bci {
+				vk::BufferCreateFlagBits::eSparseBinding | vk::BufferCreateFlagBits::eSparseResidency | _vkBufferCreate,
+				nextSize,
+				_vkBufferUsage,
+				vk::SharingMode::eExclusive,
+				0uL,
+				nullptr,
+				nullptr
+			};
 
-            vk::BufferCreateInfo bci {
-                vk::BufferCreateFlagBits::eSparseBinding | vk::BufferCreateFlagBits::eSparseResidency | _vkBufferCreate,
-                nextSize,
-                _vkBufferUsage,
-                vk::SharingMode::eExclusive,
-                0uL,
-                nullptr,
-                nullptr
-            };
+			auto vkBuffer = _device->vkDevice().createBuffer(bci);
 
-            auto vkBuffer = _device->vkDevice().createBuffer(bci);
+			const auto req = _device->vkDevice().getBufferMemoryRequirements(vkBuffer);
+			const auto layout = memory::MemoryLayout {
+				req.alignment,
+				MemoryProperty::eDeviceLocal,
+				req.memoryTypeBits
+			};
 
-            const auto req = _device->vkDevice().getBufferMemoryRequirements(vkBuffer);
-            const auto layout = memory::MemoryLayout {
-                req.alignment,
-                MemoryProperty::eDeviceLocal,
-                req.memoryTypeBits
-            };
+			auto memory = make_uptr<VirtualMemory>(_allocator, layout, req.size);
+			auto buffer = make_uptr<SparseBuffer>(std::move(memory), nextSize, vkBuffer, bci.usage);
 
-            auto memory = make_uptr<VirtualMemory>(_allocator, layout, req.size);
-            auto buffer = make_uptr<SparseBuffer>(std::move(memory), nextSize, vkBuffer, bci.usage);
+			const auto requiredPages = (nextSize / req.alignment) + ((nextSize % req.alignment) ? 1uLL : 0uLL);
 
-            const auto requiredPages = (nextSize / req.alignment) + ((nextSize % req.alignment) ? 1uLL : 0uLL);
+			for (u64 page = 0uLL; page < requiredPages; ++page) {
+				auto vbp = buffer->addPage(req.alignment, req.alignment * page);
+				[[maybe_unused]] const auto loadResult = vbp->load();
+				assert(loadResult);
+			}
 
-            for (u64 page = 0uLL; page < requiredPages; ++page) {
-                auto vbp = buffer->addPage(req.alignment, req.alignment * page);
-                [[maybe_unused]] const auto loadResult = vbp->load();
-                assert(loadResult);
-            }
+			buffer->updateBindingData();
+			buffer->enqueueBindingSync(_device->graphicsQueue());
 
-            buffer->updateBindingData();
+			/**/
 
-            #pragma warning(push)
-            #pragma warning(disable : 4996)
-            buffer->enqueueBindingSync(_device->graphicsQueue());
-            #pragma warning(pop)
+			const auto cmdPool = _device->transferQueue()->pool();
+			cmdPool->lck().acquire();
+			auto cmd = cmdPool->make();
 
-            /**/
+			cmd.begin();
+			std::array<vk::BufferMemoryBarrier, 2uLL> before {
+				vk::BufferMemoryBarrier {
+					vk::AccessFlagBits::eShaderRead, vk::AccessFlagBits::eTransferRead, 0uL, 0uL, _buffer->vkBuffer(),
+					0uL, prevSize
+				},
+				vk::BufferMemoryBarrier {
+					vk::AccessFlags {}, vk::AccessFlagBits::eTransferWrite, 0uL, 0uL, buffer->vkBuffer(), 0uL, nextSize
+				}
+			};
+			cmd.vkCommandBuffer().pipelineBarrier(
+				vk::PipelineStageFlagBits::eAllCommands,
+				vk::PipelineStageFlagBits::eTransfer,
+				vk::DependencyFlagBits::eByRegion,
+				0uL,
+				nullptr,
+				static_cast<u32>(before.size()),
+				before.data(),
+				0uL,
+				nullptr
+			);
 
-            const auto cmdPool = _device->transferQueue()->pool();
-            cmdPool->lck().acquire();
-            auto cmd = cmdPool->make();
+			const vk::BufferCopy region { 0uL, 0uL, prevSize };
+			cmd.vkCommandBuffer().copyBuffer(_buffer->vkBuffer(), buffer->vkBuffer(), 1uL, &region);
 
-            cmd.begin();
-            std::array<vk::BufferMemoryBarrier, 2uLL> before {
-                vk::BufferMemoryBarrier {
-                    vk::AccessFlagBits::eShaderRead, vk::AccessFlagBits::eTransferRead, 0uL, 0uL, _buffer->vkBuffer(),
-                    0uL, prevSize
-                },
-                vk::BufferMemoryBarrier {
-                    vk::AccessFlags {}, vk::AccessFlagBits::eTransferWrite, 0uL, 0uL, buffer->vkBuffer(), 0uL, nextSize
-                }
-            };
-            cmd.vkCommandBuffer().pipelineBarrier(
-                vk::PipelineStageFlagBits::eAllCommands,
-                vk::PipelineStageFlagBits::eTransfer,
-                vk::DependencyFlagBits::eByRegion,
-                0uL,
-                nullptr,
-                static_cast<u32>(before.size()),
-                before.data(),
-                0uL,
-                nullptr
-            );
+			std::array<vk::BufferMemoryBarrier, 2uLL> after {
+				vk::BufferMemoryBarrier {
+					vk::AccessFlagBits::eTransferRead, vk::AccessFlagBits::eShaderRead, 0uL, 0uL, _buffer->vkBuffer(),
+					0uL, prevSize
+				},
+				vk::BufferMemoryBarrier {
+					vk::AccessFlagBits::eTransferWrite, vk::AccessFlagBits::eShaderRead, 0uL, 0uL, buffer->vkBuffer(),
+					0uL, nextSize
+				}
+			};
+			cmd.vkCommandBuffer().pipelineBarrier(
+				vk::PipelineStageFlagBits::eTransfer,
+				vk::PipelineStageFlagBits::eAllCommands,
+				vk::DependencyFlagBits::eByRegion,
+				0uL,
+				nullptr,
+				static_cast<u32>(after.size()),
+				after.data(),
+				0uL,
+				nullptr
+			);
+			cmd.end();
 
-            const vk::BufferCopy region { 0uL, 0uL, prevSize };
-            cmd.vkCommandBuffer().copyBuffer(_buffer->vkBuffer(), buffer->vkBuffer(), 1uL, &region);
+			_device->transferQueue()->submitWait(cmd);
 
-            std::array<vk::BufferMemoryBarrier, 2uLL> after {
-                vk::BufferMemoryBarrier {
-                    vk::AccessFlagBits::eTransferRead, vk::AccessFlagBits::eShaderRead, 0uL, 0uL, _buffer->vkBuffer(),
-                    0uL, prevSize
-                },
-                vk::BufferMemoryBarrier {
-                    vk::AccessFlagBits::eTransferWrite, vk::AccessFlagBits::eShaderRead, 0uL, 0uL, buffer->vkBuffer(),
-                    0uL, nextSize
-                }
-            };
-            cmd.vkCommandBuffer().pipelineBarrier(
-                vk::PipelineStageFlagBits::eTransfer,
-                vk::PipelineStageFlagBits::eAllCommands,
-                vk::DependencyFlagBits::eByRegion,
-                0uL,
-                nullptr,
-                static_cast<u32>(after.size()),
-                after.data(),
-                0uL,
-                nullptr
-            );
-            cmd.end();
+			cmd.release();
+			cmdPool->lck().release();
 
-            _device->transferQueue()->submitWait(cmd);
+			/**/
 
-            cmd.release();
-            cmdPool->lck().release();
+			_buffer = std::move(buffer);
+		}
 
-            /**/
+	public:
+		[[nodiscard]] uptr<SparseBufferView> acquire(u64 requestSize_) {
 
-            _buffer = std::move(buffer);
-        }
+			auto mark = _releasedList.begin();
+			for (auto it = _releasedList.begin(); it != _releasedList.end(); ++it) {
 
-    public:
-        [[nodiscard]] uptr<SparseBufferView> acquire(u64 requestSize_) {
+				const auto range = it->second - it->first;
+				if (range < requestSize_) {
+					continue;
+				}
 
-            auto mark = _releasedList.begin();
-            for (auto it = _releasedList.begin(); it != _releasedList.end(); ++it) {
+				const auto markRange = mark->second - mark->first;
+				if (range > markRange) {
+					continue;
+				}
 
-                const auto range = it->second - it->first;
-                if (range < requestSize_) {
-                    continue;
-                }
+				mark = it;
+			}
 
-                const auto markRange = mark->second - mark->first;
-                if (range > markRange) {
-                    continue;
-                }
+			if (mark != _releasedList.end() && (mark->second - mark->first) >= requestSize_) {
+				const auto range = *mark;
+				_releasedList.erase(mark);
+				return _buffer->makeView(range.first, (range.second - range.first));
+			}
 
-                mark = it;
-            }
+			/**/
 
-            if (mark != _releasedList.end() && (mark->second - mark->first) >= requestSize_) {
-                const auto range = *mark;
-                _releasedList.erase(mark);
-                return _buffer->makeView(range.first, (range.second - range.first));
-            }
+			_monotonicOffset += requestSize_;
+			const auto range = std::pair(_monotonicOffset - requestSize_, _monotonicOffset);
 
-            /**/
+			assert(_buffer->memorySize() > _monotonicOffset);
 
-            _monotonicOffset += requestSize_;
-            const auto range = std::pair(_monotonicOffset - requestSize_, _monotonicOffset);
+			/**/
 
-            assert(_buffer->memorySize() > _monotonicOffset);
+			const auto pageAlign = _buffer->memory()->layout().align;
+			const auto requiredPages = (requestSize_ / pageAlign)
+				+ ((requestSize_ % pageAlign) ? 1uLL : 0uLL);
 
-            /**/
+			const u64 basePage = _buffer->pages().size();
+			for (u64 page = 0uLL; page < requiredPages; ++page) {
 
-            const auto pageAlign = _buffer->memory()->layout().align;
-            const auto requiredPages = (requestSize_ / pageAlign)
-                + ((requestSize_ % pageAlign) ? 1uLL : 0uLL);
+				auto vbp = _buffer->addPage(pageAlign, (basePage + page) * pageAlign);
+				[[maybe_unused]] const auto loadResult = vbp->load();
+				assert(loadResult);
+			}
 
-            const u64 basePage = _buffer->pages().size();
-            for (u64 page = 0uLL; page < requiredPages; ++page) {
+			_buffer->updateBindingData();
+			_buffer->enqueueBindingSync(_device->graphicsQueue());
 
-                auto vbp = _buffer->addPage(pageAlign, (basePage + page) * pageAlign);
-                [[maybe_unused]] const auto loadResult = vbp->load();
-                assert(loadResult);
-            }
+			/**/
 
-            _buffer->updateBindingData();
+			return _buffer->makeView(range.first, requestSize_);
+		}
 
-            #pragma warning(push)
-            #pragma warning(disable : 4996)
-            _buffer->enqueueBindingSync(_device->graphicsQueue());
-            #pragma warning(pop)
-
-            /**/
-
-            return _buffer->makeView(range.first, requestSize_);
-        }
-
-        void release(mref<uptr<SparseBufferView>> view_) {
-            _releasedList.emplace_back(view_->offset(), view_->offset() + view_->size());
-            view_.reset();
-        }
-    };
+		void release(mref<uptr<SparseBufferView>> view_) {
+			_releasedList.emplace_back(view_->offset(), view_->offset() + view_->size());
+			view_.reset();
+		}
+	};
 }

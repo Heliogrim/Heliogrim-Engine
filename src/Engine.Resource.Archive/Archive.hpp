@@ -27,7 +27,7 @@ namespace hg::engine::resource {
 		#pragma region Meta Archive Attributes
 
 	public:
-		[[nodiscard]] FORCE_INLINE inline bool shouldSwapBytes() const noexcept {
+		[[nodiscard]] inline bool shouldSwapBytes() const noexcept {
 			#if ENV_MSVC
 			return false;
 			#else
@@ -139,7 +139,7 @@ namespace hg::engine::resource {
 
 	public:
 		template <ClassHasMeta Type_>
-		FORCE_INLINE inline friend ref<this_type> operator<<(ref<this_type> self_, const ptr<const Type_> object_) {
+		inline friend ref<this_type> operator<<(ref<this_type> self_, const ptr<const Type_> object_) {
 			return self_ << object_;
 		}
 
@@ -147,65 +147,65 @@ namespace hg::engine::resource {
 		#pragma region Input Serialization
 
 	public:
-		FORCE_INLINE inline friend ref<this_type> operator>>(ref<this_type> self_, ref<bool> value_) {
+		inline friend ref<this_type> operator>>(ref<this_type> self_, ref<bool> value_) {
 			u8 rep {};
 			self_.serializeBytes(&rep, sizeof(rep), ArchiveStreamMode::eLoad);
 			value_ = rep != 0u;
 			return self_;
 		}
 
-		FORCE_INLINE inline friend ref<this_type> operator>>(ref<this_type> self_, ref<u8> value_) {
+		inline friend ref<this_type> operator>>(ref<this_type> self_, ref<u8> value_) {
 			self_.serializeBytes(&value_, sizeof(value_), ArchiveStreamMode::eLoad);
 			return self_;
 		}
 
-		FORCE_INLINE inline friend ref<this_type> operator>>(ref<this_type> self_, ref<u16> value_) {
+		inline friend ref<this_type> operator>>(ref<this_type> self_, ref<u16> value_) {
 			self_.serializeByteOrdered(value_, ArchiveStreamMode::eLoad);
 			return self_;
 		}
 
-		FORCE_INLINE inline friend ref<this_type> operator>>(ref<this_type> self_, ref<u32> value_) {
+		inline friend ref<this_type> operator>>(ref<this_type> self_, ref<u32> value_) {
 			self_.serializeByteOrdered(value_, ArchiveStreamMode::eLoad);
 			return self_;
 		}
 
-		FORCE_INLINE inline friend ref<this_type> operator>>(ref<this_type> self_, ref<u64> value_) {
+		inline friend ref<this_type> operator>>(ref<this_type> self_, ref<u64> value_) {
 			self_.serializeByteOrdered(value_, ArchiveStreamMode::eLoad);
 			return self_;
 		}
 
-		FORCE_INLINE inline friend ref<this_type> operator>>(ref<this_type> self_, ref<s8> value_) {
+		inline friend ref<this_type> operator>>(ref<this_type> self_, ref<s8> value_) {
 			self_.serializeBytes(&value_, sizeof(value_), ArchiveStreamMode::eLoad);
 			return self_;
 		}
 
-		FORCE_INLINE inline friend ref<this_type> operator>>(ref<this_type> self_, ref<s16> value_) {
+		inline friend ref<this_type> operator>>(ref<this_type> self_, ref<s16> value_) {
 			self_.serializeByteOrdered(reinterpret_cast<ref<u16>>(value_), ArchiveStreamMode::eLoad);
 			return self_;
 		}
 
-		FORCE_INLINE inline friend ref<this_type> operator>>(ref<this_type> self_, ref<s32> value_) {
+		inline friend ref<this_type> operator>>(ref<this_type> self_, ref<s32> value_) {
 			self_.serializeByteOrdered(reinterpret_cast<ref<u32>>(value_), ArchiveStreamMode::eLoad);
 			return self_;
 		}
 
-		FORCE_INLINE inline friend ref<this_type> operator>>(ref<this_type> self_, ref<s64> value_) {
+		inline friend ref<this_type> operator>>(ref<this_type> self_, ref<s64> value_) {
 			self_.serializeByteOrdered(reinterpret_cast<ref<u64>>(value_), ArchiveStreamMode::eLoad);
 			return self_;
 		}
 
-		FORCE_INLINE inline friend ref<this_type> operator>>(ref<this_type> self_, ref<float> value_) {
+		inline friend ref<this_type> operator>>(ref<this_type> self_, ref<float> value_) {
 			self_.serializeByteOrdered(reinterpret_cast<ref<u32>>(value_), ArchiveStreamMode::eLoad);
 			return self_;
 		}
 
-		FORCE_INLINE inline friend ref<this_type> operator>>(ref<this_type> self_, ref<double> value_) {
+		inline friend ref<this_type> operator>>(ref<this_type> self_, ref<double> value_) {
 			self_.serializeByteOrdered(reinterpret_cast<ref<u64>>(value_), ArchiveStreamMode::eLoad);
 			return self_;
 		}
 
 		template <typename EnumType_> requires std::is_enum_v<EnumType_>
-		FORCE_INLINE inline friend ref<this_type> operator>>(ref<this_type> self_, ref<EnumType_> value_) {
+		inline friend ref<this_type> operator>>(ref<this_type> self_, ref<EnumType_> value_) {
 
 			using enum_raw_type = std::underlying_type_t<EnumType_>;
 			static_assert(
@@ -235,43 +235,43 @@ namespace hg::engine::resource {
 		#pragma region Output Serialization
 
 	public:
-		FORCE_INLINE inline friend ref<this_type> operator<<(ref<this_type> self_, cref<bool> value_) {
+		inline friend ref<this_type> operator<<(ref<this_type> self_, cref<bool> value_) {
 			u8 rep { value_ ? (u8 { 0x1u }) : (u8 { 0x0u }) };
 			self_.serializeBytes(&rep, sizeof(rep), ArchiveStreamMode::eStore);
 			return self_;
 		}
 
-		FORCE_INLINE inline friend ref<this_type> operator<<(ref<this_type> self_, cref<char> value_) {
+		inline friend ref<this_type> operator<<(ref<this_type> self_, cref<char> value_) {
 			self_.serializeBytes(&const_cast<ref<char>>(value_), sizeof(value_), ArchiveStreamMode::eStore);
 			return self_;
 		}
 
-		FORCE_INLINE inline friend ref<this_type> operator<<(ref<this_type> self_, cref<u8> value_) {
+		inline friend ref<this_type> operator<<(ref<this_type> self_, cref<u8> value_) {
 			self_.serializeBytes(&const_cast<ref<u8>>(value_), sizeof(value_), ArchiveStreamMode::eStore);
 			return self_;
 		}
 
-		FORCE_INLINE inline friend ref<this_type> operator<<(ref<this_type> self_, cref<u16> value_) {
+		inline friend ref<this_type> operator<<(ref<this_type> self_, cref<u16> value_) {
 			self_.serializeByteOrdered(const_cast<ref<u16>>(value_), ArchiveStreamMode::eStore);
 			return self_;
 		}
 
-		FORCE_INLINE inline friend ref<this_type> operator<<(ref<this_type> self_, cref<u32> value_) {
+		inline friend ref<this_type> operator<<(ref<this_type> self_, cref<u32> value_) {
 			self_.serializeByteOrdered(const_cast<ref<u32>>(value_), ArchiveStreamMode::eStore);
 			return self_;
 		}
 
-		FORCE_INLINE inline friend ref<this_type> operator<<(ref<this_type> self_, cref<u64> value_) {
+		inline friend ref<this_type> operator<<(ref<this_type> self_, cref<u64> value_) {
 			self_.serializeByteOrdered(const_cast<ref<u64>>(value_), ArchiveStreamMode::eStore);
 			return self_;
 		}
 
-		FORCE_INLINE inline friend ref<this_type> operator<<(ref<this_type> self_, cref<s8> value_) {
+		inline friend ref<this_type> operator<<(ref<this_type> self_, cref<s8> value_) {
 			self_.serializeBytes(&const_cast<ref<s8>>(value_), sizeof(value_), ArchiveStreamMode::eStore);
 			return self_;
 		}
 
-		FORCE_INLINE inline friend ref<this_type> operator<<(ref<this_type> self_, cref<s16> value_) {
+		inline friend ref<this_type> operator<<(ref<this_type> self_, cref<s16> value_) {
 			self_.serializeByteOrdered(
 				reinterpret_cast<ref<u16>>(const_cast<ref<s16>>(value_)),
 				ArchiveStreamMode::eStore
@@ -279,7 +279,7 @@ namespace hg::engine::resource {
 			return self_;
 		}
 
-		FORCE_INLINE inline friend ref<this_type> operator<<(ref<this_type> self_, cref<s32> value_) {
+		inline friend ref<this_type> operator<<(ref<this_type> self_, cref<s32> value_) {
 			self_.serializeByteOrdered(
 				reinterpret_cast<ref<u32>>(const_cast<ref<s32>>(value_)),
 				ArchiveStreamMode::eStore
@@ -287,7 +287,7 @@ namespace hg::engine::resource {
 			return self_;
 		}
 
-		FORCE_INLINE inline friend ref<this_type> operator<<(ref<this_type> self_, cref<s64> value_) {
+		inline friend ref<this_type> operator<<(ref<this_type> self_, cref<s64> value_) {
 			self_.serializeByteOrdered(
 				reinterpret_cast<ref<u64>>(const_cast<ref<s64>>(value_)),
 				ArchiveStreamMode::eStore
@@ -295,7 +295,7 @@ namespace hg::engine::resource {
 			return self_;
 		}
 
-		FORCE_INLINE inline friend ref<this_type> operator<<(ref<this_type> self_, cref<float> value_) {
+		inline friend ref<this_type> operator<<(ref<this_type> self_, cref<float> value_) {
 			self_.serializeByteOrdered(
 				reinterpret_cast<ref<u32>>(const_cast<ref<float>>(value_)),
 				ArchiveStreamMode::eStore
@@ -303,7 +303,7 @@ namespace hg::engine::resource {
 			return self_;
 		}
 
-		FORCE_INLINE inline friend ref<this_type> operator<<(ref<this_type> self_, cref<double> value_) {
+		inline friend ref<this_type> operator<<(ref<this_type> self_, cref<double> value_) {
 			self_.serializeByteOrdered(
 				reinterpret_cast<ref<u64>>(const_cast<ref<double>>(value_)),
 				ArchiveStreamMode::eStore
@@ -312,7 +312,7 @@ namespace hg::engine::resource {
 		}
 
 		template <typename EnumType_> requires std::is_enum_v<EnumType_>
-		FORCE_INLINE inline friend ref<this_type> operator<<(ref<this_type> self_, cref<EnumType_> value_) {
+		inline friend ref<this_type> operator<<(ref<this_type> self_, cref<EnumType_> value_) {
 
 			using enum_raw_type = std::underlying_type_t<EnumType_>;
 			static_assert(
