@@ -44,36 +44,45 @@ function(add_deploy_to_target target)
 			if (candidate_type STREQUAL "SHARED_LIBRARY")
 				get_target_property(candidate_run_dll_path ${candidate} RUNTIME_OUTPUT_DIRECTORY)
 				set(candidate_run_dll_name "")
+				set(candidate_postfix)
+
+				# Check primary name
 
 				if (NOT "${candidate_run_dll_name}" AND DEFINED CMAKE_BUILD_TYPE)
 					get_target_property(candidate_run_dll_name ${candidate} "LIBRARY_OUTPUT_NAME_${__local_build_type}")
 				endif ()
 
-				if (NOT "${candidate_run_dll_name}")
+				if ("${candidate_run_dll_name}" MATCHES "NOT")
 					get_target_property(candidate_run_dll_name ${candidate} LIBRARY_OUTPUT_NAME)
 				endif ()
 
-				if (NOT "${candidate_run_dll_name}" AND DEFINED CMAKE_BUILD_TYPE)
+				if ("${candidate_run_dll_name}" MATCHES "NOT" AND DEFINED CMAKE_BUILD_TYPE)
 					get_target_property(candidate_run_dll_name ${candidate} "RUNTIME_OUTPUT_NAME_${__local_build_type}")
 				endif ()
 
-				if (NOT "${candidate_run_dll_name}")
+				if ("${candidate_run_dll_name}" MATCHES "NOT")
 					get_target_property(candidate_run_dll_name ${candidate} RUNTIME_OUTPUT_NAME)
 				endif ()
 
-				if (NOT "${candidate_run_dll_name}" AND DEFINED CMAKE_BUILD_TYPE)
+				if ("${candidate_run_dll_name}" MATCHES "NOT" AND DEFINED CMAKE_BUILD_TYPE)
 					get_target_property(candidate_run_dll_name ${candidate} "${__local_build_type}_OUTPUT_NAME")
 				endif ()
 
-				if (NOT "${candidate_run_dll_name}")
+				if ("${candidate_run_dll_name}" MATCHES "NOT")
 					get_target_property(candidate_run_dll_name ${candidate} "OUTPUT_NAME")
 				endif ()
 
-				get_target_property(candidate_postfix ${candidate} "${__local_build_type}_POSTFIX")
-				get_target_property(candidate_postfix ${candidate} "POSTFIX")
-				if (NOT ${candidate_postfix} AND "${CMAKE_SYSTEM_NAME}" MATCHES "Windows")
-					set(candidate_postfix "$<$<CONFIG:Debug>:${CMAKE_DEBUG_POSTFIX}>")
-				elseif (NOT ${candidate_postfix})
+				# Check Postfix
+
+				if (NOT "${candidate_postfix}")
+					get_target_property(candidate_postfix ${candidate} "${__local_build_type}_POSTFIX")
+				endif ()
+
+				if ("${candidate_postfix}" MATCHES "NOT")
+					get_target_property(candidate_postfix ${candidate} "POSTFIX")
+				endif ()
+
+				if ("${candidate_postfix}" MATCHES "NOT")
 					set(candidate_postfix "")
 				endif ()
 
