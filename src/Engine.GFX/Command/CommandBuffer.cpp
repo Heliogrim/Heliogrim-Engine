@@ -1,6 +1,7 @@
 #include "CommandBuffer.hpp"
 
 #include <utility>
+#include <Engine.Asserts/Todo.hpp>
 
 #include "CommandPool.hpp"
 #include "CommandQueue.hpp"
@@ -159,6 +160,10 @@ void CommandBuffer::bindVertexBuffer(const u32 index_, cref<VertexBufferView> ve
 		&reinterpret_cast<const VkBuffer&>(vertexBufferView_.buffer),
 		&static_cast<const VkDeviceSize&>(vertexBufferView_.offset)
 	);
+}
+
+void CommandBuffer::blit(vk::ImageBlit blit_, TextureBuffer& src_, TextureBuffer& dst_) {
+	::hg::todo_panic();
 }
 
 void CommandBuffer::copyBuffer(const Buffer& src_, Buffer& dst_, const vk::BufferCopy& region_) {
