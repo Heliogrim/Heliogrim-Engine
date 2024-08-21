@@ -37,7 +37,7 @@
 #endif
 
 // Check GCC
-#elif defined(__GNUG__)
+#elif defined(__GNUC__)
 
 #define ENV_GCC TRUE
 
