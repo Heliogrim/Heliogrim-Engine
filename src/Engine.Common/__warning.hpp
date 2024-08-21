@@ -14,6 +14,13 @@ _Pragma("clang diagnostic pop")
 __pragma(warning(push, 0))
 #define STOP_SUPPRESS_WARNINGS \
 __pragma(warning(pop))
+#elif __GNUC__
+#define START_SUPPRESS_WARNINGS \
+_Pragma("GCC diagnostic push") \
+_Pragma("GCC diagnostic ignored \"-Wall\"") \
+_Pragma("GCC diagnostic ignored \"-Wdelete-incomplete\"")
+#define STOP_SUPPRESS_WARNINGS \
+_Pragma("GCC diagnostic pop")
 #else
 #define START_SUPPRESS_WARNINGS
 #define STOP_SUPPRESS_WARNINGS
@@ -33,6 +40,12 @@ __pragma(warning(push)) \
 __pragma(warning(disable: 26481))
 #define END_REGION_UNCHECKED_LLVL \
 __pragma(warning(pop))
+#elif __GNUC__
+#define BEGIN_REGION_UNCHECKED_LLVL \
+_Pragma("GCC diagnostic push") \
+_Pragma("GCC diagnostic ignored \"-Wunsafe-buffer-usage\"")
+#define END_REGION_UNCHECKED_LLVL \
+_Pragma("GCC diagnostic pop")
 #else
 #define BEGIN_REGION_UNCHECKED_LLVL
 #define END_REGION_UNCHECKED_LLVL
