@@ -37,7 +37,6 @@
 #include "Texture/VkTextureFactory.hpp"
 
 /* Development Testing */
-#include <Editor.Render/Renderer/EditorRenderer.hpp>
 #include <Engine.GFX.Render/__Test__Renderer.hpp>
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
 /**/
@@ -207,9 +206,6 @@ void Graphics::setup() {
 	{
 		auto renderer = make_smr<render::TestRenderer>(_cacheCtrl.get(), _device->allocator());
 		_cachedRenderer.insert_or_assign("Test-Renderer", std::move(renderer));
-	} {
-		auto renderer = make_smr<editor::render::EditorRenderer>(_cacheCtrl.get(), _device->allocator());
-		_cachedRenderer.insert_or_assign("Editor-Renderer", std::move(renderer));
 	}
 
 	/**
@@ -321,6 +317,11 @@ smr<render::Renderer> Graphics::getRenderer(StringView key_, std::nothrow_t) con
 
 bool Graphics::hasRenderer(cref<string> key_) {
 	return _cachedRenderer.contains(key_);
+}
+
+bool Graphics::addRenderer(StringView key_, mref<smr<render::Renderer>> renderer_) {
+	const auto result = _cachedRenderer.insert(std::make_pair(key_, std::move(renderer_)));
+	return result.second;
 }
 
 bool Graphics::removeRenderer(cref<string> key_) {

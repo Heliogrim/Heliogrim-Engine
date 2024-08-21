@@ -174,6 +174,8 @@ namespace hg::engine {
 
 		[[nodiscard]] bool hasRenderer(cref<string> key_);
 
+		bool addRenderer(StringView key_, mref<smr<render::Renderer>> renderer_);
+
 		[[nodiscard, deprecated("Might create memory leak and not-freeable resources")]] bool removeRenderer(
 			cref<string> key_
 		);

@@ -8,6 +8,7 @@
 #include <Engine.Reflow/Module/Reflow.hpp>
 
 #include "Boot/AssetInit.hpp"
+#include "Boot/RenderInit.hpp"
 #include "Boot/WorldInit.hpp"
 
 using namespace hg::editor;
@@ -49,6 +50,7 @@ cref<CompactSet<engine::core::SubModuleDependency>> Editor::dependencies() const
 void Editor::setup() {}
 
 void Editor::start() {
+	boot::initRender();
 	boot::initAssets();
 	boot::initEditorWorld();
 	boot::initPrimaryWorld();
