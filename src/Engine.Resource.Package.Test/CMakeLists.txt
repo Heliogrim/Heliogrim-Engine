@@ -3,9 +3,13 @@
 make_test_project(
 		TEST_NAME Engine.Resource.Package.Test
 		LIBRARIES
+		${PROJECT_NAME}::Engine.ACS
 		${PROJECT_NAME}::Engine.Asserts
+		${PROJECT_NAME}::Engine.Assets
+		${PROJECT_NAME}::Engine.Assets.System
 		${PROJECT_NAME}::Engine.Common
 		${PROJECT_NAME}::Engine.Config
+		${PROJECT_NAME}::Engine.Core
 		${PROJECT_NAME}::Engine.Filesystem
 		${PROJECT_NAME}::Engine.Logging
 		${PROJECT_NAME}::Engine.Resource
@@ -18,4 +22,5 @@ make_test_project(
 		${PROJECT_NAME}::Engine.Serialization.Structures
 		${PROJECT_NAME}::Engine.Storage
 		${PROJECT_NAME}::Engine.Storage.IO
+		${PROJECT_NAME}::Heliogrim
 )
