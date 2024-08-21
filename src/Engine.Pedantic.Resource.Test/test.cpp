@@ -135,7 +135,7 @@ namespace PedanticResourceModule {
 		constexpr auto initial_value = 847358826uLL;
 		constexpr auto override_value = 346878688uLL;
 
-		const auto initial = make_exclusive_resource<>(initial_value);
+		const auto initial = make_exclusive_resource<u64>(initial_value);
 		EXPECT_EQ(initial.acquireReadonly().get(), initial_value);
 
 		const auto result = initial.tryApply(
