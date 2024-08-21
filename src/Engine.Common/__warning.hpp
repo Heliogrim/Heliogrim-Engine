@@ -18,7 +18,8 @@ __pragma(warning(pop))
 #define START_SUPPRESS_WARNINGS \
 _Pragma("GCC diagnostic push") \
 _Pragma("GCC diagnostic ignored \"-Wall\"") \
-_Pragma("GCC diagnostic ignored \"-Wdelete-incomplete\"")
+_Pragma("GCC diagnostic ignored \"-Wdelete-incomplete\"") \
+_Pragma("GCC diagnostic ignored \"-Wterminate\"")
 #define STOP_SUPPRESS_WARNINGS \
 _Pragma("GCC diagnostic pop")
 #else
