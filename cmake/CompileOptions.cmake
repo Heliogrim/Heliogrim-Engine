@@ -240,18 +240,12 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU" OR "${CMAKE_CXX_COMPILER_ID}" MATCH
 			-Wuninitialized
 			-Wmissing-field-initializers
 
-			-Wno-c++98-compat
 			-Wno-c++11-compat
 			-Wno-c++14-compat
 			-Wno-c++17-compat
 			-Wno-c++20-compat
 
-			-Wno-reserved-identifier
-			-Wno-reserved-macro-identifier
-			-Wno-documentation-unknown-command
-
-			# TODO: Suppress for test cases, cause gtest will use this excessively
-			-Wno-global-constructors
+			-Wno-ignored-qualifiers
 
 			$<$<CXX_COMPILER_ID:GNU>:
 			-Wmaybe-uninitialized
@@ -266,6 +260,15 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU" OR "${CMAKE_CXX_COMPILER_ID}" MATCH
 			-Wpedantic
 			-Wpedantic-macros
 			-Wpedantic-core-features
+
+			-Wno-c++98-compat
+
+			-Wno-reserved-identifier
+			-Wno-reserved-macro-identifier
+			-Wno-documentation-unknown-command
+
+			# TODO: Suppress for test cases, cause gtest will use this excessively
+			-Wno-global-constructors
 
 			-Wno-c++98-compat-pedantic
 			-Wno-c++11-compat-pedantic
