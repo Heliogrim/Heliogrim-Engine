@@ -2,6 +2,7 @@
 
 /**/
 #include <cstring>
+#include <list>
 #include <Engine.Assets/Types/Asset.hpp>
 #include <Engine.Common/Collection/Array.hpp>
 #include <Engine.Resource.Archive/BufferArchive.hpp>
@@ -186,10 +187,18 @@ namespace hg::engine::serialization {
 		using namespace ::SerializationModule;
 		using namespace ::hg::engine::serialization::layout;
 
-		defineValue<LayoutDefineValueType::eUInt32>(offsetof(TestSerialDataBaseAsset, _guid.pre));
-		defineValue<LayoutDefineValueType::eUInt16>(offsetof(TestSerialDataBaseAsset, _guid.c0));
-		defineValue<LayoutDefineValueType::eUInt16>(offsetof(TestSerialDataBaseAsset, _guid.c1));
-		defineValue<LayoutDefineValueType::eUInt64>(offsetof(TestSerialDataBaseAsset, _guid.post));
+		defineValue<LayoutDefineValueType::eUInt32>(offsetof(TestSerialDataBaseAsset, _guid.pre)
+		)
+		;
+		defineValue<LayoutDefineValueType::eUInt16>(offsetof(TestSerialDataBaseAsset, _guid.c0)
+		)
+		;
+		defineValue<LayoutDefineValueType::eUInt16>(offsetof(TestSerialDataBaseAsset, _guid.c1)
+		)
+		;
+		defineValue<LayoutDefineValueType::eUInt64>(offsetof(TestSerialDataBaseAsset, _guid.post)
+		)
+		;
 		defineValue<LayoutDefineValueType::eUInt64>(offsetof(TestSerialDataBaseAsset, _type));
 	}
 }
