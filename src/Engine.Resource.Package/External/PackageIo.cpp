@@ -106,6 +106,8 @@ uptr<Package> PackageIo::create_package_from_storage(ref<AccessBlobReadonly> blo
 	return package;
 }
 
+START_SUPPRESS_WARNINGS
+
 uptr<Package> PackageIo::create_empty_package(ref<AccessBlobReadWrite> blobAccessor_) {
 
 	::hg::assertd(not blobAccessor_.invalid());
@@ -129,12 +131,10 @@ uptr<Package> PackageIo::create_empty_package(ref<AccessBlobReadWrite> blobAcces
 			.endianness = PackageEndianness::eBigEndian,
 			.version = 0x1,
 			.guid = {
-				START_SUPPRESS_WARNINGS
 				htonGuid[0], htonGuid[1], htonGuid[2], htonGuid[3],
 				htonGuid[4], htonGuid[5], htonGuid[6], htonGuid[7],
 				htonGuid[8], htonGuid[9], htonGuid[10], htonGuid[11],
 				htonGuid[12], htonGuid[13], htonGuid[14], htonGuid[15]
-				STOP_SUPPRESS_WARNINGS
 			},
 			.compression = PackageCompression::eNone
 		},
@@ -146,6 +146,8 @@ uptr<Package> PackageIo::create_empty_package(ref<AccessBlobReadWrite> blobAcces
 		}
 	);
 }
+
+STOP_SUPPRESS_WARNINGS
 
 uptr<Package> PackageIo::create_empty_package(ref<AccessBlobReadonly> blobAccessor_) {
 	// TODO: Remove this function, as is has no semantic value.

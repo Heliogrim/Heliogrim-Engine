@@ -34,11 +34,13 @@ namespace hg {
 			return _cs;
 		}
 
+		START_SUPPRESS_WARNINGS
+
 		[[nodiscard]] constexpr const char* end() const noexcept {
-			START_SUPPRESS_WARNINGS
 			return _cs + _length;
-			STOP_SUPPRESS_WARNINGS
 		}
+
+		STOP_SUPPRESS_WARNINGS
 
 		[[nodiscard]] std::string str() const {
 			return std::string { begin(), end() };

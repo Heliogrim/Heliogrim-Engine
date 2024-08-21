@@ -8,12 +8,14 @@
 
 namespace hg {
 	namespace {
+		START_SUPPRESS_WARNINGS
+
 		template <typename Type_>
 		constexpr CompileString compile_type_name() {
-			START_SUPPRESS_WARNINGS
 			return { __FUNCSIG__ };
-			STOP_SUPPRESS_WARNINGS
 		}
+
+		STOP_SUPPRESS_WARNINGS
 	}
 
 	template <typename Type_>

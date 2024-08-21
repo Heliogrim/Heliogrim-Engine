@@ -369,15 +369,17 @@ namespace hg {
 			delete this;
 		}
 
+		START_SUPPRESS_WARNINGS
+
 		void destroy(mref<ptr<void>> obj_) override {
 			if constexpr (std::is_void_v<std::decay_t<ivty>>) {
 				std::unreachable();
 			} else {
-				START_SUPPRESS_WARNINGS
 				delete static_cast<ptr<ivty>>(obj_);
-				STOP_SUPPRESS_WARNINGS
 			}
 		}
+
+		STOP_SUPPRESS_WARNINGS
 
 		[[nodiscard]] constexpr ptr<VirtualBase> vdb() noexcept {
 			return this;
