@@ -8,6 +8,7 @@ function(library_vulkan_headers_init)
 	#
 	set(VULKAN_HEADERS_ENABLE_TESTS OFF CACHE INTERNAL "" FORCE)
 	set(VULKAN_HEADERS_ENABLE_INSTALL OFF CACHE INTERNAL "" FORCE)
+	set(VULKAN_HEADERS_ENABLE_MODULE OFF CACHE INTERNAL "" FORCE)
 
 	# Include Sub-Project
 	get_external_include_path(vendor_inc_path "vulkan-headers")
