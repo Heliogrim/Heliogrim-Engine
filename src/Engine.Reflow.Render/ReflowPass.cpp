@@ -3,8 +3,6 @@
 #include <cassert>
 #include <cstring>
 #include <utility>
-#include <Editor.Assets.Default/Images/Default.hpp>
-#include <Editor.Assets.Default/Textures/Default.hpp>
 #include <Engine.Accel.Command/CommandBuffer.hpp>
 #include <Engine.Accel.Compile/VkEffectCompiler.hpp>
 #include <Engine.Accel.Compile/Profile/EffectProfile.hpp>
@@ -52,6 +50,8 @@
 #include <Engine.Resource/ResourceManager.hpp>
 #include <Heliogrim/TextureFormat.hpp>
 #include <Heliogrim/TextureType.hpp>
+
+/**/
 
 using namespace hg::engine::reflow;
 using namespace hg::engine::render;
@@ -340,7 +340,9 @@ void render::ReflowPass::ensureDefaultImage() {
 	const auto factory = Engine::getEngine()->getAssets()->getFactory();
 	const auto registry = Engine::getEngine()->getAssets()->getRegistry();
 
-	const auto asset = editor::assets::texture::get_default_ui();
+	// TODO: Rework temporary solution
+	constexpr auto default_ui_asset = asset_guid { 2893474171, 5859, 16540, 8673728298833701775uLL };
+	const auto asset = registry->findAssetByGuid(default_ui_asset);
 	::hg::assertrt(asset != nullptr);
 
 	/**/
