@@ -629,7 +629,7 @@ namespace SerializationModule {
 		/**/
 
 		archive << StructureSlotType::eU64;
-		archive << 432856789uLL;
+		archive << static_cast<u64>(432856789uLL);
 
 		archive.seek(0);
 
