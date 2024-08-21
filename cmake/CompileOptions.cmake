@@ -230,7 +230,6 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU" OR "${CMAKE_CXX_COMPILER_ID}" MATCH
 			-Wall
 			-Wextra
 			-Wunused
-			-Weffc++
 
 			-Wreorder
 			-Wmissing-braces
@@ -251,12 +250,12 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU" OR "${CMAKE_CXX_COMPILER_ID}" MATCH
 			-Wmaybe-uninitialized
 
 			$<$<VERSION_GREATER:$<CXX_COMPILER_VERSION>,4.8>:
-			-Wpedantic
 			-Wreturn-local-addr
 			>
 			>
 
 			$<$<CXX_COMPILER_ID:Clang>:
+			-Weffc++
 			-Wpedantic
 			-Wpedantic-macros
 			-Wpedantic-core-features
