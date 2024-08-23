@@ -114,9 +114,10 @@ endfunction()
 
 function(propagate_option)
 
-	set(__single_var_options VAR NAME CALLBACK SET HOIST)
+	set(__switch_var_options HOIST SET_EMPTY)
+	set(__single_var_options VAR NAME CALLBACK SET)
 	set(__multi_var_options "")
-	cmake_parse_arguments(args "" "${__single_var_options}" "${__multi_var_options}" ${ARGN})
+	cmake_parse_arguments(args "${__switch_var_options}" "${__single_var_options}" "${__multi_var_options}" ${ARGN})
 
 	# Preserve previous state
 	_push_stack_option("${args_VAR}" ${args_VAR})
@@ -125,6 +126,8 @@ function(propagate_option)
 	set(__prop_val CACHE{${args_VAR}})
 	if (DEFINED args_SET)
 		set(__prop_val ${args_SET})
+	elseif (DEFINED args_SET_EMPTY)
+		set(__prop_val "")
 	elseif (DEFINED args_CALLBACK)
 		cmake_language(CALL ${args_CALLBACK} "__prop_val")
 	endif ()

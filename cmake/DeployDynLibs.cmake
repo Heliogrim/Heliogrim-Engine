@@ -38,6 +38,8 @@ function(add_deploy_to_target target)
 	string(TOUPPER "${__local_build_type}" __local_build_type)
 
 	set(deployable "")
+	set(rename "")
+
 	foreach (candidate ${link_libs})
 		if (TARGET ${candidate})
 			get_target_property(candidate_type ${candidate} TYPE)
@@ -45,6 +47,8 @@ function(add_deploy_to_target target)
 				get_target_property(candidate_run_dll_path ${candidate} RUNTIME_OUTPUT_DIRECTORY)
 				set(candidate_run_dll_name "")
 				set(candidate_postfix)
+				set(candidate_suffix)
+				set(candidate_soversion)
 
 				# Check primary name
 
@@ -86,9 +90,37 @@ function(add_deploy_to_target target)
 					set(candidate_postfix "")
 				endif ()
 
+				# Check custom suffix
+
+				if (NOT "${candidate_suffix}")
+					get_target_property(candidate_suffix ${candidate} "SUFFIX")
+				endif ()
+
+				if ("${candidate_suffix}" MATCHES "NOT")
+					set(candidate_suffix "${CMAKE_SHARED_LIBRARY_SUFFIX}")
+				endif ()
+
+				# Check so version
+
+				if (NOT "${CMAKE_SYSTEM_NAME}" MATCHES "Windows")
+					get_target_property(candidate_soversion ${candidate} "SOVERSION")
+				endif ()
+
+				if ("${candidate_soversion}" MATCHES "NOT")
+					set(candidate_soversion "")
+				endif ()
+
 				if (DEFINED candidate_run_dll_path AND DEFINED candidate_run_dll_name)
 					# file(GLOB_RECURSE deployable "${proj_lib_dir}/**/bin/**/$<CONFIG>**/${name_id}**/*.dll")
-					list(APPEND deployable "${candidate_run_dll_path}/${CMAKE_SHARED_LIBRARY_PREFIX}${candidate_run_dll_name}${candidate_postfix}${CMAKE_SHARED_LIBRARY_SUFFIX}")
+
+					set(__target_name "${CMAKE_SHARED_LIBRARY_PREFIX}${candidate_run_dll_name}${candidate_postfix}${candidate_suffix}")
+					list(APPEND deployable "${candidate_run_dll_path}/${__target_name}")
+
+					if (NOT "${candidate_soversion}" STREQUAL "")
+						set(__target_name "${__target_name}.${candidate_soversion}")
+					endif ()
+
+					list(APPEND rename "${__target_name}")
 				endif ()
 			endif ()
 		endif ()
@@ -99,6 +131,7 @@ function(add_deploy_to_target target)
 		foreach (pattern IN LISTS SANITIZER_DEPLOY_DLLS)
 			file(GLOB tmp "${pattern}")
 			list(APPEND deployable ${tmp})
+			list(APPEND rename ${tmp})
 		endforeach ()
 	endif ()
 
@@ -111,9 +144,23 @@ function(add_deploy_to_target target)
 		return()
 	endif ()
 
+	# Sort for renaming and stable copy
+
+	set(commands "")
 	get_shared_dist_path(proj_dist_dir)
-	add_custom_command(
+	foreach (copy IN ZIP_LISTS deployable rename)
+		if ("${copy_0}" STREQUAL "${copy_1}")
+			list(APPEND commands "COMMAND \"${CMAKE_COMMAND}\" -E copy_if_different \"${copy_0}\" \"${proj_dist_dir}\"")
+		else ()
+			list(APPEND commands "COMMAND \"${CMAKE_COMMAND}\" -E copy_if_different \"${copy_0}\" \"${proj_dist_dir}/${copy_1}\"")
+		endif ()
+	endforeach ()
+	list(JOIN commands " " commands)
+
+	cmake_language(EVAL CODE "
+		add_custom_command(
 			TARGET ${target} POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different ${deployable} "${proj_dist_dir}"
-	)
+			${commands}
+		)
+	")
 endfunction()
