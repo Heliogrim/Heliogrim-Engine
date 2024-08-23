@@ -351,7 +351,7 @@ test.linux.gcc:
   # Preparation
   before_script:
     # Install System Dependencies
-    - apk add --no-cache pkgconf cmake mesa git git-lfs
+    - apk add --no-cache pkgconf cmake mesa git git-lfs libstdc++ libgcc gcompat
     - apk add --no-cache libx11 libx11-dev libxcursor libxcursor-dev libxfixes libxfixes-dev libxext libxext-dev libxrandr libxrandr-dev libxrender libxrender-dev libxi libxi-dev
     - apk add --no-cache wayland libdecor libdecor-dev xkbcli
     - apk add --no-cache libuuid ossp-uuid-dev
@@ -383,7 +383,7 @@ test.linux.clang:
   # Preparation
   before_script:
     # Install System Dependencies
-    - apk add --no-cache pkgconf cmake mesa git git-lfs
+    - apk add --no-cache pkgconf cmake mesa git git-lfs libc++ llvm-libunwind libgcc gcompat
     - apk add --no-cache libx11 libx11-dev libxcursor libxcursor-dev libxfixes libxfixes-dev libxext libxext-dev libxrandr libxrandr-dev libxrender libxrender-dev libxi libxi-dev
     - apk add --no-cache wayland libdecor libdecor-dev xkbcli
     - apk add --no-cache libuuid ossp-uuid-dev
