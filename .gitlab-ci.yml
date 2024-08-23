@@ -34,10 +34,10 @@ build.windows.msvc:
         - build/Release
     - key: cmake-cache-deps-windows-msvc
       paths:
-        - library/*/bin/
-        - library/*/compile/
-        - library/*/include/
-        - library/*/.signature
+        - vendor/*/bin/
+        - vendor/*/compile/
+        - vendor/*/include/
+        - vendor/*/.signature
 
   # Preparation
   before_script:
@@ -102,10 +102,10 @@ build.windows.clang:
         - build/Release
     - key: cmake-cache-deps-windows-clang
       paths:
-        - library/*/bin/
-        - library/*/compile/
-        - library/*/include/
-        - library/*/.signature
+        - vendor/*/bin/
+        - vendor/*/compile/
+        - vendor/*/include/
+        - vendor/*/.signature
 
   # Preparation
   before_script:
@@ -162,6 +162,19 @@ build.linux.gcc:
   tags:
     - linux
     - amd64
+
+  cache:
+    - key: cmake-cache-build-linux-gcc
+      paths:
+        - build/Debug
+        - build/Profile
+        - build/Release
+    - key: cmake-cache-deps-linux-gcc
+      paths:
+        - vendor/*/bin/
+        - vendor/*/compile/
+        - vendor/*/include/
+        - vendor/*/.signature
 
   # Preparation
   before_script:
@@ -224,6 +237,19 @@ build.linux.clang:
   tags:
     - linux
     - amd64
+
+  cache:
+    - key: cmake-cache-build-linux-clang
+      paths:
+        - build/Debug
+        - build/Profile
+        - build/Release
+    - key: cmake-cache-deps-linux-clang
+      paths:
+        - vendor/*/bin/
+        - vendor/*/compile/
+        - vendor/*/include/
+        - vendor/*/.signature
 
   # Preparation
   before_script:
