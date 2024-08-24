@@ -193,7 +193,7 @@ namespace PackageModule {
 
 			std::memcpy(header.magicBytes, PackageMagicBytes.data(), PackageMagicBytes.size());
 			header.magicVersion = PackageMagicVersion[0];
-			header.endianness = PackageEndianness::eBigEndian;
+			header.endianness = PackageEndianness::eLittleEndian;
 
 			header.version = version;
 			std::memcpy(header.guid, &guid.pre, sizeof(PackageGuid));
@@ -231,12 +231,17 @@ namespace PackageModule {
 				}
 
 				EXPECT_EQ(storedHeader->magicVersion, PackageMagicVersion[0]);
-				EXPECT_EQ(storedHeader->endianness, PackageEndianness::eBigEndian);
+				EXPECT_EQ(storedHeader->endianness, PackageEndianness::eLittleEndian);
 			}
 
 			// Check Package Version
 			{
-				EXPECT_EQ(storedHeader->version, version);
+				if (std::endian::native != std::endian::little) {
+					auto tmp = std::byteswap(version);
+					EXPECT_EQ(storedHeader->version, tmp);
+				} else {
+					EXPECT_EQ(storedHeader->version, version);
+				}
 			}
 
 			// Check Package Guid
@@ -259,14 +264,29 @@ namespace PackageModule {
 
 			// Check Index, Meta and Compression Segment
 			{
-				EXPECT_EQ(storedHeader->indexOffset, sizeof(PackageHeader));
-				EXPECT_EQ(storedHeader->indexSize, 0);
+				if (std::endian::native != std::endian::little) {
 
-				EXPECT_EQ(storedHeader->metaOffset, sizeof(PackageHeader));
-				EXPECT_EQ(storedHeader->metaSize, 0);
+					constexpr auto pkgHeadSize = std::byteswap(sizeof(PackageHeader));
+					EXPECT_EQ(storedHeader->indexOffset, pkgHeadSize);
+					EXPECT_EQ(storedHeader->indexSize, 0);
 
-				EXPECT_EQ(storedHeader->compDataOffset, 0);
-				EXPECT_EQ(storedHeader->compDataSize, 0);
+					EXPECT_EQ(storedHeader->metaOffset, pkgHeadSize);
+					EXPECT_EQ(storedHeader->metaSize, 0);
+
+					EXPECT_EQ(storedHeader->compDataOffset, 0);
+					EXPECT_EQ(storedHeader->compDataSize, 0);
+
+				} else {
+
+					EXPECT_EQ(storedHeader->indexOffset, sizeof(PackageHeader));
+					EXPECT_EQ(storedHeader->indexSize, 0);
+
+					EXPECT_EQ(storedHeader->metaOffset, sizeof(PackageHeader));
+					EXPECT_EQ(storedHeader->metaSize, 0);
+
+					EXPECT_EQ(storedHeader->compDataOffset, 0);
+					EXPECT_EQ(storedHeader->compDataSize, 0);
+				}
 			}
 		}
 	}
@@ -345,7 +365,12 @@ namespace PackageModule {
 
 			// Check Package Version
 			{
-				EXPECT_EQ(header.version, version);
+				if (std::endian::native != std::endian::little) {
+					auto tmp = std::byteswap(version);
+					EXPECT_EQ(header.version, tmp);
+				} else {
+					EXPECT_EQ(header.version, version);
+				}
 			}
 
 			// Check Package Guid
@@ -367,14 +392,29 @@ namespace PackageModule {
 
 			// Check Index, Meta and Compression Segment
 			{
-				EXPECT_EQ(header.indexOffset, sizeof(PackageHeader));
-				EXPECT_EQ(header.indexSize, 0);
+				if (std::endian::native != std::endian::little) {
 
-				EXPECT_EQ(header.metaOffset, sizeof(PackageHeader));
-				EXPECT_EQ(header.metaSize, 0);
+					constexpr auto pkgHeadSize = std::byteswap(sizeof(PackageHeader));
+					EXPECT_EQ(header.indexOffset, pkgHeadSize);
+					EXPECT_EQ(header.indexSize, 0);
 
-				EXPECT_EQ(header.compDataOffset, 0);
-				EXPECT_EQ(header.compDataSize, 0);
+					EXPECT_EQ(header.metaOffset, pkgHeadSize);
+					EXPECT_EQ(header.metaSize, 0);
+
+					EXPECT_EQ(header.compDataOffset, 0);
+					EXPECT_EQ(header.compDataSize, 0);
+
+				} else {
+
+					EXPECT_EQ(header.indexOffset, sizeof(PackageHeader));
+					EXPECT_EQ(header.indexSize, 0);
+
+					EXPECT_EQ(header.metaOffset, sizeof(PackageHeader));
+					EXPECT_EQ(header.metaSize, 0);
+
+					EXPECT_EQ(header.compDataOffset, 0);
+					EXPECT_EQ(header.compDataSize, 0);
+				}
 			}
 		}
 	}
