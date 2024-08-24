@@ -327,7 +327,7 @@ test.windows.msvc:
     # Testing
 
     # CMake - Debug
-    - ctest --test-dir build/Debug --output-junit "$PWD/ctest-report.xml" --parallel $logical_core_count
+    - ctest --test-dir build/Debug --output-junit "$PWD/ctest-report.xml" --output-on-failure --parallel $logical_core_count
 
   artifacts:
     when: always
@@ -356,7 +356,7 @@ test.windows.clang:
     # Testing
 
     # CMake - Debug
-    - ctest --test-dir build/Debug --output-junit "$PWD/ctest-report.xml" --parallel $logical_core_count
+    - ctest --test-dir build/Debug --output-junit "$PWD/ctest-report.xml" --output-on-failure --parallel $logical_core_count
 
   artifacts:
     when: always
@@ -388,7 +388,7 @@ test.linux.gcc:
     # Testing
 
     # CMake - Debug
-    - ctest --test-dir build/Debug --output-junit "$PWD/ctest-report.xml" --parallel $(nproc)
+    - ctest --test-dir build/Debug --output-junit "$PWD/ctest-report.xml" --output-on-failure --parallel $(nproc)
 
   artifacts:
     when: always
@@ -420,7 +420,7 @@ test.linux.clang:
     # Testing
 
     # CMake - Debug
-    - ctest --test-dir build/Debug --output-junit "$PWD/ctest-report.xml" --parallel $(nproc)
+    - ctest --test-dir build/Debug --output-junit "$PWD/ctest-report.xml" --output-on-failure --parallel $(nproc)
 
   artifacts:
     when: always
