@@ -1,5 +1,6 @@
 #pragma once
 
+#include <type_traits>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
@@ -28,11 +29,7 @@ namespace hg::engine::resource {
 
 	public:
 		[[nodiscard]] inline bool shouldSwapBytes() const noexcept {
-			#if ENV_MSVC
-			return false;
-			#else
-            return true;
-			#endif
+			return std::endian::native != std::endian::little;
 		}
 		#pragma endregion
 
@@ -126,7 +123,7 @@ namespace hg::engine::resource {
 				return *this;
 			}
 
-			if constexpr (std::is_integral_v<Type_>) {
+			if constexpr (std::is_integral_v<std::remove_cvref_t<Type_>>) {
 				serializeBytesSwapped(std::forward<Type_>(value_), mode_);
 			} else {
 				serializeBytesSwapped(&value_, sizeof(value_), mode_);

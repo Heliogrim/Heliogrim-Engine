@@ -3,8 +3,8 @@
 
 namespace hg::engine::resource {
 	class BufferArchive :
-		public MemoryReadWriteArchive,
-		public AutoArray<_::byte> {
+		public AutoArray<_::byte>,
+		public MemoryReadWriteArchive {
 	public:
 		using this_type = BufferArchive;
 
