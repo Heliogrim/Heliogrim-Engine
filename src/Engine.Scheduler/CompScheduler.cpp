@@ -100,7 +100,7 @@ void CompScheduler::setup(u32 workers_) {
 	 */
 	for (u32 idx = 0; idx < workers_; ++idx) {
 		#ifdef _DEBUG
-        assert(_workers[idx].start());
+		assert(_workers[idx].start());
 		#else
 		_workers[idx].start();
 		#endif
@@ -123,7 +123,7 @@ void waitReadyAll(u32 workerCount_, const ptr<const CompScheduler::aligned_worke
 	for (u32 i = 0; i < workerCount_; ++i) {
 		while (!workers_[i].ready()) {
 			#ifdef _DEBUG
-            thread::self::sleepFor(5);
+			thread::self::sleepFor(5);
 			#else
 			thread::self::yield();
 			#endif
@@ -142,7 +142,7 @@ void CompScheduler::destroy() {
 		 */
 		for (u32 idx = 0; idx < _workerCount; ++idx) {
 			#if _DEBUG
-            assert(_workers[idx].stop());
+			assert(_workers[idx].stop());
 			#else
 			_workers[idx].stop();
 			#endif
@@ -182,10 +182,10 @@ void CompScheduler::exec(mref<task_handle_type> task_) {
 	[[maybe_unused]] const auto result = _schedule->push(std::move(task_));
 
 	#ifdef _DEBUG
-    if (not result) {
-        IM_CORE_ERROR("Failed to push task.");
-        ::hg::breakpoint();
-    }
+	if (not result) {
+		IM_CORE_ERROR("Failed to push task.");
+		::hg::breakpoint();
+	}
 	#endif
 }
 
@@ -218,7 +218,7 @@ size_t CompScheduler::getWorkerCount() const {
 void CompScheduler::wait() const {
 	for (u32 i = 0; i < _workerCount; ++i) {
 		#if _DEBUG
-        assert(_workers[i].join());
+		assert(_workers[i].join());
 		#else
 		_workers[i].join();
 		#endif

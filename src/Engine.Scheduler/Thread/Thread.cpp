@@ -9,6 +9,8 @@
 #include <Engine.Common/stdafx.h>
 /**/
 #include <processthreadsapi.h>
+#else
+#include <pthread.h>
 #endif
 
 using namespace hg::engine::scheduler::thread;
@@ -36,6 +38,7 @@ thread_local static thread_id __threadId { cast_ntid_tid(std::this_thread::get_i
 thread_local static uint64_t __threadIdx { generate_thread_idx() };
 
 FORCE_INLINE inline static bool set_priority(std::thread::native_handle_type handle_, priority priority_) {
+
 	#if defined(_WIN32) || defined(_WIN64)
 	auto tr = 0;
 
@@ -59,6 +62,33 @@ FORCE_INLINE inline static bool set_priority(std::thread::native_handle_type han
 	}
 
 	return ::SetThreadPriority(handle_, tr) == TRUE;
+
+	#else
+
+	int policy;
+	sched_param params;
+	::hg::assertrt(pthread_getschedparam(handle_, &policy, &params) == 0);
+
+	const auto lowPriorityLimit = sched_get_priority_min(policy);
+	const auto highPriorityLimit = sched_get_priority_max(policy);
+	const auto priorityRange = lowPriorityLimit != highPriorityLimit ? (highPriorityLimit - lowPriorityLimit) : 0;
+	const auto step = priorityRange / 4;
+
+	switch (priority_) {
+		case eLow: {
+			return pthread_setschedprio(handle_, lowPriorityLimit + step * 0) == 0;
+		}
+		case eNormal: {
+			return pthread_setschedprio(handle_, lowPriorityLimit + step * 1) == 0;
+		}
+		case eHigh: {
+			return pthread_setschedprio(handle_, lowPriorityLimit + step * 2) == 0;
+		}
+		case eTimeCritical: {
+			return pthread_setschedprio(handle_, lowPriorityLimit + step * 3) == 0;
+		}
+	}
+
 	#endif
 	::hg::todo_panic();
 }

@@ -2,12 +2,12 @@
 
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Concurrent/Promise.hpp>
+#include <Engine.Scheduler/CompScheduler.hpp>
 #include <Engine.Scheduler/Scheduler.hpp>
-#include <Engine.Scheduler/Queue/SharedBufferPool.hpp>
 #include <Engine.Scheduler/Helper/Wait.hpp>
 #include <Engine.Scheduler/Pipeline/CompositePipeline.hpp>
 #include <Engine.Scheduler/Pipeline/StagePipeline.hpp>
-#include <Engine.Scheduler/CompScheduler.hpp>
+#include <Engine.Scheduler/Queue/SharedBufferPool.hpp>
 
 using namespace hg::engine::scheduler;
 using namespace hg;
