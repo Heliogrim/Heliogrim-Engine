@@ -23,6 +23,7 @@ set(IDE_FOLDER "Heliogrim")
 project("Heliogrim" VERSION 1.0)
 
 # CMake Tools
+include(cmake/GlobalSettings.cmake)
 include(cmake/Architecture.cmake)
 include(cmake/BuildType.cmake)
 include(cmake/Tools.cmake)
