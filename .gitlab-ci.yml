@@ -13,6 +13,7 @@ variables:
   CXX_CLANG_TARGET: clang++-18
   C_GCC_TARGET: gcc-14
   CXX_GCC_TARGET: g++-14
+  ALPINE_APK_OPT: --no-cache --repository https://dl-cdn.alpinelinux.org/alpine/edge/main
 
 stages:
   - build
@@ -377,10 +378,10 @@ test.linux.gcc:
   # Preparation
   before_script:
     # Install System Dependencies
-    - apk add --no-cache pkgconf cmake mesa git git-lfs libstdc++ libgcc gcompat
-    - apk add --no-cache libx11 libx11-dev libxcursor libxcursor-dev libxfixes libxfixes-dev libxext libxext-dev libxrandr libxrandr-dev libxrender libxrender-dev libxi libxi-dev
-    - apk add --no-cache wayland libdecor libdecor-dev xkbcli
-    - apk add --no-cache libuuid ossp-uuid-dev
+    - apk add $ALPINE_APK_OPT pkgconf cmake mesa git git-lfs libstdc++ libgcc gcompat
+    - apk add $ALPINE_APK_OPT libx11 libx11-dev libxcursor libxcursor-dev libxfixes libxfixes-dev libxext libxext-dev libxrandr libxrandr-dev libxrender libxrender-dev libxi libxi-dev
+    - apk add $ALPINE_APK_OPT wayland libdecor libdecor-dev xkbcli
+    - apk add $ALPINE_APK_OPT libuuid ossp-uuid-dev
 
   # Process
   script:
@@ -409,10 +410,10 @@ test.linux.clang:
   # Preparation
   before_script:
     # Install System Dependencies
-    - apk add --no-cache pkgconf cmake mesa git git-lfs libc++ llvm-libunwind libgcc gcompat
-    - apk add --no-cache libx11 libx11-dev libxcursor libxcursor-dev libxfixes libxfixes-dev libxext libxext-dev libxrandr libxrandr-dev libxrender libxrender-dev libxi libxi-dev
-    - apk add --no-cache wayland libdecor libdecor-dev xkbcli
-    - apk add --no-cache libuuid ossp-uuid-dev
+    - apk add $ALPINE_APK_OPT pkgconf cmake mesa git git-lfs libc++ llvm-libunwind libgcc gcompat
+    - apk add $ALPINE_APK_OPT libx11 libx11-dev libxcursor libxcursor-dev libxfixes libxfixes-dev libxext libxext-dev libxrandr libxrandr-dev libxrender libxrender-dev libxi libxi-dev
+    - apk add $ALPINE_APK_OPT wayland libdecor libdecor-dev xkbcli
+    - apk add $ALPINE_APK_OPT libuuid ossp-uuid-dev
 
   # Process
   script:
