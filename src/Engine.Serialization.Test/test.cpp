@@ -3,6 +3,8 @@
 /**/
 #include <cstring>
 #include <list>
+#include <tuple>
+#include <utility>
 #include <Engine.Assets/Types/Asset.hpp>
 #include <Engine.Common/Collection/Array.hpp>
 #include <Engine.Resource.Archive/BufferArchive.hpp>
@@ -1400,7 +1402,7 @@ namespace SerializationModule {
 			auto write = arch.insertRootSlot();
 			auto slot = write.intoStruct();
 
-			slot.insertRecordSlot("known");
+			std::ignore = slot.insertRecordSlot("known");
 		}
 
 		/**/
