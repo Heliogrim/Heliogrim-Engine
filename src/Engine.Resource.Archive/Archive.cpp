@@ -1,5 +1,6 @@
 #include "Archive.hpp"
 
+#include <bit>
 #include <Engine.Asserts/Todo.hpp>
 
 using namespace hg::engine::resource;
@@ -76,15 +77,39 @@ void Archive::setArchiveVersion(cref<ArchiveVersion> version_) noexcept {
 }
 
 void Archive::serializeBytesSwapped(ref<u16> value_, const ArchiveStreamMode mode_) {
-	::hg::todo_panic();
+
+	if (mode_ == ArchiveStreamMode::eStore) {
+		auto tmp = std::byteswap(value_);
+		serializeBytes(&tmp, sizeof(tmp), mode_);
+		return;
+	}
+
+	serializeBytes(&value_, sizeof(value_), mode_);
+	value_ = std::byteswap(value_);
 }
 
 void Archive::serializeBytesSwapped(ref<u32> value_, const ArchiveStreamMode mode_) {
-	::hg::todo_panic();
+
+	if (mode_ == ArchiveStreamMode::eStore) {
+		auto tmp = std::byteswap(value_);
+		serializeBytes(&tmp, sizeof(tmp), mode_);
+		return;
+	}
+
+	serializeBytes(&value_, sizeof(value_), mode_);
+	value_ = std::byteswap(value_);
 }
 
 void Archive::serializeBytesSwapped(ref<u64> value_, const ArchiveStreamMode mode_) {
-	::hg::todo_panic();
+
+	if (mode_ == ArchiveStreamMode::eStore) {
+		auto tmp = std::byteswap(value_);
+		serializeBytes(&tmp, sizeof(tmp), mode_);
+		return;
+	}
+
+	serializeBytes(&value_, sizeof(value_), mode_);
+	value_ = std::byteswap(value_);
 }
 
 void Archive::serializeBytesSwapped(const ptr<void> value_, u64 size_, const ArchiveStreamMode mode_) {
