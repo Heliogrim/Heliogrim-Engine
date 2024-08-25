@@ -366,7 +366,7 @@ test.windows.clang:
       junit: ctest-report.xml
 
 test.linux.gcc:
-  image: docker.io/alpine:3.20.2
+  image: docker.io/gcc:14.2.0-bookworm
   stage: test
   tags:
     - linux
@@ -377,11 +377,18 @@ test.linux.gcc:
 
   # Preparation
   before_script:
+    # Prepare Commands
+    - apt-get update
+    - command -v git 2>&1 || { echo >&2 "Required unavailable command git, try to recover."; apt-get -qq install git git-lfs -y; }
+    - command -v cmake 2>&1 || { echo >&2 "Required unavailable command cmake, try to recover."; apt-get -qq install cmake -y; }
+    - command -v xz 2>&1 || { echo >&2 "Required unavailable command xz, try to recover."; apt-get -qq install xz-utils -y; }
+    # Optional Commands
+    - command -v ninja 2>&1 || { echo >&2 "Optional unavailable command ninja, try to recover."; apt-get -qq install ninja-build -y; }
     # Install System Dependencies
-    - apk add $ALPINE_APK_OPT pkgconf cmake mesa git git-lfs libstdc++ libgcc gcompat
-    - apk add $ALPINE_APK_OPT libx11 libx11-dev libxcursor libxcursor-dev libxfixes libxfixes-dev libxext libxext-dev libxrandr libxrandr-dev libxrender libxrender-dev libxi libxi-dev
-    - apk add $ALPINE_APK_OPT wayland libdecor libdecor-dev xkbcli
-    - apk add $ALPINE_APK_OPT libuuid ossp-uuid-dev
+    - apt-get -qq install pkg-config cmake-data mesa-vulkan-drivers -y
+    - apt-get -qq install xcb libx11-xcb1 libxcb1-dev libxcb-xfixes0 libxcb-xfixes0-dev libx11-dev libx11-xcb-dev libxext-dev libxfixes-dev libxcursor1 libxcursor-dev libxrandr2 libxrandr-dev libxrender1 libxrender-dev libxss1 libxss-dev libxi6 x11proto-dev xorg-sgml-doctools libxi-dev -y
+    - apt-get -qq install libwayland-dev libwayland-client0 libwayland-cursor0 libegl1-mesa-dev libegl-mesa0 libwayland-egl-backend-dev libwayland-egl1 libxkbcommon-dev libxkbcommon0 libdecor-0-dev libdecor-0-0 -y
+    - apt-get -qq install libuuid1 uuid-dev -y
 
   # Process
   script:
