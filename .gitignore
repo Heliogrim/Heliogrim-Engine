@@ -41,6 +41,9 @@
 [Bb]uild/
 [Dd]ist/
 
+# Don't fetch assets
+[Aa]ssets/
+
 # Don't fetch external dependencies
 [Vv]endor/*/**
 ![Vv]endor/*/CMakeLists.txt
@@ -48,4 +51,5 @@
 
 # Weaken Rules for special cases
 !**/src/**/[Bb]uild/
-!**/resources/**/*.obj
+!**/src/**/[Dd]ist/
+!**/src/**/[Vv]endor/
