@@ -5,33 +5,33 @@
 #include <Engine.Render.Scene/RenderSceneSystemModel.hpp>
 
 namespace hg::engine::gfx::scene {
-    class GeometryModel :
-        public InheritMeta<GeometryModel, render::RenderSceneSystemModel> {
-    public:
-        using this_type = GeometryModel;
+	class GeometryModel :
+		public InheritMeta<GeometryModel, render::RenderSceneSystemModel> {
+	public:
+		using this_type = GeometryModel;
 
-    protected:
-        GeometryModel(const ptr<SceneComponent> owner_);
+	protected:
+		explicit GeometryModel(const ptr<SceneComponent> owner_);
 
-    public:
-        GeometryModel(mref<this_type>) noexcept = default;
+	public:
+		GeometryModel(mref<this_type>) noexcept = default;
 
-        ~GeometryModel() override = default;
+		~GeometryModel() override = default;
 
-    public:
-        ref<this_type> operator=(mref<this_type>) noexcept = default;
+	public:
+		ref<this_type> operator=(mref<this_type>) noexcept = default;
 
-    protected:
-        CompactArray<smr<MaterialResource>> _overrideMaterials;
+	protected:
+		CompactArray<smr<MaterialResource>> _overrideMaterials;
 
-    public:
-        [[nodiscard]] bool hasOverrideMaterials() const noexcept;
+	public:
+		[[nodiscard]] bool hasOverrideMaterials() const noexcept;
 
-        [[nodiscard]] cref<CompactArray<smr<MaterialResource>>> overrideMaterials() const noexcept;
+		[[nodiscard]] cref<CompactArray<smr<MaterialResource>>> overrideMaterials() const noexcept;
 
-        [[nodiscard]] virtual smr<MaterialResource> material(const u32 index_) const noexcept;
+		[[nodiscard]] virtual smr<MaterialResource> material(const u32 index_) const noexcept;
 
-    public:
-        virtual void capture(nmpt<render::MeshCaptureInterface> mci_) const noexcept = 0;
-    };
+	public:
+		virtual void capture(nmpt<render::MeshCaptureInterface> mci_) const noexcept = 0;
+	};
 }

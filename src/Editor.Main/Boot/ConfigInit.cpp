@@ -124,7 +124,7 @@ std::filesystem::path getEditorUserCachePath() {
 std::filesystem::path getProcessModulePath() {
 	Array<_::byte, 256> tmpData {};
 	auto length = GetModuleFileNameW(
-		NULL,
+		nullptr,
 		std::bit_cast<wchar_t*>(tmpData.data()),
 		static_cast<DWORD>(tmpData.size() / sizeof(wchar_t))
 	);
@@ -134,7 +134,7 @@ std::filesystem::path getProcessModulePath() {
 	}.parent_path();
 }
 
-[[nodiscard]] static decltype(auto) getCommonInstallPath() {
+[[nodiscard, maybe_unused]] static decltype(auto) getCommonInstallPath() {
 	return readPathFromReg(L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ProgramFilesDir");
 }
 

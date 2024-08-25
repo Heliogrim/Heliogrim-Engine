@@ -409,7 +409,7 @@ namespace hg::math {
 		 *
 		 * @return The indexed value.
 		 */
-		const row_type& operator[](const size_t index_) const {
+		constexpr const row_type& operator[](const size_t index_) const {
 			return value[index_];
 		}
 
@@ -420,7 +420,7 @@ namespace hg::math {
 		 *
 		 * @return The indexed value.
 		 */
-		row_type& operator[](const size_t index_) {
+		constexpr row_type& operator[](const size_t index_) {
 			return value[index_];
 		}
 

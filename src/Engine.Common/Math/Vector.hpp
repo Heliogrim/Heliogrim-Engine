@@ -1613,7 +1613,7 @@ namespace hg::math {
 		 *
 		 * @returns The indexed value.
 		 */
-		value_type operator[](const size_t index_) const {
+		constexpr value_type operator[](const size_t index_) const {
 			return (&x)[index_];
 		}
 
@@ -1627,7 +1627,7 @@ namespace hg::math {
 		 *
 		 * @returns The indexed value.
 		 */
-		value_type& operator[](const size_t index_) {
+		constexpr value_type& operator[](const size_t index_) {
 			return (&x)[index_];
 		}
 

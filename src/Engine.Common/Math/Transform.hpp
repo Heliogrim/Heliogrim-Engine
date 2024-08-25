@@ -4,101 +4,101 @@
 #include "Rotator.hpp"
 
 namespace hg::math {
-    class Transform {
-    public:
-        using this_type = Transform;
+	class Transform {
+	public:
+		using this_type = Transform;
 
-    public:
-        /**
-         * Default Constructor
-         *
-         * @author Julius
-         * @date 26.11.2021
-         */
-        Transform() noexcept;
+	public:
+		/**
+		 * Default Constructor
+		 *
+		 * @author Julius
+		 * @date 26.11.2021
+		 */
+		Transform() noexcept;
 
-        Transform(mref<Location> location_, mref<Rotator> rotator_, mref<fvec3> scale_) noexcept;
+		Transform(mref<Location> location_, mref<Rotator> rotator_, mref<fvec3> scale_) noexcept;
 
-        /**
-         * Move Constructor
-         *
-         * @author Julius
-         * @date 26.11.2021
-         *
-         * @param other_ The transform to move from.
-         */
-        Transform(mref<Transform> other_) noexcept = default;
+		/**
+		 * Move Constructor
+		 *
+		 * @author Julius
+		 * @date 26.11.2021
+		 *
+		 * @param other_ The transform to move from.
+		 */
+		Transform(mref<Transform> other_) noexcept = default;
 
-        /**
-         * Copy Constructor
-         *
-         * @author Julius
-         * @date 26.11.2021
-         *
-         * @param other_ The transform to copy from.
-         */
-        Transform(cref<Transform> other_) = default;
+		/**
+		 * Copy Constructor
+		 *
+		 * @author Julius
+		 * @date 26.11.2021
+		 *
+		 * @param other_ The transform to copy from.
+		 */
+		Transform(cref<Transform> other_) = default;
 
-        /**
-         * Destructor
-         *
-         * @author Julius
-         * @date 26.11.2021
-         */
-        ~Transform() = default;
+		/**
+		 * Destructor
+		 *
+		 * @author Julius
+		 * @date 26.11.2021
+		 */
+		~Transform() = default;
 
-    public:
-        /**
-         * Move Assignment
-         *
-         * @author Julius
-         * @date 02.12.2021
-         *
-         * @param other_ The transform to move from.
-         *
-         * @returns A shallow copy of this.
-         */
-        ref<Transform> operator=(mref<Transform> other_) noexcept;
+	public:
+		/**
+		 * Move Assignment
+		 *
+		 * @author Julius
+		 * @date 02.12.2021
+		 *
+		 * @param other_ The transform to move from.
+		 *
+		 * @returns A shallow copy of this.
+		 */
+		ref<Transform> operator=(mref<Transform> other_) noexcept;
 
-        /**
-         * Copy Assignment
-         *
-         * @author Julius
-         * @date 02.12.2021
-         *
-         * @param other_ The transform to copy from.
-         *
-         * @returns A shallow copy of this.
-         */
-        ref<Transform> operator=(cref<Transform> other_) noexcept;
+		/**
+		 * Copy Assignment
+		 *
+		 * @author Julius
+		 * @date 02.12.2021
+		 *
+		 * @param other_ The transform to copy from.
+		 *
+		 * @returns A shallow copy of this.
+		 */
+		ref<Transform> operator=(cref<Transform> other_) noexcept;
 
-    private:
-        Location _location;
-        Rotator _rotator;
-        fvec3 _scale;
+	private:
+		Location _location;
+		Rotator _rotator;
+		fvec3 _scale;
 
-    public:
-        [[nodiscard]] cref<Location> location() const noexcept;
+	public:
+		[[nodiscard]] cref<Location> location() const noexcept;
 
-        [[nodiscard]] ref<Location> location() noexcept;
+		[[nodiscard]] ref<Location> location() noexcept;
 
-        ref<this_type> setLocation(mref<Location> location_) noexcept;
+		ref<this_type> setLocation(mref<Location> location_) noexcept;
 
-        template <typename... Args_> requires std::is_constructible_v<Location, Args_...>
-        ref<this_type> setLocation(Args_&&... args_) noexcept {
-            return setLocation({ std::forward<Args_>(args_)... });
-        }
+		template <typename... Args_> requires std::is_constructible_v<Location, Args_...>
+		ref<this_type> setLocation(Args_&&... args_) noexcept {
+			return setLocation({ std::forward<Args_>(args_)... });
+		}
 
-        [[nodiscard]] cref<Rotator> rotator() const noexcept;
+		[[nodiscard]] cref<Rotator> rotator() const noexcept;
 
-        [[nodiscard]] ref<Rotator> rotator() noexcept;
+		[[nodiscard]] ref<Rotator> rotator() noexcept;
 
-        ref<this_type> setRotator(mref<Rotator> rotator_) noexcept;
+		ref<this_type> setRotator(mref<Rotator> rotator_) noexcept;
 
-        [[nodiscard]] cref<fvec3> scale() const noexcept;
+		[[nodiscard]] cref<fvec3> scale() const noexcept;
 
-        [[nodiscard]] ref<fvec3> scale() noexcept;
+		[[nodiscard]] ref<fvec3> scale() noexcept;
 
-        ref<this_type> setScale(mref<fvec3> scale_) noexcept;
-    };
+		ref<this_type> setScale(mref<fvec3> scale_) noexcept;
+	};
 }
