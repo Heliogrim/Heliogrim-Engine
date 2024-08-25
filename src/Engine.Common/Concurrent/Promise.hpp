@@ -631,6 +631,7 @@ namespace hg::concurrent {
 
 		using fnc_type = std::function<void()>;
 
+	public:
 		/**
 		 * Constructor
 		 *
@@ -653,6 +654,10 @@ namespace hg::concurrent {
 		promise(const fnc_type& fnc_) :
 			_state(make_sptr<promise_state<void, void>>(std::move(fnc_))) {}
 
+		promise(const promise&) = default;
+
+		promise(mref<promise>) noexcept = default;
+
 		/**
 		 * Destructor
 		 *
@@ -661,6 +666,12 @@ namespace hg::concurrent {
 		 */
 		~promise() = default;
 
+	public:
+		ref<promise> operator=(cref<promise>) = delete;
+
+		ref<promise> operator=(mref<promise>) = delete;
+
+	public:
 		/**
 		 * Stacks the given function and returns the next promise in range
 		 *

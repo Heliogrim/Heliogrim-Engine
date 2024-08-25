@@ -42,7 +42,7 @@ namespace SchedulerModule {
 		EXPECT_EQ(pool.size().load(std::memory_order_relaxed), 32);
 	}
 
-	void structuredRuntimeTest(std::function<void(nmpt<engine::Scheduler>)> callback_) {
+	void structuredRuntimeTest(std::function<void(nmpt<engine::Scheduler>)>&& callback_) {
 
 		auto engine = make_uptr<test::TestSchedulerEngine>();
 		engine->preInit();
@@ -62,7 +62,7 @@ namespace SchedulerModule {
 
 		//
 		if (callback_) {
-			callback_(scheduler);
+			std::forward<decltype(callback_)>(callback_)(scheduler);
 		}
 
 		//

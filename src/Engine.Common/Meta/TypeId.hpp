@@ -91,7 +91,7 @@ namespace hg {
 	 *
 	 * @returns The result of the operation.
 	 */
-	constexpr type_id operator""_typeId(const char* str_, const std::size_t count_) {
+	constexpr type_id operator""_typeId(const char* str_, const std::size_t count_) noexcept {
 		return fnv1a_86(str_, count_);
 	}
 

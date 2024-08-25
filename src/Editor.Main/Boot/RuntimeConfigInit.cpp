@@ -12,7 +12,7 @@ using namespace hg;
 
 [[nodiscard]] static std::filesystem::path getRuntimeRootPath();
 
-[[nodiscard]] static std::filesystem::path getRuntimeCachePath();
+[[nodiscard, maybe_unused]] static std::filesystem::path getRuntimeCachePath();
 
 /**/
 

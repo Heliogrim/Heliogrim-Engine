@@ -50,9 +50,9 @@ static_assert(CompleteType<TextureAsset>);
 void engine::assets::storeDefaultNameAndUrl(ref<Asset> asset_, string source_) {
 
 	#ifdef _DEBUG
-    if (not source_.empty() && asset_.getAssetName().empty()) {
-        asset_.setAssetName(std::filesystem::path(source_).filename().string());
-    }
+	if (not source_.empty() && asset_.getAssetName().empty()) {
+		asset_.setAssetName(std::filesystem::path(source_).filename().string());
+	}
 	#endif
 
 	if (asset_.getVirtualUrl().empty()) {
@@ -61,7 +61,7 @@ void engine::assets::storeDefaultNameAndUrl(ref<Asset> asset_, string source_) {
 
 		switch (asset_.getTypeId().data) {
 			case assets::Image::typeId.data: {
-				pseudo = "texture";
+				pseudo = "image";
 				break;
 			}
 			case assets::TextureAsset::typeId.data: {
@@ -358,8 +358,8 @@ Arci<TextureAsset> AssetFactory::createTextureAsset(
 
 	if (!result) {
 		#ifdef _DEBUG
-        // TODO: We need to handle a missed insertion call to the asset database
-        // Important: Move from asset factory to another place, cause factory is just instantiation, and not database management
+		// TODO: We need to handle a missed insertion call to the asset database
+		// Important: Move from asset factory to another place, cause factory is just instantiation, and not database management
 		::hg::breakpoint();
 		#else
 		throw std::runtime_error("Failed to insert texture asset into database.");
