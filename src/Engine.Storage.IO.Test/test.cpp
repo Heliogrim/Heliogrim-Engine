@@ -3,6 +3,7 @@
 /**/
 #include <chrono>
 #include <cstring>
+#include <filesystem>
 #include <fstream>
 #include <string>
 #include <Engine.Common/Guid.hpp>
@@ -67,13 +68,15 @@ namespace StorageModule {
 		uptr<engine::Config> _config;
 		uptr<engine::storage::StorageRegistry> _registry;
 
+		std::filesystem::path _tmpRoot;
+
 	protected:
 		void initConfigValues() {
 
 			auto& cfg = *_config;
 
 			const auto baseRoot = std::filesystem::current_path();
-			const auto root = clone(baseRoot).append("tmp"sv).concat(
+			_tmpRoot = clone(baseRoot).append("tmp"sv).concat(
 				std::to_string(std::chrono::high_resolution_clock::now().time_since_epoch().count())
 			);
 
@@ -81,15 +84,15 @@ namespace StorageModule {
 
 			// Note: Just guarantee for the test, that we do not interfere with anything
 			//ASSERT_TRUE(not std::filesystem::exists(root));
-			if (std::filesystem::exists(root)) {
-				std::filesystem::remove_all(root);
+			if (std::filesystem::exists(_tmpRoot)) {
+				std::filesystem::remove_all(_tmpRoot);
 			}
-			std::filesystem::create_directories(root);
+			std::filesystem::create_directories(_tmpRoot);
 
 			/**/
 
 			{
-				String localCachePath = clone(root).append("cache"sv).generic_string();
+				String localCachePath = clone(_tmpRoot).append("cache"sv).generic_string();
 				std::ignore = cfg.init(
 					engine::cfg::EditorConfigProperty::eLocalCachePath,
 					std::move(localCachePath),
@@ -98,7 +101,7 @@ namespace StorageModule {
 			}
 			/**/
 			{
-				String localProjectPath = clone(root).append("project"sv).generic_string();
+				String localProjectPath = clone(_tmpRoot).append("project"sv).generic_string();
 				std::ignore = cfg.init(
 					engine::cfg::ProjectConfigProperty::eLocalBasePath,
 					std::move(localProjectPath),
@@ -107,7 +110,7 @@ namespace StorageModule {
 			}
 			/**/
 			{
-				String localRuntimePath = clone(root).append("runtime"sv).generic_string();
+				String localRuntimePath = clone(_tmpRoot).append("runtime"sv).generic_string();
 				std::ignore = cfg.init(
 					engine::cfg::RuntimeConfigProperty::eLocalBasePath,
 					std::move(localRuntimePath),
@@ -116,7 +119,7 @@ namespace StorageModule {
 			}
 			/**/
 			{
-				String localEditorPath = clone(root).append("editor"sv).generic_string();
+				String localEditorPath = clone(_tmpRoot).append("editor"sv).generic_string();
 				std::ignore = cfg.init(
 					engine::cfg::EditorConfigProperty::eLocalEditorPath,
 					std::move(localEditorPath),
@@ -130,18 +133,15 @@ namespace StorageModule {
 
 			auto& cfg = *_config;
 
-			const auto baseRoot = std::filesystem::current_path();
-			const auto root = clone(baseRoot).append("tmp"sv);
-
 			/**/
 
-			if (not std::filesystem::exists(root)) {
+			if (not std::filesystem::exists(_tmpRoot)) {
 				return;
 			}
 
 			/**/
 
-			std::filesystem::remove_all(root);
+			std::filesystem::remove_all(_tmpRoot);
 		}
 
 	public:
