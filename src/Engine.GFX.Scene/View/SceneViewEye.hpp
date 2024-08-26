@@ -44,37 +44,37 @@ namespace hg::engine::gfx::scene {
 		void getInvViewMatrix(_Inout_ ref<math::mat4> matrix_) const noexcept;
 
 	public:
-		[[nodiscard]] math::vec4 worldToView(const math::vec4 worldPosition_) const;
+		[[nodiscard]] math::vec4 universeToView(const math::vec4 universePosition_) const;
 
-		[[nodiscard]] math::vec4 viewToWorld(const math::vec4 viewPosition_) const;
+		[[nodiscard]] math::vec4 viewToUniverse(const math::vec4 viewPosition_) const;
 
 	public:
 		/**
-		 * Calculate the projected world space position into ui space
+		 * Calculate the projected universe space position into ui space
 		 *
 		 * @author Julius
 		 * @date 03.12.2022
 		 *
-		 * @param worldPosition_ The world space position to project into ui space
+		 * @param universePosition_ The universe space position to project into ui space
 		 *
 		 * @returns A vector in normalized space `[0.0 ... 1.0]` when  succeeded, otherwise {-1, -1}
 		 */
-		[[nodiscard]] math::vec2 worldToScreen(cref<math::vec4> worldPosition_) const;
+		[[nodiscard]] math::vec2 universeToScreen(cref<math::vec4> universePosition_) const;
 
 		/**
-		 * Calculate the trace origin and direction un-projected from ui position to world space
+		 * Calculate the trace origin and direction un-projected from ui position to universe space
 		 *
 		 * @author Julius
 		 * @date 03.12.2022
 		 *
 		 * @param screenPosition_ The ui space position in normalized space `[0.0 ... 1.0]`
-		 * @param [Out] worldOrigin_ The world space origin position for the trace
-		 * @param [Out] worldDirection_ The world space vector direction for the trace
+		 * @param [Out] universeOrigin_ The universe space origin position for the trace
+		 * @param [Out] universeDirection_ The universe space vector direction for the trace
 		 */
-		void screenToWorld(
+		void screenToUniverse(
 			cref<math::vec2> screenPosition_,
-			_Out_ ref<math::vec3> worldOrigin_,
-			_Out_ ref<math::vec3> worldDirection_
+			_Out_ ref<math::vec3> universeOrigin_,
+			_Out_ ref<math::vec3> universeDirection_
 		) const;
 
 	public:

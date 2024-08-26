@@ -1,8 +1,8 @@
 #include "ActorUpdateStage.hpp"
 
 #include <Engine.Core/Engine.hpp>
-#include <Engine.Core/World.hpp>
-#include <Engine.Core/WorldContext.hpp>
+#include <Engine.Core/Universe.hpp>
+#include <Engine.Core/UniverseContext.hpp>
 #include <Engine.Scene/Scene.hpp>
 
 using namespace hg::engine::core::schedule;
@@ -23,20 +23,20 @@ void ActorUpdateStage::staticDispatch(const non_owning_rptr<const scheduler::Sta
 			[]() {
 
 				const auto engine = Engine::getEngine();
-				const auto& ctxs = engine->getWorldContexts();
+				const auto& ctxs = engine->getUniverseContexts();
 
-				for (const auto worldContext : ctxs) {
+				for (const auto universeContext : ctxs) {
 
-					cref<sptr<World>> world = worldContext->getCurrentWorld();
-					if (not world) {
+					cref<sptr<Universe>> universe = universeContext->getCurrentUniverse();
+					if (not universe) {
 						continue;
 					}
 
 					/**/
 
-					world->getScene()->broadcast({});
-					world->getScene()->update({});
-					world->getScene()->postprocess({});
+					universe->getScene()->broadcast({});
+					universe->getScene()->update({});
+					universe->getScene()->postprocess({});
 				}
 
 				return true;

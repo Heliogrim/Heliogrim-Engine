@@ -32,8 +32,8 @@ namespace hg::engine::core {
 	class Session;
 	class SessionState;
 
-	class World;
-	class WorldContext;
+	class Universe;
+	class UniverseContext;
 }
 
 namespace hg::engine {
@@ -260,11 +260,11 @@ namespace hg::engine {
 		[[nodiscard]] virtual ref<core::Modules> getModules() const noexcept = 0;
 
 	public:
-		[[nodiscard]] virtual Vector<nmpt<core::WorldContext>> getWorldContexts() const noexcept = 0;
+		[[nodiscard]] virtual Vector<nmpt<core::UniverseContext>> getUniverseContexts() const noexcept = 0;
 
 	public:
-		virtual void addWorld(cref<sptr<core::World>> world_) = 0;
+		virtual void addUniverse(cref<sptr<core::Universe>> universe_) = 0;
 
-		virtual void removeWorld(cref<sptr<core::World>> world_) = 0;
+		virtual void removeUniverse(cref<sptr<core::Universe>> universe_) = 0;
 	};
 }

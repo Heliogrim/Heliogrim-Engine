@@ -126,7 +126,7 @@ void ObjectValueMapper<StaticGeometryComponent>::update(
 ) {
 
 	auto& sgc = *static_cast<ptr<StaticGeometryComponent>>(obj_);
-	const auto& mat { sgc.getWorldTransform() };
+	const auto& mat { sgc.getUniverseTransform() };
 	const auto& children { *parent_->children() };
 
 	auto* const transform { static_cast<ptr<Collapse>>(children[1].get()) }; {
@@ -140,13 +140,13 @@ void ObjectValueMapper<StaticGeometryComponent>::update(
 
 		std::static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(0))->_callback = [sgc = &sgc
 			](math::vec3 value_) {
-				const_cast<ref<Transform>>(sgc->getWorldTransform()).setLocation(math::Location(std::move(value_)));
+				const_cast<ref<Transform>>(sgc->getUniverseTransform()).setLocation(math::Location(std::move(value_)));
 			};
 
 		std::static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(1))->_callback = [sgc = &sgc](
 			math::vec3 value_
 		) {
-				const_cast<ref<Transform>>(sgc->getWorldTransform()).setRotator(
+				const_cast<ref<Transform>>(sgc->getUniverseTransform()).setRotator(
 					math::Rotator::fromEuler(std::move(value_))
 				);
 			};
@@ -154,7 +154,7 @@ void ObjectValueMapper<StaticGeometryComponent>::update(
 		std::static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(2))->_callback = [sgc = &sgc
 			](math::vec3 value_) {
 
-				const_cast<ref<Transform>>(sgc->getWorldTransform()).setScale(std::move(value_));
+				const_cast<ref<Transform>>(sgc->getUniverseTransform()).setScale(std::move(value_));
 			};
 	}
 

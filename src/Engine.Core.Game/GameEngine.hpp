@@ -85,15 +85,15 @@ namespace hg::engine {
 		[[nodiscard]] ref<core::Modules> getModules() const noexcept override;
 
 	private:
-		Vector<nmpt<core::WorldContext>> _worldContexts;
+		Vector<nmpt<core::UniverseContext>> _universeContexts;
 
 	public:
-		[[nodiscard]] Vector<nmpt<core::WorldContext>> getWorldContexts() const noexcept override;
+		[[nodiscard]] Vector<nmpt<core::UniverseContext>> getUniverseContexts() const noexcept override;
 
 	public:
-		void addWorld(cref<sptr<core::World>> world_) override;
+		void addUniverse(cref<sptr<core::Universe>> universe_) override;
 
-		void removeWorld(cref<sptr<core::World>> world_) override;
+		void removeUniverse(cref<sptr<core::Universe>> universe_) override;
 
 	private:
 		/**
@@ -101,9 +101,9 @@ namespace hg::engine {
 		 */
 
 		/**
-		 * As long as we use a GameEngine instance we can expect to have at least one major world
+		 * As long as we use a GameEngine instance we can expect to have at least one major universe
 		 *  We still have the possibility to execute multiple game sessions at once, but this should
-		 *  be managed explicitly to model the interaction of multiple worlds.
+		 *  be managed explicitly to model the interaction of multiple universes.
 		 */
 		uptr<core::Session> _gameSession;
 

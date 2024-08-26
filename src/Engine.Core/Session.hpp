@@ -19,11 +19,11 @@ namespace hg::engine::core {
 
 	private:
 		uptr<class SessionState> _state;
-		uptr<class WorldContext> _worldContext;
+		uptr<class UniverseContext> _universeContext;
 
 	public:
 		[[nodiscard]] ref<class SessionState> getState() const noexcept;
 
-		[[nodiscard]] ref<class WorldContext> getWorldContext() const noexcept;
+		[[nodiscard]] ref<class UniverseContext> getUniverseContext() const noexcept;
 	};
 }

@@ -14,7 +14,7 @@
 
 #include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Asserts/Todo.hpp>
-#include <Engine.Core/World.hpp>
+#include <Engine.Core/Universe.hpp>
 #include <Engine.GFX.Scene/RenderSceneManager.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 #include <Engine.Render.Scene.Model/CameraModel.hpp>
@@ -128,9 +128,9 @@ const non_owning_rptr<CameraActor> Viewport::getCameraActor() const noexcept {
 	return _cameraActor;
 }
 
-void Viewport::setViewportTarget(StringView renderer_, World world_, ptr<CameraActor> camera_) {
+void Viewport::setViewportTarget(StringView renderer_, Universe universe_, ptr<CameraActor> camera_) {
 	_renderer = std::move(renderer_);
-	_cameraWorld = std::move(world_);
+	_cameraUniverse = std::move(universe_);
 	_cameraActor = camera_;
 }
 
@@ -176,8 +176,8 @@ void Viewport::remountRenderTarget() {
 	auto* const manager = gfx->getSceneManager();
 
 	const auto renderer = gfx->getRenderer(_renderer, std::nothrow);
-	const auto* const coreWorld = static_cast<::hg::engine::core::World*>(_cameraWorld.unwrap().get());
-	const auto coreScene = coreWorld->getScene();
+	const auto* const coreUniverse = static_cast<::hg::engine::core::Universe*>(_cameraUniverse.unwrap().get());
+	const auto coreScene = coreUniverse->getScene();
 
 	auto view = smr<const hg::engine::gfx::scene::SceneView> { nullptr };
 

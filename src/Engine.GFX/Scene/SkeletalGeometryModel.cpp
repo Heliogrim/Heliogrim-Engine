@@ -23,10 +23,10 @@ void SkeletalGeometryModel::destroy(const ptr<render::RenderSceneSystem> system_
 
 void SkeletalGeometryModel::capture(nmpt<render::MeshCaptureInterface> mci_) const noexcept {
 
-    const auto worldTransform = _owner->getWorldTransform();
-    const auto pos = math::mat4::make_identity().translate(worldTransform.location().into());
-    const auto rotation = math::as<math::mat4>(worldTransform.rotator().into());
-    const auto scale = math::mat4::make_identity().unchecked_scale(worldTransform.scale());
+    const auto universeTransform = _owner->getUniverseTransform();
+    const auto pos = math::mat4::make_identity().translate(universeTransform.location().into());
+    const auto rotation = math::as<math::mat4>(universeTransform.rotator().into());
+    const auto scale = math::mat4::make_identity().unchecked_scale(universeTransform.scale());
 
     #if FALSE
     for (const auto& material : _overrideMaterials) {
