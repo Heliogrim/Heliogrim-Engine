@@ -309,7 +309,7 @@ Future<bool> hg::Destroy(mref<ptr<Actor>> actor_, cref<Universe> activeUniverse_
 
 	managed<void> dummy {};
 	const Session session {
-		managed<void> { std::move(dummy), coreSession }
+		SharedPtr<::hg::engine::core::Session> { std::move(dummy), coreSession }
 	};
 
 	return Destroy(std::move(actor_), session);

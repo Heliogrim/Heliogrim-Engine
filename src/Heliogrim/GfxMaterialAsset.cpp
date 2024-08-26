@@ -17,10 +17,10 @@ GfxMaterialAsset::GfxMaterialAsset(
 		clone(guid_),
 		engine::assets::GfxMaterial::typeId,
 		// Warning: Reference out of Scope | Use-After-Free
-		engine::Engine::getEngine()->getAssets()->getFactory()->createGfxMaterialAsset(
+		*engine::Engine::getEngine()->getAssets()->getFactory()->createGfxMaterialAsset(
 			clone(guid_),
 			std::move(prototypeGuid_)
-		).get()
+		)
 	) {}
 
 GfxMaterialAsset::~GfxMaterialAsset() noexcept = default;

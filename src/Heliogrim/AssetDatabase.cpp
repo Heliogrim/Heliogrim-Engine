@@ -44,7 +44,7 @@ AssetDatabaseResult<Asset> AssetDatabase::operator[](cref<asset_guid> guid_) con
 			asset->get_guid(),
 			asset->getTypeId(),
 			// Warning: Reference out of Scope | Use-After-Free
-			asset.get()
+			*asset.get()
 		}
 	};
 }
@@ -54,7 +54,7 @@ bool AssetDatabase::insert(ptr<Asset> asset_) noexcept {
 	::hg::assertd(asset_->_internal != nullptr /* "Asset should have internal state representation." */);
 
 	auto& idb { *static_cast<const non_owning_rptr<engine::assets::IAssetRegistry>>(_internal.get()) };
-	engine::assets::storeDefaultNameAndUrl(*static_cast<ptr<engine::assets::Asset>>(asset_->_internal), {});
+	engine::assets::storeDefaultNameAndUrl(*asset_->_internal, {});
 	::hg::todo_panic();
 	// TODO: return idb.insert({ static_cast<ptr<engine::assets::Asset>>(asset_->_internal) });
 }

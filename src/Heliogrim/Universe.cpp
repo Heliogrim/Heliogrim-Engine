@@ -19,14 +19,14 @@ using namespace hg;
 
 Universe::Universe() = default;
 
-World::World(const managed<void> internal_) :
-	_internal(internal_) {}
+Universe::Universe(mref<SharedPtr<::hg::engine::core::Universe>> internal_) :
+	_internal(std::move(internal_)) {}
 
 bool Universe::valid() const noexcept {
 	return _internal.get() && _internal.use_count();
 }
 
-cref<managed<void>> World::unwrap() const noexcept {
+cref<decltype(Universe::_internal)> Universe::unwrap() const noexcept {
 	return _internal;
 }
 

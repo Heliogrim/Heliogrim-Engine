@@ -17,9 +17,7 @@ GfxMatProtoAsset::GfxMatProtoAsset(
 		clone(guid_),
 		engine::assets::GfxMaterial::typeId,
 		// Warning: Reference out of Scope | Use-After-Free
-		engine::Engine::getEngine()->getAssets()->getFactory()->createGfxMaterialPrototypeAsset(
-			clone(guid_)
-		).get()
+		*engine::Engine::getEngine()->getAssets()->getFactory()->createGfxMaterialPrototypeAsset(clone(guid_))
 	) {}
 
 GfxMatProtoAsset::~GfxMatProtoAsset() noexcept = default;

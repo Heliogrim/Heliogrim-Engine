@@ -13,7 +13,7 @@ TextureAsset::TextureAsset(mref<asset_guid> guid_) noexcept :
 		clone(guid_),
 		engine::assets::TextureAsset::typeId,
 		// Warning: Reference out of Scope | Use-After-Free
-		engine::Engine::getEngine()->getAssets()->getFactory()->createTextureAsset(clone(guid_)).get()
+		*engine::Engine::getEngine()->getAssets()->getFactory()->createTextureAsset(clone(guid_))
 	) {}
 
 TextureAsset::TextureAsset(
@@ -29,7 +29,7 @@ TextureAsset::TextureAsset(
 		clone(guid_),
 		engine::assets::TextureAsset::typeId,
 		// Warning: Reference out of Scope | Use-After-Free
-		engine::Engine::getEngine()->getAssets()->getFactory()->createTextureAsset(
+		*engine::Engine::getEngine()->getAssets()->getFactory()->createTextureAsset(
 			clone(guid_),
 			baseImage_,
 			std::forward<Vector<asset_guid>>(images_),
@@ -37,7 +37,7 @@ TextureAsset::TextureAsset(
 			format_,
 			mipLevel_,
 			type_
-		).get()
+		)
 	) {}
 
 TextureAsset::~TextureAsset() noexcept = default;

@@ -4,11 +4,11 @@
 
 using namespace hg;
 
-SoundAsset::SoundAsset(mref<asset_guid> guid_) noexcept :
-    StreamableAsset(std::move(guid_), engine::assets::Sound::typeId) {}
+SoundAsset::SoundAsset(mref<asset_guid> guid_, ref<::hg::engine::assets::Asset> internal_) noexcept :
+	StreamableAsset(std::move(guid_), engine::assets::Sound::typeId, internal_) {}
 
 SoundAsset::~SoundAsset() noexcept = default;
 
 bool SoundAsset::isValidType() const noexcept {
-    return _typeId == engine::assets::Sound::typeId;
+	return _typeId == engine::assets::Sound::typeId;
 }
