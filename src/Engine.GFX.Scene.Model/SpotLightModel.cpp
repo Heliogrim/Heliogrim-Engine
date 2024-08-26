@@ -40,8 +40,8 @@ void SpotLightModel::create(const ptr<render::RenderSceneSystem> system_) {
 
 	const GlslLight storeLight {
 		// origin->_luminance,
-		// _owner->getWorldTransform().location().into(),
-		// _owner->getWorldTransform().rotator().euler(),
+		// _owner->getUniverseTransform().location().into(),
+		// _owner->getUniverseTransform().rotator().euler(),
 		// origin->_distanceLimit
 	};
 

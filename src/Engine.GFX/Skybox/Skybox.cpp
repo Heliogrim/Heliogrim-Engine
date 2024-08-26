@@ -190,7 +190,7 @@ Skybox::Skybox(::std::nullptr_t) :
 
 	/*
 	{
-		res::types::ResourceFile file (res::types::FileType::eTexture, FileResource::getRootDir() + std::string("\\world\\") + "skybox.ktx");
+		res::types::ResourceFile file (res::types::FileType::eTexture, FileResource::getRootDir() + std::string("\\universe\\") + "skybox.ktx");
 		const auto future = loader_->newLoadTexture(file);
 		future.wait();
 		_texture = future.get();
@@ -200,9 +200,9 @@ Skybox::Skybox(::std::nullptr_t) :
 	}
 	
 	__internal::types::future<__TextureCubemap> tex = loader_->
-		loadCubeMap(FileResource::getRootDir() + "\\world\\skybox.ktx");
+		loadCubeMap(FileResource::getRootDir() + "\\universe\\skybox.ktx");
 	__internal::types::future<__Model> model = loader_->loadModel(
-		FileResource::getRootDir() + "\\world\\skybox.obj");
+		FileResource::getRootDir() + "\\universe\\skybox.obj");
 
 	model.wait();
 	_model = model.get();
@@ -210,8 +210,8 @@ Skybox::Skybox(::std::nullptr_t) :
 	tex.wait();
 	// _texture = tex.get();
 	*/
-	res::types::ResourceFile textureFile(res::types::eTexture, FileResource::getRootDir() + "\\world\\skybox.ktx");
-	res::types::ResourceFile geometryFile(res::types::eAsset, FileResource::getRootDir() + "\\world\\skybox.obj");
+	res::types::ResourceFile textureFile(res::types::eTexture, FileResource::getRootDir() + "\\universe\\skybox.ktx");
+	res::types::ResourceFile geometryFile(res::types::eAsset, FileResource::getRootDir() + "\\universe\\skybox.obj");
 
 	auto texture = loader::TextureLoader::get().load(textureFile);
 	auto geometry = loader::GeometryLoader::get().load(geometryFile);

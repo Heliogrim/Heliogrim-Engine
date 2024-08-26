@@ -12,9 +12,9 @@ namespace hg {
 }
 
 namespace hg {
-	class World {
+	class Universe {
 	public:
-		using this_type = World;
+		using this_type = Universe;
 
 	public:
 		/**
@@ -23,7 +23,7 @@ namespace hg {
 		 * @author Julius
 		 * @date 24.10.2021
 		 */
-		World();
+		Universe();
 
 		/**
 		 * Constructor
@@ -33,9 +33,9 @@ namespace hg {
 		 */
 		World(const managed<void> internal_);
 
-		World(cref<this_type> other_) = default;
+		Universe(cref<this_type> other_) = default;
 
-		World(mref<this_type> other_) noexcept = default;
+		Universe(mref<this_type> other_) noexcept = default;
 
 		/**
 		 * Destructor
@@ -43,7 +43,7 @@ namespace hg {
 		 * @author Julius
 		 * @date 24.10.2021
 		 */
-		~World() noexcept = default;
+		~Universe() noexcept = default;
 
 	public:
 		/**
@@ -54,7 +54,7 @@ namespace hg {
 		 *
 		 * @returns A shallow copy of this.
 		 */
-		ref<World> operator=(cref<World> other_) = default;
+		ref<Universe> operator=(cref<Universe> other_) = default;
 
 		/**
 		 * Move Assignment operator
@@ -64,7 +64,7 @@ namespace hg {
 		 *
 		 * @returns A shallow copy of this.
 		 */
-		ref<World> operator=(mref<World> other_) noexcept = default;
+		ref<Universe> operator=(mref<Universe> other_) noexcept = default;
 
 	public:
 		[[nodiscard]] bool valid() const noexcept;
@@ -82,13 +82,13 @@ namespace hg {
 		 * @author Julius
 		 * @date 04.12.2022
 		 *
-		 * @returns A reference to the internal managed world representation
+		 * @returns A reference to the internal managed universe representation
 		 */
 		[[nodiscard]] cref<managed<void>> unwrap() const noexcept;
 
 	public:
 		/**
-		 * Tries to add the given level to this world
+		 * Tries to add the given level to this universe
 		 *
 		 * @author Julius
 		 * @date 24.10.2021
@@ -100,7 +100,7 @@ namespace hg {
 		_Success_(return == true) bool addLevel(_In_ const ptr<Level> level_);
 
 		/**
-		 * Removes the level from this world
+		 * Removes the level from this universe
 		 *
 		 * @author Julius
 		 * @date 24.10.2021
@@ -113,7 +113,7 @@ namespace hg {
 
 	public:
 		/**
-		 * Tries to add the given actor to this world
+		 * Tries to add the given actor to this universe
 		 *
 		 * @author Julius
 		 * @date 01.12.2021
@@ -125,7 +125,7 @@ namespace hg {
 		bool addActor(const ptr<Actor> actor_);
 
 		/**
-		 * Removes an actor from this world
+		 * Removes an actor from this universe
 		 *
 		 * @author Julius
 		 * @date 01.12.2021
@@ -138,73 +138,73 @@ namespace hg {
 	};
 
 	/**
-	 * Creates a new world instance
+	 * Creates a new universe instance
 	 *
 	 * @author Julius
 	 * @date 25.11.2021
 	 *
-	 * @returns A future, containing the newly created world
+	 * @returns A future, containing the newly created universe
 	 */
-	[[nodiscard]] extern Future<World> CreateWorld() noexcept;
+	[[nodiscard]] extern Future<Universe> CreateUniverse() noexcept;
 
 	/**
-	 * Query the session's current world
+	 * Query the session's current universe
 	 *
 	 * @author Julius
 	 * @date 09.12.2022
 	 *
-	 * @param session_ The session where to lookup the current world.
+	 * @param session_ The session where to lookup the current universe.
 	 *
-	 * @returns A representation for the currently internal stored world.
+	 * @returns A representation for the currently internal stored universe.
 	 */
-	[[nodiscard]] extern World GetWorld(cref<Session> session_) noexcept;
+	[[nodiscard]] extern Universe GetUniverse(cref<Session> session_) noexcept;
 
 	/**
-	 * Query the current primary core session's world representation
+	 * Query the current primary core session's universe representation
 	 *
 	 * @details A convenient shortcut for obtaining the current primary
-	 *  core session's world instance.
+	 *  core session's universe instance.
 	 *
 	 * @author Julius
 	 * @date 25.11.2021
 	 *
-	 * @returns A representation for the current internal world.
+	 * @returns A representation for the current internal universe.
 	 */
-	[[nodiscard]] extern World GetWorld() noexcept;
+	[[nodiscard]] extern Universe GetUniverse() noexcept;
 
 	/**
-	 * Gets a world instance by it's guid
+	 * Gets a universe instance by it's guid
 	 *
 	 * @author Julius
 	 * @date 25.11.2021
 	 *
-	 * @param guid_ The guid of the world to lookup.
+	 * @param guid_ The guid of the universe to lookup.
 	 *
-	 * @returns A future, containing a world instance
+	 * @returns A future, containing a universe instance
 	 */
-	[[nodiscard]] extern Future<World> GetWorld(cref<asset_guid> guid_) noexcept;
+	[[nodiscard]] extern Future<Universe> GetUniverse(cref<asset_guid> guid_) noexcept;
 
 	/**
-	 * Destroys the given world and it's implicit resources
+	 * Destroys the given universe and it's implicit resources
 	 *
 	 * @author Julius
 	 * @date 25.11.2021
 	 *
-	 * @param world_ The world instance to destroy.
+	 * @param universe_ The universe instance to destroy.
 	 *
-	 * @returns A future, representing whether the world was successfully destroyed.
+	 * @returns A future, representing whether the universe was successfully destroyed.
 	 */
-	extern Future<bool> Destroy(mref<World> world_);
+	extern Future<bool> Destroy(mref<Universe> universe_);
 
 	/* Warning: Experimental Feature */
 	/**
-	 * Set's the world of a core session
+	 * Set's the universe of a core session
 	 *
-	 * @note The world *must* have been created with a engine wide propagation,
+	 * @note The universe *must* have been created with a engine wide propagation,
 	 *  otherwise this would result in ub.
 	 *
 	 * @warning This method is currently unsafe. The implicit internal changes
-	 *  aspecially at the session's world-context may result in memory corruption or
+	 *  aspecially at the session's universe-context may result in memory corruption or
 	 *  modify-on-read behaviour. Further this change is required to propagate through
 	 *  whole engine and modules, therefore providing an endless amount of conflict points.
 	 *
@@ -215,19 +215,19 @@ namespace hg {
 	 * @author Julius
 	 * @date 10.12.2022
 	 *
-	 * @param session_ The session where to set the current world
-	 * @param world_ The world to use next.
+	 * @param session_ The session where to set the current universe
+	 * @param universe_ The universe to use next.
 	 */
-	extern void SetWorld(cref<Session> session_, cref<World> world_);
+	extern void SetUniverse(cref<Session> session_, cref<Universe> universe_);
 
 	/* Warning: Experimental Feature */
 	/**
-	 * Transition from the session's current world to another one
+	 * Transition from the session's current universe to another one
 	 *
 	 * @author Julius
 	 * @date 10.12.2022
 	 *
-	 * @see ::hg::SetWorld(...)
+	 * @see ::hg::SetUniverse(...)
 	 */
-	extern void TransitionToWorld(cref<Session> session_, cref<World> world_);
+	extern void TransitionToUniverse(cref<Session> session_, cref<Universe> universe_);
 }

@@ -112,14 +112,14 @@ namespace hg::test {
 		}
 
 	private:
-		Vector<nmpt<engine::core::WorldContext>> _worldContexts;
+		Vector<nmpt<engine::core::UniverseContext>> _universeContexts;
 
-		[[nodiscard]] Vector<nmpt<engine::core::WorldContext>> getWorldContexts() const noexcept override {
-			return _worldContexts;
+		[[nodiscard]] Vector<nmpt<engine::core::UniverseContext>> getUniverseContexts() const noexcept override {
+			return _universeContexts;
 		}
 
-		void addWorld(cref<sptr<engine::core::World>> world_) override {}
+		void addUniverse(cref<sptr<engine::core::Universe>> universe_) override {}
 
-		void removeWorld(cref<sptr<engine::core::World>> world_) override {}
+		void removeUniverse(cref<sptr<engine::core::Universe>> universe_) override {}
 	};
 }

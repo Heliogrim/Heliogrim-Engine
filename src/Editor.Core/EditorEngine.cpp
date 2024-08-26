@@ -12,8 +12,8 @@
 #include <Engine.Core.Schedule/CorePipeline.hpp>
 #include <Engine.Core/EngineState.hpp>
 #include <Engine.Core/Session.hpp>
-#include <Engine.Core/Event/WorldAddedEvent.hpp>
-#include <Engine.Core/Event/WorldRemoveEvent.hpp>
+#include <Engine.Core/Event/UniverseAddedEvent.hpp>
+#include <Engine.Core/Event/UniverseRemoveEvent.hpp>
 #include <Engine.Core/Module/CoreDependencies.hpp>
 #include <Engine.Core/Module/SubModule.hpp>
 #include <Engine.GFX/Graphics.hpp>
@@ -27,8 +27,9 @@
 #include <Engine.Scheduler/Helper/Wait.hpp>
 #include <Engine.SFX/Audio.hpp>
 
-#include "Engine.Core/World.hpp"
-#include "Engine.Core/WorldContext.hpp"
+#include "Engine.Core/UniverseContext.hpp"
+#include "Engine.Core/Universe.hpp"
+#include "Engine.Core/UniverseContext.hpp"
 #include "Engine.Scene/Scene.hpp"
 
 #ifdef WIN32
@@ -270,10 +271,10 @@ bool EditorEngine::start() {
 	scheduler::exec(
 		[this, &next] {
 			_editorSession = make_uptr<core::Session>();
-			_worldContexts.emplace_back(std::addressof(_editorSession->getWorldContext()));
+			_universeContexts.emplace_back(std::addressof(_editorSession->getUniverseContext()));
 
 			_primaryGameSession = make_uptr<core::Session>();
-			_worldContexts.emplace_back(std::addressof(_primaryGameSession->getWorldContext()));
+			_universeContexts.emplace_back(std::addressof(_primaryGameSession->getUniverseContext()));
 
 			/**/
 
@@ -327,28 +328,28 @@ bool EditorEngine::stop() {
 
 			/**/
 
-			auto prevWorld = _primaryGameSession->getWorldContext().getCurrentWorld();
-			_primaryGameSession->getWorldContext().setCurrentWorld(nullptr);
-			removeWorld(prevWorld);
+			auto prevUniverse = _primaryGameSession->getUniverseContext().getCurrentUniverse();
+			_primaryGameSession->getUniverseContext().setCurrentUniverse(nullptr);
+			removeUniverse(prevUniverse);
 
 			auto where = std::ranges::remove(
-				_worldContexts,
-				nmpt<core::WorldContext>(std::addressof(_primaryGameSession->getWorldContext()))
+				_universeContexts,
+				nmpt<core::UniverseContext>(std::addressof(_primaryGameSession->getUniverseContext()))
 			);
-			_worldContexts.erase(where.begin(), where.end());
+			_universeContexts.erase(where.begin(), where.end());
 			_primaryGameSession.reset();
 
 			/**/
 
-			prevWorld = _editorSession->getWorldContext().getCurrentWorld();
-			_editorSession->getWorldContext().setCurrentWorld(nullptr);
-			removeWorld(prevWorld);
+			prevUniverse = _editorSession->getUniverseContext().getCurrentUniverse();
+			_editorSession->getUniverseContext().setCurrentUniverse(nullptr);
+			removeUniverse(prevUniverse);
 
 			where = std::ranges::remove(
-				_worldContexts,
-				nmpt<core::WorldContext> { std::addressof(_editorSession->getWorldContext()) }
+				_universeContexts,
+				nmpt<core::UniverseContext> { std::addressof(_editorSession->getUniverseContext()) }
 			);
-			_worldContexts.erase(where.begin(), where.end());
+			_universeContexts.erase(where.begin(), where.end());
 			_editorSession.reset();
 
 			next.test_and_set(std::memory_order::relaxed);
@@ -547,16 +548,16 @@ ref<engine::core::Modules> EditorEngine::getModules() const noexcept {
 	return const_cast<ref<engine::core::Modules>>(_modules);
 }
 
-Vector<nmpt<engine::core::WorldContext>> EditorEngine::getWorldContexts() const noexcept {
-	return _worldContexts;
+Vector<nmpt<engine::core::UniverseContext>> EditorEngine::getUniverseContexts() const noexcept {
+	return _universeContexts;
 }
 
-void EditorEngine::addWorld(cref<sptr<engine::core::World>> world_) {
-	_emitter.emit<WorldAddedEvent>(world_);
+void EditorEngine::addUniverse(cref<sptr<engine::core::Universe>> universe_) {
+	_emitter.emit<UniverseAddedEvent>(universe_);
 }
 
-void EditorEngine::removeWorld(cref<sptr<engine::core::World>> world_) {
-	_emitter.emit<WorldRemoveEvent>(world_);
+void EditorEngine::removeUniverse(cref<sptr<engine::core::Universe>> universe_) {
+	_emitter.emit<UniverseRemoveEvent>(universe_);
 }
 
 nmpt<engine::core::Session> EditorEngine::getEditorSession() const noexcept {

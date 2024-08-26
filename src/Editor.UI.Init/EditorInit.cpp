@@ -19,8 +19,8 @@
 #include <Editor.UI.Main/EditorUI.hpp>
 #include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Core/Session.hpp>
-#include <Engine.Core/World.hpp>
-#include <Engine.Core/WorldContext.hpp>
+#include <Engine.Core/Universe.hpp>
+#include <Engine.Core/UniverseContext.hpp>
 #include <Engine.Core/Event/SignalShutdownEvent.hpp>
 #include <Engine.GFX/Device/Device.hpp>
 #include <Engine.GFX/Swapchain/VkSwapchain.hpp>
@@ -41,7 +41,7 @@
 #include <Engine.Scheduler/Async.hpp>
 #include <Heliogrim/Actor.hpp>
 #include <Heliogrim/UIComponent.hpp>
-#include <Heliogrim/World.hpp>
+#include <Heliogrim/Universe.hpp>
 #include <Heliogrim/Actors/CameraActor.hpp>
 
 using namespace hg::editor::ui;
@@ -61,7 +61,7 @@ void editor::ui::initEditor(ref<EditorUI> editorUi_) {
 
 	const auto& engine = *EditorEngine::getEngine();
 	const auto editorSession = engine.getEditorSession();
-	const auto editorWorld = editorSession->getWorldContext().getCurrentWorld();
+	const auto editorUniverse = editorSession->getUniverseContext().getCurrentUniverse();
 
 	/**/
 
@@ -70,7 +70,7 @@ void editor::ui::initEditor(ref<EditorUI> editorUi_) {
 		math::ivec2 { 1280, 720 },
 		{},
 		"Editor-Renderer"sv,
-		editorWorld->getScene()
+		editorUniverse->getScene()
 	);
 
 	initDefaultUi(editorUi_, engine.getGraphics()->getCurrentDevice(), window.get());
@@ -81,7 +81,7 @@ void editor::ui::initEditor(ref<EditorUI> editorUi_) {
 	auto* const uic = HeliogrimEditor::getEditorSession().getActorInitializer().createComponent<UIComponent>(actor);
 
 	uic->setWindow(window);
-	GetWorld(HeliogrimEditor::getEditorSession()).addActor(actor);
+	GetUniverse(HeliogrimEditor::getEditorSession()).addActor(actor);
 
 }
 
@@ -239,24 +239,24 @@ static void configureMainViewport(
 
 	const auto gfx { editor::EditorEngine::getEngine()->getGraphics() };
 	const auto coreSession = editor::EditorEngine::getEngine()->getPrimaryGameSession();
-	const auto coreWorld { coreSession->getWorldContext().getCurrentWorld() };
-	const auto scene { coreWorld->getScene() };
+	const auto coreUniverse { coreSession->getUniverseContext().getCurrentUniverse() };
+	const auto scene { coreUniverse->getScene() };
 
 	//RegisterActorClass<CameraActor>();
 	coreSession->getState().getRegistry().getOrCreateActorPool<CameraActor>();
 
 	auto session = HeliogrimEditor::getSession();
 	ptr<CameraActor> camera { CreateActor<CameraActor>(session) };
-	auto world = GetWorld(session); {
-		cref<math::Transform> tf = camera->getRootComponent()->getWorldTransform();
+	auto universe = GetUniverse(session); {
+		cref<math::Transform> tf = camera->getRootComponent()->getUniverseTransform();
 		const_cast<ref<math::Transform>>(tf).setLocation(math::Location { 0.F, 0.F, -5.F });
 		//const_cast<ref<math::Transform>>(tf).setLocation(math::Location { 0.F, 1.8F, 0.F });
 	}
-	world.addActor(camera);
+	universe.addActor(camera);
 
 	/**/
 
-	viewport->setViewportTarget("Test-Renderer"sv, world, camera);
+	viewport->setViewportTarget("Test-Renderer"sv, universe, camera);
 	viewport->rebuildView();
 
 	/**/

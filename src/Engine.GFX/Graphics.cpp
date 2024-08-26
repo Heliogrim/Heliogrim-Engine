@@ -8,9 +8,9 @@
 
 #include <Engine.Common/Concurrent/Collection/RingBuffer.hpp>
 #include <Engine.Common/Math/__default.inl>
-#include <Engine.Core/Event/WorldAddedEvent.hpp>
-#include <Engine.Core/Event/WorldChangeEvent.hpp>
-#include <Engine.Core/Event/WorldRemoveEvent.hpp>
+#include <Engine.Core/Event/UniverseAddedEvent.hpp>
+#include <Engine.Core/Event/UniverseChangeEvent.hpp>
+#include <Engine.Core/Event/UniverseRemoveEvent.hpp>
 #include <Engine.GFX.IO/Io.hpp>
 #include <Engine.GFX.Scene/RenderSceneManager.hpp>
 #include <Engine.GFX.Schedule/RenderScenePipeline.hpp>
@@ -23,7 +23,7 @@
 #include "Cache/GlobalResourceCache.hpp"
 #include "Command/CommandBatch.hpp"
 #include "Engine.Core/Engine.hpp"
-#include "Engine.Core/World.hpp"
+#include "Engine.Core/Universe.hpp"
 #include "Engine.Event/GlobalEventEmitter.hpp"
 #include "Engine.Resource/ResourceManager.hpp"
 #include "Engine.Scene/Scene.hpp"
@@ -64,10 +64,10 @@ void Graphics::tidy() {
 
 void Graphics::hookEngineState() {
 
-	const auto owae = _engine->getEmitter().on<core::WorldAddedEvent>(
-		[this](cref<core::WorldAddedEvent> event_) {
+	const auto owae = _engine->getEmitter().on<core::UniverseAddedEvent>(
+		[this](cref<core::UniverseAddedEvent> event_) {
 
-			const auto scene = event_.getWorld()->getScene();
+			const auto scene = event_.getUniverse()->getScene();
 
 			/*
 			if (not sceneClass->isType<scene::IRenderScene>()) {
@@ -82,12 +82,12 @@ void Graphics::hookEngineState() {
 			_sceneManager->registerScene(scene);
 		}
 	);
-	_hooks.push_back({ core::WorldAddedEvent::typeId.data, owae });
+	_hooks.push_back({ core::UniverseAddedEvent::typeId.data, owae });
 
-	const auto owre = _engine->getEmitter().on<core::WorldRemoveEvent>(
-		[this](cref<core::WorldRemoveEvent> event_) {
+	const auto owre = _engine->getEmitter().on<core::UniverseRemoveEvent>(
+		[this](cref<core::UniverseRemoveEvent> event_) {
 
-			const auto scene { event_.getWorld()->getScene() };
+			const auto scene { event_.getUniverse()->getScene() };
 			const auto* const sceneClass { scene->getMetaClass() };
 
 			/*
@@ -104,34 +104,34 @@ void Graphics::hookEngineState() {
 			cleanupTargetsByScene(scene);
 		}
 	);
-	_hooks.push_back({ core::WorldRemoveEvent::typeId.data, owre });
+	_hooks.push_back({ core::UniverseRemoveEvent::typeId.data, owre });
 
-	const auto owce = _engine->getEmitter().on<core::WorldChangeEvent>(
-		[this](cref<core::WorldChangeEvent> event_) {
+	const auto owce = _engine->getEmitter().on<core::UniverseChangeEvent>(
+		[this](cref<core::UniverseChangeEvent> event_) {
 
 			event_.getSession();
-			event_.getPrevWorld();
-			event_.getNextWorld();
+			event_.getPrevUniverse();
+			event_.getNextUniverse();
 
 		}
 	);
-	_hooks.push_back({ core::WorldChangeEvent::typeId.data, owce });
+	_hooks.push_back({ core::UniverseChangeEvent::typeId.data, owce });
 }
 
 void Graphics::unhookEngineState() {
 
 	for (const auto& entry : _hooks) {
 		switch (entry.first) {
-			case core::WorldAddedEvent::typeId.data: {
-				_engine->getEmitter().remove<core::WorldAddedEvent>(entry.second);
+			case core::UniverseAddedEvent::typeId.data: {
+				_engine->getEmitter().remove<core::UniverseAddedEvent>(entry.second);
 				break;
 			}
-			case core::WorldRemoveEvent::typeId.data: {
-				_engine->getEmitter().remove<core::WorldChangeEvent>(entry.second);
+			case core::UniverseRemoveEvent::typeId.data: {
+				_engine->getEmitter().remove<core::UniverseChangeEvent>(entry.second);
 				break;
 			}
-			case core::WorldChangeEvent::typeId.data: {
-				_engine->getEmitter().remove<core::WorldChangeEvent>(entry.second);
+			case core::UniverseChangeEvent::typeId.data: {
+				_engine->getEmitter().remove<core::UniverseChangeEvent>(entry.second);
 				break;
 			}
 		}

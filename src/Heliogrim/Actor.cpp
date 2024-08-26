@@ -7,8 +7,8 @@
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Session.hpp>
 #include <Engine.Core/SessionState.hpp>
-#include <Engine.Core/World.hpp>
-#include <Engine.Core/WorldContext.hpp>
+#include <Engine.Core/Universe.hpp>
+#include <Engine.Core/UniverseContext.hpp>
 #include <Engine.Reflect/IsType.hpp>
 #include <Engine.Scene/SceneBase.hpp>
 
@@ -16,7 +16,7 @@
 #include "IComponentRegisterContext.hpp"
 #include "SceneComponent.hpp"
 #include "Session.hpp"
-#include "World.hpp"
+#include "Universe.hpp"
 
 using namespace hg;
 
@@ -39,9 +39,9 @@ ptr<ActorComponent> Actor::getRootComponent() const noexcept {
 	return _rootComponent;
 }
 
-cref<Transform> Actor::getWorldTransform() const noexcept {
+cref<Transform> Actor::getUniverseTransform() const noexcept {
 	if (_rootComponent != nullptr) {
-		return _rootComponent->getWorldTransform();
+		return _rootComponent->getUniverseTransform();
 	}
 
 	// TODO: Cleanup dangling reference within engine frontend
@@ -123,16 +123,16 @@ ptr<Actor> hg::CreateActor(cref<Session> session_) {
 	return actor;
 }
 
-ptr<Actor> hg::CreateActor(cref<World> activeWorld_) {
-	const auto* world { activeWorld_.unwrap().get() };
+ptr<Actor> hg::CreateActor(cref<Universe> activeUniverse_) {
+	const auto* universe { activeUniverse_.unwrap().get() };
 
 	const auto engine { engine::Engine::getEngine() };
-	const auto ctxs { engine->getWorldContexts() };// TODO: Check whether really want to copy the set
+	const auto ctxs { engine->getUniverseContexts() };// TODO: Check whether really want to copy the set
 
 	const auto where = std::ranges::find_if(
 		ctxs,
-		[world](const auto& ctx_) {
-			return ctx_->getCurrentWorld().get() == world;
+		[universe](const auto& ctx_) {
+			return ctx_->getCurrentUniverse().get() == universe;
 		}
 	);
 
@@ -170,16 +170,16 @@ Future<ptr<Actor>> hg::CreateActor(cref<Session> session_, async_t) {
 	return Future { std::move(f) };
 }
 
-Future<ptr<Actor>> hg::CreateActor(cref<World> activeWorld_, async_t) {
-	const auto* world { activeWorld_.unwrap().get() };
+Future<ptr<Actor>> hg::CreateActor(cref<Universe> activeUniverse_, async_t) {
+	const auto* universe { activeUniverse_.unwrap().get() };
 
 	const auto engine { engine::Engine::getEngine() };
-	const auto ctxs { engine->getWorldContexts() };// TODO: Check whether really want to copy the set
+	const auto ctxs { engine->getUniverseContexts() };// TODO: Check whether really want to copy the set
 
 	const auto where = std::ranges::find_if(
 		ctxs,
-		[world](const auto& ctx_) {
-			return ctx_->getCurrentWorld().get() == world;
+		[universe](const auto& ctx_) {
+			return ctx_->getCurrentUniverse().get() == universe;
 		}
 	);
 
@@ -217,7 +217,7 @@ ptr<Actor> hg::CreateActor(const ptr<const ActorClass> class_, cref<Session> ses
 	return actor;
 }
 
-ptr<Actor> hg::CreateActor(const ptr<const ActorClass> class_, cref<World> activeWorld_) noexcept {
+ptr<Actor> hg::CreateActor(const ptr<const ActorClass> class_, cref<Universe> activeUniverse_) noexcept {
 	::hg::todo_panic();
 }
 
@@ -232,7 +232,7 @@ Future<ptr<Actor>> hg::CreateActor(
 Future<ptr<Actor>> hg::CreateActor(
 	const ptr<const ActorClass> class_,
 	const ptr<SerializedActor> serialized_,
-	cref<World> activeWorld_
+	cref<Universe> activeUniverse_
 ) noexcept {
 	::hg::todo_panic();
 }
@@ -241,18 +241,18 @@ Future<ptr<Actor>> hg::CloneActorInto(const ptr<Actor> actor_, cref<Session> ses
 	::hg::todo_panic();
 }
 
-Future<ptr<Actor>> hg::CloneActorInto(const ptr<Actor> actor_, cref<World> activeWorld_) noexcept {
+Future<ptr<Actor>> hg::CloneActorInto(const ptr<Actor> actor_, cref<Universe> activeUniverse_) noexcept {
 	::hg::todo_panic();
 }
 
-Future<ptr<Actor>> hg::SpawnActor(const ptr<const ActorClass> class_, cref<World> activeWorld_) noexcept {
+Future<ptr<Actor>> hg::SpawnActor(const ptr<const ActorClass> class_, cref<Universe> activeUniverse_) noexcept {
 	::hg::todo_panic();
 }
 
 Future<ptr<Actor>> hg::SpawnActor(
 	const ptr<const ActorClass> class_,
 	const ptr<SerializedActor> serialized_,
-	cref<World> activeWorld_
+	cref<Universe> activeUniverse_
 ) noexcept {
 	::hg::todo_panic();
 }
@@ -260,7 +260,7 @@ Future<ptr<Actor>> hg::SpawnActor(
 Future<bool> hg::Destroy(mref<ptr<Actor>> actor_, cref<Session> session_) noexcept {
 	const auto* const session { static_cast<ptr<engine::core::Session>>(session_.unwrap().get()) };
 
-	const auto scene = session->getWorldContext().getCurrentWorld()->getScene();
+	const auto scene = session->getUniverseContext().getCurrentUniverse()->getScene();
 	auto& registry { session->getState().getRegistry() };
 
 	const auto guid { actor_->guid() };
@@ -292,16 +292,16 @@ Future<bool> hg::Destroy(mref<ptr<Actor>> actor_, cref<Session> session_) noexce
 	return Future { std::move(f) };
 }
 
-Future<bool> hg::Destroy(mref<ptr<Actor>> actor_, cref<World> activeWorld_) noexcept {
-	const auto* world { activeWorld_.unwrap().get() };
+Future<bool> hg::Destroy(mref<ptr<Actor>> actor_, cref<Universe> activeUniverse_) noexcept {
+	const auto* universe { activeUniverse_.unwrap().get() };
 
 	const auto engine { engine::Engine::getEngine() };
-	const auto ctxs { engine->getWorldContexts() };// TODO: Check whether really want to copy the set
+	const auto ctxs { engine->getUniverseContexts() };// TODO: Check whether really want to copy the set
 
 	const auto where = std::ranges::find_if(
 		ctxs,
-		[world](const auto& ctx_) {
-			return ctx_->getCurrentWorld().get() == world;
+		[universe](const auto& ctx_) {
+			return ctx_->getCurrentUniverse().get() == universe;
 		}
 	);
 

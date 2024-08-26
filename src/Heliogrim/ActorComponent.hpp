@@ -63,9 +63,9 @@ namespace hg {
 		[[nodiscard]] ref<Transform> getLocalTransform() noexcept;
 
 	private:
-		Transform _worldTransform;
+		Transform _universeTransform;
 
 	public:
-		[[nodiscard]] cref<Transform> getWorldTransform() const noexcept;
+		[[nodiscard]] cref<Transform> getUniverseTransform() const noexcept;
 	};
 }

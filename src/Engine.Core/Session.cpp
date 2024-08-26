@@ -3,14 +3,14 @@
 #include <Engine.Common/Make.hpp>
 
 #include "SessionState.hpp"
-#include "WorldContext.hpp"
+#include "UniverseContext.hpp"
 
 using namespace hg::engine::core;
 using namespace hg;
 
 Session::Session() :
 	_state(uptr<SessionState>(new SessionState())),
-	_worldContext(make_uptr<WorldContext>(*this)) {}
+	_universeContext(make_uptr<UniverseContext>(*this)) {}
 
 Session::~Session() = default;
 
@@ -18,6 +18,6 @@ ref<class SessionState> Session::getState() const noexcept {
 	return *_state;
 }
 
-ref<class WorldContext> Session::getWorldContext() const noexcept {
-	return *_worldContext;
+ref<class UniverseContext> Session::getUniverseContext() const noexcept {
+	return *_universeContext;
 }

@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 #include <Engine.GFX/API/__vkFwd.hpp>
-#include <Heliogrim/World.hpp>
+#include <Heliogrim/Universe.hpp>
 
 #include "Widget.hpp"
 #include "../Children.hpp"
@@ -62,7 +62,7 @@ namespace hg::engine::reflow {
 	protected:
 		StringView _renderer;
 		ptr<CameraActor> _cameraActor;
-		World _cameraWorld;
+		Universe _cameraUniverse;
 
 	public:
 		[[nodiscard]] smr<gfx::Swapchain> getSwapchain() const noexcept;
@@ -71,7 +71,7 @@ namespace hg::engine::reflow {
 
 		[[nodiscard]] const non_owning_rptr<CameraActor> getCameraActor() const noexcept;
 
-		void setViewportTarget(StringView renderer_, World world_, ptr<CameraActor> camera_);
+		void setViewportTarget(StringView renderer_, Universe universe_, ptr<CameraActor> camera_);
 
 	private:
 		std::array<math::vec2, 4> _uvs;

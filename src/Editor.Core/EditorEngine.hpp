@@ -87,15 +87,15 @@ namespace hg::editor {
 		[[nodiscard]] ref<engine::core::Modules> getModules() const noexcept override;
 
 	private:
-		Vector<nmpt<engine::core::WorldContext>> _worldContexts;
+		Vector<nmpt<engine::core::UniverseContext>> _universeContexts;
 
 	public:
-		[[nodiscard]] Vector<nmpt<engine::core::WorldContext>> getWorldContexts() const noexcept override;
+		[[nodiscard]] Vector<nmpt<engine::core::UniverseContext>> getUniverseContexts() const noexcept override;
 
 	public:
-		void addWorld(cref<sptr<engine::core::World>> world_) override;
+		void addUniverse(cref<sptr<engine::core::Universe>> universe_) override;
 
-		void removeWorld(cref<sptr<engine::core::World>> world_) override;
+		void removeUniverse(cref<sptr<engine::core::Universe>> universe_) override;
 
 	private:
 		/**

@@ -86,11 +86,11 @@ void SceneViewEye::getInvViewMatrix(ref<math::mat4> matrix_) const noexcept {
     matrix_ = _view.inverse();
 }
 
-math::vec4 SceneViewEye::worldToView(const math::vec4 worldPosition_) const {
-    return _projection * _view /* * math::mat4::make_identity() */ * worldPosition_;
+math::vec4 SceneViewEye::universeToView(const math::vec4 universePosition_) const {
+    return _projection * _view /* * math::mat4::make_identity() */ * universePosition_;
 }
 
-math::vec4 SceneViewEye::viewToWorld(const math::vec4 viewPosition_) const {
+math::vec4 SceneViewEye::viewToUniverse(const math::vec4 viewPosition_) const {
 
     math::mat4 ip { math::mat4::make_identity() };
     math::mat4 iv { math::mat4::make_identity() };
@@ -101,10 +101,10 @@ math::vec4 SceneViewEye::viewToWorld(const math::vec4 viewPosition_) const {
     return iv * ip * viewPosition_;
 }
 
-math::vec2 SceneViewEye::worldToScreen(cref<math::vec4> worldPosition_) const {
+math::vec2 SceneViewEye::universeToScreen(cref<math::vec4> universePosition_) const {
 
-    // Affine projection of world position to view space
-    const math::vec4 viewSpace = worldToView(worldPosition_);
+    // Affine projection of universe position to view space
+    const math::vec4 viewSpace = universeToView(universePosition_);
     if (viewSpace.w <= 0.F) {
         return math::vec2 { -1.F, -1.F };
     }
@@ -123,14 +123,14 @@ math::vec2 SceneViewEye::worldToScreen(cref<math::vec4> worldPosition_) const {
     return norm;
 }
 
-void SceneViewEye::screenToWorld(
+void SceneViewEye::screenToUniverse(
     cref<math::vec2> screenPosition_,
-    ref<math::vec3> worldOrigin_,
-    ref<math::vec3> worldDirection_
+    ref<math::vec3> universeOrigin_,
+    ref<math::vec3> universeDirection_
 ) const {
     const math::vec2 screen {
         (screenPosition_.x - 0.5F) * 2.F,
-        (screenPosition_.y - 0.5F) * 2.F// @see vulkan specs at SceneViewEye::worldToScreen
+        (screenPosition_.y - 0.5F) * 2.F// @see vulkan specs at SceneViewEye::universeToScreen
     };
 
     const math::vec4 eyeToFar { screen.x, screen.y, 1.F, 1.F };
@@ -170,8 +170,8 @@ void SceneViewEye::screenToWorld(
 
     /**/
 
-    worldOrigin_ = origin;
-    worldDirection_ = direction;
+    universeOrigin_ = origin;
+    universeDirection_ = direction;
 }
 
 void SceneViewEye::vkSetFlipY(bool flip_) {

@@ -9,7 +9,7 @@
 
 #include "Boot/AssetInit.hpp"
 #include "Boot/RenderInit.hpp"
-#include "Boot/WorldInit.hpp"
+#include "Boot/UniverseInit.hpp"
 
 using namespace hg::editor;
 using namespace hg::engine::core;
@@ -52,8 +52,8 @@ void Editor::setup() {}
 void Editor::start() {
 	boot::initRender();
 	boot::initAssets();
-	boot::initEditorWorld();
-	boot::initPrimaryWorld();
+	boot::initEditorUniverse();
+	boot::initPrimaryUniverse();
 }
 
 void Editor::stop() {}

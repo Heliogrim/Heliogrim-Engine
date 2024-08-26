@@ -92,7 +92,7 @@ void AssetBrowserHelper::setup() {
 	_directoryIcons.emplace_back("env", Cast<engine::assets::TextureAsset>(asset.get()));
 	_directoryIcons.emplace_back("environment", Cast<engine::assets::TextureAsset>(asset.get()));
 	_directoryIcons.emplace_back("scene", Cast<engine::assets::TextureAsset>(asset.get()));
-	_directoryIcons.emplace_back("world", Cast<engine::assets::TextureAsset>(asset.get()));
+	_directoryIcons.emplace_back("universe", Cast<engine::assets::TextureAsset>(asset.get()));
 
 	_directoryIcons.emplace_back("fbx", Cast<engine::assets::TextureAsset>(asset.get()));
 	_directoryIcons.emplace_back("gltf", Cast<engine::assets::TextureAsset>(asset.get()));

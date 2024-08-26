@@ -22,7 +22,7 @@ namespace hg {
 
 	class IComponentRegisterContext;
 	class Session;
-	class World;
+	class Universe;
 
 	using ActorClass = ::hg::MetaClass;
 
@@ -99,7 +99,7 @@ namespace hg {
 	public:
 		[[nodiscard]] ptr<ActorComponent> getRootComponent() const noexcept;
 
-		[[nodiscard]] cref<math::Transform> getWorldTransform() const noexcept;
+		[[nodiscard]] cref<math::Transform> getUniverseTransform() const noexcept;
 
 	private:
 		CompactSet<ptr<ActorComponent>> _components;
@@ -190,18 +190,18 @@ namespace hg {
 	/**
 	 * Create a new default actor object
 	 *
-	 * @details An active or mounted world is guaranteed to be scoped with a session,
+	 * @details An active or mounted universe is guaranteed to be scoped with a session,
 	 *  therefore a data management layer is resolvable. This will not populate the scene
 	 *  like calling a actor spawn function.
 	 *
 	 * @author Julius
 	 * @date 25.11.2021
 	 *
-	 * @param activeWorld_ The world where to create the actor
+	 * @param activeUniverse_ The universe where to create the actor
 	 *
 	 * @returns A pointer to the newly created actor if succeeded, otherwise nullptr
 	 */
-	[[nodiscard]] extern ptr<Actor> CreateActor(cref<World> activeWorld_);
+	[[nodiscard]] extern ptr<Actor> CreateActor(cref<Universe> activeUniverse_);
 
 	/**
 	 * Create a new default actor object
@@ -218,18 +218,18 @@ namespace hg {
 	/**
 	 * Create a new default actor object
 	 *
-	 * @details An active or mounted world is guaranteed to be scoped with a session,
+	 * @details An active or mounted universe is guaranteed to be scoped with a session,
 	 *  therefore a data management layer is resolvable. This will not populate the scene
 	 *  like calling a actor spawn function.
 	 *
 	 * @author Julius
 	 * @date 25.11.2021
 	 *
-	 * @param activeWorld_ The world where to create the actor
+	 * @param activeUniverse_ The universe where to create the actor
 	 *
 	 * @returns A future, containing the newly created actor if succeeded, otherwise nullptr
 	 */
-	[[nodiscard]] extern Future<ptr<Actor>> CreateActor(cref<World> activeWorld_, async_t);
+	[[nodiscard]] extern Future<ptr<Actor>> CreateActor(cref<Universe> activeUniverse_, async_t);
 
 	/**
 	 * Creates a new actor object based on given actor class
@@ -257,7 +257,7 @@ namespace hg {
 	/**
 	 * Creates a new actor object based on given actor class
 	 *
-	 * @details An active or mounted world is guaranteed to be scoped with a session,
+	 * @details An active or mounted universe is guaranteed to be scoped with a session,
 	 *  therefore a data management layer is resolvable. This will not populate the scene
 	 *  like calling a actor spawn function.
 	 *
@@ -265,19 +265,19 @@ namespace hg {
 	 * @date 25.11.2021
 	 *
 	 * @param class_ The actor class to instantiate
-	 * @param activeWorld_ The world where to create the actor
+	 * @param activeUniverse_ The universe where to create the actor
 	 *
 	 * @returns A pointer to the newly created actor if succeeded, otherwise nullptr
 	 */
 	[[nodiscard]] extern ptr<Actor> CreateActor(
 		const ptr<const ActorClass> class_,
-		cref<World> activeWorld_
+		cref<Universe> activeUniverse_
 	) noexcept;
 
 	template <class ActorType_>
-	[[nodiscard]] ptr<ActorType_> CreateActor(cref<World> activeWorld_) {
+	[[nodiscard]] ptr<ActorType_> CreateActor(cref<Universe> activeUniverse_) {
 		return Cast<ActorType_, Actor, false>(
-			CreateActor(Reflect::SubstitudeActorClass<ActorType_>::Known(), activeWorld_)
+			CreateActor(Reflect::SubstitudeActorClass<ActorType_>::Known(), activeUniverse_)
 		);
 	}
 
@@ -302,7 +302,7 @@ namespace hg {
 	/**
 	 * Create a new actor object based on given actor class
 	 *
-	 * @details An active or mounted world is guaranteed to be scoped with a session,
+	 * @details An active or mounted universe is guaranteed to be scoped with a session,
 	 *  therefore a data management layer is resolvable. This will not populate the scene
 	 *  like calling a actor spawn function.
 	 *
@@ -311,14 +311,14 @@ namespace hg {
 	 *
 	 * @param class_ The actor class to instantiate.
 	 * @param serialized_ The serialized data to use.
-	 * @param activeWorld_ The world where to create the actor
+	 * @param activeUniverse_ The universe where to create the actor
 	 *
 	 * @returns A future, containing the newly created actor is succeeded, otherwise nullptr
 	 */
 	[[nodiscard]] extern Future<ptr<Actor>> CreateActor(
 		const ptr<const ActorClass> class_,
 		const ptr<SerializedActor> serialized_,
-		cref<World> activeWorld_
+		cref<Universe> activeUniverse_
 	) noexcept;
 
 	/**
@@ -340,7 +340,7 @@ namespace hg {
 	/**
 	 * Creates a new actor object equivalent to given actor object
 	 *
-	 * @details An active or mounted world is guaranteed to be scoped with a session,
+	 * @details An active or mounted universe is guaranteed to be scoped with a session,
 	 *  therefore a data management layer is resolvable. This will not populate the scene
 	 *  like calling a actor spawn function.
 	 *
@@ -348,13 +348,13 @@ namespace hg {
 	 * @date 25.11.2021
 	 *
 	 * @param actor_ The actor to clone from.
-	 * @param activeWorld_ The world where to create the new actor
+	 * @param activeUniverse_ The universe where to create the new actor
 	 *
 	 * @returns A future, containing the newly created actor if succeeded, otherwise nullptr
 	 */
 	[[nodiscard]] extern Future<ptr<Actor>> CloneActorInto(
 		const ptr<Actor> actor_,
-		cref<World> activeWorld_
+		cref<Universe> activeUniverse_
 	) noexcept;
 
 	/**
@@ -364,13 +364,13 @@ namespace hg {
 	 * @date 25.11.2021
 	 *
 	 * @param class_ The actor class to instantiate.
-	 * @param activeWorld_ The world where to create and place the new actor
+	 * @param activeUniverse_ The universe where to create and place the new actor
 	 *
 	 * @returns A future, containing the newly created and mounted actor if succeeded, otherwise nullptr
 	 */
 	[[nodiscard]] extern Future<ptr<Actor>> SpawnActor(
 		const ptr<const ActorClass> class_,
-		cref<World> activeWorld_
+		cref<Universe> activeUniverse_
 	) noexcept;
 
 	/**
@@ -383,14 +383,14 @@ namespace hg {
 	 *
 	 * @param class_ The actor class to instantiate.
 	 * @param serialized_ The serialized data to use.
-	 * @param activeWorld_ The world where to create and place the new actor
+	 * @param activeUniverse_ The universe where to create and place the new actor
 	 *
 	 * @returns A future, containing the newly created and mounted actor if succeeded, otherwise nullptr
 	 */
 	[[nodiscard]] extern Future<ptr<Actor>> SpawnActor(
 		const ptr<const ActorClass> class_,
 		const ptr<SerializedActor> serialized_,
-		cref<World> activeWorld_
+		cref<Universe> activeUniverse_
 	) noexcept;
 
 	/**
@@ -413,9 +413,9 @@ namespace hg {
 	 * @date 25.11.2021
 	 *
 	 * @param actor_ The actor to destroy.
-	 * @param activeWorld_ The world where to destroy the actor.
+	 * @param activeUniverse_ The universe where to destroy the actor.
 	 *
 	 * @returns A future, representing whether the actor was successfully destroyed.
 	 */
-	[[nodiscard]] extern Future<bool> Destroy(mref<ptr<Actor>> actor_, cref<World> activeWorld_) noexcept;
+	[[nodiscard]] extern Future<bool> Destroy(mref<ptr<Actor>> actor_, cref<Universe> activeUniverse_) noexcept;
 }

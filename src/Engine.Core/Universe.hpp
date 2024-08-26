@@ -8,18 +8,18 @@ namespace hg::engine::scene {
 }
 
 namespace hg::engine::core {
-	class World {
+	class Universe {
 	public:
-		using this_type = World;
+		using this_type = Universe;
 
 	public:
-		explicit World(mref<uptr<scene::SceneBase>> scene_);
+		explicit Universe(mref<uptr<scene::SceneBase>> scene_);
 
-		World(cref<this_type>) = delete;
+		Universe(cref<this_type>) = delete;
 
-		World(mref<this_type>) noexcept = delete;
+		Universe(mref<this_type>) noexcept = delete;
 
-		~World();
+		~Universe();
 
 	private:
 		uptr<scene::SceneBase> _scene;

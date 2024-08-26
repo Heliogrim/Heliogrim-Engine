@@ -3,8 +3,8 @@
 #include <algorithm>
 #include <ranges>
 #include <Engine.Assets/Assets.hpp>
-#include <Engine.Core/Event/WorldAddedEvent.hpp>
-#include <Engine.Core/Event/WorldRemoveEvent.hpp>
+#include <Engine.Core/Event/UniverseAddedEvent.hpp>
+#include <Engine.Core/Event/UniverseRemoveEvent.hpp>
 #include <Engine.Core/Module/CoreDependencies.hpp>
 #include <Engine.Core/Module/SubModule.hpp>
 #include <Engine.Core.Schedule/CorePipeline.hpp>
@@ -225,7 +225,7 @@ bool GameEngine::start() {
 	scheduler::exec(
 		[this, &next] {
 			_gameSession = make_uptr<core::Session>();
-			_worldContexts.emplace_back(std::addressof(_gameSession->getWorldContext()));
+			_universeContexts.emplace_back(std::addressof(_gameSession->getUniverseContext()));
 
 			/**/
 
@@ -262,10 +262,10 @@ bool GameEngine::stop() {
 			/**/
 
 			auto where = std::ranges::remove(
-				_worldContexts,
-				nmpt<core::WorldContext> { std::addressof(_gameSession->getWorldContext()) }
+				_universeContexts,
+				nmpt<core::UniverseContext> { std::addressof(_gameSession->getUniverseContext()) }
 			);
-			_worldContexts.erase(where.begin(), where.end());
+			_universeContexts.erase(where.begin(), where.end());
 			_gameSession.reset();
 
 			/**/
@@ -483,16 +483,16 @@ ref<core::Modules> GameEngine::getModules() const noexcept {
 	return const_cast<ref<core::Modules>>(_modules);
 }
 
-Vector<nmpt<core::WorldContext>> GameEngine::getWorldContexts() const noexcept {
-	return _worldContexts;
+Vector<nmpt<core::UniverseContext>> GameEngine::getUniverseContexts() const noexcept {
+	return _universeContexts;
 }
 
-void GameEngine::addWorld(cref<sptr<core::World>> world_) {
-	_emitter.emit<WorldAddedEvent>(world_);
+void GameEngine::addUniverse(cref<sptr<core::Universe>> universe_) {
+	_emitter.emit<UniverseAddedEvent>(universe_);
 }
 
-void GameEngine::removeWorld(cref<sptr<core::World>> world_) {
-	_emitter.emit<WorldRemoveEvent>(world_);
+void GameEngine::removeUniverse(cref<sptr<core::Universe>> universe_) {
+	_emitter.emit<UniverseRemoveEvent>(universe_);
 }
 
 nmpt<core::Session> GameEngine::getGameSession() const noexcept {

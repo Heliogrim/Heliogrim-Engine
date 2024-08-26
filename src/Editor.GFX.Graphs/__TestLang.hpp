@@ -23,12 +23,12 @@ using namespace ::hg::editor::gfx::graph;
 namespace hg::test {
     sptr<NodeGraph> mainFn(auto fn) {
 
-        fn.SetWorldPosition(
-            fn.GetLocalToWorld() * fn.GetLocalPosition()
+        fn.SetUniversePosition(
+            fn.GetLocalToUniverse() * fn.GetLocalPosition()
         );
 
-        fn.SetWorldNormal(
-            fn.GetLocalToWorld() * fn.GetLocalNormal()
+        fn.SetUniverseNormal(
+            fn.GetLocalToUniverse() * fn.GetLocalNormal()
         );
 
         auto albedo = fn.SampleColor(
