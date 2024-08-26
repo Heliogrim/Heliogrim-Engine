@@ -1,9 +1,8 @@
 #pragma once
 
 #include <concepts>
-#include <Engine.Common/Functional/Function.hpp>
 #include <Engine.Common/Make.hpp>
-
+#include <Engine.Common/Functional/Function.hpp>
 #include <Engine.Core/Engine.hpp>
 
 namespace hg::engine::core {

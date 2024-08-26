@@ -12,7 +12,7 @@ Session HeliogrimEditor::getEditorSession() noexcept {
 
 	managed<void> dummy {};
 	return Session {
-		managed<void> { std::move(dummy), session.get() }
+		SharedPtr<::hg::engine::core::Session> { std::move(dummy), session.get() }
 	};
 }
 
@@ -23,7 +23,7 @@ Session HeliogrimEditor::getSession() {
 
 	managed<void> dummy {};
 	return Session {
-		managed<void> { std::move(dummy), session.get() }
+		SharedPtr<::hg::engine::core::Session> { std::move(dummy), session.get() }
 	};
 }
 

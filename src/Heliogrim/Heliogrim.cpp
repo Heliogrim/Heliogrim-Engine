@@ -15,10 +15,10 @@ uptr<engine::Engine> Heliogrim::_engine = nullptr;
 
 static void startEngine(const non_owning_rptr<engine::Engine> engine_) {
 	#ifdef _DEBUG
-    assert(engine_->preInit());
-    assert(engine_->init());
-    assert(engine_->postInit());
-    assert(engine_->start());
+	assert(engine_->preInit());
+	assert(engine_->init());
+	assert(engine_->postInit());
+	assert(engine_->start());
 	#else
 	engine_->preInit();
 	engine_->init();
@@ -57,7 +57,7 @@ Session Heliogrim::getSession() {
 
 	managed<void> dummy {};
 	return Session {
-		managed<void> { std::move(dummy), session.get() }
+		SharedPtr<::hg::engine::core::Session> { std::move(dummy), session.get() }
 	};
 }
 

@@ -2,11 +2,16 @@
 
 #include <Engine.Assets/AssetGuid.hpp>
 #include <Engine.Assets/AssetTypeId.hpp>
+#include <Engine.Common/Sal.hpp>
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
 namespace hg {
 	class AssetDatabase;
+}
+
+namespace hg::engine::assets {
+	class Asset;
 }
 
 namespace hg {
@@ -16,10 +21,6 @@ namespace hg {
 
 	public:
 		using this_type = Asset;
-
-		using value_type = Asset;
-		using reference_type = ref<value_type>;
-		using const_reference_type = cref<value_type>;
 
 	protected:
 		/**
@@ -32,7 +33,10 @@ namespace hg {
 		 * @param  typeId_ Identifier for the type.
 		 * @param  internal_ The internal state.
 		 */
-		Asset(mref<asset_guid> guid_, cref<asset_type_id> typeId_, ptr<void> internal_) noexcept;
+		Asset(mref<asset_guid> guid_, cref<asset_type_id> typeId_, ref<::hg::engine::assets::Asset> internal_) noexcept;
+
+	private:
+		Asset(cref<asset_guid> invalidGuid_, cref<asset_type_id> invalidTypeId_, std::nullptr_t) noexcept;
 
 	public:
 		Asset(mref<this_type> other_) noexcept;
@@ -241,9 +245,9 @@ namespace hg {
 		/**
 		 * The internal state for this asset
 		 */
-		ptr<void> _internal;
+		ptr<::hg::engine::assets::Asset> _internal;
 
 	public:
-		[[nodiscard]] ptr<void> internal() const noexcept;
+		[[nodiscard]] decltype(_internal) internal() const noexcept;
 	};
 }

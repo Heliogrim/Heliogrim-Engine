@@ -14,7 +14,7 @@ ImageAsset::ImageAsset(mref<asset_guid> guid_) noexcept :
 		clone(guid_),
 		engine::assets::Image::typeId,
 		// Warning: Reference out of Scope | Use-After-Free
-		engine::Engine::getEngine()->getAssets()->getFactory()->createImageAsset(clone(guid_)).get()
+		*engine::Engine::getEngine()->getAssets()->getFactory()->createImageAsset(clone(guid_))
 	) {}
 
 ImageAsset::ImageAsset(mref<asset_guid> guid_, cref<string> url_) noexcept :
@@ -22,7 +22,7 @@ ImageAsset::ImageAsset(mref<asset_guid> guid_, cref<string> url_) noexcept :
 		clone(guid_),
 		engine::assets::Image::typeId,
 		// Warning: Reference out of Scope | Use-After-Free
-		engine::Engine::getEngine()->getAssets()->getFactory()->createImageAsset(clone(guid_), url_).get()
+		*engine::Engine::getEngine()->getAssets()->getFactory()->createImageAsset(clone(guid_), url_)
 	) {}
 
 ImageAsset::~ImageAsset() noexcept = default;

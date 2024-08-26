@@ -14,7 +14,7 @@ FontAsset::FontAsset(mref<asset_guid> guid_) noexcept :
 		clone(guid_),
 		engine::assets::Font::typeId,
 		// Warning: Reference out of Scope | Use-After-Free
-		engine::Engine::getEngine()->getAssets()->getFactory()->createFontAsset(clone(guid_)).get()
+		*engine::Engine::getEngine()->getAssets()->getFactory()->createFontAsset(clone(guid_))
 	) {}
 
 FontAsset::FontAsset(mref<asset_guid> guid_, cref<string> url_) noexcept :
@@ -22,7 +22,7 @@ FontAsset::FontAsset(mref<asset_guid> guid_, cref<string> url_) noexcept :
 		clone(guid_),
 		engine::assets::Font::typeId,
 		// Warning: Reference out of Scope | Use-After-Free
-		engine::Engine::getEngine()->getAssets()->getFactory()->createFontAsset(clone(guid_), url_).get()
+		*engine::Engine::getEngine()->getAssets()->getFactory()->createFontAsset(clone(guid_), url_)
 	) {}
 
 FontAsset::~FontAsset() noexcept = default;

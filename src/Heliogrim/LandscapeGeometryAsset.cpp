@@ -14,7 +14,7 @@ LandscapeGeometryAsset::LandscapeGeometryAsset(mref<asset_guid> guid_) noexcept 
 		clone(guid_),
 		engine::assets::LandscapeGeometry::typeId,
 		// Warning: Reference out of Scope | Use-After-Free
-		engine::Engine::getEngine()->getAssets()->getFactory()->createLandscapeGeometryAsset(clone(guid_)).get()
+		*engine::Engine::getEngine()->getAssets()->getFactory()->createLandscapeGeometryAsset(clone(guid_))
 	) {}
 
 LandscapeGeometryAsset::~LandscapeGeometryAsset() noexcept = default;

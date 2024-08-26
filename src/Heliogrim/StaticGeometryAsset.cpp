@@ -13,7 +13,7 @@ StaticGeometryAsset::StaticGeometryAsset(mref<asset_guid> guid_) noexcept :
 		clone(guid_),
 		engine::assets::StaticGeometry::typeId,
 		// Warning: Reference out of Scope | Use-After-Free
-		engine::Engine::getEngine()->getAssets()->getFactory()->createStaticGeometryAsset(clone(guid_)).get()
+		*engine::Engine::getEngine()->getAssets()->getFactory()->createStaticGeometryAsset(clone(guid_))
 	) {}
 
 StaticGeometryAsset::StaticGeometryAsset(
@@ -26,12 +26,12 @@ StaticGeometryAsset::StaticGeometryAsset(
 		clone(guid_),
 		engine::assets::StaticGeometry::typeId,
 		// Warning: Reference out of Scope | Use-After-Free
-		engine::Engine::getEngine()->getAssets()->getFactory()->createStaticGeometryAsset(
+		*engine::Engine::getEngine()->getAssets()->getFactory()->createStaticGeometryAsset(
 			clone(guid_),
 			url_,
 			vertexCount_,
 			indexCount_
-		).get()
+		)
 	) {}
 
 StaticGeometryAsset::~StaticGeometryAsset() noexcept = default;

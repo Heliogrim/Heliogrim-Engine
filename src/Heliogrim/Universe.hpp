@@ -11,6 +11,10 @@ namespace hg {
 	class Level;
 }
 
+namespace hg::engine::core {
+	class Universe;
+}
+
 namespace hg {
 	class Universe {
 	public:
@@ -25,13 +29,7 @@ namespace hg {
 		 */
 		Universe();
 
-		/**
-		 * Constructor
-		 *
-		 * @author Julius
-		 * @date 01.12.2021
-		 */
-		World(const managed<void> internal_);
+		explicit Universe(mref<SharedPtr<::hg::engine::core::Universe>> internal_);
 
 		Universe(cref<this_type> other_) = default;
 
@@ -73,7 +71,7 @@ namespace hg {
 		/**
 		 * Internal
 		 */
-		managed<void> _internal;
+		SharedPtr<::hg::engine::core::Universe> _internal;
 
 	public:
 		/**
@@ -84,7 +82,7 @@ namespace hg {
 		 *
 		 * @returns A reference to the internal managed universe representation
 		 */
-		[[nodiscard]] cref<managed<void>> unwrap() const noexcept;
+		[[nodiscard]] cref<decltype(_internal)> unwrap() const noexcept;
 
 	public:
 		/**

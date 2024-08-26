@@ -6,6 +6,10 @@
 #include "ActorInitializer.hpp"
 #include "Future.hpp"
 
+namespace hg::engine::core {
+	class Session;
+}
+
 namespace hg {
 	class Session final {
 	public:
@@ -14,7 +18,7 @@ namespace hg {
 	public:
 		Session() = default;
 
-		Session(const managed<void> internal_);
+		explicit Session(mref<SharedPtr<::hg::engine::core::Session>> internal_);
 
 		Session(cref<this_type> other_) = default;
 
@@ -37,10 +41,10 @@ namespace hg {
 		/**
 		 * Internal
 		 */
-		managed<void> _internal;
+		SharedPtr<::hg::engine::core::Session> _internal;
 
 	public:
-		[[nodiscard]] cref<managed<void>> unwrap() const noexcept;
+		[[nodiscard]] cref<decltype(_internal)> unwrap() const noexcept;
 	};
 
 	/**
