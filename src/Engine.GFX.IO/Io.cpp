@@ -1,7 +1,7 @@
 #include "Io.hpp"
 
-#include <Engine.Assets/Types/Geometry/StaticGeometry.hpp>
-#include <Engine.Assets/Types/Texture/TextureAsset.hpp>
+#include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
+#include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Event/GlobalEventEmitter.hpp>
 #include <Engine.GFX.Event/GraphicRegisterImporterEvent.hpp>
@@ -17,12 +17,12 @@
 #include <Engine.GFX.Loader/Material/MaterialResource.hpp>
 #include <Engine.GFX.Loader/Texture/TextureLoader.hpp>
 #include <Engine.GFX.Loader/Texture/TextureResource.hpp>
+#include <Engine.GFX/Importer/FontFileTypes.hpp>
 #include <Engine.GFX/Importer/FontImporter.hpp>
 #include <Engine.GFX/Importer/ImageFileTypes.hpp>
 #include <Engine.GFX/Importer/ImageImporter.hpp>
 #include <Engine.GFX/Importer/ModelFileTypes.hpp>
 #include <Engine.GFX/Importer/ModelImporter.hpp>
-#include "Engine.GFX/Importer/FontFileTypes.hpp"
 
 using namespace ::hg::engine::gfx::loader;
 using namespace ::hg;

@@ -1,7 +1,7 @@
 #include "StaticGeometryModel.hpp"
 
 #include <cstring>
-#include <Engine.Assets/Types/Material/GfxMaterial.hpp>
+#include <Engine.Assets.Type/Material/GfxMaterial.hpp>
 #include <Engine.Common/Math/Convertion.hpp>
 #include <Engine.Common/Math/Coordinates.hpp>
 #include <Engine.Core/Engine.hpp>

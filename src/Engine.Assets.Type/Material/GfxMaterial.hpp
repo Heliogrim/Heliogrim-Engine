@@ -1,11 +1,12 @@
 #pragma once
 
-#include <variant>
 #include <Engine.Accel.Effect/Stage/TransferDataType.hpp>
+#include <Engine.Common/Variant.hpp>
 #include <Engine.Common/Math/Matrix.hpp>
 #include <Engine.Common/Math/Vector.hpp>
 #include <Engine.GFX.Material/ParameterIdentifier.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
+
 #include "../Asset.hpp"
 
 namespace hg::engine::assets {
@@ -18,7 +19,7 @@ namespace hg::engine::assets {
 		ACCESS_STRUCTURE
 
 	public:
-		inline static constexpr asset_type_id typeId { "GfxMaterial"_typeId };
+		constexpr static asset_type_id typeId { "GfxMaterial"_typeId };
 
 	protected:
 		GfxMaterial(mref<asset_guid> guid_);
@@ -35,7 +36,7 @@ namespace hg::engine::assets {
 			gfx::material::ParameterIdentifier identifier;
 			string name;
 			accel::TransferDataType dataType;
-			std::variant<
+			Variant<
 				asset_guid,
 				u8,
 				u16,

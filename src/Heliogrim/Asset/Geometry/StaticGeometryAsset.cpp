@@ -1,4 +1,4 @@
-#include <Engine.Assets/Types/Geometry/StaticGeometry.hpp>
+#include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
 /**/
 #include "StaticGeometryAsset.hpp"
 

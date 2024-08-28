@@ -1,4 +1,4 @@
-#include <Engine.Assets/Types/Material/GfxMaterial.hpp>
+#include <Engine.Assets.Type/Material/GfxMaterial.hpp>
 /**/
 #include "GfxMaterialAsset.hpp"
 

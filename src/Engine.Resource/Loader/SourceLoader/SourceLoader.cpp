@@ -75,13 +75,13 @@ SourceLoaderStreamResponse<void>::type SourceLoader::operator()(
 
 /* Asset Specific Implementation */
 
-#include <Engine.Assets/Types/Image.hpp>
-#include <Engine.Assets/Types/Texture/TextureAsset.hpp>
-#include <Engine.Assets/Types/Geometry/StaticGeometry.hpp>
-#include <Engine.Assets/Types/Font.hpp>
+#include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
+#include <Engine.Assets.Type/Texture/Font.hpp>
+#include <Engine.Assets.Type/Texture/Image.hpp>
+#include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 
-#include <Engine.Core/Engine.hpp>
 #include <Engine.Assets/Assets.hpp>
+#include <Engine.Core/Engine.hpp>
 #include <Engine.Reflect/Cast.hpp>
 
 engine::storage::FileUrl getLfsUrl(const non_owning_rptr<const engine::assets::Asset> asset_) {

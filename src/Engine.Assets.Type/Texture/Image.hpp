@@ -1,10 +1,10 @@
 #pragma once
 
-#include <Engine.Filesystem/Url.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.Filesystem/Url.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 
-#include "Asset.hpp"
+#include "../Asset.hpp"
 
 namespace hg::engine::assets {
 	class Image final :
@@ -17,7 +17,7 @@ namespace hg::engine::assets {
 		friend class ::hg::engine::serialization::access::Structure;
 
 	public:
-		inline static constexpr asset_type_id typeId { "Image"_typeId };
+		constexpr static asset_type_id typeId { "Image"_typeId };
 
 	private:
 	public:

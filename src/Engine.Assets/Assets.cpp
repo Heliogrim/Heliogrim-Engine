@@ -1,8 +1,8 @@
 #include "Assets.hpp"
 
-#include <Engine.Common/Make.hpp>
-#include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets.System/AssetRegistry.hpp>
+#include <Engine.Assets.System/IAssetRegistry.hpp>
+#include <Engine.Common/Make.hpp>
 
 #include "AssetFactory.hpp"
 

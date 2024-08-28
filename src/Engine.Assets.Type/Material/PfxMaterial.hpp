@@ -1,14 +1,15 @@
 #pragma once
+
 #include "Material.hpp"
 
 namespace hg::engine::assets {
-	class SfxMaterial :
-		public InheritMeta<SfxMaterial, Material> {
+	class PfxMaterial :
+		public InheritMeta<PfxMaterial, Material> {
 	public:
 		template <typename>
 		friend class ::hg::engine::serialization::DataLayout;
 
 	public:
-		inline static constexpr asset_type_id typeId { "SfxMaterial"_typeId };
+		constexpr static asset_type_id typeId { "PfxMaterial"_typeId };
 	};
 }

@@ -6,7 +6,7 @@
 #include <Engine.Resource/ResourceManager.hpp>
 #include <Heliogrim/Component/Scene/Sky/SkyboxComponent.hpp>
 
-#include "Engine.Assets/Types/Material/GfxMaterial.hpp"
+#include "Engine.Assets.Type/Material/GfxMaterial.hpp"
 
 using namespace hg::engine::gfx;
 using namespace hg;

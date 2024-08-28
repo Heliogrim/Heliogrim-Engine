@@ -150,12 +150,12 @@ ptr<engine::assets::TextureAsset> AssetBrowserHelper::getItemIconForDirectory(cr
 	return tex;
 }
 
-#include <Engine.Assets/Types/Font.hpp>
-#include <Engine.Assets/Types/Image.hpp>
-#include <Engine.Assets/Types/Geometry/StaticGeometry.hpp>
-#include <Engine.Assets/Types/Material/GfxMaterial.hpp>
-#include <Engine.Assets/Types/Material/GfxMaterialPrototype.hpp>
-#include <Engine.Assets/Types/Texture/TextureAsset.hpp>
+#include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
+#include <Engine.Assets.Type/Material/GfxMaterial.hpp>
+#include <Engine.Assets.Type/Material/GfxMaterialPrototype.hpp>
+#include <Engine.Assets.Type/Texture/Font.hpp>
+#include <Engine.Assets.Type/Texture/Image.hpp>
+#include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 
 string AssetBrowserHelper::getAssetTypeName(cref<asset_type_id> typeId_) const noexcept {
 

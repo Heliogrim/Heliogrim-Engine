@@ -1,4 +1,4 @@
-#include <Engine.Assets/Types/Sound.hpp>
+#include <Engine.Assets.Type/Audio/Sound.hpp>
 /**/
 #include "SoundAsset.hpp"
 

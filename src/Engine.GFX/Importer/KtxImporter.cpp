@@ -3,8 +3,8 @@
 #include <regex>
 #include <sstream>
 #include <Engine.Assets/AssetFactory.hpp>
-#include <Engine.Assets/Types/Image.hpp>
-#include <Engine.Assets/Types/Texture/TextureAsset.hpp>
+#include <Engine.Assets.Type/Texture/Image.hpp>
+#include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 #include <Engine.Common/GuidFormat.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Concurrent/Promise.hpp>

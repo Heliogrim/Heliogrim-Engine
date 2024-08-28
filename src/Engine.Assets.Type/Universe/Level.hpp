@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Collection/Vector.hpp>
 
-#include "Asset.hpp"
+#include "../Asset.hpp"
 
 namespace hg::engine::assets {
 	class Level :
@@ -18,6 +18,6 @@ namespace hg::engine::assets {
 		Level(mref<asset_guid> guid_);
 
 	private:
-		Vector<asset_guid> _entities;
+		Vector<asset_guid> _actors;
 	};
 }

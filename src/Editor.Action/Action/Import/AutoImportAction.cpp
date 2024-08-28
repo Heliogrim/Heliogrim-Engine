@@ -105,10 +105,10 @@ bool AutoImportAction::failed() const noexcept {
 
 /**/
 
-#include <Engine.Assets/Types/Font.hpp>
-#include <Engine.Assets/Types/Image.hpp>
-#include <Engine.Assets/Types/Geometry/StaticGeometry.hpp>
-#include <Engine.Assets/Types/Texture/TextureAsset.hpp>
+#include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
+#include <Engine.Assets.Type/Texture/Font.hpp>
+#include <Engine.Assets.Type/Texture/Image.hpp>
+#include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 #include <Engine.Common/GuidFormat.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.GFX/Importer/FontFileTypes.hpp>

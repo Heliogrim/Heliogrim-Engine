@@ -1,10 +1,10 @@
 #pragma once
 
+#include <Engine.Assets.Type/Texture/Image.hpp>
+#include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 #include <Engine.Common/Concurrent/Future.hpp>
-#include <Engine.Assets/Types/Texture/TextureAsset.hpp>
-#include <Engine.Assets/Types/Image.hpp>
-#include <Engine.Resource/Importer/Importer.hpp>
 #include <Engine.Resource/File.hpp>
+#include <Engine.Resource/Importer/Importer.hpp>
 
 namespace hg::engine::gfx {
 	class KtxImporter :

@@ -10,6 +10,6 @@ namespace hg::engine::assets {
 		friend class ::hg::engine::serialization::DataLayout;
 
 	public:
-		inline static constexpr asset_type_id typeId { "SkeletalGeometry"_typeId };
+		constexpr static asset_type_id typeId { "SkeletalGeometry"_typeId };
 	};
 }

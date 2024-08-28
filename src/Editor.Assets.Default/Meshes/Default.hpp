@@ -1,8 +1,8 @@
 #pragma once
 
-#include <Engine.Assets/Types/Asset.hpp>
-#include <Engine.Assets/Types/AssetConcept.hpp>
-#include <Engine.Assets/Types/Geometry/StaticGeometry.hpp>
+#include <Engine.Assets.Type/Asset.hpp>
+#include <Engine.Assets.Type/AssetConcept.hpp>
+#include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Reflect/Cast.hpp>

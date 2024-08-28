@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine.Assets/Types/AssetConcept.hpp>
+#include <Engine.Assets.Type/AssetConcept.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/DenseMap.hpp>
