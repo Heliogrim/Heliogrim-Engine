@@ -1,4 +1,4 @@
-#include <Engine.Assets/Types/PfxMaterial.hpp>
+#include <Engine.Assets.Type/Material/PfxMaterial.hpp>
 /**/
 #include "PfxMaterialAsset.hpp"
 

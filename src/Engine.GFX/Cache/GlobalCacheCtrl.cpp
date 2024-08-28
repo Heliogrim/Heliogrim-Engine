@@ -3,7 +3,7 @@
 #include <Engine.Accel.Pipeline/AccelerationPipeline.hpp>
 #include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Asserts/Todo.hpp>
-#include <Engine.Assets/Types/Texture/TextureAsset.hpp>
+#include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 #include <Engine.Common/GuidFormat.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Engine.hpp>

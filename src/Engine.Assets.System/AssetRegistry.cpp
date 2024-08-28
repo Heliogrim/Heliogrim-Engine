@@ -4,7 +4,7 @@
 #include <filesystem>
 #include <ranges>
 
-#include <Engine.Assets/Types/Asset.hpp>
+#include <Engine.Assets.Type/Asset.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>

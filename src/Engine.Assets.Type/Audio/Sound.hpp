@@ -3,7 +3,7 @@
 #include <Engine.Common/String.hpp>
 #include <Engine.SFX/AudioFormat.hpp>
 
-#include "Asset.hpp"
+#include "../Asset.hpp"
 
 namespace hg::engine::assets {
 	class Sound :
@@ -13,7 +13,7 @@ namespace hg::engine::assets {
 		friend class ::hg::engine::serialization::DataLayout;
 
 	public:
-		inline static constexpr asset_type_id typeId { "Sound"_typeId };
+		constexpr static asset_type_id typeId { "Sound"_typeId };
 
 	protected:
 		Sound(mref<asset_guid> guid_);

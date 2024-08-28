@@ -89,9 +89,9 @@ sptr<SceneHierarchy> editor::EditorUI::getSceneHierarchy() const noexcept {
 }
 
 #include <Editor.Assets.Default/Fonts/Default.hpp>
-#include <Engine.Assets/Assets.hpp>
-#include <Engine.Assets/Types/Font.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
+#include <Engine.Assets/Assets.hpp>
+#include <Engine.Assets.Type/Texture/Font.hpp>
 #include <Engine.GFX.Loader/Font/FontLoader.hpp>
 #include <Engine.GFX.Loader/Font/FontLoadOptions.hpp>
 #include <Engine.GFX.Loader/Font/FontResource.hpp>

@@ -1,7 +1,7 @@
 #pragma once
 
+#include <Engine.Assets.Type/Asset.hpp>
 #include <Engine.Assets/AssetGuid.hpp>
-#include <Engine.Assets/Types/Asset.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/StableUnorderedMap.hpp>

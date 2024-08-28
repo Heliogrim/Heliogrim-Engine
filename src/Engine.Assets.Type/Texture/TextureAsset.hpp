@@ -1,4 +1,5 @@
 #pragma once
+
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Math/Vector.hpp>
 #include <Engine.GFX/TextureFormat.hpp>
@@ -18,7 +19,7 @@ namespace hg::engine::assets {
 		ACCESS_STRUCTURE
 
 	public:
-		static constexpr asset_type_id typeId { "Texture"_typeId };
+		constexpr static asset_type_id typeId { "Texture"_typeId };
 
 	private:
 	public:

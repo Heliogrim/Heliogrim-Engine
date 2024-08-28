@@ -1,4 +1,4 @@
-#include <Engine.Assets/Types/Image.hpp>
+#include <Engine.Assets.Type/Texture/Image.hpp>
 /**/
 #include "ImageAsset.hpp"
 

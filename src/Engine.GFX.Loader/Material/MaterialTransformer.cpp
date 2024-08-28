@@ -2,10 +2,10 @@
 
 #include <ranges>
 #include <Engine.Asserts/Breakpoint.hpp>
-#include <Engine.Assets/Assets.hpp>
-#include <Engine.Assets/Types/Material/GfxMaterialPrototype.hpp>
-#include <Engine.Assets/Types/Texture/TextureAsset.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
+#include <Engine.Assets/Assets.hpp>
+#include <Engine.Assets.Type/Material/GfxMaterialPrototype.hpp>
+#include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.GFX/Pool/GlobalResourcePool.hpp>
 #include <Engine.GFX.Material/MaterialFactory.hpp>

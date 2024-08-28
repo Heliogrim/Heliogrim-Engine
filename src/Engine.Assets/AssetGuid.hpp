@@ -1,8 +1,8 @@
 #pragma once
 
+#include <Engine.Common/Guid.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Hash/Murmur3.hpp>
-#include <Engine.Common/Guid.hpp>
 
 namespace hg {
 	struct asset_guid : public Guid {

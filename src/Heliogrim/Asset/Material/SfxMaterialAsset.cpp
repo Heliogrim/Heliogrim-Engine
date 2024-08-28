@@ -1,4 +1,4 @@
-#include <Engine.Assets/Types/SfxMaterial.hpp>
+#include <Engine.Assets.Type/Material/SfxMaterial.hpp>
 /**/
 #include "SfxMaterialAsset.hpp"
 

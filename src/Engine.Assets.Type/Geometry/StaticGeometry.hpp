@@ -5,7 +5,7 @@
 #include <Engine.Filesystem/Url.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 
-#include "../Geometry.hpp"
+#include "Geometry.hpp"
 
 namespace hg::engine::assets {
 	class StaticGeometry :
@@ -18,7 +18,7 @@ namespace hg::engine::assets {
 		ACCESS_STRUCTURE
 
 	public:
-		inline static constexpr asset_type_id typeId { "StaticGeometry"_typeId };
+		constexpr static asset_type_id typeId { "StaticGeometry"_typeId };
 
 	private:
 	public:

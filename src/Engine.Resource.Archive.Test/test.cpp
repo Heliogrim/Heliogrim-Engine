@@ -1,7 +1,7 @@
 #include "pch.h"
 
+#include <Engine.Assets.Type/Asset.hpp>
 #include <Engine.Common/Collection/Array.hpp>
-#include <Engine.Assets/Types/Asset.hpp>
 #include <Engine.Resource.Archive/BufferArchive.hpp>
 
 using namespace hg::engine::resource;

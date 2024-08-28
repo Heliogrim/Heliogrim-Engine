@@ -1,18 +1,18 @@
 /* Note: Why-so-ever, this is order dependent... */
-#include "Types/AccelEffect.hpp"
-#include "Types/Asset.hpp"
-#include "Types/Font.hpp"
-#include "Types/Image.hpp"
-#include "Types/LandscapeGeometry.hpp"
-#include "Types/Level.hpp"
-#include "Types/PfxMaterial.hpp"
-#include "Types/SfxMaterial.hpp"
-#include "Types/SkeletalGeometry.hpp"
-#include "Types/Sound.hpp"
-#include "Types/Geometry/StaticGeometry.hpp"
-#include "Types/Material/GfxMaterial.hpp"
-#include "Types/Material/GfxMaterialPrototype.hpp"
-#include "Types/Texture/TextureAsset.hpp"
+#include <Engine.Assets.Type/Asset.hpp>
+#include <Engine.Assets.Type/Accel/AccelEffect.hpp>
+#include <Engine.Assets.Type/Audio/Sound.hpp>
+#include <Engine.Assets.Type/Geometry/LandscapeGeometry.hpp>
+#include <Engine.Assets.Type/Geometry/SkeletalGeometry.hpp>
+#include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
+#include <Engine.Assets.Type/Material/GfxMaterial.hpp>
+#include <Engine.Assets.Type/Material/GfxMaterialPrototype.hpp>
+#include <Engine.Assets.Type/Material/PfxMaterial.hpp>
+#include <Engine.Assets.Type/Material/SfxMaterial.hpp>
+#include <Engine.Assets.Type/Texture/Font.hpp>
+#include <Engine.Assets.Type/Texture/Image.hpp>
+#include <Engine.Assets.Type/Texture/TextureAsset.hpp>
+#include <Engine.Assets.Type/Universe/Level.hpp>
 /* Note: Why-so-ever, this is order dependent... */
 
 #include "AssetFactory.hpp"

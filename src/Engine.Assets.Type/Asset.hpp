@@ -1,13 +1,12 @@
 #pragma once
 
+#include <Engine.Assets/AssetGuid.hpp>
+#include <Engine.Assets/AssetTypeId.hpp>
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Managed/Rc.hpp>
 #include <Engine.Reflect/Inherit/InheritBase.hpp>
 #include <Engine.Serialization/Layout/__fwd.hpp>
-
-#include "../AssetGuid.hpp"
-#include "../AssetTypeId.hpp"
 
 namespace hg::engine::assets {
 	/*

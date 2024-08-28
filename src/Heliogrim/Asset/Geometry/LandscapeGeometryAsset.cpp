@@ -1,4 +1,4 @@
-#include <Engine.Assets/Types/LandscapeGeometry.hpp>
+#include <Engine.Assets.Type/Geometry/LandscapeGeometry.hpp>
 /**/
 #include "LandscapeGeometryAsset.hpp"
 

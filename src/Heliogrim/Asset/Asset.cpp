@@ -1,6 +1,6 @@
 #include "Asset.hpp"
 
-#include <Engine.Assets/Types/Asset.hpp>
+#include <Engine.Assets.Type/Asset.hpp>
 #include <Engine.Common/Memory/Address.hpp>
 
 using namespace hg;

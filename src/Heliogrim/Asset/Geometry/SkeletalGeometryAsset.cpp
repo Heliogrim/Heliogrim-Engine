@@ -1,4 +1,4 @@
-#include <Engine.Assets/Types/SkeletalGeometry.hpp>
+#include <Engine.Assets.Type/Geometry/SkeletalGeometry.hpp>
 /**/
 #include "SkeletalGeometryAsset.hpp"
 

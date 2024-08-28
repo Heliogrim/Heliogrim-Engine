@@ -1,11 +1,11 @@
 #pragma once
 
-#include <Engine.Filesystem/Url.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.Filesystem/Url.hpp>
 #include <Engine.Reflow/Font/GlyphRanges.hpp>
 #include <Engine.Resource/Loader/Loader.hpp>
 
-#include "Asset.hpp"
+#include "../Asset.hpp"
 
 namespace hg::engine::assets {
 	class Font :
@@ -18,7 +18,7 @@ namespace hg::engine::assets {
 		ACCESS_STRUCTURE
 
 	public:
-		inline static constexpr asset_type_id typeId { "Font"_typeId };
+		constexpr static asset_type_id typeId { "Font"_typeId };
 
 	public:
 		Font();
