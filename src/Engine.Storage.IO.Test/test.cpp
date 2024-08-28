@@ -274,7 +274,7 @@ namespace StorageModule {
 		/**/
 
 		constexpr auto targetCount = 5uLL;
-		for (auto i = 0; i < targetCount; ++i) {
+		for (std::size_t i = 0; i < targetCount; ++i) {
 
 			auto archiveGuid = Guid {};
 			GuidGenerate(archiveGuid);

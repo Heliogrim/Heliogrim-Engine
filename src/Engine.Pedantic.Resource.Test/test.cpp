@@ -50,8 +50,6 @@ namespace PedanticResourceModule {
 
 	TEST(ExclusiveResource, RefCountMoveResource) {
 
-		using type = std::shared_ptr<u64>;
-
 		constexpr auto initial_value = 652897529uLL;
 		auto payload = std::make_shared<u64>(initial_value);
 
@@ -68,8 +66,6 @@ namespace PedanticResourceModule {
 	}
 
 	TEST(ExclusiveResource, MoveMoveOnlyResource) {
-
-		using type = std::unique_ptr<u64>;
 
 		constexpr auto initial_value = 9235768875uLL;
 		auto payload = std::make_unique<u64>(initial_value);

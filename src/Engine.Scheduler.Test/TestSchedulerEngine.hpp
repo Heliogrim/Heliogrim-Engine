@@ -118,8 +118,8 @@ namespace hg::test {
 			return _universeContexts;
 		}
 
-		void addUniverse(cref<sptr<engine::core::Universe>> universe_) override {}
+		void addUniverse([[maybe_unused]] cref<sptr<engine::core::Universe>> universe_) override {}
 
-		void removeUniverse(cref<sptr<engine::core::Universe>> universe_) override {}
+		void removeUniverse([[maybe_unused]] cref<sptr<engine::core::Universe>> universe_) override {}
 	};
 }
