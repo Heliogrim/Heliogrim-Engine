@@ -38,4 +38,6 @@
 #define _Notnull_
 #define _Maybenull_
 
+#define _Result_nullonfailure_
+
 #endif

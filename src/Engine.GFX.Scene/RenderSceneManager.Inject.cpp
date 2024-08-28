@@ -7,13 +7,13 @@
 #include <Engine.Render.Scene.Model/CameraModel.hpp>
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
 #include <Engine.Scene/SceneBase.hpp>
-#include <Heliogrim/SkyboxComponent.hpp>
-#include <Heliogrim/StaticGeometryComponent.hpp>
-#include <Heliogrim/UIComponent.hpp>
-#include <Heliogrim/Components/CameraComponent.hpp>
-#include <Heliogrim/Components/DirectionalLightComponent.hpp>
-#include <Heliogrim/Components/PointLightComponent.hpp>
-#include <Heliogrim/Components/SpotLightComponent.hpp>
+#include <Heliogrim/Component/Scene/Camera/CameraComponent.hpp>
+#include <Heliogrim/Component/Scene/Geometry/StaticGeometryComponent.hpp>
+#include <Heliogrim/Component/Scene/Light/DirectionalLightComponent.hpp>
+#include <Heliogrim/Component/Scene/Light/PointLightComponent.hpp>
+#include <Heliogrim/Component/Scene/Light/SpotLightComponent.hpp>
+#include <Heliogrim/Component/Scene/Sky/SkyboxComponent.hpp>
+#include <Heliogrim/Component/Scene/UI/UIComponent.hpp>
 
 #include "RenderSceneManager.hpp"
 

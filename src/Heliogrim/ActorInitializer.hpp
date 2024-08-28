@@ -5,15 +5,15 @@
 #include <Engine.Core/Session.hpp>
 #include <Engine.Core/SessionState.hpp>
 
-#include "Actor.hpp"
-#include "ActorComponent.hpp"
-#include "CachedActorPointer.hpp"
+#include "Actor/Actor.hpp"
+#include "Component/CachedActorPointer.hpp"
+#include "Component/HierarchyComponent.hpp"
 
 namespace hg {
 	/**
 	 * Forward Declaration
 	 */
-	class ActorComponent;
+	class HierarchyComponent;
 	class Session;
 
 	class ActorInitializer {
@@ -25,7 +25,7 @@ namespace hg {
 
 	protected:
 	public:
-		ActorInitializer(cref<managed<void>> internal_) :
+		ActorInitializer(cref<SharedPtr<::hg::engine::core::Session>> internal_) :
 			_internal(internal_) {}
 
 	public:
@@ -35,7 +35,7 @@ namespace hg {
 		/**
 		 *
 		 */
-		managed<void> _internal;
+		SharedPtr<::hg::engine::core::Session> _internal;
 
 	protected:
 		// Warning: Temporary Solution
@@ -48,16 +48,16 @@ namespace hg {
 		actor_guid _guid = invalid_actor_guid;
 
 	public:
-		template <std::derived_from<ActorComponent> Component>
-		ptr<Component> createComponent(_Inout_ const ptr<Actor> actor_) const {
+		template <std::derived_from<HierarchyComponent> Component_>
+		ptr<Component_> createComponent(_Inout_ const ptr<Actor> actor_) const {
 
 			/**/
 			auto& registry { getCoreSession().getState().getRegistry() };
 
 			auto* component = registry.acquireActorComponent<
-				Component,
+				Component_,
 				CachedActorPointer,
-				ptr<ActorComponent>
+				ptr<HierarchyComponent>
 			>(actor_->guid(), { actor_->guid(), actor_ }, nullptr);
 			assert(component != nullptr && "Failed to ensure successful created component.");
 
@@ -73,8 +73,11 @@ namespace hg {
 			return component;
 		}
 
-		template <std::derived_from<ActorComponent> Component>
-		ptr<Component> createSubComponent(_Inout_ const ptr<Actor> actor_, ptr<ActorComponent> parent_) const {
+		template <std::derived_from<HierarchyComponent> Component_>
+		ptr<Component_> createSubComponent(
+			_Inout_ const ptr<Actor> actor_,
+			_In_ ptr<HierarchyComponent> parent_
+		) const {
 
 			/**/
 			auto& registry { getCoreSession().getState().getRegistry() };
@@ -82,13 +85,13 @@ namespace hg {
 			auto* actor { actor_ ? actor_ : parent_->getOwner() };
 
 			auto* component = registry.acquireActorComponent<
-				Component,
+				Component_,
 				CachedActorPointer,
-				ptr<ActorComponent>
+				ptr<HierarchyComponent>
 			>(
 				actor->guid(),
 				CachedActorPointer { actor_->guid(), actor },
-				ptr<ActorComponent> { parent_ }
+				ptr<HierarchyComponent> { parent_ }
 			);
 			assert(component != nullptr && "Failed to ensure successful created component.");
 

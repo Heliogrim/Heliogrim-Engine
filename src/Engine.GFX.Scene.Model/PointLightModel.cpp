@@ -7,7 +7,7 @@
 #include <Engine.GFX/Pool/SceneResourcePool.hpp>
 #include <Engine.Reflect/Cast.hpp>
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
-#include <Heliogrim/Components/PointLightComponent.hpp>
+#include <Heliogrim/Component/Scene/Light/PointLightComponent.hpp>
 
 using namespace hg::engine::gfx::scene;
 using namespace hg;

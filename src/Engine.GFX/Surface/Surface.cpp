@@ -11,7 +11,7 @@
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Platform/Platform.hpp>
 #include <Engine.Scheduler/Fiber/Fiber.hpp>
-#include <Heliogrim/Future.hpp>
+#include <Heliogrim/Async/Future.hpp>
 
 #include "../__macro.hpp"
 #include "../API/VkTranslate.hpp"

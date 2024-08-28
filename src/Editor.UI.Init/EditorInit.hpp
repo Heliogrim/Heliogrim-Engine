@@ -13,12 +13,12 @@ namespace hg::editor::ui {
 
 namespace hg {
 	class Actor;
-	class ActorComponent;
+	class HierarchyComponent;
 }
 
 namespace hg::editor::ui {
 	/* Attention: Temporary */
 	void storeEditorSelectedTarget(ref<EditorUI> editorUI_, const hg::ptr<hg::Actor> target_);
 
-	void storeEditorSelectedTarget(ref<EditorUI> editorUI_, const hg::ptr<hg::ActorComponent> target_);
+	void storeEditorSelectedTarget(ref<EditorUI> editorUI_, const hg::ptr<hg::HierarchyComponent> target_);
 }

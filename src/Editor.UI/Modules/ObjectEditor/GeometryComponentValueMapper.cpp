@@ -9,7 +9,7 @@
 #include <Engine.Reflow/Widget/Input/InputIntegral.hpp>
 #include <Engine.Reflow/Widget/Input/InputText.hpp>
 #include <Heliogrim/Heliogrim.hpp>
-#include <Heliogrim/StaticGeometryComponent.hpp>
+#include <Heliogrim/Component/Scene/Geometry/StaticGeometryComponent.hpp>
 
 #include "ObjectValueMapper.hpp"
 #include "../../Color/Dark.hpp"

@@ -8,7 +8,8 @@
 #include <Engine.Core/Engine.hpp>
 #include <Engine.GFX/Graphics.hpp>
 #include <Engine.Logging/Logger.hpp>
-#include <Heliogrim/Actors/CameraActor.hpp>
+#include <Heliogrim/Actor/Camera/CameraActor.hpp>
+
 #include "Engine.GFX/RenderTarget.hpp"
 #endif
 
@@ -229,7 +230,7 @@ void Viewport::rebuildView() {
 	/**/
 
 	if (_cameraActor) {
-		auto* const cc { _cameraActor->getCameraComponent() };
+		const auto cc { _cameraActor->getCameraComponent() };
 		cc->setAspectRatio(
 			static_cast<float>(extent.x) / static_cast<float>(extent.y)
 		);

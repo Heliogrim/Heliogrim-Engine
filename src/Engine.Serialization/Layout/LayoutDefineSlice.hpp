@@ -109,7 +109,7 @@ namespace hg::engine::serialization::layout {
 
 				std::insert_iterator<Type_> inserter { *container, container->end() };
 
-				for (s64 i { 0LL }; i < storedCount; ++i) {
+				for (decltype(storedCount) i { 0LL }; i < storedCount; ++i) {
 
 					// Warning: Experimental temporary solution
 					if constexpr (not std::is_trivial_v<typename Type_::value_type>) {

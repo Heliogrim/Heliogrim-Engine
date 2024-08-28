@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <ranges>
+#include <Engine.Asserts/Todo.hpp>
 #include <Engine.Common/Optional.hpp>
 #include <Engine.Common/Sal.hpp>
 

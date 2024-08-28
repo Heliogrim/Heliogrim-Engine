@@ -37,7 +37,7 @@
 #include <Engine.Reflect/Cast.hpp>
 #include <Engine.Reflect/ExactType.hpp>
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
-#include <Heliogrim/SceneComponent.hpp>
+#include <Heliogrim/Component/SceneComponent.hpp>
 
 using namespace hg::engine::render;
 using namespace hg::engine::accel;

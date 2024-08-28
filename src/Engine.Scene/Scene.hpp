@@ -3,7 +3,7 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Array.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
-#include <Heliogrim/SceneComponent.hpp>
+#include <Heliogrim/Component/SceneComponent.hpp>
 
 #include "SceneBase.hpp"
 #include "SceneSystem.hpp"

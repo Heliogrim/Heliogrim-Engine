@@ -1,15 +1,19 @@
 #pragma once
 
-#include <cassert>
 #include <Engine.Asserts/Asserts.hpp>
+#include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Memory/MemoryPointer.hpp>
 
-#include "Asset.hpp"
 #include "AssetDatabaseResult.hpp"
-#include "Engine.Common/Memory/MemoryPointer.hpp"
+#include "Asset/Asset.hpp"
 
 namespace hg {
 	class Heliogrim;
+}
+
+namespace hg::engine::assets {
+	class IAssetRegistry;
 }
 
 namespace hg {
@@ -21,16 +25,16 @@ namespace hg {
 		friend class ::hg::Heliogrim;
 
 	private:
-		AssetDatabase(const non_owning_rptr<void> internal_);
+		AssetDatabase(nmpt<::hg::engine::assets::IAssetRegistry> internal_);
 
 	public:
 		~AssetDatabase();
 
 	private:
-		nmpt<void> _internal;
+		nmpt<::hg::engine::assets::IAssetRegistry> _internal;
 
 	public:
-		[[nodiscard]] nmpt<void> unwrap() const noexcept;
+		[[nodiscard]] decltype(_internal) unwrap() const noexcept;
 
 	public:
 		/**
@@ -82,7 +86,7 @@ namespace hg {
 		 *
 		 * @returns True if it succeeds, false if it fails.
 		 */
-		bool insert(ptr<Asset> asset_) noexcept;
+		bool insert(_Inout_ ref<Asset> asset_) noexcept;
 
 		/**
 		 * Erases the given asset from the database and erases internal states
@@ -94,6 +98,6 @@ namespace hg {
 		 *
 		 * @returns True if it succeeds, false if it fails.
 		 */
-		bool erase(ptr<Asset> asset_) noexcept;
+		bool erase(_Inout_ ref<Asset> asset_) noexcept;
 	};
 }

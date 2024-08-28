@@ -30,7 +30,7 @@ int main_impl() {
 	 * Instantiate Engine
 	 */
 	Heliogrim::instantiate();
-	auto* const engine { Heliogrim::getEngine() };
+	auto engine { Heliogrim::getEngine() };
 
 	/**
 	 * Register Shutdown Sequence

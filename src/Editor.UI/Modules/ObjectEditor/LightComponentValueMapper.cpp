@@ -5,8 +5,8 @@
 #include <Engine.Reflow/Widget/Input/InputFloat.hpp>
 #include <Engine.Reflow/Widget/Input/InputIntegral.hpp>
 #include <Heliogrim/Heliogrim.hpp>
-#include <Heliogrim/Components/DirectionalLightComponent.hpp>
-#include <Heliogrim/Components/PointLightComponent.hpp>
+#include <Heliogrim/Component/Scene/Light/DirectionalLightComponent.hpp>
+#include <Heliogrim/Component/Scene/Light/PointLightComponent.hpp>
 
 #include "ObjectValueMapper.hpp"
 #include "../../Color/Dark.hpp"

@@ -29,7 +29,7 @@ namespace hg {
 
 		template <class Type_>
 		concept __DirectMetaInherit = requires(const Type_& obj_) {
-			{ obj_.getMetaClass() } -> unconstrained_same<ptr<const TypedMetaClass<Type_>>>;
+			{ obj_.template getMetaClass<Type_>() } -> unconstrained_same<ptr<const TypedMetaClass<Type_>>>;
 		};
 
 		template <
