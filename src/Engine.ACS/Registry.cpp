@@ -1,6 +1,6 @@
 #include "Registry.hpp"
 
-#include <Heliogrim/Actor.hpp>
+#include <Heliogrim/Actor/Actor.hpp>
 
 #include "Heliogrim/ActorInitializer.hpp"
 

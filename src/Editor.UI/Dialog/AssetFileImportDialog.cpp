@@ -25,6 +25,7 @@
 #include <Engine.Reflow/Window/PopupLayer.hpp>
 #include <Engine.Reflow/Window/Window.hpp>
 #include <Heliogrim/Heliogrim.hpp>
+#include <Heliogrim/Async/Execute.hpp>
 
 #include "../Color/Dark.hpp"
 #include "../Modules/AssetBrowser.hpp"

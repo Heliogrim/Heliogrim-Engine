@@ -1,6 +1,6 @@
-#include <Heliogrim/Actor.hpp>
-#include <Heliogrim/ActorComponent.hpp>
 #include <Engine.Reflow/Widget/Input/InputText.hpp>
+#include <Heliogrim/Actor/Actor.hpp>
+#include <Heliogrim/Component/HierarchyComponent.hpp>
 
 #include "ObjectValueMapper.hpp"
 #include "../../Widget/Input/InputVec.hpp"

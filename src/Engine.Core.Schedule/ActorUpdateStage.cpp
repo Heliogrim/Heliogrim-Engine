@@ -25,9 +25,9 @@ void ActorUpdateStage::staticDispatch(const non_owning_rptr<const scheduler::Sta
 				const auto engine = Engine::getEngine();
 				const auto& ctxs = engine->getUniverseContexts();
 
-				for (const auto universeContext : ctxs) {
+				for (const auto ctx : ctxs) {
 
-					cref<sptr<Universe>> universe = universeContext->getCurrentUniverse();
+					cref<sptr<Universe>> universe = ctx->getCurrentUniverse();
 					if (not universe) {
 						continue;
 					}

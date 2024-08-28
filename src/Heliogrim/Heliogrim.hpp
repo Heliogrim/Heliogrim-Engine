@@ -1,9 +1,11 @@
 #pragma once
 
+#include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Memory/MemoryPointer.hpp>
 
 #include "AssetDatabase.hpp"
-#include "Session.hpp"
+#include "Core/Session.hpp"
 
 namespace hg::engine {
 	class Engine;
@@ -20,7 +22,7 @@ namespace hg {
 		static uptr<engine::Engine> _engine;
 
 	public:
-		[[nodiscard]] static const non_owning_rptr<engine::Engine> getEngine() noexcept;
+		[[nodiscard]] static nmpt<engine::Engine> getEngine() noexcept;
 
 	public:
 		[[nodiscard]] static Session getSession();

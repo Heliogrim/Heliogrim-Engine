@@ -48,8 +48,8 @@
 #include <Engine.Reflow/Window/Window.hpp>
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
-#include <Heliogrim/TextureFormat.hpp>
-#include <Heliogrim/TextureType.hpp>
+#include <Heliogrim/Graphics/TextureFormat.hpp>
+#include <Heliogrim/Graphics/TextureType.hpp>
 
 /**/
 

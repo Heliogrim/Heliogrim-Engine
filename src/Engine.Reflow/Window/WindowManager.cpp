@@ -3,21 +3,21 @@
 #include <algorithm>
 #include <ranges>
 #include <Engine.Core/Engine.hpp>
-#include <Engine.GFX/RenderTarget.hpp>
 #include <Engine.GFX/Surface/Surface.hpp>
-#include <Engine.GFX.Scene/RenderSceneManager.hpp>
-#include <Engine.GFX/Graphics.hpp>
-#include <Engine.GFX.Scene/View/SceneView.hpp>
 #include <Engine.GFX/Surface/SurfaceManager.hpp>
 #include <Engine.GFX/Swapchain/VkSurfaceSwapchain.hpp>
+#include <Engine.GFX.Scene/RenderSceneManager.hpp>
+#include <Engine.GFX/Graphics.hpp>
+#include <Engine.GFX/RenderTarget.hpp>
+#include <Engine.GFX.Scene/View/SceneView.hpp>
 #include <Engine.Input/Input.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 #include <Engine.Platform/Platform.hpp>
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
 #include <Engine.Scene/SceneBase.hpp>
-#include <Heliogrim/Future.hpp>
-#include <Heliogrim/Inbuilt.hpp>
+#include <Heliogrim/Async/Await.hpp>
+#include <Heliogrim/Async/Future.hpp>
 
 #include "BoundWindow.hpp"
 #include "Window.hpp"
@@ -228,10 +228,10 @@ void WindowManager::destroyWindow(mref<sptr<Window>> window_) {
 	const auto gfx = Engine::getEngine()->getGraphics();
 
 	#ifdef _DEBUG
-    if (wnd.use_count() > 2) {
-        // We have 2 references, one is incoming and one at the bound object
-        IM_DEBUG_LOG("Trying to destroy window which is still referenced multiple times.");
-    }
+	if (wnd.use_count() > 2) {
+		// We have 2 references, one is incoming and one at the bound object
+		IM_DEBUG_LOG("Trying to destroy window which is still referenced multiple times.");
+	}
 	#endif
 
 	bound->renderTarget->setActive(false);
@@ -244,10 +244,10 @@ void WindowManager::destroyWindow(mref<sptr<Window>> window_) {
 
 	/**/
 	#ifdef _DEBUG
-    if (wnd.use_count() > 1) {
-        // We should just have one instance, which is incoming
-        IM_DEBUG_LOG("Trying to destroy window which is still referenced multiple times.");
-    }
+	if (wnd.use_count() > 1) {
+		// We should just have one instance, which is incoming
+		IM_DEBUG_LOG("Trying to destroy window which is still referenced multiple times.");
+	}
 	#endif
 }
 

@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 #include <Engine.GFX/API/__vkFwd.hpp>
-#include <Heliogrim/Universe.hpp>
+#include <Heliogrim/Universe/Universe.hpp>
 
 #include "Widget.hpp"
 #include "../Children.hpp"

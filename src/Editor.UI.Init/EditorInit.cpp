@@ -39,10 +39,10 @@
 #include <Engine.Reflow/Window/WindowManager.hpp>
 #include <Engine.Resource/ResourceUsageFlag.hpp>
 #include <Engine.Scheduler/Async.hpp>
-#include <Heliogrim/Actor.hpp>
-#include <Heliogrim/UIComponent.hpp>
-#include <Heliogrim/Universe.hpp>
-#include <Heliogrim/Actors/CameraActor.hpp>
+#include <Heliogrim/Actor/Actor.hpp>
+#include <Heliogrim/Actor/Camera/CameraActor.hpp>
+#include <Heliogrim/Component/Scene/UI/UIComponent.hpp>
+#include <Heliogrim/Universe/Universe.hpp>
 
 using namespace hg::editor::ui;
 using namespace hg;
@@ -142,7 +142,7 @@ static void storeHierarchyActor(ref<editor::EditorUI> editorUI_, cref<Vector<ptr
 	panel->setHierarchyTarget<SceneViewEntry>("sptr<SceneViewEntry>"_typeId, sources);
 }
 
-void editor::ui::storeEditorSelectedTarget(ref<EditorUI> editorUI_, const hg::ptr<hg::ActorComponent> target_) {
+void editor::ui::storeEditorSelectedTarget(ref<EditorUI> editorUI_, const hg::ptr<hg::HierarchyComponent> target_) {
 	if (not editorUI_.getObjectEditor()) {
 		return;
 	}

@@ -1,4 +1,5 @@
 #pragma once
+
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.Reflect/Inherit/InheritBase.hpp>
 

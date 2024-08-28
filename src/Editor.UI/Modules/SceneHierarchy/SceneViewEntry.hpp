@@ -5,7 +5,7 @@
 
 namespace hg {
     class Actor;
-    class ActorComponent;
+    class HierarchyComponent;
 }
 
 namespace hg::editor::ui {
@@ -62,15 +62,15 @@ namespace hg::editor::ui {
     }
 
     template <>
-    inline void SceneViewEntry::storeTarget<ActorComponent>(const ptr<ActorComponent> target_) {
+    inline void SceneViewEntry::storeTarget<HierarchyComponent>(const ptr<HierarchyComponent> target_) {
         _target = static_cast<ptr<void>>(target_);
         _type = SceneViewEntryType::eComponent;
     }
 
     template <>
-    inline const ptr<ActorComponent> SceneViewEntry::target() const noexcept {
+    inline const ptr<HierarchyComponent> SceneViewEntry::target() const noexcept {
         assert(_type == SceneViewEntryType::eComponent);
-        return static_cast<const ptr<ActorComponent>>(_target);
+        return static_cast<const ptr<HierarchyComponent>>(_target);
     }
 
     template <>

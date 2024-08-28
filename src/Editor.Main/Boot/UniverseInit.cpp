@@ -51,12 +51,12 @@ void editor::boot::initPrimaryUniverse() {
 
 #include <Editor.Assets.Default/GfxMaterials/DefaultSkybox.hpp>
 #include <Editor.Assets.Default/Meshes/Default.hpp>
-#include <Heliogrim/Actor.hpp>
 #include <Heliogrim/ActorInitializer.hpp>
 #include <Heliogrim/Heliogrim.hpp>
-#include <Heliogrim/Session.hpp>
-#include <Heliogrim/SkyboxComponent.hpp>
-#include <Heliogrim/Universe.hpp>
+#include <Heliogrim/Actor/Actor.hpp>
+#include <Heliogrim/Component/Scene/Sky/SkyboxComponent.hpp>
+#include <Heliogrim/Core/Session.hpp>
+#include <Heliogrim/Universe/Universe.hpp>
 
 static void addDefaultSkybox() {
 

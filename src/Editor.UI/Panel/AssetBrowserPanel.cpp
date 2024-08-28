@@ -34,6 +34,7 @@
 #include <Editor.Action/ActionManager.hpp>
 #include <Editor.Action/Action/Import/SimpleImportAction.hpp>
 #include <Heliogrim/Heliogrim.hpp>
+#include <Heliogrim/Async/Execute.hpp>
 
 #include "../Menu/ContextMenu.hpp"
 #endif

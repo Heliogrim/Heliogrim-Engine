@@ -1,6 +1,6 @@
 #include <Engine.Common/Make.hpp>
-#include <Heliogrim/Actor.hpp>
-#include <Heliogrim/ActorComponent.hpp>
+#include <Heliogrim/Actor/Actor.hpp>
+#include <Heliogrim/Component/HierarchyComponent.hpp>
 
 #include "HierarchyResolver.hpp"
 #include "SceneViewEntry.hpp"
@@ -10,56 +10,56 @@ using namespace hg;
 
 template <>
 void HierarchyResolver<sptr<SceneViewEntry>>::operator()(
-    cref<sptr<SceneViewEntry>> source_,
-    ref<Vector<resolve_type>> resolved_
+	cref<sptr<SceneViewEntry>> source_,
+	ref<Vector<resolve_type>> resolved_
 ) const {
 
-    if (source_->type() == SceneViewEntryType::eEmpty) {
-        return;
-    }
+	if (source_->type() == SceneViewEntryType::eEmpty) {
+		return;
+	}
 
-    if (source_->type() == SceneViewEntryType::eActor) {
+	if (source_->type() == SceneViewEntryType::eActor) {
 
-        const ptr<Actor> actor { source_->target<Actor>() };
+		const ptr<Actor> actor { source_->target<Actor>() };
 
-        const auto root { actor->getRootComponent() };
-        if (not root) {
-            return;
-        }
+		const auto root { actor->getRootComponent() };
+		if (not root) {
+			return;
+		}
 
-        auto next { make_sptr<SceneViewEntry>() };
-        next->storeTarget<ActorComponent>(root);
+		auto next { make_sptr<SceneViewEntry>() };
+		next->storeTarget<HierarchyComponent>(root);
 
-        resolved_.push_back(std::move(next));
-        return;
-    }
+		resolved_.push_back(std::move(next));
+		return;
+	}
 
-    if (source_->type() == SceneViewEntryType::eComponent) {
+	if (source_->type() == SceneViewEntryType::eComponent) {
 
-        const ptr<ActorComponent> comp { source_->target<ActorComponent>() };
-        const ptr<Actor> actor { comp->getOwner() };
+		const ptr<HierarchyComponent> comp { source_->target<HierarchyComponent>() };
+		const ptr<Actor> actor { comp->getOwner() };
 
-        if (not actor) {
-            return;
-        }
+		if (not actor) {
+			return;
+		}
 
-        const auto selection {
-            actor->selectComponents(
-                [comp](const ptr<ActorComponent> component_) {
-                    return component_->getParentComponent() == comp;
-                }
-            )
-        };
+		const auto selection {
+			actor->selectComponents(
+				[comp](const ptr<HierarchyComponent> component_) {
+					return component_->getParentComponent() == comp;
+				}
+			)
+		};
 
-        for (const auto& entry : selection) {
+		for (const auto& entry : selection) {
 
-            auto next { make_sptr<SceneViewEntry>() };
-            next->storeTarget<ActorComponent>(entry);
+			auto next { make_sptr<SceneViewEntry>() };
+			next->storeTarget<HierarchyComponent>(entry);
 
-            resolved_.push_back(std::move(next));
-        }
+			resolved_.push_back(std::move(next));
+		}
 
-        // return;
-    }
+		// return;
+	}
 
 }

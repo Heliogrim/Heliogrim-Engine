@@ -15,7 +15,7 @@
 #include "../Modules/SceneHierarchy.hpp"
 
 #if TRUE
-#include <Heliogrim/Actor.hpp>
+#include <Heliogrim/Actor/Actor.hpp>
 
 #include "../Modules/SceneHierarchy/SceneViewEntry.hpp"
 #endif
@@ -119,7 +119,7 @@ namespace hg::editor::ui {
 						auto* const editorUI = static_cast<ptr<EditorUI>>(
 							engine::Engine::getEngine()->getModules().getSubModule(EditorUIDepKey).get()
 						);
-						storeEditorSelectedTarget(*editorUI, static_cast<const ptr<ActorComponent>>(actor));
+						storeEditorSelectedTarget(*editorUI, static_cast<const ptr<HierarchyComponent>>(actor));
 						return;
 					}
 				};

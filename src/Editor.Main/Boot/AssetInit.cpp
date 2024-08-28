@@ -16,6 +16,7 @@
 #include <Engine.Pedantic/Clone/Clone.hpp>
 #include <Engine.Scheduler/Async.hpp>
 #include <Heliogrim/Heliogrim.hpp>
+#include <Heliogrim/Async/Await.hpp>
 
 #include "Editor.Action/ActionManager.hpp"
 #include "Editor.Action/Action/Import/AutoImportAction.hpp"

@@ -11,7 +11,7 @@
 #include <Engine.Reflect/Cast.hpp>
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
-#include <Heliogrim/StaticGeometryComponent.hpp>
+#include <Heliogrim/Component/Scene/Geometry/StaticGeometryComponent.hpp>
 
 using namespace hg::engine::gfx::scene;
 using namespace hg;

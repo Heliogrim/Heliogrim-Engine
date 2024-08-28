@@ -1,4 +1,5 @@
 #pragma once
+
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/DenseMap.hpp>

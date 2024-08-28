@@ -205,7 +205,7 @@ namespace hg {
 				// __noop();
 			}
 
-			return std::distance(start, it);
+			return static_cast<size_t>(std::distance(start, it));
 		}
 
 		[[nodiscard]] constexpr size_t count(const typename key_type::value_type& key_) const noexcept {
