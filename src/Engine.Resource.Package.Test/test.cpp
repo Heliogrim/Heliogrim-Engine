@@ -311,8 +311,9 @@ namespace PackageModule {
 		{
 			auto memoryAccess = storageIo->accessReadWrite(clone(backingStorage));
 
-			u8 htonPackageGuid[16] {};
-			guid.hton(htonPackageGuid);
+			//u8 htonPackageGuid[16] {};
+			Array<u8, 16> htonPackageGuid {};
+			guid.hton(reinterpret_cast<u8(&)[16]>(*htonPackageGuid.data()));
 
 			engine::resource::PackageHeader header {
 				.magicBytes = { 0x49, 0x4D, 0x50, 0x41, 0x43, 0x4B },
@@ -360,7 +361,7 @@ namespace PackageModule {
 
 			// Check Magic Bytes
 			{
-				for (auto i = 0; i < PackageMagicBytes.size(); ++i) {
+				for (decltype(PackageMagicBytes)::size_type i = 0; i < PackageMagicBytes.size(); ++i) {
 					EXPECT_EQ(_::byte { header.magicBytes[i] }, PackageMagicBytes[i]);
 				}
 

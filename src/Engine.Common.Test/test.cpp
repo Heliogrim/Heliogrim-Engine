@@ -14,10 +14,6 @@
 
 using namespace hg;
 
-TEST(__DummyTest__, Exists) {
-	EXPECT_TRUE(true);
-}
-
 namespace Common {
 	namespace Memory {
 		struct TestPayload01 {
@@ -445,17 +441,17 @@ namespace Common {
 
 			//
 			EXPECT_TRUE(vector.empty());
-			EXPECT_EQ(vector.size(), 0);
-			EXPECT_EQ(vector.size<type>(), 0);
+			EXPECT_EQ(vector.size(), 0uLL);
+			EXPECT_EQ(vector.size<type>(), 0uLL);
 
 			//
 			vector.emplace_back<type>(32);
 
 			EXPECT_FALSE(vector.empty());
-			EXPECT_EQ(vector.size(), 1);
-			EXPECT_EQ(vector.size<type>(), 1);
-			EXPECT_GE(vector.capacity(), 1);
-			EXPECT_GE(vector.capacity<type>(), 1);
+			EXPECT_EQ(vector.size(), 1uLL);
+			EXPECT_EQ(vector.size<type>(), 1uLL);
+			EXPECT_GE(vector.capacity(), 1uLL);
+			EXPECT_GE(vector.capacity<type>(), 1uLL);
 
 			//
 			for (auto c = 0; c < 23; ++c) {
@@ -530,8 +526,8 @@ namespace Common {
 				},
 			};
 
-			auto srcVec0 = ProxyVector<>::make<type>(proxy, 1, 2, 3, 4);
-			auto srcVec1 = ProxyVector<>::make<type>(proxy, 5, 6, 7);
+			auto srcVec0 = ProxyVector<>::make<type>(proxy, 1uLL, 2uLL, 3uLL, 4uLL);
+			auto srcVec1 = ProxyVector<>::make<type>(proxy, 5uLL, 6uLL, 7uLL);
 
 			EXPECT_EQ(srcVec0.size(), 4);
 			EXPECT_EQ(srcVec1.size(), 3);
@@ -662,8 +658,8 @@ namespace Common {
 
 			//
 			{
-				auto vector = ProxyVector<>::make<type>(proxy, 1, 2, 3, 4, 5, 6, 7, 8, 9);
-				EXPECT_EQ(vector.size(), 9);
+				auto vector = ProxyVector<>::make<type>(proxy, 1uLL, 2uLL, 3uLL, 4uLL, 5uLL, 6uLL, 7uLL, 8uLL, 9uLL);
+				EXPECT_EQ(vector.size(), 9uLL);
 
 				auto where = vector.typed<type>().begin();
 				where += 3;
@@ -672,21 +668,21 @@ namespace Common {
 
 				EXPECT_EQ(vector.size(), 8);
 
-				EXPECT_EQ(vector.at<type>(0), 1);
-				EXPECT_EQ(vector.at<type>(1), 2);
-				EXPECT_EQ(vector.at<type>(2), 3);
+				EXPECT_EQ(vector.at<type>(0), 1uLL);
+				EXPECT_EQ(vector.at<type>(1), 2uLL);
+				EXPECT_EQ(vector.at<type>(2), 3uLL);
 				// ProxyVector<Stable_ = false> -> remove-erase-idiom
-				EXPECT_EQ(vector.at<type>(3), 9);
-				EXPECT_EQ(vector.at<type>(4), 5);
-				EXPECT_EQ(vector.at<type>(5), 6);
-				EXPECT_EQ(vector.at<type>(6), 7);
-				EXPECT_EQ(vector.at<type>(7), 8);
+				EXPECT_EQ(vector.at<type>(3), 9uLL);
+				EXPECT_EQ(vector.at<type>(4), 5uLL);
+				EXPECT_EQ(vector.at<type>(5), 6uLL);
+				EXPECT_EQ(vector.at<type>(6), 7uLL);
+				EXPECT_EQ(vector.at<type>(7), 8uLL);
 			}
 
 			//
 			{
-				auto vector = ProxyVector<>::make<type>(proxy, 1, 2, 3, 4, 5, 6, 7, 8, 9);
-				EXPECT_EQ(vector.size(), 9);
+				auto vector = ProxyVector<>::make<type>(proxy, 1uLL, 2uLL, 3uLL, 4uLL, 5uLL, 6uLL, 7uLL, 8uLL, 9uLL);
+				EXPECT_EQ(vector.size(), 9uLL);
 
 				auto fst = vector.typed<type>().begin() + 2;
 				auto lst = vector.typed<type>().begin() + 5;
@@ -695,12 +691,12 @@ namespace Common {
 
 				EXPECT_EQ(vector.size(), 6);
 
-				EXPECT_EQ(vector.at<type>(0), 1);
-				EXPECT_EQ(vector.at<type>(1), 2);
-				EXPECT_EQ(vector.at<type>(2), 6);
-				EXPECT_EQ(vector.at<type>(3), 7);
-				EXPECT_EQ(vector.at<type>(4), 8);
-				EXPECT_EQ(vector.at<type>(5), 9);
+				EXPECT_EQ(vector.at<type>(0), 1uLL);
+				EXPECT_EQ(vector.at<type>(1), 2uLL);
+				EXPECT_EQ(vector.at<type>(2), 6uLL);
+				EXPECT_EQ(vector.at<type>(3), 7uLL);
+				EXPECT_EQ(vector.at<type>(4), 8uLL);
+				EXPECT_EQ(vector.at<type>(5), 9uLL);
 			}
 
 			//

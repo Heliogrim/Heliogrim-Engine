@@ -129,7 +129,7 @@ namespace ResourceArchiveModule {
 
 		/**/
 
-		type writeN[3] { EnumType::eEntryOne, EnumType::eEntryTwo, EnumType::eEntryZero };
+		Array<type, 3> writeN { EnumType::eEntryOne, EnumType::eEntryTwo, EnumType::eEntryZero };
 		archive << writeN[0];
 		archive << writeN[1];
 		archive << writeN[2];
