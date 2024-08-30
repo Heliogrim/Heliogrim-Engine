@@ -14,8 +14,8 @@ namespace hg::engine::scheduler {
         ~EmptyPipelineStage() noexcept override;
 
     public:
-        void staticDispatch(const non_owning_rptr<const StageDispatcher> dispatcher_) override;
+        void staticDispatch(cref<StageDispatcher> dispatcher_) override;
 
-        void dynamicDispatch(const non_owning_rptr<const StageDispatcher> dispatcher_) override;
+        void dynamicDispatch(cref<StageDispatcher> dispatcher_) override;
     };
 }

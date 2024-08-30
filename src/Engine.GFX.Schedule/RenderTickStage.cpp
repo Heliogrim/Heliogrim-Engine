@@ -25,8 +25,8 @@ RenderTickStage::RenderTickStage(
 
 RenderTickStage::~RenderTickStage() = default;
 
-void RenderTickStage::staticDispatch(const non_owning_rptr<const StageDispatcher> dispatcher_) {
-	dispatcher_->enqueue(
+void RenderTickStage::staticDispatch(cref<StageDispatcher> dispatcher_) {
+	dispatcher_.enqueue(
 		task::make_repetitive_task(
 			[this]() {
 				tickTargets();
@@ -36,7 +36,7 @@ void RenderTickStage::staticDispatch(const non_owning_rptr<const StageDispatcher
 	);
 }
 
-void RenderTickStage::dynamicDispatch(const non_owning_rptr<const StageDispatcher> dispatcher_) {
+void RenderTickStage::dynamicDispatch(cref<StageDispatcher> dispatcher_) {
 	// TODO:
 }
 

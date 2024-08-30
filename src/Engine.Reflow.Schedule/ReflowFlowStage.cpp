@@ -24,8 +24,8 @@ ReflowFlowStage::ReflowFlowStage(
 
 ReflowFlowStage::~ReflowFlowStage() = default;
 
-void ReflowFlowStage::staticDispatch(const non_owning_rptr<const scheduler::StageDispatcher> dispatcher_) {
-	dispatcher_->enqueue(
+void ReflowFlowStage::staticDispatch(cref<StageDispatcher> dispatcher_) {
+	dispatcher_.enqueue(
 		task::make_repetitive_task(
 			[]() {
 
@@ -79,6 +79,6 @@ void ReflowFlowStage::staticDispatch(const non_owning_rptr<const scheduler::Stag
 	);
 }
 
-void ReflowFlowStage::dynamicDispatch(const non_owning_rptr<const scheduler::StageDispatcher> dispatcher_) {
+void ReflowFlowStage::dynamicDispatch(cref<StageDispatcher> dispatcher_) {
 	// TODO:
 }

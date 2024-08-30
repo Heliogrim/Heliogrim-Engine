@@ -8,10 +8,10 @@ EmptyPipelineStage::EmptyPipelineStage(cref<identifier_type> identifier_, pipeli
 
 EmptyPipelineStage::~EmptyPipelineStage() noexcept = default;
 
-void EmptyPipelineStage::staticDispatch(const non_owning_rptr<const StageDispatcher> dispatcher_) {
+void EmptyPipelineStage::staticDispatch(cref<StageDispatcher> dispatcher_) {
     // __noop();
 }
 
-void EmptyPipelineStage::dynamicDispatch(const non_owning_rptr<const StageDispatcher> dispatcher_) {
+void EmptyPipelineStage::dynamicDispatch(cref<StageDispatcher> dispatcher_) {
     // __noop();
 }

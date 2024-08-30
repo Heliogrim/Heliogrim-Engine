@@ -206,7 +206,7 @@ void CompositePipeline::dispatch(const non_owning_rptr<CompositeSlot> slot_) {
 
 	const auto dispatcher = slot_->getDynamicDispatcher();
 	for (const auto* const binding : stage->pipelineStages) {
-		const_cast<ptr<PipelineStage>>(binding)->dynamicDispatch(&dispatcher);
+		const_cast<ptr<PipelineStage>>(binding)->dynamicDispatch(dispatcher);
 	}
 
 	/**/
@@ -742,7 +742,7 @@ void CompositePipeline::prepareSlots() {
 		const auto dispatcher = slot->getStaticDispatcher();
 
 		for (const auto* const binding : stage->pipelineStages) {
-			const_cast<ptr<PipelineStage>>(binding)->staticDispatch(&dispatcher);
+			const_cast<ptr<PipelineStage>>(binding)->staticDispatch(dispatcher);
 		}
 	}
 
