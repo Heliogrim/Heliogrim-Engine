@@ -15,8 +15,8 @@ InputTickStage::InputTickStage(
 
 InputTickStage::~InputTickStage() = default;
 
-void InputTickStage::staticDispatch(const non_owning_rptr<const scheduler::StageDispatcher> dispatcher_) {
-    dispatcher_->enqueue(
+void InputTickStage::staticDispatch(cref<StageDispatcher> dispatcher_) {
+    dispatcher_.enqueue(
         task::make_repetitive_task(
             []() {
                 Engine::getEngine()->getInput()->tick();
@@ -26,6 +26,6 @@ void InputTickStage::staticDispatch(const non_owning_rptr<const scheduler::Stage
     );
 }
 
-void InputTickStage::dynamicDispatch(const non_owning_rptr<const scheduler::StageDispatcher> dispatcher_) {
+void InputTickStage::dynamicDispatch(cref<StageDispatcher> dispatcher_) {
     // TODO:
 }

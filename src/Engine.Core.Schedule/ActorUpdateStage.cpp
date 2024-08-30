@@ -17,8 +17,8 @@ ActorUpdateStage::ActorUpdateStage(
 
 ActorUpdateStage::~ActorUpdateStage() = default;
 
-void ActorUpdateStage::staticDispatch(const non_owning_rptr<const scheduler::StageDispatcher> dispatcher_) {
-	dispatcher_->enqueue(
+void ActorUpdateStage::staticDispatch(cref<StageDispatcher> dispatcher_) {
+	dispatcher_.enqueue(
 		task::make_repetitive_task(
 			[]() {
 
@@ -45,6 +45,6 @@ void ActorUpdateStage::staticDispatch(const non_owning_rptr<const scheduler::Sta
 	);
 }
 
-void ActorUpdateStage::dynamicDispatch(const non_owning_rptr<const scheduler::StageDispatcher> dispatcher_) {
+void ActorUpdateStage::dynamicDispatch(cref<StageDispatcher> dispatcher_) {
 	// TODO:
 }

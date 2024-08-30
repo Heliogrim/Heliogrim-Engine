@@ -16,8 +16,8 @@ namespace hg::engine::input::schedule {
         ~InputTickStage() override;
 
     public:
-        void staticDispatch(const non_owning_rptr<const scheduler::StageDispatcher> dispatcher_) override;
+        void staticDispatch(cref<scheduler::StageDispatcher> dispatcher_) override;
 
-        void dynamicDispatch(const non_owning_rptr<const scheduler::StageDispatcher> dispatcher_) override;
+        void dynamicDispatch(cref<scheduler::StageDispatcher> dispatcher_) override;
     };
 }
