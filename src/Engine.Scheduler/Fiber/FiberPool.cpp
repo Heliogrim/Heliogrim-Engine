@@ -1,6 +1,8 @@
 #include "FiberPool.hpp"
 
 #include <stdexcept>
+#include <Engine.Common/__macro.hpp>
+#include <Engine.Logging/Logger.hpp>
 
 #include "FiberLaunchPad.hpp"
 #include "../Thread/Thread.hpp"
@@ -89,20 +91,15 @@ void FiberPool::release(ref<ptr<Fiber>> fiber_) {
 }
 
 ptr<Fiber> FiberPool::acquireNew() noexcept {
-	/**
-	 *
-	 */
-	auto* fiber { new Fiber {} };
 
-	/**
-	 *
-	 */
+	auto* fiber = new Fiber {};
 	Fiber::create(fiber, &FiberLaunchPad::launch);
 
 	/**
 	 *
 	 */
-	if (fiber->handle == nullptr) {
+	if (fiber->handle == nullptr) [[unlikely]] {
+		IM_CORE_ERROR("Failed to create a new fiber using the platform factory function.");
 		fiber->destroy();
 		delete fiber;
 		fiber = nullptr;
@@ -124,13 +121,13 @@ ptr<Fiber> FiberPool::acquireReuse() noexcept {
 	 *
 	 */
 	ptr<Fiber> fiber = nullptr;
-	_pool.try_pop(fiber);
+	const auto success = _pool.try_pop(fiber);
 
 	/**
 	 *
 	 */
 	_acqMtx.clear(std::memory_order::release);
-	return fiber;
+	return success ? fiber : nullptr;
 }
 
 bool FiberPool::restore(ptr<Fiber> fiber_) noexcept {

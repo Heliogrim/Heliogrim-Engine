@@ -16,17 +16,17 @@ namespace hg::engine::scheduler::fiber {
 		/**
 		 * Context Handling
 		 */
-		handle_type handle;
+		handle_type handle = nullptr;
 
-		handle_type parent;
+		handle_type parent = nullptr;
 
 	public:
 		/**
 		 * Execution Model
 		 */
-		non_owning_rptr<const task::TaskDelegate> task;
+		non_owning_rptr<const task::TaskDelegate> task = nullptr;
 
-		FiberAwaitable awaiter;
+		FiberAwaitable awaiter = {};
 
 	public:
 		#if defined(WIN32)

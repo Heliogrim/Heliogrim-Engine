@@ -35,8 +35,8 @@ namespace hg::engine::scheduler {
 		[[nodiscard]] pipeline_handle_type stagePipeline() const noexcept;
 
 	public:
-		virtual void staticDispatch(cref<StageDispatcher> dispatcher_) = 0;
+		virtual void staticDispatch(cref<StaticStageDispatcher> dispatcher_) = 0;
 
-		virtual void dynamicDispatch(cref<StageDispatcher> dispatcher_) = 0;
+		virtual void dynamicDispatch(cref<DynamicStageDispatcher> dispatcher_) = 0;
 	};
 }

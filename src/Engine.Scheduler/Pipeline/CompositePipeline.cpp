@@ -6,6 +6,8 @@
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 
+#include "../Fiber/Fiber.hpp"
+#include "../Helper/Wait.hpp"
 #include "../Process/Schedule.hpp"
 #include "Composite/CompositeSlot.hpp"
 #include "Composite/StageDependency.hpp"
@@ -16,6 +18,7 @@ using namespace hg;
 
 CompositePipeline::CompositePipeline(const non_owning_rptr<Schedule> schedule_) :
 	_schedule(schedule_),
+	_stopping(),
 	_stageHead(0),
 	_stageTail(0) {}
 
@@ -55,12 +58,21 @@ void CompositePipeline::start() {
 
 	/**/
 
+	::hg::assertrt(not _stopping.test());
 	dispatch(_slots[firstStage->stage->getSlot()].get());
 }
 
 void CompositePipeline::stop() {
+	::hg::assertrt(not _stopping.test());
 
-	// TODO:
+	_stopping.test_and_set();
+	// TODO: waitOnAtomic(_stopping, true);
+	while (_stopping.test(std::memory_order::relaxed) == true) {
+		fiber::self::yield();
+	}
+	if (_stopping.test()) {
+		::hg::panic();
+	}
 }
 
 void CompositePipeline::destroy() {
@@ -246,8 +258,12 @@ void CompositePipeline::complete(const non_owning_rptr<CompositeSlot> slot_) {
 
 	// TODO: Rewrite ~ Just a fast forward quickfix
 	if (++compIter == _compositeStages.end()) {
-		assert(_compositeStages.front()->ready());
-		dispatch(_slots[_compositeStages.front()->stage->getSlot()].get());
+		if (not _stopping.test()) {
+			assert(_compositeStages.front()->ready());
+			dispatch(_slots[_compositeStages.front()->stage->getSlot()].get());
+		} else [[unlikely]] {
+			_stopping.clear();
+		}
 	}
 
 	/**/
