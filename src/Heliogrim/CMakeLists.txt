@@ -16,6 +16,7 @@ make_library_project(
 		FORCE_TYPE_STATIC ON
 		LIBRARIES
 		${PROJECT_NAME}::Engine.ACS
+		${PROJECT_NAME}::Engine.ACS.Schedule
 		${PROJECT_NAME}::Engine.Accel
 		${PROJECT_NAME}::Engine.Accel.Command
 		${PROJECT_NAME}::Engine.Accel.Compile
@@ -76,6 +77,7 @@ make_library_project(
 		${PROJECT_NAME}::Engine.Scene
 		${PROJECT_NAME}::Engine.Scene.Game
 		${PROJECT_NAME}::Engine.Scene.Preview
+		${PROJECT_NAME}::Engine.Scene.Schedule
 		${PROJECT_NAME}::Engine.Scheduler
 		${PROJECT_NAME}::Engine.Serialization
 		${PROJECT_NAME}::Engine.Serialization.Layouts

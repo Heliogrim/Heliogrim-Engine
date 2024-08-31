@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <ranges>
+#include <Engine.ACS.Schedule/ActorPipeline.hpp>
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Core.Schedule/CorePipeline.hpp>
 #include <Engine.Core/EngineState.hpp>
@@ -16,6 +17,7 @@
 #include <Engine.Network/Network.hpp>
 #include <Engine.PFX/Physics.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
+#include <Engine.Scene.Schedule/ScenePipeline.hpp>
 #include <Engine.Scheduler/Async.hpp>
 #include <Engine.Scheduler/CompScheduler.hpp>
 #include <Engine.Scheduler/Helper/Wait.hpp>
@@ -505,6 +507,14 @@ nmpt<core::Session> GameEngine::getGameSession() const noexcept {
 }
 
 void GameEngine::setupCorePipelines() {
+
 	auto corePipeline = make_uptr<schedule::CorePipeline>();
+	auto actorPipeline = make_uptr<acs::schedule::ActorPipeline>();
+	auto scenePipeline = make_uptr<scene::schedule::ScenePipeline>();
+
+	/**/
+
 	_scheduler->getCompositePipeline()->addPipeline(std::move(corePipeline));
+	_scheduler->getCompositePipeline()->addPipeline(std::move(actorPipeline));
+	_scheduler->getCompositePipeline()->addPipeline(std::move(scenePipeline));
 }

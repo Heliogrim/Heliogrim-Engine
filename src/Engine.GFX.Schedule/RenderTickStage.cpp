@@ -25,7 +25,7 @@ RenderTickStage::RenderTickStage(
 
 RenderTickStage::~RenderTickStage() = default;
 
-void RenderTickStage::staticDispatch(cref<StageDispatcher> dispatcher_) {
+void RenderTickStage::staticDispatch(cref<StaticStageDispatcher> dispatcher_) {
 	dispatcher_.enqueue(
 		task::make_repetitive_task(
 			[this]() {
@@ -36,7 +36,7 @@ void RenderTickStage::staticDispatch(cref<StageDispatcher> dispatcher_) {
 	);
 }
 
-void RenderTickStage::dynamicDispatch(cref<StageDispatcher> dispatcher_) {
+void RenderTickStage::dynamicDispatch(cref<DynamicStageDispatcher> dispatcher_) {
 	// TODO:
 }
 
