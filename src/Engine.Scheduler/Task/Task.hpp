@@ -163,7 +163,7 @@ namespace hg::engine::scheduler::task {
 		 */
 		function_type _fnc;
 
-		friend const non_owning_rptr<const TaskDelegate> make_task(function_type&&, TaskMask);
+		friend const non_owning_rptr<const Task> make_task(function_type&&, TaskMask);
 
 		/**
 		 * Constructor
@@ -186,7 +186,7 @@ namespace hg::engine::scheduler::task {
 	 * @param fnc_ The function.
 	 * @param mask_ (Optional) The mask.
 	 */
-	const non_owning_rptr<const TaskDelegate> make_task(
+	const non_owning_rptr<const Task> make_task(
 		_In_ Task::function_type&& fnc_,
 		TaskMask mask_ = TaskMask::eNormal
 	);
@@ -220,7 +220,7 @@ namespace hg::engine::scheduler::task {
 		 */
 		function_type _fnc;
 
-		friend const non_owning_rptr<const TaskDelegate> make_repetitive_task(function_type&&, TaskMask);
+		friend const non_owning_rptr<const RepetitiveTask> make_repetitive_task(function_type&&, TaskMask);
 
 		/**
 		 * Constructor
@@ -243,7 +243,7 @@ namespace hg::engine::scheduler::task {
 	 * @param fnc_ The function.
 	 * @param mask_ (Optional) The mask.
 	 */
-	const non_owning_rptr<const TaskDelegate> make_repetitive_task(
+	const non_owning_rptr<const RepetitiveTask> make_repetitive_task(
 		_In_ RepetitiveTask::function_type&& fnc_,
 		TaskMask mask_ = TaskMask::eNormal
 	);
@@ -275,7 +275,7 @@ namespace hg::engine::scheduler::task {
 		 */
 		function_type _fnc;
 
-		friend const non_owning_rptr<const TaskDelegate> make_batch_task(function_type&&, TaskMask);
+		friend const non_owning_rptr<const BatchTask> make_batch_task(function_type&&, TaskMask);
 
 		/**
 		 * Constructor
@@ -298,7 +298,7 @@ namespace hg::engine::scheduler::task {
 	 * @param fnc_ The function.
 	 * @param mask_ (Optional) The mask.
 	 */
-	const non_owning_rptr<const TaskDelegate> make_batch_task(
+	const non_owning_rptr<const BatchTask> make_batch_task(
 		_In_ BatchTask::function_type&& fnc_,
 		TaskMask mask_ = TaskMask::eNormal
 	);

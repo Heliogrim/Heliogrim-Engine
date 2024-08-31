@@ -52,15 +52,15 @@ void CompositeSlot::dynamicEnqueue(mref<non_owning_rptr<const task::TaskDelegate
 	_dynamicTasks.push_back(std::move(task_));
 }
 
-StageDispatcher CompositeSlot::getStaticDispatcher() const noexcept {
-	return StageDispatcher {
+StaticStageDispatcher CompositeSlot::getStaticDispatcher() const noexcept {
+	return StaticStageDispatcher {
 		const_cast<ptr<CompositeSlot>>(this),
 		&CompositeSlot::staticEnqueue
 	};
 }
 
-StageDispatcher CompositeSlot::getDynamicDispatcher() const noexcept {
-	return StageDispatcher {
+DynamicStageDispatcher CompositeSlot::getDynamicDispatcher() const noexcept {
+	return DynamicStageDispatcher {
 		const_cast<ptr<CompositeSlot>>(this),
 		&CompositeSlot::dynamicEnqueue
 	};
@@ -145,8 +145,8 @@ void CompositeSlot::submit() {
 		_signals.fetch_add(1uL, std::memory_order_relaxed);
 
 		const auto* dummy = task::make_task([] {});
-		const_cast<ptr<task::TaskDelegate>>(dummy)->ctrl() = static_cast<ptr<TaskCtrl>>(this);
-		_schedule->push(std::move(dummy));
+		const_cast<ptr<task::Task>>(dummy)->ctrl() = static_cast<ptr<TaskCtrl>>(this);
+		_schedule->push(static_cast<non_owning_rptr<const task::TaskDelegate>>(std::move(dummy)));
 		return;
 	}
 
