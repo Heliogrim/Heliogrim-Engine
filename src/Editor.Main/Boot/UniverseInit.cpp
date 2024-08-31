@@ -23,10 +23,10 @@ void editor::boot::initEditorUniverse() {
 	auto scene = SceneFactory::createEditorScene();
 	scene->prepare();
 
-	const auto universe { make_sptr<core::Universe>(std::move(scene)) };
+	auto universe { make_sptr<core::Universe>(std::move(scene)) };
 
-	engine->addUniverse(universe);
-	editorSession->getUniverseContext().setCurrentUniverse(universe);
+	engine->addUniverse(clone(universe));
+	editorSession->getUniverseContext().setCurrentUniverse(std::move(universe));
 }
 
 void editor::boot::initPrimaryUniverse() {
@@ -39,10 +39,10 @@ void editor::boot::initPrimaryUniverse() {
 	auto scene = SceneFactory::createGameScene();
 	scene->prepare();
 
-	const auto universe { make_sptr<core::Universe>(std::move(scene)) };
+	auto universe { make_sptr<core::Universe>(std::move(scene)) };
 
-	engine->addUniverse(universe);
-	primary->getUniverseContext().setCurrentUniverse(universe);
+	engine->addUniverse(clone(universe));
+	primary->getUniverseContext().setCurrentUniverse(std::move(universe));
 
 	/**/
 

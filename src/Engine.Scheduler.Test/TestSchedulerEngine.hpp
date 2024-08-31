@@ -114,12 +114,13 @@ namespace hg::test {
 	private:
 		Vector<nmpt<engine::core::UniverseContext>> _universeContexts;
 
-		[[nodiscard]] Vector<nmpt<engine::core::UniverseContext>> getUniverseContexts() const noexcept override {
+		[[nodiscard]] std::span<const nmpt<engine::core::UniverseContext>>
+		getUniverseContexts() const noexcept override {
 			return _universeContexts;
 		}
 
-		void addUniverse([[maybe_unused]] cref<sptr<engine::core::Universe>> universe_) override {}
+		void addUniverse([[maybe_unused]] mref<SharedPtr<engine::core::Universe>> universe_) override {}
 
-		void removeUniverse([[maybe_unused]] cref<sptr<engine::core::Universe>> universe_) override {}
+		void removeUniverse([[maybe_unused]] mref<SharedPtr<engine::core::Universe>> universe_) override {}
 	};
 }

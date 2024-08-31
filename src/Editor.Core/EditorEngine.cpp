@@ -12,6 +12,8 @@
 #include <Engine.Core.Schedule/CorePipeline.hpp>
 #include <Engine.Core/EngineState.hpp>
 #include <Engine.Core/Session.hpp>
+#include <Engine.Core/Universe.hpp>
+#include <Engine.Core/UniverseContext.hpp>
 #include <Engine.Core/Event/UniverseAddedEvent.hpp>
 #include <Engine.Core/Event/UniverseRemoveEvent.hpp>
 #include <Engine.Core/Module/CoreDependencies.hpp>
@@ -27,11 +29,6 @@
 #include <Engine.Scheduler/Helper/Wait.hpp>
 #include <Engine.SFX/Audio.hpp>
 
-#include "Engine.Core/UniverseContext.hpp"
-#include "Engine.Core/Universe.hpp"
-#include "Engine.Core/UniverseContext.hpp"
-#include "Engine.Scene/Scene.hpp"
-
 #ifdef WIN32
 #include <Support.Platform.Win32/WinPlatform.hpp>
 #else
@@ -46,7 +43,8 @@ using namespace hg;
 
 EditorEngine::EditorEngine() :
 	_storage(*this),
-	_config(make_uptr<engine::cfg::SystemProvider>()) {}
+	_config(make_uptr<engine::cfg::SystemProvider>()),
+	_universeContexts() {}
 
 EditorEngine::~EditorEngine() = default;
 
@@ -136,6 +134,14 @@ bool EditorEngine::init() {
 	_scheduler->setup(Scheduler::auto_worker_count);
 	_storage.setup(_config);
 	_resources->setup();
+
+	/**/
+
+	_editorSession = make_uptr<core::Session>();
+	_universeContexts.front() = std::addressof(_editorSession->getUniverseContext());
+
+	_primaryGameSession = make_uptr<core::Session>();
+	_universeContexts.back() = std::addressof(_primaryGameSession->getUniverseContext());
 
 	/**/
 
@@ -270,13 +276,6 @@ bool EditorEngine::start() {
 	/**/
 	scheduler::exec(
 		[this, &next] {
-			_editorSession = make_uptr<core::Session>();
-			_universeContexts.emplace_back(std::addressof(_editorSession->getUniverseContext()));
-
-			_primaryGameSession = make_uptr<core::Session>();
-			_universeContexts.emplace_back(std::addressof(_primaryGameSession->getUniverseContext()));
-
-			/**/
 
 			for (const auto& subModule : _modules.getSubModules()) {
 				subModule->start();
@@ -301,12 +300,23 @@ bool EditorEngine::stop() {
 	std::atomic_flag next {};
 	scheduler::exec(
 		[this, &next] {
-			_physics->stop();
-			_network->stop();
-			_input->stop();
-			_graphics->stop();
-			_audio->stop();
-			_assets->stop();
+
+			const auto& modules = _modules.getSubModules();
+			for (auto iter = modules.rbegin(); iter != modules.rend(); ++iter) {
+				(*iter)->stop();
+			}
+
+			/**/
+
+			auto prevUniverse = _primaryGameSession->getUniverseContext().getCurrentUniverse();
+			_primaryGameSession->getUniverseContext().setCurrentUniverse(nullptr);
+			removeUniverse(clone(prevUniverse));
+
+			/**/
+
+			prevUniverse = _editorSession->getUniverseContext().getCurrentUniverse();
+			_editorSession->getUniverseContext().setCurrentUniverse(nullptr);
+			removeUniverse(clone(prevUniverse));
 
 			next.test_and_set(std::memory_order::relaxed);
 			next.notify_one();
@@ -320,37 +330,12 @@ bool EditorEngine::stop() {
 	/**/
 	scheduler::exec(
 		[this, &next] {
-
-			const auto& modules = _modules.getSubModules();
-			for (auto iter = modules.rbegin(); iter != modules.rend(); ++iter) {
-				(*iter)->stop();
-			}
-
-			/**/
-
-			auto prevUniverse = _primaryGameSession->getUniverseContext().getCurrentUniverse();
-			_primaryGameSession->getUniverseContext().setCurrentUniverse(nullptr);
-			removeUniverse(prevUniverse);
-
-			auto where = std::ranges::remove(
-				_universeContexts,
-				nmpt<core::UniverseContext>(std::addressof(_primaryGameSession->getUniverseContext()))
-			);
-			_universeContexts.erase(where.begin(), where.end());
-			_primaryGameSession.reset();
-
-			/**/
-
-			prevUniverse = _editorSession->getUniverseContext().getCurrentUniverse();
-			_editorSession->getUniverseContext().setCurrentUniverse(nullptr);
-			removeUniverse(prevUniverse);
-
-			where = std::ranges::remove(
-				_universeContexts,
-				nmpt<core::UniverseContext> { std::addressof(_editorSession->getUniverseContext()) }
-			);
-			_universeContexts.erase(where.begin(), where.end());
-			_editorSession.reset();
+			_physics->stop();
+			_network->stop();
+			_input->stop();
+			_graphics->stop();
+			_audio->stop();
+			_assets->stop();
 
 			next.test_and_set(std::memory_order::relaxed);
 			next.notify_one();
@@ -453,6 +438,13 @@ bool EditorEngine::shutdown() {
 	/**/
 	scheduler::waitUntilAtomic(moduleCount, 6u);
 
+	/**/
+	_universeContexts.back() = nullptr;
+	_primaryGameSession.reset();
+
+	_universeContexts.front() = nullptr;
+	_editorSession.reset();
+
 	/* Base module are setup via direct call without fiber context guarantee (which is unlikely) */
 	_resources->destroy();
 	_scheduler->destroy();
@@ -548,16 +540,16 @@ ref<engine::core::Modules> EditorEngine::getModules() const noexcept {
 	return const_cast<ref<engine::core::Modules>>(_modules);
 }
 
-Vector<nmpt<engine::core::UniverseContext>> EditorEngine::getUniverseContexts() const noexcept {
-	return _universeContexts;
+std::span<const nmpt<engine::core::UniverseContext>> EditorEngine::getUniverseContexts() const noexcept {
+	return std::span { _universeContexts };
 }
 
-void EditorEngine::addUniverse(cref<sptr<engine::core::Universe>> universe_) {
-	_emitter.emit<UniverseAddedEvent>(universe_);
+void EditorEngine::addUniverse(mref<SharedPtr<engine::core::Universe>> universe_) {
+	_emitter.emit<UniverseAddedEvent>(std::move(universe_));
 }
 
-void EditorEngine::removeUniverse(cref<sptr<engine::core::Universe>> universe_) {
-	_emitter.emit<UniverseRemoveEvent>(universe_);
+void EditorEngine::removeUniverse(mref<SharedPtr<engine::core::Universe>> universe_) {
+	_emitter.emit<UniverseRemoveEvent>(std::move(universe_));
 }
 
 nmpt<engine::core::Session> EditorEngine::getEditorSession() const noexcept {

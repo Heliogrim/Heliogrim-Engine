@@ -20,18 +20,18 @@ ref<Session> UniverseContext::getOwner() const noexcept {
 	return *_owner.get();
 }
 
-cref<sptr<Universe>> UniverseContext::getCurrentUniverse() const noexcept {
+cref<SharedPtr<Universe>> UniverseContext::getCurrentUniverse() const noexcept {
 	return _universe;
 }
 
-void UniverseContext::setCurrentUniverse(cref<sptr<Universe>> nextUniverse_) {
+void UniverseContext::setCurrentUniverse(mref<SharedPtr<Universe>> nextUniverse_) {
 	// Capture session, current universe and next universe to get stable references
-	const UniverseChangeEvent event { _owner, _universe, nextUniverse_ };
+	const UniverseChangeEvent event { _owner, clone(_universe), clone(nextUniverse_) };
 
 	/**/
 
-	_universe = nextUniverse_;
-	_universeType = (not nextUniverse_) ? UniverseType::eUndefined : UniverseType::eGame;
+	_universe = std::move(nextUniverse_);
+	_universeType = (not _universe) ? UniverseType::eUndefined : UniverseType::eGame;
 
 	/**/
 

@@ -3,13 +3,14 @@
 #include <algorithm>
 #include <ranges>
 #include <Engine.Assets/Assets.hpp>
+#include <Engine.Core.Schedule/CorePipeline.hpp>
+#include <Engine.Core/EngineState.hpp>
+#include <Engine.Core/Session.hpp>
+#include <Engine.Core/UniverseContext.hpp>
 #include <Engine.Core/Event/UniverseAddedEvent.hpp>
 #include <Engine.Core/Event/UniverseRemoveEvent.hpp>
 #include <Engine.Core/Module/CoreDependencies.hpp>
 #include <Engine.Core/Module/SubModule.hpp>
-#include <Engine.Core.Schedule/CorePipeline.hpp>
-#include <Engine.Core/EngineState.hpp>
-#include <Engine.Core/Session.hpp>
 #include <Engine.GFX/Graphics.hpp>
 #include <Engine.Input/Input.hpp>
 #include <Engine.Network/Network.hpp>
@@ -24,6 +25,7 @@
 #ifdef WIN32
 #include <Support.Platform.Win32/WinPlatform.hpp>
 #else
+#include <Engine.Platform/Platform.hpp>
 //#include <Engine.Platform/Linux>
 #endif
 
@@ -32,7 +34,8 @@ using namespace hg::engine;
 using namespace hg;
 
 GameEngine::GameEngine() :
-	_storage(*this) {}
+	_storage(*this),
+	_universeContexts() {}
 
 GameEngine::~GameEngine() = default;
 
@@ -42,9 +45,9 @@ bool GameEngine::preInit() {
 	}
 
 	#ifdef _DEBUG
-    if (_assets || _audio || _graphics || _input || _network || _physics || _resources || _scheduler) {
-        return false;
-    }
+	if (_assets || _audio || _graphics || _input || _network || _physics || _resources || _scheduler) {
+		return false;
+	}
 	#endif
 
 	#ifdef WIN32
@@ -91,6 +94,11 @@ bool GameEngine::init() {
 	_platform->setup();
 	_scheduler->setup(Scheduler::auto_worker_count);
 	_resources->setup();
+
+	/**/
+
+	_gameSession = make_uptr<core::Session>();
+	_universeContexts.front() = std::addressof(_gameSession->getUniverseContext());
 
 	/**/
 
@@ -224,10 +232,6 @@ bool GameEngine::start() {
 	/**/
 	scheduler::exec(
 		[this, &next] {
-			_gameSession = make_uptr<core::Session>();
-			_universeContexts.emplace_back(std::addressof(_gameSession->getUniverseContext()));
-
-			/**/
 
 			for (const auto& subModule : _modules.getSubModules()) {
 				subModule->start();
@@ -261,12 +265,9 @@ bool GameEngine::stop() {
 
 			/**/
 
-			auto where = std::ranges::remove(
-				_universeContexts,
-				nmpt<core::UniverseContext> { std::addressof(_gameSession->getUniverseContext()) }
-			);
-			_universeContexts.erase(where.begin(), where.end());
-			_gameSession.reset();
+			auto prevUniverse = _gameSession->getUniverseContext().getCurrentUniverse();
+			_gameSession->getUniverseContext().setCurrentUniverse(nullptr);
+			removeUniverse(clone(prevUniverse));
 
 			/**/
 
@@ -388,6 +389,10 @@ bool GameEngine::shutdown() {
 	/**/
 	scheduler::waitUntilAtomic(moduleCount, 6u);
 
+	/**/
+	_universeContexts.front() = nullptr;
+	_gameSession.reset();
+
 	/* Base module are setup via direct call without fiber context guarantee (which is unlikely) */
 	_resources->destroy();
 	_scheduler->destroy();
@@ -483,16 +488,16 @@ ref<core::Modules> GameEngine::getModules() const noexcept {
 	return const_cast<ref<core::Modules>>(_modules);
 }
 
-Vector<nmpt<core::UniverseContext>> GameEngine::getUniverseContexts() const noexcept {
-	return _universeContexts;
+std::span<const nmpt<core::UniverseContext>> GameEngine::getUniverseContexts() const noexcept {
+	return std::span { _universeContexts };
 }
 
-void GameEngine::addUniverse(cref<sptr<core::Universe>> universe_) {
-	_emitter.emit<UniverseAddedEvent>(universe_);
+void GameEngine::addUniverse(mref<SharedPtr<core::Universe>> universe_) {
+	_emitter.emit<UniverseAddedEvent>(std::move(universe_));
 }
 
-void GameEngine::removeUniverse(cref<sptr<core::Universe>> universe_) {
-	_emitter.emit<UniverseRemoveEvent>(universe_);
+void GameEngine::removeUniverse(mref<SharedPtr<core::Universe>> universe_) {
+	_emitter.emit<UniverseRemoveEvent>(std::move(universe_));
 }
 
 nmpt<core::Session> GameEngine::getGameSession() const noexcept {
