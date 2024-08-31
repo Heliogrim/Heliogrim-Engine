@@ -1,19 +1,20 @@
 #pragma once
+
 #include <Engine.Scheduler/Pipeline/Stage/PipelineStage.hpp>
 
-namespace hg::engine::input::schedule {
-	class InputTickStage final :
+namespace hg::engine::scene::schedule {
+	class SceneBroadcastStage final :
 		public scheduler::PipelineStage {
 	public:
-		using this_type = InputTickStage;
+		using this_type = SceneBroadcastStage;
 
 	public:
-		InputTickStage(
+		SceneBroadcastStage(
 			cref<scheduler::StageIdentifier> identifier_,
 			pipeline_handle_type pipeline_
 		);
 
-		~InputTickStage() override;
+		~SceneBroadcastStage() override;
 
 	public:
 		void staticDispatch(cref<scheduler::StaticStageDispatcher> dispatcher_) override;

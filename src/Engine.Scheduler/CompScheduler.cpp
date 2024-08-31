@@ -7,8 +7,6 @@
 #include <Engine.Common/Make.hpp>
 #include <Engine.Logging/Logger.hpp>
 
-#include "Tick/TickPipeline.hpp"
-
 #ifdef _PROFILING
 #include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
@@ -110,12 +108,6 @@ void CompScheduler::setup(u32 workers_) {
 }
 
 void CompScheduler::finalize() {
-
-	auto tickPipeline = make_uptr<TickPipeline>();
-	_pipeline->addPipeline(std::move(tickPipeline));
-
-	/**/
-
 	_pipeline->setup();
 }
 

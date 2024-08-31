@@ -2,9 +2,9 @@
 
 #include <Engine.Common/Make.hpp>
 #include <Engine.Input.Schedule/InputPipeline.hpp>
-#include <Engine.Scheduler/Tick/TickPipeline.hpp>
+#include <Engine.Scheduler/Pipeline/Stage/EmptyPipelineStage.hpp>
 
-#include "ActorUpdateStage.hpp"
+#include "Engine.GFX.Schedule/RenderScenePipeline.hpp"
 
 using namespace hg::engine::core::schedule;
 using namespace hg::engine::scheduler;
@@ -17,40 +17,49 @@ CorePipeline::~CorePipeline() = default;
 
 void CorePipeline::mount(ref<StageRegister> register_) {
 
-	const auto actorUpdate = register_.registerStage(
-		make_uptr<ActorUpdateStage>(ActorUpdate, this)
+	const auto* const beginStage = register_.registerStage(
+		make_uptr<EmptyPipelineStage>(PipelineStage::identifier_type::from(TickBegin), this)
+	);
+	const auto* const endStage = register_.registerStage(
+		make_uptr<EmptyPipelineStage>(PipelineStage::identifier_type::from(TickEnd), this)
 	);
 
 	/**/
 
-	_orderedStages.push_back(actorUpdate);
+	_orderedStages.push_back(beginStage);
+	_orderedStages.push_back(endStage);
 }
 
 void CorePipeline::declareDependencies(
 	cref<StageRegister> register_,
 	ref<CompactSet<StageDependency>> collection_
 ) {
-	const auto* const beginTick = register_.getStage(TickPipeline::TickBegin);
-	const auto* const inputTick = register_.getStage(input::schedule::InputPipeline::InputTick);
+
+	// TODO: Guarantee that tick end stage is latest within dependent chain
+	// Attention: Hotfix
+
+	const auto* const renderScene = register_.getStage(gfx::schedule::RenderScenePipeline::RenderTick);
 
 	/**/
 
-	const auto* const actorUpdate = _orderedStages.front();
+	const auto* const beginStage = _orderedStages.front();
+	const auto* const endStage = _orderedStages.back();
 
 	/**/
 
 	collection_.insert(
 		StageDependency {
-			{ beginTick, inputTick },
+			{ renderScene },
 			this,
-			actorUpdate
+			endStage
 		}
 	);
 }
 
 void CorePipeline::dismount(ref<StageRegister> register_) {
 
-	register_.removeStage(ActorUpdate);
+	register_.removeStage(TickEnd);
+	register_.removeStage(TickBegin);
 
 	/**/
 

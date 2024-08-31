@@ -1,24 +1,23 @@
 #pragma once
 #include <Engine.Scheduler/Pipeline/StagePipeline.hpp>
 
-namespace hg::engine::core::schedule {
-	class CorePipeline final :
+namespace hg::engine::acs::schedule {
+	class ActorPipeline final :
 		public scheduler::StagePipeline {
 	public:
-		using this_type = CorePipeline;
+		using this_type = ActorPipeline;
 
 		using StageIdentifier = ::hg::engine::scheduler::StageIdentifier;
 		using StageDependency = ::hg::engine::scheduler::StageDependency;
 
 		/**/
 
-		static const inline StageIdentifier TickBegin = "::Core::TickBegin";
-		static const inline StageIdentifier TickEnd = "::Core::TickEnd";
+		static const inline StageIdentifier ActorTick = "::Core::ActorTick";
 
 	public:
-		CorePipeline();
+		ActorPipeline();
 
-		~CorePipeline() override;
+		~ActorPipeline() override;
 
 	public:
 		void mount(ref<scheduler::StageRegister> register_) override;

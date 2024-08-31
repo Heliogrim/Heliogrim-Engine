@@ -5,6 +5,7 @@
 #include <Editor.Main/Boot/ConfigInit.hpp>
 #include <Editor.Main/Boot/StorageInit.hpp>
 #include <Editor.Main/Boot/SubModuleInit.hpp>
+#include <Engine.ACS.Schedule/ActorPipeline.hpp>
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Config/Provider/EditorProvider.hpp>
 #include <Engine.Config/Provider/ProjectProvider.hpp>
@@ -24,6 +25,7 @@
 #include <Engine.Network/Network.hpp>
 #include <Engine.PFX/Physics.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
+#include <Engine.Scene.Schedule/ScenePipeline.hpp>
 #include <Engine.Scheduler/Async.hpp>
 #include <Engine.Scheduler/CompScheduler.hpp>
 #include <Engine.Scheduler/Helper/Wait.hpp>
@@ -561,6 +563,14 @@ nmpt<engine::core::Session> EditorEngine::getPrimaryGameSession() const noexcept
 }
 
 void EditorEngine::setupCorePipelines() {
+
 	auto corePipeline = make_uptr<schedule::CorePipeline>();
+	auto actorPipeline = make_uptr<acs::schedule::ActorPipeline>();
+	auto scenePipeline = make_uptr<scene::schedule::ScenePipeline>();
+
+	/**/
+
 	_scheduler->getCompositePipeline()->addPipeline(std::move(corePipeline));
+	_scheduler->getCompositePipeline()->addPipeline(std::move(actorPipeline));
+	_scheduler->getCompositePipeline()->addPipeline(std::move(scenePipeline));
 }
