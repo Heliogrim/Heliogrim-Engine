@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Engine.Common/Memory/SharedPointer.hpp>
 #include <Engine.Event/Event.hpp>
 
 namespace hg::engine::core {
@@ -13,10 +14,10 @@ namespace hg::engine::core {
 		using this_type = UniverseRemoveEvent;
 
 	public:
-		inline static constexpr event_type_id typeId { "UniverseRemoveEvent"_typeId };
+		constexpr static event_type_id typeId { "UniverseRemoveEvent"_typeId };
 
 	public:
-		explicit UniverseRemoveEvent(cref<sptr<::hg::engine::core::Universe>> universe_);
+		explicit UniverseRemoveEvent(mref<SharedPtr<::hg::engine::core::Universe>> universe_);
 
 		UniverseRemoveEvent(cref<this_type> other_) noexcept = default;
 
@@ -25,9 +26,9 @@ namespace hg::engine::core {
 		~UniverseRemoveEvent() override = default;
 
 	private:
-		sptr<::hg::engine::core::Universe> _universe;
+		SharedPtr<::hg::engine::core::Universe> _universe;
 
 	public:
-		[[nodiscard]] sptr<hg::engine::core::Universe> getUniverse() const noexcept;
+		[[nodiscard]] SharedPtr<hg::engine::core::Universe> getUniverse() const noexcept;
 	};
 }

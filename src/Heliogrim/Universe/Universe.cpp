@@ -73,7 +73,7 @@ Future<Universe> hg::CreateUniverse() noexcept {
 				defaultScene->prepare();
 
 				auto universe { make_sptr<engine::core::Universe>(std::move(defaultScene)) };
-				engine::Engine::getEngine()->addUniverse(universe);
+				engine::Engine::getEngine()->addUniverse(clone(universe));
 
 				return Universe { std::move(universe) };
 			}
@@ -106,12 +106,12 @@ Future<bool> hg::Destroy(mref<Universe> universe_) {
 	auto prom {
 		hg::concurrent::promise<bool>(
 			[universe_ = std::move(universe_)]() {
-				const auto universe = clone(universe_.unwrap());
+				auto universe = clone(universe_.unwrap());
 
 				// TODO: Remove universe from every context / session where it might be used currently
 				// TODO: Check whether we want to auto handle session's universe transition when engine propagated universe erase happens
 
-				engine::Engine::getEngine()->removeUniverse(universe);
+				engine::Engine::getEngine()->removeUniverse(std::move(universe));
 
 				return true;
 			}
@@ -133,7 +133,7 @@ void hg::SetUniverse(ref<Session> session_, cref<Universe> universe_) {
 		return;
 	}
 
-	context.setCurrentUniverse(universe);
+	context.setCurrentUniverse(clone(universe));
 }
 
 void hg::TransitionToUniverse(ref<Session> session_, cref<Universe> universe_) {

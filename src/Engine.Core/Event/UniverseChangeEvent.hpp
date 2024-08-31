@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Engine.Common/Memory/MemoryPointer.hpp>
+#include <Engine.Common/Memory/SharedPointer.hpp>
 #include <Engine.Event/Event.hpp>
 
 namespace hg::engine::core {
@@ -15,13 +16,13 @@ namespace hg::engine::core {
 		using this_type = UniverseChangeEvent;
 
 	public:
-		inline static constexpr event_type_id typeId { "UniverseChangeEvent"_typeId };
+		constexpr static event_type_id typeId { "UniverseChangeEvent"_typeId };
 
 	public:
 		UniverseChangeEvent(
 			nmpt<Session> session_,
-			cref<sptr<::hg::engine::core::Universe>> prevUniverse_,
-			cref<sptr<::hg::engine::core::Universe>> nextUniverse_
+			mref<SharedPtr<::hg::engine::core::Universe>> prevUniverse_,
+			mref<SharedPtr<::hg::engine::core::Universe>> nextUniverse_
 		);
 
 		UniverseChangeEvent(cref<this_type> other_) noexcept = default;
@@ -32,14 +33,14 @@ namespace hg::engine::core {
 
 	private:
 		nmpt<Session> _session;
-		sptr<Universe> _prevUniverse;
-		sptr<Universe> _nextUniverse;
+		SharedPtr<Universe> _prevUniverse;
+		SharedPtr<Universe> _nextUniverse;
 
 	public:
 		[[nodiscard]] nmpt<Session> getSession() const noexcept;
 
-		[[nodiscard]] sptr<Universe> getPrevUniverse() const noexcept;
+		[[nodiscard]] SharedPtr<Universe> getPrevUniverse() const noexcept;
 
-		[[nodiscard]] sptr<Universe> getNextUniverse() const noexcept;
+		[[nodiscard]] SharedPtr<Universe> getNextUniverse() const noexcept;
 	};
 }

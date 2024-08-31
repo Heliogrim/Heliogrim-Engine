@@ -5,22 +5,22 @@ using namespace hg;
 
 UniverseChangeEvent::UniverseChangeEvent(
 	nmpt<Session> session_,
-	cref<sptr<Universe>> prevUniverse_,
-	cref<sptr<Universe>> nextUniverse_
+	mref<SharedPtr<Universe>> prevUniverse_,
+	mref<SharedPtr<Universe>> nextUniverse_
 ) :
 	StatelessEvent(),
 	_session(session_),
-	_prevUniverse(prevUniverse_),
-	_nextUniverse(nextUniverse_) {}
+	_prevUniverse(std::move(prevUniverse_)),
+	_nextUniverse(std::move(nextUniverse_)) {}
 
 nmpt<Session> UniverseChangeEvent::getSession() const noexcept {
 	return _session;
 }
 
-sptr<Universe> UniverseChangeEvent::getPrevUniverse() const noexcept {
+SharedPtr<Universe> UniverseChangeEvent::getPrevUniverse() const noexcept {
 	return _prevUniverse;
 }
 
-sptr<Universe> UniverseChangeEvent::getNextUniverse() const noexcept {
+SharedPtr<Universe> UniverseChangeEvent::getNextUniverse() const noexcept {
 	return _nextUniverse;
 }

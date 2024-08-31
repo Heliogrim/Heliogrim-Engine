@@ -3,10 +3,10 @@
 using namespace hg::engine::core;
 using namespace hg;
 
-UniverseRemoveEvent::UniverseRemoveEvent(cref<sptr<hg::engine::core::Universe>> universe_) :
+UniverseRemoveEvent::UniverseRemoveEvent(mref<SharedPtr<hg::engine::core::Universe>> universe_) :
 	StatelessEvent(),
-	_universe(universe_) {}
+	_universe(std::move(universe_)) {}
 
-sptr<hg::engine::core::Universe> UniverseRemoveEvent::getUniverse() const noexcept {
+SharedPtr<hg::engine::core::Universe> UniverseRemoveEvent::getUniverse() const noexcept {
 	return _universe;
 }

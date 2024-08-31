@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Engine.Common/Collection/Array.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.Config/Config.hpp>
 #include <Engine.Core/Engine.hpp>
@@ -87,15 +88,16 @@ namespace hg::editor {
 		[[nodiscard]] ref<engine::core::Modules> getModules() const noexcept override;
 
 	private:
-		Vector<nmpt<engine::core::UniverseContext>> _universeContexts;
+		Array<nmpt<engine::core::UniverseContext>, 2> _universeContexts;
 
 	public:
-		[[nodiscard]] Vector<nmpt<engine::core::UniverseContext>> getUniverseContexts() const noexcept override;
+		[[nodiscard]] std::span<const nmpt<engine::core::UniverseContext>>
+		getUniverseContexts() const noexcept override;
 
 	public:
-		void addUniverse(cref<sptr<engine::core::Universe>> universe_) override;
+		void addUniverse(mref<SharedPtr<engine::core::Universe>> universe_) override;
 
-		void removeUniverse(cref<sptr<engine::core::Universe>> universe_) override;
+		void removeUniverse(mref<SharedPtr<engine::core::Universe>> universe_) override;
 
 	private:
 		/**

@@ -1,7 +1,8 @@
 #pragma once
 
-#include <Engine.Common/Collection/Vector.hpp>
+#include <span>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
+#include <Engine.Common/Memory/SharedPointer.hpp>
 #include <Engine.Reflect/Inherit/InheritBase.hpp>
 
 namespace hg {
@@ -260,11 +261,11 @@ namespace hg::engine {
 		[[nodiscard]] virtual ref<core::Modules> getModules() const noexcept = 0;
 
 	public:
-		[[nodiscard]] virtual Vector<nmpt<core::UniverseContext>> getUniverseContexts() const noexcept = 0;
+		[[nodiscard]] virtual std::span<const nmpt<core::UniverseContext>> getUniverseContexts() const noexcept = 0;
 
 	public:
-		virtual void addUniverse(cref<sptr<core::Universe>> universe_) = 0;
+		virtual void addUniverse(mref<SharedPtr<core::Universe>> universe_) = 0;
 
-		virtual void removeUniverse(cref<sptr<core::Universe>> universe_) = 0;
+		virtual void removeUniverse(mref<SharedPtr<core::Universe>> universe_) = 0;
 	};
 }

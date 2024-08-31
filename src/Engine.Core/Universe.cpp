@@ -5,11 +5,12 @@
 using namespace hg::engine::core;
 using namespace hg;
 
-Universe::Universe(mref<uptr<scene::SceneBase>> scene_) :
-	_scene(std::move(scene_)) {}
+engine::core::Universe::Universe(mref<uptr<scene::SceneBase>> scene_) :
+	_scene(std::move(scene_)),
+	_levels() {}
 
-Universe::~Universe() = default;
+engine::core::Universe::~Universe() = default;
 
-nmpt<engine::scene::SceneBase> Universe::getScene() const noexcept {
+nmpt<engine::scene::SceneBase> engine::core::Universe::getScene() const noexcept {
 	return _scene.get();
 }
