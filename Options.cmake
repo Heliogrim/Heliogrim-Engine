@@ -14,3 +14,9 @@ make_option(VAR "HELIOGRIM_PLATFORM_WAYLAND" NAME "PLATFORM_WAYLAND" CALLBACK su
 make_option(VAR "HELIOGRIM_PLATFORM_X11" NAME "PLATFORM_X11" CALLBACK support_opt_x11)
 
 # ------------------------------
+# Heliogrim Vendor Options
+# ------------------------------
+
+make_option(VAR "HELIOGRIM_ASSETS_FORCE_HTTPS" NAME "ASSETS_FORCE_HTTPS" DEFAULT OFF)
+
+# ------------------------------
