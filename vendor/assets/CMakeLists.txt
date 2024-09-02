@@ -1,6 +1,6 @@
 function(vendor_assets_init)
 
-	cmake_minimum_required(VERSION 3.27.7)
+	cmake_minimum_required(VERSION 3.25.1)
 	include(FetchContent)
 
 	name_to_external_alias(alias "assets")
@@ -19,7 +19,7 @@ function(vendor_assets_init)
 	)
 
 	set(vendor_git_repository "https://git.neogc.net/heliogrim-workgroup/heliogrim-engine-assets.git")
-	if (vendor_assets_git_ssh EQUAL 0)
+	if (NOT ${HELIOGRIM_ASSETS_FORCE_HTTPS} AND vendor_assets_git_ssh EQUAL 0)
 		set(vendor_git_repository "git@git.neogc.net:heliogrim-workgroup/heliogrim-engine-assets.git")
 		message(STATUS "Using ssh to access vendor assets repository, enabling support for upstream patching.")
 	endif ()
