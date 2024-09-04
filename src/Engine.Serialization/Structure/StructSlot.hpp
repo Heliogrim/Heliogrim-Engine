@@ -1,39 +1,39 @@
 #pragma once
 
-#include "__fwd.hpp"
 #include "StructureSlot.hpp"
+#include "__fwd.hpp"
 
 namespace hg::engine::serialization {
-    class StructSlot final :
-        public StructureSlotBase {
-    public:
-        using this_type = StructSlot;
+	class StructSlot final :
+		public StructureSlotBase {
+	public:
+		using this_type = StructSlot;
 
-        using record_key_type = string;
+		using record_key_type = StringView;
 
-    public:
-        StructSlot(cref<StructureSlotState> state_);
+	public:
+		StructSlot(cref<StructureSlotState> state_);
 
-        StructSlot(mref<StructureSlotState> state_);
+		StructSlot(mref<StructureSlotState> state_);
 
-        ~StructSlot() override;
+		~StructSlot() override;
 
-    public:
-        [[nodiscard]] StructureSlotType getSlotType() const noexcept override;
+	public:
+		[[nodiscard]] StructureSlotType getSlotType() const noexcept override;
 
-        [[nodiscard]] bool validateType() const noexcept override;
+		[[nodiscard]] bool validateType() const noexcept override;
 
-    public:
-        void feedback(const non_owning_rptr<const StructureSlotBase> other_) override;
+	public:
+		void feedback(const non_owning_rptr<const StructureSlotBase> other_) override;
 
-    private:
-        [[nodiscard]] s64 findRecord(cref<record_key_type> key_) const;
+	private:
+		[[nodiscard]] s64 findRecord(cref<record_key_type> key_) const;
 
-    public:
-        [[nodiscard]] sptr<RecordSlot> insertRecord(cref<record_key_type> key_);
+	public:
+		[[nodiscard]] sptr<RecordSlot> insertRecord(cref<record_key_type> key_);
 
-        [[nodiscard]] bool hasRecord(cref<record_key_type> key_);
+		[[nodiscard]] bool hasRecord(cref<record_key_type> key_);
 
-        [[nodiscard]] sptr<RecordSlot> getRecord(cref<record_key_type> key_);
-    };
+		[[nodiscard]] sptr<RecordSlot> getRecord(cref<record_key_type> key_);
+	};
 }
