@@ -9,27 +9,12 @@
 #include <Engine.Serialization/Layout/__fwd.hpp>
 
 namespace hg::engine::assets {
-	/*
-	                            Level   Entity	    Serialized<Component>	GfxMaterial	PfxMaterial	SfxMaterial	Texture     Image	    Sound	    Geometry
-	    Level	                -	    1 :: *      T 1 :: *	            T 1 :: *	T 1 :: *	T 1 :: *	T 1 :: *	T 1 :: *	T 1 :: *	T 1 :: *
-	    Entity	                -	    -	        1 :: *                  T 1 :: *	T 1 :: *	T 1 :: *	T 1 :: *	T 1 :: *	T 1 :: *	T 1 :: *
-	    Serialized<Component>	-	    -	        -	                    0,1 :: 0,*	0,1 :: 0,*	0,1 :: 0,*	T 1 :: *	T 1 :: *	0,1 :: 0,*	0,1 :: 0,*
-	    GfxMaterial	            -	    -	        -	                    -	        -	        -	        1 :: *	    T 1 :: *	-	        -
-	    PfxMaterial	            -	    -	        -	                    -	        -	        -	        - (?)	    - (T?)      -	        -
-	    SfxMaterial	            -	    -	        -	                    -	        -	        -	        -	        -	        -	        -
-	    Texture	                -	    -	        -	                    -	        -	        -	        -	        1 :: 0,1	-	        -
-	    Image	                -	    -	        -	                    -	        -	        -	        -	        -	        -	        -
-	    Sound	                -	    -	        -	                    -	        -	        -	        -	        -	        -	        -
-	    Geometry                -	    -	        -	                    -	        -	        -	        -	        -	        -	        -
-	 */
-
 	class Asset :
 		public InheritBase<Asset>,
 		public ArcFromThis<Asset> {
 	public:
-		using value_type = Asset;
-		using reference_type = Asset&;
-		using const_reference_type = const Asset&;
+		template <typename>
+		friend class ::hg::engine::serialization::DataLayout;
 
 	protected:
 		/**

@@ -11,62 +11,62 @@
 #include "LayoutOptimizer.hpp"
 
 namespace hg::engine::serialization {
-    class LayoutManager {
-    public:
-        using this_type = LayoutManager;
+	class LayoutManager {
+	public:
+		using this_type = LayoutManager;
 
-    public:
-        [[nodiscard]] static ref<LayoutManager> get() noexcept;
+	public:
+		[[nodiscard]] static ref<LayoutManager> get() noexcept;
 
-        static ref<LayoutManager> make();
+		static ref<LayoutManager> make();
 
-        static void destroy();
+		static void destroy();
 
-    private:
-        /**
-         * Singleton Instance
-         */
-        static uptr<LayoutManager> _instance;
+	private:
+		/**
+		 * Singleton Instance
+		 */
+		static uptr<LayoutManager> _instance;
 
-    private:
-        LayoutManager();
+	private:
+		LayoutManager();
 
-    public:
-        ~LayoutManager();
+	public:
+		~LayoutManager();
 
-    private:
-        void setup();
+	private:
+		void setup();
 
-        void tidy();
+		void tidy();
 
-    private:
-        LayoutOptimizer _optimizer;
+	private:
+		LayoutOptimizer _optimizer;
 
-    public:
-        void optimize(cref<sptr<DataLayoutBase>> layout_) const;
+	public:
+		void optimize(cref<sptr<DataLayoutBase>> layout_) const;
 
-    private:
-        sptr<DataLayoutBase> _nullLayout;
+	private:
+		sptr<DataLayoutBase> _nullLayout;
 
-        DenseMap<type_id, sptr<DataLayoutBase>> _typeMapping;
+		DenseMap<type_id, sptr<DataLayoutBase>> _typeMapping;
 		DenseMap<ptr<const MetaClass>, sptr<DataLayoutBase>> _classMapping;
 		DenseMap<AssocKey<string>, sptr<DataLayoutBase>> _symbolMapping;
 
-    public:
-        bool storeLayout(cref<string> symbol_, cref<sptr<DataLayoutBase>> layout_);
+	public:
+		bool storeLayout(cref<string> symbol_, cref<sptr<DataLayoutBase>> layout_);
 
-        bool storeLayout(string_view symbol_, cref<sptr<DataLayoutBase>> layout_);
+		bool storeLayout(string_view symbol_, cref<sptr<DataLayoutBase>> layout_);
 
-        bool storeLayout(const ptr<const MetaClass> class_, cref<sptr<DataLayoutBase>> layout_);
+		bool storeLayout(const ptr<const MetaClass> class_, cref<sptr<DataLayoutBase>> layout_);
 
-        bool storeLayout(cref<type_id> typeId_, cref<sptr<DataLayoutBase>> layout_);
+		bool storeLayout(cref<type_id> typeId_, cref<sptr<DataLayoutBase>> layout_);
 
-        [[nodiscard]] cref<sptr<DataLayoutBase>> getLayout(cref<string> symbol_) const noexcept;
+		[[nodiscard]] cref<sptr<DataLayoutBase>> getLayout(cref<string> symbol_) const noexcept;
 
-        [[nodiscard]] cref<sptr<DataLayoutBase>> getLayout(string_view symbol_) const noexcept;
+		[[nodiscard]] cref<sptr<DataLayoutBase>> getLayout(string_view symbol_) const noexcept;
 
-        [[nodiscard]] cref<sptr<DataLayoutBase>> getLayout(const ptr<const MetaClass> class_) const noexcept;
+		[[nodiscard]] cref<sptr<DataLayoutBase>> getLayout(const ptr<const MetaClass> class_) const noexcept;
 
-        [[nodiscard]] cref<sptr<DataLayoutBase>> getLayout(cref<type_id> typeId_) const noexcept;
-    };
+		[[nodiscard]] cref<sptr<DataLayoutBase>> getLayout(cref<type_id> typeId_) const noexcept;
+	};
 }
