@@ -12,22 +12,6 @@ using namespace hg::engine::assets;
 using namespace hg;
 
 template <>
-void access::Structure<math::uivec3>::serialize(const math::uivec3* const self_, mref<RecordScopedSlot> slot_) {
-	auto slot = slot_.intoStruct();
-	slot.insertSlot<u32>("x") << self_->x;
-	slot.insertSlot<u32>("y") << self_->y;
-	slot.insertSlot<u32>("z") << self_->z;
-}
-
-template <>
-void access::Structure<math::uivec3>::deserialize(math::uivec3* const self_, mref<RecordScopedSlot> slot_) {
-	const auto slot = slot_.intoStruct();
-	slot.getSlot<u32>("x") >> self_->x;
-	slot.getSlot<u32>("y") >> self_->y;
-	slot.getSlot<u32>("z") >> self_->z;
-}
-
-template <>
 void access::Structure<TextureAsset>::serialize(const TextureAsset* const self_, mref<RecordScopedSlot> slot_) {
 
 	auto slot = slot_.intoStruct();
@@ -53,14 +37,20 @@ void access::Structure<TextureAsset>::serialize(const TextureAsset* const self_,
 template <>
 void access::Structure<TextureAsset>::deserialize(TextureAsset* const self_, mref<RecordScopedSlot> slot_) {
 
-	const auto slot = slot_.intoStruct();
+	const auto slot = slot_.asStruct();
 
 	Structure<Guid>::deserialize(&self_->_guid, slot.getSlot<void>("__guid__"));
 	slot.getSlot<u64>("__type__") >> self_->_type.data;
 	slot.getSlot<string>("name") >> self_->_assetName;
 
-	Structure<Guid>::deserialize(&self_->_baseImage, slot.getSlot<void>("baseImage")); {
-		const auto images = slot.getSlot<void>("images").intoSeq();
+	/**/
+
+	Structure<Guid>::deserialize(&self_->_baseImage, slot.getSlot<void>("baseImage"));
+
+	/**/
+
+	{
+		const auto images = slot.getSlot<void>("images").asSeq();
 		const auto count = images.getRecordCount();
 
 		self_->_images.reserve(count);
