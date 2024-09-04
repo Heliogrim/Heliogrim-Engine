@@ -25,6 +25,21 @@ bool StringSlot::validateType() const noexcept {
 	return _state.header.type == StructureSlotType::eString;
 }
 
+void StringSlot::operator<<(cref<StringView> value_) {
+
+	const auto src = std::span<u8, std::dynamic_extent>(
+		reinterpret_cast<ptr<u8>>(const_cast<ptr<char>>(value_.data())),
+		value_.size() * sizeof(value_type::value_type)
+	);
+
+	const auto archive = _state.root->archive;
+	archive->serializeBytes(src.data(), src.size(), resource::ArchiveStreamMode::eStore);
+
+	/**/
+
+	_state.header.size = src.size();
+}
+
 void StringSlot::operator<<(cref<value_type> value_) {
 
 	const auto src = std::span<u8, std::dynamic_extent>(
