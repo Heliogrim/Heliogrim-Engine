@@ -1,9 +1,8 @@
 #pragma once
 
+#include <memory>
 #include <Engine.ACS/Registry.hpp>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Core/Session.hpp>
-#include <Engine.Core/SessionState.hpp>
 
 #include "Actor/Actor.hpp"
 #include "Component/CachedActorPointer.hpp"
@@ -25,8 +24,8 @@ namespace hg {
 
 	protected:
 	public:
-		ActorInitializer(cref<SharedPtr<::hg::engine::core::Session>> internal_) :
-			_internal(internal_) {}
+		explicit ActorInitializer(ref<::hg::engine::acs::Registry> internal_) :
+			_internal(std::addressof(internal_)) {}
 
 	public:
 		~ActorInitializer() noexcept = default;
@@ -35,26 +34,17 @@ namespace hg {
 		/**
 		 *
 		 */
-		SharedPtr<::hg::engine::core::Session> _internal;
-
-	protected:
-		// Warning: Temporary Solution
-		[[nodiscard]] cref<engine::core::Session> getCoreSession() const noexcept {
-			return *static_cast<const ptr<const engine::core::Session>>(_internal.get());
-		}
+		nmpt<::hg::engine::acs::Registry> _internal;
 
 	private:
 	public:
-		actor_guid _guid = invalid_actor_guid;
+		ActorGuid _guid = invalid_actor_guid;
 
 	public:
 		template <std::derived_from<HierarchyComponent> Component_>
 		ptr<Component_> createComponent(_Inout_ const ptr<Actor> actor_) const {
 
-			/**/
-			auto& registry { getCoreSession().getState().getRegistry() };
-
-			auto* component = registry.acquireActorComponent<
+			auto* component = _internal->acquireActorComponent<
 				Component_,
 				CachedActorPointer,
 				ptr<HierarchyComponent>
@@ -79,12 +69,9 @@ namespace hg {
 			_In_ ptr<HierarchyComponent> parent_
 		) const {
 
-			/**/
-			auto& registry { getCoreSession().getState().getRegistry() };
-
 			auto* actor { actor_ ? actor_ : parent_->getOwner() };
 
-			auto* component = registry.acquireActorComponent<
+			auto* component = _internal->acquireActorComponent<
 				Component_,
 				CachedActorPointer,
 				ptr<HierarchyComponent>

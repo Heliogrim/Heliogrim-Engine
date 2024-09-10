@@ -9,7 +9,7 @@ using namespace hg;
 
 Registry::~Registry() = default;
 
-void Registry::releaseActorComponent(cref<actor_guid> guid_, cref<type_id> typeId_) {
+void Registry::releaseActorComponent(cref<ActorGuid> guid_, cref<type_id> typeId_) {
 	auto* entry { _pools.at(typeId_) };
 	auto* pool { static_cast<ptr<PoolWrapperBase>>(entry) };
 
@@ -132,7 +132,7 @@ void Registry::destroyActor(mref<ptr<Actor>> actor_) {
 	pool->erase(actor_->guid());
 }
 
-void Registry::hackActorInit(cref<ActorInitializer> initializer_, cref<actor_guid> guid_) const noexcept {
+void Registry::hackActorInit(cref<ActorInitializer> initializer_, cref<ActorGuid> guid_) const noexcept {
 	// Warning: Hotfix - Hack
 	const_cast<ref<ActorInitializer>>(initializer_)._guid = guid_;
 }
