@@ -9,6 +9,7 @@
 #include <Engine.Reflect/Cast.hpp>
 #include <Engine.Reflect/Reflect.hpp>
 #include <Engine.Reflect/Inherit/InheritBase.hpp>
+#include <Engine.Serialization/Access/__fwd.hpp>
 
 #include "../Async/Future.hpp"
 #include "../Async/Traits.hpp"
@@ -35,6 +36,10 @@ namespace hg {
 	 */
 	class Actor :
 		public InheritBase<Actor> {
+	public:
+		ACCESS_LAYOUT
+		ACCESS_STRUCTURE
+
 	public:
 		using this_type = Actor;
 
@@ -79,7 +84,7 @@ namespace hg {
 		ref<Actor> operator=(cref<Actor>) = delete;
 
 	private:
-		actor_guid _guid;
+		ActorGuid _guid;
 
 	public:
 		/**
@@ -90,9 +95,9 @@ namespace hg {
 		 *
 		 * @returns The actor_guid of this actor object.
 		 */
-		[[nodiscard]] actor_guid guid() const noexcept;
+		[[nodiscard]] ActorGuid guid() const noexcept;
 
-		void unsafe_set_guid(cref<actor_guid> guid_);
+		void unsafe_set_guid(cref<ActorGuid> guid_);
 
 	protected:
 		ptr<HierarchyComponent> _rootComponent;

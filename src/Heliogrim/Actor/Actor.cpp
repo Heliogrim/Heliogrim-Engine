@@ -28,11 +28,11 @@ Actor::Actor(cref<ActorInitializer> initializer_) noexcept :
 
 Actor::~Actor() noexcept = default;
 
-actor_guid Actor::guid() const noexcept {
+ActorGuid Actor::guid() const noexcept {
 	return _guid;
 }
 
-void Actor::unsafe_set_guid(cref<actor_guid> guid_) {
+void Actor::unsafe_set_guid(cref<ActorGuid> guid_) {
 	_guid = guid_;
 }
 
@@ -149,10 +149,7 @@ ptr<Actor> hg::CreateActor(cref<Universe> activeUniverse_) {
 	auto& session { (*where)->getOwner() };
 	auto& registry { session.getState().getRegistry() };
 
-	SharedPtr<void> dummy {};
-	SharedPtr<::hg::engine::core::Session> alias { std::move(dummy), std::addressof(session) };
-
-	auto* actor { registry.createActor(ActorInitializer { alias }) };
+	auto* actor { registry.createActor(ActorInitializer { registry }) };
 	return actor;
 }
 
@@ -195,10 +192,7 @@ Future<ptr<Actor>> hg::CreateActor(cref<Universe> activeUniverse_, async_t) {
 			{
 				auto& registry { session->getState().getRegistry() };
 
-				SharedPtr<void> dummy {};
-				SharedPtr<::hg::engine::core::Session> alias { std::move(dummy), session };
-
-				auto* actor { registry.createActor(ActorInitializer { alias }) };
+				auto* actor { registry.createActor(ActorInitializer { registry }) };
 				return actor;
 			}
 

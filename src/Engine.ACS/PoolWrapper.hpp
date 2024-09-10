@@ -8,18 +8,18 @@ namespace hg::engine::acs {
 	public:
 		virtual ~PoolWrapperBase() = default;
 
-		virtual void insert(cref<actor_guid> key_) = 0;
+		virtual void insert(cref<ActorGuid> key_) = 0;
 
-		virtual ptr<void> get(cref<actor_guid> key_) = 0;
+		virtual ptr<void> get(cref<ActorGuid> key_) = 0;
 
-		virtual void erase(cref<actor_guid> key_) = 0;
+		virtual void erase(cref<ActorGuid> key_) = 0;
 	};
 
 	template <typename PooledType_>
 	class PoolWrapper final :
 		public PoolWrapperBase {
 	public:
-		using pool_type = Pool<actor_guid, PooledType_, invalid_actor_guid>;
+		using pool_type = Pool<ActorGuid, PooledType_, invalid_actor_guid>;
 
 	public:
 		PoolWrapper(const ptr<pool_type> actual_) noexcept :
@@ -36,17 +36,17 @@ namespace hg::engine::acs {
 		}
 
 	public:
-		void insert(cref<actor_guid> key_) override {
+		void insert(cref<ActorGuid> key_) override {
 			if constexpr (std::is_default_constructible_v<typename pool_type::assign_value_type>) {
 				_actual->insert(key_);
 			}
 		}
 
-		ptr<void> get(cref<actor_guid> key_) override {
+		ptr<void> get(cref<ActorGuid> key_) override {
 			return _actual->get(key_);
 		}
 
-		void erase(cref<actor_guid> key_) override {
+		void erase(cref<ActorGuid> key_) override {
 			_actual->erase(key_);
 		}
 	};

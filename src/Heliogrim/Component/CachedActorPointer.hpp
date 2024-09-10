@@ -13,7 +13,7 @@ namespace hg {
 		/**
 		 *
 		 */
-		actor_guid guid = invalid_actor_guid;
+		ActorGuid guid = invalid_actor_guid;
 
 		/**
 		 *
