@@ -99,6 +99,12 @@ namespace hg::engine::core {
 		template <IsCoreModule ModuleType_>
 		[[nodiscard]] Opt<ref<ModuleType_>> getCoreModuleUnsafe(_In_ cref<DependencyKey> key_) const noexcept;
 
+		void forEachCoreModule(auto&& fn_) const requires std::is_invocable_v<decltype(fn_), ref<CoreModule>> {
+			for (const auto& coreModuleEntry : _coreModules) {
+				fn_(*coreModuleEntry.module.get());
+			}
+		}
+
 		template <IsCoreModule ModuleType_>
 		void removeCoreModule(_In_ ref<ModuleType_> module_);
 

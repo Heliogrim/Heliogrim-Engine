@@ -10,6 +10,7 @@ namespace hg {
 }
 
 namespace hg::engine {
+	class ActorModule;
 	class Assets;
 	class Audio;
 	class Graphics;
@@ -230,6 +231,8 @@ namespace hg::engine {
 		virtual bool exit() = 0;
 
 	public:
+		[[nodiscard]] virtual nmpt<ActorModule> getActors() const noexcept = 0;
+
 		[[nodiscard]] virtual nmpt<Assets> getAssets() const noexcept = 0;
 
 		[[nodiscard]] virtual nmpt<Audio> getAudio() const noexcept = 0;
