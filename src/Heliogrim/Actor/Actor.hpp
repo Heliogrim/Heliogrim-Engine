@@ -184,183 +184,92 @@ namespace hg {
 	/**
 	 * Create a new default actor object
 	 *
+	 * @details This will not populate the scene like calling a actor spawn function.
+	 *
 	 * @author Julius
 	 * @date 25.11.2021
 	 *
-	 * @param session_ The core session where to create the actor
+	 * @param universe_ The universe where to create the actor
 	 *
 	 * @returns A pointer to the newly created actor if succeeded, otherwise nullptr
 	 */
-	[[nodiscard]] extern ptr<Actor> CreateActor(cref<Session> session_);
+	[[nodiscard]] extern ptr<Actor> CreateActor(cref<Universe> universe_);
 
 	/**
 	 * Create a new default actor object
 	 *
-	 * @details An active or mounted universe is guaranteed to be scoped with a session,
-	 *  therefore a data management layer is resolvable. This will not populate the scene
-	 *  like calling a actor spawn function.
+	 * @details This will not populate the scene like calling a actor spawn function.
 	 *
 	 * @author Julius
 	 * @date 25.11.2021
 	 *
-	 * @param activeUniverse_ The universe where to create the actor
-	 *
-	 * @returns A pointer to the newly created actor if succeeded, otherwise nullptr
-	 */
-	[[nodiscard]] extern ptr<Actor> CreateActor(cref<Universe> activeUniverse_);
-
-	/**
-	 * Create a new default actor object
-	 *
-	 * @author Julius
-	 * @date 25.11.2021
-	 *
-	 * @param session_ The core session where to create the actor
+	 * @param universe_ The universe where to create the actor
 	 *
 	 * @returns A future, containing the newly created actor if succeeded, otherwise nullptr
 	 */
-	[[nodiscard]] extern Future<ptr<Actor>> CreateActor(cref<Session> session_, async_t);
-
-	/**
-	 * Create a new default actor object
-	 *
-	 * @details An active or mounted universe is guaranteed to be scoped with a session,
-	 *  therefore a data management layer is resolvable. This will not populate the scene
-	 *  like calling a actor spawn function.
-	 *
-	 * @author Julius
-	 * @date 25.11.2021
-	 *
-	 * @param activeUniverse_ The universe where to create the actor
-	 *
-	 * @returns A future, containing the newly created actor if succeeded, otherwise nullptr
-	 */
-	[[nodiscard]] extern Future<ptr<Actor>> CreateActor(cref<Universe> activeUniverse_, async_t);
+	[[nodiscard]] extern Future<ptr<Actor>> CreateActor(cref<Universe> universe_, async_t);
 
 	/**
 	 * Creates a new actor object based on given actor class
+	 *
+	 * @details This will not populate the scene like calling a actor spawn function.
 	 *
 	 * @author Julius
 	 * @date 25.11.2021
 	 *
 	 * @param class_ The actor class to instantiate
-	 * @param session_ The core session where to create the actor
+	 * @param universe_ The universe where to create the actor
 	 *
 	 * @returns A pointer to the newly created actor if succeeded, otherwise nullptr
 	 */
 	[[nodiscard]] extern ptr<Actor> CreateActor(
 		_In_ ptr<const ActorClass> class_,
-		cref<Session> session_
+		cref<Universe> universe_
 	) noexcept;
 
 	template <class ActorType_>
-	[[nodiscard]] ptr<ActorType_> CreateActor(cref<Session> session_) {
+	[[nodiscard]] ptr<ActorType_> CreateActor(cref<Universe> universe_) {
 		return Cast<ActorType_, Actor, false>(
-			CreateActor(Reflect::SubstitudeActorClass<ActorType_>::Known(), session_)
-		);
-	}
-
-	/**
-	 * Creates a new actor object based on given actor class
-	 *
-	 * @details An active or mounted universe is guaranteed to be scoped with a session,
-	 *  therefore a data management layer is resolvable. This will not populate the scene
-	 *  like calling a actor spawn function.
-	 *
-	 * @author Julius
-	 * @date 25.11.2021
-	 *
-	 * @param class_ The actor class to instantiate
-	 * @param activeUniverse_ The universe where to create the actor
-	 *
-	 * @returns A pointer to the newly created actor if succeeded, otherwise nullptr
-	 */
-	[[nodiscard]] extern ptr<Actor> CreateActor(
-		_In_ ptr<const ActorClass> class_,
-		cref<Universe> activeUniverse_
-	) noexcept;
-
-	template <class ActorType_>
-	[[nodiscard]] ptr<ActorType_> CreateActor(cref<Universe> activeUniverse_) {
-		return Cast<ActorType_, Actor, false>(
-			CreateActor(Reflect::SubstitudeActorClass<ActorType_>::Known(), activeUniverse_)
+			CreateActor(Reflect::SubstitudeActorClass<ActorType_>::Known(), universe_)
 		);
 	}
 
 	/**
 	 * Create a new actor object based on given actor class
 	 *
-	 * @author Julius
-	 * @date 26.11.2021
-	 *
-	 * @param class_ The actor class to instantiate.
-	 * @param serialized_ The serialized data to use.
-	 * @param session_ The core session where to create the actor
-	 *
-	 * @returns A future, containing the newly created actor is succeeded, otherwise nullptr
-	 */
-	[[nodiscard]] extern Future<ptr<Actor>> CreateActor(
-		_In_ ptr<const ActorClass> class_,
-		_In_ cref<SerializedActor> serialized_,
-		_In_ cref<Session> session_
-	) noexcept;
-
-	/**
-	 * Create a new actor object based on given actor class
-	 *
-	 * @details An active or mounted universe is guaranteed to be scoped with a session,
-	 *  therefore a data management layer is resolvable. This will not populate the scene
-	 *  like calling a actor spawn function.
+	 * @details This will not populate the scene like calling a actor spawn function.
 	 *
 	 * @author Julius
 	 * @date 26.11.2021
 	 *
 	 * @param class_ The actor class to instantiate.
 	 * @param serialized_ The serialized data to use.
-	 * @param activeUniverse_ The universe where to create the actor
+	 * @param universe_ The universe where to create the actor
 	 *
 	 * @returns A future, containing the newly created actor is succeeded, otherwise nullptr
 	 */
 	[[nodiscard]] extern Future<ptr<Actor>> CreateActor(
 		_In_ ptr<const ActorClass> class_,
 		_In_ cref<SerializedActor> serialized_,
-		_In_ cref<Universe> activeUniverse_
+		_In_ cref<Universe> universe_
 	) noexcept;
 
 	/**
 	 * Creates a new actor object equivalent to given actor object
 	 *
-	 * @author Julius
-	 * @date 25.11.2021
-	 *
-	 * @param actor_ The actor to clone from.
-	 * @param session_ The core session where to create the new actor
-	 *
-	 * @returns A future, containing the newly created actor if succeeded, otherwise nullptr
-	 */
-	[[nodiscard]] extern Future<ptr<Actor>> CloneActorInto(
-		_In_ cref<Actor> actor_,
-		_In_ cref<Session> session_
-	) noexcept;
-
-	/**
-	 * Creates a new actor object equivalent to given actor object
-	 *
-	 * @details An active or mounted universe is guaranteed to be scoped with a session,
-	 *  therefore a data management layer is resolvable. This will not populate the scene
-	 *  like calling a actor spawn function.
+	 * @details This will not populate the scene like calling a actor spawn function.
 	 *
 	 * @author Julius
 	 * @date 25.11.2021
 	 *
 	 * @param actor_ The actor to clone from.
-	 * @param activeUniverse_ The universe where to create the new actor
+	 * @param universe_ The universe where to create the new actor
 	 *
 	 * @returns A future, containing the newly created actor if succeeded, otherwise nullptr
 	 */
 	[[nodiscard]] extern Future<ptr<Actor>> CloneActorInto(
 		_In_ cref<Actor> actor_,
-		_In_ cref<Universe> activeUniverse_
+		_In_ cref<Universe> universe_
 	) noexcept;
 
 	/**
@@ -370,13 +279,13 @@ namespace hg {
 	 * @date 25.11.2021
 	 *
 	 * @param class_ The actor class to instantiate.
-	 * @param activeUniverse_ The universe where to create and place the new actor
+	 * @param universe_ The universe where to create and place the new actor
 	 *
 	 * @returns A future, containing the newly created and mounted actor if succeeded, otherwise nullptr
 	 */
 	[[nodiscard]] extern Future<ptr<Actor>> SpawnActor(
 		_In_ ptr<const ActorClass> class_,
-		_In_ cref<Universe> activeUniverse_
+		_In_ cref<Universe> universe_
 	) noexcept;
 
 	/**
@@ -389,14 +298,14 @@ namespace hg {
 	 *
 	 * @param class_ The actor class to instantiate.
 	 * @param serialized_ The serialized data to use.
-	 * @param activeUniverse_ The universe where to create and place the new actor
+	 * @param universe_ The universe where to create and place the new actor
 	 *
 	 * @returns A future, containing the newly created and mounted actor if succeeded, otherwise nullptr
 	 */
 	[[nodiscard]] extern Future<ptr<Actor>> SpawnActor(
 		_In_ ptr<const ActorClass> class_,
 		_In_ cref<SerializedActor> serialized_,
-		_In_ cref<Universe> activeUniverse_
+		_In_ cref<Universe> universe_
 	) noexcept;
 
 	/**
@@ -406,28 +315,12 @@ namespace hg {
 	 * @date 25.11.2021
 	 *
 	 * @param actor_ The actor to destroy.
-	 * @param session_ The session where to destroy the actor.
+	 * @param universe_ The universe where to destroy the actor.
 	 *
 	 * @returns A future, representing whether the actor was successfully destroyed.
 	 */
 	[[nodiscard]] extern Future<bool> Destroy(
 		mref<ptr<Actor>> actor_,
-		cref<Session> session_
-	) noexcept;
-
-	/**
-	 * Destroys the given actor
-	 *
-	 * @author Julius
-	 * @date 25.11.2021
-	 *
-	 * @param actor_ The actor to destroy.
-	 * @param activeUniverse_ The universe where to destroy the actor.
-	 *
-	 * @returns A future, representing whether the actor was successfully destroyed.
-	 */
-	[[nodiscard]] extern Future<bool> Destroy(
-		mref<ptr<Actor>> actor_,
-		cref<Universe> activeUniverse_
+		cref<Universe> universe_
 	) noexcept;
 }

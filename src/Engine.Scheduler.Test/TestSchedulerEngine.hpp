@@ -93,6 +93,10 @@ namespace hg::test {
 			return _scheduler.get();
 		}
 
+		nmpt<const engine::SerializationModule> getSerialization() const noexcept override {
+			return nullptr;
+		}
+
 		[[nodiscard]] nmpt<const engine::StorageModule> getStorage() const noexcept override {
 			return nullptr;
 		}

@@ -21,6 +21,7 @@ namespace hg::engine {
 	class ResourceManager;
 	class Scheduler;
 	class Platform;
+	class SerializationModule;
 	class StorageModule;
 
 	class Config;
@@ -253,6 +254,8 @@ namespace hg::engine {
 		[[nodiscard]] virtual nmpt<ResourceManager> getResources() const noexcept = 0;
 
 		[[nodiscard]] virtual nmpt<Scheduler> getScheduler() const noexcept = 0;
+
+		[[nodiscard]] virtual nmpt<const SerializationModule> getSerialization() const noexcept = 0;
 
 		[[nodiscard]] virtual nmpt<const StorageModule> getStorage() const noexcept = 0;
 

@@ -7,6 +7,7 @@
 #include <Engine.Event/GlobalEventEmitter.hpp>
 
 /**/
+#include <Engine.Serialization/SerializationModule.hpp>
 #include <Engine.Storage/StorageModule.hpp>
 /**/
 
@@ -49,6 +50,7 @@ namespace hg::engine {
 		uptr<Platform> _platform;
 		uptr<ResourceManager> _resources;
 		uptr<Scheduler> _scheduler;
+		SerializationModule _serialization;
 		StorageModule _storage;
 
 		/**/
@@ -78,6 +80,8 @@ namespace hg::engine {
 		[[nodiscard]] nmpt<ResourceManager> getResources() const noexcept override;
 
 		[[nodiscard]] nmpt<Scheduler> getScheduler() const noexcept override;
+
+		[[nodiscard]] nmpt<const SerializationModule> getSerialization() const noexcept override;
 
 		[[nodiscard]] nmpt<const StorageModule> getStorage() const noexcept override;
 

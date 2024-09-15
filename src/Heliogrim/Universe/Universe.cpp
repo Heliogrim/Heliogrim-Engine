@@ -41,27 +41,27 @@ bool Universe::removeLevel(ptr<Level> level_) {
 }
 
 bool Universe::addActor(const ptr<Actor> actor_) {
+
 	const auto* const universe = _internal.get();
 	const auto scene = universe->getScene();
 	const auto ctx = scene->registerContext();
 
 	actor_->registerComponents(*ctx.get());
 
-	/**
-	 *
-	 */
+	/**/
+
 	return true;
 }
 
 bool Universe::removeActor(const ptr<Actor> actor_) {
+
 	const auto* const universe = _internal.get();
 	const auto scene = universe->getScene();
 	const auto ctx = scene->registerContext();
 	// actor_->unregisterComponents(ctx);
 
-	/**
-	 *
-	 */
+	/**/
+
 	return true;
 }
 

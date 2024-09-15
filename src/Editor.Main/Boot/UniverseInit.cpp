@@ -2,6 +2,7 @@
 
 #include <Editor.Core/EditorEngine.hpp>
 #include <Editor.Scene/SceneFactory.hpp>
+#include <Engine.ACS/ActorModule.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Core/Session.hpp>
 #include <Engine.Core/Universe.hpp>
@@ -63,8 +64,8 @@ static void addDefaultSkybox() {
 	auto session = GetSession();
 	auto primaryUniverse = GetUniverse(session);
 
-	auto* actor { CreateActor(session) };
-	auto init { session.getActorInitializer() };
+	auto* actor { CreateActor(primaryUniverse) };
+	auto init = ActorInitializer { *Engine::getEngine()->getActors()->getRegistry() };
 	auto sc = init.createComponent<SkyboxComponent>(actor);
 
 	/**/
