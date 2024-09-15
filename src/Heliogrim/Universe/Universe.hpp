@@ -135,39 +135,14 @@ namespace hg {
 		bool removeActor(_In_ ptr<Actor> actor_);
 	};
 
-	/**
-	 * Creates a new universe instance
-	 *
-	 * @author Julius
-	 * @date 25.11.2021
-	 *
-	 * @returns A future, containing the newly created universe
-	 */
+	/**/
+
 	[[nodiscard]] extern Future<Universe> CreateUniverse() noexcept;
 
-	/**
-	 * Query the session's current universe
-	 *
-	 * @author Julius
-	 * @date 09.12.2022
-	 *
-	 * @param session_ The session where to lookup the current universe.
-	 *
-	 * @returns A representation for the currently internal stored universe.
-	 */
-	[[nodiscard]] extern Universe GetUniverse(_In_ cref<Session> session_) noexcept;
+	[[nodiscard]] extern Universe GetUniverse(
+		_In_ cref<Session> session_
+	) noexcept;
 
-	/**
-	 * Query the current primary core session's universe representation
-	 *
-	 * @details A convenient shortcut for obtaining the current primary
-	 *  core session's universe instance.
-	 *
-	 * @author Julius
-	 * @date 25.11.2021
-	 *
-	 * @returns A representation for the current internal universe.
-	 */
 	[[nodiscard]] extern Universe GetUniverse() noexcept;
 
 	/**
@@ -182,17 +157,9 @@ namespace hg {
 	 */
 	[[nodiscard]] extern Future<Universe> GetUniverse(_In_ cref<asset_guid> guid_) noexcept;
 
-	/**
-	 * Destroys the given universe and it's implicit resources
-	 *
-	 * @author Julius
-	 * @date 25.11.2021
-	 *
-	 * @param universe_ The universe instance to destroy.
-	 *
-	 * @returns A future, representing whether the universe was successfully destroyed.
-	 */
-	extern Future<bool> Destroy(mref<Universe> universe_);
+	extern Future<bool> Destroy(
+		mref<Universe> universe_
+	);
 
 	/* Warning: Experimental Feature */
 	/**

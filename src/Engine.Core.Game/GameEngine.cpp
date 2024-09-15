@@ -66,6 +66,7 @@ bool GameEngine::preInit() {
 	_modules.addRootModule(*_platform);
 	_modules.addRootModule(*_resources);
 	_modules.addRootModule(*_scheduler);
+	_modules.addRootModule(_serialization);
 	_modules.addRootModule(_storage);
 
 	/**/
@@ -355,6 +356,7 @@ bool GameEngine::exit() {
 
 	/* Unregister Root Modules */
 	_modules.removeRootModule(_storage);
+	_modules.removeRootModule(_serialization);
 	_modules.removeRootModule(*_scheduler);
 	_modules.removeRootModule(*_resources);
 	_modules.removeRootModule(*_platform);
@@ -405,6 +407,10 @@ nmpt<ResourceManager> GameEngine::getResources() const noexcept {
 
 nmpt<Scheduler> GameEngine::getScheduler() const noexcept {
 	return _scheduler.get();
+}
+
+nmpt<const SerializationModule> GameEngine::getSerialization() const noexcept {
+	return std::addressof(_serialization);
 }
 
 nmpt<const StorageModule> GameEngine::getStorage() const noexcept {

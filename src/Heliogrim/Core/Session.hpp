@@ -3,7 +3,6 @@
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
-#include "../ActorInitializer.hpp"
 #include "../Async/Future.hpp"
 
 namespace hg::engine::core {
@@ -30,9 +29,6 @@ namespace hg {
 		ref<this_type> operator=(cref<this_type> other_) = default;
 
 		ref<this_type> operator=(mref<this_type> other_) noexcept = default;
-
-	public:
-		[[nodiscard]] ActorInitializer getActorInitializer() const noexcept;
 
 	public:
 		[[nodiscard]] bool valid() const noexcept;

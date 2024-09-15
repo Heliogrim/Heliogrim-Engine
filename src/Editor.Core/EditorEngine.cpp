@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <ranges>
 #include <Editor.Main/Boot/ConfigInit.hpp>
+#include <Editor.Main/Boot/SerializationInit.hpp>
 #include <Editor.Main/Boot/StorageInit.hpp>
 #include <Editor.Main/Boot/SubModuleInit.hpp>
 #include <Engine.ACS.Schedule/ActorPipeline.hpp>
@@ -90,6 +91,7 @@ bool EditorEngine::preInit() {
 	_modules.addRootModule(*_platform);
 	_modules.addRootModule(*_resources);
 	_modules.addRootModule(*_scheduler);
+	_modules.addRootModule(_serialization);
 	_modules.addRootModule(_storage);
 
 	/**/
@@ -407,6 +409,7 @@ bool EditorEngine::exit() {
 
 	/* Unregister Root Modules */
 	_modules.removeRootModule(_storage);
+	_modules.removeRootModule(_serialization);
 	_modules.removeRootModule(*_scheduler);
 	_modules.removeRootModule(*_resources);
 	_modules.removeRootModule(*_platform);
@@ -457,6 +460,10 @@ nmpt<engine::ResourceManager> EditorEngine::getResources() const noexcept {
 
 nmpt<engine::Scheduler> EditorEngine::getScheduler() const noexcept {
 	return _scheduler.get();
+}
+
+nmpt<const engine::SerializationModule> EditorEngine::getSerialization() const noexcept {
+	return std::addressof(_serialization);
 }
 
 nmpt<const engine::StorageModule> EditorEngine::getStorage() const noexcept {

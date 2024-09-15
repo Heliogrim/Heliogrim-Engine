@@ -10,12 +10,6 @@ using namespace hg;
 Session::Session(mref<SharedPtr<::hg::engine::core::Session>> internal_) :
 	_internal(std::move(internal_)) {}
 
-ActorInitializer Session::getActorInitializer() const noexcept {
-	return ActorInitializer {
-		_internal
-	};
-}
-
 bool Session::valid() const noexcept {
 	return _internal.get() && _internal.use_count();
 }

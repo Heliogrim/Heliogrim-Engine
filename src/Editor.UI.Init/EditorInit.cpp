@@ -17,15 +17,16 @@
 #include <Editor.UI/Widget/Board/BoardNode.hpp>
 #include <Editor.UI/Widget/Board/Whiteboard.hpp>
 #include <Editor.UI.Main/EditorUI.hpp>
+#include <Engine.ACS/ActorModule.hpp>
 #include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Core/Session.hpp>
 #include <Engine.Core/Universe.hpp>
 #include <Engine.Core/UniverseContext.hpp>
 #include <Engine.Core/Event/SignalShutdownEvent.hpp>
+#include <Engine.GFX/Graphics.hpp>
 #include <Engine.GFX/Device/Device.hpp>
 #include <Engine.GFX/Swapchain/VkSwapchain.hpp>
 #include <Engine.GFX.Scene/RenderSceneManager.hpp>
-#include <Engine.GFX/Graphics.hpp>
 #include <Engine.Reflow/Padding.hpp>
 #include <Engine.Reflow/ReflowSpacing.hpp>
 #include <Engine.Reflow/ReflowUnit.hpp>
@@ -39,6 +40,7 @@
 #include <Engine.Reflow/Window/WindowManager.hpp>
 #include <Engine.Resource/ResourceUsageFlag.hpp>
 #include <Engine.Scheduler/Async.hpp>
+#include <Heliogrim/ActorInitializer.hpp>
 #include <Heliogrim/Actor/Actor.hpp>
 #include <Heliogrim/Actor/Camera/CameraActor.hpp>
 #include <Heliogrim/Component/Scene/UI/UIComponent.hpp>
@@ -77,8 +79,8 @@ void editor::ui::initEditor(ref<EditorUI> editorUi_) {
 
 	/**/
 
-	auto* const actor = CreateActor(HeliogrimEditor::getEditorSession());
-	auto* const uic = HeliogrimEditor::getEditorSession().getActorInitializer().createComponent<UIComponent>(actor);
+	auto* const actor = CreateActor(GetUniverse(HeliogrimEditor::getEditorSession()));
+	auto* const uic = ActorInitializer { *engine.getActors()->getRegistry() }.createComponent<UIComponent>(actor);
 
 	uic->setWindow(window);
 	GetUniverse(HeliogrimEditor::getEditorSession()).addActor(actor);
@@ -243,11 +245,15 @@ static void configureMainViewport(
 	const auto scene { coreUniverse->getScene() };
 
 	//RegisterActorClass<CameraActor>();
-	coreSession->getState().getRegistry().getOrCreateActorPool<CameraActor>();
+	editor::EditorEngine::getEngine()->getActors()->getRegistry()->getOrCreateActorPool<CameraActor>();
 
 	auto session = HeliogrimEditor::getSession();
-	ptr<CameraActor> camera { CreateActor<CameraActor>(session) };
-	auto universe = GetUniverse(session); {
+	auto universe = GetUniverse(session);
+	ptr<CameraActor> camera = CreateActor<CameraActor>(universe);
+
+	/**/
+
+	{
 		cref<math::Transform> tf = camera->getRootComponent()->getUniverseTransform();
 		const_cast<ref<math::Transform>>(tf).setLocation(math::Location { 0.F, 0.F, -5.F });
 		//const_cast<ref<math::Transform>>(tf).setLocation(math::Location { 0.F, 1.8F, 0.F });
@@ -682,8 +688,7 @@ void initDefaultUi(
 	/**/
 
 	{
-		auto* session = static_cast<ptr<engine::core::Session>>(GetSession().unwrap().get());
-		auto& registry = session->getState().getRegistry();
+		auto& registry = *editor::EditorEngine::getEngine()->getActors()->getRegistry();
 
 		Vector<ptr<Actor>> actors {};
 
