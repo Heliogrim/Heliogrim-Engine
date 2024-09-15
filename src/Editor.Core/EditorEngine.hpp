@@ -41,6 +41,7 @@ namespace hg::editor {
 		bool exit() override;
 
 	private:
+		uptr<engine::ActorModule> _actors;
 		uptr<engine::Assets> _assets;
 		uptr<engine::Audio> _audio;
 		uptr<engine::Graphics> _graphics;
@@ -59,6 +60,8 @@ namespace hg::editor {
 		engine::core::Modules _modules;
 
 	public:
+		[[nodiscard]] nmpt<engine::ActorModule> getActors() const noexcept override;
+
 		[[nodiscard]] nmpt<engine::Assets> getAssets() const noexcept override;
 
 		[[nodiscard]] nmpt<engine::Audio> getAudio() const noexcept override;

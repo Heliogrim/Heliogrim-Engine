@@ -53,6 +53,10 @@ namespace hg::test {
 		}
 
 	public:
+		[[nodiscard]] nmpt<engine::ActorModule> getActors() const noexcept override {
+			return nullptr;
+		}
+
 		[[nodiscard]] nmpt<engine::Assets> getAssets() const noexcept override {
 			return nullptr;
 		}

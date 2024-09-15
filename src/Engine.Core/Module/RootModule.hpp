@@ -1,6 +1,7 @@
 #pragma once
 
 #include <concepts>
+#include <Engine.Common/__macro.hpp>
 
 namespace hg::engine::core {
 	class RootModule;

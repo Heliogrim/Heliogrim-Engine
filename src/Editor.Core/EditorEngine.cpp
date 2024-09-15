@@ -6,6 +6,7 @@
 #include <Editor.Main/Boot/StorageInit.hpp>
 #include <Editor.Main/Boot/SubModuleInit.hpp>
 #include <Engine.ACS.Schedule/ActorPipeline.hpp>
+#include <Engine.ACS/ActorModule.hpp>
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Config/Provider/EditorProvider.hpp>
 #include <Engine.Config/Provider/ProjectProvider.hpp>
@@ -93,6 +94,7 @@ bool EditorEngine::preInit() {
 
 	/**/
 
+	_actors = make_uptr<ActorModule>(*this);
 	_assets = make_uptr<Assets>(*this);
 	_audio = make_uptr<Audio>(*this);
 	_graphics = make_uptr<Graphics>(*this);
@@ -101,6 +103,7 @@ bool EditorEngine::preInit() {
 	_physics = make_uptr<Physics>(*this);
 
 	/* Register Core Modules */
+	_modules.addCoreModule(*_actors, ActorDepKey);
 	_modules.addCoreModule(*_assets, AssetsDepKey);
 	_modules.addCoreModule(*_audio, AudioDepKey);
 	_modules.addCoreModule(*_graphics, GraphicsDepKey);
@@ -152,57 +155,20 @@ bool EditorEngine::init() {
 
 	/* Core modules should always interact with a guaranteed fiber context and non-sequential execution */
 	std::atomic_uint_fast8_t setupCounter { 0u };
-
-	scheduler::exec(
-		[this, &setupCounter] {
-			_assets->setup();
-			++setupCounter;
-			setupCounter.notify_one();
-		}
-	);
-
-	scheduler::exec(
-		[this, &setupCounter] {
-			_audio->setup();
-			++setupCounter;
-			setupCounter.notify_one();
-		}
-	);
-
-	scheduler::exec(
-		[this, &setupCounter] {
-			_graphics->setup();
-			++setupCounter;
-			setupCounter.notify_one();
-		}
-	);
-
-	scheduler::exec(
-		[this, &setupCounter] {
-			_input->setup();
-			++setupCounter;
-			setupCounter.notify_one();
-		}
-	);
-
-	scheduler::exec(
-		[this, &setupCounter] {
-			_network->setup();
-			++setupCounter;
-			setupCounter.notify_one();
-		}
-	);
-
-	scheduler::exec(
-		[this, &setupCounter] {
-			_physics->setup();
-			++setupCounter;
-			setupCounter.notify_one();
+	_modules.forEachCoreModule(
+		[&setupCounter](ref<CoreModule> module_) {
+			scheduler::exec(
+				[coreModule = std::addressof(module_), &setupCounter] {
+					coreModule->setup();
+					++setupCounter;
+					setupCounter.notify_one();
+				}
+			);
 		}
 	);
 
 	/**/
-	scheduler::waitUntilAtomic(setupCounter, 6u);
+	scheduler::waitUntilAtomic(setupCounter, _modules.getCoreModuleCount());
 	setupCounter.store(0u, std::memory_order_relaxed);
 
 	scheduler::exec(
@@ -259,12 +225,11 @@ bool EditorEngine::start() {
 	/**/
 	scheduler::exec(
 		[this, &next] {
-			_assets->start();
-			_audio->start();
-			_graphics->start();
-			_input->start();
-			_network->start();
-			_physics->start();
+			_modules.forEachCoreModule(
+				[](ref<CoreModule> module_) {
+					module_.start();
+				}
+			);
 
 			next.test_and_set(std::memory_order::relaxed);
 			next.notify_one();
@@ -332,12 +297,11 @@ bool EditorEngine::stop() {
 	/**/
 	scheduler::exec(
 		[this, &next] {
-			_physics->stop();
-			_network->stop();
-			_input->stop();
-			_graphics->stop();
-			_audio->stop();
-			_assets->stop();
+			_modules.forEachCoreModule(
+				[](ref<CoreModule> module_) {
+					module_.stop();
+				}
+			);
 
 			next.test_and_set(std::memory_order::relaxed);
 			next.notify_one();
@@ -388,57 +352,20 @@ bool EditorEngine::shutdown() {
 
 	/* Core modules should always interact with a guaranteed fiber context and non-sequential execution */
 	std::atomic_uint_fast8_t moduleCount { 0u };
-
-	scheduler::exec(
-		[this, &moduleCount] {
-			_physics->destroy();
-			++moduleCount;
-			moduleCount.notify_one();
-		}
-	);
-
-	scheduler::exec(
-		[this, &moduleCount] {
-			_network->destroy();
-			++moduleCount;
-			moduleCount.notify_one();
-		}
-	);
-
-	scheduler::exec(
-		[this, &moduleCount] {
-			_input->destroy();
-			++moduleCount;
-			moduleCount.notify_one();
-		}
-	);
-
-	scheduler::exec(
-		[this, &moduleCount] {
-			_graphics->destroy();
-			++moduleCount;
-			moduleCount.notify_one();
-		}
-	);
-
-	scheduler::exec(
-		[this, &moduleCount] {
-			_audio->destroy();
-			++moduleCount;
-			moduleCount.notify_one();
-		}
-	);
-
-	scheduler::exec(
-		[this, &moduleCount] {
-			_assets->destroy();
-			++moduleCount;
-			moduleCount.notify_one();
+	_modules.forEachCoreModule(
+		[&moduleCount](ref<CoreModule> module_) {
+			scheduler::exec(
+				[coreModule = std::addressof(module_), &moduleCount] {
+					coreModule->destroy();
+					++moduleCount;
+					moduleCount.notify_one();
+				}
+			);
 		}
 	);
 
 	/**/
-	scheduler::waitUntilAtomic(moduleCount, 6u);
+	scheduler::waitUntilAtomic(moduleCount, _modules.getCoreModuleCount());
 
 	/**/
 	_universeContexts.back() = nullptr;
@@ -467,6 +394,7 @@ bool EditorEngine::exit() {
 	_modules.removeCoreModule(*_graphics);
 	_modules.removeCoreModule(*_audio);
 	_modules.removeCoreModule(*_assets);
+	_modules.removeCoreModule(*_actors);
 
 	/**/
 	_physics.reset();
@@ -475,6 +403,7 @@ bool EditorEngine::exit() {
 	_graphics.reset();
 	_audio.reset();
 	_assets.reset();
+	_actors.reset();
 
 	/* Unregister Root Modules */
 	_modules.removeRootModule(_storage);
@@ -488,6 +417,10 @@ bool EditorEngine::exit() {
 	_resources.reset();
 
 	return setEngineState(EngineState::eExited);
+}
+
+nmpt<engine::ActorModule> EditorEngine::getActors() const noexcept {
+	return _actors.get();
 }
 
 nmpt<engine::Assets> EditorEngine::getAssets() const noexcept {

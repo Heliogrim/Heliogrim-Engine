@@ -36,6 +36,7 @@ namespace hg::engine {
 	private:
 		/* Core Module */
 
+		uptr<ActorModule> _actors;
 		uptr<Assets> _assets;
 		uptr<Audio> _audio;
 		uptr<Graphics> _graphics;
@@ -57,6 +58,8 @@ namespace hg::engine {
 		core::Modules _modules;
 
 	public:
+		[[nodiscard]] nmpt<ActorModule> getActors() const noexcept override;
+
 		[[nodiscard]] nmpt<Assets> getAssets() const noexcept override;
 
 		[[nodiscard]] nmpt<Audio> getAudio() const noexcept override;
