@@ -3,12 +3,12 @@
 #include <Engine.Common/Make.hpp>
 #include <Engine.Config/Config.hpp>
 #include <Engine.Config/Enums.hpp>
-#include <Engine.Storage/IStorageRegistry.hpp>
+#include <Engine.Storage.Registry/IStorageRegistry.hpp>
 #include <Engine.Storage/StorageModule.hpp>
-#include <Engine.Storage/Provider/LocalFileSystemProvider.hpp>
-#include <Engine.Storage/Repository/CacheFileSystemRepository.hpp>
-#include <Engine.Storage/Repository/EditorReadOnlyRepository.hpp>
-#include <Engine.Storage/Repository/ProjectFileSystemRepository.hpp>
+#include <Engine.Storage.Registry/Provider/LocalFileSystemProvider.hpp>
+#include <Engine.Storage.Registry/Repository/CacheFileSystemRepository.hpp>
+#include <Engine.Storage.Registry/Repository/EditorReadOnlyRepository.hpp>
+#include <Engine.Storage.Registry/Repository/ProjectFileSystemRepository.hpp>
 
 using namespace hg;
 

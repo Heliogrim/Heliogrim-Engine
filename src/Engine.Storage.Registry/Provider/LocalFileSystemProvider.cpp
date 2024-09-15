@@ -47,7 +47,10 @@ nmpt<RepType_> LocalFileSystemProvider::makeUniqueRepository(
 }
 
 Arci<LocalFileStorage> LocalFileSystemProvider::makeStorageObject(mref<fs::Path> storagePath_) const noexcept {
-	return Arci<LocalFileStorage>::create(std::move(storagePath_), false, false, false, false);
+	// TODO: Rework
+	constexpr bool writeable = true;
+	constexpr bool readable = true;
+	return Arci<LocalFileStorage>::create(std::move(storagePath_), readable, writeable, readable, writeable);
 }
 
 nmpt<CacheFileSystemRepository> LocalFileSystemProvider::makeCacheRepository(

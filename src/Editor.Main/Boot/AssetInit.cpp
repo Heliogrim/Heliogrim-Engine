@@ -40,14 +40,14 @@
 #include "Engine.Resource.Package/Linker/PackageLinker.hpp"
 #include "Engine.Serialization/Layout/DataLayoutBase.hpp"
 #include "Engine.Serialization.Layouts/LayoutManager.hpp"
-#include "Engine.Storage/IStorage.hpp"
-#include "Engine.Storage/IStorageRegistry.hpp"
+#include "Engine.Storage.Registry/IStorage.hpp"
+#include "Engine.Storage.Registry/IStorageRegistry.hpp"
 #include "Engine.Storage/StorageModule.hpp"
-#include "Engine.Storage/Options/FileStorageDescriptor.hpp"
-#include "Engine.Storage/Options/PackageStorageDescriptor.hpp"
-#include "Engine.Storage/Options/StorageDescriptor.hpp"
-#include "Engine.Storage/Storage/LocalFileStorage.hpp"
-#include "Engine.Storage/Storage/PackageStorage.hpp"
+#include "Engine.Storage.Registry/Options/FileStorageDescriptor.hpp"
+#include "Engine.Storage.Registry/Options/PackageStorageDescriptor.hpp"
+#include "Engine.Storage.Registry/Options/StorageDescriptor.hpp"
+#include "Engine.Storage.Registry/Storage/LocalFileStorage.hpp"
+#include "Engine.Storage.Registry/Storage/PackageStorage.hpp"
 
 using namespace hg::editor::boot;
 using namespace hg::engine;

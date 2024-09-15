@@ -2,8 +2,7 @@
 
 #include <Engine.Common/Make.hpp>
 #include <Engine.Storage.IO/StorageIo.hpp>
-
-#include "Registry/StorageRegistry.hpp"
+#include <Engine.Storage.Registry/Registry/StorageRegistry.hpp>
 
 using namespace hg::engine;
 using namespace hg;

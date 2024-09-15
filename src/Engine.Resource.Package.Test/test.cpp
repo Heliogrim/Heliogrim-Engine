@@ -24,18 +24,18 @@
 #include <Engine.Resource.Package/External/PackageIo.hpp>
 #include <Engine.Resource.Package/Linker/LinkedArchiveIterator.hpp>
 #include <Engine.Resource.Package/Linker/PackageLinker.hpp>
-#include <Engine.Storage/Options/MemoryStorageDescriptor.hpp>
-#include <Engine.Storage/Options/StorageDescriptor.hpp>
-#include <Engine.Storage/Registry/StorageRegistry.hpp>
-#include <Engine.Storage/Storage/MemoryStorage.hpp>
-#include <Engine.Storage/Storage/PackageStorage.hpp>
+#include <Engine.Storage.Registry/Options/MemoryStorageDescriptor.hpp>
+#include <Engine.Storage.Registry/Options/StorageDescriptor.hpp>
+#include <Engine.Storage.Registry/Registry/StorageRegistry.hpp>
+#include <Engine.Storage.Registry/Storage/MemoryStorage.hpp>
+#include <Engine.Storage.Registry/Storage/PackageStorage.hpp>
 
 #include "Engine.Resource/File.hpp"
-#include "Engine.Storage/Provider/LocalFileSystemProvider.hpp"
-#include "Engine.Storage/Repository/CacheFileSystemRepository.hpp"
-#include "Engine.Storage/Repository/EditorReadOnlyRepository.hpp"
-#include "Engine.Storage/Repository/ProjectFileSystemRepository.hpp"
-#include "Engine.Storage/Repository/RuntimeFileSystemRepository.hpp"
+#include "Engine.Storage.Registry/Provider/LocalFileSystemProvider.hpp"
+#include "Engine.Storage.Registry/Repository/CacheFileSystemRepository.hpp"
+#include "Engine.Storage.Registry/Repository/EditorReadOnlyRepository.hpp"
+#include "Engine.Storage.Registry/Repository/ProjectFileSystemRepository.hpp"
+#include "Engine.Storage.Registry/Repository/RuntimeFileSystemRepository.hpp"
 
 using namespace hg::engine::resource;
 using namespace hg::engine::serialization;

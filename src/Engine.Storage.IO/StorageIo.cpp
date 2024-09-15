@@ -9,10 +9,10 @@
 #include "Engine.Resource.Blob/File/LfsSyncBlob.hpp"
 #include "Engine.Resource.Blob/Memory/ByteSpanBlob.hpp"
 #include "Engine.Resource.Package/External/PackageIo.hpp"
-#include "Engine.Storage/IStorage.hpp"
-#include "Engine.Storage/Storage/LocalFileStorage.hpp"
-#include "Engine.Storage/Storage/MemoryStorage.hpp"
-#include "Engine.Storage/Storage/PackageStorage.hpp"
+#include "Engine.Storage.Registry/IStorage.hpp"
+#include "Engine.Storage.Registry/Storage/LocalFileStorage.hpp"
+#include "Engine.Storage.Registry/Storage/MemoryStorage.hpp"
+#include "Engine.Storage.Registry/Storage/PackageStorage.hpp"
 
 using namespace hg::engine::storage;
 using namespace hg;

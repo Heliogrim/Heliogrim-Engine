@@ -8,11 +8,11 @@
 #include "Engine.Assets.System/IAssetRegistry.hpp"
 #include "Engine.Filesystem/Url.hpp"
 #include "Engine.Resource/File.hpp"
-#include "Engine.Storage/IStorageRegistry.hpp"
-#include "Engine.Storage/StorageModule.hpp"
-#include "Engine.Storage/Url/FileUrl.hpp"
-#include "Engine.Storage/Url/Url.hpp"
 #include "Engine.Storage.IO/StorageIo.hpp"
+#include "Engine.Storage.Registry/IStorageRegistry.hpp"
+#include "Engine.Storage/StorageModule.hpp"
+#include "Engine.Storage.Registry/Url/FileUrl.hpp"
+#include "Engine.Storage.Registry/Url/Url.hpp"
 
 using namespace hg::engine::resource::loader;
 using namespace hg;

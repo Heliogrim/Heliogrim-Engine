@@ -22,6 +22,11 @@ namespace hg::engine::storage {
 
 		constexpr ~MemoryUrl() noexcept = default;
 
+	public:
+		constexpr ref<MemoryUrl> operator=(cref<MemoryUrl> other_) noexcept = default;
+
+		constexpr ref<MemoryUrl> operator=(mref<MemoryUrl> other_) noexcept = default;
+
 	private:
 		Guid _guid;
 
