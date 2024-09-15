@@ -13,15 +13,15 @@
 #include <Engine.Config/Provider/SystemProvider.hpp>
 #include <Engine.Filesystem/Path.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
-#include <Engine.Storage/IStorage.hpp>
-#include <Engine.Storage/Options/StorageDescriptor.hpp>
-#include <Engine.Storage/Provider/LocalFileSystemProvider.hpp>
-#include <Engine.Storage/Registry/StorageRegistry.hpp>
-#include <Engine.Storage/Repository/CacheFileSystemRepository.hpp>
-#include <Engine.Storage/Repository/EditorReadOnlyRepository.hpp>
-#include <Engine.Storage/Repository/ProjectFileSystemRepository.hpp>
-#include <Engine.Storage/Repository/RuntimeFileSystemRepository.hpp>
-#include <Engine.Storage/Url/Url.hpp>
+#include <Engine.Storage.Registry/IStorage.hpp>
+#include <Engine.Storage.Registry/Options/StorageDescriptor.hpp>
+#include <Engine.Storage.Registry/Provider/LocalFileSystemProvider.hpp>
+#include <Engine.Storage.Registry/Registry/StorageRegistry.hpp>
+#include <Engine.Storage.Registry/Repository/CacheFileSystemRepository.hpp>
+#include <Engine.Storage.Registry/Repository/EditorReadOnlyRepository.hpp>
+#include <Engine.Storage.Registry/Repository/ProjectFileSystemRepository.hpp>
+#include <Engine.Storage.Registry/Repository/RuntimeFileSystemRepository.hpp>
+#include <Engine.Storage.Registry/Url/Url.hpp>
 
 using namespace hg;
 

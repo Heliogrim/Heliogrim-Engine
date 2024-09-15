@@ -123,13 +123,14 @@ bool AutoImportAction::failed() const noexcept {
 #include <Engine.Resource.Package/External/PackageIo.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Archive/StructuredArchive.hpp>
-#include <Engine.Storage/IStorageRegistry.hpp>
+#include <Engine.Serialization/Structure/StructScopedSlot.hpp>
+#include <Engine.Storage.Registry/IStorageRegistry.hpp>
 #include <Engine.Storage/StorageModule.hpp>
-#include <Engine.Storage/Options/FileStorageDescriptor.hpp>
-#include <Engine.Storage/Options/PackageStorageDescriptor.hpp>
-#include <Engine.Storage/Options/StorageDescriptor.hpp>
-#include <Engine.Storage/Storage/PackageStorage.hpp>
-#include <Engine.Storage/Url/Url.hpp>
+#include <Engine.Storage.Registry/Options/FileStorageDescriptor.hpp>
+#include <Engine.Storage.Registry/Options/PackageStorageDescriptor.hpp>
+#include <Engine.Storage.Registry/Options/StorageDescriptor.hpp>
+#include <Engine.Storage.Registry/Storage/PackageStorage.hpp>
+#include <Engine.Storage.Registry/Url/Url.hpp>
 
 /**/
 

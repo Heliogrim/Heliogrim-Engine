@@ -10,8 +10,8 @@
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Resource.Package/Linker/PackageLinker.hpp>
-#include <Engine.Storage/IStorageRegistry.hpp>
-#include <Engine.Storage/Storage/PackageStorage.hpp>
+#include <Engine.Storage.Registry/IStorageRegistry.hpp>
+#include <Engine.Storage.Registry/Storage/PackageStorage.hpp>
 
 using namespace hg::engine::gfx;
 using namespace hg;

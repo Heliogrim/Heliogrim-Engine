@@ -17,10 +17,10 @@
 #include "../API/VkTranslate.hpp"
 #include "Engine.Assets/Assets.hpp"
 #include "Engine.Common/Optional.hpp"
-#include "Engine.Storage/IStorageRegistry.hpp"
-#include "Engine.Storage/Options/StorageDescriptor.hpp"
-#include "Engine.Storage/Storage/PackageStorage.hpp"
-#include "Engine.Storage/Url/FileUrl.hpp"
+#include "Engine.Storage.Registry/IStorageRegistry.hpp"
+#include "Engine.Storage.Registry/Options/StorageDescriptor.hpp"
+#include "Engine.Storage.Registry/Storage/PackageStorage.hpp"
+#include "Engine.Storage.Registry/Url/FileUrl.hpp"
 
 /**/
 #include <Engine.Common/GLM.hpp>

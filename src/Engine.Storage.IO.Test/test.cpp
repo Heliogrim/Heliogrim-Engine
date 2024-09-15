@@ -26,14 +26,14 @@
 #include <Engine.Resource.Package/Footer/PackageFooter.hpp>
 #include <Engine.Resource.Package/Header/PackageHeader.hpp>
 #include <Engine.Storage.IO/StorageIo.hpp>
-#include <Engine.Storage/IStorage.hpp>
-#include <Engine.Storage/Options/StorageDescriptor.hpp>
-#include <Engine.Storage/Registry/StorageRegistry.hpp>
-#include <Engine.Storage/Storage/ArchiveStorage.hpp>
-#include <Engine.Storage/Storage/LocalFileStorage.hpp>
-#include <Engine.Storage/Storage/MemoryStorage.hpp>
-#include <Engine.Storage/Storage/PackageStorage.hpp>
-#include <Engine.Storage/Url/Url.hpp>
+#include <Engine.Storage.Registry/IStorage.hpp>
+#include <Engine.Storage.Registry/Options/StorageDescriptor.hpp>
+#include <Engine.Storage.Registry/Registry/StorageRegistry.hpp>
+#include <Engine.Storage.Registry/Storage/ArchiveStorage.hpp>
+#include <Engine.Storage.Registry/Storage/LocalFileStorage.hpp>
+#include <Engine.Storage.Registry/Storage/MemoryStorage.hpp>
+#include <Engine.Storage.Registry/Storage/PackageStorage.hpp>
+#include <Engine.Storage.Registry/Url/Url.hpp>
 
 #include "Engine.Resource.Archive/StorageReadonlyArchive.hpp"
 #include "Engine.Resource/File.hpp"
@@ -42,11 +42,11 @@
 #include "Engine.Resource.Package/Linker/LinkedArchiveIterator.hpp"
 #include "Engine.Resource.Package/Linker/PackageArchiveHeader.hpp"
 #include "Engine.Resource.Package/Linker/PackageLinker.hpp"
-#include "Engine.Storage/Provider/LocalFileSystemProvider.hpp"
-#include "Engine.Storage/Repository/CacheFileSystemRepository.hpp"
-#include "Engine.Storage/Repository/EditorReadOnlyRepository.hpp"
-#include "Engine.Storage/Repository/ProjectFileSystemRepository.hpp"
-#include "Engine.Storage/Repository/RuntimeFileSystemRepository.hpp"
+#include "Engine.Storage.Registry/Provider/LocalFileSystemProvider.hpp"
+#include "Engine.Storage.Registry/Repository/CacheFileSystemRepository.hpp"
+#include "Engine.Storage.Registry/Repository/EditorReadOnlyRepository.hpp"
+#include "Engine.Storage.Registry/Repository/ProjectFileSystemRepository.hpp"
+#include "Engine.Storage.Registry/Repository/RuntimeFileSystemRepository.hpp"
 
 using namespace hg;
 

@@ -10,11 +10,22 @@ namespace hg::engine::storage {
 		using this_type = FileStorageDescriptor;
 
 	public:
+		struct Flags {
+			u8 createIfNotExist : 1;
+		};
+
+	public:
 		FileStorageDescriptor() = delete;
 
 		explicit constexpr FileStorageDescriptor(mref<FileUrl> fileUrl_) noexcept :
 			IStorageDescriptor(),
-			url(std::move(fileUrl_)) {}
+			url(std::move(fileUrl_)),
+			flags() {}
+
+		constexpr FileStorageDescriptor(mref<FileUrl> fileUrl_, mref<Flags> flags_) noexcept :
+			IStorageDescriptor(),
+			url(std::move(fileUrl_)),
+			flags(std::move(flags_)) {}
 
 		FileStorageDescriptor(cref<this_type>) = delete;
 
@@ -24,6 +35,7 @@ namespace hg::engine::storage {
 
 	public:
 		FileUrl url;
+		Flags flags;
 
 	public:
 		[[nodiscard]] constexpr UrlScheme targetScheme() const noexcept {

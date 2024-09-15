@@ -16,7 +16,7 @@
 #include "../Header/PackageHeader.hpp"
 #include "../Linker/LinkedArchiveIterator.hpp"
 #include "Engine.Resource/File.hpp"
-#include "Engine.Storage/Url/FileUrl.hpp"
+#include "Engine.Storage.Registry/Url/FileUrl.hpp"
 
 using namespace hg::engine::resource::package;
 using namespace hg::engine::resource;

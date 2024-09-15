@@ -84,6 +84,7 @@ make_library_project(
 		${PROJECT_NAME}::Engine.Serialization.Structures
 		${PROJECT_NAME}::Engine.Storage
 		${PROJECT_NAME}::Engine.Storage.IO
+		${PROJECT_NAME}::Engine.Storage.Registry
 		${PROJECT_NAME}::Engine.SFX
 		${PROJECT_NAME}::Engine.Utils
 		${__support_libraries}

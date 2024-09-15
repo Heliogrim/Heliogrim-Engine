@@ -20,6 +20,11 @@ namespace hg::engine::storage {
 
 		constexpr ~PackageUrl() noexcept = default;
 
+	public:
+		constexpr ref<PackageUrl> operator=(cref<PackageUrl> other_) noexcept = default;
+
+		constexpr ref<PackageUrl> operator=(mref<PackageUrl> other_) noexcept = default;
+
 	private:
 		Guid _guid;
 

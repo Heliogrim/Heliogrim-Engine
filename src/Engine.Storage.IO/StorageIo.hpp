@@ -3,7 +3,7 @@
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
-#include <Engine.Storage/IStorage.hpp>
+#include <Engine.Storage.Registry/IStorage.hpp>
 
 #include "Io.hpp"
 #include "UniqueResourceAccessor.hpp"
@@ -14,8 +14,8 @@ namespace hg::engine {
 
 // Warning: Temporary
 // Bug: We are required to include the complete types here, as the compiler has problems to resolve the forwarded types in the implementation
-#include <Engine.Storage/Storage/LocalFileStorage.hpp>
-#include <Engine.Storage/Storage/MemoryStorage.hpp>
+#include <Engine.Storage.Registry/Storage/LocalFileStorage.hpp>
+#include <Engine.Storage.Registry/Storage/MemoryStorage.hpp>
 
 namespace hg::engine::resource {
 	using MemoryBuffer = storage::system::MemoryStorage::MemoryObject;

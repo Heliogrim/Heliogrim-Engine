@@ -8,7 +8,7 @@
 #include <Engine.Config/Enums.hpp>
 #include <Engine.Env/Check.hpp>
 #include <Engine.Logging/Logger.hpp>
-#include <Engine.Storage/Url/Url.hpp>
+#include <Engine.Storage.Registry/Url/Url.hpp>
 
 #include "../IStorage.hpp"
 #include "../IStorageProvider.hpp"
