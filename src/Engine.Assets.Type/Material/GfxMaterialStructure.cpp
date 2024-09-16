@@ -12,13 +12,11 @@ using namespace hg::engine::assets;
 using namespace hg;
 
 template <>
-void access::Structure<GfxMaterial>::serialize(const GfxMaterial* const self_, mref<RecordScopedSlot> slot_) {
+void access::Structure<GfxMaterial>::serialize(cref<GfxMaterial> self_, mref<StructScopedSlot> slot_) {
 
-	auto root = slot_.intoStruct();
-
-	Structure<Guid>::serialize(&self_->_guid, root.insertSlot<void>("__guid__"));
-	root.insertSlot<u64>("__type__") << self_->_type.data;
-	root.insertSlot<string>("name") << self_->_assetName;
+	Structure<Guid>::serialize(self_._guid, slot_.insertStructSlot("__guid__"));
+	slot_.insertSlot<u64>("__type__") << self_._type.data;
+	slot_.insertSlot<string>("name") << self_._assetName;
 
 	/**/
 
@@ -26,13 +24,11 @@ void access::Structure<GfxMaterial>::serialize(const GfxMaterial* const self_, m
 }
 
 template <>
-void access::Structure<GfxMaterial>::deserialize(GfxMaterial* const self_, mref<RecordScopedSlot> slot_) {
+void access::Structure<GfxMaterial>::hydrate(cref<StructScopedSlot> slot_, GfxMaterial& target_) {
 
-	const auto root = slot_.intoStruct();
-
-	Structure<Guid>::deserialize(&self_->_guid, root.getSlot<void>("__guid__"));
-	root.getSlot<u64>("__type__") >> self_->_type.data;
-	root.getSlot<string>("name") >> self_->_assetName;
+	Structure<Guid>::hydrate(slot_.getStructSlot("__guid__"), target_._guid);
+	slot_.getSlot<u64>("__type__") >> target_._type.data;
+	slot_.getSlot<string>("name") >> target_._assetName;
 
 	/**/
 

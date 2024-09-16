@@ -12,17 +12,15 @@ using namespace ::hg::engine::serialization;
 using namespace ::hg;
 
 template <>
-void access::Structure<math::Bounding>::serialize(const math::Bounding* const self_, mref<RecordScopedSlot> slot_) {
-	auto slot = slot_.intoStruct();
-	Structure<math::fvec3>::serialize(&self_->_center, slot.insertRecordSlot("center"));
-	Structure<math::fvec3>::serialize(&self_->_extent, slot.insertRecordSlot("extent"));
-	slot.insertSlot<f32>("length") << self_->_extent_length;
+void access::Structure<math::Bounding>::serialize(const math::Bounding& self_, mref<StructScopedSlot> slot_) {
+	Structure<math::fvec3>::serialize(self_._center, slot_.insertRecordSlot("center").intoStruct());
+	Structure<math::fvec3>::serialize(self_._extent, slot_.insertRecordSlot("extent").intoStruct());
+	slot_.insertSlot<f32>("length") << self_._extent_length;
 }
 
 template <>
-void access::Structure<math::Bounding>::deserialize(math::Bounding* const self_, mref<RecordScopedSlot> slot_) {
-	const auto slot = slot_.asStruct();
-	Structure<math::fvec3>::serialize(&self_->_center, slot.getRecordSlot("center"));
-	Structure<math::fvec3>::serialize(&self_->_extent, slot.getRecordSlot("extent"));
-	slot.getSlot<f32>("length") >> self_->_extent_length;
+void access::Structure<math::Bounding>::hydrate(cref<StructScopedSlot> slot_, math::Bounding& target_) {
+	Structure<math::fvec3>::serialize(target_._center, slot_.getRecordSlot("center").asStruct());
+	Structure<math::fvec3>::serialize(target_._extent, slot_.getRecordSlot("extent").asStruct());
+	slot_.getSlot<f32>("length") >> target_._extent_length;
 }

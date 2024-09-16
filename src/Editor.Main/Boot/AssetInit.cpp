@@ -1,5 +1,12 @@
 #include "AssetInit.hpp"
 
+/**/
+#include "Engine.Assets.Type/Geometry/StaticGeometry.hpp"
+#include "Engine.Assets.Type/Texture/Font.hpp"
+#include "Engine.Assets.Type/Texture/Image.hpp"
+#include "Engine.Assets.Type/Texture/TextureAsset.hpp"
+/**/
+
 #include <algorithm>
 #include <cstring>
 #include <filesystem>
@@ -26,10 +33,6 @@
 #include "Editor.Assets.Default/GfxMaterials/DefaultSkyboxPrototype.hpp"
 #include "Engine.Assets/AssetFactory.hpp"
 #include "Engine.Assets/Assets.hpp"
-#include "Engine.Assets.Type/Geometry/StaticGeometry.hpp"
-#include "Engine.Assets.Type/Texture/Font.hpp"
-#include "Engine.Assets.Type/Texture/Image.hpp"
-#include "Engine.Assets.Type/Texture/TextureAsset.hpp"
 #include "Engine.Core/Module/Modules.hpp"
 #include "Engine.Resource.Archive/BufferArchive.hpp"
 #include "Engine.Resource.Archive/StorageReadonlyArchive.hpp"
@@ -545,7 +548,7 @@ void packageDiscoverAssets(mref<Arci<storage::system::PackageStorage>> packStore
 
 			/* Check whether first element is asset, otherwise treat as unknown sequence */
 
-			const auto seq = root.intoSeq();
+			const auto seq = std::move(root).intoSeq();
 			const auto count = seq.getRecordCount();
 
 			if (count <= 0) {
@@ -567,7 +570,7 @@ void packageDiscoverAssets(mref<Arci<storage::system::PackageStorage>> packStore
 
 bool isArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
 
-	const auto record = record_.intoStruct();
+	const auto record = std::move(record_).intoStruct();
 	if (not record.slot()->validateType()) {
 		return false;
 	}
@@ -587,7 +590,7 @@ bool isArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
 	asset_type_id typeId {};
 	asset_guid guid = invalid_asset_guid;
 
-	serialization::access::Structure<Guid>::deserialize(&guid, record.getRecordSlot("__guid__"));
+	serialization::access::Structure<Guid>::hydrate(record.getStructSlot("__guid__"), guid);
 	record.getSlot<u64>("__type__") >> typeId.data;
 
 	/**/
@@ -603,21 +606,21 @@ bool isArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
 
 bool tryLoadArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
 
-	const auto record = record_.asStruct();
+	auto record = record_.asStruct();
 
 	/**/
 
 	asset_type_id typeId {};
 	asset_guid guid = invalid_asset_guid;
 
-	serialization::access::Structure<Guid>::deserialize(&guid, record.getRecordSlot("__guid__"));
+	serialization::access::Structure<Guid>::hydrate(record.getStructSlot("__guid__"), guid);
 	record.getSlot<u64>("__type__") >> typeId.data;
 
 	/**/
 
 	auto genericLoad = []<class AssetType_>(
 		asset_guid guid_,
-		mref<serialization::RecordScopedSlot> record_
+		mref<serialization::StructScopedSlot> record_
 	) -> Opt<Arci<AssetType_>> {
 
 		const auto registry = Engine::getEngine()->getAssets()->getRegistry();
@@ -628,7 +631,7 @@ bool tryLoadArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
 		/**/
 
 		auto nextAsset = Arci<AssetType_>::template create();
-		serialization::access::Structure<AssetType_>::deserialize(nextAsset.get(), std::move(record_));
+		serialization::access::Structure<AssetType_>::hydrate(std::move(record_), *nextAsset);
 
 		engine::assets::storeDefaultNameAndUrl(*nextAsset, {});
 		const auto succeeded = registry->insert({ clone(nextAsset).template into<assets::Asset>() });
@@ -657,16 +660,16 @@ bool tryLoadArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
 
 	switch (typeId.data) {
 		case assets::Font::typeId.data: {
-			return genericLoad.operator()<assets::Font>(guid, std::move(record_)).has_value();
+			return genericLoad.operator()<assets::Font>(guid, std::move(record)).has_value();
 		}
 		case assets::Image::typeId.data: {
-			return genericLoad.operator()<assets::Image>(guid, std::move(record_)).has_value();
+			return genericLoad.operator()<assets::Image>(guid, std::move(record)).has_value();
 		}
 		case assets::TextureAsset::typeId.data: {
-			return genericLoad.operator()<assets::TextureAsset>(guid, std::move(record_)).has_value();
+			return genericLoad.operator()<assets::TextureAsset>(guid, std::move(record)).has_value();
 		}
 		case assets::StaticGeometry::typeId.data: {
-			return genericLoad.operator()<assets::StaticGeometry>(guid, std::move(record_)).has_value();
+			return genericLoad.operator()<assets::StaticGeometry>(guid, std::move(record)).has_value();
 		}
 		default: {
 			return false;

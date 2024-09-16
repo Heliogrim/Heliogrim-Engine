@@ -10,44 +10,40 @@ using namespace hg::engine::serialization;
 using namespace hg;
 
 template <>
-void access::Structure<Font>::serialize(const Font* const self_, mref<RecordScopedSlot> slot_) {
+void access::Structure<Font>::serialize(const Font& self_, mref<StructScopedSlot> slot_) {
 
-	auto slot = slot_.intoStruct();
-
-	Structure<Guid>::serialize(&self_->_guid, slot.insertSlot<void>("__guid__"));
-	slot.insertSlot<u64>("__type__") << self_->_type.data;
-	slot.insertSlot<string>("name") << self_->_assetName;
+	Structure<Guid>::serialize(self_._guid, slot_.insertSlot<void>("__guid__").intoStruct());
+	slot_.insertSlot<u64>("__type__") << self_._type.data;
+	slot_.insertSlot<string>("name") << self_._assetName;
 
 	Vector<string> sources {};
-	sources.reserve(self_->_sources.size());
+	sources.reserve(self_._sources.size());
 
-	for (const auto& entry : self_->_sources) {
+	for (const auto& entry : self_._sources) {
 		sources.push_back(string { entry.encode() });
 	}
 
-	slot.insertSlot<string, Vector>("sources") << sources;
+	slot_.insertSlot<string, Vector>("sources") << sources;
 }
 
 template <>
-void access::Structure<Font>::deserialize(Font* const self_, mref<RecordScopedSlot> slot_) {
+void access::Structure<Font>::hydrate(cref<StructScopedSlot> slot_, Font& target_) {
 
-	const auto slot = slot_.intoStruct();
-
-	Structure<Guid>::deserialize(&self_->_guid, slot.getSlot<void>("__guid__"));
-	slot.getSlot<u64>("__type__") >> self_->_type.data;
-	slot.getSlot<string>("name") >> self_->_assetName;
+	Structure<Guid>::hydrate(slot_.getRecordSlot("__guid__").asStruct(), target_._guid);
+	slot_.getSlot<u64>("__type__") >> target_._type.data;
+	slot_.getSlot<string>("name") >> target_._assetName;
 
 	Vector<string> sources {};
-	slot.getSlot<string, Vector>("sources") >> sources;
+	slot_.getSlot<string, Vector>("sources") >> sources;
 
-	self_->_sources.reserve(sources.size());
+	target_._sources.reserve(sources.size());
 	for (const auto& entry : sources) {
 
 		if (entry.size() < 8uLL) {
 			continue;
 		}
 
-		self_->_sources.emplace_back("file"sv, entry.substr(7uLL));
+		target_._sources.emplace_back("file"sv, entry.substr(7uLL));
 	}
 
 }

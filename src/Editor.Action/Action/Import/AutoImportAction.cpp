@@ -157,18 +157,18 @@ struct BundleFileType {
 
 /**/
 
-[[nodiscard]] Opt<engine::res::FileTypeId> queryFileTypeId(_In_ cref<std::filesystem::path> path_) {
+[[nodiscard]] static Opt<engine::res::FileTypeId> queryFileTypeId(_In_ cref<std::filesystem::path> path_) {
 	const auto extension = path_.extension().string();
 	auto registered = engine::res::FileTypeRegister::make().getByExt(extension);
 	return registered.valid() ? Some(std::move(registered)) : None;
 }
 
-[[nodiscard]] u8 queryFileTypePrecedence(cref<engine::res::FileTypeId> fileTypeId_) {
+[[nodiscard]] static u8 queryFileTypePrecedence(cref<engine::res::FileTypeId> fileTypeId_) {
 	// TODO: Introduce precedence or explicit ordering while registering to provide some kind of priority.
 	return fileTypeId_.ext.size();
 }
 
-[[nodiscard]] Vector<BundleFileType> queryBundleTypeIdByPrecedence(
+[[nodiscard]] static Vector<BundleFileType> queryBundleTypeIdByPrecedence(
 	_In_ cref<std::filesystem::path> path_
 ) {
 
@@ -201,7 +201,7 @@ struct BundleFileType {
 	return types;
 }
 
-void associateBundle(
+static void associateBundle(
 	_Inout_ ref<Vector<Arci<engine::assets::Asset>>> assets_,
 	_In_ mref<Vector<BundleFileType>> bundle_
 ) {
@@ -517,10 +517,9 @@ bool autoStoreFont(
 		[fontAsset_](auto&& writer_) {
 
 			auto structured = engine::serialization::StructuredArchive { *writer_ };
-			auto root = structured.insertRootSlot();
 			engine::serialization::access::Structure<engine::assets::Font>::serialize(
-				fontAsset_.get(),
-				std::move(root)
+				*fontAsset_,
+				structured.insertRootSlot().intoStruct()
 			);
 
 			return true;
@@ -544,10 +543,9 @@ bool autoStoreImage(
 		[imageAsset_](auto&& writer_) {
 
 			auto structured = engine::serialization::StructuredArchive { *writer_ };
-			auto root = structured.insertRootSlot();
 			engine::serialization::access::Structure<engine::assets::Image>::serialize(
-				imageAsset_.get(),
-				std::move(root)
+				*imageAsset_,
+				structured.insertRootSlot().intoStruct()
 			);
 
 			return true;
@@ -571,10 +569,9 @@ bool autoStoreTexture(
 		[textureAsset_](auto&& writer_) {
 
 			auto structured = engine::serialization::StructuredArchive { *writer_ };
-			auto root = structured.insertRootSlot();
 			engine::serialization::access::Structure<engine::assets::TextureAsset>::serialize(
-				textureAsset_.get(),
-				std::move(root)
+				*textureAsset_,
+				structured.insertRootSlot().intoStruct()
 			);
 
 			return true;
@@ -598,10 +595,9 @@ bool autoStoreStaticGeometry(
 		[staticGeometryAsset_](auto&& writer_) {
 
 			auto structured = engine::serialization::StructuredArchive { *writer_ };
-			auto root = structured.insertRootSlot();
 			engine::serialization::access::Structure<engine::assets::StaticGeometry>::serialize(
-				staticGeometryAsset_.get(),
-				std::move(root)
+				*staticGeometryAsset_,
+				structured.insertRootSlot().intoStruct()
 			);
 
 			return true;
