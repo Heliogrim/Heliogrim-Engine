@@ -58,6 +58,7 @@ make_library_project(
 		${PROJECT_NAME}::Engine.Input
 		${PROJECT_NAME}::Engine.Input.Schedule
 		${PROJECT_NAME}::Engine.IO.Dispatcher
+		${PROJECT_NAME}::Engine.Level
 		${PROJECT_NAME}::Engine.Logging
 		${PROJECT_NAME}::Engine.Network
 		${PROJECT_NAME}::Engine.Pedantic

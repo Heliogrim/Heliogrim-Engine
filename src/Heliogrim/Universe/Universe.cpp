@@ -1,6 +1,7 @@
 #include "Universe.hpp"
 
 #include <Engine.Asserts/Todo.hpp>
+#include <Engine.Common/Move.hpp>
 #include <Engine.Common/Concurrent/Promise.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Session.hpp>
@@ -9,10 +10,12 @@
 #include <Engine.Core/Event/UniverseAddedEvent.hpp>
 #include <Engine.Core/Event/UniverseChangeEvent.hpp>
 #include <Engine.Core/Event/UniverseRemoveEvent.hpp>
+#include <Engine.Level/Level.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 #include <Engine.Scene.Game/GameScene.hpp>
 #include <Engine.Scene/Scene.hpp>
 
+#include "Level.hpp"
 #include "Scene.hpp"
 #include "../Async/Execute.hpp"
 #include "../Core/Session.hpp"
@@ -32,12 +35,30 @@ cref<decltype(Universe::_internal)> Universe::unwrap() const noexcept {
 	return _internal;
 }
 
-bool Universe::addLevel(ptr<Level> level_) {
-	::hg::todo_panic();
+bool Universe::addLevel(cref<Level> level_) {
+
+	::hg::assertrt(valid() && level_.valid());
+
+	const auto& universe = unwrap();
+	const auto& level = level_.unwrap();
+
+	universe->addLevel(clone(level));
+
+	// TODO: Update internal scene.
+	return true;
 }
 
-bool Universe::removeLevel(ptr<Level> level_) {
-	::hg::todo_panic();
+bool Universe::removeLevel(cref<Level> level_) {
+
+	::hg::assertrt(valid() && level_.valid());
+
+	const auto& universe = unwrap();
+	const auto& level = level_.unwrap();
+
+	universe->removeLevel(level);
+
+	// TODO: Update internal scene.
+	return true;
 }
 
 bool Universe::addActor(const ptr<Actor> actor_) {
@@ -72,7 +93,14 @@ Future<Universe> hg::CreateUniverse() noexcept {
 				auto defaultScene = make_uptr<engine::scene::GameScene>();
 				defaultScene->prepare();
 
-				auto universe { make_sptr<engine::core::Universe>(std::move(defaultScene)) };
+				auto defaultLevel = engine::core::make_root_like_level();
+
+				auto universe {
+					make_sptr<engine::core::Universe>(
+						std::move(defaultScene),
+						DenseSet<Arci<engine::core::Level>> { std::move(defaultLevel) }
+					)
+				};
 				engine::Engine::getEngine()->addUniverse(clone(universe));
 
 				return Universe { std::move(universe) };

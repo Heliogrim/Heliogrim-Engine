@@ -1,3 +1,7 @@
+#include <Engine.Level/Level.hpp>
+
+/**/
+
 #include "UniverseInit.hpp"
 
 #include <Editor.Core/EditorEngine.hpp>
@@ -24,7 +28,8 @@ void editor::boot::initEditorUniverse() {
 	auto scene = SceneFactory::createEditorScene();
 	scene->prepare();
 
-	auto universe { make_sptr<core::Universe>(std::move(scene)) };
+	auto level = core::make_root_like_level();
+	auto universe { make_sptr<core::Universe>(std::move(scene), DenseSet<Arci<core::Level>> { std::move(level) }) };
 
 	engine->addUniverse(clone(universe));
 	editorSession->getUniverseContext().setCurrentUniverse(std::move(universe));
@@ -40,7 +45,8 @@ void editor::boot::initPrimaryUniverse() {
 	auto scene = SceneFactory::createGameScene();
 	scene->prepare();
 
-	auto universe { make_sptr<core::Universe>(std::move(scene)) };
+	auto level = core::make_root_like_level();
+	auto universe { make_sptr<core::Universe>(std::move(scene), DenseSet<Arci<core::Level>> { clone(level) }) };
 
 	engine->addUniverse(clone(universe));
 	primary->getUniverseContext().setCurrentUniverse(std::move(universe));
