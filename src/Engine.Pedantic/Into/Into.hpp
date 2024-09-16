@@ -2,7 +2,7 @@
 
 #include <concepts>
 #include <type_traits>
-#include <utility>
+#include <Engine.Common/Forward.hpp>
 
 #include "IntoImpl.hpp"
 #include "IntoMemberFunction.hpp"
@@ -69,7 +69,7 @@ namespace hg {
 		(std::is_same_v<std::remove_cvref_t<SourceType_>, std::remove_cvref_t<TargetType_>>) &&
 		has_into_member_function<SourceType_, TargetType_>
 	[[nodiscard]] constexpr TargetType_ into(SourceType_&& val_) {
-		return std::forward<SourceType_>(val_).into();
+		return ::hg::forward<SourceType_>(val_).into();
 	}
 
 	template <typename TargetType_, typename SourceType_> requires
@@ -77,7 +77,7 @@ namespace hg {
 		(not std::is_same_v<std::remove_cvref_t<TargetType_>, std::remove_cvref_t<SourceType_>>) &&
 		(std::is_same_v<typename __unwrap_helper<SourceType_>::substitution_type, SourceType_>)
 	[[nodiscard]] constexpr TargetType_ into(SourceType_&& val_) {
-		return std::forward<SourceType_>(val_).into();
+		return ::hg::forward<SourceType_>(val_).into();
 	}
 
 	/**/
@@ -85,7 +85,7 @@ namespace hg {
 	template <typename TargetType_, typename SourceType_, template <typename> typename TemplateType_> requires
 		has_into_unwrap_template_member_function<TemplateType_, SourceType_, TargetType_>
 	[[nodiscard]] constexpr TargetType_ into(TemplateType_<SourceType_>&& val_) {
-		return std::forward<TemplateType_<SourceType_>>(val_).template into<TargetType_>();
+		return ::hg::forward<TemplateType_<SourceType_>>(val_).template into<TargetType_>();
 	}
 
 	template <typename TargetType_, typename SourceType_, template <typename> typename TemplateType_> requires
@@ -93,7 +93,7 @@ namespace hg {
 		std::is_same_v<typename __unwrap_helper<TargetType_>::substitution_type, TargetType_> &&
 		std::is_same_v<typename __unwrap_helper<SourceType_>::substitution_type, SourceType_>
 	[[nodiscard]] constexpr TemplateType_<TargetType_> into(TemplateType_<SourceType_>&& val_) {
-		return std::forward<TemplateType_<SourceType_>>(val_).template into<TargetType_>();
+		return ::hg::forward<TemplateType_<SourceType_>>(val_).template into<TargetType_>();
 	}
 
 	template <
@@ -103,7 +103,7 @@ namespace hg {
 	> requires has_into_wrap_template_member_function<TemplateType_, SourceType_, TargetType_> &&
 		std::is_same_v<typename __unwrap_helper<SourceType_>::substitution_type, SourceType_>
 	[[nodiscard]] constexpr TemplateType_<TargetType_> into(SourceType_&& val_) {
-		return std::forward<SourceType_>(val_).template into<TargetType_>();
+		return ::hg::forward<SourceType_>(val_).template into<TargetType_>();
 	}
 
 	template <
@@ -115,7 +115,7 @@ namespace hg {
 		requires has_into_boxed_template_member_function<TemplateType_, SourceType_, TargetType_> &&
 		(not std::is_same_v<typename __unwrap_helper<ExternalType_>::substitution_type, ExternalType_>)
 	[[nodiscard]] constexpr TemplateType_<TargetType_> into(TemplateType_<SourceType_>&& val_) {
-		return std::forward<TemplateType_<SourceType_>>(val_).template into<TargetType_>();
+		return ::hg::forward<TemplateType_<SourceType_>>(val_).template into<TargetType_>();
 	}
 
 	template <
@@ -127,7 +127,7 @@ namespace hg {
 		requires has_into_wrap_template_member_function<TemplateType_, SourceType_, TargetType_> &&
 		(not std::is_same_v<typename __unwrap_helper<ExternalType_>::substitution_type, ExternalType_>)
 	[[nodiscard]] constexpr TemplateType_<TargetType_> into(SourceType_&& val_) {
-		return std::forward<SourceType_>(val_).template into<TargetType_>();
+		return ::hg::forward<SourceType_>(val_).template into<TargetType_>();
 	}
 
 	/**/
@@ -141,7 +141,7 @@ namespace hg {
 	[[nodiscard]] constexpr typename __ret_type_helper<TemplateType_<SourceType_>, TargetType_>::type into(
 		ExternalType_&& val_
 	) {
-		return std::forward<TemplateType_<SourceType_>>(val_).template into<TargetType_>();
+		return ::hg::forward<TemplateType_<SourceType_>>(val_).template into<TargetType_>();
 	}
 
 	/**/
@@ -153,7 +153,7 @@ namespace hg {
 		(std::is_integral_v<TargetType_> == std::is_integral_v<SourceType_>) &&
 		(not has_into_member_function<SourceType_, TargetType_>)
 	[[nodiscard]] constexpr TargetType_ into(SourceType_&& val_) {
-		return TargetType_ { std::move(val_) };
+		return TargetType_ { ::hg::forward<SourceType_>(val_) };
 	}
 
 	/**
@@ -169,7 +169,7 @@ namespace hg {
 		(not has_into_member_function<SourceType_, TargetType_>)
 	[[nodiscard]] constexpr TargetType_ into(SourceType_&& val_) {
 		// ReSharper disable once CppCStyleCast
-		return (TargetType_)(std::forward<SourceType_>(val_));
+		return (TargetType_)(::hg::forward<SourceType_>(val_));
 	}
 
 	/**/
@@ -215,7 +215,7 @@ namespace hg {
 	>
 	[[nodiscard]] constexpr DstTemplate_<__unwrap_substitude<TargetType_>> into(ExSrcType_&& obj_) noexcept {
 		return into_impl<DstTemplate_<TargetType_>, SrcTemplate_<SourceType>> {}(
-			std::forward<SrcTemplate_<SourceType>>(obj_)
+			::hg::forward<SrcTemplate_<SourceType>>(obj_)
 		);
 	}
 
@@ -237,7 +237,7 @@ namespace hg {
 	>
 	[[nodiscard]] constexpr Template_<__unwrap_substitude<TargetType_>> into(ExSrcType_&& obj_) noexcept {
 		return into_impl<Template_<TargetType_>, Template_<SourceType>> {}(
-			std::forward<Template_<SourceType>>(obj_)
+			::hg::forward<Template_<SourceType>>(obj_)
 		);
 	}
 

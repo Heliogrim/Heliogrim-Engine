@@ -2,6 +2,7 @@
 
 #include <type_traits>
 #include <utility>
+#include <Engine.Common/Forward.hpp>
 
 #include "../Concept/SameAs.hpp"
 
@@ -29,7 +30,7 @@ namespace hg {
 		requires(Template_<From_> obj_) {
 			{
 				std::declval<into_impl<Template_<To_>, Template_<From_>>>()(
-					std::forward<Template_<From_>>(obj_)
+					::hg::forward<Template_<From_>>(obj_)
 				)
 			} -> same_as<Template_<To_>>;
 		};
@@ -45,7 +46,7 @@ namespace hg {
 		requires(FromTemplate_<From_> obj_) {
 			{
 				std::declval<into_impl<ToTemplate_<To_>, FromTemplate_<From_>>>()(
-					std::forward<FromTemplate_<From_>>(obj_)
+					::hg::forward<FromTemplate_<From_>>(obj_)
 				)
 			} -> same_as<ToTemplate_<To_>>;
 		};
