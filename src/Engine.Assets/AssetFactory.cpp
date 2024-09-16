@@ -12,7 +12,7 @@
 #include <Engine.Assets.Type/Texture/Font.hpp>
 #include <Engine.Assets.Type/Texture/Image.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
-#include <Engine.Assets.Type/Universe/Level.hpp>
+#include <Engine.Assets.Type/Universe/LevelAsset.hpp>
 /* Note: Why-so-ever, this is order dependent... */
 
 #include "AssetFactory.hpp"
@@ -37,7 +37,7 @@ static_assert(CompleteType<Font>);
 static_assert(CompleteType<GfxMaterialPrototype>);
 static_assert(CompleteType<Image>);
 static_assert(CompleteType<LandscapeGeometry>);
-static_assert(CompleteType<Level>);
+static_assert(CompleteType<LevelAsset>);
 static_assert(CompleteType<PfxMaterial>);
 static_assert(CompleteType<SfxMaterial>);
 static_assert(CompleteType<SkeletalGeometry>);
@@ -78,6 +78,10 @@ void engine::assets::storeDefaultNameAndUrl(ref<Asset> asset_, string source_) {
 			}
 			case assets::Font::typeId.data: {
 				pseudo = "font";
+				break;
+			}
+			case assets::LevelAsset::typeId.data: {
+				pseudo = "level";
 				break;
 			}
 			default: {
@@ -225,6 +229,15 @@ Arci<GfxMaterial> AssetFactory::createGfxMaterialAsset(
 Arci<GfxMaterialPrototype> AssetFactory::createGfxMaterialPrototypeAsset(mref<asset_guid> guid_) const {
 
 	auto instance = Arci<GfxMaterialPrototype>::create(std::move(guid_));
+
+	storeDefaultNameAndUrl(*instance, {});
+	_registry->insert({ clone(instance).into<Asset>() });
+	return instance;
+}
+
+Arci<LevelAsset> AssetFactory::createLevelAsset(mref<asset_guid> guid_) const {
+
+	auto instance = Arci<LevelAsset>::create(std::move(guid_));
 
 	storeDefaultNameAndUrl(*instance, {});
 	_registry->insert({ clone(instance).into<Asset>() });
