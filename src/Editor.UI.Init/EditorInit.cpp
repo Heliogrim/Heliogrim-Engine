@@ -16,6 +16,7 @@
 #include <Editor.UI/Widget/Board/Board.hpp>
 #include <Editor.UI/Widget/Board/BoardNode.hpp>
 #include <Editor.UI/Widget/Board/Whiteboard.hpp>
+#include <Editor.UI/Widget/Viewport/EditorSceneViewport.hpp>
 #include <Editor.UI.Main/EditorUI.hpp>
 #include <Engine.ACS/ActorModule.hpp>
 #include <Engine.Asserts/Breakpoint.hpp>
@@ -231,7 +232,7 @@ static void configureMainViewport(
 	/**
 	 *
 	 */
-	auto viewport = make_sptr<Viewport>();
+	auto viewport = make_sptr<EditorSceneViewport>();
 	viewport->attr.width.setValue({ ReflowUnitType::eRelative, 1.F });
 	viewport->attr.height.setValue({ ReflowUnitType::eRelative, 1.F });
 
