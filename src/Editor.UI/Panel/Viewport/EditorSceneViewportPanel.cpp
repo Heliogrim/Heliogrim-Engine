@@ -1,4 +1,4 @@
-#include "ProjectViewportPanel.hpp"
+#include "EditorSceneViewportPanel.hpp"
 
 #include <Engine.Common/Make.hpp>
 #include <Engine.Reflow/Widget/Button.hpp>
@@ -6,14 +6,15 @@
 #include <Engine.Reflow/Widget/Text.hpp>
 #include <Engine.Reflow/Widget/Viewport.hpp>
 
-#include "../Color/Dark.hpp"
-#include "../Theme/Theme.hpp"
+#include "../../Color/Dark.hpp"
+#include "../../Theme/Theme.hpp"
+#include "../../Widget/Viewport/EditorSceneViewport.hpp"
 
 using namespace hg::editor::ui;
 using namespace hg::engine::reflow;
 using namespace hg;
 
-ProjectViewportPanel::ProjectViewportPanel() :
+EditorSceneViewportPanel::EditorSceneViewportPanel() :
 	VerticalPanel() {}
 
 static void configureCtrls(cref<sptr<HorizontalPanel>> parent_) {
@@ -60,15 +61,15 @@ static void configureCtrls(cref<sptr<HorizontalPanel>> parent_) {
 }
 
 static void configureViewport(cref<sptr<HorizontalPanel>> parent_) {
-	auto viewport = make_sptr<Viewport>();
+	auto viewport = make_sptr<EditorSceneViewport>();
 	viewport->attr.width.setValue({ ReflowUnitType::eRelative, 1.F });
 	viewport->attr.height.setValue({ ReflowUnitType::eRelative, 1.F });
 	parent_->addChild(viewport);
 }
 
-sptr<ProjectViewportPanel> ProjectViewportPanel::make() {
+sptr<EditorSceneViewportPanel> EditorSceneViewportPanel::make() {
 
-	auto panel { std::shared_ptr<ProjectViewportPanel>(new ProjectViewportPanel()) };
+	auto panel { std::shared_ptr<EditorSceneViewportPanel>(new EditorSceneViewportPanel()) };
 
 	auto ctrls = make_sptr<HorizontalPanel>();
 	ctrls->attr.width.setValue({ ReflowUnitType::eRelative, 1.F });
