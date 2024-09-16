@@ -16,6 +16,6 @@ LevelAsset::LevelAsset(mref<asset_guid> guid_, ref<::hg::engine::assets::Asset> 
 LevelAsset::~LevelAsset() noexcept = default;
 
 bool LevelAsset::isValidType() const noexcept {
-	return internal() != nullptr && IsType<::hg::engine::assets::Level>(*internal());
 	return internal() != nullptr && IsType<::hg::engine::assets::LevelAsset>(*internal());
 }
+
