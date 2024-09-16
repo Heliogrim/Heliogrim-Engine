@@ -18,9 +18,23 @@ namespace hg::engine::serialization {
 	};
 
 	struct Symbols {
+		/* Generic */
 		constexpr static Symbol Type {
 			.id = "@type"_typeId,
 			.str = "@type"sv
+		};
+		constexpr static Symbol Guid {
+			.id = "@guid"_typeId,
+			.str = "@guid"sv
+		};
+		/* Contextual */
+		constexpr static Symbol Parent {
+			.id = "@parent"_typeId,
+			.str = "@parent"sv
+		};
+		constexpr static Symbol Components {
+			.id = "@components"_typeId,
+			.str = "@components"sv
 		};
 	};
 }
