@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../Wrapper.hpp"
 #include "Vector.hpp"
+#include "../Wrapper.hpp"
 
 namespace hg::math {
 	class Location final :
@@ -13,22 +13,22 @@ namespace hg::math {
 		using value_type = math_type::value_type;
 
 	public:
-		Location() noexcept;
+		constexpr Location() noexcept = default;
 
 		Location(const value_type x_, const value_type y_, const value_type z_) noexcept;
 
 		explicit Location(cref<math_type> location_) noexcept;
 
-		Location(mref<Location> other_) noexcept;
+		constexpr Location(mref<Location> other_) noexcept = default;
 
-		Location(cref<Location> other_) noexcept;
+		constexpr Location(cref<Location> other_) noexcept = default;
 
-		~Location() noexcept = default;
+		constexpr ~Location() noexcept = default;
 
 	public:
-		ref<this_type> operator=(mref<this_type> other_) noexcept;
+		constexpr ref<this_type> operator=(mref<this_type> other_) noexcept = default;
 
-		ref<this_type> operator=(cref<this_type> other_) noexcept;
+		constexpr ref<this_type> operator=(cref<this_type> other_) noexcept = default;
 
 	public:
 		void setX(const value_type x_) noexcept;
