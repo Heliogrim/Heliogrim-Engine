@@ -1,12 +1,17 @@
 #pragma once
 
 #include <Engine.GFX/Camera/CameraModes.hpp>
+#include <Engine.Serialization/Access/__fwd.hpp>
 
 #include "../../SceneComponent.hpp"
 
 namespace hg {
 	class CameraComponent :
 		public InheritMeta<CameraComponent, SceneComponent> {
+	public:
+		ACCESS_LAYOUT
+		ACCESS_STRUCTURE
+
 	public:
 		using this_type = CameraComponent;
 		using underlying_type = SceneComponent;

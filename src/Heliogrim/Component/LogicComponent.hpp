@@ -10,9 +10,10 @@ namespace hg {
 		using this_type = LogicComponent;
 		using underlying_type = InheritBase<LogicComponent>;
 
-	public:
+	protected:
 		LogicComponent(mref<component_type_id> typeId_) noexcept;
 
+	public:
 		~LogicComponent() override = default;
 
 	private:

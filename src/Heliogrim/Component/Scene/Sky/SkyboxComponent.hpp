@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Engine.Serialization/Access/__fwd.hpp>
+
 #include "../../SceneComponent.hpp"
 #include "../../../Asset/Geometry/StaticGeometryAsset.hpp"
 #include "../../../Asset/Material/GfxMaterialAsset.hpp"
@@ -7,6 +9,10 @@
 namespace hg {
 	class SkyboxComponent :
 		public InheritMeta<SkyboxComponent, SceneComponent> {
+	public:
+		ACCESS_LAYOUT
+		ACCESS_STRUCTURE
+
 	public:
 		using this_type = SkyboxComponent;
 		using underlying_type = SceneComponent;
