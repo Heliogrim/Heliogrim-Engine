@@ -152,6 +152,7 @@ bool EditorEngine::init() {
 
 	/**/
 
+	boot::initSerialization(_config, _serialization);
 	boot::initStorage(_config, _storage);
 	setupCorePipelines();
 
