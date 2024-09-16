@@ -53,13 +53,13 @@ namespace hg::engine::serialization {
 		[[nodiscard]] s64 size() const noexcept;
 
 	private:
-		Vector<ptr<layout::LayoutDefine>> _defines;
+		Vector<layout::LayoutDefine> _defines;
 
 	public:
 		[[nodiscard]] cref<decltype(_defines)> defines() const noexcept;
 
 	private:
-		void define(mref<ptr<layout::LayoutDefine>> define_);
+		void define(mref<layout::LayoutDefine> define_);
 
 	public:
 		virtual void describe() = 0;

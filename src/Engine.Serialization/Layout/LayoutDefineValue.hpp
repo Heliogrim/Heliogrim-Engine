@@ -12,10 +12,10 @@ namespace hg::engine::serialization::layout {
 		using type_traits = LayoutDefineValueTrait<ValueType_>;
 
 	public:
-		LayoutDefineValue(const u64 offset_) :
+		constexpr explicit LayoutDefineValue(const u64 offset_) :
 			LayoutDefine(offset_, type_traits::size) {
 
-			static_assert(type_traits::is_inline && type_traits::is_constant_size && not type_traits::has_subtype, "");
+			static_assert(type_traits::is_inline && type_traits::is_constant_size && not type_traits::has_subtype);
 
 			_load = this_type::loadImpl;
 			_store = this_type::storeImpl;

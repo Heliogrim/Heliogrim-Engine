@@ -65,7 +65,7 @@ namespace hg::engine::serialization {
 
 			const auto& defines { getDataLayout()->defines() };
 			for (const auto& defined : defines) {
-				defined->_store(*getArchive(), *defined, src);
+				defined._store(*getArchive(), defined, src);
 			}
 
 		}
@@ -79,7 +79,7 @@ namespace hg::engine::serialization {
 
 			const auto& defines { getDataLayout()->defines() };
 			for (const auto& defined : defines) {
-				defined->_load(*getArchive(), *defined, src);
+				defined._load(*getArchive(), defined, src);
 			}
 
 		}
