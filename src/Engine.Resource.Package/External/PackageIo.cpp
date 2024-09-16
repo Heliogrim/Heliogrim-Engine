@@ -329,10 +329,13 @@ ref<PackageLinker> PackageIo::loadLinkerData(ref<PackageLinker> linker_) {
 	linker_._package.apply(
 		[&linker_](auto accessor_) {
 
-			::hg::assertrt(accessor_->get().valid() && accessor_->get()->header().indexSize > 0uLL);
+			::hg::assertrt(accessor_->get().valid());
+			if (accessor_->get()->header().indexSize <= 0uLL) {
+				return;
+			}
 
 			if (accessor_->get()->header().compression != PackageCompression::eNone) {
-				todo_panic();
+				::hg::todo_panic();
 			}
 
 			/**/
