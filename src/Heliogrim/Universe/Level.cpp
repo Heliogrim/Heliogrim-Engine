@@ -34,15 +34,22 @@ cref<decltype(Level::_internal)> Level::unwrap() const noexcept {
 	return _internal;
 }
 
-Level::Level(mref<Level> other_) noexcept {
-	::hg::todo_panic();
+ptr<Actor> Level::addActor(mref<VolatileActor<>> actor_) {
+	auto actor = ::hg::move(actor_).release();
+	_internal->addActor(actor);
+	return actor;
 }
 
-Level::~Level() noexcept {
-	::hg::todo_panic();
+VolatileActor<> Level::removeActor(ptr<Actor> actor_) {
+	_internal->removeActor(actor_);
+	return VolatileActor<> { ::hg::move(actor_) };
 }
 
-bool Level::addActor(ptr<Actor> actor_) {
+void Level::dropActor(mref<ptr<Actor>> actor_) {
+	_internal->removeActor(actor_);
+	VolatileActor<>::destroy(::hg::move(actor_));
+}
+
 Future<Level> hg::CreateLevel() noexcept {
 	auto p = concurrent::promise<Level> { [] { return Level { engine::core::make_root_like_level() }; } };
 	auto f = p.get();

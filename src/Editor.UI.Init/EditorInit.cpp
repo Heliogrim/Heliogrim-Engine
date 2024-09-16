@@ -80,11 +80,11 @@ void editor::ui::initEditor(ref<EditorUI> editorUi_) {
 
 	/**/
 
-	auto* const actor = CreateActor(GetUniverse(HeliogrimEditor::getEditorSession()));
-	auto* const uic = ActorInitializer { *engine.getActors()->getRegistry() }.createComponent<UIComponent>(actor);
+	auto actor = CreateActor();
+	auto* const uic = ActorInitializer { *engine.getActors()->getRegistry() }.createComponent<UIComponent>(actor.get());
 
 	uic->setWindow(window);
-	GetUniverse(HeliogrimEditor::getEditorSession()).addActor(actor);
+	GetUniverse(HeliogrimEditor::getEditorSession()).addActor(std::move(actor));
 
 }
 
@@ -250,7 +250,7 @@ static void configureMainViewport(
 
 	auto session = HeliogrimEditor::getSession();
 	auto universe = GetUniverse(session);
-	ptr<CameraActor> camera = CreateActor<CameraActor>(universe);
+	auto camera = CreateActor<CameraActor>();
 
 	/**/
 
@@ -259,11 +259,11 @@ static void configureMainViewport(
 		const_cast<ref<math::Transform>>(tf).setLocation(math::Location { 0.F, 0.F, -5.F });
 		//const_cast<ref<math::Transform>>(tf).setLocation(math::Location { 0.F, 1.8F, 0.F });
 	}
-	universe.addActor(camera);
+	auto trackedActor = universe.addActor(std::move(camera));
 
 	/**/
 
-	viewport->setViewportTarget("Test-Renderer"sv, universe, camera);
+	viewport->setViewportTarget("Test-Renderer"sv, universe, trackedActor);
 	viewport->rebuildView();
 
 	/**/

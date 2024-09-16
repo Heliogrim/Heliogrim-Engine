@@ -115,24 +115,32 @@ void Actor::registerComponents(ref<IComponentRegisterContext> context_) {
 	}
 }
 
+template <>
+void VolatileActor<Actor>::destroy(ptr<Actor> obj_) {
+	auto registry = engine::Engine::getEngine()->getActors()->getRegistry();
+
+	const auto actorGuid = obj_->guid();
+	for (const auto* const component : obj_->getComponents()) {
+		::hg::assertd(component->getTypeId().data);
+		registry->releaseActorComponent(actorGuid, component->getTypeId());
+	}
+	registry->destroyActor(std::move(obj_));
+}
+
 bool hg::RegisterActorClass(ptr<const ActorClass> class_) noexcept {
 	::hg::todo_panic();
 }
 
-// TODO: Replace return reference with uptr pointer or exclusive resource guard
-ptr<Actor> hg::CreateActor(cref<Universe> universe_) {
+VolatileActor<> hg::CreateActor() {
 	auto& registry = *engine::Engine::getEngine()->getActors()->getRegistry();
-	auto* actor { registry.createActor(ActorInitializer { registry }) };
-	return actor;
+	return VolatileActor<> { registry.createActor(ActorInitializer { registry }) };
 }
 
-// TODO: Replace return reference with uptr pointer or exclusive resource guard
-Future<ptr<Actor>> hg::CreateActor(cref<Universe> universe_, async_t) {
-	concurrent::promise<ptr<Actor>> p {
-		[]() -> ptr<Actor> {
+Future<VolatileActor<>> hg::CreateActor(async_t) {
+	concurrent::promise<VolatileActor<>> p {
+		[]() -> VolatileActor<> {
 			auto& registry = *engine::Engine::getEngine()->getActors()->getRegistry();
-			auto* actor { registry.createActor(ActorInitializer { registry }) };
-			return actor;
+			return VolatileActor<> { registry.createActor(ActorInitializer { registry }) };
 		}
 	};
 
@@ -142,18 +150,14 @@ Future<ptr<Actor>> hg::CreateActor(cref<Universe> universe_, async_t) {
 	return Future { std::move(f) };
 }
 
-// TODO: Replace return reference with uptr pointer or exclusive resource guard
-ptr<Actor> hg::CreateActor(ptr<const ActorClass> class_, cref<Universe> universe_) noexcept {
+VolatileActor<> hg::CreateActor(ptr<const ActorClass> class_) noexcept {
 	auto& registry = *engine::Engine::getEngine()->getActors()->getRegistry();
-	auto* actor { registry.createActor(class_, ActorInitializer { registry }) };
-	return actor;
+	return VolatileActor<> { registry.createActor(class_, ActorInitializer { registry }) };
 }
 
-// TODO: Replace return reference with uptr pointer or exclusive resource guard
-Future<ptr<Actor>> hg::CreateActor(
+Future<VolatileActor<>> hg::CreateActor(
 	ptr<const ActorClass> class_,
-	cref<SerializedActor> serialized_,
-	cref<Universe> universe_
+	cref<SerializedActor> serialized_
 ) noexcept {
 	::hg::todo_panic();
 }
@@ -172,6 +176,11 @@ Future<ptr<Actor>> hg::SpawnActor(
 	cref<Universe> universe_
 ) noexcept {
 	::hg::todo_panic();
+}
+
+bool hg::Destroy(mref<VolatileActor<>> actor_) noexcept {
+	std::move(actor_).reset();
+	return true;
 }
 
 Future<bool> hg::Destroy(mref<ptr<Actor>> actor_, cref<Universe> universe_) noexcept {

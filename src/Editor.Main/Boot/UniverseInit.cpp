@@ -70,9 +70,9 @@ static void addDefaultSkybox() {
 	auto session = GetSession();
 	auto primaryUniverse = GetUniverse(session);
 
-	auto* actor { CreateActor(primaryUniverse) };
+	auto actor { CreateActor() };
 	auto init = ActorInitializer { *Engine::getEngine()->getActors()->getRegistry() };
-	auto sc = init.createComponent<SkyboxComponent>(actor);
+	auto sc = init.createComponent<SkyboxComponent>(actor.get());
 
 	/**/
 
@@ -84,5 +84,5 @@ static void addDefaultSkybox() {
 
 	/**/
 
-	primaryUniverse.addActor(actor);
+	primaryUniverse.addActor(std::move(actor));
 }

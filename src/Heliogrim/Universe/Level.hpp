@@ -65,9 +65,14 @@ namespace hg {
 		 *
 		 * @param actor_ The actor to add.
 		 *
-		 * @returns True if succeeded, otherwise false.
+		 * @returns A reference to the added actor (managed).
 		 */
-		bool addActor(_In_ ptr<Actor> actor_);
+		ptr<Actor> addActor(_Inout_ mref<VolatileActor<>> actor_);
+
+		template <class ActorType_>
+		ptr<ActorType_> addActor(_Inout_ mref<VolatileActor<ActorType_>> actor_) {
+			return static_cast<ptr<ActorType_>>(addActor(static_cast<mref<VolatileActor<Actor>>>(std::move(actor_))));
+		}
 
 		/**
 		 * Removes an actor from this level
@@ -75,22 +80,19 @@ namespace hg {
 		 * @author Julius
 		 * @date 01.12.2021
 		 *
-		 * @param actor_ The actor to remove.
+		 * @param actor_ A reference of the actor to remove.
 		 *
-		 * @returns True if succeeded, otherwise false.
+		 * @returns A volatile actor handle of the removed actor.
 		 */
-		bool removeActor(_In_ ptr<Actor> actor_);
-	};
+		VolatileActor<> removeActor(_In_ ptr<Actor> actor_);
 
-	/**
-	 * Creates a new level with underlying object
-	 *
-	 * @author Julius
-	 * @date 25.10.2021
-	 *
-	 * @returns A future, containing the newly created level if succeeded, otherwise nullptr.
-	 */
-	[[nodiscard, deprecated]] extern Future<ptr<Level>> CreateLevel() noexcept;
+		/**
+		 * Drops an actor instance from this level
+		 *
+		 * @param actor_ The actor instance to drop.
+		 */
+		void dropActor(_Inout_ mref<ptr<Actor>> actor_);
+	};
 
 	/**/
 
