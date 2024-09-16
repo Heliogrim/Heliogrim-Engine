@@ -8,10 +8,6 @@
 #include "AssetDatabaseResult.hpp"
 #include "Asset/Asset.hpp"
 
-namespace hg {
-	class Heliogrim;
-}
-
 namespace hg::engine::assets {
 	class IAssetRegistry;
 }
@@ -19,16 +15,12 @@ namespace hg::engine::assets {
 namespace hg {
 	class AssetDatabase {
 	public:
-		using value_type = AssetDatabase;
+		using this_type = AssetDatabase;
 
 	public:
-		friend class ::hg::Heliogrim;
+		explicit AssetDatabase(nmpt<::hg::engine::assets::IAssetRegistry> internal_) noexcept;
 
-	private:
-		AssetDatabase(nmpt<::hg::engine::assets::IAssetRegistry> internal_);
-
-	public:
-		~AssetDatabase();
+		constexpr ~AssetDatabase() noexcept = default;
 
 	private:
 		nmpt<::hg::engine::assets::IAssetRegistry> _internal;
@@ -50,6 +42,15 @@ namespace hg {
 		[[nodiscard]] bool contains(cref<asset_guid> guid_) const noexcept;
 
 	public:
+		[[nodiscard]] auto find(cref<asset_guid> guid_) const {
+			return (*this)[guid_];
+		}
+
+		template <typename Type_>
+		[[nodiscard]] auto find(cref<asset_guid> guid_) const {
+			return this->operator[]<Type_>(guid_);
+		}
+
 		[[nodiscard]] AssetDatabaseResult<Asset> operator[](cref<asset_guid> guid_) const;
 
 		template <typename Type_> requires std::is_base_of_v<Asset, Type_>
@@ -100,4 +101,8 @@ namespace hg {
 		 */
 		bool erase(_Inout_ ref<Asset> asset_) noexcept;
 	};
+
+	/**/
+
+	[[nodiscard]] extern AssetDatabase GetAssets();
 }

@@ -11,10 +11,8 @@
 
 using namespace hg;
 
-AssetDatabase::AssetDatabase(nmpt<::hg::engine::assets::IAssetRegistry> internal_) :
+AssetDatabase::AssetDatabase(nmpt<::hg::engine::assets::IAssetRegistry> internal_) noexcept :
 	_internal(std::move(internal_)) {}
-
-AssetDatabase::~AssetDatabase() = default;
 
 decltype(AssetDatabase::_internal) AssetDatabase::unwrap() const noexcept {
 	return _internal;
@@ -61,4 +59,12 @@ bool AssetDatabase::insert(ref<Asset> asset_) noexcept {
 bool AssetDatabase::erase(ref<Asset> asset_) noexcept {
 	auto& idb { *static_cast<const non_owning_rptr<engine::assets::IAssetRegistry>>(_internal.get()) };
 	return idb.removeAssetByGuid(asset_.guid());
+}
+
+/**/
+
+AssetDatabase hg::GetAssets() {
+	return AssetDatabase {
+		engine::Engine::getEngine()->getAssets()->getRegistry().get()
+	};
 }
