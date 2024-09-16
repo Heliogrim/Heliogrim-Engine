@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Engine.Common/Collection/CompactArray.hpp>
+#include <Engine.Serialization/Access/__fwd.hpp>
 
 #include "../ModelComponent.hpp"
 #include "../../../Asset/Geometry/StaticGeometryAsset.hpp"
@@ -9,6 +10,10 @@
 namespace hg {
 	class StaticGeometryComponent :
 		public InheritMeta<StaticGeometryComponent, ModelComponent> {
+	public:
+		ACCESS_LAYOUT
+		ACCESS_STRUCTURE
+
 	public:
 		using this_type = StaticGeometryComponent;
 		using underlying_type = ModelComponent;

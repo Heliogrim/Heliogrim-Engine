@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Engine.Serialization/Access/__fwd.hpp>
+
 #include "CachedActorPointer.hpp"
 #include "LogicComponent.hpp"
 #include "../Math/BuildIn.hpp"
@@ -14,10 +16,14 @@ namespace hg {
 	class HierarchyComponent :
 		public InheritMeta<HierarchyComponent, LogicComponent> {
 	public:
+		ACCESS_LAYOUT
+		ACCESS_STRUCTURE
+
+	public:
 		using this_type = HierarchyComponent;
 		using underlying_type = LogicComponent;
 
-		inline constexpr static component_type_id typeId { "HierarchyComponent"_typeId };
+		constexpr static component_type_id typeId { "HierarchyComponent"_typeId };
 
 	public:
 		HierarchyComponent(
