@@ -177,6 +177,14 @@
 #endif
 #endif
 
+#if not defined(macro_attr_intr)
+#if defined(ENV_MSVC) && not defined(__clang__)
+#define macro_attr_intr [[msvc::intrinsic]]
+#else
+#define macro_attr_intr
+#endif
+#endif
+
 // Profiling
 #ifdef _PROFILING
 //#define SCOPED_STOPWATCH_V(var_) hg::profiling::ScopedStopwatch var_ {__FUNCSIG__};
