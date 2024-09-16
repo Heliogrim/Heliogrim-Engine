@@ -4,6 +4,7 @@
 #include <condition_variable>
 #include <memory>
 #include <mutex>
+#include <type_traits>
 #include <utility>
 
 #include "../Wrapper.hpp"
@@ -23,9 +24,7 @@ namespace hg::concurrent {
 		public:
 			future_state() :
 				_returned(),
-				_value(
-					std::is_nothrow_default_constructible_v<Ty> ? new Ty() : std::move(allocate())
-				) {}
+				_value(std::move(allocate())) {}
 
 			/**
 			 * Destructor
@@ -35,11 +34,12 @@ namespace hg::concurrent {
 			 */
 			~future_state() {
 				_mtx.lock();
-				if constexpr (std::is_nothrow_default_constructible_v<Ty>) {
-					delete _value;
-				} else {
-					deallocate(_value);
+
+				if (_returned.test(std::memory_order::relaxed)) {
+					_value->~Ty();
 				}
+				deallocate(_value);
+
 				_mtx.unlock();
 			}
 
@@ -67,12 +67,7 @@ namespace hg::concurrent {
 				if (_returned.test_and_set(std::memory_order::acq_rel))
 					throw std::runtime_error("Try to assign value to already assigned future state.");
 
-				if constexpr (std::is_nothrow_default_constructible_v<Type_>) {
-					(*_value) = std::move(val_);
-				} else {
-					new(_value) Type_(std::move(val_));
-				}
-
+				new(_value) Ty(std::forward<Type_>(val_));
 				_cv.notify_all();
 			}
 
