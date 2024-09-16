@@ -47,7 +47,7 @@ namespace hg::engine::serialization::layout {
 
 	public:
 		template <HasAccIter ContainerType_>
-		ref<this_type> withType() {
+		this_type withType() && {
 			this_type::_size = sizeof(ContainerType_);
 
 			this_type::_load = this_type::loadImpl<ContainerType_>;

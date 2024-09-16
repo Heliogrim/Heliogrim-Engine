@@ -5,9 +5,9 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/AutoArray.hpp>
 
-#include "../Archive/__fwd.hpp"
 #include "DataLayoutBase.hpp"
 #include "__fwd.hpp"
+#include "../Archive/__fwd.hpp"
 
 namespace hg::engine::serialization::layout {
 	class LayoutDefine {
@@ -15,7 +15,7 @@ namespace hg::engine::serialization::layout {
 		using this_type = LayoutDefine;
 
 	protected:
-		LayoutDefine(const u64 offset_, const s64 size_) :
+		constexpr LayoutDefine(const u64 offset_, const s64 size_) :
 			_offset(offset_),
 			_size(size_),
 			_store(nullptr),

@@ -49,7 +49,7 @@ namespace hg::engine::serialization {
 		 */
 		template <layout::LayoutDefineValueType ValueType_>
 		void defineValue(const u64 offset_) {
-			define(make_ptr<layout::LayoutDefineValue<ValueType_>>(offset_));
+			define(layout::LayoutDefineValue<ValueType_> { offset_ });
 		}
 
 		/**
@@ -70,7 +70,7 @@ namespace hg::engine::serialization {
 		 * @param layout_ The serialization data layout of the object type to handle.
 		 */
 		void defineObject(const u64 offset_, cref<sptr<DataLayoutBase>> layout_) {
-			define(make_ptr<layout::LayoutDefineObject>(offset_, layout_));
+			define(layout::LayoutDefineObject { offset_, layout_ });
 		}
 
 		/**
@@ -90,7 +90,7 @@ namespace hg::engine::serialization {
 		 */
 		template <typename ContainerType_>
 		void defineSlice(const u64 offset_, cref<sptr<DataLayoutBase>> layout_) {
-			define(&make_ptr<layout::LayoutDefineSlice>(offset_, layout_)->withType<ContainerType_>());
+			define(layout::LayoutDefineSlice { offset_, layout_ }.withType<ContainerType_>());
 		}
 
 		/**
@@ -112,7 +112,7 @@ namespace hg::engine::serialization {
 		 * @param count_ The contiguous amount of elements described by `layout_` to be considered at `offset_`.
 		 */
 		void defineSpan(const u64 offset_, cref<sptr<DataLayoutBase>> layout_, const u64 count_) {
-			define(make_ptr<layout::LayoutDefineSpan>(offset_, layout_, count_));
+			define(layout::LayoutDefineSpan { offset_, layout_, count_ });
 		}
 
 	public:
