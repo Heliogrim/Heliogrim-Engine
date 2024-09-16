@@ -152,6 +152,39 @@ namespace hg {
 		void registerComponents(_Inout_ ref<IComponentRegisterContext> context_);
 	};
 
+	/**/
+
+	template <class ActorType_ = Actor>
+	class VolatileActor final :
+		public UniquePtr<ActorType_, void(*)(ptr<Actor>)> {
+	public:
+		template <class Type_>
+		friend class VolatileActor;
+
+	public:
+		using this_type = VolatileActor<ActorType_>;
+		using actor_type = ActorType_;
+		using base_type = UniquePtr<ActorType_, void(*)(ptr<Actor>)>;
+
+	public:
+		using base_type::base_type;
+
+		VolatileActor() = delete;
+
+		constexpr explicit VolatileActor(_Inout_ mref<ptr<ActorType_>> actor_) noexcept :
+			base_type(actor_, VolatileActor<Actor>::destroy) {}
+
+		template <class Type_>
+		constexpr explicit VolatileActor(_Inout_ mref<VolatileActor<Type_>> other_) noexcept :
+			// TODO: Replace with secure down cast
+			base_type(static_cast<typename base_type::pointer>(other_.release()), VolatileActor<Actor>::destroy) {}
+
+	public:
+		static void destroy(ptr<Actor> obj_);
+	};
+
+	/**/
+
 	/**
 	 * Registers a new ActorClass to the engine
 	 *
@@ -189,11 +222,9 @@ namespace hg {
 	 * @author Julius
 	 * @date 25.11.2021
 	 *
-	 * @param universe_ The universe where to create the actor
-	 *
 	 * @returns A pointer to the newly created actor if succeeded, otherwise nullptr
 	 */
-	[[nodiscard]] extern ptr<Actor> CreateActor(cref<Universe> universe_);
+	[[nodiscard]] extern VolatileActor<> CreateActor();
 
 	/**
 	 * Create a new default actor object
@@ -203,11 +234,9 @@ namespace hg {
 	 * @author Julius
 	 * @date 25.11.2021
 	 *
-	 * @param universe_ The universe where to create the actor
-	 *
 	 * @returns A future, containing the newly created actor if succeeded, otherwise nullptr
 	 */
-	[[nodiscard]] extern Future<ptr<Actor>> CreateActor(cref<Universe> universe_, async_t);
+	[[nodiscard]] extern Future<VolatileActor<>> CreateActor(async_t);
 
 	/**
 	 * Creates a new actor object based on given actor class
@@ -218,20 +247,15 @@ namespace hg {
 	 * @date 25.11.2021
 	 *
 	 * @param class_ The actor class to instantiate
-	 * @param universe_ The universe where to create the actor
 	 *
 	 * @returns A pointer to the newly created actor if succeeded, otherwise nullptr
 	 */
-	[[nodiscard]] extern ptr<Actor> CreateActor(
-		_In_ ptr<const ActorClass> class_,
-		cref<Universe> universe_
-	) noexcept;
+	[[nodiscard]] extern VolatileActor<> CreateActor(_In_ ptr<const ActorClass> class_) noexcept;
 
 	template <class ActorType_>
-	[[nodiscard]] ptr<ActorType_> CreateActor(cref<Universe> universe_) {
-		return Cast<ActorType_, Actor, false>(
-			CreateActor(Reflect::SubstitudeActorClass<ActorType_>::Known(), universe_)
-		);
+	[[nodiscard]] VolatileActor<ActorType_> CreateActor() {
+		// TODO: Secure cast
+		return static_cast<VolatileActor<ActorType_>>(CreateActor(Reflect::SubstitudeActorClass<ActorType_>::Known()));
 	}
 
 	/**
@@ -244,14 +268,12 @@ namespace hg {
 	 *
 	 * @param class_ The actor class to instantiate.
 	 * @param serialized_ The serialized data to use.
-	 * @param universe_ The universe where to create the actor
 	 *
 	 * @returns A future, containing the newly created actor is succeeded, otherwise nullptr
 	 */
-	[[nodiscard]] extern Future<ptr<Actor>> CreateActor(
+	[[nodiscard]] extern Future<VolatileActor<>> CreateActor(
 		_In_ ptr<const ActorClass> class_,
-		_In_ cref<SerializedActor> serialized_,
-		_In_ cref<Universe> universe_
+		_In_ cref<SerializedActor> serialized_
 	) noexcept;
 
 	/**
@@ -307,6 +329,15 @@ namespace hg {
 		_In_ cref<SerializedActor> serialized_,
 		_In_ cref<Universe> universe_
 	) noexcept;
+
+	/**
+	 * Destroys the provided volatile actor instance
+	 *
+	 * @param actor_ The volatile actor to destroy.
+	 *
+	 * @returns True if succeeded, otherwise false.
+	 */
+	[[nodiscard]] extern bool Destroy(mref<VolatileActor<>> actor_) noexcept;
 
 	/**
 	 * Destroys the given actor

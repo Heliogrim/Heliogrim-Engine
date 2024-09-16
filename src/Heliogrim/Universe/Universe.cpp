@@ -61,9 +61,15 @@ bool Universe::removeLevel(cref<Level> level_) {
 	return true;
 }
 
-bool Universe::addActor(const ptr<Actor> actor_) {
+ptr<Actor> Universe::addActor(mref<VolatileActor<>> actor_) {
 
 	const auto* const universe = _internal.get();
+
+	/**/
+	auto actor = actor_.release();
+	universe->getRootLevel()->addActor(actor);
+
+	/**/
 	const auto scene = universe->getScene();
 	const auto ctx = scene->registerContext();
 
@@ -71,19 +77,37 @@ bool Universe::addActor(const ptr<Actor> actor_) {
 
 	/**/
 
-	return true;
+	return actor;
 }
 
-bool Universe::removeActor(const ptr<Actor> actor_) {
+VolatileActor<> Universe::removeActor(ptr<Actor> actor_) {
 
 	const auto* const universe = _internal.get();
+
+	/**/
+	universe->getRootLevel()->removeActor(actor_);
+
+	/**/
 	const auto scene = universe->getScene();
 	const auto ctx = scene->registerContext();
 	// actor_->unregisterComponents(ctx);
 
 	/**/
 
-	return true;
+	return VolatileActor<> { ::hg::move(actor_) };
+}
+
+void Universe::dropActor(mref<ptr<Actor>> actor_) {
+	const auto* const universe = _internal.get();
+	universe->getRootLevel()->removeActor(actor_);
+
+	/**/
+	const auto scene = universe->getScene();
+	const auto ctx = scene->registerContext();
+	// actor_->unregisterComponents(ctx);
+
+	/**/
+	VolatileActor<>::destroy(::hg::move(actor_));
 }
 
 Future<Universe> hg::CreateUniverse() noexcept {
