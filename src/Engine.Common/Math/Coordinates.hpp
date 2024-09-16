@@ -9,6 +9,8 @@ namespace hg::math {
 
 	inline constexpr static vec3 vec3_one { 1, 1, 1 };
 
+	inline constexpr static vec3 vec3_inf { std::numeric_limits<vec3::value_type>::infinity() };
+
 	inline constexpr static vec3 vec3_up { 0, 1, 0 };
 
 	inline constexpr static vec3 vec3_down { 0, -1, 0 };
@@ -30,6 +32,8 @@ namespace hg::math {
 	inline constexpr static vec2 vec2_zero { 0, 0 };
 
 	inline constexpr static vec2 vec2_one { 0, 0 };
+
+	inline constexpr static vec2 vec2_inf { std::numeric_limits<vec2::value_type>::infinity() };
 
 	inline constexpr static vec2 vec2_up { 0, 1 };
 
