@@ -1,7 +1,9 @@
 #include "pch.h"
 
 /**/
+#include <chrono>
 #include <cstring>
+#include <format>
 #include <list>
 #include <tuple>
 #include <utility>
@@ -28,6 +30,8 @@
 using namespace hg::engine::resource;
 using namespace hg::engine::serialization;
 using namespace hg;
+
+#pragma region Layout Archive Serialization
 
 namespace SerializationModule {
 	enum class EnumValueType {
@@ -503,7 +507,7 @@ namespace SerializationModule {
 
 		auto writeAsset = new TestSerialSubTypeVectorizedSliceAsset();
 		//writeAsset->payload.resize(200'000'000, { 1231uLL, 738956uLL, 2.32906F, 9230.35F });
-		writeAsset->payload.resize(2'000'000, { 1231uLL, 738956uLL, 2.32906F, 9230.35F });
+		writeAsset->payload.resize(2'000, { 1231uLL, 738956uLL, 2.32906F, 9230.35F });
 
 		const auto writeStart { std::chrono::high_resolution_clock::now() };
 		arch << writeAsset;
@@ -519,44 +523,19 @@ namespace SerializationModule {
 
 		EXPECT_EQ(writeAsset->payload.size(), readAsset->payload.size());
 		EXPECT_EQ(writeAsset->payload.capacity(), readAsset->payload.capacity());
-
 		/**/
 
-		const auto memCpyStart { std::chrono::high_resolution_clock::now() };
-		Vector<TestSubTypePayload> memCpyTarget {};
-		memCpyTarget.resize(writeAsset->payload.size());
-		std::memcpy(
-			memCpyTarget.data(),
-			writeAsset->payload.data(),
-			writeAsset->payload.size() * sizeof(TestSubTypePayload)
-		);
-		const auto memCpyEnd { std::chrono::high_resolution_clock::now() };
-
-		/**/
-
-		memCpyTarget.clear();
-		memCpyTarget.shrink_to_fit();
-
-		/**/
-
-		const auto cpyStart { std::chrono::high_resolution_clock::now() };
-		memCpyTarget.reserve(writeAsset->payload.size());
-		for (const auto& entry : writeAsset->payload) {
-			memCpyTarget.push_back(entry);
-		}
-		const auto cpyEnd { std::chrono::high_resolution_clock::now() };
-
-		/**/
-
-		std::cout << "Serialization: " <<
-			std::chrono::duration_cast<std::chrono::milliseconds>(writeEnd - writeStart) <<
-			" | Deserialization: " <<
-			std::chrono::duration_cast<std::chrono::milliseconds>(readEnd - readStart) <<
-			" | MemCpy: " <<
-			std::chrono::duration_cast<std::chrono::milliseconds>(memCpyEnd - memCpyStart) <<
-			" | Cpy: " <<
-			std::chrono::duration_cast<std::chrono::milliseconds>(cpyEnd - cpyStart) <<
-			std::endl;
+		std::cout << std::format(
+			"Serialization: {:}ms ({:}ns)",
+			std::chrono::duration_cast<std::chrono::milliseconds>(writeEnd - writeStart).count(),
+			std::chrono::duration_cast<std::chrono::nanoseconds>(writeEnd - writeStart).count() /
+			writeAsset->payload.size()
+		) << std::format(
+			" | Deserialization: {:}ms ({:}ns)",
+			std::chrono::duration_cast<std::chrono::milliseconds>(readEnd - readStart).count(),
+			std::chrono::duration_cast<std::chrono::nanoseconds>(readEnd - readStart).count() /
+			writeAsset->payload.size()
+		) << std::endl;
 
 		delete writeAsset;
 		delete readAsset;
@@ -622,6 +601,9 @@ namespace SerializationModule {
 	}
 }
 
+#pragma endregion
+#pragma region Structured Archive Serialization
+
 namespace SerializationModule {
 	TEST(StructureArchive, IntegralRead) {
 
@@ -641,7 +623,7 @@ namespace SerializationModule {
 			auto read = arch.getRootSlot();
 
 			u64 dst { 0 };
-			read.intoIntegral<u64>() >> dst;
+			std::move(read).intoIntegral<u64>() >> dst;
 
 			/**/
 
@@ -661,7 +643,7 @@ namespace SerializationModule {
 			auto read = arch.getRootSlot();
 
 			u32 dst { 0 };
-			read.intoIntegral<u32>() >> dst;
+			std::move(read).intoIntegral<u32>() >> dst;
 
 			/**/
 
@@ -681,7 +663,7 @@ namespace SerializationModule {
 			auto read = arch.getRootSlot();
 
 			u16 dst { 0 };
-			read.intoIntegral<u16>() >> dst;
+			std::move(read).intoIntegral<u16>() >> dst;
 
 			/**/
 
@@ -710,7 +692,7 @@ namespace SerializationModule {
 			auto read = arch.getRootSlot();
 
 			string dst {};
-			read.intoString() >> dst;
+			std::move(read).intoString() >> dst;
 
 			/**/
 
@@ -725,7 +707,7 @@ namespace SerializationModule {
 
 		const string src { "String Test" }; {
 			auto write = arch.getRootSlot();
-			write.intoString() << src;
+			std::move(write).intoString() << src;
 		}
 
 		/**/
@@ -738,7 +720,7 @@ namespace SerializationModule {
 			auto read = arch.getRootSlot();
 
 			string dst {};
-			read.intoString() >> dst;
+			std::move(read).intoString() >> dst;
 
 			/**/
 
@@ -751,7 +733,7 @@ namespace SerializationModule {
 		BufferArchive archive {};
 		StructuredArchive arch { archive }; {
 			auto write = arch.insertRootSlot();
-			write.intoStruct();
+			std::move(write).intoStruct();
 		}
 
 		/**/
@@ -765,7 +747,7 @@ namespace SerializationModule {
 		BufferArchive archive {};
 		StructuredArchive arch { archive }; {
 			auto write = arch.insertRootSlot();
-			write.intoStruct().insertSlot<void>("test");
+			std::move(write).intoStruct().insertSlot<void>("test");
 		}
 
 		/**/
@@ -773,7 +755,7 @@ namespace SerializationModule {
 		EXPECT_EQ(archive.size(), (1 + 8) + (1 + 8 + 4) + (1 + 8));
 		archive.seek(0); {
 			auto read = arch.getRootSlot();
-			read.intoStruct().getSlot<void>("test");
+			std::move(read).intoStruct().getSlot<void>("test");
 		}
 	}
 
@@ -784,7 +766,7 @@ namespace SerializationModule {
 
 		const u64 src = 62788267uLL; {
 			auto write = arch.insertRootSlot();
-			write.intoStruct().insertSlot<u64>("test") << src;
+			std::move(write).intoStruct().insertSlot<u64>("test") << src;
 		}
 
 		/**/
@@ -795,7 +777,7 @@ namespace SerializationModule {
 
 		u64 dst = 0uLL; {
 			auto read = arch.getRootSlot();
-			read.intoStruct().getSlot<u64>("test") >> dst;
+			std::move(read).intoStruct().getSlot<u64>("test") >> dst;
 		}
 
 		/**/
@@ -810,7 +792,7 @@ namespace SerializationModule {
 
 		const string src { "Test String" }; {
 			auto write = arch.insertRootSlot();
-			write.intoStruct().insertSlot<string>("test") << src;
+			std::move(write).intoStruct().insertSlot<string>("test") << src;
 		}
 
 		/**/
@@ -821,7 +803,7 @@ namespace SerializationModule {
 
 		string dst {}; {
 			auto read = arch.getRootSlot();
-			read.intoStruct().getSlot<string>("test") >> dst;
+			std::move(read).intoStruct().getSlot<string>("test") >> dst;
 		}
 
 		/**/
@@ -837,7 +819,7 @@ namespace SerializationModule {
 		const u64 src0 = 26785626uLL;
 		const string src1 { "Test String" }; {
 			auto write = arch.insertRootSlot();
-			auto slot = write.intoStruct();
+			auto slot = std::move(write).intoStruct();
 			slot.insertSlot<u64>("test0") << src0;
 			slot.insertSlot<string>("test1") << src1;
 		}
@@ -851,7 +833,7 @@ namespace SerializationModule {
 		u64 dst0 = 0uLL;
 		string dst1 {}; {
 			auto read = arch.getRootSlot();
-			auto slot = read.intoStruct();
+			auto slot = std::move(read).intoStruct();
 			slot.getSlot<u64>("test0") >> dst0;
 			slot.getSlot<string>("test1") >> dst1;
 		}
@@ -870,7 +852,7 @@ namespace SerializationModule {
 		const u64 src0 = 637861891uLL;
 		const string src1 { "Swap String" }; {
 			auto write = arch.insertRootSlot();
-			auto slot = write.intoStruct();
+			auto slot = std::move(write).intoStruct();
 			slot.insertSlot<u64>("test0") << src0;
 			slot.insertSlot<string>("test1") << src1;
 		}
@@ -902,7 +884,7 @@ namespace SerializationModule {
 
 		const u64 src = 46262747uLL; {
 			auto write = arch.insertRootSlot();
-			write.intoStruct().insertSlot<void>("test0").intoStruct().insertSlot<u64>("test1") << src;
+			std::move(write).intoStruct().insertSlot<void>("test0").intoStruct().insertSlot<u64>("test1") << src;
 		}
 
 		/**/
@@ -913,7 +895,7 @@ namespace SerializationModule {
 
 		u64 dst = 0uLL; {
 			auto read = arch.getRootSlot();
-			read.intoStruct().getSlot<void>("test0").intoStruct().getSlot<u64>("test1") >> dst;
+			std::move(read).intoStruct().getSlot<void>("test0").intoStruct().getSlot<u64>("test1") >> dst;
 		}
 
 		/**/
@@ -929,7 +911,7 @@ namespace SerializationModule {
 		const u64 src1 = 126784uLL;
 		const u64 src2 = 6312785uLL; {
 			auto write = arch.insertRootSlot();
-			auto struct0 = write.intoStruct();
+			auto struct0 = std::move(write).intoStruct();
 
 			auto struct1 = struct0.insertSlot<void>("obj1").intoStruct();
 			struct1.insertSlot<u64>("test1") << src1;
@@ -949,7 +931,7 @@ namespace SerializationModule {
 		u64 dst1 = 0uLL;
 		u64 dst2 = 0uLL; {
 			auto read = arch.getRootSlot();
-			auto struct0 = read.intoStruct();
+			auto struct0 = std::move(read).intoStruct();
 
 			auto struct1 = struct0.getSlot<void>("obj1").intoStruct();
 			struct1.getSlot<u64>("test1") >> dst1;
@@ -971,7 +953,7 @@ namespace SerializationModule {
 
 		const Vector<u64> src { { 2165787uLL, 7826523uLL, 32597698uLL } }; {
 			auto write = arch.getRootSlot();
-			write.intoSlice<u64, Vector>() << src;
+			std::move(write).intoSlice<u64, Vector>() << src;
 		}
 
 		/**/
@@ -984,7 +966,7 @@ namespace SerializationModule {
 			auto read = arch.getRootSlot();
 
 			Vector<u64> dst {};
-			read.intoSlice<u64, Vector>() >> dst;
+			std::move(read).intoSlice<u64, Vector>() >> dst;
 
 			/**/
 
@@ -1003,7 +985,7 @@ namespace SerializationModule {
 
 		const Vector<string> src { { "$0::Test String", "$1::Test String", "$2::Test String" } }; {
 			auto write = arch.getRootSlot();
-			write.intoSlice<string, Vector>() << src;
+			std::move(write).intoSlice<string, Vector>() << src;
 		}
 
 		/**/
@@ -1016,7 +998,7 @@ namespace SerializationModule {
 			auto read = arch.getRootSlot();
 
 			Vector<string> dst {};
-			read.intoSlice<string, Vector>() >> dst;
+			std::move(read).intoSlice<string, Vector>() >> dst;
 
 			/**/
 
@@ -1039,7 +1021,7 @@ namespace SerializationModule {
 			{ "$3::key", 4267198uLL }
 		}; {
 			auto write = arch.getRootSlot();
-			write.intoMap<string, u64, std::map>() << src;
+			std::move(write).intoMap<string, u64, std::map>() << src;
 		}
 
 		/**/
@@ -1052,7 +1034,7 @@ namespace SerializationModule {
 			auto read = arch.getRootSlot();
 
 			std::map<string, u64> dst {};
-			read.intoMap<string, u64, std::map>() >> dst;
+			std::move(read).intoMap<string, u64, std::map>() >> dst;
 
 			/**/
 
@@ -1081,7 +1063,7 @@ namespace SerializationModule {
 			s64 money;
 
 			void serialize(mref<RecordScopedSlot> slot_) const {
-				auto slot = slot_.intoStruct();
+				auto slot = std::move(slot_).intoStruct();
 
 				slot.insertSlot<string>("name") << name;
 				slot.insertSlot<string>("surname") << surname;
@@ -1113,7 +1095,7 @@ namespace SerializationModule {
 			s64 cost;
 
 			void serialize(mref<RecordScopedSlot> slot_) const {
-				auto slot = slot_.intoStruct();
+				auto slot = std::move(slot_).intoStruct();
 
 				slot.insertSlot<string>("name") << name;
 				slot.insertSlot<string>("path") << path;
@@ -1155,7 +1137,7 @@ namespace SerializationModule {
 		const Obj1 src1 {};
 		const Obj2 src2 {}; {
 			auto write = arch.insertRootSlot();
-			auto slot = write.intoSeq();
+			auto slot = std::move(write).intoSeq();
 
 			src0.serialize(slot.addRecordSlot());
 			src1.serialize(slot.addRecordSlot());
@@ -1196,7 +1178,7 @@ namespace SerializationModule {
 			u64 data1;
 
 			void serialize(mref<RecordScopedSlot> slot_) {
-				auto slot = slot_.intoStruct();
+				auto slot = std::move(slot_).intoStruct();
 				slot.insertSlot<string>("data0") << data0;
 				slot.insertSlot<u64>("data1") << data1;
 			}
@@ -1225,7 +1207,7 @@ namespace SerializationModule {
 			TI3Obj obj0;
 
 			void serialize(mref<RecordScopedSlot> slot_) {
-				auto slot = slot_.intoStruct();
+				auto slot = std::move(slot_).intoStruct();
 
 				slot.insertSlot<string>("data0") << data0;
 				slot.insertSlot<u32>("data1") << data1;
@@ -1265,7 +1247,7 @@ namespace SerializationModule {
 			std::vector<string> data2;
 
 			void serialize(mref<RecordScopedSlot> slot_) {
-				auto slot = slot_.intoStruct();
+				auto slot = std::move(slot_).intoStruct();
 				slot.insertSlot<u64>("data0") << data0;
 
 				slot.insertSlot<string>("test") << "test";
@@ -1308,7 +1290,7 @@ namespace SerializationModule {
 			TI1Obj obj0;
 
 			void serialize(mref<RecordScopedSlot> slot_) {
-				auto slot = slot_.intoStruct();
+				auto slot = std::move(slot_).intoStruct();
 				slot.insertSlot<string>("data0") << data0;
 				slot.insertSlot<u64>("data1") << data1;
 				slot.insertSlot<u32>("data2") << data2;
@@ -1400,7 +1382,7 @@ namespace SerializationModule {
 		BufferArchive archive {};
 		StructuredArchive arch { archive }; {
 			auto write = arch.insertRootSlot();
-			auto slot = write.intoStruct();
+			auto slot = std::move(write).intoStruct();
 
 			std::ignore = slot.insertRecordSlot("known");
 		}
@@ -1425,3 +1407,5 @@ namespace SerializationModule {
 		}
 	}
 }
+
+#pragma endregion

@@ -13,8 +13,8 @@ namespace hg::engine::assets {
 		template <typename>
 		friend class ::hg::engine::serialization::DataLayout;
 
-		template <class>
-		friend class ::hg::engine::serialization::access::Structure;
+		ACCESS_LAYOUT
+		ACCESS_STRUCTURE
 
 	public:
 		constexpr static asset_type_id typeId { "Image"_typeId };

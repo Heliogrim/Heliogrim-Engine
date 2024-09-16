@@ -9,17 +9,15 @@ using namespace hg::engine::serialization;
 using namespace hg;
 
 template <>
-void access::Structure<math::ivec3>::serialize(const math::ivec3* const self_, mref<RecordScopedSlot> slot_) {
-	auto slot = slot_.intoStruct();
-	slot.insertSlot<s32>("x") << self_->x;
-	slot.insertSlot<s32>("y") << self_->y;
-	slot.insertSlot<s32>("z") << self_->z;
+void access::Structure<math::ivec3>::serialize(const math::vec3_t<int>& self_, mref<StructScopedSlot> slot_) {
+	slot_.insertSlot<s32>("x") << self_.x;
+	slot_.insertSlot<s32>("y") << self_.y;
+	slot_.insertSlot<s32>("z") << self_.z;
 }
 
 template <>
-void access::Structure<math::ivec3>::deserialize(math::ivec3* const self_, mref<RecordScopedSlot> slot_) {
-	const auto slot = slot_.intoStruct();
-	slot.getSlot<s32>("x") >> self_->x;
-	slot.getSlot<s32>("y") >> self_->y;
-	slot.getSlot<s32>("z") >> self_->z;
+void access::Structure<math::ivec3>::hydrate(cref<StructScopedSlot> slot_, math::vec3_t<int>& target_) {
+	slot_.getSlot<s32>("x") >> target_.x;
+	slot_.getSlot<s32>("y") >> target_.y;
+	slot_.getSlot<s32>("z") >> target_.z;
 }
