@@ -85,29 +85,9 @@ namespace hg {
 		[[nodiscard]] cref<decltype(_internal)> unwrap() const noexcept;
 
 	public:
-		/**
-		 * Tries to add the given level to this universe
-		 *
-		 * @author Julius
-		 * @date 24.10.2021
-		 *
-		 * @param  level_ The level.
-		 *
-		 * @returns True if it succeeds, false if it fails.
-		 */
-		_Success_(return == true) bool addLevel(_In_ ptr<Level> level_);
+		_Success_(return == true) bool addLevel(_In_ cref<Level> level_);
 
-		/**
-		 * Removes the level from this universe
-		 *
-		 * @author Julius
-		 * @date 24.10.2021
-		 *
-		 * @param  level_ The level.
-		 *
-		 * @returns True if it succeeds, false if it fails.
-		 */
-		_Success_(return == true) bool removeLevel(_In_ ptr<Level> level_);
+		_Success_(return == true) bool removeLevel(_In_ cref<Level> level_);
 
 	public:
 		/**

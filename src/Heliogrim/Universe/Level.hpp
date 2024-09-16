@@ -1,75 +1,60 @@
 #pragma once
 
+#include <Engine.Common/Optional.hpp>
 #include <Engine.Common/Sal.hpp>
+#include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Managed/Rc.hpp>
 
 #include "../Actor/Actor.hpp"
 #include "../Async/Future.hpp"
 #include "../Math/BuildIn.hpp"
 
 namespace hg {
-	class Level :
-		public InheritBase<Level> {
+	class LevelAsset;
+}
+
+namespace hg::engine::core {
+	class Level;
+}
+
+namespace hg {
+	/**/
+
+	struct LevelQueryOptions {};
+
+	struct LevelLoadOptions {};
+
+	struct LevelSaveOptions {};
+
+	/**/
+
+	class Level {
 	public:
 		using this_type = Level;
-		using underlying_type = InheritBase<Level>;
 
 	public:
-		/**
-		 * Default constructor
-		 *
-		 * @author Julius
-		 * @date 24.10.2021
-		 */
 		Level() noexcept;
 
-		/**
-		 * Copy Constructor
-		 *
-		 * @author Julius
-		 * @date 24.10.2021
-		 *
-		 * @param  other_ The other.
-		 */
+		explicit Level(mref<Arci<::hg::engine::core::Level>> internal_);
+
 		Level(_In_ cref<Level> other_) noexcept;
 
-		/**
-		 * Move Constructor
-		 *
-		 * @author Julius
-		 * @date 24.10.2021
-		 *
-		 * @param  other_ The other.
-		 */
 		Level(_Inout_ mref<Level> other_) noexcept;
 
-		/**
-		 * Destructor
-		 *
-		 * @author Julius
-		 * @date 24.10.2021
-		 */
-		~Level() noexcept override;
+		~Level() noexcept;
 
 	public:
-		/**
-		 * Copy Assignment
-		 *
-		 * @author Julius
-		 * @date 24.10.2021
-		 *
-		 * @returns A shallow copy of this.
-		 */
+		ref<Level> operator=(mref<Level>) noexcept;
+
 		ref<Level> operator=(cref<Level>) = delete;
 
-		/**
-		 * Move Assignment
-		 *
-		 * @author Julius
-		 * @date 24.10.2021
-		 *
-		 * @returns A shallow copy of this.
-		 */
-		ref<Level> operator=(mref<Level>) noexcept = delete;
+	private:
+		Arci<::hg::engine::core::Level> _internal;
+
+	public:
+		[[nodiscard]] bool valid() const noexcept;
+
+		[[nodiscard]] cref<decltype(_internal)> unwrap() const noexcept;
 
 	public:
 		/**
@@ -107,37 +92,38 @@ namespace hg {
 	 */
 	[[nodiscard, deprecated]] extern Future<ptr<Level>> CreateLevel() noexcept;
 
-	/**
-	 * Gets a collection of the current active Levels
-	 *
-	 * @author Julius
-	 * @date 25.11.2021
-	 *
-	 * @returns A collection containing the pointers to and amount of active levels.
-	 */
-	[[nodiscard, deprecated]] extern Vector<ptr<Level>> GetLevels() noexcept;
+	/**/
 
-	/**
-	 * Gets the primary active level at the given location
-	 *
-	 * @author Julius
-	 * @date 25.11.2021
-	 *
-	 * @param location_ The position where to look for an active level.
-	 *
-	 * @returns The pointer to the active level instance, otherwise nullptr
-	 */
-	[[nodiscard, deprecated]] extern ptr<Level> GetLevelAt(_In_ Vector3 location_) noexcept;
+	[[nodiscard]] extern Future<Level> CreateLevel() noexcept;
 
-	/**
-	 * Destroy the given level and it's implicit resources
-	 *
-	 * @author Julius
-	 * @date 25.10.2021
-	 *
-	 * @param  level_ The Level instance to destroy.
-	 *
-	 * @returns A future, representing whether the entity was successfully destroyed.
-	 */
-	[[nodiscard, deprecated]] extern Future<bool> Destroy(mref<ptr<Level>> level_) noexcept;
+	[[nodiscard]] extern Future<Level> LoadLevel(
+		_In_ cref<LevelAsset> levelAsset_,
+		Opt<LevelLoadOptions> options_ = None
+	) noexcept;
+
+	extern Vector<Level> GetLevels(
+		_In_ cref<Universe> universe_,
+		Opt<LevelQueryOptions> options_ = None
+	) noexcept;
+
+	[[nodiscard]] extern Vector<Level> GetLevelsAt(
+		_In_ cref<Universe> universe_,
+		_In_ Vector3 location_,
+		Opt<LevelQueryOptions> options_ = None
+	) noexcept;
+
+	[[nodiscard]] extern Future<bool> SaveLevel(
+		_Inout_ ref<LevelAsset> levelAsset_,
+		Opt<LevelSaveOptions> options_ = None
+	) noexcept;
+
+	[[nodiscard]] extern Future<bool> SaveLevel(
+		_In_ cref<Level> level_,
+		_Inout_ ref<LevelAsset> levelAsset_,
+		Opt<LevelSaveOptions> options_ = None
+	) noexcept;
+
+	[[nodiscard]] extern Future<bool> Destroy(
+		mref<Level> level_
+	) noexcept;
 }

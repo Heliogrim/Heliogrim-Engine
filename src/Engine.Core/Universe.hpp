@@ -1,7 +1,16 @@
 #pragma once
 
+#include <span>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
+
+#include "Engine.Common/Optional.hpp"
+#include "Engine.Common/Collection/DenseSet.hpp"
+#include "Engine.Common/Managed/Rc.hpp"
+
+namespace hg::engine::core {
+	class Level;
+}
 
 namespace hg::engine::scene {
 	class SceneBase;
@@ -13,7 +22,10 @@ namespace hg::engine::core {
 		using this_type = Universe;
 
 	public:
-		explicit Universe(mref<uptr<scene::SceneBase>> scene_);
+		Universe(
+			mref<uptr<scene::SceneBase>> scene_,
+			mref<DenseSet<Arci<core::Level>>> levels_
+		);
 
 		Universe(cref<this_type>) = delete;
 
@@ -26,5 +38,18 @@ namespace hg::engine::core {
 
 	public:
 		[[nodiscard]] nmpt<scene::SceneBase> getScene() const noexcept;
+
+	private:
+		DenseSet<Arci<core::Level>> _levels;
+		Opt<Arci<core::Level>> _rootLevel;
+
+	public:
+		void addLevel(mref<Arci<core::Level>> level_);
+
+		[[nodiscard]] std::span<const Arci<core::Level>> getLevels() const noexcept;
+
+		[[nodiscard]] cref<Arci<core::Level>> getRootLevel() const noexcept;
+
+		void removeLevel(cref<Arci<core::Level>> level_);
 	};
 }
