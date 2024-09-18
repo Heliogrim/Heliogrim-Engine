@@ -7,11 +7,11 @@ using namespace hg::engine::resource;
 using namespace hg;
 
 StorageBaseArchive::StorageBaseArchive(
-	mref<streamoff> offset_,
-	mref<streamsize> capacity_
+	mref<streamoff> baseOffset_,
+	mref<streamsize> initialSize_
 ) :
-	_offset(std::move(offset_)),
-	_capacity(std::move(capacity_)),
+	_baseOffset(baseOffset_),
+	_size(initialSize_),
 	_cursor(0) {}
 
 StorageBaseArchive::~StorageBaseArchive() noexcept = default;

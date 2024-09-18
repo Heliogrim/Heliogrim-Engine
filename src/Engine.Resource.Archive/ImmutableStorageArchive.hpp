@@ -10,10 +10,10 @@ namespace hg::engine::resource {
 	protected:
 		ImmutableStorageArchive(
 			mref<storage::AccessBlobReadonly> storage_,
-			mref<streamoff> offset_,
-			mref<streamsize> capacity_
+			mref<streamoff> baseOffset_,
+			mref<streamsize> initialSize_
 		) :
-			StorageBaseArchive(std::move(offset_), std::move(capacity_)),
+			StorageBaseArchive(std::move(baseOffset_), std::move(initialSize_)),
 			_storage(std::move(storage_)) {}
 
 	public:

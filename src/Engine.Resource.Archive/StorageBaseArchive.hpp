@@ -17,8 +17,8 @@ namespace hg::engine::resource {
 
 	protected:
 		StorageBaseArchive(
-			mref<streamoff> offset_,
-			mref<streamsize> capacity_
+			mref<streamoff> baseOffset_,
+			mref<streamsize> initialSize_
 		);
 
 	public:
@@ -34,8 +34,8 @@ namespace hg::engine::resource {
 		ref<this_type> operator=(mref<this_type>) = delete;
 
 	protected:
-		streamoff _offset;
-		streamsize _capacity;
+		streamoff _baseOffset;
+		streamsize _size;
 		s64 _cursor;
 
 	public:
