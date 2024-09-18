@@ -1,10 +1,16 @@
 #pragma once
 
+#include <Engine.Serialization/Access/__fwd.hpp>
+
 #include "Location.hpp"
 #include "Rotator.hpp"
 
 namespace hg::math {
 	class Transform {
+	public:
+		ACCESS_LAYOUT
+		ACCESS_STRUCTURE
+
 	public:
 		using this_type = Transform;
 
