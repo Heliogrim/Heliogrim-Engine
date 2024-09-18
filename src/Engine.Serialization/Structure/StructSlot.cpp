@@ -9,12 +9,12 @@
 using namespace hg::engine::serialization;
 using namespace hg;
 
-StructSlot::StructSlot(cref<StructureSlotState> state_) :
+StructSlot::StructSlot(cref<StructureSlotState> state_) noexcept :
 	StructureSlotBase(state_) {
 	_state.header = StructureSlotHeader::from<StructureSlotType::eStruct>();
 }
 
-StructSlot::StructSlot(mref<StructureSlotState> state_) :
+StructSlot::StructSlot(mref<StructureSlotState> state_) noexcept :
 	StructureSlotBase(std::move(state_)) {
 	_state.header = StructureSlotHeader::from<StructureSlotType::eStruct>();
 }

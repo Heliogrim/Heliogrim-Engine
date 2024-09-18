@@ -16,9 +16,11 @@ namespace hg::engine::serialization {
 		using this_type = StructureSlotBase;
 
 	protected:
-		StructureSlotBase(cref<StructureSlotState> state_);
+		explicit StructureSlotBase(cref<StructureSlotState> state_) noexcept :
+			_state(state_) {}
 
-		StructureSlotBase(mref<StructureSlotState> state_);
+		explicit StructureSlotBase(mref<StructureSlotState> state_) noexcept :
+			_state(std::move(state_)) {}
 
 	public:
 		virtual ~StructureSlotBase() = default;
@@ -41,14 +43,14 @@ namespace hg::engine::serialization {
 		[[nodiscard]] virtual bool validateType() const noexcept = 0;
 
 	public:
-		virtual void writeHeader();
+		void writeHeader();
 
-		virtual void readHeader();
+		void readHeader();
 
 	public:
 		virtual void enter();
 
-		virtual void leave();
+		void leave();
 
 		virtual void feedback(const non_owning_rptr<const StructureSlotBase> other_);
 	};
@@ -61,10 +63,10 @@ namespace hg::engine::serialization {
 		using value_type = std::decay_t<ValueType_>;
 
 	protected:
-		TypedStructureSlotBase(cref<StructureSlotState> state_) :
+		explicit TypedStructureSlotBase(cref<StructureSlotState> state_) :
 			StructureSlotBase(state_) {}
 
-		TypedStructureSlotBase(mref<StructureSlotState> state_) :
+		explicit TypedStructureSlotBase(mref<StructureSlotState> state_) :
 			StructureSlotBase(std::move(state_)) {}
 
 	public:

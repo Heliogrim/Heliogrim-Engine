@@ -9,9 +9,9 @@ namespace hg::engine::serialization {
 		using this_type = StringSlot;
 
 	public:
-		StringSlot(cref<StructureSlotState> state_);
+		explicit StringSlot(cref<StructureSlotState> state_) noexcept;
 
-		StringSlot(mref<StructureSlotState> state_);
+		explicit StringSlot(mref<StructureSlotState> state_) noexcept;
 
 	public:
 		[[nodiscard]] StructureSlotType getSlotType() const noexcept override;

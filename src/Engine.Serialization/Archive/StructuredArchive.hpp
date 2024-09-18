@@ -12,7 +12,7 @@ namespace hg::engine::serialization {
 		using this_type = StructuredArchive;
 
 	public:
-		StructuredArchive(_Inout_ ref<resource::Archive> archive_);
+		explicit StructuredArchive(_Inout_ ref<resource::Archive> archive_);
 
 		StructuredArchive(cref<this_type>) = delete;
 
@@ -24,7 +24,7 @@ namespace hg::engine::serialization {
 		nmpt<resource::Archive> _archive;
 
 	public:
-		[[nodiscard]] nmpt<resource::Archive> getArchive() const noexcept;
+		[[nodiscard]] ref<resource::Archive> getArchive() const noexcept;
 
 	public:
 		[[nodiscard]] RootScopedSlot getRootSlot() const;

@@ -27,7 +27,7 @@ namespace hg::engine::serialization {
 		using slice_value_type = std::decay_t<ValueType_>;
 
 	public:
-		SliceSlot(mref<StructureSlotState> state_) :
+		explicit SliceSlot(mref<StructureSlotState> state_) noexcept :
 			underlying_type(std::move(state_)) {
 			this_type::_state.header = StructureSlotHeader::from<StructureSlotType::eSlice>();
 		}

@@ -10,8 +10,6 @@ ScopedSlot::ScopedSlot(
 	_state(std::move(state_)),
 	_slot(std::move(slot_)) {}
 
-ScopedSlot::~ScopedSlot() = default;
-
 cref<ScopedSlotState> ScopedSlot::getScopedState() const noexcept {
 	return _state;
 }

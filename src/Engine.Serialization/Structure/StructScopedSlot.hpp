@@ -59,7 +59,7 @@ namespace hg::engine::serialization {
 
 		[[nodiscard]] RecordScopedSlot getRecordSlot(cref<record_key_type> key_) const;
 
-		[[nodiscard]] RecordScopedSlot getRecordSlot(const size_t index_) const;
+		[[nodiscard]] RecordScopedSlot getRecordSlot(size_t index_) const;
 
 		[[nodiscard]] StructScopedSlot getStructSlot(cref<record_key_type> key_) const;
 
@@ -70,27 +70,27 @@ namespace hg::engine::serialization {
 		}
 
 		template <typename StringType_> requires std::is_same_v<StringType_, string>
-		[[nodiscard]] const StringScopedSlot getSlot(cref<record_key_type> key_) const {
+		[[nodiscard]] StringScopedSlot getSlot(cref<record_key_type> key_) const {
 			return getRecordSlot(key_).intoString();
 		}
 
 		template <typename IntegralType_>
-		[[nodiscard]] const IntegralScopedSlot<IntegralType_> getSlot(cref<record_key_type> key_) const {
+		[[nodiscard]] IntegralScopedSlot<IntegralType_> getSlot(cref<record_key_type> key_) const {
 			return getRecordSlot(key_).intoIntegral<IntegralType_>();
 		}
 
 		template <typename FloatType_>
-		[[nodiscard]] const FloatScopedSlot<FloatType_> getSlot(cref<record_key_type> key_) const {
+		[[nodiscard]] FloatScopedSlot<FloatType_> getSlot(cref<record_key_type> key_) const {
 			return getRecordSlot(key_).intoFloat<FloatType_>();
 		}
 
 		template <typename ValueType_, template <typename...> typename SliceType_>
-		[[nodiscard]] const SliceScopedSlot<ValueType_, SliceType_> getSlot(cref<record_key_type> key_) const {
+		[[nodiscard]] SliceScopedSlot<ValueType_, SliceType_> getSlot(cref<record_key_type> key_) const {
 			return getRecordSlot(key_).intoSlice<ValueType_, SliceType_>();
 		}
 
 		template <typename KeyType_, typename ValueType_, template <typename, typename...> typename MapType_>
-		[[nodiscard]] const MapScopedSlot<KeyType_, ValueType_, MapType_> getSlot(cref<record_key_type> key_) const {
+		[[nodiscard]] MapScopedSlot<KeyType_, ValueType_, MapType_> getSlot(cref<record_key_type> key_) const {
 			return getRecordSlot(key_).intoMap<KeyType_, ValueType_, MapType_>();
 		}
 	};

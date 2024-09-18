@@ -16,8 +16,12 @@ namespace hg::engine::serialization {
 			mref<sptr<StructureSlotBase>> slot_
 		);
 
+		ScopedSlot(cref<this_type>) = default;
+
+		ScopedSlot(mref<this_type>) noexcept = default;
+
 	public:
-		virtual ~ScopedSlot();
+		virtual ~ScopedSlot() = default;
 
 	protected:
 		mutable ScopedSlotState _state;

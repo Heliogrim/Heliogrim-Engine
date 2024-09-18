@@ -3,21 +3,21 @@
 #include "StructureSlot.hpp"
 
 namespace hg::engine::serialization {
-    class RecordSlot :
-        public StructureSlotBase {
-    public:
-        using this_type = RecordSlot;
+	class RecordSlot :
+		public StructureSlotBase {
+	public:
+		using this_type = RecordSlot;
 
-    public:
-        RecordSlot(cref<StructureSlotState> state_);
+	public:
+		explicit RecordSlot(cref<StructureSlotState> state_);
 
-        RecordSlot(mref<StructureSlotState> state_);
+		explicit RecordSlot(mref<StructureSlotState> state_);
 
-        ~RecordSlot() override;
+		~RecordSlot() override;
 
-    public:
-        [[nodiscard]] StructureSlotType getSlotType() const noexcept override;
+	public:
+		[[nodiscard]] StructureSlotType getSlotType() const noexcept override;
 
-        [[nodiscard]] bool validateType() const noexcept override;
-    };
+		[[nodiscard]] bool validateType() const noexcept override;
+	};
 }

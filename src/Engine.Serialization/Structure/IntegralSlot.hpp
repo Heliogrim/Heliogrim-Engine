@@ -9,7 +9,7 @@ namespace hg::engine::serialization {
 	struct IntegralSlotTraits;
 
 	template <std::integral IntegralType_>
-	class IntegralSlot :
+	class IntegralSlot final :
 		public TypedStructureSlotBase<IntegralType_> {
 	public:
 		using this_type = IntegralSlot<IntegralType_>;
@@ -19,12 +19,12 @@ namespace hg::engine::serialization {
 		using trait_type = IntegralSlotTraits<IntegralType_>;
 
 	public:
-		IntegralSlot(cref<StructureSlotState> state_) :
+		explicit IntegralSlot(cref<StructureSlotState> state_) noexcept :
 			underlying_type(state_) {
 			this_type::_state.header = StructureSlotHeader::from<trait_type::slot_type>();
 		}
 
-		IntegralSlot(mref<StructureSlotState> state_) :
+		explicit IntegralSlot(mref<StructureSlotState> state_) noexcept :
 			underlying_type(std::move(state_)) {
 			this_type::_state.header = StructureSlotHeader::from<trait_type::slot_type>();
 		}
@@ -63,46 +63,46 @@ namespace hg::engine::serialization {
 
 	template <>
 	struct IntegralSlotTraits<bool> {
-		inline constexpr static StructureSlotType slot_type = StructureSlotType::eBool;
+		constexpr static StructureSlotType slot_type = StructureSlotType::eBool;
 	};
 
 	template <>
 	struct IntegralSlotTraits<u8> {
-		inline constexpr static StructureSlotType slot_type = StructureSlotType::eU8;
+		constexpr static StructureSlotType slot_type = StructureSlotType::eU8;
 	};
 
 	template <>
 	struct IntegralSlotTraits<u16> {
-		inline constexpr static StructureSlotType slot_type = StructureSlotType::eU16;
+		constexpr static StructureSlotType slot_type = StructureSlotType::eU16;
 	};
 
 	template <>
 	struct IntegralSlotTraits<u32> {
-		inline constexpr static StructureSlotType slot_type = StructureSlotType::eU32;
+		constexpr static StructureSlotType slot_type = StructureSlotType::eU32;
 	};
 
 	template <>
 	struct IntegralSlotTraits<u64> {
-		inline constexpr static StructureSlotType slot_type = StructureSlotType::eU64;
+		constexpr static StructureSlotType slot_type = StructureSlotType::eU64;
 	};
 
 	template <>
 	struct IntegralSlotTraits<s8> {
-		inline constexpr static StructureSlotType slot_type = StructureSlotType::eS8;
+		constexpr static StructureSlotType slot_type = StructureSlotType::eS8;
 	};
 
 	template <>
 	struct IntegralSlotTraits<s16> {
-		inline constexpr static StructureSlotType slot_type = StructureSlotType::eS16;
+		constexpr static StructureSlotType slot_type = StructureSlotType::eS16;
 	};
 
 	template <>
 	struct IntegralSlotTraits<s32> {
-		inline constexpr static StructureSlotType slot_type = StructureSlotType::eS32;
+		constexpr static StructureSlotType slot_type = StructureSlotType::eS32;
 	};
 
 	template <>
 	struct IntegralSlotTraits<s64> {
-		inline constexpr static StructureSlotType slot_type = StructureSlotType::eS64;
+		constexpr static StructureSlotType slot_type = StructureSlotType::eS64;
 	};
 }

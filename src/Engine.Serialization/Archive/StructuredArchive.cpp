@@ -8,8 +8,8 @@ using namespace hg;
 StructuredArchive::StructuredArchive(_Inout_ ref<resource::Archive> archive_) :
 	_archive(std::addressof(archive_)) {}
 
-nmpt<engine::resource::Archive> StructuredArchive::getArchive() const noexcept {
-	return _archive;
+ref<engine::resource::Archive> StructuredArchive::getArchive() const noexcept {
+	return *_archive.get();
 }
 
 RootScopedSlot StructuredArchive::getRootSlot() const {
