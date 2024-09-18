@@ -205,7 +205,7 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC")
 			/JMC
 			>
 
-			$<$<CONFIG:Release>:
+			$<$<CONFIG:Release,RelWithDebInfo>:
 			/Gw           # -> whole program global optimization
 			/GS-          # -> buffer security check: no
 			/GL           # -> whole program optimization: enable link-time code generation (disables Zi)
