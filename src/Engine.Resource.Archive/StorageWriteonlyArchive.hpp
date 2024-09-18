@@ -15,8 +15,8 @@ namespace hg::engine::resource {
 	public:
 		StorageWriteonlyArchive(
 			mref<storage::AccessBlobReadWrite> storage_,
-			mref<streamoff> offset_,
-			mref<streamsize> capacity_
+			mref<streamoff> baseOffset_,
+			mref<streamsize> initialSize_
 		);
 
 		~StorageWriteonlyArchive() override;
