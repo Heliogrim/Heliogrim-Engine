@@ -19,7 +19,7 @@ namespace hg::engine::serialization {
 		using entry_value_slot_type = typename SubstitutionSlot<entry_value_type>::type;
 
 	public:
-		MapEntrySlot(mref<StructureSlotState> state_) :
+		explicit MapEntrySlot(mref<StructureSlotState> state_) noexcept :
 			underlying_type(std::move(state_)) {
 			this_type::_state.header = StructureSlotHeader::from<StructureSlotType::eMapEntry>();
 		}

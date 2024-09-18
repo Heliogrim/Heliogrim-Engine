@@ -7,7 +7,7 @@ namespace hg::engine::serialization {
 	struct FloatSlotTraits;
 
 	template <std::floating_point FloatType_>
-	class FloatSlot :
+	class FloatSlot final :
 		public TypedStructureSlotBase<FloatType_> {
 	public:
 		using this_type = FloatSlot<FloatType_>;
@@ -17,12 +17,12 @@ namespace hg::engine::serialization {
 		using trait_type = FloatSlotTraits<FloatType_>;
 
 	public:
-		FloatSlot(cref<StructureSlotState> state_) :
+		explicit FloatSlot(cref<StructureSlotState> state_) :
 			underlying_type(state_) {
 			this_type::_state.header = StructureSlotHeader::from<trait_type::slot_type>();
 		}
 
-		FloatSlot(mref<StructureSlotState> state_) :
+		explicit FloatSlot(mref<StructureSlotState> state_) :
 			underlying_type(std::move(state_)) {
 			this_type::_state.header = StructureSlotHeader::from<trait_type::slot_type>();
 		}

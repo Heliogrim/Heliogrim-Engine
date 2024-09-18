@@ -12,9 +12,9 @@ namespace hg::engine::serialization {
 		using record_key_type = StringView;
 
 	public:
-		StructSlot(cref<StructureSlotState> state_);
+		explicit StructSlot(cref<StructureSlotState> state_) noexcept;
 
-		StructSlot(mref<StructureSlotState> state_);
+		explicit StructSlot(mref<StructureSlotState> state_) noexcept;
 
 		~StructSlot() override;
 
@@ -24,7 +24,7 @@ namespace hg::engine::serialization {
 		[[nodiscard]] bool validateType() const noexcept override;
 
 	public:
-		void feedback(const non_owning_rptr<const StructureSlotBase> other_) override;
+		void feedback(non_owning_rptr<const StructureSlotBase> other_) override;
 
 	private:
 		[[nodiscard]] s64 findRecord(cref<record_key_type> key_) const;

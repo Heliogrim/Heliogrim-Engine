@@ -11,12 +11,12 @@ namespace hg::engine::serialization {
 		using this_type = RecordSlot;
 
 	protected:
-		RootSlot(cref<StructureSlotState> state_);
+		explicit RootSlot(cref<StructureSlotState> state_);
 
-		RootSlot(mref<StructureSlotState> state_);
+		explicit RootSlot(mref<StructureSlotState> state_);
 
 	public:
-		RootSlot(_Inout_ ref<resource::Archive> archive_);
+		explicit RootSlot(_Inout_ ref<resource::Archive> archive_);
 
 	public:
 		[[nodiscard]] static StructureSlotState makeRootState(_In_ ref<resource::Archive> archive_);
