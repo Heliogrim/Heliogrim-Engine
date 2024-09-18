@@ -160,25 +160,19 @@ PackageLinker::tracked_locked_writer PackageLinker::store(mref<PackageArchiveHea
 	/**/
 
 	// TODO: Rework accessor ownership
-	//const auto capacity = blob.capacity() - nextOffset;
-	// Warning: Random magic number...
-	const streamsize capacity = 1024LL;
-
 	auto* rwa = make_ptr<StorageReadWriteArchive>(
 		// Note: We move the accessor ownership from the underlying package into the exposed writer
 		std::move(*package._blob.as<nmpt<storage::AccessBlobReadWrite>>()),
 		nextOffset + sizeof(PackageArchiveHeader),
-		clone(capacity)
+		0uLL
 	);
-	const auto initialSize = rwa->totalSize();
 
 	return tracked_locked_writer {
 		std::move(rwa),
-		[this, /* Problem: This is just a quick fix */initialSize](ptr<StorageReadWriteArchive> obj_) {
+		[this](ptr<StorageReadWriteArchive> obj_) {
 
-			// Problem: This is just an assumption
 			const auto finalizeSize = obj_->totalSize();
-			const auto writtenBytes = finalizeSize - initialSize;
+			::hg::assertrt(finalizeSize >= 0LL);
 
 			// Note: After RAII finalization triggers, we need to restore the package's blob accessor
 			auto& package = _package.as<nmpt<storage::AccessPackageReadWrite>>()->get().get().fully();
@@ -188,7 +182,7 @@ PackageLinker::tracked_locked_writer PackageLinker::store(mref<PackageArchiveHea
 
 			// Question: Are a able to guarantee, that the linker only adds links strictly sequential?
 			auto& link = _links.back();
-			link.index.size += writtenBytes;
+			link.index.size += finalizeSize;
 
 			/**/
 
