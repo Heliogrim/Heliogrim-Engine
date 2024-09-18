@@ -1,12 +1,12 @@
 #pragma once
 
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Memory/MemoryPointer.hpp>
 
-#include "../Archive/__fwd.hpp"
-#include "__fwd.hpp"
-#include "StructureSlotStateFlags.hpp"
 #include "StructureSlotHeader.hpp"
-#include "Engine.Common/Memory/MemoryPointer.hpp"
+#include "StructureSlotStateFlags.hpp"
+#include "__fwd.hpp"
+#include "../Archive/__fwd.hpp"
 
 namespace hg::engine::serialization {
 	struct StructureSlotState {

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <type_traits>
 #include <Engine.Common/Make.hpp>
 
 #include "MapEntrySlot.hpp"
