@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Memory/SharedPointer.hpp>
 
 #include "SlotOpResult.hpp"
 #include "StructurePath.hpp"

@@ -1,11 +1,12 @@
 #pragma once
 
 #include <concepts>
-
-#include "ScopedStructureSlot.hpp"
-#include "ScopedSlotGuard.hpp"
+#include <type_traits>
+#include <Engine.Common/Make.hpp>
 
 #include "FloatSlot.hpp"
+#include "ScopedSlotGuard.hpp"
+#include "ScopedStructureSlot.hpp"
 
 namespace hg::engine::serialization {
 	template <std::floating_point FloatType_>

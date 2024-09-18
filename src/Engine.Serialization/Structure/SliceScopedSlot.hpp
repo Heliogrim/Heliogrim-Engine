@@ -1,38 +1,41 @@
 #pragma once
 
+#include <type_traits>
+#include <Engine.Common/Make.hpp>
+
 #include "ScopedStructureSlot.hpp"
-#include "SubstitutionSlot.hpp"
 #include "SliceSlot.hpp"
+#include "SubstitutionSlot.hpp"
 
 namespace hg::engine::serialization {
-    template <typename ValueType_, template <typename...> typename SliceType_>
-    class SliceScopedSlot final :
-        TypeScopedSlot<SliceType_<ValueType_>> {
-    public:
-        using this_type = SliceScopedSlot<ValueType_, SliceType_>;
-        using underlying_type = TypeScopedSlot<SliceType_<ValueType_>>;
+	template <typename ValueType_, template <typename...> typename SliceType_>
+	class SliceScopedSlot final :
+		TypeScopedSlot<SliceType_<ValueType_>> {
+	public:
+		using this_type = SliceScopedSlot<ValueType_, SliceType_>;
+		using underlying_type = TypeScopedSlot<SliceType_<ValueType_>>;
 
-        using value_type = typename underlying_type::value_type;
+		using value_type = typename underlying_type::value_type;
 
-    public:
-        SliceScopedSlot(mref<ScopedSlotState> scopedState_, mref<StructureSlotState> state_) :
-            underlying_type(std::move(scopedState_), make_sptr<SliceSlot<ValueType_, SliceType_>>(std::move(state_))) {}
+	public:
+		SliceScopedSlot(mref<ScopedSlotState> scopedState_, mref<StructureSlotState> state_) :
+			underlying_type(std::move(scopedState_), make_sptr<SliceSlot<ValueType_, SliceType_>>(std::move(state_))) {}
 
-        ~SliceScopedSlot() override = default;
+		~SliceScopedSlot() override = default;
 
-    public:
-        void operator<<(cref<value_type> value_) override {
-            const ScopedSlotGuard guard { this, ScopedSlotGuardMode::eWrite };
-            (*underlying_type::slot()) << value_;
-        }
+	public:
+		void operator<<(cref<value_type> value_) override {
+			const ScopedSlotGuard guard { this, ScopedSlotGuardMode::eWrite };
+			(*underlying_type::slot()) << value_;
+		}
 
-        void operator>>(ref<value_type> value_) const override {
-            const ScopedSlotGuard guard { this, ScopedSlotGuardMode::eRead };
-            (*underlying_type::slot()) >> value_;
-        }
-    };
+		void operator>>(ref<value_type> value_) const override {
+			const ScopedSlotGuard guard { this, ScopedSlotGuardMode::eRead };
+			(*underlying_type::slot()) >> value_;
+		}
+	};
 
-    #if FALSE
+	#if FALSE
     template <typename ValueType_, template <typename...> typename SliceType_>
     class SliceScopedSlot final :
         public ScopedStructureSlot<SliceType_<ValueType_>> {
@@ -77,7 +80,7 @@ namespace hg::engine::serialization {
                 StructureSlotType storedType = StructureSlotType::eUndefined;
                 (*archive) >> storedType;
 
-    #ifdef _DEBUG
+	#ifdef _DEBUG
                 if (storedType != StructureSlotType::eSlice) {
                     IM_CORE_WARNF(
                         "Tried to deserialize a `{}` into a `{}`.",
@@ -85,7 +88,7 @@ namespace hg::engine::serialization {
                         StructureSlotTypeTraits<StructureSlotType::eSlice>::canonical
                     );
                 }
-    #endif
+	#endif
 
                 (*archive) >> this_type::_state.size;
                 return;
@@ -208,5 +211,5 @@ namespace hg::engine::serialization {
 
         }
     };
-    #endif
+	#endif
 }
