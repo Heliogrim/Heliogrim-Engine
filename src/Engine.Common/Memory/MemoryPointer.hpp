@@ -349,7 +349,7 @@ namespace hg {
 		template <typename... Args_> requires std::is_constructible_v<Ty_, Args_...>
 		[[nodiscard]] constexpr static this_type make(Args_&&... args_) {
 			this_type tmp {};
-			tmp.create(std::forward<Args_>(args_)...);
+			tmp.template create<Ty_, Args_...>(std::forward<Args_>(args_)...);
 			return tmp;
 		}
 
@@ -531,14 +531,14 @@ namespace hg {
 		~NonOwningMemoryPointer() = default;
 
 	public:
-		ref<this_type> operator=(this_type&& other_) noexcept {
+		constexpr ref<this_type> operator=(this_type&& other_) noexcept {
 			if (std::addressof(other_) != this) {
 				storage = std::move(other_.storage);
 			}
 			return *this;
 		}
 
-		ref<this_type> operator=(const this_type& other_) noexcept {
+		constexpr ref<this_type> operator=(const this_type& other_) noexcept {
 			if (std::addressof(other_) != this) {
 				storage = other_.storage;
 			}
@@ -549,14 +549,14 @@ namespace hg {
 			typename Tx_ = Ty_,
 			typename AllocType_ = typename StorageType_::allocator_type,
 			typename StorageTx_ = StorageType_>
-		ref<this_type> operator=(cref<MemoryPointer<Tx_, AllocType_, StorageTx_>> mp_) {
+		constexpr ref<this_type> operator=(cref<MemoryPointer<Tx_, AllocType_, StorageTx_>> mp_) {
 			if (static_cast<const void*>(std::addressof(mp_)) != this) {
 				storage = mp_.storage;
 			}
 			return *this;
 		}
 
-		ref<this_type> operator=(::std::nullptr_t) noexcept {
+		constexpr ref<this_type> operator=(::std::nullptr_t) noexcept {
 			std::ignore = storage.template exchange<::std::nullptr_t>(nullptr);
 			return *this;
 		}
