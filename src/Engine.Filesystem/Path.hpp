@@ -107,6 +107,10 @@ namespace hg::engine::fs {
 		[[nodiscard]] string parentName() const;
 
 	public:
+		[[nodiscard]] constexpr cref<string_type> native() const noexcept {
+			return _value;
+		}
+
 		[[nodiscard]] constexpr bool empty() const noexcept {
 			return _value.empty();
 		}
