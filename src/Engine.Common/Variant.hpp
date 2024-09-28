@@ -2,10 +2,11 @@
 
 #include <concepts>
 #include <variant>
+#include <Engine.Asserts/Asserts.hpp>
 
+#include "Forward.hpp"
 #include "Sal.hpp"
 #include "Wrapper.hpp"
-#include "Engine.Asserts/Asserts.hpp"
 #include "Meta/IsAnyOf.hpp"
 
 namespace hg {
@@ -15,6 +16,11 @@ namespace hg {
 	concept InvocableWithAll = std::conjunction_v<std::is_invocable<Callable_, TestTypes_>...>;
 
 	namespace {
+		template <typename WorkType_, typename... Types_>
+		concept IsVariantWorkType = (not std::is_void_v<WorkType_>) && std::conjunction_v<
+			std::is_nothrow_convertible<ptr<Types_>, ptr<WorkType_>>...
+		>;
+
 		template <typename... Types_>
 		concept HasCommonType = requires {
 			typename std::common_reference<Types_...>::type;
@@ -32,6 +38,9 @@ namespace hg {
 		struct CommonTypeHelper<false, Types_...> {
 			using type = std::void_t<Types_...>;
 		};
+
+		template <class... Types_>
+		using VariantMaybeCommon = typename CommonTypeHelper<HasCommonType<Types_...>, Types_...>::type;
 	}
 
 	/**/
@@ -49,7 +58,7 @@ namespace hg {
 	private:
 		template <class Ret_, class Type_, class Next_, class... Rest_>
 		[[nodiscard]] constexpr ptr<Ret_> shared_type_pointer_impl() const noexcept {
-			if (std::holds_alternative<Type_>(*this)) {
+			if (std::holds_alternative<Type_, Types_...>(*this)) {
 				return std::addressof(this->as<Type_>());
 			}
 			return shared_type_pointer_impl<Ret_, Next_, Rest_...>();
@@ -57,7 +66,7 @@ namespace hg {
 
 		template <class Ret_, class Type_, class Next_, class... Rest_>
 		[[nodiscard]] constexpr ptr<Ret_> shared_type_pointer_impl() noexcept {
-			if (std::holds_alternative<Type_>(*this)) {
+			if (std::holds_alternative<Type_, Types_...>(*this)) {
 				return std::addressof(this->as<Type_>());
 			}
 			return shared_type_pointer_impl<Ret_, Next_, Rest_...>();
@@ -65,7 +74,7 @@ namespace hg {
 
 		template <class Ret_, class Type_>
 		[[nodiscard]] constexpr ptr<Ret_> shared_type_pointer_impl() const noexcept {
-			if (std::holds_alternative<Type_>(*this)) {
+			if (std::holds_alternative<Type_, Types_...>(*this)) {
 				return std::addressof(this->as<Type_>());
 			}
 			return nullptr;
@@ -73,7 +82,7 @@ namespace hg {
 
 		template <class Ret_, class Type_>
 		[[nodiscard]] constexpr ptr<Ret_> shared_type_pointer_impl() noexcept {
-			if (std::holds_alternative<Type_>(*this)) {
+			if (std::holds_alternative<Type_, Types_...>(*this)) {
 				return std::addressof(this->as<Type_>());
 			}
 			return nullptr;
@@ -128,22 +137,6 @@ namespace hg {
 		}
 
 	protected:
-		template <typename Callable_, class CommonType_ = CommonTypeHelper<HasCommonType<Types_...>, Types_...>>
-			requires HasCommonType<Types_...> &&
-			std::is_invocable_v<std::remove_cvref_t<Callable_>, ref<CommonType_>>
-		constexpr decltype(auto) invoke_from_shared_type(Callable_&& callable_) const noexcept {
-			::hg::assertrt(not this->valueless_by_exception());
-			return std::forward<Callable_>(callable_)(*this->shared_type_pointer());
-		}
-
-		template <typename Callable_, class CommonType_ = CommonTypeHelper<HasCommonType<Types_...>, Types_...>>
-			requires HasCommonType<Types_...> &&
-			std::is_invocable_v<std::remove_cvref_t<Callable_>, ref<CommonType_>>
-		constexpr decltype(auto) invoke_from_shared_type(Callable_&& callable_) noexcept {
-			::hg::assertrt(not this->valueless_by_exception());
-			return std::forward<Callable_>(callable_)(*this->shared_type_pointer());
-		}
-
 		template <typename Callable_> requires InvocableWithAll<std::remove_cvref_t<Callable_>, ref<Types_>...>
 		constexpr decltype(auto) invoke_from_shared_type(Callable_&& callable_) const noexcept {
 			::hg::assertrt(not this->valueless_by_exception());
@@ -154,6 +147,24 @@ namespace hg {
 		constexpr decltype(auto) invoke_from_shared_type(Callable_&& callable_) noexcept {
 			::hg::assertrt(not this->valueless_by_exception());
 			return invoke_from_shared_type_impl<Callable_, Types_...>(std::forward<Callable_>(callable_));
+		}
+
+		template <typename Callable_, class CommonType_ = VariantMaybeCommon<Types_...>>
+			requires (not InvocableWithAll<std::remove_cvref_t<Callable_>, ref<Types_>...>) &&
+			IsVariantWorkType<CommonType_, Types_...> &&
+			std::is_invocable_v<std::remove_cvref_t<Callable_>, ref<CommonType_>>
+		constexpr decltype(auto) invoke_from_shared_type(Callable_&& callable_) const noexcept {
+			::hg::assertrt(not this->valueless_by_exception());
+			return std::forward<Callable_>(callable_)(*this->shared_type_pointer());
+		}
+
+		template <typename Callable_, class CommonType_ = VariantMaybeCommon<Types_...>>
+			requires (not InvocableWithAll<std::remove_cvref_t<Callable_>, ref<Types_>...>) &&
+			IsVariantWorkType<CommonType_, Types_...> &&
+			std::is_invocable_v<std::remove_cvref_t<Callable_>, ref<CommonType_>>
+		constexpr decltype(auto) invoke_from_shared_type(Callable_&& callable_) noexcept {
+			::hg::assertrt(not this->valueless_by_exception());
+			return std::forward<Callable_>(callable_)(*this->shared_type_pointer());
 		}
 
 	public:
@@ -188,15 +199,15 @@ namespace hg {
 			return invoke_from_shared_type(std::forward<Callable_>(callable_));
 		}
 
-		template <class CommonType_ = CommonTypeHelper<HasCommonType<Types_...>, Types_...>>
-			requires (not std::is_void_v<typename CommonType_::type>)
-		[[nodiscard]] ptr<std::add_const_t<typename CommonType_::type>> operator ->() const noexcept {
+		template <class CommonType_ = VariantMaybeCommon<Types_...>>
+			requires IsVariantWorkType<CommonType_, Types_...>
+		[[nodiscard]] ptr<std::add_const_t<CommonType_>> operator ->() const noexcept {
 			return (this->valueless_by_exception()) ? nullptr : this->shared_type_pointer();
 		}
 
-		template <class CommonType_ = CommonTypeHelper<HasCommonType<Types_...>, Types_...>>
-			requires (not std::is_void_v<typename CommonType_::type>)
-		[[nodiscard]] ptr<typename CommonType_::type> operator ->() noexcept {
+		template <class CommonType_ = VariantMaybeCommon<Types_...>>
+			requires IsVariantWorkType<CommonType_, Types_...>
+		[[nodiscard]] ptr<CommonType_> operator ->() noexcept {
 			return (this->valueless_by_exception()) ? nullptr : this->shared_type_pointer();
 		}
 	};
