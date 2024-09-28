@@ -15,7 +15,7 @@
 #include "../Modules/SceneHierarchy.hpp"
 
 #if TRUE
-#include <Heliogrim/Actor.hpp>
+#include <Heliogrim/Actor/Actor.hpp>
 
 #include "../Modules/SceneHierarchy/SceneViewEntry.hpp"
 #endif
@@ -52,8 +52,8 @@ namespace hg::editor::ui {
 
 			sptr<tree_view_type> tree {
 				_content->children()->empty() ?
-					nullptr :
-					std::static_pointer_cast<tree_view_type, Widget>(_content->children()->front())
+				nullptr :
+				std::static_pointer_cast<tree_view_type, Widget>(_content->children()->front())
 			};
 
 			if (not tree || _resolver != resolver || _generator != generator) {
@@ -119,7 +119,7 @@ namespace hg::editor::ui {
 						auto* const editorUI = static_cast<ptr<EditorUI>>(
 							engine::Engine::getEngine()->getModules().getSubModule(EditorUIDepKey).get()
 						);
-						storeEditorSelectedTarget(*editorUI, static_cast<const ptr<ActorComponent>>(actor));
+						storeEditorSelectedTarget(*editorUI, static_cast<const ptr<HierarchyComponent>>(actor));
 						return;
 					}
 				};

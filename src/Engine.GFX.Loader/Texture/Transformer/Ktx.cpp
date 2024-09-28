@@ -1,6 +1,11 @@
 #include "Ktx.hpp"
 
+#include <algorithm>
+#include <cstring>
 #include <filesystem>
+#include <ranges>
+#include <stdexcept>
+#include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Math/Coordinates.hpp>
 #include <Engine.Filesystem/Url.hpp>
@@ -93,7 +98,7 @@ namespace hg::external::ktx {
 	};
 
 	struct InternalContext {
-		smr<::hg::engine::resource::Source> source;
+		ref<engine::storage::AccessBlobReadonly> blob;
 
 		/**/
 
@@ -160,27 +165,25 @@ namespace hg::external::ktx {
 
 void transformer::convertKtx(
 	const non_owning_rptr<const assets::TextureAsset> asset_,
-	cref<smr<resource::Source>> src_,
+	mref<storage::AccessBlobReadonly> src_,
 	const non_owning_rptr<SparseTextureView> dst_,
 	cref<sptr<Device>> device_,
 	const TextureLoadOptions options_
 ) {
 
 	constexpr auto chunkSize = MAX(sizeof(gli::detail::FOURCC_KTX10), sizeof(ktx20Identifier));
-	Vector<unsigned char> raw {};
-	raw.resize(chunkSize);
+	Vector<_::byte> raw {};
+	raw.resize(chunkSize, _::byte {});
 
-	streamsize bytes {};
-	src_->get(0, chunkSize, raw.data(), bytes);
-
-	assert(bytes >= chunkSize);
+	auto read = src_->fully().read(streamoff {}, std::span { raw.data(), raw.size() });
+	assert(read.size() >= chunkSize);
 
 	/**/
 
-	bool isKtx20 = memcmp(raw.data(), ktx20Identifier, sizeof(ktx20Identifier)) == 0;
+	bool isKtx20 = std::memcmp(raw.data(), ktx20Identifier, sizeof(ktx20Identifier)) == 0;
 
 	if (isKtx20) {
-		convertKtx20(asset_, src_, dst_, device_, options_);
+		convertKtx20(asset_, std::move(src_), dst_, device_, options_);
 		return;
 	}
 
@@ -188,14 +191,14 @@ void transformer::convertKtx(
 
 	bool isKtx10 = true;
 	for (size_t idx = 0; idx < sizeof(gli::detail::FOURCC_KTX10); ++idx) {
-		if (raw[idx] != gli::detail::FOURCC_KTX10[idx]) {
+		if (static_cast<unsigned char>(raw[idx]) != gli::detail::FOURCC_KTX10[idx]) {
 			isKtx10 = false;
 			break;
 		}
 	}
 
 	if (isKtx10) {
-		convertKtx10Gli(asset_, src_, dst_, device_, options_);
+		convertKtx10Gli(asset_, std::move(src_), dst_, device_, options_);
 		return;
 	}
 
@@ -211,7 +214,7 @@ void transformer::convertKtx(
 
 void transformer::convertKtxPartial(
 	const non_owning_rptr<const assets::TextureAsset> asset_,
-	cref<smr<resource::Source>> src_,
+	mref<storage::AccessBlobReadonly> src_,
 	const non_owning_rptr<SparseTextureView> dst_,
 	cref<sptr<Device>> device_,
 	const TextureStreamOptions options_
@@ -222,14 +225,14 @@ void transformer::convertKtxPartial(
 		/**
 		 * Unload targeted segment and return
 		 */
-		unloadPartialTmp(asset_, src_, dst_, device_, options_);
+		unloadPartialTmp(asset_, std::move(src_), dst_, device_, options_);
 		return;
 	}
 
 	/**
 	 * Load the targeted segment
 	 */
-	convertKtx20Partial(asset_, src_, dst_, device_, options_);
+	convertKtx20Partial(asset_, std::move(src_), dst_, device_, options_);
 }
 
 /**/
@@ -381,7 +384,7 @@ void deduceFromFormat(cref<gli::format> format_, ref<vk::Format> vkFormat_, ref<
 			break;
 		}
 		default: {
-			throw std::exception("Unresolved texture format.");
+			throw std::runtime_error("Unresolved texture format.");
 		}
 	}
 }
@@ -433,7 +436,7 @@ static Buffer createStageBuffer(cref<hg::external::ktx::InternalContext> ctx_, c
 
 	const auto allocResult {
 		memory::allocate(
-			device_->allocator(),
+			*device_->allocator(),
 			device_,
 			stage.buffer,
 			MemoryProperties { MemoryProperty::eHostVisible },
@@ -499,7 +502,7 @@ static Buffer createStageBuffer(cref<sptr<Device>> device_, const u64 byteSize_)
 
 	const auto allocResult {
 		memory::allocate(
-			device_->allocator(),
+			*device_->allocator(),
 			device_,
 			stage.buffer,
 			MemoryProperties { MemoryProperty::eHostVisible },
@@ -524,25 +527,24 @@ static Buffer createStageBuffer(cref<sptr<Device>> device_, const u64 byteSize_)
 
 void transformer::convertKtx10Gli(
 	const non_owning_rptr<const engine::assets::TextureAsset> asset_,
-	cref<smr<engine::resource::Source>> src_,
+	mref<storage::AccessBlobReadonly> src_,
 	const non_owning_rptr<SparseTextureView> dst_,
 	cref<sptr<Device>> device_,
 	const TextureLoadOptions options_
 ) {
 
-	const auto srcSize = src_->size();
-	assert(srcSize > 0);
+	const auto srcSize = src_->fully().size();
+	::hg::assertrt(srcSize > 0);
 
-	Vector<char> tmp {};
-	tmp.resize(srcSize);
+	Vector<_::byte> tmp {};
+	tmp.resize(srcSize, _::byte {});
 
-	streamsize bytes {};
-	src_->get(0, srcSize, tmp.data(), bytes);
+	auto read = src_->fully().read(streamoff {}, std::span { tmp.data(), tmp.size() });
 
 	/**/
 
-	assert(bytes >= srcSize);
-	gli::texture glitex = gli::load_ktx(tmp.data(), bytes);
+	::hg::assertrt(read.size() >= srcSize);
+	gli::texture glitex = gli::load_ktx(std::bit_cast<char const*>(tmp.data()), read.size());
 
 	/**/
 
@@ -572,15 +574,15 @@ void transformer::convertKtx10Gli(
 	#ifdef _DEBUG
 
 	if (dst_->format() != api::vkTranslateFormat(format)) {
-		__debugbreak();
+		::hg::breakpoint();
 	}
 
 	if (dst_->mipLevels() < glitex.levels()) {
-		__debugbreak();
+		::hg::breakpoint();
 	}
 
 	if (create & vk::ImageCreateFlagBits::eCubeCompatible && dst_->type() != TextureType::eCube) {
-		__debugbreak();
+		::hg::breakpoint();
 	}
 
 	// Validate Aspect Flag Bits
@@ -607,7 +609,7 @@ void transformer::convertKtx10Gli(
 
 	const auto allocResult {
 		memory::allocate(
-			device_->allocator(),
+			*device_->allocator(),
 			device_,
 			stage.buffer,
 			MemoryProperties { MemoryProperty::eHostVisible } | MemoryProperty::eHostCoherent,
@@ -737,10 +739,7 @@ void transformer::convertKtx10Gli(
 	*/
 	auto tex { dst_->owner() };
 	const_cast<SparseTexture*>(tex.get())->updateBindingData();
-	#pragma warning(push)
-	#pragma warning(disable: 4996)
 	const_cast<SparseTexture*>(tex.get())->enqueueBindingSync(device_->graphicsQueue());
-	#pragma warning(pop)
 
 	/**
 	 * Capture commands to copy data to image
@@ -848,7 +847,7 @@ void transformer::convertKtx10Gli(
 
 void transformer::convertKtx20(
 	const non_owning_rptr<const engine::assets::TextureAsset> asset_,
-	cref<smr<engine::resource::Source>> src_,
+	mref<storage::AccessBlobReadonly> src_,
 	const non_owning_rptr<SparseTextureView> dst_,
 	cref<sptr<Device>> device_,
 	const TextureLoadOptions options_
@@ -948,6 +947,7 @@ void transformer::convertKtx20(
 
 	if (not validType) {
 		stage.destroy();
+		::hg::panic();
 	}
 
 	/**/
@@ -1006,10 +1006,7 @@ void transformer::convertKtx20(
 	*/
 	const auto tex { dst_->owner() };
 	const_cast<SparseTexture*>(tex.get())->updateBindingData();
-	#pragma warning(push)
-	#pragma warning(disable: 4996)
 	const_cast<SparseTexture*>(tex.get())->enqueueBindingSync(device_->graphicsQueue());
-	#pragma warning(pop)
 
 	/**
 	* Transform and data transfer
@@ -1110,7 +1107,7 @@ void transformer::convertKtx20(
 
 void transformer::convertKtx20Partial(
 	const non_owning_rptr<const engine::assets::TextureAsset> asset_,
-	cref<smr<engine::resource::Source>> src_,
+	mref<storage::AccessBlobReadonly> src_,
 	const non_owning_rptr<SparseTextureView> dst_,
 	cref<sptr<Device>> device_,
 	const TextureStreamOptions options_
@@ -1348,10 +1345,7 @@ void transformer::convertKtx20Partial(
 	if (changedMemory) {
 		auto tex { dst_->owner() };
 		const_cast<SparseTexture*>(tex.get())->updateBindingData();
-		#pragma warning(push)
-		#pragma warning(disable: 4996)
 		const_cast<SparseTexture*>(tex.get())->enqueueBindingSync(device_->transferQueue());
-		#pragma warning(pop)
 	}
 
 	#pragma endregion
@@ -1408,7 +1402,7 @@ void transformer::convertKtx20Partial(
 	if (srcMip > ktx::getLevelCount(ctx.header)) {
 		#ifdef _DEBUG
 		// We can't load data into a mip level which is not present within the source data
-		__debugbreak();
+		::hg::breakpoint();
 		#endif
 		return;
 	}
@@ -1426,7 +1420,7 @@ void transformer::convertKtx20Partial(
 	if (blockSize.x != 1 || blockSize.y != 1 || blockSize.z != 1) {
 		#ifdef _DEBUG
 		// We currently don't support (compressed) block encoding.
-		__debugbreak();
+		::hg::breakpoint();
 		#endif
 		return;
 	}
@@ -1442,7 +1436,7 @@ void transformer::convertKtx20Partial(
 
 	#ifdef _DEBUG
 	if (stageSize <= 0 || stageSize >= ~0uLL) {
-		__debugbreak();
+		::hg::breakpoint();
 		return;
 	}
 	#endif
@@ -1474,7 +1468,7 @@ void transformer::convertKtx20Partial(
 		if (ktx::getSCS(ctx.header) != ktx::SuperCompressionScheme::eNone) {
 			#ifdef _DEBUG
 			// We can't use block loading with super compression
-			__debugbreak();
+			::hg::breakpoint();
 			#endif
 			return;
 		}
@@ -1483,7 +1477,7 @@ void transformer::convertKtx20Partial(
 			#ifdef _DEBUG
 			// Missing block size is indicator for unsupported sparse loading
 			// TODO: Check whether we can break up at least ASTC formats
-			__debugbreak();
+			::hg::breakpoint();
 			#endif
 			return;
 		}
@@ -1537,13 +1531,10 @@ void transformer::convertKtx20Partial(
 			for (u32 row { minExt.y }; row < maxExt.y; ++row) {
 
 				const streamoff planeOff = row * rowSize;
-				streamsize bytes = -1;
 
-				src_->get(
-					globalOffset + sliceOff + planeOff + seqRowOff,
-					seqRowSize,
-					memory + memPos,
-					bytes
+				std::ignore = src_->fully().read(
+					static_cast<streamoff>(globalOffset + sliceOff + planeOff + seqRowOff),
+					std::span { memory + memPos, static_cast<size_t>(seqRowSize) }
 				);
 
 				memPos += seqRowSize;
@@ -1686,7 +1677,7 @@ void transformer::convertKtx20Partial(
 
 void transformer::unloadPartialTmp(
 	const non_owning_rptr<const engine::assets::TextureAsset> asset_,
-	cref<smr<engine::resource::Source>> src_,
+	mref<storage::AccessBlobReadonly> src_,
 	const non_owning_rptr<SparseTextureView> dst_,
 	cref<sptr<Device>> device_,
 	const TextureStreamOptions options_
@@ -1754,10 +1745,7 @@ void transformer::unloadPartialTmp(
 	if (changedMemory) {
 		auto tex { dst_->owner() };
 		const_cast<SparseTexture*>(tex.get())->updateBindingData();
-		#pragma warning(push)
-		#pragma warning(disable: 4996)
 		const_cast<SparseTexture*>(tex.get())->enqueueBindingSync(device_->transferQueue());
-		#pragma warning(pop)
 	}
 }
 
@@ -1799,13 +1787,15 @@ external::ktx::SuperCompressionScheme external::ktx::getSCS(cref<header_type> he
 
 bool external::ktx::is1d(cref<header_type> header_) {
 
-	// Required 
+	// Note: KTX 2.0 will use pixelWidth of 0 and pixelHeight of 1 for 1d [1x1x1 * 1] textures.
+
+	// Required
 	if (header_.pixelWidth <= 0 || header_.faceCount != 1) {
 		return false;
 	}
 
 	// Denied
-	if (header_.pixelHeight > 0 || header_.pixelDepth > 0) {
+	if (header_.pixelHeight > 1 || header_.pixelDepth > 0) {
 		return false;
 	}
 
@@ -1814,8 +1804,10 @@ bool external::ktx::is1d(cref<header_type> header_) {
 
 bool external::ktx::is2d(cref<header_type> header_) {
 
+	// Note: KTX 2.0 will use pixelWidth of 1 and pixelHeight of 0 for 2d [1x1x1 * 1] textures.
+
 	// Required
-	if (header_.pixelWidth <= 0 || header_.pixelHeight <= 0 || header_.faceCount != 1) {
+	if (header_.pixelWidth <= 0 || (header_.pixelHeight <= 0 && header_.pixelWidth <= 0) || header_.faceCount != 1) {
 		return false;
 	}
 
@@ -1907,16 +1899,18 @@ bool external::ktx::readHeader(ref<InternalContext> ctx_) {
 
 	/**/
 
-	streamsize bytes = -1;
-	ctx_.source->get(0, header_size, &ctx_.header, bytes);
+	auto read = ctx_.blob->fully().read(
+		streamoff {},
+		std::span { std::bit_cast<_::byte*>(&ctx_.header), header_size }
+	);
 
-	if (bytes < header_size) {
+	if (read.size() < header_size) {
 		return false;
 	}
 
 	/**/
 
-	if (memcmp(ctx_.header.identifier, ktx20Identifier, sizeof(ktx20Identifier)) != 0) {
+	if (std::memcmp(ctx_.header.identifier, ktx20Identifier, sizeof(ktx20Identifier)) != 0) {
 		return false;
 	}
 
@@ -1937,9 +1931,12 @@ bool external::ktx::readHeader(ref<InternalContext> ctx_) {
 	ctx_.levels.resize(getLevelCount(ctx_.header));
 
 	const streamsize levels_size = level_size * getLevelCount(ctx_.header);
-	ctx_.source->get(header_size, levels_size, ctx_.levels.data(), bytes);
+	read = ctx_.blob->fully().read(
+		streamoff { header_size },
+		std::span { std::bit_cast<_::byte*>(ctx_.levels.data()), static_cast<u64>(levels_size) }
+	);
 
-	if (bytes < levels_size) {
+	if (read.size() < levels_size) {
 		return false;
 	}
 
@@ -1981,20 +1978,14 @@ bool external::ktx::readData(cref<InternalContext> ctx_, level_type level_, std:
 
 	/**/
 
-	streamsize bytes = -1;
-	streamoff offset = level.byteOff;
-
-	while (
-		(offset - level.byteOff) < level.byteSize &&
-		ctx_.source->get(offset, level.byteSize - (offset - level.byteOff), dst_.data(), bytes)
-	) {
-		offset += bytes;
-		bytes = -1;
-	}
+	auto read = ctx_.blob->fully().read(
+		static_cast<streamoff>(level.byteOff),
+		std::span { dst_.data(), level.byteSize }
+	);
 
 	/**/
 
-	if (offset != level.byteOff + level.byteSize) {
+	if (read.size() != level.byteSize) {
 		IM_CORE_ERROR("Failed to load data from ktx completely.");
 		return false;
 	}

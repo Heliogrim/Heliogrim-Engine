@@ -1,8 +1,9 @@
 #pragma once
 
 #include <memory>
-#include "__macro.hpp"
+#include <utility>
 
+#include "__macro.hpp"
 #include "Memory/SharedPointer.hpp"
 #include "Memory/UniquePointer.hpp"
 #include "Memory/__fwd.hpp"
@@ -34,9 +35,6 @@ namespace hg {
 
 	template <class Ty_, class Dy_ = ::std::default_delete<Ty_>>
 	using uptr = std::unique_ptr<Ty_, Dy_>;
-
-	template <class Ty>
-	using managed = std::shared_ptr<Ty>;
 
 	/* C++ Language Extensions */
 

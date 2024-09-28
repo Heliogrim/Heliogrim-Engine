@@ -3,7 +3,7 @@
 #include <Engine.Asserts/Todo.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets/Assets.hpp>
-#include <Engine.Assets/Types/Image.hpp>
+#include <Engine.Assets.Type/Texture/Image.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.GFX/Buffer/BufferFactory.hpp>
 #include <Engine.GFX/Pool/GlobalResourcePool.hpp>
@@ -93,11 +93,13 @@ EditorPngTextureTransformer::loader_traits::response::type EditorPngTextureTrans
 	 * Read meta data and acquire buffers
 	 */
 
-	streamsize bytes {};
-	Vector<u8> chunk {};
-	chunk.resize(src->size());
+	auto srcSize = src->fully().size();
+	::hg::assertrt(srcSize > 0);
 
-	std::ignore = src->get(0LL, chunk.size(), chunk.data(), bytes);
+	Vector<_::byte> chunk {};
+	chunk.resize(src->fully().size());
+
+	std::ignore = src->fully().read(streamoff {}, std::span { chunk.data(), chunk.size() });
 
 	/**/
 
@@ -147,12 +149,12 @@ EditorPngTextureTransformer::loader_traits::response::type EditorPngTextureTrans
 	do {
 		status = spng_get_row_info(decodeCtx.get(), &rowInfo);
 		status = status != SPNG_OK ?
-			         status :
-			         spng_decode_row(
-				         decodeCtx.get(),
-				         static_cast<ptr<_::byte>>(stageBuffer.memory->mapping) + rowInfo.row_num * imageRowByteSize,
-				         imageRowByteSize
-			         );
+			status :
+			spng_decode_row(
+				decodeCtx.get(),
+				static_cast<ptr<_::byte>>(stageBuffer.memory->mapping) + rowInfo.row_num * imageRowByteSize,
+				imageRowByteSize
+			);
 	} while (status == SPNG_OK && rowInfo.row_num < ihdr.height - 1);
 
 	stageBuffer.unmap();
@@ -192,10 +194,7 @@ EditorPngTextureTransformer::loader_traits::response::type EditorPngTextureTrans
 
 	// Warning: Unsafe force update virtual bindings
 	view->owner()->updateBindingData();
-	#pragma warning(push)
-	#pragma warning(disable: 4996)
 	view->owner()->enqueueBindingSync(device->graphicsQueue());
-	#pragma warning(pop)
 
 	/**
 	 * Transform and transfer data

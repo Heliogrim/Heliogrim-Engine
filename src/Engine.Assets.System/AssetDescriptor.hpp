@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine.Assets/Types/Asset.hpp>
+#include <Engine.Assets.Type/Asset.hpp>
 
 #include "__fwd.hpp"
 

@@ -1,13 +1,12 @@
 #include "SimpleImportAction.hpp"
 
+#include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
+#include <Engine.Assets.Type/Texture/Image.hpp>
+#include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 #include <Engine.Core/Engine.hpp>
-#include <Engine.Resource/ResourceManager.hpp>
-#include <Engine.Resource/ImporterManager.hpp>
 #include <Engine.Resource/File.hpp>
-
-#include "Engine.Assets/Types/Texture/TextureAsset.hpp"
-#include "Engine.Assets/Types/Image.hpp"
-#include "Engine.Assets/Types/Geometry/StaticGeometry.hpp"
+#include <Engine.Resource/ImporterManager.hpp>
+#include <Engine.Resource/ResourceManager.hpp>
 
 using namespace hg::editor;
 using namespace hg;
@@ -82,7 +81,7 @@ void SimpleImportAction::apply() {
 
 	/**/
 
-	const auto srcPath { _source.path().string() };
+	const auto srcPath = static_cast<String>(_source.path());
 	const ::hg::fs::File file { srcPath };
 
 	if (srcPath.ends_with(".ktx2")) {

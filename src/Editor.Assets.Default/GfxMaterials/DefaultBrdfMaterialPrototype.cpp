@@ -3,17 +3,15 @@
 #include <Engine.Accel/Accel.hpp>
 #include <Engine.Assets/AssetFactory.hpp>
 #include <Engine.Assets/Assets.hpp>
-#include <Engine.Assets/Types/AccelEffect.hpp>
-#include <Engine.Assets/Types/Material/GfxMaterialPrototype.hpp>
+#include <Engine.Assets.Type/Accel/AccelEffect.hpp>
+#include <Engine.Assets.Type/Material/GfxMaterialPrototype.hpp>
 #include <Engine.Common/GuidFormat.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Module/Modules.hpp>
 #include <Engine.GFX.Render.Predefined/Effects/BrdfBase.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 
-#include "Editor.Assets.Default/Textures/DefaultDiffuse.hpp"
-#include "Editor.Assets.Default/Textures/DefaultNormal.hpp"
-#include "Editor.Assets.Default/Textures/DefaultRoughness.hpp"
+#include "../Textures/Default.hpp"
 
 using namespace hg::game::assets::material;
 using namespace hg;
@@ -42,8 +40,7 @@ DefaultBrdfMaterialPrototype::DefaultBrdfMaterialPrototype() :
 			.identifier = engine::gfx::material::ParameterIdentifier { 0u },
 			.name = "Albedo",
 			.dataType = engine::accel::TransferDataType::eSampler,
-			//.defaultValue = asset_guid { texture::DefaultDiffuse::unstable_auto_guid() }
-			.defaultValue = asset_guid { decodeGuid4228("1513411454-43702-17570-414804866245091486"sv) }
+			.defaultValue = editor::assets::texture::default_diffuse_guid
 		}
 	);
 	asset->_params.push_back(
@@ -51,8 +48,7 @@ DefaultBrdfMaterialPrototype::DefaultBrdfMaterialPrototype() :
 			.identifier = engine::gfx::material::ParameterIdentifier { 1u },
 			.name = "Normal",
 			.dataType = engine::accel::TransferDataType::eSampler,
-			//.defaultValue = asset_guid { texture::DefaultNormal::unstable_auto_guid() }
-			.defaultValue = asset_guid { decodeGuid4228("2957839326-51539-17441-445097573227334828"sv) }
+			.defaultValue = editor::assets::texture::default_normal_guid
 		}
 	);
 	asset->_params.push_back(
@@ -61,8 +57,7 @@ DefaultBrdfMaterialPrototype::DefaultBrdfMaterialPrototype() :
 			.name = "Arm",
 			.dataType = engine::accel::TransferDataType::eSampler,
 			// Warning: This will actually break, because we change from roughness only to arm texture!
-			//.defaultValue = asset_guid { texture::DefaultRoughness::unstable_auto_guid() }
-			.defaultValue = asset_guid { decodeGuid4228("3532173099-19939-16567-8852593991083949459"sv) }
+			.defaultValue = editor::assets::texture::default_roughness_guid
 		}
 	);
 }

@@ -20,7 +20,7 @@ namespace hg::engine::assets {
 	class GfxMaterialPrototype;
 	class Image;
 	class LandscapeGeometry;
-	class Level;
+	class LevelAsset;
 	class PfxMaterial;
 	class SfxMaterial;
 	class SkeletalGeometry;
@@ -83,9 +83,14 @@ namespace hg::engine::assets {
 
 		Arci<GfxMaterial> createGfxMaterialAsset(mref<asset_guid> prototypeGuid_) const;
 
-		Arci<GfxMaterial> createGfxMaterialAsset(mref<asset_guid> guid_, mref<asset_guid> prototypeGuid_) const;
+		Arci<GfxMaterial> createGfxMaterialAsset(
+			mref<asset_guid> guid_,
+			mref<asset_guid> prototypeGuid_
+		) const;
 
 		Arci<GfxMaterialPrototype> createGfxMaterialPrototypeAsset(mref<asset_guid> guid_) const;
+
+		Arci<LevelAsset> createLevelAsset(mref<asset_guid> guid_) const;
 
 	public:
 		/**

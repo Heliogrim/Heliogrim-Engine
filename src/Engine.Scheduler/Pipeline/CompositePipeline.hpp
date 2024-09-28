@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Collection/DenseMap.hpp>
 
@@ -37,6 +38,7 @@ namespace hg::engine::scheduler {
 		 * Schedule
 		 */
 		non_owning_rptr<class Schedule> _schedule;
+		std::atomic_flag _stopping;
 
 	public:
 		[[nodiscard]] const non_owning_rptr<class Schedule> getSchedule() const noexcept;

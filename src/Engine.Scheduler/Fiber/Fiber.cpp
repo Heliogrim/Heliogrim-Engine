@@ -1,45 +1,66 @@
 #include "Fiber.hpp"
+
+#include <cstddef>
+
 #include "FiberPool.hpp"
 
 #ifdef ENV_MSVC
+#include <Engine.Common/stdafx.h>
 #include <Engine.Common/__macro.hpp>
-#include <Windows.h>
 #elif defined ENV_GCC
 #include <ucontext.h>
+#include <signal.h>
 #endif
 
 #include <cassert>
 #include <Engine.Asserts/Asserts.hpp>
+#include <Engine.Asserts/Todo.hpp>
 
 using namespace hg::engine::scheduler::fiber;
 using namespace hg;
 
-void Fiber::create(ptr<Fiber> self_, void (*proc_)(void*), void* param_) {
+#if defined(WIN32)
+void Fiber::create(ptr<Fiber> self_, void (*proc_)(void*)) {
 
-	#ifdef ENV_MSVC
 	auto* ctx {
 		::CreateFiber(
 			default_fiber_stack_size(),
 			proc_,
-			param_
+			self_
 		)
 	};
-
-	#elif defined ENV_GCC
-    auto ctx { new ucontext_t {} };
-    ctx->uc_stack.ss_sp = malloc(default_fiber_stack_size());
-    ctx->uc_stack.ss_size = default_fiber_stack_size();
-    ctx->uc_link = 0;
-    ::getcontext(ctx);
-    ::makecontext(ctx, proc_, 1, param_);
-
-	#endif
 
 	self_->handle = ctx;
 	self_->parent = nullptr;
 	self_->task = nullptr;
 	self_->awaiter.reset();
 }
+
+#else
+void Fiber::create(ptr<Fiber> self_, _In_ void (*proc_)(int, int)) {
+
+	auto ctx = new ucontext_t {};
+	::getcontext(ctx);
+
+	ctx->uc_stack.ss_sp = malloc(default_fiber_stack_size());
+	ctx->uc_stack.ss_size = default_fiber_stack_size();
+	ctx->uc_link = 0;// pointer to the context to continue after return -> we manage this ourself...
+
+	int ptrLow = static_cast<int>(reinterpret_cast<std::ptrdiff_t>(self_) & 0x0000'0000'FFFF'FFFF);
+	int ptrHigh = static_cast<int>(reinterpret_cast<std::ptrdiff_t>(self_) >> 32);
+
+	using fwd_proc_type = void (*)();
+	auto fwd_proc = (fwd_proc_type)(*proc_);
+
+	::makecontext(ctx, fwd_proc, 2, ptrLow, ptrHigh);
+
+	self_->handle = ctx;
+	self_->parent = nullptr;
+	self_->task = nullptr;
+	self_->awaiter.reset();
+}
+
+#endif
 
 bool Fiber::destroy() {
 
@@ -71,17 +92,9 @@ void Fiber::yield() {
 	parent = nullptr;
 
 	#ifdef ENV_MSVC
-	/**
-	 *
-	 */
 	::SwitchToFiber(next);
-
 	#else
-    /**
-     *
-     */
-    ::swapcontext(handle, next);
-
+    ::swapcontext(static_cast<ptr<ucontext_t>>(handle), static_cast<ptr<ucontext_t>>(next));
 	#endif
 }
 
@@ -117,14 +130,14 @@ void self::yield() {
 	::hg::assertd(entry != nullptr);
 	static_cast<ptr<Fiber>>(entry)->yield();
 	#else
-    static_cast<ptr<Fiber>>(::GetFiberData())->yield();
+	static_cast<ptr<Fiber>>(::GetFiberData())->yield();
 	#endif
 
 	#else
     /**
      *
      */
-    throw {};
+	::hg::todo_panic();
 
 	#endif
 }
@@ -141,7 +154,7 @@ void self::await(mref<FiberAwaitable> awaitable_) {
 	static_cast<ptr<Fiber>>(entry)->await(std::forward<FiberAwaitable>(awaitable_));
 
 	#else
-    static_cast<ptr<Fiber>>(::GetFiberData())->await(std::forward<FiberAwaitable>(awaitable_));
+	static_cast<ptr<Fiber>>(::GetFiberData())->await(std::forward<FiberAwaitable>(awaitable_));
 
 	#endif
 
@@ -149,14 +162,14 @@ void self::await(mref<FiberAwaitable> awaitable_) {
     /**
      *
      */
-    throw {};
+	::hg::todo_panic();
 	#endif
 }
 
-constexpr u64 engine::scheduler::fiber::default_fiber_stack_size() noexcept {
+u64 engine::scheduler::fiber::default_fiber_stack_size() noexcept {
 	#ifdef ENV_MSVC
 	return 4096ui64;
 	#else
-    return SIGSTKSZ;
+    return static_cast<u64>(SIGSTKSZ);
 	#endif
 }

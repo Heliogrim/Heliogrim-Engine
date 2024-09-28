@@ -1,40 +1,43 @@
 #pragma once
+
+#include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Memory/MemoryPointer.hpp>
 
 #include "AssetDatabase.hpp"
-#include "Session.hpp"
+#include "Core/Session.hpp"
 
 namespace hg::engine {
-    class Engine;
+	class Engine;
 }
 
 namespace hg {
-    class Heliogrim {
-    public:
-        static void instantiate();
+	class Heliogrim {
+	public:
+		static void instantiate();
 
-        static void destroy();
+		static void destroy();
 
-    protected:
-        static uptr<engine::Engine> _engine;
+	protected:
+		static uptr<engine::Engine> _engine;
 
-    public:
-        [[nodiscard]] static const non_owning_rptr<engine::Engine> getEngine() noexcept;
+	public:
+		[[nodiscard]] static nmpt<engine::Engine> getEngine() noexcept;
 
-    public:
-        [[nodiscard]] static Session getSession();
+	public:
+		[[nodiscard]] static Session getSession();
 
-        [[nodiscard]] static Session getSession(std::nothrow_t) noexcept;
+		[[nodiscard]] static Session getSession(std::nothrow_t) noexcept;
 
-    public:
-        /**
-         * Gets the Assets Module Interface
-         *
-         * @author Julius
-         * @date 27.09.2021
-         *
-         * @returns An AssetDatabase.
-         */
-        [[nodiscard]] static AssetDatabase assets() noexcept;
-    };
+	public:
+		/**
+		 * Gets the Assets Module Interface
+		 *
+		 * @author Julius
+		 * @date 27.09.2021
+		 *
+		 * @returns An AssetDatabase.
+		 */
+		[[nodiscard]] static AssetDatabase assets() noexcept;
+	};
 }

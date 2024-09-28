@@ -1,10 +1,13 @@
 #include "CompositePipeline.hpp"
 
+#include <algorithm>
 #include <ranges>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 
+#include "../Fiber/Fiber.hpp"
+#include "../Helper/Wait.hpp"
 #include "../Process/Schedule.hpp"
 #include "Composite/CompositeSlot.hpp"
 #include "Composite/StageDependency.hpp"
@@ -15,6 +18,7 @@ using namespace hg;
 
 CompositePipeline::CompositePipeline(const non_owning_rptr<Schedule> schedule_) :
 	_schedule(schedule_),
+	_stopping(),
 	_stageHead(0),
 	_stageTail(0) {}
 
@@ -54,12 +58,21 @@ void CompositePipeline::start() {
 
 	/**/
 
+	::hg::assertrt(not _stopping.test());
 	dispatch(_slots[firstStage->stage->getSlot()].get());
 }
 
 void CompositePipeline::stop() {
+	::hg::assertrt(not _stopping.test());
 
-	// TODO:
+	_stopping.test_and_set();
+	// TODO: waitOnAtomic(_stopping, true);
+	while (_stopping.test(std::memory_order::relaxed) == true) {
+		fiber::self::yield();
+	}
+	if (_stopping.test()) {
+		::hg::panic();
+	}
 }
 
 void CompositePipeline::destroy() {
@@ -104,9 +117,11 @@ const non_owning_rptr<const Stage> CompositePipeline::registerStage(mref<uptr<Pi
 
 	/**/
 
+	::hg::assertrt(0LL <= slotIdx && slotIdx <= 127LL);
+
 	const auto result = _stages.insert_or_assign(
 		identifier.value,
-		make_uptr<Stage>(clone(identifier.value), slotIdx)
+		make_uptr<Stage>(clone(identifier.value), static_cast<s8>(slotIdx))
 	);
 
 	return result.first->second.get();
@@ -203,7 +218,7 @@ void CompositePipeline::dispatch(const non_owning_rptr<CompositeSlot> slot_) {
 
 	const auto dispatcher = slot_->getDynamicDispatcher();
 	for (const auto* const binding : stage->pipelineStages) {
-		const_cast<ptr<PipelineStage>>(binding)->dynamicDispatch(&dispatcher);
+		const_cast<ptr<PipelineStage>>(binding)->dynamicDispatch(dispatcher);
 	}
 
 	/**/
@@ -243,8 +258,12 @@ void CompositePipeline::complete(const non_owning_rptr<CompositeSlot> slot_) {
 
 	// TODO: Rewrite ~ Just a fast forward quickfix
 	if (++compIter == _compositeStages.end()) {
-		assert(_compositeStages.front()->ready());
-		dispatch(_slots[_compositeStages.front()->stage->getSlot()].get());
+		if (not _stopping.test()) {
+			assert(_compositeStages.front()->ready());
+			dispatch(_slots[_compositeStages.front()->stage->getSlot()].get());
+		} else [[unlikely]] {
+			_stopping.clear();
+		}
 	}
 
 	/**/
@@ -739,7 +758,7 @@ void CompositePipeline::prepareSlots() {
 		const auto dispatcher = slot->getStaticDispatcher();
 
 		for (const auto* const binding : stage->pipelineStages) {
-			const_cast<ptr<PipelineStage>>(binding)->staticDispatch(&dispatcher);
+			const_cast<ptr<PipelineStage>>(binding)->staticDispatch(dispatcher);
 		}
 	}
 

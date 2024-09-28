@@ -149,17 +149,19 @@ namespace hg::engine::acs {
 		}
 
 		/**
-		 * Inserts and in-place move constructs value by the given key
+		 * Inserts and in-place constructs a pooled type object associated with the given key
 		 *
 		 * @author Julius
 		 * @date 30.10.2020
 		 *
-		 * @param 		   key_ The key.
-		 * @param [in,out] value_ The value to insert.
+		 * @param key_ The associative key identifying the pooled value
+		 * @param arg0_ The first parameter consumed and forwarded for inplace construction
+		 * @param args_ The rest of the variadic parameter list to forward for inplace construction
 		 */
-		template <std::same_as<PooledType> Type_ = PooledType> requires std::is_move_constructible_v<Type_>
-		void insert(const KeyType& key_, PooledType&& value_) {
-			_storage.emplace(key_, std::forward<PooledType>(value_));
+		template <std::same_as<PooledType> Type_ = PooledType>
+		void insert(const KeyType& key_, auto&& arg0_, auto&&... args_)
+			requires std::is_constructible_v<Type_, decltype(arg0_), decltype(args_)...> {
+			_storage.emplace(key_, std::forward<decltype(arg0_)>(arg0_), std::forward<decltype(args_)>(args_)...);
 		}
 
 		/**

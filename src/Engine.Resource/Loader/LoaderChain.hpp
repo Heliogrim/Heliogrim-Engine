@@ -6,9 +6,9 @@
 
 #include "LoaderTraits.hpp"
 
-#include "Loader.hpp"
 #include "Cache.hpp"
 #include "Feedback.hpp"
+#include "Loader.hpp"
 #include "Transformer.hpp"
 #include "SourceLoader/SourceLoader.hpp"
 
@@ -39,6 +39,17 @@ namespace hg::engine::resource::loader {
 		}
 	};
 
+	template <
+		IsRequestValueType,
+		IsResponseValueType,
+		typename,
+		class,
+		class,
+		class,
+		class,
+		bool>
+	class LoaderChain;
+
 	/**/
 
 	template <
@@ -67,7 +78,7 @@ namespace hg::engine::resource::loader {
 			class,
 			class,
 			bool>
-		friend class LoaderChain;
+		friend class ::hg::engine::resource::loader::LoaderChain;
 
 	public:
 		using this_type = LoaderChainBase<
@@ -85,7 +96,7 @@ namespace hg::engine::resource::loader {
 
 		/**/
 
-		using cache_ref = typename StageRefTypes_;
+		using cache_ref = StageRefTypes_;
 		template <typename Type_>
 		using cache_ref_type = typename cache_ref::template type<Type_>;
 		using cache_stage_type = CacheStageType_;
@@ -145,12 +156,12 @@ namespace hg::engine::resource::loader {
 		/* Stage Invoker Helper */
 
 		template <typename Stage_, typename Result_, typename... Args_>
-		[[nodiscard]] FORCE_INLINE static Result_ invoke_stage(cref<std::decay_t<Stage_>> stage_, Args_&&... args_) {
+		[[nodiscard]] static Result_ invoke_stage(cref<std::decay_t<Stage_>> stage_, Args_&&... args_) {
 			return stage_(std::forward<Args_>(args_)...);
 		}
 
 		template <typename Stage_, typename Result_, typename... Args_>
-		[[nodiscard]] FORCE_INLINE static Result_ invoke_stage(
+		[[nodiscard]] static Result_ invoke_stage(
 			cref<uptr<std::decay_t<Stage_>>> stage_,
 			Args_&&... args_
 		) {
@@ -158,7 +169,7 @@ namespace hg::engine::resource::loader {
 		}
 
 		template <typename Stage_, typename Result_, typename... Args_>
-		[[nodiscard]] FORCE_INLINE static Result_ invoke_stage(
+		[[nodiscard]] static Result_ invoke_stage(
 			cref<sptr<std::decay_t<Stage_>>> stage_,
 			Args_&&... args_
 		) {
@@ -166,7 +177,7 @@ namespace hg::engine::resource::loader {
 		}
 
 		template <typename Stage_, typename Result_, typename... Args_>
-		[[nodiscard]] FORCE_INLINE static Result_ invoke_stage(
+		[[nodiscard]] static Result_ invoke_stage(
 			cref<smr<std::decay_t<Stage_>>> stage_,
 			Args_&&... args_
 		) {
@@ -177,8 +188,8 @@ namespace hg::engine::resource::loader {
 
 		template <typename FwdType_, bool Streamable_>
 		struct TransformerChainLink :
-			public TransformerNextLink<RequestType_, ResponseType_, Streamable_> {
-			using base_type = TransformerNextLink<RequestType_, ResponseType_, Streamable_>;
+			public TransformerNextLink<FwdType_, ResponseType_, Streamable_> {
+			using base_type = TransformerNextLink<FwdType_, ResponseType_, Streamable_>;
 
 			using next_response_type = typename base_type::next_response_type;
 			using next_request_type = typename base_type::next_request_type;
@@ -205,13 +216,13 @@ namespace hg::engine::resource::loader {
 					std::move(request_),
 					std::move(options_)
 				);
-			};
+			}
 		};
 
-		template <typename RequestType_>
-		struct TransformerChainLink<RequestType_, true> :
-			public TransformerNextLink<RequestType_, ResponseType_, true> {
-			using base_type = TransformerNextLink<RequestType_, ResponseType_, true>;
+		template <typename FwdType_>
+		struct TransformerChainLink<FwdType_, true> :
+			public TransformerNextLink<FwdType_, ResponseType_, true> {
+			using base_type = TransformerNextLink<FwdType_, ResponseType_, true>;
 
 			using next_response_type = typename base_type::next_response_type;
 			using next_request_type = typename base_type::next_request_type;

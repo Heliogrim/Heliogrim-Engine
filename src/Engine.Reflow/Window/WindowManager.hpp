@@ -8,76 +8,76 @@
 #include "../Event/EventDispatcher.hpp"
 
 namespace hg::engine::render {
-    class RenderSceneSystem;
+	class RenderSceneSystem;
 }
 
 namespace hg::engine::scene {
-    class SceneBase;
+	class SceneBase;
 }
 
 namespace hg::engine::reflow::schedule {
-    class ReflowFlowStage;
-    class ReflowShiftStage;
+	class ReflowFlowStage;
+	class ReflowShiftStage;
 }
 
 namespace hg::engine::reflow {
-    class WindowManager :
-        public EventDispatcher {
-    public:
-        friend class ::hg::engine::reflow::schedule::ReflowFlowStage;
-        friend class ::hg::engine::reflow::schedule::ReflowShiftStage;
+	class WindowManager :
+		public EventDispatcher {
+	public:
+		friend class ::hg::engine::reflow::schedule::ReflowFlowStage;
+		friend class ::hg::engine::reflow::schedule::ReflowShiftStage;
 
-    public:
-        using this_type = WindowManager;
+	public:
+		using this_type = WindowManager;
 
-    public:
-        [[nodiscard]] static cref<sptr<this_type>> get();
+	public:
+		[[nodiscard]] static cref<sptr<this_type>> get();
 
-        static cref<sptr<this_type>> make();
+		static cref<sptr<this_type>> make();
 
-        static void destroy();
+		static void destroy();
 
-    protected:
-        /**
-         * Singleton Instance
-         */
-        static sptr<WindowManager> _instance;
+	protected:
+		/**
+		 * Singleton Instance
+		 */
+		static sptr<WindowManager> _instance;
 
-        WindowManager();
+		WindowManager();
 
-    public:
-        ~WindowManager();
+	public:
+		~WindowManager();
 
-    private:
-        void setup();
+	private:
+		void setup();
 
-        void tidy();
+		void tidy();
 
-    private:
-        Vector<uptr<BoundWindow>> _windows;
+	private:
+		Vector<uptr<BoundWindow>> _windows;
 
-    private:
-        sptr<Window> resolveWindow(cref<math::ivec2> position_) const noexcept;
+	private:
+		sptr<Window> resolveWindow(cref<math::ivec2> position_) const noexcept;
 
-        [[nodiscard]] nmpt<render::RenderSceneSystem> resolveRenderSystem(cref<sptr<Window>> window_);
+		[[nodiscard]] nmpt<render::RenderSceneSystem> resolveRenderSystem(cref<sptr<Window>> window_);
 
-        void handleWindowResize(const ptr<BoundWindow> wnd_, cref<math::ivec2> nextSize_) const;
+		void handleWindowResize(const ptr<BoundWindow> wnd_, cref<math::ivec2> nextSize_) const;
 
-    private:
-        Vector<wptr<Window>> _focusOrder;
+	private:
+		Vector<wptr<Window>> _focusOrder;
 
-    private:
-        void interceptFocusEvent(cref<sptr<Window>> window_, cref<FocusEvent> event_) override;
+	private:
+		void interceptFocusEvent(cref<sptr<Window>> window_, cref<FocusEvent> event_) override;
 
-    public:
-        void destroyWindow(mref<sptr<Window>> window_);
+	public:
+		void destroyWindow(mref<sptr<Window>> window_);
 
-        [[nodiscard]] sptr<Window> requestWindow(
-            string_view title_,
-            cref<math::ivec2> size_,
-            const wptr<Window> parent_,
-            string_view renderer_,
-            nmpt<scene::SceneBase> renderableScene_
-        );
-    };
+		[[nodiscard]] sptr<Window> requestWindow(
+			string_view title_,
+			cref<math::ivec2> size_,
+			const wptr<Window> parent_,
+			string_view renderer_,
+			nmpt<scene::SceneBase> renderableScene_
+		);
+	};
 }

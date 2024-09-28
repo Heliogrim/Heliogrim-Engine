@@ -1,8 +1,8 @@
 #include "ReflowPass.hpp"
 
 #include <cassert>
-#include <Editor.Assets.Default/Images/UIDummy.hpp>
-#include <Editor.Assets.Default/Textures/UIDummy.hpp>
+#include <cstring>
+#include <utility>
 #include <Engine.Accel.Command/CommandBuffer.hpp>
 #include <Engine.Accel.Compile/VkEffectCompiler.hpp>
 #include <Engine.Accel.Compile/Profile/EffectProfile.hpp>
@@ -11,20 +11,18 @@
 #include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
 #include <Engine.Accel.Pipeline/VkGraphicsPipeline.hpp>
 #include <Engine.Asserts/Asserts.hpp>
-#include <Engine.Assets/Types/Image.hpp>
-#include <Engine.Assets/Types/Texture/TextureAsset.hpp>
-#include <Engine.Assets/Types/Texture/TextureAsset.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets/AssetFactory.hpp>
 #include <Engine.Assets/Assets.hpp>
+#include <Engine.Assets.Type/Texture/Image.hpp>
+#include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
+#include <Engine.GFX/Graphics.hpp>
 #include <Engine.GFX.Loader/Texture/TextureLoader.hpp>
 #include <Engine.GFX.Loader/Texture/TextureResource.hpp>
 #include <Engine.GFX.Loader/Texture/TextureResource.hpp>
-#include <Engine.GFX.Render.Command/RenderCommandBuffer.hpp>
-#include <Engine.GFX/Graphics.hpp>
 #include <Engine.GFX.Render.Predefined/Effects/UIBase.hpp>
 #include <Engine.GFX.Render.Predefined/Symbols/SceneColor.hpp>
 #include <Engine.GFX.Render.Predefined/Symbols/SceneDepth.hpp>
@@ -37,6 +35,7 @@
 #include <Engine.GFX/Texture/Texture.hpp>
 #include <Engine.GFX/Texture/TextureFactory.hpp>
 #include <Engine.GFX/Texture/TextureView.hpp>
+#include <Engine.GFX.Render.Command/RenderCommandBuffer.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 #include <Engine.Reflect/Cast.hpp>
 #include <Engine.Reflect/ExactType.hpp>
@@ -48,6 +47,10 @@
 #include <Engine.Reflow/Window/Window.hpp>
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
+#include <Heliogrim/Graphics/TextureFormat.hpp>
+#include <Heliogrim/Graphics/TextureType.hpp>
+
+/**/
 
 using namespace hg::engine::reflow;
 using namespace hg::engine::render;
@@ -302,12 +305,10 @@ void render::ReflowPass::execute(cref<engine::render::graph::ScopedSymbolContext
 	{
 		const auto batch = static_cast<ptr<driver::vk::VkNativeBatch>>(nextNativeBatch.get());
 
-		batch->_tmpWaits.insert_range(
-			batch->_tmpWaits.end(),
+		batch->_tmpWaits.append_range(
 			reinterpret_cast<Vector<VkSemaphore>&>(sceneColor->barriers)
 		);
-		batch->_tmpWaits.insert_range(
-			batch->_tmpWaits.end(),
+		batch->_tmpWaits.append_range(
 			reinterpret_cast<Vector<VkSemaphore>&>(uiCmd._imageWait)
 		);
 
@@ -316,8 +317,7 @@ void render::ReflowPass::execute(cref<engine::render::graph::ScopedSymbolContext
 		}
 
 		batch->_tmpSignals.emplace_back(_tmpSignal);
-		batch->_tmpSignals.insert_range(
-			batch->_tmpSignals.end(),
+		batch->_tmpSignals.append_range(
 			reinterpret_cast<Vector<VkSemaphore>&>(uiCmd._imageSignal)
 		);
 
@@ -339,21 +339,10 @@ void render::ReflowPass::ensureDefaultImage() {
 	const auto factory = Engine::getEngine()->getAssets()->getFactory();
 	const auto registry = Engine::getEngine()->getAssets()->getRegistry();
 
-	if (not registry->hasAsset(game::assets::image::UIDummy::unstable_auto_guid())) {
-		factory->createImageAsset(
-			clone(game::assets::image::UIDummy::unstable_auto_guid()),
-			R"(resources\imports\ktx\default_ui.ktx)"
-		);
-	}
-
-	if (not registry->hasAsset(game::assets::texture::UIDummy::unstable_auto_guid())) {
-		delete(new(game::assets::texture::UIDummy));
-	}
-
-	/**/
-
-	const auto asset = registry->findAssetByGuid(game::assets::texture::UIDummy::unstable_auto_guid());
-	assert(asset != nullptr);
+	// TODO: Rework temporary solution
+	constexpr auto default_ui_asset = asset_guid { 2893474171, 5859, 16540, 8673728298833701775uLL };
+	const auto asset = registry->findAssetByGuid(default_ui_asset);
+	::hg::assertrt(asset != nullptr);
 
 	/**/
 
@@ -501,7 +490,7 @@ void render::ReflowPass::updateVertices(
 		assert(next.buffer);
 
 		[[maybe_unused]] auto allocResult = gfx::memory::allocate(
-			device->allocator(),
+			*device->allocator(),
 			device,
 			next.buffer,
 			gfx::MemoryProperty::eHostVisible,
@@ -518,12 +507,12 @@ void render::ReflowPass::updateVertices(
 	/**/
 
 	_opaqueSubPass.vertexOffset = 0LL;
-	memcpy(target.memory->mapping, opaque_.data(), opaque_.size() * sizeof(gfx::uivertex));
+	std::memcpy(target.memory->mapping, opaque_.data(), opaque_.size() * sizeof(gfx::uivertex));
 
 	/**/
 
 	_alphaSubPass.vertexOffset = _opaqueSubPass.vertexOffset + opaque_.size() * sizeof(gfx::uivertex);
-	memcpy(
+	std::memcpy(
 		static_cast<const ptr<char>>(target.memory->mapping) + _alphaSubPass.vertexOffset,
 		alpha_.data(),
 		alpha_.size() * sizeof(gfx::uivertex)
@@ -532,7 +521,7 @@ void render::ReflowPass::updateVertices(
 	/**/
 
 	_msdfSubPass.vertexOffset = _alphaSubPass.vertexOffset + alpha_.size() * sizeof(gfx::uivertex);
-	memcpy(
+	std::memcpy(
 		static_cast<const ptr<char>>(target.memory->mapping) + _msdfSubPass.vertexOffset,
 		msdf_.data(),
 		msdf_.size() * sizeof(gfx::uivertex)
@@ -579,7 +568,7 @@ void render::ReflowPass::updateIndices(
 		assert(next.buffer);
 
 		[[maybe_unused]] auto allocResult = gfx::memory::allocate(
-			device->allocator(),
+			*device->allocator(),
 			device,
 			next.buffer,
 			gfx::MemoryProperty::eHostVisible,
@@ -598,7 +587,7 @@ void render::ReflowPass::updateIndices(
 	_opaqueSubPass.indexOffset = 0LL;
 	_opaqueSubPass.indexSize = opaque_.size_bytes();
 
-	memcpy(
+	std::memcpy(
 		target.memory->mapping,
 		opaque_.data(),
 		opaque_.size_bytes()
@@ -609,7 +598,7 @@ void render::ReflowPass::updateIndices(
 	_alphaSubPass.indexOffset = _opaqueSubPass.indexOffset + _opaqueSubPass.indexSize;
 	_alphaSubPass.indexSize = alpha_.size_bytes();
 
-	memcpy(
+	std::memcpy(
 		static_cast<const ptr<char>>(target.memory->mapping) + _alphaSubPass.indexOffset,
 		alpha_.data(),
 		alpha_.size_bytes()
@@ -620,7 +609,7 @@ void render::ReflowPass::updateIndices(
 	_msdfSubPass.indexOffset = _alphaSubPass.indexOffset + _alphaSubPass.indexSize;
 	_msdfSubPass.indexSize = msdf_.size_bytes();
 
-	memcpy(
+	std::memcpy(
 		static_cast<const ptr<char>>(target.memory->mapping) + _msdfSubPass.indexOffset,
 		msdf_.data(),
 		msdf_.size_bytes()

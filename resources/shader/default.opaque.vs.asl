@@ -1,6 +1,0 @@
-
-#include <defined>
-
-void main() {
-
-}

@@ -4,7 +4,7 @@
 #include <Engine.Common/Wrapper.hpp>
 
 namespace hg::engine::render {
-	class __declspec(novtable) MeshCaptureInterface {
+	class macro_novtable MeshCaptureInterface {
 	public:
 		using this_type = MeshCaptureInterface;
 

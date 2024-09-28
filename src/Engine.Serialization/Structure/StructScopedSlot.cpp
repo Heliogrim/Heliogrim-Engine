@@ -1,14 +1,10 @@
 #include "StructScopedSlot.hpp"
 
 #include <Engine.Asserts/Todo.hpp>
-
-#include "StructureSlotTypeTraits.hpp"
-#include "StructSlot.hpp"
 #include <Engine.Common/Make.hpp>
 
-#ifdef _DEBUG
-#include <Engine.Logging/Logger.hpp>
-#endif
+#include "StructSlot.hpp"
+#include "StructureSlotTypeTraits.hpp"
 
 using namespace hg::engine::serialization;
 using namespace hg;
@@ -50,6 +46,10 @@ RecordScopedSlot StructScopedSlot::insertRecordSlot(cref<record_key_type> key_) 
 	return RecordScopedSlot { std::move(scopedState), std::move(record) };
 }
 
+StructScopedSlot StructScopedSlot::insertStructSlot(cref<record_key_type> key_) {
+	return insertRecordSlot(key_).intoStruct();
+}
+
 bool StructScopedSlot::hasRecordSlot(cref<record_key_type> key_) const {
 	return static_cast<ptr<StructSlot>>(slot())->hasRecord(key_);
 }
@@ -64,4 +64,9 @@ RecordScopedSlot StructScopedSlot::getRecordSlot(cref<record_key_type> key_) con
 
 RecordScopedSlot StructScopedSlot::getRecordSlot(const size_t index_) const {
 	::hg::todo_panic();
+}
+
+StructScopedSlot StructScopedSlot::getStructSlot(cref<record_key_type> key_) const {
+	// Note: We need to use into, as `asStruct` would make the returned slot immutable.
+	return getRecordSlot(key_).intoStruct();
 }

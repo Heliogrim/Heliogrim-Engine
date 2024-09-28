@@ -1,8 +1,9 @@
 #pragma once
 
 #include <Engine.Common/Sal.hpp>
+#include <Engine.Common/Wrapper.hpp>
 
-#include "Archive.hpp"
+#include "__fwd.hpp"
 #include "../Layout/DataLayout.hpp"
 
 namespace hg::engine::serialization {
@@ -11,7 +12,7 @@ namespace hg::engine::serialization {
 		using this_type = LayoutArchiveBase;
 
 	protected:
-		LayoutArchiveBase(const ptr<Archive> archive_, cref<non_owning_rptr<DataLayoutBase>> layout_);
+		LayoutArchiveBase(_Inout_ ref<resource::Archive> archive_, cref<non_owning_rptr<DataLayoutBase>> layout_);
 
 	public:
 		LayoutArchiveBase(cref<this_type>) = delete;
@@ -21,10 +22,10 @@ namespace hg::engine::serialization {
 		~LayoutArchiveBase();
 
 	private:
-		ptr<Archive> _archive;
+		nmpt<resource::Archive> _archive;
 
 	public:
-		[[nodiscard]] const ptr<Archive> getArchive() const noexcept;
+		[[nodiscard]] nmpt<resource::Archive> getArchive() const noexcept;
 
 	private:
 		const non_owning_rptr<DataLayoutBase> _layout;
@@ -43,7 +44,7 @@ namespace hg::engine::serialization {
 		using layout_type = typename DataLayout<serialization_type>::this_type;
 
 	public:
-		TypedLayoutArchive(const ptr<Archive> archive_, cref<non_owning_rptr<layout_type>> layout_) :
+		TypedLayoutArchive(_Inout_ ref<resource::Archive> archive_, cref<non_owning_rptr<layout_type>> layout_) :
 			LayoutArchiveBase(archive_, layout_) {}
 
 		~TypedLayoutArchive() {
@@ -64,7 +65,7 @@ namespace hg::engine::serialization {
 
 			const auto& defines { getDataLayout()->defines() };
 			for (const auto& defined : defines) {
-				defined->_store(*getArchive(), *defined, src);
+				defined._store(*getArchive(), defined, src);
 			}
 
 		}
@@ -78,7 +79,7 @@ namespace hg::engine::serialization {
 
 			const auto& defines { getDataLayout()->defines() };
 			for (const auto& defined : defines) {
-				defined->_load(*getArchive(), *defined, src);
+				defined._load(*getArchive(), defined, src);
 			}
 
 		}
@@ -104,7 +105,7 @@ namespace hg::engine::serialization {
 		using layout_type = LayoutType_;
 
 	public:
-		LayoutArchive(const ptr<Archive> archive_, cref<non_owning_rptr<layout_type>> layout_) :
+		LayoutArchive(const ptr<resource::Archive> archive_, cref<non_owning_rptr<layout_type>> layout_) :
 			LayoutArchiveBase(archive_, layout_) {}
 
 		~LayoutArchive() {

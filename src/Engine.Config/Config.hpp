@@ -1,6 +1,8 @@
 #pragma once
+
 #include <stdexcept>
 #include <Engine.Asserts/Asserts.hpp>
+#include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Math/Hash.hpp>
@@ -35,13 +37,19 @@ namespace hg::engine {
 		using this_type = Config;
 
 	public:
-		Config();
+		constexpr Config() noexcept = default;
+
+		template <class... InitialProvider_>
+		constexpr explicit Config(uptr<InitialProvider_>&&... initial_) noexcept :
+			Config() {
+			(registerProvider(std::forward<decltype(initial_)>(initial_)), ...);
+		}
 
 		Config(mref<this_type>) = delete;
 
 		Config(cref<this_type>) = delete;
 
-		~Config();
+		constexpr ~Config() noexcept = default;
 
 	private:
 		Vector<std::pair<cfg::ProviderId, uptr<cfg::Provider>>> _providers;
@@ -71,7 +79,7 @@ namespace hg::engine {
 
 			} else if constexpr (std::is_same_v<CheckType, StringView>) {
 				if (std::is_constant_evaluated()) {
-					return CompileString { key_.data(), key_.length() }.hash();
+					return CompileString { &key_.front(), &key_.back() }.hash();
 				}
 				return hash::fnv1a(std::forward<KeyType_>(key_));
 

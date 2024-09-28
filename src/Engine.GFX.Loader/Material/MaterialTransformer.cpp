@@ -1,10 +1,11 @@
 #include "MaterialTransformer.hpp"
 
 #include <ranges>
-#include <Engine.Assets/Assets.hpp>
-#include <Engine.Assets/Types/Material/GfxMaterialPrototype.hpp>
-#include <Engine.Assets/Types/Texture/TextureAsset.hpp>
+#include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
+#include <Engine.Assets/Assets.hpp>
+#include <Engine.Assets.Type/Material/GfxMaterialPrototype.hpp>
+#include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.GFX/Pool/GlobalResourcePool.hpp>
 #include <Engine.GFX.Material/MaterialFactory.hpp>
@@ -359,11 +360,11 @@ smr<engine::gfx::TextureResource> resolveTexture(
 	const auto asset = registry_->findAssetByGuid(guid_);
 
 	#ifdef _DEBUG
-    assert(asset != nullptr);
+	assert(asset != nullptr);
 
-    if (!asset->getMetaClass()->exact<engine::assets::TextureAsset>()) {
-        __debugbreak();
-    }
+	if (!asset->getMetaClass()->exact<engine::assets::TextureAsset>()) {
+		::hg::breakpoint();
+	}
 	#endif
 
 	/**
@@ -376,8 +377,8 @@ smr<engine::gfx::TextureResource> resolveTexture(
 		std::move(textureAsset),
 		TextureLoadOptions {
 			textureAsset->getExtent().x >= 8192 ?
-				TextureLoadDataFlagBits::eLazyDataLoading :
-				TextureLoadDataFlagBits::eNone
+			TextureLoadDataFlagBits::eLazyDataLoading :
+			TextureLoadDataFlagBits::eNone
 		}
 	);
 

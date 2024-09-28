@@ -1,6 +1,8 @@
 #include "FreeType.hpp"
 
 #include <filesystem>
+#include <Engine.Asserts/Breakpoint.hpp>
+#include <Engine.Common/Discard.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Math/Compat.inl>
 #include <Engine.GFX/Buffer/Buffer.hpp>
@@ -21,15 +23,15 @@ using namespace hg::engine::gfx::loader;
 using namespace hg::engine::gfx;
 using namespace hg;
 
-std::atomic_uint_fast8_t ftRefCount {};
-FT_Library freeTypeLibrary {};
-FT_Face cascadiaMonoFace {};
+static std::atomic_uint_fast8_t ftRefCount {};
+static FT_Library freeTypeLibrary {};
+static DenseMap<asset_guid, FT_Face> freeTypeFaces {};
 
 constexpr static math::uivec2 font_texture_padding { 1uL };
 
 /**/
 
-static math::uivec2 getFontExtent(cref<FontLoadOptions> options_);
+static math::uivec2 getFontExtent(cref<engine::assets::Font> font_, cref<FontLoadOptions> options_);
 
 static void writeToMemory(
 	cref<FT_GlyphSlot> slot_,
@@ -49,13 +51,23 @@ static void storeFontToTexture(
 
 void transformer::convertFreeType(
 	const non_owning_rptr<const assets::Font> assets_,
-	cref<smr<resource::Source>> src_,
+	mref<storage::AccessBlobReadonly> src_,
 	nmpt<reflow::Font> dst_,
 	cref<sptr<Device>> device_,
 	const FontLoadOptions options_
 ) {
 
-	const math::uivec2 repExt = getFontExtent(options_);
+	// Problem: We may have to release the process lock of the file to enable freetype to get access...
+	discard(std::move(src_));
+
+	// Problem: We have to dynamically manage fonts within the FreeType setup
+	if (not freeTypeFaces.contains(assets_->get_guid())) {
+		initFaceFromAsset(*assets_);
+	}
+
+	/**/
+
+	const math::uivec2 repExt = getFontExtent(*assets_, options_);
 	math::uivec2 reqExt = repExt;
 
 	/**/
@@ -109,7 +121,7 @@ void transformer::convertFreeType(
 	assert(buffer.buffer);
 
 	[[maybe_unused]] auto allocRes = memory::allocate(
-		device_->allocator(),
+		*device_->allocator(),
 		device_,
 		buffer.buffer,
 		MemoryProperty::eHostVisible | MemoryProperty::eHostCoherent,
@@ -120,14 +132,14 @@ void transformer::convertFreeType(
 	/**/
 
 	const auto font = dst_;
-	font->_name = "Cascadia Mono"sv;
+	font->_name = assets_->getAssetName();
 	font->_atlas = make_sptr<Texture>(std::move(atlas));
 	font->_extent = reqExt;
 	font->_fontSize = 16uL;
 	font->_glyphCount = 0;
 
 	// Warning: !!Important!!
-	font->_ftFace = &cascadiaMonoFace;
+	font->_ftFace = freeTypeFaces.at(assets_->get_guid());
 
 	/**/
 
@@ -238,35 +250,40 @@ void transformer::prepareFreeType() {
 	auto error = FT_Init_FreeType(&freeTypeLibrary);
 	if (error) {
 		IM_CORE_ERROR("Failed to initialize FreeType library.");
-		__debugbreak();
+		::hg::breakpoint();
 		return;
 	}
 
-	/**/
+	// Warning: Temporary
+	return;
+}
 
-	const std::filesystem::path srcFile = R"(\resources\imports\ttf\CascadiaMono.ttf)";
-	const auto cwd = std::filesystem::current_path();
+void transformer::initFaceFromAsset(cref<assets::Font> asset_) {
 
-	const auto srcPath = std::filesystem::path { cwd.string() + srcFile.string() };
+	::hg::assertrt(not asset_.sources().empty());
+	const auto srcPath = asset_.sources().front();
+
+	const auto [faceIt, inserted] = freeTypeFaces.emplace(asset_.get_guid(), FT_Face {});
+	::hg::assertd(inserted);
 
 	/**/
 
 	// error = FT_New_Face(freeTypeLibrary, srcPath.string().c_str(), -1, &cascadiaMonoFace);
-	error = FT_New_Face(freeTypeLibrary, srcPath.string().c_str(), 0, &cascadiaMonoFace);
+	auto error = FT_New_Face(freeTypeLibrary, static_cast<String>(srcPath.path()).c_str(), 0, &faceIt->second);
 
 	if (error == FT_Err_Unknown_File_Format) {
-		IM_CORE_ERRORF("Font face file `{}` has an unknown file format.", srcFile.string());
-		__debugbreak();
+		IM_CORE_ERRORF("Font face file `{}` has an unknown file format.", static_cast<String>(srcPath.path()));
+		::hg::breakpoint();
 		return;
 	}
 
 	if (error) {
 		IM_CORE_ERROR("Failed to load font face.");
-		__debugbreak();
+		::hg::breakpoint();
 		return;
 	}
 
-	FT_Set_Pixel_Sizes(cascadiaMonoFace, 0, 16);
+	FT_Set_Pixel_Sizes(faceIt->second, 0, 16);
 }
 
 void transformer::cleanupFreeType() {
@@ -275,13 +292,18 @@ void transformer::cleanupFreeType() {
 		return;
 	}
 
-	FT_Done_Face(cascadiaMonoFace);
+	// Warning: Temporary
+	//FT_Done_Face(cascadiaMonoFace);
+	for (const auto& [guid, face] : freeTypeFaces.values()) {
+		FT_Done_Face(face);
+	}
+	freeTypeFaces.clear();
 	FT_Done_FreeType(freeTypeLibrary);
 }
 
-math::uivec2 getFontExtent(cref<FontLoadOptions> options_) {
+math::uivec2 getFontExtent(cref<engine::assets::Font> font_, cref<FontLoadOptions> options_) {
 
-	const auto& face { cascadiaMonoFace };
+	const auto& face = freeTypeFaces.at(font_.get_guid());
 
 	math::uivec2 extent {};
 	for (const auto& fontSize : options_.fontSizes) {
@@ -400,7 +422,8 @@ void storeFontToTexture(
 	cref<math::uivec2> report_,
 	ptr<u8> dst_
 ) {
-	const auto& face { cascadiaMonoFace };
+	const auto& face = static_cast<FT_Face>(font_->_ftFace);
+	::hg::assertrt(font_->_ftFace != nullptr);
 
 	const auto& atlas { font_->_atlas };
 	const math::uivec2 atlasExt { atlas->width(), atlas->height() };

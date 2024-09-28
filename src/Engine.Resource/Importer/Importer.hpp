@@ -7,106 +7,111 @@
 #include "../FileTypeId.hpp"
 
 namespace hg::engine::res {
-    class __declspec(novtable) ImporterBase {
-    public:
-        template <class ImportType_, class DescriptorType_>
-        friend class Importer;
+	template <class ImportType_, class DescriptorType_>
+	class Importer;
+}
 
-    public:
-        using value_type = ImporterBase;
-        using reference_type = ref<value_type>;
-        using const_reference_type = cref<value_type>;
+namespace hg::engine::res {
+	class macro_novtable ImporterBase {
+	public:
+		template <class ImportType_, class DescriptorType_>
+		friend class ::hg::engine::res::Importer;
 
-    private:
-        /**
-         * Default constructor
-         *
-         * @author Julius
-         * @date 12.09.2021
-         */
-        ImporterBase() noexcept = default;
+	public:
+		using value_type = ImporterBase;
+		using reference_type = ref<value_type>;
+		using const_reference_type = cref<value_type>;
 
-    public:
-        /**
-         * Destructor
-         *
-         * @author Julius
-         * @date 12.09.2021
-         */
-        virtual ~ImporterBase() noexcept = default;
+	private:
+		/**
+		 * Default constructor
+		 *
+		 * @author Julius
+		 * @date 12.09.2021
+		 */
+		ImporterBase() noexcept = default;
 
-    public:
-        /**
-         * Determine if we can import
-         *
-         * @author Julius
-         * @date 16.09.2021
-         *
-         * @param  typeId_ Identifier for the type.
-         * @param  file_ The file.
-         *
-         * @returns True if we can import, false if not.
-         */
-        [[nodiscard]] virtual bool canImport(cref<FileTypeId> typeId_, cref<hg::fs::File> file_) const noexcept = 0;
-    };
+	public:
+		/**
+		 * Destructor
+		 *
+		 * @author Julius
+		 * @date 12.09.2021
+		 */
+		virtual ~ImporterBase() noexcept = default;
 
-    template <class ImportType_, class DescriptorType_>
-    class __declspec(novtable) Importer :
-        public ImporterBase {
-    public:
-        using base_type = ImporterBase;
+	public:
+		/**
+		 * Determine if we can import
+		 *
+		 * @author Julius
+		 * @date 16.09.2021
+		 *
+		 * @param  typeId_ Identifier for the type.
+		 * @param  file_ The file.
+		 *
+		 * @returns True if we can import, false if not.
+		 */
+		[[nodiscard]] virtual bool canImport(cref<FileTypeId> typeId_, cref<hg::fs::File> file_) const noexcept = 0;
+	};
 
-        using value_type = Importer<ImportType_, DescriptorType_>;
-        using reference_type = ref<value_type>;
-        using const_reference_type = cref<value_type>;
+	template <class ImportType_, class DescriptorType_>
+	class macro_novtable Importer :
+		public ImporterBase {
+	public:
+		using base_type = ImporterBase;
 
-        using descriptor_type = DescriptorType_;
-        using import_type = ImportType_;
+		using value_type = Importer<ImportType_, DescriptorType_>;
+		using reference_type = ref<value_type>;
+		using const_reference_type = cref<value_type>;
 
-        template <typename Type_, typename = std::enable_if_t<!std::is_void_v<Type_>>>
-        using wrapper_type = hg::concurrent::future<Type_>;
-        using import_result_type = wrapper_type<import_type>;
+		using descriptor_type = DescriptorType_;
+		using import_type = ImportType_;
 
-    protected:
-        /**
-         * Default constructor
-         *
-         * @author Julius
-         * @date 10.09.2021
-         */
-        Importer() noexcept = default;
+		template <typename Type_, typename = std::enable_if_t<!std::is_void_v<Type_>>>
+		using wrapper_type = hg::concurrent::future<Type_>;
+		using import_result_type = wrapper_type<import_type>;
 
-    public:
-        /**
-         * Destructor
-         *
-         * @author Julius
-         * @date 10.09.2021
-         */
-        ~Importer() noexcept override = default;
+	protected:
+		/**
+		 * Default constructor
+		 *
+		 * @author Julius
+		 * @date 10.09.2021
+		 */
+		Importer() noexcept = default;
 
-    public:
-        /**
-         * Gets the descriptor of importer
-         *
-         * @author Julius
-         * @date 12.09.2021
-         *
-         * @returns A descriptor_type.
-         */
-        [[nodiscard]] virtual descriptor_type descriptor() const noexcept = 0;
+	public:
+		/**
+		 * Destructor
+		 *
+		 * @author Julius
+		 * @date 10.09.2021
+		 */
+		~Importer() noexcept override = default;
 
-        /**
-         * Imports a file
-         *
-         * @author Julius
-         * @date 10.09.2021
-         *
-         * @param  typeId_ Identifier for the type.
-         * @param  file_ The file.
-         *
-         * @returns An import_result_type.
-         */
-        [[nodiscard]] virtual import_result_type import(cref<FileTypeId> typeId_, cref<hg::fs::File> file_) const = 0;
-    };
+	public:
+		/**
+		 * Gets the descriptor of importer
+		 *
+		 * @author Julius
+		 * @date 12.09.2021
+		 *
+		 * @returns A descriptor_type.
+		 */
+		[[nodiscard]] virtual descriptor_type descriptor() const noexcept = 0;
+
+		/**
+		 * Imports a file
+		 *
+		 * @author Julius
+		 * @date 10.09.2021
+		 *
+		 * @param  typeId_ Identifier for the type.
+		 * @param  file_ The file.
+		 *
+		 * @returns An import_result_type.
+		 */
+		[[nodiscard]] virtual import_result_type import(cref<FileTypeId> typeId_, cref<hg::fs::File> file_) const = 0;
+	};
 }

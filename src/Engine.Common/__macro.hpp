@@ -20,7 +20,7 @@
 #define OUT
 #endif
 
-#if !defined(__FUNCSIG__) && defined(__PRETTY_FUNCTION__)
+#if !defined(__FUNCSIG__)
 #define __FUNCSIG__ __PRETTY_FUNCTION__
 #endif
 
@@ -37,7 +37,7 @@
 #endif
 
 // Check GCC
-#elif defined(__GNUG__)
+#elif defined(__GNUC__)
 
 #define ENV_GCC TRUE
 
@@ -99,28 +99,16 @@
 #define UINT32_T(var_) static_cast<uint32_t>(var_)
 
 // Warnings
-#if __clang__
-#define START_SUPPRESS_WARNINGS \
-    _Pragma("clang diagnostic push") \
-    _Pragma("clang diagnostic ignored \"-Wall\"") \
-    _Pragma("clang diagnostic ignored \"-Weverything\"")
-#define STOP_SUPPRESS_WARNINGS \
-    _Pragma("clang diagnostic pop")
-#elif defined(_MSC_VER)
-#define START_SUPPRESS_WARNINGS \
-    __pragma(warning(push, 0))
-#define STOP_SUPPRESS_WARNINGS \
-    __pragma(warning(pop))
-#else
-#define START_SUPPRESS_WARNINGS
-#define STOP_SUPPRESS_WARNINGS
-#endif
+#include "__warning.hpp"
 
 // Alignment
-#ifdef __GNUC__
-#define ALIGNED(struct_, alignment_) struct_ __attribute__ ((aligned (alignment_)))
-#else
+#if defined(ENV_MSVC)
 #define ALIGNED(struct_, alignment_) __declspec(align(alignment_)) struct_
+#elif defined(ENV_GCC) || defined(ENV_CLANG)
+#define ALIGNED(struct_, alignment_) __attribute__ ((aligned (alignment_))) struct_
+#else
+// TODO: Deal with error case
+#defined ALIGNED(struct_, alignment_) struct_
 #endif
 
 // Comparison
@@ -166,10 +154,35 @@
 #define __restrict RESTRICT
 #endif
 
-// Function Helper
+// Attributes
+#if not defined(support_no_unique_address)
+#if __has_cpp_attribute(no_unique_address)
+#define support_no_unique_address no_unique_address
+#endif
 
-#if not defined(Fn)
-#define Fn(fn_) [](auto&&... fnArgs_) { return fn_(std::forward<decltype(fnArgs_)>(fnArgs_)...); }
+#if not defined(support_no_unique_address) && ENV_MSVC && __has_cpp_attribute(msvc::no_unique_address)
+#define support_no_unique_address msvc::no_unique_address
+#endif
+
+#if not defined(support_no_unique_address)
+#define support_no_unique_address
+#endif
+#endif
+
+#if not defined(macro_novtable)
+#if defined(ENV_MSVC)
+#define macro_novtable __declspec(novtable)
+#else
+#define macro_novtable
+#endif
+#endif
+
+#if not defined(macro_attr_intr)
+#if defined(ENV_MSVC) && not defined(__clang__)
+#define macro_attr_intr msvc::intrinsic
+#else
+#define macro_attr_intr
+#endif
 #endif
 
 // Profiling
@@ -196,11 +209,13 @@
 #define IM_CORE_ERROR(msg_) ::hg::Logger::error(msg_)
 #define IM_DEBUG_LOG(msg_) ::hg::Logger::debug(msg_)
 
+START_SUPPRESS_WARNINGS
 #define IM_CORE_LOGF(format_, ...) ::hg::Logger::info(format_, ##__VA_ARGS__)
 #define IM_CORE_INFOF(format_, ...) ::hg::Logger::info(format_, ##__VA_ARGS__)
 #define IM_CORE_WARNF(format_, ...) ::hg::Logger::warn(format_, ##__VA_ARGS__)
 #define IM_CORE_ERRORF(format_, ...) ::hg::Logger::error(format_, ##__VA_ARGS__)
 #define IM_DEBUG_LOGF(format_, ...) ::hg::Logger::debug(format_, ##__VA_ARGS__)
+STOP_SUPPRESS_WARNINGS
 #else
 #define IM_CORE_LOG(msg_) ::hg::Logger::info(msg_)
 #define IM_CORE_INFO(msg_) ::hg::Logger::info(msg_)
@@ -208,9 +223,11 @@
 #define IM_CORE_ERROR(msg_) ::hg::Logger::error(msg_)
 #define IM_DEBUG_LOG(msg_)
 
+START_SUPPRESS_WARNINGS
 #define IM_CORE_LOGF(format_, ...) ::hg::Logger::info(format_, ##__VA_ARGS__)
 #define IM_CORE_INFOF(format_, ...) ::hg::Logger::info(format_, ##__VA_ARGS__)
 #define IM_CORE_WARNF(format_, ...) ::hg::Logger::warn(format_, ##__VA_ARGS__)
 #define IM_CORE_ERRORF(format_, ...) ::hg::Logger::error(format_, ##__VA_ARGS__)
 #define IM_DEBUG_LOGF(format_, ...)
+STOP_SUPPRESS_WARNINGS
 #endif

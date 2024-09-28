@@ -1,5 +1,8 @@
 #include "Config.hpp"
 
+#include <algorithm>
+#include <ranges>
+#include <utility>
 #include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Asserts/Todo.hpp>
 
@@ -15,10 +18,6 @@ using namespace ::hg;
 }
 
 /**/
-
-Config::Config() = default;
-
-Config::~Config() = default;
 
 tl::expected<void, cfg::ConfigInitError> Config::init(mref<cfg::ConfigEntry> entry_) {
 	if (_providers.empty()) {

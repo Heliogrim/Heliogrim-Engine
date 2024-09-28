@@ -1,6 +1,6 @@
-#include <Heliogrim/Actor.hpp>
-#include <Heliogrim/ActorComponent.hpp>
 #include <Engine.Reflow/Widget/Input/InputText.hpp>
+#include <Heliogrim/Actor/Actor.hpp>
+#include <Heliogrim/Component/HierarchyComponent.hpp>
 
 #include "ObjectValueMapper.hpp"
 #include "../../Widget/Input/InputVec.hpp"
@@ -48,7 +48,7 @@ template <>
 void ObjectValueMapper<Actor>::update(cref<sptr<VerticalPanel>> parent_, const ptr<void> obj_) {
 
 	const auto& actor { *static_cast<ptr<Actor>>(obj_) };
-	const auto& mat { actor.getWorldTransform() };
+	const auto& mat { actor.getUniverseTransform() };
 	const auto& children { *parent_->children() };
 
 	const auto actorGuid = actor.guid();
@@ -63,19 +63,19 @@ void ObjectValueMapper<Actor>::update(cref<sptr<VerticalPanel>> parent_, const p
 	/**/
 
 	std::static_pointer_cast<InputVec3, Widget>(children[1])->_callback = [actor = &actor](math::vec3 value_) {
-		const_cast<ref<Transform>>(actor->getRootComponent()->getWorldTransform()).setLocation(
+		const_cast<ref<Transform>>(actor->getRootComponent()->getUniverseTransform()).setLocation(
 			math::Location(std::move(value_))
 		);
 	};
 
 	std::static_pointer_cast<InputVec3, Widget>(children[2])->_callback = [actor = &actor](math::vec3 value_) {
-		const_cast<ref<Transform>>(actor->getRootComponent()->getWorldTransform()).setRotator(
+		const_cast<ref<Transform>>(actor->getRootComponent()->getUniverseTransform()).setRotator(
 			math::Rotator::fromEuler(std::move(value_))
 		);
 	};
 
 	std::static_pointer_cast<InputVec3, Widget>(children[3])->_callback = [actor = &actor](math::vec3 value_) {
-		const_cast<ref<Transform>>(actor->getRootComponent()->getWorldTransform()).setScale(std::move(value_));
+		const_cast<ref<Transform>>(actor->getRootComponent()->getUniverseTransform()).setScale(std::move(value_));
 	};
 }
 

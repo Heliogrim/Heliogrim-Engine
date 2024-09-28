@@ -3,8 +3,8 @@
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
-#include <Engine.Resource/Loader/Transformer.hpp>
 #include <Engine.GFX/Pool/__fwd.hpp>
+#include <Engine.Resource/Loader/Transformer.hpp>
 
 #include "Traits.hpp"
 
@@ -36,13 +36,13 @@ namespace hg::engine::gfx::loader {
 		[[nodiscard]] smr<TextureResource> transpose(
 			_In_ mref<request_type::type> request_,
 			_In_ mref<request_type::options> options_,
-			_In_ mref<smr<resource::Source>> from_
+			_In_ mref<storage::AccessBlobReadonly> from_
 		) const;
 
 		void partialTranspose(
 			_In_ mref<stream_request_type::type> request_,
 			_In_ mref<stream_request_type::options> options_,
-			_In_ mref<smr<resource::Source>> from_,
+			_In_ mref<storage::AccessBlobReadonly> from_,
 			_In_ mref<smr<TextureResource>> to_
 		) const;
 

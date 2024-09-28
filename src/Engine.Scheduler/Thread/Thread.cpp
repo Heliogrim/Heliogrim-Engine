@@ -1,14 +1,21 @@
 #include "Thread.hpp"
 
-#include <Engine.Common/__macro.hpp>
-#include <Windows.h>
-#include <processthreadsapi.h>
 #include <stdexcept>
 #include <Engine.Asserts/Asserts.hpp>
+#include <Engine.Asserts/Todo.hpp>
+#include <Engine.Common/__macro.hpp>
+
+#ifdef WIN32
+#include <Engine.Common/stdafx.h>
+/**/
+#include <processthreadsapi.h>
+#else
+#include <pthread.h>
+#endif
 
 using namespace hg::engine::scheduler::thread;
 
-FORCE_INLINE thread_id cast_ntid_tid(const std::thread::id& ntid_) {
+FORCE_INLINE static inline thread_id cast_ntid_tid(const std::thread::id& ntid_) {
 	if constexpr (sizeof(ntid_) == sizeof(hg::u64)) {
 		return *static_cast<const hg::u64*>(
 			static_cast<const void*>(&ntid_)
@@ -23,14 +30,15 @@ FORCE_INLINE thread_id cast_ntid_tid(const std::thread::id& ntid_) {
 // Warning: This function is called multiple times each round trip. Should be readable as fast as possible.
 thread_local static thread_id __threadId { cast_ntid_tid(std::this_thread::get_id()) };
 
-[[nodiscard]] uint64_t generate_thread_idx() {
+[[nodiscard]] static uint64_t generate_thread_idx() {
 	static std::atomic_uint64_t idx = { 0 };
 	return idx.fetch_add(1, std::memory_order_relaxed);
 }
 
 thread_local static uint64_t __threadIdx { generate_thread_idx() };
 
-FORCE_INLINE bool set_priority(HANDLE handle_, priority priority_) {
+FORCE_INLINE inline static bool set_priority(std::thread::native_handle_type handle_, priority priority_) {
+
 	#if defined(_WIN32) || defined(_WIN64)
 	auto tr = 0;
 
@@ -52,9 +60,37 @@ FORCE_INLINE bool set_priority(HANDLE handle_, priority priority_) {
 			break;
 		}
 	}
-	#endif
 
 	return ::SetThreadPriority(handle_, tr) == TRUE;
+
+	#else
+
+	int policy;
+	sched_param params;
+	::hg::assertrt(pthread_getschedparam(handle_, &policy, &params) == 0);
+
+	const auto lowPriorityLimit = sched_get_priority_min(policy);
+	const auto highPriorityLimit = sched_get_priority_max(policy);
+	const auto priorityRange = lowPriorityLimit != highPriorityLimit ? (highPriorityLimit - lowPriorityLimit) : 0;
+	const auto step = priorityRange / 4;
+
+	switch (priority_) {
+		case eLow: {
+			return pthread_setschedprio(handle_, lowPriorityLimit + step * 0) == 0;
+		}
+		case eNormal: {
+			return pthread_setschedprio(handle_, lowPriorityLimit + step * 1) == 0;
+		}
+		case eHigh: {
+			return pthread_setschedprio(handle_, lowPriorityLimit + step * 2) == 0;
+		}
+		case eTimeCritical: {
+			return pthread_setschedprio(handle_, lowPriorityLimit + step * 3) == 0;
+		}
+	}
+
+	#endif
+	::hg::todo_panic();
 }
 
 Thread::Thread() :
@@ -102,7 +138,10 @@ thread_id Thread::getId() const noexcept {
 }
 
 affinity_mask Thread::setAffinity(affinity_mask mask_) {
+	#ifdef WIN32
 	return ::SetThreadAffinityMask(_handle->native_handle(), mask_);
+	#endif
+	::hg::todo_panic();
 }
 
 bool Thread::setPriority(priority priority_) {

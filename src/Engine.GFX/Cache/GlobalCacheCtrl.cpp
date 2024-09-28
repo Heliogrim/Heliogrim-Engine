@@ -1,18 +1,19 @@
 #include "GlobalCacheCtrl.hpp"
 
-#include <Engine.Asserts/Todo.hpp>
-#include <Engine.Logging/Logger.hpp>
-#include <Engine.Assets/Types/Texture/TextureAsset.hpp>
-#include <Engine.Core/Engine.hpp>
-#include <Engine.Resource/ResourceManager.hpp>
-#include <Engine.Resource/LoaderManager.hpp>
-#include <Engine.GFX.Loader/Texture/Traits.hpp>
-#include <Engine.GFX.Loader/Texture/TextureLoader.hpp>
-#include <Engine.GFX.Loader/Material/MaterialLoader.hpp>
-#include <Engine.Pedantic/Clone/Clone.hpp>
-#include <Engine.Common/__macro.hpp>
-#include <Engine.Common/GuidFormat.hpp>
 #include <Engine.Accel.Pipeline/AccelerationPipeline.hpp>
+#include <Engine.Asserts/Breakpoint.hpp>
+#include <Engine.Asserts/Todo.hpp>
+#include <Engine.Assets.Type/Texture/TextureAsset.hpp>
+#include <Engine.Common/GuidFormat.hpp>
+#include <Engine.Common/__macro.hpp>
+#include <Engine.Core/Engine.hpp>
+#include <Engine.GFX.Loader/Material/MaterialLoader.hpp>
+#include <Engine.GFX.Loader/Texture/TextureLoader.hpp>
+#include <Engine.GFX.Loader/Texture/Traits.hpp>
+#include <Engine.Logging/Logger.hpp>
+#include <Engine.Pedantic/Clone/Clone.hpp>
+#include <Engine.Resource/LoaderManager.hpp>
+#include <Engine.Resource/ResourceManager.hpp>
 
 #include "GlobalResourceCache.hpp"
 
@@ -217,7 +218,7 @@ void GlobalCacheCtrl::unmark(mref<smr<TextureResource>> resource_, cref<AssocKey
 
 	#if _DEBUG
 	if (left > 128uL) {
-		__debugbreak();
+		::hg::breakpoint();
 	}
 	#endif
 
@@ -360,7 +361,7 @@ void GlobalCacheCtrl::unmark(
 	// No constexpr, just debug expression
 	static const u16 wrapTest { 0xFFFEuL };
 	if (left >= wrapTest) {
-		__debugbreak();
+		::hg::breakpoint();
 	}
 	#endif
 

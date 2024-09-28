@@ -1,6 +1,6 @@
 #pragma once
 
-#include <intrin.h>
+#include <Engine.Asserts/Panic.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
@@ -16,19 +16,20 @@ namespace hg::engine::scheduler::fiber {
 		/**
 		 * Context Handling
 		 */
-		handle_type handle;
+		handle_type handle = nullptr;
 
-		handle_type parent;
+		handle_type parent = nullptr;
 
 	public:
 		/**
 		 * Execution Model
 		 */
-		non_owning_rptr<const task::TaskDelegate> task;
+		non_owning_rptr<const task::TaskDelegate> task = nullptr;
 
-		FiberAwaitable awaiter;
+		FiberAwaitable awaiter = {};
 
 	public:
+		#if defined(WIN32)
 		/**
 		 * Creates a new ptr&lt;Fiber&gt;
 		 *
@@ -37,9 +38,25 @@ namespace hg::engine::scheduler::fiber {
 		 *
 		 * @param      self_ The self.
 		 * @param [in] proc_ If non-null, the procedure.
-		 * @param [in] param_ (Optional) If non-null, the parameter.
 		 */
-		static void create(_Out_ ptr<Fiber> self_, _In_ void (*proc_)(void*), _In_opt_ void* param_ = nullptr);
+		static void create(_Inout_ ptr<Fiber> self_, _In_ void (*proc_)(void*));
+
+		#else
+		/**
+		 * Creates a new ptr&lt;Fiber&gt;
+		 *
+		 * @author Julius
+		 * @date 23.10.2021
+		 *
+		 * @param      self_ The self.
+		 * @param [in] proc_ If non-null, the procedure.
+		 */
+		static void create(
+			_Inout_ ptr<Fiber> self_,
+			_In_ void (*proc_)(int ptrLow_, int ptrHigh_)
+		);
+
+		#endif
 
 		/**
 		 * Destroys this fiber
@@ -90,7 +107,7 @@ namespace hg::engine::scheduler::fiber {
 		extern void await(_Inout_ mref<FiberAwaitable> awaitable_);
 
 		template <IsAwaitableSignal AwaitableType_>
-		FORCE_INLINE void await_signal(_In_ const ptr<AwaitableType_> awaitable_) {
+		void await_signal(_In_ const ptr<AwaitableType_> awaitable_) {
 			await(
 				{
 					.mask = FiberAwaitableBits::eSignal,
@@ -100,7 +117,7 @@ namespace hg::engine::scheduler::fiber {
 		}
 
 		template <IsAwaitableSignalCall AwaitableType_>
-		FORCE_INLINE void await_signal_call(cref<AwaitableType_> awaitable_) {
+		void await_signal_call(cref<AwaitableType_> awaitable_) {
 			await(
 				{
 					.mask = FiberAwaitableBits::eSignalCall,
@@ -110,18 +127,18 @@ namespace hg::engine::scheduler::fiber {
 		}
 
 		template <IsAwaitable AwaitableType_>
-		FORCE_INLINE void await(
+		void await(
 			_In_ std::conditional_t<IsAwaitableSignal<AwaitableType_>, const ptr<AwaitableType_>, cref<AwaitableType_>>
 			awaitable_
 		) {
 			if constexpr (IsAwaitableSignal<AwaitableType_>) {
 				return await_signal<AwaitableType_>(awaitable_);
-			} else if (IsAwaitableSignalRet<AwaitableType_>) {
+			} else if constexpr (IsAwaitableSignalRet<AwaitableType_>) {
 				return await_signal<await_signal_sub_type>(awaitable_.await());
-			} else if (IsAwaitableSignalCall<AwaitableType_>) {
+			} else if constexpr (IsAwaitableSignalCall<AwaitableType_>) {
 				return await_signal_call<AwaitableType_>(awaitable_);
 			} else {
-				__ud2();
+				::hg::panic();
 			}
 		}
 	}
@@ -134,7 +151,7 @@ namespace hg::engine::scheduler::fiber {
 	 *
 	 * @returns An u64.
 	 */
-	extern constexpr u64 default_fiber_stack_size() noexcept;
+	extern u64 default_fiber_stack_size() noexcept;
 
 	/**
 	 * Switch thread to fiber

@@ -1,7 +1,7 @@
-#include <Engine.Assets/Types/Geometry/StaticGeometry.hpp>
-#include <Engine.Assets/Types/Material/GfxMaterial.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets/Assets.hpp>
+#include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
+#include <Engine.Assets.Type/Material/GfxMaterial.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Reflect/Cast.hpp>
 #include <Engine.Reflow/Widget/Text.hpp>
@@ -9,7 +9,7 @@
 #include <Engine.Reflow/Widget/Input/InputIntegral.hpp>
 #include <Engine.Reflow/Widget/Input/InputText.hpp>
 #include <Heliogrim/Heliogrim.hpp>
-#include <Heliogrim/StaticGeometryComponent.hpp>
+#include <Heliogrim/Component/Scene/Geometry/StaticGeometryComponent.hpp>
 
 #include "ObjectValueMapper.hpp"
 #include "../../Color/Dark.hpp"
@@ -126,7 +126,7 @@ void ObjectValueMapper<StaticGeometryComponent>::update(
 ) {
 
 	auto& sgc = *static_cast<ptr<StaticGeometryComponent>>(obj_);
-	const auto& mat { sgc.getWorldTransform() };
+	const auto& mat { sgc.getUniverseTransform() };
 	const auto& children { *parent_->children() };
 
 	auto* const transform { static_cast<ptr<Collapse>>(children[1].get()) }; {
@@ -140,13 +140,13 @@ void ObjectValueMapper<StaticGeometryComponent>::update(
 
 		std::static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(0))->_callback = [sgc = &sgc
 			](math::vec3 value_) {
-				const_cast<ref<Transform>>(sgc->getWorldTransform()).setLocation(math::Location(std::move(value_)));
+				const_cast<ref<Transform>>(sgc->getUniverseTransform()).setLocation(math::Location(std::move(value_)));
 			};
 
 		std::static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(1))->_callback = [sgc = &sgc](
 			math::vec3 value_
 		) {
-				const_cast<ref<Transform>>(sgc->getWorldTransform()).setRotator(
+				const_cast<ref<Transform>>(sgc->getUniverseTransform()).setRotator(
 					math::Rotator::fromEuler(std::move(value_))
 				);
 			};
@@ -154,7 +154,7 @@ void ObjectValueMapper<StaticGeometryComponent>::update(
 		std::static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(2))->_callback = [sgc = &sgc
 			](math::vec3 value_) {
 
-				const_cast<ref<Transform>>(sgc->getWorldTransform()).setScale(std::move(value_));
+				const_cast<ref<Transform>>(sgc->getUniverseTransform()).setScale(std::move(value_));
 			};
 	}
 
@@ -216,7 +216,7 @@ void ObjectValueMapper<StaticGeometryComponent>::update(
 
 			//AssetDatabaseResult<GfxMaterialAsset> next = Heliogrim::assets()[value_]; // Will break due to conversion
 			auto next = Heliogrim::assets()[value_];
-			ref<GfxMaterialAsset> slot = const_cast<ref<Vector<GfxMaterialAsset>>>(sgc->overrideMaterials())[matIdx];
+			ref<GfxMaterialAsset> slot = const_cast<ref<AutoArray<GfxMaterialAsset>>>(sgc->overrideMaterials())[matIdx];
 
 			// TODO: Remove assert and handle invalid case ~ reset input field ?!?
 			assert(next.flags & AssetDatabaseResultType::eSuccess);

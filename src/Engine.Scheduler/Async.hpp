@@ -1,4 +1,5 @@
 #pragma once
+
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Concurrent/Promise.hpp>
 
@@ -105,7 +106,7 @@ namespace hg::engine::scheduler {
 		hg::concurrent::promise<Ty> p { fnc_ };
 		hg::concurrent::future<Ty> f = p.get();
 
-		exec({ p });
+		exec({ std::move(p) });
 
 		return f;
 	}
@@ -124,7 +125,7 @@ namespace hg::engine::scheduler {
 		hg::concurrent::promise<Ty> p { fnc_ };
 		hg::concurrent::future<Ty> f = p.get();
 
-		delay({ p }, ticks_);
+		delay({ std::move(p) }, ticks_);
 
 		return f;
 	}

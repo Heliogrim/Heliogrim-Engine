@@ -6,7 +6,7 @@
 #include "../Task/TaskMask.hpp"
 
 namespace hg::engine::scheduler {
-	class __declspec(novtable) ScheduleWorkSet {
+	class macro_novtable ScheduleWorkSet {
 	public:
 		using this_type = ScheduleWorkSet;
 

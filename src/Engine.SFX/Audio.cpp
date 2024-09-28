@@ -1,7 +1,7 @@
 #include "Audio.hpp"
 
-#include <Engine.Resource/ResourceManager.hpp>
 #include <Engine.Core/Engine.hpp>
+#include <Engine.Resource/ResourceManager.hpp>
 
 #ifdef _PROFILING
 #include <Engine.Common/Profiling/Stopwatch.hpp>

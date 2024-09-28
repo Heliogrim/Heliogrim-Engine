@@ -1,32 +1,32 @@
 #pragma once
 
-#include <cassert>
 #include <Engine.Asserts/Asserts.hpp>
+#include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Memory/MemoryPointer.hpp>
 
-#include "Asset.hpp"
 #include "AssetDatabaseResult.hpp"
-#include "Engine.Common/Memory/MemoryPointer.hpp"
+#include "Asset/Asset.hpp"
+
+namespace hg::engine::assets {
+	class IAssetRegistry;
+}
 
 namespace hg {
 	class AssetDatabase {
 	public:
-		using value_type = AssetDatabase;
+		using this_type = AssetDatabase;
 
 	public:
-		friend class Heliogrim;
+		explicit AssetDatabase(nmpt<::hg::engine::assets::IAssetRegistry> internal_) noexcept;
+
+		constexpr ~AssetDatabase() noexcept = default;
 
 	private:
-		AssetDatabase(const non_owning_rptr<void> internal_);
+		nmpt<::hg::engine::assets::IAssetRegistry> _internal;
 
 	public:
-		~AssetDatabase();
-
-	private:
-		nmpt<void> _internal;
-
-	public:
-		[[nodiscard]] nmpt<void> unwrap() const noexcept;
+		[[nodiscard]] decltype(_internal) unwrap() const noexcept;
 
 	public:
 		/**
@@ -42,6 +42,15 @@ namespace hg {
 		[[nodiscard]] bool contains(cref<asset_guid> guid_) const noexcept;
 
 	public:
+		[[nodiscard]] auto find(cref<asset_guid> guid_) const {
+			return (*this)[guid_];
+		}
+
+		template <typename Type_>
+		[[nodiscard]] auto find(cref<asset_guid> guid_) const {
+			return this->operator[]<Type_>(guid_);
+		}
+
 		[[nodiscard]] AssetDatabaseResult<Asset> operator[](cref<asset_guid> guid_) const;
 
 		template <typename Type_> requires std::is_base_of_v<Asset, Type_>
@@ -78,7 +87,7 @@ namespace hg {
 		 *
 		 * @returns True if it succeeds, false if it fails.
 		 */
-		bool insert(ptr<Asset> asset_) noexcept;
+		bool insert(_Inout_ ref<Asset> asset_) noexcept;
 
 		/**
 		 * Erases the given asset from the database and erases internal states
@@ -90,6 +99,10 @@ namespace hg {
 		 *
 		 * @returns True if it succeeds, false if it fails.
 		 */
-		bool erase(ptr<Asset> asset_) noexcept;
+		bool erase(_Inout_ ref<Asset> asset_) noexcept;
 	};
+
+	/**/
+
+	[[nodiscard]] extern AssetDatabase GetAssets();
 }

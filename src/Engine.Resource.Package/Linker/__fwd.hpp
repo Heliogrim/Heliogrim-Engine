@@ -1,9 +1,20 @@
 #pragma once
 
 namespace hg::engine::resource {
-    struct LinkedArchive;
-    class PackageLinker;
+	class Package;
 
-    template <bool Const_>
-    class LinkedArchiveIterator;
+	class PackageIndex;
+	struct PackageIndexEntry;
+}
+
+namespace hg::engine::resource::package {
+	class PackageLinker;
+
+	struct PackageArchiveHeader;
+	struct PackageLinkedArchive;
+
+	struct LinkedArchive;
+
+	template <bool Const_>
+	class LinkedArchiveIterator;
 }

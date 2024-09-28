@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine.Assets/Types/Asset.hpp>
+#include <Engine.Assets.Type/Asset.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
@@ -11,9 +11,13 @@
 #include "../ResourceUsageFlag.hpp"
 
 namespace hg::engine::resource {
-	class __declspec(novtable) ResourceBase {
+	class ManageGuard;
+}
+
+namespace hg::engine::resource {
+	class macro_novtable ResourceBase {
 	public:
-		friend class ManageGuard;
+		friend class ::hg::engine::resource::ManageGuard;
 
 	public:
 		using this_type = ResourceBase;

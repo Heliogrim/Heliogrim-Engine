@@ -29,7 +29,9 @@ namespace hg::engine::accel {
 		Guid _guid;
 
 	public:
-		[[nodiscard]] Guid getGuid() const noexcept;
+		[[nodiscard]] constexpr Guid getGuid() const noexcept {
+			return _guid;
+		}
 
 	private:
 		string _name;
@@ -52,8 +54,8 @@ namespace hg::engine::accel {
 		) const noexcept;
 
 	public:
-		[[nodiscard]] Optional<StageInput> getFirstInputFor(cref<lang::Symbol> symbol_) const noexcept;
+		[[nodiscard]] Opt<StageInput> getFirstInputFor(cref<lang::Symbol> symbol_) const noexcept;
 
-		[[nodiscard]] Optional<StageOutput> getLastOutputFor(cref<lang::Symbol> symbol_) const noexcept;
+		[[nodiscard]] Opt<StageOutput> getLastOutputFor(cref<lang::Symbol> symbol_) const noexcept;
 	};
 }

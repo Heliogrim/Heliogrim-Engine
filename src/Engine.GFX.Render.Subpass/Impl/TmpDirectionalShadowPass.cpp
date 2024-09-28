@@ -1,33 +1,34 @@
 #include "TmpDirectionalShadowPass.hpp"
 
-#include <Engine.Common/GLM.hpp>
+#include <utility>
 #include <Engine.Accel.Command/CommandBuffer.hpp>
 #include <Engine.Accel.Compile/VkEffectCompiler.hpp>
 #include <Engine.Accel.Compile/Profile/EffectProfile.hpp>
 #include <Engine.Accel.Compile/Spec/SimpleEffectSpecification.hpp>
 #include <Engine.Accel.Pass/VkAccelerationPassFactory.hpp>
-#include <Engine.Core/Engine.hpp>
-#include <Engine.GFX/Graphics.hpp>
-#include <Engine.GFX.Render.Predefined/Symbols/DirectionalShadow.hpp>
-#include <Engine.GFX.Render.Predefined/Symbols/SceneView.hpp>
-#include <Engine.GFX.RenderGraph/Symbol/ScopedSymbolContext.hpp>
-#include <Engine.GFX.Scene/View/SceneView.hpp>
-#include <Engine.GFX/Texture/TextureFactory.hpp>
-#include <Engine.GFX.Render.Command/RenderCommandBuffer.hpp>
-#include <Engine.Pedantic/Clone/Clone.hpp>
-#include <Engine.Reflect/ExactType.hpp>
 #include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
 #include <Engine.Accel.Pipeline/VkGraphicsPipeline.hpp>
+#include <Engine.Common/GLM.hpp>
 #include <Engine.Common/Math/Convertion.hpp>
 #include <Engine.Common/Math/Coordinates.hpp>
+#include <Engine.Core/Engine.hpp>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
-#include <Engine.GFX.Render.Predefined/Symbols/SceneDepth.hpp>
-#include <Engine.GFX.RenderGraph/Relation/TextureDescription.hpp>
 #include <Engine.GFX/Buffer/BufferFactory.hpp>
 #include <Engine.GFX/Pool/SceneResourcePool.hpp>
 #include <Engine.GFX/Texture/SparseTextureView.hpp>
+#include <Engine.GFX/Texture/TextureFactory.hpp>
 #include <Engine.GFX/Texture/TextureView.hpp>
+#include <Engine.GFX.Render.Command/RenderCommandBuffer.hpp>
+#include <Engine.GFX/Graphics.hpp>
+#include <Engine.GFX.Render.Predefined/Symbols/DirectionalShadow.hpp>
+#include <Engine.GFX.Render.Predefined/Symbols/SceneDepth.hpp>
+#include <Engine.GFX.Render.Predefined/Symbols/SceneView.hpp>
+#include <Engine.GFX.RenderGraph/Relation/TextureDescription.hpp>
+#include <Engine.GFX.RenderGraph/Symbol/ScopedSymbolContext.hpp>
+#include <Engine.GFX.Scene/View/SceneView.hpp>
+#include <Engine.Pedantic/Clone/Clone.hpp>
 #include <Engine.Reflect/Cast.hpp>
+#include <Engine.Reflect/ExactType.hpp>
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
 
 using namespace hg::engine::render;
@@ -345,7 +346,7 @@ void TmpDirectionalShadowPass::execute(cref<graph::ScopedSymbolContext> symCtx_)
 
 		allocated->map(allocated->size);
 		const auto innerOffset = dataView->offset() - page->resourceOffset();
-		memcpy(static_cast<ptr<char>>(allocated->mapping) + innerOffset, &storeShadow, sizeof(storeShadow));
+		std::memcpy(static_cast<ptr<char>>(allocated->mapping) + innerOffset, &storeShadow, sizeof(storeShadow));
 		allocated->flush(VK_WHOLE_SIZE);
 		allocated->unmap();
 	}
@@ -457,7 +458,7 @@ void TmpDirectionalShadowPass::execute(cref<graph::ScopedSymbolContext> symCtx_)
 					continue;
 				}
 
-				__debugbreak();
+				::hg::breakpoint();
 			}
 
 		}
@@ -554,9 +555,10 @@ void TmpDirectionalShadowPass::execute(cref<graph::ScopedSymbolContext> symCtx_)
 	auto nativeBatch = (*translator)(&cmd);
 	const auto batch = static_cast<ptr<driver::vk::VkNativeBatch>>(nativeBatch.get());
 
+	/**/
+
 	{
-		batch->_tmpWaits.insert_range(
-			batch->_tmpWaits.end(),
+		batch->_tmpWaits.append_range(
 			reinterpret_cast<Vector<VkSemaphore>&>(_resources.outDirShadows->barriers)
 		);
 

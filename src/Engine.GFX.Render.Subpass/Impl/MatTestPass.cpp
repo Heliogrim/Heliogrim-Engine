@@ -1,18 +1,21 @@
 #include "MatTestPass.hpp"
 
+#include <algorithm>
 #include <ranges>
+#include <utility>
 #include <Engine.Accel.Command/CommandBuffer.hpp>
 #include <Engine.Accel.Compile/VkEffectCompiler.hpp>
 #include <Engine.Accel.Compile/Profile/EffectProfile.hpp>
 #include <Engine.Accel.Compile/Spec/SimpleEffectSpecification.hpp>
 #include <Engine.Accel.Pass/VkAccelerationPassFactory.hpp>
 #include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
-#include <Engine.Assets/Types/Texture/TextureAsset.hpp>
+#include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 #include <Engine.Common/Math/Coordinates.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
 #include <Engine.GFX/Graphics.hpp>
 #include <Engine.GFX.Loader/Texture/TextureResource.hpp>
+#include <Engine.GFX.Render.Command/RenderCommandBuffer.hpp>
 #include <Engine.GFX.Render.Predefined/Symbols/BrdfIrradiance.hpp>
 #include <Engine.GFX.Render.Predefined/Symbols/BrdfLut.hpp>
 #include <Engine.GFX.Render.Predefined/Symbols/BrdfPrefilter.hpp>
@@ -26,16 +29,15 @@
 #include <Engine.GFX/Cache/GlobalCacheCtrl.hpp>
 #include <Engine.GFX/Pool/SceneResourcePool.hpp>
 #include <Engine.GFX/Texture/SparseTexturePage.hpp>
-#include <Engine.Gfx/Texture/SparseTextureView.hpp>
+#include <Engine.GFX/Texture/SparseTextureView.hpp>
 #include <Engine.GFX/Texture/TextureFactory.hpp>
-#include <Engine.Gfx/Texture/TextureView.hpp>
-#include <Engine.GFX.Render.Command/RenderCommandBuffer.hpp>
+#include <Engine.GFX/Texture/TextureView.hpp>
 #include <Engine.GFX.Scene.Model/StaticGeometryModel.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 #include <Engine.Reflect/Cast.hpp>
 #include <Engine.Reflect/ExactType.hpp>
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
-#include <Heliogrim/SceneComponent.hpp>
+#include <Heliogrim/Component/SceneComponent.hpp>
 
 using namespace hg::engine::render;
 using namespace hg::engine::accel;
@@ -222,9 +224,7 @@ void MatTestPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
 			const auto& texture = data->load<smr<TextureLikeObject>>();
 			_framebuffer->addAttachment(clone(texture));
-		}
-
-		{
+		} {
 			const auto texture = Cast<Texture>(sceneColorTex.get());
 			_framebuffer->setExtent(texture->extent());
 		}
@@ -267,7 +267,7 @@ void MatTestPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 		_cameraBuffer.device = device->vkDevice();
 
 		const auto allocResult = memory::allocate(
-			device->allocator(),
+			*device->allocator(),
 			device,
 			_cameraBuffer.buffer,
 			MemoryProperties { MemoryProperty::eHostVisible },
@@ -584,12 +584,13 @@ void MatTestPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 	auto nativeBatch = (*translator)(&cmd);
 	auto* const batch = static_cast<ptr<driver::vk::VkNativeBatch>>(nativeBatch.get());
 
+	/**/
+
 	{
 		{
 			const auto res = symCtx_.getImportSymbol(makeDirectionalShadowSymbol());
 
-			batch->_tmpWaits.insert_range(
-				batch->_tmpWaits.end(),
+			batch->_tmpWaits.append_range(
 				reinterpret_cast<Vector<VkSemaphore>&>(res->barriers)
 			);
 			for (auto i = batch->_tmpWaitFlags.size(); i < batch->_tmpWaits.size(); ++i) {
@@ -600,8 +601,7 @@ void MatTestPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
 		/**/
 
-		batch->_tmpWaits.insert_range(
-			batch->_tmpWaits.end(),
+		batch->_tmpWaits.append_range(
 			reinterpret_cast<Vector<VkSemaphore>&>(sceneColorRes->barriers)
 		);
 		for (auto i = batch->_tmpWaitFlags.size(); i < batch->_tmpWaits.size(); ++i) {

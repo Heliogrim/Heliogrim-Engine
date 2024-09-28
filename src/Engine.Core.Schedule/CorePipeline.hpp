@@ -12,7 +12,8 @@ namespace hg::engine::core::schedule {
 
 		/**/
 
-		static const inline StageIdentifier ActorUpdate = "::Core::ActorUpdate";
+		static const inline StageIdentifier TickBegin = "::Core::TickBegin";
+		static const inline StageIdentifier TickEnd = "::Core::TickEnd";
 
 	public:
 		CorePipeline();

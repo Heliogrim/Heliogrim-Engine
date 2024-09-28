@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine.Assets/Types/Asset.hpp>
+#include <Engine.Assets.Type/Asset.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 #include <Engine.Reflect/Inherit/InheritBase.hpp>
@@ -13,10 +13,26 @@
 namespace hg::engine::resource::loader {
 	class LoaderBase;
 
+	template <IsRequestValueType, IsResponseValueType>
+	class Loader;
+
+	template <
+		IsRequestValueType,
+		IsResponseValueType,
+		typename,
+		class,
+		class,
+		class,
+		class
+	>
+	class LoaderChainBase;
+
 	template <class Type_>
 	concept IsLoader = std::derived_from<Type_, LoaderBase>;
 
-	class __declspec(novtable) LoaderBase :
+	/**/
+
+	class macro_novtable LoaderBase :
 		public InheritBase<LoaderBase> {
 	public:
 		template <typename, typename, typename...>
@@ -26,7 +42,7 @@ namespace hg::engine::resource::loader {
 		friend class ::hg::InheritBase;
 
 		template <IsRequestValueType, IsResponseValueType>
-		friend class Loader;
+		friend class ::hg::engine::resource::loader::Loader;
 
 	public:
 		using this_type = LoaderBase;
@@ -35,7 +51,7 @@ namespace hg::engine::resource::loader {
 		LoaderBase() noexcept = default;
 
 	public:
-		virtual ~LoaderBase() noexcept = default;
+		~LoaderBase() noexcept override = default;
 
 	public:
 		[[nodiscard]] virtual smr<ResourceBase> operator()(
@@ -88,7 +104,7 @@ namespace hg::engine::resource::loader {
 	/**/
 
 	template <IsRequestValueType RequestType_, IsResponseValueType ResponseType_>
-	class __declspec(novtable) Loader :
+	class macro_novtable Loader :
 		public InheritMeta<
 			Loader<RequestType_, ResponseType_>,
 			LoaderBase,
@@ -110,7 +126,7 @@ namespace hg::engine::resource::loader {
 			class,
 			class
 		>
-		friend class LoaderChainBase;
+		friend class ::hg::engine::resource::loader::LoaderChainBase;
 
 	public:
 		using this_type = Loader<RequestType_, ResponseType_>;

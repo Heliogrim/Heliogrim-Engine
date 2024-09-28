@@ -4,56 +4,61 @@
 #include <Engine.Reflow/Widget/VerticalPanel.hpp>
 
 namespace hg::editor::ui {
-    class ObjectValueMapperBase {
-    public:
-        template <typename ObjectType_>
-        friend class ObjectValueMapper;
+	template <typename ObjectType_>
+	class ObjectValueMapper;
+}
 
-    public:
-        using this_type = ObjectValueMapperBase;
+namespace hg::editor::ui {
+	class ObjectValueMapperBase {
+	public:
+		template <typename ObjectType_>
+		friend class ::hg::editor::ui::ObjectValueMapper;
 
-    private:
-        ObjectValueMapperBase() = default;
+	public:
+		using this_type = ObjectValueMapperBase;
 
-    public:
-        virtual ~ObjectValueMapperBase() = default;
+	private:
+		ObjectValueMapperBase() = default;
 
-    public:
-        virtual void update(cref<sptr<engine::reflow::VerticalPanel>> parent_, const ptr<void> obj_) = 0;
+	public:
+		virtual ~ObjectValueMapperBase() = default;
 
-        virtual void build(cref<sptr<engine::reflow::VerticalPanel>> parent_) = 0;
+	public:
+		virtual void update(cref<sptr<engine::reflow::VerticalPanel>> parent_, const ptr<void> obj_) = 0;
 
-        virtual void cleanup(cref<sptr<engine::reflow::VerticalPanel>> parent_) = 0;
-    };
+		virtual void build(cref<sptr<engine::reflow::VerticalPanel>> parent_) = 0;
 
-    template <typename ObjectType_>
-    class ObjectValueMapper :
-        public ObjectValueMapperBase {
-    public:
-        using this_type = ObjectValueMapper<ObjectType_>;
+		virtual void cleanup(cref<sptr<engine::reflow::VerticalPanel>> parent_) = 0;
+	};
 
-    public:
-        ObjectValueMapper() = default;
+	template <typename ObjectType_>
+	class ObjectValueMapper :
+		public ObjectValueMapperBase {
+	public:
+		using this_type = ObjectValueMapper<ObjectType_>;
 
-        ~ObjectValueMapper() override = default;
+	public:
+		ObjectValueMapper() = default;
 
-    public:
-        void update(cref<sptr<engine::reflow::VerticalPanel>> parent_, const ptr<void> obj_) override;
+		~ObjectValueMapper() override = default;
 
-        void build(cref<sptr<engine::reflow::VerticalPanel>> parent_) override;
+	public:
+		void update(cref<sptr<engine::reflow::VerticalPanel>> parent_, const ptr<void> obj_) override;
 
-        void cleanup(cref<sptr<engine::reflow::VerticalPanel>> parent_) override;
-    };
+		void build(cref<sptr<engine::reflow::VerticalPanel>> parent_) override;
 
-    template <>
-    inline void ObjectValueMapper<void>::update(
-        cref<sptr<engine::reflow::VerticalPanel>> parent_,
-        const ptr<void> obj_
-    ) {}
+		void cleanup(cref<sptr<engine::reflow::VerticalPanel>> parent_) override;
+	};
 
-    template <>
-    inline void ObjectValueMapper<void>::build(cref<sptr<engine::reflow::VerticalPanel>> parent_) {}
+	template <>
+	inline void ObjectValueMapper<void>::update(
+		cref<sptr<engine::reflow::VerticalPanel>> parent_,
+		const ptr<void> obj_
+	) {}
 
-    template <>
-    inline void ObjectValueMapper<void>::cleanup(cref<sptr<engine::reflow::VerticalPanel>> parent_) {}
+	template <>
+	inline void ObjectValueMapper<void>::build(cref<sptr<engine::reflow::VerticalPanel>> parent_) {}
+
+	template <>
+	inline void ObjectValueMapper<void>::cleanup(cref<sptr<engine::reflow::VerticalPanel>> parent_) {}
 }

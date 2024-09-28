@@ -1,9 +1,9 @@
 #pragma once
 #include "ImportAction.hpp"
 
-#include <Engine.Filesystem/Url.hpp>
+#include <Engine.Assets.Type/Asset.hpp>
 #include <Engine.Common/Collection/Set.hpp>
-#include <Engine.Assets/Types/Asset.hpp>
+#include <Engine.Filesystem/Url.hpp>
 
 namespace hg::editor {
 	class SimpleImportAction :

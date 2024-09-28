@@ -3,11 +3,11 @@
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
-#include "__fwd.hpp"
 #include "SourceLoaderTraits.hpp"
+#include "__fwd.hpp"
 
 namespace hg::engine::resource::loader {
-	class __declspec(novtable) SourceLoaderStage {
+	class macro_novtable SourceLoaderStage {
 	public:
 		using this_type = SourceLoaderStage;
 
@@ -18,7 +18,7 @@ namespace hg::engine::resource::loader {
 		using stream_response_type = SourceLoaderStreamResponse<void>;
 
 	public:
-		virtual ~SourceLoaderStage() noexcept = default;
+		constexpr virtual ~SourceLoaderStage() noexcept = default;
 
 	public:
 		[[nodiscard]] virtual response_type::type operator()(

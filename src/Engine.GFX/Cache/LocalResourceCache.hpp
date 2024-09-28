@@ -10,7 +10,7 @@
 namespace hg::engine::gfx::cache {
 	class LocalResourceCache final {
 	public:
-		friend class LocalCacheCtrl;
+		friend class ::hg::engine::gfx::cache::LocalCacheCtrl;
 
 	public:
 		using this_type = LocalResourceCache;

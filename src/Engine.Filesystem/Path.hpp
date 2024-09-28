@@ -1,107 +1,212 @@
 #pragma once
 
+#include <algorithm>
 #include <filesystem>
-#include <Engine.Common/Wrapper.hpp>
+#include <memory>
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Types.hpp>
+#include <Engine.Common/Wrapper.hpp>
 
 namespace hg::engine::fs {
-    class Path {
-    public:
-        using this_type = Path;
+	class Path;
 
-        using std_fs_path = std::filesystem::path;
+	/**/
 
-        static constexpr const char* separator = "/";
+	template <typename StringType_>
+	struct Separator {
+		constexpr static const char* value = "/";
+	};
 
-    public:
-        constexpr Path() = default;
+	template <>
+	struct Separator<std::wstring> {
+		constexpr static const wchar_t* value = L"\\";
+	};
 
-        Path(mref<this_type> other_) noexcept;
+	/**/
 
-        Path(cref<this_type> other_);
+	class Path {
+	public:
+		using this_type = Path;
 
-        explicit Path(cref<std_fs_path> path_);
+		using string_type = std::filesystem::path::string_type;
+		using separator_type = Separator<string_type>;
 
-        explicit Path(mref<std_fs_path> path_);
+	public:
+		constexpr Path() noexcept = default;
 
-        Path(mref<string> str_);
+		constexpr Path(mref<this_type> other_) noexcept :
+			_value(std::move(other_._value)) {}
 
-        Path(cref<string> str_);
+		constexpr Path(cref<this_type> other_) = default;
 
-        Path(string_view view_);
+		explicit constexpr Path(cref<std::filesystem::path> path_) noexcept :
+			_value(path_.native()) {}
 
-        ~Path() = default;
+		explicit constexpr Path(mref<std::filesystem::path> path_) noexcept :
+			_value(path_.native()) {}
 
-    private:
-        std::filesystem::path _value;
+		explicit constexpr Path(mref<string_type> str_) noexcept :
+			_value(std::move(str_)) {}
 
-    public:
-        ref<this_type> operator=(mref<this_type> other_) noexcept;
+		explicit constexpr Path(const std::basic_string_view<string_type::value_type> str_) noexcept :
+			_value(str_) {}
 
-        ref<this_type> operator=(cref<this_type> other_);
+		template <typename StringType_> requires (not std::is_same_v<StringType_, string_type>)
+		explicit Path(StringType_&& str_) noexcept :
+			_value(std::filesystem::path { std::forward<StringType_>(str_) }.native()) {}
 
-    public:
-        [[nodiscard]] bool hasName() const noexcept;
+		~Path() = default;
 
-        [[nodiscard]] string name() const;
+	private:
+		string_type _value;
 
-    public:
-        [[nodiscard]] bool hasParent() const noexcept;
+	public:
+		constexpr ref<this_type> operator=(mref<this_type> other_) noexcept = default;
 
-        [[nodiscard]] this_type parentPath() const;
+		constexpr ref<this_type> operator=(cref<this_type> other_) noexcept = default;
 
-        [[nodiscard]] string parentName() const;
+	public:
+		[[nodiscard]] constexpr bool hasName() const noexcept {
+			return not empty();
+		}
 
-    public:
-        [[nodiscard]] bool empty() const noexcept;
+		[[nodiscard]] constexpr string_type nativeName() const {
 
-        [[nodiscard]] u32 segments() const noexcept;
+			if (empty()) {
+				return {};
+			}
 
-    public:
-        ref<this_type> push(cref<this_type> path_);
+			const size_t last = _value.find_last_of(separator_type::value);
+			if (last == string_type::npos) {
+				return _value;
+			}
 
-        ref<this_type> push(mref<this_type> path_);
+			return _value.substr(last, string_type::npos);
+		}
 
-        ref<this_type> pop();
+		[[nodiscard]] constexpr String name() const {
 
-        ref<this_type> pop(const u32 count_);
+			// TODO: Check whether we can skip conversion if string_type equals String
+			const auto tmp = nativeName();
+			auto result = String(tmp.size(), 0);
+			// TODO: Replace with actual narrow conversion
+			std::transform(
+				tmp.begin(),
+				tmp.end(),
+				result.begin(),
+				[](string_type::value_type ch_) { return static_cast<char>(ch_); }
+			);
+			return result;
+		}
 
-    public:
-        [[nodiscard]] bool contains(cref<this_type> path_) const;
+	public:
+		[[nodiscard]] bool hasParent() const noexcept;
 
-        template <class Type_ = Path>
-        [[nodiscard]] bool isSubPath(cref<Type_> check_) const {
-            return contains(check_);
-        }
+		[[nodiscard]] this_type parentPath() const;
 
-        [[nodiscard]] bool equals(cref<this_type> path_) const;
+		[[nodiscard]] string parentName() const;
 
-        template <class Type_ = Path>
-        [[nodiscard]] bool equivalent(cref<Type_> check_) const {
-            return equals(check_);
-        }
+	public:
+		[[nodiscard]] constexpr cref<string_type> native() const noexcept {
+			return _value;
+		}
 
-        [[nodiscard]] std::strong_ordering compareLexical(cref<this_type> other_) const;
+		[[nodiscard]] constexpr bool empty() const noexcept {
+			return _value.empty();
+		}
 
-    public:
-        [[nodiscard]] bool operator==(cref<this_type> other_) const;
+		[[nodiscard]] constexpr u32 segments() const noexcept {
+			return static_cast<u32>(std::count(_value.begin(), _value.end(), *separator_type::value));
+		}
 
-        [[nodiscard]] bool operator!=(cref<this_type> other_) const;
+	public:
+		ref<this_type> push(cref<this_type> path_);
 
-        template <class Type_ = Path>
-        [[nodiscard]] std::strong_ordering operator<=>(cref<Type_> other_) const {
-            return compareLexical(other_);
-        }
+		ref<this_type> push(mref<this_type> path_);
 
-    public:
-        [[nodiscard]] string string() const;
+		ref<this_type> pop();
 
-        [[nodiscard]] std_fs_path stdFsPath() const;
+		ref<this_type> pop(const u32 count_);
 
-    public:
-        [[nodiscard]] operator ::hg::string() const;
+	public:
+		[[nodiscard]] constexpr bool contains(cref<this_type> path_) const {
 
-        [[nodiscard]] operator std_fs_path() const;
-    };
+			const auto relSize = _value.size();
+			if (relSize >= path_._value.size()) {
+				return false;
+			}
+
+			if (not _value.empty() && path_._value.at(relSize) != *separator_type::value) {
+				return false;
+			}
+
+			return _value == std::basic_string_view<string_type::value_type> {
+				path_._value.begin(), path_._value.begin() + static_cast<string_type::difference_type>(relSize)
+			};
+
+		}
+
+		template <class Type_ = Path>
+		[[nodiscard]] bool isSubPath(cref<Type_> check_) const {
+			return contains(check_);
+		}
+
+		[[nodiscard]] constexpr bool equals(cref<this_type> other_) const {
+			return _value == other_._value;
+		}
+
+		template <class Type_ = Path>
+		[[nodiscard]] bool equivalent(cref<Type_> check_) const {
+			// TODO:
+			return equals(check_);
+		}
+
+		[[nodiscard]] constexpr std::strong_ordering compareLexical(cref<this_type> other_) const {
+			return _value <=> other_._value;
+		}
+
+	public:
+		[[nodiscard]] bool operator==(cref<std::filesystem::path> path_) const {
+			return _value == path_.native();
+		}
+
+		[[nodiscard]] constexpr bool operator==(cref<this_type> other_) const {
+			return equals(other_);
+		}
+
+		[[nodiscard]] constexpr bool operator!=(cref<this_type> other_) const {
+			return not equals(other_);
+		}
+
+		template <class Type_ = Path>
+		[[nodiscard]] constexpr std::strong_ordering operator<=>(cref<Type_> other_) const {
+			return compareLexical(other_);
+		}
+
+	public:
+		template <class StringType_ = String> requires std::is_same_v<StringType_, String>
+		[[nodiscard]] explicit operator StringType_() const requires (not std::same_as<string_type, StringType_>) {
+			return std::filesystem::path { _value }.string();
+		}
+
+		[[nodiscard]] explicit constexpr operator string_type() const {
+			return _value;
+		}
+
+		template <typename PathType_ = Path> requires (sizeof(PathType_) == sizeof(std::filesystem::path))
+		[[nodiscard]] constexpr operator cref<std::filesystem::path>() const noexcept {
+			return *reinterpret_cast<const ptr<const std::filesystem::path>>(
+				static_cast<const ptr<const PathType_>>(this)
+			);
+		}
+
+		template <typename PathType_ = Path> requires (sizeof(PathType_) != sizeof(std::filesystem::path))
+		[[nodiscard]] operator std::filesystem::path() const & noexcept {
+			return std::filesystem::path { static_cast<const ptr<const PathType_>>(this)->_value };
+		}
+
+		[[nodiscard]] operator std::filesystem::path() && noexcept {
+			return std::filesystem::path { std::move(_value) };
+		}
+	};
 }

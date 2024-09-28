@@ -1,74 +1,56 @@
 #include "AssetInit.hpp"
 
+/**/
+#include "Engine.Assets.Type/Geometry/StaticGeometry.hpp"
+#include "Engine.Assets.Type/Texture/Font.hpp"
+#include "Engine.Assets.Type/Texture/Image.hpp"
+#include "Engine.Assets.Type/Texture/TextureAsset.hpp"
+/**/
+
+#include <algorithm>
+#include <cstring>
+#include <filesystem>
+#include <fstream>
+#include <ranges>
 #include <Engine.Assets.System/AssetDescriptor.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets/AssetFactory.hpp>
 #include <Engine.Assets/AssetTypeId.hpp>
 #include <Engine.Common/GuidFormat.hpp>
+#include <Engine.Common/Sal.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Logging/Logger.hpp>
-#include <Engine.Scheduler/Async.hpp>
-#include <Engine.Serialization/Archive/BufferArchive.hpp>
-#include <Heliogrim/Heliogrim.hpp>
-
-#include <filesystem>
-#include <fstream>
 #include <Engine.Pedantic/Clone/Clone.hpp>
+#include <Engine.Scheduler/Async.hpp>
+#include <Heliogrim/Heliogrim.hpp>
+#include <Heliogrim/Async/Await.hpp>
 
-#include "Editor.Assets.Default/Fonts/CascadiaCode.hpp"
+#include "Editor.Action/ActionManager.hpp"
+#include "Editor.Action/Action/Import/AutoImportAction.hpp"
 #include "Editor.Assets.Default/GfxMaterials/DefaultBrdfMaterial.hpp"
 #include "Editor.Assets.Default/GfxMaterials/DefaultBrdfMaterialPrototype.hpp"
 #include "Editor.Assets.Default/GfxMaterials/DefaultSkybox.hpp"
 #include "Editor.Assets.Default/GfxMaterials/DefaultSkyboxPrototype.hpp"
-#include "Editor.Assets.Default/Images/Brand.hpp"
-#include "Editor.Assets.Default/Images/DefaultAlpha.hpp"
-#include "Editor.Assets.Default/Images/DefaultAO.hpp"
-#include "Editor.Assets.Default/Images/DefaultDiffuse.hpp"
-#include "Editor.Assets.Default/Images/DefaultMetalness.hpp"
-#include "Editor.Assets.Default/Images/DefaultNormal.hpp"
-#include "Editor.Assets.Default/Images/DefaultRoughness.hpp"
-#include "Editor.Assets.Default/Images/DefaultSkybox.hpp"
-#include "Editor.Assets.Default/Images/Directory.hpp"
-#include "Editor.Assets.Default/Images/FolderAudio.hpp"
-#include "Editor.Assets.Default/Images/FolderEnvironment.hpp"
-#include "Editor.Assets.Default/Images/FolderFont.hpp"
-#include "Editor.Assets.Default/Images/FolderImages.hpp"
-#include "Editor.Assets.Default/Images/FolderImport.hpp"
-#include "Editor.Assets.Default/Images/FolderLog.hpp"
-#include "Editor.Assets.Default/Images/FolderResource.hpp"
-#include "Editor.Assets.Default/Images/FolderShader.hpp"
-#include "Editor.Assets.Default/Images/FolderVideo.hpp"
-#include "Editor.Assets.Default/Meshes/Sphere.hpp"
-#include "Editor.Assets.Default/Textures/DefaultAlpha.hpp"
-#include "Editor.Assets.Default/Textures/DefaultAO.hpp"
-#include "Editor.Assets.Default/Textures/DefaultDiffuse.hpp"
-#include "Editor.Assets.Default/Textures/DefaultMetalness.hpp"
-#include "Editor.Assets.Default/Textures/DefaultNormal.hpp"
-#include "Editor.Assets.Default/Textures/DefaultRoughness.hpp"
-#include "Editor.Assets.Default/Textures/DefaultSkybox.hpp"
-#include "Editor.Assets.Default/Textures/Directory.hpp"
-#include "Editor.Assets.Default/Textures/FolderAudio.hpp"
-#include "Editor.Assets.Default/Textures/FolderEnvironment.hpp"
-#include "Editor.Assets.Default/Textures/FolderFont.hpp"
-#include "Editor.Assets.Default/Textures/FolderImages.hpp"
-#include "Editor.Assets.Default/Textures/FolderImport.hpp"
-#include "Editor.Assets.Default/Textures/FolderLog.hpp"
-#include "Editor.Assets.Default/Textures/FolderResource.hpp"
-#include "Editor.Assets.Default/Textures/FolderShader.hpp"
-#include "Editor.Assets.Default/Textures/FolderVideo.hpp"
 #include "Engine.Assets/AssetFactory.hpp"
 #include "Engine.Assets/Assets.hpp"
-#include "Engine.Assets/Types/Font.hpp"
-#include "Engine.Assets/Types/Image.hpp"
-#include "Engine.Assets/Types/Geometry/StaticGeometry.hpp"
-#include "Engine.Assets/Types/Texture/TextureAsset.hpp"
-#include "Engine.Resource/Source/FileSource.hpp"
-#include "Engine.Resource.Package/PackageFactory.hpp"
-#include "Engine.Resource.Package/PackageManager.hpp"
+#include "Engine.Core/Module/Modules.hpp"
+#include "Engine.Resource.Archive/BufferArchive.hpp"
+#include "Engine.Resource.Archive/StorageReadonlyArchive.hpp"
 #include "Engine.Resource/ResourceManager.hpp"
+#include "Engine.Resource.Package/Attribute/MagicBytes.hpp"
+#include "Engine.Resource.Package/Attribute/PackageGuid.hpp"
+#include "Engine.Resource.Package/External/PackageIo.hpp"
 #include "Engine.Resource.Package/Linker/PackageLinker.hpp"
 #include "Engine.Serialization/Layout/DataLayoutBase.hpp"
 #include "Engine.Serialization.Layouts/LayoutManager.hpp"
+#include "Engine.Storage.Registry/IStorage.hpp"
+#include "Engine.Storage.Registry/IStorageRegistry.hpp"
+#include "Engine.Storage/StorageModule.hpp"
+#include "Engine.Storage.Registry/Options/FileStorageDescriptor.hpp"
+#include "Engine.Storage.Registry/Options/PackageStorageDescriptor.hpp"
+#include "Engine.Storage.Registry/Options/StorageDescriptor.hpp"
+#include "Engine.Storage.Registry/Storage/LocalFileStorage.hpp"
+#include "Engine.Storage.Registry/Storage/PackageStorage.hpp"
 
 using namespace hg::editor::boot;
 using namespace hg::engine;
@@ -80,159 +62,379 @@ namespace hg::engine::serialization {
 	class RecordScopedSlot;
 }
 
+struct Indexed {
+	std::filesystem::path primary;
+	size_t primaryCount;
+
+	std::filesystem::path meta;
+	Opt<concurrent::future<void>> scheduled;
+};
+
 /**/
-void packageDiscoverAssets();
 
-bool isArchivedAsset(mref<serialization::RecordScopedSlot> record_);
-
-bool tryLoadArchivedAsset(mref<serialization::RecordScopedSlot> record_);
+// @formatter:off
+static void packageDiscoverAssets(mref<Arci<storage::system::PackageStorage>> packStore_);
+static bool isArchivedAsset(mref<serialization::RecordScopedSlot> record_);
+static bool tryLoadArchivedAsset(mref<serialization::RecordScopedSlot> record_);
+static bool autoImport(ref<Indexed> indexed_);
+// @formatter:on
 
 /**/
 
 #pragma region File System Loading
 
-void dispatchLoad(cref<path> path_) {
-	scheduler::exec(
-		[file = path_]() {
-			// TODO:
+#if ENV_WIN
+constexpr static auto prefix_extension = L'.';
+constexpr static auto packed_extension = std::wstring_view { L".imp" };
+#else
+constexpr static auto prefix_extension = '.';
+constexpr static auto packed_extension = std::string_view { R"(.imp)" };
+#endif
 
-			constexpr auto minLength = sizeof(asset_guid) + sizeof(asset_type_id);
+// @formatter:off
+[[nodiscard]] static bool matchingMagicBytes(cref<path> lfs_);
+[[nodiscard]] static bool isPackedFile(cref<path> lfs_);
+[[nodiscard]] static bool convergentBundleName(cref<path> lfsBundle_);
+// @formatter:on
 
-			std::ifstream ifs { file, std::ios::in | std::ios::binary };
-			ifs.seekg(0, std::ios::beg);
+// @formatter:off
+[[nodiscard]] static bool isPackedAsset(cref<path> lfs_);
+[[nodiscard]] static bool isMetaAsset(cref<path> lfs_);
+[[nodiscard]] static bool isOpaqueAsset(cref<path> lfs_);
+[[nodiscard]] static bool isBundleAsset(cref<path> lfs_);
+// @formatter:on
 
-			serialization::BufferArchive archive {};
-			archive.resize(minLength, 0u);
+// @formatter:off
+[[nodiscard]] static Opt<path> getMetaAssetFor(cref<path> lfsBundleOrOpaque_);
+[[nodiscard]] static Opt<path> getBundleOrOpaqueFor(cref<path> lfsMeta_);
+// @formatter:on
 
-			auto start { ifs.tellg() };
-			ifs.read(reinterpret_cast<char*>(archive.data()), archive.size());
-			auto end { ifs.tellg() };
+/**/
 
-			if (ifs.bad()) {
-				// Can't even read asset guid or type id, so no viable data
-				return;
-			}
-
-			const auto length = end - start;
-			if (length < minLength) {
-				// Can't even read asset guid or type id, so no viable data
-				return;
-			}
-
-			/**/
-
-			asset_guid possibleGuid { invalid_asset_guid };
-			asset_type_id possibleTypeId {};
-
-			// TODO: Use predefined data layouts to deserialize guid and type id, cause they are not representable as u64 at every platform
-			archive >> reinterpret_cast<ref<u64>>(possibleGuid);
-			archive >> reinterpret_cast<ref<u64>>(possibleTypeId);
-
-			if (possibleGuid == invalid_asset_guid) {
-				return;
-			}
-
-			if (possibleTypeId.data == 0) {
-				return;
-			}
-
-			/**/
-
-			const auto& layouts = serialization::LayoutManager::get();
-			const auto layout = layouts.getLayout(possibleTypeId);
-
-			if (not layout || not layout->hasClass()) {
-				// Seams not to be a valid data package, asset type was not bootstrapped correctly or asset is not generically reconstructable
-				return;
-			}
-
-			/**/
-
-			ifs.seekg(0, std::ios::end);
-			end = ifs.tellg();
-
-			ifs.seekg(0, std::ios::beg);
-			start = ifs.tellg();
-
-			archive.seek(0);
-			archive.resize(end - start, 0u);
-
-			ifs.read(reinterpret_cast<ptr<char>>(archive.data()), archive.size());
-
-			if (ifs.bad()) {
-				// Something went wrong while reading the actual data
-				IM_CORE_ERRORF("Received an error while reading possible asset file `{}`", file.string());
-				return;
-			}
-
-			/**/
-
-			::hg::todo_panic();
-
-			// Warning: Unsafe operation, should be capsulated within io system
-			auto* obj { layout->reflect().instantiate() };
-			const std::span<u8, std::dynamic_extent> view {
-				reinterpret_cast<ptr<u8>>(obj),
-				static_cast<u64>(layout->size())
-			};
-
-			layout->dispatch().load(archive, view);
-
-			/**/
-
-			//auto* asset { static_cast<ptr<engine::assets::Asset>>(obj) };
-			//Engine::getEngine()->getAssets()->getRegistry()->insert({ asset });
-		}
-	);
+bool matchingMagicBytes(cref<path> lfs_) {
+	auto fstream = std::fstream { lfs_, std::ios::in | std::ios::binary };
+	Array<_::byte, resource::PackageMagicBytes.size()> buffer {};
+	fstream.read(std::bit_cast<char*>(buffer.data()), buffer.size());
+	return std::memcmp(buffer.data(), resource::PackageMagicBytes.data(), resource::PackageMagicBytes.size()) == 0;
 }
 
-void tryDispatchLoad(cref<path> path_) {
-
-	const auto extension = path_.extension().string();
-
-	if (extension.empty()) {
-		return;
-	}
-
-	auto* const pm = Engine::getEngine()->getResources()->packages(traits::nothrow);
-	hg::fs::File file { path_ };
-
-	if (pm->isPackageFile(file)) {
-
-		// TODO: Load Package from file
-		auto source = make_uptr<resource::FileSource>(std::move(file));
-		auto package = resource::PackageFactory::createFromSource(std::move(source));
-
-		/**/
-
-		auto managed = make_smr<resource::UniqueResource<resource::PackageResource::value_type>>(package.release());
-
-		/**/
-
-		pm->addPackage(std::move(managed));
-
-	} else if (extension.ends_with(".ima") || extension.ends_with(".imasset")) {
-
-		dispatchLoad(path_);
-	}
+bool isPackedFile(cref<path> lfs_) {
+	return lfs_.native().ends_with(packed_extension) && matchingMagicBytes(lfs_);
 }
 
-void indexLoadable(cref<path> path_, ref<Vector<path>> backlog_) {
+bool convergentBundleName(cref<path> lfsBundle_) {
 
-	const auto directory {
-		std::filesystem::directory_iterator { path_, std::filesystem::directory_options::follow_directory_symlink }
+	const auto range = std::filesystem::directory_iterator {
+		lfsBundle_, std::filesystem::directory_options::follow_directory_symlink
 	};
 
-	for (const auto& entry : directory) {
+	const auto candidate = clone(lfsBundle_).append(lfsBundle_.filename().native()).native();
+	auto accounted = 0uLL;
 
-		if (entry.is_directory()) {
-			backlog_.push_back(entry.path());
-			continue;
+	for (auto& effector : range) {
+
+		if (effector.is_directory()) {
+			// Note: Fail on nested structure.
+			return false;
 		}
 
-		if (entry.is_regular_file()) {
-			tryDispatchLoad(entry.path());
-			//continue;
+		if (not isOpaqueAsset(effector)) {
+			// Note: We expect to only discover opaque assets within a bundle.
+			return false;
+		}
+
+		const auto& epn = effector.path().native();
+		if (not epn.starts_with(candidate)) {
+			return false;
+		}
+
+		if (epn.size() > candidate.size() && epn.at(candidate.size()) != prefix_extension) {
+			// Note: We expect all opaque assets to shared the bundle name, but will allow multiple extension suffixes.
+			return false;
+		}
+
+		++accounted;
+	}
+
+	// Note: We expect a bundle to consist of more than one opaque asset.
+	return accounted > 1uLL;
+}
+
+/**/
+
+bool isPackedAsset(cref<path> lfs_) {
+	return std::filesystem::is_regular_file(lfs_) && isPackedFile(lfs_) && not getBundleOrOpaqueFor(lfs_).has_value();
+}
+
+bool isMetaAsset(cref<path> lfs_) {
+	return std::filesystem::is_regular_file(lfs_) && isPackedFile(lfs_) && getBundleOrOpaqueFor(lfs_).has_value();
+}
+
+bool isOpaqueAsset(cref<path> lfs_) {
+	return std::filesystem::is_regular_file(lfs_) && not isPackedFile(lfs_);
+}
+
+bool isBundleAsset(cref<path> lfs_) {
+	return std::filesystem::is_directory(lfs_) && (getMetaAssetFor(lfs_).has_value() || convergentBundleName(lfs_));
+}
+
+/**/
+
+Opt<path> getMetaAssetFor(cref<path> lfsBundleOrOpaque_) {
+	auto expanded = clone(lfsBundleOrOpaque_) += packed_extension;
+	return std::filesystem::exists(expanded) ? Some(std::move(expanded)) : None;
+}
+
+Opt<path> getBundleOrOpaqueFor(cref<path> lfsMeta_) {
+	auto stripped = path { lfsMeta_.native().substr(0uLL, lfsMeta_.native().size() - packed_extension.size()) };
+	return (isOpaqueAsset(stripped) || isBundleAsset(stripped)) ? Some(std::move(stripped)) : None;
+}
+
+/**/
+
+using LoadAwait = concurrent::future<void>;
+
+// @formatter:off
+[[nodiscard]] static Opt<Indexed> buildIndexedFrom(cref<path> lfs_);
+[[nodiscard]] static Opt<LoadAwait> enqueueIndexedLoad(cref<Indexed> indexed_);
+// @formatter:on
+
+// @formatter:off
+static ref<Indexed> upsertIndexed(ref<Vector<Indexed>> set_, mref<Indexed> indexed_);
+// @formatter:on
+
+/**/
+
+Opt<Indexed> buildIndexedFrom(cref<path> lfs_) {
+
+	if (isOpaqueAsset(lfs_)) {
+		return Some(Indexed { .primary = lfs_, .primaryCount = 1uLL, .meta = {}, .scheduled = None });
+	}
+
+	if (isBundleAsset(lfs_)) {
+		return Some(Indexed { .primary = lfs_, .primaryCount = 1uLL, .meta = {}, .scheduled = None });
+	}
+
+	if (isPackedAsset(lfs_)) {
+		return Some(Indexed { .primary = lfs_, .primaryCount = 1uLL, .meta = lfs_, .scheduled = None });
+	}
+
+	if (isMetaAsset(lfs_)) {
+		return Some(Indexed { .primary = {}, .primaryCount = 0uLL, .meta = lfs_, .scheduled = None });
+	}
+
+	return None;
+}
+
+Opt<LoadAwait> enqueueIndexedLoad(cref<Indexed> indexed_) {
+
+	const auto engine = Engine::getEngine();
+	const auto storeReg = engine->getStorage()->getRegistry();
+	auto storeIo = engine->getStorage()->getIo();
+	auto packIo = storage::PackageIo { *storeIo };
+
+	/**/
+
+	auto storeMetaFile = storeReg->insert(
+		storage::FileStorageDescriptor {
+			storage::FileUrl {
+				clone(storage::FileProjectScheme),
+				engine::fs::Path { indexed_.meta }
+			}
+		}
+	);
+
+	/**/
+
+	auto accessMetaFile = storeIo->accessReadonlyBlob(storeMetaFile.into<storage::system::LocalFileStorage>());
+	if (not packIo.isPackageBlob(accessMetaFile)) {
+		IM_CORE_ERRORF(
+			"Encountered indexed meta file `{}` which is not identifiable as package upon inspection.",
+			indexed_.meta.string()
+		);
+		return None;
+	}
+
+	/**/
+
+	auto package = packIo.create_package_from_storage(accessMetaFile);
+
+	auto storePack = storeReg->insert(
+		storage::PackageStorageDescriptor {
+			storage::PackageUrl { resource::PackageGuid::ntoh(package->header().guid) },
+			std::move(storeMetaFile)
+		}
+	).into<storage::system::PackageStorage>();
+
+	/**/
+
+	// @formatter:off
+	return Some(scheduler::async<void>([storePack = std::move(storePack)]() mutable {
+		packageDiscoverAssets(std::move(storePack));
+	}));
+	// @formatter:on
+}
+
+/**/
+
+ref<Indexed> upsertIndexed(ref<Vector<Indexed>> set_, mref<Indexed> indexed_) {
+
+	const auto primaryKey = indexed_.primary.empty() ?
+		getBundleOrOpaqueFor(indexed_.meta) :
+		Some(clone(indexed_.primary));
+	const auto metaKey = indexed_.meta.empty() ?
+		getMetaAssetFor(indexed_.primary) :
+		Some(clone(indexed_.meta));
+
+	auto existsByPrimary = primaryKey.has_value() ?
+		std::ranges::find(
+			set_,
+			primaryKey.value(),
+			[](const auto& stored_) { return stored_.primary; }
+		) :
+		std::ranges::end(set_);
+
+	auto existsByMeta = metaKey.has_value() ?
+		std::ranges::find(
+			set_,
+			metaKey.value(),
+			[](const auto& stored_) { return stored_.meta; }
+		) :
+		std::ranges::end(set_);
+
+	/**/
+
+	if (not indexed_.primary.empty() && not indexed_.meta.empty()) {
+		::hg::assertrt(existsByPrimary == set_.end());
+		::hg::assertrt(existsByMeta == set_.end());
+
+		return set_.emplace_back(std::move(indexed_));
+	}
+
+	if (not indexed_.primary.empty() && indexed_.meta.empty()) {
+		::hg::assertrt(existsByPrimary == set_.end());
+
+		if (existsByMeta != set_.end()) {
+			existsByMeta->primary = indexed_.primary;
+			existsByMeta->primaryCount = indexed_.primaryCount;
+			return *existsByMeta;
+		}
+
+		return set_.emplace_back(std::move(indexed_));
+	}
+
+	if (indexed_.primary.empty() && not indexed_.meta.empty()) {
+		::hg::assertrt(existsByMeta == set_.end());
+
+		if (existsByPrimary != set_.end()) {
+			existsByPrimary->meta = indexed_.meta;
+			return *existsByPrimary;
+		}
+
+		return set_.emplace_back(std::move(indexed_));
+	}
+
+	/**/
+
+	::panic();
+}
+
+/**/
+
+static void indexDirectory(
+	_In_ cref<path> path_,
+	_Inout_ ref<Vector<path>> backlog_,
+	_Inout_ ref<Vector<Indexed>> indexSet_
+);
+
+static void autoIndex(_In_ cref<path> root_);
+
+/**/
+
+void indexDirectory(cref<path> path_, ref<Vector<path>> backlog_, ref<Vector<Indexed>> indexSet_) {
+
+	auto range = std::filesystem::directory_iterator {
+		path_, std::filesystem::directory_options::follow_directory_symlink
+	};
+
+	for (const auto& candidate : range) {
+
+		buildIndexedFrom(candidate.path()).map_or_else(
+			[&indexSet_](mref<Indexed> indexed_) {
+				upsertIndexed(indexSet_, std::move(indexed_));
+			},
+			[&backlog_, &candidate]() {
+				backlog_.emplace_back(candidate.path());
+			}
+		);
+
+	}
+}
+
+void autoIndex(cref<path> root_) {
+
+	Vector<path> backlog {};
+	Vector<Indexed> indexSet {};
+
+	backlog.emplace_back(root_);
+	while (not backlog.empty()) {
+
+		const auto cur { backlog.back() };
+		backlog.pop_back();
+
+		indexDirectory(cur, backlog, indexSet);
+
+		auto rit = std::ranges::remove_if(
+			indexSet,
+			[](auto& data_) {
+				return not data_.meta.empty() && data_.scheduled.has_value() && data_.scheduled.value().ready();
+			}
+		);
+		indexSet.erase(rit.begin(), rit.end());
+	}
+
+	/**/
+
+	auto drop = [](ref<Indexed> indexed_) {
+		const auto primaryExists = not indexed_.primary.empty();
+		const auto metaExists = not indexed_.meta.empty();
+
+		if (not primaryExists && not metaExists) {
+			IM_CORE_WARNF("Encountered auto-indexed object without meta or primary path.");
+			return true;
+		}
+
+		if (primaryExists && metaExists) {
+			indexed_.scheduled = enqueueIndexedLoad(indexed_);
+			IM_DEBUG_LOGF("Enqueued indexed loading of `{}`.", indexed_.primary.string());
+			return false;
+		}
+
+		if (primaryExists && not metaExists) {
+
+			if (autoImport(indexed_)) {
+				// Note: We currently don't schedule async, so we don't need to wait
+				return true;
+			}
+
+			IM_CORE_WARNF("Failed to auto-import `{}`.", indexed_.primary.string());
+			return true;
+		}
+
+		IM_CORE_WARNF("Encountered auto-indexed meta file without an associated primary object.");
+		return true;
+	};
+
+	/**/
+
+	auto remove = std::ranges::remove_if(indexSet, std::move(drop));
+	indexSet.erase(remove.begin(), remove.end());
+
+	/**/
+
+	for (auto&& indexed : indexSet) {
+		if (indexed.scheduled) {
+			await(std::move(indexed.scheduled)->signal().get());
 		}
 	}
 }
@@ -246,45 +448,6 @@ static void initMaterialDefaults() {
 	using namespace ::hg::game::assets;
 	const auto factory = Engine::getEngine()->getAssets()->getFactory();
 
-	factory->createImageAsset(
-		clone(image::DefaultAlpha::unstable_auto_guid()),
-		R"(resources\imports\ktx\default_alpha.ktx)"
-	);
-
-	factory->createImageAsset(
-		clone(image::DefaultAO::unstable_auto_guid()),
-		R"(resources\imports\ktx\default_ao.ktx)"
-	);
-
-	factory->createImageAsset(
-		image::DefaultDiffuse::auto_guid(),
-		R"(resources\imports\ktx\default_diffuse.ktx)"
-	);
-
-	factory->createImageAsset(
-		clone(image::DefaultMetalness::unstable_auto_guid()),
-		R"(resources\imports\ktx\default_metalness.ktx)"
-	);
-
-	factory->createImageAsset(
-		clone(image::DefaultNormal::unstable_auto_guid()),
-		R"(resources\imports\ktx\default_normal.ktx)"
-	);
-
-	factory->createImageAsset(
-		clone(image::DefaultRoughness::unstable_auto_guid()),
-		R"(resources\imports\ktx\default_roughness.ktx)"
-	);
-
-	/**/
-
-	delete(new(texture::DefaultAlpha));
-	delete(new(texture::DefaultAO));
-	delete(new(texture::DefaultDiffuse));
-	delete(new(texture::DefaultMetalness));
-	delete(new(texture::DefaultNormal));
-	delete(new(texture::DefaultRoughness));
-
 	/**/
 
 	delete(new(material::DefaultBrdfMaterialPrototype));
@@ -296,160 +459,28 @@ static void initSkyboxDefaults() {
 	using namespace ::hg::game::assets;
 	const auto factory = Engine::getEngine()->getAssets()->getFactory();
 
-	factory->createImageAsset(
-		clone(image::DefaultSkybox::unstable_auto_guid()),
-		R"(resources\imports\ktx\default_skybox.ktx)"
-	);
-
-	/**/
-
-	delete(new(texture::DefaultSkybox));
-
 	/**/
 
 	delete(new(material::DefaultSkyboxPrototype));
 	delete(new(material::DefaultSkybox));
 }
 
-static void initDirectoryIcons() {
-
-	using namespace ::hg::game::assets;
-	const auto factory = Engine::getEngine()->getAssets()->getFactory();
-
-	factory->createImageAsset(
-		clone(image::Directory::unstable_auto_guid()),
-		R"(resources\imports\ktx\icons8-folder-144.ktx)"
-	);
-
-	factory->createImageAsset(
-		clone(image::FolderAudio::unstable_auto_guid()),
-		R"(resources\imports\ktx\folder-audio.ktx)"
-	);
-
-	factory->createImageAsset(
-		clone(image::FolderEnvironment::unstable_auto_guid()),
-		R"(resources\imports\ktx\folder-environment.ktx)"
-	);
-
-	factory->createImageAsset(
-		clone(image::FolderFont::unstable_auto_guid()),
-		R"(resources\imports\ktx\folder-font.ktx)"
-	);
-
-	factory->createImageAsset(
-		clone(image::FolderImages::unstable_auto_guid()),
-		R"(resources\imports\ktx\folder-images.ktx)"
-	);
-
-	factory->createImageAsset(
-		clone(image::FolderImport::unstable_auto_guid()),
-		R"(resources\imports\ktx\folder-import.ktx)"
-	);
-
-	factory->createImageAsset(
-		clone(image::FolderLog::unstable_auto_guid()),
-		R"(resources\imports\ktx\folder-log.ktx)"
-	);
-
-	factory->createImageAsset(
-		clone(image::FolderResource::unstable_auto_guid()),
-		R"(resources\imports\ktx\folder-resource.ktx)"
-	);
-
-	factory->createImageAsset(
-		clone(image::FolderShader::unstable_auto_guid()),
-		R"(resources\imports\ktx\folder-shader.ktx)"
-	);
-
-	factory->createImageAsset(
-		clone(image::FolderVideo::unstable_auto_guid()),
-		R"(resources\imports\ktx\folder-video.ktx)"
-	);
-
-	/**/
-
-	delete(new(texture::Directory));
-	delete(new(texture::FolderAudio));
-	delete(new(texture::FolderEnvironment));
-	delete(new(texture::FolderFont));
-	delete(new(texture::FolderImages));
-	delete(new(texture::FolderImport));
-	delete(new(texture::FolderLog));
-	delete(new(texture::FolderResource));
-	delete(new(texture::FolderShader));
-	delete(new(texture::FolderVideo));
-}
-
-static void initFileIcons() {
-
-	using namespace ::hg::game::assets;
-	const auto factory = Engine::getEngine()->getAssets()->getFactory();
-
-	factory->createImageAsset(
-		clone(image::Brand::unstable_auto_guid()),
-		R"(resources\imports\ktx\brand.ktx)"
-	);
-}
-
-static void initFontDefaults() {
-
-	using namespace ::hg::game::assets;
-	const auto factory = Engine::getEngine()->getAssets()->getFactory();
-
-	factory->createFontAsset(
-		clone(font::CascadiaCode::unstable_auto_guid()),
-		R"(resources\imports\ttf\CascadiaCode.ttf)"
-
-	);
-}
-
-static void initStaticGeometryDefaults() {
-
-	using namespace ::hg::game::assets;
-	const auto factory = Engine::getEngine()->getAssets()->getFactory();
-
-	factory->createStaticGeometryAsset(
-		clone(meshes::Sphere::unstable_auto_guid()),
-		R"(resources\imports\obj\sphere.obj)",
-		11520uLL,
-		11520uLL
-
-	);
-}
-
 #pragma endregion
 
 void editor::boot::initAssets() {
 
+	const auto relative = std::filesystem::current_path().append(R"(../../../assets)");
+	if (not std::filesystem::exists(relative)) {
+		std::filesystem::create_directories(relative);
+	}
+	auto root = std::filesystem::canonical(relative);
+
+	autoIndex(root);
+
+	/**/
+
 	initMaterialDefaults();
 	initSkyboxDefaults();
-	initDirectoryIcons();
-	initFileIcons();
-	initFontDefaults();
-	initStaticGeometryDefaults();
-
-	/**/
-
-	const auto root { std::filesystem::current_path().append(R"(resources\assets)") };
-	if (not std::filesystem::exists(root)) {
-		std::filesystem::create_directories(root);
-	}
-
-	Vector<path> backlog {};
-
-	backlog.push_back(root);
-	while (not backlog.empty()) {
-
-		const auto cur { backlog.back() };
-		backlog.pop_back();
-
-		indexLoadable(cur, backlog);
-	}
-
-	/**/
-
-	packageDiscoverAssets();
-
 }
 
 /**/
@@ -459,81 +490,79 @@ void editor::boot::initAssets() {
 #include <Engine.Resource.Package/Linker/LinkedArchiveIterator.hpp>
 #include <Engine.Resource.Package/Linker/PackageLinker.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
-#include <Engine.Serialization/Archive/SourceReadonlyArchive.hpp>
 #include <Engine.Serialization/Archive/StructuredArchive.hpp>
 #include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>
 #include <Engine.Serialization/Structure/RootScopedSlot.hpp>
 #include <Engine.Serialization/Structure/SeqScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 
-void packageDiscoverAssets() {
+void packageDiscoverAssets(mref<Arci<storage::system::PackageStorage>> packStore_) {
 
-	const auto* const pm = Engine::getEngine()->getResources()->packages(traits::nothrow);
-	const auto view = pm->packages();
+	auto storeIo = Engine::getEngine()->getStorage()->getIo();
+	auto packIo = storage::PackageIo { *storeIo };
 
-	for (const auto& resource : view) {
+	// TODO: We need some iterator over the storages by a certain filter ( package storages in this case )
+	// Question: Do we need a global lock to iterate the stored storage objects?
 
-		const auto guard = resource->acquire(resource::ResourceUsageFlag::eRead);
-		const auto package = guard.imm();
-		const auto* const linker = package->getLinker();
+	auto packAccess = storeIo->accessReadonly(std::move(packStore_));
+	auto linker = packIo.create_linker_from_package(packAccess);
 
-		/* Check for stored archives */
+	/* Check for stored archives */
 
-		if (linker->getArchiveCount() <= 0) {
+	if (linker->getArchiveCount() <= 0) {
+		return;
+	}
+
+	/* Index / Load data from archives */
+
+	const auto end = linker->cend();
+	for (auto iter = linker->cbegin(); iter != end; ++iter) {
+
+		if (iter.header().type != resource::package::PackageArchiveType::eSerializedStructure) {
 			continue;
 		}
 
-		/* Index / Load data from archives */
+		auto archive = iter.archive();
+		auto structured = serialization::StructuredArchive { *archive };
 
-		const auto end = linker->cend();
-		for (auto iter = linker->cbegin(); iter != end; ++iter) {
+		/* Check for root stored assets */
 
-			if (iter.header().type != resource::ArchiveHeaderType::eSerializedStructure) {
+		if (isArchivedAsset(structured.getRootSlot())) {
+
+			archive->seek(0LL);
+			tryLoadArchivedAsset(structured.getRootSlot());
+
+			continue;
+		}
+
+		/* Check for a sequence of stored assets */
+
+		{
+			archive->seek(0);
+			auto root = structured.getRootSlot();
+
+			root.slot()->readHeader();
+			if (root.slot()->getSlotHeader().type != serialization::StructureSlotType::eSeq) {
 				continue;
 			}
 
-			const auto linkedArchive = iter.archive();
-			const serialization::StructuredArchive archive { linkedArchive.get() };
+			/* Check whether first element is asset, otherwise treat as unknown sequence */
 
-			/* Check for root stored assets */
+			const auto seq = std::move(root).intoSeq();
+			const auto count = seq.getRecordCount();
 
-			if (isArchivedAsset(archive.getRootSlot())) {
-
-				linkedArchive->seek(0);
-				tryLoadArchivedAsset(archive.getRootSlot());
-
+			if (count <= 0) {
 				continue;
 			}
 
-			/* Check for a sequence of stored assets */
+			if (not isArchivedAsset(seq.getRecordSlot(0))) {
+				continue;
+			}
 
-			{
-				linkedArchive->seek(0);
-				auto root = archive.getRootSlot();
+			/* Iterate over archives and try to load */
 
-				root.slot()->readHeader();
-				if (root.slot()->getSlotHeader().type != serialization::StructureSlotType::eSeq) {
-					continue;
-				}
-
-				/* Check whether first element is asset, otherwise treat as unknown sequence */
-
-				const auto seq = root.intoSeq();
-				const auto count = seq.getRecordCount();
-
-				if (count <= 0) {
-					continue;
-				}
-
-				if (not isArchivedAsset(seq.getRecordSlot(0))) {
-					continue;
-				}
-
-				/* Iterate over archives and try to load */
-
-				for (s64 idx = 0; idx < count; ++idx) {
-					tryLoadArchivedAsset(seq.getRecordSlot(idx));
-				}
+			for (s64 idx = 0; idx < count; ++idx) {
+				tryLoadArchivedAsset(seq.getRecordSlot(idx));
 			}
 		}
 	}
@@ -541,7 +570,7 @@ void packageDiscoverAssets() {
 
 bool isArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
 
-	const auto record = record_.intoStruct();
+	const auto record = std::move(record_).intoStruct();
 	if (not record.slot()->validateType()) {
 		return false;
 	}
@@ -561,7 +590,7 @@ bool isArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
 	asset_type_id typeId {};
 	asset_guid guid = invalid_asset_guid;
 
-	serialization::access::Structure<Guid>::deserialize(&guid, record.getRecordSlot("__guid__"));
+	serialization::access::Structure<Guid>::hydrate(record.getStructSlot("__guid__"), guid);
 	record.getSlot<u64>("__type__") >> typeId.data;
 
 	/**/
@@ -577,140 +606,95 @@ bool isArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
 
 bool tryLoadArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
 
-	const auto record = record_.asStruct();
+	auto record = record_.asStruct();
 
 	/**/
 
 	asset_type_id typeId {};
 	asset_guid guid = invalid_asset_guid;
 
-	serialization::access::Structure<Guid>::deserialize(&guid, record.getRecordSlot("__guid__"));
+	serialization::access::Structure<Guid>::hydrate(record.getStructSlot("__guid__"), guid);
 	record.getSlot<u64>("__type__") >> typeId.data;
 
 	/**/
 
+	auto genericLoad = []<class AssetType_>(
+		asset_guid guid_,
+		mref<serialization::StructScopedSlot> record_
+	) -> Opt<Arci<AssetType_>> {
+
+		const auto registry = Engine::getEngine()->getAssets()->getRegistry();
+		const auto asset = registry->findAssetByGuid(guid_);
+
+		if (asset != nullptr) { return None; }
+
+		/**/
+
+		auto nextAsset = Arci<AssetType_>::template create();
+		serialization::access::Structure<AssetType_>::hydrate(std::move(record_), *nextAsset);
+
+		engine::assets::storeDefaultNameAndUrl(*nextAsset, {});
+		const auto succeeded = registry->insert({ clone(nextAsset).template into<assets::Asset>() });
+
+		/**/
+
+		if (not succeeded) {
+			IM_CORE_WARNF(
+				"Tried to load asset (`{}` -> `{}`) from package, but it is already present.",
+				nextAsset->getAssetName(),
+				encodeGuid4228(guid_)
+			);
+			::hg::breakpoint();
+			nextAsset.reset();
+			return None;
+
+		}
+
+		IM_CORE_LOGF(
+			"Successfully loaded asset `{}` -> `{}` from package.",
+			nextAsset->getAssetName(),
+			nextAsset->getVirtualUrl()
+		);
+		return Some(std::move(nextAsset));
+	};
+
 	switch (typeId.data) {
+		case assets::Font::typeId.data: {
+			return genericLoad.operator()<assets::Font>(guid, std::move(record)).has_value();
+		}
 		case assets::Image::typeId.data: {
-
-			const auto registry = Engine::getEngine()->getAssets()->getRegistry();
-			const auto asset = registry->findAssetByGuid(guid);
-
-			if (asset != nullptr) {
-				return false;
-			}
-
-			/**/
-
-			auto image = Arci<assets::Image>::create();
-			serialization::access::Structure<assets::Image>::deserialize(image.get(), std::move(record_));
-
-			engine::assets::storeDefaultNameAndUrl(*image, {});
-			const auto succeeded = registry->insert({ clone(image).into<assets::Asset>() });
-
-			if (not succeeded) {
-
-				IM_CORE_WARNF(
-					"Tried to load Image (`{}` -> `{}`) from package, but it is already present.",
-					image->getAssetName(),
-					encodeGuid4228(guid)
-				);
-
-				__debugbreak();
-				image.reset();
-
-			} else {
-				IM_CORE_LOGF(
-					"Successfully loaded Image (`{}` -> `{}`) from package.",
-					image->getAssetName(),
-					encodeGuid4228(guid)
-				);
-			}
-
-			/**/
-
-			break;
+			return genericLoad.operator()<assets::Image>(guid, std::move(record)).has_value();
 		}
 		case assets::TextureAsset::typeId.data: {
-
-			const auto registry = Engine::getEngine()->getAssets()->getRegistry();
-			const auto asset = registry->findAssetByGuid(guid);
-
-			if (asset != nullptr) {
-				return false;
-			}
-
-			/**/
-
-			auto texture = Arci<assets::TextureAsset>::create();
-			serialization::access::Structure<assets::TextureAsset>::deserialize(texture.get(), std::move(record_));
-
-			engine::assets::storeDefaultNameAndUrl(*texture, {});
-			const auto succeeded = registry->insert({ clone(texture).into<assets::Asset>() });
-
-			if (not succeeded) {
-
-				IM_CORE_WARNF(
-					"Tried to load Texture (`{}` -> `{}`) from package, but it is already present.",
-					texture->getAssetName(),
-					encodeGuid4228(guid)
-				);
-
-				__debugbreak();
-				texture.reset();
-
-			} else {
-				IM_CORE_LOGF(
-					"Successfully loaded Texture (`{}` -> `{}`) from package.",
-					texture->getAssetName(),
-					encodeGuid4228(guid)
-				);
-			}
-
-			/**/
-
-			break;
+			return genericLoad.operator()<assets::TextureAsset>(guid, std::move(record)).has_value();
 		}
 		case assets::StaticGeometry::typeId.data: {
-
-			const auto registry = Engine::getEngine()->getAssets()->getRegistry();
-			const auto asset = registry->findAssetByGuid(guid);
-
-			if (asset != nullptr) {
-				return false;
-			}
-
-			/**/
-
-			auto geom = Arci<assets::StaticGeometry>::create();
-			serialization::access::Structure<assets::StaticGeometry>::deserialize(geom.get(), std::move(record_));
-
-			engine::assets::storeDefaultNameAndUrl(*geom, {});
-			const auto succeeded = registry->insert({ clone(geom).into<assets::Asset>() });
-
-			if (not succeeded) {
-
-				IM_CORE_WARNF(
-					"Tried to load Static Geometry (`{}` -> `{}`) from package, but it is already present.",
-					geom->getAssetName(),
-					encodeGuid4228(guid)
-				);
-
-				__debugbreak();
-				geom.reset();
-
-			} else {
-				IM_CORE_LOGF(
-					"Successfully loaded Static Geometry (`{}` -> `{}`) from package.",
-					geom->getAssetName(),
-					encodeGuid4228(guid)
-				);
-			}
-
-			/**/
-
-			break;
+			return genericLoad.operator()<assets::StaticGeometry>(guid, std::move(record)).has_value();
+		}
+		default: {
+			return false;
 		}
 	}
 
-	return true;
+	std::unreachable();
+}
+
+bool autoImport(ref<Indexed> indexed_) {
+
+	const auto actions = nmpt<editor::ActionManager> {
+		static_cast<ptr<editor::ActionManager>>(
+			Engine::getEngine()->getModules().getSubModule(editor::ActionDepKey).get()
+		)
+	};
+
+	/**/
+
+	auto importAction = make_sptr<editor::AutoImportAction>(
+		storage::FileUrl { clone(storage::FileScheme), engine::fs::Path { indexed_.primary } }
+	);
+	actions->apply(importAction);
+
+	/**/
+
+	return not importAction->failed();
 }

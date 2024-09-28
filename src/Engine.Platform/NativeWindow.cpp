@@ -6,9 +6,9 @@ using namespace hg;
 NativeWindow::NativeWindow() = default;
 
 cref<decltype(NativeWindow::_resizeEmitter)> NativeWindow::resizeEmitter() const noexcept {
-    return _resizeEmitter;
+	return _resizeEmitter;
 }
 
 ref<decltype(NativeWindow::_resizeEmitter)> NativeWindow::resizeEmitter() noexcept {
-    return _resizeEmitter;
+	return _resizeEmitter;
 }

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.27.7)
+cmake_minimum_required(VERSION 3.25.1)
 
 message(STATUS "------------------------------------------------------------------")
 message(STATUS "                                                                  ")
@@ -23,9 +23,11 @@ set(IDE_FOLDER "Heliogrim")
 project("Heliogrim" VERSION 1.0)
 
 # CMake Tools
+include(cmake/GlobalSettings.cmake)
 include(cmake/Architecture.cmake)
 include(cmake/BuildType.cmake)
 include(cmake/Tools.cmake)
+include(cmake/Options.cmake)
 include(cmake/Managed.cmake)
 include(cmake/HealthCheck.cmake)
 include(cmake/LinkTimeOpt.cmake)
@@ -45,6 +47,7 @@ set(CMAKE_CONFIGURATION_TYPES "Debug;Release;Profile")
 # Project Options
 
 include(cmake/Dependencies.cmake)
+include(cmake/Discover.cmake)
 include(Options.cmake)
 
 # Project Directories
@@ -59,22 +62,7 @@ enable_deploy(ON)
 include(cmake/PreprocDefinitions.cmake)
 include(cmake/CompileOptions.cmake)
 
-# Handle external dependencies
-get_library_path(project_library_directory)
-file(GLOB externals CONFIGURE_DEPENDS LIST_DIRECTORIES true "${project_library_directory}/*")
-foreach (external ${externals})
-    add_subdirectory("${external}")
-endforeach ()
-finalize_managed_libraries()
-
 # Modules
-get_projects_path(projects_directory)
-list_directories("projects" "${projects_directory}")
-
-set(tests ${projects})
-list(FILTER projects EXCLUDE REGEX "(\\.Test)")
-list(FILTER tests INCLUDE REGEX "\\.Test")
-
-foreach (lib IN LISTS projects tests)
-    add_subdirectory(${lib})
-endforeach ()
+discover_and_hydrate_vendor()
+discover_and_hydrate_targets()
+discover_and_hydrate_tests()

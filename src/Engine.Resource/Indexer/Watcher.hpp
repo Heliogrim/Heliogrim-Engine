@@ -1,17 +1,18 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
-#include <Engine.Common/Wrapper.hpp>
-
-#ifdef ENV_MSVC
-#include <Engine.Common/__macro.hpp>
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
-#include <Fileapi.h>
-#endif
-
 #include <functional>
 #include <unordered_map>
+#include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/__macro.hpp>
+
+#if defined(ENV_MSVC) && defined(WIN32)
+#define WIN32_LEAN_AND_MEAN
+/**/
+#include <Windows.h>
+/* Note: Order dependent `windows header -> fileapi header` */
+#include <Fileapi.h>
+/**/
+#endif
 
 #include "../File.hpp"
 
@@ -23,7 +24,7 @@ namespace hg::engine::res {
 		using const_reference_type = cref<value_type>;
 
 	public:
-		Watcher(cref<hg::fs::File> root_);
+		Watcher(cref<::hg::fs::File> root_);
 
 		/**
 		 * Copy Constructor
@@ -70,24 +71,27 @@ namespace hg::engine::res {
 	private:
 		void setup();
 
-		void notify(const bool publish_ = true);
+		void notify(bool publish_ = true);
 
 	private:
 		hg::fs::File _root;
 
 	public:
-		cref<hg::fs::File> root() const noexcept;
+		[[nodiscard]] cref<hg::fs::File> root() const noexcept;
 
-		hg::fs::File root() noexcept;
+		[[nodiscard]] hg::fs::File root() noexcept;
 
 	public:
 		[[nodiscard]] operator const hg::fs::File() const noexcept;
 
 		[[nodiscard]] operator hg::fs::File() noexcept;
 
+		#ifdef _WIN32
+
 	private:
 		HANDLE _handle;
 		HANDLE _waitHandle;
+		#endif
 
 	private:
 		std::unordered_map<hg::fs::File, std::filesystem::file_time_type> _state;

@@ -9,26 +9,26 @@
 #include "../Archive/__fwd.hpp"
 
 namespace hg::engine::serialization {
-    class DataLayoutDispatch {
-    public:
-        using this_type = DataLayoutDispatch;
+	class DataLayoutDispatch {
+	public:
+		using this_type = DataLayoutDispatch;
 
-    protected:
-        DataLayoutDispatch(cref<DataLayoutBase> layout_);
+	protected:
+		DataLayoutDispatch(cref<DataLayoutBase> layout_);
 
-    public:
-        DataLayoutDispatch(cref<this_type>) = delete;
+	public:
+		DataLayoutDispatch(cref<this_type>) = delete;
 
-        DataLayoutDispatch(mref<this_type>) noexcept = delete;
+		DataLayoutDispatch(mref<this_type>) noexcept = delete;
 
-        ~DataLayoutDispatch();
+		~DataLayoutDispatch();
 
-    private:
-        cref<DataLayoutBase> _layout;
+	private:
+		cref<DataLayoutBase> _layout;
 
-    public:
-        void load(ref<Archive> archive_, std::span<u8, std::dynamic_extent> dst_) const;
+	public:
+		void load(ref<resource::Archive> archive_, std::span<u8, std::dynamic_extent> dst_) const;
 
-        void store(ref<Archive> archive_, std::span<u8, std::dynamic_extent> src_) const;
-    };
+		void store(ref<resource::Archive> archive_, std::span<u8, std::dynamic_extent> src_) const;
+	};
 }

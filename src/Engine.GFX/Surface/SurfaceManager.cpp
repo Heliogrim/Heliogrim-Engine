@@ -1,13 +1,15 @@
 #include "SurfaceManager.hpp"
 
+#include <algorithm>
+#include <ranges>
 #include <Engine.Common/Make.hpp>
-#include <Engine.Platform/NativeWindow.hpp>
 #include <Engine.Logging/Logger.hpp>
+#include <Engine.Platform/NativeWindow.hpp>
 
 #ifdef _WIN32
-#include <Engine.Platform/Windows/Win32Window.hpp>
+//#include <Engine.Platform/Windows/Win32Window.hpp>
 #else
-#include <Engine.Platform/Linux>
+//#include <Engine.Platform/Linux>
 #endif
 
 #include "Surface.hpp"

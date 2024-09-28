@@ -1,4 +1,5 @@
 #pragma once
+
 #include <Engine.Common/Sal.hpp>
 
 #include "NativeBatch.hpp"
@@ -9,7 +10,7 @@ namespace hg::engine::render::cmd {
 }
 
 namespace hg::engine::render::cmd {
-	class __declspec(novtable) RenderCommandTranslator {
+	class macro_novtable RenderCommandTranslator {
 	public:
 		using this_type = RenderCommandTranslator;
 

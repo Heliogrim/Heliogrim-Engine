@@ -151,9 +151,7 @@ smr<const AccelerationEffect> engine::render::makeUiBaseEffect() {
 	);
 
 	fragmentStage->getIntermediate()->rep.globalScope.outbound.emplace_back(std::move(tmpVar));
-	fragmentStage->getIntermediate()->rep.symbolTable.insert(std::move(tmpSym));
-
-	{
+	fragmentStage->getIntermediate()->rep.symbolTable.insert(std::move(tmpSym)); {
 		auto var = make_uptr<Variable>();
 		var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eForwardLinkage>>();
 		var->annotation = make_uptr<SymbolIdAnnotation>("depth", std::move(var->annotation));
@@ -169,7 +167,7 @@ smr<const AccelerationEffect> engine::render::makeUiBaseEffect() {
 
 	/**/
 
-	Guid guid { "__Test__Proxy"_typeId.data, 0, 0, "UIBaseEffect"_typeId.data };
+	Guid guid { static_cast<u32>("__Test__Proxy"_typeId.data), 0, 0, "UIBaseEffect"_typeId.data };
 
 	return make_smr<AccelerationEffect>(
 		std::move(guid),

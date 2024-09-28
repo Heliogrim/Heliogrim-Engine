@@ -23,7 +23,7 @@ namespace hg {
 		public MetaClass {
 	public:
 		template <typename, typename>
-		friend struct typed_meta_holder;
+		friend struct ::hg::typed_meta_holder;
 
 	public:
 		using this_type = TypedMetaClass<TargetType_, reflect::__type_list<InheritTypes_...>>;

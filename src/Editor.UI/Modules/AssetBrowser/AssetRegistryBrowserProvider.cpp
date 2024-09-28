@@ -2,10 +2,10 @@
 
 #include <algorithm>
 #include <cassert>
-#include <Engine.Assets/Types/Asset.hpp>
-
-#include <Engine.Assets.System/AssetRegistry.hpp>
 #include <filesystem>
+#include <ranges>
+#include <Engine.Assets.System/AssetRegistry.hpp>
+#include <Engine.Assets.Type/Asset.hpp>
 
 using namespace hg::editor::ui;
 using namespace hg;

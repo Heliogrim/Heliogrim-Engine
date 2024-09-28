@@ -43,7 +43,7 @@ FontTransformer::response_type::type FontTransformer::operator()(
 
 	/**/
 
-	transformer::convertFreeType(request_, src, guard.mut(), _pool->device(), options_);
+	transformer::convertFreeType(request_, std::move(src), guard.mut(), _pool->device(), options_);
 
 	/**/
 

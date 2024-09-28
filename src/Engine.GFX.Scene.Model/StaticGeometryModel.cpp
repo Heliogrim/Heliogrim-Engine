@@ -1,6 +1,7 @@
 #include "StaticGeometryModel.hpp"
 
-#include <Engine.Assets/Types/Material/GfxMaterial.hpp>
+#include <cstring>
+#include <Engine.Assets.Type/Material/GfxMaterial.hpp>
 #include <Engine.Common/Math/Convertion.hpp>
 #include <Engine.Common/Math/Coordinates.hpp>
 #include <Engine.Core/Engine.hpp>
@@ -10,169 +11,169 @@
 #include <Engine.Reflect/Cast.hpp>
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
-#include <Heliogrim/StaticGeometryComponent.hpp>
+#include <Heliogrim/Component/Scene/Geometry/StaticGeometryComponent.hpp>
 
 using namespace hg::engine::gfx::scene;
 using namespace hg;
 
 StaticGeometryModel::StaticGeometryModel(const ptr<SceneComponent> owner_) :
-    InheritMeta(owner_),
-    _sceneInstanceIndex(~0uL) {}
+	InheritMeta(owner_),
+	_sceneInstanceIndex(~0uL) {}
 
 StaticGeometryModel::~StaticGeometryModel() {
-    tidy();
+	tidy();
 }
 
 void StaticGeometryModel::tidy() {}
 
 void StaticGeometryModel::create(const ptr<render::RenderSceneSystem> system_) {
 
-    auto origin = Cast<StaticGeometryComponent>(owner());
-    const auto srp = system_->getSceneResourcePool();
+	auto origin = Cast<StaticGeometryComponent>(owner());
+	const auto srp = system_->getSceneResourcePool();
 
-    /**
-     *
-     */
-    _staticGeometryAsset = static_cast<ptr<assets::StaticGeometry>>(origin->getStaticGeometryAsset().internal());
-    _staticGeometryResource = Engine::getEngine()->getResources()->loader().
-                                                   load(_staticGeometryAsset, nullptr).
-                                                   into<StaticGeometryResource>();
+	/**
+	 *
+	 */
+	_staticGeometryAsset = static_cast<ptr<assets::StaticGeometry>>(origin->getStaticGeometryAsset().internal());
+	_staticGeometryResource = Engine::getEngine()->getResources()->loader().
+		load(_staticGeometryAsset, nullptr).
+		into<StaticGeometryResource>();
 
-    /**
-     *
-     */
-    for (const auto& material : origin->overrideMaterials()) {
-        auto* wrapped { static_cast<ptr<assets::GfxMaterial>>(material.internal()) };
-        auto resource = Engine::getEngine()->getResources()->loader().load<assets::GfxMaterial, MaterialResource>(
-            std::move(wrapped),
-            {}
-        );
+	/**
+	 *
+	 */
+	for (const auto& material : origin->overrideMaterials()) {
+		auto* wrapped { static_cast<ptr<assets::GfxMaterial>>(material.internal()) };
+		auto resource = Engine::getEngine()->getResources()->loader().load<assets::GfxMaterial, MaterialResource>(
+			std::move(wrapped),
+			{}
+		);
 
-        _overrideMaterials.push_back(resource);
-    }
+		_overrideMaterials.push_back(resource);
+	}
 
-    /**/
+	/**/
 
-    auto result = srp->staticInstancePool.acquire();
-    _sceneInstanceIndex = result.instanceIndex;
+	auto result = srp->staticInstancePool.acquire();
+	_sceneInstanceIndex = result.instanceIndex;
 
-    auto aabbStore = srp->staticAabbPool.acquire(_sceneInstanceIndex);
+	auto aabbStore = srp->staticAabbPool.acquire(_sceneInstanceIndex);
 
-    /**/
+	/**/
 
-    const auto worldTransform = _owner->getWorldTransform();
-    const auto trans { math::mat4::make_identity().translate(worldTransform.location().into()) };
-    const auto rotation = math::as<math::mat4>(worldTransform.rotator().into());
-    const auto scale { math::mat4::make_identity().unchecked_scale(worldTransform.scale()) };
+	const auto universeTransform = _owner->getUniverseTransform();
+	const auto trans { math::mat4::make_identity().translate(universeTransform.location().into()) };
+	const auto rotation = math::as<math::mat4>(universeTransform.rotator().into());
+	const auto scale { math::mat4::make_identity().unchecked_scale(universeTransform.scale()) };
 
-    const auto transform = trans * rotation * scale;
+	const auto transform = trans * rotation * scale;
 
-    const auto page = result.dataView->pages().front();
-    auto allocated = page->memory()->allocated();
+	const auto page = result.dataView->pages().front();
+	auto allocated = page->memory()->allocated();
 
-    const auto innerOffset = result.dataView->offset() - page->resourceOffset();
-    allocated->map(allocated->size);
-    memcpy(static_cast<ptr<char>>(allocated->mapping) + innerOffset, &transform, sizeof(transform));
-    allocated->unmap();
+	const auto innerOffset = result.dataView->offset() - page->resourceOffset();
+	allocated->map(allocated->size);
+	std::memcpy(static_cast<ptr<char>>(allocated->mapping) + innerOffset, &transform, sizeof(transform));
+	allocated->unmap();
 }
 
 static bool isDirty = true;
 
 void StaticGeometryModel::update(const ptr<render::RenderSceneSystem> system_) {
 
-    auto origin = Cast<StaticGeometryComponent>(owner());
-    const auto srp = system_->getSceneResourcePool();
+	auto origin = Cast<StaticGeometryComponent>(owner());
+	const auto srp = system_->getSceneResourcePool();
 
-    /* Geometry Changes */
+	/* Geometry Changes */
 
-    {
-        const auto outer = origin->getStaticGeometryGuid();
-        const auto inner = _staticGeometryAsset->get_guid();
+	{
+		const auto outer = origin->getStaticGeometryGuid();
+		const auto inner = _staticGeometryAsset->get_guid();
 
-        if (outer != inner) {
+		if (outer != inner) {
 
-            _staticGeometryAsset = static_cast<ptr<assets::StaticGeometry>>(
-                origin->getStaticGeometryAsset().internal()
-            );
-            _staticGeometryResource = Engine::getEngine()->getResources()->loader().load(
-                _staticGeometryAsset,
-                nullptr
-            ).into<StaticGeometryResource>();
+			_staticGeometryAsset = static_cast<ptr<assets::StaticGeometry>>(
+				origin->getStaticGeometryAsset().internal()
+			);
+			_staticGeometryResource = Engine::getEngine()->getResources()->loader().load(
+				_staticGeometryAsset,
+				nullptr
+			).into<StaticGeometryResource>();
 
-        }
-    }
+		}
+	}
 
-    /* Material Changes */
+	/* Material Changes */
 
-    const auto count = origin->overrideMaterials().size();
-    for (u32 matIdx = 0; matIdx < count; ++matIdx) {
+	const auto count = origin->overrideMaterials().size();
+	for (u32 matIdx = 0; matIdx < count; ++matIdx) {
 
-        auto* outer = static_cast<ptr<assets::GfxMaterial>>(origin->overrideMaterials()[matIdx].internal());
-        const auto& inner = _overrideMaterials[matIdx];
+		auto* outer = static_cast<ptr<assets::GfxMaterial>>(origin->overrideMaterials()[matIdx].internal());
+		const auto& inner = _overrideMaterials[matIdx];
 
-        if (inner->getAssociation() == nullptr) {
-            continue;
-        }
+		if (inner->getAssociation() == nullptr) {
+			continue;
+		}
 
-        // TODO: Check whether pointer comparison is actually safe, or whether should use guid compare
-        if (inner->getAssociation() != outer) {
+		// TODO: Check whether pointer comparison is actually safe, or whether should use guid compare
+		if (inner->getAssociation() != outer) {
 
-            _overrideMaterials[matIdx] = Engine::getEngine()->getResources()->loader().load<
-                assets::GfxMaterial, MaterialResource
-            >(
-                std::move(outer),
-                {}
-            );
+			_overrideMaterials[matIdx] = Engine::getEngine()->getResources()->loader().load<
+				assets::GfxMaterial, MaterialResource
+			>(
+				std::move(outer),
+				{}
+			);
 
-        }
-    }
+		}
+	}
 
-    /* Transform Changes */
+	/* Transform Changes */
 
-    if (isDirty) {
+	if (isDirty) {
 
-        const auto worldTransform = _owner->getWorldTransform();
-        const auto trans { math::mat4::make_identity().translate(worldTransform.location().into()) };
-        const auto rotation = math::as<math::mat4>(worldTransform.rotator().into());
-        const auto scale { math::mat4::make_identity().unchecked_scale(worldTransform.scale()) };
+		const auto universeTransform = _owner->getUniverseTransform();
+		const auto trans { math::mat4::make_identity().translate(universeTransform.location().into()) };
+		const auto rotation = math::as<math::mat4>(universeTransform.rotator().into());
+		const auto scale { math::mat4::make_identity().unchecked_scale(universeTransform.scale()) };
 
-        const auto transform = trans * rotation * scale;
-        const auto dataView = srp->staticInstancePool.getDataView(_sceneInstanceIndex);
+		const auto transform = trans * rotation * scale;
+		const auto dataView = srp->staticInstancePool.getDataView(_sceneInstanceIndex);
 
-        const auto page = dataView->pages().front();
-        auto allocated = page->memory()->allocated();
+		const auto page = dataView->pages().front();
+		auto allocated = page->memory()->allocated();
 
-        const auto innerOffset = dataView->offset() - page->resourceOffset();
-        allocated->map(allocated->size);
-        memcpy(static_cast<ptr<char>>(allocated->mapping) + innerOffset, &transform, sizeof(transform));
-        allocated->unmap();
+		const auto innerOffset = dataView->offset() - page->resourceOffset();
+		allocated->map(allocated->size);
+		std::memcpy(static_cast<ptr<char>>(allocated->mapping) + innerOffset, &transform, sizeof(transform));
+		allocated->unmap();
 
-        /**/
+		/**/
 
-        auto aabbStore = srp->staticAabbPool.getDataView(_sceneInstanceIndex);
-    }
+		auto aabbStore = srp->staticAabbPool.getDataView(_sceneInstanceIndex);
+	}
 }
 
 void StaticGeometryModel::destroy(const ptr<render::RenderSceneSystem> system_) {
 
-    auto origin = Cast<StaticGeometryComponent>(owner());
-    const auto srp = system_->getSceneResourcePool();
+	auto origin = Cast<StaticGeometryComponent>(owner());
+	const auto srp = system_->getSceneResourcePool();
 
-    srp->staticAabbPool.release(_sceneInstanceIndex);
-    srp->staticInstancePool.release(_sceneInstanceIndex);
+	srp->staticAabbPool.release(_sceneInstanceIndex);
+	srp->staticInstancePool.release(_sceneInstanceIndex);
 
 }
 
 void StaticGeometryModel::capture(nmpt<render::MeshCaptureInterface> mci_) const noexcept {
 
-    const auto worldTransform = _owner->getWorldTransform();
-    const auto trans { math::mat4::make_identity().translate(worldTransform.location().into()) };
-    const auto rotation = math::as<math::mat4>(worldTransform.rotator().into());
-    const auto scale { math::mat4::make_identity().unchecked_scale(worldTransform.scale()) };
+	const auto universeTransform = _owner->getUniverseTransform();
+	const auto trans { math::mat4::make_identity().translate(universeTransform.location().into()) };
+	const auto rotation = math::as<math::mat4>(universeTransform.rotator().into());
+	const auto scale { math::mat4::make_identity().unchecked_scale(universeTransform.scale()) };
 
-    /**/
+	/**/
 
-    #if FALSE
+	#if FALSE
     for (const auto& material : _overrideMaterials) {
 
         const auto guard = material->acquire(resource::ResourceUsageFlag::eRead);
@@ -184,13 +185,13 @@ void StaticGeometryModel::capture(nmpt<render::MeshCaptureInterface> mci_) const
 
     cmd_->bindStaticMeshInstance(nullptr/*{ trans * rotation * scale }*/);
     cmd_->drawStaticMeshIdx(1uL, 0uL, meshGuard->indices()->size(), 0uL);
-    #endif
+	#endif
 }
 
 const ptr<engine::assets::StaticGeometry> StaticGeometryModel::geometryAsset() const noexcept {
-    return _staticGeometryAsset;
+	return _staticGeometryAsset;
 }
 
 cref<smr<engine::gfx::StaticGeometryResource>> StaticGeometryModel::geometryResource() const noexcept {
-    return _staticGeometryResource;
+	return _staticGeometryResource;
 }

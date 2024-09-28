@@ -10,10 +10,10 @@ namespace hg::engine::gfx {
 #include "LightCaptureInterface.hpp"
 
 namespace hg::engine::render {
-    class __declspec(novtable) LightSubPassBase :
+    class macro_novtable LightSubPassBase :
         public SubPass { };
 
-    class __declspec(novtable) LightSubPass :
+    class macro_novtable LightSubPass :
         public LightSubPassBase {
     public:
         using this_type = LightSubPass;

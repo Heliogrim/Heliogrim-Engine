@@ -1,6 +1,7 @@
 #include "AccelerationEffect.hpp"
 
 #include <algorithm>
+#include <ranges>
 
 using namespace hg::engine::accel;
 using namespace hg;
@@ -15,10 +16,6 @@ AccelerationEffect::AccelerationEffect(
 	_stages(std::move(stages_)) {}
 
 AccelerationEffect::~AccelerationEffect() = default;
-
-Guid AccelerationEffect::getGuid() const noexcept {
-	return _guid;
-}
 
 string AccelerationEffect::getName() const noexcept {
 	return _name;
@@ -61,7 +58,7 @@ void AccelerationEffect::enumerateImportSymbols(ref<Vector<StageInput>> imports_
 
 		/**/
 
-		imports_.insert_range(imports_.end(), tmpIn);
+		imports_.append_range(tmpIn);
 		tmpIn.clear();
 		tmpOut.clear();
 
@@ -116,7 +113,7 @@ void AccelerationEffect::enumerateExportSymbols(ref<Vector<StageOutput>> exports
 	}
 }
 
-Optional<StageInput> AccelerationEffect::getFirstInputFor(cref<lang::Symbol> symbol_) const noexcept {
+Opt<StageInput> AccelerationEffect::getFirstInputFor(cref<lang::Symbol> symbol_) const noexcept {
 
 	Vector<StageInput> tmp {};
 	for (const auto& stage : _stages) {
@@ -126,15 +123,15 @@ Optional<StageInput> AccelerationEffect::getFirstInputFor(cref<lang::Symbol> sym
 
 		for (const auto& stageIn : tmp) {
 			if (stageIn.symbol->symbolId == symbol_.symbolId) {
-				return tl::make_optional(stageIn);
+				return Some(stageIn);
 			}
 		}
 	}
 
-	return { tl::nullopt };
+	return None;
 }
 
-Optional<StageOutput> AccelerationEffect::getLastOutputFor(cref<lang::Symbol> symbol_) const noexcept {
+Opt<StageOutput> AccelerationEffect::getLastOutputFor(cref<lang::Symbol> symbol_) const noexcept {
 
 	Vector<StageOutput> tmp {};
 	for (const auto& stage : _stages) {
@@ -144,10 +141,10 @@ Optional<StageOutput> AccelerationEffect::getLastOutputFor(cref<lang::Symbol> sy
 
 		for (const auto& stageOut : tmp) {
 			if (stageOut.symbol->symbolId == symbol_.symbolId) {
-				return tl::make_optional(stageOut);
+				return Some(stageOut);
 			}
 		}
 	}
 
-	return { tl::nullopt };
+	return None;
 }

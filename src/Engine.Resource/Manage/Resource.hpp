@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine.Assets/Types/Asset.hpp>
+#include <Engine.Assets.Type/Asset.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Types.hpp>
@@ -13,7 +13,7 @@
 
 namespace hg::engine::resource {
 	template <typename ManagedType_>
-	class __declspec(novtable) Resource :
+	class macro_novtable Resource :
 		public ResourceBase {
 	public:
 		using this_type = Resource<ManagedType_>;

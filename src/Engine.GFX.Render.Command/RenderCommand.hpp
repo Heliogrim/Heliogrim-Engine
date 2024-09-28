@@ -7,7 +7,7 @@
 #include "RenderCommandTranslator.hpp"
 
 namespace hg::engine::render::cmd {
-	class __declspec(novtable) RenderCommand {
+	class macro_novtable RenderCommand {
 	public:
 		using this_type = RenderCommand;
 

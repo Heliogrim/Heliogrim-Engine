@@ -9,59 +9,59 @@
 #include "DataLayoutDispatch.hpp"
 
 namespace hg::engine::serialization {
-    class __declspec(novtable) DataLayoutBase :
-        public DataLayoutReflect,
-        public DataLayoutDispatch {
-    public:
-        template <typename>
-        friend class DataLayout;
+	class macro_novtable DataLayoutBase :
+		public DataLayoutReflect,
+		public DataLayoutDispatch {
+	public:
+		template <typename>
+		friend class ::hg::engine::serialization::DataLayout;
 
-    public:
-        using this_type = DataLayoutBase;
+	public:
+		using this_type = DataLayoutBase;
 
-    private:
-        DataLayoutBase(const bool hasReflectedClass_);
+	private:
+		DataLayoutBase(const bool hasReflectedClass_);
 
-    public:
-        DataLayoutBase(cref<this_type>) = delete;
+	public:
+		DataLayoutBase(cref<this_type>) = delete;
 
-        DataLayoutBase(mref<this_type>) noexcept = delete;
+		DataLayoutBase(mref<this_type>) noexcept = delete;
 
-        virtual ~DataLayoutBase();
+		virtual ~DataLayoutBase();
 
-    public:
-        void tidy();
+	public:
+		void tidy();
 
-    public:
-        cref<DataLayoutReflect> reflect() const noexcept;
+	public:
+		cref<DataLayoutReflect> reflect() const noexcept;
 
-        ref<DataLayoutReflect> reflect() noexcept;
+		ref<DataLayoutReflect> reflect() noexcept;
 
-        cref<DataLayoutDispatch> dispatch() const noexcept;
+		cref<DataLayoutDispatch> dispatch() const noexcept;
 
-    private:
-        const bool _hasReflectedClass;
+	private:
+		const bool _hasReflectedClass;
 
-    public:
-        [[nodiscard]] bool hasReflectedClass() const noexcept;
+	public:
+		[[nodiscard]] bool hasReflectedClass() const noexcept;
 
-    public:
-        [[nodiscard]] bool hasDynamicDefines() const noexcept;
+	public:
+		[[nodiscard]] bool hasDynamicDefines() const noexcept;
 
-        [[nodiscard]] bool justConstantDefines() const noexcept;
+		[[nodiscard]] bool justConstantDefines() const noexcept;
 
-        [[nodiscard]] s64 size() const noexcept;
+		[[nodiscard]] s64 size() const noexcept;
 
-    private:
-        Vector<ptr<layout::LayoutDefine>> _defines;
+	private:
+		Vector<layout::LayoutDefine> _defines;
 
-    public:
-        [[nodiscard]] cref<decltype(_defines)> defines() const noexcept;
+	public:
+		[[nodiscard]] cref<decltype(_defines)> defines() const noexcept;
 
-    private:
-        void define(mref<ptr<layout::LayoutDefine>> define_);
+	private:
+		void define(mref<layout::LayoutDefine> define_);
 
-    public:
-        virtual void describe() = 0;
-    };
+	public:
+		virtual void describe() = 0;
+	};
 }

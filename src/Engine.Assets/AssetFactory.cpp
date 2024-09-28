@@ -1,42 +1,43 @@
-#include "Types/Asset.hpp"
-#include "Types/Font.hpp"
-#include "Types/Image.hpp"
-#include "Types/LandscapeGeometry.hpp"
-#include "Types/Level.hpp"
-#include "Types/PfxMaterial.hpp"
-#include "Types/SfxMaterial.hpp"
-#include "Types/SkeletalGeometry.hpp"
-#include "Types/Sound.hpp"
-#include "Types/Geometry/StaticGeometry.hpp"
-#include "Types/Material/GfxMaterial.hpp"
-#include "Types/Material/GfxMaterialPrototype.hpp"
-#include "Types/Texture/TextureAsset.hpp"
+/* Note: Why-so-ever, this is order dependent... */
+#include <Engine.Assets.Type/Asset.hpp>
+#include <Engine.Assets.Type/Accel/AccelEffect.hpp>
+#include <Engine.Assets.Type/Audio/Sound.hpp>
+#include <Engine.Assets.Type/Geometry/LandscapeGeometry.hpp>
+#include <Engine.Assets.Type/Geometry/SkeletalGeometry.hpp>
+#include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
+#include <Engine.Assets.Type/Material/GfxMaterial.hpp>
+#include <Engine.Assets.Type/Material/GfxMaterialPrototype.hpp>
+#include <Engine.Assets.Type/Material/PfxMaterial.hpp>
+#include <Engine.Assets.Type/Material/SfxMaterial.hpp>
+#include <Engine.Assets.Type/Texture/Font.hpp>
+#include <Engine.Assets.Type/Texture/Image.hpp>
+#include <Engine.Assets.Type/Texture/TextureAsset.hpp>
+#include <Engine.Assets.Type/Universe/LevelAsset.hpp>
+/* Note: Why-so-ever, this is order dependent... */
 
 #include "AssetFactory.hpp"
 
 #include <filesystem>
+#include <sstream>
+#include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Assets.System/AssetDescriptor.hpp>
 #include <Engine.Assets.System/AssetRegistry.hpp>
 #include <Engine.Assets.System/Repository/InMemAssetRepository.hpp>
+#include <Engine.Common/Meta/Type.hpp>
+#include <Engine.Pedantic/Clone/Clone.hpp>
 #include <Engine.Reflect/Meta/TypedMetaClass.hpp>
 #include <Engine.Serialization/Layout/DataLayout.hpp>
 #include <Engine.Serialization.Layouts/LayoutManager.hpp>
-
-#include <sstream>
-#include <Engine.Pedantic/Clone/Clone.hpp>
-
-#include "Types/AccelEffect.hpp"
 
 using namespace hg::engine::assets;
 using namespace hg;
 
 static_assert(CompleteType<Asset>);
-static_assert(CompleteType<::hg::engine::assets::StaticGeometry>);
 static_assert(CompleteType<Font>);
 static_assert(CompleteType<GfxMaterialPrototype>);
 static_assert(CompleteType<Image>);
 static_assert(CompleteType<LandscapeGeometry>);
-static_assert(CompleteType<Level>);
+static_assert(CompleteType<LevelAsset>);
 static_assert(CompleteType<PfxMaterial>);
 static_assert(CompleteType<SfxMaterial>);
 static_assert(CompleteType<SkeletalGeometry>);
@@ -49,9 +50,9 @@ static_assert(CompleteType<TextureAsset>);
 void engine::assets::storeDefaultNameAndUrl(ref<Asset> asset_, string source_) {
 
 	#ifdef _DEBUG
-    if (not source_.empty() && asset_.getAssetName().empty()) {
-        asset_.setAssetName(std::filesystem::path(source_).filename().string());
-    }
+	if (not source_.empty() && asset_.getAssetName().empty()) {
+		asset_.setAssetName(std::filesystem::path(source_).filename().string());
+	}
 	#endif
 
 	if (asset_.getVirtualUrl().empty()) {
@@ -60,7 +61,7 @@ void engine::assets::storeDefaultNameAndUrl(ref<Asset> asset_, string source_) {
 
 		switch (asset_.getTypeId().data) {
 			case assets::Image::typeId.data: {
-				pseudo = "texture";
+				pseudo = "image";
 				break;
 			}
 			case assets::TextureAsset::typeId.data: {
@@ -77,6 +78,10 @@ void engine::assets::storeDefaultNameAndUrl(ref<Asset> asset_, string source_) {
 			}
 			case assets::Font::typeId.data: {
 				pseudo = "font";
+				break;
+			}
+			case assets::LevelAsset::typeId.data: {
+				pseudo = "level";
 				break;
 			}
 			default: {
@@ -135,7 +140,7 @@ fs::Url AssetFactory::resolveAsSource(cref<string> url_) const noexcept {
 	auto cwd { std::filesystem::current_path() };
 	cwd.append(url_);
 
-	return fs::Url { "file"sv, cwd.generic_string() };
+	return fs::Url { "file"sv, cwd };
 }
 
 void AssetFactory::prepare() {
@@ -230,6 +235,15 @@ Arci<GfxMaterialPrototype> AssetFactory::createGfxMaterialPrototypeAsset(mref<as
 	return instance;
 }
 
+Arci<LevelAsset> AssetFactory::createLevelAsset(mref<asset_guid> guid_) const {
+
+	auto instance = Arci<LevelAsset>::create(std::move(guid_));
+
+	storeDefaultNameAndUrl(*instance, {});
+	_registry->insert({ clone(instance).into<Asset>() });
+	return instance;
+}
+
 Arci<Image> AssetFactory::createImageAsset() const {
 
 	auto guid = generate_asset_guid();
@@ -256,7 +270,7 @@ Arci<Image> AssetFactory::createImageAsset(mref<asset_guid> guid_, cref<string> 
 
 	auto instance = Arci<Image>::create(std::move(guid_), std::move(sources));
 
-	storeDefaultNameAndUrl(*instance, string { src.path() });
+	storeDefaultNameAndUrl(*instance, String { src.path() });
 	_registry->insert({ clone(instance).into<Asset>() });
 	return instance;
 }
@@ -357,9 +371,9 @@ Arci<TextureAsset> AssetFactory::createTextureAsset(
 
 	if (!result) {
 		#ifdef _DEBUG
-        // TODO: We need to handle a missed insertion call to the asset database
-        // Important: Move from asset factory to another place, cause factory is just instantiation, and not database management
-        __debugbreak();
+		// TODO: We need to handle a missed insertion call to the asset database
+		// Important: Move from asset factory to another place, cause factory is just instantiation, and not database management
+		::hg::breakpoint();
 		#else
 		throw std::runtime_error("Failed to insert texture asset into database.");
 		#endif

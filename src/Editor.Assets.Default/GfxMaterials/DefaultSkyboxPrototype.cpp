@@ -3,14 +3,14 @@
 #include <Engine.Accel/Accel.hpp>
 #include <Engine.Assets/AssetFactory.hpp>
 #include <Engine.Assets/Assets.hpp>
-#include <Engine.Assets/Types/AccelEffect.hpp>
-#include <Engine.Assets/Types/Material/GfxMaterialPrototype.hpp>
+#include <Engine.Assets.Type/Accel/AccelEffect.hpp>
+#include <Engine.Assets.Type/Material/GfxMaterialPrototype.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Module/Modules.hpp>
 #include <Engine.GFX.Render.Predefined/Effects/Skybox.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 
-#include "../Textures/DefaultSkybox.hpp"
+#include "../Textures/Default.hpp"
 
 using namespace hg::game::assets::material;
 using namespace hg;
@@ -39,7 +39,7 @@ DefaultSkyboxPrototype::DefaultSkyboxPrototype() :
 			.identifier = engine::gfx::material::ParameterIdentifier { 0u },
 			.name = "Texture",
 			.dataType = engine::accel::TransferDataType::eSampler,
-			.defaultValue = asset_guid { texture::DefaultSkybox::unstable_auto_guid() }
+			.defaultValue = editor::assets::texture::default_skybox_guid
 		}
 	);
 }

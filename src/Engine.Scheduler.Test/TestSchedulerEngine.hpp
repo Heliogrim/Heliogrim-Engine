@@ -53,6 +53,10 @@ namespace hg::test {
 		}
 
 	public:
+		[[nodiscard]] nmpt<engine::ActorModule> getActors() const noexcept override {
+			return nullptr;
+		}
+
 		[[nodiscard]] nmpt<engine::Assets> getAssets() const noexcept override {
 			return nullptr;
 		}
@@ -89,6 +93,14 @@ namespace hg::test {
 			return _scheduler.get();
 		}
 
+		nmpt<const engine::SerializationModule> getSerialization() const noexcept override {
+			return nullptr;
+		}
+
+		[[nodiscard]] nmpt<const engine::StorageModule> getStorage() const noexcept override {
+			return nullptr;
+		}
+
 	private:
 		mutable engine::Config _config;
 		mutable GlobalEventEmitter _emitter;
@@ -108,14 +120,15 @@ namespace hg::test {
 		}
 
 	private:
-		Vector<nmpt<engine::core::WorldContext>> _worldContexts;
+		Vector<nmpt<engine::core::UniverseContext>> _universeContexts;
 
-		[[nodiscard]] Vector<nmpt<engine::core::WorldContext>> getWorldContexts() const noexcept override {
-			return _worldContexts;
+		[[nodiscard]] std::span<const nmpt<engine::core::UniverseContext>>
+		getUniverseContexts() const noexcept override {
+			return _universeContexts;
 		}
 
-		void addWorld(cref<sptr<engine::core::World>> world_) override {}
+		void addUniverse([[maybe_unused]] mref<SharedPtr<engine::core::Universe>> universe_) override {}
 
-		void removeWorld(cref<sptr<engine::core::World>> world_) override {}
+		void removeUniverse([[maybe_unused]] mref<SharedPtr<engine::core::Universe>> universe_) override {}
 	};
 }

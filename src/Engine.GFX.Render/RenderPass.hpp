@@ -1,21 +1,26 @@
 #pragma once
+
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.GFX.RenderGraph/__fwd.hpp>
-#include <Engine.GFX.RenderGraph/Pass/ExecutionPass.hpp>
 #include <Engine.GFX/vkinc.hpp>
-#include <Engine.Scheduler/Fiber/Awaitable.hpp>
+#include <Engine.GFX.RenderGraph/Pass/ExecutionPass.hpp>
 #include <Engine.GFX/Texture/__fwd.hpp>
+#include <Engine.Scheduler/Fiber/Awaitable.hpp>
 
 #include "RenderPassResult.hpp"
 #include "RenderPassState.hpp"
 
 namespace hg::engine::render {
+	class Renderer;
+}
+
+namespace hg::engine::render {
 	class RenderPass final {
 	public:
-		friend class Renderer;
+		friend class ::hg::engine::render::Renderer;
 
 	public:
 		using this_type = RenderPass;
@@ -39,8 +44,9 @@ namespace hg::engine::render {
 
 	protected:
 	public:
-		RenderPassState _state;
+		// Attention: Order-Dependent destruction
 		uptr<graph::RuntimeGraph> _graph;
+		RenderPassState _state;
 
 	protected:
 		bool alloc();

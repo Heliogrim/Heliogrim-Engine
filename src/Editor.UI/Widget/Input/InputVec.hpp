@@ -167,19 +167,15 @@ namespace hg::editor::ui {
 
 	public:
 		template <size_t Index_>
-		FORCE_INLINE void unwindInputs(
+		void unwindInputs(
 			const ptr<const sptr<input_widget_type>> inputs_,
 			ptr<vector_value_base_type> dst_
 		) const {
-			dst_[Index_ - 1] = static_cast<vector_value_base_type>(inputs_[Index_ - 1]->value());
-			unwindInputs<Index_ - 1>(inputs_, dst_);
+			if constexpr (Index_ > 0) {
+				dst_[Index_ - 1] = static_cast<vector_value_base_type>(inputs_[Index_ - 1]->value());
+				unwindInputs<Index_ - 1>(inputs_, dst_);
+			}
 		}
-
-		template <>
-		FORCE_INLINE void unwindInputs<0>(
-			const ptr<const sptr<input_widget_type>> inputs_,
-			ptr<vector_value_base_type> dst_
-		) const {}
 
 		[[nodiscard]] VectorType_ value() const noexcept override {
 			VectorType_ value {};
@@ -188,16 +184,12 @@ namespace hg::editor::ui {
 		}
 
 		template <size_t Index_>
-		FORCE_INLINE void unwindStore(const ptr<sptr<input_widget_type>> inputs_, ptr<vector_value_base_type> src_) {
-			inputs_[Index_ - 1]->setValue(src_[Index_ - 1]);
-			unwindStore<Index_ - 1>(inputs_, src_);
+		void unwindStore(const ptr<sptr<input_widget_type>> inputs_, ptr<vector_value_base_type> src_) {
+			if constexpr (Index_ > 0) {
+				inputs_[Index_ - 1]->setValue(src_[Index_ - 1]);
+				unwindStore<Index_ - 1>(inputs_, src_);
+			}
 		}
-
-		template <>
-		FORCE_INLINE void unwindStore<0>(
-			const ptr<sptr<input_widget_type>> inputs_,
-			ptr<vector_value_base_type> src_
-		) {}
 
 		void setValue(cref<VectorType_> value_) {
 			auto tmp { value_ };

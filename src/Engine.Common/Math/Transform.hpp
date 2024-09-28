@@ -1,104 +1,110 @@
 #pragma once
 
+#include <Engine.Serialization/Access/__fwd.hpp>
+
 #include "Location.hpp"
 #include "Rotator.hpp"
 
 namespace hg::math {
-    class Transform {
-    public:
-        using this_type = Transform;
+	class Transform {
+	public:
+		ACCESS_LAYOUT
+		ACCESS_STRUCTURE
 
-    public:
-        /**
-         * Default Constructor
-         *
-         * @author Julius
-         * @date 26.11.2021
-         */
-        Transform() noexcept;
+	public:
+		using this_type = Transform;
 
-        Transform(mref<Location> location_, mref<Rotator> rotator_, mref<fvec3> scale_) noexcept;
+	public:
+		/**
+		 * Default Constructor
+		 *
+		 * @author Julius
+		 * @date 26.11.2021
+		 */
+		Transform() noexcept;
 
-        /**
-         * Move Constructor
-         *
-         * @author Julius
-         * @date 26.11.2021
-         *
-         * @param other_ The transform to move from.
-         */
-        Transform(mref<Transform> other_) noexcept = default;
+		Transform(mref<Location> location_, mref<Rotator> rotator_, mref<fvec3> scale_) noexcept;
 
-        /**
-         * Copy Constructor
-         *
-         * @author Julius
-         * @date 26.11.2021
-         *
-         * @param other_ The transform to copy from.
-         */
-        Transform(cref<Transform> other_) = default;
+		/**
+		 * Move Constructor
+		 *
+		 * @author Julius
+		 * @date 26.11.2021
+		 *
+		 * @param other_ The transform to move from.
+		 */
+		Transform(mref<Transform> other_) noexcept = default;
 
-        /**
-         * Destructor
-         *
-         * @author Julius
-         * @date 26.11.2021
-         */
-        ~Transform() = default;
+		/**
+		 * Copy Constructor
+		 *
+		 * @author Julius
+		 * @date 26.11.2021
+		 *
+		 * @param other_ The transform to copy from.
+		 */
+		Transform(cref<Transform> other_) = default;
 
-    public:
-        /**
-         * Move Assignment
-         *
-         * @author Julius
-         * @date 02.12.2021
-         *
-         * @param other_ The transform to move from.
-         *
-         * @returns A shallow copy of this.
-         */
-        ref<Transform> operator=(mref<Transform> other_) noexcept;
+		/**
+		 * Destructor
+		 *
+		 * @author Julius
+		 * @date 26.11.2021
+		 */
+		~Transform() = default;
 
-        /**
-         * Copy Assignment
-         *
-         * @author Julius
-         * @date 02.12.2021
-         *
-         * @param other_ The transform to copy from.
-         *
-         * @returns A shallow copy of this.
-         */
-        ref<Transform> operator=(cref<Transform> other_) noexcept;
+	public:
+		/**
+		 * Move Assignment
+		 *
+		 * @author Julius
+		 * @date 02.12.2021
+		 *
+		 * @param other_ The transform to move from.
+		 *
+		 * @returns A shallow copy of this.
+		 */
+		ref<Transform> operator=(mref<Transform> other_) noexcept;
 
-    private:
-        Location _location;
-        Rotator _rotator;
-        fvec3 _scale;
+		/**
+		 * Copy Assignment
+		 *
+		 * @author Julius
+		 * @date 02.12.2021
+		 *
+		 * @param other_ The transform to copy from.
+		 *
+		 * @returns A shallow copy of this.
+		 */
+		ref<Transform> operator=(cref<Transform> other_) noexcept;
 
-    public:
-        [[nodiscard]] cref<Location> location() const noexcept;
+	private:
+		Location _location;
+		Rotator _rotator;
+		fvec3 _scale;
 
-        [[nodiscard]] ref<Location> location() noexcept;
+	public:
+		[[nodiscard]] cref<Location> location() const noexcept;
 
-        ref<this_type> setLocation(mref<Location> location_) noexcept;
+		[[nodiscard]] ref<Location> location() noexcept;
 
-        template <typename... Args_> requires std::is_constructible_v<Location, Args_...>
-        ref<this_type> setLocation(Args_&&... args_) noexcept {
-            return setLocation({ std::forward<Args_>(args_)... });
-        }
+		ref<this_type> setLocation(mref<Location> location_) noexcept;
 
-        [[nodiscard]] cref<Rotator> rotator() const noexcept;
+		template <typename... Args_> requires std::is_constructible_v<Location, Args_...>
+		ref<this_type> setLocation(Args_&&... args_) noexcept {
+			return setLocation({ std::forward<Args_>(args_)... });
+		}
 
-        [[nodiscard]] ref<Rotator> rotator() noexcept;
+		[[nodiscard]] cref<Rotator> rotator() const noexcept;
 
-        ref<this_type> setRotator(mref<Rotator> rotator_) noexcept;
+		[[nodiscard]] ref<Rotator> rotator() noexcept;
 
-        [[nodiscard]] cref<fvec3> scale() const noexcept;
+		ref<this_type> setRotator(mref<Rotator> rotator_) noexcept;
 
-        [[nodiscard]] ref<fvec3> scale() noexcept;
+		[[nodiscard]] cref<fvec3> scale() const noexcept;
 
-        ref<this_type> setScale(mref<fvec3> scale_) noexcept;
-    };
+		[[nodiscard]] ref<fvec3> scale() noexcept;
+
+		ref<this_type> setScale(mref<fvec3> scale_) noexcept;
+	};
 }

@@ -2,19 +2,15 @@
 
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Concurrent/Promise.hpp>
+#include <Engine.Scheduler/CompScheduler.hpp>
 #include <Engine.Scheduler/Scheduler.hpp>
-#include <Engine.Scheduler/Queue/SharedBufferPool.hpp>
 #include <Engine.Scheduler/Helper/Wait.hpp>
 #include <Engine.Scheduler/Pipeline/CompositePipeline.hpp>
 #include <Engine.Scheduler/Pipeline/StagePipeline.hpp>
-#include <Engine.Scheduler/CompScheduler.hpp>
+#include <Engine.Scheduler/Queue/SharedBufferPool.hpp>
 
 using namespace hg::engine::scheduler;
 using namespace hg;
-
-TEST(__DummyTest__, Exists) {
-	EXPECT_TRUE(true);
-}
 
 namespace SchedulerModule {
 	TEST(SharedBufferPool, Default) {
@@ -42,7 +38,7 @@ namespace SchedulerModule {
 		EXPECT_EQ(pool.size().load(std::memory_order_relaxed), 32);
 	}
 
-	void structuredRuntimeTest(std::function<void(nmpt<engine::Scheduler>)> callback_) {
+	static void structuredRuntimeTest(std::function<void(nmpt<engine::Scheduler>)>&& callback_) {
 
 		auto engine = make_uptr<test::TestSchedulerEngine>();
 		engine->preInit();
@@ -62,7 +58,7 @@ namespace SchedulerModule {
 
 		//
 		if (callback_) {
-			callback_(scheduler);
+			std::forward<decltype(callback_)>(callback_)(scheduler);
 		}
 
 		//

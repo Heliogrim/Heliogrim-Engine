@@ -36,7 +36,7 @@ namespace hg::engine::scheduler {
 		void tidy();
 
 	private:
-		Array<std::atomic<sptr<ScheduleWorkSet>>, priority_count> _workSets;
+		Array<uptr<ScheduleWorkSet>, priority_count> _workSets;
 
 	private:
 		[[nodiscard]] u64 maskToPriority(const task::TaskMask mask_) const noexcept;

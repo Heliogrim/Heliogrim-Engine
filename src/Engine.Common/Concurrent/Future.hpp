@@ -1,12 +1,14 @@
 #pragma once
 
 #include <atomic>
-#include <mutex>
+#include <condition_variable>
 #include <memory>
+#include <mutex>
+#include <type_traits>
 #include <utility>
 
-#include "../__macro.hpp"
 #include "../Wrapper.hpp"
+#include "../__macro.hpp"
 #include "../Memory/MemoryPointer.hpp"
 
 namespace hg::concurrent {
@@ -22,9 +24,7 @@ namespace hg::concurrent {
 		public:
 			future_state() :
 				_returned(),
-				_value(
-					std::is_nothrow_default_constructible_v<Ty> ? new Ty() : std::move(allocate())
-				) {}
+				_value(std::move(allocate())) {}
 
 			/**
 			 * Destructor
@@ -34,11 +34,12 @@ namespace hg::concurrent {
 			 */
 			~future_state() {
 				_mtx.lock();
-				if constexpr (std::is_nothrow_default_constructible_v<Ty>) {
-					delete _value;
-				} else {
-					deallocate(_value);
+
+				if (_returned.test(std::memory_order::relaxed)) {
+					_value->~Ty();
 				}
+				deallocate(_value);
+
 				_mtx.unlock();
 			}
 
@@ -47,7 +48,7 @@ namespace hg::concurrent {
 			 *
 			 * @exception std::Thrown when a Standard error condition occurs.
 			 */
-			FORCE_INLINE void complete() const {
+			void complete() const {
 				if (_returned.test_and_set(std::memory_order::acq_rel))
 					throw std::runtime_error("Try to complete a already returned future state.");
 				_cv.notify_all();
@@ -62,16 +63,11 @@ namespace hg::concurrent {
 			 */
 			template <typename Type_ = Ty, typename = std::enable_if_t<std::is_nothrow_default_constructible_v<Type_> ||
 				std::is_nothrow_move_constructible_v<Type_>>>
-			FORCE_INLINE void set(Type_&& val_) {
+			void set(Type_&& val_) {
 				if (_returned.test_and_set(std::memory_order::acq_rel))
 					throw std::runtime_error("Try to assign value to already assigned future state.");
 
-				if constexpr (std::is_nothrow_default_constructible_v<Type_>) {
-					(*_value) = std::move(val_);
-				} else {
-					new(_value) Type_(std::move(val_));
-				}
-
+				new(_value) Ty(std::forward<Type_>(val_));
 				_cv.notify_all();
 			}
 
@@ -80,7 +76,7 @@ namespace hg::concurrent {
 			 *
 			 * @returns A reference to a Ty*.
 			 */
-			FORCE_INLINE Ty*& mem() const noexcept {
+			Ty*& mem() const noexcept {
 				return _value;
 			}
 
@@ -89,7 +85,7 @@ namespace hg::concurrent {
 			 *
 			 * @returns True if it succeeds, false if it fails.
 			 */
-			FORCE_INLINE bool returned() const {
+			bool returned() const {
 				return _returned.test(std::memory_order::relaxed);
 			}
 
@@ -98,12 +94,12 @@ namespace hg::concurrent {
 			 *
 			 * @returns A reference to a Ty&amp;
 			 */
-			FORCE_INLINE Ty&& value() const {
+			Ty&& value() const {
 				return std::forward<Ty&&>(*_value);
 			}
 
 			/** Waits this  */
-			FORCE_INLINE void wait() const {
+			void wait() const {
 				if (_returned.test(std::memory_order::acquire))
 					return;
 				std::unique_lock<std::mutex> lck(_mtx);
@@ -143,7 +139,7 @@ namespace hg::concurrent {
 		template <>
 		class future_state<void> {
 		public:
-			future_state() :
+			[[maybe_unused]] future_state() :
 				_returned() {}
 
 			/**
@@ -152,14 +148,14 @@ namespace hg::concurrent {
 			 * @author Julius
 			 * @date 20.08.2020
 			 */
-			~future_state() = default;
+			[[maybe_unused]] ~future_state() = default;
 
 			/**
 			 * Set the returned state and notify all waiters
 			 *
 			 * @exception std::Thrown when a Standard error condition occurs.
 			 */
-			FORCE_INLINE void complete() const {
+			[[maybe_unused]] void complete() const {
 				if (_returned.test_and_set(std::memory_order::acq_rel))
 					throw std::runtime_error("Try to complete a already returned future state.");
 				_cv.notify_all();
@@ -170,7 +166,7 @@ namespace hg::concurrent {
 			 *
 			 * @exception std::Thrown when a Standard error condition occurs.
 			 */
-			FORCE_INLINE void set() {
+			[[maybe_unused]] void set() {
 				if (_returned.test_and_set(std::memory_order::acq_rel))
 					throw std::runtime_error("Try to assign value to already assigned future state.");
 				_cv.notify_all();
@@ -181,12 +177,12 @@ namespace hg::concurrent {
 			 *
 			 * @returns True if it succeeds, false if it fails.
 			 */
-			FORCE_INLINE bool returned() const {
+			bool returned() const {
 				return _returned.test(std::memory_order::relaxed);
 			}
 
 			/** Waits this  */
-			FORCE_INLINE void wait() const {
+			void wait() const {
 				if (_returned.test(std::memory_order::acquire))
 					return;
 				std::unique_lock<std::mutex> lck(_mtx);
@@ -304,7 +300,7 @@ namespace hg::concurrent {
 		 *
 		 * @param  state_ The state.
 		 */
-		future(const state_type& state_) :
+		[[maybe_unused]] future(const state_type& state_) :
 			_state(state_) {}
 
 		/**
@@ -324,7 +320,7 @@ namespace hg::concurrent {
 		 *
 		 * @author Julius
 		 * @date 20.08.2020
-		 *       
+		 *
 		 */
 		[[maybe_unused, noreturn]] void retrieve() const noexcept {
 			std::unreachable();
@@ -335,7 +331,7 @@ namespace hg::concurrent {
 		 *
 		 * @author Julius
 		 * @date 20.08.2020
-		 *       
+		 *
 		 */
 		void get() const {
 			if (!_state->returned())

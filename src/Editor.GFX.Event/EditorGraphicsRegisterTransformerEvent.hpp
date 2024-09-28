@@ -1,4 +1,5 @@
 #pragma once
+
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.Event/Event.hpp>
@@ -21,11 +22,11 @@ namespace hg {
 			_In_ ref<editor::gfx::loader::EditorTextureTransformer> proxy_
 		) noexcept;
 
-		EditorGraphicsRegisterTransformerEvent(cref<this_type> other_) noexcept = default;
+		constexpr EditorGraphicsRegisterTransformerEvent(cref<this_type> other_) noexcept = default;
 
-		EditorGraphicsRegisterTransformerEvent(mref<this_type> other_) noexcept = default;
+		constexpr EditorGraphicsRegisterTransformerEvent(mref<this_type> other_) noexcept = default;
 
-		~EditorGraphicsRegisterTransformerEvent() noexcept override = default;
+		constexpr ~EditorGraphicsRegisterTransformerEvent() noexcept override = default;
 
 	public:
 		[[nodiscard]] bool canceled() const noexcept override;

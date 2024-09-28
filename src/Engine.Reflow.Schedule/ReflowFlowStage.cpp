@@ -24,8 +24,8 @@ ReflowFlowStage::ReflowFlowStage(
 
 ReflowFlowStage::~ReflowFlowStage() = default;
 
-void ReflowFlowStage::staticDispatch(const non_owning_rptr<const scheduler::StageDispatcher> dispatcher_) {
-	dispatcher_->enqueue(
+void ReflowFlowStage::staticDispatch(cref<StaticStageDispatcher> dispatcher_) {
+	dispatcher_.enqueue(
 		task::make_repetitive_task(
 			[]() {
 
@@ -54,7 +54,7 @@ void ReflowFlowStage::staticDispatch(const non_owning_rptr<const scheduler::Stag
 					 */
 
 					const math::vec2 clientSize = boundWnd->window->getClientSize();
-					auto start = std::chrono::high_resolution_clock::now();
+					//auto start = std::chrono::high_resolution_clock::now();
 
 					ReflowState state {};
 					auto layoutContext = reflow::LayoutContext {
@@ -66,11 +66,13 @@ void ReflowFlowStage::staticDispatch(const non_owning_rptr<const scheduler::Stag
 					state.setRenderTick(ReflowEngine::getGlobalRenderTick());
 					ReflowEngine::tick(state, boundWnd->window, std::move(layoutContext));
 
+					/*
 					auto end = std::chrono::high_resolution_clock::now();
 					IM_DEBUG_LOGF(
 						"Next Flex-Flow took: {}",
 						std::chrono::duration_cast<std::chrono::microseconds>(end - start)
 					);
+					*/
 				}
 
 				return true;
@@ -79,6 +81,6 @@ void ReflowFlowStage::staticDispatch(const non_owning_rptr<const scheduler::Stag
 	);
 }
 
-void ReflowFlowStage::dynamicDispatch(const non_owning_rptr<const scheduler::StageDispatcher> dispatcher_) {
+void ReflowFlowStage::dynamicDispatch(cref<DynamicStageDispatcher> dispatcher_) {
 	// TODO:
 }

@@ -1,7 +1,8 @@
 #pragma once
+#include <mutex>
 #include <shared_mutex>
-#include <unordered_map>
 #include <type_traits>
+#include <unordered_map>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Functional/Function.hpp>
 
@@ -9,17 +10,20 @@
 
 namespace hg {
 	/** The event emitter */
-	class __declspec(novtable) EventEmitter {
+	class macro_novtable EventEmitter {
 	public:
 		/**
 		 * The data type for the listener handle to remove listener from emitter
 		 */
 		using handle_type = u64;
+
+	public:
+		constexpr virtual ~EventEmitter() noexcept = default;
 	};
 
 	template <IsStatefulEvent EventType_>
 	struct StatefulEventExecutor {
-		FORCE_INLINE void operator()(cref<std::function<void(ref<EventType_>)>> fnc_, ref<EventType_> event_) const {
+		void operator()(cref<std::function<void(ref<EventType_>)>> fnc_, ref<EventType_> event_) const {
 			fnc_(event_);
 		}
 	};
@@ -64,6 +68,8 @@ namespace hg {
 			_lhc(0),
 			_listener(),
 			_mtx(mtx_) {}
+
+		~StatefulEventEmitterBase() override = default;
 
 	public:
 		/**
@@ -144,7 +150,7 @@ namespace hg {
 
 	template <IsStatelessEvent EventType_>
 	struct StatelessEventExecutor {
-		FORCE_INLINE void operator()(cref<std::function<void(cref<EventType_>)>> fnc_, cref<EventType_> event_) const {
+		void operator()(cref<std::function<void(cref<EventType_>)>> fnc_, cref<EventType_> event_) const {
 			fnc_(event_);
 		}
 	};
@@ -208,12 +214,14 @@ namespace hg {
 			_listener(),
 			_mtx() {}
 
-		StatelessEventEmitterBase(
+		explicit StatelessEventEmitterBase(
 			std::conditional_t<ExternalMtx_, ref<std::remove_cvref_t<MtxType_>>, std::remove_cvref_t<MtxType_>> mtx_
 		) :
 			_lhc(0),
 			_listener(),
 			_mtx(mtx_) {}
+
+		~StatelessEventEmitterBase() override = default;
 
 	public:
 		/**

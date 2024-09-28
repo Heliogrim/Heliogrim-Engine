@@ -32,13 +32,7 @@ namespace hg {
 			c1(other_.c1),
 			post(other_.post) {}
 
-		template <
-			std::integral PreType_,
-			std::integral C0Type_,
-			std::integral C1Type_,
-			std::integral PostType_
-		>
-		constexpr Guid(const PreType_& pre_, const C0Type_& c0_, const C1Type_& c1_, const PostType_& post_) :
+		constexpr Guid(const u32 pre_, const u16 c0_, const u16 c1_, const u64 post_) noexcept :
 			pre(pre_),
 			c0(c0_),
 			c1(c1_),
@@ -78,15 +72,15 @@ namespace hg {
 			return not static_cast<bool>(*this);
 		}
 
-		[[nodiscard]] FORCE_INLINE constexpr bool operator==(const Guid& other_) const noexcept {
+		[[nodiscard]] constexpr bool operator==(const Guid& other_) const noexcept {
 			return pre == other_.pre && c0 == other_.c0 && c1 == other_.c1 && post == other_.post;
 		}
 
-		[[nodiscard]] FORCE_INLINE constexpr bool operator!=(const Guid& other_) const noexcept {
+		[[nodiscard]] constexpr bool operator!=(const Guid& other_) const noexcept {
 			return pre != other_.pre || c0 != other_.c0 || c1 != other_.c1 || post != other_.post;
 		}
 
-		[[nodiscard]] FORCE_INLINE constexpr bool operator>(const Guid& other_) const noexcept {
+		[[nodiscard]] constexpr bool operator>(const Guid& other_) const noexcept {
 
 			static_assert(sizeof(decltype(*this)) == sizeof(u64) * 2u);
 			static_assert(alignof(decltype(*this)) == alignof(u64));
@@ -107,7 +101,7 @@ namespace hg {
 			return (self[0] > other[0]) || (self[0] == other[0] && self[1] > other[1]);
 		}
 
-		[[nodiscard]] FORCE_INLINE constexpr bool operator<(const Guid& other_) const noexcept {
+		[[nodiscard]] constexpr bool operator<(const Guid& other_) const noexcept {
 
 			static_assert(sizeof(decltype(*this)) == sizeof(u64) * 2u);
 			static_assert(alignof(decltype(*this)) == alignof(u64));
@@ -128,7 +122,7 @@ namespace hg {
 			return (self[0] < other[0]) || (self[0] == other[0] && self[1] < other[1]);
 		}
 
-		[[nodiscard]] FORCE_INLINE constexpr std::strong_ordering operator <=>(const Guid& other_) const noexcept {
+		[[nodiscard]] constexpr std::strong_ordering operator <=>(const Guid& other_) const noexcept {
 
 			static_assert(sizeof(decltype(*this)) == sizeof(u64) * 2u);
 			static_assert(alignof(decltype(*this)) == alignof(u64));
@@ -159,7 +153,7 @@ namespace hg {
 namespace std {
 	template <>
 	struct hash<::hg::Guid> {
-		[[nodiscard]] std::size_t operator()(::hg::cref<::hg::Guid> value_) const noexcept {
+		[[nodiscard]] constexpr std::size_t operator()(::hg::cref<::hg::Guid> value_) const noexcept {
 
 			size_t seed = 31587166197;
 

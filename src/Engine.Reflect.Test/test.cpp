@@ -11,10 +11,6 @@
 
 using namespace hg;
 
-TEST(__DummyTest__, Exists) {
-	EXPECT_TRUE(true);
-}
-
 namespace ReflectModule {
 	class TestBase01 : public InheritBase<TestBase01> {
 	public:
@@ -137,7 +133,7 @@ namespace ReflectModule {
 		/**/
 		auto obj0 = TestMetaPolyDerived();
 		auto obj1 = TestMetaBase();
-		auto obj2 = TestExtBase();
+		[[maybe_unused]] auto obj2 = TestExtBase();
 
 		auto obj3 = TestMetaDerived();
 
@@ -174,7 +170,7 @@ namespace ReflectModule {
 		auto obj1 = TestMetaPolyDerived();
 
 		auto obj2 = TestMetaBase();
-		auto obj3 = TestExtBase();
+		[[maybe_unused]] auto obj3 = TestExtBase();
 
 		/**/
 

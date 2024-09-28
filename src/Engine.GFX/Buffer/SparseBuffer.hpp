@@ -53,9 +53,9 @@ namespace hg::engine::gfx {
 		uptr<VirtualMemory> _memory;
 
 	public:
-		[[nodiscard]] const non_owning_rptr<const VirtualMemory> memory() const noexcept;
+		[[nodiscard]] nmpt<const VirtualMemory> memory() const noexcept;
 
-		[[nodiscard]] const non_owning_rptr<VirtualMemory> memory() noexcept;
+		[[nodiscard]] nmpt<VirtualMemory> memory() noexcept;
 
 	private:
 		Vector<ptr<SparseBufferPage>> _pages;
@@ -138,6 +138,7 @@ namespace hg::engine::gfx {
 			cref<Vector<vk::Semaphore>> signals_
 		);
 
-		[[deprecated]] void enqueueBindingSync(const ptr<CommandQueue> queue_);
+		// TODO: Remove / Deprecated
+		void enqueueBindingSync(const ptr<CommandQueue> queue_);
 	};
 }

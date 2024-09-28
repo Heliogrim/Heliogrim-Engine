@@ -1,7 +1,8 @@
 #pragma once
 
-#include <Engine.Common/Collection/Vector.hpp>
+#include <span>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
+#include <Engine.Common/Memory/SharedPointer.hpp>
 #include <Engine.Reflect/Inherit/InheritBase.hpp>
 
 namespace hg {
@@ -9,6 +10,7 @@ namespace hg {
 }
 
 namespace hg::engine {
+	class ActorModule;
 	class Assets;
 	class Audio;
 	class Graphics;
@@ -19,6 +21,8 @@ namespace hg::engine {
 	class ResourceManager;
 	class Scheduler;
 	class Platform;
+	class SerializationModule;
+	class StorageModule;
 
 	class Config;
 }
@@ -31,12 +35,12 @@ namespace hg::engine::core {
 	class Session;
 	class SessionState;
 
-	class World;
-	class WorldContext;
+	class Universe;
+	class UniverseContext;
 }
 
 namespace hg::engine {
-	class __declspec(novtable) Engine :
+	class macro_novtable Engine :
 		public InheritBase<Engine> {
 	public:
 		using this_type = Engine;
@@ -45,7 +49,7 @@ namespace hg::engine {
 		Engine();
 
 	public:
-		virtual ~Engine();
+		~Engine() override;
 
 	protected:
 		/**
@@ -228,6 +232,8 @@ namespace hg::engine {
 		virtual bool exit() = 0;
 
 	public:
+		[[nodiscard]] virtual nmpt<ActorModule> getActors() const noexcept = 0;
+
 		[[nodiscard]] virtual nmpt<Assets> getAssets() const noexcept = 0;
 
 		[[nodiscard]] virtual nmpt<Audio> getAudio() const noexcept = 0;
@@ -240,11 +246,18 @@ namespace hg::engine {
 
 		[[nodiscard]] virtual nmpt<Physics> getPhysics() const noexcept = 0;
 
+	public:
+		// TODO: Check whether root modules should be accessible by reference, as they should bind tightly with the engine object lifecycle
+
 		[[nodiscard]] virtual nmpt<Platform> getPlatform() const noexcept = 0;
 
 		[[nodiscard]] virtual nmpt<ResourceManager> getResources() const noexcept = 0;
 
 		[[nodiscard]] virtual nmpt<Scheduler> getScheduler() const noexcept = 0;
+
+		[[nodiscard]] virtual nmpt<const SerializationModule> getSerialization() const noexcept = 0;
+
+		[[nodiscard]] virtual nmpt<const StorageModule> getStorage() const noexcept = 0;
 
 	public:
 		[[nodiscard]] virtual ref<Config> getConfig() const noexcept = 0;
@@ -254,11 +267,11 @@ namespace hg::engine {
 		[[nodiscard]] virtual ref<core::Modules> getModules() const noexcept = 0;
 
 	public:
-		[[nodiscard]] virtual Vector<nmpt<core::WorldContext>> getWorldContexts() const noexcept = 0;
+		[[nodiscard]] virtual std::span<const nmpt<core::UniverseContext>> getUniverseContexts() const noexcept = 0;
 
 	public:
-		virtual void addWorld(cref<sptr<core::World>> world_) = 0;
+		virtual void addUniverse(mref<SharedPtr<core::Universe>> universe_) = 0;
 
-		virtual void removeWorld(cref<sptr<core::World>> world_) = 0;
+		virtual void removeUniverse(mref<SharedPtr<core::Universe>> universe_) = 0;
 	};
 }

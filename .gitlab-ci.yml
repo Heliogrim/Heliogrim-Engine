@@ -11,8 +11,10 @@ variables:
   VULKAN_VERSION: 1.3.275.0
   C_CLANG_TARGET: clang-18
   CXX_CLANG_TARGET: clang++-18
-  C_GCC_TARGET: gcc-13
-  CXX_GCC_TARGET: g++-13
+  C_GCC_TARGET: gcc-14
+  CXX_GCC_TARGET: g++-14
+  ALPINE_APK_OPT: --no-cache --repository https://dl-cdn.alpinelinux.org/alpine/edge/main
+  CMAKE_SHR_OPT: -DHELIOGRIM_ASSETS_FORCE_HTTPS:BOOL=ON
 
 stages:
   - build
@@ -34,10 +36,10 @@ build.windows.msvc:
         - build/Release
     - key: cmake-cache-deps-windows-msvc
       paths:
-        - library/*/bin/
-        - library/*/compile/
-        - library/*/include/
-        - library/*/.signature
+        - vendor/*/bin/
+        - vendor/*/compile/
+        - vendor/*/include/
+        - vendor/*/.signature
 
   # Preparation
   before_script:
@@ -53,7 +55,7 @@ build.windows.msvc:
     # Building
 
     # CMake - Debug
-    - cmake -S . -B build/Debug -G Ninja -DCMAKE_BUILD_TYPE=Debug
+    - cmake -S . -B build/Debug -G Ninja -DCMAKE_BUILD_TYPE=Debug $CMAKE_SHR_OPT
     - cmake --build build/Debug -t Heliogrim-Heliogrim --parallel $logical_core_count
     - cmake --build build/Debug -t Heliogrim-Editor --parallel $logical_core_count
     - cmake --build build/Debug -t Heliogrim-AllTests --parallel $logical_core_count
@@ -67,22 +69,6 @@ build.windows.msvc:
     #- cmake -S . -B build/Release -A x64 -D CMAKE_BUILD_TYPE=Release --fresh
     #- cmake --build build/Release -t Heliogrim-Heliogrim --parallel $logical_core_count --clean-first
     #- cmake --build build/Release -t Heliogrim-Editor --parallel $logical_core_count
-
-    # Linking Resources
-
-    #- rm -rf dist/Debug/resources
-    - if (Test-Path ".\dist\Debug\resources") { Remove-Item ".\dist\Debug\resources" -Recurse -Force -Confirm:$False }
-    #- rm -rf dist/Profile/resources
-    #- if (Test-Path ".\dist\Profile\resources") { Remove-Item ".\dist\Profile\resources" -Recurse -Force -Confirm:$False }
-    #- rm -rf dist/Release/resources
-    #- if (Test-Path ".\dist\Release\resources") { Remove-Item ".\dist\Release\resources" -Recurse -Force -Confirm:$False }
-
-    #- ln -sfrn resources dist/Debug/resources
-    - New-Item -ItemType Junction -Path ".\dist\Debug\resources" -Target ".\resources"
-    #- ln -sfrn resources dist/Profile/resources
-    #- New-Item -ItemType Junction -Path ".\dist\Profile\resources" -Target ".\resources"
-    #- ln -sfrn resources dist/Release/resources
-    #- New-Item -ItemType Junction -Path ".\dist\Release\resources" -Target ".\resources"
 
   # Cleanup / Referencing
   after_script:
@@ -118,10 +104,10 @@ build.windows.clang:
         - build/Release
     - key: cmake-cache-deps-windows-clang
       paths:
-        - library/*/bin/
-        - library/*/compile/
-        - library/*/include/
-        - library/*/.signature
+        - vendor/*/bin/
+        - vendor/*/compile/
+        - vendor/*/include/
+        - vendor/*/.signature
 
   # Preparation
   before_script:
@@ -138,7 +124,7 @@ build.windows.clang:
     # Building
 
     # CMake - Debug
-    - cmake -S . -B build/Debug -G Ninja "$("-DCMAKE_C_COMPILER=" + $vsclangcl)" "$("-DCMAKE_CXX_COMPILER=" + $vsclangcl)" -DCMAKE_BUILD_TYPE=Debug
+    - cmake -S . -B build/Debug -G Ninja "$("-DCMAKE_C_COMPILER=" + $vsclangcl)" "$("-DCMAKE_CXX_COMPILER=" + $vsclangcl)" -DCMAKE_BUILD_TYPE=Debug $CMAKE_SHR_OPT
     - cmake --build build/Debug -t Heliogrim-Heliogrim --parallel $logical_core_count
     - cmake --build build/Debug -t Heliogrim-Editor --parallel $logical_core_count
     - cmake --build build/Debug -t Heliogrim-AllTests --parallel $logical_core_count
@@ -152,22 +138,6 @@ build.windows.clang:
     #- cmake -S . -B build/Release -T ClangCL -A x64 -D CMAKE_BUILD_TYPE=Release --fresh
     #- cmake --build build/Release -t Heliogrim-Heliogrim --parallel $logical_core_count --clean-first
     #- cmake --build build/Release -t Heliogrim-Editor --parallel $logical_core_count
-
-    # Linking Resources
-
-    #- rm -rf dist/Debug/resources
-    - if (Test-Path ".\dist\Debug\resources") { Remove-Item ".\dist\Debug\resources" -Recurse -Force -Confirm:$False }
-    #- rm -rf dist/Profile/resources
-    #- if (Test-Path ".\dist\Profile\resources") { Remove-Item ".\dist\Profile\resources" -Recurse -Force -Confirm:$False }
-    #- rm -rf dist/Release/resources
-    #- if (Test-Path ".\dist\Release\resources") { Remove-Item ".\dist\Release\resources" -Recurse -Force -Confirm:$False }
-
-    #- ln -sfrn resources dist/Debug/resources
-    - New-Item -ItemType Junction -Path ".\dist\Debug\resources" -Target ".\resources"
-    #- ln -sfrn resources dist/Profile/resources
-    #- New-Item -ItemType Junction -Path ".\dist\Profile\resources" -Target ".\resources"
-    #- ln -sfrn resources dist/Release/resources
-    #- New-Item -ItemType Junction -Path ".\dist\Release\resources" -Target ".\resources"
 
   # Cleanup / Referencing
   after_script:
@@ -189,30 +159,41 @@ build.windows.clang:
       dotenv: build.report.env
 
 build.linux.gcc:
+  image: docker.io/gcc:14.2.0-bookworm
   stage: build
   tags:
     - linux
     - amd64
-  rules:
-    - when: never
+
+  cache:
+    - key: cmake-cache-build-linux-gcc
+      paths:
+        - build/Debug
+        - build/Profile
+        - build/Release
+    - key: cmake-cache-deps-linux-gcc
+      paths:
+        - vendor/*/bin/
+        - vendor/*/compile/
+        - vendor/*/include/
+        - vendor/*/.signature
 
   # Preparation
   before_script:
     # Prepare Commands
-    - command -v make 2>&1 || { echo >&2 "Required unavailable command make, try to recover."; sudo apt-get install build-essential -y; }
-    - command -v cmake 2>&1 || { echo >&2 "Required unavailable command cmake, try to recover."; sudo apt-get install cmake -y; }
-    - command -v g++ 2>&1 || { echo >&2 "Required unavailable command g++, try to recover."; sudo apt-get install build-essential -y; }
-    - command -v xz 2>&1 || { echo >&2 "Required unavailable command xz, try to recover."; sudo apt-get install xz-utils -y; }
+    - apt-get update
+    - command -v git 2>&1 || { echo >&2 "Required unavailable command git, try to recover."; apt-get -qq install git git-lfs -y; }
+    - command -v cmake 2>&1 || { echo >&2 "Required unavailable command cmake, try to recover."; apt-get -qq install cmake -y; }
+    - command -v xz 2>&1 || { echo >&2 "Required unavailable command xz, try to recover."; apt-get -qq install xz-utils -y; }
     # Optional Commands
-    - command -v ninja 2>&1 || { echo >&2 "Optional unavailable command ninja, try to recover."; sudo apt-get install ninja-build -y; }
-    # Ensure Vulkan SDK
-    - rm -r ~/vulkan 2> /dev/null || true
-    - mkdir ~/vulkan
-    - curl "https://sdk.lunarg.com/sdk/download/$VULKAN_VERSION/linux/vulkansdk-linux-x86_64-$VULKAN_VERSION.tar.xz" --output ~/vulkan/sdk.tar.xz
-    - tar -xf ~/vulkan/sdk.tar.xz -C ~/vulkan
-    - source "$HOME/vulkan/$VULKAN_VERSION/setup-env.sh"
+    - command -v ninja 2>&1 || { echo >&2 "Optional unavailable command ninja, try to recover."; apt-get -qq install ninja-build -y; }
     # Check Versions
     - cmake --version
+    # Install System Dependencies
+    - apt-get -qq install pkg-config cmake-data mesa-vulkan-drivers -y
+    - apt-get -qq install xcb libx11-xcb1 libxcb1-dev libxcb-xfixes0 libxcb-xfixes0-dev libx11-dev libx11-xcb-dev libxext-dev libxfixes-dev libxcursor1 libxcursor-dev libxrandr2 libxrandr-dev libxrender1 libxrender-dev libxss1 libxss-dev libxi6 x11proto-dev xorg-sgml-doctools libxi-dev -y
+    - apt-get -qq install libwayland-dev libwayland-client0 libwayland-cursor0 libegl1-mesa-dev libegl-mesa0 libwayland-egl-backend-dev libwayland-egl1 libxkbcommon-dev libxkbcommon0 libdecor-0-dev libdecor-0-0 -y
+    - apt-get -qq install libuuid1 uuid-dev -y
 
   # Process
   script:
@@ -221,9 +202,10 @@ build.linux.gcc:
     # Generator: Makefiles ~ '-A x64' by default
 
     # CMake - Debug
-    - cmake -S . -B build/Debug -D CMAKE_C_COMPILER=`which gcc` -D CMAKE_CXX_COMPILER=`which g++` -D CMAKE_BUILD_TYPE=Debug --fresh
-    - cmake --build build/Debug --parallel $(nproc) -t Heliogrim-Heliogrim --clean-first
-    - cmake --build build/Debug --parallel $(nproc) -t Heliogrim-Editor
+    - cmake -S . -B build/Debug -D CMAKE_C_COMPILER=`which gcc` -D CMAKE_CXX_COMPILER=`which g++` -D CMAKE_BUILD_TYPE=Debug $CMAKE_SHR_OPT
+    - cmake --build build/Debug -t Heliogrim-Heliogrim --parallel $(nproc)
+    - cmake --build build/Debug -t Heliogrim-Editor --parallel $(nproc)
+    - cmake --build build/Debug -t Heliogrim-AllTests --parallel $(nproc)
 
     # CMake - Profile
     #- cmake -S . -B build/Profile -A x64 -D CMAKE_C_COMPILER=`which gcc` -D CMAKE_CXX_COMPILER=`which g++` -D CMAKE_BUILD_TYPE=Profile --fresh
@@ -233,16 +215,17 @@ build.linux.gcc:
     #- cmake -S . -B build/Release -A x64 -D CMAKE_C_COMPILER=`which gcc` -D CMAKE_CXX_COMPILER=`which g++` -D CMAKE_BUILD_TYPE=Release --fresh
     #- cmake --build build/Release --parallel $(nproc) -t Game --clean-first
 
-    # Linking Resources
-
   # Cleanup / Referencing
   after_script:
-    - CI_JOB_NAME=$CI_JOB_NAME
-    - echo "JOB_${CI_JOB_NAME//./_}_ID=$CI_JOB_ID" >> build.report.env
+    #- CI_JOB_NAME=$CI_JOB_NAME
+    - echo "JOB_build_linux_gcc_ID=$CI_JOB_ID" >> build.report.env
 
   artifacts:
     name: Heliogrim-Unix-GCC-$CI_COMMIT_REF_NAME
     paths:
+      - build/Debug/
+      #- build/Profile/
+      #- build/Release/
       - dist/Debug/
       #- dist/Release/
       #- dist/Profile/
@@ -251,35 +234,39 @@ build.linux.gcc:
       dotenv: build.report.env
 
 build.linux.clang:
+  image: docker.io/silkeh/clang:18-bookworm
   stage: build
   tags:
     - linux
     - amd64
-  rules:
-    - when: never
+
+  cache:
+    - key: cmake-cache-build-linux-clang
+      paths:
+        - build/Debug
+        - build/Profile
+        - build/Release
+    - key: cmake-cache-deps-linux-clang
+      paths:
+        - vendor/*/bin/
+        - vendor/*/compile/
+        - vendor/*/include/
+        - vendor/*/.signature
 
   # Preparation
   before_script:
     # Prepare Commands
-    - command -v make 2>&1 || { echo >&2 "Required unavailable command make, try to recover."; sudo apt-get install build-essential -y; }
-    - command -v cmake 2>&1 || { echo >&2 "Required unavailable command cmake, try to recover."; sudo apt-get install cmake -y; }
-    - |-
-      command -v $C_CLANG_TARGET 2>&1 || {
-          echo >&2 "Required unavailable command clang, try to recover."
-          sudo apt-get install lsb-release wget software-properties-common gnupg -y
-          sudo bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
-      }
-    - command -v xz 2>&1 || { echo >&2 "Required unavailable command xz, try to recover."; sudo apt-get install xz-utils -y; }
+    - apt-get update
+    - command -v git 2>&1 || { echo >&2 "Required unavailable command git, try to recover."; apt-get -qq install git git-lfs -y; }
+    - command -v cmake 2>&1 || { echo >&2 "Required unavailable command cmake, try to recover."; apt-get -qq install cmake -y; }
+    - command -v xz 2>&1 || { echo >&2 "Required unavailable command xz, try to recover."; apt-get -qq install xz-utils -y; }
     # Optional Commands
-    - command -v ninja 2>&1 || { echo >&2 "Optional unavailable command ninja, try to recover."; sudo apt-get install ninja-build -y; }
-    # Ensure Vulkan SDK
-    - rm -r ~/vulkan 2> /dev/null || true
-    - mkdir ~/vulkan
-    - curl "https://sdk.lunarg.com/sdk/download/$VULKAN_VERSION/linux/vulkansdk-linux-x86_64-$VULKAN_VERSION.tar.xz" --output ~/vulkan/sdk.tar.xz
-    - tar -xf ~/vulkan/sdk.tar.xz -C ~/vulkan
-    - source "$HOME/vulkan/$VULKAN_VERSION/setup-env.sh"
-    # Check Versions
-    - cmake --version
+    - command -v ninja 2>&1 || { echo >&2 "Optional unavailable command ninja, try to recover."; apt-get -qq install ninja-build -y; }
+    # Install System Dependencies
+    - apt-get -qq install pkg-config cmake-data mesa-vulkan-drivers -y
+    - apt-get -qq install xcb libx11-xcb1 libxcb1-dev libxcb-xfixes0 libxcb-xfixes0-dev libx11-dev libx11-xcb-dev libxext-dev libxfixes-dev libxcursor1 libxcursor-dev libxrandr2 libxrandr-dev libxrender1 libxrender-dev libxss1 libxss-dev libxi6 x11proto-dev xorg-sgml-doctools libxi-dev -y
+    - apt-get -qq install libwayland-dev libwayland-client0 libwayland-cursor0 libegl1-mesa-dev libegl-mesa0 libwayland-egl-backend-dev libwayland-egl1 libxkbcommon-dev libxkbcommon0 libdecor-0-dev libdecor-0-0 -y
+    - apt-get -qq install libuuid1 uuid-dev -y
 
   # Process
   script:
@@ -288,9 +275,10 @@ build.linux.clang:
     # Generator: Makefiles ~ '-A x64' by default
 
     # CMake - Debug
-    - cmake -S . -B build/Debug -D CMAKE_C_COMPILER=`which $C_CLANG_TARGET` -D CMAKE_CXX_COMPILER=`which $CXX_CLANG_TARGET` -D CMAKE_BUILD_TYPE=Debug --fresh
-    - cmake --build build/Debug --parallel $(nproc) -t Heliogrim-Heliogrim --clean-first
-    - cmake --build build/Debug --parallel $(nproc) -t Heliogrim-Editor
+    - cmake -S . -B build/Debug -D CMAKE_C_COMPILER=`which $C_CLANG_TARGET` -D CMAKE_CXX_COMPILER=`which $CXX_CLANG_TARGET` -D CMAKE_CXX_FLAGS=-stdlib=libc++ -D CMAKE_EXE_LINKER_FLAGS=-stdlib=libc++ -D CMAKE_BUILD_TYPE=Debug $CMAKE_SHR_OPT
+    - cmake --build build/Debug -t Heliogrim-Heliogrim --parallel $(nproc)
+    - cmake --build build/Debug -t Heliogrim-Editor --parallel $(nproc)
+    - cmake --build build/Debug -t Heliogrim-AllTests --parallel $(nproc)
 
     # CMake - Profile
     #- cmake -S . -B build/Profile -A x64 -D CMAKE_C_COMPILER=`which $C_CLANG_TARGET` -D CMAKE_CXX_COMPILER=`which $CXX_CLANG_TARGET` -D CMAKE_BUILD_TYPE=Profile --fresh
@@ -300,16 +288,17 @@ build.linux.clang:
     #- cmake -S . -B build/Release -A x64 -D CMAKE_C_COMPILER=`which $C_CLANG_TARGET` -D CMAKE_CXX_COMPILER=`which $CXX_CLANG_TARGET` -D CMAKE_BUILD_TYPE=Release --fresh
     #- cmake --build build/Release --parallel $(nproc) -t Game --clean-first
 
-    # Linking Resources
-
   # Cleanup / Referencing
   after_script:
     - CI_JOB_NAME=$CI_JOB_NAME
-    - echo "JOB_${CI_JOB_NAME//./_}_ID=$CI_JOB_ID" >> build.report.env
+    - echo "JOB_build_linux_clang_ID=$CI_JOB_ID" >> build.report.env
 
   artifacts:
     name: Heliogrim-Unix-Clang-$CI_COMMIT_REF_NAME
     paths:
+      - build/Debug/
+      #- build/Profile/
+      #- build/Release/
       - dist/Debug/
       #- dist/Release/
       #- dist/Profile/
@@ -339,7 +328,7 @@ test.windows.msvc:
     # Testing
 
     # CMake - Debug
-    - ctest --test-dir build/Debug --output-junit "$PWD/ctest-report.xml" --parallel $logical_core_count
+    - ctest --test-dir build/Debug --output-junit "$PWD/ctest-report.xml" --output-on-failure --parallel $logical_core_count
 
   artifacts:
     when: always
@@ -368,7 +357,78 @@ test.windows.clang:
     # Testing
 
     # CMake - Debug
-    - ctest --test-dir build/Debug --output-junit "$PWD/ctest-report.xml" --parallel $logical_core_count
+    - ctest --test-dir build/Debug --output-junit "$PWD/ctest-report.xml" --output-on-failure --parallel $logical_core_count
+
+  artifacts:
+    when: always
+    paths:
+      - ctest-report.xml
+    reports:
+      junit: ctest-report.xml
+
+test.linux.gcc:
+  image: docker.io/gcc:14.2.0-bookworm
+  stage: test
+  tags:
+    - linux
+    - amd64
+  needs:
+    - job: build.linux.gcc
+      artifacts: true
+
+  # Preparation
+  before_script:
+    # Prepare Commands
+    - apt-get update
+    - command -v git 2>&1 || { echo >&2 "Required unavailable command git, try to recover."; apt-get -qq install git git-lfs -y; }
+    - command -v cmake 2>&1 || { echo >&2 "Required unavailable command cmake, try to recover."; apt-get -qq install cmake -y; }
+    - command -v xz 2>&1 || { echo >&2 "Required unavailable command xz, try to recover."; apt-get -qq install xz-utils -y; }
+    # Optional Commands
+    - command -v ninja 2>&1 || { echo >&2 "Optional unavailable command ninja, try to recover."; apt-get -qq install ninja-build -y; }
+    # Install System Dependencies
+    - apt-get -qq install pkg-config cmake-data mesa-vulkan-drivers -y
+    - apt-get -qq install xcb libx11-xcb1 libxcb1-dev libxcb-xfixes0 libxcb-xfixes0-dev libx11-dev libx11-xcb-dev libxext-dev libxfixes-dev libxcursor1 libxcursor-dev libxrandr2 libxrandr-dev libxrender1 libxrender-dev libxss1 libxss-dev libxi6 x11proto-dev xorg-sgml-doctools libxi-dev -y
+    - apt-get -qq install libwayland-dev libwayland-client0 libwayland-cursor0 libegl1-mesa-dev libegl-mesa0 libwayland-egl-backend-dev libwayland-egl1 libxkbcommon-dev libxkbcommon0 libdecor-0-dev libdecor-0-0 -y
+    - apt-get -qq install libuuid1 uuid-dev -y
+
+  # Process
+  script:
+    # Testing
+
+    # CMake - Debug
+    - ctest --test-dir build/Debug --output-junit "$PWD/ctest-report.xml" --output-on-failure --parallel $(nproc)
+
+  artifacts:
+    when: always
+    paths:
+      - ctest-report.xml
+    reports:
+      junit: ctest-report.xml
+
+test.linux.clang:
+  image: docker.io/alpine:3.20.2
+  stage: test
+  tags:
+    - linux
+    - amd64
+  needs:
+    - job: build.linux.clang
+      artifacts: true
+
+  # Preparation
+  before_script:
+    # Install System Dependencies
+    - apk add $ALPINE_APK_OPT pkgconf cmake mesa git git-lfs libc++ llvm-libunwind libgcc gcompat
+    - apk add $ALPINE_APK_OPT libx11 libx11-dev libxcursor libxcursor-dev libxfixes libxfixes-dev libxext libxext-dev libxrandr libxrandr-dev libxrender libxrender-dev libxi libxi-dev
+    - apk add $ALPINE_APK_OPT wayland libdecor libdecor-dev xkbcli
+    - apk add $ALPINE_APK_OPT libuuid ossp-uuid-dev
+
+  # Process
+  script:
+    # Testing
+
+    # CMake - Debug
+    - ctest --test-dir build/Debug --output-junit "$PWD/ctest-report.xml" --output-on-failure --parallel $(nproc)
 
   artifacts:
     when: always
@@ -380,6 +440,7 @@ test.windows.clang:
 # Release / Deployment Section
 
 release:
+  image: docker.io/alpine:3.20.2
   stage: release
   tags:
     - linux
@@ -389,25 +450,24 @@ release:
   needs:
     - job: build.linux.gcc
       artifacts: true
-      optional: true
     - job: build.linux.clang
       artifacts: true
-      optional: true
     - job: build.windows.msvc
       artifacts: true
     - job: build.windows.clang
       artifacts: true
   before_script:
     # Prepare Commands
+    - apk add --no-cache curl wget tar xz unzip glab git git-lfs
     - |-
       command -v release-cli 2>&1 || {
           echo >&2 "Required unavailable command release-cli, try to recover."
-          wget https://go.dev/dl/go1.20.5.linux-amd64.tar.gz
-          sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.20.5.linux-amd64.tar.gz
+          wget https://go.dev/dl/go1.23.0.linux-amd64.tar.gz
+          rm -rf /usr/local/go && tar -C /usr/local -xzf go1.23.0.linux-amd64.tar.gz
           export PATH=$PATH:/usr/local/go/bin
           source ~/.bashrc
-          sudo curl --location --output /usr/local/bin/release-cli "https://gitlab.com/api/v4/projects/gitlab-org%2Frelease-cli/packages/generic/release-cli/latest/release-cli-linux-amd64"
-          sudo chmod +x /usr/local/bin/release-cli
+          curl --location --output /usr/local/bin/release-cli "https://gitlab.com/api/v4/projects/gitlab-org%2Frelease-cli/packages/generic/release-cli/latest/release-cli-linux-amd64"
+          chmod +x /usr/local/bin/release-cli
           source ~/.bashrc
       }
   script:

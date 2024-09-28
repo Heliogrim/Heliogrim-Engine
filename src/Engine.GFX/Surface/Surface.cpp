@@ -1,21 +1,27 @@
 #include "Surface.hpp"
 
-#include <Engine.Common/stdafx.h>
 #include <Engine.Common/SDL2.hpp>
+#include <Engine.Common/stdafx.h>
 
 #ifdef _PROFILING
 #include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
 
+#include <Engine.Core/Engine.hpp>
+#include <Engine.Logging/Logger.hpp>
+#include <Engine.Platform/Platform.hpp>
+#include <Engine.Scheduler/Fiber/Fiber.hpp>
+#include <Heliogrim/Async/Future.hpp>
+
 #include "../__macro.hpp"
 #include "../API/VkTranslate.hpp"
 #include "../Swapchain/Swapchain.hpp"
-#include <Engine.Logging/Logger.hpp>
-#include <Engine.Platform/Windows/Win32Window.hpp>
-#include <Engine.Core/Engine.hpp>
-#include <Engine.Platform/Platform.hpp>
-#include <Heliogrim/Future.hpp>
-#include <Engine.Scheduler/Fiber/Fiber.hpp>
+
+#if defined(WIN32)
+#include <Support.Platform.Win32/Win32Window.hpp>
+#else
+#include <Engine.Platform/NativeWindow.hpp>
+#endif
 
 using namespace hg::engine::gfx;
 using namespace hg;

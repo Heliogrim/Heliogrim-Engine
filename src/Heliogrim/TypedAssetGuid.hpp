@@ -1,7 +1,7 @@
 #pragma once
 
 #include <concepts>
-
+#include <utility>
 #include <Engine.Assets/AssetGuid.hpp>
 
 namespace hg::engine::assets {
@@ -9,7 +9,7 @@ namespace hg::engine::assets {
 }
 
 namespace hg {
-	template <class AssetType_, bool Strict_ = true> requires std::derived_from<AssetType_, ::hg::engine::assets::Asset>
+	template <std::derived_from<::hg::engine::assets::Asset> AssetType_, bool Strict_ = true>
 	class TypedAssetGuid {
 	public:
 		using this_type = TypedAssetGuid<AssetType_, Strict_>;

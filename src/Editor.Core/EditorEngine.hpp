@@ -1,10 +1,16 @@
 #pragma once
 
+#include <Engine.Common/Collection/Array.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.Config/Config.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Module/Modules.hpp>
 #include <Engine.Event/GlobalEventEmitter.hpp>
+
+/**/
+#include <Engine.Serialization/SerializationModule.hpp>
+#include <Engine.Storage/StorageModule.hpp>
+/**/
 
 namespace hg::editor {
 	class EditorEngine :
@@ -36,6 +42,7 @@ namespace hg::editor {
 		bool exit() override;
 
 	private:
+		uptr<engine::ActorModule> _actors;
 		uptr<engine::Assets> _assets;
 		uptr<engine::Audio> _audio;
 		uptr<engine::Graphics> _graphics;
@@ -46,6 +53,8 @@ namespace hg::editor {
 		uptr<engine::Platform> _platform;
 		uptr<engine::ResourceManager> _resources;
 		uptr<engine::Scheduler> _scheduler;
+		engine::SerializationModule _serialization;
+		engine::StorageModule _storage;
 
 		engine::Config _config;
 		GlobalEventEmitter _emitter;
@@ -53,6 +62,8 @@ namespace hg::editor {
 		engine::core::Modules _modules;
 
 	public:
+		[[nodiscard]] nmpt<engine::ActorModule> getActors() const noexcept override;
+
 		[[nodiscard]] nmpt<engine::Assets> getAssets() const noexcept override;
 
 		[[nodiscard]] nmpt<engine::Audio> getAudio() const noexcept override;
@@ -65,11 +76,16 @@ namespace hg::editor {
 
 		[[nodiscard]] nmpt<engine::Physics> getPhysics() const noexcept override;
 
+	public:
 		[[nodiscard]] nmpt<engine::Platform> getPlatform() const noexcept override;
 
 		[[nodiscard]] nmpt<engine::ResourceManager> getResources() const noexcept override;
 
 		[[nodiscard]] nmpt<engine::Scheduler> getScheduler() const noexcept override;
+
+		[[nodiscard]] nmpt<const engine::SerializationModule> getSerialization() const noexcept override;
+
+		[[nodiscard]] nmpt<const engine::StorageModule> getStorage() const noexcept override;
 
 	public:
 		[[nodiscard]] ref<engine::Config> getConfig() const noexcept override;
@@ -79,15 +95,16 @@ namespace hg::editor {
 		[[nodiscard]] ref<engine::core::Modules> getModules() const noexcept override;
 
 	private:
-		Vector<nmpt<engine::core::WorldContext>> _worldContexts;
+		Array<nmpt<engine::core::UniverseContext>, 2> _universeContexts;
 
 	public:
-		[[nodiscard]] Vector<nmpt<engine::core::WorldContext>> getWorldContexts() const noexcept override;
+		[[nodiscard]] std::span<const nmpt<engine::core::UniverseContext>>
+		getUniverseContexts() const noexcept override;
 
 	public:
-		void addWorld(cref<sptr<engine::core::World>> world_) override;
+		void addUniverse(mref<SharedPtr<engine::core::Universe>> universe_) override;
 
-		void removeWorld(cref<sptr<engine::core::World>> world_) override;
+		void removeUniverse(mref<SharedPtr<engine::core::Universe>> universe_) override;
 
 	private:
 		/**

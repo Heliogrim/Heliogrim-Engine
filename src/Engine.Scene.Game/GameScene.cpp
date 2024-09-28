@@ -2,13 +2,13 @@
 
 #include <Engine.Asserts/Todo.hpp>
 #include <Engine.Reflect/Cast.hpp>
-#include <Heliogrim/ActorComponent.hpp>
-#include <Heliogrim/SceneComponent.hpp>
+#include <Heliogrim/Component/HierarchyComponent.hpp>
+#include <Heliogrim/Component/SceneComponent.hpp>
 
 using namespace hg::engine::scene;
 using namespace hg;
 
-void GameScene::add(const ptr<ActorComponent> component_) {
+void GameScene::add(const ptr<HierarchyComponent> component_) {
 	if (auto* const sceneComponent = Cast<SceneComponent>(component_)) {
 		Scene::add(sceneComponent);
 	}

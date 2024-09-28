@@ -15,86 +15,90 @@
 #include "../Widget/__fwd.hpp"
 
 namespace hg::engine::reflow {
-    class Window :
-        public Widget {
-    public:
-        friend class EventDispatcher;
+	class EventDispatcher;
+}
 
-    public:
-        using this_type = Window;
+namespace hg::engine::reflow {
+	class Window :
+		public Widget {
+	public:
+		friend class ::hg::engine::reflow::EventDispatcher;
 
-    public:
-        Window();
+	public:
+		using this_type = Window;
 
-        ~Window() override;
+	public:
+		Window();
 
-    public:
-        [[nodiscard]] string getTag() const noexcept override;
+		~Window() override;
 
-    public:
-        struct Attributes {
-            StyleAttribute<WindowStyle> style;
-        } attr;
+	public:
+		[[nodiscard]] string getTag() const noexcept override;
 
-    private:
-        void tidy();
+	public:
+		struct Attributes {
+			StyleAttribute<WindowStyle> style;
+		} attr;
 
-    private:
-        ptr<platform::NativeWindow> _nativeWindow;
+	private:
+		void tidy();
 
-    private:
-        WindowType _type;
+	private:
+		ptr<platform::NativeWindow> _nativeWindow;
 
-        math::vec2 _screenPos;
-        math::vec2 _clientSize;
+	private:
+		WindowType _type;
 
-        bool _resizable;
-        bool _closeable;
+		math::vec2 _screenPos;
+		math::vec2 _clientSize;
 
-        string _title;
+		bool _resizable;
+		bool _closeable;
 
-    public:
-        void setClientSize(cref<math::vec2> nextClientSize_);
+		string _title;
 
-        math::vec2 getClientSize() const noexcept;
+	public:
+		void setClientSize(cref<math::vec2> nextClientSize_);
 
-    private:
-        FixedChildren<2> _children;
+		math::vec2 getClientSize() const noexcept;
 
-    public:
-        void setTitleBar(sptr<Widget> titleBar_);
+	private:
+		FixedChildren<2> _children;
 
-        void setContent(sptr<Widget> content_);
+	public:
+		void setTitleBar(sptr<Widget> titleBar_);
 
-    public:
-        [[nodiscard]] sptr<Widget> root() const override;
+		void setContent(sptr<Widget> content_);
 
-        [[nodiscard]] const ptr<const Children> children() const override;
+	public:
+		[[nodiscard]] sptr<Widget> root() const override;
 
-    private:
-        Vector<uptr<PopupLayer>> _popupLayers;
+		[[nodiscard]] const ptr<const Children> children() const override;
 
-    public:
-        non_owning_rptr<PopupLayer> pushPopLayer(cref<sptr<Popup>> popup_);
+	private:
+		Vector<uptr<PopupLayer>> _popupLayers;
 
-        void dropPopLayer(const non_owning_rptr<PopupLayer> layer_ = nullptr);
+	public:
+		non_owning_rptr<PopupLayer> pushPopLayer(cref<sptr<Popup>> popup_);
 
-    private:
-        FocusPath _focus;
+		void dropPopLayer(const non_owning_rptr<PopupLayer> layer_ = nullptr);
 
-    public:
-        [[nodiscard]] cref<FocusPath> getFocusPath() const noexcept;
+	private:
+		FocusPath _focus;
 
-        [[nodiscard]] sptr<Widget> getFocusTarget() const noexcept;
+	public:
+		[[nodiscard]] cref<FocusPath> getFocusPath() const noexcept;
 
-    public:
-        void render(const ptr<ReflowCommandBuffer> cmd_) override;
+		[[nodiscard]] sptr<Widget> getFocusTarget() const noexcept;
 
-    public:
-        math::vec2 prefetchDesiredSize(cref<ReflowState> state_, float scale_) const override;
+	public:
+		void render(const ptr<ReflowCommandBuffer> cmd_) override;
 
-        math::vec2 computeDesiredSize(cref<ReflowPassState> passState_) const override;
+	public:
+		math::vec2 prefetchDesiredSize(cref<ReflowState> state_, float scale_) const override;
 
-        void applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) override;
-    };
+		math::vec2 computeDesiredSize(cref<ReflowPassState> passState_) const override;
+
+		void applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) override;
+	};
 }

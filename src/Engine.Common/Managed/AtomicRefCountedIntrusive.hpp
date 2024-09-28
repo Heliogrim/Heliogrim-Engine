@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <stdexcept>
+#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 
 #include "../Wrapper.hpp"
@@ -31,7 +32,7 @@ namespace hg {
 	class ArcFromThis {
 	public:
 		template <IncompleteOrAtomicIntrusiveRefCountable Ux_>
-		friend class AtomicRefCountedIntrusive;
+		friend class ::hg::AtomicRefCountedIntrusive;
 
 	public:
 		using this_type = ArcFromThis<Derived_>;
@@ -321,9 +322,12 @@ namespace hg {
 		}
 
 		constexpr void throw_if_null(const arci_packed_type packed_) const {
+			/*
 			if (decode_pointer(packed_) == nullptr) {
 				throw std::runtime_error("Failed to access ref counted object with ref count of zero.");
 			}
+			 */
+			::hg::assertrt(decode_pointer(packed_) != nullptr);
 		}
 
 	public:
@@ -365,7 +369,7 @@ namespace hg {
 		}
 
 	public:
-		[[nodiscard]] constexpr bool operator==(nullptr_t) const noexcept {
+		[[nodiscard]] constexpr bool operator==(std::nullptr_t) const noexcept {
 			const auto stored = _obj.load(std::memory_order::consume);
 			return stored == 0 || decode_pointer(stored) == nullptr;
 		}
@@ -397,15 +401,19 @@ namespace hg {
 			std::is_convertible_v<ptr<Ty_>, ptr<ToType_>> ||
 			std::derived_from<ToType_, Ty_>
 		[[nodiscard]] AtomicRefCountedIntrusive<ToType_> into() && noexcept {
-			return static_cast<AtomicRefCountedIntrusive<ToType_>&&>(*this);
+			return static_cast<mref<AtomicRefCountedIntrusive<ToType_>>>(
+				*reinterpret_cast<ptr<AtomicRefCountedIntrusive<ToType_>>>(this)
+			);
 		}
 
 	private:
 		template <IsAtomicIntrusiveRefCountable ToType_> requires
 			std::is_convertible_v<ptr<Ty_>, ptr<ToType_>> ||
 			std::derived_from<ToType_, Ty_>
-		[[nodiscard]] explicit operator AtomicRefCountedIntrusive<ToType_>() & noexcept {
-			return reinterpret_cast<AtomicRefCountedIntrusive<ToType_>&&>(*this);
+		[[nodiscard]] explicit operator AtomicRefCountedIntrusive<ToType_>() && noexcept {
+			return static_cast<mref<AtomicRefCountedIntrusive<ToType_>>>(
+				*reinterpret_cast<ptr<AtomicRefCountedIntrusive<ToType_>>>(this)
+			);
 		}
 	};
 
@@ -415,7 +423,7 @@ namespace hg {
 	template <typename Proxy_>
 	AtomicRefCountedIntrusive<Proxy_> ArcFromThis<Derived_>::arci_from_this() noexcept {
 		const auto result = ref_inc();
-		assert(result);
+		::hg::assertd(result);
 		return AtomicRefCountedIntrusive<Proxy_>::create_from_storage(static_cast<ptr<Derived_>>(this));
 	}
 }

@@ -1,34 +1,44 @@
 #include "GameEngine.hpp"
 
+#include <algorithm>
+#include <ranges>
+#include <Engine.ACS.Schedule/ActorPipeline.hpp>
+#include <Engine.ACS/ActorModule.hpp>
 #include <Engine.Assets/Assets.hpp>
+#include <Engine.Core.Schedule/CorePipeline.hpp>
 #include <Engine.Core/EngineState.hpp>
 #include <Engine.Core/Session.hpp>
-#include <Engine.Core/Event/WorldAddedEvent.hpp>
-#include <Engine.Core/Event/WorldRemoveEvent.hpp>
+#include <Engine.Core/UniverseContext.hpp>
+#include <Engine.Core/Event/UniverseAddedEvent.hpp>
+#include <Engine.Core/Event/UniverseRemoveEvent.hpp>
+#include <Engine.Core/Module/CoreDependencies.hpp>
 #include <Engine.Core/Module/SubModule.hpp>
 #include <Engine.GFX/Graphics.hpp>
 #include <Engine.Input/Input.hpp>
 #include <Engine.Network/Network.hpp>
 #include <Engine.PFX/Physics.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
-#include <Engine.Scheduler/CompScheduler.hpp>
+#include <Engine.Scene.Schedule/ScenePipeline.hpp>
 #include <Engine.Scheduler/Async.hpp>
+#include <Engine.Scheduler/CompScheduler.hpp>
 #include <Engine.Scheduler/Helper/Wait.hpp>
-#include <Engine.SFX/Audio.hpp>
-#include <Engine.Core.Schedule/CorePipeline.hpp>
 #include <Engine.Scheduler/Pipeline/CompositePipeline.hpp>
+#include <Engine.SFX/Audio.hpp>
 
 #ifdef WIN32
-#include <Engine.Platform/Windows/WinPlatform.hpp>
+#include <Support.Platform.Win32/WinPlatform.hpp>
 #else
-#include <Engine.Platform/Linux>
+#include <Engine.Platform/Platform.hpp>
+//#include <Engine.Platform/Linux>
 #endif
 
 using namespace hg::engine::core;
 using namespace hg::engine;
 using namespace hg;
 
-GameEngine::GameEngine() = default;
+GameEngine::GameEngine() :
+	_storage(*this),
+	_universeContexts() {}
 
 GameEngine::~GameEngine() = default;
 
@@ -38,9 +48,9 @@ bool GameEngine::preInit() {
 	}
 
 	#ifdef _DEBUG
-    if (_assets || _audio || _graphics || _input || _network || _physics || _resources || _scheduler) {
-        return false;
-    }
+	if (_assets || _audio || _graphics || _input || _network || _physics || _resources || _scheduler) {
+		return false;
+	}
 	#endif
 
 	#ifdef WIN32
@@ -52,14 +62,31 @@ bool GameEngine::preInit() {
 	_resources = make_uptr<ResourceManager>();
 	_scheduler = make_uptr<CompScheduler>();
 
+	/* Register Root Modules */
+	_modules.addRootModule(*_platform);
+	_modules.addRootModule(*_resources);
+	_modules.addRootModule(*_scheduler);
+	_modules.addRootModule(_serialization);
+	_modules.addRootModule(_storage);
+
 	/**/
 
+	_actors = make_uptr<ActorModule>(*this);
 	_assets = make_uptr<Assets>(*this);
 	_audio = make_uptr<Audio>(*this);
 	_graphics = make_uptr<Graphics>(*this);
 	_input = make_uptr<Input>(*this);
 	_network = make_uptr<Network>(*this);
 	_physics = make_uptr<Physics>(*this);
+
+	/* Register Core Modules */
+	_modules.addCoreModule(*_actors, ActorDepKey);
+	_modules.addCoreModule(*_assets, AssetsDepKey);
+	_modules.addCoreModule(*_audio, AudioDepKey);
+	_modules.addCoreModule(*_graphics, GraphicsDepKey);
+	_modules.addCoreModule(*_input, InputDepKey);
+	_modules.addCoreModule(*_network, NetworkDepKey);
+	_modules.addCoreModule(*_physics, PhysicsDepKey);
 
 	return setEngineState(EngineState::ePreInitialized);
 }
@@ -76,61 +103,29 @@ bool GameEngine::init() {
 
 	/**/
 
+	_gameSession = make_uptr<core::Session>();
+	_universeContexts.front() = std::addressof(_gameSession->getUniverseContext());
+
+	/**/
+
 	setupCorePipelines();
 
 	/* Core modules should always interact with a guaranteed fiber context and non-sequential execution */
 	std::atomic_uint_fast8_t setupCounter { 0u };
-
-	scheduler::exec(
-		[this, &setupCounter] {
-			_assets->setup();
-			++setupCounter;
-			setupCounter.notify_one();
-		}
-	);
-
-	scheduler::exec(
-		[this, &setupCounter] {
-			_audio->setup();
-			++setupCounter;
-			setupCounter.notify_one();
-		}
-	);
-
-	scheduler::exec(
-		[this, &setupCounter] {
-			_graphics->setup();
-			++setupCounter;
-			setupCounter.notify_one();
-		}
-	);
-
-	scheduler::exec(
-		[this, &setupCounter] {
-			_input->setup();
-			++setupCounter;
-			setupCounter.notify_one();
-		}
-	);
-
-	scheduler::exec(
-		[this, &setupCounter] {
-			_network->setup();
-			++setupCounter;
-			setupCounter.notify_one();
-		}
-	);
-
-	scheduler::exec(
-		[this, &setupCounter] {
-			_physics->setup();
-			++setupCounter;
-			setupCounter.notify_one();
+	_modules.forEachCoreModule(
+		[&setupCounter](ref<CoreModule> module_) {
+			scheduler::exec(
+				[coreModule = std::addressof(module_), &setupCounter] {
+					coreModule->setup();
+					++setupCounter;
+					setupCounter.notify_one();
+				}
+			);
 		}
 	);
 
 	/**/
-	scheduler::waitUntilAtomic(setupCounter, 6u);
+	scheduler::waitUntilAtomic(setupCounter, _modules.getCoreModuleCount());
 	setupCounter.store(0u, std::memory_order::relaxed);
 
 	scheduler::exec(
@@ -187,12 +182,11 @@ bool GameEngine::start() {
 	/**/
 	scheduler::exec(
 		[this, &next] {
-			_assets->start();
-			_audio->start();
-			_graphics->start();
-			_input->start();
-			_network->start();
-			_physics->start();
+			_modules.forEachCoreModule(
+				[](ref<CoreModule> module_) {
+					module_.start();
+				}
+			);
 
 			next.test_and_set(std::memory_order::relaxed);
 			next.notify_one();
@@ -206,10 +200,6 @@ bool GameEngine::start() {
 	/**/
 	scheduler::exec(
 		[this, &next] {
-			_gameSession = make_uptr<core::Session>();
-			_worldContexts.emplace_back(std::addressof(_gameSession->getWorldContext()));
-
-			/**/
 
 			for (const auto& subModule : _modules.getSubModules()) {
 				subModule->start();
@@ -243,12 +233,9 @@ bool GameEngine::stop() {
 
 			/**/
 
-			auto where = std::ranges::remove(
-				_worldContexts,
-				nmpt<core::WorldContext> { std::addressof(_gameSession->getWorldContext()) }
-			);
-			_worldContexts.erase(where.begin(), where.end());
-			_gameSession.reset();
+			auto prevUniverse = _gameSession->getUniverseContext().getCurrentUniverse();
+			_gameSession->getUniverseContext().setCurrentUniverse(nullptr);
+			removeUniverse(clone(prevUniverse));
 
 			/**/
 
@@ -264,12 +251,11 @@ bool GameEngine::stop() {
 	/**/
 	scheduler::exec(
 		[this, &next] {
-			_physics->stop();
-			_network->stop();
-			_input->stop();
-			_graphics->stop();
-			_audio->stop();
-			_assets->stop();
+			_modules.forEachCoreModule(
+				[](ref<CoreModule> module_) {
+					module_.stop();
+				}
+			);
 
 			next.test_and_set(std::memory_order::relaxed);
 			next.notify_one();
@@ -318,57 +304,24 @@ bool GameEngine::shutdown() {
 
 	/* Core modules should always interact with a guaranteed fiber context and non-sequential execution */
 	std::atomic_uint_fast8_t moduleCount { 0u };
-
-	scheduler::exec(
-		[this, &moduleCount] {
-			_physics->destroy();
-			++moduleCount;
-			moduleCount.notify_one();
-		}
-	);
-
-	scheduler::exec(
-		[this, &moduleCount] {
-			_network->destroy();
-			++moduleCount;
-			moduleCount.notify_one();
-		}
-	);
-
-	scheduler::exec(
-		[this, &moduleCount] {
-			_input->destroy();
-			++moduleCount;
-			moduleCount.notify_one();
-		}
-	);
-
-	scheduler::exec(
-		[this, &moduleCount] {
-			_graphics->destroy();
-			++moduleCount;
-			moduleCount.notify_one();
-		}
-	);
-
-	scheduler::exec(
-		[this, &moduleCount] {
-			_audio->destroy();
-			++moduleCount;
-			moduleCount.notify_one();
-		}
-	);
-
-	scheduler::exec(
-		[this, &moduleCount] {
-			_assets->destroy();
-			++moduleCount;
-			moduleCount.notify_one();
+	_modules.forEachCoreModule(
+		[&moduleCount](ref<CoreModule> module_) {
+			scheduler::exec(
+				[coreModule = std::addressof(module_), &moduleCount] {
+					coreModule->destroy();
+					++moduleCount;
+					moduleCount.notify_one();
+				}
+			);
 		}
 	);
 
 	/**/
-	scheduler::waitUntilAtomic(moduleCount, 6u);
+	scheduler::waitUntilAtomic(moduleCount, _modules.getCoreModuleCount());
+
+	/**/
+	_universeContexts.front() = nullptr;
+	_gameSession.reset();
 
 	/* Base module are setup via direct call without fiber context guarantee (which is unlikely) */
 	_resources->destroy();
@@ -383,6 +336,15 @@ bool GameEngine::exit() {
 		return false;
 	}
 
+	/* Unregister Core Modules */
+	_modules.removeCoreModule(*_physics);
+	_modules.removeCoreModule(*_network);
+	_modules.removeCoreModule(*_input);
+	_modules.removeCoreModule(*_graphics);
+	_modules.removeCoreModule(*_audio);
+	_modules.removeCoreModule(*_assets);
+	_modules.removeCoreModule(*_actors);
+
 	/**/
 	_physics.reset();
 	_network.reset();
@@ -390,6 +352,14 @@ bool GameEngine::exit() {
 	_graphics.reset();
 	_audio.reset();
 	_assets.reset();
+	_actors.reset();
+
+	/* Unregister Root Modules */
+	_modules.removeRootModule(_storage);
+	_modules.removeRootModule(_serialization);
+	_modules.removeRootModule(*_scheduler);
+	_modules.removeRootModule(*_resources);
+	_modules.removeRootModule(*_platform);
 
 	/**/
 	_resources.reset();
@@ -397,6 +367,10 @@ bool GameEngine::exit() {
 	_platform.reset();
 
 	return setEngineState(EngineState::eExited);
+}
+
+nmpt<ActorModule> GameEngine::getActors() const noexcept {
+	return _actors.get();
 }
 
 nmpt<Assets> GameEngine::getAssets() const noexcept {
@@ -435,6 +409,14 @@ nmpt<Scheduler> GameEngine::getScheduler() const noexcept {
 	return _scheduler.get();
 }
 
+nmpt<const SerializationModule> GameEngine::getSerialization() const noexcept {
+	return std::addressof(_serialization);
+}
+
+nmpt<const StorageModule> GameEngine::getStorage() const noexcept {
+	return std::addressof(_storage);
+}
+
 ref<Config> GameEngine::getConfig() const noexcept {
 	return const_cast<ref<engine::Config>>(_config);
 }
@@ -447,16 +429,16 @@ ref<core::Modules> GameEngine::getModules() const noexcept {
 	return const_cast<ref<core::Modules>>(_modules);
 }
 
-Vector<nmpt<core::WorldContext>> GameEngine::getWorldContexts() const noexcept {
-	return _worldContexts;
+std::span<const nmpt<core::UniverseContext>> GameEngine::getUniverseContexts() const noexcept {
+	return std::span { _universeContexts };
 }
 
-void GameEngine::addWorld(cref<sptr<core::World>> world_) {
-	_emitter.emit<WorldAddedEvent>(world_);
+void GameEngine::addUniverse(mref<SharedPtr<core::Universe>> universe_) {
+	_emitter.emit<UniverseAddedEvent>(std::move(universe_));
 }
 
-void GameEngine::removeWorld(cref<sptr<core::World>> world_) {
-	_emitter.emit<WorldRemoveEvent>(world_);
+void GameEngine::removeUniverse(mref<SharedPtr<core::Universe>> universe_) {
+	_emitter.emit<UniverseRemoveEvent>(std::move(universe_));
 }
 
 nmpt<core::Session> GameEngine::getGameSession() const noexcept {
@@ -464,6 +446,14 @@ nmpt<core::Session> GameEngine::getGameSession() const noexcept {
 }
 
 void GameEngine::setupCorePipelines() {
+
 	auto corePipeline = make_uptr<schedule::CorePipeline>();
+	auto actorPipeline = make_uptr<acs::schedule::ActorPipeline>();
+	auto scenePipeline = make_uptr<scene::schedule::ScenePipeline>();
+
+	/**/
+
 	_scheduler->getCompositePipeline()->addPipeline(std::move(corePipeline));
+	_scheduler->getCompositePipeline()->addPipeline(std::move(actorPipeline));
+	_scheduler->getCompositePipeline()->addPipeline(std::move(scenePipeline));
 }

@@ -1,11 +1,14 @@
 #pragma once
 
-#include "../Types.hpp"
+#include <span>
 #include "../String.hpp"
+#include "../Types.hpp"
 #include "../Wrapper.hpp"
+#include "../__macro.hpp"
 
 namespace hg::hash {
 	namespace {
+		START_SUPPRESS_WARNINGS
 		/**
 		 * Fnv-1a 86
 		 *
@@ -25,13 +28,11 @@ namespace hg::hash {
 			}
 			return acc;
 		}
+
+		STOP_SUPPRESS_WARNINGS
 	}
 
-	constexpr u64 operator ""_fnv1a(const char* str_, const std::size_t count_) {
-		return fnv1a_86(str_, count_);
-	}
-
-	[[nodiscard]] constexpr u64 fnv1a(const char* str_, const std::size_t count_) noexcept {
+	constexpr u64 operator ""_fnv1a(const char* str_, const std::size_t count_) noexcept {
 		return fnv1a_86(str_, count_);
 	}
 
@@ -41,6 +42,10 @@ namespace hg::hash {
 
 	[[nodiscard]] constexpr u64 fnv1a(cref<string> src_) noexcept {
 		return fnv1a_86(src_.data(), src_.length());
+	}
+
+	[[nodiscard]] constexpr u64 fnv1a(const std::span<char> src_) noexcept {
+		return fnv1a_86(src_.data(), src_.size());
 	}
 }
 

@@ -223,6 +223,7 @@ namespace hg::engine::gfx {
 		void updateBindingData();
 
 	public:
-		[[deprecated]] void enqueueBindingSync(const ptr<CommandQueue> queue_);
+		// TODO: Remove / Deprecated
+		void enqueueBindingSync(const ptr<CommandQueue> queue_);
 	};
 }

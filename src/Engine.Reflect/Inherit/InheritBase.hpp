@@ -7,10 +7,10 @@ namespace hg {
 		public ClassMetaBase {
 	public:
 		template <typename>
-		friend class InheritBase;
+		friend class ::hg::InheritBase;
 
 		template <typename, typename, typename...>
-		friend class InheritMeta;
+		friend class ::hg::InheritMeta;
 
 	public:
 		using this_type = InheritBase<Derived_>;
@@ -29,15 +29,13 @@ namespace hg {
 		using meta_class_ret_type = const __restricted_ptr<const meta_class<ThisType_>>;
 
 	public:
-		constexpr InheritBase() :
+		constexpr InheritBase() noexcept :
 			ClassMetaBase() {
 			ClassMetaBase::_meta = meta_class<>::get();
 		}
 
 	private:
-		// NOLINTBEGIN(*-const-return-type)
-		[[nodiscard]] constexpr const __restricted_ptr<const MetaClass> getMetaClassBase() const noexcept {
-			// NOLINTEND(*-const-return-type)
+		[[nodiscard]] constexpr std::add_const_t<__restricted_ptr<const MetaClass>> getMetaClassBase() const noexcept {
 			return ClassMetaBase::getMetaClass();
 		}
 

@@ -1,8 +1,8 @@
 #include <Engine.Common/Make.hpp>
-#include <Heliogrim/Actor.hpp>
-#include <Heliogrim/ActorComponent.hpp>
-#include <Engine.Reflow/Widget/Widget.hpp>
 #include <Engine.Reflow/Widget/Text.hpp>
+#include <Engine.Reflow/Widget/Widget.hpp>
+#include <Heliogrim/Actor/Actor.hpp>
+#include <Heliogrim/Component/HierarchyComponent.hpp>
 
 #include "HierarchyGenerator.hpp"
 #include "SceneViewEntry.hpp"
@@ -44,7 +44,7 @@ sptr<Widget> HierarchyGenerator<sptr<SceneViewEntry>>::operator()(
 
 	if (source_->type() == SceneViewEntryType::eComponent) {
 
-		const ptr<ActorComponent> comp { source_->target<ActorComponent>() };
+		const ptr<HierarchyComponent> comp { source_->target<HierarchyComponent>() };
 
 		auto txt = make_sptr<Text>();
 		theme->applyLabel(txt);

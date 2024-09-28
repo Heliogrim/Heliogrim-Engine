@@ -2,11 +2,12 @@
 
 #include <atomic>
 #include <concepts>
-#include <type_traits>
 #include <memory>
+#include <type_traits>
+#include <utility>
 
 #include "__fwd.hpp"
-
+#include "../Pair.hpp"
 #include "../Wrapper.hpp"
 #include "../Meta/Concept.hpp"
 
@@ -111,18 +112,18 @@ namespace hg {
 		}
 
 		template <typename Tx_ = Ty_>
-		const Tx_* const load() const noexcept {
+		std::add_const_t<const Tx_*> load() const noexcept {
 			return mem.load(std::memory_order::consume);
 		}
 
 		template <typename Tx_ = Ty_>
-		Tx_* const load() noexcept {
+		std::add_const_t<Tx_*> load() noexcept {
 			return mem.load(std::memory_order::consume);
 		}
 
 	public:
 		template <typename Tx_ = Ty_> requires std::is_same_v<Tx_, Ty_> && std::is_default_constructible_v<Tx_>
-		Tx_* const loadOrAllocate() {
+		std::add_const_t<Tx_*> loadOrAllocate() {
 
 			if (mem.load(std::memory_order_consume) == nullptr) {
 				allocate<>();
@@ -257,18 +258,18 @@ namespace hg {
 		}
 
 		template <typename Tx_ = Ty_>
-		constexpr Tx_* const load() const noexcept {
+		constexpr std::add_const_t<Tx_*> load() const noexcept {
 			return mem;
 		}
 
 		template <typename Tx_ = Ty_> requires (not std::is_const_v<Ty_>)
-		constexpr Tx_* const load() noexcept {
+		constexpr std::add_const_t<Tx_*> load() noexcept {
 			return mem;
 		}
 
 	public:
 		template <typename Tx_ = Ty_> requires std::is_same_v<Tx_, Ty_> && std::is_default_constructible_v<Tx_>
-		Tx_* const loadOrAllocate() {
+		std::add_const_t<Tx_*> loadOrAllocate() {
 
 			if (mem == nullptr) {
 				allocate<>();
@@ -333,7 +334,7 @@ namespace hg {
 		}
 
 		ref<this_type> operator=(::std::nullptr_t) {
-			storage.template exchange<::std::nullptr_t>(nullptr);
+			std::ignore = storage.template exchange<::std::nullptr_t>(nullptr);
 			return *this;
 		}
 
@@ -348,7 +349,7 @@ namespace hg {
 		template <typename... Args_> requires std::is_constructible_v<Ty_, Args_...>
 		[[nodiscard]] constexpr static this_type make(Args_&&... args_) {
 			this_type tmp {};
-			tmp.create(std::forward<Args_>(args_)...);
+			tmp.template create<Ty_, Args_...>(std::forward<Args_>(args_)...);
 			return tmp;
 		}
 
@@ -405,9 +406,9 @@ namespace hg {
 
 	public:
 		template <typename Ptx_ = Ty_*> requires std::is_nothrow_convertible_v<std::remove_cvref_t<Ptx_>, Ty_*>
-		[[nodiscard]] std::_Compressed_pair<allocator_type, Ty_*> exchange(Ptx_&& next_) {
-			return std::_Compressed_pair<allocator_type, Ty_*>(
-				std::_One_then_variadic_args_t {},
+		[[nodiscard]] CompressedPair<allocator_type, Ty_*> exchange(Ptx_&& next_) {
+			return CompressedPair<allocator_type, Ty_*>(
+				one_then_variadic_args_t {},
 				allocator_type {},
 				storage.exchange(std::forward<Ptx_>(next_))
 			);
@@ -530,14 +531,14 @@ namespace hg {
 		~NonOwningMemoryPointer() = default;
 
 	public:
-		ref<this_type> operator=(this_type&& other_) noexcept {
+		constexpr ref<this_type> operator=(this_type&& other_) noexcept {
 			if (std::addressof(other_) != this) {
 				storage = std::move(other_.storage);
 			}
 			return *this;
 		}
 
-		ref<this_type> operator=(const this_type& other_) noexcept {
+		constexpr ref<this_type> operator=(const this_type& other_) noexcept {
 			if (std::addressof(other_) != this) {
 				storage = other_.storage;
 			}
@@ -548,15 +549,15 @@ namespace hg {
 			typename Tx_ = Ty_,
 			typename AllocType_ = typename StorageType_::allocator_type,
 			typename StorageTx_ = StorageType_>
-		ref<this_type> operator=(cref<MemoryPointer<Tx_, AllocType_, StorageTx_>> mp_) {
+		constexpr ref<this_type> operator=(cref<MemoryPointer<Tx_, AllocType_, StorageTx_>> mp_) {
 			if (static_cast<const void*>(std::addressof(mp_)) != this) {
 				storage = mp_.storage;
 			}
 			return *this;
 		}
 
-		ref<this_type> operator=(::std::nullptr_t) noexcept {
-			storage.template exchange<::std::nullptr_t>(nullptr);
+		constexpr ref<this_type> operator=(::std::nullptr_t) noexcept {
+			std::ignore = storage.template exchange<::std::nullptr_t>(nullptr);
 			return *this;
 		}
 
@@ -590,11 +591,11 @@ namespace hg {
 			return *(storage.template load<Ty_>());
 		}
 
-		[[nodiscard]] auto get() const noexcept {
+		[[nodiscard]] constexpr auto get() const noexcept {
 			return storage.template load<Ty_>();
 		}
 
-		[[nodiscard]] auto get() noexcept {
+		[[nodiscard]] constexpr auto get() noexcept {
 			return storage.template load<Ty_>();
 		}
 
@@ -611,12 +612,12 @@ namespace hg {
 		}
 
 		template <typename Tx_ = Ty_> requires std::is_same_v<Tx_, Ty_>
-		[[nodiscard]] Tx_* const operator->() const noexcept {
+		[[nodiscard]] std::add_const_t<Tx_*> operator->() const noexcept {
 			return storage.template load<Ty_>();
 		}
 
 		template <typename Tx_ = Ty_> requires (not std::is_const_v<Ty_>) && std::is_same_v<Tx_, Ty_>
-		[[nodiscard]] Tx_* const operator->() noexcept {
+		[[nodiscard]] std::add_const_t<Tx_*> operator->() noexcept {
 			return storage.template load<Ty_>();
 		}
 

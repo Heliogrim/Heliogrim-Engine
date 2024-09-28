@@ -1,12 +1,12 @@
 #pragma once
 
+#include <Engine.Assets.Type/AssetConcept.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/DenseMap.hpp>
-#include <Engine.Assets/Types/AssetConcept.hpp>
 
-#include "../AssetRepository.hpp"
 #include "AssetRepositoryItem.hpp"
+#include "../AssetRepository.hpp"
 
 namespace hg::engine::assets::system {
 	class InMemAssetRepository :

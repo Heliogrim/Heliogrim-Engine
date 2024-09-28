@@ -1,21 +1,21 @@
 #pragma once
 
+#include <Engine.Assets.Type/Texture/Image.hpp>
+#include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 #include <Engine.Common/Concurrent/Future.hpp>
-#include <Engine.Assets/Types/Texture/TextureAsset.hpp>
-#include <Engine.Assets/Types/Image.hpp>
-#include <Engine.Resource/Importer/Importer.hpp>
 #include <Engine.Resource/File.hpp>
+#include <Engine.Resource/Importer/Importer.hpp>
 
 namespace hg::engine::gfx {
 	class KtxImporter :
 		public res::Importer<
-			std::pair<non_owning_rptr<assets::TextureAsset>, non_owning_rptr<assets::Image>>,
+			std::pair<Arci<assets::TextureAsset>, Arci<assets::Image>>,
 			ptr<void>
 		> {
 	public:
 		using this_type = KtxImporter;
 		using importer_type = res::Importer<
-			std::pair<non_owning_rptr<assets::TextureAsset>, non_owning_rptr<assets::Image>>,
+			std::pair<Arci<assets::TextureAsset>, Arci<assets::Image>>,
 			ptr<void>
 		>;
 

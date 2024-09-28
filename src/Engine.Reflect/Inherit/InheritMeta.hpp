@@ -16,10 +16,10 @@ namespace hg {
 		public Rest_... {
 	public:
 		template <typename>
-		friend class InheritBase;
+		friend class ::hg::InheritBase;
 
 		template <typename, typename, typename...>
-		friend class InheritMeta;
+		friend class ::hg::InheritMeta;
 
 	public:
 		using this_type = InheritMeta<Derived_, Base_, Rest_...>;
@@ -82,9 +82,7 @@ namespace hg {
 		}
 
 	private:
-		// NOLINTBEGIN(*-const-return-type)
-		[[nodiscard]] constexpr const __restricted_ptr<const MetaClass> getMetaClassBase() const noexcept {
-			// NOLINTEND(*-const-return-type)
+		[[nodiscard]] constexpr std::add_const_t<__restricted_ptr<const MetaClass>> getMetaClassBase() const noexcept {
 			return static_cast<const ptr<const Base_>>(this)->getMetaClassBase();
 		}
 
@@ -96,8 +94,8 @@ namespace hg {
 		 * @returns A pointer to the compile-time object.
 		 */
 		// NOLINTBEGIN(*-const-return-type)
-		template <typename DerivedType_ = Derived_>
-		[[nodiscard]] meta_class_ret_type<DerivedType_> getMetaClass() const noexcept {
+		template <CompleteType DerivedType_ = Derived_>
+		[[nodiscard]] constexpr meta_class_ret_type<DerivedType_> getMetaClass() const noexcept {
 			// NOLINTEND(*-const-return-type)
 			return static_cast<meta_class_ret_type<DerivedType_>>(getMetaClassBase());
 		}

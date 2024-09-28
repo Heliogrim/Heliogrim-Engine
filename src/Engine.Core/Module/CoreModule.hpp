@@ -8,7 +8,14 @@ namespace hg::engine {
 }
 
 namespace hg::engine::core {
-	class __declspec(novtable) CoreModule {
+	class CoreModule;
+
+	template <class Type_>
+	concept IsCoreModule = std::derived_from<Type_, CoreModule>;
+
+	/**/
+
+	class macro_novtable CoreModule {
 	public:
 		explicit constexpr CoreModule(ref<Engine> engine_) :
 			_engine(std::addressof(engine_)) {}

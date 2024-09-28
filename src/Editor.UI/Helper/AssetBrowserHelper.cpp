@@ -1,20 +1,10 @@
 #include "AssetBrowserHelper.hpp"
 
+#include <Editor.Assets.Default/Textures/Default.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Reflect/Cast.hpp>
-#include <Editor.Assets.Default/Textures/Brand.hpp>
-#include <Editor.Assets.Default/Textures/Directory.hpp>
-#include <Editor.Assets.Default/Textures/FolderAudio.hpp>
-#include <Editor.Assets.Default/Textures/FolderEnvironment.hpp>
-#include <Editor.Assets.Default/Textures/FolderFont.hpp>
-#include <Editor.Assets.Default/Textures/FolderImages.hpp>
-#include <Editor.Assets.Default/Textures/FolderImport.hpp>
-#include <Editor.Assets.Default/Textures/FolderLog.hpp>
-#include <Editor.Assets.Default/Textures/FolderResource.hpp>
-#include <Editor.Assets.Default/Textures/FolderShader.hpp>
-#include <Editor.Assets.Default/Textures/FolderVideo.hpp>
 
 using namespace hg::editor::ui;
 using namespace hg;
@@ -52,32 +42,17 @@ void AssetBrowserHelper::setup() {
 
 	/**/
 
-	auto asset = _assetRegistry->findAssetByGuid(game::assets::texture::Brand::unstable_auto_guid());
-	if (asset == nullptr) {
-		delete (new game::assets::texture::Brand());
-		asset = _assetRegistry->findAssetByGuid(game::assets::texture::Brand::unstable_auto_guid());
-	}
-
+	auto asset = assets::texture::get_default_brand();
 	_defaultTypeIcon = Cast<engine::assets::TextureAsset>(asset.get());
 
 	/**/
 
-	asset = _assetRegistry->findAssetByGuid(game::assets::texture::Directory::unstable_auto_guid());
-	if (asset == nullptr) {
-		delete (new game::assets::texture::Directory());
-		asset = _assetRegistry->findAssetByGuid(game::assets::texture::Directory::unstable_auto_guid());
-	}
-
+	asset = assets::texture::get_default_folder();
 	_directoryIcon = Cast<engine::assets::TextureAsset>(asset.get());
 
 	/**/
 
-	asset = _assetRegistry->findAssetByGuid(game::assets::texture::FolderAudio::unstable_auto_guid());
-	if (asset == nullptr) {
-		delete (new game::assets::texture::FolderAudio());
-		asset = _assetRegistry->findAssetByGuid(game::assets::texture::FolderAudio::unstable_auto_guid());
-	}
-
+	asset = assets::texture::get_default_folder_audio();
 	_directoryIcons.emplace_back("audio", Cast<engine::assets::TextureAsset>(asset.get()));
 	_directoryIcons.emplace_back("mp3", Cast<engine::assets::TextureAsset>(asset.get()));
 	_directoryIcons.emplace_back("ogg", Cast<engine::assets::TextureAsset>(asset.get()));
@@ -85,12 +60,7 @@ void AssetBrowserHelper::setup() {
 
 	/**/
 
-	asset = _assetRegistry->findAssetByGuid(game::assets::texture::FolderImages::unstable_auto_guid());
-	if (asset == nullptr) {
-		delete (new game::assets::texture::FolderImages());
-		asset = _assetRegistry->findAssetByGuid(game::assets::texture::FolderImages::unstable_auto_guid());
-	}
-
+	asset = assets::texture::get_default_folder_images();
 	_directoryIcons.emplace_back("image", Cast<engine::assets::TextureAsset>(asset.get()));
 	_directoryIcons.emplace_back("ktx", Cast<engine::assets::TextureAsset>(asset.get()));
 	_directoryIcons.emplace_back("png", Cast<engine::assets::TextureAsset>(asset.get()));
@@ -98,78 +68,43 @@ void AssetBrowserHelper::setup() {
 
 	/**/
 
-	asset = _assetRegistry->findAssetByGuid(game::assets::texture::FolderResource::unstable_auto_guid());
-	if (asset == nullptr) {
-		delete (new game::assets::texture::FolderResource());
-		asset = _assetRegistry->findAssetByGuid(game::assets::texture::FolderResource::unstable_auto_guid());
-	}
-
-	_directoryIcons.push_back(std::make_pair("resource", Cast<engine::assets::TextureAsset>(asset.get())));
+	asset = assets::texture::get_default_folder_resource();
+	_directoryIcons.emplace_back("resource", Cast<engine::assets::TextureAsset>(asset.get()));
 
 	/**/
 
-	asset = _assetRegistry->findAssetByGuid(game::assets::texture::FolderImport::unstable_auto_guid());
-	if (asset == nullptr) {
-		delete (new game::assets::texture::FolderImport());
-		asset = _assetRegistry->findAssetByGuid(game::assets::texture::FolderImport::unstable_auto_guid());
-	}
-
-	_directoryIcons.push_back(std::make_pair("import", Cast<engine::assets::TextureAsset>(asset.get())));
+	asset = assets::texture::get_default_folder_import();
+	_directoryIcons.emplace_back("import", Cast<engine::assets::TextureAsset>(asset.get()));
 
 	/**/
 
-	asset = _assetRegistry->findAssetByGuid(game::assets::texture::FolderShader::unstable_auto_guid());
-	if (asset == nullptr) {
-		delete (new game::assets::texture::FolderShader());
-		asset = _assetRegistry->findAssetByGuid(game::assets::texture::FolderShader::unstable_auto_guid());
-	}
-
-	_directoryIcons.push_back(std::make_pair("shader", Cast<engine::assets::TextureAsset>(asset.get())));
+	asset = assets::texture::get_default_folder_shader();
+	_directoryIcons.emplace_back("shader", Cast<engine::assets::TextureAsset>(asset.get()));
 
 	/**/
 
-	asset = _assetRegistry->findAssetByGuid(game::assets::texture::FolderLog::unstable_auto_guid());
-	if (asset == nullptr) {
-		delete (new game::assets::texture::FolderLog());
-		asset = _assetRegistry->findAssetByGuid(game::assets::texture::FolderLog::unstable_auto_guid());
-	}
-
-	_directoryIcons.push_back(std::make_pair("log", Cast<engine::assets::TextureAsset>(asset.get())));
+	asset = assets::texture::get_default_folder_log();
+	_directoryIcons.emplace_back("log", Cast<engine::assets::TextureAsset>(asset.get()));
 
 	/**/
 
-	asset = _assetRegistry->findAssetByGuid(game::assets::texture::FolderEnvironment::unstable_auto_guid());
-	if (asset == nullptr) {
-		delete (new game::assets::texture::FolderEnvironment());
-		asset = _assetRegistry->findAssetByGuid(game::assets::texture::FolderEnvironment::unstable_auto_guid());
-	}
-
+	asset = assets::texture::get_default_folder_environment();
 	_directoryIcons.emplace_back("env", Cast<engine::assets::TextureAsset>(asset.get()));
 	_directoryIcons.emplace_back("environment", Cast<engine::assets::TextureAsset>(asset.get()));
 	_directoryIcons.emplace_back("scene", Cast<engine::assets::TextureAsset>(asset.get()));
-	_directoryIcons.emplace_back("world", Cast<engine::assets::TextureAsset>(asset.get()));
+	_directoryIcons.emplace_back("universe", Cast<engine::assets::TextureAsset>(asset.get()));
 
 	_directoryIcons.emplace_back("fbx", Cast<engine::assets::TextureAsset>(asset.get()));
 	_directoryIcons.emplace_back("gltf", Cast<engine::assets::TextureAsset>(asset.get()));
 
 	/**/
 
-	asset = _assetRegistry->findAssetByGuid(game::assets::texture::FolderVideo::unstable_auto_guid());
-	if (asset == nullptr) {
-		delete (new game::assets::texture::FolderVideo());
-		asset = _assetRegistry->findAssetByGuid(game::assets::texture::FolderVideo::unstable_auto_guid());
-	}
-
+	asset = assets::texture::get_default_folder_video();
 	_directoryIcons.emplace_back("video", Cast<engine::assets::TextureAsset>(asset.get()));
 
 	/**/
 
-	asset = _assetRegistry->findAssetByGuid(game::assets::texture::FolderFont::unstable_auto_guid());
-	if (asset == nullptr) {
-		delete (new game::assets::texture::FolderFont());
-		asset = _assetRegistry->findAssetByGuid(game::assets::texture::FolderFont::unstable_auto_guid());
-	}
-
+	asset = assets::texture::get_default_folder_font();
 	_directoryIcons.emplace_back("font", Cast<engine::assets::TextureAsset>(asset.get()));
 }
 
@@ -215,12 +150,12 @@ ptr<engine::assets::TextureAsset> AssetBrowserHelper::getItemIconForDirectory(cr
 	return tex;
 }
 
-#include <Engine.Assets/Types/Font.hpp>
-#include <Engine.Assets/Types/Image.hpp>
-#include <Engine.Assets/Types/Geometry/StaticGeometry.hpp>
-#include <Engine.Assets/Types/Material/GfxMaterial.hpp>
-#include <Engine.Assets/Types/Material/GfxMaterialPrototype.hpp>
-#include <Engine.Assets/Types/Texture/TextureAsset.hpp>
+#include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
+#include <Engine.Assets.Type/Material/GfxMaterial.hpp>
+#include <Engine.Assets.Type/Material/GfxMaterialPrototype.hpp>
+#include <Engine.Assets.Type/Texture/Font.hpp>
+#include <Engine.Assets.Type/Texture/Image.hpp>
+#include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 
 string AssetBrowserHelper::getAssetTypeName(cref<asset_type_id> typeId_) const noexcept {
 

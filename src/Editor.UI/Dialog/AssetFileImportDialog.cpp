@@ -25,6 +25,7 @@
 #include <Engine.Reflow/Window/PopupLayer.hpp>
 #include <Engine.Reflow/Window/Window.hpp>
 #include <Heliogrim/Heliogrim.hpp>
+#include <Heliogrim/Async/Execute.hpp>
 
 #include "../Color/Dark.hpp"
 #include "../Modules/AssetBrowser.hpp"
@@ -325,7 +326,7 @@ static void configureTargetDomain(
 	const auto& dst { path_.path() };
 
 	std::string edst { dst };
-	edst.append(fs::Path::separator);
+	edst.append(static_cast<const char>(*fs::Path::separator_type::value), 1);
 	edst.append(filename);
 
 	targetInput->setPlaceholder(edst);
@@ -487,21 +488,19 @@ sptr<Dialog> AssetFileImportDialog::make(
 
 			IM_CORE_LOGF(
 				"Importing new asset from `{}` to `{}`.",
-				diag->_source.path().string(),
-				diag->_target.path().string()
+				static_cast<String>(diag->_source.path()),
+				static_cast<String>(diag->_target.path())
 			);
 
 			/**/
 			//testCreateAsset(diag->_source);
-			if (not ActionManager::get()) {
-				ActionManager::make();
-			}
 
 			const auto action { make_sptr<SimpleImportAction>(diag->_source, diag->_target) };
 
 			execute(
 				[action]() {
-					ActionManager::get()->apply(action);
+					const auto subModule = engine::Engine::getEngine()->getModules().getSubModule(ActionDepKey);
+					static_cast<ptr<ActionManager>>(subModule.get())->apply(action);
 
 					for (const auto& asset : action->importedAssets()) {
 						auto cpy = clone(asset);

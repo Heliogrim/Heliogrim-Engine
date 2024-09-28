@@ -2,6 +2,7 @@
 
 #include <ranges>
 #include <Engine.Accel.Pipeline/AccelerationPipeline.hpp>
+#include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.GFX/Graphics.hpp>
 #include <Engine.GFX/vkinc.hpp>
@@ -270,14 +271,14 @@ bool driver::vk::VkScopedResourceTable::allocateAndCommit(
 	);
 
 	if (result != ::vk::Result::eSuccess) {
-		__debugbreak();
+		::hg::breakpoint();
 		return false;
 	}
 
 	/* Store allocated descriptor for resource tracking */
 
 	auto& cms = *(_committedSets.begin() + poolIdx);
-	cms.insert_range(cms.end(), descriptorSets_);
+	cms.append_range(descriptorSets_);
 
 	/* Update allocated descriptors with stored resources */
 
@@ -417,14 +418,14 @@ bool driver::vk::VkScopedResourceTable::commit(
 	}
 
 	if (result != ::vk::Result::eSuccess) {
-		__debugbreak();
+		::hg::breakpoint();
 		return false;
 	}
 
 	/* Store allocated descriptor for resource tracking */
 
 	auto& cms = *(_committedSets.begin() + poolIdx);
-	cms.insert_range(cms.end(), descriptorSets_);
+	cms.append_range(descriptorSets_);
 
 	/* Update allocated descriptors with stored resources */
 

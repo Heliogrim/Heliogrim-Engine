@@ -1,12 +1,13 @@
 #include "EditorTextureTransformer.hpp"
 
+#include <utility>
 #include <Engine.Asserts/Todo.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets/Assets.hpp>
-#include <Engine.Assets/Types/Image.hpp>
+#include <Engine.Assets.Type/Texture/Image.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Reflect/Cast.hpp>
-#include <Heliogrim/ImageAsset.hpp>
+#include <Heliogrim/Asset/Texture/ImageAsset.hpp>
 
 using namespace ::hg::editor::gfx::loader;
 using namespace ::hg;

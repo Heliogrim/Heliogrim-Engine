@@ -1,4 +1,5 @@
 #pragma once
+
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.Event/Event.hpp>
@@ -26,11 +27,11 @@ namespace hg {
 			_In_ ref<engine::Graphics> graphics_
 		) noexcept;
 
-		GraphicRegisterImporterEvent(cref<this_type> other_) noexcept = default;
+		constexpr GraphicRegisterImporterEvent(cref<this_type> other_) noexcept = default;
 
-		GraphicRegisterImporterEvent(mref<this_type> other_) noexcept = default;
+		constexpr GraphicRegisterImporterEvent(mref<this_type> other_) noexcept = default;
 
-		~GraphicRegisterImporterEvent() noexcept override = default;
+		constexpr ~GraphicRegisterImporterEvent() noexcept override = default;
 
 	public:
 		[[nodiscard]] bool canceled() const noexcept override;

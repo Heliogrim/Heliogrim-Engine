@@ -2,10 +2,11 @@
 
 #include <memory>
 #include <stdexcept>
+#include <utility>
 
 #include "RefCounted.hpp"
-#include "../Memory/MemoryPointer.hpp"
 #include "../Wrapper.hpp"
+#include "../Memory/MemoryPointer.hpp"
 
 namespace hg {
 	template <typename Ty_>
@@ -13,7 +14,7 @@ namespace hg {
 
 	/**/
 
-	class __declspec(novtable) RefCountedBlockBase {
+	class macro_novtable RefCountedBlockBase {
 	public:
 		constexpr virtual ~RefCountedBlockBase() noexcept = default;
 
@@ -24,7 +25,7 @@ namespace hg {
 	class RefCountedBlock final :
 		public RefCountedBlockBase {
 	public:
-		friend class RefCounted<Ty_>;
+		friend class ::hg::RefCounted<Ty_>;
 
 	public:
 		using this_type = RefCountedBlock<Ty_>;
@@ -221,6 +222,7 @@ namespace hg {
 		void reset() {
 			_obj = nullptr;
 			dec_not_null();
+			_base = nullptr;
 		}
 
 		[[nodiscard]] typename block_type::storage_type release() noexcept {

@@ -1,7 +1,7 @@
 #include "EditorUI.hpp"
 #include "Module/EditorUI.hpp"
 
-#include <Editor.Assets.Default/Textures/Brand.hpp>
+#include <Editor.Assets.Default/Textures/Default.hpp>
 #include <Editor.Core/EditorEngine.hpp>
 #include <Editor.Main/Module/Editor.hpp>
 #include <Editor.UI/Helper/AssetBrowserHelper.hpp>
@@ -88,10 +88,10 @@ sptr<SceneHierarchy> editor::EditorUI::getSceneHierarchy() const noexcept {
 	return _sceneHierarchy;
 }
 
-#include <Editor.Assets.Default/Fonts/CascadiaCode.hpp>
-#include <Engine.Assets/Assets.hpp>
-#include <Engine.Assets/Types/Font.hpp>
+#include <Editor.Assets.Default/Fonts/Default.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
+#include <Engine.Assets/Assets.hpp>
+#include <Engine.Assets.Type/Texture/Font.hpp>
 #include <Engine.GFX.Loader/Font/FontLoader.hpp>
 #include <Engine.GFX.Loader/Font/FontLoadOptions.hpp>
 #include <Engine.GFX.Loader/Font/FontResource.hpp>
@@ -100,20 +100,15 @@ sptr<SceneHierarchy> editor::EditorUI::getSceneHierarchy() const noexcept {
 #include <Engine.Resource/ResourceManager.hpp>
 
 nmpt<engine::assets::Font> editor::EditorUI::getDefaultFont() const noexcept {
-	using default_font_type = ::hg::game::assets::font::CascadiaCode;
 
 	auto registry = _engine->getAssets()->getRegistry();
-	auto asset = registry->findAssetByGuid(default_font_type::unstable_auto_guid());
+	auto asset = registry->findAssetByGuid(assets::font::default_font_guid);
 
-	if (asset != nullptr) [[likely]] {
-		return Cast<engine::assets::Font>(asset.get());
-	}
+	::hg::assertrt(asset != nullptr);
 
 	/**/
 
-	delete(new default_font_type);
-	asset = registry->findAssetByGuid(default_font_type::unstable_auto_guid());
-
+	// Problem: We have to move the parametrized loading behaviour into the consumption position instead of preloading the stuff.
 	std::ignore = engine::Engine::getEngine()->getResources()->loader().load<
 		engine::assets::Font, engine::gfx::FontResource
 	>(
@@ -131,9 +126,7 @@ nmpt<engine::assets::Font> editor::EditorUI::getDefaultFont() const noexcept {
 smr<::hg::engine::gfx::TextureResource> editor::EditorUI::getPlaceholderImage() const noexcept {
 
 	if (placeholderHolder.empty()) {
-		const auto asset = _engine->getAssets()->getRegistry()->findAssetByGuid(
-			game::assets::texture::Brand::unstable_auto_guid()
-		);
+		const auto asset = assets::texture::get_default_brand();
 		::hg::assertrt(asset != nullptr);
 
 		auto* request = Cast<engine::assets::TextureAsset>(asset.get());

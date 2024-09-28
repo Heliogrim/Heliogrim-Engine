@@ -2,19 +2,31 @@
 
 #include <concepts>
 #include <variant>
+#include <Engine.Asserts/Asserts.hpp>
 
+#include "Forward.hpp"
+#include "Move.hpp"
 #include "Sal.hpp"
 #include "Wrapper.hpp"
-#include "Engine.Asserts/Asserts.hpp"
 #include "Meta/IsAnyOf.hpp"
 
 namespace hg {
+	/**/
+
+	template <class... Types_>
+	class Variant;
+
 	/**/
 
 	template <typename Callable_, class... TestTypes_>
 	concept InvocableWithAll = std::conjunction_v<std::is_invocable<Callable_, TestTypes_>...>;
 
 	namespace {
+		template <typename WorkType_, typename... Types_>
+		concept IsVariantWorkType = (not std::is_void_v<WorkType_>) && std::conjunction_v<
+			std::is_nothrow_convertible<ptr<Types_>, ptr<WorkType_>>...
+		>;
+
 		template <typename... Types_>
 		concept HasCommonType = requires {
 			typename std::common_reference<Types_...>::type;
@@ -32,7 +44,48 @@ namespace hg {
 		struct CommonTypeHelper<false, Types_...> {
 			using type = std::void_t<Types_...>;
 		};
+
+		template <class... Types_>
+		using VariantMaybeCommon = typename CommonTypeHelper<HasCommonType<Types_...>, Types_...>::type;
+
+		template <typename Type_, typename Super_>
+		struct SuperSetTypeHelper;
+
+		template <class TypeSet0_, class... TypeSet_, class SuperSet0_, class... SuperSet_>
+		struct SuperSetTypeHelper<Variant<TypeSet0_, TypeSet_...>, Variant<SuperSet0_, SuperSet_...>> {
+			using next = SuperSetTypeHelper<Variant<TypeSet_...>, Variant<SuperSet_...>>;
+			using type = std::conditional_t<
+				std::is_same_v<TypeSet0_, SuperSet0_>,
+				typename next::type,
+				std::false_type
+			>;
+		};
+
+		template <class TypeSet0_, class... TypeSet_>
+		struct SuperSetTypeHelper<Variant<TypeSet0_, TypeSet_...>, Variant<>> {
+			using type = std::false_type;
+		};
+
+		template <class SuperSet0_, class... SuperSet_>
+		struct SuperSetTypeHelper<Variant<>, Variant<SuperSet0_, SuperSet_...>> {
+			using type = std::true_type;
+		};
+
+		template <>
+		struct SuperSetTypeHelper<Variant<>, Variant<>> {
+			using type = std::false_type;
+		};
+
+		template <class Type_, class Super_>
+		concept IsSuperTypeSet = requires {
+			typename SuperSetTypeHelper<Type_, Super_>::type;
+		} && SuperSetTypeHelper<Type_, Super_>::type::value;
 	}
+
+	/**/
+
+	template <class VariantType_, class ArgType_> requires IsSuperTypeSet<ArgType_, VariantType_>
+	[[nodiscard]] constexpr decltype(auto) variant_cast(ArgType_&& arg_);
 
 	/**/
 
@@ -46,10 +99,15 @@ namespace hg {
 	public:
 		using underlying_type::underlying_type;
 
+	public:
+		template <class... TypeSubSet_>
+		constexpr explicit Variant(mref<Variant<TypeSubSet_...>> subset_) :
+			underlying_type(variant_cast<this_type>(::hg::move(subset_))) {}
+
 	private:
 		template <class Ret_, class Type_, class Next_, class... Rest_>
 		[[nodiscard]] constexpr ptr<Ret_> shared_type_pointer_impl() const noexcept {
-			if (std::holds_alternative<Type_>(*this)) {
+			if (std::holds_alternative<Type_, Types_...>(*this)) {
 				return std::addressof(this->as<Type_>());
 			}
 			return shared_type_pointer_impl<Ret_, Next_, Rest_...>();
@@ -57,7 +115,7 @@ namespace hg {
 
 		template <class Ret_, class Type_, class Next_, class... Rest_>
 		[[nodiscard]] constexpr ptr<Ret_> shared_type_pointer_impl() noexcept {
-			if (std::holds_alternative<Type_>(*this)) {
+			if (std::holds_alternative<Type_, Types_...>(*this)) {
 				return std::addressof(this->as<Type_>());
 			}
 			return shared_type_pointer_impl<Ret_, Next_, Rest_...>();
@@ -65,7 +123,7 @@ namespace hg {
 
 		template <class Ret_, class Type_>
 		[[nodiscard]] constexpr ptr<Ret_> shared_type_pointer_impl() const noexcept {
-			if (std::holds_alternative<Type_>(*this)) {
+			if (std::holds_alternative<Type_, Types_...>(*this)) {
 				return std::addressof(this->as<Type_>());
 			}
 			return nullptr;
@@ -73,7 +131,7 @@ namespace hg {
 
 		template <class Ret_, class Type_>
 		[[nodiscard]] constexpr ptr<Ret_> shared_type_pointer_impl() noexcept {
-			if (std::holds_alternative<Type_>(*this)) {
+			if (std::holds_alternative<Type_, Types_...>(*this)) {
 				return std::addressof(this->as<Type_>());
 			}
 			return nullptr;
@@ -128,22 +186,6 @@ namespace hg {
 		}
 
 	protected:
-		template <typename Callable_, class CommonType_ = CommonTypeHelper<HasCommonType<Types_...>, Types_...>>
-			requires HasCommonType<Types_...> &&
-			std::is_invocable_v<std::remove_cvref_t<Callable_>, ref<CommonType_>>
-		constexpr decltype(auto) invoke_from_shared_type(Callable_&& callable_) const noexcept {
-			::hg::assertrt(not this->valueless_by_exception());
-			return std::forward<Callable_>(callable_)(*this->shared_type_pointer());
-		}
-
-		template <typename Callable_, class CommonType_ = CommonTypeHelper<HasCommonType<Types_...>, Types_...>>
-			requires HasCommonType<Types_...> &&
-			std::is_invocable_v<std::remove_cvref_t<Callable_>, ref<CommonType_>>
-		constexpr decltype(auto) invoke_from_shared_type(Callable_&& callable_) noexcept {
-			::hg::assertrt(not this->valueless_by_exception());
-			return std::forward<Callable_>(callable_)(*this->shared_type_pointer());
-		}
-
 		template <typename Callable_> requires InvocableWithAll<std::remove_cvref_t<Callable_>, ref<Types_>...>
 		constexpr decltype(auto) invoke_from_shared_type(Callable_&& callable_) const noexcept {
 			::hg::assertrt(not this->valueless_by_exception());
@@ -154,6 +196,24 @@ namespace hg {
 		constexpr decltype(auto) invoke_from_shared_type(Callable_&& callable_) noexcept {
 			::hg::assertrt(not this->valueless_by_exception());
 			return invoke_from_shared_type_impl<Callable_, Types_...>(std::forward<Callable_>(callable_));
+		}
+
+		template <typename Callable_, class CommonType_ = VariantMaybeCommon<Types_...>>
+			requires (not InvocableWithAll<std::remove_cvref_t<Callable_>, ref<Types_>...>) &&
+			IsVariantWorkType<CommonType_, Types_...> &&
+			std::is_invocable_v<std::remove_cvref_t<Callable_>, ref<CommonType_>>
+		constexpr decltype(auto) invoke_from_shared_type(Callable_&& callable_) const noexcept {
+			::hg::assertrt(not this->valueless_by_exception());
+			return std::forward<Callable_>(callable_)(*this->shared_type_pointer());
+		}
+
+		template <typename Callable_, class CommonType_ = VariantMaybeCommon<Types_...>>
+			requires (not InvocableWithAll<std::remove_cvref_t<Callable_>, ref<Types_>...>) &&
+			IsVariantWorkType<CommonType_, Types_...> &&
+			std::is_invocable_v<std::remove_cvref_t<Callable_>, ref<CommonType_>>
+		constexpr decltype(auto) invoke_from_shared_type(Callable_&& callable_) noexcept {
+			::hg::assertrt(not this->valueless_by_exception());
+			return std::forward<Callable_>(callable_)(*this->shared_type_pointer());
 		}
 
 	public:
@@ -188,16 +248,39 @@ namespace hg {
 			return invoke_from_shared_type(std::forward<Callable_>(callable_));
 		}
 
-		template <class CommonType_ = CommonTypeHelper<HasCommonType<Types_...>, Types_...>>
-			requires (not std::is_void_v<typename CommonType_::type>)
-		[[nodiscard]] ptr<std::add_const_t<typename CommonType_::type>> operator ->() const noexcept {
+		template <class CommonType_ = VariantMaybeCommon<Types_...>>
+			requires IsVariantWorkType<CommonType_, Types_...>
+		[[nodiscard]] ptr<std::add_const_t<CommonType_>> operator ->() const noexcept {
 			return (this->valueless_by_exception()) ? nullptr : this->shared_type_pointer();
 		}
 
-		template <class CommonType_ = CommonTypeHelper<HasCommonType<Types_...>, Types_...>>
-			requires (not std::is_void_v<typename CommonType_::type>)
-		[[nodiscard]] ptr<typename CommonType_::type> operator ->() noexcept {
+		template <class CommonType_ = VariantMaybeCommon<Types_...>>
+			requires IsVariantWorkType<CommonType_, Types_...>
+		[[nodiscard]] ptr<CommonType_> operator ->() noexcept {
 			return (this->valueless_by_exception()) ? nullptr : this->shared_type_pointer();
 		}
 	};
+
+	/**/
+
+	template <class VariantType_, class SourceType_> requires IsSuperTypeSet<SourceType_, VariantType_>
+	[[nodiscard]] constexpr decltype(auto) variant_cast(SourceType_&& arg_) {
+		using source_type = std::remove_cvref_t<SourceType_>;
+
+		if (arg_.valueless_by_exception()) {
+			throw std::bad_variant_access();
+		}
+
+		if constexpr (sizeof(VariantType_) == sizeof(source_type) && alignof(VariantType_) == alignof(source_type)) {
+			return *reinterpret_cast<VariantType_*>(std::addressof(arg_));
+
+		} else {
+			return ::std::visit(
+				[](auto&& val_) -> VariantType_ {
+					return std::forward<decltype(val_)>(val_);
+				},
+				::hg::forward<SourceType_>(arg_)
+			);
+		}
+	}
 }

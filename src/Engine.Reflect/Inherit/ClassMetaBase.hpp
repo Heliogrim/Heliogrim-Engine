@@ -4,16 +4,27 @@
 #include "Compile.hpp"
 
 namespace hg {
-	class __declspec(novtable) ClassMetaBase {
+	template <typename>
+	class InheritBase;
+
+	template <typename, typename, typename...>
+	class InheritMeta;
+
+	template <typename>
+	struct lookup;
+}
+
+namespace hg {
+	class macro_novtable ClassMetaBase {
 	public:
 		template <typename>
-		friend class InheritBase;
+		friend class ::hg::InheritBase;
 
 		template <typename, typename, typename...>
-		friend class InheritMeta;
+		friend class ::hg::InheritMeta;
 
 		template <typename>
-		friend struct lookup;
+		friend struct ::hg::lookup;
 
 		constexpr static const char* name = "ClassMetaBase";
 
@@ -25,16 +36,23 @@ namespace hg {
 	public:
 		constexpr ClassMetaBase() noexcept = default;
 
+		constexpr ClassMetaBase(cref<this_type>) noexcept = default;
+
+		constexpr ClassMetaBase(mref<this_type>) noexcept = default;
+
+		constexpr virtual ~ClassMetaBase() noexcept = default;
+
+	public:
+		constexpr ref<this_type> operator=(cref<this_type>) noexcept = default;
+
+		constexpr ref<this_type> operator=(mref<this_type>) noexcept = default;
+
 	private:
 		__restricted_ptr<const class MetaClass> _meta = nullptr;
 
 	public:
-		// NOLINTBEGIN(*-const-return-type)
-		// ReSharper disable once CppConstValueFunctionReturnType
-		[[nodiscard]] const __restricted_ptr<const class MetaClass> getMetaClass() const noexcept {
+		[[nodiscard]] std::add_const_t<__restricted_ptr<const class MetaClass>> getMetaClass() const noexcept {
 			return _meta;
 		}
-
-		// NOLINTEND(*-const-return-type)
 	};
 }

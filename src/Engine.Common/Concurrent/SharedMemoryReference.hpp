@@ -7,6 +7,7 @@
 #include <type_traits>
 #include <utility>
 #include <Engine.Asserts/Asserts.hpp>
+#include <Engine.Common/Meta/Type.hpp>
 
 #include "../Cast.hpp"
 #include "../Sal.hpp"
@@ -46,7 +47,7 @@ namespace hg {
 	class SharedMemoryReference final {
 	public:
 		template <typename Ux_>
-		friend class SharedMemoryReference;
+		friend class ::hg::SharedMemoryReference;
 
 	public:
 		using this_type = SharedMemoryReference<PayloadType_>;
@@ -113,7 +114,15 @@ namespace hg {
 		}
 
 	public:
-		ref<this_type> operator=(cref<this_type>) = delete;
+		ref<this_type> operator=(_In_ cref<this_type> other_) {
+			if (std::addressof(other_) != this) {
+				reset();
+				if (not other_.empty()) {
+					*this = static_cast<this_type&&>(other_._ctrlBlock->acq());
+				}
+			}
+			return *this;
+		}
 
 		ref<this_type> operator=(_Inout_ mref<this_type> other_) noexcept {
 			if (std::addressof(other_) != this) {
@@ -165,7 +174,7 @@ namespace hg {
 		 * @returns The counts of references.
 		 */
 		[[nodiscard]] std::uint16_t refs() const noexcept {
-			return _packed;
+			return static_cast<std::uint16_t>(_packed);
 		}
 
 		/**
@@ -306,9 +315,12 @@ namespace hg {
 		using smr_type = SharedMemoryReference<vty>;
 
 	public:
+		template <typename Type_ = vty> requires std::is_same_v<Type_, vty>
 		constexpr SharedMemoryReferenceCtrlBlock() noexcept :
 			VirtualBase(),
-			_packed(0) {}
+			_packed(0) {
+			static_assert(CompleteType<Type_>, "Prevent handling of incomplete types.");
+		}
 
 		template <typename Type_ = vty> requires std::is_same_v<Type_, vty>
 		SharedMemoryReferenceCtrlBlock(_In_ mref<ptr<Type_>> payload_) :
@@ -357,6 +369,8 @@ namespace hg {
 			delete this;
 		}
 
+		START_SUPPRESS_WARNINGS
+
 		void destroy(mref<ptr<void>> obj_) override {
 			if constexpr (std::is_void_v<std::decay_t<ivty>>) {
 				std::unreachable();
@@ -364,6 +378,8 @@ namespace hg {
 				delete static_cast<ptr<ivty>>(obj_);
 			}
 		}
+
+		STOP_SUPPRESS_WARNINGS
 
 		[[nodiscard]] constexpr ptr<VirtualBase> vdb() noexcept {
 			return this;

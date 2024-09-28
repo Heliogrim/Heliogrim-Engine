@@ -10,9 +10,9 @@ Session HeliogrimEditor::getEditorSession() noexcept {
 		static_cast<ptr<EditorEngine>>(Heliogrim::_engine.get())->getEditorSession()
 	};
 
-	managed<void> dummy {};
+	SharedPtr<void> dummy {};
 	return Session {
-		managed<void> { std::move(dummy), session.get() }
+		SharedPtr<::hg::engine::core::Session> { std::move(dummy), session.get() }
 	};
 }
 
@@ -21,9 +21,9 @@ Session HeliogrimEditor::getSession() {
 		static_cast<ptr<EditorEngine>>(Heliogrim::_engine.get())->getPrimaryGameSession()
 	};
 
-	managed<void> dummy {};
+	SharedPtr<void> dummy {};
 	return Session {
-		managed<void> { std::move(dummy), session.get() }
+		SharedPtr<::hg::engine::core::Session> { std::move(dummy), session.get() }
 	};
 }
 

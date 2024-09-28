@@ -1,44 +1,53 @@
 #pragma once
+
+#include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Core/Module/SubModule.hpp>
 
 #include "Action/Action.hpp"
 #include "Log/__fwd.hpp"
 
 namespace hg::editor {
-    class ActionManager {
-    public:
-        using this_type = ActionManager;
+	constexpr static engine::core::DependencyKey ActionDepKey = { "::hg::editor::ActionManager"sv };
 
-    public:
-        [[nodiscard]] static const ptr<ActionManager> get();
+	/**/
 
-        static const ptr<this_type> make();
+	class ActionManager :
+		public engine::core::SubModule {
+	public:
+		using this_type = ActionManager;
 
-        static void destroy();
+	public:
+		explicit ActionManager(_In_ ref<engine::Engine> engine_);
 
-    protected:
-        /**
-         * Singleton Instance
-         */
-        static ptr<this_type> _instance;
+		~ActionManager() override;
 
-        ActionManager();
+	private:
+		CompactSet<engine::core::SubModuleDependency> _deps;
 
-    public:
-        ~ActionManager();
+	public:
+		[[nodiscard]] engine::core::DependencyKey moduleKey() const noexcept override;
 
-    private:
-        void tidy();
+		[[nodiscard]] cref<CompactSet<engine::core::SubModuleDependency>> dependencies() const noexcept override;
 
-    private:
-        ptr<ActionLog> _log;
-        ptr<ActionDispatcher> _dispatcher;
+	public:
+		void setup() override;
 
-    public:
-        void apply(cref<sptr<Action>> action_) const;
+		void start() override;
 
-        void revert() const;
+		void stop() override;
 
-        void reapply() const;
-    };
+		void destroy() override;
+
+	private:
+		uptr<ActionLog> _log;
+		uptr<ActionDispatcher> _dispatcher;
+
+	public:
+		void apply(cref<sptr<Action>> action_) const;
+
+		void revert() const;
+
+		void reapply() const;
+	};
 }

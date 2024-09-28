@@ -1,31 +1,31 @@
 #pragma once
 
+#include <memory>
 #include <Engine.ACS/Registry.hpp>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Core/Session.hpp>
-#include <Engine.Core/SessionState.hpp>
 
-#include "Actor.hpp"
-#include "ActorComponent.hpp"
-#include "CachedActorPointer.hpp"
+#include "Actor/Actor.hpp"
+#include "Component/CachedActorPointer.hpp"
+#include "Component/HierarchyComponent.hpp"
 
 namespace hg {
 	/**
 	 * Forward Declaration
 	 */
-	class ActorComponent;
+	class HierarchyComponent;
+	class Session;
 
 	class ActorInitializer {
 	public:
-		friend class Session;
+		friend class ::hg::Session;
 
 	public:
 		using this_type = ActorInitializer;
 
 	protected:
 	public:
-		ActorInitializer(cref<managed<void>> internal_) :
-			_internal(internal_) {}
+		explicit ActorInitializer(ref<::hg::engine::acs::Registry> internal_) :
+			_internal(std::addressof(internal_)) {}
 
 	public:
 		~ActorInitializer() noexcept = default;
@@ -34,29 +34,20 @@ namespace hg {
 		/**
 		 *
 		 */
-		managed<void> _internal;
-
-	protected:
-		// Warning: Temporary Solution
-		[[nodiscard]] cref<engine::core::Session> getCoreSession() const noexcept {
-			return *static_cast<const ptr<const engine::core::Session>>(_internal.get());
-		}
+		nmpt<::hg::engine::acs::Registry> _internal;
 
 	private:
 	public:
-		actor_guid _guid = invalid_actor_guid;
+		ActorGuid _guid = invalid_actor_guid;
 
 	public:
-		template <std::derived_from<ActorComponent> Component>
-		ptr<Component> createComponent(_Inout_ const ptr<Actor> actor_) const {
+		template <std::derived_from<HierarchyComponent> Component_>
+		ptr<Component_> createComponent(_Inout_ const ptr<Actor> actor_) const {
 
-			/**/
-			auto& registry { getCoreSession().getState().getRegistry() };
-
-			auto* component = registry.acquireActorComponent<
-				Component,
+			auto* component = _internal->acquireActorComponent<
+				Component_,
 				CachedActorPointer,
-				ptr<ActorComponent>
+				ptr<HierarchyComponent>
 			>(actor_->guid(), { actor_->guid(), actor_ }, nullptr);
 			assert(component != nullptr && "Failed to ensure successful created component.");
 
@@ -72,22 +63,22 @@ namespace hg {
 			return component;
 		}
 
-		template <std::derived_from<ActorComponent> Component>
-		ptr<Component> createSubComponent(_Inout_ const ptr<Actor> actor_, ptr<ActorComponent> parent_) const {
-
-			/**/
-			auto& registry { getCoreSession().getState().getRegistry() };
+		template <std::derived_from<HierarchyComponent> Component_>
+		ptr<Component_> createSubComponent(
+			_Inout_ const ptr<Actor> actor_,
+			_In_ ptr<HierarchyComponent> parent_
+		) const {
 
 			auto* actor { actor_ ? actor_ : parent_->getOwner() };
 
-			auto* component = registry.acquireActorComponent<
-				Component,
+			auto* component = _internal->acquireActorComponent<
+				Component_,
 				CachedActorPointer,
-				ptr<ActorComponent>
+				ptr<HierarchyComponent>
 			>(
 				actor->guid(),
 				CachedActorPointer { actor_->guid(), actor },
-				ptr<ActorComponent> { parent_ }
+				ptr<HierarchyComponent> { parent_ }
 			);
 			assert(component != nullptr && "Failed to ensure successful created component.");
 

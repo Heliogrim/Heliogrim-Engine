@@ -1,5 +1,7 @@
 #pragma once
+
 #include <Engine.Common/Sal.hpp>
+#include <Engine.Core/Module/RootModule.hpp>
 
 #include "Task/Task.hpp"
 
@@ -9,7 +11,8 @@ namespace hg::engine::scheduler {
 }
 
 namespace hg::engine {
-	class __declspec(novtable) Scheduler {
+	class macro_novtable Scheduler :
+		public core::RootModule {
 	public:
 		using task_type = ::hg::engine::scheduler::task::TaskDelegate;
 		using task_handle_type = non_owning_rptr<const task_type>;

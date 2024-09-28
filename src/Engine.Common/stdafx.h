@@ -2,16 +2,23 @@
 
 #include "__macro.hpp"
 
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <stdexcept>
-#include <stddef.h>
 #include <type_traits>
 
 #include <cassert>
 
 #if _WIN32 || _WIN64
+#ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
+#endif
+
+#ifndef STRICT
+#define STRICT
+#endif
+
 #include <Windows.h>
 #include <windowsx.h>
 #endif
@@ -29,17 +36,3 @@ using size64_t = uint64_t;
 
 // Time
 #include <ctime>
-
-/**
- * Graphic includes
- */
-#if defined(__ANDROID__)
-#define VK_USE_PLATFORM_ANDROID_KHR
-#elif defined(__linux__)
-#define VK_USE_PLATFORM_XLIB_KHR
-#elif defined(_WIN32)
-#define VK_USE_PLATFORM_WIN32_KHR
-#endif
-/**
- *
- */

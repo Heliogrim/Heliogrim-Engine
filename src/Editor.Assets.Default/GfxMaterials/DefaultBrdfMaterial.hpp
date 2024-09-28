@@ -1,5 +1,7 @@
 #pragma once
-#include <Heliogrim/GfxMaterialAsset.hpp>
+
+#include <Heliogrim/AssetAutoGuid.hpp>
+#include <Heliogrim/Asset/Material/GfxMaterialAsset.hpp>
 
 namespace hg::game::assets::material {
 	class DefaultBrdfMaterial :

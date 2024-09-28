@@ -1,72 +1,76 @@
 #pragma once
 
-#include "StructureSlot.hpp"
 #include "ScopedSlotState.hpp"
+#include "StructureSlot.hpp"
 
 namespace hg::engine::serialization {
-    class __declspec(novtable) ScopedSlot {
-    public:
-        using this_type = ScopedSlot;
+	class macro_novtable ScopedSlot {
+	public:
+		using this_type = ScopedSlot;
 
-        using slot_type = StructureSlotBase;
+		using slot_type = StructureSlotBase;
 
-    protected:
-        ScopedSlot(
-            mref<ScopedSlotState> state_,
-            mref<sptr<StructureSlotBase>> slot_
-        );
+	protected:
+		ScopedSlot(
+			mref<ScopedSlotState> state_,
+			mref<sptr<StructureSlotBase>> slot_
+		);
 
-    public:
-        virtual ~ScopedSlot();
+		ScopedSlot(cref<this_type>) = default;
 
-    protected:
-        mutable ScopedSlotState _state;
+		ScopedSlot(mref<this_type>) noexcept = default;
 
-    public:
-        [[nodiscard]] cref<ScopedSlotState> getScopedState() const noexcept;
+	public:
+		virtual ~ScopedSlot() = default;
 
-        [[nodiscard]] ref<ScopedSlotState> getScopedState() noexcept;
+	protected:
+		mutable ScopedSlotState _state;
 
-    protected:
-        mutable sptr<StructureSlotBase> _slot;
+	public:
+		[[nodiscard]] cref<ScopedSlotState> getScopedState() const noexcept;
 
-    public:
-        // ReSharper disable once CppHiddenFunction
-        [[nodiscard]] const non_owning_rptr<StructureSlotBase> slot() const noexcept;
+		[[nodiscard]] ref<ScopedSlotState> getScopedState() noexcept;
 
-    public:
-        void enterSlot() const;
+	protected:
+		mutable sptr<StructureSlotBase> _slot;
 
-        void leaveSlot() const;
-    };
+	public:
+		// ReSharper disable once CppHiddenFunction
+		[[nodiscard]] const non_owning_rptr<StructureSlotBase> slot() const noexcept;
 
-    template <typename ValueType_>
-    class __declspec(novtable) TypeScopedSlot :
-        public ScopedSlot {
-    public:
-        using this_type = TypeScopedSlot<ValueType_>;
+	public:
+		void enterSlot() const;
 
-        using slot_type = TypedStructureSlotBase<ValueType_>;
-        using value_type = typename slot_type::value_type;
+		void leaveSlot() const;
+	};
 
-    protected:
-        TypeScopedSlot(
-            mref<ScopedSlotState> state_,
-            mref<sptr<StructureSlotBase>> slot_
-        ) :
-            ScopedSlot(std::move(state_), std::move(slot_)) {}
+	template <typename ValueType_>
+	class macro_novtable TypeScopedSlot :
+		public ScopedSlot {
+	public:
+		using this_type = TypeScopedSlot<ValueType_>;
 
-    public:
-        ~TypeScopedSlot() override = default;
+		using slot_type = TypedStructureSlotBase<ValueType_>;
+		using value_type = typename slot_type::value_type;
 
-    public:
-        [[nodiscard]] const non_owning_rptr<slot_type> slot() const noexcept {
-            return static_cast<const non_owning_rptr<slot_type>>(ScopedSlot::slot());
-        }
+	protected:
+		TypeScopedSlot(
+			mref<ScopedSlotState> state_,
+			mref<sptr<StructureSlotBase>> slot_
+		) :
+			ScopedSlot(std::move(state_), std::move(slot_)) {}
 
-    public:
-        virtual void operator<<(cref<value_type> value_) = 0;
+	public:
+		~TypeScopedSlot() override = default;
 
-        virtual void operator>>(ref<value_type> value_) const = 0;
-    };
+	public:
+		[[nodiscard]] const non_owning_rptr<slot_type> slot() const noexcept {
+			return static_cast<const non_owning_rptr<slot_type>>(ScopedSlot::slot());
+		}
+
+	public:
+		virtual void operator<<(cref<value_type> value_) = 0;
+
+		virtual void operator>>(ref<value_type> value_) const = 0;
+	};
 }

@@ -12,51 +12,51 @@
 #include "FontResource.hpp"
 
 namespace hg::engine::resource::loader {
-    using namespace ::hg::engine::gfx::loader;
+	using namespace ::hg::engine::gfx::loader;
 
-    template <>
-    struct resource::loader::RequestOptions<LoaderRequest<assets::Font>> {
-        using type = FontLoadOptions;
-    };
+	template <>
+	struct RequestOptions<LoaderRequest<assets::Font>> {
+		using type = FontLoadOptions;
+	};
 }
 
 namespace hg::engine::resource::loader {
-    using namespace ::hg::engine::gfx::loader;
+	using namespace ::hg::engine::gfx::loader;
 
-    template <>
-    struct resource::loader::RequestOptions<CacheRequest<assets::Font>> {
-        using type = FontLoadOptions;
-    };
+	template <>
+	struct RequestOptions<CacheRequest<assets::Font>> {
+		using type = FontLoadOptions;
+	};
 }
 
 namespace hg::engine::resource::loader {
-    using namespace ::hg::engine::gfx::loader;
+	using namespace ::hg::engine::gfx::loader;
 
-    template <>
-    struct resource::loader::RequestOptions<FeedbackRequest<assets::Font>> {
-        using type = FontLoadOptions;
-    };
+	template <>
+	struct RequestOptions<FeedbackRequest<assets::Font>> {
+		using type = FontLoadOptions;
+	};
 }
 
 namespace hg::engine::resource::loader {
-    using namespace ::hg::engine::gfx::loader;
+	using namespace ::hg::engine::gfx::loader;
 
-    template <>
-    struct RequestOptions<SourceLoaderRequest<assets::Font>> {
-        using type = RequestOptions<SourceLoaderRequest<void>>::type;
-    };
+	template <>
+	struct RequestOptions<SourceLoaderRequest<assets::Font>> {
+		using type = RequestOptions<SourceLoaderRequest<void>>::type;
+	};
 
-    template <>
-    struct StreamOptions<SourceLoaderStreamRequest<assets::Font>> {
-        using type = StreamOptions<SourceLoaderStreamRequest<void>>::type;
-    };
+	template <>
+	struct StreamOptions<SourceLoaderStreamRequest<assets::Font>> {
+		using type = StreamOptions<SourceLoaderStreamRequest<void>>::type;
+	};
 }
 
 namespace hg::engine::resource::loader {
-    using namespace ::hg::engine::gfx::loader;
+	using namespace ::hg::engine::gfx::loader;
 
-    template <>
-    struct RequestOptions<TransformerRequest<assets::Font>> {
-        using type = FontLoadOptions;
-    };
+	template <>
+	struct RequestOptions<TransformerRequest<assets::Font>> {
+		using type = FontLoadOptions;
+	};
 }

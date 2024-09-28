@@ -1,6 +1,8 @@
 #include "Modules.hpp"
 
 #include <algorithm>
+#include <ranges>
+#include <Engine.Asserts/Asserts.hpp>
 
 #include "CoreDependencies.hpp"
 #include "SubModule.hpp"
@@ -9,36 +11,110 @@
 using namespace hg::engine::core;
 using namespace hg;
 
-Modules::Modules() :
-	_subModules(),
-	_coreModules(
-		{
-			PlatformDepKey,
-			ResourcesDepKey,
-			SchedulerDepKey,
-			/**/
-			AssetsDepKey,
-			AudioDepKey,
-			GraphicsDepKey,
-			InputDepKey,
-			NetworkDepKey,
-			PhysicsDepKey
-		}
-	) {}
-
 Modules::~Modules() = default;
 
 bool Modules::validateDependency(cref<SubModuleDependency> dependency_) const noexcept {
 
-	if (not _coreModules.contains(dependency_.key)) {
+	if (not std::ranges::contains(_coreModules, dependency_.key, [](const auto& entry_) { return entry_.key; })) {
 		return true;
 	}
 
 	return dependency_.order != SubModuleOrder::ePredecessor;
 }
 
+size_t Modules::getRootModuleCount() const noexcept {
+	return _rootModules.size();
+}
+
+void Modules::addRootModule(mref<type_id> baseTypeId_, nmpt<RootModule> rootModule_) {
+	::hg::assertrt(
+		std::ranges::find_if(
+			_rootModules,
+			[baseTypeId_](const auto& entry_) {
+				return entry_.baseTypeId == baseTypeId_;
+			}
+		) == std::ranges::end(_rootModules)
+	);
+	_rootModules.emplace_back(std::move(baseTypeId_), std::move(rootModule_));
+}
+
+nmpt<RootModule> Modules::getRootModule(mref<type_id> baseTypeId_) const noexcept {
+	const auto it = std::ranges::find_if(
+		_rootModules,
+		[baseTypeId_](const auto& entry_) {
+			return entry_.baseTypeId == baseTypeId_;
+		}
+	);
+	return (it != std::ranges::end(_rootModules)) ? it->module : nullptr;
+}
+
+void Modules::removeRootModule(mref<type_id> baseTypeId_, nmpt<RootModule> rootModule_) {
+
+	// TODO: Validate internal dependency state, instead of force requiring non-coremodule/non-submodule state
+	::hg::assertrt(_coreModules.empty());
+	::hg::assertrt(_subModules.empty());
+
+	const auto it = std::ranges::find_if(
+		_rootModules,
+		[baseTypeId_, rootModule_](const auto& entry_) {
+			return entry_.baseTypeId == baseTypeId_ && entry_.module == rootModule_;
+		}
+	);
+	_rootModules.erase(it);
+}
+
 size_t Modules::getCoreModuleCount() const noexcept {
 	return _coreModules.size();
+}
+
+void Modules::addCoreModule(cref<DependencyKey> key_, mref<type_id> baseTypeId_, nmpt<CoreModule> coreModule_) {
+	::hg::assertrt(
+		std::ranges::find_if(
+			_coreModules,
+			[key_, baseTypeId_](const auto& entry_) {
+				return entry_.key == key_ || entry_.baseTypeId == baseTypeId_;
+			}
+		) == std::ranges::end(_coreModules)
+	);
+	_coreModules.emplace_back(key_, std::move(baseTypeId_), std::move(coreModule_));
+}
+
+nmpt<CoreModule> Modules::getCoreModule(
+	cref<decltype(std::declval<decltype(_coreModules)::value_type>().key)> key_
+) const noexcept {
+	const auto it = std::ranges::find_if(
+		_coreModules,
+		[key_](const auto& entry_) {
+			return entry_.key == key_;
+		}
+	);
+	return (it != std::ranges::end(_coreModules)) ? it->module : nullptr;
+}
+
+nmpt<CoreModule> Modules::getCoreModule(
+	mref<decltype(std::declval<decltype(_coreModules)::value_type>().baseTypeId)> baseTypeId_
+) const noexcept {
+	const auto it = std::ranges::find_if(
+		_coreModules,
+		[baseTypeId_](const auto& entry_) {
+			return entry_.baseTypeId == baseTypeId_;
+		}
+	);
+	return (it != std::ranges::end(_coreModules)) ? it->module : nullptr;
+}
+
+void Modules::removeCoreModule(mref<type_id> baseTypeId_, nmpt<CoreModule> coreModule_) {
+
+	// TODO: Validate internal dependency state, instead of force requiring non-submodule state
+	::hg::assertrt(_subModules.empty());
+
+	const auto it = std::ranges::find_if(
+		_coreModules,
+		[baseTypeId_, coreModule_](const auto& entry_) {
+			return entry_.baseTypeId == baseTypeId_ && entry_.module == coreModule_;
+		}
+	);
+	_coreModules.erase(it);
 }
 
 size_t Modules::getSubModuleCount() const noexcept {
@@ -219,7 +295,7 @@ DependencyValidationResult Modules::validate() const noexcept {
 	}
 
 	for (const auto& coreModule : _coreModules) {
-		required.erase(coreModule);
+		required.erase(coreModule.key);
 	}
 
 	return required.empty() ? DependencyValidationResult::eSuccess : DependencyValidationResult::eFailedRequired;

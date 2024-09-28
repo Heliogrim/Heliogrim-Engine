@@ -1,12 +1,12 @@
-#include <Engine.Assets/Types/Geometry/StaticGeometry.hpp>
-#include <Engine.Assets/Types/Material/GfxMaterial.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
+#include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
+#include <Engine.Assets.Type/Material/GfxMaterial.hpp>
 #include <Engine.Reflow/Widget/Text.hpp>
 #include <Engine.Reflow/Widget/Input/InputFloat.hpp>
 #include <Engine.Reflow/Widget/Input/InputIntegral.hpp>
 #include <Heliogrim/Heliogrim.hpp>
-#include <Heliogrim/Components/DirectionalLightComponent.hpp>
-#include <Heliogrim/Components/PointLightComponent.hpp>
+#include <Heliogrim/Component/Scene/Light/DirectionalLightComponent.hpp>
+#include <Heliogrim/Component/Scene/Light/PointLightComponent.hpp>
 
 #include "ObjectValueMapper.hpp"
 #include "../../Color/Dark.hpp"
@@ -131,7 +131,7 @@ void ObjectValueMapper<PointLightComponent>::update(
 ) {
 
 	const auto& sgc { *static_cast<ptr<PointLightComponent>>(obj_) };
-	const auto& mat { sgc.getWorldTransform() };
+	const auto& mat { sgc.getUniverseTransform() };
 	const auto& children { *parent_->children() };
 
 	auto* const transform { static_cast<ptr<Collapse>>(children[1].get()) }; {
@@ -144,13 +144,13 @@ void ObjectValueMapper<PointLightComponent>::update(
 		std::static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(0))->_callback = [sgc = &sgc](
 			math::vec3 value_
 		) {
-				const_cast<ref<Transform>>(sgc->getWorldTransform()).setLocation(math::Location(std::move(value_)));
+				const_cast<ref<Transform>>(sgc->getUniverseTransform()).setLocation(math::Location(std::move(value_)));
 			};
 
 		std::static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(1))->_callback = [sgc = &sgc](
 			math::vec3 value_
 		) {
-				const_cast<ref<Transform>>(sgc->getWorldTransform()).setRotator(
+				const_cast<ref<Transform>>(sgc->getUniverseTransform()).setRotator(
 					math::Rotator::fromEuler(std::move(value_))
 				);
 			};
@@ -158,7 +158,7 @@ void ObjectValueMapper<PointLightComponent>::update(
 		std::static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(2))->_callback = [sgc = &sgc
 			](math::vec3 value_) {
 
-				const_cast<ref<Transform>>(sgc->getWorldTransform()).setScale(std::move(value_));
+				const_cast<ref<Transform>>(sgc->getUniverseTransform()).setScale(std::move(value_));
 			};
 	}
 
@@ -288,7 +288,7 @@ void ObjectValueMapper<DirectionalLightComponent>::update(
 ) {
 
 	const auto& dlc { *static_cast<ptr<DirectionalLightComponent>>(obj_) };
-	const auto& mat { dlc.getWorldTransform() };
+	const auto& mat { dlc.getUniverseTransform() };
 	const auto& children { *parent_->children() };
 
 	auto* const transform { static_cast<ptr<Collapse>>(children[1].get()) }; {
@@ -301,13 +301,13 @@ void ObjectValueMapper<DirectionalLightComponent>::update(
 		std::static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(0))->_callback = [sgc = &dlc](
 			math::vec3 value_
 		) {
-				const_cast<ref<Transform>>(sgc->getWorldTransform()).setLocation(math::Location(std::move(value_)));
+				const_cast<ref<Transform>>(sgc->getUniverseTransform()).setLocation(math::Location(std::move(value_)));
 			};
 
 		std::static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(1))->_callback = [sgc = &dlc](
 			math::vec3 value_
 		) {
-				const_cast<ref<Transform>>(sgc->getWorldTransform()).setRotator(
+				const_cast<ref<Transform>>(sgc->getUniverseTransform()).setRotator(
 					math::Rotator::fromEuler(std::move(value_))
 				);
 			};
@@ -315,7 +315,7 @@ void ObjectValueMapper<DirectionalLightComponent>::update(
 		std::static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(2))->_callback = [sgc = &dlc
 			](math::vec3 value_) {
 
-				const_cast<ref<Transform>>(sgc->getWorldTransform()).setScale(std::move(value_));
+				const_cast<ref<Transform>>(sgc->getUniverseTransform()).setScale(std::move(value_));
 			};
 	}
 

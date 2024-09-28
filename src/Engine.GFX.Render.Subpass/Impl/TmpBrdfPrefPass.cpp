@@ -1,32 +1,33 @@
 #include "TmpBrdfPrefPass.hpp"
 
-#include <Engine.Common/Math/Compat.inl>
+#include <utility>
 #include <Engine.Accel.Command/CommandBuffer.hpp>
 #include <Engine.Accel.Compile/VkEffectCompiler.hpp>
 #include <Engine.Accel.Compile/Profile/EffectProfile.hpp>
 #include <Engine.Accel.Compile/Spec/SimpleEffectSpecification.hpp>
 #include <Engine.Accel.Pass/VkAccelerationPassFactory.hpp>
-#include <Engine.Core/Engine.hpp>
-#include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
-#include <Engine.GFX.RenderGraph/Relation/TextureDescription.hpp>
-#include <Engine.GFX.RenderGraph/Symbol/ScopedSymbolContext.hpp>
-#include <Engine.GFX/Texture/TextureFactory.hpp>
-#include <Engine.GFX.Render.Command/RenderCommandBuffer.hpp>
-#include <Engine.GFX/Graphics.hpp>
-#include <Engine.Pedantic/Clone/Clone.hpp>
-#include <Engine.Reflect/Cast.hpp>
 #include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
 #include <Engine.Accel.Pipeline/VkGraphicsPipeline.hpp>
+#include <Engine.Common/Math/Compat.inl>
 #include <Engine.Common/Math/Coordinates.hpp>
+#include <Engine.Core/Engine.hpp>
+#include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
+#include <Engine.GFX/Graphics.hpp>
 #include <Engine.GFX.Loader/Texture/TextureResource.hpp>
 #include <Engine.GFX.Render.Predefined/Symbols/BrdfPrefilter.hpp>
 #include <Engine.GFX.Render.Predefined/Symbols/SceneView.hpp>
+#include <Engine.GFX.RenderGraph/Relation/TextureDescription.hpp>
+#include <Engine.GFX.RenderGraph/Symbol/ScopedSymbolContext.hpp>
 #include <Engine.GFX.Scene/View/SceneView.hpp>
 #include <Engine.GFX/Buffer/BufferFactory.hpp>
 #include <Engine.GFX/Buffer/UniformBufferView.hpp>
 #include <Engine.GFX/Scene/SkyboxModel.hpp>
-#include <Engine.Reflect/ExactType.hpp>
 #include <Engine.GFX/Texture/SparseTextureView.hpp>
+#include <Engine.GFX/Texture/TextureFactory.hpp>
+#include <Engine.GFX.Render.Command/RenderCommandBuffer.hpp>
+#include <Engine.Pedantic/Clone/Clone.hpp>
+#include <Engine.Reflect/Cast.hpp>
+#include <Engine.Reflect/ExactType.hpp>
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
 
 using namespace hg::engine::render;
@@ -194,9 +195,9 @@ void TmpBrdfPrefPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept
 
 	Vector<math::mat4> viewMatrices = {
 		math::mat4::make_identity().rotate(glm::radians(90.F), math::vec3_yaw)
-		                           .rotate(glm::radians(180.F), math::vec3_pitch),
+		.rotate(glm::radians(180.F), math::vec3_pitch),
 		math::mat4::make_identity().rotate(glm::radians(-90.F), math::vec3_yaw)
-		                           .rotate(glm::radians(180.F), math::vec3_pitch),
+		.rotate(glm::radians(180.F), math::vec3_pitch),
 		math::mat4::make_identity().rotate(glm::radians(-90.F), math::vec3_pitch),
 		math::mat4::make_identity().rotate(glm::radians(90.F), math::vec3_pitch),
 		math::mat4::make_identity().rotate(glm::radians(180.F), math::vec3_pitch),
@@ -487,9 +488,10 @@ void TmpBrdfPrefPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept
 	auto nativeBatch = (*translator)(&cmd);
 	const auto batch = static_cast<ptr<driver::vk::VkNativeBatch>>(nativeBatch.get());
 
+	/**/
+
 	{
-		batch->_tmpWaits.insert_range(
-			batch->_tmpWaits.end(),
+		batch->_tmpWaits.append_range(
 			reinterpret_cast<Vector<VkSemaphore>&>(_resources.outBrdfPrefTexture->barriers)
 		);
 		for (auto i = batch->_tmpWaitFlags.size(); i < batch->_tmpWaits.size(); ++i) {
@@ -563,9 +565,7 @@ smr<AccelerationEffect> build_test_effect() {
 
 		vertexStage->getIntermediate()->rep.globalScope.inbound.emplace_back(std::move(var));
 		vertexStage->getIntermediate()->rep.symbolTable.insert(std::move(sym));
-	}
-
-	{
+	} {
 		auto var = make_uptr<Variable>();
 		auto sym = make_uptr<Symbol>();
 
@@ -584,9 +584,7 @@ smr<AccelerationEffect> build_test_effect() {
 
 		fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(std::move(var));
 		fragmentStage->getIntermediate()->rep.symbolTable.insert(std::move(sym));
-	}
-
-	{
+	} {
 		auto tmpVar = make_uptr<Variable>();
 		tmpVar->type = Type { .category = TypeCategory::eObject, .objectType = ObjectType::eSampler };
 		tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eExternalLinkage>>();
@@ -599,9 +597,7 @@ smr<AccelerationEffect> build_test_effect() {
 
 		fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(std::move(tmpVar));
 		fragmentStage->getIntermediate()->rep.symbolTable.insert(std::move(tmpSym));
-	}
-
-	{
+	} {
 		auto var = make_uptr<Variable>();
 		auto sym = make_uptr<Symbol>();
 

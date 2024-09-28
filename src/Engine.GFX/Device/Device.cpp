@@ -23,9 +23,9 @@ static std::vector<const char*> deviceExtensions = {
 };
 #else
 static std::vector<const char*> deviceExtensions = {
-    VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-    VK_KHR_MULTIVIEW_EXTENSION_NAME,
-    VK_KHR_SEPARATE_DEPTH_STENCIL_LAYOUTS_EXTENSION_NAME
+	VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+	VK_KHR_MULTIVIEW_EXTENSION_NAME,
+	VK_KHR_SEPARATE_DEPTH_STENCIL_LAYOUTS_EXTENSION_NAME
 };
 #endif
 
@@ -195,11 +195,11 @@ void Device::setup() {
 
 	#else
 
-    _physicalDevice.createDevice(&dCi, nullptr, &_device);
+	_physicalDevice.createDevice(&dCi, nullptr, &_device);
 
-    if (checkSurfaceSupport) {
-        _physicalDevice.getSurfaceSupportKHR(qFamIndices.graphicsFamily, *_surface);
-    }
+	if (checkSurfaceSupport) {
+		_physicalDevice.getSurfaceSupportKHR(qFamIndices.graphicsFamily, *_surface);
+	}
 	#endif
 
 	/**
@@ -294,7 +294,7 @@ vk::PhysicalDevice& Device::vkPhysicalDevice() const {
 	return _physicalDevice;
 }
 
-const non_owning_rptr<memory::GlobalPooledAllocator> Device::allocator() const noexcept {
+nmpt<memory::GlobalPooledAllocator> Device::allocator() const noexcept {
 	return _alloc.get();
 }
 

@@ -6,10 +6,10 @@
 #include "MeshCaptureInterface.hpp"
 
 namespace hg::engine::render {
-    class __declspec(novtable) MeshSubPassBase :
+    class macro_novtable MeshSubPassBase :
         public SubPass { };
 
-    class __declspec(novtable) MeshSubPass :
+    class macro_novtable MeshSubPass :
         public MeshSubPassBase {
     public:
         using this_type = MeshSubPass;

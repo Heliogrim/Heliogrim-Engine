@@ -1,25 +1,17 @@
+#include "ModelImporter.hpp"
+
 #include <filesystem>
-#include <regex>
-#include <sstream>
+#include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Assets/AssetFactory.hpp>
+#include <Engine.Assets/Assets.hpp>
 #include <Engine.Common/GuidFormat.hpp>
+#include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Concurrent/Promise.hpp>
-#include <Engine.Serialization/Archive/Archive.hpp>
-#include <Engine.Serialization/Archive/BufferArchive.hpp>
-#include <Engine.Serialization/Archive/LayoutArchive.hpp>
-#include <Engine.Serialization/Layout/DataLayout.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Logging/Logger.hpp>
-#include <Engine.Pedantic/Clone/Clone.hpp>
-
-#include "ModelImporter.hpp"
-#include "../API/VkTranslate.hpp"
-#include "Engine.Assets/Assets.hpp"
-#include "Engine.Resource/Source/FileSource.hpp"
-#include "Engine.Resource.Package/PackageFactory.hpp"
-#include "Engine.Resource.Package/Linker/PackageLinker.hpp"
-#include "Engine.Serialization/Access/Structure.hpp"
-#include "Engine.Serialization/Archive/StructuredArchive.hpp"
+#include <Engine.Resource.Package/Linker/PackageLinker.hpp>
+#include <Engine.Storage.Registry/IStorageRegistry.hpp>
+#include <Engine.Storage.Registry/Storage/PackageStorage.hpp>
 
 using namespace hg::engine::gfx;
 using namespace hg;
@@ -54,7 +46,7 @@ FbxImporter::~FbxImporter() {}
 
 bool FbxImporter::canImport(cref<res::FileTypeId> typeId_, cref<hg::fs::File> file_) const noexcept {
 
-	if (typeId_.ext != ".fbx") {
+	if (typeId_.ext != ".fbx" && typeId_.ext != ".obj") {
 		return false;
 	}
 
@@ -71,40 +63,11 @@ FbxImporter::descriptor_type FbxImporter::descriptor() const noexcept {
 
 FbxImporter::import_result_type FbxImporter::import(cref<res::FileTypeId> typeId_, cref<hg::fs::File> file_) const {
 
-	const auto rootCwd { std::filesystem::current_path().append(R"(..\..)") };
-	const auto rootAssetPath { std::filesystem::path(R"(resources\assets\geometry)") };
-	const auto rootImportPath { std::filesystem::path(R"(resources\imports)") };
-
 	/**/
 
-	fs::Url targetUrl { fs::Path { rootAssetPath } };
-
-	/**/
-
-	const auto sourcePath { file_.path() };
-	const auto sourceFileName { sourcePath.filename().string() };
-	const auto sourceExt { sourcePath.extension().string() };
+	const auto sourceFileName { static_cast<cref<std::filesystem::path>>(file_.path()).filename().string() };
+	const auto sourceExt { static_cast<cref<std::filesystem::path>>(file_.path()).extension().string() };
 	const auto sourceName { sourceFileName.substr(0, sourceFileName.size() - sourceExt.size()) };
-
-	/**/
-	const auto targetSubDir { sourceName };
-	const auto targetDirPath { std::filesystem::path(targetUrl.path()).append(targetSubDir) };
-
-	const auto subRelativePath { std::filesystem::relative(targetDirPath, rootAssetPath) };
-
-	const auto storePath {
-		std::filesystem::path { rootCwd }
-		.append(rootImportPath.string())
-		.append(R"(fbx)")
-		.append(subRelativePath.string())
-		.append(sourceFileName)
-	};
-
-	/**/
-
-	if (/* std::filesystem::exists(targetDirPath) || */std::filesystem::exists(storePath)) {
-		return makeImportResult({ nullptr });
-	}
 
 	/**/
 
@@ -112,14 +75,6 @@ FbxImporter::import_result_type FbxImporter::import(cref<res::FileTypeId> typeId
 	if (data.indexCount == 0 && data.vertexCount == 0) {
 		return makeImportResult({ nullptr });
 	}
-
-	const auto srcPath = std::filesystem::relative(storePath, rootCwd);
-
-	/**/
-
-	IM_CORE_LOGF("Copying file to {:}", storePath.string());
-	std::filesystem::create_directories(storePath.parent_path());
-	std::filesystem::copy(sourcePath, storePath);
 
 	/**/
 
@@ -132,11 +87,11 @@ FbxImporter::import_result_type FbxImporter::import(cref<res::FileTypeId> typeId
 		auto& factory { *Engine::getEngine()->getAssets()->getFactory() };
 		return factory.createStaticGeometryAsset(
 			generate_asset_guid(),
-			path_.string(),
+			static_cast<std::string>(path_),
 			data_.vertexCount,
 			data_.indexCount
 		);
-	}(srcPath, data);
+	}(file_.path(), data);
 	geom->setAssetName(sourceName);
 
 	IM_CORE_LOGF(
@@ -144,50 +99,6 @@ FbxImporter::import_result_type FbxImporter::import(cref<res::FileTypeId> typeId
 		geom->getAssetName(),
 		encodeGuid4228(geom->get_guid())
 	);
-
-	/**/
-
-	auto memBuffer = make_uptr<BufferArchive>();
-	auto arch = StructuredArchive(memBuffer.get()); {
-		auto root = arch.insertRootSlot();
-		access::Structure<StaticGeometry>::serialize(geom.get(), std::move(root));
-	}
-
-	/**/
-
-	Guid archGuid {};
-	GuidGenerate(archGuid);
-
-	/**/
-
-	const auto packagePath = std::filesystem::path(rootCwd).append(targetDirPath.string()).append(sourceName).concat(
-		R"(.impackage)"
-	);
-
-	if (not std::filesystem::exists(packagePath.parent_path())) {
-		std::filesystem::create_directories(packagePath.parent_path());
-	}
-
-	/**/
-
-	hg::fs::File packageFile { packagePath };
-	auto source = make_uptr<resource::FileSource>(std::move(packageFile));
-
-	auto package = resource::PackageFactory::createEmptyPackage(std::move(source));
-	auto* const linker = package->getLinker();
-
-	/**/
-
-	linker->store(
-		resource::ArchiveHeader { resource::ArchiveHeaderType::eSerializedStructure, clone(archGuid) },
-		std::move(memBuffer)
-	);
-
-	/**/
-
-	package->unsafeWrite();
-
-	IM_CORE_LOGF("Wrote new package file with archive `{}` for asset.", encodeGuid4228(archGuid));
 
 	/**/
 
@@ -207,14 +118,14 @@ FbxAssimpImportData assimpGetImportData(cref<fs::File> file_) {
 
 	const streamsize size = file_.size();
 	if (size < 0) {
-		__debugbreak();
+		::hg::breakpoint();
 		return {};
 	}
 
-	auto* const scene = importer.ReadFile(file_.path().string(), ppFlags);
+	auto* const scene = importer.ReadFile(static_cast<std::string>(file_.path()), ppFlags);
 
 	if (scene == nullptr) {
-		__debugbreak();
+		::hg::breakpoint();
 		return {};
 	}
 

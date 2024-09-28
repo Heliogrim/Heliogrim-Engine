@@ -1,9 +1,15 @@
 #pragma once
 
+#include <Engine.Common/Collection/Array.hpp>
 #include <Engine.Config/Config.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Module/Modules.hpp>
 #include <Engine.Event/GlobalEventEmitter.hpp>
+
+/**/
+#include <Engine.Serialization/SerializationModule.hpp>
+#include <Engine.Storage/StorageModule.hpp>
+/**/
 
 namespace hg::engine {
 	class GameEngine :
@@ -29,6 +35,9 @@ namespace hg::engine {
 		bool exit() override;
 
 	private:
+		/* Core Module */
+
+		uptr<ActorModule> _actors;
 		uptr<Assets> _assets;
 		uptr<Audio> _audio;
 		uptr<Graphics> _graphics;
@@ -36,15 +45,23 @@ namespace hg::engine {
 		uptr<Network> _network;
 		uptr<Physics> _physics;
 
+		/* Root Modules */
+
 		uptr<Platform> _platform;
 		uptr<ResourceManager> _resources;
 		uptr<Scheduler> _scheduler;
+		SerializationModule _serialization;
+		StorageModule _storage;
+
+		/**/
 
 		Config _config;
 		GlobalEventEmitter _emitter;
 		core::Modules _modules;
 
 	public:
+		[[nodiscard]] nmpt<ActorModule> getActors() const noexcept override;
+
 		[[nodiscard]] nmpt<Assets> getAssets() const noexcept override;
 
 		[[nodiscard]] nmpt<Audio> getAudio() const noexcept override;
@@ -57,11 +74,16 @@ namespace hg::engine {
 
 		[[nodiscard]] nmpt<Physics> getPhysics() const noexcept override;
 
+	public:
 		[[nodiscard]] nmpt<Platform> getPlatform() const noexcept override;
 
 		[[nodiscard]] nmpt<ResourceManager> getResources() const noexcept override;
 
 		[[nodiscard]] nmpt<Scheduler> getScheduler() const noexcept override;
+
+		[[nodiscard]] nmpt<const SerializationModule> getSerialization() const noexcept override;
+
+		[[nodiscard]] nmpt<const StorageModule> getStorage() const noexcept override;
 
 	public:
 		[[nodiscard]] ref<Config> getConfig() const noexcept override;
@@ -71,15 +93,15 @@ namespace hg::engine {
 		[[nodiscard]] ref<core::Modules> getModules() const noexcept override;
 
 	private:
-		Vector<nmpt<core::WorldContext>> _worldContexts;
+		Array<nmpt<core::UniverseContext>, 1> _universeContexts;
 
 	public:
-		[[nodiscard]] Vector<nmpt<core::WorldContext>> getWorldContexts() const noexcept override;
+		[[nodiscard]] std::span<const nmpt<core::UniverseContext>> getUniverseContexts() const noexcept override;
 
 	public:
-		void addWorld(cref<sptr<core::World>> world_) override;
+		void addUniverse(mref<SharedPtr<core::Universe>> universe_) override;
 
-		void removeWorld(cref<sptr<core::World>> world_) override;
+		void removeUniverse(mref<SharedPtr<core::Universe>> universe_) override;
 
 	private:
 		/**
@@ -87,9 +109,9 @@ namespace hg::engine {
 		 */
 
 		/**
-		 * As long as we use a GameEngine instance we can expect to have at least one major world
+		 * As long as we use a GameEngine instance we can expect to have at least one major universe
 		 *  We still have the possibility to execute multiple game sessions at once, but this should
-		 *  be managed explicitly to model the interaction of multiple worlds.
+		 *  be managed explicitly to model the interaction of multiple universes.
 		 */
 		uptr<core::Session> _gameSession;
 

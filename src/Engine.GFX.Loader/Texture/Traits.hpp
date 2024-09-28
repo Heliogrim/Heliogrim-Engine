@@ -18,12 +18,12 @@ namespace hg::engine::resource::loader {
 	using namespace ::hg::engine::gfx::loader;
 
 	template <>
-	struct resource::loader::RequestOptions<LoaderRequest<assets::TextureAsset>> {
+	struct RequestOptions<LoaderRequest<assets::TextureAsset>> {
 		using type = TextureLoadOptions;
 	};
 
 	template <>
-	struct resource::loader::StreamOptions<LoaderStreamRequest<assets::TextureAsset>> {
+	struct StreamOptions<LoaderStreamRequest<assets::TextureAsset>> {
 		using type = TextureStreamOptions;
 	};
 }
@@ -34,12 +34,12 @@ namespace hg::engine::resource::loader {
 	using namespace ::hg::engine::gfx::loader;
 
 	template <>
-	struct resource::loader::RequestOptions<CacheRequest<assets::TextureAsset>> {
+	struct RequestOptions<CacheRequest<assets::TextureAsset>> {
 		using type = TextureLoadOptions;
 	};
 
 	template <>
-	struct resource::loader::StreamOptions<CacheStreamRequest<assets::TextureAsset>> {
+	struct StreamOptions<CacheStreamRequest<assets::TextureAsset>> {
 		using type = TextureStreamOptions;
 	};
 }
@@ -50,12 +50,12 @@ namespace hg::engine::resource::loader {
 	using namespace ::hg::engine::gfx::loader;
 
 	template <>
-	struct resource::loader::RequestOptions<FeedbackRequest<assets::TextureAsset>> {
+	struct RequestOptions<FeedbackRequest<assets::TextureAsset>> {
 		using type = TextureLoadOptions;
 	};
 
 	template <>
-	struct resource::loader::StreamOptions<FeedbackStreamRequest<assets::TextureAsset>> {
+	struct StreamOptions<FeedbackStreamRequest<assets::TextureAsset>> {
 		using type = TextureStreamOptions;
 	};
 }

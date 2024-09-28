@@ -27,8 +27,8 @@ namespace hg::editor::gfx::graph::nodes {
     class BufferInputNode;
     class UniformInputNode;
 
-    class WorldPositionRuntimeInputNode;
-    class WorldNormalRuntimeInputNode;
+    class UniversePositionRuntimeInputNode;
+    class UniverseNormalRuntimeInputNode;
     class TangentRuntimeInputNode;
     class VertexColorRuntimeInputNode;
     class InstanceIdRuntimeInputNode;

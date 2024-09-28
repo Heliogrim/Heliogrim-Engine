@@ -6,24 +6,24 @@
 #include "../__fwd.hpp"
 
 namespace hg::engine::render::graph {
-    class Component :
-        public InheritBase<Component> {
-    public:
-        using this_type = Component;
+	class Component :
+		public InheritBase<Component> {
+	public:
+		using this_type = Component;
 
-    protected:
-        Component() noexcept = default;
+	protected:
+		Component() noexcept = default;
 
-    public:
-        virtual ~Component() noexcept = default;
+	public:
+		~Component() noexcept override = default;
 
-    public:
-        virtual void mount(nmpt<const Node> target_);
+	public:
+		virtual void mount(nmpt<const Node> target_);
 
-        virtual void mounted(nmpt<const Component> mounted_);
+		virtual void mounted(nmpt<const Component> mounted_);
 
-        virtual void unmount(nmpt<const Node> target_);
+		virtual void unmount(nmpt<const Node> target_);
 
-        virtual void unmounted(nmpt<const Component> unmounted_);
-    };
+		virtual void unmounted(nmpt<const Component> unmounted_);
+	};
 }

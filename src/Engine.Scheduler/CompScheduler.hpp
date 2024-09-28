@@ -3,8 +3,8 @@
 #include <Engine.Common/Sal.hpp>
 
 #include "Scheduler.hpp"
-#include "Process/Schedule.hpp"
 #include "Pipeline/CompositePipeline.hpp"
+#include "Process/Schedule.hpp"
 #include "Worker/Worker.hpp"
 
 namespace hg::engine {

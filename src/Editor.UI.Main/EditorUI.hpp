@@ -1,4 +1,6 @@
 #pragma once
+
+#include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.Core/Module/SubModule.hpp>
@@ -66,6 +68,6 @@ namespace hg::editor {
 		// Warning: Error prone
 		mutable smr<hg::engine::gfx::TextureResource> placeholderHolder = nullptr;
 
-		[[nodiscard] ] smr<engine::gfx::TextureResource> getPlaceholderImage() const noexcept;
+		[[nodiscard]] smr<engine::gfx::TextureResource> getPlaceholderImage() const noexcept;
 	};
 }

@@ -5,6 +5,4 @@ using namespace hg;
 
 Platform::Platform() noexcept = default;
 
-Platform::~Platform() {
-    // this->tidy();
-}
+Platform::~Platform() = default;

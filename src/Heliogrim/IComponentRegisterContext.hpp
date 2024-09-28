@@ -1,20 +1,22 @@
 #pragma once
 
-#include "Inbuilt.hpp"
+#include <Engine.Common/Sal.hpp>
+#include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/__macro.hpp>
 
 namespace hg {
-    /**
-     * Forward Declaration
-     */
-    class ActorComponent;
-    class SceneComponent;
+	/**
+	 * Forward Declaration
+	 */
+	class HierarchyComponent;
+	class SceneComponent;
 
-    class ComponentHierarchy;
+	class ComponentHierarchy;
 
-    class __declspec(novtable) IComponentRegisterContext {
-    public:
-        virtual void add(const ptr<ActorComponent> component_) = 0;
+	class macro_novtable IComponentRegisterContext {
+	public:
+		virtual void add(_In_ ptr<HierarchyComponent> component_) = 0;
 
-        virtual void add(cref<ComponentHierarchy> hierarchy_) = 0;
-    };
+		virtual void add(cref<ComponentHierarchy> hierarchy_) = 0;
+	};
 }

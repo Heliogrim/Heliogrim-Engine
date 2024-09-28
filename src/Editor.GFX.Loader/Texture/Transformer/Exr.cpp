@@ -3,7 +3,7 @@
 #include <Engine.Asserts/Todo.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets/Assets.hpp>
-#include <Engine.Assets/Types/Image.hpp>
+#include <Engine.Assets.Type/Texture/Image.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.GFX/Buffer/Buffer.hpp>
 #include <Engine.GFX/Buffer/BufferFactory.hpp>
@@ -96,16 +96,24 @@ EditorExrTextureTransformer::loader_traits::response::type EditorExrTextureTrans
 	 * Read meta data and acquire buffers
 	 */
 
-	streamsize bytes {};
-	Vector<u8> chunk {};
-	chunk.resize(src->size());
+	auto srcSize = src->fully().size();
+	::hg::assertrt(srcSize > 0);
 
-	std::ignore = src->get(0LL, chunk.size(), chunk.data(), bytes);
+	Vector<_::byte> chunk {};
+	chunk.resize(src->fully().size(), _::byte {});
+
+	std::ignore = src->fully().read(streamoff {}, std::span { chunk.data(), chunk.size() });
 
 	/**/
 
 	EXRVersion version {};
-	::hg::assertrt(not ParseEXRVersionFromMemory(&version, chunk.data(), chunk.size() * sizeof(u8)));
+	::hg::assertrt(
+		not ParseEXRVersionFromMemory(
+			&version,
+			std::bit_cast<u8*>(chunk.data()),
+			chunk.size() * sizeof(u8)
+		)
+	);
 	::hg::assertrt(not version.multipart /* Warning: No multipart / layered support for now. */);
 
 	auto header = uptr<EXRHeader, hg::unary_fnc<int, ptr<EXRHeader>>> {
@@ -122,7 +130,7 @@ EditorExrTextureTransformer::loader_traits::response::type EditorExrTextureTrans
 		not ParseEXRHeaderFromMemory(
 			header.get(),
 			&version,
-			chunk.data(),
+			std::bit_cast<u8*>(chunk.data()),
 			chunk.size() * sizeof(u8),
 			&exrErr
 		)
@@ -148,7 +156,7 @@ EditorExrTextureTransformer::loader_traits::response::type EditorExrTextureTrans
 	s32 height = -1L;
 
 	auto decoded = uptr<f32, hg::unary_fnc<void, ptr<void>>> {
-		[](cref<Vector<u8>> data_, ref<s32> width_, ref<s32> height_) {
+		[](cref<Vector<_::byte>> data_, ref<s32> width_, ref<s32> height_) {
 
 			ptr<f32> iifeDecoded = nullptr;
 			ptr<const char> iifeExrErr = nullptr;
@@ -158,7 +166,7 @@ EditorExrTextureTransformer::loader_traits::response::type EditorExrTextureTrans
 					&iifeDecoded,
 					&width_,
 					&height_,
-					data_.data(),
+					std::bit_cast<u8*>(data_.data()),
 					data_.size() * sizeof(u8),
 					&iifeExrErr
 				) == TINYEXR_SUCCESS
@@ -217,10 +225,7 @@ EditorExrTextureTransformer::loader_traits::response::type EditorExrTextureTrans
 
 	// Warning: Unsafe force update virtual bindings
 	view->owner()->updateBindingData();
-	#pragma warning(push)
-	#pragma warning(disable: 4996)
 	view->owner()->enqueueBindingSync(device->graphicsQueue());
-	#pragma warning(pop)
 
 	/**
 	 * Transform and transfer data

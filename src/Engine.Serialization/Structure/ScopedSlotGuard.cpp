@@ -13,43 +13,43 @@ using namespace hg::engine::serialization;
 using namespace hg;
 
 ScopedSlotGuard::ScopedSlotGuard(
-    const non_owning_rptr<const ScopedSlot> scopedSlot_,
-    const ScopedSlotGuardMode mode_
+	const non_owning_rptr<const ScopedSlot> scopedSlot_,
+	const ScopedSlotGuardMode mode_
 ) :
-    _mode(mode_),
-    _scopedSlot(scopedSlot_) {
+	_mode(mode_),
+	_scopedSlot(scopedSlot_) {
 
-    auto* const slot = _scopedSlot->slot();
-    if (_mode == ScopedSlotGuardMode::eRead) {
-        slot->readHeader();
+	auto* const slot = _scopedSlot->slot();
+	if (_mode == ScopedSlotGuardMode::eRead) {
+		slot->readHeader();
 
-        #ifdef _DEBUG
-        if (not slot->validateType()) {
-            IM_CORE_ERRORF(
-                "Tried to deserialize a `{}` into a `{}`.",
-                StructureSlotTypeTrait::canonical(slot->getSlotHeader().type),
-                StructureSlotTypeTrait::canonical(slot->getSlotType())
-            );
-            assert(slot->validateType());
-        }
-        #endif
+		#ifdef _DEBUG
+		if (not slot->validateType()) {
+			IM_CORE_ERRORF(
+				"Tried to deserialize a `{}` into a `{}`.",
+				StructureSlotTypeTrait::canonical(slot->getSlotHeader().type),
+				StructureSlotTypeTrait::canonical(slot->getSlotType())
+			);
+			assert(slot->validateType());
+		}
+		#endif
 
-    } else {
-        slot->writeHeader();
-    }
+	} else {
+		slot->writeHeader();
+	}
 
-    slot->enter();
+	slot->enter();
 }
 
 ScopedSlotGuard::~ScopedSlotGuard() {
 
-    auto* const slot = _scopedSlot->slot();
-    slot->leave();
+	auto* const slot = _scopedSlot->slot();
+	slot->leave();
 
-    if (_mode == ScopedSlotGuardMode::eRead) {
-        // __noop();
+	if (_mode == ScopedSlotGuardMode::eRead) {
+		// __noop();
 
-    } else {
-        slot->writeHeader();
-    }
+	} else {
+		slot->writeHeader();
+	}
 }

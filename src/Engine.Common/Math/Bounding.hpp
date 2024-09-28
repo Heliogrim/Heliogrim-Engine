@@ -7,36 +7,31 @@
 namespace hg::math {
 	class Bounding {
 	public:
-		using value_type = Bounding;
-		using reference_type = ref<Bounding>;
-		using const_reference_type = cref<Bounding>;
+		using this_type = Bounding;
 
-		/**
-		 * Default constructor
-		 *
-		 * @author Julius
-		 * @date 27.03.2021
-		 */
-		Bounding();
+	public:
+		Bounding() noexcept;
 
-		/**
-		 * Constructor
-		 *
-		 * @author Julius
-		 * @date 04.11.2021
-		 *
-		 * @param center_ The center position of this bounding.
-		 * @param extent_ The extent from the center.
-		 */
-		Bounding(_In_ cref<vec3> center_, _In_ cref<vec3> extent_) noexcept;
+		constexpr Bounding(_In_ cref<vec3> center_, _In_ cref<vec3> extent_) noexcept :
+			_center(center_),
+			_extent(extent_),
+			_extent_length() {}
 
-		/**
-		 * Destructor
-		 *
-		 * @author Julius
-		 * @date 27.03.2021
-		 */
-		~Bounding() = default;
+		constexpr Bounding(_In_ cref<vec3> center_, _In_ cref<vec3> extent_, _In_ vec3::value_type length_) noexcept :
+			_center(center_),
+			_extent(extent_),
+			_extent_length(length_) {}
+
+		constexpr Bounding(cref<this_type> other_) noexcept = default;
+
+		constexpr Bounding(mref<this_type> other_) noexcept = default;
+
+		constexpr ~Bounding() = default;
+
+	public:
+		ref<this_type> operator=(mref<this_type> other_) noexcept = default;
+
+		ref<this_type> operator=(cref<this_type> other_) noexcept = default;
 
 	public:
 		/**
@@ -144,6 +139,7 @@ namespace hg::math {
 		[[nodiscard]] bool containsAaBb(cref<vec3> position_, cref<vec3> extent_) const noexcept;
 
 	private:
+	public:
 		/**
 		 * Center
 		 */
@@ -171,6 +167,7 @@ namespace hg::math {
 		[[nodiscard]] ref<vec3> center() noexcept;
 
 	private:
+	public:
 		/**
 		 * Extent
 		 */

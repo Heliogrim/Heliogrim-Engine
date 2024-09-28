@@ -1,15 +1,17 @@
 #include "SparseTexture.hpp"
 
+#include <algorithm>
 #include <ranges>
-#include <Engine.Common/Make.hpp>
+#include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Asserts/Todo.hpp>
+#include <Engine.Common/Make.hpp>
 
 #include "SparseTexturePage.hpp"
 #include "SparseTextureView.hpp"
 
 // TODO: Remove
-#include "Engine.GFX/Graphics.hpp"
 #include "Engine.Core/Engine.hpp"
+#include "Engine.GFX/Graphics.hpp"
 
 using namespace hg::engine::gfx;
 using namespace hg;
@@ -124,7 +126,7 @@ void SparseTexture::tidy() {
 			};
 		}
 		default: {
-			__debugbreak();
+			::hg::breakpoint();
 			return 0uLL;
 		}
 	}
@@ -291,14 +293,14 @@ void SparseTexture::assureTiledPages(u32 layer_, math::uivec2 mipLevels_, math::
 					};
 					const math::uivec3 tileExtent {
 						(tx + 1uL > desiredTiles.x && mipSize.x % _granularity.x) ?
-							mipSize.x % _granularity.x :
-							_granularity.x,
+						mipSize.x % _granularity.x :
+						_granularity.x,
 						(ty + 1uL > desiredTiles.y && mipSize.y % _granularity.y) ?
-							mipSize.y % _granularity.y :
-							_granularity.y,
+						mipSize.y % _granularity.y :
+						_granularity.y,
 						(tz + 1uL > desiredTiles.z && mipSize.z % _granularity.z) ?
-							mipSize.z % _granularity.z :
-							_granularity.z,
+						mipSize.z % _granularity.z :
+						_granularity.z,
 					};
 
 					auto page { makePage(layer_, mip, tileOffset, tileExtent) };
@@ -608,7 +610,7 @@ void SparseTexture::enqueueBindingSync(const ptr<CommandQueue> queue_) {
 	auto res { queue_->vkQueue().bindSparse(1, &bsi, fence) };
 	assert(res == vk::Result::eSuccess);
 	#else
-    [[maybe_unused]] auto res { queue_->vkQueue().bindSparse(1, &bsi, fence) };
+	[[maybe_unused]] auto res { queue_->vkQueue().bindSparse(1, &bsi, fence) };
 	#endif
 
 	res = queue_->device()->vkDevice().waitForFences(1uL, &fence, VK_TRUE, UINT64_MAX);

@@ -3,7 +3,7 @@
 #include "BufferLikeObject.hpp"
 
 namespace hg::engine::gfx {
-    class __declspec(novtable) BufferObject :
+    class macro_novtable BufferObject :
         public InheritMeta<BufferObject, BufferLikeObject> {
     public:
         using this_type = BufferObject;

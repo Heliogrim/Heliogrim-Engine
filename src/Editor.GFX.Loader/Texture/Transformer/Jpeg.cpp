@@ -3,7 +3,7 @@
 #include <Engine.Asserts/Todo.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets/Assets.hpp>
-#include <Engine.Assets/Types/Image.hpp>
+#include <Engine.Assets.Type/Texture/Image.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.GFX/Buffer/Buffer.hpp>
 #include <Engine.GFX/Buffer/BufferFactory.hpp>
@@ -94,18 +94,20 @@ EditorJpegTextureTransformer::loader_traits::response::type EditorJpegTextureTra
 	 * Read meta data and acquire buffers
 	 */
 
-	streamsize bytes {};
-	Vector<u8> chunk {};
-	chunk.resize(src->size());
+	auto srcSize = src->fully().size();
+	::hg::assertrt(srcSize > 0);
 
-	std::ignore = src->get(0LL, chunk.size(), chunk.data(), bytes);
+	Vector<_::byte> chunk {};
+	chunk.resize(src->fully().size(), _::byte {});
+
+	std::ignore = src->fully().read(streamoff {}, std::span { chunk.data(), chunk.size() });
 
 	/**/
 
 	s32 width = -1;
 	s32 height = -1;
 	s32 channels = -1;
-	stbi_info_from_memory(chunk.data(), chunk.size() * sizeof(u8), &width, &height, &channels);
+	stbi_info_from_memory(std::bit_cast<stbi_uc*>(chunk.data()), chunk.size() * sizeof(u8), &width, &height, &channels);
 
 	::hg::assertrt(width > 0 && height > 0 && (channels == 3 || channels == 4));
 
@@ -130,7 +132,14 @@ EditorJpegTextureTransformer::loader_traits::response::type EditorJpegTextureTra
 
 	constexpr u32 desiredChannels = 4uL;
 	auto decoded = uptr<stbi_uc, hg::unary_fnc<void, ptr<void>>> {
-		stbi_load_from_memory(chunk.data(), chunk.size(), &width, &height, &channels, desiredChannels),
+		stbi_load_from_memory(
+			std::bit_cast<stbi_uc*>(chunk.data()),
+			chunk.size(),
+			&width,
+			&height,
+			&channels,
+			desiredChannels
+		),
 		stbi_image_free
 	};
 
@@ -178,10 +187,7 @@ EditorJpegTextureTransformer::loader_traits::response::type EditorJpegTextureTra
 
 	// Warning: Unsafe force update virtual bindings
 	view->owner()->updateBindingData();
-	#pragma warning(push)
-	#pragma warning(disable: 4996)
 	view->owner()->enqueueBindingSync(device->graphicsQueue());
-	#pragma warning(pop)
 
 	/**
 	 * Transform and transfer data

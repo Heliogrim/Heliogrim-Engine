@@ -1,9 +1,9 @@
 #pragma once
 
+#include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
 #include <Engine.Common/Concurrent/Future.hpp>
-#include <Engine.Assets/Types/Geometry/StaticGeometry.hpp>
-#include <Engine.Resource/Importer/Importer.hpp>
 #include <Engine.Resource/File.hpp>
+#include <Engine.Resource/Importer/Importer.hpp>
 
 namespace hg::engine::gfx {
 	class FbxImporter :

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <algorithm>
+#include <ranges>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
@@ -57,8 +59,8 @@ namespace hg::engine::render::graph {
 				}
 			);
 			return compIt != _comps.end() ?
-				       static_cast<const ptr<ComponentType_>>(*compIt) :
-				       nmpt<ComponentType_> {};
+				static_cast<const ptr<ComponentType_>>(*compIt) :
+				nmpt<ComponentType_> {};
 		}
 
 		template <typename ComponentType_, typename Fn_>

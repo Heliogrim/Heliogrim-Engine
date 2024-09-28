@@ -7,7 +7,7 @@
 #include "RaytracingPassSpecification.hpp"
 
 namespace hg::engine::accel {
-    class __declspec(novtable) EffectSpecification {
+    class macro_novtable EffectSpecification {
     public:
         using this_type = EffectSpecification;
 

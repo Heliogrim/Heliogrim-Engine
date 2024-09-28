@@ -1,7 +1,7 @@
 #include "Io.hpp"
 
-#include <Engine.Assets/Types/Geometry/StaticGeometry.hpp>
-#include <Engine.Assets/Types/Texture/TextureAsset.hpp>
+#include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
+#include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Event/GlobalEventEmitter.hpp>
 #include <Engine.GFX.Event/GraphicRegisterImporterEvent.hpp>
@@ -12,11 +12,13 @@
 #include <Engine.GFX.Loader/Geometry/StaticGeometryLoader.hpp>
 #include <Engine.GFX.Loader/Geometry/StaticGeometryResource.hpp>
 #include <Engine.GFX.Loader/Material/MaterialLoader.hpp>
-#include <Engine.GFX.Loader/Material/MaterialResource.hpp>
 #include <Engine.GFX.Loader/Material/MaterialPrototypeLoader.hpp>
 #include <Engine.GFX.Loader/Material/MaterialPrototypeResource.hpp>
+#include <Engine.GFX.Loader/Material/MaterialResource.hpp>
 #include <Engine.GFX.Loader/Texture/TextureLoader.hpp>
 #include <Engine.GFX.Loader/Texture/TextureResource.hpp>
+#include <Engine.GFX/Importer/FontFileTypes.hpp>
+#include <Engine.GFX/Importer/FontImporter.hpp>
 #include <Engine.GFX/Importer/ImageFileTypes.hpp>
 #include <Engine.GFX/Importer/ImageImporter.hpp>
 #include <Engine.GFX/Importer/ModelFileTypes.hpp>
@@ -127,8 +129,12 @@ void engine::gfx::loader::register_importer(ref<res::ImporterManager> manager_, 
 
 	/**/
 
+	registerIfNotPresent<KtxImporter>(manager_, ImageFileType::Ktx);
 	registerIfNotPresent<KtxImporter>(manager_, ImageFileType::Ktx2);
 	registerIfNotPresent<FbxImporter>(manager_, ModelFileType::Fbx);
+	registerIfNotPresent<FbxImporter>(manager_, ModelFileType::Obj);
+	registerIfNotPresent<FontImporter>(manager_, FontFileType::Otf);
+	registerIfNotPresent<FontImporter>(manager_, FontFileType::Ttf);
 }
 
 void engine::gfx::loader::unregister_importer(ref<res::ImporterManager> manager_, ref<Graphics> graphics_) {
@@ -138,6 +144,10 @@ void engine::gfx::loader::unregister_importer(ref<res::ImporterManager> manager_
 
 	/**/
 
+	manager_.unregisterImporter(ImageFileType::Ktx);
 	manager_.unregisterImporter(ImageFileType::Ktx2);
 	manager_.unregisterImporter(ModelFileType::Fbx);
+	manager_.unregisterImporter(ModelFileType::Obj);
+	manager_.unregisterImporter(FontFileType::Otf);
+	manager_.unregisterImporter(FontFileType::Ttf);
 }

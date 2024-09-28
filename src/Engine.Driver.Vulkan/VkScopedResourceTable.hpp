@@ -1,4 +1,5 @@
 #pragma once
+
 #include <Engine.Accel.Pipeline/__fwd.hpp>
 #include <Engine.Accel.Pipeline/Bind/BindLayout.hpp>
 #include <Engine.Common/Sal.hpp>
@@ -9,10 +10,14 @@
 #include "VkDescriptor.hpp"
 
 namespace hg::driver::vk {
+	class VkResourceTable;
+}
+
+namespace hg::driver::vk {
 	class VkScopedResourceTable :
 		public engine::render::ResourceTable {
 	public:
-		friend class VkResourceTable;
+		friend class ::hg::driver::vk::VkResourceTable;
 
 	public:
 		using this_type = VkScopedResourceTable;

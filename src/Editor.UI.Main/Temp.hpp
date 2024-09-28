@@ -5,10 +5,10 @@
 #include "Editor.UI/Modules/SceneHierarchy.hpp"
 #include "Editor.UI/Modules/SceneHierarchy/SceneViewEntry.hpp"
 #include "Engine.Common/Make.hpp"
-#include "Heliogrim/Actor.hpp"
-#include "Heliogrim/StaticGeometryComponent.hpp"
-#include "Heliogrim/Components/DirectionalLightComponent.hpp"
-#include "Heliogrim/Components/PointLightComponent.hpp"
+#include "Heliogrim/Actor/Actor.hpp"
+#include "Heliogrim/Component/Scene/Geometry/StaticGeometryComponent.hpp"
+#include "Heliogrim/Component/Scene/Light/DirectionalLightComponent.hpp"
+#include "Heliogrim/Component/Scene/Light/PointLightComponent.hpp"
 
 namespace hg::editor {
 	inline void storeActorMapping(ref<EditorUI> editorUi_) {
