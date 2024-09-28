@@ -5,11 +5,17 @@
 #include <Engine.Asserts/Asserts.hpp>
 
 #include "Forward.hpp"
+#include "Move.hpp"
 #include "Sal.hpp"
 #include "Wrapper.hpp"
 #include "Meta/IsAnyOf.hpp"
 
 namespace hg {
+	/**/
+
+	template <class... Types_>
+	class Variant;
+
 	/**/
 
 	template <typename Callable_, class... TestTypes_>
@@ -41,7 +47,45 @@ namespace hg {
 
 		template <class... Types_>
 		using VariantMaybeCommon = typename CommonTypeHelper<HasCommonType<Types_...>, Types_...>::type;
+
+		template <typename Type_, typename Super_>
+		struct SuperSetTypeHelper;
+
+		template <class TypeSet0_, class... TypeSet_, class SuperSet0_, class... SuperSet_>
+		struct SuperSetTypeHelper<Variant<TypeSet0_, TypeSet_...>, Variant<SuperSet0_, SuperSet_...>> {
+			using next = SuperSetTypeHelper<Variant<TypeSet_...>, Variant<SuperSet_...>>;
+			using type = std::conditional_t<
+				std::is_same_v<TypeSet0_, SuperSet0_>,
+				typename next::type,
+				std::false_type
+			>;
+		};
+
+		template <class TypeSet0_, class... TypeSet_>
+		struct SuperSetTypeHelper<Variant<TypeSet0_, TypeSet_...>, Variant<>> {
+			using type = std::false_type;
+		};
+
+		template <class SuperSet0_, class... SuperSet_>
+		struct SuperSetTypeHelper<Variant<>, Variant<SuperSet0_, SuperSet_...>> {
+			using type = std::true_type;
+		};
+
+		template <>
+		struct SuperSetTypeHelper<Variant<>, Variant<>> {
+			using type = std::false_type;
+		};
+
+		template <class Type_, class Super_>
+		concept IsSuperTypeSet = requires {
+			typename SuperSetTypeHelper<Type_, Super_>::type;
+		} && SuperSetTypeHelper<Type_, Super_>::type::value;
 	}
+
+	/**/
+
+	template <class VariantType_, class ArgType_> requires IsSuperTypeSet<ArgType_, VariantType_>
+	[[nodiscard]] constexpr decltype(auto) variant_cast(ArgType_&& arg_);
 
 	/**/
 
@@ -54,6 +98,11 @@ namespace hg {
 
 	public:
 		using underlying_type::underlying_type;
+
+	public:
+		template <class... TypeSubSet_>
+		constexpr explicit Variant(mref<Variant<TypeSubSet_...>> subset_) :
+			underlying_type(variant_cast<this_type>(::hg::move(subset_))) {}
 
 	private:
 		template <class Ret_, class Type_, class Next_, class... Rest_>
@@ -211,4 +260,27 @@ namespace hg {
 			return (this->valueless_by_exception()) ? nullptr : this->shared_type_pointer();
 		}
 	};
+
+	/**/
+
+	template <class VariantType_, class SourceType_> requires IsSuperTypeSet<SourceType_, VariantType_>
+	[[nodiscard]] constexpr decltype(auto) variant_cast(SourceType_&& arg_) {
+		using source_type = std::remove_cvref_t<SourceType_>;
+
+		if (arg_.valueless_by_exception()) {
+			throw std::bad_variant_access();
+		}
+
+		if constexpr (sizeof(VariantType_) == sizeof(source_type) && alignof(VariantType_) == alignof(source_type)) {
+			return *reinterpret_cast<VariantType_*>(std::addressof(arg_));
+
+		} else {
+			return ::std::visit(
+				[](auto&& val_) -> VariantType_ {
+					return std::forward<decltype(val_)>(val_);
+				},
+				::hg::forward<SourceType_>(arg_)
+			);
+		}
+	}
 }
