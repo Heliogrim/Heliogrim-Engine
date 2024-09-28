@@ -19,6 +19,14 @@ namespace hg {
 		template <typename Uy_>
 		constexpr Opt(Uy_&& other_) noexcept :
 			underlying_type(std::forward<Uy_>(other_)) {}
+
+	public:
+		// Note: Comparing a optional pointer-like type, might introduce ambiguity when equal comparing to nullptr
+		bool operator==(std::nullptr_t) const noexcept = delete;
+
+		constexpr bool operator!=(std::nullptr_t) const noexcept {
+			return ::tl::operator!=(static_cast<const underlying_type&>(*this), nullptr);
+		}
 	};
 
 	template <typename Ty_>
@@ -32,3 +40,8 @@ namespace hg {
 		return Opt(std::forward<decltype(args_)>(args_));
 	}
 }
+
+/**/
+
+template <class T>
+struct tl::detail::is_optional_impl<hg::Opt<T>> : std::true_type {};
