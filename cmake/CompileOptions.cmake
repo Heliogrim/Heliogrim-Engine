@@ -219,6 +219,7 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC")
 			/wd4592       # -> disable warning: 'identifier': symbol will be dynamically initialized (implementation limitation)
 			# /wd4201     # -> disable warning: nonstandard extension used: nameless struct/union (caused by GLM)
 			# /wd4127     # -> disable warning: conditional expression is constant (caused by Qt)
+			/wd4996       # -> disable warning: 'deprecated'
 	)
 endif ()
 
@@ -245,6 +246,7 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU" OR "${CMAKE_CXX_COMPILER_ID}" MATCH
 			-Wno-c++20-compat
 
 			-Wno-ignored-qualifiers
+			-Wno-float-equal
 
 			$<$<CXX_COMPILER_ID:GNU>:
 			-Wmaybe-uninitialized
