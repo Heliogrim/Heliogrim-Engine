@@ -179,7 +179,7 @@
 
 #if not defined(macro_attr_intr)
 #if defined(ENV_MSVC) && not defined(__clang__)
-#define macro_attr_intr [[msvc::intrinsic]]
+#define macro_attr_intr msvc::intrinsic
 #else
 #define macro_attr_intr
 #endif
