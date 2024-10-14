@@ -116,7 +116,7 @@ namespace hg::engine::resource {
 		template <typename Type_>
 		ref<this_type> serializeByteOrdered(Type_&& value_, const ArchiveStreamMode mode_) {
 
-			static_assert(not std::is_signed_v<Type_>, "");
+			static_assert(not std::is_signed_v<Type_>);
 
 			if (not shouldSwapBytes()) {
 				serializeBytes(&value_, sizeof(value_), mode_);
@@ -191,6 +191,8 @@ namespace hg::engine::resource {
 			return self_;
 		}
 
+		START_SUPPRESS_WARNINGS
+
 		inline friend ref<this_type> operator>>(ref<this_type> self_, ref<float> value_) {
 			self_.serializeByteOrdered(reinterpret_cast<ref<u32>>(value_), ArchiveStreamMode::eLoad);
 			return self_;
@@ -200,6 +202,8 @@ namespace hg::engine::resource {
 			self_.serializeByteOrdered(reinterpret_cast<ref<u64>>(value_), ArchiveStreamMode::eLoad);
 			return self_;
 		}
+
+		STOP_SUPPRESS_WARNINGS
 
 		template <typename EnumType_> requires std::is_enum_v<EnumType_>
 		inline friend ref<this_type> operator>>(ref<this_type> self_, ref<EnumType_> value_) {
@@ -292,8 +296,11 @@ namespace hg::engine::resource {
 			return self_;
 		}
 
+		START_SUPPRESS_WARNINGS
+
 		inline friend ref<this_type> operator<<(ref<this_type> self_, cref<float> value_) {
 			self_.serializeByteOrdered(
+				// Note: This should be well defined as float* (-> u32*) -> char*
 				reinterpret_cast<ref<u32>>(const_cast<ref<float>>(value_)),
 				ArchiveStreamMode::eStore
 			);
@@ -307,6 +314,8 @@ namespace hg::engine::resource {
 			);
 			return self_;
 		}
+
+		STOP_SUPPRESS_WARNINGS
 
 		template <typename EnumType_> requires std::is_enum_v<EnumType_>
 		inline friend ref<this_type> operator<<(ref<this_type> self_, cref<EnumType_> value_) {
