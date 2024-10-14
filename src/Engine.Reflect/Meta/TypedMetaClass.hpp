@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Engine.Common/Meta/Support.hpp>
 #include <Engine.Common/Meta/Type.hpp>
 
 #include "MetaClass.hpp"
@@ -15,7 +16,7 @@ namespace hg {
 }
 
 namespace hg {
-	template <CompleteType TargetType_, typename TypeList_ = reflect::__type_list_lookup<TargetType_>>
+	template <CompleteType TargetType_, typename TypeList_ = reflect::__type_list_lookup<meta::peeled_t<TargetType_>>>
 	class TypedMetaClass;
 
 	template <CompleteType TargetType_, typename... InheritTypes_>
@@ -27,20 +28,19 @@ namespace hg {
 
 	public:
 		using this_type = TypedMetaClass<TargetType_, reflect::__type_list<InheritTypes_...>>;
-		using target_type = TargetType_;
+		using target_type = meta::peeled_t<TargetType_>;
 
 	public:
 		[[nodiscard]] constexpr static const __restricted_ptr<const this_type> get() noexcept;
 
 	private:
 		constexpr TypedMetaClass() noexcept :
-			MetaClass((typename reflect::query_type_id<TargetType_>::result {})()) {}
+			MetaClass((typename reflect::query_type_id<target_type>::result {})()) {}
 
 		constexpr ~TypedMetaClass() override = default;
 
 	private:
-		CompileMap<type_id, ::std::nullptr_t, sizeof...(InheritTypes_)> _inheritance = make_compile_map<type_id,
-			::std::nullptr_t>(
+		CompileMap<type_id, ::std::nullptr_t, sizeof...(InheritTypes_)> _inheritance = make_compile_map<type_id, ::std::nullptr_t>(
 			std::make_pair<type_id, ::std::nullptr_t>(
 				(typename reflect::query_type_id<InheritTypes_>::result {})(),
 				nullptr
@@ -65,12 +65,9 @@ namespace hg {
 	};
 
 	template <CompleteType TargetType_, typename... InheritTypes_>
-	constexpr const __restricted_ptr<
-		const typename TypedMetaClass<
-			TargetType_, reflect::__type_list<InheritTypes_...>
-		>::this_type> TypedMetaClass<
+	constexpr const __restricted_ptr<const typename TypedMetaClass<
 		TargetType_, reflect::__type_list<InheritTypes_...>
-	>::get() noexcept {
+	>::this_type> TypedMetaClass<TargetType_, reflect::__type_list<InheritTypes_...>>::get() noexcept {
 		return &typed_meta_holder<TargetType_, reflect::__type_list<InheritTypes_...>>::instance;
 	}
 }
