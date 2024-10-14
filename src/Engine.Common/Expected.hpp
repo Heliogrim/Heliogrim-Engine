@@ -19,6 +19,8 @@ namespace hg {
 		using this_type = Result<Type_, Error_>;
 		using underlying_type = tl::expected<Type_, Error_>;
 
+		using value_type = typename underlying_type::value_type;
+
 	public:
 		using underlying_type::expected;
 
@@ -72,3 +74,8 @@ namespace hg {
 	template <typename Error_>
 	Unexpected(Error_&&) -> Unexpected<std::decay_t<Error_>>;
 }
+
+/**/
+
+template <class T, class E>
+struct tl::detail::is_expected_impl<hg::Result<T, E>> : std::true_type {};
