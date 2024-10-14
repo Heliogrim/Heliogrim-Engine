@@ -5,6 +5,7 @@
 #include <utility>
 
 #include "RefCounted.hpp"
+#include "../Move.hpp"
 #include "../Wrapper.hpp"
 #include "../Memory/MemoryPointer.hpp"
 
@@ -14,9 +15,9 @@ namespace hg {
 
 	/**/
 
-	class macro_novtable RefCountedBlockBase {
+	class RefCountedBlockBase {
 	public:
-		constexpr virtual ~RefCountedBlockBase() noexcept = default;
+		virtual ~RefCountedBlockBase() noexcept = default;
 
 		virtual void destroy_obj() = 0;
 	};
@@ -25,6 +26,9 @@ namespace hg {
 	class RefCountedBlock final :
 		public RefCountedBlockBase {
 	public:
+		template <typename>
+		friend class RefCountedBlock;
+
 		friend class ::hg::RefCounted<Ty_>;
 
 	public:
@@ -35,7 +39,7 @@ namespace hg {
 
 	public:
 		template <typename... Args_>
-		explicit constexpr RefCountedBlock(Args_&&... args_) :
+		explicit RefCountedBlock(Args_&&... args_) :
 			RefCountedBlockBase(),
 			_refs(1),
 			_obj(storage_type::make(std::forward<Args_>(args_)...)) {}
@@ -68,8 +72,10 @@ namespace hg {
 			static_cast<ptr<RefCountedBlockBase>>(this)->destroy_obj();
 		}
 
-		constexpr void destroy_obj() override {
-			_obj.destroy();
+		void destroy_obj() override {
+			if constexpr (not std::is_void_v<Ty_>) {
+				_obj.destroy();
+			}
 		}
 
 	public:
@@ -79,7 +85,7 @@ namespace hg {
 			}
 		}
 
-		[[nodiscard]] constexpr bool dec_nz() {
+		[[nodiscard]] bool dec_nz() {
 			if (_refs == 0) {
 				return false;
 			}
@@ -110,6 +116,10 @@ namespace hg {
 
 	template <typename Ty_>
 	class RefCounted final {
+	public:
+		template <typename>
+		friend class RefCounted;
+
 	public:
 		using this_type = RefCounted<Ty_>;
 
@@ -143,6 +153,11 @@ namespace hg {
 		constexpr RefCounted(::std::nullptr_t) noexcept :
 			RefCounted() {}
 
+		template <typename Ux_>
+		constexpr RefCounted(RefCounted<Ux_>&& other_) noexcept requires std::is_convertible_v<ref<Ux_>, ref<Ty_>> :
+			_base(_void_cast<block_type>(std::exchange(other_._base, nullptr).get())),
+			_obj(::hg::move(other_._obj)) {}
+
 		constexpr RefCounted(const this_type& other_) noexcept :
 			_base(other_._base),
 			_obj(other_._obj) {
@@ -153,7 +168,7 @@ namespace hg {
 			_base(std::exchange(other_._base, nmpt<block_type> { nullptr })),
 			_obj(std::exchange(other_._obj, storage_type { nullptr })) {}
 
-		constexpr ~RefCounted() {
+		~RefCounted() {
 			dec_not_null();
 		}
 
@@ -162,7 +177,7 @@ namespace hg {
 			if (std::addressof(other_) != this) {
 				dec_not_null();
 				_base = std::exchange(other_._base, nmpt<block_type> { nullptr });
-				_obj = std::exchange(other_._base, storage_type { nullptr });
+				_obj = std::exchange(other_._obj, storage_type { nullptr });
 			}
 			return *this;
 		}
@@ -171,7 +186,7 @@ namespace hg {
 			if (std::addressof(other_) != this) {
 				dec_not_null();
 				_base = other_._base;
-				_obj = other_._base;
+				_obj = other_._obj;
 				inc_not_null();
 			}
 			return *this;
@@ -183,8 +198,13 @@ namespace hg {
 
 	private:
 		constexpr void destroy_block() {
+
 			auto alloc = std::allocator<block_type> {};
-			alloc.deallocate(_base.get(), 1);
+			auto alloc_traits = std::allocator_traits<std::allocator<block_type>> {};
+
+			alloc_traits.destroy(alloc, _base.get());
+			alloc.deallocate(_base.get(), 1uLL);
+
 			_base = nullptr;
 		}
 
@@ -194,7 +214,7 @@ namespace hg {
 			}
 		}
 
-		constexpr void dec_not_null() {
+		void dec_not_null() {
 			if (_base == nullptr) {
 				return;
 			}
@@ -241,14 +261,27 @@ namespace hg {
 			return _obj.get();
 		}
 
-		[[nodiscard]] constexpr cref<Ty_> operator*() const {
+		template <typename Tx_ = Ty_> requires (not std::is_void_v<Ty_>)
+		[[nodiscard]] constexpr mref<Tx_> operator*() && {
 			throw_if_null();
 			return *_obj;
 		}
 
-		[[nodiscard]] constexpr ref<Ty_> operator*() {
+		template <typename Tx_ = Ty_> requires (not std::is_void_v<Ty_>)
+		[[nodiscard]] constexpr cref<Tx_> operator*() const & {
 			throw_if_null();
 			return *_obj;
+		}
+
+		template <typename Tx_ = Ty_> requires (not std::is_void_v<Ty_>)
+		[[nodiscard]] constexpr ref<Tx_> operator*() & {
+			throw_if_null();
+			return *_obj;
+		}
+
+	public:
+		[[nodiscard]] constexpr bool operator==(std::nullptr_t) const noexcept {
+			return _obj == nullptr;
 		}
 	};
 }
