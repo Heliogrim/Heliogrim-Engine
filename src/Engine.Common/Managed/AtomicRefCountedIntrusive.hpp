@@ -105,6 +105,7 @@ namespace hg {
 		using this_type = AtomicRefCountedIntrusive<Ty_>;
 
 		using storage_type = arci_atomic_packed_type;
+		using value_type = Ty_;
 
 	private:
 		[[nodiscard]] static arci_packed_type encode_pointer(const ptr<Ty_> pt_) noexcept {
@@ -131,13 +132,13 @@ namespace hg {
 		template <typename... Args_> requires std::is_constructible_v<Ty_, Args_...>
 		[[nodiscard]] constexpr static this_type create(Args_&&... args_) noexcept {
 
-			auto alloc = std::allocator<Ty_> {};
-			auto alloc_traits = std::allocator_traits<std::allocator<Ty_>> {};
-
-			auto obj = alloc.allocate(1);
-			alloc_traits.construct(alloc, obj, std::forward<Args_>(args_)...);
-
-			return this_type { encode(obj, 1u) };
+			if constexpr (std::is_aggregate_v<Ty_>) {
+				auto obj = new Ty_ { ::std::forward<Args_>(args_)... };
+				return this_type { encode(obj, 1u) };
+			} else {
+				auto obj = new Ty_(::std::forward<Args_>(args_)...);
+				return this_type { encode(obj, 1u) };
+			}
 		}
 
 		[[nodiscard]] constexpr static this_type create_from_storage(const ptr<Ty_> self_) noexcept {
@@ -295,11 +296,8 @@ namespace hg {
 	private:
 		constexpr void destroy_obj(ptr<Ty_> obj_) {
 
-			auto alloc = std::allocator<Ty_> {};
-			auto alloc_traits = std::allocator_traits<std::allocator<Ty_>> {};
-
-			alloc_traits.destroy(alloc, obj_);
 			_obj.store(arci_packed_type { 0 }, std::memory_order::relaxed);
+			delete obj_;
 		}
 
 		constexpr void cascade_dec(const ptr<Ty_> obj_) {
@@ -346,8 +344,8 @@ namespace hg {
 			dec_not_null();
 		}
 
-		// TODO:
-		[[nodiscard]] auto release() noexcept = delete;
+		// Attention: Releasing an intrusive ref-counted object is semantically incorrect.
+		auto release() noexcept = delete;
 
 	public:
 		[[nodiscard]] constexpr ptr<Ty_> operator->() const {

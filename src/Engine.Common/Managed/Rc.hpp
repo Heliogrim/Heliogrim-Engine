@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../Concurrent/SharedMemoryReference.hpp"
 
 #include "RefCounted.hpp"
