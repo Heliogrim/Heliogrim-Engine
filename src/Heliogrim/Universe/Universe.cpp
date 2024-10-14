@@ -66,14 +66,14 @@ ptr<Actor> Universe::addActor(mref<VolatileActor<>> actor_) {
 	const auto* const universe = _internal.get();
 
 	/**/
-	auto actor = actor_.release();
+	auto actor = std::move(actor_).release();
 	universe->getRootLevel()->addActor(actor);
 
 	/**/
 	const auto scene = universe->getScene();
 	const auto ctx = scene->registerContext();
 
-	actor_->registerComponents(*ctx.get());
+	actor->registerComponents(*ctx.get());
 
 	/**/
 
@@ -111,29 +111,27 @@ void Universe::dropActor(mref<ptr<Actor>> actor_) {
 }
 
 Future<Universe> hg::CreateUniverse() noexcept {
-	auto prom {
-		hg::concurrent::promise<Universe>(
-			[]() {
-				auto defaultScene = make_uptr<engine::scene::GameScene>();
-				defaultScene->prepare();
+	auto prom = hg::concurrent::promise<Universe>(
+		[]() {
+			auto defaultScene = make_uptr<engine::scene::GameScene>();
+			defaultScene->prepare();
 
-				auto defaultLevel = engine::core::make_root_like_level();
+			auto defaultLevel = engine::core::make_root_like_level();
 
-				auto universe {
-					make_sptr<engine::core::Universe>(
-						std::move(defaultScene),
-						DenseSet<Arci<engine::core::Level>> { std::move(defaultLevel) }
-					)
-				};
-				engine::Engine::getEngine()->addUniverse(clone(universe));
+			auto universe {
+				make_sptr<engine::core::Universe>(
+					std::move(defaultScene),
+					DenseSet<Arci<engine::core::Level>> { std::move(defaultLevel) }
+				)
+			};
+			engine::Engine::getEngine()->addUniverse(clone(universe));
 
-				return Universe { std::move(universe) };
-			}
-		)
-	};
+			return Universe { std::move(universe) };
+		}
+	);
 
 	auto fut { prom.get() };
-	execute(prom);
+	execute(::hg::move(prom));
 
 	return fut;
 }
@@ -171,7 +169,7 @@ Future<bool> hg::Destroy(mref<Universe> universe_) {
 	};
 
 	auto fut { prom.get() };
-	execute(prom);
+	execute(::hg::move(prom));
 
 	return fut;
 }

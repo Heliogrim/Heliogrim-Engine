@@ -383,11 +383,18 @@ namespace hg::concurrent {
 		friend class ::hg::concurrent::nxpromise;
 
 	public:
+		using this_type = nxpromise<Ret, Args...>;
+
 		using value_type = nxpromise<Ret, Args...>;
 		using reference_type = nxpromise<Ret, Args...>&;
 		using const_reference_type = const nxpromise<Ret, Args...>&;
 
 		using fnc_type = std::function<Ret(Args...)>;
+
+	public:
+		nxpromise(const this_type&) = delete;
+
+		nxpromise(this_type&&) noexcept = default;
 
 		/**
 		 * Destructor
@@ -397,6 +404,12 @@ namespace hg::concurrent {
 		 */
 		~nxpromise() = default;
 
+	public:
+		ref<this_type> operator=(cref<this_type>) = delete;
+
+		ref<this_type> operator=(mref<this_type>) noexcept = default;
+
+	public:
 		/**
 		 * Stacks the given function and returns the next promise in range
 		 *
@@ -429,16 +442,16 @@ namespace hg::concurrent {
 		 */
 		template <typename NxRet>
 		[[nodiscard]] nxpromise<NxRet, Ret> then(const std::function<NxRet(Ret)>& fnc_) {
-			nxpromise<NxRet, Ret> next(std::move(fnc_));
+			auto next = nxpromise<NxRet, Ret> { std::move(fnc_) };
 
 			// Anonymous Subscriber
 			_state->stack(
 				[nxs = next._state](Ret&& args_) {
-					nxs->step(std::forward(args_));
+					nxs->step(std::move(args_));
 				}
 			);
 
-			return std::forward(next);
+			return next;
 		}
 
 		/**
@@ -449,7 +462,7 @@ namespace hg::concurrent {
 		 *
 		 * @param  fnc_ The function.
 		 */
-		void finally(const std::function<void(Ret)>&& fnc_) {
+		void finally(std::function<void(Ret)>&& fnc_) {
 			_state->stack(std::move(fnc_));
 		}
 
@@ -501,6 +514,8 @@ namespace hg::concurrent {
 	template <typename Ret>
 	class promise {
 	public:
+		using this_type = promise<Ret>;
+
 		using value_type = promise<Ret>;
 		using reference_type = promise<Ret>&;
 		using const_reference_type = const promise<Ret>&;
@@ -529,6 +544,10 @@ namespace hg::concurrent {
 		promise(const fnc_type& fnc_) :
 			_state(make_sptr<promise_state<Ret>>(std::move(fnc_))) {}
 
+		promise(const this_type&) = delete;
+
+		promise(this_type&&) noexcept = default;
+
 		/**
 		 * Destructor
 		 *
@@ -537,6 +556,12 @@ namespace hg::concurrent {
 		 */
 		~promise() = default;
 
+	public:
+		ref<this_type> operator=(cref<this_type>) = delete;
+
+		ref<this_type> operator=(mref<this_type>) noexcept = default;
+
+	public:
 		/**
 		 * Stacks the given function and returns the next promise in range
 		 *
@@ -569,16 +594,16 @@ namespace hg::concurrent {
 		 */
 		template <typename NxRet>
 		[[nodiscard]] nxpromise<NxRet, Ret> then(const std::function<NxRet(Ret)>& fnc_) {
-			nxpromise<NxRet, Ret> next(std::move(fnc_));
+			auto next = nxpromise<NxRet, Ret> { std::move(fnc_) };
 
 			// Anonymous Subscriber
 			_state->stack(
 				[nxs = next._state](Ret&& args_) {
-					return nxs->step(std::forward(args_));
+					return nxs->step(std::move(args_));
 				}
 			);
 
-			return std::forward(next);
+			return next;
 		}
 
 		/**
@@ -589,7 +614,7 @@ namespace hg::concurrent {
 		 *
 		 * @param fnc_ The function.
 		 */
-		void finally(const std::function<void(Ret)>&& fnc_) {
+		void finally(std::function<void(Ret)>&& fnc_) {
 			_state->stack(std::move(fnc_));
 		}
 
@@ -618,6 +643,13 @@ namespace hg::concurrent {
 			_state->step();
 		}
 
+	public:
+		[[nodiscard]] operator std::function<void()>() && {
+			return [_state = std::move(_state)]() mutable -> void {
+				_state->step();
+			};
+		}
+
 	private:
 		mutable typename promise_state<Ret>::shared_type _state;
 	};
@@ -625,6 +657,8 @@ namespace hg::concurrent {
 	template <>
 	class promise<void> {
 	public:
+		using this_type = promise<void>;
+
 		using value_type = promise<void>;
 		using reference_type = promise<void>&;
 		using const_reference_type = const promise<void>&;
@@ -656,7 +690,7 @@ namespace hg::concurrent {
 
 		promise(const promise&) = default;
 
-		promise(mref<promise>) noexcept = default;
+		promise(this_type&&) noexcept = default;
 
 		/**
 		 * Destructor
@@ -669,7 +703,7 @@ namespace hg::concurrent {
 	public:
 		ref<promise> operator=(cref<promise>) = delete;
 
-		ref<promise> operator=(mref<promise>) = delete;
+		ref<promise> operator=(mref<promise>) noexcept = default;
 
 	public:
 		/**
@@ -704,7 +738,7 @@ namespace hg::concurrent {
 		 */
 		template <typename NxRet>
 		[[nodiscard]] nxpromise<NxRet, void> then(const std::function<NxRet(void)>& fnc_) {
-			nxpromise<NxRet, void> next(std::move(fnc_));
+			auto next = nxpromise<NxRet, void> { std::move(fnc_) };
 
 			// Anonymous Subscriber
 			_state->stack(
@@ -713,7 +747,7 @@ namespace hg::concurrent {
 				}
 			);
 
-			return std::forward(next);
+			return next;
 		}
 
 		/**
@@ -724,7 +758,7 @@ namespace hg::concurrent {
 		 *
 		 * @param fnc_ The function.
 		 */
-		void finally(const std::function<void(void)>&& fnc_) {
+		void finally(std::function<void(void)>&& fnc_) {
 			_state->stack(std::move(fnc_));
 		}
 
@@ -751,6 +785,13 @@ namespace hg::concurrent {
 		 */
 		void operator()() const {
 			_state->step();
+		}
+
+	public:
+		[[nodiscard]] operator std::function<void()>() && {
+			return [_state = std::move(_state)]() mutable -> void {
+				_state->step();
+			};
 		}
 
 	private:
