@@ -19,9 +19,9 @@ namespace hg {
 
 	template <typename Type_> requires (not ClassHasMeta<Type_>)
 	struct IsTypeFn<Type_> {
-		static_assert(not ClassHasMeta<Type_>);
+		static_assert(ClassHasMeta<Type_>);
 	};
 
-	template <ClassHasMeta Type_>
+	template <CompleteType Type_>
 	static constexpr IsTypeFn<Type_> IsType {};
 }
