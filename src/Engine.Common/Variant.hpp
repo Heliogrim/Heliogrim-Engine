@@ -27,6 +27,8 @@ namespace hg {
 			std::is_nothrow_convertible<ptr<Types_>, ptr<WorkType_>>...
 		>;
 
+		/**/
+
 		template <typename... Types_>
 		concept HasCommonType = requires {
 			typename std::common_reference<Types_...>::type;
@@ -48,15 +50,21 @@ namespace hg {
 		template <class... Types_>
 		using VariantMaybeCommon = typename CommonTypeHelper<HasCommonType<Types_...>, Types_...>::type;
 
+		/**/
+
 		template <typename Type_, typename Super_>
 		struct SuperSetTypeHelper;
 
 		template <class TypeSet0_, class... TypeSet_, class SuperSet0_, class... SuperSet_>
 		struct SuperSetTypeHelper<Variant<TypeSet0_, TypeSet_...>, Variant<SuperSet0_, SuperSet_...>> {
-			using next = SuperSetTypeHelper<Variant<TypeSet_...>, Variant<SuperSet_...>>;
 			using type = std::conditional_t<
 				std::is_same_v<TypeSet0_, SuperSet0_>,
-				typename next::type,
+				typename SuperSetTypeHelper<Variant<TypeSet_...>, Variant<SuperSet_...>>::type,
+				typename SuperSetTypeHelper<Variant<TypeSet0_, TypeSet_...>, Variant<SuperSet_...>>::type
+			>;
+			using covariant_index_sequence = std::conditional_t<
+				std::is_same_v<TypeSet0_, SuperSet0_>,
+				typename SuperSetTypeHelper<Variant<TypeSet_...>, Variant<SuperSet_...>>::type,
 				std::false_type
 			>;
 		};
@@ -64,22 +72,30 @@ namespace hg {
 		template <class TypeSet0_, class... TypeSet_>
 		struct SuperSetTypeHelper<Variant<TypeSet0_, TypeSet_...>, Variant<>> {
 			using type = std::false_type;
+			using covariant_index_sequence = std::false_type;
 		};
 
 		template <class SuperSet0_, class... SuperSet_>
 		struct SuperSetTypeHelper<Variant<>, Variant<SuperSet0_, SuperSet_...>> {
 			using type = std::true_type;
+			using covariant_index_sequence = std::true_type;
 		};
 
 		template <>
 		struct SuperSetTypeHelper<Variant<>, Variant<>> {
-			using type = std::false_type;
+			using type = std::true_type;
+			using covariant_index_sequence = std::true_type;
 		};
 
 		template <class Type_, class Super_>
 		concept IsSuperTypeSet = requires {
 			typename SuperSetTypeHelper<Type_, Super_>::type;
 		} && SuperSetTypeHelper<Type_, Super_>::type::value;
+
+		template <class Type_, class Super_>
+		concept CovariantIndexSeq = requires {
+			typename SuperSetTypeHelper<Type_, Super_>::covariant_index_sequence;
+		} && SuperSetTypeHelper<Type_, Super_>::covariant_index_sequence::value;
 	}
 
 	/**/
@@ -271,7 +287,11 @@ namespace hg {
 			throw std::bad_variant_access();
 		}
 
-		if constexpr (sizeof(VariantType_) == sizeof(source_type) && alignof(VariantType_) == alignof(source_type)) {
+		if constexpr (
+			CovariantIndexSeq<SourceType_, VariantType_> &&
+			sizeof(VariantType_) == sizeof(source_type) &&
+			alignof(VariantType_) == alignof(source_type)
+		) {
 			return *reinterpret_cast<VariantType_*>(std::addressof(arg_));
 
 		} else {
