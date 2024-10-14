@@ -1,7 +1,7 @@
 #pragma once
+
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Pedantic.Resource/ResourceAccessor.hpp>
 
 #include "MutableStorageArchive.hpp"
 #include "StorageBaseArchive.hpp"
@@ -14,14 +14,14 @@ namespace hg::engine::resource {
 
 	public:
 		StorageWriteonlyArchive(
-			mref<storage::AccessBlobReadWrite> storage_,
-			mref<streamoff> baseOffset_,
-			mref<streamsize> initialSize_
+			_Inout_ ref<Blob> storage_,
+			_In_ streamoff baseOffset_,
+			_In_ streamsize initialSize_
 		);
 
 		~StorageWriteonlyArchive() override;
 
 	public:
-		void serializeBytes(const ptr<void> value_, u64 size_, const ArchiveStreamMode mode_) override;
+		void serializeBytes(ptr<void> value_, u64 size_, ArchiveStreamMode mode_) override;
 	};
 }

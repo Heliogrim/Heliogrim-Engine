@@ -1,17 +1,19 @@
 #include "StorageReadonlyArchive.hpp"
 
+#include <Engine.Resource.Blob/Blob.hpp>
+
 using namespace hg::engine::resource;
 using namespace hg;
 
 StorageReadonlyArchive::StorageReadonlyArchive(
-	mref<storage::AccessBlobReadonly> storage_,
-	mref<streamoff> baseOffset_,
-	mref<streamsize> initialSize_
+	cref<Blob> storage_,
+	const streamoff baseOffset_,
+	const streamsize initialSize_
 ) :
-	ImmutableStorageArchive(
-		std::move(storage_),
-		std::move(baseOffset_),
-		std::move(initialSize_)
+	InheritMeta(
+		storage_,
+		baseOffset_,
+		initialSize_
 	) {}
 
 StorageReadonlyArchive::~StorageReadonlyArchive() = default;
@@ -23,7 +25,7 @@ void StorageReadonlyArchive::serializeBytes(const ptr<void> value_, u64 size_, c
 		return;
 	}
 
-	const auto read = _storage->fully().read(_baseOffset + _cursor, { static_cast<ptr<_::byte>>(value_), size_ });
+	const auto read = _storage.read(_baseOffset + _cursor, { static_cast<ptr<_::byte>>(value_), size_ });
 
 	// TODO: Check whether we still need to check for partial read operations
 	if (read.empty() || read.size() != size_) {

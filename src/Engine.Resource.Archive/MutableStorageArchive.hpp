@@ -1,7 +1,14 @@
 #pragma once
+
 #include "StorageBaseArchive.hpp"
 
 namespace hg::engine::resource {
+	/**/
+
+	class Blob;
+
+	/**/
+
 	class macro_novtable MutableStorageArchive :
 		public StorageBaseArchive {
 	public:
@@ -9,25 +16,20 @@ namespace hg::engine::resource {
 
 	protected:
 		MutableStorageArchive(
-			mref<storage::AccessBlobReadWrite> storage_,
-			mref<streamoff> baseOffset_,
-			mref<streamsize> initialSize_
+			_Inout_ ref<Blob> storage_,
+			_In_ streamoff baseOffset_,
+			_In_ streamsize initialSize_
 		) :
 			StorageBaseArchive(std::move(baseOffset_), std::move(initialSize_)),
-			_storage(std::move(storage_)) {}
+			_storage(storage_) {}
 
 	public:
 		~MutableStorageArchive() noexcept override = default;
 
 	protected:
-		storage::AccessBlobReadWrite _storage;
+		ref<Blob> _storage;
 
 	public:
 		[[nodiscard]] s64 totalSize() const noexcept override;
-
-		[[nodiscard]] storage::AccessBlobReadWrite release() && {
-			// BUG: Breaks
-			return std::move(_storage);
-		}
 	};
 }

@@ -1,16 +1,14 @@
 #pragma once
 
-#include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
-#include <Engine.Pedantic.Resource/Resource.hpp>
-#include <Engine.Pedantic.Resource/ResourceAccessor.hpp>
-#include <Engine.Resource.Blob/Blob.hpp>
-#include <Engine.Resource.Package/Package.hpp>
-#include <Engine.Storage.IO/StorageIo.hpp>
+#include <Engine.Common/Types.hpp>
+#include <Engine.Common/Wrapper.hpp>
+#include <Engine.Reflect/Inherit/InheritBase.hpp>
 
 #include "Archive.hpp"
 
 namespace hg::engine::resource {
 	class macro_novtable StorageBaseArchive :
+		public InheritBase<StorageBaseArchive>,
 		public Archive {
 	public:
 		using this_type = StorageBaseArchive;
@@ -39,7 +37,7 @@ namespace hg::engine::resource {
 		s64 _cursor;
 
 	public:
-		void seek(const s64 pos_) override;
+		void seek(s64 pos_) override;
 
 		[[nodiscard]] s64 tell() const noexcept override;
 	};

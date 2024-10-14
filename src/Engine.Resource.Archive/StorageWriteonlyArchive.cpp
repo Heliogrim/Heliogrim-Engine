@@ -1,17 +1,19 @@
 #include "StorageWriteonlyArchive.hpp"
 
+#include <Engine.Resource.Blob/Blob.hpp>
+
 using namespace hg::engine::resource;
 using namespace hg;
 
 StorageWriteonlyArchive::StorageWriteonlyArchive(
-	mref<storage::AccessBlobReadWrite> storage_,
-	mref<streamoff> baseOffset_,
-	mref<streamsize> initialSize_
+	ref<Blob> storage_,
+	const streamoff baseOffset_,
+	const streamsize initialSize_
 ) :
 	MutableStorageArchive(
-		std::move(storage_),
-		std::move(baseOffset_),
-		std::move(initialSize_)
+		storage_,
+		baseOffset_,
+		initialSize_
 	) {}
 
 StorageWriteonlyArchive::~StorageWriteonlyArchive() = default;
@@ -23,7 +25,7 @@ void StorageWriteonlyArchive::serializeBytes(const ptr<void> value_, u64 size_, 
 		return;
 	}
 
-	const auto wrote = _storage->fully().write(_baseOffset + _cursor, { static_cast<ptr<_::byte>>(value_), size_ });
+	const auto wrote = _storage.write(_baseOffset + _cursor, { static_cast<ptr<_::byte>>(value_), size_ });
 
 	if (wrote.empty()) {
 		setError();

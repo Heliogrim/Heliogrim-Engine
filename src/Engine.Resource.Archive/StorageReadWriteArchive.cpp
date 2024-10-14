@@ -1,17 +1,19 @@
 #include "StorageReadWriteArchive.hpp"
 
+#include <Engine.Resource.Blob/Blob.hpp>
+
 using namespace hg::engine::resource;
 using namespace hg;
 
 StorageReadWriteArchive::StorageReadWriteArchive(
-	mref<storage::AccessBlobReadWrite> storage_,
-	mref<streamoff> baseOffset_,
-	mref<streamsize> initialSize_
+	ref<Blob> storage_,
+	const streamoff baseOffset_,
+	const streamsize initialSize_
 ) :
 	MutableStorageArchive(
-		std::move(storage_),
-		std::move(baseOffset_),
-		std::move(initialSize_)
+		storage_,
+		baseOffset_,
+		initialSize_
 	) {}
 
 StorageReadWriteArchive::~StorageReadWriteArchive() = default;
@@ -25,7 +27,7 @@ void StorageReadWriteArchive::serializeBytes(const ptr<void> value_, u64 size_, 
 
 	if (mode_ == ArchiveStreamMode::eStore) {
 
-		const auto wrote = _storage->fully().write(_baseOffset + _cursor, { static_cast<ptr<_::byte>>(value_), size_ });
+		const auto wrote = _storage.write(_baseOffset + _cursor, { static_cast<ptr<_::byte>>(value_), size_ });
 
 		if (wrote.empty()) {
 			setError();
@@ -36,7 +38,7 @@ void StorageReadWriteArchive::serializeBytes(const ptr<void> value_, u64 size_, 
 
 	} else {
 
-		const auto read = _storage->fully().read(_baseOffset + _cursor, { static_cast<ptr<_::byte>>(value_), size_ });
+		const auto read = _storage.read(_baseOffset + _cursor, { static_cast<ptr<_::byte>>(value_), size_ });
 
 		// TODO: Check whether we still need to check for partial read operations
 		if (read.empty() || read.size() != size_) {
