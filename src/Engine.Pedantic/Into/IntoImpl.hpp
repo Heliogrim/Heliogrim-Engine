@@ -13,11 +13,7 @@ namespace hg {
 	>
 	struct into_impl;
 
-	/*
-	{
-	    [[nodiscard]] constexpr TargetType_ operator()(SourceType_&& obj_) noexcept;
-	};
-	*/
+	/**/
 
 	template <
 		typename To_,

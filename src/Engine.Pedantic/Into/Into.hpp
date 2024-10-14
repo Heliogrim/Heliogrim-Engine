@@ -3,6 +3,7 @@
 #include <concepts>
 #include <type_traits>
 #include <Engine.Common/Forward.hpp>
+#include <Engine.Common/Meta/Type.hpp>
 
 #include "IntoImpl.hpp"
 #include "IntoMemberFunction.hpp"
@@ -239,6 +240,13 @@ namespace hg {
 		return into_impl<Template_<TargetType_>, Template_<SourceType>> {}(
 			::hg::forward<Template_<SourceType>>(obj_)
 		);
+	}
+
+	template <typename Ty_, typename Ux_>
+	[[nodiscard]] constexpr Ux_ into(Ty_&& obj_) noexcept requires CompleteType<into_impl<Ty_, Ux_>> && requires {
+		{ into_impl<Ty_, Ux_> {}(std::declval<Ty_>()) };
+	} {
+		return into_impl<Ty_, Ux_> {}(::hg::forward<Ty_>(obj_));
 	}
 
 	/**/
