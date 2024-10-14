@@ -5,13 +5,14 @@
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/UniqueValue.hpp>
 #include <Engine.Filesystem/Url.hpp>
+#include <Engine.Reflect/Inherit/InheritMeta.hpp>
 
 #include "../Blob.hpp"
 
 namespace hg::engine::resource {
 	// TODO: Determine how we should handle the difference between 'readWrite' and 'readonly' access.
 	class LfsSyncBlob final :
-		public Blob {
+		public InheritMeta<LfsSyncBlob, Blob> {
 	public:
 		explicit LfsSyncBlob(mref<fs::Path> path_) noexcept;
 

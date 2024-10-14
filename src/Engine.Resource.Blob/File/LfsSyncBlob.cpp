@@ -4,7 +4,7 @@ using namespace hg::engine::resource;
 using namespace hg;
 
 LfsSyncBlob::LfsSyncBlob(mref<fs::Path> path_) noexcept :
-	Blob(),
+	InheritMeta(),
 	_stream(std::in_place) {
 	if (not std::filesystem::exists(path_)) {
 		std::filesystem::create_directories(path_.parentPath());

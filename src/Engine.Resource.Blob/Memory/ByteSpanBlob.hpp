@@ -6,17 +6,18 @@
 #include <utility>
 #include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Common/Types.hpp>
+#include <Engine.Reflect/Inherit/InheritMeta.hpp>
 
 #include "../Blob.hpp"
 
 namespace hg::engine::resource {
 	class ByteSpanBlob final :
-		public Blob {
+		public InheritMeta<ByteSpanBlob, Blob> {
 	public:
 		constexpr ByteSpanBlob() noexcept = default;
 
 		constexpr explicit ByteSpanBlob(std::span<_::byte> bytes_) noexcept :
-			Blob(),
+			InheritMeta(),
 			_bytes(bytes_) {}
 
 		constexpr ByteSpanBlob(cref<ByteSpanBlob>) noexcept = default;

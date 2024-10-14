@@ -5,11 +5,13 @@
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Reflect/Inherit/InheritBase.hpp>
 
 namespace hg::engine::resource {
-	class macro_novtable Blob {
+	class macro_novtable Blob :
+		public InheritBase<Blob> {
 	public:
-		constexpr virtual ~Blob() noexcept = default;
+		constexpr ~Blob() noexcept override = default;
 
 	public:
 		virtual std::span<_::byte> read(_In_ streamoff offset_, _In_ mref<std::span<_::byte>> dst_) const = 0;
