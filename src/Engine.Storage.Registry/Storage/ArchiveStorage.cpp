@@ -39,3 +39,7 @@ bool ArchiveStorage::isRandomReadable() const noexcept {
 bool ArchiveStorage::isRandomWritable() const noexcept {
 	return _randomWritable;
 }
+
+Arci<engine::storage::IStorage> ArchiveStorage::getBacking() const noexcept {
+	return _backing;
+}

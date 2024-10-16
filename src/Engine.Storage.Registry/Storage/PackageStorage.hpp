@@ -10,7 +10,7 @@ namespace hg::engine::storage {
 
 namespace hg::engine::storage::system {
 	class PackageStorage final :
-		public InheritMeta<PackageStorage, IStorage> {
+		public InheritMeta<PackageStorage, ISecondaryStorage> {
 	public:
 		friend class ::hg::engine::storage::StorageIo;
 
@@ -54,5 +54,8 @@ namespace hg::engine::storage::system {
 
 	private:
 		Arci<IStorage> _backing;
+
+	public:
+		[[nodiscard]] Arci<IStorage> getBacking() const noexcept override;
 	};
 }

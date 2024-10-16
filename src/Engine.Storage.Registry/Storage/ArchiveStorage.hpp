@@ -6,7 +6,7 @@
 
 namespace hg::engine::storage::system {
 	class ArchiveStorage final :
-		public InheritMeta<ArchiveStorage, IStorage> {
+		public InheritMeta<ArchiveStorage, ISecondaryStorage> {
 	public:
 		using this_type = ArchiveStorage;
 
@@ -47,5 +47,8 @@ namespace hg::engine::storage::system {
 
 	private:
 		Arci<IStorage> _backing;
+
+	public:
+		[[nodiscard]] Arci<IStorage> getBacking() const noexcept override;
 	};
 }
