@@ -15,15 +15,15 @@ namespace hg {
 
 	/* Unique Pointer (STD) */
 
-	template <CompleteType Ty_, class... Args_> requires std::is_constructible_v<Ty_, Args_...>
-	[[nodiscard]] inline uptr<Ty_> make_uptr(Args_&&... args_) {
+	template <CompleteType Ty_, class... Args_> requires std::is_constructible_v<Ty_, Args_&&...>
+	[[nodiscard]] uptr<Ty_> make_uptr(Args_&&... args_) {
 		return std::make_unique<Ty_>(std::forward<Args_>(args_)...);
 	}
 
 	template <CompleteType Ty_, class... Args_> requires
 		(not std::is_constructible_v<Ty_, Args_...>) &&
 		(std::is_aggregate_v<Ty_>)
-	[[nodiscard]] inline uptr<Ty_> make_uptr(Args_&&... args_) {
+	[[nodiscard]] uptr<Ty_> make_uptr(Args_&&... args_) {
 		return uptr<Ty_>(new Ty_ { std::forward<Args_>(args_)... });
 	}
 

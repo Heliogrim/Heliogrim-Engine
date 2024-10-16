@@ -9,7 +9,7 @@ namespace hg::engine::render {
 
 		[[nodiscard]] virtual nmpt<const MetaClass> getDataMetaClass() const noexcept = 0;
 
-		virtual volatile nmpt<RenderSceneSystemModel> add(ptr<SceneComponent> src_) = 0;
+		virtual nmpt<RenderSceneSystemModel> add(ptr<SceneComponent> src_) = 0;
 
 		virtual void remove(ptr<ClassMetaBase> obj_) = 0;
 
@@ -64,7 +64,7 @@ namespace hg::engine::render {
 			return dataMetaClass;
 		}
 
-		volatile nmpt<RenderSceneSystemModel> add(ptr<SceneComponent> src_) override {
+		nmpt<RenderSceneSystemModel> add(ptr<SceneComponent> src_) override {
 			denseData.emplace_back(std::forward<decltype(src_)>(src_));
 			return &denseData.back();
 		}
