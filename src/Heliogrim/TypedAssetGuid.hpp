@@ -43,6 +43,10 @@ namespace hg {
 		constexpr TypedAssetGuid(ref<FromWeakAssetType_> asset_) noexcept :
 			_guid(asset_->get_guid()) {}
 
+		constexpr TypedAssetGuid(const this_type&) noexcept = default;
+
+		constexpr TypedAssetGuid(this_type&&) noexcept = default;
+
 		constexpr ~TypedAssetGuid() noexcept = default;
 
 	public:
@@ -56,6 +60,8 @@ namespace hg {
 			return *this;
 		}
 
+		constexpr ref<this_type> operator=(cref<this_type> other_) noexcept = default;
+
 		template <class FromAssetType_ = AssetType_, bool FromStrict_ = Strict_> requires
 			std::derived_from<FromAssetType_, AssetType_> &&
 			(FromStrict_ || FromStrict_ == Strict_)
@@ -65,6 +71,8 @@ namespace hg {
 			}
 			return *this;
 		}
+
+		constexpr ref<this_type> operator=(mref<this_type>) noexcept = default;
 
 	private:
 		asset_guid _guid;
