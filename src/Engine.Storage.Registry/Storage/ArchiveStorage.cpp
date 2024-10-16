@@ -15,10 +15,7 @@ ArchiveStorage::ArchiveStorage(
 	_writeable(writeable_),
 	_randomReadable(randomReadable_),
 	_randomWritable(randomWritable_),
-	_backing(std::move(backing_)) {
-	// Warning: Just a temporary explicit error
-	::hg::assertrt(_backing == nullptr || _backing->isPrimaryStorage());
-}
+	_backing(std::move(backing_)) {}
 
 bool ArchiveStorage::isReadable() const noexcept {
 	return _readable;
