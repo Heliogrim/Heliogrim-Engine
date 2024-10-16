@@ -16,7 +16,12 @@ MemoryProvider::MemoryProvider(mref<uptr<std::pmr::memory_resource>> allocator_)
 	IStorageProvider(),
 	_allocator(std::move(allocator_)) {}
 
-MemoryProvider::~MemoryProvider() = default;
+MemoryProvider::~MemoryProvider() {
+	// Attention: Order dependent, as elements in repositories might reference the allocator
+	// Warning:		thus, we may end up with a `use-after-free` for the allocator.
+	_repositories.clear();
+	_allocator.reset();
+}
 
 Arci<MemoryStorage> MemoryProvider::makeStorageObject(mref<MemoryStorageDescriptor> descriptor_) {
 	return Arci<MemoryStorage>::create(
