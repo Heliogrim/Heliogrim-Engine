@@ -177,6 +177,13 @@ namespace hg {
 			return static_cast<std::uint16_t>(_packed);
 		}
 
+		[[nodiscard]] std::uint16_t ctrlRefs() const noexcept {
+			if (not empty()) {
+				return _ctrlBlock->refs();
+			}
+			return 0u;
+		}
+
 		/**
 		 * Will get the stored pointer
 		 *
@@ -386,13 +393,17 @@ namespace hg {
 		}
 
 	public:
+		[[nodiscard]] std::uint16_t refs() const noexcept {
+			return static_cast<std::uint16_t>(_packed);
+		}
+
 		/**
 		 * Acquire a SharedMemoryReference from this ctrl block
 		 *
 		 * @author Julius
 		 * @date 15.11.2021
 		 *
-		 * @returns A atomic ctrl ptr with a possible internal state
+		 * @returns An atomic ctrl ptr with a possible internal state
 		 */
 		[[nodiscard]] smr_type acq() {
 
