@@ -50,6 +50,12 @@ namespace hg::engine::storage {
 
 		[[nodiscard]] Arci<IStorage> findStorageByUrl(mref<Url> url_) const noexcept override;
 
+		bool findReferrerStorages(
+			mref<UrlScheme> scheme_,
+			mref<Arci<IStorage>> ref_,
+			ref<Vector<Arci<IStorage>>> collector_
+		) const override;
+
 	public:
 		[[nodiscard]] Arci<IStorage> insert(mref<StorageDescriptor> descriptor_) override;
 

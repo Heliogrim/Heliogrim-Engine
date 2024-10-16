@@ -55,6 +55,10 @@ Arci<engine::storage::IStorage> MemoryRepository::getStorageByUrl(cref<Url> url_
 	return it != _storages.end() ? it->second.into<IStorage>() : Arci<engine::storage::IStorage> {};
 }
 
+void MemoryRepository::findReferrerStorages(cref<Arci<IStorage>> ref_, ref<Vector<Arci<IStorage>>> collector_) const {
+	// Note: Memory storage is never backed by any other storage.
+}
+
 bool MemoryRepository::removeStorage(mref<nmpt<IStorage>> storage_) {
 	const auto vecIt = std::ranges::find(
 		_storages.values(),

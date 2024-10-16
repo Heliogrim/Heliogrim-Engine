@@ -50,6 +50,17 @@ Arci<engine::storage::IStorage> PackageSystemRepository::getStorageByUrl(cref<Ur
 	return inlineGetStorageByUrl<PackageUrl>(_storages, url_);
 }
 
+void PackageSystemRepository::findReferrerStorages(cref<Arci<IStorage>> ref_, ref<Vector<Arci<IStorage>>> collector_) const {
+	const auto unwrapped = ref_.get();
+	for (const auto& [_, storage] : _storages.values()) {
+		if (storage->getBacking().get() != unwrapped) [[likely]] {
+			continue;
+		}
+
+		collector_.emplace_back(storage.into<IStorage>());
+	}
+}
+
 bool PackageSystemRepository::removeStorage(mref<nmpt<IStorage>> storage_) {
 	return inlineRemoveStorage(_storages, std::move(storage_));
 }

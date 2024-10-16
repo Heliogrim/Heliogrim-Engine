@@ -10,6 +10,7 @@ namespace hg::engine::storage {
 	class Url;
 	class IStorage;
 	class StorageDescriptor;
+	class UrlScheme;
 }
 
 namespace hg::engine::storage::system {
@@ -61,10 +62,11 @@ namespace hg::engine::storage {
 			mref<Url> url_
 		) const noexcept = 0;
 
-	public:
-		[[nodiscard]] virtual _Success_(return != nullptr) Arci<IStorage> insert(
-			_In_ mref<StorageDescriptor> descriptor_
-		) = 0;
+		virtual bool findReferrerStorages(
+			_In_ mref<UrlScheme> scheme_,
+			_In_ mref<Arci<IStorage>> ref_,
+			_Inout_ ref<Vector<Arci<IStorage>>> collector_
+		) const = 0;
 
 	public:
 		[[nodiscard]] virtual _Success_(return != nullptr) Arci<IStorage> removeStorageByUrl(mref<Url> url_) = 0;

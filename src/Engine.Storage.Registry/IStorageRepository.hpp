@@ -3,6 +3,7 @@
 #include <span>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/String.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Managed/Rc.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 
@@ -56,6 +57,8 @@ namespace hg::engine::storage::system {
 		[[nodiscard]] virtual bool hasStorage(cref<Url> url_) const = 0;
 
 		[[nodiscard]] virtual Arci<IStorage> getStorageByUrl(cref<Url> url_) const = 0;
+
+		virtual void findReferrerStorages(_In_ cref<Arci<IStorage>> ref_, _Inout_ ref<Vector<Arci<IStorage>>> collector_) const = 0;
 
 		[[nodiscard]] virtual bool removeStorage(_In_ mref<nmpt<IStorage>> storage_) = 0;
 	};

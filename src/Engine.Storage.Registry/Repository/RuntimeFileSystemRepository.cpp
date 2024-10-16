@@ -69,6 +69,10 @@ Arci<engine::storage::IStorage> RuntimeFileSystemRepository::getStorageByUrl(cre
 	return it != _storages.end() ? it->second.into<IStorage>() : Arci<engine::storage::IStorage> {};
 }
 
+void RuntimeFileSystemRepository::findReferrerStorages(cref<Arci<IStorage>> ref_, ref<Vector<Arci<IStorage>>> collector_) const {
+	// Note: filesystem storage is never backed by any other storage.
+}
+
 bool RuntimeFileSystemRepository::removeStorage(mref<nmpt<IStorage>> storage_) {
 	const auto vecIt = std::ranges::find(
 		_storages.values(),

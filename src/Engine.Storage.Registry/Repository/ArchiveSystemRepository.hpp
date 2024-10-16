@@ -45,6 +45,8 @@ namespace hg::engine::storage::system {
 
 		[[nodiscard]] Arci<IStorage> getStorageByUrl(cref<Url> url_) const override;
 
+		void findReferrerStorages(cref<Arci<IStorage>> ref_, ref<Vector<Arci<IStorage>>> collector_) const override;
+
 		[[nodiscard]] bool removeStorage(mref<nmpt<IStorage>> storage_) override;
 	};
 }

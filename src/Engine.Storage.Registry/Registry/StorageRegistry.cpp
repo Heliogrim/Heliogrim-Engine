@@ -188,23 +188,29 @@ Arci<IStorage> StorageRegistry::findStorageByUrl(mref<Url> url_) const noexcept 
 	return {};
 }
 
-Arci<IStorage> StorageRegistry::insert(mref<StorageDescriptor> descriptor_) {
-	::hg::assertrt(descriptor_.valid());
+bool StorageRegistry::findReferrerStorages(
+	mref<UrlScheme> scheme_,
+	mref<Arci<IStorage>> ref_,
+	ref<Vector<Arci<IStorage>>> collector_
+) const {
 
-	// Warning: Temporary naive implementation
-	const auto scheme = descriptor_.targetScheme();
+	const auto subject = ::hg::move(ref_);
+
 	for (const auto& repository : _repositories) {
 
 		const auto candidates = repository->getUrlScheme();
 		for (const auto& candidate : candidates) {
-			if (candidate == scheme) {
-				return repository->createStorage(std::move(descriptor_));
+			if (candidate != scheme_) {
+				continue;
 			}
+
+			repository->findReferrerStorages(subject, collector_);
 			break;
 		}
+
 	}
 
-	return {};
+	return true;
 }
 
 Arci<IStorage> StorageRegistry::removeStorageByUrl(mref<Url> url_) {
