@@ -44,6 +44,9 @@ namespace hg::engine::storage {
 		) override;
 
 	public:
+		[[nodiscard]] Arci<IStorage> insert(mref<StorageDescriptor> descriptor_) override;
+
+	public:
 		[[nodiscard]] bool hasStorage(mref<Url> url_) const noexcept override;
 
 		[[nodiscard]] Arci<IStorage> getStorageByUrl(mref<Url> url_) const override;
@@ -55,9 +58,6 @@ namespace hg::engine::storage {
 			mref<Arci<IStorage>> ref_,
 			ref<Vector<Arci<IStorage>>> collector_
 		) const override;
-
-	public:
-		[[nodiscard]] Arci<IStorage> insert(mref<StorageDescriptor> descriptor_) override;
 
 	public:
 		[[nodiscard]] Arci<IStorage> removeStorageByUrl(mref<Url> url_) override;

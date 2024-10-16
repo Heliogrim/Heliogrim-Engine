@@ -54,6 +54,11 @@ namespace hg::engine::storage {
 		) = 0;
 
 	public:
+		[[nodiscard]] virtual _Success_(return != nullptr) Arci<IStorage> insert(
+			_In_ mref<StorageDescriptor> descriptor_
+		) = 0;
+
+	public:
 		[[nodiscard]] virtual bool hasStorage(mref<Url> url_) const noexcept = 0;
 
 		[[nodiscard]] virtual Arci<IStorage> getStorageByUrl(mref<Url> url_) const = 0;

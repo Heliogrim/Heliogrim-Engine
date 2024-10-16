@@ -130,6 +130,25 @@ bool StorageRegistry::removeRepository(
 	::hg::todo_panic();
 }
 
+Arci<IStorage> StorageRegistry::insert(mref<StorageDescriptor> descriptor_) {
+	::hg::assertrt(descriptor_.valid());
+
+	// Warning: Temporary naive implementation
+	const auto scheme = descriptor_.targetScheme();
+	for (const auto& repository : _repositories) {
+
+		const auto candidates = repository->getUrlScheme();
+		for (const auto& candidate : candidates) {
+			if (candidate == scheme) {
+				return repository->createStorage(std::move(descriptor_));
+			}
+			break;
+		}
+	}
+
+	return {};
+}
+
 bool StorageRegistry::hasStorage(mref<Url> url_) const noexcept {
 
 	const auto scheme = url_.scheme();
