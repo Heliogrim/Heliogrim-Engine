@@ -73,9 +73,9 @@ namespace hg {
 			_value(value_type {}),
 			_deleter(std::forward<Deleter_>(deleter_)) {}
 
-		UniqueValue(cref<this_type>) = delete;
+		UniqueValue(const this_type&) = delete;
 
-		constexpr UniqueValue(mref<this_type> other_) noexcept :
+		constexpr UniqueValue(this_type&& other_) noexcept :
 			// Note: Moving tl::optional<T> will not cleanup the monad state -> bugprone
 			_value(other_._value.take()),
 			_deleter(std::move(other_._deleter)) {}
@@ -118,28 +118,8 @@ namespace hg {
 			return not _value.has_value();
 		}
 
-		[[nodiscard]] constexpr cref<value_type> get(std::nothrow_t) const noexcept {
-			if (std::is_constant_evaluated()) {
-				::hg::assertrt(not empty());
-				return _value.value();
-			}
-
-			::hg::assertd(not empty());
-			return _value.value();
-		}
-
 		[[nodiscard]] constexpr cref<value_type> get() const {
 			::hg::assertrt(not empty());
-			return _value.value();
-		}
-
-		[[nodiscard]] constexpr ref<value_type> get(std::nothrow_t) noexcept {
-			if (std::is_constant_evaluated()) {
-				::hg::assertrt(not empty());
-				return _value.value();
-			}
-
-			::hg::assertd(not empty());
 			return _value.value();
 		}
 
