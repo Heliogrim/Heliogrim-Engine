@@ -20,17 +20,9 @@ namespace hg {
 			c1(),
 			post() {}
 
-		constexpr Guid(const Guid& other_) noexcept :
-			pre(other_.pre),
-			c0(other_.c0),
-			c1(other_.c1),
-			post(other_.post) {}
+		constexpr Guid(const Guid& other_) noexcept = default;
 
-		constexpr Guid(Guid&& other_) noexcept :
-			pre(other_.pre),
-			c0(other_.c0),
-			c1(other_.c1),
-			post(other_.post) {}
+		constexpr Guid(Guid&& other_) noexcept = default;
 
 		constexpr Guid(const u32 pre_, const u16 c0_, const u16 c1_, const u64 post_) noexcept :
 			pre(pre_),
@@ -42,21 +34,9 @@ namespace hg {
 		explicit Guid(const _GUID& value_);
 		#endif
 
-		constexpr ref<Guid> operator=(cref<Guid> other_) noexcept {
-			pre = other_.pre;
-			c0 = other_.c0;
-			c1 = other_.c1;
-			post = other_.post;
-			return *this;
-		}
+		constexpr ref<Guid> operator=(cref<Guid> other_) noexcept = default;
 
-		constexpr ref<Guid> operator=(mref<Guid> other_) noexcept {
-			pre = other_.pre;
-			c0 = other_.c0;
-			c1 = other_.c1;
-			post = other_.post;
-			return *this;
-		}
+		constexpr ref<Guid> operator=(mref<Guid> other_) noexcept = default;
 
 	public:
 		void hton(ref<u8[16]> dst_) noexcept;
