@@ -4,10 +4,10 @@
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
-#include <Engine.Filesystem/Url.hpp>
 #include <Engine.Filesystem/__fwd.hpp>
 #include <Engine.Reflect/Inherit/ClassMetaBase.hpp>
 #include <Engine.Reflect/Inherit/Concept.hpp>
+#include <Engine.Reflect/Inherit/InheritBase.hpp>
 
 #include "ArchiveStreamMode.hpp"
 #include "ArchiveVersion.hpp"
@@ -15,7 +15,8 @@
 #include "Filter/__fwd.hpp"
 
 namespace hg::engine::resource {
-	class macro_novtable Archive {
+	class macro_novtable Archive :
+		public InheritBase<Archive> {
 	public:
 		using this_type = Archive;
 
@@ -23,7 +24,7 @@ namespace hg::engine::resource {
 		Archive() noexcept;
 
 	public:
-		virtual ~Archive() = default;
+		~Archive() override = default;
 
 		#pragma region Meta Archive Attributes
 
@@ -148,6 +149,11 @@ namespace hg::engine::resource {
 			u8 rep {};
 			self_.serializeBytes(&rep, sizeof(rep), ArchiveStreamMode::eLoad);
 			value_ = rep != 0u;
+			return self_;
+		}
+
+		inline friend ref<this_type> operator>>(ref<this_type> self_, ref<char> value_) {
+			self_.serializeBytes(&value_, sizeof(value_), ArchiveStreamMode::eLoad);
 			return self_;
 		}
 
