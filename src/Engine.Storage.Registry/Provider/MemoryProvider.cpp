@@ -28,6 +28,7 @@ Arci<MemoryStorage> MemoryProvider::makeStorageObject(mref<MemoryStorageDescript
 		MemoryStorage::MemoryObject {
 			static_cast<ptr<_::byte>>(_allocator->allocate(descriptor_.memorySize())),
 			descriptor_.memorySize(),
+			0uLL,
 			[alloc = _allocator.get()](ptr<_::byte> mem_, size_t size_) {
 				alloc->deallocate(mem_, size_);
 			}
