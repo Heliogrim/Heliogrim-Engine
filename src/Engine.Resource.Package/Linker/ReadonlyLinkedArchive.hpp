@@ -1,11 +1,11 @@
 #pragma once
 
+#include "LinkedDataSpan.hpp"
 #include "PackageArchiveHeader.hpp"
-#include "../Index/PackageIndexEntry.hpp"
 
 namespace hg::engine::resource::package {
-	struct LinkedArchive {
+	struct ReadonlyLinkedArchive {
+		LinkedDataSpan data;
 		PackageArchiveHeader header;
-		PackageIndexEntry index;
 	};
 }

@@ -5,12 +5,12 @@
 namespace hg::engine::resource {
 	#pragma pack(push)
 	#pragma pack(1)
-	struct PackageIndexEntry {
+	struct LinkedDataSpan {
 		streamoff offset;
 		streamsize size;
 	};
 	#pragma pack(pop)
 
-	static_assert(std::is_trivial_v<PackageIndexEntry>);
-	static_assert(sizeof(PackageIndexEntry) == 0x10);
+	static_assert(std::is_trivial_v<LinkedDataSpan>);
+	static_assert(sizeof(LinkedDataSpan) == 16uLL);
 }
