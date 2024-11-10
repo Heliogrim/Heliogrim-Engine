@@ -18,6 +18,8 @@ namespace hg::engine::resource {
 
 		virtual std::span<_::byte> write(_In_ streamoff offset_, _In_ mref<std::span<_::byte>> src_) = 0;
 
+		virtual bool trim(_In_ size_t tailSize_) = 0;
+
 	public:
 		// Question: Which attributes and functions should be exposed by blob.
 		[[nodiscard]] constexpr virtual streamsize size() const noexcept {

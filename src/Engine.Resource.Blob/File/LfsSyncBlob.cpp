@@ -5,6 +5,7 @@ using namespace hg;
 
 LfsSyncBlob::LfsSyncBlob(mref<fs::Path> path_) noexcept :
 	InheritMeta(),
+	_path(path_),
 	_stream(std::in_place) {
 	if (not std::filesystem::exists(path_)) {
 		std::filesystem::create_directories(path_.parentPath());
@@ -64,6 +65,35 @@ std::span<_::byte> LfsSyncBlob::write(streamoff offset_, mref<std::span<_::byte>
 
 	::hg::assertd(stream.tellg() == (beg + length));
 	return std::move(src_);
+}
+
+bool LfsSyncBlob::trim(size_t tailSize_) {
+
+	::hg::assertrt(not _stream.empty() && _stream->is_open() && _stream->good());
+
+	if (tailSize_ <= 0) {
+		return false;
+	}
+
+	/**/
+
+	_stream->flush();
+
+	_stream->seekg(0, std::ios::end);
+	const auto filesize = static_cast<streamsize>(_stream->tellg());
+	_stream->close();
+
+	/**/
+
+	const auto nextSize = filesize - (tailSize_ < filesize ? tailSize_ : filesize);
+	std::filesystem::resize_file(_path, nextSize);
+
+	/**/
+
+	_stream->open(_path, std::ios::in | std::ios::out | std::ios::binary);
+	::hg::assertrt(_stream->is_open());
+
+	return true;
 }
 
 streamsize LfsSyncBlob::size() const noexcept {

@@ -16,9 +16,15 @@ namespace hg::engine::resource {
 	public:
 		constexpr ByteSpanBlob() noexcept = default;
 
-		constexpr explicit ByteSpanBlob(std::span<_::byte> bytes_) noexcept :
+		constexpr explicit ByteSpanBlob(const std::span<_::byte> bytes_, const size_t used_) noexcept :
 			InheritMeta(),
-			_bytes(bytes_) {}
+			_bytes(bytes_),
+			_used(used_) {
+			::hg::assertd(used_ <= bytes_.size());
+		}
+
+		constexpr explicit ByteSpanBlob(const std::span<_::byte> bytes_) noexcept :
+			ByteSpanBlob(bytes_, bytes_.size()) {}
 
 		constexpr ByteSpanBlob(cref<ByteSpanBlob>) noexcept = default;
 
@@ -28,6 +34,7 @@ namespace hg::engine::resource {
 
 	private:
 		std::span<_::byte> _bytes;
+		size_t _used;
 
 	public:
 		constexpr std::span<_::byte> read(
@@ -49,7 +56,28 @@ namespace hg::engine::resource {
 		) override {
 			::hg::assertrt(offset_ >= 0LL && offset_ <= _bytes.size() && offset_ + src_.size() <= _bytes.size());
 			std::ranges::copy(src_, _bytes.begin() + offset_);
+			_used = std::max(_used, offset_ + src_.size());
 			return std::move(src_);
+		}
+
+		bool trim(size_t tailSize_) override {
+			#if _DEBUG
+			const auto size = _used;
+			const auto start = _used - (tailSize_ > size ? size : tailSize_);
+			std::memset(_bytes.data() + start, NULL, size - start);
+			#endif
+			_used -= std::min(_used, tailSize_);
+			return true;
+		}
+
+	public:
+		[[nodiscard]] constexpr streamsize capacity() const noexcept {
+			return _bytes.size();
+		}
+
+		[[nodiscard]] constexpr streamsize size() const noexcept override {
+			//return static_cast<streamsize>(_bytes.size());
+			return _used;
 		}
 	};
 }

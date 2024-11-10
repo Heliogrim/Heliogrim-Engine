@@ -23,12 +23,16 @@ namespace hg::engine::resource {
 		constexpr ~LfsSyncBlob() override = default;
 
 	private:
+		// Note: We need this for resizing operations on the target file...
+		fs::Path _path;
 		UniqueValue<std::fstream> _stream;
 
 	public:
 		std::span<_::byte> read(streamoff offset_, mref<std::span<_::byte>> dst_) const override;
 
 		std::span<_::byte> write(streamoff offset_, mref<std::span<_::byte>> src_) override;
+
+		bool trim(size_t tailSize_) override;
 
 	public:
 		[[nodiscard]] streamsize size() const noexcept override;
