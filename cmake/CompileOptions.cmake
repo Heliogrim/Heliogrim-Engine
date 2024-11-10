@@ -33,6 +33,7 @@ get_vendor_path(vendor)
 set(DEFAULT_INCLUDE_DIRECTORIES
 		"${vendor}/ankerl/include"
 		"${vendor}/assimp/include"
+		"${vendor}/crcpp/include"
 		"${vendor}/dr_libs/include"
 		"${vendor}/expected/include"
 		"${vendor}/freetype2/include"
