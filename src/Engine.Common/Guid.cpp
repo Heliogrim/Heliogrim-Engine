@@ -58,7 +58,7 @@ void hg::GuidGenerate(ref<Guid> guid_) {
 	#endif
 }
 
-void Guid::hton(ref<u8[16]> dst_) noexcept {
+void Guid::hton(std::span<_::byte, 16> dst_) const noexcept {
 	if constexpr (std::endian::native != std::endian::big) {
 		(*std::bit_cast<u32*>(&dst_[0])) = std::byteswap(pre);
 		(*std::bit_cast<u16*>(&dst_[4])) = std::byteswap(c0);
@@ -69,6 +69,38 @@ void Guid::hton(ref<u8[16]> dst_) noexcept {
 		(*std::bit_cast<u16*>(&dst_[4])) = c0;
 		(*std::bit_cast<u16*>(&dst_[6])) = c1;
 		(*std::bit_cast<u64*>(&dst_[8])) = post;
+	}
+}
+
+void Guid::hton(ref<u8[16]> dst_) const noexcept {
+	if constexpr (std::endian::native != std::endian::big) {
+		(*std::bit_cast<u32*>(&dst_[0])) = std::byteswap(pre);
+		(*std::bit_cast<u16*>(&dst_[4])) = std::byteswap(c0);
+		(*std::bit_cast<u16*>(&dst_[6])) = std::byteswap(c1);
+		(*std::bit_cast<u64*>(&dst_[8])) = std::byteswap(post);
+	} else {
+		(*std::bit_cast<u32*>(&dst_[0])) = pre;
+		(*std::bit_cast<u16*>(&dst_[4])) = c0;
+		(*std::bit_cast<u16*>(&dst_[6])) = c1;
+		(*std::bit_cast<u64*>(&dst_[8])) = post;
+	}
+}
+
+Guid Guid::ntoh(std::span<const _::byte, 16> src_) noexcept {
+	if constexpr (std::endian::native != std::endian::big) {
+		return {
+			std::byteswap(*std::bit_cast<u32*>(&src_[0])),
+			std::byteswap(*std::bit_cast<u16*>(&src_[4])),
+			std::byteswap(*std::bit_cast<u16*>(&src_[6])),
+			std::byteswap(*std::bit_cast<u64*>(&src_[8]))
+		};
+	} else {
+		return {
+			*std::bit_cast<u32*>(&src_[0]),
+			*std::bit_cast<u16*>(&src_[4]),
+			*std::bit_cast<u16*>(&src_[6]),
+			*std::bit_cast<u64*>(&src_[8])
+		};
 	}
 }
 
