@@ -1,25 +1,25 @@
 #pragma once
 
 #include <Engine.Common/Types.hpp>
-#include <Engine.Common/Guid.hpp>
+#include <Engine.Common/Collection/Array.hpp>
 
-#include "../Attribute/PackageVersion.hpp"
 #include "../Attribute/PackageCompression.hpp"
 #include "../Attribute/PackageEndianness.hpp"
+#include "../Attribute/PackageVersion.hpp"
 
 namespace hg::engine::resource {
 	#pragma pack(push)
 	#pragma pack(1)
 	struct PackageHeader {
 		// 0x00
-		u8 magicBytes[6];
+		Array<_::byte, 6> magicBytes;
 		u8 magicVersion;
 		PackageEndianness endianness;
 		// 0x08
 		PackageVersion version;
 
 		// 0x10
-		u8 guid[16];// ~ ::hg::Guid is not trivial
+		Array<_::byte, 16> guid;// ~ ::hg::Guid is not trivial
 
 		// 0x20
 		PackageCompression compression;
