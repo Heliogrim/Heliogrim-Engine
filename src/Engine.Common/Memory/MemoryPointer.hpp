@@ -346,7 +346,7 @@ namespace hg {
 		}
 
 	public:
-		template <typename... Args_> requires std::is_constructible_v<Ty_, Args_...>
+		template <typename... Args_> requires std::is_constructible_v<Ty_, Args_&&...>
 		[[nodiscard]] constexpr static this_type make(Args_&&... args_) {
 			this_type tmp {};
 			tmp.template create<Ty_, Args_...>(std::forward<Args_>(args_)...);
@@ -360,7 +360,7 @@ namespace hg {
 
 	public:
 		template <typename Tx_ = Ty_, typename... Args_>
-		ref<this_type> create(Args_... args_) {
+		ref<this_type> create(Args_&&... args_) {
 			storage.allocate(std::forward<Args_>(args_)...);
 			return *this;
 		}
