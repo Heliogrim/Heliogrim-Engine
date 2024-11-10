@@ -13,10 +13,10 @@ namespace hg::engine::resource {
 		using underlying_type = MemoryBaseArchive;
 
 	public:
-		MemoryWriteonlyArchive(_Inout_ ref<AutoArray<u8>> bytes_);
+		MemoryWriteonlyArchive(_Inout_ ref<AutoArray<_::byte>> bytes_);
 
 	protected:
-		ref<AutoArray<u8>> _bytes;
+		ref<AutoArray<_::byte>> _bytes;
 
 	public:
 		[[nodiscard]] s64 totalSize() const noexcept override;

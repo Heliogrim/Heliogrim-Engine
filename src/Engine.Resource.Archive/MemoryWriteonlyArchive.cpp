@@ -6,7 +6,7 @@
 using namespace hg::engine::resource;
 using namespace hg;
 
-MemoryWriteonlyArchive::MemoryWriteonlyArchive(ref<AutoArray<u8>> bytes_) :
+MemoryWriteonlyArchive::MemoryWriteonlyArchive(ref<AutoArray<_::byte>> bytes_) :
 	MemoryBaseArchive(),
 	_bytes(bytes_) {}
 

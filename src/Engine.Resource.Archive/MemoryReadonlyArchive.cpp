@@ -6,12 +6,12 @@
 using namespace hg::engine::resource;
 using namespace hg;
 
-MemoryReadonlyArchive::MemoryReadonlyArchive(ref<std::span<u8, std::dynamic_extent>> bytes_) :
+MemoryReadonlyArchive::MemoryReadonlyArchive(ref<std::span<_::byte, std::dynamic_extent>> bytes_) :
 	MemoryBaseArchive(),
 	_bytes(bytes_),
 	_limit(-1) {}
 
-MemoryReadonlyArchive::MemoryReadonlyArchive(ref<std::span<u8, std::dynamic_extent>> bytes_, const s64 limit_) :
+MemoryReadonlyArchive::MemoryReadonlyArchive(ref<std::span<_::byte, std::dynamic_extent>> bytes_, const s64 limit_) :
 	MemoryBaseArchive(),
 	_bytes(bytes_),
 	_limit(limit_) {}

@@ -13,12 +13,12 @@ namespace hg::engine::resource {
 		using underlying_type = MemoryBaseArchive;
 
 	public:
-		MemoryReadonlyArchive(_In_ ref<std::span<u8>> bytes_);
+		MemoryReadonlyArchive(_In_ ref<std::span<_::byte>> bytes_);
 
-		MemoryReadonlyArchive(_In_ ref<std::span<u8>> bytes_, const s64 limit_);
+		MemoryReadonlyArchive(_In_ ref<std::span<_::byte>> bytes_, const s64 limit_);
 
 	protected:
-		ref<std::span<u8>> _bytes;
+		ref<std::span<_::byte>> _bytes;
 		s64 _limit;
 
 	public:
