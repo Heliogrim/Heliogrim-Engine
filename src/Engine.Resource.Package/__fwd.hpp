@@ -2,13 +2,15 @@
 
 namespace hg::engine::resource {
 	class Package;
-	struct PackageHeader;
-	class PackageIndex;
-	struct PackageFooter;
-}
+	class ReadonlyPackage;
+	class ReadWritePackage;
 
-namespace hg::engine::resource::package {
+	struct PackageHeader;
+	struct PackageFooter;
+
 	class PackageLinker;
+	class ReadonlyPackageLinker;
+	class ReadWritePackageLinker;
 }
 
 namespace hg::engine::storage {
