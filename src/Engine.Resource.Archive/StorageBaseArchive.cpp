@@ -10,6 +10,7 @@ StorageBaseArchive::StorageBaseArchive(
 	mref<streamoff> baseOffset_,
 	mref<streamsize> initialSize_
 ) :
+	InheritMeta(),
 	_baseOffset(baseOffset_),
 	_size(initialSize_),
 	_cursor(0) {}

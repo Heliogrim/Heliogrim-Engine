@@ -2,14 +2,13 @@
 
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Reflect/Inherit/InheritBase.hpp>
+#include <Engine.Reflect/Inherit/InheritMeta.hpp>
 
 #include "Archive.hpp"
 
 namespace hg::engine::resource {
 	class macro_novtable StorageBaseArchive :
-		public InheritBase<StorageBaseArchive>,
-		public Archive {
+		public InheritMeta<StorageBaseArchive, Archive> {
 	public:
 		using this_type = StorageBaseArchive;
 
