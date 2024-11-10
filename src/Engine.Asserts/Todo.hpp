@@ -34,5 +34,5 @@ namespace hg {
 	/**/
 
 	using TodoPanicFn = ErrorPanicFn<::hg::todo_runtime_error>;
-	static constexpr TodoPanicFn todo_panic {};
+	constexpr inline TodoPanicFn todo_panic {};
 }
