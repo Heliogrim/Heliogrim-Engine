@@ -1,7 +1,6 @@
 #pragma once
 
-#include <Engine.Common/Guid.hpp>
-
+#include "ArchiveGuid.hpp"
 #include "PackageArchiveType.hpp"
 
 namespace hg::engine::resource::package {
@@ -9,7 +8,9 @@ namespace hg::engine::resource::package {
 	#pragma pack(1)
 	struct PackageArchiveHeader {
 		PackageArchiveType type;
-		Guid guid;
+		ArchiveGuid guid;
 	};
 	#pragma pack(pop)
+
+	static_assert(sizeof(PackageArchiveHeader) == 16uLL);
 }

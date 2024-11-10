@@ -11,4 +11,6 @@ namespace hg::engine::resource::package {
 		//
 		eRaw = 0xFF,
 	};
+
+	static_assert(sizeof(PackageArchiveType) == 1uLL);
 }
