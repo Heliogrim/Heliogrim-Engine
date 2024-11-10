@@ -44,7 +44,7 @@ namespace hg::hash {
 		return fnv1a_86(src_.data(), src_.length());
 	}
 
-	[[nodiscard]] constexpr u64 fnv1a(const std::span<char> src_) noexcept {
+	[[nodiscard]] constexpr u64 fnv1a(const std::span<const char> src_) noexcept {
 		return fnv1a_86(src_.data(), src_.size());
 	}
 }
