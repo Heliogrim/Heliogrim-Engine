@@ -2,6 +2,7 @@
 
 #include <type_traits>
 #include <Engine.Common/Types.hpp>
+#include <Engine.Common/Collection/Array.hpp>
 
 #include "../Attribute/PackageEndianness.hpp"
 
@@ -10,10 +11,10 @@ namespace hg::engine::resource {
 	#pragma pack(1)
 	struct PackageFooter {
 		// 0x00
-		u8 crc32[8];
-		u8 __reserved__[8];
+		Array<_::byte, 8> crc32;
+		Array<_::byte, 8> __reserved__;
 		// 0x10
-		u8 magicBytes[6];
+		Array<_::byte, 6> magicBytes;
 		u8 magicVersion;
 		PackageEndianness endianess;
 		// 0x18
