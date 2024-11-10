@@ -55,7 +55,7 @@ namespace hg::engine::storage {
 
 		bool findReferrerStorages(
 			mref<UrlScheme> scheme_,
-			mref<Arci<IStorage>> ref_,
+			cref<Arci<IStorage>> ref_,
 			ref<Vector<Arci<IStorage>>> collector_
 		) const override;
 

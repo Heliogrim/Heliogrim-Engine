@@ -69,7 +69,7 @@ namespace hg::engine::storage {
 
 		virtual bool findReferrerStorages(
 			_In_ mref<UrlScheme> scheme_,
-			_In_ mref<Arci<IStorage>> ref_,
+			_In_ cref<Arci<IStorage>> ref_,
 			_Inout_ ref<Vector<Arci<IStorage>>> collector_
 		) const = 0;
 

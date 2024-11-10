@@ -35,7 +35,9 @@ StorageRegistry::StorageRegistry() noexcept :
 	_provider(),
 	_repositories() {}
 
-StorageRegistry::~StorageRegistry() noexcept = default;
+StorageRegistry::~StorageRegistry() noexcept {
+	tidy();
+}
 
 void StorageRegistry::setup(cref<Config> config_) {
 
@@ -209,11 +211,9 @@ Arci<IStorage> StorageRegistry::findStorageByUrl(mref<Url> url_) const noexcept 
 
 bool StorageRegistry::findReferrerStorages(
 	mref<UrlScheme> scheme_,
-	mref<Arci<IStorage>> ref_,
+	cref<Arci<IStorage>> ref_,
 	ref<Vector<Arci<IStorage>>> collector_
 ) const {
-
-	const auto subject = ::hg::move(ref_);
 
 	for (const auto& repository : _repositories) {
 
@@ -223,7 +223,7 @@ bool StorageRegistry::findReferrerStorages(
 				continue;
 			}
 
-			repository->findReferrerStorages(subject, collector_);
+			repository->findReferrerStorages(ref_, collector_);
 			break;
 		}
 
