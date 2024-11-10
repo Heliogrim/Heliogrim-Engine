@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <stdexcept>
+#include <type_traits>
 #include <utility>
 
 #include "RefCounted.hpp"
@@ -127,7 +128,7 @@ namespace hg {
 		using storage_type = nmpt<Ty_>;
 
 	public:
-		template <typename... Args_>
+		template <typename... Args_> requires std::is_constructible_v<Ty_, Args_&&...>
 		[[nodiscard]] constexpr static this_type create(Args_&&... args_) noexcept {
 
 			auto alloc = std::allocator<block_type> {};
