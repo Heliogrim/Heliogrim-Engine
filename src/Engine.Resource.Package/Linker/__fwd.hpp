@@ -2,19 +2,20 @@
 
 namespace hg::engine::resource {
 	class Package;
+	class ReadonlyPackage;
+	class ReadWritePackage;
 
-	class PackageIndex;
-	struct PackageIndexEntry;
+	class PackageLinker;
+	class ReadonlyPackageLinker;
+	class ReadWritePackageLinker;
 }
 
 namespace hg::engine::resource::package {
-	class PackageLinker;
+	class ArchiveGuid;
 
+	class LinkedDataSpan;
 	struct PackageArchiveHeader;
-	struct PackageLinkedArchive;
 
-	struct LinkedArchive;
-
-	template <bool Const_>
-	class LinkedArchiveIterator;
+	struct ReadonlyLinkedArchive;
+	struct ReadWriteLinkedArchive;
 }
