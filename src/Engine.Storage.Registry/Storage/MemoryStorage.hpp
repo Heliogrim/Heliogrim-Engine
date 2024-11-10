@@ -3,6 +3,7 @@
 #include <functional>
 #include <span>
 #include <utility>
+#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Common/Types.hpp>
 
 #include "../IStorage.hpp"
@@ -65,15 +66,18 @@ namespace hg::engine::storage::system {
 			MemoryObject() noexcept :
 				_base(nullptr),
 				_size(0uLL),
+				_touched(0uLL),
 				_dealloc() {}
 
 			MemoryObject(
 				mref<ptr<_::byte>> memoryBase_,
 				mref<size_t> memorySize_,
+				mref<size_t> touchedSize_,
 				mref<dealloc_callback> dealloc_
 			) noexcept :
 				_base(std::move(memoryBase_)),
 				_size(std::move(memorySize_)),
+				_touched(std::move(touchedSize_)),
 				_dealloc(std::move(dealloc_)) {}
 
 			MemoryObject(const MemoryObject&) = delete;
@@ -81,6 +85,7 @@ namespace hg::engine::storage::system {
 			MemoryObject(mref<MemoryObject> other_) noexcept :
 				_base(std::exchange(other_._base, nullptr)),
 				_size(std::exchange(other_._size, 0uLL)),
+				_touched(std::exchange(other_._touched, 0uLL)),
 				_dealloc(std::move(other_._dealloc)) {}
 
 			~MemoryObject() {
@@ -92,6 +97,7 @@ namespace hg::engine::storage::system {
 		private:
 			ptr<_::byte> _base;
 			size_t _size;
+			size_t _touched;
 
 			dealloc_callback _dealloc;
 
@@ -104,12 +110,36 @@ namespace hg::engine::storage::system {
 				_dealloc(std::exchange(_base, nullptr), std::exchange(_size, 0uLL));
 			}
 
-			[[nodiscard]] std::span<_::byte> span() const noexcept {
+			[[nodiscard]] constexpr std::span<_::byte> span() const noexcept {
 				return std::span<_::byte> { _base, _size };
+			}
+
+		public:
+			constexpr size_t markAsTouched(const size_t touchedSize_) noexcept {
+				_touched = std::min({ _touched, touchedSize_, _size });
+				return _touched;
+			}
+
+			constexpr void setAsTouched(const size_t forceTouchedSize_) {
+				::hg::assertrt(forceTouchedSize_ <= _size);
+				_touched = forceTouchedSize_;
+			}
+
+			constexpr void resetTouched() noexcept {
+				_touched = 0uLL;
+			}
+
+			[[nodiscard]] constexpr size_t touched() const noexcept {
+				return _touched;
+			}
+
+			[[nodiscard]] constexpr std::span<_::byte> touchedSpan() const noexcept {
+				return std::span<_::byte> { _base, _touched };
 			}
 		};
 
 	private:
+	public:
 		MemoryObject _memory;
 	};
 }
