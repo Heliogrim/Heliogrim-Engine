@@ -28,5 +28,10 @@ namespace hg::engine::resource {
 
 	protected:
 		cref<Blob> _storage;
+
+	public:
+		[[nodiscard]] s64 totalSize() const noexcept override {
+			return _size;
+		}
 	};
 }
