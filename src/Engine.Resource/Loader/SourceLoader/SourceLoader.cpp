@@ -1,18 +1,17 @@
 #include "SourceLoader.hpp"
 
+#include <Engine.Asserts/Todo.hpp>
+#include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Common/GuidFormat.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Sal.hpp>
+#include <Engine.Filesystem/Url.hpp>
 #include <Engine.Logging/Logger.hpp>
-
-#include "Engine.Assets.System/IAssetRegistry.hpp"
-#include "Engine.Filesystem/Url.hpp"
-#include "Engine.Resource/File.hpp"
-#include "Engine.Storage.IO/StorageIo.hpp"
-#include "Engine.Storage.Registry/IStorageRegistry.hpp"
-#include "Engine.Storage/StorageModule.hpp"
-#include "Engine.Storage.Registry/Url/FileUrl.hpp"
-#include "Engine.Storage.Registry/Url/Url.hpp"
+#include <Engine.Resource/File.hpp>
+#include <Engine.Storage.Registry/IStorageRegistry.hpp>
+#include <Engine.Storage/StorageModule.hpp>
+#include <Engine.Storage.Registry/Url/FileUrl.hpp>
+#include <Engine.Storage.Registry/Url/Url.hpp>
 
 using namespace hg::engine::resource::loader;
 using namespace hg;
@@ -32,7 +31,7 @@ SourceLoaderResponse<void>::type SourceLoader::operator()(
 	mref<request_type::options> options_
 ) const {
 
-	static_assert(std::is_same_v<SourceLoaderResponse<void>::type, storage::AccessBlobReadonly>);
+	static_assert(not std::is_void_v<SourceLoaderResponse<void>::type>);
 
 	/**/
 
@@ -43,7 +42,7 @@ SourceLoaderResponse<void>::type SourceLoader::operator()(
 			encodeGuid4228(request_->get_guid()),
 			request_->getAssetName()
 		);
-		return {};
+		return { *_storage->getSystem(), Arci<storage::IStorage> {} };
 	}
 
 	/**/
@@ -55,32 +54,29 @@ SourceLoaderResponse<void>::type SourceLoader::operator()(
 			encodeGuid4228(request_->get_guid()),
 			request_->getAssetName()
 		);
-		return {};
+		return { *_storage->getSystem(), Arci<storage::IStorage> {} };
 	}
 
 	/**/
 
-	return _storage->getIo()->accessReadonlyBlob(
-		_storage->getRegistry()->getStorageByUrl(std::move(lfsUrl))
-	);
+	return { *_storage->getSystem(), _storage->getRegistry()->getStorageByUrl(std::move(lfsUrl)) };
 }
 
 SourceLoaderStreamResponse<void>::type SourceLoader::operator()(
 	mref<stream_request_type::type> request_,
 	mref<stream_request_type::options> options_
 ) const {
-	static_assert(std::is_same_v<SourceLoaderStreamResponse<void>::type, storage::AccessBlobReadonly>);
+	static_assert(not std::is_void_v<SourceLoaderStreamResponse<void>::type>);
 	::hg::todo_panic();
 }
 
 /* Asset Specific Implementation */
 
+#include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
 #include <Engine.Assets.Type/Texture/Font.hpp>
 #include <Engine.Assets.Type/Texture/Image.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
-
-#include <Engine.Assets/Assets.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Reflect/Cast.hpp>
 

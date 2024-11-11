@@ -2,12 +2,16 @@
 
 #include <Engine.Pedantic.Resource/Resource.hpp>
 #include <Engine.Resource.Blob/Blob.hpp>
-#include <Engine.Storage.IO/StorageIo.hpp>
+#include <Engine.Storage.Registry/IStorage.hpp>
 
 #include "__fwd.hpp"
 
 #include "SourceLoader/SourceLoadOptions.hpp"
 #include "SourceLoader/SourceStreamOptions.hpp"
+
+namespace hg::engine::storage {
+	class StorageSystem;
+}
 
 namespace hg::engine::resource::loader {
 	class SourceLoader;
@@ -63,7 +67,8 @@ namespace hg::engine::resource::loader {
 
 		template <typename Type_>
 		using wrapper_type = std::type_identity_t<Type_>;
-		using value_type = storage::AccessBlobReadonly;
+		//using value_type = storage::AccessBlobReadonly;
+		using value_type = std::pair<ref<storage::StorageSystem>, Arci<storage::IStorage>>;
 
 		using type = wrapper_type<value_type>;
 	};
@@ -95,7 +100,8 @@ namespace hg::engine::resource::loader {
 
 		template <typename Type_>
 		using wrapper_type = std::type_identity_t<Type_>;
-		using value_type = storage::AccessBlobReadonly;
+		//using value_type = storage::AccessBlobReadonly;
+		using value_type = std::pair<ref<storage::StorageSystem>, Arci<storage::IStorage>>;
 
 		using type = wrapper_type<value_type>;
 	};
