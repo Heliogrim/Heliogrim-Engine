@@ -19,7 +19,6 @@ make_test_project(
 		${PROJECT_NAME}::Engine.Serialization.Layouts
 		${PROJECT_NAME}::Engine.Serialization.Structures
 		${PROJECT_NAME}::Engine.Storage
-		${PROJECT_NAME}::Engine.Storage.IO
 		${PROJECT_NAME}::Engine.Storage.Registry
 		${PROJECT_NAME}::Heliogrim
 )

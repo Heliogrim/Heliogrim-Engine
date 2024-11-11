@@ -13,9 +13,6 @@ namespace hg::engine::storage::system {
 	class LocalFileStorage final :
 		public InheritMeta<LocalFileStorage, IStorage> {
 	public:
-		friend class ::hg::engine::storage::StorageIo;
-
-	public:
 		using this_type = LocalFileStorage;
 
 	public:
@@ -54,6 +51,7 @@ namespace hg::engine::storage::system {
 		[[nodiscard]] bool isRandomWritable() const noexcept override;
 
 	private:
+	public:
 		fs::Path _lfsPath;
 	};
 }
