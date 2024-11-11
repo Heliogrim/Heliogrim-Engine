@@ -460,3 +460,7 @@ namespace hg::engine::storage {
 		);
 	};
 }
+
+/**/
+
+#include "Details/ExtendedStorageSystem.hpp"
