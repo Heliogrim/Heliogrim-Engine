@@ -12,7 +12,8 @@ namespace hg::engine {
 
 namespace hg::engine::storage {
 	class IStorageRegistry;
-	class StorageIo;
+	class StorageActionResolver;
+	class StorageSystem;
 }
 
 namespace hg::engine {
@@ -22,7 +23,8 @@ namespace hg::engine {
 		using this_type = StorageModule;
 
 		using IStorageRegistry = ::hg::engine::storage::IStorageRegistry;
-		using StorageIo = ::hg::engine::storage::StorageIo;
+		using StorageActionResolver = ::hg::engine::storage::StorageActionResolver;
+		using System = ::hg::engine::storage::StorageSystem;
 
 	public:
 		explicit StorageModule(ref<Engine> engine_);
@@ -38,11 +40,12 @@ namespace hg::engine {
 
 	private:
 		uptr<IStorageRegistry> _registry;
-		uptr<StorageIo> _io;
+		uptr<StorageActionResolver> _resolver;
+		uptr<System> _system;
 
 	public:
 		[[nodiscard]] nmpt<IStorageRegistry> getRegistry() const noexcept;
 
-		[[nodiscard]] nmpt<StorageIo> getIo() const noexcept;
+		[[nodiscard]] nmpt<System> getSystem() const noexcept;
 	};
 }
