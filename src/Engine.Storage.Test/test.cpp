@@ -287,12 +287,12 @@ namespace StorageModule {
 		/**/
 
 		auto descriptor = engine::storage::MemoryStorageDescriptor { clone(query), requestSize, properties };
-		ASSERT_TRUE(_registry->insert(std::move(descriptor)) != nullptr);
+		ASSERT_NE(_registry->insert(std::move(descriptor)), nullptr);
 		ASSERT_TRUE(_registry->hasStorage(clone(query)));
 
 		/**/
 
-		ASSERT_TRUE(_registry->removeStorageByUrl(clone(query)) != nullptr);
+		ASSERT_NE(_registry->removeStorageByUrl(clone(query)), nullptr);
 		ASSERT_FALSE(_registry->hasStorage(clone(query)));
 	}
 
