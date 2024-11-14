@@ -13,6 +13,7 @@
 #include <Engine.GFX/Texture/SparseTextureView.hpp>
 #include <Engine.Reflect/Cast.hpp>
 #include <Engine.Resource/Manage/UniqueResource.hpp>
+#include <Engine.Storage.System/StorageSystem.hpp>
 #include <stb/stb_image.h>
 
 using namespace ::hg::editor::gfx::loader;
@@ -94,13 +95,23 @@ EditorJpegTextureTransformer::loader_traits::response::type EditorJpegTextureTra
 	 * Read meta data and acquire buffers
 	 */
 
-	auto srcSize = src->fully().size();
-	::hg::assertrt(srcSize > 0);
+	const auto ioResult = src.first.query(
+		::hg::move(src.second),
+		[](_In_ cref<engine::resource::Blob> blob_) {
 
-	Vector<_::byte> chunk {};
-	chunk.resize(src->fully().size(), _::byte {});
+			auto srcSize = blob_.size();
+			::hg::assertrt(srcSize > 0);
 
-	std::ignore = src->fully().read(streamoff {}, std::span { chunk.data(), chunk.size() });
+			Vector<_::byte> chunk {};
+			chunk.resize(blob_.size(), _::byte {});
+
+			std::ignore = blob_.read(streamoff {}, std::span { chunk.data(), chunk.size() });
+			return chunk;
+		}
+	);
+
+	::hg::assertrt(ioResult.has_value());
+	auto chunk = ::hg::move(ioResult).value();
 
 	/**/
 
