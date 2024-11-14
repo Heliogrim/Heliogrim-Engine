@@ -32,22 +32,12 @@ namespace hg::engine::gfx {
 		 * Constructor
 		 *
 		 * @author Julius
-		 * @date 12.12.2022
-		 *
-		 * @param application_ The application instances used for tracking and encapsulation.
-		 */
-		Device(const Application& application_);
-
-		/**
-		 * Constructor
-		 *
-		 * @author Julius
 		 * @date 17.11.2020
 		 *
 		 * @param  application_ The application.
 		 * @param  surface_ The surface.
 		 */
-		Device(const Application& application_, ptr<Surface> surface_);
+		explicit Device(cref<Application> application_, ptr<Surface> surface_ = nullptr) noexcept;
 
 		/**
 		 * Destructor
@@ -151,7 +141,7 @@ namespace hg::engine::gfx {
 		ptr<CommandQueue> transferQueue() const noexcept;
 
 	private:
-		cref<Application> _application;
+		nmpt<const Application> _application;
 		ptr<Surface> _surface;
 
 		mutable vk::Device _device;

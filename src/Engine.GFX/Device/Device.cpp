@@ -1,5 +1,8 @@
 #include "Device.hpp"
+
 #include <unordered_set>
+#include <Engine.Common/Collection/Set.hpp>
+#include <Engine.Logging/Logger.hpp>
 
 #ifdef _PROFILING
 #include <Engine.Common/Profiling/Stopwatch.hpp>
@@ -7,10 +10,8 @@
 
 #include "../Command/CommandQueue.hpp"
 #include "../Library/Types.hpp"
-#include "../Surface/Surface.hpp"
 #include "../Memory/VkAllocator.hpp"
-#include <Engine.Logging/Logger.hpp>
-#include <Engine.Common/Collection/Set.hpp>
+#include "../Surface/Surface.hpp"
 
 using namespace hg::engine::gfx;
 using namespace hg;
@@ -40,15 +41,12 @@ static std::vector<const char*> validationLayers = {
 	#endif
 };
 
-Device::Device(Application::const_reference_type application_) :
-	Device(application_, nullptr) {}
-
-Device::Device(Application::const_reference_type application_, ptr<Surface> surface_) :
+Device::Device(cref<Application> application_, const ptr<Surface> surface_) noexcept :
 	_alloc(nullptr),
 	_computeQueue(nullptr),
 	_graphicsQueue(nullptr),
 	_transferQueue(nullptr),
-	_application(application_),
+	_application(std::addressof(application_)),
 	_surface(surface_),
 	_device(nullptr),
 	_physicalDevice(nullptr) {}
@@ -86,7 +84,7 @@ void Device::setup() {
 
 	const auto checkSurfaceSupport { _surface != nullptr };
 
-	const std::vector<vk::PhysicalDevice> physicalCandidates = _application->enumeratePhysicalDevices();
+	const std::vector<vk::PhysicalDevice> physicalCandidates = (*_application)->enumeratePhysicalDevices();
 	for (const auto& entry : physicalCandidates) {
 
 		const bool extension { supportsExtensions(entry) };
