@@ -36,13 +36,13 @@ namespace hg::engine::gfx::loader {
 		[[nodiscard]] smr<TextureResource> transpose(
 			_In_ mref<request_type::type> request_,
 			_In_ mref<request_type::options> options_,
-			_In_ mref<storage::AccessBlobReadonly> from_
+			_In_ mref<std::pair<ref<storage::StorageSystem>, Arci<storage::IStorage>>> from_
 		) const;
 
 		void partialTranspose(
 			_In_ mref<stream_request_type::type> request_,
 			_In_ mref<stream_request_type::options> options_,
-			_In_ mref<storage::AccessBlobReadonly> from_,
+			_In_ mref<std::pair<ref<storage::StorageSystem>, Arci<storage::IStorage>>> from_,
 			_In_ mref<smr<TextureResource>> to_
 		) const;
 

@@ -20,7 +20,7 @@ TextureTransformer::TextureTransformer(const non_owning_rptr<pool::GlobalResourc
 smr<TextureResource> TextureTransformer::transpose(
 	mref<request_type::type> request_,
 	mref<request_type::options> options_,
-	mref<storage::AccessBlobReadonly> from_
+	mref<std::pair<ref<storage::StorageSystem>, Arci<storage::IStorage>>> from_
 ) const {
 
 	const non_owning_rptr<const assets::TextureAsset> asset = request_;
@@ -55,7 +55,7 @@ smr<TextureResource> TextureTransformer::transpose(
 void TextureTransformer::partialTranspose(
 	mref<stream_request_type::type> request_,
 	mref<stream_request_type::options> options_,
-	mref<storage::AccessBlobReadonly> from_,
+	mref<std::pair<ref<storage::StorageSystem>, Arci<storage::IStorage>>> from_,
 	mref<smr<TextureResource>> to_
 ) const {
 

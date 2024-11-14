@@ -8,7 +8,6 @@
 #include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Math/Coordinates.hpp>
-#include <Engine.Filesystem/Url.hpp>
 #include <Engine.GFX/API/VkTranslate.hpp>
 #include <Engine.GFX/Command/CommandBuffer.hpp>
 #include <Engine.GFX/Device/Device.hpp>
@@ -16,6 +15,7 @@
 #include <Engine.GFX/Texture/SparseTextureView.hpp>
 #include <Engine.GFX/Texture/TextureFactory.hpp>
 #include <Engine.Logging/Logger.hpp>
+#include <Engine.Storage.System/StorageSystem.hpp>
 #include <gli/gli.hpp>
 
 using namespace hg::engine::gfx::loader::transformer;
@@ -98,7 +98,7 @@ namespace hg::external::ktx {
 	};
 
 	struct InternalContext {
-		ref<engine::storage::AccessBlobReadonly> blob;
+		cref<engine::resource::Blob> blob;
 
 		/**/
 
@@ -165,22 +165,35 @@ namespace hg::external::ktx {
 
 void transformer::convertKtx(
 	const non_owning_rptr<const assets::TextureAsset> asset_,
-	mref<storage::AccessBlobReadonly> src_,
+	mref<std::pair<ref<storage::StorageSystem>, Arci<storage::IStorage>>> src_,
 	const non_owning_rptr<SparseTextureView> dst_,
 	cref<sptr<Device>> device_,
 	const TextureLoadOptions options_
 ) {
 
-	constexpr auto chunkSize = MAX(sizeof(gli::detail::FOURCC_KTX10), sizeof(ktx20Identifier));
-	Vector<_::byte> raw {};
-	raw.resize(chunkSize, _::byte {});
+	const auto ioResult = src_.first.query(
+		clone(src_.second),
+		[](_In_ cref<engine::resource::Blob> blob_) {
 
-	auto read = src_->fully().read(streamoff {}, std::span { raw.data(), raw.size() });
-	assert(read.size() >= chunkSize);
+			constexpr auto chunkSize = MAX(sizeof(gli::detail::FOURCC_KTX10), sizeof(ktx20Identifier));
+
+			auto srcSize = blob_.size();
+			::hg::assertrt(srcSize > 0);
+
+			Vector<_::byte> chunk {};
+			chunk.resize(chunkSize, _::byte {});
+
+			std::ignore = blob_.read(streamoff {}, std::span { chunk.data(), chunk.size() });
+			return chunk;
+		}
+	);
+
+	::hg::assertrt(ioResult.has_value());
+	auto chunk = ::hg::move(ioResult).value();
 
 	/**/
 
-	bool isKtx20 = std::memcmp(raw.data(), ktx20Identifier, sizeof(ktx20Identifier)) == 0;
+	bool isKtx20 = std::memcmp(chunk.data(), ktx20Identifier, sizeof(ktx20Identifier)) == 0;
 
 	if (isKtx20) {
 		convertKtx20(asset_, std::move(src_), dst_, device_, options_);
@@ -191,7 +204,7 @@ void transformer::convertKtx(
 
 	bool isKtx10 = true;
 	for (size_t idx = 0; idx < sizeof(gli::detail::FOURCC_KTX10); ++idx) {
-		if (static_cast<unsigned char>(raw[idx]) != gli::detail::FOURCC_KTX10[idx]) {
+		if (static_cast<unsigned char>(chunk[idx]) != gli::detail::FOURCC_KTX10[idx]) {
 			isKtx10 = false;
 			break;
 		}
@@ -214,7 +227,7 @@ void transformer::convertKtx(
 
 void transformer::convertKtxPartial(
 	const non_owning_rptr<const assets::TextureAsset> asset_,
-	mref<storage::AccessBlobReadonly> src_,
+	mref<std::pair<ref<storage::StorageSystem>, Arci<storage::IStorage>>> src_,
 	const non_owning_rptr<SparseTextureView> dst_,
 	cref<sptr<Device>> device_,
 	const TextureStreamOptions options_
@@ -527,24 +540,33 @@ static Buffer createStageBuffer(cref<sptr<Device>> device_, const u64 byteSize_)
 
 void transformer::convertKtx10Gli(
 	const non_owning_rptr<const engine::assets::TextureAsset> asset_,
-	mref<storage::AccessBlobReadonly> src_,
+	mref<std::pair<ref<storage::StorageSystem>, Arci<storage::IStorage>>> src_,
 	const non_owning_rptr<SparseTextureView> dst_,
 	cref<sptr<Device>> device_,
 	const TextureLoadOptions options_
 ) {
 
-	const auto srcSize = src_->fully().size();
-	::hg::assertrt(srcSize > 0);
+	const auto ioResult = src_.first.query(
+		::hg::move(src_.second),
+		[](_In_ cref<engine::resource::Blob> blob_) {
 
-	Vector<_::byte> tmp {};
-	tmp.resize(srcSize, _::byte {});
+			auto srcSize = blob_.size();
+			::hg::assertrt(srcSize > 0);
 
-	auto read = src_->fully().read(streamoff {}, std::span { tmp.data(), tmp.size() });
+			Vector<_::byte> chunk {};
+			chunk.resize(srcSize, _::byte {});
+
+			std::ignore = blob_.read(streamoff {}, std::span { chunk.data(), chunk.size() });
+			return chunk;
+		}
+	);
+
+	::hg::assertrt(ioResult.has_value());
+	auto chunk = ::hg::move(ioResult).value();
 
 	/**/
 
-	::hg::assertrt(read.size() >= srcSize);
-	gli::texture glitex = gli::load_ktx(std::bit_cast<char const*>(tmp.data()), read.size());
+	gli::texture glitex = gli::load_ktx(std::bit_cast<char const*>(chunk.data()), chunk.size());
 
 	/**/
 
@@ -842,12 +864,12 @@ void transformer::convertKtx10Gli(
 	stage.destroy();
 	glitex.clear();
 
-	tmp.clear();
+	chunk.clear();
 }
 
 void transformer::convertKtx20(
 	const non_owning_rptr<const engine::assets::TextureAsset> asset_,
-	mref<storage::AccessBlobReadonly> src_,
+	mref<std::pair<ref<storage::StorageSystem>, Arci<storage::IStorage>>> src_,
 	const non_owning_rptr<SparseTextureView> dst_,
 	cref<sptr<Device>> device_,
 	const TextureLoadOptions options_
@@ -910,82 +932,104 @@ void transformer::convertKtx20(
 
 	/**/
 
-	using namespace ::hg::external;
+	auto ioResult = src_.first.query(
+		::hg::move(src_.second),
+		[dst_, &device_](
+		_In_ cref<resource::Blob> blob_
+	) -> std::tuple<Buffer, u32, u32, vk::ImageAspectFlags, Vector<vk::BufferImageCopy>> {
+			using namespace ::hg::external;
 
-	ktx::InternalContext ctx {
-		src_
-	};
+			ktx::InternalContext ctx {
+				blob_
+			};
 
-	if (not ktx::readHeader(ctx)) {
+			if (not ktx::readHeader(ctx)) {
+				return {};
+			}
+
+			Buffer stage = createStageBuffer(ctx, device_);
+
+			/**/
+
+			bool validType = false;
+			switch (dst_->type()) {
+				case TextureType::e2d: {
+					validType = ktx::is2d(ctx.header) && not ktx::isArray(ctx.header);
+					break;
+				}
+				case TextureType::e2dArray: {
+					validType = ktx::is2d(ctx.header) && ktx::isArray(ctx.header);
+					validType = ktx::is2d(ctx.header);
+					break;
+				}
+				case TextureType::e3d: {
+					validType = ktx::is3d(ctx.header) && not ktx::isArray(ctx.header);
+					break;
+				}
+				case TextureType::eCube: {
+					validType = ktx::isCube(ctx.header) && not ktx::isArray(ctx.header);
+					break;
+				}
+			}
+
+			if (not validType) {
+				stage.destroy();
+				::hg::panic();
+			}
+
+			/**/
+
+			vk::Format format {};
+			vk::ImageAspectFlags aspect {};
+			deduceFromFormat(ktx::getFormat(ctx.header), format, aspect);
+
+			const auto effectedLayers = MAX(ktx::getLayerCount(ctx.header), ktx::getFaceCount(ctx.header));
+			const auto effectedLevels = MIN(ktx::getLevelCount(ctx.header), dst_->mipLevels());
+
+			/**/
+
+			u64 offset = 0;
+			Vector<vk::BufferImageCopy> regions {};
+
+			for (u32 level = 0; level < effectedLevels; ++level) {
+
+				const math::uivec3 extent { ktx::getWidth(ctx.header), ktx::getHeight(ctx.header), ktx::getDepth(ctx.header) };
+				const auto levelExtent = ktx::calcLevelExtent(extent, level);
+
+				regions.emplace_back(
+					offset,
+					0,
+					0,
+					vk::ImageSubresourceLayers {
+						aspect,
+						level,
+						0,
+						effectedLayers
+					},
+					vk::Offset3D(),
+					vk::Extent3D { levelExtent.x, levelExtent.y, levelExtent.z }
+
+				);
+				offset += ktx::getDataSize(ctx, level);
+			}
+
+			/**/
+
+			return std::make_tuple(::hg::move(stage), effectedLayers, effectedLevels, aspect, ::hg::move(regions));
+		}
+	);
+
+	/**/
+
+	if (
+		not ioResult.has_value() ||
+		std::get<0>(*ioResult).memory == nullptr ||
+		not static_cast<bool>(std::get<0>(*ioResult).buffer)
+	) {
 		return;
 	}
 
-	Buffer stage = createStageBuffer(ctx, device_);
-
-	/**/
-
-	bool validType = false;
-	switch (dst_->type()) {
-		case TextureType::e2d: {
-			validType = ktx::is2d(ctx.header) && not ktx::isArray(ctx.header);
-			break;
-		}
-		case TextureType::e2dArray: {
-			validType = ktx::is2d(ctx.header) && ktx::isArray(ctx.header);
-			validType = ktx::is2d(ctx.header);
-			break;
-		}
-		case TextureType::e3d: {
-			validType = ktx::is3d(ctx.header) && not ktx::isArray(ctx.header);
-			break;
-		}
-		case TextureType::eCube: {
-			validType = ktx::isCube(ctx.header) && not ktx::isArray(ctx.header);
-			break;
-		}
-	}
-
-	if (not validType) {
-		stage.destroy();
-		::hg::panic();
-	}
-
-	/**/
-
-	vk::Format format {};
-	vk::ImageAspectFlags aspect {};
-	deduceFromFormat(ktx::getFormat(ctx.header), format, aspect);
-
-	const auto effectedLayers = MAX(ktx::getLayerCount(ctx.header), ktx::getFaceCount(ctx.header));
-	const auto effectedLevels = MIN(ktx::getLevelCount(ctx.header), dst_->mipLevels());
-
-	/**/
-
-	u64 offset = 0;
-	Vector<vk::BufferImageCopy> regions {};
-
-	for (u32 level = 0; level < effectedLevels; ++level) {
-
-		const math::uivec3 extent { ktx::getWidth(ctx.header), ktx::getHeight(ctx.header), ktx::getDepth(ctx.header) };
-		const auto levelExtent = ktx::calcLevelExtent(extent, level);
-
-		vk::BufferImageCopy copy {
-			offset,
-			0,
-			0,
-			{
-				aspect,
-				level,
-				0,
-				effectedLayers
-			},
-			vk::Offset3D(),
-			vk::Extent3D { levelExtent.x, levelExtent.y, levelExtent.z }
-		};
-
-		regions.push_back(std::move(copy));
-		offset += ktx::getDataSize(ctx, level);
-	}
+	auto [stage, effectedLayers, effectedLevels, aspect, regions] = ::hg::move(ioResult).value();
 
 	/**/
 
@@ -1107,7 +1151,7 @@ void transformer::convertKtx20(
 
 void transformer::convertKtx20Partial(
 	const non_owning_rptr<const engine::assets::TextureAsset> asset_,
-	mref<storage::AccessBlobReadonly> src_,
+	mref<std::pair<ref<storage::StorageSystem>, Arci<storage::IStorage>>> src_,
 	const non_owning_rptr<SparseTextureView> dst_,
 	cref<sptr<Device>> device_,
 	const TextureStreamOptions options_
@@ -1356,197 +1400,212 @@ void transformer::convertKtx20Partial(
 	if (!changedMemory && not(options_.mip >= dst_->owner()->mipTailFirstLod())) {
 		return;
 	}
+
 	/**
 	 *
 	 */
 
-	#pragma region KTX Header
+	auto ioResult = src_.first.query(
+		::hg::move(src_.second),
+		[dst_, &options_, &device_, &reqExtent, &reqOffset](_In_ cref<resource::Blob> blob_) {
 
-	ktx::InternalContext ctx {
-		src_
-	};
+			#pragma region KTX Header
 
-	if (not ktx::readHeader(ctx)) {
-		return;
-	}
+			ktx::InternalContext ctx {
+				blob_
+			};
 
-	// Format
-	vk::Format format {};
-	vk::ImageAspectFlags aspect {};
-	deduceFromFormat(ktx::getFormat(ctx.header), format, aspect);
-
-	// Meta
-	const ktx::extent_type ktxExtent {
-		ktx::getWidth(ctx.header), ktx::getHeight(ctx.header), ktx::getDepth(ctx.header)
-	};
-
-	#pragma endregion
-
-	/* Check Mip Diff */
-
-	const math::uivec3 ownerExtent {
-		dst_->owner()->width(),
-		dst_->owner()->height(),
-		dst_->owner()->depth()
-	};
-	auto mipDiff = calcMipDiff(ktxExtent, ownerExtent);
-
-	assert(static_cast<s32>(options_.mip) + mipDiff >= 0);
-
-	/**/
-
-	// TODO: Check why `base - option` instead of `base + layer` ?!?
-	const u32 srcLayer { dst_->baseLayer() - options_.layer };
-	const u32 srcMip { options_.mip + mipDiff };
-
-	if (srcMip > ktx::getLevelCount(ctx.header)) {
-		#ifdef _DEBUG
-		// We can't load data into a mip level which is not present within the source data
-		::hg::breakpoint();
-		#endif
-		return;
-	}
-
-	/**/
-
-	#pragma region KTX Source Data
-
-	const ktx::extent_type levelExtent = ktx::calcLevelExtent(ktxExtent, srcMip);
-	const auto& ktxLevel = ctx.levels[srcMip];
-
-	const auto formatSize = formatDataSize(api::vkTranslateFormat(format));
-	const auto blockSize = formatBlockSize(api::vkTranslateFormat(format));
-
-	if (blockSize.x != 1 || blockSize.y != 1 || blockSize.z != 1) {
-		#ifdef _DEBUG
-		// We currently don't support (compressed) block encoding.
-		::hg::breakpoint();
-		#endif
-		return;
-	}
-
-	/* Create stage buffer */
-
-	u64 stageSize = ~0;
-	if (options_.extent.zero()) {
-		stageSize = levelExtent.x * levelExtent.y * levelExtent.z * formatSize;
-	} else {
-		stageSize = reqExtent.x * reqExtent.y * reqExtent.z * formatSize;
-	}
-
-	#ifdef _DEBUG
-	if (stageSize <= 0 || stageSize >= ~0uLL) {
-		::hg::breakpoint();
-		return;
-	}
-	#endif
-
-	Buffer stage = createStageBuffer(device_, stageSize);
-
-	/* Load data to stage */
-
-	const bool useFastCopy { options_.extent.zero() || options_.extent == levelExtent };
-	if (useFastCopy) {
-
-		if (not stage.memory->mapping) {
-			stage.mapAligned();
-		}
-
-		std::span<_::byte> bufferMemory { reinterpret_cast<ptr<_::byte>>(stage.memory->mapping), stage.memory->size };
-		const auto succeeded = ktx::readData(ctx, srcMip, bufferMemory);
-
-		if (not succeeded) {
-			stage.destroy();
-			return;
-		}
-
-		stage.flushAligned();
-		stage.unmap();
-
-	} else {
-
-		if (ktx::getSCS(ctx.header) != ktx::SuperCompressionScheme::eNone) {
-			#ifdef _DEBUG
-			// We can't use block loading with super compression
-			::hg::breakpoint();
-			#endif
-			return;
-		}
-
-		if (formatSize <= 0) {
-			#ifdef _DEBUG
-			// Missing block size is indicator for unsupported sparse loading
-			// TODO: Check whether we can break up at least ASTC formats
-			::hg::breakpoint();
-			#endif
-			return;
-		}
-
-		// :: level
-		// :: level :: layer
-		// :: level :: layer :: face
-		// :: level :: layer :: face :: z
-		// :: level :: layer :: face :: z :: y
-		// :: level :: layer :: face :: z :: y :: x
-
-		const auto globalLevelOffset = ktxLevel.byteOff;
-
-		const auto layerCount = ktx::getLayerCount(ctx.header);
-		const auto faceCount = ktx::getFaceCount(ctx.header);
-
-		const auto rowSize = levelExtent.x * formatSize;
-		const auto planeSize = levelExtent.y * rowSize;
-		const auto sliceSize = levelExtent.z * planeSize;
-		const auto faceSize = sliceSize;
-		const auto layerSize = faceSize * faceCount;
-
-		const auto layerOffset = options_.layer * layerSize;
-
-		/**/
-
-		const auto globalOffset = globalLevelOffset + layerOffset;
-
-		/**/
-
-		const auto minExt { reqOffset };
-		const auto maxExt { reqOffset + reqExtent };
-
-		// the file is linearized at the x-dimension, so we can read the whole contiguous sequence
-		const streamsize seqRowSize = (maxExt.x - minExt.x) * formatSize;
-		const streamoff seqRowOff = minExt.x * formatSize;
-
-		/**/
-
-		if (not stage.memory->mapping) {
-			stage.mapAligned();
-		}
-
-		const ptr<_::byte> memory = reinterpret_cast<ptr<_::byte>>(stage.memory->mapping);
-		streampos memPos = 0;
-
-		// for (u32 face { 0uL }; face < faceCount; ++face) {
-		for (u32 slice { minExt.z }; slice < maxExt.z; ++slice) {
-
-			const streamoff sliceOff = slice * planeSize;
-			for (u32 row { minExt.y }; row < maxExt.y; ++row) {
-
-				const streamoff planeOff = row * rowSize;
-
-				std::ignore = src_->fully().read(
-					static_cast<streamoff>(globalOffset + sliceOff + planeOff + seqRowOff),
-					std::span { memory + memPos, static_cast<size_t>(seqRowSize) }
-				);
-
-				memPos += seqRowSize;
+			if (not ktx::readHeader(ctx)) {
+				return Buffer {};
 			}
+
+			// Format
+			vk::Format format {};
+			vk::ImageAspectFlags aspect {};
+			deduceFromFormat(ktx::getFormat(ctx.header), format, aspect);
+
+			// Meta
+			const ktx::extent_type ktxExtent {
+				ktx::getWidth(ctx.header), ktx::getHeight(ctx.header), ktx::getDepth(ctx.header)
+			};
+
+			#pragma endregion
+
+			/* Check Mip Diff */
+
+			const math::uivec3 ownerExtent {
+				dst_->owner()->width(),
+				dst_->owner()->height(),
+				dst_->owner()->depth()
+			};
+			auto mipDiff = calcMipDiff(ktxExtent, ownerExtent);
+
+			assert(static_cast<s32>(options_.mip) + mipDiff >= 0);
+
+			/**/
+
+			// TODO: Check why `base - option` instead of `base + layer` ?!?
+			const u32 srcLayer { dst_->baseLayer() - options_.layer };
+			const u32 srcMip { options_.mip + mipDiff };
+
+			if (srcMip > ktx::getLevelCount(ctx.header)) {
+				#ifdef _DEBUG
+				// We can't load data into a mip level which is not present within the source data
+				::hg::breakpoint();
+				#endif
+				return Buffer {};
+			}
+
+			/**/
+
+			#pragma region KTX Source Data
+
+			const ktx::extent_type levelExtent = ktx::calcLevelExtent(ktxExtent, srcMip);
+			const auto& ktxLevel = ctx.levels[srcMip];
+
+			const auto formatSize = formatDataSize(api::vkTranslateFormat(format));
+			const auto blockSize = formatBlockSize(api::vkTranslateFormat(format));
+
+			if (blockSize.x != 1 || blockSize.y != 1 || blockSize.z != 1) {
+				#ifdef _DEBUG
+				// We currently don't support (compressed) block encoding.
+				::hg::breakpoint();
+				#endif
+				return Buffer {};
+			}
+
+			/* Create stage buffer */
+
+			u64 stageSize = ~0;
+			if (options_.extent.zero()) {
+				stageSize = levelExtent.x * levelExtent.y * levelExtent.z * formatSize;
+			} else {
+				stageSize = reqExtent.x * reqExtent.y * reqExtent.z * formatSize;
+			}
+
+			#ifdef _DEBUG
+			if (stageSize <= 0 || stageSize >= ~0uLL) {
+				::hg::breakpoint();
+				return Buffer {};
+			}
+			#endif
+
+			Buffer stage = createStageBuffer(device_, stageSize);
+
+			/* Load data to stage */
+
+			const bool useFastCopy { options_.extent.zero() || options_.extent == levelExtent };
+			if (useFastCopy) {
+
+				if (not stage.memory->mapping) {
+					stage.mapAligned();
+				}
+
+				std::span<_::byte> bufferMemory { reinterpret_cast<ptr<_::byte>>(stage.memory->mapping), stage.memory->size };
+				const auto succeeded = ktx::readData(ctx, srcMip, bufferMemory);
+
+				if (not succeeded) {
+					stage.destroy();
+					return Buffer {};
+				}
+
+				stage.flushAligned();
+				stage.unmap();
+
+			} else {
+
+				if (ktx::getSCS(ctx.header) != ktx::SuperCompressionScheme::eNone) {
+					#ifdef _DEBUG
+					// We can't use block loading with super compression
+					::hg::breakpoint();
+					#endif
+					return Buffer {};
+				}
+
+				if (formatSize <= 0) {
+					#ifdef _DEBUG
+					// Missing block size is indicator for unsupported sparse loading
+					// TODO: Check whether we can break up at least ASTC formats
+					::hg::breakpoint();
+					#endif
+					return Buffer {};
+				}
+
+				// :: level
+				// :: level :: layer
+				// :: level :: layer :: face
+				// :: level :: layer :: face :: z
+				// :: level :: layer :: face :: z :: y
+				// :: level :: layer :: face :: z :: y :: x
+
+				const auto globalLevelOffset = ktxLevel.byteOff;
+
+				const auto layerCount = ktx::getLayerCount(ctx.header);
+				const auto faceCount = ktx::getFaceCount(ctx.header);
+
+				const auto rowSize = levelExtent.x * formatSize;
+				const auto planeSize = levelExtent.y * rowSize;
+				const auto sliceSize = levelExtent.z * planeSize;
+				const auto faceSize = sliceSize;
+				const auto layerSize = faceSize * faceCount;
+
+				const auto layerOffset = options_.layer * layerSize;
+
+				/**/
+
+				const auto globalOffset = globalLevelOffset + layerOffset;
+
+				/**/
+
+				const auto minExt { reqOffset };
+				const auto maxExt { reqOffset + reqExtent };
+
+				// the file is linearized at the x-dimension, so we can read the whole contiguous sequence
+				const streamsize seqRowSize = (maxExt.x - minExt.x) * formatSize;
+				const streamoff seqRowOff = minExt.x * formatSize;
+
+				/**/
+
+				if (not stage.memory->mapping) {
+					stage.mapAligned();
+				}
+
+				const ptr<_::byte> memory = reinterpret_cast<ptr<_::byte>>(stage.memory->mapping);
+				streampos memPos = 0;
+
+				// for (u32 face { 0uL }; face < faceCount; ++face) {
+				for (u32 slice { minExt.z }; slice < maxExt.z; ++slice) {
+
+					const streamoff sliceOff = slice * planeSize;
+					for (u32 row { minExt.y }; row < maxExt.y; ++row) {
+
+						const streamoff planeOff = row * rowSize;
+
+						std::ignore = blob_.read(
+							static_cast<streamoff>(globalOffset + sliceOff + planeOff + seqRowOff),
+							std::span { memory + memPos, static_cast<size_t>(seqRowSize) }
+						);
+
+						memPos += seqRowSize;
+					}
+				}
+				// }
+
+				stage.flushAligned();
+				stage.unmap();
+			}
+
+			#pragma endregion
+
+			return stage;
 		}
-		// }
+	);
 
-		stage.flushAligned();
-		stage.unmap();
+	/**/
+
+	if (not ioResult.has_value() || ioResult->memory == nullptr || static_cast<bool>(ioResult->buffer)) {
+		return;
 	}
-
-	#pragma endregion
 
 	/**
 	* Fetch Region per Layer
@@ -1624,7 +1683,7 @@ void transformer::convertKtx20Partial(
 	);
 
 	cmd.vkCommandBuffer().copyBufferToImage(
-		stage.buffer,
+		ioResult->buffer,
 		dst_->owner()->vkImage(),
 		vk::ImageLayout::eTransferDstOptimal,
 		static_cast<u32>(regions.size()),
@@ -1672,12 +1731,12 @@ void transformer::convertKtx20Partial(
 	/**
 	* Cleanup
 	*/
-	stage.destroy();
+	::hg::move(ioResult).value().destroy();
 }
 
 void transformer::unloadPartialTmp(
 	const non_owning_rptr<const engine::assets::TextureAsset> asset_,
-	mref<storage::AccessBlobReadonly> src_,
+	mref<std::pair<ref<storage::StorageSystem>, Arci<storage::IStorage>>> src_,
 	const non_owning_rptr<SparseTextureView> dst_,
 	cref<sptr<Device>> device_,
 	const TextureStreamOptions options_
@@ -1899,7 +1958,7 @@ bool external::ktx::readHeader(ref<InternalContext> ctx_) {
 
 	/**/
 
-	auto read = ctx_.blob->fully().read(
+	auto read = ctx_.blob.read(
 		streamoff {},
 		std::span { std::bit_cast<_::byte*>(&ctx_.header), header_size }
 	);
@@ -1931,7 +1990,7 @@ bool external::ktx::readHeader(ref<InternalContext> ctx_) {
 	ctx_.levels.resize(getLevelCount(ctx_.header));
 
 	const streamsize levels_size = level_size * getLevelCount(ctx_.header);
-	read = ctx_.blob->fully().read(
+	read = ctx_.blob.read(
 		streamoff { header_size },
 		std::span { std::bit_cast<_::byte*>(ctx_.levels.data()), static_cast<u64>(levels_size) }
 	);
@@ -1978,7 +2037,7 @@ bool external::ktx::readData(cref<InternalContext> ctx_, level_type level_, std:
 
 	/**/
 
-	auto read = ctx_.blob->fully().read(
+	auto read = ctx_.blob.read(
 		static_cast<streamoff>(level.byteOff),
 		std::span { dst_.data(), level.byteSize }
 	);
