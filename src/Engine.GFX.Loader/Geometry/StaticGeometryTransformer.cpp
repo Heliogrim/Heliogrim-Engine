@@ -7,6 +7,7 @@
 #include <Engine.GFX/Buffer/Buffer.hpp>
 #include <Engine.GFX/Buffer/SparseBufferPage.hpp>
 #include <Engine.GFX/Buffer/SparseBufferView.hpp>
+#include <Engine.GFX/Command/CommandBuffer.hpp>
 #include <Engine.GFX/Geometry/Vertex.hpp>
 #include <Engine.GFX/Memory/AllocatedMemory.hpp>
 #include <Engine.GFX/Memory/AllocationResult.hpp>
@@ -14,21 +15,20 @@
 #include <Engine.GFX/Pool/GlobalResourcePool.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Resource/Manage/UniqueResource.hpp>
-
-#include "Engine.GFX/Command/CommandBuffer.hpp"
+#include <Engine.Storage.System/StorageSystem.hpp>
 
 using namespace hg::engine::gfx::loader;
 using namespace hg::engine::gfx;
 using namespace hg;
 
 static smr<StaticGeometryResource> loadWithAssimp(
-	const non_owning_rptr<const engine::assets::StaticGeometry> request_,
-	mref<engine::storage::AccessBlobReadonly> src_,
-	const non_owning_rptr<pool::GlobalResourcePool> pool_,
+	non_owning_rptr<const engine::assets::StaticGeometry> request_,
+	mref<engine::resource::loader::SourceLoaderResponse<void>::type> src_,
+	non_owning_rptr<pool::GlobalResourcePool> pool_,
 	cref<StaticGeometryTransformer::request_type::options> options_
 );
 
-static Buffer createStageBuffer(cref<sptr<Device>> device_, const u64 byteSize_);
+static Buffer createStageBuffer(cref<sptr<Device>> device_, u64 byteSize_);
 
 StaticGeometryTransformer::StaticGeometryTransformer(const non_owning_rptr<pool::GlobalResourcePool> pool_) :
 	Transformer(),
@@ -56,7 +56,7 @@ StaticGeometryTransformer::response_type::type StaticGeometryTransformer::operat
 
 static smr<StaticGeometryResource> loadWithAssimp(
 	const non_owning_rptr<const engine::assets::StaticGeometry> request_,
-	mref<engine::storage::AccessBlobReadonly> src_,
+	mref<engine::resource::loader::SourceLoaderResponse<void>::type> src_,
 	const non_owning_rptr<pool::GlobalResourcePool> pool_,
 	cref<StaticGeometryTransformer::request_type::options> options_
 ) {
@@ -68,13 +68,23 @@ static smr<StaticGeometryResource> loadWithAssimp(
 
 	/**/
 
-	auto srcSize = src_->fully().size();
-	::hg::assertrt(srcSize > 0);
+	const auto ioResult = src_.first.query(
+		::hg::move(src_.second),
+		[](_In_ cref<engine::resource::Blob> blob_) {
 
-	Vector<_::byte> buffer {};
-	buffer.resize(srcSize, _::byte {});
+			auto srcSize = blob_.size();
+			::hg::assertrt(srcSize > 0);
 
-	std::ignore = src_->fully().read(streamoff {}, std::span { buffer.data(), buffer.size() });
+			Vector<_::byte> chunk {};
+			chunk.resize(blob_.size(), _::byte {});
+
+			std::ignore = blob_.read(streamoff {}, std::span { chunk.data(), chunk.size() });
+			return chunk;
+		}
+	);
+
+	::hg::assertrt(ioResult.has_value());
+	auto buffer = ::hg::move(ioResult).value();
 
 	/**/
 
@@ -86,7 +96,7 @@ static smr<StaticGeometryResource> loadWithAssimp(
 		pHint = "gltf";
 	}
 
-	auto* const scene = importer.ReadFileFromMemory(buffer.data(), srcSize, ppFlags, pHint);
+	auto* const scene = importer.ReadFileFromMemory(buffer.data(), buffer.size(), ppFlags, pHint);
 
 	if (scene == nullptr) {
 		IM_CORE_ERRORF(
