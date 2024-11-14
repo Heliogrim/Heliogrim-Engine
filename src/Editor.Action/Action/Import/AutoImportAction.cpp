@@ -116,11 +116,11 @@ bool AutoImportAction::failed() const noexcept {
 #include <Engine.GFX/Importer/ModelFileTypes.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Reflect/TypeSwitch.hpp>
+#include <Engine.Resource.Archive/BufferArchive.hpp>
 #include <Engine.Resource.Archive/StorageReadWriteArchive.hpp>
 #include <Engine.Resource/FileTypeId.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
-#include <Engine.Resource.Package/Attribute/PackageGuid.hpp>
-#include <Engine.Resource.Package/External/PackageIo.hpp>
+#include <Engine.Resource.Package/Linker/PackageArchiveType.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Archive/StructuredArchive.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
@@ -131,8 +131,12 @@ bool AutoImportAction::failed() const noexcept {
 #include <Engine.Storage.Registry/Options/StorageDescriptor.hpp>
 #include <Engine.Storage.Registry/Storage/PackageStorage.hpp>
 #include <Engine.Storage.Registry/Url/Url.hpp>
+#include <Engine.Storage.System/StorageSystem.hpp>
 
 /**/
+
+using namespace hg::engine::resource::package;
+using namespace hg::engine::resource;
 
 // @formatter:off
 [[nodiscard]] static Opt<Vector<Arci<engine::assets::Asset>>> autoImportCombinedImageTexture(_In_ mref<engine::res::FileTypeId> fileTypeId_, _In_ cref<engine::storage::FileUrl> fileUrl_);
@@ -141,10 +145,10 @@ bool AutoImportAction::failed() const noexcept {
 
 [[nodiscard]] static Opt<Arci<engine::storage::system::PackageStorage>> autoStoreAssets(_In_ cref<engine::storage::FileUrl> baseFileUrl_, _In_ cref<Vector<Arci<engine::assets::Asset>>> assets_);
 
-[[nodiscard]] static bool autoStoreFont(_Inout_ ref<engine::resource::package::PackageLinker> linker_, _In_ nmpt<engine::assets::Font> fontAsset_);
-[[nodiscard]] static bool autoStoreImage(_Inout_ ref<engine::resource::package::PackageLinker> linker_, _In_ nmpt<engine::assets::Image> imageAsset_);
-[[nodiscard]] static bool autoStoreTexture(_Inout_ ref<engine::resource::package::PackageLinker> linker_, _In_ nmpt<engine::assets::TextureAsset> textureAsset_);
-[[nodiscard]] static bool autoStoreStaticGeometry(_Inout_ ref<engine::resource::package::PackageLinker> linker_, _In_ nmpt<engine::assets::StaticGeometry> staticGeometryAsset_);
+[[nodiscard]] static std::pair<PackageArchiveType, BufferArchive> autoStoreFont(_In_ nmpt<engine::assets::Font> fontAsset_);
+[[nodiscard]] static std::pair<PackageArchiveType, BufferArchive> autoStoreImage(_In_ nmpt<engine::assets::Image> imageAsset_);
+[[nodiscard]] static std::pair<PackageArchiveType, BufferArchive> autoStoreTexture(_In_ nmpt<engine::assets::TextureAsset> textureAsset_);
+[[nodiscard]] static std::pair<PackageArchiveType, BufferArchive> autoStoreStaticGeometry(_In_ nmpt<engine::assets::StaticGeometry> staticGeometryAsset_);
 // @formatter:on
 
 /**/
@@ -396,8 +400,7 @@ Opt<Arci<engine::storage::system::PackageStorage>> autoStoreAssets(
 
 	const auto engine = engine::Engine::getEngine();
 	const auto storeReg = engine->getStorage()->getRegistry();
-	const auto storeIo = engine->getStorage()->getIo();
-	auto packIo = engine::storage::PackageIo { *storeIo.get() };
+	const auto storeSys = engine->getStorage()->getSystem();
 
 	/* Generate the package storage unit */
 
@@ -424,185 +427,146 @@ Opt<Arci<engine::storage::system::PackageStorage>> autoStoreAssets(
 
 	/* Morph the underlying storage unit into a package storage */
 
-	engine::resource::PackageGuid packageGuid {};
-	GuidGenerate(packageGuid);
+	auto maybePackage = storeSys->requestPackage(
+		{ .storage = ::hg::move(storageUnit).into<engine::storage::system::LocalFileStorage>() }
+	);
 
-	// Question: Should happen implicitly? -> packageIo.create_empty_package();
-	auto packageUnit = storeReg->insert(
-		engine::storage::PackageStorageDescriptor {
-			engine::storage::PackageUrl { clone(packageGuid) },
-			std::move(storageUnit)
-		}
-	).into<engine::storage::system::PackageStorage>();
-	auto packageAccess = storeIo->accessReadWrite(clone(packageUnit));
+	if (not maybePackage.has_value()) {
+		IM_CORE_ERRORF(
+			"Failed to request newly generate package based on file url storage `{}`.",
+			packageFileUrl.string()
+		);
+		return None;
+	}
+
+	auto packageStore = ::hg::move(maybePackage).value();
 
 	/**/
 
-	// Problem: This is just a temporary fix to prevent the lfs blob from failing due to the unattended offset writing.
-	packIo.writeHeader(packageAccess->fully(), streamoff {});
-	auto linker = packIo.create_empty_linker(packageAccess);
+	/* Collect serialized data to write */
 
-	/* Store Data to Package */
+	auto serialized = Vector<std::pair<PackageArchiveType, BufferArchive>> {};
+	serialized.reserve(assets_.size());
 
-	auto stored = true;
 	for (const auto& asset : assets_) {
+		serialized.emplace_back(
+			switchType(
+				asset.get(),
+				[](const ptr<engine::assets::Image> imageAsset_) {
+					return autoStoreImage(imageAsset_);
+				},
+				[](const ptr<engine::assets::TextureAsset> textureAsset_) {
+					return autoStoreTexture(textureAsset_);
+				},
+				[](const ptr<engine::assets::StaticGeometry> staticGeometryAsset_) {
+					return autoStoreStaticGeometry(staticGeometryAsset_);
+				},
+				[](const ptr<engine::assets::Font> fontAsset_) {
+					return autoStoreFont(fontAsset_);
+				}
+			)
+		);
+	}
 
-		stored &= switchType(
-			asset.get(),
-			[&linker_ = linker.get()](const ptr<engine::assets::Image> imageAsset_) {
-				return autoStoreImage(linker_, imageAsset_);
-			},
-			[&linker_ = linker.get()](const ptr<engine::assets::TextureAsset> textureAsset_) {
-				return autoStoreTexture(linker_, textureAsset_);
-			},
-			[&linker_ = linker.get()](const ptr<engine::assets::StaticGeometry> staticGeometryAsset_) {
-				return autoStoreStaticGeometry(linker_, staticGeometryAsset_);
-			},
-			[&linker_ = linker.get()](const ptr<engine::assets::Font> fontAsset_) {
-				return autoStoreFont(linker_, fontAsset_);
-			}
+	/* Write data collection to package */
+
+	auto ioFailed = false;
+	for (auto idx = 0uLL; idx < serialized.size(); ++idx) {
+
+		auto collected = ::hg::move(serialized[idx]);
+
+		auto result = storeSys->addArchiveToPackage(
+			clone(packageStore),
+			collected.first,
+			::hg::move(collected.second)
 		);
 
-		if (not stored) {
+		if (not result.has_value()) {
 			IM_CORE_ERRORF(
-				"Failed to store asset data `{}` into auto generated package `{}`.",
-				encodeGuid4228(asset->get_guid()),
+				"Failed to store serialized asset data of `{}` into auto generated package `{}`.",
+				encodeGuid4228(assets_[idx]->get_guid()),
 				packageFileUrl.string()
 			);
+			ioFailed = true;
 			break;
 		}
 	}
 
 	/* Recover from storing failure */
 
-	if (not stored) {
+	if (ioFailed) {
 		// Note: We need to improve the error recovery... This is just a dirty quickfix.
-		std::ignore = storeReg->removeStorageByUrl(storageFileUrl);
-		std::ignore = std::move(linker);
-		std::ignore = std::move(packageAccess);
+		std::ignore = storeSys->removeStorage(clone(storageFileUrl));
 		std::filesystem::remove(packageFileUrl);
 		return None;
 	}
 
-	/* Flush/Write the package */
+	/**/
 
-	packIo.storeLinkerData(*linker);
-
-	auto& header = packageAccess->fully().header();
-	header.packageSize = header.indexOffset + header.indexSize - sizeof(engine::resource::PackageHeader);
-	packIo.writeHeader(packageAccess->fully(), streamoff {});
-
-	auto footerOffset = header.indexOffset + header.indexSize;
-	packIo.writeFooter(packageAccess->fully(), static_cast<streamoff>(footerOffset));
-
-	return Some(std::move(packageUnit));
+	return Some(std::move(packageStore));
 }
 
 /**/
 #pragma region Asset Specific Serialization
 
-bool autoStoreFont(
-	ref<engine::resource::package::PackageLinker> linker_,
+std::pair<PackageArchiveType, BufferArchive> autoStoreFont(
 	nmpt<engine::assets::Font> fontAsset_
 ) {
 
-	Guid archiveGuid {};
-	GuidGenerate(archiveGuid);
+	auto archive = BufferArchive {};
 
-	return linker_.store(
-		engine::resource::package::PackageArchiveHeader {
-			.type = engine::resource::package::PackageArchiveType::eSerializedStructure,
-			.guid = archiveGuid
-		},
-		[fontAsset_](auto&& writer_) {
-
-			auto structured = engine::serialization::StructuredArchive { *writer_ };
-			engine::serialization::access::Structure<engine::assets::Font>::serialize(
-				*fontAsset_,
-				structured.insertRootSlot().intoStruct()
-			);
-
-			return true;
-		}
+	auto structured = engine::serialization::StructuredArchive { archive };
+	engine::serialization::access::Structure<engine::assets::Font>::serialize(
+		*fontAsset_,
+		structured.insertRootSlot().intoStruct()
 	);
+
+	return std::make_pair(PackageArchiveType::eSerializedStructure, ::hg::move(archive));
 }
 
-bool autoStoreImage(
-	ref<engine::resource::package::PackageLinker> linker_,
+std::pair<PackageArchiveType, BufferArchive> autoStoreImage(
 	nmpt<engine::assets::Image> imageAsset_
 ) {
 
-	Guid archiveGuid {};
-	GuidGenerate(archiveGuid);
+	auto archive = BufferArchive {};
 
-	return linker_.store(
-		engine::resource::package::PackageArchiveHeader {
-			.type = engine::resource::package::PackageArchiveType::eSerializedStructure,
-			.guid = archiveGuid
-		},
-		[imageAsset_](auto&& writer_) {
-
-			auto structured = engine::serialization::StructuredArchive { *writer_ };
-			engine::serialization::access::Structure<engine::assets::Image>::serialize(
-				*imageAsset_,
-				structured.insertRootSlot().intoStruct()
-			);
-
-			return true;
-		}
+	auto structured = engine::serialization::StructuredArchive { archive };
+	engine::serialization::access::Structure<engine::assets::Image>::serialize(
+		*imageAsset_,
+		structured.insertRootSlot().intoStruct()
 	);
+
+	return std::make_pair(PackageArchiveType::eSerializedStructure, ::hg::move(archive));
 }
 
-bool autoStoreTexture(
-	ref<engine::resource::package::PackageLinker> linker_,
+std::pair<PackageArchiveType, BufferArchive> autoStoreTexture(
 	nmpt<engine::assets::TextureAsset> textureAsset_
 ) {
 
-	Guid archiveGuid {};
-	GuidGenerate(archiveGuid);
+	auto archive = BufferArchive {};
 
-	return linker_.store(
-		engine::resource::package::PackageArchiveHeader {
-			.type = engine::resource::package::PackageArchiveType::eSerializedStructure,
-			.guid = archiveGuid
-		},
-		[textureAsset_](auto&& writer_) {
-
-			auto structured = engine::serialization::StructuredArchive { *writer_ };
-			engine::serialization::access::Structure<engine::assets::TextureAsset>::serialize(
-				*textureAsset_,
-				structured.insertRootSlot().intoStruct()
-			);
-
-			return true;
-		}
+	auto structured = engine::serialization::StructuredArchive { archive };
+	engine::serialization::access::Structure<engine::assets::TextureAsset>::serialize(
+		*textureAsset_,
+		structured.insertRootSlot().intoStruct()
 	);
+
+	return std::make_pair(PackageArchiveType::eSerializedStructure, ::hg::move(archive));
 }
 
-bool autoStoreStaticGeometry(
-	ref<engine::resource::package::PackageLinker> linker_,
+std::pair<PackageArchiveType, BufferArchive> autoStoreStaticGeometry(
 	nmpt<engine::assets::StaticGeometry> staticGeometryAsset_
 ) {
 
-	Guid archiveGuid {};
-	GuidGenerate(archiveGuid);
+	auto archive = BufferArchive {};
 
-	return linker_.store(
-		engine::resource::package::PackageArchiveHeader {
-			.type = engine::resource::package::PackageArchiveType::eSerializedStructure,
-			.guid = archiveGuid
-		},
-		[staticGeometryAsset_](auto&& writer_) {
-
-			auto structured = engine::serialization::StructuredArchive { *writer_ };
-			engine::serialization::access::Structure<engine::assets::StaticGeometry>::serialize(
-				*staticGeometryAsset_,
-				structured.insertRootSlot().intoStruct()
-			);
-
-			return true;
-		}
+	auto structured = engine::serialization::StructuredArchive { archive };
+	engine::serialization::access::Structure<engine::assets::StaticGeometry>::serialize(
+		*staticGeometryAsset_,
+		structured.insertRootSlot().intoStruct()
 	);
+
+	return std::make_pair(PackageArchiveType::eSerializedStructure, ::hg::move(archive));
 }
 
 #pragma endregion
