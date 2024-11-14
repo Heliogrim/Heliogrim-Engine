@@ -17,16 +17,26 @@ using namespace hg;
 
 Vector<const char*> Application::_validation = {
 	#ifdef _DEBUG
-    "VK_LAYER_KHRONOS_validation",
-    "VK_LAYER_KHRONOS_synchronization2",
-    "VK_LAYER_KHRONOS_shader_object"
+	"VK_LAYER_KHRONOS_validation",
+	"VK_LAYER_KHRONOS_synchronization2",
+	"VK_LAYER_KHRONOS_shader_object"
 	#endif
 };
+
+Application::Application(mref<Application> other_) noexcept :
+	_instance(std::exchange(other_._instance, nullptr)) {}
 
 Application::~Application() {
 	if (_instance) {
 		destroy();
 	}
+}
+
+ref<Application::this_type> Application::operator=(mref<Application> other_) noexcept {
+	if (std::addressof(other_) != this) {
+		_instance = std::exchange(other_._instance, nullptr);
+	}
+	return *this;
 }
 
 void Application::setup() {

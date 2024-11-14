@@ -1,31 +1,30 @@
 #pragma once
+
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
+
 #include "../vkinc.hpp"
 
 namespace hg::engine::gfx {
 	class Application {
 	public:
-		using value_type = Application;
-		using reference_type = Application&;
-		using const_reference_type = const Application&;
+		using this_type = Application;
 
-		/**
-		 * Default constructor
-		 *
-		 * @author Julius
-		 * @date 09.11.2020
-		 */
-		Application() = default;
+	public:
+		Application() noexcept = default;
 
-		/**
-		 * Destructor
-		 *
-		 * @author Julius
-		 * @date 09.11.2020
-		 */
+		Application(cref<Application>) = delete;
+
+		Application(mref<Application> other_) noexcept;
+
 		~Application();
 
+	public:
+		ref<this_type> operator=(cref<Application>) = delete;
+
+		ref<this_type> operator=(mref<Application> other_) noexcept;
+
+	public:
 		/**
 		 * Setups this
 		 *
