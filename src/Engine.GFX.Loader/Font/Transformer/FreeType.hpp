@@ -9,7 +9,7 @@ namespace hg::engine::gfx {
 namespace hg::engine::gfx::loader::transformer {
 	extern void convertFreeType(
 		const non_owning_rptr<const assets::Font> assets_,
-		mref<storage::AccessBlobReadonly> src_,
+		mref<std::pair<ref<storage::StorageSystem>, Arci<storage::IStorage>>> src_,
 		nmpt<reflow::Font> dst_,
 		cref<sptr<Device>> device_,
 		const FontLoadOptions options_
