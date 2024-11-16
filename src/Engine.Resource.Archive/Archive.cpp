@@ -8,6 +8,7 @@ using namespace hg;
 
 Archive::Archive() noexcept :
 	_error(),
+	_type(),
 	_filter(nullptr),
 	_compression(nullptr),
 	_version() {}
@@ -22,6 +23,10 @@ void Archive::setError() noexcept {
 
 void Archive::clearError() noexcept {
 	_error = false;
+}
+
+void Archive::setType(ArchiveType type_) noexcept {
+	_type = type_;
 }
 
 void Archive::seek(const s64 pos_) {}

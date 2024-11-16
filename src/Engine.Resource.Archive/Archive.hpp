@@ -10,6 +10,7 @@
 #include <Engine.Reflect/Inherit/InheritBase.hpp>
 
 #include "ArchiveStreamMode.hpp"
+#include "ArchiveType.hpp"
 #include "ArchiveVersion.hpp"
 #include "Compression/__fwd.hpp"
 #include "Filter/__fwd.hpp"
@@ -38,6 +39,7 @@ namespace hg::engine::resource {
 
 	protected:
 		bool _error;
+		ArchiveType _type;
 
 	public:
 		[[nodiscard]] bool hasError() const noexcept;
@@ -45,6 +47,12 @@ namespace hg::engine::resource {
 		void setError() noexcept;
 
 		void clearError() noexcept;
+
+		[[nodiscard]] constexpr ArchiveType type() const noexcept {
+			return _type;
+		}
+
+		void setType(ArchiveType type_) noexcept;
 
 		#pragma endregion
 		#pragma region Input / Output
