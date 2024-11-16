@@ -197,12 +197,13 @@ nmpt<Asset> AssetRegistry::getAssetByGuid(cref<asset_guid> guid_) const {
 	return table->get(guid_);
 }
 
-nmpt<Asset> AssetRegistry::findAssetByGuid(cref<asset_guid> guid_) const noexcept {
+Opt<Arci<Asset>> AssetRegistry::findAssetByGuid(cref<asset_guid> guid_) const noexcept {
 
 	_SCTRL_SGATE(_mtx);
 
 	const auto* const table = static_cast<const ptr<const AutoIndexTable<GuidIndex>>>(_indexGuid);
-	return table->find(guid_);
+	const auto result = table->find(guid_);
+	return result != nullptr ? Some(result->arci_from_this()) : None;
 }
 
 nmpt<Asset> AssetRegistry::getAssetByPath(cref<fs::Path> path_) const {

@@ -3,10 +3,12 @@
 #include <span>
 #include <Engine.Assets/AssetGuid.hpp>
 #include <Engine.Assets/AssetTypeId.hpp>
+#include <Engine.Common/Optional.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Functional/Function.hpp>
+#include <Engine.Common/Managed/Rc.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.Filesystem/Url.hpp>
 
@@ -49,7 +51,7 @@ namespace hg::engine::assets {
 
 		[[nodiscard]] virtual nmpt<Asset> getAssetByGuid(cref<asset_guid> guid_) const = 0;
 
-		[[nodiscard]] virtual nmpt<Asset> findAssetByGuid(cref<asset_guid> guid_) const noexcept = 0;
+		[[nodiscard]] virtual Opt<Arci<Asset>> findAssetByGuid(cref<asset_guid> guid_) const noexcept = 0;
 
 		[[nodiscard]] virtual nmpt<Asset> getAssetByPath(cref<fs::Path> path_) const = 0;
 

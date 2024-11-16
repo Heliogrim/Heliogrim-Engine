@@ -61,7 +61,7 @@ namespace hg::engine::assets {
 
 		[[nodiscard]] nmpt<Asset> getAssetByGuid(cref<asset_guid> guid_) const override;
 
-		[[nodiscard]] nmpt<Asset> findAssetByGuid(cref<asset_guid> guid_) const noexcept override;
+		[[nodiscard]] Opt<Arci<Asset>> findAssetByGuid(cref<asset_guid> guid_) const noexcept override;
 
 		[[nodiscard]] nmpt<Asset> getAssetByPath(cref<fs::Path> path_) const override;
 
