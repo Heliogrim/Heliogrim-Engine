@@ -39,6 +39,8 @@ namespace hg {
 		[[nodiscard]] bool isValidType() const noexcept;
 
 	public:
+		[[nodiscard]] asset_guid getPrototypeGuid() const noexcept;
+
 		[[nodiscard]] nmpt<const GfxMatProtoAsset> prototype() const noexcept;
 	};
 }

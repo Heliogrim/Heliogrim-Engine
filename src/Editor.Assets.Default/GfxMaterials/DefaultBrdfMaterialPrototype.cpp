@@ -11,13 +11,14 @@
 #include <Engine.GFX.Render.Predefined/Effects/BrdfBase.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 
+#include "Default.hpp"
 #include "../Textures/Default.hpp"
 
 using namespace hg::game::assets::material;
 using namespace hg;
 
 DefaultBrdfMaterialPrototype::DefaultBrdfMaterialPrototype() :
-	GfxMatProtoAsset(clone(DefaultBrdfMaterialPrototype::unstable_auto_guid())) {
+	GfxMatProtoAsset(clone(editor::assets::materials::default_brdf_prototype_guid)) {
 
 	/* Warning: Temporary Cross-Fix */
 

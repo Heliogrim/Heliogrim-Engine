@@ -1,7 +1,8 @@
 #include "EditorSceneViewport.hpp"
 
-#include "Engine.ACS/ActorModule.hpp"
-#include "Heliogrim/Actor/Camera/CameraActor.hpp"
+#include <Editor.Assets.Default/GfxMaterials/Default.hpp>
+#include <Engine.ACS/ActorModule.hpp>
+#include <Heliogrim/Actor/Camera/CameraActor.hpp>
 
 using namespace hg::editor::ui;
 using namespace hg::engine::reflow;
@@ -56,7 +57,7 @@ void experimental_add_actor(math::Transform baseTransform_) {
 	::hg::assertrt(query.flags & AssetDatabaseResultType::eSuccess);
 	component->setStaticGeometryByAsset(static_cast<ref<StaticGeometryAsset>>(query.value));
 
-	query = Heliogrim::assets()[game::assets::material::DefaultBrdfMaterial::unstable_auto_guid()];
+	query = Heliogrim::assets()[editor::assets::materials::default_brdf_guid];
 	::hg::assertrt(query.flags & AssetDatabaseResultType::eSuccess);
 	const_cast<CompactArray<GfxMaterialAsset>&>(component->overrideMaterials()).emplace_back(
 		static_cast<ref<GfxMaterialAsset>>(query.value)

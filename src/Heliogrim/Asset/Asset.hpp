@@ -22,6 +22,9 @@ namespace hg {
 	public:
 		using this_type = Asset;
 
+	private:
+		Asset(cref<asset_guid> invalidGuid_, cref<asset_type_id> invalidTypeId_, std::nullptr_t) noexcept;
+
 	protected:
 		/**
 		 * Constructor
@@ -34,9 +37,6 @@ namespace hg {
 		 * @param  internal_ The internal state.
 		 */
 		Asset(mref<asset_guid> guid_, cref<asset_type_id> typeId_, ref<::hg::engine::assets::Asset> internal_) noexcept;
-
-	private:
-		Asset(cref<asset_guid> invalidGuid_, cref<asset_type_id> invalidTypeId_, std::nullptr_t) noexcept;
 
 	public:
 		Asset(mref<this_type> other_) noexcept;

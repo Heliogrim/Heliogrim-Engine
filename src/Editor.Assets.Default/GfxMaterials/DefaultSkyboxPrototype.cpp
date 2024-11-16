@@ -10,13 +10,14 @@
 #include <Engine.GFX.Render.Predefined/Effects/Skybox.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 
+#include "Default.hpp"
 #include "../Textures/Default.hpp"
 
 using namespace hg::game::assets::material;
 using namespace hg;
 
 DefaultSkyboxPrototype::DefaultSkyboxPrototype() :
-	GfxMatProtoAsset(clone(DefaultSkyboxPrototype::unstable_auto_guid())) {
+	GfxMatProtoAsset(clone(editor::assets::materials::default_skybox_prototype_guid)) {
 
 	/* Warning: Temporary Cross-Fix */
 

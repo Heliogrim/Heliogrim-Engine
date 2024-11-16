@@ -30,6 +30,10 @@ bool GfxMaterialAsset::isValidType() const noexcept {
 	return internal() != nullptr && IsType<::hg::engine::assets::GfxMaterial>(*internal());
 }
 
+asset_guid GfxMaterialAsset::getPrototypeGuid() const noexcept {
+	return static_cast<cref<::hg::engine::assets::GfxMaterial>>(*internal()).prototype();
+}
+
 nmpt<const GfxMatProtoAsset> GfxMaterialAsset::prototype() const noexcept {
 	return nullptr;
 }
