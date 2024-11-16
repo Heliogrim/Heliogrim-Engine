@@ -35,7 +35,7 @@ namespace hg::engine::storage {
 			return ArchiveScheme;
 		}
 
-		[[nodiscard]] constexpr Guid archiveGuid() const noexcept {
+		[[nodiscard]] constexpr resource::ArchiveGuid archiveGuid() const noexcept {
 			return _archiveUrl.guid();
 		}
 
@@ -44,7 +44,7 @@ namespace hg::engine::storage {
 		}
 
 		[[nodiscard]] constexpr bool valid() const noexcept {
-			return (_archiveUrl.guid() != Guid {}) && _archiveBacking != nullptr;
+			return (_archiveUrl.guid() != resource::ArchiveGuid {}) && _archiveBacking != nullptr;
 		}
 	};
 }

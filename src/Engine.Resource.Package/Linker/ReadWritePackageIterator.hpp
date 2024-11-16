@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Common/Guid.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/StableUnorderedMap.hpp>
@@ -13,13 +12,13 @@ namespace hg::engine::resource {
 
 namespace hg::engine::resource::package {
 	class ReadWritePackageIterator :
-		public StableUnorderedMap<Guid, ReadWriteLinkedArchive>::const_iterator {
+		public StableUnorderedMap<ArchiveGuid, ReadWriteLinkedArchive>::const_iterator {
 	public:
 		friend class ReadWritePackageLinker;
 
 	public:
 		using this_type = ReadWritePackageIterator;
-		using base_type = StableUnorderedMap<Guid, ReadWriteLinkedArchive>::const_iterator;
+		using base_type = StableUnorderedMap<ArchiveGuid, ReadWriteLinkedArchive>::const_iterator;
 
 	public:
 		using base_type::base_type;
@@ -29,13 +28,13 @@ namespace hg::engine::resource::package {
 	};
 
 	class MutableReadWritePackageIterator :
-		public StableUnorderedMap<Guid, ReadWriteLinkedArchive>::iterator {
+		public StableUnorderedMap<ArchiveGuid, ReadWriteLinkedArchive>::iterator {
 	public:
 		friend class ReadWritePackageLinker;
 
 	public:
 		using this_type = ReadWritePackageIterator;
-		using base_type = StableUnorderedMap<Guid, ReadWriteLinkedArchive>::iterator;
+		using base_type = StableUnorderedMap<ArchiveGuid, ReadWriteLinkedArchive>::iterator;
 
 	public:
 		using base_type::base_type;

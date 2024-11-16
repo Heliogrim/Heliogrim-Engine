@@ -22,7 +22,7 @@ namespace hg::engine::resource {
 		using iterator_type = package::ReadWritePackageIterator;
 		using mutable_iterator_type = package::MutableReadWritePackageIterator;
 
-		using link_container_type = StableUnorderedMap<Guid, archive_link_type>;
+		using link_container_type = StableUnorderedMap<ArchiveGuid, archive_link_type>;
 
 	public:
 		explicit ReadWritePackageLinker(
@@ -62,7 +62,7 @@ namespace hg::engine::resource {
 
 		[[nodiscard]] Opt<ref<archive_link_type>> get(_In_ cref<ArchiveGuid> archiveGuid_) noexcept;
 
-		void drop(_In_ cref<Guid> guid_) noexcept;
+		void drop(_In_ cref<ArchiveGuid> archiveGuid_) noexcept;
 
 	public:
 		[[nodiscard]] iterator_type begin() const noexcept;

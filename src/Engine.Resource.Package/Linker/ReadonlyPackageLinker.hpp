@@ -17,7 +17,7 @@ namespace hg::engine::resource {
 	public:
 		using this_type = ReadonlyPackageLinker;
 
-		using archive_guid_type = Guid;
+		using archive_guid_type = ArchiveGuid;
 		using archive_link_type = package::ReadonlyLinkedArchive;
 		using iterator_type = package::ReadonlyPackageIterator;
 

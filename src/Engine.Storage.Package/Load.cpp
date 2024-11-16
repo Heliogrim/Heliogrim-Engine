@@ -86,7 +86,7 @@ Opt<ReadonlyPackageLinker> engine::storage::package::readLinker(
 
 		const auto& indexed = index[i];
 		const auto [_, success] = linked.emplace(
-			static_cast<Guid>(indexed.header.guid),
+			indexed.header.guid,
 			ReadonlyLinkedArchive { indexed.data, indexed.header }
 		);
 		::hg::assertrt(success);
@@ -131,7 +131,7 @@ Opt<ReadWritePackageLinker> engine::storage::package::readLinker(
 
 		const auto& indexed = index[i];
 		const auto [_, success] = linked.emplace(
-			static_cast<Guid>(indexed.header.guid),
+			indexed.header.guid,
 			ReadWriteLinkedArchive { ReadonlyLinkedArchive { indexed.data, indexed.header }, {} }
 		);
 		::hg::assertrt(success);

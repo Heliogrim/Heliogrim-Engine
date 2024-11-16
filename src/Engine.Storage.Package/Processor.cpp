@@ -146,7 +146,7 @@ Result<void, std::runtime_error> engine::storage::package::commit_archive_change
 
 	constexpr auto nullGuid = ArchiveGuid {};
 
-	auto sweeping = Vector<Guid> {};
+	auto sweeping = Vector<ArchiveGuid> {};
 	auto blobOffset = streamoff { sizeof(PackageHeader) };
 
 	for (auto& linked : linker_) {

@@ -32,12 +32,12 @@ size_t ReadonlyPackageLinker::count() const noexcept {
 }
 
 Opt<ReadonlyPackageLinker::archive_link_type> ReadonlyPackageLinker::get(cref<Guid> guid_) const noexcept {
-	auto it = _links.find(guid_);
+	auto it = _links.find(ArchiveGuid::from(guid_));
 	return it != _links.end() ? Some(it->second) : None;
 }
 
 Opt<ReadonlyPackageLinker::archive_link_type> ReadonlyPackageLinker::get(cref<ArchiveGuid> archiveGuid_) const noexcept {
-	auto it = _links.find(static_cast<Guid>(archiveGuid_));
+	auto it = _links.find(archiveGuid_);
 	return it != _links.end() ? Some(it->second) : None;
 }
 

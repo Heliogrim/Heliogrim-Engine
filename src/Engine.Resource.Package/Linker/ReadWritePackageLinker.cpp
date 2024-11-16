@@ -43,17 +43,16 @@ streamsize ReadWritePackageLinker::computeIndexSize() const noexcept {
 
 ref<ReadWritePackageLinker::archive_link_type> ReadWritePackageLinker::add(mref<PackageArchiveHeader> header_) {
 
-	const auto guid = static_cast<Guid>(header_.guid);
-	::hg::assertrt(not _links.contains(guid));
+	::hg::assertrt(not _links.contains(header_.guid));
 
-	const auto [it, success] = _links.emplace(guid, archive_link_type { LinkedDataSpan {}, ::hg::move(header_) });
+	const auto [it, success] = _links.emplace(header_.guid, archive_link_type { LinkedDataSpan {}, ::hg::move(header_) });
 	::hg::assertd(success);
 
 	return it->second;
 }
 
 bool ReadWritePackageLinker::contains(cref<Guid> guid_) const noexcept {
-	return _links.contains(guid_);
+	return _links.contains(ArchiveGuid::from(guid_));
 }
 
 size_t ReadWritePackageLinker::count() const noexcept {
@@ -61,23 +60,23 @@ size_t ReadWritePackageLinker::count() const noexcept {
 }
 
 Opt<ReadWritePackageLinker::archive_link_type> ReadWritePackageLinker::get(cref<Guid> guid_) const noexcept {
-	auto it = _links.find(guid_);
-	return it != _links.end() ? Some(it->second) : None;
+	return get(ArchiveGuid::from(guid_));
 }
 
 Opt<ReadWritePackageLinker::archive_link_type> ReadWritePackageLinker::get(cref<ArchiveGuid> archiveGuid_) const noexcept {
-	return get(static_cast<Guid>(archiveGuid_));
-}
-
-Opt<ref<ReadWritePackageLinker::archive_link_type>> ReadWritePackageLinker::get(cref<ArchiveGuid> archiveGuid_) noexcept {
-	auto it = _links.find(static_cast<Guid>(archiveGuid_));
+	auto it = _links.find(archiveGuid_);
 	return it != _links.end() ? Some(it->second) : None;
 }
 
-void ReadWritePackageLinker::drop(cref<Guid> guid_) noexcept {
+Opt<ref<ReadWritePackageLinker::archive_link_type>> ReadWritePackageLinker::get(cref<ArchiveGuid> archiveGuid_) noexcept {
+	auto it = _links.find(archiveGuid_);
+	return it != _links.end() ? Some(it->second) : None;
+}
+
+void ReadWritePackageLinker::drop(cref<ArchiveGuid> archiveGuid_) noexcept {
 	// TODO:
 	// Question: Are we safe to assume that dropping a archive from this package linker, will not result in use-after-free?
-	_links.erase(guid_);
+	_links.erase(archiveGuid_);
 }
 
 ReadWritePackageLinker::iterator_type ReadWritePackageLinker::begin() const noexcept {
@@ -97,11 +96,11 @@ ReadWritePackageLinker::mutable_iterator_type ReadWritePackageLinker::end() noex
 }
 
 ReadWritePackageLinker::iterator_type ReadWritePackageLinker::find(cref<Guid> guid_) const noexcept {
-	return ReadWritePackageIterator { _links.find(guid_) };
+	return find(ArchiveGuid::from(guid_));
 }
 
 ReadWritePackageLinker::iterator_type ReadWritePackageLinker::find(cref<ArchiveGuid> archiveGuid_) const noexcept {
-	return find(static_cast<Guid>(archiveGuid_));
+	return ReadWritePackageIterator { _links.find(archiveGuid_) };
 }
 
 Opt<ReadWritePackageLinker::archive_link_type> ReadWritePackageLinker::operator[](size_t index_) const noexcept {
@@ -111,7 +110,7 @@ Opt<ReadWritePackageLinker::archive_link_type> ReadWritePackageLinker::operator[
 
 	auto it = _links.begin();
 	std::advance(it, index_);
-	return (it != _links.end() && it->first != Guid {}) ? Some(it->second) : None;
+	return (it != _links.end() && it->first != ArchiveGuid {}) ? Some(it->second) : None;
 }
 
 Opt<ReadWritePackageLinker::archive_link_type> ReadWritePackageLinker::operator[](cref<Guid> guid_) const noexcept {

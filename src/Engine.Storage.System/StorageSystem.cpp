@@ -245,7 +245,7 @@ Result<Arci<system::PackageStorage>, request_package_error> StorageSystem::reque
 
 			auto packedArchives = Vector<ArchiveStorageDescriptor> {};
 			for (const auto& linked : package.getLinker()) {
-				packedArchives.emplace_back(ArchiveUrl { static_cast<Guid>(linked.first) }, nullptr);
+				packedArchives.emplace_back(ArchiveUrl { linked.first }, nullptr);
 			}
 
 			return Some(std::make_pair(::hg::move(packageGuid), ::hg::move(packedArchives)));
