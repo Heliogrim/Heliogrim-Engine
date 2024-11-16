@@ -8,11 +8,11 @@ namespace hg::engine::resource {
 	class PackageLinker;
 	class ReadonlyPackageLinker;
 	class ReadWritePackageLinker;
+
+	class ArchiveGuid;
 }
 
 namespace hg::engine::resource::package {
-	class ArchiveGuid;
-
 	class LinkedDataSpan;
 	struct PackageArchiveHeader;
 

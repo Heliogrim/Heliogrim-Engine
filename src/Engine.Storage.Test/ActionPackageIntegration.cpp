@@ -71,7 +71,7 @@ namespace StorageModule {
 		auto packGuid = Guid {};
 		GuidGenerate(packGuid);
 
-		const auto initial_archive_guid = package::ArchiveGuid::random();
+		const auto initial_archive_guid = ArchiveGuid::random();
 		constexpr auto initial_archive_data = StringView { "Initial Archive Data"sv };
 		constexpr auto initial_archive_size = initial_archive_data.size();
 

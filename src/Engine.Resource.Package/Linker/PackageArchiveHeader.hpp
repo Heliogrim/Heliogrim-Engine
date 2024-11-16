@@ -1,6 +1,7 @@
 #pragma once
 
-#include "ArchiveGuid.hpp"
+#include <Engine.Resource.Archive/ArchiveGuid.hpp>
+
 #include "PackageArchiveType.hpp"
 
 namespace hg::engine::resource::package {

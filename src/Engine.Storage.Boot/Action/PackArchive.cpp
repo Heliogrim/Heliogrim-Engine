@@ -30,10 +30,10 @@ Result<
 
 	// TODO: We need to get the guid to query for the correct linker data.
 	::hg::assertrt(accessor_->getLinker().count() <= 1uLL);
-	auto archGuid = package::ArchiveGuid {};
+	auto archGuid = ArchiveGuid {};
 
 	auto& linker = accessor_->getLinker();
-	//const auto& linked = linker.get(package::ArchiveGuid {});
+	//const auto& linked = linker.get(ArchiveGuid {});
 	auto& linked = *linker.begin();
 
 	/**/
@@ -119,10 +119,10 @@ Result<
 
 	// TODO: We need to get the guid to query for the correct linker data.
 	::hg::assertrt(accessor_->getLinker().count() <= 1uLL);
-	auto archGuid = package::ArchiveGuid {};
+	auto archGuid = ArchiveGuid {};
 
 	auto& linker = accessor_->getLinker();
-	//const auto& linked = linker.get(package::ArchiveGuid {});
+	//const auto& linked = linker.get(ArchiveGuid {});
 	auto& linked = *linker.begin();
 
 	/**/

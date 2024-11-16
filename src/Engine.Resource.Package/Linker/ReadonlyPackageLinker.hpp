@@ -4,7 +4,6 @@
 #include <Engine.Common/Collection/DenseMap.hpp>
 #include <Engine.Resource.Blob/Blob.hpp>
 
-#include "ArchiveGuid.hpp"
 #include "PackageLinker.hpp"
 #include "ReadonlyLinkedArchive.hpp"
 #include "ReadonlyPackageIterator.hpp"
@@ -50,7 +49,7 @@ namespace hg::engine::resource {
 
 		[[nodiscard]] Opt<archive_link_type> get(_In_ cref<Guid> guid_) const noexcept;
 
-		[[nodiscard]] Opt<archive_link_type> get(_In_ cref<package::ArchiveGuid> archiveGuid_) const noexcept;
+		[[nodiscard]] Opt<archive_link_type> get(_In_ cref<ArchiveGuid> archiveGuid_) const noexcept;
 
 	public:
 		[[nodiscard]] iterator_type begin() const noexcept;

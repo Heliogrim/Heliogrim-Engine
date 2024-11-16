@@ -2,7 +2,7 @@
 
 #include "Guid.hpp"
 
-using namespace hg::engine::resource::package;
+using namespace hg::engine::resource;
 using namespace hg;
 
 ArchiveGuid ArchiveGuid::random() noexcept {

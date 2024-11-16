@@ -733,7 +733,7 @@ Result<Arci<system::ArchiveStorage>, mutate_package_error> StorageSystem::addArc
 		clone(package_),
 		[_opt = &options_](_Inout_ ref<resource::ReadWritePackage> rwp_) {
 
-			auto guid = resource::package::ArchiveGuid::random();
+			auto guid = resource::ArchiveGuid::random();
 
 			auto& linker = rwp_.getLinker();
 			auto linked = linker.add(resource::package::PackageArchiveHeader { .type = _opt->type, .guid = ::hg::move(guid) });

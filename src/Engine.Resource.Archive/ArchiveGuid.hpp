@@ -11,7 +11,7 @@ namespace hg {
 	struct Guid;
 }
 
-namespace hg::engine::resource::package {
+namespace hg::engine::resource {
 	struct ArchiveGuid : public Array<_::byte, 15> {
 	public:
 		using this_type = ArchiveGuid;
@@ -30,8 +30,8 @@ namespace hg::engine::resource::package {
 
 namespace std {
 	template <>
-	struct hash<hg::engine::resource::package::ArchiveGuid> {
-		[[nodiscard]] constexpr std::size_t operator()(hg::cref<hg::engine::resource::package::ArchiveGuid> value_) const noexcept {
+	struct hash<hg::engine::resource::ArchiveGuid> {
+		[[nodiscard]] constexpr std::size_t operator()(hg::cref<hg::engine::resource::ArchiveGuid> value_) const noexcept {
 			return hg::hash::fnv1a(std::span { std::bit_cast<const hg::ptr<const char>>(value_.data()), value_.size() });
 		}
 	};

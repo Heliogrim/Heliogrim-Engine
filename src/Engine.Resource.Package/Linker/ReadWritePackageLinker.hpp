@@ -5,7 +5,6 @@
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.Resource.Blob/Blob.hpp>
 
-#include "ArchiveGuid.hpp"
 #include "PackageLinker.hpp"
 #include "ReadWriteLinkedArchive.hpp"
 #include "ReadWritePackageIterator.hpp"
@@ -59,9 +58,9 @@ namespace hg::engine::resource {
 		// Question: Should we return const value types or const references?
 		[[nodiscard]] Opt<archive_link_type> get(_In_ cref<Guid> guid_) const noexcept;
 
-		[[nodiscard]] Opt<archive_link_type> get(_In_ cref<package::ArchiveGuid> archiveGuid_) const noexcept;
+		[[nodiscard]] Opt<archive_link_type> get(_In_ cref<ArchiveGuid> archiveGuid_) const noexcept;
 
-		[[nodiscard]] Opt<ref<archive_link_type>> get(_In_ cref<package::ArchiveGuid> archiveGuid_) noexcept;
+		[[nodiscard]] Opt<ref<archive_link_type>> get(_In_ cref<ArchiveGuid> archiveGuid_) noexcept;
 
 		void drop(_In_ cref<Guid> guid_) noexcept;
 
@@ -76,7 +75,7 @@ namespace hg::engine::resource {
 
 		[[nodiscard]] iterator_type find(_In_ cref<Guid> guid_) const noexcept;
 
-		[[nodiscard]] iterator_type find(_In_ cref<package::ArchiveGuid> archiveGuid_) const noexcept;
+		[[nodiscard]] iterator_type find(_In_ cref<ArchiveGuid> archiveGuid_) const noexcept;
 
 	public:
 		// Question: Should we return const value types or const references?
@@ -84,9 +83,9 @@ namespace hg::engine::resource {
 
 		[[nodiscard]] Opt<archive_link_type> operator[](_In_ cref<Guid> guid_) const noexcept;
 
-		[[nodiscard]] Opt<archive_link_type> operator[](_In_ cref<package::ArchiveGuid> archiveGuid_) const noexcept;
+		[[nodiscard]] Opt<archive_link_type> operator[](_In_ cref<ArchiveGuid> archiveGuid_) const noexcept;
 
-		[[nodiscard]] Opt<ref<archive_link_type>> operator[](_In_ cref<package::ArchiveGuid> archiveGuid_) noexcept;
+		[[nodiscard]] Opt<ref<archive_link_type>> operator[](_In_ cref<ArchiveGuid> archiveGuid_) noexcept;
 
 	protected:
 	public:
