@@ -736,7 +736,7 @@ Result<Arci<system::ArchiveStorage>, mutate_package_error> StorageSystem::addArc
 			auto guid = resource::ArchiveGuid::random();
 
 			auto& linker = rwp_.getLinker();
-			auto linked = linker.add(resource::package::PackageArchiveHeader { .type = _opt->type, .guid = ::hg::move(guid) });
+			auto linked = linker.add(resource::package::PackageArchiveHeader { .type = _opt->archive.type(), .guid = ::hg::move(guid) });
 			linked.changes.emplace_back(
 				resource::package::ArchiveDeltaAdd {
 					streamoff {}, _opt->archive.totalSize(), _opt->archive

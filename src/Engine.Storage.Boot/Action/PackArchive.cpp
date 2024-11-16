@@ -40,7 +40,7 @@ Result<
 
 	auto value = Rc<StorageReadWriteArchive> {};
 	if (archGuid != linked.second.header.guid) {
-		auto& nextLinked = linker.add({ .type = package::PackageArchiveType::eUndefined, .guid = archGuid });
+		auto& nextLinked = linker.add({ .type = ArchiveType::eUndefined, .guid = archGuid });
 		// nextLinked.changes;
 		value = Rc<StorageReadWriteArchive>::create(
 			linker.getStorage(),

@@ -120,7 +120,6 @@ bool AutoImportAction::failed() const noexcept {
 #include <Engine.Resource.Archive/StorageReadWriteArchive.hpp>
 #include <Engine.Resource/FileTypeId.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
-#include <Engine.Resource.Package/Linker/PackageArchiveType.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Archive/StructuredArchive.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
@@ -145,10 +144,10 @@ using namespace hg::engine::resource;
 
 [[nodiscard]] static Opt<Arci<engine::storage::system::PackageStorage>> autoStoreAssets(_In_ cref<engine::storage::FileUrl> baseFileUrl_, _In_ cref<Vector<Arci<engine::assets::Asset>>> assets_);
 
-[[nodiscard]] static std::pair<PackageArchiveType, BufferArchive> autoStoreFont(_In_ nmpt<engine::assets::Font> fontAsset_);
-[[nodiscard]] static std::pair<PackageArchiveType, BufferArchive> autoStoreImage(_In_ nmpt<engine::assets::Image> imageAsset_);
-[[nodiscard]] static std::pair<PackageArchiveType, BufferArchive> autoStoreTexture(_In_ nmpt<engine::assets::TextureAsset> textureAsset_);
-[[nodiscard]] static std::pair<PackageArchiveType, BufferArchive> autoStoreStaticGeometry(_In_ nmpt<engine::assets::StaticGeometry> staticGeometryAsset_);
+[[nodiscard]] static BufferArchive autoStoreFont(_In_ nmpt<engine::assets::Font> fontAsset_);
+[[nodiscard]] static BufferArchive autoStoreImage(_In_ nmpt<engine::assets::Image> imageAsset_);
+[[nodiscard]] static BufferArchive autoStoreTexture(_In_ nmpt<engine::assets::TextureAsset> textureAsset_);
+[[nodiscard]] static BufferArchive autoStoreStaticGeometry(_In_ nmpt<engine::assets::StaticGeometry> staticGeometryAsset_);
 // @formatter:on
 
 /**/
@@ -445,7 +444,7 @@ Opt<Arci<engine::storage::system::PackageStorage>> autoStoreAssets(
 
 	/* Collect serialized data to write */
 
-	auto serialized = Vector<std::pair<PackageArchiveType, BufferArchive>> {};
+	auto serialized = Vector<BufferArchive> {};
 	serialized.reserve(assets_.size());
 
 	for (const auto& asset : assets_) {
@@ -477,8 +476,7 @@ Opt<Arci<engine::storage::system::PackageStorage>> autoStoreAssets(
 
 		auto result = storeSys->addArchiveToPackage(
 			clone(packageStore),
-			collected.first,
-			::hg::move(collected.second)
+			::hg::move(collected)
 		);
 
 		if (not result.has_value()) {
@@ -509,7 +507,7 @@ Opt<Arci<engine::storage::system::PackageStorage>> autoStoreAssets(
 /**/
 #pragma region Asset Specific Serialization
 
-std::pair<PackageArchiveType, BufferArchive> autoStoreFont(
+BufferArchive autoStoreFont(
 	nmpt<engine::assets::Font> fontAsset_
 ) {
 
@@ -521,10 +519,11 @@ std::pair<PackageArchiveType, BufferArchive> autoStoreFont(
 		structured.insertRootSlot().intoStruct()
 	);
 
-	return std::make_pair(PackageArchiveType::eSerializedStructure, ::hg::move(archive));
+	archive.setType(ArchiveType::eSerializedStructure);
+	return archive;
 }
 
-std::pair<PackageArchiveType, BufferArchive> autoStoreImage(
+BufferArchive autoStoreImage(
 	nmpt<engine::assets::Image> imageAsset_
 ) {
 
@@ -536,10 +535,11 @@ std::pair<PackageArchiveType, BufferArchive> autoStoreImage(
 		structured.insertRootSlot().intoStruct()
 	);
 
-	return std::make_pair(PackageArchiveType::eSerializedStructure, ::hg::move(archive));
+	archive.setType(ArchiveType::eSerializedStructure);
+	return archive;
 }
 
-std::pair<PackageArchiveType, BufferArchive> autoStoreTexture(
+BufferArchive autoStoreTexture(
 	nmpt<engine::assets::TextureAsset> textureAsset_
 ) {
 
@@ -551,10 +551,11 @@ std::pair<PackageArchiveType, BufferArchive> autoStoreTexture(
 		structured.insertRootSlot().intoStruct()
 	);
 
-	return std::make_pair(PackageArchiveType::eSerializedStructure, ::hg::move(archive));
+	archive.setType(ArchiveType::eSerializedStructure);
+	return archive;
 }
 
-std::pair<PackageArchiveType, BufferArchive> autoStoreStaticGeometry(
+BufferArchive autoStoreStaticGeometry(
 	nmpt<engine::assets::StaticGeometry> staticGeometryAsset_
 ) {
 
@@ -566,7 +567,8 @@ std::pair<PackageArchiveType, BufferArchive> autoStoreStaticGeometry(
 		structured.insertRootSlot().intoStruct()
 	);
 
-	return std::make_pair(PackageArchiveType::eSerializedStructure, ::hg::move(archive));
+	archive.setType(ArchiveType::eSerializedStructure);
+	return archive;
 }
 
 #pragma endregion
