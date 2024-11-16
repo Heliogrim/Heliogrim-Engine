@@ -91,13 +91,13 @@ engine::storage::FileUrl getLfsUrl(const non_owning_rptr<const engine::assets::A
 			const auto registry = engine::Engine::getEngine()->getAssets()->getRegistry();
 			const auto asset = registry->findAssetByGuid(baseImageGuid);
 
-			if (asset == nullptr) {
+			if (asset == None || asset.value() == nullptr) {
 				return engine::storage::FileUrl {};
 			}
 
 			engine::storage::FileUrl lfsUrl {};
 			//const auto* const image = Cast<engine::assets::Image, engine::assets::Asset, false>(asset);
-			const auto image = Cast<engine::assets::Image>(asset.get());
+			const auto image = Cast<engine::assets::Image>(asset->get());
 
 			for (const auto& sourceUrl : image->sources()) {
 				if (sourceUrl.scheme() == "file") {

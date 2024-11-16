@@ -5,7 +5,7 @@
 
 using namespace hg;
 
-nmpt<engine::assets::Asset> editor::assets::meshes::resolveRuntimeAsset(
+Opt<Arci<engine::assets::Asset>> editor::assets::meshes::resolveRuntimeAsset(
 	ref<engine::Engine> engine_,
 	cref<asset_guid> guid_
 ) {

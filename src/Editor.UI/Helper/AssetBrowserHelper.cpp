@@ -43,73 +43,72 @@ void AssetBrowserHelper::setup() {
 	/**/
 
 	auto asset = assets::texture::get_default_brand();
-	_defaultTypeIcon = Cast<engine::assets::TextureAsset>(asset.get());
+	_defaultTypeIcon = Cast<engine::assets::TextureAsset>(asset->get());
 
 	/**/
 
 	asset = assets::texture::get_default_folder();
-	_directoryIcon = Cast<engine::assets::TextureAsset>(asset.get());
+	_directoryIcon = Cast<engine::assets::TextureAsset>(asset->get());
 
 	/**/
 
 	asset = assets::texture::get_default_folder_audio();
-	_directoryIcons.emplace_back("audio", Cast<engine::assets::TextureAsset>(asset.get()));
-	_directoryIcons.emplace_back("mp3", Cast<engine::assets::TextureAsset>(asset.get()));
-	_directoryIcons.emplace_back("ogg", Cast<engine::assets::TextureAsset>(asset.get()));
-	_directoryIcons.emplace_back("wav", Cast<engine::assets::TextureAsset>(asset.get()));
+	_directoryIcons.emplace_back("audio", Cast<engine::assets::TextureAsset>(asset->get()));
+	_directoryIcons.emplace_back("mp3", Cast<engine::assets::TextureAsset>(asset->get()));
+	_directoryIcons.emplace_back("ogg", Cast<engine::assets::TextureAsset>(asset->get()));
+	_directoryIcons.emplace_back("wav", Cast<engine::assets::TextureAsset>(asset->get()));
 
 	/**/
 
 	asset = assets::texture::get_default_folder_images();
-	_directoryIcons.emplace_back("image", Cast<engine::assets::TextureAsset>(asset.get()));
-	_directoryIcons.emplace_back("ktx", Cast<engine::assets::TextureAsset>(asset.get()));
-	_directoryIcons.emplace_back("png", Cast<engine::assets::TextureAsset>(asset.get()));
-	_directoryIcons.emplace_back("texture", Cast<engine::assets::TextureAsset>(asset.get()));
+	_directoryIcons.emplace_back("image", Cast<engine::assets::TextureAsset>(asset->get()));
+	_directoryIcons.emplace_back("ktx", Cast<engine::assets::TextureAsset>(asset->get()));
+	_directoryIcons.emplace_back("png", Cast<engine::assets::TextureAsset>(asset->get()));
+	_directoryIcons.emplace_back("texture", Cast<engine::assets::TextureAsset>(asset->get()));
 
 	/**/
 
 	asset = assets::texture::get_default_folder_resource();
-	_directoryIcons.emplace_back("resource", Cast<engine::assets::TextureAsset>(asset.get()));
+	_directoryIcons.emplace_back("resource", Cast<engine::assets::TextureAsset>(asset->get()));
 
 	/**/
 
 	asset = assets::texture::get_default_folder_import();
-	_directoryIcons.emplace_back("import", Cast<engine::assets::TextureAsset>(asset.get()));
+	_directoryIcons.emplace_back("import", Cast<engine::assets::TextureAsset>(asset->get()));
 
 	/**/
 
 	asset = assets::texture::get_default_folder_shader();
-	_directoryIcons.emplace_back("shader", Cast<engine::assets::TextureAsset>(asset.get()));
+	_directoryIcons.emplace_back("shader", Cast<engine::assets::TextureAsset>(asset->get()));
 
 	/**/
 
 	asset = assets::texture::get_default_folder_log();
-	_directoryIcons.emplace_back("log", Cast<engine::assets::TextureAsset>(asset.get()));
+	_directoryIcons.emplace_back("log", Cast<engine::assets::TextureAsset>(asset->get()));
 
 	/**/
 
 	asset = assets::texture::get_default_folder_environment();
-	_directoryIcons.emplace_back("env", Cast<engine::assets::TextureAsset>(asset.get()));
-	_directoryIcons.emplace_back("environment", Cast<engine::assets::TextureAsset>(asset.get()));
-	_directoryIcons.emplace_back("scene", Cast<engine::assets::TextureAsset>(asset.get()));
-	_directoryIcons.emplace_back("universe", Cast<engine::assets::TextureAsset>(asset.get()));
+	_directoryIcons.emplace_back("env", Cast<engine::assets::TextureAsset>(asset->get()));
+	_directoryIcons.emplace_back("environment", Cast<engine::assets::TextureAsset>(asset->get()));
+	_directoryIcons.emplace_back("scene", Cast<engine::assets::TextureAsset>(asset->get()));
+	_directoryIcons.emplace_back("universe", Cast<engine::assets::TextureAsset>(asset->get()));
 
-	_directoryIcons.emplace_back("fbx", Cast<engine::assets::TextureAsset>(asset.get()));
-	_directoryIcons.emplace_back("gltf", Cast<engine::assets::TextureAsset>(asset.get()));
+	_directoryIcons.emplace_back("fbx", Cast<engine::assets::TextureAsset>(asset->get()));
+	_directoryIcons.emplace_back("gltf", Cast<engine::assets::TextureAsset>(asset->get()));
 
 	/**/
 
 	asset = assets::texture::get_default_folder_video();
-	_directoryIcons.emplace_back("video", Cast<engine::assets::TextureAsset>(asset.get()));
+	_directoryIcons.emplace_back("video", Cast<engine::assets::TextureAsset>(asset->get()));
 
 	/**/
 
 	asset = assets::texture::get_default_folder_font();
-	_directoryIcons.emplace_back("font", Cast<engine::assets::TextureAsset>(asset.get()));
+	_directoryIcons.emplace_back("font", Cast<engine::assets::TextureAsset>(asset->get()));
 }
 
-ptr<engine::assets::TextureAsset>
-AssetBrowserHelper::getItemIconByAssetType(cref<asset_type_id> typeId_) const noexcept {
+ptr<engine::assets::TextureAsset> AssetBrowserHelper::getItemIconByAssetType(cref<asset_type_id> typeId_) const noexcept {
 
 	const auto it { _typeIconMap.find(typeId_) };
 	if (it != _typeIconMap.end()) {

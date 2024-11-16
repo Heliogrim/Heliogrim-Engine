@@ -103,7 +103,6 @@ nmpt<engine::assets::Font> editor::EditorUI::getDefaultFont() const noexcept {
 
 	auto registry = _engine->getAssets()->getRegistry();
 	auto asset = registry->findAssetByGuid(assets::font::default_font_guid);
-
 	::hg::assertrt(asset != nullptr);
 
 	/**/
@@ -112,7 +111,7 @@ nmpt<engine::assets::Font> editor::EditorUI::getDefaultFont() const noexcept {
 	std::ignore = engine::Engine::getEngine()->getResources()->loader().load<
 		engine::assets::Font, engine::gfx::FontResource
 	>(
-		Cast<engine::assets::Font>(asset.get()),
+		Cast<engine::assets::Font>(asset->get()),
 		engine::gfx::loader::FontLoadOptions {
 			.ranges = { engine::reflow::BasicLatin, engine::reflow::Latin1Supplement },
 			.glyphs = {},
@@ -120,7 +119,7 @@ nmpt<engine::assets::Font> editor::EditorUI::getDefaultFont() const noexcept {
 		}
 	);
 
-	return Cast<engine::assets::Font>(asset.get());
+	return Cast<engine::assets::Font>(asset->get());
 }
 
 smr<::hg::engine::gfx::TextureResource> editor::EditorUI::getPlaceholderImage() const noexcept {
@@ -129,7 +128,7 @@ smr<::hg::engine::gfx::TextureResource> editor::EditorUI::getPlaceholderImage() 
 		const auto asset = assets::texture::get_default_brand();
 		::hg::assertrt(asset != nullptr);
 
-		auto* request = Cast<engine::assets::TextureAsset>(asset.get());
+		auto* request = Cast<engine::assets::TextureAsset>(asset->get());
 		placeholderHolder = _engine->getResources()->loader().load<
 			engine::assets::TextureAsset, engine::gfx::TextureResource
 		>(std::move(request), engine::gfx::loader::TextureLoadOptions {});

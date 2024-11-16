@@ -36,13 +36,13 @@ bool EditorJpegTextureTransformer::canUse(nmpt<const engine::assets::TextureAsse
 	const auto registry = engine::Engine::getEngine()->getAssets()->getRegistry();
 	const auto asset = registry->findAssetByGuid(asset_->baseImage());
 
-	if (asset == nullptr) {
+	if (asset == None) {
 		return false;
 	}
 
 	/**/
 
-	const auto* const image = Cast<engine::assets::Image>(asset.get());
+	const auto* const image = Cast<engine::assets::Image>(asset.value().get());
 	if (image == nullptr) {
 		return false;
 	}

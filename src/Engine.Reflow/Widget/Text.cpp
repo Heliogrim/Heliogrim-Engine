@@ -323,9 +323,12 @@ bool Text::willChangeLayout(cref<math::vec2> space_) const noexcept {
 #include <Engine.Resource/ResourceManager.hpp>
 
 nmpt<Font> loadFont(cref<TypedAssetGuid<hg::engine::assets::Font>> guid_) {
+
 	const auto engine = ::hg::engine::Engine::getEngine();
 	const auto asset = engine->getAssets()->getRegistry()->findAssetByGuid(guid_);
-	auto* fontAsset = Cast<::hg::engine::assets::Font>(asset.get());
+	::hg::assertrt(asset != nullptr);
+
+	auto* fontAsset = Cast<::hg::engine::assets::Font>(asset->get());
 	return engine->getResources()->loader().load<engine::assets::Font, engine::gfx::FontResource>(
 		std::move(fontAsset),
 		engine::gfx::loader::FontLoadOptions {

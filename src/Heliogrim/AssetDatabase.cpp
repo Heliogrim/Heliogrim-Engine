@@ -29,7 +29,7 @@ AssetDatabaseResult<Asset> AssetDatabase::operator[](cref<asset_guid> guid_) con
 	const auto& idb { *static_cast<const non_owning_rptr<engine::assets::IAssetRegistry>>(_internal.get()) };
 	const auto asset = idb.findAssetByGuid(guid_);
 
-	if (asset == nullptr) {
+	if (asset == None || asset.value() == nullptr) {
 		return AssetDatabaseResult<Asset> {
 			{ AssetDatabaseResultType::eFailed },
 			hg::Asset { clone(invalid_asset_guid), asset_type_id { 0 }, nullptr }
@@ -39,10 +39,10 @@ AssetDatabaseResult<Asset> AssetDatabase::operator[](cref<asset_guid> guid_) con
 	return AssetDatabaseResult<Asset> {
 		{ AssetDatabaseResultType::eSuccess },
 		{
-			asset->get_guid(),
-			asset->getTypeId(),
+			(*asset)->get_guid(),
+			(*asset)->getTypeId(),
 			// Warning: Reference out of Scope | Use-After-Free
-			*asset.get()
+			*(asset->get())
 		}
 	};
 }

@@ -106,10 +106,10 @@ sptr<AssetBrowserItem> AssetBrowserItem::make(
 		const auto asset = engine::Engine::getEngine()->getAssets()->getRegistry()->findAssetByGuid(
 			self->_value.guid
 		);
-		assert(asset != nullptr);
+		::hg::assertd(asset != nullptr);
 
-		iconAsset = helper->getItemIconByAssetType(asset->getTypeId());
-		typeTitle = helper->getAssetTypeName(asset->getTypeId());
+		iconAsset = helper->getItemIconByAssetType((*asset)->getTypeId());
+		typeTitle = helper->getAssetTypeName((*asset)->getTypeId());
 	}
 
 	auto iconRes = engine::Engine::getEngine()->getResources()->loader().loadImmediately<engine::assets::TextureAsset,

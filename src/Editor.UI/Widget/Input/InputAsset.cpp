@@ -182,12 +182,12 @@ EventResponse InputAsset::onDrop(cref<DragDropEvent> event_) {
 
 	const auto asset = engine::Engine::getEngine()->getAssets()->getRegistry()->findAssetByGuid(guid);
 
-	if (asset == nullptr) {
+	if (asset == None) {
 		IM_CORE_WARNF("Unknown asset guid `{}`.", static_cast<String>(parsed.path()));
 		return EventResponse::eConsumed;
 	}
 
-	if (not std::ranges::contains(_acceptedTypes, asset->getTypeId())) {
+	if (not std::ranges::contains(_acceptedTypes, (*asset)->getTypeId())) {
 		IM_CORE_WARN("Invalid asset type.");
 		return EventResponse::eConsumed;
 	}

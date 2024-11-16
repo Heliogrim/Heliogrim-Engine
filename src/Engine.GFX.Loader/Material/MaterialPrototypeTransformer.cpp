@@ -284,11 +284,10 @@ smr<engine::gfx::TextureResource> resolveTexture(
 	 * Resolve texture asset from database
 	 */
 	const auto asset = registry_->findAssetByGuid(guid_);
+	::hg::assertrt(asset != nullptr);
 
 	#ifdef _DEBUG
-	assert(asset != nullptr);
-
-	if (!asset->getMetaClass()->exact<engine::assets::TextureAsset>()) {
+	if (!(*asset)->getMetaClass()->exact<engine::assets::TextureAsset>()) {
 		::hg::breakpoint();
 	}
 	#endif
@@ -298,9 +297,9 @@ smr<engine::gfx::TextureResource> resolveTexture(
 	 *  // TODO: This should be a non-residential load operation, cause we only need the handle
 	 */
 	//auto* textureAsset = Cast<engine::assets::Texture, engine::assets::Asset, false>(asset);
-	auto* textureAsset = Cast<engine::assets::TextureAsset>(asset.get());
+	auto* textureAsset = Cast<engine::assets::TextureAsset>(asset->get());
 	auto texture = loader_->loadImmediately<engine::assets::TextureAsset, TextureResource>(
-		std::move(textureAsset),
+		clone(textureAsset),
 		TextureLoadOptions {
 			textureAsset->getExtent().x >= 8192 ?
 			TextureLoadDataFlagBits::eLazyDataLoading :
@@ -323,12 +322,13 @@ smr<MaterialPrototypeResource> resolvePrototype(
 	 * Resolve material prototype asset from database
 	 */
 	const auto asset = registry_->findAssetByGuid(guid_);
+	::hg::assertrt(asset != nullptr);
 
 	/**
 	 * Load material prototype to get the internal resource handle
 	 */
 	//auto* matProtAsset = Cast<engine::assets::GfxMaterialPrototype, engine::assets::Asset, false>(asset);
-	auto* matProtAsset = Cast<engine::assets::GfxMaterialPrototype>(asset.get());
+	auto* matProtAsset = Cast<engine::assets::GfxMaterialPrototype>(asset->get());
 	auto prototype = loader_->loadImmediately<engine::assets::GfxMaterialPrototype, MaterialPrototypeResource>(
 		std::move(matProtAsset),
 		{}
@@ -349,11 +349,12 @@ smr<const engine::accel::AccelerationEffect> resolveEffect(
 	 * Resolve effect asset from database
 	 */
 	const auto asset = registry_->findAssetByGuid(guid_);
+	::hg::assertrt(asset != nullptr);
 
 	/**
 	 * Load material prototype to get the internal resource handle
 	 */
-	auto* effectAsset = Cast<engine::assets::AccelEffect>(asset.get());
+	auto* effectAsset = Cast<engine::assets::AccelEffect>(asset->get());
 	auto loaded = loader_->loadImmediately<engine::assets::AccelEffect, engine::accel::EffectResource>(
 		std::move(effectAsset),
 		{}

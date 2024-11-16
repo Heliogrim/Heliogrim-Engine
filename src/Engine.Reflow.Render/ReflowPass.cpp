@@ -346,7 +346,7 @@ void render::ReflowPass::ensureDefaultImage() {
 
 	/**/
 
-	auto request = static_cast<ptr<assets::TextureAsset>>(asset.get());
+	auto request = static_cast<ptr<assets::TextureAsset>>(asset->get());
 	auto resource = Engine::getEngine()->getResources()->loader().load<assets::TextureAsset, gfx::TextureResource>(
 		std::move(request)
 	);
