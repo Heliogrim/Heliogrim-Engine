@@ -172,9 +172,7 @@ namespace StorageModule {
 		/**/
 
 		{
-			auto guid = Guid {};
-			GuidGenerate(guid);
-
+			auto guid = ArchiveGuid::random();
 			const auto archUrl = ArchiveUrl { ::hg::move(guid) };
 
 			/**/
@@ -307,9 +305,7 @@ namespace StorageModule {
 		/**/
 
 		{
-			auto guid = Guid {};
-			GuidGenerate(guid);
-
+			auto guid = ArchiveGuid::random();
 			const auto archUrl = ArchiveUrl { ::hg::move(guid) };
 
 			/**/

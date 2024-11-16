@@ -316,9 +316,7 @@ namespace StorageModule {
 
 		/**/
 
-		auto archiveGuid = Guid {};
-		GuidGenerate(archiveGuid);
-
+		auto archiveGuid = engine::resource::ArchiveGuid::random();
 		ASSERT_FALSE(_registry->hasStorage(engine::storage::ArchiveUrl { clone(archiveGuid) }));
 
 		/**/

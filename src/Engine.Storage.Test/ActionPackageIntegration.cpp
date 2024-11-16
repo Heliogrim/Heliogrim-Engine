@@ -137,7 +137,7 @@ namespace StorageModule {
 					EXPECT_EQ(linker.count(), 1uLL);
 					EXPECT_EQ(linker.computeArchiveSize(), rp_.getHeader().packageSize - sizeof(package::Indexed));
 					EXPECT_EQ(linker.computeArchiveSize(), package::computeContentSize(rp_.getHeader()));
-					EXPECT_TRUE(linker.contains(static_cast<Guid>(initialGuid)));
+					EXPECT_TRUE(linker.contains(initialGuid));
 
 					/**/
 
@@ -222,7 +222,7 @@ namespace StorageModule {
 					EXPECT_EQ(linker.count(), 1uLL);
 					EXPECT_EQ(linker.computeArchiveSize(), rp_.getHeader().packageSize - sizeof(package::Indexed));
 					EXPECT_EQ(linker.computeArchiveSize(), package::computeContentSize(rp_.getHeader()));
-					EXPECT_TRUE(linker.contains(static_cast<Guid>(initialGuid)));
+					EXPECT_TRUE(linker.contains(initialGuid));
 
 					/**/
 
@@ -296,7 +296,7 @@ namespace StorageModule {
 					EXPECT_EQ(linker.count(), 0uLL);
 					EXPECT_EQ(linker.computeArchiveSize(), 0uLL);
 					EXPECT_EQ(linker.computeArchiveSize(), package::computeContentSize(rp_.getHeader()));
-					EXPECT_FALSE(linker.contains(static_cast<Guid>(initialGuid)));
+					EXPECT_FALSE(linker.contains(initialGuid));
 				}
 			);
 		}
