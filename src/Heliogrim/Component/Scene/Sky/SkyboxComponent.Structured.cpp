@@ -5,6 +5,7 @@
 #include <Engine.Serialization.Structures/Symbols.hpp>
 
 #include "SkyboxComponent.hpp"
+#include "../../../AssetDatabase.hpp"
 
 using namespace hg::engine::serialization;
 using namespace hg;
@@ -39,9 +40,9 @@ void access::Structure<SkyboxComponent>::hydrate(
 	// TODO: Implement Resolver
 	asset_guid geometryGuid {};
 	Structure<Guid>::hydrate(slot_.getStructSlot("geometry"sv), geometryGuid);
-	target_._skyboxGeometry = StaticGeometryAsset { std::move(geometryGuid) };
+	target_._skyboxGeometry = GetAssets().find<StaticGeometryAsset>(geometryGuid).value;
 
 	asset_guid materialGuid {};
 	Structure<Guid>::hydrate(slot_.getStructSlot("material"sv), materialGuid);
-	//target_._skyboxMaterial = GfxMaterialAsset { std::move(materialGuid) };
+	target_._skyboxMaterial = GetAssets().find<GfxMaterialAsset>(materialGuid).value;
 }
