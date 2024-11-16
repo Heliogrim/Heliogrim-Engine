@@ -39,10 +39,10 @@
 #include "Engine.Resource/ResourceManager.hpp"
 #include "Engine.Resource.Package/Attribute/MagicBytes.hpp"
 #include "Engine.Resource.Package/Attribute/PackageGuid.hpp"
-#include "Engine.Resource.Package/External/PackageIo.hpp"
 #include "Engine.Resource.Package/Linker/PackageLinker.hpp"
 #include "Engine.Serialization/Layout/DataLayoutBase.hpp"
 #include "Engine.Serialization.Layouts/LayoutManager.hpp"
+#include "Engine.Storage.Package/Pattern.hpp"
 #include "Engine.Storage.Registry/IStorage.hpp"
 #include "Engine.Storage.Registry/IStorageRegistry.hpp"
 #include "Engine.Storage/StorageModule.hpp"
@@ -51,6 +51,7 @@
 #include "Engine.Storage.Registry/Options/StorageDescriptor.hpp"
 #include "Engine.Storage.Registry/Storage/LocalFileStorage.hpp"
 #include "Engine.Storage.Registry/Storage/PackageStorage.hpp"
+#include "Engine.Storage.System/StorageSystem.hpp"
 
 using namespace hg::editor::boot;
 using namespace hg::engine;
@@ -229,25 +230,29 @@ Opt<Indexed> buildIndexedFrom(cref<path> lfs_) {
 Opt<LoadAwait> enqueueIndexedLoad(cref<Indexed> indexed_) {
 
 	const auto engine = Engine::getEngine();
-	const auto storeReg = engine->getStorage()->getRegistry();
-	auto storeIo = engine->getStorage()->getIo();
-	auto packIo = storage::PackageIo { *storeIo };
+	const auto storeSys = engine->getStorage()->getSystem();
 
 	/**/
 
-	auto storeMetaFile = storeReg->insert(
-		storage::FileStorageDescriptor {
-			storage::FileUrl {
-				clone(storage::FileProjectScheme),
-				engine::fs::Path { indexed_.meta }
-			}
+	auto maybeMetaFile = storeSys->requestStorage(
+		{ .fileUrl = { clone(storage::FileProjectScheme), engine::fs::Path { indexed_.meta } } }
+	);
+
+	if (not maybeMetaFile.has_value()) {
+		IM_CORE_ERRORF("Failed to request indexed meta file `{}`.", indexed_.meta.string());
+		return None;
+	}
+
+	/**/
+
+	const auto blobIsPack = storeSys->query(
+		clone(maybeMetaFile.value()).into<storage::IStorage>(),
+		[](_In_ ref<const resource::Blob> blob_) {
+			return storage::package::isPackageBlob(blob_);
 		}
 	);
 
-	/**/
-
-	auto accessMetaFile = storeIo->accessReadonlyBlob(storeMetaFile.into<storage::system::LocalFileStorage>());
-	if (not packIo.isPackageBlob(accessMetaFile)) {
+	if (not blobIsPack.has_value() || not blobIsPack.value()) {
 		IM_CORE_ERRORF(
 			"Encountered indexed meta file `{}` which is not identifiable as package upon inspection.",
 			indexed_.meta.string()
@@ -257,19 +262,17 @@ Opt<LoadAwait> enqueueIndexedLoad(cref<Indexed> indexed_) {
 
 	/**/
 
-	auto package = packIo.create_package_from_storage(accessMetaFile);
+	auto maybePackStore = storeSys->requestPackage({ .storage = ::hg::move(maybeMetaFile).value() });
 
-	auto storePack = storeReg->insert(
-		storage::PackageStorageDescriptor {
-			storage::PackageUrl { resource::PackageGuid::ntoh(package->header().guid) },
-			std::move(storeMetaFile)
-		}
-	).into<storage::system::PackageStorage>();
+	if (not maybePackStore.has_value()) {
+		IM_CORE_ERRORF("Failed to request package storage based on index meta file `{}`.", indexed_.meta.string());
+		return None;
+	}
 
 	/**/
 
 	// @formatter:off
-	return Some(scheduler::async<void>([storePack = std::move(storePack)]() mutable {
+	return Some(scheduler::async<void>([storePack = std::move(maybePackStore).value()]() mutable {
 		packageDiscoverAssets(std::move(storePack));
 	}));
 	// @formatter:on
@@ -486,9 +489,6 @@ void editor::boot::initAssets() {
 /**/
 
 #include <Engine.Reflect/Reflect.hpp>
-#include <Engine.Resource.Package/Linker/LinkedArchive.hpp>
-#include <Engine.Resource.Package/Linker/LinkedArchiveIterator.hpp>
-#include <Engine.Resource.Package/Linker/PackageLinker.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Archive/StructuredArchive.hpp>
 #include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>
@@ -498,73 +498,77 @@ void editor::boot::initAssets() {
 
 void packageDiscoverAssets(mref<Arci<storage::system::PackageStorage>> packStore_) {
 
-	auto storeIo = Engine::getEngine()->getStorage()->getIo();
-	auto packIo = storage::PackageIo { *storeIo };
+	const auto engine = Engine::getEngine();
+	const auto storeSys = engine->getStorage()->getSystem();
 
 	// TODO: We need some iterator over the storages by a certain filter ( package storages in this case )
 	// Question: Do we need a global lock to iterate the stored storage objects?
 
-	auto packAccess = storeIo->accessReadonly(std::move(packStore_));
-	auto linker = packIo.create_linker_from_package(packAccess);
+	// TODO: Check whether we want an option to filter for a certain (raw, structured, layout) arch-type?
+	auto maybeEnumArchives = storeSys->enumArchivesFromPackage(::hg::move(packStore_));
 
 	/* Check for stored archives */
 
-	if (linker->getArchiveCount() <= 0) {
+	if (not maybeEnumArchives.has_value() || maybeEnumArchives.value().empty()) {
 		return;
 	}
 
 	/* Index / Load data from archives */
 
-	const auto end = linker->cend();
-	for (auto iter = linker->cbegin(); iter != end; ++iter) {
+	for (auto&& archive : maybeEnumArchives.value()) {
+		// @formatter:off
+		storeSys->query(::hg::move(archive), [](_In_ ref<resource::StorageReadonlyArchive> archive_) {
+			// @formatter:on
 
-		if (iter.header().type != resource::package::PackageArchiveType::eSerializedStructure) {
-			continue;
-		}
-
-		auto archive = iter.archive();
-		auto structured = serialization::StructuredArchive { *archive };
-
-		/* Check for root stored assets */
-
-		if (isArchivedAsset(structured.getRootSlot())) {
-
-			archive->seek(0LL);
-			tryLoadArchivedAsset(structured.getRootSlot());
-
-			continue;
-		}
-
-		/* Check for a sequence of stored assets */
-
-		{
-			archive->seek(0);
-			auto root = structured.getRootSlot();
-
-			root.slot()->readHeader();
-			if (root.slot()->getSlotHeader().type != serialization::StructureSlotType::eSeq) {
-				continue;
+			if (archive_.type() != resource::ArchiveType::eSerializedStructure) {
+				return;
 			}
 
-			/* Check whether first element is asset, otherwise treat as unknown sequence */
+			auto structured = serialization::StructuredArchive { archive_ };
 
-			const auto seq = std::move(root).intoSeq();
-			const auto count = seq.getRecordCount();
+			/* Check for root stored assets */
 
-			if (count <= 0) {
-				continue;
+			if (isArchivedAsset(structured.getRootSlot())) {
+
+				archive_.seek(0LL);
+				tryLoadArchivedAsset(structured.getRootSlot());
+				return;
 			}
 
-			if (not isArchivedAsset(seq.getRecordSlot(0))) {
-				continue;
+			/* Check for a sequence of stored assets */
+
+			{
+				archive_.seek(0);
+				auto root = structured.getRootSlot();
+
+				root.slot()->readHeader();
+				if (root.slot()->getSlotHeader().type != serialization::StructureSlotType::eSeq) {
+					return;
+				}
+
+				/* Check whether first element is asset, otherwise treat as unknown sequence */
+
+				const auto seq = std::move(root).intoSeq();
+				const auto count = seq.getRecordCount();
+
+				if (count <= 0) {
+					return;
+				}
+
+				if (not isArchivedAsset(seq.getRecordSlot(0))) {
+					return;
+				}
+
+				/* Iterate over archives and try to load */
+
+				for (s64 idx = 0; idx < count; ++idx) {
+					tryLoadArchivedAsset(seq.getRecordSlot(idx));
+				}
 			}
 
-			/* Iterate over archives and try to load */
-
-			for (s64 idx = 0; idx < count; ++idx) {
-				tryLoadArchivedAsset(seq.getRecordSlot(idx));
-			}
-		}
+			// @formatter:off
+		});
+		// @formatter:on
 	}
 }
 
