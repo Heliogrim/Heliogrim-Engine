@@ -1,13 +1,31 @@
 #include "pch.h"
+/**/
 
 #include <Engine.Assets.Type/Asset.hpp>
 #include <Engine.Common/Collection/Array.hpp>
+#include <Engine.Resource.Archive/ArchiveGuid.hpp>
 #include <Engine.Resource.Archive/BufferArchive.hpp>
 
 using namespace hg::engine::resource;
 using namespace hg;
 
 namespace ResourceArchiveModule {
+	TEST(ArchiveGuid, ConversionFromTo) {
+
+		auto initial = ArchiveGuid::random();
+		EXPECT_NE(initial, ArchiveGuid {});
+
+		auto initialCast = static_cast<Guid>(initial);
+		EXPECT_NE(initialCast, Guid {});
+
+		auto copy = ArchiveGuid::from(initialCast);
+		EXPECT_NE(copy, ArchiveGuid {});
+
+		EXPECT_EQ(copy, initial);
+	}
+
+	/**/
+
 	template <typename ValueType_>
 	void simpleBufferTest() {
 

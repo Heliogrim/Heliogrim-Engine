@@ -33,22 +33,6 @@ using namespace hg::engine::resource;
 using namespace hg;
 
 namespace PackageModule {
-	TEST(ArchiveGuid, ConversionFromTo) {
-
-		auto initial = package::ArchiveGuid::random();
-		EXPECT_NE(initial, package::ArchiveGuid {});
-
-		auto initialCast = static_cast<Guid>(initial);
-		EXPECT_NE(initialCast, Guid {});
-
-		auto copy = package::ArchiveGuid::from(initialCast);
-		EXPECT_NE(copy, package::ArchiveGuid {});
-
-		EXPECT_EQ(copy, initial);
-	}
-
-	/**/
-
 	TEST(Package, BaseLifecycle) {
 
 		auto blob = ByteSpanBlob {};
@@ -311,7 +295,7 @@ namespace PackageModule {
 
 		/**/
 
-		auto guid = package::ArchiveGuid::random();
+		auto guid = ArchiveGuid::random();
 		auto archive = make_uptr<BufferArchive>();
 		archive->reserve(data.size());
 
@@ -377,9 +361,9 @@ namespace PackageModule {
 
 		/**/
 
-		auto guid0 = package::ArchiveGuid::random();
-		auto guid1 = package::ArchiveGuid::random();
-		auto guid2 = package::ArchiveGuid::random();
+		auto guid0 = ArchiveGuid::random();
+		auto guid1 = ArchiveGuid::random();
+		auto guid2 = ArchiveGuid::random();
 
 		auto ar0 = make_uptr<BufferArchive>();
 		auto ar1 = make_uptr<BufferArchive>();
@@ -458,9 +442,9 @@ namespace PackageModule {
 
 		/**/
 
-		auto guid0 = package::ArchiveGuid::random();
-		auto guid1 = package::ArchiveGuid::random();
-		auto guid2 = package::ArchiveGuid::random();
+		auto guid0 = ArchiveGuid::random();
+		auto guid1 = ArchiveGuid::random();
+		auto guid2 = ArchiveGuid::random();
 
 		auto ar0 = make_uptr<BufferArchive>();
 		auto ar1 = make_uptr<BufferArchive>();
