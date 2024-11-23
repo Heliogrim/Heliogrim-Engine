@@ -1,6 +1,7 @@
 #include "StorageModule.hpp"
 
 #include <Engine.Common/Make.hpp>
+#include <Engine.Storage.Boot/Action/ActionResolverInit.hpp>
 #include <Engine.Storage.Registry/Registry/StorageRegistry.hpp>
 #include <Engine.Storage.System/StorageSystem.hpp>
 #include <Engine.Storage.System/Details/StorageActionResolver.hpp>
@@ -17,6 +18,7 @@ StorageModule::~StorageModule() = default;
 
 void StorageModule::setup(cref<Config> config_) {
 	static_cast<ptr<storage::StorageRegistry>>(_registry.get())->setup(config_);
+	storage::initActionResolver(*_system, *_resolver);
 }
 
 nmpt<storage::IStorageRegistry> StorageModule::getRegistry() const noexcept {
