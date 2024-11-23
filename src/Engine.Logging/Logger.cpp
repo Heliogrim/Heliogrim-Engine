@@ -2,11 +2,10 @@
 
 #include <algorithm>
 #include <ctime>
-#include <iostream>
 #include <mutex>
 #include <ranges>
-#include <sstream>
 #include <Engine.Common/Make.hpp>
+#include <Engine.Common/Move.hpp>
 #include <Engine.Common/__macro.hpp>
 
 #if defined(WIN32)
@@ -21,6 +20,7 @@
 #include <spdlog/async.h>
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/sinks/dup_filter_sink.h>
 
 /*
 #if defined(_DEBUG) && defined(_MSC_VER) && defined(WIN32)
@@ -55,7 +55,17 @@ Logger::Logger(mref<Logger> logger_) noexcept = default;
 Logger::~Logger() noexcept = default;
 
 void Logger::setup() {
+
 	staticLogger = uptr<Logger> { new Logger() };
+	staticLogger->_native = spdlog::create_async<spdlog::sinks::dup_filter_sink_mt>(
+		"LogFile",
+		std::chrono::seconds { 3LL }
+	);
+
+	auto& dupSink = static_cast<const ptr<spdlog::async_logger>>(staticLogger->_native.get())->sinks().front();
+	auto& link = static_cast<ref<spdlog::sinks::dup_filter_sink_mt>>(*dupSink);
+
+	/**/
 
 	std::string logfile = std::format("{}.log", processStartPoint);
 	std::ranges::replace(logfile, ':', '-');
@@ -64,7 +74,8 @@ void Logger::setup() {
 	auto cwd { std::filesystem::current_path() };
 	cwd.append(logfile);
 
-	staticLogger->_native = spdlog::basic_logger_mt<spdlog::async_factory>("LogFile", cwd.string());
+	auto fileSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(cwd.string());
+	link.add_sink(::hg::move(fileSink));
 
 	/*
 	#if defined(_DEBUG) && defined(_MSC_VER) && defined(WIN32)
@@ -75,7 +86,7 @@ void Logger::setup() {
 
 	#if defined(_DEBUG)
 	auto coutSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-	static_cast<const ptr<spdlog::logger>>(staticLogger->_native.get())->sinks().emplace_back(std::move(coutSink));
+	link.add_sink(::hg::move(coutSink));
 	#endif
 
 	#if defined(_DEBUG)
