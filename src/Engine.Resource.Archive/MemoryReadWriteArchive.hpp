@@ -11,10 +11,24 @@ namespace hg::engine::resource {
 	public:
 		using this_type = MemoryReadWriteArchive;
 
+	protected:
+		MemoryReadWriteArchive(
+			mref<MemoryBaseArchive> base_,
+			_Inout_ ref<AutoArray<_::byte>> bytes_,
+			s64 limit_
+		) noexcept;
+
 	public:
 		MemoryReadWriteArchive(_Inout_ ref<AutoArray<_::byte>> bytes_);
 
 		MemoryReadWriteArchive(_Inout_ ref<AutoArray<_::byte>> bytes_, const s64 limit_);
+
+		MemoryReadWriteArchive(this_type&&) noexcept = default;
+
+		~MemoryReadWriteArchive() override = default;
+
+	protected:
+		ref<this_type> operator=(this_type&&) noexcept;
 
 	protected:
 		ref<AutoArray<_::byte>> _bytes;

@@ -10,6 +10,14 @@ namespace hg::engine::resource {
 	protected:
 		MemoryBaseArchive();
 
+		MemoryBaseArchive(this_type&&) noexcept = default;
+
+	public:
+		~MemoryBaseArchive() noexcept override = default;
+
+	protected:
+		ref<this_type> operator=(this_type&&) noexcept = default;
+
 	protected:
 		s64 _pos;
 

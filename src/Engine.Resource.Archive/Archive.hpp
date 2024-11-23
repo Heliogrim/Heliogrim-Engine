@@ -24,8 +24,18 @@ namespace hg::engine::resource {
 	protected:
 		Archive() noexcept;
 
+		Archive(this_type&&) noexcept = default;
+
 	public:
+		Archive(const this_type&) = delete;
+
 		~Archive() override = default;
+
+	protected:
+		ref<this_type> operator=(this_type&&) noexcept = default;
+
+	public:
+		ref<this_type> operator=(const this_type&) = delete;
 
 		#pragma region Meta Archive Attributes
 
