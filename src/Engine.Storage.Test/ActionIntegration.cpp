@@ -578,7 +578,7 @@ void supportAddArchiveStoreMutationStages(ref<StorageActionResolver> resolver_) 
 		/**/
 
 		auto value = Rc<StorageReadWriteArchive>::create(input.value->get(), streamoff {}, input.value->get().size());
-		auto cachedValue = ctx_.caches.add(clone(storage_), ::hg::move(value));
+		auto cachedValue = ctx_.objectStore.add(clone(storage_), ::hg::move(value));
 
 		/**/
 
@@ -592,7 +592,7 @@ void supportAddArchiveStoreMutationStages(ref<StorageActionResolver> resolver_) 
 		/**/
 
 		auto resource = Rc<resource_type>::create(::hg::move(resolveMut), ::hg::move(resolveConst));
-		auto storedResource = ctx_.store.add(clone(storage_).into<IStorage>(), ::hg::move(resource));
+		auto storedResource = ctx_.accessStore.add(clone(storage_).into<IStorage>(), ::hg::move(resource));
 
 		/**/
 

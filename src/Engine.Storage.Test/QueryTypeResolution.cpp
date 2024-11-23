@@ -398,7 +398,7 @@ namespace StorageModule {
 				/**/
 
 				auto value = Rc<engine::resource::ByteSpanBlob>::create(memStore->_memory.span());
-				auto cachedValue = ctx_.caches.add(clone(storage_), ::hg::move(value));
+				auto cachedValue = ctx_.objectStore.add(clone(storage_), ::hg::move(value));
 
 				/**/
 
@@ -409,7 +409,7 @@ namespace StorageModule {
 				/**/
 
 				auto resource = Rc<resource_type>::create(::hg::move(resolver));
-				auto storedResource = ctx_.store.add(::hg::move(memStore).into<IStorage>(), ::hg::move(resource));
+				auto storedResource = ctx_.accessStore.add(::hg::move(memStore).into<IStorage>(), ::hg::move(resource));
 
 				/**/
 
@@ -496,8 +496,8 @@ namespace StorageModule {
 
 		/**/
 
-		auto memDummy = Arci<system::MemoryStorage>::create(system::MemoryStorage::MemoryObject {}, true, true, true, true);
-		auto archiveDummy = Arci<system::ArchiveStorage>::create(clone(memDummy).into<IStorage>(), true, true, true, true);
+		auto memDummy = Arci<MemoryStorage>::create(system::MemoryStorage::MemoryObject {}, true, true, true, true);
+		auto archiveDummy = Arci<ArchiveStorage>::create(clone(memDummy).into<IStorage>(), ArchiveGuid {}, true, true, true, true);
 
 		auto query = (*factory)();
 		ASSERT_TRUE(query);
@@ -549,7 +549,7 @@ namespace StorageModule {
 				/**/
 
 				auto value = Rc<engine::resource::ByteSpanBlob>::create(memStore->_memory.span());
-				auto cachedValue = ctx_.caches.add(clone(storage_), ::hg::move(value));
+				auto cachedValue = ctx_.objectStore.add(clone(storage_), ::hg::move(value));
 
 				/**/
 
@@ -560,7 +560,7 @@ namespace StorageModule {
 				/**/
 
 				auto resource = Rc<resource_type>::create(::hg::move(resolver));
-				auto storedResource = ctx_.store.add(::hg::move(memStore).into<IStorage>(), ::hg::move(resource));
+				auto storedResource = ctx_.accessStore.add(::hg::move(memStore).into<IStorage>(), ::hg::move(resource));
 
 				/**/
 
@@ -573,8 +573,8 @@ namespace StorageModule {
 			decltype(DynamicStage::relFn) relFn = [](Context& ctx_, cref<Arci<IStorage>>, auto&& val_) -> void {
 				::hg::forward<decltype(val_)>(val_).value.reset();
 
-				ctx_.store.map.clear();
-				ctx_.caches.map.clear();
+				ctx_.accessStore.map.clear();
+				ctx_.objectStore.map.clear();
 			};
 
 			auto stageTypeInfo = StageTypeInfo {

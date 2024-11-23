@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Store/ResourceCache.hpp"
-#include "Store/ResourceStore.hpp"
+#include "Store/ResourceAccessStore.hpp"
+#include "Store/ResourceObjectStore.hpp"
 
 namespace hg::engine::storage {
 	struct Context {
-		ResourceStore store;
-		ResourceCache caches;
+		ResourceAccessStore accessStore;
+		ResourceObjectStore objectStore;
 	};
 }

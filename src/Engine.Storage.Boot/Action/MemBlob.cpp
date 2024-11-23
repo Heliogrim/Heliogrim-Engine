@@ -22,7 +22,7 @@ Result<IoResourceAccessor<ByteSpanBlob>, Mutation::acq_error_type> engine::stora
 	auto& memory = storage_->_memory;
 
 	auto value = Rc<ByteSpanBlob>::create(memory.span(), memory.touched());
-	auto cachedValue = ctx_.caches.add(
+	auto cachedValue = ctx_.objectStore.add(
 		clone(storage_).into<IStorage>(),
 		move(value),
 		std::addressof(storage_->_memory)
@@ -37,7 +37,7 @@ Result<IoResourceAccessor<ByteSpanBlob>, Mutation::acq_error_type> engine::stora
 	/**/
 
 	auto resource = Rc<resource_type>::create(move(resolver));
-	auto storedResource = ctx_.store.add(clone(storage_).into<IStorage>(), hg::move(resource));
+	auto storedResource = ctx_.accessStore.add(clone(storage_).into<IStorage>(), hg::move(resource));
 
 	/**/
 
@@ -49,7 +49,7 @@ void engine::storage::releaseStaticMemBlobMutation(
 	cref<Arci<system::MemoryStorage>> storage_,
 	mref<IoResourceAccessor<resource::ByteSpanBlob>> accessor_
 ) {
-	auto deferred = ctx_.store.drop(clone(storage_).into<IStorage>());
+	auto deferred = ctx_.accessStore.drop(clone(storage_).into<IStorage>());
 
 	/**/
 
@@ -57,7 +57,7 @@ void engine::storage::releaseStaticMemBlobMutation(
 
 	/**/
 
-	ctx_.caches.invalidate(clone(storage_).into<IStorage>());
+	ctx_.objectStore.invalidate(clone(storage_).into<IStorage>());
 	::hg::forward<decltype(accessor_)>(accessor_).reset();
 	::hg::discard(::hg::move(deferred));
 }
@@ -76,7 +76,7 @@ Result<IoResourceAccessor<const ByteSpanBlob>, Query::acq_error_type> engine::st
 	const auto& memory = storage_->_memory;
 
 	auto value = Rc<ByteSpanBlob>::create(memory.touchedSpan(), memory.touched());
-	auto cachedValue = ctx_.caches.add(
+	auto cachedValue = ctx_.objectStore.add(
 		clone(storage_).into<IStorage>(),
 		move(value),
 		std::addressof(storage_->_memory)
@@ -91,7 +91,7 @@ Result<IoResourceAccessor<const ByteSpanBlob>, Query::acq_error_type> engine::st
 	/**/
 
 	auto resource = Rc<resource_type>::create(move(resolver));
-	auto storedResource = ctx_.store.add(clone(storage_).into<IStorage>(), hg::move(resource));
+	auto storedResource = ctx_.accessStore.add(clone(storage_).into<IStorage>(), hg::move(resource));
 
 	/**/
 
@@ -103,8 +103,8 @@ void engine::storage::releaseStaticMemBlobQuery(
 	cref<Arci<system::MemoryStorage>> storage_,
 	mref<IoResourceAccessor<const resource::ByteSpanBlob>> accessor_
 ) {
-	auto deferred = ctx_.store.drop(clone(storage_).into<IStorage>());
-	ctx_.caches.invalidate(clone(storage_).into<IStorage>());
+	auto deferred = ctx_.accessStore.drop(clone(storage_).into<IStorage>());
+	ctx_.objectStore.invalidate(clone(storage_).into<IStorage>());
 
 	::hg::forward<decltype(accessor_)>(accessor_).reset();
 	::hg::discard(::hg::move(deferred));

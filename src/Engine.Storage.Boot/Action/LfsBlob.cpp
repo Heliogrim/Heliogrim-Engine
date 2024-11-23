@@ -19,7 +19,7 @@ Result<IoResourceAccessor<LfsSyncBlob>, Mutation::acq_error_type> engine::storag
 	/**/
 
 	auto value = Rc<LfsSyncBlob>::create(clone(storage_->_lfsPath));
-	auto cachedValue = ctx_.caches.add(
+	auto cachedValue = ctx_.objectStore.add(
 		clone(storage_).into<IStorage>(),
 		move(value),
 		std::addressof(*storage_->_lfsPath.native().data())
@@ -34,7 +34,7 @@ Result<IoResourceAccessor<LfsSyncBlob>, Mutation::acq_error_type> engine::storag
 	/**/
 
 	auto resource = Rc<resource_type>::create(move(resolver));
-	auto storedResource = ctx_.store.add(clone(storage_).into<IStorage>(), hg::move(resource));
+	auto storedResource = ctx_.accessStore.add(clone(storage_).into<IStorage>(), hg::move(resource));
 
 	/**/
 
@@ -46,8 +46,8 @@ void engine::storage::releaseStaticLfsBlobMutation(
 	cref<Arci<system::LocalFileStorage>> storage_,
 	mref<IoResourceAccessor<resource::LfsSyncBlob>> accessor_
 ) {
-	auto deferred = ctx_.store.drop(clone(storage_).into<IStorage>());
-	ctx_.caches.invalidate(clone(storage_).into<IStorage>());
+	auto deferred = ctx_.accessStore.drop(clone(storage_).into<IStorage>());
+	ctx_.objectStore.invalidate(clone(storage_).into<IStorage>());
 
 	::hg::forward<decltype(accessor_)>(accessor_).reset();
 	::hg::discard(::hg::move(deferred));
@@ -65,7 +65,7 @@ Result<IoResourceAccessor<const LfsSyncBlob>, Query::acq_error_type> engine::sto
 	/**/
 
 	auto value = Rc<LfsSyncBlob>::create(clone(storage_->_lfsPath));
-	auto cachedValue = ctx_.caches.add(
+	auto cachedValue = ctx_.objectStore.add(
 		clone(storage_).into<IStorage>(),
 		move(value),
 		std::addressof(*storage_->_lfsPath.native().data())
@@ -80,7 +80,7 @@ Result<IoResourceAccessor<const LfsSyncBlob>, Query::acq_error_type> engine::sto
 	/**/
 
 	auto resource = Rc<resource_type>::create(move(resolver));
-	auto storedResource = ctx_.store.add(clone(storage_).into<IStorage>(), hg::move(resource));
+	auto storedResource = ctx_.accessStore.add(clone(storage_).into<IStorage>(), hg::move(resource));
 
 	/**/
 
@@ -92,8 +92,8 @@ void engine::storage::releaseStaticLfsBlobQuery(
 	cref<Arci<system::LocalFileStorage>> storage_,
 	mref<IoResourceAccessor<const resource::LfsSyncBlob>> accessor_
 ) {
-	auto deferred = ctx_.store.drop(clone(storage_).into<IStorage>());
-	ctx_.caches.invalidate(clone(storage_).into<IStorage>());
+	auto deferred = ctx_.accessStore.drop(clone(storage_).into<IStorage>());
+	ctx_.objectStore.invalidate(clone(storage_).into<IStorage>());
 
 	::hg::forward<decltype(accessor_)>(accessor_).reset();
 	::hg::discard(::hg::move(deferred));

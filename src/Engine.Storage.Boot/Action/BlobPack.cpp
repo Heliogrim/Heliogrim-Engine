@@ -37,7 +37,7 @@ Result<
 		value = Rc<ReadWritePackage>::create(package::reconstruct_read_write_package(accessor_.get()));
 	}
 
-	auto cachedValue = ctx_.caches.add(
+	auto cachedValue = ctx_.objectStore.add(
 		clone(storage_).into<IStorage>(),
 		hg::move(value),
 		std::addressof(accessor_.get())
@@ -55,7 +55,7 @@ Result<
 	/**/
 
 	auto resource = Rc<resource_type>::create(move(resolveReadWrite), move(resolveReadonly));
-	auto storedResource = ctx_.store.add(clone(storage_).into<IStorage>(), hg::move(resource));
+	auto storedResource = ctx_.accessStore.add(clone(storage_).into<IStorage>(), hg::move(resource));
 
 	/**/
 
@@ -67,7 +67,7 @@ void engine::storage::releaseStaticPackMutation(
 	cref<Arci<system::PackageStorage>> storage_,
 	mref<IoResourceAccessor<resource::ReadWritePackage>> accessor_
 ) {
-	auto deferred = ctx_.store.drop(clone(storage_).into<IStorage>());
+	auto deferred = ctx_.accessStore.drop(clone(storage_).into<IStorage>());
 
 	/**/
 
@@ -78,7 +78,7 @@ void engine::storage::releaseStaticPackMutation(
 
 	/**/
 
-	ctx_.caches.invalidate(clone(storage_).into<IStorage>());
+	ctx_.objectStore.invalidate(clone(storage_).into<IStorage>());
 	::hg::forward<decltype(accessor_)>(accessor_).reset();
 	::hg::discard(::hg::move(deferred));
 }
@@ -111,7 +111,7 @@ Result<
 		value = Rc<ReadonlyPackage>::create(package::reconstruct_readonly_package(accessor_.get()));
 	}
 
-	auto cachedValue = ctx_.caches.add(
+	auto cachedValue = ctx_.objectStore.add(
 		clone(storage_).into<IStorage>(),
 		hg::move(value),
 		std::addressof(accessor_.get())
@@ -129,7 +129,7 @@ Result<
 	/**/
 
 	auto resource = Rc<resource_type>::create(move(resolveReadWrite), move(resolveReadonly));
-	auto storedResource = ctx_.store.add(clone(storage_).into<IStorage>(), hg::move(resource));
+	auto storedResource = ctx_.accessStore.add(clone(storage_).into<IStorage>(), hg::move(resource));
 
 	/**/
 
@@ -141,8 +141,8 @@ void engine::storage::releaseStaticPackQuery(
 	cref<Arci<system::PackageStorage>> storage_,
 	mref<IoResourceAccessor<const resource::ReadonlyPackage>> accessor_
 ) {
-	auto deferred = ctx_.store.drop(clone(storage_).into<IStorage>());
-	ctx_.caches.invalidate(clone(storage_).into<IStorage>());
+	auto deferred = ctx_.accessStore.drop(clone(storage_).into<IStorage>());
+	ctx_.objectStore.invalidate(clone(storage_).into<IStorage>());
 
 	::hg::forward<decltype(accessor_)>(accessor_).reset();
 	::hg::discard(::hg::move(deferred));

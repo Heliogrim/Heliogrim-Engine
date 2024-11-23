@@ -9,7 +9,7 @@
 #include "../Access/IoResourceBase.hpp"
 
 namespace hg::engine::storage {
-	struct ResourceStore {
+	struct ResourceAccessStore {
 		struct StoredResource {
 			Rc<IoResourceBase> data;
 			type_id type;
