@@ -659,16 +659,16 @@ mutate_package_guard StorageSystem::fetchMutation(
 	};
 }
 
-IoMutationGuard<engine::resource::StorageReadWriteArchive> StorageSystem::fetchMutation(
+IoMutationGuard<engine::resource::Archive> StorageSystem::fetchMutation(
 	mref<Arci<system::ArchiveStorage>> storage_
 ) const noexcept {
 
-	assertd(IsType<system::ArchiveStorage>(*storage_));
+	::hg::assertd(IsType<system::ArchiveStorage>(*storage_));
 
 	/**/
 
 	auto signature = ActionTypeInfo {
-		.targetResourceInfo = refl::FullTypeInfo::from<resource::StorageReadWriteArchive>(),
+		.targetResourceInfo = refl::FullTypeInfo::from<resource::Archive>(),
 		.stageTypeInfos = {
 			StageTypeInfo {
 				.storage = refl::PartialTypeInfo::from<system::ArchiveStorage>()
@@ -695,7 +695,7 @@ IoMutationGuard<engine::resource::StorageReadWriteArchive> StorageSystem::fetchM
 	const auto factory = _resolver.resolveMutation(signature);
 
 	// TODO: Replace with explicit error handling
-	assertrt(factory.has_value());
+	::hg::assertrt(factory.has_value());
 
 	/**/
 
@@ -703,13 +703,13 @@ IoMutationGuard<engine::resource::StorageReadWriteArchive> StorageSystem::fetchM
 	const auto prepareResult = mutation->prepare(move(storage_).into<IStorage>());
 
 	// TODO: Replace with explicit error handling
-	assertrt(prepareResult.has_value());
+	::hg::assertrt(prepareResult.has_value());
 
 	/**/
 
 	// Problem:
 	// Question: Where do we call `mutation.cleanup(...)`?
-	return IoMutationGuard<resource::StorageReadWriteArchive> {
+	return IoMutationGuard<resource::Archive> {
 		static_cast<ref<ExtendedStorageSystem>>(const_cast<ref<StorageSystem>>(*this)),
 		hg::move(mutation)
 	};
@@ -736,17 +736,12 @@ Result<Arci<system::ArchiveStorage>, mutate_package_error> StorageSystem::addArc
 			auto guid = resource::ArchiveGuid::random();
 
 			auto& linker = rwp_.getLinker();
-			auto linked = linker.add(resource::package::PackageArchiveHeader { .type = _opt->archive.type(), .guid = ::hg::move(guid) });
+			auto& linked = linker.add(resource::package::PackageArchiveHeader { .type = _opt->archive.type(), .guid = ::hg::move(guid) });
 			linked.changes.emplace_back(
 				resource::package::ArchiveDeltaAdd {
 					streamoff {}, _opt->archive.totalSize(), _opt->archive
 				}
 			);
-
-			/**/
-
-			// TODO: Commit changes of linker to underlying binary io interface
-			::hg::todo_panic();
 		}
 	);
 

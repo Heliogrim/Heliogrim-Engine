@@ -8,6 +8,7 @@
 #include <Engine.Common/Optional.hpp>
 #include <Engine.Common/Variant.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Resource.Archive/Archive.hpp>
 #include <Engine.Resource.Archive/__fwd.hpp>
 #include <Engine.Storage.Action/Guard/IoMutationGuard.hpp>
 #include <Engine.Storage.Action/Guard/IoQueryGuard.hpp>
@@ -366,7 +367,7 @@ namespace hg::engine::storage {
 
 	private:
 		struct AddArchiveToPackageOptions {
-			resource::Archive&& archive;
+			resource::Archive& archive;
 		};
 
 		Result<Arci<system::ArchiveStorage>, mutate_package_error> addArchiveToPackage(
@@ -377,7 +378,7 @@ namespace hg::engine::storage {
 		/**/
 
 		struct ReplaceArchiveInPackageOptions {
-			resource::Archive&& nextArchive;
+			resource::Archive& nextArchive;
 		};
 
 		Result<Arci<system::ArchiveStorage>, mutate_package_error> replaceArchiveInPackage(
@@ -393,12 +394,12 @@ namespace hg::engine::storage {
 			(not std::is_same_v<ArchiveType_, resource::Archive>)
 		decltype(auto) addArchiveToPackage(
 			_Inout_ mref<Arci<system::PackageStorage>> package_,
-			_In_ mref<ArchiveType_> archive_
+			_In_ ref<ArchiveType_> archive_
 		) {
 			return addArchiveToPackage(
 				std::move(package_),
 				AddArchiveToPackageOptions {
-					.archive = static_cast<mref<resource::Archive>>(archive_)
+					.archive = archive_
 				}
 			);
 		}
@@ -417,13 +418,13 @@ namespace hg::engine::storage {
 		decltype(auto) replaceArchiveInPackage(
 			_Inout_ mref<Arci<system::PackageStorage>> package_,
 			_Inout_ mref<Arci<system::ArchiveStorage>> prevArchive_,
-			_In_ mref<ArchiveType_> nextArchive_
+			_In_ ref<ArchiveType_> nextArchive_
 		) {
 			return replaceArchiveInPackage(
 				std::move(package_),
 				std::move(prevArchive_),
 				ReplaceArchiveInPackageOptions {
-					.nextArchive = static_cast<mref<resource::Archive>>(nextArchive_)
+					.nextArchive = nextArchive_
 				}
 			);
 		}
