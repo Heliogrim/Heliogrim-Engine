@@ -56,9 +56,9 @@ namespace hg::engine::resource {
 		[[nodiscard]] size_t count() const noexcept;
 
 		// Question: Should we return const value types or const references?
-		[[nodiscard]] Opt<archive_link_type> get(_In_ cref<Guid> guid_) const noexcept;
+		[[nodiscard]] Opt<ref<const archive_link_type>> get(_In_ cref<Guid> guid_) const noexcept;
 
-		[[nodiscard]] Opt<archive_link_type> get(_In_ cref<ArchiveGuid> archiveGuid_) const noexcept;
+		[[nodiscard]] Opt<ref<const archive_link_type>> get(_In_ cref<ArchiveGuid> archiveGuid_) const noexcept;
 
 		[[nodiscard]] Opt<ref<archive_link_type>> get(_In_ cref<ArchiveGuid> archiveGuid_) noexcept;
 
@@ -79,11 +79,11 @@ namespace hg::engine::resource {
 
 	public:
 		// Question: Should we return const value types or const references?
-		[[nodiscard]] Opt<archive_link_type> operator[](_In_ size_t index_) const noexcept;
+		[[nodiscard]] Opt<ref<const archive_link_type>> operator[](_In_ size_t index_) const noexcept;
 
-		[[nodiscard]] Opt<archive_link_type> operator[](_In_ cref<Guid> guid_) const noexcept;
+		[[nodiscard]] Opt<ref<const archive_link_type>> operator[](_In_ cref<Guid> guid_) const noexcept;
 
-		[[nodiscard]] Opt<archive_link_type> operator[](_In_ cref<ArchiveGuid> archiveGuid_) const noexcept;
+		[[nodiscard]] Opt<ref<const archive_link_type>> operator[](_In_ cref<ArchiveGuid> archiveGuid_) const noexcept;
 
 		[[nodiscard]] Opt<ref<archive_link_type>> operator[](_In_ cref<ArchiveGuid> archiveGuid_) noexcept;
 

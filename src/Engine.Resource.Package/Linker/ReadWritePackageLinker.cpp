@@ -59,11 +59,11 @@ size_t ReadWritePackageLinker::count() const noexcept {
 	return _links.size();
 }
 
-Opt<ReadWritePackageLinker::archive_link_type> ReadWritePackageLinker::get(cref<Guid> guid_) const noexcept {
+Opt<ref<const ReadWritePackageLinker::archive_link_type>> ReadWritePackageLinker::get(cref<Guid> guid_) const noexcept {
 	return get(ArchiveGuid::from(guid_));
 }
 
-Opt<ReadWritePackageLinker::archive_link_type> ReadWritePackageLinker::get(cref<ArchiveGuid> archiveGuid_) const noexcept {
+Opt<ref<const ReadWritePackageLinker::archive_link_type>> ReadWritePackageLinker::get(cref<ArchiveGuid> archiveGuid_) const noexcept {
 	auto it = _links.find(archiveGuid_);
 	return it != _links.end() ? Some(it->second) : None;
 }
@@ -103,7 +103,7 @@ ReadWritePackageLinker::iterator_type ReadWritePackageLinker::find(cref<ArchiveG
 	return ReadWritePackageIterator { _links.find(archiveGuid_) };
 }
 
-Opt<ReadWritePackageLinker::archive_link_type> ReadWritePackageLinker::operator[](size_t index_) const noexcept {
+Opt<ref<const ReadWritePackageLinker::archive_link_type>> ReadWritePackageLinker::operator[](size_t index_) const noexcept {
 	if (_links.size() <= index_) {
 		return None;
 	}
@@ -113,11 +113,12 @@ Opt<ReadWritePackageLinker::archive_link_type> ReadWritePackageLinker::operator[
 	return (it != _links.end() && it->first != ArchiveGuid {}) ? Some(it->second) : None;
 }
 
-Opt<ReadWritePackageLinker::archive_link_type> ReadWritePackageLinker::operator[](cref<Guid> guid_) const noexcept {
+Opt<ref<const ReadWritePackageLinker::archive_link_type>> ReadWritePackageLinker::operator[](cref<Guid> guid_) const noexcept {
 	return get(guid_);
 }
 
-Opt<ReadWritePackageLinker::archive_link_type> ReadWritePackageLinker::operator[](cref<ArchiveGuid> archiveGuid_) const noexcept {
+Opt<ref<const ReadWritePackageLinker::archive_link_type>> ReadWritePackageLinker::operator[
+](cref<ArchiveGuid> archiveGuid_) const noexcept {
 	return get(archiveGuid_);
 }
 
