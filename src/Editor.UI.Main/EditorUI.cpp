@@ -103,7 +103,7 @@ nmpt<engine::assets::Font> editor::EditorUI::getDefaultFont() const noexcept {
 
 	auto registry = _engine->getAssets()->getRegistry();
 	auto asset = registry->findAssetByGuid(assets::font::default_font_guid);
-	::hg::assertrt(asset != nullptr);
+	::hg::assertrt(asset != None);
 
 	/**/
 
@@ -126,7 +126,7 @@ smr<::hg::engine::gfx::TextureResource> editor::EditorUI::getPlaceholderImage() 
 
 	if (placeholderHolder.empty()) {
 		const auto asset = assets::texture::get_default_brand();
-		::hg::assertrt(asset != nullptr);
+		::hg::assertrt(asset != None);
 
 		auto* request = Cast<engine::assets::TextureAsset>(asset->get());
 		placeholderHolder = _engine->getResources()->loader().load<

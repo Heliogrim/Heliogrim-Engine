@@ -630,7 +630,7 @@ bool tryLoadArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
 		const auto registry = Engine::getEngine()->getAssets()->getRegistry();
 		const auto asset = registry->findAssetByGuid(guid_);
 
-		if (asset != nullptr) { return None; }
+		if (asset != None) { return None; }
 
 		/**/
 

@@ -358,7 +358,7 @@ smr<engine::gfx::TextureResource> resolveTexture(
 	 * Resolve texture asset from database
 	 */
 	const auto asset = registry_->findAssetByGuid(guid_);
-	::hg::assertrt(asset != nullptr);
+	::hg::assertrt(asset != None);
 
 	#ifdef _DEBUG
 	if (!(*asset)->getMetaClass()->exact<engine::assets::TextureAsset>()) {
@@ -396,7 +396,7 @@ smr<MaterialPrototypeResource> resolvePrototype(
 	 * Resolve material prototype asset from database
 	 */
 	const auto asset = registry_->findAssetByGuid(guid_);
-	::hg::assertrt(asset != nullptr);
+	::hg::assertrt(asset != None);
 
 	/**
 	 * Load material prototype to get the internal resource handle

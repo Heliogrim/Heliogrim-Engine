@@ -342,7 +342,7 @@ void render::ReflowPass::ensureDefaultImage() {
 	// TODO: Rework temporary solution
 	constexpr auto default_ui_asset = asset_guid { 2893474171, 5859, 16540, 8673728298833701775uLL };
 	const auto asset = registry->findAssetByGuid(default_ui_asset);
-	::hg::assertrt(asset != nullptr);
+	::hg::assertrt(asset != None);
 
 	/**/
 

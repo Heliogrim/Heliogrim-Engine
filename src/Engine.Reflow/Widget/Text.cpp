@@ -326,7 +326,7 @@ nmpt<Font> loadFont(cref<TypedAssetGuid<hg::engine::assets::Font>> guid_) {
 
 	const auto engine = ::hg::engine::Engine::getEngine();
 	const auto asset = engine->getAssets()->getRegistry()->findAssetByGuid(guid_);
-	::hg::assertrt(asset != nullptr);
+	::hg::assertrt(asset != None);
 
 	auto* fontAsset = Cast<::hg::engine::assets::Font>(asset->get());
 	return engine->getResources()->loader().load<engine::assets::Font, engine::gfx::FontResource>(

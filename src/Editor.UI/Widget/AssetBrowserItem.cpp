@@ -106,7 +106,7 @@ sptr<AssetBrowserItem> AssetBrowserItem::make(
 		const auto asset = engine::Engine::getEngine()->getAssets()->getRegistry()->findAssetByGuid(
 			self->_value.guid
 		);
-		::hg::assertd(asset != nullptr);
+		::hg::assertd(asset != None);
 
 		iconAsset = helper->getItemIconByAssetType((*asset)->getTypeId());
 		typeTitle = helper->getAssetTypeName((*asset)->getTypeId());

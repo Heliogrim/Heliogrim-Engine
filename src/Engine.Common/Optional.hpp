@@ -22,11 +22,9 @@ namespace hg {
 
 	public:
 		// Note: Comparing a optional pointer-like type, might introduce ambiguity when equal comparing to nullptr
-		bool operator==(std::nullptr_t) const noexcept = delete;
+		bool operator==(std::nullptr_t) const = delete;
 
-		constexpr bool operator!=(std::nullptr_t) const noexcept {
-			return ::tl::operator!=(static_cast<const underlying_type&>(*this), nullptr);
-		}
+		bool operator!=(std::nullptr_t) const = delete;
 	};
 
 	template <typename Ty_>
