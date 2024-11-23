@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Engine.Common/Guid.hpp>
+
 #include "IUrlComp.hpp"
 
 namespace hg::engine::storage {

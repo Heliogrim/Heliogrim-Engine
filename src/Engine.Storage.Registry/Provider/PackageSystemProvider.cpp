@@ -17,7 +17,8 @@ PackageSystemProvider::~PackageSystemProvider() noexcept = default;
 
 Arci<ArchiveStorage> PackageSystemProvider::makeStorageObject(mref<ArchiveStorageDescriptor> descriptor_) {
 	return Arci<ArchiveStorage>::create(
-		std::move(descriptor_).archiveBacking(),
+		descriptor_.archiveBacking(),
+		descriptor_.archiveGuid(),
 		true,
 		true,
 		true,

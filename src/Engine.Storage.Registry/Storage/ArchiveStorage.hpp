@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Engine.Common/Types.hpp>
+#include <Engine.Resource.Archive/ArchiveGuid.hpp>
 
 #include "../IStorage.hpp"
 
@@ -15,6 +16,7 @@ namespace hg::engine::storage::system {
 
 		ArchiveStorage(
 			mref<Arci<IStorage>> backing_,
+			mref<resource::ArchiveGuid> archiveGuid_,
 			bool readable_,
 			bool writeable_,
 			bool randomReadable_,
@@ -47,8 +49,11 @@ namespace hg::engine::storage::system {
 
 	private:
 		Arci<IStorage> _backing;
+		resource::ArchiveGuid _archiveGuid;
 
 	public:
 		[[nodiscard]] Arci<IStorage> getBacking() const noexcept override;
+
+		[[nodiscard]] resource::ArchiveGuid getArchiveGuid() const noexcept;
 	};
 }
