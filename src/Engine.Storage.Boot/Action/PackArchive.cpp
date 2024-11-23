@@ -3,6 +3,9 @@
 #include <Engine.Asserts/Todo.hpp>
 #include <Engine.Common/Discard.hpp>
 #include <Engine.Pedantic.Resource/AccessMode.hpp>
+#include <Engine.Reflect/IsType.hpp>
+#include <Engine.Resource.Archive/BufferArchive.hpp>
+#include <Engine.Resource.Archive/Storage/PackageReadWriteArchive.hpp>
 #include <Engine.Storage.Action/Context.hpp>
 #include <Engine.Storage.Action/Access/ExclusiveIoResource.hpp>
 
@@ -28,39 +31,29 @@ Result<
 
 	/**/
 
-	// TODO: We need to get the guid to query for the correct linker data.
-	::hg::assertrt(accessor_->getLinker().count() <= 1uLL);
-	auto archGuid = ArchiveGuid {};
+	const auto archiveGuid = storage_->getArchiveGuid();
+	::hg::assertd(archiveGuid != ArchiveGuid {});
 
 	auto& linker = accessor_->getLinker();
-	//const auto& linked = linker.get(ArchiveGuid {});
-	auto& linked = *linker.begin();
+	auto linked = linker.get(archiveGuid);
 
 	/**/
 
-	auto value = Rc<StorageReadWriteArchive> {};
-	if (archGuid != linked.second.header.guid) {
-		auto& nextLinked = linker.add({ .type = ArchiveType::eUndefined, .guid = archGuid });
-		// nextLinked.changes;
-		value = Rc<StorageReadWriteArchive>::create(
-			linker.getStorage(),
-			nextLinked.data.offset,
-			nextLinked.data.size
-		);
-		::hg::todo_panic();
+	auto value = Rc<PackageReadWriteArchive> {};
+	if (linked == None) {
+		auto& nextLinked = linker.add({ .type = ArchiveType::eUndefined, .guid = archiveGuid });
+		value = Rc<PackageReadWriteArchive>::create(accessor_.get(), nextLinked);
 
 	} else {
-		auto maybeLinked = linker.get(archGuid);
-		// maybeLinked.changes;
-		value = Rc<StorageReadWriteArchive>::create(
-			linker.getStorage(),
-			maybeLinked->data.offset,
-			maybeLinked->data.size
-		);
+		value = Rc<PackageReadWriteArchive>::create(accessor_.get(), linked.value());
+		value->preload(linked->data.size);
 	}
 
-		clone(storage_).into<IStorage>(),
+	// Warning: Experimental control-flow
 	auto cachedValue = ctx_.objectStore.add(
+		// Attention: Attach object to parent (Package Storage) invalidation cycle.
+		//clone(storage_).into<IStorage>(),
+		storage_->getBacking(),
 		::hg::move(value),
 		std::addressof(accessor_.get())
 	);
@@ -92,6 +85,36 @@ void engine::storage::releaseStaticPackArchMutation(
 	auto deferred = ctx_.accessStore.drop(clone(storage_).into<IStorage>());
 	ctx_.objectStore.invalidate(clone(storage_).into<IStorage>());
 
+	/**/
+
+	if (IsType<PackageReadWriteArchive>(accessor_.get())) {
+
+		auto& packArch = static_cast<ref<PackageReadWriteArchive>>(accessor_.get());
+		if (packArch.getLinked().data.size <= streamsize {}) {
+			// nextLinked.changes;
+			packArch.getLinked().changes.emplace_back(
+				package::ArchiveDeltaAdd {
+					.where = streamoff {},
+					.size = packArch.totalSize(),
+					.data = packArch
+				}
+			);
+
+		} else {
+			// maybeLinked.changes;
+			packArch.getLinked().changes.emplace_back(
+				package::ArchiveDeltaReplace {
+					.where = streamoff {},
+					.size = packArch.getLinked().data.size,
+					.data = packArch
+				}
+			);
+		}
+
+	}
+
+	/**/
+
 	::hg::forward<decltype(accessor_)>(accessor_).reset();
 	::hg::discard(::hg::move(deferred));
 }
@@ -116,28 +139,27 @@ Result<
 
 	/**/
 
-	// TODO: We need to get the guid to query for the correct linker data.
-	::hg::assertrt(accessor_->getLinker().count() <= 1uLL);
-	auto archGuid = ArchiveGuid {};
+	const auto archiveGuid = storage_->getArchiveGuid();
+	::hg::assertd(archiveGuid != ArchiveGuid {});
 
 	auto& linker = accessor_->getLinker();
-	//const auto& linked = linker.get(ArchiveGuid {});
-	auto& linked = *linker.begin();
+	auto linked = linker.get(archiveGuid);
 
 	/**/
 
-	if (archGuid != linked.second.header.guid) {
+	if (linked == None) {
 		return Unexpected<Query::acq_error_type> { AccessError { "Requested archive does not exist within package." } };
-
 	}
 
-	auto maybeLinked = linker.get(archGuid);
-	// maybeLinked.changes;
+	/**/
+
+	constexpr auto contentOffset = sizeof(PackageHeader);
 	auto value = Rc<StorageReadonlyArchive>::create(
 		linker.getStorage(),
-		maybeLinked->data.offset,
-		maybeLinked->data.size
+		static_cast<streamoff>(contentOffset + linked->data.offset),
+		linked->data.size
 	);
+	value->setType(linked->header.type);
 
 	auto cachedValue = ctx_.objectStore.add(
 		clone(storage_).into<IStorage>(),
