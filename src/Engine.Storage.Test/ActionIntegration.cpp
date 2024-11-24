@@ -375,7 +375,7 @@ void supportAddMemStoreBlobQueryStages(ref<StorageActionResolver> resolver_) {
 		const auto& memory = memStore->_memory;
 
 		auto value = Rc<ByteSpanBlob>::create(memory.touchedSpan());
-		auto cachedValue = ctx_.caches.add(clone(storage_), ::hg::move(value));
+		auto cachedValue = ctx_.objectStore.add(clone(storage_), ::hg::move(value));
 
 		/**/
 
@@ -386,7 +386,7 @@ void supportAddMemStoreBlobQueryStages(ref<StorageActionResolver> resolver_) {
 		/**/
 
 		auto resource = Rc<resource_type>::create(::hg::move(resolver));
-		auto storedResource = ctx_.store.add(::hg::move(memStore).into<IStorage>(), ::hg::move(resource));
+		auto storedResource = ctx_.accessStore.add(::hg::move(memStore).into<IStorage>(), ::hg::move(resource));
 
 		/**/
 
@@ -400,8 +400,8 @@ void supportAddMemStoreBlobQueryStages(ref<StorageActionResolver> resolver_) {
 	decltype(DynamicStage::relFn) relFn = [](Context& ctx_, cref<Arci<IStorage>>, auto&& val_) -> void {
 		::hg::forward<decltype(val_)>(val_).value.reset();
 
-		ctx_.store.map.clear();
-		ctx_.caches.map.clear();
+		ctx_.accessStore.map.clear();
+		ctx_.objectStore.map.clear();
 	};
 
 	auto stageTypeInfo = StageTypeInfo {
@@ -444,7 +444,7 @@ void supportAddArchiveStoreQueryStages(ref<StorageActionResolver> resolver_) {
 		/**/
 
 		auto value = Rc<StorageReadonlyArchive>::create(input.value->get(), streamoff {}, input.value->get().size());
-		auto cachedValue = ctx_.caches.add(clone(storage_), ::hg::move(value));
+		auto cachedValue = ctx_.objectStore.add(clone(storage_), ::hg::move(value));
 
 		/**/
 
@@ -458,7 +458,7 @@ void supportAddArchiveStoreQueryStages(ref<StorageActionResolver> resolver_) {
 		/**/
 
 		auto resource = Rc<resource_type>::create(::hg::move(resolveMut), ::hg::move(resolveConst));
-		auto storedResource = ctx_.store.add(clone(storage_).into<IStorage>(), ::hg::move(resource));
+		auto storedResource = ctx_.accessStore.add(clone(storage_).into<IStorage>(), ::hg::move(resource));
 
 		/**/
 
@@ -509,7 +509,7 @@ void supportAddMemStoreBlobMutationStages(ref<StorageActionResolver> resolver_) 
 		/**/
 
 		auto value = Rc<ByteSpanBlob>::create(memStore->_memory.span());
-		auto cachedValue = ctx_.caches.add(clone(storage_), ::hg::move(value));
+		auto cachedValue = ctx_.objectStore.add(clone(storage_), ::hg::move(value));
 
 		/**/
 
@@ -520,7 +520,7 @@ void supportAddMemStoreBlobMutationStages(ref<StorageActionResolver> resolver_) 
 		/**/
 
 		auto resource = Rc<resource_type>::create(::hg::move(resolver));
-		auto storedResource = ctx_.store.add(::hg::move(memStore).into<IStorage>(), ::hg::move(resource));
+		auto storedResource = ctx_.accessStore.add(::hg::move(memStore).into<IStorage>(), ::hg::move(resource));
 
 		/**/
 
@@ -534,8 +534,8 @@ void supportAddMemStoreBlobMutationStages(ref<StorageActionResolver> resolver_) 
 	decltype(DynamicStage::relFn) relFn = [](Context& ctx_, cref<Arci<IStorage>>, auto&& val_) -> void {
 		::hg::forward<decltype(val_)>(val_).value.reset();
 
-		ctx_.store.map.clear();
-		ctx_.caches.map.clear();
+		ctx_.accessStore.map.clear();
+		ctx_.objectStore.map.clear();
 	};
 
 	auto stageTypeInfo = StageTypeInfo {

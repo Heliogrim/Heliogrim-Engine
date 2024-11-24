@@ -37,13 +37,13 @@ namespace StorageModule {
 		_Inout_ ref<MutationIntegrationFixture> self_,
 		_In_ cref<Guid> memGuid_
 	) {
-		const auto memUrl = MemoryUrl { clone(memGuid_) };
+		auto memUrl = MemoryUrl { clone(memGuid_) };
 		constexpr auto requestSize = 4096uLL;
 		constexpr auto properties = MemoryProperty::eUndefined;
 
 		/**/
 
-		auto descriptor = MemoryStorageDescriptor { clone(memUrl), requestSize, properties };
+		auto descriptor = MemoryStorageDescriptor { ::hg::move(memUrl), requestSize, properties };
 		auto memStorage = self_._registry.insert(::hg::move(descriptor));
 		ASSERT_NE(memStorage, nullptr);
 	}
@@ -53,12 +53,12 @@ namespace StorageModule {
 		_In_ cref<Guid> memGuid_,
 		_In_ cref<Guid> packGuid_
 	) {
-		const auto packUrl = PackageUrl { clone(packGuid_) };
+		auto packUrl = PackageUrl { clone(packGuid_) };
 		auto memStore = self_._registry.findStorageByUrl(MemoryUrl { clone(memGuid_) });
 
 		/**/
 
-		auto descriptor = PackageStorageDescriptor { clone(packUrl), ::hg::move(memStore) };
+		auto descriptor = PackageStorageDescriptor { ::hg::move(packUrl), ::hg::move(memStore) };
 		auto packStorage = self_._registry.insert(::hg::move(descriptor));
 		ASSERT_NE(packStorage, nullptr);
 	}
