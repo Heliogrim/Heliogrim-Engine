@@ -298,6 +298,7 @@ namespace PackageModule {
 		auto guid = ArchiveGuid::random();
 		auto archive = make_uptr<BufferArchive>();
 		archive->reserve(data.size());
+		archive->setType(ArchiveType::eRaw);
 
 		for (const auto& ch : data) { *archive << ch; }
 
@@ -305,7 +306,7 @@ namespace PackageModule {
 
 		const auto prevSize = package.getHeader().packageSize;
 
-		auto& linked = package.getLinker().add({ .type = package::PackageArchiveType::eRaw, .guid = guid });
+		auto& linked = package.getLinker().add({ .type = ArchiveType::eUndefined, .guid = guid });
 		linked.changes.emplace_back(
 			package::ArchiveDeltaAdd {
 				streamoff {},
@@ -370,8 +371,11 @@ namespace PackageModule {
 		auto ar2 = make_uptr<BufferArchive>();
 
 		ar0->reserve(data0.size());
+		ar0->setType(ArchiveType::eRaw);
 		ar1->reserve(data1.size());
+		ar1->setType(ArchiveType::eRaw);
 		ar2->reserve(data2.size());
+		ar2->setType(ArchiveType::eRaw);
 
 		for (const auto& ch : data0) { *ar0 << ch; }
 		for (const auto& ch : data1) { *ar1 << ch; }
@@ -379,9 +383,9 @@ namespace PackageModule {
 
 		auto& linker = package.getLinker();
 
-		auto& lk0 = linker.add({ .type = package::PackageArchiveType::eRaw, .guid = guid0 });
-		auto& lk1 = linker.add({ .type = package::PackageArchiveType::eRaw, .guid = guid1 });
-		auto& lk2 = linker.add({ .type = package::PackageArchiveType::eRaw, .guid = guid2 });
+		auto& lk0 = linker.add({ .type = ArchiveType::eUndefined, .guid = guid0 });
+		auto& lk1 = linker.add({ .type = ArchiveType::eUndefined, .guid = guid1 });
+		auto& lk2 = linker.add({ .type = ArchiveType::eUndefined, .guid = guid2 });
 
 		lk0.changes.emplace_back(package::ArchiveDeltaAdd { .where = 0uLL, .size = static_cast<streamsize>(ar0->size()), .data = *ar0 });
 		lk1.changes.emplace_back(package::ArchiveDeltaAdd { .where = 0uLL, .size = static_cast<streamsize>(ar1->size()), .data = *ar1 });
@@ -451,8 +455,11 @@ namespace PackageModule {
 		auto ar2 = make_uptr<BufferArchive>();
 
 		ar0->reserve(data0.size());
+		ar0->setType(ArchiveType::eRaw);
 		ar1->reserve(data1.size());
+		ar1->setType(ArchiveType::eRaw);
 		ar2->reserve(data2.size());
+		ar2->setType(ArchiveType::eRaw);
 
 		for (const auto& ch : data0) { *ar0 << ch; }
 		for (const auto& ch : data1) { *ar1 << ch; }
@@ -460,9 +467,9 @@ namespace PackageModule {
 
 		auto& linker = package.getLinker();
 
-		auto& lk0 = linker.add({ .type = package::PackageArchiveType::eRaw, .guid = guid0 });
-		auto& lk1 = linker.add({ .type = package::PackageArchiveType::eRaw, .guid = guid1 });
-		auto& lk2 = linker.add({ .type = package::PackageArchiveType::eRaw, .guid = guid2 });
+		auto& lk0 = linker.add({ .type = ArchiveType::eUndefined, .guid = guid0 });
+		auto& lk1 = linker.add({ .type = ArchiveType::eUndefined, .guid = guid1 });
+		auto& lk2 = linker.add({ .type = ArchiveType::eUndefined, .guid = guid2 });
 
 		lk0.changes.emplace_back(package::ArchiveDeltaAdd { .where = 0uLL, .size = static_cast<streamsize>(ar0->size()), .data = *ar0 });
 		lk1.changes.emplace_back(package::ArchiveDeltaAdd { .where = 0uLL, .size = static_cast<streamsize>(ar1->size()), .data = *ar1 });
