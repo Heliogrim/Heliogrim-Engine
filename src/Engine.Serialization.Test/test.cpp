@@ -26,6 +26,7 @@
 #include "Engine.Serialization/Structure/SliceScopedSlot.hpp"
 #include "Engine.Serialization/Structure/StringScopedSlot.hpp"
 #include "Engine.Serialization/Structure/StructScopedSlot.hpp"
+#include "Engine.Serialization/Structure/StructSlot.hpp"
 
 using namespace hg::engine::resource;
 using namespace hg::engine::serialization;
@@ -193,16 +194,20 @@ namespace hg::engine::serialization {
 		using namespace ::SerializationModule;
 		using namespace ::hg::engine::serialization::layout;
 
-		defineValue<LayoutDefineValueType::eUInt32>(offsetof(TestSerialDataBaseAsset, _guid.pre)
+		defineValue<LayoutDefineValueType::eUInt32>(
+		offsetof(TestSerialDataBaseAsset, _guid.pre)
 		)
 		;
-		defineValue<LayoutDefineValueType::eUInt16>(offsetof(TestSerialDataBaseAsset, _guid.c0)
+		defineValue<LayoutDefineValueType::eUInt16>(
+		offsetof(TestSerialDataBaseAsset, _guid.c0)
 		)
 		;
-		defineValue<LayoutDefineValueType::eUInt16>(offsetof(TestSerialDataBaseAsset, _guid.c1)
+		defineValue<LayoutDefineValueType::eUInt16>(
+		offsetof(TestSerialDataBaseAsset, _guid.c1)
 		)
 		;
-		defineValue<LayoutDefineValueType::eUInt64>(offsetof(TestSerialDataBaseAsset, _guid.post)
+		defineValue<LayoutDefineValueType::eUInt64>(
+		offsetof(TestSerialDataBaseAsset, _guid.post)
 		)
 		;
 		defineValue<LayoutDefineValueType::eUInt64>(offsetof(TestSerialDataBaseAsset, _type));
@@ -910,16 +915,15 @@ namespace SerializationModule {
 
 		const u64 src1 = 126784uLL;
 		const u64 src2 = 6312785uLL; {
-			auto write = arch.insertRootSlot();
-			auto struct0 = std::move(write).intoStruct();
+			auto struct0 = arch.insertRootSlot().intoStruct();
 
-			auto struct1 = struct0.insertSlot<void>("obj1").intoStruct();
-			struct1.insertSlot<u64>("test1") << src1;
-			struct1.leaveSlot();
+			[src1](mref<StructScopedSlot> slot_) {
+				slot_.insertSlot<u64>("test1") << src1;
+			}(struct0.insertSlot<void>("obj1").intoStruct());
 
-			auto struct2 = struct0.insertSlot<void>("obj2").intoStruct();
-			struct2.insertSlot<u64>("test2") << src2;
-			struct2.leaveSlot();
+			[src2](mref<StructScopedSlot> slot_) {
+				slot_.insertSlot<u64>("test2") << src2;
+			}(struct0.insertSlot<void>("obj2").intoStruct());
 		}
 
 		/**/
@@ -930,14 +934,15 @@ namespace SerializationModule {
 
 		u64 dst1 = 0uLL;
 		u64 dst2 = 0uLL; {
-			auto read = arch.getRootSlot();
-			auto struct0 = std::move(read).intoStruct();
+			auto struct0 = arch.getRootSlot().asStruct();
 
-			auto struct1 = struct0.getSlot<void>("obj1").intoStruct();
-			struct1.getSlot<u64>("test1") >> dst1;
+			[&dst1](cref<StructScopedSlot> slot_) {
+				slot_.getSlot<u64>("test1") >> dst1;
+			}(struct0.getSlot<void>("obj1").intoStruct());
 
-			auto struct2 = struct0.getSlot<void>("obj2").intoStruct();
-			struct2.getSlot<u64>("test2") >> dst2;
+			[&dst2](cref<StructScopedSlot> slot_) {
+				slot_.getSlot<u64>("test2") >> dst2;
+			}(struct0.getSlot<void>("obj2").intoStruct());
 		}
 
 		/**/
