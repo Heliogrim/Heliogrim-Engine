@@ -12,8 +12,8 @@ using namespace hg;
 ActionManager::ActionManager(ref<engine::Engine> engine_) :
 	SubModule(std::addressof(engine_)),
 	_deps(),
-	_dispatcher(),
-	_log() {}
+	_log(),
+	_dispatcher() {}
 
 ActionManager::~ActionManager() {
 	ActionManager::destroy();

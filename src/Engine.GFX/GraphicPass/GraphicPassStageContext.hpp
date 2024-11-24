@@ -3,10 +3,9 @@
 #include <Engine.Common/Wrapper.hpp>
 
 #include "../Command/CommandBatch.hpp"
-#include "../Renderer/RenderPassState.hpp"
 
 namespace hg::engine::gfx {
-    struct GraphicPassStageContext {
-        ref<CommandBatch> batch;
-    };
+	struct GraphicPassStageContext {
+		ref<CommandBatch> batch;
+	};
 }

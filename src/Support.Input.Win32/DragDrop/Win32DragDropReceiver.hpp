@@ -2,7 +2,9 @@
 
 /**/
 #define WIN32_LEAN_AND_MEAN
+#ifndef STRICT
 #define STRICT
+#endif
 #include <Windows.h>
 /**/
 #include <ole2.h>

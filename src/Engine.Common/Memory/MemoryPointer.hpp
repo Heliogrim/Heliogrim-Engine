@@ -82,8 +82,6 @@ namespace hg {
 
 		void deallocate(AllocType_&& allocator_ = AllocType_ {}) {
 
-			using allocator_traits = std::allocator_traits<AllocType_>;
-
 			Ty_* expectation = nullptr;
 			auto* snapshot = mem.exchange(expectation, std::memory_order::seq_cst);
 
