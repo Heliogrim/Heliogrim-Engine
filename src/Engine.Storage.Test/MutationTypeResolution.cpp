@@ -59,9 +59,9 @@ namespace StorageModule {
 
 		/**/
 
-		auto base = Arci<system::LocalFileStorage>::create(fs::Path {}, true, true, true, true);
-		auto inter = Arci<system::PackageStorage>::create(clone(base).into<IStorage>(), true, true, true, true);
-		auto dist = Arci<system::ArchiveStorage>::create(clone(inter).into<IStorage>(), true, true, true, true);
+		auto base = Arci<LocalFileStorage>::create(fs::Path {}, true, true, true, true);
+		auto inter = Arci<PackageStorage>::create(clone(base).into<IStorage>(), true, true, true, true);
+		auto dist = Arci<ArchiveStorage>::create(clone(inter).into<IStorage>(), ArchiveGuid {}, true, true, true, true);
 
 		/**/
 
@@ -239,9 +239,9 @@ namespace StorageModule {
 
 		/**/
 
-		auto lfsDummy = Arci<system::LocalFileStorage>::create(fs::Path {}, true, true, true, true);
-		auto packageDummy = Arci<system::PackageStorage>::create(clone(lfsDummy).into<IStorage>(), true, true, true, true);
-		auto archiveDummy = Arci<system::ArchiveStorage>::create(clone(packageDummy).into<IStorage>(), true, true, true, true);
+		auto lfsDummy = Arci<LocalFileStorage>::create(fs::Path {}, true, true, true, true);
+		auto packageDummy = Arci<PackageStorage>::create(clone(lfsDummy).into<IStorage>(), true, true, true, true);
+		auto archiveDummy = Arci<ArchiveStorage>::create(clone(packageDummy).into<IStorage>(), ArchiveGuid {}, true, true, true, true);
 
 		auto mutation = (*factory)();
 		ASSERT_TRUE(mutation);
@@ -356,8 +356,8 @@ namespace StorageModule {
 
 		/**/
 
-		auto lfsDummy = Arci<system::LocalFileStorage>::create(fs::Path {}, true, true, true, true);
-		auto archiveDummy = Arci<system::ArchiveStorage>::create(clone(lfsDummy).into<IStorage>(), true, true, true, true);
+		auto lfsDummy = Arci<LocalFileStorage>::create(fs::Path {}, true, true, true, true);
+		auto archiveDummy = Arci<ArchiveStorage>::create(clone(lfsDummy).into<IStorage>(), ArchiveGuid {}, true, true, true, true);
 
 		auto mutation = (*factory)();
 		ASSERT_TRUE(mutation);
@@ -496,8 +496,8 @@ namespace StorageModule {
 
 		/**/
 
-		auto memDummy = Arci<system::MemoryStorage>::create(system::MemoryStorage::MemoryObject {}, true, true, true, true);
-		auto archiveDummy = Arci<system::ArchiveStorage>::create(clone(memDummy).into<IStorage>(), true, true, true, true);
+		auto memDummy = Arci<MemoryStorage>::create(system::MemoryStorage::MemoryObject {}, true, true, true, true);
+		auto archiveDummy = Arci<ArchiveStorage>::create(clone(memDummy).into<IStorage>(), ArchiveGuid {}, true, true, true, true);
 
 		auto mutation = (*factory)();
 		ASSERT_TRUE(mutation);
@@ -658,8 +658,8 @@ namespace StorageModule {
 
 		/**/
 
-		auto memDummy = Arci<system::MemoryStorage>::create(system::MemoryStorage::MemoryObject {}, true, true, true, true);
-		auto archiveDummy = Arci<system::ArchiveStorage>::create(clone(memDummy).into<IStorage>(), true, true, true, true);
+		auto memDummy = Arci<MemoryStorage>::create(system::MemoryStorage::MemoryObject {}, true, true, true, true);
+		auto archiveDummy = Arci<ArchiveStorage>::create(clone(memDummy).into<IStorage>(), ArchiveGuid {}, true, true, true, true);
 
 		auto mutation = (*factory)();
 		ASSERT_TRUE(mutation);
