@@ -472,11 +472,9 @@ Opt<Arci<engine::storage::system::PackageStorage>> autoStoreAssets(
 	auto ioFailed = false;
 	for (auto idx = 0uLL; idx < serialized.size(); ++idx) {
 
-		auto collected = ::hg::move(serialized[idx]);
-
 		auto result = storeSys->addArchiveToPackage(
 			clone(packageStore),
-			::hg::move(collected)
+			serialized[idx]
 		);
 
 		if (not result.has_value()) {
