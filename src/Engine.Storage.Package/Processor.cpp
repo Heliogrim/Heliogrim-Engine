@@ -84,10 +84,11 @@ Result<void, std::runtime_error> engine::storage::package::commit_archive_change
 		for (auto&& change : archiveChanges) {
 			::hg::move(change).apply(
 				Overloaded {
-					[&archiveData, &scratchTail, &scratchPad](ArchiveDeltaAdd& add_) {
+					[&archiveData, &archiveHeader, &scratchTail, &scratchPad](ArchiveDeltaAdd& add_) {
 
 						::hg::assertrt(add_.where == 0);
 
+						archiveHeader.type = add_.data.type();
 						archiveData.offset = scratchTail;
 						archiveData.size = add_.size;
 
@@ -97,9 +98,10 @@ Result<void, std::runtime_error> engine::storage::package::commit_archive_change
 						add_.data.serializeBytes(dst, ArchiveStreamMode::eLoad);
 						scratchTail += add_.size;
 					},
-					[&archiveData, &scratchTail, &scratchPad](ArchiveDeltaReplace& replace_) {
+					[&archiveData, &archiveHeader, &scratchTail, &scratchPad](ArchiveDeltaReplace& replace_) {
 
 						::hg::assertrt(replace_.where == 0);
+						archiveHeader.type = replace_.data.type();
 
 						if (archiveData.size < replace_.size) {
 
