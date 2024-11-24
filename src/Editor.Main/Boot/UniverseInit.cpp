@@ -12,6 +12,11 @@
 #include <Engine.Core/Universe.hpp>
 #include <Engine.Core/UniverseContext.hpp>
 
+/**/
+
+#include <Editor.Assets.Default/GfxMaterials/Default.hpp>
+#include <Editor.Assets.Default/Meshes/Default.hpp>
+
 using namespace hg::editor::boot;
 using namespace hg::engine;
 using namespace hg;
@@ -76,11 +81,14 @@ static void addDefaultSkybox() {
 
 	/**/
 
-	auto query = Heliogrim::assets()[game::assets::material::DefaultSkybox::unstable_auto_guid()];
-	sc->setSkyboxMaterialByAsset(static_cast<ref<GfxMaterialAsset>>(query.value));
+	const auto material = Heliogrim::assets().find<GfxMaterialAsset>(editor::assets::materials::default_skybox_guid);
+	::hg::assertrt(static_cast<bool>(material));
+	sc->setSkyboxMaterialByAsset(material.value);
 
-	query = Heliogrim::assets()[editor::assets::meshes::default_sphere_guid];
-	sc->setSkyboxGeometryByAsset(static_cast<ref<StaticGeometryAsset>>(query.value));
+	const auto geometry = Heliogrim::assets().find<StaticGeometryAsset>(editor::assets::meshes::default_sphere_guid);
+	::hg::assertrt(static_cast<bool>(geometry));
+	sc->setSkyboxGeometryByAsset(geometry.value);
+
 
 	/**/
 
