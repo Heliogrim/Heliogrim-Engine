@@ -34,13 +34,13 @@ namespace hg {
 
 		template <
 			class Type_,
-			class RetTy_ = std::invoke_result_t<decltype(&Type_::getMetaClass)(Type_)>>
-		concept __IndirectMetaInhert = std::derived_from<Type_, typename RetTy_::target_type>;
+			class RetTy_ = decltype(std::declval<Type_>().getMetaClass())>
+		concept __IndirectMetaInherit = std::derived_from<Type_, typename RetTy_::target_type>;
 	}
 
 	template <class Type_>
 	concept ClassHasMeta =
-		(std::same_as<ClassMetaBase, Type_> || __DirectMetaInherit<Type_> || __IndirectMetaInhert<Type_>) &&
+		(std::same_as<ClassMetaBase, Type_> || __DirectMetaInherit<Type_> || __IndirectMetaInherit<Type_>) &&
 		__HasInheritTypeList<Type_> &&
 		std::derived_from<Type_, ClassMetaBase>;
 }
