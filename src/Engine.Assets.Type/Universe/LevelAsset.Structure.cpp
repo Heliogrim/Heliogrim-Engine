@@ -44,8 +44,8 @@ void access::Structure<LevelAsset>::hydrate(cref<StructScopedSlot> slot_, LevelA
 	} else if (levelData.starts_with(storage::ArchiveScheme)) {
 
 		// Note: "archive://xxxx-xx-xx-xxxxxxxx" -> "xxxx-xx-xx-xxxxxxxx"
-		auto archiveGuid = decodeGuid4228({ levelData.begin() + (storage::ArchiveScheme.size() + 3), levelData.end() });
-		target_._levelData = storage::ArchiveUrl { std::move(archiveGuid) };
+		const auto archiveGuid = decodeGuid4228({ levelData.begin() + (storage::ArchiveScheme.size() + 3), levelData.end() });
+		target_._levelData = storage::ArchiveUrl { resource::ArchiveGuid::from(archiveGuid) };
 
 	} else {
 		::hg::panic();

@@ -27,14 +27,14 @@ void access::Structure<Actor>::serialize(
 
 	/**/
 
-	access::Structure<Guid>::serialize(self_._guid, slot_.insertRecordSlot(Symbols::Guid).intoStruct());
+	access::Structure<Guid>::serialize(self_._guid, slot_.insertStructSlot(Symbols::Guid));
 
 	/**/
 
 	// TODO: Generic Serialize Components
 
 	const auto serial = Engine::getEngine()->getSerialization();
-	auto components = slot_.insertRecordSlot(Symbols::Components).asSeq();
+	auto components = slot_.insertRecordSlot(Symbols::Components).intoSeq();
 
 	u64 idx = 0;
 	for (const auto& component : self_.getComponents()) {

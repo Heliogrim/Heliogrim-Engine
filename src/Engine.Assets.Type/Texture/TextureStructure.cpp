@@ -14,11 +14,11 @@ using namespace hg;
 template <>
 void access::Structure<TextureAsset>::serialize(const TextureAsset& self_, mref<StructScopedSlot> slot_) {
 
-	Structure<Guid>::serialize(self_._guid, slot_.insertSlot<void>("__guid__").intoStruct());
+	Structure<Guid>::serialize(self_._guid, slot_.insertStructSlot("__guid__"));
 	slot_.insertSlot<u64>("__type__") << self_._type.data;
 	slot_.insertSlot<string>("name") << self_._assetName;
 
-	Structure<Guid>::serialize(self_._baseImage, slot_.insertSlot<void>("baseImage").intoStruct()); {
+	Structure<Guid>::serialize(self_._baseImage, slot_.insertStructSlot("baseImage")); {
 		auto images = slot_.insertSlot<void>("images").intoSeq();
 
 		for (const auto& entry : self_._images) {
@@ -26,7 +26,7 @@ void access::Structure<TextureAsset>::serialize(const TextureAsset& self_, mref<
 		}
 	}
 
-	Structure<math::uivec3>::serialize(self_._extent, slot_.insertRecordSlot("extent").intoStruct());
+	Structure<math::uivec3>::serialize(self_._extent, slot_.insertStructSlot("extent"));
 	slot_.insertSlot<gfx::TextureFormat>("format") << self_._format;
 	slot_.insertSlot<u32>("mipLevel") << self_._mipLevel;
 	slot_.insertSlot<gfx::TextureType>("textureType") << self_._textureType;
@@ -35,7 +35,7 @@ void access::Structure<TextureAsset>::serialize(const TextureAsset& self_, mref<
 template <>
 void access::Structure<TextureAsset>::hydrate(cref<StructScopedSlot> slot_, TextureAsset& target_) {
 
-	Structure<Guid>::hydrate(slot_.getSlot<void>("__guid__").asStruct(), target_._guid);
+	Structure<Guid>::hydrate(slot_.getStructSlot("__guid__"), target_._guid);
 	slot_.getSlot<u64>("__type__") >> target_._type.data;
 	slot_.getSlot<string>("name") >> target_._assetName;
 

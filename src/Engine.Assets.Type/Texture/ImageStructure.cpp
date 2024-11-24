@@ -13,7 +13,7 @@ using namespace hg;
 template <>
 void access::Structure<Image>::serialize(const Image& self_, mref<StructScopedSlot> slot_) {
 
-	Structure<Guid>::serialize(self_._guid, slot_.insertSlot<void>("__guid__").asStruct());
+	Structure<Guid>::serialize(self_._guid, slot_.insertStructSlot("__guid__"));
 	slot_.insertSlot<u64>("__type__") << self_._type.data;
 	slot_.insertSlot<string>("name") << self_._assetName;
 

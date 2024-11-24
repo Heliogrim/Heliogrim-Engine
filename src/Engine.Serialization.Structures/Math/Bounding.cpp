@@ -13,14 +13,14 @@ using namespace ::hg;
 
 template <>
 void access::Structure<math::Bounding>::serialize(const math::Bounding& self_, mref<StructScopedSlot> slot_) {
-	Structure<math::fvec3>::serialize(self_._center, slot_.insertRecordSlot("center").intoStruct());
-	Structure<math::fvec3>::serialize(self_._extent, slot_.insertRecordSlot("extent").intoStruct());
+	Structure<math::fvec3>::serialize(self_._center, slot_.insertStructSlot("center"));
+	Structure<math::fvec3>::serialize(self_._extent, slot_.insertStructSlot("extent"));
 	slot_.insertSlot<f32>("length") << self_._extent_length;
 }
 
 template <>
 void access::Structure<math::Bounding>::hydrate(cref<StructScopedSlot> slot_, math::Bounding& target_) {
-	Structure<math::fvec3>::serialize(target_._center, slot_.getRecordSlot("center").asStruct());
-	Structure<math::fvec3>::serialize(target_._extent, slot_.getRecordSlot("extent").asStruct());
+	Structure<math::fvec3>::serialize(target_._center, slot_.getStructSlot("center"));
+	Structure<math::fvec3>::serialize(target_._extent, slot_.getStructSlot("extent"));
 	slot_.getSlot<f32>("length") >> target_._extent_length;
 }
