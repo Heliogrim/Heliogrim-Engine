@@ -27,7 +27,7 @@ namespace hg::editor::assets::font {
 	/**/
 
 	// @formatter:off
-	constexpr auto default_font_guid = asset_guid { 2065718515, 35678, 18479, 6899515527289313462uLL };
+	constexpr auto default_font_guid = asset_guid { 2774955005, 48357, 17892, 10439228922350965650uLL };
 	inline auto get_default_font() { return resolveRuntimeAsset<engine::assets::Font>(default_font_guid); }
 	// @formatter:on
 }

@@ -29,102 +29,102 @@ namespace hg::editor::assets::image {
 	/**/
 
 	// @formatter:off
-	constexpr auto default_alpha_guid = asset_guid { 3005927515, 33438, 16559, 3820848764490074011uLL };
+	constexpr auto default_alpha_guid = asset_guid { 3740371845, 62089, 18592, 7022471688465727651uLL };
 	inline auto get_default_alpha() { return resolveRuntimeAsset<engine::assets::Image>(default_alpha_guid);	}
 	// @formatter:on
 
 	// @formatter:off
-	constexpr auto default_ao_guid = asset_guid { 2326201392, 16626, 18134, 6885605954035160750uLL };
+	constexpr auto default_ao_guid = asset_guid { 4253936157, 61900, 17723, 11155127813840916895uLL };
 	inline auto get_default_ao() { return resolveRuntimeAsset<engine::assets::Image>(default_ao_guid); }
 	// @formatter:on
 
 	// @formatter:off
-	constexpr auto default_diffuse_guid = asset_guid { 1023084325, 9784, 20298, 9883004807731196087uLL };
+	constexpr auto default_diffuse_guid = asset_guid { 2295487962, 53879, 18449, 18187122731606890117uLL };
 	inline auto get_default_diffuse() { return resolveRuntimeAsset<engine::assets::Image>(default_diffuse_guid); }
 	// @formatter:on
 
 	// @formatter:off
-	constexpr auto default_metalness_guid = asset_guid { 2824505190, 721, 17436, 8936093579663056513uLL };
+	constexpr auto default_metalness_guid = asset_guid { 2860199844, 33958, 18232, 6980037863491099301uLL };
 	inline auto get_default_metalness() { return resolveRuntimeAsset<engine::assets::Image>(default_metalness_guid); }
 	// @formatter:on
 
 	// @formatter:off
-	constexpr auto default_normal_guid = asset_guid { 1806176931, 64119, 18252, 2840666528584760762uLL };
+	constexpr auto default_normal_guid = asset_guid { 1773573098, 32496, 16798, 7370537146264896955uLL };
 	inline auto get_default_normal() { return resolveRuntimeAsset<engine::assets::Image>(default_normal_guid); }
 	// @formatter:on
 
 	// @formatter:off
-	constexpr auto default_roughness_guid = asset_guid { 2674095696, 22081, 20403, 1076465487822258052uLL };
+	constexpr auto default_roughness_guid = asset_guid { 1762806216, 39630, 18769, 16969257628364889492uLL };
 	inline auto get_default_roughness() { return resolveRuntimeAsset<engine::assets::Image>(default_roughness_guid); }
 	// @formatter:on
 
 	// @formatter:off
-	constexpr auto default_skybox_guid = asset_guid { 931955011, 19171, 17319, 10414389543137045169uLL };
+	constexpr auto default_skybox_guid = asset_guid { 495382030, 33749, 16747, 13922483137383964328uLL };
 	inline auto get_default_skybox() { return resolveRuntimeAsset<engine::assets::Image>(default_skybox_guid); }
 	// @formatter:on
 
 	// @formatter:off
-	constexpr auto default_ui_guid = asset_guid { 1123718804, 55457, 16926, 367296539542088330uLL };
+	constexpr auto default_ui_guid = asset_guid { 265918465, 47321, 16580, 15882871379672275356uLL };
 	inline auto get_default_ui() { return resolveRuntimeAsset<engine::assets::Image>(default_ui_guid); }
 	// @formatter:on
 
 	// @formatter:off
-	constexpr auto default_folder_audio_guid = asset_guid { 130859755, 55579, 16978, 18211665340278115503uLL };
+	constexpr auto default_folder_audio_guid = asset_guid { 3665610331, 61809, 18342, 13465750290974491575uLL };
 	inline auto get_default_folder_audio() { return resolveRuntimeAsset<engine::assets::Image>(default_folder_audio_guid); }
 	// @formatter:on
 
 	// @formatter:off
-	constexpr auto default_folder_content_guid = asset_guid { 888305952, 30064, 19012, 12619493542595477140uLL };
+	constexpr auto default_folder_content_guid = asset_guid { 2169471190, 31484, 18240, 328091922817093546uLL };
 	inline auto get_default_folder_content() { return resolveRuntimeAsset<engine::assets::Image>(default_folder_content_guid); }
 	// @formatter:on
 
 	// @formatter:off
-	constexpr auto default_folder_environment_guid = asset_guid { 3071288992, 32572, 18846, 1127042857901645738uLL };
+	constexpr auto default_folder_environment_guid = asset_guid { 4213600231, 50021, 20111, 12300287216455170208uLL };
 	inline auto get_default_folder_environment() { return resolveRuntimeAsset<engine::assets::Image>(default_folder_environment_guid); }
 	// @formatter:on
 
 	// @formatter:off
-	constexpr auto default_folder_font_guid = asset_guid { 1515377284, 3060, 19206, 12590909874900686779uLL };
+	constexpr auto default_folder_font_guid = asset_guid { 3811433541, 6249, 19716, 1595826253909480636uLL };
 	inline auto get_default_folder_font() { return resolveRuntimeAsset<engine::assets::Image>(default_folder_font_guid); }
 	// @formatter:on
 
 	// @formatter:off
-	constexpr auto default_folder_images_guid = asset_guid { 3106700071, 25881, 20301, 9626218722165055142uLL };
+	constexpr auto default_folder_images_guid = asset_guid { 529004534, 40824, 20003, 13195579874990001048uLL };
 	inline auto get_default_folder_images() { return resolveRuntimeAsset<engine::assets::Image>(default_folder_images_guid); }
 	// @formatter:on
 
 	// @formatter:off
-	constexpr auto default_folder_import_guid = asset_guid { 4254331991, 20993, 18566, 4286578366701584054uLL };
+	constexpr auto default_folder_import_guid = asset_guid { 290276718, 7820, 20363, 11117062180316588170uLL };
 	inline auto get_default_folder_import() { return resolveRuntimeAsset<engine::assets::Image>(default_folder_import_guid); }
 	// @formatter:on
 
 	// @formatter:off
-	constexpr auto default_folder_log_guid = asset_guid { 2309003744, 45116, 16560, 10211045100335542962uLL };
+	constexpr auto default_folder_log_guid = asset_guid { 1105206237, 13563, 18252, 11080491705456247469uLL };
 	inline auto get_default_folder_log() { return resolveRuntimeAsset<engine::assets::Image>(default_folder_log_guid); }
 	// @formatter:on
 
 	// @formatter:off
-	constexpr auto default_folder_resource_guid = asset_guid { 2491898112, 4198, 17013, 12601514348549086351uLL };
+	constexpr auto default_folder_resource_guid = asset_guid { 3053581967, 24086, 20113, 11899618067910874280uLL };
 	inline auto get_default_folder_resource() { return resolveRuntimeAsset<engine::assets::Image>(default_folder_resource_guid); }
 	// @formatter:on
 
 	// @formatter:off
-	constexpr auto default_folder_shader_guid = asset_guid { 671537253, 23572, 20100, 14474749635096932272uLL };
+	constexpr auto default_folder_shader_guid = asset_guid { 2411502815, 49219, 16900, 8152247199189144753uLL };
 	inline auto get_default_folder_shader() { return resolveRuntimeAsset<engine::assets::Image>(default_folder_shader_guid); }
 	// @formatter:on
 
 	// @formatter:off
-	constexpr auto default_folder_video_guid = asset_guid { 2799607117, 50541, 16696, 7636627867784714125uLL };
+	constexpr auto default_folder_video_guid = asset_guid { 1114087546, 11712, 19001, 7672489111085763201uLL };
 	inline auto get_default_folder_video() { return resolveRuntimeAsset<engine::assets::Image>(default_folder_video_guid); }
 	// @formatter:on
 
 	// @formatter:off
-	constexpr auto default_folder_guid = asset_guid { 4129809256, 18754, 18294, 3592777807304476079uLL };
+	constexpr auto default_folder_guid = asset_guid { 3248604910, 14279, 16484, 7205671166195306687uLL };
 	inline auto get_default_folder() { return resolveRuntimeAsset<engine::assets::Image>(default_folder_guid); }
 	// @formatter:on
 
 	// @formatter:off
-	constexpr auto default_brand_guid = asset_guid { 3906719091, 41442, 19658, 9326844701594771633uLL };
+	constexpr auto default_brand_guid = asset_guid { 2386695830, 35334, 18489, 5438030904227306898uLL };
 	inline auto get_default_brand() { return resolveRuntimeAsset<engine::assets::Image>(default_brand_guid); }
 	// @formatter:on
 }

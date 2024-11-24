@@ -29,7 +29,7 @@ namespace hg::editor::assets::meshes {
 	/**/
 
 	// @formatter:off
-	constexpr auto default_sphere_guid = asset_guid { 2327095154, 11665, 18946, 4311640585827641743uLL };
+	constexpr auto default_sphere_guid = asset_guid { 4007417872, 23494, 19151, 5075903121290812314uLL };
 	inline auto get_default_sphere() { return resolveRuntimeAsset<engine::assets::StaticGeometry>(default_sphere_guid); }
 	// @formatter:on
 }
