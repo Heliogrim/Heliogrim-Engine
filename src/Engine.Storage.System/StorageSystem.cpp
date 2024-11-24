@@ -3,6 +3,7 @@
 #include <Engine.Common/Discard.hpp>
 #include <Engine.Common/Move.hpp>
 #include <Engine.Reflect/IsType.hpp>
+#include <Engine.Reflect/TypeSwitch.hpp>
 #include <Engine.Resource.Archive/StorageReadonlyArchive.hpp>
 #include <Engine.Resource.Archive/StorageReadWriteArchive.hpp>
 #include <Engine.Resource.Blob/Blob.hpp>
@@ -377,18 +378,33 @@ IoQueryGuard<const engine::resource::Blob> StorageSystem::fetchQuery(
 	mref<Arci<IStorage>> storage_
 ) const noexcept {
 
-	::hg::assertd(IsType<system::MemoryStorage>(*storage_));
+	::hg::assertd(IsType<system::MemoryStorage>(*storage_) || IsType<system::LocalFileStorage>(*storage_));
 
 	/**/
 
-	auto signature = ActionTypeInfo {
-		.targetResourceInfo = refl::FullTypeInfo::from<const resource::Blob>(),
-		.stageTypeInfos = {
-			StageTypeInfo {
-				.storage = refl::PartialTypeInfo::from<system::MemoryStorage>()
-			}
+	auto signature = switchType(
+		storage_.get(),
+		[]([[maybe_unused]] const ptr<const system::MemoryStorage> memStore_) {
+			return ActionTypeInfo {
+				.targetResourceInfo = refl::FullTypeInfo::from<const resource::Blob>(),
+				.stageTypeInfos = {
+					StageTypeInfo {
+						.storage = refl::PartialTypeInfo::from<system::MemoryStorage>()
+					}
+				}
+			};
+		},
+		[]([[maybe_unused]] const ptr<const system::LocalFileStorage> lfsStore_) {
+			return ActionTypeInfo {
+				.targetResourceInfo = refl::FullTypeInfo::from<const resource::Blob>(),
+				.stageTypeInfos = {
+					StageTypeInfo {
+						.storage = refl::PartialTypeInfo::from<system::LocalFileStorage>()
+					}
+				}
+			};
 		}
-	};
+	);
 
 	if (IsType<ISecondaryStorage>(*storage_)) {
 		auto next = clone(static_cast<const ptr<ISecondaryStorage>>(storage_.get())->getBacking());
