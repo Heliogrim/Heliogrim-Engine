@@ -3,6 +3,7 @@
 #include <mutex>
 #include <utility>
 #include <Engine.Asserts/Asserts.hpp>
+#include <Engine.Common/Wrapper.hpp>
 
 #include "ResourceAccessorBase.hpp"
 
@@ -82,8 +83,8 @@ namespace hg {
 			return _owned != nullptr;
 		}
 
-		[[nodiscard]] cref<resource_type> owner() const {
-			::hg::assertrt(valid());
+		[[nodiscard]] cref<resource_type> holder() const {
+			::hg::assertrt(_resource);
 			return *_resource;
 		}
 
@@ -99,10 +100,6 @@ namespace hg {
 			return *_owned;
 		}
 
-		[[nodiscard]] ref<managed_type> get(std::nothrow_t) const noexcept {
-			return *_owned;
-		}
-
 	public:
 		[[nodiscard]] ref<managed_type> operator*() const {
 			return get();
@@ -112,14 +109,14 @@ namespace hg {
 			return get();
 		}
 
-		[[nodiscard]] ref<managed_type> operator->() const {
+		[[nodiscard]] constexpr ptr<managed_type> operator->() const {
 			::hg::assertrt(valid());
-			return *_owned;
+			return _owned;
 		}
 
-		[[nodiscard]] ref<managed_type> operator->() {
+		[[nodiscard]] constexpr ptr<managed_type> operator->() {
 			::hg::assertrt(valid());
-			return *_owned;
+			return _owned;
 		}
 	};
 }

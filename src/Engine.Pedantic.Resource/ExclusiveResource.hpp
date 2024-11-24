@@ -1,4 +1,5 @@
 #pragma once
+
 #include <Engine.Scheduler/Helper/Wait.hpp>
 
 #include "Resource.hpp"
@@ -99,16 +100,16 @@ namespace hg {
 			return readwrite_accessor_type { *this, _storage.getValueReference() };
 		}
 
-		[[nodiscard]] tl::optional<readonly_accessor_type> tryAcquireReadonly() const noexcept override {
+		[[nodiscard]] Opt<readonly_accessor_type> tryAcquireReadonly() const noexcept override {
 			return tryAcquireLock() ?
-				tl::make_optional<readonly_accessor_type>(*this, _storage.getConstValueReference()) :
-				tl::nullopt;
+				Some(readonly_accessor_type { *this, _storage.getConstValueReference() }) :
+				None;
 		}
 
-		[[nodiscard]] tl::optional<readwrite_accessor_type> tryAcquireReadWrite() const noexcept override {
+		[[nodiscard]] Opt<readwrite_accessor_type> tryAcquireReadWrite() const noexcept override {
 			return tryAcquireLock() ?
-				tl::make_optional<readwrite_accessor_type>(*this, _storage.getValueReference()) :
-				tl::nullopt;
+				Some(readwrite_accessor_type { *this, _storage.getValueReference() }) :
+				None;
 		}
 
 	protected:
@@ -134,8 +135,9 @@ namespace hg {
 	template <
 		typename DeducedType_,
 		typename StorageType_ = ResourceStorage<typename sanitize_resource_type<DeducedType_>::type>>
-	[[nodiscard]] ExclusiveResource<typename sanitize_resource_type<DeducedType_>::type, StorageType_>
-	make_exclusive_resource(DeducedType_&& initial_) {
+	[[nodiscard]] ExclusiveResource<typename sanitize_resource_type<DeducedType_>::type, StorageType_> make_exclusive_resource(
+		DeducedType_&& initial_
+	) {
 		using type = ExclusiveResource<typename sanitize_resource_type<DeducedType_>::type, StorageType_>;
 		return type { std::forward<DeducedType_>(initial_) };
 	}

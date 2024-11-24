@@ -49,7 +49,7 @@ namespace hg {
 		[[nodiscard]] constexpr static this_type from(mref<ResourceAccessor<ManagedType_>> source_)
 			requires (not std::is_const_v<managed_type>) && std::is_nothrow_move_constructible_v<managed_type> {
 			::hg::assertd(source_.valid());
-			return this_type { std::move(source_.get(std::nothrow)) };
+			return this_type { std::move(source_.get()) };
 		}
 	};
 }
