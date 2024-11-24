@@ -40,3 +40,13 @@ cref<Arci<Level>> engine::core::Universe::getRootLevel() const noexcept {
 void engine::core::Universe::removeLevel(cref<Arci<core::Level>> level_) {
 	_levels.erase(level_);
 }
+
+void engine::core::Universe::commitLevel(mref<Arci<core::Level>> level_) {
+
+	_levels.emplace(clone(level_));
+
+	const auto ctx = _scene->registerContext();
+	for (auto actor : level_->getActors()) {
+		actor->registerComponents(*ctx.get());
+	}
+}

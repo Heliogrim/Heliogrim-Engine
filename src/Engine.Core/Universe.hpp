@@ -51,5 +51,8 @@ namespace hg::engine::core {
 		[[nodiscard]] cref<Arci<core::Level>> getRootLevel() const noexcept;
 
 		void removeLevel(cref<Arci<core::Level>> level_);
+
+	public:
+		void commitLevel(mref<Arci<core::Level>> level_);
 	};
 }
