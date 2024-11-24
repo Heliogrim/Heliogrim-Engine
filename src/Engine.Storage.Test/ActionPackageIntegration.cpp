@@ -4,8 +4,11 @@
 
 #include "IntegrationFixture.hpp"
 
+/**/
+
 #include <Engine.Common/Guid.hpp>
 #include <Engine.Config/Config.hpp>
+#include <Engine.Resource.Archive/ArchiveType.hpp>
 #include <Engine.Resource.Archive/BufferArchive.hpp>
 #include <Engine.Resource.Archive/StorageReadonlyArchive.hpp>
 #include <Engine.Resource.Archive/StorageReadWriteArchive.hpp>
@@ -96,11 +99,12 @@ namespace StorageModule {
 				initial_archive_data.size(),
 				ArchiveStreamMode::eStore
 			);
+			initialArchive.setType(ArchiveType::eRaw);
 
 			_system.mutate(
 				::hg::move(packStore).into<PackageStorage>(),
 				[&initialArchive, &initialGuid = initial_archive_guid](_Inout_ ref<ReadWritePackage> rwp_) -> bool {
-					auto& linked = rwp_.getLinker().add({ .type = package::PackageArchiveType::eRaw, .guid = initialGuid });
+					auto& linked = rwp_.getLinker().add({ .type = ArchiveType::eUndefined, .guid = initialGuid });
 					linked.changes.emplace_back(
 						package::ArchiveDeltaAdd {
 							.where = streamoff {},
@@ -145,7 +149,7 @@ namespace StorageModule {
 					ASSERT_TRUE(linked.has_value());
 
 					EXPECT_EQ(linked->header.guid, initialGuid);
-					EXPECT_EQ(linked->header.type, package::PackageArchiveType::eRaw);
+					EXPECT_EQ(linked->header.type, ArchiveType::eRaw);
 
 					/**/
 
@@ -179,6 +183,7 @@ namespace StorageModule {
 				replace_archive_data.size(),
 				ArchiveStreamMode::eStore
 			);
+			replaceArchive.setType(ArchiveType::eSerializedStructure);
 
 			_system.mutate(
 				::hg::move(packStore).into<PackageStorage>(),
@@ -230,7 +235,7 @@ namespace StorageModule {
 					ASSERT_TRUE(linked.has_value());
 
 					EXPECT_EQ(linked->header.guid, initialGuid);
-					EXPECT_EQ(linked->header.type, package::PackageArchiveType::eRaw);
+					EXPECT_EQ(linked->header.type, ArchiveType::eSerializedStructure);
 
 					/**/
 
