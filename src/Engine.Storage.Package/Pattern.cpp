@@ -1,5 +1,7 @@
 #include "Pattern.hpp"
 
+#include <cstring>
+
 #include <Engine.Resource.Package/Attribute/MagicBytes.hpp>
 #include <Engine.Resource.Package/Footer/PackageFooter.hpp>
 #include <Engine.Resource.Package/Header/PackageHeader.hpp>

@@ -86,11 +86,11 @@ bool LfsSyncBlob::trim(size_t tailSize_) {
 	/**/
 
 	const auto nextSize = filesize - (tailSize_ < filesize ? tailSize_ : filesize);
-	std::filesystem::resize_file(_path, nextSize);
+	std::filesystem::resize_file(static_cast<cref<std::filesystem::path>>(_path), nextSize);
 
 	/**/
 
-	_stream->open(_path, std::ios::in | std::ios::out | std::ios::binary);
+	_stream->open(static_cast<cref<std::filesystem::path>>(_path), std::ios::in | std::ios::out | std::ios::binary);
 	::hg::assertrt(_stream->is_open());
 
 	return true;

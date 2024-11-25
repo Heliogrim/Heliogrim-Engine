@@ -284,7 +284,7 @@ Result<void, std::runtime_error> engine::storage::package::commit_package_change
 
 u32 computeCheckSum(cref<Blob> blob_, streamsize length_) {
 
-	constexpr auto chunkSize = 4096uLL;
+	constexpr auto chunkSize = std::size_t { 4096uLL };
 	auto buffer = Array<_::byte, chunkSize> {};
 	auto checksum = engine::crypto::Crc32 {};
 
