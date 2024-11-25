@@ -1,5 +1,7 @@
 #include "ArchiveGuid.hpp"
 
+#include <cstring>
+
 #include "Guid.hpp"
 
 using namespace hg::engine::resource;
@@ -16,12 +18,12 @@ ArchiveGuid ArchiveGuid::from(cref<Guid> guid_) noexcept {
 	guid_.hton(tmp);
 
 	auto res = ArchiveGuid {};
-	memcpy(res.data(), tmp.data(), res.size());
+	std::memcpy(res.data(), tmp.data(), res.size());
 	return res;
 }
 
 ArchiveGuid::operator Guid() const noexcept {
 	auto tmp = Array<_::byte, 16> {};
-	memcpy(tmp.data(), this->data(), this->size());
+	std::memcpy(tmp.data(), this->data(), this->size());
 	return Guid::ntoh(tmp);
 }
