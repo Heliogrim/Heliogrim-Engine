@@ -56,7 +56,7 @@ namespace hg::engine::resource {
 		) override {
 			::hg::assertrt(offset_ >= 0LL && offset_ <= _bytes.size() && offset_ + src_.size() <= _bytes.size());
 			std::ranges::copy(src_, _bytes.begin() + offset_);
-			_used = std::max(_used, offset_ + src_.size());
+			_used = std::max(_used, static_cast<std::size_t>(offset_ + src_.size()));
 			return std::move(src_);
 		}
 
