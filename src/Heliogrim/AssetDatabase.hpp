@@ -55,7 +55,6 @@ namespace hg {
 
 		template <typename Type_> requires std::is_base_of_v<Asset, Type_>
 		[[nodiscard]] AssetDatabaseResult<Type_> operator[](cref<asset_guid> guid_) const {
-			#ifdef _DEBUG
 
 			auto result = operator[](guid_);
 
@@ -63,17 +62,11 @@ namespace hg {
 			if (result.flags == AssetDatabaseResultType::eSuccess) {
 				auto& value { result.value };
 				auto& par { static_cast<Type_&>(value) };
-				::hg::assertd(par.isValidType() /* "Invalid type cast." */);
+				::hg::assertd(par.isValidType() /* Invalid type cast. */);
 			}
 
 			// TODO: Replace with better solution
-			// Warning: Replace with better solution
 			return *reinterpret_cast<AssetDatabaseResult<Type_>*>(&result);
-
-			#else
-
-			return operator[](guid_);
-			#endif
 		}
 
 	public:
