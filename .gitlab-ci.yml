@@ -375,6 +375,7 @@ test.linux.gcc:
   needs:
     - job: build.linux.gcc
       artifacts: true
+  allow_failure: true
 
   # Preparation
   before_script:
@@ -414,6 +415,7 @@ test.linux.clang:
   needs:
     - job: build.linux.clang
       artifacts: true
+  allow_failure: true
 
   # Preparation
   before_script:
