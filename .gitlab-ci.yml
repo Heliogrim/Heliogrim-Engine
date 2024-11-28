@@ -442,7 +442,7 @@ test.linux.clang:
 # Release / Deployment Section
 
 release:
-  image: docker.io/alpine:3.20.2
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
   stage: release
   tags:
     - linux
@@ -458,20 +458,6 @@ release:
       artifacts: true
     - job: build.windows.clang
       artifacts: true
-  before_script:
-    # Prepare Commands
-    - apk add --no-cache curl wget tar xz unzip glab git git-lfs
-    - |-
-      command -v release-cli 2>&1 || {
-          echo >&2 "Required unavailable command release-cli, try to recover."
-          wget https://go.dev/dl/go1.23.0.linux-amd64.tar.gz
-          rm -rf /usr/local/go && tar -C /usr/local -xzf go1.23.0.linux-amd64.tar.gz
-          export PATH=$PATH:/usr/local/go/bin
-          source ~/.bashrc
-          curl --location --output /usr/local/bin/release-cli "https://gitlab.com/api/v4/projects/gitlab-org%2Frelease-cli/packages/generic/release-cli/latest/release-cli-linux-amd64"
-          chmod +x /usr/local/bin/release-cli
-          source ~/.bashrc
-      }
   script:
     - echo "Release '$CI_COMMIT_TAG' using jobs '$JOB_build_linux_gcc_ID', '$JOB_build_linux_clang_ID', '$JOB_build_windows_msvc_ID', '$JOB_build_windows_clang_ID'"
   release:
