@@ -4,9 +4,12 @@
 #include <format>
 #include <ranges>
 #include <Engine.Common/Make.hpp>
+#include <Engine.Common/Move.hpp>
 
+#include "Layer.hpp"
 #include "../Command/ReflowCommandLayer.hpp"
 #include "../Widget/Popup.hpp"
+#include "../Widget/Layer/Host.hpp"
 
 using namespace hg::engine::reflow;
 using namespace hg;
@@ -23,7 +26,8 @@ Window::Window() :
 	_nativeWindow(nullptr),
 	_type(WindowType::eNormal),
 	_resizable(true),
-	_closeable(true) {}
+	_closeable(true),
+	_layers() {}
 
 Window::~Window() {
 	tidy();
@@ -73,6 +77,45 @@ sptr<Widget> Window::root() const {
 
 const ptr<const Children> Window::children() const {
 	return &_children;
+}
+
+nmpt<Layer> Window::requestLayer(cref<sptr<Host>> host_) {
+
+	auto nextLayer = make_uptr<Layer>(
+		std::static_pointer_cast<Window, Widget>(shared_from_this()),
+		host_
+	);
+	auto result = nextLayer.get();
+
+	_layers.emplace_back(::hg::move(nextLayer));
+	_children.emplace_back(host_);
+
+	return result;
+}
+
+void Window::dropLayer(nmpt<Host> host_) {
+	const auto remove = std::ranges::remove_if(
+		_layers,
+		[host_](const auto& entry_) {
+			return entry_->getHost().lock().get() == host_.get();
+		}
+	);
+
+	std::erase_if(_children, [host_](const auto& widget_) { return widget_.get() == host_.get(); });
+	_layers.erase(remove.begin(), remove.end());
+}
+
+void Window::dropLayer(nmpt<Layer> layer_) {
+	const auto remove = std::ranges::remove_if(_layers, [layer_](const auto& entry_) { return entry_.get() == layer_.get(); });
+
+	for (auto it = remove.begin(); it != remove.end(); ++it) {
+		auto maybeHost = it->get()->getHost().lock();
+		if (maybeHost != nullptr) {
+			std::erase_if(_children, [host = maybeHost.get()](const auto& widget_) { return widget_.get() == host; });
+		}
+	}
+
+	_layers.erase(remove.begin(), remove.end());
 }
 
 non_owning_rptr<PopupLayer> Window::pushPopLayer(cref<sptr<Popup>> popup_) {

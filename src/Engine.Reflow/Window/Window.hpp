@@ -76,9 +76,16 @@ namespace hg::engine::reflow {
 		[[nodiscard]] const ptr<const Children> children() const override;
 
 	private:
+		Vector<uptr<Layer>> _layers;
 		Vector<uptr<PopupLayer>> _popupLayers;
 
 	public:
+		[[nodiscard]] nmpt<Layer> requestLayer(cref<sptr<Host>> host_);
+
+		void dropLayer(nmpt<Host> host_);
+
+		void dropLayer(nmpt<Layer> layer_);
+
 		non_owning_rptr<PopupLayer> pushPopLayer(cref<sptr<Popup>> popup_);
 
 		void dropPopLayer(const non_owning_rptr<PopupLayer> layer_ = nullptr);
