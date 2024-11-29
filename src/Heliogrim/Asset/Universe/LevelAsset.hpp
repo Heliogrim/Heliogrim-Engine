@@ -1,10 +1,15 @@
 #pragma once
 
 #include "../Asset.hpp"
+#include "../Factory.hpp"
 
 namespace hg {
 	class LevelAsset :
 		public Asset {
+	public:
+		template <class>
+		friend struct FactoryFn;
+
 	public:
 		using this_type = LevelAsset;
 		using base_type = Asset;
@@ -40,5 +45,12 @@ namespace hg {
 		 * @returns True if valid type, false if not.
 		 */
 		[[nodiscard]] bool isValidType() const noexcept;
+	};
+
+	/**/
+
+	template <>
+	struct FactoryFn<LevelAsset> {
+		[[nodiscard]] LevelAsset operator()() const;
 	};
 }

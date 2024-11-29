@@ -2,6 +2,9 @@
 /**/
 #include "LevelAsset.hpp"
 
+#include <Engine.Assets/AssetFactory.hpp>
+#include <Engine.Assets/Assets.hpp>
+#include <Engine.Core/Engine.hpp>
 #include <Engine.Reflect/IsType.hpp>
 
 using namespace hg;
@@ -19,3 +22,15 @@ bool LevelAsset::isValidType() const noexcept {
 	return internal() != nullptr && IsType<::hg::engine::assets::LevelAsset>(*internal());
 }
 
+/**/
+
+LevelAsset FactoryFn<LevelAsset>::operator()() const {
+
+	asset_guid nextGuid {};
+	GuidGenerate(nextGuid);
+
+	return LevelAsset {
+		clone(nextGuid),
+		*engine::Engine::getEngine()->getAssets()->getFactory()->createLevelAsset(std::move(nextGuid))
+	};
+}
