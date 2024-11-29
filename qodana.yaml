@@ -1,0 +1,12 @@
+version: 1.0
+bootstrap: |+
+  mkdir -p cmake-build-qodana;
+  cd cmake-build-qodana;
+  cmake -G -DCMAKE_BUILD_TYPE=Debug -DHELIOGRIM_ASSETS_FORCE_HTTPS:BOOL=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .. || true
+
+# Quality Gate
+failureConditions:
+  severityThresholds:
+    critical: 1
+    high: 5
+    moderate: 20

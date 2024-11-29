@@ -1,0 +1,18 @@
+qodana:
+  image:
+    name: jetbrains/qodana-clang:2024.2-eap
+    entrypoint: [ "" ]
+  cache:
+    - key: qodana-2024.2-$CI_DEFAULT_BRANCH-$CI_COMMIT_REF_SLUG
+      fallback_keys:
+        - qodana-2024.2-$CI_DEFAULT_BRANCH-
+        - qodana-2024.2-
+      paths:
+        - .qodana/cache
+  variables:
+    QODANA_TOKEN: $QODANA_TOKEN
+    QODANA_ENDPOINT: "https://qodana.cloud"
+    COMPILE_CMD_PATH: $CI_PROJECT_DIR/cmake-build-qodana/compile_commands.json
+  script:
+    # --baseline <path/to/qodana.sarif.json>
+    - qodana --compile-commands $COMPILE_CMD_PATH --results-dir=$CI_PROJECT_DIR/.qodana/results --cache-dir=$CI_PROJECT_DIR/.qodana/cache
