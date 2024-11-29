@@ -40,6 +40,7 @@ set(DEFAULT_INCLUDE_DIRECTORIES
 		"${vendor}/gli/include"
 		"${vendor}/glm/include"
 		"${vendor}/glslang/include"
+		"${vendor}/nontype_fn/include"
 		"${vendor}/ogg/include"
 		"${vendor}/optional/include"
 		"${vendor}/ryml/include"
