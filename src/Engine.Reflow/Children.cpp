@@ -15,6 +15,10 @@ SingleChildren::SingleChildren() {
 	push_back(NullWidget::instance());
 }
 
+SingleChildren::SingleChildren(ref<const sptr<Widget>> nonNullChild_) {
+	emplace_back(nonNullChild_ != nullptr ? nonNullChild_ : NullWidget::instance());
+}
+
 sptr<Widget> SingleChildren::setChild(cref<sptr<Widget>> nextChild_) {
 	return std::exchange(front(), nextChild_);
 }
