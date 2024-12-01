@@ -84,6 +84,8 @@ nmpt<Layer> Window::requestLayer(cref<sptr<Host>> host_) {
 	auto result = nextLayer.get();
 
 	_layers.emplace_back(::hg::move(nextLayer));
+
+	host_->setParent(shared_from_this());
 	_children.emplace_back(host_);
 
 	return result;
@@ -97,7 +99,16 @@ void Window::dropLayer(nmpt<Host> host_) {
 		}
 	);
 
-	std::erase_if(_children, [host_](const auto& widget_) { return widget_.get() == host_.get(); });
+	std::erase_if(
+		_children,
+		[host_](const auto& widget_) {
+			if (widget_.get() == host_.get()) {
+				widget_->setParent(nullptr);
+				return true;
+			}
+			return false;
+		}
+	);
 	_layers.erase(remove.begin(), remove.end());
 }
 
@@ -107,7 +118,16 @@ void Window::dropLayer(nmpt<Layer> layer_) {
 	for (auto it = remove.begin(); it != remove.end(); ++it) {
 		auto maybeHost = it->get()->second.lock();
 		if (maybeHost != nullptr) {
-			std::erase_if(_children, [host = maybeHost.get()](const auto& widget_) { return widget_.get() == host; });
+			std::erase_if(
+				_children,
+				[host = maybeHost.get()](const auto& widget_) {
+					if (widget_.get() == host) {
+						widget_->setParent(nullptr);
+						return true;
+					}
+					return false;
+				}
+			);
 		}
 	}
 
@@ -176,6 +196,21 @@ void Window::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) {
 
 		const auto state = state_.getStateOf(_children.getChild<1uL>());
 		state->layoutOffset = ctx_.localOffset;
+		state->layoutSize = ctx_.localSize;
+	}
+
+	/**/
+
+	if (_children.size() <= 2uLL) {
+		return;
+	}
+
+	for (auto iter = _children.begin() + 2uLL; iter != _children.end(); ++iter) {
+
+		const auto state = state_.getStateOf(*iter);
+		const auto* const host = static_cast<const ptr<const Host>>(iter->get());
+
+		state->layoutOffset = host->getHostOffset();
 		state->layoutSize = ctx_.localSize;
 	}
 }

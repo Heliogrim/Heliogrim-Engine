@@ -44,11 +44,11 @@ math::vec2 Host::prefetchDesiredSize(cref<ReflowState> state_, float scale_) con
 }
 
 math::vec2 Host::computeDesiredSize(cref<ReflowPassState> passState_) const {
-	return _layout.front()->getDesiredSize();
+	return _layout.front()->computeDesiredSize(passState_);
 }
 
 void Host::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) {
 	const auto layoutState = state_.getStateOf(_layout.front());
 	layoutState->layoutOffset = ctx_.localOffset;
-	layoutState->layoutSize = ctx_.localSize;
+	layoutState->layoutSize = _layout.front()->getDesiredSize();
 }
