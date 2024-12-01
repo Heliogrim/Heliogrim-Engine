@@ -21,7 +21,7 @@ namespace hg::engine::reflow {
 		sptr<Host> _host;
 
 	public:
-		void show(_Inout_ sptr<Widget> content_);
+		void show(_Inout_ sptr<Widget> content_, _In_ math::vec2 globalOffset_);
 
 		void hide();
 

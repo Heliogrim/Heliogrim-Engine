@@ -31,7 +31,7 @@ void Menu::openMenu() {
 	_anchor->setParent(shared_from_this());
 	_anchor->state().set(WidgetStateFlagBits::eVisible);
 
-	_anchor->show(not _content ? NullWidget::instance() : _content);
+	_anchor->show(not _content ? NullWidget::instance() : _content, computeContentPosition());
 }
 
 void Menu::closeMenu() {
@@ -81,6 +81,10 @@ void Menu::setContent(mref<sptr<Widget>> content_) noexcept {
 	_content = ::hg::move(content_);
 }
 
+void Menu::setContentPosition(MenuContentPosition contentPosition_) noexcept {
+	_contentPosition = contentPosition_;
+}
+
 void Menu::render(const ptr<ReflowCommandBuffer> cmd_) {
 	_trigger.getChild()->render(cmd_);
 }
@@ -90,23 +94,19 @@ math::vec2 Menu::prefetchDesiredSize(cref<ReflowState> state_, float scale_) con
 }
 
 math::vec2 Menu::computeDesiredSize(cref<ReflowPassState> passState_) const {
-	return _trigger.getChild()->getDesiredSize();
+	return _trigger.getChild()->computeDesiredSize(passState_);
 }
-
-#include <Engine.Logging/Logger.hpp>
 
 void Menu::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) {
 	const auto childState = state_.getStateOf(_trigger.getChild());
 	childState->layoutOffset = ctx_.localOffset;
 	childState->layoutSize = ctx_.localSize;
+}
 
-	Logger::debug(
-		"Menu: {}:{} / {}:{}",
-		childState->layoutOffset.x,
-		childState->layoutOffset.y,
-		childState->layoutSize.x,
-		childState->layoutSize.y
-	);
+math::vec2 Menu::computeContentPosition() {
+	math::vec2 result = _layoutState.layoutOffset + math::vec2 { 0.F, _layoutState.layoutSize.y };
+	// TODO: Consume menu content position attribute to relocate.
+	return result;
 }
 
 EventResponse Menu::onFocus(cref<FocusEvent> event_) {

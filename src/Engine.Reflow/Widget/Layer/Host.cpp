@@ -7,6 +7,12 @@ Host::Host(ref<const sptr<Widget>> layout_) :
 	Widget(),
 	_layout(layout_) {}
 
+Host::Host(ref<const sptr<Widget>> layout_, const math::vec2 hostOffset_, const math::vec2 hostSize_) :
+	Widget(),
+	_layout(layout_),
+	_hostOffset(hostOffset_),
+	_hostSize(hostSize_) {}
+
 Host::~Host() = default;
 
 string Host::getTag() const noexcept {
@@ -19,6 +25,14 @@ const ptr<const SingleChildren> Host::children() const {
 
 sptr<Widget> Host::layout() const noexcept {
 	return _layout.getChild();
+}
+
+math::vec2 Host::getHostOffset() const noexcept {
+	return _hostOffset;
+}
+
+math::vec2 Host::getHostSize() const noexcept {
+	return _hostSize;
 }
 
 void Host::render(const ptr<ReflowCommandBuffer> cmd_) {

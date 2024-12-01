@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Children.hpp"
 #include "../Widget.hpp"
+#include "../../Children.hpp"
 
 namespace hg::engine::reflow {
 	class Host final :
@@ -12,6 +12,8 @@ namespace hg::engine::reflow {
 	public:
 		explicit Host(_In_ ref<const sptr<Widget>> layout_);
 
+		Host(_In_ ref<const sptr<Widget>> layout_, _In_ math::vec2 hostOffset_, _In_ math::vec2 hostSize_);
+
 		~Host() override;
 
 	public:
@@ -19,11 +21,17 @@ namespace hg::engine::reflow {
 
 	private:
 		SingleChildren _layout;
+		math::vec2 _hostOffset;
+		math::vec2 _hostSize;
 
 	public:
 		[[nodiscard]] const ptr<const SingleChildren> children() const override;
 
 		[[nodiscard]] sptr<Widget> layout() const noexcept;
+
+		[[nodiscard]] math::vec2 getHostOffset() const noexcept;
+
+		[[nodiscard]] math::vec2 getHostSize() const noexcept;
 
 	public:
 		void render(const ptr<ReflowCommandBuffer> cmd_) override;

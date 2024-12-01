@@ -5,6 +5,31 @@
 #include "Engine.Event/EventEmitter.hpp"
 
 namespace hg::engine::reflow {
+	enum class MenuContentPosition {
+		eTop = 0b1 << 0,
+		eBottom = 0b1 << 1,
+		eVCenter = eTop | eBottom,
+		/**/
+		eLeft = 0b1 << 2,
+		eRight = 0b1 << 3,
+		eHCenter = eLeft | eRight,
+		/**/
+		eTopLeft = eTop | eLeft,
+		eTopCenter = eTop | eHCenter,
+		eTopRight = eTop | eRight,
+		/**/
+		eVCenterLeft = eVCenter | eLeft,
+		eVCenterRight = eVCenter | eRight,
+		/**/
+		eBottomLeft = eBottom | eLeft,
+		eBottomCenter = eBottom | eHCenter,
+		eBottomRight = eBottom | eRight,
+		/**/
+		eCenterCenter = eVCenter | eHCenter
+	};
+
+	/**/
+
 	class Menu final :
 		public Widget {
 	public:
@@ -29,6 +54,8 @@ namespace hg::engine::reflow {
 		sptr<Anchor> _anchor;
 		sptr<Widget> _content;
 
+		MenuContentPosition _contentPosition;
+
 	public:
 		[[nodiscard]] const ptr<const SingleChildren> children() const override;
 
@@ -40,6 +67,8 @@ namespace hg::engine::reflow {
 
 		void setContent(mref<sptr<Widget>> content_) noexcept;
 
+		void setContentPosition(MenuContentPosition contentPosition_) noexcept;
+
 	public:
 		void render(ptr<ReflowCommandBuffer> cmd_) override;
 
@@ -49,6 +78,8 @@ namespace hg::engine::reflow {
 		math::vec2 computeDesiredSize(cref<ReflowPassState> passState_) const override;
 
 		void applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) override;
+
+		math::vec2 computeContentPosition();
 
 	public:
 		EventResponse onFocus(cref<FocusEvent> event_) override;

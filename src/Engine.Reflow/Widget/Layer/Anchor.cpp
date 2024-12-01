@@ -20,7 +20,7 @@ string Anchor::getTag() const noexcept {
 	return std::format(R"(:Anchor <{:#x}>)", reinterpret_cast<u64>(this));
 }
 
-void Anchor::show(sptr<Widget> content_) {
+void Anchor::show(sptr<Widget> content_, math::vec2 globalOffset_) {
 	::hg::assertrt(not _host);
 
 	auto root = this->root();
@@ -29,7 +29,8 @@ void Anchor::show(sptr<Widget> content_) {
 	auto window = std::dynamic_pointer_cast<Window, Widget>(root);
 	::hg::assertrt(static_cast<bool>(window));
 
-	_host = make_sptr<Host>(content_);
+	_host = make_sptr<Host>(content_, globalOffset_, math::vec2_zero);
+	content_->setParent(_host);
 	[[maybe_unused]] auto layer = window->requestLayer(_host);
 }
 
