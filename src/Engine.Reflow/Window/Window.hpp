@@ -5,7 +5,7 @@
 #include <Engine.Common/Math/Vector.hpp>
 #include <Engine.Platform/NativeWindow.hpp>
 
-#include "PopupLayer.hpp"
+#include "Layer.hpp"
 #include "WindowType.hpp"
 #include "../Children.hpp"
 #include "../FocusPath.hpp"
@@ -77,7 +77,6 @@ namespace hg::engine::reflow {
 
 	private:
 		Vector<uptr<Layer>> _layers;
-		Vector<uptr<PopupLayer>> _popupLayers;
 
 	public:
 		[[nodiscard]] nmpt<Layer> requestLayer(cref<sptr<Host>> host_);
@@ -85,10 +84,6 @@ namespace hg::engine::reflow {
 		void dropLayer(nmpt<Host> host_);
 
 		void dropLayer(nmpt<Layer> layer_);
-
-		non_owning_rptr<PopupLayer> pushPopLayer(cref<sptr<Popup>> popup_);
-
-		void dropPopLayer(const non_owning_rptr<PopupLayer> layer_ = nullptr);
 
 	private:
 		FocusPath _focus;

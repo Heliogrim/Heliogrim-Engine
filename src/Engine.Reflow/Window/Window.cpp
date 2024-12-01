@@ -38,11 +38,7 @@ string Window::getTag() const noexcept {
 }
 
 void Window::tidy() {
-
-	Vector<uptr<PopupLayer>> tmp {};
-	std::swap(tmp, _popupLayers);
-
-	tmp.clear();
+	_layers.clear();
 }
 
 void Window::setClientSize(cref<math::vec2> nextClientSize_) {
@@ -118,68 +114,6 @@ void Window::dropLayer(nmpt<Layer> layer_) {
 	_layers.erase(remove.begin(), remove.end());
 }
 
-non_owning_rptr<PopupLayer> Window::pushPopLayer(cref<sptr<Popup>> popup_) {
-
-	auto layer {
-		make_uptr<PopupLayer>(
-			std::static_pointer_cast<Window, Widget>(shared_from_this()),
-			popup_
-		)
-	};
-
-	/**/
-
-	_popupLayers.push_back(std::move(layer));
-	_children.emplace_back(popup_);
-
-	/**/
-
-	return _popupLayers.back().get();
-}
-
-void Window::dropPopLayer(const non_owning_rptr<PopupLayer> layer_) {
-
-	if (_popupLayers.empty()) {
-		return;
-	}
-
-	if (layer_ == nullptr) {
-
-		const auto last = std::move(_popupLayers.back());
-		_popupLayers.pop_back();
-
-		std::erase_if(
-			_children,
-			[key = last->getContent().get()](const auto& entry_) {
-				return entry_.get() == key;
-			}
-		);
-		return;
-	}
-
-	/**/
-
-	std::erase_if(
-		_children,
-		[key = layer_->getContent().get()](const auto& entry_) {
-			return entry_.get() == key;
-		}
-	);
-
-	const auto where {
-		std::ranges::remove(
-			_popupLayers.begin(),
-			_popupLayers.end(),
-			layer_,
-			[](cref<uptr<PopupLayer>> layer_) {
-				return layer_.get();
-			}
-		)
-	};
-
-	_popupLayers.erase(where.begin(), where.end());
-}
-
 cref<FocusPath> Window::getFocusPath() const noexcept {
 	return _focus;
 }
@@ -217,11 +151,6 @@ void Window::render(const ptr<ReflowCommandBuffer> cmd_) {
 			const ReflowCommandLayer pushLayer { _layoutState, *cmd_, cmd_->getCurrentMaxLayer() };
 			child->render(cmd_);
 		}
-
-		for (const auto& layer : _popupLayers) {
-			const ReflowCommandLayer pushLayer { _layoutState, *cmd_, cmd_->getCurrentMaxLayer() };
-			layer->getContent()->render(cmd_);
-		}
 	}
 }
 
@@ -246,14 +175,6 @@ void Window::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) {
 	if (_children.getChild<1uL>() != NullWidget::instance()) {
 
 		const auto state = state_.getStateOf(_children.getChild<1uL>());
-		state->layoutOffset = ctx_.localOffset;
-		state->layoutSize = ctx_.localSize;
-	}
-
-	for (const auto& layer : _popupLayers) {
-
-		const auto child = layer->getContent();
-		const auto state = state_.getStateOf(child);
 		state->layoutOffset = ctx_.localOffset;
 		state->layoutSize = ctx_.localSize;
 	}
