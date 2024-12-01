@@ -62,3 +62,7 @@ math::vec2 Anchor::prefetchDesiredSize(cref<ReflowState> state_, float scale_) c
 void Anchor::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) {
 	// __noop();
 }
+
+ReflowPosition Anchor::position() const noexcept {
+	return ReflowPosition::eAbsolute;
+}

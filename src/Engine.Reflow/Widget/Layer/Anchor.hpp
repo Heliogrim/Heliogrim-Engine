@@ -34,5 +34,7 @@ namespace hg::engine::reflow {
 		math::vec2 prefetchDesiredSize(cref<ReflowState> state_, float scale_) const override;
 
 		void applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) override;
+
+		ReflowPosition position() const noexcept override;
 	};
 }
