@@ -3,7 +3,6 @@
 namespace hg::engine::reflow {
 	class Anchor;
 	class Host;
-	class Layer;
 
 	/**/
 
