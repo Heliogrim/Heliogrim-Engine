@@ -1,210 +1,244 @@
-<h1 align="center">
-    Ember Engine
-</h1>
+<!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
+<a name="readme-top"></a>
+<!--
+*** Thanks for checking out the Best-README-Template. If you have a suggestion
+*** that would make this better, please fork the repo and create a pull request
+*** or simply open an issue with the tag "enhancement".
+*** Don't forget to give the project a star!
+*** Thanks again! Now go create something AMAZING! :D
+-->
+
+<!-- PROJECT SHIELDS -->
+<!--
+*** I'm using markdown "reference style" links for readability.
+*** Reference links are enclosed in brackets [ ] instead of parentheses ( ).
+*** See the bottom of this document for the declaration of the reference variables
+*** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
+*** https://www.markdownguide.org/basic-syntax/#reference-style-links
+-->
+[![Contributors][contributors-shield]][contributors-url]
+[![Issues][issues-shield]][issues-url]
+[![Private License][license-shield]][license-url]
+[![Twitch][twitch-shield]][twitch-url]
+
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
+  <a href="https://git.neogc.net/heliogrim-workgroup/engine">
+    <img src="https://puu.sh/JIMnc/6aa7352720.png" alt="Logo" width="355" height="200" style="margin-top: -32px; margin-bottom: -32px">
+  </a>
+
+<h3 align="center">Heliogrim Engine</h3>
+
+  <p align="center">
+    <!-- Project Description -->
+    Next-Gen experimental Engine
+    <br />
+    <a href="https://git.neogc.net/heliogrim-workgroup/engine/-/wikis/home#content-table"><strong>Explore the docs »</strong></a>
+    <br />
+    <br />
+    <a href="https://git.neogc.net/heliogrim-workgroup/engine">View Demo</a>
+    ·
+    <a href="https://track.neogc.net:8443/newIssue">Report Bug</a>
+    ·
+    <a href="https://track.neogc.net:8443/newIssue">Request Feature</a>
+  </p>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<details>
+  <summary>Table of Contents</summary>
+  <ol>
+    <li>
+      <a href="#about-the-project">About The Project</a>
+      <ul>
+        <li><a href="#built-with">Built With</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#getting-started">Getting Started</a>
+      <ul>
+        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#installation">Installation</a></li>
+      </ul>
+    </li>
+    <li><a href="#usage">Usage</a></li>
+    <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#contributing">Contributing</a></li>
+    <li><a href="#license">License</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="#acknowledgments">Acknowledgments</a></li>
+  </ol>
+</details>
+
+
+
+<!-- ABOUT THE PROJECT -->
+## About The Project
+
+[![Heliogrim Engine][product-screenshot]](https://git.neogc.net/heliogrim-workgroup/engine)
+
+<!--
+Here's a blank template to get started: To avoid retyping too much info. Do a search and replace with your text editor for the following: `github_username`, `repo_name`, `twitter_handle`, `linkedin_username`, `email_client`, `email`, `project_title`, `project_description`
+-->
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+### Built With
+
+* [![C++][C++]][c++-url]
+* [![Vulkan][Vulkan]][vulkan-url]
+* [![CMake][CMake]][cmake-url]
+* [![CLion][CLion]][clion-url]
+* [![Visual Studio][Visual Studio]][vs-url]
+* [![Visual Studio Code][Visual Studio Code]][vs-code-url]
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- GETTING STARTED -->
+## Getting Started
+
+Install, Build, Run... or the other way round 🤔
 
-<p align="center">
-    <a href="https://git.neogc.net/ember/engine/-/releases/ember-v0.0.1">
-        <!-- <img src="https://img.shields.io/badge/Version-0.0.1-blue.svg?style=flat" alt="Ember Version"> -->
-        <img alt="GitLab Release (by release name)" src="https://img.shields.io/gitlab/v/release/ember/engine?display_name=release&gitlab_url=https%3A%2F%2Fgit.neogc.net&include_prereleases&sort=semver">
-    </a>
-    <a href="https://git.neogc.net/ember/engine/-/blob/master/LICENSE">
-        <img src="https://img.shields.io/badge/License-Private-red.svg?style=flat" alt="Ember License">
-    </a>
-    <a href="https://git.neogc.net/ember/engine/-/pipelines">
-        <img alt="Gitlab pipeline status (self-hosted)" src="https://img.shields.io/gitlab/pipeline-status/ember/engine?branch=master&gitlab_url=https%3A%2F%2Fgit.neogc.net&style=flat">
-    </a>
-    <a href="">
-        <img src="https://img.shields.io/badge/Platform-Windows,%20Linux-inactive.svg?style=flat" alt="Ember Platform">
-    </a>
-</p>
+### Prerequisites
 
-**Ember** is a game engine structured, developed and maintained by Julius.
+List of things you need to install to use the software and build the solution.
+* Compiler for C++23 ( `gcc` | `clang` | `msvc` )
+* CMake ( `cmake` )
+* Git + Git LFS ( `git`, `git-lfs` )
+* Graphics Driver (Dedicated GPU)
 
-The project is currently closed-source and under private license. For more information about using and contributing with **Ember** take a look at the [license](#License).
+### Installation
 
-The engine is **built modularly** to sustain maintainability and provide better possibilities to improve, replace or erase any submodule. Based on the splitted definition of requirements for any subsystem, there are some core modules like the **Session Module**, **Proxy Module** and **Scheduler Module** which are required to bind and composite every functionallity.
+1. Clone the repo
 
-## Core features
+   ```sh
+   # Via GitLab
+   git clone git@git.neogc.net:heliogrim-workgroup/engine.git
+   # Or GitHub
+   git clone git@github.com:Heliogrim/Heliogrim-Engine.git
+   ```
 
-- Assets
-- Common
-- ECS
-- Environment
-- Event
-- Graphics
-- Network
-- Physics
-- Proxy
-- Resource
-- Scene
-- Scheduler
-- Session
-- Sounds
-- Utilities
+2. Hook/Update Git LFS
 
-### Additional features
+   ```sh
+   git lfs install
+   git lfs fetch
+   ```
 
-- Maybe Shipable<br>
-***and much more...***
+3. Configuration
 
-## Getting started
+    ```sh
+    <open project root directory>
 
-### Installation and Dependency
+    # On Windows
+    start .\Options.cmake
+    # On Other
+    vi | vim | nano Options.cmake
+    ```
 
-Ember requires at least C++20 standart. See the following pages for help and information on how to get started with Ember:
+4. Setup
 
-- [Installation Guide](https://git.neogc.net/ember/engine/-/tree/master/docs/install.md)
+    ```sh
+    cmake -S . -B build/Debug -G Ninja -DCMAKE_BUILD_TYPE=Debug --fresh
+    ```
 
-### Control Flow
+    ```sh
+    cmake --build build/Debug -t Heliogrim-Heliogrim --parallel $(nproc)
+    cmake --build build/Debug -t Heliogrim-Editor --parallel $(nproc)
 
-Using **Ember** will enforce you to use a customized control flow. The following instructions and constraints are required based on the scheduling and asynchronously resource handling of the whole game engine.
+    # when editing the engine, we recommend:
+    cmake --build build/Debug -t Heliogrim-AllTests --parallel $(nproc)
+    ```
 
-#### Callbacks
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-If using a callback function registered with a timed / managed execution context you must guarantee not blocking the current execution context.
+<!-- USAGE EXAMPLES -->
+## Usage
 
-```c++
-struct CustomComponent {
+Sorry, but there is currently no usage description available.
 
-    void update() {
-        ...; // Not allowed to block
-    }
-}
+_For more examples, please refer to the [Documentation](git.neogc.net/heliogrim-workgroup/engine/-/wikis/examples/)_
 
-RegisterComponent<CustomComponent>();
-```
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-#### Threading
+<!-- ROADMAP -->
+## Roadmap
 
-Using **Ember** you shall not use any external threading or blocking execution model. For any application case computing asynchronously please use the inbuilt Tasking.
+* [YouTrack Desk](https://track.neogc.net:8443/issues)
 
-#### Tasking
+See the milestones or [open issues](https://track.neogc.net:8443/issues) for a full list of proposed features (and known issues).
 
-Within **Ember** executing code asynchronously is one key design function of the scheduling system. To maintain the maximum possible usage of available resources, the scheduler will reorder and executes tasks at will, if not constrained by any barrier.
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-Take note that every execution context called from **Ember** is not an actual thread, but a fiber executed by a pooled thread. Due to this circumstance the pushlished interface will give you some functions to interact with the control flow and execution context.
-
----
-
-![delay](https://img.shields.io/badge/delay-grey.svg?style=flat)
-Will execute a given task with given delay at least.
-
-![execute](https://img.shields.io/badge/execute-grey.svg?style=flat)
-Will execute a given task. For more control use an task aggregate.
-
-![await](https://img.shields.io/badge/await-darkgreen.svg?style=flat)
-Will suspend the current execution context until the given resource is available / signaled.
-
-![sleep](https://img.shields.io/badge/sleep-blue.svg?style=flat)
-Will suspend the current execution context at least for the given time in milliseconds.
-
-![yield](https://img.shields.io/badge/yield-blue.svg?style=flat)
-Is a function to suspend the current execution context and continue later.
-
-![desync](https://img.shields.io/badge/desync-darkred.svg?style=flat)
-Will erase guarantees related to the current execution context if possible. This might fail if the current context is marked with a control token, to prevent unexpected execution within callback functions.
-
-![sync](https://img.shields.io/badge/sync-darkred.svg?style=flat)
-Will enforce guarantees related to the current execution context if possible. This might fail if the current context is marked with a control token, to prevent unexcepted execution within callback functions.
-
----
-
-Those functions may satisfy any needs of synchronization for timed exection and resource handling. Anyways, there are helper functions to directly access meta data of the current thread, but due to the execution via fiber, the present thread might change.
-
-There is an example of working with a task detaching and re-attaching to the system.
-
-```c++
-void unrelated_work() {
-    ...;
-}
-
-void callback() {
-    ...; // Enforced scheduled context
-
-    desync();
-
-    unrelated_work(); // Free scheduled context
-
-    sync(...);
-
-    ...; // Enforced scheduled context
-}
-```
-
-An common problem while executing with pooled threads is blocking for io operations or resource related operations. This might releaf using control flow helpers.
-
-```c++
-void create_entity(...) {
-
-    auto ae = CreateEntity();
-
-    await(ae);
-
-    ae.record<StaticMeshComponent>();
-    ...
-}
-
-void play_sound(const asset_guid& guid_) {
-
-    auto sound = AssetByGuid<SoundAsset>(guid_);
-
-    await(sound.load());
-
-    sound.play();
-    ...
-}
-```
-
-Another function you should care about is to execute tasks at the same execution stage. This will enable you to execute computational tasks which may block triggered by a timed context.
-
-```c++
-struct CustomComponent {
-
-    void compute() {
-        ...; // Any computational task which may block
-
-        await(...) / yield / sleep(...); // Allowed to block
-    }
-
-    void update() {
-        ...; // Not allowed to block, so schedule task which can
-
-        // Build a task which should execute at the same stage
-        Task task {
-            [this]() {
-                compute();
-            }
-        };
-
-        task.dstStage(...);
-
-        // Schedule the task to execute
-        execute(task);
-    }
-}
-
-RegisterComponent<CustomComponent>();
-```
-
----
-
-Related to the asynchronous computation might be a synchronization for given tasks afar from awaitable signals. Those enforced synchronizations are called stage barriers. The stages are related to a fixed order each containing a barrier with a certain guarantee. The scheduling can only move forward if every guarantee of the current barrier was fulfilled.
-
-Task enqueued to the scheduler may or may not carry two stages. The first stage named `source stage` is the earliest execution stage at which the given task may be executed. The second stage named `destination stage` is the latest execution stage at which the task may be executed.
-
-Based on the `weak` or `strong` guarantee of the given stage barriers, the scheduler will handle the execution guarantee differently.
-
+<!-- CONTRIBUTING -->
 ## Contributing
 
-### Get in touch
+Any contributions you make are **greatly appreciated**.
 
-<table>
-  <tr>
-    <td><a href="mailto:julius.richter@gmx.de">Email</a></td>
-    <td>Contact me via Email with any request regarding <b>Ember</b></td>
-  </tr>
-</table>
+If you have a suggestion that would make this better, please provide such information to us in person by visiting our socials. You can also simply open an issue with the tag "enhancement".  
+Thanks for the support again!
 
+<!--
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+-->
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- LICENSE -->
 ## License
 
-Ember is licensed under Private License ([Private](https://git.neogc.net/ember/engine/-/blob/master/LICENSE)).
+Distributed under the Private License. See `LICENSE` for more information.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- CONTACT -->
+## Contact
+
+Julius Richter - [Twitch]([twitch-url]) | [LtJulius#1720](LtJulius#1720)
+
+GitLab Group Link: [https://git.neogc.net/heliogrim-workgroup](https://git.neogc.net/heliogrim-workgroup)  
+GitLab Project Link: [https://git.neogc.net/heliogrim-workgroup/engine](https://git.neogc.net/heliogrim-workgroup/engine)
+
+GitHub Group Link: [https://github.com/Heliogrim](https://github.com/Heliogrim)  
+GitHub Project Link: [https://github.com/Heliogrim/Heliogrim-Engine](https://github.com/Heliogrim/Heliogrim-Engine)
+
+Bug Tracking : [https://track.neogc.net:8443/issues](https://track.neogc.net:8443/issues)
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- ACKNOWLEDGMENTS -->
+## Acknowledgments
+
+* ...
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- MARKDOWN LINKS & IMAGES -->
+<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+[contributors-shield]: https://img.shields.io/gitlab/contributors/heliogrim-workgroup/engine?gitlab_url=https%3A%2F%2Fgit.neogc.net&style=for-the-badge
+[contributors-url]: https://git.neogc.net/heliogrim-workgroup/engine/-/graphs
+[issues-shield]: https://img.shields.io/gitlab/issues/all/heliogrim-workgroup/engine?gitlab_url=https%3A%2F%2Fgit.neogc.net&style=for-the-badge
+[issues-url]: https://git.neogc.net/heliogrim-workgroup/engine/-/issues
+[license-shield]: https://img.shields.io/gitlab/license/heliogrim-workgroup/engine?gitlab_url=https%3A%2F%2Fgit.neogc.net&style=for-the-badge
+[license-url]: https://git.neogc.net/heliogrim-workgroup/engine/-/blob/master/LICENSE
+[twitch-shield]: https://img.shields.io/twitch/status/ltjulius?style=for-the-badge
+[twitch-shield-flat]: https://img.shields.io/twitch/status/ltjulius
+[twitch-url]: https://www.twitch.tv/ltjulius
+[product-screenshot]: images/screenshot.png
+[C++]: https://img.shields.io/badge/C%2B%2B-00599C?style=for-the-badge&logo=c%2B%2B&logoColor=white
+[c++-url]: https://isocpp.org
+[CLion]: https://img.shields.io/badge/CLion-000000?style=for-the-badge&logo=clion&logoColor=white
+[clion-url]: https://www.jetbrains.com/clion/
+[Visual Studio]: https://img.shields.io/badge/Visual_Studio-5C2D91?style=for-the-badge&logo=visual%20studio&logoColor=white
+[vs-url]: https://visualstudio.microsoft.com
+[Visual Studio Code]: https://img.shields.io/badge/Visual_Studio_Code-0078D4?style=for-the-badge&logo=visual%20studio%20code&logoColor=white
+[vs-code-url]: https://code.visualstudio.com
+[CMake]: https://img.shields.io/badge/CMake-%23008FBA.svg?style=for-the-badge&logo=cmake&logoColor=white
+[cmake-url]: https://cmake.org
+[Vulkan]: https://img.shields.io/badge/Vulkan-AC162C.svg?style=for-the-badge&logo=Vulkan&logoColor=white
+[vulkan-url]: https://www.vulkan.org
