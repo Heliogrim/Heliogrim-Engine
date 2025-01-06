@@ -50,6 +50,7 @@
 ![Vv]endor/*/*.patch
 
 # Weaken Rules for special cases
+!**/src/**/[Aa]ssets/
 !**/src/**/[Bb]uild/
 !**/src/**/[Dd]ist/
 !**/src/**/[Vv]endor/
