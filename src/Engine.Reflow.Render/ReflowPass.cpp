@@ -675,7 +675,7 @@ void render::ReflowPass::captureOpaque(
 
 	/**/
 
-	if (records_._scissors.empty()) {
+	if (records_._scissors.empty() || records_._opaque.scissorSpan.empty()) {
 		return;
 	}
 
@@ -836,7 +836,7 @@ void render::ReflowPass::captureAlpha(
 
 	/**/
 
-	if (records_._scissors.empty()) {
+	if (records_._scissors.empty() || records_._alpha.scissorSpan.empty()) {
 		return;
 	}
 
