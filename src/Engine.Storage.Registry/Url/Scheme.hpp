@@ -31,12 +31,12 @@ namespace hg::engine::storage {
 		constexpr ref<UrlScheme> operator=(mref<this_type>) noexcept = default;
 	};
 
-	constexpr static UrlScheme ArchiveScheme = UrlScheme { "archive" };
-	constexpr static UrlScheme FileScheme = UrlScheme { "file" };
-	constexpr static UrlScheme FileCacheScheme = UrlScheme { "file+cache" };
-	constexpr static UrlScheme FileEditorScheme = UrlScheme { "file+editor" };
-	constexpr static UrlScheme FileRuntimeScheme = UrlScheme { "file+runtime" };
-	constexpr static UrlScheme FileProjectScheme = UrlScheme { "file+project" };
-	constexpr static UrlScheme MemoryScheme = UrlScheme { "mem" };
-	constexpr static UrlScheme PackageScheme = UrlScheme { "package" };
+	constexpr inline auto ArchiveScheme = UrlScheme { "archive"sv };
+	constexpr inline auto FileScheme = UrlScheme { "file"sv };
+	constexpr inline auto FileCacheScheme = UrlScheme { "file+cache"sv };
+	constexpr inline auto FileEditorScheme = UrlScheme { "file+editor"sv };
+	constexpr inline auto FileRuntimeScheme = UrlScheme { "file+runtime"sv };
+	constexpr inline auto FileProjectScheme = UrlScheme { "file+project"sv };
+	constexpr inline auto MemoryScheme = UrlScheme { "mem"sv };
+	constexpr inline auto PackageScheme = UrlScheme { "package"sv };
 }
