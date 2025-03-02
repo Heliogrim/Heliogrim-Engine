@@ -2,7 +2,9 @@
 
 #include <map>
 #include <ranges>
+
 #include <Engine.Accel.Effect/AccelerationEffect.hpp>
+#include <Engine.Accel.Pipeline/Stage/StageModule.hpp>
 #include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Sal.hpp>
