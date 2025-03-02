@@ -681,7 +681,10 @@ void render::ReflowPass::captureOpaque(
 
 	/* Warning: Dirty Hack for Sanitizing */
 
-	if (records_._opaque.imageSpan.empty()) {
+	if (
+		records_._opaque.imageSpan.empty() ||
+		records_._opaque.imageSpan.back().last != records_._opaque.scissorSpan.back().last
+	) {
 		const_cast<Vector<ImageSpan>&>(records_._opaque.imageSpan).emplace_back(
 			records_._opaque.scissorSpan.back().last,
 			records_._opaque.scissorSpan.back().last,
@@ -842,7 +845,10 @@ void render::ReflowPass::captureAlpha(
 
 	/* Warning: Dirty Hack for Sanitizing */
 
-	if (records_._alpha.imageSpan.empty()) {
+	if (
+		records_._alpha.imageSpan.empty() ||
+		records_._alpha.imageSpan.back().last != records_._alpha.scissorSpan.back().last
+	) {
 		const_cast<Vector<ImageSpan>&>(records_._alpha.imageSpan).emplace_back(
 			records_._alpha.scissorSpan.back().last,
 			records_._alpha.scissorSpan.back().last,
