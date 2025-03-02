@@ -1,42 +1,23 @@
 #pragma once
 
-#include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/String.hpp>
+#include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.Common/Meta/TypeId.hpp>
 
 namespace hg::engine::input {
-    enum class DragDropObjectType : u64 {
-        eNone = 0x0,
-        eFileType = ("Drop::File"_typeId).data,
-        eTextType = ("Drop::Text"_typeId).data
-    };
+	class DragDropObject {
+	public:
+		using this_type = DragDropObject;
 
-    struct DragDropObjectFilePayload;
-    struct DragDropObjectTextPayload;
+	protected:
+		DragDropObject() = default;
 
-    union DragDropObjectPayload {
-        ptr<DragDropObjectFilePayload> files;
-        ptr<DragDropObjectTextPayload> text;
-    };
+	public:
+		virtual ~DragDropObject() = default;
 
-    class DragDropObject {
-    public:
-        using this_type = DragDropObject;
+	public:
+		virtual bool storeFiles(cref<Vector<string>> paths_) = 0;
 
-    protected:
-        DragDropObject();
-
-    public:
-        virtual ~DragDropObject() = default;
-
-    protected:
-        DragDropObjectType _type;
-        DragDropObjectPayload _payload;
-
-    public:
-        virtual bool storeFiles(cref<Vector<string>> paths_) = 0;
-
-        virtual bool storeText(cref<string> text_) = 0;
-    };
+		virtual bool storeText(cref<string> text_) = 0;
+	};
 }

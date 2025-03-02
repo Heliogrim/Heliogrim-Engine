@@ -1,15 +1,12 @@
 #pragma once
 
-#include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/String.hpp>
+#include <Engine.Common/Variant.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Math/Vector.hpp>
 #include <Engine.Event/Event.hpp>
 
-#include "DragDrop/DragDropObject.hpp"
-
 namespace hg::engine::input::event {
-	using DragDropEventType = ::hg::engine::input::DragDropObjectType;
-
 	struct DragDropEventFilePayload final {
 		Vector<string> paths;
 	};
@@ -18,11 +15,7 @@ namespace hg::engine::input::event {
 		string data;
 	};
 
-	union DragDropEventPayload {
-		ptr<void> _;
-		ptr<DragDropEventFilePayload> files;
-		ptr<DragDropEventTextPayload> text;
-	};
+	using DragDropEventPayload = Variant<DragDropEventFilePayload, DragDropEventTextPayload>;
 
 	class DragDropEvent final :
 		public StatelessEvent {
@@ -37,8 +30,7 @@ namespace hg::engine::input::event {
 	public:
 		explicit DragDropEvent(
 			cref<math::ivec2> pointer_,
-			cref<DragDropEventType> type_,
-			mref<DragDropEventPayload> data_
+			mref<DragDropEventPayload> payload_
 		) noexcept;
 
 		DragDropEvent(cref<this_type> other_) noexcept;
@@ -50,8 +42,6 @@ namespace hg::engine::input::event {
 		//private:
 	public:
 		math::ivec2 _pointer;
-
-		DragDropEventType _type;
-		DragDropEventPayload _data;
+		DragDropEventPayload _payload;
 	};
 }
