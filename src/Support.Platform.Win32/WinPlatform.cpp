@@ -120,15 +120,13 @@ hg::concurrent::future<uptr<NativeWindow>> WinPlatform::makeNativeWindow(
 					extent.height,
 					SDL_WINDOW_VULKAN | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_RESIZABLE
 				),
-				NativeWindowFlags { NativeWindowFlagBits::eMovable } |
-				NativeWindowFlagBits::eResizable |
-				NativeWindowFlagBits::eShown,
+				NativeWindowFlags { NativeWindowFlagBits::eMovable } | NativeWindowFlagBits::eResizable | NativeWindowFlagBits::eShown,
 				math::ivec2 { extent.offsetX, extent.offsetY },
 				math::ivec2 { extent.width, extent.height },
 				title
 			);
 
-			assert(wnd && wnd->sdl());
+			::hg::assertrt(wnd && wnd->sdl());
 
 			/**/
 
