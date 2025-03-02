@@ -10,7 +10,7 @@
 /**/
 #include <Windows.h>
 /* Note: Order dependent `windows header -> fileapi header` */
-#include <Fileapi.h>
+#include <fileapi.h>
 /**/
 #endif
 
