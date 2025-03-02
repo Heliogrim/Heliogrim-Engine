@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <ranges>
+#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Common/Math/Compat.inl>
 #include <Engine.GFX/Texture/Texture.hpp>
 #include <Engine.GFX/Texture/TextureLikeObject.hpp>
@@ -500,7 +501,15 @@ void ReflowCommandBuffer::drawQuadLine(
 	const float strength_
 ) {}
 
-void ReflowCommandBuffer::drawRect(math::vec2 min_, math::vec2 max_, cref<color> color_) {}
+void ReflowCommandBuffer::drawRect(math::vec2 min_, math::vec2 max_, cref<color> color_) {
+	drawQuad(
+		math::vec2 { min_.x, min_.y },
+		math::vec2 { max_.x, min_.y },
+		math::vec2 { max_.x, max_.y },
+		math::vec2 { min_.x, max_.y },
+		color_
+	);
+}
 
 void ReflowCommandBuffer::drawRectLine(math::vec2 min_, math::vec2 max_, cref<color> color_, const float strength_) {}
 
@@ -875,6 +884,7 @@ void ReflowCommandBuffer::drawImageAsync(
 		capture.imageSpan.back().last = baseIdx + 6uL;
 
 	} else {
+		::hg::assertd(image_ != nullptr);
 		_images.emplace_back(std::move(image_));
 		capture.imageSpan.emplace_back(baseIdx, baseIdx + 6uL, _images.size() - 1uL);
 	}
