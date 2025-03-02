@@ -7,6 +7,8 @@
 
 #include "WidgetState.hpp"
 #include "../FlowContext.hpp"
+#include "../ReflowClassList.hpp"
+#include "../ReflowEventEmitter.hpp"
 #include "../ReflowPosition.hpp"
 #include "../ReflowState.hpp"
 #include "../Attribute/Attribute.hpp"
@@ -37,6 +39,8 @@ namespace hg::engine::reflow {
 	protected:
 		Widget();
 
+		explicit Widget(mref<ReflowClassList> classList_, SharedPtr<Widget> parent_);
+
 	public:
 		virtual ~Widget();
 
@@ -54,8 +58,15 @@ namespace hg::engine::reflow {
 
 		[[nodiscard]] ref<ReflowPassState> layoutState() noexcept;
 
+	protected:
+		ReflowClassList _staticClassList;
+
 	public:
 		[[nodiscard]] virtual string getTag() const noexcept = 0;
+
+		[[nodiscard]] ref<const ReflowClassList> getStaticClassList() const noexcept;
+
+		[[nodiscard]] ref<ReflowClassList> getStaticClassList() noexcept;
 
 		/**
 		 * Abstract System Clocking
@@ -70,6 +81,13 @@ namespace hg::engine::reflow {
 		 *
 		 * @details Adopted Synthetic Events https://reactjs.org/docs/events.html
 		 */
+	private:
+		template <class EventType_>
+		using listen_fn_type = ReflowEventEmitter::listener_type<EventType_>;
+		using listen_handle_type = ReflowEventEmitter::handle_type;
+
+		ReflowEventEmitter _emitter;
+
 	public:
 		virtual EventResponse onFocus(cref<FocusEvent> event_);
 

@@ -6,36 +6,53 @@ using namespace hg::engine::reflow;
 using namespace hg;
 
 constexpr static WidgetState defaultWidgetState = WidgetState {
-    static_cast<WidgetState::value_type>(WidgetStateFlagBits::eVisible) |
-    static_cast<WidgetState::value_type>(WidgetStateFlagBits::ePending) |
-    static_cast<WidgetState::value_type>(WidgetStateFlagBits::ePendingInherit)
+	static_cast<WidgetState::value_type>(WidgetStateFlagBits::eVisible) |
+	static_cast<WidgetState::value_type>(WidgetStateFlagBits::ePending) |
+	static_cast<WidgetState::value_type>(WidgetStateFlagBits::ePendingInherit)
 };
 
 Widget::Widget() :
-    _state(defaultWidgetState),
-    _layoutState(),
-    _parent() {}
+	_state(defaultWidgetState),
+	_layoutState(),
+	_staticClassList(),
+	_parent() {}
+
+Widget::Widget(mref<ReflowClassList> classList_, SharedPtr<Widget> parent_) :
+	_state(defaultWidgetState),
+	_layoutState(),
+	_staticClassList(::hg::move(classList_)),
+	_parent(::hg::move(parent_)) {
+	// TODO: Check whether we need to invoke the provision logic
+}
 
 Widget::~Widget() = default;
 
 cref<WidgetState> Widget::state() const noexcept {
-    return _state;
+	return _state;
 }
 
 ref<WidgetState> Widget::state() noexcept {
-    return _state;
+	return _state;
 }
 
 cref<ReflowPassState> Widget::layoutState() const noexcept {
-    return _layoutState;
+	return _layoutState;
 }
 
 ref<ReflowPassState> Widget::layoutState() noexcept {
-    return _layoutState;
+	return _layoutState;
+}
+
+ref<const ReflowClassList> Widget::getStaticClassList() const noexcept {
+	return _staticClassList;
+}
+
+ref<ReflowClassList> Widget::getStaticClassList() noexcept {
+	return _staticClassList;
 }
 
 bool Widget::shouldTick() const noexcept {
-    return false;
+	return false;
 }
 
 void Widget::tick() {}
