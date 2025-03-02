@@ -13,7 +13,11 @@ CameraModel::CameraModel(const ptr<SceneComponent> owner_) :
 	InheritMeta(owner_),
 	_sceneView(nullptr) {}
 
+CameraModel::CameraModel(mref<this_type>) noexcept = default;
+
 CameraModel::~CameraModel() = default;
+
+ref<CameraModel::this_type> CameraModel::operator=(mref<this_type>) noexcept = default;
 
 void CameraModel::create(const ptr<RenderSceneSystem> system_) {
 
