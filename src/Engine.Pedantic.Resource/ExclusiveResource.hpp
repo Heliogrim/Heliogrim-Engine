@@ -34,19 +34,22 @@ namespace hg {
 	public:
 		constexpr ExclusiveResource() noexcept requires std::is_default_constructible_v<storage_type> :
 			Resource<ManagedType_>(),
-			_storage() {}
+			_storage(),
+			_lck() {}
 
 		template <typename... Args_>
 		constexpr explicit ExclusiveResource(Args_&&... args_) noexcept
 			requires std::is_constructible_v<typename storage_type::managed_type, Args_...> :
 			Resource<ManagedType_>(),
-			_storage({ std::forward<Args_>(args_)... }) {}
+			_storage({ std::forward<Args_>(args_)... }),
+			_lck() {}
 
 		ExclusiveResource(ExclusiveResource&& other_) noexcept
 			requires (not std::is_const_v<typename storage_type::managed_type>) &&
 			std::is_nothrow_move_constructible_v<typename storage_type::managed_type> :
 			Resource<ManagedType_>(),
-			_storage(storage_type::from(other_.acquireReadWrite())) {}
+			_storage(storage_type::from(other_.acquireReadWrite())),
+			_lck() {}
 
 		ExclusiveResource(ExclusiveResource&& other_) noexcept
 			requires (not std::is_const_v<typename storage_type::managed_type>) &&
@@ -54,7 +57,8 @@ namespace hg {
 			std::is_default_constructible_v<typename storage_type::managed_type> &&
 			std::is_move_assignable_v<typename storage_type::managed_type> :
 			Resource<ManagedType_>(),
-			_storage() {
+			_storage(),
+			_lck() {
 			other_.apply(
 				[this](ref<typename storage_type::managed_type> obj_) {
 					_storage.getValueReference() = std::move(obj_);

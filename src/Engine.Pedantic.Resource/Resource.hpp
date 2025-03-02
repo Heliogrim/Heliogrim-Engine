@@ -1,5 +1,6 @@
 #pragma once
 
+#include <bit>
 #include <type_traits>
 #include <Engine.Common/Optional.hpp>
 #include <Engine.Common/Wrapper.hpp>
