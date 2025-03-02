@@ -13,6 +13,7 @@
 #include <Engine.Reflect/IsType.hpp>
 
 #include "MeshPass.hpp"
+#include "RaytracingPass.hpp"
 #include "VkGraphicsPass.hpp"
 
 using namespace hg::engine::accel;
