@@ -4,6 +4,7 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Managed/SharedFromThis.hpp>
 #include <Engine.GFX/Aabb.hpp>
+#include <Engine.Reflow.Theming/ThemeProvisioner.hpp>
 
 #include "WidgetState.hpp"
 #include "../FlowContext.hpp"
@@ -135,6 +136,7 @@ namespace hg::engine::reflow {
 		 */
 	private:
 		wptr<Widget> _parent;
+		Opt<ref<const theming::ThemeProvisioner>> _effectiveProvisioner;
 
 	public:
 		[[nodiscard]] virtual const ptr<const Children> children() const = 0;
@@ -149,13 +151,22 @@ namespace hg::engine::reflow {
 
 		[[nodiscard]] virtual sptr<Widget> root() const;
 
+	public:
+		[[nodiscard]] Opt<ref<const theming::ThemeProvisioner>> getEffectiveProvisioner() const noexcept;
+
+		[[nodiscard]] virtual Opt<ref<const theming::ThemeProvisioner>> cachedUpdateNearestProvisioner(
+			bool localInvalidate_
+		) noexcept;
+
 		/**
-		 * Layout & Graphics
+		 * Layout- & Graphics-Rendering
 		 */
 	public:
 		virtual void render(const ptr<ReflowCommandBuffer> cmd_) = 0;
 
 	public:
+		virtual void cascadeContextChange(bool invalidate_);
+
 		virtual math::vec2 prefetchDesiredSize(cref<ReflowState> state_, float scale_) const = 0;
 
 		virtual math::vec2 computeDesiredSize(cref<ReflowPassState> passState_) const;
@@ -176,10 +187,6 @@ namespace hg::engine::reflow {
 		[[nodiscard]] virtual ReflowPosition position() const noexcept;
 
 	public:
-		[[nodiscard]] virtual bool willChangeLayout(
-			cref<math::vec2> space_
-		) const noexcept;
-
 		void markAsPending(const bool inherited_ = false, const bool suppress_ = false);
 
 		WidgetStateFlag clearPending();

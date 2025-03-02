@@ -142,11 +142,19 @@ EventResponse Widget::onKeyUp(cref<KeyboardEvent> event_) {
 }
 
 void Widget::setParent(mref<sptr<Widget>> parent_) {
-    _parent = std::move(parent_);
+	_parent = std::move(parent_);
+
+	if (cachedUpdateNearestProvisioner(true) != None) {
+		cascadeContextChange(true);
+	}
 }
 
 void Widget::setParent(cref<sptr<Widget>> parent_) {
-    _parent = parent_;
+	_parent = parent_;
+
+	if (cachedUpdateNearestProvisioner(true) != None) {
+		cascadeContextChange(true);
+	}
 }
 
 bool Widget::hasParent() const {
@@ -166,115 +174,145 @@ sptr<Widget> Widget::root() const {
     return parent()->root();
 }
 
+Opt<ref<const theming::ThemeProvisioner>> Widget::getEffectiveProvisioner() const noexcept {
+	return _effectiveProvisioner;
+}
+
+Opt<ref<const theming::ThemeProvisioner>> Widget::cachedUpdateNearestProvisioner(const bool localInvalidate_) noexcept {
+	if (not localInvalidate_ && _effectiveProvisioner.has_value()) {
+		return _effectiveProvisioner;
+	}
+
+	if (not hasParent()) {
+		return None;
+	}
+
+	/**/
+
+	const auto parentProvisioner = parent()->cachedUpdateNearestProvisioner(false);
+
+	if (parentProvisioner.has_value()) {
+		// Warning: Check whether we need the self-restoring behaviour in here !?
+		this->_effectiveProvisioner = parentProvisioner;
+		return parentProvisioner;
+	}
+
+	return None;
+}
+
+void Widget::cascadeContextChange(const bool invalidate_) {
+	for (const auto& child : *children()) {
+		if (child->cachedUpdateNearestProvisioner(invalidate_) != None) {
+			child->cascadeContextChange(invalidate_);
+		}
+	}
+}
+
 math::vec2 Widget::computeDesiredSize(cref<ReflowPassState> passState_) const {
-    return getDesiredSize();
+	return getDesiredSize();
 }
 
 math::vec2 Widget::getDesiredSize() const {
-    return _layoutState.prefetchedSize;
+	return _layoutState.prefetchedSize;
 }
 
 float Widget::shrinkFactor() const noexcept {
-    return 0.F;
+	return 0.F;
 }
 
 float Widget::growFactor() const noexcept {
-    return 0.F;
+	return 0.F;
 }
 
 ReflowPosition Widget::position() const noexcept {
-    return ReflowPosition::eStatic;
-}
-
-bool Widget::willChangeLayout(cref<math::vec2> space_) const noexcept {
-    return _state.isProxyPending();
+	return ReflowPosition::eStatic;
 }
 
 void Widget::enumerateDistinctCapture(
-    const u16 compareVersion_,
-    ref<Vector<nmpt<const Widget>>> capture_
+	const u16 compareVersion_,
+	ref<Vector<nmpt<const Widget>>> capture_
 ) const noexcept {
 
-    if (_state.shouldRenderSelf(compareVersion_)) {
-        capture_.emplace_back(this);
-        return;
-    }
+	if (_state.shouldRenderSelf(compareVersion_)) {
+		capture_.emplace_back(this);
+		return;
+	}
 
-    for (const auto& child : *children()) {
-        if (child->state().shouldRender(compareVersion_)) {
-            child->enumerateDistinctCapture(compareVersion_, capture_);
-        }
-    }
+	for (const auto& child : *children()) {
+		if (child->state().shouldRender(compareVersion_)) {
+			child->enumerateDistinctCapture(compareVersion_, capture_);
+		}
+	}
 }
 
 void Widget::markAsPending(const bool inherited_, const bool suppress_) {
 
-    /*
-    if (_state.pending) {
-        return;
-    }
-     */
+	/*
+	if (_state.pending) {
+	    return;
+	}
+	 */
 
-    if (inherited_) {
-        _state |= WidgetStateFlagBits::ePendingInherit;
-    } else {
-        _state |= WidgetStateFlagBits::ePending;
-    }
+	if (inherited_) {
+		_state |= WidgetStateFlagBits::ePendingInherit;
+	} else {
+		_state |= WidgetStateFlagBits::ePending;
+	}
 
-    if (suppress_) {
-        return;
-    }
+	if (suppress_) {
+		return;
+	}
 
-    if (hasParent()) {
-        parent()->markAsPending(true);
-    }
+	if (hasParent()) {
+		parent()->markAsPending(true);
+	}
 }
 
 WidgetStateFlag Widget::clearPending() {
 
-    const WidgetStateFlag result { _state };
-    _state.unwrap &= ~(
-        static_cast<WidgetState::value_type>(WidgetStateFlagBits::ePending) |
-        static_cast<WidgetState::value_type>(WidgetStateFlagBits::ePendingInherit)
-    );
+	const WidgetStateFlag result { _state };
+	_state.unwrap &= ~(
+		static_cast<WidgetState::value_type>(WidgetStateFlagBits::ePending) |
+		static_cast<WidgetState::value_type>(WidgetStateFlagBits::ePendingInherit)
+	);
 
-    return result;
+	return result;
 }
 
 void Widget::updateRenderVersion(const u16 version_, const bool inherited_) {
 
-    if (inherited_) {
-        _state.setProxyRenderVersion(version_);
-    } else {
-        _state.setRenderVersion(version_);
-    }
+	if (inherited_) {
+		_state.setProxyRenderVersion(version_);
+	} else {
+		_state.setRenderVersion(version_);
+	}
 
-    if (hasParent()) {
-        parent()->updateRenderVersion(version_, true);
-    }
+	if (hasParent()) {
+		parent()->updateRenderVersion(version_, true);
+	}
 
 }
 
 void Widget::cascadeRenderVersion(const u16 version_, cref<Aabb2d> aabb_) {
 
-    bool forwarded = false;
-    for (const auto& child : *children()) {
+	bool forwarded = false;
+	for (const auto& child : *children()) {
 
-        const auto& childLayout = child->layoutState();
-        const auto childAabb = Aabb2d { childLayout.layoutOffset, childLayout.layoutOffset + childLayout.layoutSize };
+		const auto& childLayout = child->layoutState();
+		const auto childAabb = Aabb2d { childLayout.layoutOffset, childLayout.layoutOffset + childLayout.layoutSize };
 
-        if (childAabb.contains(aabb_)) {
-            child->cascadeRenderVersion(version_, aabb_);
-            forwarded = true;
-            continue;
-        }
+		if (childAabb.contains(aabb_)) {
+			child->cascadeRenderVersion(version_, aabb_);
+			forwarded = true;
+			continue;
+		}
 
-        if (childAabb.intersects(aabb_)) {
-            child->updateRenderVersion(version_);
-        }
-    }
+		if (childAabb.intersects(aabb_)) {
+			child->updateRenderVersion(version_);
+		}
+	}
 
-    if (not forwarded) {
-        updateRenderVersion(version_);
-    }
+	if (not forwarded) {
+		updateRenderVersion(version_);
+	}
 }
