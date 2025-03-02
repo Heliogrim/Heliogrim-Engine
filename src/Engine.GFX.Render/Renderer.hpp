@@ -17,7 +17,7 @@ namespace hg::engine::render {
 		using this_type = Renderer;
 
 	protected:
-		Renderer() noexcept = default;
+		Renderer() noexcept;
 
 	public:
 		Renderer(
@@ -30,7 +30,7 @@ namespace hg::engine::render {
 			mref<nmpt<gfx::memory::GlobalPooledAllocator>> globalGfxAllocator_
 		) noexcept;
 
-		virtual ~Renderer() = default;
+		virtual ~Renderer();
 
 	private:
 		Guid _guid;
