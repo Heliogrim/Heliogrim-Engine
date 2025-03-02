@@ -2,12 +2,17 @@
 
 #include <algorithm>
 #include <ranges>
+
 #include <Engine.Accel.Effect/AccelerationEffect.hpp>
 #include <Engine.Accel.Effect/Stage/Stage.hpp>
 #include <Engine.Accel.Pipeline/AccelerationPipeline.hpp>
 
 using namespace hg::engine::accel;
 using namespace hg;
+
+GlobalStorage::GlobalStorage() noexcept = default;
+
+GlobalStorage::~GlobalStorage() noexcept = default;
 
 bool GlobalStorage::hasAccelStage(cref<HashedState<Stage>> hashedState_) noexcept {
 	return _stages.contains(hashedState_);
