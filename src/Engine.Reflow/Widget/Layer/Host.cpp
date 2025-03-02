@@ -1,5 +1,7 @@
 #include "Host.hpp"
 
+#include <format>
+
 using namespace hg::engine::reflow;
 using namespace hg;
 

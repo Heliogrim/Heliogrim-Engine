@@ -1,11 +1,13 @@
 #include "Anchor.hpp"
 
+#include <format>
+
 #include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Math/Coordinates.hpp>
 
-#include "Window/Layer.hpp"
-#include "Window/Window.hpp"
+#include "../../Window/Layer.hpp"
+#include "../../Window/Window.hpp"
 
 using namespace hg::engine::reflow;
 using namespace hg;
@@ -20,6 +22,10 @@ string Anchor::getTag() const noexcept {
 	return std::format(R"(:Anchor <{:#x}>)", reinterpret_cast<u64>(this));
 }
 
+bool Anchor::isShown() const noexcept {
+	return static_cast<bool>(_host);
+}
+
 void Anchor::show(sptr<Widget> content_, math::vec2 globalOffset_) {
 	::hg::assertrt(not _host);
 
@@ -31,7 +37,9 @@ void Anchor::show(sptr<Widget> content_, math::vec2 globalOffset_) {
 
 	_host = make_sptr<Host>(content_, globalOffset_, math::vec2_zero);
 	content_->setParent(_host);
+
 	[[maybe_unused]] auto layer = window->requestLayer(_host);
+	content_->markAsPending();
 }
 
 void Anchor::hide() {
