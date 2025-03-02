@@ -45,13 +45,12 @@ void Win32DragDropObject::tidy() {
 
 bool Win32DragDropObject::storeFiles(cref<Vector<string>> paths_) {
 
-	if (_type != DragDropObjectType::eNone || _payload.files != nullptr) {
+	if (not _payload.valueless_by_exception()) {
 		IM_CORE_WARN("Tried to override value and value type of drag-drop object instance.");
 		return false;
 	}
 
 	// @see https://learn.microsoft.com/en-us/windows/win32/shell/clipboard#cf_hdrop
-	_type = DragDropObjectType::eFileType;
 
 	std::wstringstream stream {};
 	for (const auto& path : paths_) {
@@ -89,7 +88,7 @@ bool Win32DragDropObject::storeFiles(cref<Vector<string>> paths_) {
 
 	/**/
 
-	_payload.files = new DragDropObjectFilePayload { std::move(stream.str()) };
+	_payload = Rc<DragDropObjectFilePayload>::create(std::move(stream.str()));
 
 	FORMATETC format {
 		CF_HDROP,
@@ -107,7 +106,7 @@ bool Win32DragDropObject::storeFiles(cref<Vector<string>> paths_) {
 
 	/**/
 
-	const auto globalSize { _payload.files->paths.size() * sizeof(wchar_t) + sizeof(DROPFILES) };
+	const auto globalSize { _payload.as<Rc<DragDropObjectFilePayload>>()->paths.size() * sizeof(wchar_t) + sizeof(DROPFILES) };
 
 	medium.hGlobal = GlobalAlloc(GMEM_MOVEABLE, globalSize);
 	LPVOID hdata = GlobalLock(medium.hGlobal);
@@ -120,8 +119,8 @@ bool Win32DragDropObject::storeFiles(cref<Vector<string>> paths_) {
 
 	std::memcpy(
 		(static_cast<ptr<char>>(hdata) + sizeof(DROPFILES)),
-		_payload.files->paths.data(),
-		_payload.files->paths.size() * sizeof(wchar_t)
+		_payload.as<Rc<DragDropObjectFilePayload>>()->paths.data(),
+		_payload.as<Rc<DragDropObjectFilePayload>>()->paths.size() * sizeof(wchar_t)
 	);
 
 	GlobalUnlock(hdata);
@@ -136,12 +135,10 @@ bool Win32DragDropObject::storeFiles(cref<Vector<string>> paths_) {
 
 bool Win32DragDropObject::storeText(cref<string> text_) {
 
-	if (_type != DragDropObjectType::eNone || _payload.text != nullptr) {
+	if (not _payload.valueless_by_exception()) {
 		IM_CORE_WARN("Tried to override value and value type of drag-drop object instance.");
 		return false;
 	}
-
-	_type = DragDropObjectType::eTextType;
 
 	const auto wsize = MultiByteToWideChar(
 		CP_UTF8,
@@ -167,7 +164,7 @@ bool Win32DragDropObject::storeText(cref<string> text_) {
 
 	/**/
 
-	_payload.text = new DragDropObjectTextPayload { std::move(wtext) };
+	_payload = Rc<DragDropObjectTextPayload>::create(std::move(wtext));
 
 	FORMATETC format {
 		CF_UNICODETEXT,
@@ -185,10 +182,14 @@ bool Win32DragDropObject::storeText(cref<string> text_) {
 
 	/**/
 
-	medium.hGlobal = GlobalAlloc(GMEM_MOVEABLE, _payload.text->data.size() * sizeof(wchar_t));
+	medium.hGlobal = GlobalAlloc(GMEM_MOVEABLE, _payload.as<Rc<DragDropObjectTextPayload>>()->data.size() * sizeof(wchar_t));
 
 	LPVOID hdata = GlobalLock(medium.hGlobal);
-	std::memcpy(hdata, _payload.text->data.data(), _payload.text->data.size() * sizeof(wchar_t));
+	std::memcpy(
+		hdata,
+		_payload.as<Rc<DragDropObjectTextPayload>>()->data.data(),
+		_payload.as<Rc<DragDropObjectTextPayload>>()->data.size() * sizeof(wchar_t)
+	);
 	GlobalUnlock(hdata);
 
 	/**/
@@ -218,11 +219,15 @@ HRESULT Win32DragDropObject::QueryInterface(const IID& riid, void** ppvObject) {
 	return E_NOINTERFACE;
 }
 
+#include <stacktrace>
+
 ULONG Win32DragDropObject::AddRef() {
+	Logger::debug("AddRef: {}", std::stacktrace::current());
 	return ++_useCount;
 }
 
 ULONG Win32DragDropObject::Release() {
+	Logger::debug("Release: {}", std::stacktrace::current());
 	return --_useCount;
 }
 

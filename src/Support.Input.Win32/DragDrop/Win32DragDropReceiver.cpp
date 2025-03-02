@@ -33,26 +33,26 @@ void Win32DragDropReceiver::destroy() {
 	::RevokeDragDrop(_hwnd);
 }
 
-HRESULT Win32DragDropReceiver::QueryInterface(const IID& riid, void** ppvObject) {
+HRESULT Win32DragDropReceiver::QueryInterface(REFIID riid_, _COM_Outptr_ void __RPC_FAR *__RPC_FAR * ppvObject_) {
 
-	if (riid == IID_IUnknown) {
-		*ppvObject = static_cast<ptr<IUnknown>>(this);
+	if (riid_ == IID_IUnknown) {
+		*ppvObject_ = static_cast<ptr<IUnknown>>(this);
 		return S_OK;
 	}
 
-	if (riid == IID_IDropTarget) {
-		*ppvObject = static_cast<ptr<IDropTarget>>(this);
+	if (riid_ == IID_IDropTarget) {
+		*ppvObject_ = static_cast<ptr<IDropTarget>>(this);
 		return S_OK;
 	}
 
 	return E_NOINTERFACE;
 }
 
-ULONG Win32DragDropReceiver::AddRef() {
+ULONG Win32DragDropReceiver::AddRef(void) {
 	return ++_useCount;
 }
 
-ULONG Win32DragDropReceiver::Release() {
+ULONG Win32DragDropReceiver::Release(void) {
 	return --_useCount;
 }
 
@@ -62,53 +62,62 @@ bool Win32DragDropReceiver::supportedDataObject(ptr<IDataObject> data_) const {
 	FORMATETC hdropFormat { CF_HDROP, nullptr, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
 
 	/**/
-	if (_data->QueryGetData(&textFormat) == S_OK) {
+	if (data_->QueryGetData(&textFormat) == S_OK) {
 		return true;
 	}
 
-	if (_data->QueryGetData(&hdropFormat) == S_OK) {
+	if (data_->QueryGetData(&hdropFormat) == S_OK) {
 		return true;
 	}
 
 	return false;
 }
 
-HRESULT Win32DragDropReceiver::DragEnter(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) {
+HRESULT Win32DragDropReceiver::DragEnter(
+	__RPC__in_opt IDataObject* pDataObj_,
+	DWORD grfKeyState_,
+	POINTL pt_,
+	__RPC__inout DWORD* pdwEffect_
+) {
 
-	_cursorPos.x = pt.x;
-	_cursorPos.y = pt.y;
+	_cursorPos.x = pt_.x;
+	_cursorPos.y = pt_.y;
 
-	_data = pDataObj;
+	_data = pDataObj_;
 	_data->AddRef();
 
 	/**/
 
 	if ((_valid = supportedDataObject(_data)) == true) {
-		*pdwEffect = DROPEFFECT_COPY;
+		*pdwEffect_ = DROPEFFECT_COPY;
 		return S_OK;
 	}
 
-	*pdwEffect = DROPEFFECT_NONE;
+	*pdwEffect_ = DROPEFFECT_NONE;
 	return S_OK;
 }
 
-HRESULT Win32DragDropReceiver::DragOver(DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) {
+HRESULT Win32DragDropReceiver::DragOver(
+	DWORD grfKeyState_,
+	POINTL pt_,
+	__RPC__inout DWORD* pdwEffect_
+) {
 
-	_cursorPos.x = pt.x;
-	_cursorPos.y = pt.y;
+	_cursorPos.x = pt_.x;
+	_cursorPos.y = pt_.y;
 
 	/**/
 
 	if (_valid) {
-		*pdwEffect = DROPEFFECT_COPY;
+		*pdwEffect_ = DROPEFFECT_COPY;
 		return S_OK;
 	}
 
-	*pdwEffect = DROPEFFECT_NONE;
+	*pdwEffect_ = DROPEFFECT_NONE;
 	return S_OK;
 }
 
-HRESULT Win32DragDropReceiver::DragLeave() {
+HRESULT Win32DragDropReceiver::DragLeave(void) {
 
 	_cursorPos.x = -1;
 	_cursorPos.y = -1;
@@ -240,15 +249,20 @@ static string handleTextDrop(ptr<IDataObject> data_, cref<FORMATETC> format_, re
 	return text;
 }
 
-HRESULT Win32DragDropReceiver::Drop(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) {
+HRESULT Win32DragDropReceiver::Drop(
+	__RPC__in_opt IDataObject* pDataObj_,
+	DWORD grfKeyState_,
+	POINTL pt_,
+	__RPC__inout DWORD* pdwEffect_
+) {
 
-	_cursorPos.x = pt.x;
-	_cursorPos.y = pt.y;
+	_cursorPos.x = pt_.x;
+	_cursorPos.y = pt_.y;
 
-	pDataObj->AddRef();
+	pDataObj_->AddRef();
 
 	_data->Release();
-	_data = pDataObj;
+	_data = pDataObj_;
 
 	/**/
 
@@ -274,14 +288,7 @@ HRESULT Win32DragDropReceiver::Drop(IDataObject* pDataObj, DWORD grfKeyState, PO
 
 	RECT rect {};
 	GetWindowRect(_hwnd, &rect);
-
-	uptr<input::event::DragDropEvent> event {
-		make_uptr<input::event::DragDropEvent>(
-			_cursorPos - math::ivec2 { rect.left, rect.top },
-			event::DragDropEventType::eNone,
-			event::DragDropEventPayload { nullptr }
-		)
-	};
+	auto event = uptr<input::event::DragDropEvent> {};
 
 	/**/
 
@@ -293,8 +300,10 @@ HRESULT Win32DragDropReceiver::Drop(IDataObject* pDataObj, DWORD grfKeyState, PO
 			auto files = handleFileDrop(_data, hdropFormat, medium);
 
 			if (not files.empty()) {
-				event->_type = event::DragDropEventType::eFileType;
-				event->_data.files = new event::DragDropEventFilePayload { std::move(files) };
+				event = make_uptr<event::DragDropEvent>(
+					_cursorPos - math::ivec2 { rect.left, rect.top },
+					event::DragDropEventFilePayload { ::hg::move(files) }
+				);
 			}
 		}
 
@@ -306,8 +315,10 @@ HRESULT Win32DragDropReceiver::Drop(IDataObject* pDataObj, DWORD grfKeyState, PO
 			auto text = handleTextDrop(_data, textFormat, medium);
 
 			if (not text.empty()) {
-				event->_type = event::DragDropEventType::eTextType;
-				event->_data.text = new event::DragDropEventTextPayload { std::move(text) };
+				event = make_uptr<event::DragDropEvent>(
+					_cursorPos - math::ivec2 { rect.left, rect.top },
+					event::DragDropEventTextPayload { ::hg::move(text) }
+				);
 			}
 		}
 
@@ -315,18 +326,18 @@ HRESULT Win32DragDropReceiver::Drop(IDataObject* pDataObj, DWORD grfKeyState, PO
 
 	/**/
 
-	if (event->_type == event::DragDropEventType::eNone) {
-		*pdwEffect = DROPEFFECT_NONE;
+	if (event == nullptr || event->_payload.valueless_by_exception()) {
+		*pdwEffect_ = DROPEFFECT_NONE;
 		return S_OK;
 	}
 
 	/**/
 
 	if (_onDrop && _onDrop(std::move(event))) {
-		*pdwEffect = DROPEFFECT_COPY;
+		*pdwEffect_ = DROPEFFECT_COPY;
 		return S_OK;
 	}
 
-	*pdwEffect = DROPEFFECT_NONE;
+	*pdwEffect_ = DROPEFFECT_NONE;
 	return S_OK;
 }

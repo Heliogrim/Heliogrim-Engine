@@ -38,22 +38,39 @@ namespace hg::engine::input {
 		std::atomic_uint_fast32_t _useCount;
 
 	public:
-		HRESULT QueryInterface(const IID& riid, void** ppvObject) override;
+		HRESULT STDMETHODCALLTYPE QueryInterface(
+			REFIID riid_,
+			_COM_Outptr_ void __RPC_FAR *__RPC_FAR * ppvObject_
+		) override;
 
-		ULONG AddRef() override;
+		ULONG STDMETHODCALLTYPE AddRef(void) override;
 
-		ULONG Release() override;
+		ULONG STDMETHODCALLTYPE Release(void) override;
 
 	private:
 		[[nodiscard]] bool supportedDataObject(ptr<IDataObject> data_) const;
 
 	public:
-		HRESULT DragEnter(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override;
+		HRESULT STDMETHODCALLTYPE DragEnter(
+			__RPC__in_opt IDataObject* pDataObj_,
+			DWORD grfKeyState_,
+			POINTL pt_,
+			__RPC__inout DWORD* pdwEffect_
+		) override;
 
-		HRESULT DragOver(DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override;
+		HRESULT STDMETHODCALLTYPE DragOver(
+			DWORD grfKeyState_,
+			POINTL pt_,
+			__RPC__inout DWORD* pdwEffect_
+		) override;
 
-		HRESULT DragLeave() override;
+		HRESULT STDMETHODCALLTYPE DragLeave(void) override;
 
-		HRESULT Drop(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override;
+		HRESULT STDMETHODCALLTYPE Drop(
+			__RPC__in_opt IDataObject* pDataObj_,
+			DWORD grfKeyState_,
+			POINTL pt_,
+			__RPC__inout DWORD* pdwEffect_
+		) override;
 	};
 }

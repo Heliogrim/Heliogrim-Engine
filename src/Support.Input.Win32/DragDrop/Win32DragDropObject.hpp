@@ -1,12 +1,21 @@
 #pragma once
 
 #include <Engine.Common/stdafx.h>
+#include <Engine.Common/Variant.hpp>
+#include <Engine.Common/Managed/Rc.hpp>
 #include <Engine.Input/DragDrop/DragDropObject.hpp>
 
 /**/
 #include <objidl.h>
 
 namespace hg::engine::input {
+	struct DragDropObjectFilePayload;
+	struct DragDropObjectTextPayload;
+
+	using DragDropObjectPayload = Variant<Rc<DragDropObjectFilePayload>, Rc<DragDropObjectTextPayload>>;
+
+	/**/
+
 	class Win32DragDropObject :
 		public DragDropObject,
 		public IDataObject {
@@ -28,6 +37,8 @@ namespace hg::engine::input {
 
 	private:
 		std::atomic_uint_fast32_t _useCount;
+
+		DragDropObjectPayload _payload;
 
 		Vector<FORMATETC> _formats;
 		Vector<STGMEDIUM> _mediums;
