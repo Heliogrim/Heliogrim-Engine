@@ -456,9 +456,7 @@ namespace hg::math {
 		}
 
 		/**
-		 * \brief 
-		 * \param right_ 
-		 * \return 
+		 *
 		 */
 		matq4_t<T>& operator*=(const matq4_t<T>& right_) {
 			todo_panic();

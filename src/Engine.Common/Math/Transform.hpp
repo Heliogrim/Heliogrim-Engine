@@ -21,7 +21,10 @@ namespace hg::math {
 		 * @author Julius
 		 * @date 26.11.2021
 		 */
-		Transform() noexcept;
+		constexpr Transform() noexcept :
+			_location(),
+			_rotator(),
+			_scale(1.F) {}
 
 		Transform(mref<Location> location_, mref<Rotator> rotator_, mref<fvec3> scale_) noexcept;
 
@@ -79,6 +82,7 @@ namespace hg::math {
 		ref<Transform> operator=(cref<Transform> other_) noexcept;
 
 	private:
+	public:
 		Location _location;
 		Rotator _rotator;
 		fvec3 _scale;

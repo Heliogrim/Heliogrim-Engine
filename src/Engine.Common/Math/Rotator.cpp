@@ -9,8 +9,6 @@
 using namespace hg::math;
 using namespace hg;
 
-Rotator::Rotator() noexcept = default;
-
 Rotator::Rotator(const value_type pitch_, const value_type yaw_, const value_type roll_) noexcept :
 	math_type(pitch_, yaw_, roll_) {}
 
