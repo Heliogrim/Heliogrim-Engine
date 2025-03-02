@@ -37,6 +37,11 @@ namespace hg {
 	[[nodiscard]] constexpr static decltype(auto) Some(auto&& args_) noexcept {
 		return Opt(std::forward<decltype(args_)>(args_));
 	}
+
+	/**/
+
+	template <typename Type_>
+	concept IsOpt = tl::detail::is_optional<Type_>::value;
 }
 
 /**/
