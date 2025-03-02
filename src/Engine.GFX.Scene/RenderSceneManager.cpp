@@ -1,6 +1,8 @@
 #include "RenderSceneManager.hpp"
 
 #include <Engine.GFX/RenderTarget.hpp>
+#include <Engine.GFX.Scene/View/SceneView.hpp>
+#include <Engine.GFX/Swapchain/Swapchain.hpp>
 
 using namespace hg::engine::gfx::scene;
 using namespace hg::engine::gfx;

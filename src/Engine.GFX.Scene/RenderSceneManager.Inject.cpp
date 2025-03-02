@@ -3,6 +3,7 @@
 #include <Engine.GFX.Scene.Model/PointLightModel.hpp>
 #include <Engine.GFX.Scene.Model/SpotLightModel.hpp>
 #include <Engine.GFX.Scene.Model/StaticGeometryModel.hpp>
+#include <Engine.GFX/RenderTarget.hpp>
 #include <Engine.Reflow/Scene/UISceneModel.hpp>
 #include <Engine.Render.Scene.Model/CameraModel.hpp>
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
