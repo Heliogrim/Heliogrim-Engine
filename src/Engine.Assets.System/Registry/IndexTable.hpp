@@ -303,7 +303,7 @@ namespace hg::engine::assets::system {
 
 				//auto projected = trait_type::project(*iter);
 				const auto& projected = iter->first;
-				const auto compared = trait_type::template compare(index_, projected);
+				const auto compared = trait_type::compare(index_, projected);
 
 				if (compared < 0) {
 					continue;
@@ -340,7 +340,7 @@ namespace hg::engine::assets::system {
 
 				//auto projected = index_trait_type::project(*iter);
 				auto projected = iter->first;
-				const auto compared = index_trait_type::template compare(index_, projected, options_);
+				const auto compared = index_trait_type::compare(index_, projected, options_);
 
 				if (compared < 0) {
 					continue;
@@ -396,7 +396,7 @@ namespace hg::engine::assets::system {
 
 				//auto projected = index_trait_type::project(*iter);
 				auto projected = iter->first;
-				const auto compared = index_trait_type::template compare(index_, projected, options_);
+				const auto compared = index_trait_type::compare(index_, projected, options_);
 
 				if (compared < 0) {
 					continue;
