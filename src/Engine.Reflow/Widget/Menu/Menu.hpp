@@ -2,7 +2,6 @@
 
 #include "../Widget.hpp"
 #include "../../Children.hpp"
-#include "Engine.Event/EventEmitter.hpp"
 
 namespace hg::engine::reflow {
 	enum class MenuContentPosition {
@@ -49,7 +48,7 @@ namespace hg::engine::reflow {
 		void closeMenu();
 
 	private:
-		EventEmitter::handle_type _triggerHandle;
+		ReflowEventEmitter::handle_type _triggerHandle;
 		SingleChildren _trigger;
 		sptr<Anchor> _anchor;
 		sptr<Widget> _content;
@@ -63,7 +62,7 @@ namespace hg::engine::reflow {
 
 		[[nodiscard]] sptr<Widget> getContent() const noexcept;
 
-		void setTrigger(mref<sptr<Button>> trigger_) noexcept;
+		void setTrigger(mref<SharedPtr<Widget>> trigger_) noexcept;
 
 		void setContent(mref<sptr<Widget>> content_) noexcept;
 
@@ -82,8 +81,8 @@ namespace hg::engine::reflow {
 		math::vec2 computeContentPosition();
 
 	public:
-		EventResponse onFocus(cref<FocusEvent> event_) override;
+		EventResponse invokeOnFocus(cref<FocusEvent> event_) override;
 
-		EventResponse onBlur(cref<FocusEvent> event_) override;
+		EventResponse invokeOnBlur(cref<FocusEvent> event_) override;
 	};
 }

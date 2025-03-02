@@ -4,7 +4,6 @@
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Move.hpp>
 
-#include "../Button.hpp"
 #include "../Layer/Anchor.hpp"
 
 using namespace hg::engine::reflow;
@@ -53,23 +52,21 @@ sptr<Widget> Menu::getContent() const noexcept {
 	return _content;
 }
 
-void Menu::setTrigger(mref<sptr<Button>> trigger_) noexcept {
+void Menu::setTrigger(mref<SharedPtr<Widget>> trigger_) noexcept {
 
 	auto prev = _trigger.getChild();
 	if (prev && prev != NullWidget::instance()) {
-
-		auto prevTrigger = std::static_pointer_cast<Button, Widget>(prev);
-		prevTrigger->removeOnClick(_triggerHandle);
-
+		prev->dropOnClick(_triggerHandle);
 		_trigger.getChild()->setParent(nullptr);
 	}
 
 	/**/
 
 	trigger_->setParent(shared_from_this());
-	_triggerHandle = trigger_->addOnClick(
+	_triggerHandle = trigger_->onClick(
 		[this](const auto&) {
 			this->openMenu();
+			return EventResponse::eConsumed;
 		}
 	);
 
@@ -109,14 +106,11 @@ math::vec2 Menu::computeContentPosition() {
 	return result;
 }
 
-EventResponse Menu::onFocus(cref<FocusEvent> event_) {
-	//return Popup::onFocus(event_);
-	return Widget::onFocus(event_);
+EventResponse Menu::invokeOnFocus(cref<FocusEvent> event_) {
+	return Widget::invokeOnFocus(event_);
 }
 
-EventResponse Menu::onBlur(cref<FocusEvent> event_) {
-	//closeMenu();
-	//return Popup::onBlur(event_);
+EventResponse Menu::invokeOnBlur(cref<FocusEvent> event_) {
 	closeMenu();
-	return Widget::onBlur(event_);
+	return Widget::invokeOnBlur(event_);
 }
