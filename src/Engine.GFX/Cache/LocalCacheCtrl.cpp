@@ -1,7 +1,9 @@
 #include "LocalCacheCtrl.hpp"
 
-#include "LocalResourceCache.hpp"
+#include <Engine.Accel.Pipeline/AccelerationPipeline.hpp>
+
 #include "GlobalResourceCache.hpp"
+#include "LocalResourceCache.hpp"
 
 using namespace hg::engine::gfx::cache;
 using namespace hg;
