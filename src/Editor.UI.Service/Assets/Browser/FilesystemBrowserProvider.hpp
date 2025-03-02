@@ -4,7 +4,7 @@
 
 #include "AssetBrowserProvider.hpp"
 
-namespace hg::editor::ui {
+namespace hg::editor::ui::service {
 	class FilesystemBrowserProvider :
 		public AssetBrowserProvider {
 	public:
@@ -19,21 +19,21 @@ namespace hg::editor::ui {
 		fs::Url _root;
 
 	private:
-		string normalizeFsPath(mref<string> unnormalized_);
+		string normalizeFsPath(cref<std::filesystem::path> unnormalized_) const;
 
-		string expandPath(mref<string> normalized_);
+		std::filesystem::path expandPath(mref<std::filesystem::path> normalized_) const;
 
 		bool retrieveFs(
 			cref<fs::Url> url_,
 			const bool directories_,
 			_Inout_ ref<Vector<AssetBrowserEntry>> entries_
-		);
+		) const;
 
 	public:
-		bool effects(cref<fs::Url> url_) override;
+		bool effects(ref<const fs::Url> url_) const override;
 
-		bool retrieve(cref<fs::Url> url_, ref<Vector<AssetBrowserEntry>> entries_) override;
+		bool fetchItems(ref<const fs::Url> url_, ref<Vector<AssetBrowserEntry>> entries_) const override;
 
-		bool retrieveDirectories(cref<fs::Url> url_, ref<Vector<AssetBrowserEntry>> directories_) override;
+		bool fetchDirectories(ref<const fs::Url> url_, ref<Vector<AssetBrowserEntry>> directories_) const override;
 	};
 }

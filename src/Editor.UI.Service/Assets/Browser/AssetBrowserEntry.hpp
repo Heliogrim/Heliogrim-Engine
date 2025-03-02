@@ -4,7 +4,7 @@
 #include <Engine.Filesystem/__fwd.hpp>
 #include <Engine.Filesystem/Url.hpp>
 
-namespace hg::editor::ui {
+namespace hg::editor::ui::service {
     enum class AssetBrowserEntryType {
         eUndefined,
         //
@@ -18,12 +18,8 @@ namespace hg::editor::ui {
 
     struct AssetBrowserEntry {
         AssetBrowserEntryType type;
-
-        //
         string title;
         fs::Url path;
-
-        //
         asset_guid guid;
     };
 }

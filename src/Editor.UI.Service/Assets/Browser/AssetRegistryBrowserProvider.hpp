@@ -6,7 +6,7 @@
 
 #include "AssetBrowserProvider.hpp"
 
-namespace hg::editor::ui {
+namespace hg::editor::ui::service {
 	class AssetRegistryBrowserProvider :
 		public AssetBrowserProvider {
 	public:
@@ -26,28 +26,28 @@ namespace hg::editor::ui {
 
 	private:
 		[[nodiscard]] data_list_type::iterator filterByType(
-			cref<data_list_type::iterator> begin_,
-			cref<data_list_type::iterator> end_,
+			ref<const data_list_type::iterator> begin_,
+			ref<const data_list_type::iterator> end_,
 			asset_type_id typeId_
 		) const;
 
 		[[nodiscard]] data_list_type::iterator filterByTypes(
-			cref<data_list_type::iterator> begin_,
-			cref<data_list_type::iterator> end_,
-			cref<CompactSet<asset_type_id>> types_
+			ref<const data_list_type::iterator> begin_,
+			ref<const data_list_type::iterator> end_,
+			ref<const CompactSet<asset_type_id>> types_
 		) const;
 
 		void mapAssetsToEntries(
-			_In_ cref<data_list_type::iterator> begin_,
-			_In_ cref<data_list_type::iterator> end_,
+			_In_ ref<const data_list_type::iterator> begin_,
+			_In_ ref<const data_list_type::iterator> end_,
 			_Out_ ref<Vector<AssetBrowserEntry>> entries_
 		) const;
 
 	public:
-		bool effects(cref<fs::Url> url_) override;
+		bool effects(ref<const fs::Url> url_) const override;
 
-		bool retrieve(cref<fs::Url> url_, ref<Vector<AssetBrowserEntry>> entries_) override;
+		bool fetchItems(ref<const fs::Url> url_, ref<Vector<AssetBrowserEntry>> entries_) const override;
 
-		bool retrieveDirectories(cref<fs::Url> url_, ref<Vector<AssetBrowserEntry>> directories_) override;
+		bool fetchDirectories(ref<const fs::Url> url_, ref<Vector<AssetBrowserEntry>> directories_) const override;
 	};
 }

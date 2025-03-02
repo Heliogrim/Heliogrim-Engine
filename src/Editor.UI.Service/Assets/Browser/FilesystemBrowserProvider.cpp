@@ -1,8 +1,9 @@
 #include "FilesystemBrowserProvider.hpp"
 
 #include <filesystem>
+#include <Engine.Common/Move.hpp>
 
-using namespace hg::editor::ui;
+using namespace hg::editor::ui::service;
 using namespace hg;
 
 FilesystemBrowserProvider::FilesystemBrowserProvider() :
@@ -14,47 +15,45 @@ FilesystemBrowserProvider::FilesystemBrowserProvider() :
 		}
 	) {}
 
-string FilesystemBrowserProvider::normalizeFsPath(mref<string> unnormalized_) {
+string FilesystemBrowserProvider::normalizeFsPath(cref<std::filesystem::path> unnormalized_) const {
 
 	const std::filesystem::path root = _root.path();
-	std::filesystem::path tmp { std::move(unnormalized_) };
 
-	if (tmp.has_stem()) {
+	auto cpy = unnormalized_;
+	if (cpy.has_stem()) {
 
-		if (tmp.stem() == root.stem()) {
+		if (cpy.stem() == root.stem()) {
 			return "";
 		}
 
-		tmp = std::filesystem::relative(tmp, root);
+		cpy = std::filesystem::relative(::hg::move(cpy), root);
 	}
 
-	if (tmp.wstring().starts_with(L"..")) {
+	if (cpy.wstring().starts_with(L"..")) {
 		return "";
 	}
 
-	return tmp.string();
+	return cpy.string();
 }
 
-string FilesystemBrowserProvider::expandPath(mref<string> normalized_) {
+std::filesystem::path FilesystemBrowserProvider::expandPath(mref<std::filesystem::path> normalized_) const {
 
 	std::filesystem::path tmp = _root.path();
-	const std::filesystem::path norm = std::move(normalized_);
-
-	if (norm.has_root_path()) {
-		tmp += norm;
+	if (normalized_.has_root_path()) {
+		tmp += ::hg::move(normalized_);
 	} else {
-		tmp /= norm;
+		tmp /= ::hg::move(normalized_);
 	}
 
-	return tmp.string();
+	return tmp;
 }
 
 bool FilesystemBrowserProvider::retrieveFs(
 	cref<fs::Url> url_,
 	const bool directories_,
 	ref<Vector<AssetBrowserEntry>> entries_
-) {
-	const std::filesystem::path fsPath = expandPath(string { url_.path() });
+) const {
+	const auto fsPath = expandPath(string { url_.path() });
 	if (not std::filesystem::is_directory(fsPath)) {
 		return false;
 	}
@@ -74,7 +73,7 @@ bool FilesystemBrowserProvider::retrieveFs(
 			continue;
 		}
 
-		auto subPath = normalizeFsPath(fsEntry.path().string());
+		auto subPath = normalizeFsPath(fsEntry.path());
 		entries_.push_back(
 			AssetBrowserEntry {
 				.type = (fsEntry.is_directory() ? AssetBrowserEntryType::eDirectory : AssetBrowserEntryType::eFile),
@@ -88,7 +87,7 @@ bool FilesystemBrowserProvider::retrieveFs(
 
 }
 
-bool FilesystemBrowserProvider::effects(cref<fs::Url> url_) {
+bool FilesystemBrowserProvider::effects(ref<const fs::Url> url_) const {
 
 	if (not url_.hasScheme()) {
 		return true;
@@ -97,10 +96,10 @@ bool FilesystemBrowserProvider::effects(cref<fs::Url> url_) {
 	return url_.scheme() == "file"sv;
 }
 
-bool FilesystemBrowserProvider::retrieve(cref<fs::Url> url_, ref<Vector<AssetBrowserEntry>> entries_) {
+bool FilesystemBrowserProvider::fetchItems(ref<const fs::Url> url_, ref<Vector<AssetBrowserEntry>> entries_) const {
 	return retrieveFs(url_, false, entries_);
 }
 
-bool FilesystemBrowserProvider::retrieveDirectories(cref<fs::Url> url_, ref<Vector<AssetBrowserEntry>> directories_) {
+bool FilesystemBrowserProvider::fetchDirectories(ref<const fs::Url> url_, ref<Vector<AssetBrowserEntry>> directories_) const {
 	return retrieveFs(url_, true, directories_);
 }
