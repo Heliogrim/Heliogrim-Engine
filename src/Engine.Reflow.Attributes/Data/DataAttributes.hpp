@@ -78,18 +78,18 @@ namespace hg::engine::reflow {
 		}
 
 		template <ref<const StringView> AttributeName_>
-		bool update(mref<GetTypeOf<AttributeName_>> next_) noexcept {
+		bool update(cref<GetTypeOf<AttributeName_>> next_) noexcept {
 			constexpr auto index = namedIndex<AttributeName_, 0uLL>();
 			static_assert(index != (~0uLL), "Failed to find attribute with name.");
 			return std::get<index>(_attributes).attribute.update(::hg::forward<decltype(next_)>(next_));
 		}
 
-		//template <ref<const StringView> AttributeName_>
-		//bool update(auto&& next_) noexcept {
-		//	constexpr auto index = namedIndex<AttributeName_, 0uLL>();
-		//	static_assert(index != (~0uLL), "Failed to find attribute with name.");
-		//	return std::get<index>(_attributes).attribute.update(::hg::forward<decltype(next_)>(next_));
-		//}
+		template <ref<const StringView> AttributeName_>
+		bool update(mref<GetTypeOf<AttributeName_>> next_) noexcept {
+			constexpr auto index = namedIndex<AttributeName_, 0uLL>();
+			static_assert(index != (~0uLL), "Failed to find attribute with name.");
+			return std::get<index>(_attributes).attribute.update(::hg::forward<decltype(next_)>(next_));
+		}
 
 		template <ref<const StringView> AttributeName_>
 		[[nodiscard]] auto& valueOf() const noexcept {

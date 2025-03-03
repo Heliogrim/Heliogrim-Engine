@@ -7,6 +7,17 @@
 #include "../NamedAttributeTuple.hpp"
 
 namespace hg::engine::reflow {
+	template <typename NamedAttribute_>
+	struct ExtractTypeOfImpl;
+
+	template <ref<const StringView> Name_, typename Attribute_>
+	struct ExtractTypeOfImpl<NamedAttribute<Name_, StyleAttribute<Attribute_>>> {
+		using named_type = NamedAttribute<Name_, StyleAttribute<Attribute_>>;
+		using type = Attribute_;
+	};
+
+	/**/
+
 	template <typename... Attributes_>
 	class StyleAttributes {
 	public:
@@ -15,6 +26,17 @@ namespace hg::engine::reflow {
 
 	private:
 		attributes_type _attributes;
+
+		template <std::size_t Index_>
+		struct GetTypeOfImpl {
+			using named_type = meta::drop_ref_t<decltype(std::get<Index_>(std::declval<decltype(_attributes)>()))>;
+			using type = typename ExtractTypeOfImpl<named_type>::type;
+		};
+
+		template <>
+		struct GetTypeOfImpl<(~0uLL)> {
+			using type = void;
+		};
 
 	public:
 		constexpr StyleAttributes() = default;
@@ -46,6 +68,9 @@ namespace hg::engine::reflow {
 			return (~0uLL);
 		}
 
+		template <ref<const StringView> Name_>
+		using GetTypeOf = typename GetTypeOfImpl<namedIndex<Name_, 0uLL>()>::type;
+
 	public:
 		template <ref<const StringView> AttributeName_>
 		[[nodiscard]] auto& get() const noexcept {
@@ -55,7 +80,14 @@ namespace hg::engine::reflow {
 		}
 
 		template <ref<const StringView> AttributeName_>
-		bool update(auto&& next_) noexcept {
+		bool update(cref<GetTypeOf<AttributeName_>> next_) noexcept {
+			constexpr auto index = namedIndex<AttributeName_, 0uLL>();
+			static_assert(index != (~0uLL), "Failed to find attribute with name.");
+			return std::get<index>(_attributes).attribute.update(::hg::forward<decltype(next_)>(next_));
+		}
+
+		template <ref<const StringView> AttributeName_>
+		bool update(mref<GetTypeOf<AttributeName_>> next_) noexcept {
 			constexpr auto index = namedIndex<AttributeName_, 0uLL>();
 			static_assert(index != (~0uLL), "Failed to find attribute with name.");
 			return std::get<index>(_attributes).attribute.update(::hg::forward<decltype(next_)>(next_));
