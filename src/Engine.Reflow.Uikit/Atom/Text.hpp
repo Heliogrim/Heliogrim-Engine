@@ -35,7 +35,22 @@ namespace hg::engine::reflow::uikit {
 		void setText(cref<string> text_);
 
 	private:
-		math::vec2 contentSize(cref<reflow::Font> font_, cref<math::vec2> space_) const;
+		mutable struct TextMeasureCache {
+			std::uintptr_t textRef;
+			size_t textHash;
+			std::uintptr_t fontRef;
+			f32 fontSizeRef;
+			f32 lineSizeRef;
+			f32 chunkLimitRef;
+
+			f32 minExtend;
+			f32 freeExtend;
+			f32 chunkSum;
+		} _measureCache;
+
+		[[nodiscard]] math::fvec2 measure1DimText(ref<const reflow::Font> font_) const;
+
+		[[nodiscard]] f32 measure1CrossDimChunked(ref<const reflow::Font> font_, f32 chunkLimit_) const;
 
 	private:
 		NullChildren _children;
@@ -49,10 +64,16 @@ namespace hg::engine::reflow::uikit {
 	public:
 		void cascadeContextChange(bool invalidate_) override;
 
-		math::vec2 prefetchDesiredSize(cref<ReflowState> state_, float scale_) const override;
+		PrefetchSizing prefetchSizing(ReflowAxis axis_, ref<const ReflowState> state_) const override;
 
-		math::vec2 computeDesiredSize(cref<ReflowPassState> passState_) const override;
+		PassPrefetchSizing passPrefetchSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) const override;
 
-		void applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) override;
+		void computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) override;
+
+		void applyLayout(ref<ReflowState> state_) override;
+
+		math::fvec2 getGrowFactor() const noexcept override;
+
+		math::fvec2 getShrinkFactor() const noexcept override;
 	};
 }

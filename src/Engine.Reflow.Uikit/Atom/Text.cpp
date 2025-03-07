@@ -1,6 +1,8 @@
 #include "Text.hpp"
 
 #include <format>
+
+#include <Engine.Reflow/Algorithm/Flex.hpp>
 #include <Engine.Reflow/Layout/Style.hpp>
 
 using namespace hg::engine::reflow::uikit;
@@ -24,10 +26,12 @@ Text::Text(mref<ReflowClassList> classList_, mref<SharedPtr<Widget>> parent_) :
 			BoxLayoutAttributes {
 				ReflowUnit { ReflowUnitType::eAuto, 0.F },
 				ReflowUnit { ReflowUnitType::eAuto, 0.F },
+				0.F, 1.F,
+				/**/
 				ReflowUnit { ReflowUnitType::eAuto, 0.F },
 				ReflowUnit { ReflowUnitType::eAuto, 0.F },
-				ReflowUnit { ReflowUnitType::eAuto, 0.F },
-				ReflowUnit { ReflowUnitType::eAuto, 0.F },
+				0.F, 1.F,
+				/**/
 				Padding { 4.F },
 				ReflowPlacement::eMiddleCenter
 			}
@@ -37,13 +41,14 @@ Text::Text(mref<ReflowClassList> classList_, mref<SharedPtr<Widget>> parent_) :
 				TypedAssetGuid<engine::assets::Font> {},
 				12.F,
 				1.F,
-				TextAlign::eLeftTop,
+				TextAlign::eTopLeft,
 				0uL,
 				ReflowWrap::eNone,
 				color { 255.F, 255.F, 255.F, 255.F }
 			}
 		}
-	) {}
+	),
+	_measureCache() {}
 
 Text::~Text() = default;
 
@@ -60,50 +65,133 @@ void Text::setText(cref<string> text_) {
 	markAsPending();
 }
 
-math::vec2 Text::contentSize(cref<reflow::Font> font_, cref<math::vec2> space_) const {
+math::fvec2 Text::measure1DimText(ref<const reflow::Font> font_) const {
 
 	const auto& data = getDataAttributes();
 	const auto& style = getStyleAttributes();
+
+	const auto& text = data.valueOf<attr::TextData::text>();
+
+	/**/
+
+	if (text.empty()) {
+		return math::fvec2 { 0.F, 0.F };
+	}
+
+	const auto textHash = hasher::fnv1a<StringView> {}(text);
+
+	if (
+		_measureCache.textHash == textHash &&
+		_measureCache.fontRef == reinterpret_cast<std::uintptr_t>(std::addressof(font_)) &&
+		_measureCache.fontSizeRef == style.valueOf<attr::TextStyle::fontSize>()
+	) {
+		return math::fvec2 { _measureCache.minExtend, _measureCache.freeExtend };
+	}
 
 	/**/
 
 	const auto fss { font_.nextFontSize(static_cast<u32>(style.valueOf<attr::TextStyle::fontSize>())) };
 	const auto fontScale { style.valueOf<attr::TextStyle::fontSize>() / static_cast<float>(fss) };
 
-	float lineBound = space_.x;
+	/**/
 
-	float fwd { 0.F };
-	u32 lines { 0uL };
-	math::vec2 size { 0.F };
+	auto sum = f32 { 0.F };
+	auto min = f32 { std::numeric_limits<f32>::infinity() };
+	auto fwd = f32 { 0.F };
+	for (const auto& ch : text) {
 
-	for (const auto& letter : data.valueOf<attr::TextData::text>()) {
+		const auto* const glyph = font_.glyph(static_cast<u32>(ch), fss);
+		sum += glyph->_advance * fontScale;
 
-		const auto* glyph { font_.glyph(static_cast<u32>(letter), fss) };
-
-		if (glyph == nullptr) {
+		if (std::isspace(ch)) {
+			min = std::max(min, fwd);
+			fwd = 0.F;
 			continue;
 		}
 
 		fwd += glyph->_advance * fontScale;
-
-		if (style.valueOf<attr::TextStyle::textWrap>() == ReflowWrap::eWrap && fwd > lineBound) {
-			fwd = glyph->_advance * fontScale;
-			++lines;
-		}
-
-		size.x = MAX(size.x, fwd);
 	}
 
 	/**/
 
-	if (style.valueOf<attr::TextStyle::textWrap>() == ReflowWrap::eNoWrap) {
-		lines = 1uL;
-	} else if (style.valueOf<attr::TextStyle::textEllipse>()) {
-		lines = MIN(lines, style.valueOf<attr::TextStyle::textEllipse>());
+	_measureCache.textRef = reinterpret_cast<std::uintptr_t>(data.valueOf<attr::TextData::text>().data());
+	_measureCache.textHash = textHash;
+	_measureCache.fontRef = reinterpret_cast<std::uintptr_t>(std::addressof(font_));
+	_measureCache.fontSizeRef = style.valueOf<attr::TextStyle::fontSize>();
+	_measureCache.minExtend = std::min(min, fwd);
+	_measureCache.freeExtend = sum;
+
+	// Note: We set chunkSum to zero to signal the chunked measure to update
+	_measureCache.chunkSum = 0.F;
+
+	/**/
+
+	return math::fvec2 { std::min(min, fwd), sum };
+}
+
+f32 Text::measure1CrossDimChunked(ref<const reflow::Font> font_, f32 chunkLimit_) const {
+
+	const auto& data = getDataAttributes();
+	const auto& style = getStyleAttributes();
+
+	const auto text = data.valueOf<attr::TextData::text>();
+
+	/**/
+
+	if (text.empty()) {
+		return 0.F;
 	}
 
-	size.y = static_cast<float>(lines) * style.valueOf<attr::TextStyle::fontSize>() * style.valueOf<attr::TextStyle::lineHeight>();
-	return size;
+	if (
+		// Note: This is used as cache buster from the measure 1-dim text
+		_measureCache.chunkSum != 0.F &&
+		/* The rest of comparisons is actual cache option validation... */
+		_measureCache.textRef == reinterpret_cast<std::uintptr_t>(data.valueOf<attr::TextData::text>().data()) &&
+		_measureCache.fontRef == reinterpret_cast<std::uintptr_t>(std::addressof(font_)) &&
+		_measureCache.fontSizeRef == style.valueOf<attr::TextStyle::fontSize>() &&
+		_measureCache.lineSizeRef == style.valueOf<attr::TextStyle::lineHeight>() &&
+		_measureCache.chunkLimitRef == chunkLimit_
+	) {
+		return _measureCache.chunkSum;
+	}
+
+	/**/
+
+	const auto fss { font_.nextFontSize(static_cast<u32>(style.valueOf<attr::TextStyle::fontSize>())) };
+	const auto fontScale { style.valueOf<attr::TextStyle::fontSize>() / static_cast<float>(fss) };
+
+	auto lines = text.empty() ? 0uL : 1uL;
+	auto lss = f32 { 0.F };
+	auto fwd = f32 { 0.F };
+	for (const auto& ch : text) {
+
+		const auto* const glyph = font_.glyph(static_cast<u32>(ch), fss);
+		const auto advance = glyph->_advance * fontScale;
+		lss += advance;
+
+		if (fwd + lss > chunkLimit_) {
+			++lines;
+			fwd = 0.F;
+		}
+
+		if (std::isspace(ch)) {
+			fwd += lss;
+			lss = 0.F;
+		}
+	}
+
+	/**/
+
+	_measureCache.lineSizeRef = style.valueOf<attr::TextStyle::lineHeight>();
+	_measureCache.chunkLimitRef = chunkLimit_;
+	// Note: We set chunkSum to zero to signal the chunked measure to update
+	_measureCache.chunkSum = static_cast<f32>(lines) *
+		style.valueOf<attr::TextStyle::fontSize>() *
+		style.valueOf<attr::TextStyle::lineHeight>();
+
+	/**/
+
+	return static_cast<f32>(lines) * style.valueOf<attr::TextStyle::fontSize>() * style.valueOf<attr::TextStyle::lineHeight>();
 }
 
 const ptr<const NullChildren> Text::children() const {
@@ -113,124 +201,125 @@ const ptr<const NullChildren> Text::children() const {
 void Text::render(const ptr<ReflowCommandBuffer> cmd_) {
 
 	const auto& data = getDataAttributes();
+	const auto& layout = getLayoutAttributes();
 	const auto& style = getStyleAttributes();
 
-	math::vec2 innerOffset = _layoutState.layoutOffset;
-	const math::vec2 innerSize = _layoutState.layoutSize;
+	const auto padding = layout.valueOf<attr::BoxLayout::padding>();
+	const auto shift = _layoutState.layoutOffset + math::fvec2 { padding.x, padding.y };
+	const auto space = _layoutState.layoutSize - math::fvec2 { padding.x + padding.z, padding.y + padding.w };
 
 	auto font = loadFont(style.valueOf<attr::TextStyle::font>());
-	const math::vec2 occupied = contentSize(*font, innerSize);
 
 	/**/
 
-	const math::fExtent2D scissor { innerSize.x, innerSize.y, innerOffset.x, innerOffset.y };
+	const math::fExtent2D scissor { space.x, space.y, shift.x, shift.y };
 	cmd_->pushIntersectScissor(scissor);
 
 	/**/
 
 	const u8 align { static_cast<u8>(style.valueOf<attr::TextStyle::textAlign>()) };
-	if ((align & 0b0000'1110u) == 0x0u) {
 
-		/* Align Left */
-		// off.x += _computedStyle.margin.x;
-
-	} else if ((align & 0b0000'1111u) == 0x2u) {
-
-		/* Align Center */
-		const math::vec2 diff { innerSize.x - occupied.x, innerSize.y - occupied.y };
-		innerOffset.x += diff.x * 0.5F;
-
-	} else if ((align & 0b0000'1111u) == 0x4u) {
-
-		/* Align Right */
-		const math::vec2 diff { innerSize.x - occupied.x, innerSize.y - occupied.y };
-		innerOffset.x += diff.x;
-	}
-
-	if ((align & 0b1110'0000u) == 0x0u) {
-
+	const auto alignVertical =
 		/* Vertical Align Top */
-		// off.y += _computedStyle.margin.y;
-
-	} else if ((align & 0b1111'0000u) == 0x20u) {
-
+		(align & 0b1110'0000u) == 0x0u ?
+		0.F :
 		/* Vertical Align Middle */
-		const math::vec2 diff { innerSize.x - occupied.x, innerSize.y - occupied.y };
-		innerOffset.y += diff.y * 0.5F;
-
-	} else if ((align & 0b1111'0000u) == 0x40u) {
-
+		(align & 0b1111'0000u) == 0x20u ?
+		(getLayoutState().layoutSize.y - getLayoutState().computeSize.y) / 2.F :
 		/* Vertical Align Bottom */
-		const math::vec2 diff { innerSize.x - occupied.x, innerSize.y - occupied.y };
-		innerOffset.y += diff.y;
-	}
+		(align & 0b1111'0000u) == 0x40u ?
+		(getLayoutState().layoutSize.y - getLayoutState().computeSize.y) :
+		/* Invalid flag */
+		0.F;
+
+	const auto alignShiftFactor =
+		/* Align Left */
+		(align & 0b0000'1110u) == 0x0u ?
+		0.F :
+		/* Align Center*/
+		(align & 0b0000'1111u) == 0x2u ?
+		0.5F :
+		/* Align Right*/
+		(align & 0b0000'1111u) == 0x4u ?
+		1.F :
+		/* Invalid flag */
+		0.F;
 
 	/**/
 
-	if (not style.valueOf<attr::TextStyle::textEllipse>()) {
+	const auto text = StringView { data.valueOf<attr::TextData::text>() };
+	const auto fss { font->nextFontSize(static_cast<u32>(style.valueOf<attr::TextStyle::fontSize>())) };
+	const auto fontScale = style.valueOf<attr::TextStyle::fontSize>() / static_cast<f32>(fss);
+	const auto lineScale = style.valueOf<attr::TextStyle::fontSize>() * style.valueOf<attr::TextStyle::lineHeight>();
+
+	/**/
+
+	const auto renderTextLine = [&](const u16 line_, const u16 start_, const u16 end_, const f32 extend_) {
+
+		const auto alignShift = (space.x - extend_) * alignShiftFactor;
+		const auto base = shift + math::fvec2 { alignShift, alignVertical + static_cast<f32>(line_) * lineScale };
+
 		cmd_->drawText(
-			innerOffset,
-			data.valueOf<attr::TextData::text>(),
+			base,
+			StringView { text.substr(start_, end_ - start_) },
 			*font,
 			style.valueOf<attr::TextStyle::fontSize>(),
 			style.valueOf<attr::TextStyle::color>()
 		);
 
-	} else {
+	};
 
-		const auto fss { font->nextFontSize(static_cast<u32>(style.valueOf<attr::TextStyle::fontSize>())) };
-		const auto fontScale { style.valueOf<attr::TextStyle::fontSize>() / static_cast<float>(fss) };
-		const auto lineBound { occupied.x };
+	/**/
 
-		float fccw { 0.F };
-		u32 wraps { 0uL };
-		u32 j { 0uL };
+	auto lineIdx = u16 { 0uL };
+	auto lineStartIdx = u16 { 0uL };
+	auto lineFwd = f32 { 0.F };
+	auto wordStartIdx = u16 { 0uL };
+	auto wordFwd = f32 { 0.F };
 
-		// Warning: We need to use references or string_views instead of string copies
-		const auto text = StringView { data.valueOf<attr::TextData::text>() };
-		for (u32 i { 0uL }; i < text.length(); ++i) {
+	for (size_t idx = 0uLL; idx < text.length(); ++idx) {
 
-			const auto& letter = text[i];
-			const auto* glyph { font->glyph(static_cast<u32>(letter), fss) };
+		const auto ch = text[idx];
+		const auto* const glyph = font->glyph(static_cast<u32>(ch), fss);
 
-			if (glyph == nullptr) {
-				continue;
-			}
-
-			fccw += glyph->_advance * fontScale;
-
-			if (style.valueOf<attr::TextStyle::textWrap>() == ReflowWrap::eWrap &&
-				fccw > lineBound &&
-				wraps < style.valueOf<attr::TextStyle::textEllipse>()
-			) {
-
-				cmd_->drawText(
-					innerOffset,
-					string_view { text.begin() + j, text.begin() + i },
-					*font,
-					style.valueOf<attr::TextStyle::fontSize>(),
-					style.valueOf<attr::TextStyle::color>()
-				);
-
-				innerOffset.y += style.valueOf<attr::TextStyle::fontSize>() * style.valueOf<attr::TextStyle::lineHeight>();
-
-				fccw = glyph->_advance * fontScale;
-				j = i;
-				++wraps;
-			}
-
+		if (glyph == nullptr) {
+			continue;
 		}
 
-		if (fccw <= lineBound && wraps < style.valueOf<attr::TextStyle::textEllipse>()) {
-			cmd_->drawText(
-				innerOffset,
-				string_view { text.begin() + j, text.end() },
-				*font,
-				style.valueOf<attr::TextStyle::fontSize>(),
-				style.valueOf<attr::TextStyle::color>()
-			);
+		const auto advance = glyph->_advance * fontScale;
+		if (lineFwd + wordFwd + advance > space.x) {
+			renderTextLine(lineIdx, lineStartIdx, wordStartIdx, lineFwd);
+
+			++lineIdx;
+			lineStartIdx = wordStartIdx;
+			lineFwd = 0.F;
 		}
 
+		/**/
+
+		if (std::isspace(ch) && wordStartIdx == idx) {
+			lineFwd += advance;
+			wordFwd = 0.F;
+			wordStartIdx = idx + 1;
+			continue;
+		}
+
+		if (std::isspace(ch)) {
+			lineFwd += wordFwd + advance;
+			wordFwd = 0.F;
+			wordStartIdx = idx + 1;
+			continue;
+		}
+
+		wordFwd += advance;
+	}
+
+	if (lineFwd > 0.F || wordFwd > 0.F) {
+		renderTextLine(lineIdx, lineStartIdx, text.length(), lineFwd + wordFwd);
+	}
+
+	if (not style.valueOf<attr::TextStyle::textEllipse>()) {
+		// TODO: Handle text ellipsing
 	}
 
 	/**/
@@ -263,11 +352,13 @@ void Text::cascadeContextChange(bool invalidate_) {
 			auto& stored = getLayoutAttributes();
 
 			stored.update<attr::BoxLayout::minWidth>(layout->valueOf<attr::BoxLayout::minWidth>());
-			stored.update<attr::BoxLayout::width>(layout->valueOf<attr::BoxLayout::width>());
 			stored.update<attr::BoxLayout::maxWidth>(layout->valueOf<attr::BoxLayout::maxWidth>());
+			stored.update<attr::BoxLayout::widthGrow>(layout->valueOf<attr::BoxLayout::widthGrow>());
+			stored.update<attr::BoxLayout::widthShrink>(layout->valueOf<attr::BoxLayout::widthShrink>());
 			stored.update<attr::BoxLayout::minHeight>(layout->valueOf<attr::BoxLayout::minHeight>());
-			stored.update<attr::BoxLayout::height>(layout->valueOf<attr::BoxLayout::height>());
 			stored.update<attr::BoxLayout::maxHeight>(layout->valueOf<attr::BoxLayout::maxHeight>());
+			stored.update<attr::BoxLayout::heightGrow>(layout->valueOf<attr::BoxLayout::heightGrow>());
+			stored.update<attr::BoxLayout::heightShrink>(layout->valueOf<attr::BoxLayout::heightShrink>());
 			stored.update<attr::BoxLayout::padding>(layout->valueOf<attr::BoxLayout::padding>());
 			stored.update<attr::BoxLayout::placement>(layout->valueOf<attr::BoxLayout::placement>());
 		}
@@ -291,98 +382,100 @@ void Text::cascadeContextChange(bool invalidate_) {
 	Widget::cascadeContextChange(invalidate_);
 }
 
-math::vec2 Text::prefetchDesiredSize(cref<ReflowState> state_, float scale_) const {
+PrefetchSizing Text::prefetchSizing(ReflowAxis axis_, ref<const ReflowState> state_) const {
 
-	const auto& layout = getLayoutAttributes();
+	const auto& box = getLayoutAttributes();
 	const auto& style = getStyleAttributes();
 
-	/**/
+	const auto fb = algorithm::PrefetchBox {
+		.mainAxis = ReflowAxis::eXAxis,
+		.min = algorithm::unitAbsMin(box.valueOf<attr::BoxLayout::minWidth>(), box.valueOf<attr::BoxLayout::minHeight>()),
+		.max = algorithm::unitAbsMax(box.valueOf<attr::BoxLayout::maxWidth>(), box.valueOf<attr::BoxLayout::maxHeight>()),
+		.gapping = { 0.F, 0.F },
+		.padding = box.valueOf<attr::BoxLayout::padding>()
+	};
+	auto base = algorithm::prefetch(axis_, fb, children());
 
-	math::vec2 size { std::numeric_limits<float>::infinity() };
-	if (layout.valueOf<attr::BoxLayout::width>().type == ReflowUnitType::eAbsolute) {
-		size.x = layout.valueOf<attr::BoxLayout::width>().value;
-	}
-	if (layout.valueOf<attr::BoxLayout::height>().type == ReflowUnitType::eAbsolute) {
-		size.y = layout.valueOf<attr::BoxLayout::height>().value;
-	}
+	if (axis_ == ReflowAxis::eXAxis) {
 
-	/**/
+		// TODO: Measure text requirements
+		const auto font = loadFont(style.valueOf<attr::TextStyle::font>());
+		const auto textSizing = measure1DimText(*font);
 
-	const auto font = loadFont(style.valueOf<attr::TextStyle::font>());
-	auto baseSize = contentSize(*font, size);
-	baseSize *= scale_;
+		base.minSizing.x += textSizing.min;
+		base.sizing.x += textSizing.max;
 
-	/**/
-
-	if (layout.valueOf<attr::BoxLayout::width>().type == ReflowUnitType::eAbsolute) {
-		size.x = layout.valueOf<attr::BoxLayout::width>().value;
 	} else {
-		size.x = baseSize.x;
+
+		const auto font = loadFont(style.valueOf<attr::TextStyle::font>());
+		const auto textSizing = measure1CrossDimChunked(*font, getLayoutState().computeSize.x - fb.padding.x - fb.padding.z);
+
+		base.minSizing.y += textSizing;
+		base.sizing.y += textSizing;
+
 	}
 
-	if (layout.valueOf<attr::BoxLayout::height>().type == ReflowUnitType::eAbsolute) {
-		size.y = layout.valueOf<attr::BoxLayout::height>().value;
-	} else {
-		size.y = baseSize.y;
-	}
-
-	/**/
-
-	//return layout::clampSizeAbs(layout, size);
-	return size;
+	return {
+		math::compClamp(fb.min, base.minSizing, fb.max),
+		math::compClamp(fb.min, base.sizing, fb.max)
+	};
 }
 
-math::vec2 Text::computeDesiredSize(cref<ReflowPassState> passState_) const {
+PassPrefetchSizing Text::passPrefetchSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) const {
 
-	const auto& layout = getLayoutAttributes();
-	const auto& style = getStyleAttributes();
-
-	math::vec2 desired { getDesiredSize() };
-	if (layout.valueOf<attr::BoxLayout::width>().type == ReflowUnitType::eRelative) {
-		desired.x = passState_.referenceSize.x * layout.valueOf<attr::BoxLayout::width>().value;
-	}
-	if (layout.valueOf<attr::BoxLayout::height>().type == ReflowUnitType::eRelative) {
-		desired.y = passState_.referenceSize.y * layout.valueOf<attr::BoxLayout::height>().value;
-	}
-
-	/**/
-
-	const auto font = loadFont(style.valueOf<attr::TextStyle::font>());
-	auto baseSize = contentSize(*font, desired);
-	baseSize *= 1.F;
-
-	/**/
-
-	if (layout.valueOf<attr::BoxLayout::width>().type == ReflowUnitType::eAbsolute) {
-		desired.x = layout.valueOf<attr::BoxLayout::width>().value;
-	} else if (layout.valueOf<attr::BoxLayout::width>().type == ReflowUnitType::eRelative) {
-		desired.x = passState_.referenceSize.x * layout.valueOf<attr::BoxLayout::width>().value;
-	} else {
-		desired.x = baseSize.x;
-	}
-
-	if (layout.valueOf<attr::BoxLayout::height>().type == ReflowUnitType::eAbsolute) {
-		desired.y = layout.valueOf<attr::BoxLayout::height>().value;
-	} else if (layout.valueOf<attr::BoxLayout::height>().type == ReflowUnitType::eRelative) {
-		desired.y = passState_.referenceSize.y * layout.valueOf<attr::BoxLayout::height>().value;
-	} else {
-		desired.y = baseSize.y;
-	}
-
-	/**/
-
-	//return layout::clampSize(layout, passState_.layoutSize, desired);
-	return desired;
+	const auto& box = getLayoutAttributes();
+	return {
+		algorithm::nextUnit(
+			box.valueOf<attr::BoxLayout::minWidth>(),
+			box.valueOf<attr::BoxLayout::minHeight>(),
+			passState_.referenceSize,
+			passState_.prefetchMinSize
+		),
+		math::compMax(
+			algorithm::nextUnit(
+				box.valueOf<attr::BoxLayout::minWidth>(),
+				box.valueOf<attr::BoxLayout::minHeight>(),
+				passState_.referenceSize,
+				passState_.prefetchSize
+			),
+			passState_.prefetchSize
+		),
+		algorithm::nextUnit(
+			box.valueOf<attr::BoxLayout::maxWidth>(),
+			box.valueOf<attr::BoxLayout::maxHeight>(),
+			passState_.referenceSize,
+			algorithm::unitAbsMax(
+				box.valueOf<attr::BoxLayout::maxWidth>(),
+				box.valueOf<attr::BoxLayout::maxHeight>()
+			)
+		)
+	};
 }
 
-void Text::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) {
-	// TODO: Implement
+void Text::computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) {
+	// Note: We artificially employ the prefetchSizing function to handle wrapping on secondary pass
+}
+
+void Text::applyLayout(ref<ReflowState> state_) {}
+
+math::fvec2 Text::getGrowFactor() const noexcept {
+	return {
+		getLayoutAttributes().valueOf<attr::BoxLayout::widthGrow>(),
+		getLayoutAttributes().valueOf<attr::BoxLayout::heightGrow>()
+	};
+}
+
+math::fvec2 Text::getShrinkFactor() const noexcept {
+	return {
+		getLayoutAttributes().valueOf<attr::BoxLayout::widthShrink>(),
+		getLayoutAttributes().valueOf<attr::BoxLayout::heightShrink>()
+	};
 }
 
 /**/
 
-#include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets/Assets.hpp>
+#include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.GFX.Loader/Font/FontLoadOptions.hpp>
 #include <Engine.GFX.Loader/Font/FontResource.hpp>
