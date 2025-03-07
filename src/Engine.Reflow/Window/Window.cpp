@@ -2,13 +2,11 @@
 
 #include <algorithm>
 #include <format>
-#include <ranges>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Move.hpp>
 
 #include "Layer.hpp"
 #include "../Command/ReflowCommandLayer.hpp"
-#include "../Widget/Popup.hpp"
 #include "../Widget/Layer/Host.hpp"
 
 using namespace hg::engine::reflow;
@@ -16,13 +14,6 @@ using namespace hg;
 
 Window::Window() :
 	Widget(),
-	attr(
-		Attributes {
-			.style = {
-				this, WindowStyle {}
-			}
-		}
-	),
 	_nativeWindow(nullptr),
 	_type(WindowType::eNormal),
 	_resizable(true),
@@ -149,7 +140,7 @@ sptr<Widget> Window::getFocusTarget() const noexcept {
 
 void Window::render(const ptr<ReflowCommandBuffer> cmd_) {
 
-	if (attr.style->backgroundColor.a > 0.F) {
+	if (true) {
 
 		const math::vec2& offset = _layoutState.layoutOffset;
 		const math::vec2& size = _layoutState.layoutSize;
@@ -159,7 +150,7 @@ void Window::render(const ptr<ReflowCommandBuffer> cmd_) {
 		const math::vec2 c2 { offset.x + size.x, offset.y + size.y };
 		const math::vec2 c3 { offset.x, offset.y + size.y };
 
-		cmd_->drawQuad(c0, c1, c2, c3, attr.style->backgroundColor);
+		cmd_->drawQuad(c0, c1, c2, c3, /*attr.style->backgroundColor*/{ 127.F, 0.F, 127.F, 255.F });
 	}
 
 	/**/
@@ -174,29 +165,60 @@ void Window::render(const ptr<ReflowCommandBuffer> cmd_) {
 	}
 }
 
-math::vec2 Window::prefetchDesiredSize(cref<ReflowState> state_, float scale_) const {
-	return _clientSize;
+PrefetchSizing Window::prefetchSizing(ReflowAxis axis_, ref<const ReflowState> state_) const {
+	return { _clientSize, _clientSize };
 }
 
-math::vec2 Window::computeDesiredSize(cref<ReflowPassState> passState_) const {
-	return passState_.referenceSize;
+PassPrefetchSizing Window::passPrefetchSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) const {
+	return { _clientSize, _clientSize, _clientSize };
 }
 
-void Window::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) {
+void Window::computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) {
+
+	// TODO: Implement
+	if (_children.getChild<0uL>() != NullWidget::instance()) {
+
+		auto& state = _children.getChild<0uL>()->getLayoutState();
+		state.computeSize = passState_.computeSize;
+	}
+
+	if (_children.getChild<1uL>() != NullWidget::instance()) {
+
+		auto& state = _children.getChild<1uL>()->getLayoutState();
+		const auto range = state.prefetchMaxSize - state.prefetchSize;
+
+		state.computeSize = math::compMax(state.prefetchMinSize, math::compMin(state.prefetchMaxSize, passState_.computeSize));
+	}
+
+	/**/
+
+	if (_children.size() <= 2uLL) {
+		return;
+	}
+
+	for (auto iter = _children.begin() + 2uLL; iter != _children.end(); ++iter) {
+		auto* const host = static_cast<const ptr<Host>>(iter->get());
+		host->getLayoutState().computeSize = getLayoutState().computeSize;
+	}
+}
+
+void Window::applyLayout(ref<ReflowState> state_) {
+
+	const auto& local = getLayoutState();
 
 	// TODO: Implement
 	if (_children.getChild<0uL>() != NullWidget::instance()) {
 
 		const auto state = state_.getStateOf(_children.getChild<0uL>());
-		state->layoutOffset = ctx_.localOffset;
-		state->layoutSize = ctx_.localSize;
+		state->layoutOffset = local.layoutOffset;
+		state->layoutSize = local.layoutSize;
 	}
 
 	if (_children.getChild<1uL>() != NullWidget::instance()) {
 
 		const auto state = state_.getStateOf(_children.getChild<1uL>());
-		state->layoutOffset = ctx_.localOffset;
-		state->layoutSize = ctx_.localSize;
+		state->layoutOffset = local.layoutOffset;
+		state->layoutSize = state->computeSize;
 	}
 
 	/**/
@@ -210,7 +232,15 @@ void Window::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) {
 		const auto state = state_.getStateOf(*iter);
 		const auto* const host = static_cast<const ptr<const Host>>(iter->get());
 
-		state->layoutOffset = host->getHostOffset();
-		state->layoutSize = ctx_.localSize;
+		state->layoutOffset = local.layoutOffset + host->getHostOffset();
+		state->layoutSize = local.layoutSize;
 	}
+}
+
+math::fvec2 Window::getShrinkFactor() const noexcept {
+	return {};
+}
+
+math::fvec2 Window::getGrowFactor() const noexcept {
+	return {};
 }

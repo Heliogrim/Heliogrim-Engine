@@ -143,7 +143,7 @@ sptr<Window> WindowManager::resolveWindow(cref<math::ivec2> position_) const noe
 	for (const auto& entry : _windows) {
 
 		const auto* const wnd { entry->window.get() };
-		if (intersects(wnd->layoutState().layoutOffset, wnd->layoutState().layoutSize, pos)) {
+		if (intersects(wnd->getLayoutState().layoutOffset, wnd->getLayoutState().layoutSize, pos)) {
 			return entry->window;
 		}
 	}
@@ -283,6 +283,7 @@ sptr<Window> WindowManager::requestWindow(
 			platform->makeNativeWindow(title_, math::iExtent2D { size_.x, size_.y })
 		}
 	);
+	::hg::assertrt(window != nullptr);
 
 	/**/
 
