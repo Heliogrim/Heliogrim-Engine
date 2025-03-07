@@ -9,9 +9,6 @@
 namespace hg::engine::reflow {
 	namespace attr {
 		struct FlexLayout {
-			constexpr static inline auto grow = "grow"sv;
-			constexpr static inline auto shrink = "shrink"sv;
-
 			constexpr static inline auto colGap = "columnGap"sv;
 			constexpr static inline auto rowGap = "rowGap"sv;
 
@@ -22,8 +19,6 @@ namespace hg::engine::reflow {
 
 	struct FlexLayoutAttributes final :
 		public LayoutAttributes<
-			NamedAttribute<attr::FlexLayout::grow, LayoutAttribute<float>>,
-			NamedAttribute<attr::FlexLayout::shrink, LayoutAttribute<float>>,
 			NamedAttribute<attr::FlexLayout::colGap, LayoutAttribute<float>>,
 			NamedAttribute<attr::FlexLayout::rowGap, LayoutAttribute<float>>,
 			NamedAttribute<attr::FlexLayout::align, LayoutAttribute<ReflowAlignment>>,
