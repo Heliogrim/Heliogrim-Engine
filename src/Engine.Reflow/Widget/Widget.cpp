@@ -57,27 +57,43 @@ bool Widget::shouldTick() const noexcept {
 
 void Widget::tick() {}
 
-EventResponse Widget::onFocus(cref<FocusEvent> event_) {
-    return EventResponse::eUnhandled;
+EventResponse Widget::invokeOnFocus(cref<FocusEvent> event_) {
+	return _emitter.emit(ReflowEventNames::FocusEvent, event_);
 }
 
-EventResponse Widget::onBlur(cref<FocusEvent> event_) {
-    return EventResponse::eUnhandled;
+ReflowEventEmitter::handle_type Widget::onFocus(ReflowEventEmitter::listener_type<FocusEvent> listenFn_) {
+	return _emitter.on(ReflowEventNames::FocusEvent, ::hg::move(listenFn_));
 }
 
-EventResponse Widget::onMouseButtonDown(cref<MouseEvent> event_) {
-    return EventResponse::eUnhandled;
+EventResponse Widget::invokeOnBlur(cref<FocusEvent> event_) {
+	return _emitter.emit(ReflowEventNames::BlurEvent, event_);
 }
 
-EventResponse Widget::onMouseButtonUp(cref<MouseEvent> event_) {
-    return EventResponse::eUnhandled;
+Widget::listen_handle_type Widget::onBlur(listen_fn_type<FocusEvent> listenFn_) {
+	return _emitter.on(ReflowEventNames::BlurEvent, ::hg::move(listenFn_));
 }
 
-EventResponse Widget::onMouseMove(cref<MouseMoveEvent> event_) {
-    return EventResponse::eUnhandled;
+Widget::listen_handle_type Widget::onClick(listen_fn_type<MouseEvent> listenFn_) {
+	return _emitter.on(ReflowEventNames::ClickEvent, ::hg::move(listenFn_));
 }
 
-EventResponse Widget::onMouseEnter(cref<MouseMoveEvent> event_) {
+bool Widget::dropOnClick(listen_handle_type handle_) {
+	return _emitter.off<MouseEvent>(ReflowEventNames::ClickEvent, ::hg::move(handle_));
+}
+
+EventResponse Widget::invokeOnMouseButtonDown(ref<const MouseEvent> event_) {
+	return _emitter.emit(ReflowEventNames::ClickEvent, event_);
+}
+
+EventResponse Widget::invokeOnMouseButtonUp(ref<const MouseEvent> event_) {
+	return EventResponse::eUnhandled;
+}
+
+EventResponse Widget::invokeOnMouseMove(ref<const MouseMoveEvent> event_) {
+	return EventResponse::eUnhandled;
+}
+
+EventResponse Widget::invokeOnMouseEnter(ref<const MouseMoveEvent> event_) {
 
 	if (not _state.isHover()) {
 		_state |= WidgetStateFlagBits::eHover;
@@ -87,7 +103,7 @@ EventResponse Widget::onMouseEnter(cref<MouseMoveEvent> event_) {
 	return EventResponse::eUnhandled;
 }
 
-EventResponse Widget::onMouseLeave(cref<MouseMoveEvent> event_) {
+EventResponse Widget::invokeOnMouseLeave(ref<const MouseMoveEvent> event_) {
 
 	if (_state.isHover()) {
 		_state.unwrap &= (~static_cast<WidgetState::value_type>(WidgetStateFlagBits::eHover));
@@ -97,48 +113,48 @@ EventResponse Widget::onMouseLeave(cref<MouseMoveEvent> event_) {
 	return EventResponse::eUnhandled;
 }
 
-EventResponse Widget::onWheel(cref<WheelEvent> event_) {
+EventResponse Widget::invokeOnWheel(ref<const WheelEvent> event_) {
 	return EventResponse::eUnhandled;
 }
 
-EventResponse Widget::onDrag(cref<DragDropEvent> event_) {
+EventResponse Widget::invokeOnDrag(ref<const DragDropEvent> event_) {
 	return EventResponse::eUnhandled;
 }
 
-EventResponse Widget::onDrop(cref<DragDropEvent> event_) {
-    return EventResponse::eUnhandled;
+EventResponse Widget::invokeOnDrop(ref<const DragDropEvent> event_) {
+	return EventResponse::eUnhandled;
 }
 
-EventResponse Widget::onDragEnter(cref<DragDropEvent> event_) {
-    return EventResponse::eUnhandled;
+EventResponse Widget::invokeOnDragEnter(ref<const DragDropEvent> event_) {
+	return EventResponse::eUnhandled;
 }
 
-EventResponse Widget::onDragLeave(cref<DragDropEvent> event_) {
-    return EventResponse::eUnhandled;
+EventResponse Widget::invokeOnDragLeave(ref<const DragDropEvent> event_) {
+	return EventResponse::eUnhandled;
 }
 
-EventResponse Widget::onDragOver(cref<DragDropEvent> event_) {
-    return EventResponse::eUnhandled;
+EventResponse Widget::invokeOnDragOver(ref<const DragDropEvent> event_) {
+	return EventResponse::eUnhandled;
 }
 
-EventResponse Widget::onTouchStart(cref<TouchEvent> event_) {
-    return EventResponse::eUnhandled;
+EventResponse Widget::invokeOnTouchStart(ref<const TouchEvent> event_) {
+	return EventResponse::eUnhandled;
 }
 
-EventResponse Widget::onTouchEnd(cref<TouchEvent> event_) {
-    return EventResponse::eUnhandled;
+EventResponse Widget::invokeOnTouchEnd(ref<const TouchEvent> event_) {
+	return EventResponse::eUnhandled;
 }
 
-EventResponse Widget::onTouchMove(cref<TouchEvent> event_) {
-    return EventResponse::eUnhandled;
+EventResponse Widget::invokeOnTouchMove(ref<const TouchEvent> event_) {
+	return EventResponse::eUnhandled;
 }
 
-EventResponse Widget::onKeyDown(cref<KeyboardEvent> event_) {
-    return EventResponse::eUnhandled;
+EventResponse Widget::invokeOnKeyDown(ref<const KeyboardEvent> event_) {
+	return EventResponse::eUnhandled;
 }
 
-EventResponse Widget::onKeyUp(cref<KeyboardEvent> event_) {
-    return EventResponse::eUnhandled;
+EventResponse Widget::invokeOnKeyUp(ref<const KeyboardEvent> event_) {
+	return EventResponse::eUnhandled;
 }
 
 void Widget::setParent(mref<sptr<Widget>> parent_) {
