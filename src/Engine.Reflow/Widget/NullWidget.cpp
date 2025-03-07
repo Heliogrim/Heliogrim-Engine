@@ -2,42 +2,47 @@
 
 #include "../Children.hpp"
 
-#include <Engine.Common/Make.hpp>
 #include <format>
 
 using namespace hg::engine::reflow;
 using namespace hg;
 
 NullWidget::NullWidget() :
-    Widget() {}
+	Widget() {}
 
 NullWidget::~NullWidget() = default;
 
 sptr<NullWidget> NullWidget::instance() {
-    static sptr<NullWidget> instance = sptr<NullWidget>(new NullWidget());
-    return instance;
+	static sptr<NullWidget> instance = sptr<NullWidget>(new NullWidget());
+	return instance;
 }
 
 string NullWidget::getTag() const noexcept {
-    return std::format(R"(NullWidget <{:#x}>)", reinterpret_cast<u64>(this));
+	return std::format(R"(NullWidget <{:#x}>)", reinterpret_cast<u64>(this));
 }
 
 const ptr<const Children> NullWidget::children() const {
-    return get_null_children();
+	return get_null_children();
 }
 
 void NullWidget::render(const ptr<ReflowCommandBuffer> cmd_) {}
 
-math::vec2 NullWidget::prefetchDesiredSize(cref<ReflowState> state_, float scale_) const {
-    return math::vec2 {};
+PassPrefetchSizing NullWidget::passPrefetchSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) const {
+	return { { 0.F, 0.F }, { 0.F, 0.F }, { 0.F, 0.F } };
 }
 
-math::vec2 NullWidget::computeDesiredSize(cref<ReflowPassState> passState_) const {
-    return math::vec2 {};
+PrefetchSizing NullWidget::prefetchSizing(ReflowAxis axis_, ref<const ReflowState> state_) const {
+	return { { 0.F, 0.F }, { 0.F, 0.F } };
 }
 
-void NullWidget::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) {}
+void NullWidget::computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) {}
 
-bool NullWidget::willChangeLayout(cref<math::vec2> space_) const noexcept {
-    return false;
+void NullWidget::applyLayout(ref<ReflowState> state_) {}
+
+math::fvec2 NullWidget::getShrinkFactor() const noexcept {
+	return { 0.F, 0.F };
+}
+
+math::fvec2 NullWidget::getGrowFactor() const noexcept {
+	return { 0.F, 0.F };
 }
