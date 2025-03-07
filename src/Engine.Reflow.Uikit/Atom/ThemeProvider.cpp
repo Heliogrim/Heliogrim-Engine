@@ -58,20 +58,35 @@ void uikit::ThemeProvider::render(const ptr<ReflowCommandBuffer> cmd_) {
 	_children.getChild()->render(cmd_);
 }
 
-math::vec2 uikit::ThemeProvider::prefetchDesiredSize(cref<ReflowState> state_, float scale_) const {
-	return _children.getChild()->getDesiredSize();
+PrefetchSizing uikit::ThemeProvider::prefetchSizing(ReflowAxis axis_, ref<const ReflowState> state_) const {
+	return {
+		_children.getChild()->getLayoutState().prefetchMinSize,
+		_children.getChild()->getLayoutState().prefetchSize
+	};
 }
 
-math::vec2 uikit::ThemeProvider::computeDesiredSize(cref<ReflowPassState> passState_) const {
-	return _children.getChild()->computeDesiredSize(passState_);
+PassPrefetchSizing uikit::ThemeProvider::passPrefetchSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) const {
+	return _children.getChild()->passPrefetchSizing(axis_, passState_);
 }
 
-void uikit::ThemeProvider::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) {
+void uikit::ThemeProvider::computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) {
+	_children.getChild()->getLayoutState().computeSize = passState_.computeSize;
+}
+
+void uikit::ThemeProvider::applyLayout(ref<ReflowState> state_) {
 	if (_children.getChild() == NullWidget::instance()) {
 		return;
 	}
 
 	const auto childState = state_.getStateOf(_children.getChild());
-	childState->layoutOffset = ctx_.localOffset;
-	childState->layoutSize = ctx_.localSize;
+	childState->layoutOffset = getLayoutState().layoutOffset;
+	childState->layoutSize = getLayoutState().layoutSize;
+}
+
+math::fvec2 uikit::ThemeProvider::getGrowFactor() const noexcept {
+	return _children.getChild()->getGrowFactor();
+}
+
+math::fvec2 uikit::ThemeProvider::getShrinkFactor() const noexcept {
+	return _children.getChild()->getShrinkFactor();
 }
