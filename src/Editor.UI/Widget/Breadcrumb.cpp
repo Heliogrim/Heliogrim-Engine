@@ -4,24 +4,22 @@
 #include <ranges>
 #include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Common/Make.hpp>
-#include <Engine.Reflow/Widget/Button.hpp>
-#include <Engine.Reflow/Widget/Text.hpp>
-
-#include "Editor.UI/Theme/Theme.hpp"
+#include <Engine.Reflow/TextAlign.hpp>
+#include <Engine.Reflow.Uikit/Atom/Text.hpp>
+#include <Engine.Reflow.Uikit/Exp/Button.hpp>
 
 using namespace hg::engine::reflow;
 using namespace hg::editor::ui;
 using namespace hg;
 
 Breadcrumb::Breadcrumb() :
-	HorizontalPanel() {
+	HorizontalLayout() {
 	/**/
-	attr.maxWidth.setValue({ ReflowUnitType::eRelative, 1.F });
-	attr.minHeight.setValue({ ReflowUnitType::eAbsolute, 20.F });
-	attr.maxHeight.setValue({ ReflowUnitType::eRelative, 1.F });
-	attr.rowGap.setValue(2.F);
-	attr.padding.setValue(Padding { 4.F, 2.F });
-	attr.align.setValue(ReflowAlignment::eCenter);
+	std::get<0>(getLayoutAttributes().attributeSets).update<attr::BoxLayout::minHeight>({ ReflowUnitType::eAbsolute, 20.F });
+	std::get<0>(getLayoutAttributes().attributeSets).update<attr::BoxLayout::padding>(Padding { 4.F });
+
+	std::get<1>(getLayoutAttributes().attributeSets).update<attr::FlexLayout::rowGap>(2.F);
+	std::get<1>(getLayoutAttributes().attributeSets).update<attr::FlexLayout::align>(ReflowAlignment::eCenter);
 }
 
 Breadcrumb::~Breadcrumb() {
@@ -29,8 +27,6 @@ Breadcrumb::~Breadcrumb() {
 }
 
 void Breadcrumb::addNavEntry(cref<AssocKey<string>> key_, cref<string> title_, cref<fs::Url> value_) {
-
-	const auto theme = Theme::get();
 
 	if (std::ranges::find(
 		_entries.begin(),
@@ -47,9 +43,8 @@ void Breadcrumb::addNavEntry(cref<AssocKey<string>> key_, cref<string> title_, c
 
 	if (not _entries.empty()) {
 
-		auto spacer { make_sptr<Text>() };
-		theme->applyLabel(spacer);
-		spacer->attr.textAlign.setValue(TextAlign::eCenterMiddle);
+		auto spacer { make_sptr<uikit::Text>() };
+		spacer->getStyleAttributes().update<attr::TextStyle::textAlign>(TextAlign::eMiddleCenter);
 		spacer->setText(R"(>)");
 
 		this->addChild(spacer);
@@ -57,24 +52,21 @@ void Breadcrumb::addNavEntry(cref<AssocKey<string>> key_, cref<string> title_, c
 
 	/**/
 
-	auto button { make_sptr<Button>() };
-	theme->applyTextButton(button);
-	auto title { make_sptr<Text>() };
-	theme->applyLabel(title);
-
+	auto title = make_sptr<uikit::Text>();
 	title->setText(title_);
-	button->setChild(title);
+	auto button = uikit::makeButton(uikit::TextButtonCreateOptions { .level = 2, .text = ::hg::move(title) });
 
 	/**/
 
-	[[maybe_unused]] auto _ = button->addOnClick(
+	[[maybe_unused]] auto _ = button->onClick(
 		[breadcrumb = weak_from_this(), url = value_](const auto&) {
 
 			if (breadcrumb.expired()) {
-				return;
+				return EventResponse::eUnhandled;
 			}
 
 			std::static_pointer_cast<Breadcrumb, Widget>(breadcrumb.lock())->handleAction(url);
+			return EventResponse::eConsumed;
 		}
 	);
 
@@ -151,8 +143,4 @@ void Breadcrumb::offAction(u64 action_) {
 	);
 
 	_actions.erase(where.begin(), where.end());
-}
-
-sptr<Breadcrumb> Breadcrumb::make() {
-	return sptr<Breadcrumb>(new Breadcrumb());
 }
