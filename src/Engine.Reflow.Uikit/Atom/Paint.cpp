@@ -1,6 +1,7 @@
 #include "Paint.hpp"
 
 #include <format>
+#include <Engine.Reflow/Algorithm/Flex.hpp>
 
 using namespace hg::engine::reflow::uikit;
 using namespace hg::engine::reflow;
@@ -11,7 +12,24 @@ Paint::Paint() :
 
 Paint::Paint(mref<ReflowClassList> classList_, mref<SharedPtr<Widget>> parent_) :
 	Widget(::hg::move(classList_), ::hg::move(parent_)),
-	Atom(),
+	Atom(
+		{},
+		{
+			BoxLayoutAttributes {
+				ReflowUnit { ReflowUnitType::eAuto, 0.F },
+				ReflowUnit { ReflowUnitType::eAuto, 0.F },
+				1.F, 1.F,
+				/**/
+				ReflowUnit { ReflowUnitType::eAuto, 0.F },
+				ReflowUnit { ReflowUnitType::eAuto, 0.F },
+				1.F, 1.F,
+				/**/
+				Padding {},
+				ReflowPlacement::eMiddleCenter
+			}
+		},
+		{ PaintStyleAttributes {} }
+	),
 	_children() {}
 
 Paint::~Paint() = default;
@@ -20,26 +38,22 @@ string Paint::getTag() const noexcept {
 	return std::format(R"(Paint <{:#x}>)", reinterpret_cast<u64>(this));
 }
 
-const ptr<const SingleChildren> Paint::children() const {
+const ptr<const NullChildren> Paint::children() const {
 	return &_children;
-}
-
-void Paint::setChild(cref<SharedPtr<Widget>> nextChild_) {
-
-	_children.getChild()->setParent(nullptr);
-
-	nextChild_->setParent(shared_from_this());
-	_children.setChild(nextChild_);
-
-	markAsPending();
 }
 
 void Paint::render(const ptr<ReflowCommandBuffer> cmd_) {
 
-	const auto& offset = _layoutState.layoutOffset;
-	const auto& size = _layoutState.layoutSize;
+	const auto padding = getLayoutAttributes().valueOf<attr::BoxLayout::padding>();
+	auto offset = _layoutState.layoutOffset;
+	auto size = _layoutState.layoutSize;
 
-	// TODO:
+	offset.x += padding.x;
+	offset.y += padding.y;
+
+	size.x -= (padding.x + padding.z);
+	size.y -= (padding.y + padding.w);
+
 	cmd_->drawRect(offset, offset + size, getStyleAttributes().valueOf<attr::PaintStyleAttributes::tint>());
 }
 
@@ -69,24 +83,68 @@ void Paint::cascadeContextChange(bool invalidate_) {
 	Widget::cascadeContextChange(invalidate_);
 }
 
-math::vec2 Paint::prefetchDesiredSize(cref<ReflowState> state_, float scale_) const {
-	return _children.getChild()->getDesiredSize();
+PrefetchSizing Paint::prefetchSizing(ReflowAxis axis_, ref<const ReflowState> state_) const {
+
+	const auto& box = getLayoutAttributes();
+
+	return algorithm::prefetch(
+		axis_,
+		{
+			.mainAxis = ReflowAxis::eXAxis,
+			.min = algorithm::unitAbsMin(box.valueOf<attr::BoxLayout::minWidth>(), box.valueOf<attr::BoxLayout::minHeight>()),
+			.max = algorithm::unitAbsMax(box.valueOf<attr::BoxLayout::maxWidth>(), box.valueOf<attr::BoxLayout::maxHeight>()),
+			.gapping = { 0.F, 0.F },
+			.padding = box.valueOf<attr::BoxLayout::padding>()
+		},
+		children()
+	);
 }
 
-math::vec2 Paint::computeDesiredSize(cref<ReflowPassState> passState_) const {
-	if (_children.getChild() != NullWidget::instance()) {
-		return Widget::computeDesiredSize(passState_);
-	}
+PassPrefetchSizing Paint::passPrefetchSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) const {
 
-	return passState_.referenceSize;
+	const auto& box = getLayoutAttributes();
+	return {
+		algorithm::nextUnit(
+			box.valueOf<attr::BoxLayout::minWidth>(),
+			box.valueOf<attr::BoxLayout::minHeight>(),
+			passState_.referenceSize,
+			passState_.prefetchMinSize
+		),
+		math::compMax(
+			algorithm::nextUnit(
+				box.valueOf<attr::BoxLayout::minWidth>(),
+				box.valueOf<attr::BoxLayout::minHeight>(),
+				passState_.referenceSize,
+				passState_.prefetchSize
+			),
+			passState_.prefetchSize
+		),
+		algorithm::nextUnit(
+			box.valueOf<attr::BoxLayout::maxWidth>(),
+			box.valueOf<attr::BoxLayout::maxHeight>(),
+			passState_.referenceSize,
+			algorithm::unitAbsMax(
+				box.valueOf<attr::BoxLayout::maxWidth>(),
+				box.valueOf<attr::BoxLayout::maxHeight>()
+			)
+		)
+	};
 }
 
-void Paint::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) {
-	if (_children.getChild() == NullWidget::instance()) {
-		return;
-	}
+void Paint::computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) {}
 
-	const auto childState = state_.getStateOf(_children.getChild());
-	childState->layoutOffset = ctx_.localOffset;
-	childState->layoutSize = ctx_.localSize;
+void Paint::applyLayout(ref<ReflowState> state_) {}
+
+math::fvec2 Paint::getShrinkFactor() const noexcept {
+	return {
+		getLayoutAttributes().valueOf<attr::BoxLayout::widthShrink>(),
+		getLayoutAttributes().valueOf<attr::BoxLayout::heightShrink>()
+	};
+}
+
+math::fvec2 Paint::getGrowFactor() const noexcept {
+	return {
+		getLayoutAttributes().valueOf<attr::BoxLayout::widthGrow>(),
+		getLayoutAttributes().valueOf<attr::BoxLayout::heightGrow>()
+	};
 }

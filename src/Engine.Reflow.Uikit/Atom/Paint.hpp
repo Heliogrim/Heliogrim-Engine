@@ -2,6 +2,7 @@
 
 #include <Engine.Reflow/Children.hpp>
 #include <Engine.Reflow/Widget/Widget.hpp>
+#include <Engine.Reflow.Attributes/Layout/Base/BoxLayoutAttributes.hpp>
 #include <Engine.Reflow.Attributes/Style/Base/PaintStyleAttributes.hpp>
 
 #include "Atom.hpp"
@@ -10,7 +11,7 @@ namespace hg::engine::reflow::uikit {
 	class Paint :
 		public Widget,
 		public Atom<
-			void, void, PaintStyleAttributes
+			void, BoxLayoutAttributes, PaintStyleAttributes
 		> {
 	public:
 		Paint();
@@ -23,12 +24,10 @@ namespace hg::engine::reflow::uikit {
 		[[nodiscard]] string getTag() const noexcept override;
 
 	protected:
-		SingleChildren _children;
+		NullChildren _children;
 
 	public:
-		const ptr<const SingleChildren> children() const override;
-
-		void setChild(cref<SharedPtr<Widget>> nextChild_);
+		const ptr<const NullChildren> children() const override;
 
 	public:
 		void render(const ptr<ReflowCommandBuffer> cmd_) override;
@@ -36,10 +35,16 @@ namespace hg::engine::reflow::uikit {
 	public:
 		void cascadeContextChange(bool invalidate_) override;
 
-		math::vec2 prefetchDesiredSize(cref<ReflowState> state_, float scale_) const override;
+		PrefetchSizing prefetchSizing(ReflowAxis axis_, ref<const ReflowState> state_) const override;
 
-		math::vec2 computeDesiredSize(cref<ReflowPassState> passState_) const override;
+		PassPrefetchSizing passPrefetchSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) const override;
 
-		void applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) override;
+		void computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) override;
+
+		void applyLayout(ref<ReflowState> state_) override;
+
+		math::fvec2 getShrinkFactor() const noexcept override;
+
+		math::fvec2 getGrowFactor() const noexcept override;
 	};
 }
