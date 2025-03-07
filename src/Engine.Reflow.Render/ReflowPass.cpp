@@ -227,17 +227,17 @@ void render::ReflowPass::execute(cref<engine::render::graph::ScopedSymbolContext
 
 	for (auto marked : markForCapture) {
 
-		if (marked->layoutState().layoutSize.anyZero()) {
+		if (marked->getLayoutState().layoutSize.anyZero()) {
 			continue;
 		}
 
 		/**/
 
 		const math::fExtent2D markScissor {
-			marked->layoutState().layoutSize.x,
-			marked->layoutState().layoutSize.y,
-			marked->layoutState().layoutOffset.x,
-			marked->layoutState().layoutOffset.y
+			marked->getLayoutState().layoutSize.x,
+			marked->getLayoutState().layoutSize.y,
+			marked->getLayoutState().layoutOffset.x,
+			marked->getLayoutState().layoutOffset.y
 		};
 
 		uiCmd.pushScissor(markScissor);
