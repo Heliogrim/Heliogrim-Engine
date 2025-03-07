@@ -1,8 +1,8 @@
 #pragma once
 
 #include <Engine.Reflow/Children.hpp>
-#include <Engine.Reflow.Attributes/Layout/CompositeLayoutAttributes.hpp>
 #include <Engine.Reflow/Widget/Widget.hpp>
+#include <Engine.Reflow.Attributes/Layout/CompositeLayoutAttributes.hpp>
 #include <Engine.Reflow.Attributes/Layout/Base/BoxLayoutAttributes.hpp>
 #include <Engine.Reflow.Attributes/Layout/Base/FlexLayoutAttributes.hpp>
 
@@ -43,15 +43,16 @@ namespace hg::engine::reflow::uikit {
 		void render(const ptr<ReflowCommandBuffer> cmd_) override;
 
 	public:
-		math::vec2 prefetchDesiredSize(cref<ReflowState> state_, float scale_) const override;
+		PrefetchSizing prefetchSizing(ReflowAxis axis_, ref<const ReflowState> state_) const override;
 
-		math::vec2 computeDesiredSize(cref<ReflowPassState> passState_) const override;
+		PassPrefetchSizing passPrefetchSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) const override;
 
-		void applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) override;
+		void computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) override;
 
-	public:
-		[[nodiscard]] float shrinkFactor() const noexcept override;
+		void applyLayout(ref<ReflowState> state_) override;
 
-		[[nodiscard]] float growFactor() const noexcept override;
+		[[nodiscard]] math::fvec2 getShrinkFactor() const noexcept override;
+
+		[[nodiscard]] math::fvec2 getGrowFactor() const noexcept override;
 	};
 }
