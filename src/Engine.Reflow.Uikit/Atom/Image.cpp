@@ -1,6 +1,7 @@
 #include "Image.hpp"
 
 #include <format>
+#include <Engine.Reflow/Algorithm/Flex.hpp>
 #include <Engine.Reflow/Layout/Style.hpp>
 
 using namespace hg::engine::reflow::uikit;
@@ -99,40 +100,65 @@ void Image::cascadeContextChange(bool invalidate_) {
 	Widget::cascadeContextChange(invalidate_);
 }
 
-math::vec2 Image::prefetchDesiredSize(cref<ReflowState> state_, float scale_) const {
-
-	const auto& layout = getLayoutAttributes();
-	math::vec2 size = math::vec2 { 0.F };
-
-	/**/
-
-	if (layout.valueOf<attr::BoxLayout::width>().type == ReflowUnitType::eAbsolute) {
-		size.x = layout.valueOf<attr::BoxLayout::width>().value;
-	}
-	if (layout.valueOf<attr::BoxLayout::height>().type == ReflowUnitType::eAbsolute) {
-		size.y = layout.valueOf<attr::BoxLayout::height>().value;
-	}
-
-	/**/
-
-	return layout::clampSizeAbs(layout, size);
+PrefetchSizing Image::prefetchSizing(ReflowAxis axis_, ref<const ReflowState> state_) const {
+	const auto& box = getLayoutAttributes();
+	return algorithm::prefetch(
+		axis_,
+		{
+			.mainAxis = ReflowAxis::eXAxis,
+			.min = algorithm::unitAbsMin(box.valueOf<attr::BoxLayout::minWidth>(), box.valueOf<attr::BoxLayout::minHeight>()),
+			.max = algorithm::unitAbsMax(box.valueOf<attr::BoxLayout::maxWidth>(), box.valueOf<attr::BoxLayout::maxHeight>()),
+			.gapping = { 0.F, 0.F },
+			.padding = box.valueOf<attr::BoxLayout::padding>()
+		},
+		children()
+	);
 }
 
-math::vec2 Image::computeDesiredSize(cref<ReflowPassState> passState_) const {
-
-	const auto& layout = getLayoutAttributes();
-	math::vec2 desired { getDesiredSize() };
-
-	if (layout.valueOf<attr::BoxLayout::width>().type == ReflowUnitType::eRelative) {
-		desired.x = passState_.referenceSize.x * layout.valueOf<attr::BoxLayout::width>().value;
-	}
-	if (layout.valueOf<attr::BoxLayout::height>().type == ReflowUnitType::eRelative) {
-		desired.y = passState_.referenceSize.y * layout.valueOf<attr::BoxLayout::height>().value;
-	}
-
-	return layout::clampSize(layout, passState_.layoutSize, desired);
+PassPrefetchSizing Image::passPrefetchSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) const {
+	const auto& box = getLayoutAttributes();
+	return {
+		algorithm::nextUnit(
+			box.valueOf<attr::BoxLayout::minWidth>(),
+			box.valueOf<attr::BoxLayout::minHeight>(),
+			passState_.referenceSize,
+			passState_.prefetchMinSize
+		),
+		math::compMax(
+			algorithm::nextUnit(
+				box.valueOf<attr::BoxLayout::minWidth>(),
+				box.valueOf<attr::BoxLayout::minHeight>(),
+				passState_.referenceSize,
+				passState_.prefetchSize
+			),
+			passState_.prefetchSize
+		),
+		algorithm::nextUnit(
+			box.valueOf<attr::BoxLayout::maxWidth>(),
+			box.valueOf<attr::BoxLayout::maxHeight>(),
+			passState_.referenceSize,
+			algorithm::unitAbsMax(
+				box.valueOf<attr::BoxLayout::maxWidth>(),
+				box.valueOf<attr::BoxLayout::maxHeight>()
+			)
+		)
+	};
 }
 
-void Image::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) {
-	//
+void Image::computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) {}
+
+void Image::applyLayout(ref<ReflowState> state_) {}
+
+math::fvec2 Image::getShrinkFactor() const noexcept {
+	return {
+		getLayoutAttributes().valueOf<attr::BoxLayout::widthShrink>(),
+		getLayoutAttributes().valueOf<attr::BoxLayout::heightShrink>()
+	};
+}
+
+math::fvec2 Image::getGrowFactor() const noexcept {
+	return {
+		getLayoutAttributes().valueOf<attr::BoxLayout::widthGrow>(),
+		getLayoutAttributes().valueOf<attr::BoxLayout::heightGrow>()
+	};
 }
