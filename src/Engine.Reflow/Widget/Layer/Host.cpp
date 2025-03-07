@@ -41,16 +41,32 @@ void Host::render(const ptr<ReflowCommandBuffer> cmd_) {
 	_layout.front()->render(cmd_);
 }
 
-math::vec2 Host::prefetchDesiredSize(cref<ReflowState> state_, float scale_) const {
-	return _layout.front()->getDesiredSize();
+PrefetchSizing Host::prefetchSizing(ReflowAxis axis_, ref<const ReflowState> state_) const {
+	return {
+		_layout.front()->getLayoutState().prefetchMinSize,
+		_layout.front()->getLayoutState().prefetchSize
+	};
 }
 
-math::vec2 Host::computeDesiredSize(cref<ReflowPassState> passState_) const {
-	return _layout.front()->computeDesiredSize(passState_);
+PassPrefetchSizing Host::passPrefetchSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) const {
+	return _layout.front()->passPrefetchSizing(axis_, passState_);
 }
 
-void Host::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) {
+void Host::computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) {
+	auto& layout = _layout.front()->getLayoutState();
+	layout.computeSize = passState_.computeSize;
+}
+
+void Host::applyLayout(ref<ReflowState> state_) {
 	const auto layoutState = state_.getStateOf(_layout.front());
-	layoutState->layoutOffset = ctx_.localOffset;
-	layoutState->layoutSize = _layout.front()->getDesiredSize();
+	layoutState->layoutOffset = getLayoutState().layoutOffset;
+	layoutState->layoutSize = getLayoutState().layoutSize;
+}
+
+math::fvec2 Host::getShrinkFactor() const noexcept {
+	return _layout.front()->getShrinkFactor();
+}
+
+math::fvec2 Host::getGrowFactor() const noexcept {
+	return _layout.front()->getGrowFactor();
 }
