@@ -1,7 +1,7 @@
 #include "Stack.hpp"
 
 #include <format>
-
+#include <Engine.Reflow/Algorithm/Flex.hpp>
 #include <Engine.Reflow/Layout/Style.hpp>
 
 using namespace hg::engine::reflow::uikit;
@@ -16,10 +16,12 @@ uikit::Stack::Stack() :
 			BoxLayoutAttributes {
 				ReflowUnit { ReflowUnitType::eAuto, 0.F },
 				ReflowUnit { ReflowUnitType::eAuto, 0.F },
+				0.F, 1.F,
+				/**/
 				ReflowUnit { ReflowUnitType::eAuto, 0.F },
 				ReflowUnit { ReflowUnitType::eAuto, 0.F },
-				ReflowUnit { ReflowUnitType::eAuto, 0.F },
-				ReflowUnit { ReflowUnitType::eAuto, 0.F },
+				0.F, 1.F,
+				/**/
 				Padding { 0.F },
 				ReflowPlacement::eMiddleCenter
 			}
@@ -123,11 +125,13 @@ void uikit::Stack::cascadeContextChange(bool invalidate_) {
 			auto& stored = getLayoutAttributes();
 
 			stored.update<attr::BoxLayout::minWidth>(layout->valueOf<attr::BoxLayout::minWidth>());
-			stored.update<attr::BoxLayout::width>(layout->valueOf<attr::BoxLayout::width>());
 			stored.update<attr::BoxLayout::maxWidth>(layout->valueOf<attr::BoxLayout::maxWidth>());
+			stored.update<attr::BoxLayout::widthGrow>(layout->valueOf<attr::BoxLayout::widthGrow>());
+			stored.update<attr::BoxLayout::widthShrink>(layout->valueOf<attr::BoxLayout::widthShrink>());
 			stored.update<attr::BoxLayout::minHeight>(layout->valueOf<attr::BoxLayout::minHeight>());
-			stored.update<attr::BoxLayout::height>(layout->valueOf<attr::BoxLayout::height>());
 			stored.update<attr::BoxLayout::maxHeight>(layout->valueOf<attr::BoxLayout::maxHeight>());
+			stored.update<attr::BoxLayout::heightGrow>(layout->valueOf<attr::BoxLayout::heightGrow>());
+			stored.update<attr::BoxLayout::heightShrink>(layout->valueOf<attr::BoxLayout::heightShrink>());
 			stored.update<attr::BoxLayout::padding>(layout->valueOf<attr::BoxLayout::padding>());
 			stored.update<attr::BoxLayout::placement>(layout->valueOf<attr::BoxLayout::placement>());
 		}
@@ -139,92 +143,102 @@ void uikit::Stack::cascadeContextChange(bool invalidate_) {
 	Widget::cascadeContextChange(invalidate_);
 }
 
-math::vec2 uikit::Stack::prefetchDesiredSize(cref<ReflowState> state_, float scale_) const {
+PrefetchSizing uikit::Stack::prefetchSizing(ReflowAxis axis_, ref<const ReflowState> state_) const {
 
 	const auto& layout = getLayoutAttributes();
-	auto size = math::vec2 { 0.F };
+
+	const auto minSize = algorithm::unitAbsMin(layout.valueOf<attr::BoxLayout::minWidth>(), layout.valueOf<attr::BoxLayout::minHeight>());
+	const auto maxSize = algorithm::unitAbsMax(layout.valueOf<attr::BoxLayout::maxWidth>(), layout.valueOf<attr::BoxLayout::maxHeight>());
 
 	/**/
 
-	if (layout.valueOf<attr::BoxLayout::width>().type == ReflowUnitType::eAbsolute) {
-		size.x = layout.valueOf<attr::BoxLayout::width>().value;
+	auto innerMin = math::vec2 { 0.F };
+	auto innerSize = math::vec2 { 0.F };
+	for (const auto& child : *children()) {
+		innerMin = math::compMax<float>(innerMin, child->getLayoutState().prefetchMinSize);
+		innerSize = math::compMax<float>(innerSize, child->getLayoutState().prefetchSize);
 	}
 
-	if (layout.valueOf<attr::BoxLayout::height>().type == ReflowUnitType::eAbsolute) {
-		size.y = layout.valueOf<attr::BoxLayout::height>().value;
-	}
+	const auto& padding = layout.valueOf<attr::BoxLayout::padding>();
+	innerMin += math::fvec2 { padding.x + padding.z, padding.y + padding.w };
+	innerSize += math::fvec2 { padding.x + padding.z, padding.y + padding.w };
 
 	/**/
 
-	if (size.x <= 0.F || size.y <= 0.F) {
-
-		auto computedMaxSize = math::vec2 { 0.F };
-		for (const auto& child : *children()) {
-			computedMaxSize = math::compMax<float>(computedMaxSize, child->getDesiredSize());
-		}
-
-		size.x = size.x > 0.F ? size.x : computedMaxSize.x;
-		size.y = size.y > 0.F ? size.y : computedMaxSize.y;
-	}
-
-	/**/
-
-	return layout::clampSizeAbs(layout, size);
+	return {
+		math::compClamp(minSize, innerMin, maxSize),
+		math::compClamp(minSize, innerSize, maxSize)
+	};
 }
 
-math::vec2 uikit::Stack::computeDesiredSize(cref<ReflowPassState> passState_) const {
+PassPrefetchSizing uikit::Stack::passPrefetchSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) const {
 
-	const auto& layout = getLayoutAttributes();
-	auto size = math::vec2 { 0.F };
-
-	/**/
-
-	if (layout.valueOf<attr::BoxLayout::width>().type == ReflowUnitType::eAbsolute) {
-		size.x = layout.valueOf<attr::BoxLayout::width>().value;
-
-	} else if (layout.valueOf<attr::BoxLayout::width>().type == ReflowUnitType::eRelative) {
-		size.x = passState_.referenceSize.x * layout.valueOf<attr::BoxLayout::width>().value;
-	}
-
-	if (layout.valueOf<attr::BoxLayout::height>().type == ReflowUnitType::eAbsolute) {
-		size.y = layout.valueOf<attr::BoxLayout::height>().value;
-
-	} else if (layout.valueOf<attr::BoxLayout::height>().type == ReflowUnitType::eRelative) {
-		size.y = passState_.referenceSize.y * layout.valueOf<attr::BoxLayout::height>().value;
-	}
-
-	/**/
-
-	if (size.x <= 0.F || size.y <= 0.F) {
-
-		auto computedMaxSize = math::vec2 { 0.F };
-		for (const auto& child : *children()) {
-			// TODO: Check whether we need to pre-compute the computed desired size of the children as we pass through the flex scaling
-			computedMaxSize = math::compMax<float>(computedMaxSize, child->getDesiredSize());
-		}
-
-		size.x = size.x > 0.F ? size.x : computedMaxSize.x;
-		size.y = size.y > 0.F ? size.y : computedMaxSize.y;
-	}
-
-	/**/
-
-	return layout::clampSize(layout, passState_.layoutSize, size);
+	const auto& box = getLayoutAttributes();
+	return {
+		algorithm::nextUnit(
+			box.valueOf<attr::BoxLayout::minWidth>(),
+			box.valueOf<attr::BoxLayout::minHeight>(),
+			passState_.referenceSize,
+			passState_.prefetchMinSize
+		),
+		math::compMax(
+			algorithm::nextUnit(
+				box.valueOf<attr::BoxLayout::minWidth>(),
+				box.valueOf<attr::BoxLayout::minHeight>(),
+				passState_.referenceSize,
+				passState_.prefetchSize
+			),
+			passState_.prefetchSize
+		),
+		algorithm::nextUnit(
+			box.valueOf<attr::BoxLayout::maxWidth>(),
+			box.valueOf<attr::BoxLayout::maxHeight>(),
+			passState_.referenceSize,
+			algorithm::unitAbsMax(
+				box.valueOf<attr::BoxLayout::maxWidth>(),
+				box.valueOf<attr::BoxLayout::maxHeight>()
+			)
+		)
+	};
 }
 
-void uikit::Stack::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) {
+void uikit::Stack::computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) {
+
+	// TODO: Padding
+	const auto& layout = getLayoutAttributes();
+	const auto& padding = layout.valueOf<attr::BoxLayout::padding>();
+
+	const auto space = passState_.computeSize - math::fvec2 { padding.x + padding.z, padding.y + padding.w };
+
+	for (const auto& child : *children()) {
+		if (axis_ == ReflowAxis::eXAxis) {
+			const auto perChildLimit = child->getGrowFactor().x > 0.F ?
+				child->getLayoutState().prefetchMaxSize.x :
+				child->getLayoutState().prefetchSize.x;
+			child->getLayoutState().computeSize.x = std::min(space.x, perChildLimit);
+
+		} else {
+			const auto perChildLimit = child->getGrowFactor().y > 0.F ?
+				child->getLayoutState().prefetchMaxSize.y :
+				child->getLayoutState().prefetchSize.y;
+			child->getLayoutState().computeSize.y = std::min(space.y, perChildLimit);
+		}
+	}
+}
+
+void uikit::Stack::applyLayout(ref<ReflowState> state_) {
 
 	const auto& layout = getLayoutAttributes();
 
-	const auto innerOffset = layout::outerToInnerOffset(layout, ctx_.localOffset);
-	const auto innerSize = layout::outerToInnerSize(layout, ctx_.localSize);
+	const auto innerOffset = layout::outerToInnerOffset(layout, getLayoutState().layoutOffset);
+	const auto innerSize = layout::outerToInnerSize(layout, getLayoutState().layoutSize);
 
 	/**/
 
 	for (const auto& child : *children()) {
 
 		const auto childSize = math::compMin<f32>(
-			math::compMax<f32>(child->layoutState().cachedPreservedSize, math::vec2 { 0.F }),
+			math::compMax<f32>(child->getLayoutState().computeSize, math::vec2 { 0.F }),
 			innerSize
 		);
 		auto space = math::compMax(innerSize - childSize, math::vec2 { 0.F });
@@ -267,36 +281,16 @@ void uikit::Stack::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_
 	}
 }
 
-float uikit::Stack::shrinkFactor() const noexcept {
-
-	// TODO: Add a selector layout attribute to predefined a selected sizing behaviour (All-Max, All-Min, Fixed)
-	if (
-		getLayoutAttributes().valueOf<attr::BoxLayout::width>().type != ReflowUnitType::eAuto ||
-		getLayoutAttributes().valueOf<attr::BoxLayout::height>().type != ReflowUnitType::eAuto
-	) {
-		auto computedFactor = 0.F;
-		for (const auto& child : *children()) {
-			computedFactor = (std::max)(computedFactor, child->shrinkFactor());
-		}
-		return computedFactor;
-	}
-
-	return Widget::shrinkFactor();
+math::fvec2 uikit::Stack::getShrinkFactor() const noexcept {
+	return {
+		getLayoutAttributes().valueOf<attr::BoxLayout::widthShrink>(),
+		getLayoutAttributes().valueOf<attr::BoxLayout::heightShrink>()
+	};
 }
 
-float uikit::Stack::growFactor() const noexcept {
-
-	// TODO: Add a selector layout attribute to predefined a selected sizing behaviour (All-Max, All-Min, Fixed)
-	if (
-		getLayoutAttributes().valueOf<attr::BoxLayout::width>().type != ReflowUnitType::eAuto ||
-		getLayoutAttributes().valueOf<attr::BoxLayout::height>().type != ReflowUnitType::eAuto
-	) {
-		auto computedFactor = 0.F;
-		for (const auto& child : *children()) {
-			computedFactor = (std::max)(computedFactor, child->growFactor());
-		}
-		return computedFactor;
-	}
-
-	return Widget::growFactor();
+math::fvec2 uikit::Stack::getGrowFactor() const noexcept {
+	return {
+		getLayoutAttributes().valueOf<attr::BoxLayout::widthGrow>(),
+		getLayoutAttributes().valueOf<attr::BoxLayout::heightGrow>()
+	};
 }
