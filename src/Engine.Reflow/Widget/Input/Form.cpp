@@ -47,16 +47,31 @@ void Form::render(const ptr<ReflowCommandBuffer> cmd_) {
 	_children.front()->render(cmd_);
 }
 
-math::vec2 Form::prefetchDesiredSize(cref<ReflowState> state_, float scale_) const {
-	return _children.getChild()->getDesiredSize();
+PrefetchSizing Form::prefetchSizing(ReflowAxis axis_, ref<const ReflowState> state_) const {
+	return {
+		_children.getChild()->getLayoutState().prefetchMinSize,
+		_children.getChild()->getLayoutState().prefetchSize
+	};
 }
 
-math::vec2 Form::computeDesiredSize(cref<ReflowPassState> passState_) const {
-	return _children.getChild()->computeDesiredSize(passState_);
+PassPrefetchSizing Form::passPrefetchSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) const {
+	return _children.getChild()->passPrefetchSizing(axis_, passState_);
 }
 
-void Form::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) {
+void Form::computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) {
+	_children.getChild()->getLayoutState().computeSize = passState_.computeSize;
+}
+
+void Form::applyLayout(ref<ReflowState> state_) {
 	const auto childState = state_.getStateOf(_children.getChild());
-	childState->layoutOffset = ctx_.localOffset;
-	childState->layoutSize = ctx_.localSize;
+	childState->layoutOffset = getLayoutState().layoutOffset;
+	childState->layoutSize = getLayoutState().layoutSize;
+}
+
+math::fvec2 Form::getShrinkFactor() const noexcept {
+	return _children.getChild()->getShrinkFactor();
+}
+
+math::fvec2 Form::getGrowFactor() const noexcept {
+	return _children.getChild()->getGrowFactor();
 }
