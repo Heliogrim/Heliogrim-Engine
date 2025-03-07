@@ -626,6 +626,12 @@ void render::ReflowPass::captureOpaque(
 	ref<engine::render::cmd::RenderCommandBuffer> cmd_
 ) {
 
+	if (records_._scissors.empty() || records_._opaque.scissorSpan.empty()) {
+		return;
+	}
+
+	/**/
+
 	cmd_.lambda(
 		[this, scope_](ref<accel::AccelCommandBuffer> cmd_) {
 
@@ -674,10 +680,6 @@ void render::ReflowPass::captureOpaque(
 	cmd_.bindTextureSampler(accel::lang::SymbolId::from("ui-image-sampler"sv), _opaqueSubPass.imageSampler.get());
 
 	/**/
-
-	if (records_._scissors.empty() || records_._opaque.scissorSpan.empty()) {
-		return;
-	}
 
 	/* Warning: Dirty Hack for Sanitizing */
 
@@ -790,6 +792,12 @@ void render::ReflowPass::captureAlpha(
 	ref<engine::render::cmd::RenderCommandBuffer> cmd_
 ) {
 
+	if (records_._scissors.empty() || records_._alpha.scissorSpan.empty()) {
+		return;
+	}
+
+	/**/
+
 	cmd_.lambda(
 		[this, scope_](ref<accel::AccelCommandBuffer> cmd_) {
 
@@ -838,10 +846,6 @@ void render::ReflowPass::captureAlpha(
 	cmd_.bindTextureSampler(accel::lang::SymbolId::from("ui-image-sampler"sv), _alphaSubPass.imageSampler.get());
 
 	/**/
-
-	if (records_._scissors.empty() || records_._alpha.scissorSpan.empty()) {
-		return;
-	}
 
 	/* Warning: Dirty Hack for Sanitizing */
 
