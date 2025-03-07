@@ -17,6 +17,7 @@
 #include <Engine.Asserts/Todo.hpp>
 #include <Engine.Core/Universe.hpp>
 #include <Engine.GFX.Scene/RenderSceneManager.hpp>
+#include <Engine.GFX.Scene/View/SceneView.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 #include <Engine.Render.Scene.Model/CameraModel.hpp>
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
@@ -325,39 +326,26 @@ void Viewport::render(const ptr<ReflowCommandBuffer> cmd_) {
 	_currentImageSignal = nullptr;
 }
 
-math::vec2 Viewport::prefetchDesiredSize(cref<ReflowState> state_, float scale_) const {
-
-	math::vec2 size = math::vec2 { 0.F };
-
-	/**/
-
-	if (attr.width->type == ReflowUnitType::eAbsolute) {
-		size.x = attr.width->value;
-	}
-	if (attr.height->type == ReflowUnitType::eAbsolute) {
-		size.y = attr.height->value;
-	}
-
-	/**/
-
-	return layout::clampSizeAbs(attr, size);
+PrefetchSizing Viewport::prefetchSizing(ReflowAxis axis_, ref<const ReflowState> state_) const {
+	::hg::todo_panic();
 }
 
-math::vec2 Viewport::computeDesiredSize(cref<ReflowPassState> passState_) const {
+PassPrefetchSizing Viewport::passPrefetchSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) const {
+	::hg::todo_panic();
+}
 
-	math::vec2 desired { getDesiredSize() };
-	if (attr.width->type == ReflowUnitType::eRelative) {
-		desired.x = passState_.referenceSize.x * attr.width->value;
-	}
-	if (attr.height->type == ReflowUnitType::eRelative) {
-		desired.y = passState_.referenceSize.y * attr.height->value;
-	}
+void Viewport::computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) {
+	::hg::todo_panic();
+}
 
-	return layout::clampSize(
-		attr,
-		passState_.layoutSize,
-		desired
-	);
+void Viewport::applyLayout(ref<ReflowState> state_) {}
+
+math::fvec2 Viewport::getShrinkFactor() const noexcept {
+	::hg::todo_panic();
+}
+
+math::fvec2 Viewport::getGrowFactor() const noexcept {
+	::hg::todo_panic();
 }
 
 void Viewport::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) {}
