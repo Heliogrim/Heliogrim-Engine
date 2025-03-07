@@ -86,18 +86,13 @@ namespace hg::engine::reflow {
 
 		math::fvec2 getShrinkFactor() const noexcept override;
 
-    public:
-        [[nodiscard]] float shrinkFactor() const noexcept override;
+	public:
+		EventResponse invokeOnFocus(cref<FocusEvent> event_) override;
 
-        [[nodiscard]] float growFactor() const noexcept override;
+		EventResponse invokeOnBlur(cref<FocusEvent> event_) override;
 
-    public:
-        EventResponse onFocus(cref<FocusEvent> event_) override;
+		EventResponse invokeOnKeyDown(ref<const KeyboardEvent> event_) override;
 
-        EventResponse onBlur(cref<FocusEvent> event_) override;
-
-		EventResponse onKeyDown(cref<KeyboardEvent> event_) override;
-
-		EventResponse onKeyUp(cref<KeyboardEvent> event_) override;
+		EventResponse invokeOnKeyUp(ref<const KeyboardEvent> event_) override;
 	};
 }

@@ -87,9 +87,9 @@ namespace hg::engine::reflow {
 		void changeStateSelection(cref<sptr<Widget>> item_, const bool selected_);
 
 	public:
-		EventResponse onFocus(cref<FocusEvent> event_) override;
+		EventResponse invokeOnFocus(cref<FocusEvent> event_) override;
 
-		EventResponse onBlur(cref<FocusEvent> event_) override;
+		EventResponse invokeOnBlur(cref<FocusEvent> event_) override;
 	};
 
 	template <typename DataItemType_, template <typename> typename WrapType_ = sptr>
@@ -720,7 +720,7 @@ namespace hg::engine::reflow {
 		}
 
 	public:
-		EventResponse onMouseButtonDown(cref<MouseEvent> event_) override {
+		EventResponse invokeOnMouseButtonDown(ref<const MouseEvent> event_) override {
 
 			if (event_._button != 0x1) {
 				return EventResponse::eHandled;
@@ -741,7 +741,7 @@ namespace hg::engine::reflow {
 			return EventResponse::eConsumed;
 		}
 
-		EventResponse onKeyDown(cref<KeyboardEvent> event_) override {
+		EventResponse invokeOnKeyDown(ref<const KeyboardEvent> event_) override {
 
 			// 79 :: Right
 			// 80 :: Left
@@ -753,14 +753,14 @@ namespace hg::engine::reflow {
 				const auto next { getPrevViewEntry(_cursor.first) };
 				handleCursor(_cursor.first, next, event_._modifier & 0x3 /* 0x1 || 0x1 */);
 
-				return TreeViewBase::onKeyDown(event_);
+				return TreeViewBase::invokeOnKeyDown(event_);
 
 			} else if (event_._key == 81) {
 
 				const auto next { getNextViewEntry(_cursor.first) };
 				handleCursor(_cursor.first, next, event_._modifier & 0x3 /* 0x1 || 0x1 */);
 
-				return TreeViewBase::onKeyDown(event_);
+				return TreeViewBase::invokeOnKeyDown(event_);
 
 			} else if (event_._key == 80) {
 
@@ -769,7 +769,7 @@ namespace hg::engine::reflow {
 					handleCursor(_cursor.first, next, event_._modifier & 0x3 /* 0x1 || 0x1 */);
 				}
 
-				return TreeViewBase::onKeyDown(event_);
+				return TreeViewBase::invokeOnKeyDown(event_);
 
 			} else if (event_._key == 79) {
 
@@ -778,11 +778,11 @@ namespace hg::engine::reflow {
 					handleCursor(_cursor.first, next, event_._modifier & 0x3 /* 0x1 || 0x1 */);
 				}
 
-				return TreeViewBase::onKeyDown(event_);
+				return TreeViewBase::invokeOnKeyDown(event_);
 
 			}
 
-			return TreeViewBase::onKeyDown(event_);
+			return TreeViewBase::invokeOnKeyDown(event_);
 		}
 	};
 

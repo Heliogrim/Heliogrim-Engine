@@ -55,21 +55,21 @@ void InputBase::updateValueAndValidity(const bool propagate_, const bool emit_) 
     // TODO: Propagation and Emitting
 }
 
-EventResponse InputBase::onFocus(cref<FocusEvent> event_) {
+EventResponse InputBase::invokeOnFocus(cref<FocusEvent> event_) {
     _state |= WidgetStateFlagBits::eFocus;
 
     // Warning: Temporary Fix
     markAsPending();
 
-    return Widget::onFocus(event_);
+    return Widget::invokeOnFocus(event_);
 }
 
-EventResponse InputBase::onBlur(cref<FocusEvent> event_) {
+EventResponse InputBase::invokeOnBlur(cref<FocusEvent> event_) {
     markAsTouched();
     _state.unwrap &= (~static_cast<u8>(WidgetStateFlagBits::eFocus));
 
     // Warning: Temporary Fix
     markAsPending();
 
-    return Widget::onBlur(event_);
+    return Widget::invokeOnBlur(event_);
 }

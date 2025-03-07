@@ -142,20 +142,20 @@ math::fvec2 InputFloat::getGrowFactor() const noexcept {
 	return _children.getChild()->getGrowFactor();
 }
 
-EventResponse InputFloat::onFocus(cref<FocusEvent> event_) {
-    _wrapper->state() |= WidgetStateFlagBits::eFocus;
-    return Input<InputFloat::input_type>::onFocus(event_);
+EventResponse InputFloat::invokeOnFocus(cref<FocusEvent> event_) {
+	_wrapper->state() |= WidgetStateFlagBits::eFocus;
+	return Input<InputFloat::input_type>::invokeOnFocus(event_);
 }
 
-EventResponse InputFloat::onBlur(cref<FocusEvent> event_) {
-    updateValueAndValidity(true, false);
-    valueToText();
+EventResponse InputFloat::invokeOnBlur(cref<FocusEvent> event_) {
+	updateValueAndValidity(true, false);
+	valueToText();
 
-    _wrapper->state().unwrap &= (~static_cast<WidgetState::value_type>(WidgetStateFlagBits::eFocus));
-    return Input<InputFloat::input_type>::onBlur(event_);
+	_wrapper->state().unwrap &= (~static_cast<WidgetState::value_type>(WidgetStateFlagBits::eFocus));
+	return Input<InputFloat::input_type>::invokeOnBlur(event_);
 }
 
-EventResponse InputFloat::onKeyDown(cref<KeyboardEvent> event_) {
+EventResponse InputFloat::invokeOnKeyDown(ref<const KeyboardEvent> event_) {
 
 	if (not _state.isFocus()) {
 		return EventResponse::eUnhandled;
@@ -231,7 +231,7 @@ EventResponse InputFloat::onKeyDown(cref<KeyboardEvent> event_) {
 	return EventResponse::eConsumed;
 }
 
-EventResponse InputFloat::onKeyUp(cref<KeyboardEvent> event_) {
+EventResponse InputFloat::invokeOnKeyUp(ref<const KeyboardEvent> event_) {
 
 	if (not _state.isFocus()) {
 		return EventResponse::eUnhandled;

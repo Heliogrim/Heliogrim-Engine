@@ -69,7 +69,7 @@ namespace hg::engine::reflow {
 					continue;
 				}
 
-				const auto result { event_._down ? lck->onKeyDown(event_) : lck->onKeyUp(event_) };
+				const auto result { event_._down ? lck->invokeOnKeyDown(event_) : lck->invokeOnKeyUp(event_) };
 				state = MAX(state, result);
 			}
 
@@ -101,8 +101,8 @@ namespace hg::engine::reflow {
 					const auto& child { *it };
 
 					if (child->state().isVisible() && intersects(
-						child->layoutState().layoutOffset,
-						child->layoutState().layoutSize,
+						child->getLayoutState().layoutOffset,
+						child->getLayoutState().layoutSize,
 						point
 					)) {
 						backlog.push(child);
@@ -125,7 +125,7 @@ namespace hg::engine::reflow {
 
 				const auto& next { backlog.top() };
 
-				const auto result = (event_._down) ? next->onMouseButtonDown(event_) : next->onMouseButtonUp(event_);
+				const auto result = (event_._down) ? next->invokeOnMouseButtonDown(event_) : next->invokeOnMouseButtonUp(event_);
 				state = MAX(state, result);
 
 				backlog.pop();
@@ -148,19 +148,19 @@ namespace hg::engine::reflow {
 				const auto next { backlog.back() };
 
 				const auto contained {
-					intersects(next->layoutState().layoutOffset, next->layoutState().layoutSize, point)
+					intersects(next->getLayoutState().layoutOffset, next->getLayoutState().layoutSize, point)
 				};
 				const auto hovered { next->state().isHover() };
 
 				if (not contained && hovered) {
-					next->onMouseLeave(event_);
+					next->invokeOnMouseLeave(event_);
 				}
 
 				if (contained && not hovered) {
-					next->onMouseEnter(event_);
+					next->invokeOnMouseEnter(event_);
 				}
 
-				const auto result = next->onMouseMove(event_);
+				const auto result = next->invokeOnMouseMove(event_);
 
 				state = MAX(state, result);
 				backlog.pop_back();
@@ -177,7 +177,7 @@ namespace hg::engine::reflow {
 					if (child->state().isHover()) {
 						backlog.push_back(child);
 
-					} else if (intersects(child->layoutState().layoutOffset, child->layoutState().layoutSize, point)) {
+					} else if (intersects(child->getLayoutState().layoutOffset, child->getLayoutState().layoutSize, point)) {
 						backlog.push_back(child);
 					}
 				}
@@ -213,7 +213,7 @@ namespace hg::engine::reflow {
 
 					const auto& child { *it };
 
-					if (intersects(child->layoutState().layoutOffset, child->layoutState().layoutSize, point)) {
+					if (intersects(child->getLayoutState().layoutOffset, child->getLayoutState().layoutSize, point)) {
 						backlog.push(child);
 						break;
 					}
@@ -228,7 +228,7 @@ namespace hg::engine::reflow {
 
 				// TODO: Differ between, Drag, Drop, DragOver, DragEnter, DragLeave
 				auto result { EventResponse::eUnhandled };
-				result = next->onDrop(event_);
+				result = next->invokeOnDrop(event_);
 				state = MAX(state, result);
 
 				backlog.pop();
@@ -262,7 +262,7 @@ namespace hg::engine::reflow {
 
 					const auto& child { *it };
 
-					if (intersects(child->layoutState().layoutOffset, child->layoutState().layoutSize, point)) {
+					if (intersects(child->getLayoutState().layoutOffset, child->getLayoutState().layoutSize, point)) {
 						backlog.push(child);
 						break;
 					}
@@ -275,7 +275,7 @@ namespace hg::engine::reflow {
 
 				const auto& next { backlog.top() };
 
-				const auto result = next->onWheel(event_);
+				const auto result = next->invokeOnWheel(event_);
 				state = MAX(state, result);
 
 				backlog.pop();
@@ -325,7 +325,7 @@ namespace hg::engine::reflow {
 						continue;
 					}
 
-					it->lock()->onBlur(event_);
+					it->lock()->invokeOnBlur(event_);
 				}
 
 				window_->_focus.erase(changeIt, endIt);
@@ -347,7 +347,7 @@ namespace hg::engine::reflow {
 
 			const auto persistIt { window_->_focus.begin() + MIN(persistSize - 1, 0) };
 			for (auto it { window_->_focus.end() }; it != persistIt && state != EventResponse::eConsumed;) {
-				const auto result = (--it)->lock()->onFocus(event_);
+				const auto result = (--it)->lock()->invokeOnFocus(event_);
 				state = MAX(state, result);
 			}
 

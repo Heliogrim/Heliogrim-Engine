@@ -74,25 +74,25 @@ math::fvec2 InputText::getShrinkFactor() const noexcept {
 	return _children.getChild()->getShrinkFactor();
 }
 
-EventResponse InputText::onFocus(cref<FocusEvent> event_) {
-    _text->setText(_value);
+EventResponse InputText::invokeOnFocus(cref<FocusEvent> event_) {
+	_text->setText(_value);
 
-    _wrapper->state() |= WidgetStateFlagBits::eFocus;
-    return Input<std::string>::onFocus(event_);
+	_wrapper->state() |= WidgetStateFlagBits::eFocus;
+	return Input<std::string>::invokeOnFocus(event_);
 }
 
-EventResponse InputText::onBlur(cref<FocusEvent> event_) {
+EventResponse InputText::invokeOnBlur(cref<FocusEvent> event_) {
 
 	if (_value.empty()) {
 		_text->setText(_placeholder);
 		markAsPending();
 	}
 
-    _wrapper->state().unwrap &= (~static_cast<WidgetState::value_type>(WidgetStateFlagBits::eFocus));
-    return Input<std::string>::onBlur(event_);
+	_wrapper->state().unwrap &= (~static_cast<WidgetState::value_type>(WidgetStateFlagBits::eFocus));
+	return Input<std::string>::invokeOnBlur(event_);
 }
 
-EventResponse InputText::onKeyDown(cref<KeyboardEvent> event_) {
+EventResponse InputText::invokeOnKeyDown(ref<const KeyboardEvent> event_) {
 
 	if (not _state.isFocus()) {
 		return EventResponse::eUnhandled;
@@ -139,7 +139,7 @@ EventResponse InputText::onKeyDown(cref<KeyboardEvent> event_) {
 	return EventResponse::eConsumed;
 }
 
-EventResponse InputText::onKeyUp(cref<KeyboardEvent> event_) {
+EventResponse InputText::invokeOnKeyUp(ref<const KeyboardEvent> event_) {
 
 	if (not _state.isFocus()) {
 		return EventResponse::eUnhandled;
