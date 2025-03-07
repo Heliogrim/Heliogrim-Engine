@@ -55,13 +55,13 @@ namespace hg::engine::reflow::uikit {
 
 		EventResponse invokeOnBlur(cref<FocusEvent> event_) override;
 
-		EventResponse onMouseButtonDown(cref<MouseEvent> event_) override;
+		EventResponse invokeOnMouseButtonDown(ref<const MouseEvent> event_) override;
 
-		EventResponse onMouseButtonUp(cref<MouseEvent> event_) override;
+		EventResponse invokeOnMouseButtonUp(ref<const MouseEvent> event_) override;
 
-		EventResponse onMouseEnter(cref<MouseMoveEvent> event_) override;
+		EventResponse invokeOnMouseEnter(ref<const MouseMoveEvent> event_) override;
 
-		EventResponse onMouseLeave(cref<MouseMoveEvent> event_) override;
+		EventResponse invokeOnMouseLeave(ref<const MouseMoveEvent> event_) override;
 	};
 
 	/**/

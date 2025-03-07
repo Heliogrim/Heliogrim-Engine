@@ -213,8 +213,8 @@ EventResponse uikit::Button::invokeOnBlur(cref<FocusEvent> event_) {
 	return response;
 }
 
-EventResponse uikit::Button::onMouseButtonDown(cref<MouseEvent> event_) {
-	auto response = uikit::Stack::onMouseButtonDown(event_);
+EventResponse uikit::Button::invokeOnMouseButtonDown(ref<const MouseEvent> event_) {
+	auto response = uikit::Stack::invokeOnMouseButtonDown(event_);
 
 	if (_themeStateMap.pressed.has_value()) {
 		if (getLocalContext().addLocalTheme(std::addressof(_themeStateMap.pressed.value()))) {
@@ -225,8 +225,8 @@ EventResponse uikit::Button::onMouseButtonDown(cref<MouseEvent> event_) {
 	return response;
 }
 
-EventResponse uikit::Button::onMouseButtonUp(cref<MouseEvent> event_) {
-	auto response = uikit::Stack::onMouseButtonUp(event_);
+EventResponse uikit::Button::invokeOnMouseButtonUp(ref<const MouseEvent> event_) {
+	auto response = uikit::Stack::invokeOnMouseButtonUp(event_);
 
 	if (_themeStateMap.pressed.has_value()) {
 		if (getLocalContext().dropLocalTheme(std::addressof(_themeStateMap.pressed.value()))) {
@@ -237,8 +237,8 @@ EventResponse uikit::Button::onMouseButtonUp(cref<MouseEvent> event_) {
 	return response;
 }
 
-EventResponse uikit::Button::onMouseEnter(cref<MouseMoveEvent> event_) {
-	auto response = uikit::Stack::onMouseEnter(event_);
+EventResponse uikit::Button::invokeOnMouseEnter(ref<const MouseMoveEvent> event_) {
+	auto response = uikit::Stack::invokeOnMouseEnter(event_);
 
 	if (_themeStateMap.hover.has_value()) {
 		if (getLocalContext().addLocalTheme(std::addressof(_themeStateMap.hover.value()))) {
@@ -249,8 +249,8 @@ EventResponse uikit::Button::onMouseEnter(cref<MouseMoveEvent> event_) {
 	return response;
 }
 
-EventResponse uikit::Button::onMouseLeave(cref<MouseMoveEvent> event_) {
-	auto response = uikit::Stack::onMouseLeave(event_);
+EventResponse uikit::Button::invokeOnMouseLeave(ref<const MouseMoveEvent> event_) {
+	auto response = uikit::Stack::invokeOnMouseLeave(event_);
 
 	if (_themeStateMap.hover.has_value()) {
 		if (getLocalContext().dropLocalTheme(std::addressof(_themeStateMap.hover.value()))) {

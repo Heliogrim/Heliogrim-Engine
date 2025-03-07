@@ -163,11 +163,11 @@ void VScrollBox::applyLayout(ref<ReflowState> state_) {
 	getLayoutState().layoutOffset = preserveOffset;
 }
 
-EventResponse VScrollBox::onWheel(cref<WheelEvent> event_) {
+EventResponse VScrollBox::invokeOnWheel(ref<const WheelEvent> event_) {
 
 	if (_children.empty()) {
 		_scrollValue = 0.F;
-		return VerticalLayout::onWheel(event_);
+		return VerticalLayout::invokeOnWheel(event_);
 	}
 
 	constexpr float scrollInvSpeed = 32.F;

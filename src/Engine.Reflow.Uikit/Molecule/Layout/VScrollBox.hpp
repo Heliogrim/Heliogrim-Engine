@@ -45,6 +45,6 @@ namespace hg::engine::reflow::uikit {
 		void applyLayout(ref<ReflowState> state_) override;
 
 	public:
-		EventResponse onWheel(cref<WheelEvent> event_) override;
+		EventResponse invokeOnWheel(ref<const WheelEvent> event_) override;
 	};
 }
