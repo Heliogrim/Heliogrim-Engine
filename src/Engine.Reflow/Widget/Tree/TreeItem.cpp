@@ -11,13 +11,13 @@ using namespace hg;
 }
 
 TreeItem::TreeItem() :
-    HorizontalPanel(),
-    attr(
-        Attributes {
-            .level = { this, 0uL }
-        }
-    ),
-    _selected(false) {}
+	HorizontalLayout(),
+	attr(
+		Attributes {
+			.level = { this, 0uL }
+		}
+	),
+	_selected(false) {}
 
 TreeItem::~TreeItem() = default;
 

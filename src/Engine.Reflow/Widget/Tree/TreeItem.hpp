@@ -1,12 +1,13 @@
 #pragma once
 
 #include "../HorizontalPanel.hpp"
+#include <Engine.Reflow.Uikit/Atom/Layout/HorizontalLayout.hpp>
 
 namespace hg::engine::reflow {
-    class TreeItem :
-        public HorizontalPanel {
-    public:
-        using this_type = TreeItem;
+	class TreeItem :
+		public uikit::HorizontalLayout {
+	public:
+		using this_type = TreeItem;
 
     public:
         TreeItem();

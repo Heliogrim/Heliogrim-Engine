@@ -5,10 +5,10 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/DenseMap.hpp>
 #include <Engine.Common/Collection/Set.hpp>
+#include <Engine.Reflow.Uikit/Molecule/Layout/VScrollBox.hpp>
 
 #include "TreeItem.hpp"
 #include "../Widget.hpp"
-#include "../Scroll/VScrollBox.hpp"
 
 namespace hg::engine::reflow {
 	template <typename DataItemType_, template <typename> typename WrappingType_>
@@ -43,7 +43,7 @@ namespace hg::engine::reflow {
 	};
 
 	class macro_novtable TreeViewBase :
-		public VScrollBox {
+		public uikit::VScrollBox {
 	public:
 		using this_type = TreeViewBase;
 
@@ -69,7 +69,7 @@ namespace hg::engine::reflow {
 		 *
 		 * @returns The generated TreeItem wrapping the content
 		 *
-		 * Attention: Return items is guaranteed to be TreeItem, but for call simplification dropped string typing
+		 * Attention: Return items is guaranteed to be TreeItem, but for call simplification dropped strict typing
 		 */
 		sptr<Widget> generateRow(cref<TreeViewItem> view_, cref<sptr<Widget>> content_);
 
@@ -151,27 +151,17 @@ namespace hg::engine::reflow {
 		}
 
 	public:
-		math::vec2 prefetchDesiredSize(cref<ReflowState> state_, float scale_) const override {
-			return TreeViewBase::prefetchDesiredSize(state_, scale_);
+		PrefetchSizing prefetchSizing(ReflowAxis axis_, ref<const ReflowState> state_) const override {
+			return TreeViewBase::prefetchSizing(axis_, state_);
 		}
 
-		math::vec2 computeDesiredSize(cref<ReflowPassState> passState_) const override {
-			return TreeViewBase::computeDesiredSize(passState_);
+		void computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) override {
+			return TreeViewBase::computeSizing(axis_, passState_);
 		}
 
-		void applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) override {
-			TreeViewBase::applyLayout(state_, std::move(ctx_));
-
-			/**/
-
-			for (const auto& child : _children) {
-
-				const auto* const item = static_cast<ptr<TreeItem>>(child.get());
-				const auto level = item->attr.level.getValue();
-
-				const auto ident = ident_per_level * level;
-				child->layoutState().layoutOffset.x += ident;
-			}
+		void applyLayout(ref<ReflowState> state_) override {
+			TreeViewBase::applyLayout(state_);
+			::hg::todo_panic();
 		}
 
 	private:
@@ -478,7 +468,7 @@ namespace hg::engine::reflow {
 			float approxRowSize { 20.F };
 			if (not this->children()->empty()) {
 				//const auto childOuter = this->children()->front()->outerSize();
-				const auto childOuter = this->children()->front()->layoutState().layoutSize;
+				const auto childOuter = this->children()->front()->getLayoutState().layoutSize;
 				approxRowSize = MAX(approxRowSize, childOuter.y);
 			}
 
@@ -490,10 +480,10 @@ namespace hg::engine::reflow {
 			const auto& children { *this->children() };
 
 			math::vec2 size {
-				/*children[start]->outerSize()*/children[start]->layoutState().layoutSize
+				/*children[start]->outerSize()*/children[start]->getLayoutState().layoutSize
 			};
 			math::vec2 offset {
-				/*children[start]->screenOffset()*/children[start]->layoutState().layoutOffset
+				/*children[start]->screenOffset()*/children[start]->getLayoutState().layoutOffset
 			};
 			if (intersects(offset, size, point_)) {
 				return children[start];
@@ -503,8 +493,8 @@ namespace hg::engine::reflow {
 
 				const auto crend { children.rend() };
 				for (auto it { children.rbegin() + (children.size() - start) }; it != crend; ++it) {
-					size = (*it)->layoutState().layoutSize;
-					offset = (*it)->layoutState().layoutOffset;
+					size = (*it)->getLayoutState().layoutSize;
+					offset = (*it)->getLayoutState().layoutOffset;
 
 					if (intersects(offset, size, point_)) {
 						return *it;
@@ -514,8 +504,8 @@ namespace hg::engine::reflow {
 			} else {
 
 				for (auto it { children.begin() + start }; it != cend; ++it) {
-					size = (*it)->layoutState().layoutSize;
-					offset = (*it)->layoutState().layoutOffset;
+					size = (*it)->getLayoutState().layoutSize;
+					offset = (*it)->getLayoutState().layoutOffset;
 
 					if (intersects(offset, size, point_)) {
 						return *it;
@@ -708,7 +698,7 @@ namespace hg::engine::reflow {
 
 				const auto widget { view.widget.lock() };
 				//this->scrollTo(widget->screenOffset(), widget->outerSize());
-				this->scrollTo(widget->layoutState().layoutOffset, widget->layoutState().layoutSize);
+				this->scrollTo(widget->getLayoutState().layoutOffset, widget->getLayoutState().layoutSize);
 			}
 		}
 
