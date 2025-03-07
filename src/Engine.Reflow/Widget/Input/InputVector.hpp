@@ -2,128 +2,128 @@
 
 #include <tuple>
 
-#include "../BoxPanel.hpp"
 #include "../Input.hpp"
+#include "../../Children.hpp"
 
 namespace hg::engine::reflow {
-    template <typename... InputTypes_>
-    class InputVector :
-        public Input<std::tuple<std::decay_t<InputTypes_>...>> {
-    public:
-        using this_type = InputVector<InputTypes_...>;
-        using base_type = Input<std::tuple<std::decay_t<typename InputTypes_::value_type>...>>;
+	template <typename... InputTypes_>
+	class InputVector :
+		public Input<std::tuple<std::decay_t<InputTypes_>...>> {
+	public:
+		using this_type = InputVector<InputTypes_...>;
+		using base_type = Input<std::tuple<std::decay_t<typename InputTypes_::value_type>...>>;
 
-        using base_type::input_type;
+		using base_type::input_type;
 
-    public:
-        InputVector() :
-            base_type() {
-            setup();
-        }
+	public:
+		InputVector() :
+			base_type() {
+			setup();
+		}
 
-        ~InputVector() override = default;
+		~InputVector() override = default;
 
-    public:
-        [[nodiscard]] string getTag() const noexcept override {
-            return std::format(R"(InputVector <{:#x}>)", reinterpret_cast<u64>(this));
-        }
+	public:
+		[[nodiscard]] string getTag() const noexcept override {
+			return std::format(R"(InputVector <{:#x}>)", reinterpret_cast<u64>(this));
+		}
 
-    private:
-        Vector<sptr<InputBase>> _inputs;
+	private:
+		Vector<sptr<InputBase>> _inputs;
 
-    private:
-        void setup() {
-            // TODO: ...
-        }
+	private:
+		void setup() {
+			// TODO: ...
+		}
 
-    private:
-        sptr<Box> _content;
+	private:
+		SharedPtr<Widget> _content;
 
-    public:
-        void setContent(cref<sptr<Box>> content_) {
-            _content = content_;
-        }
+	public:
+		void setContent(ref<SharedPtr<Widget>> content_) {
+			_content = content_;
+		}
 
-    public:
-        [[nodiscard]] const ptr<const Children> children() const override {
-            return _content->children();
-        }
+	public:
+		[[nodiscard]] const ptr<const Children> children() const override {
+			return _content->children();
+		}
 
-    public:
-        void enable() override {
+	public:
+		void enable() override {
 
-            const auto& children { *_content->children() };
-            for (size_t i { 1uLL }; i < children.size(); i += 2uLL) {
-                const auto& child { children[i] };
-                std::static_pointer_cast<InputBase, Widget>(child)->enable();
-            }
-        }
+			const auto& children { *_content->children() };
+			for (size_t i { 1uLL }; i < children.size(); i += 2uLL) {
+				const auto& child { children[i] };
+				std::static_pointer_cast<InputBase, Widget>(child)->enable();
+			}
+		}
 
-        void disable() override {
+		void disable() override {
 
-            const auto& children { *_content->children() };
-            for (size_t i { 1uLL }; i < children.size(); i += 2uLL) {
-                const auto& child { children[i] };
-                std::static_pointer_cast<InputBase, Widget>(child)->disable();
-            }
-        }
+			const auto& children { *_content->children() };
+			for (size_t i { 1uLL }; i < children.size(); i += 2uLL) {
+				const auto& child { children[i] };
+				std::static_pointer_cast<InputBase, Widget>(child)->disable();
+			}
+		}
 
-        void markAsDirty() override {
+		void markAsDirty() override {
 
-            const auto& children { *_content->children() };
-            for (size_t i { 1uLL }; i < children.size(); i += 2uLL) {
-                const auto& child { children[i] };
-                std::static_pointer_cast<InputBase, Widget>(child)->markAsDirty();
-            }
-        }
+			const auto& children { *_content->children() };
+			for (size_t i { 1uLL }; i < children.size(); i += 2uLL) {
+				const auto& child { children[i] };
+				std::static_pointer_cast<InputBase, Widget>(child)->markAsDirty();
+			}
+		}
 
-        void markAsPristine() override {
+		void markAsPristine() override {
 
-            const auto& children { *_content->children() };
-            for (size_t i { 1uLL }; i < children.size(); i += 2uLL) {
-                const auto& child { children[i] };
-                std::static_pointer_cast<InputBase, Widget>(child)->markAsPristine();
-            }
-        }
+			const auto& children { *_content->children() };
+			for (size_t i { 1uLL }; i < children.size(); i += 2uLL) {
+				const auto& child { children[i] };
+				std::static_pointer_cast<InputBase, Widget>(child)->markAsPristine();
+			}
+		}
 
-        void markAsTouched() override {
-            const auto& children { *_content->children() };
-            for (size_t i { 1uLL }; i < children.size(); i += 2uLL) {
-                const auto& child { children[i] };
-                std::static_pointer_cast<InputBase, Widget>(child)->markAsTouched();
-            }
-        }
+		void markAsTouched() override {
+			const auto& children { *_content->children() };
+			for (size_t i { 1uLL }; i < children.size(); i += 2uLL) {
+				const auto& child { children[i] };
+				std::static_pointer_cast<InputBase, Widget>(child)->markAsTouched();
+			}
+		}
 
-        void markAsUntouched() override {
+		void markAsUntouched() override {
 
-            const auto& children { *_content->children() };
-            for (size_t i { 1uLL }; i < children.size(); i += 2uLL) {
-                const auto& child { children[i] };
-                std::static_pointer_cast<InputBase, Widget>(child)->markAsTouched();
-            }
-        }
+			const auto& children { *_content->children() };
+			for (size_t i { 1uLL }; i < children.size(); i += 2uLL) {
+				const auto& child { children[i] };
+				std::static_pointer_cast<InputBase, Widget>(child)->markAsTouched();
+			}
+		}
 
-        void reset() override {
+		void reset() override {
 
-            const auto& children { *_content->children() };
-            for (size_t i { 1uLL }; i < children.size(); i += 2uLL) {
-                const auto& child { children[i] };
-                std::static_pointer_cast<InputBase, Widget>(child)->reset();
-            }
-        }
+			const auto& children { *_content->children() };
+			for (size_t i { 1uLL }; i < children.size(); i += 2uLL) {
+				const auto& child { children[i] };
+				std::static_pointer_cast<InputBase, Widget>(child)->reset();
+			}
+		}
 
-        void updateValueAndValidity(const bool propagate_, const bool emit_) override {
+		void updateValueAndValidity(const bool propagate_, const bool emit_) override {
 
-            const auto& children { *_content->children() };
-            for (size_t i { 1uLL }; i < children.size(); i += 2uLL) {
-                const auto& child { children[i] };
-                std::static_pointer_cast<InputBase, Widget>(child)->updateValueAndValidity(true, emit_);
-            }
-        }
+			const auto& children { *_content->children() };
+			for (size_t i { 1uLL }; i < children.size(); i += 2uLL) {
+				const auto& child { children[i] };
+				std::static_pointer_cast<InputBase, Widget>(child)->updateValueAndValidity(true, emit_);
+			}
+		}
 
-    public:
-        [[nodiscard]] input_type value() const noexcept override {
-            return input_type {};
-        }
-    };
+	public:
+		[[nodiscard]] input_type value() const noexcept override {
+			return input_type {};
+		}
+	};
 }
