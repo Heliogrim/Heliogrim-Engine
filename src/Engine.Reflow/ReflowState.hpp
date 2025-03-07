@@ -31,12 +31,14 @@ namespace hg::engine::reflow {
 
 		[[nodiscard]] nmpt<ReflowPassState> record(cref<sptr<Widget>> widget_);
 
+		[[nodiscard]] nmpt<ReflowPassState> record(nmpt<Widget> widget_);
+
 		[[nodiscard]] nmpt<const ReflowPassState> getStateOf(cref<sptr<Widget>> widget_) const;
 
-		[[nodiscard]] nmpt<const ReflowPassState> getStateOf(
-			nmpt<const Widget> widget_
-		) const;
+		[[nodiscard]] nmpt<const ReflowPassState> getStateOf(nmpt<const Widget> widget_) const;
 
 		[[nodiscard]] nmpt<ReflowPassState> getStateOf(cref<sptr<Widget>> widget_);
+
+		[[nodiscard]] nmpt<ReflowPassState> getStateOf(nmpt<Widget> widget_);
 	};
 }

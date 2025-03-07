@@ -33,7 +33,27 @@ nmpt<ReflowPassState> ReflowState::record(cref<sptr<Widget>> widget_) {
 	const auto result = _recorded.insert(
 		std::make_pair(
 			widget_.get(),
-			std::addressof(widget_->layoutState())
+			std::addressof(widget_->getLayoutState())
+		)
+	);
+
+	/**/
+
+	ref<ReflowPassState> state = *result.first->second;
+	return result.first->second;
+}
+
+nmpt<ReflowPassState> ReflowState::record(nmpt<Widget> widget_) {
+
+	const auto iter = _recorded.find(widget_.get());
+	if (iter != _recorded.end()) {
+		return iter->second;
+	}
+
+	const auto result = _recorded.insert(
+		std::make_pair(
+			widget_.get(),
+			std::addressof(widget_->getLayoutState())
 		)
 	);
 
@@ -62,6 +82,14 @@ nmpt<const ReflowPassState> ReflowState::getStateOf(
 }
 
 nmpt<ReflowPassState> ReflowState::getStateOf(cref<sptr<Widget>> widget_) {
+	const auto iter = _recorded.find(widget_.get());
+	if (iter != _recorded.end()) {
+		return iter->second;
+	}
+	return nullptr;
+}
+
+nmpt<ReflowPassState> ReflowState::getStateOf(nmpt<Widget> widget_) {
 	const auto iter = _recorded.find(widget_.get());
 	if (iter != _recorded.end()) {
 		return iter->second;

@@ -3,9 +3,9 @@
 #include <Engine.Common/Collection/Stack.hpp>
 #include <Engine.GFX/Aabb.hpp>
 
-#include "Widget/Widget.hpp"
-#include "ReflowState.hpp"
 #include "Children.hpp"
+#include "ReflowState.hpp"
+#include "Widget/Widget.hpp"
 
 using namespace hg::engine::reflow;
 using namespace hg;
@@ -14,9 +14,24 @@ std::atomic_uint_fast16_t ReflowEngine::_globalReflowTick = 0;
 
 /**/
 
-static void recomputeStates(ref<ReflowState> state_, cref<sptr<Widget>> root_);
+static void prefetchStateAlongAxis(
+	ReflowAxis axis_,
+	ref<const SharedPtr<Widget>> root_,
+	ref<ReflowState> state_
+);
 
-static void reapplyLayout(ref<ReflowState> state_, cref<sptr<Widget>> root_, mref<LayoutContext> globalCtx_);
+static void computeStateAlongAxis(
+	ReflowAxis axis_,
+	ref<const LayoutContext> globalCtx_,
+	ref<const SharedPtr<Widget>> root_,
+	ref<ReflowState> state_
+);
+
+static void finalizeLayoutAndStates(
+	ref<const SharedPtr<Widget>> root_,
+	ref<ReflowState> state_,
+	mref<LayoutContext> globalCtx_
+);
 
 /**/
 
@@ -36,26 +51,35 @@ void ReflowEngine::tick(ref<ReflowState> state_, cref<sptr<Widget>> widget_, mre
 	/**
 	 * First Pass: Recording prefetched desired size and distribute style updates
 	 */
-	recomputeStates(state_, widget_);
+	state_.reset();
+	prefetchStateAlongAxis(ReflowAxis::eXAxis, widget_, state_);
+	computeStateAlongAxis(ReflowAxis::eXAxis, globalCtx_, widget_, state_);
+
+	state_.reset();
+	prefetchStateAlongAxis(ReflowAxis::eYAxis, widget_, state_);
+	computeStateAlongAxis(ReflowAxis::eYAxis, globalCtx_, widget_, state_);
 
 	/**
 	 * Second Pass: Apply layout changes
 	 */
-	reapplyLayout(state_, widget_, std::move(globalCtx_));
-
+	finalizeLayoutAndStates(widget_, state_, std::move(globalCtx_));
 }
 
 /**/
 
-void recomputeStates(ref<ReflowState> state_, cref<sptr<Widget>> root_) {
-
-	constexpr float scale = 1.F;
+void prefetchStateAlongAxis(
+	ReflowAxis axis_,
+	ref<const SharedPtr<Widget>> root_,
+	ref<ReflowState> state_
+) {
 
 	/**
 	 * Use depth-first visiting to guarantee bottom-up computed sizes
 	 */
-	Stack<sptr<Widget>> pending {};
-	pending.push(root_);
+	auto cont = Vector<nmpt<Widget>>();
+	cont.reserve(16uLL);
+	auto pending = Stack<nmpt<Widget>, Vector<nmpt<Widget>>> { ::hg::move(cont) };
+	pending.emplace(root_.get());
 
 	while (not pending.empty()) {
 
@@ -65,7 +89,6 @@ void recomputeStates(ref<ReflowState> state_, cref<sptr<Widget>> root_) {
 		/**
 		 * Check for dependencies -> depth-first
 		 */
-
 		bool dependencies = false;
 		for (const auto& child : *children) {
 
@@ -74,7 +97,7 @@ void recomputeStates(ref<ReflowState> state_, cref<sptr<Widget>> root_) {
 			}
 
 			dependencies = true;
-			pending.push(child);
+			pending.emplace(child.get());
 
 			/* Warning: Temporary solution */
 
@@ -95,9 +118,8 @@ void recomputeStates(ref<ReflowState> state_, cref<sptr<Widget>> root_) {
 		/**
 		 * Record and compute current widget
 		 */
-
 		const auto widgetState = state_.record(cur);
-		const auto prefetchedSize = cur->prefetchDesiredSize(state_, scale);
+		const auto sizing = cur->prefetchSizing(axis_, state_);
 
 		/**
 		 * Preserve previous layout state as last aabb
@@ -108,12 +130,21 @@ void recomputeStates(ref<ReflowState> state_, cref<sptr<Widget>> root_) {
 		/**
 		 * Compare cached/preserved and computed for state changes
 		 */
-		if (prefetchedSize != widgetState->prefetchedSize) {
+		if (sizing.sizing != widgetState->prefetchSize) {
 			// TODO: Replace with correct function
 			//cur->markAsPending();
 		}
 
-		widgetState->prefetchedSize = prefetchedSize;
+		/**
+		 * Update widget's layout state with prefetched sizes
+		 */
+		if (axis_ == ReflowAxis::eXAxis) {
+			widgetState->prefetchMinSize.x = sizing.minSizing.x;
+			widgetState->prefetchSize.x = sizing.sizing.x;
+		} else {
+			widgetState->prefetchMinSize.y = sizing.minSizing.y;
+			widgetState->prefetchSize.y = sizing.sizing.y;
+		}
 
 		/* Warning: Temporary Fix */
 		if (state_.getRenderTick() == 0u) {
@@ -128,15 +159,84 @@ void recomputeStates(ref<ReflowState> state_, cref<sptr<Widget>> root_) {
 	}
 }
 
-void reapplyLayout(ref<ReflowState> state_, cref<sptr<Widget>> root_, mref<LayoutContext> globalCtx_) {
-
-	constexpr float scale = 1.F;
+void computeStateAlongAxis(
+	ReflowAxis axis_,
+	ref<const LayoutContext> globalCtx_,
+	ref<const SharedPtr<Widget>> root_,
+	ref<ReflowState> state_
+) {
 
 	/**
-	 * Use board-first visiting/computation
+	 * Use broad-first visiting/computation
 	 */
-	Stack<sptr<Widget>> pending {};
-	pending.push(root_);
+	auto cont = Vector<nmpt<Widget>>();
+	cont.reserve(32uLL);
+	auto pending = Stack<nmpt<Widget>, Vector<nmpt<Widget>>> { ::hg::move(cont) };
+	pending.emplace(root_.get());
+
+	root_->getLayoutState().computeSize = globalCtx_.localSize;
+
+	while (not pending.empty()) {
+
+		const auto cur = pending.top();
+		pending.pop();
+
+		/**
+		 * Forward update constraints and compute sizing state
+		 */
+
+		// Bug: We may need a additional function to forward the correct reference size to the children.
+		// Note: `computeReference(math::vec2 reference_) -> math::vec2 (child-reference)`
+		const auto referenceSize = cur->hasParent() ? state_.getStateOf(cur)->computeSize : globalCtx_.localSize;
+
+		/**/
+
+		const auto* const children = cur->children();
+		for (const auto& child : *children) {
+
+			const auto childState = state_.getStateOf(child);
+
+			/**/
+
+			childState->referenceSize = referenceSize;
+			const auto sizing = child->passPrefetchSizing(axis_, *childState);
+
+			/**
+			 * Update widget's layout state with prefetched sizes
+			 */
+			if (axis_ == ReflowAxis::eXAxis) {
+				childState->prefetchMinSize.x = sizing.minSizing.x;
+				childState->prefetchSize.x = sizing.sizing.x;
+				childState->prefetchMaxSize.x = sizing.maxSizing.x;
+			} else {
+				childState->prefetchMinSize.y = sizing.minSizing.y;
+				childState->prefetchSize.y = sizing.sizing.y;
+				childState->prefetchMaxSize.y = sizing.maxSizing.y;
+			}
+
+			/**
+			 * Queue compute sized children for computation/recursion
+			 *	Note: This is hoisted from the end of this compute function, as the computeSizing is not allowed to
+			 *			manipulate the specific set of children while scheduling
+			 */
+			pending.emplace(child.get());
+		}
+
+		/**/
+
+		cur->computeSizing(axis_, *state_.getStateOf(cur));
+	}
+}
+
+void finalizeLayoutAndStates(ref<const SharedPtr<Widget>> root_, ref<ReflowState> state_, mref<LayoutContext> globalCtx_) {
+
+	/**
+	 * Use broad-first visiting/computation
+	 */
+	auto cont = Vector<nmpt<Widget>>();
+	cont.reserve(32uLL);
+	auto pending = Stack<nmpt<Widget>, Vector<nmpt<Widget>>> { ::hg::move(cont) };
+	pending.emplace(root_.get());
 
 	Vector<engine::gfx::Aabb2d> revealed {};
 
@@ -151,51 +251,16 @@ void reapplyLayout(ref<ReflowState> state_, cref<sptr<Widget>> root_, mref<Layou
 		 * Apply layout computation
 		 */
 
-		LayoutContext ctx {};
 		if (not cur->hasParent()) {
-			ctx = globalCtx_;
-
 			const auto rootState = state_.getStateOf(cur);
-			rootState->referenceSize = ctx.localSize;
-			rootState->cachedPreservedSize = rootState->prefetchedSize;
-			rootState->layoutSize = rootState->prefetchedSize;
-			rootState->layoutOffset = ctx.localOffset;
-
-		} else {
-			const auto widgetState = state_.getStateOf(cur);
-			ctx = LayoutContext {
-				.localOffset = widgetState->layoutOffset,
-				.localSize = widgetState->layoutSize,
-				.localScale = scale
-			};
+			rootState->layoutSize = rootState->computeSize;
+			rootState->layoutOffset = globalCtx_.localOffset;
 		}
 
 		/**
-		 * Recompute desired size of children ( used for relative calculations )
+		 * Apply layout computation and position elements
 		 */
-
-		const auto* const children = cur->children();
-		for (const auto& child : *children) {
-
-			const auto childState = state_.getStateOf(child);
-
-			/**/
-
-			// TODO: Calculate Reference Sizes for child states
-			// TODO: We might need a method `computeReference(math::vec2 reference_) -> math::vec2 (child-reference)`
-			childState->referenceSize = ctx.localSize;
-			// TODO: Calculate size limit for child states
-			childState->layoutSize = ctx.localSize;
-
-			/**/
-
-			const auto computedSize = child->computeDesiredSize(*childState);
-			childState->cachedPreservedSize = computedSize;
-		}
-
-		/**/
-
-		cur->applyLayout(state_, std::move(ctx));
+		cur->applyLayout(state_);
 
 		/**
 		 *
@@ -233,22 +298,19 @@ void reapplyLayout(ref<ReflowState> state_, cref<sptr<Widget>> root_, mref<Layou
 
 		const auto pendingResult = cur->clearPending();
 		if (pendingResult & WidgetStateFlagBits::ePending) {
-
 			// TODO: Warning: If AABB of element changed, we need to queue previously covered elements to overdraw
-
 			cur->updateRenderVersion(state_.getRenderTick());
 		}
 
 		const auto nextAabb = engine::gfx::Aabb2d {
-			cur->layoutState().layoutOffset, cur->layoutState().layoutOffset + cur->layoutState().layoutSize
+			cur->getLayoutState().layoutOffset, cur->getLayoutState().layoutOffset + cur->getLayoutState().layoutSize
 		};
-		const auto changedAabb = nextAabb != cur->layoutState().lastAabb;
+		const auto changedAabb = nextAabb != cur->getLayoutState().lastAabb;
 		if (changedAabb) {
 			cur->updateRenderVersion(state_.getRenderTick());
 		}
 
 		// TODO: Check for layout changes -> drop sub-sequent layout operations
-
 		if (
 			not(pendingResult & WidgetStateFlagBits::ePending) &&
 			not(pendingResult & WidgetStateFlagBits::ePendingInherit) &&
@@ -265,9 +327,8 @@ void reapplyLayout(ref<ReflowState> state_, cref<sptr<Widget>> root_, mref<Layou
 		// TODO: Warning: We may want to combine the Aabb check and pending pushback into one single loop
 		// -> This may reduce the number of touched elements even more, cause right now we drop the cascade
 		//      after we entered an unchanged element
-
-		for (const auto& child : *children) {
-			pending.push(child);
+		for (const auto& child : *cur->children()) {
+			pending.emplace(child.get());
 		}
 	}
 
