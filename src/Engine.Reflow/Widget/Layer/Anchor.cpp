@@ -63,12 +63,24 @@ void Anchor::render(ptr<ReflowCommandBuffer> cmd_) {
 	// __noop();
 }
 
-math::vec2 Anchor::prefetchDesiredSize(cref<ReflowState> state_, float scale_) const {
-	return math::vec2_zero;
+PrefetchSizing Anchor::prefetchSizing(ReflowAxis axis_, ref<const ReflowState> state_) const {
+	return { math::vec2_zero, math::vec2_zero };
 }
 
-void Anchor::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) {
-	// __noop();
+PassPrefetchSizing Anchor::passPrefetchSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) const {
+	return { math::vec2_zero, math::vec2_zero, math::vec2_zero };
+}
+
+void Anchor::computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) {}
+
+void Anchor::applyLayout(ref<ReflowState> state_) {}
+
+math::fvec2 Anchor::getShrinkFactor() const noexcept {
+	return {};
+}
+
+math::fvec2 Anchor::getGrowFactor() const noexcept {
+	return {};
 }
 
 ReflowPosition Anchor::position() const noexcept {
