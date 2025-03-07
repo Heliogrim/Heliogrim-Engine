@@ -86,18 +86,33 @@ void Menu::render(const ptr<ReflowCommandBuffer> cmd_) {
 	_trigger.getChild()->render(cmd_);
 }
 
-math::vec2 Menu::prefetchDesiredSize(cref<ReflowState> state_, float scale_) const {
-	return _trigger.getChild()->getDesiredSize();
+PrefetchSizing Menu::prefetchSizing(ReflowAxis axis_, ref<const ReflowState> state_) const {
+	return {
+		_trigger.getChild()->getLayoutState().prefetchMinSize,
+		_trigger.getChild()->getLayoutState().prefetchSize
+	};
 }
 
-math::vec2 Menu::computeDesiredSize(cref<ReflowPassState> passState_) const {
-	return _trigger.getChild()->computeDesiredSize(passState_);
+PassPrefetchSizing Menu::passPrefetchSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) const {
+	return _trigger.getChild()->passPrefetchSizing(axis_, passState_);
 }
 
-void Menu::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) {
+void Menu::computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) {
+	_trigger.getChild()->getLayoutState().computeSize = passState_.computeSize;
+}
+
+void Menu::applyLayout(ref<ReflowState> state_) {
 	const auto childState = state_.getStateOf(_trigger.getChild());
-	childState->layoutOffset = ctx_.localOffset;
-	childState->layoutSize = ctx_.localSize;
+	childState->layoutOffset = getLayoutState().layoutOffset;
+	childState->layoutSize = getLayoutState().layoutSize;
+}
+
+math::fvec2 Menu::getGrowFactor() const noexcept {
+	return {};
+}
+
+math::fvec2 Menu::getShrinkFactor() const noexcept {
+	return {};
 }
 
 math::vec2 Menu::computeContentPosition() {
