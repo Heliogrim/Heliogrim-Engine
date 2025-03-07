@@ -1885,6 +1885,15 @@ namespace hg::math {
 			MIN(vec0_.z, vec1_.z)
 		};
 	}
+
+	template <typename T>
+	constexpr vec2_t<T> compClamp(
+		ref<const vec2_t<T>> min_,
+		ref<const vec2_t<T>> val_,
+		ref<const vec2_t<T>> max_
+	) noexcept {
+		return compMin<T>(max_, compMax<T>(val_, min_));
+	}
 }
 
 /** . */
