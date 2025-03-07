@@ -3,7 +3,6 @@
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Reflow/Children.hpp>
 #include <Engine.Reflow/Algorithm/Flex.hpp>
-#include <Engine.Reflow/Algorithm/FlexState.hpp>
 #include <Engine.Reflow/Layout/Style.hpp>
 
 using namespace hg::engine::reflow::uikit;
@@ -11,7 +10,11 @@ using namespace hg::engine::reflow;
 using namespace hg;
 
 VScrollBox::VScrollBox() :
-	VerticalLayout() {}
+	VerticalLayout(),
+	_scrollTrack(),
+	_scrollThumb(),
+	_scrollValue(),
+	_overflow() {}
 
 VScrollBox::~VScrollBox() = default;
 
@@ -43,7 +46,7 @@ void VScrollBox::setScrollThumb(cref<sptr<Widget>> thumb_) {
 	markAsPending();
 }
 
-math::vec2 VScrollBox::getScrollValue() const noexcept {
+f32 VScrollBox::getScrollValue() const noexcept {
 	return _scrollValue;
 }
 
@@ -56,8 +59,8 @@ void VScrollBox::scrollTo(cref<math::vec2> point_, cref<math::vec2> size_) {
 
 		const math::vec2 diff { point_ - off };
 
-		_scrollValue.y += (diff.y / _overflow.y);// We expect diff.y to be negative
-		_scrollValue.y = math::clamp(_scrollValue.y, 0.F, 1.F);
+		_scrollValue += (diff.y / _overflow);// We expect diff.y to be negative
+		_scrollValue = math::clamp(_scrollValue, 0.F, 1.F);
 
 	} else if (point_.y < off.y + size.y) {
 
@@ -68,8 +71,8 @@ void VScrollBox::scrollTo(cref<math::vec2> point_, cref<math::vec2> size_) {
 
 			const float correct { MAX(diff.y, inner.y) };
 
-			_scrollValue.y += (correct / _overflow.y);// We expect diff.y to be positive
-			_scrollValue.y = math::clamp(_scrollValue.y, 0.F, 1.F);
+			_scrollValue += (correct / _overflow);// We expect diff.y to be positive
+			_scrollValue = math::clamp(_scrollValue, 0.F, 1.F);
 
 		}
 
@@ -77,8 +80,8 @@ void VScrollBox::scrollTo(cref<math::vec2> point_, cref<math::vec2> size_) {
 
 		const math::vec2 diff { (point_ + size_) - (off + size) };
 
-		_scrollValue.y += (diff.y / _overflow.y);// We expect diff.y to be positive
-		_scrollValue.y = math::clamp(_scrollValue.y, 0.F, 1.F);
+		_scrollValue += (diff.y / _overflow);// We expect diff.y to be positive
+		_scrollValue = math::clamp(_scrollValue, 0.F, 1.F);
 
 	}
 }
@@ -110,108 +113,69 @@ void VScrollBox::render(const ptr<ReflowCommandBuffer> cmd_) {
 	cmd_->popScissor();
 }
 
-math::vec2 VScrollBox::prefetchDesiredSize(cref<ReflowState> state_, float scale_) const {
-	return VerticalLayout::prefetchDesiredSize(state_, scale_);
+PrefetchSizing VScrollBox::prefetchSizing(ReflowAxis axis_, ref<const ReflowState> state_) const {
+	return VerticalLayout::prefetchSizing(axis_, state_);
 }
 
-math::vec2 VScrollBox::computeDesiredSize(cref<ReflowPassState> passState_) const {
-	return VerticalLayout::computeDesiredSize(passState_);
+void VScrollBox::computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) {
+	return VerticalLayout::computeSizing(axis_, passState_);
 }
 
-void VScrollBox::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) {
+void VScrollBox::applyLayout(ref<ReflowState> state_) {
 
 	const auto& layout = getLayoutAttributes();
-	const auto& boxLayout = std::get<0>(layout.attributeSets);
-	const auto& flexLayout = std::get<1>(layout.attributeSets);
+	const auto& box = std::get<0>(layout.attributeSets);
+	const auto& flex = std::get<1>(layout.attributeSets);
 
 	/**/
 
-	const auto innerSize = layout::outerToInnerSize(boxLayout, ctx_.localSize);
+	const auto gaps = _children.empty() ? 0uLL : _children.size() - 1uLL;
+	auto mayOccupiedSpace = box.valueOf<attr::BoxLayout::padding>().x +
+		box.valueOf<attr::BoxLayout::padding>().y +
+		flex.valueOf<attr::FlexLayout::rowGap>() * gaps;
 
-	algorithm::FlexState flexState {};
-	flexState.box.preservedSize = innerSize;
-	flexState.box.maxSize = innerSize;
-	flexState.box.orientation = algorithm::FlexLineOrientation::eVertical;
-	flexState.box.justify = flexLayout.valueOf<attr::FlexLayout::justify>();
-	flexState.box.align = flexLayout.valueOf<attr::FlexLayout::align>();
-	flexState.box.gap = math::vec2 { flexLayout.valueOf<attr::FlexLayout::colGap>(), flexLayout.valueOf<attr::FlexLayout::rowGap>() };
-	flexState.box.wrap = false;
-
-	/**/
-
-	algorithm::solve(flexState, state_, children());
-
-	/**/
-
-	const auto minFlexBound = /*ctx_.localOffset*/math::vec2 { 0.F };
-	const auto maxFlexBound = /*ctx_.localOffset + ctx_.localSize*/innerSize;
-
-	const auto offset = layout::outerToInnerOffset(boxLayout, ctx_.localOffset);
-
-	/**/
-
-	const auto& lfl = flexState.lines.back();
-	const auto fbmax = lfl.offset + lfl.size;
-	_overflow = math::compMax<float>(math::vec2 { 0.F }, fbmax - flexState.box.maxSize);
-
-	/**/
-
-	for (const auto& flexLine : flexState.lines) {
-		for (const auto& flexItem : flexLine.items) {
-
-			const auto dummy = flexItem.widget.lock();
-			const auto widgetState = state_.getStateOf(std::static_pointer_cast<Widget, void>(dummy));
-
-			widgetState->layoutOffset = flexItem.offset + offset;
-			widgetState->layoutSize = flexItem.flexSize;
-
-			// TODO: Check how we should work with co-axis
-			// Currently Flex-Solving will guarantee main-axis constraint (as long as possible), but co-axis will break
-			// We might try to hard-limit contextual constraints
-
-			math::vec2 minDiff;
-			math::vec2 maxDiff;
-
-			const auto minCorner = flexItem.offset;
-			const auto maxCorner = flexItem.offset + flexItem.flexSize;
-
-			if (maxCorner.x > maxFlexBound.x || maxCorner.y > maxFlexBound.y) {
-				maxDiff = maxCorner - maxFlexBound;
-				maxDiff = math::compMax<float>(maxDiff, math::vec2 { 0.F });
-			}
-
-			if (minCorner.x > minFlexBound.x || minCorner.y > minFlexBound.y) {
-				minDiff = minFlexBound - minCorner;
-				minDiff = math::compMax<float>(minDiff, math::vec2 { 0.F });
-			}
-
-			widgetState->layoutOffset += minDiff;
-
-			if (algorithm::FlexLineOrientation::eVertical == algorithm::FlexLineOrientation::eVertical) {
-				widgetState->layoutSize.x -= maxDiff.x;
-			} else {
-				widgetState->layoutSize.y -= maxDiff.y;
-			}
-
-			widgetState->layoutOffset -= (_scrollValue * _overflow);
-		}
+	for (const auto& child : *children()) {
+		mayOccupiedSpace += child->getLayoutState().computeSize.y;
 	}
+
+	_overflow = std::max(mayOccupiedSpace - getLayoutState().layoutSize.x, 0.F);
+
+	/**/
+
+	// Warning: This is a bit hacky and unclean
+	const auto preserveOffset = getLayoutState().layoutOffset;
+	getLayoutState().layoutOffset.y -= (_scrollValue * _overflow);
+
+	algorithm::layout(
+		{
+			.mainAxis = ReflowAxis::eYAxis,
+			.anchor = getLayoutState().layoutOffset,
+			.span = getLayoutState().layoutSize,
+			.gapping = { flex.valueOf<attr::FlexLayout::colGap>(), flex.valueOf<attr::FlexLayout::rowGap>() },
+			.padding = box.valueOf<attr::BoxLayout::padding>(),
+			.align = flex.valueOf<attr::FlexLayout::align>(),
+			.justify = flex.valueOf<attr::FlexLayout::justify>()
+		},
+		children()
+	);
+
+	// Warning: This is the offset restoration corresponding to the hack above
+	getLayoutState().layoutOffset = preserveOffset;
 }
 
 EventResponse VScrollBox::onWheel(cref<WheelEvent> event_) {
 
 	if (_children.empty()) {
-		_scrollValue = math::vec2 { 0.F };
+		_scrollValue = 0.F;
 		return VerticalLayout::onWheel(event_);
 	}
 
 	constexpr float scrollInvSpeed = 32.F;
 	const auto diff { event_._value * (/* _overflow /  */scrollInvSpeed) };
-	const auto normalized { diff / _overflow };
+	const auto normalized { diff.y / _overflow };
 
 	_scrollValue -= normalized;
-	_scrollValue.x = math::clamp(_scrollValue.x, 0.F, 1.F);
-	_scrollValue.y = math::clamp(_scrollValue.y, 0.F, 1.F);
+	_scrollValue = math::clamp(_scrollValue, 0.F, 1.F);
 
 	markAsPending();
 	return EventResponse::eConsumed;

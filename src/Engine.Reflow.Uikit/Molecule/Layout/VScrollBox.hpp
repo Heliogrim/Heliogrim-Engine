@@ -26,11 +26,11 @@ namespace hg::engine::reflow::uikit {
 		void setScrollThumb(cref<sptr<Widget>> thumb_);
 
 	private:
-		math::vec2 _scrollValue;
-		math::vec2 _overflow;
+		f32 _scrollValue;
+		f32 _overflow;
 
 	public:
-		[[nodiscard]] math::vec2 getScrollValue() const noexcept;
+		[[nodiscard]] f32 getScrollValue() const noexcept;
 
 		void scrollTo(cref<math::vec2> point_, cref<math::vec2> size_);
 
@@ -38,11 +38,11 @@ namespace hg::engine::reflow::uikit {
 		void render(const ptr<ReflowCommandBuffer> cmd_) override;
 
 	public:
-		math::vec2 prefetchDesiredSize(cref<ReflowState> state_, float scale_) const override;
+		PrefetchSizing prefetchSizing(ReflowAxis axis_, ref<const ReflowState> state_) const override;
 
-		math::vec2 computeDesiredSize(cref<ReflowPassState> passState_) const override;
+		void computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) override;
 
-		void applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) override;
+		void applyLayout(ref<ReflowState> state_) override;
 
 	public:
 		EventResponse onWheel(cref<WheelEvent> event_) override;
