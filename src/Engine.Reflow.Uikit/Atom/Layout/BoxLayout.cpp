@@ -1,6 +1,7 @@
 #include "BoxLayout.hpp"
 
 #include <format>
+#include <Engine.Reflow/Algorithm/Flex.hpp>
 #include <Engine.Reflow/Command/ReflowCommandLayer.hpp>
 #include <Engine.Reflow/Layout/Style.hpp>
 
@@ -19,10 +20,12 @@ BoxLayout::BoxLayout(mref<ReflowClassList> classList_, mref<SharedPtr<Widget>> p
 			.layoutAttributes = BoxLayoutAttributes {
 				ReflowUnit { ReflowUnitType::eAuto, 0.F },
 				ReflowUnit { ReflowUnitType::eAuto, 0.F },
+				0.F, 1.F,
+				/**/
 				ReflowUnit { ReflowUnitType::eAuto, 0.F },
 				ReflowUnit { ReflowUnitType::eAuto, 0.F },
-				ReflowUnit { ReflowUnitType::eAuto, 0.F },
-				ReflowUnit { ReflowUnitType::eAuto, 0.F },
+				0.F, 1.F,
+				/**/
 				Padding { 0.F },
 				ReflowPlacement::eMiddleCenter
 			}
@@ -60,8 +63,8 @@ void BoxLayout::render(const ptr<ReflowCommandBuffer> cmd_) {
 	for (const auto& child : *children()) {
 
 		if (child->state().isVisible() && not cmd_->scissorCull(
-			child->layoutState().layoutOffset,
-			child->layoutState().layoutSize
+			child->getLayoutState().layoutOffset,
+			child->getLayoutState().layoutSize
 		)) {
 			child->render(cmd_);
 		}
@@ -70,55 +73,77 @@ void BoxLayout::render(const ptr<ReflowCommandBuffer> cmd_) {
 
 }
 
-math::vec2 BoxLayout::prefetchDesiredSize(cref<ReflowState> state_, float scale_) const {
+PrefetchSizing BoxLayout::prefetchSizing(ReflowAxis axis_, ref<const ReflowState> state_) const {
 
-	const auto& layout = getLayoutAttributes();
+	const auto& box = getLayoutAttributes();
 
-	const auto inner = _children.getChild()->getDesiredSize();
-	auto size = layout::innerToOuterSize(layout, inner);
-
-	/**/
-
-	if (layout.valueOf<attr::BoxLayout::width>().type == ReflowUnitType::eAbsolute) {
-		size.x = layout.valueOf<attr::BoxLayout::width>().value;
-	}
-
-	if (layout.valueOf<attr::BoxLayout::height>().type == ReflowUnitType::eAbsolute) {
-		size.y = layout.valueOf<attr::BoxLayout::height>().value;
-	}
-
-	/**/
-
-	return layout::clampSizeAbs(layout, size);
+	return algorithm::prefetch(
+		axis_,
+		{
+			.mainAxis = ReflowAxis::eXAxis,
+			.min = algorithm::unitAbsMin(box.valueOf<attr::BoxLayout::minWidth>(), box.valueOf<attr::BoxLayout::minHeight>()),
+			.max = algorithm::unitAbsMax(box.valueOf<attr::BoxLayout::maxWidth>(), box.valueOf<attr::BoxLayout::maxHeight>()),
+			.gapping = { 0.F, 0.F },
+			.padding = box.valueOf<attr::BoxLayout::padding>()
+		},
+		children()
+	);
 }
 
-math::vec2 BoxLayout::computeDesiredSize(cref<ReflowPassState> passState_) const {
+PassPrefetchSizing BoxLayout::passPrefetchSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) const {
 
-	const auto& layout = getLayoutAttributes();
-
-	math::vec2 desired = getDesiredSize();
-	if (layout.valueOf<attr::BoxLayout::width>().type == ReflowUnitType::eRelative) {
-		desired.x = passState_.referenceSize.x * layout.valueOf<attr::BoxLayout::width>().value;
-	}
-
-	if (layout.valueOf<attr::BoxLayout::height>().type == ReflowUnitType::eRelative) {
-		desired.y = passState_.referenceSize.y * layout.valueOf<attr::BoxLayout::height>().value;
-	}
-
-	/**/
-
-	return layout::clampSize(layout, passState_.layoutSize, desired);
+	const auto& box = getLayoutAttributes();
+	return {
+		algorithm::nextUnit(
+			box.valueOf<attr::BoxLayout::minWidth>(),
+			box.valueOf<attr::BoxLayout::minHeight>(),
+			passState_.referenceSize,
+			passState_.prefetchMinSize
+		),
+		math::compMax(
+			algorithm::nextUnit(
+				box.valueOf<attr::BoxLayout::minWidth>(),
+				box.valueOf<attr::BoxLayout::minHeight>(),
+				passState_.referenceSize,
+				passState_.prefetchSize
+			),
+			passState_.prefetchSize
+		),
+		algorithm::nextUnit(
+			box.valueOf<attr::BoxLayout::maxWidth>(),
+			box.valueOf<attr::BoxLayout::maxHeight>(),
+			passState_.referenceSize,
+			algorithm::unitAbsMax(
+				box.valueOf<attr::BoxLayout::maxWidth>(),
+				box.valueOf<attr::BoxLayout::maxHeight>()
+			)
+		)
+	};
 }
 
-void BoxLayout::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) {
+void BoxLayout::computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) {
+
+	algorithm::compute(
+		axis_,
+		{
+			.mainAxis = ReflowAxis::eXAxis,
+			.size = passState_.computeSize,
+			.gapping = { 0.F, 0.F },
+			.padding = getLayoutAttributes().valueOf<attr::BoxLayout::padding>()
+		},
+		children()
+	);
+}
+
+void BoxLayout::applyLayout(ref<ReflowState> state_) {
 
 	const auto& layout = getLayoutAttributes();
 
-	const auto innerOffset = layout::outerToInnerOffset(layout, ctx_.localOffset);
-	const auto innerSize = layout::outerToInnerSize(layout, ctx_.localSize);
+	const auto innerOffset = layout::outerToInnerOffset(layout, getLayoutState().layoutOffset);
+	const auto innerSize = layout::outerToInnerSize(layout, getLayoutState().layoutSize);
 
 	const auto childSize = math::compMin<float>(
-		math::compMax<float>(_children.getChild()->layoutState().cachedPreservedSize, math::vec2 { 0.F }),
+		math::compMax<float>(_children.getChild()->getLayoutState().computeSize, math::vec2 { 0.F }),
 		innerSize
 	);
 
@@ -163,4 +188,18 @@ void BoxLayout::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) {
 
 	childPassState->layoutOffset = innerOffset + space;
 	childPassState->layoutSize = childSize;
+}
+
+math::fvec2 BoxLayout::getGrowFactor() const noexcept {
+	return {
+		getLayoutAttributes().valueOf<attr::BoxLayout::widthGrow>(),
+		getLayoutAttributes().valueOf<attr::BoxLayout::heightGrow>()
+	};
+}
+
+math::fvec2 BoxLayout::getShrinkFactor() const noexcept {
+	return {
+		getLayoutAttributes().valueOf<attr::BoxLayout::widthShrink>(),
+		getLayoutAttributes().valueOf<attr::BoxLayout::heightShrink>()
+	};
 }
