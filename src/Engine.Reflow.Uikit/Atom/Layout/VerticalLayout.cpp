@@ -21,22 +21,20 @@ VerticalLayout::VerticalLayout(mref<ReflowClassList> classList_, mref<SharedPtr<
 				.attributeSets = std::make_tuple(
 					BoxLayoutAttributes {
 						ReflowUnit { ReflowUnitType::eAuto, 0.F },
-						ReflowUnit { ReflowUnitType::eRelative, 1.F },
-						ReflowUnit { ReflowUnitType::eRelative, 1.F },
+						ReflowUnit { ReflowUnitType::eAuto, 0.F },
+						0.F, 1.F,
 						/**/
 						ReflowUnit { ReflowUnitType::eAuto, 0.F },
-						ReflowUnit { ReflowUnitType::eRelative, 1.F },
-						ReflowUnit { ReflowUnitType::eRelative, 1.F },
+						ReflowUnit { ReflowUnitType::eAuto, 0.F },
+						0.F, 1.F,
 						/**/
 						Padding {},
 						ReflowPlacement::eMiddleCenter
 					},
 					FlexLayoutAttributes {
-						1.F,
-						1.F,
 						4.F,
 						4.F,
-						ReflowAlignment::eCenter,
+						ReflowAlignment::eStart,
 						ReflowSpacing::eStart
 					}
 				)
@@ -126,8 +124,8 @@ void VerticalLayout::render(const ptr<ReflowCommandBuffer> cmd_) {
 	for (const auto& child : *children()) {
 
 		if (child->state().isVisible() && not cmd_->scissorCull(
-			child->layoutState().layoutOffset,
-			child->layoutState().layoutSize
+			child->getLayoutState().layoutOffset,
+			child->getLayoutState().layoutSize
 		)) {
 			child->render(cmd_);
 		}
@@ -135,134 +133,93 @@ void VerticalLayout::render(const ptr<ReflowCommandBuffer> cmd_) {
 	}
 }
 
-math::vec2 VerticalLayout::prefetchDesiredSize(cref<ReflowState> state_, float scale_) const {
+PrefetchSizing VerticalLayout::prefetchSizing(ReflowAxis axis_, ref<const ReflowState> state_) const {
 
 	const auto& layout = getLayoutAttributes();
-	const auto& boxLayout = std::get<0>(layout.attributeSets);
-	const auto& flexLayout = std::get<1>(layout.attributeSets);
+	const auto& box = std::get<0>(layout.attributeSets);
+	const auto& flex = std::get<1>(layout.attributeSets);
 
-	math::vec2 childAggregate;
-	math::vec2 childMax;
-
-	for (const auto& child : *children()) {
-
-		if (child->position() == ReflowPosition::eAbsolute) {
-			continue;
-		}
-
-		const auto childState = state_.getStateOf(child);
-
-		childAggregate += child->getDesiredSize();
-		childMax = math::compMax<float>(childMax, child->getDesiredSize());
-	}
-
-	const auto gapping = math::vec2 {
-		flexLayout.valueOf<attr::FlexLayout::colGap>(),
-		flexLayout.valueOf<attr::FlexLayout::rowGap>()
-	} * static_cast<float>(MAX(children()->size(), 1) - 1);
-
-	/**/
-
-	const math::vec2 innerSize = math::vec2 { childMax.x, childAggregate.y + gapping.y };
-	math::vec2 size = layout::innerToOuterSize(boxLayout, innerSize);
-
-	/**/
-
-	if (boxLayout.valueOf<attr::BoxLayout::width>().type == ReflowUnitType::eAbsolute) {
-		size.x = boxLayout.valueOf<attr::BoxLayout::width>().value;
-	}
-	if (boxLayout.valueOf<attr::BoxLayout::height>().type == ReflowUnitType::eAbsolute) {
-		size.y = boxLayout.valueOf<attr::BoxLayout::height>().value;
-	}
-
-	/**/
-
-	return layout::clampSizeAbs(boxLayout, size);
+	return algorithm::prefetch(
+		axis_,
+		{
+			.mainAxis = ReflowAxis::eYAxis,
+			.min = algorithm::unitAbsMin(box.valueOf<attr::BoxLayout::minWidth>(), box.valueOf<attr::BoxLayout::minHeight>()),
+			.max = algorithm::unitAbsMax(box.valueOf<attr::BoxLayout::maxWidth>(), box.valueOf<attr::BoxLayout::maxHeight>()),
+			.gapping = { flex.valueOf<attr::FlexLayout::colGap>(), flex.valueOf<attr::FlexLayout::rowGap>() },
+			.padding = box.valueOf<attr::BoxLayout::padding>()
+		},
+		children()
+	);
 }
 
-math::vec2 VerticalLayout::computeDesiredSize(cref<ReflowPassState> passState_) const {
+PassPrefetchSizing VerticalLayout::passPrefetchSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) const {
 
-	const auto& layout = getLayoutAttributes();
-	const auto& boxLayout = std::get<0>(layout.attributeSets);
-
-	/**/
-
-	math::vec2 desired { getDesiredSize() };
-	if (boxLayout.valueOf<attr::BoxLayout::width>().type == ReflowUnitType::eRelative) {
-		desired.x = passState_.referenceSize.x * boxLayout.valueOf<attr::BoxLayout::width>().value;
-	}
-	if (boxLayout.valueOf<attr::BoxLayout::height>().type == ReflowUnitType::eRelative) {
-		desired.y = passState_.referenceSize.y * boxLayout.valueOf<attr::BoxLayout::height>().value;
-	}
-
-	return layout::clampSize(boxLayout, passState_.layoutSize, desired);
+	const auto& box = std::get<0>(getLayoutAttributes().attributeSets);
+	return {
+		algorithm::nextUnit(
+			box.valueOf<attr::BoxLayout::minWidth>(),
+			box.valueOf<attr::BoxLayout::minHeight>(),
+			passState_.referenceSize,
+			passState_.prefetchMinSize
+		),
+		math::compMax(
+			algorithm::nextUnit(
+				box.valueOf<attr::BoxLayout::minWidth>(),
+				box.valueOf<attr::BoxLayout::minHeight>(),
+				passState_.referenceSize,
+				passState_.prefetchSize
+			),
+			passState_.prefetchSize
+		),
+		algorithm::nextUnit(
+			box.valueOf<attr::BoxLayout::maxWidth>(),
+			box.valueOf<attr::BoxLayout::maxHeight>(),
+			passState_.referenceSize,
+			algorithm::unitAbsMax(
+				box.valueOf<attr::BoxLayout::maxWidth>(),
+				box.valueOf<attr::BoxLayout::maxHeight>()
+			)
+		)
+	};
 }
 
-void VerticalLayout::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) {
+void VerticalLayout::computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) {
+
+	const auto& box = std::get<0>(getLayoutAttributes().attributeSets);
+	const auto& flex = std::get<1>(getLayoutAttributes().attributeSets);
+
+	algorithm::compute(
+		axis_,
+		{
+			.mainAxis = ReflowAxis::eYAxis,
+			.size = passState_.computeSize,
+			.gapping = { flex.valueOf<attr::FlexLayout::colGap>(), flex.valueOf<attr::FlexLayout::rowGap>() },
+			.padding = box.valueOf<attr::BoxLayout::padding>()
+		},
+		children()
+	);
+}
+
+void VerticalLayout::applyLayout(ref<ReflowState> state_) {
 
 	const auto& layout = getLayoutAttributes();
-	const auto& boxLayout = std::get<0>(layout.attributeSets);
-	const auto& flexLayout = std::get<1>(layout.attributeSets);
+	const auto& box = std::get<0>(layout.attributeSets);
+	const auto& flex = std::get<1>(layout.attributeSets);
 
 	/**/
 
-	const auto innerSize = layout::outerToInnerSize(boxLayout, ctx_.localSize);
-
-	algorithm::FlexState flexState {};
-	flexState.box.preservedSize = innerSize;
-	flexState.box.maxSize = innerSize;
-	flexState.box.orientation = algorithm::FlexLineOrientation::eVertical;
-	flexState.box.justify = flexLayout.valueOf<attr::FlexLayout::justify>();
-	flexState.box.align = flexLayout.valueOf<attr::FlexLayout::align>();
-	flexState.box.gap = math::vec2 { flexLayout.valueOf<attr::FlexLayout::colGap>(), flexLayout.valueOf<attr::FlexLayout::rowGap>() };
-	flexState.box.wrap = false;
-
-	/**/
-
-	algorithm::solve(flexState, state_, children());
-
-	/**/
-
-	const auto minFlexBound = /*ctx_.localOffset*/math::vec2 { 0.F };
-	const auto maxFlexBound = /*ctx_.localOffset + ctx_.localSize*/innerSize;
-
-	const auto offset = layout::outerToInnerOffset(boxLayout, ctx_.localOffset);
-
-	/**/
-
-	for (const auto& flexLine : flexState.lines) {
-		for (const auto& flexItem : flexLine.items) {
-
-			const auto dummy = flexItem.widget.lock();
-			const auto widgetState = state_.getStateOf(std::static_pointer_cast<Widget, void>(dummy));
-
-			widgetState->layoutOffset = flexItem.offset + offset;
-			widgetState->layoutSize = flexItem.flexSize;
-
-			// TODO: Check how we should work with co-axis
-			// Currently Flex-Solving will guarantee main-axis constraint (as long as possible), but co-axis will break
-			// We might try to hard-limit contextual constraints
-
-			math::vec2 minDiff;
-			math::vec2 maxDiff;
-
-			const auto minCorner = flexItem.offset;
-			const auto maxCorner = flexItem.offset + flexItem.flexSize;
-
-			if (maxCorner.x > maxFlexBound.x || maxCorner.y > maxFlexBound.y) {
-				maxDiff = maxCorner - maxFlexBound;
-				maxDiff = math::compMax<float>(maxDiff, math::vec2 { 0.F });
-			}
-
-			if (minCorner.x > minFlexBound.x || minCorner.y > minFlexBound.y) {
-				minDiff = minFlexBound - minCorner;
-				minDiff = math::compMax<float>(minDiff, math::vec2 { 0.F });
-			}
-
-			widgetState->layoutOffset += minDiff;
-			widgetState->layoutSize -= maxDiff;
-		}
-	}
+	algorithm::layout(
+		{
+			.mainAxis = ReflowAxis::eYAxis,
+			.anchor = getLayoutState().layoutOffset,
+			.span = getLayoutState().layoutSize,
+			.gapping = { flex.valueOf<attr::FlexLayout::colGap>(), flex.valueOf<attr::FlexLayout::rowGap>() },
+			.padding = box.valueOf<attr::BoxLayout::padding>(),
+			.align = flex.valueOf<attr::FlexLayout::align>(),
+			.justify = flex.valueOf<attr::FlexLayout::justify>()
+		},
+		children()
+	);
 
 	/**/
 
@@ -271,22 +228,26 @@ void VerticalLayout::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ct
 		if (child->position() == ReflowPosition::eAbsolute) {
 
 			const auto widgetState = state_.getStateOf(child);
-			widgetState->layoutOffset = ctx_.localOffset;
-			widgetState->layoutSize = widgetState->cachedPreservedSize;
+			widgetState->layoutOffset = getLayoutState().layoutOffset;
+			widgetState->layoutSize = widgetState->computeSize;
 		}
 	}
 }
 
-float VerticalLayout::shrinkFactor() const noexcept {
-	const auto& layout = getLayoutAttributes();
-	const auto& flexLayout = std::get<1>(layout.attributeSets);
+math::fvec2 VerticalLayout::getShrinkFactor() const noexcept {
+	const auto& box = std::get<0>(getLayoutAttributes().attributeSets);
 
-	return flexLayout.valueOf<attr::FlexLayout::shrink>();
-}
+	return {
+		box.valueOf<attr::BoxLayout::widthShrink>(),
+		box.valueOf<attr::BoxLayout::heightShrink>()
+	};
+};
 
-float VerticalLayout::growFactor() const noexcept {
-	const auto& layout = getLayoutAttributes();
-	const auto& flexLayout = std::get<1>(layout.attributeSets);
+math::fvec2 VerticalLayout::getGrowFactor() const noexcept {
+	const auto& box = std::get<0>(getLayoutAttributes().attributeSets);
 
-	return flexLayout.valueOf<attr::FlexLayout::grow>();
+	return {
+		box.valueOf<attr::BoxLayout::widthGrow>(),
+		box.valueOf<attr::BoxLayout::heightGrow>()
+	};
 }
