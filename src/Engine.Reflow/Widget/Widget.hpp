@@ -8,12 +8,11 @@
 
 #include "WidgetState.hpp"
 #include "../FlowContext.hpp"
+#include "../ReflowAxis.hpp"
 #include "../ReflowClassList.hpp"
 #include "../ReflowEventEmitter.hpp"
 #include "../ReflowPosition.hpp"
 #include "../ReflowState.hpp"
-#include "../Attribute/Attribute.hpp"
-#include "../Attribute/DynamicAttribute.hpp"
 #include "../Command/ReflowCommandBuffer.hpp"
 #include "../Event/DragDropEvent.hpp"
 #include "../Event/EventResponse.hpp"
@@ -30,6 +29,19 @@ namespace hg::engine::reflow {
 }
 
 namespace hg::engine::reflow {
+	struct PrefetchSizing {
+		math::fvec2 minSizing;
+		math::fvec2 sizing;
+	};
+
+	struct PassPrefetchSizing {
+		math::fvec2 minSizing;
+		math::fvec2 sizing;
+		math::fvec2 maxSizing;
+	};
+
+	/**/
+
 	class Widget :
 		public SharedFromThis<Widget> {
 	public:
@@ -55,9 +67,9 @@ namespace hg::engine::reflow {
 		[[nodiscard]] ref<WidgetState> state() noexcept;
 
 	public:
-		[[nodiscard]] cref<ReflowPassState> layoutState() const noexcept;
+		[[nodiscard]] cref<ReflowPassState> getLayoutState() const noexcept;
 
-		[[nodiscard]] ref<ReflowPassState> layoutState() noexcept;
+		[[nodiscard]] ref<ReflowPassState> getLayoutState() noexcept;
 
 	protected:
 		ReflowClassList _staticClassList;
@@ -167,22 +179,17 @@ namespace hg::engine::reflow {
 	public:
 		virtual void cascadeContextChange(bool invalidate_);
 
-		virtual math::vec2 prefetchDesiredSize(cref<ReflowState> state_, float scale_) const = 0;
+		virtual PrefetchSizing prefetchSizing(ReflowAxis axis_, ref<const ReflowState> state_) const = 0;
 
-		virtual math::vec2 computeDesiredSize(cref<ReflowPassState> passState_) const;
+		virtual PassPrefetchSizing passPrefetchSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) const = 0;
 
-		virtual void applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) = 0;
+		virtual void computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) = 0;
 
-		/**
-		 * Layout Related
-		 */
-	public:
-		[[nodiscard]] math::vec2 getDesiredSize() const;
+		virtual void applyLayout(ref<ReflowState> state_) = 0;
 
-	public:
-		[[nodiscard]] virtual float shrinkFactor() const noexcept;
+		[[nodiscard]] virtual math::fvec2 getShrinkFactor() const noexcept = 0;
 
-		[[nodiscard]] virtual float growFactor() const noexcept;
+		[[nodiscard]] virtual math::fvec2 getGrowFactor() const noexcept = 0;
 
 		[[nodiscard]] virtual ReflowPosition position() const noexcept;
 

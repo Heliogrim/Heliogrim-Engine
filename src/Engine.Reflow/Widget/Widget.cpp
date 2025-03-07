@@ -35,11 +35,11 @@ ref<WidgetState> Widget::state() noexcept {
 	return _state;
 }
 
-cref<ReflowPassState> Widget::layoutState() const noexcept {
+cref<ReflowPassState> Widget::getLayoutState() const noexcept {
 	return _layoutState;
 }
 
-ref<ReflowPassState> Widget::layoutState() noexcept {
+ref<ReflowPassState> Widget::getLayoutState() noexcept {
 	return _layoutState;
 }
 
@@ -79,30 +79,30 @@ EventResponse Widget::onMouseMove(cref<MouseMoveEvent> event_) {
 
 EventResponse Widget::onMouseEnter(cref<MouseMoveEvent> event_) {
 
-    if (not _state.isHover()) {
-        _state |= WidgetStateFlagBits::eHover;
-        markAsPending();
-    }
+	if (not _state.isHover()) {
+		_state |= WidgetStateFlagBits::eHover;
+		markAsPending();
+	}
 
-    return EventResponse::eUnhandled;
+	return EventResponse::eUnhandled;
 }
 
 EventResponse Widget::onMouseLeave(cref<MouseMoveEvent> event_) {
 
-    if (_state.isHover()) {
-        _state.unwrap &= (~static_cast<WidgetState::value_type>(WidgetStateFlagBits::eHover));
-        markAsPending();
-    }
+	if (_state.isHover()) {
+		_state.unwrap &= (~static_cast<WidgetState::value_type>(WidgetStateFlagBits::eHover));
+		markAsPending();
+	}
 
-    return EventResponse::eUnhandled;
+	return EventResponse::eUnhandled;
 }
 
 EventResponse Widget::onWheel(cref<WheelEvent> event_) {
-    return EventResponse::eUnhandled;
+	return EventResponse::eUnhandled;
 }
 
 EventResponse Widget::onDrag(cref<DragDropEvent> event_) {
-    return EventResponse::eUnhandled;
+	return EventResponse::eUnhandled;
 }
 
 EventResponse Widget::onDrop(cref<DragDropEvent> event_) {
@@ -158,20 +158,20 @@ void Widget::setParent(cref<sptr<Widget>> parent_) {
 }
 
 bool Widget::hasParent() const {
-    return not _parent.expired();
+	return not _parent.expired();
 }
 
 sptr<Widget> Widget::parent() const {
-    return _parent.lock();
+	return _parent.lock();
 }
 
 sptr<Widget> Widget::root() const {
-    if (not hasParent()) [[unlikely]]
-    {
-        return nullptr;
-    }
+	if (not hasParent()) [[unlikely]]
+	{
+		return nullptr;
+	}
 
-    return parent()->root();
+	return parent()->root();
 }
 
 Opt<ref<const theming::ThemeProvisioner>> Widget::getEffectiveProvisioner() const noexcept {
@@ -206,22 +206,6 @@ void Widget::cascadeContextChange(const bool invalidate_) {
 			child->cascadeContextChange(invalidate_);
 		}
 	}
-}
-
-math::vec2 Widget::computeDesiredSize(cref<ReflowPassState> passState_) const {
-	return getDesiredSize();
-}
-
-math::vec2 Widget::getDesiredSize() const {
-	return _layoutState.prefetchedSize;
-}
-
-float Widget::shrinkFactor() const noexcept {
-	return 0.F;
-}
-
-float Widget::growFactor() const noexcept {
-	return 0.F;
 }
 
 ReflowPosition Widget::position() const noexcept {
@@ -298,7 +282,7 @@ void Widget::cascadeRenderVersion(const u16 version_, cref<Aabb2d> aabb_) {
 	bool forwarded = false;
 	for (const auto& child : *children()) {
 
-		const auto& childLayout = child->layoutState();
+		const auto& childLayout = child->getLayoutState();
 		const auto childAabb = Aabb2d { childLayout.layoutOffset, childLayout.layoutOffset + childLayout.layoutSize };
 
 		if (childAabb.contains(aabb_)) {
