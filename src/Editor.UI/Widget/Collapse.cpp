@@ -3,48 +3,40 @@
 #include <format>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Reflow/Algorithm/Flex.hpp>
-#include <Engine.Reflow/Algorithm/FlexState.hpp>
 #include <Engine.Reflow/Layout/Style.hpp>
-
-#include "../Color/Dark.hpp"
-#include "Editor.UI/Theme/Theme.hpp"
 
 using namespace hg::engine::reflow;
 using namespace hg::editor::ui;
 using namespace hg;
 
 CollapseHeader::CollapseHeader(ptr<Collapse> parent_) :
-	HorizontalPanel(),
+	HorizontalLayout(),
 	_parent(parent_) {
 	/**/
-	attr.width.setValue({ ReflowUnitType::eRelative, 1.F });
-	attr.maxWidth.setValue({ ReflowUnitType::eRelative, 1.F });
-	attr.minHeight.setValue({ ReflowUnitType::eAbsolute, 20.F });
-	attr.height.setValue({ ReflowUnitType::eAbsolute, 20.F });
-	attr.maxHeight.setValue({ ReflowUnitType::eAbsolute, 20.F });
-	attr.padding.setValue(Padding { 0.F, 4.F });
-	attr.justify.setValue(ReflowSpacing::eSpaceBetween);
+	std::get<0>(getLayoutAttributes().attributeSets).update<attr::BoxLayout::minWidth>({ ReflowUnitType::eRelative, 1.F });
+	std::get<0>(getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxWidth>({ ReflowUnitType::eRelative, 1.F });
+	std::get<0>(getLayoutAttributes().attributeSets).update<attr::BoxLayout::minHeight>({ ReflowUnitType::eAbsolute, 20.F });
+	std::get<0>(getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxHeight>({ ReflowUnitType::eAbsolute, 20.F });
+	std::get<0>(getLayoutAttributes().attributeSets).update<attr::BoxLayout::padding>(Padding { 0.F, 4.F });
+
+	std::get<1>(getLayoutAttributes().attributeSets).update<attr::FlexLayout::justify>(ReflowSpacing::eSpaceBetween);
 }
 
 CollapseHeader::~CollapseHeader() = default;
 
 void CollapseHeader::setup() {
 
-	const auto theme = Theme::get();
-
-	_indicator = make_sptr<Text>();
-	theme->applyLabel(_indicator);
+	_indicator = make_sptr<uikit::Text>();
 	_indicator->setText(R"(>)");
 	this->addChild(_indicator);
 
-	_content = make_sptr<Text>();
-	theme->applyLabel(std::static_pointer_cast<Text, Widget>(_content));
-	static_cast<ptr<Text>>(_content.get())->setText(R"(Collapse)");
+	_content = make_sptr<uikit::Text>();
+	static_cast<ptr<uikit::Text>>(_content.get())->setText(R"(Collapse)");
 	this->addChild(_content);
 }
 
 void CollapseHeader::setTitle(cref<string> title_) {
-	static_cast<ptr<Text>>(_content.get())->setText(title_);
+	static_cast<ptr<uikit::Text>>(_content.get())->setText(title_);
 }
 
 EventResponse CollapseHeader::onMouseButtonDown(cref<MouseEvent> event_) {
@@ -151,8 +143,8 @@ void Collapse::render(const ptr<engine::reflow::ReflowCommandBuffer> cmd_) {
 	for (const auto& child : _children) {
 
 		if (child->state().isVisible() && not cmd_->scissorCull(
-			child->layoutState().layoutOffset,
-			child->layoutState().layoutSize
+			child->getLayoutState().layoutOffset,
+			child->getLayoutState().layoutSize
 		)) {
 			child->render(cmd_);
 		}
@@ -164,58 +156,29 @@ void Collapse::render(const ptr<engine::reflow::ReflowCommandBuffer> cmd_) {
 	cmd_->popScissor();
 }
 
-math::vec2 Collapse::prefetchDesiredSize(cref<ReflowState> state_, float scale_) const {
-
-	const auto headerSize = _children.getChild<0>()->getDesiredSize();
-	const auto bodySize = _children.getChild<1>()->getDesiredSize();
-
-	/**/
-
-	math::vec2 desired = headerSize;
-	if (not attr.collapsed.getValue()) {
-		desired = math::vec2 { MAX(headerSize.x, bodySize.x), headerSize.y + bodySize.y };
-	}
-
-	/**/
-
-	return layout::clampSizeAbs(attr, desired);
+PrefetchSizing Collapse::prefetchSizing(ReflowAxis axis_, ref<const ReflowState> state_) const {
+	::hg::todo_panic();
 }
 
-math::vec2 Collapse::computeDesiredSize(cref<ReflowPassState> passState_) const {
-	const math::vec2 desired = getDesiredSize();
-	return layout::clampSize(attr, passState_.layoutSize, desired);
+engine::reflow::PassPrefetchSizing Collapse::passPrefetchSizing(
+	engine::reflow::ReflowAxis axis_,
+	ref<const engine::reflow::ReflowPassState> passState_
+) const {
+	::hg::todo_panic();
 }
 
-void Collapse::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) {
-
-	algorithm::FlexState flexState {};
-	flexState.box.preservedSize = ctx_.localSize;
-	flexState.box.maxSize = ctx_.localSize;
-	flexState.box.orientation = algorithm::FlexLineOrientation::eVertical;
-	flexState.box.justify = ReflowSpacing::eStart;
-	flexState.box.align = ReflowAlignment::eCenter;
-	flexState.box.wrap = false;
-
-	algorithm::solve(flexState, state_, children());
-
-	for (const auto& flexLine : flexState.lines) {
-		for (const auto& flexItem : flexLine.items) {
-
-			const auto dummy = flexItem.widget.lock();
-			const auto widgetState = state_.getStateOf(std::static_pointer_cast<Widget, void>(dummy));
-
-			widgetState->layoutOffset = flexItem.offset + ctx_.localOffset;
-			widgetState->layoutSize = flexItem.flexSize;
-		}
-	}
-
-	if (attr.collapsed.getValue()) {
-		_children.getChild<1>()->layoutState().layoutSize = math::vec2 { 0.F };
-	}
+void Collapse::computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) {
+	::hg::todo_panic();
 }
 
-bool Collapse::willChangeLayout(
-	cref<math::vec2> space_
-) const noexcept {
-	return Widget::willChangeLayout(space_);
+void Collapse::applyLayout(ref<ReflowState> state_) {
+	::hg::todo_panic();
+}
+
+math::fvec2 Collapse::getGrowFactor() const noexcept {
+	::hg::todo_panic();
+}
+
+math::fvec2 Collapse::getShrinkFactor() const noexcept {
+	::hg::todo_panic();
 }

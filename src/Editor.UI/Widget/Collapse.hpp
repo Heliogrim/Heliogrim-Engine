@@ -1,12 +1,10 @@
 #pragma once
 
-#include <Engine.Reflow/Widget/Text.hpp>
-#include <Engine.Reflow/Widget/HorizontalPanel.hpp>
-#include <Engine.Reflow/Widget/VerticalPanel.hpp>
-#include <Engine.Reflow/Widget/BoxPanel.hpp>
 #include <Engine.Reflow/Children.hpp>
+#include <Engine.Reflow.Uikit/Atom/Text.hpp>
 #include <Engine.Reflow/Attribute/Attribute.hpp>
 #include <Engine.Reflow/Attribute/DynamicAttribute.hpp>
+#include <Engine.Reflow.Uikit/Atom/Layout/HorizontalLayout.hpp>
 
 namespace hg::editor::ui {
 	class Collapse;
@@ -14,7 +12,7 @@ namespace hg::editor::ui {
 
 namespace hg::editor::ui {
 	class CollapseHeader :
-		public engine::reflow::HorizontalPanel {
+		public engine::reflow::uikit::HorizontalLayout {
 	public:
 		friend class ::hg::editor::ui::Collapse;
 
@@ -33,7 +31,7 @@ namespace hg::editor::ui {
 		ptr<Collapse> _parent;
 
 	private:
-		sptr<engine::reflow::Text> _indicator;
+		sptr<engine::reflow::uikit::Text> _indicator;
 		sptr<engine::reflow::Widget> _content;
 
 	public:
@@ -98,15 +96,22 @@ namespace hg::editor::ui {
 		void render(const ptr<engine::reflow::ReflowCommandBuffer> cmd_) override;
 
 	public:
-		math::vec2 prefetchDesiredSize(cref<engine::reflow::ReflowState> state_, float scale_) const override;
+		engine::reflow::PrefetchSizing prefetchSizing(
+			engine::reflow::ReflowAxis axis_,
+			ref<const engine::reflow::ReflowState> state_
+		) const override;
 
-		math::vec2 computeDesiredSize(cref<engine::reflow::ReflowPassState> passState_) const override;
+		engine::reflow::PassPrefetchSizing passPrefetchSizing(
+			engine::reflow::ReflowAxis axis_,
+			ref<const engine::reflow::ReflowPassState> passState_
+		) const override;
 
-		void applyLayout(ref<engine::reflow::ReflowState> state_, mref<engine::reflow::LayoutContext> ctx_) override;
+		void computeSizing(engine::reflow::ReflowAxis axis_, ref<const engine::reflow::ReflowPassState> passState_) override;
 
-	public:
-		[[nodiscard]] bool willChangeLayout(
-			cref<math::vec2> space_
-		) const noexcept override;
+		void applyLayout(ref<engine::reflow::ReflowState> state_) override;
+
+		math::fvec2 getGrowFactor() const noexcept override;
+
+		math::fvec2 getShrinkFactor() const noexcept override;
 	};
 }
