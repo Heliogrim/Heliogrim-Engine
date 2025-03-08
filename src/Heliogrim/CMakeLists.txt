@@ -68,8 +68,11 @@ make_library_project(
 		${PROJECT_NAME}::Engine.Platform
 		${PROJECT_NAME}::Engine.Reflect
 		${PROJECT_NAME}::Engine.Reflow
+		${PROJECT_NAME}::Engine.Reflow.Attributes
 		${PROJECT_NAME}::Engine.Reflow.Render
 		${PROJECT_NAME}::Engine.Reflow.Schedule
+		${PROJECT_NAME}::Engine.Reflow.Theming
+		${PROJECT_NAME}::Engine.Reflow.Uikit
 		${PROJECT_NAME}::Engine.Render.Scene
 		${PROJECT_NAME}::Engine.Render.Scene.Model
 		${PROJECT_NAME}::Engine.Resource
