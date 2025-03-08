@@ -45,7 +45,8 @@ cref<Transform> Actor::getUniverseTransform() const noexcept {
 	}
 
 	// TODO: Cleanup dangling reference within engine frontend
-	return Transform {};
+	constexpr static Transform error_dummy {};
+	return error_dummy;
 }
 
 cref<CompactSet<ptr<HierarchyComponent>>> Actor::getComponents() const noexcept {
