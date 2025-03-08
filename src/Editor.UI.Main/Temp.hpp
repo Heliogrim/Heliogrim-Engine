@@ -2,8 +2,6 @@
 
 #include "EditorUI.hpp"
 #include "Editor.UI/Modules/ObjectEditor.hpp"
-#include "Editor.UI/Modules/SceneHierarchy.hpp"
-#include "Editor.UI/Modules/SceneHierarchy/SceneViewEntry.hpp"
 #include "Engine.Common/Make.hpp"
 #include "Heliogrim/Actor/Actor.hpp"
 #include "Heliogrim/Component/Scene/Geometry/StaticGeometryComponent.hpp"
@@ -27,17 +25,6 @@ namespace hg::editor {
 		editorUi_.getObjectEditor()->storeObjectMapper(
 			::hg::DirectionalLightComponent::typeId,
 			make_uptr<ui::ObjectValueMapper<::hg::DirectionalLightComponent>>()
-		);
-	}
-
-	inline void storeSceneHierarchyMeta(ref<EditorUI> editorUi_) {
-		editorUi_.getSceneHierarchy()->storeGenerator(
-			"sptr<SceneViewEntry>"_typeId,
-			make_uptr<ui::HierarchyGenerator<sptr<ui::SceneViewEntry>>>()
-		);
-		editorUi_.getSceneHierarchy()->storeResolver(
-			"sptr<SceneViewEntry>"_typeId,
-			make_uptr<ui::HierarchyResolver<sptr<ui::SceneViewEntry>>>()
 		);
 	}
 }
