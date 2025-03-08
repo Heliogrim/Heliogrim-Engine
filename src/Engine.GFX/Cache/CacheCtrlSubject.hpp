@@ -30,7 +30,8 @@ namespace hg::engine::gfx::cache {
 
 		CacheCtrlSubject(mref<this_type> other_) noexcept :
 			subject(std::move(other_.subject)),
-			marks(std::move(other_.marks)),
+			// Error: Race-Condition? TODO: Rework !?
+			marks(std::move(other_.marks).load()),
 			locked() {
 
 			/**
