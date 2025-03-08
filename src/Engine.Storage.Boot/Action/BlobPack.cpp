@@ -6,6 +6,7 @@
 #include <Engine.Storage.Action/Access/ExclusiveIoResource.hpp>
 #include <Engine.Storage.Package/Factory.hpp>
 #include <Engine.Storage.Package/Processor.hpp>
+#include <Engine.Storage.Package/Store.hpp>
 
 using namespace hg::engine::storage;
 using namespace hg::engine::resource;
@@ -32,6 +33,12 @@ Result<
 	auto value = Rc<ReadWritePackage> {};
 	if (accessor_->size() < 1uLL) {
 		value = Rc<ReadWritePackage>::create(package::make_read_write_package(accessor_.get()));
+
+		// TODO: Cleanup!? Not sure whether we should do this here.
+		auto& blob = accessor_.get();
+		::hg::assertrt(package::writeHeader(value->getHeader(), blob));
+		::hg::assertrt(package::writeLinker(value->getHeader(), value->getLinker(), blob));
+		::hg::assertrt(package::writeFooter(value->getHeader(), value->getFooter(), blob));
 
 	} else {
 		value = Rc<ReadWritePackage>::create(package::reconstruct_read_write_package(accessor_.get()));
