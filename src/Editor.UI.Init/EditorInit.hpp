@@ -10,15 +10,3 @@ namespace hg::editor {
 namespace hg::editor::ui {
 	void initEditor(_In_ ref<EditorUI> editorUi_);
 }
-
-namespace hg {
-	class Actor;
-	class HierarchyComponent;
-}
-
-namespace hg::editor::ui {
-	/* Attention: Temporary */
-	void storeEditorSelectedTarget(ref<EditorUI> editorUI_, const hg::ptr<hg::Actor> target_);
-
-	void storeEditorSelectedTarget(ref<EditorUI> editorUI_, const hg::ptr<hg::HierarchyComponent> target_);
-}
