@@ -12,6 +12,6 @@ namespace hg::editor::ui {
 		using engine::reflow::Viewport::Viewport;
 
 	public:
-		engine::reflow::EventResponse onKeyDown(cref<engine::reflow::KeyboardEvent> event_) override;
+		engine::reflow::EventResponse invokeOnKeyDown(ref<const engine::reflow::KeyboardEvent> event_) override;
 	};
 }

@@ -39,7 +39,7 @@ void CollapseHeader::setTitle(cref<string> title_) {
 	static_cast<ptr<uikit::Text>>(_content.get())->setText(title_);
 }
 
-EventResponse CollapseHeader::onMouseButtonDown(cref<MouseEvent> event_) {
+EventResponse CollapseHeader::invokeOnMouseButtonDown(ref<const MouseEvent> event_) {
 
 	if (event_._button != 0x1) {
 		return EventResponse::eHandled;

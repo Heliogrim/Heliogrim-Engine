@@ -38,7 +38,7 @@ namespace hg::editor::ui {
 		void setTitle(cref<string> title_);
 
 	public:
-		engine::reflow::EventResponse onMouseButtonDown(cref<engine::reflow::MouseEvent> event_) override;
+		engine::reflow::EventResponse invokeOnMouseButtonDown(ref<const engine::reflow::MouseEvent> event_) override;
 
 	public:
 		[[nodiscard]] string getTag() const noexcept override;

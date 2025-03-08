@@ -14,7 +14,7 @@ static void experimental_add_actor(math::Transform baseTransform_);
 
 /**/
 
-EventResponse EditorSceneViewport::onKeyDown(cref<KeyboardEvent> event_) {
+EventResponse EditorSceneViewport::invokeOnKeyDown(ref<const KeyboardEvent> event_) {
 
 	if (event_._down == true && event_._key == 'n') {
 
@@ -25,7 +25,7 @@ EventResponse EditorSceneViewport::onKeyDown(cref<KeyboardEvent> event_) {
 		return EventResponse::eConsumed;
 	}
 
-	return Viewport::onKeyDown(event_);
+	return Viewport::invokeOnKeyDown(event_);
 }
 
 /**/

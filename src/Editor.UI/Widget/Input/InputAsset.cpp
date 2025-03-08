@@ -133,10 +133,10 @@ string InputAsset::getTag() const noexcept {
 	return std::format(R"(InputAsset <{:#x}>)", reinterpret_cast<u64>(this));
 }
 
-EventResponse InputAsset::onDrop(cref<DragDropEvent> event_) {
+EventResponse InputAsset::invokeOnDrop(ref<const DragDropEvent> event_) {
 
 	if (not event_._payload.is<engine::input::event::DragDropEventTextPayload>()) {
-		return Input<asset_guid>::onDrop(event_);
+		return Input<asset_guid>::invokeOnDrop(event_);
 	}
 
 	/**/
@@ -145,7 +145,7 @@ EventResponse InputAsset::onDrop(cref<DragDropEvent> event_) {
 	const auto& text = payload.data;
 
 	if (not text.starts_with("asset://")) {
-		return Input<asset_guid>::onDrop(event_);
+		return Input<asset_guid>::invokeOnDrop(event_);
 	}
 
 	static constexpr auto pathIdx = sizeof("asset://") - 1;
@@ -194,8 +194,8 @@ EventResponse InputAsset::onDrop(cref<DragDropEvent> event_) {
 	return EventResponse::eConsumed;
 }
 
-EventResponse InputAsset::onDragOver(cref<DragDropEvent> event_) {
-	return Input<asset_guid>::onDragOver(event_);
+EventResponse InputAsset::invokeOnDragOver(ref<const DragDropEvent> event_) {
+	return Input<asset_guid>::invokeOnDragOver(event_);
 }
 
 const ptr<const Children> InputAsset::children() const {
