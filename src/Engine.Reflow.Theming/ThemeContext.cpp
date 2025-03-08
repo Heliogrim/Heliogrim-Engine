@@ -1,6 +1,6 @@
 #include "ThemeContext.hpp"
 
-#include "Algo/FirstOf.hpp"
+#include <Engine.Common/Algo/FirstOf.hpp>
 
 using namespace hg::engine::reflow::theming;
 using namespace hg::engine::reflow;
@@ -32,7 +32,7 @@ bool ThemeContext::dropLocalTheme(const nmpt<const Theme> theme_) {
 Opt<ref<const ImageStyleAttributes>> ThemeContext::getImageStyle(StringView className_) const {
 
 	const auto maybeLocal = FirstOf<Opt<ref<const ImageStyleAttributes>>>(
-		localThemes,
+		std::ranges::reverse_view(localThemes),
 		[&](const nmpt<const Theme>& theme_) {
 			return theme_->getImageStyle(className_);
 		}
@@ -54,7 +54,7 @@ Opt<ref<const ImageStyleAttributes>> ThemeContext::getImageStyle(StringView clas
 Opt<ref<const PaintStyleAttributes>> ThemeContext::getPaintStyle(StringView className_) const {
 
 	const auto maybeLocal = FirstOf<Opt<ref<const PaintStyleAttributes>>>(
-		localThemes,
+		std::ranges::reverse_view(localThemes),
 		[&](const nmpt<const Theme>& theme_) {
 			return theme_->getPaintStyle(className_);
 		}
@@ -76,7 +76,7 @@ Opt<ref<const PaintStyleAttributes>> ThemeContext::getPaintStyle(StringView clas
 Opt<ref<const TextStyleAttributes>> ThemeContext::getTextStyle(StringView className_) const {
 
 	const auto maybeLocal = FirstOf<Opt<ref<const TextStyleAttributes>>>(
-		localThemes,
+		std::ranges::reverse_view(localThemes),
 		[&](const nmpt<const Theme>& theme_) {
 			return theme_->getTextStyle(className_);
 		}
@@ -98,7 +98,7 @@ Opt<ref<const TextStyleAttributes>> ThemeContext::getTextStyle(StringView classN
 Opt<ref<const BoxLayoutAttributes>> ThemeContext::getBoxLayout(StringView className_) const {
 
 	const auto maybeLocal = FirstOf<Opt<ref<const BoxLayoutAttributes>>>(
-		localThemes,
+		std::ranges::reverse_view(localThemes),
 		[&](const nmpt<const Theme>& theme_) {
 			return theme_->getBoxLayout(className_);
 		}
