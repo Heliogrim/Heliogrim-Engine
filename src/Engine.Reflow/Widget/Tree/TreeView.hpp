@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Engine.Common/Optional.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
@@ -123,7 +124,7 @@ namespace hg::engine::reflow {
 			_selectedFnc(nullptr),
 			_selectionMode(TreeViewSelectionMode::eSingle),
 			_selected(),
-			_cursor(std::make_pair(-1, nullptr)),
+			_cursor(std::make_pair(-1, None)),
 			_sourceData() {}
 
 		~TreeView() override = default;
@@ -185,7 +186,7 @@ namespace hg::engine::reflow {
 		selected_set_type _selected;
 
 	private:
-		std::pair<s64, data_type> _cursor;
+		std::pair<s64, Opt<data_type>> _cursor;
 		/**
 		 * TODO: To handle cursor selections with multi select mode we need to introduce another cursor to track the origin
 		 *  TODO: If we don't track the origin, we have no orientation or distinct choice whether we want to select or deselect the next element
@@ -261,8 +262,7 @@ namespace hg::engine::reflow {
 
 				/**/
 
-				ptr<view_item_type> view = nullptr;
-				{
+				ptr<view_item_type> view = nullptr; {
 					const auto it { _mapping.find(item) };
 					if (it != _mapping.end()) {
 						view = &it->second;
@@ -616,6 +616,10 @@ namespace hg::engine::reflow {
 	private:
 		void refreshCursor() {
 
+			if (_cursor.second == None) {
+				return;
+			}
+
 			const auto dataIt {
 				std::find_if(
 					_linearizedData.begin(),
@@ -624,20 +628,20 @@ namespace hg::engine::reflow {
 						target = cref<decltype(_cursor.second)> { _cursor.second },
 						equal = data_equal_type {}
 					](cref<data_type> entry_) {
-						return equal(target, entry_);
+						return equal(*target, entry_);
 					}
 				)
 			};
 			if (dataIt == _linearizedData.end()) {
 				_cursor.first = -1;
-				_cursor.second = nullptr;
+				_cursor.second = None;
 				return;
 			}
 
 			const auto off { std::distance(_linearizedData.begin(), dataIt) };
 
 			_cursor.first = off;
-			_cursor.second = *dataIt;
+			_cursor.second = Some(*dataIt);
 		}
 
 		[[nodiscard]] s64 getPrevRootViewEntry(const s64 idx_) {
@@ -689,7 +693,7 @@ namespace hg::engine::reflow {
 		void moveCursor(const s64 next_) {
 
 			_cursor.first = next_;
-			_cursor.second = _linearizedData[next_];
+			_cursor.second = Some(_linearizedData[next_]);
 
 			/**/
 
@@ -812,6 +816,16 @@ namespace hg::engine::reflow {
 	};
 
 	template <typename DataItemType_>
+	struct TreeDataItemEqual<DataItemType_, std::type_identity_t> :
+		public std::equal_to<DataItemType_> {
+		using type = TreeDataItemEqual<DataItemType_, std::type_identity_t>;
+
+		[[nodiscard]] constexpr bool operator()(ref<const DataItemType_> left_, ref<const DataItemType_> right_) const noexcept {
+			return static_cast<ref<const std::equal_to<DataItemType_>>>(*this)(left_, right_);
+		}
+	};
+
+	template <typename DataItemType_>
 	struct TreeDataItemHash<DataItemType_, sptr> :
 		public std::hash<DataItemType_> {
 		using this_type = TreeDataItemHash<DataItemType_, sptr>;
@@ -829,6 +843,16 @@ namespace hg::engine::reflow {
 			}
 
 			return static_cast<cref<base_hash_type>>(*this)(*value_);
+		}
+	};
+
+	template <typename DataItemType_>
+	struct TreeDataItemHash<DataItemType_, std::type_identity_t> :
+		public std::hash<DataItemType_> {
+		using type = TreeDataItemHash<DataItemType_, std::type_identity_t>;
+
+		[[nodiscard]] constexpr size_t operator()(ref<const DataItemType_> value_) const noexcept {
+			return static_cast<ref<const std::hash<DataItemType_>>>(*this)(value_);
 		}
 	};
 }
