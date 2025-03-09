@@ -14,14 +14,14 @@ namespace hg::engine::reflow {
 	public:
 		constexpr ReflowClassList() noexcept = default;
 
-		constexpr explicit ReflowClassList(mref<value_type> initialValue_) noexcept :
+		explicit ReflowClassList(mref<value_type> initialValue_) noexcept :
 			Vector({ ::hg::move(initialValue_) }) {}
 
 		constexpr ReflowClassList(cref<ReflowClassList> other_) noexcept = default;
 
 		constexpr ReflowClassList(mref<ReflowClassList> other_) noexcept = default;
 
-		constexpr ~ReflowClassList() = default;
+		~ReflowClassList() = default;
 
 	public:
 		ref<this_type> operator=(cref<this_type>) noexcept = default;
