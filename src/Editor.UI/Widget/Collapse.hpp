@@ -1,10 +1,8 @@
 #pragma once
 
-#include <Engine.Reflow/Children.hpp>
 #include <Engine.Reflow.Uikit/Atom/Text.hpp>
-#include <Engine.Reflow/Attribute/Attribute.hpp>
-#include <Engine.Reflow/Attribute/DynamicAttribute.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/HorizontalLayout.hpp>
+#include <Engine.Reflow.Uikit/Atom/Layout/VerticalLayout.hpp>
 
 namespace hg::editor::ui {
 	class Collapse;
@@ -45,7 +43,7 @@ namespace hg::editor::ui {
 	};
 
 	class Collapse :
-		public engine::reflow::Widget {
+		public engine::reflow::uikit::VerticalLayout {
 	public:
 		friend class ::hg::editor::ui::CollapseHeader;
 
@@ -58,39 +56,30 @@ namespace hg::editor::ui {
 		~Collapse() override;
 
 	public:
+		[[nodiscard]] string getTag() const noexcept override;
+
+	public:
 		void setup();
 
 	private:
-	public:
-		struct Attributes {
-			engine::reflow::Attribute<engine::reflow::ReflowUnit> minWidth;
-			engine::reflow::Attribute<engine::reflow::ReflowUnit> maxWidth;
-
-			engine::reflow::Attribute<engine::reflow::ReflowUnit> minHeight;
-			engine::reflow::Attribute<engine::reflow::ReflowUnit> maxHeight;
-
-			engine::reflow::DynamicAttribute<bool> collapsed;
-		} attr;
+		bool _collapsed;
 
 	public:
 		void collapse();
 
 		void expand();
 
-	private:
-		engine::reflow::FixedChildren<2> _children;
+	protected:
+		using VerticalLayout::addChild;
+		using VerticalLayout::setChild;
+		using VerticalLayout::removeChild;
 
 	public:
-		[[nodiscard]] const ptr<const engine::reflow::Children> children() const override;
-
 		[[nodiscard]] sptr<CollapseHeader> getHeader() noexcept;
 
 		[[nodiscard]] sptr<Widget> getContent() const noexcept;
 
 		void setContent(cref<sptr<Widget>> widget_);
-
-	public:
-		[[nodiscard]] string getTag() const noexcept override;
 
 	public:
 		void render(const ptr<engine::reflow::ReflowCommandBuffer> cmd_) override;

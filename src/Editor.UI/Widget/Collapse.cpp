@@ -47,7 +47,7 @@ EventResponse CollapseHeader::invokeOnMouseButtonDown(ref<const MouseEvent> even
 
 	/**/
 
-	if (_parent->attr.collapsed.getValue()) {
+	if (_parent->_collapsed) {
 		_parent->expand();
 	} else {
 		_parent->collapse();
@@ -61,17 +61,8 @@ string CollapseHeader::getTag() const noexcept {
 }
 
 Collapse::Collapse() :
-	Widget(),
-	attr(
-		Attributes {
-			.minWidth = { this, { ReflowUnitType::eRelative, 1.F } },
-			.maxWidth = { this, { ReflowUnitType::eRelative, 1.F } },
-			.minHeight = { this, { ReflowUnitType::eAuto } },
-			.maxHeight = { this, { ReflowUnitType::eAuto } },
-			.collapsed = { this, true }
-		}
-	),
-	_children() {}
+	VerticalLayout(),
+	_collapsed() {}
 
 Collapse::~Collapse() = default;
 
@@ -80,16 +71,17 @@ void Collapse::setup() {
 	auto header = make_sptr<CollapseHeader>(this);
 	header->setup();
 	header->setParent(shared_from_this());
-	_children.setChild<0>(std::move(header));
+	addChild(std::move(header));
+	addChild(NullWidget::instance());
 
 	collapse();
 }
 
 void Collapse::collapse() {
-	attr.collapsed.setValue(true);
+	_collapsed = true;
 	markAsPending();
 
-	const auto body = _children.getChild<1>();
+	const auto body = _children.at(1);
 	if (body) {
 		body->state().unset(WidgetStateFlagBits::eVisible);
 		body->markAsPending();
@@ -97,32 +89,26 @@ void Collapse::collapse() {
 }
 
 void Collapse::expand() {
-	attr.collapsed.setValue(false);
+	_collapsed = false;
 	markAsPending();
 
-	const auto body = _children.getChild<1>();
+	const auto body = _children.at(1);
 	if (body) {
 		body->state().set(WidgetStateFlagBits::eVisible);
 		body->markAsPending();
 	}
 }
 
-const ptr<const engine::reflow::Children> Collapse::children() const {
-	return &_children;
-}
-
 sptr<CollapseHeader> Collapse::getHeader() noexcept {
-	return std::static_pointer_cast<CollapseHeader, Widget>(_children.getChild<0>());
+	return std::static_pointer_cast<CollapseHeader, Widget>(_children.at(0));
 }
 
 sptr<Widget> Collapse::getContent() const noexcept {
-	return _children.getChild<1>();
+	return _children.at(1);
 }
 
 void Collapse::setContent(cref<sptr<Widget>> widget_) {
-	widget_->setParent(shared_from_this());
-	const auto prev = _children.setChild<1>(widget_);
-	prev->setParent(nullptr);
+	VerticalLayout::setChild(1, widget_);
 }
 
 string Collapse::getTag() const noexcept {
