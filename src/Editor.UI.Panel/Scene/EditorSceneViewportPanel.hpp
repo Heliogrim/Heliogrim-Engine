@@ -1,9 +1,10 @@
 #pragma once
-#include <Engine.Reflow/Widget/VerticalPanel.hpp>
+
+#include <Engine.Reflow.Uikit/Atom/Layout/VerticalLayout.hpp>
 
 namespace hg::editor::ui {
 	class EditorSceneViewportPanel :
-		public engine::reflow::VerticalPanel {
+		public engine::reflow::uikit::VerticalLayout {
 	protected:
 		EditorSceneViewportPanel();
 
