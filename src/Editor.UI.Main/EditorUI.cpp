@@ -4,15 +4,11 @@
 #include <Editor.Assets.Default/Textures/Default.hpp>
 #include <Editor.Core/EditorEngine.hpp>
 #include <Editor.Main/Module/Editor.hpp>
+#include <Editor.UI.View/Scene/SceneEditorController.hpp>
 #include <Editor.UI/Helper/AssetBrowserHelper.hpp>
-#include <Editor.UI/Modules/AssetBrowser.hpp>
-#include <Editor.UI/Modules/ObjectEditor.hpp>
-#include <Editor.UI/Modules/SceneHierarchy.hpp>
 #include <Editor.UI.Init/EditorInit.hpp>
+#include <Editor.UI.Rx/Subject.hpp>
 #include <Engine.Common/Make.hpp>
-#include <Engine.GFX.Loader/Texture/TextureLoadOptions.hpp>
-
-#include "Temp.hpp"
 
 using namespace hg::editor::ui;
 using namespace hg::engine::core;
@@ -47,14 +43,10 @@ void editor::EditorUI::start() {
 
 	AssetBrowserHelper::make();
 
-	_assetBrowser = make_sptr<AssetBrowser>();
-	_objectEditor = make_sptr<ObjectEditor>();
-	_sceneHierarchy = make_sptr<SceneHierarchy>();
-
 	/**/
 
-	storeActorMapping(*this);
-	storeSceneHierarchyMeta(*this);
+	_uiServices.assetBrowserService = make_sptr<service::AssetBrowserService>();
+	_uiServices.sceneHierarchyService = make_sptr<service::SceneHierarchyService>();
 
 	/**/
 
@@ -63,29 +55,26 @@ void editor::EditorUI::start() {
 
 void editor::EditorUI::stop() {
 
-	if (not placeholderHolder.empty()) {
-		placeholderHolder.reset();
-	}
+	_sceneEditorController.reset();
 
-	_sceneHierarchy.reset();
-	_objectEditor.reset();
-	_assetBrowser.reset();
+	_uiServices.sceneHierarchyService.reset();
+	_uiServices.assetBrowserService.reset();
 
 	AssetBrowserHelper::destroy();
 }
 
 void editor::EditorUI::destroy() {}
 
-sptr<AssetBrowser> editor::EditorUI::getAssetBrowser() const noexcept {
-	return _assetBrowser;
+ref<EditorUiModel> editor::EditorUI::getEditorModel() noexcept {
+	return _uiModel;
 }
 
-sptr<ObjectEditor> editor::EditorUI::getObjectEditor() const noexcept {
-	return _objectEditor;
+ref<const EditorUiModel> editor::EditorUI::getEditorModel() const noexcept {
+	return _uiModel;
 }
 
-sptr<SceneHierarchy> editor::EditorUI::getSceneHierarchy() const noexcept {
-	return _sceneHierarchy;
+ref<const EditorUiServices> editor::EditorUI::getEditorServices() const noexcept {
+	return _uiServices;
 }
 
 #include <Editor.Assets.Default/Fonts/Default.hpp>
@@ -95,8 +84,6 @@ sptr<SceneHierarchy> editor::EditorUI::getSceneHierarchy() const noexcept {
 #include <Engine.GFX.Loader/Font/FontLoader.hpp>
 #include <Engine.GFX.Loader/Font/FontLoadOptions.hpp>
 #include <Engine.GFX.Loader/Font/FontResource.hpp>
-#include <Engine.GFX.Loader/Texture/TextureLoader.hpp>
-#include <Engine.GFX.Loader/Texture/TextureResource.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 
 nmpt<engine::assets::Font> editor::EditorUI::getDefaultFont() const noexcept {
@@ -120,18 +107,4 @@ nmpt<engine::assets::Font> editor::EditorUI::getDefaultFont() const noexcept {
 	);
 
 	return Cast<engine::assets::Font>(asset->get());
-}
-
-smr<::hg::engine::gfx::TextureResource> editor::EditorUI::getPlaceholderImage() const noexcept {
-
-	if (placeholderHolder.empty()) {
-		const auto asset = assets::texture::get_default_brand();
-		::hg::assertrt(asset != None);
-
-		auto* request = Cast<engine::assets::TextureAsset>(asset->get());
-		placeholderHolder = _engine->getResources()->loader().load<
-			engine::assets::TextureAsset, engine::gfx::TextureResource
-		>(std::move(request), engine::gfx::loader::TextureLoadOptions {});
-	}
-	return placeholderHolder;
 }

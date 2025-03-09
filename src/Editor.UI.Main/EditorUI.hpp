@@ -1,19 +1,18 @@
 #pragma once
 
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.Core/Module/SubModule.hpp>
-#include <Engine.GFX.Loader/Texture/TextureResource.hpp>
+
+#include "EditorUiModel.hpp"
+#include "EditorUiServices.hpp"
 
 namespace hg::editor {
 	class EditorEngine;
 }
 
 namespace hg::editor::ui {
-	class AssetBrowser;
-	class ObjectEditor;
-	class SceneHierarchy;
+	class SceneEditorController;
 }
 
 namespace hg::engine::assets {
@@ -49,25 +48,21 @@ namespace hg::editor {
 		void destroy() override;
 
 	private:
-		sptr<ui::AssetBrowser> _assetBrowser;
-		sptr<ui::ObjectEditor> _objectEditor;
-		sptr<ui::SceneHierarchy> _sceneHierarchy;
+		ui::EditorUiModel _uiModel;
+		ui::EditorUiServices _uiServices;
+
+	private:
+	public:
+		UniquePtr<ui::SceneEditorController> _sceneEditorController;
 
 	public:
-		[[nodiscard]] sptr<ui::AssetBrowser> getAssetBrowser() const noexcept;
+		[[nodiscard]] ref<ui::EditorUiModel> getEditorModel() noexcept;
 
-		[[nodiscard]] sptr<ui::ObjectEditor> getObjectEditor() const noexcept;
+		[[nodiscard]] ref<const ui::EditorUiModel> getEditorModel() const noexcept;
 
-		[[nodiscard]] sptr<ui::SceneHierarchy> getSceneHierarchy() const noexcept;
+		[[nodiscard]] ref<const ui::EditorUiServices> getEditorServices() const noexcept;
 
 	public:
 		[[nodiscard]] nmpt<engine::assets::Font> getDefaultFont() const noexcept;
-
-		nmpt<void> editorSelectedTarget = nullptr;
-
-		// Warning: Error prone
-		mutable smr<hg::engine::gfx::TextureResource> placeholderHolder = nullptr;
-
-		[[nodiscard]] smr<engine::gfx::TextureResource> getPlaceholderImage() const noexcept;
 	};
 }
