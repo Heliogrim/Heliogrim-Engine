@@ -2,7 +2,7 @@
 
 namespace hg::engine::reflow::uikit {
 	class BoxLayout;
-	class GridLayout;
+	class GridLayoutBase;
 	class HorizontalLayout;
 	class UniformGridLayout;
 	class VerticalLayout;
