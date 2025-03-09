@@ -2,12 +2,11 @@
 
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 #include <Engine.GFX/API/__vkFwd.hpp>
+#include <Engine.Reflow.Uikit/Atom/Atom.hpp>
 #include <Heliogrim/Universe/Universe.hpp>
 
 #include "Widget.hpp"
 #include "../Children.hpp"
-#include "../ReflowUnit.hpp"
-#include "../Attribute/Attribute.hpp"
 
 namespace hg {
 	class CameraActor;
@@ -21,7 +20,8 @@ namespace hg::engine::gfx {
 
 namespace hg::engine::reflow {
 	class Viewport :
-		public Widget {
+		public Widget,
+		public uikit::Atom<void, BoxLayoutAttributes, void> {
 	public:
 		using this_type = Viewport;
 
@@ -37,17 +37,6 @@ namespace hg::engine::reflow {
 		bool shouldTick() const noexcept override;
 
 		void tick() override;
-
-	public:
-		struct Attributes {
-			Attribute<ReflowUnit> minWidth;
-			Attribute<ReflowUnit> width;
-			Attribute<ReflowUnit> maxWidth;
-
-			Attribute<ReflowUnit> minHeight;
-			Attribute<ReflowUnit> height;
-			Attribute<ReflowUnit> maxHeight;
-		} attr;
 
 	private:
 		void tidy();

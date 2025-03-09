@@ -24,21 +24,30 @@
 #include <Engine.Scene/SceneBase.hpp>
 
 #include "../Layout/Style.hpp"
+#include "../Algorithm/Flex.hpp"
 
 using namespace hg::engine::reflow;
 using namespace hg;
 
 Viewport::Viewport() :
 	Widget(),
-	attr(
-		Attributes {
-			.minWidth = { this, { ReflowUnitType::eAuto, 0.F } },
-			.width = { this, { ReflowUnitType::eAuto, 0.F } },
-			.maxWidth = { this, { ReflowUnitType::eAuto, 0.F } },
-			.minHeight = { this, { ReflowUnitType::eAuto, 0.F } },
-			.height = { this, { ReflowUnitType::eAuto, 0.F } },
-			.maxHeight = { this, { ReflowUnitType::eAuto, 0.F } }
-		}
+	Atom(
+		{},
+		{
+			BoxLayoutAttributes {
+				ReflowUnit { ReflowUnitType::eAuto, 0.F },
+				ReflowUnit { ReflowUnitType::eAuto, 0.F },
+				0.F, 1.F,
+				/**/
+				ReflowUnit { ReflowUnitType::eAuto, 0.F },
+				ReflowUnit { ReflowUnitType::eAuto, 0.F },
+				0.F, 1.F,
+				/**/
+				Padding { 0.F },
+				ReflowPlacement::eMiddleCenter
+			}
+		},
+		{}
 	),
 	_swapChain(nullptr),
 	_renderTarget(nullptr),
@@ -138,9 +147,10 @@ void Viewport::setViewportTarget(StringView renderer_, Universe universe_, ptr<C
 
 math::uivec2 Viewport::actualViewExtent() const noexcept {
 	if (_viewSize.allZero()) {
+		const auto padding = getLayoutAttributes().valueOf<attr::BoxLayout::padding>();
 		return math::uivec2 {
-			static_cast<u32>(_layoutState.layoutSize.x),
-			static_cast<u32>(_layoutState.layoutSize.y)
+			static_cast<u32>(_layoutState.layoutSize.x - (padding.x + padding.z)),
+			static_cast<u32>(_layoutState.layoutSize.y - (padding.y + padding.w))
 		};
 	}
 
@@ -292,8 +302,11 @@ void Viewport::render(const ptr<ReflowCommandBuffer> cmd_) {
 
 	/**/
 
-	const auto offset = _layoutState.layoutOffset;
-	const auto size = _layoutState.layoutSize;
+	const auto& box = getLayoutAttributes();
+	const auto padding = box.valueOf<attr::BoxLayout::padding>();
+
+	const auto offset = _layoutState.layoutOffset + math::fvec2 { padding.x, padding.y };
+	const auto size = _layoutState.layoutSize - math::fvec2 { padding.x + padding.z, padding.y + padding.w };
 
 	if (_currentSwapChainImage.empty()) {
 		return;
@@ -327,25 +340,69 @@ void Viewport::render(const ptr<ReflowCommandBuffer> cmd_) {
 }
 
 PrefetchSizing Viewport::prefetchSizing(ReflowAxis axis_, ref<const ReflowState> state_) const {
-	::hg::todo_panic();
+
+	const auto& box = getLayoutAttributes();
+
+	return algorithm::prefetch(
+		axis_,
+		{
+			.mainAxis = ReflowAxis::eXAxis,
+			.min = algorithm::unitAbsMin(box.valueOf<attr::BoxLayout::minWidth>(), box.valueOf<attr::BoxLayout::minHeight>()),
+			.max = algorithm::unitAbsMax(box.valueOf<attr::BoxLayout::maxWidth>(), box.valueOf<attr::BoxLayout::maxHeight>()),
+			.gapping = { 0.F, 0.F },
+			.padding = box.valueOf<attr::BoxLayout::padding>()
+		},
+		get_null_children()
+	);
 }
 
 PassPrefetchSizing Viewport::passPrefetchSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) const {
-	::hg::todo_panic();
+
+	const auto& box = getLayoutAttributes();
+	return {
+		algorithm::nextUnit(
+			box.valueOf<attr::BoxLayout::minWidth>(),
+			box.valueOf<attr::BoxLayout::minHeight>(),
+			passState_.referenceSize,
+			passState_.prefetchMinSize
+		),
+		math::compMax(
+			algorithm::nextUnit(
+				box.valueOf<attr::BoxLayout::minWidth>(),
+				box.valueOf<attr::BoxLayout::minHeight>(),
+				passState_.referenceSize,
+				passState_.prefetchSize
+			),
+			passState_.prefetchSize
+		),
+		algorithm::nextUnit(
+			box.valueOf<attr::BoxLayout::maxWidth>(),
+			box.valueOf<attr::BoxLayout::maxHeight>(),
+			passState_.referenceSize,
+			algorithm::unitAbsMax(
+				box.valueOf<attr::BoxLayout::maxWidth>(),
+				box.valueOf<attr::BoxLayout::maxHeight>()
+			)
+		)
+	};
 }
 
-void Viewport::computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) {
-	::hg::todo_panic();
-}
+void Viewport::computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) {}
 
 void Viewport::applyLayout(ref<ReflowState> state_) {}
 
 math::fvec2 Viewport::getShrinkFactor() const noexcept {
-	::hg::todo_panic();
+	return {
+		getLayoutAttributes().valueOf<attr::BoxLayout::widthShrink>(),
+		getLayoutAttributes().valueOf<attr::BoxLayout::heightShrink>()
+	};
 }
 
 math::fvec2 Viewport::getGrowFactor() const noexcept {
-	::hg::todo_panic();
+	return {
+		getLayoutAttributes().valueOf<attr::BoxLayout::widthGrow>(),
+		getLayoutAttributes().valueOf<attr::BoxLayout::heightGrow>()
+	};
 }
 
 EventResponse Viewport::invokeOnFocus(cref<FocusEvent> event_) {
