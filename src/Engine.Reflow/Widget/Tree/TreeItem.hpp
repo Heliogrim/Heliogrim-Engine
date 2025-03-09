@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../HorizontalPanel.hpp"
 #include <Engine.Reflow.Uikit/Atom/Layout/HorizontalLayout.hpp>
 
 namespace hg::engine::reflow {
@@ -9,30 +8,30 @@ namespace hg::engine::reflow {
 	public:
 		using this_type = TreeItem;
 
-    public:
-        TreeItem();
+	public:
+		TreeItem();
 
-        ~TreeItem() override;
+		~TreeItem() override;
 
-    public:
-        struct Attributes {
-            DynamicAttribute<u32> level;
-        } attr;
+	private:
+		u32 _level;
+		bool _selected;
 
-    private:
-        bool _selected;
+	public:
+		[[nodiscard]] u32 getLevel() const noexcept;
 
-    public:
-        [[nodiscard]] bool isSelected() const noexcept;
+		void setLevel(u32 level_);
 
-        void setSelected(const bool selected_);
+		[[nodiscard]] bool isSelected() const noexcept;
 
-    private:
-        sptr<void> _treeDataItem;
+		void setSelected(bool selected_);
 
-    public:
-        [[nodiscard]] sptr<void> getTreeDataItem() const noexcept;
+	private:
+		sptr<void> _treeDataItem;
 
-        void setTreeDataItem(cref<sptr<void>> dataItem_);
-    };
+	public:
+		[[nodiscard]] sptr<void> getTreeDataItem() const noexcept;
+
+		void setTreeDataItem(cref<sptr<void>> dataItem_);
+	};
 }

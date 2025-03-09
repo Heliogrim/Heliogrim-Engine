@@ -27,7 +27,7 @@ sptr<Widget> TreeViewBase::generateRow(cref<TreeViewItem> view_, cref<sptr<Widge
 	std::get<0>(wrapper->getLayoutAttributes().attributeSets).update<attr::BoxLayout::minHeight>(
 		{ ReflowUnitType::eAbsolute, row_min_height }
 	);
-	wrapper->attr.level.setValue(static_cast<u32>(view_.depth));
+	wrapper->setLevel(static_cast<u32>(view_.depth));
 
 	wrapper->addChild(content_);
 	return wrapper;
