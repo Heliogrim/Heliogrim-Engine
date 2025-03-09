@@ -1,5 +1,6 @@
 #include "AssetBrowserView.hpp"
 
+#include <Editor.UI/Widget/Breadcrumb.hpp>
 #include <Editor.UI.Service/Assets/Browser/AssetBrowserEntry.hpp>
 #include <Engine.Common/Discard.hpp>
 
@@ -15,7 +16,6 @@
 #include "Engine.Reflow.Uikit/Atom/Layout/VerticalLayout.hpp"
 #include "Engine.Reflow.Uikit/Theme/Themes.hpp"
 #include "Engine.Resource/ResourceManager.hpp"
-#include <Editor.UI/Widget/Breadcrumb.hpp>
 
 using namespace hg::editor::ui;
 using namespace hg::engine::reflow;
@@ -76,15 +76,13 @@ SharedPtr<uikit::Button> AssetBrowserView::makeItem(ref<const service::AssetBrow
 	constexpr auto iconHeight = ReflowUnit { ReflowUnitType::eAbsolute, wholeItemWidth.value };
 	constexpr auto detailsHeight = ReflowUnit { ReflowUnitType::eAbsolute, wholeItemHeight.value - iconHeight.value };
 
-	auto wholeItemBackground = make_sptr<uikit::Paint>(ReflowClassList { "button > background"sv }, nullptr);
+	auto wholeItemBackground = make_sptr<uikit::Paint>(ReflowClassList { "[Button] > background"sv }, nullptr);
 	auto wholeItemLayout = make_sptr<uikit::VerticalLayout>();
 
 	std::get<0>(wholeItemLayout->getLayoutAttributes().attributeSets).update<attr::BoxLayout::minWidth>(clone(wholeItemWidth));
-	std::get<0>(wholeItemLayout->getLayoutAttributes().attributeSets).update<attr::BoxLayout::width>(clone(wholeItemWidth));
 	std::get<0>(wholeItemLayout->getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxWidth>(clone(wholeItemWidth));
 
 	std::get<0>(wholeItemLayout->getLayoutAttributes().attributeSets).update<attr::BoxLayout::minHeight>(clone(wholeItemHeight));
-	std::get<0>(wholeItemLayout->getLayoutAttributes().attributeSets).update<attr::BoxLayout::height>(clone(wholeItemHeight));
 	std::get<0>(wholeItemLayout->getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxHeight>(clone(wholeItemHeight));
 
 	auto previewOrIcon = make_sptr<uikit::Image>();
@@ -94,11 +92,9 @@ SharedPtr<uikit::Button> AssetBrowserView::makeItem(ref<const service::AssetBrow
 	previewOrIcon->getDataAttributes().update<attr::ImageData::resource>(loadIcon.get());
 
 	previewOrIcon->getLayoutAttributes().update<attr::BoxLayout::minWidth>(clone(wholeItemWidth));
-	previewOrIcon->getLayoutAttributes().update<attr::BoxLayout::width>(clone(wholeItemWidth));
 	previewOrIcon->getLayoutAttributes().update<attr::BoxLayout::maxWidth>(clone(wholeItemWidth));
 
 	previewOrIcon->getLayoutAttributes().update<attr::BoxLayout::minHeight>(clone(iconHeight));
-	previewOrIcon->getLayoutAttributes().update<attr::BoxLayout::height>(clone(iconHeight));
 	previewOrIcon->getLayoutAttributes().update<attr::BoxLayout::maxHeight>(clone(iconHeight));
 
 	wholeItemLayout->addChild(::hg::move(previewOrIcon));
@@ -106,11 +102,9 @@ SharedPtr<uikit::Button> AssetBrowserView::makeItem(ref<const service::AssetBrow
 	auto detailsLayout = make_sptr<uikit::VerticalLayout>();
 
 	std::get<0>(detailsLayout->getLayoutAttributes().attributeSets).update<attr::BoxLayout::minWidth>(clone(wholeItemWidth));
-	std::get<0>(detailsLayout->getLayoutAttributes().attributeSets).update<attr::BoxLayout::width>(clone(wholeItemWidth));
 	std::get<0>(detailsLayout->getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxWidth>(clone(wholeItemWidth));
 
 	std::get<0>(detailsLayout->getLayoutAttributes().attributeSets).update<attr::BoxLayout::minHeight>(clone(detailsHeight));
-	std::get<0>(detailsLayout->getLayoutAttributes().attributeSets).update<attr::BoxLayout::height>(clone(detailsHeight));
 	std::get<0>(detailsLayout->getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxHeight>(clone(detailsHeight));
 
 	auto displayTitle = make_sptr<uikit::Text>();
@@ -186,11 +180,10 @@ UniquePtr<AssetBrowserView> editor::ui::makeAssetBrowserView(ref<AssetBrowserCon
 	auto header = make_sptr<uikit::HorizontalLayout>();
 	const auto breadcrumb = make_sptr<Breadcrumb>();
 
-	std::get<0>(header->getLayoutAttributes().attributeSets).update<attr::BoxLayout::height>({ ReflowUnitType::eAbsolute, 24.F });
+	std::get<0>(header->getLayoutAttributes().attributeSets).update<attr::BoxLayout::minHeight>({ ReflowUnitType::eAbsolute, 24.F });
 	std::get<0>(header->getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxHeight>({ ReflowUnitType::eAbsolute, 24.F });
 
 	std::get<1>(header->getLayoutAttributes().attributeSets).update<attr::FlexLayout::justify>(ReflowSpacing::eStart);
-	std::get<1>(header->getLayoutAttributes().attributeSets).update<attr::FlexLayout::grow>(0.F);
 
 	breadcrumb->onAction(
 		[&ctrl = controller_](ref<const fs::Url> event_) {
@@ -207,14 +200,13 @@ UniquePtr<AssetBrowserView> editor::ui::makeAssetBrowserView(ref<AssetBrowserCon
 
 	(std::get<0>(content->getLayoutAttributes().attributeSets)).update<attr::BoxLayout::padding>(Padding { 4.F });
 
-	grid->attr.width.setValue({ ReflowUnitType::eRelative, 1.F });
-	grid->attr.maxWidth.setValue({ ReflowUnitType::eRelative, 1.F });
-	grid->attr.height.setValue({ ReflowUnitType::eAuto, 0.F });
-	grid->attr.colGap.setValue(4.F);
-	grid->attr.rowGap.setValue(4.F);
+	std::get<0>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
+	std::get<0>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::heightGrow>(1.F);
 
-	grid->attr.slot.width.setValue({ ReflowUnitType::eAbsolute, 96.F });
-	grid->attr.slot.height.setValue({ ReflowUnitType::eAbsolute, 156.F });
+	std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxWidth>({ ReflowUnitType::eAbsolute, 96.F });
+	std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::minWidth>({ ReflowUnitType::eAbsolute, 96.F });
+	std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::minHeight>({ ReflowUnitType::eAbsolute, 156.F });
+	std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxHeight>({ ReflowUnitType::eAbsolute, 156.F });
 
 	content->addChild(clone(grid));
 
