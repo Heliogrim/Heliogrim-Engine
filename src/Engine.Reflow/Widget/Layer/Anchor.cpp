@@ -32,7 +32,7 @@ void Anchor::show(sptr<Widget> content_, math::vec2 globalOffset_) {
 	auto root = this->root();
 	::hg::assertrt(static_cast<bool>(root));
 
-	auto window = std::dynamic_pointer_cast<Window, Widget>(root);
+	auto window = std::static_pointer_cast<Window, Widget>(root);
 	::hg::assertrt(static_cast<bool>(window));
 
 	_host = make_sptr<Host>(content_, globalOffset_, math::vec2_zero);
@@ -48,7 +48,7 @@ void Anchor::hide() {
 	auto root = this->root();
 	::hg::assertrt(static_cast<bool>(root));
 
-	auto window = std::dynamic_pointer_cast<Window, Widget>(root);
+	auto window = std::static_pointer_cast<Window, Widget>(root);
 	::hg::assertrt(static_cast<bool>(window));
 
 	window->dropLayer(_host.get());
