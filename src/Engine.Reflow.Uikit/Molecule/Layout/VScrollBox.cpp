@@ -88,8 +88,13 @@ void VScrollBox::scrollTo(cref<math::vec2> point_, cref<math::vec2> size_) {
 
 void VScrollBox::render(const ptr<ReflowCommandBuffer> cmd_) {
 
-	const auto off = _layoutState.layoutOffset;
-	const auto size = _layoutState.layoutSize;
+	const auto& layout = getLayoutAttributes();
+	const auto& box = std::get<0>(layout.attributeSets);
+
+	const auto padding = box.valueOf<attr::BoxLayout::padding>();
+
+	const auto off = _layoutState.layoutOffset + math::fvec2 { padding.x, padding.y };
+	const auto size = _layoutState.layoutSize - math::fvec2 { padding.x + padding.z, padding.y + padding.w };
 
 	const math::fExtent2D scissor { size.x, size.y, off.x, off.y };
 	cmd_->pushIntersectScissor(scissor);
@@ -138,7 +143,7 @@ void VScrollBox::applyLayout(ref<ReflowState> state_) {
 		mayOccupiedSpace += child->getLayoutState().computeSize.y;
 	}
 
-	_overflow = std::max(mayOccupiedSpace - getLayoutState().layoutSize.x, 0.F);
+	_overflow = std::max(mayOccupiedSpace - getLayoutState().layoutSize.y, 0.F);
 
 	/**/
 
