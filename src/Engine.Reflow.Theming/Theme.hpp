@@ -15,7 +15,7 @@ namespace hg::engine::reflow::theming {
 		using this_type = Theme;
 
 	public:
-		constexpr explicit Theme() = default;
+		explicit Theme() = default;
 
 		//private:
 	public:

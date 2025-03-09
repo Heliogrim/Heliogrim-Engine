@@ -21,9 +21,9 @@ namespace hg::engine::reflow {
 		using listener_type = std::function<EventResponse(ref<const EventType_>)>;
 
 	public:
-		constexpr ReflowEventEmitter() noexcept = default;
+		ReflowEventEmitter() noexcept = default;
 
-		constexpr ~ReflowEventEmitter() noexcept = default;
+		~ReflowEventEmitter() noexcept = default;
 
 	private:
 		u8 _handleCount;
