@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine.Common/Optional.hpp>
+#include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Memory/SharedPointer.hpp>
 #include <Engine.Filesystem/Url.hpp>
 
