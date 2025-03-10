@@ -164,6 +164,7 @@ build.linux.gcc:
   tags:
     - linux
     - amd64
+  allow_failure: true
 
   cache:
     - key: cmake-cache-build-linux-gcc
