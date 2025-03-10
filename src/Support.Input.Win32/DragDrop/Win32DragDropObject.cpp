@@ -5,18 +5,6 @@
 #include <sstream>
 #include <Engine.Logging/Logger.hpp>
 
-namespace hg::engine::input {
-	// @see https://learn.microsoft.com/en-us/windows/win32/shell/clipboard#cf_hdrop
-	struct DragDropObjectFilePayload {
-		std::wstring paths;
-	};
-
-	// CF_UNICODETEXT (13) | Unicode text | Text | Null Terminated
-	struct DragDropObjectTextPayload {
-		std::wstring data;
-	};
-}
-
 using namespace hg::engine::input;
 using namespace hg;
 
