@@ -27,15 +27,15 @@ namespace hg::engine::reflow {
 	private:
 		attributes_type _attributes;
 
-		template <std::size_t Index_>
+		template <std::size_t Index_, typename Dummy_ = void>
 		struct GetTypeOfImpl {
 			using named_type = meta::drop_ref_t<decltype(std::get<Index_>(std::declval<decltype(_attributes)>()))>;
 			using type = typename ExtractTypeOfImpl<named_type>::type;
 		};
 
-		template <>
-		struct GetTypeOfImpl<(~0uLL)> {
-			using type = void;
+		template <typename Dummy_>
+		struct GetTypeOfImpl<(~0uLL), Dummy_> {
+			using type = std::void_t<Dummy_>;
 		};
 
 	public:
