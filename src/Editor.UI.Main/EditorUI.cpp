@@ -8,7 +8,10 @@
 #include <Editor.UI/Helper/AssetBrowserHelper.hpp>
 #include <Editor.UI.Init/EditorInit.hpp>
 #include <Editor.UI.Rx/Subject.hpp>
+#include <Editor.UI.Theme/EditorTheme.hpp>
 #include <Engine.Common/Make.hpp>
+#include <Engine.Reflow/Reflow.hpp>
+#include <Engine.Reflow/Module/Reflow.hpp>
 
 using namespace hg::editor::ui;
 using namespace hg::engine::core;
@@ -37,7 +40,15 @@ cref<CompactSet<engine::core::SubModuleDependency>> editor::EditorUI::dependenci
 	return _dependencies;
 }
 
-void editor::EditorUI::setup() {}
+void editor::EditorUI::setup() {
+
+	auto reflowModule = _engine->getModules().getSubModule(ReflowDepKey);
+	::hg::assertrt(reflowModule != nullptr);
+
+	auto& reflow = static_cast<ref<Reflow>>(*reflowModule);
+	setupEditorTheme(reflow.getTheming());
+
+}
 
 void editor::EditorUI::start() {
 
