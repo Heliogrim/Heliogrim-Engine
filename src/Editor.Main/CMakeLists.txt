@@ -22,6 +22,7 @@ make_app_project(
 		${PROJECT_NAME}::Editor.UI.Panel
 		${PROJECT_NAME}::Editor.UI.Rx
 		${PROJECT_NAME}::Editor.UI.Service
+		${PROJECT_NAME}::Editor.UI.Theme
 		${PROJECT_NAME}::Editor.UI.View
 		${PROJECT_NAME}::Heliogrim
 )

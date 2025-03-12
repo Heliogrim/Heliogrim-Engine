@@ -1,15 +1,16 @@
-#include "Themes.hpp"
+#include "EditorTheme.hpp"
 
-#include "Editor.UI.Main/EditorUI.hpp"
-#include "Editor.UI.Main/Module/EditorUI.hpp"
-#include "Engine.Core/Engine.hpp"
-#include "Engine.Core/Module/Modules.hpp"
+#include <Editor.UI.Main/EditorUI.hpp>
+#include <Editor.UI.Main/Module/EditorUI.hpp>
+#include <Engine.Core/Engine.hpp>
+#include <Engine.Core/Module/Modules.hpp>
+#include <Engine.Reflow/Reflow.hpp>
+#include <Engine.Reflow/Module/Reflow.hpp>
 
-using namespace hg::engine::reflow::uikit;
+using namespace hg::editor::ui;
+using namespace hg::engine::reflow::theming;
 using namespace hg::engine::reflow;
 using namespace hg;
-
-static const auto stable_ref_theme = theming::Theme {};
 
 /**/
 
@@ -72,18 +73,24 @@ constexpr static struct StyleSystem {
 	} lvl3;
 } styles;
 
+/**/
+
 /**
  * Section : Basis
  */
 
 #pragma region Base
 
-theming::Theme uikit::generate_base_theme() {
+static Theme generate_base_theme() {
 
 	auto theme = theming::Theme {};
-	auto font = static_cast<ptr<editor::EditorUI>>(
-		Engine::getEngine()->getModules().getSubModule(editor::EditorUIDepKey).get()
-	)->getDefaultFont();
+	const auto fontGuid = static_cast<ptr<editor::EditorUI>>(
+		engine::Engine::getEngine()->getModules().getSubModule(editor::EditorUIDepKey).get()
+	)->getDefaultFontGuid();
+
+	// TODO: Cleanup!?
+	auto fontTypedGuid = TypedAssetGuid<engine::assets::Font> {};
+	*static_cast<asset_guid*>(static_cast<void*>(&fontTypedGuid)) = fontGuid;
 
 	/**/
 
@@ -97,7 +104,7 @@ theming::Theme uikit::generate_base_theme() {
 	theme.addTextStyle(
 		"[Text]"sv,
 		TextStyleAttributes {
-			*font,
+			fontTypedGuid,
 			styles.base.normal.font_size,
 			styles.base.normal.text_line_height,
 			styles.base.normal.text_align,
@@ -120,7 +127,7 @@ theming::Theme uikit::generate_base_theme() {
 
 #pragma region Lvl1
 
-theming::Theme uikit::generate_lvl1_theme() {
+static theming::Theme generate_lvl1_theme() {
 
 	auto theme = theming::Theme {};
 
@@ -136,7 +143,7 @@ theming::Theme uikit::generate_lvl1_theme() {
 	return theme;
 }
 
-theming::Theme uikit::generate_lvl1_hover_theme() {
+static Theme generate_lvl1_hover_theme() {
 	auto theme = theming::Theme {};
 
 	/**/
@@ -156,7 +163,7 @@ theming::Theme uikit::generate_lvl1_hover_theme() {
 
 #pragma region Lvl2
 
-theming::Theme uikit::generate_lvl2_theme() {
+static Theme generate_lvl2_theme() {
 
 	auto theme = theming::Theme {};
 
@@ -172,7 +179,7 @@ theming::Theme uikit::generate_lvl2_theme() {
 	return theme;
 }
 
-theming::Theme uikit::generate_lvl2_hover_theme() {
+static Theme generate_lvl2_hover_theme() {
 	auto theme = theming::Theme {};
 
 	/**/
@@ -192,7 +199,7 @@ theming::Theme uikit::generate_lvl2_hover_theme() {
 
 #pragma region Lvl3
 
-theming::Theme uikit::generate_lvl3_theme() {
+static Theme generate_lvl3_theme() {
 
 	auto theme = theming::Theme {};
 
@@ -206,7 +213,7 @@ theming::Theme uikit::generate_lvl3_theme() {
 	return theme;
 }
 
-theming::Theme uikit::generate_lvl3_hover_theme() {
+static Theme generate_lvl3_hover_theme() {
 	auto theme = theming::Theme {};
 
 	/**/
@@ -219,3 +226,32 @@ theming::Theme uikit::generate_lvl3_hover_theme() {
 }
 
 #pragma endregion Lvl3
+
+/**/
+
+void editor::ui::setupEditorTheme(ref<Theming> theming_) {
+
+	theming_.storeBaseTheme(generate_base_theme());
+
+	/**/
+
+	theming_.storeStatedTheme(1u, {}, generate_lvl1_theme());
+	theming_.storeStatedTheme(1u, { .hover = true }, generate_lvl1_hover_theme());
+
+	/**/
+
+	theming_.storeStatedTheme(2u, {}, generate_lvl2_theme());
+	theming_.storeStatedTheme(2u, { .hover = true }, generate_lvl2_hover_theme());
+
+	/**/
+
+	theming_.storeStatedTheme(3u, {}, generate_lvl3_theme());
+	theming_.storeStatedTheme(3u, { .hover = true }, generate_lvl3_hover_theme());
+
+}
+
+ref<const Theming> editor::ui::getEditorTheming() {
+	const auto reflowModule = engine::Engine::getEngine()->getModules().getSubModule(engine::ReflowDepKey);
+	::hg::assertrt(reflowModule != nullptr);
+	return static_cast<ref<const engine::Reflow>>(*reflowModule).getTheming();
+}
