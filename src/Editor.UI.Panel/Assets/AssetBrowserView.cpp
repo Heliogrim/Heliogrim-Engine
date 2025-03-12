@@ -6,6 +6,7 @@
 
 #include "AssetBrowserController.hpp"
 #include "Editor.UI/Helper/AssetBrowserHelper.hpp"
+#include "Editor.UI.Theme/EditorTheme.hpp"
 #include "Engine.Assets.System/IAssetRegistry.hpp"
 #include "Engine.Assets/Assets.hpp"
 #include "Engine.Common/Math/Coordinates.hpp"
@@ -14,7 +15,6 @@
 #include "Engine.GFX.Loader/Texture/Traits.hpp"
 #include "Engine.Reflow.Uikit/Atom/Paint.hpp"
 #include "Engine.Reflow.Uikit/Atom/Layout/VerticalLayout.hpp"
-#include "Engine.Reflow.Uikit/Theme/Themes.hpp"
 #include "Engine.Resource/ResourceManager.hpp"
 
 using namespace hg::editor::ui;
@@ -120,11 +120,13 @@ SharedPtr<uikit::Button> AssetBrowserView::makeItem(ref<const service::AssetBrow
 
 	/**/
 
+	const auto& theming = getEditorTheming();
+
 	auto button = uikit::makeButton(uikit::ButtonCreateOptions { .level = 2, .children = ::hg::move(wholeItemBackground) });
 	button->addChild(::hg::move(wholeItemLayout));
 
-	button->setBaseTheme(Some(uikit::generate_lvl2_theme()));
-	button->setStateTheme(InteractiveStateFlagBits::eHover, Some(uikit::generate_lvl2_hover_theme()));
+	button->setBaseTheme(theming.getStatedTheme(2u, {}));
+	button->setStateTheme(InteractiveStateFlagBits::eHover, theming.getStatedTheme(2u, { .hover = true }));
 
 	::hg::discard = button->onClick(
 		[&ctrl = _controller, data = data_](ref<const engine::reflow::MouseEvent> event_) {
