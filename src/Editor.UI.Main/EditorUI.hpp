@@ -7,6 +7,10 @@
 #include "EditorUiModel.hpp"
 #include "EditorUiServices.hpp"
 
+namespace hg {
+	struct asset_guid;
+}
+
 namespace hg::editor {
 	class EditorEngine;
 }
@@ -63,6 +67,8 @@ namespace hg::editor {
 		[[nodiscard]] ref<const ui::EditorUiServices> getEditorServices() const noexcept;
 
 	public:
+		[[nodiscard]] ref<const asset_guid> getDefaultFontGuid() const noexcept;
+
 		[[nodiscard]] nmpt<engine::assets::Font> getDefaultFont() const noexcept;
 	};
 }
