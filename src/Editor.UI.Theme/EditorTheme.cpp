@@ -96,10 +96,10 @@ static Theme generate_base_theme() {
 
 	theme.addImageStyle("[Image]"sv, ImageStyleAttributes { styles.base.normal.image_alpha, styles.base.normal.image_tint });
 
-	theme.addPaintStyle("[Button] > background"sv, PaintStyleAttributes { styles.base.normal.color_background });
-	theme.addPaintStyle("[Card] > background"sv, PaintStyleAttributes { styles.base.normal.color_background });
+	theme.addPaintStyle("[Button] > background"sv, PaintStyleAttributes { styles.base.normal.color_background, 8.F });
+	theme.addPaintStyle("[Card] > background"sv, PaintStyleAttributes { styles.base.normal.color_background, 8.F });
 
-	theme.addPaintStyle("[Paint]"sv, PaintStyleAttributes { styles.base.normal.color_background });
+	theme.addPaintStyle("[Paint]"sv, PaintStyleAttributes { styles.base.normal.color_background, 0.F });
 
 	theme.addTextStyle(
 		"[Text]"sv,
@@ -133,10 +133,10 @@ static theming::Theme generate_lvl1_theme() {
 
 	/**/
 
-	theme.addPaintStyle("[Button] > background"sv, PaintStyleAttributes { styles.lvl2.normal.color_background });
-	theme.addPaintStyle("[Card] > background"sv, PaintStyleAttributes { styles.lvl1.normal.color_background });
+	theme.addPaintStyle("[Button] > background"sv, PaintStyleAttributes { styles.lvl2.normal.color_background, 8.F });
+	theme.addPaintStyle("[Card] > background"sv, PaintStyleAttributes { styles.lvl1.normal.color_background, 8.F });
 
-	theme.addPaintStyle("[Paint]"sv, PaintStyleAttributes { styles.lvl2.normal.color_background });
+	theme.addPaintStyle("[Paint]"sv, PaintStyleAttributes { styles.lvl2.normal.color_background, 0.F });
 
 	/**/
 
@@ -148,7 +148,7 @@ static Theme generate_lvl1_hover_theme() {
 
 	/**/
 
-	theme.addPaintStyle("[Button] > background"sv, PaintStyleAttributes { styles.lvl1.hover.color_background });
+	theme.addPaintStyle("[Button] > background"sv, PaintStyleAttributes { styles.lvl1.hover.color_background, 8.F });
 
 	/**/
 
@@ -169,10 +169,10 @@ static Theme generate_lvl2_theme() {
 
 	/**/
 
-	theme.addPaintStyle("[Button] > background"sv, PaintStyleAttributes { styles.lvl2.normal.color_background });
-	theme.addPaintStyle("[Card] > background"sv, PaintStyleAttributes { styles.lvl2.normal.color_background });
+	theme.addPaintStyle("[Button] > background"sv, PaintStyleAttributes { styles.lvl2.normal.color_background, 8.F });
+	theme.addPaintStyle("[Card] > background"sv, PaintStyleAttributes { styles.lvl2.normal.color_background, 8.F });
 
-	theme.addPaintStyle("[Paint]"sv, PaintStyleAttributes { styles.lvl2.normal.color_background });
+	theme.addPaintStyle("[Paint]"sv, PaintStyleAttributes { styles.lvl2.normal.color_background, 0.F });
 
 	/**/
 
@@ -184,7 +184,7 @@ static Theme generate_lvl2_hover_theme() {
 
 	/**/
 
-	theme.addPaintStyle("[Button] > background"sv, PaintStyleAttributes { styles.lvl2.hover.color_background });
+	theme.addPaintStyle("[Button] > background"sv, PaintStyleAttributes { styles.lvl2.hover.color_background, 8.F });
 
 	/**/
 
@@ -205,8 +205,8 @@ static Theme generate_lvl3_theme() {
 
 	/**/
 
-	theme.addPaintStyle("[Button] > background"sv, PaintStyleAttributes { styles.lvl3.normal.color_background });
-	theme.addPaintStyle("[Card] > background"sv, PaintStyleAttributes { styles.lvl3.normal.color_background });
+	theme.addPaintStyle("[Button] > background"sv, PaintStyleAttributes { styles.lvl3.normal.color_background, 8.F });
+	theme.addPaintStyle("[Card] > background"sv, PaintStyleAttributes { styles.lvl3.normal.color_background, 8.F });
 
 	/**/
 
@@ -218,7 +218,7 @@ static Theme generate_lvl3_hover_theme() {
 
 	/**/
 
-	theme.addPaintStyle("[Button] > background"sv, PaintStyleAttributes { styles.lvl3.hover.color_background });
+	theme.addPaintStyle("[Button] > background"sv, PaintStyleAttributes { styles.lvl3.hover.color_background, 8.F });
 
 	/**/
 
