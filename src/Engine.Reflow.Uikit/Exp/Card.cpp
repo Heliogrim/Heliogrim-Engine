@@ -2,9 +2,10 @@
 
 #include <format>
 #include <Engine.Common/Make.hpp>
+#include <Engine.Reflow.Theming/Theming.hpp>
 
+#include "../Themes.hpp"
 #include "../Atom/Paint.hpp"
-#include "../Theme/Themes.hpp"
 
 using namespace hg::engine::reflow;
 using namespace hg;
@@ -60,13 +61,14 @@ Opt<ref<const theming::ThemeProvisioner>> uikit::Card::cachedUpdateNearestProvis
 SharedPtr<uikit::Card> uikit::makeCard(mref<CardCreateOptions> options_) {
 
 	auto card = make_sptr<Card>();
+	const auto& theming = getRuntimeTheming();
 
 	switch (options_.level) {
-		case 1: card->setCardTheme(Some(uikit::generate_lvl1_theme()));
+		case 1: card->setCardTheme(theming->getStatedTheme(1u, {}));
 			break;
-		case 2: card->setCardTheme(Some(uikit::generate_lvl2_theme()));
+		case 2: card->setCardTheme(theming->getStatedTheme(2u, {}));
 			break;
-		case 3: card->setCardTheme(Some(uikit::generate_lvl3_theme()));
+		case 3: card->setCardTheme(theming->getStatedTheme(3u, {}));
 			break;
 		default: ;
 	}

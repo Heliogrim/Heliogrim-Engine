@@ -2,11 +2,12 @@
 
 #include <format>
 #include <Engine.Common/Functional/Lambda.hpp>
+#include <Engine.Reflow.Theming/Theming.hpp>
 #include <Engine.Reflow/ReflowClassList.hpp>
 
+#include "Themes.hpp"
 #include "../Atom/Paint.hpp"
 #include "../Atom/Layout/BoxLayout.hpp"
-#include "../Theme/Themes.hpp"
 
 using namespace hg::engine::reflow;
 using namespace hg;
@@ -16,17 +17,18 @@ SharedPtr<uikit::Button> uikit::makeButton(
 ) {
 
 	auto button = make_sptr<uikit::Button>();
+	const auto& theming = getRuntimeTheming();
 
 	::hg::move(options_).apply(
 		Overloaded {
 			[&](TextButtonCreateOptions& textOptions_) {
 
 				switch (textOptions_.level) {
-					case 1: button->setStateTheme(InteractiveStateFlagBits::eHover, Some(uikit::generate_lvl1_hover_theme()));
+					case 1: button->setStateTheme(InteractiveStateFlagBits::eHover, theming->getStatedTheme(1u, { .hover = true }));
 						break;
-					case 2: button->setStateTheme(InteractiveStateFlagBits::eHover, Some(uikit::generate_lvl2_hover_theme()));
+					case 2: button->setStateTheme(InteractiveStateFlagBits::eHover, theming->getStatedTheme(2u, { .hover = true }));
 						break;
-					case 3: button->setStateTheme(InteractiveStateFlagBits::eHover, Some(uikit::generate_lvl3_hover_theme()));
+					case 3: button->setStateTheme(InteractiveStateFlagBits::eHover, theming->getStatedTheme(3u, { .hover = true }));
 						break;
 					default: ;
 				}
@@ -45,11 +47,11 @@ SharedPtr<uikit::Button> uikit::makeButton(
 			[&](ImageButtonCreateOptions& imageOptions_) {
 
 				switch (imageOptions_.level) {
-					case 1: button->setStateTheme(InteractiveStateFlagBits::eHover, Some(uikit::generate_lvl1_hover_theme()));
+					case 1: button->setStateTheme(InteractiveStateFlagBits::eHover, theming->getStatedTheme(1u, { .hover = true }));
 						break;
-					case 2: button->setStateTheme(InteractiveStateFlagBits::eHover, Some(uikit::generate_lvl2_hover_theme()));
+					case 2: button->setStateTheme(InteractiveStateFlagBits::eHover, theming->getStatedTheme(2u, { .hover = true }));
 						break;
-					case 3: button->setStateTheme(InteractiveStateFlagBits::eHover, Some(uikit::generate_lvl3_hover_theme()));
+					case 3: button->setStateTheme(InteractiveStateFlagBits::eHover, theming->getStatedTheme(3u, { .hover = true }));
 						break;
 					default: ;
 				}
@@ -59,11 +61,11 @@ SharedPtr<uikit::Button> uikit::makeButton(
 			[&](ButtonCreateOptions& customOptions_) {
 
 				switch (customOptions_.level) {
-					case 1: button->setStateTheme(InteractiveStateFlagBits::eHover, Some(uikit::generate_lvl1_hover_theme()));
+					case 1: button->setStateTheme(InteractiveStateFlagBits::eHover, theming->getStatedTheme(1u, { .hover = true }));
 						break;
-					case 2: button->setStateTheme(InteractiveStateFlagBits::eHover, Some(uikit::generate_lvl2_hover_theme()));
+					case 2: button->setStateTheme(InteractiveStateFlagBits::eHover, theming->getStatedTheme(2u, { .hover = true }));
 						break;
-					case 3: button->setStateTheme(InteractiveStateFlagBits::eHover, Some(uikit::generate_lvl3_hover_theme()));
+					case 3: button->setStateTheme(InteractiveStateFlagBits::eHover, theming->getStatedTheme(3u, { .hover = true }));
 						break;
 					default: ;
 				}
