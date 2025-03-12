@@ -40,7 +40,6 @@
 #include <Engine.Reflect/Cast.hpp>
 #include <Engine.Reflect/ExactType.hpp>
 #include <Engine.Reflect/TypeSwitch.hpp>
-#include <Engine.Reflow/FlowContext.hpp>
 #include <Engine.Reflow/ReflowEngine.hpp>
 #include <Engine.Reflow/Command/ReflowCommandBuffer.hpp>
 #include <Engine.Reflow/Scene/UISceneModel.hpp>
@@ -192,12 +191,8 @@ void render::ReflowPass::execute(cref<engine::render::graph::ScopedSymbolContext
 		static_cast<float>(sceneColorTex->width()),
 		static_cast<float>(sceneColorTex->height())
 	};
-	const FlowContext fctx {
-		math::fExtent2D { available.x, available.y, 0.F, 0.F },
-		math::fExtent2D { available.x, available.y, 0.F, 0.F }
-	};
 
-	const math::fExtent2D rootScissor { fctx.scissor };
+	const auto rootScissor = math::fExtent2D { available.x, available.y, 0.F, 0.F };
 	uiCmd.pushRootScissor(rootScissor);
 
 	/**/
