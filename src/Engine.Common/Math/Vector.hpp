@@ -1438,17 +1438,14 @@ namespace hg::math {
 			return *this;
 		}
 
-		/**
-		 * Check zero vector
-		 *
-		 * @author Julius
-		 * @date 16.01.2020
-		 *
-		 * @returns whether vector is zero.
-		 */
-		[[nodiscard]] bool zero() const {
+		[[nodiscard]] constexpr bool allZero() const noexcept {
 			// TODO: Unsafe possible float point equality operation
 			return x == 0 && y == 0 && z == 0 && w == 0;
+		}
+
+		[[nodiscard]] constexpr bool anyZero() const noexcept {
+			// TODO: Unsafe possible float point equality operation
+			return x == 0 || y == 0 || z == 0 || w == 0;
 		}
 
 		/**
