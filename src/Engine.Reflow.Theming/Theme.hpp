@@ -6,7 +6,7 @@
 #include <Engine.Reflow.Attributes/Layout/Base/BoxLayoutAttributes.hpp>
 #include <Engine.Reflow.Attributes/Layout/Base/FlexLayoutAttributes.hpp>
 #include <Engine.Reflow.Attributes/Style/Base/ImageStyleAttributes.hpp>
-#include <Engine.Reflow.Attributes/Style/Base/PaintStyleAttributes.hpp>
+#include <Engine.Reflow.Attributes/Style/Base/PaintStyle.hpp>
 #include <Engine.Reflow.Attributes/Style/Base/TextStyleAttributes.hpp>
 
 namespace hg::engine::reflow::theming {

@@ -7,14 +7,16 @@
 
 namespace hg::engine::reflow {
 	namespace attr {
-		struct PaintStyleAttributes {
+		struct PaintStyle {
 			constexpr static inline auto tint = "tint"sv;
+			constexpr static inline auto borderRadius = "borderRadius"sv;
 		};
 	}
 
 	struct PaintStyleAttributes final :
 		StyleAttributes<
-			NamedAttribute<attr::PaintStyleAttributes::tint, StyleAttribute<color>>
+			NamedAttribute<attr::PaintStyle::tint, StyleAttribute<color>>,
+			NamedAttribute<attr::PaintStyle::borderRadius, StyleAttribute<math::fvec4>>
 		> {
 		using StyleAttributes::StyleAttributes;
 	};

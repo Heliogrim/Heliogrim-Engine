@@ -3,7 +3,7 @@
 #include <Engine.Reflow/Children.hpp>
 #include <Engine.Reflow/Widget/Widget.hpp>
 #include <Engine.Reflow.Attributes/Layout/Base/BoxLayoutAttributes.hpp>
-#include <Engine.Reflow.Attributes/Style/Base/PaintStyleAttributes.hpp>
+#include <Engine.Reflow.Attributes/Style/Base/PaintStyle.hpp>
 
 #include "Atom.hpp"
 
