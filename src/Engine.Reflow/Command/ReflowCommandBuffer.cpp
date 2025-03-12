@@ -533,12 +533,8 @@ void ReflowCommandBuffer::drawArc(
 	/* Result  :: [2*PI*r] * [(tt-ft)/(2*PI)] */
 	/*         :: [r] * [(tt-ft)] */
 
-	u32 segments { MIN(static_cast<u32>(radius_ * (toTheta_ - fromTheta_)), 11uL) };
-
-	// Enforce odd segment count to prevent rounding / flattening of corner tip
-	if (not segments & 0x1) {
-		++segments;
-	}
+	constexpr static auto density = 1.F / 2.F;
+	auto segments = std::clamp(static_cast<u32>(radius_ * (toTheta_ - fromTheta_) * density), u32 { 3uL }, u32 { 50uL });
 
 	const float dtPs { (toTheta_ - fromTheta_) / static_cast<float>(segments) };
 
@@ -557,18 +553,16 @@ void ReflowCommandBuffer::drawArc(
 	capture.vertices.reserve(baseVtx + reqVtx);
 
 	/**/
-	capture.vertices.push_back(
-		uivertex {
-			math::vec2 { pos_ },
-			math::vec4_t<u8> {
-				static_cast<u8>(color_.r),
-				static_cast<u8>(color_.g),
-				static_cast<u8>(color_.b),
-				static_cast<u8>(color_.a)
-			},
-			math::vec3 {},
-			_layer
-		}
+	capture.vertices.emplace_back(
+		math::vec2 { pos_ },
+		math::vec4_t<u8> {
+			static_cast<u8>(color_.r),
+			static_cast<u8>(color_.g),
+			static_cast<u8>(color_.b),
+			static_cast<u8>(color_.a)
+		},
+		math::vec3 {},
+		_layer
 	);
 
 	/**/
@@ -578,18 +572,16 @@ void ReflowCommandBuffer::drawArc(
 
 		const math::vec2 nd { math::cosf(theta), math::sinf(theta) };
 
-		capture.vertices.push_back(
-			uivertex {
-				math::vec2 { pos_ + nd * radius_ },
-				math::vec4_t<u8> {
-					static_cast<u8>(color_.r),
-					static_cast<u8>(color_.g),
-					static_cast<u8>(color_.b),
-					static_cast<u8>(color_.a)
-				},
-				math::vec3 {},
-				_layer
-			}
+		capture.vertices.emplace_back(
+			math::vec2 { pos_ + nd * radius_ },
+			math::vec4_t<u8> {
+				static_cast<u8>(color_.r),
+				static_cast<u8>(color_.g),
+				static_cast<u8>(color_.b),
+				static_cast<u8>(color_.a)
+			},
+			math::vec3 {},
+			_layer
 		);
 	}
 
