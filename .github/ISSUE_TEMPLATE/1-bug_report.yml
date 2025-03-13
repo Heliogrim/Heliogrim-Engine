@@ -1,0 +1,47 @@
+name: Bug Report
+description: Create a report to help us improve
+labels: [ bug ]
+body:
+  - type: textarea
+    attributes:
+      label: "Actual Behavior"
+      description: "How does the system currently behave."
+      render: markdown
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: "Expected Behavior"
+      description: "How should the system behave, when everything would be right?"
+      render: markdown
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: "----"
+  - type: textarea
+    attributes:
+      label: "To Reproduce"
+      description: "Steps to reproduce the behavior:"
+      render: markdown
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: "Platform"
+      placeholder: "Windows x64 10.0.19045 Build 19045"
+  - type: input
+    attributes:
+      label: "Version"
+      placeholder: "1.0.123-rc"
+  - type: input
+    attributes:
+      label: "Subsystem(s)"
+      placeholder: "Graphics/Acceleration, Graphics/Material, Editor/Material, ..."
+  - type: markdown
+    attributes:
+      value: "----"
+  - type: textarea
+    attributes:
+      label: "Additional context/remarks"
+      description: "Add any other context about the problem here."
