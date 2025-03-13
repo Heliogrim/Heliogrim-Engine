@@ -12,7 +12,7 @@ function(library_nontype_fn_init)
 	CachedFetchContent_Declare(
 			nontype_fn
 			GIT_REPOSITORY https://github.com/zhihaoy/nontype_functional.git
-			GIT_TAG v1.0.1
+			GIT_TAG v1.0.2
 			GIT_SUBMODULES_RECURSE FALSE
 			GIT_SHALLOW TRUE
 			SOURCE_DIR "${vendor_src_path}"
