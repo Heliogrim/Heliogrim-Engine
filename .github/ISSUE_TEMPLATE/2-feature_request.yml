@@ -5,7 +5,7 @@ body:
   - type: textarea
     id: reasoning
     attributes:
-      label: ":zap: Is there an underlying problem to be solved?"
+      label: "⚡ Is there an underlying problem to be solved?"
       description: "If there is any, provide a description of the problem."
       render: markdown
     validations:
@@ -13,7 +13,7 @@ body:
   - type: textarea
     id: expectation
     attributes:
-      label: ":memo: What should the system provide?"
+      label: "📝 What should the system provide?"
       description: "Name the key points, what the feature should be about and what it will provide."
       render: markdown
     validations:
@@ -21,7 +21,7 @@ body:
   - type: textarea
     id: layout
     attributes:
-      label: ":dark_sunglasses: How should the solution look like to achieve the points above?"
+      label: "🕶️ How should the solution look like to achieve the points above?"
       description: "If you already have a idea or description for a solution, please provide this."
       render: markdown
     validations:
@@ -32,7 +32,7 @@ body:
   - type: textarea
     id: considerations
     attributes:
-      label: ":speech_balloon: Do you have any additional considerations?"
+      label: "💬 Do you have any additional considerations?"
       description: "Are there any constrains, edge cases or target cases, which should be resolved?"
       render: markdown
     validations:
@@ -40,7 +40,7 @@ body:
   - type: textarea
     id: information
     attributes:
-      label: ":information_source: Is there any documentation or related information?"
+      label: "ℹ️ Is there any documentation or related information?"
       description: "If there is any external documentation or information available, please provide accessible links, so we can consider already existing solutions..."
       render: markdown
     validations:
