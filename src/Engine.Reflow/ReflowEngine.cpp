@@ -184,10 +184,7 @@ void computeStateAlongAxis(
 		/**
 		 * Forward update constraints and compute sizing state
 		 */
-
-		// Bug: We may need a additional function to forward the correct reference size to the children.
-		// Note: `computeReference(math::vec2 reference_) -> math::vec2 (child-reference)`
-		const auto referenceSize = cur->hasParent() ? state_.getStateOf(cur)->computeSize : globalCtx_.localSize;
+		const auto referenceSize = cur->hasParent() ? cur->computeReferenceSize(axis_) : globalCtx_.localSize;
 
 		/**/
 
@@ -198,7 +195,11 @@ void computeStateAlongAxis(
 
 			/**/
 
-			childState->referenceSize = referenceSize;
+			if (axis_ == ReflowAxis::eXAxis) {
+				childState->referenceSize.x = referenceSize.x;
+			} else {
+				childState->referenceSize.y = referenceSize.y;
+			}
 			const auto sizing = child->passPrefetchSizing(axis_, *childState);
 
 			/**
