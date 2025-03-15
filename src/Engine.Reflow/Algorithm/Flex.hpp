@@ -234,7 +234,7 @@ namespace hg::engine::reflow::algorithm {
 				}
 
 				if (localGrowFactor.y > 0.F && underflow > 0.F && localGrowRange.y > 0.F) {
-					capabilities.emplace_back(index, std::min(localGrowRange.y, overflow), localGrowFactor.y);
+					capabilities.emplace_back(index, std::min(localGrowRange.y, underflow), localGrowFactor.y);
 					factorSum += localGrowFactor.y;
 				}
 
