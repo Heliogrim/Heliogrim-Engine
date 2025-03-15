@@ -71,6 +71,10 @@ PassPrefetchSizing Anchor::passPrefetchSizing(ReflowAxis axis_, ref<const Reflow
 	return { math::vec2_zero, math::vec2_zero, math::vec2_zero };
 }
 
+math::fvec2 Anchor::computeReferenceSize(ReflowAxis axis_) const {
+	return math::vec2_zero;
+}
+
 void Anchor::computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) {}
 
 void Anchor::applyLayout(ref<ReflowState> state_) {}

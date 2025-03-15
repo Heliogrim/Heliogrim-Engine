@@ -387,6 +387,10 @@ PassPrefetchSizing Viewport::passPrefetchSizing(ReflowAxis axis_, ref<const Refl
 	};
 }
 
+math::fvec2 Viewport::computeReferenceSize(ReflowAxis axis_) const {
+	return math::vec2_zero;
+}
+
 void Viewport::computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) {}
 
 void Viewport::applyLayout(ref<ReflowState> state_) {}
