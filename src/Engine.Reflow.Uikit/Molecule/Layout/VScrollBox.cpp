@@ -119,7 +119,15 @@ void VScrollBox::render(const ptr<ReflowCommandBuffer> cmd_) {
 }
 
 PrefetchSizing VScrollBox::prefetchSizing(ReflowAxis axis_, ref<const ReflowState> state_) const {
-	return VerticalLayout::prefetchSizing(axis_, state_);
+
+	const auto& box = std::get<0>(getLayoutAttributes().attributeSets);
+
+	const auto min = algorithm::unitAbsMin(box.valueOf<attr::BoxLayout::minWidth>(), box.valueOf<attr::BoxLayout::minHeight>());
+	const auto max = algorithm::unitAbsMax(box.valueOf<attr::BoxLayout::maxWidth>(), box.valueOf<attr::BoxLayout::maxHeight>());
+
+	auto layout = VerticalLayout::prefetchSizing(axis_, state_);
+	layout.minSizing.y = std::clamp(0.F, min.y, max.y);
+	return layout;
 }
 
 void VScrollBox::computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) {
