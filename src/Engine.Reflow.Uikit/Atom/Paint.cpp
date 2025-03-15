@@ -212,6 +212,10 @@ PassPrefetchSizing Paint::passPrefetchSizing(ReflowAxis axis_, ref<const ReflowP
 	};
 }
 
+math::fvec2 Paint::computeReferenceSize(ReflowAxis axis_) const {
+	return math::vec2_zero;
+}
+
 void Paint::computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) {}
 
 void Paint::applyLayout(ref<ReflowState> state_) {}

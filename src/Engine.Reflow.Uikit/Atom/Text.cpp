@@ -452,6 +452,10 @@ PassPrefetchSizing Text::passPrefetchSizing(ReflowAxis axis_, ref<const ReflowPa
 	};
 }
 
+math::fvec2 Text::computeReferenceSize(ReflowAxis axis_) const {
+	return math::vec2_zero;
+}
+
 void Text::computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) {
 	// Note: We artificially employ the prefetchSizing function to handle wrapping on secondary pass
 }

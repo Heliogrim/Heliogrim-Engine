@@ -145,6 +145,10 @@ PassPrefetchSizing Image::passPrefetchSizing(ReflowAxis axis_, ref<const ReflowP
 	};
 }
 
+math::fvec2 Image::computeReferenceSize(ReflowAxis axis_) const {
+	return math::vec2_zero;
+}
+
 void Image::computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) {}
 
 void Image::applyLayout(ref<ReflowState> state_) {}
