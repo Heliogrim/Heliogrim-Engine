@@ -191,6 +191,8 @@ namespace hg::engine::reflow {
 
 		virtual PassPrefetchSizing passPrefetchSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) const = 0;
 
+		virtual math::fvec2 computeReferenceSize(ReflowAxis axis_) const = 0;
+
 		virtual void computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) = 0;
 
 		virtual void applyLayout(ref<ReflowState> state_) = 0;

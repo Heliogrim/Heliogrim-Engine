@@ -35,6 +35,10 @@ PrefetchSizing NullWidget::prefetchSizing(ReflowAxis axis_, ref<const ReflowStat
 	return { { 0.F, 0.F }, { 0.F, 0.F } };
 }
 
+math::fvec2 NullWidget::computeReferenceSize(ReflowAxis axis_) const {
+	return { 0.F, 0.F };
+}
+
 void NullWidget::computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) {}
 
 void NullWidget::applyLayout(ref<ReflowState> state_) {}
