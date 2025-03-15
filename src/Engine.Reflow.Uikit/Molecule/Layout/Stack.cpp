@@ -202,6 +202,16 @@ PassPrefetchSizing uikit::Stack::passPrefetchSizing(ReflowAxis axis_, ref<const 
 	};
 }
 
+math::fvec2 uikit::Stack::computeReferenceSize(ReflowAxis axis_) const {
+
+	const auto& padding = getLayoutAttributes().valueOf<attr::BoxLayout::padding>();
+
+	auto result = _layoutState.computeSize;
+	result.x -= (padding.x + padding.z);
+	result.y -= (padding.y + padding.w);
+	return result;
+}
+
 void uikit::Stack::computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) {
 
 	// TODO: Padding
