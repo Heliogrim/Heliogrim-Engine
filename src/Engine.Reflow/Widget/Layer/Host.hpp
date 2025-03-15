@@ -40,6 +40,8 @@ namespace hg::engine::reflow {
 
 		PrefetchSizing prefetchSizing(ReflowAxis axis_, ref<const ReflowState> state_) const override;
 
+		math::fvec2 computeReferenceSize(ReflowAxis axis_) const override;
+
 		void computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) override;
 
 		void applyLayout(ref<ReflowState> state_) override;

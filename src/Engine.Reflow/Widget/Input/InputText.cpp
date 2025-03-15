@@ -56,6 +56,10 @@ PassPrefetchSizing InputText::passPrefetchSizing(ReflowAxis axis_, ref<const Ref
 	return _children.getChild()->passPrefetchSizing(axis_, passState_);
 }
 
+math::fvec2 InputText::computeReferenceSize(ReflowAxis axis_) const {
+	return _layoutState.referenceSize;
+}
+
 void InputText::computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) {
 	_children.getChild()->getLayoutState().computeSize = passState_.computeSize;
 }

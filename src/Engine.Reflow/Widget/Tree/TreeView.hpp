@@ -152,11 +152,15 @@ namespace hg::engine::reflow {
 		}
 
 	public:
-		PrefetchSizing prefetchSizing(ReflowAxis axis_, ref<const ReflowState> state_) const override {
+		PrefetchSizing prefetchSizing(const ReflowAxis axis_, ref<const ReflowState> state_) const override {
 			return TreeViewBase::prefetchSizing(axis_, state_);
 		}
 
-		void computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) override {
+		math::fvec2 computeReferenceSize(const ReflowAxis axis_) const override {
+			return TreeViewBase::computeReferenceSize(axis_);
+		}
+
+		void computeSizing(const ReflowAxis axis_, ref<const ReflowPassState> passState_) override {
 			return TreeViewBase::computeSizing(axis_, passState_);
 		}
 

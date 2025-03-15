@@ -97,6 +97,10 @@ PassPrefetchSizing Menu::passPrefetchSizing(ReflowAxis axis_, ref<const ReflowPa
 	return _trigger.getChild()->passPrefetchSizing(axis_, passState_);
 }
 
+math::fvec2 Menu::computeReferenceSize(ReflowAxis axis_) const {
+	return _layoutState.referenceSize;
+}
+
 void Menu::computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) {
 	_trigger.getChild()->getLayoutState().computeSize = passState_.computeSize;
 }

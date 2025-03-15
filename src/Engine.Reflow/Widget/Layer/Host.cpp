@@ -52,6 +52,10 @@ PassPrefetchSizing Host::passPrefetchSizing(ReflowAxis axis_, ref<const ReflowPa
 	return _layout.front()->passPrefetchSizing(axis_, passState_);
 }
 
+math::fvec2 Host::computeReferenceSize(ReflowAxis axis_) const {
+	return _layoutState.referenceSize;
+}
+
 void Host::computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) {
 	auto& layout = _layout.front()->getLayoutState();
 	layout.computeSize = passState_.computeSize;
