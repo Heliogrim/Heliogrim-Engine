@@ -65,6 +65,10 @@ void Text::setText(cref<string> text_) {
 	markAsPending();
 }
 
+constexpr bool Text::isBreakPoint(char ch_) const noexcept {
+	return std::isspace(ch_) || ch_ == '-' || ch_ == '_';
+}
+
 math::fvec2 Text::measure1DimText(ref<const reflow::Font> font_) const {
 
 	const auto& data = getDataAttributes();
@@ -103,7 +107,7 @@ math::fvec2 Text::measure1DimText(ref<const reflow::Font> font_) const {
 		const auto* const glyph = font_.glyph(static_cast<u32>(ch), fss);
 		sum += glyph->_advance * fontScale;
 
-		if (std::isspace(ch)) {
+		if (isBreakPoint(ch)) {
 			min = std::max(min, fwd);
 			fwd = 0.F;
 			continue;
@@ -174,7 +178,7 @@ f32 Text::measure1CrossDimChunked(ref<const reflow::Font> font_, f32 chunkLimit_
 			fwd = 0.F;
 		}
 
-		if (std::isspace(ch)) {
+		if (isBreakPoint(ch)) {
 			fwd += lss;
 			lss = 0.F;
 		}
@@ -297,14 +301,14 @@ void Text::render(const ptr<ReflowCommandBuffer> cmd_) {
 
 		/**/
 
-		if (std::isspace(ch) && wordStartIdx == idx) {
+		if (isBreakPoint(ch) && wordStartIdx == idx) {
 			lineFwd += advance;
 			wordFwd = 0.F;
 			wordStartIdx = idx + 1;
 			continue;
 		}
 
-		if (std::isspace(ch)) {
+		if (isBreakPoint(ch)) {
 			lineFwd += wordFwd + advance;
 			wordFwd = 0.F;
 			wordStartIdx = idx + 1;
