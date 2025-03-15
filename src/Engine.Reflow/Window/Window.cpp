@@ -173,6 +173,10 @@ PassPrefetchSizing Window::passPrefetchSizing(ReflowAxis axis_, ref<const Reflow
 	return { _clientSize, _clientSize, _clientSize };
 }
 
+math::fvec2 Window::computeReferenceSize(ReflowAxis axis_) const {
+	return _clientSize;
+}
+
 void Window::computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) {
 
 	// TODO: Implement
