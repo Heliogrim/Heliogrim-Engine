@@ -101,7 +101,7 @@ void prefetchStateAlongAxis(
 
 			/* Warning: Temporary solution */
 
-			if (child->shouldTick()) {
+			if (child->shouldTick() && axis_ == ReflowAxis::eXAxis) {
 				child->updateRenderVersion(state_.getRenderTick());
 				child->tick();
 			}
