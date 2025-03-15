@@ -28,7 +28,9 @@ namespace hg::engine::reflow::uikit {
 		[[nodiscard]] string getTag() const noexcept override;
 
 	private:
-		[[nodiscard]] PrefetchSizing prefetchSlotSizing(ReflowAxis axis_) const;
+		[[nodiscard]] PrefetchSizing prefetchSlotSizingX() const;
+
+		[[nodiscard]] PrefetchSizing prefetchSlotSizingY() const;
 
 		[[nodiscard]] PassPrefetchSizing passPrefetchSlotSizing(ReflowAxis axis_, PrefetchSizing prefetch_, math::fvec2 reference_) const;
 
@@ -36,6 +38,8 @@ namespace hg::engine::reflow::uikit {
 		PrefetchSizing prefetchSizing(ReflowAxis axis_, ref<const ReflowState> state_) const override;
 
 		PassPrefetchSizing passPrefetchSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) const override;
+
+		math::fvec2 computeReferenceSize(ReflowAxis axis_) const override;
 
 		void computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) override;
 
