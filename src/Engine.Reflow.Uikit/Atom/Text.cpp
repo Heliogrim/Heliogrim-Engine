@@ -65,7 +65,7 @@ void Text::setText(cref<string> text_) {
 	markAsPending();
 }
 
-constexpr bool Text::isBreakPoint(char ch_) const noexcept {
+bool Text::isBreakPoint(char ch_) const noexcept {
 	return std::isspace(ch_) || ch_ == '-' || ch_ == '_';
 }
 

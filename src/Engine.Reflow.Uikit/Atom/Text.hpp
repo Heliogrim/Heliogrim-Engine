@@ -48,7 +48,7 @@ namespace hg::engine::reflow::uikit {
 			f32 chunkSum;
 		} _measureCache;
 
-		[[nodiscard]] constexpr bool isBreakPoint(char ch_) const noexcept;
+		[[nodiscard]] bool isBreakPoint(char ch_) const noexcept;
 
 		[[nodiscard]] math::fvec2 measure1DimText(ref<const reflow::Font> font_) const;
 
