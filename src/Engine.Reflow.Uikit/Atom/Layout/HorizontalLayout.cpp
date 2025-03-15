@@ -182,6 +182,20 @@ PassPrefetchSizing HorizontalLayout::passPrefetchSizing(ReflowAxis axis_, ref<co
 	};
 }
 
+math::fvec2 HorizontalLayout::computeReferenceSize(ReflowAxis axis_) const {
+
+	const auto& box = std::get<0>(getLayoutAttributes().attributeSets);
+	const auto& flex = std::get<1>(getLayoutAttributes().attributeSets);
+
+	const auto& padding = box.valueOf<attr::BoxLayout::padding>();
+
+	auto result = _layoutState.computeSize;
+	const auto gapCount = _children.empty() ? 0uLL : _children.size() - 1uLL;
+	result.x -= (padding.x + padding.z + flex.valueOf<attr::FlexLayout::colGap>() * static_cast<f32>(gapCount));
+	result.y -= (padding.y + padding.w);
+	return result;
+}
+
 void HorizontalLayout::computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) {
 
 	const auto& box = std::get<0>(getLayoutAttributes().attributeSets);

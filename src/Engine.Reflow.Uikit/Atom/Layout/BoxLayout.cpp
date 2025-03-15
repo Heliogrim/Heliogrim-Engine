@@ -121,6 +121,15 @@ PassPrefetchSizing BoxLayout::passPrefetchSizing(ReflowAxis axis_, ref<const Ref
 	};
 }
 
+math::fvec2 BoxLayout::computeReferenceSize(ReflowAxis axis_) const {
+	const auto& padding = getLayoutAttributes().valueOf<attr::BoxLayout::padding>();
+
+	auto result = _layoutState.computeSize;
+	result.x -= (padding.x + padding.z);
+	result.y -= (padding.y + padding.w);
+	return result;
+}
+
 void BoxLayout::computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) {
 
 	algorithm::compute(
