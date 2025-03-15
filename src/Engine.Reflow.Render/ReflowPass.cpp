@@ -229,10 +229,10 @@ void render::ReflowPass::execute(cref<engine::render::graph::ScopedSymbolContext
 		/**/
 
 		const math::fExtent2D markScissor {
-			marked->getLayoutState().layoutSize.x,
-			marked->getLayoutState().layoutSize.y,
-			marked->getLayoutState().layoutOffset.x,
-			marked->getLayoutState().layoutOffset.y
+			std::ceilf(marked->getLayoutState().layoutSize.x),
+			std::ceilf(marked->getLayoutState().layoutSize.y),
+			std::floorf(marked->getLayoutState().layoutOffset.x),
+			std::floorf(marked->getLayoutState().layoutOffset.y)
 		};
 
 		uiCmd.pushScissor(markScissor);
