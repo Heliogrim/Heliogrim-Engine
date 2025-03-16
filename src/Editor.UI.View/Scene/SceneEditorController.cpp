@@ -2,6 +2,7 @@
 
 #include <Editor.UI.Main/EditorUiServices.hpp>
 #include <Editor.UI.Panel/Assets/AssetBrowserController.hpp>
+#include <Editor.UI.Panel/Properties/PropertyController.hpp>
 #include <Editor.UI.Panel/Scene/Hierarchy/SceneHierarchyController.hpp>
 
 #include "SceneEditorView.hpp"
@@ -18,6 +19,7 @@ SceneEditorController::~SceneEditorController() {}
 void SceneEditorController::setup() {
 
 	assetBrowser = makeAssetBrowser({ .service = _editorServices.assetBrowserService, .basePath = fs::Url {}, .initialPath = None });
+	properties = makeProperty({ .editorUiModel = _editorModel, .service = _editorServices.propertyService });
 	sceneHierarchy = makeSceneHierarchy({ .editorUiModel = _editorModel, .service = _editorServices.sceneHierarchyService });
 
 	/**/

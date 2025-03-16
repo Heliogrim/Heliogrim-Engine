@@ -10,6 +10,7 @@ namespace hg::editor::ui {
 	struct SceneEditorView;
 
 	class AssetBrowserController;
+	class PropertyController;
 	class SceneHierarchyController;
 }
 
@@ -30,6 +31,7 @@ namespace hg::editor::ui {
 
 	public:
 		UniquePtr<AssetBrowserController> assetBrowser;
+		UniquePtr<PropertyController> properties;
 		UniquePtr<SceneHierarchyController> sceneHierarchy;
 
 	public:

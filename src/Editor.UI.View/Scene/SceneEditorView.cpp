@@ -4,6 +4,8 @@
 #include <Editor.UI.Main/Module/EditorUI.hpp>
 #include <Editor.UI.Panel/Assets/AssetBrowserController.hpp>
 #include <Editor.UI.Panel/Assets/AssetBrowserView.hpp>
+#include <Editor.UI.Panel/Properties/PropertyController.hpp>
+#include <Editor.UI.Panel/Properties/PropertyView.hpp>
 #include <Editor.UI.Panel/Scene/EditorSceneViewportPanel.hpp>
 #include <Editor.UI.Panel/Scene/Hierarchy/SceneHierarchyController.hpp>
 #include <Editor.UI.Panel/Scene/Hierarchy/SceneHierarchyView.hpp>
@@ -20,13 +22,13 @@ using namespace hg;
 UniquePtr<SceneEditorView> editor::ui::makeSceneEditorView(
 	ref<const SceneEditorController> controller_
 ) {
-	auto main = make_sptr<uikit::HorizontalLayout>(); {
-		auto& layout = main->getLayoutAttributes();
+	auto shell = make_sptr<uikit::HorizontalLayout>(); {
+		auto& layout = shell->getLayoutAttributes();
 		auto& box = std::get<0>(layout.attributeSets);
 		auto& flex = std::get<1>(layout.attributeSets);
 
-		box.update<attr::BoxLayout::minWidth>({ ReflowUnitType::eRelative, 1.F });
-		box.update<attr::BoxLayout::minHeight>({ ReflowUnitType::eAuto, 0.F });
+		box.update<attr::BoxLayout::widthGrow>(1.F);
+		box.update<attr::BoxLayout::heightGrow>(1.F);
 
 		flex.update<attr::FlexLayout::justify>(ReflowSpacing::eSpaceEvenly);
 		flex.update<attr::FlexLayout::align>(ReflowAlignment::eStart);
@@ -45,8 +47,7 @@ UniquePtr<SceneEditorView> editor::ui::makeSceneEditorView(
 
 		box.update<attr::BoxLayout::minWidth>(ReflowUnit { ReflowUnitType::eAbsolute, 360.F });
 		box.update<attr::BoxLayout::maxWidth>(ReflowUnit { ReflowUnitType::eAbsolute, 360.F });
-		box.update<attr::BoxLayout::minHeight>(ReflowUnit { ReflowUnitType::eRelative, 1.F });
-		box.update<attr::BoxLayout::maxHeight>(ReflowUnit { ReflowUnitType::eRelative, 1.F });
+		box.update<attr::BoxLayout::heightGrow>(1.F);
 
 		flex.update<attr::FlexLayout::justify>(ReflowSpacing::eStart);
 		flex.update<attr::FlexLayout::align>(ReflowAlignment::eStart);
@@ -56,10 +57,8 @@ UniquePtr<SceneEditorView> editor::ui::makeSceneEditorView(
 		auto sceneViewCard = controller_.sceneHierarchy->getView().main;
 		auto sceneViewBox = make_sptr<uikit::BoxLayout>();
 
-		sceneViewCard->getLayoutAttributes().update<attr::BoxLayout::minWidth>({ ReflowUnitType::eRelative, 1.F });
-		sceneViewCard->getLayoutAttributes().update<attr::BoxLayout::maxWidth>({ ReflowUnitType::eRelative, 1.F });
-		sceneViewCard->getLayoutAttributes().update<attr::BoxLayout::minHeight>({ ReflowUnitType::eRelative, 1.F });
-		sceneViewCard->getLayoutAttributes().update<attr::BoxLayout::maxHeight>({ ReflowUnitType::eRelative, 1.F });
+		sceneViewCard->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
+		sceneViewCard->getLayoutAttributes().update<attr::BoxLayout::heightGrow>(1.F);
 
 		sceneViewBox->getLayoutAttributes().update<attr::BoxLayout::minWidth>({ ReflowUnitType::eRelative, 1.F });
 		sceneViewBox->getLayoutAttributes().update<attr::BoxLayout::maxWidth>({ ReflowUnitType::eRelative, 1.F });
@@ -98,10 +97,8 @@ UniquePtr<SceneEditorView> editor::ui::makeSceneEditorView(
 
 		/**/
 
-		box.update<attr::BoxLayout::minWidth>(ReflowUnit { ReflowUnitType::eRelative, 1.F });
-		box.update<attr::BoxLayout::maxWidth>(ReflowUnit { ReflowUnitType::eRelative, 1.F });
-		box.update<attr::BoxLayout::minHeight>(ReflowUnit { ReflowUnitType::eRelative, 1.F });
-		box.update<attr::BoxLayout::maxHeight>(ReflowUnit { ReflowUnitType::eRelative, 1.F });
+		box.update<attr::BoxLayout::widthGrow>(1.F);
+		box.update<attr::BoxLayout::heightGrow>(1.F);
 
 		flex.update<attr::FlexLayout::justify>(ReflowSpacing::eStart);
 		flex.update<attr::FlexLayout::align>(ReflowAlignment::eCenter);
@@ -154,34 +151,31 @@ UniquePtr<SceneEditorView> editor::ui::makeSceneEditorView(
 
 		box.update<attr::BoxLayout::minWidth>(ReflowUnit { ReflowUnitType::eAbsolute, 360.F });
 		box.update<attr::BoxLayout::maxWidth>(ReflowUnit { ReflowUnitType::eAbsolute, 360.F });
-		box.update<attr::BoxLayout::minHeight>(ReflowUnit { ReflowUnitType::eRelative, 1.F });
-		box.update<attr::BoxLayout::maxHeight>(ReflowUnit { ReflowUnitType::eRelative, 1.F });
+		box.update<attr::BoxLayout::heightGrow>(1.F);
 
 		flex.update<attr::FlexLayout::justify>(ReflowSpacing::eStart);
 		flex.update<attr::FlexLayout::align>(ReflowAlignment::eStart);
 
 		flex.update<attr::FlexLayout::rowGap>(8.F);
 	} {
-		auto* editorUi = static_cast<ptr<editor::EditorUI>>(
-			engine::Engine::getEngine()->getModules().getSubModule(editor::EditorUIDepKey).get()
-		);
+		auto propertiesCard = controller_.properties->getView().main;
+		auto propertiesBox = make_sptr<uikit::BoxLayout>();
 
-		/**/
+		propertiesCard->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
+		propertiesCard->getLayoutAttributes().update<attr::BoxLayout::heightGrow>(1.F);
 
-		auto objectEditorBox = make_sptr<uikit::BoxLayout>();
+		propertiesBox->getLayoutAttributes().update<attr::BoxLayout::minWidth>({ ReflowUnitType::eRelative, 1.F });
+		propertiesBox->getLayoutAttributes().update<attr::BoxLayout::maxWidth>({ ReflowUnitType::eRelative, 1.F });
+		propertiesBox->getLayoutAttributes().update<attr::BoxLayout::heightGrow>(1.F);
 
-		objectEditorBox->getLayoutAttributes().update<attr::BoxLayout::minWidth>({ ReflowUnitType::eRelative, 1.F });
-		objectEditorBox->getLayoutAttributes().update<attr::BoxLayout::maxWidth>({ ReflowUnitType::eRelative, 1.F });
-		objectEditorBox->getLayoutAttributes().update<attr::BoxLayout::minHeight>(ReflowUnit { ReflowUnitType::eRelative, 1.F });
-		objectEditorBox->getLayoutAttributes().update<attr::BoxLayout::maxHeight>(ReflowUnit { ReflowUnitType::eRelative, 1.F });
-
-		right->addChild(::hg::move(objectEditorBox));
+		propertiesBox->setChild(::hg::move(propertiesCard));
+		right->addChild(::hg::move(propertiesBox));
 	}
 
 	/**/
 
-	main->addChild(::hg::move(left));
-	main->addChild(::hg::move(center));
-	main->addChild(::hg::move(right));
-	return make_uptr<SceneEditorView>(::hg::move(main));
+	shell->addChild(::hg::move(left));
+	shell->addChild(::hg::move(center));
+	shell->addChild(::hg::move(right));
+	return make_uptr<SceneEditorView>(::hg::move(shell));
 }
