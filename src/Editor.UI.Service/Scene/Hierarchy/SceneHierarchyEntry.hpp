@@ -17,8 +17,8 @@ namespace hg::editor::ui::service {
 
 		[[nodiscard]] constexpr SceneHierarchyEntryType type() const noexcept {
 			switch (value.index()) {
-				case 1: return SceneHierarchyEntryType::eActor;
-				case 2: return SceneHierarchyEntryType::eComponent;
+				case 0: return SceneHierarchyEntryType::eActor;
+				case 1: return SceneHierarchyEntryType::eComponent;
 				default: return SceneHierarchyEntryType::eInvalid;
 			}
 		}
