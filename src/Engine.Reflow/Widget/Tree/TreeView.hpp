@@ -626,8 +626,8 @@ namespace hg::engine::reflow {
 
 			const auto dataIt {
 				std::find_if(
-					_linearizedData.begin(),
-					_linearizedData.end(),
+					_linearizedData.cbegin(),
+					_linearizedData.cend(),
 					[
 						target = cref<decltype(_cursor.second)> { _cursor.second },
 						equal = data_equal_type {}
@@ -636,16 +636,16 @@ namespace hg::engine::reflow {
 					}
 				)
 			};
-			if (dataIt == _linearizedData.end()) {
+			if (dataIt == _linearizedData.cend()) {
 				_cursor.first = -1;
 				_cursor.second = None;
 				return;
 			}
 
-			const auto off { std::distance(_linearizedData.begin(), dataIt) };
+			const auto off { std::distance(_linearizedData.cbegin(), dataIt) };
 
 			_cursor.first = off;
-			_cursor.second = Some(*dataIt);
+			_cursor.second = Some(clone(*dataIt));
 		}
 
 		[[nodiscard]] s64 getPrevRootViewEntry(const s64 idx_) {
@@ -697,7 +697,7 @@ namespace hg::engine::reflow {
 		void moveCursor(const s64 next_) {
 
 			_cursor.first = next_;
-			_cursor.second = Some(_linearizedData[next_]);
+			_cursor.second = Some(clone(_linearizedData[next_]));
 
 			/**/
 
