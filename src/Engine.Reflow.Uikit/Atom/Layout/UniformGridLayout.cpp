@@ -226,7 +226,7 @@ PrefetchSizing UniformGridLayout::prefetchSizing(ReflowAxis axis_, ref<const Ref
 
 	return {
 		math::compClamp(pb.min, minSizing, pb.max),
-		math::compClamp(pb.min, sizing, pb.max)
+		math::compClamp(pb.min, math::compMax(sizing, minSizing), pb.max)
 	};
 }
 
