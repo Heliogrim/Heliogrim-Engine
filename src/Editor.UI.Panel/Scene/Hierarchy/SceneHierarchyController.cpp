@@ -1,5 +1,7 @@
 #include "SceneHierarchyController.hpp"
 
+#include <Editor.UI.Service/Scene/Hierarchy/SceneHierarchyEntry.hpp>
+
 #include "SceneHierarchyModel.hpp"
 #include "SceneHierarchyView.hpp"
 
@@ -47,6 +49,26 @@ ref<const SceneHierarchyModel> SceneHierarchyController::getModel() const noexce
 
 ref<const SceneHierarchyView> SceneHierarchyController::getView() const noexcept {
 	return *_view;
+}
+
+void SceneHierarchyController::onSelectionChange(std::span<service::SceneHierarchyEntry> selected_) {
+
+	if (selected_.empty()) {
+		_editor.scene.selected.next(nullptr);
+		return;
+	}
+
+	const auto& first = selected_.front();
+	if (first.value.is<nmpt<Actor>>()) {
+		_editor.scene.selected.next(first.value.as<nmpt<Actor>>());
+		return;
+	}
+
+	if (first.value.is<nmpt<HierarchyComponent>>()) {
+		_editor.scene.selected.next(first.value.as<nmpt<HierarchyComponent>>());
+		return;
+	}
+
 }
 
 UniquePtr<SceneHierarchyController> editor::ui::makeSceneHierarchy(SceneHierarchyOptions options_) {

@@ -4,6 +4,8 @@
 #include <Editor.UI.Service/Scene/Hierarchy/SceneHierarchyEntry.hpp>
 #include <Heliogrim/Actor/Actor.hpp>
 
+#include "SceneHierarchyController.hpp"
+
 using namespace hg::editor::ui;
 using namespace hg::engine::reflow;
 using namespace hg;
@@ -56,25 +58,17 @@ void SceneHierarchyView::displayTreeItems(
 	auto locked = tree.lock();
 	locked->_generateFromData = [this](const auto& data_) { return makeTreeItem(data_); };
 	locked->_resolveChildren = ::hg::move(resolver_);
-	locked->_selectedFnc = [](const auto& selectedSet_) {
-		//const auto& sel { *(data_.begin()) };
-		//if (sel->type() == SceneViewEntryType::eActor) {
-		//	auto* actor { sel->template target<void>() };
-		//	auto* const editorUI = static_cast<ptr<EditorUI>>(
-		//		engine::Engine::getEngine()->getModules().getSubModule(EditorUIDepKey).get()
-		//	);
-		//	storeEditorSelectedTarget(*editorUI, static_cast<const ptr<Actor>>(actor));
-		//	return;
-		//}
-		//
-		//if (sel->type() == SceneViewEntryType::eComponent) {
-		//	auto* actor { sel->template target<void>() };
-		//	auto* const editorUI = static_cast<ptr<EditorUI>>(
-		//		engine::Engine::getEngine()->getModules().getSubModule(EditorUIDepKey).get()
-		//	);
-		//	storeEditorSelectedTarget(*editorUI, static_cast<const ptr<HierarchyComponent>>(actor));
-		//	return;
-		//}
+	locked->_selectedFnc = [this](const auto& selectedSet_) {
+
+		if (selectedSet_.empty()) {
+			_controller.onSelectionChange({});
+			return;
+		}
+
+		auto tmp = Vector<service::SceneHierarchyEntry> {};
+		tmp.reserve(selectedSet_.size());
+		for (auto&& selected : selectedSet_) { tmp.emplace_back(::hg::move(selected)); }
+		_controller.onSelectionChange(tmp);
 	};
 
 	locked->setTreeViewSource(baseItems_);

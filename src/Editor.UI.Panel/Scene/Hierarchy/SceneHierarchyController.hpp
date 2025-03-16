@@ -12,6 +12,7 @@ namespace hg::editor::ui {
 
 namespace hg::editor::ui::service {
 	class SceneHierarchyService;
+	struct SceneHierarchyEntry;
 }
 
 namespace hg::editor::ui {
@@ -43,6 +44,9 @@ namespace hg::editor::ui {
 		[[nodiscard]] ref<const SceneHierarchyModel> getModel() const noexcept;
 
 		[[nodiscard]] ref<const SceneHierarchyView> getView() const noexcept;
+
+	public:
+		void onSelectionChange(std::span<service::SceneHierarchyEntry> selected_);
 	};
 
 	/**/
