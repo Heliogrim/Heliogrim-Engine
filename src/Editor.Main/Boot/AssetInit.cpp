@@ -634,7 +634,7 @@ bool tryLoadArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
 
 		/**/
 
-		auto nextAsset = Arci<AssetType_>::template create();
+		auto nextAsset = Arci<AssetType_>::create();
 		serialization::access::Structure<AssetType_>::hydrate(std::move(record_), *nextAsset);
 
 		engine::assets::storeDefaultNameAndUrl(*nextAsset, {});
@@ -651,7 +651,6 @@ bool tryLoadArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
 			::hg::breakpoint();
 			nextAsset.reset();
 			return None;
-
 		}
 
 		IM_CORE_LOGF(

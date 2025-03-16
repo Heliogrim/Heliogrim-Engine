@@ -118,8 +118,8 @@ std::filesystem::path getEditorUserCachePath() {
 /**/
 
 #include <Windows.h>
-// Note: <psapi> depends on <windows.h> header
-#include <psapi.h>
+// Note: <Psapi.h> depends on <windows.h> header
+#include <Psapi.h>
 
 std::filesystem::path getProcessModulePath() {
 	Array<_::byte, 256> tmpData {};

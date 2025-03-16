@@ -30,7 +30,7 @@ namespace hg::engine::serialization {
 			auto&& allocator_,
 			auto&&... args_
 		) {
-			auto* target = AccessType_::template instantiate(
+			auto* target = AccessType_::instantiate(
 				std::forward<decltype(allocator_)>(allocator_),
 				std::forward<decltype(args_)>(args_)...
 			);
