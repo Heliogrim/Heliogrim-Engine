@@ -173,7 +173,7 @@ f32 Text::measure1CrossDimChunked(ref<const reflow::Font> font_, f32 chunkLimit_
 		const auto advance = glyph->_advance * fontScale;
 		lss += advance;
 
-		if (fwd + lss > chunkLimit_) {
+		if (fwd > 0.F && fwd + lss > chunkLimit_) {
 			++lines;
 			fwd = 0.F;
 		}
@@ -291,7 +291,7 @@ void Text::render(const ptr<ReflowCommandBuffer> cmd_) {
 		}
 
 		const auto advance = glyph->_advance * fontScale;
-		if (lineFwd + wordFwd + advance > space.x) {
+		if (lineFwd > 0.F && lineFwd + wordFwd + advance > space.x) {
 			renderTextLine(lineIdx, lineStartIdx, wordStartIdx, lineFwd);
 
 			++lineIdx;
