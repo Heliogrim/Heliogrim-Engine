@@ -140,7 +140,7 @@ void BoxLayout::computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passS
 			.gapping = { 0.F, 0.F },
 			.padding = getLayoutAttributes().valueOf<attr::BoxLayout::padding>()
 		},
-		children()
+		*children()
 	);
 }
 

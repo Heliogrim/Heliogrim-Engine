@@ -210,7 +210,7 @@ void VerticalLayout::computeSizing(ReflowAxis axis_, ref<const ReflowPassState> 
 			.gapping = { flex.valueOf<attr::FlexLayout::colGap>(), flex.valueOf<attr::FlexLayout::rowGap>() },
 			.padding = box.valueOf<attr::BoxLayout::padding>()
 		},
-		children()
+		*children()
 	);
 }
 

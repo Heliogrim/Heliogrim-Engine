@@ -1,6 +1,7 @@
 #pragma once
 
 #include <numeric>
+#include <span>
 
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Math/Coordinates.hpp>
@@ -138,13 +139,13 @@ namespace hg::engine::reflow::algorithm {
 	constexpr inline void compute(
 		_In_ ReflowAxis axis_,
 		_In_ ref<const ComputeBox> box_,
-		_Inout_ ptr<const Children> children_
+		_Inout_ std::span<const SharedPtr<Widget>> children_
 	) noexcept {
 
 		const auto isMainAxis = axis_ == box_.mainAxis;
 		const auto isCrossAxis = axis_ != box_.mainAxis;
 
-		const auto gaps = children_->empty() ? 0uLL : children_->size() - 1uLL;
+		const auto gaps = children_.empty() ? 0uLL : children_.size() - 1uLL;
 		const auto space = box_.size -
 			math::vec2 { box_.padding.x + box_.padding.z, box_.padding.y + box_.padding.z } -
 			(box_.mainAxis == ReflowAxis::eXAxis ? math::fvec2 { box_.gapping.x, 0.F } : math::fvec2 { 0.F, box_.gapping.y }) * gaps;
@@ -152,7 +153,7 @@ namespace hg::engine::reflow::algorithm {
 		auto size = math::fvec2 {};
 		auto max = math::fvec2 {};
 
-		for (const auto& child : *children_) {
+		for (const auto& child : children_) {
 			const auto& state = child->getLayoutState();
 			size += state.prefetchSize;
 			max = math::compMax(max, state.prefetchSize);
@@ -201,7 +202,7 @@ namespace hg::engine::reflow::algorithm {
 		auto factorSum = f32 { 0.F };
 
 		u16 index = 0;
-		for (auto& child : *children_) {
+		for (auto& child : children_) {
 
 			auto& layout = child->getLayoutState();
 			auto localShrinkRange = layout.prefetchSize - layout.prefetchMinSize;
@@ -313,7 +314,7 @@ namespace hg::engine::reflow::algorithm {
 
 			for (auto& cap : capabilities) {
 
-				auto& layout = (*children_)[cap.index]->getLayoutState();
+				auto& layout = (children_)[cap.index]->getLayoutState();
 				auto consume = cap.factor * fractionPerRange;
 				cap.range -= consume;
 
@@ -342,7 +343,7 @@ namespace hg::engine::reflow::algorithm {
 
 			for (auto& cap : capabilities) {
 
-				auto& layout = (*children_)[cap.index]->getLayoutState();
+				auto& layout = children_[cap.index]->getLayoutState();
 				auto consume = cap.factor * fractionPerRange;
 				cap.range -= consume;
 
