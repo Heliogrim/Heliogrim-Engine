@@ -1,85 +1,43 @@
 #pragma once
 
-#include <Engine.Reflow.Uikit/Atom/Text.hpp>
-#include <Engine.Reflow.Uikit/Atom/Layout/HorizontalLayout.hpp>
-#include <Engine.Reflow.Uikit/Atom/Layout/VerticalLayout.hpp>
+#include <Engine.Reflow/Children.hpp>
+#include <Engine.Reflow.Attributes/Layout/Base/BoxLayoutAttributes.hpp>
+#include <Engine.Reflow.Uikit/Atom/Atom.hpp>
+#include <Engine.Reflow/Widget/Widget.hpp>
 
 namespace hg::editor::ui {
-	class Collapse;
-}
-
-namespace hg::editor::ui {
-	class CollapseHeader :
-		public engine::reflow::uikit::HorizontalLayout {
-	public:
-		friend class ::hg::editor::ui::Collapse;
-
-	public:
-		using this_type = CollapseHeader;
-
-	public:
-		CollapseHeader(ptr<Collapse> parent_);
-
-		~CollapseHeader() override;
-
-	private:
-		void setup();
-
-	private:
-		ptr<Collapse> _parent;
-
-	private:
-		sptr<engine::reflow::uikit::Text> _indicator;
-		sptr<engine::reflow::Widget> _content;
-
-	public:
-		void setTitle(cref<string> title_);
-
-	public:
-		engine::reflow::EventResponse invokeOnMouseButtonDown(ref<const engine::reflow::MouseEvent> event_) override;
-
-	public:
-		[[nodiscard]] string getTag() const noexcept override;
-	};
-
 	class Collapse :
-		public engine::reflow::uikit::VerticalLayout {
-	public:
-		friend class ::hg::editor::ui::CollapseHeader;
-
+		public engine::reflow::Widget,
+		public engine::reflow::uikit::Atom<void, engine::reflow::BoxLayoutAttributes, void> {
 	public:
 		using this_type = Collapse;
 
 	public:
 		Collapse();
 
+		Collapse(mref<engine::reflow::ReflowClassList> classList_, mref<SharedPtr<Widget>> parent_);
+
 		~Collapse() override;
 
 	public:
 		[[nodiscard]] string getTag() const noexcept override;
 
-	public:
-		void setup();
-
 	private:
 		bool _collapsed;
+		engine::reflow::ReflowEventEmitter::handle_type _toggleHandle;
+		engine::reflow::FixedChildren<2uL> _children;
 
 	public:
 		void collapse();
 
 		void expand();
 
-	protected:
-		using VerticalLayout::addChild;
-		using VerticalLayout::setChild;
-		using VerticalLayout::removeChild;
-
 	public:
-		[[nodiscard]] sptr<CollapseHeader> getHeader() noexcept;
+		[[nodiscard]] const ptr<const engine::reflow::FixedChildren<2>> children() const noexcept override;
 
-		[[nodiscard]] sptr<Widget> getContent() const noexcept;
+		void setHeader(mref<SharedPtr<Widget>> header_);
 
-		void setContent(cref<sptr<Widget>> widget_);
+		void setContent(mref<SharedPtr<Widget>> content_);
 
 	public:
 		void render(const ptr<engine::reflow::ReflowCommandBuffer> cmd_) override;
@@ -94,6 +52,8 @@ namespace hg::editor::ui {
 			engine::reflow::ReflowAxis axis_,
 			ref<const engine::reflow::ReflowPassState> passState_
 		) const override;
+
+		math::fvec2 computeReferenceSize(engine::reflow::ReflowAxis axis_) const override;
 
 		void computeSizing(engine::reflow::ReflowAxis axis_, ref<const engine::reflow::ReflowPassState> passState_) override;
 
