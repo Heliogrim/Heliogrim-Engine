@@ -11,7 +11,7 @@ Paint::Paint() :
 	Paint(ReflowClassList { "[Paint]"sv }, nullptr) {}
 
 Paint::Paint(mref<ReflowClassList> classList_, mref<SharedPtr<Widget>> parent_) :
-	Widget(::hg::move(classList_), ::hg::move(parent_)),
+	LeafWidget(::hg::move(classList_), ::hg::move(parent_)),
 	Atom(
 		{},
 		{
@@ -29,17 +29,12 @@ Paint::Paint(mref<ReflowClassList> classList_, mref<SharedPtr<Widget>> parent_) 
 			}
 		},
 		{ PaintStyleAttributes {} }
-	),
-	_children() {}
+	) {}
 
 Paint::~Paint() = default;
 
 string Paint::getTag() const noexcept {
 	return std::format(R"(Paint <{:#x}>)", reinterpret_cast<u64>(this));
-}
-
-const ptr<const NullChildren> Paint::children() const {
-	return &_children;
 }
 
 void Paint::render(const ptr<ReflowCommandBuffer> cmd_) {
@@ -211,14 +206,6 @@ PassPrefetchSizing Paint::passPrefetchSizing(ReflowAxis axis_, ref<const ReflowP
 		)
 	};
 }
-
-math::fvec2 Paint::computeReferenceSize(ReflowAxis axis_) const {
-	return math::vec2_zero;
-}
-
-void Paint::computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) {}
-
-void Paint::applyLayout(ref<ReflowState> state_) {}
 
 math::fvec2 Paint::getShrinkFactor() const noexcept {
 	return {

@@ -12,7 +12,7 @@ Image::Image() :
 	Image(ReflowClassList { "[Image]"sv }, nullptr) {}
 
 Image::Image(mref<ReflowClassList> classList_, mref<SharedPtr<Widget>> parent_) :
-	Widget(::hg::move(classList_), ::hg::move(parent_)),
+	LeafWidget(::hg::move(classList_), ::hg::move(parent_)),
 	Atom({}, {}, { .styleAttributes = ImageStyleAttributes { ReflowAlphaMode::eNone, engine::color { 255.F, 255.F, 255.F, 255.F } } }),
 	_uvs(
 		{
@@ -33,10 +33,6 @@ Image::~Image() {
 
 string Image::getTag() const noexcept {
 	return std::format(R"(Image <{:#x}>)", reinterpret_cast<u64>(this));
-}
-
-const ptr<const NullChildren> Image::children() const {
-	return &_children;
 }
 
 void Image::render(const ptr<ReflowCommandBuffer> cmd_) {
@@ -144,14 +140,6 @@ PassPrefetchSizing Image::passPrefetchSizing(ReflowAxis axis_, ref<const ReflowP
 		)
 	};
 }
-
-math::fvec2 Image::computeReferenceSize(ReflowAxis axis_) const {
-	return math::vec2_zero;
-}
-
-void Image::computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) {}
-
-void Image::applyLayout(ref<ReflowState> state_) {}
 
 math::fvec2 Image::getShrinkFactor() const noexcept {
 	return {

@@ -2,7 +2,7 @@
 
 #include <Engine.Assets.Type/Texture/Font.hpp>
 #include <Engine.Reflow/Children.hpp>
-#include <Engine.Reflow/Widget/Widget.hpp>
+#include <Engine.Reflow/Widget/LeafWidget.hpp>
 #include <Engine.Reflow.Attributes/Data/Base/TextDataAttributes.hpp>
 #include <Engine.Reflow.Attributes/Style/Base/TextStyleAttributes.hpp>
 
@@ -14,7 +14,7 @@ namespace hg::engine::reflow {
 
 namespace hg::engine::reflow::uikit {
 	class Text :
-		public Widget,
+		public LeafWidget,
 		public Atom<TextDataAttributes, BoxLayoutAttributes, TextStyleAttributes> {
 	public:
 		using this_type = Text;
@@ -54,11 +54,7 @@ namespace hg::engine::reflow::uikit {
 
 		[[nodiscard]] f32 measure1CrossDimChunked(ref<const reflow::Font> font_, f32 chunkLimit_) const;
 
-	private:
-		NullChildren _children;
-
 	public:
-		const ptr<const NullChildren> children() const override;
 
 	public:
 		void render(const ptr<ReflowCommandBuffer> cmd_) override;
@@ -69,12 +65,6 @@ namespace hg::engine::reflow::uikit {
 		PrefetchSizing prefetchSizing(ReflowAxis axis_, ref<const ReflowState> state_) const override;
 
 		PassPrefetchSizing passPrefetchSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) const override;
-
-		math::fvec2 computeReferenceSize(ReflowAxis axis_) const override;
-
-		void computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) override;
-
-		void applyLayout(ref<ReflowState> state_) override;
 
 		math::fvec2 getGrowFactor() const noexcept override;
 

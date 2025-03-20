@@ -19,7 +19,7 @@ Text::Text() :
 	Text(ReflowClassList { "[Text]"sv }, nullptr) {}
 
 Text::Text(mref<ReflowClassList> classList_, mref<SharedPtr<Widget>> parent_) :
-	Widget(::hg::move(classList_), ::hg::move(parent_)),
+	LeafWidget(::hg::move(classList_), ::hg::move(parent_)),
 	Atom(
 		{},
 		{
@@ -198,9 +198,6 @@ f32 Text::measure1CrossDimChunked(ref<const reflow::Font> font_, f32 chunkLimit_
 	return static_cast<f32>(lines) * style.valueOf<attr::TextStyle::fontSize>() * style.valueOf<attr::TextStyle::lineHeight>();
 }
 
-const ptr<const NullChildren> Text::children() const {
-	return &_children;
-}
 
 void Text::render(const ptr<ReflowCommandBuffer> cmd_) {
 
@@ -456,16 +453,6 @@ PassPrefetchSizing Text::passPrefetchSizing(ReflowAxis axis_, ref<const ReflowPa
 	};
 }
 
-math::fvec2 Text::computeReferenceSize(ReflowAxis axis_) const {
-	return math::vec2_zero;
-}
-
-void Text::computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) {
-	// Note: We artificially employ the prefetchSizing function to handle wrapping on secondary pass
-}
-
-void Text::applyLayout(ref<ReflowState> state_) {}
-
 math::fvec2 Text::getGrowFactor() const noexcept {
 	return {
 		getLayoutAttributes().valueOf<attr::BoxLayout::widthGrow>(),
@@ -482,8 +469,8 @@ math::fvec2 Text::getShrinkFactor() const noexcept {
 
 /**/
 
-#include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
+#include <Engine.Assets/Assets.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.GFX.Loader/Font/FontLoadOptions.hpp>
 #include <Engine.GFX.Loader/Font/FontResource.hpp>
