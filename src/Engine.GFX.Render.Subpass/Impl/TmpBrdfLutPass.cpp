@@ -274,13 +274,13 @@ smr<AccelerationEffect> build_test_effect() {
 
 	/**/
 
-	const auto vertexShaderCode = read_shader_file("__test__brdfLut.gen.vs");
+	const auto vertexShaderCode = read_shader_file(R"(brdf/__test__brdfLut.gen.vs)");
 
 	vertexStage->setIntermediate(make_smr<lang::Intermediate>());
 	vertexStage->getIntermediate()->lang.dialect = lang::Dialect::eVulkanGlsl460;
 	vertexStage->getIntermediate()->lang.text.emplace_back(std::move(vertexShaderCode));
 
-	const auto fragmentShaderCode = read_shader_file("__test__brdfLut.gen.fs");
+	const auto fragmentShaderCode = read_shader_file(R"(brdf/__test__brdfLut.gen.fs)");
 
 	fragmentStage->setIntermediate(make_smr<lang::Intermediate>());
 	fragmentStage->getIntermediate()->lang.dialect = lang::Dialect::eVulkanGlsl460;

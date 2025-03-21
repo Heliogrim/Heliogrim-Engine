@@ -592,8 +592,8 @@ smr<material::MaterialEffect> build_test_effect() {
 
 	/**/
 
-	const auto vertexShaderCode = read_shader_file("__test__shadowDir.vs");
-	const auto fragmentShaderCode = read_shader_file("__test__shadowDir.fs");
+	const auto vertexShaderCode = read_shader_file(R"(shadow/__test__shadowDir.vs)");
+	const auto fragmentShaderCode = read_shader_file(R"(shadow/__test__shadowDir.fs)");
 
 	vertexStage->setIntermediate(make_smr<lang::Intermediate>());
 	fragmentStage->setIntermediate(make_smr<lang::Intermediate>());

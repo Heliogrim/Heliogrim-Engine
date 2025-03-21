@@ -144,12 +144,12 @@ static smr<AccelerationEffect> build_test_effect() {
 
 	/**/
 
-	const auto vertexShaderCode = read_shader_file("__test__sky.vs");
+	const auto vertexShaderCode = read_shader_file(R"(skybox/__test__sky.vs)");
 
 	vertexStage->getIntermediate()->lang.dialect = lang::Dialect::eVulkanGlsl460;
 	vertexStage->getIntermediate()->lang.text.emplace_back(std::move(vertexShaderCode));
 
-	const auto fragmentShaderCode = read_shader_file("__test__sky.fs");
+	const auto fragmentShaderCode = read_shader_file(R"(skybox/__test__sky.fs)");
 
 	fragmentStage->getIntermediate()->lang.dialect = lang::Dialect::eVulkanGlsl460;
 	fragmentStage->getIntermediate()->lang.text.emplace_back(std::move(fragmentShaderCode));

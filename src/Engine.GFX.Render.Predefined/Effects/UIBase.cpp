@@ -14,7 +14,7 @@ smr<const AccelerationEffect> engine::render::makeUiBaseEffect() {
 	auto vertexStage = make_smr<Stage>(StageFlagBits::eVertex);
 	vertexStage->setIntermediate(make_smr<lang::Intermediate>());
 
-	const auto vertexShaderCode = read_shader_file("__test__ui.vs");
+	const auto vertexShaderCode = read_shader_file(R"(ui/__test__ui.vs)");
 
 	vertexStage->getIntermediate()->lang.dialect = Dialect::eVulkanGlsl460;
 	vertexStage->getIntermediate()->lang.text.emplace_back(std::move(vertexShaderCode));
@@ -24,7 +24,7 @@ smr<const AccelerationEffect> engine::render::makeUiBaseEffect() {
 	auto fragmentStage = make_smr<Stage>(StageFlagBits::eFragment);
 	fragmentStage->setIntermediate(make_smr<lang::Intermediate>());
 
-	const auto fragmentShaderCode = read_shader_file("__test__ui.fs");
+	const auto fragmentShaderCode = read_shader_file(R"(ui/__test__ui.fs)");
 
 	fragmentStage->getIntermediate()->lang.dialect = Dialect::eVulkanGlsl460;
 	fragmentStage->getIntermediate()->lang.text.emplace_back(std::move(fragmentShaderCode));

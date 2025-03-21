@@ -110,14 +110,14 @@ void TriTestPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 			auto data = symCtx_.getExportSymbol(clone(output));
 
 			#ifdef _DEBUG
-            const auto isValid = data->valid<
-                smr<const TextureLikeObject>,
-                graph::TextureDescription,
-                decltype([](const auto& obj_) {
-                    return obj_.get();
-                })
-            >();
-            assert(isValid);
+			const auto isValid = data->valid<
+				smr<const TextureLikeObject>,
+				graph::TextureDescription,
+				decltype([](const auto& obj_) {
+					return obj_.get();
+				})
+			>();
+			assert(isValid);
 			#endif
 
 			const auto& texture = data->load<smr<TextureLikeObject>>();
@@ -233,13 +233,13 @@ smr<AccelerationEffect> build_test_effect() {
 
 	/**/
 
-	const auto vertexShaderCode = read_shader_file("__test__render.vs");
+	const auto vertexShaderCode = read_shader_file(R"(test/__test__render.vs)");
 
 	vertexStage->setIntermediate(make_smr<lang::Intermediate>());
 	vertexStage->getIntermediate()->lang.dialect = lang::Dialect::eVulkanGlsl460;
 	vertexStage->getIntermediate()->lang.text.emplace_back(std::move(vertexShaderCode));
 
-	const auto fragmentShaderCode = read_shader_file("__test__render.fs");
+	const auto fragmentShaderCode = read_shader_file(R"(text/__test__render.fs)");
 
 	fragmentStage->setIntermediate(make_smr<lang::Intermediate>());
 	fragmentStage->getIntermediate()->lang.dialect = lang::Dialect::eVulkanGlsl460;

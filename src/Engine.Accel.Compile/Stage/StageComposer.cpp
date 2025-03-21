@@ -218,7 +218,7 @@ static void preprocessStageDerivat(
 	smr<StageDerivat> derivat_
 ) {
 
-	static string shaderMacros = engine::render::read_shader_file("__macros__.glsl");
+	static string shaderMacros = engine::render::read_shader_file(R"(shared/__macros__.glsl)");
 
 	std::stringstream ss {};
 	ss << "#version 450 core\n";

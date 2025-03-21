@@ -281,8 +281,8 @@ smr<AccelerationEffect> build_test_effect() {
 	auto vertexStage = make_smr<Stage>(StageFlagBits::eVertex);
 	auto fragmentStage = make_smr<Stage>(StageFlagBits::eFragment);
 
-	const auto vertexShaderCode = read_shader_file("__test__visualize.vs");
-	const auto fragmentShaderCode = read_shader_file("__test__visualize.fs");
+	const auto vertexShaderCode = read_shader_file(R"(visualize/__test__visualize.vs)");
+	const auto fragmentShaderCode = read_shader_file(R"(visualize/__test__visualize.fs)");
 
 	vertexStage->setIntermediate(make_smr<lang::Intermediate>());
 	vertexStage->getIntermediate()->lang.dialect = lang::Dialect::eVulkanGlsl460;

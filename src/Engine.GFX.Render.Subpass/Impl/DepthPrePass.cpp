@@ -206,13 +206,13 @@ smr<AccelerationEffect> build_test_effect() {
 
 	/**/
 
-	const auto vertexShaderCode = read_shader_file("__test__predepth.vs");
+	const auto vertexShaderCode = read_shader_file(R"(depth/__test__predepth.vs)");
 
 	vertexStage->setIntermediate(make_smr<lang::Intermediate>());
 	vertexStage->getIntermediate()->lang.dialect = lang::Dialect::eVulkanGlsl460;
 	vertexStage->getIntermediate()->lang.text.emplace_back(std::move(vertexShaderCode));
 
-	const auto fragmentShaderCode = read_shader_file("__test__predepth.fs");
+	const auto fragmentShaderCode = read_shader_file(R"(depth/__test__predepth.fs)");
 
 	fragmentStage->setIntermediate(make_smr<lang::Intermediate>());
 	fragmentStage->getIntermediate()->lang.dialect = lang::Dialect::eVulkanGlsl460;
