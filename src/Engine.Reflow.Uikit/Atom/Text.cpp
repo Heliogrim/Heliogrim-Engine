@@ -61,8 +61,9 @@ string Text::getText() const noexcept {
 }
 
 void Text::setText(cref<string> text_) {
-	getDataAttributes().update<attr::TextData::text>(text_);
-	markAsPending();
+	if (getDataAttributes().update<attr::TextData::text>(text_)) {
+		markAsPending();
+	}
 }
 
 bool Text::isBreakPoint(char ch_) const noexcept {
