@@ -1,16 +1,17 @@
 #include "ReflowFlowStage.hpp"
 
 #include <chrono>
-
 #include <Engine.Core/Engine.hpp>
+#include <Engine.Core/Module/Modules.hpp>
+#include <Engine.GFX/Surface/Surface.hpp>
 #include <Engine.Logging/Logger.hpp>
-#include <Engine.Reflow/Window/BoundWindow.hpp>
-#include <Engine.Reflow/Window/WindowManager.hpp>
-
+#include <Engine.Reflow/DataWatcher.hpp>
+#include <Engine.Reflow/Reflow.hpp>
 #include <Engine.Reflow/ReflowEngine.hpp>
 #include <Engine.Reflow/ReflowState.hpp>
-
-#include "Engine.GFX/Surface/Surface.hpp"
+#include <Engine.Reflow/Module/Reflow.hpp>
+#include <Engine.Reflow/Window/BoundWindow.hpp>
+#include <Engine.Reflow/Window/WindowManager.hpp>
 
 using namespace hg::engine::reflow::schedule;
 using namespace hg::engine::scheduler;
@@ -30,9 +31,11 @@ void ReflowFlowStage::staticDispatch(cref<StaticStageDispatcher> dispatcher_) {
 			[]() {
 
 				const auto engine = Engine::getEngine();
+				auto& reflow = *static_cast<Reflow* const>(engine->getModules().getSubModule(ReflowDepKey).get());
 				const auto& manager = ::hg::engine::reflow::WindowManager::get();
 
 				ReflowEngine::updateTickVersion();
+				reflow.getDataWatcher().tick();
 
 				/**/
 
