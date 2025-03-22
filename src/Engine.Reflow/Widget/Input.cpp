@@ -4,72 +4,76 @@ using namespace hg::engine::reflow;
 using namespace hg;
 
 bool InputBase::isEnabled() const noexcept {
-    return _status != InputControlStatus::eDisabled;
+	return _status != InputControlStatus::eDisabled;
+}
+
+bool InputBase::isPristine() const noexcept {
+	return not _dirty;
 }
 
 bool InputBase::isDirty() const noexcept {
-    return _dirty;
+	return _dirty;
 }
 
 bool InputBase::isTouched() const noexcept {
-    return _touched;
+	return _touched;
 }
 
 void InputBase::enable() {
-    if (_status != InputControlStatus::eDisabled) {
-        return;
-    }
+	if (_status != InputControlStatus::eDisabled) {
+		return;
+	}
 
-    // TODO: We need to dispatch the validation to get the actual status
-    _status = InputControlStatus::ePending;
-    updateValueAndValidity(false, false);
+	// TODO: We need to dispatch the validation to get the actual status
+	_status = InputControlStatus::ePending;
+	updateValueAndValidity(false, false);
 }
 
 void InputBase::disable() {
-    _status = InputControlStatus::eDisabled;
+	_status = InputControlStatus::eDisabled;
 }
 
 void InputBase::markAsDirty() {
-    _dirty = true;
+	_dirty = true;
 }
 
 void InputBase::markAsPristine() {
-    _dirty = false;
+	_dirty = false;
 }
 
 void InputBase::markAsTouched() {
-    _touched = true;
+	_touched = true;
 }
 
 void InputBase::markAsUntouched() {
-    _touched = false;
+	_touched = false;
 }
 
 void InputBase::reset() {
-    //__nop();
+	//__nop();
 }
 
 void InputBase::updateValueAndValidity(const bool propagate_, const bool emit_) {
-    _status = InputControlStatus::eValid;
+	_status = InputControlStatus::eValid;
 
-    // TODO: Propagation and Emitting
+	// TODO: Propagation and Emitting
 }
 
 EventResponse InputBase::invokeOnFocus(cref<FocusEvent> event_) {
-    _state |= WidgetStateFlagBits::eFocus;
+	_state |= WidgetStateFlagBits::eFocus;
 
-    // Warning: Temporary Fix
-    markAsPending();
+	// Warning: Temporary Fix
+	markAsPending();
 
-    return Widget::invokeOnFocus(event_);
+	return Widget::invokeOnFocus(event_);
 }
 
 EventResponse InputBase::invokeOnBlur(cref<FocusEvent> event_) {
-    markAsTouched();
-    _state.unwrap &= (~static_cast<u8>(WidgetStateFlagBits::eFocus));
+	markAsTouched();
+	_state.unwrap &= (~static_cast<u8>(WidgetStateFlagBits::eFocus));
 
-    // Warning: Temporary Fix
-    markAsPending();
+	// Warning: Temporary Fix
+	markAsPending();
 
-    return Widget::invokeOnBlur(event_);
+	return Widget::invokeOnBlur(event_);
 }

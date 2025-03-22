@@ -1,72 +1,79 @@
 #pragma once
 
-#include "Widget.hpp"
+#include "CompoundWidget.hpp"
 
 namespace hg::engine::reflow {
-    enum class InputControlStatus {
-        eValid,
-        eInvalid,
-        ePending,
-        eDisabled
-    };
+	enum class InputControlStatus {
+		eValid,
+		eInvalid,
+		ePending,
+		eDisabled
+	};
 
-    class macro_novtable InputBase : public Widget {
-    protected:
-        bool _resettable = false;
+	class macro_novtable InputBase : public CompoundWidget {
+	protected:
+		using CompoundWidget::CompoundWidget;
 
-        /**
-         * @see https://angular.io/api/forms/AbstractControl
-         */
-        InputControlStatus _status = InputControlStatus::eValid;
+	protected:
+		bool _resettable = false;
 
-        bool _dirty = false;
-        bool _touched = false;
+		/**
+		 * @see https://angular.io/api/forms/AbstractControl
+		 */
+		InputControlStatus _status = InputControlStatus::eValid;
 
-    public:
-        [[nodiscard]] bool isEnabled() const noexcept;
+		bool _dirty = false;
+		bool _touched = false;
 
-        [[nodiscard]] bool isDirty() const noexcept;
+	public:
+		[[nodiscard]] bool isEnabled() const noexcept;
 
-        [[nodiscard]] bool isTouched() const noexcept;
+		[[nodiscard]] bool isPristine() const noexcept;
 
-    public:
-        virtual void enable();
+		[[nodiscard]] bool isDirty() const noexcept;
 
-        virtual void disable();
+		[[nodiscard]] bool isTouched() const noexcept;
 
-        virtual void markAsDirty();
+	public:
+		virtual void enable();
 
-        virtual void markAsPristine();
+		virtual void disable();
 
-        virtual void markAsTouched();
+		virtual void markAsDirty();
 
-        virtual void markAsUntouched();
+		virtual void markAsPristine();
 
-        virtual void reset();
+		virtual void markAsTouched();
 
-    public:
-        virtual void updateValueAndValidity(const bool propagate_ = false, const bool emit_ = true);
+		virtual void markAsUntouched();
 
-    public:
-        EventResponse invokeOnFocus(cref<FocusEvent> event_) override;
+		virtual void reset();
 
-        EventResponse invokeOnBlur(cref<FocusEvent> event_) override;
-    };
+	public:
+		virtual void updateValueAndValidity(const bool propagate_ = false, const bool emit_ = true);
 
-    template <typename InputType_>
-    class Input :
-        public InputBase {
-    public:
-        using this_type = Input<InputType_>;
-        using input_type = std::decay_t<InputType_>;
+	public:
+		EventResponse invokeOnFocus(cref<FocusEvent> event_) override;
 
-    protected:
-        Input() = default;
+		EventResponse invokeOnBlur(cref<FocusEvent> event_) override;
+	};
 
-    public:
-        ~Input() override = default;
+	template <typename InputType_>
+	class Input :
+		public InputBase {
+	public:
+		using this_type = Input<InputType_>;
+		using input_type = std::decay_t<InputType_>;
 
-    public:
-        [[nodiscard]] virtual input_type value() const noexcept = 0;
-    };
+	protected:
+		Input() = default;
+
+		using InputBase::InputBase;
+
+	public:
+		~Input() override = default;
+
+	public:
+		[[nodiscard]] virtual input_type value() const noexcept = 0;
+	};
 }
