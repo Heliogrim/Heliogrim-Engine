@@ -2,9 +2,9 @@
 
 #include <Engine.Common/Collection/DenseMap.hpp>
 #include <Engine.Common/Functional/Function.hpp>
+#include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.Reflow.Attributes/Data/DataAttribute.hpp>
 
-#include "Memory/MemoryPointer.hpp"
 #include "Widget/Widget.hpp"
 
 namespace hg::engine::reflow {
