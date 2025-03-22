@@ -1,7 +1,7 @@
 #include "Text.hpp"
 
 #include <format>
-
+#include <Engine.Reflow/DataWatcher.hpp>
 #include <Engine.Reflow/Algorithm/Flex.hpp>
 #include <Engine.Reflow/Layout/Style.hpp>
 
@@ -198,6 +198,17 @@ f32 Text::measure1CrossDimChunked(ref<const reflow::Font> font_, f32 chunkLimit_
 	return static_cast<f32>(lines) * style.valueOf<attr::TextStyle::fontSize>() * style.valueOf<attr::TextStyle::lineHeight>();
 }
 
+void Text::onAttachDataWatcher(ref<DataWatcher> watcher_) {
+	if (getDataAttributes().queryOf<attr::TextData::text>() != nullptr) {
+		watcher_.attach(this, getDataAttributes().get<attr::TextData::text>());
+	}
+}
+
+void Text::onDetachDataWatcher(ref<DataWatcher> watcher_) {
+	if (getDataAttributes().queryOf<attr::TextData::text>() != nullptr) {
+		watcher_.detach(getDataAttributes().get<attr::TextData::text>());
+	}
+}
 
 void Text::render(const ptr<ReflowCommandBuffer> cmd_) {
 

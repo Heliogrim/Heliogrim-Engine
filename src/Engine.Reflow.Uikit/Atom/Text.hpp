@@ -55,6 +55,9 @@ namespace hg::engine::reflow::uikit {
 		[[nodiscard]] f32 measure1CrossDimChunked(ref<const reflow::Font> font_, f32 chunkLimit_) const;
 
 	public:
+		void onAttachDataWatcher(ref<DataWatcher> watcher_) override;
+
+		void onDetachDataWatcher(ref<DataWatcher> watcher_) override;
 
 	public:
 		void render(const ptr<ReflowCommandBuffer> cmd_) override;
