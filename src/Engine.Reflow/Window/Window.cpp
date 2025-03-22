@@ -138,6 +138,13 @@ sptr<Widget> Window::getFocusTarget() const noexcept {
 	return _focus.back().lock();
 }
 
+void Window::setDataWatcher(mref<Opt<ref<DataWatcher>>> watcher_) {
+	_watcher = ::hg::move(watcher_);
+	for (const auto& child : _children) {
+		child->updateDataWatcherReference(true);
+	}
+}
+
 void Window::render(const ptr<ReflowCommandBuffer> cmd_) {
 
 	if (true) {

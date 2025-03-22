@@ -20,7 +20,10 @@
 #include <Heliogrim/Async/Future.hpp>
 
 #include "BoundWindow.hpp"
+#include "Reflow.hpp"
 #include "Window.hpp"
+#include "Engine.Core/Module/Modules.hpp"
+#include "Module/Reflow.hpp"
 
 using namespace hg::engine::reflow;
 using namespace hg;
@@ -198,7 +201,8 @@ void WindowManager::handleWindowResize(const ptr<BoundWindow> wnd_, cref<math::i
 
 void WindowManager::destroyWindow(mref<sptr<Window>> window_) {
 
-	const auto wnd { std::move(window_) };
+	const auto wnd = std::move(window_);
+	wnd->setDataWatcher(None);
 
 	const auto iter {
 		std::find_if(
@@ -212,6 +216,7 @@ void WindowManager::destroyWindow(mref<sptr<Window>> window_) {
 
 	if (iter == _windows.end()) {
 		// Shared pointer will destroy itself and we don't hold a reference
+		::hg::breakpoint();
 		return;
 	}
 
@@ -277,6 +282,7 @@ sptr<Window> WindowManager::requestWindow(
 
 	const auto platform = Engine::getEngine()->getPlatform();
 	const auto gfx = Engine::getEngine()->getGraphics();
+	auto& reflow = *static_cast<Reflow* const>(Engine::getEngine()->getModules().getSubModule(ReflowDepKey).get());
 
 	auto window = await(
 		Future {
@@ -348,6 +354,7 @@ sptr<Window> WindowManager::requestWindow(
 	);
 
 	wnd->setClientSize(math::vec2 { surfaceExtent });
+	wnd->setDataWatcher(Some(reflow.getDataWatcher()));
 
 	/**/
 

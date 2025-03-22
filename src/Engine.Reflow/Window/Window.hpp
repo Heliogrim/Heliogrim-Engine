@@ -87,6 +87,9 @@ namespace hg::engine::reflow {
 		[[nodiscard]] sptr<Widget> getFocusTarget() const noexcept;
 
 	public:
+		void setDataWatcher(mref<Opt<ref<DataWatcher>>> watcher_);
+
+	public:
 		void render(const ptr<ReflowCommandBuffer> cmd_) override;
 
 	public:
