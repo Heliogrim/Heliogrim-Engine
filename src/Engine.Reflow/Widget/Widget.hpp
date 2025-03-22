@@ -95,7 +95,7 @@ namespace hg::engine::reflow {
 		 *
 		 * @details Adopted Synthetic Events https://reactjs.org/docs/events.html
 		 */
-	private:
+	protected:
 		template <class EventType_>
 		using listen_fn_type = ReflowEventEmitter::listener_type<EventType_>;
 		using listen_handle_type = ReflowEventEmitter::handle_type;
