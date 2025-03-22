@@ -2,6 +2,10 @@
 
 #include <Engine.Core/Module/SubModule.hpp>
 
+namespace hg::engine::reflow {
+	class DataWatcher;
+}
+
 namespace hg::engine::reflow::theming {
 	class Theming;
 }
@@ -36,10 +40,15 @@ namespace hg::engine {
 
 	private:
 		UniquePtr<reflow::theming::Theming> _theming;
+		UniquePtr<reflow::DataWatcher> _watcher;
 
 	public:
 		[[nodiscard]] ref<const reflow::theming::Theming> getTheming() const noexcept;
 
 		[[nodiscard]] ref<reflow::theming::Theming> getTheming() noexcept;
+
+		[[nodiscard]] ref<const reflow::DataWatcher> getDataWatcher() const noexcept;
+
+		[[nodiscard]] ref<reflow::DataWatcher> getDataWatcher() noexcept;
 	};
 }

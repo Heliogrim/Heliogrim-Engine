@@ -11,6 +11,7 @@
 #include <Engine.Scheduler/Scheduler.hpp>
 #include <Engine.Scheduler/Pipeline/CompositePipeline.hpp>
 
+#include "DataWatcher.hpp"
 #include "Window/WindowManager.hpp"
 
 using namespace hg::engine::core;
@@ -28,7 +29,8 @@ Reflow::Reflow(const non_owning_rptr<Engine> engine_) :
 			}
 		}
 	),
-	_theming() {}
+	_theming(),
+	_watcher() {}
 
 Reflow::~Reflow() = default;
 
@@ -43,6 +45,7 @@ cref<CompactSet<core::SubModuleDependency>> Reflow::dependencies() const noexcep
 void Reflow::setup() {
 
 	_theming = make_uptr<reflow::theming::Theming>();
+	_watcher = make_uptr<reflow::DataWatcher>();
 
 	/**
 	 * Scheduling Pipelines
@@ -69,4 +72,12 @@ ref<const reflow::theming::Theming> Reflow::getTheming() const noexcept {
 
 ref<reflow::theming::Theming> Reflow::getTheming() noexcept {
 	return *_theming;
+}
+
+ref<const reflow::DataWatcher> Reflow::getDataWatcher() const noexcept {
+	return *_watcher;
+}
+
+ref<reflow::DataWatcher> Reflow::getDataWatcher() noexcept {
+	return *_watcher;
 }
