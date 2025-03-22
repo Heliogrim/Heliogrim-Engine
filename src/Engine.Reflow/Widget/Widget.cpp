@@ -1,6 +1,7 @@
 #include "Widget.hpp"
 
 #include "../Children.hpp"
+#include "../DataWatcher.hpp"
 
 using namespace hg::engine::reflow;
 using namespace hg;
@@ -15,12 +16,14 @@ Widget::Widget() :
 	_state(defaultWidgetState),
 	_layoutState(),
 	_staticClassList(),
+	_emitter(),
 	_parent() {}
 
 Widget::Widget(mref<ReflowClassList> classList_, SharedPtr<Widget> parent_) :
 	_state(defaultWidgetState),
 	_layoutState(),
 	_staticClassList(::hg::move(classList_)),
+	_emitter(),
 	_parent(::hg::move(parent_)) {
 	// TODO: Check whether we need to invoke the provision logic
 }
@@ -163,6 +166,7 @@ void Widget::setParent(mref<sptr<Widget>> parent_) {
 	if (cachedUpdateNearestProvisioner(true) != None) {
 		cascadeContextChange(true);
 	}
+	updateDataWatcherReference(true);
 }
 
 void Widget::setParent(cref<sptr<Widget>> parent_) {
@@ -171,6 +175,7 @@ void Widget::setParent(cref<sptr<Widget>> parent_) {
 	if (cachedUpdateNearestProvisioner(true) != None) {
 		cascadeContextChange(true);
 	}
+	updateDataWatcherReference(true);
 }
 
 bool Widget::hasParent() const {
@@ -214,6 +219,44 @@ Opt<ref<const theming::ThemeProvisioner>> Widget::cachedUpdateNearestProvisioner
 	}
 
 	return None;
+}
+
+void Widget::onAttachDataWatcher([[maybe_unused]] ref<DataWatcher> watcher_) {}
+
+void Widget::onDetachDataWatcher([[maybe_unused]] ref<DataWatcher> watcher_) {}
+
+Opt<ref<DataWatcher>> Widget::getDataWatcher() const noexcept {
+	return _watcher;
+}
+
+bool Widget::updateDataWatcherReference(bool invalidate_) noexcept {
+	if (not invalidate_ && _watcher.has_value()) {
+		return false;
+	}
+
+	auto watcher = hasParent() ? parent()->getDataWatcher() : None;
+	if (watcher == None && _watcher == None) {
+		return false;
+	}
+
+	if (_watcher.has_value() && watcher.has_value() && std::addressof(*_watcher) == std::addressof(*watcher)) {
+		return false;
+	}
+
+	if (not _watcher.has_value() && watcher.has_value()) {
+		_watcher = watcher;
+		this->onAttachDataWatcher(*_watcher);
+	}
+
+	if (_watcher.has_value() && not watcher.has_value()) {
+		this->onDetachDataWatcher(*_watcher);
+		_watcher = None;
+	}
+
+	for (const auto& child : *children()) {
+		child->updateDataWatcherReference(invalidate_);
+	}
+	return true;
 }
 
 void Widget::cascadeContextChange(const bool invalidate_) {

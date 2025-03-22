@@ -26,6 +26,7 @@
 
 namespace hg::engine::reflow {
 	class Children;
+	class DataWatcher;
 }
 
 namespace hg::engine::reflow {
@@ -177,6 +178,18 @@ namespace hg::engine::reflow {
 		[[nodiscard]] virtual Opt<ref<const theming::ThemeProvisioner>> cachedUpdateNearestProvisioner(
 			bool localInvalidate_
 		) noexcept;
+
+	protected:
+		Opt<ref<DataWatcher>> _watcher;
+
+	public:
+		virtual void onAttachDataWatcher(ref<DataWatcher> watcher_);
+
+		virtual void onDetachDataWatcher(ref<DataWatcher> watcher_);
+
+		[[nodiscard]] Opt<ref<DataWatcher>> getDataWatcher() const noexcept;
+
+		bool updateDataWatcherReference(bool invalidate_) noexcept;
 
 		/**
 		 * Layout- & Graphics-Rendering
