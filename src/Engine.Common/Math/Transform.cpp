@@ -1,5 +1,9 @@
 #include "Transform.hpp"
 
+#include <Engine.Pedantic/Clone/Clone.hpp>
+
+#include "Convertion.hpp"
+
 using namespace hg::math;
 using namespace hg;
 
@@ -63,4 +67,21 @@ ref<fvec3> Transform::scale() noexcept {
 ref<Transform::this_type> Transform::setScale(mref<fvec3> scale_) noexcept {
 	_scale = std::move(scale_);
 	return *this;
+}
+
+mat4 Transform::asMatrix() const noexcept {
+
+	const auto translate = mat4::make_identity().translate(_location.into());
+	const auto rotate = math::as<mat4>(_rotator.into());
+	const auto scale = mat4::make_identity().unchecked_scale(_scale);
+
+	return translate * rotate * scale;
+}
+
+mat4 math::operator*(ref<const Transform> outer_, ref<const Transform> inner_) noexcept {
+	return outer_.asMatrix() * inner_.asMatrix();
+}
+
+mat4 math::operator*(ref<const mat4> outer_, ref<const Transform> inner_) noexcept {
+	return outer_ * inner_.asMatrix();
 }

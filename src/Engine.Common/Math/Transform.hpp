@@ -3,6 +3,7 @@
 #include <Engine.Serialization/Access/__fwd.hpp>
 
 #include "Location.hpp"
+#include "Matrix.hpp"
 #include "Rotator.hpp"
 
 namespace hg::math {
@@ -110,5 +111,12 @@ namespace hg::math {
 		[[nodiscard]] ref<fvec3> scale() noexcept;
 
 		ref<this_type> setScale(mref<fvec3> scale_) noexcept;
+
+	public:
+		[[nodiscard]] math::mat4 asMatrix() const noexcept;
+
+		friend math::mat4 operator*(ref<const Transform> outer_, ref<const Transform> inner_) noexcept;
+
+		friend math::mat4 operator*(ref<const math::mat4> outer_, ref<const Transform> inner_) noexcept;
 	};
 }
