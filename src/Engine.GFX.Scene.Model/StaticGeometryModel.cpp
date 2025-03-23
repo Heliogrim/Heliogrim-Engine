@@ -61,12 +61,7 @@ void StaticGeometryModel::create(const ptr<render::RenderSceneSystem> system_) {
 
 	/**/
 
-	const auto universeTransform = _owner->getUniverseTransform();
-	const auto trans { math::mat4::make_identity().translate(universeTransform.location().into()) };
-	const auto rotation = math::as<math::mat4>(universeTransform.rotator().into());
-	const auto scale { math::mat4::make_identity().unchecked_scale(universeTransform.scale()) };
-
-	const auto transform = trans * rotation * scale;
+	const auto transform = _owner->getUniverseMatrix();
 
 	const auto page = result.dataView->pages().front();
 	auto allocated = page->memory()->allocated();
@@ -132,12 +127,7 @@ void StaticGeometryModel::update(const ptr<render::RenderSceneSystem> system_) {
 
 	if (isDirty) {
 
-		const auto universeTransform = _owner->getUniverseTransform();
-		const auto trans { math::mat4::make_identity().translate(universeTransform.location().into()) };
-		const auto rotation = math::as<math::mat4>(universeTransform.rotator().into());
-		const auto scale { math::mat4::make_identity().unchecked_scale(universeTransform.scale()) };
-
-		const auto transform = trans * rotation * scale;
+		const auto transform = _owner->getUniverseMatrix();
 		const auto dataView = srp->staticInstancePool.getDataView(_sceneInstanceIndex);
 
 		const auto page = dataView->pages().front();
@@ -166,10 +156,7 @@ void StaticGeometryModel::destroy(const ptr<render::RenderSceneSystem> system_) 
 
 void StaticGeometryModel::capture(nmpt<render::MeshCaptureInterface> mci_) const noexcept {
 
-	const auto universeTransform = _owner->getUniverseTransform();
-	const auto trans { math::mat4::make_identity().translate(universeTransform.location().into()) };
-	const auto rotation = math::as<math::mat4>(universeTransform.rotator().into());
-	const auto scale { math::mat4::make_identity().unchecked_scale(universeTransform.scale()) };
+	const auto transform = _owner->getUniverseMatrix();
 
 	/**/
 

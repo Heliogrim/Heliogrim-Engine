@@ -39,16 +39,6 @@ ptr<HierarchyComponent> Actor::getRootComponent() const noexcept {
 	return _rootComponent;
 }
 
-cref<Transform> Actor::getUniverseTransform() const noexcept {
-	if (_rootComponent != nullptr) {
-		return _rootComponent->getUniverseTransform();
-	}
-
-	// TODO: Cleanup dangling reference within engine frontend
-	constexpr static Transform error_dummy {};
-	return error_dummy;
-}
-
 cref<CompactSet<ptr<HierarchyComponent>>> Actor::getComponents() const noexcept {
 	return _components;
 }

@@ -18,7 +18,6 @@ void access::Structure<CameraComponent>::serialize(cref<CameraComponent> self_, 
 
 	Structure<math::Bounding>::serialize(self_._boundaries, slot_.insertStructSlot("boundaries"));
 	Structure<math::Transform>::serialize(self_._localTransform, slot_.insertStructSlot("localTransform"));
-	Structure<math::Transform>::serialize(self_._universeTransform, slot_.insertStructSlot("universeTransform"));
 
 	/**/
 
@@ -43,7 +42,6 @@ void access::Structure<CameraComponent>::hydrate(cref<StructScopedSlot> slot_, C
 
 	Structure<math::Bounding>::hydrate(slot_.getStructSlot("boundaries"), target_._boundaries);
 	Structure<math::Transform>::hydrate(slot_.getStructSlot("localTransform"), target_._localTransform);
-	Structure<math::Transform>::hydrate(slot_.getStructSlot("universeTransform"), target_._universeTransform);
 
 	/**/
 

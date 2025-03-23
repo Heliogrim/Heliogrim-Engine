@@ -105,8 +105,6 @@ namespace hg {
 	public:
 		[[nodiscard]] ptr<HierarchyComponent> getRootComponent() const noexcept;
 
-		[[nodiscard]] cref<math::Transform> getUniverseTransform() const noexcept;
-
 	private:
 		CompactSet<ptr<HierarchyComponent>> _components;
 

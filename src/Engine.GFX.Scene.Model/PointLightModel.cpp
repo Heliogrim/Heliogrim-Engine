@@ -41,7 +41,7 @@ void PointLightModel::create(const ptr<render::RenderSceneSystem> system_) {
 
 	const GlslLight storeLight {
 		math::fvec4 { origin->_luminance, 0.F },
-		math::fvec4 { _owner->getUniverseTransform().location().into(), 0.F },
+		math::fvec4 { _owner->getUniverseLocation().into(), 0.F },
 		math::fvec4 { math::vec3_zero, 0.F },
 		origin->_distanceLimit
 	};
@@ -68,7 +68,7 @@ void PointLightModel::update(const ptr<render::RenderSceneSystem> system_) {
 
 	const GlslLight storeLight {
 		math::fvec4 { origin->_luminance, 0.F },
-		math::fvec4 { _owner->getUniverseTransform().location().into(), 0.F },
+		math::fvec4 { _owner->getUniverseLocation().into(), 0.F },
 		math::fvec4 { math::vec3_zero, 0.F },
 		origin->_distanceLimit
 	};
