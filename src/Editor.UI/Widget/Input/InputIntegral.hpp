@@ -4,16 +4,8 @@
 #include <Engine.Reflow/Widget/Input.hpp>
 #include <Engine.Reflow.Uikit/Molecule/Layout/Stack.hpp>
 
+#include "../../Attributes/InputDataAttributes.hpp"
 #include "../../Event/InputChangeEvent.hpp"
-
-namespace hg::engine::reflow::attr {
-	struct InputData {
-		constexpr static inline auto limits = "limits"sv;
-		constexpr static inline auto precision = "precision"sv;
-		constexpr static inline auto step = "step"sv;
-		constexpr static inline auto value = "value"sv;
-	};
-}
 
 namespace hg::editor::ui {
 	enum class InputIntegralPrecision {
