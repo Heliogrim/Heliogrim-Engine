@@ -2,11 +2,12 @@
 
 #include <Engine.Assets/AssetGuid.hpp>
 #include <Engine.Assets/AssetTypeId.hpp>
-#include <Engine.Reflow/Widget/Input.hpp>
-#include <Engine.Reflow/Widget/Input/InputText.hpp>
 #include <Engine.Reflow.Uikit/Atom/Image.hpp>
+#include <Engine.Reflow/Widget/Input.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/VerticalLayout.hpp>
 #include <Engine.Reflow.Uikit/Exp/Button.hpp>
+
+#include "InputText.hpp"
 
 namespace hg::editor::ui {
 	class InputAsset :
@@ -32,7 +33,7 @@ namespace hg::editor::ui {
 
 	protected:
 		sptr<engine::reflow::uikit::Image> _preview;
-		sptr<engine::reflow::InputText> _input;
+		sptr<InputText> _input;
 		sptr<engine::reflow::uikit::Button> _search;
 		sptr<engine::reflow::uikit::Button> _reset;
 		sptr<engine::reflow::uikit::VerticalLayout> _content;
@@ -40,7 +41,7 @@ namespace hg::editor::ui {
 		engine::reflow::SingleChildren _children;
 
 	public:
-		[[nodiscard]] const ptr<const engine::reflow::Children> children() const override;
+		//[[nodiscard]] const ptr<const engine::reflow::Children> children() const override;
 
 	public:
 		void render(

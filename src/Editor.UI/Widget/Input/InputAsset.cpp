@@ -24,10 +24,11 @@
 
 using namespace hg::editor::ui;
 using namespace hg::engine::reflow;
+using namespace hg::engine;
 using namespace hg;
 
 InputAsset::InputAsset() :
-	Input(),
+	Input(nullptr, ReflowClassList {}, nullptr),
 	_value(invalid_asset_guid) {}
 
 InputAsset::~InputAsset() = default;
@@ -71,10 +72,10 @@ void InputAsset::setup() {
 
 	auto* previewAsset = AssetBrowserHelper::get()->getItemIconByAssetType(asset_type_id {});
 
-	auto iconRes = engine::Engine::getEngine()->getResources()->loader().loadImmediately<engine::assets::TextureAsset,
-		engine::gfx::TextureResource>(std::move(previewAsset));
+	auto iconRes = Engine::getEngine()->getResources()->loader().loadImmediately<assets::TextureAsset,
+		gfx::TextureResource>(std::move(previewAsset));
 
-	auto previewGuard = iconRes->acquire(engine::resource::ResourceUsageFlag::eRead);
+	auto previewGuard = iconRes->acquire(resource::ResourceUsageFlag::eRead);
 
 	/**/
 
@@ -94,12 +95,12 @@ void InputAsset::setup() {
 
 	auto txt { make_sptr<uikit::Text>() };
 	txt->setText("S");
-	_search = uikit::makeButton(uikit::TextButtonCreateOptions { .level = 2, .text = ::hg::move(txt) });
+	_search = makeButton(uikit::TextButtonCreateOptions { .level = 2, .text = hg::move(txt) });
 	actions->addChild(_search);
 
 	txt = make_sptr<uikit::Text>();
 	txt->setText("R");
-	_reset = uikit::makeButton(uikit::TextButtonCreateOptions { .level = 2, .text = ::hg::move(txt) });
+	_reset = makeButton(uikit::TextButtonCreateOptions { .level = 2, .text = hg::move(txt) });
 	actions->addChild(_reset);
 
 	/**/
@@ -114,17 +115,14 @@ void InputAsset::setup() {
 
 	_content->addChild(lower);
 
-	_input = make_sptr<InputText>(); {
-		auto& attr = _input->_wrapper->getLayoutAttributes().attributeSets;
-		std::get<0>(attr).update<attr::BoxLayout::minWidth>({ ReflowUnitType::eRelative, 1.F });
-		std::get<0>(attr).update<attr::BoxLayout::maxWidth>({ ReflowUnitType::eRelative, 1.F });
-		std::get<0>(attr).update<attr::BoxLayout::minHeight>({ ReflowUnitType::eAbsolute, 20.F });
-		std::get<0>(attr).update<attr::BoxLayout::maxHeight>({ ReflowUnitType::eAbsolute, 20.F });
-		std::get<0>(attr).update<attr::BoxLayout::padding>(Padding { 4.F, 2.F });
+	_input = makeInputText(); {
+		auto& attr = _input->getContent()->getLayoutAttributes();
+		attr.update<attr::BoxLayout::minWidth>({ ReflowUnitType::eRelative, 1.F });
+		attr.update<attr::BoxLayout::maxWidth>({ ReflowUnitType::eRelative, 1.F });
+		attr.update<attr::BoxLayout::minHeight>({ ReflowUnitType::eAbsolute, 20.F });
+		attr.update<attr::BoxLayout::maxHeight>({ ReflowUnitType::eAbsolute, 20.F });
+		attr.update<attr::BoxLayout::padding>(Padding { 4.F, 2.F });
 	}
-
-	_input->_text->getStyleAttributes().update<attr::TextStyle::textAlign>(TextAlign::eMiddleLeft);
-	_input->_text->getStyleAttributes().update<attr::TextStyle::textEllipse>(1uL);
 
 	lower->addChild(_input);
 }
@@ -198,9 +196,9 @@ EventResponse InputAsset::invokeOnDragOver(ref<const DragDropEvent> event_) {
 	return Input<asset_guid>::invokeOnDragOver(event_);
 }
 
-const ptr<const Children> InputAsset::children() const {
-	return &_children;
-}
+//const ptr<const Children> InputAsset::children() const {
+//	return &_children;
+//}
 
 void InputAsset::render(const ptr<ReflowCommandBuffer> cmd_) {
 	_content->render(cmd_);
@@ -269,17 +267,17 @@ void InputAsset::reset() {
 }
 
 void InputAsset::updateValueAndValidity(const bool propagate_, const bool emit_) {
-	Input<asset_guid>::updateValueAndValidity(propagate_, emit_);
-	_input->updateValueAndValidity();
+	Input::updateValueAndValidity(propagate_, emit_);
+	_input->updateValueAndValidity(propagate_, emit_);
 }
 
-Input<asset_guid>::input_type InputAsset::value() const noexcept {
+reflow::Input<asset_guid>::input_type InputAsset::value() const noexcept {
 	return _value;
 }
 
 void InputAsset::setValue(cref<asset_guid> assetGuid_) {
 	_value = assetGuid_;
-	_input->setPlaceholder(std::format(R"(<<{}-{}-{}-{}>>)", _value.pre, _value.c0, _value.c1, _value.post));
+	_input->setValue(std::format(R"(<<{}-{}-{}-{}>>)", _value.pre, _value.c0, _value.c1, _value.post));
 
 	/**/
 
@@ -291,7 +289,7 @@ void InputAsset::setValue(cref<asset_guid> assetGuid_) {
 			return;
 		}
 
-		_input->setPlaceholder(string { name });
+		_input->setValue(string { name });
 	}
 }
 
