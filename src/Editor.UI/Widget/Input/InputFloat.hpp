@@ -6,16 +6,16 @@
 
 #include "../../Event/InputChangeEvent.hpp"
 
-namespace hg::editor::ui {
-	namespace attr {
-		struct InputData {
-			constexpr static inline auto limits = "limits"sv;
-			constexpr static inline auto precision = "precision"sv;
-			constexpr static inline auto step = "step"sv;
-			constexpr static inline auto value = "value"sv;
-		};
-	}
+namespace hg::engine::reflow::attr {
+	struct InputData {
+		constexpr static inline auto limits = "limits"sv;
+		constexpr static inline auto precision = "precision"sv;
+		constexpr static inline auto step = "step"sv;
+		constexpr static inline auto value = "value"sv;
+	};
+}
 
+namespace hg::editor::ui {
 	enum class InputFloatPrecision {
 		eF64,
 		eDouble = eF64,
@@ -26,10 +26,10 @@ namespace hg::editor::ui {
 
 	struct InputFloatDataAttributes final :
 		public engine::reflow::DataAttributes<
-			engine::reflow::NamedAttribute<attr::InputData::limits, engine::reflow::DataAttribute<math::vec2_t<::hg::f64>>>,
-			engine::reflow::NamedAttribute<attr::InputData::precision, engine::reflow::DataAttribute<InputFloatPrecision>>,
-			engine::reflow::NamedAttribute<attr::InputData::step, engine::reflow::DataAttribute<::hg::f64>>,
-			engine::reflow::NamedAttribute<attr::InputData::value, engine::reflow::DataAttribute<::hg::f64>>
+			engine::reflow::NamedAttribute<engine::reflow::attr::InputData::limits, engine::reflow::DataAttribute<math::vec2_t<::hg::f64>>>,
+			engine::reflow::NamedAttribute<engine::reflow::attr::InputData::precision, engine::reflow::DataAttribute<InputFloatPrecision>>,
+			engine::reflow::NamedAttribute<engine::reflow::attr::InputData::step, engine::reflow::DataAttribute<::hg::f64>>,
+			engine::reflow::NamedAttribute<engine::reflow::attr::InputData::value, engine::reflow::DataAttribute<::hg::f64>>
 		> {
 		using DataAttributes::DataAttributes;
 	};

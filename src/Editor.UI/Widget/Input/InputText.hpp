@@ -6,18 +6,19 @@
 
 #include "../../Event/InputChangeEvent.hpp"
 
-namespace hg::editor::ui {
-	namespace attr {
-		struct InputData {
-			constexpr static inline auto limits = "limits"sv;
-			constexpr static inline auto value = "value"sv;
-		};
-	}
+namespace hg::engine::reflow::attr {
+	struct InputData {
+		constexpr static inline auto limits = "limits"sv;
+		constexpr static inline auto value = "value"sv;
+	};
+}
 
+namespace hg::editor::ui {
 	struct InputTextDataAttributes final :
 		public engine::reflow::DataAttributes<
-			engine::reflow::NamedAttribute<attr::InputData::limits, engine::reflow::DataAttribute<math::vec2_t<String::size_type>>>,
-			engine::reflow::NamedAttribute<attr::InputData::value, engine::reflow::DataAttribute<String>>
+			engine::reflow::NamedAttribute<engine::reflow::attr::InputData::limits, engine::reflow::DataAttribute<math::vec2_t<
+				String::size_type>>>,
+			engine::reflow::NamedAttribute<engine::reflow::attr::InputData::value, engine::reflow::DataAttribute<String>>
 		> {
 		using DataAttributes::DataAttributes;
 	};
