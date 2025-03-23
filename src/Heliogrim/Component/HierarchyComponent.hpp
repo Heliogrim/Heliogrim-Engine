@@ -70,10 +70,11 @@ namespace hg {
 
 		[[nodiscard]] ref<Transform> getLocalTransform() noexcept;
 
-	private:
-		Transform _universeTransform;
-
 	public:
-		[[nodiscard]] cref<Transform> getUniverseTransform() const noexcept;
+		[[nodiscard]] math::Location getUniverseLocation() const noexcept;
+
+		[[nodiscard]] math::Rotator getUniverseRotator() const noexcept;
+
+		[[nodiscard]] math::fmat4 getUniverseMatrix() const noexcept;
 	};
 }

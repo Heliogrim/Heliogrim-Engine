@@ -10,13 +10,13 @@ HierarchyComponent::HierarchyComponent(
 	InheritMeta(std::move(typeId_)),
 	_owner(std::move(owner_)),
 	_parent(std::move(parent_)),
-	_universeTransform({}, {}, math::vec3 { 1.F }) {}
+	_localTransform({}, {}, math::vec3 { 1.F }) {}
 
 HierarchyComponent::HierarchyComponent(mref<CachedActorPointer> owner_, mref<ptr<HierarchyComponent>> parent_) :
 	InheritMeta(component_type_id { typeId }),
 	_owner(std::move(owner_)),
 	_parent(std::move(parent_)),
-	_universeTransform({}, {}, math::vec3 { 1.F }) {}
+	_localTransform({}, {}, math::vec3 { 1.F }) {}
 
 ptr<Actor> HierarchyComponent::getOwner() const noexcept {
 	return _owner.cached;
@@ -52,6 +52,24 @@ ref<Transform> HierarchyComponent::getLocalTransform() noexcept {
 	return _localTransform;
 }
 
-cref<Transform> HierarchyComponent::getUniverseTransform() const noexcept {
-	return _universeTransform;
+math::Location HierarchyComponent::getUniverseLocation() const noexcept {
+	if (not _parent) {
+		return _localTransform.location();
+	}
+	return math::Location { _parent->getUniverseMatrix() * math::fvec4 { _localTransform.location().into(), 1.F } };
+}
+
+math::Rotator HierarchyComponent::getUniverseRotator() const noexcept {
+	if (not _parent) {
+		return _localTransform.rotator();
+	}
+	return math::Rotator::outerToInner(_localTransform.rotator(), _parent->getUniverseRotator());
+}
+
+math::fmat4 HierarchyComponent::getUniverseMatrix() const noexcept {
+	if (not _parent) {
+		return _localTransform.asMatrix();
+	}
+
+	return _parent->getUniverseMatrix() * _localTransform;
 }
