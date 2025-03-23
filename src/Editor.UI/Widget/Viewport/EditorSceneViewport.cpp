@@ -65,7 +65,7 @@ void experimental_add_actor(math::Transform baseTransform_) {
 
 	/**/
 
-	const_cast<Transform&>(actor->getRootComponent()->getUniverseTransform()).location() = baseTransform_.location();
+	actor->getRootComponent()->getLocalTransform().location() = baseTransform_.location();
 
 	/**/
 

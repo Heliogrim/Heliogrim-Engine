@@ -100,10 +100,7 @@ static void configureViewport(cref<sptr<uikit::HorizontalLayout>> parent_) {
 
 	/**/
 
-	{
-		cref<math::Transform> tf = camera->getRootComponent()->getUniverseTransform();
-		const_cast<ref<math::Transform>>(tf).setLocation(math::Location { 0.F, 0.F, -5.F });
-	}
+	camera->getRootComponent()->getLocalTransform().setLocation(math::Location { 0.F, 0.F, -5.F });
 	auto trackedActor = universe.addActor(std::move(camera));
 
 	/**/
