@@ -1,21 +1,6 @@
-<!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
 <a name="readme-top"></a>
-<!--
-*** Thanks for checking out the Best-README-Template. If you have a suggestion
-*** that would make this better, please fork the repo and create a pull request
-*** or simply open an issue with the tag "enhancement".
-*** Don't forget to give the project a star!
-*** Thanks again! Now go create something AMAZING! :D
--->
 
 <!-- PROJECT SHIELDS -->
-<!--
-*** I'm using markdown "reference style" links for readability.
-*** Reference links are enclosed in brackets [ ] instead of parentheses ( ).
-*** See the bottom of this document for the declaration of the reference variables
-*** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
-*** https://www.markdownguide.org/basic-syntax/#reference-style-links
--->
 [![Contributors][contributors-shield]][contributors-url]
 [![Issues][issues-shield]][issues-url]
 [![Private License][license-shield]][license-url]
@@ -32,51 +17,34 @@
 
   <p align="center">
     <!-- Project Description -->
-    Next-Gen experimental Engine
+    Pseudo Next-Gen Experimental Engine
     <br />
-    <a href="https://git.neogc.net/heliogrim-workgroup/engine/-/wikis/home#content-table"><strong>Explore the docs »</strong></a>
+    <a href="#"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://git.neogc.net/heliogrim-workgroup/engine">View Demo</a>
+<!--
+    <a href="#">View Demo</a>
     ·
-    <a href="https://track.neogc.net:8443/newIssue">Report Bug</a>
+-->
+    <a href="https://discord.gg/VzcbyGH8Hk">Chat</a>
     ·
-    <a href="https://track.neogc.net:8443/newIssue">Request Feature</a>
+    <a href="https://github.com/Heliogrim/Heliogrim-Engine/issues/new?template=1-bug_report.yml">Report Bug</a>
+    ·
+    <a href="https://github.com/Heliogrim/Heliogrim-Engine/issues/new?template=2-feature_request.yml">Request Feature</a>
   </p>
 </div>
-
-<!-- TABLE OF CONTENTS -->
-<details>
-  <summary>Table of Contents</summary>
-  <ol>
-    <li>
-      <a href="#about-the-project">About The Project</a>
-      <ul>
-        <li><a href="#built-with">Built With</a></li>
-      </ul>
-    </li>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
-      </ul>
-    </li>
-    <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
-    <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
-  </ol>
-</details>
-
-
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Heliogrim Engine][product-screenshot]](https://git.neogc.net/heliogrim-workgroup/engine)
+The [Heliogrim Engine](https://github.com/Heliogrim/Heliogrim-Engine) Project started as a private solution to learn and explore the complex
+setup and sub-systems of a general purpose game engine.
+While progressing, the whole project underwent multiple re-conceptions and a shift of priorities towards a new goal; Reaching a state of
+usability to allow the creation of software
+based on the presented solution.
+
+Therefore, as stated later in the [contribution](https://github.com/Heliogrim/Heliogrim-Engine#contributing) section, we highly appreciate
+participation and contribution, as the general scope is overwhelming in contrast to the lack of available working capacity.
 
 <!--
 Here's a blank template to get started: To avoid retyping too much info. Do a search and replace with your text editor for the following: `github_username`, `repo_name`, `twitter_handle`, `linkedin_username`, `email_client`, `email`, `project_title`, `project_description`
@@ -156,18 +124,18 @@ List of things you need to install to use the software and build the solution.
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-Sorry, but there is currently no usage description available.
+_Sorry, but there is currently no usage description available._
 
-_For more examples, please refer to the [Documentation](git.neogc.net/heliogrim-workgroup/engine/-/wikis/examples/)_
+<!-- _For more examples, please refer to the [Documentation](#)_ -->
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- ROADMAP -->
 ## Roadmap
 
-* [YouTrack Desk](https://track.neogc.net:8443/issues)
+* [GitHub Project](https://github.com/orgs/Heliogrim/projects/1/views/6)
 
-See the milestones or [open issues](https://track.neogc.net:8443/issues) for a full list of proposed features (and known issues).
+See [open issues](https://track.neogc.net:8443/issues) for a full list of proposed features (and known issues).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -176,23 +144,19 @@ See the milestones or [open issues](https://track.neogc.net:8443/issues) for a f
 
 Any contributions you make are **greatly appreciated**.
 
-If you have a suggestion that would make this better, please provide such information to us in person by visiting our socials. You can also simply open an issue with the tag "enhancement".  
+If you have a suggestion that would make this better, please provide such information to us in person by visiting our socials or simply open
+an issue with the tag "enhancement".  
 Thanks for the support again!
-
-<!--
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
--->
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- LICENSE -->
 ## License
 
-Distributed under the Private License. See `LICENSE` for more information.
+As of now, this is only distributed under the private usage license, which will require a personal agreement between the main authors and
+you as a consumer of this project.
+
+_We will provide a more permissive and open license as soon as possible. When ready, see `LICENSE` for more information._
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -207,7 +171,7 @@ GitLab Project Link: [https://git.neogc.net/heliogrim-workgroup/engine](https://
 GitHub Group Link: [https://github.com/Heliogrim](https://github.com/Heliogrim)  
 GitHub Project Link: [https://github.com/Heliogrim/Heliogrim-Engine](https://github.com/Heliogrim/Heliogrim-Engine)
 
-Bug Tracking : [https://track.neogc.net:8443/issues](https://track.neogc.net:8443/issues)
+Bug Tracking : [GitHub Project Bugs](https://github.com/orgs/Heliogrim/projects/1/views/1)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -220,16 +184,21 @@ Bug Tracking : [https://track.neogc.net:8443/issues](https://track.neogc.net:844
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/gitlab/contributors/heliogrim-workgroup/engine?gitlab_url=https%3A%2F%2Fgit.neogc.net&style=for-the-badge
-[contributors-url]: https://git.neogc.net/heliogrim-workgroup/engine/-/graphs
-[issues-shield]: https://img.shields.io/gitlab/issues/all/heliogrim-workgroup/engine?gitlab_url=https%3A%2F%2Fgit.neogc.net&style=for-the-badge
-[issues-url]: https://git.neogc.net/heliogrim-workgroup/engine/-/issues
-[license-shield]: https://img.shields.io/gitlab/license/heliogrim-workgroup/engine?gitlab_url=https%3A%2F%2Fgit.neogc.net&style=for-the-badge
-[license-url]: https://git.neogc.net/heliogrim-workgroup/engine/-/blob/master/LICENSE
+
+[contributors-shield]: https://img.shields.io/github/contributors/Heliogrim/Heliogrim-Engine?style=for-the-badge
+
+[contributors-url]: https://github.com/Heliogrim/Heliogrim-Engine
+
+[issues-shield]: https://img.shields.io/github/issues/Heliogrim/Heliogrim-Engine?style=for-the-badge
+
+[issues-url]: https://github.com/Heliogrim/Heliogrim-Engine/issues
+
+[license-shield]: https://img.shields.io/github/license/Heliogrim/Heliogrim-Engine?style=for-the-badge
+
+[license-url]: https://github.com/Heliogrim/Heliogrim-Engine/blob/master/LICENSE
 [twitch-shield]: https://img.shields.io/twitch/status/ltjulius?style=for-the-badge
 [twitch-shield-flat]: https://img.shields.io/twitch/status/ltjulius
 [twitch-url]: https://www.twitch.tv/ltjulius
-[product-screenshot]: images/screenshot.png
 [C++]: https://img.shields.io/badge/C%2B%2B-00599C?style=for-the-badge&logo=c%2B%2B&logoColor=white
 [c++-url]: https://isocpp.org
 [CLion]: https://img.shields.io/badge/CLion-000000?style=for-the-badge&logo=clion&logoColor=white
