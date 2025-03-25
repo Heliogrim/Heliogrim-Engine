@@ -57,6 +57,7 @@ void editor::EditorUI::start() {
 	/**/
 
 	_uiServices.assetBrowserService = make_sptr<service::AssetBrowserService>();
+	_uiServices.contextService = make_sptr<service::ContextService>();
 	_uiServices.propertyService = make_sptr<service::PropertyService>();
 	_uiServices.sceneHierarchyService = make_sptr<service::SceneHierarchyService>();
 
@@ -71,6 +72,7 @@ void editor::EditorUI::stop() {
 
 	_uiServices.sceneHierarchyService.reset();
 	_uiServices.propertyService.reset();
+	_uiServices.contextService.reset();
 	_uiServices.assetBrowserService.reset();
 
 	AssetBrowserHelper::destroy();
