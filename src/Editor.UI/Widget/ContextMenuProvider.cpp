@@ -3,9 +3,11 @@
 #include <format>
 #include <Editor.UI.Main/EditorUI.hpp>
 #include <Editor.UI.Main/Module/EditorUI.hpp>
+#include <Engine.Common/Discard.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Module/Modules.hpp>
 #include <Engine.Reflow/Window/Window.hpp>
+#include <Engine.Reflow/Window/WindowManager.hpp>
 
 #include "../EditorUiEventNames.hpp"
 
@@ -14,10 +16,12 @@ using namespace hg::engine::reflow;
 using namespace hg;
 
 ContextMenuProvider::ContextMenuProvider() :
-	CompoundWidget(ReflowClassList {}, nullptr) {}
+	CompoundWidget(ReflowClassList {}, nullptr),
+	_runtimeMenuHost() {}
 
 ContextMenuProvider::ContextMenuProvider(mref<SharedPtr<Widget>> content_) :
-	CompoundWidget(::hg::move(content_), ReflowClassList {}, nullptr) {}
+	CompoundWidget(::hg::move(content_), ReflowClassList {}, nullptr),
+	_runtimeMenuHost() {}
 
 ContextMenuProvider::~ContextMenuProvider() = default;
 
@@ -63,13 +67,14 @@ EventResponse ContextMenuProvider::invokeOnMouseButtonUp(ref<const MouseEvent> e
 		return CompoundWidget::invokeOnMouseButtonUp(event_);
 	}
 
+	::hg::assertrt(_runtimeMenuHost == nullptr);
+
 	const auto subModule = engine::Engine::getEngine()->getModules().getSubModule(EditorUIDepKey);
 	::hg::assertd(subModule != nullptr);
 
-	const auto root = this->root();
-	::hg::assertd(root != nullptr);
+	const auto window = std::static_pointer_cast<Window>(root());
+	::hg::assertd(window != nullptr);
 
-	auto& window = *static_cast<const ptr<Window>>(root.get());
 	const auto& service = *static_cast<const ptr<const EditorUI>>(subModule.get())->getEditorServices().contextService;
 
 	// TODO: Update positioning and possible sizing constraints for host

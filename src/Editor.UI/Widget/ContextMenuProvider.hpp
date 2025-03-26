@@ -4,6 +4,10 @@
 
 #include "../Event/ContextMenuEvent.hpp"
 
+namespace hg::engine::reflow {
+	class Host;
+}
+
 namespace hg::editor::ui {
 	class ContextMenuProvider :
 		public engine::reflow::CompoundWidget {
@@ -21,6 +25,9 @@ namespace hg::editor::ui {
 
 	public:
 		[[nodiscard]] string getTag() const noexcept override;
+
+	private:
+		SharedPtr<engine::reflow::Host> _runtimeMenuHost;
 
 	public:
 		engine::reflow::EventResponse invokeOnContextMenu(ref<const ContextMenuEvent> event_) const;
