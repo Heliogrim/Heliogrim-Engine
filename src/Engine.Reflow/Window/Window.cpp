@@ -238,8 +238,11 @@ void Window::computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passStat
 	}
 
 	for (auto iter = _children.begin() + 2uLL; iter != _children.end(); ++iter) {
+
 		auto* const host = static_cast<const ptr<Host>>(iter->get());
-		host->getLayoutState().computeSize = getLayoutState().computeSize;
+		auto& state = host->getLayoutState();
+
+		state.computeSize = math::compMax(state.prefetchMinSize, math::compMin(state.prefetchSize, passState_.computeSize));
 	}
 }
 
@@ -274,7 +277,7 @@ void Window::applyLayout(ref<ReflowState> state_) {
 		const auto* const host = static_cast<const ptr<const Host>>(iter->get());
 
 		state->layoutOffset = local.layoutOffset + host->getHostOffset();
-		state->layoutSize = local.layoutSize;
+		state->layoutSize = state->computeSize;
 	}
 }
 
