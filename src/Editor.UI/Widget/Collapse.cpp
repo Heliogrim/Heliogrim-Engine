@@ -78,7 +78,7 @@ void Collapse::setHeader(mref<SharedPtr<Widget>> header_) {
 				} else {
 					this->collapse();
 				}
-				return EventResponse::eConsumed;
+				return EventResponse::eHandled;
 			}
 		);
 	}
@@ -252,14 +252,14 @@ void Collapse::applyLayout(ref<ReflowState> state_) {
 
 math::fvec2 Collapse::getGrowFactor() const noexcept {
 	return {
-		getLayoutAttributes().valueOf<attr::BoxLayout::widthShrink>(),
-		getLayoutAttributes().valueOf<attr::BoxLayout::heightShrink>()
+		getLayoutAttributes().valueOf<attr::BoxLayout::widthGrow>(),
+		getLayoutAttributes().valueOf<attr::BoxLayout::heightGrow>()
 	};
 }
 
 math::fvec2 Collapse::getShrinkFactor() const noexcept {
 	return {
-		getLayoutAttributes().valueOf<attr::BoxLayout::widthGrow>(),
-		getLayoutAttributes().valueOf<attr::BoxLayout::heightGrow>()
+		getLayoutAttributes().valueOf<attr::BoxLayout::widthShrink>(),
+		getLayoutAttributes().valueOf<attr::BoxLayout::heightShrink>()
 	};
 }
