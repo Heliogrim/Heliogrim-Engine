@@ -23,7 +23,7 @@ string InputToggle::getTag() const noexcept {
 }
 
 bool InputToggle::shouldTick() const noexcept {
-	return not state().isFocus() && isPristine() && state().isPending();
+	return not state().isFocus() && isPristine() && state().isLayoutOrRenderPending();
 }
 void InputToggle::tick() {
 
@@ -102,7 +102,7 @@ void InputToggle::setValue(bool enabled_) {
 		prev->setParent(nullptr);
 	}
 
-	markAsPending();
+	markAsPending(true, true);
 }
 
 void InputToggle::updateValueAndValidity(bool propagate_, bool emit_) {

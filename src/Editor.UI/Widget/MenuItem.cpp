@@ -25,7 +25,7 @@ void MenuItem::setContent(mref<SharedPtr<Widget>> content_) {
 	auto prev = _children.setChild(::hg::move(content_));
 	prev->setParent(nullptr);
 
-	markAsPending();
+	markAsPending(true, true);
 }
 
 void MenuItem::setSubMenu(mref<SharedPtr<Menu>> subMenu_) {
@@ -47,7 +47,7 @@ void MenuItem::showSubMenu() {
 	_subMenu->setParent(_runtimeHost);
 
 	[[maybe_unused]] auto layer = window->requestLayer(_runtimeHost);
-	_subMenu->markAsPending();
+	_subMenu->markAsPending(true, true);
 }
 
 void MenuItem::hideSubMenu() {

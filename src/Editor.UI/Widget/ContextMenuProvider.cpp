@@ -33,7 +33,7 @@ void ContextMenuProvider::setContent(mref<SharedPtr<Widget>> content_) {
 	content_->setParent(shared_from_this());
 	auto prev = _children.setChild(::hg::move(content_));
 	prev->setParent(nullptr);
-	markAsPending();
+	markAsPending(true, true);
 }
 
 EventResponse ContextMenuProvider::invokeOnContextMenu(ref<const ContextMenuEvent> event_) const {
@@ -96,7 +96,7 @@ EventResponse ContextMenuProvider::invokeOnMouseButtonUp(ref<const MouseEvent> e
 
 	/**/
 
-	menu->markAsPending();
+	menu->markAsPending(true, true);
 	auto focusEvent = FocusEvent { menu };
 	WindowManager::get()->dispatch(window, focusEvent);
 

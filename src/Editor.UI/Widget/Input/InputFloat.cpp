@@ -39,7 +39,7 @@ string InputFloat::getTag() const noexcept {
 }
 
 bool InputFloat::shouldTick() const noexcept {
-	return not state().isFocus() && isPristine() && state().isPending();
+	return not state().isFocus() && isPristine() && state().isLayoutOrRenderPending();
 }
 
 void InputFloat::tick() {
@@ -66,7 +66,7 @@ InputFloat::input_type InputFloat::value() const noexcept {
 
 void InputFloat::setValue(value_type next_) {
 	if (getDataAttributes().update<attr::InputData::value>(next_)) {
-		markAsPending();
+		markAsPending(true, true);
 	}
 }
 

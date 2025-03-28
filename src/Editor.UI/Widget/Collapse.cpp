@@ -43,23 +43,23 @@ string Collapse::getTag() const noexcept {
 
 void Collapse::collapse() {
 	_collapsed = true;
-	markAsPending();
+	markAsPending(true, true);
 
 	const auto body = _children.getChild<1uL>();
 	if (body != nullptr && body != NullWidget::instance()) {
 		body->state().unset(WidgetStateFlagBits::eVisible);
-		body->markAsPending();
+		body->markAsPending(true, true);
 	}
 }
 
 void Collapse::expand() {
 	_collapsed = false;
-	markAsPending();
+	markAsPending(true, true);
 
 	const auto body = _children.getChild<1uL>();
 	if (body != nullptr && body != NullWidget::instance()) {
 		body->state().set(WidgetStateFlagBits::eVisible);
-		body->markAsPending();
+		body->markAsPending(true, true);
 	}
 }
 
@@ -91,7 +91,7 @@ void Collapse::setHeader(mref<SharedPtr<Widget>> header_) {
 		prev->dropOnClick(prevToggleHandle);
 	}
 
-	markAsPending();
+	markAsPending(true, true);
 }
 
 void Collapse::setContent(mref<SharedPtr<Widget>> content_) {

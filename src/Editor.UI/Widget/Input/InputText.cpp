@@ -41,7 +41,7 @@ string InputText::getTag() const noexcept {
 }
 
 bool InputText::shouldTick() const noexcept {
-	return not state().isFocus() && isPristine() && state().isPending();
+	return not state().isFocus() && isPristine() && state().isLayoutOrRenderPending();
 }
 
 void InputText::tick() {
@@ -64,7 +64,7 @@ InputText::input_type InputText::value() const noexcept {
 
 void InputText::setValue(StringView next_) {
 	if (getDataAttributes().update<attr::InputData::value>(String { next_ })) {
-		markAsPending();
+		markAsPending(true, true);
 	}
 }
 
