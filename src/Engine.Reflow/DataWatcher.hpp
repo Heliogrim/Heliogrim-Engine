@@ -38,7 +38,7 @@ namespace hg::engine::reflow {
 					reinterpret_cast<std::uintptr_t>(std::addressof(attribute_)),
 					[attribute = std::addressof(attribute_), widget = widget_]() {
 						if (attribute->update(attribute->_query())) {
-							widget->markAsPending();
+							widget->markAsPending(true, true);
 						}
 					}
 				)
