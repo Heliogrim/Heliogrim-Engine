@@ -217,9 +217,11 @@ namespace hg::engine::reflow {
 		[[nodiscard]] virtual ReflowPosition position() const noexcept;
 
 	public:
-		void markAsPending(const bool inherited_ = false, const bool suppress_ = false);
+		void markAsPending(bool layout_, bool render_);
 
-		WidgetStateFlag clearPending();
+		[[nodiscard]] bool clearLayoutPending();
+
+		[[nodiscard]] bool clearRenderPending();
 
 		virtual void enumerateDistinctCapture(
 			_In_ const u16 compareVersion_,
