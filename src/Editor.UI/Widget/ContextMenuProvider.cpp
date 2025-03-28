@@ -29,6 +29,13 @@ string ContextMenuProvider::getTag() const noexcept {
 	return std::format(R"(ContextMenuProvider <{:#x}>)", reinterpret_cast<u64>(this));
 }
 
+void ContextMenuProvider::setContent(mref<SharedPtr<Widget>> content_) {
+	content_->setParent(shared_from_this());
+	auto prev = _children.setChild(::hg::move(content_));
+	prev->setParent(nullptr);
+	markAsPending();
+}
+
 EventResponse ContextMenuProvider::invokeOnContextMenu(ref<const ContextMenuEvent> event_) const {
 	return _emitter.emit(EditorUiEventNames::ContextMenuEvent, event_);
 }
