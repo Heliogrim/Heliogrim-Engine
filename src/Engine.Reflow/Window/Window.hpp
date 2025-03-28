@@ -18,7 +18,8 @@ namespace hg::engine::reflow {
 
 namespace hg::engine::reflow {
 	class Window :
-		public Widget {
+		public Widget,
+		public theming::ThemeProvisioner {
 	public:
 		friend class ::hg::engine::reflow::EventDispatcher;
 
@@ -55,6 +56,26 @@ namespace hg::engine::reflow {
 
 		math::vec2 getClientSize() const noexcept;
 
+		/**
+		 * Theming
+		 */
+
+	private:
+		Vector<theming::Theme> _providerThemes;
+
+	public:
+		[[nodiscard]] std::span<const theming::Theme> getProviderThemes() const noexcept;
+
+		void setProviderThemes(mref<Vector<theming::Theme>> themes_);
+
+		[[nodiscard]] Opt<ref<const ThemeProvisioner>> findParentProvisioner() const noexcept override;
+
+		[[nodiscard]] Opt<ref<const ThemeProvisioner>> cachedUpdateNearestProvisioner(bool localInvalidate_) noexcept override;
+
+		/**
+		 * Child- & Layer-Handling
+		 */
+
 	private:
 		FixedChildren<2> _children;
 
@@ -78,6 +99,10 @@ namespace hg::engine::reflow {
 
 		void dropLayer(nmpt<Layer> layer_);
 
+		/**
+		 * Focus Path
+		 */
+
 	private:
 		FocusPath _focus;
 
@@ -86,11 +111,23 @@ namespace hg::engine::reflow {
 
 		[[nodiscard]] sptr<Widget> getFocusTarget() const noexcept;
 
+		/**
+		 * Data Watcher
+		 */
+
 	public:
 		void setDataWatcher(mref<Opt<ref<DataWatcher>>> watcher_);
 
+		/**
+		 * Rendering
+		 */
+
 	public:
 		void render(const ptr<ReflowCommandBuffer> cmd_) override;
+
+		/**
+		 * Sizing & Layout
+		 */
 
 	public:
 		PrefetchSizing prefetchSizing(ReflowAxis axis_, ref<const ReflowState> state_) const override;

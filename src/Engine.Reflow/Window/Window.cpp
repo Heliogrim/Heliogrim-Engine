@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <format>
+#include <Engine.Common/Discard.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Move.hpp>
 
@@ -18,6 +19,7 @@ Window::Window() :
 	_type(WindowType::eNormal),
 	_resizable(true),
 	_closeable(true),
+	_providerThemes(),
 	_layers() {}
 
 Window::~Window() {
@@ -38,6 +40,34 @@ void Window::setClientSize(cref<math::vec2> nextClientSize_) {
 
 math::vec2 Window::getClientSize() const noexcept {
 	return _clientSize;
+}
+
+std::span<const theming::Theme> Window::getProviderThemes() const noexcept {
+	return _providerThemes;
+}
+
+void Window::setProviderThemes(mref<Vector<theming::Theme>> themes_) {
+	auto& ctx = getLocalContext();
+	for (const auto& prev : _providerThemes) {
+		::hg::discard(ctx.dropLocalTheme(std::addressof(prev)));
+	}
+
+	/**/
+
+	_providerThemes = ::hg::move(themes_);
+	for (const auto& next : _providerThemes) {
+		::hg::discard(ctx.addLocalTheme(std::addressof(next)));
+	}
+
+	cascadeContextChange(false);
+}
+
+Opt<ref<const theming::ThemeProvisioner>> Window::findParentProvisioner() const noexcept {
+	return None;
+}
+
+Opt<ref<const theming::ThemeProvisioner>> Window::cachedUpdateNearestProvisioner(bool localInvalidate_) noexcept {
+	return Some(*this);
 }
 
 void Window::setTitleBar(sptr<Widget> titleBar_) {
