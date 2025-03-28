@@ -8,8 +8,8 @@ using namespace hg;
 
 constexpr static WidgetState defaultWidgetState = WidgetState {
 	static_cast<WidgetState::value_type>(WidgetStateFlagBits::eVisible) |
-	static_cast<WidgetState::value_type>(WidgetStateFlagBits::ePending) |
-	static_cast<WidgetState::value_type>(WidgetStateFlagBits::ePendingInherit)
+	static_cast<WidgetState::value_type>(WidgetStateFlagBits::eLayoutPending) |
+	static_cast<WidgetState::value_type>(WidgetStateFlagBits::eRenderPending)
 };
 
 Widget::Widget() :
@@ -100,7 +100,8 @@ EventResponse Widget::invokeOnMouseEnter(ref<const MouseMoveEvent> event_) {
 
 	if (not _state.isHover()) {
 		_state |= WidgetStateFlagBits::eHover;
-		markAsPending();
+		// TODO: Check whether we should fully invalidate
+		markAsPending(false, true);
 	}
 
 	return EventResponse::eUnhandled;
@@ -110,7 +111,8 @@ EventResponse Widget::invokeOnMouseLeave(ref<const MouseMoveEvent> event_) {
 
 	if (_state.isHover()) {
 		_state.unwrap &= (~static_cast<WidgetState::value_type>(WidgetStateFlagBits::eHover));
-		markAsPending();
+		// TODO: Check whether we should fully invalidate
+		markAsPending(false, true);
 	}
 
 	return EventResponse::eUnhandled;
@@ -288,37 +290,34 @@ void Widget::enumerateDistinctCapture(
 	}
 }
 
-void Widget::markAsPending(const bool inherited_, const bool suppress_) {
+void Widget::markAsPending(bool layout_, bool render_) {
 
-	/*
-	if (_state.pending) {
-	    return;
-	}
-	 */
-
-	if (inherited_) {
-		_state |= WidgetStateFlagBits::ePendingInherit;
-	} else {
-		_state |= WidgetStateFlagBits::ePending;
-	}
-
-	if (suppress_) {
+	if (
+		(_state.isLayoutPending() && layout_) == layout_ &&
+		(_state.isRenderPending() && render_) == render_
+	) {
 		return;
 	}
 
+	if (layout_)
+		_state.set(WidgetStateFlagBits::eLayoutPending);
+	if (render_)
+		_state.set(WidgetStateFlagBits::eLayoutPending);
+
 	if (hasParent()) {
-		parent()->markAsPending(true);
+		parent()->markAsPending(layout_, render_);
 	}
 }
 
-WidgetStateFlag Widget::clearPending() {
+bool Widget::clearLayoutPending() {
+	auto result = _state.isLayoutPending();
+	_state.unset(WidgetStateFlagBits::eLayoutPending);
+	return result;
+}
 
-	const WidgetStateFlag result { _state };
-	_state.unwrap &= ~(
-		static_cast<WidgetState::value_type>(WidgetStateFlagBits::ePending) |
-		static_cast<WidgetState::value_type>(WidgetStateFlagBits::ePendingInherit)
-	);
-
+bool Widget::clearRenderPending() {
+	auto result = _state.isRenderPending();
+	_state.unset(WidgetStateFlagBits::eRenderPending);
 	return result;
 }
 

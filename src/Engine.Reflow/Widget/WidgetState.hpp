@@ -15,13 +15,11 @@ namespace hg::engine::reflow {
 	enum class WidgetStateFlagBits : u8 {
 		eFocus = 0b0000'0001,
 		eHover = 0b0000'0010,
-		eDisable = 0b0000'0100,
 		ePress = 0b0000'1000,
-		eDrag = 0b0001'0000,
 		/**/
 		eVisible = 0b0010'0000,
-		ePending = 0b0100'0000,
-		ePendingInherit = 0b1000'0000
+		eLayoutPending = 0b0100'0000,
+		eRenderPending = 0b1000'0000
 	};
 
 	typedef Flag<WidgetStateFlagBits, hg::u8> WidgetStateFlag;
@@ -41,33 +39,24 @@ namespace hg::engine::reflow {
 			return (*this) & WidgetStateFlagBits::eHover;
 		}
 
-		[[nodiscard]] bool isDisabled() const noexcept {
-			return (*this) & WidgetStateFlagBits::eDisable;
-		}
-
 		[[nodiscard]] bool isPressed() const noexcept {
 			return (*this) & WidgetStateFlagBits::ePress;
-		}
-
-		[[nodiscard]] bool isDragged() const noexcept {
-			return (*this) & WidgetStateFlagBits::eDrag;
 		}
 
 		[[nodiscard]] bool isVisible() const noexcept {
 			return (*this) & WidgetStateFlagBits::eVisible;
 		}
 
-		[[nodiscard]] bool isPending() const noexcept {
-			return (*this) & WidgetStateFlagBits::ePending;
+		[[nodiscard]] constexpr bool isLayoutPending() const noexcept {
+			return (*this) & WidgetStateFlagBits::eLayoutPending;
 		}
 
-		[[nodiscard]] bool isPendingInherit() const noexcept {
-			return (*this) & WidgetStateFlagBits::ePendingInherit;
+		[[nodiscard]] constexpr bool isRenderPending() const noexcept {
+			return (*this) & WidgetStateFlagBits::eRenderPending;
 		}
 
-		[[nodiscard]] bool isProxyPending() const noexcept {
-			return unwrap & (static_cast<value_type>(WidgetStateFlagBits::ePending) |
-				static_cast<value_type>(WidgetStateFlagBits::ePendingInherit));
+		[[nodiscard]] constexpr bool isLayoutOrRenderPending() const noexcept {
+			return isLayoutPending() || isRenderPending();
 		}
 
 	public:
