@@ -39,7 +39,7 @@ void Anchor::show(sptr<Widget> content_, math::vec2 globalOffset_) {
 	content_->setParent(_host);
 
 	[[maybe_unused]] auto layer = window->requestLayer(_host);
-	content_->markAsPending();
+	content_->markAsPending(true, true);
 }
 
 void Anchor::hide() {

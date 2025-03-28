@@ -147,7 +147,7 @@ namespace hg::engine::reflow {
 				const_cast<ptr<this_type>>(this)->refreshTreeView();
 
 				_requiresRefresh = false;
-				markAsPending();
+				markAsPending(true, true);
 			}
 		}
 

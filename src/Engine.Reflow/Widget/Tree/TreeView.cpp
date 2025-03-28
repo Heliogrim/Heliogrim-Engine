@@ -39,14 +39,14 @@ void TreeViewBase::changeStateSelection(cref<sptr<Widget>> item_, const bool sel
 
 EventResponse TreeViewBase::invokeOnFocus(cref<FocusEvent> event_) {
 	_state |= WidgetStateFlagBits::eFocus;
-	markAsPending();
+	markAsPending(false, true);
 
 	return VScrollBox::invokeOnFocus(event_);
 }
 
 EventResponse TreeViewBase::invokeOnBlur(cref<FocusEvent> event_) {
 	_state.unwrap &= (~static_cast<WidgetState::value_type>(WidgetStateFlagBits::eFocus));
-	markAsPending();
+	markAsPending(false, true);
 
 	return VScrollBox::invokeOnBlur(event_);
 }

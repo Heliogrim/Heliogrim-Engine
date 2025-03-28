@@ -23,7 +23,7 @@ u32 TreeItem::getLevel() const noexcept {
 
 void TreeItem::setLevel(u32 level_) {
 	_level = level_;
-	markAsPending();
+	markAsPending(true, true);
 }
 
 bool TreeItem::isSelected() const noexcept {
@@ -32,7 +32,7 @@ bool TreeItem::isSelected() const noexcept {
 
 void TreeItem::setSelected(const bool selected_) {
 	if (_selected != selected_) {
-		this->markAsPending();
+		this->markAsPending(false, true);
 	}
 
 	_selected = selected_;

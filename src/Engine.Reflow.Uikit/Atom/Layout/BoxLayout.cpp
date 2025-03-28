@@ -51,7 +51,7 @@ void BoxLayout::setChild(cref<sptr<Widget>> nextChild_) {
 	nextChild_->setParent(shared_from_this());
 	_children.setChild(nextChild_);
 
-	markAsPending();
+	markAsPending(true, true);
 }
 
 void BoxLayout::render(const ptr<ReflowCommandBuffer> cmd_) {

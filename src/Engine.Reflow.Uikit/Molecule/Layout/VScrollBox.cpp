@@ -31,7 +31,7 @@ void VScrollBox::setScrollTrack(cref<sptr<Widget>> track_) {
 	}
 
 	_scrollTrack = track_;
-	markAsPending();
+	markAsPending(true, true);
 }
 
 void VScrollBox::setScrollThumb(cref<sptr<Widget>> thumb_) {
@@ -43,7 +43,7 @@ void VScrollBox::setScrollThumb(cref<sptr<Widget>> thumb_) {
 	}
 
 	_scrollThumb = thumb_;
-	markAsPending();
+	markAsPending(true, true);
 }
 
 f32 VScrollBox::getScrollValue() const noexcept {
@@ -190,6 +190,6 @@ EventResponse VScrollBox::invokeOnWheel(ref<const WheelEvent> event_) {
 	_scrollValue -= normalized;
 	_scrollValue = math::clamp(_scrollValue, 0.F, 1.F);
 
-	markAsPending();
+	markAsPending(true, false);
 	return EventResponse::eConsumed;
 }

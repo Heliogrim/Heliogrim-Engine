@@ -21,7 +21,7 @@ void GridLayoutBase::addChild(cref<sptr<Widget>> child_) {
 	child_->setParent(shared_from_this());
 	_children.push_back(child_);
 
-	markAsPending();
+	markAsPending(true, true);
 }
 
 void GridLayoutBase::setChild(const u32 idx_, cref<sptr<Widget>> child_) {
@@ -39,7 +39,7 @@ void GridLayoutBase::setChild(const u32 idx_, cref<sptr<Widget>> child_) {
 	_children[idx_]->setParent(nullptr);
 	_children[idx_] = child_;
 
-	markAsPending();
+	markAsPending(true, true);
 }
 
 void GridLayoutBase::removeChild(cref<sptr<Widget>> child_) {
@@ -63,7 +63,7 @@ void GridLayoutBase::removeChild(cref<sptr<Widget>> child_) {
 	(*iter)->setParent(nullptr);
 	_children.erase(_children.cbegin() + found);
 
-	markAsPending();
+	markAsPending(true, true);
 }
 
 void GridLayoutBase::clearChildren() {
@@ -74,7 +74,7 @@ void GridLayoutBase::clearChildren() {
 
 	_children.clear();
 
-	markAsPending();
+	markAsPending(true, true);
 }
 
 void GridLayoutBase::render(const ptr<ReflowCommandBuffer> cmd_) {

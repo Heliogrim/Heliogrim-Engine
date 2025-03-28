@@ -136,13 +136,13 @@ void uikit::Button::setStateTheme(InteractiveStateFlagBits interactiveBit_, mref
 			break;
 		}
 		case InteractiveStateFlagBits::eDisable: {
-			if (_state.isDisabled() && _themeStateMap.disabled.has_value()) {
+			if (/* TODO: */false && _themeStateMap.disabled.has_value()) {
 				effective |= getLocalContext().dropLocalTheme(std::addressof(_themeStateMap.disabled.value()));
 			}
 
 			_themeStateMap.disabled = ::hg::move(theme_);
 
-			if (_state.isDisabled() && _themeStateMap.disabled.has_value()) {
+			if (/* TODO: */false && _themeStateMap.disabled.has_value()) {
 				effective |= getLocalContext().addLocalTheme(std::addressof(_themeStateMap.disabled.value()));
 			}
 			break;
