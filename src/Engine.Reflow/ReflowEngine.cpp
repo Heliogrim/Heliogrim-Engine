@@ -297,24 +297,23 @@ void finalizeLayoutAndStates(ref<const SharedPtr<Widget>> root_, ref<ReflowState
 
 		/**/
 
-		const auto pendingResult = cur->clearPending();
-		if (pendingResult & WidgetStateFlagBits::ePending) {
-			// TODO: Warning: If AABB of element changed, we need to queue previously covered elements to overdraw
-			cur->updateRenderVersion(state_.getRenderTick());
-		}
-
 		const auto nextAabb = engine::gfx::Aabb2d {
 			cur->getLayoutState().layoutOffset, cur->getLayoutState().layoutOffset + cur->getLayoutState().layoutSize
 		};
+
+		const auto layoutPending = cur->clearLayoutPending();
+		const auto renderPending = cur->clearRenderPending();
 		const auto changedAabb = nextAabb != cur->getLayoutState().lastAabb;
-		if (changedAabb) {
+
+		if (layoutPending || renderPending || changedAabb) {
+			// TODO: Warning: If AABB of element changed, we need to queue previously covered elements to overdraw
 			cur->updateRenderVersion(state_.getRenderTick());
 		}
 
 		// TODO: Check for layout changes -> drop sub-sequent layout operations
 		if (
-			not(pendingResult & WidgetStateFlagBits::ePending) &&
-			not(pendingResult & WidgetStateFlagBits::ePendingInherit) &&
+			not(layoutPending) &&
+			not(renderPending) &&
 			not(changedAabb) &&
 			not(childAabbChanged)
 		) {
