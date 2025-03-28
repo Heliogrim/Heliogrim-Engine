@@ -345,10 +345,13 @@ namespace hg::engine::reflow {
 
 			/**/
 
-			const auto persistIt { window_->_focus.begin() + MIN(persistSize - 1, 0) };
-			for (auto it { window_->_focus.end() }; it != persistIt && state != EventResponse::eConsumed;) {
-				const auto result = (--it)->lock()->invokeOnFocus(event_);
-				state = MAX(state, result);
+			if (window_->_focus.empty()) {
+				return state;
+			}
+
+			for (auto rsi = window_->_focus.size(); rsi > persistSize && state != EventResponse::eConsumed; --rsi) {
+				const auto& reversed = window_->_focus[rsi - 1];
+				state = std::max(state, reversed.lock()->invokeOnFocus(event_));
 			}
 
 			return state;
