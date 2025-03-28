@@ -112,5 +112,7 @@ EventResponse ContextMenuProvider::invokeOnMouseButtonUp(ref<const MouseEvent> e
 
 	/**/
 
-	return CompoundWidget::invokeOnMouseButtonUp(event_);
+	// Note: Invoke the basis to still call the event handlers
+	::hg::discard = CompoundWidget::invokeOnMouseButtonUp(event_);
+	return EventResponse::eConsumed;
 }
