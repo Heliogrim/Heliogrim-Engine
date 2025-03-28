@@ -59,7 +59,7 @@ void VerticalLayout::addChild(cref<sptr<Widget>> child_) {
 	child_->setParent(shared_from_this());
 	_children.push_back(child_);
 
-	markAsPending();
+	markAsPending(true, true);
 }
 
 void VerticalLayout::setChild(const u32 idx_, cref<sptr<Widget>> child_) {
@@ -77,7 +77,7 @@ void VerticalLayout::setChild(const u32 idx_, cref<sptr<Widget>> child_) {
 	_children[idx_]->setParent(nullptr);
 	_children[idx_] = child_;
 
-	markAsPending();
+	markAsPending(true, true);
 }
 
 void VerticalLayout::removeChild(cref<sptr<Widget>> child_) {
@@ -101,7 +101,7 @@ void VerticalLayout::removeChild(cref<sptr<Widget>> child_) {
 	(*iter)->setParent(nullptr);
 	_children.erase(_children.cbegin() + found);
 
-	markAsPending();
+	markAsPending(true, true);
 }
 
 void VerticalLayout::clearChildren() {
@@ -112,7 +112,7 @@ void VerticalLayout::clearChildren() {
 
 	_children.clear();
 
-	markAsPending();
+	markAsPending(true, true);
 }
 
 void VerticalLayout::render(const ptr<ReflowCommandBuffer> cmd_) {

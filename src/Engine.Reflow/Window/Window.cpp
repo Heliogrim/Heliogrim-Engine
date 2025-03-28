@@ -76,7 +76,7 @@ void Window::setTitleBar(sptr<Widget> titleBar_) {
 	_children.getChild<0>()->setParent(nullptr);
 	_children.setChild<0>(titleBar_);
 
-	markAsPending();
+	markAsPending(true, true);
 }
 
 void Window::setContent(sptr<Widget> content_) {
@@ -85,7 +85,7 @@ void Window::setContent(sptr<Widget> content_) {
 	_children.getChild<1>()->setParent(nullptr);
 	_children.setChild<1>(content_);
 
-	markAsPending();
+	markAsPending(true, true);
 }
 
 sptr<Widget> Window::root() const {

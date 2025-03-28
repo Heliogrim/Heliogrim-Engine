@@ -44,7 +44,7 @@ void uikit::Stack::addChild(cref<sptr<Widget>> child_) {
 	child_->setParent(shared_from_this());
 	_children.emplace_back(child_);
 
-	markAsPending();
+	markAsPending(true, true);
 }
 
 void uikit::Stack::setChild(const u32 idx_, cref<sptr<Widget>> child_) {
@@ -62,7 +62,7 @@ void uikit::Stack::setChild(const u32 idx_, cref<sptr<Widget>> child_) {
 	_children[idx_]->setParent(nullptr);
 	_children[idx_] = child_;
 
-	markAsPending();
+	markAsPending(true, true);
 }
 
 void uikit::Stack::removeChild(cref<sptr<Widget>> child_) {
@@ -85,7 +85,7 @@ void uikit::Stack::removeChild(cref<sptr<Widget>> child_) {
 	(*iter)->setParent(nullptr);
 	_children.erase(iter);
 
-	markAsPending();
+	markAsPending(true, true);
 }
 
 void uikit::Stack::clearChildren() {
@@ -95,7 +95,7 @@ void uikit::Stack::clearChildren() {
 	}
 	_children.clear();
 
-	markAsPending();
+	markAsPending(true, true);
 }
 
 void uikit::Stack::render(const ptr<ReflowCommandBuffer> cmd_) {

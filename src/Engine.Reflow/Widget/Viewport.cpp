@@ -411,13 +411,13 @@ math::fvec2 Viewport::getGrowFactor() const noexcept {
 
 EventResponse Viewport::invokeOnFocus(cref<FocusEvent> event_) {
 	_state.set(WidgetStateFlagBits::eFocus);
-	markAsPending();
+	markAsPending(false, true);
 	return EventResponse::eConsumed;
 }
 
 EventResponse Viewport::invokeOnBlur(cref<FocusEvent> event_) {
 	_state.unset(WidgetStateFlagBits::eFocus);
-	markAsPending();
+	markAsPending(false, true);
 	return EventResponse::eConsumed;
 }
 
@@ -425,7 +425,7 @@ EventResponse Viewport::invokeOnKeyDown(ref<const KeyboardEvent> event_) {
 	// Early exit on ESC Key to drop focus and ctrl
 	if (event_._key == '\x1B') {
 		_state.unset(WidgetStateFlagBits::eFocus);
-		markAsPending();
+		markAsPending(false, true);
 		return EventResponse::eConsumed;
 	}
 

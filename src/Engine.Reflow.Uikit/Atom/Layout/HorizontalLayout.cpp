@@ -59,7 +59,7 @@ void HorizontalLayout::addChild(cref<sptr<Widget>> child_) {
 	child_->setParent(shared_from_this());
 	_children.push_back(child_);
 
-	markAsPending();
+	markAsPending(true, true);
 }
 
 void HorizontalLayout::setChild(const u32 idx_, cref<sptr<Widget>> child_) {
@@ -76,7 +76,7 @@ void HorizontalLayout::setChild(const u32 idx_, cref<sptr<Widget>> child_) {
 	_children[idx_]->setParent(nullptr);
 	_children[idx_] = child_;
 
-	markAsPending();
+	markAsPending(true, true);
 }
 
 void HorizontalLayout::removeChild(cref<sptr<Widget>> child_) {
@@ -100,7 +100,7 @@ void HorizontalLayout::removeChild(cref<sptr<Widget>> child_) {
 	(*iter)->setParent(nullptr);
 	_children.erase(_children.cbegin() + found);
 
-	markAsPending();
+	markAsPending(true, true);
 }
 
 void HorizontalLayout::clearChildren() {
@@ -111,7 +111,7 @@ void HorizontalLayout::clearChildren() {
 
 	_children.clear();
 
-	markAsPending();
+	markAsPending(true, true);
 }
 
 void HorizontalLayout::render(const ptr<ReflowCommandBuffer> cmd_) {

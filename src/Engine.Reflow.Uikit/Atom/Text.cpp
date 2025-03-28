@@ -62,7 +62,7 @@ string Text::getText() const noexcept {
 
 void Text::setText(cref<string> text_) {
 	if (getDataAttributes().update<attr::TextData::text>(text_)) {
-		markAsPending();
+		markAsPending(true, true);
 	}
 }
 
