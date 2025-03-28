@@ -3,8 +3,8 @@
 #include <ranges>
 #include <Editor.UI/Builder/MenuBuilder.hpp>
 #include <Editor.UI/Event/ContextMenuEvent.hpp>
-#include <Editor.UI/Widget/ContextMenu.hpp>
 #include <Editor.UI/Widget/ContextMenuProvider.hpp>
+#include <Editor.UI/Widget/Menu.hpp>
 #include <Engine.Reflow/Widget/Widget.hpp>
 #include <Engine.Reflow/Window/Window.hpp>
 
@@ -24,7 +24,7 @@ void ContextService::pop(mref<SharedPtr<ContextMenuProvider>> contextMenuProvide
 	_pushed.erase(std::ranges::find(_pushed, ::hg::move(contextMenuProvider_)));
 }
 
-SharedPtr<ContextMenu> ContextService::buildContextMenu(ref<const engine::reflow::Window> window_) const {
+SharedPtr<Menu> ContextService::buildContextMenu(ref<const engine::reflow::Window> window_) const {
 
 	auto active = Vector<nmpt<const engine::reflow::Widget>> {};
 	const auto& focus = window_.getFocusPath();
@@ -56,5 +56,5 @@ SharedPtr<ContextMenu> ContextService::buildContextMenu(ref<const engine::reflow
 		}
 	}
 
-	return make_sptr<ContextMenu>(builder.construct());
+	return builder.construct();
 }

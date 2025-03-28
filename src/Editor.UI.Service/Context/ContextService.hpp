@@ -11,7 +11,7 @@ namespace hg::engine::reflow {
 
 namespace hg::editor::ui {
 	class ContextMenuProvider;
-	class ContextMenu;
+	class Menu;
 }
 
 namespace hg::editor::ui::service {
@@ -33,6 +33,6 @@ namespace hg::editor::ui::service {
 
 		void pop(mref<SharedPtr<ContextMenuProvider>> contextMenuProvider_);
 
-		[[nodiscard]] SharedPtr<ContextMenu> buildContextMenu(ref<const engine::reflow::Window> window_) const;
+		[[nodiscard]] SharedPtr<Menu> buildContextMenu(ref<const engine::reflow::Window> window_) const;
 	};
 }

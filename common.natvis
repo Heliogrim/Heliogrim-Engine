@@ -1,132 +1,126 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
-	
-	<!-- General -->
-	
-	<Type Name="hg::Guid">
-		<DisplayString>{{ {pre}-{c0}-{c1}-{post} }}</DisplayString>
-	</Type>
-	
-	<!-- Pointers and Smart Pointers -->
-	
-	<!-- Protect against void types -->
-	<Type Name="hg::SharedMemoryReference&lt;void&gt;"></Type>
-	<Type Name="hg::SharedMemoryReference&lt;*&gt;">
-		<SmartPointer Usage="Minimal">($T1*)(_packed >> 16)</SmartPointer>
-		<DisplayString Condition="_ctrlBlock == nullptr">empty</DisplayString>
-		<DisplayString Condition="_packed == 0">empty</DisplayString>
-		<Expand>
-			<Item Condition="_packed != 0" Name="[ptr]">($T1*)(_packed >> 16)</Item>
-			<Item Condition="_ctrlBlock != nullptr" Name="[ctrl block]">*_ctrlBlock</Item>
-		</Expand>
-	</Type>
-	
-	<!-- Protect against void types -->
-	<Type Name="hg::NonOwningMemoryPointer&lt;void&gt;">
-		<DisplayString Condition="storage.mem == nullptr">nullptr</DisplayString>
-		<DisplayString Condition="storage.mem != nullptr">void</DisplayString>
-	</Type>
-	<Type Name="hg::NonOwningMemoryPointer&lt;*&gt;">
-		<SmartPointer Usage="Minimal">storage.mem</SmartPointer>
-		<DisplayString Condition="storage.mem == nullptr">nullptr</DisplayString>
-		<Expand>
-			<Item Condition="storage.mem != nullptr" Name="[ptr]">storage.mem</Item>
-		</Expand>
-	</Type>
-	
-	<!-- Math -->
-	
-	<Type Name="hg::math::matq2_t&lt;*&gt;">
-		<DisplayString>[2, 2]</DisplayString>
-		<Expand>
-			<Synthetic Name="[Row 0]">
-				<DisplayString>{value[0].x} {value[0].y}</DisplayString>
-			</Synthetic>
-			<Synthetic Name="[Row 1]">
-				<DisplayString>{value[1].x} {value[1].y}</DisplayString>
-			</Synthetic>
-		</Expand>
-	</Type>
-	
-	<Type Name="hg::math::matq3_t&lt;*&gt;">
-		<DisplayString>[3, 3]</DisplayString>
-		<Expand>
-			<Synthetic Name="[Row 0]">
-				<DisplayString>{value[0].x} {value[0].y} {value[0].z}</DisplayString>
-			</Synthetic>
-			<Synthetic Name="[Row 1]">
-				<DisplayString>{value[1].x} {value[1].y} {value[1].z}</DisplayString>
-			</Synthetic>
-			<Synthetic Name="[Row 2]">
-				<DisplayString>{value[2].x} {value[2].y} {value[2].z}</DisplayString>
-			</Synthetic>
-		</Expand>
-	</Type>
-	
-	<Type Name="hg::math::matq4_t&lt;*&gt;">
-		<DisplayString>[4, 4]</DisplayString>
-		<Expand>
-			<Synthetic Name="[Row 0]">
-				<DisplayString>{value[0].x} {value[0].y} {value[0].z} {value[0].w}</DisplayString>
-			</Synthetic>
-			<Synthetic Name="[Row 1]">
-				<DisplayString>{value[1].x} {value[1].y} {value[1].z} {value[1].w}</DisplayString>
-			</Synthetic>
-			<Synthetic Name="[Row 2]">
-				<DisplayString>{value[2].x} {value[2].y} {value[2].z} {value[2].w}</DisplayString>
-			</Synthetic>
-			<Synthetic Name="[Row 3]">
-				<DisplayString>{value[3].x} {value[3].y} {value[3].z} {value[3].w}</DisplayString>
-			</Synthetic>
-		</Expand>
-	</Type>
-	
-	<Type Name="hg::math::quaternion_t&lt;*&gt;">
-		<DisplayString>{{ x={_quat.x} y={_quat.y} z={_quat.z} w={_quat.w} }}</DisplayString>
-	</Type>
-	<Type Name="hg::math::Location">
-		<DisplayString>{{ x={x} y={y} z={z} }}</DisplayString>
-	</Type>
-	<Type Name="hg::math::Rotator">
-		<DisplayString>{{ roll={z} pitch={x} yaw={z} }}</DisplayString>
-		<Expand>
-			<Synthetic Name="[Euler]">
-				<DisplayString>{{ roll={z} pitch={x} yaw={z} }}</DisplayString>
-			</Synthetic>
-			<Item Name="[Quat]">into()</Item>
-		</Expand>
-	</Type>
-	
-	<!-- Container -->
-	
-	<!-- Protect against void types -->
-	<Type Name="tl::expected&lt;void,*&gt;">
-		<DisplayString>{{...}}</DisplayString>
-	</Type>
-	<Type Name="tl::expected&lt;*&gt;" ExcludeView="stl">
-		<DisplayString Condition="m_has_val == true">{{expected({m_val,g})}}</DisplayString>
-		<DisplayString Condition="m_has_val != true">{{unexpected({m_unexpect.m_val,g})}}</DisplayString>
-		<DisplayString>{{...}}</DisplayString>
-	</Type>
-	
-	<!-- Protect against void types -->
-	<Type Name="tl::optional&lt;void&gt;">
-		<DisplayString>{{...}}</DisplayString>
-	</Type>
-	<Type Name="tl::optional&lt;*&gt;" Priority="MediumHigh">
-		<DisplayString Condition="m_has_value == true">{{some({m_value,g})}}</DisplayString>
-		<DisplayString Condition="m_has_value != true">{{empty()}}</DisplayString>
-		<Expand>
-			<ExpandedItem Condition="m_has_value">m_value</ExpandedItem>
-		</Expand>
-	</Type>
-	<Type Name="tl::optional&lt;*&gt;">
-		<DisplayString Condition="m_value != nullptr">{{some({m_value,g})}}</DisplayString>
-		<DisplayString Condition="m_value == nullptr">{{empty()}}</DisplayString>
-		<Expand>
-			<ExpandedItem Condition="m_value != nullptr">m_value</ExpandedItem>
-		</Expand>
-	</Type>
+
+    <!-- General -->
+
+    <Type Name="hg::Guid">
+        <DisplayString>{{ {pre}-{c0}-{c1}-{post} }}</DisplayString>
+    </Type>
+
+    <!-- Pointers and Smart Pointers -->
+
+    <!-- Protect against void types -->
+    <Type Name="hg::SharedMemoryReference&lt;void&gt;"></Type>
+    <Type Name="hg::SharedMemoryReference&lt;*&gt;">
+        <SmartPointer Usage="Minimal">($T1*)(_packed >> 16)</SmartPointer>
+        <DisplayString Condition="_ctrlBlock == nullptr">empty</DisplayString>
+        <DisplayString Condition="_packed == 0">empty</DisplayString>
+        <Expand>
+            <Item Condition="_packed != 0" Name="[ptr]">($T1*)(_packed >> 16)</Item>
+            <Item Condition="_ctrlBlock != nullptr" Name="[ctrl block]">*_ctrlBlock</Item>
+        </Expand>
+    </Type>
+
+    <!-- Protect against void types -->
+    <Type Name="hg::NonOwningMemoryPointer&lt;void&gt;">
+        <DisplayString Condition="storage.mem == nullptr">nullptr</DisplayString>
+        <DisplayString Condition="storage.mem != nullptr">void</DisplayString>
+    </Type>
+    <Type Name="hg::NonOwningMemoryPointer&lt;*&gt;">
+        <SmartPointer Usage="Minimal">storage.mem</SmartPointer>
+        <DisplayString Condition="storage.mem == nullptr">nullptr</DisplayString>
+        <Expand>
+            <Item Condition="storage.mem != nullptr" Name="[ptr]">storage.mem</Item>
+        </Expand>
+    </Type>
+
+    <!-- Math -->
+
+    <Type Name="hg::math::matq2_t&lt;*&gt;">
+        <DisplayString>[2, 2]</DisplayString>
+        <Expand>
+            <Synthetic Name="[Row 0]">
+                <DisplayString>{value[0].x} {value[0].y}</DisplayString>
+            </Synthetic>
+            <Synthetic Name="[Row 1]">
+                <DisplayString>{value[1].x} {value[1].y}</DisplayString>
+            </Synthetic>
+        </Expand>
+    </Type>
+
+    <Type Name="hg::math::matq3_t&lt;*&gt;">
+        <DisplayString>[3, 3]</DisplayString>
+        <Expand>
+            <Synthetic Name="[Row 0]">
+                <DisplayString>{value[0].x} {value[0].y} {value[0].z}</DisplayString>
+            </Synthetic>
+            <Synthetic Name="[Row 1]">
+                <DisplayString>{value[1].x} {value[1].y} {value[1].z}</DisplayString>
+            </Synthetic>
+            <Synthetic Name="[Row 2]">
+                <DisplayString>{value[2].x} {value[2].y} {value[2].z}</DisplayString>
+            </Synthetic>
+        </Expand>
+    </Type>
+
+    <Type Name="hg::math::matq4_t&lt;*&gt;">
+        <DisplayString>[4, 4]</DisplayString>
+        <Expand>
+            <Synthetic Name="[Row 0]">
+                <DisplayString>{value[0].x} {value[0].y} {value[0].z} {value[0].w}</DisplayString>
+            </Synthetic>
+            <Synthetic Name="[Row 1]">
+                <DisplayString>{value[1].x} {value[1].y} {value[1].z} {value[1].w}</DisplayString>
+            </Synthetic>
+            <Synthetic Name="[Row 2]">
+                <DisplayString>{value[2].x} {value[2].y} {value[2].z} {value[2].w}</DisplayString>
+            </Synthetic>
+            <Synthetic Name="[Row 3]">
+                <DisplayString>{value[3].x} {value[3].y} {value[3].z} {value[3].w}</DisplayString>
+            </Synthetic>
+        </Expand>
+    </Type>
+
+    <Type Name="hg::math::quaternion_t&lt;*&gt;">
+        <DisplayString>{{ x={_quat.x} y={_quat.y} z={_quat.z} w={_quat.w} }}</DisplayString>
+    </Type>
+    <Type Name="hg::math::Location">
+        <DisplayString>{{ x={x} y={y} z={z} }}</DisplayString>
+    </Type>
+    <Type Name="hg::math::Rotator">
+        <DisplayString>{{ pitch={x} yaw={y} roll={z} }}</DisplayString>
+    </Type>
+
+    <!-- Container -->
+
+    <!-- Protect against void types -->
+    <Type Name="tl::expected&lt;void,*&gt;">
+        <DisplayString>{{...}}</DisplayString>
+    </Type>
+    <Type Name="tl::expected&lt;*&gt;" ExcludeView="stl">
+        <DisplayString Condition="m_has_val == true">{{expected({m_val,g})}}</DisplayString>
+        <DisplayString Condition="m_has_val != true">{{unexpected({m_unexpect.m_val,g})}}</DisplayString>
+        <DisplayString>{{...}}</DisplayString>
+    </Type>
+
+    <!-- Protect against void types -->
+    <Type Name="tl::optional&lt;void&gt;">
+        <DisplayString>{{...}}</DisplayString>
+    </Type>
+    <Type Name="tl::optional&lt;*&gt;" Priority="MediumHigh">
+        <DisplayString Condition="m_has_value == true">{{some({m_value,g})}}</DisplayString>
+        <DisplayString Condition="m_has_value != true">{{empty()}}</DisplayString>
+        <Expand>
+            <ExpandedItem Condition="m_has_value">m_value</ExpandedItem>
+        </Expand>
+    </Type>
+    <Type Name="tl::optional&lt;*&gt;">
+        <DisplayString Condition="m_value != nullptr">{{some({m_value,g})}}</DisplayString>
+        <DisplayString Condition="m_value == nullptr">{{empty()}}</DisplayString>
+        <Expand>
+            <ExpandedItem Condition="m_value != nullptr">m_value</ExpandedItem>
+        </Expand>
+    </Type>
 
 	<Type Name="ankerl::unordered_dense::v4_4_0::detail::table&lt;*&gt;" ExcludeView="stl">
 		<Expand>
