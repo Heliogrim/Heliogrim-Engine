@@ -30,9 +30,11 @@ namespace hg::editor::ui {
 		SharedPtr<engine::reflow::Host> _runtimeMenuHost;
 
 	public:
+		void setContent(mref<SharedPtr<Widget>> content_);
+
 		engine::reflow::EventResponse invokeOnContextMenu(ref<const ContextMenuEvent> event_) const;
 
-		[[nodiscard]] listen_handle_type onContextMenu(listen_fn_type<ContextMenuEvent> listenFn_);
+		listen_handle_type onContextMenu(listen_fn_type<ContextMenuEvent> listenFn_);
 
 		bool dropOnContextMenu(listen_handle_type handle_);
 
