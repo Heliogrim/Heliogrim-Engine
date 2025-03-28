@@ -70,7 +70,7 @@ EventResponse ContextMenuProvider::invokeOnBlur(cref<FocusEvent> event_) {
 }
 EventResponse ContextMenuProvider::invokeOnMouseButtonUp(ref<const MouseEvent> event_) {
 
-	if (event_._button != 2u) {
+	if (event_._button != 3u) {
 		return CompoundWidget::invokeOnMouseButtonUp(event_);
 	}
 
@@ -88,7 +88,7 @@ EventResponse ContextMenuProvider::invokeOnMouseButtonUp(ref<const MouseEvent> e
 	const auto menu = service.buildContextMenu(*window);
 	_runtimeMenuHost = make_sptr<Host>(
 		menu,
-		getLayoutState().layoutOffset,
+		event_._pointer,
 		math::fvec2 { std::numeric_limits<f32>::infinity() }
 	);
 	[[maybe_unused]] auto layer = window->requestLayer(_runtimeMenuHost);
