@@ -39,7 +39,7 @@ string InputIntegral::getTag() const noexcept {
 }
 
 bool InputIntegral::shouldTick() const noexcept {
-	return not state().isFocus() && isPristine() && state().isPending();
+	return not state().isFocus() && isPristine() && state().isLayoutOrRenderPending();
 }
 
 void InputIntegral::tick() {
@@ -64,7 +64,7 @@ InputIntegral::input_type InputIntegral::value() const noexcept {
 
 void InputIntegral::setValue(value_type next_) {
 	if (getDataAttributes().update<attr::InputData::value>(next_)) {
-		markAsPending();
+		markAsPending(true, true);
 	}
 }
 

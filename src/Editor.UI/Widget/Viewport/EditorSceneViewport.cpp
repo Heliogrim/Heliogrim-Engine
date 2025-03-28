@@ -18,10 +18,7 @@ EventResponse EditorSceneViewport::invokeOnKeyDown(ref<const KeyboardEvent> even
 
 	if (event_._down == true && event_._key == 'n') {
 
-		auto cameraTransform = _cameraActor->getRootComponent()->getLocalTransform();
-		experimental_add_actor(cameraTransform);
-
-		markAsPending();
+		markAsPending(true, true);
 		return EventResponse::eConsumed;
 	}
 
