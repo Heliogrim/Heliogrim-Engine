@@ -17,6 +17,12 @@ namespace hg::engine::reflow {
 		[[nodiscard]] static u16 getGlobalRenderTick() noexcept;
 
 	public:
+		static void revealArea(
+			_Inout_ ref<Widget> root_,
+			_In_ ref<const gfx::Aabb2d> aabb2d_
+		);
+
+	public:
 		static void tick(
 			_Inout_ ref<ReflowState> state_,
 			_In_ cref<sptr<Widget>> widget_,
