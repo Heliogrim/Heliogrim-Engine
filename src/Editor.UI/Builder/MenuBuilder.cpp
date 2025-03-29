@@ -17,6 +17,11 @@ ref<MenuBuilderSubItem> MenuBuilderSubItem::setIcon(mref<TypedAssetGuid<engine::
 	return *this;
 }
 
+ref<MenuBuilderSubItem> MenuBuilderSubItem::setAction(mref<std::function<void()>> action_) & {
+	_self.second.action = ::hg::move(action_);
+	return *this;
+}
+
 MenuBuilderSubItem MenuBuilderSubItem::addSubItem(StringView itemId_) {
 	auto key = String { itemId_ };
 	::hg::assertrt(not _self.second.subItems.contains(key));
@@ -46,6 +51,14 @@ ref<MenuBuilderItem> MenuBuilderItem::setIcon(mref<TypedAssetGuid<engine::assets
 	return *this;
 }
 
+ref<MenuBuilderItem> MenuBuilderItem::setAction(mref<std::function<void()>> action_) & {
+	const auto key = String { _itemId };
+	const auto iter = _builder._items.find(key);
+
+	iter->second.action = ::hg::move(action_);
+	return *this;
+}
+
 MenuBuilderSubItem MenuBuilderItem::addSubItem(const StringView itemId_) {
 	return _builder.addSubItem(_itemId, itemId_);
 }
@@ -71,7 +84,7 @@ MenuBuilderSubItem MenuBuilder::addSubItem(StringView parentItemId_, StringView 
 	::hg::assertrt(iter != _items.end());
 
 	auto key = String { itemId_ };
-	::hg::assertrt(iter->second.subItems.contains(key));
+	::hg::assertrt(not iter->second.subItems.contains(key));
 
 	auto result = iter->second.subItems.insert_or_assign(::hg::move(key), MenuItemData {});
 	::hg::assertrt(result.second);
@@ -97,6 +110,15 @@ SharedPtr<MenuItem> MenuBuilder::setupMenuItem(mref<SharedPtr<MenuItem>> item_, 
 
 	if (not data_.title.empty()) {
 		text->setText(data_.title);
+	}
+
+	if (data_.action != nullptr) {
+		item_->onClick(
+			[action = data_.action]([[maybe_unused]] const auto& event_) {
+				action();
+				return EventResponse::eHandled;
+			}
+		);
 	}
 
 	item_->setContent(::hg::move(content));

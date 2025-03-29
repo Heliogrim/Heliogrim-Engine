@@ -15,6 +15,7 @@ namespace hg::editor::ui {
 	struct MenuItemData {
 		String title;
 		TypedAssetGuid<engine::assets::TextureAsset> icon;
+		std::function<void()> action;
 
 		/**/
 
@@ -41,6 +42,8 @@ namespace hg::editor::ui {
 
 		ref<MenuBuilderSubItem> setIcon(mref<TypedAssetGuid<engine::assets::TextureAsset>> icon_) &;
 
+		ref<MenuBuilderSubItem> setAction(mref<std::function<void()>> action_) &;
+
 		[[nodiscard]] MenuBuilderSubItem addSubItem(StringView itemId_);
 	};
 
@@ -61,6 +64,8 @@ namespace hg::editor::ui {
 		ref<MenuBuilderItem> setTitle(StringView title_) &;
 
 		ref<MenuBuilderItem> setIcon(mref<TypedAssetGuid<engine::assets::TextureAsset>> icon_) &;
+
+		ref<MenuBuilderItem> setAction(mref<std::function<void()>> action_) &;
 
 		[[nodiscard]] MenuBuilderSubItem addSubItem(StringView itemId_);
 	};
