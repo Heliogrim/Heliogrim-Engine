@@ -43,6 +43,13 @@ u16 ReflowEngine::getGlobalRenderTick() noexcept {
 	return ReflowEngine::_globalReflowTick.load(std::memory_order::relaxed);
 }
 
+void ReflowEngine::revealArea(
+	ref<Widget> root_,
+	ref<const gfx::Aabb2d> aabb2d_
+) {
+	root_.cascadeRenderVersion(getGlobalRenderTick(), aabb2d_);
+}
+
 void ReflowEngine::tick(ref<ReflowState> state_, cref<sptr<Widget>> widget_, mref<LayoutContext> globalCtx_) {
 
 	// TODO: Erase temporary cleanup
@@ -360,7 +367,8 @@ void finalizeLayoutAndStates(ref<const SharedPtr<Widget>> root_, ref<ReflowState
 
 	/**/
 
+	const auto renderTick = state_.getRenderTick();
 	for (const auto& aabb : revealed) {
-		root_->cascadeRenderVersion(state_.getRenderTick(), aabb);
+		root_->cascadeRenderVersion(renderTick, aabb);
 	}
 }
