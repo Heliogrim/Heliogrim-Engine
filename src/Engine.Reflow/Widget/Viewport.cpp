@@ -283,8 +283,11 @@ void Viewport::render(const ptr<ReflowCommandBuffer> cmd_) {
 		return;
 	}
 
+	// Warning: We need the actual layout size, so hoisting into the tick function is not possible
+	auto& mutSelf = const_cast<ref<this_type>>(*this);
+
 	if (viewHasChanged()) {
-		rebuildView();
+		mutSelf.rebuildView();
 
 		/*
 		if (gfx->_renderTarget->ready()) {
@@ -297,7 +300,7 @@ void Viewport::render(const ptr<ReflowCommandBuffer> cmd_) {
 	}
 
 	if (_renderTarget == nullptr) {
-		remountRenderTarget();
+		mutSelf.remountRenderTarget();
 	}
 
 	/**/
@@ -335,8 +338,8 @@ void Viewport::render(const ptr<ReflowCommandBuffer> cmd_) {
 	);
 
 	// Error: This will break any asynchronous processing
-	_currentImageWaits.clear();
-	_currentImageSignal = nullptr;
+	mutSelf._currentImageWaits.clear();
+	mutSelf._currentImageSignal = nullptr;
 }
 
 PrefetchSizing Viewport::prefetchSizing(ReflowAxis axis_, ref<const ReflowState> state_) const {
