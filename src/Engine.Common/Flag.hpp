@@ -42,7 +42,7 @@ namespace hg {
 		 *
 		 * @param [in,out] other_ The other.
 		 */
-		Flag(Flag&& other_) noexcept = default;
+		constexpr Flag(Flag&& other_) noexcept = default;
 
 		/**
 		 * Constructor
@@ -72,7 +72,7 @@ namespace hg {
 		 * @author Julius
 		 * @date 20.12.2020
 		 */
-		~Flag() noexcept = default;
+		constexpr ~Flag() noexcept = default;
 
 		/**
 		 * Bitwise 'or' assignment operator
@@ -144,7 +144,7 @@ namespace hg {
 		 *
 		 * @returns The result of the operation.
 		 */
-		bool operator&(const Flag& other_) const noexcept {
+		constexpr bool operator&(const Flag& other_) const noexcept {
 			return unwrap & other_.unwrap;
 		}
 
@@ -158,7 +158,7 @@ namespace hg {
 		 *
 		 * @returns The result of the operation.
 		 */
-		bool operator&(const Ty& other_) const noexcept {
+		constexpr bool operator&(const Ty& other_) const noexcept {
 			return unwrap & static_cast<value_type>(other_);
 		}
 
@@ -239,7 +239,7 @@ namespace hg {
 		 *
 		 * @returns True if the parameters are considered equivalent.
 		 */
-		[[nodiscard]] bool operator==(const Ty& value_) const noexcept {
+		[[nodiscard]] constexpr bool operator==(const Ty& value_) const noexcept {
 			return value_ == static_cast<Ty>(unwrap);
 		}
 
@@ -253,7 +253,7 @@ namespace hg {
 		 *
 		 * @returns True if the parameters are considered not equivalent.
 		 */
-		[[nodiscard]] bool operator!=(const Ty& value_) const noexcept {
+		[[nodiscard]] constexpr bool operator!=(const Ty& value_) const noexcept {
 			return value_ != static_cast<Ty>(unwrap);
 		}
 
