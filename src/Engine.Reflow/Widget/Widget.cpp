@@ -104,7 +104,11 @@ EventResponse Widget::invokeOnMouseEnter(ref<const MouseMoveEvent> event_) {
 		markAsPending(false, true);
 	}
 
-	return EventResponse::eUnhandled;
+	return _emitter.emit(ReflowEventNames::MouseEnterEvent, event_);
+}
+
+Widget::listen_handle_type Widget::onMouseEnter(listen_fn_type<MouseMoveEvent> listenFn_) {
+	return _emitter.on<MouseMoveEvent>(ReflowEventNames::MouseEnterEvent, ::hg::move(listenFn_));
 }
 
 EventResponse Widget::invokeOnMouseLeave(ref<const MouseMoveEvent> event_) {
