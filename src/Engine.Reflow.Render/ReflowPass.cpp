@@ -187,24 +187,6 @@ void render::ReflowPass::execute(cref<engine::render::graph::ScopedSymbolContext
 	uiCmd._alpha.indices.reserve(16uLL * 1024uLL);
 	uiCmd._alpha.vertices.reserve(16uLL * 1024uLL);
 
-	math::vec2 available {
-		static_cast<float>(sceneColorTex->width()),
-		static_cast<float>(sceneColorTex->height())
-	};
-
-	const auto rootScissor = math::fExtent2D { available.x, available.y, 0.F, 0.F };
-	uiCmd.pushRootScissor(rootScissor);
-
-	/**/
-
-	auto& wnd = uiModel->getWindow();
-	//wnd.render(&uiCmd);
-
-	{
-		const auto poppedRoot = uiCmd.popScissor();
-		assert(rootScissor == poppedRoot);
-	}
-
 	/**/
 
 	const auto globalRenderTick = ReflowEngine::getGlobalRenderTick();
@@ -214,6 +196,7 @@ void render::ReflowPass::execute(cref<engine::render::graph::ScopedSymbolContext
 	}
 
 	auto markForCapture = Vector<nmpt<const Widget>> {};
+	auto& wnd = uiModel->getWindow();
 	wnd.enumerateDistinctCapture(_lastRenderTick, markForCapture);
 
 	_lastRenderTick = globalRenderTick;
@@ -247,6 +230,11 @@ void render::ReflowPass::execute(cref<engine::render::graph::ScopedSymbolContext
 	if (uiCmd._alpha.vertices.empty() && uiCmd._opaque.vertices.empty()) {
 		return;
 	}
+
+	const auto rootScissor = math::fExtent2D {
+		static_cast<float>(sceneColorTex->width()),
+		static_cast<float>(sceneColorTex->height()), 0.F, 0.F
+	};
 
 	updateVertices(uiCmd._opaque.vertices, uiCmd._alpha.vertices, {});
 	updateIndices(uiCmd._opaque.indices, uiCmd._alpha.indices, {});
