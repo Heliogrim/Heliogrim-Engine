@@ -124,6 +124,8 @@ namespace hg::engine::reflow {
 
 		virtual EventResponse invokeOnMouseEnter(ref<const MouseMoveEvent> event_);
 
+		listen_handle_type onMouseEnter(listen_fn_type<MouseMoveEvent> listenFn_);
+
 		virtual EventResponse invokeOnMouseLeave(ref<const MouseMoveEvent> event_);
 
 	public:
