@@ -46,6 +46,10 @@ namespace hg::editor::ui::rx {
 			return this_type { ::hg::forward<decltype(args_)>(args_)... };
 		}
 
+		[[nodiscard]] ref<const ::hg::meta::drop_ref_t<Type_>> peek() const noexcept {
+			return _holder.stored;
+		}
+
 		void next(auto&&... args_) requires
 			(not std::is_reference_v<Type_>) &&
 			std::is_constructible_v<::hg::meta::drop_ref_t<Type_>, decltype(args_)&&...> {
