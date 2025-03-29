@@ -18,6 +18,8 @@ using namespace hg::engine::core;
 using namespace hg::engine;
 using namespace hg;
 
+Opt<ref<editor::EditorUI>> editor::EditorUI::_cached = None;
+
 editor::EditorUI::EditorUI(ref<EditorEngine> engine_) :
 	SubModule(std::addressof(engine_)),
 	_dependencies(
@@ -28,9 +30,20 @@ editor::EditorUI::EditorUI(ref<EditorEngine> engine_) :
 				true
 			}
 		}
-	) {}
+	),
+	_uiModel(),
+	_uiServices(),
+	_sceneEditorController() {
+	EditorUI::_cached = Some(*this);
+}
 
-editor::EditorUI::~EditorUI() = default;
+editor::EditorUI::~EditorUI() {
+	EditorUI::_cached = None;
+}
+
+Opt<ref<editor::EditorUI>> editor::EditorUI::getEditorUI() {
+	return EditorUI::_cached;
+}
 
 engine::core::DependencyKey editor::EditorUI::moduleKey() const noexcept {
 	return EditorUIDepKey;

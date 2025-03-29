@@ -1,6 +1,8 @@
 #pragma once
 
+#include <Engine.Common/Optional.hpp>
 #include <Engine.Common/Sal.hpp>
+#include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.Core/Module/SubModule.hpp>
 
@@ -35,9 +37,12 @@ namespace hg::editor {
 		~EditorUI() override;
 
 	private:
+		static Opt<ref<EditorUI>> _cached;
 		CompactSet<engine::core::SubModuleDependency> _dependencies;
 
 	public:
+		[[nodiscard]] static Opt<ref<EditorUI>> getEditorUI();
+
 		[[nodiscard]] engine::core::DependencyKey moduleKey() const noexcept override;
 
 		[[nodiscard]] cref<CompactSet<engine::core::SubModuleDependency>> dependencies() const noexcept override;
