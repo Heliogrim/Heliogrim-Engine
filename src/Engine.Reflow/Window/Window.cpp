@@ -123,7 +123,7 @@ void Window::dropLayer(nmpt<Host> host_) {
 	const auto remove = std::ranges::remove_if(
 		_layers,
 		[host_](const auto& entry_) {
-			return entry_->second.lock().get() == host_.get();
+			return entry_.get() != nullptr ? entry_->second.lock().get() == host_.get() : true;
 		}
 	);
 
@@ -134,7 +134,7 @@ void Window::dropLayer(nmpt<Host> host_) {
 	/**/
 
 	for (const auto& layer : remove) {
-		if (layer->second.expired())
+		if (not layer || layer->second.expired())
 			continue;
 		invalidateHostArea(*this, *layer->second.lock());
 	}
@@ -168,13 +168,13 @@ void Window::dropLayer(nmpt<Layer> layer_) {
 	/**/
 
 	for (const auto& layer : remove) {
-		if (layer->second.expired())
+		if (not layer || layer->second.expired())
 			continue;
 		invalidateHostArea(*this, *layer->second.lock());
 	}
 
 	for (auto it = remove.begin(); it != remove.end(); ++it) {
-		auto maybeHost = it->get()->second.lock();
+		auto maybeHost = (it->get() != nullptr) ? it->get()->second.lock() : nullptr;
 		if (maybeHost != nullptr) {
 			std::erase_if(
 				_children,
