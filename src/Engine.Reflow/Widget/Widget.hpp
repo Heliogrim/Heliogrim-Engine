@@ -103,6 +103,8 @@ namespace hg::engine::reflow {
 		ReflowEventEmitter _emitter;
 
 	public:
+		void requestFocus();
+
 		virtual EventResponse invokeOnFocus(cref<FocusEvent> event_);
 
 		[[nodiscard]] listen_handle_type onFocus(listen_fn_type<FocusEvent> listenFn_);

@@ -2,6 +2,8 @@
 
 #include "../Children.hpp"
 #include "../DataWatcher.hpp"
+#include "../Window/Window.hpp"
+#include "../Window/WindowManager.hpp"
 
 using namespace hg::engine::reflow;
 using namespace hg;
@@ -59,6 +61,13 @@ bool Widget::shouldTick() const noexcept {
 }
 
 void Widget::tick() {}
+
+void Widget::requestFocus() {
+	const auto root = std::static_pointer_cast<Window>(this->root());
+	if (root == nullptr)
+		return;
+	WindowManager::get()->dispatch(root, FocusEvent { shared_from_this() });
+}
 
 EventResponse Widget::invokeOnFocus(cref<FocusEvent> event_) {
 	return _emitter.emit(ReflowEventNames::FocusEvent, event_);
