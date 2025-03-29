@@ -7,11 +7,18 @@
 #include <Engine.Common/Move.hpp>
 
 #include "Layer.hpp"
+#include "../ReflowEngine.hpp"
 #include "../Command/ReflowCommandLayer.hpp"
 #include "../Widget/Layer/Host.hpp"
 
 using namespace hg::engine::reflow;
 using namespace hg;
+
+/**/
+
+static void invalidateHostArea(ref<Window> window_, ref<const Host> host_);
+
+/**/
 
 Window::Window() :
 	Widget(),
@@ -120,6 +127,18 @@ void Window::dropLayer(nmpt<Host> host_) {
 		}
 	);
 
+	if (remove.empty()) {
+		return;
+	}
+
+	/**/
+
+	for (const auto& layer : remove) {
+		if (layer->second.expired())
+			continue;
+		invalidateHostArea(*this, *layer->second.lock());
+	}
+
 	std::erase_if(
 		_children,
 		[host_](const auto& widget_) {
@@ -134,7 +153,25 @@ void Window::dropLayer(nmpt<Host> host_) {
 }
 
 void Window::dropLayer(nmpt<Layer> layer_) {
-	const auto remove = std::ranges::remove_if(_layers, [layer_](const auto& entry_) { return entry_.get() == layer_.get(); });
+
+	const auto remove = std::ranges::remove_if(
+		_layers,
+		[layer_](const auto& entry_) {
+			return entry_.get() == layer_.get();
+		}
+	);
+
+	if (remove.empty()) {
+		return;
+	}
+
+	/**/
+
+	for (const auto& layer : remove) {
+		if (layer->second.expired())
+			continue;
+		invalidateHostArea(*this, *layer->second.lock());
+	}
 
 	for (auto it = remove.begin(); it != remove.end(); ++it) {
 		auto maybeHost = it->get()->second.lock();
@@ -287,4 +324,10 @@ math::fvec2 Window::getShrinkFactor() const noexcept {
 
 math::fvec2 Window::getGrowFactor() const noexcept {
 	return {};
+}
+
+/**/
+
+void invalidateHostArea(ref<Window> window_, ref<const Host> host_) {
+	ReflowEngine::revealArea(window_, host_.getLayoutState().lastAabb);
 }
