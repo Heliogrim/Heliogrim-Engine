@@ -14,7 +14,9 @@ MenuItem::MenuItem() :
 	CompoundWidget(ReflowClassList {}, nullptr),
 	_subMenu() {}
 
-MenuItem::~MenuItem() = default;
+MenuItem::~MenuItem() {
+	hideSubMenu();
+};
 
 String MenuItem::getTag() const noexcept {
 	return std::format(R"(MenuItem <{:#x}>)", reinterpret_cast<u64>(this));
@@ -39,9 +41,11 @@ void MenuItem::showSubMenu() {
 	auto window = std::static_pointer_cast<Window>(root());
 	::hg::assertrt(window != nullptr);
 
+	const auto position = getLayoutState().layoutOffset + math::fvec2 { getLayoutState().layoutSize.x, 0.F };
+
 	_runtimeHost = make_sptr<Host>(
 		_subMenu,
-		getLayoutState().layoutOffset,
+		position,
 		math::fvec2 { std::numeric_limits<f32>::infinity(), std::numeric_limits<f32>::infinity() }
 	);
 	_subMenu->setParent(_runtimeHost);
@@ -52,9 +56,22 @@ void MenuItem::showSubMenu() {
 
 void MenuItem::hideSubMenu() {
 
-	::hg::assertrt(_runtimeHost != nullptr);
+	if (_runtimeHost == nullptr) {
+		return;
+	}
 
-	auto window = std::static_pointer_cast<Window>(root());
+	auto window = std::static_pointer_cast<Window>(
+		[this] {
+			if (auto menuRoot = this->root()) {
+				return menuRoot;
+			}
+
+			if (auto hostRoot = this->_runtimeHost->root()) {
+				return hostRoot;
+			}
+			return SharedPtr<Widget> {};
+		}()
+	);
 	::hg::assertrt(window != nullptr);
 
 	window->dropLayer(_runtimeHost.get());
@@ -62,24 +79,19 @@ void MenuItem::hideSubMenu() {
 	_runtimeHost.reset();
 }
 
-EventResponse MenuItem::invokeOnFocus(cref<FocusEvent> event_) {
+EventResponse MenuItem::invokeOnSelected(bool selected_) {
 
-	// TODO: Replace with mouse enter / hover event
-	if (_subMenu != nullptr) {
+	if (selected_ && _subMenu != nullptr) {
 		showSubMenu();
+		return EventResponse::eHandled;
 	}
 
-	return CompoundWidget::invokeOnFocus(event_);
-}
-
-EventResponse MenuItem::invokeOnBlur(cref<FocusEvent> event_) {
-
-	// TODO: Replace with mouse lease / 'un'-hover event
-	if (_runtimeHost != nullptr || _subMenu != nullptr) {
+	if (not selected_ && _runtimeHost != nullptr && _subMenu != nullptr) {
 		hideSubMenu();
+		return EventResponse::eHandled;
 	}
 
-	return CompoundWidget::invokeOnBlur(event_);
+	return EventResponse::eUnhandled;
 }
 
 /**/

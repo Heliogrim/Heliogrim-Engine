@@ -39,9 +39,7 @@ namespace hg::editor::ui {
 		void hideSubMenu();
 
 	public:
-		engine::reflow::EventResponse invokeOnFocus(cref<engine::reflow::FocusEvent> event_) override;
-
-		engine::reflow::EventResponse invokeOnBlur(cref<engine::reflow::FocusEvent> event_) override;
+		engine::reflow::EventResponse invokeOnSelected(bool selected_);
 	};
 
 	/**/
