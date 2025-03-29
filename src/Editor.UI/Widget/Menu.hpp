@@ -29,9 +29,12 @@ namespace hg::editor::ui {
 		[[nodiscard]] string getTag() const noexcept override;
 
 	private:
+		Opt<ref<MenuItem>> _selected;
 		SharedPtr<engine::reflow::uikit::VerticalLayout> _layout;
 
 	public:
+		void changeSelection(mref<Opt<ref<MenuItem>>> next_);
+
 		void addMenuItem(mref<SharedPtr<MenuItem>> menuItem_);
 	};
 
