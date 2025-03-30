@@ -445,8 +445,7 @@ EventResponse Viewport::invokeOnKeyDown(ref<const KeyboardEvent> event_) {
 			response = EventResponse::eConsumed;
 
 			ref<Transform> rtf { _cameraActor->getRootComponent()->getLocalTransform() };
-
-			auto rlwd = rtf.rotator().into()._left();
+			auto rlwd = -rtf.rotator().into()._left();
 
 			rtf.setLocation(
 				math::Location(
@@ -459,8 +458,7 @@ EventResponse Viewport::invokeOnKeyDown(ref<const KeyboardEvent> event_) {
 			response = EventResponse::eConsumed;
 
 			ref<Transform> rtf { _cameraActor->getRootComponent()->getLocalTransform() };
-
-			auto rrwd = -rtf.rotator().into()._left();
+			auto rrwd = rtf.rotator().into()._left();
 
 			rtf.setLocation(
 				math::Location(
@@ -569,7 +567,7 @@ EventResponse Viewport::invokeOnMouseMove(ref<const MouseMoveEvent> event_) {
 	ref<Transform> ctf { _cameraActor->getCameraComponent()->getLocalTransform() };
 
 	rtf.rotator() += math::Rotator { 0.F, dxdy.x, 0.F };
-	ctf.rotator() += math::Rotator { dxdy.y, 0.F, 0.F };
+	ctf.rotator() += math::Rotator { -dxdy.y, 0.F, 0.F };
 
 	return EventResponse::eConsumed;
 }

@@ -7,37 +7,11 @@
 #include <Engine.Scheduler/Helper/Wait.hpp>
 #include <Engine.Scheduler/Pipeline/CompositePipeline.hpp>
 #include <Engine.Scheduler/Pipeline/StagePipeline.hpp>
-#include <Engine.Scheduler/Queue/SharedBufferPool.hpp>
 
 using namespace hg::engine::scheduler;
 using namespace hg;
 
 namespace SchedulerModule {
-	TEST(SharedBufferPool, Default) {
-		//
-		auto pool = SharedBufferPool();
-
-		//
-		EXPECT_EQ(pool.capacity(), 0);
-		EXPECT_EQ(pool.size().load(std::memory_order_relaxed), 0);
-	}
-
-	TEST(SharedBufferPool, Reserve) {
-		//
-		auto pool = SharedBufferPool();
-
-		//
-		EXPECT_EQ(pool.capacity(), 0);
-		EXPECT_EQ(pool.size().load(std::memory_order_relaxed), 0);
-
-		//
-		pool.reserve(32uL);
-
-		//
-		EXPECT_EQ(pool.capacity(), 32);
-		EXPECT_EQ(pool.size().load(std::memory_order_relaxed), 32);
-	}
-
 	static void structuredRuntimeTest(std::function<void(nmpt<engine::Scheduler>)>&& callback_) {
 
 		auto engine = make_uptr<test::TestSchedulerEngine>();
