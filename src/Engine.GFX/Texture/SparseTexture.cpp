@@ -205,8 +205,8 @@ nmpt<SparseTexturePage> SparseTexture::makeOpaquePage(u32 layer_) {
 	 *
 	 */
 	nmpt<VirtualMemoryPage> memory {};
-	const auto memorySize { _mipTailSize };
-	const auto memoryOffset { _mipTailOffset };
+	const auto memorySize = _mipTailSize;
+	const auto memoryOffset = _mipTailOffset + _mipTailStride * layer_;
 
 	memory = _memory->definePage(memoryOffset, memorySize);
 	assert(!!memory);
