@@ -623,7 +623,25 @@ namespace hg::math {
 		return res;
 	}
 
-	[[maybe_unused]] static mat4 perspective(
+	[[maybe_unused]] static mat4 perspectiveLeftHand(
+		const mat4::value_type& fov_,
+		const mat4::value_type& aspect_,
+		const mat4::value_type& znear_,
+		const mat4::value_type& zfar_
+	) {
+		const mat4::value_type ht = tan(fov_ / static_cast<mat4::value_type>(2));
+
+		mat4 res = mat4(0);
+		res[0][0] = static_cast<mat4::value_type>(1) / (aspect_ * ht);
+		res[1][1] = static_cast<mat4::value_type>(1) / (ht);
+		res[2][2] = zfar_ / (zfar_ - znear_);
+		res[2][3] = static_cast<mat4::value_type>(1);
+		res[3][2] = -(zfar_ * znear_) / (zfar_ - znear_);
+
+		return res;
+	}
+
+	[[maybe_unused]] static mat4 perspectiveRightHand(
 		const mat4::value_type& fov_,
 		const mat4::value_type& aspect_,
 		const mat4::value_type& znear_,
@@ -639,5 +657,18 @@ namespace hg::math {
 		res[3][2] = -(zfar_ * znear_) / (zfar_ - znear_);
 
 		return res;
+	}
+
+	[[maybe_unused]] FORCE_INLINE static mat4 perspective(
+		const mat4::value_type& fov_,
+		const mat4::value_type& aspect_,
+		const mat4::value_type& znear_,
+		const mat4::value_type& zfar_
+	) {
+		if constexpr (true/* Driver is Vulkan? */) {
+			return perspectiveRightHand(fov_, aspect_, znear_, zfar_);
+		} else {
+			return perspectiveLeftHand(fov_, aspect_, znear_, zfar_);
+		}
 	}
 }
