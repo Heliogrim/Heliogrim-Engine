@@ -656,7 +656,7 @@ EffectCompileResult build_test_pipeline(
 				.stencilCompareMask = 0uL,
 				.stencilWriteMask = 0uL,
 				.primitiveTopology = PrimitiveTopology::eTriangleList,
-				.faceCulling = FaceCulling::eBack,
+				.faceCulling = FaceCulling::eFront,
 				.faceMode = FaceMode::eFill,
 				.faceWinding = FaceWinding::eCcw,
 				.pass = pass_.get()

@@ -193,10 +193,8 @@ void TmpBrdfIrradPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcep
 	);
 
 	Vector<math::mat4> viewMatrices = {
-		math::mat4::make_identity().rotate(glm::radians(90.F), math::vec3_yaw)
-		.rotate(glm::radians(180.F), math::vec3_pitch),
-		math::mat4::make_identity().rotate(glm::radians(-90.F), math::vec3_yaw)
-		.rotate(glm::radians(180.F), math::vec3_pitch),
+		math::mat4::make_identity().rotate(glm::radians(90.F), math::vec3_yaw).rotate(glm::radians(180.F), math::vec3_pitch),
+		math::mat4::make_identity().rotate(glm::radians(-90.F), math::vec3_yaw).rotate(glm::radians(180.F), math::vec3_pitch),
 		math::mat4::make_identity().rotate(glm::radians(-90.F), math::vec3_pitch),
 		math::mat4::make_identity().rotate(glm::radians(90.F), math::vec3_pitch),
 		math::mat4::make_identity().rotate(glm::radians(180.F), math::vec3_pitch),
