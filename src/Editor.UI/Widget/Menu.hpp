@@ -9,6 +9,7 @@ namespace hg::engine::reflow::uikit {
 
 namespace hg::editor::ui {
 	class MenuItem;
+	class MenuSpacer;
 }
 
 namespace hg::editor::ui {
@@ -36,6 +37,8 @@ namespace hg::editor::ui {
 		void changeSelection(mref<Opt<ref<MenuItem>>> next_);
 
 		void addMenuItem(mref<SharedPtr<MenuItem>> menuItem_);
+
+		void addMenuSpacer(mref<SharedPtr<MenuSpacer>> menuSpacer_);
 	};
 
 	/**/

@@ -5,6 +5,7 @@
 #include <Engine.Reflow.Uikit/Molecule/Layout/Stack.hpp>
 
 #include "MenuItem.hpp"
+#include "MenuSpacer.hpp"
 
 using namespace hg::editor::ui;
 using namespace hg::engine::reflow;
@@ -49,6 +50,10 @@ void editor::ui::Menu::addMenuItem(mref<SharedPtr<MenuItem>> menuItem_) {
 	/**/
 
 	_layout->addChild(::hg::move(menuItem_));
+}
+
+void editor::ui::Menu::addMenuSpacer(mref<SharedPtr<MenuSpacer>> menuSpacer_) {
+	_layout->addChild(::hg::move(menuSpacer_));
 }
 
 SharedPtr<editor::ui::Menu> editor::ui::makeMenu() {
