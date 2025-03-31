@@ -35,6 +35,14 @@ MenuBuilderSubItem MenuBuilderSubItem::addSubItem(StringView itemId_) {
 	};
 }
 
+ref<MenuBuilderItem> MenuBuilderItem::setPrecedence(u16 precedence_) & {
+	const auto key = String { _itemId };
+	const auto iter = _builder._items.find(key);
+
+	iter->second.precedence = ::hg::move(precedence_);
+	return *this;
+}
+
 ref<MenuBuilderItem> MenuBuilderItem::setTitle(StringView title_) & {
 	const auto key = String { _itemId };
 	const auto iter = _builder._items.find(key);
@@ -68,7 +76,7 @@ MenuBuilderItem MenuBuilder::addItem(StringView itemId_) {
 	auto key = String { itemId_ };
 	::hg::assertrt(not _items.contains(key));
 
-	const auto result = _items.insert_or_assign(::hg::move(key), MenuItemData {});
+	const auto result = _items.insert_or_assign(::hg::move(key), MenuItemData { .precedence = (_autoPrecedence += 100uL) });
 	::hg::assertrt(result.second);
 
 	return MenuBuilderItem {
@@ -151,11 +159,23 @@ SharedPtr<editor::ui::Menu> MenuBuilder::construct() const {
 
 	/**/
 
+	auto sorted = Vector<nmpt<const MenuItemData>> {};
 	for (const auto& [key, value] : _items) {
+		const auto insertPoint = std::ranges::lower_bound(
+			sorted,
+			value.precedence,
+			std::less<u16> {},
+			[](const auto& item_) { return item_->precedence; }
+		);
+		sorted.insert(insertPoint, std::addressof(value));
+	}
+
+	for (const auto& item : sorted) {
+
 		menu->addMenuItem(
 			setupMenuItem(
 				makeMenuItem(),
-				value
+				*item
 			)
 		);
 	}

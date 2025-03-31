@@ -13,6 +13,8 @@ namespace hg::editor::ui {
 	/**/
 
 	struct MenuItemData {
+		u16 precedence;
+
 		String title;
 		TypedAssetGuid<engine::assets::TextureAsset> icon;
 		std::function<void()> action;
@@ -61,6 +63,8 @@ namespace hg::editor::ui {
 		ref<MenuBuilder> _builder;
 
 	public:
+		ref<MenuBuilderItem> setPrecedence(u16 precedence_) &;
+
 		ref<MenuBuilderItem> setTitle(StringView title_) &;
 
 		ref<MenuBuilderItem> setIcon(mref<TypedAssetGuid<engine::assets::TextureAsset>> icon_) &;
@@ -78,6 +82,7 @@ namespace hg::editor::ui {
 		friend struct MenuBuilderSubItem;
 
 	private:
+		u16 _autoPrecedence = u16 { 1000uL };
 		StableUnorderedMap<String, MenuItemData> _items;
 
 	public:
