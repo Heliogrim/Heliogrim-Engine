@@ -2,6 +2,7 @@
 
 #include <Engine.Reflow.Uikit/Atom/Paint.hpp>
 #include <Engine.Reflow.Uikit/Exp/Button.hpp>
+#include <Widget/MenuSpacer.hpp>
 
 using namespace hg::editor::ui;
 using namespace hg::engine::reflow;
@@ -67,6 +68,16 @@ ref<MenuBuilderItem> MenuBuilderItem::setAction(mref<std::function<void()>> acti
 	return *this;
 }
 
+ref<MenuBuilderItem> MenuBuilderItem::setSpacer(const bool before_, const bool after_) & {
+	const auto key = String { _itemId };
+	const auto iter = _builder._items.find(key);
+
+	iter->second.beforeSpacer = before_;
+	iter->second.afterSpacer = after_;
+
+	return *this;
+}
+
 MenuBuilderSubItem MenuBuilderItem::addSubItem(const StringView itemId_) {
 	return _builder.addSubItem(_itemId, itemId_);
 }
@@ -105,8 +116,6 @@ MenuBuilderSubItem MenuBuilder::addSubItem(StringView parentItemId_, StringView 
 
 SharedPtr<MenuItem> MenuBuilder::setupMenuItem(mref<SharedPtr<MenuItem>> item_, ref<const MenuItemData> data_) const {
 
-	auto text = make_sptr<uikit::Text>();
-	auto content = uikit::makeButton(uikit::TextButtonCreateOptions { .level = 1u, .text = clone(text) });
 	auto text = make_sptr<uikit::Text>(ReflowClassList { "[MenuItem] > title"sv }, nullptr);
 	text->getLayoutAttributes().update<attr::BoxLayout::padding>(Padding { 4.F, 2.F });
 	text->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
@@ -178,12 +187,20 @@ SharedPtr<editor::ui::Menu> MenuBuilder::construct() const {
 
 	for (const auto& item : sorted) {
 
+		if (item->beforeSpacer) {
+			menu->addMenuSpacer(makeMenuSpacer());
+		}
+
 		menu->addMenuItem(
 			setupMenuItem(
 				makeMenuItem(),
 				*item
 			)
 		);
+
+		if (item->afterSpacer) {
+			menu->addMenuSpacer(makeMenuSpacer());
+		}
 	}
 
 	/**/

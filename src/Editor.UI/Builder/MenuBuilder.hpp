@@ -73,6 +73,8 @@ namespace hg::editor::ui {
 
 		ref<MenuBuilderItem> setAction(mref<std::function<void()>> action_) &;
 
+		ref<MenuBuilderItem> setSpacer(bool before_, bool after_) &;
+
 		[[nodiscard]] MenuBuilderSubItem addSubItem(StringView itemId_);
 	};
 
