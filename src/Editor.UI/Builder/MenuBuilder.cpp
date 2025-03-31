@@ -107,13 +107,19 @@ SharedPtr<MenuItem> MenuBuilder::setupMenuItem(mref<SharedPtr<MenuItem>> item_, 
 
 	auto text = make_sptr<uikit::Text>();
 	auto content = uikit::makeButton(uikit::TextButtonCreateOptions { .level = 1u, .text = clone(text) });
+	auto text = make_sptr<uikit::Text>(ReflowClassList { "[MenuItem] > title"sv }, nullptr);
+	text->getLayoutAttributes().update<attr::BoxLayout::padding>(Padding { 4.F, 2.F });
+	text->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
+
+	auto content = uikit::makeButton(uikit::TextButtonCreateOptions { .level = 2u, .text = clone(text) });
+	content->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
 
 	if (data_.icon.valid()) {
 		const auto icon = make_sptr<uikit::Paint>();
-		icon->getLayoutAttributes().update<attr::BoxLayout::minWidth>({ ReflowUnitType::eAbsolute, 24.F });
-		icon->getLayoutAttributes().update<attr::BoxLayout::maxWidth>({ ReflowUnitType::eAbsolute, 24.F });
-		icon->getLayoutAttributes().update<attr::BoxLayout::minHeight>({ ReflowUnitType::eAbsolute, 24.F });
-		icon->getLayoutAttributes().update<attr::BoxLayout::maxHeight>({ ReflowUnitType::eAbsolute, 24.F });
+		icon->getLayoutAttributes().update<attr::BoxLayout::minWidth>({ ReflowUnitType::eAbsolute, 16.F });
+		icon->getLayoutAttributes().update<attr::BoxLayout::maxWidth>({ ReflowUnitType::eAbsolute, 16.F });
+		icon->getLayoutAttributes().update<attr::BoxLayout::minHeight>({ ReflowUnitType::eAbsolute, 16.F });
+		icon->getLayoutAttributes().update<attr::BoxLayout::maxHeight>({ ReflowUnitType::eAbsolute, 16.F });
 	}
 
 	if (not data_.title.empty()) {

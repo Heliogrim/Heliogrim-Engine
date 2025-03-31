@@ -13,6 +13,8 @@ namespace hg::editor::ui {
 	/**/
 
 	struct MenuItemData {
+		bool beforeSpacer : 1;
+		bool afterSpacer : 1;
 		u16 precedence;
 
 		String title;
