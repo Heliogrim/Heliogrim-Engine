@@ -3,6 +3,7 @@
 #include <Engine.Common/Collection/Array.hpp>
 #include <Engine.Config/Config.hpp>
 #include <Engine.Core/Engine.hpp>
+#include <Engine.Core/Timing.hpp>
 #include <Engine.Core/Module/Modules.hpp>
 #include <Engine.Event/GlobalEventEmitter.hpp>
 
@@ -58,6 +59,7 @@ namespace hg::engine {
 		Config _config;
 		GlobalEventEmitter _emitter;
 		core::Modules _modules;
+		core::Timing _timing;
 
 	public:
 		[[nodiscard]] nmpt<ActorModule> getActors() const noexcept override;
@@ -91,6 +93,8 @@ namespace hg::engine {
 		[[nodiscard]] ref<GlobalEventEmitter> getEmitter() const noexcept override;
 
 		[[nodiscard]] ref<core::Modules> getModules() const noexcept override;
+
+		[[nodiscard]] ref<core::Timing> getTiming() const noexcept override;
 
 	private:
 		Array<nmpt<core::UniverseContext>, 1> _universeContexts;

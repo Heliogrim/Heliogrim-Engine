@@ -222,6 +222,9 @@ bool GameEngine::stop() {
 		return false;
 	}
 
+	// Problem: Due to the destructive behaviour of the stop functions, we need to execute them between `TickEnd` -> `TickBegin`
+	//	as we have to maintain the the constraints, data-integrity and immutability while within the bound cycle state.
+
 	/**/
 	std::atomic_flag next {};
 	scheduler::exec(
@@ -427,6 +430,10 @@ ref<GlobalEventEmitter> GameEngine::getEmitter() const noexcept {
 
 ref<core::Modules> GameEngine::getModules() const noexcept {
 	return const_cast<ref<core::Modules>>(_modules);
+}
+
+ref<core::Timing> GameEngine::getTiming() const noexcept {
+	return const_cast<ref<core::Timing>>(_timing);
 }
 
 std::span<const nmpt<core::UniverseContext>> GameEngine::getUniverseContexts() const noexcept {
