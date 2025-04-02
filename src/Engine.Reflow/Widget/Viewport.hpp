@@ -54,6 +54,16 @@ namespace hg::engine::reflow {
 		ptr<CameraActor> _cameraActor;
 		Universe _cameraUniverse;
 
+		struct CameraControls {
+			bool forward : 1 = false;
+			bool left : 1 = false;
+			bool backward : 1 = false;
+			bool right : 1 = false;
+			bool up : 1 = false;
+			bool down : 1 = false;
+			bool boost : 1 = false;
+		} _cameraControls;
+
 	public:
 		[[nodiscard]] smr<gfx::Swapchain> getSwapchain() const noexcept;
 
@@ -62,6 +72,8 @@ namespace hg::engine::reflow {
 		[[nodiscard]] const non_owning_rptr<CameraActor> getCameraActor() const noexcept;
 
 		void setViewportTarget(StringView renderer_, Universe universe_, ptr<CameraActor> camera_);
+
+		void updateCameraWithCtrl();
 
 	private:
 		std::array<math::vec2, 4> _uvs;

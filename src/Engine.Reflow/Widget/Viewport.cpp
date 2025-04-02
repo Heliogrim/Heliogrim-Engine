@@ -15,6 +15,7 @@
 
 #include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Asserts/Todo.hpp>
+#include <Engine.Core/Timing.hpp>
 #include <Engine.Core/Universe.hpp>
 #include <Engine.GFX.Scene/RenderSceneManager.hpp>
 #include <Engine.GFX.Scene/View/SceneView.hpp>
@@ -23,8 +24,8 @@
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
 #include <Engine.Scene/SceneBase.hpp>
 
-#include "../Layout/Style.hpp"
 #include "../Algorithm/Flex.hpp"
+#include "../Layout/Style.hpp"
 
 using namespace hg::engine::reflow;
 using namespace hg;
@@ -81,6 +82,10 @@ bool Viewport::shouldTick() const noexcept {
 
 void Viewport::tick() {
 	Widget::tick();
+
+	if (_cameraUniverse.valid() && _cameraActor != nullptr) {
+		updateCameraWithCtrl();
+	}
 
 	/**/
 
@@ -143,6 +148,62 @@ void Viewport::setViewportTarget(StringView renderer_, Universe universe_, ptr<C
 	_renderer = std::move(renderer_);
 	_cameraUniverse = std::move(universe_);
 	_cameraActor = camera_;
+}
+
+void Viewport::updateCameraWithCtrl() {
+
+	ref<Transform> rtf { _cameraActor->getRootComponent()->getLocalTransform() };
+	ref<const Transform> ctf = _cameraActor->getCameraComponent()->getLocalTransform();
+	const auto factor = (_cameraControls.boost ? 20.F : 5.F) * core::Timing::getDeltaTime();
+
+	auto delta = math::fvec3 { 0.F };
+
+	/**/
+
+	if (_cameraControls.forward && not _cameraControls.backward) {
+
+		const auto rotator = math::Rotator::combine(rtf.rotator(), ctf.rotator());
+		auto rfwd = rotator.into().__forward();
+		rfwd.x *= -1.F;
+
+		delta += rfwd.normalize();
+	}
+
+	if (_cameraControls.left && not _cameraControls.right) {
+
+		auto rlwd = -rtf.rotator().into()._left();
+		delta += rlwd.normalize();
+	}
+
+	if (not _cameraControls.forward && _cameraControls.backward) {
+
+		const auto rotator = math::Rotator::combine(rtf.rotator(), ctf.rotator());
+		auto rbwd = -rotator.into().__forward();
+		rbwd.x *= -1.F;
+
+		delta += rbwd.normalize();
+	}
+
+	if (not _cameraControls.left && _cameraControls.right) {
+
+		auto rrwd = rtf.rotator().into()._left();
+
+		delta += rrwd.normalize();
+	}
+
+	if (_cameraControls.up && not _cameraControls.down) {
+		delta += math::vec3_up;
+	}
+
+	if (not _cameraControls.up && _cameraControls.down) {
+		delta += math::vec3_down;
+	}
+
+	/**/
+
+	if (not delta.zero()) {
+		rtf.setLocation(math::Location(rtf.location().into() + delta.normalize() * factor));
+	}
 }
 
 math::uivec2 Viewport::actualViewExtent() const noexcept {
@@ -419,6 +480,17 @@ EventResponse Viewport::invokeOnFocus(cref<FocusEvent> event_) {
 }
 
 EventResponse Viewport::invokeOnBlur(cref<FocusEvent> event_) {
+
+	_cameraControls.forward = false;
+	_cameraControls.left = false;
+	_cameraControls.backward = false;
+	_cameraControls.right = false;
+	_cameraControls.up = false;
+	_cameraControls.down = false;
+	_cameraControls.boost = false;
+
+	/**/
+
 	_state.unset(WidgetStateFlagBits::eFocus);
 	markAsPending(false, true);
 	return EventResponse::eConsumed;
@@ -436,104 +508,101 @@ EventResponse Viewport::invokeOnKeyDown(ref<const KeyboardEvent> event_) {
 		return EventResponse::eHandled;
 	}
 
-	const auto isShift { (event_._modifier & 0x3) != 0x0 };
-	const float factor { 0.1F };
-
 	auto response { EventResponse::eHandled };
 	switch (event_._key) {
 		case 'a': {
+			_cameraControls.left = true;
 			response = EventResponse::eConsumed;
-
-			ref<Transform> rtf { _cameraActor->getRootComponent()->getLocalTransform() };
-			auto rlwd = -rtf.rotator().into()._left();
-
-			rtf.setLocation(
-				math::Location(
-					rtf.location().into() + rlwd.normalize() * factor
-				)
-			);
 			break;
 		}
 		case 'd': {
+			_cameraControls.right = true;
 			response = EventResponse::eConsumed;
-
-			ref<Transform> rtf { _cameraActor->getRootComponent()->getLocalTransform() };
-			auto rrwd = rtf.rotator().into()._left();
-
-			rtf.setLocation(
-				math::Location(
-					rtf.location().into() + rrwd.normalize() * factor
-				)
-			);
 			break;
 		}
 		case 's': {
+			_cameraControls.backward = true;
 			response = EventResponse::eConsumed;
-
-			ref<Transform> rtf { _cameraActor->getRootComponent()->getLocalTransform() };
-			cref<Transform> ctf = _cameraActor->getCameraComponent()->getLocalTransform();
-
-			const auto rotator = math::Rotator::combine(rtf.rotator(), ctf.rotator());
-			auto rbwd = -rotator.into().__forward();
-			rbwd.x *= -1.F;
-
-			rtf.setLocation(
-				math::Location(
-					rtf.location().into() + rbwd.normalize() * factor
-				)
-			);
 			break;
 		}
 		case 'w': {
+			_cameraControls.forward = true;
 			response = EventResponse::eConsumed;
-
-			ref<Transform> rtf { _cameraActor->getRootComponent()->getLocalTransform() };
-			cref<Transform> ctf = _cameraActor->getCameraComponent()->getLocalTransform();
-
-			const auto rotator = math::Rotator::combine(rtf.rotator(), ctf.rotator());
-			auto rfwd = rotator.into().__forward();
-			rfwd.x *= -1.F;
-
-			rtf.setLocation(
-				math::Location(
-					rtf.location().into() + rfwd.normalize() * factor
-				)
-			);
 			break;
 		}
 		case 'q': {
+			_cameraControls.down = true;
 			response = EventResponse::eConsumed;
-
-			ref<Transform> tf { _cameraActor->getRootComponent()->getLocalTransform() };
-
-			tf.setLocation(
-				math::Location(
-					tf.location().into() + math::vec3_down * factor
-				)
-			);
 			break;
 		}
-
 		case 'c': {
+			_cameraControls.up = true;
 			response = EventResponse::eConsumed;
-
-			ref<Transform> tf { _cameraActor->getRootComponent()->getLocalTransform() };
-
-			tf.setLocation(
-				math::Location(
-					tf.location().into() + math::vec3_up * factor
-				)
-			);
 			break;
 		}
 		default: {}
+	}
+
+	if ((event_._modifier & 0x3) != 0x0) {
+		_cameraControls.boost = true;
 	}
 
 	return response;
 }
 
 EventResponse Viewport::invokeOnKeyUp(ref<const KeyboardEvent> event_) {
-	return Widget::invokeOnKeyUp(event_);
+
+	// Early exit on ESC Key to drop focus and ctrl
+	if (event_._key == '\x1B') {
+		_state.unset(WidgetStateFlagBits::eFocus);
+		markAsPending(false, true);
+		return EventResponse::eConsumed;
+	}
+
+	if (not _cameraActor) {
+		return EventResponse::eHandled;
+	}
+
+	auto response { EventResponse::eHandled };
+	switch (event_._key) {
+		case 'a': {
+			_cameraControls.left = false;
+			response = EventResponse::eConsumed;
+			break;
+		}
+		case 'd': {
+			_cameraControls.right = false;
+			response = EventResponse::eConsumed;
+			break;
+		}
+		case 's': {
+			_cameraControls.backward = false;
+			response = EventResponse::eConsumed;
+			break;
+		}
+		case 'w': {
+			_cameraControls.forward = false;
+			response = EventResponse::eConsumed;
+			break;
+		}
+		case 'q': {
+			_cameraControls.down = false;
+			response = EventResponse::eConsumed;
+			break;
+		}
+		case 'c': {
+			_cameraControls.up = false;
+			response = EventResponse::eConsumed;
+			break;
+		}
+		default: {}
+	}
+
+	if ((event_._modifier & 0x3) == 0x0) {
+		_cameraControls.boost = false;
+	}
+
+	return response;
 }
 
 EventResponse Viewport::invokeOnMouseEnter(ref<const MouseMoveEvent> event_) {
