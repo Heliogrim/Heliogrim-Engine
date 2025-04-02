@@ -35,6 +35,8 @@ namespace hg::engine::core {
 	class Session;
 	class SessionState;
 
+	class Timing;
+
 	class Universe;
 	class UniverseContext;
 }
@@ -54,7 +56,7 @@ namespace hg::engine {
 	protected:
 		/**
 		 * The cached engine instance pointer
-		 *  This is used for more easier access due to unknown or ambiguous entry points
+		 *  This is used for easier access due to unknown or ambiguous entry points
 		 */
 		static ptr<Engine> _cached;
 
@@ -265,6 +267,8 @@ namespace hg::engine {
 		[[nodiscard]] virtual ref<GlobalEventEmitter> getEmitter() const noexcept = 0;
 
 		[[nodiscard]] virtual ref<core::Modules> getModules() const noexcept = 0;
+
+		[[nodiscard]] virtual ref<core::Timing> getTiming() const noexcept = 0;
 
 	public:
 		[[nodiscard]] virtual std::span<const nmpt<core::UniverseContext>> getUniverseContexts() const noexcept = 0;
