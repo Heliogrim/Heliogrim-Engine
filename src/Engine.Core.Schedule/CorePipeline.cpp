@@ -4,6 +4,7 @@
 #include <Engine.Input.Schedule/InputPipeline.hpp>
 #include <Engine.Scheduler/Pipeline/Stage/EmptyPipelineStage.hpp>
 
+#include "TickTimingStage.hpp"
 #include "Engine.GFX.Schedule/RenderScenePipeline.hpp"
 
 using namespace hg::engine::core::schedule;
@@ -18,7 +19,7 @@ CorePipeline::~CorePipeline() = default;
 void CorePipeline::mount(ref<StageRegister> register_) {
 
 	const auto* const beginStage = register_.registerStage(
-		make_uptr<EmptyPipelineStage>(PipelineStage::identifier_type::from(TickBegin), this)
+		make_uptr<TickTimingStage>(PipelineStage::identifier_type::from(TickBegin), this)
 	);
 	const auto* const endStage = register_.registerStage(
 		make_uptr<EmptyPipelineStage>(PipelineStage::identifier_type::from(TickEnd), this)
