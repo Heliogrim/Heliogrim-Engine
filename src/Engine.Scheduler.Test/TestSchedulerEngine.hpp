@@ -4,6 +4,7 @@
 #include <Engine.Config/Config.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/EngineState.hpp>
+#include <Engine.Core/Timing.hpp>
 #include <Engine.Core/Module/Modules.hpp>
 #include <Engine.Event/GlobalEventEmitter.hpp>
 #include <Engine.Scheduler/CompScheduler.hpp>
@@ -105,6 +106,7 @@ namespace hg::test {
 		mutable engine::Config _config;
 		mutable GlobalEventEmitter _emitter;
 		engine::core::Modules _modules;
+		engine::core::Timing _timing;
 
 	public:
 		[[nodiscard]] ref<engine::Config> getConfig() const noexcept override {
@@ -119,11 +121,14 @@ namespace hg::test {
 			return const_cast<ref<engine::core::Modules>>(_modules);
 		}
 
+		[[nodiscard]] ref<engine::core::Timing> getTiming() const noexcept override {
+			return const_cast<ref<engine::core::Timing>>(_timing);
+		}
+
 	private:
 		Vector<nmpt<engine::core::UniverseContext>> _universeContexts;
 
-		[[nodiscard]] std::span<const nmpt<engine::core::UniverseContext>>
-		getUniverseContexts() const noexcept override {
+		[[nodiscard]] std::span<const nmpt<engine::core::UniverseContext>> getUniverseContexts() const noexcept override {
 			return _universeContexts;
 		}
 
