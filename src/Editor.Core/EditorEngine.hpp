@@ -4,6 +4,7 @@
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.Config/Config.hpp>
 #include <Engine.Core/Engine.hpp>
+#include <Engine.Core/Timing.hpp>
 #include <Engine.Core/Module/Modules.hpp>
 #include <Engine.Event/GlobalEventEmitter.hpp>
 
@@ -60,6 +61,7 @@ namespace hg::editor {
 		GlobalEventEmitter _emitter;
 
 		engine::core::Modules _modules;
+		engine::core::Timing _timing;
 
 	public:
 		[[nodiscard]] nmpt<engine::ActorModule> getActors() const noexcept override;
@@ -94,12 +96,13 @@ namespace hg::editor {
 
 		[[nodiscard]] ref<engine::core::Modules> getModules() const noexcept override;
 
+		[[nodiscard]] ref<engine::core::Timing> getTiming() const noexcept override;
+
 	private:
 		Array<nmpt<engine::core::UniverseContext>, 2> _universeContexts;
 
 	public:
-		[[nodiscard]] std::span<const nmpt<engine::core::UniverseContext>>
-		getUniverseContexts() const noexcept override;
+		[[nodiscard]] std::span<const nmpt<engine::core::UniverseContext>> getUniverseContexts() const noexcept override;
 
 	public:
 		void addUniverse(mref<SharedPtr<engine::core::Universe>> universe_) override;

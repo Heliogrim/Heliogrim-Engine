@@ -483,6 +483,10 @@ ref<engine::core::Modules> EditorEngine::getModules() const noexcept {
 	return const_cast<ref<engine::core::Modules>>(_modules);
 }
 
+ref<engine::core::Timing> EditorEngine::getTiming() const noexcept {
+	return const_cast<ref<engine::core::Timing>>(_timing);
+}
+
 std::span<const nmpt<engine::core::UniverseContext>> EditorEngine::getUniverseContexts() const noexcept {
 	return std::span { _universeContexts };
 }
