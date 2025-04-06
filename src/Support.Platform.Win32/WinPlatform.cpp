@@ -227,6 +227,7 @@ void WinPlatform::processInternal() {
 					break;
 				}
 			}
+			case SDL_EventType::SDL_KEYUP:
 			case SDL_EventType::SDL_KEYDOWN: {
 				// Warning: Temporary solution
 
@@ -238,7 +239,7 @@ void WinPlatform::processInternal() {
 					input::event::KeyboardEvent::typeId,
 					make_uptr<input::event::KeyboardEvent>(
 						static_cast<char>(event.key.keysym.sym),
-						true,
+						event.type == SDL_EventType::SDL_KEYDOWN,
 						event.key.keysym.mod
 					)
 				);
