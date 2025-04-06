@@ -15,9 +15,13 @@ using namespace hg;
 
 /**/
 
-[[nodiscard]] static std::filesystem::path getProjectRootPath();
+[[nodiscard]] static std::filesystem::path getProjectAssetPath();
 
 [[nodiscard]] static std::filesystem::path getProjectCachePath();
+
+[[nodiscard]] static std::filesystem::path getProjectRootPath();
+
+[[nodiscard]] static std::filesystem::path getEditorAssetPath();
 
 [[nodiscard]] static std::filesystem::path getEditorInstallPath();
 
@@ -43,6 +47,17 @@ void editor::boot::initProjectConfig(ref<engine::Config> cfg_, ref<engine::cfg::
 	/**/
 
 	{
+		auto projectAssetPath = getProjectAssetPath();
+		std::ignore = cfg_.init(
+			engine::cfg::ProjectConfigProperty::eLocalAssetPath,
+			std::move(projectAssetPath).generic_string(),
+			engine::cfg::query_provider_id(provider_)
+		);
+	}
+
+	/**/
+
+	{
 		auto projectCachePath = getProjectCachePath();
 		std::ignore = cfg_.init(
 			engine::cfg::ProjectConfigProperty::eLocalCachePath,
@@ -54,6 +69,17 @@ void editor::boot::initProjectConfig(ref<engine::Config> cfg_, ref<engine::cfg::
 }
 
 void editor::boot::initEditorConfig(ref<engine::Config> cfg_, ref<cfg::EditorProvider> provider_) {
+
+	/**/
+
+	{
+		auto editorAssetPath = getEditorAssetPath();
+		std::ignore = cfg_.init(
+			engine::cfg::EditorConfigProperty::eLocalAssetPath,
+			std::move(editorAssetPath).generic_string(),
+			query_provider_id(provider_)
+		);
+	}
 
 	/**/
 
@@ -95,6 +121,10 @@ std::filesystem::path getProjectRootPath() {
 	return clone(cwd);
 }
 
+std::filesystem::path getProjectAssetPath() {
+	return getProjectRootPath().append(R"(assets)");
+}
+
 std::filesystem::path getProjectCachePath() {
 	return getProjectRootPath().append(R"(.cache)");
 }
@@ -102,6 +132,10 @@ std::filesystem::path getProjectCachePath() {
 std::filesystem::path getEditorInstallPath() {
 	return getProcessModulePath();
 	//return getCommonInstallPath().value<>().append(R"(Heliogrim\Editor)");
+}
+
+std::filesystem::path getEditorAssetPath() {
+	return getEditorInstallPath().append(R"(assets)");
 }
 
 std::filesystem::path getEditorUserCachePath() {
@@ -198,8 +232,16 @@ std::filesystem::path getProjectRootPath() {
 	return clone(cwd);
 }
 
+std::filesystem::path getProjectAssetPath() {
+	return getProjectRootPath().append(R"(assets)");
+}
+
 std::filesystem::path getProjectCachePath() {
 	return getProjectRootPath().append(R"(.cache)");
+}
+
+std::filesystem::path getEditorAssetPath() {
+	return getEditorInstallPath().append(R"(assets)");
 }
 
 std::filesystem::path getEditorInstallPath() {
