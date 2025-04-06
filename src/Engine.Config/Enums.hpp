@@ -5,6 +5,7 @@ namespace hg::engine::cfg {
 
 	enum class ProjectConfigProperty {
 		/**/
+		eLocalAssetPath,
 		eLocalBasePath,
 		eLocalCachePath,
 		/**/
@@ -15,8 +16,9 @@ namespace hg::engine::cfg {
 
 	enum class EditorConfigProperty {
 		/**/
-		eLocalEditorPath,
+		eLocalAssetPath,
 		eLocalCachePath,
+		eLocalEditorPath
 	};
 
 	/**/
