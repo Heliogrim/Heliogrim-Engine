@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Engine.Common/Expected.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Managed/Rc.hpp>
 
@@ -18,6 +19,10 @@ namespace hg::editor {
 		~ActionDispatcher() noexcept = default;
 
 	public:
-		bool operator()(mref<Arci<Action>> action_, bool reverting_ = false) const;
+		Result<void, std::runtime_error> apply(mref<Arci<Action>> action_) const;
+
+		Result<void, std::runtime_error> revoke(mref<Arci<Action>> action_) const;
+
+		Result<void, std::runtime_error> undo(mref<Arci<Action>> action_) const;
 	};
 }

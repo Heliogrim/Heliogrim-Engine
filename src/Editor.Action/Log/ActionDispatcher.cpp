@@ -12,27 +12,27 @@ using namespace hg;
 
 ActionDispatcher::ActionDispatcher() = default;
 
-bool ActionDispatcher::operator()(mref<Arci<Action>> action_, const bool reverting_) const {
-
-	if (reverting_ && not action_->isReversible()) {
-		return false;
-	}
-
-	if (reverting_) {
-		execute(
-			[action = action_]() {
-				action->reverse();
-			}
-		);
-
-	} else {
-		execute(
-			[action = action_]() {
-				action->apply();
-			}
-		);
-	}
-
+Result<void, std::runtime_error> ActionDispatcher::apply(mref<Arci<Action>> action_) const {
+	auto result = Result<void, std::runtime_error> {};
+	execute([action = action_, &result] { result = action->apply(); });
 	await(*action_);
-	return not action_->failed();
+	return result;
+}
+
+Result<void, std::runtime_error> ActionDispatcher::revoke(mref<Arci<Action>> action_) const {
+	auto result = Result<void, std::runtime_error> {};
+	execute([action = action_, &result] { result = action->revoke(); });
+	await(*action_);
+	return result;
+}
+
+Result<void, std::runtime_error> ActionDispatcher::undo(mref<Arci<Action>> action_) const {
+	if (not action_->isReversible()) {
+		return Unexpected { std::runtime_error("Failed to undo irreversible action.") };
+	}
+
+	auto result = Result<void, std::runtime_error> {};
+	execute([action = action_, &result] { result = action->undo(); });
+	await(*action_);
+	return result;
 }
