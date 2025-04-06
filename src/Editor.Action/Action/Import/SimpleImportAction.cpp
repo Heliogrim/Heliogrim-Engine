@@ -17,8 +17,7 @@ SimpleImportAction::SimpleImportAction() :
 	_target(),
 	_assets(),
 	_running(),
-	_finished(),
-	_failed() {}
+	_finished() {}
 
 SimpleImportAction::SimpleImportAction(cref<fs::Url> source_, cref<fs::Url> target_) :
 	InheritMeta(),
@@ -26,8 +25,7 @@ SimpleImportAction::SimpleImportAction(cref<fs::Url> source_, cref<fs::Url> targ
 	_target(target_),
 	_assets(),
 	_running(),
-	_finished(),
-	_failed() {}
+	_finished() {}
 
 SimpleImportAction::~SimpleImportAction() = default;
 
@@ -72,9 +70,8 @@ bool SimpleImportAction::isFinished() const noexcept {
 #include "Engine.GFX/Importer/ImageFileTypes.hpp"
 #include "Engine.GFX/Importer/ModelFileTypes.hpp"
 
-void SimpleImportAction::apply() {
+Result<void, std::runtime_error> SimpleImportAction::apply() {
 	setRunning();
-	_failed = false;
 
 	const auto manager { engine::Engine::getEngine()->getResources() };
 	const auto& importer { manager->importer() };
@@ -92,7 +89,8 @@ void SimpleImportAction::apply() {
 		auto data { result.get() };
 
 		if (data.first == nullptr && data.second == nullptr) {
-			_failed = true;
+			setFinished();
+			return Unexpected { std::runtime_error { "Failed to import texture asset from ktx2 file." } };
 		}
 
 		if (data.first != nullptr) {
@@ -112,7 +110,8 @@ void SimpleImportAction::apply() {
 		auto data = result.get();
 
 		if (data == nullptr) {
-			_failed = true;
+			setFinished();
+			return Unexpected { std::runtime_error { "Failed to import static geometry from fbx file." } };
 
 		} else {
 			_assets.insert(std::move(data).into<::hg::engine::assets::Asset>());
@@ -122,16 +121,18 @@ void SimpleImportAction::apply() {
 	setFinished();
 }
 
-void SimpleImportAction::reverse() {
+Result<void, std::runtime_error> SimpleImportAction::revoke() {
 	setRunning();
-	_failed = false;
 	setFinished();
+	return Expected<void> {};
+}
+
+Result<void, std::runtime_error> SimpleImportAction::undo() {
+	setRunning();
+	setFinished();
+	return Unexpected { std::runtime_error { "TODO: Failed to undo import of ..." } };
 }
 
 SimpleImportAction::operator ptr<await_signal_sub_type>() const noexcept {
 	return &_finished;
-}
-
-bool SimpleImportAction::failed() const noexcept {
-	return _failed;
 }

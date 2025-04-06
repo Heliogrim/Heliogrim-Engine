@@ -47,13 +47,13 @@ namespace hg::editor {
 		[[nodiscard]] bool isFinished() const noexcept override;
 
 	public:
-		void apply() override;
+		Result<void, std::runtime_error> apply() override;
 
-		void reverse() override;
+		Result<void, std::runtime_error> revoke() override;
+
+		Result<void, std::runtime_error> undo() override;
 
 	public:
 		[[nodiscard]] operator ptr<await_signal_sub_type>() const noexcept override;
-
-		[[nodiscard]] bool failed() const noexcept override;
 	};
 }

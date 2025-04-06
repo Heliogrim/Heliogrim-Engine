@@ -29,11 +29,10 @@ namespace hg::editor {
 		[[nodiscard]] bool isReversible() const noexcept override;
 
 	public:
-		void apply() override;
+		Result<void, std::runtime_error> apply() override;
 
-		void reverse() override;
+		Result<void, std::runtime_error> revoke() override;
 
-	public:
-		[[nodiscard]] bool failed() const noexcept override;
+		Result<void, std::runtime_error> undo() override;
 	};
 }

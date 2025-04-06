@@ -19,18 +19,20 @@ bool DelegateAction::isReversible() const noexcept {
 	return _bwd != nullptr;
 }
 
-void DelegateAction::apply() {
+Result<void, std::runtime_error> DelegateAction::apply() {
 	setRunning();
 	_fwd();
 	setFinished();
+	return Expected<void> {};
 }
 
-void DelegateAction::reverse() {
+Result<void, std::runtime_error> DelegateAction::revoke() {
+	return Unexpected { std::runtime_error { "Unable to revoke delegate actions." } };
+}
+
+Result<void, std::runtime_error> DelegateAction::undo() {
 	setRunning();
 	_bwd();
 	setFinished();
-}
-
-bool DelegateAction::failed() const noexcept {
-	return false;
+	return Expected<void> {};
 }

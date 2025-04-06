@@ -1,7 +1,8 @@
 #pragma once
 
-#include <Engine.Common/Managed/AtomicRefCountedIntrusive.hpp>
+#include <Engine.Common/Expected.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Managed/AtomicRefCountedIntrusive.hpp>
 #include <Engine.Reflect/Inherit/InheritBase.hpp>
 #include <Heliogrim/Async/AwaitSignal.hpp>
 
@@ -33,14 +34,13 @@ namespace hg::editor {
 		[[nodiscard]] virtual bool isFinished() const noexcept = 0;
 
 	public:
-		virtual void apply() = 0;
+		virtual Result<void, std::runtime_error> apply() = 0;
 
-		virtual void reverse() = 0;
+		virtual Result<void, std::runtime_error> revoke() = 0;
+
+		virtual Result<void, std::runtime_error> undo() = 0;
 
 	public:
 		[[nodiscard]] virtual operator ptr<await_signal_sub_type>() const noexcept = 0;
-
-	public:
-		[[nodiscard]] virtual bool failed() const noexcept = 0;
 	};
 }// namespace hg::editor

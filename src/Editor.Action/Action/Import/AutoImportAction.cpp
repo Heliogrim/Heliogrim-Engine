@@ -62,7 +62,8 @@ bool AutoImportAction::isFinished() const noexcept {
 	return _finished.test();
 }
 
-void AutoImportAction::apply() {
+Result<void, std::runtime_error> AutoImportAction::apply() {
+
 	setRunning();
 	_failed = not std::filesystem::exists(_importFile.path());
 
@@ -87,18 +88,19 @@ void AutoImportAction::apply() {
 	/**/
 
 	setFinished();
+	return Expected<void> {};
 }
 
-void AutoImportAction::reverse() {
+Result<void, std::runtime_error> AutoImportAction::revoke() {
+	return Unexpected { std::runtime_error { "Unable to revoke auto import action." } };
+}
+
+Result<void, std::runtime_error> AutoImportAction::undo() {
 	::hg::todo_panic();
 }
 
 AutoImportAction::operator ptr<await_signal_sub_type>() const noexcept {
 	return &_finished;
-}
-
-bool AutoImportAction::failed() const noexcept {
-	return _failed;
 }
 
 /**/
