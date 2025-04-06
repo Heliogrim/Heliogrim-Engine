@@ -14,18 +14,17 @@ namespace hg::engine::render {
 	inline static string read_shader_file(std::filesystem::path name_) {
 
 		const auto& cfg = Engine::getEngine()->getConfig();
-		const auto& projectPath = cfg.getTyped<String>(cfg::ProjectConfigProperty::eLocalBasePath);
-		const auto& editorPath = cfg.getTyped<String>(cfg::EditorConfigProperty::eLocalEditorPath);
-		auto relative = std::filesystem::canonical(std::filesystem::current_path().append(R"(../../../assets/shader)"));
-
 		auto checks = Vector<std::filesystem::path> {};
+
+		const auto& projectPath = cfg.getTyped<String>(cfg::ProjectConfigProperty::eLocalAssetPath);
 		if (projectPath.has_value() && projectPath->has_value()) {
-			checks.emplace_back(std::filesystem::path { **projectPath }.append(R"(assets/shader)").lexically_normal());
+			checks.emplace_back(std::filesystem::path { **projectPath }.append(R"(shader)").lexically_normal());
 		}
+
+		const auto& editorPath = cfg.getTyped<String>(cfg::EditorConfigProperty::eLocalAssetPath);
 		if (editorPath.has_value() && editorPath->has_value()) {
-			checks.emplace_back(std::filesystem::path { **editorPath }.append(R"(assets/shader)").lexically_normal());
+			checks.emplace_back(std::filesystem::path { **editorPath }.append(R"(shader)").lexically_normal());
 		}
-		checks.emplace_back(::hg::move(relative));
 
 		Opt<std::filesystem::path> inputFile = None;
 		for (const auto& check : checks) {
