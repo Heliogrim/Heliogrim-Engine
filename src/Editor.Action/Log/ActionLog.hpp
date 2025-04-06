@@ -33,16 +33,9 @@ namespace hg::editor {
 
 		Arci<Action> popLog();
 
-		void storeRevertLog(mref<Arci<Action>> entry_);
+		void storeUndoLog(mref<Arci<Action>> entry_);
 
-		Arci<Action> popRevertLog();
-
-	private:
-		void storeActionState(mref<Arci<Action>> action_);
-
-		void dropActionState();
-
-		bool revertActionState(mref<Arci<Action>> action_);
+		Arci<Action> popUndoLog();
 
 	public:
 		/**
@@ -57,7 +50,7 @@ namespace hg::editor {
 		 *
 		 * @returns A shared pointer to the reverting action
 		 */
-		Arci<Action> revert();
+		Arci<Action> undo();
 
 		/**
 		 * Will rearrange the action and will return the first action to apply from reverted log

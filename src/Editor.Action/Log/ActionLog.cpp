@@ -4,12 +4,11 @@
 
 #include "ActionLog.hpp"
 
+#include <Engine.Common/Discard.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 #include <Heliogrim/Async/Yield.hpp>
-
-#include "ActionSaveState.hpp"
 
 using namespace hg::editor;
 using namespace hg;
@@ -38,12 +37,12 @@ Arci<Action> ActionLog::popLog() {
 	return peek;
 }
 
-void ActionLog::storeRevertLog(mref<Arci<Action>> entry_) {
+void ActionLog::storeUndoLog(mref<Arci<Action>> entry_) {
 	// TODO: Check how many entries we may allow to be re-applyable
 	_relog.push(entry_);
 }
 
-Arci<Action> ActionLog::popRevertLog() {
+Arci<Action> ActionLog::popUndoLog() {
 	if (_relog.empty()) {
 		return nullptr;
 	}
@@ -53,90 +52,28 @@ Arci<Action> ActionLog::popRevertLog() {
 	return peek;
 }
 
-void ActionLog::storeActionState(mref<Arci<Action>> action_) {
-	ptr<ActionSaveState> state { make_ptr<ActionSaveState>() };
-
-	uintptr_t expect { NULL };
-	while (not _saveState.compare_exchange_strong(
-		expect,
-		reinterpret_cast<uintptr_t>(state),
-		std::memory_order::seq_cst
-	)) {
-		expect = NULL;
-		::hg::yield();
-	}
-
-	// TODO: Store state / serialize effected data to restore on fail
-	state;
-}
-
-void ActionLog::dropActionState() {
-	uintptr_t stored { _saveState.load() };
-	if (not _saveState.compare_exchange_strong(stored, NULL, std::memory_order::seq_cst)) {
-		return;
-	}
-
-	auto* state = reinterpret_cast<ptr<ActionSaveState>>(stored);
-	// TODO: Cleanup state / serialized effected data
-	delete state;
-}
-
-bool ActionLog::revertActionState(mref<Arci<Action>> action_) {
-	uintptr_t stored { _saveState.load() };
-	if (not _saveState.compare_exchange_strong(stored, NULL, std::memory_order::seq_cst)) {
-		return false;
-	}
-
-	auto* state = reinterpret_cast<ptr<ActionSaveState>>(stored);
-	// TODO: Restore state / serialized data to revert effects
-	delete state;
-
-	return true;
-}
-
 void ActionLog::apply(mref<Arci<Action>> action_) {
 	storeLog(clone(action_));
-	storeActionState(std::move(action_));
 }
 
-Arci<Action> ActionLog::revert() {
-	auto action = popLog();
-	if (action == nullptr) {
-		return action;
-	}
-
-	storeActionState(clone(action));
-	return action;
+Arci<Action> ActionLog::undo() {
+	return popLog();
 }
 
 Arci<Action> ActionLog::reapply() {
-	auto action = popRevertLog();
-	if (action == nullptr) {
-		return action;
-	}
-
-	storeActionState(clone(action));
-	return action;
+	return popUndoLog();
 }
 
 void ActionLog::succeed(mref<Arci<Action>> action_) {
-	dropActionState();
+	::hg::discard(::hg::move(action_));
 }
 
 void ActionLog::fail(mref<Arci<Action>> action_) {
-	const auto result = revertActionState(std::move(action_));
-	if (not result) {
-		IM_CORE_ERROR("Failed to revert action state.");
-	}
 
-	#ifdef _DEBUG
-    const auto stored { popLog() };
-    if (stored != action_) {
-        IM_CORE_ERROR("Mismatch of logged action while reverting failed one.");
-    }
-	#else
-	popLog();
-	#endif
+	const auto stored = popLog();
+	if (stored != action_) {
+		IM_CORE_ERROR("Mismatch of logged action while reverting, due to previous failure.");
+	}
 
 	// TODO: Check whether we want to store failed actions to reverted log to reapply the same action again / retry
 }
