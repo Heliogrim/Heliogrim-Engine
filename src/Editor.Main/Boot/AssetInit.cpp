@@ -705,9 +705,9 @@ bool autoImport(ref<Indexed> indexed_) {
 	auto importAction = Arci<editor::AutoImportAction>::create(
 		storage::FileUrl { clone(storage::FileScheme), engine::fs::Path { indexed_.primary } }
 	);
-	actions->apply(clone(importAction));
+	const auto result = actions->apply(clone(importAction));
 
 	/**/
 
-	return not importAction->failed();
+	return result.has_value();
 }
