@@ -34,6 +34,8 @@
 #include "Editor.Assets.Default/GfxMaterials/DefaultSkyboxPrototype.hpp"
 #include "Engine.Assets/AssetFactory.hpp"
 #include "Engine.Assets/Assets.hpp"
+#include "Engine.Config/Config.hpp"
+#include "Engine.Config/Enums.hpp"
 #include "Engine.Core/Module/Modules.hpp"
 #include "Engine.Resource.Archive/BufferArchive.hpp"
 #include "Engine.Resource.Archive/StorageReadonlyArchive.hpp"
@@ -377,6 +379,10 @@ void indexDirectory(cref<path> path_, ref<Vector<path>> backlog_, ref<Vector<Ind
 
 void autoIndex(cref<path> root_) {
 
+	if (not std::filesystem::exists(root_)) {
+		return;
+	}
+
 	Vector<path> backlog {};
 	Vector<Indexed> indexSet {};
 
@@ -473,13 +479,16 @@ static void initSkyboxDefaults() {
 
 void editor::boot::initAssets() {
 
-	const auto relative = std::filesystem::current_path().append(R"(../../../assets)");
-	if (not std::filesystem::exists(relative)) {
-		std::filesystem::create_directories(relative);
-	}
-	auto root = std::filesystem::canonical(relative);
+	const auto& cfg = engine::Engine::getEngine()->getConfig();
 
-	autoIndex(root);
+	const auto& editorAssetPath = cfg.getTyped<String>(engine::cfg::EditorConfigProperty::eLocalAssetPath);
+	::hg::assertrt(editorAssetPath.has_value() && editorAssetPath->has_value());
+
+	const auto& projectAssetPath = cfg.getTyped<String>(engine::cfg::ProjectConfigProperty::eLocalAssetPath);
+	::hg::assertrt(projectAssetPath.has_value() && projectAssetPath->has_value());
+
+	autoIndex(**editorAssetPath);
+	autoIndex(**projectAssetPath);
 
 	/**/
 
