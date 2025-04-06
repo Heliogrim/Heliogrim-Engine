@@ -2,6 +2,8 @@
 
 #include <tl/expected.hpp>
 
+#include "Forward.hpp"
+
 namespace hg {
 	/**/
 	template <typename Type_>
@@ -30,6 +32,9 @@ namespace hg {
 
 		constexpr Result(Unexpected<Error_>&& unexpected_) noexcept:// NOLINT(*-explicit-constructor)
 			underlying_type(::tl::unexpected { std::move(unexpected_.error) }) {}
+
+		constexpr Result(underlying_type&& other_) noexcept :
+			underlying_type(::hg::forward<decltype(other_)>(other_)) {}
 
 	public:
 		constexpr static decltype(auto) expected(auto&&... args_) noexcept
