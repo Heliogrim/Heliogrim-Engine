@@ -4,6 +4,7 @@
 
 #include "ActionManager.hpp"
 
+#include <Engine.Asserts/Todo.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 
@@ -47,50 +48,74 @@ void ActionManager::destroy() {
 	_log.reset();
 }
 
-cref<ActionManager> ActionManager::apply(mref<Arci<Action>> action_) const {
+Result<void, std::runtime_error> ActionManager::apply(mref<Arci<Action>> action_) const {
 
 	// TODO: Check whether we need to synchronize
 	_log->apply(clone(action_));
-	const auto result = (*_dispatcher)(clone(action_));
+	const auto result = _dispatcher->apply(clone(action_));
 
-	if (result) {
+	if (result.has_value()) {
 		_log->succeed(std::move(action_));
-	} else {
-		_log->fail(std::move(action_));
+		return result;
 	}
-	return *this;
+
+	/**/
+
+	const auto revokeResult = _dispatcher->revoke(clone(action_));
+	if (not revokeResult.has_value()) {
+		IM_CORE_ERROR("Failed to recover from invalid state after failed action.");
+		::hg::panic();
+	}
+
+	_log->fail(std::move(action_));
+	return result;
 }
 
-void ActionManager::revert() const {
+Result<void, std::runtime_error> ActionManager::undo() const {
 
-	auto action = _log->revert();
+	auto action = _log->undo();
 	if (action == nullptr) {
 		IM_CORE_WARN("Tried to revert on empty action log.");
-		return;
+		return Unexpected { std::runtime_error { "Tried to revert on empty action log." } };
 	}
 
-	const auto result = (*_dispatcher)(clone(action));
+	const auto result = _dispatcher->undo(clone(action));
 
-	if (result) {
+	if (result.has_value()) {
 		_log->succeed(std::move(action));
-	} else {
-		_log->fail(std::move(action));
+		return result;
 	}
+
+	/**/
+
+	// TODO: Check whether it is appropriate to revoke the action on undo!?
+	::hg::todo_panic();
+	//_log->fail(std::move(action));
 }
 
-void ActionManager::reapply() const {
+Result<void, std::runtime_error> ActionManager::reapply() const {
 
 	auto action = _log->reapply();
 	if (action != nullptr) {
 		IM_CORE_WARN("Tried to reapply on empty reverted action log.");
-		return;
+		return Unexpected { std::runtime_error { "Tried to reapply on empty reverted action log." } };
 	}
 
-	const auto result = (*_dispatcher)(clone(action));
+	const auto result = _dispatcher->apply(clone(action));
 
-	if (result) {
+	if (result.has_value()) {
 		_log->succeed(std::move(action));
-	} else {
-		_log->fail(std::move(action));
+		return result;
 	}
+
+	/**/
+
+	const auto revokeResult = _dispatcher->revoke(clone(action));
+	if (not revokeResult.has_value()) {
+		IM_CORE_ERROR("Failed to recover from invalid state after failed reapply of action.");
+		::hg::panic();
+	}
+
+	_log->fail(std::move(action));
+	return result;
 }

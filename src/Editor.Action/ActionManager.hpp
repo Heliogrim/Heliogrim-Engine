@@ -1,9 +1,10 @@
 #pragma once
 
+#include <Engine.Common/Expected.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Core/Module/SubModule.hpp>
 #include <Engine.Common/Managed/Rc.hpp>
+#include <Engine.Core/Module/SubModule.hpp>
 
 #include "Log/__fwd.hpp"
 
@@ -48,15 +49,15 @@ namespace hg::editor {
 		uptr<ActionDispatcher> _dispatcher;
 
 	public:
-		cref<ActionManager> apply(_In_ mref<Arci<Action>> action_) const;
+		Result<void, std::runtime_error> apply(_In_ mref<Arci<Action>> action_) const;
 
 		template <CompleteType ActionType_> requires (not std::is_same_v<ActionType_, Action>)
-		cref<ActionManager> apply(_In_ mref<Arci<ActionType_>> action_) const {
+		Result<void, std::runtime_error> apply(_In_ mref<Arci<ActionType_>> action_) const {
 			return apply(std::move(action_).template into<Action>());
 		}
 
-		void revert() const;
+		Result<void, std::runtime_error> undo() const;
 
-		void reapply() const;
+		Result<void, std::runtime_error> reapply() const;
 	};
 }
