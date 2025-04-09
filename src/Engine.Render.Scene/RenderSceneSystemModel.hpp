@@ -53,6 +53,6 @@ namespace hg::engine::render {
 	public:
 		[[nodiscard]] bool markedAsDeleted() const noexcept;
 
-		[[nodiscard]] bool markAsDeleted() noexcept;
+		void markAsDeleted() noexcept;
 	};
 }
