@@ -48,7 +48,15 @@ void RenderSceneSystem::update(scene::SceneUpdateFlags flags_) {
 
 }
 
-void RenderSceneSystem::postprocess(scene::ScenePostProcessFlags flags_) {}
+void RenderSceneSystem::postprocess(scene::ScenePostProcessFlags flags_) {
+	for (auto& storage : _storage.storageMap.values()) {
+		storage.second->remove(
+			[](ref<const RenderSceneSystemModel> model_) {
+				return model_.markedAsDeleted();
+			}
+		);
+	}
+}
 
 ref<RenderSceneRegistry> RenderSceneSystem::getRegistry() noexcept {
 	return _storage;
@@ -72,9 +80,32 @@ void RenderSceneSystem::add(const ptr<const MetaClass> meta_, std::span<const pt
 }
 
 void RenderSceneSystem::remove(const ptr<const MetaClass> meta_, std::span<const ptr<const SceneComponent>> batch_) {
-	::hg::todo_panic();
+
+	// Warning: This is just a naive implementation with O^2 runtime complexity
+	for (const auto& mapping : _storage.mapping) {
+		if (mapping.first != meta_) {
+			continue;
+		}
+
+		auto* const storage = _storage.storageMap.at(mapping.second).get();
+		storage->forEachMut(
+			[this, &batch_](ref<RenderSceneSystemModel> model_) {
+				if (std::ranges::contains(batch_, model_.owner().get())) {
+					model_.destroy(this);
+					model_.markAsDeleted();
+				}
+			}
+		);
+	}
 }
 
 void RenderSceneSystem::clear() {
-	::hg::todo_panic();
+	for (auto& storage : _storage.storageMap.values()) {
+		storage.second->forEachMut(
+			[this](auto& model_) {
+				model_.destroy(this);
+				model_.markAsDeleted();
+			}
+		);
+	}
 }
