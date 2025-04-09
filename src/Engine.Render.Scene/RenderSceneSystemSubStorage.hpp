@@ -1,5 +1,8 @@
 #pragma once
+
 #include <concepts>
+#include <Engine.Common/Move.hpp>
+#include <Engine.Common/Functional/FnRef.hpp>
 
 #include "RenderSceneSystemModel.hpp"
 
@@ -11,12 +14,14 @@ namespace hg::engine::render {
 
 		virtual nmpt<RenderSceneSystemModel> add(ptr<SceneComponent> src_) = 0;
 
-		virtual void remove(ptr<ClassMetaBase> obj_) = 0;
+		virtual void remove(ptr<RenderSceneSystemModel> obj_) = 0;
+
+		virtual void remove(FnRef<bool(ref<const RenderSceneSystemModel>)> selector_) = 0;
 
 	public:
-		virtual void forEach(std::function<void(cref<RenderSceneSystemModel>)> fn_) const = 0;
+		virtual void forEach(FnRef<void(ref<const RenderSceneSystemModel>)> fn_) const = 0;
 
-		virtual void forEachMut(std::function<void(ref<RenderSceneSystemModel>)> fn_) = 0;
+		virtual void forEachMut(FnRef<void(ref<RenderSceneSystemModel>)> fn_) = 0;
 	};
 
 	/**/
@@ -69,7 +74,7 @@ namespace hg::engine::render {
 			return &denseData.back();
 		}
 
-		void remove(ptr<ClassMetaBase> obj_) override {
+		void remove(ptr<RenderSceneSystemModel> obj_) override {
 
 			const auto diff = reinterpret_cast<std::ptrdiff_t>(obj_) - reinterpret_cast<std::ptrdiff_t>(
 				std::addressof(*denseData.begin())
@@ -87,7 +92,7 @@ namespace hg::engine::render {
 			}
 		}
 
-		void forEach(std::function<void(cref<RenderSceneSystemModel>)> fn_) const override {
+		void forEach(FnRef<void(ref<const RenderSceneSystemModel>)> fn_) const override {
 			for (const auto& stored : denseData) {
 				fn_(stored);
 			}
@@ -100,7 +105,7 @@ namespace hg::engine::render {
 			}
 		}
 
-		void forEachMut(std::function<void(ref<RenderSceneSystemModel>)> fn_) override {
+		void forEachMut(FnRef<void(ref<RenderSceneSystemModel>)> fn_) override {
 			for (auto& stored : denseData) {
 				fn_(stored);
 			}
