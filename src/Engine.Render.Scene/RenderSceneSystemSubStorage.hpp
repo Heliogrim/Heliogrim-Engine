@@ -84,6 +84,11 @@ namespace hg::engine::render {
 			denseData.erase(removeIt);
 		}
 
+		void remove(FnRef<bool(ref<const RenderSceneSystemModel>)> selector_) override {
+			auto orphaned = std::ranges::remove_if(denseData, ::hg::move(selector_));
+			denseData.erase(orphaned.begin(), orphaned.end());
+		}
+
 	public:
 		template <typename Fn_>
 		void forEach(Fn_&& fn_) const {
