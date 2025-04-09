@@ -253,7 +253,7 @@ namespace hg::engine::gfx {
 				}
 
 				if (iter != _releasedList.rend()) {
-					_releasedList.erase(iter.base());
+					_releasedList.erase(iter.base() - 1uL);
 					return { instance_, _buffer->makeView(instance_ * stride, stride) };
 				}
 			}
