@@ -5,6 +5,11 @@
 #include "IUrlComp.hpp"
 
 namespace hg::engine::storage {
+	/**
+	* @details The file url type wil lock-in a normalized form of the filesystem path provided.
+	*	Thus we will drop the support for arbitrary path manipulation actions with freely defined content
+	*	to uphold the guarantee of a normalized representation.
+	*/
 	class FileUrl final :
 		public IUrlComp<FileUrl> {
 	public:
@@ -13,19 +18,19 @@ namespace hg::engine::storage {
 			_scheme(FileScheme),
 			_path() {}
 
-		constexpr FileUrl(mref<UrlScheme> scheme_, mref<fs::Path> path_) noexcept :
+		FileUrl(mref<UrlScheme> scheme_, mref<fs::Path> path_) noexcept :
 			IUrlComp(),
 			_scheme(std::move(scheme_)),
-			_path(std::move(path_)) {}
+			_path(std::move(path_).normalized()) {}
 
-		constexpr FileUrl(cref<FileUrl> other_) noexcept = default;
+		constexpr FileUrl(ref<const FileUrl> other_) noexcept = default;
 
 		constexpr FileUrl(mref<FileUrl> other_) noexcept = default;
 
 		constexpr ~FileUrl() noexcept = default;
 
 	public:
-		constexpr ref<FileUrl> operator=(cref<FileUrl> other_) noexcept = default;
+		constexpr ref<FileUrl> operator=(ref<const FileUrl> other_) noexcept = default;
 
 		constexpr ref<FileUrl> operator=(mref<FileUrl> other_) noexcept = default;
 
@@ -38,7 +43,7 @@ namespace hg::engine::storage {
 			return _scheme;
 		}
 
-		[[nodiscard]] constexpr cref<fs::Path> path() const noexcept {
+		[[nodiscard]] constexpr ref<const fs::Path> path() const noexcept {
 			return _path;
 		}
 

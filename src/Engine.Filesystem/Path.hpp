@@ -2,7 +2,7 @@
 
 #include <algorithm>
 #include <filesystem>
-#include <memory>
+#include <Engine.Common/Move.hpp>
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
@@ -107,8 +107,16 @@ namespace hg::engine::fs {
 		[[nodiscard]] string parentName() const;
 
 	public:
-		[[nodiscard]] constexpr cref<string_type> native() const noexcept {
+		[[nodiscard]] constexpr ref<const string_type> native() const noexcept {
 			return _value;
+		}
+
+		[[nodiscard]] Path normalized() const & {
+			return Path { static_cast<ref<const std::filesystem::path>>(*this).lexically_normal() };
+		}
+
+		[[nodiscard]] Path normalized() && {
+			return Path { static_cast<mref<std::filesystem::path>>(::hg::move(*this)).lexically_normal() };
 		}
 
 		[[nodiscard]] constexpr bool empty() const noexcept {
