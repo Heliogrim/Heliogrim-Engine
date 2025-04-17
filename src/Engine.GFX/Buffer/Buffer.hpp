@@ -1,6 +1,7 @@
 #pragma once
 
 #include <utility>
+#include <Engine.Common/Move.hpp>
 
 #include "BufferObject.hpp"
 #include "../vkinc.hpp"
@@ -154,13 +155,17 @@ namespace hg::engine::gfx {
 		using this_type = TypeBuffer;
 
 	public:
-		using value_type = TypeBuffer<Ty>;
-		using reference_type = TypeBuffer<Ty>&;
-		using const_reference_type = const TypeBuffer<Ty>&;
+		TypeBuffer() noexcept = default;
 
-		[[nodiscard]] u32 count() const {
-			return size / sizeof(Ty);
-		}
+		TypeBuffer(mref<Buffer> buffer_) noexcept :
+			Buffer(::hg::move(buffer_)) {}
+
+		TypeBuffer(ref<const this_type>) = delete;
+
+		TypeBuffer(mref<this_type> other_) noexcept :
+			Buffer(::hg::move(other_)) {}
+
+		~TypeBuffer() noexcept override = default;
 
 	public:
 		ref<this_type> operator=(mref<this_type> other_) noexcept = default;
@@ -172,6 +177,11 @@ namespace hg::engine::gfx {
 
 			static_cast<ref<Buffer>>(*this) = std::move(other_);
 			return *this;
+		}
+
+	public:
+		[[nodiscard]] u32 count() const {
+			return size / sizeof(Ty);
 		}
 	};
 
