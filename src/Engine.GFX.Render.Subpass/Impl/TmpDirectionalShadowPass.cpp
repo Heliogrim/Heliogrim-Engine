@@ -340,15 +340,13 @@ void TmpDirectionalShadowPass::execute(cref<graph::ScopedSymbolContext> symCtx_)
 
 		/**/
 
-		auto dataView = shadowSourcePool.getDataView(_dirLightModel->_sceneShadowIndex);
-		auto* const page = dataView->pages().front();
-		auto allocated = page->memory()->allocated();
+		static_assert(::hg::meta::drop_ref_t<decltype(shadowSourcePool)>::stride >= sizeof(GlslDirectionalShadow));
+		const auto offset = shadowSourcePool.stride * _dirLightModel->_sceneShadowIndex;
+		const auto view = shadowSourcePool.getPoolView();
 
-		allocated->map(allocated->size);
-		const auto innerOffset = dataView->offset() - page->resourceOffset();
-		std::memcpy(static_cast<ptr<char>>(allocated->mapping) + innerOffset, &storeShadow, sizeof(storeShadow));
-		allocated->flush(VK_WHOLE_SIZE);
-		allocated->unmap();
+		view->map(shadowSourcePool.stride, offset);
+		view->write<GlslDirectionalShadow>(&storeShadow, 1uL);
+		view->unmap();
 	}
 
 	/**/

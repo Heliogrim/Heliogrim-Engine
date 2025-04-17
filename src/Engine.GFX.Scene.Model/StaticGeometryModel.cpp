@@ -1,9 +1,7 @@
 #include "StaticGeometryModel.hpp"
 
-#include <cstring>
 #include <Engine.Assets.Type/Material/GfxMaterial.hpp>
 #include <Engine.Common/Math/Convertion.hpp>
-#include <Engine.Common/Math/Coordinates.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.GFX.Loader/Geometry/Traits.hpp>
 #include <Engine.GFX.Loader/Material/Traits.hpp>
@@ -151,7 +149,6 @@ void StaticGeometryModel::destroy(const ptr<render::RenderSceneSystem> system_) 
 
 	srp->staticAabbPool.release(_sceneInstanceIndex);
 	srp->staticInstancePool.release(_sceneInstanceIndex);
-
 }
 
 void StaticGeometryModel::capture(nmpt<render::MeshCaptureInterface> mci_) const noexcept {

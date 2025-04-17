@@ -26,9 +26,6 @@ math::fvec3 DirectionalLightModel::getLightDirection() const noexcept {
 void DirectionalLightModel::create(const ptr<render::RenderSceneSystem> system_) {
 
 	auto origin = Cast<DirectionalLightComponent>(owner());
-
-	/**/
-
 	const auto srp = system_->getSceneResourcePool();
 
 	/**/
@@ -76,13 +73,10 @@ void DirectionalLightModel::create(const ptr<render::RenderSceneSystem> system_)
 
 		/**/
 
-		const auto page = result.dataView->pages().front();
-		auto allocated = page->memory()->allocated();
-
-		allocated->map(allocated->size);
-		const auto innerOffset = result.dataView->offset() - page->resourceOffset();
-		std::memcpy(static_cast<ptr<char>>(allocated->mapping) + innerOffset, &storeShadow, sizeof(storeShadow));
-		allocated->unmap();
+		const auto offset = sizeof(GlslDirectionalShadow) * result.instanceIndex;
+		result.dataView.map(sizeof(GlslDirectionalShadow), offset);
+		result.dataView.write<GlslDirectionalShadow>(&storeShadow, 1uL);
+		result.dataView.unmap();
 	}
 
 }
@@ -105,7 +99,7 @@ void DirectionalLightModel::update(const ptr<render::RenderSceneSystem> system_)
 	/**/
 
 	const auto view = srp->lightSourcePool.getDataView(_sceneLightIndex);
-	const auto* const page = view->pages().front();
+	const auto page = view->pages().front();
 	auto allocated = page->memory()->allocated();
 
 	allocated->map(allocated->size);
@@ -118,6 +112,7 @@ void DirectionalLightModel::destroy(const ptr<render::RenderSceneSystem> system_
 
 	const auto srp = system_->getSceneResourcePool();
 	srp->lightSourcePool.release(_sceneLightIndex);
+	srp->shadowSourcePool.release(_sceneShadowIndex);
 }
 
 void DirectionalLightModel::capture(nmpt<render::LightCaptureInterface> lci_) const noexcept {}
