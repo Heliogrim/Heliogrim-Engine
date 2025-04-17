@@ -36,6 +36,14 @@ void DirectionalLightModel::create(const ptr<render::RenderSceneSystem> system_)
 
 		/**/
 
+		auto& sceneLightInfo = srp->sceneLightInfo;
+		if (sceneLightInfo.lightCount <= _sceneLightIndex) {
+			sceneLightInfo.lightCount = _sceneLightIndex + 1uL;
+			srp->sceneLightInfoBuffer.write<GlslSceneLightInfo>(&sceneLightInfo, 1uL);
+		}
+
+		/**/
+
 		const GlslLight storeLight {
 			math::fvec4 { origin->_luminance, 0.F },
 			math::fvec4 { math::vec3_zero, 0.F },
