@@ -9,7 +9,7 @@
 #include "../Texture/SparseTexture.hpp"
 
 /**/
-#include "RangePooled.hpp"
+#include "SparseRangePooled.hpp"
 #include "../Texture/TextureFactory.hpp"
 
 namespace hg::engine::gfx::pool {
@@ -53,14 +53,14 @@ namespace hg::engine::gfx::pool {
 		/**
 		 * Vertex Buffer
 		 */
-		RangePooled<void> _globalVertexBuffer;
+		SparseRangePooled<void> _globalVertexBuffer;
 		Vector<uptr<SparseBuffer>> _vertexBuffers;
 
 	private:
 		/**
 		 * Index Buffer
 		 */
-		RangePooled<void> _globalIndexBuffer;
+		SparseRangePooled<void> _globalIndexBuffer;
 		Vector<uptr<SparseBuffer>> _indexBuffers;
 
 	private:

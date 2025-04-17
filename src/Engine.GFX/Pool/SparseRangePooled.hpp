@@ -1,34 +1,35 @@
 #pragma once
+
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 
-#include "../Memory/VirtualMemory.hpp"
 #include "../Buffer/SparseBuffer.hpp"
-#include "../Memory/GlobalPooledAllocator.hpp"
 #include "../Buffer/SparseBufferView.hpp"
-#include "Engine.GFX/Command/CommandBuffer.hpp"
-#include "Engine.GFX/Command/CommandPool.hpp"
-#include "Engine.GFX/Command/CommandQueue.hpp"
+#include "../Command/CommandBuffer.hpp"
+#include "../Command/CommandPool.hpp"
+#include "../Command/CommandQueue.hpp"
+#include "../Memory/GlobalPooledAllocator.hpp"
+#include "../Memory/VirtualMemory.hpp"
 
 namespace hg::engine::gfx {
 	template <typename ValueType_>
-	class RangePooled {
+	class SparseRangePooled {
 	public:
-		using this_type = RangePooled<ValueType_>;
+		using this_type = SparseRangePooled<ValueType_>;
 
 	public:
-		RangePooled(cref<sptr<Device>> device_) :
+		SparseRangePooled(cref<sptr<Device>> device_) :
 			_device(device_),
 			_allocator(_device->allocator()),
 			_buffer(nullptr),
 			_monotonicOffset(0uL),
 			_releasedList() {}
 
-		RangePooled(cref<this_type>) = delete;
+		SparseRangePooled(cref<this_type>) = delete;
 
-		RangePooled(mref<this_type>) = delete;
+		SparseRangePooled(mref<this_type>) = delete;
 
-		~RangePooled() = default;
+		~SparseRangePooled() = default;
 
 	private:
 	public:
