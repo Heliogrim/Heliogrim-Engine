@@ -10,33 +10,35 @@ SceneViewEye::SceneViewEye() :
 	_location(),
 	_projection(math::mat4::make_identity()),
 	_view(math::mat4::make_identity()),
-	_vkLocation(),
-	_vkFlipY(true) {}
+	_driver(SceneViewDriver::eVulkan) {}
 
 void SceneViewEye::updateProjection(cref<math::mat4> projection_) {
 	_projection = projection_;
-	if (_vkFlipY) {
-		_projection[1][1] *= -1.F;
+	if (_driver == SceneViewDriver::eVulkan) {
+		constexpr auto vkViewIntermediate = math::mat4 {
+			1.F, 0.F, 0.F, 0.F,
+			0.F, -1.F, 0.F, 0.F,
+			0.F, 0.F, -1.F, 0.F,
+			0.F, 0.F, 0.F, 1.F
+		};
+		_projection = _projection * vkViewIntermediate;
 	}
 }
 
 void SceneViewEye::updateView(cref<math::Location> origin_, cref<math::Rotator> rotation_) {
 
-	/* Handle (vk) Rotation */
+	/* Handle Rotation */
 
 	math::mat4 rotationMatrix { math::mat4::make_identity() };
 
-	rotationMatrix.rotate(rotation_.pitch() * (_vkFlipY ? -1.F : 1.F), math::vec3_right);
-	//rotationMatrix.rotate(rotation_.pitch(), math::vec3_right);
+	rotationMatrix.rotate(rotation_.pitch(), math::vec3_right);
 	rotationMatrix.rotate(rotation_.yaw(), math::vec3_up);
 	rotationMatrix.rotate(rotation_.roll(), math::vec3_forward);
 
-	/* Handle (vk) Translation */
+	/* Handle Translation */
 
 	_location = origin_;
-	auto translation = origin_.into() * math::fvec3 { -1.F, 1.F, -1.F };
-
-	const auto translationMatrix = math::mat4::make_identity().translate(translation);
+	const auto translationMatrix = math::mat4::make_identity().translate(-origin_.into());
 
 	/* Update View */
 
@@ -47,10 +49,7 @@ void SceneViewEye::updateView(cref<math::Location> origin_, cref<math::Rotator> 
 		_view = translationMatrix * rotationMatrix;
 	}
 
-	/* Handle (vk) View Position */
-
-	//_vkLocation = math::Location(_view.inverse()[3]);
-	_vkLocation = math::Location { translation };
+	_inverseView = _view.inverse();
 }
 
 void SceneViewEye::updateView(cref<math::Location> origin_, cref<math::quaternion> rotation_) {
@@ -69,33 +68,38 @@ void SceneViewEye::getInvProjectionMatrix(ref<math::mat4> matrix_) const noexcep
 	matrix_ = _projection.inverse();
 }
 
-cref<math::mat4> SceneViewEye::getViewMatrix() const noexcept {
+ref<const math::mat4> SceneViewEye::getViewMatrix() const noexcept {
 	return _view;
 }
 
-void SceneViewEye::getInvViewMatrix(ref<math::mat4> matrix_) const noexcept {
-	matrix_ = _view.inverse();
+ref<const math::mat4> SceneViewEye::getInvViewMatrix() const noexcept {
+	return _inverseView;
 }
 
-math::vec4 SceneViewEye::universeToView(const math::vec4 universePosition_) const {
-	return _projection * _view /* * math::mat4::make_identity() */ * universePosition_;
+math::vec4 SceneViewEye::universeToView(ref<const math::Location> universeLocation_) const {
+	return _view * math::fvec4 { universeLocation_.into(), 1.F };
 }
 
-math::vec4 SceneViewEye::viewToUniverse(const math::vec4 viewPosition_) const {
+math::vec4 SceneViewEye::universeToViewProjected(ref<const math::Location> universeLocation_) const {
+	return _projection * _view * math::fvec4 { universeLocation_.into(), 1.F };
+}
 
-	math::mat4 ip { math::mat4::make_identity() };
-	math::mat4 iv { math::mat4::make_identity() };
+math::vec4 SceneViewEye::viewToUniverse(ref<const math::Location> viewLocation_) const {
+	return _inverseView * math::fvec4 { viewLocation_.into(), 1.F };
+}
 
+math::vec4 SceneViewEye::projectedViewToUniverse(ref<const math::Location> viewLocation_) const {
+
+	auto ip = math::mat4::make_identity();
 	getInvProjectionMatrix(ip);
-	getInvViewMatrix(iv);
 
-	return iv * ip * viewPosition_;
+	return _inverseView * ip * math::fvec4 { viewLocation_.into(), 1.F };
 }
 
-math::vec2 SceneViewEye::universeToScreen(cref<math::vec4> universePosition_) const {
+math::vec2 SceneViewEye::universeToScreen(ref<const math::Location> universeLocation_) const {
 
 	// Affine projection of universe position to view space
-	const math::vec4 viewSpace = universeToView(universePosition_);
+	const math::vec4 viewSpace = universeToViewProjected(universeLocation_);
 	if (viewSpace.w <= 0.F) {
 		return math::vec2 { -1.F, -1.F };
 	}
@@ -150,26 +154,14 @@ void SceneViewEye::screenToUniverse(
 
 	/**/
 
-	math::mat4 iv { math::mat4::make_identity() };
-	getInvViewMatrix(iv);
-
-	const auto origin { iv * nearH };
+	const auto origin { _inverseView * nearH };
 
 	viewSpaceDir.w = 0.F;
-	auto direction { iv * viewSpaceDir };
+	auto direction { _inverseView * viewSpaceDir };
 	direction.normalize();
 
 	/**/
 
 	universeOrigin_ = origin;
 	universeDirection_ = direction;
-}
-
-void SceneViewEye::vkSetFlipY(bool flip_) {
-	_vkFlipY = flip_;
-	// TODO: Update View and Projection
-}
-
-cref<math::Location> SceneViewEye::getVkLocation() const noexcept {
-	return _vkLocation;
 }

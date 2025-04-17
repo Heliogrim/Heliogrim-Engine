@@ -3,11 +3,16 @@
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Math/Location.hpp>
-#include <Engine.Common/Math/Rotator.hpp>
 #include <Engine.Common/Math/Matrix.hpp>
 #include <Engine.Common/Math/Quaternion.hpp>
+#include <Engine.Common/Math/Rotator.hpp>
 
 namespace hg::engine::gfx::scene {
+	enum class SceneViewDriver : bool {
+		eNone,
+		eVulkan
+	};
+
 	class SceneViewEye {
 	public:
 		using this_type = SceneViewEye;
@@ -20,10 +25,10 @@ namespace hg::engine::gfx::scene {
 
 		math::mat4 _projection;
 		math::mat4 _view;
+		math::mat4 _inverseView;
 
 	protected:
-		math::Location _vkLocation;
-		bool _vkFlipY;
+		SceneViewDriver _driver;
 
 	public:
 		void updateProjection(cref<math::mat4> projection_);
@@ -39,14 +44,18 @@ namespace hg::engine::gfx::scene {
 
 		void getInvProjectionMatrix(_Inout_ ref<math::mat4> matrix_) const noexcept;
 
-		[[nodiscard]] cref<math::mat4> getViewMatrix() const noexcept;
+		[[nodiscard]] ref<const math::mat4> getViewMatrix() const noexcept;
 
-		void getInvViewMatrix(_Inout_ ref<math::mat4> matrix_) const noexcept;
+		[[nodiscard]] ref<const math::mat4> getInvViewMatrix() const noexcept;
 
 	public:
-		[[nodiscard]] math::vec4 universeToView(const math::vec4 universePosition_) const;
+		[[nodiscard]] math::vec4 universeToView(ref<const math::Location> universeLocation_) const;
 
-		[[nodiscard]] math::vec4 viewToUniverse(const math::vec4 viewPosition_) const;
+		[[nodiscard]] math::vec4 universeToViewProjected(ref<const math::Location> universeLocation_) const;
+
+		[[nodiscard]] math::vec4 viewToUniverse(ref<const math::Location> viewLocation_) const;
+
+		[[nodiscard]] math::vec4 projectedViewToUniverse(ref<const math::Location> viewLocation_) const;
 
 	public:
 		/**
@@ -55,11 +64,11 @@ namespace hg::engine::gfx::scene {
 		 * @author Julius
 		 * @date 03.12.2022
 		 *
-		 * @param universePosition_ The universe space position to project into ui space
+		 * @param universeLocation_ The universe space position to project into ui space
 		 *
 		 * @returns A vector in normalized space `[0.0 ... 1.0]` when  succeeded, otherwise {-1, -1}
 		 */
-		[[nodiscard]] math::vec2 universeToScreen(cref<math::vec4> universePosition_) const;
+		[[nodiscard]] math::vec2 universeToScreen(ref<const math::Location> universeLocation_) const;
 
 		/**
 		 * Calculate the trace origin and direction un-projected from ui position to universe space
@@ -78,8 +87,6 @@ namespace hg::engine::gfx::scene {
 		) const;
 
 	public:
-		void vkSetFlipY(bool flip_);
-
-		[[nodiscard]] cref<math::Location> getVkLocation() const noexcept;
+		void setDriver(SceneViewDriver driver_);
 	};
 }

@@ -51,7 +51,7 @@ void CameraModel::update(const ptr<RenderSceneSystem> system_) {
 
 	math::mat4 projection;
 	if (owner.getProjectMode() == gfx::CameraProjectionMode::ePerspective) {
-		projection = math::perspectiveLeftHand(glm::radians(owner.getFov()), owner.getAspectRatio(), ZNEAR, ZFAR);
+		projection = math::perspective(glm::radians(owner.getFov()), owner.getAspectRatio(), ZNEAR, ZFAR);
 	} else {
 		projection = math::ortho(0.F, ORTHO_WIDTH, ORTHO_HEIGHT, 0.F, ZNEAR, ZFAR);
 	}
