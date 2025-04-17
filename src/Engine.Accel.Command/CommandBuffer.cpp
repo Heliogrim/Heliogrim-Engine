@@ -81,8 +81,9 @@ void AccelCommandBuffer::bindRenderPass(mref<BindRenderPassStruct> bindRenderPas
 
 	/* Warning: Temporary */
 	_vkCmd.setScissor(0uL, 1uL, &renderArea /* Warning: alias scissor by default ~ will break ui renderer */);
-	::vk::Viewport viewport {
-		0.F, 0.F, static_cast<float>(rpbi.renderArea.extent.width), static_cast<float>(rpbi.renderArea.extent.height),
+	const auto viewport = ::vk::Viewport {
+		0.F, 0.F,
+		static_cast<float>(rpbi.renderArea.extent.width), static_cast<float>(rpbi.renderArea.extent.height),
 		0.F, 1.F
 	};
 	_vkCmd.setViewport(0uL, 1uL, &viewport);

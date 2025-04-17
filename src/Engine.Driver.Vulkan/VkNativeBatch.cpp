@@ -92,7 +92,7 @@ void VkNativeBatch::commit() {
 	};
 
 	const auto result = ::vkQueueSubmit(vkQueue, 1uL, &si, fence);
-	assert(result == VK_SUCCESS);
+	::hg::assertd(result == VK_SUCCESS);
 
 	/* Warning: Dummy */
 	[[maybe_unused]] const auto waitResult = vkDevice.waitForFences(1uL, &fence, true, UINT64_MAX);

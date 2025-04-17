@@ -144,14 +144,14 @@ driver::vk::VkDescriptorPoolAllocationLayout driver::vk::VkScopedResourceTable::
 
 	#if _DEBUG
 	const auto maxTypeCount = layout.sizes.empty() ?
-		                          0uL :
-		                          std::ranges::max(
-			                          layout.sizes,
-			                          {},
-			                          [](const auto& entry_) {
-				                          return entry_.capacity;
-			                          }
-		                          ).capacity;
+		0uL :
+		std::ranges::max(
+			layout.sizes,
+			{},
+			[](const auto& entry_) {
+				return entry_.capacity;
+			}
+		).capacity;
 	if (maxTypeCount >= 1024uL) {
 		IM_CORE_WARN("High demand on typed descriptors may indicate unexpected behaviour.");
 	} else if (maxTypeCount >= 1024uL * 1024uL) {
