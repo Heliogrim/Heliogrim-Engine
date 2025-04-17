@@ -1,14 +1,12 @@
 #pragma once
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
+#include <Engine.Pedantic/Clone/Clone.hpp>
 
-#include "../Memory/VirtualMemory.hpp"
-#include "../Buffer/SparseBuffer.hpp"
+#include "../Buffer/Buffer.hpp"
+#include "../Buffer/BufferFactory.hpp"
 #include "../Memory/GlobalPooledAllocator.hpp"
-#include "../Buffer/SparseBufferView.hpp"
-#include "Engine.GFX/Command/CommandBuffer.hpp"
-#include "Engine.GFX/Command/CommandPool.hpp"
-#include "Engine.GFX/Command/CommandQueue.hpp"
+#include "../Memory/VirtualMemory.hpp"
 
 namespace hg::engine::gfx {
 	template <typename ValueType_>
@@ -22,7 +20,6 @@ namespace hg::engine::gfx {
 	public:
 		InstancePooled(cref<sptr<Device>> device_) :
 			_device(device_),
-			_allocator(_device->allocator()),
 			_buffer(nullptr),
 			_monotonicIndex(0uL),
 			_releasedList() {}
@@ -36,47 +33,23 @@ namespace hg::engine::gfx {
 	public:
 		void setup(u32 reservedInstances_) {
 
-			assert(_buffer == nullptr);
+			::hg::assertd(_buffer == nullptr);
 
 			/**/
 
 			const auto reservedSize = stride * reservedInstances_;
-
-			vk::BufferCreateInfo bci {
-				vk::BufferCreateFlagBits::eSparseBinding | vk::BufferCreateFlagBits::eSparseResidency,
-				reservedSize,
-				vk::BufferUsageFlagBits::eStorageBuffer | vk::BufferUsageFlagBits::eTransferSrc |
+			_buildPayload = BufferBuildPayload {
+				.byteSize = reservedSize,
+				.byteAlign = alignof(ValueType_),
+				.memoryProperties = MemoryProperty::eHostVisible,
+				.vkFlags = vk::BufferCreateFlags {},
+				.vkUsage = vk::BufferUsageFlagBits::eStorageBuffer | vk::BufferUsageFlagBits::eTransferSrc |
 				vk::BufferUsageFlagBits::eTransferDst,
-				vk::SharingMode::eExclusive,
-				0uL,
-				nullptr,
-				nullptr
+				.vkSharing = vk::SharingMode::eExclusive
 			};
 
-			auto vkBuffer = _device->vkDevice().createBuffer(bci);
-
-			const auto req = _device->vkDevice().getBufferMemoryRequirements(vkBuffer);
-			const auto layout = memory::MemoryLayout {
-				req.alignment,
-				MemoryProperty::eHostVisible,
-				req.memoryTypeBits
-			};
-
-			auto memory = make_uptr<VirtualMemory>(_allocator, layout, req.size);
-			auto buffer = make_uptr<SparseBuffer>(std::move(memory), reservedSize, vkBuffer, bci.usage);
-
-			const auto requiredPages = (reservedSize / req.alignment) + ((reservedSize % req.alignment) ? 1uLL : 0uLL);
-
-			for (u64 page = 0uLL; page < requiredPages; ++page) {
-				auto vbp = buffer->addPage(req.alignment, req.alignment * page);
-				[[maybe_unused]] const auto loadResult = vbp->load();
-				assert(loadResult);
-			}
-
-			buffer->updateBindingData();
-			buffer->enqueueBindingSync(_device->graphicsQueue());
-
-			_buffer = std::move(buffer);
+			const auto bufferFactor = BufferFactory::get();
+			_buffer = make_uptr<TypeBuffer<ValueType_>>(bufferFactor->build(clone(_buildPayload)));
 		}
 
 		void destroy() {
@@ -85,6 +58,8 @@ namespace hg::engine::gfx {
 				return;
 			}
 
+			_buffer->destroy();
+
 			_buffer.reset();
 			_monotonicIndex = 0uL;
 			_releasedList.clear();
@@ -92,132 +67,22 @@ namespace hg::engine::gfx {
 
 	private:
 		sptr<Device> _device;
-		nmpt<memory::GlobalPooledAllocator> _allocator;
 
-	private:
-		uptr<SparseBuffer> _buffer;
+		BufferBuildPayload _buildPayload;
+		uptr<TypeBuffer<ValueType_>> _buffer;
 
 		u32 _monotonicIndex;
 		Vector<u32> _releasedList;
 
 	private:
 		void grow(s64 required_) {
-
-			const auto prevSize = _buffer->memorySize();
-
-			const auto nextSize = (required_ > 0) ?
-				MAX(required_, _buffer->memorySize()) :
-				_buffer->memorySize() + 128uLL * stride;
-			const auto dr = lldiv(nextSize, 128uLL);
-			const auto nextSizeAligned = dr.quot + (dr.rem > 0 ? 1uLL : 0uLL);
-
-			/**/
-
-			vk::BufferCreateInfo bci {
-				vk::BufferCreateFlagBits::eSparseBinding | vk::BufferCreateFlagBits::eSparseResidency,
-				nextSizeAligned,
-				vk::BufferUsageFlagBits::eStorageBuffer | vk::BufferUsageFlagBits::eTransferSrc |
-				vk::BufferUsageFlagBits::eTransferDst,
-				vk::SharingMode::eExclusive,
-				0uL,
-				nullptr,
-				nullptr
-			};
-
-			auto vkBuffer = _device->vkDevice().createBuffer(bci);
-
-			const auto req = _device->vkDevice().getBufferMemoryRequirements(vkBuffer);
-			const auto layout = memory::MemoryLayout {
-				req.alignment,
-				MemoryProperty::eHostVisible,
-				req.memoryTypeBits
-			};
-
-			auto memory = make_uptr<VirtualMemory>(_allocator, layout, req.size);
-			auto buffer = make_uptr<SparseBuffer>(std::move(memory), nextSizeAligned, vkBuffer, bci.usage);
-
-			const auto requiredPages = (nextSizeAligned / req.alignment) + ((nextSizeAligned % req.alignment) ?
-				1uLL :
-				0uLL);
-
-			for (u64 page = 0uLL; page < requiredPages; ++page) {
-				auto vbp = buffer->addPage(req.alignment, req.alignment * page);
-				[[maybe_unused]] const auto loadResult = vbp->load();
-				assert(loadResult);
-			}
-
-			buffer->updateBindingData();
-			buffer->enqueueBindingSync(_device->graphicsQueue());
-
-			/**/
-
-			const auto cmdPool = _device->transferQueue()->pool();
-			cmdPool->lck().acquire();
-			auto cmd = cmdPool->make();
-
-			cmd.begin();
-			std::array<vk::BufferMemoryBarrier, 2uLL> before {
-				vk::BufferMemoryBarrier {
-					vk::AccessFlagBits::eShaderRead, vk::AccessFlagBits::eTransferRead, 0uL, 0uL, _buffer->vkBuffer(),
-					0uL, prevSize
-				},
-				vk::BufferMemoryBarrier {
-					vk::AccessFlags {}, vk::AccessFlagBits::eTransferWrite, 0uL, 0uL, buffer->vkBuffer(), 0uL,
-					nextSizeAligned
-				}
-			};
-			cmd.vkCommandBuffer().pipelineBarrier(
-				vk::PipelineStageFlagBits::eAllCommands,
-				vk::PipelineStageFlagBits::eTransfer,
-				vk::DependencyFlagBits::eByRegion,
-				0uL,
-				nullptr,
-				static_cast<u32>(before.size()),
-				before.data(),
-				0uL,
-				nullptr
-			);
-
-			const vk::BufferCopy region { 0uL, 0uL, prevSize };
-			cmd.vkCommandBuffer().copyBuffer(_buffer->vkBuffer(), buffer->vkBuffer(), 1uL, &region);
-
-			std::array<vk::BufferMemoryBarrier, 2uLL> after {
-				vk::BufferMemoryBarrier {
-					vk::AccessFlagBits::eTransferRead, vk::AccessFlagBits::eShaderRead, 0uL, 0uL, _buffer->vkBuffer(),
-					0uL, prevSize
-				},
-				vk::BufferMemoryBarrier {
-					vk::AccessFlagBits::eTransferWrite, vk::AccessFlagBits::eShaderRead, 0uL, 0uL, buffer->vkBuffer(),
-					0uL, nextSizeAligned
-				}
-			};
-			cmd.vkCommandBuffer().pipelineBarrier(
-				vk::PipelineStageFlagBits::eTransfer,
-				vk::PipelineStageFlagBits::eAllCommands,
-				vk::DependencyFlagBits::eByRegion,
-				0uL,
-				nullptr,
-				static_cast<u32>(after.size()),
-				after.data(),
-				0uL,
-				nullptr
-			);
-			cmd.end();
-
-			_device->transferQueue()->submitWait(cmd);
-
-			cmd.release();
-			cmdPool->lck().release();
-
-			/**/
-
-			_buffer = std::move(buffer);
+			::hg::todo_panic();
 		}
 
 	public:
 		struct AcquireResult {
 			u32 instanceIndex;
-			uptr<SparseBufferView> dataView;
+			ref<TypeBuffer<ValueType_>> dataView;
 		};
 
 		[[nodiscard]] AcquireResult acquire() {
@@ -227,18 +92,18 @@ namespace hg::engine::gfx {
 				const auto index = _releasedList.back();
 				_releasedList.pop_back();
 
-				return { index, _buffer->makeView(index * stride, stride) };
+				return { index, *_buffer };
 			}
 
 			/**/
 
 			auto index = _monotonicIndex++;
 
-			if (_buffer->memorySize() < index * stride) {
+			if (_buffer->size < index * stride) {
 				grow(-1LL);
 			}
 
-			return { index, _buffer->makeView(index * stride, stride) };
+			return { index, *_buffer };
 		}
 
 		[[nodiscard]] AcquireResult acquire(const u32 instance_) {
@@ -254,7 +119,7 @@ namespace hg::engine::gfx {
 
 				if (iter != _releasedList.rend()) {
 					_releasedList.erase(iter.base() - 1uL);
-					return { instance_, _buffer->makeView(instance_ * stride, stride) };
+					return { instance_, *_buffer };
 				}
 			}
 
@@ -266,7 +131,7 @@ namespace hg::engine::gfx {
 				grow(instance_ * stride);
 			}
 
-			return { instance_, _buffer->makeView(instance_ * stride, stride) };
+			return { instance_, *_buffer };
 		}
 
 		void release(u32 instanceIndex_) {
@@ -274,11 +139,7 @@ namespace hg::engine::gfx {
 		}
 
 	public:
-		[[nodiscard]] uptr<SparseBufferView> getDataView(const u32 instanceIndex_) const {
-			return _buffer->makeView(instanceIndex_ * stride, stride);
-		}
-
-		[[nodiscard]] nmpt<SparseBuffer> getPoolView() const {
+		[[nodiscard]] nmpt<TypeBuffer<ValueType_>> getPoolView() const {
 			return _buffer.get();
 		}
 	};

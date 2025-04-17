@@ -126,16 +126,16 @@ cref<vk::BufferUsageFlags> SparseBuffer::vkBufferUsageFlags() const noexcept {
 
 non_owning_rptr<SparseBufferPage> SparseBuffer::addPage(const u64 size_, const u64 offset_) {
 	#ifdef _DEBUG
-    for (const auto& entry : _pages) {
-        if (entry->resourceOffset() >= (offset_ + size_)) {
-            continue;
-        }
+	for (const auto& entry : _pages) {
+		if (entry->resourceOffset() >= (offset_ + size_)) {
+			continue;
+		}
 
-        const auto eo { entry->resourceOffset() };
-        const auto es { entry->resourceSize() };
+		const auto eo { entry->resourceOffset() };
+		const auto es { entry->resourceSize() };
 
-        assert((eo + es) <= offset_);
-    }
+		assert((eo + es) <= offset_);
+	}
 	#endif
 
 	// Warning: Replace virtual memory page offset
@@ -240,8 +240,8 @@ void SparseBuffer::enqueueBinding(const ptr<CommandQueue> queue_) {
 	};
 
 	#ifdef _DEBUG
-    const auto res { queue_->vkQueue().bindSparse(1, &bsi, nullptr) };
-    assert(res == vk::Result::eSuccess);
+	const auto res { queue_->vkQueue().bindSparse(1, &bsi, nullptr) };
+	assert(res == vk::Result::eSuccess);
 	#else
 	[[maybe_unused]] const auto res { queue_->vkQueue().bindSparse(1, &bsi, nullptr) };
 	#endif
@@ -267,8 +267,8 @@ void SparseBuffer::enqueueBinding(
 	};
 
 	#ifdef _DEBUG
-    const auto res { queue_->vkQueue().bindSparse(1, &bsi, nullptr) };
-    assert(res == vk::Result::eSuccess);
+	const auto res { queue_->vkQueue().bindSparse(1, &bsi, nullptr) };
+	assert(res == vk::Result::eSuccess);
 	#else
 	[[maybe_unused]] const auto res { queue_->vkQueue().bindSparse(1, &bsi, nullptr) };
 	#endif
@@ -292,12 +292,14 @@ void SparseBuffer::enqueueBindingSync(const ptr<CommandQueue> queue_) {
 	auto fence { queue_->device()->vkDevice().createFence(vk::FenceCreateInfo {}) };
 
 	#ifdef _DEBUG
-    auto res { queue_->vkQueue().bindSparse(1, &bsi, fence) };
-    assert(res == vk::Result::eSuccess);
+	auto res { queue_->vkQueue().bindSparse(1, &bsi, fence) };
+	assert(res == vk::Result::eSuccess);
 	#else
 	[[maybe_unused]] auto res { queue_->vkQueue().bindSparse(1, &bsi, fence) };
 	#endif
 
 	res = queue_->device()->vkDevice().waitForFences(1uL, &fence, VK_TRUE, UINT64_MAX);
 	assert(res == vk::Result::eSuccess);
+
+	queue_->device()->vkDevice().destroyFence(fence);
 }
