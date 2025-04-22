@@ -26,9 +26,9 @@ namespace hg::engine::assets {
 		 * @param  guid_ Unique identifier.
 		 * @param  type_ The type.
 		 */
-		Asset(mref<AssetGuid> guid_, mref<asset_type_id> type_);
+		Asset(mref<AssetGuid> guid_, mref<AssetTypeId> type_);
 
-		Asset(mref<AssetGuid> guid_, cref<asset_type_id> type_);
+		Asset(mref<AssetGuid> guid_, cref<AssetTypeId> type_);
 
 	public:
 		/**
@@ -60,7 +60,7 @@ namespace hg::engine::assets {
 		/**
 		 * Type Identifier
 		 */
-		asset_type_id _type;
+		AssetTypeId _type;
 
 	public:
 		/**
@@ -71,7 +71,7 @@ namespace hg::engine::assets {
 		 *
 		 * @returns The type identifier.
 		 */
-		[[nodiscard]] asset_type_id getTypeId() const noexcept;
+		[[nodiscard]] AssetTypeId getTypeId() const noexcept;
 
 	protected:
 		/**

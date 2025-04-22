@@ -13,7 +13,7 @@ namespace hg::engine::assets {
 		friend class ::hg::engine::serialization::DataLayout;
 
 	public:
-		constexpr static asset_type_id typeId { "Sound"_typeId };
+		constexpr static AssetTypeId typeId { "Sound"_typeId };
 
 	protected:
 		Sound(mref<AssetGuid> guid_);

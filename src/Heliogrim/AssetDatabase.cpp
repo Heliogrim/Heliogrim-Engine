@@ -32,7 +32,7 @@ AssetDatabaseResult<Asset> AssetDatabase::operator[](cref<AssetGuid> guid_) cons
 	if (asset == None || asset.value() == nullptr) {
 		return AssetDatabaseResult<Asset> {
 			{ AssetDatabaseResultType::eFailed },
-			hg::Asset { clone(invalid_asset_guid), asset_type_id { 0 }, nullptr }
+			hg::Asset { clone(invalid_asset_guid), AssetTypeId { 0 }, nullptr }
 		};
 	}
 

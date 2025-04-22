@@ -17,7 +17,7 @@ sptr<loader::SourceLoader> LoaderManager::sharedSourceLoader() const {
 	return _sharedSourceLoader;
 }
 
-sptr<loader::LoaderBase> LoaderManager::selectLoader(cref<asset_type_id> typeId_, ptr<void> options_) const noexcept {
+sptr<loader::LoaderBase> LoaderManager::selectLoader(cref<AssetTypeId> typeId_, ptr<void> options_) const noexcept {
 
 	const auto result { _loader.find(typeId_) };
 	if (result == _loader.end()) {
@@ -29,12 +29,12 @@ sptr<loader::LoaderBase> LoaderManager::selectLoader(cref<asset_type_id> typeId_
 	return result->second;
 }
 
-bool LoaderManager::hasLoader(cref<asset_type_id> typeId_) const noexcept {
+bool LoaderManager::hasLoader(cref<AssetTypeId> typeId_) const noexcept {
 	const auto iter = _loader.find(typeId_);
 	return iter != _loader.end() && iter->second.get() != nullptr;
 }
 
-bool LoaderManager::registerLoader(cref<asset_type_id> typeId_, cref<sptr<loader::LoaderBase>> loader_) noexcept {
+bool LoaderManager::registerLoader(cref<AssetTypeId> typeId_, cref<sptr<loader::LoaderBase>> loader_) noexcept {
 	const auto result { _loader.insert({ typeId_, loader_ }) };
 	return result.second;
 }
@@ -56,7 +56,7 @@ bool LoaderManager::unregisterLoader(mref<sptr<loader::LoaderBase>> loader_) noe
 	return true;
 }
 
-bool LoaderManager::unregisterLoader(cref<asset_type_id> typeId_) noexcept {
+bool LoaderManager::unregisterLoader(cref<AssetTypeId> typeId_) noexcept {
 
 	const auto iter = _loader.find(typeId_);
 	if (iter == _loader.cend()) {

@@ -14,7 +14,7 @@ namespace hg::engine::assets {
 		ACCESS_STRUCTURE
 
 	public:
-		constexpr static asset_type_id typeId { "AccelEffect"_typeId };
+		constexpr static AssetTypeId typeId { "AccelEffect"_typeId };
 
 	public:
 		AccelEffect(mref<AssetGuid> guid_);

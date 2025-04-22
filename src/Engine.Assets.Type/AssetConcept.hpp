@@ -11,7 +11,7 @@ namespace hg::engine::assets {
 	template <class Ty>
 	concept IsAsset = requires(const Ty obj) {
 		{ obj.get_guid() } -> std::same_as<AssetGuid>;
-	} && hg::HasType<Ty, asset_type_id>;
+	} && hg::HasType<Ty, AssetTypeId>;
 
 	template <class Type_ = void>
 	constexpr inline bool _has_data_layout = true;

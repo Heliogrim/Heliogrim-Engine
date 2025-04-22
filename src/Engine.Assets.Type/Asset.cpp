@@ -3,11 +3,11 @@
 using namespace hg::engine::assets;
 using namespace hg;
 
-Asset::Asset(mref<AssetGuid> guid_, mref<asset_type_id> type_) :
+Asset::Asset(mref<AssetGuid> guid_, mref<AssetTypeId> type_) :
 	_guid(std::move(guid_)),
 	_type(std::move(type_)) {}
 
-Asset::Asset(mref<AssetGuid> guid_, cref<asset_type_id> type_) :
+Asset::Asset(mref<AssetGuid> guid_, cref<AssetTypeId> type_) :
 	_guid(std::move(guid_)),
 	_type(type_) {}
 
@@ -15,7 +15,7 @@ AssetGuid Asset::get_guid() const noexcept {
 	return _guid;
 }
 
-asset_type_id Asset::getTypeId() const noexcept {
+AssetTypeId Asset::getTypeId() const noexcept {
 	return _type;
 }
 

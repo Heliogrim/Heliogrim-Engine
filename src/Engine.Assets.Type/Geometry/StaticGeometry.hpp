@@ -18,7 +18,7 @@ namespace hg::engine::assets {
 		ACCESS_STRUCTURE
 
 	public:
-		constexpr static asset_type_id typeId { "StaticGeometry"_typeId };
+		constexpr static AssetTypeId typeId { "StaticGeometry"_typeId };
 
 	private:
 	public:

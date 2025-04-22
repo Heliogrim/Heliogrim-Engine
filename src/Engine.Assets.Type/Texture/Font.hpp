@@ -18,7 +18,7 @@ namespace hg::engine::assets {
 		ACCESS_STRUCTURE
 
 	public:
-		constexpr static asset_type_id typeId { "Font"_typeId };
+		constexpr static AssetTypeId typeId { "Font"_typeId };
 
 	public:
 		Font();

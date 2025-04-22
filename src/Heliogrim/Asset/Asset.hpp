@@ -23,7 +23,7 @@ namespace hg {
 		using this_type = Asset;
 
 	private:
-		Asset(cref<AssetGuid> invalidGuid_, cref<asset_type_id> invalidTypeId_, std::nullptr_t) noexcept;
+		Asset(cref<AssetGuid> invalidGuid_, cref<AssetTypeId> invalidTypeId_, std::nullptr_t) noexcept;
 
 	protected:
 		/**
@@ -36,7 +36,7 @@ namespace hg {
 		 * @param  typeId_ Identifier for the type.
 		 * @param  internal_ The internal state.
 		 */
-		Asset(mref<AssetGuid> guid_, cref<asset_type_id> typeId_, ref<::hg::engine::assets::Asset> internal_) noexcept;
+		Asset(mref<AssetGuid> guid_, cref<AssetTypeId> typeId_, ref<::hg::engine::assets::Asset> internal_) noexcept;
 
 	public:
 		Asset(mref<this_type> other_) noexcept;
@@ -107,7 +107,7 @@ namespace hg {
 		/**
 		 * Type Identifier
 		 */
-		asset_type_id _typeId;
+		AssetTypeId _typeId;
 
 	public:
 		/**
@@ -118,7 +118,7 @@ namespace hg {
 		 *
 		 * @returns A cref&lt;asset_type_id&gt;
 		 */
-		[[nodiscard]] cref<asset_type_id> typeId() const noexcept;
+		[[nodiscard]] cref<AssetTypeId> typeId() const noexcept;
 
 		/**
 		 * Get the type identifier
@@ -128,7 +128,7 @@ namespace hg {
 		 *
 		 * @returns An asset_type_id.
 		 */
-		[[nodiscard]] asset_type_id typeId() noexcept;
+		[[nodiscard]] AssetTypeId typeId() noexcept;
 
 		/**
 		 * Get the type identifier
@@ -138,7 +138,7 @@ namespace hg {
 		 *
 		 * @returns The result of the operation.
 		 */
-		[[nodiscard]] operator cref<asset_type_id>() const noexcept;
+		[[nodiscard]] operator cref<AssetTypeId>() const noexcept;
 
 		/**
 		 * Get the type identifier
@@ -148,7 +148,7 @@ namespace hg {
 		 *
 		 * @returns The result of the operation.
 		 */
-		[[nodiscard]] operator asset_type_id() noexcept;
+		[[nodiscard]] operator AssetTypeId() noexcept;
 
 	public:
 		/**
@@ -227,7 +227,7 @@ namespace hg {
 		 *
 		 * @returns True if the parameters are considered equivalent.
 		 */
-		[[nodiscard]] bool operator==(cref<asset_type_id> typeId_) const noexcept;
+		[[nodiscard]] bool operator==(cref<AssetTypeId> typeId_) const noexcept;
 
 		/**
 		 * Check the type of this asset
@@ -239,7 +239,7 @@ namespace hg {
 		 *
 		 * @returns True if the parameters are not considered equivalent.
 		 */
-		[[nodiscard]] bool operator!=(cref<asset_type_id> typeId_) const noexcept;
+		[[nodiscard]] bool operator!=(cref<AssetTypeId> typeId_) const noexcept;
 
 	private:
 		/**

@@ -601,7 +601,7 @@ bool isArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
 
 	/**/
 
-	asset_type_id typeId {};
+	AssetTypeId typeId {};
 	AssetGuid guid = invalid_asset_guid;
 
 	serialization::access::Structure<Guid>::hydrate(record.getStructSlot("__guid__"), guid);
@@ -624,7 +624,7 @@ bool tryLoadArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
 
 	/**/
 
-	asset_type_id typeId {};
+	AssetTypeId typeId {};
 	AssetGuid guid = invalid_asset_guid;
 
 	serialization::access::Structure<Guid>::hydrate(record.getStructSlot("__guid__"), guid);

@@ -36,7 +36,7 @@ namespace SerializationModule {
 		friend class ::hg::engine::serialization::DataLayout;
 
 	public:
-		inline static constexpr asset_type_id typeId { "TestSerialSubTypeVectorizedSliceAsset"_typeId };
+		inline static constexpr AssetTypeId typeId { "TestSerialSubTypeVectorizedSliceAsset"_typeId };
 
 	public:
 		TestSerialSubTypeVectorizedSliceAsset() :

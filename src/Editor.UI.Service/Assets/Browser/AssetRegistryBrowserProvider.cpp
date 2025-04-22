@@ -20,7 +20,7 @@ AssetRegistryBrowserProvider::~AssetRegistryBrowserProvider() = default;
 AssetRegistryBrowserProvider::data_list_type::iterator AssetRegistryBrowserProvider::filterByType(
 	ref<const data_list_type::iterator> begin_,
 	ref<const data_list_type::iterator> end_,
-	const asset_type_id typeId_
+	const AssetTypeId typeId_
 ) const {
 
 	const auto subrange = std::ranges::remove_if(
@@ -37,7 +37,7 @@ AssetRegistryBrowserProvider::data_list_type::iterator AssetRegistryBrowserProvi
 AssetRegistryBrowserProvider::data_list_type::iterator AssetRegistryBrowserProvider::filterByTypes(
 	ref<const data_list_type::iterator> begin_,
 	ref<const data_list_type::iterator> end_,
-	ref<const CompactSet<asset_type_id>> types_
+	ref<const CompactSet<AssetTypeId>> types_
 ) const {
 
 	const auto subrange = std::ranges::remove_if(

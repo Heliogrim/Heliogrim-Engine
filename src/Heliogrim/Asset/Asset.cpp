@@ -5,12 +5,12 @@
 
 using namespace hg;
 
-Asset::Asset(mref<AssetGuid> guid_, cref<asset_type_id> typeId_, ref<::hg::engine::assets::Asset> internal_) noexcept :
+Asset::Asset(mref<AssetGuid> guid_, cref<AssetTypeId> typeId_, ref<::hg::engine::assets::Asset> internal_) noexcept :
 	_guid(std::move(guid_)),
 	_typeId(typeId_),
 	_internal(std::addressof(internal_)) {}
 
-Asset::Asset(cref<AssetGuid> invalidGuid_, cref<asset_type_id> invalidTypeId_, std::nullptr_t) noexcept :
+Asset::Asset(cref<AssetGuid> invalidGuid_, cref<AssetTypeId> invalidTypeId_, std::nullptr_t) noexcept :
 	_guid(invalidGuid_),
 	_typeId(invalidTypeId_),
 	_internal(nullptr) {}
@@ -61,19 +61,19 @@ Asset::operator AssetGuid() noexcept {
 	return _guid;
 }
 
-cref<asset_type_id> Asset::typeId() const noexcept {
+cref<AssetTypeId> Asset::typeId() const noexcept {
 	return _typeId;
 }
 
-asset_type_id Asset::typeId() noexcept {
+AssetTypeId Asset::typeId() noexcept {
 	return _typeId;
 }
 
-Asset::operator const asset_type_id&() const noexcept {
+Asset::operator const AssetTypeId&() const noexcept {
 	return _typeId;
 }
 
-Asset::operator asset_type_id() noexcept {
+Asset::operator AssetTypeId() noexcept {
 	return _typeId;
 }
 
@@ -107,11 +107,11 @@ bool Asset::operator!=(cref<AssetGuid> guid_) const noexcept {
 	return _guid != guid_;
 }
 
-bool Asset::operator==(cref<asset_type_id> typeId_) const noexcept {
+bool Asset::operator==(cref<AssetTypeId> typeId_) const noexcept {
 	return _typeId == typeId_;
 }
 
-bool Asset::operator!=(cref<asset_type_id> typeId_) const noexcept {
+bool Asset::operator!=(cref<AssetTypeId> typeId_) const noexcept {
 	return _typeId != typeId_;
 }
 

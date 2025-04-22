@@ -95,14 +95,14 @@ namespace hg::editor::ui {
 		/**/
 
 	protected:
-		Vector<asset_type_id> _acceptedTypes;
+		Vector<AssetTypeId> _acceptedTypes;
 
 	public:
-		[[nodiscard]] cref<Vector<asset_type_id>> acceptedTypes() const noexcept;
+		[[nodiscard]] cref<Vector<AssetTypeId>> acceptedTypes() const noexcept;
 
-		void addAcceptedType(asset_type_id typeId_);
+		void addAcceptedType(AssetTypeId typeId_);
 
-		void dropAcceptedType(asset_type_id typeId_);
+		void dropAcceptedType(AssetTypeId typeId_);
 
 	private:
 	public:

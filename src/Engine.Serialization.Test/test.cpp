@@ -72,7 +72,7 @@ namespace SerializationModule {
 		friend class ::hg::engine::serialization::DataLayout;
 
 	public:
-		inline static constexpr asset_type_id typeId { "TestSerialAsset"_typeId };
+		inline static constexpr AssetTypeId typeId { "TestSerialAsset"_typeId };
 
 	public:
 		TestSerialAsset() :
@@ -170,7 +170,7 @@ namespace SerializationModule {
 		friend class ::hg::engine::serialization::DataLayout;
 
 	public:
-		inline static constexpr asset_type_id typeId { "TestSerialDataBaseAsset"_typeId };
+		inline static constexpr AssetTypeId typeId { "TestSerialDataBaseAsset"_typeId };
 
 	public:
 		TestSerialDataBaseAsset() :
@@ -181,7 +181,7 @@ namespace SerializationModule {
 			_guid = guid_;
 		}
 
-		void setType(asset_type_id type_) {
+		void setType(AssetTypeId type_) {
 			_type = type_;
 		}
 	};
@@ -224,7 +224,7 @@ namespace SerializationModule {
 		TypedLayoutArchive<TestSerialDataBaseAsset> arch { archive, &layout };
 
 		constexpr auto testGuid = AssetGuid { 0x2356uL, 0x12, 0x56, 0x68537136uL };
-		constexpr auto testType = asset_type_id { "TestBaseAsset_Changed"_typeId };
+		constexpr auto testType = AssetTypeId { "TestBaseAsset_Changed"_typeId };
 
 		auto writeAsset = new TestSerialDataBaseAsset();
 		writeAsset->setGuid(testGuid);
@@ -257,7 +257,7 @@ namespace SerializationModule {
 		friend class ::hg::engine::serialization::DataLayout;
 
 	public:
-		inline static constexpr asset_type_id typeId { "TestSerialSubTypeAsset"_typeId };
+		inline static constexpr AssetTypeId typeId { "TestSerialSubTypeAsset"_typeId };
 
 	public:
 		TestSerialSubTypeAsset() :
@@ -339,7 +339,7 @@ namespace SerializationModule {
 		friend class ::hg::engine::serialization::DataLayout;
 
 	public:
-		inline static constexpr asset_type_id typeId { "TestSerialSubTypeSpanAsset"_typeId };
+		inline static constexpr AssetTypeId typeId { "TestSerialSubTypeSpanAsset"_typeId };
 
 	public:
 		TestSerialSubTypeSpanAsset() :
@@ -407,7 +407,7 @@ namespace SerializationModule {
 		friend class ::hg::engine::serialization::DataLayout;
 
 	public:
-		inline static constexpr asset_type_id typeId { "TestSerialSubTypeSliceAsset"_typeId };
+		inline static constexpr AssetTypeId typeId { "TestSerialSubTypeSliceAsset"_typeId };
 
 	public:
 		TestSerialSubTypeSliceAsset() :
@@ -474,7 +474,7 @@ namespace SerializationModule {
 		friend class ::hg::engine::serialization::DataLayout;
 
 	public:
-		inline static constexpr asset_type_id typeId { "TestSerialSubTypeVectorizedSliceAsset"_typeId };
+		inline static constexpr AssetTypeId typeId { "TestSerialSubTypeVectorizedSliceAsset"_typeId };
 
 	public:
 		TestSerialSubTypeVectorizedSliceAsset() :
@@ -553,7 +553,7 @@ namespace SerializationModule {
 		friend class ::hg::engine::serialization::DataLayout;
 
 	public:
-		inline static constexpr asset_type_id typeId { "TestSerialSubTypeStringAsset"_typeId };
+		inline static constexpr AssetTypeId typeId { "TestSerialSubTypeStringAsset"_typeId };
 
 	public:
 		TestSerialSubTypeStringAsset() :

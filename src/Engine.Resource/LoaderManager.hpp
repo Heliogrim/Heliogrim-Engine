@@ -51,13 +51,13 @@ namespace hg::engine::resource {
 		[[nodiscard]] sptr<loader::SourceLoader> sharedSourceLoader() const;
 
 	private:
-		StableUnorderedMap<asset_type_id, sptr<loader::LoaderBase>> _loader;
+		StableUnorderedMap<AssetTypeId, sptr<loader::LoaderBase>> _loader;
 
 	private:
-		sptr<loader::LoaderBase> selectLoader(cref<asset_type_id> typeId_, ptr<void> options_) const noexcept;
+		sptr<loader::LoaderBase> selectLoader(cref<AssetTypeId> typeId_, ptr<void> options_) const noexcept;
 
 	public:
-		[[nodiscard]] bool hasLoader(cref<asset_type_id> typeId_) const noexcept;
+		[[nodiscard]] bool hasLoader(cref<AssetTypeId> typeId_) const noexcept;
 
 		template <assets::IsAsset AssetType_, typename ResourceType_ = ResourceBase>
 		[[nodiscard]] bool hasLoader() const noexcept {
@@ -75,7 +75,7 @@ namespace hg::engine::resource {
 		 *
 		 * @returns True if it succeeds, false if it fails.
 		 */
-		bool registerLoader(cref<asset_type_id> typeId_, cref<sptr<loader::LoaderBase>> loader_) noexcept;
+		bool registerLoader(cref<AssetTypeId> typeId_, cref<sptr<loader::LoaderBase>> loader_) noexcept;
 
 		template <assets::IsAsset AssetType_, typename ResourceType_ = ResourceBase>
 		bool registerLoader(cref<sptr<loader::Loader<AssetType_, ResourceType_>>> loader_) noexcept {
@@ -111,7 +111,7 @@ namespace hg::engine::resource {
 		 *
 		 * @returns True if it succeeds, false if it fails.
 		 */
-		bool unregisterLoader(cref<asset_type_id> typeId_) noexcept;
+		bool unregisterLoader(cref<AssetTypeId> typeId_) noexcept;
 
 		template <assets::IsAsset AssetType_>
 		bool unregisterLoader() noexcept {

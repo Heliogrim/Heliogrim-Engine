@@ -28,13 +28,13 @@ namespace hg::editor::ui::service {
 		[[nodiscard]] data_list_type::iterator filterByType(
 			ref<const data_list_type::iterator> begin_,
 			ref<const data_list_type::iterator> end_,
-			asset_type_id typeId_
+			AssetTypeId typeId_
 		) const;
 
 		[[nodiscard]] data_list_type::iterator filterByTypes(
 			ref<const data_list_type::iterator> begin_,
 			ref<const data_list_type::iterator> end_,
-			ref<const CompactSet<asset_type_id>> types_
+			ref<const CompactSet<AssetTypeId>> types_
 		) const;
 
 		void mapAssetsToEntries(

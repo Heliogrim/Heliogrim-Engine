@@ -32,11 +32,11 @@ static std::strong_ordering comparatorAssetGuid(AssetGuid left_, AssetGuid right
 	return std::compare_three_way {}.operator()(left_, right_);
 }
 
-static asset_type_id projectAssetType(nmpt<const Asset> asset_) noexcept {
+static AssetTypeId projectAssetType(nmpt<const Asset> asset_) noexcept {
 	return asset_->getTypeId();
 }
 
-static std::strong_ordering comparatorAssetType(asset_type_id left_, asset_type_id right_) noexcept {
+static std::strong_ordering comparatorAssetType(AssetTypeId left_, AssetTypeId right_) noexcept {
 	return std::compare_three_way {}.operator()(left_.data, right_.data);
 }
 
@@ -83,7 +83,7 @@ struct IndexAssetUrlRelation {
 /**/
 
 using GuidIndex = Index<true, false, void, false, AssetGuid, projectAssetGuid, comparatorAssetGuid>;
-using TypeIndex = Index<false, true, void, false, asset_type_id, projectAssetType, comparatorAssetType>;
+using TypeIndex = Index<false, true, void, false, AssetTypeId, projectAssetType, comparatorAssetType>;
 using UrlIndex = Index<true, true, FindPathOptions, false, string, projectAssetUrl, comparatorAssetUrl,
 	IndexAssetUrlRelation>;
 

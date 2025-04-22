@@ -19,7 +19,7 @@ namespace hg::engine::assets {
 		ACCESS_STRUCTURE
 
 	public:
-		constexpr static asset_type_id typeId { "GfxMaterial"_typeId };
+		constexpr static AssetTypeId typeId { "GfxMaterial"_typeId };
 
 	protected:
 		GfxMaterial(mref<AssetGuid> guid_);

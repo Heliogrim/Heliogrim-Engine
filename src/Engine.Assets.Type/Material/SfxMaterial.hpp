@@ -9,6 +9,6 @@ namespace hg::engine::assets {
 		friend class ::hg::engine::serialization::DataLayout;
 
 	public:
-		constexpr static asset_type_id typeId { "SfxMaterial"_typeId };
+		constexpr static AssetTypeId typeId { "SfxMaterial"_typeId };
 	};
 }

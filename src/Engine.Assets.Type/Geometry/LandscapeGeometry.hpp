@@ -13,7 +13,7 @@ namespace hg::engine::assets {
 		friend class ::hg::engine::serialization::DataLayout;
 
 	public:
-		constexpr static asset_type_id typeId { "LandscapeGeometry"_typeId };
+		constexpr static AssetTypeId typeId { "LandscapeGeometry"_typeId };
 
 	protected:
 		LandscapeGeometry(mref<AssetGuid> guid_);

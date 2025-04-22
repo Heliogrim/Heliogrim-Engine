@@ -70,7 +70,7 @@ void InputAsset::setup() {
 	_preview = make_sptr<uikit::Image>();
 	// TODO: theme->applyIcon72(_preview);
 
-	auto* previewAsset = AssetBrowserHelper::get()->getItemIconByAssetType(asset_type_id {});
+	auto* previewAsset = AssetBrowserHelper::get()->getItemIconByAssetType(AssetTypeId {});
 
 	auto iconRes = Engine::getEngine()->getResources()->loader().loadImmediately<assets::TextureAsset,
 		gfx::TextureResource>(std::move(previewAsset));
@@ -293,11 +293,11 @@ void InputAsset::setValue(cref<AssetGuid> assetGuid_) {
 	}
 }
 
-cref<Vector<asset_type_id>> InputAsset::acceptedTypes() const noexcept {
+cref<Vector<AssetTypeId>> InputAsset::acceptedTypes() const noexcept {
 	return _acceptedTypes;
 }
 
-void InputAsset::addAcceptedType(asset_type_id typeId_) {
+void InputAsset::addAcceptedType(AssetTypeId typeId_) {
 	if (std::ranges::contains(_acceptedTypes, typeId_)) {
 		return;
 	}
@@ -305,7 +305,7 @@ void InputAsset::addAcceptedType(asset_type_id typeId_) {
 	_acceptedTypes.push_back(typeId_);
 }
 
-void InputAsset::dropAcceptedType(asset_type_id typeId_) {
+void InputAsset::dropAcceptedType(AssetTypeId typeId_) {
 	const auto sub = std::ranges::remove(_acceptedTypes, typeId_);
 	_acceptedTypes.erase(sub.end(), _acceptedTypes.end());
 }
