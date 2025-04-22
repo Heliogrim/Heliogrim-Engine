@@ -26,13 +26,13 @@ namespace hg::engine::assets {
 		TextureAsset();
 
 	protected:
-		explicit TextureAsset(mref<asset_guid> guid_);
+		explicit TextureAsset(mref<AssetGuid> guid_);
 
 	public:
 		TextureAsset(
-			mref<asset_guid> guid_,
-			cref<asset_guid> baseImage_,
-			mref<Vector<asset_guid>> images_,
+			mref<AssetGuid> guid_,
+			cref<AssetGuid> baseImage_,
+			mref<Vector<AssetGuid>> images_,
 			cref<math::uivec3> extent_,
 			cref<gfx::TextureFormat> format_,
 			cref<u32> mipLevel_,
@@ -40,19 +40,19 @@ namespace hg::engine::assets {
 		);
 
 	private:
-		asset_guid _baseImage;
-		Vector<asset_guid> _images;
+		AssetGuid _baseImage;
+		Vector<AssetGuid> _images;
 
 	public:
-		[[nodiscard]] cref<asset_guid> baseImage() const noexcept;
+		[[nodiscard]] cref<AssetGuid> baseImage() const noexcept;
 
-		void setBaseImage(const asset_guid imageGuid_);
+		void setBaseImage(const AssetGuid imageGuid_);
 
-		void addSourceImage(const asset_guid imageGuid_);
+		void addSourceImage(const AssetGuid imageGuid_);
 
-		[[nodiscard]] bool hasSourceImage(const asset_guid imageGuid_);
+		[[nodiscard]] bool hasSourceImage(const AssetGuid imageGuid_);
 
-		void removeSourceImage(const asset_guid imageGuid_);
+		void removeSourceImage(const AssetGuid imageGuid_);
 
 	private:
 		math::uivec3 _extent;

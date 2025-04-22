@@ -3,7 +3,7 @@
 using namespace hg::engine::assets;
 using namespace hg;
 
-LevelAsset::LevelAsset(mref<asset_guid> guid_) :
+LevelAsset::LevelAsset(mref<AssetGuid> guid_) :
 	InheritMeta(std::move(guid_), typeId) {}
 
 cref<AssetReferenceUrl> LevelAsset::getLevelData() const noexcept {

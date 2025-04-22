@@ -12,7 +12,7 @@
 using namespace hg;
 
 GfxMatProtoAsset::GfxMatProtoAsset(
-	mref<asset_guid> guid_
+	mref<AssetGuid> guid_
 ) noexcept :
 	Asset(
 		clone(guid_),

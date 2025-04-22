@@ -19,7 +19,7 @@ namespace hg {
 		 * @param  guid_ Unique identifier.
 		 * @param  internal_ The internal engine state of this asset.
 		 */
-		PfxMaterialAsset(mref<asset_guid> guid_, _In_ ref<::hg::engine::assets::Asset> internal_) noexcept;
+		PfxMaterialAsset(mref<AssetGuid> guid_, _In_ ref<::hg::engine::assets::Asset> internal_) noexcept;
 
 	public:
 		/**

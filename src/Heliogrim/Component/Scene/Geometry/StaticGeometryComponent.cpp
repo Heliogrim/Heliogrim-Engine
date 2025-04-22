@@ -12,7 +12,7 @@ StaticGeometryComponent::StaticGeometryComponent(
 	_staticGeometry(clone(invalid_asset_guid)),
 	_overrideMaterials() {}
 
-asset_guid StaticGeometryComponent::getStaticGeometryGuid() const noexcept {
+AssetGuid StaticGeometryComponent::getStaticGeometryGuid() const noexcept {
 	return _staticGeometry;
 }
 

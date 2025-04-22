@@ -20,7 +20,7 @@ namespace hg {
 		 *
 		 * @param  guid_ Unique identifier.
 		 */
-		ImageAsset(mref<asset_guid> guid_) noexcept;
+		ImageAsset(mref<AssetGuid> guid_) noexcept;
 
 		/**
 		 * Constructor
@@ -31,7 +31,7 @@ namespace hg {
 		 * @param  guid_ Unique identifier.
 		 * @param  url_ The url to the underlying data resource
 		 */
-		ImageAsset(mref<asset_guid> guid_, cref<string> url_) noexcept;
+		ImageAsset(mref<AssetGuid> guid_, cref<string> url_) noexcept;
 
 	public:
 		/**

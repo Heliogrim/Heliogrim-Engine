@@ -22,12 +22,12 @@ namespace hg::engine::assets {
 		constexpr static asset_type_id typeId { "GfxMaterial"_typeId };
 
 	protected:
-		GfxMaterial(mref<asset_guid> guid_);
+		GfxMaterial(mref<AssetGuid> guid_);
 
 	public:
 		GfxMaterial(
-			mref<asset_guid> guid_,
-			mref<asset_guid> prototypeGuid_
+			mref<AssetGuid> guid_,
+			mref<AssetGuid> prototypeGuid_
 		);
 
 	private:
@@ -37,7 +37,7 @@ namespace hg::engine::assets {
 			string name;
 			accel::TransferDataType dataType;
 			Variant<
-				asset_guid,
+				AssetGuid,
 				u8,
 				u16,
 				u32,
@@ -64,11 +64,11 @@ namespace hg::engine::assets {
 			> value;
 		};
 
-		asset_guid _prototype;
+		AssetGuid _prototype;
 		Vector<TmpParam> _params;
 
 	public:
-		[[nodiscard]] asset_guid prototype() const noexcept;
+		[[nodiscard]] AssetGuid prototype() const noexcept;
 
 		// TODO: Serialize/Map instantiated parameters
 	};

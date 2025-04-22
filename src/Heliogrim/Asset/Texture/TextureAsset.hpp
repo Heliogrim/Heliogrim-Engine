@@ -26,7 +26,7 @@ namespace hg {
 		 *
 		 * @param  guid_ Unique identifier.
 		 */
-		TextureAsset(mref<asset_guid> guid_) noexcept;
+		TextureAsset(mref<AssetGuid> guid_) noexcept;
 
 		/**
 		 * Constructor
@@ -43,9 +43,9 @@ namespace hg {
 		 * @param  type_ The texture type.
 		 */
 		TextureAsset(
-			mref<asset_guid> guid_,
-			cref<asset_guid> baseImage_,
-			mref<Vector<asset_guid>> images_,
+			mref<AssetGuid> guid_,
+			cref<AssetGuid> baseImage_,
+			mref<Vector<AssetGuid>> images_,
 			cref<math::uivec3> extent_,
 			cref<TextureFormat> format_,
 			cref<u32> mipLevel_,
@@ -75,11 +75,11 @@ namespace hg {
 	public:
 		[[nodiscard]] nmpt<const ImageAsset> baseImage() const noexcept;
 
-		[[nodiscard]] cref<asset_guid> baseImageGuid() const noexcept;
+		[[nodiscard]] cref<AssetGuid> baseImageGuid() const noexcept;
 
 		[[nodiscard]] Vector<ptr<const ImageAsset>> images() const noexcept;
 
-		[[nodiscard]] Vector<asset_guid> imagesGuids() const noexcept;
+		[[nodiscard]] Vector<AssetGuid> imagesGuids() const noexcept;
 
 		[[nodiscard]] cref<math::uivec3> extent() const noexcept;
 

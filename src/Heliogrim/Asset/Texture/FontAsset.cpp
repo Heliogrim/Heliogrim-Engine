@@ -11,7 +11,7 @@
 
 using namespace hg;
 
-FontAsset::FontAsset(mref<asset_guid> guid_) noexcept :
+FontAsset::FontAsset(mref<AssetGuid> guid_) noexcept :
 	Asset(
 		clone(guid_),
 		engine::assets::Font::typeId,
@@ -19,7 +19,7 @@ FontAsset::FontAsset(mref<asset_guid> guid_) noexcept :
 		*engine::Engine::getEngine()->getAssets()->getFactory()->createFontAsset(clone(guid_))
 	) {}
 
-FontAsset::FontAsset(mref<asset_guid> guid_, cref<string> url_) noexcept :
+FontAsset::FontAsset(mref<AssetGuid> guid_, cref<string> url_) noexcept :
 	Asset(
 		clone(guid_),
 		engine::assets::Font::typeId,

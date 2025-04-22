@@ -25,13 +25,13 @@ using namespace hg;
 /**/
 
 [[nodiscard]] static smr<TextureResource> resolveTexture(
-	mref<asset_guid> guid_,
+	mref<AssetGuid> guid_,
 	nmpt<const engine::assets::IAssetRegistry> registry_,
 	const non_owning_rptr<const engine::resource::LoaderManager> loader_
 );
 
 [[nodiscard]] static smr<MaterialPrototypeResource> resolvePrototype(
-	mref<asset_guid> guid_,
+	mref<AssetGuid> guid_,
 	nmpt<const engine::assets::IAssetRegistry> registry_,
 	const non_owning_rptr<const engine::resource::LoaderManager> loader_
 );
@@ -215,9 +215,9 @@ MaterialTransformer::response_type::type MaterialTransformer::operator()(
 			case accel::TransferDataType::eStorage: break;
 			case accel::TransferDataType::eSampler: {
 
-				assert(std::holds_alternative<asset_guid>(matParam.value));
+				assert(std::holds_alternative<AssetGuid>(matParam.value));
 
-				auto textureGuid = std::get<asset_guid>(matParam.value);
+				auto textureGuid = std::get<AssetGuid>(matParam.value);
 				auto resolved = resolveTexture(std::move(textureGuid), registry, &loader);
 
 				dst.set(std::move(resolved));
@@ -349,7 +349,7 @@ MaterialTransformer::response_type::type MaterialTransformer::operator()(
 }
 
 smr<engine::gfx::TextureResource> resolveTexture(
-	mref<asset_guid> guid_,
+	mref<AssetGuid> guid_,
 	nmpt<const engine::assets::IAssetRegistry> registry_,
 	const non_owning_rptr<const engine::resource::LoaderManager> loader_
 ) {
@@ -387,7 +387,7 @@ smr<engine::gfx::TextureResource> resolveTexture(
 }
 
 smr<MaterialPrototypeResource> resolvePrototype(
-	mref<asset_guid> guid_,
+	mref<AssetGuid> guid_,
 	nmpt<const engine::assets::IAssetRegistry> registry_,
 	const non_owning_rptr<const engine::resource::LoaderManager> loader_
 ) {

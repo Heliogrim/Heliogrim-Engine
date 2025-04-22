@@ -19,7 +19,7 @@ namespace hg::engine::assets {
 		constexpr static asset_type_id typeId { "LevelAsset"_typeId };
 
 	public:
-		explicit LevelAsset(mref<asset_guid> guid_);
+		explicit LevelAsset(mref<AssetGuid> guid_);
 
 	private:
 		AssetReferenceUrl _levelData;

@@ -75,22 +75,22 @@ namespace hg::engine::assets {
 		void prepare();
 
 	public:
-		Arci<Font> createFontAsset(mref<asset_guid> guid_) const;
+		Arci<Font> createFontAsset(mref<AssetGuid> guid_) const;
 
-		Arci<Font> createFontAsset(mref<asset_guid> guid_, cref<string> url_) const;
+		Arci<Font> createFontAsset(mref<AssetGuid> guid_, cref<string> url_) const;
 
-		Arci<AccelEffect> createAccelEffectAsset(mref<asset_guid> guid_) const;
+		Arci<AccelEffect> createAccelEffectAsset(mref<AssetGuid> guid_) const;
 
-		Arci<GfxMaterial> createGfxMaterialAsset(mref<asset_guid> prototypeGuid_) const;
+		Arci<GfxMaterial> createGfxMaterialAsset(mref<AssetGuid> prototypeGuid_) const;
 
 		Arci<GfxMaterial> createGfxMaterialAsset(
-			mref<asset_guid> guid_,
-			mref<asset_guid> prototypeGuid_
+			mref<AssetGuid> guid_,
+			mref<AssetGuid> prototypeGuid_
 		) const;
 
-		Arci<GfxMaterialPrototype> createGfxMaterialPrototypeAsset(mref<asset_guid> guid_) const;
+		Arci<GfxMaterialPrototype> createGfxMaterialPrototypeAsset(mref<AssetGuid> guid_) const;
 
-		Arci<LevelAsset> createLevelAsset(mref<asset_guid> guid_) const;
+		Arci<LevelAsset> createLevelAsset(mref<AssetGuid> guid_) const;
 
 	public:
 		/**
@@ -113,7 +113,7 @@ namespace hg::engine::assets {
 		 *
 		 * @returns The new image asset.
 		 */
-		Arci<Image> createImageAsset(mref<asset_guid> guid_) const;
+		Arci<Image> createImageAsset(mref<AssetGuid> guid_) const;
 
 		/**
 		 * Creates a image asset
@@ -126,7 +126,7 @@ namespace hg::engine::assets {
 		 *
 		 * @returns The new image asset.
 		 */
-		Arci<Image> createImageAsset(mref<asset_guid> guid_, cref<string> url_) const;
+		Arci<Image> createImageAsset(mref<AssetGuid> guid_, cref<string> url_) const;
 
 	public:
 		/**
@@ -149,7 +149,7 @@ namespace hg::engine::assets {
 		 *
 		 * @returns The new texture asset.
 		 */
-		Arci<TextureAsset> createTextureAsset(mref<asset_guid> guid_) const;
+		Arci<TextureAsset> createTextureAsset(mref<AssetGuid> guid_) const;
 
 		/**
 		 * Creates a texture asset
@@ -168,9 +168,9 @@ namespace hg::engine::assets {
 		 * @returns The new texture asset.
 		 */
 		Arci<TextureAsset> createTextureAsset(
-			mref<asset_guid> guid_,
-			cref<asset_guid> baseImage_,
-			mref<Vector<asset_guid>> images_,
+			mref<AssetGuid> guid_,
+			cref<AssetGuid> baseImage_,
+			mref<Vector<AssetGuid>> images_,
 			cref<math::uivec3> extent_,
 			cref<gfx::TextureFormat> format_,
 			cref<u32> mipLevel_,
@@ -179,15 +179,15 @@ namespace hg::engine::assets {
 
 		// TODO:
 	public:
-		Arci<StaticGeometry> createStaticGeometryAsset(mref<asset_guid> guid_) const;
+		Arci<StaticGeometry> createStaticGeometryAsset(mref<AssetGuid> guid_) const;
 
 		Arci<StaticGeometry> createStaticGeometryAsset(
-			mref<asset_guid> guid_,
+			mref<AssetGuid> guid_,
 			cref<string> url_,
 			cref<u64> vertexCount_,
 			cref<u64> indexCount_
 		) const;
 
-		Arci<LandscapeGeometry> createLandscapeGeometryAsset(mref<asset_guid> guid_) const;
+		Arci<LandscapeGeometry> createLandscapeGeometryAsset(mref<AssetGuid> guid_) const;
 	};
 }

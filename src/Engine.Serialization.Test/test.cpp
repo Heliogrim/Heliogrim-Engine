@@ -76,7 +76,7 @@ namespace SerializationModule {
 
 	public:
 		TestSerialAsset() :
-			InheritMeta(asset_guid {}, typeId) {}
+			InheritMeta(AssetGuid {}, typeId) {}
 
 	public:
 		u8 t0 = 0x0;
@@ -174,10 +174,10 @@ namespace SerializationModule {
 
 	public:
 		TestSerialDataBaseAsset() :
-			InheritMeta(asset_guid {}, typeId) {}
+			InheritMeta(AssetGuid {}, typeId) {}
 
 	public:
-		void setGuid(asset_guid guid_) {
+		void setGuid(AssetGuid guid_) {
 			_guid = guid_;
 		}
 
@@ -223,7 +223,7 @@ namespace SerializationModule {
 
 		TypedLayoutArchive<TestSerialDataBaseAsset> arch { archive, &layout };
 
-		constexpr auto testGuid = asset_guid { 0x2356uL, 0x12, 0x56, 0x68537136uL };
+		constexpr auto testGuid = AssetGuid { 0x2356uL, 0x12, 0x56, 0x68537136uL };
 		constexpr auto testType = asset_type_id { "TestBaseAsset_Changed"_typeId };
 
 		auto writeAsset = new TestSerialDataBaseAsset();
@@ -261,7 +261,7 @@ namespace SerializationModule {
 
 	public:
 		TestSerialSubTypeAsset() :
-			InheritMeta(asset_guid {}, typeId),
+			InheritMeta(AssetGuid {}, typeId),
 			payload() {}
 
 	public:
@@ -343,7 +343,7 @@ namespace SerializationModule {
 
 	public:
 		TestSerialSubTypeSpanAsset() :
-			InheritMeta(asset_guid {}, typeId),
+			InheritMeta(AssetGuid {}, typeId),
 			payload() {}
 
 	public:
@@ -411,7 +411,7 @@ namespace SerializationModule {
 
 	public:
 		TestSerialSubTypeSliceAsset() :
-			InheritMeta(asset_guid {}, typeId) {}
+			InheritMeta(AssetGuid {}, typeId) {}
 
 	public:
 		std::list<TestSubTypePayload> payload;
@@ -478,7 +478,7 @@ namespace SerializationModule {
 
 	public:
 		TestSerialSubTypeVectorizedSliceAsset() :
-			InheritMeta(asset_guid {}, typeId) {}
+			InheritMeta(AssetGuid {}, typeId) {}
 
 	public:
 		Vector<TestSubTypePayload> payload;
@@ -557,7 +557,7 @@ namespace SerializationModule {
 
 	public:
 		TestSerialSubTypeStringAsset() :
-			InheritMeta(asset_guid {}, typeId) {}
+			InheritMeta(AssetGuid {}, typeId) {}
 
 	public:
 		string payload;

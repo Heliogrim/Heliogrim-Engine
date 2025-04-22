@@ -11,8 +11,8 @@
 using namespace hg;
 
 GfxMaterialAsset::GfxMaterialAsset(
-	mref<asset_guid> guid_,
-	mref<asset_guid> prototypeGuid_
+	mref<AssetGuid> guid_,
+	mref<AssetGuid> prototypeGuid_
 ) noexcept :
 	Asset(
 		clone(guid_),
@@ -30,7 +30,7 @@ bool GfxMaterialAsset::isValidType() const noexcept {
 	return internal() != nullptr && IsType<::hg::engine::assets::GfxMaterial>(*internal());
 }
 
-asset_guid GfxMaterialAsset::getPrototypeGuid() const noexcept {
+AssetGuid GfxMaterialAsset::getPrototypeGuid() const noexcept {
 	return static_cast<cref<::hg::engine::assets::GfxMaterial>>(*internal()).prototype();
 }
 

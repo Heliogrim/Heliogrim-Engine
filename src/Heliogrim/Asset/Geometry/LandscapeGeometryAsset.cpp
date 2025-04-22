@@ -10,7 +10,7 @@
 
 using namespace hg;
 
-LandscapeGeometryAsset::LandscapeGeometryAsset(mref<asset_guid> guid_) noexcept :
+LandscapeGeometryAsset::LandscapeGeometryAsset(mref<AssetGuid> guid_) noexcept :
 	Asset(
 		clone(guid_),
 		engine::assets::LandscapeGeometry::typeId,

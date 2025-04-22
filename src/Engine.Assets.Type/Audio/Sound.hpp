@@ -16,7 +16,7 @@ namespace hg::engine::assets {
 		constexpr static asset_type_id typeId { "Sound"_typeId };
 
 	protected:
-		Sound(mref<asset_guid> guid_);
+		Sound(mref<AssetGuid> guid_);
 
 	private:
 		string _url;

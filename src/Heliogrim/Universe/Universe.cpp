@@ -139,7 +139,7 @@ Future<Universe> hg::CreateUniverse() noexcept {
 Universe hg::GetUniverse(cref<Session> session_) noexcept {
 	const auto* session = session_.unwrap().get();
 	const auto& context = session->getUniverseContext();
-	const auto universe = context.getCurrentUniverse();
+	const auto& universe = context.getCurrentUniverse();
 
 	return Universe { clone(universe) };
 }
@@ -148,7 +148,7 @@ Universe hg::GetUniverse() noexcept {
 	return GetUniverse(GetSession());
 }
 
-Future<Universe> hg::GetUniverse(cref<asset_guid> guid_) noexcept {
+Future<Universe> hg::GetUniverse(cref<AssetGuid> guid_) noexcept {
 	::hg::todo_panic();
 }
 

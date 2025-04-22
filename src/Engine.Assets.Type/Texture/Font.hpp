@@ -24,10 +24,10 @@ namespace hg::engine::assets {
 		Font();
 
 	protected:
-		Font(mref<asset_guid> guid_);
+		Font(mref<AssetGuid> guid_);
 
 	public:
-		Font(mref<asset_guid> guid_, mref<Vector<fs::Url>> sources_);
+		Font(mref<AssetGuid> guid_, mref<Vector<fs::Url>> sources_);
 
 	private:
 		Vector<fs::Url> _sources;

@@ -18,13 +18,13 @@ decltype(AssetDatabase::_internal) AssetDatabase::unwrap() const noexcept {
 	return _internal;
 }
 
-bool AssetDatabase::contains(cref<asset_guid> guid_) const noexcept {
+bool AssetDatabase::contains(cref<AssetGuid> guid_) const noexcept {
 
 	const auto& idb { *static_cast<const non_owning_rptr<engine::assets::IAssetRegistry>>(_internal.get()) };
 	return idb.hasAsset(guid_);
 }
 
-AssetDatabaseResult<Asset> AssetDatabase::operator[](cref<asset_guid> guid_) const {
+AssetDatabaseResult<Asset> AssetDatabase::operator[](cref<AssetGuid> guid_) const {
 
 	const auto& idb { *static_cast<const non_owning_rptr<engine::assets::IAssetRegistry>>(_internal.get()) };
 	const auto asset = idb.findAssetByGuid(guid_);

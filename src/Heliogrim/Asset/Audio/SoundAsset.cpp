@@ -6,7 +6,7 @@
 
 using namespace hg;
 
-SoundAsset::SoundAsset(mref<asset_guid> guid_, ref<::hg::engine::assets::Asset> internal_) noexcept :
+SoundAsset::SoundAsset(mref<AssetGuid> guid_, ref<::hg::engine::assets::Asset> internal_) noexcept :
 	Asset(std::move(guid_), engine::assets::Sound::typeId, internal_) {}
 
 SoundAsset::~SoundAsset() noexcept = default;

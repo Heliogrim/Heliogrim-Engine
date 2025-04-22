@@ -10,7 +10,7 @@ namespace hg {
 		using base_type = Asset;
 
 	public:
-		GfxMatProtoAsset(mref<asset_guid> guid_) noexcept;
+		GfxMatProtoAsset(mref<AssetGuid> guid_) noexcept;
 
 		~GfxMatProtoAsset() noexcept;
 

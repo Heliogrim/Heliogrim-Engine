@@ -11,7 +11,7 @@
 
 namespace hg::editor::ui {
 	class InputAsset :
-		public engine::reflow::Input<asset_guid> {
+		public engine::reflow::Input<AssetGuid> {
 	public:
 		using this_type = InputAsset;
 
@@ -85,12 +85,12 @@ namespace hg::editor::ui {
 		void updateValueAndValidity(const bool propagate_, const bool emit_) override;
 
 	protected:
-		asset_guid _value;
+		AssetGuid _value;
 
 	public:
 		[[nodiscard]] input_type value() const noexcept override;
 
-		void setValue(cref<asset_guid> assetGuid_);
+		void setValue(cref<AssetGuid> assetGuid_);
 
 		/**/
 

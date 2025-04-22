@@ -47,11 +47,11 @@ namespace hg::engine::assets {
 		 * Single-Asset Operations
 		 */
 	public:
-		[[nodiscard]] virtual bool hasAsset(cref<asset_guid> guid_) const noexcept = 0;
+		[[nodiscard]] virtual bool hasAsset(cref<AssetGuid> guid_) const noexcept = 0;
 
-		[[nodiscard]] virtual nmpt<Asset> getAssetByGuid(cref<asset_guid> guid_) const = 0;
+		[[nodiscard]] virtual nmpt<Asset> getAssetByGuid(cref<AssetGuid> guid_) const = 0;
 
-		[[nodiscard]] virtual Opt<Arci<Asset>> findAssetByGuid(cref<asset_guid> guid_) const noexcept = 0;
+		[[nodiscard]] virtual Opt<Arci<Asset>> findAssetByGuid(cref<AssetGuid> guid_) const noexcept = 0;
 
 		[[nodiscard]] virtual nmpt<Asset> getAssetByPath(cref<fs::Path> path_) const = 0;
 
@@ -90,9 +90,9 @@ namespace hg::engine::assets {
 		virtual bool insert(_In_ mref<system::AssetDescriptor> descriptor_) = 0;
 
 	public:
-		virtual bool removeAssetByGuid(cref<asset_guid> guid_) = 0;
+		virtual bool removeAssetByGuid(cref<AssetGuid> guid_) = 0;
 
-		virtual bool removeAssetsByGuids(cref<std::span<asset_guid>> guids_) = 0;
+		virtual bool removeAssetsByGuids(cref<std::span<AssetGuid>> guids_) = 0;
 
 		virtual bool removeAssetByPath(cref<fs::Path> path_) = 0;
 

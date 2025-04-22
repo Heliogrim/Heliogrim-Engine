@@ -174,7 +174,7 @@ void AssetFactory::prepare() {
 	layouts.storeLayout(TypedMetaClass<Image>::get(), cur);
 }
 
-Arci<Font> AssetFactory::createFontAsset(mref<asset_guid> guid_) const {
+Arci<Font> AssetFactory::createFontAsset(mref<AssetGuid> guid_) const {
 
 	auto instance = Arci<Font>::create(std::move(guid_), Vector<fs::Url> {});
 
@@ -183,7 +183,7 @@ Arci<Font> AssetFactory::createFontAsset(mref<asset_guid> guid_) const {
 	return instance;
 }
 
-Arci<Font> AssetFactory::createFontAsset(mref<asset_guid> guid_, cref<string> url_) const {
+Arci<Font> AssetFactory::createFontAsset(mref<AssetGuid> guid_, cref<string> url_) const {
 
 	auto src { resolveAsSource(url_) };
 	Vector<fs::Url> sources {};
@@ -199,7 +199,7 @@ Arci<Font> AssetFactory::createFontAsset(mref<asset_guid> guid_, cref<string> ur
 	return instance;
 }
 
-Arci<AccelEffect> AssetFactory::createAccelEffectAsset(mref<asset_guid> guid_) const {
+Arci<AccelEffect> AssetFactory::createAccelEffectAsset(mref<AssetGuid> guid_) const {
 
 	auto instance = Arci<AccelEffect>::create(std::move(guid_));
 
@@ -208,15 +208,15 @@ Arci<AccelEffect> AssetFactory::createAccelEffectAsset(mref<asset_guid> guid_) c
 	return instance;
 }
 
-Arci<GfxMaterial> AssetFactory::createGfxMaterialAsset(mref<asset_guid> prototypeGuid_) const {
+Arci<GfxMaterial> AssetFactory::createGfxMaterialAsset(mref<AssetGuid> prototypeGuid_) const {
 
 	auto guid = generate_asset_guid();
 	return createGfxMaterialAsset(std::move(guid), std::move(prototypeGuid_));
 }
 
 Arci<GfxMaterial> AssetFactory::createGfxMaterialAsset(
-	mref<asset_guid> guid_,
-	mref<asset_guid> prototypeGuid_
+	mref<AssetGuid> guid_,
+	mref<AssetGuid> prototypeGuid_
 ) const {
 
 	auto instance = Arci<GfxMaterial>::create(std::move(guid_), std::move(prototypeGuid_));
@@ -226,7 +226,7 @@ Arci<GfxMaterial> AssetFactory::createGfxMaterialAsset(
 	return instance;
 }
 
-Arci<GfxMaterialPrototype> AssetFactory::createGfxMaterialPrototypeAsset(mref<asset_guid> guid_) const {
+Arci<GfxMaterialPrototype> AssetFactory::createGfxMaterialPrototypeAsset(mref<AssetGuid> guid_) const {
 
 	auto instance = Arci<GfxMaterialPrototype>::create(std::move(guid_));
 
@@ -235,7 +235,7 @@ Arci<GfxMaterialPrototype> AssetFactory::createGfxMaterialPrototypeAsset(mref<as
 	return instance;
 }
 
-Arci<LevelAsset> AssetFactory::createLevelAsset(mref<asset_guid> guid_) const {
+Arci<LevelAsset> AssetFactory::createLevelAsset(mref<AssetGuid> guid_) const {
 
 	auto instance = Arci<LevelAsset>::create(std::move(guid_));
 
@@ -250,7 +250,7 @@ Arci<Image> AssetFactory::createImageAsset() const {
 	return createImageAsset(std::move(guid));
 }
 
-Arci<Image> AssetFactory::createImageAsset(mref<asset_guid> guid_) const {
+Arci<Image> AssetFactory::createImageAsset(mref<AssetGuid> guid_) const {
 
 	auto instance = Arci<Image>::create(std::move(guid_), Vector<fs::Url> {});
 
@@ -259,7 +259,7 @@ Arci<Image> AssetFactory::createImageAsset(mref<asset_guid> guid_) const {
 	return instance;
 }
 
-Arci<Image> AssetFactory::createImageAsset(mref<asset_guid> guid_, cref<string> url_) const {
+Arci<Image> AssetFactory::createImageAsset(mref<AssetGuid> guid_, cref<string> url_) const {
 
 	auto src { resolveAsSource(url_) };
 	Vector<fs::Url> sources {};
@@ -275,7 +275,7 @@ Arci<Image> AssetFactory::createImageAsset(mref<asset_guid> guid_, cref<string> 
 	return instance;
 }
 
-Arci<LandscapeGeometry> AssetFactory::createLandscapeGeometryAsset(mref<asset_guid> guid_) const {
+Arci<LandscapeGeometry> AssetFactory::createLandscapeGeometryAsset(mref<AssetGuid> guid_) const {
 
 	auto instance = Arci<LandscapeGeometry>::create(std::move(guid_), Vector<fs::Url> {});
 
@@ -284,7 +284,7 @@ Arci<LandscapeGeometry> AssetFactory::createLandscapeGeometryAsset(mref<asset_gu
 	return instance;
 }
 
-Arci<StaticGeometry> AssetFactory::createStaticGeometryAsset(mref<asset_guid> guid_) const {
+Arci<StaticGeometry> AssetFactory::createStaticGeometryAsset(mref<AssetGuid> guid_) const {
 
 	auto instance = Arci<StaticGeometry>::create(
 		std::move(guid_),
@@ -299,7 +299,7 @@ Arci<StaticGeometry> AssetFactory::createStaticGeometryAsset(mref<asset_guid> gu
 }
 
 Arci<StaticGeometry> AssetFactory::createStaticGeometryAsset(
-	mref<asset_guid> guid_,
+	mref<AssetGuid> guid_,
 	cref<string> url_,
 	cref<u64> vertexCount_,
 	cref<u64> indexCount_
@@ -330,12 +330,12 @@ Arci<TextureAsset> AssetFactory::createTextureAsset() const {
 	return createTextureAsset(std::move(guid));
 }
 
-Arci<TextureAsset> AssetFactory::createTextureAsset(mref<asset_guid> guid_) const {
+Arci<TextureAsset> AssetFactory::createTextureAsset(mref<AssetGuid> guid_) const {
 
 	auto instance = Arci<TextureAsset>::create(
 		std::move(guid_),
 		invalid_asset_guid,
-		Vector<asset_guid> { invalid_asset_guid },
+		Vector<AssetGuid> { invalid_asset_guid },
 		math::uivec3 {},
 		gfx::TextureFormat::eUndefined,
 		0,
@@ -348,9 +348,9 @@ Arci<TextureAsset> AssetFactory::createTextureAsset(mref<asset_guid> guid_) cons
 }
 
 Arci<TextureAsset> AssetFactory::createTextureAsset(
-	mref<asset_guid> guid_,
-	cref<asset_guid> baseImage_,
-	mref<Vector<asset_guid>> images_,
+	mref<AssetGuid> guid_,
+	cref<AssetGuid> baseImage_,
+	mref<Vector<AssetGuid>> images_,
 	cref<math::uivec3> extent_,
 	cref<gfx::TextureFormat> format_,
 	cref<u32> mipLevel_,
@@ -359,7 +359,7 @@ Arci<TextureAsset> AssetFactory::createTextureAsset(
 	auto instance = Arci<TextureAsset>::create(
 		std::move(guid_),
 		baseImage_,
-		std::forward<Vector<asset_guid>>(images_),
+		std::forward<Vector<AssetGuid>>(images_),
 		extent_,
 		format_,
 		mipLevel_,

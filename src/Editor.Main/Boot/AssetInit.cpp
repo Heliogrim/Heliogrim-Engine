@@ -602,7 +602,7 @@ bool isArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
 	/**/
 
 	asset_type_id typeId {};
-	asset_guid guid = invalid_asset_guid;
+	AssetGuid guid = invalid_asset_guid;
 
 	serialization::access::Structure<Guid>::hydrate(record.getStructSlot("__guid__"), guid);
 	record.getSlot<u64>("__type__") >> typeId.data;
@@ -625,7 +625,7 @@ bool tryLoadArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
 	/**/
 
 	asset_type_id typeId {};
-	asset_guid guid = invalid_asset_guid;
+	AssetGuid guid = invalid_asset_guid;
 
 	serialization::access::Structure<Guid>::hydrate(record.getStructSlot("__guid__"), guid);
 	record.getSlot<u64>("__type__") >> typeId.data;
@@ -633,7 +633,7 @@ bool tryLoadArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
 	/**/
 
 	auto genericLoad = []<class AssetType_>(
-		asset_guid guid_,
+		AssetGuid guid_,
 		mref<serialization::StructScopedSlot> record_
 	) -> Opt<Arci<AssetType_>> {
 

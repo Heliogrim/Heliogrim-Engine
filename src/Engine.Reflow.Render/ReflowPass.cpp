@@ -323,7 +323,7 @@ void render::ReflowPass::ensureDefaultImage() {
 	const auto registry = Engine::getEngine()->getAssets()->getRegistry();
 
 	// TODO: Rework temporary solution
-	constexpr auto default_ui_asset = asset_guid { 4199784551, 6723, 19881, 9898617085362983564uLL };
+	constexpr auto default_ui_asset = AssetGuid { 4199784551, 6723, 19881, 9898617085362983564uLL };
 	const auto asset = registry->findAssetByGuid(default_ui_asset);
 	::hg::assertrt(asset != None);
 

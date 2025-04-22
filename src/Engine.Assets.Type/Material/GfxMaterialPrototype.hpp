@@ -22,7 +22,7 @@ namespace hg::engine::assets {
 		constexpr static asset_type_id typeId { "GfxMaterialPrototype"_typeId };
 
 	public:
-		GfxMaterialPrototype(mref<asset_guid> guid_);
+		GfxMaterialPrototype(mref<AssetGuid> guid_);
 
 	private:
 	public:
@@ -31,7 +31,7 @@ namespace hg::engine::assets {
 			string name;
 			accel::TransferDataType dataType;
 			Variant<
-				asset_guid,
+				AssetGuid,
 				u8,
 				u16,
 				u32,
@@ -59,7 +59,7 @@ namespace hg::engine::assets {
 		};
 
 		// TODO: Serialize/Map instantiated parameters
-		Vector<asset_guid> _effects;
+		Vector<AssetGuid> _effects;
 		Vector<TmpParam> _params;
 	};
 }

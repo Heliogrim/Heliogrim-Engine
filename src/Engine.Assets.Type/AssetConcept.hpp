@@ -10,7 +10,7 @@ namespace hg::engine::assets {
 	 */
 	template <class Ty>
 	concept IsAsset = requires(const Ty obj) {
-		{ obj.get_guid() } -> std::same_as<asset_guid>;
+		{ obj.get_guid() } -> std::same_as<AssetGuid>;
 	} && hg::HasType<Ty, asset_type_id>;
 
 	template <class Type_ = void>

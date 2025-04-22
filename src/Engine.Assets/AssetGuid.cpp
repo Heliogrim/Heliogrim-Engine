@@ -7,7 +7,7 @@
 
 using namespace hg;
 
-asset_guid hg::generate_unstable_asset_guid() {
+AssetGuid hg::generate_unstable_asset_guid() {
 	static std::atomic_uint_fast32_t ai { 1 };
 
 	const auto pre = ai.fetch_add(1, std::memory_order_acq_rel);
@@ -18,9 +18,9 @@ asset_guid hg::generate_unstable_asset_guid() {
 	return { pre, 0, 0, static_cast<u64>(tt) };
 }
 
-asset_guid hg::generate_asset_guid() {
+AssetGuid hg::generate_asset_guid() {
 
-	asset_guid guid {};
+	AssetGuid guid {};
 	GuidGenerate(guid);
 
 	return guid;

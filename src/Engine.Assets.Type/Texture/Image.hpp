@@ -24,10 +24,10 @@ namespace hg::engine::assets {
 		Image();
 
 	protected:
-		Image(mref<asset_guid> guid_);
+		Image(mref<AssetGuid> guid_);
 
 	public:
-		Image(mref<asset_guid> guid_, mref<Vector<fs::Url>> sources_);
+		Image(mref<AssetGuid> guid_, mref<Vector<fs::Url>> sources_);
 
 	private:
 		Vector<fs::Url> _sources;

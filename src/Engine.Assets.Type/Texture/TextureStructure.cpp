@@ -54,7 +54,7 @@ void access::Structure<TextureAsset>::hydrate(cref<StructScopedSlot> slot_, Text
 			Guid tmp {};
 			Structure<Guid>::hydrate(images.getRecordSlot(i).asStruct(), tmp);
 
-			target_._images.push_back(static_cast<mref<asset_guid>>(tmp));
+			target_._images.push_back(static_cast<mref<AssetGuid>>(tmp));
 		}
 	}
 

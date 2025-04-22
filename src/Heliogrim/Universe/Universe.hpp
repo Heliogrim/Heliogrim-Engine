@@ -147,7 +147,7 @@ namespace hg {
 	 *
 	 * @returns A future, containing a universe instance
 	 */
-	[[nodiscard]] extern Future<Universe> GetUniverse(_In_ cref<asset_guid> guid_) noexcept;
+	[[nodiscard]] extern Future<Universe> GetUniverse(_In_ cref<AssetGuid> guid_) noexcept;
 
 	extern Future<bool> Destroy(
 		mref<Universe> universe_

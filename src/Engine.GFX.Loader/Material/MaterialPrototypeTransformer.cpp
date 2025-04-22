@@ -29,13 +29,13 @@ using namespace hg;
 /**/
 
 [[nodiscard]] static smr<TextureResource> resolveTexture(
-	mref<asset_guid> guid_,
+	mref<AssetGuid> guid_,
 	nmpt<const engine::assets::IAssetRegistry> registry_,
 	const non_owning_rptr<const engine::resource::LoaderManager> loader_
 );
 
 [[nodiscard]] static smr<const engine::accel::AccelerationEffect> resolveEffect(
-	mref<asset_guid> guid_,
+	mref<AssetGuid> guid_,
 	nmpt<const engine::assets::IAssetRegistry> registry_,
 	const non_owning_rptr<const engine::resource::LoaderManager> loader_
 );
@@ -83,9 +83,9 @@ MaterialPrototypeTransformer::response_type::type MaterialPrototypeTransformer::
 			case accel::TransferDataType::eStorage: break;
 			case accel::TransferDataType::eSampler: {
 
-				assert(std::holds_alternative<asset_guid>(serialParam.defaultValue));
+				assert(std::holds_alternative<AssetGuid>(serialParam.defaultValue));
 
-				auto textureGuid = std::get<asset_guid>(serialParam.defaultValue);
+				auto textureGuid = std::get<AssetGuid>(serialParam.defaultValue);
 				auto resolved = resolveTexture(std::move(textureGuid), registry, &loader);
 				dst.set(std::move(resolved));
 				break;
@@ -275,7 +275,7 @@ MaterialPrototypeTransformer::response_type::type MaterialPrototypeTransformer::
 }
 
 smr<engine::gfx::TextureResource> resolveTexture(
-	mref<asset_guid> guid_,
+	mref<AssetGuid> guid_,
 	nmpt<const engine::assets::IAssetRegistry> registry_,
 	const non_owning_rptr<const engine::resource::LoaderManager> loader_
 ) {
@@ -313,7 +313,7 @@ smr<engine::gfx::TextureResource> resolveTexture(
 }
 
 smr<MaterialPrototypeResource> resolvePrototype(
-	mref<asset_guid> guid_,
+	mref<AssetGuid> guid_,
 	nmpt<const engine::assets::IAssetRegistry> registry_,
 	const non_owning_rptr<const engine::resource::LoaderManager> loader_
 ) {
@@ -340,7 +340,7 @@ smr<MaterialPrototypeResource> resolvePrototype(
 }
 
 smr<const engine::accel::AccelerationEffect> resolveEffect(
-	mref<asset_guid> guid_,
+	mref<AssetGuid> guid_,
 	nmpt<const engine::assets::IAssetRegistry> registry_,
 	const non_owning_rptr<const engine::resource::LoaderManager> loader_
 ) {

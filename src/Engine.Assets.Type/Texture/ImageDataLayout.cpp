@@ -11,7 +11,7 @@ namespace hg::engine::serialization {
 		using namespace ::hg::engine::serialization::layout;
 
 		const auto guidLayout = make_sptr<DataLayout<Guid>>();
-		guidLayout->reflect().storeType<asset_guid>();
+		guidLayout->reflect().storeType<AssetGuid>();
 		guidLayout->describe();
 
 		const auto assetNameLayout = make_sptr<DataLayout<u8>>();

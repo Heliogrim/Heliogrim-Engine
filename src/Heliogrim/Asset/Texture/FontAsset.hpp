@@ -12,9 +12,9 @@ namespace hg {
 		using base_type = Asset;
 
 	protected:
-		FontAsset(mref<asset_guid> guid_) noexcept;
+		FontAsset(mref<AssetGuid> guid_) noexcept;
 
-		FontAsset(mref<asset_guid> guid_, cref<string> url_) noexcept;
+		FontAsset(mref<AssetGuid> guid_, cref<string> url_) noexcept;
 
 	public:
 		~FontAsset() noexcept;

@@ -38,7 +38,7 @@ GlobalResourceCache::query_result_type GlobalResourceCache::query(
 	return query(asset_->get_guid());
 }
 
-GlobalResourceCache::query_result_type GlobalResourceCache::query(cref<asset_guid> guid_) const noexcept {
+GlobalResourceCache::query_result_type GlobalResourceCache::query(cref<AssetGuid> guid_) const noexcept {
 
 	const auto it = _mapped.find(guid_);
 	if (it != _mapped.end()) {
@@ -49,7 +49,7 @@ GlobalResourceCache::query_result_type GlobalResourceCache::query(cref<asset_gui
 }
 
 GlobalResourceCache::store_result_type GlobalResourceCache::store(
-	cref<asset_guid> guid_,
+	cref<AssetGuid> guid_,
 	mref<smr<resource::ResourceBase>> resource_
 ) {
 	/**
@@ -71,12 +71,12 @@ GlobalResourceCache::store_result_type GlobalResourceCache::store(
 	return { StoreResultType::eSuccess };
 }
 
-bool GlobalResourceCache::remove(cref<asset_guid> guid_) {
+bool GlobalResourceCache::remove(cref<AssetGuid> guid_) {
 	return _mapped.erase(guid_);
 }
 
 bool GlobalResourceCache::remove(
-	cref<asset_guid> guid_,
+	cref<AssetGuid> guid_,
 	_Out_ ref<smr<resource::ResourceBase>> resource_
 ) {
 

@@ -10,10 +10,10 @@ using namespace hg;
 Image::Image() :
 	InheritMeta(clone(invalid_asset_guid), Image::typeId) {}
 
-Image::Image(mref<asset_guid> guid_) :
+Image::Image(mref<AssetGuid> guid_) :
 	InheritMeta(std::move(guid_), Image::typeId) {}
 
-Image::Image(mref<asset_guid> guid_, mref<Vector<fs::Url>> sources_) :
+Image::Image(mref<AssetGuid> guid_, mref<Vector<fs::Url>> sources_) :
 	InheritMeta(std::move(guid_), Image::typeId),
 	_sources(std::move(sources_)) {}
 

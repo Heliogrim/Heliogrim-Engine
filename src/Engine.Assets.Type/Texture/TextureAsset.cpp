@@ -14,7 +14,7 @@ TextureAsset::TextureAsset() :
     _mipLevel(0uL),
     _textureType(gfx::TextureType::eUndefined) {}
 
-TextureAsset::TextureAsset(mref<asset_guid> guid_) :
+TextureAsset::TextureAsset(mref<AssetGuid> guid_) :
     InheritMeta(std::move(guid_), typeId),
     _baseImage(invalid_asset_guid),
     _images(),
@@ -24,9 +24,9 @@ TextureAsset::TextureAsset(mref<asset_guid> guid_) :
     _textureType(gfx::TextureType::eUndefined) {}
 
 TextureAsset::TextureAsset(
-    mref<asset_guid> guid_,
-    cref<asset_guid> baseImage_,
-    mref<Vector<asset_guid>> images_,
+    mref<AssetGuid> guid_,
+    cref<AssetGuid> baseImage_,
+    mref<Vector<AssetGuid>> images_,
     cref<math::uivec3> extent_,
     cref<gfx::TextureFormat> format_,
     cref<u32> mipLevel_,
@@ -40,23 +40,23 @@ TextureAsset::TextureAsset(
     _mipLevel(mipLevel_),
     _textureType(type_) {}
 
-cref<asset_guid> TextureAsset::baseImage() const noexcept {
+cref<AssetGuid> TextureAsset::baseImage() const noexcept {
     return _baseImage;
 }
 
-void TextureAsset::setBaseImage(const asset_guid imageGuid_) {
+void TextureAsset::setBaseImage(const AssetGuid imageGuid_) {
     _baseImage = imageGuid_;
 }
 
-void TextureAsset::addSourceImage(const asset_guid imageGuid_) {
+void TextureAsset::addSourceImage(const AssetGuid imageGuid_) {
     _images.push_back(imageGuid_);
 }
 
-bool TextureAsset::hasSourceImage(const asset_guid imageGuid_) {
+bool TextureAsset::hasSourceImage(const AssetGuid imageGuid_) {
     return std::find(_images.begin(), _images.end(), imageGuid_) != _images.end();
 }
 
-void TextureAsset::removeSourceImage(const asset_guid imageGuid_) {
+void TextureAsset::removeSourceImage(const AssetGuid imageGuid_) {
     const auto where { std::remove(_images.begin(), _images.end(), imageGuid_) };
     _images.erase(where, _images.end());
 }

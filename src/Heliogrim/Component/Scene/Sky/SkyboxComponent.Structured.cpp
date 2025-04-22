@@ -38,11 +38,11 @@ void access::Structure<SkyboxComponent>::hydrate(
 	/**/
 
 	// TODO: Implement Resolver
-	asset_guid geometryGuid {};
+	AssetGuid geometryGuid {};
 	Structure<Guid>::hydrate(slot_.getStructSlot("geometry"sv), geometryGuid);
 	target_._skyboxGeometry = GetAssets().find<StaticGeometryAsset>(geometryGuid).value;
 
-	asset_guid materialGuid {};
+	AssetGuid materialGuid {};
 	Structure<Guid>::hydrate(slot_.getStructSlot("material"sv), materialGuid);
 	target_._skyboxMaterial = GetAssets().find<GfxMaterialAsset>(materialGuid).value;
 }

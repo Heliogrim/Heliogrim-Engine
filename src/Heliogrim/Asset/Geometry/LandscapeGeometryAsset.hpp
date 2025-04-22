@@ -18,7 +18,7 @@ namespace hg {
 		 *
 		 * @param  guid_ Unique identifier.
 		 */
-		LandscapeGeometryAsset(mref<asset_guid> guid_) noexcept;
+		LandscapeGeometryAsset(mref<AssetGuid> guid_) noexcept;
 
 	public:
 		/**

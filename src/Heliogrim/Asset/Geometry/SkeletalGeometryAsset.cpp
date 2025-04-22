@@ -7,7 +7,7 @@
 using namespace hg;
 
 SkeletalGeometryAsset::SkeletalGeometryAsset(
-	mref<asset_guid> guid_,
+	mref<AssetGuid> guid_,
 	ref<::hg::engine::assets::Asset> internal_
 ) noexcept :
 	Asset(

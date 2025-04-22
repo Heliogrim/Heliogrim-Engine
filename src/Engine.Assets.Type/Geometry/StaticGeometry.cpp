@@ -14,7 +14,7 @@ StaticGeometry::StaticGeometry() :
 	_clusterCount(),
 	_clusterDepth() {}
 
-StaticGeometry::StaticGeometry(mref<asset_guid> guid_) :
+StaticGeometry::StaticGeometry(mref<AssetGuid> guid_) :
 	InheritMeta(std::move(guid_), typeId),
 	_sources(),
 	_vertexCount(),
@@ -23,7 +23,7 @@ StaticGeometry::StaticGeometry(mref<asset_guid> guid_) :
 	_clusterDepth() {}
 
 StaticGeometry::StaticGeometry(
-	mref<asset_guid> guid_,
+	mref<AssetGuid> guid_,
 	mref<Vector<fs::Url>> sources_,
 	cref<u64> vertexCount_,
 	cref<u64> indexCount_

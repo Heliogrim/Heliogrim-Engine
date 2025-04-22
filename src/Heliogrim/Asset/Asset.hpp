@@ -23,7 +23,7 @@ namespace hg {
 		using this_type = Asset;
 
 	private:
-		Asset(cref<asset_guid> invalidGuid_, cref<asset_type_id> invalidTypeId_, std::nullptr_t) noexcept;
+		Asset(cref<AssetGuid> invalidGuid_, cref<asset_type_id> invalidTypeId_, std::nullptr_t) noexcept;
 
 	protected:
 		/**
@@ -36,7 +36,7 @@ namespace hg {
 		 * @param  typeId_ Identifier for the type.
 		 * @param  internal_ The internal state.
 		 */
-		Asset(mref<asset_guid> guid_, cref<asset_type_id> typeId_, ref<::hg::engine::assets::Asset> internal_) noexcept;
+		Asset(mref<AssetGuid> guid_, cref<asset_type_id> typeId_, ref<::hg::engine::assets::Asset> internal_) noexcept;
 
 	public:
 		Asset(mref<this_type> other_) noexcept;
@@ -60,7 +60,7 @@ namespace hg {
 		/**
 		 * Guid
 		 */
-		asset_guid _guid;
+		AssetGuid _guid;
 
 	public:
 		/**
@@ -71,7 +71,7 @@ namespace hg {
 		 *
 		 * @returns An asset_guid.
 		 */
-		[[nodiscard]] cref<asset_guid> guid() const noexcept;
+		[[nodiscard]] cref<AssetGuid> guid() const noexcept;
 
 		/**
 		 * Gets the unique identifier
@@ -81,7 +81,7 @@ namespace hg {
 		 *
 		 * @returns An asset_guid.
 		 */
-		[[nodiscard]] asset_guid guid() noexcept;
+		[[nodiscard]] AssetGuid guid() noexcept;
 
 		/**
 		 * Get the unique identifier
@@ -91,7 +91,7 @@ namespace hg {
 		 *
 		 * @returns The result of the operation.
 		 */
-		[[nodiscard]] operator cref<asset_guid>() const noexcept;
+		[[nodiscard]] operator cref<AssetGuid>() const noexcept;
 
 		/**
 		 * Get the unique identifier
@@ -101,7 +101,7 @@ namespace hg {
 		 *
 		 * @returns The result of the operation.
 		 */
-		[[nodiscard]] operator asset_guid() noexcept;
+		[[nodiscard]] operator AssetGuid() noexcept;
 
 	protected:
 		/**
@@ -203,7 +203,7 @@ namespace hg {
 		 *
 		 * @returns True if the parameters are considered equivalent.
 		 */
-		[[nodiscard]] bool operator==(cref<asset_guid> guid_) const noexcept;
+		[[nodiscard]] bool operator==(cref<AssetGuid> guid_) const noexcept;
 
 		/**
 		 * Check the guid of this asset
@@ -215,7 +215,7 @@ namespace hg {
 		 *
 		 * @returns True if the parameters are not considered equivalent.
 		 */
-		[[nodiscard]] bool operator!=(cref<asset_guid> guid_) const noexcept;
+		[[nodiscard]] bool operator!=(cref<AssetGuid> guid_) const noexcept;
 
 		/**
 		 * Check the type of this asset

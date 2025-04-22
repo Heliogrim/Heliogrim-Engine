@@ -6,7 +6,7 @@
 
 using namespace hg;
 
-SfxMaterialAsset::SfxMaterialAsset(mref<asset_guid> guid_, ref<::hg::engine::assets::Asset> internal_) noexcept :
+SfxMaterialAsset::SfxMaterialAsset(mref<AssetGuid> guid_, ref<::hg::engine::assets::Asset> internal_) noexcept :
 	Asset(
 		std::move(guid_),
 		engine::assets::SfxMaterial::typeId,

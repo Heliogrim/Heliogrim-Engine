@@ -5,17 +5,17 @@
 #include <Engine.Common/Hash/Murmur3.hpp>
 
 namespace hg {
-	struct asset_guid : public Guid {
+	struct AssetGuid : public Guid {
 		using Guid::Guid;
 
-		asset_guid(cref<Guid> other_) noexcept :
+		AssetGuid(cref<Guid> other_) noexcept :
 			Guid(other_) {}
 	};
 
 	/**
 	 * Identifier for the invalid asset
 	 */
-	inline constexpr static asset_guid invalid_asset_guid {};
+	inline constexpr static AssetGuid invalid_asset_guid {};
 
 	/**
 	 * Generates an unstable asset unique identifier
@@ -25,7 +25,7 @@ namespace hg {
 	 *
 	 * @returns The asset unique identifier.
 	 */
-	extern asset_guid generate_unstable_asset_guid();
+	extern AssetGuid generate_unstable_asset_guid();
 
 	/**
 	 * Generates an asset unique identifier
@@ -35,15 +35,15 @@ namespace hg {
 	 *
 	 * @returns The asset unique identifier.
 	 */
-	extern asset_guid generate_asset_guid();
+	extern AssetGuid generate_asset_guid();
 }
 
 namespace std {
 	template <>
-	struct hash<hg::asset_guid> {
-		std::size_t operator()(const hg::asset_guid& value_) const noexcept {
+	struct hash<hg::AssetGuid> {
+		std::size_t operator()(const hg::AssetGuid& value_) const noexcept {
 
-			constexpr hg::u64 size = sizeof(hg::asset_guid);
+			constexpr hg::u64 size = sizeof(hg::AssetGuid);
 
 			/**
 			 * Warning: Don't use identity

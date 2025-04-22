@@ -27,7 +27,7 @@ namespace hg::engine::assets::system {
 		void tidy();
 
 	private:
-		DenseMap<asset_guid, AssetRepositoryItem> _entries;
+		DenseMap<AssetGuid, AssetRepositoryItem> _entries;
 
 	public:
 		[[nodiscard]] bool destroyAsset(mref<nmpt<Asset>> asset_) override;
@@ -63,9 +63,9 @@ namespace hg::engine::assets::system {
 
 		// TODO: Replace with better memory management
 		template <IsAsset AssetType_, typename... ConstructArgs_> requires
-			std::is_constructible_v<AssetType_, asset_guid, ConstructArgs_...>
+			std::is_constructible_v<AssetType_, AssetGuid, ConstructArgs_...>
 		[[nodiscard]] nmpt<AssetType_> createAsset(
-			_In_ mref<asset_guid> guid_,
+			_In_ mref<AssetGuid> guid_,
 			_In_ ConstructArgs_&&... args_
 		) {
 
@@ -77,8 +77,8 @@ namespace hg::engine::assets::system {
 				std::make_pair(
 					guid_,
 					AssetRepositoryItem {
-						Arci<AssetType_>::template create<asset_guid, ConstructArgs_...>(
-							std::forward<asset_guid>(guid_),
+						Arci<AssetType_>::template create<AssetGuid, ConstructArgs_...>(
+							std::forward<AssetGuid>(guid_),
 							std::forward<ConstructArgs_>(args_)...
 						)
 					}

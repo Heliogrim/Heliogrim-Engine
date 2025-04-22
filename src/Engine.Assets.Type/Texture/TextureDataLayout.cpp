@@ -11,7 +11,7 @@ namespace hg::engine::serialization {
         using namespace ::hg::engine::serialization::layout;
 
         const auto guidLayout = make_sptr<DataLayout<Guid>>();
-        guidLayout->reflect().storeType<asset_guid>();
+        guidLayout->reflect().storeType<AssetGuid>();
         guidLayout->describe();
 
         const auto assetNameLayout = make_sptr<DataLayout<u8>>();
@@ -25,7 +25,7 @@ namespace hg::engine::serialization {
 
         /**/
         defineObject(offsetof(TextureAsset, _baseImage), guidLayout);
-        defineSlice<Vector<asset_guid>>(offsetof(TextureAsset, _images), guidLayout);
+        defineSlice<Vector<AssetGuid>>(offsetof(TextureAsset, _images), guidLayout);
 
         #if USE_SPAN_LAYOUT
         defineSpan(offsetof(Texture, _extent), sizeof(TextureAsset::_extent));

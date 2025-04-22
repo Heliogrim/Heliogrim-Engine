@@ -56,7 +56,7 @@ namespace hg::engine::gfx::cache {
 		/**
 		 *
 		 */
-		DenseMap<asset_guid, smr<resource::ResourceBase>> _mapped;
+		DenseMap<AssetGuid, smr<resource::ResourceBase>> _mapped;
 
 	public:
 		[[nodiscard]] bool contains(const non_owning_rptr<const assets::Asset> asset_) const noexcept;
@@ -66,15 +66,15 @@ namespace hg::engine::gfx::cache {
 		) const noexcept;
 
 		[[nodiscard]] query_result_type query(
-			cref<asset_guid> guid_
+			cref<AssetGuid> guid_
 		) const noexcept;
 
 	public:
-		store_result_type store(_In_ cref<asset_guid> guid_, _In_ mref<smr<resource::ResourceBase>> resource_);
+		store_result_type store(_In_ cref<AssetGuid> guid_, _In_ mref<smr<resource::ResourceBase>> resource_);
 
-		bool remove(_In_ cref<asset_guid> guid_);
+		bool remove(_In_ cref<AssetGuid> guid_);
 
-		bool remove(_In_ cref<asset_guid> guid_, _Out_ ref<smr<resource::ResourceBase>> resource_);
+		bool remove(_In_ cref<AssetGuid> guid_, _Out_ ref<smr<resource::ResourceBase>> resource_);
 
 		void clear();
 	};

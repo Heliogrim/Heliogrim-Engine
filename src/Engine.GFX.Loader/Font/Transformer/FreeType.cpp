@@ -25,7 +25,7 @@ using namespace hg;
 
 static std::atomic_uint_fast8_t ftRefCount {};
 static FT_Library freeTypeLibrary {};
-static DenseMap<asset_guid, FT_Face> freeTypeFaces {};
+static DenseMap<AssetGuid, FT_Face> freeTypeFaces {};
 
 constexpr static math::uivec2 font_texture_padding { 1uL };
 

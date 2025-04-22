@@ -134,7 +134,7 @@ string InputAsset::getTag() const noexcept {
 EventResponse InputAsset::invokeOnDrop(ref<const DragDropEvent> event_) {
 
 	if (not event_._payload.is<engine::input::event::DragDropEventTextPayload>()) {
-		return Input<asset_guid>::invokeOnDrop(event_);
+		return Input<AssetGuid>::invokeOnDrop(event_);
 	}
 
 	/**/
@@ -143,7 +143,7 @@ EventResponse InputAsset::invokeOnDrop(ref<const DragDropEvent> event_) {
 	const auto& text = payload.data;
 
 	if (not text.starts_with("asset://")) {
-		return Input<asset_guid>::invokeOnDrop(event_);
+		return Input<AssetGuid>::invokeOnDrop(event_);
 	}
 
 	static constexpr auto pathIdx = sizeof("asset://") - 1;
@@ -158,7 +158,7 @@ EventResponse InputAsset::invokeOnDrop(ref<const DragDropEvent> event_) {
 		return EventResponse::eConsumed;
 	}
 
-	const asset_guid guid = decodeGuid4228(static_cast<String>(parsed.path()));
+	const AssetGuid guid = decodeGuid4228(static_cast<String>(parsed.path()));
 	if (guid == invalid_asset_guid) {
 		IM_CORE_WARN("Invalid asset guid.");
 		return EventResponse::eConsumed;
@@ -193,7 +193,7 @@ EventResponse InputAsset::invokeOnDrop(ref<const DragDropEvent> event_) {
 }
 
 EventResponse InputAsset::invokeOnDragOver(ref<const DragDropEvent> event_) {
-	return Input<asset_guid>::invokeOnDragOver(event_);
+	return Input<AssetGuid>::invokeOnDragOver(event_);
 }
 
 //const ptr<const Children> InputAsset::children() const {
@@ -232,37 +232,37 @@ math::fvec2 InputAsset::getGrowFactor() const noexcept {
 }
 
 void InputAsset::enable() {
-	Input<asset_guid>::enable();
+	Input<AssetGuid>::enable();
 	_input->enable();
 }
 
 void InputAsset::disable() {
-	Input<asset_guid>::disable();
+	Input<AssetGuid>::disable();
 	_input->disable();
 }
 
 void InputAsset::markAsDirty() {
-	Input<asset_guid>::markAsDirty();
+	Input<AssetGuid>::markAsDirty();
 	_input->markAsDirty();
 }
 
 void InputAsset::markAsPristine() {
-	Input<asset_guid>::markAsPristine();
+	Input<AssetGuid>::markAsPristine();
 	_input->markAsPristine();
 }
 
 void InputAsset::markAsTouched() {
-	Input<asset_guid>::markAsTouched();
+	Input<AssetGuid>::markAsTouched();
 	_input->markAsTouched();
 }
 
 void InputAsset::markAsUntouched() {
-	Input<asset_guid>::markAsUntouched();
+	Input<AssetGuid>::markAsUntouched();
 	_input->markAsUntouched();
 }
 
 void InputAsset::reset() {
-	Input<asset_guid>::reset();
+	Input<AssetGuid>::reset();
 	_input->reset();
 }
 
@@ -271,11 +271,11 @@ void InputAsset::updateValueAndValidity(const bool propagate_, const bool emit_)
 	_input->updateValueAndValidity(propagate_, emit_);
 }
 
-reflow::Input<asset_guid>::input_type InputAsset::value() const noexcept {
+reflow::Input<AssetGuid>::input_type InputAsset::value() const noexcept {
 	return _value;
 }
 
-void InputAsset::setValue(cref<asset_guid> assetGuid_) {
+void InputAsset::setValue(cref<AssetGuid> assetGuid_) {
 	_value = assetGuid_;
 	_input->setValue(std::format(R"(<<{}-{}-{}-{}>>)", _value.pre, _value.c0, _value.c1, _value.post));
 

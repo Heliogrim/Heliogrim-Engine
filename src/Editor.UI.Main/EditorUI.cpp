@@ -114,7 +114,7 @@ ref<const EditorUiServices> editor::EditorUI::getEditorServices() const noexcept
 #include <Engine.GFX.Loader/Font/FontResource.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 
-ref<const asset_guid> editor::EditorUI::getDefaultFontGuid() const noexcept {
+ref<const AssetGuid> editor::EditorUI::getDefaultFontGuid() const noexcept {
 	return assets::font::default_font_guid;
 }
 

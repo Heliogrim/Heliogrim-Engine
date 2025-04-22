@@ -6,7 +6,7 @@
 
 using namespace hg;
 
-LevelAsset::LevelAsset(mref<asset_guid> guid_, ref<::hg::engine::assets::Asset> internal_) noexcept :
+LevelAsset::LevelAsset(mref<AssetGuid> guid_, ref<::hg::engine::assets::Asset> internal_) noexcept :
 	Asset(
 		std::move(guid_),
 		engine::assets::LevelAsset::typeId,

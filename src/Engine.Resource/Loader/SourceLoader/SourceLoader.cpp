@@ -16,7 +16,7 @@
 using namespace hg::engine::resource::loader;
 using namespace hg;
 
-[[nodiscard]] static string to_string(cref<asset_guid> guid_) {
+[[nodiscard]] static string to_string(cref<AssetGuid> guid_) {
 	return std::format(R"({:08x}-{:04x}-{:04x}-{:016x})", guid_.pre, guid_.c0, guid_.c1, guid_.post);
 }
 

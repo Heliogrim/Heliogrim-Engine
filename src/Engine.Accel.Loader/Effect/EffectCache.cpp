@@ -21,7 +21,7 @@ EffectCache::response_type::type EffectCache::operator()(
     cref<next_type> next_
 ) const {
 
-    const asset_guid guid = request_->get_guid();
+    const AssetGuid guid = request_->get_guid();
 
     if (_storage->hasAccelEffect(guid)) {
         auto stored = _storage->getAccelEffect(guid);

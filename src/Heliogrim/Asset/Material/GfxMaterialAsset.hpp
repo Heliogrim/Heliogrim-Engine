@@ -15,8 +15,8 @@ namespace hg {
 
 	public:
 		GfxMaterialAsset(
-			mref<asset_guid> guid_,
-			mref<asset_guid> prototypeGuid_
+			mref<AssetGuid> guid_,
+			mref<AssetGuid> prototypeGuid_
 		) noexcept;
 
 		/**
@@ -39,7 +39,7 @@ namespace hg {
 		[[nodiscard]] bool isValidType() const noexcept;
 
 	public:
-		[[nodiscard]] asset_guid getPrototypeGuid() const noexcept;
+		[[nodiscard]] AssetGuid getPrototypeGuid() const noexcept;
 
 		[[nodiscard]] nmpt<const GfxMatProtoAsset> prototype() const noexcept;
 	};

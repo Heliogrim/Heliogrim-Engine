@@ -29,7 +29,7 @@ namespace hg {
 		StaticGeometryAsset _staticGeometry;
 
 	public:
-		[[nodiscard]] asset_guid getStaticGeometryGuid() const noexcept;
+		[[nodiscard]] AssetGuid getStaticGeometryGuid() const noexcept;
 
 		[[nodiscard]] cref<StaticGeometryAsset> getStaticGeometryAsset() const noexcept;
 

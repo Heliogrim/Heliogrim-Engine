@@ -13,11 +13,11 @@ namespace hg::editor::assets::meshes {
 
 	[[nodiscard]] extern Opt<Arci<engine::assets::Asset>> resolveRuntimeAsset(
 		_In_ ref<engine::Engine> engine_,
-		_In_ cref<asset_guid> guid_
+		_In_ cref<AssetGuid> guid_
 	);
 
 	template <engine::assets::IsAsset AssetType_>
-	[[nodiscard]] decltype(auto) resolveRuntimeAsset(cref<asset_guid> guid_) {
+	[[nodiscard]] decltype(auto) resolveRuntimeAsset(cref<AssetGuid> guid_) {
 		// TODO: Make type safe casts...
 		return resolveRuntimeAsset(*engine::Engine::getEngine(), guid_).and_then(
 			[](auto&& val_) {
@@ -29,7 +29,7 @@ namespace hg::editor::assets::meshes {
 	/**/
 
 	// @formatter:off
-	constexpr auto default_sphere_guid = asset_guid { 4007417872, 23494, 19151, 5075903121290812314uLL };
+	constexpr auto default_sphere_guid = AssetGuid { 4007417872, 23494, 19151, 5075903121290812314uLL };
 	inline auto get_default_sphere() { return resolveRuntimeAsset<engine::assets::StaticGeometry>(default_sphere_guid); }
 	// @formatter:on
 }

@@ -12,7 +12,7 @@
 
 using namespace hg;
 
-TextureAsset::TextureAsset(mref<asset_guid> guid_) noexcept :
+TextureAsset::TextureAsset(mref<AssetGuid> guid_) noexcept :
 	Asset(
 		clone(guid_),
 		engine::assets::TextureAsset::typeId,
@@ -21,9 +21,9 @@ TextureAsset::TextureAsset(mref<asset_guid> guid_) noexcept :
 	) {}
 
 TextureAsset::TextureAsset(
-	mref<asset_guid> guid_,
-	cref<asset_guid> baseImage_,
-	mref<Vector<asset_guid>> images_,
+	mref<AssetGuid> guid_,
+	cref<AssetGuid> baseImage_,
+	mref<Vector<AssetGuid>> images_,
 	cref<math::uivec3> extent_,
 	cref<TextureFormat> format_,
 	cref<u32> mipLevel_,
@@ -36,7 +36,7 @@ TextureAsset::TextureAsset(
 		*engine::Engine::getEngine()->getAssets()->getFactory()->createTextureAsset(
 			clone(guid_),
 			baseImage_,
-			std::forward<Vector<asset_guid>>(images_),
+			std::forward<Vector<AssetGuid>>(images_),
 			extent_,
 			format_,
 			mipLevel_,
@@ -54,7 +54,7 @@ nmpt<const ImageAsset> TextureAsset::baseImage() const noexcept {
 	::hg::todo_panic();
 }
 
-cref<asset_guid> TextureAsset::baseImageGuid() const noexcept {
+cref<AssetGuid> TextureAsset::baseImageGuid() const noexcept {
 	::hg::todo_panic();
 }
 
@@ -62,7 +62,7 @@ Vector<ptr<const ImageAsset>> TextureAsset::images() const noexcept {
 	::hg::todo_panic();
 }
 
-Vector<asset_guid> TextureAsset::imagesGuids() const noexcept {
+Vector<AssetGuid> TextureAsset::imagesGuids() const noexcept {
 	::hg::todo_panic();
 }
 

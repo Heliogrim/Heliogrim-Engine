@@ -284,7 +284,7 @@ void GlobalCacheCtrl::markAsUsed(
 	const auto guard = material_->acquire();
 	const auto guid = guard->getGuid();
 
-	const auto result = _cache->store(static_cast<cref<asset_guid>>(guid), clone(material_));
+	const auto result = _cache->store(static_cast<cref<AssetGuid>>(guid), clone(material_));
 
 	#if _DEBUG
 	if (result == StoreResultType::eFail) {

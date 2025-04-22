@@ -10,7 +10,7 @@
 
 using namespace hg;
 
-StaticGeometryAsset::StaticGeometryAsset(mref<asset_guid> guid_) noexcept :
+StaticGeometryAsset::StaticGeometryAsset(mref<AssetGuid> guid_) noexcept :
 	Asset(
 		clone(guid_),
 		engine::assets::StaticGeometry::typeId,
@@ -19,7 +19,7 @@ StaticGeometryAsset::StaticGeometryAsset(mref<asset_guid> guid_) noexcept :
 	) {}
 
 StaticGeometryAsset::StaticGeometryAsset(
-	mref<asset_guid> guid_,
+	mref<AssetGuid> guid_,
 	cref<string> url_,
 	cref<u64> vertexCount_,
 	cref<u64> indexCount_

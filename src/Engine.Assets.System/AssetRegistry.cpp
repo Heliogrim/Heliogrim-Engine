@@ -24,11 +24,11 @@ using namespace hg;
 
 /**/
 
-static asset_guid projectAssetGuid(nmpt<const Asset> asset_) noexcept {
+static AssetGuid projectAssetGuid(nmpt<const Asset> asset_) noexcept {
 	return asset_->get_guid();
 }
 
-static std::strong_ordering comparatorAssetGuid(asset_guid left_, asset_guid right_) noexcept {
+static std::strong_ordering comparatorAssetGuid(AssetGuid left_, AssetGuid right_) noexcept {
 	return std::compare_three_way {}.operator()(left_, right_);
 }
 
@@ -82,7 +82,7 @@ struct IndexAssetUrlRelation {
 
 /**/
 
-using GuidIndex = Index<true, false, void, false, asset_guid, projectAssetGuid, comparatorAssetGuid>;
+using GuidIndex = Index<true, false, void, false, AssetGuid, projectAssetGuid, comparatorAssetGuid>;
 using TypeIndex = Index<false, true, void, false, asset_type_id, projectAssetType, comparatorAssetType>;
 using UrlIndex = Index<true, true, FindPathOptions, false, string, projectAssetUrl, comparatorAssetUrl,
 	IndexAssetUrlRelation>;
@@ -181,7 +181,7 @@ bool AssetRegistry::removeRepository(
 	return true;
 }
 
-bool AssetRegistry::hasAsset(cref<asset_guid> guid_) const noexcept {
+bool AssetRegistry::hasAsset(cref<AssetGuid> guid_) const noexcept {
 
 	_SCTRL_SGATE(_mtx);
 
@@ -189,7 +189,7 @@ bool AssetRegistry::hasAsset(cref<asset_guid> guid_) const noexcept {
 	return table->find(guid_) != nullptr;
 }
 
-nmpt<Asset> AssetRegistry::getAssetByGuid(cref<asset_guid> guid_) const {
+nmpt<Asset> AssetRegistry::getAssetByGuid(cref<AssetGuid> guid_) const {
 
 	_SCTRL_SGATE(_mtx);
 
@@ -197,7 +197,7 @@ nmpt<Asset> AssetRegistry::getAssetByGuid(cref<asset_guid> guid_) const {
 	return table->get(guid_);
 }
 
-Opt<Arci<Asset>> AssetRegistry::findAssetByGuid(cref<asset_guid> guid_) const noexcept {
+Opt<Arci<Asset>> AssetRegistry::findAssetByGuid(cref<AssetGuid> guid_) const noexcept {
 
 	_SCTRL_SGATE(_mtx);
 
@@ -293,7 +293,7 @@ void AssetRegistry::dropAssetIndex(nmpt<Asset> asset_) {
 	}
 }
 
-bool AssetRegistry::removeAssetByGuid(cref<asset_guid> guid_) {
+bool AssetRegistry::removeAssetByGuid(cref<AssetGuid> guid_) {
 
 	_SCTRL_GATE(_mtx);
 
@@ -320,7 +320,7 @@ bool AssetRegistry::removeAssetByGuid(cref<asset_guid> guid_) {
 	return false;
 }
 
-bool AssetRegistry::removeAssetsByGuids(cref<std::span<asset_guid>> guids_) {
+bool AssetRegistry::removeAssetsByGuids(cref<std::span<AssetGuid>> guids_) {
 
 	bool succeeded = false;
 	for (const auto& guid : guids_) {

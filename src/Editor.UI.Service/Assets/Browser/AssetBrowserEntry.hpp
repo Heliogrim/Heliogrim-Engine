@@ -20,6 +20,6 @@ namespace hg::editor::ui::service {
         AssetBrowserEntryType type;
         string title;
         fs::Url path;
-        asset_guid guid;
+        AssetGuid guid;
     };
 }

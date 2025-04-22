@@ -39,22 +39,22 @@ namespace hg {
 		 *
 		 * @returns True if the object is in the database, false if not.
 		 */
-		[[nodiscard]] bool contains(cref<asset_guid> guid_) const noexcept;
+		[[nodiscard]] bool contains(cref<AssetGuid> guid_) const noexcept;
 
 	public:
-		[[nodiscard]] auto find(cref<asset_guid> guid_) const {
+		[[nodiscard]] auto find(cref<AssetGuid> guid_) const {
 			return (*this)[guid_];
 		}
 
 		template <typename Type_>
-		[[nodiscard]] auto find(cref<asset_guid> guid_) const {
+		[[nodiscard]] auto find(cref<AssetGuid> guid_) const {
 			return this->operator[]<Type_>(guid_);
 		}
 
-		[[nodiscard]] AssetDatabaseResult<Asset> operator[](cref<asset_guid> guid_) const;
+		[[nodiscard]] AssetDatabaseResult<Asset> operator[](cref<AssetGuid> guid_) const;
 
 		template <typename Type_> requires std::is_base_of_v<Asset, Type_>
-		[[nodiscard]] AssetDatabaseResult<Type_> operator[](cref<asset_guid> guid_) const {
+		[[nodiscard]] AssetDatabaseResult<Type_> operator[](cref<AssetGuid> guid_) const {
 
 			auto result = operator[](guid_);
 

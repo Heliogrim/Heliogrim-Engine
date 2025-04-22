@@ -29,7 +29,7 @@ namespace hg {
 		constexpr TypedAssetGuid(mref<TypedAssetGuid<asset_type, FromStrict_>> other_) noexcept :
 			_guid(std::exchange(other_._guid, invalid_asset_guid)) {}
 
-		constexpr TypedAssetGuid(mref<asset_guid> assetGuid_) noexcept requires (not is_strict) :
+		constexpr TypedAssetGuid(mref<AssetGuid> assetGuid_) noexcept requires (not is_strict) :
 			_guid(std::move(assetGuid_)) {}
 
 		template <class FromAssetType_ = AssetType_> requires std::derived_from<FromAssetType_, AssetType_>
@@ -75,14 +75,14 @@ namespace hg {
 		constexpr ref<this_type> operator=(mref<this_type>) noexcept = default;
 
 	private:
-		asset_guid _guid;
+		AssetGuid _guid;
 
 	public:
 		[[nodiscard]] constexpr bool valid() const noexcept {
 			return _guid != invalid_asset_guid;
 		}
 
-		[[nodiscard]] constexpr operator hg::asset_guid() const noexcept {
+		[[nodiscard]] constexpr operator hg::AssetGuid() const noexcept {
 			return _guid;
 		}
 	};

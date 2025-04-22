@@ -57,11 +57,11 @@ namespace hg::engine::assets {
 		 * Single-Asset Operations
 		 */
 	public:
-		[[nodiscard]] bool hasAsset(cref<asset_guid> guid_) const noexcept override;
+		[[nodiscard]] bool hasAsset(cref<AssetGuid> guid_) const noexcept override;
 
-		[[nodiscard]] nmpt<Asset> getAssetByGuid(cref<asset_guid> guid_) const override;
+		[[nodiscard]] nmpt<Asset> getAssetByGuid(cref<AssetGuid> guid_) const override;
 
-		[[nodiscard]] Opt<Arci<Asset>> findAssetByGuid(cref<asset_guid> guid_) const noexcept override;
+		[[nodiscard]] Opt<Arci<Asset>> findAssetByGuid(cref<AssetGuid> guid_) const noexcept override;
 
 		[[nodiscard]] nmpt<Asset> getAssetByPath(cref<fs::Path> path_) const override;
 
@@ -110,9 +110,9 @@ namespace hg::engine::assets {
 		void dropAssetIndex(nmpt<Asset> asset_);
 
 	public:
-		bool removeAssetByGuid(cref<asset_guid> guid_) override;
+		bool removeAssetByGuid(cref<AssetGuid> guid_) override;
 
-		bool removeAssetsByGuids(cref<std::span<asset_guid>> guids_) override;
+		bool removeAssetsByGuids(cref<std::span<AssetGuid>> guids_) override;
 
 		bool removeAssetByPath(cref<fs::Path> path_) override;
 

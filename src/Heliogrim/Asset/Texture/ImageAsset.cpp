@@ -10,7 +10,7 @@
 
 using namespace hg;
 
-ImageAsset::ImageAsset(mref<asset_guid> guid_) noexcept :
+ImageAsset::ImageAsset(mref<AssetGuid> guid_) noexcept :
 	Asset(
 		clone(guid_),
 		engine::assets::Image::typeId,
@@ -18,7 +18,7 @@ ImageAsset::ImageAsset(mref<asset_guid> guid_) noexcept :
 		*engine::Engine::getEngine()->getAssets()->getFactory()->createImageAsset(clone(guid_))
 	) {}
 
-ImageAsset::ImageAsset(mref<asset_guid> guid_, cref<string> url_) noexcept :
+ImageAsset::ImageAsset(mref<AssetGuid> guid_, cref<string> url_) noexcept :
 	Asset(
 		clone(guid_),
 		engine::assets::Image::typeId,
