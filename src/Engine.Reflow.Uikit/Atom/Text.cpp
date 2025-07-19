@@ -11,7 +11,7 @@ using namespace hg;
 
 /**/
 
-[[nodiscard]] static nmpt<Font> loadFont(cref<TypedAssetGuid<::hg::engine::assets::Font>> guid_);
+[[nodiscard]] static nmpt<Font> loadFont(cref<TypedAssetGuid<::hg::engine::assets::FontAsset>> guid_);
 
 /**/
 
@@ -38,7 +38,7 @@ Text::Text(mref<ReflowClassList> classList_, mref<SharedPtr<Widget>> parent_) :
 		},
 		{
 			TextStyleAttributes {
-				TypedAssetGuid<engine::assets::Font> {},
+				TypedAssetGuid<engine::assets::FontAsset> {},
 				12.F,
 				1.F,
 				TextAlign::eTopLeft,
@@ -490,14 +490,14 @@ math::fvec2 Text::getShrinkFactor() const noexcept {
 #include <Engine.Reflect/Cast.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 
-nmpt<Font> loadFont(cref<TypedAssetGuid<hg::engine::assets::Font>> guid_) {
+nmpt<Font> loadFont(cref<TypedAssetGuid<hg::engine::assets::FontAsset>> guid_) {
 
 	const auto engine = ::hg::engine::Engine::getEngine();
 	const auto asset = engine->getAssets()->getRegistry()->findAssetByGuid(guid_);
 	::hg::assertrt(asset != None);
 
-	auto* fontAsset = Cast<::hg::engine::assets::Font>(asset->get());
-	return engine->getResources()->loader().load<engine::assets::Font, engine::gfx::FontResource>(
+	auto* fontAsset = Cast<::hg::engine::assets::FontAsset>(asset->get());
+	return engine->getResources()->loader().load<engine::assets::FontAsset, engine::gfx::FontResource>(
 		std::move(fontAsset),
 		engine::gfx::loader::FontLoadOptions {
 			.ranges = { BasicLatin, Latin1Supplement },

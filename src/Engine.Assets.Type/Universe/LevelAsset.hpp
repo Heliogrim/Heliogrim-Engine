@@ -1,12 +1,12 @@
 #pragma once
 
+#include <Engine.Assets/AssetReferenceUrl.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 
 #include "../Asset.hpp"
-#include "../Url.hpp"
 
 namespace hg::engine::assets {
-	class LevelAsset :
+	class LevelAsset final :
 		public InheritMeta<LevelAsset, Asset> {
 	public:
 		template <typename>
@@ -19,7 +19,12 @@ namespace hg::engine::assets {
 		constexpr static AssetTypeId typeId { "LevelAsset"_typeId };
 
 	public:
-		explicit LevelAsset(mref<AssetGuid> guid_);
+		LevelAsset(
+			mref<AssetGuid> guid_,
+			mref<StringView> name_,
+			mref<AssetReferenceUrl> storageUrl_,
+			mref<AssetUrl> vfsUrl_
+		);
 
 	private:
 		AssetReferenceUrl _levelData;

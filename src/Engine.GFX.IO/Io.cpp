@@ -95,7 +95,7 @@ void engine::gfx::loader::register_loader(
 		manager_.sharedSourceLoader()
 	);
 
-	registerIfNotPresent<FontLoader, assets::Font, FontResource>(
+	registerIfNotPresent<FontLoader, assets::FontAsset, FontResource>(
 		manager_,
 		cacheCtrl_,
 		pool_,
@@ -119,7 +119,7 @@ void engine::gfx::loader::unregister_loader(
 	manager_.unregisterLoader<assets::StaticGeometry>();
 	manager_.unregisterLoader<assets::GfxMaterial>();
 	manager_.unregisterLoader<assets::GfxMaterialPrototype>();
-	manager_.unregisterLoader<assets::Font>();
+	manager_.unregisterLoader<assets::FontAsset>();
 }
 
 void engine::gfx::loader::register_importer(ref<res::ImporterManager> manager_, ref<Graphics> graphics_) {

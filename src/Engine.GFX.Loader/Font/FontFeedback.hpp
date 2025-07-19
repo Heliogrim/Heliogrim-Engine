@@ -5,10 +5,10 @@
 #include "Traits.hpp"
 
 namespace hg::engine::gfx::loader {
-    class FontFeedback final : public resource::loader::Feedback<assets::Font, FontResource> {
+    class FontFeedback final : public resource::loader::Feedback<assets::FontAsset, FontResource> {
     public:
         using this_type = FontFeedback;
-        using underlying_type = resource::loader::Feedback<assets::Font, FontResource>;
+        using underlying_type = resource::loader::Feedback<assets::FontAsset, FontResource>;
 
         using underlying_type::loader_traits;
         using underlying_type::request_type;

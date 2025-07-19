@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine.Assets.Type/Texture/Font.hpp>
+#include <Engine.Assets.Type/Texture/FontAsset.hpp>
 #include <Engine.Resource/Loader/__fwd.hpp>
 
 namespace hg::engine::gfx {

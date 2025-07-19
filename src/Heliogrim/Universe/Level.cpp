@@ -1,13 +1,14 @@
 #include "Level.hpp"
 
 #include <Engine.Asserts/Todo.hpp>
+#include <Engine.Assets.Type/Universe/LevelAsset.hpp>
 #include <Engine.Level/Level.hpp>
 
 #include "Universe.hpp"
+#include "Asset/UniverseAssetHandles.hpp"
 #include "Engine.Common/Move.hpp"
 #include "Engine.Common/Concurrent/Promise.hpp"
 #include "Engine.Core/Universe.hpp"
-#include "Heliogrim/Asset/Universe/LevelAsset.hpp"
 
 using namespace hg;
 
@@ -58,7 +59,7 @@ Future<Level> hg::CreateLevel() noexcept {
 }
 
 Future<Level> LoadLevel(
-	cref<LevelAsset> levelAsset_,
+	ref<const LevelAssetHandle> levelAsset_,
 	Opt<LevelLoadOptions> options_
 ) noexcept {
 	::hg::todo_panic();
@@ -99,7 +100,7 @@ Vector<Level> hg::GetLevelsAt(
 }
 
 Future<bool> SaveLevel(
-	ref<LevelAsset> levelAsset_,
+	ref<LevelAssetHandle> levelAsset_,
 	Opt<LevelSaveOptions> options_
 ) noexcept {
 	::hg::todo_panic();
@@ -109,7 +110,7 @@ Future<bool> SaveLevel(
 #include <Engine.Assets.Type/Universe/LevelAsset.hpp>
 Future<bool> SaveLevel(
 	cref<Level> level_,
-	ref<LevelAsset> levelAsset_,
+	ref<LevelAssetHandle> levelAsset_,
 	Opt<LevelSaveOptions> options_ = None
 ) noexcept {
 	::hg::todo_panic();

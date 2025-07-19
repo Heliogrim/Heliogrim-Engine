@@ -1,14 +1,17 @@
 #pragma once
 
+#include <Engine.Common/Collection/AutoArray.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Math/Bounding.hpp>
 #include <Engine.Filesystem/Url.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
+#include <Heliogrim/TypedAssetGuid.hpp>
 
 #include "Geometry.hpp"
+#include "../Material/GfxMaterial.hpp"
 
 namespace hg::engine::assets {
-	class StaticGeometry :
+	class StaticGeometry final :
 		public InheritMeta<StaticGeometry, Geometry> {
 	public:
 		template <typename>
@@ -20,19 +23,16 @@ namespace hg::engine::assets {
 	public:
 		constexpr static AssetTypeId typeId { "StaticGeometry"_typeId };
 
-	private:
 	public:
 		StaticGeometry();
 
-	protected:
-		StaticGeometry(mref<AssetGuid> guid_);
-
-	public:
 		StaticGeometry(
 			mref<AssetGuid> guid_,
+			mref<StringView> name_,
+			mref<AssetReferenceUrl> storageUrl_,
+			mref<AssetUrl> vfsUrl_,
 			mref<Vector<fs::Url>> sources_,
-			cref<u64> vertexCount_,
-			cref<u64> indexCount_
+			mref<AutoArray<AssetGuid>> meshMaterials_
 		);
 
 	private:
@@ -41,6 +41,19 @@ namespace hg::engine::assets {
 	public:
 		[[nodiscard]] cref<Vector<fs::Url>> sources() const noexcept;
 
+	private:
+		// TODO: Check whether we can support `AutoArray<TypedAssetGuid<GfxMaterial>>`
+		// TODO:	As of now this will break in serialization due to ordering
+		AutoArray<AssetGuid> _meshMaterials;
+
+	public:
+		[[nodiscard]] u16 getMeshMaterialCount() const noexcept;
+
+		[[nodiscard]] ref<const AutoArray<AssetGuid>> getMeshMaterials() const noexcept;
+
+		void setMeshMaterial(u16 index_, mref<TypedAssetGuid<GfxMaterial>> materialGuid_);
+
+		/* TODO: Rework !?! */
 		//private:
 	public:
 		u64 _vertexCount;
@@ -48,24 +61,5 @@ namespace hg::engine::assets {
 
 		u64 _clusterCount;
 		u64 _clusterDepth;
-
-	public:
-		[[nodiscard]] u64 getVertexCount() const;
-
-		[[nodiscard]] u64 getIndexCount() const;
-
-		[[nodiscard, deprecated]] u64 getFaceCount() const;
-
-		[[nodiscard]] u32 getMaterialCount() const;
-
-		[[nodiscard, deprecated]] bool hasUvCoords();
-
-		[[nodiscard, deprecated]] bool hasUvm();
-
-		[[nodiscard, deprecated]] bool hasLods();
-
-		[[nodiscard, deprecated]] bool isStreamable();
-
-		[[nodiscard]] math::Bounding getBoundary();
 	};
 }

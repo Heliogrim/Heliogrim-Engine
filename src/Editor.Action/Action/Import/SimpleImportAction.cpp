@@ -1,7 +1,7 @@
 #include "SimpleImportAction.hpp"
 
 #include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
-#include <Engine.Assets.Type/Texture/Image.hpp>
+#include <Engine.Assets.Type/Texture/ImageAsset.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Resource/File.hpp>
@@ -83,7 +83,7 @@ Result<void, std::runtime_error> SimpleImportAction::apply() {
 
 	if (srcPath.ends_with(".ktx2")) {
 		const auto result = importer.import<
-			std::pair<Arci<::hg::engine::assets::TextureAsset>, Arci<::hg::engine::assets::Image>>
+			std::pair<Arci<::hg::engine::assets::TextureAsset>, Arci<::hg::engine::assets::ImageAsset>>
 		>(::hg::engine::gfx::ImageFileType::Ktx2, file);
 
 		auto data { result.get() };

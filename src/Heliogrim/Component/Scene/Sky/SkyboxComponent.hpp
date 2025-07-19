@@ -3,8 +3,8 @@
 #include <Engine.Serialization/Access/__fwd.hpp>
 
 #include "../../SceneComponent.hpp"
-#include "../../../Asset/Geometry/StaticGeometryAsset.hpp"
-#include "../../../Asset/Material/GfxMaterialAsset.hpp"
+#include "../../../Asset/GeometryAssetHandles.hpp"
+#include "../../../Asset/MaterialAssetHandles.hpp"
 
 namespace hg {
 	class SkyboxComponent :
@@ -28,19 +28,19 @@ namespace hg {
 		~SkyboxComponent() override = default;
 
 	private:
-		StaticGeometryAsset _skyboxGeometry;
+		StaticGeometryAssetHandle _skyboxGeometry;
 
 	public:
-		[[nodiscard]] cref<StaticGeometryAsset> getSkyboxGeometryAsset() const noexcept;
+		[[nodiscard]] ref<const StaticGeometryAssetHandle> getSkyboxGeometry() const noexcept;
 
-		bool setSkyboxGeometryByAsset(cref<StaticGeometryAsset> asset_);
+		bool setSkyboxGeometry(ref<const StaticGeometryAssetHandle> handle_);
 
 	private:
-		GfxMaterialAsset _skyboxMaterial;
+		GfxMaterialAssetHandle _skyboxMaterial;
 
 	public:
-		[[nodiscard]] cref<GfxMaterialAsset> getSkyboxMaterialAsset() const noexcept;
+		[[nodiscard]] ref<const GfxMaterialAssetHandle> getSkyboxMaterial() const noexcept;
 
-		bool setSkyboxMaterialByAsset(cref<GfxMaterialAsset> asset_);
+		bool setSkyboxMaterial(ref<const GfxMaterialAssetHandle> handle_);
 	};
 }

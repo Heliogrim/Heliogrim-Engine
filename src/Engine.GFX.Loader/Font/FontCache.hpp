@@ -6,10 +6,10 @@
 #include "Traits.hpp"
 
 namespace hg::engine::gfx::loader {
-	class FontCache final : public resource::loader::Cache<assets::Font, FontResource> {
+	class FontCache final : public resource::loader::Cache<assets::FontAsset, FontResource> {
 	public:
 		using this_type = FontCache;
-		using underlying_type = resource::loader::Cache<assets::Font, FontResource>;
+		using underlying_type = resource::loader::Cache<assets::FontAsset, FontResource>;
 
 		using underlying_type::loader_traits;
 		using underlying_type::request_type;

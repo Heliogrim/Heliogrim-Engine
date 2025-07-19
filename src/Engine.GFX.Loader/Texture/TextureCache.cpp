@@ -26,12 +26,12 @@ bool TextureCache::store(
 	const non_owning_rptr<const assets::TextureAsset> asset_,
 	mref<smr<TextureResource>> resource_
 ) const noexcept {
-	_cacheCtrl->cache()->store(asset_->get_guid(), std::move(resource_));
+	_cacheCtrl->cache()->store(asset_->getAssetGuid(), std::move(resource_));
 	return true;
 }
 
 bool TextureCache::remove(const non_owning_rptr<const assets::TextureAsset> asset_) noexcept {
-	return _cacheCtrl->cache()->remove(asset_->get_guid());
+	return _cacheCtrl->cache()->remove(asset_->getAssetGuid());
 }
 
 bool TextureCache::remove(
@@ -39,7 +39,7 @@ bool TextureCache::remove(
 	ref<smr<TextureResource>> resource_
 ) noexcept {
 	smr<resource::ResourceBase> stored {};
-	const auto result = _cacheCtrl->cache()->remove(asset_->get_guid(), stored);
+	const auto result = _cacheCtrl->cache()->remove(asset_->getAssetGuid(), stored);
 
 	if (result) {
 		resource_ = stored.into<TextureResource>();
@@ -90,7 +90,7 @@ TextureCache::stream_response_type::type TextureCache::operator()(
 	cache::TextureSubResource sub = {};
 	if (
 		_cacheCtrl->markAsUsed(
-			static_cast<non_owning_rptr<TextureResource>>(request_.get()),
+			static_cast<non_owning_rptr<const TextureResource>>(request_.get()),
 			std::move(sub)
 		) == cache::StreamCacheResultType::eResidential
 	) {

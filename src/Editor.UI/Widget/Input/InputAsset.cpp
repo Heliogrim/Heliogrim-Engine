@@ -282,9 +282,9 @@ void InputAsset::setValue(cref<AssetGuid> assetGuid_) {
 	/**/
 
 	const auto query = Heliogrim::assets()[assetGuid_];
-	if (query.flags & AssetDatabaseResultType::eSuccess) {
+	if (query.flags & AssetDatabaseResultType::eSuccess && query.value.isValid()) {
 
-		const auto name { query.value.getAssetName() };
+		const auto name = query.value.getAssetRef()->getAssetName();
 		if (name.empty()) {
 			return;
 		}

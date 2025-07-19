@@ -1,3 +1,4 @@
+#include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Structure/FloatScopedSlot.hpp>
 #include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>
@@ -21,8 +22,8 @@ void access::Structure<SkyboxComponent>::serialize(
 	/**/
 
 	// TODO: Implement Resolver
-	Structure<Guid>::serialize(self_._skyboxGeometry.guid(), slot_.insertStructSlot("geometry"sv));
-	Structure<Guid>::serialize(self_._skyboxMaterial.guid(), slot_.insertStructSlot("material"sv));
+	Structure<Guid>::serialize(self_._skyboxGeometry.getAssetGuid(), slot_.insertStructSlot("geometry"sv));
+	Structure<Guid>::serialize(self_._skyboxMaterial.getAssetGuid(), slot_.insertStructSlot("material"sv));
 }
 
 template <>
@@ -40,9 +41,9 @@ void access::Structure<SkyboxComponent>::hydrate(
 	// TODO: Implement Resolver
 	AssetGuid geometryGuid {};
 	Structure<Guid>::hydrate(slot_.getStructSlot("geometry"sv), geometryGuid);
-	target_._skyboxGeometry = GetAssets().find<StaticGeometryAsset>(geometryGuid).value;
+	target_._skyboxGeometry = GetAssets().find<StaticGeometryAssetHandle>(geometryGuid).value;
 
 	AssetGuid materialGuid {};
 	Structure<Guid>::hydrate(slot_.getStructSlot("material"sv), materialGuid);
-	target_._skyboxMaterial = GetAssets().find<GfxMaterialAsset>(materialGuid).value;
+	target_._skyboxMaterial = GetAssets().find<GfxMaterialAssetHandle>(materialGuid).value;
 }

@@ -22,9 +22,7 @@ namespace hg::engine::fs {
 
 		Url(mref<this_type> other_) noexcept = default;
 
-		Url(mref<Path> path_);
-
-		Url(string_view scheme_, mref<Path> path_);
+		Url(StringView scheme_, mref<Path> path_);
 
 		template <typename PathStringType_> requires std::is_constructible_v<fs::Path, PathStringType_>
 		Url(string_view scheme_, PathStringType_&& pathString_) :

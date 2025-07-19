@@ -160,7 +160,7 @@ void GlobalCacheCtrl::unmark(
 		return;
 	}
 
-	auto result = _cache->query(texture->get_guid());
+	auto result = _cache->query(texture->getAssetGuid());
 	if (result != QueryResultType::eHit) {
 		Logger::error(
 			"Tried to unmark a already uncached texture resource of texture object `{}`",

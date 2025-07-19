@@ -261,7 +261,7 @@ MaterialPrototypeTransformer::response_type::type MaterialPrototypeTransformer::
 	auto dst = make_smr<derived_type>(
 		MaterialPrototypeWrapper {
 			make_smr<material::MaterialPrototype>(
-				Guid { request_->get_guid() },
+				Guid { request_->getAssetGuid() },
 				string { request_->getAssetName() },
 				std::move(effects),
 				std::move(params)

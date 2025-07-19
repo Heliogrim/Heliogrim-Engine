@@ -10,7 +10,7 @@
 #include "../Math/BuildIn.hpp"
 
 namespace hg {
-	class LevelAsset;
+	class LevelAssetHandle;
 }
 
 namespace hg::engine::core {
@@ -99,7 +99,7 @@ namespace hg {
 	[[nodiscard]] extern Future<Level> CreateLevel() noexcept;
 
 	[[nodiscard]] extern Future<Level> LoadLevel(
-		_In_ cref<LevelAsset> levelAsset_,
+		_In_ ref<const LevelAssetHandle> levelAsset_,
 		Opt<LevelLoadOptions> options_ = None
 	) noexcept;
 
@@ -115,13 +115,13 @@ namespace hg {
 	) noexcept;
 
 	[[nodiscard]] extern Future<bool> SaveLevel(
-		_Inout_ ref<LevelAsset> levelAsset_,
+		_Inout_ ref<LevelAssetHandle> levelAsset_,
 		Opt<LevelSaveOptions> options_ = None
 	) noexcept;
 
 	[[nodiscard]] extern Future<bool> SaveLevel(
-		_In_ cref<Level> level_,
-		_Inout_ ref<LevelAsset> levelAsset_,
+		_In_ ref<const Level> level_,
+		_Inout_ ref<LevelAssetHandle> levelAsset_,
 		Opt<LevelSaveOptions> options_ = None
 	) noexcept;
 

@@ -27,7 +27,6 @@ EventResponse EditorSceneViewport::invokeOnKeyDown(ref<const KeyboardEvent> even
 
 /**/
 
-#include <Editor.Assets.Default/GfxMaterials/DefaultBrdfMaterial.hpp>
 #include <Editor.Assets.Default/Meshes/Default.hpp>
 #include <Editor.Core/EditorEngine.hpp>
 #include <Heliogrim/ActorInitializer.hpp>
@@ -50,15 +49,13 @@ void experimental_add_actor(math::Transform baseTransform_) {
 
 	/* Configure components */
 
-	auto query = Heliogrim::assets()[editor::assets::meshes::default_sphere_guid];
-	::hg::assertrt(query.flags & AssetDatabaseResultType::eSuccess);
-	component->setStaticGeometryByAsset(static_cast<ref<StaticGeometryAsset>>(query.value));
+	const auto meshQuery = Heliogrim::assets().find<StaticGeometryAssetHandle>(editor::assets::meshes::default_sphere_guid);
+	::hg::assertrt(meshQuery.flags & AssetDatabaseResultType::eSuccess);
+	component->setStaticGeometry(meshQuery.value);
 
-	query = Heliogrim::assets()[editor::assets::materials::default_brdf_guid];
-	::hg::assertrt(query.flags & AssetDatabaseResultType::eSuccess);
-	const_cast<CompactArray<GfxMaterialAsset>&>(component->overrideMaterials()).emplace_back(
-		static_cast<ref<GfxMaterialAsset>>(query.value)
-	);
+	const auto materialQuery = Heliogrim::assets().find<GfxMaterialAssetHandle>(editor::assets::materials::default_brdf_guid);
+	::hg::assertrt(materialQuery.flags & AssetDatabaseResultType::eSuccess);
+	component->setInstanceMaterial(0u, materialQuery.value);
 
 	/**/
 

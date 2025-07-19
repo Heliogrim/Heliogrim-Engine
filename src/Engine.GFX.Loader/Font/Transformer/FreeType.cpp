@@ -31,7 +31,7 @@ constexpr static math::uivec2 font_texture_padding { 1uL };
 
 /**/
 
-static math::uivec2 getFontExtent(cref<engine::assets::Font> font_, cref<FontLoadOptions> options_);
+static math::uivec2 getFontExtent(cref<engine::assets::FontAsset> font_, cref<FontLoadOptions> options_);
 
 static void writeToMemory(
 	cref<FT_GlyphSlot> slot_,
@@ -50,7 +50,7 @@ static void storeFontToTexture(
 /**/
 
 void transformer::convertFreeType(
-	const non_owning_rptr<const assets::Font> assets_,
+	const non_owning_rptr<const assets::FontAsset> assets_,
 	mref<std::pair<ref<storage::StorageSystem>, Arci<storage::IStorage>>> src_,
 	nmpt<reflow::Font> dst_,
 	cref<sptr<Device>> device_,
@@ -61,7 +61,7 @@ void transformer::convertFreeType(
 	discard(std::move(src_));
 
 	// Problem: We have to dynamically manage fonts within the FreeType setup
-	if (not freeTypeFaces.contains(assets_->get_guid())) {
+	if (not freeTypeFaces.contains(assets_->getAssetGuid())) {
 		initFaceFromAsset(*assets_);
 	}
 
@@ -139,7 +139,7 @@ void transformer::convertFreeType(
 	font->_glyphCount = 0;
 
 	// Warning: !!Important!!
-	font->_ftFace = freeTypeFaces.at(assets_->get_guid());
+	font->_ftFace = freeTypeFaces.at(assets_->getAssetGuid());
 
 	/**/
 
@@ -258,12 +258,12 @@ void transformer::prepareFreeType() {
 	return;
 }
 
-void transformer::initFaceFromAsset(cref<assets::Font> asset_) {
+void transformer::initFaceFromAsset(cref<assets::FontAsset> asset_) {
 
 	::hg::assertrt(not asset_.sources().empty());
 	const auto srcPath = asset_.sources().front();
 
-	const auto [faceIt, inserted] = freeTypeFaces.emplace(asset_.get_guid(), FT_Face {});
+	const auto [faceIt, inserted] = freeTypeFaces.emplace(asset_.getAssetGuid(), FT_Face {});
 	::hg::assertd(inserted);
 
 	/**/
@@ -272,7 +272,7 @@ void transformer::initFaceFromAsset(cref<assets::Font> asset_) {
 	auto error = FT_New_Face(freeTypeLibrary, static_cast<String>(srcPath.path()).c_str(), 0, &faceIt->second);
 
 	if (error == FT_Err_Unknown_File_Format) {
-		IM_CORE_ERRORF("Font face file `{}` has an unknown file format.", static_cast<String>(srcPath.path()));
+		IM_CORE_ERRORF("FontAsset face file `{}` has an unknown file format.", static_cast<String>(srcPath.path()));
 		::hg::breakpoint();
 		return;
 	}
@@ -301,9 +301,9 @@ void transformer::cleanupFreeType() {
 	FT_Done_FreeType(freeTypeLibrary);
 }
 
-math::uivec2 getFontExtent(cref<engine::assets::Font> font_, cref<FontLoadOptions> options_) {
+math::uivec2 getFontExtent(cref<engine::assets::FontAsset> font_, cref<FontLoadOptions> options_) {
 
-	const auto& face = freeTypeFaces.at(font_.get_guid());
+	const auto& face = freeTypeFaces.at(font_.getAssetGuid());
 
 	math::uivec2 extent {};
 	for (const auto& fontSize : options_.fontSizes) {

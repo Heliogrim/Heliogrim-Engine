@@ -1,6 +1,5 @@
 #include "FontImporter.hpp"
 
-#include <Engine.Assets/AssetFactory.hpp>
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Common/GuidFormat.hpp>
 #include <Engine.Common/Wrapper.hpp>
@@ -34,7 +33,7 @@ FontImporter::descriptor_type FontImporter::descriptor() const noexcept {
 	return nullptr;
 }
 
-engine::res::Importer<AtomicRefCountedIntrusive<engine::assets::Font>, void*>::import_result_type FontImporter::import(
+engine::res::Importer<AtomicRefCountedIntrusive<engine::assets::FontAsset>, void*>::import_result_type FontImporter::import(
 	cref<res::FileTypeId> typeId_,
 	cref<hg::fs::File> file_
 ) const {
@@ -52,21 +51,25 @@ engine::res::Importer<AtomicRefCountedIntrusive<engine::assets::Font>, void*>::i
 
 	/**/
 
-	auto& factory = *Engine::getEngine()->getAssets()->getFactory();
-	auto font = factory.createFontAsset(generate_asset_guid(), static_cast<std::string>(file_.path()));
-	font->setAssetName(sourceName);
+	auto asset = Arci<FontAsset>::create(
+		generate_asset_guid(),
+		StringView { sourceName },
+		AssetReferenceUrl {},
+		AssetUrl { AssetPath { file_.path().parentPath() }, AssetName { sourceName } },
+		Vector<fs::Url> { { storage::FileScheme, clone(file_.path()) } }
+	);
 
 	/**/
 
 	IM_CORE_LOGF(
 		"Created new font asset `{}` -> `{}`",
-		font->getAssetName(),
-		encodeGuid4228(font->get_guid())
+		asset->getAssetName(),
+		encodeGuid4228(asset->getAssetGuid())
 	);
 
 	/**/
 
-	return makeImportResult(std::move(font));
+	return makeImportResult(std::move(asset));
 }
 
 /**/

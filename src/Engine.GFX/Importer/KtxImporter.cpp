@@ -2,8 +2,7 @@
 #include <filesystem>
 #include <regex>
 #include <sstream>
-#include <Engine.Assets/AssetFactory.hpp>
-#include <Engine.Assets.Type/Texture/Image.hpp>
+#include <Engine.Assets.Type/Texture/ImageAsset.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 #include <Engine.Common/GuidFormat.hpp>
 #include <Engine.Common/Wrapper.hpp>
@@ -167,29 +166,28 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
 	const auto sourceExt { static_cast<cref<std::filesystem::path>>(file_.path()).extension().string() };
 	const auto sourceName { sourceFileName.substr(0, sourceFileName.size() - sourceExt.size()) };
 
+	constexpr auto imageAssetUrlName = "Image"sv;
+	constexpr auto textureAssetUrlName = "Texture"sv;
+	const auto source2vfsPath = assets::AssetPath { file_.path() };
+
 	/**/
 
 	using namespace ::hg::engine::serialization;
 	using namespace ::hg::engine::assets;
 
-	auto& factory { *Engine::getEngine()->getAssets()->getFactory() };
-
-	auto imgAsset { factory.createImageAsset() };
-	auto& image = *imgAsset;
-
-	auto texAsset { factory.createTextureAsset() };
-	auto& texture = *texAsset;
-
-	/**/
-
 	// TODO: Remap the source file url.
-	image.setAssetName(sourceName);
-	image.addSource(fs::Url { "file"sv, file_.path() });
+	auto imageAsset = Arci<ImageAsset>::create(
+		generate_asset_guid(),
+		StringView { sourceName },
+		AssetReferenceUrl {},
+		AssetUrl { clone(source2vfsPath), imageAssetUrlName },
+		Vector<fs::Url> { { "file"sv, clone(file_.path()) } }
+	);
 
 	IM_CORE_LOGF(
 		"Created new image asset `{}` -> `{}`",
-		imgAsset->getAssetName(),
-		encodeGuid4228(imgAsset->get_guid())
+		imageAsset->getAssetName(),
+		encodeGuid4228(imageAsset->getAssetGuid())
 	);
 
 	/**/
@@ -202,6 +200,7 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
 	char internalIdentifier[sizeof(ktx20Identifier)] {};
 	ifs.read(internalIdentifier, sizeof(internalIdentifier));
 
+	auto textureAsset = Arci<TextureAsset> {};
 	if (std::memcmp(internalIdentifier, ktx20Identifier, sizeof(ktx20Identifier)) == 0) {
 
 		InternalKtxHeader internalHeader {};
@@ -210,30 +209,31 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
 
 		/**/
 
-		texture.setAssetName(sourceName);
-		texture.setBaseImage(image.get_guid());
-
-		texture.setExtent(
-			{
-				static_cast<u32>(internalHeader.pixelWidth),
-				std::max(static_cast<u32>(internalHeader.pixelHeight), 1u),
-				std::max(static_cast<u32>(internalHeader.pixelDepth), 1u)
-			}
-		);
-
-		texture.setTextureFormat(
-			api::vkTranslateFormat(*reinterpret_cast<const vk::Format*>(&internalHeader.vkFormat))
-		);
-		texture.setMipLevelCount(std::max(internalHeader.levelCount, 1u));
-
 		// TODO: Replace with actual/correct type resolving for textures
-		if (internalHeader.faceCount <= 1uL) {
-			texture.setTextureType(TextureType::e2d);
-		} else if (internalHeader.faceCount == 6uL) {
-			texture.setTextureType(TextureType::eCube);
-		} else if (internalHeader.faceCount > 1uL) {
-			texture.setTextureType(TextureType::e2dArray);
-		}
+		auto type = internalHeader.faceCount <= 1uL ?
+			TextureType::e2d :
+			internalHeader.faceCount == 6uL ?
+			TextureType::eCube :
+			internalHeader.faceCount > 1uL ?
+			TextureType::e2dArray :
+			TextureType::eUndefined;
+
+		textureAsset = Arci<TextureAsset>::create(
+			generate_asset_guid(),
+			StringView { sourceName },
+			AssetReferenceUrl {},
+			AssetUrl { clone(source2vfsPath), textureAssetUrlName },
+			imageAsset->getAssetGuid(),
+			Vector<AssetGuid> {},
+			math::uivec3 {
+				(internalHeader.pixelWidth),
+				std::max(internalHeader.pixelHeight, 1u),
+				std::max(internalHeader.pixelDepth, 1u)
+			},
+			api::vkTranslateFormat(*reinterpret_cast<const vk::Format*>(&internalHeader.vkFormat)),
+			std::max(internalHeader.levelCount, 1u),
+			type
+		);
 
 	} else if (std::memcmp(internalIdentifier, gli::detail::FOURCC_KTX10, sizeof(gli::detail::FOURCC_KTX10)) == 0) {
 
@@ -244,36 +244,36 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
 		/**/
 
 		gli::texture glitex = gli::load_ktx(static_cast<std::string>(file_.path()));
-
-		/**/
-
-		texture.setAssetName(sourceName);
-		texture.setBaseImage(image.get_guid());
-
 		const auto lvlZeroExt = glitex.extent(0);
-		texture.setExtent(
-			{
-				static_cast<u32>(lvlZeroExt.x),
-				std::max(static_cast<u32>(lvlZeroExt.y), 1u),
-				std::max(static_cast<u32>(lvlZeroExt.z), 1u)
-			}
-		);
-
 		const auto lvlZeroForm = glitex.format();
 		const auto format = deduceFromFormat(lvlZeroForm);
 		::hg::assertrt(format.has_value());
 
-		texture.setTextureFormat(api::vkTranslateFormat(format.value()));
-		texture.setMipLevelCount(std::max(internalHeader.mipLevelCount, 1u));
-
 		// TODO: Replace with actual/correct type resolving for textures
-		if (glitex.faces() <= 1uL) {
-			texture.setTextureType(TextureType::e2d);
-		} else if (glitex.faces() == 6uL) {
-			texture.setTextureType(TextureType::eCube);
-		} else if (glitex.faces() > 1uL) {
-			texture.setTextureType(TextureType::e2dArray);
-		}
+		auto type = glitex.faces() <= 1uL ?
+			TextureType::e2d :
+			glitex.faces() == 6uL ?
+			TextureType::eCube :
+			glitex.faces() > 1uL ?
+			TextureType::e2dArray :
+			TextureType::eUndefined;
+
+		textureAsset = Arci<TextureAsset>::create(
+			generate_asset_guid(),
+			StringView { sourceName },
+			AssetReferenceUrl {},
+			AssetUrl { clone(source2vfsPath), textureAssetUrlName },
+			imageAsset->getAssetGuid(),
+			Vector<AssetGuid> {},
+			math::uivec3 {
+				static_cast<u32>(lvlZeroExt.x),
+				std::max(static_cast<u32>(lvlZeroExt.y), 1u),
+				std::max(static_cast<u32>(lvlZeroExt.z), 1u)
+			},
+			api::vkTranslateFormat(format.value()),
+			std::max(internalHeader.mipLevelCount, 1u),
+			type
+		);
 
 	} else {
 		::hg::panic();
@@ -282,15 +282,17 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
 	/**/
 
 	ifs.close();
+	::hg::assertrt(textureAsset != nullptr);
+
 	IM_CORE_LOGF(
 		"Created new texture asset `{}` -> `{}`",
-		texAsset->getAssetName(),
-		encodeGuid4228(texAsset->get_guid())
+		textureAsset->getAssetName(),
+		encodeGuid4228(textureAsset->getAssetGuid())
 	);
 
 	/**/
 
-	return makeImportResult({ std::move(texAsset), std::move(imgAsset) });
+	return makeImportResult({ std::move(textureAsset), std::move(imageAsset) });
 }
 
 /**/

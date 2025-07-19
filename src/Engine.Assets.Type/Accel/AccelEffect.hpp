@@ -17,6 +17,11 @@ namespace hg::engine::assets {
 		constexpr static AssetTypeId typeId { "AccelEffect"_typeId };
 
 	public:
-		AccelEffect(mref<AssetGuid> guid_);
+		AccelEffect(
+			mref<AssetGuid> guid_,
+			mref<StringView> name_,
+			mref<AssetReferenceUrl> storageUrl_,
+			mref<AssetUrl> vfsUrl_
+		);
 	};
 }

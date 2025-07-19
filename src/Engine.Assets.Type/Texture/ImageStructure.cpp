@@ -1,4 +1,4 @@
-#include "Image.hpp"
+#include "ImageAsset.hpp"
 
 #include <filesystem>
 #include <Engine.Serialization/Access/Structure.hpp>
@@ -11,7 +11,7 @@ using namespace hg::engine::serialization;
 using namespace hg;
 
 template <>
-void access::Structure<Image>::serialize(const Image& self_, mref<StructScopedSlot> slot_) {
+void access::Structure<ImageAsset>::serialize(const ImageAsset& self_, mref<StructScopedSlot> slot_) {
 
 	Structure<Guid>::serialize(self_._guid, slot_.insertStructSlot("__guid__"));
 	slot_.insertSlot<u64>("__type__") << self_._type.data;
@@ -28,7 +28,7 @@ void access::Structure<Image>::serialize(const Image& self_, mref<StructScopedSl
 }
 
 template <>
-void access::Structure<Image>::hydrate(cref<StructScopedSlot> slot_, Image& target_) {
+void access::Structure<ImageAsset>::hydrate(cref<StructScopedSlot> slot_, ImageAsset& target_) {
 
 	Structure<Guid>::hydrate(slot_.getSlot<void>("__guid__").asStruct(), target_._guid);
 	slot_.getSlot<u64>("__type__") >> target_._type.data;

@@ -11,7 +11,7 @@
 #include <Engine.Storage.Registry/IStorageRegistry.hpp>
 #include <Engine.Storage/StorageModule.hpp>
 #include <Engine.Storage.Registry/Url/FileUrl.hpp>
-#include <Engine.Storage.Registry/Url/Url.hpp>
+#include <Engine.Storage.Registry/Url/StorageUrl.hpp>
 
 using namespace hg::engine::resource::loader;
 using namespace hg;
@@ -39,7 +39,7 @@ SourceLoaderResponse<void>::type SourceLoader::operator()(
 	if (lfsUrl.path().empty()) {
 		IM_CORE_WARNF(
 			R"(Could not find source data at lfs for asset `{} -> {}`.)",
-			encodeGuid4228(request_->get_guid()),
+			encodeGuid4228(request_->getAssetGuid()),
 			request_->getAssetName()
 		);
 		return { *_storage->getSystem(), Arci<storage::IStorage> {} };
@@ -51,7 +51,7 @@ SourceLoaderResponse<void>::type SourceLoader::operator()(
 	if (not file.exists() || file.isDirectory()) {
 		IM_CORE_ERRORF(
 			R"(Lfs source data for asset `{} -> {}` does not exist.)",
-			encodeGuid4228(request_->get_guid()),
+			encodeGuid4228(request_->getAssetGuid()),
 			request_->getAssetName()
 		);
 		return { *_storage->getSystem(), Arci<storage::IStorage> {} };
@@ -74,8 +74,8 @@ SourceLoaderStreamResponse<void>::type SourceLoader::operator()(
 
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
-#include <Engine.Assets.Type/Texture/Font.hpp>
-#include <Engine.Assets.Type/Texture/Image.hpp>
+#include <Engine.Assets.Type/Texture/FontAsset.hpp>
+#include <Engine.Assets.Type/Texture/ImageAsset.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Reflect/Cast.hpp>
@@ -96,8 +96,8 @@ engine::storage::FileUrl getLfsUrl(const non_owning_rptr<const engine::assets::A
 			}
 
 			engine::storage::FileUrl lfsUrl {};
-			//const auto* const image = Cast<engine::assets::Image, engine::assets::Asset, false>(asset);
-			const auto image = Cast<engine::assets::Image>(asset->get());
+			//const auto* const image = Cast<engine::assets::ImageAsset, engine::assets::Asset, false>(asset);
+			const auto image = Cast<engine::assets::ImageAsset>(asset->get());
 
 			for (const auto& sourceUrl : image->sources()) {
 				if (sourceUrl.scheme() == "file") {
@@ -128,9 +128,9 @@ engine::storage::FileUrl getLfsUrl(const non_owning_rptr<const engine::assets::A
 
 			return lfsUrl;
 		}
-		case engine::assets::Font::typeId.data: {
+		case engine::assets::FontAsset::typeId.data: {
 
-			const auto* const font = static_cast<const ptr<const engine::assets::Font>>(asset_);
+			const auto* const font = static_cast<const ptr<const engine::assets::FontAsset>>(asset_);
 
 			engine::storage::FileUrl lfsUrl {};
 			for (const auto& sourceUrl : font->sources()) {

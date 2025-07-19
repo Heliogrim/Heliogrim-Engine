@@ -1,16 +1,16 @@
 #pragma once
 
-#include <Engine.Assets.Type/Texture/Font.hpp>
+#include <Engine.Assets.Type/Texture/FontAsset.hpp>
 #include <Engine.Common/Concurrent/Future.hpp>
 #include <Engine.Resource/File.hpp>
 #include <Engine.Resource/Importer/Importer.hpp>
 
 namespace hg::engine::gfx {
 	class FontImporter :
-		public res::Importer<Arci<assets::Font>, ptr<void>> {
+		public res::Importer<Arci<assets::FontAsset>, ptr<void>> {
 	public:
 		using this_type = FontImporter;
-		using importer_type = res::Importer<Arci<assets::Font>, ptr<void>>;
+		using importer_type = res::Importer<Arci<assets::FontAsset>, ptr<void>>;
 
 		using importer_type::import_result_type;
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine.Assets.Type/Texture/Font.hpp>
+#include <Engine.Assets.Type/Texture/FontAsset.hpp>
 #include <Engine.Reflow/Children.hpp>
 #include <Engine.Reflow/Widget/LeafWidget.hpp>
 #include <Engine.Reflow.Attributes/Data/Base/TextDataAttributes.hpp>

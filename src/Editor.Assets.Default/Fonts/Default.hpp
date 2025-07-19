@@ -2,7 +2,7 @@
 
 #include <Engine.Assets.Type/Asset.hpp>
 #include <Engine.Assets.Type/AssetConcept.hpp>
-#include <Engine.Assets.Type/Texture/Font.hpp>
+#include <Engine.Assets.Type/Texture/FontAsset.hpp>
 #include <Engine.Common/Optional.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Core/Engine.hpp>
@@ -28,6 +28,6 @@ namespace hg::editor::assets::font {
 
 	// @formatter:off
 	constexpr auto default_font_guid = AssetGuid { 2774955005, 48357, 17892, 10439228922350965650uLL };
-	inline auto get_default_font() { return resolveRuntimeAsset<engine::assets::Font>(default_font_guid); }
+	inline auto get_default_font() { return resolveRuntimeAsset<engine::assets::FontAsset>(default_font_guid); }
 	// @formatter:on
 }

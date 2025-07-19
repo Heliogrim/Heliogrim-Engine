@@ -77,8 +77,8 @@ bool FilesystemBrowserProvider::retrieveFs(
 		entries_.push_back(
 			AssetBrowserEntry {
 				.type = (fsEntry.is_directory() ? AssetBrowserEntryType::eDirectory : AssetBrowserEntryType::eFile),
-				.title = fsEntry.path().filename().string(),
-				.path = fs::Url { "file"sv, std::move(subPath) }
+				.url = { engine::assets::AssetPath { fs::Path { fsEntry.path() } }, engine::assets::AssetName {} },
+				.guid = {}
 			}
 		);
 	}

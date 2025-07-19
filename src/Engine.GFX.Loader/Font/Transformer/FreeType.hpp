@@ -8,7 +8,7 @@ namespace hg::engine::gfx {
 
 namespace hg::engine::gfx::loader::transformer {
 	extern void convertFreeType(
-		const non_owning_rptr<const assets::Font> assets_,
+		const non_owning_rptr<const assets::FontAsset> assets_,
 		mref<std::pair<ref<storage::StorageSystem>, Arci<storage::IStorage>>> src_,
 		nmpt<reflow::Font> dst_,
 		cref<sptr<Device>> device_,
@@ -19,7 +19,7 @@ namespace hg::engine::gfx::loader::transformer {
 
 	extern void prepareFreeType();
 
-	extern void initFaceFromAsset(cref<assets::Font> asset_);
+	extern void initFaceFromAsset(cref<assets::FontAsset> asset_);
 
 	extern void cleanupFreeType();
 }

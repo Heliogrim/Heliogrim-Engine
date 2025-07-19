@@ -6,7 +6,6 @@
 
 namespace hg::engine::assets {
 	class IAssetRegistry;
-	class AssetFactory;
 }
 
 namespace hg::engine {
@@ -16,7 +15,6 @@ namespace hg::engine {
 		using this_type = Assets;
 
 		using IAssetRegistry = ::hg::engine::assets::IAssetRegistry;
-		using AssetFactory = ::hg::engine::assets::AssetFactory;
 
 	public:
 		explicit Assets(ref<Engine> engine_);
@@ -38,11 +36,8 @@ namespace hg::engine {
 
 	private:
 		uptr<IAssetRegistry> _registry;
-		uptr<AssetFactory> _factory;
 
 	public:
 		[[nodiscard]] nmpt<IAssetRegistry> getRegistry() const noexcept;
-
-		[[nodiscard]] nmpt<AssetFactory> getFactory() const noexcept;
 	};
 }

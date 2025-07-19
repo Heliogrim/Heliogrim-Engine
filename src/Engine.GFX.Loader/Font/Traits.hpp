@@ -15,7 +15,7 @@ namespace hg::engine::resource::loader {
 	using namespace ::hg::engine::gfx::loader;
 
 	template <>
-	struct RequestOptions<LoaderRequest<assets::Font>> {
+	struct RequestOptions<LoaderRequest<assets::FontAsset>> {
 		using type = FontLoadOptions;
 	};
 }
@@ -24,7 +24,7 @@ namespace hg::engine::resource::loader {
 	using namespace ::hg::engine::gfx::loader;
 
 	template <>
-	struct RequestOptions<CacheRequest<assets::Font>> {
+	struct RequestOptions<CacheRequest<assets::FontAsset>> {
 		using type = FontLoadOptions;
 	};
 }
@@ -33,7 +33,7 @@ namespace hg::engine::resource::loader {
 	using namespace ::hg::engine::gfx::loader;
 
 	template <>
-	struct RequestOptions<FeedbackRequest<assets::Font>> {
+	struct RequestOptions<FeedbackRequest<assets::FontAsset>> {
 		using type = FontLoadOptions;
 	};
 }
@@ -42,12 +42,12 @@ namespace hg::engine::resource::loader {
 	using namespace ::hg::engine::gfx::loader;
 
 	template <>
-	struct RequestOptions<SourceLoaderRequest<assets::Font>> {
+	struct RequestOptions<SourceLoaderRequest<assets::FontAsset>> {
 		using type = RequestOptions<SourceLoaderRequest<void>>::type;
 	};
 
 	template <>
-	struct StreamOptions<SourceLoaderStreamRequest<assets::Font>> {
+	struct StreamOptions<SourceLoaderStreamRequest<assets::FontAsset>> {
 		using type = StreamOptions<SourceLoaderStreamRequest<void>>::type;
 	};
 }
@@ -56,7 +56,7 @@ namespace hg::engine::resource::loader {
 	using namespace ::hg::engine::gfx::loader;
 
 	template <>
-	struct RequestOptions<TransformerRequest<assets::Font>> {
+	struct RequestOptions<TransformerRequest<assets::FontAsset>> {
 		using type = FontLoadOptions;
 	};
 }

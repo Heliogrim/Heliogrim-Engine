@@ -1,11 +1,12 @@
 #pragma once
 
+#include <Engine.Common/Optional.hpp>
 #include <Engine.Common/Collection/CompactArray.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 
 #include "../ModelComponent.hpp"
-#include "../../../Asset/Geometry/StaticGeometryAsset.hpp"
-#include "../../../Asset/Material/GfxMaterialAsset.hpp"
+#include "../../../Asset/GeometryAssetHandles.hpp"
+#include "../../../Asset/MaterialAssetHandles.hpp"
 
 namespace hg {
 	class StaticGeometryComponent :
@@ -26,19 +27,21 @@ namespace hg {
 		~StaticGeometryComponent() override = default;
 
 	private:
-		StaticGeometryAsset _staticGeometry;
+		StaticGeometryAssetHandle _staticGeometry;
 
 	public:
-		[[nodiscard]] AssetGuid getStaticGeometryGuid() const noexcept;
+		[[nodiscard]] ref<const StaticGeometryAssetHandle> getStaticGeometry() const noexcept;
 
-		[[nodiscard]] cref<StaticGeometryAsset> getStaticGeometryAsset() const noexcept;
-
-		bool setStaticGeometryByAsset(cref<StaticGeometryAsset> asset_);
+		bool setStaticGeometry(ref<const StaticGeometryAssetHandle> handle_);
 
 	private:
-		CompactArray<GfxMaterialAsset> _overrideMaterials;
+		AutoArray<Opt<GfxMaterialAssetHandle>> _instanceMaterials;
 
 	public:
-		[[nodiscard]] cref<CompactArray<GfxMaterialAsset>> overrideMaterials() const noexcept;
+		[[nodiscard]] ref<const AutoArray<Opt<GfxMaterialAssetHandle>>> getInstanceMaterials() const noexcept;
+
+		void setInstanceMaterial(u16 index_, ref<const GfxMaterialAssetHandle> material_);
+
+		void unsetInstanceMaterial(u16 index_);
 	};
 }

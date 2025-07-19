@@ -22,7 +22,7 @@ EffectTransformer::response_type::type EffectTransformer::operator()(
     /**/
 
     smr<const AccelEffect> effect = nullptr;
-    dummy_initialize_effect(request_->get_guid(), effect);
+    dummy_initialize_effect(request_->getAssetGuid(), effect);
 
     /**/
 

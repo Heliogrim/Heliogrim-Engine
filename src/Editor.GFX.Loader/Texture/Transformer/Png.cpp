@@ -3,7 +3,7 @@
 #include <Engine.Asserts/Todo.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets/Assets.hpp>
-#include <Engine.Assets.Type/Texture/Image.hpp>
+#include <Engine.Assets.Type/Texture/ImageAsset.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.GFX/Buffer/BufferFactory.hpp>
 #include <Engine.GFX/Pool/GlobalResourcePool.hpp>
@@ -47,7 +47,7 @@ bool EditorPngTextureTransformer::canUse(nmpt<const engine::assets::TextureAsset
 
 	/**/
 
-	const auto* const image = Cast<engine::assets::Image>(asset.value().get());
+	const auto* const image = Cast<engine::assets::ImageAsset>(asset.value().get());
 	if (image == nullptr) {
 		return false;
 	}

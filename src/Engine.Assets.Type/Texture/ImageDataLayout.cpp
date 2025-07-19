@@ -1,4 +1,4 @@
-#include "Image.hpp"
+#include "ImageAsset.hpp"
 
 #include <Engine.Serialization/Layout/DataLayout.hpp>
 
@@ -6,7 +6,7 @@ using namespace hg::engine::assets;
 
 namespace hg::engine::serialization {
 	template <>
-	void DataLayout<Image>::describe() {
+	void DataLayout<ImageAsset>::describe() {
 
 		using namespace ::hg::engine::serialization::layout;
 
@@ -23,11 +23,11 @@ namespace hg::engine::serialization {
 		urlLayout->describe();
 
 		/**/
-		defineObject(offsetof(Image, _guid), guidLayout);
-		defineValue<LayoutDefineValueType::eUInt64>(offsetof(Image, _type));
-		defineSlice<string>(offsetof(Image, _assetName), assetNameLayout);
+		defineObject(offsetof(ImageAsset, _guid), guidLayout);
+		defineValue<LayoutDefineValueType::eUInt64>(offsetof(ImageAsset, _type));
+		defineSlice<string>(offsetof(ImageAsset, _assetName), assetNameLayout);
 
 		/**/
-		defineSlice<Vector<fs::Url>>(offsetof(Image, _sources), urlLayout);
+		defineSlice<Vector<fs::Url>>(offsetof(ImageAsset, _sources), urlLayout);
 	}
 }

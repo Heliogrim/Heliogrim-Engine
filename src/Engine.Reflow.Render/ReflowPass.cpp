@@ -12,9 +12,8 @@
 #include <Engine.Accel.Pipeline/VkGraphicsPipeline.hpp>
 #include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
-#include <Engine.Assets/AssetFactory.hpp>
 #include <Engine.Assets/Assets.hpp>
-#include <Engine.Assets.Type/Texture/Image.hpp>
+#include <Engine.Assets.Type/Texture/ImageAsset.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Core/Engine.hpp>
@@ -319,7 +318,6 @@ void render::ReflowPass::execute(cref<engine::render::graph::ScopedSymbolContext
 
 void render::ReflowPass::ensureDefaultImage() {
 
-	const auto factory = Engine::getEngine()->getAssets()->getFactory();
 	const auto registry = Engine::getEngine()->getAssets()->getRegistry();
 
 	// TODO: Rework temporary solution

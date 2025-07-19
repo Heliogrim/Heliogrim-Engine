@@ -1,8 +1,10 @@
 #pragma once
 
 #include <Engine.Assets/AssetGuid.hpp>
+#include <Engine.Assets/AssetName.hpp>
+#include <Engine.Assets/AssetReferenceUrl.hpp>
 #include <Engine.Assets/AssetTypeId.hpp>
-#include <Engine.Common/String.hpp>
+#include <Engine.Assets/AssetUrl.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Managed/Rc.hpp>
 #include <Engine.Reflect/Inherit/InheritBase.hpp>
@@ -17,18 +19,13 @@ namespace hg::engine::assets {
 		friend class ::hg::engine::serialization::DataLayout;
 
 	protected:
-		/**
-		 * Constructor
-		 *
-		 * @author Julius
-		 * @date 09.01.2021
-		 *
-		 * @param  guid_ Unique identifier.
-		 * @param  type_ The type.
-		 */
-		Asset(mref<AssetGuid> guid_, mref<AssetTypeId> type_);
-
-		Asset(mref<AssetGuid> guid_, cref<AssetTypeId> type_);
+		Asset(
+			mref<AssetGuid> guid_,
+			ref<const AssetTypeId> type_,
+			mref<StringView> name_,
+			mref<AssetReferenceUrl> storageUrl_,
+			mref<AssetUrl> vfsUrl_
+		);
 
 	public:
 		/**
@@ -54,7 +51,7 @@ namespace hg::engine::assets {
 		 *
 		 * @returns The unique identifier.
 		 */
-		[[nodiscard]] AssetGuid get_guid() const noexcept;
+		[[nodiscard]] AssetGuid getAssetGuid() const noexcept;
 
 	protected:
 		/**
@@ -77,22 +74,24 @@ namespace hg::engine::assets {
 		/**
 		 * Asset Name
 		 */
-		string _assetName;
+		AssetName _assetName;
 
 	public:
-		[[nodiscard]] string_view getAssetName() const noexcept;
+		[[nodiscard]] ref<const AssetName> getAssetName() const noexcept;
 
-		void setAssetName(string_view assetName_);
+		void setAssetName(mref<AssetName> assetName_);
 
 	protected:
-		/**
-		 * Asset Virtual Url
-		 */
-		string _virtualUrl;
+		AssetReferenceUrl _assetStorageUrl;
+		AssetUrl _assetVfsUrl;
 
 	public:
-		[[nodiscard]] string_view getVirtualUrl() const noexcept;
+		[[nodiscard]] ref<const AssetReferenceUrl> getAssetStorageUrl() const noexcept;
 
-		void setVirtualUrl(string_view virtualUrl_);
+		[[nodiscard]] ref<const AssetUrl> getAssetVfsUrl() const noexcept;
+
+		void setAssetStorageUrl(mref<AssetReferenceUrl> assetStorageUrl_);
+
+		void setAssetVfsUrl(mref<AssetUrl> assetVfsUrl_);
 	};
 }

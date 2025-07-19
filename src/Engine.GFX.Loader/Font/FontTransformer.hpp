@@ -6,10 +6,10 @@
 #include "Traits.hpp"
 
 namespace hg::engine::gfx::loader {
-	class FontTransformer final : public resource::loader::Transformer<assets::Font, FontResource> {
+	class FontTransformer final : public resource::loader::Transformer<assets::FontAsset, FontResource> {
 	public:
 		using this_type = FontTransformer;
-		using underlying_type = resource::loader::Transformer<assets::Font, FontResource>;
+		using underlying_type = resource::loader::Transformer<assets::FontAsset, FontResource>;
 
 		using underlying_type::loader_traits;
 		using underlying_type::request_type;

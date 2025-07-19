@@ -3,14 +3,14 @@
 #include <Engine.Serialization/Structure/SliceScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 
-#include "Font.hpp"
+#include "FontAsset.hpp"
 
 using namespace hg::engine::assets;
 using namespace hg::engine::serialization;
 using namespace hg;
 
 template <>
-void access::Structure<Font>::serialize(const Font& self_, mref<StructScopedSlot> slot_) {
+void access::Structure<FontAsset>::serialize(const FontAsset& self_, mref<StructScopedSlot> slot_) {
 
 	Structure<Guid>::serialize(self_._guid, slot_.insertSlot<void>("__guid__").intoStruct());
 	slot_.insertSlot<u64>("__type__") << self_._type.data;
@@ -27,7 +27,7 @@ void access::Structure<Font>::serialize(const Font& self_, mref<StructScopedSlot
 }
 
 template <>
-void access::Structure<Font>::hydrate(cref<StructScopedSlot> slot_, Font& target_) {
+void access::Structure<FontAsset>::hydrate(cref<StructScopedSlot> slot_, FontAsset& target_) {
 
 	Structure<Guid>::hydrate(slot_.getRecordSlot("__guid__").asStruct(), target_._guid);
 	slot_.getSlot<u64>("__type__") >> target_._type.data;

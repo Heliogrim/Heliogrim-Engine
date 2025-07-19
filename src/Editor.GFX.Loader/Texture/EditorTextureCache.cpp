@@ -27,12 +27,12 @@ bool EditorTextureCache::store(
 	nmpt<const engine::assets::TextureAsset> asset_,
 	mref<cache_value_type> resource_
 ) const {
-	_cacheCtrl->cache()->store(asset_->get_guid(), std::move(resource_));
+	_cacheCtrl->cache()->store(asset_->getAssetGuid(), std::move(resource_));
 	return true;
 }
 
 bool EditorTextureCache::remove(nmpt<const engine::assets::TextureAsset> asset_) noexcept {
-	return _cacheCtrl->cache()->remove(asset_->get_guid());
+	return _cacheCtrl->cache()->remove(asset_->getAssetGuid());
 }
 
 bool EditorTextureCache::remove(
@@ -41,7 +41,7 @@ bool EditorTextureCache::remove(
 ) noexcept {
 
 	smr<engine::resource::ResourceBase> stored {};
-	const auto result = _cacheCtrl->cache()->remove(asset_->get_guid(), stored);
+	const auto result = _cacheCtrl->cache()->remove(asset_->getAssetGuid(), stored);
 
 	if (result) {
 		resource_ = stored.into<cache_value_type::value_type>();
@@ -82,7 +82,7 @@ EditorTextureCache::stream_response_type::type EditorTextureCache::operator()(
 
 	engine::gfx::cache::TextureSubResource sub {};
 	if (
-		_cacheCtrl->markAsUsed(static_cast<ptr<engine::gfx::TextureResource>>(request_.get()), std::move(sub)) ==
+		_cacheCtrl->markAsUsed(static_cast<ptr<const engine::gfx::TextureResource>>(request_.get()), std::move(sub)) ==
 		engine::gfx::cache::StreamCacheResultType::eResidential
 	) {
 		// return result.value();

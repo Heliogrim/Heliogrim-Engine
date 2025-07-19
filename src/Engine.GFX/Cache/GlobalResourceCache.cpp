@@ -29,13 +29,13 @@ cref<sptr<Device>> GlobalResourceCache::device() const noexcept {
 }
 
 bool GlobalResourceCache::contains(const non_owning_rptr<const assets::Asset> asset_) const noexcept {
-	return _mapped.find(asset_->get_guid()) != _mapped.end();
+	return _mapped.find(asset_->getAssetGuid()) != _mapped.end();
 }
 
 GlobalResourceCache::query_result_type GlobalResourceCache::query(
 	const non_owning_rptr<const assets::Asset> asset_
 ) const noexcept {
-	return query(asset_->get_guid());
+	return query(asset_->getAssetGuid());
 }
 
 GlobalResourceCache::query_result_type GlobalResourceCache::query(cref<AssetGuid> guid_) const noexcept {

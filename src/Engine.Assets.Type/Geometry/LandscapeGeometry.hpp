@@ -6,7 +6,7 @@
 #include "Geometry.hpp"
 
 namespace hg::engine::assets {
-	class LandscapeGeometry :
+	class LandscapeGeometry final :
 		public InheritMeta<LandscapeGeometry, Geometry> {
 	public:
 		template <typename>
@@ -15,11 +15,14 @@ namespace hg::engine::assets {
 	public:
 		constexpr static AssetTypeId typeId { "LandscapeGeometry"_typeId };
 
-	protected:
-		LandscapeGeometry(mref<AssetGuid> guid_);
-
 	public:
-		LandscapeGeometry(mref<AssetGuid> guid_, mref<Vector<fs::Url>> sources_);
+		LandscapeGeometry(
+			mref<AssetGuid> guid_,
+			mref<StringView> name_,
+			mref<AssetReferenceUrl> storageUrl_,
+			mref<AssetUrl> vfsUrl_,
+			mref<Vector<fs::Url>> sources_
+		);
 
 	private:
 		Vector<fs::Url> _sources;

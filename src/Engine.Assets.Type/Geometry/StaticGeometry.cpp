@@ -7,31 +7,27 @@ using namespace hg::engine::assets;
 using namespace hg;
 
 StaticGeometry::StaticGeometry() :
-	InheritMeta(clone(invalid_asset_guid), typeId),
+	InheritMeta(clone(invalid_asset_guid), StaticGeometry::typeId, StringView {}, AssetReferenceUrl {}, AssetUrl {}),
 	_sources(),
-	_vertexCount(),
-	_indexCount(),
-	_clusterCount(),
-	_clusterDepth() {}
-
-StaticGeometry::StaticGeometry(mref<AssetGuid> guid_) :
-	InheritMeta(std::move(guid_), typeId),
-	_sources(),
-	_vertexCount(),
-	_indexCount(),
-	_clusterCount(),
-	_clusterDepth() {}
+	_meshMaterials(),
+	_vertexCount(0uLL),
+	_indexCount(0uLL),
+	_clusterCount(0uLL),
+	_clusterDepth(0uLL) {}
 
 StaticGeometry::StaticGeometry(
 	mref<AssetGuid> guid_,
+	mref<StringView> name_,
+	mref<AssetReferenceUrl> storageUrl_,
+	mref<AssetUrl> vfsUrl_,
 	mref<Vector<fs::Url>> sources_,
-	cref<u64> vertexCount_,
-	cref<u64> indexCount_
+	mref<AutoArray<AssetGuid>> meshMaterials_
 ) :
-	InheritMeta(std::move(guid_), typeId),
+	InheritMeta(::hg::move(guid_), typeId, ::hg::move(name_), ::hg::move(storageUrl_), ::hg::move(vfsUrl_)),
 	_sources(std::move(sources_)),
-	_vertexCount(vertexCount_),
-	_indexCount(indexCount_),
+	_meshMaterials(::hg::move(meshMaterials_)),
+	_vertexCount(),
+	_indexCount(),
 	_clusterCount(),
 	_clusterDepth() {}
 
@@ -39,39 +35,15 @@ cref<Vector<fs::Url>> StaticGeometry::sources() const noexcept {
 	return _sources;
 }
 
-u64 StaticGeometry::getVertexCount() const {
-	return _vertexCount;
+u16 StaticGeometry::getMeshMaterialCount() const noexcept {
+	return _meshMaterials.size();
 }
 
-u64 StaticGeometry::getIndexCount() const {
-	return _indexCount;
+ref<const AutoArray<AssetGuid>> StaticGeometry::getMeshMaterials() const noexcept {
+	return _meshMaterials;
 }
 
-u32 StaticGeometry::getMaterialCount() const {
-	// TODO:
-	return 1uL;
-}
-
-u64 StaticGeometry::getFaceCount() const {
-	::hg::todo_panic();
-}
-
-bool StaticGeometry::hasUvCoords() {
-	::hg::todo_panic();
-}
-
-bool StaticGeometry::hasUvm() {
-	::hg::todo_panic();
-}
-
-bool StaticGeometry::hasLods() {
-	::hg::todo_panic();
-}
-
-bool StaticGeometry::isStreamable() {
-	::hg::todo_panic();
-}
-
-math::Bounding StaticGeometry::getBoundary() {
-	::hg::todo_panic();
+void StaticGeometry::setMeshMaterial(u16 index_, mref<TypedAssetGuid<GfxMaterial>> materialGuid_) {
+	::hg::assertd(getMeshMaterialCount() > index_ && _meshMaterials.size() > index_);
+	_meshMaterials.at(index_) = ::hg::move(materialGuid_);
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine.Assets.Type/Texture/Image.hpp>
+#include <Engine.Assets.Type/Texture/ImageAsset.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 #include <Engine.Common/Concurrent/Future.hpp>
 #include <Engine.Resource/File.hpp>
@@ -9,13 +9,13 @@
 namespace hg::engine::gfx {
 	class KtxImporter :
 		public res::Importer<
-			std::pair<Arci<assets::TextureAsset>, Arci<assets::Image>>,
+			std::pair<Arci<assets::TextureAsset>, Arci<assets::ImageAsset>>,
 			ptr<void>
 		> {
 	public:
 		using this_type = KtxImporter;
 		using importer_type = res::Importer<
-			std::pair<Arci<assets::TextureAsset>, Arci<assets::Image>>,
+			std::pair<Arci<assets::TextureAsset>, Arci<assets::ImageAsset>>,
 			ptr<void>
 		>;
 

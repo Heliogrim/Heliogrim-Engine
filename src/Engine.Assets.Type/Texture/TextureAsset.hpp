@@ -21,16 +21,14 @@ namespace hg::engine::assets {
 	public:
 		constexpr static AssetTypeId typeId { "Texture"_typeId };
 
-	private:
 	public:
 		TextureAsset();
 
-	protected:
-		explicit TextureAsset(mref<AssetGuid> guid_);
-
-	public:
 		TextureAsset(
 			mref<AssetGuid> guid_,
+			mref<StringView> name_,
+			mref<AssetReferenceUrl> storageUrl_,
+			mref<AssetUrl> vfsUrl_,
 			cref<AssetGuid> baseImage_,
 			mref<Vector<AssetGuid>> images_,
 			cref<math::uivec3> extent_,

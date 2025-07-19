@@ -22,7 +22,7 @@ namespace hg::editor::ui {
 }
 
 namespace hg::engine::assets {
-	class Font;
+	class FontAsset;
 }
 
 namespace hg::editor {
@@ -74,6 +74,6 @@ namespace hg::editor {
 	public:
 		[[nodiscard]] ref<const AssetGuid> getDefaultFontGuid() const noexcept;
 
-		[[nodiscard]] nmpt<engine::assets::Font> getDefaultFont() const noexcept;
+		[[nodiscard]] nmpt<engine::assets::FontAsset> getDefaultFont() const noexcept;
 	};
 }

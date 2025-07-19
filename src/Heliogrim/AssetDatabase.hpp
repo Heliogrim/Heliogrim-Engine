@@ -6,7 +6,7 @@
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 
 #include "AssetDatabaseResult.hpp"
-#include "Asset/Asset.hpp"
+#include "Asset/AssetHandle.hpp"
 
 namespace hg::engine::assets {
 	class IAssetRegistry;
@@ -42,57 +42,31 @@ namespace hg {
 		[[nodiscard]] bool contains(cref<AssetGuid> guid_) const noexcept;
 
 	public:
-		[[nodiscard]] auto find(cref<AssetGuid> guid_) const {
+		[[nodiscard]] auto find(ref<const AssetGuid> guid_) const {
 			return (*this)[guid_];
 		}
 
-		template <typename Type_>
-		[[nodiscard]] auto find(cref<AssetGuid> guid_) const {
-			return this->operator[]<Type_>(guid_);
+		template <std::derived_from<AssetHandle> HandleType_>
+		[[nodiscard]] auto find(ref<const AssetGuid> guid_) const noexcept {
+			return this->operator[]<HandleType_>(guid_);
 		}
 
-		[[nodiscard]] AssetDatabaseResult<Asset> operator[](cref<AssetGuid> guid_) const;
+		[[nodiscard]] AssetDatabaseResult<AssetHandle> operator[](ref<const AssetGuid> guid_) const;
 
-		template <typename Type_> requires std::is_base_of_v<Asset, Type_>
-		[[nodiscard]] AssetDatabaseResult<Type_> operator[](cref<AssetGuid> guid_) const {
+		template <std::derived_from<AssetHandle> HandleType_> requires std::is_final_v<HandleType_>
+		[[nodiscard]] AssetDatabaseResult<HandleType_> operator[](ref<const AssetGuid> guid_) const {
 
-			auto result = operator[](guid_);
-
-			// Warning: we can't check future state, cause we can't intercept chain
-			if (result.flags == AssetDatabaseResultType::eSuccess) {
-				auto& value { result.value };
-				auto& par { static_cast<Type_&>(value) };
-				::hg::assertd(par.isValidType() /* Invalid type cast. */);
+			const auto queryResult = operator[](guid_);
+			if (queryResult.flags != AssetDatabaseResultType::eSuccess) {
+				return AssetDatabaseResult<HandleType_> { AssetDatabaseResultType::eFailed, HandleType_ {} };
 			}
 
-			// TODO: Replace with better solution
-			return *reinterpret_cast<AssetDatabaseResult<Type_>*>(&result);
+			auto& queryValue = queryResult.value;
+			auto result = queryValue.asTyped<typename HandleType_::asset_type>();
+			::hg::assertd(result != None);
+
+			return AssetDatabaseResult<HandleType_> { AssetDatabaseResultType::eSuccess, *result };
 		}
-
-	public:
-		/**
-		 * Inserts the given asset to database and prepares internal states
-		 *
-		 * @author Julius
-		 * @date 06.10.2021
-		 *
-		 * @param  asset_ The asset.
-		 *
-		 * @returns True if it succeeds, false if it fails.
-		 */
-		bool insert(_Inout_ ref<Asset> asset_) noexcept;
-
-		/**
-		 * Erases the given asset from the database and erases internal states
-		 *
-		 * @author Julius
-		 * @date 06.10.2021
-		 *
-		 * @param  asset_ The asset.
-		 *
-		 * @returns True if it succeeds, false if it fails.
-		 */
-		bool erase(_Inout_ ref<Asset> asset_) noexcept;
 	};
 
 	/**/

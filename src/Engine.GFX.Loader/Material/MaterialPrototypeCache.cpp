@@ -16,7 +16,7 @@ MaterialPrototypeCache::response_type::type MaterialPrototypeCache::operator()(
     cref<next_type> next_
 ) const {
 
-    const AssetGuid guid = request_->get_guid();
+    const AssetGuid guid = request_->getAssetGuid();
     const auto query = _cacheCtrl->cache()->query(guid);
     if (query == cache::QueryResultType::eHit) {
         return (smr<resource::ResourceBase> { query.value() }).into<MaterialPrototypeResource>();

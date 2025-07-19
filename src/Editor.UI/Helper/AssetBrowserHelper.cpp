@@ -152,8 +152,8 @@ ptr<engine::assets::TextureAsset> AssetBrowserHelper::getItemIconForDirectory(cr
 #include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
 #include <Engine.Assets.Type/Material/GfxMaterial.hpp>
 #include <Engine.Assets.Type/Material/GfxMaterialPrototype.hpp>
-#include <Engine.Assets.Type/Texture/Font.hpp>
-#include <Engine.Assets.Type/Texture/Image.hpp>
+#include <Engine.Assets.Type/Texture/FontAsset.hpp>
+#include <Engine.Assets.Type/Texture/ImageAsset.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 
 string AssetBrowserHelper::getAssetTypeName(cref<asset_type_id> typeId_) const noexcept {
@@ -161,7 +161,7 @@ string AssetBrowserHelper::getAssetTypeName(cref<asset_type_id> typeId_) const n
 	static constexpr asset_type_id invalid {};
 
 	switch (typeId_.data) {
-		case engine::assets::Image::typeId.data: {
+		case engine::assets::ImageAsset::typeId.data: {
 			return "Image";
 		}
 		case engine::assets::TextureAsset::typeId.data: {
@@ -176,8 +176,8 @@ string AssetBrowserHelper::getAssetTypeName(cref<asset_type_id> typeId_) const n
 		case engine::assets::GfxMaterialPrototype::typeId.data: {
 			return "Gfx Material Prototype";
 		}
-		case engine::assets::Font::typeId.data: {
-			return "Font";
+		case engine::assets::FontAsset::typeId.data: {
+			return "FontAsset";
 		}
 		case invalid.data: {
 			return "Undefined";

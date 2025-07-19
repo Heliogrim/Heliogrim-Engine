@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine.Assets.Type/Texture/Font.hpp>
+#include <Engine.Assets.Type/Texture/FontAsset.hpp>
 #include <Engine.GFX/Color/Color.hpp>
 #include <Engine.Reflow/ReflowPlacement.hpp>
 #include <Engine.Reflow/ReflowWrap.hpp>
@@ -27,7 +27,7 @@ namespace hg::engine::reflow {
 
 	struct TextStyleAttributes final :
 		public StyleAttributes<
-			NamedAttribute<attr::TextStyle::font, StyleAttribute<TypedAssetGuid<engine::assets::Font>>>,
+			NamedAttribute<attr::TextStyle::font, StyleAttribute<TypedAssetGuid<engine::assets::FontAsset>>>,
 			NamedAttribute<attr::TextStyle::fontSize, StyleAttribute<float>>,
 			NamedAttribute<attr::TextStyle::lineHeight, StyleAttribute<float>>,
 			NamedAttribute<attr::TextStyle::textAlign, StyleAttribute<TextAlign>>,

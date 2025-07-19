@@ -2,8 +2,8 @@
 
 /**/
 #include "Engine.Assets.Type/Geometry/StaticGeometry.hpp"
-#include "Engine.Assets.Type/Texture/Font.hpp"
-#include "Engine.Assets.Type/Texture/Image.hpp"
+#include "Engine.Assets.Type/Texture/FontAsset.hpp"
+#include "Engine.Assets.Type/Texture/ImageAsset.hpp"
 #include "Engine.Assets.Type/Texture/TextureAsset.hpp"
 #include "Editor.Action/Action/Action.hpp"
 /**/
@@ -15,7 +15,6 @@
 #include <ranges>
 #include <Engine.Assets.System/AssetDescriptor.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
-#include <Engine.Assets/AssetFactory.hpp>
 #include <Engine.Assets/AssetTypeId.hpp>
 #include <Engine.Common/GuidFormat.hpp>
 #include <Engine.Common/Sal.hpp>
@@ -26,13 +25,9 @@
 #include <Heliogrim/Heliogrim.hpp>
 #include <Heliogrim/Async/Await.hpp>
 
+#include "Editor.Assets.Default/DefaultAssetInit.hpp"
 #include "Editor.Action/ActionManager.hpp"
 #include "Editor.Action/Action/Import/AutoImportAction.hpp"
-#include "Editor.Assets.Default/GfxMaterials/DefaultBrdfMaterial.hpp"
-#include "Editor.Assets.Default/GfxMaterials/DefaultBrdfMaterialPrototype.hpp"
-#include "Editor.Assets.Default/GfxMaterials/DefaultSkybox.hpp"
-#include "Editor.Assets.Default/GfxMaterials/DefaultSkyboxPrototype.hpp"
-#include "Engine.Assets/AssetFactory.hpp"
 #include "Engine.Assets/Assets.hpp"
 #include "Engine.Config/Config.hpp"
 #include "Engine.Config/Enums.hpp"
@@ -451,32 +446,6 @@ void autoIndex(cref<path> root_) {
 
 #pragma endregion
 
-#pragma region Predefined Loading
-
-static void initMaterialDefaults() {
-
-	using namespace ::hg::game::assets;
-	const auto factory = Engine::getEngine()->getAssets()->getFactory();
-
-	/**/
-
-	delete(new(material::DefaultBrdfMaterialPrototype));
-	delete(new(material::DefaultBrdfMaterial));
-}
-
-static void initSkyboxDefaults() {
-
-	using namespace ::hg::game::assets;
-	const auto factory = Engine::getEngine()->getAssets()->getFactory();
-
-	/**/
-
-	delete(new(material::DefaultSkyboxPrototype));
-	delete(new(material::DefaultSkybox));
-}
-
-#pragma endregion
-
 void editor::boot::initAssets() {
 
 	const auto& cfg = engine::Engine::getEngine()->getConfig();
@@ -489,11 +458,18 @@ void editor::boot::initAssets() {
 
 	autoIndex(**editorAssetPath);
 	autoIndex(**projectAssetPath);
+}
 
-	/**/
+void editor::boot::initDefaultAssets() {
 
-	initMaterialDefaults();
-	initSkyboxDefaults();
+	const auto& engine = *engine::Engine::getEngine();
+
+	initDefaultImageAssets(engine);
+	initDefaultTextureAssets(engine);
+	initDefaultMeshAssets(engine);
+
+	initDefaultFontAssets(engine);
+	initDefaultGfxMaterialAssets(engine);
 }
 
 /**/
@@ -664,25 +640,26 @@ bool tryLoadArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
 		}
 
 		IM_CORE_LOGF(
-			"Successfully loaded asset `{}` -> `{}` from package.",
+			"Successfully loaded asset `{}` -> `{}` -> `{}` from package.",
 			nextAsset->getAssetName(),
-			nextAsset->getVirtualUrl()
+			StringView { nextAsset->getAssetVfsUrl().getAssetPath().asByteSpan() },
+			nextAsset->getAssetStorageUrl().encode()
 		);
 		return Some(std::move(nextAsset));
 	};
 
 	switch (typeId.data) {
-		case assets::Font::typeId.data: {
-			return genericLoad.operator()<assets::Font>(guid, std::move(record)).has_value();
+		case assets::FontAsset::typeId.data: {
+			return genericLoad.operator()<assets::FontAsset>(assetStorageUrl_, guid, std::move(record)).has_value();
 		}
-		case assets::Image::typeId.data: {
-			return genericLoad.operator()<assets::Image>(guid, std::move(record)).has_value();
+		case assets::ImageAsset::typeId.data: {
+			return genericLoad.operator()<assets::ImageAsset>(assetStorageUrl_, guid, std::move(record)).has_value();
 		}
 		case assets::TextureAsset::typeId.data: {
-			return genericLoad.operator()<assets::TextureAsset>(guid, std::move(record)).has_value();
+			return genericLoad.operator()<assets::TextureAsset>(assetStorageUrl_, guid, std::move(record)).has_value();
 		}
 		case assets::StaticGeometry::typeId.data: {
-			return genericLoad.operator()<assets::StaticGeometry>(guid, std::move(record)).has_value();
+			return genericLoad.operator()<assets::StaticGeometry>(assetStorageUrl_, guid, std::move(record)).has_value();
 		}
 		default: {
 			return false;

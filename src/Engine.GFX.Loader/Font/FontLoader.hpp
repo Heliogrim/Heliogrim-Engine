@@ -14,7 +14,7 @@ namespace hg::engine::gfx::loader {
 	using FontSourceLoader = ::hg::engine::resource::loader::SourceLoader;
 
 	using FontLoaderType = resource::loader::LoaderChain<
-		assets::Font,
+		assets::FontAsset,
 		FontResource,
 		resource::loader::MetaTypeWrapperList<std::type_identity_t, std::type_identity_t, std::type_identity_t, sptr>,
 		FontCache,

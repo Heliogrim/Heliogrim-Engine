@@ -3,11 +3,7 @@
 using namespace hg::engine::fs;
 using namespace hg;
 
-Url::Url(mref<Path> path_) :
-	_scheme(),
-	_path(std::move(path_)) {}
-
-Url::Url(string_view scheme_, mref<Path> path_) :
+Url::Url(StringView scheme_, mref<Path> path_) :
 	_scheme(scheme_),
 	_path(std::move(path_)) {}
 

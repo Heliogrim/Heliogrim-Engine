@@ -144,19 +144,36 @@ namespace hg::engine::fs {
 				return false;
 			}
 
-			if (not _value.empty() && path_._value.at(relSize) != *separator_type::value) {
+			if (
+				not _value.empty() &&
+				_value.at(relSize - 1uL) != *separator_type::value &&
+				path_._value.at(relSize) != *separator_type::value
+			) {
 				return false;
 			}
 
 			return _value == std::basic_string_view<string_type::value_type> {
 				path_._value.begin(), path_._value.begin() + static_cast<string_type::difference_type>(relSize)
 			};
-
 		}
 
 		template <class Type_ = Path>
-		[[nodiscard]] bool isSubPath(cref<Type_> check_) const {
-			return contains(check_);
+		[[nodiscard]] bool isSubPathOf(ref<const Type_> parentCandidate_) const {
+
+			const auto relSize = _value.size();
+			const auto baseSize = parentCandidate_._value.size();
+			if (relSize == 0uL || relSize <= baseSize) {
+				return false;
+			}
+
+			if (
+				parentCandidate_._value.at(baseSize - 1uL) != *separator_type::value &&
+				_value.at(baseSize) != *separator_type::value
+			) {
+				return false;
+			}
+
+			return parentCandidate_._value == _value.substr(0uL, baseSize);
 		}
 
 		[[nodiscard]] constexpr bool equals(cref<this_type> other_) const {

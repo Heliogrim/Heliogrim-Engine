@@ -106,8 +106,8 @@ AutoImportAction::operator ptr<await_signal_sub_type>() const noexcept {
 /**/
 
 #include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
-#include <Engine.Assets.Type/Texture/Font.hpp>
-#include <Engine.Assets.Type/Texture/Image.hpp>
+#include <Engine.Assets.Type/Texture/FontAsset.hpp>
+#include <Engine.Assets.Type/Texture/ImageAsset.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 #include <Engine.Common/GuidFormat.hpp>
 #include <Engine.Core/Engine.hpp>
@@ -144,8 +144,8 @@ using namespace hg::engine::resource;
 
 [[nodiscard]] static Opt<Arci<engine::storage::system::PackageStorage>> autoStoreAssets(_In_ cref<engine::storage::FileUrl> baseFileUrl_, _In_ cref<Vector<Arci<engine::assets::Asset>>> assets_);
 
-[[nodiscard]] static BufferArchive autoStoreFont(_In_ nmpt<engine::assets::Font> fontAsset_);
-[[nodiscard]] static BufferArchive autoStoreImage(_In_ nmpt<engine::assets::Image> imageAsset_);
+[[nodiscard]] static BufferArchive autoStoreFont(_In_ nmpt<engine::assets::FontAsset> fontAsset_);
+[[nodiscard]] static BufferArchive autoStoreImage(_In_ nmpt<engine::assets::ImageAsset> imageAsset_);
 [[nodiscard]] static BufferArchive autoStoreTexture(_In_ nmpt<engine::assets::TextureAsset> textureAsset_);
 [[nodiscard]] static BufferArchive autoStoreStaticGeometry(_In_ nmpt<engine::assets::StaticGeometry> staticGeometryAsset_);
 // @formatter:on
@@ -305,7 +305,7 @@ Opt<Vector<Arci<engine::assets::Asset>>> autoImportCombinedImageTexture(
 
 	/**/
 
-	const auto result = importer.import<std::pair<Arci<engine::assets::TextureAsset>, Arci<engine::assets::Image>>>(
+	const auto result = importer.import<std::pair<Arci<engine::assets::TextureAsset>, Arci<engine::assets::ImageAsset>>>(
 		fileTypeId_,
 		{ fileUrl_.path() }
 	).get();
@@ -337,7 +337,7 @@ Opt<Vector<Arci<engine::assets::Asset>>> autoImportFont(
 
 	/**/
 
-	const auto result = importer.import<Arci<engine::assets::Font>>(
+	const auto result = importer.import<Arci<engine::assets::FontAsset>>(
 		fileTypeId_,
 		{ fileUrl_.path() }
 	).get();
@@ -451,7 +451,7 @@ Opt<Arci<engine::storage::system::PackageStorage>> autoStoreAssets(
 		serialized.emplace_back(
 			switchType(
 				asset.get(),
-				[](const ptr<engine::assets::Image> imageAsset_) {
+				[](const ptr<engine::assets::ImageAsset> imageAsset_) {
 					return autoStoreImage(imageAsset_);
 				},
 				[](const ptr<engine::assets::TextureAsset> textureAsset_) {
@@ -460,7 +460,7 @@ Opt<Arci<engine::storage::system::PackageStorage>> autoStoreAssets(
 				[](const ptr<engine::assets::StaticGeometry> staticGeometryAsset_) {
 					return autoStoreStaticGeometry(staticGeometryAsset_);
 				},
-				[](const ptr<engine::assets::Font> fontAsset_) {
+				[](const ptr<engine::assets::FontAsset> fontAsset_) {
 					return autoStoreFont(fontAsset_);
 				}
 			)
@@ -480,7 +480,7 @@ Opt<Arci<engine::storage::system::PackageStorage>> autoStoreAssets(
 		if (not result.has_value()) {
 			IM_CORE_ERRORF(
 				"Failed to store serialized asset data of `{}` into auto generated package `{}`.",
-				encodeGuid4228(assets_[idx]->get_guid()),
+				encodeGuid4228(assets_[idx]->getAssetGuid()),
 				packageFileUrl.string()
 			);
 			ioFailed = true;
@@ -506,13 +506,13 @@ Opt<Arci<engine::storage::system::PackageStorage>> autoStoreAssets(
 #pragma region Asset Specific Serialization
 
 BufferArchive autoStoreFont(
-	nmpt<engine::assets::Font> fontAsset_
+	nmpt<engine::assets::FontAsset> fontAsset_
 ) {
 
 	auto archive = BufferArchive {};
 
 	auto structured = engine::serialization::StructuredArchive { archive };
-	engine::serialization::access::Structure<engine::assets::Font>::serialize(
+	engine::serialization::access::Structure<engine::assets::FontAsset>::serialize(
 		*fontAsset_,
 		structured.insertRootSlot().intoStruct()
 	);
@@ -522,13 +522,13 @@ BufferArchive autoStoreFont(
 }
 
 BufferArchive autoStoreImage(
-	nmpt<engine::assets::Image> imageAsset_
+	nmpt<engine::assets::ImageAsset> imageAsset_
 ) {
 
 	auto archive = BufferArchive {};
 
 	auto structured = engine::serialization::StructuredArchive { archive };
-	engine::serialization::access::Structure<engine::assets::Image>::serialize(
+	engine::serialization::access::Structure<engine::assets::ImageAsset>::serialize(
 		*imageAsset_,
 		structured.insertRootSlot().intoStruct()
 	);

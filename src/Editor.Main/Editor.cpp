@@ -51,6 +51,7 @@ void Editor::setup() {}
 
 void Editor::start() {
 	boot::initRender();
+	boot::initDefaultAssets();
 	boot::initAssets();
 	boot::initEditorUniverse();
 	boot::initPrimaryUniverse();

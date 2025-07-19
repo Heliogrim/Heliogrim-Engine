@@ -63,9 +63,8 @@ void AssetRegistryBrowserProvider::mapAssetsToEntries(
 
 		entries_.emplace_back(
 			AssetBrowserEntryType::eAsset,
-			string { (*it)->getAssetName() },
-			fs::Url { ""sv, (*it)->getVirtualUrl() },
-			(*it)->get_guid()
+			engine::assets::AssetUrl { (*it)->getAssetVfsUrl() },
+			(*it)->getAssetGuid()
 		);
 	}
 }
@@ -76,8 +75,11 @@ bool AssetRegistryBrowserProvider::effects(ref<const fs::Url> url_) const {
 
 bool AssetRegistryBrowserProvider::fetchItems(ref<const fs::Url> url_, ref<Vector<AssetBrowserEntry>> entries_) const {
 
-	data_list_type assetList {};
-	_registry->findAssetsByPath(url_.path(), assetList);
+	auto assetList = data_list_type {};
+	_registry->findAssetsByPath(
+		engine::assets::AssetPath { url_.path() },
+		assetList
+	);
 
 	/* Map assets to browser entries */
 
@@ -90,14 +92,22 @@ bool AssetRegistryBrowserProvider::fetchDirectories(
 	ref<Vector<AssetBrowserEntry>> directories_
 ) const {
 
-	CompactSet<string> indexedPaths {};
+	auto indexedPaths = Vector<engine::assets::AssetPath> {};
 	static_cast<ptr<engine::assets::AssetRegistry>>(_registry.get())->getIndexedPaths(indexedPaths);
 
-	const auto base = url_.path();
-	for (ref<const string> entry : indexedPaths) {
+	const auto exists = [&directories_](ref<const engine::assets::AssetPath> path_) -> bool {
+		return std::ranges::any_of(
+			directories_,
+			[&path_](const AssetBrowserEntry& entry_) {
+				return entry_.url.getAssetPath() == path_;
+			}
+		);
+	};
 
-		auto check = fs::Path(string_view { entry });
-		if (not base.contains(check)) {
+	const auto base = engine::assets::AssetPath { url_.path() };
+	for (const auto& entry : indexedPaths) {
+
+		if (not entry.contains(base)) {
 			continue;
 		}
 
@@ -105,11 +115,13 @@ bool AssetRegistryBrowserProvider::fetchDirectories(
 			continue;
 		}
 
-		directories_.emplace_back(
-			AssetBrowserEntryType::eDirectory,
-			fs::Path { entry }.name(),
-			fs::Url { fs::Path { entry } }
-		);
+		auto candidate = engine::assets::AssetPath { asFsPath };
+		if (asFsPath.parentPath() == url_.path() && not exists(candidate)) {
+			directories_.emplace_back(
+				AssetBrowserEntryType::eDirectory,
+				engine::assets::AssetUrl { ::hg::move(candidate), engine::assets::AssetName {} }
+			);
+		}
 	}
 
 	return true;

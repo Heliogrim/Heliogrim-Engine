@@ -34,14 +34,14 @@ namespace hg {
 
 		template <class FromAssetType_ = AssetType_> requires std::derived_from<FromAssetType_, AssetType_>
 		constexpr TypedAssetGuid(ref<FromAssetType_> asset_) noexcept :
-			_guid(asset_.get_guid()) {}
+			_guid(asset_.getAssetGuid()) {}
 
 		template <class FromWeakAssetType_ = AssetType_> requires
 			(not std::is_same_v<FromWeakAssetType_, AssetType_>) &&
 			std::derived_from<AssetType_, FromWeakAssetType_> &&
 			(not is_strict)
 		constexpr TypedAssetGuid(ref<FromWeakAssetType_> asset_) noexcept :
-			_guid(asset_->get_guid()) {}
+			_guid(asset_->getAssetGuid()) {}
 
 		constexpr TypedAssetGuid(const this_type&) noexcept = default;
 

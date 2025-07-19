@@ -10,7 +10,7 @@
 #include "../Asset.hpp"
 
 namespace hg::engine::assets {
-	class GfxMaterial :
+	class GfxMaterial final :
 		public InheritMeta<GfxMaterial, Asset> {
 	public:
 		using this_type = GfxMaterial;
@@ -21,12 +21,12 @@ namespace hg::engine::assets {
 	public:
 		constexpr static AssetTypeId typeId { "GfxMaterial"_typeId };
 
-	protected:
-		GfxMaterial(mref<AssetGuid> guid_);
-
 	public:
 		GfxMaterial(
 			mref<AssetGuid> guid_,
+			mref<StringView> name_,
+			mref<AssetReferenceUrl> storageUrl_,
+			mref<AssetUrl> vfsUrl_,
 			mref<AssetGuid> prototypeGuid_
 		);
 

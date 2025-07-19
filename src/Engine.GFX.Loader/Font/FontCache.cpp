@@ -17,7 +17,7 @@ FontCache::response_type::type FontCache::operator()(
 	cref<next_type> next_
 ) const {
 
-	const auto guid = request_->get_guid();
+	const auto guid = request_->getAssetGuid();
 	const auto query = _cacheCtrl->cache()->query(guid);
 	if (query == cache::QueryResultType::eHit) {
 		return query.value().into<resource::Resource<reflow::Font>>();

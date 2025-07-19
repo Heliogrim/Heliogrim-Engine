@@ -4,7 +4,6 @@
 #include <Engine.Assets.System/AssetDescriptor.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets.Type/Asset.hpp>
-#include <Engine.Assets/AssetFactory.hpp>
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
@@ -24,41 +23,27 @@ bool AssetDatabase::contains(cref<AssetGuid> guid_) const noexcept {
 	return idb.hasAsset(guid_);
 }
 
-AssetDatabaseResult<Asset> AssetDatabase::operator[](cref<AssetGuid> guid_) const {
+AssetDatabaseResult<AssetHandle> AssetDatabase::operator[](ref<const AssetGuid> guid_) const {
 
 	const auto& idb { *static_cast<const non_owning_rptr<engine::assets::IAssetRegistry>>(_internal.get()) };
-	const auto asset = idb.findAssetByGuid(guid_);
+	auto asset = idb.findAssetByGuid(guid_);
 
 	if (asset == None || asset.value() == nullptr) {
-		return AssetDatabaseResult<Asset> {
+		return AssetDatabaseResult<AssetHandle> {
 			{ AssetDatabaseResultType::eFailed },
-			hg::Asset { clone(invalid_asset_guid), AssetTypeId { 0 }, nullptr }
+			{}
 		};
 	}
 
-	return AssetDatabaseResult<Asset> {
+	return AssetDatabaseResult<AssetHandle> {
 		{ AssetDatabaseResultType::eSuccess },
 		{
-			(*asset)->get_guid(),
+			(*asset)->getAssetGuid(),
 			(*asset)->getTypeId(),
 			// Warning: Reference out of Scope | Use-After-Free
-			*(asset->get())
+			Some(**asset)
 		}
 	};
-}
-
-bool AssetDatabase::insert(ref<Asset> asset_) noexcept {
-
-	::hg::assertrt(asset_._internal != nullptr /* "Asset should have internal state representation." */);
-
-	engine::assets::storeDefaultNameAndUrl(*asset_._internal, {});
-	::hg::todo_panic();
-	// TODO: return _internal->insert({ static_cast<ptr<engine::assets::Asset>>(asset_->_internal) });
-}
-
-bool AssetDatabase::erase(ref<Asset> asset_) noexcept {
-	auto& idb { *static_cast<const non_owning_rptr<engine::assets::IAssetRegistry>>(_internal.get()) };
-	return idb.removeAssetByGuid(asset_.guid());
 }
 
 /**/

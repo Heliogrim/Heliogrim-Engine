@@ -2,7 +2,6 @@
 
 #include <filesystem>
 #include <Engine.Asserts/Breakpoint.hpp>
-#include <Engine.Assets/AssetFactory.hpp>
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Common/GuidFormat.hpp>
 #include <Engine.Common/Wrapper.hpp>
@@ -83,26 +82,27 @@ FbxImporter::import_result_type FbxImporter::import(cref<res::FileTypeId> typeId
 
 	/**/
 
-	auto geom = [](const auto& path_, const auto& data_) {
-		auto& factory { *Engine::getEngine()->getAssets()->getFactory() };
-		return factory.createStaticGeometryAsset(
-			generate_asset_guid(),
-			static_cast<std::string>(path_),
-			data_.vertexCount,
-			data_.indexCount
-		);
-	}(file_.path(), data);
-	geom->setAssetName(sourceName);
+	auto materials = AutoArray<AssetGuid> {};
+	materials.resize(data.materialCount, AssetGuid {});
+
+	auto asset = Arci<StaticGeometry>::create(
+		generate_asset_guid(),
+		StringView { sourceName },
+		AssetReferenceUrl {},
+		AssetUrl { AssetPath { file_.path().parentPath() }, AssetName { sourceName } },
+		Vector<fs::Url> { { storage::FileScheme, clone(file_.path()) } },
+		::hg::move(materials)
+	);
 
 	IM_CORE_LOGF(
 		"Created new static geometry asset `{}` -> `{}`",
-		geom->getAssetName(),
-		encodeGuid4228(geom->get_guid())
+		asset->getAssetName(),
+		encodeGuid4228(asset->getAssetGuid())
 	);
 
 	/**/
 
-	return makeImportResult(std::move(geom));
+	return makeImportResult(::hg::move(asset));
 }
 
 #include <assimp/Importer.hpp>

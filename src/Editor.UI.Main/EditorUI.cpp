@@ -108,7 +108,7 @@ ref<const EditorUiServices> editor::EditorUI::getEditorServices() const noexcept
 #include <Editor.Assets.Default/Fonts/Default.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets/Assets.hpp>
-#include <Engine.Assets.Type/Texture/Font.hpp>
+#include <Engine.Assets.Type/Texture/FontAsset.hpp>
 #include <Engine.GFX.Loader/Font/FontLoader.hpp>
 #include <Engine.GFX.Loader/Font/FontLoadOptions.hpp>
 #include <Engine.GFX.Loader/Font/FontResource.hpp>
@@ -118,7 +118,7 @@ ref<const AssetGuid> editor::EditorUI::getDefaultFontGuid() const noexcept {
 	return assets::font::default_font_guid;
 }
 
-nmpt<engine::assets::Font> editor::EditorUI::getDefaultFont() const noexcept {
+nmpt<engine::assets::FontAsset> editor::EditorUI::getDefaultFont() const noexcept {
 
 	auto registry = _engine->getAssets()->getRegistry();
 	auto asset = registry->findAssetByGuid(assets::font::default_font_guid);
@@ -128,9 +128,9 @@ nmpt<engine::assets::Font> editor::EditorUI::getDefaultFont() const noexcept {
 
 	// Problem: We have to move the parametrized loading behaviour into the consumption position instead of preloading the stuff.
 	std::ignore = engine::Engine::getEngine()->getResources()->loader().load<
-		engine::assets::Font, engine::gfx::FontResource
+		engine::assets::FontAsset, engine::gfx::FontResource
 	>(
-		Cast<engine::assets::Font>(asset->get()),
+		Cast<engine::assets::FontAsset>(asset->get()),
 		engine::gfx::loader::FontLoadOptions {
 			.ranges = { engine::reflow::BasicLatin, engine::reflow::Latin1Supplement },
 			.glyphs = {},
@@ -138,5 +138,5 @@ nmpt<engine::assets::Font> editor::EditorUI::getDefaultFont() const noexcept {
 		}
 	);
 
-	return Cast<engine::assets::Font>(asset->get());
+	return Cast<engine::assets::FontAsset>(asset->get());
 }

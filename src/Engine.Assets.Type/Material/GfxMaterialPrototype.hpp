@@ -22,7 +22,12 @@ namespace hg::engine::assets {
 		constexpr static AssetTypeId typeId { "GfxMaterialPrototype"_typeId };
 
 	public:
-		GfxMaterialPrototype(mref<AssetGuid> guid_);
+		GfxMaterialPrototype(
+			mref<AssetGuid> guid_,
+			mref<StringView> name_,
+			mref<AssetReferenceUrl> storageUrl_,
+			mref<AssetUrl> vfsUrl_
+		);
 
 	private:
 	public:

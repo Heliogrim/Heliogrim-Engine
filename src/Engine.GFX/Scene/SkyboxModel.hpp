@@ -36,13 +36,11 @@ namespace hg::engine::gfx {
 		void capture(nmpt<render::MeshCaptureInterface> mci_) const noexcept override;
 
 	private:
-		ptr<assets::StaticGeometry> _skyboxGeometryAsset = nullptr;
+		ptr<const assets::StaticGeometry> _skyboxGeometryAsset = nullptr;
 		smr<resource::ResourceBase> _skyboxGeometryResource = {};
 		bool _streamable = false;
 
 	public:
-		[[nodiscard]] const ptr<assets::StaticGeometry> geometryAsset() const noexcept;
-
 		[[nodiscard]] cref<smr<resource::ResourceBase>> geometryResource() const noexcept;
 
 		[[nodiscard]] bool streamable() const noexcept;
