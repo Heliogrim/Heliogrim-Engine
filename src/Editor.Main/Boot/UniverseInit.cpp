@@ -81,13 +81,14 @@ static void addDefaultSkybox() {
 
 	/**/
 
-	const auto material = Heliogrim::assets().find<GfxMaterialAsset>(editor::assets::materials::default_skybox_guid);
+	const auto material = Heliogrim::assets().find<GfxMaterialAssetHandle>(editor::assets::materials::default_skybox_guid);
 	::hg::assertrt(static_cast<bool>(material));
-	sc->setSkyboxMaterialByAsset(material.value);
+	sc->setSkyboxMaterial(material.value);
 
-	const auto geometry = Heliogrim::assets().find<StaticGeometryAsset>(editor::assets::meshes::default_sphere_guid);
-	::hg::assertrt(static_cast<bool>(geometry));
-	sc->setSkyboxGeometryByAsset(geometry.value);
+	const auto meshQuery = Heliogrim::assets().find<StaticGeometryAssetHandle>(editor::assets::meshes::default_sphere_guid);
+	::hg::assertrt(static_cast<bool>(meshQuery));
+	sc->setSkyboxGeometry(meshQuery.value);
+
 
 
 	/**/
