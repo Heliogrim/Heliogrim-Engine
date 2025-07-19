@@ -13,7 +13,7 @@ namespace hg::engine::resource::loader {
 		using wrapper_type = non_owning_rptr<Type_>;
 		using value_type = ValueType_;
 
-		using type = wrapper_type<value_type>;
+		using type = wrapper_type<const value_type>;
 
 		/**/
 
@@ -32,7 +32,7 @@ namespace hg::engine::resource::loader {
 		using wrapper_type = smr<Type_>;
 		using value_type = ResourceBase;
 
-		using type = wrapper_type<value_type>;
+		using type = wrapper_type<const value_type>;
 
 		/**/
 

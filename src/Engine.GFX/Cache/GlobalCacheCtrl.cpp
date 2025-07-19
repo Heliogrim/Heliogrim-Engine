@@ -97,14 +97,14 @@ GlobalCacheCtrl::stream_result_type<> GlobalCacheCtrl::markLoadedAsUsed(
 }
 
 GlobalCacheCtrl::stream_result_type<> GlobalCacheCtrl::markAsUsed(
-	const non_owning_rptr<TextureResource> resource_,
+	const non_owning_rptr<const TextureResource> resource_,
 	mref<TextureSubResource> subresource_
 ) {
 	return markAsUsed(resource_, AssocKey<TextureSubResource>::from(std::move(subresource_)));
 }
 
 GlobalCacheCtrl::stream_result_type<> GlobalCacheCtrl::markAsUsed(
-	const non_owning_rptr<TextureResource> resource_,
+	const non_owning_rptr<const TextureResource> resource_,
 	cref<AssocKey<TextureSubResource>> subresource_
 ) {
 
@@ -141,14 +141,14 @@ GlobalCacheCtrl::stream_result_type<> GlobalCacheCtrl::markAsUsed(
 }
 
 GlobalCacheCtrl::stream_result_type<> GlobalCacheCtrl::markAsUsed(
-	ptr<TextureResource>,
+	ptr<const TextureResource>,
 	mref<TextureSubResourceRange> subresourceRange_
 ) {
 	::hg::todo_panic();
 }
 
 void GlobalCacheCtrl::unmark(
-	const non_owning_rptr<TextureResource> resource_,
+	const non_owning_rptr<const TextureResource> resource_,
 	cref<AssocKey<TextureSubResource>> subresource_
 ) {
 

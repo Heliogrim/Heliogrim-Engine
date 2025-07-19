@@ -135,7 +135,7 @@ namespace hg::engine::resource {
 		 *
 		 * @returns A shared memory reference of the resource which should be loaded.
 		 */
-		[[nodiscard]] response_base_type preload(const ptr<assets::Asset> asset_, ptr<void> options_ = nullptr) const;
+		[[nodiscard]] response_base_type preload(const ptr<const assets::Asset> asset_, ptr<void> options_ = nullptr) const;
 
 		/**
 		 * Loads the requested resource underlying of given asset
@@ -148,7 +148,7 @@ namespace hg::engine::resource {
 		 *
 		 * @returns A shared memory reference of the resource which should be loaded.
 		 */
-		[[nodiscard]] response_base_type load(const ptr<assets::Asset> asset_, ptr<void> options_ = nullptr) const;
+		[[nodiscard]] response_base_type load(const ptr<const assets::Asset> asset_, ptr<void> options_ = nullptr) const;
 
 		/**
 		 * Loads the requested resource underlying of given asset immediately
@@ -162,7 +162,7 @@ namespace hg::engine::resource {
 		 * @returns A shared memory reference of the resource which should be loaded.
 		 */
 		[[nodiscard]] response_base_type loadImmediately(
-			const ptr<assets::Asset> asset_,
+			const ptr<const assets::Asset> asset_,
 			ptr<void> options_ = nullptr
 		) const;
 
@@ -229,8 +229,7 @@ namespace hg::engine::resource {
 		 *  TODO: Check how we want to support stream ops of the loader chain specific for a certain project
 		 */
 		template <assets::IsStreamableAsset AssetType_, typename ResourceType_ = ResourceBase>
-		[[nodiscard]] typename loader::Loader<AssetType_, ResourceType_>::traits::stream_response::type
-		streamImmediately(
+		[[nodiscard]] typename loader::Loader<AssetType_, ResourceType_>::traits::stream_response::type streamImmediately(
 			mref<typename loader::Loader<AssetType_, ResourceType_>::traits::stream_request::type> request_,
 			mref<typename loader::Loader<AssetType_, ResourceType_>::traits::stream_request::options> options_
 		) const {

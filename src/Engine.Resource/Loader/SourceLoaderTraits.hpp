@@ -48,9 +48,9 @@ namespace hg::engine::resource::loader {
 
 		template <typename Type_>
 		using wrapper_type = non_owning_rptr<Type_>;
-		using value_type = const assets::Asset;
+		using value_type = assets::Asset;
 
-		using type = wrapper_type<value_type>;
+		using type = wrapper_type<const value_type>;
 
 		/**/
 
@@ -83,7 +83,7 @@ namespace hg::engine::resource::loader {
 		using wrapper_type = smr<Type_>;
 		using value_type = assets::Asset;
 
-		using type = wrapper_type<value_type>;
+		using type = wrapper_type<const value_type>;
 
 		/**/
 

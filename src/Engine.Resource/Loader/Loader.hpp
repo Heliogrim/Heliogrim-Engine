@@ -55,7 +55,7 @@ namespace hg::engine::resource::loader {
 
 	public:
 		[[nodiscard]] virtual smr<ResourceBase> operator()(
-			ptr<assets::Asset> asset_,
+			ptr<const assets::Asset> asset_,
 			ptr<void> options_
 		) = 0;
 	};
@@ -142,7 +142,7 @@ namespace hg::engine::resource::loader {
 
 	public:
 		[[nodiscard]] smr<ResourceBase> operator()(
-			ptr<assets::Asset> asset_,
+			ptr<const assets::Asset> asset_,
 			ptr<void> options_
 		) override {
 

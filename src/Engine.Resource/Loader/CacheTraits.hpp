@@ -19,7 +19,7 @@ namespace hg::engine::resource::loader {
 		using wrapper_type = typename LoaderRequest<AssetType_>::template wrapper_type<Type_>;
 		using value_type = AssetType_;
 
-		using type = wrapper_type<value_type>;
+		using type = wrapper_type<const value_type>;
 
 		/**/
 
@@ -38,7 +38,7 @@ namespace hg::engine::resource::loader {
 		using wrapper_type = typename LoaderStreamRequest<SubjectType_>::template wrapper_type<Type_>;
 		using value_type = typename LoaderStreamRequest<SubjectType_>::value_type;
 
-		using type = wrapper_type<value_type>;
+		using type = wrapper_type<const value_type>;
 
 		/**/
 

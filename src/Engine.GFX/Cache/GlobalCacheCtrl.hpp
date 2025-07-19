@@ -64,7 +64,7 @@ namespace hg::engine::gfx::cache {
 		/**
 		 * Texture Atlases
 		 */
-		DenseMap<ptr<TextureResource>, DenseMap<AssocKey<TextureSubResource>, ptr<CacheCtrlSubject<
+		DenseMap<ptr<const TextureResource>, DenseMap<AssocKey<TextureSubResource>, ptr<CacheCtrlSubject<
 			TextureSubResource>>>> _textures;
 
 	public:
@@ -104,24 +104,24 @@ namespace hg::engine::gfx::cache {
 		 * @returns A result of `eResidential` if main- and sub-resource got a cache hit, otherwise `eUndefined`
 		 */
 		[[nodiscard]] stream_result_type<> markAsUsed(
-			_In_ const non_owning_rptr<TextureResource> resource_,
+			_In_ non_owning_rptr<const TextureResource> resource_,
 			_In_ mref<TextureSubResource> subresource_
 		);
 
 		[[nodiscard]] stream_result_type<> markAsUsed(
-			_In_ const non_owning_rptr<TextureResource> resource_,
+			_In_ non_owning_rptr<const TextureResource> resource_,
 			cref<AssocKey<TextureSubResource>> subresource_
 		);
 
 		// TODO: Remove / Deprecated
 		stream_result_type<> markAsUsed(
-			_In_ const non_owning_rptr<TextureResource> resource_,
+			_In_ non_owning_rptr<const TextureResource> resource_,
 			_In_ mref<TextureSubResourceRange> range_
 		);
 
 	public:
 		void unmark(
-			const non_owning_rptr<TextureResource> resource_,
+			non_owning_rptr<const TextureResource> resource_,
 			cref<AssocKey<TextureSubResource>> subresource_
 		);
 
