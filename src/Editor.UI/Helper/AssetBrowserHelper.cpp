@@ -108,7 +108,7 @@ void AssetBrowserHelper::setup() {
 	_directoryIcons.emplace_back("font", Cast<engine::assets::TextureAsset>(asset->get()));
 }
 
-ptr<engine::assets::TextureAsset> AssetBrowserHelper::getItemIconByAssetType(cref<asset_type_id> typeId_) const noexcept {
+ptr<engine::assets::TextureAsset> AssetBrowserHelper::getItemIconByAssetType(cref<AssetTypeId> typeId_) const noexcept {
 
 	const auto it { _typeIconMap.find(typeId_) };
 	if (it != _typeIconMap.end()) {
@@ -156,9 +156,9 @@ ptr<engine::assets::TextureAsset> AssetBrowserHelper::getItemIconForDirectory(cr
 #include <Engine.Assets.Type/Texture/ImageAsset.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 
-string AssetBrowserHelper::getAssetTypeName(cref<asset_type_id> typeId_) const noexcept {
+string AssetBrowserHelper::getAssetTypeName(cref<AssetTypeId> typeId_) const noexcept {
 
-	static constexpr asset_type_id invalid {};
+	static constexpr AssetTypeId invalid {};
 
 	switch (typeId_.data) {
 		case engine::assets::ImageAsset::typeId.data: {

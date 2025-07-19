@@ -40,7 +40,7 @@ namespace hg::editor::ui {
 
 	private:
 		ptr<engine::assets::TextureAsset> _defaultTypeIcon;
-		DenseMap<asset_type_id, ptr<engine::assets::TextureAsset>> _typeIconMap;
+		DenseMap<AssetTypeId, ptr<engine::assets::TextureAsset>> _typeIconMap;
 
 	private:
 		ptr<engine::assets::TextureAsset> _directoryIcon;
@@ -48,11 +48,11 @@ namespace hg::editor::ui {
 
 	public:
 		[[nodiscard]] ptr<engine::assets::TextureAsset> getItemIconByAssetType(
-			cref<asset_type_id> typeId_
+			cref<AssetTypeId> typeId_
 		) const noexcept;
 
 		[[nodiscard]] ptr<engine::assets::TextureAsset> getItemIconForDirectory(cref<string_view> name_) const noexcept;
 
-		[[nodiscard]] string getAssetTypeName(cref<asset_type_id> typeId_) const noexcept;
+		[[nodiscard]] string getAssetTypeName(cref<AssetTypeId> typeId_) const noexcept;
 	};
 }
