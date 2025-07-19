@@ -8,7 +8,7 @@
 #include "../Provider/PackageSystemProvider.hpp"
 #include "../Storage/ArchiveStorage.hpp"
 #include "../Url/Scheme.hpp"
-#include "../Url/Url.hpp"
+#include "../Url/StorageUrl.hpp"
 
 using namespace hg::engine::storage::system;
 using namespace hg;
@@ -42,11 +42,11 @@ Arci<engine::storage::IStorage> ArchiveSystemRepository::createStorage(mref<Stor
 	return it->second.into<IStorage>();
 }
 
-bool ArchiveSystemRepository::hasStorage(cref<Url> url_) const {
+bool ArchiveSystemRepository::hasStorage(cref<StorageUrl> url_) const {
 	return inlineHasStorage<ArchiveUrl>(_storages, url_);
 }
 
-Arci<engine::storage::IStorage> ArchiveSystemRepository::getStorageByUrl(cref<Url> url_) const {
+Arci<engine::storage::IStorage> ArchiveSystemRepository::getStorageByUrl(cref<StorageUrl> url_) const {
 	return inlineGetStorageByUrl<ArchiveUrl>(_storages, url_);
 }
 

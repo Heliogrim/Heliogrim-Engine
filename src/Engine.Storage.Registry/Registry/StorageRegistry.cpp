@@ -8,7 +8,7 @@
 #include <Engine.Config/Enums.hpp>
 #include <Engine.Env/Check.hpp>
 #include <Engine.Logging/Logger.hpp>
-#include <Engine.Storage.Registry/Url/Url.hpp>
+#include <Engine.Storage.Registry/Url/StorageUrl.hpp>
 
 #include "../IStorage.hpp"
 #include "../IStorageProvider.hpp"
@@ -151,7 +151,7 @@ Arci<IStorage> StorageRegistry::insert(mref<StorageDescriptor> descriptor_) {
 	return {};
 }
 
-bool StorageRegistry::hasStorage(mref<Url> url_) const noexcept {
+bool StorageRegistry::hasStorage(mref<StorageUrl> url_) const noexcept {
 
 	const auto scheme = url_.scheme();
 	for (const auto& repository : _repositories) {
@@ -167,7 +167,7 @@ bool StorageRegistry::hasStorage(mref<Url> url_) const noexcept {
 	return false;
 }
 
-Arci<IStorage> StorageRegistry::getStorageByUrl(mref<Url> url_) const {
+Arci<IStorage> StorageRegistry::getStorageByUrl(mref<StorageUrl> url_) const {
 
 	const auto scheme = url_.scheme();
 	for (const auto& repository : _repositories) {
@@ -188,7 +188,7 @@ Arci<IStorage> StorageRegistry::getStorageByUrl(mref<Url> url_) const {
 	::hg::panic();
 }
 
-Arci<IStorage> StorageRegistry::findStorageByUrl(mref<Url> url_) const noexcept {
+Arci<IStorage> StorageRegistry::findStorageByUrl(mref<StorageUrl> url_) const noexcept {
 
 	const auto scheme = url_.scheme();
 	for (const auto& repository : _repositories) {
@@ -232,7 +232,7 @@ bool StorageRegistry::findReferrerStorages(
 	return true;
 }
 
-Arci<IStorage> StorageRegistry::removeStorageByUrl(mref<Url> url_) {
+Arci<IStorage> StorageRegistry::removeStorageByUrl(mref<StorageUrl> url_) {
 
 	const auto scheme = url_.scheme();
 	for (const auto& repository : _repositories) {

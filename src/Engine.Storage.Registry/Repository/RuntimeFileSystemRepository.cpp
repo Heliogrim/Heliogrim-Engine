@@ -8,7 +8,7 @@
 #include "../Options/StorageDescriptor.hpp"
 #include "../Provider/LocalFileSystemProvider.hpp"
 #include "../Storage/LocalFileStorage.hpp"
-#include "../Url/Url.hpp"
+#include "../Url/StorageUrl.hpp"
 
 using namespace hg::engine::storage::system;
 using namespace hg;
@@ -53,7 +53,7 @@ Arci<engine::storage::IStorage> RuntimeFileSystemRepository::createStorage(mref<
 	return it->second.into<IStorage>();
 }
 
-bool RuntimeFileSystemRepository::hasStorage(cref<Url> url_) const {
+bool RuntimeFileSystemRepository::hasStorage(cref<StorageUrl> url_) const {
 	if (not url_.is<FileUrl>())
 		return false;
 
@@ -61,7 +61,7 @@ bool RuntimeFileSystemRepository::hasStorage(cref<Url> url_) const {
 	return it != _storages.end();
 }
 
-Arci<engine::storage::IStorage> RuntimeFileSystemRepository::getStorageByUrl(cref<Url> url_) const {
+Arci<engine::storage::IStorage> RuntimeFileSystemRepository::getStorageByUrl(cref<StorageUrl> url_) const {
 	if (not url_.is<FileUrl>())
 		return {};
 

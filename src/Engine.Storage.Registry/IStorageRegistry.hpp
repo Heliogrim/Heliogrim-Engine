@@ -7,7 +7,7 @@
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 
 namespace hg::engine::storage {
-	class Url;
+	class StorageUrl;
 	class IStorage;
 	class StorageDescriptor;
 	class UrlScheme;
@@ -59,12 +59,12 @@ namespace hg::engine::storage {
 		) = 0;
 
 	public:
-		[[nodiscard]] virtual bool hasStorage(mref<Url> url_) const noexcept = 0;
+		[[nodiscard]] virtual bool hasStorage(mref<StorageUrl> url_) const noexcept = 0;
 
-		[[nodiscard]] virtual Arci<IStorage> getStorageByUrl(mref<Url> url_) const = 0;
+		[[nodiscard]] virtual Arci<IStorage> getStorageByUrl(mref<StorageUrl> url_) const = 0;
 
 		[[nodiscard]] virtual _Success_(return != nullptr) Arci<IStorage> findStorageByUrl(
-			mref<Url> url_
+			mref<StorageUrl> url_
 		) const noexcept = 0;
 
 		virtual bool findReferrerStorages(
@@ -74,6 +74,6 @@ namespace hg::engine::storage {
 		) const = 0;
 
 	public:
-		[[nodiscard]] virtual _Success_(return != nullptr) Arci<IStorage> removeStorageByUrl(mref<Url> url_) = 0;
+		[[nodiscard]] virtual _Success_(return != nullptr) Arci<IStorage> removeStorageByUrl(mref<StorageUrl> url_) = 0;
 	};
 }

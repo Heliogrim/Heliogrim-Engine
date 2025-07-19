@@ -129,7 +129,7 @@ AutoImportAction::operator ptr<await_signal_sub_type>() const noexcept {
 #include <Engine.Storage.Registry/Options/PackageStorageDescriptor.hpp>
 #include <Engine.Storage.Registry/Options/StorageDescriptor.hpp>
 #include <Engine.Storage.Registry/Storage/PackageStorage.hpp>
-#include <Engine.Storage.Registry/Url/Url.hpp>
+#include <Engine.Storage.Registry/Url/StorageUrl.hpp>
 #include <Engine.Storage.System/StorageSystem.hpp>
 
 /**/

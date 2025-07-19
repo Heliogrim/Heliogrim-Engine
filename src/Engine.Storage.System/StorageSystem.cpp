@@ -13,7 +13,7 @@
 #include <Engine.Storage.Registry/IStorageRegistry.hpp>
 #include <Engine.Storage.Registry/Options/ArchiveStorageDescriptor.hpp>
 #include <Engine.Storage.Registry/Options/StorageDescriptor.hpp>
-#include <Engine.Storage.Registry/Url/Url.hpp>
+#include <Engine.Storage.Registry/Url/StorageUrl.hpp>
 
 #include "Details/StorageActionResolver.hpp"
 

@@ -47,11 +47,11 @@ namespace hg::engine::storage {
 		[[nodiscard]] Arci<IStorage> insert(mref<StorageDescriptor> descriptor_) override;
 
 	public:
-		[[nodiscard]] bool hasStorage(mref<Url> url_) const noexcept override;
+		[[nodiscard]] bool hasStorage(mref<StorageUrl> url_) const noexcept override;
 
-		[[nodiscard]] Arci<IStorage> getStorageByUrl(mref<Url> url_) const override;
+		[[nodiscard]] Arci<IStorage> getStorageByUrl(mref<StorageUrl> url_) const override;
 
-		[[nodiscard]] Arci<IStorage> findStorageByUrl(mref<Url> url_) const noexcept override;
+		[[nodiscard]] Arci<IStorage> findStorageByUrl(mref<StorageUrl> url_) const noexcept override;
 
 		bool findReferrerStorages(
 			mref<UrlScheme> scheme_,
@@ -60,6 +60,6 @@ namespace hg::engine::storage {
 		) const override;
 
 	public:
-		[[nodiscard]] Arci<IStorage> removeStorageByUrl(mref<Url> url_) override;
+		[[nodiscard]] Arci<IStorage> removeStorageByUrl(mref<StorageUrl> url_) override;
 	};
 }

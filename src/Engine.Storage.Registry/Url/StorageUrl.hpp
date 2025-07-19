@@ -15,10 +15,10 @@ namespace hg::engine::storage {
 
 	/**/
 
-	class Url final :
+	class StorageUrl final :
 		public Variant<ArchiveUrl, FileUrl, MemoryUrl, PackageUrl, RfclUrl> {
 	public:
-		using this_type = Url;
+		using this_type = StorageUrl;
 		using underlying_type = Variant<ArchiveUrl, FileUrl, MemoryUrl, PackageUrl, RfclUrl>;
 
 	public:

@@ -8,7 +8,7 @@
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 
 namespace hg::engine::storage {
-	class Url;
+	class StorageUrl;
 	class UrlScheme;
 	class IStorage;
 	class StorageDescriptor;
@@ -54,9 +54,9 @@ namespace hg::engine::storage::system {
 			mref<StorageDescriptor> descriptor_
 		) = 0;
 
-		[[nodiscard]] virtual bool hasStorage(cref<Url> url_) const = 0;
+		[[nodiscard]] virtual bool hasStorage(cref<StorageUrl> url_) const = 0;
 
-		[[nodiscard]] virtual Arci<IStorage> getStorageByUrl(cref<Url> url_) const = 0;
+		[[nodiscard]] virtual Arci<IStorage> getStorageByUrl(cref<StorageUrl> url_) const = 0;
 
 		virtual void findReferrerStorages(_In_ cref<Arci<IStorage>> ref_, _Inout_ ref<Vector<Arci<IStorage>>> collector_) const = 0;
 

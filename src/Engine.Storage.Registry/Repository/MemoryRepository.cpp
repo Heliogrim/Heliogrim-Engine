@@ -8,7 +8,7 @@
 #include "../Provider/MemoryProvider.hpp"
 #include "../Storage/MemoryStorage.hpp"
 #include "../Url/Scheme.hpp"
-#include "../Url/Url.hpp"
+#include "../Url/StorageUrl.hpp"
 
 using namespace hg::engine::storage::system;
 using namespace hg;
@@ -43,11 +43,11 @@ Arci<engine::storage::IStorage> MemoryRepository::createStorage(mref<StorageDesc
 	return it->second.into<IStorage>();
 }
 
-bool MemoryRepository::hasStorage(cref<Url> url_) const {
+bool MemoryRepository::hasStorage(cref<StorageUrl> url_) const {
 	return url_.is<MemoryUrl>() && _storages.contains(url_.as<MemoryUrl>().guid());
 }
 
-Arci<engine::storage::IStorage> MemoryRepository::getStorageByUrl(cref<Url> url_) const {
+Arci<engine::storage::IStorage> MemoryRepository::getStorageByUrl(cref<StorageUrl> url_) const {
 	if (not url_.is<MemoryUrl>())
 		return {};
 

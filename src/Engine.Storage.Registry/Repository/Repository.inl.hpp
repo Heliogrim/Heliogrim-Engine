@@ -4,16 +4,16 @@
 #include <Engine.Common/Managed/Rc.hpp>
 
 #include "../IStorage.hpp"
-#include "../Url/Url.hpp"
+#include "../Url/StorageUrl.hpp"
 
 namespace hg::engine::storage::system {
 	template <typename UrlType_>
-	[[nodiscard]] constexpr decltype(auto) inlineHasStorage(const auto& storages_, cref<Url> url_) {
+	[[nodiscard]] constexpr decltype(auto) inlineHasStorage(const auto& storages_, cref<StorageUrl> url_) {
 		return url_.is<UrlType_>() && storages_.contains(url_.as<UrlType_>().guid());
 	}
 
 	template <typename UrlType_>
-	[[nodiscard]] constexpr decltype(auto) inlineGetStorageByUrl(const auto& storages_, cref<Url> url_) {
+	[[nodiscard]] constexpr decltype(auto) inlineGetStorageByUrl(const auto& storages_, cref<StorageUrl> url_) {
 		if (not url_.is<UrlType_>()) {
 			return Arci<IStorage> {};
 		}
