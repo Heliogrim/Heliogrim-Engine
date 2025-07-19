@@ -11,6 +11,7 @@
 
 #include "AssetDescriptor.hpp"
 #include "AssetRepository.hpp"
+#include "Engine.Asserts/Todo.hpp"
 
 #include "Registry/Index.hpp"
 #include "Registry/IndexTable.hpp"
@@ -25,7 +26,7 @@ using namespace hg;
 /**/
 
 static AssetGuid projectAssetGuid(nmpt<const Asset> asset_) noexcept {
-	return asset_->get_guid();
+	return asset_->getAssetGuid();
 }
 
 static std::strong_ordering comparatorAssetGuid(AssetGuid left_, AssetGuid right_) noexcept {
@@ -40,28 +41,30 @@ static std::strong_ordering comparatorAssetType(AssetTypeId left_, AssetTypeId r
 	return std::compare_three_way {}.operator()(left_.data, right_.data);
 }
 
-static string projectAssetUrl(nmpt<const Asset> asset_) noexcept {
-	return string { asset_->getVirtualUrl() };
+static AssetUrl projectAssetUrl(nmpt<const Asset> asset_) noexcept {
+	return asset_->getAssetVfsUrl();
 }
 
 static std::strong_ordering comparatorAssetUrl(
-	string left_,
-	string right_,
+	AssetUrl check_,
+	AssetUrl indexed_,
 	FindPathOptions options_
 ) noexcept {
 
-	const auto index = fs::Path(std::move(left_));
-	auto check = fs::Path(std::move(right_));
-
-	if (not index.contains(check)) {
-		return index <=> check;
+	const auto result = indexed_.getAssetPath() <=> check_.getAssetPath();
+	if (result == std::strong_ordering::less) {
+		return std::strong_ordering::less;
 	}
 
-	if (options_.recursive) {
+	if (result == std::strong_ordering::equivalent && not check_.getAssetName().empty()) {
+		return indexed_.getAssetName() <=> check_.getAssetName();
+	}
+
+	if (result == std::strong_ordering::equivalent && check_.getAssetName().empty() && not options_.recursive) {
 		return std::strong_ordering::equivalent;
 	}
 
-	if (index == check.pop()) {
+	if (options_.recursive && indexed_.getAssetPath().contains(check_.getAssetPath())) {
 		return std::strong_ordering::equivalent;
 	}
 
@@ -69,14 +72,8 @@ static std::strong_ordering comparatorAssetUrl(
 }
 
 struct IndexAssetUrlRelation {
-	[[nodiscard]] bool operator()(cref<string> left_, cref<string> right_) const noexcept {
-
-		/* left_ < right_ => ? */
-
-		const std::filesystem::path base = left_;
-		const std::filesystem::path test = right_;
-
-		return base < test;
+	[[nodiscard]] bool operator()(ref<const AssetUrl> base_, ref<const AssetUrl> test_) const noexcept {
+		return base_ < test_;
 	}
 };
 
@@ -84,8 +81,7 @@ struct IndexAssetUrlRelation {
 
 using GuidIndex = Index<true, false, void, false, AssetGuid, projectAssetGuid, comparatorAssetGuid>;
 using TypeIndex = Index<false, true, void, false, AssetTypeId, projectAssetType, comparatorAssetType>;
-using UrlIndex = Index<true, true, FindPathOptions, false, string, projectAssetUrl, comparatorAssetUrl,
-	IndexAssetUrlRelation>;
+using UrlIndex = Index<true, true, FindPathOptions, false, AssetUrl, projectAssetUrl, comparatorAssetUrl, IndexAssetUrlRelation>;
 
 /**/
 
@@ -95,7 +91,8 @@ AssetRegistry::AssetRegistry() noexcept :
 	_repositories(),
 	_indexes(),
 	_indexGuid(nullptr),
-	_indexUrl(nullptr) {}
+	_indexUrl(nullptr),
+	_indexType(nullptr) {}
 
 AssetRegistry::~AssetRegistry() {
 	_indexes.clear();
@@ -118,6 +115,7 @@ void AssetRegistry::setup() {
 
 	_indexGuid = guidIndex.get();
 	_indexUrl = urlIndex.get();
+	_indexType = typeIndex.get();
 
 	addIndexTable(std::move(guidIndex));
 	addIndexTable(std::move(typeIndex));
@@ -206,47 +204,68 @@ Opt<Arci<Asset>> AssetRegistry::findAssetByGuid(cref<AssetGuid> guid_) const noe
 	return result != nullptr ? Some(result->arci_from_this()) : None;
 }
 
-nmpt<Asset> AssetRegistry::getAssetByPath(cref<fs::Path> path_) const {
+nmpt<Asset> AssetRegistry::getAssetByPath(ref<const AssetUrl> path_) const {
 
 	_SCTRL_SGATE(_mtx);
 
 	const auto* const table = static_cast<const ptr<const AutoIndexTable<UrlIndex>>>(_indexUrl);
-	return table->get(static_cast<String>(path_));
+	return table->get(path_);
 }
 
-nmpt<Asset> AssetRegistry::findAssetByPath(cref<fs::Path> path_) const noexcept {
+nmpt<Asset> AssetRegistry::findAssetByPath(ref<const AssetUrl> path_) const noexcept {
 
 	_SCTRL_SGATE(_mtx);
 
 	const auto* const table = static_cast<const ptr<const AutoIndexTable<UrlIndex>>>(_indexUrl);
-	return table->get(static_cast<String>(path_));
+	return table->get(path_);
 }
 
-void AssetRegistry::findAssetsByPath(cref<fs::Path> path_, ref<Vector<nmpt<Asset>>> assets_) {
+void AssetRegistry::findAssetsByPath(ref<const AssetPath> path_, ref<Vector<nmpt<Asset>>> assets_) {
 	findAssetsByPath(path_, FindPathOptions { false }, assets_);
 }
 
 void AssetRegistry::findAssetsByPath(
-	cref<fs::Path> path_,
+	ref<const AssetPath> path_,
 	system::FindPathOptions options_,
 	ref<Vector<nmpt<Asset>>> assets_
 ) {
+	const auto url = AssetUrl { path_, AssetName {} };
 
 	_SCTRL_SGATE(_mtx);
 
 	//const auto encoded = path_.encode();
 
 	const auto* const table = static_cast<const ptr<const AutoIndexTable<UrlIndex>>>(_indexUrl);
-	table->get(static_cast<String>(path_), options_, assets_);
+	table->get(url, options_, assets_);
 }
 
-void AssetRegistry::findAssetsByPaths(cref<std::span<fs::Path>> paths_, ref<Vector<nmpt<Asset>>> asset_) {}
+void AssetRegistry::findAssetsByPaths(std::span<AssetPath> paths_, ref<Vector<nmpt<Asset>>> asset_) {
+	::hg::todo_panic();
+}
 
 void AssetRegistry::findAssetsByPaths(
-	cref<std::span<fs::Path>> paths_,
+	std::span<AssetPath> paths_,
 	system::FindPathsOptions options_,
 	ref<Vector<nmpt<Asset>>> asset_
-) {}
+) {
+	::hg::todo_panic();
+}
+
+void AssetRegistry::findAssetsByType(ref<const AssetTypeId> assetTypeId_, ref<Vector<nmpt<Asset>>> asset_) const {
+
+	_SCTRL_GATE(_mtx);
+
+	const auto* const table = static_cast<const ptr<const AutoIndexTable<TypeIndex>>>(_indexType);
+	table->get(assetTypeId_, asset_);
+}
+
+/* @formatter:off */
+bool AssetRegistry::canIndexAsset(nmpt<Asset> asset_) const noexcept {
+	return std::ranges::all_of(_indexes, [&](const auto& indexTable_) {
+		return not(indexTable_->isUniqueIndex() && indexTable_->slowContains(asset_));
+	});
+}
+/* @formatter:on */
 
 void AssetRegistry::indexAsset(const nmpt<Asset> asset_) {
 	for (const auto& indexTable : _indexes) {
@@ -269,6 +288,12 @@ bool AssetRegistry::insert(mref<system::AssetDescriptor> descriptor_) {
 
 	_SCTRL_GATE(_mtx);
 
+	if (not canIndexAsset(descriptor_.asset.get())) {
+		return false;
+	}
+
+	/**/
+
 	// Warning: Unsafe
 	const auto repository = selectRepository(descriptor_);
 	const auto stored = static_cast<ptr<system::InMemAssetRepository>>(repository.get())->storeAsset(
@@ -281,10 +306,39 @@ bool AssetRegistry::insert(mref<system::AssetDescriptor> descriptor_) {
 		return false;
 	}
 
-	/**/
-
 	indexAsset(stored);
 	return true;
+}
+
+Result<std::true_type, AssetRegistryError> AssetRegistry::insertOrFail(mref<system::AssetDescriptor> descriptor_) noexcept {
+
+	_SCTRL_GATE(_mtx);
+
+	// Note: If required, we may need to add a "primary" attribute to the index to support multiple non-recoverable indexes
+	if (_indexGuid->slowContains(descriptor_.asset.get())) {
+		return Unexpected<AssetRegistryError> { IndexFailure {} };
+	}
+
+	if (not canIndexAsset(descriptor_.asset.get())) {
+		return Unexpected<AssetRegistryError> { IndexSoftFailure {} };
+	}
+
+	/**/
+
+	// Warning: Unsafe
+	const auto repository = selectRepository(descriptor_);
+	const auto stored = static_cast<ptr<system::InMemAssetRepository>>(repository.get())->storeAsset(
+		::hg::move(descriptor_.asset)
+	);
+
+	/**/
+
+	if (stored == nullptr) {
+		return Unexpected<AssetRegistryError> { RepositoryFailure {} };
+	}
+
+	indexAsset(stored);
+	return Expected<std::true_type> {};
 }
 
 void AssetRegistry::dropAssetIndex(nmpt<Asset> asset_) {
@@ -330,15 +384,15 @@ bool AssetRegistry::removeAssetsByGuids(cref<std::span<AssetGuid>> guids_) {
 	return succeeded;
 }
 
-bool AssetRegistry::removeAssetByPath(cref<fs::Path> url_) {
+bool AssetRegistry::removeAssetByPath(ref<const AssetUrl> url_) {
 	return false;
 }
 
-bool AssetRegistry::removeAssetsByPath(cref<fs::Path> path_, system::RemovePathOptions options_) {
+bool AssetRegistry::removeAssetsByPath(ref<const AssetUrl> path_, system::RemovePathOptions options_) {
 	return false;
 }
 
-bool AssetRegistry::removeAssetsByPaths(cref<std::span<fs::Path>> paths_, system::RemovePathsOptions options_) {
+bool AssetRegistry::removeAssetsByPaths(std::span<AssetUrl> paths_, system::RemovePathsOptions options_) {
 	return false;
 }
 
@@ -438,7 +492,11 @@ bool AssetRegistry::dropIndex(cref<string> uniqueName_) {
 	return false;
 }
 
-void AssetRegistry::getIndexedPaths(ref<CompactSet<string>> paths_) const {
+void AssetRegistry::getIndexedPaths(
+	ref<Vector<AssetPath>> paths_
+) const {
+
+	paths_.clear();
 
 	_SCTRL_SGATE(_mtx);
 
@@ -446,7 +504,10 @@ void AssetRegistry::getIndexedPaths(ref<CompactSet<string>> paths_) const {
 	const auto keys = table->tableKeys();
 
 	for (const auto& key : keys) {
-		const auto path = fs::Path(string_view { key });
-		paths_.insert(path.parentPath());
+		if (not paths_.empty() && paths_.back() == key.getAssetPath()) {
+			continue;
+		}
+
+		paths_.emplace_back(clone(key.getAssetPath()));
 	}
 }

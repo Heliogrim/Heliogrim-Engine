@@ -44,7 +44,7 @@ namespace hg::engine::assets::system {
 		template <typename AssetType_> requires std::derived_from<AssetType_, Asset>
 		[[nodiscard]] nmpt<AssetType_> storeAsset(_In_ mref<Arci<AssetType_>> owningPtr_) {
 
-			const auto key = owningPtr_->get_guid();
+			const auto key = owningPtr_->getAssetGuid();
 			if (_entries.contains(key)) {
 				return nullptr;
 			}

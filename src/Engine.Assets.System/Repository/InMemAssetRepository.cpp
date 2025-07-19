@@ -18,7 +18,7 @@ void InMemAssetRepository::tidy() {
 
 bool InMemAssetRepository::destroyAsset(mref<nmpt<Asset>> asset_) {
 
-	const auto key = asset_->get_guid();
+	const auto key = asset_->getAssetGuid();
 	const auto iter = _entries.find(key);
 
 	if (iter == _entries.end()) {

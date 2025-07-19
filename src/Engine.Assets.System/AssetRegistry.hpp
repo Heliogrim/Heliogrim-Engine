@@ -2,13 +2,13 @@
 
 #include <span>
 #include <Engine.Assets/AssetGuid.hpp>
+#include <Engine.Assets/AssetPath.hpp>
 #include <Engine.Assets/AssetTypeId.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Set.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Functional/Function.hpp>
-#include <Engine.Filesystem/Path.hpp>
 #include <Engine.Filesystem/__fwd.hpp>
 #include <Engine.Utils/_CTRL.hpp>
 
@@ -63,40 +63,47 @@ namespace hg::engine::assets {
 
 		[[nodiscard]] Opt<Arci<Asset>> findAssetByGuid(cref<AssetGuid> guid_) const noexcept override;
 
-		[[nodiscard]] nmpt<Asset> getAssetByPath(cref<fs::Path> path_) const override;
+		[[nodiscard]] nmpt<Asset> getAssetByPath(ref<const AssetUrl> path_) const override;
 
-		[[nodiscard]] nmpt<Asset> findAssetByPath(cref<fs::Path> path_) const noexcept override;
+		[[nodiscard]] nmpt<Asset> findAssetByPath(ref<const AssetUrl> path_) const noexcept override;
 
 		/**
 		 * Multi-Asset Operations
 		 */
 	public:
 		void findAssetsByPath(
-			cref<fs::Path> path_,
+			ref<const AssetPath> path_,
 			_Out_ ref<Vector<nmpt<Asset>>> assets_
 		) override;
 
 		void findAssetsByPath(
-			cref<fs::Path> path_,
+			ref<const AssetPath> path_,
 			system::FindPathOptions options_,
 			_Out_ ref<Vector<nmpt<Asset>>> assets_
 		) override;
 
 		void findAssetsByPaths(
-			cref<std::span<fs::Path>> paths_,
+			std::span<AssetPath> paths_,
 			_Out_ ref<Vector<nmpt<Asset>>> asset_
 		) override;
 
 		void findAssetsByPaths(
-			cref<std::span<fs::Path>> paths_,
+			std::span<AssetPath> paths_,
 			system::FindPathsOptions options_,
 			_Out_ ref<Vector<nmpt<Asset>>> asset_
 		) override;
+
+		void findAssetsByType(
+			ref<const AssetTypeId> assetTypeId_,
+			_Out_ ref<Vector<nmpt<Asset>>> asset_
+		) const;
 
 		/**
 		 * Registry Mutation Operations
 		 */
 	protected:
+		[[nodiscard]] bool canIndexAsset(nmpt<Asset> asset_) const noexcept;
+
 		void indexAsset(nmpt<Asset> asset_);
 
 		[[nodiscard]] nmpt<system::AssetRepository> selectRepository(
@@ -106,6 +113,8 @@ namespace hg::engine::assets {
 	public:
 		bool insert(_In_ mref<system::AssetDescriptor> descriptor_) override;
 
+		Result<std::true_type, AssetRegistryError> insertOrFail(mref<system::AssetDescriptor> descriptor_) noexcept override;
+
 	protected:
 		void dropAssetIndex(nmpt<Asset> asset_);
 
@@ -114,11 +123,11 @@ namespace hg::engine::assets {
 
 		bool removeAssetsByGuids(cref<std::span<AssetGuid>> guids_) override;
 
-		bool removeAssetByPath(cref<fs::Path> path_) override;
+		bool removeAssetByPath(ref<const AssetUrl> path_) override;
 
-		bool removeAssetsByPath(cref<fs::Path> path_, system::RemovePathOptions options_ = {}) override;
+		bool removeAssetsByPath(ref<const AssetUrl> path_, system::RemovePathOptions options_ = {}) override;
 
-		bool removeAssetsByPaths(cref<std::span<fs::Path>> paths_, system::RemovePathsOptions options_ = {}) override;
+		bool removeAssetsByPaths(std::span<AssetUrl> paths_, system::RemovePathsOptions options_ = {}) override;
 
 		/**
 		 * Index Tables
@@ -128,6 +137,7 @@ namespace hg::engine::assets {
 
 		non_owning_rptr<system::IndexTableBase> _indexGuid;
 		non_owning_rptr<system::IndexTableBase> _indexUrl;
+		non_owning_rptr<system::IndexTableBase> _indexType;
 
 	protected:
 		bool addIndexTable(mref<uptr<system::IndexTableBase>> table_);
@@ -152,7 +162,7 @@ namespace hg::engine::assets {
 		 * Special Functions
 		 */
 	public:
-		void getIndexedPaths(_Out_ ref<CompactSet<string>> paths_) const;
+		void getIndexedPaths(_Out_ ref<Vector<AssetPath>> paths_) const;
 	};
 
 	/**/

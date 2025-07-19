@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <map>
 #include <ranges>
+#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/DenseMap.hpp>
@@ -46,6 +47,10 @@ namespace hg::engine::assets::system {
 		}
 
 	public:
+		[[nodiscard]] constexpr virtual bool isUniqueIndex() const noexcept = 0;
+
+		[[nodiscard]] virtual bool slowContains(nmpt<Asset> asset_) const noexcept = 0;
+
 		virtual void clear() = 0;
 
 		virtual void store(nmpt<Asset> asset_) = 0;
@@ -155,8 +160,44 @@ namespace hg::engine::assets::system {
 		}
 
 	public:
+		[[nodiscard]] constexpr bool isUniqueIndex() const noexcept override {
+			return trait_type::unique;
+		}
+
 		void clear() override {
 			_table.clear();
+		}
+
+		/**
+		 * Query Operations
+		 */
+	public:
+		template <typename IndexType_ = Index_> requires IndexTrait<IndexType_>::unique &&
+			(not IndexTrait<IndexType_>::multiple)
+		[[nodiscard]] bool slowContains(nmpt<Asset> asset_) const noexcept {
+			using index_trait_type = IndexTrait<IndexType_>;
+			return _table.contains(index_trait_type::project(asset_));
+		}
+
+		template <typename IndexType_ = Index_> requires IndexTrait<IndexType_>::unique &&
+			IndexTrait<IndexType_>::multiple
+		[[nodiscard]] bool slowContains(nmpt<Asset> asset_) const noexcept {
+			using index_trait_type = IndexTrait<IndexType_>;
+			return _table.contains(index_trait_type::project(asset_));
+		}
+
+		template <typename IndexType_ = Index_> requires (not IndexTrait<IndexType_>::unique) &&
+			IndexTrait<IndexType_>::multiple
+		[[nodiscard]] bool slowContains([[maybe_unused]] nmpt<Asset> asset_) const noexcept {
+			// using index_trait_type = IndexTrait<IndexType_>;
+			// Attention: We won't support this currently as this is only internal behaviour, unused and we expect the
+			// Attention:	corresponding implementation to be "slow"
+			::hg::panic();
+		}
+
+	public:
+		[[nodiscard]] bool slowContains(nmpt<Asset> asset_) const noexcept override {
+			return slowContains<index_type>(asset_);
 		}
 
 		/**
@@ -170,7 +211,7 @@ namespace hg::engine::assets::system {
 
 			#ifdef _DEBUG
 			const auto result = _table.insert_or_assign(index_trait_type::project(asset_), asset_);
-			assert(result.second);
+			::hg::assertd(result.second);
 			#else
 			_table.insert_or_assign(index_trait_type::project(asset_), asset_);
 			#endif
@@ -183,7 +224,7 @@ namespace hg::engine::assets::system {
 
 			#ifdef _DEBUG
 			const auto result = _table.insert_or_assign(index_trait_type::project(asset_), asset_);
-			assert(result.second);
+			::hg::assertd(result.second);
 			#else
 			_table.insert_or_assign(index_trait_type::project(asset_), asset_);
 			#endif

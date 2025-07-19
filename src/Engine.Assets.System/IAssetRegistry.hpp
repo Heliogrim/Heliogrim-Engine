@@ -3,6 +3,8 @@
 #include <span>
 #include <Engine.Assets/AssetGuid.hpp>
 #include <Engine.Assets/AssetTypeId.hpp>
+#include <Engine.Assets/AssetUrl.hpp>
+#include <Engine.Common/Expected.hpp>
 #include <Engine.Common/Optional.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
@@ -12,6 +14,7 @@
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.Filesystem/Url.hpp>
 
+#include "AssetRegistryError.hpp"
 #include "__fwd.hpp"
 #include "Options/FindPathOptions.hpp"
 #include "Options/FindPathsOptions.hpp"
@@ -53,32 +56,32 @@ namespace hg::engine::assets {
 
 		[[nodiscard]] virtual Opt<Arci<Asset>> findAssetByGuid(cref<AssetGuid> guid_) const noexcept = 0;
 
-		[[nodiscard]] virtual nmpt<Asset> getAssetByPath(cref<fs::Path> path_) const = 0;
+		[[nodiscard]] virtual nmpt<Asset> getAssetByPath(ref<const AssetUrl> path_) const = 0;
 
-		[[nodiscard]] virtual nmpt<Asset> findAssetByPath(cref<fs::Path> path_) const noexcept = 0;
+		[[nodiscard]] virtual nmpt<Asset> findAssetByPath(ref<const AssetUrl> path_) const noexcept = 0;
 
 		/**
 		 * Multi-Asset Operations
 		 */
 	public:
 		virtual void findAssetsByPath(
-			cref<fs::Path> path_,
+			ref<const AssetPath> path_,
 			_Out_ ref<Vector<nmpt<Asset>>> assets_
 		) = 0;
 
 		virtual void findAssetsByPath(
-			cref<fs::Path> path_,
+			ref<const AssetPath> path_,
 			system::FindPathOptions options_,
 			_Out_ ref<Vector<nmpt<Asset>>> assets_
 		) = 0;
 
 		virtual void findAssetsByPaths(
-			cref<std::span<fs::Path>> paths_,
+			std::span<AssetPath> paths_,
 			_Out_ ref<Vector<nmpt<Asset>>> asset_
 		) = 0;
 
 		virtual void findAssetsByPaths(
-			cref<std::span<fs::Path>> paths_,
+			std::span<AssetPath> paths_,
 			system::FindPathsOptions options_,
 			_Out_ ref<Vector<nmpt<Asset>>> asset_
 		) = 0;
@@ -89,17 +92,19 @@ namespace hg::engine::assets {
 	public:
 		virtual bool insert(_In_ mref<system::AssetDescriptor> descriptor_) = 0;
 
+		virtual Result<std::true_type, AssetRegistryError> insertOrFail(_In_ mref<system::AssetDescriptor> descriptor_) noexcept = 0;
+
 	public:
 		virtual bool removeAssetByGuid(cref<AssetGuid> guid_) = 0;
 
 		virtual bool removeAssetsByGuids(cref<std::span<AssetGuid>> guids_) = 0;
 
-		virtual bool removeAssetByPath(cref<fs::Path> path_) = 0;
+		virtual bool removeAssetByPath(ref<const AssetUrl> path_) = 0;
 
-		virtual bool removeAssetsByPath(cref<fs::Path> path_, system::RemovePathOptions options_ = {}) = 0;
+		virtual bool removeAssetsByPath(ref<const AssetUrl> path_, system::RemovePathOptions options_ = {}) = 0;
 
 		virtual bool removeAssetsByPaths(
-			cref<std::span<fs::Path>> paths_,
+			std::span<AssetUrl> paths_,
 			system::RemovePathsOptions options_ = {}
 		) = 0;
 	};
