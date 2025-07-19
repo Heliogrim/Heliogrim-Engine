@@ -24,6 +24,8 @@ void access::Structure<SkyboxComponent>::serialize(
 	// TODO: Implement Resolver
 	Structure<Guid>::serialize(self_._skyboxGeometry.getAssetGuid(), slot_.insertStructSlot("geometry"sv));
 	Structure<Guid>::serialize(self_._skyboxMaterial.getAssetGuid(), slot_.insertStructSlot("material"sv));
+	// Problem: At this point we are losing bytes of the last value stored into a slot
+	// Question: Maybe the slots are getting destroyed out of order?
 }
 
 template <>

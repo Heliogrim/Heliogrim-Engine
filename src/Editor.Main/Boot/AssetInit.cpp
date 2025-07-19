@@ -29,9 +29,11 @@
 #include "Editor.Action/ActionManager.hpp"
 #include "Editor.Action/Action/Import/AutoImportAction.hpp"
 #include "Engine.Assets/Assets.hpp"
+#include "Engine.Assets/Utils.hpp"
 #include "Engine.Config/Config.hpp"
 #include "Engine.Config/Enums.hpp"
 #include "Engine.Core/Module/Modules.hpp"
+#include "Engine.Reflect/IsType.hpp"
 #include "Engine.Resource.Archive/BufferArchive.hpp"
 #include "Engine.Resource.Archive/StorageReadonlyArchive.hpp"
 #include "Engine.Resource/ResourceManager.hpp"
@@ -39,6 +41,7 @@
 #include "Engine.Resource.Package/Attribute/PackageGuid.hpp"
 #include "Engine.Resource.Package/Linker/PackageLinker.hpp"
 #include "Engine.Serialization/Layout/DataLayoutBase.hpp"
+#include "Engine.Serialization/Scheme/DefaultScheme.hpp"
 #include "Engine.Serialization.Layouts/LayoutManager.hpp"
 #include "Engine.Storage.Package/Pattern.hpp"
 #include "Engine.Storage.Registry/IStorage.hpp"
@@ -69,13 +72,20 @@ struct Indexed {
 	Opt<concurrent::future<void>> scheduled;
 };
 
+struct RetryContext {
+	assets::AssetName baseName;
+	size_t retry;
+};
+
 /**/
 
 // @formatter:off
-static void packageDiscoverAssets(mref<Arci<storage::system::PackageStorage>> packStore_);
-static bool isArchivedAsset(mref<serialization::RecordScopedSlot> record_);
-static bool tryLoadArchivedAsset(mref<serialization::RecordScopedSlot> record_);
-static bool autoImport(ref<Indexed> indexed_);
+static void package_discover_assets(mref<Arci<storage::system::PackageStorage>> packStore_);
+static bool is_archived_asset(mref<serialization::RecordScopedSlot> record_);
+static bool try_load_archived_asset(ref<const storage::ArchiveUrl> assetStorageUrl_, mref<serialization::RecordScopedSlot> record_);
+static bool auto_import(ref<Indexed> indexed_);
+static bool try_recover_vfs(ref<assets::Asset> asset_, ref<const storage::ArchiveUrl> archiveUrl_);
+static Opt<::hg::engine::fs::Path> find_best_match_relative(ref<const ::hg::engine::fs::Path> lfsStoragePath_);
 // @formatter:on
 
 /**/
@@ -271,7 +281,7 @@ Opt<LoadAwait> enqueueIndexedLoad(cref<Indexed> indexed_) {
 
 	// @formatter:off
 	return Some(scheduler::async<void>([storePack = std::move(maybePackStore).value()]() mutable {
-		packageDiscoverAssets(std::move(storePack));
+		package_discover_assets(std::move(storePack));
 	}));
 	// @formatter:on
 }
@@ -417,7 +427,7 @@ void autoIndex(cref<path> root_) {
 
 		if (primaryExists && not metaExists) {
 
-			if (autoImport(indexed_)) {
+			if (auto_import(indexed_)) {
 				// Note: We currently don't schedule async, so we don't need to wait
 				return true;
 			}
@@ -426,7 +436,7 @@ void autoIndex(cref<path> root_) {
 			return true;
 		}
 
-		IM_CORE_WARNF("Encountered auto-indexed meta file without an associated primary object.");
+		// IM_CORE_WARNF("Encountered auto-indexed meta file without an associated primary object.");
 		return true;
 	};
 
@@ -482,7 +492,7 @@ void editor::boot::initDefaultAssets() {
 #include <Engine.Serialization/Structure/SeqScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 
-void packageDiscoverAssets(mref<Arci<storage::system::PackageStorage>> packStore_) {
+void package_discover_assets(mref<Arci<storage::system::PackageStorage>> packStore_) {
 
 	const auto engine = Engine::getEngine();
 	const auto storeSys = engine->getStorage()->getSystem();
@@ -503,7 +513,8 @@ void packageDiscoverAssets(mref<Arci<storage::system::PackageStorage>> packStore
 
 	for (auto&& archive : maybeEnumArchives.value()) {
 		// @formatter:off
-		storeSys->query(::hg::move(archive), [](_In_ ref<resource::StorageReadonlyArchive> archive_) {
+		const auto storageUrl = storage::ArchiveUrl { archive->getArchiveGuid() };
+		storeSys->query(::hg::move(archive), [&storageUrl](_In_ ref<resource::StorageReadonlyArchive> archive_) {
 			// @formatter:on
 
 			if (archive_.type() != resource::ArchiveType::eSerializedStructure) {
@@ -514,10 +525,10 @@ void packageDiscoverAssets(mref<Arci<storage::system::PackageStorage>> packStore
 
 			/* Check for root stored assets */
 
-			if (isArchivedAsset(structured.getRootSlot())) {
+			if (is_archived_asset(structured.getRootSlot())) {
 
 				archive_.seek(0LL);
-				tryLoadArchivedAsset(structured.getRootSlot());
+				try_load_archived_asset(storageUrl, structured.getRootSlot());
 				return;
 			}
 
@@ -541,14 +552,14 @@ void packageDiscoverAssets(mref<Arci<storage::system::PackageStorage>> packStore
 					return;
 				}
 
-				if (not isArchivedAsset(seq.getRecordSlot(0))) {
+				if (not is_archived_asset(seq.getRecordSlot(0))) {
 					return;
 				}
 
 				/* Iterate over archives and try to load */
 
 				for (s64 idx = 0; idx < count; ++idx) {
-					tryLoadArchivedAsset(seq.getRecordSlot(idx));
+					try_load_archived_asset(storageUrl, seq.getRecordSlot(idx));
 				}
 			}
 
@@ -558,7 +569,7 @@ void packageDiscoverAssets(mref<Arci<storage::system::PackageStorage>> packStore
 	}
 }
 
-bool isArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
+bool is_archived_asset(mref<serialization::RecordScopedSlot> record_) {
 
 	const auto record = std::move(record_).intoStruct();
 	if (not record.slot()->validateType()) {
@@ -594,7 +605,7 @@ bool isArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
 	return true;
 }
 
-bool tryLoadArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
+bool try_load_archived_asset(ref<const storage::ArchiveUrl> assetStorageUrl_, mref<serialization::RecordScopedSlot> record_) {
 
 	auto record = record_.asStruct();
 
@@ -608,7 +619,8 @@ bool tryLoadArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
 
 	/**/
 
-	auto genericLoad = []<class AssetType_>(
+	auto genericLoad = []<std::derived_from<assets::Asset> AssetType_>(
+		ref<const storage::ArchiveUrl> archiveStorageUrl_,
 		AssetGuid guid_,
 		mref<serialization::StructScopedSlot> record_
 	) -> Opt<Arci<AssetType_>> {
@@ -623,12 +635,65 @@ bool tryLoadArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
 		auto nextAsset = Arci<AssetType_>::create();
 		serialization::access::Structure<AssetType_>::hydrate(std::move(record_), *nextAsset);
 
-		engine::assets::storeDefaultNameAndUrl(*nextAsset, {});
-		const auto succeeded = registry->insert({ clone(nextAsset).template into<assets::Asset>() });
+		nextAsset->setAssetStorageUrl(clone(archiveStorageUrl_));
 
 		/**/
 
-		if (not succeeded) {
+		if (nextAsset->getAssetVfsUrl().empty() && not try_recover_vfs(
+			*nextAsset,
+			archiveStorageUrl_
+		)) {
+			IM_CORE_ERRORF(
+				"Failed to recover virtual filesystem url for asset (`{}` -> `{}`).",
+				nextAsset->getAssetName(),
+				encodeGuid4228(guid_)
+			);
+			nextAsset.reset();
+			return None;
+		}
+
+		/**/
+
+		auto success = false;
+		auto hard_failure = false;
+		Opt<RetryContext> retry_context = None;
+		// TODO: Add retry context to track e.g. the renaming suffix
+
+		do {
+
+			if (retry_context != None) {
+				auto next_asset_name = std::format("{} ({})", retry_context->baseName, retry_context->retry);
+				nextAsset = assets::rename(
+					::hg::move(nextAsset).template into<assets::Asset>(),
+					::hg::move(next_asset_name)
+				).into<AssetType_>();
+				++retry_context->retry;
+			}
+
+			/**/
+
+			const auto result = registry->insertOrFail({ clone(nextAsset).template into<assets::Asset>() });
+
+			/**/
+
+			success = result.has_value();
+			hard_failure = not success && not result.error().template is<assets::system::IndexSoftFailure>();
+
+			if (not success && not hard_failure && not retry_context) {
+				IM_CORE_WARNF(
+					"Tried to load asset (`{}` -> `{}`) from package, but need to refactor asset, as it's already used.",
+					nextAsset->getAssetName(),
+					encodeGuid4228(guid_)
+				);
+
+				retry_context = Some(RetryContext { .baseName = nextAsset->getAssetName(), .retry = 1uLL });
+			}
+
+		} while (not success && not hard_failure);
+
+		/**/
+
+		if (not success && hard_failure) {
 			IM_CORE_WARNF(
 				"Tried to load asset (`{}` -> `{}`) from package, but it is already present.",
 				nextAsset->getAssetName(),
@@ -669,7 +734,7 @@ bool tryLoadArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
 	std::unreachable();
 }
 
-bool autoImport(ref<Indexed> indexed_) {
+bool auto_import(ref<Indexed> indexed_) {
 
 	const auto actions = nmpt<editor::ActionManager> {
 		static_cast<ptr<editor::ActionManager>>(
@@ -687,4 +752,86 @@ bool autoImport(ref<Indexed> indexed_) {
 	/**/
 
 	return result.has_value();
+}
+
+bool try_recover_vfs(ref<assets::Asset> asset_, ref<const storage::ArchiveUrl> archiveUrl_) {
+
+	const auto& system = *Engine::getEngine()->getStorage()->getSystem();
+
+	const auto archiveStorage = system.findArchive(clone(archiveUrl_));
+	if (archiveStorage == None) {
+		return false;
+	}
+
+	auto archiveBackingStorage = (*archiveStorage)->getBacking();
+	if (archiveBackingStorage == nullptr || (
+		not IsType<storage::system::PackageStorage>(*archiveBackingStorage) &&
+		not IsType<storage::system::LocalFileStorage>(*archiveBackingStorage)
+	)) {
+		return false;
+	}
+
+	auto lfsStorage = Arci<storage::system::LocalFileStorage> {};
+	if (IsType<storage::system::LocalFileStorage>(*archiveBackingStorage)) {
+		lfsStorage = ::hg::move(archiveBackingStorage).into<storage::system::LocalFileStorage>();
+
+	} else {
+		const auto packageStorage = ::hg::move(archiveBackingStorage).into<storage::system::PackageStorage>();
+		auto packageBackingStorage = packageStorage->getBacking();
+
+		if (packageBackingStorage == nullptr || not IsType<storage::system::LocalFileStorage>(*packageBackingStorage)) {
+			return false;
+		}
+
+		lfsStorage = ::hg::move(packageBackingStorage).into<storage::system::LocalFileStorage>();
+	}
+
+	/**/
+
+	auto storageLfsPath = clone(lfsStorage->_lfsPath);
+	::hg::assertd(std::filesystem::exists(storageLfsPath));
+
+	// Note: This is a lot of guessing, as we try to find a suitable config path mapping and the shortest relative
+	// Note:	sub-path to artificially re-locate the asset.
+	auto vfsPathCandidate = find_best_match_relative(storageLfsPath.normalized());
+	if (vfsPathCandidate == None) {
+		return false;
+	}
+
+	// Note: We will use the full lfs path, instead of the stripped version, trying to prevent data-raises due to
+	// Note:	naming conflicts. (Same as 'Image' and 'Texture' suffix naming for texture imports)
+	// Warning: This will only work as sanitization when used with un-bundled asset archives
+	asset_.setAssetVfsUrl(assets::AssetUrl { ::hg::move(vfsPathCandidate).value(), asset_.getAssetName() });
+	return true;
+}
+
+Opt<::hg::engine::fs::Path> find_best_match_relative(ref<const ::hg::engine::fs::Path> lfsStoragePath_) {
+
+	const auto& cfg = engine::Engine::getEngine()->getConfig();
+
+	/**/
+
+	const auto& cfgEditorAssetPath = cfg.getTyped<String>(engine::cfg::EditorConfigProperty::eLocalAssetPath);
+	::hg::assertrt(cfgEditorAssetPath.has_value() && cfgEditorAssetPath->has_value());
+	const auto editorAssetPath = engine::fs::Path { **cfgEditorAssetPath }.normalized();
+
+	Opt<engine::fs::Path> result = None;
+	if (lfsStoragePath_.isSubPathOf(editorAssetPath)) {
+		result = Some(engine::fs::Path { std::filesystem::relative(lfsStoragePath_, editorAssetPath) });
+	}
+
+	/**/
+
+	const auto& cfgProjectAssetPath = cfg.getTyped<String>(engine::cfg::ProjectConfigProperty::eLocalAssetPath);
+	::hg::assertrt(cfgProjectAssetPath.has_value() && cfgProjectAssetPath->has_value());
+	const auto projectAssetPath = engine::fs::Path { **cfgProjectAssetPath }.normalized();
+
+	if (lfsStoragePath_.isSubPathOf(projectAssetPath)) {
+		auto next = engine::fs::Path { std::filesystem::relative(lfsStoragePath_, projectAssetPath) };
+		if (result == None || (*result <=> next) == std::strong_ordering::greater) {
+			result = Some(engine::fs::Path { ::hg::move(next) });
+		}
+	}
+
+	return result;
 }

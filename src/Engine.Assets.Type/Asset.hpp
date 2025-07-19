@@ -82,6 +82,19 @@ namespace hg::engine::assets {
 		void setAssetName(mref<AssetName> assetName_);
 
 	protected:
+		// Question: Where to we store the information about the storage location?
+		// Note: The storage sub-system maps specific urls to the corresponding repository of a provider ( storage object only ).
+		// Note: The asset registry uses one in-memory table to hold the Arci<...> of the assets, while maintaining
+		// Note:	multiple index tables using the asset_guid, asset_type_id and virtual url.
+
+		// Attention: The storage system will handle the indexing of the storage units, so that we can 'rely' on the system
+		// Attention:	to know each archive + the possible backing storage so that we don't care about the data streaming.
+		// Problem:		Therefore we end up with two problems to solve: 1. When creating a new asset, we need some kind of
+		// Problem:		initial mapping between the asset and a (to be) known storage unit | 2. We need to maintain the
+		// Problem:		storage url of the asset, where to load and store the data.
+
+		// TODO: Checkout how to bypass indexing problems, when not providing a default value to the url ( asset registry auto-index table )
+
 		AssetReferenceUrl _assetStorageUrl;
 		AssetUrl _assetVfsUrl;
 

@@ -88,6 +88,7 @@ FbxImporter::import_result_type FbxImporter::import(cref<res::FileTypeId> typeId
 	auto asset = Arci<StaticGeometry>::create(
 		generate_asset_guid(),
 		StringView { sourceName },
+		/* TODO: Check whether the importer should already locate and seal the storage used for the asset */
 		AssetReferenceUrl {},
 		AssetUrl { AssetPath { file_.path().parentPath() }, AssetName { sourceName } },
 		Vector<fs::Url> { { storage::FileScheme, clone(file_.path()) } },

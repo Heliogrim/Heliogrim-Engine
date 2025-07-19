@@ -111,8 +111,9 @@ bool AssetRegistryBrowserProvider::fetchDirectories(
 			continue;
 		}
 
-		if (base != check.pop()) {
-			continue;
+		auto asFsPath = fs::Path { String { entry.asByteSpan().data(), entry.asByteSpan().size() } }.normalized();
+		while (asFsPath.parentPath() != url_.path() && asFsPath.native().size() > url_.path().native().size()) {
+			asFsPath = asFsPath.parentPath();
 		}
 
 		auto candidate = engine::assets::AssetPath { asFsPath };

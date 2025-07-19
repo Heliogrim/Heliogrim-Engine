@@ -58,6 +58,7 @@ namespace hg {
 
 			const auto queryResult = operator[](guid_);
 			if (queryResult.flags != AssetDatabaseResultType::eSuccess) {
+				// Error: X:\\Dev\\C++\\Heliogrim-CLion\\src\\Heliogrim\\Component\\Scene\\Sky\../../../Asset/GeometryAssetHandles.hpp(25,3): note: default constructor of 'StaticGeometryAssetHandle' is implicitly deleted because base class 'TypedAssetHandle< ::hg::engine::assets::StaticGeometry>' has no default constructor
 				return AssetDatabaseResult<HandleType_> { AssetDatabaseResultType::eFailed, HandleType_ {} };
 			}
 
