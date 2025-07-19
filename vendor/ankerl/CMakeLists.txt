@@ -12,7 +12,7 @@ function(library_ankerl_init)
 	CachedFetchContent_Declare(
 			ankerl
 			GIT_REPOSITORY https://github.com/martinus/unordered_dense.git
-			GIT_TAG v4.4.0
+			GIT_TAG v4.5.0
 			GIT_SUBMODULES_RECURSE OFF
 			GIT_SHALLOW ON
 			SOURCE_DIR "${vendor_src_path}"

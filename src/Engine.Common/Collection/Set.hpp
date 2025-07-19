@@ -5,14 +5,14 @@
 #include <ankerl/unordered_dense.h>
 
 namespace hg {
-	template<
+	template <
 		class Type_,
-		class Hash_ = ankerl::unordered_dense::v4_4_0::hash<Type_>,
+		class Hash_ = ankerl::unordered_dense::v4_5_0::hash<Type_>,
 		class Equal_ = std::equal_to<Type_>,
 		class Allocator_ = std::allocator<Type_>>
 	using CompactSet = ankerl::unordered_dense::set<Type_, Hash_, Equal_, Allocator_>;
 
-	template<
+	template <
 		class Type_,
 		class Hash_ = std::hash<Type_>,
 		class Equal_ = std::equal_to<Type_>,
