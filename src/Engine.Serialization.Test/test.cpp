@@ -236,7 +236,7 @@ namespace SerializationModule {
 		auto readAsset = new TestSerialDataBaseAsset();
 		arch >> readAsset;
 
-		EXPECT_EQ(readAsset->get_guid(), testGuid);
+		EXPECT_EQ(readAsset->getAssetGuid(), testGuid);
 		EXPECT_EQ(readAsset->getTypeId(), testType);
 
 		delete writeAsset;
