@@ -36,7 +36,7 @@ function(library_glslang_init)
     CachedFetchContent_Declare(
             libglslang
             GIT_REPOSITORY https://github.com/KhronosGroup/glslang.git
-            GIT_TAG 14.1.0
+            GIT_TAG 15.4.0
             GIT_SHALLOW ON
             GIT_PROGRESS ON
             SOURCE_DIR "${vendor_src_path}"
