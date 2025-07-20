@@ -18,7 +18,7 @@ SceneEditorController::~SceneEditorController() {}
 
 void SceneEditorController::setup() {
 
-	assetBrowser = makeAssetBrowser({ .service = _editorServices.assetBrowserService, .basePath = fs::Url {}, .initialPath = None });
+	assetBrowser = makeAssetBrowser({ .service = _editorServices.assetBrowserService, .basePath = fs::Path {}, .initialPath = None });
 	properties = makeProperty({ .editorUiModel = _editorModel, .service = _editorServices.propertyService });
 	sceneHierarchy = makeSceneHierarchy({ .editorUiModel = _editorModel, .service = _editorServices.sceneHierarchyService });
 

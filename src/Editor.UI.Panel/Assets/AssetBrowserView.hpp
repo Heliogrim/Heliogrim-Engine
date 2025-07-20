@@ -18,7 +18,7 @@ namespace hg::editor::ui::service {
 namespace hg::editor::ui {
 	struct BrowserNavEntry {
 		String title;
-		fs::Url navPath;
+		fs::Path navPath;
 	};
 
 	class AssetBrowserView {

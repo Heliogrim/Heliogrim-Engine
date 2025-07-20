@@ -130,12 +130,12 @@ SharedPtr<uikit::Button> AssetBrowserView::makeItem(ref<const service::AssetBrow
 
 	::hg::discard = button->onClick(
 		[&ctrl = _controller, data = data_](ref<const engine::reflow::MouseEvent> event_) {
-			if (not event_._down || event_._button != /* SDL_BUTTON_LEFT */ 1) {
+			if (event_._button != /* SDL_BUTTON_LEFT */ 1) {
 				return EventResponse::eHandled;
 			}
 
 			ctrl.onAssetItemClick(data);
-			return EventResponse::eConsumed;
+			return EventResponse::eHandled;
 		}
 	);
 
@@ -188,7 +188,7 @@ UniquePtr<AssetBrowserView> editor::ui::makeAssetBrowserView(ref<AssetBrowserCon
 	std::get<1>(header->getLayoutAttributes().attributeSets).update<attr::FlexLayout::justify>(ReflowSpacing::eStart);
 
 	breadcrumb->onAction(
-		[&ctrl = controller_](ref<const fs::Url> event_) {
+		[&ctrl = controller_](ref<const fs::Path> event_) {
 			ctrl.onNavItemClick(event_);
 		}
 	);

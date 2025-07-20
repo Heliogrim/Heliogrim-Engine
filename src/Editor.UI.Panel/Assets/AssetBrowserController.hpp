@@ -17,8 +17,8 @@ namespace hg::editor::ui::service {
 namespace hg::editor::ui {
 	struct AssetBrowserOptions {
 		SharedPtr<service::AssetBrowserService> service;
-		fs::Url basePath;
-		Opt<fs::Url> initialPath;
+		fs::Path basePath;
+		Opt<fs::Path> initialPath;
 	};
 
 	/**/
@@ -42,7 +42,7 @@ namespace hg::editor::ui {
 		[[nodiscard]] ref<const AssetBrowserView> getView() const noexcept;
 
 	public:
-		void onNavItemClick(ref<const fs::Url> eventData_);
+		void onNavItemClick(ref<const fs::Path> eventData_);
 
 		void onAssetItemClick(ref<const service::AssetBrowserEntry> eventData_);
 	};

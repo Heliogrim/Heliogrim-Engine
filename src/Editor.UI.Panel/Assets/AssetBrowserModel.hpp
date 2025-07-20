@@ -18,8 +18,8 @@ namespace hg::editor::ui {
 		AssetBrowserModel(
 			ref<AssetBrowserView> view_,
 			SharedPtr<service::AssetBrowserService> service_,
-			fs::Url basePath_,
-			fs::Url currentPath_
+			fs::Path basePath_,
+			fs::Path currentPath_
 		);
 
 		~AssetBrowserModel();
@@ -29,17 +29,17 @@ namespace hg::editor::ui {
 
 	public:
 		SharedPtr<service::AssetBrowserService> service;
-		fs::Url basePath;
-		fs::Url currentPath;
+		fs::Path basePath;
+		fs::Path currentPath;
 
 	public:
-		void changeDirectory(ref<const fs::Url> nextPath_);
+		void changeDirectory(ref<const fs::Path> nextPath_);
 	};
 
 	[[nodiscard]] extern UniquePtr<AssetBrowserModel> makeAssetBrowserModel(
 		_Inout_ ref<AssetBrowserView> view_,
 		SharedPtr<service::AssetBrowserService> service_,
-		fs::Url basePath_,
-		fs::Url currentPath_
+		fs::Path basePath_,
+		fs::Path currentPath_
 	);
 }

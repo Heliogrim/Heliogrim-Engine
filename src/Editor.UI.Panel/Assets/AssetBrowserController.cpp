@@ -33,12 +33,13 @@ ref<const AssetBrowserView> AssetBrowserController::getView() const noexcept {
 	return *_view;
 }
 
-void AssetBrowserController::onNavItemClick(ref<const fs::Url> eventData_) {
+void AssetBrowserController::onNavItemClick(ref<const fs::Path> eventData_) {
 	_model->changeDirectory(eventData_);
 }
 
 void AssetBrowserController::onAssetItemClick(ref<const service::AssetBrowserEntry> eventData_) {
-	_model->changeDirectory(eventData_.path);
+	const auto path = fs::Path { StringView { eventData_.url.getAssetPath().asByteSpan() } };
+	_model->changeDirectory(path);
 }
 
 UniquePtr<AssetBrowserController> editor::ui::makeAssetBrowser(AssetBrowserOptions options_) {

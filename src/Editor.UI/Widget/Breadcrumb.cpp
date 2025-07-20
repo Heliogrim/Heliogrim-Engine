@@ -26,7 +26,7 @@ Breadcrumb::~Breadcrumb() {
 	clearNavEntries();
 }
 
-void Breadcrumb::addNavEntry(cref<AssocKey<string>> key_, cref<string> title_, cref<fs::Url> value_) {
+void Breadcrumb::addNavEntry(cref<AssocKey<string>> key_, cref<string> title_, cref<fs::Path> value_) {
 
 	if (std::ranges::find(
 		_entries.begin(),
@@ -54,7 +54,7 @@ void Breadcrumb::addNavEntry(cref<AssocKey<string>> key_, cref<string> title_, c
 
 	auto title = make_sptr<uikit::Text>();
 	title->setText(title_);
-	auto button = uikit::makeButton(uikit::TextButtonCreateOptions { .level = 2, .text = ::hg::move(title) });
+	auto button = uikit::makeButton(uikit::TextButtonCreateOptions { .level = 0, .text = ::hg::move(title) });
 
 	/**/
 
@@ -66,7 +66,7 @@ void Breadcrumb::addNavEntry(cref<AssocKey<string>> key_, cref<string> title_, c
 			}
 
 			std::static_pointer_cast<Breadcrumb, Widget>(breadcrumb.lock())->handleAction(url);
-			return EventResponse::eConsumed;
+			return EventResponse::eHandled;
 		}
 	);
 
@@ -119,9 +119,9 @@ void Breadcrumb::clearNavEntries() {
 	_entries.clear();
 }
 
-void Breadcrumb::handleAction(cref<fs::Url> url_) {
+void Breadcrumb::handleAction(cref<fs::Path> path_) {
 	for (const auto& pair : _actions) {
-		pair.second(url_);
+		pair.second(path_);
 	}
 }
 
