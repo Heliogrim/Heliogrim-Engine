@@ -21,7 +21,7 @@
 #include <Engine.Storage.Registry/Options/StorageDescriptor.hpp>
 #include <Engine.Storage.Registry/Registry/StorageRegistry.hpp>
 #include <Engine.Storage.Registry/Url/MemoryUrl.hpp>
-#include <Engine.Storage.Registry/Url/Url.hpp>
+#include <Engine.Storage.Registry/Url/StorageUrl.hpp>
 #include <Engine.Storage.System/StorageSystem.hpp>
 
 #include "Utils.hpp"

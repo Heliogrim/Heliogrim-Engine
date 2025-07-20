@@ -21,7 +21,7 @@
 #include <Engine.Storage.Registry/Repository/EditorReadOnlyRepository.hpp>
 #include <Engine.Storage.Registry/Repository/ProjectFileSystemRepository.hpp>
 #include <Engine.Storage.Registry/Repository/RuntimeFileSystemRepository.hpp>
-#include <Engine.Storage.Registry/Url/Url.hpp>
+#include <Engine.Storage.Registry/Url/StorageUrl.hpp>
 
 using namespace hg;
 
