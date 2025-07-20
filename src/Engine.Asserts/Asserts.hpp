@@ -75,6 +75,17 @@ namespace hg {
 		}
 	}
 
+	template <typename Expr_>
+		requires (not std::is_invocable_v<Expr_>) &&
+		std::is_nothrow_convertible_v<Expr_, bool>
+	constexpr void assertct(Expr_&& expr_) noexcept {
+		if (std::is_constant_evaluated()) {
+			if (not static_cast<bool>(std::forward<Expr_>(expr_))) {
+				throw_compile_assert();
+			}
+		}
+	}
+
 	#if defined(_DEBUG) && not defined(NDEBUG)
 
 	template <typename Expr_>
