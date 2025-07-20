@@ -7,7 +7,7 @@
 using namespace hg::math;
 using namespace hg;
 
-Transform::Transform(mref<Location> location_, mref<Rotator> rotator_, mref<fvec3> scale_) noexcept :
+Transform::Transform(mref<Location> location_, mref<Rotator> rotator_, mref<scale_type> scale_) noexcept :
 	_location(std::move(location_)),
 	_rotator(std::move(rotator_)),
 	_scale(std::move(scale_)) {}
@@ -56,15 +56,15 @@ ref<Transform::this_type> Transform::setRotator(mref<Rotator> rotator_) noexcept
 	return *this;
 }
 
-cref<fvec3> Transform::scale() const noexcept {
+cref<Transform::scale_type> Transform::scale() const noexcept {
 	return _scale;
 }
 
-ref<fvec3> Transform::scale() noexcept {
+ref<Transform::scale_type> Transform::scale() noexcept {
 	return _scale;
 }
 
-ref<Transform::this_type> Transform::setScale(mref<fvec3> scale_) noexcept {
+ref<Transform::this_type> Transform::setScale(mref<scale_type> scale_) noexcept {
 	_scale = std::move(scale_);
 	return *this;
 }

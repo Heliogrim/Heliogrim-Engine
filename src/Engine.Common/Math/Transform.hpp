@@ -14,6 +14,7 @@ namespace hg::math {
 
 	public:
 		using this_type = Transform;
+		using scale_type = Vector3f32;
 
 	public:
 		/**
@@ -27,7 +28,7 @@ namespace hg::math {
 			_rotator(),
 			_scale(1.F) {}
 
-		Transform(mref<Location> location_, mref<Rotator> rotator_, mref<fvec3> scale_) noexcept;
+		Transform(mref<Location> location_, mref<Rotator> rotator_, mref<scale_type> scale_) noexcept;
 
 		/**
 		 * Move Constructor
@@ -86,7 +87,7 @@ namespace hg::math {
 	public:
 		Location _location;
 		Rotator _rotator;
-		fvec3 _scale;
+		scale_type _scale;
 
 	public:
 		[[nodiscard]] cref<Location> location() const noexcept;
@@ -106,11 +107,11 @@ namespace hg::math {
 
 		ref<this_type> setRotator(mref<Rotator> rotator_) noexcept;
 
-		[[nodiscard]] cref<fvec3> scale() const noexcept;
+		[[nodiscard]] cref<scale_type> scale() const noexcept;
 
-		[[nodiscard]] ref<fvec3> scale() noexcept;
+		[[nodiscard]] ref<scale_type> scale() noexcept;
 
-		ref<this_type> setScale(mref<fvec3> scale_) noexcept;
+		ref<this_type> setScale(mref<scale_type> scale_) noexcept;
 
 	public:
 		[[nodiscard]] math::mat4 asMatrix() const noexcept;
