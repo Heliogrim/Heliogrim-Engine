@@ -9,8 +9,8 @@ namespace Math {
 		TEST(Vector1f32, ZeroChecks) {
 			using namespace ::hg::math;
 
-			const auto value = 236.5894656f;
-			const auto base_subject = Vector1f32 { value };
+			constexpr auto value = 236.5894656f;
+			constexpr auto base_subject = Vector1f32 { value };
 
 			EXPECT_FALSE(base_subject.allZero());
 			EXPECT_FALSE(base_subject.anyZero());
