@@ -1,5 +1,6 @@
 #include "StaticGeometryModel.hpp"
 
+#include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
 #include <Engine.Assets.Type/Material/GfxMaterial.hpp>
 #include <Engine.Common/Math/Convertion.hpp>
 #include <Engine.Core/Engine.hpp>
@@ -32,7 +33,8 @@ void StaticGeometryModel::create(const ptr<render::RenderSceneSystem> system_) {
 	/**
 	 *
 	 */
-	_staticGeometryAsset = static_cast<ptr<assets::StaticGeometry>>(origin->getStaticGeometryAsset().internal());
+	::hg::assertrt(origin->getStaticGeometry().isValid());
+	_staticGeometryAsset = std::addressof(*origin->getStaticGeometry().getAssetRef());
 	_staticGeometryResource = Engine::getEngine()->getResources()->loader().
 		load(_staticGeometryAsset, nullptr).
 		into<StaticGeometryResource>();
@@ -40,14 +42,16 @@ void StaticGeometryModel::create(const ptr<render::RenderSceneSystem> system_) {
 	/**
 	 *
 	 */
-	for (const auto& material : origin->overrideMaterials()) {
-		auto* wrapped { static_cast<ptr<assets::GfxMaterial>>(material.internal()) };
+	for (const auto& material : origin->getInstanceMaterials()) {
+		::hg::assertrt(material != None && material->isValid());
+
+		const auto& request = *material->getAssetRef();
 		auto resource = Engine::getEngine()->getResources()->loader().load<assets::GfxMaterial, MaterialResource>(
-			std::move(wrapped),
+			std::addressof(request),
 			{}
 		);
 
-		_overrideMaterials.push_back(resource);
+		_materials.push_back(resource);
 	}
 
 	/**/
@@ -80,14 +84,14 @@ void StaticGeometryModel::update(const ptr<render::RenderSceneSystem> system_) {
 	/* Geometry Changes */
 
 	{
-		const auto outer = origin->getStaticGeometryGuid();
-		const auto inner = _staticGeometryAsset->get_guid();
+		const auto& outerHandle = origin->getStaticGeometry();
+		const auto inner = _staticGeometryAsset->getAssetGuid();
 
-		if (outer != inner) {
+		if (outerHandle != inner) {
 
-			_staticGeometryAsset = static_cast<ptr<assets::StaticGeometry>>(
-				origin->getStaticGeometryAsset().internal()
-			);
+			::hg::assertrt(outerHandle.isValid()/* TODO: */);
+
+			_staticGeometryAsset = std::addressof(*outerHandle.getAssetRef());
 			_staticGeometryResource = Engine::getEngine()->getResources()->loader().load(
 				_staticGeometryAsset,
 				nullptr
@@ -98,23 +102,24 @@ void StaticGeometryModel::update(const ptr<render::RenderSceneSystem> system_) {
 
 	/* Material Changes */
 
-	const auto count = origin->overrideMaterials().size();
+	const auto count = origin->getInstanceMaterials().size();
 	for (u32 matIdx = 0; matIdx < count; ++matIdx) {
 
-		auto* outer = static_cast<ptr<assets::GfxMaterial>>(origin->overrideMaterials()[matIdx].internal());
-		const auto& inner = _overrideMaterials[matIdx];
+		const auto& outerHandle = origin->getInstanceMaterials()[matIdx];
+		const auto& inner = _materials[matIdx];
 
 		if (inner->getAssociation() == nullptr) {
 			continue;
 		}
 
 		// TODO: Check whether pointer comparison is actually safe, or whether should use guid compare
-		if (inner->getAssociation() != outer) {
+		const auto* outerAssetPtr = std::addressof(*outerHandle->getAssetRef());
+		if (inner->getAssociation() != outerAssetPtr) {
 
-			_overrideMaterials[matIdx] = Engine::getEngine()->getResources()->loader().load<
+			_materials[matIdx] = Engine::getEngine()->getResources()->loader().load<
 				assets::GfxMaterial, MaterialResource
 			>(
-				std::move(outer),
+				std::move(outerAssetPtr),
 				{}
 			);
 
@@ -172,7 +177,7 @@ void StaticGeometryModel::capture(nmpt<render::MeshCaptureInterface> mci_) const
 	#endif
 }
 
-const ptr<engine::assets::StaticGeometry> StaticGeometryModel::geometryAsset() const noexcept {
+const ptr<const engine::assets::StaticGeometry> StaticGeometryModel::geometryAsset() const noexcept {
 	return _staticGeometryAsset;
 }
 

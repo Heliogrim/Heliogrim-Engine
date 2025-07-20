@@ -42,11 +42,11 @@ namespace hg::engine::gfx::scene {
 		u32 _sceneInstanceIndex;
 
 	private:
-		ptr<assets::StaticGeometry> _staticGeometryAsset = nullptr;
+		ptr<const assets::StaticGeometry> _staticGeometryAsset = nullptr;
 		smr<StaticGeometryResource> _staticGeometryResource;
 
 	public:
-		[[nodiscard]] const ptr<assets::StaticGeometry> geometryAsset() const noexcept;
+		[[nodiscard]] const ptr<const assets::StaticGeometry> geometryAsset() const noexcept;
 
 		[[nodiscard]] cref<smr<StaticGeometryResource>> geometryResource() const noexcept;
 	};
