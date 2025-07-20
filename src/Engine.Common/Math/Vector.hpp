@@ -1,7 +1,9 @@
 #pragma once
+
 #include <cmath>
 #include <cstddef>
 #include <limits>
+#include <Engine.Asserts/Asserts.hpp>
 
 #include "Hash.hpp"
 #include "MathDefaultDefine.hpp"
@@ -1668,6 +1670,201 @@ namespace hg::math {
 			};
 		};
 	};
+
+	/**/
+
+	template <typename ScalarType_, u8 Dimension_>
+	struct VectorImpl {
+		using scalar_type = ::std::remove_cvref_t<ScalarType_>;
+		constexpr static auto dimension = Dimension_;
+
+		using this_type = VectorImpl<scalar_type, dimension>;
+		static_assert(dimension > 0u);
+
+		template <u8 Index_> requires (Index_ < Dimension_)
+		[[nodiscard]] constexpr scalar_type at() const noexcept {
+			return arr[Index_];
+		}
+
+		template <u8 Index_> requires (Index_ < Dimension_)
+		[[nodiscard]] constexpr ref<scalar_type> at() noexcept {
+			return arr[Index_];
+		}
+
+		[[nodiscard]] constexpr scalar_type at(const u8 index_) const noexcept {
+			if consteval {
+				static_assert(index_ < dimension);
+				return arr[index_];
+			} else {
+				::hg::assertrt(index_ < dimension);
+				return arr[index_];
+			}
+		}
+
+		[[nodiscard]] constexpr ref<scalar_type> at(const u8 index_) noexcept {
+			if consteval {
+				static_assert(index_ < dimension);
+				return arr[index_];
+			} else {
+				::hg::assertrt(index_ < dimension);
+				return arr[index_];
+			}
+		}
+
+		[[nodiscard]] f64 length() const noexcept {
+			auto tmp = arr[0] * arr[0];
+			for (u8 index = 1u; index < dimension; ++index) {
+				tmp += (arr[index] * arr[index]);
+			}
+			return std::sqrt(tmp);
+		}
+
+		template <typename ScaleType_>
+		ref<this_type> scale(ScaleType_ amount_) noexcept {
+			for (auto& value : arr) {
+				value *= amount_;
+			}
+			return *this;
+		}
+
+		ref<this_type> normalize() noexcept {
+			const auto l = length();
+			return scale<f64>(1. / l);
+		}
+
+		[[nodiscard]] constexpr bool allZero() const noexcept {
+			constexpr static auto zero = scalar_type { 0 };
+			for (const auto value : arr) {
+				if (value != zero) {
+					return false;
+				}
+			}
+			return true;
+		}
+
+		[[nodiscard]] constexpr bool anyZero() const noexcept {
+			constexpr static auto zero = scalar_type { 0 };
+			for (const auto value : arr) {
+				if (value == zero) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		constexpr ref<this_type> operator+=(const scalar_type addScalar_) noexcept {
+			for (auto& value : arr) {
+				value += addScalar_;
+			}
+			return *this;
+		}
+
+		[[nodiscard]] this_type operator+(const scalar_type addScalar_) const noexcept {
+			return this_type { *this }.operator+=(addScalar_);
+		}
+
+		constexpr ref<this_type> operator-=(const scalar_type subtractScalar_) noexcept {
+			return (*this).operator+=(-subtractScalar_);
+		}
+
+		[[nodiscard]] this_type operator-(const scalar_type subtractScalar_) const noexcept {
+			return this_type { *this }.operator+=(-subtractScalar_);
+		}
+
+		constexpr ref<this_type> operator*=(const scalar_type multiplyBy_) noexcept {
+			return scale<scalar_type>(multiplyBy_);
+		}
+
+		[[nodiscard]] constexpr this_type operator*(const scalar_type multiplyBy_) const noexcept {
+			return this_type { *this }.template scale<scalar_type>(multiplyBy_);
+		}
+
+		template <std::same_as<scalar_type> DivideType_ = scalar_type> requires std::is_floating_point_v<DivideType_>
+		constexpr ref<this_type> operator/=(const scalar_type divideBy_) noexcept {
+			const auto scalar = scalar_type { 1. } / divideBy_;
+			return scale<scalar_type>(scalar);
+		}
+
+		template <std::same_as<scalar_type> DivideType_ = scalar_type> requires std::is_floating_point_v<DivideType_>
+		[[nodiscard]] constexpr this_type operator/(const scalar_type divideBy_) const noexcept {
+			const auto scalar = scalar_type { 1.F } / divideBy_;
+			return this_type { *this }.template scale<scalar_type>(scalar);
+		}
+
+		[[nodiscard]] constexpr bool operator==(ref<const this_type> other_) const noexcept {
+			// TODO: Take care of floating-point types
+			return ::std::memcmp(this, std::addressof(other_), sizeof(scalar_type) * dimension) == 0;
+		}
+
+		[[nodiscard]] constexpr bool operator!=(ref<const this_type> other_) const noexcept {
+			// TODO: Take care of floating-point types
+			return ::std::memcmp(this, std::addressof(other_), sizeof(scalar_type) * dimension) != 0;
+		}
+
+		union {
+			scalar_type arr[Dimension_];
+		};
+	};
+
+	/**/
+
+	template <typename ScalarType_, u8 Dimension_>
+	struct select_vector_type_impl {
+		using type = VectorImpl<ScalarType_, Dimension_>;
+	};
+
+	template <typename ScalarType_>
+	struct select_vector_type_impl<ScalarType_, 0u> {
+		using type = void;
+	};
+
+	template <typename ScalarType_>
+	struct select_vector_type_impl<ScalarType_, 1u> {
+		using type = VectorImpl<ScalarType_, 1u>;
+	};
+
+	template <typename ScalarType_>
+	struct select_vector_type_impl<ScalarType_, 2u> {
+		using type = vec2_t<ScalarType_>;
+	};
+
+	template <typename ScalarType_>
+	struct select_vector_type_impl<ScalarType_, 3u> {
+		using type = vec3_t<ScalarType_>;
+	};
+
+	template <typename ScalarType_>
+	struct select_vector_type_impl<ScalarType_, 4u> {
+		using type = vec4_t<ScalarType_>;
+	};
+
+	template <typename ScalarType_, u8 Dimension_>
+	using Vector = typename select_vector_type_impl<ScalarType_, Dimension_>::type;
+
+	using Vector1f64 = Vector<f64, 1u>;
+	using Vector1f32 = Vector<f32, 1u>;
+	using Vector1s32 = Vector<s32, 1u>;
+	using Vector1u32 = Vector<u32, 1u>;
+
+	using Vector2f64 = Vector<f64, 2u>;
+	using Vector2f32 = Vector<f32, 2u>;
+	using Vector2s32 = Vector<s32, 2u>;
+	using Vector2u32 = Vector<u32, 2u>;
+
+	using Vector3f64 = Vector<f64, 3u>;
+	using Vector3f32 = Vector<f32, 3u>;
+	using Vector3s32 = Vector<s32, 3u>;
+	using Vector3u32 = Vector<u32, 3u>;
+
+	using Vector4f64 = Vector<f64, 4u>;
+	using Vector4f32 = Vector<f32, 4u>;
+	using Vector4s32 = Vector<s32, 4u>;
+	using Vector4u32 = Vector<u32, 4u>;
+
+	using Vector16f64 = Vector<f64, 16u>;
+	using Vector16f32 = Vector<f32, 16u>;
+	using Vector16s32 = Vector<s32, 16u>;
+	using Vector16u32 = Vector<u32, 16u>;
 
 	/** Defines an alias representing the second dvec */
 	typedef vec2_t<double_t> dvec2;

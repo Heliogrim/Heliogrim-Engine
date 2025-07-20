@@ -1,7 +1,8 @@
 #pragma once
-#include "../Wrapper.hpp"
-#include "Vector.hpp"
+
 #include "Quaternion.hpp"
+#include "Vector.hpp"
+#include "../Wrapper.hpp"
 
 namespace hg::math {
 	struct Rotator final :
