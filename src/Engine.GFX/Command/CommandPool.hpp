@@ -1,112 +1,112 @@
 #pragma once
 
+#include <Engine.Async/Primitive/SpinLock.hpp>
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Concurrent/SpinLock.hpp>
 #include "CommandQueue.hpp"
 
 namespace hg::engine::gfx {
-    /**
-     * Forward Declaration CommandBuffer.
-     *
-     * @author Julius
-     * @date 25.11.2020
-     */
-    class CommandBuffer;
+	/**
+	 * Forward Declaration CommandBuffer.
+	 *
+	 * @author Julius
+	 * @date 25.11.2020
+	 */
+	class CommandBuffer;
 
-    class CommandPool final {
-    public:
-        /**
-         * Constructor
-         *
-         * @author Julius
-         * @date 25.11.2020
-         *
-         * @param  queue_ The queue.
-         */
-        CommandPool(const ptr<CommandQueue>& queue_) noexcept;
+	class CommandPool final {
+	public:
+		/**
+		 * Constructor
+		 *
+		 * @author Julius
+		 * @date 25.11.2020
+		 *
+		 * @param  queue_ The queue.
+		 */
+		CommandPool(const ptr<CommandQueue>& queue_) noexcept;
 
-        /**
-         * Destructor
-         *
-         * @author Julius
-         * @date 23.11.2020
-         */
-        ~CommandPool() noexcept = default;
+		/**
+		 * Destructor
+		 *
+		 * @author Julius
+		 * @date 23.11.2020
+		 */
+		~CommandPool() noexcept = default;
 
-        /**
-         * Setups this
-         *
-         * @author Julius
-         * @date 25.11.2020
-         */
-        void setup();
+		/**
+		 * Setups this
+		 *
+		 * @author Julius
+		 * @date 25.11.2020
+		 */
+		void setup();
 
-        /**
-         * Destroys this 
-         *
-         * @author Julius
-         * @date 25.11.2020
-         */
-        void destroy();
+		/**
+		 * Destroys this
+		 *
+		 * @author Julius
+		 * @date 25.11.2020
+		 */
+		void destroy();
 
-        /**
-         * Constructs a new CommandBuffer
-         *
-         * @author Julius
-         * @date 25.11.2020
-         *
-         * @returns A CommandBuffer.
-         */
-        [[nodiscard]] CommandBuffer make();
+		/**
+		 * Constructs a new CommandBuffer
+		 *
+		 * @author Julius
+		 * @date 25.11.2020
+		 *
+		 * @returns A CommandBuffer.
+		 */
+		[[nodiscard]] CommandBuffer make();
 
-        [[nodiscard]] CommandBuffer make(bool secondary_);
+		[[nodiscard]] CommandBuffer make(bool secondary_);
 
-        /**
-         * Releases the given buffer
-         *
-         * @author Julius
-         * @date 20.12.2020
-         *
-         * @param  buffer_ The buffer.
-         */
-        void release(const CommandBuffer& buffer_);
+		/**
+		 * Releases the given buffer
+		 *
+		 * @author Julius
+		 * @date 20.12.2020
+		 *
+		 * @param  buffer_ The buffer.
+		 */
+		void release(const CommandBuffer& buffer_);
 
-    private:
-        /**
-         * Command Queue
-         */
-        ptr<CommandQueue> _queue;
+	private:
+		/**
+		 * Command Queue
+		 */
+		ptr<CommandQueue> _queue;
 
-    public:
-        /**
-         * Gets the queue
-         *
-         * @author Julius
-         * @date 09.12.2020
-         *
-         * @returns A ptr&lt;CommandQueue&gt;
-         */
-        [[nodiscard]] ptr<CommandQueue> queue() noexcept;
+	public:
+		/**
+		 * Gets the queue
+		 *
+		 * @author Julius
+		 * @date 09.12.2020
+		 *
+		 * @returns A ptr&lt;CommandQueue&gt;
+		 */
+		[[nodiscard]] ptr<CommandQueue> queue() noexcept;
 
-    private:
-        /**
-         * Synchronization Lock
-         */
-        mutable hg::concurrent::UnfairSpinLock _lck;
+	private:
+		/**
+		 * Synchronization Lock
+		 */
+		mutable hg::concurrent::UnfairSpinLock _lck;
 
-    public:
-        /**
-         * Get a mutable reference to internal synchronization lock
-         *
-         * @author Julius
-         * @date 25.11.2020
-         */
-        [[nodiscard]] ref<hg::concurrent::UnfairSpinLock> lck() const;
+	public:
+		/**
+		 * Get a mutable reference to internal synchronization lock
+		 *
+		 * @author Julius
+		 * @date 25.11.2020
+		 */
+		[[nodiscard]] ref<hg::concurrent::UnfairSpinLock> lck() const;
 
-    private:
-        /**
-         * Vulkan API
-         */
-        vk::CommandPool _vkPool;
-    };
+	private:
+		/**
+		 * Vulkan API
+		 */
+		vk::CommandPool _vkPool;
+	};
 }

@@ -6,10 +6,9 @@
 #include <mutex>
 #include <type_traits>
 #include <utility>
-
-#include "../Wrapper.hpp"
-#include "../__macro.hpp"
-#include "../Memory/MemoryPointer.hpp"
+#include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/__macro.hpp>
+#include <Engine.Common/Memory/MemoryPointer.hpp>
 
 namespace hg::concurrent {
 	namespace {

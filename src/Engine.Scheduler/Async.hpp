@@ -1,7 +1,7 @@
 #pragma once
 
+#include <Engine.Async/Await/Promise.hpp>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/Concurrent/Promise.hpp>
 
 #include "Scheduler.hpp"
 #include "Pipeline/Stage/StageIdentifier.hpp"

@@ -2,8 +2,8 @@
 
 #include <condition_variable>
 #include <functional>
+#include <Engine.Async/Collection/RingBuffer.hpp>
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Concurrent/Collection/RingBuffer.hpp>
 
 namespace hg::engine::scheduler::task {
 	class SignaledQueue final {

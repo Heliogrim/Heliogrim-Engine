@@ -4,9 +4,9 @@
 #include <sstream>
 #include <Engine.Assets.Type/Texture/ImageAsset.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
+#include <Engine.Async/Await/Promise.hpp>
 #include <Engine.Common/GuidFormat.hpp>
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Concurrent/Promise.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Serialization/Archive/LayoutArchive.hpp>

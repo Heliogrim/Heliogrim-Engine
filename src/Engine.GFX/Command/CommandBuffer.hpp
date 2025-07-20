@@ -1,6 +1,7 @@
 #pragma once
 
-#include <Engine.Common/Concurrent/SpinLock.hpp>
+#include <Engine.Async/Primitive/SpinLock.hpp>
+
 #include "CommandPool.hpp"
 #include "../Buffer/Buffer.hpp"
 #include "../Buffer/SparseBuffer.hpp"

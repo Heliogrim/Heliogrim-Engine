@@ -1,11 +1,11 @@
 #pragma once
 
+#include <Engine.Async/Primitive/SpinLock.hpp>
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Concurrent/SpinLock.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 
-#include "../Stage/StageDispatcher.hpp"
 #include "../../Task/TaskCtrl.hpp"
+#include "../Stage/StageDispatcher.hpp"
 
 namespace hg::engine::scheduler {
 	class CompositeSlot :

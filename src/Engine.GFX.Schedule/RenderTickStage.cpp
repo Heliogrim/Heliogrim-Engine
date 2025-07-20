@@ -1,7 +1,7 @@
 #include "RenderTickStage.hpp"
 
 #include <chrono>
-#include <Engine.Common/Concurrent/Collection/RingBuffer.hpp>
+#include <Engine.Async/Collection/RingBuffer.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.GFX.Scene/RenderSceneManager.hpp>
 #include <Engine.GFX/Graphics.hpp>

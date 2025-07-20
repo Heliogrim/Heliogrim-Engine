@@ -1,7 +1,7 @@
 #pragma once
 
+#include <Engine.Async/Collection/RingBuffer.hpp>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/Concurrent/Collection/RingBuffer.hpp>
 
 #include "Swapchain.hpp"
 

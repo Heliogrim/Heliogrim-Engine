@@ -1,9 +1,9 @@
 #pragma once
 
 #include <functional>
+#include <Engine.Common/Make.hpp>
 
 #include "Future.hpp"
-#include "../Make.hpp"
 
 namespace hg::concurrent {
 	namespace {

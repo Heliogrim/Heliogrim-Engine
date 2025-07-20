@@ -30,6 +30,7 @@ make_library_project(
 		${PROJECT_NAME}::Engine.Assets
 		${PROJECT_NAME}::Engine.Assets.System
 		${PROJECT_NAME}::Engine.Assets.Type
+		${PROJECT_NAME}::Engine.Async
 		${PROJECT_NAME}::Engine.Common
 		${PROJECT_NAME}::Engine.Config
 		${PROJECT_NAME}::Engine.Core

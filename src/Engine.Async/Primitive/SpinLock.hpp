@@ -1,9 +1,8 @@
 #pragma once
 #include <atomic>
 #include <mutex>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Scheduler/Thread/Thread.hpp>
-
-#include "../__macro.hpp"
 
 namespace hg::concurrent {
 	constexpr static inline std::defer_lock_t defer_lock {};

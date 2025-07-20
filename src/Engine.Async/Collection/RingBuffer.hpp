@@ -1,8 +1,8 @@
 #pragma once
 
 #include <atomic>
-#include "../../Types.hpp"
-#include "../../Collection/Vector.hpp"
+#include <Engine.Common/Types.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 
 namespace hg::engine::concurrent {
 	/**

@@ -6,7 +6,7 @@
 #include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
 
-#include <Engine.Common/Concurrent/Collection/RingBuffer.hpp>
+#include <Engine.Async/Collection/RingBuffer.hpp>
 #include <Engine.Common/Math/__default.inl>
 #include <Engine.Core/Event/UniverseAddedEvent.hpp>
 #include <Engine.Core/Event/UniverseChangeEvent.hpp>
