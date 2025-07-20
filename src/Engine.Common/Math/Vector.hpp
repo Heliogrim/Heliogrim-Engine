@@ -1692,8 +1692,8 @@ namespace hg::math {
 		}
 
 		[[nodiscard]] constexpr scalar_type at(const u8 index_) const noexcept {
-			if consteval {
-				static_assert(index_ < dimension);
+			if (std::is_constant_evaluated()) {
+				::hg::assertct(index_ < dimension);
 				return arr[index_];
 			} else {
 				::hg::assertrt(index_ < dimension);
@@ -1702,8 +1702,8 @@ namespace hg::math {
 		}
 
 		[[nodiscard]] constexpr ref<scalar_type> at(const u8 index_) noexcept {
-			if consteval {
-				static_assert(index_ < dimension);
+			if (std::is_constant_evaluated()) {
+				::hg::assertct(index_ < dimension);
 				return arr[index_];
 			} else {
 				::hg::assertrt(index_ < dimension);
