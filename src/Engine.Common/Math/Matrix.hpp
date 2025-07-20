@@ -481,6 +481,21 @@ namespace hg::math {
 		row_type value[4];
 	};
 
+	using Matrix2x2f64 = matq2_t<f64>;
+	using Matrix2x2f32 = matq2_t<f32>;
+	using Matrix2x2s32 = matq2_t<s32>;
+	using Matrix2x2u32 = matq2_t<u32>;
+
+	using Matrix3x3f64 = matq3_t<f64>;
+	using Matrix3x3f32 = matq3_t<f32>;
+	using Matrix3x3s32 = matq3_t<s32>;
+	using Matrix3x3u32 = matq3_t<u32>;
+
+	using Matrix4x4f64 = matq4_t<f64>;
+	using Matrix4x4f32 = matq4_t<f32>;
+	using Matrix4x4s32 = matq4_t<s32>;
+	using Matrix4x4u32 = matq4_t<u32>;
+
 	typedef matq2_t<float_t> fmat2;
 	typedef matq3_t<float_t> fmat3;
 	typedef matq4_t<float_t> fmat4;
