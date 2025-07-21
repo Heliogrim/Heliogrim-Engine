@@ -35,7 +35,7 @@ function(library_spdlog_init)
     CachedFetchContent_Declare(
             libspdlog
             GIT_REPOSITORY https://github.com/gabime/spdlog.git
-            GIT_TAG v1.13.0
+            GIT_TAG v1.15.3
             GIT_SHALLOW ON
             GIT_PROGRESS ON
             SOURCE_DIR "${vendor_src_path}"
