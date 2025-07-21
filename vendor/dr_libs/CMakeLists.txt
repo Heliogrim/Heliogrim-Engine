@@ -12,8 +12,9 @@ function(library_dr_libs_init)
     CachedFetchContent_Declare(
             drlibs
             GIT_REPOSITORY https://github.com/mackron/dr_libs.git
+            GIT_TAG 92844c5c07f05b21855e37b482ed0b3143256cf6
             GIT_SUBMODULES_RECURSE OFF
-            GIT_SHALLOW ON
+            GIT_SHALLOW OFF
             SOURCE_DIR "${vendor_src_path}"
             EXCLUDE_FROM_ALL
     )
