@@ -17,10 +17,8 @@ namespace hg::engine::assets {
 		constexpr AssetUrl(
 			auto&& assetPath_,
 			auto&& assetName_
-		) noexcept(
-			std::is_nothrow_constructible_v<AssetPath, decltype(assetPath_)&&> &&
-			std::is_nothrow_constructible_v<AssetName, decltype(assetName_)&&>
-		) :
+			// Error: (MSVC) ) noexcept(std::is_nothrow_constructible_v<AssetPath, decltype(assetPath_)&&> && std::is_nothrow_constructible_v<AssetName, decltype(assetName_)&&>) :
+		) noexcept :
 			_path(::hg::forward<decltype(assetPath_)>(assetPath_)),
 			_name(::hg::forward<decltype(assetName_)>(assetName_)) {}
 

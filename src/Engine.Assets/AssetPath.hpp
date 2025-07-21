@@ -11,7 +11,8 @@ namespace hg::engine::assets {
 	public:
 		constexpr AssetPath() noexcept = default;
 
-		explicit constexpr AssetPath(auto&&... args_) noexcept(std::is_nothrow_constructible_v<String, decltype(args_)&&...>) :
+		// Error: (MSVC) explicit constexpr AssetPath(auto&&... args_) noexcept(std::is_nothrow_constructible_v<String, decltype(args_)&&...>) :
+		explicit constexpr AssetPath(auto&&... args_) noexcept :
 			_data(::hg::forward<decltype(args_)>(args_)...) {}
 
 		explicit AssetPath(ref<const fs::Path> path_) noexcept :
