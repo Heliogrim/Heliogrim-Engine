@@ -61,7 +61,7 @@ function(library_sdl_init)
 	CachedFetchContent_Declare(
 			libsdl
 			GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-			GIT_TAG release-2.30.2
+			GIT_TAG release-2.32.6
 			GIT_SHALLOW ON
 			GIT_PROGRESS ON
 			SOURCE_DIR "${vendor_src_path}"
