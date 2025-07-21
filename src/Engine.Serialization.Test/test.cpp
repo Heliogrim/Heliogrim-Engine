@@ -802,6 +802,24 @@ namespace SerializationModule {
 		}
 	}
 
+	TEST(StructureArchive, EmptySequence) {
+
+		BufferArchive archive {};
+		StructuredArchive arch { archive }; {
+			auto write = arch.insertRootSlot();
+			auto _ = std::move(write).intoSeq();
+		}
+
+		/**/
+
+		EXPECT_EQ(archive.size(), (1 + 8));
+		archive.seek(0); {
+			auto read = arch.getRootSlot();
+			auto seq = std::move(read).asSeq();
+			EXPECT_EQ(seq.getRecordCount(), 0);
+		}
+	}
+
 	TEST(StructureArchive, IntegralStructReadWrite) {
 
 		BufferArchive archive {};
