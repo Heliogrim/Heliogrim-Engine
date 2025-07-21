@@ -16,7 +16,7 @@ namespace hg::editor {
 		using this_type = Action;
 
 	protected:
-		constexpr Action() noexcept = default;
+		Action() noexcept;
 
 	public:
 		constexpr ~Action() noexcept override = default;
