@@ -12,7 +12,7 @@ function(library_gli_init)
 	CachedFetchContent_Declare(
 			gli
 			GIT_REPOSITORY https://github.com/g-truc/gli.git
-			GIT_TAG master
+			GIT_TAG 779b99ac6656e4d30c3b24e96e0136a59649a869
 			GIT_SUBMODULES_RECURSE FALSE
 			GIT_SHALLOW TRUE
 			GIT_PROGRESS TRUE
