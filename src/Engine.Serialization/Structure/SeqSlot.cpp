@@ -173,7 +173,11 @@ sptr<RecordSlot> SeqSlot::getRecord(const u64 index_) {
 
 s64 SeqSlot::getRecordCount() {
 
-	if (_state.header.size <= sizeof(u64)) {
+	if (_state.header.size == 0LL) {
+		return 0LL;
+	}
+
+	if (_state.header.size < sizeof(u64)) {
 		return -1LL;
 	}
 
