@@ -40,7 +40,13 @@ namespace SerializationModule {
 
 	public:
 		TestSerialSubTypeVectorizedSliceAsset() :
-			InheritMeta(AssetGuid {}, typeId) {}
+			InheritMeta(
+				AssetGuid {},
+				typeId,
+				"TestSerialSubTypeVectorizedSliceAsset"sv,
+				engine::assets::AssetReferenceUrl {},
+				engine::assets::AssetUrl {}
+			) {}
 
 	public:
 		Vector<TestSubTypePayload> payload;

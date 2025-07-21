@@ -76,7 +76,13 @@ namespace SerializationModule {
 
 	public:
 		TestSerialAsset() :
-			InheritMeta(AssetGuid {}, typeId) {}
+			InheritMeta(
+				AssetGuid {},
+				typeId,
+				"TestSerialAsset"sv,
+				engine::assets::AssetReferenceUrl {},
+				engine::assets::AssetUrl {}
+			) {}
 
 	public:
 		u8 t0 = 0x0;
@@ -174,7 +180,13 @@ namespace SerializationModule {
 
 	public:
 		TestSerialDataBaseAsset() :
-			InheritMeta(AssetGuid {}, typeId) {}
+			InheritMeta(
+				AssetGuid {},
+				typeId,
+				"TestSerialDataBaseAsset"sv,
+				engine::assets::AssetReferenceUrl {},
+				engine::assets::AssetUrl {}
+			) {}
 
 	public:
 		void setGuid(AssetGuid guid_) {
@@ -195,21 +207,17 @@ namespace hg::engine::serialization {
 		using namespace ::hg::engine::serialization::layout;
 
 		defineValue<LayoutDefineValueType::eUInt32>(
-		offsetof(TestSerialDataBaseAsset, _guid.pre)
-		)
-		;
+			offsetof(TestSerialDataBaseAsset, _guid.pre)
+		);
 		defineValue<LayoutDefineValueType::eUInt16>(
-		offsetof(TestSerialDataBaseAsset, _guid.c0)
-		)
-		;
+			offsetof(TestSerialDataBaseAsset, _guid.c0)
+		);
 		defineValue<LayoutDefineValueType::eUInt16>(
-		offsetof(TestSerialDataBaseAsset, _guid.c1)
-		)
-		;
+			offsetof(TestSerialDataBaseAsset, _guid.c1)
+		);
 		defineValue<LayoutDefineValueType::eUInt64>(
-		offsetof(TestSerialDataBaseAsset, _guid.post)
-		)
-		;
+			offsetof(TestSerialDataBaseAsset, _guid.post)
+		);
 		defineValue<LayoutDefineValueType::eUInt64>(offsetof(TestSerialDataBaseAsset, _type));
 	}
 }
@@ -261,7 +269,13 @@ namespace SerializationModule {
 
 	public:
 		TestSerialSubTypeAsset() :
-			InheritMeta(AssetGuid {}, typeId),
+			InheritMeta(
+				AssetGuid {},
+				typeId,
+				"TestSerialSubTypeAsset"sv,
+				engine::assets::AssetReferenceUrl {},
+				engine::assets::AssetUrl {}
+			),
 			payload() {}
 
 	public:
@@ -343,7 +357,13 @@ namespace SerializationModule {
 
 	public:
 		TestSerialSubTypeSpanAsset() :
-			InheritMeta(AssetGuid {}, typeId),
+			InheritMeta(
+				AssetGuid {},
+				typeId,
+				"TestSerialSubTypeSpanAsset"sv,
+				engine::assets::AssetReferenceUrl {},
+				engine::assets::AssetUrl {}
+			),
 			payload() {}
 
 	public:
@@ -411,7 +431,13 @@ namespace SerializationModule {
 
 	public:
 		TestSerialSubTypeSliceAsset() :
-			InheritMeta(AssetGuid {}, typeId) {}
+			InheritMeta(
+				AssetGuid {},
+				typeId,
+				"TestSerialSubTypeSliceAsset"sv,
+				engine::assets::AssetReferenceUrl {},
+				engine::assets::AssetUrl {}
+			) {}
 
 	public:
 		std::list<TestSubTypePayload> payload;
@@ -478,7 +504,13 @@ namespace SerializationModule {
 
 	public:
 		TestSerialSubTypeVectorizedSliceAsset() :
-			InheritMeta(AssetGuid {}, typeId) {}
+			InheritMeta(
+				AssetGuid {},
+				typeId,
+				"TestSerialSubTypeVectorizedSliceAsset"sv,
+				engine::assets::AssetReferenceUrl {},
+				engine::assets::AssetUrl {}
+			) {}
 
 	public:
 		Vector<TestSubTypePayload> payload;
@@ -557,7 +589,13 @@ namespace SerializationModule {
 
 	public:
 		TestSerialSubTypeStringAsset() :
-			InheritMeta(AssetGuid {}, typeId) {}
+			InheritMeta(
+				AssetGuid {},
+				typeId,
+				"TestSerialSubTypeStringAsset"sv,
+				engine::assets::AssetReferenceUrl {},
+				engine::assets::AssetUrl {}
+			) {}
 
 	public:
 		string payload;
