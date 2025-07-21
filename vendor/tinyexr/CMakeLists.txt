@@ -12,7 +12,7 @@ function(library_tinyexr_init)
 	CachedFetchContent_Declare(
 			tinyexr
 			GIT_REPOSITORY https://github.com/syoyo/tinyexr.git
-			GIT_TAG v1.0.9
+			GIT_TAG v1.0.12
 			GIT_SUBMODULES_RECURSE OFF
 			GIT_SHALLOW ON
 			SOURCE_DIR "${vendor_src_path}"
