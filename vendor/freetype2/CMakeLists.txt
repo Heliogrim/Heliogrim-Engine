@@ -33,7 +33,7 @@ function(library_freetype_init)
     CachedFetchContent_Declare(
             libfreetype
             GIT_REPOSITORY https://github.com/freetype/freetype.git
-            GIT_TAG VER-2-13-2
+            GIT_TAG VER-2-13-3
             GIT_SHALLOW ON
             GIT_PROGRESS ON
             SOURCE_DIR "${vendor_src_path}"
