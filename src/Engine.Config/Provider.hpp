@@ -1,4 +1,5 @@
 #pragma once
+
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Meta/TypeId.hpp>
 #include <Engine.Reflect/Meta/TypeId.hpp>

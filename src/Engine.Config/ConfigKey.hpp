@@ -1,4 +1,5 @@
 #pragma once
+
 #include <type_traits>
 #include <Engine.Common/String.hpp>
 #include <Engine.Reflect/CompileString.hpp>
