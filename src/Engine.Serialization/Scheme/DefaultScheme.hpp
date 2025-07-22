@@ -1,5 +1,8 @@
 #pragma once
 
+#include "../Structure/RecordScopedSlot.hpp"
+#include "../Structure/StructScopedSlot.hpp"
+
 #include "Scheme.hpp"
 
 namespace hg::engine::serialization {
