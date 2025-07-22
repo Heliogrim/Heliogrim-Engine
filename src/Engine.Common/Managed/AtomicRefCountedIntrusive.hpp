@@ -156,7 +156,6 @@ namespace hg {
 		constexpr AtomicRefCountedIntrusive(::std::nullptr_t) noexcept :
 			AtomicRefCountedIntrusive() {}
 
-		// TODO:
 		constexpr AtomicRefCountedIntrusive(const this_type& other_) noexcept :
 			_obj(++const_cast<ref<arci_atomic_packed_type>>(other_._obj)) {
 
@@ -172,7 +171,6 @@ namespace hg {
 			_obj.store(encode(subject, 1u), std::memory_order::relaxed);
 		}
 
-		// TODO:
 		constexpr AtomicRefCountedIntrusive(this_type&& other_) noexcept :
 			_obj(++other_._obj) {
 
@@ -190,7 +188,7 @@ namespace hg {
 				return;
 			}
 
-			// If old_refs < 2u, we got a inactive or uninitialized pointer
+			// If old_refs < 2u, we got an inactive or uninitialized pointer
 			other_._obj.fetch_sub(1u, std::memory_order::relaxed);
 			_obj.store(0uLL, std::memory_order::relaxed);
 		}
@@ -256,7 +254,7 @@ namespace hg {
 						target = ++_obj;
 					}
 
-					// Note: We may end up inbetween multiple asignments which could potentially
+					// Note: We may end up in between multiple assignments which could potentially
 					//			store a pointer before the lock expansion
 					if (auto recursive = decode_pointer(target); recursive != nullptr) {
 						// Modify local intrusive counter to pseudo-holder
@@ -329,6 +327,12 @@ namespace hg {
 		}
 
 	public:
+		[[nodiscard]] bool ref_unique() const noexcept {
+			using ref_count_type = decltype(std::declval<const Ty_>().ref_count());
+			auto* const subject = decode_pointer(_obj.load(std::memory_order::consume));
+			return subject == nullptr ? true : subject->ref_count() == ref_count_type { 1 } ? true : false;
+		}
+
 		[[nodiscard]] auto ref_count() const noexcept {
 			using ref_count_type = decltype(std::declval<const Ty_>().ref_count());
 			auto* const subject = decode_pointer(_obj.load(std::memory_order::consume));
