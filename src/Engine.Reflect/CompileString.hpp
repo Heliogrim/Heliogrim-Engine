@@ -6,19 +6,19 @@
 namespace hg {
 	class CompileString {
 	public:
-		friend constexpr CompileString operator""_cs(const char*, std::size_t);
+		friend consteval CompileString operator""_cs(const char*, std::size_t);
 
 	private:
-		constexpr CompileString(const char* begin_, std::size_t length_) :
+		consteval CompileString(const char* begin_, std::size_t length_) :
 			_cs(begin_),
 			_length(length_) {}
 
 	public:
 		template <std::size_t NumChars_>
-		constexpr CompileString(const char (&cs)[NumChars_]) :
+		consteval CompileString(const char (&cs)[NumChars_]) :
 			CompileString(&cs[0], /* Note: We drop the null terminator */ NumChars_ - 1) {}
 
-		constexpr CompileString(const char* begin_, const char* end_) :
+		consteval CompileString(const char* begin_, const char* end_) :
 			CompileString(begin_, static_cast<std::size_t>(end_ - begin_)) {}
 
 		[[nodiscard]] constexpr std::size_t length() const noexcept {
@@ -53,7 +53,7 @@ namespace hg {
 
 	/**/
 
-	constexpr CompileString operator""_cs(const char* str_, const std::size_t count_) {
+	consteval CompileString operator""_cs(const char* str_, const std::size_t count_) {
 		return CompileString { str_, count_ };
 	}
 }
