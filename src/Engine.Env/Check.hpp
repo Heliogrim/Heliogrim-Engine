@@ -23,24 +23,24 @@ namespace hg::env {
 	/**/
 
 	template <EnvProps Property_>
-	extern constexpr bool check() noexcept;
+	extern consteval bool check() noexcept;
 
 	/**/
 
 	template <>
-	constexpr bool check<EnvProps::eIsEditor>() noexcept {
+	consteval bool check<EnvProps::eIsEditor>() noexcept {
 		// TODO:
 		return true;
 	}
 
 	template <>
-	constexpr bool check<EnvProps::eIsRuntime>() noexcept {
+	consteval bool check<EnvProps::eIsRuntime>() noexcept {
 		constexpr auto ed = check<EnvProps::eIsEditor>();
 		return not ed;
 	}
 
 	template <>
-	constexpr bool check<EnvProps::eIsShipment>() noexcept {
+	consteval bool check<EnvProps::eIsShipment>() noexcept {
 		// TODO:
 		return false;
 	}
@@ -48,7 +48,7 @@ namespace hg::env {
 	/**/
 
 	template <>
-	constexpr bool check<EnvProps::eIsWindows>() noexcept {
+	consteval bool check<EnvProps::eIsWindows>() noexcept {
 		#ifdef _WIN32
 		return true;
 		#else
