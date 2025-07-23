@@ -41,7 +41,7 @@ namespace hg::editor::ui {
 		std::weak_ptr<engine::reflow::uikit::UniformGridLayout> grid;
 
 	private:
-		[[nodiscard]] SharedPtr<engine::reflow::uikit::Button> makeItem(ref<const service::AssetBrowserEntry> data_) const;
+		[[nodiscard]] SharedPtr<engine::reflow::Widget> makeItem(ref<const service::AssetBrowserEntry> data_) const;
 
 	public:
 		void displayNav(ref<const Vector<BrowserNavEntry>> navData_);

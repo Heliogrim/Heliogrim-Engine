@@ -35,11 +35,12 @@ AssetBrowserView::AssetBrowserView(
 	scrollBox(::hg::move(scrollBox_)),
 	grid(::hg::move(grid_)) {}
 
-SharedPtr<uikit::Button> AssetBrowserView::makeItem(ref<const service::AssetBrowserEntry> data_) const {
+SharedPtr<Widget> AssetBrowserView::makeItem(ref<const service::AssetBrowserEntry> data_) const {
 
 	const auto helper = AssetBrowserHelper::get();
 
 	auto icon = helper->getItemIconForDirectory("Undefined"sv);
+	auto title = String {};
 	auto label = String {};
 
 	switch (data_.type) {
@@ -49,17 +50,20 @@ SharedPtr<uikit::Button> AssetBrowserView::makeItem(ref<const service::AssetBrow
 			::hg::assertrt(asset != None);
 
 			icon = helper->getItemIconByAssetType(asset.value()->getTypeId());
+			title = data_.url.getAssetName();
 			label = helper->getAssetTypeName(asset.value()->getTypeId());
 			break;
 		}
 		case service::AssetBrowserEntryType::eDirectory: {
-			icon = helper->getItemIconForDirectory(data_.title);
+			title = std::filesystem::path { StringView { data_.url.getAssetPath().asByteSpan() } }.filename().string();
 			label = "Directory"sv;
+			icon = helper->getItemIconForDirectory(title);
 			break;
 		}
 		case service::AssetBrowserEntryType::eFile: {
-			icon = helper->getItemIconForDirectory(data_.title);
+			title = std::filesystem::path { StringView { data_.url.getAssetPath().asByteSpan() } }.filename().string();
 			label = "File"sv;
+			icon = helper->getItemIconForDirectory(title);
 			break;
 		}
 		default: ;
@@ -110,7 +114,7 @@ SharedPtr<uikit::Button> AssetBrowserView::makeItem(ref<const service::AssetBrow
 	auto displayTitle = make_sptr<uikit::Text>();
 	auto displayLabel = make_sptr<uikit::Text>();
 
-	displayTitle->setText(data_.title);
+	displayTitle->setText(title);
 	displayLabel->setText(label);
 
 	detailsLayout->addChild(::hg::move(displayTitle));
