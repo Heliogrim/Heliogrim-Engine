@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Meta/TypeId.hpp>
-#include <Engine.Reflect/Meta/TypeId.hpp>
+#include <Engine.Reflect/TypeId.hpp>
 
 #include "ConfigEntry.hpp"
 #include "ConfigKey.hpp"
@@ -41,7 +41,7 @@ namespace hg::engine::cfg {
 		if constexpr (ProviderIdGetter<Type_>) {
 			return provider_.providerId();
 		} else {
-			return reflect::typeId<Type_>().data;
+			return refl::TypeId<Type_>().data;
 		}
 	}
 }

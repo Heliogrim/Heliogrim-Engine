@@ -2,8 +2,8 @@
 
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Collection/DenseMap.hpp>
+#include <Engine.Reflect/TypeId.hpp>
 #include <Engine.Reflect/Inherit/Concept.hpp>
-#include <Engine.Reflect/Meta/TypeId.hpp>
 
 #include "ActorPoolWrapper.hpp"
 #include "ComponentTypeId.hpp"
@@ -59,7 +59,7 @@ namespace hg::engine::acs {
 			auto ptr = &pool_type::getOrCreate();
 
 			// Temporary
-			const auto typeId { reflect::typeId<ValueType>() };
+			constexpr auto typeId = refl::TypeId<ValueType>();
 			auto mapped = _pools[typeId];
 
 			if (mapped == nullptr) {
@@ -184,7 +184,7 @@ namespace hg::engine::acs {
 			// TODO: Change static lifetime to scoped one
 			auto* const pool { &pool_type::getOrCreate() };
 
-			const auto typeId { reflect::typeId<ActorType_>() };
+			constexpr auto typeId = refl::TypeId<ActorType_>();
 			const auto* const mapped { _actorPools[typeId] };
 
 			if (mapped == nullptr) {

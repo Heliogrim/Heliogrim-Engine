@@ -2,7 +2,7 @@
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Hash/Fnv-1a.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
-#include <Engine.Reflect/CompileString.hpp>
+#include <Engine.Reflect/Compile/String.hpp>
 
 #include "Function.hpp"
 #include "Variable.hpp"

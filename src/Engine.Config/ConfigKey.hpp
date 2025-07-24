@@ -2,7 +2,7 @@
 
 #include <type_traits>
 #include <Engine.Common/String.hpp>
-#include <Engine.Reflect/CompileString.hpp>
+#include <Engine.Reflect/Compile/String.hpp>
 
 namespace hg::engine::cfg {
 	template <typename Ty_>

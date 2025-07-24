@@ -37,10 +37,10 @@ namespace hg::engine::storage {
 					Vector<CachedResource> {
 						CachedResource {
 							(Rc<void>&&)::hg::move(resource_)/* TODO: .into<void>()*/,
-							reflect::typeId<Type_>(),
+							::hg::refl::TypeId<Type_>(),
 							{
 								CachedResource::dep_type {
-									reflect::typeId<std::remove_pointer_t<decltype(deps_)>>(),
+									::hg::refl::TypeId<std::remove_pointer_t<decltype(deps_)>>(),
 									reinterpret_cast<CachedResource::address_type>(deps_)
 								}...
 							}
@@ -52,11 +52,11 @@ namespace hg::engine::storage {
 
 			/**/
 
-			constexpr auto nextTypeId = reflect::typeId<Type_>();
+			constexpr auto nextTypeId = ::hg::refl::TypeId<Type_>();
 
 			const auto nextDeps = std::array<CachedResource::dep_type, sizeof...(deps_)> {
 				CachedResource::dep_type {
-					reflect::typeId<std::remove_pointer_t<decltype(deps_)>>(),
+					::hg::refl::TypeId<std::remove_pointer_t<decltype(deps_)>>(),
 					reinterpret_cast<CachedResource::address_type>(deps_)
 				}...
 			};
@@ -80,7 +80,7 @@ namespace hg::engine::storage {
 			iter->second.emplace_back(
 				CachedResource {
 					(Rc<void>&&)::hg::move(resource_)/* TODO: .into<void>()*/,
-					reflect::typeId<Type_>(),
+					::hg::refl::TypeId<Type_>(),
 					{ nextDeps.begin(), nextDeps.end() }
 				}
 			);
@@ -96,7 +96,7 @@ namespace hg::engine::storage {
 
 			const auto observed = std::array {
 				CachedResource::dep_type {
-					reflect::typeId<std::remove_pointer_t<decltype(deps_)>>(),
+					::hg::refl::TypeId<std::remove_pointer_t<decltype(deps_)>>(),
 					reinterpret_cast<CachedResource::address_type>(deps_)
 				}...
 			};
@@ -130,7 +130,7 @@ namespace hg::engine::storage {
 			const auto& stored = map.at(::hg::move(key_));
 			const auto set = std::array {
 				CachedResource::dep_type {
-					reflect::typeId<std::remove_pointer_t<decltype(deps_)>>(),
+					::hg::refl::TypeId<std::remove_pointer_t<decltype(deps_)>>(),
 					reinterpret_cast<CachedResource::address_type>(deps_)
 				}...
 			};
@@ -140,7 +140,7 @@ namespace hg::engine::storage {
 			for (auto& res : stored) {
 
 				if ([](const auto& set_, const auto& res_) {
-					if (res_.type != reflect::typeId<Type_>()) {
+					if (res_.type != ::hg::refl::TypeId<Type_>()) {
 						return false;
 					}
 

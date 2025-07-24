@@ -264,28 +264,28 @@ smr<const AccelerationPipeline> VkPipelineCompiler::compile(
 	/**/
 
 	switch (source_->getMetaClass()->typeId().data) {
-		case VkComputePipeline::typeId.data: {
+		case ::hg::refl::TypeId<VkComputePipeline>().data: {
 			return compileTypeSpec<VkComputePipeline>(
 				std::move(source_),
 				std::move(stages),
 				specifications_->getPassSpec<ComputePassSpecification>()
 			);
 		}
-		case VkGraphicsPipeline::typeId.data: {
+		case ::hg::refl::TypeId<VkGraphicsPipeline>().data: {
 			return compileTypeSpec<VkGraphicsPipeline>(
 				std::move(source_),
 				std::move(stages),
 				specifications_->getPassSpec<GraphicsPassSpecification>()
 			);
 		}
-		case VkMeshPipeline::typeId.data: {
+		case ::hg::refl::TypeId<VkMeshPipeline>().data: {
 			return compileTypeSpec<VkMeshPipeline>(
 				std::move(source_),
 				std::move(stages),
 				specifications_->getPassSpec<MeshPassSpecification>()
 			);
 		}
-		case VkRaytracingPipeline::typeId.data: {
+		case ::hg::refl::TypeId<VkRaytracingPipeline>().data: {
 			return compileTypeSpec<VkRaytracingPipeline>(
 				std::move(source_),
 				std::move(stages),

@@ -1,32 +1,31 @@
 #pragma once
 #include <Engine.Common/String.hpp>
-#include <Engine.Common/Meta/Constexpr.hpp>
-#include <Engine.Reflect/CompileTypeId.hpp>
+#include <Engine.Reflect/Compile/TypeId.hpp>
 
 #include "Component.hpp"
 
 namespace hg::engine::render::graph {
-    class BarrierComponent final :
-        public InheritMeta<BarrierComponent, Component> {
-    public:
-        using this_type = BarrierComponent;
+	class BarrierComponent final :
+		public InheritMeta<BarrierComponent, Component> {
+	public:
+		using this_type = BarrierComponent;
 
-    public:
-        inline static constexpr type_id typeId { force_constexpr<ctid<this_type>()> };
+	public:
+		constexpr static type_id typeId = ::hg::refl::ctid<this_type>();
 
-    public:
-        BarrierComponent() noexcept = default;
+	public:
+		BarrierComponent() noexcept = default;
 
-        BarrierComponent(mref<string> barrierName_) noexcept;
+		BarrierComponent(mref<string> barrierName_) noexcept;
 
-        ~BarrierComponent() noexcept override = default;
+		~BarrierComponent() noexcept override = default;
 
-    private:
-        string _name;
+	private:
+		string _name;
 
-    public:
-        [[nodiscard]] string_view getBarrierName() const noexcept;
+	public:
+		[[nodiscard]] string_view getBarrierName() const noexcept;
 
-        void setBarrierName(string_view barrierName_);
-    };
+		void setBarrierName(string_view barrierName_);
+	};
 }

@@ -1,6 +1,6 @@
 #include "ArchiveSystemRepository.hpp"
 
-#include <Engine.Reflect/CompileString.hpp>
+#include <Engine.Reflect/Compile/String.hpp>
 
 #include "Repository.inl.hpp"
 #include "../IStorage.hpp"

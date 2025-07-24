@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Engine.Common/Move.hpp>
-#include <Engine.Reflect/Meta/TypeId.hpp>
+#include <Engine.Reflect/TypeId.hpp>
 
 namespace hg::meta {
 	template <typename Type_>
@@ -28,10 +28,10 @@ namespace hg::meta {
 
 		TypeTrait& operator=(cref<TypeTrait>) noexcept = default;
 
-		type_id typeId = reflect::typeId<Type_>();
+		type_id typeId = ::hg::refl::TypeId<Type_>();
 
 		[[nodiscard]] constexpr bool valid() const noexcept {
-			return typeId == reflect::typeId<Type_>();
+			return typeId == ::hg::refl::TypeId<Type_>();
 		}
 	};
 }

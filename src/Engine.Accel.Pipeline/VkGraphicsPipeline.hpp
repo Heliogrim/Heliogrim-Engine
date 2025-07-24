@@ -1,8 +1,6 @@
 #pragma once
 
-#include <Engine.Common/Meta/Constexpr.hpp>
 #include <Engine.GFX/API/__vkFwd.hpp>
-#include <Engine.Reflect/CompileTypeId.hpp>
 
 #include "GraphicsPipeline.hpp"
 
@@ -11,9 +9,6 @@ namespace hg::engine::accel {
 		public InheritMeta<VkGraphicsPipeline, GraphicsPipeline> {
 	public:
 		using this_type = VkGraphicsPipeline;
-
-	public:
-		inline static constexpr type_id typeId { force_constexpr<ctid<this_type>()> };
 
 	public:
 		VkGraphicsPipeline(mref<smr<const AccelerationEffect>> effect_);

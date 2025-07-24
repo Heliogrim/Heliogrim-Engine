@@ -4,7 +4,7 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Env/Check.hpp>
 #include <Engine.Filesystem/Url.hpp>
-#include <Engine.Reflect/CompileString.hpp>
+#include <Engine.Reflect/Compile/String.hpp>
 
 #include "../IStorage.hpp"
 #include "../Options/StorageDescriptor.hpp"

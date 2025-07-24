@@ -28,7 +28,7 @@ nmpt<RepType_> LocalFileSystemProvider::makeUniqueRepository(
 	mref<hg::fs::File::path_type> basePath_
 ) {
 
-	constexpr auto repoTypeId = reflect::typeId<RepType_>();
+	constexpr auto repoTypeId = ::hg::refl::TypeId<RepType_>();
 	for (auto& entry : repositories_) {
 		if (entry.typeId != repoTypeId) {
 			continue;

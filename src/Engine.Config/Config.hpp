@@ -78,13 +78,11 @@ namespace hg::engine {
 				return std::forward<KeyType_>(key_).hash();
 
 			} else if constexpr (std::is_same_v<CheckType, StringView>) {
-				if (std::is_constant_evaluated()) {
-					return CompileString { &key_.front(), &key_.back() }.hash();
-				}
+				// Error: (MSVC) if consteval { return CompileString { &key_.front(), &key_.back() }.hash(); }
 				return hash::fnv1a(std::forward<KeyType_>(key_));
 
 			} else if constexpr (std::is_enum_v<CheckType>) {
-				const auto enumTypeId = ::hg::reflect::typeId<CheckType>();
+				constexpr auto enumTypeId = ::hg::refl::TypeId<CheckType>();
 				const auto enumValInt = std::bit_cast<std::underlying_type_t<CheckType>>(std::forward<KeyType_>(key_));
 
 				auto combined = enumTypeId.data;
@@ -116,7 +114,7 @@ namespace hg::engine {
 		[[nodiscard]] tl::expected<void, cfg::ConfigInitError> init(KeyType_&& key_, ValueType_&& value_) noexcept {
 			return init(
 				cfg::ConfigEntry {
-					reflect::typeId<std::remove_cvref_t<ValueType_>>(),
+					refl::TypeId<std::remove_cvref_t<ValueType_>>(),
 					convertKey(std::forward<KeyType_>(key_)),
 					{ std::forward<ValueType_>(value_) }
 				}
@@ -145,7 +143,7 @@ namespace hg::engine {
 		) noexcept {
 			return init(
 				cfg::ConfigEntry {
-					reflect::typeId<std::remove_cvref_t<ValueType_>>(),
+					refl::TypeId<std::remove_cvref_t<ValueType_>>(),
 					convertKey(std::forward<KeyType_>(key_)),
 					{ std::forward<ValueType_>(value_) }
 				},

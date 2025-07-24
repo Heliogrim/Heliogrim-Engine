@@ -2,45 +2,45 @@
 #include <Engine.Common/Math/Hash.hpp>
 #include <Engine.GFX.Scene/View/SceneView.hpp>
 #include <Engine.GFX/Camera/CameraFrustum.hpp>
-#include <Engine.Reflect/Meta/TypeId.hpp>
+#include <Engine.Reflect/TypeId.hpp>
 
 #include "Culling.hpp"
 
 namespace hg::engine::render::graph {
-    class FrustumCullingFilter :
-        public InheritMeta<FrustumCullingFilter, CullingFilter> {
-    public:
-        using this_type = FrustumCullingFilter;
+	class FrustumCullingFilter :
+		public InheritMeta<FrustumCullingFilter, CullingFilter> {
+	public:
+		using this_type = FrustumCullingFilter;
 
-    public:
-        constexpr FrustumCullingFilter() noexcept = default;
+	public:
+		constexpr FrustumCullingFilter() noexcept = default;
 
-        constexpr ~FrustumCullingFilter() noexcept override = default;
+		constexpr ~FrustumCullingFilter() noexcept override = default;
 
-    private:
-        gfx::CameraFrustum _frustum;
-        ptr<const gfx::scene::SceneView> _sceneView;
+	private:
+		gfx::CameraFrustum _frustum;
+		ptr<const gfx::scene::SceneView> _sceneView;
 
-    public:
-        [[nodiscard]] checksum_type checksum() const noexcept override {
+	public:
+		[[nodiscard]] checksum_type checksum() const noexcept override {
 
-            constexpr auto selfTypeId = reflect::typeId<this_type>();
-            checksum_type combined { selfTypeId.data };
+			constexpr auto selfTypeId = ::hg::refl::TypeId<this_type>();
+			checksum_type combined { selfTypeId.data };
 
-            const auto sceneHash = reinterpret_cast<checksum_type>(_sceneView->getRenderSceneSystem().get());
+			const auto sceneHash = reinterpret_cast<checksum_type>(_sceneView->getRenderSceneSystem().get());
 
-            // TODO: Hash view- and projection-matrix
-            const auto viewHash = _sceneView->getViewMatrix();
-            const auto projHash = _sceneView->getProjectionMatrix();
+			// TODO: Hash view- and projection-matrix
+			const auto viewHash = _sceneView->getViewMatrix();
+			const auto projHash = _sceneView->getProjectionMatrix();
 
-            hash::hashCombine<checksum_type>(combined, sceneHash);
+			hash::hashCombine<checksum_type>(combined, sceneHash);
 
-            return combined;
-        }
+			return combined;
+		}
 
-    public:
-        void update(cref<gfx::scene::SceneView> sceneView_) noexcept override;
+	public:
+		void update(cref<gfx::scene::SceneView> sceneView_) noexcept override;
 
-        [[nodiscard]] bool operator()(const void* node_) const noexcept override;
-    };
+		[[nodiscard]] bool operator()(const void* node_) const noexcept override;
+	};
 }

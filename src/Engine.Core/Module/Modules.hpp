@@ -6,7 +6,7 @@
 #include <Engine.Common/Collection/Deque.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
-#include <Engine.Reflect/Meta/TypeId.hpp>
+#include <Engine.Reflect/TypeId.hpp>
 
 #include "CoreModule.hpp"
 #include "DependencyKey.hpp"
@@ -127,30 +127,30 @@ namespace hg::engine::core {
 
 	template <IsRootModule ModuleType_>
 	void Modules::addRootModule(ref<ModuleType_> module_) {
-		addRootModule(reflect::typeId<ModuleType_>(), std::addressof(module_));
+		addRootModule(::hg::refl::TypeId<ModuleType_>(), std::addressof(module_));
 	}
 
 	template <IsRootModule ModuleType_>
 	Opt<ref<ModuleType_>> Modules::getRootModule() const noexcept {
-		auto val = getRootModule(reflect::typeId<ModuleType_>());
+		auto val = getRootModule(::hg::refl::TypeId<ModuleType_>());
 		return (val != nullptr) ? Some(static_cast<ref<ModuleType_>>(*val)) : None;
 	}
 
 	template <IsRootModule ModuleType_>
 	void Modules::removeRootModule(ref<ModuleType_> module_) {
-		removeRootModule(reflect::typeId<ModuleType_>(), std::addressof(module_));
+		removeRootModule(::hg::refl::TypeId<ModuleType_>(), std::addressof(module_));
 	}
 
 	/**/
 
 	template <IsCoreModule ModuleType_>
 	void Modules::addCoreModule(ref<ModuleType_> module_, cref<DependencyKey> key_) {
-		addCoreModule(std::move(key_), reflect::typeId<ModuleType_>(), std::addressof(module_));
+		addCoreModule(std::move(key_), ::hg::refl::TypeId<ModuleType_>(), std::addressof(module_));
 	}
 
 	template <IsCoreModule ModuleType_>
 	Opt<ref<ModuleType_>> Modules::getCoreModule() const noexcept {
-		auto val = getCoreModule(reflect::typeId<ModuleType_>());
+		auto val = getCoreModule(::hg::refl::TypeId<ModuleType_>());
 		return (val != nullptr) ? Some(static_cast<ref<ModuleType_>>(*val)) : None;
 	}
 
@@ -162,6 +162,6 @@ namespace hg::engine::core {
 
 	template <IsCoreModule ModuleType_>
 	void Modules::removeCoreModule(ref<ModuleType_> module_) {
-		removeCoreModule(reflect::typeId<ModuleType_>(), std::addressof(module_));
+		removeCoreModule(::hg::refl::TypeId<ModuleType_>(), std::addressof(module_));
 	}
 }

@@ -1,27 +1,26 @@
 #pragma once
 
-#include <Engine.Common/Meta/Constexpr.hpp>
-#include <Engine.Reflect/CompileTypeId.hpp>
+#include <Engine.Reflect/Compile/TypeId.hpp>
 
 #include "Description.hpp"
 
 namespace hg::engine::render::graph {
-    class SceneCameraDescription final :
-        public InheritMeta<SceneCameraDescription, Description> {
-    public:
-        using this_type = SceneCameraDescription;
+	class SceneCameraDescription final :
+		public InheritMeta<SceneCameraDescription, Description> {
+	public:
+		using this_type = SceneCameraDescription;
 
-    public:
-        inline static constexpr type_id typeId { force_constexpr<ctid<this_type>()> };
+	public:
+		constexpr static type_id typeId = ::hg::refl::ctid<this_type>();
 
-    public:
-        SceneCameraDescription() noexcept;
+	public:
+		SceneCameraDescription() noexcept;
 
-        ~SceneCameraDescription() override;
+		~SceneCameraDescription() override;
 
-    protected:
-        [[nodiscard]] bool isValueCompatible(
-            const non_owning_rptr<const Description> other_
-        ) const noexcept override;
-    };
+	protected:
+		[[nodiscard]] bool isValueCompatible(
+			const non_owning_rptr<const Description> other_
+		) const noexcept override;
+	};
 }

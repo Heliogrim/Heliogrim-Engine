@@ -2,8 +2,6 @@
 
 #include <atomic>
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Meta/Constexpr.hpp>
-#include <Engine.Reflect/CompileTypeId.hpp>
 #include <Engine.Reflect/Inherit/InheritBase.hpp>
 
 namespace hg::engine::gfx::material {
