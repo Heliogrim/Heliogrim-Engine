@@ -1,13 +1,16 @@
 #include "pch.h"
 
 #include <Engine.Common/Meta/Constexpr.hpp>
-#include <Engine.Reflect/Compile/Map.hpp>
+#include <Engine.Reflect/PartialTypeInfo.hpp>
+#include <Engine.Reflect/TypeId.hpp>
+#include <Engine.Reflect/TypeName.hpp>
 #include <Engine.Reflect/Compile/HashMap.hpp>
-#include <Engine.Reflect/CompileTypeId.hpp>
-#include <Engine.Reflect/Meta/TypedMetaClass.hpp>
-#include <Engine.Reflect/Meta/TypeId.hpp>
+#include <Engine.Reflect/Compile/Map.hpp>
+#include <Engine.Reflect/Compile/TypeId.hpp>
+#include <Engine.Reflect/Compile/TypeName.hpp>
 #include <Engine.Reflect/Inherit/InheritBase.hpp>
 #include <Engine.Reflect/Inherit/InheritMeta.hpp>
+#include <Engine.Reflect/Meta/TypedMetaClass.hpp>
 
 using namespace hg;
 
@@ -57,17 +60,17 @@ namespace ReflectModule {
 		// Same Class Check
 		EXPECT_TRUE(obj->getMetaClass()->is<TestDerived01F>());
 		EXPECT_TRUE(obj->getMetaClass()->exact<TestDerived01F>());
-		EXPECT_EQ(reflect::typeId<TestDerived01F>(), obj->getMetaClass()->typeId());
+		EXPECT_EQ(::hg::refl::TypeId<TestDerived01F>(), obj->getMetaClass()->typeId());
 
 		// Outer Class Check
 		EXPECT_FALSE(obj->getMetaClass()->is<TestDerived02F>());
 		EXPECT_FALSE(obj->getMetaClass()->exact<TestDerived02F>());
-		EXPECT_NE(reflect::typeId<TestDerived02F>(), obj->getMetaClass()->typeId());
+		EXPECT_NE(::hg::refl::TypeId<TestDerived02F>(), obj->getMetaClass()->typeId());
 
 		// Base Class Check
 		//EXPECT_TRUE(obj->getMetaClass()->isType<TestBase01>());
 		EXPECT_FALSE(obj->getMetaClass()->exact<TestBase01>());
-		EXPECT_NE(reflect::typeId<TestBase01>(), obj->getMetaClass()->typeId());
+		EXPECT_NE(::hg::refl::TypeId<TestBase01>(), obj->getMetaClass()->typeId());
 
 		//
 		delete obj;
@@ -142,7 +145,7 @@ namespace ReflectModule {
 		EXPECT_NE(obj0.getMetaClass()->typeId(), obj1.getMetaClass()->typeId());
 		EXPECT_TRUE(obj0.getMetaClass()->inherits(TestMetaBase::meta_class<>::get()));
 
-		EXPECT_TRUE(obj0.getMetaClass()->inherits(ctid<TestExtBase>()));
+		EXPECT_TRUE(obj0.getMetaClass()->inherits(::hg::refl::ctid<TestExtBase>()));
 	}
 
 	TEST(MetaInherit, TestPolyMetaDerived) {
@@ -180,7 +183,7 @@ namespace ReflectModule {
 		EXPECT_NE(obj0.getMetaClass()->typeId(), obj2.getMetaClass()->typeId());
 		EXPECT_TRUE(obj0.getMetaClass()->inherits(TestMetaBase::meta_class<>::get()));
 
-		EXPECT_TRUE(obj0.getMetaClass()->inherits(ctid<TestExtBase>()));
+		EXPECT_TRUE(obj0.getMetaClass()->inherits(::hg::refl::ctid<TestExtBase>()));
 	}
 
 	TEST(MetaInherit, StaticMeta) {
@@ -196,11 +199,47 @@ namespace ReflectModule {
 	}
 }
 
+/**/
+
+namespace ReflectModule {
+	TEST(CompileTime, AllNameEqual) {
+
+		struct TestType {
+			int data[4];
+		};
+
+		constexpr auto deep = ::hg::refl::ctname<TestType>();
+		constexpr auto forwarded = ::hg::refl::TypeName<TestType>();
+
+		EXPECT_EQ(deep, forwarded);
+	}
+
+	TEST(CompileTime, AllTypeIdEqual) {
+
+		struct TestType {
+			float data[4];
+		};
+
+		constexpr auto deep = ::hg::refl::ctid<TestType>();
+		constexpr auto* metaClass = ::hg::TypedMetaClass<TestType>::get();
+		constexpr auto partialInfo = ::hg::refl::PartialTypeInfo::from<TestType>();
+		constexpr auto fullInfo = ::hg::refl::FullTypeInfo::from<TestType>();
+		constexpr auto queried = ::hg::refl::TypeId<TestType>();
+
+		EXPECT_EQ(deep, metaClass->typeId());
+		EXPECT_EQ(deep, partialInfo.meta->typeId());
+		EXPECT_EQ(deep, fullInfo.meta->typeId());
+		EXPECT_EQ(deep, queried);
+	}
+}
+
+/**/
+
 struct mapped_load {
 	u64 marker;
 };
 
-constexpr auto test_gen_map() {
+static consteval auto test_gen_map() {
 	auto tmp = make_compile_map<string_view, mapped_load>(
 		std::pair<string_view, mapped_load> { "b"sv, {} },
 		std::pair<string_view, mapped_load> { "c"sv, {} },
@@ -215,7 +254,7 @@ constexpr auto test_gen_map() {
 	return tmp;
 }
 
-constexpr auto test_gen_hash_map() {
+static consteval auto test_gen_hash_map() {
 	auto tmp = make_compile_hash_map<string_view, mapped_load>(
 		std::pair<string_view, mapped_load> { "b"sv, {} },
 		std::pair<string_view, mapped_load> { "c"sv, {} },
@@ -230,8 +269,71 @@ constexpr auto test_gen_hash_map() {
 	return tmp;
 }
 
+static consteval auto test_gen_mass_hash_map() {
+	return make_compile_hash_map<string_view, mapped_load>(
+		std::pair<string_view, mapped_load> { "first-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "mass-entry"sv, {} },
+		std::pair<string_view, mapped_load> { "last-entry"sv, {} }
+	);
+}
+
 constexpr auto map = test_gen_map();
 constexpr auto hash_map = test_gen_hash_map();
+constexpr auto mass_hash_map = test_gen_mass_hash_map();
 
 namespace ReflectModule {
 	TEST(CompileMap, Find) {
@@ -302,6 +404,17 @@ namespace ReflectModule {
 		EXPECT_TRUE(c4);
 	}
 
+	TEST(CompileHashMap, MassFind) {
+
+		constexpr auto ffe = mass_hash_map.find("first-entry"sv) != mass_hash_map.end();
+		constexpr auto fme = mass_hash_map.find("mass-entry"sv) != mass_hash_map.end();
+		constexpr auto fle = mass_hash_map.find("last-entry"sv) != mass_hash_map.end();
+
+		EXPECT_TRUE(ffe);
+		EXPECT_TRUE(fme);
+		EXPECT_TRUE(fle);
+	}
+
 	TEST(CompileHashMap, Contains) { {
 			constexpr auto result = hash_map.contains("c"sv);
 			EXPECT_TRUE(result);
@@ -326,5 +439,17 @@ namespace ReflectModule {
 			EXPECT_EQ(result, 2);
 		}
 
+	}
+
+	TEST(CompileHashMap, MassCount) { {
+			constexpr auto result = mass_hash_map.count("first-entry"sv);
+			EXPECT_EQ(result, 1);
+		} {
+			constexpr auto result = mass_hash_map.count("mass-entry"sv);
+			EXPECT_EQ(result, 55);
+		} {
+			constexpr auto result = mass_hash_map.count("last-entry"sv);
+			EXPECT_EQ(result, 1);
+		}
 	}
 }
