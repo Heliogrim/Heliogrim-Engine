@@ -10,7 +10,7 @@ namespace hg {
 	template <typename Type_, size_t Size_, typename Hash_ = CompileHash<Type_>>
 	struct CompileTableHashKey :
 		public Hash_ {
-		using type = CompileTableHashKey<Type_, Size_, Hash_>;
+		using this_type = CompileTableHashKey<Type_, Size_, Hash_>;
 		using value_type = Type_;
 
 	public:
@@ -22,13 +22,12 @@ namespace hg {
 			hash(static_cast<Hash_&>(*this)(value_)),
 			data(value_) {}
 
-		template <typename Ty_ = Type_> requires std::is_same_v<Ty_, Type_> && std::is_copy_constructible_v<Ty_>
-		constexpr CompileTableHashKey(const Ty_& other_) noexcept :
+		constexpr CompileTableHashKey(ref<const this_type>& other_) noexcept requires (std::is_copy_constructible_v<Type_>) :
 			hash(other_.hash),
 			data(other_.data) {}
 
 		template <typename Ty_ = Type_> requires std::is_same_v<Ty_, Type_> && std::is_move_constructible_v<Ty_>
-		constexpr CompileTableHashKey(Ty_&& other_) noexcept :
+		constexpr CompileTableHashKey(CompileTableHashKey<Ty_, Size_, Hash_>&& other_) noexcept :
 			hash(other_.hash),
 			data(std::move(other_.data)) {}
 
@@ -39,9 +38,7 @@ namespace hg {
 		value_type data;
 
 	public:
-		template <typename Ty_ = type> requires
-			std::is_same_v<Ty_, type> && std::is_copy_assignable_v<typename Ty_::value_type>
-		constexpr type& operator=(const Ty_& other_) noexcept {
+		constexpr this_type& operator=(const this_type& other_) noexcept requires(std::is_copy_assignable_v<Type_>) {
 			if (std::addressof(other_) != this) {
 				hash = other_.hash;
 				data = other_.data;
@@ -49,9 +46,9 @@ namespace hg {
 			return *this;
 		}
 
-		template <typename Ty_ = type> requires
-			std::is_same_v<Ty_, type> && std::is_move_assignable_v<typename Ty_::value_type>
-		constexpr type& operator=(Ty_&& other_) noexcept {
+		template <typename Ty_ = this_type> requires
+			std::is_same_v<Ty_, this_type> && std::is_move_assignable_v<typename Ty_::value_type>
+		constexpr this_type& operator=(Ty_&& other_) noexcept {
 			if (std::addressof(other_) != this) {
 				hash = other_.hash;
 				data = std::move(other_.data);
@@ -60,31 +57,31 @@ namespace hg {
 		}
 
 	public:
-		constexpr bool operator<(const type& other_) const noexcept {
+		constexpr bool operator<(const this_type& other_) const noexcept {
 			return hash < other_.hash;
 		}
 
-		constexpr bool operator>(const type& other_) const noexcept {
+		constexpr bool operator>(const this_type& other_) const noexcept {
 			return hash > other_.hash;
 		}
 
-		constexpr bool operator<=(const type& other_) const noexcept {
+		constexpr bool operator<=(const this_type& other_) const noexcept {
 			return hash <= other_.hash;
 		}
 
-		constexpr bool operator>=(const type& other_) const noexcept {
+		constexpr bool operator>=(const this_type& other_) const noexcept {
 			return hash >= other_.hash;
 		}
 
-		constexpr bool operator==(const type& other_) const noexcept {
+		constexpr bool operator==(const this_type& other_) const noexcept {
 			return hash == other_.hash;
 		}
 
-		constexpr bool operator!=(const type& other_) const noexcept {
+		constexpr bool operator!=(const this_type& other_) const noexcept {
 			return hash != other_.hash;
 		}
 
-		[[nodiscard]] constexpr std::strong_ordering operator<=>(const type& other_) const noexcept {
+		[[nodiscard]] constexpr std::strong_ordering operator<=>(const this_type& other_) const noexcept {
 			return hash <=> other_.hash;
 		}
 	};
@@ -98,7 +95,7 @@ namespace hg {
 	public:
 		using this_type = CompileHashMap<Key_, Value_, Size_, Hash_>;
 
-		using key_type = typename CompileTableHashKey<Key_, Size_, Hash_>::type;
+		using key_type = typename CompileTableHashKey<Key_, Size_, Hash_>::this_type;
 		using value_type = Value_;
 
 	private:
@@ -106,7 +103,7 @@ namespace hg {
 			using node_type = CompileTableNode<key_type, value_type>;
 
 			[[nodiscard]] constexpr bool operator()(cref<node_type> left_, cref<node_type> right_) const noexcept {
-				return std::less {}(left_->first, right_->first);
+				return std::less<decltype(left_->first)> {}(left_->first, right_->first);
 			}
 		};
 
@@ -115,10 +112,10 @@ namespace hg {
 		using table_type = CompileTable<CompileTableNode<key_type, value_type>, Size_, comparator>;
 
 	public:
-		constexpr CompileHashMap(const typename table_type::node_type (&pairs_)[Size_]) :
+		consteval CompileHashMap(const typename table_type::node_type (&pairs_)[Size_]) :
 			_table(pairs_) {}
 
-		constexpr CompileHashMap(const std::pair<key_type, value_type> (&pairs_)[Size_]) :
+		consteval CompileHashMap(const std::pair<key_type, value_type> (&pairs_)[Size_]) :
 			_table(pairs_) {}
 
 	private:
@@ -155,7 +152,7 @@ namespace hg {
 			return false;
 		}
 
-		[[nodiscard]] constexpr auto size() const noexcept {
+		[[nodiscard]] consteval auto size() const noexcept {
 			return Size_;
 		}
 
@@ -225,33 +222,27 @@ namespace hg {
 	/**/
 
 	template <typename Key_, typename Value_, typename Hash_ = CompileHash<Key_>, size_t Size_>
-	[[nodiscard]] constexpr auto make_compile_hash_map(
+	[[nodiscard]] consteval auto make_compile_hash_map(
 		const std::pair<typename CompileHashMap<Key_, Value_, Size_, Hash_>::key_type, Value_> (&pairs_)[Size_]
 	) {
 		return CompileHashMap<Key_, Value_, Size_, Hash_> { pairs_ };
 	}
 
 	template <typename Key_, typename Value_, typename Hash_ = CompileHash<Key_>, size_t Size_>
-	[[nodiscard]] constexpr auto make_compile_hash_map(
+	[[nodiscard]] consteval auto make_compile_hash_map(
 		const typename CompileHashMap<Key_, Value_, Size_, Hash_>::table_type::node_type (&nodes_)[Size_]
 	) {
 		return CompileHashMap<Key_, Value_, Size_, Hash_> { nodes_ };
 	}
 
 	template <typename Key_, typename Value_, typename Hash_ = CompileHash<Key_>, typename... PairTypes_>
-	[[nodiscard]] constexpr auto make_compile_hash_map(
+		requires (sizeof...(PairTypes_) > 0)
+	[[nodiscard]] consteval auto make_compile_hash_map(
 		const PairTypes_... pairs_
 	) {
 		using map_type = CompileHashMap<Key_, Value_, sizeof...(pairs_), Hash_>;
 
-		static_assert(
-			sizeof...(pairs_) > 0,
-			"Requires at least one pair to construct compile map via vardiac factoring."
-		);
-
-		std::pair<typename map_type::key_type, Value_> tmp[sizeof...(pairs_)] {
-			{ { pairs_.first }, { pairs_.second } }...
-		};
+		std::pair<typename map_type::key_type, Value_> tmp[sizeof...(pairs_)] { { { pairs_.first }, { pairs_.second } }... };
 		return CompileHashMap<Key_, Value_, sizeof...(pairs_), Hash_> { tmp };
 	}
 }

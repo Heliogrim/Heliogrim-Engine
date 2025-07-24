@@ -10,9 +10,9 @@ namespace hg {
     public:
         using this_type = MetaClass;
 
-    protected:
-        constexpr MetaClass(const type_id typeId_) noexcept :
-            _typeId(typeId_) {}
+	protected:
+		consteval MetaClass(const type_id typeId_) noexcept :
+			_typeId(typeId_) {}
 
     public:
         constexpr virtual ~MetaClass() noexcept = default;

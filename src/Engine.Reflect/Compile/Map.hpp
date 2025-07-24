@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Table.hpp"
 #include "Relation.hpp"
+#include "Table.hpp"
 
 namespace hg {
 	template <typename Type_>
@@ -42,10 +42,10 @@ namespace hg {
 		using table_type = CompileTable<CompileTableNode<key_type, value_type>, Size_, comparator>;
 
 	public:
-		constexpr CompileMap(const typename table_type::node_type (&pairs_)[Size_]) :
+		consteval CompileMap(const typename table_type::node_type (&pairs_)[Size_]) :
 			_table(pairs_) {}
 
-		constexpr CompileMap(const std::pair<key_type, value_type> (&pairs_)[Size_]) :
+		consteval CompileMap(const std::pair<key_type, value_type> (&pairs_)[Size_]) :
 			_table(pairs_) {}
 
 	private:
@@ -166,7 +166,7 @@ namespace hg {
 		using table_type = CompileTable<CompileTableNode<key_type, value_type>, 1, comparator>;
 
 	public:
-		constexpr CompileMap() noexcept = default;
+		consteval CompileMap() noexcept = default;
 
 	public:
 		[[nodiscard]] constexpr auto begin() const noexcept {
@@ -224,32 +224,31 @@ namespace hg {
 	/**/
 
 	template <typename Key_, typename Value_, typename Comparator_ = CompileLess<Key_>, size_t Size_>
-	[[nodiscard]] constexpr auto make_compile_map(
+	[[nodiscard]] consteval auto make_compile_map(
 		const std::pair<Key_, Value_> (&pairs_)[Size_]
 	) {
 		return CompileMap<Key_, Value_, Size_, Comparator_> { pairs_ };
 	}
 
 	template <typename Key_, typename Value_, typename Comparator_ = CompileLess<Key_>, size_t Size_>
-	[[nodiscard]] constexpr auto make_compile_map(
+	[[nodiscard]] consteval auto make_compile_map(
 		const typename CompileMap<Key_, Value_, Size_, Comparator_>::table_type::node_type (&nodes_)[Size_]
 	) {
 		return CompileMap<Key_, Value_, Size_, Comparator_> { nodes_ };
 	}
 
 	template <typename Key_, typename Value_, typename Comparator_ = CompileLess<Key_>, typename... PairTypes_>
-	[[nodiscard]] constexpr auto make_compile_map(
+		requires (sizeof...(PairTypes_) > 0)
+	[[nodiscard]] consteval auto make_compile_map(
 		const PairTypes_... pairs_
 	) {
-
-		static_assert(
-			sizeof...(pairs_) > 0,
-			"Requires at least one pair to construct compile map via vardiac factoring."
-		);
-
-		std::pair<Key_, Value_> tmp[sizeof...(pairs_)] {
-			{ pairs_ }...
-		};
+		std::pair<Key_, Value_> tmp[sizeof...(pairs_)] { { pairs_ }... };
 		return CompileMap<Key_, Value_, sizeof...(pairs_), Comparator_> { tmp };
+	}
+
+	template <typename Key_, typename Value_, typename Comparator_ = CompileLess<Key_>, typename... EmptySet_>
+		requires (sizeof...(EmptySet_) == 0)
+	[[nodiscard]] consteval auto make_compile_map([[maybe_unused]] const EmptySet_...) noexcept {
+		return CompileMap<Key_, Value_, 0uLL, Comparator_> {};
 	}
 }

@@ -10,7 +10,7 @@ namespace hg::refl {
 		START_SUPPRESS_WARNINGS
 
 		template <typename Type_>
-		constexpr CompileString compile_type_name() {
+		consteval CompileString compile_type_name() {
 			return { __FUNCSIG__ };
 		}
 
@@ -19,7 +19,7 @@ namespace hg::refl {
 
 	template <typename Type_>
 	[[nodiscard]] consteval StringView ctname() noexcept {
-		const auto compiled = compile_type_name<Type_>();
+		constexpr auto compiled = compile_type_name<Type_>();
 		return StringView { compiled.begin(), compiled.end() };
 	}
 }

@@ -14,7 +14,7 @@ namespace hg::refl {
 	// Attention: We need to deal with void as as special case, as void is ALWAYS an incomplete type
 	template <>
 	struct TypeNameFn<void> {
-		[[nodiscard]] constexpr StringView operator()() const noexcept {
+		[[nodiscard]] consteval StringView operator()() const noexcept {
 			return "void"sv;
 		}
 	};
@@ -23,7 +23,7 @@ namespace hg::refl {
 
 	template <typename Type_> requires (not std::is_same_v<Type_, void>)
 	struct TypeNameFn<Type_> {
-		[[nodiscard]] constexpr StringView operator()() const noexcept {
+		[[nodiscard]] consteval StringView operator()() const noexcept {
 			return ctname<Type_>();
 		}
 	};
@@ -31,5 +31,5 @@ namespace hg::refl {
 	/**/
 
 	template <typename Type_>
-	constexpr static TypeNameFn<Type_> TypeName {};
+	constexpr inline TypeNameFn<Type_> TypeName {};
 }

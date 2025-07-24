@@ -63,7 +63,7 @@ namespace hg::refl {
 
 	public:
 		template <CompleteType Type_>
-		constexpr static FullTypeInfo from() noexcept {
+		consteval static FullTypeInfo from() noexcept {
 			return {
 				.meta = TypedMetaClass<Type_>::get(),
 				.is_const = std::is_const_v<std::remove_reference_t<Type_>>,

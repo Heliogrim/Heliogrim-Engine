@@ -25,23 +25,23 @@ namespace hg {
 		using mapping = CompilePair<key_type, value_type>;
 
 	public:
-		constexpr CompileTableNode() noexcept = default;
+		consteval CompileTableNode() noexcept = default;
 
 		template <template <typename, typename> typename Type_> requires
 			std::is_same_v<Type_<Key_, Value_>, mapping>
-		constexpr CompileTableNode(const Type_<Key_, Value_> data_) noexcept :
+		consteval CompileTableNode(const Type_<Key_, Value_> data_) noexcept :
 			data(data_) {}
 
 		template <template <typename, typename> typename Type_> requires
 			(not std::is_same_v<Type_<Key_, Value_>, mapping>) &&
 			std::is_nothrow_convertible_v<Type_<Key_, Value_>, mapping>
-		constexpr CompileTableNode(const Type_<Key_, Value_> data_) noexcept :
+		consteval CompileTableNode(const Type_<Key_, Value_> data_) noexcept :
 			data { data_ } {}
 
-		constexpr CompileTableNode(const this_type& other_) noexcept :
+		consteval CompileTableNode(const this_type& other_) noexcept :
 			data(other_.data) {}
 
-		constexpr CompileTableNode(this_type&& other_) noexcept :
+		consteval CompileTableNode(this_type&& other_) noexcept :
 			data(std::move(other_.data)) {}
 
 		constexpr ~CompileTableNode() noexcept = default;
@@ -101,25 +101,25 @@ namespace hg {
 
 	private:
 		template <size_t... Idx_>
-		constexpr CompileTable(const node_type (&entries_)[Size_], std::index_sequence<Idx_...>) noexcept :
+		consteval CompileTable(const node_type (&entries_)[Size_], std::index_sequence<Idx_...>) noexcept :
 			_data { { entries_[Idx_] }... } {
 			static_assert(sizeof...(Idx_) == Size_, "Size of index sequence has to match the element count.");
 			//compile_sort(std::begin(_data), std::end(_data), Comparator_ {});
 		}
 
 		template <typename Type_, size_t... Idx_> requires std::is_nothrow_convertible_v<Type_, NodeType_>
-		constexpr CompileTable(const Type_ (&values_)[Size_], std::index_sequence<Idx_...>) noexcept :
+		consteval CompileTable(const Type_ (&values_)[Size_], std::index_sequence<Idx_...>) noexcept :
 			_data { (node_type { values_[Idx_] })... } {
 			static_assert(sizeof...(Idx_) == Size_, "Size of index sequence has to match the element count.");
 			compile_sort(begin(), end(), Comparator_ {});
 		}
 
 	public:
-		constexpr CompileTable(const node_type (&entries_)[Size_]) noexcept :
+		consteval CompileTable(const node_type (&entries_)[Size_]) noexcept :
 			CompileTable(entries_, std::make_index_sequence<Size_>()) {}
 
 		template <typename Type_> requires std::is_nothrow_convertible_v<Type_, NodeType_>
-		constexpr CompileTable(const Type_ (&values_)[Size_]) noexcept :
+		consteval CompileTable(const Type_ (&values_)[Size_]) noexcept :
 			CompileTable(values_, std::make_index_sequence<Size_>()) {}
 
 	private:

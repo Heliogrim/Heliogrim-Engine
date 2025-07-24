@@ -4,9 +4,9 @@
 #include <Engine.Common/Meta/Type.hpp>
 
 #include "MetaClass.hpp"
-#include "TypeId.hpp"
 #include "../Compile/Map.hpp"
 #include "../Inherit/Compile.hpp"
+#include "../Template/QueryTypeId.hpp"
 
 namespace hg {
 	class ClassMetaBase;
@@ -31,11 +31,11 @@ namespace hg {
 		using target_type = meta::peeled_t<TargetType_>;
 
 	public:
-		[[nodiscard]] constexpr static const __restricted_ptr<const this_type> get() noexcept;
+		[[nodiscard]] consteval static const __restricted_ptr<const this_type> get() noexcept;
 
 	private:
-		constexpr TypedMetaClass() noexcept :
 			MetaClass((typename reflect::query_type_id<target_type>::result {})()) {}
+		consteval TypedMetaClass() noexcept :
 
 		constexpr ~TypedMetaClass() override = default;
 
@@ -65,7 +65,7 @@ namespace hg {
 	};
 
 	template <CompleteType TargetType_, typename... InheritTypes_>
-	constexpr const __restricted_ptr<const typename TypedMetaClass<
+	consteval const __restricted_ptr<const typename TypedMetaClass<
 		TargetType_, reflect::__type_list<InheritTypes_...>
 	>::this_type> TypedMetaClass<TargetType_, reflect::__type_list<InheritTypes_...>>::get() noexcept {
 		return &typed_meta_holder<TargetType_, reflect::__type_list<InheritTypes_...>>::instance;

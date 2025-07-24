@@ -43,7 +43,7 @@ namespace hg::refl {
 		}
 
 		template <typename Type_>
-		constexpr static PartialTypeInfo from() noexcept {
+		consteval static PartialTypeInfo from() noexcept {
 			return PartialTypeInfo { TypedMetaClass<Type_>::get() };
 		}
 	};
