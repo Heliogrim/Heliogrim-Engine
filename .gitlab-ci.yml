@@ -8,11 +8,11 @@ workflow:
 
 variables:
   GIT_DEPTH: 0
-  VULKAN_VERSION: 1.3.275.0
-  C_CLANG_TARGET: clang-18
-  CXX_CLANG_TARGET: clang++-18
-  C_GCC_TARGET: gcc-14
-  CXX_GCC_TARGET: g++-14
+  VULKAN_VERSION: 1.4.321.0
+  C_CLANG_TARGET: clang-20
+  CXX_CLANG_TARGET: clang++-20
+  C_GCC_TARGET: gcc-15
+  CXX_GCC_TARGET: g++-15
   ALPINE_APK_OPT: --no-cache --repository https://dl-cdn.alpinelinux.org/alpine/edge/main
   CMAKE_SHR_OPT: -DHELIOGRIM_ASSETS_FORCE_HTTPS:BOOL=ON
 
@@ -159,7 +159,7 @@ build.windows.clang:
       dotenv: build.report.env
 
 build.linux.gcc:
-  image: docker.io/gcc:14.2.0-bookworm
+  image: docker.io/gcc:15.1.0-bookworm
   stage: build
   tags:
     - linux
@@ -235,7 +235,7 @@ build.linux.gcc:
       dotenv: build.report.env
 
 build.linux.clang:
-  image: docker.io/silkeh/clang:18-bookworm
+  image: docker.io/silkeh/clang:20-bookworm
   stage: build
   tags:
     - linux
@@ -408,7 +408,7 @@ test.linux.gcc:
       junit: ctest-report.xml
 
 test.linux.clang:
-  image: docker.io/alpine:3.20.2
+  image: docker.io/alpine:3.22.1
   stage: test
   tags:
     - linux
