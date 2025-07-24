@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <cstddef>
+#include <cstring>
 #include <limits>
 #include <Engine.Asserts/Asserts.hpp>
 
