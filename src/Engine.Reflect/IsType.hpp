@@ -23,5 +23,5 @@ namespace hg {
 	};
 
 	template <CompleteType Type_>
-	static constexpr IsTypeFn<Type_> IsType {};
+	constexpr inline IsTypeFn<Type_> IsType {};
 }

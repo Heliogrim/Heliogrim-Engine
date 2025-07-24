@@ -34,15 +34,15 @@ namespace hg {
 		[[nodiscard]] consteval static const __restricted_ptr<const this_type> get() noexcept;
 
 	private:
-			MetaClass((typename reflect::query_type_id<target_type>::result {})()) {}
 		consteval TypedMetaClass() noexcept :
+			MetaClass((typename ::hg::refl::query_type_id<target_type>::result {})()) {}
 
 		constexpr ~TypedMetaClass() override = default;
 
 	private:
 		CompileMap<type_id, ::std::nullptr_t, sizeof...(InheritTypes_)> _inheritance = make_compile_map<type_id, ::std::nullptr_t>(
 			std::make_pair<type_id, ::std::nullptr_t>(
-				(typename reflect::query_type_id<InheritTypes_>::result {})(),
+				(typename ::hg::refl::query_type_id<InheritTypes_>::result {})(),
 				nullptr
 			)...
 		);

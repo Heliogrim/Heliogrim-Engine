@@ -1,9 +1,10 @@
 #pragma once
 
 #include <Engine.Common/Meta/TypeId.hpp>
-#include "../CompileTypeId.hpp"
 
-namespace hg::reflect {
+#include "../Compile/TypeId.hpp"
+
+namespace hg::refl {
 	template <typename Type_>
 	concept TypeQueryable = std::true_type::value;
 
@@ -21,7 +22,7 @@ namespace hg::reflect {
 	template <typename Type_>
 	struct query_type_id_impl<Type_, false> {
 		using result = decltype([]() constexpr {
-			return ctid<Type_>();
+			return ::hg::refl::ctid<Type_>();
 		});
 	};
 

@@ -3,9 +3,8 @@
 #include <functional>
 #include <Engine.Common/Functional/Function.hpp>
 
+#include "TypeId.hpp"
 #include "Inherit/Concept.hpp"
-#include "Meta/TypeId.hpp"
-#include "Template/QueryTypeId.hpp"
 
 namespace hg {
 	namespace {
@@ -67,7 +66,7 @@ namespace hg {
 
 		using check_type = std::remove_pointer_t<typename decompose<Fn_>::subject_type>;
 
-		if (value_->getMetaClass()->typeId().data == reflect::typeId<std::remove_const_t<check_type>>().data) {
+		if (value_->getMetaClass()->typeId().data == ::hg::refl::TypeId<std::remove_const_t<check_type>>().data) {
 			return std::forward<Fn_>(fn_)(static_cast<check_type*>(value_));
 		}
 		return switchTypeImpl<Value_, ReturnType_, Rest_...>(
@@ -88,7 +87,7 @@ namespace hg {
 
 		using check_type = std::remove_pointer_t<typename decompose<Fn_>::subject_type>;
 
-		if (value_->getMetaClass()->typeId().data == reflect::typeId<std::remove_const_t<check_type>>().data) {
+		if (value_->getMetaClass()->typeId().data == ::hg::refl::TypeId<std::remove_const_t<check_type>>().data) {
 			return std::forward<Fn_>(fn_)(static_cast<check_type*>(value_));
 		}
 
@@ -107,7 +106,7 @@ namespace hg {
 
 		using check_type = std::remove_pointer_t<typename decompose<Fn_>::subject_type>;
 
-		if (value_->getMetaClass()->typeId().data == reflect::typeId<std::remove_const_t<check_type>>().data) {
+		if (value_->getMetaClass()->typeId().data == ::hg::refl::TypeId<std::remove_const_t<check_type>>().data) {
 			return std::forward<Fn_>(fn_)(static_cast<check_type*>(value_));
 		}
 	}

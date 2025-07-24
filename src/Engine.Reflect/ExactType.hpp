@@ -23,5 +23,5 @@ namespace hg {
 	};
 
 	template <ClassHasMeta Type_>
-	static constexpr ExactTypeFn<Type_> ExactType {};
+	constexpr inline ExactTypeFn<Type_> ExactType {};
 }

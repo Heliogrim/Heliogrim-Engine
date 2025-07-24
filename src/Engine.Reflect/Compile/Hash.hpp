@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Engine.Common/Meta/Concept.hpp>
-#include "../CompileString.hpp"
+#include "String.hpp"
 
 namespace hg {
     template <typename Type_>

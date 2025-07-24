@@ -3,7 +3,7 @@
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/__macro.hpp>
 
-#include "../CompileString.hpp"
+#include "String.hpp"
 
 namespace hg::refl {
 	namespace {
