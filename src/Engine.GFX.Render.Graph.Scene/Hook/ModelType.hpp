@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Math/Hash.hpp>
 #include <Engine.Reflect/TypeId.hpp>
 

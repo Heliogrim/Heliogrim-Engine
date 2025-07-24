@@ -2,6 +2,7 @@
 
 #include <Engine.Accel.Effect/Stage/TransferDataType.hpp>
 #include <Engine.Common/Variant.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Math/Matrix.hpp>
 #include <Engine.Common/Math/Vector.hpp>
 #include <Engine.GFX.Material/ParameterIdentifier.hpp>

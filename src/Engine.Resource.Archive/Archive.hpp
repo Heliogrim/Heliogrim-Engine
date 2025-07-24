@@ -1,5 +1,6 @@
 #pragma once
 
+#include <bit>
 #include <type_traits>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/__macro.hpp>

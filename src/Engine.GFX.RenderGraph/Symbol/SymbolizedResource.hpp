@@ -1,7 +1,9 @@
 #pragma once
+
 #include <concepts>
 #include <type_traits>
 #include <utility>
+#include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.Reflect/IsType.hpp>
