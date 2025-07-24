@@ -14,6 +14,8 @@ namespace hg {
 		using value_type = Type_;
 
 	public:
+		constexpr CompileTableHashKey() noexcept requires (std::is_nothrow_default_constructible_v<Type_>) = default;
+
 		constexpr CompileTableHashKey(const size_t hash_, const value_type& value_) :
 			hash(hash_),
 			data(value_) {}
@@ -174,7 +176,7 @@ namespace hg {
 					_table,
 					key_,
 					CompileLess<key_type> {},
-					[](cref<typename table_type::node_type> node_) {
+					[](ref<const typename table_type::node_type> node_) {
 						return node_->first;
 					}
 				);

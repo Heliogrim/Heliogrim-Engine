@@ -29,13 +29,13 @@ namespace hg {
 
 		template <template <typename, typename> typename Type_> requires
 			std::is_same_v<Type_<Key_, Value_>, mapping>
-		consteval CompileTableNode(const Type_<Key_, Value_> data_) noexcept :
+		consteval CompileTableNode(const Type_<Key_, Value_>& data_) noexcept :
 			data(data_) {}
 
 		template <template <typename, typename> typename Type_> requires
 			(not std::is_same_v<Type_<Key_, Value_>, mapping>) &&
 			std::is_nothrow_convertible_v<Type_<Key_, Value_>, mapping>
-		consteval CompileTableNode(const Type_<Key_, Value_> data_) noexcept :
+		consteval CompileTableNode(const Type_<Key_, Value_>& data_) noexcept :
 			data { data_ } {}
 
 		consteval CompileTableNode(const this_type& other_) noexcept :
@@ -111,7 +111,7 @@ namespace hg {
 		consteval CompileTable(const Type_ (&values_)[Size_], std::index_sequence<Idx_...>) noexcept :
 			_data { (node_type { values_[Idx_] })... } {
 			static_assert(sizeof...(Idx_) == Size_, "Size of index sequence has to match the element count.");
-			compile_sort(begin(), end(), Comparator_ {});
+			compile_sort<Size_>(begin(), end(), Comparator_ {});
 		}
 
 	public:

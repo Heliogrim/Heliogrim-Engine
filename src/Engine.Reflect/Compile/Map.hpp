@@ -28,12 +28,8 @@ namespace hg {
 			using underlying_comparator = Type_;
 			using node_type = CompileTableNode<key_type, value_type>;
 
-			[[nodiscard]] constexpr const underlying_comparator& underlying() const noexcept {
-				return static_cast<const underlying_comparator&>(*this);
-			}
-
 			[[nodiscard]] constexpr bool operator()(cref<node_type> left_, cref<node_type> right_) const noexcept {
-				return underlying()(left_->first, right_->first);
+				return Type_::operator()(left_->first, right_->first);
 			}
 		};
 
@@ -94,7 +90,7 @@ namespace hg {
 			if constexpr (Size_ < threshold) {
 				return std::ranges::find_if(
 					_table,
-					[key_](cref<typename table_type::node_type> node_) {
+					[key_](ref<const typename table_type::node_type> node_) constexpr {
 						return node_->first == key_;
 					}
 				);
@@ -103,7 +99,7 @@ namespace hg {
 					_table,
 					key_,
 					CompileLess<key_type> {},
-					[](cref<typename table_type::node_type> node_) {
+					[](ref<const typename table_type::node_type> node_) constexpr {
 						return node_->first;
 					}
 				);

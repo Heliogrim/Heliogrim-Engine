@@ -6,7 +6,7 @@
 namespace hg {
 	template <typename Type_>
 	struct CompileLess {
-		[[nodiscard]] consteval bool operator()(const Type_& left_, const Type_& right_) const noexcept {
+		[[nodiscard]] constexpr bool operator()(const Type_& left_, const Type_& right_) const noexcept {
 			return left_ < right_;
 		}
 	};

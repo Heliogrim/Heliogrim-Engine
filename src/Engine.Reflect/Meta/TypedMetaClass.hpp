@@ -31,7 +31,7 @@ namespace hg {
 		using target_type = meta::peeled_t<TargetType_>;
 
 	public:
-		[[nodiscard]] consteval static const __restricted_ptr<const this_type> get() noexcept;
+		[[nodiscard]] constexpr static const __restricted_ptr<const this_type> get() noexcept;
 
 	private:
 		consteval TypedMetaClass() noexcept :
@@ -65,7 +65,7 @@ namespace hg {
 	};
 
 	template <CompleteType TargetType_, typename... InheritTypes_>
-	consteval const __restricted_ptr<const typename TypedMetaClass<
+	constexpr const __restricted_ptr<const typename TypedMetaClass<
 		TargetType_, reflect::__type_list<InheritTypes_...>
 	>::this_type> TypedMetaClass<TargetType_, reflect::__type_list<InheritTypes_...>>::get() noexcept {
 		return &typed_meta_holder<TargetType_, reflect::__type_list<InheritTypes_...>>::instance;
