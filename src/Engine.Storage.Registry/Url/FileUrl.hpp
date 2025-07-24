@@ -18,9 +18,9 @@ namespace hg::engine::storage {
 			_scheme(FileScheme),
 			_path() {}
 
-		FileUrl(mref<UrlScheme> scheme_, mref<fs::Path> path_) noexcept :
+		FileUrl(auto&& scheme_, mref<fs::Path> path_) noexcept :
 			IUrlComp(),
-			_scheme(std::move(scheme_)),
+			_scheme(::hg::forward<decltype(scheme_)>(scheme_)),
 			_path(std::move(path_).normalized()) {}
 
 		constexpr FileUrl(ref<const FileUrl> other_) noexcept = default;
@@ -48,5 +48,10 @@ namespace hg::engine::storage {
 		}
 
 		[[nodiscard]] String encode() const;
+
+		[[nodiscard]] constexpr bool empty() const noexcept {
+			// Note: We explicitly ignore the empty state of the `_scheme` value.
+			return _path.empty();
+		}
 	};
 }
