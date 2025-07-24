@@ -89,7 +89,7 @@ static Theme generate_base_theme() {
 	)->getDefaultFontGuid();
 
 	// TODO: Cleanup!?
-	auto fontTypedGuid = TypedAssetGuid<engine::assets::Font> {};
+	auto fontTypedGuid = TypedAssetGuid<engine::assets::FontAsset> {};
 	*static_cast<AssetGuid*>(static_cast<void*>(&fontTypedGuid)) = fontGuid;
 
 	/**/
