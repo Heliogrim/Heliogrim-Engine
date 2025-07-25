@@ -666,7 +666,7 @@ bool try_load_archived_asset(ref<const storage::ArchiveUrl> assetStorageUrl_, mr
 				nextAsset = assets::rename(
 					::hg::move(nextAsset).template into<assets::Asset>(),
 					::hg::move(next_asset_name)
-				).into<AssetType_>();
+				).template into<AssetType_>();
 				++retry_context->retry;
 			}
 
