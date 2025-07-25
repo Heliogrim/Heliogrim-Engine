@@ -1,9 +1,9 @@
-#pragma once
+export module hgrim.config:enums;
 
 namespace hg::engine::cfg {
 	/**/
 
-	enum class ProjectConfigProperty {
+	export enum class ProjectConfigProperty {
 		/**/
 		eLocalAssetPath,
 		eLocalBasePath,
@@ -14,7 +14,7 @@ namespace hg::engine::cfg {
 
 	/**/
 
-	enum class EditorConfigProperty {
+	export enum class EditorConfigProperty {
 		/**/
 		eLocalAssetPath,
 		eLocalCachePath,
@@ -23,7 +23,7 @@ namespace hg::engine::cfg {
 
 	/**/
 
-	enum class RuntimeConfigProperty {
+	export enum class RuntimeConfigProperty {
 		/**/
 		eLocalBasePath,
 		eLocalCachePath

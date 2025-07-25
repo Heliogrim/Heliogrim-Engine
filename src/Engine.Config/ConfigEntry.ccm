@@ -1,0 +1,18 @@
+module;
+
+#include <Engine.Common/Meta/TypeId.hpp>
+
+export module hgrim.config:entry;
+
+import :key;
+import :value;
+
+export {
+	namespace hg::engine::cfg {
+		struct ConfigEntry {
+			type_id typeId;
+			InternalConfigKey hashId;
+			ConfigValue holder;
+		};
+	}
+}

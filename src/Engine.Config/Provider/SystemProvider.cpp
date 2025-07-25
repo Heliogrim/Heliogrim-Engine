@@ -1,6 +1,8 @@
-#include "SystemProvider.hpp"
+module;
 
 #include <Engine.Asserts/Asserts.hpp>
+
+module hgrim.config.providers;
 
 using namespace ::hg::engine::cfg;
 using namespace ::hg;

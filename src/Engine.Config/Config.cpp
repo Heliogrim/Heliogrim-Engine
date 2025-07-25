@@ -1,10 +1,14 @@
-#include "Config.hpp"
+module;
 
 #include <algorithm>
 #include <ranges>
 #include <utility>
 #include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Asserts/Todo.hpp>
+#include <tl/expected.hpp>
+#include <tl/optional.hpp>
+
+module hgrim.config;
 
 using namespace ::hg::engine;
 using namespace ::hg;
