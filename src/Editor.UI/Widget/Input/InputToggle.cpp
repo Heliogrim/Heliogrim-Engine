@@ -1,5 +1,7 @@
 #include "InputToggle.hpp"
 
+#include <format>
+
 #include "EditorUiEventNames.hpp"
 #include "Engine.Common/Discard.hpp"
 #include "Engine.Reflow/DataWatcher.hpp"

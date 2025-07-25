@@ -1,6 +1,7 @@
 #include "InputAsset.hpp"
 
 #include <algorithm>
+#include <format>
 #include <ranges>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets/Assets.hpp>
