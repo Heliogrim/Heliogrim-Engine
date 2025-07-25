@@ -4,6 +4,7 @@
 #include <condition_variable>
 #include <memory>
 #include <mutex>
+#include <stdexcept>
 #include <type_traits>
 #include <utility>
 #include <Engine.Common/Wrapper.hpp>
