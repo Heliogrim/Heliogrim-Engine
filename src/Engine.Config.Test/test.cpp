@@ -1,10 +1,8 @@
 #include "pch.h"
 
-#include <Engine.Common/Make.hpp>
-#include <Engine.Config/Config.hpp>
-#include <Engine.Config/Enums.hpp>
-#include <Engine.Config/Provider/RuntimeProvider.hpp>
-#include <Engine.Config/Provider/SystemProvider.hpp>
+import hgrim.common;
+import hgrim.config;
+import hgrim.config.providers;
 
 using namespace hg;
 
@@ -224,10 +222,10 @@ namespace ConfigModule {
 
 		/**/
 
-		ASSERT_EQ(obj->getTyped<StringView>(sysKey), "System Value"sv);
-		ASSERT_EQ(obj->getTyped<StringView>(runKey), "Runtime Value"sv);
+		ASSERT_EQ(obj->getTyped<StringView>(sysKey).value(), "System Value"sv);
+		ASSERT_EQ(obj->getTyped<StringView>(runKey).value(), "Runtime Value"sv);
 
-		ASSERT_EQ(obj->getTyped<StringView>(testKey), "Test Value on Dynamic"sv);
+		ASSERT_EQ(obj->getTyped<StringView>(testKey).value(), "Test Value on Dynamic"sv);
 
 		/**/
 
@@ -235,9 +233,9 @@ namespace ConfigModule {
 
 		/**/
 
-		ASSERT_EQ(obj->getTyped<StringView>(sysKey), "System Value"sv);
+		ASSERT_EQ(obj->getTyped<StringView>(sysKey).value(), "System Value"sv);
 		ASSERT_FALSE(obj->get(runKey).has_value());
-		ASSERT_EQ(obj->getTyped<StringView>(testKey), "Test Value on System"sv);
+		ASSERT_EQ(obj->getTyped<StringView>(testKey).value(), "Test Value on System"sv);
 
 		/**/
 
