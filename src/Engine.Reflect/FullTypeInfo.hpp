@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Meta/Type.hpp>
 
