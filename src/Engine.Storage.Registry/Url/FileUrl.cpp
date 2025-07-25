@@ -1,5 +1,6 @@
 #include "FileUrl.hpp"
 
+#include <format>
 #include <Engine.Common/GuidFormat.hpp>
 
 using namespace hg::engine::storage;
