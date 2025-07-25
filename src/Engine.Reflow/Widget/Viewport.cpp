@@ -13,6 +13,7 @@
 #include "Engine.GFX/RenderTarget.hpp"
 #endif
 
+#include <format>
 #include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Asserts/Todo.hpp>
 #include <Engine.Core/Timing.hpp>
@@ -636,7 +637,7 @@ EventResponse Viewport::invokeOnMouseMove(ref<const MouseMoveEvent> event_) {
 	ref<Transform> ctf { _cameraActor->getCameraComponent()->getLocalTransform() };
 
 	rtf.rotator() += math::Rotator { 0.F, dxdy.x, 0.F };
-	ctf.rotator() += math::Rotator { -dxdy.y, 0.F, 0.F };
+	ctf.rotator() += math::Rotator { dxdy.y, 0.F, 0.F };
 
 	return EventResponse::eConsumed;
 }

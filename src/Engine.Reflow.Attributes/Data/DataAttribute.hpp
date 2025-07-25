@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <Engine.Common/Move.hpp>
 #include <Engine.Common/Wrapper.hpp>
 

@@ -1,8 +1,8 @@
 #include "NullWidget.hpp"
 
-#include "../Children.hpp"
-
 #include <format>
+
+#include "../Children.hpp"
 
 using namespace hg::engine::reflow;
 using namespace hg;
