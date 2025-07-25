@@ -32,10 +32,10 @@ namespace hg {
 
 	/**/
 
-	constexpr static auto None = tl::nullopt;
+	constexpr inline auto None = tl::nullopt;
 
-	[[nodiscard]] constexpr static decltype(auto) Some(auto&& args_) noexcept {
-		return Opt(std::forward<decltype(args_)>(args_));
+	[[nodiscard]] constexpr decltype(auto) Some(auto&& args_) noexcept {
+		return ::hg::Opt(std::forward<decltype(args_)>(args_));
 	}
 
 	/**/
@@ -47,4 +47,4 @@ namespace hg {
 /**/
 
 template <class T>
-struct tl::detail::is_optional_impl<hg::Opt<T>> : std::true_type {};
+struct tl::detail::is_optional_impl<::hg::Opt<T>> : std::true_type {};
