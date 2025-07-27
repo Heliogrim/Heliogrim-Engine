@@ -10,9 +10,6 @@ workflow:
 
 include:
   - component: $CI_SERVER_FQDN/qodana/qodana/qodana-gitlab-ci@v2025.1
-      args: |
-        --compile-commands,build/Debug/compile_commands.json,
-        --linter,jetbrains/qodana-clang:2024.3-eap
 
 #
 
