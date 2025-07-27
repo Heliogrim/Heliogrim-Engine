@@ -6,6 +6,16 @@ workflow:
     # Merge Requests
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event' && $CI_MERGE_REQUEST_TARGET_BRANCH_PROTECTED
 
+#
+
+include:
+  - component: $CI_SERVER_FQDN/qodana/qodana/qodana-gitlab-ci@v2025.1
+      args: |
+        --compile-commands,build/Debug/compile_commands.json,
+        --linter,jetbrains/qodana-clang:2024.3-eap
+
+#
+
 variables:
   GIT_DEPTH: 0
   VULKAN_VERSION: 1.4.321.0
@@ -19,6 +29,7 @@ variables:
 stages:
   - build
   - test
+  - sa
   - release
 
 build.windows.msvc:
@@ -439,6 +450,26 @@ test.linux.clang:
       - ctest-report.xml
     reports:
       junit: ctest-report.xml
+
+# Analytics
+
+sa.qodana:
+  image:
+    name: jetbrains/qodana-clang:2024.3-eap
+    entrypoint: [""]
+  stage: sa
+  cache:
+    - key: qodana-2025.1-$CI_DEFAULT_BRANCH-$CI_COMMIT_REF_SLUG
+      fallback_keys:
+        - qodana-2025.1-$CI_DEFAULT_BRANCH-
+        - qodana-2025.1-
+      paths:
+        - .qodana/cache
+  variables:
+    QODANA_TOKEN: $QODANA_TOKEN
+    QODANA_ENDPOINT: "https://qodana.cloud"
+  script:
+    - qodana --cache-dir=$CI_PROJECT_DIR/.qodana/cache
 
 # Release / Deployment Section
 
