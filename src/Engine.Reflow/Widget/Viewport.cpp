@@ -273,7 +273,7 @@ void Viewport::remountRenderTarget() {
 	/**/
 
 	auto renderTarget = make_smr<gfx::RenderTarget>(gfx->getCurrentDevice(), renderer.get());
-	[[maybe_unused]] const auto targetTransition = renderTarget->transitionToTarget(clone(_swapChain), nullptr);
+	[[maybe_unused]] const auto targetTransition = renderTarget->transitionToTarget(clone(_swapChain));
 	[[maybe_unused]] const auto sceneViewTransition = renderTarget->transitionToSceneView(std::move(view));
 
 	renderTarget->setup();
