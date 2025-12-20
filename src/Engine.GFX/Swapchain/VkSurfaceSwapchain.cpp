@@ -37,16 +37,11 @@ VkSurfaceSwapchain::~VkSurfaceSwapchain() {
 void VkSurfaceSwapchain::setup(cref<sptr<Device>> device_) {
 
 	::hg::assertrt(device_.get());
-
-	/**/
 	Swapchain::setup(device_);
 
 	/**/
 
-	assert(/*_surface*/true);
-
-	/**/
-
+	::hg::assertrt(_surface != nullptr);
 	const auto capabilities = _device->vkPhysicalDevice().getSurfaceCapabilitiesKHR(*_surface);
 
 	_extent = clampExtent({ capabilities.currentExtent.width, capabilities.currentExtent.height }, capabilities);
@@ -61,10 +56,11 @@ void VkSurfaceSwapchain::setup(cref<sptr<Device>> device_) {
 		surfaceTransform = capabilities.currentTransform;
 	}
 
-	u32 length = capabilities.minImageCount + 1;
+	u32 length = capabilities.minImageCount > 1 ? capabilities.minImageCount : 2uL;
 	if (capabilities.maxImageCount > 0 && length > capabilities.maxImageCount) {
 		length = capabilities.maxImageCount;
 	}
+	::hg::assertd(length == 2uL);
 
 	vk::SwapchainCreateInfoKHR sci {
 		vk::SwapchainCreateFlagsKHR(),
@@ -83,6 +79,7 @@ void VkSurfaceSwapchain::setup(cref<sptr<Device>> device_) {
 		mode,
 		VK_TRUE,
 		nullptr
+
 	};
 
 	if (capabilities.supportedUsageFlags & vk::ImageUsageFlagBits::eTransferSrc) {
@@ -97,8 +94,11 @@ void VkSurfaceSwapchain::setup(cref<sptr<Device>> device_) {
 		sci.imageUsage |= vk::ImageUsageFlagBits::eSampled;
 	}
 
-	_vkSwapchain = _device->vkDevice().createSwapchainKHR(sci);
-	::hg::assertd(_vkSwapchain);
+	auto successValue = vk::SwapchainKHR {};
+	const auto result = _device->vkDevice().createSwapchainKHR(&sci, nullptr, &successValue);
+
+	::hg::assertrt(result == vk::Result::eSuccess);
+	_vkSwapchain = successValue;
 
 	const auto swapImages = _device->vkDevice().getSwapchainImagesKHR(_vkSwapchain);
 	_images.resize(swapImages.size(), {});
