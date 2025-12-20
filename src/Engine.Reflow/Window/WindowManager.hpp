@@ -46,7 +46,7 @@ namespace hg::engine::reflow {
 		WindowManager();
 
 	public:
-		~WindowManager();
+		~WindowManager() override;
 
 	private:
 		void setup();
