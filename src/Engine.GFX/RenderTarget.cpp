@@ -137,20 +137,39 @@ smr<const scene::SceneView> RenderTarget::getSceneView() const noexcept {
 	return clone(_sceneView);
 }
 
-tl::expected<concurrent::Future<std::pair<nmpt<Swapchain>, nmpt<Surface>>>, std::runtime_error>
-RenderTarget::transitionToTarget(
-	mref<smr<Swapchain>> swapchain_,
-	nmpt<Surface> surface_
+Result<TransitionResult, std::runtime_error> RenderTarget::transitionToTarget(
+	ref<Surface> surface_,
+	FnRef<smr<Swapchain>(mref<smr<Swapchain>> prev_)> transitionFn_
 ) {
+	/**
+	 * Block render passes
+	 */
+	if (_enforceCpuGpuSync) {
 
-	assert(_swapchain != swapchain_);
+		const auto condOtfCount = std::min<u8>(_onTheFlight ? 2u : 1u, _renderPasses.size());
+		for (auto i = 0u; i < condOtfCount; ++i) {
+
+			auto cpuGpuSync { _renderPasses[i]->unsafeSync() };
+			if (cpuGpuSync) {
+				auto result { _device->vkDevice().waitForFences(1, &cpuGpuSync, VK_TRUE, UINT64_MAX) };
+				// Might fail when one was submitted or pipeline gets dumped/error state
+				assert(result == vk::Result::eSuccess);
+			}
+		}
+	}
+
+	/**/
+
+	_surface = nullptr;
+	auto nextSwapchain = transitionFn_(::hg::move(_swapchain));
+	::hg::assertd(static_cast<bool>(nextSwapchain));
 
 	const auto reqImg = _onTheFlight ? 1uL : 2uL;
-	if (swapchain_->imageCount() < reqImg) {
+	if (nextSwapchain->imageCount() < reqImg) {
 		IM_CORE_WARNF(
 			"Tried to use render target with unsupported swapchain. (min. Img. `{}`, provided `{}`)",
 			reqImg,
-			swapchain_->imageCount()
+			nextSwapchain->imageCount()
 		);
 		return tl::make_unexpected(std::runtime_error("Failed to transition with unsupported swapchain."));
 	}
@@ -170,31 +189,83 @@ RenderTarget::transitionToTarget(
 			return tl::make_unexpected(std::runtime_error("Failed to override transition state."));
 		}
 
-		_swapchain = std::move(swapchain_);
-		_surface = std::move(surface_);
+		_swapchain = std::move(nextSwapchain);
+		_surface = std::addressof(surface_);
 
 		// Attention: At this point the internal future state has some shared ownership
-		return _chainSwapChain->get();
+		return TransitionResult { _chainSwapChain->get(), _swapchain };
 	}
 
 	/**/
 
 	_chainSwapChainMask = fullSwapChainMask;
-	_chainSwapChain = make_uptr<concurrent::Promise<std::pair<nmpt<Swapchain>, nmpt<Surface>>>>(
-		concurrent::Promise<std::pair<nmpt<Swapchain>, nmpt<Surface>>>(
+	_chainSwapChain = make_uptr<concurrent::Promise<std::monostate>>(
+		concurrent::Promise<std::monostate>(
 			// Warning: We are explicitly expanding the lifetime of the previous object
-			[prevSwapChain = clone(_swapchain), prevSurface = _surface] {
-				return std::make_pair(prevSwapChain.get(), prevSurface);
-			}
+			[] { return std::monostate {}; }
 		)
 	);
 
 	/**/
 
-	_swapchain = std::move(swapchain_);
-	_surface = surface_;
+	_swapchain = std::move(nextSwapchain);
+	_surface = std::addressof(surface_);
 
-	return _chainSwapChain->get();
+	return TransitionResult { _chainSwapChain->get(), _swapchain };
+}
+
+Result<TransitionResult, std::runtime_error> RenderTarget::transitionToTarget(mref<smr<Swapchain>> nextSwapchain_) {
+
+	::hg::assertd(static_cast<bool>(nextSwapchain_) && _swapchain != nextSwapchain_);
+
+	const auto reqImg = _onTheFlight ? 1uL : 2uL;
+	if (nextSwapchain_->imageCount() < reqImg) {
+		IM_CORE_WARNF(
+			"Tried to use render target with unsupported swapchain. (min. Img. `{}`, provided `{}`)",
+			reqImg,
+			nextSwapchain_->imageCount()
+		);
+		return tl::make_unexpected(std::runtime_error("Failed to transition with unsupported swapchain."));
+	}
+
+	/**/
+
+	u8 fullSwapChainMask = 0u;
+	for (u8 i = static_cast<u8>(_renderPasses.size()); i > 0u; --i) {
+		fullSwapChainMask |= (0x1u << (i - 1u));
+	}
+
+	if (_chainSwapChain != nullptr) {
+
+		/* Check for possible forceful override of untouched transition */
+		if (_chainSwapChainMask != fullSwapChainMask) {
+			IM_CORE_WARN("Tried to override ongoing transition at render target.");
+			return tl::make_unexpected(std::runtime_error("Failed to override transition state."));
+		}
+
+		_swapchain = std::move(nextSwapchain_);
+		_surface = nullptr;
+
+		// Attention: At this point the internal future state has some shared ownership
+		return TransitionResult { _chainSwapChain->get(), _swapchain };
+	}
+
+	/**/
+
+	_chainSwapChainMask = fullSwapChainMask;
+	_chainSwapChain = make_uptr<concurrent::Promise<std::monostate>>(
+		concurrent::Promise<std::monostate>(
+			// Warning: We are explicitly expanding the lifetime of the previous object
+			[previousKeepalive = clone(_swapchain)] { return std::monostate {}; }
+		)
+	);
+
+	/**/
+
+	_swapchain = std::move(nextSwapchain_);
+	_surface = nullptr;
+
+	return TransitionResult { _chainSwapChain->get(), _swapchain };
 }
 
 smr<Swapchain> RenderTarget::getSwapChain() const noexcept {

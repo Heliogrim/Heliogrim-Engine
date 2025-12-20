@@ -1,12 +1,14 @@
 #pragma once
+
 #include <Engine.Async/Await/Future.hpp>
 #include <Engine.Async/Await/Promise.hpp>
+#include <Engine.Common/Expected.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.Common/Functional/FnRef.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.GFX.Render/Renderer.hpp>
-#include <tl/expected.hpp>
 
 #include "RenderEnqueueResult.hpp"
 #include "vkinc.hpp"
@@ -23,6 +25,11 @@ namespace hg::engine::gfx::scene {
 }
 
 namespace hg::engine::gfx {
+	struct TransitionResult {
+		::hg::concurrent::Future<std::monostate> pending;
+		smr<Swapchain> pendingSwapchain;
+	};
+
 	class RenderTarget {
 	public:
 		using this_type = RenderTarget;
@@ -66,14 +73,17 @@ namespace hg::engine::gfx {
 		smr<Swapchain> _swapchain;
 		nmpt<Surface> _surface;
 
-		uptr<::hg::concurrent::Promise<std::pair<nmpt<Swapchain>, nmpt<Surface>>>> _chainSwapChain;
+		uptr<::hg::concurrent::Promise<std::monostate>> _chainSwapChain;
 		u8 _chainSwapChainMask;
 
 	public:
-		[[nodiscard]] tl::expected<::hg::concurrent::Future<std::pair<nmpt<Swapchain>, nmpt<Surface>>>,
-			std::runtime_error> transitionToTarget(
-			mref<smr<Swapchain>> swapchain_,
-			nmpt<Surface> surface_
+		[[nodiscard]] Result<TransitionResult, std::runtime_error> transitionToTarget(
+			_In_ ref<Surface> surface_,
+			FnRef<smr<Swapchain>(mref<smr<Swapchain>> prev_)> transitionFn_
+		);
+
+		[[nodiscard]] Result<TransitionResult, std::runtime_error> transitionToTarget(
+			mref<smr<Swapchain>> nextSwapchain_
 		);
 
 		[[nodiscard]] smr<Swapchain> getSwapChain() const noexcept;
