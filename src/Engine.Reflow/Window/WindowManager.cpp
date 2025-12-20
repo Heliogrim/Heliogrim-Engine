@@ -181,22 +181,23 @@ void WindowManager::handleWindowResize(const ptr<BoundWindow> wnd_, cref<math::i
 
 	/**/
 
-	const auto gfx = Engine::getEngine()->getGraphics();
+	// Attention: Vulkan requires that a single surface can only be bound by exactly one swapchain, so we need to cleanup before re-creating
+	const auto graphics = Engine::getEngine()->getGraphics();
+	graphics->getSceneManager()->transitionToTarget(
+		*wnd_->surface,
+		clone(wnd_->surface->swapchain()),
+		[wnd_, graphics](mref<smr<gfx::Swapchain>> prev_) {
+			::hg::move(prev_)->destroy();
 
-	/**/
+			auto next = make_smr<gfx::VkSurfaceSwapchain>(wnd_->surface);
+			next->setup(graphics->getCurrentDevice());
 
-	auto nextSwapChain = make_smr<gfx::VkSurfaceSwapchain>(wnd_->surface);
-	nextSwapChain->setup(gfx->getCurrentDevice());
+			wnd_->surface->setSwapchain(clone(next));
+			wnd_->window->setClientSize(math::vec2 { next->extent() });
 
-	auto prevSwapChain = wnd_->surface->swapchain();
-	wnd_->surface->setSwapchain(clone(nextSwapChain));
-
-	const auto nextWindowExtent = nextSwapChain->extent();
-
-	/**/
-
-	gfx->getSceneManager()->transitionToTarget(std::move(prevSwapChain), std::move(nextSwapChain), wnd_->surface);
-	wnd_->window->setClientSize(math::vec2 { nextWindowExtent });
+			return next;
+		}
+	);
 }
 
 void WindowManager::destroyWindow(mref<sptr<Window>> window_) {
@@ -324,7 +325,10 @@ sptr<Window> WindowManager::requestWindow(
 	auto renderTarget = make_smr<gfx::RenderTarget>(std::move(device), renderer.get());
 
 	[[maybe_unused]] auto sceneViewTransition = renderTarget->transitionToSceneView(std::move(sceneView));
-	[[maybe_unused]] auto targetTransition = renderTarget->transitionToTarget(std::move(swapchain), surface);
+	[[maybe_unused]] auto targetTransition = renderTarget->transitionToTarget(
+		*surface,
+		[swapchain]([[maybe_unused]] mref<smr<gfx::Swapchain>> prev_) { return ::hg::move(swapchain); }
+	);
 
 	renderTarget->setup();
 	renderTarget->setActive(true);
