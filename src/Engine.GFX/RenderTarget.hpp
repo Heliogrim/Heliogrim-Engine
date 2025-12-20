@@ -106,7 +106,7 @@ namespace hg::engine::gfx {
 		vk::Semaphore _swapSignal;
 
 	private:
-		void nextSync();
+		void flipRenderSync();
 
 	private:
 		/*std::atomic_flag*/

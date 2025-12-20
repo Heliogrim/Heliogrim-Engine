@@ -17,6 +17,18 @@ using namespace hg::engine::render;
 using namespace hg::engine::gfx;
 using namespace hg;
 
+/**/
+
+[[nodiscard]] constexpr static auto next_index_from(u8 syncIdx_) noexcept {
+	return 1 - syncIdx_;
+}
+
+[[nodiscard]] constexpr static auto sync_index_from(u8 syncIdx_) noexcept {
+	return syncIdx_;
+}
+
+/**/
+
 RenderTarget::RenderTarget(mref<sptr<Device>> device_, const nmpt<const render::Renderer> renderer_) :
 	_device(std::move(device_)),
 	_renderer(renderer_),
@@ -198,8 +210,8 @@ u8 RenderTarget::supportedFramesAhead() const noexcept {
 	return 0u;
 }
 
-void RenderTarget::nextSync() {
-	// Fast flip-flip idx
+void RenderTarget::flipRenderSync() {
+	// Fast flip-flop idx
 	_syncIdx = 1u - _syncIdx;
 }
 
@@ -343,7 +355,7 @@ nmpt<RenderPass> RenderTarget::next() {
 	 * Check for enforced sync behaviour
 	 */
 	if (_enforceCpuGpuSync) {
-		auto cpuGpuSync { _renderPasses[_syncIdx]->unsafeSync() };
+		auto cpuGpuSync { _renderPasses[sync_index_from(_syncIdx)]->unsafeSync() };
 
 		if (cpuGpuSync) {
 			auto result { _device->vkDevice().waitForFences(1, &cpuGpuSync, VK_TRUE, UINT64_MAX) };
@@ -354,11 +366,11 @@ nmpt<RenderPass> RenderTarget::next() {
 	/**
 	 * Next Swapchain Image
 	 */
-	s64 nextIdx = -1;
+	s64 nextSwapIdx = -1;
 	smr<Texture> nextImage {};
 	vk::Semaphore nextSignal {};
 
-	const auto nextResult = _swapchain->acquireNext(nextIdx, nextImage, nextSignal);
+	const auto nextResult = _swapchain->acquireNext(nextSwapIdx, nextImage, nextSignal);
 
 	/**
 	 * Ensure swapchain complies our expectations
@@ -371,30 +383,31 @@ nmpt<RenderPass> RenderTarget::next() {
 		/**
 		 * Get Invocation / Await Last Render
 		 */
-		const auto& pass = _renderPasses[_syncIdx];
+		const auto& pass = _renderPasses[sync_index_from(_syncIdx)];
 		if (!pass->await()) {
 			IM_CORE_WARN("Failed to validate await state of render invocation.");
 		}
 	}
 
 	_swapSignal = nextSignal;
-	_swapIdx = static_cast<u8>(nextIdx);
+	_swapIdx = static_cast<u8>(nextSwapIdx);
 
 	/**/
 
-	auto* const renderPass = _renderPasses[nextIdx].get();
+	const auto nextRenderIdx = next_index_from(_syncIdx);
+	auto* const renderPass = _renderPasses[nextRenderIdx].get();
 
 	// Conditional Scene View Update
-	if (_chainSceneViewMask & (1u << nextIdx)) {
+	if (_chainSceneViewMask & (1u << nextRenderIdx)) {
 		renderPass->changeSceneView(clone(_sceneView));
-		_chainSceneViewMask &= ~(1u << nextIdx);
+		_chainSceneViewMask &= ~(1u << nextRenderIdx);
 	}
 
 	// Conditional Target Update
-	if (_chainSwapChainMask & (1u << nextIdx)) {
+	if (_chainSwapChainMask & (1u << nextRenderIdx)) {
 		// renderPass.bindTarget(<<symbol>>, <<texture>>);
 		const auto previous = renderPass->unbindTarget(makeSceneColorSymbol());
-		const auto bindResult = renderPass->bindTarget(makeSceneColorSymbol(), clone(_swapchain->at(nextIdx)));
+		const auto bindResult = renderPass->bindTarget(makeSceneColorSymbol(), clone(_swapchain->at(nextSwapIdx)));
 		assert(bindResult);
 	}
 
@@ -405,13 +418,14 @@ nmpt<RenderPass> RenderTarget::next() {
 
 void RenderTarget::update() {
 
-	auto& renderPass = _renderPasses[_syncIdx];
+	const auto renderIdx = next_index_from(_syncIdx);
+	auto& renderPass = _renderPasses[renderIdx];
 
 	/**/
 
-	if (_chainSwapChainMask & (1u << _swapIdx)) {
+	if (_chainSwapChainMask & (1u << renderIdx)) {
 		renderPass->clearTargetWaitSignals(makeSceneColorSymbol());
-		_chainSwapChainMask &= ~(1u << _swapIdx);
+		_chainSwapChainMask &= ~(1u << renderIdx);
 	}
 
 	/**/
@@ -430,7 +444,7 @@ void RenderTarget::update() {
 
 	auto updated = _renderer->update(std::move(renderPass));
 	(*updated)();
-	_renderPasses[_syncIdx] = std::move(updated);
+	_renderPasses[renderIdx] = std::move(updated);
 
 	/**/
 
@@ -456,7 +470,8 @@ RenderEnqueueResult RenderTarget::finish(
 
 	if (_onTheFlight) {
 		//waits.push_back(_otfFinish[_syncIdx]);
-		_renderPasses[_syncIdx]->enumerateTargetReadySignals(waits);
+		const auto renderIdx = next_index_from(_syncIdx);
+		_renderPasses[renderIdx]->enumerateTargetReadySignals(waits);
 	}
 
 	/*
@@ -479,6 +494,6 @@ RenderEnqueueResult RenderTarget::finish(
 	/**
 	 *
 	 */
-	nextSync();
+	flipRenderSync();
 	return result;
 }
