@@ -1,5 +1,6 @@
 #include "RenderSceneManager.hpp"
 
+#include <Engine.Common/Move.hpp>
 #include <Engine.GFX/RenderTarget.hpp>
 #include <Engine.GFX.Scene/View/SceneView.hpp>
 #include <Engine.GFX/Swapchain/Swapchain.hpp>
@@ -60,20 +61,33 @@ void RenderSceneManager::transitionToSceneView(mref<smr<Swapchain>> targetKey_, 
 	[[maybe_unused]] const auto transition = iter->second->transitionToSceneView(std::move(nextView_));
 }
 
-void RenderSceneManager::transitionToTarget(
-	mref<smr<Swapchain>> from_,
-	mref<smr<Swapchain>> toSwapChain_,
-	nmpt<Surface> toSurface_
-) {
+void RenderSceneManager::transitionToTarget(mref<smr<Swapchain>> from_, mref<smr<Swapchain>> next_) {
 	auto iter = _mappedRenderTargets.find(from_);
 	assert(iter != _mappedRenderTargets.end());
 
-	const auto transition = iter->second->transitionToTarget(clone(toSwapChain_), std::move(toSurface_));
+	const auto transition = iter->second->transitionToTarget(::hg::move(next_));
 	assert(transition.has_value());
 
 	auto renderTarget = std::move(iter->second);
 	_mappedRenderTargets.erase(iter);
-	_mappedRenderTargets.emplace(toSwapChain_, std::move(renderTarget));
+	_mappedRenderTargets.emplace(transition->pendingSwapchain, std::move(renderTarget));
+}
+
+void RenderSceneManager::transitionToTarget(
+	ref<Surface> surface_,
+	mref<smr<Swapchain>> fromSwapchain_,
+	FnRef<smr<Swapchain>(mref<smr<Swapchain>> prev_)> transitionFn_
+) {
+	auto iter = _mappedRenderTargets.find(::hg::move(fromSwapchain_));
+	assert(iter != _mappedRenderTargets.end());
+
+	auto renderTarget = std::move(iter->second);
+	_mappedRenderTargets.erase(iter);
+
+	const auto transition = renderTarget->transitionToTarget(surface_, ::hg::move(transitionFn_));
+	assert(transition.has_value());
+
+	_mappedRenderTargets.emplace(transition->pendingSwapchain, std::move(renderTarget));
 }
 
 void RenderSceneManager::selectInvokeTargets(ref<CompactSet<smr<RenderTarget>>> targets_) const noexcept {

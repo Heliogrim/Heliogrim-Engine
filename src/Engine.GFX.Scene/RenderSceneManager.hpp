@@ -6,6 +6,7 @@
 #include <Engine.Common/Collection/DenseMap.hpp>
 #include <Engine.Common/Collection/Set.hpp>
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
+#include <Engine.Common/Functional/FnRef.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 #include <Engine.Utils/_CTRL.hpp>
@@ -89,8 +90,13 @@ namespace hg::engine::gfx::scene {
 
 		void transitionToTarget(
 			mref<smr<Swapchain>> from_,
-			mref<smr<Swapchain>> toSwapChain_,
-			nmpt<Surface> toSurface_
+			mref<smr<Swapchain>> next_
+		);
+
+		void transitionToTarget(
+			ref<Surface> surface_,
+			mref<smr<Swapchain>> from_,
+			FnRef<smr<Swapchain>(mref<smr<Swapchain>> prev_)> transitionFn_
 		);
 
 	public:
