@@ -118,7 +118,7 @@ static void configureViewport(cref<sptr<uikit::HorizontalLayout>> parent_) {
 			}
 
 			auto* const manager = engine::Engine::getEngine()->getGraphics()->getSceneManager();
-			manager->transitionToTarget(std::move(prev_), std::move(next_), nullptr);
+			manager->transitionToTarget(::hg::move(prev_), ::hg::move(next_));
 		}
 	);
 
