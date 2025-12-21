@@ -14,27 +14,23 @@ using namespace hg;
 template <>
 void access::Structure<GfxMaterialPrototype>::serialize(
 	cref<GfxMaterialPrototype> self_,
-	mref<StructScopedSlot> slot_
+	mref<StructScopedSlot> record_
 ) {
 
-	Structure<Guid>::serialize(self_._guid, slot_.insertStructSlot("__guid__"));
-	slot_.insertSlot<u64>("__type__") << self_._type.data;
-	slot_.insertSlot<string>("name") << self_._assetName;
+	// TODO:
 
 	/**/
 
-	// TODO:
+	Structure<Asset>::serialize(self_, ::hg::move(record_));
 }
 
 template <>
 void access::Structure<GfxMaterialPrototype>::hydrate(
-	cref<StructScopedSlot> slot_,
+	cref<StructScopedSlot> record_,
 	GfxMaterialPrototype& target_
 ) {
 
-	Structure<Guid>::hydrate(slot_.getStructSlot("__guid__"), target_._guid);
-	slot_.getSlot<u64>("__type__") >> target_._type.data;
-	slot_.getSlot<string>("name") >> target_._assetName;
+	Structure<Asset>::hydrate(record_, target_);
 
 	/**/
 
