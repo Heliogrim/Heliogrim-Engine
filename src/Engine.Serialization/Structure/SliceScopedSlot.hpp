@@ -25,63 +25,67 @@ namespace hg::engine::serialization {
 
 	public:
 		void operator<<(cref<value_type> value_) override {
-			const ScopedSlotGuard guard { this, ScopedSlotGuardMode::eWrite };
+			const auto guard = ScopedSlotGuard { this, ScopedSlotGuardMode::eWrite };
 			(*underlying_type::slot()) << value_;
 		}
 
 		void operator>>(ref<value_type> value_) const override {
-			const ScopedSlotGuard guard { this, ScopedSlotGuardMode::eRead };
+			const auto guard = ScopedSlotGuard { this, ScopedSlotGuardMode::eRead };
 			(*underlying_type::slot()) >> value_;
 		}
 	};
 
 	#if FALSE
-    template <typename ValueType_, template <typename...> typename SliceType_>
-    class SliceScopedSlot final :
-        public ScopedStructureSlot<SliceType_<ValueType_>> {
-    public:
-        using this_type = SliceScopedSlot<ValueType_, SliceType_>;
+	template <typename ValueType_, template <typename...> typename SliceType_>
+	class SliceScopedSlot final :
+		public ScopedStructureSlot<SliceType_<ValueType_>> {
+	public:
+		using this_type = SliceScopedSlot<ValueType_, SliceType_>;
 
-        using slice_type = SliceType_<ValueType_>;
-        using data_type = ValueType_;
+		using slice_type = SliceType_<ValueType_>;
+		using data_type = ValueType_;
 
-        using scoped_entry_type = typename SubstitutionSlot<ValueType_>::type;
+		using scoped_entry_type = typename SubstitutionSlot<ValueType_>::type;
 
-    public:
-        SliceScopedSlot(cref<ScopedSlotState> state_) :
-            ScopedStructureSlot<slice_type>(state_) {
-            this_type::ensureEntered(not this_type::_state.isScopedImmutable());
-        }
+	public:
+		SliceScopedSlot(cref<ScopedSlotState> state_) :
+			ScopedStructureSlot<slice_type>(state_) {
+			this_type::ensureEntered(not this_type::_state.isScopedImmutable());
+		}
 
-        SliceScopedSlot(mref<ScopedSlotState> state_) :
-            ScopedStructureSlot<slice_type>(std::move(state_)) {
-            this_type::ensureEntered(not this_type::_state.isScopedImmutable());
-        }
+		SliceScopedSlot(mref<ScopedSlotState> state_) :
+			ScopedStructureSlot<slice_type>(std::move(state_)) {
+			this_type::ensureEntered(not this_type::_state.isScopedImmutable());
+		}
 
-        ~SliceScopedSlot() override = default;
+		~SliceScopedSlot() override = default;
 
-    public:
-        [[nodiscard]] StructureSlotType getSlotType() const noexcept override {
-            return StructureSlotType::eSlice;
-        }
+	public:
+		[[nodiscard]] StructureSlotType getSlotType() const noexcept override {
+			return StructureSlotType::eSlice;
+		}
 
-    protected:
-        void enter(const bool mutating_) override {
+	protected:
+		void enter(const bool mutating_) override {
 
-            ScopedStructureSlot<slice_type>::enter(mutating_);
+			ScopedStructureSlot<slice_type>::enter(mutating_);
 
-            /**/
+			/**/
 
-            if (not mutating_ && not this_type::_state.size) {
+			if (not mutating_ && not this_type::_state
+			.
+			size
+			) {
 
-                auto* archive = this_type::_state.rootState->getArchive();
-                archive->seek(this_type::_state.offset);
+				auto* archive = this_type::_state.rootState->getArchive();
+				archive->seek(this_type::_state.offset);
 
-                StructureSlotType storedType = StructureSlotType::eUndefined;
-                (*archive) >> storedType;
+				StructureSlotType storedType = StructureSlotType::eUndefined;
+				(*archive) >> storedType;
+
 
 	#ifdef _DEBUG
-                if (storedType != StructureSlotType::eSlice) {
+	if (storedType!= StructureSlotType::eSlice) {
                     IM_CORE_WARNF(
                         "Tried to deserialize a `{}` into a `{}`.",
                         StructureSlotTypeTrait::canonical(storedType),
@@ -90,126 +94,126 @@ namespace hg::engine::serialization {
                 }
 	#endif
 
-                (*archive) >> this_type::_state.size;
+	(*archive)>> this_type::_state.size;
                 return;
             }
 
-            /**/
+	/**/
 
-            if (mutating_ && not this_type::_state.size) {
+            if (mutating_ &&not this_type::_state.size) {
                 auto* archive = this_type::_state.rootState->getArchive();
                 (*archive) << StructureSlotType::eSlice;
                 (*archive) << 0uLL;
             }
         }
 
-        void leave(const bool mutating_) override {
+	void leave(const bool mutating_) override {
 
-            ScopedStructureSlot<slice_type>::leave(mutating_);
+		ScopedStructureSlot<slice_type>::leave(mutating_);
 
-            /**/
+		/**/
 
-            if (not mutating_) {
-                return;
-            }
+		if (not mutating_) {
+			return;
+		}
 
-            /**/
+		/**/
 
-            auto* archive = this_type::_state.rootState->getArchive();
-            archive->seek(this_type::_state.offset);
+		auto* archive = this_type::_state.rootState->getArchive();
+		archive->seek(this_type::_state.offset);
 
-            (*archive) << StructureSlotType::eSlice;
-            (*archive) << (this_type::_state.size - sizeof(StructureSlotType::eSlice) - sizeof(u64));
+		(*archive) << StructureSlotType::eSlice;
+		(*archive) << (this_type::_state.size - sizeof(StructureSlotType::eSlice) - sizeof(u64));
 
-            archive->seek(this_type::_state.offset + this_type::_state.size);
-        }
-
-    public:
-        [[nodiscard]] const scoped_entry_type getSliceEntry(const size_t index_) const {
-            return *static_cast<const ptr<scoped_entry_type>>(nullptr);
-        }
-
-        [[nodiscard]] size_t getSliceSize() const noexcept {
-            return ~0;
-        }
+		archive->seek(this_type::_state.offset + this_type::_state.size);
+	}
 
     public:
-        void operator<<(cref<slice_type> object_) override {
+	[[nodiscard]] const scoped_entry_type getSliceEntry(const size_t index_) const {
+		return *static_cast<const ptr<scoped_entry_type>>(nullptr);
+	}
 
-            const ScopedSlotGuard guard { this, true };
-            auto* archive = this_type::_state.rootState->getArchive();
+	[[nodiscard]] size_t getSliceSize() const noexcept {
+		return ~0;
+	}
 
-            /* Write dummy / placeholder to archive and safe position */
-            const auto countMarker = archive->tell();
-            u64 count = 0uLL;
-            (*archive) << count;
+    public:
+	void operator<<(cref<slice_type> object_) override {
 
-            /**/
+		const ScopedSlotGuard guard { this, true };
+		auto* archive = this_type::_state.rootState->getArchive();
 
-            auto begin = std::ranges::begin(object_);
-            const auto end = std::ranges::end(object_);
+		/* Write dummy / placeholder to archive and safe position */
+		const auto countMarker = archive->tell();
+		u64 count = 0uLL;
+		(*archive) << count;
 
-            for (auto it = begin; it != end; ++it) {
+		/**/
 
-                ScopedSlotState state {
-                    ScopedSlotStateFlag::eUndefined,
-                    *this,
-                    this_type::_state.rootState
-                };
-                scoped_entry_type slot { std::move(state) };
+		auto begin = std::ranges::begin(object_);
+		const auto end = std::ranges::end(object_);
 
-                /**/
+		for (auto it = begin; it != end; ++it) {
 
-                slot << *it;
-                ++count;
-            }
+			ScopedSlotState state {
+				ScopedSlotStateFlag::eUndefined,
+				*this,
+				this_type::_state.rootState
+			};
+			scoped_entry_type slot { std::move(state) };
 
-            /**/
+			/**/
 
-            const auto cursor = archive->tell();
-            archive->seek(countMarker);
-            (*archive) << count;
+			slot << *it;
+			++count;
+		}
 
-            /**/
+		/**/
 
-            archive->seek(cursor);
-        }
+		const auto cursor = archive->tell();
+		archive->seek(countMarker);
+		(*archive) << count;
 
-        void operator>>(ref<slice_type> object_) const override {
+		/**/
 
-            const ScopedSlotGuard guard { this, false };
-            auto* const archive = this_type::_state.rootState->getArchive();
+		archive->seek(cursor);
+	}
 
-            /**/
+	void operator>>(ref<slice_type> object_) const override {
 
-            u64 storedCount { 0uLL };
-            (*archive) >> storedCount;
+		const ScopedSlotGuard guard { this, false };
+		auto* const archive = this_type::_state.rootState->getArchive();
 
-            assert(storedCount != ~0uLL);
+		/**/
 
-            /**/
+		u64 storedCount { 0uLL };
+		(*archive) >> storedCount;
 
-            // TODO: This might be not available depending on the sub type and container type
-            object_.resize(storedCount);
+		assert(storedCount != ~0uLL);
 
-            auto begin = std::ranges::begin(object_);
-            const auto end = std::ranges::end(object_);
+		/**/
 
-            for (auto it = begin; it != end; ++it) {
+		// TODO: This might be not available depending on the sub type and container type
+		object_.resize(storedCount);
 
-                ScopedSlotState state {
-                    ScopedSlotStateFlag::eImmutable,
-                    *this,
-                    this_type::_state.rootState
-                };
-                scoped_entry_type slot { std::move(state) };
+		auto begin = std::ranges::begin(object_);
+		const auto end = std::ranges::end(object_);
 
-                /**/
+		for (auto it = begin; it != end; ++it) {
 
-                slot >> *it;
-            }
+			ScopedSlotState state {
+				ScopedSlotStateFlag::eImmutable,
+				*this,
+				this_type::_state.rootState
+			};
+			scoped_entry_type slot { std::move(state) };
 
-        }
+			/**/
+
+			slot >> *it;
+		}
+
+	}
     };
 	#endif
 }

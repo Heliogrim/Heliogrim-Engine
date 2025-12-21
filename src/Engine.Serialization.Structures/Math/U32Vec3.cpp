@@ -9,15 +9,15 @@ using namespace hg::engine::serialization;
 using namespace hg;
 
 template <>
-void access::Structure<math::uivec3>::serialize(const math::vec3_t<u32>& self_, mref<StructScopedSlot> slot_) {
-	slot_.insertSlot<u32>("x") << self_.x;
-	slot_.insertSlot<u32>("y") << self_.y;
-	slot_.insertSlot<u32>("z") << self_.z;
+void access::Structure<math::uivec3>::serialize(const math::vec3_t<u32>& self_, mref<StructScopedSlot> record_) {
+	record_.insertSlot<u32>("x") << self_.x;
+	record_.insertSlot<u32>("y") << self_.y;
+	record_.insertSlot<u32>("z") << self_.z;
 }
 
 template <>
-void access::Structure<math::uivec3>::hydrate(cref<StructScopedSlot> slot_, math::vec3_t<u32>& target_) {
-	slot_.getSlot<u32>("x") >> target_.x;
-	slot_.getSlot<u32>("y") >> target_.y;
-	slot_.getSlot<u32>("z") >> target_.z;
+void access::Structure<math::uivec3>::hydrate(cref<StructScopedSlot> record_, math::vec3_t<u32>& target_) {
+	record_.getSlot<u32>("x") >> target_.x;
+	record_.getSlot<u32>("y") >> target_.y;
+	record_.getSlot<u32>("z") >> target_.z;
 }

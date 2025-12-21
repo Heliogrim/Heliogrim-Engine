@@ -1,8 +1,7 @@
 #include "ScopedSlotGuard.hpp"
 
-#include <cassert>
-
 #ifdef _DEBUG
+#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include "StructureSlotTypeTraits.hpp"
 #endif
@@ -24,13 +23,14 @@ ScopedSlotGuard::ScopedSlotGuard(
 		slot->readHeader();
 
 		#ifdef _DEBUG
-		if (not slot->validateType()) {
+		if (not
+			slot->validateType()) {
 			IM_CORE_ERRORF(
 				"Tried to deserialize a `{}` into a `{}`.",
 				StructureSlotTypeTrait::canonical(slot->getSlotHeader().type),
 				StructureSlotTypeTrait::canonical(slot->getSlotType())
 			);
-			assert(slot->validateType());
+			::hg::assertd(slot->validateType());
 		}
 		#endif
 
