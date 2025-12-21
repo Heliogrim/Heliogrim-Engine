@@ -104,11 +104,12 @@ void File::createFile() const {
 }
 
 void File::move(const File& dst_) {
-	if (!dst_.exists() || !dst_.isDirectory()) {
+	const auto parent = dst_.parent();
+	if (parent == dst_ || not parent.exists() || not parent.isDirectory()) {
 		throw std::runtime_error("Target is not a existing directory.");
 	}
 
-	const auto copyResult = std::filesystem::copy_file(_path, dst_._path, std::filesystem::copy_options {});
+	const auto copyResult = std::filesystem::copy_file(_path, dst_._path, std::filesystem::copy_options::overwrite_existing);
 
 	if (not copyResult) {
 		return;
