@@ -17,6 +17,10 @@ void Registry::removeActorComponent(ref<const ComponentGuid> guid_, ref<const Co
 	pool->erase(guid_);
 }
 
+void Registry::releaseActorComponent(mref<VolatileComponent<>> component_) {
+	_housekeeping.storePendingRelease(::hg::move(component_));
+}
+
 ptr<Actor> Registry::createActor(const ptr<const ActorClass> actorClass_, cref<ActorInitializer> initializer_) {
 
 	const auto guid = generate_actor_guid();

@@ -135,20 +135,19 @@ namespace hg::engine::acs {
 
 	public:
 		template <class ValueType_, typename... Args_>
-		[[nodiscard]] ptr<ValueType_> acquireActorComponent(cref<ActorGuid> guid_, Args_&&... args_) {
+		[[nodiscard]] VolatileComponent<ValueType_> acquireActorComponent(ref<const ComponentGuid> guid_, Args_&&... args_) {
 
-			auto& pool { getOrCreatePool<ValueType_>() };
-			const auto result = pool.emplace(guid_, std::forward<Args_>(args_)...);
+			auto& pool = getOrCreateComponentPool<ValueType_>();
+			auto result = pool.emplace(guid_, ComponentGuid { guid_ }, std::forward<Args_>(args_)...);
 
-			return result.second ? result.first : nullptr;
+			return VolatileComponent<ValueType_> { result.second ? result.first : nullptr };
 		}
 
-		void releaseActorComponent(cref<ActorGuid> guid_, cref<type_id> typeId_);
+		void releaseActorComponent(mref<VolatileComponent<>> component_);
 
 		template <ClassHasMeta ValueType_>
-		void releaseActorComponent(cref<ActorGuid> guid_, mref<ptr<ValueType_>> value_) {
-			// TODO: releaseActorComponent(guid_, value_->getClass()->typeId());
-			releaseActorComponent(guid_, value_->getTypeId());
+		void releaseActorComponent(mref<VolatileComponent<ValueType_>> component_) {
+			releaseActorComponent(static_cast<mref<VolatileComponent<>>>(component_));
 		}
 
 		#pragma endregion
