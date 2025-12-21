@@ -1,8 +1,12 @@
 #pragma once
 
-#include <Heliogrim/Actor/Actor.hpp>
 #include "Pool.hpp"
 #include "Traits.hpp"
+
+namespace hg {
+	class Actor;
+	class ActorInitializer;
+}
 
 namespace hg::engine::acs {
 	class macro_novtable ActorPoolWrapperBase {

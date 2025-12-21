@@ -84,7 +84,7 @@ namespace hg::engine::acs {
 		 *
 		 * @param [in,out] other_ The other.
 		 */
-		hybrid_storage_page(this_type&& other_) noexcept:
+		hybrid_storage_page(this_type&& other_) noexcept :
 			_mem(std::exchange(other_._mem, nullptr)),
 			_keys(std::exchange(other_._keys, nullptr)),
 			_values(std::exchange(other_._values, nullptr)),
@@ -368,19 +368,19 @@ namespace hg::engine::acs {
 		 */
 		class hybrid_value_iterator final {
 		public:
-			hybrid_value_iterator() noexcept:
+			hybrid_value_iterator() noexcept :
 				_ptr(nullptr) {}
 
-			hybrid_value_iterator(IN value_type* ptr_) noexcept:
+			hybrid_value_iterator(IN value_type* ptr_) noexcept :
 				_ptr(ptr_) {}
 
-			hybrid_value_iterator(IN value_type* ptr_, const size_t idx_) noexcept:
+			hybrid_value_iterator(IN value_type* ptr_, const size_t idx_) noexcept :
 				_ptr(&ptr_[idx_]) {}
 
-			hybrid_value_iterator(IN hybrid_value_iterator&& other_) noexcept:
+			hybrid_value_iterator(IN hybrid_value_iterator&& other_) noexcept :
 				_ptr(std::exchange(other_._ptr, nullptr)) {}
 
-			hybrid_value_iterator(IN const hybrid_value_iterator& other_) noexcept:
+			hybrid_value_iterator(IN const hybrid_value_iterator& other_) noexcept :
 				_ptr(other_._ptr) {}
 
 			hybrid_value_iterator& operator++() noexcept {
@@ -493,7 +493,7 @@ namespace hg::engine::acs {
 			 * @author Julius
 			 * @date 02.11.2020
 			 */
-			constexpr hybrid_key_value_iterator() noexcept:
+			constexpr hybrid_key_value_iterator() noexcept :
 				_keys(nullptr),
 				_values(nullptr) {}
 
@@ -510,7 +510,7 @@ namespace hg::engine::acs {
 			 * @param [in,out] keys_ If non-null, the keys.
 			 * @param [in,out] values_ If non-null, the values.
 			 */
-			hybrid_key_value_iterator(IN key_type* keys_, IN value_type* values_) noexcept:
+			hybrid_key_value_iterator(IN key_type* keys_, IN value_type* values_) noexcept :
 				_keys(keys_),
 				_values(values_) {}
 
@@ -524,7 +524,7 @@ namespace hg::engine::acs {
 			 * @param [in,out] values_ If non-null, the values.
 			 * @param 		   idx_ Zero-based index of the.
 			 */
-			hybrid_key_value_iterator(IN key_type* keys_, IN value_type* values_, const index_type idx_) noexcept:
+			hybrid_key_value_iterator(IN key_type* keys_, IN value_type* values_, const index_type idx_) noexcept :
 				_keys(&keys_[idx_]),
 				_values(&values_[idx_]) {}
 
@@ -536,7 +536,7 @@ namespace hg::engine::acs {
 			 *
 			 * @param [in,out] other_ The other.
 			 */
-			hybrid_key_value_iterator(IN hybrid_key_value_iterator&& other_) noexcept:
+			hybrid_key_value_iterator(IN hybrid_key_value_iterator&& other_) noexcept :
 				_keys(std::exchange(other_._keys, nullptr)),
 				_values(std::exchange(other_._values, nullptr)) {}
 
@@ -1041,7 +1041,7 @@ namespace hg::engine::acs {
 		 * @author Julius
 		 * @date 23.10.2020
 		 */
-		explicit hybrid_storage_page() noexcept:
+		explicit hybrid_storage_page() noexcept :
 			_mem(allocate_safe()),
 			_keys(static_cast<KeyType*>(static_cast<void*>(static_cast<ValueType*>(_mem) + per_page))),
 			_values(static_cast<ValueType*>(_mem)),
@@ -1704,7 +1704,7 @@ namespace hg::engine::acs {
 		 *
 		 * @param [in,out] other_ The other.
 		 */
-		hybrid_storage(hybrid_storage&& other_) noexcept:
+		hybrid_storage(hybrid_storage&& other_) noexcept :
 			_pages(std::move(other_._pages)),
 			_indirection(std::move(other_._indirection)) {}
 
@@ -1809,6 +1809,7 @@ namespace hg::engine::acs {
 				 * If emplace failed, lookup existing element and return pointer
 				 */
 				stp = &_pages[unmask_page_index(inp.idx)].get_value(unmask_value_index(inp.idx));
+
 			} else {
 				/**
 				 * If emplace succeeded, construct element inplace at page
