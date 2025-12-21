@@ -90,7 +90,7 @@ const non_owning_rptr<Schedule> CompositePipeline::getSchedule() const noexcept 
 const non_owning_rptr<const Stage> CompositePipeline::registerStage(mref<uptr<PipelineStage>> stage_) {
 
 	const auto& identifier = stage_->stageIdentifier();
-	_pipelineStages.push_back(std::move(stage_));
+	_pipelineStages.emplace_back(std::move(stage_));
 
 	/**/
 
@@ -258,10 +258,13 @@ void CompositePipeline::complete(const non_owning_rptr<CompositeSlot> slot_) {
 
 	// TODO: Rewrite ~ Just a fast forward quickfix
 	if (++compIter == _compositeStages.end()) {
-		if (not _stopping.test()) {
+		if (not
+			_stopping.test()
+		) {
 			assert(_compositeStages.front()->ready());
 			dispatch(_slots[_compositeStages.front()->stage->getSlot()].get());
-		} else [[unlikely]] {
+		}
+		else [[unlikely]] {
 			_stopping.clear();
 		}
 	}
@@ -454,7 +457,9 @@ bool CompositePipeline::resolveCanInsertStage(
 		}
 
 		for (const auto& required : entry.required) {
-			if (not stated_.contains(required)) {
+			if (not
+				stated_.contains(required)
+			) {
 				return false;
 			}
 		}
@@ -488,7 +493,9 @@ bool CompositePipeline::resolveCanInsertStage(
 		/**/
 
 		for (auto orderIter = order->begin(); orderIter != stageMark; ++orderIter) {
-			if (not stated_.contains(*orderIter)) {
+			if (not
+				stated_.contains(*orderIter)
+			) {
 				return false;
 			}
 		}

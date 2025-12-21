@@ -7,7 +7,7 @@
 namespace hg::engine::storage {
 	/**
 	* @details The file url type wil lock-in a normalized form of the filesystem path provided.
-	*	Thus we will drop the support for arbitrary path manipulation actions with freely defined content
+	*	Thus, we will drop the support for arbitrary path manipulation actions with freely defined content
 	*	to uphold the guarantee of a normalized representation.
 	*/
 	class FileUrl final :

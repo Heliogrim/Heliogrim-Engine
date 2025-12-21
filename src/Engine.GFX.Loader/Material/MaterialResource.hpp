@@ -4,5 +4,5 @@
 #include <Engine.GFX.Material/Material.hpp>
 
 namespace hg::engine::gfx {
-    typedef resource::Resource<material::Material> MaterialResource;
+	typedef resource::Resource<material::Material> MaterialResource;
 }

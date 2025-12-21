@@ -630,7 +630,7 @@ namespace hg::concurrent {
 		 */
 		future<Ret> get() {
 			typename future<Ret>::state_type& fs = _state->future();
-			return std::move(future<Ret>(fs));
+			return future<Ret>(fs);
 		}
 
 		/**

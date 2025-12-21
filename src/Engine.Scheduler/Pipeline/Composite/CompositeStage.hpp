@@ -6,23 +6,23 @@
 #include "CompositeDependency.hpp"
 
 namespace hg::engine::scheduler {
-    struct CompositeStage {
-        const non_owning_rptr<const class Stage> stage;
-        CompactArray<non_owning_rptr<const class PipelineStage>> pipelineStages;
+	struct CompositeStage {
+		const non_owning_rptr<const class Stage> stage;
+		CompactArray<non_owning_rptr<const class PipelineStage>> pipelineStages;
 
-        u64 generation;
+		u64 generation;
 
-        CompactSet<CompositeDependency> dependencies;
+		CompactSet<CompositeDependency> dependencies;
 
-    public:
-        [[nodiscard]] bool ready() const noexcept {
-            for (const auto& entry : dependencies) {
-                if (entry.requiredGeneration > entry.stage->generation) {
-                    return false;
-                }
-            }
+	public:
+		[[nodiscard]] bool ready() const noexcept {
+			for (const auto& entry : dependencies) {
+				if (entry.requiredGeneration > entry.stage->generation) {
+					return false;
+				}
+			}
 
-            return true;
-        }
-    };
+			return true;
+		}
+	};
 }
