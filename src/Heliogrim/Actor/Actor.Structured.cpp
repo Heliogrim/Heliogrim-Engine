@@ -1,18 +1,20 @@
 #pragma once
 
+#include <Engine.Common/Move.hpp>
+#include <Engine.Core/Engine.hpp>
+#include <Engine.Core/Module/Modules.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>
 #include <Engine.Serialization/Structure/SeqScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 #include <Engine.Serialization.Structures/Symbols.hpp>
+#include <Engine.Serialization/SerializationModule.hpp>
+#include <Engine.Serialization.Structures/Common/Guid.hpp>
+#include <Engine.Serialization.Structures/Common/TypeId.hpp>
 
 #include "Actor.hpp"
-#include "Engine.Common/Move.hpp"
-#include "Engine.Core/Engine.hpp"
-#include "Engine.Core/Module/Modules.hpp"
-#include "Engine.Serialization/SerializationModule.hpp"
-#include "Heliogrim/ActorInitializer.hpp"
-#include "Heliogrim/Component/LogicComponent.hpp"
+#include "../ActorInitializer.hpp"
+#include "../Component/LogicComponent.hpp"
 
 using namespace hg::engine::serialization;
 using namespace hg;
@@ -20,21 +22,18 @@ using namespace hg;
 template <>
 void access::Structure<Actor>::serialize(
 	const Actor& self_,
-	mref<StructScopedSlot> slot_
+	mref<StructScopedSlot> record_
 ) {
 
-	slot_.insertSlot<u64>(Symbols::Type) << Actor::typeId.data;
-
-	/**/
-
-	access::Structure<Guid>::serialize(self_._guid, slot_.insertStructSlot(Symbols::Guid));
+	insert_guid_slot(record_, self_._guid);
+	insert_typeId_slot(record_, self_.getMetaClass<>()->typeId());
 
 	/**/
 
 	// TODO: Generic Serialize Components
 
 	const auto serial = Engine::getEngine()->getSerialization();
-	auto components = slot_.insertRecordSlot(Symbols::Components).intoSeq();
+	auto components = record_.insertRecordSlot(Symbols::Components).intoSeq();
 
 	u64 idx = 0;
 	for (const auto& component : self_.getComponents()) {
@@ -62,13 +61,12 @@ void access::Structure<Actor>::serialize(
 }
 
 template <>
-void access::Structure<Actor>::hydrate(cref<StructScopedSlot> slot_, ref<Actor> target_) {
+void access::Structure<Actor>::hydrate(cref<StructScopedSlot> record_, ref<Actor> target_) {
 
-	type_id checkTypeId {};
-	slot_.getSlot<u64>(Symbols::Type) >> checkTypeId.data;
-	::hg::assertrt(checkTypeId == Actor::typeId);
+	const auto checkTypeId = get_typeId_slot(record_);
+	::hg::assertrt(checkTypeId == target_.getMetaClass<>()->typeId());
 
 	/**/
 
-	access::Structure<Guid>::hydrate(slot_.getRecordSlot(Symbols::Guid).asStruct(), target_._guid);
+	target_._guid = get_guid_slot<ActorGuid>(record_);
 }
