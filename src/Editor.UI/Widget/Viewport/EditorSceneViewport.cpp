@@ -44,8 +44,7 @@ void experimental_add_actor(math::Transform baseTransform_) {
 	auto universe = GetUniverse(session);
 
 	auto actor = CreateActor();
-	auto component = ActorInitializer { *engine::Engine::getEngine()->getActors()->getRegistry() }
-		.createComponent<StaticGeometryComponent>(actor.get());
+	auto component = actor->addComponent<StaticGeometryComponent>();
 
 	/* Configure components */
 

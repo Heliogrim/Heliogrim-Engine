@@ -16,12 +16,12 @@ void SceneHierarchyService::fetchAll(ref<const SceneHierarchyEntry> base_, ref<V
 
 	if (base_.type() == SceneHierarchyEntryType::eActor) {
 
-		const auto root = base_.value.as<nmpt<Actor>>()->getRootComponent();
-		if (root == nullptr) {
+		auto root = base_.value.as<nmpt<Actor>>()->getRootComponent();
+		if (root.is_null()) {
 			return;
 		}
 
-		const auto next = SceneHierarchyEntry { root };
+		const auto next = SceneHierarchyEntry { std::addressof(root.value()) };
 		entries_.emplace_back(clone(next));
 
 		return fetchAll(next, entries_);
@@ -57,12 +57,12 @@ void SceneHierarchyService::fetchLayer(ref<const SceneHierarchyEntry> parent_, r
 
 	if (parent_.type() == SceneHierarchyEntryType::eActor) {
 
-		const auto root = parent_.value.as<nmpt<Actor>>()->getRootComponent();
-		if (root == nullptr) {
+		auto root = parent_.value.as<nmpt<Actor>>()->getRootComponent();
+		if (root.is_null()) {
 			return;
 		}
 
-		const auto next = SceneHierarchyEntry { root };
+		const auto next = SceneHierarchyEntry { std::addressof(root.value()) };
 		children_.emplace_back(clone(next));
 		return;
 	}
