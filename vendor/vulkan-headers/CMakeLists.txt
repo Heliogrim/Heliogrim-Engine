@@ -17,7 +17,7 @@ function(library_vulkan_headers_init)
 	CachedFetchContent_Declare(
 			vulkan-headers
 			GIT_REPOSITORY https://github.com/KhronosGroup/Vulkan-Headers.git
-			GIT_TAG vulkan-sdk-1.4.321.0
+			GIT_TAG vulkan-sdk-1.4.335.0
 			GIT_SUBMODULES_RECURSE OFF
 			GIT_SHALLOW ON
 			SOURCE_DIR "${vendor_src_path}"

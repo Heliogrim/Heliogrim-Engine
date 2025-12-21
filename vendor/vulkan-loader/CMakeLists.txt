@@ -25,7 +25,7 @@ function(library_vulkan_loader_init)
 	CachedFetchContent_Declare(
 			vulkan-loader
 			GIT_REPOSITORY https://github.com/KhronosGroup/Vulkan-Loader.git
-			GIT_TAG vulkan-sdk-1.4.321.0
+			GIT_TAG vulkan-sdk-1.4.335.0
 			GIT_SHALLOW ON
 			GIT_PROGRESS ON
 			SOURCE_DIR "${vendor_src_path}"
