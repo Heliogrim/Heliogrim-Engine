@@ -6,11 +6,14 @@
 using namespace hg::engine::acs;
 using namespace hg;
 
-Registry::~Registry() = default;
+Registry::Registry() :
+	_pools(),
+	_actorPools(),
+	_housekeeping(*this) {}
 
-void Registry::releaseActorComponent(cref<ActorGuid> guid_, cref<type_id> typeId_) {
-	auto* entry { _pools.at(typeId_) };
-	auto* pool { static_cast<ptr<PoolWrapperBase>>(entry) };
+Registry::~Registry() {
+	_housekeeping.commit();
+}
 
 void Registry::removeActorComponent(ref<const ComponentGuid> guid_, ref<const ComponentTypeId> typeId_) {
 	auto* pool = _pools.at(typeId_);
@@ -140,4 +143,8 @@ void Registry::destroyActor(mref<ptr<Actor>> actor_) {
 void Registry::hackActorInit(cref<ActorInitializer> initializer_, cref<ActorGuid> guid_) const noexcept {
 	// Warning: Hotfix - Hack
 	const_cast<ref<ActorInitializer>>(initializer_)._guid = guid_;
+}
+
+ref<Housekeeping> Registry::housekeeping() noexcept {
+	return _housekeeping;
 }
