@@ -17,6 +17,9 @@ function(library_sdl_init)
 	#
 	propagate_option(VAR "SDL_DISABLE_INSTALL" SET ON)
 	propagate_option(VAR "SDL_DISABLE_UNINSTALL" SET ON)
+	propagate_option(VAR "SDL_INSTALL_CPACK" SET OFF)
+	propagate_option(VAR "SDL_INSTALL_DOCS" SET OFF)
+	propagate_option(VAR "SDL_UNINSTALL" SET OFF)
 
 	propagate_option(VAR "SDL_OPENGL" SET OFF)
 	propagate_option(VAR "SDL_OPENGLES" SET OFF)
@@ -50,9 +53,10 @@ function(library_sdl_init)
 
 	propagate_option(VAR "SDL_SHARED" SET ${__USE_SHARED_LINKING})
 	propagate_option(VAR "SDL_STATIC" SET ${__USE_STATIC_LINKING})
-	propagate_option(VAR "SDL_TEST" SET OFF)
+	propagate_option(VAR "SDL_TESTS" SET OFF)
 	propagate_option(VAR "SDL_TEST_LIBRARY" SET OFF)
-	propagate_option(VAR "SDL2_DISABLE_SDL2MAIN" SET ON)
+	propagate_option(VAR "SDL_EXAMPLES" SET OFF)
+	propagate_option(VAR "SDL3_MAINPROJECT" SET ON)
 
 	# Include Sub-Project
 	get_external_include_path(vendor_inc_path "sdl")
@@ -61,7 +65,7 @@ function(library_sdl_init)
 	CachedFetchContent_Declare(
 			libsdl
 			GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-			GIT_TAG release-2.32.6
+			GIT_TAG release-3.2.22
 			GIT_SHALLOW ON
 			GIT_PROGRESS ON
 			SOURCE_DIR "${vendor_src_path}"
@@ -74,10 +78,10 @@ function(library_sdl_init)
 
 	# Resolve Export Target
 
-	set(__EXPOSED_TARGET SDL2)
+	set(__EXPOSED_TARGET SDL3-shared)
 	set(__EXPOSED_AUX_TARGETS)
 	if (${__USE_STATIC_LINKING})
-		set(__EXPOSED_TARGET SDL2-static)
+		set(__EXPOSED_TARGET SDL3-static)
 		set(__EXPOSED_AUX_TARGETS sdl-build-options)
 	endif ()
 
@@ -89,7 +93,7 @@ function(library_sdl_init)
 			DESTINATION "${vendor_inc_path}/sdl/"
 	)
 
-	export(TARGETS ${__EXPOSED_TARGET} ${__EXPOSED_AUX_TARGETS} NAMESPACE External:: FILE ${PROJECT_BINARY_DIR}/cmake/${alias}/${alias}-export.cmake)
+	#export(TARGETS ${__EXPOSED_TARGET} ${__EXPOSED_AUX_TARGETS} NAMESPACE External:: FILE ${PROJECT_BINARY_DIR}/cmake/${alias}/${alias}-export.cmake)
 
 	# Deployment
 	get_external_lib_path(vendor_dist_path "sdl")
