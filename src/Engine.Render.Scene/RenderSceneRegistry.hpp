@@ -28,6 +28,11 @@ namespace hg::engine::render {
 		concept ValidForEachImm = requires(cref<Type_> data_) {
 			{ std::declval<std::decay_t<Fn_>>()(data_) };
 		} && std::is_invocable_v<std::decay_t<Fn_>, cref<Type_>>;
+
+		template <typename Fn_, class Type_>
+		concept ValidPred = requires(ref<const Type_> data_) {
+			{ std::declval<std::decay_t<Fn_>>()(data_) } -> std::same_as<bool>;
+		};
 	}
 
 	struct RenderSceneRegistry {
@@ -54,19 +59,28 @@ namespace hg::engine::render {
 			storageMap.insert(std::make_pair(dstMeta, make_uptr<RenderSceneSystemSubStorage<DstType_>>()));
 		}
 
-	public:
-		template <ValidSubStorageType Type_, typename Fn_> requires ValidForEachImm<Fn_, Type_>
-		void forEach(Fn_&& fn_) {
+	private:
+		template <ValidSubStorageType Type_>
+		[[nodiscard]] const auto* const assertGetSubStorage() const {
 
 			const auto* const metaClass = Type_::getStaticMetaClass();
 			const auto storageIt = storageMap.find(metaClass);
 
-			assert(storageIt != storageMap.end());
+			::hg::assertd(storageIt != storageMap.end());
 
 			const auto* const storageBase = storageIt->second.get();
-			const auto* const storage = static_cast<const ptr<const RenderSceneSystemSubStorage<Type_>>>(storageBase);
+			return static_cast<const ptr<const RenderSceneSystemSubStorage<Type_>>>(storageBase);
+		}
 
-			storage->template forEach<Fn_>(std::forward<Fn_>(fn_));
+	public:
+		template <ValidSubStorageType Type_, typename Pred_> requires ValidPred<Pred_, Type_>
+		[[nodiscard]] Opt<ref<const Type_>> find(Pred_&& pred_) const {
+			return assertGetSubStorage<Type_>()->template find<Pred_>(std::forward<Pred_>(pred_));
+		}
+
+		template <ValidSubStorageType Type_, typename Fn_> requires ValidForEachImm<Fn_, Type_>
+		void forEach(Fn_&& fn_) {
+			assertGetSubStorage<Type_>()->template forEach<Fn_>(std::forward<Fn_>(fn_));
 		}
 	};
 }

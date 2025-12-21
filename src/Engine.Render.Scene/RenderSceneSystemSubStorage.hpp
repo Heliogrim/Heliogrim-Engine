@@ -2,6 +2,7 @@
 
 #include <concepts>
 #include <Engine.Common/Move.hpp>
+#include <Engine.Common/Optional.hpp>
 #include <Engine.Common/Functional/FnRef.hpp>
 
 #include "RenderSceneSystemModel.hpp"
@@ -90,6 +91,16 @@ namespace hg::engine::render {
 		}
 
 	public:
+		template <typename Pred_>
+		[[nodiscard]] Opt<ref<const Type_>> find(Pred_&& fn_) const {
+			for (const auto& stored : denseData) {
+				if (fn_(stored)) {
+					return Some<ref<const Type_>>(stored);
+				}
+			}
+			return None;
+		}
+
 		template <typename Fn_>
 		void forEach(Fn_&& fn_) const {
 			for (const auto& stored : denseData) {
