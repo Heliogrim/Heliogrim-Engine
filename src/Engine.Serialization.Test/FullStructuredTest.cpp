@@ -75,76 +75,76 @@ namespace SerializationModule {
 template <>
 void access::Structure<SerializationModule::TrivialTestClass>::serialize(
 	const SerializationModule::TrivialTestClass& self_,
-	mref<StructScopedSlot> slot_
+	mref<StructScopedSlot> record_
 ) {
-	slot_.insertSlot<float>("x") << self_.x;
-	slot_.insertSlot<float>("y") << self_.y;
-	slot_.insertSlot<float>("z") << self_.z;
+	record_.insertSlot<float>("x") << self_.x;
+	record_.insertSlot<float>("y") << self_.y;
+	record_.insertSlot<float>("z") << self_.z;
 }
 
 template <>
 void access::Structure<SerializationModule::TrivialTestClass>::hydrate(
-	cref<StructScopedSlot> slot_,
+	cref<StructScopedSlot> record_,
 	ref<SerializationModule::TrivialTestClass> target_
 ) {
-	slot_.getSlot<float>("x") >> target_.x;
-	slot_.getSlot<float>("y") >> target_.y;
-	slot_.getSlot<float>("z") >> target_.z;
+	record_.getSlot<float>("x") >> target_.x;
+	record_.getSlot<float>("y") >> target_.y;
+	record_.getSlot<float>("z") >> target_.z;
 }
 
 template <>
 void access::Structure<SerializationModule::FlatTestClass>::serialize(
 	const SerializationModule::FlatTestClass& self_,
-	mref<StructScopedSlot> slot_
+	mref<StructScopedSlot> record_
 ) {
-	slot_.insertSlot<String>("name") << self_.name;
-	Structure<SerializationModule::TrivialTestClass>::serialize(self_.subclass, slot_.insertStructSlot("subclass"));
+	record_.insertSlot<String>("name") << self_.name;
+	Structure<SerializationModule::TrivialTestClass>::serialize(self_.subclass, record_.insertStructSlot("subclass"));
 }
 
 template <>
 void access::Structure<SerializationModule::FlatTestClass>::hydrate(
-	cref<StructScopedSlot> slot_,
+	cref<StructScopedSlot> record_,
 	ref<SerializationModule::FlatTestClass> target_
 ) {
-	slot_.getSlot<String>("name") >> target_.name;
-	Structure<SerializationModule::TrivialTestClass>::hydrate(slot_.getStructSlot("subclass"), target_.subclass);
+	record_.getSlot<String>("name") >> target_.name;
+	Structure<SerializationModule::TrivialTestClass>::hydrate(record_.getStructSlot("subclass"), target_.subclass);
 }
 
 template <>
 void access::Structure<SerializationModule::FlatTestWithArgsClass>::serialize(
 	const SerializationModule::FlatTestWithArgsClass& self_,
-	mref<StructScopedSlot> slot_
+	mref<StructScopedSlot> record_
 ) {
 	// Note: Will be supplied by the constructor arguments
 	// slot.insertSlot<String>("name") << self_->name;
-	Structure<SerializationModule::TrivialTestClass>::serialize(self_.subclass, slot_.insertStructSlot("subclass"));
+	Structure<SerializationModule::TrivialTestClass>::serialize(self_.subclass, record_.insertStructSlot("subclass"));
 }
 
 template <>
 void access::Structure<SerializationModule::FlatTestWithArgsClass>::hydrate(
-	cref<StructScopedSlot> slot_,
+	cref<StructScopedSlot> record_,
 	ref<SerializationModule::FlatTestWithArgsClass> target_
 ) {
 	// Note: Will be supplied by the constructor arguments
 	// slot.getSlot<String>("name") >> target_.name;
-	Structure<SerializationModule::TrivialTestClass>::hydrate(slot_.getStructSlot("subclass"), target_.subclass);
+	Structure<SerializationModule::TrivialTestClass>::hydrate(record_.getStructSlot("subclass"), target_.subclass);
 }
 
 template <>
 void access::Structure<SerializationModule::NestedTestClass>::serialize(
 	const SerializationModule::NestedTestClass& self_,
-	mref<StructScopedSlot> slot_
+	mref<StructScopedSlot> record_
 ) {
-	slot_.insertSlot<String>("data") << self_.data;
-	Structure<SerializationModule::TrivialTestClass>::serialize(*self_.nested, slot_.insertStructSlot("nested"));
+	record_.insertSlot<String>("data") << self_.data;
+	Structure<SerializationModule::TrivialTestClass>::serialize(*self_.nested, record_.insertStructSlot("nested"));
 }
 
 template <>
 void access::Structure<SerializationModule::NestedTestClass>::hydrate(
-	cref<StructScopedSlot> slot_,
+	cref<StructScopedSlot> record_,
 	ref<SerializationModule::NestedTestClass> target_
 ) {
-	slot_.getSlot<String>("data") >> target_.data;
+	record_.getSlot<String>("data") >> target_.data;
 }
 
 template <>
@@ -171,16 +171,16 @@ decltype(auto) DefaultScheme<SerializationModule::NestedTestClass>::deserialize<
 template <>
 void access::Structure<SerializationModule::NestedTestWithArgsClass>::serialize(
 	const SerializationModule::NestedTestWithArgsClass& self_,
-	mref<StructScopedSlot> slot_
+	mref<StructScopedSlot> record_
 ) {
 	// Note: Will be supplied by the constructor arguments
 	// slot.insertSlot<String>("data") << self_->data;
-	Structure<SerializationModule::FlatTestWithArgsClass>::serialize(*self_.nested, slot_.insertStructSlot("nested"));
+	Structure<SerializationModule::FlatTestWithArgsClass>::serialize(*self_.nested, record_.insertStructSlot("nested"));
 }
 
 template <>
 void access::Structure<SerializationModule::NestedTestWithArgsClass>::hydrate(
-	cref<StructScopedSlot> slot_,
+	cref<StructScopedSlot> record_,
 	ref<SerializationModule::NestedTestWithArgsClass> target_
 ) {
 	// Note: Will be supplied by the constructor arguments
