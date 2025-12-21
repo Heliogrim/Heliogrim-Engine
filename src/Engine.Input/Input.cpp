@@ -1,6 +1,6 @@
 #include "Input.hpp"
 
-#include <Engine.Common/SDL2.hpp>
+#include <Engine.Common/SDL3.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Event/GlobalEventEmitter.hpp>
 #include <Engine.Input.Schedule/InputPipeline.hpp>
@@ -138,17 +138,19 @@ const ptr<input::DragDropSender> Input::dragDropSender() const noexcept {
 }
 
 void Input::captureWindow(const non_owning_rptr<platform::NativeWindow> nativeWindow_) {
-	assert(not _dragDropReceiver);
+	::hg::assertd(not _dragDropReceiver);
 
 	#ifdef WIN32
 	auto* sdlWnd = static_cast<ptr<platform::Win32Window>>(nativeWindow_)->sdl();
-	SDL_SysWMinfo info {};
-	SDL_VERSION(&info.version);
-	SDL_GetWindowWMInfo(sdlWnd, &info);
+	const auto hWnd = static_cast<HWND>(SDL_GetPointerProperty(
+		SDL_GetWindowProperties(sdlWnd),
+		SDL_PROP_WINDOW_WIN32_HWND_POINTER,
+		nullptr
+	));
 
-	const HWND hwnd = info.info.win.window;
+	::hg::assertrt(hWnd != nullptr);
 
-	_dragDropReceiver = new Win32DragDropReceiver(hwnd);
+	_dragDropReceiver = new Win32DragDropReceiver(hWnd);
 	_dragDropReceiver->setup();
 
 	/**/
