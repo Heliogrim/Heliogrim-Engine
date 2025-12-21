@@ -1,10 +1,17 @@
 #include "LogicComponent.hpp"
 
+#include <Engine.Common/Move.hpp>
+
 using namespace hg;
 
-LogicComponent::LogicComponent(mref<component_type_id> typeId_) noexcept :
-	_typeId(std::move(typeId_)) {}
+LogicComponent::LogicComponent(mref<ComponentGuid> guid_, mref<ComponentTypeId> typeId_) noexcept :
+	_typeId(::hg::move(typeId_)),
+	_guid(::hg::move(guid_)) {}
 
-cref<component_type_id> LogicComponent::getTypeId() const noexcept {
+cref<ComponentTypeId> LogicComponent::getTypeId() const noexcept {
 	return _typeId;
+}
+
+ref<const ComponentGuid> LogicComponent::getComponentGuid() const noexcept {
+	return _guid;
 }

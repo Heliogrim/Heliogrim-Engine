@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Engine.ACS/ComponentGuid.hpp>
 #include <Engine.ACS/ComponentTypeId.hpp>
 #include <Engine.Reflect/Inherit/InheritBase.hpp>
 
@@ -11,15 +12,18 @@ namespace hg {
 		using underlying_type = InheritBase<LogicComponent>;
 
 	protected:
-		LogicComponent(mref<component_type_id> typeId_) noexcept;
+		LogicComponent(mref<ComponentGuid> guid_, mref<ComponentTypeId> typeId_) noexcept;
 
 	public:
 		~LogicComponent() override = default;
 
 	private:
-		component_type_id _typeId;
+		ComponentTypeId _typeId;
+		ComponentGuid _guid;
 
 	public:
-		[[nodiscard]] cref<component_type_id> getTypeId() const noexcept;
+		[[nodiscard]] cref<ComponentTypeId> getTypeId() const noexcept;
+
+		[[nodiscard]] ref<const ComponentGuid> getComponentGuid() const noexcept;
 	};
 }
