@@ -5,7 +5,6 @@
 #include <type_traits>
 #include <utility>
 
-#include "RefCounted.hpp"
 #include "../Move.hpp"
 #include "../Wrapper.hpp"
 #include "../Memory/MemoryPointer.hpp"

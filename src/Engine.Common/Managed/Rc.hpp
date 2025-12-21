@@ -2,10 +2,10 @@
 
 #include "../Concurrent/SharedMemoryReference.hpp"
 
-#include "RefCounted.hpp"
-#include "RefCountedIntrusive.hpp"
 #include "AtomicRefCounted.hpp"
 #include "AtomicRefCountedIntrusive.hpp"
+#include "RefCounted.hpp"
+#include "RefCountedIntrusive.hpp"
 
 namespace hg {
 	/**
