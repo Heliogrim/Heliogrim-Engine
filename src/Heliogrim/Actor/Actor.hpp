@@ -1,17 +1,19 @@
 #pragma once
 
+#include <Engine.ACS/ActorModule.hpp>
 #include <Engine.ACS/Traits.hpp>
 #include <Engine.Common/Optional.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/CompactArray.hpp>
 #include <Engine.Common/Collection/Set.hpp>
-#include <Engine.Common/Math/Transform.hpp>
-#include <Engine.Reflect/Cast.hpp>
+#include <Engine.Core/Engine.hpp>
+#include <Engine.Reflect/IsType.hpp>
 #include <Engine.Reflect/Reflect.hpp>
 #include <Engine.Reflect/Inherit/InheritBase.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 
+#include "../ActorInitializer.hpp"
 #include "../Async/Future.hpp"
 #include "../Async/Traits.hpp"
 
@@ -19,8 +21,8 @@ namespace hg {
 	/**
 	 * Forward Declaration
 	 */
+	struct CachedActorPointer;
 	class HierarchyComponent;
-	class ActorInitializer;
 	struct SerializedActor;
 
 	class IComponentRegisterContext;
@@ -55,7 +57,7 @@ namespace hg {
 		 */
 		Actor(cref<ActorInitializer> initializer_) noexcept;
 
-		Actor(cref<this_type>) = delete;
+		Actor (cref<this_type>) = delete;
 
 		Actor(mref<this_type>) noexcept = delete;
 
@@ -121,7 +123,86 @@ namespace hg {
 			}
 		}
 
+		void scheduleComponentRemoval(mref<ptr<HierarchyComponent>> component_);
+
+		void scheduleComponentRelease(mref<ptr<LogicComponent>> component_) const;
+
 	public:
+		struct AddComponentOptions {
+			bool autoRegister : 1 = true;
+			Opt<ref<HierarchyComponent>> parent;
+		};
+
+		template <IsConstructibleComponent Component_, typename Arg0_, typename... Args_>
+			requires IsConstructibleComponent < Component_
+
+		,
+		Arg0_&&
+		,
+		Args_&&
+		...
+		>
+		Opt<ref<Component_>> addComponent(_In_ mref<AddComponentOptions> options_, Arg0_&& arg0_, Args_&&... args_) {
+
+			// TODO: Rework
+			auto initializer = ActorInitializer { *engine::Engine::getEngine()->getActors()->getRegistry() };
+			return Some<ref<Component_>>(
+				*initializer.createComponent<Component_>(
+					*this,
+					::hg::move(options_),
+					std::forward<Arg0_>(arg0_),
+					std::forward<Args_>(args_)...
+				)
+			);
+		}
+
+		template <IsConstructibleComponent Component_>
+		Opt<ref<Component_>> addComponent(_In_ mref<AddComponentOptions> options_) {
+
+			// TODO: Rework
+			auto initializer = ActorInitializer { *engine::Engine::getEngine()->getActors()->getRegistry() };
+			return Some<ref<Component_>>(*initializer.createComponent < Component_ > (*this, ::hg::move(options_)));
+		}
+
+		template <IsConstructibleComponent Component_, typename Arg0_, typename... Args_>
+			requires (not
+		std::is_same_v<::hg::meta::peeled_t<Arg0_>, AddComponentOptions>
+		)
+		&&
+		IsConstructibleComponent
+		<
+		Component_
+		,
+		Arg0_&&
+		,
+		Args_&&
+		...
+		>
+		Opt<ref<Component_>> addComponent(Arg0_&& arg0_, Args_&&... args_) {
+			if (_rootComponent.is_null()) {
+				return addComponent<Component_, Arg0_, Args_...>(
+					{ .parent = None },
+					::hg::forward<Arg0_>(arg0_),
+					hg::forward<Args_>(args_)...
+				);
+			}
+			return addComponent<Component_, Arg0_, Args_...>(
+				{ .parent = _rootComponent },
+				::hg::forward<Arg0_>(arg0_),
+				hg::forward<Args_>(args_)...
+			);
+		}
+
+		template <IsConstructibleComponent Component_>
+		Opt<ref<Component_>> addComponent() {
+			if (_rootComponent.is_null()) {
+				return addComponent<Component_>({ .parent = None });
+			}
+			return addComponent<Component_>({ .parent = _rootComponent });
+		}
+
+		void addComponent(_In_ mref<VolatileComponent<HierarchyComponent>> component_, _In_ Opt<ref<const AddComponentOptions>> options_);
+
 		[[nodiscard]] cref<CompactSet<ptr<HierarchyComponent>>> getComponents() const noexcept;
 
 		template <typename Selector_>
@@ -130,7 +211,7 @@ namespace hg {
 			eachComponent(
 				[&](const ptr<HierarchyComponent> component_) {
 					if (selector_(component_)) {
-						result.push_back(component_);
+						result.emplace_back(component_);
 					}
 				}
 			);
@@ -138,7 +219,94 @@ namespace hg {
 			return result;
 		}
 
-		void addComponent(_In_ ptr<HierarchyComponent> component_);
+		template <IsConstructibleComponent Component_>
+		[[nodiscard]] AutoArray<VolatileComponent<HierarchyComponent>> removeComponents(ref<Component_> component_) {
+
+			auto result = AutoArray<VolatileComponent<HierarchyComponent>> {
+				VolatileComponent < Component_ > { std::addressof(component_) }
+			};
+
+			for (auto parentIndex = 0u, erasedIndex = 0u; parentIndex != result.size(); ++parentIndex) {
+
+				const auto* const parent = result[parentIndex].get();
+				for (auto* component : _components) {
+					if (component->getParentComponent() == parent) {
+						result.emplace_back(VolatileComponent<> { ::hg::move(component) });
+					}
+				}
+
+				while (erasedIndex != result.size()) {
+					_components.erase(result[erasedIndex].get());
+					++erasedIndex;
+				}
+			}
+
+			/**/
+
+			if (_universe.has_value()) {
+				for (const auto& removal : result) {
+					scheduleComponentRemoval(removal.get());
+				}
+			}
+
+			return result;
+		}
+
+		template <IsConstructibleComponent Component_>
+		[[nodiscard]] AutoArray<VolatileComponent<Component_>> removeComponents() {
+			::hg::todo_panic();
+
+			#if 0
+			const auto removal = selectComponents(
+				[](ptr<const HierarchyComponent> component_) {
+					return IsType < Component_ > (*component_);
+				}
+			);
+
+			/**/
+
+			auto result = AutoArray<VolatileComponent<Component_>> {};
+			result.reserve(removal.size());
+
+			for (auto* const component : removal) {
+				result.emplace_back(
+					removeComponent < Component_ > (static_cast<ref<Component_>>(*component))
+				);
+			}
+
+			/**/
+
+			return result;
+			#endif
+		}
+
+		template <IsConstructibleComponent Component_>
+		void destroyComponent(ref<Component_> component_) {
+			auto* const address = std::addressof(component_);
+			_components.erase(address);
+
+			/**/
+
+			for (auto measured = _components.size() - 1; measured != _components.size(); measured = _components.size()) {
+				const auto nextIt = std::ranges::find(
+					_components.values(),
+					address,
+					[](const auto* const component_) { return component_->getParentComponent(); }
+				);
+
+				if (nextIt != _components.end()) {
+					destroyComponent(**nextIt);
+				}
+			}
+
+			/**/
+
+			if (_universe.has_value()) {
+				scheduleComponentRemoval(clone(address));
+			}
+
+			scheduleComponentRelease(address);
+		}
 
 	public:
 		/**
@@ -147,9 +315,12 @@ namespace hg {
 		 * @author Julius
 		 * @date 01.12.2021
 		 *
+		 * @param universe_ The universe where is actor will be committed to.
 		 * @param context_ The context where to register components.
 		 */
-		void registerComponents(_Inout_ ref<IComponentRegisterContext> context_);
+		void registerComponents(_In_ ref<engine::core::Universe> universe_, _Inout_ ref<IComponentRegisterContext> context_);
+
+		void unregisterComponents(_Inout_ ref<IComponentRegisterContext> context_);
 	};
 
 	/**/
