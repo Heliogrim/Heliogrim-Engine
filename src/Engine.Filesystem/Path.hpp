@@ -234,4 +234,10 @@ namespace hg::engine::fs {
 			return std::filesystem::path { std::move(_value) };
 		}
 	};
+
+	/**/
+
+	[[nodiscard]] constexpr Path normalized_path_from(auto&& maybeDenormalized_) {
+		return Path { std::filesystem::path { ::hg::forward<decltype(maybeDenormalized_)>(maybeDenormalized_) }.lexically_normal() };
+	}
 }
