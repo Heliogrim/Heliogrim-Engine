@@ -22,7 +22,8 @@ using namespace hg;
 
 Actor::Actor(cref<ActorInitializer> initializer_) noexcept :
 	_guid(initializer_._guid),
-	_rootComponent(nullptr),
+	_universe(None),
+	_rootComponent(None),
 	_components() {}
 
 Actor::~Actor() noexcept = default;
@@ -35,7 +36,7 @@ void Actor::unsafe_set_guid(cref<ActorGuid> guid_) {
 	_guid = guid_;
 }
 
-ptr<HierarchyComponent> Actor::getRootComponent() const noexcept {
+Opt<ref<HierarchyComponent>> Actor::getRootComponent() const noexcept {
 	return _rootComponent;
 }
 

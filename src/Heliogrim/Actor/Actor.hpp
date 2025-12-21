@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Engine.ACS/Traits.hpp>
+#include <Engine.Common/Optional.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/CompactArray.hpp>
@@ -100,10 +101,11 @@ namespace hg {
 		void unsafe_set_guid(cref<ActorGuid> guid_);
 
 	protected:
-		ptr<HierarchyComponent> _rootComponent;
+		Opt<ref<engine::core::Universe>> _universe;
+		Opt<ref<HierarchyComponent>> _rootComponent;
 
 	public:
-		[[nodiscard]] ptr<HierarchyComponent> getRootComponent() const noexcept;
+		[[nodiscard]] Opt<ref<HierarchyComponent>> getRootComponent() const noexcept;
 
 	private:
 		CompactSet<ptr<HierarchyComponent>> _components;
