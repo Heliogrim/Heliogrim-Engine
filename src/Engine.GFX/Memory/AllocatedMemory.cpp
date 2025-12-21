@@ -45,9 +45,9 @@ AllocatedMemory::~AllocatedMemory() {
 	}
 
 	#ifdef _DEBUG
-    if (parent || allocator) {
-        assert(!vkMemory && "Possible memory leak due to missing hierarchical release report.");
-    }
+	if (parent || allocator) {
+		assert(!vkMemory && "Possible memory leak due to missing hierarchical release report.");
+	}
 	#else
 	if (vkMemory && (parent || allocator)) {
 		throw std::runtime_error("Possible memory leak due to missing hierarchical release report.");
@@ -79,7 +79,7 @@ void AllocatedMemory::flush(const u64 size_, const u64 offset_) {
 	const auto mapSize { (size_ == VK_WHOLE_SIZE && offset_ == 0 && offset != 0) ? size : size_ };
 
 	#ifdef _DEBUG
-    assert((mapSize == VK_WHOLE_SIZE && (offset_ + offset) == 0) || mapSize <= (size - offset_));
+	assert((mapSize == VK_WHOLE_SIZE && (offset_ + offset) == 0) || mapSize <= (size - offset_));
 	#endif
 
 	const vk::MappedMemoryRange range { vkMemory, offset + offset_, mapSize };
@@ -91,7 +91,7 @@ MemoryMapping AllocatedMemory::map(const u64 size_, const u64 offset_) {
 	const auto mapSize { (size_ == VK_WHOLE_SIZE && offset_ == 0 && offset != 0) ? size : size_ };
 
 	#ifdef _DEBUG
-    assert((mapSize == VK_WHOLE_SIZE && (offset_ + offset) == 0) || mapSize <= (size - offset_));
+	assert((mapSize == VK_WHOLE_SIZE && (offset_ + offset) == 0) || mapSize <= (size - offset_));
 	#endif
 
 	mapping = vkDevice.mapMemory(vkMemory, offset + offset_, mapSize, vk::MemoryMapFlags {});

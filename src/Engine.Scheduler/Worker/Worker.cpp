@@ -47,7 +47,7 @@ bool Worker::start() {
 		return false;
 	}
 
-	if (_mask & task::TaskMask::eCritical) {
+	if (_mask& task::TaskMask::eCritical) {
 		// Warning: Set thread priority NEVER to eTimeCritical ... Breakdown will be guaranteed
 		// _thread.setPriority(eTimeCritical);
 		_thread.setPriority(eHigh);
@@ -101,7 +101,7 @@ void Worker::handle(void* args_) {
 	/**
 	 *
 	 */
-	Worker* worker { static_cast<Worker*>(args_) };
+	Worker * worker { static_cast<Worker*>(args_) };
 
 	/**
 	 * Convert this thread to fiber
@@ -139,8 +139,7 @@ void Worker::handle(void* args_) {
 	volatile bool interrupt = false;
 	worker->setInterruptPtr(&interrupt);
 
-	while (!interrupt) [[likely]]
-	{
+	while (!interrupt) [[likely]] {
 		/**
 		 * Acquire next task or nullptr
 		 */

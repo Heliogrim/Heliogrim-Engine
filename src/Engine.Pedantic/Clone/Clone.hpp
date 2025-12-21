@@ -1,6 +1,5 @@
 #pragma once
 
-#include <concepts>
 #include <type_traits>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Wrapper.hpp>

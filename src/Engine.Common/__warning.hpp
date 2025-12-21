@@ -2,7 +2,7 @@
 
 /* Warning: General tool which will suppress all warnings...*/
 
-#if __clang__
+#if defined(__clang__)
 #define START_SUPPRESS_WARNINGS \
 _Pragma("clang diagnostic push") \
 _Pragma("clang diagnostic ignored \"-Wall\"") \
@@ -14,7 +14,7 @@ _Pragma("clang diagnostic pop")
 __pragma(warning(push, 0))
 #define STOP_SUPPRESS_WARNINGS \
 __pragma(warning(pop))
-#elif __GNUC__
+#elif defined(__GNUC__)
 #define START_SUPPRESS_WARNINGS \
 _Pragma("GCC diagnostic push") \
 _Pragma("GCC diagnostic ignored \"-Wall\"") \
@@ -29,7 +29,7 @@ _Pragma("GCC diagnostic pop")
 
 /* Purposely bound warning helpers... */
 
-#if __clang__
+#if defined(__clang__)
 #define BEGIN_REGION_UNCHECKED_LLVL \
 _Pragma("clang diagnostic push") \
 _Pragma("clang diagnostic ignored \"-Wunsafe-buffer-usage\"")
@@ -41,7 +41,7 @@ __pragma(warning(push)) \
 __pragma(warning(disable: 26481))
 #define END_REGION_UNCHECKED_LLVL \
 __pragma(warning(pop))
-#elif __GNUC__
+#elif defined(__GNUC__)
 // GCC does not allow pragma inside functions, don't care anymore at this point
 #define BEGIN_REGION_UNCHECKED_LLVL
 #define END_REGION_UNCHECKED_LLVL

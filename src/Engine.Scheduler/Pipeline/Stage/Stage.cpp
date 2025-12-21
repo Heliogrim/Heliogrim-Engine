@@ -4,22 +4,22 @@ using namespace hg::engine::scheduler;
 using namespace hg;
 
 Stage::Stage(mref<string> identifier_, const s8 slot_) noexcept :
-    _refCount(1uL),
-    _identifier(std::move(identifier_)),
-    _slot(slot_) {}
+	_refCount(1uL),
+	_identifier(std::move(identifier_)),
+	_slot(slot_) {}
 
 void Stage::incRef() noexcept {
-    ++_refCount;
+	++_refCount;
 }
 
 bool Stage::decRef() noexcept {
-    return (--_refCount) == 0;
+	return (--_refCount) == 0;
 }
 
 cref<string> Stage::getIdentifier() const noexcept {
-    return _identifier;
+	return _identifier;
 }
 
 s8 Stage::getSlot() const noexcept {
-    return _slot;
+	return _slot;
 }

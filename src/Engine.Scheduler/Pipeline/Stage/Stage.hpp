@@ -6,34 +6,34 @@
 #include "StageIdentifier.hpp"
 
 namespace hg::engine::scheduler {
-    class Stage final {
-    public:
-        using this_type = Stage;
+	class Stage final {
+	public:
+		using this_type = Stage;
 
-    public:
-        Stage(mref<StageIdentifier> identifier_, const s8 slot_) noexcept;
+	public:
+		Stage(mref<StageIdentifier> identifier_, const s8 slot_) noexcept;
 
-        Stage(cref<this_type>) = delete;
+		Stage (cref<this_type>) = delete;
 
-        Stage(mref<this_type>) noexcept = delete;
+		Stage(mref<this_type>) noexcept = delete;
 
-        ~Stage() noexcept = default;
+		~Stage() noexcept = default;
 
-    private:
-        u16 _refCount;
+	private:
+		u16 _refCount;
 
-    public:
-        void incRef() noexcept;
+	public:
+		void incRef() noexcept;
 
-        [[nodiscard]] bool decRef() noexcept;
+		[[nodiscard]] bool decRef() noexcept;
 
-    private:
-        const StageIdentifier _identifier;
-        const s8 _slot;
+	private:
+		const StageIdentifier _identifier;
+		const s8 _slot;
 
-    public:
-        [[nodiscard]] cref<StageIdentifier> getIdentifier() const noexcept;
+	public:
+		[[nodiscard]] cref<StageIdentifier> getIdentifier() const noexcept;
 
-        [[nodiscard]] s8 getSlot() const noexcept;
-    };
+		[[nodiscard]] s8 getSlot() const noexcept;
+	};
 }
