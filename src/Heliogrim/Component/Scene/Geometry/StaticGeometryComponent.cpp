@@ -14,6 +14,22 @@ StaticGeometryComponent::StaticGeometryComponent(
 	_staticGeometry(),
 	_instanceMaterials() {}
 
+StaticGeometryComponent::StaticGeometryComponent(
+	mref<ComponentGuid> guid_,
+	mref<CachedActorPointer> owner_,
+	mref<ptr<HierarchyComponent>> parent_,
+	ref<const StaticGeometryAssetHandle> geometry_,
+	ref<const AutoArray<ptr<const GfxMaterialAssetHandle>>> materials_
+) :
+	InheritMeta(std::move(guid_), ComponentTypeId { typeId }, std::move(owner_), std::move(parent_)),
+	_staticGeometry(::hg::move(geometry_)),
+	_instanceMaterials() {
+	for (auto index = 0uLL; index < materials_.size(); ++index) {
+		::hg::assertrt(materials_[index] != nullptr);
+		setInstanceMaterial(index, *materials_[index]);
+	}
+}
+
 ref<const StaticGeometryAssetHandle> StaticGeometryComponent::getStaticGeometry() const noexcept {
 	return _staticGeometry;
 }
