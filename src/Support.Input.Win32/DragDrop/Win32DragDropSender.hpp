@@ -44,15 +44,15 @@ namespace hg::engine::input {
 		std::atomic_uint_fast32_t _useCount;
 
 	public:
-		HRESULT QueryInterface(const IID& riid, void** ppvObject) override;
+		HRESULT QueryInterface(const IID& riid, void** ppvObject_) override;
 
 		ULONG AddRef() override;
 
 		ULONG Release() override;
 
 	public:
-		HRESULT QueryContinueDrag(BOOL fEscapePressed, DWORD grfKeyState) override;
+		HRESULT QueryContinueDrag(BOOL fEscapePressed_, DWORD grfKeyState_) override;
 
-		HRESULT GiveFeedback(DWORD dwEffect) override;
+		HRESULT GiveFeedback(DWORD dwEffect_) override;
 	};
 }
