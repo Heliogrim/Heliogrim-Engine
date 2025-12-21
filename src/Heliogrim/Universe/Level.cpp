@@ -2,13 +2,14 @@
 
 #include <Engine.Asserts/Todo.hpp>
 #include <Engine.Assets.Type/Universe/LevelAsset.hpp>
+#include <Engine.Async/Await/Promise.hpp>
+#include <Engine.Common/Discard.hpp>
+#include <Engine.Common/Move.hpp>
+#include <Engine.Core/Universe.hpp>
 #include <Engine.Level/Level.hpp>
 
 #include "Universe.hpp"
-#include "Asset/UniverseAssetHandles.hpp"
-#include "Engine.Async/Await/Promise.hpp"
-#include "Engine.Common/Move.hpp"
-#include "Engine.Core/Universe.hpp"
+#include "../Asset/UniverseAssetHandles.hpp"
 
 using namespace hg;
 
@@ -36,19 +37,18 @@ cref<decltype(Level::_internal)> Level::unwrap() const noexcept {
 }
 
 ptr<Actor> Level::addActor(mref<VolatileActor<>> actor_) {
-	auto actor = ::hg::move(actor_).release();
-	_internal->addActor(actor);
-	return actor;
+	auto* const ref = actor_.get();
+	_internal->addActor(::hg::move(actor_));
+	return ref;
 }
 
-VolatileActor<> Level::removeActor(ptr<Actor> actor_) {
-	_internal->removeActor(actor_);
-	return VolatileActor<> { ::hg::move(actor_) };
+Opt<VolatileActor<>> Level::removeActor(ptr<Actor> actor_) {
+	return _internal->removeActor(actor_);
 }
 
 void Level::dropActor(mref<ptr<Actor>> actor_) {
-	_internal->removeActor(actor_);
-	VolatileActor<>::destroy(::hg::move(actor_));
+	auto removed = _internal->removeActor(actor_);
+	::hg::discard(removed);
 }
 
 Future<Level> hg::CreateLevel() noexcept {

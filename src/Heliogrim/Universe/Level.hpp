@@ -84,7 +84,7 @@ namespace hg {
 		 *
 		 * @returns A volatile actor handle of the removed actor.
 		 */
-		VolatileActor<> removeActor(_In_ ptr<Actor> actor_);
+		Opt<VolatileActor<>> removeActor(_In_ ptr<Actor> actor_);
 
 		/**
 		 * Drops an actor instance from this level
