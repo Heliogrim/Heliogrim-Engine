@@ -163,17 +163,17 @@ void StaticGeometryModel::capture(nmpt<render::MeshCaptureInterface> mci_) const
 	/**/
 
 	#if FALSE
-    for (const auto& material : _overrideMaterials) {
+	for (const auto& material : _overrideMaterials) {
 
-        const auto guard = material->acquire(resource::ResourceUsageFlag::eRead);
-        cmd_->bindMaterial(MaterialIdentifier {}, guard.imm());
-    }
+		const auto guard = material->acquire(resource::ResourceUsageFlag::eRead);
+		cmd_->bindMaterial(MaterialIdentifier {}, guard.imm());
+	}
 
-    const auto meshGuard = _staticGeometryResource->acquire(resource::ResourceUsageFlag::eRead);
-    cmd_->bindStaticMesh(meshGuard.imm());
+	const auto meshGuard = _staticGeometryResource->acquire(resource::ResourceUsageFlag::eRead);
+	cmd_->bindStaticMesh(meshGuard.imm());
 
-    cmd_->bindStaticMeshInstance(nullptr/*{ trans * rotation * scale }*/);
-    cmd_->drawStaticMeshIdx(1uL, 0uL, meshGuard->indices()->size(), 0uL);
+	cmd_->bindStaticMeshInstance(nullptr/*{ trans * rotation * scale }*/);
+	cmd_->drawStaticMeshIdx(1uL, 0uL, meshGuard->indices()->size(), 0uL);
 	#endif
 }
 
