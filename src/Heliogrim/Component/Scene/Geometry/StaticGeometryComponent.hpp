@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Engine.Common/Optional.hpp>
-#include <Engine.Common/Collection/CompactArray.hpp>
+#include <Engine.Common/Collection/AutoArray.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 
 #include "../ModelComponent.hpp"
@@ -19,10 +19,14 @@ namespace hg {
 		using this_type = StaticGeometryComponent;
 		using underlying_type = ModelComponent;
 
-		constexpr static component_type_id typeId { "StaticGeometryComponent"_typeId };
+		constexpr static ComponentTypeId typeId { "StaticGeometryComponent"_typeId };
 
 	public:
-		StaticGeometryComponent(mref<CachedActorPointer> owner_, mref<ptr<HierarchyComponent>> parent_);
+		StaticGeometryComponent(
+			mref<ComponentGuid> guid_,
+			mref<CachedActorPointer> owner_,
+			mref<ptr<HierarchyComponent>> parent_
+		);
 
 		~StaticGeometryComponent() override = default;
 

@@ -8,7 +8,7 @@ namespace hg {
 		using this_type = SkinnedGeometryComponent;
 		using underlying_type = SkeletalGeometryComponent;
 
-		constexpr static component_type_id typeId { "SkinnedGeometryComponent"_typeId };
+		constexpr static ComponentTypeId typeId { "SkinnedGeometryComponent"_typeId };
 
 	public:
 	};

@@ -14,10 +14,10 @@ namespace hg {
 	public:
 		using this_type = PointLightComponent;
 
-		constexpr static component_type_id typeId { "PointLightComponent"_typeId };
+		constexpr static ComponentTypeId typeId { "PointLightComponent"_typeId };
 
 	public:
-		PointLightComponent(mref<CachedActorPointer> owner_, mref<ptr<HierarchyComponent>> parent_);
+		PointLightComponent(mref<ComponentGuid> guid_, mref<CachedActorPointer> owner_, mref<ptr<HierarchyComponent>> parent_);
 
 		~PointLightComponent() override;
 

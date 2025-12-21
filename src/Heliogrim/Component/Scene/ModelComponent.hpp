@@ -11,7 +11,8 @@ namespace hg {
 
 	public:
 		ModelComponent(
-			mref<component_type_id> typeId_,
+			mref<ComponentGuid> guid_,
+			mref<ComponentTypeId> typeId_,
 			mref<CachedActorPointer> owner_,
 			mref<ptr<HierarchyComponent>> parent_
 		);

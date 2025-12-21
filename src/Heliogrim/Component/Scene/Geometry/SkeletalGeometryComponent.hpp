@@ -9,10 +9,10 @@ namespace hg {
 		using this_type = SkeletalGeometryComponent;
 		using underlying_type = ModelComponent;
 
-		constexpr static component_type_id typeId { "SkeletalGeometryComponent"_typeId };
+		constexpr static ComponentTypeId typeId { "SkeletalGeometryComponent"_typeId };
 
 	public:
-		SkeletalGeometryComponent(mref<CachedActorPointer> owner_, mref<ptr<HierarchyComponent>> parent_);
+		SkeletalGeometryComponent(mref<ComponentGuid> guid_, mref<CachedActorPointer> owner_, mref<ptr<HierarchyComponent>> parent_);
 
 		~SkeletalGeometryComponent() override = default;
 	};

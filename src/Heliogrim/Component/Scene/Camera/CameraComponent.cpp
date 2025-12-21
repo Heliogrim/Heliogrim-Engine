@@ -1,9 +1,11 @@
 #include "CameraComponent.hpp"
 
+#include <Engine.Common/Move.hpp>
+
 using namespace hg;
 
-CameraComponent::CameraComponent(mref<CachedActorPointer> owner_, mref<ptr<HierarchyComponent>> parent_) :
-	InheritMeta(component_type_id { typeId }, std::move(owner_), std::move(parent_)),
+CameraComponent::CameraComponent(mref<ComponentGuid> guid_, mref<CachedActorPointer> owner_, mref<ptr<HierarchyComponent>> parent_) :
+	InheritMeta(::hg::move(guid_), ComponentTypeId { typeId }, std::move(owner_), std::move(parent_)),
 	_fov(70.F),
 	_aspectRation(16.F / 9.F),
 	_lockedAspect(false),
