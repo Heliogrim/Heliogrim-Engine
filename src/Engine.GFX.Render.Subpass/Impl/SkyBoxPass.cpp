@@ -136,8 +136,7 @@ void SkyBoxPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
 	if (
 		not
-			_framebuffer.empty() &&
-			(
+			_framebuffer.empty() && (
 				_framebuffer->attachments().front() != sceneColorTex ||
 				static_cast<ptr<void>>(_framebuffer->attachments().back().get()) != sceneDepthRes.get()
 			)
