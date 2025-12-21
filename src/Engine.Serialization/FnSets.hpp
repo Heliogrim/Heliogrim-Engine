@@ -23,7 +23,7 @@ namespace hg::engine::serialization {
 	struct ComponentFnSet {
 		std::function<void(cref<LogicComponent>, mref<StructScopedSlot>)> serialize;
 
-		std::function<ptr<LogicComponent>(
+		std::function<VolatileComponent<>(
 			cref<RecordScopedSlot>,
 			nmpt<acs::Registry>,
 			ref<Actor>,
@@ -97,7 +97,7 @@ namespace hg::engine::serialization {
 					nmpt<acs::Registry> allocator_,
 					ref<Actor> owner_,
 					nmpt<HierarchyComponent> maybeParent_
-				) -> ptr<LogicComponent> {
+				) -> VolatileComponent<> {
 						return serialization::access::Structure<ComponentType_>::template deserialize(
 							slot_,
 							allocator_,
