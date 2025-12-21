@@ -4,8 +4,10 @@
 #include <Engine.Common/Collection/DenseMap.hpp>
 #include <Engine.Reflect/TypeId.hpp>
 #include <Engine.Reflect/Inherit/Concept.hpp>
+#include <Heliogrim/Actor/ActorGuid.hpp>
 
 #include "ActorPoolWrapper.hpp"
+#include "ComponentGuid.hpp"
 #include "ComponentTypeId.hpp"
 #include "Pool.hpp"
 #include "PoolWrapper.hpp"
@@ -27,7 +29,15 @@ namespace hg::engine::acs {
 		using size_type = size_t;
 
 		template <typename PooledType_>
-		using pool_type = Pool<ActorGuid, PooledType_, invalid_actor_guid>;
+		using ComponentPool = Pool<ComponentGuid, PooledType_, invalid_component_guid>;
+
+		using ComponentPoolWrapperBase = PoolWrapperBase<ComponentGuid>;
+
+		template <typename PooledType_>
+		using ComponentPoolWrapper = PoolWrapper<PooledType_, ComponentGuid, invalid_component_guid>;
+
+		template <typename PooledType_>
+		using ActorPool = Pool<ActorGuid, PooledType_, invalid_actor_guid>;
 
 	public:
 		/**
@@ -38,6 +48,11 @@ namespace hg::engine::acs {
 		 */
 		~Registry();
 
+		#pragma region Component Pooling
+
+	private:
+		DenseMap<type_id, ptr<ComponentPoolWrapperBase>> _pools;
+
 	public:
 		/**
 		 * Pool Operations
@@ -46,24 +61,24 @@ namespace hg::engine::acs {
 		/**
 		 * Gets or create pool
 		 *
-		 * @tparam ValueType Type of the value to get a pool of.
+		 * @tparam ComponentType_ Type of the value to get a pool of.
 		 *
-		 * @returns The or create pool.
+		 * @returns The existing or create pool.
 		 */
-		template <typename ValueType>
-		pool_type<ValueType>& getOrCreatePool() {
+		template <typename ComponentType_>
+		[[nodiscard]] ComponentPool<ComponentType_>& getOrCreateComponentPool() {
 
-			using pool_type = pool_type<ValueType>;
-			using wrapper_type = PoolWrapper<ValueType>;
+			using pool_type = ComponentPool<ComponentType_>;
+			using wrapper_type = ComponentPoolWrapper<ComponentType_>;
 
 			auto ptr = &pool_type::getOrCreate();
 
 			// Temporary
-			constexpr auto typeId = refl::TypeId<ValueType>();
+			constexpr auto typeId = refl::TypeId<ComponentType_>();
 			auto mapped = _pools[typeId];
 
 			if (mapped == nullptr) {
-				_pools[typeId] = new PoolWrapper<ValueType>(ptr);
+				_pools[typeId] = new wrapper_type(ptr);
 			}
 
 			return *ptr;
@@ -72,14 +87,14 @@ namespace hg::engine::acs {
 		/**
 		 * Gets the pool
 		 *
-		 * @tparam ValueType Type of the value to get a pool of.
+		 * @tparam ComponentType_ Type of the value to get a pool of.
 		 *
 		 * @returns A reference to a pool of value type.
 		 */
-		template <typename ValueType>
-		pool_type<ValueType>& pool() {
+		template <typename ComponentType_>
+		[[nodiscard]] ComponentPool<ComponentType_>& pool() {
 
-			using pool_type = pool_type<ValueType>;
+			using pool_type = ComponentPool<ComponentType_>;
 			auto* ptr = pool_type::get();
 
 			return *ptr;
@@ -89,69 +104,28 @@ namespace hg::engine::acs {
 		/**
 		 * Unsafe get of a value reference
 		 *
-		 * @tparam ValueType Type of the value.
+		 * @tparam ComponentType_ Type of the value.
 		 * @param  key_ The key.
 		 *
 		 * @returns A reference to a value.
 		 */
-		template <typename ValueType>
-		ValueType& unsafe_get(const ActorGuid& key_) {
-			return pool<ValueType>().unsafe_get(key_);
-		}
-
-		/**
-		 * Unsafe get of value references
-		 *
-		 * @tparam First_ Type of the first.
-		 * @tparam Second_ Type of the second.
-		 * @tparam Args_ Type of the arguments.
-		 * @param  key_ The key.
-		 *
-		 * @returns A tuple&lt;First_&amp;,Second_&amp;,Args_&amp;...&gt;
-		 */
-		template <typename First_, typename Second_, typename... Args_>
-		std::tuple<First_&, Second_&, Args_&...> unsafe_get(const ActorGuid& key_) {
-
-			using pool_type = pool_type<First_>;
-
-			const typename pool_type::hash_type hash = typename pool_type::assign_hasher()(key_);
-			return std::forward_as_tuple(get<First_>(key_, hash), get<Second_>(key_, hash), get<Args_>(key_, hash)...);
+		template <typename ComponentType_>
+		ComponentType_& unsafe_get(const ComponentGuid& key_) {
+			return pool<ComponentType_>().unsafe_get(key_);
 		}
 
 		/**
 		 * Gets a value pointer using the given key
 		 *
-		 * @tparam ValueType Type of the value to get.
+		 * @tparam ComponentType_ Type of the value to get.
 		 * @param  key_ The key.
 		 *
 		 * @returns Null if it fails, else a pointer to a value.
 		 */
-		template <typename ValueType>
-		ValueType* get(const ActorGuid& key_) {
-			return pool<ValueType>().get(key_);
+		template <typename ComponentType_>
+		ComponentType_* get(const ComponentGuid& key_) {
+			return pool<ComponentType_>().get(key_);
 		}
-
-		/**
-		 * Gets a tuple&lt; first , second ,args ...&gt; using the given key
-		 *
-		 * @tparam First_ Type of the first.
-		 * @tparam Second_ Type of the second.
-		 * @tparam Args_ Type of the arguments.
-		 * @param  key_ The key.
-		 *
-		 * @returns A tuple&lt;First_,Second_,args_...&gt;
-		 */
-		template <typename First_, typename Second_, typename... Args_>
-		std::tuple<First_*, Second_*, Args_*...> get(const ActorGuid& key_) {
-
-			using pool_type = pool_type<First_>;
-
-			const typename pool_type::hash_type hash = typename pool_type::assign_hasher()(key_);
-			return std::forward_as_tuple(get<First_>(key_, hash), get<Second_>(key_, hash), get<Args_>(key_, hash)...);
-		}
-
-	private:
-		DenseMap<type_id, ptr<PoolWrapperBase>> _pools;
 
 	public:
 		template <class ValueType_, typename... Args_>
@@ -171,18 +145,21 @@ namespace hg::engine::acs {
 			releaseActorComponent(guid_, value_->getTypeId());
 		}
 
+		#pragma endregion
+		#pragma region Actor Pooling
+
 	private:
 		DenseMap<type_id, ptr<ActorPoolWrapperBase>> _actorPools;
 
 	public:
 		template <typename ActorType_>
-		const ptr<pool_type<ActorType_>> getOrCreateActorPool() {
+		const ptr<ActorPool<ActorType_>> getOrCreateActorPool() {
 
-			using pool_type = pool_type<ActorType_>;
+			using pool_type = ActorPool<ActorType_>;
 			using wrapper_type = ActorPoolWrapper<ActorType_>;
 
 			// TODO: Change static lifetime to scoped one
-			auto* const pool { &pool_type::getOrCreate() };
+			auto* const pool = &pool_type::getOrCreate();
 
 			constexpr auto typeId = refl::TypeId<ActorType_>();
 			const auto* const mapped { _actorPools[typeId] };
