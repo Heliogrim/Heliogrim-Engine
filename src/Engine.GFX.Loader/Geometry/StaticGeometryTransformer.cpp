@@ -208,12 +208,12 @@ static smr<StaticGeometryResource> loadWithAssimp(
 		vk::BufferMemoryBarrier {
 			vk::AccessFlags {}, vk::AccessFlagBits::eTransferWrite,
 			VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED,
-			indexBuffer->owner()->vkBuffer(), indexBuffer->offset(), indexBuffer->size()
+			indexBuffer->owner().vkBuffer(), indexBuffer->offset(), indexBuffer->size()
 		},
 		vk::BufferMemoryBarrier {
 			vk::AccessFlags {}, vk::AccessFlagBits::eTransferWrite,
 			VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED,
-			vertexBuffer->owner()->vkBuffer(), vertexBuffer->offset(), vertexBuffer->size()
+			vertexBuffer->owner().vkBuffer(), vertexBuffer->offset(), vertexBuffer->size()
 		}
 	};
 	cmd.vkCommandBuffer().pipelineBarrier(
@@ -232,7 +232,7 @@ static smr<StaticGeometryResource> loadWithAssimp(
 
 	{
 		const auto indexSize = sizeof(u32) * indices.size();
-		const auto* const firstPage = indexBuffer->pages().front();
+		const auto firstPage = indexBuffer->pages().front();
 		const auto alignment = firstPage->memory()->allocated()->layout.align;
 
 		const auto required = (indexSize / alignment) + ((indexSize % alignment) ? 1uLL : 0uLL);
@@ -261,7 +261,7 @@ static smr<StaticGeometryResource> loadWithAssimp(
 			auto patchOff = (page * alignment);
 
 			auto cpyData = vk::BufferCopy { patchOff, indexBuffer->offset() + patchOff, patchSize };
-			cmd.vkCommandBuffer().copyBuffer(indexStage.buffer, indexBuffer->owner()->vkBuffer(), 1uL, &cpyData);
+			cmd.vkCommandBuffer().copyBuffer(indexStage.buffer, indexBuffer->owner().vkBuffer(), 1uL, &cpyData);
 		}
 	}
 
@@ -269,7 +269,7 @@ static smr<StaticGeometryResource> loadWithAssimp(
 
 	{
 		const auto vertexSize = sizeof(vertex) * vertices.size();
-		const auto* const firstPage = vertexBuffer->pages().front();
+		const auto firstPage = vertexBuffer->pages().front();
 		const auto alignment = firstPage->memory()->allocated()->layout.align;
 
 		const auto required = (vertexSize / alignment) + ((vertexSize % alignment) ? 1uLL : 0uLL);
@@ -298,7 +298,7 @@ static smr<StaticGeometryResource> loadWithAssimp(
 			auto patchOff = (page * alignment);
 
 			auto cpyData = vk::BufferCopy { patchOff, vertexBuffer->offset() + patchOff, patchSize };
-			cmd.vkCommandBuffer().copyBuffer(vertexStage.buffer, vertexBuffer->owner()->vkBuffer(), 1uL, &cpyData);
+			cmd.vkCommandBuffer().copyBuffer(vertexStage.buffer, vertexBuffer->owner().vkBuffer(), 1uL, &cpyData);
 		}
 	}
 
@@ -308,12 +308,12 @@ static smr<StaticGeometryResource> loadWithAssimp(
 		vk::BufferMemoryBarrier {
 			vk::AccessFlagBits::eTransferWrite, vk::AccessFlagBits::eShaderRead,
 			VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED,
-			indexBuffer->owner()->vkBuffer(), indexBuffer->offset(), indexBuffer->size()
+			indexBuffer->owner().vkBuffer(), indexBuffer->offset(), indexBuffer->size()
 		},
 		vk::BufferMemoryBarrier {
 			vk::AccessFlagBits::eTransferWrite, vk::AccessFlagBits::eShaderRead,
 			VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED,
-			vertexBuffer->owner()->vkBuffer(), vertexBuffer->offset(), vertexBuffer->size()
+			vertexBuffer->owner().vkBuffer(), vertexBuffer->offset(), vertexBuffer->size()
 		}
 	};
 	cmd.vkCommandBuffer().pipelineBarrier(
