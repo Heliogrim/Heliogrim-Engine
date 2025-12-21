@@ -79,7 +79,6 @@ set(DEFAULT_LIBRARIES
 		${PROJECT_NAME}::External-MachineIndependent
 		${PROJECT_NAME}::External-OSDependent
 		${PROJECT_NAME}::External-SPIRV
-		${PROJECT_NAME}::External-SPVRemapper
 		${PROJECT_NAME}::External-vulkan-loader
 )
 
