@@ -11,6 +11,13 @@ constexpr static auto level_root_bounding = ::hg::math::Bounding { math::vec3_ze
 
 /**/
 
+Level::~Level() {
+	for (const auto actor : _actors) {
+		VolatileActor<>::destroy(actor);
+	}
+	_actors.clear();
+}
+
 bool Level::isRootLike() const noexcept {
 	return _bounding.center() == level_root_bounding.center() &&
 		_bounding.extent() == level_root_bounding.extent();
@@ -24,16 +31,20 @@ void Level::setBounding(cref<math::Bounding> bounding_) noexcept {
 	_bounding = bounding_;
 }
 
-void Level::addActor(mref<nmpt<Actor>> actor_) {
-	std::ignore = _actors.emplace(std::move(actor_));
+void Level::addActor(mref<VolatileActor<>> actor_) {
+	_actors.emplace(actor_.release());
 }
 
-std::span<const nmpt<Actor>> Level::getActors() const noexcept {
+std::span<const owner_ptr<Actor>> Level::getActors() const noexcept {
 	return std::span { _actors.values() };
 }
 
-void Level::removeActor(const nmpt<Actor> actor_) {
-	std::ignore = _actors.erase(actor_);
+Opt<VolatileActor<>> Level::removeActor(const nmpt<Actor> actor_) {
+	if (not _actors.contains(actor_.get())) [[unlikely]] {
+		return None;
+	}
+	_actors.erase(actor_.get());
+	return Some<VolatileActor<>>(actor_.get());
 }
 
 Arci<Level> engine::core::make_root_like_level() {
