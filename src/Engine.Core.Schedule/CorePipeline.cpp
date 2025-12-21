@@ -1,11 +1,11 @@
 #include "CorePipeline.hpp"
 
+#include <Engine.ACS.Schedule/ActorPipeline.hpp>
 #include <Engine.Common/Make.hpp>
-#include <Engine.Input.Schedule/InputPipeline.hpp>
+#include <Engine.GFX.Schedule/RenderScenePipeline.hpp>
 #include <Engine.Scheduler/Pipeline/Stage/EmptyPipelineStage.hpp>
 
 #include "TickTimingStage.hpp"
-#include "Engine.GFX.Schedule/RenderScenePipeline.hpp"
 
 using namespace hg::engine::core::schedule;
 using namespace hg::engine::scheduler;
@@ -40,6 +40,7 @@ void CorePipeline::declareDependencies(
 	// Attention: Hotfix
 
 	const auto* const renderScene = register_.getStage(gfx::schedule::RenderScenePipeline::RenderTick);
+	const auto* const actorHousekeeping = register_.getStage(acs::schedule::ActorPipeline::ActorHousekeeping);
 
 	/**/
 
@@ -50,7 +51,7 @@ void CorePipeline::declareDependencies(
 
 	collection_.insert(
 		StageDependency {
-			{ renderScene },
+			{ renderScene, actorHousekeeping },
 			this,
 			endStage
 		}
