@@ -4,6 +4,7 @@
 #include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Asserts/Todo.hpp>
 #include <Engine.Common/__macro.hpp>
+#include <Engine.Common/String/Convert.hpp>
 
 #ifdef WIN32
 #include <Engine.Common/stdafx.h>
@@ -149,8 +150,13 @@ bool Thread::setPriority(priority priority_) {
 	return set_priority(_handle->native_handle(), priority_);
 }
 
-void Thread::setName(cstr name_) {
-	throw std::runtime_error("unsupported operation.");
+void Thread::setName([[maybe_unused]] cstr name_) {
+	#ifdef WIN32
+	const auto next = stringToWString(name_);
+	::hg::assertrt(SetThreadDescription(_handle->native_handle(), next.c_str()) == ERROR_SUCCESS);
+	#else
+	throw std::runtime_error("Unsupported operation.");
+	#endif
 }
 
 void self::yield() {
@@ -172,55 +178,3 @@ hg::u64 self::getIdx() noexcept {
 hg::u32 hg::engine::scheduler::thread::getNativeThreadCount() {
 	return std::thread::hardware_concurrency();
 }
-
-#if 0
-#include "Subroutines/Task.hpp"
-
-using namespace clockwork::__internal::scheduler::types;
-
-Thread::Thread(DWORD parent_, TaskQueue& queue_) :
-	_interrupt(false),
-	_queue(queue_),
-	_parentId(parent_) {
-	_thread = std::thread(&Thread::process, this);
-}
-
-Thread::~Thread() {
-	if (_thread.joinable())
-		_thread.join();
-}
-
-void Thread::process() {
-	bool available = false;
-
-#if TRUE
-	MSG msg;
-	PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE);
-
-	AttachThreadInput(GetCurrentThreadId(), _parentId, TRUE);
-#endif
-	
-	while (!_interrupt) {		
-		const subroutine::__ptr__Task task = _queue.front();
-
-		if (task == nullptr)
-			continue;
-
-		if (!task->check()) {
-			_queue.defer(task);
-		}
-
-		(*task)();
-
-		if (task->getType() == subroutine::eRepetitive) {
-			_queue.defer(task);
-		}
-		
-		_queue.pop();
-	}
-}
-
-void Thread::interrupt() {
-	_interrupt = true;
-}
-#endif
