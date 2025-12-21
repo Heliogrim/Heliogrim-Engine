@@ -1,7 +1,6 @@
+#include <Engine.Serialization.Structures/Common/Guid.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
-#include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
-#include <Engine.Serialization.Structures/Symbols.hpp>
 
 #include "CameraActor.hpp"
 
@@ -9,29 +8,34 @@ namespace hg::engine::serialization {
 	template <>
 	void access::Structure<CameraActor>::serialize(
 		const CameraActor& self_,
-		mref<StructScopedSlot> slot_
+		mref<StructScopedSlot> record_
 	) {
 
-		slot_.insertSlot<u64>(Symbols::Type) << CameraActor::typeId.data;
+		insert_named_guid_slot(record_, "camera"sv, self_._cameraComponent->getComponentGuid());
+		insert_named_guid_slot(record_, "mount"sv, self_._mountComponent->getComponentGuid());
 
 		/**/
 
-		access::Structure<Guid>::serialize(self_._guid, slot_.insertStructSlot(Symbols::Guid));
-		access::Structure<CameraComponent>::serialize(*self_._cameraComponent, slot_.insertStructSlot("camera"));
-		access::Structure<HierarchyComponent>::serialize(*self_._mountComponent, slot_.insertStructSlot("mount"));
+		access::Structure<Actor>::serialize(self_, ::hg::move(record_));
 	}
 
 	template <>
-	void access::Structure<CameraActor>::hydrate(cref<StructScopedSlot> slot_, ref<CameraActor> target_) {
+	void access::Structure<CameraActor>::hydrate(cref<StructScopedSlot> record_, ref<CameraActor> target_) {
 
-		type_id checkTypeId {};
-		slot_.getSlot<u64>(Symbols::Type) >> checkTypeId.data;
-		::hg::assertrt(checkTypeId == CameraActor::typeId);
+		access::Structure<Actor>::hydrate(record_, target_);
 
 		/**/
 
-		access::Structure<Guid>::hydrate(slot_.getStructSlot(Symbols::Guid), target_._guid);
-		access::Structure<CameraComponent>::hydrate(slot_.getStructSlot("camera"), *target_._cameraComponent);
-		access::Structure<HierarchyComponent>::hydrate(slot_.getStructSlot("mount"), *target_._mountComponent);
+		const auto cameraComponentGuid = get_named_guid_slot(record_, "camera"sv);
+		const auto mountComponentGuid = get_named_guid_slot(record_, "mount"sv);
+
+		for (auto* const candidate : target_._components.values()) {
+			if (candidate->getComponentGuid() == cameraComponentGuid) {
+				target_._cameraComponent = static_cast<ptr<CameraComponent>>(candidate);
+			}
+			if (candidate->getComponentGuid() == mountComponentGuid) {
+				target_._mountComponent = static_cast<ptr<HierarchyComponent>>(candidate);
+			}
+		}
 	}
 }
