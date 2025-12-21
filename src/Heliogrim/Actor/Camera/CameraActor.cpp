@@ -9,8 +9,8 @@ CameraActor::CameraActor(cref<ActorInitializer> initializer_) :
 	_cameraComponent(nullptr),
 	_mountComponent(nullptr) {
 
-	_mountComponent = initializer_.createComponent<HierarchyComponent>(this);
-	_cameraComponent = initializer_.createSubComponent<CameraComponent>(this, _mountComponent);
+	_mountComponent = initializer_.createComponent<HierarchyComponent>(*this, { .parent = None });
+	_cameraComponent = initializer_.createComponent<CameraComponent>(*this, { .parent = Some(*_mountComponent) });
 }
 
 nmpt<CameraComponent> CameraActor::getCameraComponent() const noexcept {
