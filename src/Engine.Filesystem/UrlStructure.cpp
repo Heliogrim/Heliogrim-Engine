@@ -9,16 +9,16 @@ using namespace hg::engine::fs;
 using namespace hg;
 
 template <>
-void access::Structure<Url>::serialize(const Url& self_, mref<StructScopedSlot> slot_) {
-	slot_.insertSlot<string>("scheme") << self_._scheme;
-	slot_.insertSlot<string>("path") << static_cast<String>(self_._path);
+void access::Structure<Url>::serialize(const Url& self_, mref<StructScopedSlot> record_) {
+	record_.insertSlot<string>("scheme") << self_._scheme;
+	record_.insertSlot<string>("path") << static_cast<String>(self_._path);
 }
 
 template <>
-void access::Structure<Url>::hydrate(cref<StructScopedSlot> slot_, Url& target_) {
-	slot_.getSlot<string>("scheme") >> target_._scheme;
+void access::Structure<Url>::hydrate(cref<StructScopedSlot> record_, Url& target_) {
+	record_.getSlot<string>("scheme") >> target_._scheme;
 
 	string tmp {};
-	slot_.getSlot<string>("path") >> tmp;
+	record_.getSlot<string>("path") >> tmp;
 	target_.setPath(fs::Path { std::move(tmp) });
 }
