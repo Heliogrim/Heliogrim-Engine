@@ -1,5 +1,7 @@
 #include "ScopedStructureSlot.hpp"
 
+#include <Engine.Common/Move.hpp>
+
 using namespace hg::engine::serialization;
 using namespace hg;
 
@@ -7,8 +9,8 @@ ScopedSlot::ScopedSlot(
 	mref<ScopedSlotState> state_,
 	mref<sptr<StructureSlotBase>> slot_
 ) :
-	_state(std::move(state_)),
-	_slot(std::move(slot_)) {}
+	_state(::hg::move(state_)),
+	_slot(::hg::move(slot_)) {}
 
 cref<ScopedSlotState> ScopedSlot::getScopedState() const noexcept {
 	return _state;
