@@ -1,21 +1,24 @@
 #include "HierarchyComponent.hpp"
 
+#include <Engine.Common/Move.hpp>
+
 using namespace hg;
 
 HierarchyComponent::HierarchyComponent(
-	mref<component_type_id> typeId_,
+	mref<ComponentGuid> guid_,
+	mref<ComponentTypeId> typeId_,
 	mref<CachedActorPointer> owner_,
 	mref<ptr<HierarchyComponent>> parent_
 ) :
-	InheritMeta(std::move(typeId_)),
-	_owner(std::move(owner_)),
-	_parent(std::move(parent_)),
+	InheritMeta(::hg::move(guid_), ::hg::move(typeId_)),
+	_owner(::hg::move(owner_)),
+	_parent(::hg::move(parent_)),
 	_localTransform({}, {}, math::vec3 { 1.F }) {}
 
-HierarchyComponent::HierarchyComponent(mref<CachedActorPointer> owner_, mref<ptr<HierarchyComponent>> parent_) :
-	InheritMeta(component_type_id { typeId }),
-	_owner(std::move(owner_)),
-	_parent(std::move(parent_)),
+HierarchyComponent::HierarchyComponent(mref<ComponentGuid> guid_, mref<CachedActorPointer> owner_, mref<ptr<HierarchyComponent>> parent_) :
+	InheritMeta(::hg::move(guid_), ComponentTypeId { typeId }),
+	_owner(::hg::move(owner_)),
+	_parent(::hg::move(parent_)),
 	_localTransform({}, {}, math::vec3 { 1.F }) {}
 
 ptr<Actor> HierarchyComponent::getOwner() const noexcept {

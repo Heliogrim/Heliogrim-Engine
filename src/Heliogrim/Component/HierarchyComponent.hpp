@@ -23,20 +23,21 @@ namespace hg {
 		using this_type = HierarchyComponent;
 		using underlying_type = LogicComponent;
 
-		constexpr static component_type_id typeId { "HierarchyComponent"_typeId };
+		constexpr static ComponentTypeId typeId { "HierarchyComponent"_typeId };
 
 	public:
 		HierarchyComponent(
-			mref<component_type_id> typeId_,
+			mref<ComponentGuid> guid_,
+			mref<ComponentTypeId> typeId_,
 			mref<CachedActorPointer> owner_,
 			mref<ptr<HierarchyComponent>> parent_
 		);
 
-		HierarchyComponent(mref<CachedActorPointer> owner_, mref<ptr<HierarchyComponent>> parent_);
+		HierarchyComponent(mref<ComponentGuid> guid_, mref<CachedActorPointer> owner_, mref<ptr<HierarchyComponent>> parent_);
 
 		HierarchyComponent(mref<HierarchyComponent> other_) noexcept = default;
 
-		HierarchyComponent(cref<HierarchyComponent>) = delete;
+		HierarchyComponent (cref<HierarchyComponent>) = delete;
 
 		~HierarchyComponent() override = default;
 
