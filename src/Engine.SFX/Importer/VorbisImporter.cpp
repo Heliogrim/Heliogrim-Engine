@@ -19,8 +19,9 @@ VorbisImporter::descriptor_type VorbisImporter::descriptor() const noexcept {
 }
 
 VorbisImporter::import_result_type VorbisImporter::import(
-	cref<res::FileTypeId> typeId_,
-	cref<::hg::fs::File> file_
+	ref<const res::FileTypeId> typeId_,
+	ref<const hg::fs::File> file_,
+	mref<res::ImportDestination> destination_
 ) const {
 
 	OggVorbis_File vf;

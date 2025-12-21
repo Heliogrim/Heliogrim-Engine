@@ -20,7 +20,11 @@ FlacImporter::descriptor_type FlacImporter::descriptor() const noexcept {
 	return {};
 }
 
-FlacImporter::import_result_type FlacImporter::import(cref<res::FileTypeId> typeId_, cref<::hg::fs::File> file_) const {
+FlacImporter::import_result_type FlacImporter::import(
+	ref<const res::FileTypeId> typeId_,
+	ref<const hg::fs::File> file_,
+	mref<res::ImportDestination> destination_
+) const {
 
 	const ptr<drflac> flac = drflac_open_file(static_cast<std::string>(file_.path()).c_str(), nullptr);
 	if (flac == nullptr) {

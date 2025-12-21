@@ -49,7 +49,9 @@ bool FbxImporter::canImport(cref<res::FileTypeId> typeId_, cref<hg::fs::File> fi
 		return false;
 	}
 
-	if (not file_.exists()) {
+	if (not
+		file_.exists()
+	) {
 		return false;
 	}
 
@@ -60,7 +62,11 @@ FbxImporter::descriptor_type FbxImporter::descriptor() const noexcept {
 	return nullptr;
 }
 
-FbxImporter::import_result_type FbxImporter::import(cref<res::FileTypeId> typeId_, cref<hg::fs::File> file_) const {
+FbxImporter::import_result_type FbxImporter::import(
+	ref<const res::FileTypeId> typeId_,
+	ref<const hg::fs::File> file_,
+	mref<res::ImportDestination> destination_
+) const {
 
 	/**/
 
@@ -90,7 +96,7 @@ FbxImporter::import_result_type FbxImporter::import(cref<res::FileTypeId> typeId
 		StringView { sourceName },
 		/* TODO: Check whether the importer should already locate and seal the storage used for the asset */
 		AssetReferenceUrl {},
-		AssetUrl { AssetPath { file_.path().parentPath() }, AssetName { sourceName } },
+		AssetUrl { AssetPath { ::hg::move(destination_).virtualBasePath }, AssetName { sourceName } },
 		Vector<fs::Url> { { storage::FileScheme, clone(file_.path()) } },
 		::hg::move(materials)
 	);
@@ -113,7 +119,7 @@ FbxImporter::import_result_type FbxImporter::import(cref<res::FileTypeId> typeId
 FbxAssimpImportData assimpGetImportData(cref<fs::File> file_) {
 
 	Assimp::Importer importer {};
-	const u32 ppFlags = { aiProcess_PreTransformVertices };
+	constexpr u32 ppFlags = { aiProcess_PreTransformVertices | aiProcess_Triangulate };
 
 	/**/
 

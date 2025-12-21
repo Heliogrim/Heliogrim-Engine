@@ -104,8 +104,9 @@ namespace hg::engine::res {
 		 */
 		template <class ImportType_>
 		[[nodiscard]] typename Importer<ImportType_, void>::import_result_type import(
-			cref<FileTypeId> fileType_,
-			cref<hg::fs::File> file_
+			ref<const FileTypeId> fileType_,
+			ref<const hg::fs::File> file_,
+			mref<ImportDestination> destination_
 		) const {
 
 			const sptr<ImporterBase> im = importer(fileType_, file_);
@@ -114,7 +115,7 @@ namespace hg::engine::res {
 				throw std::runtime_error("No suitable importer found for FileTypeId and File.");
 			}
 
-			return static_cast<const ptr<Importer<ImportType_, void>>>(im.get())->import(fileType_, file_);
+			return static_cast<const ptr<Importer<ImportType_, void>>>(im.get())->import(fileType_, file_, ::hg::move(destination_));
 		}
 	};
 }
