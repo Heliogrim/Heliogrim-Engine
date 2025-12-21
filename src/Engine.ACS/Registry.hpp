@@ -13,7 +13,6 @@
 #include "PoolWrapper.hpp"
 #include "Registry.hpp"
 #include "Traits.hpp"
-#include "Heliogrim/Actor/ActorGuid.hpp"
 
 namespace hg {
 	/**
@@ -21,6 +20,8 @@ namespace hg {
 	 */
 	class Actor;
 	class ActorInitializer;
+
+	using ActorClass = ::hg::MetaClass;
 }
 
 namespace hg::engine::acs {
@@ -40,6 +41,8 @@ namespace hg::engine::acs {
 		using ActorPool = Pool<ActorGuid, PooledType_, invalid_actor_guid>;
 
 	public:
+		explicit Registry();
+
 		/**
 		 * Destructor
 		 *
@@ -52,6 +55,9 @@ namespace hg::engine::acs {
 
 	private:
 		DenseMap<type_id, ptr<ComponentPoolWrapperBase>> _pools;
+
+	protected:
+		void removeActorComponent(ref<const ComponentGuid> guid_, ref<const ComponentTypeId> typeId_);
 
 	public:
 		/**

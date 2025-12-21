@@ -1,8 +1,7 @@
 #include "Registry.hpp"
 
+#include <Heliogrim/ActorInitializer.hpp>
 #include <Heliogrim/Actor/Actor.hpp>
-
-#include "Heliogrim/ActorInitializer.hpp"
 
 using namespace hg::engine::acs;
 using namespace hg;
@@ -13,6 +12,8 @@ void Registry::releaseActorComponent(cref<ActorGuid> guid_, cref<type_id> typeId
 	auto* entry { _pools.at(typeId_) };
 	auto* pool { static_cast<ptr<PoolWrapperBase>>(entry) };
 
+void Registry::removeActorComponent(ref<const ComponentGuid> guid_, ref<const ComponentTypeId> typeId_) {
+	auto* pool = _pools.at(typeId_);
 	pool->erase(guid_);
 }
 
