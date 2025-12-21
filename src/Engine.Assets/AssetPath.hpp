@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Engine.Common/String.hpp>
+#include <Engine.Common/Meta/Support.hpp>
 #include <Engine.Filesystem/Path.hpp>
 
 namespace hg::engine::assets {
@@ -11,15 +12,15 @@ namespace hg::engine::assets {
 	public:
 		constexpr AssetPath() noexcept = default;
 
-		// Error: (MSVC) explicit constexpr AssetPath(auto&&... args_) noexcept(std::is_nothrow_constructible_v<String, decltype(args_)&&...>) :
-		explicit constexpr AssetPath(auto&&... args_) noexcept :
-			_data(::hg::forward<decltype(args_)>(args_)...) {}
+		explicit constexpr AssetPath(auto&& arg0_, auto&&... args_) noexcept
+			requires (not std::is_same_v<::hg::meta::peeled_t<decltype(arg0_)>, fs::Path>) :
+			_data { ::hg::forward<decltype(arg0_)>(arg0_), ::hg::forward<decltype(args_)>(args_)... } {}
 
-		explicit AssetPath(ref<const fs::Path> path_) noexcept :
-			_data(path_.normalized()) {}
+		explicit AssetPath(ref<const fs::Path> path_) :
+			_data(normalizeOrThrow(path_.normalized())) {}
 
 		explicit AssetPath(mref<fs::Path> path_) noexcept :
-			_data(::hg::move(path_).normalized()) {}
+			_data(normalizeOrThrow(::hg::move(path_).normalized())) {}
 
 		constexpr AssetPath(ref<const this_type> other_) = default;
 
@@ -31,6 +32,16 @@ namespace hg::engine::assets {
 		ref<this_type> operator=(ref<const this_type> other_) = default;
 
 		ref<this_type> operator=(mref<this_type> other_) noexcept = default;
+
+	private:
+		[[nodiscard]] constexpr static String normalizeOrThrow(mref<fs::Path> denormalized_) {
+			const auto converted = String { ::hg::move(denormalized_) };
+			if (converted.starts_with(".."sv) || converted.starts_with("/"sv)) {
+				throw std::runtime_error("Failed too consume denormalize path for asset path normalization.");
+			}
+
+			return converted.starts_with("."sv) ? ::hg::move(converted).substr(1uLL) : ::hg::move(converted);
+		}
 
 	public:
 		[[nodiscard]] constexpr bool empty() const noexcept {
