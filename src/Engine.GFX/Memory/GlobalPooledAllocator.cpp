@@ -52,11 +52,11 @@ AllocationResult GlobalPooledAllocator::allocate(
 	 */
 	if (shouldPool(layout_, size_)) {
 		#ifdef _DEBUG
-        auto* const pool { _cache.getOrCreatePool(layout_) };
-        if (pool == nullptr) {
-        	::hg::breakpoint();
-            return AllocationResult::eFailed;
-        }
+		auto* const pool { _cache.getOrCreatePool(layout_) };
+		if (pool == nullptr) {
+			::hg::breakpoint();
+			return AllocationResult::eFailed;
+		}
 		#else
 		auto* const pool { _cache.getOrCreatePool(layout_) };
 		if (pool == nullptr) {
@@ -115,7 +115,7 @@ void GlobalPooledAllocator::augmentPool(ptr<MemoryPool> pool_, const u64 size_) 
 
 void GlobalPooledAllocator::free(mref<uptr<AllocatedMemory>> mem_) {
 
-	if (_cache.free(std::move(mem_))) {
+	if (_cache.free(mem_)) {
 		return;
 	}
 

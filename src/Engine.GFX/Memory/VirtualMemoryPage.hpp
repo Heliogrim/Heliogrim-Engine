@@ -7,53 +7,53 @@
 #include "VirtualMemoryPageState.hpp"
 
 namespace hg::engine::gfx {
-    class VirtualMemory;
+	class VirtualMemory;
 }
 
 namespace hg::engine::gfx {
-    class VirtualMemoryPage {
-    public:
-        using this_type = VirtualMemoryPage;
+	class VirtualMemoryPage {
+	public:
+		using this_type = VirtualMemoryPage;
 
-    public:
-        VirtualMemoryPage(const nmpt<VirtualMemory> owner_, const u64 offset_, const u64 size_);
+	public:
+		VirtualMemoryPage(const nmpt<VirtualMemory> owner_, const u64 offset_, const u64 size_);
 
-        ~VirtualMemoryPage();
+		~VirtualMemoryPage();
 
-    private:
-        const nmpt<VirtualMemory> _owner;
+	private:
+		const nmpt<VirtualMemory> _owner;
 
-    public:
-        [[nodiscard]] const nmpt<VirtualMemory> owner() const noexcept;
+	public:
+		[[nodiscard]] const nmpt<VirtualMemory> owner() const noexcept;
 
-    private:
-        u64 _offset;
+	private:
+		u64 _offset;
 
-    public:
-        [[nodiscard]] u64 offset() const noexcept;
+	public:
+		[[nodiscard]] u64 offset() const noexcept;
 
-    private:
-        u64 _size;
+	private:
+		u64 _size;
 
-    public:
-        [[nodiscard]] u64 size() const noexcept;
+	public:
+		[[nodiscard]] u64 size() const noexcept;
 
-    private:
-        volatile VirtualMemoryPageState _state;
+	private:
+		volatile VirtualMemoryPageState _state;
 
-    public:
-        [[nodiscard]] VirtualMemoryPageState state() const noexcept;
+	public:
+		[[nodiscard]] VirtualMemoryPageState state() const noexcept;
 
-        //private:
-    public:
-        uptr<memory::AllocatedMemory> _memory;
+		//private:
+	public:
+		uptr<memory::AllocatedMemory> _memory;
 
-    public:
-        [[nodiscard]] nmpt<memory::AllocatedMemory> allocated() const noexcept;
+	public:
+		[[nodiscard]] nmpt<memory::AllocatedMemory> allocated() const noexcept;
 
-    public:
-        [[nodiscard]] memory::AllocationResult load();
+	public:
+		[[nodiscard]] memory::AllocationResult load();
 
-        void unload();
-    };
+		void unload();
+	};
 }

@@ -32,6 +32,6 @@ namespace hg::engine::gfx::memory {
 			_Out_ ref<uptr<AllocatedMemory>> dst_
 		);
 
-		bool free(mref<uptr<AllocatedMemory>> mem_);
+		bool free(_Inout_ ref<uptr<AllocatedMemory>> mem_);
 	};
 }

@@ -102,15 +102,18 @@ namespace hg::engine::gfx {
 		Vector<u32> _releasedList;
 
 	private:
-		void grow(s64 required_) {
+		void grow(s64 requiredBytes_) {
+
+			constexpr auto default_step_size = 1uLL;
+			constexpr auto default_sparse_buffer_align = 128uLL;
 
 			const auto prevSize = _buffer->memorySize();
+			const auto nextSize = (requiredBytes_ > 0) ?
+				(std::max)(static_cast<u64>(requiredBytes_), _buffer->memorySize()) :
+				_buffer->memorySize() + default_step_size * stride;
 
-			const auto nextSize = (required_ > 0) ?
-				MAX(required_, _buffer->memorySize()) :
-				_buffer->memorySize() + 128uLL * stride;
-			const auto dr = lldiv(nextSize, 128uLL);
-			const auto nextSizeAligned = dr.quot + (dr.rem > 0 ? 1uLL : 0uLL);
+			const auto dr = lldiv(nextSize, default_sparse_buffer_align);
+			const auto nextSizeAligned = (dr.quot + (dr.rem > 0 ? 1uLL : 0uLL)) * default_sparse_buffer_align;
 
 			/**/
 

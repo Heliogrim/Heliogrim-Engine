@@ -80,7 +80,7 @@ void SparseTexture::tidy() {
 	/**
 	 * Delete every virtual texture page and implicitly pages virtual memory before backing memory
 	 */
-	for (auto& page : _pages) {
+	for (auto&& page : _pages) {
 		/* Memory Pages are getting freed by follow-up memory destructor */
 		page->release();
 		page.reset();

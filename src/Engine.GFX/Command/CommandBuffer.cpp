@@ -111,7 +111,7 @@ void CommandBuffer::bindIndexBuffer(const ptr<const SparseBuffer> buffer_, u64 o
 
 void CommandBuffer::bindIndexBuffer(const ptr<const SparseBufferView> bufferView_) {
 	_vkCmd.bindIndexBuffer(
-		bufferView_->owner()->vkBuffer(),
+		bufferView_->owner().vkBuffer(),
 		bufferView_->offset(),
 		vk::IndexType::eUint32
 	);
@@ -149,7 +149,7 @@ void CommandBuffer::bindVertexBuffer(const u32 binding_, const ptr<const SparseB
 
 void CommandBuffer::bindVertexBuffer(const u32 binding_, const ptr<const SparseBufferView> bufferView_) {
 	const auto loff = bufferView_->offset();
-	_vkCmd.bindVertexBuffers(binding_, 1uL, &bufferView_->owner()->vkBuffer(), &loff);
+	_vkCmd.bindVertexBuffers(binding_, 1uL, &bufferView_->owner().vkBuffer(), &loff);
 }
 
 void CommandBuffer::bindVertexBuffer(const u32 index_, cref<VertexBufferView> vertexBufferView_) {
@@ -278,7 +278,8 @@ void CommandBuffer::submitWait() {
 	assert(_valid && _root);
 
 	_pool->queue()->submitWait(*this);
-	_valid = not _faf;
+	_valid = not
+	_faf;
 }
 
 void CommandBuffer::release() {

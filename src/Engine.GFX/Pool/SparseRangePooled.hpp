@@ -25,9 +25,9 @@ namespace hg::engine::gfx {
 			_monotonicOffset(0uL),
 			_releasedList() {}
 
-		SparseRangePooled(cref<this_type>) = delete;
+		SparseRangePooled (cref<this_type>) = delete;
 
-		SparseRangePooled(mref<this_type>) = delete;
+		SparseRangePooled (mref<this_type>) = delete;
 
 		~SparseRangePooled() = default;
 
@@ -237,7 +237,7 @@ namespace hg::engine::gfx {
 			const auto requiredPages = (requestSize_ / pageAlign)
 				+ ((requestSize_ % pageAlign) ? 1uLL : 0uLL);
 
-			const u64 basePage = _buffer->pages().size();
+			const u64 basePage = _buffer->getPageCount();
 			for (u64 page = 0uLL; page < requiredPages; ++page) {
 
 				auto vbp = _buffer->addPage(pageAlign, (basePage + page) * pageAlign);
