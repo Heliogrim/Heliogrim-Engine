@@ -174,7 +174,7 @@ void GlobalCacheCtrl::unmark(
 	#else
 
 	auto texture = static_cast<non_owning_rptr<const assets::TextureAsset>>(resource_->getAssociation());
-	auto result = _cache->query(texture->get_guid());
+	auto result = _cache->query(texture->getAssetGuid());
 
 	unmark(smr<resource::ResourceBase> { result.value<>() }.into<TextureResource>(), subresource_);
 
