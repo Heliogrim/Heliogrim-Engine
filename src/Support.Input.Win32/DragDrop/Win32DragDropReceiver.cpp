@@ -26,7 +26,7 @@ Win32DragDropReceiver::~Win32DragDropReceiver() noexcept = default;
 
 void Win32DragDropReceiver::setup() {
 	const auto result = ::RegisterDragDrop(_hwnd, this);
-	assert(result == S_OK);
+	::hg::assertrt(result == S_OK);
 }
 
 void Win32DragDropReceiver::destroy() {

@@ -138,15 +138,15 @@ void Win32DragDropSender::sendDragText(cref<string> text_) {
 	dispatchDragDrop();
 }
 
-HRESULT Win32DragDropSender::QueryInterface(const IID& riid, void** ppvObject) {
+HRESULT Win32DragDropSender::QueryInterface(const IID& riid, void** ppvObject_) {
 
 	if (riid == IID_IUnknown) {
-		*ppvObject = static_cast<ptr<IUnknown>>(this);
+		*ppvObject_ = static_cast<ptr<IUnknown>>(this);
 		return S_OK;
 	}
 
 	if (riid == IID_IDropSource) {
-		*ppvObject = static_cast<ptr<IDropSource>>(this);
+		*ppvObject_ = static_cast<ptr<IDropSource>>(this);
 		return S_OK;
 	}
 
@@ -161,13 +161,13 @@ ULONG Win32DragDropSender::Release() {
 	return --_useCount;
 }
 
-HRESULT Win32DragDropSender::QueryContinueDrag(BOOL fEscapePressed, DWORD grfKeyState) {
+HRESULT Win32DragDropSender::QueryContinueDrag(const BOOL fEscapePressed_, const DWORD grfKeyState_) {
 
-	if (fEscapePressed) {
+	if (fEscapePressed_) {
 		return DRAGDROP_S_CANCEL;
 	}
 
-	if (_grfKeyState != grfKeyState) {
+	if (_grfKeyState != grfKeyState_) {
 		_grfKeyState = NULL;
 		return DRAGDROP_S_DROP;
 	}
@@ -175,6 +175,6 @@ HRESULT Win32DragDropSender::QueryContinueDrag(BOOL fEscapePressed, DWORD grfKey
 	return S_OK;
 }
 
-HRESULT Win32DragDropSender::GiveFeedback(DWORD dwEffect) {
+HRESULT Win32DragDropSender::GiveFeedback([[maybe_unused]] DWORD dwEffect_) {
 	return DRAGDROP_S_USEDEFAULTCURSORS;
 }

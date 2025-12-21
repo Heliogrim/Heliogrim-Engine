@@ -1,6 +1,6 @@
 #include "Surface.hpp"
 
-#include <Engine.Common/SDL2.hpp>
+#include <Engine.Common/SDL3.hpp>
 #include <Engine.Common/stdafx.h>
 
 #ifdef _PROFILING
@@ -43,7 +43,6 @@ Surface::~Surface() {
 void Surface::setup() {
 
 	SCOPED_STOPWATCH
-
 	try {
 		_surface = createApiSurface();
 	} catch (std::exception& ex) {
@@ -59,7 +58,6 @@ void Surface::setup() {
 void Surface::destroy() {
 
 	SCOPED_STOPWATCH
-
 	if (_swapchain) {
 		_swapchain->destroy();
 		_swapchain.reset();
@@ -121,7 +119,7 @@ vk::SurfaceKHR Surface::createApiSurface() {
 	const auto sdlWnd { window->sdl() };
 
 	VkSurfaceKHR tmp {};
-	if (!SDL_Vulkan_CreateSurface(sdlWnd, static_cast<vk::Instance>(*_application), &tmp)) {
+	if (!SDL_Vulkan_CreateSurface(sdlWnd, static_cast<vk::Instance>(*_application), nullptr, &tmp)) {
 		throw std::runtime_error("Could not get vulkan surface from window.");
 	}
 
