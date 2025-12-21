@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Engine.Assets/AssetGuid.hpp>
+#include <Engine.Common/Optional.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
@@ -85,9 +86,19 @@ namespace hg {
 		[[nodiscard]] cref<decltype(_internal)> unwrap() const noexcept;
 
 	public:
-		_Success_(return == true) bool addLevel(_In_ cref<Level> level_);
+		_Success_ (
+		return
+		==
+		true
+		)
+		bool addLevel(_In_ cref<Level> level_);
 
-		_Success_(return == true) bool removeLevel(_In_ cref<Level> level_);
+		_Success_ (
+		return
+		==
+		true
+		)
+		bool removeLevel(_In_ cref<Level> level_);
 
 	public:
 		/**
@@ -117,7 +128,7 @@ namespace hg {
 		 *
 		 * @returns A volatile actor handle of the removed actor.
 		 */
-		VolatileActor<> removeActor(_In_ ptr<Actor> actor_);
+		Opt<VolatileActor<>> removeActor(_In_ ptr<Actor> actor_);
 
 		/**
 		 * Drops an actor instance from this level
