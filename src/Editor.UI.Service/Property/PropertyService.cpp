@@ -45,8 +45,8 @@ Vector<nmpt<const Property>> PropertyService::fetchPropertiesFor(nmpt<const Hier
 
 	auto result = Vector<nmpt<const Property>> {};
 	for (const auto& property : _registered) {
-		if (property->selector.is<component_type_id>()) {
-			if (property->selector.as<component_type_id>() == componentTypeId) {
+		if (property->selector.is<ComponentTypeId>()) {
+			if (property->selector.as<ComponentTypeId>() == componentTypeId) {
 				result.emplace_back(property.get());
 			}
 			continue;

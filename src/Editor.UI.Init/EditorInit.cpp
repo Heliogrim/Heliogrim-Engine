@@ -40,7 +40,7 @@ void editor::ui::initEditor(ref<EditorUI> editorUi_) {
 	/**/
 
 	auto actor = CreateActor();
-	auto* const uic = ActorInitializer { *engine.getActors()->getRegistry() }.createComponent<UIComponent>(actor.get());
+	auto uic = actor->addComponent<UIComponent>();
 
 	uic->setWindow(window);
 	GetUniverse(HeliogrimEditor::getEditorSession()).addActor(std::move(actor));
