@@ -11,14 +11,20 @@ namespace hg {
 		using this_type = UIComponent;
 		using underlying_type = SceneComponent;
 
-		constexpr static component_type_id typeId { "UIComponent"_typeId };
+		constexpr static ComponentTypeId typeId { "UIComponent"_typeId };
 
 	public:
 		UIComponent(
+			mref<ComponentGuid> guid_,
 			mref<CachedActorPointer> owner_,
 			mref<ptr<HierarchyComponent>> parent_
 		) :
-			InheritMeta(component_type_id { typeId }, std::move(owner_), std::move(parent_)) {}
+			InheritMeta(
+				::hg::move(guid_),
+				ComponentTypeId { typeId },
+				std::move(owner_),
+				std::move(parent_)
+			) {}
 
 		~UIComponent() override = default;
 

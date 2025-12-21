@@ -17,10 +17,11 @@ namespace hg {
 		using this_type = SkyboxComponent;
 		using underlying_type = SceneComponent;
 
-		constexpr static component_type_id typeId { "SkyboxComponent"_typeId };
+		constexpr static ComponentTypeId typeId { "SkyboxComponent"_typeId };
 
 	public:
 		SkyboxComponent(
+			mref<ComponentGuid> guid_,
 			mref<CachedActorPointer> owner_,
 			mref<ptr<HierarchyComponent>> parent_
 		);

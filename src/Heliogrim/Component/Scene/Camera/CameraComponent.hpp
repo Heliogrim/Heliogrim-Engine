@@ -19,10 +19,14 @@ namespace hg {
 		using CameraProjectMode = ::hg::engine::gfx::CameraProjectionMode;
 		using CameraViewMode = ::hg::engine::gfx::CameraViewMode;
 
-		constexpr static component_type_id typeId { "CameraComponent"_typeId };
+		constexpr static ComponentTypeId typeId { "CameraComponent"_typeId };
 
 	public:
-		CameraComponent(mref<CachedActorPointer> owner_, mref<ptr<HierarchyComponent>> parent_);
+		CameraComponent(
+			mref<ComponentGuid> guid_,
+			mref<CachedActorPointer> owner_,
+			mref<ptr<HierarchyComponent>> parent_
+		);
 
 		~CameraComponent() override;
 

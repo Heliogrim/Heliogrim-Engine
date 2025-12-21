@@ -14,10 +14,10 @@ namespace hg {
 	public:
 		using this_type = DirectionalLightComponent;
 
-		constexpr static component_type_id typeId { "DirectionalLightComponent"_typeId };
+		constexpr static ComponentTypeId typeId { "DirectionalLightComponent"_typeId };
 
 	public:
-		DirectionalLightComponent(mref<CachedActorPointer> owner_, mref<ptr<HierarchyComponent>> parent_);
+		DirectionalLightComponent(mref<ComponentGuid> guid_, mref<CachedActorPointer> owner_, mref<ptr<HierarchyComponent>> parent_);
 
 		~DirectionalLightComponent() override;
 
