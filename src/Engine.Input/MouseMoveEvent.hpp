@@ -16,8 +16,8 @@ namespace hg::engine::input::event {
 
 	public:
 		explicit MouseMoveEvent(
-			cref<math::ivec2> pointer_,
-			cref<math::ivec2> delta_,
+			ref<const math::fvec2> pointer_,
+			ref<const math::fvec2> delta_,
 			u32 button_,
 			u32 modifier_
 		) noexcept;
@@ -30,8 +30,8 @@ namespace hg::engine::input::event {
 
 		//private:
 	public:
-		math::ivec2 _pointer;
-		math::ivec2 _delta;
+		math::fvec2 _pointer;
+		math::fvec2 _delta;
 
 		u32 _button;
 		u32 _modifier;
