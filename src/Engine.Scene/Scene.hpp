@@ -60,7 +60,9 @@ namespace hg::engine::scene {
 	/**/
 
 	template <typename Type_, typename... Types_>
-	concept IsAnyOf = std::disjunction_v<std::is_same<Type_, Types_>...>;
+	concept IsAnyOf = std::disjunction_v < std::is_same<Type_, Types_>
+	...
+	>;
 
 	/**/
 
@@ -125,7 +127,7 @@ namespace hg::engine::scene {
 	private:
 		std::tuple<Systems_...> _typedSystems;
 		Array<ptr<SceneSystemBase>, sizeof...(Systems_)> _denseSystems = {
-			std::addressof(std::get<index_of_packed_type<Systems_, system_types>::value>(_typedSystems))...
+			std::addressof(std::get < index_of_packed_type<Systems_, system_types>::value > (_typedSystems))...
 		};
 
 	private:
@@ -156,7 +158,7 @@ namespace hg::engine::scene {
 			);
 		}
 
-	private:
+	protected:
 		template <typename Fn_>
 		void forEachSystem(Fn_&& fn_) const {
 			for (const auto* const system : _denseSystems) {
@@ -188,7 +190,10 @@ namespace hg::engine::scene {
 
 		template <IsSceneSystem SystemType_>
 		[[nodiscard]] nmpt<SystemType_> getSceneSystem() const noexcept {
-			static_assert(not std::is_void_v<typename index_of_type<SystemType_, Systems_...>::type>);
+			static_assert(not
+			std::is_void_v < typename index_of_type<SystemType_, Systems_...>::type >
+			)
+			;
 			return _denseSystems[index_of_type<SystemType_, Systems_...>::value];
 		}
 
