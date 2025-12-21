@@ -64,7 +64,7 @@ static smr<StaticGeometryResource> loadWithAssimp(
 	/**/
 
 	Assimp::Importer importer {};
-	const u32 ppFlags = { aiProcess_PreTransformVertices };
+	constexpr u32 ppFlags = { aiProcess_PreTransformVertices | aiProcess_Triangulate };
 
 	/**/
 
@@ -92,6 +92,8 @@ static smr<StaticGeometryResource> loadWithAssimp(
 	const char* pHint = "";
 	if (static_cast<String>(request_->sources().front().path()).ends_with(R"(.obj)")) {
 		pHint = "obj";
+	} else if (static_cast<String>(request_->sources().front().path()).ends_with(R"(.fbx)")) {
+		pHint = "fbx";
 	} else if (static_cast<String>(request_->sources().front().path()).ends_with(R"(.gltf)")) {
 		pHint = "gltf";
 	}
