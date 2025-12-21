@@ -15,8 +15,12 @@ namespace hg {
 
 	class macro_novtable IComponentRegisterContext {
 	public:
-		virtual void add(_In_ ptr<HierarchyComponent> component_) = 0;
+		virtual void add(ptr<HierarchyComponent> component_) = 0;
 
-		virtual void add(cref<ComponentHierarchy> hierarchy_) = 0;
+		virtual void add(ref<const ComponentHierarchy> hierarchy_) = 0;
+
+		virtual void remove(ptr<HierarchyComponent> component_) = 0;
+
+		virtual void remove(ref<const ComponentHierarchy> hierarchy_) = 0;
 	};
 }
