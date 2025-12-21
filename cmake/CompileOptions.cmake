@@ -176,7 +176,7 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC")
 			PRIVATE
 			/MP           # -> build with multiple processes
 			# Warning: /W4 will currently crash the msvc compiler with ICE 1001
-			/W3           # -> warning level 4
+			/W4           # -> warning level 4
 			# /WX         # -> treat warnings as errors
 
 			# Compiler Shared Options
@@ -204,9 +204,14 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC")
 			/Od
 			/GS
 			/JMC
+			/Zf
+			/Zo
 			>
 
 			$<$<CONFIG:Release,RelWithDebInfo>:
+			/O2
+			/Ob3
+			/Oty
 			/Gw           # -> whole program global optimization
 			/GS-          # -> buffer security check: no
 			/GL           # -> whole program optimization: enable link-time code generation (disables Zi)
@@ -221,6 +226,10 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC")
 			# /wd4201     # -> disable warning: nonstandard extension used: nameless struct/union (caused by GLM)
 			# /wd4127     # -> disable warning: conditional expression is constant (caused by Qt)
 			/wd4996       # -> disable warning: 'deprecated'
+
+			/wd4464
+			/wd4514
+			/volatile:iso
 	)
 endif ()
 
