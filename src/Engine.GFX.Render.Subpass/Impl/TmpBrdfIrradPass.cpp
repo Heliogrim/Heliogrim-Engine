@@ -90,10 +90,7 @@ void TmpBrdfIrradPass::iterate(cref<graph::ScopedSymbolContext> symCtx_) noexcep
 }
 
 void TmpBrdfIrradPass::resolve() noexcept {
-	if (_effect&& _compiled
-	.
-	flag == EffectCompileResultFlag::eUnknown
-	) {
+	if (_effect && _compiled.flag == EffectCompileResultFlag::eUnknown) {
 		_compiled = build_test_pipeline(clone(_effect), clone(_pass));
 	}
 }
