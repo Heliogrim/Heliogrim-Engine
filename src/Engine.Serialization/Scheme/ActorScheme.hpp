@@ -1,13 +1,17 @@
 #pragma once
 
 #include <Engine.ACS/Registry.hpp>
+#include <Engine.Common/Optional.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.Core/Engine.hpp>
+#include <Engine.Reflect/Cast.hpp>
 #include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>
 #include <Engine.Serialization/Structure/RecordScopedSlot.hpp>
 #include <Engine.Serialization/Structure/SeqScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 #include <Engine.Serialization.Structures/Symbols.hpp>
+#include <Engine.Serialization.Structures/Common/Guid.hpp>
+#include <Engine.Serialization.Structures/Common/TypeId.hpp>
 #include <Heliogrim/Actor/ActorGuid.hpp>
 
 #include "Scheme.hpp"
@@ -39,9 +43,7 @@ namespace hg::engine::serialization {
 		) {
 
 			const auto slot = slot_.asStruct();
-
-			ActorGuid actorGuid {};
-			access::Structure<Guid>::hydrate(slot.getStructSlot(Symbols::Guid), actorGuid);
+			const auto actorGuid = get_guid_slot<ActorGuid>(slot);
 
 			auto* target = AccessType_::template instantiate(
 				allocator_,
@@ -58,7 +60,7 @@ namespace hg::engine::serialization {
 
 			// TODO:
 			const auto count = components.getRecordCount();
-			auto instanced = Vector<nmpt<LogicComponent>>();
+			auto instanced = Vector<ptr<LogicComponent>>();
 			instanced.resize(count, nullptr);
 
 			for (s64 idx = 0; idx < count; ++idx) {
@@ -68,34 +70,50 @@ namespace hg::engine::serialization {
 
 				/**/
 
-				type_id checkTypeId {};
-				structured.getSlot<u64>(Symbols::Type) >> checkTypeId.data;
-				::hg::assertrt(checkTypeId != type_id {});
+				const auto checkTypeId = get_typeId_slot<ComponentTypeId>(structured);
+				::hg::assertrt(checkTypeId != ComponentTypeId {});
 
 				/**/
 
 				s8 recordParentIdx { -1 };
 				structured.getSlot<s8>(Symbols::Parent) >> recordParentIdx;
-				::hg::assertrt(recordParentIdx == -1 || recordParentIdx >= 0);
+				::hg::assertrt(recordParentIdx == -1 || (recordParentIdx >= 0 && recordParentIdx < /* ~instanced.size() */idx));
 
 				/**/
 
 				const auto fnSet = serial->getComponentScheme(checkTypeId);
 				::hg::assertrt(fnSet.has_value());
 
-				instanced[idx] = fnSet->deserialize(
+				const auto hasParent = recordParentIdx >= 0;
+				auto* const parent = hasParent && instanced[recordParentIdx] ?
+					Cast<HierarchyComponent>(instanced[recordParentIdx]) :
+					nullptr;
+				::hg::assertd(hasParent == !!parent);
+
+				/**/
+
+				auto next = fnSet->deserialize(
 					record,
 					allocator_,
 					*target,
-					recordParentIdx >= 0 ?
-					// Error: Unsafe / UB
-					static_cast<ptr<HierarchyComponent>>(instanced[recordParentIdx].get()) :
-					nullptr
+					parent
 				);
-				::hg::assertrt(instanced[idx] != nullptr);
 
-				// Error: Unsafe / UB
-				target->addComponent(static_cast<ptr<HierarchyComponent>>(instanced[idx].get()));
+				/**/
+
+				if (IsType<HierarchyComponent>(*next.get())) {
+					// Keep back-reference for parent resolving with pure pointers
+					instanced[idx] = next.get();
+					target->addComponent(
+						VolatileComponent<HierarchyComponent> { ::hg::move(next) },
+						Some<ref<const Type_::AddComponentOptions>>(
+							{
+								.autoRegister = false,
+								.parent = parent ? Some<ref<HierarchyComponent>>(*parent) : None
+							}
+						)
+					);
+				}
 			}
 
 			/**/
