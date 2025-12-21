@@ -144,7 +144,7 @@ void VkDescriptorWriter::storeUniform(index_type idx_, cref<SparseBufferView> vi
 
 	const auto marker = emplaceBufferInfo(
 		{
-			view_.owner()->vkBuffer(),
+			view_.owner().vkBuffer(),
 			view_.offset(),
 			view_.size()
 		}
@@ -214,7 +214,7 @@ void VkDescriptorWriter::storeUniform(index_type idx_, nmpt<const gfx::UniformBu
 
 			const auto marker = emplaceBufferInfo(
 				{
-					view_->owner()->vkBuffer(),
+					view_->owner().vkBuffer(),
 					view_->offset(),
 					view_->size()
 				}
@@ -284,7 +284,7 @@ void VkDescriptorWriter::storeStorage(index_type idx_, cref<SparseBufferView> vi
 
 	const auto marker = emplaceBufferInfo(
 		{
-			view_.owner()->vkBuffer(),
+			view_.owner().vkBuffer(),
 			view_.offset(),
 			view_.size()
 		}
@@ -353,7 +353,7 @@ void VkDescriptorWriter::storeStorage(index_type idx_, nmpt<const gfx::StorageBu
 
 			const auto marker = emplaceBufferInfo(
 				{
-					view_->owner()->vkBuffer(),
+					view_->owner().vkBuffer(),
 					view_->offset(),
 					view_->size()
 				}
@@ -407,8 +407,8 @@ void VkDescriptorWriter::storeTexture(index_type idx_, nmpt<const gfx::TextureLi
 				{
 					nullptr,
 					texture_->_vkImageView != nullptr ?
-						reinterpret_cast<VkImageView>(texture_->_vkImageView) :
-						texture_->owner()->vkView().operator VkImageView(),
+					reinterpret_cast<VkImageView>(texture_->_vkImageView) :
+					texture_->owner()->vkView().operator VkImageView(),
 					// Warning: Unsecure / Error prone
 					texture_->owner()->buffer()._vkLayout
 				}

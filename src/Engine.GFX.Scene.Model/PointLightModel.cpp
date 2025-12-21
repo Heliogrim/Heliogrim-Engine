@@ -48,7 +48,7 @@ void PointLightModel::create(const ptr<render::RenderSceneSystem> system_) {
 
 	/**/
 
-	const auto* const page = result.dataView->pages().front();
+	const auto page = result.dataView->pages().front();
 	auto allocated = page->memory()->allocated();
 
 	allocated->map(allocated->size);
@@ -76,7 +76,7 @@ void PointLightModel::update(const ptr<render::RenderSceneSystem> system_) {
 	/**/
 
 	const auto view = srp->lightSourcePool.getDataView(_sceneLightIndex);
-	const auto* const page = view->pages().front();
+	const auto page = view->pages().front();
 	auto allocated = page->memory()->allocated();
 
 	allocated->map(allocated->size);
