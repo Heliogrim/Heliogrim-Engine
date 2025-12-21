@@ -71,9 +71,7 @@ void Logger::setup() {
 	std::ranges::replace(logfile, ':', '-');
 	std::ranges::replace(logfile, ' ', '_');
 
-	auto cwd { std::filesystem::current_path() };
-	cwd.append(logfile);
-
+	const auto cwd = std::filesystem::current_path().append(R"(logs)").append(logfile);
 	auto fileSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(cwd.string());
 	link.add_sink(::hg::move(fileSink));
 
