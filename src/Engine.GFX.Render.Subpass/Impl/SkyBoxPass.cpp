@@ -84,26 +84,20 @@ void SkyBoxPass::iterate(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
 	/**/
 
-	ptr<const SkyboxModel> model = nullptr;
 	auto sceneViewRes = symCtx_.getImportSymbol(makeSceneViewSymbol());
 	auto sceneView = sceneViewRes->load<smr<const gfx::scene::SceneView>>();
 
 	const auto sys = sceneView->getRenderSceneSystem();
-	sys->getRegistry().forEach<SkyboxModel>(
-		[&model](const auto& model_) {
-			model = std::addressof(model_);
-		}
-	);
-
-	/**/
-
-	if (model == nullptr) {
+	const auto maybeSkybox = sys->getRegistry().find<SkyboxModel>([](const auto& model_) { return model_.isValid(); });
+	if (maybeSkybox == None) {
 		return;
 	}
 
+	const auto& model = maybeSkybox.value();
+
 	/**/
 
-	auto material = model->material(0uL);
+	auto material = model.material(0uL);
 	auto guard = material->acquire(resource::ResourceUsageFlag::eRead);
 
 	auto proto = guard->getPrototype();
@@ -141,11 +135,12 @@ void SkyBoxPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 	const auto& sceneDepthTex = sceneDepthRes->load<smr<const TextureLikeObject>>();
 
 	if (
-		not _framebuffer.empty() &&
-		(
-			_framebuffer->attachments().front() != sceneColorTex ||
-			static_cast<ptr<void>>(_framebuffer->attachments().back().get()) != sceneDepthRes.get()
-		)
+		not
+			_framebuffer.empty() &&
+			(
+				_framebuffer->attachments().front() != sceneColorTex ||
+				static_cast<ptr<void>>(_framebuffer->attachments().back().get()) != sceneDepthRes.get()
+			)
 	) {
 		_framebuffer->device()->vkDevice().destroySemaphore(_tmpSignal);
 		_framebuffer->destroy();
@@ -330,12 +325,12 @@ void SkyBoxPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 			reinterpret_cast<Vector<VkSemaphore>&>(sceneColorRes->barriers)
 		);
 		for (auto i = batch->_tmpWaitFlags.size(); i < batch->_tmpWaits.size(); ++i) {
-			batch->_tmpWaitFlags.push_back(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+			batch->_tmpWaitFlags.emplace_back(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
 		}
-		batch->_tmpSignals.push_back(_tmpSignal);
+		batch->_tmpSignals.emplace_back(_tmpSignal);
 
 		sceneColorRes->barriers.clear();
-		sceneColorRes->barriers.push_back(_tmpSignal.operator VkSemaphore());
+		sceneColorRes->barriers.emplace_back(_tmpSignal.operator VkSemaphore());
 
 		/*
 		batch->_tmpWaits.insert_range(

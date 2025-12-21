@@ -74,26 +74,20 @@ void TmpBrdfPrefPass::iterate(cref<graph::ScopedSymbolContext> symCtx_) noexcept
 
 	/**/
 
-	ptr<const SkyboxModel> model = nullptr;
 	auto sceneViewRes = symCtx_.getImportSymbol(makeSceneViewSymbol());
 	auto sceneView = sceneViewRes->load<smr<const gfx::scene::SceneView>>();
 
 	const auto sys = sceneView->getRenderSceneSystem();
-	sys->getRegistry().forEach<SkyboxModel>(
-		[&model](const auto& model_) {
-			model = std::addressof(model_);
-		}
-	);
-
-	/**/
-
-	if (model == nullptr) {
+	const auto maybeSkybox = sys->getRegistry().find<SkyboxModel>([](const auto& model_) { return model_.isValid(); });
+	if (maybeSkybox == None) {
 		return;
 	}
 
+	const auto& model = maybeSkybox.value();
+
 	/**/
 
-	_skyboxMaterial = model->material(0uL);
+	_skyboxMaterial = model.material(0uL);
 }
 
 void TmpBrdfPrefPass::resolve() noexcept {
