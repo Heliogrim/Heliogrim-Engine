@@ -2,6 +2,7 @@
 
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.Common/Memory/MemoryPointer.hpp>
 
 #include "BufferLikeObject.hpp"
 #include "__fwd.hpp"
@@ -17,14 +18,14 @@ namespace hg::engine::gfx {
 
 	protected:
 		SparseBufferView(
-			non_owning_rptr<SparseBuffer> owner_,
-			mref<Vector<non_owning_rptr<SparseBufferPage>>> pages_,
+			ref<SparseBuffer> owner_,
+			mref<Vector<nmpt<SparseBufferPage>>> pages_,
 			const u64 offset_,
 			const u64 size_
 		);
 
 	public:
-		SparseBufferView(cref<this_type>) = delete;
+		SparseBufferView (cref<this_type>) = delete;
 
 		SparseBufferView(mref<this_type>) noexcept = delete;
 
@@ -37,17 +38,17 @@ namespace hg::engine::gfx {
 		ref<this_type> operator=(mref<this_type>) noexcept = delete;
 
 	private:
-		non_owning_rptr<SparseBuffer> _owner;
+		ref<SparseBuffer> _owner;
 
 	public:
-		[[nodiscard]] const non_owning_rptr<const SparseBuffer> owner() const noexcept;
+		[[nodiscard]] ref<const SparseBuffer> owner() const noexcept;
 
 	private:
-		Vector<non_owning_rptr<SparseBufferPage>> _pages;
+		Vector<nmpt<SparseBufferPage>> _pages;
 
 	public:
 		// TODO: Should be protected / private ...
-		[[nodiscard]] cref<Vector<non_owning_rptr<SparseBufferPage>>> pages() const noexcept;
+		[[nodiscard]] ref<const Vector<nmpt<SparseBufferPage>>> pages() const noexcept;
 
 	private:
 		u64 _offset;

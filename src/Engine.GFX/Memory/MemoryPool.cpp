@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cassert>
 #include <ranges>
+#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Logging/Logger.hpp>
@@ -27,19 +28,44 @@ MemoryPool::~MemoryPool() {
 
 void MemoryPool::tidy() {
 
-	while (not _memory.empty()) {
+	u64 lastChangeSize = _memory.size();
+	u64 lastChangeTrack = 0uLL;
+
+	while (not _memory
+	.
+	empty()
+	) {
 		auto entry = std::move(_memory.back());
 		_memory.pop_back();
 
 		if (
 			entry->parent &&
 			poolContains(entry->parent) &&
-			free(std::move(entry))
+			free(entry)
 		) {
 			// __noop();
 		} else {
 			AllocatedMemory::free(std::move(entry));
 		}
+
+		if (lastChangeSize != _memory.size()) {
+			lastChangeSize = _memory.size();
+			lastChangeTrack = 0uLL;
+		}
+
+		if ((++lastChangeTrack) < lastChangeSize) {
+			for (const auto& [handle, tracking] : active_tracking) {
+				if (tracking.free_stacktrace == None) {
+					IM_CORE_ERRORF(
+						"Missing external free of memory section `{:x} -> {:x}`:\n{}",
+						tracking.parent_as_handle,
+						tracking.as_handle,
+						tracking.alloc_stacktrace.value()
+					);
+				}
+			}
+		}
+		//::hg::assertrt((++lastChangeTrack) < lastChangeSize);
 	}
 
 	_memory.clear();
@@ -123,13 +149,17 @@ bool MemoryPool::treeMerge(
 
 	for (auto it = begin_; it != end_; ++it) {
 
+		/* Lookout for memory partition neighborhood */
+
 		const auto diff = std::abs(static_cast<s64>((*it)->offset) - static_cast<s64>(memory_->offset));
 		if (diff > memory_->size) {
 
+			// Early exit when we moved too far from the sorted neighbor candidates
 			if ((*it)->offset > memory_->offset) {
 				return false;
 			}
 
+			// We are either before the valid candidates, so keep moving
 			continue;
 		}
 
@@ -137,7 +167,7 @@ bool MemoryPool::treeMerge(
 
 		if ((*it)->parent == memory_->parent && (*it)->size + memory_->size == memory_->parent->size) {
 
-			assert((*it)->offset == memory_->parent->offset || memory_->offset == memory_->parent->offset);
+			::hg::assertd((*it)->offset == memory_->parent->offset || memory_->offset == memory_->parent->offset);
 
 			auto parentIt = _pooling.find(memory_->parent.get());
 			auto hold = std::move(parentIt->second);
@@ -151,8 +181,11 @@ bool MemoryPool::treeMerge(
 
 			/* Recursive call to free tree-spliced memory */
 
-			const auto result = free(std::move(hold), true);
-			if (not result && hold->allocator) {
+			const auto result = free(hold, true);
+			if (not result && hold
+			->
+			allocator
+			) {
 				memory::AllocatedMemory::free(std::move(hold));
 
 				if (_pooling.empty() && _memory.empty()) {
@@ -279,8 +312,10 @@ AllocationResult MemoryPool::allocate(const u64 size_, const bool bestFit_, ref<
 	return allocate(size_, true, dst_);
 }
 
-bool MemoryPool::free(mref<uptr<AllocatedMemory>> mem_, bool cascade_) {
-	if (not mem_->parent) {
+bool MemoryPool::free(ref<uptr<AllocatedMemory>> mem_, bool cascade_) {
+	if (not
+		mem_->parent
+	) {
 		return false;
 	}
 
@@ -317,7 +352,7 @@ bool MemoryPool::free(mref<uptr<AllocatedMemory>> mem_, bool cascade_) {
 
 	/**/
 
-	/* Warning: After successful treeMerge call the iterators are invalid to use */
+	/* Warning: After successful treeMerge call, the iterators are invalid to use */
 
 	if (
 		mem_->parent &&
@@ -334,12 +369,38 @@ bool MemoryPool::free(mref<uptr<AllocatedMemory>> mem_, bool cascade_) {
 }
 
 AllocationResult MemoryPool::allocate(const u64 size_, ref<uptr<AllocatedMemory>> dst_) {
-	return allocate(size_, false, dst_);
+	const auto result = allocate(size_, false, dst_);
+	if (result == AllocationResult::eSuccess) {
+		active_tracking.emplace(
+			reinterpret_cast<s64>(dst_.get()),
+			mem_alloc_tracking {
+				.as_handle = reinterpret_cast<s64>(dst_.get()),
+				.parent_as_handle = reinterpret_cast<s64>(dst_->parent.get()),
+				.alloc_stacktrace = Some(std::stacktrace::current()),
+				.free_stacktrace = None
+			}
+		);
+	}
+	return result;
 }
 
-bool MemoryPool::free(mref<uptr<AllocatedMemory>> mem_) {
+bool MemoryPool::free(_Inout_ ref<uptr<AllocatedMemory>> mem_) {
 
-	const auto result = free(std::move(mem_), true);
+	auto tracked = active_tracking.find(reinterpret_cast<s64>(mem_.get()));
+	if (tracked == active_tracking.end()) {
+		auto check_double_free = completed_tracking.find(reinterpret_cast<s64>(mem_.get()));
+		if (check_double_free != completed_tracking.end()) {
+			hg::breakpoint();
+		}
+	}
+
+	if (tracked != active_tracking.end()) {
+		tracked->second.free_stacktrace = Some(std::stacktrace::current());
+		completed_tracking.emplace(tracked->first, tracked->second);
+		active_tracking.erase(tracked);
+	}
+
+	const auto result = free(mem_, true);
 
 	if (_pooling.empty() && _memory.empty()) {
 		_totalAlloc.store(0);
@@ -353,21 +414,22 @@ bool MemoryPool::free(mref<uptr<AllocatedMemory>> mem_) {
 bool MemoryPool::poolContains(nmpt<AllocatedMemory> allocated_) const noexcept {
 
 	#ifdef _DEBUG
-    if (not _pooling.contains(allocated_.get())) {
-        if (std::ranges::contains(
-            _memory,
-            allocated_.get(),
-            [](const auto& e_) {
-                return e_.get();
-            }
-        )) {
-            ::hg::breakpoint();
-            IM_CORE_ERRORF(
-                "Encountered double-free on allocated memory from pool with parent ({:x})",
-                reinterpret_cast<ptrdiff_t>(allocated_.get())
-            );
-        }
-    }
+	if (not
+		_pooling.contains(allocated_.get())) {
+		if (std::ranges::contains(
+			_memory,
+			allocated_.get(),
+			[](const auto& e_) {
+				return e_.get();
+			}
+		)) {
+			::hg::breakpoint();
+			IM_CORE_ERRORF(
+				"Encountered double-free on allocated memory from pool with parent ({:x})",
+				reinterpret_cast<ptrdiff_t>(allocated_.get())
+			);
+		}
+	}
 	#endif
 
 	return _pooling.contains(allocated_.get());

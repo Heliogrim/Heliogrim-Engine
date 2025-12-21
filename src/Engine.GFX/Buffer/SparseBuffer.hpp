@@ -31,7 +31,7 @@ namespace hg::engine::gfx {
 			cref<vk::BufferUsageFlags> usageFlags_
 		) noexcept;
 
-		SparseBuffer(cref<this_type>) = delete;
+		SparseBuffer (cref<this_type>) = delete;
 
 		SparseBuffer(mref<this_type> other_) noexcept;
 
@@ -58,7 +58,7 @@ namespace hg::engine::gfx {
 		[[nodiscard]] nmpt<VirtualMemory> memory() noexcept;
 
 	private:
-		Vector<ptr<SparseBufferPage>> _pages;
+		Vector<uptr<SparseBufferPage>> _pages;
 
 	public:
 		[[nodiscard]] u64 size() const noexcept;
@@ -92,9 +92,9 @@ namespace hg::engine::gfx {
 		 *
 		 * @returns A pointer to the newly created virtual buffer page or nullptr.
 		 */
-		non_owning_rptr<SparseBufferPage> addPage(const u64 size_, const u64 offset_);
+		nmpt<SparseBufferPage> addPage(const u64 size_, const u64 offset_);
 
-		[[nodiscard]] cref<Vector<ptr<SparseBufferPage>>> pages() const noexcept;
+		[[nodiscard]] u64 getPageCount() const noexcept;
 
 	private:
 		void assureTiledPages(
@@ -105,7 +105,7 @@ namespace hg::engine::gfx {
 		void selectPages(
 			const u64 offset_,
 			const u64 size_,
-			_Inout_ ref<Vector<non_owning_rptr<SparseBufferPage>>> pages_
+			_Inout_ ref<Vector<nmpt<SparseBufferPage>>> pages_
 		);
 
 	public:

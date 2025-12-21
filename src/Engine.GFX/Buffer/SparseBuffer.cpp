@@ -11,7 +11,10 @@
 // TODO: Remove
 #include <Engine.Core/Engine.hpp>
 
-#include "Engine.GFX/Graphics.hpp"
+#include <Engine.Common/Discard.hpp>
+#include <Engine.Common/Move.hpp>
+
+#include "../Graphics.hpp"
 
 using namespace hg::engine::gfx;
 using namespace hg;
@@ -59,7 +62,7 @@ ref<SparseBuffer::this_type> SparseBuffer::operator=(mref<this_type> other_) noe
 
 		_bufferSize = std::exchange(other_._bufferSize, _bufferSize);
 		_memory.swap(other_._memory);
-		_pages = std::exchange(other_._pages, _pages);
+		std::swap(_pages, other_._pages);
 		_vkBuffer = std::exchange(other_._vkBuffer, _vkBuffer);
 		_vkBufferUsageFlags = std::exchange(other_._vkBufferUsageFlags, _vkBufferUsageFlags);
 		_changed = std::exchange(other_._changed, _changed);
@@ -85,10 +88,11 @@ void SparseBuffer::tidy() {
 	 */
 	for (auto& entry : _pages) {
 		/* Memory Pages are getting freed by follow-up memory destructor */
-		entry->release();
-		delete entry;
-		entry = nullptr;
+		::hg::discard = entry->release();
+		entry.reset();
 	}
+
+	_pages.clear();
 
 	/**
 	 * Cleanup Memory
@@ -124,7 +128,7 @@ cref<vk::BufferUsageFlags> SparseBuffer::vkBufferUsageFlags() const noexcept {
 	return _vkBufferUsageFlags;
 }
 
-non_owning_rptr<SparseBufferPage> SparseBuffer::addPage(const u64 size_, const u64 offset_) {
+nmpt<SparseBufferPage> SparseBuffer::addPage(const u64 size_, const u64 offset_) {
 	#ifdef _DEBUG
 	for (const auto& entry : _pages) {
 		if (entry->resourceOffset() >= (offset_ + size_)) {
@@ -142,18 +146,19 @@ non_owning_rptr<SparseBufferPage> SparseBuffer::addPage(const u64 size_, const u
 	const auto memPage = _memory->definePage(0uLL, size_);
 	assert(memPage);
 
-	const auto page = new SparseBufferPage {
+	auto page = make_uptr<SparseBufferPage>(
 		memPage,
 		size_,
 		offset_
-	};
+	);
 
-	_pages.push_back(page);
-	return page;
+	auto* const result = page.get();
+	_pages.emplace_back(::hg::move(page));
+	return result;
 }
 
-cref<Vector<ptr<SparseBufferPage>>> SparseBuffer::pages() const noexcept {
-	return _pages;
+u64 SparseBuffer::getPageCount() const noexcept {
+	return _pages.size();
 }
 
 void SparseBuffer::assureTiledPages(const u64 offset_, const u64 size_) {}
@@ -161,26 +166,26 @@ void SparseBuffer::assureTiledPages(const u64 offset_, const u64 size_) {}
 void SparseBuffer::selectPages(
 	const u64 offset_,
 	const u64 size_,
-	ref<Vector<non_owning_rptr<SparseBufferPage>>> pages_
+	ref<Vector<nmpt<SparseBufferPage>>> pages_
 ) {
 	const u64 lowerBound { offset_ };
 	const u64 upperBound { offset_ + size_ };
 
-	for (auto* const entry : _pages) {
+	for (auto& entry : _pages) {
 		const u64 pageUpperBound { entry->resourceOffset() + entry->resourceSize() };
 
 		if (entry->resourceOffset() > upperBound || lowerBound > pageUpperBound) {
 			continue;
 		}
 
-		pages_.push_back(entry);
+		pages_.emplace_back(entry.get());
 	}
 }
 
 uptr<SparseBufferView> SparseBuffer::makeView(const u64 offset_, const u64 size_) {
 	assureTiledPages(offset_, size_);
 
-	Vector<non_owning_rptr<SparseBufferPage>> pages {};
+	auto pages = Vector<nmpt<SparseBufferPage>> {};
 	selectPages(offset_, size_, pages);
 
 	/**
@@ -188,30 +193,28 @@ uptr<SparseBufferView> SparseBuffer::makeView(const u64 offset_, const u64 size_
 	 */
 	std::ranges::sort(
 		pages,
-		[](non_owning_rptr<SparseBufferPage> left_, non_owning_rptr<SparseBufferPage> right_) {
+		[](nmpt<SparseBufferPage> left_, nmpt<SparseBufferPage> right_) {
 			return left_->resourceOffset() < right_->resourceOffset();
 		}
 	);
 
-	/**
-	 *
-	 */
-	const auto view {
+	/**/
+
+	return uptr<SparseBufferView>(
 		new SparseBufferView(
-			this,
-			std::move(pages),
+			*this,
+			::hg::move(pages),
 			offset_,
 			size_
 		)
-	};
-
-	return std::unique_ptr<SparseBufferView>(view);
+	);
 }
 
 void SparseBuffer::updateBindingData() {
-	cref<Vector<ptr<SparseBufferPage>>> updates { _pages };
+
+	const auto& updates = _pages;
 	for (const auto& page : updates) {
-		_bindings.push_back(page->vkSparseMemoryBind());
+		_bindings.emplace_back(page->vkSparseMemoryBind());
 	}
 
 	/**

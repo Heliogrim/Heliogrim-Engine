@@ -18,9 +18,9 @@ namespace hg::engine::gfx::memory {
 	public:
 		MemoryPool(cref<MemoryLayout> layout_);
 
-		MemoryPool(cref<this_type>) = delete;
+		MemoryPool (cref<this_type>) = delete;
 
-		MemoryPool(mref<this_type>) = delete;
+		MemoryPool (mref<this_type>) = delete;
 
 		~MemoryPool();
 
@@ -74,12 +74,12 @@ namespace hg::engine::gfx::memory {
 			_Out_ ref<uptr<AllocatedMemory>> dst_
 		);
 
-		bool free(mref<uptr<AllocatedMemory>> mem_, bool cascade_);
+		bool free(_Inout_ ref<uptr<AllocatedMemory>> mem_, bool cascade_);
 
 	public:
 		[[nodiscard]] AllocationResult allocate(const u64 size_, _Out_ ref<uptr<AllocatedMemory>> dst_);
 
-		bool free(mref<uptr<AllocatedMemory>> mem_);
+		bool free(_Inout_ ref<uptr<AllocatedMemory>> mem_);
 
 	private:
 		[[nodiscard]] bool poolContains(nmpt<AllocatedMemory> allocated_) const noexcept;
