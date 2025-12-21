@@ -3,10 +3,15 @@
 #include <Engine.ACS/ComponentGuid.hpp>
 #include <Engine.ACS/ComponentTypeId.hpp>
 #include <Engine.Reflect/Inherit/InheritBase.hpp>
+#include <Engine.Serialization/Access/__fwd.hpp>
 
 namespace hg {
 	class LogicComponent :
 		public InheritBase<LogicComponent> {
+	public:
+		ACCESS_LAYOUT
+		ACCESS_STRUCTURE
+
 	public:
 		using this_type = LogicComponent;
 		using underlying_type = InheritBase<LogicComponent>;
