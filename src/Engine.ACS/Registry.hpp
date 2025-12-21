@@ -9,6 +9,7 @@
 #include "ActorPoolWrapper.hpp"
 #include "ComponentGuid.hpp"
 #include "ComponentTypeId.hpp"
+#include "Housekeeping.hpp"
 #include "Pool.hpp"
 #include "PoolWrapper.hpp"
 #include "Registry.hpp"
@@ -26,6 +27,9 @@ namespace hg {
 
 namespace hg::engine::acs {
 	class Registry {
+	public:
+		friend class ::hg::engine::acs::Housekeeping;
+
 	public:
 		using size_type = size_t;
 
@@ -214,5 +218,13 @@ namespace hg::engine::acs {
 
 	private:
 		void hackActorInit(cref<ActorInitializer> initializer_, cref<ActorGuid> guid_) const noexcept;
+
+		#pragma endregion
+
+	private:
+		Housekeeping _housekeeping;
+
+	public:
+		[[nodiscard]] ref<Housekeeping> housekeeping() noexcept;
 	};
 }
