@@ -240,7 +240,7 @@ struct mapped_load {
 };
 
 static consteval auto test_gen_map() {
-	auto tmp = make_compile_map<string_view, mapped_load>(
+	return make_compile_map<string_view, mapped_load>(
 		std::pair<string_view, mapped_load> { "b"sv, {} },
 		std::pair<string_view, mapped_load> { "c"sv, {} },
 		std::pair<string_view, mapped_load> { "a"sv, {} },
@@ -251,11 +251,10 @@ static consteval auto test_gen_map() {
 		std::pair<string_view, mapped_load> { "y"sv, {} },
 		std::pair<string_view, mapped_load> { "y"sv, {} }
 	);
-	return tmp;
 }
 
 static consteval auto test_gen_hash_map() {
-	auto tmp = make_compile_hash_map<string_view, mapped_load>(
+	return make_compile_hash_map<string_view, mapped_load>(
 		std::pair<string_view, mapped_load> { "b"sv, {} },
 		std::pair<string_view, mapped_load> { "c"sv, {} },
 		std::pair<string_view, mapped_load> { "a"sv, {} },
@@ -266,7 +265,6 @@ static consteval auto test_gen_hash_map() {
 		std::pair<string_view, mapped_load> { "y"sv, {} },
 		std::pair<string_view, mapped_load> { "y"sv, {} }
 	);
-	return tmp;
 }
 
 static consteval auto test_gen_mass_hash_map() {
