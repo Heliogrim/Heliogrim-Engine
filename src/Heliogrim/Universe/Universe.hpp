@@ -86,19 +86,9 @@ namespace hg {
 		[[nodiscard]] cref<decltype(_internal)> unwrap() const noexcept;
 
 	public:
-		_Success_ (
-		return
-		==
-		true
-		)
-		bool addLevel(_In_ cref<Level> level_);
+		_Success_(return == true) bool addLevel(_In_ cref<Level> level_);
 
-		_Success_ (
-		return
-		==
-		true
-		)
-		bool removeLevel(_In_ cref<Level> level_);
+		_Success_(return == true) bool removeLevel(_In_ cref<Level> level_);
 
 	public:
 		/**

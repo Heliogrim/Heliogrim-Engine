@@ -57,7 +57,7 @@ namespace hg {
 		 */
 		Actor(cref<ActorInitializer> initializer_) noexcept;
 
-		Actor (cref<this_type>) = delete;
+		Actor(cref<this_type>) = delete;
 
 		Actor(mref<this_type>) noexcept = delete;
 
@@ -134,14 +134,7 @@ namespace hg {
 		};
 
 		template <IsConstructibleComponent Component_, typename Arg0_, typename... Args_>
-			requires IsConstructibleComponent < Component_
-
-		,
-		Arg0_&&
-		,
-		Args_&&
-		...
-		>
+			requires IsConstructibleComponent<Component_, Arg0_&&, Args_&&...>
 		Opt<ref<Component_>> addComponent(_In_ mref<AddComponentOptions> options_, Arg0_&& arg0_, Args_&&... args_) {
 
 			// TODO: Rework
@@ -161,23 +154,12 @@ namespace hg {
 
 			// TODO: Rework
 			auto initializer = ActorInitializer { *engine::Engine::getEngine()->getActors()->getRegistry() };
-			return Some<ref<Component_>>(*initializer.createComponent < Component_ > (*this, ::hg::move(options_)));
+			return Some<ref<Component_>>(*initializer.createComponent<Component_>(*this, ::hg::move(options_)));
 		}
 
 		template <IsConstructibleComponent Component_, typename Arg0_, typename... Args_>
-			requires (not
-		std::is_same_v<::hg::meta::peeled_t<Arg0_>, AddComponentOptions>
-		)
-		&&
-		IsConstructibleComponent
-		<
-		Component_
-		,
-		Arg0_&&
-		,
-		Args_&&
-		...
-		>
+			requires (not std::is_same_v<::hg::meta::peeled_t<Arg0_>, AddComponentOptions>) &&
+			IsConstructibleComponent<Component_, Arg0_&&, Args_&&...>
 		Opt<ref<Component_>> addComponent(Arg0_&& arg0_, Args_&&... args_) {
 			if (_rootComponent.is_null()) {
 				return addComponent<Component_, Arg0_, Args_...>(
@@ -223,7 +205,7 @@ namespace hg {
 		[[nodiscard]] AutoArray<VolatileComponent<HierarchyComponent>> removeComponents(ref<Component_> component_) {
 
 			auto result = AutoArray<VolatileComponent<HierarchyComponent>> {
-				VolatileComponent < Component_ > { std::addressof(component_) }
+				VolatileComponent<Component_> { std::addressof(component_) }
 			};
 
 			for (auto parentIndex = 0u, erasedIndex = 0u; parentIndex != result.size(); ++parentIndex) {
@@ -259,7 +241,7 @@ namespace hg {
 			#if 0
 			const auto removal = selectComponents(
 				[](ptr<const HierarchyComponent> component_) {
-					return IsType < Component_ > (*component_);
+					return IsType<Component_>(*component_);
 				}
 			);
 
@@ -270,7 +252,7 @@ namespace hg {
 
 			for (auto* const component : removal) {
 				result.emplace_back(
-					removeComponent < Component_ > (static_cast<ref<Component_>>(*component))
+					removeComponent<Component_>(static_cast<ref<Component_>>(*component))
 				);
 			}
 
