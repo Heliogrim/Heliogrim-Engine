@@ -26,6 +26,14 @@ namespace hg {
 			mref<ptr<HierarchyComponent>> parent_
 		);
 
+		SkyboxComponent(
+			mref<ComponentGuid> guid_,
+			mref<CachedActorPointer> owner_,
+			mref<ptr<HierarchyComponent>> parent_,
+			mref<StaticGeometryAssetHandle> geometry_,
+			mref<GfxMaterialAssetHandle> material_
+		);
+
 		~SkyboxComponent() override = default;
 
 	private:
