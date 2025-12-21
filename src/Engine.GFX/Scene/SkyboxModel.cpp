@@ -24,27 +24,29 @@ void SkyboxModel::create(const ptr<render::RenderSceneSystem> system_) {
 
 	auto origin = Cast<SkyboxComponent>(owner());
 
-	/**
-	 *
-	 */
 	//_boundary = origin->getBoundaries();
-	::hg::assertrt(origin->getSkyboxGeometry().isValid());
-	_skyboxGeometryAsset = std::addressof(*origin->getSkyboxGeometry().getAssetRef());
-	_skyboxGeometryResource = Engine::getEngine()->getResources()->loader().load(_skyboxGeometryAsset, nullptr);
+	if (origin->getSkyboxGeometry().isValid()) {
+		_skyboxGeometryAsset = origin->getSkyboxGeometry().getAssetRef();
+		_skyboxGeometryResource = Engine::getEngine()->getResources()->loader().load(std::addressof(*_skyboxGeometryAsset), nullptr);
+	}
 
-	/**
-	 *
-	 */
-	::hg::assertrt(origin->getSkyboxMaterial().isValid());
-	const auto& materialAsset = *origin->getSkyboxMaterial().getAssetRef();
-	auto materialResource = Engine::getEngine()->getResources()->loader().load(std::addressof(materialAsset), nullptr);
+	if (origin->getSkyboxMaterial().isValid()) {
+		const auto& materialAsset = *origin->getSkyboxMaterial().getAssetRef();
+		auto materialResource = Engine::getEngine()->getResources()->loader().load(std::addressof(materialAsset), nullptr);
 
-	_materials.push_back(materialResource.into<MaterialResource>());
+		_materials.emplace_back(materialResource.into<MaterialResource>());
+	}
 }
 
 void SkyboxModel::update(const ptr<render::RenderSceneSystem> system_) {}
 
-void SkyboxModel::destroy(const ptr<render::RenderSceneSystem> system_) {}
+void SkyboxModel::destroy(const ptr<render::RenderSceneSystem> system_) {
+
+	_skyboxGeometryResource.reset();
+	_skyboxGeometryAsset = None;
+
+	_materials.clear();
+}
 
 void SkyboxModel::capture(nmpt<render::MeshCaptureInterface> mci_) const noexcept {}
 
