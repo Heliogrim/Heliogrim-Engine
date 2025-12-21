@@ -4,22 +4,23 @@
 #include "Traits.hpp"
 
 namespace hg::engine::acs {
+	template <typename KeyType_>
 	class macro_novtable PoolWrapperBase {
 	public:
 		virtual ~PoolWrapperBase() = default;
 
-		virtual void insert(cref<ActorGuid> key_) = 0;
+		virtual void insert(ref<const KeyType_> key_) = 0;
 
-		virtual ptr<void> get(cref<ActorGuid> key_) = 0;
+		virtual ptr<void> get(ref<const KeyType_> key_) = 0;
 
-		virtual void erase(cref<ActorGuid> key_) = 0;
+		virtual void erase(ref<const KeyType_> key_) = 0;
 	};
 
-	template <typename PooledType_>
+	template <typename PooledType_, typename KeyType_, KeyType_ InvalidKey_>
 	class PoolWrapper final :
-		public PoolWrapperBase {
+		public PoolWrapperBase<KeyType_> {
 	public:
-		using pool_type = Pool<ActorGuid, PooledType_, invalid_actor_guid>;
+		using pool_type = Pool<KeyType_, PooledType_, InvalidKey_>;
 
 	public:
 		PoolWrapper(const ptr<pool_type> actual_) noexcept :
@@ -36,17 +37,17 @@ namespace hg::engine::acs {
 		}
 
 	public:
-		void insert(cref<ActorGuid> key_) override {
+		void insert(ref<const KeyType_> key_) override {
 			if constexpr (std::is_default_constructible_v<typename pool_type::assign_value_type>) {
 				_actual->insert(key_);
 			}
 		}
 
-		ptr<void> get(cref<ActorGuid> key_) override {
+		ptr<void> get(ref<const KeyType_> key_) override {
 			return _actual->get(key_);
 		}
 
-		void erase(cref<ActorGuid> key_) override {
+		void erase(ref<const KeyType_> key_) override {
 			_actual->erase(key_);
 		}
 	};
