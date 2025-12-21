@@ -50,7 +50,7 @@ function(library_assimp_init)
 	CachedFetchContent_Declare(
 			libassimp
 			GIT_REPOSITORY https://github.com/assimp/assimp.git
-			GIT_TAG v5.4.0
+			GIT_TAG v6.0.2
 			GIT_SHALLOW TRUE
 			GIT_PROGRESS TRUE
 			SOURCE_DIR "${vendor_src_path}"
