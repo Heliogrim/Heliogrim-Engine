@@ -28,6 +28,14 @@ namespace hg {
 			mref<ptr<HierarchyComponent>> parent_
 		);
 
+		StaticGeometryComponent(
+			mref<ComponentGuid> guid_,
+			mref<CachedActorPointer> owner_,
+			mref<ptr<HierarchyComponent>> parent_,
+			ref<const StaticGeometryAssetHandle> geometry_,
+			ref<const AutoArray<ptr<const GfxMaterialAssetHandle>>> materials_
+		);
+
 		~StaticGeometryComponent() override = default;
 
 	private:
