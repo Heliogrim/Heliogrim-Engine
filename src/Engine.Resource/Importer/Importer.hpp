@@ -3,6 +3,7 @@
 #include <Engine.Async/Await/Future.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
+#include "./ImportDestination.hpp"
 #include "../File.hpp"
 #include "../FileTypeId.hpp"
 
@@ -101,17 +102,10 @@ namespace hg::engine::res {
 		 */
 		[[nodiscard]] virtual descriptor_type descriptor() const noexcept = 0;
 
-		/**
-		 * Imports a file
-		 *
-		 * @author Julius
-		 * @date 10.09.2021
-		 *
-		 * @param  typeId_ Identifier for the type.
-		 * @param  file_ The file.
-		 *
-		 * @returns An import_result_type.
-		 */
-		[[nodiscard]] virtual import_result_type import(cref<FileTypeId> typeId_, cref<hg::fs::File> file_) const = 0;
+		[[nodiscard]] virtual import_result_type import(
+			ref<const FileTypeId> typeId_,
+			ref<const hg::fs::File> file_,
+			mref<ImportDestination> destination_
+		) const = 0;
 	};
 }
