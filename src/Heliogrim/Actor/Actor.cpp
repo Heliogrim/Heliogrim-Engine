@@ -8,6 +8,7 @@
 #include <Engine.Async/Await/Promise.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Universe.hpp>
+#include <Engine.Logging/Logger.hpp>
 #include <Engine.Reflect/IsType.hpp>
 #include <Engine.Scene/SceneBase.hpp>
 
@@ -40,35 +41,50 @@ Opt<ref<HierarchyComponent>> Actor::getRootComponent() const noexcept {
 	return _rootComponent;
 }
 
+void Actor::scheduleComponentRemoval(mref<ptr<HierarchyComponent>> component_) {
+	_universe->getScene()->registerContext()->remove(component_);
+}
+
+void Actor::scheduleComponentRelease(mref<ptr<LogicComponent>> component_) const {
+	engine::Engine::getEngine()->getActors()->getRegistry()->releaseActorComponent(VolatileComponent<> { ::hg::move(component_) });
+}
+
 cref<CompactSet<ptr<HierarchyComponent>>> Actor::getComponents() const noexcept {
 	return _components;
 }
 
-void Actor::addComponent(ptr<HierarchyComponent> component_) {
-	/**
-	 *
-	 */
-	if (component_->getParentComponent() == nullptr && !_rootComponent) {
-		_rootComponent = component_;
+void Actor::addComponent(mref<VolatileComponent<HierarchyComponent>> component_, Opt<ref<const AddComponentOptions>> options_) {
+
+	if (options_.is_null() || options_->parent.is_null()) {
+		::hg::assertrt(component_->getParentComponent() == nullptr && _rootComponent.is_null());
+		auto* const component = ::hg::move(component_).release();
+		_rootComponent = Some<ref<HierarchyComponent>>(*component);
+		_components.insert(component);
+		return;
 	}
 
-	#ifdef _DEBUG
-	if (component_->getParentComponent() != nullptr) {
-		::hg::assertd(
-			_components.contains(component_->getParentComponent()) &&
-			"Failed to ensure acknowledged parent component."
-		);
-	}
-	#endif
+	::hg::assertrt(component_->getParentComponent() == options_->parent.address());
+	::hg::assertd(
+		/* Check: Failed to ensure acknowledged parent component.*/
+		_components.contains(component_->getParentComponent())
+	);
 
-	_components.insert(component_);
+	_components.insert(::hg::move(component_).release());
 }
 
-void Actor::registerComponents(ref<IComponentRegisterContext> context_) {
+void Actor::registerComponents(ref<engine::core::Universe> universe_, ref<IComponentRegisterContext> context_) {
+
+	if (_universe != None && _universe.address() != std::addressof(universe_)) [[unlikely]] {
+		IM_CORE_WARN("Tried to register actor components in a mismatching scene.");
+		return;
+	}
+
+	_universe = Some<ref<engine::core::Universe>>(universe_);
+
 	/**
 	 * Guard for non rooted actor
 	 */
-	if (_rootComponent == nullptr) {
+	if (not _rootComponent.has_value()) {
 		return;
 	}
 
@@ -82,7 +98,7 @@ void Actor::registerComponents(ref<IComponentRegisterContext> context_) {
 		/**
 		 *
 		 */
-		const auto entry { *iter };
+		auto* const entry = *iter;
 		const auto parent { entry->getParentComponent() };
 
 		/**
@@ -107,14 +123,21 @@ void Actor::registerComponents(ref<IComponentRegisterContext> context_) {
 	}
 }
 
+void Actor::unregisterComponents(ref<IComponentRegisterContext> context_) {
+
+	// TODO: Check whether we need to remove components in (hierarchical) order
+	for (const auto& entry : getComponents()) {
+		context_.remove(entry);
+	}
+}
+
 template <>
 void VolatileActor<Actor>::destroy(ptr<Actor> obj_) {
 	auto registry = engine::Engine::getEngine()->getActors()->getRegistry();
 
-	const auto actorGuid = obj_->guid();
-	for (const auto* const component : obj_->getComponents()) {
+	for (auto* const component : obj_->getComponents()) {
 		::hg::assertd(component->getTypeId().data);
-		registry->releaseActorComponent(actorGuid, component->getTypeId());
+		registry->releaseActorComponent(VolatileComponent<> { component });
 	}
 	registry->destroyActor(std::move(obj_));
 }
@@ -181,17 +204,16 @@ Future<bool> hg::Destroy(mref<ptr<Actor>> actor_, cref<Universe> universe_) noex
 	const auto scene = universe->getScene();
 	auto& registry = *engine::Engine::getEngine()->getActors()->getRegistry();
 
-	const auto guid { actor_->guid() };
 	// Warning: Check modify-on-read condition
 	// Warning: Multiple unsafe paths!!!
-	for (const auto* const component : actor_->getComponents()) {
+	for (auto* const component : actor_->getComponents()) {
 		assert(component->getTypeId().data);
 
 		if (IsType<SceneComponent>(*component)) {
 			scene->remove(static_cast<const ptr<const SceneComponent>>(component));
 		}
 
-		registry.releaseActorComponent(guid, component->getTypeId());
+		registry.releaseActorComponent(VolatileComponent<> { component });
 	}
 
 	/**/
