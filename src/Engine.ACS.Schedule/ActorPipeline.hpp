@@ -13,6 +13,7 @@ namespace hg::engine::acs::schedule {
 		/**/
 
 		static const inline StageIdentifier ActorTick = "::Core::ActorTick";
+		static const inline StageIdentifier ActorHousekeeping = "::Core::ActorHousekeeping";
 
 	public:
 		ActorPipeline();
