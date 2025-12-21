@@ -758,10 +758,14 @@ Result<Arci<system::ArchiveStorage>, mutate_package_error> StorageSystem::addArc
 					streamoff {}, _opt->archive.totalSize(), _opt->archive
 				}
 			);
+
+			return guid;
 		}
 	);
 
-	return Expected { Arci<system::ArchiveStorage> {} };
+	auto descriptor = ArchiveStorageDescriptor { ArchiveUrl { result.value() }, ::hg::move(package_).into<IStorage>() };
+	auto registeredStorage = _registry.insert(::hg::move(descriptor));
+	return Expected { ::hg::move(registeredStorage).into<system::ArchiveStorage>() };
 }
 
 Result<Vector<Arci<system::ArchiveStorage>>, query_blob_error> StorageSystem::enumArchivesFromPackage(
