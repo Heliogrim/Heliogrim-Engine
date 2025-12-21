@@ -22,10 +22,7 @@ namespace hg::engine::serialization::access {
 		struct NewDeleteAllocator {
 			template <CompleteType TargetType_ = target_type>
 			[[nodiscard]] constexpr TargetType_* alloc(auto&&... args_) const
-					requires std::is_constructible_v < TargetType_, decltype(args_)
-			...
-			>
- {
+				requires std::is_constructible_v<TargetType_, decltype(args_)...> {
 				return new TargetType_(std::forward<decltype(args_)>(args_)...);
 			}
 		};
@@ -144,31 +141,25 @@ namespace hg::engine::serialization::access {
 
 	public:
 		[[nodiscard]] static decltype(auto) instantiate(
-				cref<Scheme_> scheme_,
-				auto&&... args_
-			) noexcept requires CompleteType<Scheme_> && (not std::is_empty_v<Scheme_>
-		)
-		&&
-		requires { {
-				scheme_.template instantiate<this_type>(std::forward<decltype(args_)>(args_)...)
-			};
-		}
- {
+			cref<Scheme_> scheme_,
+			auto&&... args_
+		) noexcept
+			requires CompleteType<Scheme_> && (not std::is_empty_v<Scheme_>) &&
+			requires {
+				{ scheme_.template instantiate<this_type>(std::forward<decltype(args_)>(args_)...) };
+			} {
 			return scheme_.template instantiate<this_type>(std::forward<decltype(args_)>(args_)...);
 		}
 
 		[[nodiscard]] static decltype(auto) deserialize(
-				cref<Scheme_> scheme_,
-				cref<RecordScopedSlot> slot_,
-				auto&&... args_
-			) noexcept requires CompleteType<Scheme_> && (not std::is_empty_v<Scheme_>
-		)
-		&&
-		requires { {
-				scheme_.template deserialize<this_type>(slot_, std::forward<decltype(args_)>(args_)...)
-			};
-		}
- {
+			cref<Scheme_> scheme_,
+			cref<RecordScopedSlot> slot_,
+			auto&&... args_
+		) noexcept
+			requires CompleteType<Scheme_> && (not std::is_empty_v<Scheme_>) &&
+			requires {
+				{ scheme_.template deserialize<this_type>(slot_, std::forward<decltype(args_)>(args_)...) };
+			} {
 			return scheme_.template deserialize<this_type>(slot_, std::forward<decltype(args_)>(args_)...);
 		}
 	};

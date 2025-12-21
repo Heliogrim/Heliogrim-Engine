@@ -25,14 +25,10 @@ namespace hg::engine::serialization {
 	TypeIdType_ get_typeId_slot(_In_ ref<const StructScopedSlot> slot_) {
 		if constexpr (std::is_convertible_v<type_id, TypeIdType_>) {
 			return get_typeId_slot<type_id>(slot_);
-		} else if constexpr (std::is_constructible_v < TypeIdType_, type_id &&  >) {
+		} else if constexpr (std::is_constructible_v<TypeIdType_, type_id&&>) {
 			return TypeIdType_ { get_typeId_slot<type_id>(slot_) };
 		} else {
-			static_assert(not
-			std::is_convertible_v<type_id, TypeIdType_>&& not std::is_constructible_v<TypeIdType_, type_id&&>, 
-			""
-			)
-			;
+			static_assert(not std::is_convertible_v<type_id, TypeIdType_> && not std::is_constructible_v<TypeIdType_, type_id&&>, "");
 			std::unreachable();
 		}
 	}
