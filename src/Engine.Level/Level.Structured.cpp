@@ -21,13 +21,13 @@ using namespace ::hg::engine::core;
 using namespace ::hg;
 
 template <>
-void access::Structure<Level>::serialize(const Level& self_, mref<StructScopedSlot> slot_) {
-	Structure<math::Bounding>::serialize(self_._bounding, slot_.insertStructSlot("bounding"));
+void access::Structure<Level>::serialize(const Level& self_, mref<StructScopedSlot> record_) {
+	Structure<math::Bounding>::serialize(self_._bounding, record_.insertStructSlot("bounding"));
 
 	/**/
 
 	const auto serial = Engine::getEngine()->getSerialization();
-	auto sequence = slot_.insertRecordSlot(Symbols::Components).intoSeq();
+	auto sequence = record_.insertRecordSlot(Symbols::Components).intoSeq();
 
 	for (const auto actor : self_.getActors()) {
 
@@ -40,12 +40,12 @@ void access::Structure<Level>::serialize(const Level& self_, mref<StructScopedSl
 }
 
 template <>
-void access::Structure<Level>::hydrate(cref<StructScopedSlot> slot_, Level& target_) {
-	Structure<math::Bounding>::hydrate(slot_.getStructSlot("bounding"), target_._bounding);
+void access::Structure<Level>::hydrate(cref<StructScopedSlot> record_, Level& target_) {
+	Structure<math::Bounding>::hydrate(record_.getStructSlot("bounding"), target_._bounding);
 
 	/**/
 
-	const auto sequence = slot_.getRecordSlot(Symbols::Components).asSeq();
+	const auto sequence = record_.getRecordSlot(Symbols::Components).asSeq();
 	::hg::assertrt(sequence.slot()->validateType());
 
 	/**/
@@ -67,6 +67,6 @@ void access::Structure<Level>::hydrate(cref<StructScopedSlot> slot_, Level& targ
 		auto re = fnSet->deserialize(record, std::addressof(registry));
 		::hg::assertrt(re != nullptr);
 
-		target_.addActor(re);
+		target_.addActor(VolatileActor<> { ::hg::move(re) });
 	}
 }
