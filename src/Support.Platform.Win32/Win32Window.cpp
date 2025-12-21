@@ -1,6 +1,6 @@
 #include "Win32Window.hpp"
 
-#include <Engine.Common/SDL2.hpp>
+#include <Engine.Common/SDL3.hpp>
 #include <Engine.Common/stdafx.h>
 
 using namespace hg::engine::platform;
