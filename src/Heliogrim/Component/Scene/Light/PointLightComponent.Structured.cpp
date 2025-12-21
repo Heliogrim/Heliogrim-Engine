@@ -1,3 +1,4 @@
+#include <Engine.Common/Move.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Structure/FloatScopedSlot.hpp>
 #include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>
@@ -12,30 +13,25 @@ using namespace hg;
 template <>
 void access::Structure<PointLightComponent>::serialize(
 	const PointLightComponent& self_,
-	mref<StructScopedSlot> slot_
+	mref<StructScopedSlot> record_
 ) {
-
-	slot_.insertSlot<u64>(Symbols::Type) << PointLightComponent::typeId.data;
+	record_.insertSlot<f32>("distanceLimit") << self_._distanceLimit;
+	Structure<math::fvec3>::serialize(self_._luminance, record_.insertStructSlot("luminance"));
 
 	/**/
 
-	slot_.insertSlot<f32>("distanceLimit") << self_._distanceLimit;
-	Structure<math::fvec3>::serialize(self_._luminance, slot_.insertStructSlot("luminance"));
-
+	return Structure<HierarchyComponent>::serialize(self_, ::hg::move(record_));
 }
 
 template <>
 void access::Structure<PointLightComponent>::hydrate(
-	cref<StructScopedSlot> slot_,
+	cref<StructScopedSlot> record_,
 	PointLightComponent& target_
 ) {
-
-	component_type_id checkTypeId {};
-	slot_.getSlot<u64>(Symbols::Type) >> checkTypeId.data;
-	::hg::assertrt(checkTypeId == PointLightComponent::typeId);
+	Structure<HierarchyComponent>::hydrate(record_, target_);
 
 	/**/
 
-	slot_.getSlot<f32>("distanceLimit") >> target_._distanceLimit;
-	Structure<math::fvec3>::hydrate(slot_.getStructSlot("luminance"), target_._luminance);
+	record_.getSlot<f32>("distanceLimit") >> target_._distanceLimit;
+	Structure<math::fvec3>::hydrate(record_.getStructSlot("luminance"), target_._luminance);
 }
