@@ -34,8 +34,9 @@ FontImporter::descriptor_type FontImporter::descriptor() const noexcept {
 }
 
 engine::res::Importer<AtomicRefCountedIntrusive<engine::assets::FontAsset>, void*>::import_result_type FontImporter::import(
-	cref<res::FileTypeId> typeId_,
-	cref<hg::fs::File> file_
+	ref<const res::FileTypeId> typeId_,
+	ref<const hg::fs::File> file_,
+	mref<res::ImportDestination> destination_
 ) const {
 
 	/**/
@@ -55,7 +56,7 @@ engine::res::Importer<AtomicRefCountedIntrusive<engine::assets::FontAsset>, void
 		generate_asset_guid(),
 		StringView { sourceName },
 		AssetReferenceUrl {},
-		AssetUrl { AssetPath { file_.path().parentPath() }, AssetName { sourceName } },
+		AssetUrl { AssetPath { ::hg::move(destination_).virtualBasePath }, AssetName { sourceName } },
 		Vector<fs::Url> { { storage::FileScheme, clone(file_.path()) } }
 	);
 

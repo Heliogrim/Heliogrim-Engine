@@ -104,7 +104,9 @@ bool KtxImporter::canImport(cref<res::FileTypeId> typeId_, cref<hg::fs::File> fi
 		return false;
 	}
 
-	if (not file_.exists()) {
+	if (not
+		file_.exists()
+	) {
 		return false;
 	}
 
@@ -158,7 +160,11 @@ static KtxImporter::import_result_type makeImportResult(mref<KtxImporter::import
 	return tmp0;
 }
 
-KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId_, cref<hg::fs::File> file_) const {
+KtxImporter::import_result_type KtxImporter::import(
+	ref<const res::FileTypeId> typeId_,
+	ref<const hg::fs::File> file_,
+	mref<res::ImportDestination> destination_
+) const {
 
 	/**/
 
@@ -166,9 +172,9 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
 	const auto sourceExt { static_cast<cref<std::filesystem::path>>(file_.path()).extension().string() };
 	const auto sourceName { sourceFileName.substr(0, sourceFileName.size() - sourceExt.size()) };
 
-	constexpr auto imageAssetUrlName = "Image"sv;
-	constexpr auto textureAssetUrlName = "Texture"sv;
-	const auto source2vfsPath = assets::AssetPath { file_.path() };
+	const auto imageAssetUrlName = std::format("{} (Image)"sv, sourceName);
+	const auto textureAssetUrlName = std::format("{} (Texture)"sv, sourceName);
+	const auto vfs = assets::AssetPath { destination_.virtualBasePath };
 
 	/**/
 
@@ -178,9 +184,9 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
 	// TODO: Remap the source file url.
 	auto imageAsset = Arci<ImageAsset>::create(
 		generate_asset_guid(),
-		StringView { sourceName },
+		StringView { imageAssetUrlName },
 		AssetReferenceUrl {},
-		AssetUrl { clone(source2vfsPath), imageAssetUrlName },
+		AssetUrl { clone(vfs), imageAssetUrlName },
 		Vector<fs::Url> { { "file"sv, clone(file_.path()) } }
 	);
 
@@ -220,9 +226,9 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
 
 		textureAsset = Arci<TextureAsset>::create(
 			generate_asset_guid(),
-			StringView { sourceName },
+			StringView { textureAssetUrlName },
 			AssetReferenceUrl {},
-			AssetUrl { clone(source2vfsPath), textureAssetUrlName },
+			AssetUrl { clone(vfs), textureAssetUrlName },
 			imageAsset->getAssetGuid(),
 			Vector<AssetGuid> {},
 			math::uivec3 {
@@ -260,9 +266,9 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
 
 		textureAsset = Arci<TextureAsset>::create(
 			generate_asset_guid(),
-			StringView { sourceName },
+			StringView { textureAssetUrlName },
 			AssetReferenceUrl {},
-			AssetUrl { clone(source2vfsPath), textureAssetUrlName },
+			AssetUrl { clone(vfs), textureAssetUrlName },
 			imageAsset->getAssetGuid(),
 			Vector<AssetGuid> {},
 			math::uivec3 {

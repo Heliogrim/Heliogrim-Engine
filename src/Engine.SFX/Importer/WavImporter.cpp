@@ -25,7 +25,11 @@ WavImporter::descriptor_type WavImporter::descriptor() const noexcept {
 	return {};
 }
 
-WavImporter::import_result_type WavImporter::import(cref<res::FileTypeId> typeId_, cref<::hg::fs::File> file_) const {
+WavImporter::import_result_type WavImporter::import(
+	ref<const res::FileTypeId> typeId_,
+	ref<const hg::fs::File> file_,
+	mref<res::ImportDestination> destination_
+) const {
 
 	SCOPED_STOPWATCH
 
