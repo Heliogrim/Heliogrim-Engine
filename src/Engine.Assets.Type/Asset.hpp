@@ -8,6 +8,7 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Managed/Rc.hpp>
 #include <Engine.Reflect/Inherit/InheritBase.hpp>
+#include <Engine.Serialization/Access/__fwd.hpp>
 #include <Engine.Serialization/Layout/__fwd.hpp>
 
 namespace hg::engine::assets {
@@ -17,6 +18,9 @@ namespace hg::engine::assets {
 	public:
 		template <typename>
 		friend class ::hg::engine::serialization::DataLayout;
+
+		ACCESS_LAYOUT
+		ACCESS_STRUCTURE
 
 	protected:
 		Asset(
