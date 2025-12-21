@@ -1,5 +1,5 @@
-﻿diff --git a/CMakeLists.txt b/CMakeLists.txt
-index da1917e..6cafe00 100644
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index da1917e..b4064c8 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -53,7 +53,7 @@ foreach(spng_TARGET ${spng_TARGETS})
@@ -11,3 +11,16 @@ index da1917e..6cafe00 100644
      target_link_libraries(${spng_TARGET} PRIVATE ${MATH_LIBRARY})
  endforeach()
  
+@@ -87,12 +87,6 @@ install(
+   DESTINATION ${config_install_dir}
+ )
+ 
+-install(
+-  EXPORT ${targets_export_name}
+-  NAMESPACE "spng::"
+-  DESTINATION ${config_install_dir}
+-)
+-
+ if(NOT CMAKE_HOST_WIN32 OR CYGWIN OR MINGW)
+     set(prefix      ${CMAKE_INSTALL_PREFIX})
+     set(exec_prefix ${CMAKE_INSTALL_PREFIX})
