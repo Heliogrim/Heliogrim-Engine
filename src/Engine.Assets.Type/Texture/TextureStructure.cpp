@@ -12,41 +12,39 @@ using namespace hg::engine::assets;
 using namespace hg;
 
 template <>
-void access::Structure<TextureAsset>::serialize(const TextureAsset& self_, mref<StructScopedSlot> slot_) {
+void access::Structure<TextureAsset>::serialize(const TextureAsset& self_, mref<StructScopedSlot> record_) {
 
-	Structure<Guid>::serialize(self_._guid, slot_.insertStructSlot("__guid__"));
-	slot_.insertSlot<u64>("__type__") << self_._type.data;
-	slot_.insertSlot<string>("name") << self_._assetName;
-
-	Structure<Guid>::serialize(self_._baseImage, slot_.insertStructSlot("baseImage")); {
-		auto images = slot_.insertSlot<void>("images").intoSeq();
+	Structure<Guid>::serialize(self_._baseImage, record_.insertStructSlot("baseImage")); {
+		auto images = record_.insertSlot<void>("images").intoSeq();
 
 		for (const auto& entry : self_._images) {
 			Structure<Guid>::serialize(entry, images.addRecordSlot().intoStruct());
 		}
 	}
 
-	Structure<math::uivec3>::serialize(self_._extent, slot_.insertStructSlot("extent"));
-	slot_.insertSlot<gfx::TextureFormat>("format") << self_._format;
-	slot_.insertSlot<u32>("mipLevel") << self_._mipLevel;
-	slot_.insertSlot<gfx::TextureType>("textureType") << self_._textureType;
-}
-
-template <>
-void access::Structure<TextureAsset>::hydrate(cref<StructScopedSlot> slot_, TextureAsset& target_) {
-
-	Structure<Guid>::hydrate(slot_.getStructSlot("__guid__"), target_._guid);
-	slot_.getSlot<u64>("__type__") >> target_._type.data;
-	slot_.getSlot<string>("name") >> target_._assetName;
+	Structure<math::uivec3>::serialize(self_._extent, record_.insertStructSlot("extent"));
+	record_.insertSlot<gfx::TextureFormat>("format") << self_._format;
+	record_.insertSlot<u32>("mipLevel") << self_._mipLevel;
+	record_.insertSlot<gfx::TextureType>("textureType") << self_._textureType;
 
 	/**/
 
-	Structure<Guid>::hydrate(slot_.getSlot<void>("baseImage").asStruct(), target_._baseImage);
+	return access::Structure<Asset>::serialize(self_, ::hg::move(record_));
+}
+
+template <>
+void access::Structure<TextureAsset>::hydrate(cref<StructScopedSlot> record_, TextureAsset& target_) {
+
+	access::Structure<Asset>::hydrate(record_, target_);
+
+	/**/
+
+	Structure<Guid>::hydrate(record_.getSlot<void>("baseImage").asStruct(), target_._baseImage);
 
 	/**/
 
 	{
-		const auto images = slot_.getSlot<void>("images").asSeq();
+		const auto images = record_.getSlot<void>("images").asSeq();
 		const auto count = images.getRecordCount();
 
 		target_._images.reserve(count);
@@ -58,8 +56,8 @@ void access::Structure<TextureAsset>::hydrate(cref<StructScopedSlot> slot_, Text
 		}
 	}
 
-	Structure<math::uivec3>::hydrate(slot_.getRecordSlot("extent").asStruct(), target_._extent);
-	slot_.getSlot<gfx::TextureFormat>("format") >> target_._format;
-	slot_.getSlot<u32>("mipLevel") >> target_._mipLevel;
-	slot_.getSlot<gfx::TextureType>("textureType") >> target_._textureType;
+	Structure<math::uivec3>::hydrate(record_.getRecordSlot("extent").asStruct(), target_._extent);
+	record_.getSlot<gfx::TextureFormat>("format") >> target_._format;
+	record_.getSlot<u32>("mipLevel") >> target_._mipLevel;
+	record_.getSlot<gfx::TextureType>("textureType") >> target_._textureType;
 }

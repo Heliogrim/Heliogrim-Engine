@@ -12,23 +12,19 @@ using namespace hg::engine::assets;
 using namespace hg;
 
 template <>
-void access::Structure<GfxMaterial>::serialize(cref<GfxMaterial> self_, mref<StructScopedSlot> slot_) {
+void access::Structure<GfxMaterial>::serialize(cref<GfxMaterial> self_, mref<StructScopedSlot> record_) {
 
-	Structure<Guid>::serialize(self_._guid, slot_.insertStructSlot("__guid__"));
-	slot_.insertSlot<u64>("__type__") << self_._type.data;
-	slot_.insertSlot<string>("name") << self_._assetName;
+	// TODO:
 
 	/**/
 
-	// TODO:
+	Structure<Asset>::serialize(self_, ::hg::move(record_));
 }
 
 template <>
-void access::Structure<GfxMaterial>::hydrate(cref<StructScopedSlot> slot_, GfxMaterial& target_) {
+void access::Structure<GfxMaterial>::hydrate(cref<StructScopedSlot> record_, GfxMaterial& target_) {
 
-	Structure<Guid>::hydrate(slot_.getStructSlot("__guid__"), target_._guid);
-	slot_.getSlot<u64>("__type__") >> target_._type.data;
-	slot_.getSlot<string>("name") >> target_._assetName;
+	Structure<Asset>::hydrate(record_, target_);
 
 	/**/
 

@@ -11,11 +11,7 @@ using namespace hg::engine::serialization;
 using namespace hg;
 
 template <>
-void access::Structure<ImageAsset>::serialize(const ImageAsset& self_, mref<StructScopedSlot> slot_) {
-
-	Structure<Guid>::serialize(self_._guid, slot_.insertStructSlot("__guid__"));
-	slot_.insertSlot<u64>("__type__") << self_._type.data;
-	slot_.insertSlot<string>("name") << self_._assetName;
+void access::Structure<ImageAsset>::serialize(const ImageAsset& self_, mref<StructScopedSlot> record_) {
 
 	Vector<string> sources {};
 	sources.reserve(self_._sources.size());
@@ -24,18 +20,22 @@ void access::Structure<ImageAsset>::serialize(const ImageAsset& self_, mref<Stru
 		sources.push_back(string { entry.encode() });
 	}
 
-	slot_.insertSlot<string, Vector>("sources") << sources;
+	record_.insertSlot<string, Vector>("sources") << sources;
+
+	/**/
+
+	return access::Structure<Asset>::serialize(self_, ::hg::move(record_));
 }
 
 template <>
-void access::Structure<ImageAsset>::hydrate(cref<StructScopedSlot> slot_, ImageAsset& target_) {
+void access::Structure<ImageAsset>::hydrate(ref<const StructScopedSlot> record_, ImageAsset& target_) {
 
-	Structure<Guid>::hydrate(slot_.getSlot<void>("__guid__").asStruct(), target_._guid);
-	slot_.getSlot<u64>("__type__") >> target_._type.data;
-	slot_.getSlot<string>("name") >> target_._assetName;
+	access::Structure<Asset>::hydrate(record_, target_);
+
+	/**/
 
 	Vector<string> sources {};
-	slot_.getSlot<string, Vector>("sources") >> sources;
+	record_.getSlot<string, Vector>("sources") >> sources;
 
 	target_._sources.reserve(sources.size());
 	for (const auto& entry : sources) {
