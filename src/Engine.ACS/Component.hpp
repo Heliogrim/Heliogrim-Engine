@@ -1,281 +1,37 @@
 #pragma once
+
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Meta/TypeId.hpp>
 
-namespace hg::engine::acs {
-	template <typename Ty>
-	concept IsComponent = hg::HasStaticType<Ty> &&
-		std::is_object_v<Ty> &&
-		std::is_nothrow_default_constructible_v<Ty>;
-	/* This will require the default constructor for a object to be noexcept attributed *///&&
-	//std::is_trivially_move_assignable_v<Ty> &&
-	//std::is_trivially_move_constructible_v<Ty>;
+namespace hg {
+	class LogicComponent;
+}
 
-	/**
-	 * A component handle which will be force by type cast of component reference using undefined behaviour to control pooled references.
-	 *
-	 * @author Julius
-	 * @date 31.08.2020
-	 *
-	 * @tparam ComponentType Type of the component type.
-	 */
-	template <IsComponent ComponentType>
-	struct component_handle {
+namespace hg {
+	template <typename ComponentType_ = LogicComponent>
+	class VolatileComponent final :
+		public UniquePtr<ComponentType_, void(*)(ptr<LogicComponent>)> {
 	public:
-		using internal_type = ComponentType;
-		using internal_ref_type = ComponentType&;
-		using internal_ptr_type = ComponentType*;
+		template <class Type_>
+		friend class VolatileComponent;
 
-		using value_type = component_handle<internal_type>;
-		using reference_type = component_handle<internal_type>&;
-		using const_reference_type = const component_handle<internal_type>&;
+	public:
+		using this_type = VolatileComponent<ComponentType_>;
+		using component_type = ComponentType_;
+		using base_type = UniquePtr<ComponentType_, void(*)(ptr<LogicComponent>)>;
 
-		/**
-		 * The pointer the handle is created above
-		 */
-		const internal_ptr_type ref;
+	public:
+		using base_type::base_type;
 
-		/**
-		 * Default constructor
-		 *
-		 * @author Julius
-		 * @date 03.09.2020
-		 */
-		component_handle() = delete;
+		VolatileComponent() = delete;
 
-		/**
-		 * Constructor
-		 * 
-		 *	Will create a invalid component_handle
-		 *
-		 * @author Julius
-		 * @date 03.09.2020
-		 *
-		 * @param nullptr
-		 */
-		component_handle(::std::nullptr_t) :
-			ref(nullptr) {}
+		constexpr explicit VolatileComponent(_Inout_ mref<ptr<ComponentType_>> component_) noexcept :
+			base_type(component_, VolatileComponent<>::destroy) {}
 
-		/**
-		 * Constructor
-		 *
-		 * @author Julius
-		 * @date 03.09.2020
-		 *
-		 * @param ref_ The reference to a valid component.
-		 */
-		component_handle(cref<internal_type> ref_) :
-			ref(&ref_) {}
+		template <typename OtherComponentType_>
+		constexpr explicit VolatileComponent(_Inout_ mref<VolatileComponent<OtherComponentType_>> other_) noexcept :
+			base_type(static_cast<typename base_type::pointer>(other_.release()), VolatileComponent<>::destroy) {}
 
-		/**
-		 * Constructor
-		 *
-		 * @author Julius
-		 * @date 03.09.2020
-		 *
-		 * @param ptr_ The pointer to a valid component.
-		 */
-		component_handle(const internal_ptr_type& ptr_) :
-			ref(ptr_) {}
-
-		/**
-		 * Copy Constructor
-		 *
-		 * @author Julius
-		 * @date 03.09.2020
-		 *
-		 * @param  other_ The other.
-		 */
-		component_handle(const_reference_type other_) :
-			ref(other_.ref) {}
-
-		/**
-		 * Pseudo Move Constructor
-		 *
-		 * @author Julius
-		 * @date 03.09.2020
-		 *
-		 * @param [in,out] other_ The other.
-		 */
-		component_handle(value_type&& other_) :
-			ref(std::move(other_.ref)) {}
-
-		/**
-		 * Copy Constructor
-		 *
-		 * @author Julius
-		 * @date 03.09.2020
-		 *
-		 * @tparam OtherType Type of the other type.
-		 * @param  other_ The other.
-		 */
-		template <IsComponent OtherType>
-		component_handle(typename component_handle<OtherType>::const_reference_type other_) :
-			ref(other_.ref) {}
-
-		/**
-		 * Pseudo Move Constructor
-		 *
-		 * @author Julius
-		 * @date 03.09.2020
-		 *
-		 * @tparam OtherType Type of the other type.
-		 * @param  other_ The other.
-		 */
-		template <IsComponent OtherType>
-		component_handle(typename component_handle<OtherType>::value_type&& other_) :
-			ref(std::move(other_.ref)) {}
-
-		/**
-		 * Check whether this is valid pointer
-		 *
-		 * @author Julius
-		 * @date 31.08.2020
-		 *
-		 * @returns The result of the operation.
-		 */
-		explicit operator bool() const noexcept {
-			return ref != nullptr;
-		}
-
-		/**
-		 * Indirection operator
-		 *
-		 * @author Julius
-		 * @date 31.08.2020
-		 *
-		 * @returns A immutable reference to the stored component; If this is invalid, function has undefined behavior.
-		 */
-		const ComponentType& operator *() const {
-			// TODO: Check whether we want reinterpret_cast or static_cast
-			return *(reinterpret_cast<const ComponentType*>(ref));
-		}
-
-		/**
-		 * Indirection operator
-		 *
-		 * @author Julius
-		 * @date 31.08.2020
-		 *
-		 * @returns A mutable reference to the stored component; If this is invalid, function has undefined behavior.
-		 */
-		ComponentType& operator *() {
-			return *(reinterpret_cast<ComponentType*>(ref));
-		}
-
-		/**
-		 * Member dereference operator
-		 *
-		 * @author Julius
-		 * @date 31.08.2020
-		 *
-		 * @returns The dereferenced object.
-		 */
-		const ComponentType* operator->() const {
-			return (reinterpret_cast<ComponentType*>(ref));
-		}
-
-		/**
-		 * Member dereference operator
-		 *
-		 * @author Julius
-		 * @date 31.08.2020
-		 *
-		 * @returns The dereferenced object.
-		 */
-		ComponentType* operator->() {
-			return (reinterpret_cast<ComponentType*>(ref));
-		}
-
-		/**
-		 * Const ComponentType* casting operator
-		 *
-		 * @author Julius
-		 * @date 09.11.2020
-		 *
-		 * @returns The result of the operation.
-		 */
-		operator const ComponentType*() const {
-			return (reinterpret_cast<const ComponentType*>(ref));
-		}
-
-		/**
-		 * ComponentType* casting operator
-		 *
-		 * @author Julius
-		 * @date 09.11.2020
-		 *
-		 * @returns The result of the operation.
-		 */
-		operator ComponentType*() {
-			return (reinterpret_cast<ComponentType*>(ref));
-		}
-
-		/**
-		 * Query if this is null
-		 *
-		 * @author Julius
-		 * @date 31.08.2020
-		 *
-		 * @returns True if null, false if not.
-		 */
-		[[nodiscard]] bool is_null() const noexcept {
-			return ref == nullptr;
-		}
-
-		/**
-		 * Check whether this is valid pointer
-		 *
-		 * @author Julius
-		 * @date 31.08.2020
-		 *
-		 * @returns True if it succeeds, false if it fails.
-		 */
-		[[nodiscard]] bool valid() const noexcept {
-			return ref != nullptr;
-		}
+	public:
+		static void destroy(ptr<LogicComponent> obj_);
 	};
-
-	/**
-	 * A null component.
-	 *
-	 * @author Julius
-	 * @date 31.08.2020
-	 */
-	struct null_component_t {};
-
-	/** The null component */
-	inline constexpr null_component_t null_component {};
-
-	/**
-	 * Equality operator
-	 *
-	 * @author Julius
-	 * @date 31.08.2020
-	 *
-	 * @param  left_ The first instance to compare.
-	 * @param  right_ The second instance to compare.
-	 *
-	 * @returns True if the parameters are considered equivalent.
-	 */
-	template <IsComponent ComponentType>
-	bool operator ==(const typename component_handle<ComponentType>::reference_type left_, null_component_t right_) {
-		return left_.is_null();
-	}
-
-	/**
-	 * Equality operator
-	 *
-	 * @author Julius
-	 * @date 31.08.2020
-	 *
-	 * @param  left_ The first instance to compare.
-	 * @param  right_ The second instance to compare.
-	 *
-	 * @returns True if the parameters are considered equivalent.
-	 */
-	template <IsComponent ComponentType>
-	bool operator ==(null_component_t left_, const typename component_handle<ComponentType>::reference_type right_) {
-		return right_.is_null();
-	}
 }
