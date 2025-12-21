@@ -19,7 +19,7 @@ namespace std {
 	template <>
 	struct hash<hg::AssetTypeId> :
 		public std::hash<hg::type_id> {
-		[[nodiscard]] std::size_t operator()(hg::cref<hg::AssetTypeId> typeId_) const noexcept {
+		[[nodiscard]] constexpr std::size_t operator()(hg::cref<hg::AssetTypeId> typeId_) const noexcept {
 			return static_cast<const std::hash<hg::type_id>&>(*this)(typeId_);
 		}
 	};
@@ -27,7 +27,7 @@ namespace std {
 	template <>
 	struct less<hg::AssetTypeId> :
 		public std::less<hg::type_id> {
-		[[nodiscard]] bool operator()(
+		[[nodiscard]] constexpr bool operator()(
 			hg::cref<hg::AssetTypeId> left_,
 			hg::cref<hg::AssetTypeId> right_
 		) const noexcept {
@@ -39,7 +39,7 @@ namespace std {
 	template <>
 	struct equal_to<hg::AssetTypeId> :
 		public std::equal_to<hg::type_id> {
-		[[nodiscard]] bool operator()(
+		[[nodiscard]] constexpr bool operator()(
 			hg::cref<hg::AssetTypeId> left_,
 			hg::cref<hg::AssetTypeId> right_
 		) const noexcept {
