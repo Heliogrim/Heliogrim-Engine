@@ -40,19 +40,22 @@ namespace hg::engine::core {
 		[[nodiscard]] nmpt<scene::SceneBase> getScene() const noexcept;
 
 	private:
+		// Question: Should we use Arc<ExclusiveResource< ...<core::Level> >> instead?
 		DenseSet<Arci<core::Level>> _levels;
 		Opt<Arci<core::Level>> _rootLevel;
+
+	public:
+		void commitLevel(nmpt<core::Level> level_);
+
+		void uncommitLevel(nmpt<core::Level> level_);
 
 	public:
 		void addLevel(mref<Arci<core::Level>> level_);
 
 		[[nodiscard]] std::span<const Arci<core::Level>> getLevels() const noexcept;
 
-		[[nodiscard]] cref<Arci<core::Level>> getRootLevel() const noexcept;
+		[[nodiscard]] ref<const Arci<core::Level>> getRootLevel() const noexcept;
 
 		void removeLevel(cref<Arci<core::Level>> level_);
-
-	public:
-		void commitLevel(mref<Arci<core::Level>> level_);
 	};
 }
