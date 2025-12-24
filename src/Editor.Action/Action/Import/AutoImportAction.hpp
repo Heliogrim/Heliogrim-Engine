@@ -4,9 +4,14 @@
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Managed/Rc.hpp>
+#include <Engine.Resource/Importer/ImportDestination.hpp>
 #include <Engine.Storage.Registry/Url/FileUrl.hpp>
 
 #include "ImportAction.hpp"
+
+namespace hg::engine::storage::system {
+	class PackageStorage;
+}
 
 namespace hg::editor {
 	class AutoImportAction :
@@ -14,13 +19,19 @@ namespace hg::editor {
 	public:
 		AutoImportAction() noexcept;
 
-		AutoImportAction(_In_ mref<engine::storage::FileUrl> importFile_) noexcept;
+		AutoImportAction(
+			_In_ mref<engine::storage::FileUrl> importFile_,
+			_In_ mref<engine::res::ImportDestination> importDestination_
+		) noexcept;
 
 		~AutoImportAction() override;
 
 	private:
 		engine::storage::FileUrl _importFile;
+		engine::res::ImportDestination _importDestination;
+
 		Vector<Arci<engine::assets::Asset>> _generatedAssets;
+		Arci<engine::storage::system::PackageStorage> _generatedPackage;
 
 	public:
 		[[nodiscard]] engine::storage::FileUrl getImportFile() const noexcept;
