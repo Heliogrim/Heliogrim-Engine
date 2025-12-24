@@ -18,6 +18,16 @@ void PreviewScene::add(cref<ComponentHierarchy> hierarchy_) {
 	::hg::todo_panic();
 }
 
+void PreviewScene::remove(ptr<HierarchyComponent> component_) {
+	if (auto* const sceneComponent = Cast<SceneComponent>(component_)) {
+		Scene::remove(sceneComponent);
+	}
+}
+
+void PreviewScene::remove(ref<const ComponentHierarchy> hierarchy_) {
+	::hg::todo_panic();
+}
+
 nmpt<IComponentRegisterContext> PreviewScene::registerContext() noexcept {
 	return this;
 }

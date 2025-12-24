@@ -15,6 +15,10 @@ namespace hg::engine::scene {
 
 		void add(cref<ComponentHierarchy> hierarchy_) override;
 
+		void remove(ptr<HierarchyComponent> component_) override;
+
+		void remove(ref<const ComponentHierarchy> hierarchy_) override;
+
 	public:
 		[[nodiscard]] nmpt<IComponentRegisterContext> registerContext() noexcept override;
 	};
