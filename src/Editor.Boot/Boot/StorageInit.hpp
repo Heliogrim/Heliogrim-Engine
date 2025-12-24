@@ -9,5 +9,5 @@ namespace hg::engine {
 }
 
 namespace hg::editor::boot {
-	void initRuntimeStorage(_In_ cref<engine::Config> cfg_, _In_ ref<engine::StorageModule> module_);
+	extern void initStorage(_In_ cref<engine::Config> cfg_, _In_ ref<engine::StorageModule> module_);
 }
