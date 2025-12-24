@@ -16,7 +16,7 @@ namespace hg::engine::cfg {
 }
 
 namespace hg::editor::boot {
-	void initRuntimeConfig(
+	extern void initRuntimeConfig(
 		_In_ cref<EditorEngine> engine_,
 		_In_ ref<engine::Config> cfg_,
 		_Inout_ ref<engine::cfg::RuntimeProvider> provider_

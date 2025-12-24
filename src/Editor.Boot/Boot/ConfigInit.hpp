@@ -16,7 +16,7 @@ namespace hg::engine::cfg {
 }
 
 namespace hg::editor::boot {
-	void initProjectConfig(_In_ ref<engine::Config> cfg_, _Inout_ ref<engine::cfg::ProjectProvider> provider_);
+	extern void initProjectConfig(_In_ ref<engine::Config> cfg_, _Inout_ ref<engine::cfg::ProjectProvider> provider_);
 
-	void initEditorConfig(_In_ ref<engine::Config> cfg_, _Inout_ ref<cfg::EditorProvider> provider_);
+	extern void initEditorConfig(_In_ ref<engine::Config> cfg_, _Inout_ ref<cfg::EditorProvider> provider_);
 }

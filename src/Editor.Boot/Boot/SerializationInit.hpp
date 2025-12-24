@@ -5,9 +5,9 @@
 
 namespace hg::engine {
 	class Config;
-	class StorageModule;
+	class SerializationModule;
 }
 
 namespace hg::editor::boot {
-	void initStorage(_In_ cref<engine::Config> cfg_, _In_ ref<engine::StorageModule> module_);
+	extern void initSerialization(_In_ cref<engine::Config> cfg_, _In_ ref<engine::SerializationModule> module_);
 }

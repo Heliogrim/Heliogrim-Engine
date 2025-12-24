@@ -1,5 +1,5 @@
 #pragma once
 
 namespace hg::editor::boot {
-	void initRender();
+	extern void preInitSubModules();
 }
