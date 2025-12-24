@@ -2,10 +2,10 @@
 
 #include <algorithm>
 #include <ranges>
-#include <Editor.Main/Boot/ConfigInit.hpp>
-#include <Editor.Main/Boot/SerializationInit.hpp>
-#include <Editor.Main/Boot/StorageInit.hpp>
-#include <Editor.Main/Boot/SubModuleInit.hpp>
+#include <Editor.Boot/Boot/ConfigInit.hpp>
+#include <Editor.Boot/Boot/SerializationInit.hpp>
+#include <Editor.Boot/Boot/StorageInit.hpp>
+#include <Editor.Boot/Boot/SubModuleInit.hpp>
 #include <Engine.ACS.Schedule/ActorPipeline.hpp>
 #include <Engine.ACS/ActorModule.hpp>
 #include <Engine.Assets/Assets.hpp>
@@ -81,7 +81,7 @@ bool EditorEngine::preInit() {
 	#ifdef WIN32
 	_platform = make_uptr<WinPlatform>();
 	#else
-    _platform = nullptr;
+	_platform = nullptr;
 	#endif
 
 	_resources = make_uptr<ResourceManager>();
@@ -278,15 +278,19 @@ bool EditorEngine::stop() {
 
 			/**/
 
-			auto prevUniverse = _primaryGameSession->getUniverseContext().getCurrentUniverse();
-			_primaryGameSession->getUniverseContext().setCurrentUniverse(nullptr);
-			removeUniverse(clone(prevUniverse));
+			auto prevEditorUniverse = _editorSession->getUniverseContext().getCurrentUniverse();
+			_editorSession->getUniverseContext().setCurrentUniverse(nullptr);
+			removeUniverse(clone(prevEditorUniverse));
+			prevEditorUniverse.reset();
 
 			/**/
 
-			prevUniverse = _editorSession->getUniverseContext().getCurrentUniverse();
-			_editorSession->getUniverseContext().setCurrentUniverse(nullptr);
-			removeUniverse(clone(prevUniverse));
+			auto prevPrimaryUniverse = _primaryGameSession->getUniverseContext().getCurrentUniverse();
+			_primaryGameSession->getUniverseContext().setCurrentUniverse(nullptr);
+			removeUniverse(clone(prevPrimaryUniverse));
+			prevPrimaryUniverse.reset();
+
+			/**/
 
 			next.test_and_set(std::memory_order::relaxed);
 			next.notify_one();
