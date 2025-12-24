@@ -62,7 +62,14 @@ bool Widget::shouldTick() const noexcept {
 
 void Widget::tick() {}
 
-void Widget::requestFocus() {
+void Widget::blur() {
+	const auto root = std::static_pointer_cast<Window>(this->root());
+	if (root == nullptr)
+		return;
+	WindowManager::get()->dispatch(root, FocusEvent { root });
+}
+
+void Widget::focus() {
 	const auto root = std::static_pointer_cast<Window>(this->root());
 	if (root == nullptr)
 		return;
@@ -94,11 +101,11 @@ bool Widget::dropOnClick(listen_handle_type handle_) {
 }
 
 EventResponse Widget::invokeOnMouseButtonDown(ref<const MouseEvent> event_) {
-	return _emitter.emit(ReflowEventNames::ClickEvent, event_);
+	return EventResponse::eUnhandled;
 }
 
 EventResponse Widget::invokeOnMouseButtonUp(ref<const MouseEvent> event_) {
-	return EventResponse::eUnhandled;
+	return _emitter.emit(ReflowEventNames::ClickEvent, event_);
 }
 
 EventResponse Widget::invokeOnMouseMove(ref<const MouseMoveEvent> event_) {

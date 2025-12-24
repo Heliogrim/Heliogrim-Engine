@@ -103,7 +103,9 @@ namespace hg::engine::reflow {
 		ReflowEventEmitter _emitter;
 
 	public:
-		void requestFocus();
+		void blur();
+
+		void focus();
 
 		virtual EventResponse invokeOnFocus(cref<FocusEvent> event_);
 
@@ -114,7 +116,7 @@ namespace hg::engine::reflow {
 		[[nodiscard]] listen_handle_type onBlur(listen_fn_type<FocusEvent> listenFn_);
 
 	public:
-		[[nodiscard]] listen_handle_type onClick(listen_fn_type<MouseEvent> listenFn_);
+		listen_handle_type onClick(listen_fn_type<MouseEvent> listenFn_);
 
 		bool dropOnClick(listen_handle_type handle_);
 
