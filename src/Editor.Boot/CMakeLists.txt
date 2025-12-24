@@ -1,16 +1,12 @@
 
 # Setup
-make_app_project(
-		APP_NAME "Editor"
-		APP_FOLDER "${IDE_FOLDER}/Editor"
-		LIB_NAME "Editor.Main"
+make_library_project(
+		LIB_NAME "Editor.Boot"
 		LIB_FOLDER "${IDE_FOLDER}/Editor"
-		SOURCE "Editor.Main"
 		LIBRARIES
 		${PROJECT_NAME}::Editor.Action
 		${PROJECT_NAME}::Editor.Assets.Actions
 		${PROJECT_NAME}::Editor.Assets.Default
-		${PROJECT_NAME}::Editor.Boot
 		${PROJECT_NAME}::Editor.Core
 		${PROJECT_NAME}::Editor.GFX.Event
 		${PROJECT_NAME}::Editor.GFX.Graphs
