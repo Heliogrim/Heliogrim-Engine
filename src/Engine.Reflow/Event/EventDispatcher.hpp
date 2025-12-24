@@ -115,7 +115,7 @@ namespace hg::engine::reflow {
 
 			if (not backlog.empty()) {
 				// Warning: Temporary Solution
-				if (not backlog.top()->state().isFocus()) {
+				if (not backlog.top()->state().isFocus() && event_._down == false) {
 					const FocusEvent focusEvent { backlog.top() };
 					dispatch(window_, focusEvent);
 				}
