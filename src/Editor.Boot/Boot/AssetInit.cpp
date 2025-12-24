@@ -1,58 +1,49 @@
 #include "AssetInit.hpp"
 
 /**/
-#include "Engine.Assets.Type/Geometry/StaticGeometry.hpp"
-#include "Engine.Assets.Type/Texture/FontAsset.hpp"
-#include "Engine.Assets.Type/Texture/ImageAsset.hpp"
-#include "Engine.Assets.Type/Texture/TextureAsset.hpp"
-#include "Editor.Action/Action/Action.hpp"
+#include <Engine.Storage.Registry/Storage/PackageStorage.hpp>
+#include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
+#include <Engine.Assets.Type/Texture/FontAsset.hpp>
+#include <Engine.Assets.Type/Texture/ImageAsset.hpp>
+#include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 /**/
 
 #include <algorithm>
-#include <cstring>
 #include <filesystem>
 #include <fstream>
 #include <ranges>
+#include <Action/Import/AutoImportAction.hpp>
+#include <Editor.Action/ActionManager.hpp>
+#include <Editor.Assets.Default/DefaultAssetInit.hpp>
 #include <Engine.Assets.System/AssetDescriptor.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
+#include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets/AssetTypeId.hpp>
+#include <Engine.Assets/Utils.hpp>
 #include <Engine.Common/GuidFormat.hpp>
 #include <Engine.Common/Sal.hpp>
+#include <Engine.Config/Config.hpp>
+#include <Engine.Config/Enums.hpp>
 #include <Engine.Core/Engine.hpp>
+#include <Engine.Core/Module/Modules.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
+#include <Engine.Reflect/IsType.hpp>
+#include <Engine.Resource.Archive/StorageReadonlyArchive.hpp>
+#include <Engine.Resource/ResourceManager.hpp>
+#include <Engine.Resource.Package/Attribute/MagicBytes.hpp>
 #include <Engine.Scheduler/Async.hpp>
-#include <Heliogrim/Heliogrim.hpp>
+#include <Engine.Serialization.Layouts/LayoutManager.hpp>
+#include <Engine.Serialization.Structures/Common/Guid.hpp>
+#include <Engine.Serialization.Structures/Common/TypeId.hpp>
+#include <Engine.Storage.Package/Pattern.hpp>
+#include <Engine.Storage.Registry/IStorage.hpp>
+#include <Engine.Storage.Registry/IStorageRegistry.hpp>
+#include <Engine.Storage/StorageModule.hpp>
+#include <Engine.Storage.Registry/Options/StorageDescriptor.hpp>
+#include <Engine.Storage.Registry/Storage/LocalFileStorage.hpp>
+#include <Engine.Storage.System/StorageSystem.hpp>
 #include <Heliogrim/Async/Await.hpp>
-
-#include "Editor.Assets.Default/DefaultAssetInit.hpp"
-#include "Editor.Action/ActionManager.hpp"
-#include "Editor.Action/Action/Import/AutoImportAction.hpp"
-#include "Engine.Assets/Assets.hpp"
-#include "Engine.Assets/Utils.hpp"
-#include "Engine.Config/Config.hpp"
-#include "Engine.Config/Enums.hpp"
-#include "Engine.Core/Module/Modules.hpp"
-#include "Engine.Reflect/IsType.hpp"
-#include "Engine.Resource.Archive/BufferArchive.hpp"
-#include "Engine.Resource.Archive/StorageReadonlyArchive.hpp"
-#include "Engine.Resource/ResourceManager.hpp"
-#include "Engine.Resource.Package/Attribute/MagicBytes.hpp"
-#include "Engine.Resource.Package/Attribute/PackageGuid.hpp"
-#include "Engine.Resource.Package/Linker/PackageLinker.hpp"
-#include "Engine.Serialization/Layout/DataLayoutBase.hpp"
-#include "Engine.Serialization/Scheme/DefaultScheme.hpp"
-#include "Engine.Serialization.Layouts/LayoutManager.hpp"
-#include "Engine.Storage.Package/Pattern.hpp"
-#include "Engine.Storage.Registry/IStorage.hpp"
-#include "Engine.Storage.Registry/IStorageRegistry.hpp"
-#include "Engine.Storage/StorageModule.hpp"
-#include "Engine.Storage.Registry/Options/FileStorageDescriptor.hpp"
-#include "Engine.Storage.Registry/Options/PackageStorageDescriptor.hpp"
-#include "Engine.Storage.Registry/Options/StorageDescriptor.hpp"
-#include "Engine.Storage.Registry/Storage/LocalFileStorage.hpp"
-#include "Engine.Storage.Registry/Storage/PackageStorage.hpp"
-#include "Engine.Storage.System/StorageSystem.hpp"
 
 using namespace hg::editor::boot;
 using namespace hg::engine;
@@ -63,6 +54,11 @@ using path = std::filesystem::path;
 namespace hg::engine::serialization {
 	class RecordScopedSlot;
 }
+
+struct IndexBase {
+	storage::UrlScheme scheme;
+	std::filesystem::path basePath;
+};
 
 struct Indexed {
 	std::filesystem::path primary;
@@ -83,7 +79,7 @@ struct RetryContext {
 static void package_discover_assets(mref<Arci<storage::system::PackageStorage>> packStore_);
 static bool is_archived_asset(mref<serialization::RecordScopedSlot> record_);
 static bool try_load_archived_asset(ref<const storage::ArchiveUrl> assetStorageUrl_, mref<serialization::RecordScopedSlot> record_);
-static bool auto_import(ref<Indexed> indexed_);
+static bool auto_import(ref<const IndexBase> indexBase_, ref<Indexed> indexed_);
 static bool try_recover_vfs(ref<assets::Asset> asset_, ref<const storage::ArchiveUrl> archiveUrl_);
 static Opt<::hg::engine::fs::Path> find_best_match_relative(ref<const ::hg::engine::fs::Path> lfsStoragePath_);
 // @formatter:on
@@ -358,7 +354,7 @@ static void indexDirectory(
 	_Inout_ ref<Vector<Indexed>> indexSet_
 );
 
-static void autoIndex(_In_ cref<path> root_);
+static void autoIndex(_In_ ref<const storage::UrlScheme> baseScheme_, _In_ cref<path> root_);
 
 /**/
 
@@ -382,11 +378,15 @@ void indexDirectory(cref<path> path_, ref<Vector<path>> backlog_, ref<Vector<Ind
 	}
 }
 
-void autoIndex(cref<path> root_) {
+void autoIndex(ref<const storage::UrlScheme> baseScheme_, cref<path> root_) {
 
 	if (not std::filesystem::exists(root_)) {
 		return;
 	}
+
+	const auto indexBase = IndexBase { .scheme = baseScheme_, .basePath = root_ };
+
+	/**/
 
 	Vector<path> backlog {};
 	Vector<Indexed> indexSet {};
@@ -410,7 +410,7 @@ void autoIndex(cref<path> root_) {
 
 	/**/
 
-	auto drop = [](ref<Indexed> indexed_) {
+	auto drop = [&indexBase](ref<Indexed> indexed_) {
 		const auto primaryExists = not indexed_.primary.empty();
 		const auto metaExists = not indexed_.meta.empty();
 
@@ -427,7 +427,7 @@ void autoIndex(cref<path> root_) {
 
 		if (primaryExists && not metaExists) {
 
-			if (auto_import(indexed_)) {
+			if (auto_import(indexBase, indexed_)) {
 				// Note: We currently don't schedule async, so we don't need to wait
 				return true;
 			}
@@ -466,8 +466,8 @@ void editor::boot::initAssets() {
 	const auto& projectAssetPath = cfg.getTyped<String>(engine::cfg::ProjectConfigProperty::eLocalAssetPath);
 	::hg::assertrt(projectAssetPath.has_value() && projectAssetPath->has_value());
 
-	autoIndex(**editorAssetPath);
-	autoIndex(**projectAssetPath);
+	autoIndex(storage::FileEditorScheme, **editorAssetPath);
+	autoIndex(storage::FileProjectScheme, **projectAssetPath);
 }
 
 void editor::boot::initDefaultAssets() {
@@ -578,11 +578,11 @@ bool is_archived_asset(mref<serialization::RecordScopedSlot> record_) {
 
 	/**/
 
-	if (not record.hasRecordSlot("__type__")) {
+	if (not serialization::has_typeId_slot(record) && not record.hasRecordSlot("__type__")) {
 		return false;
 	}
 
-	if (not record.hasRecordSlot("__guid__")) {
+	if (not serialization::has_guid_slot(record) && not record.hasRecordSlot("__guid__")) {
 		return false;
 	}
 
@@ -591,8 +591,17 @@ bool is_archived_asset(mref<serialization::RecordScopedSlot> record_) {
 	AssetTypeId typeId {};
 	AssetGuid guid = invalid_asset_guid;
 
-	serialization::access::Structure<Guid>::hydrate(record.getStructSlot("__guid__"), guid);
-	record.getSlot<u64>("__type__") >> typeId.data;
+	if (serialization::has_guid_slot(record)) {
+		guid = serialization::get_guid_slot<AssetGuid>(record);
+	} else {
+		serialization::access::Structure<Guid>::hydrate(record.getStructSlot("__guid__"), guid);
+	}
+
+	if (serialization::has_typeId_slot(record)) {
+		typeId = serialization::get_typeId_slot<AssetTypeId>(record);
+	} else {
+		record.getSlot<u64>("__type__") >> typeId.data;
+	}
 
 	/**/
 
@@ -614,8 +623,17 @@ bool try_load_archived_asset(ref<const storage::ArchiveUrl> assetStorageUrl_, mr
 	AssetTypeId typeId {};
 	AssetGuid guid = invalid_asset_guid;
 
-	serialization::access::Structure<Guid>::hydrate(record.getStructSlot("__guid__"), guid);
-	record.getSlot<u64>("__type__") >> typeId.data;
+	if (serialization::has_guid_slot(record)) {
+		guid = serialization::get_guid_slot<>(record);
+	} else {
+		serialization::access::Structure<Guid>::hydrate(record.getStructSlot("__guid__"), guid);
+	}
+
+	if (serialization::has_typeId_slot(record)) {
+		typeId = serialization::get_typeId_slot<AssetTypeId>(record);
+	} else {
+		record.getSlot<u64>("__type__") >> typeId.data;
+	}
 
 	/**/
 
@@ -734,7 +752,7 @@ bool try_load_archived_asset(ref<const storage::ArchiveUrl> assetStorageUrl_, mr
 	std::unreachable();
 }
 
-bool auto_import(ref<Indexed> indexed_) {
+bool auto_import(ref<const IndexBase> indexBase_, ref<Indexed> indexed_) {
 
 	const auto actions = nmpt<editor::ActionManager> {
 		static_cast<ptr<editor::ActionManager>>(
@@ -744,8 +762,14 @@ bool auto_import(ref<Indexed> indexed_) {
 
 	/**/
 
+	auto destination = res::ImportDestination {
+		.virtualBasePath = engine::fs::Path { std::filesystem::relative(indexed_.primary, indexBase_.basePath) },
+		.virtualRemapScheme = indexBase_.scheme
+	};
+
 	auto importAction = Arci<editor::AutoImportAction>::create(
-		storage::FileUrl { clone(storage::FileScheme), engine::fs::Path { indexed_.primary } }
+		storage::FileUrl { clone(storage::FileScheme), engine::fs::Path { indexed_.primary } },
+		::hg::move(destination)
 	);
 	const auto result = actions->apply(clone(importAction));
 
