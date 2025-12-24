@@ -3,17 +3,26 @@
 #include <algorithm>
 #include <ranges>
 #include <Engine.Asserts/Todo.hpp>
+#include <Engine.Assets.System/AssetDescriptor.hpp>
+#include <Engine.Assets.System/IAssetRegistry.hpp>
+#include <Engine.Assets/Assets.hpp>
 #include <Engine.Common/Optional.hpp>
 #include <Engine.Common/Sal.hpp>
+#include <Engine.Storage.Registry/Storage/PackageStorage.hpp>
 
 using namespace hg::editor;
 using namespace hg;
 
 /**/
 
+struct AutoImportInternalResult {
+	Vector<Arci<engine::assets::Asset>> assets;
+	Arci<engine::storage::system::PackageStorage> package;
+};
+
 // @formatter:off
-[[nodiscard]] static Opt<Vector<Arci<engine::assets::Asset>>> autoImportBundle(cref<engine::storage::FileUrl> bundleUrl_);
-[[nodiscard]] static Opt<Vector<Arci<engine::assets::Asset>>> autoImportFile(cref<engine::storage::FileUrl> fileUrl_);
+[[nodiscard]] static Opt<AutoImportInternalResult> autoImportBundle(cref<engine::storage::FileUrl> bundleUrl_, ref<const engine::res::ImportDestination> importDestination_);
+[[nodiscard]] static Opt<AutoImportInternalResult> autoImportFile(cref<engine::storage::FileUrl> fileUrl_, mref<engine::res::ImportDestination> importDestination_);
 // @formatter:on
 
 /**/
@@ -21,9 +30,13 @@ using namespace hg;
 AutoImportAction::AutoImportAction() noexcept :
 	InheritMeta() {}
 
-AutoImportAction::AutoImportAction(mref<engine::storage::FileUrl> importFile_) noexcept :
+AutoImportAction::AutoImportAction(
+	mref<engine::storage::FileUrl> importFile_,
+	mref<engine::res::ImportDestination> importDestination_
+) noexcept :
 	InheritMeta(),
-	_importFile(std::move(importFile_)),
+	_importFile(::hg::move(importFile_)),
+	_importDestination(::hg::move(importDestination_)),
 	_generatedAssets() {}
 
 AutoImportAction::~AutoImportAction() = default;
@@ -71,18 +84,14 @@ Result<void, std::runtime_error> AutoImportAction::apply() {
 
 	if (not _failed) {
 
-		if (std::filesystem::is_directory(_importFile.path())) {
-			auto assets = autoImportBundle(_importFile);
-			if (not(_failed = not assets.has_value())) {
-				_generatedAssets = std::move(assets.take().value());
-			}
-		} else {
-			auto assets = autoImportFile(_importFile);
-			if (not(_failed = not assets.has_value())) {
-				_generatedAssets = std::move(assets.take().value());
-			}
-		}
+		auto assets = std::filesystem::is_directory(_importFile.path()) ?
+			autoImportBundle(_importFile, _importDestination) :
+			autoImportFile(_importFile, clone(_importDestination));
 
+		if (not(_failed = not assets.has_value())) {
+			_generatedAssets = ::hg::move(assets.value().assets);
+			_generatedPackage = ::hg::move(assets.value().package);
+		}
 	}
 
 	/**/
@@ -138,11 +147,15 @@ using namespace hg::engine::resource::package;
 using namespace hg::engine::resource;
 
 // @formatter:off
-[[nodiscard]] static Opt<Vector<Arci<engine::assets::Asset>>> autoImportCombinedImageTexture(_In_ mref<engine::res::FileTypeId> fileTypeId_, _In_ cref<engine::storage::FileUrl> fileUrl_);
-[[nodiscard]] static Opt<Vector<Arci<engine::assets::Asset>>> autoImportFont(_In_ mref<engine::res::FileTypeId> fileTypeId_, _In_ cref<engine::storage::FileUrl> fileUrl_);
-[[nodiscard]] static Opt<Vector<Arci<engine::assets::Asset>>> autoImportStaticGeometry(_In_ mref<engine::res::FileTypeId> fileTypeId_, _In_ cref<engine::storage::FileUrl> fileUrl_);
+[[nodiscard]] static Opt<Vector<Arci<engine::assets::Asset>>> autoImportCombinedImageTexture(
+	_In_ mref<engine::res::FileTypeId> fileTypeId_, _In_ cref<engine::storage::FileUrl> fileUrl_, _In_ mref<engine::res::ImportDestination> importDestination_);
+[[nodiscard]] static Opt<Vector<Arci<engine::assets::Asset>>> autoImportFont(
+	_In_ mref<engine::res::FileTypeId> fileTypeId_, _In_ cref<engine::storage::FileUrl> fileUrl_, _In_ mref<engine::res::ImportDestination> importDestination_);
+[[nodiscard]] static Opt<Vector<Arci<engine::assets::Asset>>> autoImportStaticGeometry(
+	_In_ mref<engine::res::FileTypeId> fileTypeId_, _In_ cref<engine::storage::FileUrl> fileUrl_, _In_ mref<engine::res::ImportDestination> importDestination_);
 
-[[nodiscard]] static Opt<Arci<engine::storage::system::PackageStorage>> autoStoreAssets(_In_ cref<engine::storage::FileUrl> baseFileUrl_, _In_ cref<Vector<Arci<engine::assets::Asset>>> assets_);
+[[nodiscard]] static Opt<Arci<engine::storage::system::PackageStorage>> autoStoreAssets(
+	_In_ cref<engine::storage::FileUrl> baseFileUrl_, _In_ ref<const Vector<Arci<engine::assets::Asset>>> assets_);
 
 [[nodiscard]] static BufferArchive autoStoreFont(_In_ nmpt<engine::assets::FontAsset> fontAsset_);
 [[nodiscard]] static BufferArchive autoStoreImage(_In_ nmpt<engine::assets::ImageAsset> imageAsset_);
@@ -211,7 +224,10 @@ static void associateBundle(
 	// TODO:
 }
 
-Opt<Vector<Arci<engine::assets::Asset>>> autoImportBundle(cref<engine::storage::FileUrl> bundleUrl_) {
+Opt<AutoImportInternalResult> autoImportBundle(
+	cref<engine::storage::FileUrl> bundleUrl_,
+	ref<const engine::res::ImportDestination> importDestination_
+) {
 
 	auto fileTypes = queryBundleTypeIdByPrecedence(bundleUrl_.path());
 	if (fileTypes.empty()) {
@@ -220,23 +236,50 @@ Opt<Vector<Arci<engine::assets::Asset>>> autoImportBundle(cref<engine::storage::
 
 	/**/
 
-	Opt<Vector<Arci<engine::assets::Asset>>> result = None;
+	using ResultSet = Vector<Arci<engine::assets::Asset>>;
+	Opt<Vector<Arci<engine::assets::Asset>>> combinedResult = None;
 
 	auto fileTypeIt = fileTypes.begin();
 	while (fileTypeIt != fileTypes.end()) {
 
 		if (std::ranges::contains(engine::gfx::ImageFileType::asSpan(), fileTypeIt->fileTypeId)) {
-			result = autoImportCombinedImageTexture(
+			autoImportCombinedImageTexture(
 				clone(fileTypeIt->fileTypeId),
-				engine::storage::FileUrl { bundleUrl_.scheme(), engine::fs::Path { fileTypeIt->filePath } }
+				engine::storage::FileUrl { bundleUrl_.scheme(), engine::fs::Path { fileTypeIt->filePath } },
+				clone(importDestination_)
+			).map(
+				[&combinedResult](auto&& result_) {
+					combinedResult = combinedResult.take().map_or_else(
+						[&result_](ResultSet&& combined_) {
+							combined_.append_range(::hg::move(result_));
+							return combined_;
+						},
+						[&result_]() {
+							return Some(::hg::move(result_));
+						}
+					);
+				}
 			);
 			break;
 		}
 
 		if (std::ranges::contains(engine::gfx::ModelFileType::asSpan(), fileTypeIt->fileTypeId)) {
-			result = autoImportStaticGeometry(
+			autoImportStaticGeometry(
 				clone(fileTypeIt->fileTypeId),
-				engine::storage::FileUrl { bundleUrl_.scheme(), engine::fs::Path { fileTypeIt->filePath } }
+				engine::storage::FileUrl { bundleUrl_.scheme(), engine::fs::Path { fileTypeIt->filePath } },
+				clone(importDestination_)
+			).map(
+				[&combinedResult](auto&& result_) {
+					combinedResult = combinedResult.take().map_or_else(
+						[&result_](ResultSet&& combined_) {
+							combined_.append_range(::hg::move(result_));
+							return combined_;
+						},
+						[&result_]() {
+							return Some(::hg::move(result_));
+						}
+					);
+				}
 			);
 			break;
 		}
@@ -245,18 +288,34 @@ Opt<Vector<Arci<engine::assets::Asset>>> autoImportBundle(cref<engine::storage::
 
 	/**/
 
-	if (result.has_value()) {
-		associateBundle(result.value(), std::move(fileTypes));
-		// Question: Do we need to capture the result within the action report to handle the failed state?
-		std::ignore = autoStoreAssets(bundleUrl_, result.value());
+	if (not combinedResult.has_value()) {
+		return None;
 	}
 
 	/**/
 
-	return result;
+	associateBundle(combinedResult.value(), std::move(fileTypes));
+	auto package = autoStoreAssets(bundleUrl_, combinedResult.value());
+	if (not package.has_value()) {
+		return None;
+	}
+
+	/**/
+
+	const auto registry = engine::Engine::getEngine()->getAssets()->getRegistry();
+	for (const auto& asset : *combinedResult) {
+		registry->insert(engine::assets::system::AssetDescriptor { asset });
+	}
+
+	/**/
+
+	return Some(AutoImportInternalResult { ::hg::move(combinedResult).value(), ::hg::move(package).value() });
 }
 
-Opt<Vector<Arci<engine::assets::Asset>>> autoImportFile(cref<engine::storage::FileUrl> fileUrl_) {
+Opt<AutoImportInternalResult> autoImportFile(
+	cref<engine::storage::FileUrl> fileUrl_,
+	mref<engine::res::ImportDestination> importDestination_
+) {
 
 	auto fileTypeId = queryFileTypeId(fileUrl_.path());
 	if (not fileTypeId.has_value()) {
@@ -270,32 +329,46 @@ Opt<Vector<Arci<engine::assets::Asset>>> autoImportFile(cref<engine::storage::Fi
 	/**/
 
 	if (std::ranges::contains(engine::gfx::ImageFileType::asSpan(), fileTypeId.value())) {
-		result = autoImportCombinedImageTexture(std::move(fileTypeId.take().value()), fileUrl_);
+		result = autoImportCombinedImageTexture(std::move(fileTypeId.take().value()), fileUrl_, ::hg::move(importDestination_));
 
 	} else if (std::ranges::contains(engine::gfx::ModelFileType::asSpan(), fileTypeId.value())) {
-		result = autoImportStaticGeometry(std::move(fileTypeId.take().value()), fileUrl_);
+		result = autoImportStaticGeometry(std::move(fileTypeId.take().value()), fileUrl_, ::hg::move(importDestination_));
 
 	} else if (std::ranges::contains(engine::gfx::FontFileType::asSpan(), fileTypeId.value())) {
-		result = autoImportFont(std::move(fileTypeId.take().value()), fileUrl_);
+		result = autoImportFont(std::move(fileTypeId.take().value()), fileUrl_, ::hg::move(importDestination_));
 	}
 
 	/**/
 
-	if (result.has_value()) {
-		// Question: Do we need to capture the result within the action report to handle the failed state?
-		std::ignore = autoStoreAssets(fileUrl_, result.value());
+	if (not result.has_value()) {
+		return None;
 	}
 
 	/**/
 
-	return result;
+	auto package = autoStoreAssets(fileUrl_, result.value());
+	if (not package.has_value()) {
+		return None;
+	}
+
+	/**/
+
+	const auto registry = engine::Engine::getEngine()->getAssets()->getRegistry();
+	for (const auto& asset : *result) {
+		registry->insert(engine::assets::system::AssetDescriptor { asset });
+	}
+
+	/**/
+
+	return Some(AutoImportInternalResult { ::hg::move(result).value(), ::hg::move(package).value() });
 }
 
 /**/
 
 Opt<Vector<Arci<engine::assets::Asset>>> autoImportCombinedImageTexture(
 	mref<engine::res::FileTypeId> fileTypeId_,
-	cref<engine::storage::FileUrl> fileUrl_
+	cref<engine::storage::FileUrl> fileUrl_,
+	mref<engine::res::ImportDestination> importDestination_
 ) {
 
 	const auto& importer = engine::Engine::getEngine()->getResources()->importer();
@@ -307,7 +380,8 @@ Opt<Vector<Arci<engine::assets::Asset>>> autoImportCombinedImageTexture(
 
 	const auto result = importer.import<std::pair<Arci<engine::assets::TextureAsset>, Arci<engine::assets::ImageAsset>>>(
 		fileTypeId_,
-		{ fileUrl_.path() }
+		{ fileUrl_.path() },
+		::hg::move(importDestination_)
 	).get();
 
 	if (result.first == nullptr || result.second == nullptr) {
@@ -327,7 +401,8 @@ Opt<Vector<Arci<engine::assets::Asset>>> autoImportCombinedImageTexture(
 
 Opt<Vector<Arci<engine::assets::Asset>>> autoImportFont(
 	mref<engine::res::FileTypeId> fileTypeId_,
-	cref<engine::storage::FileUrl> fileUrl_
+	cref<engine::storage::FileUrl> fileUrl_,
+	mref<engine::res::ImportDestination> importDestination_
 ) {
 
 	const auto& importer = engine::Engine::getEngine()->getResources()->importer();
@@ -339,7 +414,8 @@ Opt<Vector<Arci<engine::assets::Asset>>> autoImportFont(
 
 	const auto result = importer.import<Arci<engine::assets::FontAsset>>(
 		fileTypeId_,
-		{ fileUrl_.path() }
+		{ fileUrl_.path() },
+		::hg::move(importDestination_)
 	).get();
 
 	if (result != nullptr) {
@@ -351,7 +427,8 @@ Opt<Vector<Arci<engine::assets::Asset>>> autoImportFont(
 
 Opt<Vector<Arci<engine::assets::Asset>>> autoImportStaticGeometry(
 	mref<engine::res::FileTypeId> fileTypeId_,
-	cref<engine::storage::FileUrl> fileUrl_
+	cref<engine::storage::FileUrl> fileUrl_,
+	mref<engine::res::ImportDestination> importDestination_
 ) {
 
 	const auto& importer = engine::Engine::getEngine()->getResources()->importer();
@@ -363,7 +440,8 @@ Opt<Vector<Arci<engine::assets::Asset>>> autoImportStaticGeometry(
 
 	const auto result = importer.import<Arci<engine::assets::StaticGeometry>>(
 		fileTypeId_,
-		{ fileUrl_.path() }
+		{ fileUrl_.path() },
+		::hg::move(importDestination_)
 	).get();
 
 	if (result != nullptr) {
@@ -383,7 +461,7 @@ constexpr static auto packed_extension = std::string_view { R"(.imp)" };
 
 Opt<Arci<engine::storage::system::PackageStorage>> autoStoreAssets(
 	cref<engine::storage::FileUrl> baseFileUrl_,
-	cref<Vector<Arci<engine::assets::Asset>>> assets_
+	ref<const Vector<Arci<engine::assets::Asset>>> assets_
 ) {
 
 	const auto packageFileUrl = std::filesystem::path { baseFileUrl_.path() }.concat(packed_extension);
@@ -477,6 +555,8 @@ Opt<Arci<engine::storage::system::PackageStorage>> autoStoreAssets(
 			serialized[idx]
 		);
 
+		/**/
+
 		if (not result.has_value()) {
 			IM_CORE_ERRORF(
 				"Failed to store serialized asset data of `{}` into auto generated package `{}`.",
@@ -486,12 +566,20 @@ Opt<Arci<engine::storage::system::PackageStorage>> autoStoreAssets(
 			ioFailed = true;
 			break;
 		}
+
+		/**/
+
+		assets_[idx]->setAssetStorageUrl(engine::storage::ArchiveUrl { result.value()->getArchiveGuid() });
 	}
 
 	/* Recover from storing failure */
 
 	if (ioFailed) {
 		// Note: We need to improve the error recovery... This is just a dirty quickfix.
+		for (auto& asset : assets_) {
+			asset->setAssetStorageUrl(engine::assets::AssetReferenceUrl {});
+		}
+
 		std::ignore = storeSys->removeStorage(clone(storageFileUrl));
 		std::filesystem::remove(packageFileUrl);
 		return None;
