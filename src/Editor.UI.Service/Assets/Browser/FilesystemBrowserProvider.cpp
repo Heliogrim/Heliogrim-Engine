@@ -67,16 +67,11 @@ bool FilesystemBrowserProvider::retrieveFs(
 
 	for (const auto& fsEntry : fsIt) {
 
-		if (directories_ && not
-			fsEntry.is_directory()
-		) {
+		if (directories_ && not fsEntry.is_directory()) {
 			continue;
 		}
 
-		if (not directories_ && fsEntry
-		.
-		is_directory()
-		) {
+		if (not directories_ && fsEntry.is_directory()) {
 			continue;
 		}
 
@@ -96,14 +91,11 @@ bool FilesystemBrowserProvider::retrieveFs(
 
 bool FilesystemBrowserProvider::effects(ref<const AssetBrowserFilter> filter_) const {
 
-	if (not
-		filter_.url.hasScheme()
-	) {
+	if (not filter_.url.hasScheme()) {
 		return true;
 	}
 
-	return filter_.url.scheme() == "file"
-	sv;
+	return filter_.url.scheme() == "file"sv;
 }
 
 bool FilesystemBrowserProvider::fetchItems(ref<const AssetBrowserFilter> filter_, ref<Vector<AssetBrowserEntry>> entries_) const {
