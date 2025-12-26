@@ -19,7 +19,12 @@ namespace hg::editor::ui {
 
 		String title;
 		TypedAssetGuid<engine::assets::TextureAsset> icon;
-		std::function<void()> action;
+
+		/**
+		 * The action to invoke on menu item click event
+		 * @details This callback action should return true to close and false to keep the menu open.
+		 */
+		std::function<bool()> action;
 
 		/**/
 
@@ -33,9 +38,9 @@ namespace hg::editor::ui {
 			_self(self_),
 			_builder(builder_) {}
 
-		MenuBuilderSubItem(ref<const MenuBuilderSubItem>) = delete;
+		MenuBuilderSubItem (ref<const MenuBuilderSubItem>) = delete;
 
-		MenuBuilderSubItem(mref<MenuBuilderSubItem>) = delete;
+		MenuBuilderSubItem (mref<MenuBuilderSubItem>) = delete;
 
 	public:
 		ref<decltype(MenuItemData::subItems)::value_type> _self;
@@ -46,7 +51,12 @@ namespace hg::editor::ui {
 
 		ref<MenuBuilderSubItem> setIcon(mref<TypedAssetGuid<engine::assets::TextureAsset>> icon_) &;
 
-		ref<MenuBuilderSubItem> setAction(mref<std::function<void()>> action_) &;
+		/**
+		 * Will store the callback action for the sub menu item to generate
+		 *
+		 * @see MenuItemData::action
+		 */
+		ref<MenuBuilderSubItem> setAction(mref<std::function<bool()>> action_) &;
 
 		[[nodiscard]] MenuBuilderSubItem addSubItem(StringView itemId_);
 	};
@@ -56,9 +66,9 @@ namespace hg::editor::ui {
 			_itemId(itemId_),
 			_builder(builder_) {}
 
-		MenuBuilderItem(ref<const MenuBuilderItem>) = delete;
+		MenuBuilderItem (ref<const MenuBuilderItem>) = delete;
 
-		MenuBuilderItem(mref<MenuBuilderItem>) = delete;
+		MenuBuilderItem (mref<MenuBuilderItem>) = delete;
 
 	public:
 		StringView _itemId;
@@ -71,7 +81,12 @@ namespace hg::editor::ui {
 
 		ref<MenuBuilderItem> setIcon(mref<TypedAssetGuid<engine::assets::TextureAsset>> icon_) &;
 
-		ref<MenuBuilderItem> setAction(mref<std::function<void()>> action_) &;
+		/**
+		 * Will store the callback action for the menu item to generate
+		 *
+		 * @see MenuItemData::action
+		 */
+		ref<MenuBuilderItem> setAction(mref<std::function<bool()>> action_) &;
 
 		ref<MenuBuilderItem> setSpacer(bool before_, bool after_) &;
 

@@ -18,7 +18,7 @@ ref<MenuBuilderSubItem> MenuBuilderSubItem::setIcon(mref<TypedAssetGuid<engine::
 	return *this;
 }
 
-ref<MenuBuilderSubItem> MenuBuilderSubItem::setAction(mref<std::function<void()>> action_) & {
+ref<MenuBuilderSubItem> MenuBuilderSubItem::setAction(mref<std::function<bool()>> action_) & {
 	_self.second.action = ::hg::move(action_);
 	return *this;
 }
@@ -60,7 +60,7 @@ ref<MenuBuilderItem> MenuBuilderItem::setIcon(mref<TypedAssetGuid<engine::assets
 	return *this;
 }
 
-ref<MenuBuilderItem> MenuBuilderItem::setAction(mref<std::function<void()>> action_) & {
+ref<MenuBuilderItem> MenuBuilderItem::setAction(mref<std::function<bool()>> action_) & {
 	const auto key = String { _itemId };
 	const auto iter = _builder._items.find(key);
 
@@ -91,7 +91,8 @@ MenuBuilderItem MenuBuilder::addItem(StringView itemId_) {
 	::hg::assertrt(result.second);
 
 	return MenuBuilderItem {
-		itemId_,
+		// Note: We take a string view of key in the items, cause we store them in a stable open-address table. `itemId_` may be volatile.
+		StringView { result.first->first },
 		*this
 	};
 }
@@ -137,8 +138,10 @@ SharedPtr<MenuItem> MenuBuilder::setupMenuItem(mref<SharedPtr<MenuItem>> item_, 
 
 	if (data_.action != nullptr) {
 		item_->onClick(
-			[action = data_.action]([[maybe_unused]] const auto& event_) {
-				action();
+			[self = item_.get(), action = data_.action]([[maybe_unused]] const auto& event_) {
+				if (action()) {
+					self->blur();
+				}
 				return EventResponse::eHandled;
 			}
 		);
