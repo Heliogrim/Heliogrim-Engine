@@ -1,6 +1,7 @@
 #include "Menu.hpp"
 
 #include <format>
+#include <Engine.Reflow.Uikit/Atom/Paint.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/VerticalLayout.hpp>
 #include <Engine.Reflow.Uikit/Molecule/Layout/Stack.hpp>
 
@@ -59,7 +60,12 @@ void editor::ui::Menu::addMenuSpacer(mref<SharedPtr<MenuSpacer>> menuSpacer_) {
 SharedPtr<editor::ui::Menu> editor::ui::makeMenu() {
 
 	auto stack = make_sptr<uikit::Stack>();
+
+	auto paint = make_sptr<uikit::Paint>(ReflowClassList { "[Menu] > background"sv }, nullptr);
+	stack->addChild(::hg::move(paint));
+
 	auto layout = make_sptr<uikit::VerticalLayout>();
+	std::get<0>(layout->getLayoutAttributes().attributeSets).update<attr::BoxLayout::padding>(Padding { 4.F });
 	stack->addChild(clone(layout));
 
 	auto menu = make_sptr<Menu>(clone(stack), hg::move(layout));
