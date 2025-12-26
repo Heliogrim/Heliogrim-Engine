@@ -14,7 +14,8 @@ namespace hg::engine::reflow::theming {
 		bool disabled : 1;
 		bool pressed : 1;
 		bool dragged : 1;
-		u8 pad0 : 3;
+		bool selected : 1;
+		u8 pad0 : 2;
 	};
 
 	class Theming {
@@ -24,9 +25,9 @@ namespace hg::engine::reflow::theming {
 	public:
 		Theming() noexcept;
 
-		Theming(ref<const this_type>) = delete;
+		Theming (ref<const this_type>) = delete;
 
-		Theming(mref<this_type>) = delete;
+		Theming (mref<this_type>) = delete;
 
 		~Theming() noexcept;
 
@@ -34,11 +35,17 @@ namespace hg::engine::reflow::theming {
 		std::map<size_t, UniquePtr<Theme>> _themes;
 
 	public:
-		[[nodiscard]] Opt<ref<const Theme>> getBaseTheme() const noexcept;
+		[[nodiscard]] Opt<ref < const Theme>
+		>
+		getBaseTheme() const noexcept;
 
-		[[nodiscard]] Opt<ref<const Theme>> getTheme(StringView key_) const noexcept;
+		[[nodiscard]] Opt<ref < const Theme>
+		>
+		getTheme(StringView key_) const noexcept;
 
-		[[nodiscard]] Opt<ref<const Theme>> getStatedTheme(u8 level_, ThemeStateOptions states_) const noexcept;
+		[[nodiscard]] Opt<ref < const Theme>
+		>
+		getStatedTheme(u8 level_, ThemeStateOptions states_) const noexcept;
 
 		void storeBaseTheme(mref<Theme> theme_);
 
