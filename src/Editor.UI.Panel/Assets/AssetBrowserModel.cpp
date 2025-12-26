@@ -1,12 +1,36 @@
 #include "AssetBrowserModel.hpp"
 
-#include <Editor.UI.Service/Assets/Browser/AssetBrowserService.hpp>
+#include <ranges>
 #include <Editor.UI.Service/Assets/Browser/AssetBrowserEntry.hpp>
+#include <Editor.UI.Service/Assets/Browser/AssetBrowserFilter.hpp>
+#include <Editor.UI.Service/Assets/Browser/AssetBrowserFilterEntry.hpp>
+#include <Editor.UI.Service/Assets/Browser/AssetBrowserService.hpp>
+#include <Engine.Assets.Type/Geometry/LandscapeGeometry.hpp>
+#include <Engine.Assets.Type/Geometry/SkeletalGeometry.hpp>
+#include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
+#include <Engine.Assets.Type/Material/GfxMaterial.hpp>
+#include <Engine.Assets.Type/Texture/ImageAsset.hpp>
+#include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 
 #include "AssetBrowserView.hpp"
 
 using namespace hg::editor::ui;
 using namespace hg;
+
+/**/
+
+static const auto defaultFilterData = Array {
+	service::AssetBrowserFilterEntry { "All", None, {} },
+	service::AssetBrowserFilterEntry {
+		"Geometry", None,
+		{ engine::assets::LandscapeGeometry::typeId, engine::assets::SkeletalGeometry::typeId, engine::assets::StaticGeometry::typeId }
+	},
+	service::AssetBrowserFilterEntry { "Image", None, { engine::assets::ImageAsset::typeId } },
+	service::AssetBrowserFilterEntry { "Material", None, { engine::assets::GfxMaterial::typeId } },
+	service::AssetBrowserFilterEntry { "Texture", None, { engine::assets::TextureAsset::typeId } }
+};
+
+/**/
 
 AssetBrowserModel::AssetBrowserModel(
 	ref<AssetBrowserView> view_,
@@ -17,14 +41,47 @@ AssetBrowserModel::AssetBrowserModel(
 	_view(view_),
 	service(::hg::move(service_)),
 	basePath(::hg::move(basePath_)),
-	currentPath(::hg::move(currentPath_)) {}
+	currentPath(::hg::move(currentPath_)),
+	baseFilterData { std::from_range, defaultFilterData },
+	currentFilters {} {}
 
 AssetBrowserModel::~AssetBrowserModel() = default;
+
+void AssetBrowserModel::changeFilters(Opt<std::span<const service::AssetBrowserFilterEntry>> nextFilters_) {
+
+	const auto empty = nextFilters_.map_or(
+		[](const auto& filters_) {
+			return std::ranges::all_of(
+				filters_,
+				[](const auto& filterEntry_) {
+					return filterEntry_.tag == None && filterEntry_.types.empty();
+				}
+			);
+		},
+		true
+	);
+
+	if (empty) {
+		currentFilters = {};
+		return changeDirectory(currentPath);
+	}
+
+	/**/
+
+	currentFilters = { std::from_range, nextFilters_.value() };
+	return changeDirectory(currentPath);
+}
 
 void AssetBrowserModel::changeDirectory(ref<const fs::Path> nextPath_) {
 
 	auto entries = Vector<service::AssetBrowserEntry> {};
-	service->fetchAll(fs::Url { StringView {}, nextPath_ }, entries);
+	service->fetchAll(
+		{
+			.url = fs::Url { StringView {}, nextPath_ },
+			.typeAndTag = std::span { currentFilters }
+		},
+		entries
+	);
 
 	_view.displayItems(entries);
 
