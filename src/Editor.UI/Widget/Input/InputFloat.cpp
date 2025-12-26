@@ -141,23 +141,10 @@ EventResponse InputFloat::invokeOnKeyDown(ref<const KeyboardEvent> event_) {
 		_stringified.append(&code, 1);
 
 	} else if (event_._key >= 0x30 && event_._key <= 0x39) {
-		const auto maxChars { static_cast<u64>(std::floor(std::log10(static_cast<long double>(limits.max)))) + 1uLL };
-
-		if (_stringified.size() >= maxChars) {
-			return EventResponse::eConsumed;
-		}
-
 		_stringified.append(&event_._key, 1);
 
 	} else if (event_._key >= 0x58 && event_._key <= 0x62 && event_._modifier == 4096) {
-
-		const auto maxChars { static_cast<u64>(std::floor(std::log10(static_cast<long double>(limits.max)))) + 1uLL };
 		char numChar = event_._key < 0x62 ? event_._key - 0x28u : '0';
-
-		if (_stringified.size() >= maxChars) {
-			return EventResponse::eConsumed;
-		}
-
 		_stringified.append(&numChar, 1);
 
 	} else if (event_._key == '-') {
