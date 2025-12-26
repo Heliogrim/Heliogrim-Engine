@@ -66,8 +66,6 @@ namespace hg::engine::reflow {
 		using input_type = std::decay_t<InputType_>;
 
 	protected:
-		Input() = default;
-
 		using InputBase::InputBase;
 
 	public:
