@@ -3,6 +3,8 @@
 #include <filesystem>
 #include <Engine.Common/Move.hpp>
 
+#include "AssetBrowserFilter.hpp"
+
 using namespace hg::editor::ui::service;
 using namespace hg;
 
@@ -65,11 +67,16 @@ bool FilesystemBrowserProvider::retrieveFs(
 
 	for (const auto& fsEntry : fsIt) {
 
-		if (directories_ && not fsEntry.is_directory()) {
+		if (directories_ && not
+			fsEntry.is_directory()
+		) {
 			continue;
 		}
 
-		if (not directories_ && fsEntry.is_directory()) {
+		if (not directories_ && fsEntry
+		.
+		is_directory()
+		) {
 			continue;
 		}
 
@@ -87,19 +94,22 @@ bool FilesystemBrowserProvider::retrieveFs(
 
 }
 
-bool FilesystemBrowserProvider::effects(ref<const fs::Url> url_) const {
+bool FilesystemBrowserProvider::effects(ref<const AssetBrowserFilter> filter_) const {
 
-	if (not url_.hasScheme()) {
+	if (not
+		filter_.url.hasScheme()
+	) {
 		return true;
 	}
 
-	return url_.scheme() == "file"sv;
+	return filter_.url.scheme() == "file"
+	sv;
 }
 
-bool FilesystemBrowserProvider::fetchItems(ref<const fs::Url> url_, ref<Vector<AssetBrowserEntry>> entries_) const {
-	return retrieveFs(url_, false, entries_);
+bool FilesystemBrowserProvider::fetchItems(ref<const AssetBrowserFilter> filter_, ref<Vector<AssetBrowserEntry>> entries_) const {
+	return retrieveFs(filter_.url, false, entries_);
 }
 
-bool FilesystemBrowserProvider::fetchDirectories(ref<const fs::Url> url_, ref<Vector<AssetBrowserEntry>> directories_) const {
-	return retrieveFs(url_, true, directories_);
+bool FilesystemBrowserProvider::fetchDirectories(ref<const AssetBrowserFilter> filter_, ref<Vector<AssetBrowserEntry>> directories_) const {
+	return retrieveFs(filter_.url, true, directories_);
 }

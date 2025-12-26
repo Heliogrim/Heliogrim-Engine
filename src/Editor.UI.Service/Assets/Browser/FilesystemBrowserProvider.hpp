@@ -2,6 +2,7 @@
 
 #include <Engine.Common/Sal.hpp>
 
+#include "AssetBrowserFilter.hpp"
 #include "AssetBrowserProvider.hpp"
 
 namespace hg::editor::ui::service {
@@ -30,10 +31,10 @@ namespace hg::editor::ui::service {
 		) const;
 
 	public:
-		bool effects(ref<const fs::Url> url_) const override;
+		[[nodiscard]] bool effects(ref<const AssetBrowserFilter> filter_) const override;
 
-		bool fetchItems(ref<const fs::Url> url_, ref<Vector<AssetBrowserEntry>> entries_) const override;
+		bool fetchItems(ref<const AssetBrowserFilter> filter_, ref<Vector<AssetBrowserEntry>> entries_) const override;
 
-		bool fetchDirectories(ref<const fs::Url> url_, ref<Vector<AssetBrowserEntry>> directories_) const override;
+		bool fetchDirectories(ref<const AssetBrowserFilter> filter_, ref<Vector<AssetBrowserEntry>> directories_) const override;
 	};
 }

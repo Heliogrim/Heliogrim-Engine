@@ -1,9 +1,11 @@
 #pragma once
 
+#include <ranges>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Collection/Set.hpp>
 
+#include "AssetBrowserFilter.hpp"
 #include "AssetBrowserProvider.hpp"
 
 namespace hg::editor::ui::service {
@@ -25,16 +27,9 @@ namespace hg::editor::ui::service {
 		nmpt<engine::assets::IAssetRegistry> _registry;
 
 	private:
-		[[nodiscard]] data_list_type::iterator filterByType(
-			ref<const data_list_type::iterator> begin_,
-			ref<const data_list_type::iterator> end_,
-			AssetTypeId typeId_
-		) const;
-
-		[[nodiscard]] data_list_type::iterator filterByTypes(
-			ref<const data_list_type::iterator> begin_,
-			ref<const data_list_type::iterator> end_,
-			ref<const CompactSet<AssetTypeId>> types_
+		[[nodiscard]] std::ranges::subrange<data_list_type::iterator> filterByTypeAndTag(
+			std::ranges::subrange<data_list_type::iterator> range_,
+			std::span<const AssetBrowserFilterEntry> filters_
 		) const;
 
 		void mapAssetsToEntries(
@@ -44,10 +39,10 @@ namespace hg::editor::ui::service {
 		) const;
 
 	public:
-		bool effects(ref<const fs::Url> url_) const override;
+		[[nodiscard]] bool effects(ref<const AssetBrowserFilter> filter_) const override;
 
-		bool fetchItems(ref<const fs::Url> url_, ref<Vector<AssetBrowserEntry>> entries_) const override;
+		bool fetchItems(ref<const AssetBrowserFilter> filter_, ref<Vector<AssetBrowserEntry>> entries_) const override;
 
-		bool fetchDirectories(ref<const fs::Url> url_, ref<Vector<AssetBrowserEntry>> directories_) const override;
+		bool fetchDirectories(ref<const AssetBrowserFilter> filter_, ref<Vector<AssetBrowserEntry>> directories_) const override;
 	};
 }
