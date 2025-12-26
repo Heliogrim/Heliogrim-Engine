@@ -5,6 +5,7 @@
 #include <Engine.Core/Engine.hpp>
 
 #include "AssetBrowserEntry.hpp"
+#include "AssetBrowserFilter.hpp"
 #include "AssetBrowserProvider.hpp"
 #include "AssetRegistryBrowserProvider.hpp"
 
@@ -22,31 +23,34 @@ void AssetBrowserService::addProvider(mref<UniquePtr<AssetBrowserProvider>> prov
 	_providers.emplace_back(::hg::move(provider_));
 }
 
-void AssetBrowserService::fetchProviderItems(ref<const fs::Url> url_, ref<Vector<AssetBrowserEntry>> items_) const {
+void AssetBrowserService::fetchProviderItems(ref<const AssetBrowserFilter> filter_, ref<Vector<AssetBrowserEntry>> items_) const {
 	for (const auto& provider : _providers) {
-		if (provider->effects(url_)) {
-			provider->fetchItems(url_, items_);
+		if (provider->effects(filter_)) {
+			provider->fetchItems(filter_, items_);
 		}
 	}
 }
 
-void AssetBrowserService::fetchProviderDirectories(ref<const fs::Url> url_, ref<Vector<AssetBrowserEntry>> directories_) const {
+void AssetBrowserService::fetchProviderDirectories(
+	ref<const AssetBrowserFilter> filter_,
+	ref<Vector<AssetBrowserEntry>> directories_
+) const {
 	for (const auto& provider : _providers) {
-		if (provider->effects(url_)) {
-			provider->fetchDirectories(url_, directories_);
+		if (provider->effects(filter_)) {
+			provider->fetchDirectories(filter_, directories_);
 		}
 	}
 }
 
-void AssetBrowserService::fetchAll(ref<const fs::Url> url_, ref<Vector<AssetBrowserEntry>> entries_) const {
-	fetchProviderDirectories(url_, entries_);
-	fetchProviderItems(url_, entries_);
+void AssetBrowserService::fetchAll(ref<const AssetBrowserFilter> filter_, ref<Vector<AssetBrowserEntry>> entries_) const {
+	fetchProviderDirectories(filter_, entries_);
+	fetchProviderItems(filter_, entries_);
 }
 
-void AssetBrowserService::fetchItems(ref<const fs::Url> url_, ref<Vector<AssetBrowserEntry>> items_) const {
-	fetchProviderItems(url_, items_);
+void AssetBrowserService::fetchItems(ref<const AssetBrowserFilter> filter_, ref<Vector<AssetBrowserEntry>> items_) const {
+	fetchProviderItems(filter_, items_);
 }
 
-void AssetBrowserService::fetchDirectories(ref<const fs::Url> url_, ref<Vector<AssetBrowserEntry>> directories_) const {
-	fetchProviderDirectories(url_, directories_);
+void AssetBrowserService::fetchDirectories(ref<const AssetBrowserFilter> filter_, ref<Vector<AssetBrowserEntry>> directories_) const {
+	fetchProviderDirectories(filter_, directories_);
 }

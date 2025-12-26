@@ -10,6 +10,7 @@
 
 namespace hg::editor::ui::service {
 	struct AssetBrowserEntry;
+	struct AssetBrowserFilter;
 	class AssetBrowserProvider;
 }
 
@@ -31,15 +32,15 @@ namespace hg::editor::ui::service {
 		void addProvider(mref<UniquePtr<AssetBrowserProvider>> provider_);
 
 	private:
-		void fetchProviderItems(ref<const fs::Url> url_, _Inout_ ref<Vector<AssetBrowserEntry>> items_) const;
+		void fetchProviderItems(ref<const AssetBrowserFilter> filter_, _Inout_ ref<Vector<AssetBrowserEntry>> items_) const;
 
-		void fetchProviderDirectories(ref<const fs::Url> url_, _Inout_ ref<Vector<AssetBrowserEntry>> directories_) const;
+		void fetchProviderDirectories(ref<const AssetBrowserFilter> filter_, _Inout_ ref<Vector<AssetBrowserEntry>> directories_) const;
 
 	public:
-		void fetchAll(ref<const fs::Url> url_, ref<Vector<AssetBrowserEntry>> entries_) const;
+		void fetchAll(ref<const AssetBrowserFilter> filter_, ref<Vector<AssetBrowserEntry>> entries_) const;
 
-		void fetchItems(ref<const fs::Url> url_, ref<Vector<AssetBrowserEntry>> items_) const;
+		void fetchItems(ref<const AssetBrowserFilter> filter_, ref<Vector<AssetBrowserEntry>> items_) const;
 
-		void fetchDirectories(ref<const fs::Url> url_, ref<Vector<AssetBrowserEntry>> directories_) const;
+		void fetchDirectories(ref<const AssetBrowserFilter> filter_, ref<Vector<AssetBrowserEntry>> directories_) const;
 	};
 }
