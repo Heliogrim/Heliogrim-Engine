@@ -217,7 +217,7 @@ void Text::render(const ptr<ReflowCommandBuffer> cmd_) {
 	const auto& layout = getLayoutAttributes();
 	const auto& style = getStyleAttributes();
 
-	const auto padding = layout.valueOf<attr::BoxLayout::padding>();
+	const auto& padding = layout.valueOf<attr::BoxLayout::padding>();
 	const auto shift = _layoutState.layoutOffset + math::fvec2 { padding.x, padding.y };
 	const auto space = _layoutState.layoutSize - math::fvec2 { padding.x + padding.z, padding.y + padding.w };
 
@@ -230,7 +230,7 @@ void Text::render(const ptr<ReflowCommandBuffer> cmd_) {
 
 	/**/
 
-	const u8 align { static_cast<u8>(style.valueOf<attr::TextStyle::textAlign>()) };
+	const auto align = static_cast<u8>(style.valueOf<attr::TextStyle::textAlign>());
 
 	const auto alignVertical =
 		/* Vertical Align Top */
