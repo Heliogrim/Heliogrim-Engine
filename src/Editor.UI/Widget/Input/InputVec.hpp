@@ -6,6 +6,7 @@
 #include <Engine.Common/Collection/Array.hpp>
 #include <Engine.Common/Math/Vector.hpp>
 #include <Engine.Reflow/Widget/Input.hpp>
+#include <Engine.Reflow.Uikit/Atom/Layout/HorizontalLayout.hpp>
 
 #include "./InputFloat.hpp"
 #include "./InputIntegral.hpp"
