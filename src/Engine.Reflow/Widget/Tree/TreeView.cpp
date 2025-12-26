@@ -3,6 +3,9 @@
 #include <format>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Reflow.Theming/Theming.hpp>
+#include <Engine.Reflow.Uikit/Themes.hpp>
+#include <Engine.Reflow.Uikit/Atom/Paint.hpp>
 
 #include "TreeItem.hpp"
 
@@ -21,14 +24,28 @@ sptr<Widget> TreeViewBase::generateRow(cref<TreeViewItem> view_, cref<sptr<Widge
 	auto wrapper = make_sptr<TreeItem>();
 	::hg::assertrt(view_.depth >= 0LL);
 
+	const auto& theming = uikit::getRuntimeTheming();
+	wrapper->setBaseTheme(theming->getStatedTheme(2u, {}));
+	wrapper->setStateTheme(InteractiveStateFlagBits::eHover, theming->getStatedTheme(2u, { .hover = true }));
+	wrapper->setStateTheme(InteractiveStateFlagBits::eSelected, theming->getStatedTheme(2u, { .selected = true }));
+
 	// TODO: Warning: This will break the tree view
 	//wrapper->style()->minHeight = ReflowUnit { ReflowUnitType::eAbsolute, row_min_height };
 	//wrapper->style()->margin = Margin { static_cast<float>(view_.depth) * ident_per_level, 0.F, 0.F, 0.F };
-	std::get<0>(wrapper->getLayoutAttributes().attributeSets).update<attr::BoxLayout::minHeight>(
+	wrapper->getLayoutAttributes().update<attr::BoxLayout::placement>(ReflowPlacement::eMiddleLeft);
+	wrapper->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
+	wrapper->getLayoutAttributes().update<attr::BoxLayout::minHeight>(
 		{ ReflowUnitType::eAbsolute, row_min_height }
 	);
 	wrapper->setLevel(static_cast<u32>(view_.depth));
 
+	/**/
+
+	auto background = make_sptr<uikit::Paint>(ReflowClassList { "[TreeViewItem] > background"sv }, nullptr);
+
+	/**/
+
+	wrapper->addChild(::hg::move(background));
 	wrapper->addChild(content_);
 	return wrapper;
 }
