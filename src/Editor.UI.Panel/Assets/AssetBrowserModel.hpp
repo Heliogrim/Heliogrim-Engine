@@ -1,6 +1,8 @@
 #pragma once
 
+#include <Engine.Common/Optional.hpp>
 #include <Engine.Common/Sal.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Memory/SharedPointer.hpp>
 #include <Engine.Filesystem/Url.hpp>
 
@@ -9,6 +11,7 @@ namespace hg::editor::ui {
 }
 
 namespace hg::editor::ui::service {
+	struct AssetBrowserFilterEntry;
 	class AssetBrowserService;
 }
 
@@ -32,7 +35,12 @@ namespace hg::editor::ui {
 		fs::Path basePath;
 		fs::Path currentPath;
 
+		Vector<service::AssetBrowserFilterEntry> baseFilterData;
+		Vector<service::AssetBrowserFilterEntry> currentFilters;
+
 	public:
+		void changeFilters(Opt<std::span<const service::AssetBrowserFilterEntry>> nextFilters_);
+
 		void changeDirectory(ref<const fs::Path> nextPath_);
 	};
 
