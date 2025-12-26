@@ -30,11 +30,11 @@ static void configureCtrls(cref<sptr<uikit::HorizontalLayout>> parent_) {
 
 	auto viewText = make_sptr<uikit::Text>();
 	viewText->setText("View");
-	auto viewButton = uikit::makeButton(uikit::TextButtonCreateOptions { .level = 1, .text = ::hg::move(viewText) });
+	auto viewButton = uikit::makeButton(uikit::TextButtonCreateOptions { .level = 2, .text = ::hg::move(viewText) });
 	::hg::discard = viewButton->onClick(
 		[]([[maybe_unused]] const auto&) {
 			IM_CORE_INFO("View Button Clicked.");
-			return EventResponse::eConsumed;
+			return EventResponse::eHandled;
 		}
 	);
 
@@ -44,11 +44,11 @@ static void configureCtrls(cref<sptr<uikit::HorizontalLayout>> parent_) {
 
 	auto selectText = make_sptr<uikit::Text>();
 	selectText->setText("Select");
-	auto selectButton = uikit::makeButton(uikit::TextButtonCreateOptions { .level = 1, .text = ::hg::move(selectText) });
+	auto selectButton = uikit::makeButton(uikit::TextButtonCreateOptions { .level = 2, .text = ::hg::move(selectText) });
 	::hg::discard = selectButton->onClick(
 		[]([[maybe_unused]] const auto&) {
 			IM_CORE_INFO("Select Button Clicked.");
-			return EventResponse::eConsumed;
+			return EventResponse::eHandled;
 		}
 	);
 
@@ -58,11 +58,11 @@ static void configureCtrls(cref<sptr<uikit::HorizontalLayout>> parent_) {
 
 	auto addText = make_sptr<uikit::Text>();
 	addText->setText("Add");
-	auto addButton = uikit::makeButton(uikit::TextButtonCreateOptions { .level = 1, .text = ::hg::move(addText) });
+	auto addButton = uikit::makeButton(uikit::TextButtonCreateOptions { .level = 2, .text = ::hg::move(addText) });
 	::hg::discard = addButton->onClick(
 		[]([[maybe_unused]] const auto&) {
 			IM_CORE_INFO("Add Button Clicked.");
-			return EventResponse::eConsumed;
+			return EventResponse::eHandled;
 		}
 	);
 
@@ -72,11 +72,11 @@ static void configureCtrls(cref<sptr<uikit::HorizontalLayout>> parent_) {
 
 	auto objectText = make_sptr<uikit::Text>();
 	objectText->setText("Object");
-	auto objectButton = uikit::makeButton(uikit::TextButtonCreateOptions { .level = 1, .text = ::hg::move(objectText) });
+	auto objectButton = uikit::makeButton(uikit::TextButtonCreateOptions { .level = 2, .text = ::hg::move(objectText) });
 	::hg::discard = objectButton->onClick(
 		[]([[maybe_unused]] const auto&) {
 			IM_CORE_INFO("Object Button Clicked.");
-			return EventResponse::eConsumed;
+			return EventResponse::eHandled;
 		}
 	);
 
@@ -88,6 +88,8 @@ static void configureViewport(cref<sptr<uikit::HorizontalLayout>> parent_) {
 	// TODO: Handle Viewport UI Scaling
 	//viewport->attr.width.setValue({ ReflowUnitType::eRelative, 1.F });
 	//viewport->attr.height.setValue({ ReflowUnitType::eRelative, 1.F });
+	viewport->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
+	viewport->getLayoutAttributes().update<attr::BoxLayout::heightGrow>(1.F);
 	parent_->addChild(viewport);
 
 	/**/
@@ -160,8 +162,12 @@ sptr<EditorSceneViewportPanel> EditorSceneViewportPanel::make() {
 	auto panel { std::shared_ptr<EditorSceneViewportPanel>(new EditorSceneViewportPanel()) };
 
 	auto ctrls = make_sptr<uikit::HorizontalLayout>();
+	std::get<0>(ctrls->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
+	std::get<0>(ctrls->getLayoutAttributes().attributeSets).update<attr::BoxLayout::padding>(Padding { 4.F });
 
 	auto wrapper = make_sptr<uikit::HorizontalLayout>();
+	std::get<0>(wrapper->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
+	std::get<0>(wrapper->getLayoutAttributes().attributeSets).update<attr::BoxLayout::heightGrow>(1.F);
 	std::get<1>(wrapper->getLayoutAttributes().attributeSets).update<attr::FlexLayout::justify>(ReflowSpacing::eSpaceAround);
 
 	/**/
@@ -172,8 +178,7 @@ sptr<EditorSceneViewportPanel> EditorSceneViewportPanel::make() {
 	/**/
 
 	auto ctrlCard = uikit::makeCard({ .level = 1, .children = ::hg::move(ctrls) });
-	ctrlCard->getLayoutAttributes().update<attr::BoxLayout::minHeight>({ ReflowUnitType::eAbsolute, 28.F });
-	ctrlCard->getLayoutAttributes().update<attr::BoxLayout::maxHeight>({ ReflowUnitType::eAbsolute, 28.F });
+	ctrlCard->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
 
 	/**/
 
