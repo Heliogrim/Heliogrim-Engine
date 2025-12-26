@@ -42,6 +42,11 @@ static auto statedToKey(const u8 level_, const ThemeStateOptions states_) noexce
 		return hash::fnv1a(source);
 	}
 
+	if (states_.selected) {
+		const auto source = std::format(R"(:select([Level-{}]))", level_);
+		return hash::fnv1a(source);
+	}
+
 	std::unreachable();
 }
 
