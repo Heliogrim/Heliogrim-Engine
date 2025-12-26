@@ -1,5 +1,6 @@
 #pragma once
 
+#include <span>
 #include <Engine.Common/Optional.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Filesystem/Url.hpp>
@@ -12,6 +13,7 @@ namespace hg::editor::ui {
 namespace hg::editor::ui::service {
 	class AssetBrowserService;
 	struct AssetBrowserEntry;
+	struct AssetBrowserFilterEntry;
 }
 
 namespace hg::editor::ui {
@@ -42,6 +44,8 @@ namespace hg::editor::ui {
 		[[nodiscard]] ref<const AssetBrowserView> getView() const noexcept;
 
 	public:
+		void onFilterItemClick(Opt<std::span<const service::AssetBrowserFilterEntry>> filters_);
+
 		void onNavItemClick(ref<const fs::Path> eventData_);
 
 		void onAssetItemClick(ref<const service::AssetBrowserEntry> eventData_);

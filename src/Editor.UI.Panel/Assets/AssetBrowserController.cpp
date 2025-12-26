@@ -1,6 +1,7 @@
 #include "AssetBrowserController.hpp"
 
 #include <Editor.UI.Service/Assets/Browser/AssetBrowserEntry.hpp>
+#include <Editor.UI.Service/Assets/Browser/AssetBrowserFilterEntry.hpp>
 
 #include "AssetBrowserModel.hpp"
 #include "AssetBrowserView.hpp"
@@ -31,6 +32,10 @@ ref<const AssetBrowserModel> AssetBrowserController::getModel() const noexcept {
 
 ref<const AssetBrowserView> AssetBrowserController::getView() const noexcept {
 	return *_view;
+}
+
+void AssetBrowserController::onFilterItemClick(Opt<std::span<const service::AssetBrowserFilterEntry>> filters_) {
+	_model->changeFilters(::hg::move(filters_));
 }
 
 void AssetBrowserController::onNavItemClick(ref<const fs::Path> eventData_) {

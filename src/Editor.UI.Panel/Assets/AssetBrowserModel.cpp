@@ -87,10 +87,24 @@ void AssetBrowserModel::changeDirectory(ref<const fs::Path> nextPath_) {
 
 	/**/
 
+	_view.displayFilterItems(
+		baseFilterData,
+		[](ref<const service::AssetBrowserFilterEntry> parent_, ref<Vector<service::AssetBrowserFilterEntry>> children_) {
+			if (parent_.tag != None)
+				return;
+			children_.emplace_back("Tag", Some(service::AssetTag { "Tag" }), clone(parent_.types));
+		}
+	);
+
+	/**/
+
 	auto proxyUrl = std::filesystem::path { nextPath_ };
 	Vector<string> proxyParts {};
 
-	while (not proxyUrl.empty() && proxyUrl != proxyUrl.parent_path()) {
+	while (not proxyUrl
+	.
+	empty() && proxyUrl != proxyUrl.parent_path()
+	) {
 		proxyParts.emplace_back(proxyUrl.filename().string());
 		proxyUrl = proxyUrl.parent_path();
 	}
@@ -139,7 +153,7 @@ UniquePtr<AssetBrowserModel> editor::ui::makeAssetBrowserModel(
 	fs::Path basePath_,
 	fs::Path currentPath_
 ) {
-	return make_uptr<AssetBrowserModel>(
+	return make_uptr < AssetBrowserModel > (
 		view_,
 		::hg::move(service_),
 		::hg::move(basePath_),

@@ -6,6 +6,7 @@
 
 #include "AssetBrowserController.hpp"
 #include "Editor.UI/Helper/AssetBrowserHelper.hpp"
+#include "Editor.UI.Service/Assets/Browser/AssetBrowserFilterEntry.hpp"
 #include "Editor.UI.Theme/EditorTheme.hpp"
 #include "Engine.Assets.System/IAssetRegistry.hpp"
 #include "Engine.Assets/Assets.hpp"
@@ -15,6 +16,7 @@
 #include "Engine.GFX.Loader/Texture/Traits.hpp"
 #include "Engine.Reflow.Uikit/Atom/Paint.hpp"
 #include "Engine.Reflow.Uikit/Atom/Layout/VerticalLayout.hpp"
+#include "Engine.Reflow/Widget/Tree/TreeView.hpp"
 #include "Engine.Resource/ResourceManager.hpp"
 
 using namespace hg::editor::ui;
@@ -22,16 +24,26 @@ using namespace hg::engine::reflow;
 using namespace hg::engine::input;
 using namespace hg;
 
+/**/
+
+static std::pair<SharedPtr<uikit::VerticalLayout>, SharedPtr<AssetBrowserView::FilterTree>> make_browser_navigator(
+	ref<AssetBrowserController> controller_
+);
+
+/**/
+
 AssetBrowserView::AssetBrowserView(
 	ref<AssetBrowserController> controller_,
 	SharedPtr<engine::reflow::uikit::Card> main_,
 	std::weak_ptr<Breadcrumb> breadcrumb_,
+	std::weak_ptr<FilterTree> filterTree_,
 	std::weak_ptr<engine::reflow::uikit::VScrollBox> scrollBox_,
 	std::weak_ptr<engine::reflow::uikit::UniformGridLayout> grid_
 ) :
 	_controller(controller_),
 	main(::hg::move(main_)),
 	breadcrumb(::hg::move(breadcrumb_)),
+	filterTree(::hg::move(filterTree_)),
 	scrollBox(::hg::move(scrollBox_)),
 	grid(::hg::move(grid_)) {}
 
@@ -146,6 +158,38 @@ SharedPtr<Widget> AssetBrowserView::makeItem(ref<const service::AssetBrowserEntr
 	/**/
 
 	return button;
+
+void AssetBrowserView::displayFilterItems(
+	ref<const Vector<service::AssetBrowserFilterEntry>> baseFilters_,
+	mref<std::function<void(ref<const service::AssetBrowserFilterEntry> parent_, ref<Vector<service::AssetBrowserFilterEntry>> children_)>>
+	resolver_
+) {
+
+	if (filterTree.expired()) {
+		return;
+	}
+
+	auto tree = filterTree.lock();
+	tree->_generateFromData = [](ref<const service::AssetBrowserFilterEntry> data_) {
+		auto text = make_sptr<uikit::Text>();
+		text->setText(data_.name);
+
+		return text;
+	};
+
+	tree->_resolveChildren = ::hg::move(resolver_);
+	tree->_selectedFnc = [this](const auto& selectedSet_) {
+
+		if (selectedSet_.empty()) {
+			_controller.onFilterItemClick(None);
+			return;
+		}
+
+		auto tmp = Vector<service::AssetBrowserFilterEntry> { std::from_range, selectedSet_.values() };
+		_controller.onFilterItemClick(Some(tmp));
+	};
+
+	tree->setTreeViewSource(baseFilters_);
 }
 
 void AssetBrowserView::displayNav(ref<const Vector<BrowserNavEntry>> navData_) {
@@ -222,13 +266,71 @@ UniquePtr<AssetBrowserView> editor::ui::makeAssetBrowserView(ref<AssetBrowserCon
 	wrapper->addChild(::hg::move(header));
 	wrapper->addChild(::hg::move(content));
 
-	auto card = uikit::makeCard({ .level = 1, .children = ::hg::move(wrapper) });
+	auto [navigator, filterTree] = make_browser_navigator(controller_);
+
+	auto composition = make_sptr<uikit::HorizontalLayout>();
+	std::get<0>(composition->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
+	std::get<0>(composition->getLayoutAttributes().attributeSets).update<attr::BoxLayout::heightGrow>(1.F);
+	composition->addChild(::hg::move(navigator));
+	composition->addChild(::hg::move(browserContent));
+
+	auto card = uikit::makeCard({ .level = 1, .children = ::hg::move(composition) });
 
 	return make_uptr<AssetBrowserView>(
 		controller_,
 		::hg::move(card),
 		breadcrumb,
-		content,
+		filterTree,
+		::hg::move(content),
 		grid
 	);
+}
+
+/**/
+
+std::pair<SharedPtr<uikit::VerticalLayout>, SharedPtr<AssetBrowserView::FilterTree>> make_browser_navigator(
+	ref<AssetBrowserController> controller_
+) {
+
+	auto navigator = make_sptr<uikit::VerticalLayout>();
+	std::get<0>(navigator->getLayoutAttributes().attributeSets).update<attr::BoxLayout::heightGrow>(1.f);
+	std::get<0>(navigator->getLayoutAttributes().attributeSets).update<attr::BoxLayout::padding>(Padding { 8.f });
+	std::get<0>(navigator->getLayoutAttributes().attributeSets).update<attr::BoxLayout::minWidth>({ ReflowUnitType::eAbsolute, 240.f });
+	std::get<0>(navigator->getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxWidth>({ ReflowUnitType::eAbsolute, 240.f });
+	std::get<1>(navigator->getLayoutAttributes().attributeSets).update<attr::FlexLayout::rowGap>(4.f);
+
+	auto navHeader = make_sptr<uikit::HorizontalLayout>();
+
+	std::get<0>(navHeader->getLayoutAttributes().attributeSets).update<attr::BoxLayout::minHeight>({ ReflowUnitType::eAbsolute, 20.f });
+	std::get<0>(navHeader->getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxHeight>({ ReflowUnitType::eAbsolute, 20.f });
+	std::get<0>(navHeader->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
+	std::get<1>(navHeader->getLayoutAttributes().attributeSets).update<attr::FlexLayout::justify>(ReflowSpacing::eStart);
+
+	auto navScroll = make_sptr<uikit::VScrollBox>();
+
+	std::get<0>(navScroll->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
+	std::get<0>(navScroll->getLayoutAttributes().attributeSets).update<attr::BoxLayout::heightGrow>(1.F);
+	std::get<0>(navScroll->getLayoutAttributes().attributeSets).update<attr::BoxLayout::padding>(Padding { 4.F });
+	std::get<0>(navScroll->getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxWidth>({ ReflowUnitType::eRelative, 1.F });
+	std::get<0>(navScroll->getLayoutAttributes().attributeSets).update<
+		attr::BoxLayout::maxHeight>({ ReflowUnitType::eRelative, 1.F });
+
+	auto navTree = make_sptr<TreeView<service::AssetBrowserFilterEntry, std::type_identity_t>>();
+	std::get<0>(navTree->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
+	std::get<0>(navTree->getLayoutAttributes().attributeSets).update<attr::BoxLayout::heightGrow>(1.F);
+
+	navScroll->addChild(navTree);
+
+	auto navigatorContent = make_sptr<uikit::Stack>();
+	navigatorContent->addChild(make_sptr<uikit::Paint>(ReflowClassList { "[AssetBrowser]"sv }, nullptr));
+	navigatorContent->addChild(clone(navScroll));
+
+	navigatorContent->getLayoutAttributes().update<attr::BoxLayout::maxHeight>({ ReflowUnitType::eRelative, 1.F });
+	navigatorContent->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
+	navigatorContent->getLayoutAttributes().update<attr::BoxLayout::heightGrow>(1.F);
+
+	navigator->addChild(navHeader);
+	navigator->addChild(navigatorContent);
+
+	return { navigator, navTree };
 }
