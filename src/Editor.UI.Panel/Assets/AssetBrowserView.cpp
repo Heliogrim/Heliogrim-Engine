@@ -5,13 +5,17 @@
 #include <Engine.Common/Discard.hpp>
 
 #include "AssetBrowserController.hpp"
+#include "Editor.Action/ActionManager.hpp"
+#include "Editor.Assets.Actions/UnknownImport.hpp"
 #include "Editor.UI/Helper/AssetBrowserHelper.hpp"
+#include "Editor.UI/Widget/ContextMenuProvider.hpp"
 #include "Editor.UI.Service/Assets/Browser/AssetBrowserFilterEntry.hpp"
 #include "Editor.UI.Theme/EditorTheme.hpp"
 #include "Engine.Assets.System/IAssetRegistry.hpp"
 #include "Engine.Assets/Assets.hpp"
 #include "Engine.Common/Math/Coordinates.hpp"
 #include "Engine.Core/Engine.hpp"
+#include "Engine.Core/Module/Modules.hpp"
 #include "Engine.GFX.Loader/Texture/TextureResource.hpp"
 #include "Engine.GFX.Loader/Texture/Traits.hpp"
 #include "Engine.Reflow.Uikit/Atom/Paint.hpp"
@@ -157,7 +161,18 @@ SharedPtr<Widget> AssetBrowserView::makeItem(ref<const service::AssetBrowserEntr
 
 	/**/
 
-	return button;
+	auto ctxMenu = make_sptr<ContextMenuProvider>();
+	ctxMenu->setContent(::hg::move(button));
+	ctxMenu->onContextMenu(
+		[](const auto& event_) {
+			auto item = event_.builder.addItem("Delete"sv);
+			item.setTitle("Delete"sv);
+			return EventResponse::eHandled;
+		}
+	);
+
+	return ctxMenu;
+}
 
 void AssetBrowserView::displayFilterItems(
 	ref<const Vector<service::AssetBrowserFilterEntry>> baseFilters_,
@@ -262,9 +277,58 @@ UniquePtr<AssetBrowserView> editor::ui::makeAssetBrowserView(ref<AssetBrowserCon
 
 	/**/
 
-	auto wrapper = make_sptr<uikit::VerticalLayout>();
-	wrapper->addChild(::hg::move(header));
-	wrapper->addChild(::hg::move(content));
+	auto contentStack = make_sptr<uikit::Stack>();
+	contentStack->addChild(make_sptr<uikit::Paint>(ReflowClassList { "[AssetBrowser]"sv }, nullptr));
+	contentStack->addChild(clone(content));
+
+	contentStack->getLayoutAttributes().update<attr::BoxLayout::maxHeight>({ ReflowUnitType::eRelative, 1.F });
+	contentStack->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
+	contentStack->getLayoutAttributes().update<attr::BoxLayout::heightGrow>(1.F);
+
+	auto ctxMenu = make_sptr<ContextMenuProvider>();
+	ctxMenu->setContent(::hg::move(contentStack));
+	ctxMenu->onContextMenu(
+		[](ref<const ContextMenuEvent> event_) {
+
+			auto addItem = event_.builder.addItem("Add"sv);
+			addItem.setTitle("Add"sv);
+			auto addMaterialItem = addItem.addSubItem("Material"sv);
+			addMaterialItem.setTitle("Material"sv);
+			auto addMeshItem = addItem.addSubItem("Mesh"sv);
+			addMeshItem.setTitle("Mesh"sv);
+			auto addTextureItem = addItem.addSubItem("Texture"sv);
+			addTextureItem.setTitle("Texture"sv);
+
+			auto importItem = event_.builder.addItem("Import"sv);
+			importItem.setTitle("Import"sv);
+			importItem.setAction(
+				[]() {
+					const auto module = engine::Engine::getEngine()->getModules().getSubModule(editor::ActionDepKey);
+					::hg::assertrt(module != nullptr);
+
+					auto action = assets::actions::makeUnknownWithExplorer(engine::storage::FileUrl {});
+					if (not action.has_value()) {
+						return true;
+					}
+
+					static_cast<ptr<ActionManager>>(module.get())->apply(::hg::move(action).value());
+					return true;
+				}
+			);
+
+			return EventResponse::eHandled;
+		}
+	);
+
+	/**/
+
+	auto browserContent = make_sptr<uikit::VerticalLayout>();
+	std::get<0>(browserContent->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
+	std::get<0>(browserContent->getLayoutAttributes().attributeSets).update<attr::BoxLayout::heightGrow>(1.F);
+	browserContent->addChild(::hg::move(header));
+	browserContent->addChild(::hg::move(ctxMenu));
+
+	/**/
 
 	auto [navigator, filterTree] = make_browser_navigator(controller_);
 
