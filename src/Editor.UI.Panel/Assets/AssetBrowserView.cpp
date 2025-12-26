@@ -91,12 +91,12 @@ SharedPtr<Widget> AssetBrowserView::makeItem(ref<const service::AssetBrowserEntr
 
 	/**/
 
-	constexpr auto wholeItemWidth = ReflowUnit { ReflowUnitType::eAbsolute, 96.F };
-	constexpr auto wholeItemHeight = ReflowUnit { ReflowUnitType::eAbsolute, 156.F };
-	constexpr auto iconHeight = ReflowUnit { ReflowUnitType::eAbsolute, wholeItemWidth.value };
+	constexpr auto wholeItemWidth = ReflowUnit { ReflowUnitType::eAbsolute, 94.F };
+	constexpr auto wholeItemHeight = ReflowUnit { ReflowUnitType::eAbsolute, 130.F };
+	constexpr auto iconHeight = ReflowUnit { ReflowUnitType::eAbsolute, 86.F };
 	constexpr auto detailsHeight = ReflowUnit { ReflowUnitType::eAbsolute, wholeItemHeight.value - iconHeight.value };
 
-	auto wholeItemBackground = make_sptr<uikit::Paint>(ReflowClassList { "[Button] > background"sv }, nullptr);
+	auto wholeItemBackground = make_sptr<uikit::Paint>(ReflowClassList { "[AssetBrowserItem]"sv }, nullptr);
 	auto wholeItemLayout = make_sptr<uikit::VerticalLayout>();
 
 	std::get<0>(wholeItemLayout->getLayoutAttributes().attributeSets).update<attr::BoxLayout::minWidth>(clone(wholeItemWidth));
@@ -117,9 +117,14 @@ SharedPtr<Widget> AssetBrowserView::makeItem(ref<const service::AssetBrowserEntr
 	previewOrIcon->getLayoutAttributes().update<attr::BoxLayout::minHeight>(clone(iconHeight));
 	previewOrIcon->getLayoutAttributes().update<attr::BoxLayout::maxHeight>(clone(iconHeight));
 
+	previewOrIcon->getLayoutAttributes().update<attr::BoxLayout::padding>(Padding { 4.F });
+
 	wholeItemLayout->addChild(::hg::move(previewOrIcon));
 
 	auto detailsLayout = make_sptr<uikit::VerticalLayout>();
+
+	std::get<1>(detailsLayout->getLayoutAttributes().attributeSets).update<attr::FlexLayout::justify>(ReflowSpacing::eSpaceBetween);
+	std::get<0>(detailsLayout->getLayoutAttributes().attributeSets).update<attr::BoxLayout::padding>(Padding { 4.F, 4.F, 4.F, 8.F });
 
 	std::get<0>(detailsLayout->getLayoutAttributes().attributeSets).update<attr::BoxLayout::minWidth>(clone(wholeItemWidth));
 	std::get<0>(detailsLayout->getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxWidth>(clone(wholeItemWidth));
@@ -127,9 +132,10 @@ SharedPtr<Widget> AssetBrowserView::makeItem(ref<const service::AssetBrowserEntr
 	std::get<0>(detailsLayout->getLayoutAttributes().attributeSets).update<attr::BoxLayout::minHeight>(clone(detailsHeight));
 	std::get<0>(detailsLayout->getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxHeight>(clone(detailsHeight));
 
-	auto displayTitle = make_sptr<uikit::Text>();
-	auto displayLabel = make_sptr<uikit::Text>();
+	auto displayTitle = make_sptr<uikit::Text>(ReflowClassList { "[AssetBrowserItem] > title"sv }, nullptr);
+	auto displayLabel = make_sptr<uikit::Text>(ReflowClassList { "[AssetBrowserItem] > label"sv }, nullptr);
 
+	displayTitle->getStyleAttributes().update<attr::TextStyle::textWrap>(ReflowWrap::eWrap);
 	displayTitle->setText(title);
 	displayLabel->setText(label);
 
@@ -142,11 +148,8 @@ SharedPtr<Widget> AssetBrowserView::makeItem(ref<const service::AssetBrowserEntr
 
 	const auto& theming = getEditorTheming();
 
-	auto button = uikit::makeButton(uikit::ButtonCreateOptions { .level = 2, .children = ::hg::move(wholeItemBackground) });
+	auto button = uikit::makeButton(uikit::ButtonCreateOptions { .level = 0, .children = ::hg::move(wholeItemBackground) });
 	button->addChild(::hg::move(wholeItemLayout));
-
-	button->setBaseTheme(theming.getStatedTheme(2u, {}));
-	button->setStateTheme(InteractiveStateFlagBits::eHover, theming.getStatedTheme(2u, { .hover = true }));
 
 	::hg::discard = button->onClick(
 		[&ctrl = _controller, data = data_](ref<const engine::reflow::MouseEvent> event_) {
@@ -245,9 +248,7 @@ UniquePtr<AssetBrowserView> editor::ui::makeAssetBrowserView(ref<AssetBrowserCon
 	auto header = make_sptr<uikit::HorizontalLayout>();
 	const auto breadcrumb = make_sptr<Breadcrumb>();
 
-	std::get<0>(header->getLayoutAttributes().attributeSets).update<attr::BoxLayout::minHeight>({ ReflowUnitType::eAbsolute, 24.F });
-	std::get<0>(header->getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxHeight>({ ReflowUnitType::eAbsolute, 24.F });
-
+	std::get<0>(header->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
 	std::get<1>(header->getLayoutAttributes().attributeSets).update<attr::FlexLayout::justify>(ReflowSpacing::eStart);
 
 	breadcrumb->onAction(
@@ -263,15 +264,20 @@ UniquePtr<AssetBrowserView> editor::ui::makeAssetBrowserView(ref<AssetBrowserCon
 	auto content = make_sptr<uikit::VScrollBox>();
 	const auto grid = make_sptr<uikit::UniformGridLayout>();
 
+	(std::get<0>(content->getLayoutAttributes().attributeSets)).update<attr::BoxLayout::widthGrow>(1.F);
+	(std::get<0>(content->getLayoutAttributes().attributeSets)).update<attr::BoxLayout::heightGrow>(1.F);
 	(std::get<0>(content->getLayoutAttributes().attributeSets)).update<attr::BoxLayout::padding>(Padding { 4.F });
+	std::get<0>(content->getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxWidth>({ ReflowUnitType::eRelative, 1.F });
+	std::get<0>(content->getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxHeight>({ ReflowUnitType::eRelative, 1.F });
 
 	std::get<0>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
 	std::get<0>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::heightGrow>(1.F);
+	std::get<0>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::heightShrink>(0.F);
 
-	std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxWidth>({ ReflowUnitType::eAbsolute, 96.F });
-	std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::minWidth>({ ReflowUnitType::eAbsolute, 96.F });
-	std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::minHeight>({ ReflowUnitType::eAbsolute, 156.F });
-	std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxHeight>({ ReflowUnitType::eAbsolute, 156.F });
+	std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxWidth>({ ReflowUnitType::eAbsolute, 94.F });
+	std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::minWidth>({ ReflowUnitType::eAbsolute, 94.F });
+	std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::minHeight>({ ReflowUnitType::eAbsolute, 130.F });
+	std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxHeight>({ ReflowUnitType::eAbsolute, 130.F });
 
 	content->addChild(clone(grid));
 
