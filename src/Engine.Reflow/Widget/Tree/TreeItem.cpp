@@ -11,7 +11,7 @@ using namespace hg;
 }
 
 TreeItem::TreeItem() :
-	HorizontalLayout(),
+	Button(),
 	_level(),
 	_selected(false) {}
 
@@ -33,6 +33,16 @@ bool TreeItem::isSelected() const noexcept {
 void TreeItem::setSelected(const bool selected_) {
 	if (_selected != selected_) {
 		this->markAsPending(false, true);
+	}
+
+	if (_themeStateMap.selected.has_value()) {
+		const auto addr = std::addressof(_themeStateMap.selected.value());
+		if (selected_) {
+			(void)getLocalContext().addLocalTheme(addr);
+		} else {
+			(void)getLocalContext().dropLocalTheme(addr);
+		}
+		notifyContextChange();
 	}
 
 	_selected = selected_;

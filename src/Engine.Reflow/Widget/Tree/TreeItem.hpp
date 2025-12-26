@@ -1,10 +1,10 @@
 #pragma once
 
-#include <Engine.Reflow.Uikit/Atom/Layout/HorizontalLayout.hpp>
+#include <Engine.Reflow.Uikit/Exp/Button.hpp>
 
 namespace hg::engine::reflow {
 	class TreeItem :
-		public uikit::HorizontalLayout {
+		public uikit::Button {
 	public:
 		using this_type = TreeItem;
 
