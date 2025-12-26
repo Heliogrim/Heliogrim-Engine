@@ -56,7 +56,7 @@ void InputToggle::setActiveContent(mref<SharedPtr<Widget>> active_) {
 				// Warning: Maybe cause use-after-free due to immediate tree-rewrite in `setValue`
 				setValue(false);
 				updateValueAndValidity(true, true);
-				return EventResponse::eConsumed;
+				return EventResponse::eHandled;
 			}
 		);
 	}
@@ -81,7 +81,7 @@ void InputToggle::setInactiveContent(mref<SharedPtr<Widget>> inactive_) {
 				// Warning: Maybe cause use-after-free due to immediate tree-rewrite in `setValue`
 				setValue(true);
 				updateValueAndValidity(true, true);
-				return EventResponse::eConsumed;
+				return EventResponse::eHandled;
 			}
 		);
 	}
