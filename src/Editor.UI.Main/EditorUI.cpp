@@ -2,12 +2,13 @@
 #include "Module/EditorUI.hpp"
 
 #include <Editor.Assets.Default/Textures/Default.hpp>
+#include <Editor.Boot/Module/Editor.hpp>
 #include <Editor.Core/EditorEngine.hpp>
-#include <Editor.Main/Module/Editor.hpp>
 #include <Editor.UI.View/Scene/SceneEditorController.hpp>
 #include <Editor.UI/Helper/AssetBrowserHelper.hpp>
 #include <Editor.UI.Init/EditorInit.hpp>
 #include <Editor.UI.Rx/Subject.hpp>
+#include <Editor.UI.Service/Property/PropertyServiceInit.hpp>
 #include <Editor.UI.Theme/EditorTheme.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Reflow/Reflow.hpp>
@@ -76,6 +77,7 @@ void editor::EditorUI::start() {
 
 	/**/
 
+	service::initPropertyService(*_uiServices.propertyService);
 	initEditor(*this);
 }
 
