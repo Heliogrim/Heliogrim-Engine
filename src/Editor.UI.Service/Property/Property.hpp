@@ -14,6 +14,7 @@ namespace hg::editor::ui::service {
 		using view_fn_arg = ref<const Variant<nmpt<Actor>, nmpt<HierarchyComponent>>>;
 
 		String debugName;
+		String section;
 		Variant<nmpt<const ActorClass>, ComponentTypeId, selector_fn> selector;
 		std::function<SharedPtr<engine::reflow::Widget>(view_fn_arg)> view;
 	};
