@@ -6,8 +6,9 @@
 #include <Engine.Common/Collection/Array.hpp>
 #include <Engine.Common/Math/Vector.hpp>
 #include <Engine.Reflow/Widget/Input.hpp>
-#include <Engine.Reflow/Widget/Input/InputFloat.hpp>
-#include <Engine.Reflow/Widget/Input/InputIntegral.hpp>
+
+#include "./InputFloat.hpp"
+#include "./InputIntegral.hpp"
 
 namespace hg::editor::ui {
 	template <typename VectorType_>
@@ -22,15 +23,22 @@ namespace hg::editor::ui {
 
 		using input_widget_type = std::conditional_t<
 			std::is_integral_v<vector_value_base_type>,
-			engine::reflow::InputIntegral,
-			engine::reflow::InputFloat
+			InputIntegral,
+			InputFloat
 		>;
 
 		constexpr inline static u64 vector_dim { sizeof(vector_type) / sizeof(vector_value_base_type) };
 
 	protected:
 		InputVec() :
-			engine::reflow::Input<VectorType_>() {
+			engine::reflow::Input<VectorType_>(
+				make_sptr<engine::reflow::uikit::HorizontalLayout>(),
+				engine::reflow::ReflowClassList {},
+				nullptr
+			),
+			_content(
+				std::static_pointer_cast<engine::reflow::uikit::HorizontalLayout>(engine::reflow::CompoundWidget::_children.getChild())
+			) {
 			prepare();
 		}
 
@@ -44,8 +52,8 @@ namespace hg::editor::ui {
 
 	public:
 		void prepare() {
+			::hg::assertd(static_cast<bool>(_content));
 
-			_content = make_sptr<engine::reflow::uikit::HorizontalLayout>();
 			auto& attrs = _content->getLayoutAttributes().attributeSets;
 			std::get<0>(attrs).update<engine::reflow::attr::BoxLayout::maxWidth>({ engine::reflow::ReflowUnitType::eRelative, 1.F });
 			std::get<0>(attrs).update<engine::reflow::attr::BoxLayout::minHeight>({ engine::reflow::ReflowUnitType::eAbsolute, 20.F });
@@ -76,12 +84,6 @@ namespace hg::editor::ui {
 
 	protected:
 		sptr<engine::reflow::uikit::HorizontalLayout> _content;
-		engine::reflow::Children _children;
-
-	public:
-		[[nodiscard]] const ptr<const engine::reflow::Children> children() const override {
-			return &_children;
-		}
 
 	public:
 		void enable() override {
@@ -184,8 +186,8 @@ namespace hg::editor::ui {
 				return;
 			}
 
-			if (not _children.empty()) {
-				_children.clear();
+			if (not::hg::engine::reflow::CompoundWidget::_children.empty()) {
+				::hg::engine::reflow::CompoundWidget::_children.clear();
 			}
 
 			_content->setParent(nullptr);
@@ -200,8 +202,8 @@ namespace hg::editor::ui {
 				return;
 			}
 
-			if (_children.empty()) {
-				_children.push_back(_content);
+			if (::hg::engine::reflow::CompoundWidget::_children.empty()) {
+				::hg::engine::reflow::CompoundWidget::_children.push_back(_content);
 			}
 
 			const auto frac = 1.F / ((float)vector_dim);
