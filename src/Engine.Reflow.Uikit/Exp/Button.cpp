@@ -24,6 +24,8 @@ SharedPtr<uikit::Button> uikit::makeButton(
 			[&](TextButtonCreateOptions& textOptions_) {
 
 				switch (textOptions_.level) {
+					case 0: button->setStateTheme(InteractiveStateFlagBits::eHover, theming->getStatedTheme(0u, { .hover = true }));
+						break;
 					case 1: button->setStateTheme(InteractiveStateFlagBits::eHover, theming->getStatedTheme(1u, { .hover = true }));
 						break;
 					case 2: button->setStateTheme(InteractiveStateFlagBits::eHover, theming->getStatedTheme(2u, { .hover = true }));
@@ -37,16 +39,13 @@ SharedPtr<uikit::Button> uikit::makeButton(
 
 				auto background = make_sptr<uikit::Paint>(ReflowClassList { "[Button] > background"sv }, nullptr);
 				button->addChild(background);
-
-				auto wrapper = make_sptr<uikit::BoxLayout>();
-				wrapper->getLayoutAttributes().update<attr::BoxLayout::padding>(Padding { 8.F });
-
-				wrapper->setChild(::hg::move(textOptions_.text));
-				button->addChild(::hg::move(wrapper));
+				button->addChild(::hg::move(textOptions_.text));
 			},
 			[&](ImageButtonCreateOptions& imageOptions_) {
 
 				switch (imageOptions_.level) {
+					case 0: button->setStateTheme(InteractiveStateFlagBits::eHover, theming->getStatedTheme(0u, { .hover = true }));
+						break;
 					case 1: button->setStateTheme(InteractiveStateFlagBits::eHover, theming->getStatedTheme(1u, { .hover = true }));
 						break;
 					case 2: button->setStateTheme(InteractiveStateFlagBits::eHover, theming->getStatedTheme(2u, { .hover = true }));
@@ -61,6 +60,8 @@ SharedPtr<uikit::Button> uikit::makeButton(
 			[&](ButtonCreateOptions& customOptions_) {
 
 				switch (customOptions_.level) {
+					case 0: button->setStateTheme(InteractiveStateFlagBits::eHover, theming->getStatedTheme(0u, { .hover = true }));
+						break;
 					case 1: button->setStateTheme(InteractiveStateFlagBits::eHover, theming->getStatedTheme(1u, { .hover = true }));
 						break;
 					case 2: button->setStateTheme(InteractiveStateFlagBits::eHover, theming->getStatedTheme(2u, { .hover = true }));
@@ -156,6 +157,18 @@ void uikit::Button::setStateTheme(InteractiveStateFlagBits interactiveBit_, mref
 
 			if (_state.isPressed() && _themeStateMap.pressed.has_value()) {
 				effective |= getLocalContext().addLocalTheme(std::addressof(_themeStateMap.pressed.value()));
+			}
+			break;
+		}
+		case InteractiveStateFlagBits::eSelected: {
+			if (_state.isPressed() && _themeStateMap.selected.has_value()) {
+				effective |= getLocalContext().dropLocalTheme(std::addressof(_themeStateMap.selected.value()));
+			}
+
+			_themeStateMap.selected = ::hg::move(theme_);
+
+			if (_state.isPressed() && _themeStateMap.selected.has_value()) {
+				effective |= getLocalContext().addLocalTheme(std::addressof(_themeStateMap.selected.value()));
 			}
 			break;
 		}

@@ -31,6 +31,7 @@ namespace hg::engine::reflow::uikit {
 			Opt<theming::Theme> hover;
 			Opt<theming::Theme> pressed;
 			// TODO: Check form states
+			Opt<theming::Theme> selected;
 			Opt<theming::Theme> disabled;
 		};
 
@@ -45,7 +46,7 @@ namespace hg::engine::reflow::uikit {
 			bool localInvalidate_
 		) noexcept override;
 
-	private:
+	protected:
 		MapStateToSets _themeStateMap;
 
 		void notifyContextChange();
