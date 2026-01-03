@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <map>
 #include <ranges>
 #include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Asserts/Breakpoint.hpp>
@@ -10,6 +11,25 @@
 
 #include "AllocatedMemory.hpp"
 #include "AllocationResult.hpp"
+#include "Optional.hpp"
+
+/**/
+
+#ifdef DEBUG_EXT
+
+struct mem_alloc_tracking {
+	ptrdiff_t as_handle;
+	ptrdiff_t parent_as_handle;
+	hg::Opt<std::stacktrace> alloc_stacktrace;
+	hg::Opt<std::stacktrace> free_stacktrace;
+};
+
+static std::map<ptrdiff_t, mem_alloc_tracking> completed_tracking {};
+static std::map<ptrdiff_t, mem_alloc_tracking> active_tracking {};
+
+#endif
+
+/**/
 
 using namespace hg::engine::gfx::memory;
 using namespace hg;
@@ -31,10 +51,7 @@ void MemoryPool::tidy() {
 	u64 lastChangeSize = _memory.size();
 	u64 lastChangeTrack = 0uLL;
 
-	while (not _memory
-	.
-	empty()
-	) {
+	while (not _memory.empty()) {
 		auto entry = std::move(_memory.back());
 		_memory.pop_back();
 
@@ -53,6 +70,7 @@ void MemoryPool::tidy() {
 			lastChangeTrack = 0uLL;
 		}
 
+		#ifdef DEBUG_EXT
 		if ((++lastChangeTrack) < lastChangeSize) {
 			for (const auto& [handle, tracking] : active_tracking) {
 				if (tracking.free_stacktrace == None) {
@@ -65,6 +83,7 @@ void MemoryPool::tidy() {
 				}
 			}
 		}
+		#endif
 		//::hg::assertrt((++lastChangeTrack) < lastChangeSize);
 	}
 
@@ -182,10 +201,7 @@ bool MemoryPool::treeMerge(
 			/* Recursive call to free tree-spliced memory */
 
 			const auto result = free(hold, true);
-			if (not result && hold
-			->
-			allocator
-			) {
+			if (not result && hold->allocator) {
 				memory::AllocatedMemory::free(std::move(hold));
 
 				if (_pooling.empty() && _memory.empty()) {
@@ -313,9 +329,7 @@ AllocationResult MemoryPool::allocate(const u64 size_, const bool bestFit_, ref<
 }
 
 bool MemoryPool::free(ref<uptr<AllocatedMemory>> mem_, bool cascade_) {
-	if (not
-		mem_->parent
-	) {
+	if (not mem_->parent) {
 		return false;
 	}
 
@@ -370,6 +384,7 @@ bool MemoryPool::free(ref<uptr<AllocatedMemory>> mem_, bool cascade_) {
 
 AllocationResult MemoryPool::allocate(const u64 size_, ref<uptr<AllocatedMemory>> dst_) {
 	const auto result = allocate(size_, false, dst_);
+	#ifdef DEBUG_EXT
 	if (result == AllocationResult::eSuccess) {
 		active_tracking.emplace(
 			reinterpret_cast<s64>(dst_.get()),
@@ -381,11 +396,13 @@ AllocationResult MemoryPool::allocate(const u64 size_, ref<uptr<AllocatedMemory>
 			}
 		);
 	}
+	#endif
 	return result;
 }
 
 bool MemoryPool::free(_Inout_ ref<uptr<AllocatedMemory>> mem_) {
 
+	#ifdef DEBUG_EXT
 	auto tracked = active_tracking.find(reinterpret_cast<s64>(mem_.get()));
 	if (tracked == active_tracking.end()) {
 		auto check_double_free = completed_tracking.find(reinterpret_cast<s64>(mem_.get()));
@@ -399,6 +416,7 @@ bool MemoryPool::free(_Inout_ ref<uptr<AllocatedMemory>> mem_) {
 		completed_tracking.emplace(tracked->first, tracked->second);
 		active_tracking.erase(tracked);
 	}
+	#endif
 
 	const auto result = free(mem_, true);
 
@@ -414,8 +432,7 @@ bool MemoryPool::free(_Inout_ ref<uptr<AllocatedMemory>> mem_) {
 bool MemoryPool::poolContains(nmpt<AllocatedMemory> allocated_) const noexcept {
 
 	#ifdef _DEBUG
-	if (not
-		_pooling.contains(allocated_.get())) {
+	if (not _pooling.contains(allocated_.get())) {
 		if (std::ranges::contains(
 			_memory,
 			allocated_.get(),
