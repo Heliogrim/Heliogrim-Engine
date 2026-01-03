@@ -19,6 +19,8 @@ namespace hg::engine::assets {
 		constexpr static AssetTypeId typeId { "LevelAsset"_typeId };
 
 	public:
+		LevelAsset() noexcept;
+
 		LevelAsset(
 			mref<AssetGuid> guid_,
 			mref<StringView> name_,
