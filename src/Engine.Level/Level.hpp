@@ -12,6 +12,16 @@
 #include <Engine.Serialization/Layout/DataLayout.hpp>
 #include <Heliogrim/Actor/Actor.hpp>
 
+#include "LevelGuid.hpp"
+
+namespace hg {
+	struct AssetGuid;
+}
+
+namespace hg::engine::assets {
+	class LevelAsset;
+}
+
 namespace hg::engine::core {
 	class Level :
 		public ArcFromThis<Level> {
@@ -26,15 +36,22 @@ namespace hg::engine::core {
 		using this_type = Level;
 
 	public:
-		Level() noexcept = default;
+		Level(mref<LevelGuid> guid_) noexcept;
+
+		Level(ref<const assets::LevelAsset> asset_) noexcept;
 
 		~Level();
 
 	private:
+		LevelGuid _guid;
 		math::Bounding _bounding;
 
 	public:
 		[[nodiscard]] bool isRootLike() const noexcept;
+
+		[[nodiscard]] ref<const LevelGuid> guid() const noexcept;
+
+		[[nodiscard]] ref<const AssetGuid> assetGuid() const noexcept;
 
 		[[nodiscard]] cref<math::Bounding> getBounding() const noexcept;
 
