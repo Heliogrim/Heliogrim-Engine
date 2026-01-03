@@ -148,6 +148,10 @@ if (HELIOGRIM_PREVENT_MAIN_AUTO_SLEEP)
 	list(APPEND DEFAULT_COMPILE_DEFINITIONS "PREVENT_MAIN_AUTO_SLEEP=TRUE")
 endif ()
 
+if (HELIOGRIM_DEBUG_EXT)
+	list(APPEND DEFAULT_COMPILE_DEFINITIONS "DEBUG_EXT=TRUE")
+endif()
+
 #
 # Compile launch options
 #
@@ -203,7 +207,7 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC")
 			/Oy-
 			/Od
 			/GS
-			/JMC
+			/JMC-
 			/Zf
 			/Zo
 			>

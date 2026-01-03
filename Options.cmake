@@ -10,6 +10,10 @@ make_option(VAR "HELIOGRIM_FULL_STATIC_LINKING" NAME "FULL_STATIC_LINKING" CALLB
 
 # ------------------------------
 
+make_option(VAR "HELIOGRIM_DEBUG_EXT" NAME "DEBUG_EXT" DEFAULT OFF)
+
+# ------------------------------
+
 make_option(VAR "HELIOGRIM_PLATFORM_WAYLAND" NAME "PLATFORM_WAYLAND" CALLBACK support_opt_wayland)
 make_option(VAR "HELIOGRIM_PLATFORM_X11" NAME "PLATFORM_X11" CALLBACK support_opt_x11)
 
