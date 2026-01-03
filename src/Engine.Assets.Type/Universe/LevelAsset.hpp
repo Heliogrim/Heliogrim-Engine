@@ -5,6 +5,10 @@
 
 #include "../Asset.hpp"
 
+namespace hg::engine::core {
+	class Level;
+}
+
 namespace hg::engine::assets {
 	class LevelAsset final :
 		public InheritMeta<LevelAsset, Asset> {
@@ -22,7 +26,7 @@ namespace hg::engine::assets {
 		LevelAsset() noexcept;
 
 		LevelAsset(
-			mref<AssetGuid> guid_,
+			ref<const core::Level> level_,
 			mref<StringView> name_,
 			mref<AssetReferenceUrl> storageUrl_,
 			mref<AssetUrl> vfsUrl_

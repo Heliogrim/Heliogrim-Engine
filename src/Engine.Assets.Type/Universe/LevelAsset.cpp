@@ -1,17 +1,22 @@
 #include "LevelAsset.hpp"
 
+#include <Engine.Level/Level.hpp>
+
 using namespace hg::engine::assets;
 using namespace hg;
 
+LevelAsset::LevelAsset() noexcept :
+	InheritMeta(clone(invalid_asset_guid), LevelAsset::typeId, StringView {}, AssetReferenceUrl {}, AssetUrl {}) {}
+
 LevelAsset::LevelAsset(
-	mref<AssetGuid> guid_,
+	ref<const core::Level> level_,
 	mref<StringView> name_,
 	mref<AssetReferenceUrl> storageUrl_,
 	mref<AssetUrl> vfsUrl_
 ) :
 	InheritMeta(
-		std::move(guid_),
-		typeId,
+		clone(level_.assetGuid()),
+		LevelAsset::typeId,
 		::hg::move(name_),
 		::hg::move(storageUrl_),
 		::hg::move(vfsUrl_)

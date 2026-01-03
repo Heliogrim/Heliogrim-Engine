@@ -1,5 +1,7 @@
 #include "Level.hpp"
 
+#include <Engine.Assets/AssetGuid.hpp>
+#include <Engine.Assets.Type/Universe/LevelAsset.hpp>
 #include <Engine.Common/Math/Coordinates.hpp>
 
 using namespace hg::engine::core;
@@ -11,6 +13,12 @@ constexpr static auto level_root_bounding = ::hg::math::Bounding { math::vec3_ze
 
 /**/
 
+Level::Level(mref<LevelGuid> guid_) noexcept :
+	_guid(::hg::move(guid_)) {}
+
+Level::Level(ref<const assets::LevelAsset> asset_) noexcept :
+	_guid(asset_.getAssetGuid()) {}
+
 Level::~Level() {
 	for (const auto actor : _actors) {
 		VolatileActor<>::destroy(actor);
@@ -21,6 +29,14 @@ Level::~Level() {
 bool Level::isRootLike() const noexcept {
 	return _bounding.center() == level_root_bounding.center() &&
 		_bounding.extent() == level_root_bounding.extent();
+}
+
+ref<const LevelGuid> Level::guid() const noexcept {
+	return _guid;
+}
+
+ref<const AssetGuid> Level::assetGuid() const noexcept {
+	return reinterpret_cast<ref<const AssetGuid>>(_guid);
 }
 
 cref<math::Bounding> Level::getBounding() const noexcept {
@@ -48,7 +64,7 @@ Opt<VolatileActor<>> Level::removeActor(const nmpt<Actor> actor_) {
 }
 
 Arci<Level> engine::core::make_root_like_level() {
-	auto level = Arci<Level>::create();
+	auto level = Arci<Level>::create(generate_level_guid());
 	level->setBounding(level_root_bounding);
 	return level;
 }
