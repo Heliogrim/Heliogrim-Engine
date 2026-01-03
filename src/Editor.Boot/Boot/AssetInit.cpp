@@ -1,11 +1,12 @@
 #include "AssetInit.hpp"
 
 /**/
-#include <Engine.Storage.Registry/Storage/PackageStorage.hpp>
 #include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
 #include <Engine.Assets.Type/Texture/FontAsset.hpp>
 #include <Engine.Assets.Type/Texture/ImageAsset.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
+#include <Engine.Assets.Type/Universe/LevelAsset.hpp>
+#include <Engine.Storage.Registry/Storage/PackageStorage.hpp>
 /**/
 
 #include <algorithm>
@@ -737,6 +738,9 @@ bool try_load_archived_asset(ref<const storage::ArchiveUrl> assetStorageUrl_, mr
 		}
 		case assets::ImageAsset::typeId.data: {
 			return genericLoad.operator()<assets::ImageAsset>(assetStorageUrl_, guid, std::move(record)).has_value();
+		}
+		case assets::LevelAsset::typeId.data: {
+			return genericLoad.operator()<assets::LevelAsset>(assetStorageUrl_, guid, std::move(record)).has_value();
 		}
 		case assets::TextureAsset::typeId.data: {
 			return genericLoad.operator()<assets::TextureAsset>(assetStorageUrl_, guid, std::move(record)).has_value();
