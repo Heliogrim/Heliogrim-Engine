@@ -6,6 +6,7 @@
 
 #include <Editor.Core/EditorEngine.hpp>
 #include <Editor.Scene/SceneFactory.hpp>
+#include <Engine.Assets.Type/Universe/LevelAsset.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Move.hpp>
 #include <Engine.Core/Session.hpp>
@@ -27,7 +28,7 @@ static void add_default_box(mref<Level> level_);
 
 static bool experimentalHasLevel();
 
-static void experimentalLoadLevel(ref<core::Level> level_);
+static Arci<core::Level> experimentalLoadLevel();
 
 static void experimentalSaveLevel(ref<core::Level> level_);
 
@@ -57,18 +58,18 @@ void editor::boot::initPrimaryUniverse() {
 
 	/**/
 
-	auto level = core::make_root_like_level();
-	const bool levelData = experimentalHasLevel();
+	auto level = experimentalHasLevel() ?
+		experimentalLoadLevel() :
+		([] {
+			auto nextLevel = core::make_root_like_level();
 
-	if (not levelData) {
-		add_default_skybox(Level { clone(level) });
-		add_default_light(Level { clone(level) });
-		add_default_box(Level { clone(level) });
-		experimentalSaveLevel(*level);
+			add_default_skybox(Level { clone(nextLevel) });
+			add_default_light(Level { clone(nextLevel) });
+			add_default_box(Level { clone(nextLevel) });
+			experimentalSaveLevel(*nextLevel);
 
-	} else {
-		experimentalLoadLevel(*level);
-	}
+			return nextLevel;
+		})();
 
 	/**/
 
@@ -172,7 +173,7 @@ static void add_default_box(mref<Level> level_) {
 
 /**/
 
-static decltype(auto) wantedLoad(_In_ cref<assets::LevelAsset> levelAsset_, _Inout_ ref<core::Level> level_) {
+static decltype(auto) wantedLoad(_In_ cref<assets::LevelAsset> levelAsset_) {
 
 	auto engine = Engine::getEngine();
 	const auto serial = engine->getSerialization();
@@ -186,13 +187,16 @@ static decltype(auto) wantedLoad(_In_ cref<assets::LevelAsset> levelAsset_, _Ino
 
 	/**/
 
+	auto level = Arci<core::Level>::create(levelAsset_);
 	ssys->query(
 		std::move(dataArchive).value(),
-		[&level_, serial](resource::StorageReadonlyArchive& archive_) -> void {
+		[&level_ = *level, serial](resource::StorageReadonlyArchive& archive_) -> void {
 			auto structured = serialization::StructuredArchive { archive_ };
 			serial->hydrate(structured, level_);
 		}
 	);
+
+	return level;
 }
 
 static decltype(auto) wantedSave(_In_ cref<core::Level> level_, _In_ cref<assets::LevelAsset> levelAsset_) {
@@ -207,14 +211,27 @@ static decltype(auto) wantedSave(_In_ cref<core::Level> level_, _In_ cref<assets
 	auto dataArchive = ssys->findArchive(clone(dataUrl.as<storage::ArchiveUrl>()));
 	::hg::assertrt(dataArchive != None);
 
-	/**/
-
 	ssys->mutate(
 		std::move(dataArchive).value(),
 		[&level_, serial](auto& archive_) {
 			archive_.setType(resource::ArchiveType::eSerializedStructure);
 			auto structured = serialization::StructuredArchive { archive_ };
 			serial->serialize(level_, structured);
+		}
+	);
+
+	/**/
+
+	auto assetUrl = levelAsset_.getAssetStorageUrl();
+	auto assetArchive = ssys->findArchive(clone(assetUrl.as<storage::ArchiveUrl>()));
+	::hg::assertrt(assetArchive != None);
+
+	ssys->mutate(
+		::hg::move(assetArchive).value(),
+		[&levelAsset_, serial](auto& archive_) {
+			archive_.setType(resource::ArchiveType::eSerializedStructure);
+			auto structured = serialization::StructuredArchive { archive_ };
+			serial->serialize(levelAsset_, structured);
 		}
 	);
 }
@@ -247,6 +264,29 @@ static storage::FileUrl experimentalResolveLevelFileUrl() {
 }
 
 static Arci<assets::LevelAsset> experimentalResolveLevelAsset() {
+	const auto engine = Engine::getEngine();
+	const auto assets = engine->getAssets();
+
+	/**/
+
+	auto results = Vector<nmpt<assets::Asset>> {};
+	assets->getRegistry()->findAssetsByPath(assets::AssetPath { "universe/default"sv }, { .recursive = true }, results);
+
+	::hg::assertrt(not results.empty());
+
+	const auto guesswork = std::ranges::find_if(
+		results,
+		[](const nmpt<assets::Asset> asset_) {
+			return IsType<assets::LevelAsset>(*asset_) &&
+				not static_cast<ref<const assets::LevelAsset>>(asset_.load()).getLevelData().valueless_by_exception();
+		}
+	);
+
+	::hg::assertrt(guesswork != results.end());
+	return (*guesswork)->arci_from_this<>().into<assets::LevelAsset>();
+}
+
+static Arci<assets::LevelAsset> experimentalResolveLevelAsset(ref<const engine::core::Level> level_) {
 
 	const auto engine = Engine::getEngine();
 	const auto assets = engine->getAssets();
@@ -254,44 +294,32 @@ static Arci<assets::LevelAsset> experimentalResolveLevelAsset() {
 
 	/**/
 
-	constexpr auto levelAssetTypeId = "::experimental::assets::RootLevel"_typeId;
-	constexpr auto levelAssetGuid = Guid {
-		static_cast<u32>(levelAssetTypeId.data >> 32),
-		static_cast<u16>(levelAssetTypeId.data >> 16),
-		static_cast<u16>(levelAssetTypeId.data >> 8),
-		levelAssetTypeId.data
-	};
-
-	constexpr auto levelTypeId = "::experimental::RootLevel"_typeId;
-	constexpr auto levelArchiveGuid = Guid {
-		static_cast<u32>(levelTypeId.data >> 32),
-		static_cast<u16>(levelTypeId.data >> 16),
-		static_cast<u16>(levelTypeId.data >> 8),
-		levelTypeId.data
-	};
+	auto asset = assets->getRegistry()->findAssetByGuid(level_.assetGuid());
+	::hg::assertrt(asset == None);
 
 	/**/
 
-	auto asset = assets->getRegistry()->findAssetByGuid(levelAssetGuid);
-	if (asset != None && (*asset)->getTypeId() == assets::LevelAsset::typeId) {
-		return std::move(asset).value().into<assets::LevelAsset>();
-	}
-
-	/**/
-
-	const auto ensure = ssys->requestArchive(
-		storage::ArchiveUrl { resource::ArchiveGuid::from(levelArchiveGuid) },
+	const auto levelDataArchiveGuid = resource::ArchiveGuid::random();
+	const auto ensureDataArchive = ssys->requestArchive(
+		storage::ArchiveUrl { levelDataArchiveGuid },
 		{ .package = { .fileUrl = experimentalResolveLevelFileUrl() } }
 	);
-	::hg::assertrt(ensure.has_value());
+	::hg::assertrt(ensureDataArchive.has_value());
+
+	const auto levelAssetArchiveGuid = resource::ArchiveGuid::random();
+	const auto ensureAssetArchive = ssys->requestArchive(
+		storage::ArchiveUrl { levelAssetArchiveGuid },
+		{ .package = { .fileUrl = experimentalResolveLevelFileUrl() } }
+	);
+	::hg::assertrt(ensureAssetArchive.has_value());
 
 	auto nextLevelAsset = Arci<assets::LevelAsset>::create(
-		generate_asset_guid(),
+		level_,
 		"Root Level"sv,
-		assets::AssetReferenceUrl {},
+		storage::ArchiveUrl { levelAssetArchiveGuid },
 		experimentalResolveLevelAssetUrl()
 	);
-	nextLevelAsset->setLevelData(storage::ArchiveUrl { resource::ArchiveGuid::from(levelArchiveGuid) });
+	nextLevelAsset->setLevelData(storage::ArchiveUrl { levelDataArchiveGuid });
 
 	return nextLevelAsset;
 }
@@ -300,12 +328,12 @@ bool experimentalHasLevel() {
 	return Engine::getEngine()->getStorage()->getSystem()->hasStorage(experimentalResolveLevelFileUrl());
 }
 
-void experimentalLoadLevel(ref<core::Level> level_) {
+Arci<core::Level> experimentalLoadLevel() {
 	const auto asset = experimentalResolveLevelAsset();
-	wantedLoad(*asset, level_);
+	return wantedLoad(*asset);
 }
 
 void experimentalSaveLevel(ref<core::Level> level_) {
-	const auto asset = experimentalResolveLevelAsset();
+	const auto asset = experimentalResolveLevelAsset(level_);
 	wantedSave(level_, *asset);
 }
