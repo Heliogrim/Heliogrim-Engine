@@ -20,7 +20,7 @@ void access::Structure<math::Bounding>::serialize(const math::Bounding& self_, m
 
 template <>
 void access::Structure<math::Bounding>::hydrate(cref<StructScopedSlot> record_, math::Bounding& target_) {
-	Structure<math::fvec3>::serialize(target_._center, record_.getStructSlot("center"));
-	Structure<math::fvec3>::serialize(target_._extent, record_.getStructSlot("extent"));
+	Structure<math::fvec3>::hydrate(record_.getStructSlot("center"), target_._center);
+	Structure<math::fvec3>::hydrate(record_.getStructSlot("extent"), target_._extent);
 	record_.getSlot<f32>("length") >> target_._extent_length;
 }
