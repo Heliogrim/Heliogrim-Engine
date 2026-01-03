@@ -1,5 +1,6 @@
 #include "RenderTarget.hpp"
 
+#include <Engine.Common/Discard.hpp>
 #include <Engine.GFX.Render/RenderPass.hpp>
 #include <Engine.GFX.Render.Predefined/Symbols/SceneColor.hpp>
 #include <Engine.GFX.Render.Predefined/Symbols/SceneView.hpp>
@@ -67,7 +68,7 @@ void RenderTarget::tidy() {
 		// Release bound Render Targets
 		// renderPass.unbindTarget(<<symbol>>);
 		auto storedSceneColor = renderPass.unbindTarget(makeSceneColorSymbol());
-		assert(_swapchain->at(i).get() == storedSceneColor.get());
+		::hg::discard(::hg::move(storedSceneColor));
 
 		// Release bound Scene View
 		//renderPass.changeSceneView(clone(sceneView_));
