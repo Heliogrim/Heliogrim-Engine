@@ -30,7 +30,7 @@ namespace hg::engine::serialization {
 		) {
 			return allocator_->createActor<Type_>(
 				guid_,
-				ActorInitializer { *allocator_.get() },
+				ActorInitializer { *allocator_.get(), { .autoInitialize = false } },
 				std::forward<decltype(args_)>(args_)...
 			);
 		}
@@ -109,7 +109,7 @@ namespace hg::engine::serialization {
 						Some<ref<const Type_::AddComponentOptions>>(
 							{
 								.autoRegister = false,
-								.parent = parent ? Some<ref<HierarchyComponent>>(*parent) : None
+								.parent = !!parent ? Some<ref<HierarchyComponent>>(*parent) : None
 							}
 						)
 					);
