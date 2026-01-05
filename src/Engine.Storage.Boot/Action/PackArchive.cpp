@@ -95,8 +95,7 @@ void engine::storage::releaseStaticPackArchMutation(
 			packArch.getLinked().changes.emplace_back(
 				package::ArchiveDeltaAdd {
 					.where = streamoff {},
-					.size = packArch.totalSize(),
-					.data = packArch
+					.sizedData = packArch
 				}
 			);
 
@@ -105,8 +104,8 @@ void engine::storage::releaseStaticPackArchMutation(
 			packArch.getLinked().changes.emplace_back(
 				package::ArchiveDeltaReplace {
 					.where = streamoff {},
-					.size = packArch.getLinked().data.size,
-					.data = packArch
+					.byteCount = packArch.getLinked().data.size,
+					.withSizedData = packArch
 				}
 			);
 		}
