@@ -21,7 +21,7 @@ engine::core::Universe::Universe(mref<uptr<scene::SceneBase>> scene_, mref<Dense
 
 engine::core::Universe::~Universe() {
 	for (auto& level : _levels) {
-		uncommitLevel(level.get());
+		uncommitLevel(*level.get());
 	}
 	_rootLevel.reset();
 	_levels.clear();
@@ -31,31 +31,38 @@ nmpt<engine::scene::SceneBase> engine::core::Universe::getScene() const noexcept
 	return _scene.get();
 }
 
-void engine::core::Universe::commitLevel(nmpt<core::Level> level_) {
+void engine::core::Universe::commitLevel(ref<core::Level> level_) {
+
+	level_.setOwnerUniverse(Some<ref<Universe>>(*this));
 	const auto ctx = _scene->registerContext();
-	for (auto actor : level_->getActors()) {
+
+	for (auto actor : level_.getActors()) {
 		actor->registerComponents(*this, *ctx.get());
 	}
 }
 
-void engine::core::Universe::uncommitLevel(nmpt<core::Level> level_) {
+void engine::core::Universe::uncommitLevel(ref<core::Level> level_) {
+
 	auto& ctx = _scene->registerContext().load<>();
-	for (auto actor : level_->getActors()) {
+
+	for (auto actor : level_.getActors()) {
 		// TODO: unregister actors and components from scene
 		actor->unregisterComponents(ctx);
 	}
+
+	level_.setOwnerUniverse(None);
 }
 
 void engine::core::Universe::addLevel(mref<Arci<core::Level>> level_) {
 	_levels.emplace(clone(level_));
-	commitLevel(level_.get());
+	commitLevel(*level_);
 }
 
 std::span<const Arci<Level>> engine::core::Universe::getLevels() const noexcept {
 	return _levels.values();
 }
 
-ref<const Arci<Level>> engine::core::Universe::getRootLevel() const noexcept {
+Arci<Level> engine::core::Universe::getRootLevel() const noexcept {
 	return *_rootLevel;
 }
 
@@ -64,5 +71,5 @@ void engine::core::Universe::removeLevel(cref<Arci<core::Level>> level_) {
 
 	const auto keepAlive = clone(level_);
 	_levels.erase(level_);
-	uncommitLevel(keepAlive.get());
+	uncommitLevel(*keepAlive.get());
 }

@@ -45,16 +45,16 @@ namespace hg::engine::core {
 		Opt<Arci<core::Level>> _rootLevel;
 
 	public:
-		void commitLevel(nmpt<core::Level> level_);
+		void commitLevel(ref<core::Level> level_);
 
-		void uncommitLevel(nmpt<core::Level> level_);
+		void uncommitLevel(ref<core::Level> level_);
 
 	public:
 		void addLevel(mref<Arci<core::Level>> level_);
 
 		[[nodiscard]] std::span<const Arci<core::Level>> getLevels() const noexcept;
 
-		[[nodiscard]] ref<const Arci<core::Level>> getRootLevel() const noexcept;
+		[[nodiscard]] Arci<core::Level> getRootLevel() const noexcept;
 
 		void removeLevel(cref<Arci<core::Level>> level_);
 	};

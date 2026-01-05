@@ -19,6 +19,10 @@
 #include "../Async/Future.hpp"
 #include "../Async/Traits.hpp"
 
+namespace hg::engine::core {
+	class Level;
+}
+
 namespace hg {
 	/**
 	 * Forward Declaration
@@ -111,10 +115,17 @@ namespace hg {
 
 	protected:
 		Opt<ref<engine::core::Universe>> _universe;
+		Opt<ref<engine::core::Level>> _level;
 		Opt<ref<HierarchyComponent>> _rootComponent;
 
 	public:
+		[[nodiscard]] Opt<ref<engine::core::Universe>> getUniverse() const noexcept;
+
+		[[nodiscard]] Opt<ref<engine::core::Level>> getLevel() const noexcept;
+
 		[[nodiscard]] Opt<ref<HierarchyComponent>> getRootComponent() const noexcept;
+
+		void setOwnerLevel(mref<Opt<ref<engine::core::Level>>> owner_);
 
 	private:
 		CompactSet<ptr<HierarchyComponent>> _components;
@@ -498,20 +509,4 @@ namespace hg {
 	 * @returns True if succeeded, otherwise false.
 	 */
 	[[nodiscard]] extern bool Destroy(mref<VolatileActor<>> actor_) noexcept;
-
-	/**
-	 * Destroys the given actor
-	 *
-	 * @author Julius
-	 * @date 25.11.2021
-	 *
-	 * @param actor_ The actor to destroy.
-	 * @param universe_ The universe where to destroy the actor.
-	 *
-	 * @returns A future, representing whether the actor was successfully destroyed.
-	 */
-	[[nodiscard]] extern Future<bool> Destroy(
-		mref<ptr<Actor>> actor_,
-		cref<Universe> universe_
-	) noexcept;
 }
