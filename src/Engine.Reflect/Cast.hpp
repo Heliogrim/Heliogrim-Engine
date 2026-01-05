@@ -23,8 +23,9 @@ namespace hg {
 			return src_->getMetaClass()->template is<TargetType_>() ?
 				static_cast<ptr<TargetType_>>(src_) :
 				nullptr;
+		} else {
+			return static_cast<ptr<TargetType_>>(src_);
 		}
-		return static_cast<ptr<TargetType_>>(src_);
 	}
 
 	template <CompleteType TargetType_, CompleteType SrcType_, bool Secure_ = true> requires
@@ -35,8 +36,9 @@ namespace hg {
 			return src_->getMetaClass()->template is<TargetType_>() ?
 				static_cast<const ptr<const TargetType_>>(src_) :
 				nullptr;
+		} else {
+			return static_cast<const ptr<const TargetType_>>(src_);
 		}
-		return static_cast<const ptr<const TargetType_>>(src_);
 	}
 }
 
@@ -68,7 +70,8 @@ namespace hg {
 			return src_->getMetaClass()->template is<TargetType_>() ?
 				nmpt<target_type> { static_cast<const ptr<target_type>>(src_.get()) } :
 				nmpt<target_type> { nullptr };
+		} else {
+			return nmpt<target_type> { static_cast<const ptr<target_type>>(src_.get()) };
 		}
-		return nmpt<target_type> { static_cast<const ptr<target_type>>(src_.get()) };
 	}
 }
