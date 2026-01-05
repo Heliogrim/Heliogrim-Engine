@@ -13,6 +13,8 @@
 #include <Engine.Reflect/Inherit/InheritBase.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 
+#include "ActorGuid.hpp"
+#include "ActorLabel.hpp"
 #include "../ActorInitializer.hpp"
 #include "../Async/Future.hpp"
 #include "../Async/Traits.hpp"
@@ -88,6 +90,7 @@ namespace hg {
 
 	private:
 		ActorGuid _guid;
+		ActorLabel _label;
 
 	public:
 		/**
@@ -99,6 +102,10 @@ namespace hg {
 		 * @returns The actor_guid of this actor object.
 		 */
 		[[nodiscard]] ActorGuid guid() const noexcept;
+
+		[[nodiscard]] ref<const ActorLabel> label() const noexcept;
+
+		void setLabel(mref<ActorLabel> label_);
 
 		void unsafe_set_guid(cref<ActorGuid> guid_);
 

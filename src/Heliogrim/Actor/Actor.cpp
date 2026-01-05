@@ -23,6 +23,7 @@ using namespace hg;
 
 Actor::Actor(cref<ActorInitializer> initializer_) noexcept :
 	_guid(initializer_._guid),
+	_label(),
 	_universe(None),
 	_rootComponent(None),
 	_components() {}
@@ -31,6 +32,14 @@ Actor::~Actor() noexcept = default;
 
 ActorGuid Actor::guid() const noexcept {
 	return _guid;
+}
+
+ref<const ActorLabel> Actor::label() const noexcept {
+	return _label;
+}
+
+void Actor::setLabel(mref<ActorLabel> label_) {
+	_label = ::hg::move(label_);
 }
 
 void Actor::unsafe_set_guid(cref<ActorGuid> guid_) {
