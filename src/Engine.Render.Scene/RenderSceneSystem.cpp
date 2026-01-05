@@ -41,6 +41,10 @@ void RenderSceneSystem::update(scene::SceneUpdateFlags flags_) {
 	for (auto& storage : _storage.storageMap.values()) {
 		storage.second->forEachMut(
 			[this](ref<RenderSceneSystemModel> model_) {
+				if (model_.markedAsDeleted()) {
+					return;
+				}
+
 				model_.update(this);
 			}
 		);
