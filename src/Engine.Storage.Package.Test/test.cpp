@@ -307,13 +307,7 @@ namespace PackageModule {
 		const auto prevSize = package.getHeader().packageSize;
 
 		auto& linked = package.getLinker().add({ .type = ArchiveType::eUndefined, .guid = guid });
-		linked.changes.emplace_back(
-			package::ArchiveDeltaAdd {
-				streamoff {},
-				static_cast<streamsize>(archive->size()),
-				*archive
-			}
-		);
+		linked.changes.emplace_back(package::ArchiveDeltaAdd { .where = streamoff {}, .sizedData = *archive });
 
 		/**/
 
@@ -387,9 +381,9 @@ namespace PackageModule {
 		auto& lk1 = linker.add({ .type = ArchiveType::eUndefined, .guid = guid1 });
 		auto& lk2 = linker.add({ .type = ArchiveType::eUndefined, .guid = guid2 });
 
-		lk0.changes.emplace_back(package::ArchiveDeltaAdd { .where = 0uLL, .size = static_cast<streamsize>(ar0->size()), .data = *ar0 });
-		lk1.changes.emplace_back(package::ArchiveDeltaAdd { .where = 0uLL, .size = static_cast<streamsize>(ar1->size()), .data = *ar1 });
-		lk2.changes.emplace_back(package::ArchiveDeltaAdd { .where = 0uLL, .size = static_cast<streamsize>(ar2->size()), .data = *ar2 });
+		lk0.changes.emplace_back(package::ArchiveDeltaAdd { .where = 0uLL, .sizedData = *ar0 });
+		lk1.changes.emplace_back(package::ArchiveDeltaAdd { .where = 0uLL, .sizedData = *ar1 });
+		lk2.changes.emplace_back(package::ArchiveDeltaAdd { .where = 0uLL, .sizedData = *ar2 });
 
 		ASSERT_TRUE(commit_package_changes(package).has_value());
 
@@ -406,7 +400,9 @@ namespace PackageModule {
 
 		target->changes.emplace_back(
 			package::ArchiveDeltaReplace {
-				streamoff {}, static_cast<streamsize>(archive->size()), *archive
+				.where = streamoff {},
+				.byteCount = target->data.size,
+				.withSizedData = *archive,
 			}
 		);
 		EXPECT_EQ(target->changes.size(), 1uLL);
@@ -471,9 +467,9 @@ namespace PackageModule {
 		auto& lk1 = linker.add({ .type = ArchiveType::eUndefined, .guid = guid1 });
 		auto& lk2 = linker.add({ .type = ArchiveType::eUndefined, .guid = guid2 });
 
-		lk0.changes.emplace_back(package::ArchiveDeltaAdd { .where = 0uLL, .size = static_cast<streamsize>(ar0->size()), .data = *ar0 });
-		lk1.changes.emplace_back(package::ArchiveDeltaAdd { .where = 0uLL, .size = static_cast<streamsize>(ar1->size()), .data = *ar1 });
-		lk2.changes.emplace_back(package::ArchiveDeltaAdd { .where = 0uLL, .size = static_cast<streamsize>(ar2->size()), .data = *ar2 });
+		lk0.changes.emplace_back(package::ArchiveDeltaAdd { .where = 0uLL, .sizedData = *ar0 });
+		lk1.changes.emplace_back(package::ArchiveDeltaAdd { .where = 0uLL, .sizedData = *ar1 });
+		lk2.changes.emplace_back(package::ArchiveDeltaAdd { .where = 0uLL, .sizedData = *ar2 });
 
 		ASSERT_TRUE(commit_package_changes(package).has_value());
 
