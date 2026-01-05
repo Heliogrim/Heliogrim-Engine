@@ -15,6 +15,7 @@ namespace hg::engine::serialization {
 	) {
 		insert_typeId_slot<>(record_, self_._typeId);
 		insert_guid_slot<>(record_, self_._guid);
+		record_.insertSlot<String>("label"sv) << self_._label.text;
 	}
 
 	template <>
@@ -24,5 +25,6 @@ namespace hg::engine::serialization {
 	) {
 		target_._typeId = get_typeId_slot<ComponentTypeId>(record_);
 		target_._guid = get_guid_slot<ComponentGuid>(record_);
+		record_.getSlot<String>("label"sv) >> target_._label.text;
 	}
 }

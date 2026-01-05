@@ -27,6 +27,7 @@ void access::Structure<Actor>::serialize(
 
 	insert_guid_slot(record_, self_._guid);
 	insert_typeId_slot(record_, self_.getMetaClass<>()->typeId());
+	record_.insertSlot<String>("label"sv) << self_._label.text;
 
 	/**/
 
@@ -69,4 +70,5 @@ void access::Structure<Actor>::hydrate(cref<StructScopedSlot> record_, ref<Actor
 	/**/
 
 	target_._guid = get_guid_slot<ActorGuid>(record_);
+	record_.getSlot<String>("label"sv) >> target_._label.text;
 }
