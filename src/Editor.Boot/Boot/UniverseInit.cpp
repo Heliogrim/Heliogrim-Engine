@@ -45,9 +45,10 @@ void editor::boot::initEditorUniverse() {
 	scene->prepare();
 
 	auto level = core::make_root_like_level();
-	auto universe { make_sptr<core::Universe>(std::move(scene), DenseSet<Arci<core::Level>> { std::move(level) }) };
-
+	auto universe { make_sptr<core::Universe>(std::move(scene), DenseSet<Arci<core::Level>> { clone(level) }) };
 	engine->addUniverse(clone(universe));
+	universe->commitLevel(*level.get());
+
 	editorSession->getUniverseContext().setCurrentUniverse(std::move(universe));
 }
 
@@ -78,10 +79,7 @@ void editor::boot::initPrimaryUniverse() {
 
 	auto universe { make_sptr<core::Universe>(std::move(scene), DenseSet<Arci<core::Level>> { clone(level) }) };
 	engine->addUniverse(clone(universe));
-
-	auto* const keepRef = level.get();
-	universe->addLevel(::hg::move(level));
-	universe->commitLevel(keepRef);
+	universe->commitLevel(*level.get());
 
 	primary->getUniverseContext().setCurrentUniverse(std::move(universe));
 }

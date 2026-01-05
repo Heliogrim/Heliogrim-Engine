@@ -82,7 +82,7 @@ void despawnLightActorImpl(mref<ActorGuid> actorGuid_) {
 	auto universe = GetUniverse(session);
 
 	auto* actor = engine::Engine::getEngine()->getActors()->getRegistry()->getOrCreateActorPool<Actor>()->get(actorGuid_);
-	::hg::discard = Destroy(::hg::move(actor), universe);
+	universe.dropActor(::hg::move(actor));
 
 	/**/
 
