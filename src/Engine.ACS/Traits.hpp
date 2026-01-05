@@ -28,7 +28,7 @@ namespace hg {
 	 *
 	 * @returns The actor unique identifier.
 	 */
-	[[nodiscard]] static ActorGuid generate_actor_guid() {
+	[[nodiscard]] inline ActorGuid generate_actor_guid() {
 		static std::atomic_uint_fast32_t ai { 1 };
 		const auto pre = ai.fetch_add(1, std::memory_order_relaxed);
 		const auto post = std::chrono::high_resolution_clock::now().time_since_epoch().count();
@@ -39,7 +39,7 @@ namespace hg {
 	 * Generates an component unique identifier
 	 * @returns The component unique identifier.
 	 */
-	[[nodiscard]] static ComponentGuid generate_component_guid() {
+	[[nodiscard]] inline ComponentGuid generate_component_guid() {
 		static std::atomic_uint_fast32_t ai { 1 };
 		const auto pre = ai.fetch_add(1, std::memory_order_relaxed);
 		const auto post = std::chrono::high_resolution_clock::now().time_since_epoch().count();
