@@ -41,20 +41,31 @@ Result<void, std::runtime_error> engine::storage::package::commit_archive_change
 			change.apply(
 				Overloaded {
 					[&nextSize, &peekSize](const ArchiveDeltaAdd& add_) {
-						nextSize += add_.size;
-						peekSize += add_.size;
+						::hg::assertrt(add_.sizedData.totalSize() >= 0uL);
+						nextSize += add_.sizedData.totalSize();
+						peekSize += add_.sizedData.totalSize();
 					},
 					[&nextSize, &peekSize, &linked](const ArchiveDeltaReplace& replace_) {
-						if (linked.second.data.size < replace_.size) {
-							peekSize += replace_.size;
-							nextSize += (replace_.size - linked.second.data.size);
+						::hg::assertrt(replace_.withSizedData.totalSize() >= 0uL);
 
-						} else {
-							nextSize -= (linked.second.data.size - replace_.size);
+						if (replace_.where == 0 && replace_.byteCount == linked.second.data.size) {
+							const auto diff = replace_.withSizedData.totalSize() - replace_.byteCount/* linked.second.data.size */;
+							nextSize += diff;
+							peekSize += replace_.withSizedData.totalSize();
+							return;
+						}
+
+						const auto cutoutSize = replace_.byteCount;
+						const auto mergeDiff = replace_.withSizedData.totalSize() - cutoutSize;
+
+						nextSize += mergeDiff;
+
+						if (mergeDiff >= 0) {
+							peekSize += mergeDiff;
 						}
 					},
 					[&nextSize](const ArchiveDeltaDrop& drop_) {
-						nextSize -= drop_.size;
+						nextSize -= drop_.byteCount;
 					}
 				}
 			);
@@ -88,48 +99,61 @@ Result<void, std::runtime_error> engine::storage::package::commit_archive_change
 
 						::hg::assertrt(add_.where == 0);
 
-						archiveHeader.type = add_.data.type();
+						archiveHeader.type = add_.sizedData.type();
 						archiveData.offset = scratchTail;
-						archiveData.size = add_.size;
+						archiveData.size = add_.sizedData.totalSize();
 
-						add_.data.seek(0);
-						auto dst = std::span { scratchPad.begin() + scratchTail, static_cast<size_t>(add_.size) };
+						add_.sizedData.seek(0);
+						auto dst = std::span { scratchPad.begin() + scratchTail, static_cast<size_t>(add_.sizedData.totalSize()) };
 
-						add_.data.serializeBytes(dst, ArchiveStreamMode::eLoad);
-						scratchTail += add_.size;
+						add_.sizedData.serializeBytes(dst, ArchiveStreamMode::eLoad);
+						scratchTail += add_.sizedData.totalSize();
 					},
 					[&archiveData, &archiveHeader, &scratchTail, &scratchPad](ArchiveDeltaReplace& replace_) {
 
 						::hg::assertrt(replace_.where == 0);
-						archiveHeader.type = replace_.data.type();
+						archiveHeader.type = replace_.withSizedData.type();
 
-						if (archiveData.size < replace_.size) {
+						const auto dataSize = replace_.withSizedData.totalSize();
+						if (replace_.where == 0 && replace_.byteCount == archiveData.size) {
 
 							archiveData.offset = scratchTail;
-							archiveData.size = replace_.size;
+							archiveData.size = dataSize;
 
-							replace_.data.seek(0);
-							auto dst = std::span { scratchPad.begin() + scratchTail, static_cast<size_t>(replace_.size) };
+							replace_.withSizedData.seek(0);
+							auto dst = std::span { scratchPad.begin() + scratchTail, static_cast<size_t>(dataSize) };
 
-							replace_.data.serializeBytes(dst, ArchiveStreamMode::eLoad);
-							scratchTail += replace_.size;
+							replace_.withSizedData.serializeBytes(dst, ArchiveStreamMode::eLoad);
+							scratchTail += dataSize;
 							return;
 						}
 
 						/**/
 
-						//archiveData.offset = archiveData.offset;
-						//archiveData.size = replace_.size;
+						const auto cutoutSize = replace_.byteCount;
+						const auto mergeDiff = replace_.withSizedData.totalSize() - cutoutSize;
+						const auto nextSize = archiveData.size + mergeDiff;
 
-						replace_.data.seek(0);
-						auto dst = std::span { scratchPad.begin() + archiveData.offset, static_cast<size_t>(replace_.size) };
+						auto headDst = std::span { scratchPad.begin() + scratchTail, static_cast<size_t>(replace_.where) };
+						memcpy(headDst.data(), scratchPad.data() + archiveData.offset, replace_.where);
 
-						replace_.data.serializeBytes(dst, ArchiveStreamMode::eLoad);
-						archiveData.size = replace_.size;
+						auto cutDst = std::span { scratchPad.begin() + scratchTail + replace_.where, static_cast<size_t>(dataSize) };
+						replace_.withSizedData.serializeBytes(cutDst, ArchiveStreamMode::eLoad);
+
+						const auto tailSize = archiveData.size - (replace_.where + replace_.byteCount);
+						auto tailDst = std::span {
+							scratchPad.begin() + scratchTail + replace_.where + dataSize, static_cast<size_t>(tailSize)
+						};
+						memcpy(tailDst.data(), scratchPad.data() + archiveData.offset + replace_.where + replace_.byteCount, tailSize);
+
+						archiveData.offset = scratchTail;
+						archiveData.size = nextSize;
+
+						scratchTail += nextSize;
 					},
 					[&archiveData, &archiveHeader](ArchiveDeltaDrop& drop_) {
 
-						::hg::assertrt(drop_.where == 0 && drop_.size == archiveData.size);
+						::hg::assertrt(drop_.where == 0 && drop_.byteCount == archiveData.size);
 
 						archiveHeader.guid = ArchiveGuid {};
 						archiveData.offset = streamoff {};
