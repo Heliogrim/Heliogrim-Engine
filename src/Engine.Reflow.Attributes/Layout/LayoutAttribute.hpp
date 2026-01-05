@@ -51,9 +51,11 @@ namespace hg::engine::reflow {
 					return true;
 				}
 				return false;
+
+			} else {
+				_store = ::hg::forward<decltype(next_)&&>(next_);
+				return true;
 			}
-			_store = ::hg::forward<decltype(next_)&&>(next_);
-			return true;
 		}
 
 		bool update(auto&& fn_) requires std::is_same_v<std::invoke_result_t<decltype(fn_), ref<const Type_>>, Type_> {
@@ -64,9 +66,11 @@ namespace hg::engine::reflow {
 					return true;
 				}
 				return false;
+
+			} else {
+				_store = ::hg::move(next);
+				return true;
 			}
-			_store = ::hg::move(next);
-			return true;
 		}
 
 		[[nodiscard]] ref<const Type_> value() const noexcept {
