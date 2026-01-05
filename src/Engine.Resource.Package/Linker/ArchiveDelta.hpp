@@ -10,21 +10,20 @@ namespace hg::engine::resource::package {
 	/**/
 	struct ArchiveDeltaAdd {
 		streamoff where;
-		streamsize size;
 		/**/
-		Archive& data;
+		Archive& sizedData;
 	};
 
 	struct ArchiveDeltaDrop {
 		streamoff where;
-		streamsize size;
+		streamsize byteCount;
 	};
 
 	struct ArchiveDeltaReplace {
 		streamoff where;
-		streamsize size;
+		streamsize byteCount;
 		/**/
-		Archive& data;
+		Archive& withSizedData;
 	};
 
 	/**/
