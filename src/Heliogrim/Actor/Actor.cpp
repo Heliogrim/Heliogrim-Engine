@@ -46,8 +46,20 @@ void Actor::unsafe_set_guid(cref<ActorGuid> guid_) {
 	_guid = guid_;
 }
 
+Opt<ref<engine::core::Universe>> Actor::getUniverse() const noexcept {
+	return _universe;
+}
+
+Opt<ref<engine::core::Level>> Actor::getLevel() const noexcept {
+	return _level;
+}
+
 Opt<ref<HierarchyComponent>> Actor::getRootComponent() const noexcept {
 	return _rootComponent;
+}
+
+void Actor::setOwnerLevel(mref<Opt<ref<engine::core::Level>>> owner_) {
+	_level = ::hg::move(owner_);
 }
 
 void Actor::scheduleComponentRemoval(mref<ptr<HierarchyComponent>> component_) {
@@ -138,10 +150,14 @@ void Actor::unregisterComponents(ref<IComponentRegisterContext> context_) {
 	for (const auto& entry : getComponents()) {
 		context_.remove(entry);
 	}
+
+	_universe = None;
 }
 
 template <>
 void VolatileActor<Actor>::destroy(ptr<Actor> obj_) {
+
+	::hg::assertd(obj_->getUniverse().is_null());
 	auto registry = engine::Engine::getEngine()->getActors()->getRegistry();
 
 	for (auto* const component : obj_->getComponents()) {
@@ -205,38 +221,4 @@ Future<ptr<Actor>> hg::SpawnActor(
 bool hg::Destroy(mref<VolatileActor<>> actor_) noexcept {
 	std::move(actor_).reset();
 	return true;
-}
-
-Future<bool> hg::Destroy(mref<ptr<Actor>> actor_, cref<Universe> universe_) noexcept {
-
-	const auto* const universe = universe_.unwrap().get();
-	const auto scene = universe->getScene();
-	auto& registry = *engine::Engine::getEngine()->getActors()->getRegistry();
-
-	// Warning: Check modify-on-read condition
-	// Warning: Multiple unsafe paths!!!
-	for (auto* const component : actor_->getComponents()) {
-		assert(component->getTypeId().data);
-
-		if (IsType<SceneComponent>(*component)) {
-			scene->remove(static_cast<const ptr<const SceneComponent>>(component));
-		}
-
-		registry.releaseActorComponent(VolatileComponent<> { component });
-	}
-
-	/**/
-	registry.destroyActor(std::move(actor_));
-
-	/**/
-	concurrent::promise<bool> p {
-		[]() {
-			return true;
-		}
-	};
-
-	auto f = p.get();
-	p();
-
-	return Future { std::move(f) };
 }

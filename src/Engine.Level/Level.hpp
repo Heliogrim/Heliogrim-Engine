@@ -44,7 +44,9 @@ namespace hg::engine::core {
 
 	private:
 		LevelGuid _guid;
+
 		math::Bounding _bounding;
+		Opt<ref<engine::core::Universe>> _universe;
 
 	public:
 		[[nodiscard]] bool isRootLike() const noexcept;
@@ -56,6 +58,10 @@ namespace hg::engine::core {
 		[[nodiscard]] cref<math::Bounding> getBounding() const noexcept;
 
 		void setBounding(cref<math::Bounding> bounding_) noexcept;
+
+		[[nodiscard]] Opt<ref<engine::core::Universe>> getUniverse() const noexcept;
+
+		void setOwnerUniverse(mref<Opt<ref<engine::core::Universe>>> owner_);
 
 	private:
 		DenseSet<owner_ptr<Actor>> _actors;
