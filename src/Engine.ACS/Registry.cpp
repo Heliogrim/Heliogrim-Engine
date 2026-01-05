@@ -76,16 +76,6 @@ ptr<Actor> Registry::createActor(
 
 	actor->unsafe_set_guid(guid);
 
-	// Warning: Error prone behaviour
-	// Warning: Just a hotfix - ClassMetaBase has class pointer and vt-pointer
-	static_assert(sizeof(ClassMetaBase) == sizeof(void*) + sizeof(ptr<MetaClass>));
-	const auto** classLocator = reinterpret_cast<ptr<ptr<const ActorClass>>>(
-		std::addressof(*static_cast<ptr<ClassMetaBase>>(actor)) + ptrdiff_t {
-			/*offsetof(ClassMetaBase, _meta)*/8LL
-		}
-	);
-	*classLocator = actorClass_;
-
 	/**/
 
 	return actor;
@@ -111,16 +101,6 @@ ptr<Actor> Registry::createActor(cref<ActorInitializer> initializer_) noexcept {
 	/**/
 
 	actor->unsafe_set_guid(guid);
-
-	// Warning: Error prone behaviour
-	// Warning: Just a hotfix - ClassMetaBase has class pointer and vt-pointer
-	static_assert(sizeof(ClassMetaBase) == sizeof(void*) + sizeof(ptr<MetaClass>));
-	const auto** classLocator = reinterpret_cast<ptr<ptr<const ActorClass>>>(
-		std::addressof(*static_cast<ptr<ClassMetaBase>>(actor)) + ptrdiff_t {
-			/*offsetof(ClassMetaBase, _meta)*/8LL
-		}
-	);
-	*classLocator = TypedMetaClass<Actor>::get();
 
 	/**/
 
