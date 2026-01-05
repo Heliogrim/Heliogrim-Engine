@@ -24,6 +24,10 @@ namespace hg {
 		std::derived_from<Type_, HierarchyComponent> &&
 		std::is_constructible_v<Type_, mref<ComponentGuid>, mref<CachedActorPointer>, mref<ptr<HierarchyComponent>>, Args_&&...>;
 
+	struct ActorInitializationFlags {
+		bool autoInitialize : 1 = true;
+	};
+
 	class ActorInitializer {
 	public:
 		friend class ::hg::Session;
@@ -35,6 +39,10 @@ namespace hg {
 	public:
 		explicit ActorInitializer(ref<::hg::engine::acs::Registry> internal_) :
 			_internal(std::addressof(internal_)) {}
+
+		explicit ActorInitializer(ref<::hg::engine::acs::Registry> internal_, const ActorInitializationFlags flags_) :
+			_internal(std::addressof(internal_)),
+			_flags(flags_) {}
 
 	public:
 		~ActorInitializer() noexcept = default;
@@ -48,6 +56,12 @@ namespace hg {
 	private:
 	public:
 		ActorGuid _guid = invalid_actor_guid;
+		ActorInitializationFlags _flags;
+
+	public:
+		[[nodiscard]] constexpr bool shouldAutoInitialize() const noexcept {
+			return _flags.autoInitialize;
+		}
 
 	public:
 		template <
