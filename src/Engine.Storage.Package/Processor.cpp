@@ -32,43 +32,44 @@ Result<void, std::runtime_error> engine::storage::package::commit_archive_change
 	auto nextSize = streamsize {};
 	auto peekSize = streamsize {};
 
-	for (const auto& linked : linker_) {
+	for (auto& linked : linker_) {
 		prevSize += linked.second.data.size;
 		nextSize += linked.second.data.size;
 		peekSize += linked.second.data.size;
 
+		bool extends = false;
+
 		for (const auto& change : linked.second.changes) {
 			change.apply(
 				Overloaded {
-					[&nextSize, &peekSize](const ArchiveDeltaAdd& add_) {
-						::hg::assertrt(add_.sizedData.totalSize() >= 0uL);
+					[&nextSize, &peekSize, &linked](ref<const ArchiveDeltaAdd> add_) {
+						::hg::assertrt(linked.second.data.size == 0 && add_.sizedData.totalSize() >= 0uL);
 						nextSize += add_.sizedData.totalSize();
 						peekSize += add_.sizedData.totalSize();
 					},
-					[&nextSize, &peekSize, &linked](const ArchiveDeltaReplace& replace_) {
-						::hg::assertrt(replace_.withSizedData.totalSize() >= 0uL);
+					[&nextSize, &peekSize, &extends](ref<const ArchiveDeltaReplace> replace_) {
 
-						if (replace_.where == 0 && replace_.byteCount == linked.second.data.size) {
-							const auto diff = replace_.withSizedData.totalSize() - replace_.byteCount/* linked.second.data.size */;
-							nextSize += diff;
-							peekSize += replace_.withSizedData.totalSize();
-							return;
+						const auto insertSize = replace_.withSizedData.totalSize();
+						::hg::assertrt(insertSize >= 0uL);
+
+						const auto sizeDiff = insertSize - replace_.byteCount;
+						if (sizeDiff > 0) {
+							peekSize += sizeDiff;
+							extends = true;
 						}
 
-						const auto cutoutSize = replace_.byteCount;
-						const auto mergeDiff = replace_.withSizedData.totalSize() - cutoutSize;
-
-						nextSize += mergeDiff;
-
-						if (mergeDiff >= 0) {
-							peekSize += mergeDiff;
-						}
+						nextSize += sizeDiff;
 					},
-					[&nextSize](const ArchiveDeltaDrop& drop_) {
+					[&nextSize](ref<const ArchiveDeltaDrop> drop_) {
 						nextSize -= drop_.byteCount;
 					}
 				}
 			);
+		}
+
+		if (extends) {
+			// Note: When extended, we will duplicate/copy the original sequence into the scratch-tail.
+			peekSize += linked.second.data.size;
 		}
 	}
 
