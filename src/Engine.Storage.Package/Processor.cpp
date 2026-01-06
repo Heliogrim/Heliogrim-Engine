@@ -18,6 +18,10 @@ using namespace hg;
 
 [[nodiscard]] static u32 computeCheckSum(_In_ cref<Blob> blob_, _In_ streamsize length_);
 
+[[nodiscard]] constexpr static Vector<std::pair<streamoff, size_t>> sortedIndices(
+	_In_ ref<const Vector<ArchiveDelta>> changeList_
+) noexcept;
+
 /**/
 
 // TODO: !Important! Rewrite
@@ -90,11 +94,12 @@ Result<void, std::runtime_error> engine::storage::package::commit_archive_change
 	for (auto&& batchChange : batchChangeList) {
 
 		auto& archiveChanges = batchChange->changes;
+		const auto accessIndices = sortedIndices(archiveChanges);
 		auto& archiveHeader = batchChange->header;
 		auto& archiveData = batchChange->data;
 
-		for (auto&& change : archiveChanges) {
-			::hg::move(change).apply(
+		for (const auto [_, accessIndex] : accessIndices) {
+			::hg::move(archiveChanges[accessIndex]).apply(
 				Overloaded {
 					[&archiveData, &archiveHeader, &scratchTail, &scratchPad](ArchiveDeltaAdd& add_) {
 
@@ -326,4 +331,19 @@ u32 computeCheckSum(cref<Blob> blob_, streamsize length_) {
 	}
 
 	return ::hg::move(checksum).finalize();
+}
+constexpr Vector<std::pair<streamoff, size_t>> sortedIndices(ref<const Vector<ArchiveDelta>> changeList_) noexcept {
+	auto result = Vector<std::pair<streamoff, size_t>> {};
+	result.reserve(changeList_.size());
+	for (auto index = 0; index < changeList_.size(); ++index) {
+		const auto offset = changeList_[index].apply(
+			Overloaded {
+				[](ref<const ArchiveDeltaAdd> delta_) { return delta_.where; },
+				[](ref<const ArchiveDeltaReplace> delta_) { return delta_.where; },
+				[](ref<const ArchiveDeltaDrop> delta_) { return delta_.where; }
+			}
+		);
+		result.insert(std::ranges::lower_bound(result, offset, {}, &std::pair<streamoff, size_t>::first), std::pair { offset, index });
+	}
+	return result;
 }
