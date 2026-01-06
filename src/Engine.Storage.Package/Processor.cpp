@@ -96,74 +96,140 @@ Result<void, std::runtime_error> engine::storage::package::commit_archive_change
 		auto& archiveChanges = batchChange->changes;
 		const auto accessIndices = sortedIndices(archiveChanges);
 		auto& archiveHeader = batchChange->header;
-		auto& archiveData = batchChange->data;
+
+		const auto& originSpan = batchChange->data;
+		auto workSpan = originSpan;
+		auto lastOpEnd = 0LL;
 
 		for (const auto [_, accessIndex] : accessIndices) {
 			::hg::move(archiveChanges[accessIndex]).apply(
 				Overloaded {
-					[&archiveData, &archiveHeader, &scratchTail, &scratchPad](ArchiveDeltaAdd& add_) {
+					[&workSpan, &lastOpEnd, &archiveHeader, &scratchTail, &scratchPad](ArchiveDeltaAdd& add_) {
 
-						::hg::assertrt(add_.where == 0);
+						::hg::assertrt(add_.where == 0 && lastOpEnd == 0);
+						const auto insertSize = add_.sizedData.totalSize();
 
 						archiveHeader.type = add_.sizedData.type();
-						archiveData.offset = scratchTail;
-						archiveData.size = add_.sizedData.totalSize();
+						workSpan.offset = scratchTail;
+						workSpan.size = insertSize;
 
 						add_.sizedData.seek(0);
-						auto dst = std::span { scratchPad.begin() + scratchTail, static_cast<size_t>(add_.sizedData.totalSize()) };
+						auto dst = std::span { scratchPad.begin() + scratchTail, static_cast<size_t>(insertSize) };
 
 						add_.sizedData.serializeBytes(dst, ArchiveStreamMode::eLoad);
-						scratchTail += add_.sizedData.totalSize();
+						scratchTail += insertSize;
 					},
-					[&archiveData, &archiveHeader, &scratchTail, &scratchPad](ArchiveDeltaReplace& replace_) {
+					[&originSpan, &workSpan, &lastOpEnd, &archiveHeader, &scratchTail, &scratchPad](ArchiveDeltaReplace& replace_) {
 
-						::hg::assertrt(replace_.where == 0);
+						::hg::assertrt(replace_.where >= lastOpEnd);
 						archiveHeader.type = replace_.withSizedData.type();
 
-						const auto dataSize = replace_.withSizedData.totalSize();
-						if (replace_.where == 0 && replace_.byteCount == archiveData.size) {
+						const auto insertSize = replace_.withSizedData.totalSize();
+						const auto sizeDiff = insertSize - replace_.byteCount;
+						/* Note: Normally we would need to track/accumulate this, but because of sorting we can compute */
+						const auto drift = workSpan.size - originSpan.size;
+						/**
+						 *	work ( size = 100 ) | origin ( size = 100 )
+						 *		insert ( size = 20 ) + [work - origin] => false
+						 *	work ( size = 100 ) | origin ( size = 100 )
+						 *		insert ( size = -20 ) + [work - origin] => true
+						 *	work ( size = 80 ) | origin ( size = 100 )
+						 *		insert ( size = 20 ) + [work - origin] => true
+						 *	work ( size = 80 ) | origin ( size = 100 )
+						 *		insert ( size = -20 ) + [work - origin] => true
+						 *	work ( size = 80 ) | origin ( size = 100 )
+						 *		insert ( size = 30 ) + [work - origin] => false
+						 */
+						const auto fitInPlace = sizeDiff + (workSpan.size - originSpan.size) <= 0;
+						const auto inScratchTail = workSpan.offset > originSpan.offset;
 
-							archiveData.offset = scratchTail;
-							archiveData.size = dataSize;
+						if (fitInPlace) {
 
+							const auto driftedWhere = replace_.where + drift;
+							const auto driftedPrevEnd = driftedWhere + replace_.byteCount;
+							const auto tailSize = workSpan.size - driftedPrevEnd;
+							if (tailSize > 0) {
+								auto tailDst = std::span {
+									scratchPad.begin() + workSpan.offset + driftedWhere + insertSize, static_cast<size_t>(tailSize)
+								};
+								memcpy(tailDst.data(), scratchPad.data() + driftedPrevEnd, tailSize);
+							}
+
+							auto insertDst = std::span {
+								scratchPad.begin() + workSpan.offset + driftedWhere, static_cast<size_t>(insertSize)
+							};
 							replace_.withSizedData.seek(0);
-							auto dst = std::span { scratchPad.begin() + scratchTail, static_cast<size_t>(dataSize) };
+							replace_.withSizedData.serializeBytes(insertDst, ArchiveStreamMode::eLoad);
 
-							replace_.withSizedData.serializeBytes(dst, ArchiveStreamMode::eLoad);
-							scratchTail += dataSize;
+							if (inScratchTail) {
+								scratchTail += sizeDiff;
+							}
+							workSpan.size += sizeDiff;
+							lastOpEnd = replace_.where + replace_.byteCount;
 							return;
 						}
 
 						/**/
 
-						const auto cutoutSize = replace_.byteCount;
-						const auto mergeDiff = replace_.withSizedData.totalSize() - cutoutSize;
-						const auto nextSize = archiveData.size + mergeDiff;
+						if (not inScratchTail) {
 
-						auto headDst = std::span { scratchPad.begin() + scratchTail, static_cast<size_t>(replace_.where) };
-						memcpy(headDst.data(), scratchPad.data() + archiveData.offset, replace_.where);
+							const auto driftedWhere = replace_.where + drift;
 
-						auto cutDst = std::span { scratchPad.begin() + scratchTail + replace_.where, static_cast<size_t>(dataSize) };
-						replace_.withSizedData.serializeBytes(cutDst, ArchiveStreamMode::eLoad);
+							const auto headSize = driftedWhere;
+							if (headSize > 0) {
+								auto headDst = std::span { scratchPad.begin() + scratchTail, static_cast<size_t>(headSize) };
+								memcpy(headDst.data(), scratchPad.data() + originSpan.offset, headSize);
+							}
 
-						const auto tailSize = archiveData.size - (replace_.where + replace_.byteCount);
-						auto tailDst = std::span {
-							scratchPad.begin() + scratchTail + replace_.where + dataSize, static_cast<size_t>(tailSize)
+							auto insertDst = std::span { scratchPad.begin() + scratchTail + driftedWhere, static_cast<size_t>(insertSize) };
+							replace_.withSizedData.seek(0);
+							replace_.withSizedData.serializeBytes(insertDst, ArchiveStreamMode::eLoad);
+
+							const auto driftedPrevEnd = driftedWhere + replace_.byteCount;
+							const auto tailSize = workSpan.size - driftedPrevEnd;
+							if (tailSize > 0) {
+								auto tailDst = std::span {
+									scratchPad.begin() + scratchTail + driftedWhere + insertSize, static_cast<size_t>(tailSize)
+								};
+								memcpy(tailDst.data(), scratchPad.data() + originSpan.offset + driftedPrevEnd, tailSize);
+							}
+
+							workSpan.offset = scratchTail;
+							workSpan.size += sizeDiff;
+							scratchTail += workSpan.size;
+							lastOpEnd = replace_.where + replace_.byteCount;
+							return;
+						}
+
+						/**/
+
+						const auto driftedWhere = replace_.where + drift;
+						const auto driftedPrevEnd = driftedWhere + replace_.byteCount;
+						const auto tailSize = workSpan.size - driftedPrevEnd;
+						if (tailSize > 0) {
+							auto tailDst = std::span {
+								scratchPad.begin() + workSpan.offset + driftedPrevEnd + sizeDiff, static_cast<size_t>(tailSize)
+							};
+							std::memmove(tailDst.data(), scratchPad.data() + workSpan.offset + driftedPrevEnd, tailSize);
+						}
+
+						auto insertDst = std::span {
+							scratchPad.begin() + workSpan.offset + driftedWhere, static_cast<size_t>(insertSize)
 						};
-						memcpy(tailDst.data(), scratchPad.data() + archiveData.offset + replace_.where + replace_.byteCount, tailSize);
+						replace_.withSizedData.seek(0);
+						replace_.withSizedData.serializeBytes(insertDst, ArchiveStreamMode::eLoad);
 
-						archiveData.offset = scratchTail;
-						archiveData.size = nextSize;
-
-						scratchTail += nextSize;
+						workSpan.size += sizeDiff;
+						scratchTail += sizeDiff;
+						lastOpEnd = replace_.where + replace_.byteCount;
 					},
-					[&archiveData, &archiveHeader](ArchiveDeltaDrop& drop_) {
+					[&workSpan, &archiveHeader](ArchiveDeltaDrop& drop_) {
 
-						::hg::assertrt(drop_.where == 0 && drop_.byteCount == archiveData.size);
+						::hg::assertrt(drop_.where == 0 && drop_.byteCount == workSpan.size);
 
 						archiveHeader.guid = ArchiveGuid {};
-						archiveData.offset = streamoff {};
-						archiveData.size = streamsize {};
+						workSpan.offset = streamoff {};
+						workSpan.size = streamsize {};
 					}
 				}
 			);
@@ -172,6 +238,7 @@ Result<void, std::runtime_error> engine::storage::package::commit_archive_change
 		/**/
 
 		archiveChanges.clear();
+		batchChange->data = workSpan;
 	}
 
 	/**/
