@@ -422,6 +422,51 @@ namespace PackageModule {
 		EXPECT_EQ(package.getLinker()[guid0]->data.size, ar0->size());
 		EXPECT_EQ(package.getLinker()[guid1]->data.size, archive->size());
 		EXPECT_EQ(package.getLinker()[guid2]->data.size, ar2->size());
+
+		/**/
+
+		auto recoverSize = data0.size();
+		std::span reintSpan = std::span { raw }.subspan(sizeof(PackageHeader) + package.getLinker()[guid0]->data.offset, recoverSize);
+		auto reintArchive0 = MemoryReadonlyArchive { reintSpan };
+
+		auto recover = string {};
+		recover.resize(recoverSize, '\0');
+
+		for (auto& ch : recover) {
+			reintArchive0 >> ch;
+		}
+
+		EXPECT_EQ(recover, data0);
+
+		/**/
+
+		recoverSize = update1.size();
+		reintSpan = std::span { raw }.subspan(sizeof(PackageHeader) + package.getLinker()[guid1]->data.offset, recoverSize);
+		auto reintArchive1 = MemoryReadonlyArchive { reintSpan };
+
+		recover.clear();
+		recover.resize(recoverSize, '\0');
+
+		for (auto& ch : recover) {
+			reintArchive1 >> ch;
+		}
+
+		EXPECT_EQ(recover, update1);
+
+		/**/
+
+		recoverSize = data2.size();
+		reintSpan = std::span { raw }.subspan(sizeof(PackageHeader) + package.getLinker()[guid2]->data.offset, recoverSize);
+		auto reintArchive2 = MemoryReadonlyArchive { reintSpan };
+
+		recover.clear();
+		recover.resize(recoverSize, '\0');
+
+		for (auto& ch : recover) {
+			reintArchive2 >> ch;
+		}
+
+		EXPECT_EQ(recover, data2);
 	}
 
 	TEST(PackageLinker, ArchiveDeltaDrop) {
@@ -500,7 +545,149 @@ namespace PackageModule {
 		EXPECT_EQ(blob.size(), expectedBlobSize);
 	}
 
-	// TODO: TEST(PackageLinker, MultiArchiveDelta) {
-	// TODO: 	ASSERT_FALSE(true);
-	// TODO: }
+	TEST(PackageLinker, MultiArchiveDeltaReplace) {
+
+		constexpr auto data0 = R"(This payload should stay at the top.)"sv;
+		constexpr auto data1 = R"(This payload should be replaced.)"sv;
+		constexpr auto data2 = R"(This payload should stay at the end.)"sv;
+
+		constexpr auto update1 = R"(replace the previous one.)"sv;
+		constexpr auto update2 = R"(merged data)"sv;
+
+		auto raw = Array<
+			_::byte,
+			sizeof(PackageHeader) + sizeof(PackageFooter) +
+			sizeof(package::Indexed) * 3uLL +
+			data0.size() + (data1.size() + update1.size() + update2.size()) + data2.size()
+		> {};
+		auto blob = ByteSpanBlob { raw };
+
+		auto package = make_read_write_package(blob);
+
+		/**/
+
+		auto guid0 = ArchiveGuid::random();
+		auto guid1 = ArchiveGuid::random();
+		auto guid2 = ArchiveGuid::random();
+
+		auto ar0 = make_uptr<BufferArchive>();
+		auto ar1 = make_uptr<BufferArchive>();
+		auto ar2 = make_uptr<BufferArchive>();
+
+		ar0->reserve(data0.size());
+		ar0->setType(ArchiveType::eRaw);
+		ar1->reserve(data1.size());
+		ar1->setType(ArchiveType::eRaw);
+		ar2->reserve(data2.size());
+		ar2->setType(ArchiveType::eRaw);
+
+		for (const auto& ch : data0) { *ar0 << ch; }
+		for (const auto& ch : data1) { *ar1 << ch; }
+		for (const auto& ch : data2) { *ar2 << ch; }
+
+		auto& linker = package.getLinker();
+
+		auto& lk0 = linker.add({ .type = ArchiveType::eUndefined, .guid = guid0 });
+		auto& lk1 = linker.add({ .type = ArchiveType::eUndefined, .guid = guid1 });
+		auto& lk2 = linker.add({ .type = ArchiveType::eUndefined, .guid = guid2 });
+
+		lk0.changes.emplace_back(package::ArchiveDeltaAdd { .where = 0uLL, .sizedData = *ar0 });
+		lk1.changes.emplace_back(package::ArchiveDeltaAdd { .where = 0uLL, .sizedData = *ar1 });
+		lk2.changes.emplace_back(package::ArchiveDeltaAdd { .where = 0uLL, .sizedData = *ar2 });
+
+		ASSERT_TRUE(commit_package_changes(package).has_value());
+
+		/**/
+
+		const auto prevSize = package.getHeader().packageSize;
+
+		auto target = package.getLinker()[guid1];
+		ASSERT_NE(target, None);
+
+		auto archive1 = make_uptr<BufferArchive>();
+		archive1->reserve(update1.size());
+		for (const auto& ch : update1) { *archive1 << ch; }
+
+		auto archive2 = make_uptr<BufferArchive>();
+		archive2->reserve(update2.size());
+		for (const auto& ch : update2) { *archive2 << ch; }
+
+		target->changes.emplace_back(
+			package::ArchiveDeltaReplace {
+				.where = streamoff { 20 },
+				.byteCount = data1.size() - 20,
+				.withSizedData = *archive1,
+			}
+		);
+		target->changes.emplace_back(
+			package::ArchiveDeltaReplace {
+				.where = streamoff { 5 },
+				.byteCount = 7,
+				.withSizedData = *archive2,
+			}
+		);
+		EXPECT_EQ(target->changes.size(), 2uLL);
+
+		auto updateResult = commit_package_changes(package);
+		ASSERT_TRUE(updateResult.has_value());
+
+		// Warning: We just require/assume that update1.size is bigger than data1.size ( unsigned type )s
+		constexpr auto expectedSize = 224;
+		EXPECT_LE(package.getHeader().packageSize, expectedSize);
+
+		/**/
+
+		constexpr auto merged1 = "This merged data should replace the previous one."sv;
+
+		EXPECT_EQ(package.getLinker().count(), 3uLL);
+		EXPECT_NE(package.getLinker()[guid1], None);
+		EXPECT_EQ(package.getLinker()[guid0]->data.size, ar0->size());
+		EXPECT_EQ(package.getLinker()[guid1]->data.size, merged1.size());
+		EXPECT_EQ(package.getLinker()[guid2]->data.size, ar2->size());
+
+		/**/
+
+		auto recoverSize = data0.size();
+		std::span reintSpan = std::span { raw }.subspan(sizeof(PackageHeader) + package.getLinker()[guid0]->data.offset, recoverSize);
+		auto reintArchive0 = MemoryReadonlyArchive { reintSpan };
+
+		auto recover = string {};
+		recover.resize(recoverSize, '\0');
+
+		for (auto& ch : recover) {
+			reintArchive0 >> ch;
+		}
+
+		EXPECT_EQ(recover, data0);
+
+		/**/
+
+		recoverSize = merged1.size();
+		reintSpan = std::span { raw }.subspan(sizeof(PackageHeader) + package.getLinker()[guid1]->data.offset, recoverSize);
+		auto reintArchive1 = MemoryReadonlyArchive { reintSpan };
+
+		recover.clear();
+		recover.resize(recoverSize, '\0');
+
+		for (auto& ch : recover) {
+			reintArchive1 >> ch;
+		}
+
+		EXPECT_EQ(recover, merged1);
+
+		/**/
+
+		recoverSize = data2.size();
+		reintSpan = std::span { raw }.subspan(sizeof(PackageHeader) + package.getLinker()[guid2]->data.offset, recoverSize);
+		auto reintArchive2 = MemoryReadonlyArchive { reintSpan };
+
+		recover.clear();
+		recover.resize(recoverSize, '\0');
+
+		for (auto& ch : recover) {
+			reintArchive2 >> ch;
+		}
+
+		EXPECT_EQ(recover, data2);
+	}
 }
