@@ -11,7 +11,7 @@ namespace hg::engine::serialization {
 		mref<StructScopedSlot> record_
 	) {
 
-		insert_named_guid_slot(record_, "point"sv, self_._pointLightComponent->getComponentGuid());
+		insert_named_guid_slot(record_, "point"sv, self_._pointLightComponent->guid());
 
 		/**/
 
@@ -30,7 +30,7 @@ namespace hg::engine::serialization {
 
 		const auto pointLightGuid = get_named_guid_slot(record_, "point"sv);
 		for (auto* const candidate : target_._components.values()) {
-			if (candidate->getComponentGuid() == pointLightGuid) {
+			if (candidate->guid() == pointLightGuid) {
 				target_._pointLightComponent = static_cast<ptr<PointLightComponent>>(candidate);
 				break;
 			}
