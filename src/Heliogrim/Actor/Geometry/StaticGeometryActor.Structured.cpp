@@ -11,7 +11,7 @@ namespace hg::engine::serialization {
 		mref<StructScopedSlot> record_
 	) {
 
-		insert_named_guid_slot(record_, "geometry"sv, self_._staticGeometryComponent->getComponentGuid());
+		insert_named_guid_slot(record_, "geometry"sv, self_._staticGeometryComponent->guid());
 
 		/**/
 
@@ -32,7 +32,7 @@ namespace hg::engine::serialization {
 		target_._staticGeometryComponent = nullptr;
 
 		for (auto* const candidate : target_._components.values()) {
-			if (candidate->getComponentGuid() == staticGeometryComponentGuid) {
+			if (candidate->guid() == staticGeometryComponentGuid) {
 				target_._staticGeometryComponent = static_cast<ptr<StaticGeometryComponent>>(candidate);
 				break;
 			}

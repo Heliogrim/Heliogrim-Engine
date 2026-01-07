@@ -11,7 +11,7 @@ namespace hg::engine::serialization {
 		mref<StructScopedSlot> record_
 	) {
 
-		insert_named_guid_slot(record_, "directional"sv, self_._directionalLightComponent->getComponentGuid());
+		insert_named_guid_slot(record_, "directional"sv, self_._directionalLightComponent->guid());
 
 		/**/
 
@@ -30,7 +30,7 @@ namespace hg::engine::serialization {
 
 		const auto directionalLightGuid = get_named_guid_slot(record_, "directional"sv);
 		for (auto* const candidate : target_._components.values()) {
-			if (candidate->getComponentGuid() == directionalLightGuid) {
+			if (candidate->guid() == directionalLightGuid) {
 				target_._directionalLightComponent = static_cast<ptr<DirectionalLightComponent>>(candidate);
 				break;
 			}

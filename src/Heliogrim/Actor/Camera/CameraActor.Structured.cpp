@@ -11,8 +11,8 @@ namespace hg::engine::serialization {
 		mref<StructScopedSlot> record_
 	) {
 
-		insert_named_guid_slot(record_, "camera"sv, self_._cameraComponent->getComponentGuid());
-		insert_named_guid_slot(record_, "mount"sv, self_._mountComponent->getComponentGuid());
+		insert_named_guid_slot(record_, "camera"sv, self_._cameraComponent->guid());
+		insert_named_guid_slot(record_, "mount"sv, self_._mountComponent->guid());
 
 		/**/
 
@@ -30,10 +30,10 @@ namespace hg::engine::serialization {
 		const auto mountComponentGuid = get_named_guid_slot(record_, "mount"sv);
 
 		for (auto* const candidate : target_._components.values()) {
-			if (candidate->getComponentGuid() == cameraComponentGuid) {
+			if (candidate->guid() == cameraComponentGuid) {
 				target_._cameraComponent = static_cast<ptr<CameraComponent>>(candidate);
 			}
-			if (candidate->getComponentGuid() == mountComponentGuid) {
+			if (candidate->guid() == mountComponentGuid) {
 				target_._mountComponent = static_cast<ptr<HierarchyComponent>>(candidate);
 			}
 		}
