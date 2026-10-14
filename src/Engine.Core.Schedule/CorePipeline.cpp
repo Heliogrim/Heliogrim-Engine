@@ -2,7 +2,7 @@
 
 #include <Engine.ACS.Schedule/ActorPipeline.hpp>
 #include <Engine.Common/Make.hpp>
-#include <Engine.GFX.Schedule/RenderScenePipeline.hpp>
+#include <Engine.Scene.Schedule/ScenePipeline.hpp>
 #include <Engine.Scheduler/Pipeline/Stage/EmptyPipelineStage.hpp>
 
 #include "TickTimingStage.hpp"
@@ -18,17 +18,17 @@ CorePipeline::~CorePipeline() = default;
 
 void CorePipeline::mount(ref<StageRegister> register_) {
 
-	const auto* const beginStage = register_.registerStage(
+	const auto beginStage = register_.registerStage(
 		make_uptr<TickTimingStage>(PipelineStage::identifier_type::from(TickBegin), this)
 	);
-	const auto* const endStage = register_.registerStage(
+	const auto endStage = register_.registerStage(
 		make_uptr<EmptyPipelineStage>(PipelineStage::identifier_type::from(TickEnd), this)
 	);
 
 	/**/
 
-	_orderedStages.push_back(beginStage);
-	_orderedStages.push_back(endStage);
+	_orderedStages.emplace_back(beginStage.address());
+	_orderedStages.emplace_back(endStage.address());
 }
 
 void CorePipeline::declareDependencies(
@@ -39,8 +39,8 @@ void CorePipeline::declareDependencies(
 	// TODO: Guarantee that tick end stage is latest within dependent chain
 	// Attention: Hotfix
 
-	const auto* const renderScene = register_.getStage(gfx::schedule::RenderScenePipeline::RenderTick);
-	const auto* const actorHousekeeping = register_.getStage(acs::schedule::ActorPipeline::ActorHousekeeping);
+	const auto scenePostProcess = register_.getStage(scene::schedule::ScenePipeline::ScenePostProcess);
+	const auto actorHousekeeping = register_.getStage(acs::schedule::ActorPipeline::ActorHousekeeping);
 
 	/**/
 
@@ -51,7 +51,7 @@ void CorePipeline::declareDependencies(
 
 	collection_.insert(
 		StageDependency {
-			{ renderScene, actorHousekeeping },
+			{ scenePostProcess.address(), actorHousekeeping.address() },
 			this,
 			endStage
 		}
