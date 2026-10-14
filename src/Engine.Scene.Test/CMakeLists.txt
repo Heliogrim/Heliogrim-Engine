@@ -7,5 +7,6 @@ make_test_project(
 		${PROJECT_NAME}::Engine.Common
 		${PROJECT_NAME}::Engine.Reflect
 		${PROJECT_NAME}::Engine.Scene
+		${PROJECT_NAME}::Engine.Scene.Support
 		${PROJECT_NAME}::Heliogrim
 )
