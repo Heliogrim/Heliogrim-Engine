@@ -132,6 +132,12 @@ namespace hg {
 		template <typename... Args_> requires std::is_constructible_v<Ty_, Args_...>
 		[[nodiscard]] constexpr static this_type create(Args_&&... args_) noexcept {
 
+			// TODO: auto alloc = std::allocator<Ty_> {};
+			// TODO: auto alloc_traits = std::allocator_traits<std::allocator<Ty_>> {};
+
+			// TODO: auto obj = alloc.allocate(1);
+			// TODO: alloc_traits.construct(alloc, obj, std::forward<Args_>(args_)...);
+
 			if constexpr (std::is_aggregate_v<Ty_>) {
 				auto obj = new Ty_ { ::std::forward<Args_>(args_)... };
 				return this_type { encode(obj, 1u) };
@@ -294,8 +300,15 @@ namespace hg {
 	private:
 		constexpr void destroy_obj(ptr<Ty_> obj_) {
 
+			// TODO: auto alloc = std::allocator<Ty_> {};
+			// TODO: auto alloc_traits = std::allocator_traits<std::allocator<Ty_>> {};
+
 			_obj.store(arci_packed_type { 0 }, std::memory_order::relaxed);
 			delete obj_;
+
+			// Problem: We will leak memory, as type of `obj_` is not guaranteed.
+			// TODO: alloc_traits.destroy(alloc, obj_);
+			// TODO: alloc.deallocate(obj_, 1uLL);
 		}
 
 		constexpr void cascade_dec(const ptr<Ty_> obj_) {
