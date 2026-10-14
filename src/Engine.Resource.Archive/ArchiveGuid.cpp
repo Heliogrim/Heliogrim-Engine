@@ -1,8 +1,7 @@
 #include "ArchiveGuid.hpp"
 
 #include <cstring>
-
-#include "Guid.hpp"
+#include <Engine.Common/Guid.hpp>
 
 using namespace hg::engine::resource;
 using namespace hg;
@@ -15,7 +14,7 @@ ArchiveGuid ArchiveGuid::random() noexcept {
 
 ArchiveGuid ArchiveGuid::from(cref<Guid> guid_) noexcept {
 	auto tmp = Array<_::byte, 16> {};
-	guid_.hton(tmp);
+	guid_.hostToNetwork(tmp);
 
 	auto res = ArchiveGuid {};
 	std::memcpy(res.data(), tmp.data(), res.size());
@@ -25,5 +24,5 @@ ArchiveGuid ArchiveGuid::from(cref<Guid> guid_) noexcept {
 ArchiveGuid::operator Guid() const noexcept {
 	auto tmp = Array<_::byte, 16> {};
 	std::memcpy(tmp.data(), this->data(), this->size());
-	return Guid::ntoh(tmp);
+	return Guid::networkToHost(tmp);
 }

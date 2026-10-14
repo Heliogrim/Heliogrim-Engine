@@ -17,7 +17,7 @@ namespace hg::engine::serialization {
 	template <>
 	inline void insert_guid_slot<Guid>(_Inout_ ref<StructScopedSlot> slot_, _In_ ref<const Guid> guid_) {
 		auto tmp = make_null_string(16uLL);
-		guid_.hton(std::span<_::byte, 16uLL> { std::bit_cast<_::byte*>(tmp.data()), 16uLL });
+		guid_.hostToNetwork(std::span<_::byte, 16uLL> { std::bit_cast<_::byte*>(tmp.data()), 16uLL });
 		slot_.insertSlot<String>(Symbols::Guid) << ::hg::move(tmp);
 	}
 
@@ -29,7 +29,7 @@ namespace hg::engine::serialization {
 	template <>
 	inline void insert_named_guid_slot<Guid>(_Inout_ ref<StructScopedSlot> slot_, _In_ const StringView name_, _In_ ref<const Guid> guid_) {
 		auto tmp = make_null_string(16uLL);
-		guid_.hton(std::span<_::byte, 16uLL> { std::bit_cast<_::byte*>(tmp.data()), 16uLL });
+		guid_.hostToNetwork(std::span<_::byte, 16uLL> { std::bit_cast<_::byte*>(tmp.data()), 16uLL });
 		slot_.insertSlot<String>(name_) << ::hg::move(tmp);
 	}
 
@@ -57,7 +57,7 @@ namespace hg::engine::serialization {
 	inline Guid get_guid_slot(_In_ ref<const StructScopedSlot> slot_) {
 		auto tmp = make_null_string(16uLL);
 		slot_.getSlot<String>(Symbols::Guid) >> tmp;
-		return Guid::ntoh(std::span<_::byte, 16uLL> { std::bit_cast<_::byte*>(tmp.data()), 16uLL });
+		return Guid::networkToHost(std::span<_::byte, 16uLL> { std::bit_cast<_::byte*>(tmp.data()), 16uLL });
 	}
 
 	template <std::derived_from<Guid> GuidType_ = Guid>
@@ -76,6 +76,6 @@ namespace hg::engine::serialization {
 	inline Guid get_named_guid_slot(_In_ ref<const StructScopedSlot> structure_, _In_ const StringView name_) {
 		auto tmp = make_null_string(16uLL);
 		structure_.getSlot<String>(name_) >> tmp;
-		return Guid::ntoh(std::span<_::byte, 16uLL> { std::bit_cast<_::byte*>(tmp.data()), 16uLL });
+		return Guid::networkToHost(std::span<_::byte, 16uLL> { std::bit_cast<_::byte*>(tmp.data()), 16uLL });
 	}
 }

@@ -67,7 +67,7 @@ namespace PackageModule {
 			header.endianness = PackageEndianness::eLittleEndian;
 
 			header.version = version;
-			guid.hton(header.guid);
+			guid.hostToNetwork(header.guid);
 
 			header.compression = PackageCompression::eNone;
 			header.packageSize = 0uLL;
@@ -113,7 +113,7 @@ namespace PackageModule {
 
 			// Check Package Guid
 			{
-				auto storedGuid = PackageGuid::ntoh(storedHeader->guid);
+				auto storedGuid = PackageGuid::networkToHost(storedHeader->guid);
 				EXPECT_EQ(storedGuid, guid);
 			}
 
@@ -172,7 +172,7 @@ namespace PackageModule {
 
 		{
 			Array<_::byte, 16> htonPackageGuid {};
-			guid.hton(htonPackageGuid);
+			guid.hostToNetwork(htonPackageGuid);
 
 			PackageHeader header {
 				.magicBytes = PackageMagicBytes,
@@ -229,7 +229,7 @@ namespace PackageModule {
 
 			// Check Package Guid
 			{
-				auto cmpGuid = PackageGuid::ntoh(header.guid);
+				auto cmpGuid = PackageGuid::networkToHost(header.guid);
 				EXPECT_EQ(cmpGuid, guid);
 			}
 

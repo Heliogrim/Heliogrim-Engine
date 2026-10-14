@@ -40,13 +40,13 @@ namespace hg {
 		constexpr ref<Guid> operator=(mref<Guid> other_) noexcept = default;
 
 	public:
-		void hton(_Inout_ std::span<_::byte, 16> dst_) const noexcept;
+		void hostToNetwork(_Inout_ std::span<_::byte, 16> dst_) const noexcept;
 
-		void hton(_Inout_ ref<u8[16]> dst_) const noexcept;
+		void hostToNetwork(_Inout_ ref<u8[16]> dst_) const noexcept;
 
-		[[nodiscard]] static Guid ntoh(_In_ std::span<const _::byte, 16> src_) noexcept;
+		[[nodiscard]] static Guid networkToHost(_In_ std::span<const _::byte, 16> src_) noexcept;
 
-		[[nodiscard]] static Guid ntoh(_In_ cref<u8[16]> src_) noexcept;
+		[[nodiscard]] static Guid networkToHost(_In_ cref<u8[16]> src_) noexcept;
 
 	public:
 		[[nodiscard]] constexpr explicit operator bool() const noexcept {
