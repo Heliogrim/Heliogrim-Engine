@@ -11,9 +11,11 @@ using namespace hg;
 
 SceneUpdateStage::SceneUpdateStage(
 	cref<StageIdentifier> identifier_,
-	pipeline_handle_type pipeline_
+	pipeline_handle_type pipeline_,
+	mref<SceneUpdateStageOptions> options_
 ) :
-	PipelineStage(identifier_type::from(identifier_), pipeline_) {}
+	PipelineStage(identifier_type::from(identifier_), pipeline_),
+	_options(::hg::move(options_)) {}
 
 SceneUpdateStage::~SceneUpdateStage() = default;
 
@@ -25,9 +27,9 @@ void SceneUpdateStage::staticDispatch(cref<StaticStageDispatcher> dispatcher_) {
 	for (const auto& context : contexts) {
 		dispatcher_.enqueue(
 			task::make_repetitive_task(
-				[ctx = context]() {
+				[this, ctx = context]() {
 					if (const auto& universe = ctx->getCurrentUniverse()) {
-						universe->getScene()->update({});
+						universe->getScene()->update(_options.flags);
 					}
 					return true;
 				}

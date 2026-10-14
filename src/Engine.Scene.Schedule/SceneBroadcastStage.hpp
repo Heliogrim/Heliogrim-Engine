@@ -1,8 +1,13 @@
 #pragma once
 
+#include <Engine.Scene/SceneBroadcastFlags.hpp>
 #include <Engine.Scheduler/Pipeline/Stage/PipelineStage.hpp>
 
 namespace hg::engine::scene::schedule {
+	struct SceneBroadcastStageOptions {
+		SceneBroadcastFlags flags;
+	};
+
 	class SceneBroadcastStage final :
 		public scheduler::PipelineStage {
 	public:
@@ -11,10 +16,14 @@ namespace hg::engine::scene::schedule {
 	public:
 		SceneBroadcastStage(
 			cref<scheduler::StageIdentifier> identifier_,
-			pipeline_handle_type pipeline_
+			pipeline_handle_type pipeline_,
+			mref<SceneBroadcastStageOptions> options_
 		);
 
 		~SceneBroadcastStage() override;
+
+	private:
+		SceneBroadcastStageOptions _options;
 
 	public:
 		void staticDispatch(cref<scheduler::StaticStageDispatcher> dispatcher_) override;
