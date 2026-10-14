@@ -11,9 +11,11 @@ using namespace hg;
 
 SceneBroadcastStage::SceneBroadcastStage(
 	cref<StageIdentifier> identifier_,
-	pipeline_handle_type pipeline_
+	pipeline_handle_type pipeline_,
+	mref<SceneBroadcastStageOptions> options_
 ) :
-	PipelineStage(identifier_type::from(identifier_), pipeline_) {}
+	PipelineStage(identifier_type::from(identifier_), pipeline_),
+	_options(::hg::move(options_)) {}
 
 SceneBroadcastStage::~SceneBroadcastStage() = default;
 
@@ -25,9 +27,9 @@ void SceneBroadcastStage::staticDispatch(cref<StaticStageDispatcher> dispatcher_
 	for (const auto& context : contexts) {
 		dispatcher_.enqueue(
 			task::make_repetitive_task(
-				[ctx = context]() {
+				[this, ctx = context]() {
 					if (const auto& universe = ctx->getCurrentUniverse()) {
-						universe->getScene()->broadcast({});
+						universe->getScene()->broadcast(this->_options.flags);
 					}
 					return true;
 				}
