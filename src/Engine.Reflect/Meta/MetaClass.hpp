@@ -60,3 +60,11 @@ namespace hg {
 		#pragma endregion
 	};
 }
+
+template <>
+struct ::std::hash<::hg::__restricted_ptr<const ::hg::MetaClass>> :
+	public ::std::hash<::std::uintptr_t> {
+	[[nodiscard]] constexpr ::std::size_t operator()(const ::hg::__restricted_ptr<const ::hg::MetaClass> val_) const noexcept {
+		return static_cast<::std::hash<::std::uintptr_t>>(*this)(reinterpret_cast<::std::uintptr_t>(val_));
+	}
+};
