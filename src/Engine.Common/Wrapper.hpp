@@ -44,5 +44,5 @@ namespace hg {
 	 * @note The `__restrict` specification is provided either from MSVC or the alias macro of `__macro.hpp`
 	 */
 	template <typename Type_>
-	using __restricted_ptr = Type_* __restrict;
+	using __restricted_ptr = Type_* RESTRICT;
 }
