@@ -51,9 +51,9 @@ namespace hg::engine::scheduler {
 		Vector<uptr<PipelineStage>> _pipelineStages;
 
 	public:
-		[[nodiscard]] const non_owning_rptr<const Stage> registerStage(mref<uptr<PipelineStage>> stage_) override;
+		[[nodiscard]] Opt<ref<const Stage>> registerStage(mref<uptr<PipelineStage>> stage_) override;
 
-		[[nodiscard]] const non_owning_rptr<const Stage> getStage(cref<string> identifier_) const noexcept override;
+		[[nodiscard]] Opt<ref<const Stage>> getStage(cref<string> identifier_) const noexcept override;
 
 		void removeStage(cref<string> identifier_) override;
 

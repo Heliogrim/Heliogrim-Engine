@@ -37,9 +37,10 @@ void scheduler::execOnStage(
 ) {
 
 	const auto scheduler = Engine::getEngine()->getScheduler();
+	const auto stage = scheduler->getCompositePipeline()->getStage(stage_);
+	::hg::assertrt(stage != None);
 
-	const auto* const stage = scheduler->getCompositePipeline()->getStage(stage_);
-	scheduler->execOnStage(std::move(task_), stage);
+	scheduler->execOnStage(std::move(task_), stage.address());
 }
 
 void scheduler::execOnStage(
@@ -72,9 +73,11 @@ void scheduler::execOnStages(
 
 	const auto scheduler = Engine::getEngine()->getScheduler();
 
-	const auto* const beginStage = scheduler->getCompositePipeline()->getStage(begin_);
-	const auto* const endStage = scheduler->getCompositePipeline()->getStage(end_);
-	scheduler->execOnStages(std::move(task_), beginStage, endStage);
+	const auto beginStage = scheduler->getCompositePipeline()->getStage(begin_);
+	const auto endStage = scheduler->getCompositePipeline()->getStage(end_);
+	::hg::assertrt(beginStage != None && endStage != None);
+
+	scheduler->execOnStages(std::move(task_), beginStage.address(), endStage.address());
 }
 
 void scheduler::execOnStages(
