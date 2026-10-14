@@ -55,6 +55,19 @@ ref<Transform> HierarchyComponent::getLocalTransform() noexcept {
 	return _localTransform;
 }
 
+void HierarchyComponent::setRelativeLocationAndRotator(
+	mref<math::Location> outerLocation_,
+	mref<math::Rotator> outerRotator_
+) noexcept {
+	if (not _parent) {
+		_localTransform.setLocationAndRotator(::hg::move(outerLocation_), ::hg::move(outerRotator_));
+		return;
+	}
+
+	const auto& parentRotator = _parent->getLocalTransform().rotator();
+	_localTransform.setLocationAndRotator({}, math::Rotator::innerToOuter(outerRotator_, parentRotator));
+}
+
 math::Location HierarchyComponent::getUniverseLocation() const noexcept {
 	if (not _parent) {
 		return _localTransform.location();

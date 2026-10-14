@@ -37,7 +37,7 @@ namespace hg {
 
 		HierarchyComponent(mref<HierarchyComponent> other_) noexcept = default;
 
-		HierarchyComponent (cref<HierarchyComponent>) = delete;
+		HierarchyComponent(cref<HierarchyComponent>) = delete;
 
 		~HierarchyComponent() override = default;
 
@@ -70,6 +70,8 @@ namespace hg {
 		[[nodiscard]] cref<Transform> getLocalTransform() const noexcept;
 
 		[[nodiscard]] ref<Transform> getLocalTransform() noexcept;
+
+		void setRelativeLocationAndRotator(mref<math::Location> outerLocation_, mref<math::Rotator> outerRotator_) noexcept;
 
 	public:
 		[[nodiscard]] math::Location getUniverseLocation() const noexcept;
