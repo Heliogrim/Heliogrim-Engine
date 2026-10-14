@@ -131,12 +131,30 @@ namespace hg::engine::scene {
 	private:
 		template <typename Fn_>
 		void unrollForEachFwd(Fn_&& fn_) {
-			std::apply(std::forward<Fn_>(fn_), _typedSystems);
+			/*
+			template for (auto& system : _typedSystems) {
+				fn_(system);
+			}
+			 */
+			[]<typename FwdFn_, std::size_t ... Indices_>(
+				FwdFn_&& fn_,
+				ref<decltype(_typedSystems)> systems_,
+				std::index_sequence<Indices_...>
+			) static {
+					(fn_(std::get<Indices_>(systems_)), ...);
+				}(std::forward<Fn_>(fn_), _typedSystems, std::make_index_sequence<sizeof...(Systems_)>());
 		}
 
 		template <typename Fn_>
 		void unrollForEachBwd(Fn_&& fn_) {
-			::hg::todo_panic();
+			constexpr static auto system_count = sizeof...(Systems_);
+			[]<typename FwdFn_, std::size_t ... Indices_>(
+				FwdFn_&& fn_,
+				ref<decltype(_typedSystems)> systems_,
+				std::index_sequence<Indices_...>
+			) static {
+					(fn_(std::get<system_count - 1 - Indices_>(systems_)), ...);
+				}(std::forward<Fn_>(fn_), _typedSystems, std::make_index_sequence<sizeof...(Systems_)>());
 		}
 
 	public:
@@ -149,7 +167,7 @@ namespace hg::engine::scene {
 		}
 
 		void cleanup() override {
-			unrollForEachFwd/*unrollForEachBwd*/(
+			unrollForEachBwd(
 				[](auto& system_) {
 					system_.cleanup();
 				}
@@ -189,7 +207,7 @@ namespace hg::engine::scene {
 		template <IsSceneSystem SystemType_>
 		[[nodiscard]] nmpt<SystemType_> getSceneSystem() const noexcept {
 			static_assert(not std::is_void_v<typename index_of_type<SystemType_, Systems_...>::type>);
-			return _denseSystems[index_of_type<SystemType_, Systems_...>::value];
+			return static_cast<ptr<SystemType_>>(_denseSystems[index_of_type<SystemType_, Systems_...>::value]);
 		}
 
 		template <size_t SystemIndex_>
