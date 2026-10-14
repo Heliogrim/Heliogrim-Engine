@@ -566,7 +566,8 @@ namespace hg {
 			return *this;
 		}
 
-		template <typename Tx_ = Ty_> requires (not std::is_void_v<Tx_>) && std::is_nothrow_convertible_v<ptr<Ty_>, ptr<Tx_>>
+		template <typename Tx_ = Ty_> requires
+			(not std::is_void_v<Tx_>) && std::is_nothrow_convertible_v<ptr<Ty_>, ptr<Tx_>>
 		constexpr ref<const std::remove_const_t<Tx_>> load() const noexcept {
 			return *(storage.template load<Ty_>());
 		}

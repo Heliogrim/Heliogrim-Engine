@@ -67,7 +67,7 @@ namespace hg {
 
 	public:
 		#if IS_BIG_ENDIAN
-        uint64_t high, low;
+		uint64_t high, low;
 		#else
 		uint64_t low, high;
 		#endif

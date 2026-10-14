@@ -1079,7 +1079,7 @@ namespace hg::math {
 			return !(x == other_.x && y == other_.y && z == other_.z);
 		}
 
-		template <typename NumericType_ = T, std::enable_if_t<!std::is_floating_point_v<NumericType_>, bool>  = true>
+		template <typename NumericType_ = T, std::enable_if_t<!std::is_floating_point_v<NumericType_>, bool> = true>
 		constexpr type operator>>(const NumericType_& shift_) const {
 			return type {
 				x >> shift_,
@@ -1265,7 +1265,7 @@ namespace hg::math {
 		 * @param  xyz_ The xy.
 		 * @param  w_   The z coordinate.
 		 */
-		constexpr vec4_t(typename vec3_t<value_type>::const_reference_type& xyz_, const value_type& w_) noexcept:
+		constexpr vec4_t(typename vec3_t<value_type>::const_reference_type& xyz_, const value_type& w_) noexcept :
 			x(xyz_.x),
 			y(xyz_.y),
 			z(xyz_.z),
