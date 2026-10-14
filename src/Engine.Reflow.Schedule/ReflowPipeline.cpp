@@ -1,9 +1,7 @@
 #include "ReflowPipeline.hpp"
 
-#include <Engine.ACS.Schedule/ActorPipeline.hpp>
 #include <Engine.Common/Make.hpp>
-#include <Engine.Core.Schedule/CorePipeline.hpp>
-#include <Engine.Input.Schedule/InputPipeline.hpp>
+#include <Engine.Scene.Schedule/ScenePipeline.hpp>
 
 #include "ReflowFlowStage.hpp"
 
@@ -18,22 +16,21 @@ ReflowPipeline::~ReflowPipeline() = default;
 
 void ReflowPipeline::mount(ref<StageRegister> register_) {
 
-	const auto* const tick = register_.registerStage(
+	const auto tick = register_.registerStage(
 		make_uptr<ReflowFlowStage>(Tick, this)
 	);
 
 	/**/
 
-	_orderedStages.push_back(tick);
+	_orderedStages.emplace_back(tick.address());
 }
 
 void ReflowPipeline::declareDependencies(
 	cref<StageRegister> register_,
 	ref<CompactSet<StageDependency>> collection_
 ) {
-	const auto* const beginTick = register_.getStage(core::schedule::CorePipeline::TickBegin);
-	const auto* const inputTick = register_.getStage(input::schedule::InputPipeline::InputTick);
-	const auto* const actorTick = register_.getStage(acs::schedule::ActorPipeline::ActorTick);
+	const auto sceneUpdatePostPhysics = register_.getStage(scene::schedule::ScenePipeline::SceneUpdatePostPhysics);
+	::hg::assertrt(sceneUpdatePostPhysics != None);
 
 	/**/
 
@@ -43,7 +40,7 @@ void ReflowPipeline::declareDependencies(
 
 	collection_.insert(
 		StageDependency {
-			{ beginTick, inputTick, actorTick },
+			{ sceneUpdatePostPhysics.address() },
 			this,
 			tick
 		}
