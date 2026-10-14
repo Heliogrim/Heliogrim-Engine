@@ -2,6 +2,7 @@
 
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
+#include <Engine.Logging/Logger.hpp>
 
 #include "../Buffer/SparseBuffer.hpp"
 #include "../Buffer/SparseBufferView.hpp"
