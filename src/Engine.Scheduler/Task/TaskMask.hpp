@@ -19,7 +19,7 @@ namespace hg::engine::scheduler::task {
 		eAll = 0b11111111
 	};
 
-	[[nodiscard]] FORCE_INLINE inline bool operator&(const TaskMask& left_, const TaskMask& right_) noexcept {
+	[[nodiscard]] FORCE_INLINE bool operator&(const TaskMask& left_, const TaskMask& right_) noexcept {
 		return static_cast<u8>(left_) & static_cast<u8>(right_);
 	}
 
