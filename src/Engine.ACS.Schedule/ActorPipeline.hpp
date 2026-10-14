@@ -12,7 +12,10 @@ namespace hg::engine::acs::schedule {
 
 		/**/
 
-		static const inline StageIdentifier ActorTick = "::Core::ActorTick";
+		static const inline StageIdentifier ActorTickPrePhysics = "::Core::Actor::Tick::Pre-Physics";
+		static const inline StageIdentifier ActorTickPostPhysics = "::Core::Actor::Tick::Post-Physics";
+		static const inline StageIdentifier ActorPhysicsOverlap = "::Core::Actor::Physics::Overlap";
+		static const inline StageIdentifier ActorPhysicsCollision = "::Core::Actor::Physics::Collision";
 		static const inline StageIdentifier ActorHousekeeping = "::Core::ActorHousekeeping";
 
 	public:
