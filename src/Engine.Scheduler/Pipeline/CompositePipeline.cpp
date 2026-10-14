@@ -87,7 +87,7 @@ const non_owning_rptr<Schedule> CompositePipeline::getSchedule() const noexcept 
 	return _schedule;
 }
 
-const non_owning_rptr<const Stage> CompositePipeline::registerStage(mref<uptr<PipelineStage>> stage_) {
+Opt<ref<const Stage>> CompositePipeline::registerStage(mref<uptr<PipelineStage>> stage_) {
 
 	const auto& identifier = stage_->stageIdentifier();
 	_pipelineStages.emplace_back(std::move(stage_));
@@ -96,11 +96,9 @@ const non_owning_rptr<const Stage> CompositePipeline::registerStage(mref<uptr<Pi
 
 	const auto where = _stages.find(identifier.value);
 	if (where != _stages.end()) {
-
-		auto* const stage = where->second.get();
-		stage->incRef();
-
-		return stage;
+		const auto& stored = where->second;
+		stored->incRef();
+		return Some(*stored);
 	}
 
 	/**/
@@ -120,12 +118,12 @@ const non_owning_rptr<const Stage> CompositePipeline::registerStage(mref<uptr<Pi
 		make_uptr<Stage>(clone(identifier.value), static_cast<s8>(slotIdx))
 	);
 
-	return result.first->second.get();
+	return Some(*result.first->second);
 }
 
-const non_owning_rptr<const Stage> CompositePipeline::getStage(cref<string> identifier_) const noexcept {
+Opt<ref<const Stage>> CompositePipeline::getStage(cref<string> identifier_) const noexcept {
 	const auto where = _stages.find(identifier_);
-	return where != _stages.end() ? where->second.get() : nullptr;
+	return where != _stages.end() ? Some(*where->second) : None;
 }
 
 void CompositePipeline::removeStage(cref<string> identifier_) {
