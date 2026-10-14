@@ -114,6 +114,9 @@ namespace hg::math {
 		ref<this_type> setScale(mref<scale_type> scale_) noexcept;
 
 	public:
+		ref<this_type> setLocationAndRotator(mref<Location> location_, mref<Rotator> rotator_) noexcept;
+
+	public:
 		[[nodiscard]] math::mat4 asMatrix() const noexcept;
 
 		friend math::mat4 operator*(ref<const Transform> outer_, ref<const Transform> inner_) noexcept;
