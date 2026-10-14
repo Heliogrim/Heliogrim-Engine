@@ -21,9 +21,13 @@ void Timing::updateTimings() {
 	// 1s -> 1000ms
 	// 1ms -> 1000us | 1000ms -> 1000'000us
 	// 1us -> 1000ns | 1000us -> 1000'000ns | 1000'000us -> 1000'000'000ns
-	_rawDeltaTime = static_cast<f32>(std::chrono::duration_cast<std::chrono::microseconds>(diff).count()) / 1'000'000.F;
+	_rawDeltaTime = static_cast<f32>(std::chrono::duration_cast<std::chrono::microseconds>(diff).count()) / 1'000'000.f;
 }
 
 f32 Timing::getDeltaTime() noexcept {
-	return Timing::_cached.has_value() ? Timing::_cached->_rawDeltaTime : 0.F;
+	return Timing::_cached.has_value() ? Timing::_cached->_rawDeltaTime : 0.f;
+}
+
+f32 Timing::getDeltaTime(std::chrono::seconds) noexcept {
+	return Timing::_cached.has_value() ? (Timing::_cached->_rawDeltaTime / 1000.f) : 0.f;
 }
