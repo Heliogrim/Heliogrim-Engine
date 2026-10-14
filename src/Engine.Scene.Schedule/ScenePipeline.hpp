@@ -12,8 +12,10 @@ namespace hg::engine::scene::schedule {
 
 		/**/
 
-		static const inline StageIdentifier SceneBroadcast = "::Core::SceneBroadcast";
-		static const inline StageIdentifier SceneUpdate = "::Core::SceneUpdate";
+		static const inline StageIdentifier SceneBroadcastPrePhysics = "::Core::SceneBroadcast::PrePhysics";
+		static const inline StageIdentifier SceneBroadcastPostPhysics = "::Core::SceneBroadcast::PostPhysics";
+		static const inline StageIdentifier SceneUpdatePrePhysics = "::Core::SceneUpdate::PrePhysics";
+		static const inline StageIdentifier SceneUpdatePostPhysics = "::Core::SceneUpdate::PostPhysics";
 		static const inline StageIdentifier ScenePostProcess = "::Core::ScenePostProcess";
 
 	public:
