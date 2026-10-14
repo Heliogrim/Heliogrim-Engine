@@ -16,20 +16,21 @@ InputPipeline::~InputPipeline() = default;
 
 void InputPipeline::mount(ref<StageRegister> register_) {
 
-	const auto* const inputTick = register_.registerStage(
+	const auto inputTick = register_.registerStage(
 		make_uptr<InputTickStage>(InputTick, this)
 	);
 
 	/**/
 
-	_orderedStages.push_back(inputTick);
+	_orderedStages.emplace_back(inputTick.address());
 }
 
 void InputPipeline::declareDependencies(
 	cref<StageRegister> register_,
 	ref<CompactSet<StageDependency>> collection_
 ) {
-	const auto* const beginTick = register_.getStage(core::schedule::CorePipeline::TickBegin);
+	const auto beginTick = register_.getStage(core::schedule::CorePipeline::TickBegin);
+	::hg::assertrt(beginTick != None);
 
 	/**/
 
@@ -39,7 +40,7 @@ void InputPipeline::declareDependencies(
 
 	collection_.insert(
 		StageDependency {
-			{ beginTick },
+			{ beginTick.address() },
 			this,
 			inputTick
 		}
