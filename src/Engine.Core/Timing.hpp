@@ -1,4 +1,4 @@
- #pragma once
+#pragma once
 
 #include <chrono>
 #include <Engine.Common/Optional.hpp>
@@ -27,5 +27,7 @@ namespace hg::engine::core {
 
 	public:
 		[[nodiscard]] static f32 getDeltaTime() noexcept;
+
+		[[nodiscard]] static f32 getDeltaTime(std::chrono::seconds) noexcept;
 	};
 }
