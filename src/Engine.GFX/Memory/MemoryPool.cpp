@@ -7,11 +7,11 @@
 #include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Common/Make.hpp>
+#include <Engine.Common/Optional.hpp>
 #include <Engine.Logging/Logger.hpp>
 
 #include "AllocatedMemory.hpp"
 #include "AllocationResult.hpp"
-#include "Optional.hpp"
 
 /**/
 
