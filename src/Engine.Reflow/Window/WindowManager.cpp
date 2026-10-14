@@ -287,7 +287,7 @@ sptr<Window> WindowManager::requestWindow(
 
 	auto window = await(
 		Future {
-			platform->makeNativeWindow(title_, math::iExtent2D { size_.x, size_.y })
+			platform->makeNativeWindow(title_, math::Extent2i32 { size_.x, size_.y })
 		}
 	);
 	::hg::assertrt(window != nullptr);

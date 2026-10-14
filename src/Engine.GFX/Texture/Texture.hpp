@@ -104,7 +104,7 @@ namespace hg::engine::gfx {
 		 */
 		[[nodiscard]] uptr<TextureView> makeView(
 			math::uivec2 layers_,
-			math::uExtent3D extent_,
+			math::Extent3u32 extent_,
 			math::uivec2 mipLevels_
 		);
 

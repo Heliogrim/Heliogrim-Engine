@@ -81,7 +81,7 @@ u32 ReflowCommandBuffer::ensureScissor() {
 	return _scissors.size() - 1uL;
 }
 
-void ReflowCommandBuffer::pushRootScissor(cref<math::f32ext2d> scissor_) {
+void ReflowCommandBuffer::pushRootScissor(cref<math::Extent2f32> scissor_) {
 
 	if (not _opaque.indices.empty() || not _alpha.indices.empty()) {
 
@@ -102,7 +102,7 @@ void ReflowCommandBuffer::pushRootScissor(cref<math::f32ext2d> scissor_) {
 	_scissorStack.emplace(scissor_);
 }
 
-void ReflowCommandBuffer::pushScissor(cref<math::fExtent2D> scissor_) {
+void ReflowCommandBuffer::pushScissor(cref<math::Extent2f32> scissor_) {
 
 	const u32 lastOpaqueIdx = static_cast<u32>(_opaque.indices.size());
 	const u32 lastAlphaIdx = static_cast<u32>(_alpha.indices.size());
@@ -158,7 +158,7 @@ void ReflowCommandBuffer::pushScissor(cref<math::fExtent2D> scissor_) {
 	_scissorStack.push(scissor_);
 }
 
-void ReflowCommandBuffer::pushIntersectScissor(cref<math::fExtent2D> scissor_) {
+void ReflowCommandBuffer::pushIntersectScissor(cref<math::Extent2f32> scissor_) {
 
 	const auto hasPrevScissor { not _scissorStack.empty() };
 	auto scissor { scissor_ };
@@ -192,7 +192,7 @@ void ReflowCommandBuffer::pushIntersectScissor(cref<math::fExtent2D> scissor_) {
 	pushScissor(scissor);
 }
 
-math::fExtent2D ReflowCommandBuffer::popScissor() {
+math::Extent2f32 ReflowCommandBuffer::popScissor() {
 
 	const u32 lastOpaqueIdx = static_cast<u32>(_opaque.indices.size());
 	const u32 lastAlphaIdx = static_cast<u32>(_alpha.indices.size());
@@ -298,7 +298,7 @@ bool ReflowCommandBuffer::scissorCull(cref<math::vec2> off_, cref<math::vec2> si
 	return false;
 }
 
-bool ReflowCommandBuffer::scissorCull(cref<math::fExtent2D> rect_) const noexcept {
+bool ReflowCommandBuffer::scissorCull(cref<math::Extent2f32> rect_) const noexcept {
 
 	if (_scissorStack.empty()) {
 		return false;

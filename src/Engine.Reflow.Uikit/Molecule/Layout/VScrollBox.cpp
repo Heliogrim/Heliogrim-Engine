@@ -96,7 +96,7 @@ void VScrollBox::render(const ptr<ReflowCommandBuffer> cmd_) {
 	const auto off = _layoutState.layoutOffset + math::fvec2 { padding.x, padding.y };
 	const auto size = _layoutState.layoutSize - math::fvec2 { padding.x + padding.z, padding.y + padding.w };
 
-	const math::fExtent2D scissor { size.x, size.y, off.x, off.y };
+	const math::Extent2f32 scissor { size.x, size.y, off.x, off.y };
 	cmd_->pushIntersectScissor(scissor);
 
 	/**/

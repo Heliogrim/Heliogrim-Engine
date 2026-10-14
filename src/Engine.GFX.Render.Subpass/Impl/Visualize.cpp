@@ -179,7 +179,7 @@ void Visualize::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 				if (!_visTexView || _visTexView->owner() != depthTex) {
 					_visTexView = depthTex->makeView(
 						math::uivec2 { depthTex->layer() },
-						math::uExtent3D { depthTex->width(), depthTex->height(), depthTex->depth() },
+						math::Extent3u32 { depthTex->width(), depthTex->height(), depthTex->depth() },
 						{ 0uL, depthTex->mipLevels() }
 					);
 					_visTexView->owner()->buffer()._vkLayout = vk::ImageLayout::eDepthStencilReadOnlyOptimal;

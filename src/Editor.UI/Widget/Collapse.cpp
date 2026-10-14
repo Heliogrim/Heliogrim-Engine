@@ -107,7 +107,7 @@ void Collapse::setContent(mref<SharedPtr<Widget>> content_) {
 
 void Collapse::render(const ptr<engine::reflow::ReflowCommandBuffer> cmd_) {
 
-	math::fExtent2D scissor = math::fExtent2D {
+	math::Extent2f32 scissor = math::Extent2f32 {
 		_layoutState.layoutSize.x, _layoutState.layoutSize.y,
 		_layoutState.layoutOffset.x, _layoutState.layoutOffset.y
 	};

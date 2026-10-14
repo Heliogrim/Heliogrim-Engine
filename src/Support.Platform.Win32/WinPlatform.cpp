@@ -113,7 +113,7 @@ ref<task::SignaledQueue> WinPlatform::platformQueue() const noexcept {
 
 hg::concurrent::future<uptr<NativeWindow>> WinPlatform::makeNativeWindow(
 	const string_view title_,
-	cref<math::iExtent2D> extent_
+	cref<math::Extent2i32> extent_
 ) {
 
 	::hg::concurrent::promise<uptr<NativeWindow>> promise {

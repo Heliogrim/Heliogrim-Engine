@@ -75,26 +75,26 @@ namespace hg::engine::reflow {
 		void reset(const bool free_ = false);
 
 	public:
-		Stack<math::fExtent2D> _scissorStack;
+		Stack<math::Extent2f32> _scissorStack;
 
 	private:
 		[[nodiscard]] u32 ensureScissor();
 
 	public:
-		void pushRootScissor(cref<math::f32ext2d> scissor_);
+		void pushRootScissor(cref<math::Extent2f32> scissor_);
 
-		void pushScissor(cref<math::fExtent2D> scissor_);
+		void pushScissor(cref<math::Extent2f32> scissor_);
 
-		void pushIntersectScissor(cref<math::fExtent2D> scissor_);
+		void pushIntersectScissor(cref<math::Extent2f32> scissor_);
 
-		math::fExtent2D popScissor();
+		math::Extent2f32 popScissor();
 
 	public:
 		[[nodiscard]] bool scissorCull(cref<math::vec2> p_, float r_) const noexcept;
 
 		[[nodiscard]] bool scissorCull(cref<math::vec2> off_, cref<math::vec2> size_) const noexcept;
 
-		[[nodiscard]] bool scissorCull(cref<math::fExtent2D> rect_) const noexcept;
+		[[nodiscard]] bool scissorCull(cref<math::Extent2f32> rect_) const noexcept;
 
 	private:
 		u8 _maxLayer;
@@ -116,7 +116,7 @@ namespace hg::engine::reflow {
 		CaptureData _opaque;
 		CaptureData _alpha;
 
-		Vector<math::fExtent2D> _scissors;
+		Vector<math::Extent2f32> _scissors;
 
 		Vector<nmpt<gfx::TextureLikeObject>> _images;
 		Vector<_::VkSemaphore> _imageWait;

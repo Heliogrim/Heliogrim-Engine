@@ -269,12 +269,11 @@ namespace hg::math {
 		}
 	};
 
-	typedef Extent2D<s32> iExtent2D;
-	typedef Extent2D<u32> uExtent2D;
-	typedef Extent2D<float> fExtent2D;
-	typedef Extent3D<s32> iExtent3D;
-	typedef Extent3D<u32> uExtent3D;
-	typedef Extent3D<float> fExtent3D;
+	using Extent2f32 = Extent2D<f32>;
+	using Extent2i32 = Extent2D<s32>;
+	using Extent2u32 = Extent2D<u32>;
 
-	typedef Extent2D<f32> f32ext2d;
+	using Extent3f32 = Extent3D<f32>;
+	using Extent3i32 = Extent3D<s32>;
+	using Extent3u32 = Extent3D<u32>;
 }

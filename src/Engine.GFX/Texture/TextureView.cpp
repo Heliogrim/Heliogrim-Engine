@@ -8,7 +8,7 @@ using namespace hg;
 TextureView::TextureView(
     non_owning_rptr<Texture> owner_,
     math::uivec2 layers_,
-    math::uExtent3D extent_,
+    math::Extent3u32 extent_,
     math::uivec2 mipLevels_
 ) :
     _owner(owner_),
@@ -35,15 +35,15 @@ math::uivec2::value_type TextureView::layers() const noexcept {
     return (_layers.max - _layers.min) + 1uL;
 }
 
-math::uExtent3D::off_type TextureView::offsetX() const noexcept {
+math::Extent3u32::off_type TextureView::offsetX() const noexcept {
     return _extent.offsetX;
 }
 
-math::uExtent3D::off_type TextureView::offsetY() const noexcept {
+math::Extent3u32::off_type TextureView::offsetY() const noexcept {
     return _extent.offsetY;
 }
 
-math::uExtent3D::off_type TextureView::offsetZ() const noexcept {
+math::Extent3u32::off_type TextureView::offsetZ() const noexcept {
     return _extent.offsetZ;
 }
 
@@ -51,15 +51,15 @@ math::uivec3 TextureView::extent() const noexcept {
     return math::uivec3 { _extent.width, _extent.height, _extent.depth };
 }
 
-math::uExtent3D::value_type TextureView::width() const noexcept {
+math::Extent3u32::value_type TextureView::width() const noexcept {
     return _extent.width;
 }
 
-math::uExtent3D::value_type TextureView::height() const noexcept {
+math::Extent3u32::value_type TextureView::height() const noexcept {
     return _extent.height;
 }
 
-math::uExtent3D::value_type TextureView::depth() const noexcept {
+math::Extent3u32::value_type TextureView::depth() const noexcept {
     return _extent.depth;
 }
 
