@@ -28,9 +28,9 @@ namespace hg::engine::render {
 
 		Opt<std::filesystem::path> inputFile = None;
 		for (const auto& check : checks) {
-			const auto target = check / name_;
+			auto target = check / name_;
 			if (std::filesystem::exists(target)) {
-				inputFile = Some(target);
+				inputFile = Some(::hg::move(target));
 				break;
 			}
 		}

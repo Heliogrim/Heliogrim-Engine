@@ -7,8 +7,8 @@ Opt<ref<Timing>> Timing::_cached = None;
 
 Timing::Timing() noexcept :
 	_lastTimePoint(std::chrono::high_resolution_clock::now()),
-	_rawDeltaTime(0.F) {
-	_cached = Some(*this);
+	_rawDeltaTime(0.f) {
+	_cached = SomeRef(*this);
 }
 
 Timing::~Timing() noexcept = default;

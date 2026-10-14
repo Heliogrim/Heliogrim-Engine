@@ -85,7 +85,7 @@ Opt<VolatileActor<>> Level::removeActor(const nmpt<Actor> actor_) {
 
 	_actors.erase(actor_.get());
 	actor_->setOwnerLevel(None);
-	return Some<VolatileActor<>>(actor_.get());
+	return SomeVal<VolatileActor<>>(actor_.get());
 }
 
 Arci<Level> engine::core::make_root_like_level() {
