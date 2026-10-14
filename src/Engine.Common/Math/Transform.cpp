@@ -1,5 +1,6 @@
 #include "Transform.hpp"
 
+#include <Engine.Common/Move.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 
 #include "Convertion.hpp"
@@ -66,6 +67,12 @@ ref<Transform::scale_type> Transform::scale() noexcept {
 
 ref<Transform::this_type> Transform::setScale(mref<scale_type> scale_) noexcept {
 	_scale = std::move(scale_);
+	return *this;
+}
+
+ref<Transform::this_type> Transform::setLocationAndRotator(mref<Location> location_, mref<Rotator> rotator_) noexcept {
+	_location = ::hg::move(location_);
+	_rotator = ::hg::move(rotator_);
 	return *this;
 }
 
