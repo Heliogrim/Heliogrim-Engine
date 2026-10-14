@@ -225,7 +225,7 @@ void Text::render(const ptr<ReflowCommandBuffer> cmd_) {
 
 	/**/
 
-	const math::fExtent2D scissor { space.x, space.y, shift.x, shift.y };
+	const math::Extent2f32 scissor { space.x, space.y, shift.x, shift.y };
 	cmd_->pushIntersectScissor(scissor);
 
 	/**/

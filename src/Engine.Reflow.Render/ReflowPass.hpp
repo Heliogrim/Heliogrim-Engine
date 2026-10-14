@@ -117,13 +117,13 @@ namespace hg::engine::reflow::render {
 
 		void captureOpaque(
 			cref<ReflowCommandBuffer> records_,
-			cref<math::fExtent2D> scope_,
+			cref<math::Extent2f32> scope_,
 			_Inout_ ref<engine::render::cmd::RenderCommandBuffer> cmd_
 		);
 
 		void captureAlpha(
 			cref<ReflowCommandBuffer> records_,
-			cref<math::fExtent2D> scope_,
+			cref<math::Extent2f32> scope_,
 			_Inout_ ref<engine::render::cmd::RenderCommandBuffer> cmd_
 		);
 	};

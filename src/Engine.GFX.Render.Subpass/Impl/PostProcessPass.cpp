@@ -123,7 +123,7 @@ void PostProcessPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept
 
 		_colorView = _colorTexture->makeView(
 			math::uivec2 { _colorTexture->layer() },
-			math::uExtent3D { _colorTexture->width(), _colorTexture->height(), _colorTexture->depth() },
+			math::Extent3u32 { _colorTexture->width(), _colorTexture->height(), _colorTexture->depth() },
 			{ 0uL, _colorTexture->mipLevels() }
 		);
 		_colorView->owner()->buffer()._vkLayout = vk::ImageLayout::eShaderReadOnlyOptimal;

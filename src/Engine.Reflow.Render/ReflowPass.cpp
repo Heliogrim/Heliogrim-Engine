@@ -210,7 +210,7 @@ void render::ReflowPass::execute(cref<engine::render::graph::ScopedSymbolContext
 
 		/**/
 
-		const math::fExtent2D markScissor {
+		const math::Extent2f32 markScissor {
 			std::ceilf(marked->getLayoutState().layoutSize.x),
 			std::ceilf(marked->getLayoutState().layoutSize.y),
 			std::floorf(marked->getLayoutState().layoutOffset.x),
@@ -230,7 +230,7 @@ void render::ReflowPass::execute(cref<engine::render::graph::ScopedSymbolContext
 		return;
 	}
 
-	const auto rootScissor = math::fExtent2D {
+	const auto rootScissor = math::Extent2f32 {
 		static_cast<float>(sceneColorTex->width()),
 		static_cast<float>(sceneColorTex->height()), 0.F, 0.F
 	};
@@ -603,7 +603,7 @@ void render::ReflowPass::updateIndices(
 
 void render::ReflowPass::captureOpaque(
 	cref<ReflowCommandBuffer> records_,
-	cref<math::fExtent2D> scope_,
+	cref<math::Extent2f32> scope_,
 	ref<engine::render::cmd::RenderCommandBuffer> cmd_
 ) {
 
@@ -769,7 +769,7 @@ void render::ReflowPass::captureOpaque(
 
 void render::ReflowPass::captureAlpha(
 	cref<ReflowCommandBuffer> records_,
-	cref<math::fExtent2D> scope_,
+	cref<math::Extent2f32> scope_,
 	ref<engine::render::cmd::RenderCommandBuffer> cmd_
 ) {
 

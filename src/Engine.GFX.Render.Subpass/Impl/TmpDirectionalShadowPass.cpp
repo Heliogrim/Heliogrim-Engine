@@ -83,7 +83,7 @@ void TmpDirectionalShadowPass::setup(ref<graph::ScopedSymbolContext> symCtx_) no
 		_dirShadowCascades[cascade] = make_smr<TextureView>(
 			_dirShadowMap->makeView(
 				math::uivec2 { cascade, cascade },
-				math::uExtent3D {
+				math::Extent3u32 {
 					_dirShadowMap->width(), _dirShadowMap->height(), _dirShadowMap->depth(), 0uL, 0uL, 0uL
 				},
 				math::uivec2 { 0uL, 1uL }

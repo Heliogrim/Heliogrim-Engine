@@ -33,7 +33,7 @@ namespace hg::engine {
 
 		[[nodiscard]] hg::concurrent::future<uptr<platform::NativeWindow>> makeNativeWindow(
 			const string_view title_,
-			cref<math::iExtent2D> extent_
+			cref<math::Extent2i32> extent_
 		) override;
 
 		[[nodiscard]] hg::concurrent::future<bool> destroyNativeWindow(

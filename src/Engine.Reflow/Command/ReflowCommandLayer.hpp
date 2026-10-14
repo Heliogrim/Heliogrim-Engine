@@ -44,7 +44,7 @@ namespace hg::engine::reflow {
 	protected:
 		void enter() const noexcept {
 
-			const auto scissor = math::f32ext2d {
+			const auto scissor = math::Extent2f32 {
 				_self->layoutSize.x, _self->layoutSize.y, _self->layoutOffset.x, _self->layoutOffset.y
 			};
 

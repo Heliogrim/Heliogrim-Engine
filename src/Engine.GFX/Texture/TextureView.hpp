@@ -21,7 +21,7 @@ namespace hg::engine::gfx {
 		TextureView(
 			non_owning_rptr<Texture> owner_,
 			math::uivec2 layers_,
-			math::uExtent3D extent_,
+			math::Extent3u32 extent_,
 			math::uivec2 mipLevels_
 		);
 
@@ -55,22 +55,22 @@ namespace hg::engine::gfx {
 		[[nodiscard]] math::uivec2::value_type layers() const noexcept;
 
 	private:
-		math::uExtent3D _extent;
+		math::Extent3u32 _extent;
 
 	public:
-		[[nodiscard]] math::uExtent3D::off_type offsetX() const noexcept;
+		[[nodiscard]] math::Extent3u32::off_type offsetX() const noexcept;
 
-		[[nodiscard]] math::uExtent3D::off_type offsetY() const noexcept;
+		[[nodiscard]] math::Extent3u32::off_type offsetY() const noexcept;
 
-		[[nodiscard]] math::uExtent3D::off_type offsetZ() const noexcept;
+		[[nodiscard]] math::Extent3u32::off_type offsetZ() const noexcept;
 
 		[[nodiscard]] math::uivec3 extent() const noexcept;
 
-		[[nodiscard]] math::uExtent3D::value_type width() const noexcept;
+		[[nodiscard]] math::Extent3u32::value_type width() const noexcept;
 
-		[[nodiscard]] math::uExtent3D::value_type height() const noexcept;
+		[[nodiscard]] math::Extent3u32::value_type height() const noexcept;
 
-		[[nodiscard]] math::uExtent3D::value_type depth() const noexcept;
+		[[nodiscard]] math::Extent3u32::value_type depth() const noexcept;
 
 	public:
 		[[nodiscard]] math::vec2 minSt() const noexcept;

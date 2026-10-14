@@ -59,7 +59,7 @@ void Texture::destroy() {
 	_buffer.destroy();
 }
 
-hg::uptr<TextureView> Texture::makeView(math::uivec2 layers_, math::uExtent3D extent_, math::uivec2 mipLevels_) {
+hg::uptr<TextureView> Texture::makeView(math::uivec2 layers_, math::Extent3u32 extent_, math::uivec2 mipLevels_) {
 
 	const math::uivec2 mipLevels {
 		MAX(_mipLevels, mipLevels_.min),
@@ -72,7 +72,7 @@ hg::uptr<TextureView> Texture::makeView(math::uivec2 layers_, math::uExtent3D ex
 		MIN(maxLayer, layers_.max)
 	};
 
-	const math::uExtent3D extent {
+	const math::Extent3u32 extent {
 		MIN(_extent.x - extent_.offsetX, extent_.width),
 		MIN(_extent.y - extent_.offsetY, extent_.height),
 		MIN(_extent.z - extent_.offsetZ, extent_.depth),
