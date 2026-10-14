@@ -21,7 +21,7 @@ namespace hg {
 	}
 
 	template <CompleteType Ty_, class... Args_> requires
-		(not std::is_constructible_v<Ty_, Args_...>) &&
+		(not std::is_constructible_v<Ty_, Args_&&...>) &&
 		(std::is_aggregate_v<Ty_>)
 	[[nodiscard]] uptr<Ty_> make_uptr(Args_&&... args_) {
 		return uptr<Ty_>(new Ty_ { std::forward<Args_>(args_)... });
