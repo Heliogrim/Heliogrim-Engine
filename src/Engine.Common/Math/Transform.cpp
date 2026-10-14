@@ -9,15 +9,15 @@ using namespace hg::math;
 using namespace hg;
 
 Transform::Transform(mref<Location> location_, mref<Rotator> rotator_, mref<scale_type> scale_) noexcept :
-	_location(std::move(location_)),
-	_rotator(std::move(rotator_)),
-	_scale(std::move(scale_)) {}
+	_location(::hg::move(location_)),
+	_rotator(::hg::move(rotator_)),
+	_scale(::hg::move(scale_)) {}
 
 ref<Transform> Transform::operator=(mref<Transform> other_) noexcept {
 	if (this != std::addressof(other_)) {
-		_location = std::move(other_._location);
-		_rotator = std::move(other_._rotator);
-		_scale = std::move(other_._scale);
+		_location = ::hg::move(other_._location);
+		_rotator = ::hg::move(other_._rotator);
+		_scale = ::hg::move(other_._scale);
 	}
 	return *this;
 }
