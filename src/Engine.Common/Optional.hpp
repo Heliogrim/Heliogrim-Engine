@@ -3,6 +3,7 @@
 #include <type_traits>
 #include <tl/optional.hpp>
 
+#include "Move.hpp"
 #include "Wrapper.hpp"
 #include "Meta/Reference.hpp"
 
@@ -68,18 +69,39 @@ namespace hg {
 
 	constexpr inline auto None = tl::nullopt;
 
-	template <typename Type_> requires (not std::is_reference_v<Type_>)
-	[[nodiscard]] constexpr ::hg::Opt<Type_> Some(auto&&... args_) noexcept {
-		return ::hg::Opt<Type_>(std::forward<decltype(args_)>(args_)...);
+	template <typename Type_>
+	[[nodiscard]] constexpr ::hg::Opt<::hg::ref<Type_>> Some(::hg::ref<Type_> ref_) noexcept {
+		return ::hg::Opt<::hg::ref<Type_>>(ref_);
 	}
 
-	template <typename Type_> requires (std::is_reference_v<Type_>)
-	[[nodiscard]] constexpr ::hg::Opt<Type_> Some(ref<::hg::meta::drop_ref_t<Type_>> ref_) noexcept {
+	template <typename Type_> requires ::std::is_rvalue_reference_v<::hg::mref<Type_>>
+	[[nodiscard]] constexpr ::hg::Opt<::hg::meta::drop_ref_t<Type_>> Some(::hg::mref<Type_> ref_) noexcept {
+		return ::hg::Opt<::hg::meta::drop_ref_t<Type_>>(::hg::move(ref_));
+	}
+
+	template <typename Type_> requires ::std::is_lvalue_reference_v<Type_>
+	[[nodiscard]] constexpr ::hg::Opt<Type_> SomeRef(Type_ ref_) noexcept {
 		return ::hg::Opt<Type_>(ref_);
 	}
 
-	[[nodiscard]] constexpr decltype(auto) Some(auto&& args_) noexcept {
-		return ::hg::Opt(std::forward<decltype(args_)>(args_));
+	template <typename Type_>
+	[[nodiscard]] constexpr hg::Opt<ref<::hg::meta::drop_ref_t<Type_>>> SomeRef(Type_& ref_) noexcept {
+		return ::hg::Opt<::hg::ref<::hg::meta::drop_ref_t<Type_>>>(ref_);
+	}
+
+	template <typename Type_> requires ::std::is_rvalue_reference_v<Type_>
+	[[nodiscard]] constexpr ::hg::Opt<::hg::meta::drop_ref_t<Type_>> SomeVal(Type_ ref_) noexcept {
+		return ::hg::Opt<::hg::meta::drop_ref_t<Type_>>(::hg::move(ref_));
+	}
+
+	template <typename Type_> requires (not::std::is_reference_v<Type_>)
+	[[nodiscard]] constexpr ::hg::Opt<Type_> SomeVal(Type_ val_) noexcept {
+		return ::hg::Opt<Type_>(::hg::move(val_));
+	}
+
+	template <typename Type_>
+	[[nodiscard]] constexpr hg::Opt<::hg::meta::drop_ref_t<Type_>> SomeVal(auto&&... args_) noexcept {
+		return ::hg::Opt<::hg::meta::drop_ref_t<Type_>>(::tl::in_place, ::hg::forward<decltype(args_)>(args_)...);
 	}
 
 	/**/
