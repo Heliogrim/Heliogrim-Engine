@@ -33,7 +33,7 @@ namespace hg {
 		constexpr Result(Expected<Type_>&&) noexcept requires (std::is_void_v<Type_>) :
 			underlying_type() {}
 
-		constexpr Result(Unexpected<Error_>&& unexpected_) noexcept:
+		constexpr Result(Unexpected<Error_>&& unexpected_) noexcept :
 			underlying_type(::tl::unexpected { std::move(unexpected_.error) }) {}
 
 		constexpr Result(underlying_type&& other_) noexcept :

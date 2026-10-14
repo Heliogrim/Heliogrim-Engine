@@ -5,6 +5,6 @@
 #include "../Types.hpp"
 
 namespace hg {
-    template <class Ty, size_t Size>
-    using Array = std::array<Ty, Size>;
+	template <class Ty, size_t Size>
+	using Array = std::array<Ty, Size>;
 }
