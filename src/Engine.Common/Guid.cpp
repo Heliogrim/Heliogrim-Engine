@@ -58,7 +58,7 @@ void hg::GuidGenerate(ref<Guid> guid_) {
 	#endif
 }
 
-void Guid::hton(std::span<_::byte, 16> dst_) const noexcept {
+void Guid::hostToNetwork(std::span<_::byte, 16> dst_) const noexcept {
 	if constexpr (std::endian::native != std::endian::big) {
 		(*std::bit_cast<u32*>(&dst_[0])) = std::byteswap(pre);
 		(*std::bit_cast<u16*>(&dst_[4])) = std::byteswap(c0);
@@ -72,7 +72,7 @@ void Guid::hton(std::span<_::byte, 16> dst_) const noexcept {
 	}
 }
 
-void Guid::hton(ref<u8[16]> dst_) const noexcept {
+void Guid::hostToNetwork(ref<u8[16]> dst_) const noexcept {
 	if constexpr (std::endian::native != std::endian::big) {
 		(*std::bit_cast<u32*>(&dst_[0])) = std::byteswap(pre);
 		(*std::bit_cast<u16*>(&dst_[4])) = std::byteswap(c0);
@@ -86,7 +86,7 @@ void Guid::hton(ref<u8[16]> dst_) const noexcept {
 	}
 }
 
-Guid Guid::ntoh(std::span<const _::byte, 16> src_) noexcept {
+Guid Guid::networkToHost(std::span<const _::byte, 16> src_) noexcept {
 	if constexpr (std::endian::native != std::endian::big) {
 		return {
 			std::byteswap(*std::bit_cast<u32*>(&src_[0])),
@@ -104,7 +104,7 @@ Guid Guid::ntoh(std::span<const _::byte, 16> src_) noexcept {
 	}
 }
 
-Guid Guid::ntoh(cref<u8[16]> src_) noexcept {
+Guid Guid::networkToHost(cref<u8[16]> src_) noexcept {
 	if constexpr (std::endian::native != std::endian::big) {
 		return {
 			std::byteswap(*std::bit_cast<u32*>(&src_[0])),

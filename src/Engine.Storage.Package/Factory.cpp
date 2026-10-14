@@ -15,7 +15,7 @@ PackageHeader engine::storage::package::make_package_header() noexcept {
 	GuidGenerate(packGuid);
 
 	Array<_::byte, 16> netGuid {};
-	packGuid.hton(netGuid);
+	packGuid.hostToNetwork(netGuid);
 
 	return PackageHeader {
 		.magicBytes = PackageMagicBytes,

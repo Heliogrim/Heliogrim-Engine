@@ -239,7 +239,7 @@ Result<Arci<system::PackageStorage>, request_package_error> StorageSystem::reque
 			::hg::assertrt(package::isPackageBlob(blob_));
 			auto package = package::reconstruct_readonly_package(blob_);
 
-			auto packageGuid = resource::PackageGuid::ntoh(package.getHeader().guid);
+			auto packageGuid = resource::PackageGuid::networkToHost(package.getHeader().guid);
 			::hg::assertd(packageGuid != resource::PackageGuid {});
 
 			/**/
