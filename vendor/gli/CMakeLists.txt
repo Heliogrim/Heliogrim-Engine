@@ -14,7 +14,7 @@ function(library_gli_init)
 			GIT_REPOSITORY https://github.com/g-truc/gli.git
 			GIT_TAG 779b99ac6656e4d30c3b24e96e0136a59649a869
 			GIT_SUBMODULES_RECURSE FALSE
-			GIT_SHALLOW TRUE
+			GIT_SHALLOW FALSE
 			GIT_PROGRESS TRUE
 			SOURCE_DIR "${vendor_src_path}"
 			PATCH_COMMAND ${CMAKE_COMMAND} -E rm -f -- "${vendor_src_path}/CMakeLists.txt"

@@ -19,7 +19,7 @@ function(library_libuuid_init)
 	CachedFetchContent_Declare(
 			libuuid
 			GIT_REPOSITORY https://github.com/gershnik/libuuid-cmake.git
-			GIT_TAG v2.40.2
+			GIT_TAG v2.41
 			GIT_SUBMODULES_RECURSE FALSE
 			GIT_SHALLOW TRUE
 			SOURCE_DIR "${vendor_src_path}"
