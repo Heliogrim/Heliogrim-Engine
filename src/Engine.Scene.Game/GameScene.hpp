@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Engine.Physics.Scene/PhysicsSceneSystem.hpp>
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
 #include <Engine.Scene/Scene.hpp>
 #include <Heliogrim/IComponentRegisterContext.hpp>
@@ -8,7 +9,7 @@
 
 namespace hg::engine::scene {
 	class GameScene final :
-		public Scene<render::RenderSceneSystem>,
+		public Scene<physics::PhysicsSceneSystem, render::RenderSceneSystem>,
 		public SceneComponentQueue<GameScene> {
 	public:
 		using this_type = GameScene;
