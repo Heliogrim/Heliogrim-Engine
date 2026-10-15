@@ -116,7 +116,7 @@ static void add_default_skybox(mref<Level> level_) {
 	auto box2 = actor->addComponent<StaticGeometryComponent>(StaticGeometryAssetHandle {}, AutoArray<ptr<const GfxMaterialAssetHandle>> {});
 	auto parent2 = box2.map_or(
 		[](auto& obj_) -> Opt<ref<HierarchyComponent>> { return Some<ref<HierarchyComponent>>(obj_); },
-		Opt<ref<HierarchyComponent>> {}
+		Opt<ref<HierarchyComponent>> { None }
 	);
 	[[maybe_unused]] auto skybox3 = actor->addComponent<SkyboxComponent>({ .parent = parent2 });
 	auto box4 = actor->addComponent<StaticGeometryComponent>(
