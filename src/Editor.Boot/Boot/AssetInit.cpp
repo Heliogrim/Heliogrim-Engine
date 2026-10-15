@@ -13,8 +13,8 @@
 #include <filesystem>
 #include <fstream>
 #include <ranges>
-#include <Action/Import/AutoImportAction.hpp>
 #include <Editor.Action/ActionManager.hpp>
+#include <Editor.Action/Action/Import/AutoImportAction.hpp>
 #include <Editor.Assets.Default/DefaultAssetInit.hpp>
 #include <Engine.Assets.System/AssetDescriptor.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
