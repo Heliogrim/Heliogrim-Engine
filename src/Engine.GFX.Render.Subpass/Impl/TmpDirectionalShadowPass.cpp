@@ -332,7 +332,7 @@ void TmpDirectionalShadowPass::execute(cref<graph::ScopedSymbolContext> symCtx_)
 			/**/
 
 			storeShadow.shadowViewProj[c] = projection * view;
-			storeShadow.cascadeDepth[c] = (ZNEAR + splitDist * clipRange) * -1.F;
+			storeShadow.cascadeDepth[c] = ZNEAR + splitDist * clipRange;
 
 			prevSplitDist = splitDist;
 			splitDist = splits[MIN(c + 1u, cascadeCount - 1u)];
@@ -484,7 +484,9 @@ void TmpDirectionalShadowPass::execute(cref<graph::ScopedSymbolContext> symCtx_)
 		sys->getRegistry().forEach<gfx::scene::StaticGeometryModel>(
 			[&cmd](const gfx::scene::StaticGeometryModel& model_) {
 
+				// Warning: We need to handle empty model states.
 				const auto& modelResource = model_.geometryResource();
+				// Error: Access violation due to modelResource being empty.
 				const auto modelGuard = modelResource->acquire(resource::ResourceUsageFlag::eRead);
 
 				const auto& indexBuffer = modelGuard->indices();
