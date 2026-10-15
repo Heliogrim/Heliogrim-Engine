@@ -27,8 +27,10 @@ function(add_deploy_to_target target)
 		foreach (level ${link_libs})
 			if (TARGET ${level})
 				get_target_property(tmp ${level} LINK_LIBRARIES)
-				list(APPEND link_libs ${tmp})
-				list(REMOVE_DUPLICATES link_libs)
+				if (NOT "${tmp}" MATCHES "NOT")
+					list(APPEND link_libs ${tmp})
+					list(REMOVE_DUPLICATES link_libs)
+				endif ()
 			endif ()
 		endforeach ()
 		list(LENGTH link_libs next_length)
@@ -75,6 +77,11 @@ function(add_deploy_to_target target)
 				if ("${candidate_run_dll_name}" MATCHES "NOT")
 					get_target_property(candidate_run_dll_name ${candidate} "OUTPUT_NAME")
 				endif ()
+
+				if ("${candidate_run_dll_name}" MATCHES "NOT")
+					get_target_property(candidate_run_dll_name ${candidate} "NAME")
+				endif ()
+
 
 				# Check Postfix
 

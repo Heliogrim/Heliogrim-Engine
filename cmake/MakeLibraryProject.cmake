@@ -44,15 +44,21 @@ function(make_library_project)
 	# Library
 	if (DEFINED args_FORCE_TYPE_STATIC)
 		add_library(${target} ${source_files})
-		target_sources(${target} PUBLIC FILE_SET HEADERS FILES ${header_files})
+		target_sources(${target}
+				PRIVATE FILE_SET private_HEADERS TYPE HEADERS FILES ${header_files}
+				INTERFACE FILE_SET interface_HEADERS TYPE HEADERS BASE_DIRS ${proj_src_dir} FILES ${header_files}
+		)
 	else ()
 		add_library(${target} OBJECT ${source_files})
-		target_sources(${target} PUBLIC FILE_SET HEADERS FILES ${header_files})
+		target_sources(${target}
+				PRIVATE FILE_SET private_HEADERS TYPE HEADERS FILES ${header_files}
+				INTERFACE FILE_SET interface_HEADERS TYPE HEADERS BASE_DIRS ${proj_src_dir} FILES ${header_files}
+		)
 	endif ()
 
 	if (DEFINED CMAKE_CXX_SCAN_FOR_MODULES AND CMAKE_CXX_SCAN_FOR_MODULES)
 		file(GLOB_RECURSE module_interface_files CONFIGURE_DEPENDS ${source_directory}/*.ixx)
-		file(GLOB_RECURSE module_source_files CONFIGURE_DEPENDS ${source_directory}/*.cxxm ${source_directory}/*.cppm)
+		file(GLOB_RECURSE module_source_files CONFIGURE_DEPENDS ${source_directory}/*.mxx ${source_directory}/*.ccm ${source_directory}/*.cxxm ${source_directory}/*.cppm)
 
 		target_sources(${target} PUBLIC FILE_SET CXX_MODULES FILES ${module_source_files} ${module_interface_files})
 	endif ()
@@ -75,7 +81,7 @@ function(make_library_project)
 	endif ()
 
 	# Include Directories
-	target_include_directories(${target} PRIVATE ${proj_src_dir})
+	target_include_directories(${target} SYSTEM PRIVATE ${proj_src_dir})
 	target_include_directories(${target} SYSTEM PUBLIC ${DEFAULT_INCLUDE_DIRECTORIES})
 
 	# Libraries

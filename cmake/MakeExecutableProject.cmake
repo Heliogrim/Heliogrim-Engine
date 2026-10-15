@@ -65,7 +65,7 @@ function(make_app_project)
 	# CXX Modules
 	if (DEFINED CMAKE_CXX_SCAN_FOR_MODULES AND CMAKE_CXX_SCAN_FOR_MODULES)
 		file(GLOB_RECURSE module_interface_files CONFIGURE_DEPENDS ${source_directory}/*.ixx)
-		file(GLOB_RECURSE module_source_files CONFIGURE_DEPENDS ${source_directory}/*.cxxm ${source_directory}/*.cppm)
+		file(GLOB_RECURSE module_source_files CONFIGURE_DEPENDS ${source_directory}/*.mxx ${source_directory}/*.ccm ${source_directory}/*.cxxm ${source_directory}/*.cppm)
 
 		target_sources(${app_target} PUBLIC FILE_SET CXX_MODULES FILES ${module_source_files} ${module_interface_files})
 		target_sources(${lib_target} PUBLIC FILE_SET CXX_MODULES FILES ${module_source_files} ${module_interface_files})

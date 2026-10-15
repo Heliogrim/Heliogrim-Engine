@@ -72,7 +72,7 @@ function(make_test_project)
 	# CXX Modules
 	if (DEFINED CMAKE_CXX_SCAN_FOR_MODULES AND CMAKE_CXX_SCAN_FOR_MODULES)
 		file(GLOB_RECURSE module_interface_files CONFIGURE_DEPENDS ${source_directory}/*.ixx)
-		file(GLOB_RECURSE module_source_files CONFIGURE_DEPENDS ${source_directory}/*.cxxm ${source_directory}/*.cppm)
+		file(GLOB_RECURSE module_source_files CONFIGURE_DEPENDS ${source_directory}/*.mxx ${source_directory}/*.ccm ${source_directory}/*.cxxm ${source_directory}/*.cppm)
 
 		target_sources(${target} PUBLIC FILE_SET CXX_MODULES FILES ${module_source_files} ${module_interface_files})
 	endif ()
