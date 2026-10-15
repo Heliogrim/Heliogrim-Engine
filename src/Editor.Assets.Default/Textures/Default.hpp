@@ -39,6 +39,11 @@ namespace hg::editor::assets::texture {
 	// @formatter:on
 
 	// @formatter:off
+	constexpr auto default_arm_guid = AssetGuid { 3634608335, 21126, 19443, 15048642558162166912uLL };
+	inline auto get_default_arm() { return resolveRuntimeAsset<engine::assets::TextureAsset>(default_arm_guid); }
+	// @formatter:on
+
+	// @formatter:off
 	constexpr auto default_diffuse_guid = AssetGuid { 3911594413, 1620, 18684, 8859932973985590919uLL };
 	inline auto get_default_diffuse() { return resolveRuntimeAsset<engine::assets::TextureAsset>(default_diffuse_guid); }
 	// @formatter:on

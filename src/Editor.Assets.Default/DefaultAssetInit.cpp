@@ -101,7 +101,7 @@ void editor::boot::initDefaultGfxMaterialAssets(ref<const engine::Engine> engine
 				.name = "Arm",
 				.dataType = engine::accel::TransferDataType::eSampler,
 				// Warning: This will actually break, because we change from roughness only to arm texture!
-				.defaultValue = editor::assets::texture::default_roughness_guid
+				.defaultValue = editor::assets::texture::default_arm_guid
 			}
 		);
 	}(*brdfMaterialPrototype);
