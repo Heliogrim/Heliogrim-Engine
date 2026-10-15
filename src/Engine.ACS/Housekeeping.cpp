@@ -37,7 +37,7 @@ void Housekeeping::storePendingRelease(mref<VolatileComponent<>> component_) {
 void Housekeeping::commit() {
 	for (auto&& [type, batch] : _pendingReleases) {
 		for (auto&& component : batch) {
-			_registry.removeActorComponent(component->getComponentGuid(), type);
+			_registry.removeActorComponent(component->guid(), type);
 		}
 	}
 	_pendingReleases.clear();
