@@ -224,7 +224,8 @@ void Window::render(const ptr<ReflowCommandBuffer> cmd_) {
 		const math::vec2 c2 { offset.x + size.x, offset.y + size.y };
 		const math::vec2 c3 { offset.x, offset.y + size.y };
 
-		cmd_->drawQuad(c0, c1, c2, c3, /*attr.style->backgroundColor*/{ 127.F, 0.F, 127.F, 255.F });
+		//cmd_->drawQuad(c0, c1, c2, c3, /*attr.style->backgroundColor*/{ 127.F, 0.F, 127.F, 255.F });
+		cmd_->drawQuad(c0, c1, c2, c3, /*attr.style->backgroundColor*/{ 35.F, 43.F, 47.F, 255.F });
 	}
 
 	/**/
