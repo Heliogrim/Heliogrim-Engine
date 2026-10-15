@@ -21,6 +21,7 @@
 
 namespace hg::engine::core {
 	class Level;
+	class Universe;
 }
 
 namespace hg {
@@ -141,13 +142,19 @@ namespace hg {
 			}
 		}
 
+		void scheduleComponentRegister(const ptr<HierarchyComponent> component_);
+
 		void scheduleComponentRemoval(mref<ptr<HierarchyComponent>> component_);
 
 		void scheduleComponentRelease(mref<ptr<LogicComponent>> component_) const;
 
 	public:
 		struct AddComponentOptions {
-			bool autoRegister : 1 = true;
+			/**
+			 * TODO: We need this to be implemented, as we rely on adding components and actors during event callbacks without universe context.
+			 * @deprecated
+			 */
+			[[deprecated]] bool autoRegister : 1 = true;
 			Opt<ref<HierarchyComponent>> parent;
 		};
 
