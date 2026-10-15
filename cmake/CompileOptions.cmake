@@ -40,6 +40,7 @@ set(DEFAULT_INCLUDE_DIRECTORIES
 		"${vendor}/gli/include"
 		"${vendor}/glm/include"
 		"${vendor}/glslang/include"
+		"${vendor}/jolt/include"
 		"${vendor}/nontype_fn/include"
 		"${vendor}/ogg/include"
 		"${vendor}/optional/include"
@@ -80,6 +81,7 @@ set(DEFAULT_LIBRARIES
 		${PROJECT_NAME}::External-OSDependent
 		${PROJECT_NAME}::External-SPIRV
 		${PROJECT_NAME}::External-vulkan-loader
+		${PROJECT_NAME}::External-jolt
 )
 
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU" OR "${CMAKE_SYSTEM_NAME}" MATCHES "Linux")
@@ -150,14 +152,14 @@ endif ()
 
 if (HELIOGRIM_DEBUG_EXT)
 	list(APPEND DEFAULT_COMPILE_DEFINITIONS "DEBUG_EXT=TRUE")
-endif()
+endif ()
 
 #
 # Compile launch options
 #
 
 find_program(CCACHE_PROGRAM ccache)
-if (CCACHE_PROGRAM)
+if (CCACHE_PROGRAM AND NO)
 	# Prevent launch control of CCache with whitespace prone resources
 	#set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
 	set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
