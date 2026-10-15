@@ -17,6 +17,7 @@ ContextService::ContextService() = default;
 ContextService::~ContextService() = default;
 
 void ContextService::push(mref<SharedPtr<ContextMenuProvider>> contextMenuProvider_) {
+	::hg::assertd(not std::ranges::contains(_pushed, contextMenuProvider_));
 	_pushed.emplace_back(::hg::move(contextMenuProvider_));
 }
 
