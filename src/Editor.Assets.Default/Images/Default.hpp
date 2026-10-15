@@ -39,6 +39,11 @@ namespace hg::editor::assets::image {
 	// @formatter:on
 
 	// @formatter:off
+	constexpr auto default_arm_guid = AssetGuid { 1698222178, 46074, 18984, 1889353932843953593uLL };
+	inline auto get_default_arm() { return resolveRuntimeAsset<engine::assets::ImageAsset>(default_arm_guid); }
+	// @formatter:on
+
+	// @formatter:off
 	constexpr auto default_diffuse_guid = AssetGuid { 2295487962, 53879, 18449, 18187122731606890117uLL };
 	inline auto get_default_diffuse() { return resolveRuntimeAsset<engine::assets::ImageAsset>(default_diffuse_guid); }
 	// @formatter:on
