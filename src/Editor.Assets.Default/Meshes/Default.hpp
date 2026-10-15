@@ -29,6 +29,11 @@ namespace hg::editor::assets::meshes {
 	/**/
 
 	// @formatter:off
+	constexpr auto default_cube_guid = AssetGuid { 801850317, 1875, 18562, 16492465155244904584uLL };
+	inline auto get_default_cube() { return resolveRuntimeAsset<engine::assets::StaticGeometry>(default_cube_guid); }
+	// @formatter:on
+
+	// @formatter:off
 	constexpr auto default_sphere_guid = AssetGuid { 4007417872, 23494, 19151, 5075903121290812314uLL };
 	inline auto get_default_sphere() { return resolveRuntimeAsset<engine::assets::StaticGeometry>(default_sphere_guid); }
 	// @formatter:on
