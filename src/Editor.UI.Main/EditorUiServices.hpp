@@ -2,6 +2,7 @@
 
 #include <Editor.UI.Service/Assets/Browser/AssetBrowserService.hpp>
 #include <Editor.UI.Service/Context/ContextService.hpp>
+#include <Editor.UI.Service/Input/InputService.hpp>
 #include <Editor.UI.Service/Property/PropertyService.hpp>
 #include <Editor.UI.Service/Scene/Hierarchy/SceneHierarchyService.hpp>
 
@@ -9,6 +10,7 @@ namespace hg::editor::ui {
 	struct EditorUiServices {
 		SharedPtr<service::AssetBrowserService> assetBrowserService;
 		SharedPtr<service::ContextService> contextService;
+		SharedPtr<service::InputService> inputService;
 		SharedPtr<service::PropertyService> propertyService;
 		SharedPtr<service::SceneHierarchyService> sceneHierarchyService;
 	};
