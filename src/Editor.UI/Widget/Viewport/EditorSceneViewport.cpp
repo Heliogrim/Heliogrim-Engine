@@ -29,6 +29,8 @@ EventResponse EditorSceneViewport::invokeOnKeyDown(ref<const KeyboardEvent> even
 
 #include <Editor.Assets.Default/Meshes/Default.hpp>
 #include <Editor.Core/EditorEngine.hpp>
+#include <Editor.UI.Main/EditorUI.hpp>
+#include <Editor.UI.Main/Module/EditorUI.hpp>
 #include <Heliogrim/ActorInitializer.hpp>
 #include <Heliogrim/Heliogrim.hpp>
 #include <Heliogrim/Actor/Actor.hpp>
@@ -63,4 +65,11 @@ void experimental_add_actor(math::Transform baseTransform_) {
 	/**/
 
 	universe.addActor(std::move(actor));
+
+	/**/
+
+	auto* const editorUi = static_cast<editor::EditorUI*>(
+		editor::EditorEngine::getEngine()->getModules().getSubModule(editor::EditorUIDepKey).get()
+	);
+	editorUi->getEditorModel().scene.instance.next(universe.unwrap().get());
 }
