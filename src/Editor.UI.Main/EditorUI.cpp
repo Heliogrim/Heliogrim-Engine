@@ -8,6 +8,7 @@
 #include <Editor.UI/Helper/AssetBrowserHelper.hpp>
 #include <Editor.UI.Init/EditorInit.hpp>
 #include <Editor.UI.Rx/Subject.hpp>
+#include <Editor.UI.Service/Input/InputServiceInit.hpp>
 #include <Editor.UI.Service/Property/PropertyServiceInit.hpp>
 #include <Editor.UI.Theme/EditorTheme.hpp>
 #include <Engine.Common/Make.hpp>
@@ -72,11 +73,13 @@ void editor::EditorUI::start() {
 
 	_uiServices.assetBrowserService = make_sptr<service::AssetBrowserService>();
 	_uiServices.contextService = make_sptr<service::ContextService>();
+	_uiServices.inputService = make_sptr<service::InputService>();
 	_uiServices.propertyService = make_sptr<service::PropertyService>();
 	_uiServices.sceneHierarchyService = make_sptr<service::SceneHierarchyService>();
 
 	/**/
 
+	service::init_input_service(*_uiServices.inputService);
 	service::initPropertyService(*_uiServices.propertyService);
 	initEditor(*this);
 }
@@ -87,6 +90,7 @@ void editor::EditorUI::stop() {
 
 	_uiServices.sceneHierarchyService.reset();
 	_uiServices.propertyService.reset();
+	_uiServices.inputService.reset();
 	_uiServices.contextService.reset();
 	_uiServices.assetBrowserService.reset();
 
