@@ -37,6 +37,8 @@ void editor::ui::initEditor(ref<EditorUI> editorUi_) {
 		editorUniverse->getScene()
 	);
 
+	initDefaultUi(editorUi_, engine.getGraphics()->getCurrentDevice(), window.get());
+
 	/**/
 
 	auto actor = CreateActor();
