@@ -62,6 +62,10 @@ void Actor::setOwnerLevel(mref<Opt<ref<engine::core::Level>>> owner_) {
 	_level = ::hg::move(owner_);
 }
 
+void Actor::scheduleComponentRegister(const ptr<HierarchyComponent> component_) {
+	_universe->getScene()->registerContext()->add(component_);
+}
+
 void Actor::scheduleComponentRemoval(mref<ptr<HierarchyComponent>> component_) {
 	_universe->getScene()->registerContext()->remove(component_);
 }
@@ -75,6 +79,10 @@ cref<CompactSet<ptr<HierarchyComponent>>> Actor::getComponents() const noexcept 
 }
 
 void Actor::addComponent(mref<VolatileComponent<HierarchyComponent>> component_, Opt<ref<const AddComponentOptions>> options_) {
+
+	if (not options_.is_null() && options_->autoRegister && not _universe.is_null()) {
+		scheduleComponentRegister(component_.get());
+	}
 
 	if (options_.is_null() || options_->parent.is_null()) {
 		::hg::assertrt(component_->getParentComponent() == nullptr && _rootComponent.is_null());
