@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+<AutoVisualizer>
 
     <!-- General -->
 
@@ -8,6 +8,12 @@
     </Type>
 
     <!-- Pointers and Smart Pointers -->
+
+    <!-- Protect against void types -->
+    <Type Name="hg::AtomicRefCountedIntrusive&lt;void&gt;"/>
+    <Type Name="hg::AtomicRefCountedIntrusive&lt;*&gt;">
+        <SmartPointer Usage="Minimal">($T1*)(this->_obj._Storage._Value >> 16)</SmartPointer>
+    </Type>
 
     <!-- Protect against void types -->
     <Type Name="hg::SharedMemoryReference&lt;void&gt;"></Type>
@@ -27,7 +33,7 @@
         <DisplayString Condition="storage.mem != nullptr">void</DisplayString>
     </Type>
     <Type Name="hg::NonOwningMemoryPointer&lt;*&gt;">
-        <SmartPointer Usage="Minimal">storage.mem</SmartPointer>
+        <DisplayString Condition="storage.mem != nullptr">Nmpt &lt; $T1 &gt;</DisplayString>
         <DisplayString Condition="storage.mem == nullptr">nullptr</DisplayString>
         <Expand>
             <Item Condition="storage.mem != nullptr" Name="[ptr]">storage.mem</Item>
