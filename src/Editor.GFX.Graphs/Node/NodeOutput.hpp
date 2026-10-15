@@ -6,12 +6,12 @@
 #include "NodeOutputSpec.hpp"
 
 namespace hg::editor::gfx::graph {
-    class NodeOutput {
-    public:
-        using this_type = NodeInput;
+	class NodeOutput {
+	public:
+		using this_type = NodeInput;
 
-    public:
-        string _uniqueName;
-        NodeOutputSpec _spec;
-    };
+	public:
+		string _uniqueName;
+		NodeOutputSpec _spec;
+	};
 }
