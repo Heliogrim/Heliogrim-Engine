@@ -594,91 +594,91 @@ Vector<u16> RevVirtualMarkerTexture::tileBitToIndex(const ptr<const u32> bitmask
 			for (
 				u16 bit { 0uL };
 				bit < blie;
-				#ifdef __AVX2__
-                bit += 8uL
+				#if defined(__AVX2__) && not defined(__clang__)
+				bit += 8uL
 				#else
 				++bit
 				#endif
 			) {
 
-				#ifdef __AVX2__
+				#if defined(__AVX2__) && not defined(__clang__)
 
-                constexpr __m256i mask {
-                    1,
-                    0,
-                    0,
-                    0,
-                    1,
-                    0,
-                    0,
-                    0,
-                    1,
-                    0,
-                    0,
-                    0,
-                    1,
-                    0,
-                    0,
-                    0,
-                    1,
-                    0,
-                    0,
-                    0,
-                    1,
-                    0,
-                    0,
-                    0,
-                    1,
-                    0,
-                    0,
-                    0,
-                    1,
-                    0,
-                    0,
-                    0,
-                };
+				constexpr __m256i mask {
+					1,
+					0,
+					0,
+					0,
+					1,
+					0,
+					0,
+					0,
+					1,
+					0,
+					0,
+					0,
+					1,
+					0,
+					0,
+					0,
+					1,
+					0,
+					0,
+					0,
+					1,
+					0,
+					0,
+					0,
+					1,
+					0,
+					0,
+					0,
+					1,
+					0,
+					0,
+					0,
+				};
 
-                u32 ipdr[8] = {
-                    (u32)(bit),
-                    (u32)(bit + 1),
-                    (u32)(bit + 2),
-                    (u32)(bit + 3),
-                    (u32)(bit + 4),
-                    (u32)(bit + 5),
-                    (u32)(bit + 6),
-                    (u32)(bit + 7)
-                };
-                const u32 iood[8] {
-                    outerOffset,
-                    outerOffset,
-                    outerOffset,
-                    outerOffset,
-                    outerOffset,
-                    outerOffset,
-                    outerOffset,
-                    outerOffset
-                };
+				u32 ipdr[8] = {
+					(u32)(bit),
+					(u32)(bit + 1),
+					(u32)(bit + 2),
+					(u32)(bit + 3),
+					(u32)(bit + 4),
+					(u32)(bit + 5),
+					(u32)(bit + 6),
+					(u32)(bit + 7)
+				};
+				const u32 iood[8] {
+					outerOffset,
+					outerOffset,
+					outerOffset,
+					outerOffset,
+					outerOffset,
+					outerOffset,
+					outerOffset,
+					outerOffset
+				};
 
-                const __m256i ibiod = _mm256_add_epi32(*(__m256i*)&ipdr, *(__m256i*)&iood);
-                const __m256i ibod = _mm256_srli_epi32(ibiod, 3);
-                const __m256i iibod = _mm256_sub_epi32(
-                    ibiod,
-                    _mm256_slli_epi32(ibod, 3)
-                );
+				const __m256i ibiod = _mm256_add_epi32(*(__m256i*)&ipdr, *(__m256i*)&iood);
+				const __m256i ibod = _mm256_srli_epi32(ibiod, 3);
+				const __m256i iibod = _mm256_sub_epi32(
+					ibiod,
+					_mm256_slli_epi32(ibod, 3)
+				);
 
-                __m256i idcv = _mm256_i32gather_epi32(reinterpret_cast<int const*>(cursor), ibod, 1);
-                idcv = _mm256_srav_epi32(idcv, iibod);
-                //const __mmask8 irv = _mm256_test_epi32_mask(idcv, mask); // Warning: Requires AVX512-F
-                auto irv = _mm256_and_epi32(idcv, mask);
+				__m256i idcv = _mm256_i32gather_epi32(reinterpret_cast<int const*>(cursor), ibod, 1);
+				idcv = _mm256_srav_epi32(idcv, iibod);
+				//const __mmask8 irv = _mm256_test_epi32_mask(idcv, mask); // Warning: Requires AVX512-F
+				auto irv = _mm256_and_epi32(idcv, mask);
 
-                for (u32 i = 0; i < 8; ++i) {
+				for (u32 i = 0; i < 8; ++i) {
 
-                    if (irv.m256i_u32[i]) {
-                        const auto index = tileBitOffsetToIndex(ibiod.m256i_u32[i]);
-                        indices.push_back(index);
-                    }
+					if (irv.m256i_u32[i]) {
+						const auto index = tileBitOffsetToIndex(ibiod.m256i_u32[i]);
+						indices.push_back(index);
+					}
 
-                }
+				}
 
 				#else
 
@@ -704,21 +704,21 @@ Vector<u16> RevVirtualMarkerTexture::tileBitToIndex(const ptr<const u32> bitmask
 
 	#else
 
-    u16 outerOffset { 0uL };
-    auto* cursor { bitmask_ + (2uL /* add offset of header */) };
-    while (outerOffset < 5468uL) {
+	u16 outerOffset { 0uL };
+	auto* cursor { bitmask_ + (2uL /* add offset of header */) };
+	while (outerOffset < 5468uL) {
 
-        for (u16 bit { 0uL }; bit < (sizeof(u32) * 8uL); ++bit) {
+		for (u16 bit { 0uL }; bit < (sizeof(u32) * 8uL); ++bit) {
 
-            if ((*cursor >> bit) & 0b1) {
-                const auto index = tileBitOffsetToIndex(outerOffset + bit);
-                indices.push_back(index);
-            }
-        }
+			if ((*cursor >> bit) & 0b1) {
+				const auto index = tileBitOffsetToIndex(outerOffset + bit);
+				indices.push_back(index);
+			}
+		}
 
-        outerOffset += (sizeof(u32) * 8uL);
-        ++cursor;
-    }
+		outerOffset += (sizeof(u32) * 8uL);
+		++cursor;
+	}
 	#endif
 
 	#undef USE_HEADER_TREE
