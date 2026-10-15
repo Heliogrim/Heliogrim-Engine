@@ -6,34 +6,34 @@
 #include "SceneViewEye.hpp"
 
 namespace hg {
-    class Actor;
+	class Actor;
 }
 
 namespace hg::engine::render {
-    class RenderSceneSystem;
+	class RenderSceneSystem;
 }
 
 namespace hg::engine::gfx::scene {
-    class SceneView :
-        public SceneViewEye {
-    public:
-        using this_type = SceneView;
+	class SceneView :
+		public SceneViewEye {
+	public:
+		using this_type = SceneView;
 
-    public:
-        SceneView(nmpt<Actor> actor_, nmpt<render::RenderSceneSystem> system_);
+	public:
+		SceneView(nmpt<Actor> actor_, nmpt<render::RenderSceneSystem> system_);
 
-        ~SceneView();
+		~SceneView();
 
-    private:
-        nmpt<Actor> _actor;
-        nmpt<render::RenderSceneSystem> _renderSceneSystem;
+	private:
+		nmpt<Actor> _actor;
+		nmpt<render::RenderSceneSystem> _renderSceneSystem;
 
-    public:
-        [[nodiscard]] nmpt<Actor> getViewActor() const noexcept;
+	public:
+		[[nodiscard]] nmpt<Actor> getViewActor() const noexcept;
 
-        [[nodiscard]] nmpt<render::RenderSceneSystem> getRenderSceneSystem() const noexcept;
+		[[nodiscard]] nmpt<render::RenderSceneSystem> getRenderSceneSystem() const noexcept;
 
-    public:
-        [[nodiscard]] cref<SceneViewEye> getSceneViewEye() const noexcept;
-    };
+	public:
+		[[nodiscard]] cref<SceneViewEye> getSceneViewEye() const noexcept;
+	};
 }

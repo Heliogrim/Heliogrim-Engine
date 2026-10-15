@@ -1,36 +1,36 @@
 #pragma once
 
 namespace hg::_ {
-    typedef struct _VkBuffer* VkBuffer;
-    typedef struct _VkBufferView* VkBufferView;
+	typedef struct _VkBuffer* VkBuffer;
+	typedef struct _VkBufferView* VkBufferView;
 
-    typedef struct _VkImage* VkImage;
-    typedef struct _VkImageView* VkImageView;
+	typedef struct _VkImage* VkImage;
+	typedef struct _VkImageView* VkImageView;
 
-    typedef struct _VkSemaphore* VkSemaphore;
+	typedef struct _VkSemaphore* VkSemaphore;
 
-    /**/
+	/**/
 
-    typedef struct _VkShaderModule* VkShaderModule;
+	typedef struct _VkShaderModule* VkShaderModule;
 
-    /**/
+	/**/
 
-    typedef struct _VkDescriptorSetLayout* VkDescriptorSetLayout;
-    typedef struct _VkDescriptorSet* VkDescriptorSet;
+	typedef struct _VkDescriptorSetLayout* VkDescriptorSetLayout;
+	typedef struct _VkDescriptorSet* VkDescriptorSet;
 
-    /**/
+	/**/
 
-    typedef struct _VkGraphicsPipelineLayout* VkGraphicsPipelineLayout;
-    typedef struct _VkGraphicsPipeline* VkGraphicsPipeline;
+	typedef struct _VkGraphicsPipelineLayout* VkGraphicsPipelineLayout;
+	typedef struct _VkGraphicsPipeline* VkGraphicsPipeline;
 
-    typedef struct _VkComputePipelineLayout* VkComputePipelineLayout;
-    typedef struct _VkComputePipeline* VkComputePipeline;
+	typedef struct _VkComputePipelineLayout* VkComputePipelineLayout;
+	typedef struct _VkComputePipeline* VkComputePipeline;
 
-    /**/
+	/**/
 
-    typedef struct _VkGraphicsRenderPass* VkGraphicsRenderPass;
-    typedef struct _VkMeshRenderPass* VkMeshRenderPass;
-    typedef struct _VkRaytracingRenderPass* VkRaytracingRenderPass;
+	typedef struct _VkGraphicsRenderPass* VkGraphicsRenderPass;
+	typedef struct _VkMeshRenderPass* VkMeshRenderPass;
+	typedef struct _VkRaytracingRenderPass* VkRaytracingRenderPass;
 }
 
 namespace vk {}
