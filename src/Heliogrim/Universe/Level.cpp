@@ -106,13 +106,38 @@ Future<bool> SaveLevel(
 	::hg::todo_panic();
 }
 
+/* TODO: Move */
 #include <Engine.Assets.Type/Asset.hpp>
 #include <Engine.Assets.Type/Universe/LevelAsset.hpp>
+#include <Engine.Core/Engine.hpp>
+#include <Engine.Resource.Archive/BufferArchive.hpp>
+#include <Engine.Resource.Save/StorePipeline.hpp>
+#include <Engine.Serialization/Archive/StructuredArchive.hpp>
+#include <Engine.Storage.Registry/IStorageRegistry.hpp>
+#include <Engine.Storage/StorageModule.hpp>
+/**/
+
 Future<bool> SaveLevel(
 	cref<Level> level_,
 	ref<LevelAssetHandle> levelAsset_,
 	Opt<LevelSaveOptions> options_ = None
 ) noexcept {
+
+	/**
+	 * TODO: Checklist
+	 * 1. Check level_ validity and integrity
+	 * 2. Check levelAsset_ validity
+	 * Note: We expect the asset to have a valid storage url
+	 * 3. Check whether we can IPS or have to buffer.
+	 *	(3.1) If buffer, acquire temporary resources
+	 * 4. Request storage object with write permission from storage sub-system
+	 * 7.
+	 */
+
+	::hg::assertrt(level_.valid());
+	::hg::assertrt(levelAsset_.isValid());
+	::hg::assertrt(not levelAsset_.getAssetRef()->getAssetStorageUrl().encode().empty());
+
 	::hg::todo_panic();
 }
 
