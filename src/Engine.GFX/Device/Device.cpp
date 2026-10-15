@@ -36,8 +36,8 @@ static std::vector<const char*> validationLayers = {
 	"VK_LAYER_KHRONOS_validation"
 	#endif
 	#ifdef ENABLE_RENDERDOC
-    ,
-    "VK_LAYER_RENDERDOC_Capture"
+	,
+	"VK_LAYER_RENDERDOC_Capture"
 	#endif
 };
 

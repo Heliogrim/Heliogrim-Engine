@@ -6,8 +6,8 @@
 #include "NodeOutputValueAttributes.hpp"
 
 namespace hg::editor::gfx::graph {
-    struct NodeOutputSpec {
-        NodeLinkValueType valueType;
-        NodeOutputValueAttributes valueAttributes;
-    };
+	struct NodeOutputSpec {
+		NodeLinkValueType valueType;
+		NodeOutputValueAttributes valueAttributes;
+	};
 }
