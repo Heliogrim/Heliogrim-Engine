@@ -3,7 +3,6 @@
 #include <Engine.Serialization.Structures/Symbols.hpp>
 #include <Engine.Serialization.Structures/Common/Guid.hpp>
 
-#include "ComponentGuid.hpp"
 #include "HierarchyComponent.hpp"
 
 namespace hg::engine::serialization {
