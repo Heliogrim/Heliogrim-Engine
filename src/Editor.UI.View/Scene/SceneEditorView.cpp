@@ -32,6 +32,7 @@ UniquePtr<SceneEditorView> editor::ui::makeSceneEditorView(
 
 		flex.update<attr::FlexLayout::justify>(ReflowSpacing::eSpaceEvenly);
 		flex.update<attr::FlexLayout::align>(ReflowAlignment::eStart);
+		box.update<attr::BoxLayout::padding>({ 42.f, 12.f, 42.f, 44.f });
 
 		flex.update<attr::FlexLayout::colGap>(8.F);
 	}
@@ -127,7 +128,7 @@ UniquePtr<SceneEditorView> editor::ui::makeSceneEditorView(
 
 	auto right = make_sptr<uikit::VerticalLayout>();
 
-	[](ref<SharedPtr<uikit::VerticalLayout>> right_) {
+	[](ref<SharedPtr<uikit::VerticalLayout>> right_) static {
 		auto& layout = right_->getLayoutAttributes();
 		auto& box = std::get<0>(layout.attributeSets);
 		auto& flex = std::get<1>(layout.attributeSets);
@@ -144,7 +145,7 @@ UniquePtr<SceneEditorView> editor::ui::makeSceneEditorView(
 		flex.update<attr::FlexLayout::rowGap>(8.F);
 	}(right);
 
-	[](ref<const SceneEditorController> controller_, ref<SharedPtr<uikit::VerticalLayout>> right_) {
+	[](ref<const SceneEditorController> controller_, ref<SharedPtr<uikit::VerticalLayout>> right_) static {
 		auto propertiesCard = controller_.properties->getView().main;
 		auto propertiesBox = make_sptr<uikit::BoxLayout>();
 
