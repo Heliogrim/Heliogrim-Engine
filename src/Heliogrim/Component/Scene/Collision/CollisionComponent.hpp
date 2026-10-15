@@ -10,5 +10,6 @@ namespace hg {
 		using underlying_type = SceneComponent;
 
 	public:
+		using InheritMeta::InheritMeta;
 	};
 }
