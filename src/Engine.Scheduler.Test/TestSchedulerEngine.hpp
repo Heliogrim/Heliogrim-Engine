@@ -10,6 +10,8 @@
 #include <Engine.Scheduler/CompScheduler.hpp>
 #include <Engine.Scheduler/Scheduler.hpp>
 
+#include "TestCompScheduler.hpp"
+
 namespace hg::test {
 	class TestSchedulerEngine final :
 		public engine::Engine {
@@ -23,7 +25,7 @@ namespace hg::test {
 
 	public:
 		bool preInit() override {
-			_scheduler = make_uptr<engine::CompScheduler>();
+			_scheduler = make_uptr<engine::TestCompScheduler>();
 			return setEngineState(engine::core::EngineState::ePreInitialized);
 		}
 
