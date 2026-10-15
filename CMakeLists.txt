@@ -20,7 +20,7 @@ set_property(GLOBAL PROPERTY CMAKE_FOLDER "External")
 set(CMAKE_FOLDER "External")
 set(IDE_FOLDER "Heliogrim")
 
-project("Heliogrim" VERSION 1.0)
+project("Heliogrim" VERSION 1.0 LANGUAGES C CXX ASM)
 
 # CMake Tools
 include(cmake/GlobalSettings.cmake)
