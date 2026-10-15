@@ -30,7 +30,7 @@ namespace hg::editor::ui {
 		std::weak_ptr<engine::reflow::TreeView<service::SceneHierarchyEntry, std::type_identity_t>> tree;
 
 	private:
-		[[nodiscard]] SharedPtr<engine::reflow::uikit::Text> makeTreeItem(ref<const service::SceneHierarchyEntry> data_) const;
+		[[nodiscard]] SharedPtr<engine::reflow::Widget> makeTreeItem(ref<const service::SceneHierarchyEntry> data_) const;
 
 	public:
 		void displayTreeItems(

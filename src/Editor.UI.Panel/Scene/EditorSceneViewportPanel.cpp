@@ -99,6 +99,7 @@ static void configureViewport(cref<sptr<uikit::HorizontalLayout>> parent_) {
 	auto session = HeliogrimEditor::getSession();
 	auto universe = GetUniverse(session);
 	auto camera = CreateActor<CameraActor>();
+	camera->setLabel({ .text = "Editor Camera" });
 
 	/**/
 
