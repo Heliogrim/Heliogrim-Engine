@@ -13,6 +13,7 @@
 #include <Engine.Reflow.Uikit/Atom/Layout/UniformGridLayout.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/VerticalLayout.hpp>
 #include <Heliogrim/Component/Scene/Camera/CameraComponent.hpp>
+#include <Heliogrim/Component/Scene/Collision/BoxShapeCollisionComponent.hpp>
 #include <Heliogrim/Component/Scene/Geometry/StaticGeometryComponent.hpp>
 #include <Heliogrim/Component/Scene/Light/DirectionalLightComponent.hpp>
 #include <Heliogrim/Component/Scene/Light/PointLightComponent.hpp>
@@ -1326,6 +1327,175 @@ void service::initPropertyService(ref<PropertyService> service_) {
 					}
 
 					list->addChild(hg::move(grid));
+				}
+
+				/**/
+
+				return list;
+			}
+		}
+	);
+
+	/**
+	 * Physics
+	 */
+
+	service_.registerProperty(
+		{
+			.debugName = "Box Shape Collision :: Physics",
+			.section = "Physics",
+			.selector = [](Property::selector_fn_arg data_) {
+				return data_.is<nmpt<const HierarchyComponent>>() && data_.as<nmpt<const HierarchyComponent>>() != nullptr &&
+					IsType<BoxShapeCollisionComponent>(*data_.as<nmpt<const HierarchyComponent>>());
+			},
+			.view = [](Property::view_fn_arg data_) {
+				const auto component = Cast<BoxShapeCollisionComponent>(data_.as<nmpt<HierarchyComponent>>());
+
+				auto list = make_sptr<uikit::VerticalLayout>();
+				std::get<0>(list->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
+
+				/**/
+
+				{
+					auto grid = make_sptr<uikit::UniformGridLayout>();
+
+					std::get<0>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
+					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::minHeight>(
+						{ ReflowUnitType::eAbsolute, 20.F }
+					);
+					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxHeight>(
+						{ ReflowUnitType::eAbsolute, 20.F }
+					);
+					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::minWidth>(
+						{ ReflowUnitType::eRelative, 1.F / 4.F }
+					);
+					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxWidth>(
+						{ ReflowUnitType::eRelative, 1.F / 4.F }
+					);
+
+					auto label = make_sptr<uikit::Text>();
+					label->getStyleAttributes().update<attr::TextStyle::textAlign>(TextAlign::eMiddleLeft);
+					label->setText("Extent");
+
+					auto inputX = makeInputFloat();
+					inputX->getContent()->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
+					inputX->getDataAttributes().update<attr::InputData::limits>(math::fvec2 { 0.F, 255.F });
+					inputX->getDataAttributes().setQuery<attr::InputData::value>(
+						[component]() {
+							return component->extent.x;
+						}
+					);
+
+					auto inputY = makeInputFloat();
+					inputY->getContent()->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
+					inputY->getDataAttributes().update<attr::InputData::limits>(math::fvec2 { 0.F, 255.F });
+					inputY->getDataAttributes().setQuery<attr::InputData::value>(
+						[component]() {
+							return component->extent.y;
+						}
+					);
+
+					auto inputZ = makeInputFloat();
+					inputZ->getContent()->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
+					inputZ->getDataAttributes().update<attr::InputData::limits>(math::fvec2 { 0.F, 255.F });
+					inputZ->getDataAttributes().setQuery<attr::InputData::value>(
+						[component]() {
+							return component->extent.z;
+						}
+					);
+
+					grid->addChild(hg::move(label));
+					for (auto&& item : { inputX, inputY, inputZ }) {
+						grid->addChild(hg::move(item));
+					}
+
+					list->addChild(hg::move(grid));
+				}
+
+				/**/
+
+				{
+					auto row = make_sptr<uikit::HorizontalLayout>();
+					std::get<0>(row->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
+					std::get<1>(row->getLayoutAttributes().attributeSets).update<attr::FlexLayout::justify>(
+						ReflowSpacing::eSpaceBetween
+					);
+
+					auto label = make_sptr<uikit::Text>();
+					label->getStyleAttributes().update<attr::TextStyle::textAlign>(TextAlign::eMiddleLeft);
+					label->setText("Simulation Mode");
+
+					auto active = make_sptr<uikit::Text>();
+					active->setText("Static");
+
+					auto inactive = make_sptr<uikit::Text>();
+					inactive->setText("Dynamic");
+
+					auto input = makeInputToggle(::hg::move(active), ::hg::move(inactive), component->settings.isStatic);
+					input->getDataAttributes().setQuery<attr::InputData::value>(
+						[component]() {
+							return component->settings.isStatic;
+						}
+					);
+					discard = input->onInputChange(
+						[component](ref<const InputChangeEvent> event_) {
+							const auto& target = *static_cast<const ptr<const InputToggle>>(event_.target.get());
+							component->settings.isStatic = target.value();
+							return EventResponse::eConsumed;
+						}
+					);
+
+					auto box = make_sptr<uikit::BoxLayout>();
+					box->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
+					box->setChild(::hg::move(input));
+
+					row->addChild(hg::move(label));
+					row->addChild(hg::move(box));
+
+					list->addChild(hg::move(row));
+				}
+
+				/**/
+
+				{
+					auto row = make_sptr<uikit::HorizontalLayout>();
+					std::get<0>(row->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
+					std::get<1>(row->getLayoutAttributes().attributeSets).update<attr::FlexLayout::justify>(
+						ReflowSpacing::eSpaceBetween
+					);
+
+					auto label = make_sptr<uikit::Text>();
+					label->getStyleAttributes().update<attr::TextStyle::textAlign>(TextAlign::eMiddleLeft);
+					label->setText("Trigger Mode");
+
+					auto active = make_sptr<uikit::Text>();
+					active->setText("Active");
+
+					auto inactive = make_sptr<uikit::Text>();
+					inactive->setText("Inactive");
+
+					auto input = makeInputToggle(::hg::move(active), ::hg::move(inactive), component->settings.isTrigger);
+					input->getDataAttributes().setQuery<attr::InputData::value>(
+						[component]() {
+							return component->settings.isTrigger;
+						}
+					);
+					discard = input->onInputChange(
+						[component](ref<const InputChangeEvent> event_) {
+							const auto& target = *static_cast<const ptr<const InputToggle>>(event_.target.get());
+							component->settings.isTrigger = target.value();
+							return EventResponse::eConsumed;
+						}
+					);
+
+					auto box = make_sptr<uikit::BoxLayout>();
+					box->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
+					box->setChild(::hg::move(input));
+
+					row->addChild(hg::move(label));
+					row->addChild(hg::move(box));
+
+					list->addChild(hg::move(row));
 				}
 
 				/**/
