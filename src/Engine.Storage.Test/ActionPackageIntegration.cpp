@@ -13,7 +13,9 @@
 #include <Engine.Resource.Archive/StorageReadonlyArchive.hpp>
 #include <Engine.Resource.Archive/StorageReadWriteArchive.hpp>
 #include <Engine.Resource.Blob/Memory/ByteSpanBlob.hpp>
+#include <Engine.Resource.Package/Attribute/PackageGuid.hpp>
 #include <Engine.Resource.Package/Linker/Indexed.hpp>
+#include <Engine.Resource.Package/Utils.hpp>
 #include <Engine.Storage.Action/Context.hpp>
 #include <Engine.Storage.Action/Access/ExclusiveIoResource.hpp>
 #include <Engine.Storage.Registry/Options/MemoryStorageDescriptor.hpp>
@@ -23,9 +25,6 @@
 #include <Engine.Storage.Registry/Url/MemoryUrl.hpp>
 #include <Engine.Storage.Registry/Url/StorageUrl.hpp>
 #include <Engine.Storage.System/StorageSystem.hpp>
-
-#include "Utils.hpp"
-#include "Attribute/PackageGuid.hpp"
 
 /**/
 
@@ -93,8 +92,7 @@ namespace StorageModule {
 				linked.changes.emplace_back(
 					package::ArchiveDeltaAdd {
 						.where = streamoff {},
-						.size = static_cast<streamsize>(initialArchive.size()),
-						.data = initialArchive
+						.sizedData = initialArchive
 					}
 				);
 				return true;
@@ -189,8 +187,8 @@ namespace StorageModule {
 				linked->changes.emplace_back(
 					package::ArchiveDeltaReplace {
 						.where = streamoff {},
-						.size = static_cast<streamsize>(replaceArchive.size()),
-						.data = replaceArchive
+						.byteCount = static_cast<streamsize>(replaceArchive.size()),
+						.withSizedData = replaceArchive
 					}
 				);
 			}
@@ -274,7 +272,7 @@ namespace StorageModule {
 				linked->changes.emplace_back(
 					package::ArchiveDeltaDrop {
 						.where = streamoff {},
-						.size = linked->data.size
+						.byteCount = linked->data.size
 					}
 				);
 			}
