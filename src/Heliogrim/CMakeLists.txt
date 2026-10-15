@@ -66,6 +66,9 @@ make_library_project(
 		${PROJECT_NAME}::Engine.Pedantic
 		${PROJECT_NAME}::Engine.Pedantic.Resource
 		${PROJECT_NAME}::Engine.PFX
+		${PROJECT_NAME}::Engine.Physics.Scene
+		${PROJECT_NAME}::Engine.Physics.Scene.Model
+		${PROJECT_NAME}::Engine.Physics.Schedule
 		${PROJECT_NAME}::Engine.Platform
 		${PROJECT_NAME}::Engine.Reflect
 		${PROJECT_NAME}::Engine.Reflow
