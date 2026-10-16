@@ -268,9 +268,10 @@ bool Modules::removeSubModule(nmpt<SubModule> subModule_) {
 		}
 	);
 
+	const auto removed = not rem.empty();
 	_subModules.erase(rem.begin(), rem.end());
 
-	return false;
+	return removed;
 }
 
 DependencyValidationResult Modules::validate() const noexcept {
