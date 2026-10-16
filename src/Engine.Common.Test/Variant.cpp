@@ -41,6 +41,53 @@ namespace Common {
 		EXPECT_EQ(obj.as<u32>(), 675714);
 	}
 
+	TEST(Variant, DefaultHoldsFirstAlternative) {
+		auto obj = Variant<u32, StringView> {};
+
+		EXPECT_TRUE(obj.is<u32>());
+		EXPECT_FALSE(obj.is<StringView>());
+		EXPECT_EQ(obj.as<u32>(), 0u);
+	}
+
+	TEST(Variant, ReassignSwitchesAlternativeBothWays) {
+		auto obj = Variant<u32, String> {};
+
+		obj = String { "a string beyond the small buffer optimization" };
+		EXPECT_TRUE(obj.is<String>());
+		EXPECT_FALSE(obj.is<u32>());
+
+		obj = u32 { 9 };
+		EXPECT_TRUE(obj.is<u32>());
+		EXPECT_FALSE(obj.is<String>());
+		EXPECT_EQ(obj.as<u32>(), 9u);
+	}
+
+	TEST(Variant, CopyKeepsAlternativeAndValue) {
+		const auto src = Variant<u32, String> { String { "a string beyond the small buffer optimization" } };
+		auto dst = src;
+
+		ASSERT_TRUE(dst.is<String>());
+		EXPECT_EQ(dst.as<String>(), "a string beyond the small buffer optimization");
+		EXPECT_EQ(src.as<String>(), dst.as<String>());
+	}
+
+	TEST(Variant, MoveTransfersValue) {
+		auto src = Variant<u32, String> { String { "a string beyond the small buffer optimization" } };
+		auto dst = ::hg::move(src);
+
+		ASSERT_TRUE(dst.is<String>());
+		EXPECT_EQ(dst.as<String>(), "a string beyond the small buffer optimization");
+	}
+
+	TEST(Variant, ApplyVisitsActiveAlternativeOnly) {
+		auto obj = Variant<u32, StringView> { "view"sv };
+
+		const auto visited = obj.apply(
+			[]<typename Ty_>(const Ty_&) { return std::is_same_v<Ty_, StringView>; }
+		);
+		EXPECT_TRUE(visited);
+	}
+
 	struct VariantTestBase {
 		[[nodiscard]] int val() const noexcept {
 			return 45;
