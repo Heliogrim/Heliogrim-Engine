@@ -67,9 +67,7 @@ namespace Common {
 		EXPECT_TRUE(set.contains(a));
 	}
 
-	// BUG: Guid::operator< / > / <=> reinterpret the guid bytes as a pointer to u64[2] (double indirection in
-	// Guid.hpp) and dereference it: access violation (0xc0000005) for any real value. Enable once fixed.
-	TEST(GuidOps, DISABLED_OrderingIsStrictAndConsistent) {
+	TEST(GuidOps, OrderingIsStrictAndConsistent) {
 		const Guid low { 1u, 0u, 0u, 0uLL };
 		const Guid high { 2u, 0u, 0u, 0uLL };
 
@@ -79,6 +77,22 @@ namespace Common {
 		EXPECT_TRUE(high > low);
 		EXPECT_TRUE((low <=> high) < 0);
 		EXPECT_TRUE((low <=> low) == 0);
+	}
+
+	// Ordering is defined on the binary representation: two adjacent u64, first one dominates.
+	TEST(GuidOps, OrderingFollowsBinaryRepresentation) {
+		const Guid a { 0u, 0u, 0u, 1uLL };
+		const Guid b { 0u, 0u, 0u, 2uLL };
+		const Guid c { 1u, 0u, 0u, 0uLL };
+
+		EXPECT_TRUE(a < b);
+		EXPECT_TRUE(b > a);
+		EXPECT_FALSE(b < a);
+
+		// Second u64 (post) is only a tie breaker for the first one (pre, c0, c1).
+		EXPECT_TRUE(a < c);
+		EXPECT_TRUE(b < c);
+		EXPECT_FALSE(c < b);
 	}
 
 	TEST(GuidFormatTest, EncodeJoinsComponentsWithDash) {
