@@ -162,13 +162,13 @@ namespace Core {
 		EXPECT_EQ(modules.validate(), DependencyValidationResult::eSuccess);
 	}
 
-	// BUG: removeSubModule erases the module but always returns false. Enable once it reports the removal.
-	TEST(Modules, DISABLED_RemoveSubModuleReportsSuccess) {
+	TEST(Modules, RemoveSubModuleReportsSuccess) {
 		Modules modules {};
 		(void)modules.addSubModule(make("a"));
 		const auto module = modules.getSubModule("a");
 
 		EXPECT_TRUE(modules.removeSubModule(module));
+		EXPECT_FALSE(modules.removeSubModule(module));
 	}
 
 	TEST(Modules, RemoveSubModuleErasesIt) {
