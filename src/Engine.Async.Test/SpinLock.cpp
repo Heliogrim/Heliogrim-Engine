@@ -56,19 +56,27 @@ namespace Async {
 		EXPECT_FALSE(mtx.test());
 	}
 
-	// BUG: unlock() does not reset `_owns`, so the destructor clears the flag a second time and can release a lock
-	// another thread acquired in between (and a re-lock throws). Enable once fixed in Engine.Async/Primitive/SpinLock.hpp.
-	TEST(SpinLock, DISABLED_UnlockThenDestructDoesNotReleaseForeignLock) {
+	TEST(SpinLock, UnlockThenDestructDoesNotReleaseForeignLock) {
 		SpinMutex mtx {};
 		{
-			SpinLock first { mtx };
-			first.unlock();
+			SpinLock guard { mtx };
+			guard.unlock();
 
-			SpinLock second { mtx };
-			// `first` destructs before `second`; second must stay locked until its own scope ends.
-			EXPECT_TRUE(mtx.test());
+			// Another holder takes the flag after the explicit unlock; the guard's destructor must not release it.
+			EXPECT_FALSE(mtx.test_and_set());
 		}
+		EXPECT_TRUE(mtx.test());
+		mtx.clear();
+	}
+
+	TEST(SpinLock, RelockAfterUnlock) {
+		SpinMutex mtx {};
+		SpinLock guard { mtx };
+		guard.unlock();
 		EXPECT_FALSE(mtx.test());
+
+		EXPECT_NO_THROW(guard.lock());
+		EXPECT_TRUE(mtx.test());
 	}
 
 	TEST(SpinLock, ProtectsSharedCounter) {
