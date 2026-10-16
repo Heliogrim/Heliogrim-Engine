@@ -1,5 +1,7 @@
 #include "Murmur3.hpp"
 
+#include <cstring>
+
 using namespace hg::hash;
 using namespace hg;
 
@@ -25,7 +27,10 @@ static u64 rotl64(u64 v_, s8 r_) {
 #endif
 
 static u32 get_block_32(const u32* ptr_, const u32 idx_) {
-	return ptr_[idx_];
+	// Note: The input is not guaranteed to be aligned
+	u32 block;
+	std::memcpy(&block, ptr_ + idx_, sizeof(u32));
+	return block;
 }
 
 static u64 get_block_64(const u64* ptr_, const u32 idx_) {
@@ -61,7 +66,7 @@ void hash::murmur3_x86_32(const void* data_, const u32 length_, const u32 seed_,
 	constexpr u32 c1 = 0xcc9e2d51uL;
 	constexpr u32 c2 = 0x1b873593uL;
 
-	const u32* blocks = (const u32*)(block + nblocks * 4);
+	const u32* blocks = (const u32*)block;
 
 	for (u32 i = 0; i < nblocks; ++i) {
 		u32 k1 = get_block_32(blocks, i);
