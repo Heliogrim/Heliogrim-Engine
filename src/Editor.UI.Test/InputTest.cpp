@@ -105,6 +105,7 @@ namespace ReflowModule {
 		generic_test_empty_input<editor::ui::InputToggle>(*this, []() { return make_sptr<editor::ui::InputToggle>(); });
 	}
 
+	// Fenced: InputVec<T>::prepare() no longer compiles (make_sptr<InputFloat>() has no default ctor, InputFloat::_callback is gone).
 	#if FALSE
 
 	TEST_F(LayoutingBoxFixture, EmptyUikitInputVec3) {
