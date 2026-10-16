@@ -126,9 +126,50 @@ namespace ReflectModule {
 
 		EXPECT_NE(obj0.getMetaClass()->typeId(), obj1.getMetaClass()->typeId());
 
-		//
-		std::cout << "obj0->meta->name :: " << obj0.getMetaClass()->typeId().data << std::endl;
-		std::cout << "obj1->meta->name :: " << obj1.getMetaClass()->typeId().data << std::endl;
+		EXPECT_EQ(obj0.getMetaClass()->typeId(), ::hg::refl::ctid<TestMetaBase>());
+		EXPECT_EQ(obj1.getMetaClass()->typeId(), ::hg::refl::ctid<TestMetaDerived>());
+	}
+
+	TEST(MetaInherit, NegativeInherit) {
+		auto base = TestMetaBase();
+		auto base2 = TestMetaBase2();
+		auto derived = TestMetaDerived();
+
+		// A base never inherits from its derived type, nor from an unrelated type
+		EXPECT_FALSE(base.getMetaClass()->inherits(TestMetaDerived::meta_class<>::get()));
+		EXPECT_FALSE(base.getMetaClass()->inherits(TestMetaBase2::meta_class<>::get()));
+		EXPECT_FALSE(base2.getMetaClass()->inherits(TestMetaBase::meta_class<>::get()));
+		EXPECT_FALSE(derived.getMetaClass()->inherits(TestMetaBase2::meta_class<>::get()));
+		EXPECT_FALSE(derived.getMetaClass()->inherits(::hg::refl::ctid<TestExtBase>()));
+
+		// A derived type does inherit from its base
+		EXPECT_TRUE(derived.getMetaClass()->inherits(TestMetaBase::meta_class<>::get()));
+	}
+
+	TEST(MetaInherit, ThreeLevelChain) {
+		auto leaf = TestDerived02F();
+
+		EXPECT_TRUE(leaf.getMetaClass()->exact<TestDerived02F>());
+
+		// Siblings and unrelated branches are not part of the chain
+		EXPECT_FALSE(leaf.getMetaClass()->inherits(::hg::refl::ctid<TestDerived01F>()));
+		EXPECT_FALSE(leaf.getMetaClass()->inherits(::hg::refl::ctid<TestDerived02>()));
+	}
+
+	// Suspected defect: TypedMetaClass::inherits only knows the direct InheritMeta bases, so the grand-base is not reported.
+	TEST(MetaInherit, DISABLED_ThreeLevelTransitiveInherit) {
+		auto leaf = TestDerived02F();
+
+		EXPECT_TRUE(leaf.getMetaClass()->inherits(::hg::refl::ctid<TestDerived01>()));
+		EXPECT_TRUE(leaf.getMetaClass()->inherits(::hg::refl::ctid<TestBase01>()));
+	}
+
+	TEST(MetaInherit, MetaClassIdentity) {
+		auto a = TestMetaBase();
+		auto b = TestMetaBase();
+
+		EXPECT_EQ(a.getMetaClass(), b.getMetaClass());
+		EXPECT_EQ(a.getMetaClass(), TestMetaBase::meta_class<>::get());
 	}
 
 	TEST(MetaInherit, AdvancedInheritSM) {
@@ -355,6 +396,20 @@ namespace ReflectModule {
 		EXPECT_TRUE(c4);
 	}
 
+	TEST(CompileMap, SortedAndFindKey) {
+		for (auto it = map.begin(); (it + 1) != map.end(); ++it) {
+			EXPECT_LE(it->data.first, (it + 1)->data.first);
+		}
+
+		for (const auto key : { "a"sv, "b"sv, "c"sv, "d"sv, "e"sv, "f"sv, "y"sv }) {
+			const auto found = map.find(key);
+			ASSERT_NE(found, map.end());
+			EXPECT_EQ(found->data.first, key);
+		}
+
+		EXPECT_EQ(map.find(""sv), map.end());
+	}
+
 	TEST(CompileMap, Contains) { {
 			constexpr auto result = map.contains("c"sv);
 			EXPECT_TRUE(result);
@@ -400,6 +455,18 @@ namespace ReflectModule {
 		EXPECT_TRUE(c2);
 		EXPECT_TRUE(c3);
 		EXPECT_TRUE(c4);
+	}
+
+	TEST(CompileHashMap, FindKeyAndMiss) {
+		for (const auto key : { "a"sv, "b"sv, "c"sv, "d"sv, "e"sv, "f"sv, "y"sv }) {
+			const auto found = hash_map.find(key);
+			ASSERT_NE(found, hash_map.end());
+			EXPECT_EQ(found->data.first, key);
+		}
+
+		for (const auto key : { ""sv, "g"sv, "aa"sv, "Y"sv }) {
+			EXPECT_EQ(hash_map.find(key), hash_map.end());
+		}
 	}
 
 	TEST(CompileHashMap, MassFind) {
