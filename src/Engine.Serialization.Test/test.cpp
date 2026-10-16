@@ -1467,6 +1467,107 @@ namespace SerializationModule {
 			 */
 		}
 	}
+
+	TEST(StructureArchive, EmptyStructHasNoRecords) {
+
+		BufferArchive archive {};
+		StructuredArchive arch { archive }; {
+			auto write = arch.insertRootSlot();
+			std::move(write).intoStruct();
+		}
+
+		archive.seek(0); {
+			const auto read = arch.getRootSlot();
+			auto slot = read.asStruct();
+
+			EXPECT_FALSE(slot.hasRecordSlot("anything"));
+		}
+	}
+
+	// Suspected defect: an empty struct reports hasRecordSlot("") == true.
+	TEST(StructureArchive, DISABLED_EmptyStructRejectsEmptyIdentifier) {
+
+		BufferArchive archive {};
+		StructuredArchive arch { archive }; {
+			auto write = arch.insertRootSlot();
+			std::move(write).intoStruct();
+		}
+
+		archive.seek(0); {
+			const auto read = arch.getRootSlot();
+			EXPECT_FALSE(read.asStruct().hasRecordSlot(""));
+		}
+	}
+
+	TEST(StructureArchive, IntegralBoundaryValues) {
+
+		BufferArchive archive {};
+		StructuredArchive arch { archive }; {
+			auto write = arch.insertRootSlot();
+			auto slot = std::move(write).intoStruct();
+			slot.insertSlot<u64>("zero") << 0uLL;
+			slot.insertSlot<u64>("max") << std::numeric_limits<u64>::max();
+		}
+
+		archive.seek(0);
+
+		u64 zero = 1uLL;
+		u64 max = 0uLL; {
+			auto read = arch.getRootSlot();
+			auto slot = std::move(read).intoStruct();
+			slot.getSlot<u64>("zero") >> zero;
+			slot.getSlot<u64>("max") >> max;
+		}
+
+		EXPECT_EQ(zero, 0uLL);
+		EXPECT_EQ(max, std::numeric_limits<u64>::max());
+	}
+
+	TEST(StructureArchive, EmptyStringRoundTrip) {
+
+		BufferArchive archive {};
+		StructuredArchive arch { archive }; {
+			auto write = arch.insertRootSlot();
+			std::move(write).intoStruct().insertSlot<string>("test") << string {};
+		}
+
+		archive.seek(0);
+
+		string dst { "preset" }; {
+			auto read = arch.getRootSlot();
+			std::move(read).intoStruct().getSlot<string>("test") >> dst;
+		}
+
+		EXPECT_TRUE(dst.empty());
+	}
+
+	TEST(StructureArchive, RecordsReadableOutOfOrder) {
+
+		BufferArchive archive {};
+		StructuredArchive arch { archive }; {
+			auto write = arch.insertRootSlot();
+			auto slot = std::move(write).intoStruct();
+			slot.insertSlot<u64>("first") << 11uLL;
+			slot.insertSlot<string>("second") << string { "two" };
+			slot.insertSlot<u64>("third") << 33uLL;
+		}
+
+		archive.seek(0);
+
+		u64 first = 0uLL;
+		u64 third = 0uLL;
+		string second {}; {
+			auto read = arch.getRootSlot();
+			auto slot = std::move(read).intoStruct();
+			slot.getSlot<u64>("third") >> third;
+			slot.getSlot<string>("second") >> second;
+			slot.getSlot<u64>("first") >> first;
+		}
+
+		EXPECT_EQ(first, 11uLL);
+		EXPECT_EQ(second, "two");
+		EXPECT_EQ(third, 33uLL);
+	}
 }
 
 #pragma endregion
