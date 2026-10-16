@@ -375,8 +375,8 @@ namespace Common {
 		EXPECT_EQ(semLive, 0);
 	}
 
-	// Defect: a reader copying a slot while writers move-assign it corrupts the heap / double-destroys (observed invalid reads, semLive == -1, CRT heap assert).
-	TEST_F(ArciSemantics, DISABLED_ConcurrentReadersAndWritersOfSharedSlot) {
+	// Note: The writer drain-waits for in-flight readers (best-effort, see AtomicRefCountedIntrusive).
+	TEST_F(ArciSemantics, ConcurrentReadersAndWritersOfSharedSlot) {
 		Arci<AtomicIntrusive> slot { Arci<AtomicIntrusive>::create(1) };
 
 		std::atomic_bool stop { false };
