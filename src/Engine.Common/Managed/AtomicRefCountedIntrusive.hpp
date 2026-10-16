@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <stdexcept>
+#include <thread>
 #include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 
@@ -99,6 +100,10 @@ namespace hg {
 			0b11111111'11111111'11111111'11111111'11111111'11111111'00000000'00000000;
 	};
 
+	/**
+	 * Note: Concurrently copying from and replacing (move-assign) the same instance is only best-effort. The writer
+	 *	drain-waits for readers, which may starve it. This pattern needs a redesign (split reference counting).
+	 */
 	template <IncompleteOrAtomicIntrusiveRefCountable Ty_>
 	class AtomicRefCountedIntrusive final {
 	public:
@@ -273,6 +278,16 @@ namespace hg {
 				/* Store remote to local */
 				_obj.fetch_or(encode_pointer(remote), std::memory_order_acq_rel);
 
+				/* Wait for in-flight readers of the previous pointer */
+
+				// Note: Readers pinned the slot before we exchanged the pointer might not have acquired a reference to
+				//			the previous object yet. We must not drop our reference before they left the slot.
+				// shortcut: drain-wait can starve the writer under constant readers on the same slot; the pin counter
+				//			has no epoch to tell old from new readers, so this pattern needs a redesign (split ref count).
+				while (decode_counter(_obj.load(std::memory_order::acquire)) > 2u) {
+					std::this_thread::yield();
+				}
+
 				/* Release local "lock" */
 
 				// Note: We will only release one reference bump, as the second one was required
@@ -283,9 +298,8 @@ namespace hg {
 				if (local != nullptr) {
 					// Drop stored object with exclusive ownership
 					if (local->ref_dec() == 0) {
-						auto alloc = std::allocator<Ty_> {};
-						auto alloc_traits = std::allocator_traits<std::allocator<Ty_>> {};
-						alloc_traits.destroy(alloc, local);
+						// Note: Matches the allocation of `create` and `destroy_obj`, otherwise the object leaks
+						delete local;
 					}
 				}
 			}
