@@ -64,6 +64,7 @@ namespace hg::concurrent {
 			}
 
 			_flag.clear(std::memory_order_seq_cst);
+			_owns = false;
 		}
 
 		SpinLock operator=(const SpinLock&) = delete;
