@@ -22,9 +22,7 @@ namespace Common {
 		EXPECT_EQ(murmur32("", 1uL), 0x514E28B7uL);
 	}
 
-	// BUG: murmur3_x86_32 indexes blocks forward from the end of the data (canonical code uses negative
-	// indices), so it reads past the input and skips it. Enable once fixed in Engine.Common/Hash/Murmur3.cpp.
-	TEST(Murmur3, DISABLED_x86_32CanonicalVectors) {
+	TEST(Murmur3, x86_32CanonicalVectors) {
 		EXPECT_EQ(murmur32("test"), 0xBA6BD213uL);
 		EXPECT_EQ(murmur32("Hello, world!", 0x9747B28CuL), 0x24884CBAuL);
 	}
@@ -34,7 +32,7 @@ namespace Common {
 	}
 
 	TEST(Murmur3, x86_32TailLengthsAreDistinct) {
-		// Exercise the 1..3 byte tail paths (<4 bytes: the block loop is broken, see below).
+		// Exercise the 1..3 byte tail paths (<4 bytes).
 		EXPECT_NE(murmur32("a"), murmur32("ab"));
 		EXPECT_NE(murmur32("ab"), murmur32("abc"));
 	}
