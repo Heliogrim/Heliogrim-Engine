@@ -1,5 +1,8 @@
 #pragma once
 
+#include <array>
+#include <bit>
+#include <compare>
 #include <concepts>
 #include <span>
 
@@ -70,18 +73,8 @@ namespace hg {
 			static_assert(sizeof(decltype(*this)) == sizeof(u64) * 2u);
 			static_assert(alignof(decltype(*this)) == alignof(u64));
 
-			const auto self = std::span<const u64, 2uLL> {
-				*static_cast<const ptr<const ptr<const u64>>>(
-					static_cast<const void* const>(this)
-				),
-				2uLL
-			};
-			const auto other = std::span<const u64, 2uLL> {
-				*static_cast<const ptr<const ptr<const u64>>>(
-					static_cast<const void* const>(std::addressof(other_))
-				),
-				2uLL
-			};
+			const auto self = std::bit_cast<std::array<u64, 2uLL>>(*this);
+			const auto other = std::bit_cast<std::array<u64, 2uLL>>(other_);
 
 			return (self[0] > other[0]) || (self[0] == other[0] && self[1] > other[1]);
 		}
@@ -91,18 +84,8 @@ namespace hg {
 			static_assert(sizeof(decltype(*this)) == sizeof(u64) * 2u);
 			static_assert(alignof(decltype(*this)) == alignof(u64));
 
-			const auto self = std::span<const u64, 2uLL> {
-				*static_cast<const ptr<const ptr<const u64>>>(
-					static_cast<const void* const>(this)
-				),
-				2uLL
-			};
-			const auto other = std::span<const u64, 2uLL> {
-				*static_cast<const ptr<const ptr<const u64>>>(
-					static_cast<const void* const>(std::addressof(other_))
-				),
-				2uLL
-			};
+			const auto self = std::bit_cast<std::array<u64, 2uLL>>(*this);
+			const auto other = std::bit_cast<std::array<u64, 2uLL>>(other_);
 
 			return (self[0] < other[0]) || (self[0] == other[0] && self[1] < other[1]);
 		}
