@@ -157,4 +157,53 @@ namespace ReflowModule {
 	TEST_F(LayoutingBoxFixture, EmptyUikitCard) {
 		generic_test_empty<engine::reflow::uikit::Card>(*this);
 	}
+
+	/**/
+
+	static void fixSize(ref<engine::reflow::uikit::BoxLayout> box_, const math::vec2 size_) {
+		using namespace engine::reflow;
+		auto& attr = box_.getLayoutAttributes();
+		attr.update<attr::BoxLayout::minWidth>(ReflowUnit { ReflowUnitType::eAbsolute, size_.x });
+		attr.update<attr::BoxLayout::maxWidth>(ReflowUnit { ReflowUnitType::eAbsolute, size_.x });
+		attr.update<attr::BoxLayout::minHeight>(ReflowUnit { ReflowUnitType::eAbsolute, size_.y });
+		attr.update<attr::BoxLayout::maxHeight>(ReflowUnit { ReflowUnitType::eAbsolute, size_.y });
+	}
+
+	TEST_F(LayoutingBoxFixture, FixedSizeBox) {
+		auto subject = make_sptr<engine::reflow::uikit::BoxLayout>();
+		fixSize(*subject, math::vec2 { 64.f, 32.f });
+		attach(subject);
+
+		computeLayout();
+
+		const auto& layout = subject->getLayoutState();
+		EXPECT_TRUE(layout.layoutOffset.allZero());
+		EXPECT_EQ(layout.layoutSize, (math::vec2 { 64.f, 32.f }));
+	}
+
+	TEST_F(LayoutingBoxFixture, AutoBoxWrapsFixedChild) {
+		auto child = make_sptr<engine::reflow::uikit::BoxLayout>();
+		fixSize(*child, math::vec2 { 40.f, 20.f });
+
+		auto subject = make_sptr<engine::reflow::uikit::BoxLayout>();
+		subject->setChild(child);
+		attach(subject);
+
+		computeLayout();
+
+		EXPECT_EQ(child->getLayoutState().layoutSize, (math::vec2 { 40.f, 20.f }));
+		EXPECT_EQ(subject->getLayoutState().layoutSize, (math::vec2 { 40.f, 20.f }));
+	}
+
+	TEST_F(LayoutingBoxFixture, FixedSizeIsStableAcrossTicks) {
+		auto subject = make_sptr<engine::reflow::uikit::BoxLayout>();
+		fixSize(*subject, math::vec2 { 64.f, 32.f });
+		attach(subject);
+
+		computeLayout();
+		const auto first = subject->getLayoutState().layoutSize;
+		computeLayout();
+
+		EXPECT_EQ(subject->getLayoutState().layoutSize, first);
+	}
 }
