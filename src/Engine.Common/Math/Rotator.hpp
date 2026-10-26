@@ -63,6 +63,15 @@ namespace hg::math {
 		 */
 		[[nodiscard]] std::array<value_type, 9> asRotationMatrix() const noexcept;
 
+		/**
+		 * Inverse of `asRotationMatrix`, with yaw limited to [-90Deg, 90Deg] and pitch and roll to [-180Deg, 180Deg].
+		 *
+		 * @details At a yaw of exactly +-90Deg, pitch and roll turn around the same axis, so all of it is folded into pitch.
+		 *
+		 * @param matrix_ A pure rotation in row-major order.
+		 */
+		[[nodiscard]] static this_type fromRotationMatrix(cref<std::array<value_type, 9>> matrix_) noexcept;
+
 	public:
 		[[nodiscard]] math_type inversed(cref<math_type> vector_) const noexcept;
 
