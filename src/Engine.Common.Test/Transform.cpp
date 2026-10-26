@@ -25,9 +25,9 @@ namespace Common {
 		using namespace hg::math;
 
 		// Both paths describe the very same orientation: Rotator::rotated (closed form) and Transform::asMatrix (quaternion).
-		const Rotator rot { 0.3F, 0.7F, -0.2F };
-		const Transform t { Location { 1.F, 2.F, 3.F }, Rotator { rot }, Vector3f32 { 1.F } };
-		const fvec3 vec { 1.F, 2.F, 3.F };
+		const auto rot = Rotator { 0.3F, 0.7F, -0.2F };
+		const auto t = Transform { Location { 1.F, 2.F, 3.F }, Rotator { rot }, Vector3f32 { 1.F } };
+		const auto vec = fvec3 { 1.F, 2.F, 3.F };
 
 		const auto expected = rot.rotated(vec) + fvec3 { 1.F, 2.F, 3.F };
 		const auto actual = t.asMatrix() * fvec4 { vec.x, vec.y, vec.z, 1.F };
@@ -41,7 +41,7 @@ namespace Common {
 		using namespace hg::math;
 
 		// Scale (2, 1, 1) stretches x first; a 90Deg yaw then maps the stretched x axis onto z.
-		const Transform t { Location {}, Rotator { 0.F, 1.5707964F, 0.F }, Vector3f32 { 2.F, 1.F, 1.F } };
+		const auto t = Transform { Location {}, Rotator { 0.F, 1.5707964F, 0.F }, Vector3f32 { 2.F, 1.F, 1.F } };
 
 		const auto actual = t.asMatrix() * fvec4 { 1.F, 0.F, 0.F, 0.F };
 
