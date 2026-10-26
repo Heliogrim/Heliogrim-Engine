@@ -5,6 +5,7 @@
 #include <utility>
 
 #include "InlineArray.hpp"
+#include "../Move.hpp"
 #include "../Wrapper.hpp"
 #include "../__macro.hpp"
 #include "../Memory/Destroy.hpp"
@@ -133,6 +134,9 @@ namespace hg {
 	public:
 		template <bool Const_>
 		class IteratorImpl {
+		public:
+			friend class InlineAutoArray<Type_, Capacity_, Allocator_>;
+
 		public:
 			using this_type = InlineAutoArray<Type_, Capacity_, Allocator_>::IteratorImpl<Const_>;
 
@@ -464,11 +468,11 @@ namespace hg {
 			auto newPt = _traits.allocate(_alloc, newSize);
 
 			if constexpr (std::is_nothrow_move_constructible_v<Type_> || not std::is_copy_constructible_v<Type_>) {
-				std::uninitialized_move(prevBegin, prevBegin + where_, newPt, _alloc);
-				std::uninitialized_move(prevBegin + where_ + 1, _externalEnd, newPt, _alloc);
+				const auto tail = std::uninitialized_move(prevBegin, prevBegin + where_, newPt);
+				std::uninitialized_move(prevBegin + where_ + 1, _externalEnd, tail);
 			} else {
-				std::uninitialized_copy(prevBegin, prevBegin + where_, newPt, _alloc);
-				std::uninitialized_copy(prevBegin + where_ + 1, _externalEnd, newPt, _alloc);
+				const auto tail = std::uninitialized_copy(prevBegin, prevBegin + where_, newPt);
+				std::uninitialized_copy(prevBegin + where_ + 1, _externalEnd, tail);
 			}
 
 			//_traits.destroy(_alloc, oldLast);
@@ -553,12 +557,19 @@ namespace hg {
 		constexpr void erase(cref<ConstIterator> where_) noexcept {
 			assert(where_ >= cbegin());
 
-			if (where_._idx < element_capacity) {
-				inline_erase_at(where_._idx);
+			const auto idx = static_cast<size_type>(where_._idx);
+			if (idx < element_capacity) {
+				inline_erase_at(idx);
+
+				// The inline range was full, if any element lives in the external storage; pull the first one in to fill the gap.
+				if (external_size() > 0) {
+					inline_emplace_back(::hg::move(*external_begin()));
+					external_erase_at(0);
+				}
 				return;
 			}
 
-			external_erase_at(where_.idx - element_capacity);
+			external_erase_at(idx - element_capacity);
 		}
 
 		constexpr void clear() {

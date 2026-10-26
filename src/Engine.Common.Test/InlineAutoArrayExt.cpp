@@ -20,6 +20,12 @@ namespace Common::Collection {
 
 			Tracked(const Tracked&) = delete;
 
+			// Shifting elements on erase assigns over live objects (like std::vector::erase).
+			Tracked& operator=(Tracked&& other_) noexcept {
+				value = other_.value;
+				return *this;
+			}
+
 			~Tracked() { --liveObjects; }
 		};
 
@@ -86,6 +92,89 @@ namespace Common::Collection {
 		for (size_t i = 0; i < 6; ++i) { array.emplace_back(i); }
 
 		EXPECT_EQ(toVector(array), (std::vector<size_t> { 0, 1, 2, 3, 4, 5 }));
+	}
+
+	/* Capacity 2 => indices 0..1 live inline, every further index lives in the external storage. */
+
+	TEST(InlineAutoArrayExt, EraseInlineElementWithoutOverflow) {
+		InlineAutoArray<size_t, 4> array {};
+		for (size_t i = 0; i < 3; ++i) { array.emplace_back(i); }
+
+		// [0, 1, 2] -> drop index 0 -> [1, 2]
+		array.erase(array.cbegin());
+
+		EXPECT_EQ(toVector(array), (std::vector<size_t> { 1, 2 }));
+	}
+
+	TEST(InlineAutoArrayExt, EraseFirstExternalElement) {
+		InlineAutoArray<size_t, 2> array {};
+		for (size_t i = 0; i < 5; ++i) { array.emplace_back(i); }
+
+		// [0, 1 | 2, 3, 4] -> drop index 2 -> [0, 1 | 3, 4]
+		array.erase(array.cbegin() + 2);
+
+		EXPECT_EQ(toVector(array), (std::vector<size_t> { 0, 1, 3, 4 }));
+	}
+
+	TEST(InlineAutoArrayExt, EraseMiddleExternalElement) {
+		InlineAutoArray<size_t, 2> array {};
+		for (size_t i = 0; i < 5; ++i) { array.emplace_back(i); }
+
+		// [0, 1 | 2, 3, 4] -> drop index 3 -> [0, 1 | 2, 4]
+		array.erase(array.cbegin() + 3);
+
+		EXPECT_EQ(toVector(array), (std::vector<size_t> { 0, 1, 2, 4 }));
+	}
+
+	TEST(InlineAutoArrayExt, EraseLastExternalElement) {
+		InlineAutoArray<size_t, 2> array {};
+		for (size_t i = 0; i < 5; ++i) { array.emplace_back(i); }
+
+		// [0, 1 | 2, 3, 4] -> drop index 4 -> [0, 1 | 2, 3]
+		array.erase(array.cbegin() + 4);
+
+		EXPECT_EQ(toVector(array), (std::vector<size_t> { 0, 1, 2, 3 }));
+	}
+
+	TEST(InlineAutoArrayExt, EraseOnlyExternalElementReleasesExternalStorage) {
+		InlineAutoArray<size_t, 2> array {};
+		for (size_t i = 0; i < 3; ++i) { array.emplace_back(i); }
+
+		// [0, 1 | 2] -> drop index 2 -> [0, 1]
+		array.erase(array.cbegin() + 2);
+
+		EXPECT_EQ(toVector(array), (std::vector<size_t> { 0, 1 }));
+	}
+
+	TEST(InlineAutoArrayExt, EraseInlineElementWithOverflow) {
+		InlineAutoArray<size_t, 2> array {};
+		for (size_t i = 0; i < 5; ++i) { array.emplace_back(i); }
+
+		// [0, 1 | 2, 3, 4] -> drop index 0 -> [1, 2 | 3, 4]
+		array.erase(array.cbegin());
+
+		EXPECT_EQ(toVector(array), (std::vector<size_t> { 1, 2, 3, 4 }));
+	}
+
+	TEST(InlineAutoArrayExt, EraseLastInlineElementWithOverflow) {
+		InlineAutoArray<size_t, 2> array {};
+		for (size_t i = 0; i < 4; ++i) { array.emplace_back(i); }
+
+		// [0, 1 | 2, 3] -> drop index 1 -> [0, 2 | 3]
+		array.erase(array.cbegin() + 1);
+
+		EXPECT_EQ(toVector(array), (std::vector<size_t> { 0, 2, 3 }));
+	}
+
+	TEST(InlineAutoArrayExt, EraseInlineElementWithSingleExternalElement) {
+		InlineAutoArray<size_t, 2> array {};
+		for (size_t i = 0; i < 3; ++i) { array.emplace_back(i); }
+
+		// [0, 1 | 2] -> drop index 0 -> [1, 2], the external storage is drained completely
+		array.erase(array.cbegin());
+
+		EXPECT_EQ(toVector(array), (std::vector<size_t> { 1, 2 }));
+		EXPECT_EQ(array.size(), 2uLL);
 	}
 
 	TEST(InlineAutoArrayExt, PopUntilEmpty) {
@@ -173,6 +262,22 @@ namespace Common::Collection {
 
 		array.clear();
 
+		EXPECT_EQ(liveObjects, 0);
+	}
+
+	TEST_F(InlineAutoArrayLifetime, EraseInlineElementWithOverflowKeepsObjectCountBalanced) {
+		{
+			InlineAutoArray<Tracked, 2> array {};
+			for (int i = 0; i < 5; ++i) { array.emplace_back(i); }
+
+			// [0, 1 | 2, 3, 4] -> drop index 0 -> [1, 2 | 3, 4]: four live objects remain, none leaked or duplicated.
+			array.erase(array.cbegin());
+
+			EXPECT_EQ(array.size(), 4uLL);
+			EXPECT_EQ(liveObjects, 4);
+			EXPECT_EQ(array.front().value, 1);
+			EXPECT_EQ(array.back().value, 4);
+		}
 		EXPECT_EQ(liveObjects, 0);
 	}
 
