@@ -96,7 +96,7 @@ Result<void, std::runtime_error> ActionManager::undo() const {
 Result<void, std::runtime_error> ActionManager::reapply() const {
 
 	auto action = _log->reapply();
-	if (action != nullptr) {
+	if (action == nullptr) {
 		IM_CORE_WARN("Tried to reapply on empty reverted action log.");
 		return Unexpected { std::runtime_error { "Tried to reapply on empty reverted action log." } };
 	}
