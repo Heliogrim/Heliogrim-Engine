@@ -43,7 +43,7 @@ namespace Common::Collection {
 	}
 
 	TEST(InlineAutoArrayExt, StartsEmpty) {
-		InlineAutoArray<size_t, 2> array {};
+		auto array = InlineAutoArray<size_t, 2> {};
 
 		EXPECT_TRUE(array.empty());
 		EXPECT_EQ(array.size(), 0uLL);
@@ -59,7 +59,7 @@ namespace Common::Collection {
 	}
 
 	TEST(InlineAutoArrayExt, FrontAndBackWithinInline) {
-		InlineAutoArray<size_t, 4> array {};
+		auto array = InlineAutoArray<size_t, 4> {};
 		array.emplace_back(10);
 		array.emplace_back(20);
 
@@ -73,7 +73,7 @@ namespace Common::Collection {
 	}
 
 	TEST(InlineAutoArrayExt, BackFollowsOverflowAndPop) {
-		InlineAutoArray<size_t, 2> array {};
+		auto array = InlineAutoArray<size_t, 2> {};
 		array.emplace_back(1);
 		array.emplace_back(2);
 		array.emplace_back(3);
@@ -88,7 +88,7 @@ namespace Common::Collection {
 	}
 
 	TEST(InlineAutoArrayExt, IterationPreservesInsertionOrderAcrossOverflow) {
-		InlineAutoArray<size_t, 2> array {};
+		auto array = InlineAutoArray<size_t, 2> {};
 		for (size_t i = 0; i < 6; ++i) { array.emplace_back(i); }
 
 		EXPECT_EQ(toVector(array), (std::vector<size_t> { 0, 1, 2, 3, 4, 5 }));
@@ -97,7 +97,7 @@ namespace Common::Collection {
 	/* Capacity 2 => indices 0..1 live inline, every further index lives in the external storage. */
 
 	TEST(InlineAutoArrayExt, EraseInlineElementWithoutOverflow) {
-		InlineAutoArray<size_t, 4> array {};
+		auto array = InlineAutoArray<size_t, 4> {};
 		for (size_t i = 0; i < 3; ++i) { array.emplace_back(i); }
 
 		// [0, 1, 2] -> drop index 0 -> [1, 2]
@@ -107,7 +107,7 @@ namespace Common::Collection {
 	}
 
 	TEST(InlineAutoArrayExt, EraseFirstExternalElement) {
-		InlineAutoArray<size_t, 2> array {};
+		auto array = InlineAutoArray<size_t, 2> {};
 		for (size_t i = 0; i < 5; ++i) { array.emplace_back(i); }
 
 		// [0, 1 | 2, 3, 4] -> drop index 2 -> [0, 1 | 3, 4]
@@ -117,7 +117,7 @@ namespace Common::Collection {
 	}
 
 	TEST(InlineAutoArrayExt, EraseMiddleExternalElement) {
-		InlineAutoArray<size_t, 2> array {};
+		auto array = InlineAutoArray<size_t, 2> {};
 		for (size_t i = 0; i < 5; ++i) { array.emplace_back(i); }
 
 		// [0, 1 | 2, 3, 4] -> drop index 3 -> [0, 1 | 2, 4]
@@ -127,7 +127,7 @@ namespace Common::Collection {
 	}
 
 	TEST(InlineAutoArrayExt, EraseLastExternalElement) {
-		InlineAutoArray<size_t, 2> array {};
+		auto array = InlineAutoArray<size_t, 2> {};
 		for (size_t i = 0; i < 5; ++i) { array.emplace_back(i); }
 
 		// [0, 1 | 2, 3, 4] -> drop index 4 -> [0, 1 | 2, 3]
@@ -137,7 +137,7 @@ namespace Common::Collection {
 	}
 
 	TEST(InlineAutoArrayExt, EraseOnlyExternalElementReleasesExternalStorage) {
-		InlineAutoArray<size_t, 2> array {};
+		auto array = InlineAutoArray<size_t, 2> {};
 		for (size_t i = 0; i < 3; ++i) { array.emplace_back(i); }
 
 		// [0, 1 | 2] -> drop index 2 -> [0, 1]
@@ -147,7 +147,7 @@ namespace Common::Collection {
 	}
 
 	TEST(InlineAutoArrayExt, EraseInlineElementWithOverflow) {
-		InlineAutoArray<size_t, 2> array {};
+		auto array = InlineAutoArray<size_t, 2> {};
 		for (size_t i = 0; i < 5; ++i) { array.emplace_back(i); }
 
 		// [0, 1 | 2, 3, 4] -> drop index 0 -> [1, 2 | 3, 4]
@@ -157,7 +157,7 @@ namespace Common::Collection {
 	}
 
 	TEST(InlineAutoArrayExt, EraseLastInlineElementWithOverflow) {
-		InlineAutoArray<size_t, 2> array {};
+		auto array = InlineAutoArray<size_t, 2> {};
 		for (size_t i = 0; i < 4; ++i) { array.emplace_back(i); }
 
 		// [0, 1 | 2, 3] -> drop index 1 -> [0, 2 | 3]
@@ -167,7 +167,7 @@ namespace Common::Collection {
 	}
 
 	TEST(InlineAutoArrayExt, EraseInlineElementWithSingleExternalElement) {
-		InlineAutoArray<size_t, 2> array {};
+		auto array = InlineAutoArray<size_t, 2> {};
 		for (size_t i = 0; i < 3; ++i) { array.emplace_back(i); }
 
 		// [0, 1 | 2] -> drop index 0 -> [1, 2], the external storage is drained completely
@@ -178,7 +178,7 @@ namespace Common::Collection {
 	}
 
 	TEST(InlineAutoArrayExt, PopUntilEmpty) {
-		InlineAutoArray<size_t, 2> array {};
+		auto array = InlineAutoArray<size_t, 2> {};
 		for (size_t i = 0; i < 5; ++i) { array.emplace_back(i); }
 
 		for (size_t i = 0; i < 5; ++i) { array.pop_back(); }
@@ -188,7 +188,7 @@ namespace Common::Collection {
 	}
 
 	TEST(InlineAutoArrayExt, ReusableAfterDraining) {
-		InlineAutoArray<size_t, 2> array {};
+		auto array = InlineAutoArray<size_t, 2> {};
 		for (size_t i = 0; i < 4; ++i) { array.emplace_back(i); }
 		for (size_t i = 0; i < 4; ++i) { array.pop_back(); }
 
@@ -200,7 +200,7 @@ namespace Common::Collection {
 	}
 
 	TEST(InlineAutoArrayExt, ClearEmptiesAndAllowsReuse) {
-		InlineAutoArray<size_t, 2> array {};
+		auto array = InlineAutoArray<size_t, 2> {};
 		for (size_t i = 0; i < 4; ++i) { array.emplace_back(i); }
 
 		array.clear();
@@ -237,7 +237,7 @@ namespace Common::Collection {
 
 	TEST_F(InlineAutoArrayLifetime, DestructorReleasesInlineAndExternal) {
 		{
-			InlineAutoArray<Tracked, 2> array {};
+			auto array = InlineAutoArray<Tracked, 2> {};
 			for (int i = 0; i < 5; ++i) { array.emplace_back(i); }
 			EXPECT_GE(liveObjects, 5);
 		}
@@ -245,7 +245,7 @@ namespace Common::Collection {
 	}
 
 	TEST_F(InlineAutoArrayLifetime, PopBackDestroysElements) {
-		InlineAutoArray<Tracked, 2> array {};
+		auto array = InlineAutoArray<Tracked, 2> {};
 		for (int i = 0; i < 4; ++i) { array.emplace_back(i); }
 
 		array.pop_back();
@@ -257,7 +257,7 @@ namespace Common::Collection {
 	}
 
 	TEST_F(InlineAutoArrayLifetime, ClearDestroysElements) {
-		InlineAutoArray<Tracked, 2> array {};
+		auto array = InlineAutoArray<Tracked, 2> {};
 		for (int i = 0; i < 4; ++i) { array.emplace_back(i); }
 
 		array.clear();
@@ -267,7 +267,7 @@ namespace Common::Collection {
 
 	TEST_F(InlineAutoArrayLifetime, EraseInlineElementWithOverflowKeepsObjectCountBalanced) {
 		{
-			InlineAutoArray<Tracked, 2> array {};
+			auto array = InlineAutoArray<Tracked, 2> {};
 			for (int i = 0; i < 5; ++i) { array.emplace_back(i); }
 
 			// [0, 1 | 2, 3, 4] -> drop index 0 -> [1, 2 | 3, 4]: four live objects remain, none leaked or duplicated.

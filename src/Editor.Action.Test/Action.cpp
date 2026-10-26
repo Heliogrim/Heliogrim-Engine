@@ -68,14 +68,14 @@ namespace EditorAction {
 	}
 
 	TEST(ActionLogTest, UndoOnEmptyLogIsNull) {
-		ActionLog log {};
+		auto log = ActionLog {};
 
 		EXPECT_EQ(log.undo(), nullptr);
 		EXPECT_EQ(log.reapply(), nullptr);
 	}
 
 	TEST(ActionLogTest, UndoReturnsActionsInReverseOrder) {
-		ActionLog log {};
+		auto log = ActionLog {};
 		auto a = makeAction();
 		auto b = makeAction();
 		log.apply(clone(a));
@@ -87,7 +87,7 @@ namespace EditorAction {
 	}
 
 	TEST(ActionLogTest, FailDropsLastLoggedAction) {
-		ActionLog log {};
+		auto log = ActionLog {};
 		auto a = makeAction();
 		auto b = makeAction();
 		log.apply(clone(a));
@@ -99,7 +99,7 @@ namespace EditorAction {
 	}
 
 	TEST(ActionLogTest, LogIsBoundedToMostRecentEntries) {
-		ActionLog log {};
+		auto log = ActionLog {};
 		Vector<Arci<Action>> actions {};
 		for (u64 i = 0; i < ActionLog::action_log_size + 5uLL; ++i) {
 			actions.push_back(makeAction());
@@ -113,7 +113,7 @@ namespace EditorAction {
 	}
 
 	TEST(ActionLogTest, ReapplyReturnsUndoneAction) {
-		ActionLog log {};
+		auto log = ActionLog {};
 		auto a = makeAction();
 		log.apply(clone(a));
 		ASSERT_EQ(log.undo(), a);
@@ -122,14 +122,14 @@ namespace EditorAction {
 	}
 
 	TEST(ActionLogTest, ReapplyOnEmptyReappliedStackYieldsNothing) {
-		ActionLog log {};
+		auto log = ActionLog {};
 		log.apply(makeAction());
 
 		EXPECT_EQ(log.reapply(), nullptr);
 	}
 
 	TEST(ActionLogTest, ReapplyReturnsMostRecentlyUndoneFirst) {
-		ActionLog log {};
+		auto log = ActionLog {};
 		auto a = makeAction();
 		auto b = makeAction();
 		log.apply(clone(a));
@@ -145,7 +145,7 @@ namespace EditorAction {
 	}
 
 	TEST(ActionLogTest, ReappliedActionCanBeUndoneAgain) {
-		ActionLog log {};
+		auto log = ActionLog {};
 		auto a = makeAction();
 		log.apply(clone(a));
 		ASSERT_EQ(log.undo(), a);
@@ -155,7 +155,7 @@ namespace EditorAction {
 	}
 
 	TEST(ActionLogTest, ApplyDiscardsPreviouslyUndoneActions) {
-		ActionLog log {};
+		auto log = ActionLog {};
 		log.apply(makeAction());
 		ASSERT_NE(log.undo(), nullptr);
 

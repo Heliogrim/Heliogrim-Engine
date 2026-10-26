@@ -86,8 +86,8 @@ namespace Performance {
 	}
 
 	TEST(TransformBenchmark, DISABLED_RotatorRotated) {
-		const math::Rotator rot { 0.3F, 0.7F, -0.2F };
-		math::fvec3 vec { 1.F, 2.F, 3.F };
+		const auto rot = math::Rotator { 0.3F, 0.7F, -0.2F };
+		auto vec = math::fvec3 { 1.F, 2.F, 3.F };
 
 		report("Rotator::rotated", nanosPerOp([&](const int i) {
 			vec.x = static_cast<float>(i & 7);
@@ -97,8 +97,8 @@ namespace Performance {
 	}
 
 	TEST(TransformBenchmark, DISABLED_RotatorInversed) {
-		const math::Rotator rot { 0.3F, 0.7F, -0.2F };
-		math::fvec3 vec { 1.F, 2.F, 3.F };
+		const auto rot = math::Rotator { 0.3F, 0.7F, -0.2F };
+		auto vec = math::fvec3 { 1.F, 2.F, 3.F };
 
 		report("Rotator::inversed", nanosPerOp([&](const int i) {
 			vec.x = static_cast<float>(i & 7);
@@ -108,7 +108,7 @@ namespace Performance {
 	}
 
 	TEST(TransformBenchmark, DISABLED_TransformAsMatrix) {
-		math::Transform transform { math::Location { 1.F, 2.F, 3.F }, math::Rotator { 0.3F, 0.7F, -0.2F }, math::vec3 { 2.F, 1.F, 0.5F } };
+		auto transform = math::Transform { math::Location { 1.F, 2.F, 3.F }, math::Rotator { 0.3F, 0.7F, -0.2F }, math::vec3 { 2.F, 1.F, 0.5F } };
 
 		report("Transform::asMatrix", nanosPerOp([&](const int i) {
 			transform.setLocation(math::Location { static_cast<float>(i & 7), 2.F, 3.F });
@@ -118,7 +118,7 @@ namespace Performance {
 	}
 
 	TEST(TransformBenchmark, DISABLED_HierarchyUniverseMatrixDepth1) {
-		Chain chain { 1 };
+		auto chain = Chain { 1 };
 		report("HierarchyComponent::getUniverseMatrix depth 1", nanosPerOp([&](int) {
 			const auto out = chain.leaf().getUniverseMatrix();
 			consume(out);
@@ -126,7 +126,7 @@ namespace Performance {
 	}
 
 	TEST(TransformBenchmark, DISABLED_HierarchyUniverseMatrixDepth4) {
-		Chain chain { 4 };
+		auto chain = Chain { 4 };
 		report("HierarchyComponent::getUniverseMatrix depth 4", nanosPerOp([&](int) {
 			const auto out = chain.leaf().getUniverseMatrix();
 			consume(out);
@@ -134,7 +134,7 @@ namespace Performance {
 	}
 
 	TEST(TransformBenchmark, DISABLED_HierarchyUniverseMatrixDepth8) {
-		Chain chain { 8 };
+		auto chain = Chain { 8 };
 		report("HierarchyComponent::getUniverseMatrix depth 8", nanosPerOp([&](int) {
 			const auto out = chain.leaf().getUniverseMatrix();
 			consume(out);
@@ -142,7 +142,7 @@ namespace Performance {
 	}
 
 	TEST(TransformBenchmark, DISABLED_HierarchyUniverseLocationAndRotatorDepth4) {
-		Chain chain { 4 };
+		auto chain = Chain { 4 };
 		report("HierarchyComponent::getUniverse{Location,Rotator} depth 4", nanosPerOp([&](int) {
 			const auto loc = chain.leaf().getUniverseLocation();
 			const auto rot = chain.leaf().getUniverseRotator();
@@ -152,7 +152,7 @@ namespace Performance {
 	}
 
 	TEST(TransformBenchmark, DISABLED_HierarchySetRelativeDepth4) {
-		Chain chain { 4 };
+		auto chain = Chain { 4 };
 		report("HierarchyComponent::setRelativeLocationAndRotator depth 4", nanosPerOp([&](const int i) {
 			chain.leaf().setRelativeLocationAndRotator(
 				math::Location { static_cast<float>(i & 7), 1.F, 2.F },
