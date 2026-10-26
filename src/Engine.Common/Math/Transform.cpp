@@ -78,11 +78,22 @@ ref<Transform::this_type> Transform::setLocationAndRotator(mref<Location> locati
 
 mat4 Transform::asMatrix() const noexcept {
 
-	const auto translate = mat4::make_identity().translate(_location.into());
-	const auto rotate = math::as<mat4>(_rotator.into());
-	const auto scale = mat4::make_identity().unchecked_scale(_scale);
+	// Equals `translate * rotate * scale`: the scale stretches the rotation's columns, the location is the last column.
+	const auto rotation = _rotator.asRotationMatrix();
 
-	return translate * rotate * scale;
+	auto result = mat4::make_identity();
+	for (auto row = 0uLL; row < 3uLL; ++row) {
+		result[0][row] = rotation[row * 3uLL + 0uLL] * _scale[0];
+		result[1][row] = rotation[row * 3uLL + 1uLL] * _scale[1];
+		result[2][row] = rotation[row * 3uLL + 2uLL] * _scale[2];
+	}
+
+	const auto& location = _location.into();
+	result[3][0] = location.x;
+	result[3][1] = location.y;
+	result[3][2] = location.z;
+
+	return result;
 }
 
 mat4 math::operator*(ref<const Transform> outer_, ref<const Transform> inner_) noexcept {
