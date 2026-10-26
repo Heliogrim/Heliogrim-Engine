@@ -1,5 +1,6 @@
 #include "pch.h"
 
+#include <array>
 #include <numbers>
 #include <Engine.Common/Hash/Fnv-1a.hpp>
 #include <Engine.Common/Math/Bezier.hpp>
@@ -214,9 +215,66 @@ namespace Common {
 		EXPECT_NEAR(back.roll(), 0.2F, 1e-3F);
 	}
 
+	/* Rotator -> rotation matrix -> Rotator is the quaternion-free way back. */
+
+	TEST(RotatorTest, RotationMatrixRoundTripCombinedAxes) {
+		const auto rot = Rotator { 0.3F, 0.4F, 0.2F };
+
+		const auto back = Rotator::fromRotationMatrix(rot.asRotationMatrix());
+
+		EXPECT_NEAR(back.pitch(), 0.3F, 1e-4F);
+		EXPECT_NEAR(back.yaw(), 0.4F, 1e-4F);
+		EXPECT_NEAR(back.roll(), 0.2F, 1e-4F);
+	}
+
+	TEST(RotatorTest, RotationMatrixRoundTripNegativeAndLargeAngles) {
+		// Pitch and roll may use the full (-180Deg, 180Deg) range; 2.5 rad is about 143Deg.
+		const auto rot = Rotator { -2.5F, -0.6F, 2.5F };
+
+		const auto back = Rotator::fromRotationMatrix(rot.asRotationMatrix());
+
+		EXPECT_NEAR(back.pitch(), -2.5F, 1e-4F);
+		EXPECT_NEAR(back.yaw(), -0.6F, 1e-4F);
+		EXPECT_NEAR(back.roll(), 2.5F, 1e-4F);
+	}
+
+	TEST(RotatorTest, RotationMatrixOfIdentityIsIdentity) {
+		const auto matrix = Rotator {}.asRotationMatrix();
+
+		// Row-major identity: ones on the diagonal (indices 0, 4, 8), zeros elsewhere.
+		const auto identity = std::array<float, 9> { 1.F, 0.F, 0.F, 0.F, 1.F, 0.F, 0.F, 0.F, 1.F };
+		for (auto i = 0uLL; i < 9uLL; ++i) {
+			EXPECT_NEAR(matrix[i], identity[i], 1e-6F);
+		}
+	}
+
+	TEST(RotatorTest, RotationMatrixOfQuarterYawMapsForwardOntoRight) {
+		// Y is up, so a +90Deg yaw turns Z (forward) towards +X (right): Ry maps (0, 0, 1) onto (1, 0, 0).
+		const auto matrix = Rotator { 0.F, 1.5707964F, 0.F }.asRotationMatrix();
+
+		// Third column of the row-major matrix is (m[2], m[5], m[8]).
+		EXPECT_NEAR(matrix[2], 1.F, 1e-5F);
+		EXPECT_NEAR(matrix[5], 0.F, 1e-5F);
+		EXPECT_NEAR(matrix[8], 0.F, 1e-5F);
+	}
+
+	TEST(RotatorTest, RotationMatrixRoundTripAtGimbalLockKeepsOrientation) {
+		// Yaw of exactly +90Deg: only the sum of pitch and roll is defined, so compare the orientation instead.
+		const auto rot = Rotator { 0.3F, 1.5707964F, 0.2F };
+		const auto vec = fvec3 { 1.F, 2.F, 3.F };
+
+		const auto back = Rotator::fromRotationMatrix(rot.asRotationMatrix());
+
+		const auto expected = rot.rotated(vec);
+		const auto actual = back.rotated(vec);
+		EXPECT_NEAR(actual.x, expected.x, 1e-3F);
+		EXPECT_NEAR(actual.y, expected.y, 1e-3F);
+		EXPECT_NEAR(actual.z, expected.z, 1e-3F);
+	}
+
 	TEST(RotatorTest, QuaternionRoundTripNegativeAndLargeAngles) {
 		// Pitch and roll may use the full (-180Deg, 180Deg) range; 2.5 rad is about 143Deg.
-		const Rotator rot { -2.5F, -0.6F, 2.5F };
+		const auto rot = Rotator { -2.5F, -0.6F, 2.5F };
 
 		const auto back = Rotator { rot.into() };
 
@@ -227,8 +285,8 @@ namespace Common {
 
 	TEST(RotatorTest, QuaternionRoundTripAtGimbalLockKeepsOrientation) {
 		// Yaw of exactly 90Deg: pitch and roll turn around the same axis, so only their combined effect is defined.
-		const Rotator rot { 0.3F, 1.5707964F, 0.F };
-		const fvec3 vec { 1.F, 2.F, 3.F };
+		const auto rot = Rotator { 0.3F, 1.5707964F, 0.F };
+		const auto vec = fvec3 { 1.F, 2.F, 3.F };
 
 		const auto back = Rotator { rot.into() };
 
@@ -242,8 +300,8 @@ namespace Common {
 
 	TEST(RotatorTest, QuaternionConversionMatchesMatrixRotationOfVector) {
 		// The quaternion path and the matrix path of a combined rotation have to describe the same orientation.
-		const Rotator rot { 0.3F, 0.7F, -0.2F };
-		const fvec3 vec { 1.F, 2.F, 3.F };
+		const auto rot = Rotator { 0.3F, 0.7F, -0.2F };
+		const auto vec = fvec3 { 1.F, 2.F, 3.F };
 
 		const auto viaMatrix = rot.rotated(vec);
 		const auto viaRoundTrip = Rotator { rot.into() }.rotated(vec);

@@ -1,5 +1,6 @@
 #include "Rotator.hpp"
 
+#include <algorithm>
 #include <cmath>
 
 #include "Compat.inl"
@@ -74,6 +75,26 @@ std::array<Rotator::value_type, 9> Rotator::asRotationMatrix() const noexcept {
 		cp * sr + sp * sy * cr, cp * cr - sp * sy * sr, -sp * cy,
 		sp * sr - cp * sy * cr, sp * cr + cp * sy * sr, cp * cy
 	};
+}
+
+Rotator::this_type Rotator::fromRotationMatrix(cref<std::array<value_type, 9>> matrix_) noexcept {
+
+	constexpr auto gimbalLimit = 0.999999F;
+
+	/* The entry [0][2] equals sin(yaw), see `asRotationMatrix`. */
+	const auto sinYaw = std::clamp(matrix_[2], -1.F, 1.F);
+	const auto yaw = std::asin(sinYaw);
+
+	if (std::abs(sinYaw) < gimbalLimit) {
+		return Rotator {
+			std::atan2(-matrix_[5], matrix_[8]),
+			yaw,
+			std::atan2(-matrix_[1], matrix_[0])
+		};
+	}
+
+	/* Gimbal lock :: Yaw == +-90Deg, pitch and roll rotate around the same axis, so we fold all of it into pitch. */
+	return Rotator { std::atan2(matrix_[7], matrix_[4]), yaw, 0.F };
 }
 
 Rotator::math_type Rotator::inversed(cref<math_type> vector_) const noexcept {
