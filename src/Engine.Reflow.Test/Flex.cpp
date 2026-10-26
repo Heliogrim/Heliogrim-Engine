@@ -226,8 +226,8 @@ namespace ReflowModule {
 		EXPECT_EQ(offsetOf(0), (math::fvec2 { 4.F, 6.F }));
 	}
 
-	// BUG: SpaceBetween divides by `gaps`, which is 0 for a single child, yielding inf/NaN offsets.
-	TEST_F(FlexLayout, DISABLED_SpaceBetweenSingleChildStaysFinite) {
+	// SpaceBetween distributes free space over the gaps between children, which is 0 gaps for a single child.
+	TEST_F(FlexLayout, SpaceBetweenSingleChildStaysFinite) {
 		add({ 10.F, 10.F });
 
 		algorithm::layout(box(ReflowAxis::eXAxis, ReflowSpacing::eSpaceBetween), &children);
