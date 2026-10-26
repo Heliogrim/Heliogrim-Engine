@@ -1,5 +1,6 @@
 #include "pch.h"
 
+#include <vector>
 #include <Engine.ACS/Traits.hpp>
 #include <Engine.Common/Move.hpp>
 #include <Heliogrim/Component/HierarchyComponent.hpp>
@@ -71,13 +72,145 @@ namespace HeliogrimApi {
 		EXPECT_EQ(root.getLocalTransform().location(), (math::Location { 4.F, 5.F, 6.F }));
 	}
 
-	// SUSPECTED BUG (unverified intent): for a child the requested location is discarded (`setLocationAndRotator({}, ...)`), only the rotator is applied.
-	TEST(HierarchyComponentTest, DISABLED_ChildRelativeSetterStoresLocation) {
+	/* The setter takes a pose in universe space; the stored local transform is relative to the parent. */
+
+	TEST(HierarchyComponentTest, ChildSetterSubtractsUnrotatedParentTranslation) {
 		auto root = make();
+		root.getLocalTransform().setLocation(math::Location { 10.F, 0.F, 0.F });
 		auto child = make(&root);
 
-		child.setRelativeLocationAndRotator(math::Location { 4.F, 5.F, 6.F }, math::Rotator {});
+		// Universe (12, 3, 4) seen from a parent at (10, 0, 0) without rotation is (2, 3, 4).
+		child.setRelativeLocationAndRotator(math::Location { 12.F, 3.F, 4.F }, math::Rotator {});
 
-		EXPECT_EQ(child.getLocalTransform().location(), (math::Location { 4.F, 5.F, 6.F }));
+		const auto local = child.getLocalTransform().location().into();
+		EXPECT_NEAR(local.x, 2.F, 1e-4F);
+		EXPECT_NEAR(local.y, 3.F, 1e-4F);
+		EXPECT_NEAR(local.z, 4.F, 1e-4F);
+	}
+
+	TEST(HierarchyComponentTest, ChildSetterRoundTripsThroughRotatedParent) {
+		auto root = make();
+		root.getLocalTransform().setLocationAndRotator(math::Location { 10.F, 0.F, 0.F }, math::Rotator { 0.F, 0.5F, 0.F });
+		auto child = make(&root);
+
+		// Whatever the parent's rotation does to the local values, the universe pose must be the requested one.
+		child.setRelativeLocationAndRotator(math::Location { 10.F, 0.F, 5.F }, math::Rotator {});
+
+		const auto universe = child.getUniverseLocation().into();
+		EXPECT_NEAR(universe.x, 10.F, 1e-3F);
+		EXPECT_NEAR(universe.y, 0.F, 1e-3F);
+		EXPECT_NEAR(universe.z, 5.F, 1e-3F);
+	}
+
+	TEST(HierarchyComponentTest, ChildSetterDerivesLocalRotatorFromParentUniverseRotator) {
+		auto root = make();
+		root.getLocalTransform().setRotator(math::Rotator { 0.F, 0.5F, 0.F });
+		auto child = make(&root);
+
+		// Parent yaw 0.5 rad, requested universe yaw 0.8 rad => child yaw relative to parent is 0.3 rad.
+		child.setRelativeLocationAndRotator(math::Location {}, math::Rotator { 0.F, 0.8F, 0.F });
+
+		EXPECT_NEAR(child.getLocalTransform().rotator().yaw(), 0.3F, 1e-3F);
+		EXPECT_NEAR(child.getUniverseRotator().yaw(), 0.8F, 1e-3F);
+	}
+
+	TEST(HierarchyComponentTest, UniverseRotatorAccumulatesAlongParentChain) {
+		auto grand = make();
+		grand.getLocalTransform().setRotator(math::Rotator { 0.F, 0.2F, 0.F });
+		auto parent = make(&grand);
+		parent.getLocalTransform().setRotator(math::Rotator { 0.F, 0.3F, 0.F });
+		auto child = make(&parent);
+		child.getLocalTransform().setRotator(math::Rotator { 0.F, 0.1F, 0.F });
+
+		// Yaw adds up along the chain: 0.2 + 0.3 + 0.1 = 0.6 rad.
+		EXPECT_NEAR(child.getUniverseRotator().yaw(), 0.6F, 1e-3F);
+	}
+
+	/* Universe transform: the whole chain is folded in one walk; nested manual rotations act as the reference. */
+
+	TEST(HierarchyComponentTest, UniverseLocationUnderRotatedAndScaledParent) {
+		auto root = make();
+		const math::Rotator rootRotator { 0.3F, 0.7F, -0.2F };
+		root.getLocalTransform().setLocationAndRotator(math::Location { 10.F, 0.F, 0.F }, math::Rotator { rootRotator });
+		root.getLocalTransform().setScale(math::Vector3f32 { 2.F, 1.F, 0.5F });
+		auto child = make(&root);
+		child.getLocalTransform().setLocation(math::Location { 1.F, 2.F, 3.F });
+
+		// The child offset (1, 2, 3) is scaled by the parent first: (2, 2, 1.5); then rotated, then moved to (10, 0, 0).
+		const auto scaled = math::fvec3 { 2.F, 2.F, 1.5F };
+		const auto expected = rootRotator.rotated(scaled) + math::fvec3 { 10.F, 0.F, 0.F };
+
+		const auto loc = child.getUniverseLocation().into();
+		EXPECT_NEAR(loc.x, expected.x, 1e-3F);
+		EXPECT_NEAR(loc.y, expected.y, 1e-3F);
+		EXPECT_NEAR(loc.z, expected.z, 1e-3F);
+	}
+
+	TEST(HierarchyComponentTest, UniverseTransformMatchesNestedRotationsOverThreeLevels) {
+		const math::Rotator r1 { 0.3F, 0.4F, 0.2F };
+		const math::Rotator r2 { -0.2F, 0.5F, 0.1F };
+		const math::Rotator r3 { 0.1F, -0.3F, 0.6F };
+
+		auto grand = make();
+		grand.getLocalTransform().setLocationAndRotator(math::Location { 1.F, 0.F, 0.F }, math::Rotator { r1 });
+		auto parent = make(&grand);
+		parent.getLocalTransform().setLocationAndRotator(math::Location { 0.F, 2.F, 0.F }, math::Rotator { r2 });
+		auto child = make(&parent);
+		child.getLocalTransform().setLocationAndRotator(math::Location { 0.F, 0.F, 3.F }, math::Rotator { r3 });
+
+		// Location: every level rotates everything below it, i.e. t1 + R1 * (t2 + R2 * t3).
+		const auto expectedLoc = math::fvec3 { 1.F, 0.F, 0.F } +
+			r1.rotated(math::fvec3 { 0.F, 2.F, 0.F } + r2.rotated(math::fvec3 { 0.F, 0.F, 3.F }));
+		// Direction: R1 * R2 * R3 applied to (1, 2, 3).
+		const auto expectedDir = r1.rotated(r2.rotated(r3.rotated(math::fvec3 { 1.F, 2.F, 3.F })));
+
+		const auto universe = child.getUniverseTransform();
+		const auto loc = universe.location.into();
+		EXPECT_NEAR(loc.x, expectedLoc.x, 1e-3F);
+		EXPECT_NEAR(loc.y, expectedLoc.y, 1e-3F);
+		EXPECT_NEAR(loc.z, expectedLoc.z, 1e-3F);
+
+		const auto dir = universe.matrix * math::fvec4 { 1.F, 2.F, 3.F, 0.F };
+		EXPECT_NEAR(dir.x, expectedDir.x, 1e-3F);
+		EXPECT_NEAR(dir.y, expectedDir.y, 1e-3F);
+		EXPECT_NEAR(dir.z, expectedDir.z, 1e-3F);
+
+		const auto origin = universe.matrix * math::fvec4 { 0.F, 0.F, 0.F, 1.F };
+		EXPECT_NEAR(origin.x, expectedLoc.x, 1e-3F);
+		EXPECT_NEAR(origin.y, expectedLoc.y, 1e-3F);
+		EXPECT_NEAR(origin.z, expectedLoc.z, 1e-3F);
+
+		// The individual getters are views onto the same walk.
+		EXPECT_EQ(child.getUniverseLocation(), universe.location);
+	}
+
+	TEST(HierarchyComponentTest, UniverseRotatorAccumulatesOverDeepChainBeyondInlineCapacity) {
+		// 12 levels exceed the inline chain buffer (8), each adding 0.05 rad of yaw => 0.6 rad.
+		std::vector<HierarchyComponent> chain {};
+		chain.reserve(12);
+		for (auto i = 0; i < 12; ++i) {
+			chain.push_back(make(i == 0 ? nullptr : &chain.back()));
+			chain.back().getLocalTransform().setRotator(math::Rotator { 0.F, 0.05F, 0.F });
+		}
+
+		EXPECT_NEAR(chain.back().getUniverseRotator().yaw(), 0.6F, 1e-3F);
+	}
+
+	TEST(HierarchyComponentTest, ChildSetterRoundTripsCombinedPoseThroughScaledRotatedParent) {
+		auto root = make();
+		root.getLocalTransform().setLocationAndRotator(math::Location { 4.F, -2.F, 1.F }, math::Rotator { 0.2F, 0.4F, -0.3F });
+		root.getLocalTransform().setScale(math::Vector3f32 { 2.F, 1.F, 0.5F });
+		auto child = make(&root);
+
+		child.setRelativeLocationAndRotator(math::Location { 7.F, 3.F, -5.F }, math::Rotator { 0.1F, -0.5F, 0.6F });
+
+		const auto universe = child.getUniverseTransform();
+		const auto loc = universe.location.into();
+		EXPECT_NEAR(loc.x, 7.F, 1e-3F);
+		EXPECT_NEAR(loc.y, 3.F, 1e-3F);
+		EXPECT_NEAR(loc.z, -5.F, 1e-3F);
+		EXPECT_NEAR(universe.rotator.pitch(), 0.1F, 1e-3F);
+		EXPECT_NEAR(universe.rotator.yaw(), -0.5F, 1e-3F);
+		EXPECT_NEAR(universe.rotator.roll(), 0.6F, 1e-3F);
 	}
 }
