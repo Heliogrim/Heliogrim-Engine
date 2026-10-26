@@ -130,7 +130,7 @@ namespace HeliogrimApi {
 
 	TEST(HierarchyComponentTest, UniverseLocationUnderRotatedAndScaledParent) {
 		auto root = make();
-		const math::Rotator rootRotator { 0.3F, 0.7F, -0.2F };
+		const auto rootRotator = math::Rotator { 0.3F, 0.7F, -0.2F };
 		root.getLocalTransform().setLocationAndRotator(math::Location { 10.F, 0.F, 0.F }, math::Rotator { rootRotator });
 		root.getLocalTransform().setScale(math::Vector3f32 { 2.F, 1.F, 0.5F });
 		auto child = make(&root);
@@ -147,9 +147,9 @@ namespace HeliogrimApi {
 	}
 
 	TEST(HierarchyComponentTest, UniverseTransformMatchesNestedRotationsOverThreeLevels) {
-		const math::Rotator r1 { 0.3F, 0.4F, 0.2F };
-		const math::Rotator r2 { -0.2F, 0.5F, 0.1F };
-		const math::Rotator r3 { 0.1F, -0.3F, 0.6F };
+		const auto r1 = math::Rotator { 0.3F, 0.4F, 0.2F };
+		const auto r2 = math::Rotator { -0.2F, 0.5F, 0.1F };
+		const auto r3 = math::Rotator { 0.1F, -0.3F, 0.6F };
 
 		auto grand = make();
 		grand.getLocalTransform().setLocationAndRotator(math::Location { 1.F, 0.F, 0.F }, math::Rotator { r1 });
@@ -186,7 +186,7 @@ namespace HeliogrimApi {
 
 	TEST(HierarchyComponentTest, UniverseRotatorAccumulatesOverDeepChainBeyondInlineCapacity) {
 		// 12 levels exceed the inline chain buffer (8), each adding 0.05 rad of yaw => 0.6 rad.
-		std::vector<HierarchyComponent> chain {};
+		auto chain = std::vector<HierarchyComponent> {};
 		chain.reserve(12);
 		for (auto i = 0; i < 12; ++i) {
 			chain.push_back(make(i == 0 ? nullptr : &chain.back()));
@@ -194,6 +194,30 @@ namespace HeliogrimApi {
 		}
 
 		EXPECT_NEAR(chain.back().getUniverseRotator().yaw(), 0.6F, 1e-3F);
+	}
+
+	TEST(HierarchyComponentTest, UniverseTransformKeepsScaleOutOfTheRotationOverFiveLevels) {
+		// Every level yaws by 0.1 rad and stretches x by 2; the stretch has to bend the matrix but never the rotator.
+		auto chain = std::vector<HierarchyComponent> {};
+		chain.reserve(5);
+		for (auto i = 0; i < 5; ++i) {
+			chain.push_back(make(i == 0 ? nullptr : &chain.back()));
+			chain.back().getLocalTransform().setRotator(math::Rotator { 0.F, 0.1F, 0.F });
+			chain.back().getLocalTransform().setScale(math::Vector3f32 { 2.F, 1.F, 1.F });
+		}
+
+		const auto universe = chain.back().getUniverseTransform();
+
+		// Rotation: 5 * 0.1 = 0.5 rad of yaw, independent of the scale.
+		EXPECT_NEAR(universe.rotator.pitch(), 0.F, 1e-3F);
+		EXPECT_NEAR(universe.rotator.yaw(), 0.5F, 1e-3F);
+		EXPECT_NEAR(universe.rotator.roll(), 0.F, 1e-3F);
+
+		// Yaw turns around the y axis and the stretch only acts on x, so the y axis passes through all levels unchanged.
+		const auto up = universe.matrix * math::fvec4 { 0.F, 1.F, 0.F, 0.F };
+		EXPECT_NEAR(up.x, 0.F, 1e-3F);
+		EXPECT_NEAR(up.y, 1.F, 1e-3F);
+		EXPECT_NEAR(up.z, 0.F, 1e-3F);
 	}
 
 	TEST(HierarchyComponentTest, ChildSetterRoundTripsCombinedPoseThroughScaledRotatedParent) {
