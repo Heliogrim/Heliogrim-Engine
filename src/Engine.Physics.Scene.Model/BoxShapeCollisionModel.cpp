@@ -38,8 +38,9 @@ void BoxShapeCollisionModel::create(ref<PhysicsSceneSystem> system_) {
 
 	/**/
 
-	const auto& globalLocation = _owner->getUniverseLocation().into();
-	const auto globalRotation = _owner->getUniverseRotator().into();
+	const auto universe = _owner->getUniverseTransform();
+	const auto& globalLocation = universe.location.into();
+	const auto globalRotation = universe.rotator.into();
 
 	auto bodyCreateSettings = JPH::BodyCreationSettings {
 		_boxShape,
@@ -63,8 +64,9 @@ void BoxShapeCollisionModel::create(ref<PhysicsSceneSystem> system_) {
 
 void BoxShapeCollisionModel::update(ref<PhysicsSceneSystem> system_) {
 
-	const auto& globalLocation = _owner->getUniverseLocation().into();
-	const auto globalRotation = _owner->getUniverseRotator().into();
+	const auto universe = _owner->getUniverseTransform();
+	const auto& globalLocation = universe.location.into();
+	const auto globalRotation = universe.rotator.into();
 
 	auto& access = system_.getJoltBodyInterface().value();
 	access.SetPositionAndRotationWhenChanged(
