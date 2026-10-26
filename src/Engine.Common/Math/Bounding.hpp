@@ -12,10 +12,11 @@ namespace hg::math {
 	public:
 		Bounding() noexcept;
 
-		constexpr Bounding(_In_ cref<vec3> center_, _In_ cref<vec3> extent_) noexcept :
+		// Note: Not constexpr, as `vec3::length()` relies on `std::sqrt`, which is not a constant expression before C++26.
+		Bounding(_In_ cref<vec3> center_, _In_ cref<vec3> extent_) noexcept :
 			_center(center_),
 			_extent(extent_),
-			_extent_length() {}
+			_extent_length(extent_.length()) {}
 
 		constexpr Bounding(_In_ cref<vec3> center_, _In_ cref<vec3> extent_, _In_ vec3::value_type length_) noexcept :
 			_center(center_),

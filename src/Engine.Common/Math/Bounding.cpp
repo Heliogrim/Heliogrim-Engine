@@ -15,7 +15,9 @@ bool Bounding::intersectsSpherical(cref<vec3> position_) const noexcept {
 
 bool Bounding::intersectsSpherical(cref<vec3> position_, const float radius_) const noexcept {
 	const auto distance = (_center - position_).sqrLength();
-	return MAX(distance, -distance) <= (_extent_length * _extent_length) + (radius_ * radius_);
+	// Spheres touch or overlap, if the center distance does not exceed the sum of both radii.
+	const auto reach = _extent_length + radius_;
+	return distance <= reach * reach;
 }
 
 bool Bounding::intersectsSpherical(cref<Bounding> other_) const noexcept {
@@ -25,9 +27,9 @@ bool Bounding::intersectsSpherical(cref<Bounding> other_) const noexcept {
 bool Bounding::intersectsAaBb(cref<vec3> position_) const noexcept {
 	const auto delta = _center - position_;
 	return (
-		(_extent.x <= delta.x && -_extent.x >= delta.x) &&
-		(_extent.y <= delta.y && -_extent.y >= delta.y) &&
-		(_extent.z <= delta.z && -_extent.z >= delta.z)
+		(-_extent.x <= delta.x && delta.x <= _extent.x) &&
+		(-_extent.y <= delta.y && delta.y <= _extent.y) &&
+		(-_extent.z <= delta.z && delta.z <= _extent.z)
 	);
 }
 
@@ -51,7 +53,13 @@ bool Bounding::intersectsAaBb(cref<Bounding> other_) const noexcept {
 
 bool Bounding::containsSpherical(cref<vec3> position_, cref<vec3::value_type> radius_) const noexcept {
 	const auto distance = (_center - position_).sqrLength();
-	return (MAX(distance, -distance) + radius_ * radius_) <= _extent_length * _extent_length;
+	// The other sphere is contained, if it fits into the remaining room (L - r) around our center.
+	if (radius_ > _extent_length) {
+		return false;
+	}
+
+	const auto room = _extent_length - radius_;
+	return distance <= room * room;
 }
 
 bool Bounding::containsAaBb(cref<vec3> position_, cref<vec3> extent_) const noexcept {
