@@ -1,5 +1,7 @@
 #pragma once
 
+#include <algorithm>
+#include <cmath>
 #include <utility>
 
 #include "Compat.inl"
@@ -41,7 +43,7 @@ namespace hg::math {
 		mat[1][1] = mat3::value_type { 1 } - mat3::value_type { 2 } * (xx + zz);
 		mat[1][2] = mat3::value_type { 2 } * (yz + wx);
 
-		mat[2][0] = mat3::value_type { 2 } * (xy + wy);
+		mat[2][0] = mat3::value_type { 2 } * (xz + wy);
 		mat[2][1] = mat3::value_type { 2 } * (yz - wx);
 		mat[2][2] = mat3::value_type { 1 } - mat3::value_type { 2 } * (xx + yy);
 
@@ -58,59 +60,48 @@ namespace hg::math {
 
 		const auto& data = from_._quat;
 
-		// @see http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToEuler/
-		constexpr static float singularity = 0.4999999F;
-
-		/*
-		const auto x2 = data.x * data.x;
-		const auto y2 = data.y * data.y;
-		const auto z2 = data.z * data.z;
-		const auto w2 = data.w * data.w;
+		/**
+		 * Inverse of `quaternion::euler`, which composes `q = Rx(pitch) * Ry(yaw) * Rz(roll)`.
+		 *
+		 * The rotation matrix of that product has the following entries (s = sin, c = cos):
+		 *	[0][2] =  s(yaw)
+		 *	[1][2] = -s(pitch) * c(yaw)		[2][2] = c(pitch) * c(yaw)
+		 *	[0][1] = -c(yaw) * s(roll)		[0][0] = c(yaw) * c(roll)
+		 * which are read back from the quaternion components below.
 		 */
+		constexpr static float singularity = 0.999999F;
 
-		const auto test = data.x * data.y + data.z * data.w;
-		/*
-		const auto unit = x2 + y2 + z2 + w2;
-		 */
+		const auto sinYaw = std::clamp(2.F * (data.x * data.z + data.w * data.y), -1.F, 1.F);
 
-		float heading;
-		float attitude;
-		float bank;
+		float pitch;
+		float roll;
 
-		if (test > singularity/* * unit */) {
+		if (std::abs(sinYaw) < singularity) {
 
-			heading = 2.F * math::atan2f(data.x, data.w);
-			attitude = math::pih_f /* North Pole :: Pitch == 90Deg */;
-			bank = 0.F;
+			pitch = math::atan2f(
+				-2.F * (data.y * data.z - data.w * data.x),
+				1.F - 2.F * (data.x * data.x + data.y * data.y)
+			);
 
-		} else if (test < -singularity/* * unit */) {
-
-			heading = -2.F * math::atan2f(data.x, data.w);
-			attitude = -math::pih_f /* South Pole :: Pitch == -90Deg */;
-			bank = 0.F;
+			roll = math::atan2f(
+				-2.F * (data.x * data.y - data.w * data.z),
+				1.F - 2.F * (data.y * data.y + data.z * data.z)
+			);
 
 		} else {
 
-			const auto zp2 = data.z * data.z;
-
-			heading = math::atan2f(
-				2.F * data.y * data.w - 2.F * data.x * data.z,
-				1.F - 2.F * data.y * data.y - 2 * zp2
+			/* Gimbal lock :: Yaw == +-90Deg, pitch and roll rotate around the same axis, so we fold all of it into pitch. */
+			pitch = math::atan2f(
+				2.F * (data.y * data.z + data.w * data.x),
+				1.F - 2.F * (data.x * data.x + data.z * data.z)
 			);
-
-			attitude = math::asinf(2.F * test);
-
-			bank = math::atan2f(
-				2.F * data.x * data.w - 2.F * data.y * data.z,
-				1 - 2.F * data.x * data.x - 2.F * zp2
-			);
-
+			roll = 0.F;
 		}
 
 		return Rotator {
-			bank,
-			heading,
-			attitude
+			pitch,
+			math::asinf(sinYaw),
+			roll
 		};
 	}
 

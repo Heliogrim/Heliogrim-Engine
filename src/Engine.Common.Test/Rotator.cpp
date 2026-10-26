@@ -161,8 +161,7 @@ namespace Common {
 	}
 
 
-	// BUG: fromEulerRaw assigns euler_.x to the roll axis (Rotator.cpp) instead of euler_.z.
-	TEST(RotatorTest, DISABLED_FromEulerRawKeepsAxes) {
+	TEST(RotatorTest, FromEulerRawKeepsAxes) {
 		const auto rot = Rotator::fromEulerRaw(fvec3 { 1.F, 2.F, 3.F });
 
 		EXPECT_EQ(rot.pitch(), 1.F);
@@ -182,9 +181,7 @@ namespace Common {
 		}
 	}
 
-	// SUSPECTED BUG: inversed()/inverse() negate the angles but rotate in the same pitch->yaw->roll order, which is only
-	// the inverse for single-axis rotations; a combined rotation needs the reversed order.
-	TEST(RotatorTest, DISABLED_InverseRotationUndoesCombinedRotation) {
+	TEST(RotatorTest, InverseRotationUndoesCombinedRotation) {
 		const Rotator rot { 0.3F, 0.7F, -0.2F };
 		const fvec3 vec { 1.F, 2.F, 3.F };
 
@@ -205,16 +202,55 @@ namespace Common {
 		}
 	}
 
-	// SUSPECTED BUG: Rotator -> quaternion -> Rotator drifts by ~0.01-0.1 rad for combined axes, so
-	// into() and the quaternion constructor use different euler conventions.
-	TEST(RotatorTest, DISABLED_QuaternionRoundTripCombinedAxes) {
+	/* Rotator -> quaternion -> Rotator must give back the same angles, as long as yaw stays within (-90Deg, 90Deg). */
+
+	TEST(RotatorTest, QuaternionRoundTripCombinedAxes) {
 		const Rotator rot { 0.3F, 0.4F, 0.2F };
 
 		const auto back = Rotator { rot.into() };
 
-		EXPECT_NEAR(back.pitch(), rot.pitch(), 1e-3F);
-		EXPECT_NEAR(back.yaw(), rot.yaw(), 1e-3F);
-		EXPECT_NEAR(back.roll(), rot.roll(), 1e-3F);
+		EXPECT_NEAR(back.pitch(), 0.3F, 1e-3F);
+		EXPECT_NEAR(back.yaw(), 0.4F, 1e-3F);
+		EXPECT_NEAR(back.roll(), 0.2F, 1e-3F);
+	}
+
+	TEST(RotatorTest, QuaternionRoundTripNegativeAndLargeAngles) {
+		// Pitch and roll may use the full (-180Deg, 180Deg) range; 2.5 rad is about 143Deg.
+		const Rotator rot { -2.5F, -0.6F, 2.5F };
+
+		const auto back = Rotator { rot.into() };
+
+		EXPECT_NEAR(back.pitch(), -2.5F, 1e-3F);
+		EXPECT_NEAR(back.yaw(), -0.6F, 1e-3F);
+		EXPECT_NEAR(back.roll(), 2.5F, 1e-3F);
+	}
+
+	TEST(RotatorTest, QuaternionRoundTripAtGimbalLockKeepsOrientation) {
+		// Yaw of exactly 90Deg: pitch and roll turn around the same axis, so only their combined effect is defined.
+		const Rotator rot { 0.3F, 1.5707964F, 0.F };
+		const fvec3 vec { 1.F, 2.F, 3.F };
+
+		const auto back = Rotator { rot.into() };
+
+		// Compare the orientation through a rotated vector instead of the (ambiguous) angles.
+		const auto expected = rot.rotated(vec);
+		const auto actual = back.rotated(vec);
+		EXPECT_NEAR(actual.x, expected.x, 1e-3F);
+		EXPECT_NEAR(actual.y, expected.y, 1e-3F);
+		EXPECT_NEAR(actual.z, expected.z, 1e-3F);
+	}
+
+	TEST(RotatorTest, QuaternionConversionMatchesMatrixRotationOfVector) {
+		// The quaternion path and the matrix path of a combined rotation have to describe the same orientation.
+		const Rotator rot { 0.3F, 0.7F, -0.2F };
+		const fvec3 vec { 1.F, 2.F, 3.F };
+
+		const auto viaMatrix = rot.rotated(vec);
+		const auto viaRoundTrip = Rotator { rot.into() }.rotated(vec);
+
+		EXPECT_NEAR(viaRoundTrip.x, viaMatrix.x, 1e-3F);
+		EXPECT_NEAR(viaRoundTrip.y, viaMatrix.y, 1e-3F);
+		EXPECT_NEAR(viaRoundTrip.z, viaMatrix.z, 1e-3F);
 	}
 
 	TEST(RotatorTest, CombineWithIdentityKeepsSingleAxisRotation) {

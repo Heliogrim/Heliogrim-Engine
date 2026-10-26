@@ -1,5 +1,7 @@
 #pragma once
 
+#include <array>
+
 #include "Quaternion.hpp"
 #include "Vector.hpp"
 #include "../Wrapper.hpp"
@@ -52,6 +54,14 @@ namespace hg::math {
 			z = std::forward<decltype(roll_)>(roll_);
 			return *this;
 		}
+
+	public:
+		/**
+		 * Rotation matrix of `Rx(pitch) * Ry(yaw) * Rz(roll)` with X right, Y up and Z forward.
+		 *
+		 * @returns The 3x3 matrix in row-major order, so the entry of row `r` and column `c` is at index `r * 3 + c`.
+		 */
+		[[nodiscard]] std::array<value_type, 9> asRotationMatrix() const noexcept;
 
 	public:
 		[[nodiscard]] math_type inversed(cref<math_type> vector_) const noexcept;
