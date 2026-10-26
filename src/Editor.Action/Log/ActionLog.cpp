@@ -54,14 +54,24 @@ Arci<Action> ActionLog::popUndoLog() {
 
 void ActionLog::apply(mref<Arci<Action>> action_) {
 	storeLog(clone(action_));
+	// A new action invalidates everything which was reverted before.
+	_relog = {};
 }
 
 Arci<Action> ActionLog::undo() {
-	return popLog();
+	auto action = popLog();
+	if (action != nullptr) {
+		storeUndoLog(clone(action));
+	}
+	return action;
 }
 
 Arci<Action> ActionLog::reapply() {
-	return popUndoLog();
+	auto action = popUndoLog();
+	if (action != nullptr) {
+		storeLog(clone(action));
+	}
+	return action;
 }
 
 void ActionLog::succeed(mref<Arci<Action>> action_) {

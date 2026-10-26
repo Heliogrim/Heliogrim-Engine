@@ -112,14 +112,56 @@ namespace EditorAction {
 		EXPECT_EQ(popped, ActionLog::action_log_size);
 	}
 
-	// BUG: nothing ever pushes onto the re-apply stack (storeUndoLog is unused), so reapply() can never return an
-	// action after an undo. Enable once undo() moves the action onto the re-apply stack.
-	TEST(ActionLogTest, DISABLED_ReapplyReturnsUndoneAction) {
+	TEST(ActionLogTest, ReapplyReturnsUndoneAction) {
 		ActionLog log {};
 		auto a = makeAction();
 		log.apply(clone(a));
 		ASSERT_EQ(log.undo(), a);
 
 		EXPECT_EQ(log.reapply(), a);
+	}
+
+	TEST(ActionLogTest, ReapplyOnEmptyReappliedStackYieldsNothing) {
+		ActionLog log {};
+		log.apply(makeAction());
+
+		EXPECT_EQ(log.reapply(), nullptr);
+	}
+
+	TEST(ActionLogTest, ReapplyReturnsMostRecentlyUndoneFirst) {
+		ActionLog log {};
+		auto a = makeAction();
+		auto b = makeAction();
+		log.apply(clone(a));
+		log.apply(clone(b));
+
+		// Undo order: b, a. Redo order is the reverse of that: a, b.
+		ASSERT_EQ(log.undo(), b);
+		ASSERT_EQ(log.undo(), a);
+
+		EXPECT_EQ(log.reapply(), a);
+		EXPECT_EQ(log.reapply(), b);
+		EXPECT_EQ(log.reapply(), nullptr);
+	}
+
+	TEST(ActionLogTest, ReappliedActionCanBeUndoneAgain) {
+		ActionLog log {};
+		auto a = makeAction();
+		log.apply(clone(a));
+		ASSERT_EQ(log.undo(), a);
+		ASSERT_EQ(log.reapply(), a);
+
+		EXPECT_EQ(log.undo(), a);
+	}
+
+	TEST(ActionLogTest, ApplyDiscardsPreviouslyUndoneActions) {
+		ActionLog log {};
+		log.apply(makeAction());
+		ASSERT_NE(log.undo(), nullptr);
+
+		// A fresh action forks the history, so the undone one must not be re-appliable anymore.
+		log.apply(makeAction());
+
+		EXPECT_EQ(log.reapply(), nullptr);
 	}
 }
