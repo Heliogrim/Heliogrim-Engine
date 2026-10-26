@@ -89,7 +89,7 @@ namespace hg::engine::acs {
 		 * @date 22.10.2020
 		 */
 		static void destroy() {
-			delete value_type::_this;
+			delete std::exchange(value_type::_this, nullptr);
 		}
 
 		/**
