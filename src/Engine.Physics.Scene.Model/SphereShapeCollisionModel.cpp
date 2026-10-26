@@ -36,8 +36,9 @@ void SphereShapeCollisionModel::create(ref<PhysicsSceneSystem> system_) {
 
 	/**/
 
-	const auto& globalLocation = _owner->getUniverseLocation().into();
-	const auto globalRotation = _owner->getUniverseRotator().into();
+	const auto universe = _owner->getUniverseTransform();
+	const auto& globalLocation = universe.location.into();
+	const auto globalRotation = universe.rotator.into();
 
 	auto bodyCreateSettings = JPH::BodyCreationSettings {
 		_sphereShape,
@@ -62,8 +63,9 @@ void SphereShapeCollisionModel::create(ref<PhysicsSceneSystem> system_) {
 
 void SphereShapeCollisionModel::update(ref<PhysicsSceneSystem> system_) {
 
-	const auto& globalLocation = _owner->getUniverseLocation().into();
-	const auto globalRotation = _owner->getUniverseRotator().into();
+	const auto universe = _owner->getUniverseTransform();
+	const auto& globalLocation = universe.location.into();
+	const auto globalRotation = universe.rotator.into();
 
 	auto& access = system_.getJoltBodyInterface().value();
 	access.SetPositionAndRotationWhenChanged(
