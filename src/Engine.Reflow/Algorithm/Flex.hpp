@@ -147,7 +147,7 @@ namespace hg::engine::reflow::algorithm {
 
 		const auto gaps = children_.empty() ? 0uLL : children_.size() - 1uLL;
 		const auto space = box_.size -
-			math::vec2 { box_.padding.x + box_.padding.z, box_.padding.y + box_.padding.z } -
+			math::vec2 { box_.padding.x + box_.padding.z, box_.padding.y + box_.padding.w } -
 			(box_.mainAxis == ReflowAxis::eXAxis ? math::fvec2 { box_.gapping.x, 0.F } : math::fvec2 { 0.F, box_.gapping.y }) * gaps;
 
 		auto size = math::fvec2 {};
@@ -404,7 +404,7 @@ namespace hg::engine::reflow::algorithm {
 				break;
 			}
 			case ReflowSpacing::eSpaceBetween: {
-				gapAlongAxis += (unoccupiedAlongAxis / static_cast<f32>(gaps));
+				gapAlongAxis += (unoccupiedAlongAxis / static_cast<f32>(std::max(gaps, 1uLL)));
 				break;
 			}
 			case ReflowSpacing::eSpaceEvenly: {
