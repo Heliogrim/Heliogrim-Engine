@@ -18,6 +18,21 @@ body:
     validations:
       required: true
   - type: textarea
+    id: done
+    attributes:
+      label: "✅ How do we know it is done?"
+      description: "List checkable results. For editor/reflow flows use Given/When/Then, for technical systems state the contract."
+      placeholder: "Given a storage with a read-only repository, when a mutate is requested, then ..."
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: "🧭 What is covered now, what is left for later?"
+      description: "Name the cases covered by this change and the ones the design should only leave room for."
+    validations:
+      required: true
+  - type: textarea
     id: layout
     attributes:
       label: "🕶️ How should the solution look like to achieve the points above?"
