@@ -39,8 +39,8 @@ Fill template fields by `id` (bug: `actual expected repro platform version subsy
 
 `https://github.com/Heliogrim/Heliogrim-Engine/issues/new?template=<file>&title=<t>&labels=<a,b>&type=<Type>&projects=Heliogrim/1&<id>=<value>...`
 
-Open it with `Start-Process`. If the `type` parameter is ignored by GitHub, tell the user to set it by hand.
+Open it with `Start-Process`. Verified: GitHub honors `type`, `labels` and `projects` in the URL. If a module label does not exist for the area (e.g. build system), omit it unless the user wants a new label created.
 
 ## 5. Status after submit
 
-When the user says it is submitted: find the issue (`gh issue list --author @me --limit 3`), read its project item status via `gh project item-list 1 --owner Heliogrim --format json`, and if it differs from the target status set it with `gh project item-edit` (status field id `PVTSSF_lADOCwDwf84A0I09zgp0Uy4`; options: To triage `f971fb55`, Backlog `f75ad846`, To discuss `4cccfa3e`; project id `PVT_kwDOCwDwf84A0I09`). Needs the `project` token scope: if it fails, tell the user to run `! "/c/Program Files/GitHub CLI/gh.exe" auth refresh -s project`. Do not set Priority.
+The project auto-adds the issue with an EMPTY status (verified), so always set the target status. When the user says it is submitted: find the issue (`gh issue list --author @me --limit 3`), read its project item status via `gh project item-list 1 --owner Heliogrim --format json`, and if it differs from the target status set it with `gh project item-edit` (status field id `PVTSSF_lADOCwDwf84A0I09zgp0Uy4`; options: To triage `f971fb55`, Backlog `f75ad846`, To discuss `4cccfa3e`; project id `PVT_kwDOCwDwf84A0I09`). Needs the `project` token scope: if it fails, tell the user to run `! "/c/Program Files/GitHub CLI/gh.exe" auth refresh -s project`. Do not set Priority.
