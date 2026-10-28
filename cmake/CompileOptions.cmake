@@ -158,15 +158,23 @@ endif ()
 # Compile launch options
 #
 
-find_program(CCACHE_PROGRAM ccache)
-if (CCACHE_PROGRAM AND NO)
-	# Prevent launch control of CCache with whitespace prone resources
-	#set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
-	set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
-	set(CMAKE_C_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
-	# CCache should not be used for linking, as is can make a mess
-	#set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
-	message(STATUS "Found ccache.")
+option(HELIOGRIM_USE_COMPILER_CACHE "Launch compiler through sccache (switches debug info to embedded /Z7)." OFF)
+
+if (HELIOGRIM_USE_COMPILER_CACHE)
+	find_program(SCCACHE_PROGRAM sccache)
+	if (SCCACHE_PROGRAM)
+		set(CMAKE_CXX_COMPILER_LAUNCHER "${SCCACHE_PROGRAM}")
+		set(CMAKE_C_COMPILER_LAUNCHER "${SCCACHE_PROGRAM}")
+		# The launcher is for compiling only; linking stays uncached
+
+		# sccache cannot cache objects sharing a PDB (/Zi); embed debug info (/Z7) instead (CMP0141)
+		if ("${CMAKE_CXX_COMPILER_FRONTEND_VARIANT}" STREQUAL "MSVC" OR MSVC)
+			set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<$<CONFIG:Debug,RelWithDebInfo,Profile>:Embedded>")
+		endif ()
+		message(STATUS "Using sccache: ${SCCACHE_PROGRAM}")
+	else ()
+		message(WARNING "HELIOGRIM_USE_COMPILER_CACHE is ON, but sccache was not found.")
+	endif ()
 endif ()
 
 
