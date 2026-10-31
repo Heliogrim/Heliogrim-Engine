@@ -1,0 +1,26 @@
+#include "Interface.hpp"
+
+#include <algorithm>
+#include <tuple>
+
+using namespace hg::engine::accel::lang;
+using namespace hg;
+
+Vector<ir::InterfaceEntry> ir::computeInterface(ref<const Module> module_) {
+	Vector<InterfaceEntry> entries {};
+	entries.reserve(module_.bindings.size());
+	for (const auto& binding : module_.bindings) {
+		entries.emplace_back(
+			InterfaceEntry { binding.id, binding.type, binding.mode, binding.bindClass, binding.implicit, binding.input }
+		);
+	}
+
+	std::ranges::sort(
+		entries,
+		[](ref<const InterfaceEntry> a_, ref<const InterfaceEntry> b_) {
+			return std::forward_as_tuple(not a_.input, a_.id, a_.mode, a_.cls, a_.implicit, a_.type.index) <
+				std::forward_as_tuple(not b_.input, b_.id, b_.mode, b_.cls, b_.implicit, b_.type.index);
+		}
+	);
+	return entries;
+}
