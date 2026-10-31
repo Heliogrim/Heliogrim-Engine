@@ -1,6 +1,7 @@
 #pragma once
 #include <Engine.Accel.Compile/Profile/EffectProfile.hpp>
 #include <Engine.Accel.Effect/AccelerationEffect.hpp>
+#include <Engine.Accel.Lang/Ir/Variant.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Math/Hash.hpp>
 
@@ -71,8 +72,31 @@ namespace hg::engine::accel {
 		return { .value = hash_from_address(value_) };
 	}
 
-	constexpr HashedState<EffectProfile> calcStorageHash(cref<EffectProfile> value_) noexcept {
-		return { .value = hasher::fnv1a<decltype(value_._name)> {}(value_._name) };
+	inline HashedState<EffectProfile> calcStorageHash(ref<const EffectProfile> value_) noexcept {
+		lang::ir::ContentHasher h {};
+		h.put(value_._name);
+
+		h.put(static_cast<u64>(value_._definitions.size()));
+		for (const auto& definition : value_._definitions) {
+			h.put(definition.type);
+			h.put(definition.data);
+		}
+
+		h.put(static_cast<u64>(value_._modules.size()));
+		for (const auto& module : value_._modules) {
+			h.put(module.contentHash());
+		}
+
+		/* shortcut: the profile has no toggle field yet and descriptions have no content hash, so only the usage
+		 * pattern's symbol ids are keyed; add the profile toggles and a description key when they exist */
+		for (const auto* const pairs : { &value_._usagePattern.ctx.pairs, &value_._usagePattern.dyn.pairs }) {
+			h.put(static_cast<u64>(pairs->size()));
+			for (const auto& [description, symbolId] : *pairs) {
+				h.put(symbolId.value);
+			}
+		}
+
+		return { .value = h.value };
 	}
 
 	constexpr HashedState<EffectSpecification> calcStorageHash(
@@ -83,10 +107,8 @@ namespace hg::engine::accel {
 
 	inline HashedState<Stage> calcStorageHash(cref<Stage> value_) noexcept {
 		auto combined = static_cast<size_t>(value_.getFlagBits());
-		hash::hashCombine(
-			combined,
-			hash_from_address(*value_.getIntermediate())
-		);
+		const auto intermediate = value_.getIntermediate();
+		hash::hashCombine(combined, intermediate != nullptr ? intermediate->contentHash() : 0uLL);
 		return { .value = combined };
 	}
 
