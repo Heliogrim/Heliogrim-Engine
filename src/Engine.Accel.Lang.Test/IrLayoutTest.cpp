@@ -254,6 +254,36 @@ namespace AccelLang {
 		EXPECT_EQ(slotOf(packed, "e")->binding, 4u);
 	}
 
+	TEST(LayoutTest, SkipCostCountsOnlyHolesLeft) {
+		// existing: p:Y@0, q:X@1
+		const auto first = layoutOf(
+			parse(
+				"@input (mode = bind, id = \"p\", class = storage) block p { u32 y; };\n"
+				"@input (mode = bind, id = \"q\", class = storage) block q { f32 x; };\n"
+			)
+		);
+		ASSERT_EQ(slotOf(first, "q")->binding, 1u);
+		const auto second = parse(
+			"@input (mode = bind, id = \"a\", class = storage) block a { f32 x; };\n"
+			"@input (mode = bind, id = \"b\", class = storage) block b { u32 y; };\n"
+			"@input (mode = bind, id = \"c\", class = storage) block c { s32 z; };\n"
+		);
+		const auto existing = Vector<Layout> { first };
+
+		// set 0 ends gap-free, so even a very cheap new set is not opened
+		const auto cheapSet = layoutOf(second, LayoutWeights { 1.0f, 4.0f, 0.5f }, existing);
+		EXPECT_EQ(slotOf(cheapSet, "a")->binding, 1u);
+		EXPECT_EQ(slotOf(cheapSet, "b")->binding, 0u);
+		EXPECT_EQ(slotOf(cheapSet, "c")->set, 0u);
+		EXPECT_EQ(slotOf(cheapSet, "c")->binding, 2u);
+
+		// `b` takes @0 first, so `a` skips nothing and is reused even when one skip would cost a new layout
+		const auto cheapLayout = layoutOf(second, LayoutWeights { 1.0f, 1.0f, 8.0f }, existing);
+		EXPECT_EQ(slotOf(cheapLayout, "a")->binding, 1u);
+		EXPECT_EQ(slotOf(cheapLayout, "b")->binding, 0u);
+		EXPECT_EQ(slotOf(cheapLayout, "c")->binding, 2u);
+	}
+
 	TEST(LayoutTest, EmptyInterface) {
 		const auto layout = assignLayout({}, {}, {});
 		EXPECT_TRUE(layout.slots.empty());
