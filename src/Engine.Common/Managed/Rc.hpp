@@ -29,6 +29,6 @@ namespace hg {
 	/**
 	 * Atomic Intrusive Reference Counted < Type_ >
 	 */
-	template <IncompleteOrAtomicIntrusiveRefCountable Type_>
-	using Arci = AtomicRefCountedIntrusive<Type_>;
+	template <IncompleteOrAtomicIntrusiveRefCountable Type_, class Policy_ = StdAtomicPolicy>
+	using Arci = AtomicRefCountedIntrusive<Type_, Policy_>;
 }

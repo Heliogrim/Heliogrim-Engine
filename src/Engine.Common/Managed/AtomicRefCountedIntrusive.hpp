@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <memory>
 #include <stdexcept>
 #include <thread>
@@ -29,21 +30,34 @@ namespace hg {
 
 	/**/
 
-	template <IncompleteOrAtomicIntrusiveRefCountable Ty_>
+	// Every atomic access of the object counter and the Arci slot word goes through the policy, so a test or
+	//	model-checker policy can intercept them.
+	struct StdAtomicPolicy {
+		template <class Ux_>
+		using atomic = std::atomic<Ux_>;
+
+		static void fence(const std::memory_order order_) noexcept {
+			std::atomic_thread_fence(order_);
+		}
+	};
+
+	/**/
+
+	template <IncompleteOrAtomicIntrusiveRefCountable Ty_, class Policy_ = StdAtomicPolicy>
 	class AtomicRefCountedIntrusive;
 
 	/**/
 
-	template <class Derived_>
+	template <class Derived_, class Policy_ = StdAtomicPolicy>
 	class ArcFromThis {
 	public:
-		template <IncompleteOrAtomicIntrusiveRefCountable Ux_>
+		template <IncompleteOrAtomicIntrusiveRefCountable Ux_, class Px_>
 		friend class ::hg::AtomicRefCountedIntrusive;
 
 	public:
-		using this_type = ArcFromThis<Derived_>;
+		using this_type = ArcFromThis<Derived_, Policy_>;
 
-		using counter_type = std::atomic_uint_fast16_t;
+		using counter_type = typename Policy_::template atomic<std::uint_fast16_t>;
 		using derived_type = Derived_;
 
 	public:
@@ -90,14 +104,13 @@ namespace hg {
 
 	public:
 		template <typename Proxy_ = Derived_>
-		[[nodiscard]] AtomicRefCountedIntrusive<Proxy_> arci_from_this() noexcept;
+		[[nodiscard]] AtomicRefCountedIntrusive<Proxy_, Policy_> arci_from_this() noexcept;
 	};
 
 	/**/
 
 	namespace {
 		using arci_packed_type = std::uintptr_t;
-		using arci_atomic_packed_type = std::atomic_uintptr_t;
 
 		constexpr arci_packed_type arci_packed_shift = 16uLL;
 		constexpr arci_packed_type arci_packed_ref_mask =
@@ -110,12 +123,12 @@ namespace hg {
 	 * Note: Concurrently copying from and replacing (move-assign) the same instance is only best-effort. The writer
 	 *	drain-waits for readers, which may starve it. This pattern needs a redesign (split reference counting).
 	 */
-	template <IncompleteOrAtomicIntrusiveRefCountable Ty_>
+	template <IncompleteOrAtomicIntrusiveRefCountable Ty_, class Policy_>
 	class AtomicRefCountedIntrusive final {
 	public:
-		using this_type = AtomicRefCountedIntrusive<Ty_>;
+		using this_type = AtomicRefCountedIntrusive<Ty_, Policy_>;
 
-		using storage_type = arci_atomic_packed_type;
+		using storage_type = typename Policy_::template atomic<arci_packed_type>;
 		using value_type = Ty_;
 
 	private:
@@ -175,14 +188,14 @@ namespace hg {
 			AtomicRefCountedIntrusive() {}
 
 		constexpr AtomicRefCountedIntrusive(const this_type& other_) noexcept :
-			_obj(++const_cast<ref<arci_atomic_packed_type>>(other_._obj)) {
+			_obj(++const_cast<ref<storage_type>>(other_._obj)) {
 
 			auto* const subject = decode_pointer(_obj.load(std::memory_order::relaxed));
 
 			if (subject != nullptr) {
 				subject->ref_inc();
 			}
-			--const_cast<ref<arci_atomic_packed_type>>(other_._obj);
+			--const_cast<ref<storage_type>>(other_._obj);
 
 			/**/
 
@@ -212,11 +225,11 @@ namespace hg {
 		}
 
 		template <typename From_> requires std::is_const_v<Ty_> && std::same_as<From_, std::remove_const_t<Ty_>>
-		constexpr AtomicRefCountedIntrusive(cref<AtomicRefCountedIntrusive<From_>> other_) noexcept :
+		constexpr AtomicRefCountedIntrusive(cref<AtomicRefCountedIntrusive<From_, Policy_>> other_) noexcept :
 			AtomicRefCountedIntrusive(other_.template into<Ty_>()) {}
 
 		template <typename From_> requires std::is_const_v<Ty_> && std::same_as<From_, std::remove_const_t<Ty_>>
-		constexpr AtomicRefCountedIntrusive(mref<AtomicRefCountedIntrusive<From_>> other_) noexcept :
+		constexpr AtomicRefCountedIntrusive(mref<AtomicRefCountedIntrusive<From_, Policy_>> other_) noexcept :
 			AtomicRefCountedIntrusive(std::move(other_).template into<Ty_>()) {}
 
 		constexpr ~AtomicRefCountedIntrusive() {
@@ -435,44 +448,46 @@ namespace hg {
 		 * Pedantic Support
 		 */
 		template <IsAtomicIntrusiveRefCountable ToType_> requires ArciConvertibleTo<Ty_, ToType_>
-		[[nodiscard]] AtomicRefCountedIntrusive<ToType_> into() const & noexcept {
+		[[nodiscard]] AtomicRefCountedIntrusive<ToType_, Policy_> into() const & noexcept {
 			return clone(*this).template into<ToType_>();
 		}
 
 		template <IsAtomicIntrusiveRefCountable ToType_> requires ArciConvertibleTo<Ty_, ToType_>
-		[[nodiscard]] AtomicRefCountedIntrusive<ToType_> into() && noexcept {
-			return static_cast<mref<AtomicRefCountedIntrusive<ToType_>>>(
-				*reinterpret_cast<ptr<AtomicRefCountedIntrusive<ToType_>>>(this)
+		[[nodiscard]] AtomicRefCountedIntrusive<ToType_, Policy_> into() && noexcept {
+			return static_cast<mref<AtomicRefCountedIntrusive<ToType_, Policy_>>>(
+				*reinterpret_cast<ptr<AtomicRefCountedIntrusive<ToType_, Policy_>>>(this)
 			);
 		}
 
 	private:
 		template <IsAtomicIntrusiveRefCountable ToType_> requires ArciConvertibleTo<Ty_, ToType_>
-		[[nodiscard]] explicit operator AtomicRefCountedIntrusive<ToType_>() && noexcept {
-			return static_cast<mref<AtomicRefCountedIntrusive<ToType_>>>(
-				*reinterpret_cast<ptr<AtomicRefCountedIntrusive<ToType_>>>(this)
+		[[nodiscard]] explicit operator AtomicRefCountedIntrusive<ToType_, Policy_>() && noexcept {
+			return static_cast<mref<AtomicRefCountedIntrusive<ToType_, Policy_>>>(
+				*reinterpret_cast<ptr<AtomicRefCountedIntrusive<ToType_, Policy_>>>(this)
 			);
 		}
 	};
 
 	/**/
 
-	template <class Derived_>
+	template <class Derived_, class Policy_>
 	template <typename Proxy_>
-	AtomicRefCountedIntrusive<Proxy_> ArcFromThis<Derived_>::arci_from_this() noexcept {
+	AtomicRefCountedIntrusive<Proxy_, Policy_> ArcFromThis<Derived_, Policy_>::arci_from_this() noexcept {
 		const auto result = ref_inc();
 		::hg::assertd(result);
-		return AtomicRefCountedIntrusive<Proxy_>::create_from_storage(static_cast<ptr<Derived_>>(this));
+		return AtomicRefCountedIntrusive<Proxy_, Policy_>::create_from_storage(static_cast<ptr<Derived_>>(this));
 	}
 }
 
 /**/
 
 namespace std {
-	template <class Type_>
-	struct hash<::hg::AtomicRefCountedIntrusive<Type_>> :
+	template <class Type_, class Policy_>
+	struct hash<::hg::AtomicRefCountedIntrusive<Type_, Policy_>> :
 		public ::std::hash<::std::uintptr_t> {
-		[[nodiscard]] size_t operator()(::hg::cref<::hg::AtomicRefCountedIntrusive<Type_>> value_) const noexcept {
+		[[nodiscard]] size_t operator()(
+			::hg::cref<::hg::AtomicRefCountedIntrusive<Type_, Policy_>> value_
+		) const noexcept {
 			return static_cast<const ::std::hash<::std::uintptr_t>&>(*this)(
 				reinterpret_cast<::std::uintptr_t>(std::addressof(*value_))
 			);
