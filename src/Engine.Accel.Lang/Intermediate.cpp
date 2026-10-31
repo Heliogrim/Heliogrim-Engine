@@ -5,12 +5,55 @@
 #include <Engine.Asserts/Todo.hpp>
 #include <Engine.Common/Make.hpp>
 
+#include "Ir/Variant.hpp"
+
 using namespace hg::engine::accel::lang;
 using namespace hg;
 
 Intermediate::Intermediate(cref<this_type> other_) = default;
 
 Intermediate::Intermediate(mref<this_type> other_) noexcept = default;
+
+u64 Intermediate::contentHash() const noexcept {
+	ir::ContentHasher h {};
+	h.put(lang.dialect);
+	h.put(static_cast<u64>(lang.text.size()));
+	for (const auto& block : lang.text) {
+		h.put(block.data);
+	}
+
+	/* shortcut: legacy rep functions, mainEntry and symbol table are not hashed (symbols are derived from the
+	 * variables' SymbolId annotations; lowering emits no rep functions), hash them once hand-built ones carry code */
+	const auto variables = [&h](ref<const Vector<uptr<Variable>>> variables_) {
+		h.put(static_cast<u64>(variables_.size()));
+		for (const auto& variable : variables_) {
+			h.put(variable->type.category);
+			h.put(variable->type.typeData);
+			for (auto cur = variable->annotation.get(); cur != nullptr; cur = cur->next.get()) {
+				h.put(cur->type);
+				if (cur->type == AnnotationType::eSymbolId) {
+					h.put(static_cast<ptr<const SymbolIdAnnotation>>(cur)->symbolId);
+				} else if (cur->type == AnnotationType::eVkBindLocation) {
+					const auto* const location = static_cast<ptr<const VkBindLocationAnnotation>>(cur);
+					h.put(location->vkSet);
+					h.put(location->vkLocation);
+					h.put(location->vkOffset);
+				}
+			}
+			/* end of the chain, so chains cannot shift into the next variable */
+			h.put(u8 { 0xFFu });
+		}
+	};
+	variables(rep.globalScope.inbound);
+	variables(rep.globalScope.outbound);
+	variables(rep.globalScope.variables);
+
+	h.put(ir != nullptr);
+	if (ir != nullptr) {
+		h.put(ir::contentHash(*ir));
+	}
+	return h.value;
+}
 
 void Intermediate::applyMask(u8 mask_) {
 	todo_panic();
