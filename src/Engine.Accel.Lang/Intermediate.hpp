@@ -1,9 +1,11 @@
 #pragma once
 
 #include <Engine.Common/Sal.hpp>
+#include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 
 #include "Language.hpp"
 #include "Representation.hpp"
+#include "Ir/Module.hpp"
 
 namespace hg::engine::accel::lang {
 	class Intermediate {
@@ -22,8 +24,13 @@ namespace hg::engine::accel::lang {
 	public:
 		Language lang;
 		Representation rep;
+		/* the resolved module this intermediate was lowered from; shared and never mutated (null for hand-built ones) */
+		smr<const ir::Module> ir;
 
 	public:
+		/* content hash for variant caching */
+		[[nodiscard]] u64 contentHash() const noexcept;
+
 		[[deprecated]] void applyMask(u8 mask_ = 0xFFu);
 
 		void enumerateOutboundSymbols(
