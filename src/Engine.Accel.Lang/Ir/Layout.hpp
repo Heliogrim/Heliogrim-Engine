@@ -41,7 +41,7 @@ namespace hg::engine::accel::lang::ir {
 
 	/**
 	 * `slots` sorted by (set, binding); `push` in id order; `inputLocations[i]` is the first location of the i-th
-	 * forward input in id order. Forward outputs get no entry: Task 9 numbers them by id.
+	 * forward input in id order. Forward outputs get no entry: the caller numbers them by id.
 	 */
 	struct Layout {
 		Vector<SlotAssignment> slots;
@@ -60,20 +60,21 @@ namespace hg::engine::accel::lang::ir {
 	 * Resolve order step 5. Deterministic: the same entries (in any order) and type table contents (in any order)
 	 * with the same weights and existing layouts give the same layout; everything iterates sorted vectors.
 	 *
-	 * Entries: duplicates collapse by id, the first in (id, class, type key) order wins (bind and push share one id
-	 * space, forward inputs their own). A bind entry with class `eNone` and every forward output are skipped (Task 9
-	 * reports a missing class). Bind entries take descriptor slots, push entries push ranges, forward inputs locations.
+	 * Entries: duplicates collapse by id, the first in (id, class, type key, size, locations, valid) order wins (bind
+	 * and push share one id space, forward inputs their own). A bind entry with class `eNone` and every forward output
+	 * are skipped (no slot or location; the caller's contract check must report a missing class). Bind entries take descriptor slots, push entries push ranges, forward inputs locations.
 	 *
 	 * Slots: ordered by class (uniform, storage, texture, sampler), then id, so a fresh layout is packed: set 0,
 	 * bindings 0..n-1 with each class contiguous.
 	 * shortcut: the IR carries no update frequency, so all bindings start in set 0 grouped by class; add a
 	 * frequency annotation (per pipeline / per pass / per invocation) and key sets by it when materials need it.
-	 * 1. Reuse: for each entry, the slots of `existing_` with the same class and type key that this layout has not
-	 *    taken are candidates; the one with fewest skipped bindings (binding minus the set's next free binding, or 0
-	 *    when below it) wins, ties by same id, then (set, binding). It is reused if
-	 *    `unusedSlotCost * skipped < extraLayoutCost`; skips into set 0 add to the accumulated skip cost.
+	 * 1. Reuse: for an entry, the slots of `existing_` with the same class and type key that this layout has not
+	 *    taken are candidates. Repeatedly, the (entry, candidate) pair with fewest skipped bindings (binding minus
+	 *    the set's next free binding, or 0 when below it) is taken, ties by same id, then (set, binding), then entry
+	 *    order; it is reused only if `unusedSlotCost * skipped < extraLayoutCost`, else reuse stops.
 	 * 2. New bindings (entries not reused), same order: once, before the first one, a new set (one past the highest
-	 *    set in use) is opened if `extraSetCost` is below the accumulated skip cost; new bindings then append at the
+	 *    set in use) is opened if `extraSetCost` is below the accumulated skip cost, `unusedSlotCost` times the
+	 *    numbers below set 0's next free binding that no reuse took; new bindings then append at the
 	 *    next free binding of that set (or of set 0). Skipped numbers stay free: they keep the reused set lined up
 	 *    with the existing layout.
 	 *

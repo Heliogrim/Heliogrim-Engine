@@ -25,7 +25,7 @@ namespace hg::engine::accel::lang::ir {
 	 * Resolve order step 4: every binding of a resolved and sliced module (conditions are not evaluated), sorted by
 	 * (`input` first, `id`), ties by mode, class, implicit and type index. Implicit outputs (no GLSL variable) are
 	 * entries too. Nothing is validated here: a bind entry without class (`eNone`, the parser does not infer one)
-	 * is listed as is; `assignLayout` skips it and the Task 9 contract check reports it.
+	 * is listed as is; `assignLayout` skips it, so the caller's contract check must report it.
 	 */
 	[[nodiscard]] Vector<InterfaceEntry> computeInterface(ref<const Module> module_);
 }

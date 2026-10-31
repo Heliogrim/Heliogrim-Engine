@@ -221,15 +221,20 @@ namespace {
 		const Info* info;
 	};
 
-	/* sorts by (id, class, type key, size) and keeps the first per id */
+	/* sorts by (id, class, type key, size, locations, valid) and keeps the first per id */
 	void collapse(ref<Vector<Item>> items_) {
-		std::ranges::sort(
-			items_,
-			[](cref<Item> a_, cref<Item> b_) {
-				return std::tie(a_.entry->id, a_.entry->cls, a_.info->key, a_.info->size) <
-					std::tie(b_.entry->id, b_.entry->cls, b_.info->key, b_.info->size);
-			}
-		);
+		// bitfields cannot be tied, so locations and valid are copied
+		const auto rank = [](ref<const Item> item_) {
+			return std::tuple<ref<const String>, ir::BindClass,ref<const String>, u64, u64, u64>(
+				item_.entry->id,
+				item_.entry->cls,
+				item_.info->key,
+				item_.info->size,
+				item_.info->locations,
+				item_.info->valid
+			);
+		};
+		std::ranges::sort(items_, [&](ref<const Item> a_, ref<const Item> b_) { return rank(a_) < rank(b_); });
 		const auto dup = std::ranges::unique(items_, [](cref<Item> a_, cref<Item> b_) { return a_.entry->id == b_.entry->id; });
 		items_.erase(dup.begin(), dup.end());
 	}
@@ -352,36 +357,52 @@ ir::Layout ir::assignLayout(
 		layout.slots.push_back(SlotAssignment { slot_.first.entry->id, set_, binding_, slot_.second });
 	};
 
-	// 1. reuse
-	Vector<const std::pair<Item, String>*> fresh {};
-	float skipCost = 0.0f;
-	for (const auto& slot : slots) {
-		const auto& [item, identity] = slot;
+	// 1. reuse, globally fewest skips first, so a reuse is not charged for a hole a later reuse fills
+	Vector<bool> reused(slots.size(), false);
+	for (;;) {
 		const SlotAssignment* best = nullptr;
-		std::tuple<u32, bool, u32, u32> bestRank {};
-		for (const auto* candidate : pool) {
-			if (identity.empty() || candidate->identity != identity || isTaken(candidate->set, candidate->binding)) {
+		std::tuple<u32, bool, u32, u32, size_t> bestRank {};
+		for (size_t i = 0uz; i < slots.size(); ++i) {
+			const auto& [item, identity] = slots[i];
+			if (reused[i] || identity.empty()) {
 				continue;
 			}
-			const auto top = tops.of(candidate->set);
-			const u32 skipped = candidate->binding > top ? candidate->binding - top : 0uL;
-			const auto rank = std::tuple<u32, bool, u32, u32>(skipped, candidate->id != item.entry->id, candidate->set, candidate->binding);
-			if (best == nullptr || rank < bestRank) {
-				best = candidate;
-				bestRank = rank;
+			for (const auto* candidate : pool) {
+				if (candidate->identity != identity || isTaken(candidate->set, candidate->binding)) {
+					continue;
+				}
+				const auto top = tops.of(candidate->set);
+				const u32 skipped = candidate->binding > top ? candidate->binding - top : 0uL;
+				const auto rank = std::tuple<u32, bool, u32, u32, size_t>(
+					skipped,
+					candidate->id != item.entry->id,
+					candidate->set,
+					candidate->binding,
+					i
+				);
+				if (best == nullptr || rank < bestRank) {
+					best = candidate;
+					bestRank = rank;
+				}
 			}
 		}
-
-		const auto cost = best == nullptr ? 0.0f : weights_.unusedSlotCost * static_cast<float>(std::get<0>(bestRank));
-		if (best != nullptr && cost < weights_.extraLayoutCost) {
-			skipCost += best->set == 0uL ? cost : 0.0f;
-			take(slot, best->set, best->binding);
-		} else {
-			fresh.push_back(&slot);
+		if (best == nullptr || not(weights_.unusedSlotCost * static_cast<float>(std::get<0>(bestRank)) < weights_.extraLayoutCost)) {
+			break;
+		}
+		const auto i = std::get<4>(bestRank);
+		reused[i] = true;
+		take(slots[i], best->set, best->binding);
+	}
+	Vector<const std::pair<Item, String>*> fresh {};
+	for (size_t i = 0uz; i < slots.size(); ++i) {
+		if (not reused[i]) {
+			fresh.emplace_back(&slots[i]);
 		}
 	}
 
-	// 2. new bindings
+	// 2. new bindings; the skip cost is the holes actually left in set 0 (taken entries are unique and below its top)
+	const auto takenInSetZero = std::ranges::count(taken, 0uL, &std::pair<u32, u32>::first);
+	const auto skipCost = weights_.unusedSlotCost * static_cast<float>(tops.of(0uL) - static_cast<u32>(takenInSetZero));
 	u32 set = 0uL;
 	if (not fresh.empty() && weights_.extraSetCost < skipCost && tops.highestSet() != ~0uL) {
 		set = tops.highestSet() + 1uL;
