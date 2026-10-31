@@ -291,13 +291,18 @@ namespace AccelLang {
 
 	/* Rulings pinned beyond the brief */
 
-	TEST(ParserTest, FunctionBodyIsDiagnosticUntilTask5) {
-		const auto diags = parseFail("fn F() -> f32 {\n\treturn 1.0;\n}\nfn G() -> f32 {");
-		ASSERT_EQ(diags.size(), 2uz);
-		EXPECT_TRUE(mentions(diags[0], "function bodies are parsed from Task 5 on")) << diags[0].message;
-		EXPECT_EQ(diags[0].line, 1u);
-		EXPECT_EQ(diags[0].column, 15u);
-		EXPECT_EQ(diags[1].line, 4u);
+	TEST(ParserTest, BadFunctionBodyDoesNotCascade) {
+		const auto diags = parseFail(
+			"fn F() -> f32 {\n\treturn ) ;\n\tif (1.0 { return 2.0; }\n}\n"
+			"fn G() -> f32 { return 1.0; }\n"
+			"fn H() -> f32 {"
+		);
+		ASSERT_EQ(diags.size(), 3uz);
+		EXPECT_EQ(diags[0].line, 2u);
+		EXPECT_EQ(diags[0].column, 9u);
+		EXPECT_EQ(diags[1].line, 3u);
+		EXPECT_EQ(diags[2].line, 6u);// unterminated, at H's '{'
+		EXPECT_EQ(diags[2].column, 15u);
 	}
 
 	TEST(ParserTest, ZeroValueAndDuplicateTogglesAreDiagnostics) {
@@ -539,5 +544,450 @@ namespace AccelLang {
 		ASSERT_EQ(module.functions.size(), 2uz);
 		EXPECT_EQ(module.functions[0].name, "L");
 		EXPECT_EQ(module.functions[1].name, "R");
+	}
+}
+
+/**/
+
+#include <Engine.Accel.Lang/Ir/Analysis.hpp>
+
+namespace AccelLang {
+	namespace {
+		/* a missing function or body throws out_of_range, which fails the test */
+		[[nodiscard]] ref<const Stmt> bodyRoot(ref<const Module> module_, size_t function_) {
+			return module_.stmts.at(module_.functions.at(function_).body.value_or(BodyRef {}).root.index);
+		}
+
+		[[nodiscard]] ref<const Stmt> stmtAt(ref<const Module> module_, StmtRef ref_) {
+			return module_.stmts.at(ref_.index);
+		}
+
+		[[nodiscard]] ref<const Expr> exprAt(ref<const Module> module_, ExprRef ref_) {
+			return module_.exprs.at(ref_.index);
+		}
+
+		constexpr auto unset = ~0uL;
+	}
+
+	TEST(ParserBodyTest, ParsesShadowVertexMain) {
+		const auto module = parseOk(
+			"@input (mode = bind, id = \"camera\", class = storage) block camera { f32mat4[4] cascadeViewProj; f32vec4 cascadeDepth; };\n"
+			"@input (mode = bind, id = \"model\", class = storage) block model { f32mat4[] model; };\n"
+			"@input (mode = bind, id = \"push\", class = push) block push { u32 cascade; };\n"
+			"@input (mode = forward) f32vec3 local_position;\n"
+			"fn main() {\n"
+			"\tlet pos = model.model[instance_index] * f32vec4(local_position, 1.0);\n"
+			"\tposition = camera.cascadeViewProj[push.cascade] * pos;\n"
+			"}\n"
+		);
+		ASSERT_EQ(module.functions.size(), 1uz);
+		const auto& root = bodyRoot(module, 0uz);
+		EXPECT_EQ(root.kind, StmtKind::eBlock);
+		ASSERT_EQ(root.children.size(), 2uz);
+
+		const auto& let = stmtAt(module, root.children[0]);
+		EXPECT_EQ(let.kind, StmtKind::eDeclareLocal);
+		EXPECT_EQ(let.name, "pos");
+		EXPECT_EQ(exprAt(module, let.lhs).kind, ExprKind::eBinary);
+
+		const auto& assign = stmtAt(module, root.children[1]);
+		EXPECT_EQ(assign.kind, StmtKind::eAssign);
+		EXPECT_EQ(exprAt(module, assign.lhs).kind, ExprKind::eBuiltin);
+		const auto& rhs = exprAt(module, assign.rhs);
+		ASSERT_EQ(rhs.operands.size(), 2uz);
+		EXPECT_TRUE(exprAt(module, rhs.operands[1]).local);// pos
+
+		const auto usage = usageOf(module, 0u);
+		EXPECT_TRUE(usage.calledFunctions.empty());
+		EXPECT_EQ(usage.readBindings, (Vector<u32> { 0u, 1u, 2u, 3u }));// camera, model, push, local_position
+		EXPECT_TRUE(usage.writtenBindings.empty());// `position` is a builtin
+	}
+
+	TEST(ParserBodyTest, UnresolvedNameIsDiagnostic) {
+		const auto diags = parseFail("fn main() {\n\tposition = f32vec4(nope, 1.0);\n}\n");
+		ASSERT_EQ(diags.size(), 1uz);
+		EXPECT_TRUE(mentions(diags[0], "Unknown name 'nope'")) << diags[0].message;
+		EXPECT_EQ(diags[0].line, 2u);
+		EXPECT_EQ(diags[0].column, 21u);
+	}
+
+	TEST(ParserBodyTest, WhenStatementKeepsCondition) {
+		const auto module = parseOk(
+			"toggle Shadows : { Off, On } = Off;\n"
+			"fn main() {\n"
+			"\t@when (Shadows == On) position = f32vec4(1.0);\n"
+			"\t@when (Shadows == Off) { frag_depth = 0.5; }\n"
+			"}\n"
+		);
+		const auto& root = bodyRoot(module, 0uz);
+		ASSERT_EQ(root.children.size(), 2uz);
+
+		const auto& single = stmtAt(module, root.children[0]);
+		EXPECT_EQ(single.kind, StmtKind::eWhen);
+		EXPECT_EQ(single.when.kind, ConditionKind::eEquals);
+		EXPECT_EQ(single.when.toggle, "Shadows");
+		EXPECT_EQ(single.when.value, "On");
+		ASSERT_EQ(single.children.size(), 1uz);
+		EXPECT_EQ(stmtAt(module, single.children[0]).kind, StmtKind::eAssign);
+
+		const auto& block = stmtAt(module, root.children[1]);
+		EXPECT_EQ(block.kind, StmtKind::eWhen);
+		EXPECT_EQ(block.when.value, "Off");
+		ASSERT_EQ(block.children.size(), 1uz);
+		EXPECT_EQ(stmtAt(module, block.children[0]).kind, StmtKind::eBlock);
+
+		const auto diags = parseFail("toggle Shadows : { Off, On } = Off;\nfn main() {\n\t@when (Nope == On) frag_depth = 1.0;\n}\n");
+		ASSERT_EQ(diags.size(), 1uz);
+		EXPECT_TRUE(mentions(diags[0], "Unknown toggle 'Nope'")) << diags[0].message;
+		EXPECT_EQ(diags[0].line, 3u);
+		EXPECT_EQ(diags[0].column, 9u);
+	}
+
+	TEST(ParserBodyTest, EmptyMainIsValid) {
+		const auto module = parseOk("@output (mode = forward, id = \"depth\") implicit f32 depth;\nfn main() {}\n");
+		ASSERT_EQ(module.bindings.size(), 1uz);
+		EXPECT_TRUE(module.bindings[0].implicit);
+		ASSERT_EQ(module.functions.size(), 1uz);
+		const auto& root = bodyRoot(module, 0uz);
+		EXPECT_EQ(root.kind, StmtKind::eBlock);
+		EXPECT_TRUE(root.children.empty());
+		EXPECT_TRUE(usageOf(module, 0u).writtenBindings.empty());
+	}
+
+	/* Rulings pinned beyond the brief */
+
+	TEST(ParserBodyTest, LocalShadowingBindingIsNotABindingUse) {
+		const auto module = parseOk(
+			"@input (mode = forward) f32vec4 color;\n"
+			"@output (mode = forward) f32vec4 outColor;\n"
+			"fn main() {\n"
+			"\tlet color = f32vec4(1.0);\n"
+			"\toutColor = color;\n"
+			"}\n"
+		);
+		const auto& assign = stmtAt(module, bodyRoot(module, 0uz).children.at(1));
+		const auto& read = exprAt(module, assign.rhs);
+		EXPECT_EQ(read.kind, ExprKind::eNameRef);
+		EXPECT_TRUE(read.local);
+		EXPECT_EQ(read.binding.index, unset);
+		EXPECT_EQ(exprAt(module, assign.lhs).binding.index, 1u);
+
+		const auto usage = usageOf(module, 0u);
+		EXPECT_TRUE(usage.readBindings.empty());
+		EXPECT_EQ(usage.writtenBindings, (Vector<u32> { 1u }));
+	}
+
+	TEST(ParserBodyTest, LocalScopeEndsAtBlockEnd) {
+		const auto diags = parseFail("fn main() {\n\t{ let a = 1.0; }\n\tfrag_depth = a;\n}\n");
+		ASSERT_EQ(diags.size(), 1uz);
+		EXPECT_TRUE(mentions(diags[0], "'a'")) << diags[0].message;
+		EXPECT_EQ(diags[0].line, 3u);
+		EXPECT_EQ(diags[0].column, 15u);
+
+		// an inner shadow ends with its block; the parameter is visible again
+		const auto module = parseOk("fn F(x: f32) -> f32 {\n\t{ let x = 2.0; frag_depth = x; }\n\treturn x;\n}\n");
+		const auto& root = bodyRoot(module, 0uz);
+		ASSERT_EQ(root.children.size(), 2uz);
+		EXPECT_TRUE(exprAt(module, stmtAt(module, root.children[1]).lhs).local);
+
+		// duplicates in one scope are diagnostics, parameters included
+		const auto dups = parseFail("fn G(a: f32, a: f32);\nfn H() {\n\tlet b = 1.0;\n\tlet b = 2.0;\n}\n");
+		ASSERT_EQ(dups.size(), 2uz);
+		EXPECT_EQ(dups[0].line, 1u);
+		EXPECT_EQ(dups[0].column, 14u);
+		EXPECT_EQ(dups[1].line, 4u);
+		EXPECT_EQ(dups[1].column, 6u);
+	}
+
+	TEST(ParserBodyTest, CallsResolveForwardAndUnknownCallIsDiagnostic) {
+		const auto module = parseOk(
+			"fn Decl() -> f32;\n"
+			"fn main() {\n"
+			"\tfrag_depth = Later(1.0) + Decl();\n"
+			"}\n"
+			"fn Later(v: f32) -> f32 { return v; }\n"
+			"fn Decl() -> f32 { return 0.5; }\n"
+		);
+		ASSERT_EQ(module.functions.size(), 4uz);
+		const auto usage = usageOf(module, 1u);
+		EXPECT_EQ(usage.calledFunctions, (Vector<u32> { 2u, 3u }));// Decl resolves to its body, not the forward decl
+		const std::array<u32, 1> roots { 1u };
+		EXPECT_EQ(reachableFunctions(module, roots), (Vector<u32> { 1u, 2u, 3u }));
+
+		const auto diags = parseFail("fn main() {\n\tMissing(1.0);\n}\n");
+		ASSERT_EQ(diags.size(), 1uz);
+		EXPECT_TRUE(mentions(diags[0], "Unknown function 'Missing'")) << diags[0].message;
+		EXPECT_EQ(diags[0].line, 2u);
+		EXPECT_EQ(diags[0].column, 2u);
+	}
+
+	TEST(ParserBodyTest, BuiltinNamesAndSample) {
+		const auto module = parseOk(
+			"@input (mode = bind, id = \"albedo\", class = texture) texture2d albedo;\n"
+			"@input (mode = bind, id = \"smp\", class = sampler) sampler smp;\n"
+			"@input (mode = forward) f32vec2 uv;\n"
+			"@output (mode = forward) f32vec4 color;\n"
+			"fn main() {\n"
+			"\tposition = f32vec4(f32(vertex_index), f32(instance_index), 0.0, 1.0);\n"
+			"\tframe_depth_is_not_a_builtin();\n"
+			"}\n"
+			"fn frame_depth_is_not_a_builtin() {\n"
+			"\tfrag_depth = 1.0;\n"
+			"\tcolor = sample(albedo, smp, uv);\n"
+			"}\n"
+		);
+		const auto& first = stmtAt(module, bodyRoot(module, 0uz).children.at(0));
+		const auto& position = exprAt(module, first.lhs);
+		EXPECT_EQ(position.kind, ExprKind::eBuiltin);
+		EXPECT_EQ(position.name, "position");
+		const auto& ctor = exprAt(module, first.rhs);
+		ASSERT_EQ(ctor.operands.size(), 4uz);
+		const auto& vertexIndex = exprAt(module, exprAt(module, ctor.operands[0]).operands.at(0));
+		EXPECT_EQ(vertexIndex.kind, ExprKind::eBuiltin);
+		EXPECT_EQ(vertexIndex.name, "vertex_index");
+
+		const auto& sample = exprAt(module, stmtAt(module, bodyRoot(module, 1uz).children.at(1)).rhs);
+		EXPECT_EQ(sample.kind, ExprKind::eBuiltin);
+		EXPECT_EQ(sample.name, "sample");
+		EXPECT_EQ(sample.operands.size(), 3uz);
+
+		const auto usage = usageOf(module, 1u);
+		EXPECT_EQ(usage.readBindings, (Vector<u32> { 0u, 1u, 2u }));
+		EXPECT_EQ(usage.writtenBindings, (Vector<u32> { 3u }));// frag_depth is not a binding
+		EXPECT_TRUE(usageOf(module, 0u).writtenBindings.empty());
+	}
+
+	TEST(ParserBodyTest, IfElseAndPrecedenceStructure) {
+		const auto module = parseOk(
+			"fn F(a: f32, b: f32) -> f32 {\n"
+			"\tif (a + 1.0 < b * 2.0 - a) return 0.0; else if (a >= 1.0) { return -a; } else return a - b - 1.0;\n"
+			"\tif (!(a == b)) frag_depth = a;\n"
+			"\treturn a;\n"
+			"}\n"
+		);
+		const auto& root = bodyRoot(module, 0uz);
+		ASSERT_EQ(root.children.size(), 3uz);
+
+		const auto& outer = stmtAt(module, root.children[0]);
+		EXPECT_EQ(outer.kind, StmtKind::eIf);
+		ASSERT_EQ(outer.children.size(), 2uz);
+		const auto& cond = exprAt(module, outer.lhs);// (a + 1.0) < ((b * 2.0) - a)
+		EXPECT_EQ(cond.kind, ExprKind::eBinary);
+		EXPECT_EQ(cond.name, "<");
+		EXPECT_EQ(exprAt(module, cond.operands.at(0)).name, "+");
+		const auto& minus = exprAt(module, cond.operands.at(1));
+		EXPECT_EQ(minus.name, "-");
+		EXPECT_EQ(exprAt(module, minus.operands.at(0)).name, "*");
+		EXPECT_EQ(stmtAt(module, outer.children[0]).kind, StmtKind::eReturn);
+
+		const auto& elseIf = stmtAt(module, outer.children[1]);
+		EXPECT_EQ(elseIf.kind, StmtKind::eIf);
+		ASSERT_EQ(elseIf.children.size(), 2uz);
+		EXPECT_EQ(exprAt(module, elseIf.lhs).name, ">=");
+		EXPECT_EQ(stmtAt(module, elseIf.children[0]).kind, StmtKind::eBlock);
+		const auto& last = exprAt(module, stmtAt(module, elseIf.children[1]).lhs);// (a - b) - 1.0
+		EXPECT_EQ(last.name, "-");
+		EXPECT_EQ(exprAt(module, last.operands.at(0)).name, "-");
+		EXPECT_EQ(exprAt(module, last.operands.at(1)).kind, ExprKind::eLiteral);
+
+		const auto& noElse = stmtAt(module, root.children[1]);
+		EXPECT_EQ(noElse.kind, StmtKind::eIf);
+		EXPECT_EQ(noElse.children.size(), 1uz);
+		const auto& negation = exprAt(module, noElse.lhs);
+		EXPECT_EQ(negation.kind, ExprKind::eUnary);
+		EXPECT_EQ(negation.name, "!");
+		EXPECT_EQ(exprAt(module, negation.operands.at(0)).name, "==");
+
+		const auto& ret = stmtAt(module, root.children[2]);
+		EXPECT_EQ(ret.kind, StmtKind::eReturn);
+		EXPECT_TRUE(exprAt(module, ret.lhs).local);
+
+		const auto empty = parseOk("fn G() { return; }");
+		EXPECT_EQ(stmtAt(empty, bodyRoot(empty, 0uz).children.at(0)).lhs.index, unset);
+
+		// the condition and both arms count for usageOf
+		const auto used = parseOk(
+			"@input (mode = forward) f32 level;\n@output (mode = forward) f32 o;\n"
+			"fn H() { if (level < 0.5) { o = 1.0; } else o = 0.0; }"
+		);
+		EXPECT_EQ(usageOf(used, 0u).readBindings, (Vector<u32> { 0u }));
+		EXPECT_EQ(usageOf(used, 0u).writtenBindings, (Vector<u32> { 1u }));
+	}
+
+	TEST(ParserBodyTest, BothLocalDeclarationForms) {
+		const auto module = parseOk(
+			"struct Light { f32vec3 dir; }\n"
+			"fn main() {\n"
+			"\tlet v: f32vec4 = f32vec4(1.0);\n"
+			"\tf32vec4 w = v;\n"
+			"\tlet u = w;\n"
+			"\tf32[4] arr;\n"
+			"\tlet t: f32;\n"
+			"\tLight l = Light(w.xyz);\n"
+			"\tfrag_depth = arr[0] + t + u.x + l.dir.y;\n"
+			"}\n"
+		);
+		const auto& root = bodyRoot(module, 0uz);
+		ASSERT_EQ(root.children.size(), 7uz);
+
+		const auto& v = stmtAt(module, root.children[0]);
+		const auto& w = stmtAt(module, root.children[1]);
+		const auto& u = stmtAt(module, root.children[2]);
+		const auto& arr = stmtAt(module, root.children[3]);
+		const auto& t = stmtAt(module, root.children[4]);
+		const auto& l = stmtAt(module, root.children[5]);
+		for (const auto* decl : { &v, &w, &u, &arr, &t, &l }) {
+			EXPECT_EQ(decl->kind, StmtKind::eDeclareLocal);
+		}
+		EXPECT_EQ(v.name, "v");
+		EXPECT_EQ(module.types.at(v.type.index).kind, TypeKind::eVector);
+		EXPECT_EQ(w.name, "w");
+		EXPECT_EQ(w.type, v.type);
+		EXPECT_TRUE(exprAt(module, w.lhs).local);
+		EXPECT_EQ(u.type.index, unset);// inferred later
+		EXPECT_NE(u.lhs.index, unset);
+		EXPECT_EQ(module.types.at(arr.type.index).kind, TypeKind::eArray);
+		EXPECT_EQ(arr.lhs.index, unset);// no initializer
+		EXPECT_EQ(module.types.at(t.type.index).kind, TypeKind::eScalar);
+		EXPECT_EQ(t.lhs.index, unset);
+		EXPECT_EQ(module.types.at(l.type.index).name, "Light");
+
+		const auto diags = parseFail("fn main() {\n\tlet z;\n\tnope q = 1.0;\n}\n");
+		ASSERT_EQ(diags.size(), 2uz);
+		EXPECT_EQ(diags[0].line, 2u);
+		EXPECT_EQ(diags[0].column, 6u);
+		EXPECT_TRUE(mentions(diags[1], "Unknown type 'nope'")) << diags[1].message;
+		EXPECT_EQ(diags[1].line, 3u);
+	}
+
+	TEST(ParserBodyTest, FieldAndIndexWritesCountAsBaseBindingWrites) {
+		const auto module = parseOk(
+			"@output (mode = bind, id = \"camera\", class = storage) block camera { f32mat4 vp; };\n"
+			"@output (mode = bind, id = \"a\", class = storage) f32[8] a;\n"
+			"@input (mode = forward) u32 i;\n"
+			"@input (mode = forward) f32mat4 x;\n"
+			"fn main() {\n"
+			"\tcamera.vp = x;\n"
+			"\ta[i] = 1.0;\n"
+			"}\n"
+		);
+		const auto usage = usageOf(module, 0u);
+		EXPECT_EQ(usage.writtenBindings, (Vector<u32> { 0u, 1u }));// camera, a
+		EXPECT_EQ(usage.readBindings, (Vector<u32> { 2u, 3u }));// i, x
+
+		const auto& index = exprAt(module, stmtAt(module, bodyRoot(module, 0uz).children.at(1)).lhs);
+		EXPECT_EQ(index.kind, ExprKind::eIndex);
+		ASSERT_EQ(index.operands.size(), 2uz);
+		EXPECT_EQ(exprAt(module, index.operands[0]).binding.index, 1u);
+		EXPECT_EQ(exprAt(module, index.operands[1]).binding.index, 2u);
+
+		const auto diags = parseFail("fn F() -> f32;\nfn main() {\n\t1.0 = frag_depth;\n\tF() = 1.0;\n}\n");
+		ASSERT_EQ(diags.size(), 2uz);
+		EXPECT_TRUE(mentions(diags[0], "Cannot assign")) << diags[0].message;
+		EXPECT_EQ(diags[0].line, 3u);
+		EXPECT_EQ(diags[0].column, 2u);
+		EXPECT_EQ(diags[1].line, 4u);
+	}
+
+	TEST(ParserBodyTest, ConstructorAndSwizzleShape) {
+		const auto module = parseOk(
+			"struct Light { f32vec3 dir; f32 power; }\n"
+			"@input (mode = forward) f32vec4 a;\n"
+			"@output (mode = forward) f32vec4 o;\n"
+			"fn main() {\n"
+			"\to = f32vec4(a.xy, 0.2, -a.w);\n"
+			"\tlet l = Light(a.rgb, 1.0);\n"
+			"}\n"
+		);
+		const auto& root = bodyRoot(module, 0uz);
+		const auto& ctor = exprAt(module, stmtAt(module, root.children.at(0)).rhs);
+		EXPECT_EQ(ctor.kind, ExprKind::eConstruct);
+		ASSERT_LT(ctor.type.index, module.types.size());
+		EXPECT_EQ(module.types[ctor.type.index].kind, TypeKind::eVector);
+		EXPECT_EQ(module.types[ctor.type.index].n, 4u);
+		EXPECT_EQ(module.types[ctor.type.index].bits, 32u);
+		EXPECT_EQ(ctor.type, module.bindings[0].type);// interned once
+		ASSERT_EQ(ctor.operands.size(), 3uz);
+
+		const auto& swizzle = exprAt(module, ctor.operands[0]);
+		EXPECT_EQ(swizzle.kind, ExprKind::eField);
+		EXPECT_EQ(swizzle.name, "xy");
+		ASSERT_EQ(swizzle.operands.size(), 1uz);
+		EXPECT_EQ(exprAt(module, swizzle.operands[0]).binding.index, 0u);
+
+		const auto& literal = exprAt(module, ctor.operands[1]);
+		EXPECT_EQ(literal.kind, ExprKind::eLiteral);
+		EXPECT_EQ(literal.name, "0.2");
+
+		const auto& negated = exprAt(module, ctor.operands[2]);// postfix binds tighter than unary
+		EXPECT_EQ(negated.kind, ExprKind::eUnary);
+		EXPECT_EQ(exprAt(module, negated.operands.at(0)).kind, ExprKind::eField);
+
+		const auto& light = exprAt(module, stmtAt(module, root.children.at(1)).lhs);
+		EXPECT_EQ(light.kind, ExprKind::eConstruct);
+		EXPECT_EQ(module.types[light.type.index].name, "Light");
+		EXPECT_EQ(light.operands.size(), 2uz);
+	}
+
+	TEST(ParserBodyTest, UnsupportedSyntaxIsDiagnostic) {
+		const auto diags = parseFail(
+			"fn main() {\n"
+			"\tfor (u32 i = 0; i < 4; i = i + 1) { frag_depth = 1.0; }\n"
+			"\twhile (true) { }\n"
+			"\tfrag_depth += 1.0;\n"
+			"\tswitch (vertex_index) { }\n"
+			"\tfrag_depth = 2.0;\n"
+			"}\n"
+		);
+		ASSERT_EQ(diags.size(), 4uz);
+		for (const auto& diag : diags) {
+			EXPECT_TRUE(mentions(diag, "unsupported in this milestone")) << diag.message;
+		}
+		EXPECT_EQ(diags[0].line, 2u);
+		EXPECT_EQ(diags[0].column, 2u);
+		EXPECT_EQ(diags[1].line, 3u);
+		EXPECT_EQ(diags[2].line, 4u);
+		EXPECT_EQ(diags[2].column, 13u);
+		EXPECT_EQ(diags[3].line, 5u);
+	}
+
+	TEST(ParserBodyTest, EofInsideBodyIsOneDiagnostic) {
+		const auto open = parseFail("fn main() {\n\tif (true) {\n\t\tfrag_depth = 1.0;");
+		ASSERT_EQ(open.size(), 1uz);
+		EXPECT_TRUE(mentions(open[0], "Unterminated")) << open[0].message;
+		EXPECT_EQ(open[0].line, 2u);
+		EXPECT_EQ(open[0].column, 12u);
+
+		const auto midExpr = parseFail("fn main() {\n\tfrag_depth = f32(1.0");
+		ASSERT_EQ(midExpr.size(), 1uz);
+		EXPECT_TRUE(mentions(midExpr[0], "end of input")) << midExpr[0].message;
+		EXPECT_EQ(midExpr[0].line, 2u);
+	}
+
+	TEST(ParserBodyTest, DeepExpressionsAreOneDepthDiagnostic) {
+		const auto body = [](ref<const String> expr_) {
+			return "fn main() {\n\tfrag_depth = " + expr_ + ";\n}\n";
+		};
+		// statement is level 1, so unary #256 (column 15 + 255) is level 257
+		expectOnlyDepthError(parseFail(body(repeat("(", 5000uz) + "1.0" + repeat(")", 5000uz))), 2u, 270u);
+		expectOnlyDepthError(parseFail(body(repeat("-", 5000uz) + "1.0")), 2u, 270u);
+		expectOnlyDepthError(parseFail(body(repeat("!", 5000uz) + "true")), 2u, 270u);
+		expectOnlyDepthError(parseFail(body(repeat("f32(", 5000uz) + "1.0" + repeat(")", 5000uz))), 2u, 15u + 255u * 4u);
+
+		EXPECT_EQ(parseOk(body(repeat("(", 100uz) + "1.0" + repeat(")", 100uz))).functions.size(), 1uz);
+		EXPECT_EQ(parseOk(body(repeat("-", 100uz) + "1.0")).functions.size(), 1uz);
+		EXPECT_EQ(parseOk(body(repeat("!", 100uz) + "true")).functions.size(), 1uz);
+	}
+
+	TEST(ParserBodyTest, DeepStatementsAreOneDepthDiagnostic) {
+		// statement #257 is the 257th '{'
+		expectOnlyDepthError(parseFail("fn main() {\n" + repeat("{", 5000uz) + repeat("}", 5000uz) + "\n}\n"), 2u, 257u);
+		// unbalanced: enclosing blocks are not reported as unterminated on top
+		expectOnlyDepthError(parseFail("fn main() {\n" + repeat("{", 5000uz)), 2u, 257u);
+		// if #256 is level 256, its condition `true` (column 1 + 255 * 10 + 4) level 257
+		expectOnlyDepthError(parseFail("fn main() {\n" + repeat("if (true) ", 5000uz) + "frag_depth = 1.0;\n}\n"), 2u, 2555u);
+
+		EXPECT_EQ(parseOk("fn main() {\n" + repeat("{", 100uz) + repeat("}", 100uz) + "\n}\n").functions.size(), 1uz);
+		EXPECT_EQ(parseOk("fn main() {\n" + repeat("if (true) ", 100uz) + "frag_depth = 1.0;\n}\n").functions.size(), 1uz);
 	}
 }

@@ -16,10 +16,10 @@ namespace {
 	}
 
 	struct Walker {
-		cref<ir::Module> module;
+		ref<const ir::Module> module;
 		ir::Usage usage;
 
-		void bindingAt(cref<ir::Expr> expr_, Vector<u32>& into_) {
+		void bindingAt(ref<const ir::Expr> expr_, Vector<u32>& into_) {
 			if (expr_.local) {
 				return;
 			}
@@ -96,7 +96,9 @@ namespace {
 					break;
 				}
 				case ir::StmtKind::eBlock:
-				case ir::StmtKind::eWhen: {
+				case ir::StmtKind::eWhen:
+				case ir::StmtKind::eIf: {
+					expr(s.lhs);// if: the condition; unset (out of range) otherwise
 					for (const auto& child : s.children) {
 						stmt(child);
 					}
@@ -110,7 +112,7 @@ namespace {
 	};
 }
 
-ir::Usage ir::usageOf(cref<Module> module_, u32 functionIndex_) {
+ir::Usage ir::usageOf(ref<const Module> module_, u32 functionIndex_) {
 	Walker walker { module_, {} };
 	if (functionIndex_ < module_.functions.size()) {
 		const auto& body = module_.functions[functionIndex_].body;
@@ -121,13 +123,13 @@ ir::Usage ir::usageOf(cref<Module> module_, u32 functionIndex_) {
 	return std::move(walker.usage);
 }
 
-Vector<u32> ir::reachableFunctions(cref<Module> module_, std::span<const u32> roots_) {
+Vector<u32> ir::reachableFunctions(ref<const Module> module_, std::span<const u32> roots_) {
 	Vector<bool> seen(module_.functions.size(), false);
 	Vector<u32> work {};
 	for (const auto root : roots_) {
 		if (root < seen.size() && !seen[root]) {
 			seen[root] = true;
-			work.push_back(root);
+			work.emplace_back(root);
 		}
 	}
 
@@ -137,7 +139,7 @@ Vector<u32> ir::reachableFunctions(cref<Module> module_, std::span<const u32> ro
 		for (const auto callee : usageOf(module_, next).calledFunctions) {
 			if (callee < seen.size() && !seen[callee]) {
 				seen[callee] = true;
-				work.push_back(callee);
+				work.emplace_back(callee);
 			}
 		}
 	}
@@ -145,7 +147,7 @@ Vector<u32> ir::reachableFunctions(cref<Module> module_, std::span<const u32> ro
 	Vector<u32> result {};
 	for (auto i = 0uz; i < seen.size(); ++i) {
 		if (seen[i]) {
-			result.push_back(static_cast<u32>(i));
+			result.emplace_back(static_cast<u32>(i));
 		}
 	}
 	return result;
