@@ -47,6 +47,14 @@ namespace hg::engine::accel::lang::ir {
 		u32 index = ~0uL;
 	};
 
+	struct BindingRef {
+		u32 index = ~0uL;
+	};
+
+	struct FunctionRef {
+		u32 index = ~0uL;
+	};
+
 	struct BodyRef {
 		StmtRef root;
 	};
@@ -71,8 +79,13 @@ namespace hg::engine::accel::lang::ir {
 		/* literal: source text; nameref/call: referenced name; field: member name; unary/binary: operator */
 		String name;
 
-		/* nameref: binding index, call: function index; ~0 while unresolved (then matched by name) */
-		u32 resolved = ~0uL;
+		/* nameref: resolved binding; call: resolved function; ~0 = unresolved (then matched by name).
+		 * Typed so arena merging can remap them like the other refs. */
+		BindingRef binding;
+		FunctionRef function;
+
+		/* nameref resolved to a local or parameter: not a binding use, `binding` stays absent */
+		bool local = false;
 
 		/* construct */
 		TypeRef type;

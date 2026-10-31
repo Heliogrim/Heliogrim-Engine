@@ -81,6 +81,34 @@ namespace AccelLang {
 		EXPECT_EQ(usageOf(m, 0uL).calledFunctions, (Vector<u32> { 0uL }));
 	}
 
+	TEST(IrAnalysisTest, LocalShadowingBindingIsNotBindingUse) {
+		Module m {};
+		m.bindings.emplace_back(BindingDecl { .id = "depth", .localName = "depth" });
+
+		const auto lhs = addExpr(m, Expr { .kind = ExprKind::eNameRef, .name = "depth", .local = true });
+		const auto rhs = addExpr(m, Expr { .kind = ExprKind::eNameRef, .name = "depth", .local = true });
+		const auto write = addStmt(m, Stmt { .kind = StmtKind::eAssign, .lhs = lhs, .rhs = rhs });
+		addFunction(m, "f", { write });
+
+		const auto usage = usageOf(m, 0uL);
+		EXPECT_TRUE(usage.readBindings.empty());
+		EXPECT_TRUE(usage.writtenBindings.empty());
+	}
+
+	TEST(IrAnalysisTest, ResolvedIndexWinsOverName) {
+		Module m {};
+		m.bindings.emplace_back(BindingDecl { .id = "a", .localName = "a" });
+		m.bindings.emplace_back(BindingDecl { .id = "b", .localName = "b" });
+
+		addFunction(
+			m,
+			"f",
+			{ exprStmt(m, addExpr(m, Expr { .kind = ExprKind::eNameRef, .name = "a", .binding = BindingRef { 1uL } })) }
+		);
+
+		EXPECT_EQ(usageOf(m, 0uL).readBindings, (Vector<u32> { 1uL }));
+	}
+
 	TEST(IrAnalysisTest, WhenCountsBothArms) {
 		Module m {};
 		m.bindings.emplace_back(BindingDecl { .id = "x", .localName = "x" });
