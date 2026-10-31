@@ -38,7 +38,7 @@ namespace hg::engine::accel::lang::ir {
 		[[nodiscard]] bool operator==(const TypeRef&) const noexcept = default;
 	};
 
-	/* Arena handles; the arenas themselves are added with the AST */
+	/* Arena handles; index-based so arenas can be copied and appended (refs remapped by offset) */
 	struct ExprRef {
 		u32 index = ~0uL;
 	};
@@ -48,7 +48,66 @@ namespace hg::engine::accel::lang::ir {
 	};
 
 	struct BodyRef {
-		u32 index = ~0uL;
+		StmtRef root;
+	};
+
+	enum class ExprKind : u8 {
+		eLiteral,
+		eNameRef,
+		eCall,
+		eField,
+		eIndex,
+		eUnary,
+		eBinary,
+		eConstruct
+	};
+
+	/**
+	 * Flat expression node; only the members relevant to `kind` are meaningful.
+	 */
+	struct Expr {
+		ExprKind kind = ExprKind::eLiteral;
+
+		/* literal: source text; nameref/call: referenced name; field: member name; unary/binary: operator */
+		String name;
+
+		/* nameref: binding index, call: function index; ~0 while unresolved (then matched by name) */
+		u32 resolved = ~0uL;
+
+		/* construct */
+		TypeRef type;
+
+		/* call/construct: arguments; field: [base]; index: [base, index]; unary: [operand]; binary: [lhs, rhs] */
+		Vector<ExprRef> operands;
+	};
+
+	enum class StmtKind : u8 {
+		eDeclareLocal,
+		eAssign,
+		eExpr,
+		eReturn,
+		eBlock,
+		eWhen
+	};
+
+	/**
+	 * Flat statement node; only the members relevant to `kind` are meaningful.
+	 */
+	struct Stmt {
+		StmtKind kind = StmtKind::eExpr;
+
+		/* declare-local */
+		String name;
+		TypeRef type;
+
+		/* declare-local: init (optional), assign: lhs, expr/return: value (optional for return) */
+		ExprRef lhs;
+		/* assign: rhs */
+		ExprRef rhs;
+
+		/* block: children; when: [then, else?] */
+		Vector<StmtRef> children;
+		Condition when;
 	};
 
 	enum class TypeKind : u8 {
@@ -145,5 +204,7 @@ namespace hg::engine::accel::lang::ir {
 		Vector<TypeDesc> types;
 		Vector<BindingDecl> bindings;
 		Vector<FunctionDecl> functions;
+		Vector<Expr> exprs;
+		Vector<Stmt> stmts;
 	};
 }
