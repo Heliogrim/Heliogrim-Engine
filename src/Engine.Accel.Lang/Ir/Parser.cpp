@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <array>
+#include <string>
 
 #include "Lexer.hpp"
 
@@ -82,7 +83,33 @@ namespace {
 		return ir::Condition::all({ std::move(outer_), std::move(inner_) });
 	}
 
-	/* State shared by the root module and all modules it includes; everything is parsed into one Module. */
+	/* One limit for every recursive production (conditions, @when blocks, includes): bad input must not overflow the stack */
+	constexpr u32 maxDepth = 256uL;
+
+	/* RAII nesting level */
+	class Nest {
+	public:
+		explicit Nest(ref<u32> depth_) :
+			_depth(depth_) {
+			++_depth;
+		}
+
+		Nest(cref<Nest>) = delete;
+		ref<Nest> operator=(cref<Nest>) = delete;
+
+		~Nest() {
+			--_depth;
+		}
+
+	private:
+		ref<u32> _depth;
+	};
+
+	/*
+	 * State shared by the root module and all modules it includes; everything is parsed into one Module.
+	 * shortcut: modules in one parse share one name scope, so whether a sibling's toggles/structs are accepted depends
+	 * on include order; upgrade when per-module scopes are needed (e.g. with Task 6 merge).
+	 */
 	struct Shared {
 		explicit Shared(cref<ir::ModuleResolver> resolver_) :
 			resolver(resolver_) {}
@@ -93,6 +120,10 @@ namespace {
 		/* include chain, root first */
 		Vector<String> active {};
 		Vector<String> done {};
+		/* nesting across includes, conditions and @when blocks: one stack budget per parse */
+		u32 depth = 0uL;
+		/* after a depth error, unterminated enclosing blocks are not reported again */
+		u32 depthErrors = 0uL;
 	};
 
 	void parseSource(StringView name_, StringView source_, ref<Shared> shared_);
@@ -134,6 +165,16 @@ namespace {
 		cref<Vector<ir::Token>> _tokens;
 		ref<Shared> _shared;
 		size_t _pos = 0uz;
+
+		/* call after entering a Nest on `_shared.depth`; reports at the offending token */
+		[[nodiscard]] bool tooDeep(cref<ir::Token> at_) {
+			if (_shared.depth <= maxDepth) {
+				return false;
+			}
+			++_shared.depthErrors;
+			error(at_, "Nesting too deep (limit " + std::to_string(maxDepth) + ").");
+			return true;
+		}
 
 		/* the root module's diagnostics are unprefixed */
 		[[nodiscard]] bool nested() const {
@@ -254,6 +295,10 @@ namespace {
 			if (std::ranges::find(_shared.done, name) != _shared.done.end()) {
 				return;
 			}
+			const Nest nest { _shared.depth };
+			if (tooDeep(target)) {
+				return;
+			}
 
 			Opt<String> source = None;
 			if (_shared.resolver) {
@@ -345,11 +390,15 @@ namespace {
 		}
 
 		void whenBlock(cref<ir::Condition> when_) {
+			const Nest nest { _shared.depth };
+			if (tooDeep(peek())) {
+				return skipGroup(TokenKind::eLBrace, TokenKind::eRBrace);
+			}
 			const auto& open = take();
 			while (not at(TokenKind::eRBrace) && not at(TokenKind::eEof)) {
 				item(when_);
 			}
-			if (not accept(TokenKind::eRBrace)) {
+			if (not accept(TokenKind::eRBrace) && _shared.depthErrors == 0uL) {
 				error(open, "Unterminated @when block, expected '}'.");
 			}
 		}
@@ -444,7 +493,12 @@ namespace {
 			return conjunction_ ? ir::Condition::all(std::move(terms)) : ir::Condition::any(std::move(terms));
 		}
 
+		/* every condition recursion (`!`, `( )`, any/all/none arguments) passes through here */
 		[[nodiscard]] Opt<ir::Condition> unaryCondition() {
+			const Nest nest { _shared.depth };
+			if (tooDeep(peek())) {
+				return None;
+			}
 			if (accept(TokenKind::eBang)) {
 				auto inner = unaryCondition();
 				if (not inner.has_value()) {
@@ -465,32 +519,43 @@ namespace {
 			}
 
 			const auto& name = take();
-			if (accept(TokenKind::eLParen)) {
-				Vector<ir::Condition> args {};
-				do {
-					auto arg = condition();
-					if (not arg.has_value()) {
-						return None;
-					}
-					args.push_back(std::move(*arg));
-				} while (accept(TokenKind::eComma));
-				if (not expect(TokenKind::eRParen, "')'")) {
+			return at(TokenKind::eLParen) ? combinator(name) : comparison(name);
+		}
+
+		/* `name(cond, ...)` at '('; recursive, so it keeps its frame small (Debug stack depth) */
+		[[nodiscard]] Opt<ir::Condition> combinator(cref<ir::Token> name_) {
+			take();
+			Vector<ir::Condition> args {};
+			do {
+				auto arg = condition();
+				if (not arg.has_value()) {
 					return None;
 				}
-
-				if (name.text == "any") {
-					return ir::Condition::any(std::move(args));
-				}
-				if (name.text == "all") {
-					return ir::Condition::all(std::move(args));
-				}
-				if (name.text == "none") {
-					return ir::Condition::none(std::move(args));
-				}
-				error(name, "Unknown condition '" + String(name.text) + "', expected any, all or none.");
-				return ir::Condition::always();
+				args.push_back(std::move(*arg));
+			} while (accept(TokenKind::eComma));
+			if (not expect(TokenKind::eRParen, "')'")) {
+				return None;
 			}
 
+			if (name_.text == "any") {
+				return ir::Condition::any(std::move(args));
+			}
+			if (name_.text == "all") {
+				return ir::Condition::all(std::move(args));
+			}
+			if (name_.text == "none") {
+				return ir::Condition::none(std::move(args));
+			}
+			unknownCombinator(name_);
+			return ir::Condition::always();
+		}
+
+		void unknownCombinator(cref<ir::Token> name_) {
+			error(name_, "Unknown condition '" + String(name_.text) + "', expected any, all or none.");
+		}
+
+		/* leaf `Toggle == Value` / `Toggle != Value`; never recurses */
+		[[nodiscard]] Opt<ir::Condition> comparison(cref<ir::Token> name) {
 			const bool equal = at(TokenKind::eEqEq);
 			if (not equal && not at(TokenKind::eNotEq)) {
 				syntaxError("'==' or '!=' after a toggle name");
