@@ -22,6 +22,11 @@ namespace hg {
 	template <typename Ty_>
 	concept IncompleteOrAtomicIntrusiveRefCountable = (not CompleteType<Ty_>) || (IsAtomicIntrusiveRefCountable<Ty_>);
 
+	// Pointer conversion or downcast, never dropping const from the handled type.
+	template <typename From_, typename To_>
+	concept ArciConvertibleTo = std::is_convertible_v<ptr<From_>, ptr<To_>> ||
+		(std::derived_from<To_, From_> && (std::is_const_v<To_> || not std::is_const_v<From_>));
+
 	/**/
 
 	template <IncompleteOrAtomicIntrusiveRefCountable Ty_>
@@ -63,18 +68,19 @@ namespace hg {
 		ref<this_type> operator=(this_type&&) = delete;
 
 	private:
-		counter_type _refs;
+		// Ownership bookkeeping, not object state: `Arci<const Derived_>` must still count.
+		mutable counter_type _refs;
 
 	public:
-		auto ref_inc() noexcept {
+		auto ref_inc() const noexcept {
 			return ++_refs;
 		}
 
-		auto ref_dec() noexcept {
+		auto ref_dec() const noexcept {
 			return --_refs;
 		}
 
-		auto ref_dec(const u16 refs_) noexcept {
+		auto ref_dec(const u16 refs_) const noexcept {
 			return _refs -= refs_;
 		}
 
@@ -143,11 +149,12 @@ namespace hg {
 			// TODO: auto obj = alloc.allocate(1);
 			// TODO: alloc_traits.construct(alloc, obj, std::forward<Args_>(args_)...);
 
-			if constexpr (std::is_aggregate_v<Ty_>) {
-				auto obj = new Ty_ { ::std::forward<Args_>(args_)... };
+			using alloc_type = std::remove_const_t<Ty_>;
+			if constexpr (std::is_aggregate_v<alloc_type>) {
+				auto obj = new alloc_type { ::std::forward<Args_>(args_)... };
 				return this_type { encode(obj, 1u) };
 			} else {
-				auto obj = new Ty_(::std::forward<Args_>(args_)...);
+				auto obj = new alloc_type(::std::forward<Args_>(args_)...);
 				return this_type { encode(obj, 1u) };
 			}
 		}
@@ -203,6 +210,14 @@ namespace hg {
 			other_._obj.fetch_sub(1u, std::memory_order::relaxed);
 			_obj.store(0uLL, std::memory_order::relaxed);
 		}
+
+		template <typename From_> requires std::is_const_v<Ty_> && std::same_as<From_, std::remove_const_t<Ty_>>
+		constexpr AtomicRefCountedIntrusive(cref<AtomicRefCountedIntrusive<From_>> other_) noexcept :
+			AtomicRefCountedIntrusive(other_.template into<Ty_>()) {}
+
+		template <typename From_> requires std::is_const_v<Ty_> && std::same_as<From_, std::remove_const_t<Ty_>>
+		constexpr AtomicRefCountedIntrusive(mref<AtomicRefCountedIntrusive<From_>> other_) noexcept :
+			AtomicRefCountedIntrusive(std::move(other_).template into<Ty_>()) {}
 
 		constexpr ~AtomicRefCountedIntrusive() {
 			dec_not_null();
@@ -419,16 +434,12 @@ namespace hg {
 		/**
 		 * Pedantic Support
 		 */
-		template <IsAtomicIntrusiveRefCountable ToType_> requires
-			std::is_convertible_v<ptr<Ty_>, ptr<ToType_>> ||
-			std::derived_from<ToType_, Ty_>
+		template <IsAtomicIntrusiveRefCountable ToType_> requires ArciConvertibleTo<Ty_, ToType_>
 		[[nodiscard]] AtomicRefCountedIntrusive<ToType_> into() const & noexcept {
 			return clone(*this).template into<ToType_>();
 		}
 
-		template <IsAtomicIntrusiveRefCountable ToType_> requires
-			std::is_convertible_v<ptr<Ty_>, ptr<ToType_>> ||
-			std::derived_from<ToType_, Ty_>
+		template <IsAtomicIntrusiveRefCountable ToType_> requires ArciConvertibleTo<Ty_, ToType_>
 		[[nodiscard]] AtomicRefCountedIntrusive<ToType_> into() && noexcept {
 			return static_cast<mref<AtomicRefCountedIntrusive<ToType_>>>(
 				*reinterpret_cast<ptr<AtomicRefCountedIntrusive<ToType_>>>(this)
@@ -436,9 +447,7 @@ namespace hg {
 		}
 
 	private:
-		template <IsAtomicIntrusiveRefCountable ToType_> requires
-			std::is_convertible_v<ptr<Ty_>, ptr<ToType_>> ||
-			std::derived_from<ToType_, Ty_>
+		template <IsAtomicIntrusiveRefCountable ToType_> requires ArciConvertibleTo<Ty_, ToType_>
 		[[nodiscard]] explicit operator AtomicRefCountedIntrusive<ToType_>() && noexcept {
 			return static_cast<mref<AtomicRefCountedIntrusive<ToType_>>>(
 				*reinterpret_cast<ptr<AtomicRefCountedIntrusive<ToType_>>>(this)
