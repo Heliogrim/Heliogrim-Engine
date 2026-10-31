@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cassert>
 #include <string>
 
 #include "Lexer.hpp"
@@ -43,6 +44,71 @@ namespace {
 		return it != builtinTypes.end() ? &*it : nullptr;
 	}
 
+	/* Builtin names (expression kind eBuiltin); Task 9 maps each to its GLSL form; extended per shader in Tasks 12-14 */
+	constexpr std::array<StringView, 4> builtinVariables {
+		"vertex_index",// s32, gl_VertexIndex
+		"instance_index",// s32, gl_InstanceIndex
+		"position",// f32vec4, gl_Position
+		"frag_depth"// f32, gl_FragDepth
+	};
+
+	constexpr std::array<StringView, 1> builtinFunctions {
+		"sample"// sample(texture2d, sampler, f32vec2) -> f32vec4, texture(sampler2D(tex, smp), uv)
+	};
+
+	template <size_t Size_>
+	[[nodiscard]] bool contains(cref<std::array<StringView, Size_>> names_, StringView name_) {
+		return std::ranges::find(names_, name_) != names_.end();
+	}
+
+	/* statement keywords the lexer leaves as identifiers; loops and switch come after this milestone */
+	constexpr std::array<StringView, 3> unsupportedStatements { "for", "while", "switch" };
+
+	constexpr u32 additive = 2uL;
+
+	/* binary operator precedence, higher binds tighter (all left-associative); 0 = no binary operator */
+	[[nodiscard]] u32 precedenceOf(TokenKind kind_) {
+		if (kind_ == TokenKind::eStar || kind_ == TokenKind::eSlash) {
+			return additive + 1uL;
+		}
+		if (kind_ == TokenKind::ePlus || kind_ == TokenKind::eMinus) {
+			return additive;
+		}
+		const bool comparison = kind_ == TokenKind::eEqEq || kind_ == TokenKind::eNotEq || kind_ == TokenKind::eLess ||
+			kind_ == TokenKind::eLessEq || kind_ == TokenKind::eGreater || kind_ == TokenKind::eGreaterEq;
+		return comparison ? 1uL : 0uL;
+	}
+
+	/* RAII lexical scope over the locals in view: names declared inside end with it */
+	class Scope {
+	public:
+		Scope(ref<Vector<StringView>> locals_, ref<size_t> start_) :
+			_locals(locals_),
+			_start(start_),
+			_outer(start_) {
+			_start = _locals.size();
+		}
+
+		Scope(cref<Scope>) = delete;
+		ref<Scope> operator=(cref<Scope>) = delete;
+
+		~Scope() {
+			_locals.resize(_start);
+			_start = _outer;
+		}
+
+	private:
+		ref<Vector<StringView>> _locals;
+		ref<size_t> _start;
+		size_t _outer;
+	};
+
+	/* a call resolved after the whole parse, so functions may be called before their declaration */
+	struct PendingCall {
+		ir::Diagnostic unknown;
+		size_t expr;
+	};
+
 	[[nodiscard]] Opt<ir::BindMode> bindModeOf(StringView text_) {
 		if (text_ == "forward") {
 			return ir::BindMode::eForward;
@@ -83,7 +149,8 @@ namespace {
 		return ir::Condition::all({ std::move(outer_), std::move(inner_) });
 	}
 
-	/* One limit for every recursive production (conditions, @when blocks, includes): bad input must not overflow the stack */
+	/* One limit for every recursive production (conditions, @when blocks, includes, statements, expressions):
+	 * bad input must not overflow the stack */
 	constexpr u32 maxDepth = 256uL;
 
 	/* RAII nesting level */
@@ -120,7 +187,8 @@ namespace {
 		/* include chain, root first */
 		Vector<String> active {};
 		Vector<String> done {};
-		/* nesting across includes, conditions and @when blocks: one stack budget per parse */
+		Vector<PendingCall> calls {};
+		/* nesting across includes, conditions, @when blocks, statements and expressions: one stack budget per parse */
 		u32 depth = 0uL;
 		/* after a depth error, unterminated enclosing blocks are not reported again */
 		u32 depthErrors = 0uL;
@@ -165,6 +233,11 @@ namespace {
 		cref<Vector<ir::Token>> _tokens;
 		ref<Shared> _shared;
 		size_t _pos = 0uz;
+		/* locals in view inside a function body (parameters first); `_scope` starts the innermost scope */
+		Vector<StringView> _locals {};
+		size_t _scope = 0uz;
+		/* errors at end of input; an unterminated block is then not reported again */
+		size_t _eofErrors = 0uz;
 
 		/* call after entering a Nest on `_shared.depth`; reports at the offending token */
 		[[nodiscard]] bool tooDeep(cref<ir::Token> at_) {
@@ -207,12 +280,21 @@ namespace {
 			return true;
 		}
 
+		[[nodiscard]] cref<ir::Token> next() const {
+			return _tokens[std::min(_pos + 1uz, _tokens.size() - 1uz)];
+		}
+
+		[[nodiscard]] ir::Diagnostic diagnostic(cref<ir::Token> at_, String message_) const {
+			return ir::Diagnostic {
+				ir::Severity::eError, located(_name, nested(), std::move(message_)), at_.loc.line, at_.loc.column
+			};
+		}
+
 		void error(cref<ir::Token> at_, String message_) {
-			_shared.diags.push_back(
-				ir::Diagnostic {
-					ir::Severity::eError, located(_name, nested(), std::move(message_)), at_.loc.line, at_.loc.column
-				}
-			);
+			if (at_.kind == TokenKind::eEof) {
+				++_eofErrors;
+			}
+			_shared.diags.push_back(diagnostic(at_, std::move(message_)));
 		}
 
 		void syntaxError(StringView expected_) {
@@ -613,6 +695,24 @@ namespace {
 			return ir::TypeRef { static_cast<u32>(it - types.begin()) };
 		}
 
+		[[nodiscard]] bool isTypeName(StringView name_) const {
+			return findBuiltin(name_) != nullptr || findStruct(name_).has_value();
+		}
+
+		/* a struct or builtin type by name, interned */
+		[[nodiscard]] Opt<ir::TypeRef> namedType(StringView name_) {
+			if (const auto* builtin = findBuiltin(name_); builtin != nullptr) {
+				ir::TypeDesc desc {};
+				desc.kind = builtin->kind;
+				desc.scalar = builtin->scalar;
+				desc.bits = builtin->bits;
+				desc.n = builtin->n;
+				desc.m = builtin->m;
+				return intern(std::move(desc));
+			}
+			return findStruct(name_);
+		}
+
 		/* `Name` or `Name[N]` / `Name[]` (repeatable); reports and returns None on failure */
 		[[nodiscard]] Opt<ir::TypeRef> type() {
 			if (not at(TokenKind::eIdentifier)) {
@@ -621,16 +721,7 @@ namespace {
 			}
 			const auto& name = take();
 
-			Opt<ir::TypeRef> result = findStruct(name.text);
-			if (const auto* builtin = findBuiltin(name.text); builtin != nullptr) {
-				ir::TypeDesc desc {};
-				desc.kind = builtin->kind;
-				desc.scalar = builtin->scalar;
-				desc.bits = builtin->bits;
-				desc.n = builtin->n;
-				desc.m = builtin->m;
-				result = intern(std::move(desc));
-			}
+			Opt<ir::TypeRef> result = namedType(name.text);
 			if (not result.has_value()) {
 				error(name, "Unknown type '" + String(name.text) + "'.");
 				return None;
@@ -794,7 +885,11 @@ namespace {
 						syntaxError("a parameter name");
 						return recover();
 					}
-					String paramName { take().text };
+					const auto& paramToken = take();
+					String paramName { paramToken.text };
+					if (std::ranges::find(fn.params, paramName, &ir::ParamDecl::name) != fn.params.end()) {
+						error(paramToken, "Duplicate parameter '" + paramName + "'.");
+					}
 					if (not expect(TokenKind::eColon, "':' after the parameter name")) {
 						return recover();
 					}
@@ -818,8 +913,14 @@ namespace {
 			}
 
 			if (at(TokenKind::eLBrace)) {
-				error(peek(), "function bodies are parsed from Task 5 on");
-				skipGroup(TokenKind::eLBrace, TokenKind::eRBrace);
+				// parameters form the outermost scope; the body block opens its own
+				_locals.clear();
+				_scope = 0uz;
+				for (const auto& param : fn.params) {
+					_locals.emplace_back(param.name);
+				}
+				fn.body = ir::BodyRef { block() };
+				_locals.clear();
 			} else if (not expect(TokenKind::eSemicolon, "';' or a function body")) {
 				return recover();
 			}
@@ -868,7 +969,467 @@ namespace {
 			}
 			_shared.module.bindings.push_back(std::move(decl));
 		}
+
+		/*
+		 * Bodies. Every statement recursion passes through statement(), every expression recursion through unary(),
+		 * both under the shared Nest budget. Recursive frames stay small: node building and diagnostics live in
+		 * non-recursive helpers. A parser recovers only from errors in its own tokens (fail()); a failed
+		 * sub-statement has recovered already and is passed up as None.
+		 */
+
+		[[nodiscard]] ir::ExprRef expr(ir::Expr expr_) {
+			auto& exprs = _shared.module.exprs;
+			exprs.push_back(std::move(expr_));
+			return ir::ExprRef { static_cast<u32>(exprs.size() - 1uz) };
+		}
+
+		[[nodiscard]] ir::ExprRef node(ir::ExprKind kind_, StringView name_, Vector<ir::ExprRef> operands_ = {}) {
+			ir::Expr out {};
+			out.kind = kind_;
+			out.name = name_;
+			out.operands = std::move(operands_);
+			return expr(std::move(out));
+		}
+
+		[[nodiscard]] ir::StmtRef add(ir::Stmt stmt_) {
+			auto& stmts = _shared.module.stmts;
+			stmts.push_back(std::move(stmt_));
+			return ir::StmtRef { static_cast<u32>(stmts.size() - 1uz) };
+		}
+
+		[[nodiscard]] ir::StmtRef stmt(ir::StmtKind kind_, ir::ExprRef lhs_ = {}, Vector<ir::StmtRef> children_ = {}) {
+			ir::Stmt out {};
+			out.kind = kind_;
+			out.lhs = lhs_;
+			out.children = std::move(children_);
+			return add(std::move(out));
+		}
+
+		[[nodiscard]] Opt<ir::StmtRef> fail() {
+			recover();
+			return None;
+		}
+
+		void unterminated(cref<ir::Token> open_) {
+			if (_eofErrors == 0uz && _shared.depthErrors == 0uL) {
+				error(open_, "Unterminated block, expected '}'.");
+			}
+			++_eofErrors;
+		}
+
+		/* Statements */
+
+		/* `{ statement* }`; the block is a scope */
+		[[nodiscard]] ir::StmtRef block() {
+			const auto& open = take();
+			const Scope scope { _locals, _scope };
+			Vector<ir::StmtRef> children {};
+			while (not at(TokenKind::eRBrace) && not at(TokenKind::eEof)) {
+				if (const auto child = statement(); child.has_value()) {
+					children.push_back(*child);
+				}
+			}
+			if (not accept(TokenKind::eRBrace)) {
+				unterminated(open);
+			}
+			return stmt(ir::StmtKind::eBlock, {}, std::move(children));
+		}
+
+		/* consumes at least one token unless at `}` or the end of input */
+		[[nodiscard]] Opt<ir::StmtRef> statement() {
+			const Nest nest { _shared.depth };
+			if (tooDeep(peek())) {
+				if (at(TokenKind::eLBrace)) {
+					skipGroup(TokenKind::eLBrace, TokenKind::eRBrace);
+					return None;
+				}
+				return fail();
+			}
+
+			const auto& head = peek();
+			if (head.kind == TokenKind::eLBrace) {
+				return block();
+			}
+			if (accept(TokenKind::eSemicolon)) {
+				return stmt(ir::StmtKind::eBlock);
+			}
+			if (head.kind == TokenKind::eAt) {
+				return whenStatement();
+			}
+			if (head.kind == TokenKind::eKwIf) {
+				return ifStatement();
+			}
+			if (head.kind == TokenKind::eKwReturn) {
+				return returnStatement();
+			}
+			if (head.kind == TokenKind::eKwLet) {
+				return letStatement();
+			}
+			if (head.kind == TokenKind::eIdentifier) {
+				if (std::ranges::find(unsupportedStatements, head.text) != unsupportedStatements.end()) {
+					take();
+					return unsupported(head, head.text);
+				}
+				const auto ahead = next().kind;
+				if (ahead == TokenKind::eIdentifier || (ahead == TokenKind::eLBracket && isTypeName(head.text))) {
+					return typedDeclaration();
+				}
+			}
+			return simpleStatement();
+		}
+
+		/* the then/else arm of `if` or `@when`: a scope even without braces */
+		[[nodiscard]] Opt<ir::StmtRef> branch() {
+			const Scope scope { _locals, _scope };
+			return statement();
+		}
+
+		/* `@when (cond) statement` */
+		[[nodiscard]] Opt<ir::StmtRef> whenStatement() {
+			const auto head = whenHead();
+			if (not head.has_value()) {
+				return fail();
+			}
+			const auto child = branch();
+			if (not child.has_value()) {
+				return None;
+			}
+			_shared.module.stmts[head->index].children.push_back(*child);
+			return *head;
+		}
+
+		/* keeps the condition out of the recursive frame */
+		[[nodiscard]] Opt<ir::StmtRef> whenHead() {
+			take();
+			if (not accept(TokenKind::eKwWhen)) {
+				error(peek(), "Only @when applies to a statement.");
+				return None;
+			}
+			auto cond = parenCondition();
+			if (not cond.has_value()) {
+				return None;
+			}
+			ir::Stmt when {};
+			when.kind = ir::StmtKind::eWhen;
+			when.when = std::move(*cond);
+			return add(std::move(when));
+		}
+
+		/* `if (expr) statement [else statement]` */
+		[[nodiscard]] Opt<ir::StmtRef> ifStatement() {
+			take();
+			if (not expect(TokenKind::eLParen, "'(' after if")) {
+				return fail();
+			}
+			const auto cond = expression();
+			if (not cond.has_value() || not expect(TokenKind::eRParen, "')'")) {
+				return fail();
+			}
+			const auto then = branch();
+			if (not then.has_value()) {
+				return None;
+			}
+			if (not accept(TokenKind::eKwElse)) {
+				return stmt(ir::StmtKind::eIf, *cond, { *then });
+			}
+			const auto otherwise = branch();
+			if (not otherwise.has_value()) {
+				return None;
+			}
+			return stmt(ir::StmtKind::eIf, *cond, { *then, *otherwise });
+		}
+
+		[[nodiscard]] Opt<ir::StmtRef> returnStatement() {
+			take();
+			if (accept(TokenKind::eSemicolon)) {
+				return stmt(ir::StmtKind::eReturn);
+			}
+			const auto value = expression();
+			if (not value.has_value() || not expect(TokenKind::eSemicolon, "';'")) {
+				return fail();
+			}
+			return stmt(ir::StmtKind::eReturn, *value);
+		}
+
+		/* `let name [: Type] [= init];`, a type or an initializer required */
+		[[nodiscard]] Opt<ir::StmtRef> letStatement() {
+			take();
+			if (not at(TokenKind::eIdentifier)) {
+				syntaxError("a local name");
+				return fail();
+			}
+			const auto& name = take();
+			Opt<ir::TypeRef> declType = None;
+			if (accept(TokenKind::eColon)) {
+				declType = type();
+				if (not declType.has_value()) {
+					return fail();
+				}
+			} else if (not at(TokenKind::eAssign)) {
+				error(name, "A 'let' declaration needs a type or an initializer.");
+				return fail();
+			}
+			return local(name, declType.value_or(ir::TypeRef {}));
+		}
+
+		/* `Type name [= init];` */
+		[[nodiscard]] Opt<ir::StmtRef> typedDeclaration() {
+			const auto declType = type();
+			if (not declType.has_value()) {
+				return fail();
+			}
+			if (not at(TokenKind::eIdentifier)) {
+				syntaxError("a local name");
+				return fail();
+			}
+			return local(take(), *declType);
+		}
+
+		/* `[= init];` of both declaration forms (type unset = inferred later); the name is in scope after its
+		 * initializer, even after an error */
+		[[nodiscard]] Opt<ir::StmtRef> local(cref<ir::Token> name_, ir::TypeRef type_) {
+			ir::Stmt decl {};
+			decl.kind = ir::StmtKind::eDeclareLocal;
+			decl.name = name_.text;
+			decl.type = type_;
+			bool valid = true;
+			if (accept(TokenKind::eAssign)) {
+				const auto init = expression();
+				valid = init.has_value();
+				decl.lhs = valid ? *init : decl.lhs;
+			}
+			valid = valid && expect(TokenKind::eSemicolon, "';'");
+
+			if (std::find(_locals.begin() + static_cast<ptrdiff_t>(_scope), _locals.end(), name_.text) != _locals.end()) {
+				error(name_, "Duplicate local '" + String(name_.text) + "'.");
+			}
+			_locals.push_back(name_.text);
+			if (not valid) {
+				return fail();
+			}
+			return add(std::move(decl));
+		}
+
+		/* `expr;` or `lvalue = expr;` */
+		[[nodiscard]] Opt<ir::StmtRef> simpleStatement() {
+			const auto& start = peek();
+			const auto lhs = expression();
+			if (not lhs.has_value()) {
+				return fail();
+			}
+			if (compoundAhead()) {
+				return unsupported(peek(), String(peek().text) + String(next().text));
+			}
+			if (not accept(TokenKind::eAssign)) {
+				if (not expect(TokenKind::eSemicolon, "';'")) {
+					return fail();
+				}
+				return stmt(ir::StmtKind::eExpr, *lhs);
+			}
+			if (not assignable(*lhs)) {
+				error(start, "Cannot assign to this expression.");
+			}
+			const auto rhs = expression();
+			if (not rhs.has_value() || not expect(TokenKind::eSemicolon, "';'")) {
+				return fail();
+			}
+			ir::Stmt assign {};
+			assign.kind = ir::StmtKind::eAssign;
+			assign.lhs = *lhs;
+			assign.rhs = *rhs;
+			return add(std::move(assign));
+		}
+
+		/* reports at `at_`, then skips `(...)` and a `{...}` body or the rest of the statement */
+		[[nodiscard]] Opt<ir::StmtRef> unsupported(cref<ir::Token> at_, StringView what_) {
+			error(at_, "'" + String(what_) + "' is unsupported in this milestone.");
+			if (at(TokenKind::eLParen)) {
+				skipGroup(TokenKind::eLParen, TokenKind::eRParen);
+			}
+			if (at(TokenKind::eLBrace)) {
+				skipGroup(TokenKind::eLBrace, TokenKind::eRBrace);
+				return None;
+			}
+			return fail();
+		}
+
+		/* `+=`, `-=`, `*=`, `/=`, `++` (lexed as two tokens) */
+		[[nodiscard]] bool compoundAhead() const {
+			const auto kind = peek().kind;
+			const auto ahead = next().kind;
+			return precedenceOf(kind) >= additive && (ahead == TokenKind::eAssign || (kind == TokenKind::ePlus && ahead == kind));
+		}
+
+		/* a name, optionally behind field and index accesses */
+		[[nodiscard]] bool assignable(ir::ExprRef ref_) const {
+			const auto& exprs = _shared.module.exprs;
+			const auto* e = &exprs[ref_.index];
+			while ((e->kind == ir::ExprKind::eField || e->kind == ir::ExprKind::eIndex) && not e->operands.empty()) {
+				e = &exprs[e->operands.front().index];
+			}
+			return e->kind == ir::ExprKind::eNameRef || (e->kind == ir::ExprKind::eBuiltin && contains(builtinVariables, e->name));
+		}
+
+		/* Expressions: comparisons < `+ -` < `* /` (precedence climbing) < unary `- !` < postfix `.name [i]` < primary */
+
+		[[nodiscard]] Opt<ir::ExprRef> expression(u32 minPrecedence_ = 1uL) {
+			auto lhs = unary();
+			while (lhs.has_value() && precedenceOf(peek().kind) >= minPrecedence_ && not compoundAhead()) {
+				const auto& op = take();
+				const auto rhs = expression(precedenceOf(op.kind) + 1uL);
+				lhs = rhs.has_value() ? Opt<ir::ExprRef> { node(ir::ExprKind::eBinary, op.text, { *lhs, *rhs }) } : None;
+			}
+			return lhs;
+		}
+
+		[[nodiscard]] Opt<ir::ExprRef> unary() {
+			const Nest nest { _shared.depth };
+			if (tooDeep(peek())) {
+				return None;
+			}
+			if (at(TokenKind::eMinus) || at(TokenKind::eBang)) {
+				const auto& op = take();
+				const auto operand = unary();
+				if (not operand.has_value()) {
+					return None;
+				}
+				return node(ir::ExprKind::eUnary, op.text, { *operand });
+			}
+			return postfix(primary());
+		}
+
+		[[nodiscard]] Opt<ir::ExprRef> postfix(Opt<ir::ExprRef> base_) {
+			while (base_.has_value()) {
+				if (accept(TokenKind::eDot)) {
+					if (not at(TokenKind::eIdentifier)) {
+						syntaxError("a field name");
+						return None;
+					}
+					// shortcut: no type inference, so any field name (struct member or swizzle) is accepted on any base;
+					// upgrade when a typing pass exists (Task 8/9 need field types anyway)
+					base_ = node(ir::ExprKind::eField, take().text, { *base_ });
+				} else if (accept(TokenKind::eLBracket)) {
+					const auto index = expression();
+					if (not index.has_value() || not expect(TokenKind::eRBracket, "']'")) {
+						return None;
+					}
+					base_ = node(ir::ExprKind::eIndex, {}, { *base_, *index });
+				} else {
+					break;
+				}
+			}
+			return base_;
+		}
+
+		[[nodiscard]] Opt<ir::ExprRef> primary() {
+			const auto& token = peek();
+			if (token.kind == TokenKind::eInteger || token.kind == TokenKind::eFloat) {
+				take();
+				return node(ir::ExprKind::eLiteral, token.text);
+			}
+			if (token.kind == TokenKind::eIdentifier) {
+				take();
+				if (at(TokenKind::eLParen)) {
+					return call(token);
+				}
+				return name(token);
+			}
+			if (accept(TokenKind::eLParen)) {
+				const auto inner = expression();
+				if (not inner.has_value() || not expect(TokenKind::eRParen, "')'")) {
+					return None;
+				}
+				return *inner;
+			}
+			syntaxError("an expression");
+			return None;
+		}
+
+		/* `name(args)` at '(' */
+		[[nodiscard]] Opt<ir::ExprRef> call(cref<ir::Token> name_) {
+			take();
+			Vector<ir::ExprRef> args {};
+			if (not accept(TokenKind::eRParen)) {
+				do {
+					const auto arg = expression();
+					if (not arg.has_value()) {
+						return None;
+					}
+					args.push_back(*arg);
+				} while (accept(TokenKind::eComma));
+				if (not expect(TokenKind::eRParen, "',' or ')'")) {
+					return None;
+				}
+			}
+			return callee(name_, std::move(args));
+		}
+
+		/* type name -> construct, builtin function -> builtin, else a call resolved after the parse */
+		[[nodiscard]] ir::ExprRef callee(cref<ir::Token> name_, Vector<ir::ExprRef> args_) {
+			if (const auto type = namedType(name_.text); type.has_value()) {
+				ir::Expr construct {};
+				construct.kind = ir::ExprKind::eConstruct;
+				construct.name = name_.text;
+				construct.type = *type;
+				construct.operands = std::move(args_);
+				return expr(std::move(construct));
+			}
+			if (contains(builtinFunctions, name_.text)) {
+				return node(ir::ExprKind::eBuiltin, name_.text, std::move(args_));
+			}
+			const auto pending = node(ir::ExprKind::eCall, name_.text, std::move(args_));
+			_shared.calls.push_back(PendingCall { diagnostic(name_, "Unknown function '" + String(name_.text) + "'."), pending.index });
+			return pending;
+		}
+
+		/* `true`/`false` -> literal; else local, then binding (by local name), then builtin variable */
+		[[nodiscard]] ir::ExprRef name(cref<ir::Token> name_) {
+			const auto text = name_.text;
+			if (text == "true" || text == "false") {
+				return node(ir::ExprKind::eLiteral, text);
+			}
+
+			ir::Expr named {};
+			named.kind = ir::ExprKind::eNameRef;
+			named.name = text;
+			const auto& bindings = _shared.module.bindings;
+			const auto binding = std::ranges::find(bindings, text, &ir::BindingDecl::localName);
+			if (std::ranges::find(_locals, text) != _locals.end()) {
+				named.local = true;
+			} else if (binding != bindings.end()) {
+				named.binding = ir::BindingRef { static_cast<u32>(binding - bindings.begin()) };
+			} else if (contains(builtinVariables, text)) {
+				named.kind = ir::ExprKind::eBuiltin;
+			} else {
+				error(name_, "Unknown name '" + String(text) + "'.");
+			}
+			// a local is never a binding use (usageOf relies on it)
+			assert(not named.local || named.binding.index == ir::BindingRef {}.index);
+			return expr(std::move(named));
+		}
 	};
+
+	/* binds each call to a declaration of its name: the last one with a body (`@redefine`: the last wins), else the first
+	 * shortcut: one declaration per name, so @when-variant bodies of a function all resolve to the last; upgrade when
+	 * Task 6/7 merge and slice per variant. */
+	void resolveCalls(ref<Shared> shared_) {
+		auto& module = shared_.module;
+		for (auto& pending : shared_.calls) {
+			auto& call = module.exprs[pending.expr];
+			Opt<u32> found = None;
+			for (auto i = 0uz; i < module.functions.size(); ++i) {
+				const auto& fn = module.functions[i];
+				if (fn.name == call.name && (not found.has_value() || fn.body.has_value())) {
+					found = static_cast<u32>(i);
+				}
+			}
+			if (found.has_value()) {
+				call.function = ir::FunctionRef { *found };
+			} else {
+				shared_.diags.emplace_back(std::move(pending.unknown));
+			}
+		}
+	}
 
 	void parseSource(StringView name_, StringView source_, ref<Shared> shared_) {
 		auto tokens = ir::lex(source_);
@@ -898,6 +1459,7 @@ std::expected<ir::Module, ir::Diagnostics> ir::parseModule(
 	shared.module.entry = entry_;
 
 	parseSource(name_, source_, shared);
+	resolveCalls(shared);
 
 	if (not shared.diags.empty()) {
 		return std::unexpected(std::move(shared.diags));

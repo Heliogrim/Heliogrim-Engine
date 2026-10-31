@@ -67,7 +67,9 @@ namespace hg::engine::accel::lang::ir {
 		eIndex,
 		eUnary,
 		eBinary,
-		eConstruct
+		eConstruct,
+		/* builtin variable (`position` -> gl_Position) or builtin call (`sample(...)`) by `name`; never a binding use */
+		eBuiltin
 	};
 
 	/**
@@ -76,7 +78,8 @@ namespace hg::engine::accel::lang::ir {
 	struct Expr {
 		ExprKind kind = ExprKind::eLiteral;
 
-		/* literal: source text; nameref/call: referenced name; field: member name; unary/binary: operator */
+		/* literal: source text (`true`/`false` included); nameref/call/builtin: referenced name; field: member name
+		 * (swizzles too); unary/binary: operator text */
 		String name;
 
 		/* nameref: resolved binding; call: resolved function; ~0 = unresolved (then matched by name).
@@ -90,7 +93,7 @@ namespace hg::engine::accel::lang::ir {
 		/* construct */
 		TypeRef type;
 
-		/* call/construct: arguments; field: [base]; index: [base, index]; unary: [operand]; binary: [lhs, rhs] */
+		/* call/construct/builtin call: arguments; field: [base]; index: [base, index]; unary: [operand]; binary: [lhs, rhs] */
 		Vector<ExprRef> operands;
 	};
 
@@ -100,7 +103,8 @@ namespace hg::engine::accel::lang::ir {
 		eExpr,
 		eReturn,
 		eBlock,
-		eWhen
+		eWhen,
+		eIf
 	};
 
 	/**
@@ -113,12 +117,12 @@ namespace hg::engine::accel::lang::ir {
 		String name;
 		TypeRef type;
 
-		/* declare-local: init (optional), assign: lhs, expr/return: value (optional for return) */
+		/* declare-local: init (optional), assign: lhs, expr/return: value (optional for return), if: condition */
 		ExprRef lhs;
 		/* assign: rhs */
 		ExprRef rhs;
 
-		/* block: children; when: [then, else?] */
+		/* block: children; when: [then, else?] (the parser emits [then]); if: [then, else?] */
 		Vector<StmtRef> children;
 		Condition when;
 	};
