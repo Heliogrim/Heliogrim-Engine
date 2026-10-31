@@ -158,6 +158,8 @@ namespace hg::engine::accel::lang::ir {
 	struct TypeDesc {
 		TypeKind kind = TypeKind::eScalar;
 		ScalarKind scalar = ScalarKind::eFloat;
+		/* scalar/vector/matrix: component width in bits (u8 vs u32) */
+		u32 bits = 32uL;
 
 		/* vector: n = components; matrix: n = columns, m = rows */
 		u32 n = 1uL;
@@ -181,6 +183,8 @@ namespace hg::engine::accel::lang::ir {
 		BindMode mode = BindMode::eForward;
 		BindClass bindClass = BindClass::eNone;
 		bool implicit = false;
+		/* `@input` (true) or `@output` (false) */
+		bool input = true;
 		Condition when;
 		String localName;
 	};
