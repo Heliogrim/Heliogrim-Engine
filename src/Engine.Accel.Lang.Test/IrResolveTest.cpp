@@ -578,6 +578,35 @@ namespace AccelLang {
 		EXPECT_EQ(usageOf(sliced, functionIndex(sliced, "Write")).writtenBindings, (Vector<u32> { bindingIndex(sliced, "normal_out") }));
 	}
 
+	TEST(SliceTest, StatementsCallingAKeptOutputWriterStay) {
+		constexpr StringView decls =
+			"@input (mode = forward) f32vec3 normal;\n"
+			"@output (mode = forward, id = \"color\") f32vec4 color;\n"
+			"@output (mode = forward, id = \"normal_out\") f32vec3 normal_out;\n"
+			"fn Shade() -> f32vec4 { normal_out = normal; return f32vec4(1.0); }\n"
+			"fn WriteN() -> bool { normal_out = normal; return true; }\n"
+			"fn Get() -> f32vec4 { return Shade(); }\n";
+		struct Case {
+			StringView main;
+			StringView writer;
+		};
+		const std::array cases {
+			Case { "fn main() {\n\tcolor = Shade();\n}\n", "Shade" },// a write to a dropped output
+			Case { "fn main() {\n\tif (WriteN()) {\n\t\tcolor = f32vec4(1.0);\n\t}\n}\n", "WriteN" },// a condition
+			Case { "fn main() {\n\tcolor = Get();\n}\n", "Shade" },// through a return
+			Case { "fn main() {\n\tShade();\n}\n", "Shade" }// a call statement
+		};
+		for (const auto& c : cases) {
+			const auto module = parse(String(decls) + String(c.main));
+			const auto sliced = sliceChecked(module, { "normal_out" });
+			expectCompact(sliced);
+			EXPECT_EQ(bodyRoot(sliced, "main").children.size(), 1uz) << c.main;
+			const auto writer = functionIndex(sliced, c.writer);
+			ASSERT_NE(writer, unset) << c.main;
+			EXPECT_TRUE(std::ranges::contains(usageOf(sliced, writer).writtenBindings, bindingIndex(sliced, "normal_out"))) << c.main;
+		}
+	}
+
 	TEST(SliceTest, LocalsFeedingKeptCodeStay) {
 		const auto module = parse(
 			"@input (mode = forward) f32 bias;\n"

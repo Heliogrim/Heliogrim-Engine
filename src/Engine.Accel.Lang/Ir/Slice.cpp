@@ -196,8 +196,8 @@ namespace {
 				}
 			};
 			for (const auto s : list) {
-				const auto role = roles[s];
-				if (role == Role::eLive || ((role == Role::eLocal || role == Role::eCall) && mayWrite(s))) {
+				// any statement whose expressions call a writer stays, even a write to a dropped output or a condition
+				if (roles[s] == Role::eLive || mayWrite(s)) {
 					mark(s);
 				}
 			}
@@ -266,8 +266,9 @@ ir::Module ir::slice(ref<const Module> module_, std::span<const String> required
 						work.emplace_back(callee);
 					}
 				}
-				/* shortcut: a live read of a dropped output keeps that binding (its writes are gone, so it reads
-				 * undefined), upgrade when Task 11 contract checks report it */
+				/* shortcut: a live read of a dropped output, or a write to it kept for a callee that writes a kept
+				 * target (`color = Shade();`), keeps that binding (a read may see undefined), upgrade when Task 11
+				 * contract checks report it */
 				for (const auto b : slicer.facts[s].bindings) {
 					keep[b] = true;
 				}
