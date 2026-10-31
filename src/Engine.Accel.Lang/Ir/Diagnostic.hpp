@@ -11,6 +11,14 @@ namespace hg::engine::accel::lang::ir {
 		eError
 	};
 
+	/**
+	 * 1-based line and column; a tab counts as one column.
+	 */
+	struct SourceLoc {
+		u32 line = 1uL;
+		u32 column = 1uL;
+	};
+
 	struct Diagnostic {
 		Severity severity = Severity::eError;
 		String message;
