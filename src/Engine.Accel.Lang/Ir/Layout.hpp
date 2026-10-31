@@ -57,6 +57,11 @@ namespace hg::engine::accel::lang::ir {
 	[[nodiscard]] Vector<u32> std430Offsets(ref<const Vector<TypeDesc>> types_, TypeRef struct_);
 
 	/**
+	 * Locations a forward variable of the type takes, counted as for forward inputs below (at least 1).
+	 */
+	[[nodiscard]] u32 locationCount(ref<const Vector<TypeDesc>> types_, TypeRef type_);
+
+	/**
 	 * Resolve order step 5. Deterministic: the same entries (in any order) and type table contents (in any order)
 	 * with the same weights and existing layouts give the same layout; everything iterates sorted vectors.
 	 *

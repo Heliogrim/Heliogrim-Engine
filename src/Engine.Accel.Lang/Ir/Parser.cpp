@@ -5,6 +5,7 @@
 #include <cassert>
 #include <string>
 
+#include "Builtin.hpp"
 #include "Lexer.hpp"
 
 using namespace hg::engine::accel::lang;
@@ -44,17 +45,11 @@ namespace {
 		return it != builtinTypes.end() ? &*it : nullptr;
 	}
 
-	/* Builtin names (expression kind eBuiltin); Task 9 maps each to its GLSL form; extended per shader in Tasks 12-14 */
-	constexpr std::array<StringView, 4> builtinVariables {
-		"vertex_index",// s32, gl_VertexIndex
-		"instance_index",// s32, gl_InstanceIndex
-		"position",// f32vec4, gl_Position
-		"frag_depth"// f32, gl_FragDepth
-	};
+	using ir::builtinFunctions;
 
-	constexpr std::array<StringView, 1> builtinFunctions {
-		"sample"// sample(texture2d, sampler, f32vec2) -> f32vec4, texture(sampler2D(tex, smp), uv)
-	};
+	[[nodiscard]] bool isBuiltinVariable(StringView name_) {
+		return ir::findBuiltinVariable(name_) != nullptr;
+	}
 
 	template <size_t Size_>
 	[[nodiscard]] bool contains(cref<std::array<StringView, Size_>> names_, StringView name_) {
@@ -1267,7 +1262,7 @@ namespace {
 			while ((e->kind == ir::ExprKind::eField || e->kind == ir::ExprKind::eIndex) && not e->operands.empty()) {
 				e = &exprs[e->operands.front().index];
 			}
-			return e->kind == ir::ExprKind::eNameRef || (e->kind == ir::ExprKind::eBuiltin && contains(builtinVariables, e->name));
+			return e->kind == ir::ExprKind::eNameRef || (e->kind == ir::ExprKind::eBuiltin && isBuiltinVariable(e->name));
 		}
 
 		/* Expressions: comparisons < `+ -` < `* /` (precedence climbing) < unary `- !` < postfix `.name [i]` < primary */
@@ -1398,7 +1393,7 @@ namespace {
 				named.local = true;
 			} else if (binding != bindings.end()) {
 				named.binding = ir::BindingRef { static_cast<u32>(binding - bindings.begin()) };
-			} else if (contains(builtinVariables, text)) {
+			} else if (isBuiltinVariable(text)) {
 				named.kind = ir::ExprKind::eBuiltin;
 			} else {
 				error(name_, "Unknown name '" + String(text) + "'.");

@@ -35,16 +35,16 @@ namespace {
 
 	class Types {
 	public:
-		explicit Types(cref<Vector<ir::TypeDesc>> types_) :
+		explicit Types(ref<const Vector<ir::TypeDesc>> types_) :
 			_types(types_),
 			_memo(types_.size()),
 			_state(types_.size(), State::eNew) {}
 
-		[[nodiscard]] cref<Info> of(ir::TypeRef ref_) {
+		[[nodiscard]] ref<const Info> of(ir::TypeRef ref_) {
 			return info(ref_.index, 0uL);
 		}
 
-		[[nodiscard]] cref<ir::TypeDesc> desc(ir::TypeRef ref_) const {
+		[[nodiscard]] ref<const ir::TypeDesc> desc(ir::TypeRef ref_) const {
 			return _types[ref_.index];
 		}
 
@@ -55,13 +55,13 @@ namespace {
 			eDone
 		};
 
-		cref<Vector<ir::TypeDesc>> _types;
+		ref<const Vector<ir::TypeDesc>> _types;
 		Vector<Info> _memo;
 		Vector<State> _state;
 		Info _invalid {};
 
 		/* returns a ref into `_memo`, which never reallocates */
-		[[nodiscard]] cref<Info> info(u32 index_, u32 depth_) {
+		[[nodiscard]] ref<const Info> info(u32 index_, u32 depth_) {
 			// an open type is on the current path: a cycle
 			if (index_ >= _types.size() || depth_ > maxDepth || _state[index_] == State::eOpen) {
 				return _invalid;
@@ -81,7 +81,7 @@ namespace {
 			return _memo[index_];
 		}
 
-		[[nodiscard]] static Info scalar(cref<ir::TypeDesc> desc_) {
+		[[nodiscard]] static Info scalar(ref<const ir::TypeDesc> desc_) {
 			Info out {};
 			if (desc_.scalar == ir::ScalarKind::eBool) {
 				out = Info { .valid = true, .size = 4uLL, .align = 4uLL, .key = "bool" };
@@ -93,7 +93,7 @@ namespace {
 		}
 
 		/* n components of `component_` */
-		[[nodiscard]] static Info vector(cref<Info> component_, u32 n_) {
+		[[nodiscard]] static Info vector(ref<const Info> component_, u32 n_) {
 			if (not component_.valid || n_ < 2uL || n_ > 4uL) {
 				return Info {};
 			}
@@ -107,7 +107,7 @@ namespace {
 			};
 		}
 
-		[[nodiscard]] static Info matrix(cref<ir::TypeDesc> desc_) {
+		[[nodiscard]] static Info matrix(ref<const ir::TypeDesc> desc_) {
 			const auto column = vector(scalar(desc_), desc_.m);
 			if (not column.valid || desc_.n < 2uL || desc_.n > 4uL) {
 				return Info {};
@@ -122,7 +122,7 @@ namespace {
 			};
 		}
 
-		[[nodiscard]] Info array(cref<ir::TypeDesc> desc_, u32 depth_) {
+		[[nodiscard]] Info array(ref<const ir::TypeDesc> desc_, u32 depth_) {
 			const auto& element = info(desc_.element.index, depth_ + 1uL);
 			if (not element.valid || element.unsized || element.opaque) {
 				return Info {};
@@ -142,7 +142,7 @@ namespace {
 			};
 		}
 
-		[[nodiscard]] Info structure(cref<ir::TypeDesc> desc_, u32 depth_) {
+		[[nodiscard]] Info structure(ref<const ir::TypeDesc> desc_, u32 depth_) {
 			Info out { .valid = true, .key = "{" };
 			u64 end = 0uLL;
 			for (auto i = 0uz; i < desc_.fields.size(); ++i) {
@@ -171,7 +171,7 @@ namespace {
 			return out;
 		}
 
-		[[nodiscard]] Info compute(cref<ir::TypeDesc> desc_, u32 depth_) {
+		[[nodiscard]] Info compute(ref<const ir::TypeDesc> desc_, u32 depth_) {
 			using enum ir::TypeKind;
 			if (desc_.kind == eScalar) {
 				return scalar(desc_);
@@ -205,7 +205,7 @@ namespace {
 		eForward
 	};
 
-	[[nodiscard]] Category categoryOf(cref<ir::InterfaceEntry> entry_) {
+	[[nodiscard]] Category categoryOf(ref<const ir::InterfaceEntry> entry_) {
 		if (entry_.mode == ir::BindMode::eForward) {
 			return entry_.input ? Category::eForward : Category::eSkip;
 		}
@@ -235,7 +235,7 @@ namespace {
 			);
 		};
 		std::ranges::sort(items_, [&](ref<const Item> a_, ref<const Item> b_) { return rank(a_) < rank(b_); });
-		const auto dup = std::ranges::unique(items_, [](cref<Item> a_, cref<Item> b_) { return a_.entry->id == b_.entry->id; });
+		const auto dup = std::ranges::unique(items_, [](ref<const Item> a_, ref<const Item> b_) { return a_.entry->id == b_.entry->id; });
 		items_.erase(dup.begin(), dup.end());
 	}
 
@@ -268,7 +268,7 @@ namespace {
 	};
 }
 
-Vector<u32> ir::std430Offsets(cref<Vector<TypeDesc>> types_, TypeRef struct_) {
+Vector<u32> ir::std430Offsets(ref<const Vector<TypeDesc>> types_, TypeRef struct_) {
 	Types types { types_ };
 	const auto& info = types.of(struct_);
 	if (not info.valid || types.desc(struct_).kind != TypeKind::eStruct) {
@@ -279,17 +279,23 @@ Vector<u32> ir::std430Offsets(cref<Vector<TypeDesc>> types_, TypeRef struct_) {
 	for (const auto& field : types.desc(struct_).fields) {
 		const auto& member = types.of(field.type);
 		const auto offset = roundUp(end, member.align);
-		offsets.push_back(clamp32(offset));
+		offsets.emplace_back(clamp32(offset));
 		end = offset + member.size;
 	}
 	return offsets;
 }
 
+u32 ir::locationCount(ref<const Vector<TypeDesc>> types_, TypeRef type_) {
+	Types types { types_ };
+	const auto& info = types.of(type_);
+	return info.valid ? clamp32(std::max(info.locations, 1uLL)) : 1uL;
+}
+
 ir::Layout ir::assignLayout(
-	cref<Vector<InterfaceEntry>> entries_,
-	cref<Vector<TypeDesc>> types_,
-	cref<LayoutWeights> weights_,
-	cref<Vector<Layout>> existing_
+	ref<const Vector<InterfaceEntry>> entries_,
+	ref<const Vector<TypeDesc>> types_,
+	ref<const LayoutWeights> weights_,
+	ref<const Vector<Layout>> existing_
 ) {
 	Types types { types_ };
 	Vector<Item> resources {};
@@ -300,7 +306,7 @@ ir::Layout ir::assignLayout(
 			continue;
 		}
 		auto& into = category == Category::eForward ? forward : resources;
-		into.push_back(Item { &entry, &types.of(entry.type) });
+		into.emplace_back(Item { &entry, &types.of(entry.type) });
 	}
 	collapse(resources);
 	collapse(forward);
@@ -317,7 +323,7 @@ ir::Layout ir::assignLayout(
 		const auto fixed = info.valid && not info.unsized && not info.opaque;
 		const auto offset = roundUp(cursor, std::max(fixed ? info.align : 1uLL, 4uLL));
 		const auto size = fixed ? roundUp(info.size, 4uLL) : 0uLL;
-		layout.push.push_back(PushRange { item.entry->id, clamp32(offset), clamp32(size) });
+		layout.push.emplace_back(PushRange { item.entry->id, clamp32(offset), clamp32(size) });
 		cursor = offset + size;
 	}
 
@@ -329,7 +335,7 @@ ir::Layout ir::assignLayout(
 			slots.emplace_back(item, key.empty() ? String {} : std::to_string(static_cast<u32>(item.entry->cls)) + ":" + key);
 		}
 	}
-	std::ranges::stable_sort(slots, {}, [](cref<std::pair<Item, String>> slot_) { return slot_.first.entry->cls; });
+	std::ranges::stable_sort(slots, {}, [](ref<const std::pair<Item, String>> slot_) { return slot_.first.entry->cls; });
 
 	// reuse candidates: every distinct slot of the existing layouts with an identity, sorted
 	Vector<const SlotAssignment*> pool {};
@@ -337,7 +343,7 @@ ir::Layout ir::assignLayout(
 		for (const auto& slot : other.slots) {
 			// ~0 would overflow the next free binding
 			if (not slot.identity.empty() && slot.set != ~0uL && slot.binding != ~0uL) {
-				pool.push_back(&slot);
+				pool.emplace_back(&slot);
 			}
 		}
 	}
@@ -351,10 +357,10 @@ ir::Layout ir::assignLayout(
 	const auto isTaken = [&](u32 set_, u32 binding_) {
 		return std::ranges::binary_search(taken, std::pair { set_, binding_ });
 	};
-	const auto take = [&](cref<std::pair<Item, String>> slot_, u32 set_, u32 binding_) {
+	const auto take = [&](ref<const std::pair<Item, String>> slot_, u32 set_, u32 binding_) {
 		taken.insert(std::ranges::lower_bound(taken, std::pair { set_, binding_ }), { set_, binding_ });
 		tops.raise(set_, binding_ + 1uL);
-		layout.slots.push_back(SlotAssignment { slot_.first.entry->id, set_, binding_, slot_.second });
+		layout.slots.emplace_back(SlotAssignment { slot_.first.entry->id, set_, binding_, slot_.second });
 	};
 
 	// 1. reuse, globally fewest skips first, so a reuse is not charged for a hole a later reuse fills
@@ -411,12 +417,12 @@ ir::Layout ir::assignLayout(
 		take(*slot, set, tops.of(set));
 	}
 
-	std::ranges::sort(layout.slots, {}, [](cref<SlotAssignment> s_) { return std::pair { s_.set, s_.binding }; });
+	std::ranges::sort(layout.slots, {}, [](ref<const SlotAssignment> s_) { return std::pair { s_.set, s_.binding }; });
 
 	// forward input locations, id order
 	u64 location = 0uLL;
 	for (const auto& item : forward) {
-		layout.inputLocations.push_back(clamp32(location));
+		layout.inputLocations.emplace_back(clamp32(location));
 		location += item.info->valid ? std::max(item.info->locations, 1uLL) : 1uLL;
 	}
 	return layout;
