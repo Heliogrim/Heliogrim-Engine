@@ -418,6 +418,98 @@ namespace Common {
 		EXPECT_EQ(semLive, 0);
 	}
 
+	/* Arci<const T> */
+
+	static_assert(std::same_as<decltype(std::declval<const Arci<const AtomicIntrusive>&>().get()), const AtomicIntrusive*>);
+	static_assert(std::is_convertible_v<Arci<AtomicIntrusive>, Arci<const AtomicIntrusive>>);
+	static_assert(std::is_convertible_v<const Arci<AtomicIntrusive>&, Arci<const AtomicIntrusive>>);
+	static_assert(not std::is_convertible_v<Arci<const AtomicIntrusive>, Arci<AtomicIntrusive>>);
+	static_assert(not std::is_constructible_v<Arci<AtomicIntrusive>, Arci<const AtomicIntrusive>>);
+
+	template <class From_, class To_>
+	concept ArciInto = requires(From_ from_) { std::move(from_).template into<To_>(); };
+
+	static_assert(ArciInto<Arci<AtomicIntrusive>, const AtomicIntrusive>);
+	static_assert(not ArciInto<Arci<const AtomicIntrusive>, AtomicIntrusive>);
+
+	TEST_F(ArciSemantics, ConstCreateAndDestroy) {
+		{
+			auto obj = Arci<const AtomicIntrusive>::create(5);
+			EXPECT_EQ(obj->value, 5);
+			EXPECT_EQ((*obj).value, 5);
+			EXPECT_EQ(obj.ref_count(), 1);
+			EXPECT_TRUE(obj.ref_unique());
+			EXPECT_EQ(semLive, 1);
+		}
+		EXPECT_EQ(semLive, 0);
+	}
+
+	TEST_F(ArciSemantics, ConstCopyMoveReset) {
+		auto a = Arci<const AtomicIntrusive>::create(6);
+		auto b = a;
+		EXPECT_EQ(a.ref_count(), 2);
+		EXPECT_EQ(a.get(), b.get());
+
+		auto c = std::move(b);
+		EXPECT_TRUE(b == nullptr);
+		EXPECT_EQ(c.ref_count(), 2);
+
+		Arci<const AtomicIntrusive> d {};
+		d = std::move(c);
+		EXPECT_EQ(d->value, 6);
+
+		a.reset();
+		EXPECT_EQ(d.ref_count(), 1);
+		EXPECT_EQ(semLive, 1);
+
+		d.reset();
+		EXPECT_EQ(semLive, 0);
+	}
+
+	TEST_F(ArciSemantics, MutableConvertsToConstByCopy) {
+		auto src = Arci<AtomicIntrusive>::create(7);
+		Arci<const AtomicIntrusive> view = src;
+
+		EXPECT_EQ(view.get(), src.get());
+		EXPECT_EQ(src.ref_count(), 2);
+
+		src.reset();
+		EXPECT_EQ(view->value, 7);
+		EXPECT_EQ(semLive, 1);
+
+		view.reset();
+		EXPECT_EQ(semLive, 0);
+	}
+
+	TEST_F(ArciSemantics, MutableConvertsToConstByMove) {
+		auto src = Arci<AtomicIntrusive>::create(8);
+		const auto* const raw = src.get();
+		Arci<const AtomicIntrusive> dst = std::move(src);
+
+		EXPECT_TRUE(src == nullptr);
+		EXPECT_EQ(dst.get(), raw);
+		EXPECT_EQ(dst.ref_count(), 1);
+
+		dst.reset();
+		EXPECT_EQ(semLive, 0);
+	}
+
+	TEST_F(ArciSemantics, IntoConstKeepsObject) {
+		auto src = Arci<AtomicIntrusive>::create(9);
+		auto dst = src.into<const AtomicIntrusive>();
+
+		EXPECT_EQ(src.ref_count(), 2);
+		EXPECT_EQ(dst->value, 9);
+	}
+
+	TEST_F(ArciSemantics, ConstFromThisCountsOnSharedObject) {
+		auto src = Arci<AtomicIntrusive>::create(10);
+		Arci<const AtomicIntrusive> other = src->arci_from_this<const AtomicIntrusive>();
+
+		EXPECT_EQ(src.ref_count(), 2);
+		EXPECT_EQ(other.get(), src.get());
+	}
+
 	/* Arc */
 
 	TEST_F(ArcSemantics, ReadAfterMove) {
