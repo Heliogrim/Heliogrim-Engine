@@ -434,6 +434,98 @@ namespace AccelLang {
 		EXPECT_TRUE(mentions(diags[1], "in 'lexbad'")) << diags[1].message;
 	}
 
+	/* Nesting depth: one limit (256) bounds every recursive production; deep input yields one located diagnostic */
+
+	namespace {
+		[[nodiscard]] String repeat(StringView text_, size_t count_) {
+			String out {};
+			for (auto i = 0uz; i < count_; ++i) {
+				out += text_;
+			}
+			return out;
+		}
+
+		constexpr StringView toggleAB = "toggle A : { B } = B;\n";
+
+		void expectOnlyDepthError(ref<const Diagnostics> diags_, u32 line_, u32 column_) {
+			ASSERT_EQ(diags_.size(), 1uz);
+			EXPECT_TRUE(mentions(diags_[0], "too deep")) << diags_[0].message;
+			EXPECT_EQ(diags_[0].line, line_);
+			EXPECT_EQ(diags_[0].column, column_);
+		}
+
+		[[nodiscard]] ModuleResolver includeChain(size_t length_, String leaf_ = "fn Leaf();") {
+			// module mN includes m(N+1) until the chain ends (never cyclic)
+			return [length_, leaf = std::move(leaf_)](StringView name_) -> Opt<String> {
+				const auto n = std::stoull(String(name_.substr(1uz)));
+				if (n >= length_) {
+					return Opt<String> { leaf };
+				}
+				return Opt<String> { "#include <m" + std::to_string(n + 1uLL) + ">\n" };
+			};
+		}
+	}
+
+	TEST(ParserTest, DeepParenthesesAreOneDepthDiagnostic) {
+		const auto deep = String(toggleAB) + "@when (" + repeat("(", 5000uz) + "A == B" + repeat(")", 5000uz) + ") fn F();";
+		// unaryCondition #257 sits on the 257th inner '(' (columns start at 8)
+		expectOnlyDepthError(parseFail(deep), 2u, 264u);
+
+		const auto legal = String(toggleAB) + "@when (" + repeat("(", 100uz) + "A == B" + repeat(")", 100uz) + ") fn F();";
+		EXPECT_EQ(parseOk(legal).functions.size(), 1uz);
+	}
+
+	TEST(ParserTest, DeepNegationIsOneDepthDiagnostic) {
+		expectOnlyDepthError(parseFail(String(toggleAB) + "@when (" + repeat("!", 5000uz) + "A == B) fn F();"), 2u, 264u);
+		EXPECT_EQ(parseOk(String(toggleAB) + "@when (" + repeat("!", 100uz) + "A == B) fn F();").functions.size(), 1uz);
+	}
+
+	TEST(ParserTest, DeepCombinatorsAreOneDepthDiagnostic) {
+		const auto nested = [](size_t levels_) {
+			return String(toggleAB) + "@when (" + repeat("any(all(none(", levels_) + "A == B" + repeat(")))", levels_) + ") fn F();";
+		};
+		// unaryCondition #257 = 3 * 85 + 2: the `all` of the 86th "any(all(none(" group (13 columns each)
+		expectOnlyDepthError(parseFail(nested(2000uz)), 2u, 8u + 85u * 13u + 4u);
+
+		EXPECT_EQ(parseOk(nested(33uz)).functions.size(), 1uz);// 99 levels
+	}
+
+	TEST(ParserTest, DeepWhenBlocksAreOneDepthDiagnostic) {
+		// balanced: 5000 nested blocks; block #256 parses the condition of #257 at depth 257
+		const auto balanced = String(toggleAB) + repeat("@when (A == B) {\n", 5000uz) + "fn F();\n" + repeat("}\n", 5000uz) + "fn G();";
+		expectOnlyDepthError(parseFail(balanced), 258u, 8u);
+
+		// unbalanced: the enclosing blocks are not reported as unterminated on top
+		expectOnlyDepthError(parseFail(String(toggleAB) + repeat("@when (A == B) {\n", 5000uz)), 258u, 8u);
+
+		const auto legal = String(toggleAB) + repeat("@when (A == B) {\n", 100uz) + "fn F();\n" + repeat("}\n", 100uz);
+		const auto module = parseOk(legal);
+		ASSERT_EQ(module.functions.size(), 1uz);
+		EXPECT_TRUE(evaluate(module.functions[0].when, { { "A", "B" } }));
+	}
+
+	TEST(ParserTest, DeepIncludeChainIsOneDepthDiagnostic) {
+		const auto diags = parseFail("#include <m1>\n", includeChain(5000uz));
+		ASSERT_EQ(diags.size(), 1uz);
+		EXPECT_TRUE(mentions(diags[0], "too deep")) << diags[0].message;
+		EXPECT_TRUE(mentions(diags[0], "in 'm256'")) << diags[0].message;// including m257 is nesting level 257
+		EXPECT_EQ(diags[0].line, 1u);
+		EXPECT_EQ(diags[0].column, 11u);
+
+		EXPECT_EQ(parseOk("#include <m1>\n", includeChain(100uz)).functions.size(), 1uz);
+	}
+
+	TEST(ParserTest, IncludeAndBlockNestingShareOneBudget) {
+		// m200 sits at include depth 200, so its 57th @when condition reaches level 257
+		const auto leaf = String(toggleAB) + repeat("@when (A == B) {\n", 100uz) + "fn F();\n" + repeat("}\n", 100uz);
+		const auto diags = parseFail("#include <m1>\n", includeChain(200uz, leaf));
+		ASSERT_EQ(diags.size(), 1uz);
+		EXPECT_TRUE(mentions(diags[0], "in 'm200'")) << diags[0].message;
+		EXPECT_TRUE(mentions(diags[0], "too deep")) << diags[0].message;
+		EXPECT_EQ(diags[0].line, 58u);
+		EXPECT_EQ(diags[0].column, 8u);
+	}
+
 	TEST(ParserTest, DiamondIncludeIsAppendedOnce) {
 		const auto includes = includesFrom(
 			{
