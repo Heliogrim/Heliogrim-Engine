@@ -1,5 +1,8 @@
 #pragma once
 #include "../Emitter.hpp"
+#include "../Ir/Diagnostic.hpp"
+#include "../Ir/Layout.hpp"
+#include "../Ir/Module.hpp"
 
 namespace hg::engine::accel::lang {
     class GlslEmitter final :
@@ -9,6 +12,16 @@ namespace hg::engine::accel::lang {
             return dialect_ == Dialect::eVulkanGlsl460;
         }
 
+        /* a representation carries no code: emits the empty module (version line and an empty `main`) */
         void operator()(cref<Representation> rep_, Dialect dialect_, ref<Language> target_) const override;
+
+        /**
+         * Appends one text block of Vulkan GLSL 460 for a resolved module and its layout. Set, binding, push and
+         * input location numbers come from `layout_` only; output locations are numbered by id. Emits the bindings
+         * (implicit ones emit nothing), the named structs reachable from them and from function code (once per name),
+         * the functions with body and `main` (empty if the module has none). Identifiers are kept, builtins map to
+         * their GLSL names. On any error `target_` is left unchanged.
+         */
+        [[nodiscard]] ir::Diagnostics emit(cref<ir::Module> module_, cref<ir::Layout> layout_, ref<Language> target_) const;
     };
 }
