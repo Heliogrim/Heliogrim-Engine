@@ -20,9 +20,13 @@ namespace {
 		ir::Usage usage;
 
 		void bindingAt(cref<ir::Expr> expr_, Vector<u32>& into_) {
-			auto index = expr_.resolved;
+			if (expr_.local) {
+				return;
+			}
+
+			auto index = expr_.binding.index;
 			if (index == unresolved) {
-				/* shortcut: no local-scope shadowing, names match BindingDecl::localName until the parser resolves them */
+				/* shortcut: unresolved names match BindingDecl::localName without scope shadowing, until the parser resolves them */
 				const auto it = std::ranges::find(module.bindings, expr_.name, &ir::BindingDecl::localName);
 				if (it == module.bindings.end()) {
 					return;
@@ -44,7 +48,7 @@ namespace {
 					break;
 				}
 				case ir::ExprKind::eCall: {
-					auto index = e.resolved;
+					auto index = e.function.index;
 					if (index == unresolved) {
 						const auto it = std::ranges::find(module.functions, e.name, &ir::FunctionDecl::name);
 						index = it == module.functions.end() ? unresolved : static_cast<u32>(it - module.functions.begin());
