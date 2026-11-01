@@ -17,7 +17,7 @@ namespace {
 		return Type { .category = TypeCategory::eScalar, .scalarType = scalar_ };
 	}
 
-	[[nodiscard]] Type legacyScalar(cref<ir::TypeDesc> desc_) {
+	[[nodiscard]] Type legacyScalar(ref<const ir::TypeDesc> desc_) {
 		using enum ScalarType;
 		switch (desc_.scalar) {
 			// legacy types have no bool; a GLSL bool is 32 bits wide
@@ -42,7 +42,7 @@ namespace {
 
 	/* every numeric vector (int/uint/float of each width) and float matrix has its own legacy type; bool vectors
 	 * have none and map to an unknown object */
-	[[nodiscard]] Type legacyType(cref<Vector<ir::TypeDesc>> types_, ir::TypeRef ref_) {
+	[[nodiscard]] Type legacyType(ref<const Vector<ir::TypeDesc>> types_, ir::TypeRef ref_) {
 		if (ref_.index >= types_.size()) {
 			return objectType;
 		}
@@ -90,10 +90,11 @@ namespace {
 }
 
 std::expected<Intermediate, ir::Diagnostics> ir::lowerToIntermediate(
-	cref<Module> resolved_,
-	cref<Layout> layout_,
+	ref<const Module> resolved_,
+	ref<const Layout> layout_,
 	Dialect dialect_,
-	cref<DenseMap<String, u32>> vertexOffsets_
+	ref<const DenseMap<String, u32>> vertexOffsets_,
+	ref<const DenseMap<String, s32>> vertexFormats_
 ) {
 	if (dialect_ != Dialect::eVulkanGlsl460) {
 		return std::unexpected(Diagnostics { Diagnostic { .message = "Only Vulkan GLSL 460 can be emitted." } });
@@ -116,14 +117,16 @@ std::expected<Intermediate, ir::Diagnostics> ir::lowerToIntermediate(
 			if (entry.input && resolved_.entry == EntryKind::eVertex) {
 				const auto offset = vertexOffsets_.find(entry.id);
 				if (offset == vertexOffsets_.end()) {
-					diags.push_back(Diagnostic { .message = "Vertex input '" + entry.id + "' has no vertex offset." });
+					diags.emplace_back(Diagnostic { .message = "Vertex input '" + entry.id + "' has no vertex offset." });
 				} else if (index < layout_.inputLocations.size()) {
+					const auto format = vertexFormats_.find(entry.id);
 					// set -1: vertex buffer binding 0
 					chain = make_uptr<VkBindLocationAnnotation>(
 						-1L,
 						static_cast<s32>(layout_.inputLocations[index]),
 						static_cast<s32>(offset->second),
-						std::move(chain)
+						std::move(chain),
+						format != vertexFormats_.end() ? format->second : -1L
 					);
 				}
 			}
@@ -142,7 +145,7 @@ std::expected<Intermediate, ir::Diagnostics> ir::lowerToIntermediate(
 
 		auto symbol = make_uptr<Symbol>(SymbolId::from(entry.id), VariableSymbol { SymbolType::eVariableSymbol, var.get() });
 		symbol->symbolName = entry.id;
-		(entry.input ? im.rep.globalScope.inbound : im.rep.globalScope.outbound).push_back(std::move(var));
+		(entry.input ? im.rep.globalScope.inbound : im.rep.globalScope.outbound).emplace_back(std::move(var));
 		im.rep.symbolTable.insert(std::move(symbol));
 	}
 

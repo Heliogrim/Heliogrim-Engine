@@ -32,4 +32,9 @@ namespace hg::engine::accel {
 			default: return Format::eUndefined;
 		}
 	}
+
+	/** The format the data owner supplied (non-negative `vk::Format`), else the one of the shader type. */
+	[[nodiscard]] constexpr vk::Format vertexFormatOf(const lang::ScalarType type_, const s32 override_) noexcept {
+		return override_ >= 0L ? static_cast<vk::Format>(override_) : vertexFormatOf(type_);
+	}
 }
