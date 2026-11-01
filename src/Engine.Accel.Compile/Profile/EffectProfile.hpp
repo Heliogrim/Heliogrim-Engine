@@ -14,6 +14,8 @@ namespace hg::engine::accel {
     public:
         Vector<ProfileDefinition> _definitions;
         Vector<lang::Intermediate> _modules;
+        /* toggle values the profile fixes for its ir stages, sorted by toggle name */
+        lang::ir::ToggleSet _toggles;
 
     private:
     public:

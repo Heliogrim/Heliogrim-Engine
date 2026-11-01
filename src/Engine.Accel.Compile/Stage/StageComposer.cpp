@@ -10,10 +10,13 @@
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 #include <Engine.GFX.Render.Subpass/Impl/__tmp_helper.hpp>
+#include <Engine.Logging/Logger.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 
+#include "StageIr.hpp"
 #include "../Profile/EffectProfile.hpp"
 #include "../Profile/ProfileDefinition.hpp"
+#include "../Spec/EffectSpecification.hpp"
 
 using namespace hg::engine::accel;
 using namespace hg;
@@ -45,6 +48,10 @@ Vector<smr<StageDerivat>> StageComposer::compose(
 	Vector<smr<StageDerivat>> derivats {};
 	derivats.reserve(stages.size());
 
+	/* resolved variant per derivat; null for text-only stages */
+	Vector<smr<const lang::ir::Resolved>> resolvedStages {};
+	resolvedStages.reserve(stages.size());
+
 	for (const auto& stage : stages) {
 
 		StageFlagBits flagBits { stage->getFlagBits() };
@@ -60,8 +67,29 @@ Vector<smr<StageDerivat>> StageComposer::compose(
 			)
 		);
 
+		const auto source = stage->getIntermediate();
+		if (source != nullptr && source->ir != nullptr) {
+
+			auto resolved = resolveStageIr(*source, *profile_, *specifications_, stage->getFlagBits(), _variants);
+			if (not resolved.has_value()) {
+				for (const auto& diagnostic : resolved.error()) {
+					Logger::error(
+						"Failed to compose ir stage: {} ({}:{})",
+						diagnostic.message,
+						diagnostic.line,
+						diagnostic.column
+					);
+				}
+				return {};
+			}
+
+			derivats.back()->setIntermediate(make_smr<lang::Intermediate>((*resolved)->lowered));
+			resolvedStages.emplace_back(std::move(resolved).value());
+			continue;
+		}
+
+		resolvedStages.emplace_back();
 		preprocessStageDerivat(stage, profile_, derivats.back());
-		//derivats.back()->setIntermediate(make_smr<lang::Intermediate>(*stage->getIntermediate()));
 	}
 
 	/**/
@@ -69,7 +97,14 @@ Vector<smr<StageDerivat>> StageComposer::compose(
 	BindLayout layout {};
 	Vector<nmpt<const lang::Symbol>> symbols {};
 
-	for (const auto& derivat : derivats) {
+	for (size_t stageIdx = 0uLL; stageIdx < derivats.size(); ++stageIdx) {
+
+		const auto& derivat = derivats[stageIdx];
+
+		if (resolvedStages[stageIdx] != nullptr) {
+			appendBindLayout(*resolvedStages[stageIdx], *derivat, layout);
+			continue;
+		}
 
 		symbols.clear();
 		derivat->getIntermediate()->enumerateInboundSymbols(symbols);
@@ -275,11 +310,7 @@ static void preprocessStageDerivat(
 
 	for (const auto& module : profile_->_modules | std::views::reverse) {
 
-		// TODO: Merge intermediate representations
-		intermediate->rep;
-		module.rep;
-
-		// Temporary alternative
+		/* text-only stages concatenate module text; ir stages merge ir in `resolveStageIr` */
 		for (const auto block : module.lang.text | std::views::reverse) {
 			il.emplace_back(block);
 		}

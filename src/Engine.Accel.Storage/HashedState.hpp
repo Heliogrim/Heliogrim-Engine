@@ -87,8 +87,14 @@ namespace hg::engine::accel {
 			h.put(module.contentHash());
 		}
 
-		/* shortcut: the profile has no toggle field yet and descriptions have no content hash, so only the usage
-		 * pattern's symbol ids are keyed; add the profile toggles and a description key when they exist */
+		h.put(static_cast<u64>(value_._toggles.size()));
+		for (const auto& [toggle, toggleValue] : value_._toggles) {
+			h.put(StringView { toggle });
+			h.put(StringView { toggleValue });
+		}
+
+		/* shortcut: descriptions have no content hash, so only the usage pattern's symbol ids are keyed;
+		 * add a description key once descriptions can be hashed by content */
 		for (const auto* const pairs : { &value_._usagePattern.ctx.pairs, &value_._usagePattern.dyn.pairs }) {
 			h.put(static_cast<u64>(pairs->size()));
 			for (const auto& [description, symbolId] : *pairs) {

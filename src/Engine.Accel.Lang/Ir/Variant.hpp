@@ -20,6 +20,7 @@
 #include "Interface.hpp"
 #include "Layout.hpp"
 #include "Module.hpp"
+#include "../Intermediate.hpp"
 
 namespace hg::engine::accel::lang::ir {
 	/**
@@ -78,6 +79,8 @@ namespace hg::engine::accel::lang::ir {
 		Module module;
 		Layout layout;
 		Vector<InterfaceEntry> interfaceEntries;
+		/* the lowered legacy form, so a cache hit emits nothing; copy it for each user */
+		Intermediate lowered;
 	};
 }
 

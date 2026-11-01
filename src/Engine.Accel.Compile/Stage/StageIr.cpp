@@ -1,0 +1,258 @@
+#include "StageIr.hpp"
+
+#include <algorithm>
+#include <Engine.Accel.Lang/Dialect.hpp>
+#include <Engine.Accel.Lang/Ir/Contract.hpp>
+#include <Engine.Accel.Lang/Ir/Interface.hpp>
+#include <Engine.Accel.Lang/Ir/Layout.hpp>
+#include <Engine.Accel.Lang/Ir/Lower.hpp>
+#include <Engine.Accel.Lang/Ir/Merge.hpp>
+#include <Engine.Accel.Lang/Ir/Resolve.hpp>
+#include <Engine.Accel.Lang/Ir/Slice.hpp>
+#include <Engine.Accel.Lang/Rep/Annotation.hpp>
+#include <Engine.Common/Make.hpp>
+
+#include "../Profile/EffectProfile.hpp"
+#include "../Spec/EffectSpecification.hpp"
+
+using namespace hg;
+using namespace hg::engine::accel;
+using namespace hg::engine::accel::lang;
+using namespace hg::engine::accel::lang::ir;
+
+namespace {
+	[[nodiscard]] Diagnostics fail(String message_) {
+		return Diagnostics { Diagnostic { .severity = Severity::eError, .message = std::move(message_) } };
+	}
+
+	[[nodiscard]] bool hasError(cref<Diagnostics> diagnostics_) {
+		return std::ranges::any_of(
+			diagnostics_,
+			[](cref<Diagnostic> d_) { return d_.severity == Severity::eError; }
+		);
+	}
+
+	/* inbound variables carrying a SymbolId and a VkBindLocation: id -> vertex offset, sorted */
+	[[nodiscard]] Vector<std::pair<String, u32>> vertexOffsetsOf(cref<Intermediate> stage_) {
+		Vector<std::pair<String, u32>> offsets {};
+		for (const auto& var : stage_.rep.globalScope.inbound) {
+
+			const SymbolIdAnnotation* id = nullptr;
+			const VkBindLocationAnnotation* location = nullptr;
+			for (auto* cur = var->annotation.get(); cur != nullptr; cur = cur->next.get()) {
+				if (cur->type == AnnotationType::eSymbolId) {
+					id = static_cast<const SymbolIdAnnotation*>(cur);
+				} else if (cur->type == AnnotationType::eVkBindLocation) {
+					location = static_cast<const VkBindLocationAnnotation*>(cur);
+				}
+			}
+
+			if (id != nullptr && location != nullptr && location->vkOffset >= 0) {
+				offsets.emplace_back(String { id->symbolId }, static_cast<u32>(location->vkOffset));
+			}
+		}
+
+		std::ranges::sort(offsets);
+		return offsets;
+	}
+
+	[[nodiscard]] BindType bindTypeOf(cref<Resolved> resolved_, cref<String> id_) {
+		for (const auto& entry : resolved_.interfaceEntries) {
+			if (entry.input && entry.id == id_) {
+				switch (entry.cls) {
+					case BindClass::eStorageBuffer: return BindType::eStorageBuffer;
+					case BindClass::eTexture: return BindType::eTexture;
+					case BindClass::eSampler: return BindType::eTextureSampler;
+					default: return BindType::eUniformBuffer;
+				}
+			}
+		}
+		return BindType::eUniformBuffer;
+	}
+}
+
+std::expected<smr<const Resolved>, Diagnostics> hg::engine::accel::resolveStageIr(
+	cref<Intermediate> stage_,
+	cref<EffectProfile> profile_,
+	cref<EffectSpecification> spec_,
+	cref<StageFlagBits> flags_,
+	ref<VariantCache> cache_
+) {
+
+	if (stage_.ir == nullptr) {
+		return std::unexpected(fail("stage has no ir"));
+	}
+
+	Vector<const Module*> modules {};
+	modules.reserve(profile_._modules.size() + 1uLL);
+	for (const auto& module : profile_._modules) {
+		if (module.ir != nullptr) {
+			modules.push_back(module.ir.get());
+		}
+	}
+	modules.push_back(stage_.ir.get());
+
+	Vector<String> outputs {};
+	for (const auto& symbol : spec_.targetSymbols()) {
+		outputs.push_back(symbol->symbolName);
+	}
+
+	const auto offsets = vertexOffsetsOf(stage_);
+
+	/* Key: the input modules, not the merged one, so a hit merges nothing. */
+	auto key = makeVariantKey(*stage_.ir, profile_._toggles, outputs);
+	{
+		ContentHasher h {};
+		h.put(static_cast<u64>(modules.size()));
+		for (const auto* module : modules) {
+			h.put(contentHash(*module));
+		}
+		h.put(flags_);
+		h.put(static_cast<u64>(offsets.size()));
+		for (const auto& [id, offset] : offsets) {
+			h.put(StringView { id });
+			h.put(offset);
+		}
+		key.module = h.value;
+	}
+
+	Diagnostics failure {};
+	auto resolved = cache_.getOrCreate(
+		key,
+		[&]() -> smr<const Resolved> {
+
+			auto merged = merge(modules);
+			if (not merged.has_value()) {
+				failure = std::move(merged).error();
+				return {};
+			}
+
+			auto fixed = fixToggles(*merged, ToggleSources { .pass = {}, .profile = profile_._toggles, .material = {} });
+			if (not fixed.has_value()) {
+				failure = std::move(fixed).error();
+				return {};
+			}
+
+			auto flat = resolveToggles(*merged, fixed->toggles);
+			if (not flat.has_value()) {
+				failure = std::move(flat).error();
+				return {};
+			}
+
+			/* unknown target symbols are errors, the slice would silently keep nothing */
+			const auto all = computeInterface(*flat);
+			for (const auto& id : outputs) {
+				if (std::ranges::none_of(all, [&](cref<InterfaceEntry> e_) { return not e_.input && e_.id == id; })) {
+					failure = fail("target symbol '" + id + "' is not an output of the stage");
+					return {};
+				}
+			}
+
+			auto sliced = slice(*flat, outputs);
+			auto interfaceEntries = computeInterface(sliced);
+
+			StageContract contract {};
+			for (const auto& entry : interfaceEntries) {
+				if (entry.input && entry.mode == BindMode::eBind) {
+					contract.provides.push_back(entry.id);
+				}
+			}
+
+			failure = checkContract(interfaceEntries, contract, {});
+			if (hasError(failure)) {
+				return {};
+			}
+
+			auto layout = assignLayout(interfaceEntries, sliced.types, {});
+
+			DenseMap<String, u32> vertexOffsets {};
+			for (const auto& [id, offset] : offsets) {
+				vertexOffsets.insert_or_assign(id, offset);
+			}
+
+			auto lowered = lowerToIntermediate(sliced, layout, Dialect::eVulkanGlsl460, vertexOffsets);
+			if (not lowered.has_value()) {
+				failure = std::move(lowered).error();
+				return {};
+			}
+
+			return make_smr<const Resolved>(
+				new Resolved {
+					std::move(sliced),
+					std::move(layout),
+					std::move(interfaceEntries),
+					std::move(lowered).value()
+				}
+			);
+		}
+	);
+
+	if (resolved == nullptr) {
+		return std::unexpected(std::move(failure));
+	}
+	return resolved;
+}
+
+std::expected<smr<StageDerivat>, Diagnostics> hg::engine::accel::composeStageIr(
+	cref<Intermediate> stage_,
+	cref<EffectProfile> profile_,
+	cref<EffectSpecification> spec_,
+	const StageFlagBits flags_,
+	ref<VariantCache> cache_
+) {
+
+	auto resolved = resolveStageIr(stage_, profile_, spec_, flags_, cache_);
+	if (not resolved.has_value()) {
+		return std::unexpected(std::move(resolved).error());
+	}
+
+	auto derivat = make_smr<StageDerivat>(
+		nmpt<Stage> {},
+		Vector<smr<Stage>> {},
+		smr<StageModule> { nullptr },
+		StageFlagBits { flags_ }
+	);
+	derivat->setIntermediate(make_smr<Intermediate>((*resolved)->lowered));
+	return derivat;
+}
+
+void hg::engine::accel::appendBindLayout(cref<Resolved> resolved_, cref<StageDerivat> derivat_, ref<BindLayout> layout_) {
+
+	const auto intermediate = derivat_.getIntermediate();
+
+	for (const auto& slot : resolved_.layout.slots) {
+
+		const auto iter = std::ranges::find_if(
+			intermediate->rep.symbolTable,
+			[&](cref<uptr<Symbol>> s_) { return s_->symbolName == slot.id; }
+		);
+		if (iter == intermediate->rep.symbolTable.end()) {
+			continue;
+		}
+
+		if (layout_.groups.size() <= slot.set) {
+			layout_.groups.resize(slot.set + 1uLL);
+		}
+
+		/* shortcut: stages are laid out one by one, so a binding shared by stages must land in the same
+		 * place in each; pass the earlier layouts as existing layouts to the layout pass to guarantee it */
+		auto& elements = layout_.groups[slot.set].elements;
+		if (std::ranges::none_of(elements, [&](cref<BindElement> e_) { return e_.symbol->symbolName == slot.id; })) {
+			elements.push_back(BindElement { nmpt<const Symbol> { iter->get() }, bindTypeOf(resolved_, slot.id) });
+		}
+	}
+
+	for (const auto& range : resolved_.layout.push) {
+
+		auto existing = std::ranges::find_if(
+			layout_.constants,
+			[&](cref<PushConstant> c_) { return c_.offset == range.offset && c_.size == range.size; }
+		);
+
+		if (existing != layout_.constants.end()) {
+			existing->stages |= derivat_.getFlagBits();
+		} else {
+			layout_.constants.emplace_back(derivat_.getFlagBits(), range.offset, range.size);
+		}
+	}
+}
