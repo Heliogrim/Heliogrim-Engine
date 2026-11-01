@@ -127,7 +127,8 @@ namespace hg {
 	 *	Every modification of a slot that may be copied concurrently is a single RMW, so copy vs move-assign / reset /
 	 *	move-from on the same instance is supported. Copy vs destroy of the same instance is a contract violation.
 	 *
-	 * Attention: `get()`, `operator->` and `operator*` are plain loads, unsafe against a concurrent reassign.
+	 * Attention: `get()`, `operator->`, `operator*`, `ref_count()` and `ref_unique()` dereference a plain-loaded
+	 *	pointer, unsafe against a concurrent reassign of the same slot.
 	 */
 	template <IncompleteOrAtomicIntrusiveRefCountable Ty_, class Policy_>
 	class AtomicRefCountedIntrusive final {
@@ -173,6 +174,7 @@ namespace hg {
 			}
 
 			// Reads inside the release sequence of the writer's exchange, so the object is visible.
+			// unverified: needs weak-memory check (acquire pin sees the object published by the writer's exchange)
 			const auto old = slot_.fetch_add(1u, std::memory_order::acquire);
 			auto* const subject = decode_pointer(old);
 			if (subject == nullptr) {
@@ -195,6 +197,7 @@ namespace hg {
 
 				const auto pins = decode_pins(current);
 
+				// shortcut: |net| must stay below 2^31 (about 131k live words each holding about 16k pins), when to upgrade: a 64-bit net field or a bounded-pin guard
 				// Credit before the pins leave the word; the undo cannot reach zero, as the flusher holds a live ref.
 				subject_->ref_fetch_add(s64 { pins }, std::memory_order::relaxed);
 				// unverified: needs weak-memory check (release pairs with the acquire of a later fold's slot read)
@@ -217,6 +220,8 @@ namespace hg {
 				return;
 			}
 
+			// shortcut: |net| must stay below 2^31 (about 131k live words each holding about 16k pins), when to upgrade: a 64-bit net field or a bounded-pin guard
+			// unverified: needs weak-memory check (release fold pairs with the acquire fence on zero before delete)
 			const s64 delta = -arci_live_one + (s64 { decode_pins(packed_) } - 1);
 			if (subject->ref_fetch_add(delta, std::memory_order::release) + delta == 0) {
 				Policy_::fence(std::memory_order::acquire);
@@ -319,6 +324,7 @@ namespace hg {
 		}
 
 		constexpr void reset() {
+			// unverified: needs weak-memory check (acq_rel exchange hands the word's pins and flush credits to the fold)
 			fold(_obj.exchange(0u, std::memory_order::acq_rel));
 		}
 
@@ -370,6 +376,7 @@ namespace hg {
 		template <IsAtomicIntrusiveRefCountable ToType_> requires ArciConvertibleTo<Ty_, ToType_>
 		[[nodiscard]] AtomicRefCountedIntrusive<ToType_, Policy_> into() && noexcept {
 			using target_type = AtomicRefCountedIntrusive<ToType_, Policy_>;
+			// unverified: needs weak-memory check (acq_rel exchange sees flush credits of the moved word's pins)
 			const auto moved = normalize(_obj.exchange(0u, std::memory_order::acq_rel));
 			return target_type {
 				target_type::encode(static_cast<ptr<ToType_>>(decode_pointer(moved)), decode_pins(moved))
