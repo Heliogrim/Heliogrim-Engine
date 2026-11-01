@@ -28,6 +28,7 @@
 #include "../VkApi.hpp"
 #include "../Module/VkCompiledModule.hpp"
 #include "../Spec/EffectSpecification.hpp"
+#include "VkVertexFormat.hpp"
 
 using namespace hg::engine::accel;
 using namespace hg;
@@ -602,35 +603,10 @@ smr<VkGraphicsPipeline> VkPipelineCompiler::linkVk(
 		const auto& var = *in.symbol->var.data;
 		assert(var.type.category == lang::TypeCategory::eScalar);
 
-		auto format = vk::Format::eUndefined;
-		switch (var.type.scalarType) {
-			case lang::ScalarType::eU8: {
-				format = vk::Format::eR8Uint;
-				break;
-			}
-			case lang::ScalarType::eU8Vec2: {
-				format = vk::Format::eR8G8Unorm;
-				break;
-			}
-			case lang::ScalarType::eU8Vec3: {
-				format = vk::Format::eR8G8B8Unorm;
-				break;
-			}
-			case lang::ScalarType::eU8Vec4: {
-				format = vk::Format::eR8G8B8A8Unorm;
-				break;
-			}
-			case lang::ScalarType::eF32Vec3: {
-				format = vk::Format::eR32G32B32Sfloat;
-				break;
-			}
-			case lang::ScalarType::eF32Vec4: {
-				format = vk::Format::eR32G32B32A32Sfloat;
-				break;
-			}
-			default: {
-				::hg::panic();
-			}
+		const auto format = vertexFormatOf(var.type.scalarType);
+		if (format == vk::Format::eUndefined) {
+			IM_CORE_ERRORF("Vertex input type 0x{:02X} has no vertex format.", static_cast<u8>(var.type.scalarType));
+			return nullptr;
 		}
 
 		u32 index = ~0uL;
