@@ -110,6 +110,11 @@ EffectCompileResult EffectCompiler::compile(
 		pass
 	);
 
+	// An empty list signals a failed compose (already logged by the composer).
+	if (stages.empty()) {
+		return { .flag = EffectCompileResultFlag::eFailed };
+	}
+
 	/* Build module sources out of the scoped stages */
 
 	Vector<uptr<ModuleSource>> sources {};
@@ -149,14 +154,14 @@ EffectCompileResult EffectCompiler::compile(
 
 	/* Finalize acceleration stage derivates */
 
+	auto pipeline = _passCompiler->compile(request_.spec, std::move(pass), std::move(stages), std::move(modules));
+	if (not pipeline) {
+		return { .flag = EffectCompileResultFlag::eFailed };
+	}
+
 	return {
 		.flag = EffectCompileResultFlag::eCompiled,
 		.alias = std::move(aliasing),
-		.pipeline = _passCompiler->compile(
-			request_.spec,
-			std::move(pass),
-			std::move(stages),
-			std::move(modules)
-		)
+		.pipeline = std::move(pipeline)
 	};
 }
