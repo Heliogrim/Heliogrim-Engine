@@ -206,27 +206,8 @@ smr<AccelerationEffect> build_test_effect() {
 
 	/**/
 
-	const auto vertexShaderCode = read_shader_file(R"(depth/__test__predepth.vs)");
-
-	vertexStage->setIntermediate(make_smr<lang::Intermediate>());
-	vertexStage->getIntermediate()->lang.dialect = lang::Dialect::eVulkanGlsl460;
-	vertexStage->getIntermediate()->lang.text.emplace_back(std::move(vertexShaderCode));
-
-	const auto fragmentShaderCode = read_shader_file(R"(depth/__test__predepth.fs)");
-
-	fragmentStage->setIntermediate(make_smr<lang::Intermediate>());
-	fragmentStage->getIntermediate()->lang.dialect = lang::Dialect::eVulkanGlsl460;
-	fragmentStage->getIntermediate()->lang.text.emplace_back(std::move(fragmentShaderCode));
-
-	/**/
-
-	uptr<lang::Variable> tmpVar {};
-
-	tmpVar = make_uptr<lang::Variable>();
-	tmpVar->annotation = make_uptr<lang::SimpleAnnotation<lang::AnnotationType::eForwardLinkage>>();
-	tmpVar->annotation = make_uptr<lang::SymbolIdAnnotation>("depth", std::move(tmpVar->annotation));
-
-	fragmentStage->getIntermediate()->rep.globalScope.outbound.emplace_back(std::move(tmpVar));
+	vertexStage->setIntermediate(makeIrIntermediate(R"(depth/predepth.vs.asl)", lang::ir::EntryKind::eVertex));
+	fragmentStage->setIntermediate(makeIrIntermediate(R"(depth/predepth.fs.asl)", lang::ir::EntryKind::eFragment));
 
 	/**/
 
