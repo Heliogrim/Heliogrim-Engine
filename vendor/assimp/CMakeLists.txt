@@ -36,6 +36,9 @@ function(library_assimp_init)
 	set(ASSIMP_BUILD_ZLIB OFF CACHE INTERNAL "" FORCE)
 	set(USE_STATIC_CRT OFF CACHE INTERNAL "" FORCE)
 
+	# Assimp would install a global RULE_LAUNCH_COMPILE/LINK ccache, stacking with HELIOGRIM_USE_COMPILER_CACHE (`ccache sccache clang-cl`)
+	set(ASSIMP_BUILD_USE_CCACHE OFF CACHE INTERNAL "" FORCE)
+
 	get_external_include_path(zlib_include_path "zlib")
 	set(ZLIB_INCLUDE_DIR "${zlib_include_path}/zlib" CACHE INTERNAL "" FORCE)
 	set(ZLIB_LIBRARY ${PROJECT_NAME}::External-zlib CACHE INTERNAL "" FORCE)
