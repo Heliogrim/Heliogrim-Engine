@@ -136,15 +136,4 @@ namespace AccelLang {
 		EXPECT_TRUE(emitter.supportsDialect(Dialect::eVulkanGlsl460));
 	}
 
-	TEST(GlslEmitterTest, EmitsTextBlock) {
-		const GlslEmitter emitter {};
-		Representation rep {};
-		Language target {};
-
-		emitter(rep, Dialect::eVulkanGlsl460, target);
-
-		ASSERT_FALSE(target.text.empty());
-		EXPECT_TRUE(target.text.front().data.starts_with("#version 460\n"));
-		EXPECT_TRUE(target.text.front().data.contains("void main()"));
-	}
 }

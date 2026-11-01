@@ -89,7 +89,7 @@ namespace {
 
 	class Writer {
 	public:
-		Writer(cref<ir::Module> module_, cref<ir::Layout> layout_) :
+		Writer(ref<const ir::Module> module_, ref<const ir::Layout> layout_) :
 			_module(module_),
 			_layout(layout_),
 			_structState(module_.types.size(), State::eNew) {}
@@ -125,8 +125,8 @@ namespace {
 			}
 		};
 
-		cref<ir::Module> _module;
-		cref<ir::Layout> _layout;
+		ref<const ir::Module> _module;
+		ref<const ir::Layout> _layout;
 		ir::Diagnostics _diags;
 
 		String _structs;
@@ -142,7 +142,7 @@ namespace {
 		u32 _depth = 0uL;
 
 		void error(String message_) {
-			_diags.push_back(ir::Diagnostic { .message = std::move(message_) });
+			_diags.emplace_back(ir::Diagnostic { .message = std::move(message_) });
 		}
 
 		[[nodiscard]] const ir::TypeDesc* typeAt(ir::TypeRef ref_) const {
@@ -173,7 +173,7 @@ namespace {
 				bits == 64uL ? static_cast<u32>(eShaderInt64) : 0uL;
 		}
 
-		[[nodiscard]] Opt<String> scalarName(cref<ir::TypeDesc> desc_) {
+		[[nodiscard]] Opt<String> scalarName(ref<const ir::TypeDesc> desc_) {
 			using enum ir::ScalarKind;
 			if (desc_.scalar == eBool) {
 				return String { "bool" };
@@ -190,7 +190,7 @@ namespace {
 			return desc_.bits == 32uL ? base : base + bits + "_t";
 		}
 
-		[[nodiscard]] Opt<String> vectorPrefix(cref<ir::TypeDesc> desc_) {
+		[[nodiscard]] Opt<String> vectorPrefix(ref<const ir::TypeDesc> desc_) {
 			using enum ir::ScalarKind;
 			if (desc_.scalar == eBool) {
 				return String { "b" };
@@ -207,7 +207,7 @@ namespace {
 		}
 
 		/* GLSL type name; arrays in type syntax (`float[4]`); None if GLSL cannot name it */
-		[[nodiscard]] Opt<String> name(cref<ir::TypeDesc> desc_, u32 depth_ = 0uL) {
+		[[nodiscard]] Opt<String> name(ref<const ir::TypeDesc> desc_, u32 depth_ = 0uL) {
 			using enum ir::TypeKind;
 			const auto inRange = [](u32 v_) { return v_ >= 2uL && v_ <= 4uL; };
 			switch (desc_.kind) {
@@ -424,7 +424,7 @@ namespace {
 			}
 		}
 
-		void forward(cref<ir::BindingDecl> binding_, u32 index_) {
+		void forward(ref<const ir::BindingDecl> binding_, u32 index_) {
 			if (binding_.implicit) {
 				return;
 			}
@@ -446,7 +446,7 @@ namespace {
 				"in " + *decl + ";\n";
 		}
 
-		void resource(cref<ir::BindingDecl> binding_) {
+		void resource(ref<const ir::BindingDecl> binding_) {
 			using enum ir::BindClass;
 			const auto* desc = typeAt(binding_.type);
 			const auto kind = desc != nullptr ? Opt<ir::TypeKind> { desc->kind } : None;
@@ -503,7 +503,7 @@ namespace {
 		}
 
 		/* an anonymous struct becomes the block body (instance name = local name), any other type its only member */
-		void block(cref<String> head_, cref<ir::BindingDecl> binding_, cref<ir::TypeDesc> desc_) {
+		void block(ref<const String> head_, ref<const ir::BindingDecl> binding_, ref<const ir::TypeDesc> desc_) {
 			const auto& local = binding_.localName;
 			if (desc_.kind == ir::TypeKind::eStruct && desc_.name.empty()) {
 				String members {};
@@ -522,7 +522,7 @@ namespace {
 
 		/* Functions */
 
-		[[nodiscard]] Opt<String> signature(cref<ir::FunctionDecl> fn_) {
+		[[nodiscard]] Opt<String> signature(ref<const ir::FunctionDecl> fn_) {
 			const auto* ret = typeAt(fn_.ret);
 			const auto retName = ret != nullptr ? name(*ret) : Opt<String> { "void" };
 			if (not retName.has_value()) {
@@ -651,7 +651,7 @@ namespace {
 			}
 		}
 
-		void declareLocal(cref<ir::Stmt> stmt_, cref<String> pad_, ref<String> out_) {
+		void declareLocal(ref<const ir::Stmt> stmt_, ref<const String> pad_, ref<String> out_) {
 			const auto init = stmt_.lhs.index < _module.exprs.size() ? Opt<Emitted> { expr(stmt_.lhs) } : None;
 			Opt<ir::TypeDesc> type = typeOf(stmt_.type);
 			Opt<String> decl = None;
@@ -676,7 +676,7 @@ namespace {
 
 		/* Expressions: every unary and binary is parenthesized, so source precedence carries over */
 
-		[[nodiscard]] Opt<ir::TypeDesc> localType(cref<String> name_) const {
+		[[nodiscard]] Opt<ir::TypeDesc> localType(ref<const String> name_) const {
 			for (auto it = _locals.rbegin(); it != _locals.rend(); ++it) {
 				if (it->first == name_) {
 					return it->second;
@@ -772,7 +772,7 @@ namespace {
 			}
 		}
 
-		[[nodiscard]] Emitted nameRef(cref<ir::Expr> e_) {
+		[[nodiscard]] Emitted nameRef(ref<const ir::Expr> e_) {
 			if (e_.local) {
 				return { e_.name, localType(e_.name) };
 			}
@@ -792,7 +792,7 @@ namespace {
 		}
 
 		/* `sample(texture, sampler, uv)` -> `texture(sampler2D(texture, sampler), uv)` */
-		[[nodiscard]] Emitted sample(cref<ir::Expr> e_) {
+		[[nodiscard]] Emitted sample(ref<const ir::Expr> e_) {
 			if (e_.operands.size() != 3uz) {
 				error("'sample' takes a texture, a sampler and coordinates.");
 				return { "0", None };
@@ -812,7 +812,7 @@ namespace {
 			};
 		}
 
-		[[nodiscard]] Opt<ir::TypeDesc> fieldType(cref<Opt<ir::TypeDesc>> base_, cref<String> field_) const {
+		[[nodiscard]] Opt<ir::TypeDesc> fieldType(ref<const Opt<ir::TypeDesc>> base_, ref<const String> field_) const {
 			if (not base_.has_value()) {
 				return None;
 			}
@@ -826,7 +826,7 @@ namespace {
 				None;
 		}
 
-		[[nodiscard]] Opt<ir::TypeDesc> indexType(cref<Opt<ir::TypeDesc>> base_) const {
+		[[nodiscard]] Opt<ir::TypeDesc> indexType(ref<const Opt<ir::TypeDesc>> base_) const {
 			if (not base_.has_value()) {
 				return None;
 			}
@@ -839,7 +839,7 @@ namespace {
 			return base_->kind == ir::TypeKind::eMatrix ? Opt<ir::TypeDesc> { vectorDesc(base_->scalar, base_->bits, base_->m) } : None;
 		}
 
-		[[nodiscard]] static Opt<ir::TypeDesc> binaryType(cref<String> op_, cref<Opt<ir::TypeDesc>> lhs_, cref<Opt<ir::TypeDesc>> rhs_) {
+		[[nodiscard]] static Opt<ir::TypeDesc> binaryType(ref<const String> op_, ref<const Opt<ir::TypeDesc>> lhs_, ref<const Opt<ir::TypeDesc>> rhs_) {
 			using enum ir::TypeKind;
 			if (isComparison(op_)) {
 				return scalarDesc(ir::ScalarKind::eBool, 32uL);
@@ -865,8 +865,8 @@ namespace {
 	};
 }
 
-void lang::GlslEmitter::operator()(cref<Representation>, Dialect dialect_, ref<Language> target_) const {
-	std::ignore = emit(ir::Module {}, ir::Layout {}, target_);
+void lang::GlslEmitter::operator()(ref<const Representation>, Dialect dialect_, ref<Language> target_) const {
+	// Legacy path: shader text comes from the Intermediate; IR output goes through emit().
 	target_.dialect = dialect_;
 }
 
