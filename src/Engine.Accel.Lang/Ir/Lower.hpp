@@ -19,7 +19,7 @@ namespace hg::engine::accel::lang::ir {
 	 * - `lang`: `dialect_` and one text block emitted by `GlslEmitter::emit`.
 	 * - `rep`: one variable per interface entry (inputs inbound, outputs outbound) and its symbol (`SymbolId` of the
 	 *   id). Annotation chains, outermost first: forward `SymbolId -> ForwardLinkage`, preceded by
-	 *   `VkBindLocation(-1, location, offset)` for a vertex input (offset from `vertexOffsets_` by id); bind
+	 *   `VkBindLocation(-1, location, offset)` for a vertex input (offset from `vertexOffsets_` by id, `vk::Format` from `vertexFormats_` by id, absent: -1); bind
 	 *   `SymbolId -> Storage | Uniform -> ExternalLinkage` (textures and samplers are uniform); push
 	 *   `SymbolId -> Readonly -> Constant -> ExternalLinkage`. Implicit entries get a variable and symbol too.
 	 * Errors: an unsupported dialect, every emitter error, a vertex input without offset.
@@ -28,6 +28,7 @@ namespace hg::engine::accel::lang::ir {
 		ref<const Module> resolved_,
 		ref<const Layout> layout_,
 		Dialect dialect_,
-		cref<DenseMap<String, u32>> vertexOffsets_ = {}
+		ref<const DenseMap<String, u32>> vertexOffsets_ = {},
+		ref<const DenseMap<String, s32>> vertexFormats_ = {}
 	);
 }
