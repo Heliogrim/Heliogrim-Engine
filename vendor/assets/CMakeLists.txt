@@ -9,14 +9,14 @@ function(vendor_assets_init)
 	get_external_include_path(vendor_inc_path "assets")
 	get_external_source_path(vendor_src_path "assets")
 
-	execute_process(
-			COMMAND ssh -T git@git.neogc.net
-			WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
-			TIMEOUT 10
-			RESULT_VARIABLE vendor_assets_git_ssh
-			OUTPUT_QUIET
-			ERROR_QUIET
-	)
+	#execute_process(
+	#		COMMAND ssh -T git@git.neogc.net
+	#		WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+	#		TIMEOUT 10
+	#		RESULT_VARIABLE vendor_assets_git_ssh
+	#		OUTPUT_QUIET
+	#		ERROR_QUIET
+	#)
 
 	set(vendor_git_repository "https://git.neogc.net/heliogrim-workgroup/heliogrim-engine-assets.git")
 	if (NOT ${HELIOGRIM_ASSETS_FORCE_HTTPS} AND vendor_assets_git_ssh EQUAL 0)
@@ -35,9 +35,9 @@ function(vendor_assets_init)
 			SOURCE_DIR "${vendor_src_path}"
 			EXCLUDE_FROM_ALL
 	)
-	FetchContent_MakeAvailable(
-			assets
-	)
+	#FetchContent_MakeAvailable(
+	#		assets
+	#)
 
 endfunction()
 
