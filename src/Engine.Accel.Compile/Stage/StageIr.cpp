@@ -11,6 +11,7 @@
 #include <Engine.Accel.Lang/Ir/Slice.hpp>
 #include <Engine.Accel.Lang/Rep/Annotation.hpp>
 #include <Engine.Common/Make.hpp>
+#include <Engine.Logging/Logger.hpp>
 
 #include "../Profile/EffectProfile.hpp"
 #include "../Spec/EffectSpecification.hpp"
@@ -76,7 +77,8 @@ std::expected<smr<const Resolved>, Diagnostics> hg::engine::accel::resolveStageI
 	cref<EffectProfile> profile_,
 	cref<EffectSpecification> spec_,
 	cref<StageFlagBits> flags_,
-	ref<VariantCache> cache_
+	ref<VariantCache> cache_,
+	const bool exportStage_
 ) {
 
 	if (stage_.ir == nullptr) {
@@ -85,16 +87,21 @@ std::expected<smr<const Resolved>, Diagnostics> hg::engine::accel::resolveStageI
 
 	Vector<const Module*> modules {};
 	modules.reserve(profile_._modules.size() + 1uLL);
+	bool skippedText = false;
 	for (const auto& module : profile_._modules) {
 		if (module.ir != nullptr) {
 			modules.push_back(module.ir.get());
+		} else if (not module.lang.text.empty()) {
+			skippedText = true;
 		}
 	}
 	modules.push_back(stage_.ir.get());
 
 	Vector<String> outputs {};
-	for (const auto& symbol : spec_.targetSymbols()) {
-		outputs.push_back(symbol->symbolName);
+	if (exportStage_) {
+		for (const auto& symbol : spec_.targetSymbols()) {
+			outputs.emplace_back(symbol->symbolName);
+		}
 	}
 
 	const auto offsets = vertexOffsetsOf(stage_);
@@ -120,6 +127,10 @@ std::expected<smr<const Resolved>, Diagnostics> hg::engine::accel::resolveStageI
 	auto resolved = cache_.getOrCreate(
 		key,
 		[&]() -> smr<const Resolved> {
+
+			if (skippedText) {
+				Logger::warn("Ir stage skips profile '{}' modules without ir; their text is not emitted", profile_._name);
+			}
 
 			auto merged = merge(modules);
 			if (not merged.has_value()) {
@@ -162,6 +173,10 @@ std::expected<smr<const Resolved>, Diagnostics> hg::engine::accel::resolveStageI
 			if (hasError(failure)) {
 				return {};
 			}
+			for (const auto& warning : failure) {
+				Logger::warn("Ir stage contract: {}", warning.message);
+			}
+			failure.clear();
 
 			auto layout = assignLayout(interfaceEntries, sliced.types, {});
 
@@ -198,10 +213,11 @@ std::expected<smr<StageDerivat>, Diagnostics> hg::engine::accel::composeStageIr(
 	cref<EffectProfile> profile_,
 	cref<EffectSpecification> spec_,
 	const StageFlagBits flags_,
-	ref<VariantCache> cache_
+	ref<VariantCache> cache_,
+	const bool exportStage_
 ) {
 
-	auto resolved = resolveStageIr(stage_, profile_, spec_, flags_, cache_);
+	auto resolved = resolveStageIr(stage_, profile_, spec_, flags_, cache_, exportStage_);
 	if (not resolved.has_value()) {
 		return std::unexpected(std::move(resolved).error());
 	}
@@ -216,7 +232,11 @@ std::expected<smr<StageDerivat>, Diagnostics> hg::engine::accel::composeStageIr(
 	return derivat;
 }
 
-void hg::engine::accel::appendBindLayout(cref<Resolved> resolved_, cref<StageDerivat> derivat_, ref<BindLayout> layout_) {
+Diagnostics hg::engine::accel::appendBindLayout(
+	ref<const Resolved> resolved_,
+	ref<const StageDerivat> derivat_,
+	ref<BindLayout> layout_
+) {
 
 	const auto intermediate = derivat_.getIntermediate();
 
@@ -230,16 +250,41 @@ void hg::engine::accel::appendBindLayout(cref<Resolved> resolved_, cref<StageDer
 			continue;
 		}
 
+		/* an id an earlier stage appended must sit at the same (set, binding) here */
+		bool known = false;
+		for (size_t set = 0uLL; set < layout_.groups.size(); ++set) {
+			const auto& elements = layout_.groups[set].elements;
+			for (size_t binding = 0uLL; binding < elements.size(); ++binding) {
+				if (elements[binding].symbol->symbolName != slot.id) {
+					continue;
+				}
+				if (set != slot.set || binding != slot.binding) {
+					return fail(
+						"binding '" + slot.id + "' is at set " + std::to_string(set) + ", binding " +
+						std::to_string(binding) + " in an earlier stage but at set " + std::to_string(slot.set) +
+						", binding " + std::to_string(slot.binding) + " here"
+					);
+				}
+				known = true;
+			}
+		}
+		if (known) {
+			continue;
+		}
+
 		if (layout_.groups.size() <= slot.set) {
 			layout_.groups.resize(slot.set + 1uLL);
 		}
 
-		/* shortcut: stages are laid out one by one, so a binding shared by stages must land in the same
-		 * place in each; pass the earlier layouts as existing layouts to the layout pass to guarantee it */
+		/* the pipeline compiler numbers bindings by position in the group */
 		auto& elements = layout_.groups[slot.set].elements;
-		if (std::ranges::none_of(elements, [&](cref<BindElement> e_) { return e_.symbol->symbolName == slot.id; })) {
-			elements.push_back(BindElement { nmpt<const Symbol> { iter->get() }, bindTypeOf(resolved_, slot.id) });
+		if (elements.size() != slot.binding) {
+			return fail(
+				"binding '" + slot.id + "' at set " + std::to_string(slot.set) + ", binding " +
+				std::to_string(slot.binding) + " does not line up with the bindings of the other stages"
+			);
 		}
+		elements.emplace_back(BindElement { nmpt<const Symbol> { iter->get() }, bindTypeOf(resolved_, slot.id) });
 	}
 
 	for (const auto& range : resolved_.layout.push) {
@@ -255,4 +300,6 @@ void hg::engine::accel::appendBindLayout(cref<Resolved> resolved_, cref<StageDer
 			layout_.constants.emplace_back(derivat_.getFlagBits(), range.offset, range.size);
 		}
 	}
+
+	return {};
 }

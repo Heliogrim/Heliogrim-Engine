@@ -70,7 +70,16 @@ Vector<smr<StageDerivat>> StageComposer::compose(
 		const auto source = stage->getIntermediate();
 		if (source != nullptr && source->ir != nullptr) {
 
-			auto resolved = resolveStageIr(*source, *profile_, *specifications_, stage->getFlagBits(), _variants);
+			/* target symbols are the effect's exports: only the last stage is sliced to them */
+			const bool exportStage = &stage == &stages.back();
+			auto resolved = resolveStageIr(
+				*source,
+				*profile_,
+				*specifications_,
+				stage->getFlagBits(),
+				_variants,
+				exportStage
+			);
 			if (not resolved.has_value()) {
 				for (const auto& diagnostic : resolved.error()) {
 					Logger::error(
@@ -102,7 +111,13 @@ Vector<smr<StageDerivat>> StageComposer::compose(
 		const auto& derivat = derivats[stageIdx];
 
 		if (resolvedStages[stageIdx] != nullptr) {
-			appendBindLayout(*resolvedStages[stageIdx], *derivat, layout);
+			const auto clash = appendBindLayout(*resolvedStages[stageIdx], *derivat, layout);
+			if (not clash.empty()) {
+				for (const auto& diagnostic : clash) {
+					Logger::error("Failed to lay out ir stages: {}", diagnostic.message);
+				}
+				return {};
+			}
 			continue;
 		}
 
