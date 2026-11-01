@@ -32,15 +32,15 @@ lang::Representation::Representation(cref<this_type> other_) :
 
 			// TODO: Migrate back reference into representation
 
-			symbolTable.emplace(
-				make_uptr<Symbol>(
-					clone(symbol->symbolId),
-					FunctionSymbol {
-						SymbolType::eFunctionSymbol,
-						nullptr
-					}
-				)
+			auto fnSymbol = make_uptr<Symbol>(
+				clone(symbol->symbolId),
+				FunctionSymbol {
+					SymbolType::eFunctionSymbol,
+					nullptr
+				}
 			);
+			fnSymbol->symbolName = symbol->symbolName;
+			symbolTable.emplace(std::move(fnSymbol));
 
 		} else if (symbol->fn.type == SymbolType::eVariableSymbol) {
 
@@ -79,15 +79,15 @@ lang::Representation::Representation(cref<this_type> other_) :
 			assert(set != nullptr);
 
 			const auto& bref = set->at(offset);
-			symbolTable.emplace(
-				make_uptr<Symbol>(
-					clone(symbol->symbolId),
-					VariableSymbol {
-						SymbolType::eVariableSymbol,
-						bref.get()
-					}
-				)
+			auto varSymbol = make_uptr<Symbol>(
+				clone(symbol->symbolId),
+				VariableSymbol {
+					SymbolType::eVariableSymbol,
+					bref.get()
+				}
 			);
+			varSymbol->symbolName = symbol->symbolName;
+			symbolTable.emplace(std::move(varSymbol));
 		}
 	}
 }
