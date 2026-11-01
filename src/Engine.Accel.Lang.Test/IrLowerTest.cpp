@@ -271,7 +271,7 @@ namespace AccelLang {
 		};
 
 		Language target {};
-		const auto diags = GlslEmitter {}.emit(module, layoutOf(module), target);
+		const auto diags = GlslEmitter {}.emit(module, layoutOf(module), target).diagnostics;
 
 		ASSERT_EQ(diags.size(), 1uz);
 		EXPECT_TRUE(diags[0].message.contains("'S'")) << diags[0].message;
