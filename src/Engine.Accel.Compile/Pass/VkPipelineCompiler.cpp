@@ -647,7 +647,7 @@ smr<VkGraphicsPipeline> VkPipelineCompiler::linkVk(
 
 	// Warning: Temporary Hack
 	{
-		if (vertexAttributes.size() >= 2 && vertexAttributes[1].format == vk::Format::eR8G8B8A8Unorm) {
+		if (std::ranges::any_of(vertexAttributes, [](const auto& attr) { return attr.format == vk::Format::eR8G8B8A8Unorm; })) {
 			vertexBindings.front().stride = sizeof(gfx::uivertex);
 		} else if (not vertexBindings.empty()) {
 			vertexBindings.front().stride = sizeof(gfx::vertex);
