@@ -402,7 +402,10 @@ smr<VkGraphicsPipeline> VkPipelineCompiler::linkVk(
 		assert(out.symbol->var.type == lang::SymbolType::eVariableSymbol);
 
 		if (out.symbol->var.data->type != lang::Type {}) {
-			assert(out.symbol->var.data->type.category == lang::TypeCategory::eTexture);
+			assert(
+				out.symbol->var.data->type.category == lang::TypeCategory::eTexture
+				|| out.symbol->var.data->type.category == lang::TypeCategory::eScalar
+			);
 		}
 
 		assert(out.symbol->var.data->annotation);
