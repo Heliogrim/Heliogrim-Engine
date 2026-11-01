@@ -613,8 +613,14 @@ namespace {
 					if (e.name == "true" || e.name == "false") {
 						return { e.name, scalarDesc(ir::ScalarKind::eBool, 32uL) };
 					}
-					const auto floating = e.name.find_first_of(".eE") != String::npos;
-					return { e.name, scalarDesc(floating ? ir::ScalarKind::eFloat : ir::ScalarKind::eInt, 32uL) };
+					// hex digits may contain 'e'/'E'; a `u` suffix makes an integer unsigned
+					const auto hex = e.name.starts_with("0x") || e.name.starts_with("0X");
+					const auto floating = not hex && e.name.find_first_of(".eE") != String::npos;
+					const auto unsignedInt = not floating && (e.name.ends_with('u') || e.name.ends_with('U'));
+					return {
+						e.name,
+						scalarDesc(floating ? ir::ScalarKind::eFloat : unsignedInt ? ir::ScalarKind::eUInt : ir::ScalarKind::eInt, 32uL)
+					};
 				}
 				case ir::ExprKind::eNameRef: {
 					return nameRef(e);

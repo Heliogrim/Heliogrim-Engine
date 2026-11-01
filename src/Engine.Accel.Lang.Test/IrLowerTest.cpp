@@ -289,4 +289,38 @@ namespace AccelLang {
 		ASSERT_FALSE(res.has_value());
 		EXPECT_TRUE(res.error().front().message.contains("'p'")) << res.error().front().message;
 	}
+
+	/* the lexer rejects `1u` and `0x1E`, so the literals are hand-built */
+	TEST(LowerTest, LiteralSuffixAndHexInferTheirType) {
+		Module module {};
+		module.entry = EntryKind::eFragment;
+		const auto literals = std::array<String, 5> { "1u", "0x1E", "0x1Eu", "1.5", "1e3" };
+		const auto names = std::array<String, 5> { "a", "b", "c", "d", "e" };
+		Stmt block {};
+		block.kind = StmtKind::eBlock;
+		for (auto i = 0uz; i < literals.size(); ++i) {
+			Expr literal {};
+			literal.name = literals[i];
+			module.exprs.emplace_back(std::move(literal));
+			Stmt local {};
+			local.kind = StmtKind::eDeclareLocal;
+			local.name = names[i];
+			local.lhs = ExprRef { static_cast<u32>(i) };
+			module.stmts.emplace_back(std::move(local));
+			block.children.emplace_back(StmtRef { static_cast<u32>(i) });
+		}
+		module.stmts.emplace_back(std::move(block));
+		FunctionDecl main {};
+		main.name = "main";
+		main.body = BodyRef { StmtRef { static_cast<u32>(literals.size()) } };
+		module.functions.emplace_back(std::move(main));
+
+		const auto text = textOf(lower(module, layoutOf(module)));
+
+		EXPECT_TRUE(text.contains("uint a = 1u;")) << text;
+		EXPECT_TRUE(text.contains("int b = 0x1E;")) << text;
+		EXPECT_TRUE(text.contains("uint c = 0x1Eu;")) << text;
+		EXPECT_TRUE(text.contains("float d = 1.5;")) << text;
+		EXPECT_TRUE(text.contains("float e = 1e3;")) << text;
+	}
 }
