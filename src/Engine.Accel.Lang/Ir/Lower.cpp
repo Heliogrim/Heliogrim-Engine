@@ -100,7 +100,7 @@ std::expected<Intermediate, ir::Diagnostics> ir::lowerToIntermediate(
 	}
 
 	Intermediate im {};
-	auto diags = GlslEmitter {}.emit(resolved_, layout_, im.lang);
+	auto diags = GlslEmitter {}.emit(resolved_, layout_, im.lang).diagnostics;
 	im.lang.dialect = dialect_;
 
 	u32 forwardInputs = 0uL;

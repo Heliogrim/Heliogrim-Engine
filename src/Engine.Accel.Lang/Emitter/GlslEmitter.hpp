@@ -3,8 +3,15 @@
 #include "../Ir/Diagnostic.hpp"
 #include "../Ir/Layout.hpp"
 #include "../Ir/Module.hpp"
+#include "GlslRequirements.hpp"
 
 namespace hg::engine::accel::lang {
+    struct GlslEmitResult {
+        ir::Diagnostics diagnostics;
+        /* what the emitted text needs from the device; empty on error */
+        GlslRequirements requirements;
+    };
+
     class GlslEmitter final :
         public Emitter {
     public:
@@ -21,7 +28,8 @@ namespace hg::engine::accel::lang {
          * (implicit ones emit nothing), the named structs reachable from them and from function code (once per name),
          * the functions with body and `main` (empty if the module has none). Identifiers are kept, builtins map to
          * their GLSL names. On any error `target_` is left unchanged.
+         * Only the `#extension` lines the used types need are written (see `GlslRequirements`).
          */
-        [[nodiscard]] ir::Diagnostics emit(cref<ir::Module> module_, cref<ir::Layout> layout_, ref<Language> target_) const;
+        [[nodiscard]] GlslEmitResult emit(ref<const ir::Module> module_, ref<const ir::Layout> layout_, ref<Language> target_) const;
     };
 }

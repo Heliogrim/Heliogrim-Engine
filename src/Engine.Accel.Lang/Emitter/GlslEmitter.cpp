@@ -46,6 +46,47 @@ namespace {
 		Opt<ir::TypeDesc> type;
 	};
 
+	constexpr u32 bit(GlslFeature feature_) {
+		return static_cast<u32>(feature_);
+	}
+
+	constexpr u32 storage8 = bit(GlslFeature::eStorageBuffer8BitAccess) | bit(GlslFeature::eUniformAndStorageBuffer8BitAccess) |
+		bit(GlslFeature::eStoragePushConstant8);
+	constexpr u32 storage16 = bit(GlslFeature::eStorageBuffer16BitAccess) | bit(GlslFeature::eUniformAndStorageBuffer16BitAccess) |
+		bit(GlslFeature::eStoragePushConstant16) | bit(GlslFeature::eStorageInputOutput16);
+
+	/**
+	 * The minimal extension set for the used features, sorted. Names are from the Khronos GLSL extension registry:
+	 * GL_EXT_shader_explicit_arithmetic_types declares one sub-extension per width (`_int8`, `_int16`, `_int64`,
+	 * `_float16`); `double` and `dvec`/`dmat` are core since GLSL 4.00 and only need the device feature
+	 * (shaderFloat64). GL_EXT_shader_8bit_storage / GL_EXT_shader_16bit_storage allow the 8/16-bit types as members
+	 * of buffer, uniform and push constant blocks (they do not declare the types: the arithmetic extension does).
+	 */
+	[[nodiscard]] Vector<String> extensionsOf(u32 features_) {
+		using enum GlslFeature;
+		Vector<String> names {};
+		if ((features_ & bit(eShaderInt8)) != 0uL) {
+			names.emplace_back("GL_EXT_shader_explicit_arithmetic_types_int8");
+		}
+		if ((features_ & bit(eShaderInt16)) != 0uL) {
+			names.emplace_back("GL_EXT_shader_explicit_arithmetic_types_int16");
+		}
+		if ((features_ & bit(eShaderInt64)) != 0uL) {
+			names.emplace_back("GL_EXT_shader_explicit_arithmetic_types_int64");
+		}
+		if ((features_ & bit(eShaderFloat16)) != 0uL) {
+			names.emplace_back("GL_EXT_shader_explicit_arithmetic_types_float16");
+		}
+		if ((features_ & storage8) != 0uL) {
+			names.emplace_back("GL_EXT_shader_8bit_storage");
+		}
+		if ((features_ & storage16) != 0uL) {
+			names.emplace_back("GL_EXT_shader_16bit_storage");
+		}
+		std::ranges::sort(names);
+		return names;
+	}
+
 	class Writer {
 	public:
 		Writer(cref<ir::Module> module_, cref<ir::Layout> layout_) :
@@ -53,21 +94,16 @@ namespace {
 			_layout(layout_),
 			_structState(module_.types.size(), State::eNew) {}
 
-		[[nodiscard]] ir::Diagnostics run(ref<String> out_) {
+		[[nodiscard]] ir::Diagnostics run(ref<String> out_, ref<GlslRequirements> requirements_) {
 			bindings();
 			functions();
 
+			requirements_ = GlslRequirements { .features = _features, .extensions = extensionsOf(_features) };
 			out_ = "#version 460\n";
-			if (_bits8 || _bits16 || _bits64) {
-				out_ += "#extension GL_EXT_shader_explicit_arithmetic_types : require\n";
+			for (const auto& extension : requirements_.extensions) {
+				out_ += "#extension " + extension + " : require\n";
 			}
-			if (_bits8) {
-				out_ += "#extension GL_EXT_shader_8bit_storage : require\n";
-			}
-			if (_bits16) {
-				out_ += "#extension GL_EXT_shader_16bit_storage : require\n";
-			}
-			out_ += "\nlayout(std430) buffer;\n\n" + _structs + _bindings + "\n" + _functions;
+			out_ +="\nlayout(std430) buffer;\n\n" + _structs + _bindings + "\n" + _functions;
 			return std::move(_diags);
 		}
 
@@ -96,9 +132,7 @@ namespace {
 		String _structs;
 		String _bindings;
 		String _functions;
-		bool _bits8 = false;
-		bool _bits16 = false;
-		bool _bits64 = false;
+		u32 _features = 0uL;
 
 		Vector<State> _structState;
 		/* emitted struct name -> its member text, to emit a name once and catch conflicting definitions */
@@ -122,11 +156,21 @@ namespace {
 
 		/* Types */
 
-		[[nodiscard]] bool width(u32 bits_) {
-			_bits8 = _bits8 || bits_ == 8uL;
-			_bits16 = _bits16 || bits_ == 16uL;
-			_bits64 = _bits64 || bits_ == 64uL;
-			return bits_ == 8uL || bits_ == 16uL || bits_ == 32uL || bits_ == 64uL;
+		/* floats are 16, 32 or 64 bits wide, integers 8, 16, 32 or 64 */
+		[[nodiscard]] static bool validWidth(ref<const ir::TypeDesc> desc_) {
+			return desc_.bits == 16uL || desc_.bits == 32uL || desc_.bits == 64uL || (desc_.bits == 8uL && desc_.scalar != ir::ScalarKind::eFloat);
+		}
+
+		/* records the device features a named scalar, vector or matrix type needs */
+		void note(ref<const ir::TypeDesc> desc_) {
+			using enum GlslFeature;
+			const auto bits = desc_.bits;
+			if (desc_.scalar == ir::ScalarKind::eFloat) {
+				_features |= bits == 16uL ? static_cast<u32>(eShaderFloat16) : bits == 64uL ? static_cast<u32>(eShaderFloat64) : 0uL;
+				return;
+			}
+			_features |= bits == 8uL ? static_cast<u32>(eShaderInt8) : bits == 16uL ? static_cast<u32>(eShaderInt16) :
+				bits == 64uL ? static_cast<u32>(eShaderInt64) : 0uL;
 		}
 
 		[[nodiscard]] Opt<String> scalarName(cref<ir::TypeDesc> desc_) {
@@ -134,12 +178,13 @@ namespace {
 			if (desc_.scalar == eBool) {
 				return String { "bool" };
 			}
-			if (not width(desc_.bits)) {
+			if (not validWidth(desc_)) {
 				return None;
 			}
+			note(desc_);
 			const auto bits = std::to_string(desc_.bits);
 			if (desc_.scalar == eFloat) {
-				return desc_.bits == 8uL ? None : Opt<String> { desc_.bits == 32uL ? "float" : desc_.bits == 64uL ? "double" : "float16_t" };
+				return String { desc_.bits == 32uL ? "float" : desc_.bits == 64uL ? "double" : "float16_t" };
 			}
 			const String base = desc_.scalar == eInt ? "int" : "uint";
 			return desc_.bits == 32uL ? base : base + bits + "_t";
@@ -150,9 +195,10 @@ namespace {
 			if (desc_.scalar == eBool) {
 				return String { "b" };
 			}
-			if (not width(desc_.bits) || (desc_.scalar == eFloat && desc_.bits == 8uL)) {
+			if (not validWidth(desc_)) {
 				return None;
 			}
+			note(desc_);
 			if (desc_.scalar == eFloat) {
 				return String { desc_.bits == 32uL ? "" : desc_.bits == 64uL ? "d" : "f16" };
 			}
@@ -173,12 +219,13 @@ namespace {
 					return prefix.has_value() && inRange(desc_.n) ? Opt<String> { *prefix + "vec" + std::to_string(desc_.n) } : None;
 				}
 				case eMatrix: {
-					const auto floating = desc_.scalar == ir::ScalarKind::eFloat && (desc_.bits == 32uL || desc_.bits == 64uL);
+					// GLSL has float matrices only (no integer or bool matrix)
+					const auto floating = desc_.scalar == ir::ScalarKind::eFloat && validWidth(desc_);
 					if (not floating || not inRange(desc_.n) || not inRange(desc_.m)) {
 						return None;
 					}
-					_bits64 = _bits64 || desc_.bits == 64uL;
-					const String base = desc_.bits == 64uL ? "dmat" : "mat";
+					note(desc_);
+					const String base = desc_.bits == 64uL ? "dmat" : desc_.bits == 16uL ? "f16mat" : "mat";
 					return desc_.n == desc_.m ?
 						base + std::to_string(desc_.n) :
 						base + std::to_string(desc_.n) + "x" + std::to_string(desc_.m);
@@ -284,6 +331,46 @@ namespace {
 			_structs += "struct " + desc.name + " {\n" + members + "};\n\n";
 		}
 
+		/**
+		 * Records the storage features for the 8/16-bit components of a type placed in a binding (directly or in
+		 * a reachable struct). A zero 8-bit mask means the placement cannot hold 8-bit types (stage interface).
+		 */
+		void storageUse(ir::TypeRef ref_, u32 mask8_, u32 mask16_, ref<const String> id_, u32 depth_ = 0uL) {
+			const auto* desc = typeAt(ref_);
+			if (desc == nullptr || depth_ > maxDepth || not _diags.empty()) {
+				return;
+			}
+			switch (desc->kind) {
+				case ir::TypeKind::eScalar:
+				case ir::TypeKind::eVector:
+				case ir::TypeKind::eMatrix: {
+					if (desc->scalar == ir::ScalarKind::eBool) {
+						return;
+					}
+					if (desc->bits == 8uL && mask8_ == 0uL) {
+						error("Binding '" + id_ + "' forwards an 8-bit type; GLSL has no 8-bit stage interface variables.");
+					}
+					_features |= desc->bits == 8uL ? mask8_ : desc->bits == 16uL ? mask16_ : 0uL;
+					return;
+				}
+				case ir::TypeKind::eArray: {
+					storageUse(desc->element, mask8_, mask16_, id_, depth_ + 1uL);
+					return;
+				}
+				case ir::TypeKind::eStruct: {
+					for (const auto& field : desc->fields) {
+						storageUse(field.type, mask8_, mask16_, id_, depth_ + 1uL);
+					}
+					return;
+				}
+				case ir::TypeKind::eTexture:
+				case ir::TypeKind::eSampler:
+				default: {
+					return;
+				}
+			}
+		}
+
 		/* Bindings */
 
 		void bindings() {
@@ -314,6 +401,7 @@ namespace {
 					} else if (not binding.implicit) {
 						if (const auto decl = declareOrReport(binding.type, binding.localName); decl.has_value()) {
 							_bindings += "layout(location = " + std::to_string(outputLocation) + ") out " + *decl + ";\n";
+							storageUse(binding.type, 0uL, bit(GlslFeature::eStorageInputOutput16), binding.id);
 						}
 						outputLocation += ir::locationCount(_module.types, binding.type);
 					}
@@ -348,6 +436,7 @@ namespace {
 			if (not decl.has_value()) {
 				return;
 			}
+			storageUse(binding_.type, 0uL, bit(GlslFeature::eStorageInputOutput16), binding_.id);
 			// integer fragment inputs cannot be interpolated
 			const auto* desc = typeAt(binding_.type);
 			const auto integral = desc != nullptr && (desc->kind == ir::TypeKind::eScalar || desc->kind == ir::TypeKind::eVector) &&
@@ -375,6 +464,17 @@ namespace {
 			if (not fits) {
 				error("The type of binding '" + binding_.id + "' does not fit its class.");
 				return;
+			}
+			if (not opaque) {
+				using enum GlslFeature;
+				const auto push = binding_.bindClass == ePushConstant;
+				const auto buffer = binding_.bindClass == eStorageBuffer;
+				storageUse(
+					binding_.type,
+					bit(push ? eStoragePushConstant8 : buffer ? eStorageBuffer8BitAccess : eUniformAndStorageBuffer8BitAccess),
+					bit(push ? eStoragePushConstant16 : buffer ? eStorageBuffer16BitAccess : eUniformAndStorageBuffer16BitAccess),
+					binding_.id
+				);
 			}
 
 			if (binding_.bindClass == ePushConstant) {
@@ -770,13 +870,15 @@ void lang::GlslEmitter::operator()(cref<Representation>, Dialect dialect_, ref<L
 	target_.dialect = dialect_;
 }
 
-lang::ir::Diagnostics lang::GlslEmitter::emit(cref<ir::Module> module_, cref<ir::Layout> layout_, ref<Language> target_) const {
+lang::GlslEmitResult lang::GlslEmitter::emit(ref<const ir::Module> module_, ref<const ir::Layout> layout_, ref<Language> target_) const {
 	String text {};
-	auto diags = Writer { module_, layout_ }.run(text);
-	if (not diags.empty()) {
-		return diags;
+	GlslEmitResult result {};
+	result.diagnostics = Writer { module_, layout_ }.run(text, result.requirements);
+	if (not result.diagnostics.empty()) {
+		result.requirements = {};
+		return result;
 	}
 	target_.dialect = Dialect::eVulkanGlsl460;
 	target_.text.emplace_back(TextBlock { std::move(text) });
-	return diags;
+	return result;
 }
