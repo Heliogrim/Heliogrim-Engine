@@ -3,7 +3,10 @@
 #include <cassert>
 #include <filesystem>
 #include <fstream>
+#include <Engine.Accel.Lang/Intermediate.hpp>
+#include <Engine.Accel.Lang/Ir/Parser.hpp>
 #include <Engine.Asserts/Breakpoint.hpp>
+#include <Engine.Common/Make.hpp>
 #include <Engine.Common/Move.hpp>
 #include <Engine.Common/String.hpp>
 #include <Engine.Config/Config.hpp>
@@ -56,5 +59,36 @@ namespace hg::engine::render {
 
 		ifs.close();
 		return tmp;
+	}
+
+	/**
+	 * Loads an `.asl` module below `shader/`; lowering to GLSL happens per stage when the effect is composed.
+	 * Includes resolve below `shader/` as well.
+	 */
+	[[nodiscard]] inline smr<accel::lang::Intermediate> makeIrIntermediate(
+		std::filesystem::path name_,
+		accel::lang::ir::EntryKind entry_
+	) {
+		using namespace accel::lang;
+
+		const auto name = name_.generic_string();
+		auto parsed = ir::parseModule(
+			name,
+			read_shader_file(std::move(name_)),
+			entry_,
+			ir::ModuleResolver {
+				[](StringView include_) -> Opt<String> {
+					auto source = read_shader_file(std::filesystem::path { String { include_ } });
+					return source.empty() ? None : Opt<String> { std::move(source) };
+				}
+			}
+		);
+
+		assert(parsed.has_value());
+		auto intermediate = make_smr<Intermediate>();
+		if (parsed.has_value()) {
+			intermediate->ir = make_smr<const ir::Module>(new ir::Module { std::move(parsed).value() });
+		}
+		return intermediate;
 	}
 }
