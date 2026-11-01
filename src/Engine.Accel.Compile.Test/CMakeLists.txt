@@ -1,11 +1,15 @@
 
 # Setup
-# shortcut: Engine.Accel.Compile/Storage are object libraries whose objects pull in the GFX backend, so the
-# header-only key code links against Lang only; link the bundles (or the engine) once a test calls their .cpp code
+# Engine.Accel.Compile is an object library whose objects pull in the GFX backend, so the test links the engine
+# the way the GFX test does, to resolve the symbols of the bundle code it calls
 make_test_project(
 		TEST_NAME Engine.Accel.Compile.Test
 		LIBRARIES
+		${PROJECT_NAME}::Engine.Accel.Compile
 		${PROJECT_NAME}::Engine.Accel.Lang
 		${PROJECT_NAME}::Engine.Asserts
 		${PROJECT_NAME}::Engine.Common
+		${PROJECT_NAME}::Engine.GFX
+		${PROJECT_NAME}::Engine.Logging
+		${PROJECT_NAME}::Heliogrim
 )

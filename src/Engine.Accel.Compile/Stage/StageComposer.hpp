@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Engine.Accel.Lang/Ir/Variant.hpp>
 #include <Engine.Accel.Pipeline/AccelerationPipeline.hpp>
 #include <Engine.Accel.Pipeline/Stage/StageDerivat.hpp>
 #include <Engine.Common/Wrapper.hpp>
@@ -18,6 +19,9 @@ namespace hg::engine::accel {
 
     private:
         non_owning_rptr<const class Tokenizer> _tokenizer;
+
+        /* resolved ir stage variants, shared by every compose of this composer */
+        mutable lang::ir::VariantCache _variants;
 
     public:
         [[nodiscard]] non_owning_rptr<const class Tokenizer> getTokenizer() const noexcept;
