@@ -592,113 +592,14 @@ smr<material::MaterialEffect> build_test_effect() {
 
 	/**/
 
-	const auto vertexShaderCode = read_shader_file(R"(shadow/__test__shadowDir.vs)");
-	const auto fragmentShaderCode = read_shader_file(R"(shadow/__test__shadowDir.fs)");
+	const std::array vertexOffsets {
+		std::pair<String, u32> { "vertex-position", static_cast<u32>(offsetof(engine::gfx::vertex, position)) }
+	};
 
-	vertexStage->setIntermediate(make_smr<lang::Intermediate>());
-	fragmentStage->setIntermediate(make_smr<lang::Intermediate>());
-
-	vertexStage->getIntermediate()->lang.dialect = Dialect::eVulkanGlsl460;
-	vertexStage->getIntermediate()->lang.text.emplace_back(std::move(vertexShaderCode));
-
-	fragmentStage->getIntermediate()->lang.dialect = Dialect::eVulkanGlsl460;
-	fragmentStage->getIntermediate()->lang.text.emplace_back(std::move(fragmentShaderCode));
-
-	/**/
-
-	{
-		auto var = make_uptr<Variable>();
-		var->type = Type { .category = TypeCategory::eScalar, .scalarType = ScalarType::eF32Vec3 };
-		var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eForwardLinkage>>();
-		var->annotation = make_uptr<SymbolIdAnnotation>("vertex-position", std::move(var->annotation));
-		var->annotation = make_uptr<VkBindLocationAnnotation>(
-			-1L,
-			0L,
-			offsetof(engine::gfx::vertex, position),
-			std::move(var->annotation)
-		);
-
-		auto sym = make_uptr<Symbol>(
-			SymbolId::from("vertex-position"sv),
-			VariableSymbol { SymbolType::eVariableSymbol, var.get() }
-		);
-
-		vertexStage->getIntermediate()->rep.globalScope.inbound.emplace_back(std::move(var));
-		vertexStage->getIntermediate()->rep.symbolTable.insert(std::move(sym));
-	}
-
-	/**/
-
-	{
-		auto var = make_uptr<Variable>();
-		var->type = Type { .category = TypeCategory::eObject, .objectType = ObjectType::eUnknown };
-		var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eExternalLinkage>>();
-		var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eStorage>>(std::move(var->annotation));
-		var->annotation = make_uptr<SymbolIdAnnotation>("view", std::move(var->annotation));
-
-		auto sym = make_uptr<Symbol>(
-			SymbolId::from("view"sv),
-			VariableSymbol { SymbolType::eVariableSymbol, var.get() }
-		);
-
-		vertexStage->getIntermediate()->rep.globalScope.inbound.emplace_back(std::move(var));
-		vertexStage->getIntermediate()->rep.symbolTable.insert(std::move(sym));
-	}
-
-	/**/
-
-	{
-		auto var = make_uptr<Variable>();
-		var->type = Type { .category = TypeCategory::eObject, .objectType = ObjectType::eUnknown };
-		var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eExternalLinkage>>();
-		var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eStorage>>(std::move(var->annotation));
-		var->annotation = make_uptr<SymbolIdAnnotation>("model", std::move(var->annotation));
-
-		auto sym = make_uptr<Symbol>(
-			SymbolId::from("model"sv),
-			VariableSymbol { SymbolType::eVariableSymbol, var.get() }
-		);
-
-		vertexStage->getIntermediate()->rep.globalScope.inbound.emplace_back(std::move(var));
-		vertexStage->getIntermediate()->rep.symbolTable.insert(std::move(sym));
-	}
-
-	/**/
-
-	{
-		auto var = make_uptr<Variable>();
-		auto sym = make_uptr<Symbol>();
-
-		var->type = Type { .category = TypeCategory::eObject, .objectType = ObjectType::eUnknown };
-		var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eExternalLinkage>>();
-		var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eConstant>>(std::move(var->annotation));
-		var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eReadonly>>(std::move(var->annotation));
-		var->annotation = make_uptr<SymbolIdAnnotation>("block", std::move(var->annotation));
-
-		sym->symbolId = SymbolId::from("block"sv);
-		sym->var.type = SymbolType::eVariableSymbol;
-		sym->var.data = var.get();
-
-		vertexStage->getIntermediate()->rep.globalScope.inbound.emplace_back(std::move(var));
-		vertexStage->getIntermediate()->rep.symbolTable.insert(std::move(sym));
-	}
-
-	/**/
-
-	{
-		auto var = make_uptr<Variable>();
-		var->type = Type { .category = TypeCategory::eScalar, .scalarType = ScalarType::eF32 };
-		var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eForwardLinkage>>();
-		var->annotation = make_uptr<SymbolIdAnnotation>("depth", std::move(var->annotation));
-
-		auto sym = make_uptr<Symbol>(
-			SymbolId::from("depth"sv),
-			VariableSymbol { SymbolType::eVariableSymbol, var.get() }
-		);
-
-		fragmentStage->getIntermediate()->rep.globalScope.outbound.emplace_back(std::move(var));
-		fragmentStage->getIntermediate()->rep.symbolTable.insert(std::move(sym));
-	}
+	vertexStage->setIntermediate(
+		makeIrIntermediate(R"(shadow/shadowDir.vs.asl)", lang::ir::EntryKind::eVertex, vertexOffsets)
+	);
+	fragmentStage->setIntermediate(makeIrIntermediate(R"(shadow/shadowDir.fs.asl)", lang::ir::EntryKind::eFragment));
 
 	/**/
 

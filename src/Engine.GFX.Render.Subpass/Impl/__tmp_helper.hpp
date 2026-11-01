@@ -3,6 +3,9 @@
 #include <cassert>
 #include <filesystem>
 #include <fstream>
+#include <span>
+#include <utility>
+#include <Engine.Accel.Lang/Rep/Variable.hpp>
 #include <Engine.Accel.Lang/Intermediate.hpp>
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
 #include <Engine.Asserts/Breakpoint.hpp>
@@ -64,10 +67,14 @@ namespace hg::engine::render {
 	/**
 	 * Loads an `.asl` module below `shader/`; lowering to GLSL happens per stage when the effect is composed.
 	 * Includes resolve below `shader/` as well.
+	 *
+	 * `vertexOffsets_` maps vertex input ids to their byte offset in the vertex buffer; that layout is C++ data, so
+	 * it is supplied here instead of being authored in the module.
 	 */
 	[[nodiscard]] inline smr<accel::lang::Intermediate> makeIrIntermediate(
 		std::filesystem::path name_,
-		accel::lang::ir::EntryKind entry_
+		accel::lang::ir::EntryKind entry_,
+		std::span<const std::pair<String, u32>> vertexOffsets_ = {}
 	) {
 		using namespace accel::lang;
 
@@ -89,6 +96,18 @@ namespace hg::engine::render {
 		if (parsed.has_value()) {
 			intermediate->ir = make_smr<const ir::Module>(new ir::Module { std::move(parsed).value() });
 		}
+
+		for (const auto& [id, offset] : vertexOffsets_) {
+			auto var = make_uptr<accel::lang::Variable>();
+			var->annotation = make_uptr<accel::lang::VkBindLocationAnnotation>(
+				-1L,
+				0L,
+				static_cast<s32>(offset),
+				make_uptr<accel::lang::SymbolIdAnnotation>(String { id })
+			);
+			intermediate->rep.globalScope.inbound.emplace_back(std::move(var));
+		}
+
 		return intermediate;
 	}
 }
