@@ -45,9 +45,35 @@ namespace Common {
 			~AtomicIntrusive() { --semLive; }
 		};
 
+		inline std::atomic_int guardedCreated { 0 };
+		inline std::atomic_int guardedDestroyed { 0 };
+
+		// Detects use after free (magic cleared on destroy) and double free (destroy count).
+		struct Guarded :
+			public ArcFromThis<Guarded> {
+			static constexpr int alive = 0x5AFE;
+
+			int magic = alive;
+			int value;
+
+			explicit Guarded(const int value_ = 0) :
+				value(value_) { ++guardedCreated; }
+
+			~Guarded() {
+				magic = 0;
+				++guardedDestroyed;
+			}
+
+			[[nodiscard]] bool valid() const { return magic == alive; }
+		};
+
 		struct SemanticsFixture :
 			public ::testing::Test {
-			void SetUp() override { semLive = 0; }
+			void SetUp() override {
+				semLive = 0;
+				guardedCreated = 0;
+				guardedDestroyed = 0;
+			}
 		};
 	}
 
@@ -375,7 +401,6 @@ namespace Common {
 		EXPECT_EQ(semLive, 0);
 	}
 
-	// Note: The writer drain-waits for in-flight readers (best-effort, see AtomicRefCountedIntrusive).
 	TEST_F(ArciSemantics, ConcurrentReadersAndWritersOfSharedSlot) {
 		Arci<AtomicIntrusive> slot { Arci<AtomicIntrusive>::create(1) };
 
@@ -416,6 +441,194 @@ namespace Common {
 
 		slot.reset();
 		EXPECT_EQ(semLive, 0);
+	}
+
+	TEST_F(ArciSemantics, CopyOfCopyAndDestroyOrder) {
+		auto a = Arci<Guarded>::create(1);
+		auto b = a;
+		auto c = b;
+		EXPECT_EQ(a.ref_count(), 3u);
+		EXPECT_EQ(c.get(), a.get());
+
+		// Dropping the origin first keeps the object alive through the copies.
+		a.reset();
+		EXPECT_EQ(b.ref_count(), 2u);
+		EXPECT_EQ(guardedDestroyed, 0);
+
+		auto d = std::move(c);
+		auto e = d;
+		b.reset();
+		EXPECT_EQ(e.ref_count(), 2u);
+		EXPECT_TRUE(e->valid());
+
+		e.reset();
+		EXPECT_TRUE(d.ref_unique());
+		EXPECT_EQ(guardedDestroyed, 0);
+
+		d.reset();
+		EXPECT_EQ(guardedCreated, 1);
+		EXPECT_EQ(guardedDestroyed, 1);
+	}
+
+	TEST_F(ArciSemantics, NullHandling) {
+		Arci<Guarded> empty {};
+		Arci<Guarded> fromNull { nullptr };
+
+		EXPECT_TRUE(empty == nullptr);
+		EXPECT_TRUE(empty.ref_unique());
+		EXPECT_EQ(empty.ref_count(), 0u);
+		EXPECT_TRUE(empty == fromNull);
+
+		auto copy = empty;
+		auto moved = std::move(copy);
+		EXPECT_TRUE(copy == nullptr);
+		EXPECT_TRUE(moved == nullptr);
+
+		moved = std::move(empty);
+		moved.reset();
+		moved.reset();
+		EXPECT_TRUE(moved == nullptr);
+
+		auto converted = std::move(moved).into<const Guarded>();
+		EXPECT_TRUE(converted == nullptr);
+		EXPECT_EQ(guardedCreated, 0);
+	}
+
+	TEST_F(ArciSemantics, PinFlushKeepsLiveCopies) {
+		constexpr auto flushAt = Arci<Guarded>::pin_flush_at;
+		auto slot = Arci<Guarded>::create(1);
+
+		// Hold copies across the flush, so flushed credits and live words overlap.
+		std::vector<Arci<Guarded>> held {};
+		held.reserve(flushAt + 16);
+		for (int i = 0; i < flushAt + 16; ++i) {
+			held.push_back(slot);
+		}
+		EXPECT_EQ(slot.ref_count(), flushAt + 17u);
+
+		for (int i = 0; i < 2 * flushAt; ++i) {
+			auto transient = slot;
+		}
+		EXPECT_EQ(slot.ref_count(), flushAt + 17u);
+
+		held.clear();
+		EXPECT_TRUE(slot.ref_unique());
+		EXPECT_EQ(guardedDestroyed, 0);
+
+		slot.reset();
+		EXPECT_EQ(guardedDestroyed, 1);
+	}
+
+	namespace {
+		// Readers copy the shared slot until `stop`, checking every snapshot is a live object of an expected value.
+		template <class Mutate_>
+		void stressSharedSlot(ref<Arci<Guarded>> slot_, Mutate_&& mutate_, const int readers_ = 4) {
+			std::atomic_bool stop { false };
+			std::atomic_int invalid { 0 };
+
+			std::vector<std::thread> readers {};
+			for (int t = 0; t < readers_; ++t) {
+				readers.emplace_back(
+					[&] {
+						while (not stop.load()) {
+							auto snapshot = slot_;
+							if (snapshot != nullptr && (not snapshot->valid() || snapshot->value < 1 || snapshot->value > 4)) {
+								++invalid;
+							}
+							auto copyOfCopy = snapshot;
+						}
+					}
+				);
+			}
+
+			mutate_();
+
+			stop = true;
+			for (auto& th : readers) { th.join(); }
+
+			EXPECT_EQ(invalid, 0);
+		}
+	}
+
+	TEST_F(ArciSemantics, ConcurrentMoveFromVsCopy) {
+		Arci<Guarded> slot = Arci<Guarded>::create(1);
+
+		stressSharedSlot(
+			slot,
+			[&slot] {
+				std::vector<std::thread> movers {};
+				for (int t = 1; t <= 2; ++t) {
+					movers.emplace_back(
+						[&slot, t] {
+							for (int i = 0; i < 2000; ++i) {
+								auto taken = std::move(slot);
+								slot = Arci<Guarded>::create(t);
+								auto again = std::move(slot).into<const Guarded>();
+							}
+						}
+					);
+				}
+				for (auto& th : movers) { th.join(); }
+			}
+		);
+
+		slot.reset();
+		EXPECT_EQ(guardedCreated, guardedDestroyed);
+	}
+
+	TEST_F(ArciSemantics, ConcurrentResetVsCopy) {
+		Arci<Guarded> slot = Arci<Guarded>::create(1);
+
+		stressSharedSlot(
+			slot,
+			[&slot] {
+				std::vector<std::thread> writers {};
+				for (int t = 1; t <= 2; ++t) {
+					writers.emplace_back(
+						[&slot, t] {
+							for (int i = 0; i < 2000; ++i) {
+								slot.reset();
+								slot = Arci<Guarded>::create(t + 2);
+							}
+						}
+					);
+				}
+				for (auto& th : writers) { th.join(); }
+			}
+		);
+
+		slot.reset();
+		EXPECT_EQ(guardedCreated, guardedDestroyed);
+	}
+
+	TEST_F(ArciSemantics, ConcurrentWritersVsCopyFreeEachObjectOnce) {
+		Arci<Guarded> slot = Arci<Guarded>::create(1);
+
+		stressSharedSlot(
+			slot,
+			[&slot] {
+				std::vector<std::thread> writers {};
+				for (int t = 1; t <= 4; ++t) {
+					writers.emplace_back(
+						[&slot, t] {
+							auto own = Arci<Guarded>::create(t);
+							for (int i = 0; i < 2000; ++i) {
+								auto keep = slot;
+								slot = std::move(own);
+								own = Arci<Guarded>::create(t);
+							}
+						}
+					);
+				}
+				for (auto& th : writers) { th.join(); }
+			},
+			8
+		);
+
+		EXPECT_EQ(slot.ref_count(), 1u);
+		EXPECT_EQ(guardedCreated, guardedDestroyed + 1);
+		slot.reset();
+		EXPECT_EQ(guardedCreated, guardedDestroyed);
 	}
 
 	/* Arci<const T> */

@@ -136,11 +136,19 @@ namespace Common {
 			static inline std::atomic_size_t loads { 0 };
 			static inline std::atomic_size_t stores { 0 };
 			static inline std::atomic_size_t rmws { 0 };
+			// Highest pin count T a slot word reached (low 16 bits after a slot fetch_add).
+			static inline std::atomic_uint32_t maxPins { 0 };
 
 			static void reset() {
 				loads = 0;
 				stores = 0;
 				rmws = 0;
+				maxPins = 0;
+			}
+
+			static void observePins(const std::uint32_t pins_) {
+				auto seen = maxPins.load();
+				while (pins_ > seen && not maxPins.compare_exchange_weak(seen, pins_)) {}
 			}
 		};
 
@@ -163,7 +171,27 @@ namespace Common {
 
 			Ux_ fetch_add(Ux_ arg_, std::memory_order order_ = std::memory_order::seq_cst) noexcept {
 				++OpCounts::rmws;
-				return value.fetch_add(arg_, order_);
+				const auto prev = value.fetch_add(arg_, order_);
+				// The slot word is the only uintptr_t atomic; the object counter is s64.
+				if constexpr (std::same_as<Ux_, std::uintptr_t>) {
+					OpCounts::observePins(static_cast<std::uint32_t>((prev + arg_) & 0xFFFFu));
+				}
+				return prev;
+			}
+
+			Ux_ exchange(Ux_ value_, std::memory_order order_ = std::memory_order::seq_cst) noexcept {
+				++OpCounts::rmws;
+				return value.exchange(value_, order_);
+			}
+
+			bool compare_exchange_strong(
+				Ux_& expected_,
+				Ux_ desired_,
+				std::memory_order success_,
+				std::memory_order failure_
+			) noexcept {
+				++OpCounts::rmws;
+				return value.compare_exchange_strong(expected_, desired_, success_, failure_);
 			}
 
 			Ux_ fetch_sub(Ux_ arg_, std::memory_order order_ = std::memory_order::seq_cst) noexcept {
@@ -217,7 +245,7 @@ namespace Common {
 	}
 
 	static_assert(sizeof(Arci<TrackedArci>) == sizeof(std::atomic_uintptr_t));
-	static_assert(std::same_as<ArcFromThis<TrackedArci>::counter_type, std::atomic_uint_fast16_t>);
+	static_assert(std::same_as<ArcFromThis<TrackedArci>::counter_type, std::atomic<s64>>);
 
 	using ArciAtomicPolicy = LifetimeFixture;
 
@@ -271,6 +299,105 @@ namespace Common {
 		b.reset();
 		a.reset();
 		EXPECT_GE(OpCounts::rmws.load(), 2u);
+		EXPECT_EQ(liveCount, 0);
+	}
+
+	TEST_F(ArciAtomicPolicy, RmwCountsPerOperation) {
+		auto a = CountingArci::create();
+
+		// Copy: pin on the source word + live on the object counter.
+		OpCounts::reset();
+		auto b = a;
+		EXPECT_EQ(OpCounts::rmws.load(), 2u);
+		EXPECT_EQ(OpCounts::stores.load(), 0u);
+
+		// Move-construct: one exchange on the (possibly shared) source.
+		OpCounts::reset();
+		auto c = std::move(b);
+		EXPECT_EQ(OpCounts::rmws.load(), 1u);
+
+		// Destroy of a non-last word: one fold on the object counter.
+		OpCounts::reset();
+		{
+			auto dropped = std::move(c);
+			OpCounts::reset();
+		}
+		EXPECT_EQ(OpCounts::rmws.load(), 1u);
+
+		// Move-assign into a non-null target: source exchange, target exchange, fold of the old target word.
+		auto d = CountingArci::create();
+		auto e = a;
+		OpCounts::reset();
+		d = std::move(e);
+		EXPECT_EQ(OpCounts::rmws.load(), 3u);
+		EXPECT_EQ(liveCount, 1);
+
+		// Reset: exchange + fold.
+		OpCounts::reset();
+		d.reset();
+		EXPECT_EQ(OpCounts::rmws.load(), 2u);
+
+		// Copy-out from a held reference: one RMW on the object counter.
+		OpCounts::reset();
+		auto f = a->arci_from_this();
+		EXPECT_EQ(OpCounts::rmws.load(), 1u);
+		EXPECT_EQ(a.ref_count(), 2u);
+
+		// Null: copy and destroy touch no counter; move-construct still exchanges the source.
+		const CountingArci empty {};
+		OpCounts::reset();
+		{
+			auto copy = empty;
+			auto moved = std::move(copy);
+		}
+		EXPECT_EQ(OpCounts::rmws.load(), 1u);
+
+		f.reset();
+		a.reset();
+		EXPECT_EQ(liveCount, 0);
+	}
+
+	TEST_F(ArciAtomicPolicy, PinFlushBoundsSlotPins) {
+		constexpr auto flushAt = CountingArci::pin_flush_at;
+		auto a = CountingArci::create();
+
+		OpCounts::reset();
+		for (int i = 0; i < 3 * flushAt; ++i) {
+			auto copy = a;
+		}
+		// The pin that observes T == flushAt flushes the word; single-threaded T never exceeds flushAt + 1.
+		EXPECT_EQ(OpCounts::maxPins.load(), flushAt + 1u);
+		EXPECT_EQ(a.ref_count(), 1u);
+		EXPECT_EQ(liveCount, 1);
+
+		a.reset();
+		EXPECT_EQ(liveCount, 0);
+	}
+
+	TEST_F(ArciAtomicPolicy, ConcurrentPinsStayBelowFlushBound) {
+		constexpr auto flushAt = CountingArci::pin_flush_at;
+		constexpr int threads = 8;
+		auto a = CountingArci::create();
+
+		OpCounts::reset();
+		std::vector<std::thread> pool {};
+		for (int t = 0; t < threads; ++t) {
+			pool.emplace_back(
+				[&a] {
+					for (int i = 0; i < 2 * flushAt; ++i) {
+						auto copy = a;
+					}
+				}
+			);
+		}
+		for (auto& th : pool) { th.join(); }
+
+		EXPECT_GT(OpCounts::maxPins.load(), flushAt);
+		EXPECT_LE(OpCounts::maxPins.load(), flushAt + threads);
+		EXPECT_EQ(a.ref_count(), 1u);
+		EXPECT_EQ(liveCount, 1);
+
+		a.reset();
 		EXPECT_EQ(liveCount, 0);
 	}
 }

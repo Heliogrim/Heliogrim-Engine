@@ -11,13 +11,15 @@
 #include "../Meta/Type.hpp"
 
 namespace hg {
+	/**
+	 * Object counter surface of the split-count protocol: `C = live * 2^32 + net`, where `live` is the number of
+	 *	Arci instances holding the object and `net` (signed, low 32 bits) collects folded pin credits minus debits.
+	 *	`ref_fetch_add` returns the previous value of C.
+	 */
 	template <typename Ty_>
-	concept IsAtomicIntrusiveRefCountable = requires(Ty_& obj_) {
-			{ obj_.ref_inc() } -> std::convertible_to<u16>;
-			{ obj_.ref_dec() } -> std::convertible_to<u16>;
-			{ obj_.ref_dec(std::declval<u16>()) } -> std::convertible_to<u16>;
-		} && requires(const Ty_& obj_) {
-			{ obj_.ref_count() } -> std::convertible_to<u16>;
+	concept IsAtomicIntrusiveRefCountable = requires(const Ty_& obj_) {
+			{ obj_.ref_fetch_add(std::declval<s64>(), std::memory_order::relaxed) } -> std::same_as<s64>;
+			{ obj_.ref_count() } -> std::convertible_to<u32>;
 		};
 
 	template <typename Ty_>
@@ -41,6 +43,10 @@ namespace hg {
 		}
 	};
 
+	namespace {
+		constexpr s64 arci_live_one = s64 { 1 } << 32;
+	}
+
 	/**/
 
 	template <IncompleteOrAtomicIntrusiveRefCountable Ty_, class Policy_ = StdAtomicPolicy>
@@ -57,13 +63,14 @@ namespace hg {
 	public:
 		using this_type = ArcFromThis<Derived_, Policy_>;
 
-		using counter_type = typename Policy_::template atomic<std::uint_fast16_t>;
+		using counter_type = typename Policy_::template atomic<s64>;
 		using derived_type = Derived_;
 
 	public:
+		// Starts with one live word and its net credit, adopted by `Arci::create` / `create_from_storage`.
 		template <typename DerivedType_ = Derived_>
 		constexpr ArcFromThis() noexcept :
-			_refs(1) {
+			_refs(arci_live_one + 1) {
 			static_assert(
 				std::derived_from<DerivedType_, this_type>,
 				"Used crtp helper class for ref counting incorrectly."
@@ -86,20 +93,14 @@ namespace hg {
 		mutable counter_type _refs;
 
 	public:
-		auto ref_inc() const noexcept {
-			return ++_refs;
+		s64 ref_fetch_add(const s64 delta_, const std::memory_order order_) const noexcept {
+			return _refs.fetch_add(delta_, order_);
 		}
 
-		auto ref_dec() const noexcept {
-			return --_refs;
-		}
-
-		auto ref_dec(const u16 refs_) const noexcept {
-			return _refs -= refs_;
-		}
-
-		[[nodiscard]] auto ref_count() const noexcept {
-			return _refs.load(std::memory_order::consume);
+		// Number of live Arci instances; a snapshot under concurrency.
+		[[nodiscard]] u32 ref_count() const noexcept {
+			// Round so a negative `net` does not borrow from `live`.
+			return static_cast<u32>((_refs.load(std::memory_order::relaxed) + (s64 { 1 } << 31)) >> 32);
 		}
 
 	public:
@@ -120,36 +121,108 @@ namespace hg {
 	};
 
 	/**
-	 * Note: Concurrently copying from and replacing (move-assign) the same instance is only best-effort. The writer
-	 *	drain-waits for readers, which may starve it. This pattern needs a redesign (split reference counting).
+	 * Split reference counting: the slot word packs the 48-bit pointer with a 16-bit pin count T, the object keeps
+	 *	`C = live * 2^32 + net`. A copy pins the source word (one RMW, so the pointer it reads is the one it pins),
+	 *	then adds one live; a dropped word folds `-live + (T - 1)` into C. The object is freed when C reaches zero.
+	 *	Every modification of a slot that may be copied concurrently is a single RMW, so copy vs move-assign / reset /
+	 *	move-from on the same instance is supported. Copy vs destroy of the same instance is a contract violation.
+	 *
+	 * Attention: `get()`, `operator->` and `operator*` are plain loads, unsafe against a concurrent reassign.
 	 */
 	template <IncompleteOrAtomicIntrusiveRefCountable Ty_, class Policy_>
 	class AtomicRefCountedIntrusive final {
+	public:
+		template <IncompleteOrAtomicIntrusiveRefCountable Ux_, class Px_>
+		friend class ::hg::AtomicRefCountedIntrusive;
+
 	public:
 		using this_type = AtomicRefCountedIntrusive<Ty_, Policy_>;
 
 		using storage_type = typename Policy_::template atomic<arci_packed_type>;
 		using value_type = Ty_;
 
-	private:
-		[[nodiscard]] static arci_packed_type encode_pointer(const ptr<Ty_> pt_) noexcept {
-			return reinterpret_cast<arci_packed_type>(pt_) << packed_shift;
-		}
+		/**
+		 * A copier that pins a word with `T >= pin_flush_at` moves the word's pins into the object counter. Each
+		 *	thread pins at most once before it flushes, so `T <= pin_flush_at + threads` stays below 2^16 for fewer
+		 *	than 2^16 - 2^14 concurrent copiers of one slot. Flush is lock-free, not wait-free (CAS retry).
+		 */
+		static constexpr u16 pin_flush_at = 1u << 14;
 
-		[[nodiscard]] static arci_packed_type encode_counter(const u16 refs_) noexcept {
-			return arci_packed_type { refs_ };
+	private:
+		[[nodiscard]] static arci_packed_type encode(const ptr<Ty_> pt_, const u16 pins_) noexcept {
+			return (reinterpret_cast<arci_packed_type>(pt_) << arci_packed_shift) | arci_packed_type { pins_ };
 		}
 
 		[[nodiscard]] static Ty_* decode_pointer(const arci_packed_type& packed_) noexcept {
 			return reinterpret_cast<Ty_*>((packed_ & arci_packed_ptr_mask) >> arci_packed_shift);
 		}
 
-		[[nodiscard]] static u16 decode_counter(const arci_packed_type& packed_) noexcept {
+		[[nodiscard]] static u16 decode_pins(const arci_packed_type& packed_) noexcept {
 			return static_cast<u16>(packed_ & arci_packed_ref_mask);
 		}
 
-		[[nodiscard]] static arci_packed_type encode(const ptr<Ty_> pt_, const u16 refs_) noexcept {
-			return encode_pointer(pt_) | encode_counter(refs_);
+		// Stale pins on a null word are ignored; drop them so they never travel.
+		[[nodiscard]] static arci_packed_type normalize(const arci_packed_type packed_) noexcept {
+			return decode_pointer(packed_) == nullptr ? arci_packed_type { 0 } : packed_;
+		}
+
+		[[nodiscard]] static arci_packed_type pin_copy(ref<storage_type> slot_) noexcept {
+
+			if (decode_pointer(slot_.load(std::memory_order::relaxed)) == nullptr) {
+				return arci_packed_type { 0 };
+			}
+
+			// Reads inside the release sequence of the writer's exchange, so the object is visible.
+			const auto old = slot_.fetch_add(1u, std::memory_order::acquire);
+			auto* const subject = decode_pointer(old);
+			if (subject == nullptr) {
+				return arci_packed_type { 0 };
+			}
+
+			subject->ref_fetch_add(arci_live_one, std::memory_order::relaxed);
+
+			if (decode_pins(old) >= pin_flush_at) {
+				flush(slot_, subject);
+			}
+
+			return encode(subject, 0u);
+		}
+
+		static void flush(ref<storage_type> slot_, const ptr<Ty_> subject_) noexcept {
+
+			auto current = slot_.load(std::memory_order::relaxed);
+			while (decode_pointer(current) == subject_ && decode_pins(current) != 0u) {
+
+				const auto pins = decode_pins(current);
+
+				// Credit before the pins leave the word; the undo cannot reach zero, as the flusher holds a live ref.
+				subject_->ref_fetch_add(s64 { pins }, std::memory_order::relaxed);
+				// unverified: needs weak-memory check (release pairs with the acquire of a later fold's slot read)
+				if (slot_.compare_exchange_strong(
+					current,
+					encode(subject_, 0u),
+					std::memory_order::release,
+					std::memory_order::relaxed
+				)) {
+					return;
+				}
+				subject_->ref_fetch_add(-s64 { pins }, std::memory_order::relaxed);
+			}
+		}
+
+		static void fold(const arci_packed_type packed_) noexcept {
+
+			auto* const subject = decode_pointer(packed_);
+			if (subject == nullptr) {
+				return;
+			}
+
+			const s64 delta = -arci_live_one + (s64 { decode_pins(packed_) } - 1);
+			if (subject->ref_fetch_add(delta, std::memory_order::release) + delta == 0) {
+				Policy_::fence(std::memory_order::acquire);
+				// Note: Matches the allocation of `create`.
+				delete subject;
+			}
 		}
 
 	public:
@@ -165,15 +238,16 @@ namespace hg {
 			using alloc_type = std::remove_const_t<Ty_>;
 			if constexpr (std::is_aggregate_v<alloc_type>) {
 				auto obj = new alloc_type { ::std::forward<Args_>(args_)... };
-				return this_type { encode(obj, 1u) };
+				return this_type { encode(obj, 0u) };
 			} else {
 				auto obj = new alloc_type(::std::forward<Args_>(args_)...);
-				return this_type { encode(obj, 1u) };
+				return this_type { encode(obj, 0u) };
 			}
 		}
 
+		// Adopts one live word plus its net credit already present on the object (see `ArcFromThis`).
 		[[nodiscard]] constexpr static this_type create_from_storage(const ptr<Ty_> self_) noexcept {
-			return this_type { encode(self_, 1u) };
+			return this_type { encode(self_, 0u) };
 		}
 
 	private:
@@ -188,41 +262,11 @@ namespace hg {
 			AtomicRefCountedIntrusive() {}
 
 		constexpr AtomicRefCountedIntrusive(const this_type& other_) noexcept :
-			_obj(++const_cast<ref<storage_type>>(other_._obj)) {
+			_obj(pin_copy(other_._obj)) {}
 
-			auto* const subject = decode_pointer(_obj.load(std::memory_order::relaxed));
-
-			if (subject != nullptr) {
-				subject->ref_inc();
-			}
-			--const_cast<ref<storage_type>>(other_._obj);
-
-			/**/
-
-			_obj.store(encode(subject, 1u), std::memory_order::relaxed);
-		}
-
+		// unverified: needs weak-memory check (acquire sees flush credits of the moved word's pins)
 		constexpr AtomicRefCountedIntrusive(this_type&& other_) noexcept :
-			_obj(++other_._obj) {
-
-			// Erase previous ownership of other_ subject
-			const auto old_refs = decode_counter(_obj.load(std::memory_order::relaxed));
-			if (old_refs >= 2u) {
-				other_._obj.fetch_and(arci_packed_ref_mask, std::memory_order::release);
-
-				// Release bumped reference
-				other_._obj.fetch_sub(1u, std::memory_order::release);
-
-				// Sanitize encoded value
-				auto* const subject = decode_pointer(_obj.load(std::memory_order::relaxed));
-				_obj.store(encode(subject, 1u), std::memory_order::relaxed);
-				return;
-			}
-
-			// If old_refs < 2u, we got an inactive or uninitialized pointer
-			other_._obj.fetch_sub(1u, std::memory_order::relaxed);
-			_obj.store(0uLL, std::memory_order::relaxed);
-		}
+			_obj(normalize(other_._obj.exchange(0u, std::memory_order::acq_rel))) {}
 
 		template <typename From_> requires std::is_const_v<Ty_> && std::same_as<From_, std::remove_const_t<Ty_>>
 		constexpr AtomicRefCountedIntrusive(cref<AtomicRefCountedIntrusive<From_, Policy_>> other_) noexcept :
@@ -233,103 +277,16 @@ namespace hg {
 			AtomicRefCountedIntrusive(std::move(other_).template into<Ty_>()) {}
 
 		constexpr ~AtomicRefCountedIntrusive() {
-			dec_not_null();
+			// unverified: needs weak-memory check (acquire orders flush credits on this word before the fold)
+			fold(_obj.load(std::memory_order::acquire));
 		}
 
 	public:
 		ref<this_type> operator=(this_type&& other_) noexcept {
 			if (std::addressof(other_) != this) {
-
-				/* "Lock" other local encoded pointer */
-
-				// Alias: ~fetch_add (..., std::memory_order::acq_rel)
-				auto source = ++other_._obj;
-				while (decode_counter(source) > 2u) {
-					other_._obj.fetch_sub(1u, std::memory_order::release);
-					// TODO: yield
-					source = ++other_._obj;
-				}
-
-				/* Exclusively extract remote pointer */
-
-				const auto remote_refs = decode_counter(source);
-
-				other_._obj.fetch_and(arci_packed_ref_mask, std::memory_order::release);
-				other_._obj.fetch_sub(remote_refs, std::memory_order::release);
-
-				auto* const remote = decode_pointer(source);
-
-				/* "Lock" local encoded pointer */
-
-				// Alias: ~fetch_add (..., std::memory_order::acq_rel)
-				auto target = ++_obj;
-				while (decode_counter(target) > 2u) {
-					_obj.fetch_sub(1u, std::memory_order::release);
-					// TODO: yield;
-					target = ++_obj;
-				}
-
-				/**/
-
-				auto* local = decode_pointer(target);
-				const auto local_refs = decode_counter(target);
-
-				// Note: local_refs == 1u -> inactive pointer ( got moved )
-				//			local_refs == 2u -> active pointer ( still owned )
-				if (local != nullptr && local_refs == 2u) {
-					// Modify local intrusive counter to pseudo-holder
-					_obj.fetch_and(arci_packed_ref_mask, std::memory_order::release);
-				}
-
-				if (local_refs == 1u) {
-
-					// Note: As the previous value is an inactive pointer
-					//			we are required to "relock" as an active one
-
-					target = ++_obj;
-					while (decode_counter(target) != 2u) {
-						_obj.fetch_sub(1u, std::memory_order::release);
-						// TODO: yield
-						target = ++_obj;
-					}
-
-					// Note: We may end up in between multiple assignments which could potentially
-					//			store a pointer before the lock expansion
-					if (auto recursive = decode_pointer(target); recursive != nullptr) {
-						// Modify local intrusive counter to pseudo-holder
-						_obj.fetch_and(arci_packed_ref_mask, std::memory_order::release);
-						// Note: As local_refs was originally 1u, we can assume that the initial local was nullptr
-						local = recursive;
-					}
-				}
-
-				/* Store remote to local */
-				_obj.fetch_or(encode_pointer(remote), std::memory_order_acq_rel);
-
-				/* Wait for in-flight readers of the previous pointer */
-
-				// Note: Readers pinned the slot before we exchanged the pointer might not have acquired a reference to
-				//			the previous object yet. We must not drop our reference before they left the slot.
-				// shortcut: drain-wait can starve the writer under constant readers on the same slot; the pin counter
-				//			has no epoch to tell old from new readers, so this pattern needs a redesign (split ref count).
-				while (decode_counter(_obj.load(std::memory_order::acquire)) > 2u) {
-					std::this_thread::yield();
-				}
-
-				/* Release local "lock" */
-
-				// Note: We will only release one reference bump, as the second one was required
-				//			to lift the inactive to and active pointer state
-				_obj.fetch_sub(1u, std::memory_order::release);
-
-				/* Cleanup deferred destruction */
-				if (local != nullptr) {
-					// Drop stored object with exclusive ownership
-					if (local->ref_dec() == 0) {
-						// Note: Matches the allocation of `create` and `destroy_obj`, otherwise the object leaks
-						delete local;
-					}
-				}
+				// unverified: needs weak-memory check (both exchanges acq_rel: publish the object, see flush credits)
+				const auto moved = normalize(other_._obj.exchange(0u, std::memory_order::acq_rel));
+				fold(_obj.exchange(moved, std::memory_order::acq_rel));
 			}
 			return *this;
 		}
@@ -337,60 +294,22 @@ namespace hg {
 		ref<this_type> operator=(const this_type& other_) noexcept = delete;
 
 	private:
-		storage_type _obj;
-
-	private:
-		constexpr void destroy_obj(ptr<Ty_> obj_) {
-
-			// TODO: auto alloc = std::allocator<Ty_> {};
-			// TODO: auto alloc_traits = std::allocator_traits<std::allocator<Ty_>> {};
-
-			_obj.store(arci_packed_type { 0 }, std::memory_order::relaxed);
-			delete obj_;
-
-			// Problem: We will leak memory, as type of `obj_` is not guaranteed.
-			// TODO: alloc_traits.destroy(alloc, obj_);
-			// TODO: alloc.deallocate(obj_, 1uLL);
-		}
-
-		constexpr void cascade_dec(const ptr<Ty_> obj_) {
-			if (obj_ != nullptr && obj_->ref_dec() == 0) {
-				destroy_obj(obj_);
-			}
-		}
-
-		constexpr void dec_not_null() {
-
-			if (decode_counter(_obj.load(std::memory_order::consume)) == 0) {
-				return;
-			}
-
-			// Alias: ~fetch_sub (..., std::memory_order::acq_rel)
-			const auto packed = --_obj;
-			if (decode_counter(packed) == 0) {
-				cascade_dec(decode_pointer(packed));
-			}
-		}
+		// Mutable: copying pins the source word, also for a `const` source.
+		mutable storage_type _obj;
 
 		constexpr void throw_if_null(const arci_packed_type packed_) const {
-			/*
-			if (decode_pointer(packed_) == nullptr) {
-				throw std::runtime_error("Failed to access ref counted object with ref count of zero.");
-			}
-			 */
 			::hg::assertrt(decode_pointer(packed_) != nullptr);
 		}
 
 	public:
 		[[nodiscard]] bool ref_unique() const noexcept {
-			using ref_count_type = decltype(std::declval<const Ty_>().ref_count());
-			auto* const subject = decode_pointer(_obj.load(std::memory_order::consume));
-			return subject == nullptr ? true : subject->ref_count() == ref_count_type { 1 } ? true : false;
+			auto* const subject = decode_pointer(_obj.load(std::memory_order::relaxed));
+			return subject == nullptr ? true : subject->ref_count() == 1u;
 		}
 
 		[[nodiscard]] auto ref_count() const noexcept {
 			using ref_count_type = decltype(std::declval<const Ty_>().ref_count());
-			auto* const subject = decode_pointer(_obj.load(std::memory_order::consume));
+			auto* const subject = decode_pointer(_obj.load(std::memory_order::relaxed));
 			return subject == nullptr ? ref_count_type { 0 } : subject->ref_count();
 		}
 
@@ -400,7 +319,7 @@ namespace hg {
 		}
 
 		constexpr void reset() {
-			dec_not_null();
+			fold(_obj.exchange(0u, std::memory_order::acq_rel));
 		}
 
 		// Attention: Releasing an intrusive ref-counted object is semantically incorrect.
@@ -427,20 +346,15 @@ namespace hg {
 
 	public:
 		[[nodiscard]] constexpr bool operator==(std::nullptr_t) const noexcept {
-			const auto stored = _obj.load(std::memory_order::consume);
-			return stored == 0 || decode_pointer(stored) == nullptr;
+			return decode_pointer(_obj.load(std::memory_order::consume)) == nullptr;
 		}
 
 		[[nodiscard]] constexpr bool operator==(cref<this_type> other_) const noexcept {
-			const auto selfStored = _obj.load(std::memory_order::consume);
-			const auto otherStored = other_._obj.load(std::memory_order::consume);
-			return selfStored == otherStored || decode_pointer(selfStored) == decode_pointer(otherStored);
+			return get() == other_.get();
 		}
 
 		[[nodiscard]] constexpr bool operator!=(cref<this_type> other_) const noexcept {
-			const auto selfStored = _obj.load(std::memory_order::consume);
-			const auto otherStored = other_._obj.load(std::memory_order::consume);
-			return selfStored != otherStored && decode_pointer(selfStored) != decode_pointer(otherStored);
+			return get() != other_.get();
 		}
 
 	public:
@@ -452,19 +366,14 @@ namespace hg {
 			return clone(*this).template into<ToType_>();
 		}
 
+		// Moves the word; pins belong to the shared object counter, so they travel with the converted pointer.
 		template <IsAtomicIntrusiveRefCountable ToType_> requires ArciConvertibleTo<Ty_, ToType_>
 		[[nodiscard]] AtomicRefCountedIntrusive<ToType_, Policy_> into() && noexcept {
-			return static_cast<mref<AtomicRefCountedIntrusive<ToType_, Policy_>>>(
-				*reinterpret_cast<ptr<AtomicRefCountedIntrusive<ToType_, Policy_>>>(this)
-			);
-		}
-
-	private:
-		template <IsAtomicIntrusiveRefCountable ToType_> requires ArciConvertibleTo<Ty_, ToType_>
-		[[nodiscard]] explicit operator AtomicRefCountedIntrusive<ToType_, Policy_>() && noexcept {
-			return static_cast<mref<AtomicRefCountedIntrusive<ToType_, Policy_>>>(
-				*reinterpret_cast<ptr<AtomicRefCountedIntrusive<ToType_, Policy_>>>(this)
-			);
+			using target_type = AtomicRefCountedIntrusive<ToType_, Policy_>;
+			const auto moved = normalize(_obj.exchange(0u, std::memory_order::acq_rel));
+			return target_type {
+				target_type::encode(static_cast<ptr<ToType_>>(decode_pointer(moved)), decode_pins(moved))
+			};
 		}
 	};
 
@@ -473,8 +382,10 @@ namespace hg {
 	template <class Derived_, class Policy_>
 	template <typename Proxy_>
 	AtomicRefCountedIntrusive<Proxy_, Policy_> ArcFromThis<Derived_, Policy_>::arci_from_this() noexcept {
-		const auto result = ref_inc();
-		::hg::assertd(result);
+		// No pin supplies the new word's net credit, so add it with the live one.
+		// unverified: needs weak-memory check (relaxed by analogy with the shared_ptr copy)
+		const auto previous = ref_fetch_add(arci_live_one + 1, std::memory_order::relaxed);
+		::hg::assertd(previous != 0);
 		return AtomicRefCountedIntrusive<Proxy_, Policy_>::create_from_storage(static_cast<ptr<Derived_>>(this));
 	}
 }
