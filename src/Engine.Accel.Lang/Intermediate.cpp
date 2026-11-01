@@ -38,6 +38,7 @@ u64 Intermediate::contentHash() const noexcept {
 					h.put(location->vkSet);
 					h.put(location->vkLocation);
 					h.put(location->vkOffset);
+					h.put(location->vkFormat);
 				}
 			}
 			/* end of the chain, so chains cannot shift into the next variable */

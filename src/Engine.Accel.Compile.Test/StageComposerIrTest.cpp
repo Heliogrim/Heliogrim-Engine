@@ -1,5 +1,6 @@
 #include "pch.h"
 
+#include <Engine.Accel.Compile/Pass/VkVertexFormat.hpp>
 #include <Engine.Accel.Compile/Profile/EffectProfile.hpp>
 #include <Engine.Accel.Compile/Spec/EffectSpecification.hpp>
 #include <Engine.Accel.Compile/Stage/StageIr.hpp>
@@ -339,5 +340,61 @@ namespace AccelCompile {
 		const auto inner = composeStageIr(fragment, profile, spec, StageFlagBits::eFragment, cache, false);
 		ASSERT_TRUE(inner.has_value());
 		EXPECT_TRUE(textOf(**inner).contains("other")) << textOf(**inner);
+	}
+
+	TEST(StageIrTest, VertexFormatSuppliedByStageWinsOverShaderType) {
+		VariantCache cache {};
+		auto vertex = intermediateOf(
+			"@input (mode = forward, id = \"vertex-color\") f32vec4 color;\n"
+			"@input (mode = forward, id = \"vertex-position\") f32vec3 local;\n"
+			"@output (mode = forward, id = \"forwarded\") f32vec4 forwarded;\n"
+			"fn main() { forwarded = color; position = f32vec4(local, 1.0); }\n",
+			EntryKind::eVertex
+		);
+
+		const auto attribute = [&](StringView id_, s32 offset_, s32 format_) {
+			auto var = make_uptr<Variable>();
+			var->annotation = make_uptr<VkBindLocationAnnotation>(
+				-1L,
+				0L,
+				offset_,
+				make_uptr<SymbolIdAnnotation>(String { id_ }),
+				format_
+			);
+			vertex.rep.globalScope.inbound.emplace_back(std::move(var));
+		};
+		attribute("vertex-color", 8L, static_cast<s32>(vk::Format::eR8G8B8A8Unorm));
+		attribute("vertex-position", 0L, -1L);
+
+		const auto resolved = resolveStageIr(
+			vertex,
+			EffectProfile {},
+			TestSpecification { {} },
+			StageFlagBits::eVertex,
+			cache,
+			false
+		);
+		ASSERT_TRUE(resolved.has_value()) << resolved.error().front().message;
+
+		const auto formatOf = [&](StringView id_) {
+			for (const auto& var : (*resolved)->lowered.rep.globalScope.inbound) {
+				const SymbolIdAnnotation* id = nullptr;
+				const VkBindLocationAnnotation* location = nullptr;
+				for (auto* cur = var->annotation.get(); cur != nullptr; cur = cur->next.get()) {
+					if (cur->type == AnnotationType::eSymbolId) {
+						id = static_cast<const SymbolIdAnnotation*>(cur);
+					} else if (cur->type == AnnotationType::eVkBindLocation) {
+						location = static_cast<const VkBindLocationAnnotation*>(cur);
+					}
+				}
+				if (id != nullptr && location != nullptr && id->symbolId == id_) {
+					return vertexFormatOf(var->type.scalarType, location->vkFormat);
+				}
+			}
+			return vk::Format::eUndefined;
+		};
+
+		EXPECT_EQ(formatOf("vertex-color"), vk::Format::eR8G8B8A8Unorm);
+		EXPECT_EQ(formatOf("vertex-position"), vk::Format::eR32G32B32Sfloat);
 	}
 }

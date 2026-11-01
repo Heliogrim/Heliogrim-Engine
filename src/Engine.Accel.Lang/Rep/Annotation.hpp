@@ -113,29 +113,35 @@ namespace hg::engine::accel::lang {
 			const s32 vkSet_,
 			const s32 vkLocation_,
 			const s32 vkOffset_ = -1L,
-			mref<uptr<Annotation>> next_ = nullptr
+			mref<uptr<Annotation>> next_ = nullptr,
+			const s32 vkFormat_ = -1L
 		) noexcept :
 			AnnotationBase(AnnotationType::eVkBindLocation, std::move(next_)),
 			vkSet(vkSet_),
 			vkLocation(vkLocation_),
-			vkOffset(vkOffset_) {}
+			vkOffset(vkOffset_),
+			vkFormat(vkFormat_) {}
 
 		VkBindLocationAnnotation(cref<this_type> other_) :
 			AnnotationBase(other_),
 			vkSet(other_.vkSet),
 			vkLocation(other_.vkLocation),
-			vkOffset(other_.vkOffset) {}
+			vkOffset(other_.vkOffset),
+			vkFormat(other_.vkFormat) {}
 
 		constexpr VkBindLocationAnnotation(mref<this_type> other_) noexcept :
 			AnnotationBase(std::move(other_)),
 			vkSet(std::exchange(other_.vkSet, ~0)),
 			vkLocation(std::exchange(other_.vkLocation, ~0)),
-			vkOffset(std::exchange(other_.vkOffset, ~0)) {}
+			vkOffset(std::exchange(other_.vkOffset, ~0)),
+			vkFormat(std::exchange(other_.vkFormat, ~0)) {}
 
 		~VkBindLocationAnnotation() override = default;
 
 		s32 vkSet;
 		s32 vkLocation;
 		s32 vkOffset;
+		/* vertex attribute `vk::Format` supplied by the data owner; negative falls back to the type's format */
+		s32 vkFormat;
 	};
 }

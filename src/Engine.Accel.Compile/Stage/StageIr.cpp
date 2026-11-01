@@ -26,16 +26,16 @@ namespace {
 		return Diagnostics { Diagnostic { .severity = Severity::eError, .message = std::move(message_) } };
 	}
 
-	[[nodiscard]] bool hasError(cref<Diagnostics> diagnostics_) {
+	[[nodiscard]] bool hasError(ref<const Diagnostics> diagnostics_) {
 		return std::ranges::any_of(
 			diagnostics_,
-			[](cref<Diagnostic> d_) { return d_.severity == Severity::eError; }
+			[](ref<const Diagnostic> d_) { return d_.severity == Severity::eError; }
 		);
 	}
 
-	/* inbound variables carrying a SymbolId and a VkBindLocation: id -> vertex offset, sorted */
-	[[nodiscard]] Vector<std::pair<String, u32>> vertexOffsetsOf(cref<Intermediate> stage_) {
-		Vector<std::pair<String, u32>> offsets {};
+	/* inbound variables carrying a SymbolId and a VkBindLocation: (id, vertex offset, vertex format or -1), sorted */
+	[[nodiscard]] Vector<std::tuple<String, u32, s32>> vertexOffsetsOf(ref<const Intermediate> stage_) {
+		Vector<std::tuple<String, u32, s32>> offsets {};
 		for (const auto& var : stage_.rep.globalScope.inbound) {
 
 			const SymbolIdAnnotation* id = nullptr;
@@ -49,7 +49,7 @@ namespace {
 			}
 
 			if (id != nullptr && location != nullptr && location->vkOffset >= 0) {
-				offsets.emplace_back(String { id->symbolId }, static_cast<u32>(location->vkOffset));
+				offsets.emplace_back(String { id->symbolId }, static_cast<u32>(location->vkOffset), location->vkFormat);
 			}
 		}
 
@@ -57,7 +57,7 @@ namespace {
 		return offsets;
 	}
 
-	[[nodiscard]] BindType bindTypeOf(cref<Resolved> resolved_, cref<String> id_) {
+	[[nodiscard]] BindType bindTypeOf(ref<const Resolved> resolved_, ref<const String> id_) {
 		for (const auto& entry : resolved_.interfaceEntries) {
 			if (entry.input && entry.id == id_) {
 				switch (entry.cls) {
@@ -73,10 +73,10 @@ namespace {
 }
 
 std::expected<smr<const Resolved>, Diagnostics> hg::engine::accel::resolveStageIr(
-	cref<Intermediate> stage_,
-	cref<EffectProfile> profile_,
-	cref<EffectSpecification> spec_,
-	cref<StageFlagBits> flags_,
+	ref<const Intermediate> stage_,
+	ref<const EffectProfile> profile_,
+	ref<const EffectSpecification> spec_,
+	ref<const StageFlagBits> flags_,
 	ref<VariantCache> cache_,
 	const bool exportStage_
 ) {
@@ -90,12 +90,12 @@ std::expected<smr<const Resolved>, Diagnostics> hg::engine::accel::resolveStageI
 	bool skippedText = false;
 	for (const auto& module : profile_._modules) {
 		if (module.ir != nullptr) {
-			modules.push_back(module.ir.get());
+			modules.emplace_back(module.ir.get());
 		} else if (not module.lang.text.empty()) {
 			skippedText = true;
 		}
 	}
-	modules.push_back(stage_.ir.get());
+	modules.emplace_back(stage_.ir.get());
 
 	Vector<String> outputs {};
 	if (exportStage_) {
@@ -116,9 +116,10 @@ std::expected<smr<const Resolved>, Diagnostics> hg::engine::accel::resolveStageI
 		}
 		h.put(flags_);
 		h.put(static_cast<u64>(offsets.size()));
-		for (const auto& [id, offset] : offsets) {
+		for (const auto& [id, offset, format] : offsets) {
 			h.put(StringView { id });
 			h.put(offset);
+			h.put(format);
 		}
 		key.module = h.value;
 	}
@@ -153,7 +154,7 @@ std::expected<smr<const Resolved>, Diagnostics> hg::engine::accel::resolveStageI
 			/* unknown target symbols are errors, the slice would silently keep nothing */
 			const auto all = computeInterface(*flat);
 			for (const auto& id : outputs) {
-				if (std::ranges::none_of(all, [&](cref<InterfaceEntry> e_) { return not e_.input && e_.id == id; })) {
+				if (std::ranges::none_of(all, [&](ref<const InterfaceEntry> e_) { return not e_.input && e_.id == id; })) {
 					failure = fail("target symbol '" + id + "' is not an output of the stage");
 					return {};
 				}
@@ -165,7 +166,7 @@ std::expected<smr<const Resolved>, Diagnostics> hg::engine::accel::resolveStageI
 			StageContract contract {};
 			for (const auto& entry : interfaceEntries) {
 				if (entry.input && entry.mode == BindMode::eBind) {
-					contract.provides.push_back(entry.id);
+					contract.provides.emplace_back(entry.id);
 				}
 			}
 
@@ -181,11 +182,15 @@ std::expected<smr<const Resolved>, Diagnostics> hg::engine::accel::resolveStageI
 			auto layout = assignLayout(interfaceEntries, sliced.types, {});
 
 			DenseMap<String, u32> vertexOffsets {};
-			for (const auto& [id, offset] : offsets) {
+			DenseMap<String, s32> vertexFormats {};
+			for (const auto& [id, offset, format] : offsets) {
 				vertexOffsets.insert_or_assign(id, offset);
+				if (format >= 0L) {
+					vertexFormats.insert_or_assign(id, format);
+				}
 			}
 
-			auto lowered = lowerToIntermediate(sliced, layout, Dialect::eVulkanGlsl460, vertexOffsets);
+			auto lowered = lowerToIntermediate(sliced, layout, Dialect::eVulkanGlsl460, vertexOffsets, vertexFormats);
 			if (not lowered.has_value()) {
 				failure = std::move(lowered).error();
 				return {};
@@ -209,9 +214,9 @@ std::expected<smr<const Resolved>, Diagnostics> hg::engine::accel::resolveStageI
 }
 
 std::expected<smr<StageDerivat>, Diagnostics> hg::engine::accel::composeStageIr(
-	cref<Intermediate> stage_,
-	cref<EffectProfile> profile_,
-	cref<EffectSpecification> spec_,
+	ref<const Intermediate> stage_,
+	ref<const EffectProfile> profile_,
+	ref<const EffectSpecification> spec_,
 	const StageFlagBits flags_,
 	ref<VariantCache> cache_,
 	const bool exportStage_
@@ -244,7 +249,7 @@ Diagnostics hg::engine::accel::appendBindLayout(
 
 		const auto iter = std::ranges::find_if(
 			intermediate->rep.symbolTable,
-			[&](cref<uptr<Symbol>> s_) { return s_->symbolName == slot.id; }
+			[&](ref<const uptr<Symbol>> s_) { return s_->symbolName == slot.id; }
 		);
 		if (iter == intermediate->rep.symbolTable.end()) {
 			continue;
@@ -291,7 +296,7 @@ Diagnostics hg::engine::accel::appendBindLayout(
 
 		auto existing = std::ranges::find_if(
 			layout_.constants,
-			[&](cref<PushConstant> c_) { return c_.offset == range.offset && c_.size == range.size; }
+			[&](ref<const PushConstant> c_) { return c_.offset == range.offset && c_.size == range.size; }
 		);
 
 		if (existing != layout_.constants.end()) {

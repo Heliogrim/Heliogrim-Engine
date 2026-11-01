@@ -603,15 +603,10 @@ smr<VkGraphicsPipeline> VkPipelineCompiler::linkVk(
 		const auto& var = *in.symbol->var.data;
 		assert(var.type.category == lang::TypeCategory::eScalar);
 
-		const auto format = vertexFormatOf(var.type.scalarType);
-		if (format == vk::Format::eUndefined) {
-			IM_CORE_ERRORF("Vertex input type 0x{:02X} has no vertex format.", static_cast<u8>(var.type.scalarType));
-			return nullptr;
-		}
-
 		u32 index = ~0uL;
 		u32 location = ~0uL;
 		u32 offset = ~0uL;
+		s32 formatOverride = -1L;
 
 		cur = in.symbol->var.data->annotation.get();
 		while (cur != nullptr) {
@@ -624,9 +619,16 @@ smr<VkGraphicsPipeline> VkPipelineCompiler::linkVk(
 
 				location = static_cast<u32>(vkBindAn->vkLocation);
 				offset = static_cast<u32>(vkBindAn->vkOffset);
+				formatOverride = vkBindAn->vkFormat;
 				break;
 			}
 			cur = cur->next.get();
+		}
+
+		const auto format = vertexFormatOf(var.type.scalarType, formatOverride);
+		if (format == vk::Format::eUndefined) {
+			IM_CORE_ERRORF("Vertex input type 0x{:02X} has no vertex format.", static_cast<u8>(var.type.scalarType));
+			return nullptr;
 		}
 
 		assert(location != ~0uL);

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <cassert>
 #include <filesystem>
 #include <fstream>
@@ -69,12 +70,14 @@ namespace hg::engine::render {
 	 * Includes resolve below `shader/` as well.
 	 *
 	 * `vertexOffsets_` maps vertex input ids to their byte offset in the vertex buffer; that layout is C++ data, so
-	 * it is supplied here instead of being authored in the module.
+	 * it is supplied here instead of being authored in the module. `vertexFormats_` likewise maps vertex input ids to
+	 * the `vk::Format` of the stored attribute where it differs from the shader type (8-bit normalized data read as float).
 	 */
 	[[nodiscard]] inline smr<accel::lang::Intermediate> makeIrIntermediate(
 		std::filesystem::path name_,
 		accel::lang::ir::EntryKind entry_,
-		std::span<const std::pair<String, u32>> vertexOffsets_ = {}
+		std::span<const std::pair<String, u32>> vertexOffsets_ = {},
+		std::span<const std::pair<String, s32>> vertexFormats_ = {}
 	) {
 		using namespace accel::lang;
 
@@ -98,12 +101,14 @@ namespace hg::engine::render {
 		}
 
 		for (const auto& [id, offset] : vertexOffsets_) {
+			const auto format = std::ranges::find_if(vertexFormats_, [&id](const auto& f_) { return f_.first == id; });
 			auto var = make_uptr<accel::lang::Variable>();
 			var->annotation = make_uptr<accel::lang::VkBindLocationAnnotation>(
 				-1L,
 				0L,
 				static_cast<s32>(offset),
-				make_uptr<accel::lang::SymbolIdAnnotation>(String { id })
+				make_uptr<accel::lang::SymbolIdAnnotation>(String { id }),
+				format != vertexFormats_.end() ? format->second : -1L
 			);
 			intermediate->rep.globalScope.inbound.emplace_back(std::move(var));
 		}
