@@ -148,7 +148,7 @@ namespace AccelCompile {
 		ASSERT_TRUE(second.has_value());
 		EXPECT_EQ(first->get(), second->get());
 
-		/* equal content in other objects hits as well, another profile toggle does not */
+		/* equal content in other objects hits as well, another toggle value is another variant */
 		const auto sameContent = resolveStageIr(
 			intermediateOf(stageSource, EntryKind::eFragment),
 			profileOf(),
@@ -159,11 +159,31 @@ namespace AccelCompile {
 		ASSERT_TRUE(sameContent.has_value());
 		EXPECT_EQ(first->get(), sameContent->get());
 
-		auto toggled = profileOf();
-		toggled._toggles.emplace_back("quality", "high");
-		const auto other = resolveStageIr(stage, toggled, spec, StageFlagBits::eFragment, cache);
-		/* the toggle is unknown to the module, which is an error and not a cached variant */
-		EXPECT_FALSE(other.has_value());
+		const auto toggledStage = intermediateOf(
+			"toggle Quality : { Low, High } = Low;\n"
+			"@output (mode = forward, id = \"color\") f32 color;\n"
+			"@when (Quality == High) fn Pick() -> f32 { return 1.0; }\n"
+			"@when (Quality == Low) fn Pick() -> f32 { return 0.5; }\n"
+			"fn main() { color = Pick(); }\n",
+			EntryKind::eFragment
+		);
+		auto high = EffectProfile {};
+		high._toggles.emplace_back("Quality", "High");
+
+		const auto lowVariant = resolveStageIr(toggledStage, EffectProfile {}, spec, StageFlagBits::eFragment, cache);
+		const auto highVariant = resolveStageIr(toggledStage, high, spec, StageFlagBits::eFragment, cache);
+		ASSERT_TRUE(lowVariant.has_value() && highVariant.has_value());
+		EXPECT_NE(lowVariant->get(), highVariant->get());
+		EXPECT_NE(lowVariant->get()->lowered.lang.text.front().data, highVariant->get()->lowered.lang.text.front().data);
+
+		const auto highAgain = resolveStageIr(toggledStage, high, spec, StageFlagBits::eFragment, cache);
+		ASSERT_TRUE(highAgain.has_value());
+		EXPECT_EQ(highVariant->get(), highAgain->get());
+
+		/* a toggle the module does not declare is an error, not a cached variant */
+		auto unknown = profileOf();
+		unknown._toggles.emplace_back("quality", "high");
+		EXPECT_FALSE(resolveStageIr(stage, unknown, spec, StageFlagBits::eFragment, cache).has_value());
 
 		/* every composed derivat owns its own intermediate */
 		const auto a = composeStageIr(stage, profile, spec, StageFlagBits::eFragment, cache);
@@ -203,7 +223,7 @@ namespace AccelCompile {
 		ASSERT_TRUE(derivat.has_value());
 
 		BindLayout layout {};
-		appendBindLayout(**resolved, **derivat, layout);
+		EXPECT_TRUE(appendBindLayout(**resolved, **derivat, layout).empty());
 
 		ASSERT_EQ(layout.constants.size(), 1uLL);
 		EXPECT_EQ(layout.constants.front().size, (*resolved)->layout.push.front().size);
@@ -218,8 +238,106 @@ namespace AccelCompile {
 		EXPECT_EQ(layout.groups.front().elements.front().type, BindType::eUniformBuffer);
 
 		/* a second stage of the same layout adds its flag and no duplicates */
-		appendBindLayout(**resolved, **derivat, layout);
+		EXPECT_TRUE(appendBindLayout(**resolved, **derivat, layout).empty());
 		EXPECT_EQ(layout.constants.size(), 1uLL);
 		EXPECT_EQ(layout.groups.front().elements.size(), 1uLL);
+	}
+
+	namespace {
+		[[nodiscard]] String fragmentUsing(StringView ids_) {
+			String source {};
+			String sum { "f32vec4(0.0)" };
+			for (const auto id : ids_) {
+				const String name(1uLL, id);
+				source += "@input (mode = bind, id = \"" + name + "\", class = uniform) block " + name +
+					" { f32vec4 v; };\n";
+				sum += " + " + name + ".v";
+			}
+			return source + "@output (mode = forward, id = \"color\") f32vec4 color;\nfn main() { color = " + sum + "; }\n";
+		}
+
+		struct Laid {
+			smr<const Resolved> resolved;
+			smr<StageDerivat> derivat;
+		};
+
+		[[nodiscard]] Laid layoutOf(StringView ids_, ref<VariantCache> cache_, StageFlagBits flags_) {
+			const auto stage = intermediateOf(fragmentUsing(ids_), EntryKind::eFragment);
+			const TestSpecification spec { {} };
+			auto resolved = resolveStageIr(stage, EffectProfile {}, spec, flags_, cache_);
+			auto derivat = composeStageIr(stage, EffectProfile {}, spec, flags_, cache_);
+			EXPECT_TRUE(resolved.has_value() && derivat.has_value());
+			return { std::move(resolved).value(), std::move(derivat).value() };
+		}
+	}
+
+	TEST(StageIrTest, LayoutGuardRejectsDifferentIdsOnOneSlot) {
+		VariantCache cache {};
+		const auto first = layoutOf("a", cache, StageFlagBits::eVertex);
+		const auto second = layoutOf("b", cache, StageFlagBits::eFragment);
+
+		BindLayout layout {};
+		EXPECT_TRUE(appendBindLayout(*first.resolved, *first.derivat, layout).empty());
+
+		const auto clash = appendBindLayout(*second.resolved, *second.derivat, layout);
+		ASSERT_FALSE(clash.empty());
+		EXPECT_TRUE(clash.front().message.contains("'b'")) << clash.front().message;
+		EXPECT_EQ(layout.groups.front().elements.size(), 1uLL);
+	}
+
+	TEST(StageIrTest, LayoutGuardRejectsSharedIdAtDifferentSlots) {
+		VariantCache cache {};
+		/* sorted by id: a = binding 0, b = binding 1; alone, b = binding 0 */
+		const auto first = layoutOf("ab", cache, StageFlagBits::eVertex);
+		const auto second = layoutOf("b", cache, StageFlagBits::eFragment);
+
+		BindLayout layout {};
+		EXPECT_TRUE(appendBindLayout(*first.resolved, *first.derivat, layout).empty());
+
+		const auto clash = appendBindLayout(*second.resolved, *second.derivat, layout);
+		ASSERT_FALSE(clash.empty());
+		EXPECT_TRUE(clash.front().message.contains("'b'")) << clash.front().message;
+	}
+
+	TEST(StageIrTest, LayoutGuardAcceptsSameSlotsAndSupersets) {
+		VariantCache cache {};
+		const auto first = layoutOf("a", cache, StageFlagBits::eVertex);
+		const auto second = layoutOf("ab", cache, StageFlagBits::eFragment);
+
+		BindLayout layout {};
+		EXPECT_TRUE(appendBindLayout(*first.resolved, *first.derivat, layout).empty());
+		EXPECT_TRUE(appendBindLayout(*second.resolved, *second.derivat, layout).empty());
+		ASSERT_EQ(layout.groups.size(), 1uLL);
+		EXPECT_EQ(layout.groups.front().elements.size(), 2uLL);
+	}
+
+	TEST(StageIrTest, TargetSymbolsOnlySliceTheExportStage) {
+		VariantCache cache {};
+		const auto vertex = intermediateOf(
+			"@output (mode = forward, id = \"uv\") f32vec2 uv;\n"
+			"fn main() { uv = f32vec2(0.0, 1.0); }\n",
+			EntryKind::eVertex
+		);
+		const auto fragment = intermediateOf(stageSource, EntryKind::eFragment);
+		const TestSpecification spec { { "color" } };
+		const auto profile = profileOf();
+
+		/* the vertex stage keeps its varying although the target names a fragment output */
+		const auto kept = composeStageIr(vertex, EffectProfile {}, spec, StageFlagBits::eVertex, cache, false);
+		ASSERT_TRUE(kept.has_value()) << kept.error().front().message;
+		EXPECT_TRUE(textOf(**kept).contains("uv")) << textOf(**kept);
+
+		/* as the export stage it would fail */
+		EXPECT_FALSE(composeStageIr(vertex, EffectProfile {}, spec, StageFlagBits::eVertex, cache, true).has_value());
+
+		/* the export stage slices to the target */
+		const auto exported = composeStageIr(fragment, profile, spec, StageFlagBits::eFragment, cache, true);
+		ASSERT_TRUE(exported.has_value());
+		EXPECT_FALSE(textOf(**exported).contains("other")) << textOf(**exported);
+
+		/* the same fragment as a non-export stage keeps every output */
+		const auto inner = composeStageIr(fragment, profile, spec, StageFlagBits::eFragment, cache, false);
+		ASSERT_TRUE(inner.has_value());
+		EXPECT_TRUE(textOf(**inner).contains("other")) << textOf(**inner);
 	}
 }
