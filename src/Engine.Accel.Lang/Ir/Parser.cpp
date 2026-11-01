@@ -4,6 +4,7 @@
 #include <array>
 #include <cassert>
 #include <string>
+#include <tuple>
 
 #include "Builtin.hpp"
 #include "Lexer.hpp"
@@ -23,26 +24,64 @@ namespace {
 		u16 m;
 	};
 
-	constexpr std::array<BuiltinType, 12> builtinTypes {
+	constexpr std::array<BuiltinType, 3> fixedTypes {
 		{
 			{ "bool", ir::TypeKind::eScalar, ir::ScalarKind::eBool, 32u, 1u, 1u },
-			{ "f32", ir::TypeKind::eScalar, ir::ScalarKind::eFloat, 32u, 1u, 1u },
-			{ "f32vec2", ir::TypeKind::eVector, ir::ScalarKind::eFloat, 32u, 2u, 1u },
-			{ "f32vec3", ir::TypeKind::eVector, ir::ScalarKind::eFloat, 32u, 3u, 1u },
-			{ "f32vec4", ir::TypeKind::eVector, ir::ScalarKind::eFloat, 32u, 4u, 1u },
-			{ "f32mat4", ir::TypeKind::eMatrix, ir::ScalarKind::eFloat, 32u, 4u, 4u },
-			{ "u32", ir::TypeKind::eScalar, ir::ScalarKind::eUInt, 32u, 1u, 1u },
-			{ "u8", ir::TypeKind::eScalar, ir::ScalarKind::eUInt, 8u, 1u, 1u },
-			{ "u8vec4", ir::TypeKind::eVector, ir::ScalarKind::eUInt, 8u, 4u, 1u },
-			{ "s32", ir::TypeKind::eScalar, ir::ScalarKind::eInt, 32u, 1u, 1u },
 			{ "texture2d", ir::TypeKind::eTexture, ir::ScalarKind::eFloat, 32u, 1u, 1u },
 			{ "sampler", ir::TypeKind::eSampler, ir::ScalarKind::eFloat, 32u, 1u, 1u }
 		}
 	};
 
-	[[nodiscard]] const BuiltinType* findBuiltin(StringView name_) {
-		const auto it = std::ranges::find(builtinTypes, name_, &BuiltinType::name);
-		return it != builtinTypes.end() ? &*it : nullptr;
+	/**
+	 * `<k><bits>[vec<2-4> | mat<2-4>[x<2-4>]]` with k = f (16/32/64), s or u (8/16/32/64); a matrix is
+	 * `matCxR` (C columns, R rows, `matC` is square). Matrices are float only: GLSL has no integer matrices.
+	 * `intMatrix_` is set for the integer matrix spellings, which are recognized but not types.
+	 */
+	[[nodiscard]] Opt<BuiltinType> findBuiltin(StringView name_, ptr<bool> intMatrix_ = nullptr) {
+		if (const auto it = std::ranges::find(fixedTypes, name_, &BuiltinType::name); it != fixedTypes.end()) {
+			return *it;
+		}
+		if (name_.size() < 2uz) {
+			return None;
+		}
+		const auto scalar = name_[0] == 'f' ? ir::ScalarKind::eFloat : name_[0] == 's' ? ir::ScalarKind::eInt :
+			name_[0] == 'u' ? ir::ScalarKind::eUInt : ir::ScalarKind::eBool;
+		auto rest = name_.substr(1uz);
+		u16 bits = 0u;
+		while (not rest.empty() && rest.front() >= '0' && rest.front() <= '9' && bits < 100u) {
+			bits = static_cast<u16>(bits * 10u + static_cast<u16>(rest.front() - '0'));
+			rest.remove_prefix(1uz);
+		}
+		const auto knownBits = scalar == ir::ScalarKind::eFloat ? (bits == 16u || bits == 32u || bits == 64u) :
+			(bits == 8u || bits == 16u || bits == 32u || bits == 64u);
+		if (scalar == ir::ScalarKind::eBool || not knownBits) {
+			return None;
+		}
+		const auto digit = [](char c_) { return c_ >= '2' && c_ <= '4' ? static_cast<u16>(c_ - '0') : u16 { 0u }; };
+		if (rest.empty()) {
+			return BuiltinType { name_, ir::TypeKind::eScalar, scalar, bits, 1u, 1u };
+		}
+		if (rest.starts_with("vec") && rest.size() == 4uz && digit(rest[3]) != 0u) {
+			return BuiltinType { name_, ir::TypeKind::eVector, scalar, bits, digit(rest[3]), 1u };
+		}
+		const auto square = rest.size() == 4uz;
+		const auto rect = rest.size() == 6uz && rest[4] == 'x' && digit(rest[5]) != 0u;
+		if (rest.starts_with("mat") && (square || rect) && digit(rest[3]) != 0u) {
+			if (scalar != ir::ScalarKind::eFloat) {
+				if (intMatrix_ != nullptr) {
+					*intMatrix_ = true;
+				}
+				return None;
+			}
+			return BuiltinType { name_, ir::TypeKind::eMatrix, scalar, bits, digit(rest[3]), square ? digit(rest[3]) : digit(rest[5]) };
+		}
+		return None;
+	}
+
+	[[nodiscard]] bool isIntMatrixName(StringView name_) {
+		auto intMatrix = false;
+		std::ignore = findBuiltin(name_, &intMatrix);
+		return intMatrix;
 	}
 
 	using ir::builtinFunctions;
@@ -691,12 +730,12 @@ namespace {
 		}
 
 		[[nodiscard]] bool isTypeName(StringView name_) const {
-			return findBuiltin(name_) != nullptr || findStruct(name_).has_value();
+			return findBuiltin(name_).has_value() || isIntMatrixName(name_) || findStruct(name_).has_value();
 		}
 
 		/* a struct or builtin type by name, interned */
 		[[nodiscard]] Opt<ir::TypeRef> namedType(StringView name_) {
-			if (const auto* builtin = findBuiltin(name_); builtin != nullptr) {
+			if (const auto builtin = findBuiltin(name_); builtin.has_value()) {
 				ir::TypeDesc desc {};
 				desc.kind = builtin->kind;
 				desc.scalar = builtin->scalar;
@@ -718,7 +757,12 @@ namespace {
 
 			Opt<ir::TypeRef> result = namedType(name.text);
 			if (not result.has_value()) {
-				error(name, "Unknown type '" + String(name.text) + "'.");
+				error(
+					name,
+					isIntMatrixName(name.text) ?
+					"GLSL has no integer matrix type '" + String(name.text) + "'; matrices are float only." :
+					"Unknown type '" + String(name.text) + "'."
+				);
 				return None;
 			}
 
@@ -850,7 +894,7 @@ namespace {
 			}
 			accept(TokenKind::eSemicolon);
 
-			if (findBuiltin(name.text) != nullptr || findStruct(name.text).has_value()) {
+			if (findBuiltin(name.text).has_value() || isIntMatrixName(name.text) || findStruct(name.text).has_value()) {
 				return error(name, "Type '" + String(name.text) + "' is already declared.");
 			}
 			ir::TypeDesc desc {};

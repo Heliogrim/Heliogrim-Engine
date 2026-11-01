@@ -40,8 +40,8 @@ namespace {
 		}
 	}
 
-	/* shortcut: the legacy vector types are u8vec2-4 and f32vec3-4 only, anything else maps to an unknown object;
-	 * extend `ScalarType` when a vertex input needs another format */
+	/* every numeric vector (int/uint/float of each width) and float matrix has its own legacy type; bool vectors
+	 * have none and map to an unknown object */
 	[[nodiscard]] Type legacyType(cref<Vector<ir::TypeDesc>> types_, ir::TypeRef ref_) {
 		if (ref_.index >= types_.size()) {
 			return objectType;
@@ -52,14 +52,19 @@ namespace {
 				return legacyScalar(desc);
 			}
 			case ir::TypeKind::eVector: {
-				if (desc.scalar == ir::ScalarKind::eUInt && desc.bits == 8uL) {
-					return desc.n == 2uL ? scalarType(ScalarType::eU8Vec2) : desc.n == 3uL ? scalarType(ScalarType::eU8Vec3) :
-						desc.n == 4uL ? scalarType(ScalarType::eU8Vec4) : objectType;
+				const auto element = legacyScalar(desc);
+				if (desc.scalar == ir::ScalarKind::eBool || element.category != TypeCategory::eScalar || desc.n < 2uL || desc.n > 4uL) {
+					return objectType;
 				}
-				if (desc.scalar == ir::ScalarKind::eFloat && desc.bits == 32uL) {
-					return desc.n == 3uL ? scalarType(ScalarType::eF32Vec3) : desc.n == 4uL ? scalarType(ScalarType::eF32Vec4) : objectType;
+				return scalarType(vectorOf(element.scalarType, static_cast<u8>(desc.n)));
+			}
+			case ir::TypeKind::eMatrix: {
+				const auto element = legacyScalar(desc);
+				if (desc.scalar != ir::ScalarKind::eFloat || element.category != TypeCategory::eScalar) {
+					return objectType;
 				}
-				return objectType;
+				const auto matrix = matrixOf(element.scalarType, static_cast<u8>(desc.n), static_cast<u8>(desc.m));
+				return matrix == element.scalarType ? objectType : scalarType(matrix);
 			}
 			case ir::TypeKind::eTexture: {
 				using enum TextureType;
@@ -70,7 +75,6 @@ namespace {
 			case ir::TypeKind::eSampler: {
 				return Type { .category = TypeCategory::eObject, .objectType = ObjectType::eSampler };
 			}
-			case ir::TypeKind::eMatrix:
 			case ir::TypeKind::eArray:
 			case ir::TypeKind::eStruct:
 			default: {
