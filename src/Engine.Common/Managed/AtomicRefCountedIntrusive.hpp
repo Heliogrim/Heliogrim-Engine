@@ -365,6 +365,56 @@ namespace hg {
 
 	public:
 		/**
+		 * One counted reference with the pointer cached: reads are plain loads, immune to a concurrent reassign of the
+		 *	source slot. The held word is a private copy (pin protocol on creation) that is never pinned itself, so its
+		 *	T stays 0 and destruction is a plain fold. Only built in place, never copied, moved or heap allocated.
+		 */
+		template <typename Access_> requires std::is_convertible_v<ptr<Ty_>, ptr<Access_>>
+		class View final {
+		public:
+			explicit View(cref<this_type> source_) noexcept :
+				_hold(source_),
+				_obj(_hold.get()) {}
+
+			View(const View&) = delete;
+
+			View(View&&) = delete;
+
+			View& operator=(const View&) = delete;
+
+			View& operator=(View&&) = delete;
+
+			~View() = default;
+
+			static void* operator new(std::size_t) = delete;
+
+			static void* operator new[](std::size_t) = delete;
+
+			static void operator delete(void*) = delete;
+
+			static void operator delete[](void*) = delete;
+
+		private:
+			this_type _hold;
+			ptr<Access_> _obj;
+
+		public:
+			[[nodiscard]] ptr<Access_> get() const noexcept {
+				return _obj;
+			}
+
+			[[nodiscard]] ptr<Access_> operator->() const noexcept {
+				return _obj;
+			}
+		};
+
+		template <typename Access_ = Ty_> requires std::is_convertible_v<ptr<Ty_>, ptr<Access_>>
+		[[nodiscard]] View<Access_> view() const noexcept {
+			return View<Access_> { *this };
+		}
+
+	public:
+		/**
 		 * Pedantic Support
 		 */
 		template <IsAtomicIntrusiveRefCountable ToType_> requires ArciConvertibleTo<Ty_, ToType_>
