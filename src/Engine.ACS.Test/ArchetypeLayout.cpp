@@ -41,7 +41,9 @@ namespace Acs {
 		ASSERT_EQ(SingleInfo::entry_count, 1u);
 
 		const auto& root = SingleInfo::entries[0];
-		EXPECT_EQ(root.offset, 0u);
+		// 8 bytes of front padding for the 16-aligned actor; the root ends at the actor.
+		EXPECT_EQ(root.offset, 8u);
+		EXPECT_EQ(root.offset + root.size, SingleInfo::actor_offset);
 		EXPECT_EQ(root.size, sizeof(A));
 		EXPECT_EQ(root.parentIndex, noParent);
 		EXPECT_EQ(root.arrayIndex, 0u);
@@ -135,7 +137,7 @@ namespace Acs {
 	}
 
 	TEST(Layout, Bitmap) {
-		// Fits in one word (8 bytes at 8-byte min align); nested block spans 120 bytes at 1-byte min align.
+		// Fits in one word (16 bytes at 8-byte min align); nested block spans 128 bytes at 1-byte min align.
 		EXPECT_TRUE((std::same_as<SingleInfo::bitmap_type, u64>));
 		EXPECT_TRUE((std::same_as<NestedInfo::bitmap_type, std::array<u64, 2>>));
 
@@ -150,7 +152,9 @@ namespace Acs {
 		}
 		EXPECT_EQ(setCount, NestedInfo::entry_count);
 
-		EXPECT_TRUE(SingleInfo::is_start(0u));
+		// Front padding is no component start.
+		EXPECT_FALSE(SingleInfo::is_start(0u));
+		EXPECT_TRUE(SingleInfo::is_start(8u));
 	}
 
 	TEST(Layout, ActorAfterBlock) {

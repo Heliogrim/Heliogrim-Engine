@@ -205,11 +205,10 @@ namespace hg::engine::acs {
 		[[nodiscard]] consteval bool offsets_stable() {
 			using before = layout_builder<Before_, ActorAlign_>;
 			using after = layout_builder<After_, ActorAlign_>;
-			constexpr u32 beforeActor = align_up(before::block_size, ActorAlign_);
-			constexpr u32 afterActor = align_up(after::block_size, ActorAlign_);
-
+			// The actor follows the block end directly (alignment padding goes in front), so the distance is block-only.
 			for (u32 entry = 0u; entry < before::entries; ++entry) {
-				if (beforeActor - before::table.entries[entry].offset != afterActor - after::table.entries[entry].offset) {
+				if (before::block_size - before::table.entries[entry].offset
+					!= after::block_size - after::table.entries[entry].offset) {
 					return false;
 				}
 			}
@@ -505,8 +504,12 @@ namespace hg::engine::acs {
 				return offset;
 			}();
 
-			// Whole actor alignment steps keep the base block's distance to the actor.
-			static constexpr u32 base_offset = align_up(prefix_size, std::max(Base_::block_align, ActorAlign_));
+		public:
+			static constexpr u32 block_align = std::max({ Base_::block_align, slot_metrics<typename Attach_::slot>::element_align... });
+
+		private:
+			// The base block ends the block, which stays a block_align multiple (base_offset is one of the base align).
+			static constexpr u32 base_offset = align_up(prefix_size + Base_::block_size, block_align) - Base_::block_size;
 
 		public:
 			static constexpr u32 entries = Base_::entries + (
@@ -519,7 +522,6 @@ namespace hg::engine::acs {
 				(attach_path_length<Base_, Attach_>() + 1u + slot_metrics<typename Attach_::slot>::max_path)...
 			});
 			static constexpr u32 block_size = base_offset + Base_::block_size;
-			static constexpr u32 block_align = std::max({ Base_::block_align, slot_metrics<typename Attach_::slot>::element_align... });
 			static constexpr u32 min_align = std::min({ Base_::min_align, slot_metrics<typename Attach_::slot>::min_align... });
 
 			// Base entries keep their indices; attachments follow.
@@ -561,7 +563,9 @@ namespace hg::engine::acs {
 	/**
 	 * Compile-time slot table of an archetype layout followed by the actor.
 	 *
-	 * Slot memory: components in [0, block_size), the actor at actor_offset.
+	 * Slot memory: [lead padding][components][actor]; the actor directly follows the components at
+	 * actor_offset == block_size. Padding for a stricter actor alignment goes in front, so an entry's distance
+	 * to the actor (`actor_relative`) depends on the layout only, never on the actor type.
 	 * For `Extend` layouts the base entries keep their indices and their `actor_relative` distance.
 	 */
 	template <typename Layout_, typename Actor_>
@@ -575,18 +579,26 @@ namespace hg::engine::acs {
 		);
 
 	public:
-		static constexpr u32 block_size = builder::block_size;
+		// Front padding; a block_align multiple, since the component extent is one and the actor align is a power of two.
+		static constexpr u32 lead = detail::align_up(builder::block_size, static_cast<u32>(alignof(Actor_)))
+			- builder::block_size;
+
+		static constexpr u32 block_size = lead + builder::block_size;
 		static constexpr u32 block_align = builder::block_align;
 		static constexpr u32 min_align = builder::min_align;
 
-		static constexpr u32 actor_offset = detail::align_up(block_size, static_cast<u32>(alignof(Actor_)));
+		static constexpr u32 actor_offset = block_size;
 		static constexpr u32 slot_stride = detail::align_up(
 			actor_offset + static_cast<u32>(sizeof(Actor_)),
 			std::max(block_align, static_cast<u32>(alignof(Actor_)))
 		);
 
 		static constexpr u32 entry_count = builder::entries;
-		static constexpr std::array<SlotEntry, entry_count> entries = table.entries;
+		static constexpr std::array<SlotEntry, entry_count> entries = [] {
+			auto result = table.entries;
+			for (auto& entry : result) { entry.offset += lead; }
+			return result;
+		}();
 
 		// Distance from an entry to the actor; stable for base entries under Extend.
 		[[nodiscard]] static constexpr u32 actor_relative(const u32 index_) noexcept {
@@ -599,7 +611,7 @@ namespace hg::engine::acs {
 
 		static constexpr bitmap_type startBitmap = [] {
 			bitmap_type bitmap {};
-			for (const auto& entry : table.entries) {
+			for (const auto& entry : entries) {
 				const u32 bit = entry.offset / min_align;
 				if constexpr (bitmap_words == 1u) {
 					bitmap |= 1uLL << bit;
