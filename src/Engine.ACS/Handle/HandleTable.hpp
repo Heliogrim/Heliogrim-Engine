@@ -16,6 +16,7 @@ namespace hg::engine::acs {
 
 	/**
 	 * Paged handle table of one space; not thread-safe.
+	 * Generations of a reused space id start above every generation issued for that id before, so stale handles never alias.
 	 */
 	class HandleTable {
 	public:
@@ -62,6 +63,7 @@ namespace hg::engine::acs {
 		[[nodiscard]] Entry* find(Handle handle_) const noexcept;
 
 		SpaceId _space;
+		u32 _seed;
 		u32 _size = 0u;
 		std::vector<std::unique_ptr<Page>> _pages;
 		std::vector<u32> _free;

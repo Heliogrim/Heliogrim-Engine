@@ -1,5 +1,6 @@
 #include "HandleTable.hpp"
 
+#include <atomic>
 #include <bitset>
 #include <mutex>
 
@@ -9,6 +10,14 @@ using namespace hg::engine::acs;
 namespace {
 	std::mutex registryMtx {};
 	std::bitset<1uLL << Handle::spaceBits> registry {};
+
+	// Highest generation ever handed out per space id; a reused id seeds new tables above it.
+	std::atomic<u32> highWater[1uLL << Handle::spaceBits] {};
+
+	void raiseHighWater(const SpaceId space_, const u32 generation_) noexcept {
+		auto seen = highWater[space_].load(std::memory_order_relaxed);
+		while (seen < generation_ && not highWater[space_].compare_exchange_weak(seen, generation_, std::memory_order_relaxed)) {}
+	}
 }
 
 SpaceId engine::acs::acquireSpace() {
@@ -31,7 +40,8 @@ void engine::acs::releaseSpace(const SpaceId space_) {
 }
 
 HandleTable::HandleTable(const SpaceId space_) :
-	_space(space_) {}
+	_space(space_),
+	_seed(highWater[space_ & Handle::spaceMask].load(std::memory_order_relaxed) + 1u) {}
 
 SpaceId HandleTable::space() const noexcept {
 	return _space;
@@ -54,13 +64,18 @@ Handle HandleTable::acquire(void* const address_) {
 	} else {
 		index = _size++;
 		if (index / pageSize >= _pages.size()) {
-			_pages.push_back(std::make_unique<Page>());
+			auto page = std::make_unique<Page>();
+			for (auto& seeded : page->entries) {
+				seeded.generation = _seed;
+			}
+			_pages.push_back(std::move(page));
 		}
 	}
 
 	auto& entry = _pages[index / pageSize]->entries[index % pageSize];
 	entry.address = address_;
 	entry.live = true;
+	raiseHighWater(_space, entry.generation);
 	return Handle::make(_space, entry.generation, index);
 }
 
