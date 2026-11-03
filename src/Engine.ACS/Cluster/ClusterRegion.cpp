@@ -4,6 +4,7 @@
 #include <bit>
 #include <new>
 #include <stdexcept>
+#include <Engine.Asserts/Asserts.hpp>
 
 using namespace hg;
 using namespace hg::engine::acs;
@@ -11,6 +12,10 @@ using namespace hg::engine::acs;
 namespace {
 	constexpr u32 pageBytes = 4096u;
 	constexpr u32 cacheLine = 64u;
+
+	[[nodiscard]] uintptr_t address(const std::byte* ptr_) noexcept {
+		return reinterpret_cast<uintptr_t>(ptr_);
+	}
 
 	[[nodiscard]] std::align_val_t chunkAlign(const ClusterDesc& desc_) noexcept {
 		return std::align_val_t { std::max(desc_.align, cacheLine) };
@@ -44,11 +49,13 @@ ClusterRegion::Slot ClusterRegion::claim(const Chunk* const exclude_) {
 	}
 
 	if (chunk == nullptr) {
+		// shortcut: no engine page allocator, so empty chunks go back to the heap and not to the OS; switch once the engine has a page allocator
 		auto* const base = static_cast<std::byte*>(::operator new(_chunkSize, chunkAlign(_desc)));
 		const auto words = (_capacity + 63u) / 64u;
 		chunk = _chunks.emplace_back(
 			std::make_unique<Chunk>(Chunk { .base = base, .liveMask = std::vector<u64>(words, 0uLL), .handles = std::vector<Handle>(_capacity) })
 		).get();
+		_byBase.insert(std::ranges::upper_bound(_byBase, address(base), std::less<> {}, chunkAddress), chunk);
 	}
 
 	// The lowest free bit is below capacity because the chunk is not full.
@@ -63,16 +70,26 @@ ClusterRegion::Slot ClusterRegion::claim(const Chunk* const exclude_) {
 	}
 }
 
+uintptr_t ClusterRegion::chunkAddress(const Chunk* const chunk_) noexcept {
+	return address(chunk_->base);
+}
+
 ClusterRegion::Slot ClusterRegion::find(const std::byte* const slot_) const {
-	for (const auto& chunk : _chunks) {
-		if (slot_ >= chunk->base && slot_ < chunk->base + static_cast<size_t>(_capacity) * _desc.stride) {
-			return Slot { chunk.get(), static_cast<u32>(static_cast<size_t>(slot_ - chunk->base) / _desc.stride) };
-		}
+	const auto ptr = address(slot_);
+	const auto next = std::ranges::upper_bound(_byBase, ptr, std::less<> {}, chunkAddress);
+	if (next == _byBase.begin()) {
+		return Slot { nullptr, 0u };
 	}
-	return Slot { nullptr, 0u };
+	auto* const chunk = *std::prev(next);
+	const auto offset = ptr - chunkAddress(chunk);
+	if (offset >= static_cast<uintptr_t>(_capacity) * _desc.stride) {
+		return Slot { nullptr, 0u };
+	}
+	return Slot { chunk, static_cast<u32>(offset / _desc.stride) };
 }
 
 void ClusterRegion::returnChunk(const Chunk* const chunk_) {
+	_byBase.erase(std::ranges::find(_byBase, chunk_));
 	const auto it = std::ranges::find(_chunks, chunk_, &std::unique_ptr<Chunk>::get);
 	::operator delete(chunk_->base, _chunkSize, chunkAlign(_desc));
 	_chunks.erase(it);
@@ -87,6 +104,7 @@ std::byte* ClusterRegion::allocate(Handle& out_) {
 }
 
 std::span<std::byte*> ClusterRegion::allocate(const size_t count_, const std::span<Handle> out_) {
+	::hg::assertrt(out_.size() >= count_);
 	_batch.resize(count_);
 	for (size_t i = 0uLL; i < count_; ++i) {
 		_batch[i] = allocate(out_[i]);
@@ -134,6 +152,7 @@ void ClusterRegion::releaseAll() {
 		::operator delete(chunk->base, _chunkSize, chunkAlign(_desc));
 	}
 	_chunks.clear();
+	_byBase.clear();
 }
 
 RelocationTable ClusterRegion::debugMoveChunk(const u32 chunk_, const FnRef<void(std::byte*, std::byte*)> relocate_) {

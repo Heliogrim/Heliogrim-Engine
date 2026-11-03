@@ -43,6 +43,10 @@ namespace Acs {
 		EXPECT_EQ(table.resolve(handle), slot + testDesc.actorOffset);
 		EXPECT_EQ(region.stats(0u).live, 1u);
 
+		// Pointers outside every chunk are ignored.
+		region.free(slot + region.stats(0u).capacity * testDesc.stride);
+		EXPECT_EQ(region.stats(0u).live, 1u);
+
 		region.free(slot);
 		EXPECT_EQ(table.resolve(handle), nullptr);
 		EXPECT_EQ(chunkCount(region), 0u);
@@ -75,6 +79,26 @@ namespace Acs {
 		const auto capacity = region.stats(0u).capacity;
 		EXPECT_EQ(chunkCount(region), (n + capacity - 1u) / capacity);
 		std::printf("[ cluster  ] stride %u: %u slots per chunk, %u chunks for %zu slots\n", testDesc.stride, capacity, chunkCount(region), n);
+	}
+
+	TEST(ClusterDeathTest, BatchAllocateRejectsShortOutput) {
+		const SpaceGuard space {};
+		HandleTable table { space.id };
+		ClusterRegion region { testDesc, table };
+
+		std::vector<Handle> handles(3u);
+		EXPECT_DEATH(region.allocate(4u, handles), "");
+	}
+
+	TEST(Cluster, RelocationLookupBounds) {
+		alignas(16) std::byte from[2u * testDesc.stride] {};
+		alignas(16) std::byte to[testDesc.stride] {};
+		const RelocationTable relocation { testDesc.stride, { RelocationEntry { from, to } } };
+
+		EXPECT_EQ(relocation.lookup(from), to);
+		EXPECT_EQ(relocation.lookup(from + testDesc.stride - 1u), to + testDesc.stride - 1u);
+		// One past the slot is not part of it.
+		EXPECT_EQ(relocation.lookup(from + testDesc.stride), nullptr);
 	}
 
 	TEST(Cluster, ChunkReturnedWhenEmpty) {
@@ -194,6 +218,9 @@ namespace Acs {
 				EXPECT_EQ(relocation.lookup(old), nullptr);
 			}
 		}
+
+		// One past the source chunk was never a slot.
+		EXPECT_EQ(relocation.lookup(chunk0 + capacity * testDesc.stride), nullptr);
 
 		// The emptied source chunk was returned.
 		EXPECT_EQ(chunkCount(region), 1u);

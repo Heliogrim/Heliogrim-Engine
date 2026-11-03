@@ -38,7 +38,8 @@ namespace hg::engine::acs {
 				return nullptr;
 			}
 			const auto& entry = *std::prev(next);
-			const auto offset = static_cast<size_t>(ptr_ - entry.from);
+			// Integer difference: `ptr_` may point into an allocation unrelated to `entry.from`.
+			const auto offset = reinterpret_cast<uintptr_t>(ptr_) - reinterpret_cast<uintptr_t>(entry.from);
 			return offset < _stride ? entry.to + offset : nullptr;
 		}
 

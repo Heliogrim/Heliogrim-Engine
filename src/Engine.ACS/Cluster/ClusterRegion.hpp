@@ -36,6 +36,7 @@ namespace hg::engine::acs {
 	/**
 	 * Slots of one archetype in chunks of `chunkBytes`; handles bind to the actor of each slot.
 	 * The region hands out raw memory only, constructing and destroying slot contents is the caller's job. Not thread-safe.
+	 * The HandleTable must outlive the region.
 	 */
 	class ClusterRegion {
 	public:
@@ -53,12 +54,14 @@ namespace hg::engine::acs {
 		[[nodiscard]] std::byte* allocate(Handle& out_);
 
 		/**
+		 * Panics if `out_` holds fewer than `count_` handles.
 		 * @returns the slots, valid until the next batch allocate
 		 */
 		std::span<std::byte*> allocate(size_t count_, std::span<Handle> out_);
 
 		void free(std::byte* slot_);
 
+		/** `count_` is the chunk capacity; `liveMask_` marks the live slots. */
 		void forEachChunk(FnRef<void(std::byte* base_, u32 count_, u32 stride_, const u64* liveMask_)> fn_) const;
 
 		[[nodiscard]] ChunkStats stats(u32 chunk_) const;
@@ -89,6 +92,8 @@ namespace hg::engine::acs {
 
 		[[nodiscard]] Slot claim(const Chunk* exclude_);
 
+		[[nodiscard]] static uintptr_t chunkAddress(const Chunk* chunk_) noexcept;
+
 		[[nodiscard]] Slot find(const std::byte* slot_) const;
 
 		void returnChunk(const Chunk* chunk_);
@@ -98,6 +103,8 @@ namespace hg::engine::acs {
 		u32 _chunkSize;
 		u32 _capacity;
 		std::vector<std::unique_ptr<Chunk>> _chunks;
+		// chunks sorted by base address, for free()
+		std::vector<Chunk*> _byBase;
 		std::vector<std::byte*> _batch;
 	};
 }
