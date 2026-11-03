@@ -117,6 +117,23 @@ namespace Acs {
 		EXPECT_EQ(NestedInfo::entries[hub].parentIndex, wheels);
 	}
 
+	TEST(Layout, PathDisambiguation) {
+		using Info = LayoutInfo<
+			ActorLayout<Slot<"r", A, Children<Slot<"p", B, Children<Slot<"x", C>>>, Slot<"q", B, Children<Slot<"x", C>>>>>>,
+			TestActor
+		>;
+
+		constexpr auto p = Info::index_of<"p">();
+		constexpr auto q = Info::index_of<"q">();
+		constexpr auto px = Info::index_of<"p/x">();
+		constexpr auto qx = Info::index_of<"q/x">();
+
+		EXPECT_NE(px, qx);
+		EXPECT_EQ(Info::entries[px].parentIndex, p);
+		EXPECT_EQ(Info::entries[qx].parentIndex, q);
+		EXPECT_EQ((std::set<u32> { px, qx }), (std::set<u32> { Info::index_of<"r/p/x">(), Info::index_of<"r/q/x">() }));
+	}
+
 	TEST(Layout, Bitmap) {
 		// Fits in one word (8 bytes at 8-byte min align); nested block spans 120 bytes at 1-byte min align.
 		EXPECT_TRUE((std::same_as<SingleInfo::bitmap_type, u64>));
