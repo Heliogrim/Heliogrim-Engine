@@ -98,4 +98,57 @@ namespace hg::engine::acs {
 
 		using root = RootSlot_;
 	};
+
+	/**
+	 * Extend item: slots added as children of the base slot at Path_, one set per element of an array slot.
+	 */
+	template <fixed_string Path_, typename... Slots_>
+	struct At {
+		static_assert(Path_.size() > 0uLL, "At needs a slot path; top-level additions go directly into Extend.");
+		static_assert((is_slot<Slots_>::value && ...), "At takes Slot<...> additions.");
+	};
+
+	/**
+	 * Extend item: replaces the component type of the base slot at Path_.
+	 *
+	 * @tparam NewType_ Must derive from the replaced type. A different size or alignment that moves any base
+	 *	slot needs an `Overridable` base.
+	 */
+	template <fixed_string Path_, typename NewType_>
+	struct Override {
+		static constexpr auto path = Path_;
+		using type = NewType_;
+	};
+
+	namespace detail {
+		template <typename>
+		struct is_extend_item : std::false_type {};
+
+		template <fixed_string Name_, typename Type_, typename... Options_>
+		struct is_extend_item<Slot<Name_, Type_, Options_...>> : std::true_type {};
+
+		template <fixed_string Path_, typename... Slots_>
+		struct is_extend_item<At<Path_, Slots_...>> : std::true_type {};
+
+		template <fixed_string Path_, typename NewType_>
+		struct is_extend_item<Override<Path_, NewType_>> : std::true_type {};
+	}
+
+	/**
+	 * Derived layout: base layout plus added slots and overrides.
+	 *
+	 * Memory is `[added slots][base block]`, so every base slot keeps its distance to the actor.
+	 *
+	 * @tparam BaseLayout_ `ActorLayout`, `Extend` or `Overridable<...>` of either.
+	 * @tparam Items_ `Slot` (child of the root), `At<"path", Slot...>` or `Override<"path", Type>`.
+	 */
+	template <typename BaseLayout_, typename... Items_>
+	struct Extend {
+		static_assert(
+			(detail::is_extend_item<Items_>::value && ...),
+			"Extend takes Slot<...>, At<\"path\", Slot...> or Override<\"path\", Type> items."
+		);
+
+		using base = BaseLayout_;
+	};
 }
