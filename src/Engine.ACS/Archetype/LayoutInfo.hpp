@@ -40,10 +40,8 @@ namespace hg::engine::acs {
 			std::array<u32, Slots_> slotFirstEntry {};
 			std::array<const void*, Slots_> slotType {};
 
-			// Non-empty when two slots share one full path; consumed by a static_assert in LayoutInfo.
-			static constexpr std::string_view duplicate_prefix = "Duplicate layout slot path: ";
-			std::array<char, duplicate_prefix.size() + MaxPath_> duplicateMessage {};
-			u32 duplicateMessageLength = 0u;
+			// True when two slots share one full path; consumed by a static_assert in LayoutInfo.
+			bool duplicatePath = false;
 		};
 
 		template <typename Slot_, typename Children_ = typename Slot_::children>
@@ -150,17 +148,14 @@ namespace hg::engine::acs {
 			}
 
 			// Sibling slots with one name share a full path; the path lookup could never tell them apart.
-			for (u32 slot = 0u; slot < metrics::slots && table.duplicateMessageLength == 0u; ++slot) {
+			for (u32 slot = 0u; slot < metrics::slots && !table.duplicatePath; ++slot) {
 				const std::string_view path { table.paths[slot].data(), table.pathLength[slot] };
 				for (u32 prev = 0u; prev < slot; ++prev) {
 					if (path != std::string_view { table.paths[prev].data(), table.pathLength[prev] }) {
 						continue;
 					}
 
-					u32 length = 0u;
-					for (const char c : table.duplicate_prefix) { table.duplicateMessage[length++] = c; }
-					for (const char c : path) { table.duplicateMessage[length++] = c; }
-					table.duplicateMessageLength = length;
+					table.duplicatePath = true;
 					break;
 				}
 			}
@@ -186,8 +181,8 @@ namespace hg::engine::acs {
 		using root_metrics = detail::slot_metrics<typename Layout_::root>;
 		static constexpr auto table = detail::build_layout_table<typename Layout_::root>();
 		static_assert(
-			table.duplicateMessageLength == 0u,
-			std::string_view { table.duplicateMessage.data(), table.duplicateMessageLength }
+			!table.duplicatePath,
+			"Duplicate layout slot path: a path name appears twice under the same parent; rename one slot."
 		);
 
 	public:
