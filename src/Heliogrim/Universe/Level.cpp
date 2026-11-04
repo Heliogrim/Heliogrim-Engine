@@ -37,9 +37,7 @@ cref<decltype(Level::_internal)> Level::unwrap() const noexcept {
 }
 
 ptr<Actor> Level::addActor(mref<VolatileActor<>> actor_) {
-	auto* const ref = actor_.get();
-	_internal->addActor(::hg::move(actor_));
-	return ref;
+	return _internal->addActor(::hg::move(actor_));
 }
 
 Opt<VolatileActor<>> Level::removeActor(ptr<Actor> actor_) {

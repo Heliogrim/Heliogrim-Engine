@@ -8,6 +8,7 @@
 #include <Engine.Async/Await/Promise.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Universe.hpp>
+#include <Engine.Level/Level.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Reflect/IsType.hpp>
 #include <Engine.Scene/SceneBase.hpp>
@@ -100,13 +101,21 @@ ComponentRange Actor::getComponents() const noexcept {
 	);
 }
 
-void Actor::addComponent(mref<VolatileComponent<HierarchyComponent>> component_, Opt<ref<const AddComponentOptions>> options_) {
+ptr<const ActorClass> Actor::getArchetype() const noexcept {
+	return _archetype;
+}
 
-	// shortcut: sealed archetypes reject runtime components until de-optimization exists (spec 11).
+void Actor::rejectSealed(const std::string_view message_) const {
+	// shortcut: sealed archetypes reject runtime component changes until de-optimization exists (spec 11).
 	if (_archetype != nullptr) [[unlikely]] {
-		::hg::panic_details::PanicErrorSink {} << std::string_view { "Actor::addComponent: sealed archetype actor rejects runtime components" };
+		::hg::panic_details::PanicErrorSink {} << std::string_view { message_ };
 		::hg::panic();
 	}
+}
+
+void Actor::addComponent(mref<VolatileComponent<HierarchyComponent>> component_, Opt<ref<const AddComponentOptions>> options_) {
+
+	rejectSealed("Actor::addComponent: sealed archetype actor rejects runtime components");
 
 	if (not options_.is_null() && options_->autoRegister && not _universe.is_null()) {
 		scheduleComponentRegister(component_.get());
@@ -206,6 +215,12 @@ void VolatileActor<Actor>::destroy(ptr<Actor> obj_) {
 	::hg::assertd(obj_->getUniverse().is_null());
 	auto registry = engine::Engine::getEngine()->getActors()->getRegistry();
 
+	// Archetype components live in the actor's slot; they go with it, never to the per-type pools.
+	if (obj_->getArchetype() != nullptr) {
+		registry->destroyArchetypeActor(obj_);
+		return;
+	}
+
 	for (auto* const component : obj_->getComponents()) {
 		::hg::assertd(component->getTypeId().data);
 		registry->releaseActorComponent(VolatileComponent<> { component });
@@ -213,8 +228,53 @@ void VolatileActor<Actor>::destroy(ptr<Actor> obj_) {
 	registry->destroyActor(std::move(obj_));
 }
 
+namespace {
+	[[nodiscard]] ref<engine::acs::Registry> actorRegistry() noexcept {
+		return *engine::Engine::getEngine()->getActors()->getRegistry();
+	}
+
+	[[nodiscard]] std::vector<ptr<Actor>> spawnInto(
+		const ptr<const ActorClass> class_,
+		const size_t count_,
+		const FnRef<void(ref<Actor>, size_t)> init_,
+		cref<Universe> universe_,
+		Opt<ref<engine::core::Level>> level_
+	) {
+		const auto root = universe_.unwrap()->getRootLevel();
+		auto* const level = level_.has_value() ? std::addressof(level_.value()) : root.get();
+
+		auto actors = actorRegistry().createActors(class_, count_, level->space());
+		for (size_t index = 0uLL; index < actors.size(); ++index) {
+			init_(*actors[index], index);
+		}
+		// Already in the level's space, so addActor mounts without relocating.
+		for (auto& actor : actors) {
+			actor = level->addActor(VolatileActor<> { ::hg::move(actor) });
+		}
+		return actors;
+	}
+
+	[[nodiscard]] ptr<Actor> hydrated(const ptr<const ActorClass> class_, cref<SerializedActor> serialized_, ptr<Actor> actor_) {
+		// shortcut: ArchetypeOps::hydrate is a nullptr placeholder until Task 10 types and fills it.
+		::hg::assertrt(class_->ops().hydrate != nullptr);
+		class_->ops().hydrate(
+			reinterpret_cast<std::byte*>(actor_) - class_->desc().actorOffset,
+			std::addressof(serialized_)
+		);
+		return actor_;
+	}
+}
+
 bool hg::RegisterActorClass(ptr<const ActorClass> class_) noexcept {
-	::hg::todo_panic();
+	return actorRegistry().registerActorClass(class_);
+}
+
+Opt<ref<const ActorClass>> hg::FindActorClass(const type_id typeId_) noexcept {
+	return actorRegistry().findActorClass(typeId_);
+}
+
+VolatileActor<> hg::CreateActor(ptr<const ActorClass> class_) noexcept {
+	return VolatileActor<> { ::hg::move(actorRegistry().createActors(class_, 1uLL, engine::acs::detachedSpace).front()) };
 }
 
 VolatileActor<> hg::CreateActor() {
@@ -245,7 +305,18 @@ Future<VolatileActor<>> hg::CreateActor(
 	ptr<const ActorClass> class_,
 	cref<SerializedActor> serialized_
 ) noexcept {
-	::hg::todo_panic();
+	concurrent::promise<VolatileActor<>> p {
+		[class_, &serialized_]() -> VolatileActor<> {
+			auto actor = CreateActor(class_);
+			static_cast<void>(hydrated(class_, serialized_, actor.get()));
+			return actor;
+		}
+	};
+
+	auto f { p.get() };
+	p();
+
+	return Future { ::hg::move(f) };
 }
 
 Future<ptr<Actor>> hg::CloneActorInto(cref<Actor> actor_, cref<Universe> universe_) noexcept {
@@ -253,7 +324,16 @@ Future<ptr<Actor>> hg::CloneActorInto(cref<Actor> actor_, cref<Universe> univers
 }
 
 Future<ptr<Actor>> hg::SpawnActor(ptr<const ActorClass> class_, cref<Universe> universe_) noexcept {
-	::hg::todo_panic();
+	concurrent::promise<ptr<Actor>> p {
+		[class_, &universe_]() -> ptr<Actor> {
+			return spawnInto(class_, 1uLL, [](ref<Actor>, size_t) {}, universe_, None).front();
+		}
+	};
+
+	auto f { p.get() };
+	p();
+
+	return Future { ::hg::move(f) };
 }
 
 Future<ptr<Actor>> hg::SpawnActor(
@@ -261,7 +341,37 @@ Future<ptr<Actor>> hg::SpawnActor(
 	cref<SerializedActor> serialized_,
 	cref<Universe> universe_
 ) noexcept {
-	::hg::todo_panic();
+	concurrent::promise<ptr<Actor>> p {
+		[class_, &serialized_, &universe_]() -> ptr<Actor> {
+			auto created = CreateActor(class_, serialized_).get();
+			const auto level = universe_.unwrap()->getRootLevel();
+			return level->addActor(::hg::move(created));
+		}
+	};
+
+	auto f { p.get() };
+	p();
+
+	return Future { std::move(f) };
+}
+
+Future<std::vector<ptr<Actor>>> hg::SpawnActors(
+	ptr<const ActorClass> class_,
+	size_t count_,
+	FnRef<void(ref<Actor>, size_t)> init_,
+	cref<Universe> universe_,
+	Opt<ref<engine::core::Level>> level_
+) {
+	concurrent::promise<std::vector<ptr<Actor>>> p {
+		[=, &universe_]() -> std::vector<ptr<Actor>> {
+			return spawnInto(class_, count_, init_, universe_, level_);
+		}
+	};
+
+	auto f { p.get() };
+	p();
+
+	return Future { ::hg::move(f) };
 }
 
 bool hg::Destroy(mref<VolatileActor<>> actor_) noexcept {

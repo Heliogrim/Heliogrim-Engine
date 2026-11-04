@@ -1,5 +1,7 @@
 #include "Level.hpp"
 
+#include <Engine.ACS/ActorModule.hpp>
+#include <Engine.ACS/Registry.hpp>
 #include <Engine.Assets/AssetGuid.hpp>
 #include <Engine.Assets.Type/Universe/LevelAsset.hpp>
 #include <Engine.Common/Math/Coordinates.hpp>
@@ -15,6 +17,14 @@ constexpr static auto level_root_bounding = ::hg::math::Bounding { math::vec3_ze
 
 /**/
 
+namespace {
+	[[nodiscard]] ref<engine::acs::Registry> actorRegistry() noexcept {
+		return *engine::Engine::getEngine()->getActors()->getRegistry();
+	}
+}
+
+/**/
+
 Level::Level(mref<LevelGuid> guid_) noexcept :
 	_guid(::hg::move(guid_)) {}
 
@@ -26,6 +36,11 @@ Level::~Level() {
 		VolatileActor<>::destroy(actor);
 	}
 	_actors.clear();
+
+	// Frees the level's chunks and handle pages as a whole.
+	if (_space != acs::detachedSpace) {
+		actorRegistry().releaseSpace(_space);
+	}
 }
 
 bool Level::isRootLike() const noexcept {
@@ -57,16 +72,28 @@ void Level::setOwnerUniverse(mref<Opt<ref<engine::core::Universe>>> owner_) {
 	_universe = ::hg::move(owner_);
 }
 
-void Level::addActor(mref<VolatileActor<>> actor_) {
+engine::acs::SpaceId Level::space() {
+	if (_space == acs::detachedSpace) {
+		_space = actorRegistry().acquireSpace();
+	}
+	return _space;
+}
 
-	auto& actor = *actor_;
-	_actors.emplace(actor_.release());
-	actor.setOwnerLevel(Some(*this));
+ptr<Actor> Level::addActor(mref<VolatileActor<>> actor_) {
+
+	auto* actor = actor_.release();
+	if (actor->getArchetype() != nullptr) {
+		actor = actorRegistry().moveActor(actor, space());
+	}
+
+	_actors.emplace(actor);
+	actor->setOwnerLevel(Some(*this));
 
 	if (not _universe.is_null()) [[likely]] {
 		const auto ctx = _universe->getScene()->registerContext();
-		actor.registerComponents(*_universe, *ctx.get());
+		actor->registerComponents(*_universe, *ctx.get());
 	}
+	return actor;
 }
 
 std::span<const owner_ptr<Actor>> Level::getActors() const noexcept {
@@ -85,7 +112,12 @@ Opt<VolatileActor<>> Level::removeActor(const nmpt<Actor> actor_) {
 
 	_actors.erase(actor_.get());
 	actor_->setOwnerLevel(None);
-	return SomeVal<VolatileActor<>>(actor_.get());
+
+	auto* actor = actor_.get();
+	if (actor->getArchetype() != nullptr) {
+		actor = actorRegistry().moveActor(actor, acs::detachedSpace);
+	}
+	return SomeVal<VolatileActor<>>(::hg::move(actor));
 }
 
 Arci<Level> engine::core::make_root_like_level() {

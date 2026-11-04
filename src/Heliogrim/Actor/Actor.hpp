@@ -1,5 +1,9 @@
 #pragma once
 
+#include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.Common/Move.hpp>
+#include <Engine.Common/Forward.hpp>
+#include <vector>
 #include <Engine.ACS/ActorModule.hpp>
 #include <Engine.ACS/Traits.hpp>
 #include <Engine.Common/Optional.hpp>
@@ -7,6 +11,7 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/CompactArray.hpp>
 #include <Engine.Common/Collection/Set.hpp>
+#include <Engine.Common/Functional/FnRef.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Reflect/IsType.hpp>
 #include <Engine.Reflect/Inherit/InheritBase.hpp>
@@ -14,6 +19,7 @@
 
 #include "ActorGuid.hpp"
 #include "ActorLabel.hpp"
+#include "Archetype/ActorClass.hpp"
 #include "ComponentRange.hpp"
 #include "../ActorInitializer.hpp"
 #include "../Async/Future.hpp"
@@ -135,6 +141,16 @@ namespace hg {
 		ptr<const ActorClass> _archetype;
 		CompactSet<ptr<HierarchyComponent>> _components;
 
+	public:
+		/**
+		 * @returns the archetype class of a sealed actor, or nullptr for a dynamic actor
+		 */
+		[[nodiscard]] ptr<const ActorClass> getArchetype() const noexcept;
+
+	private:
+		// Panics with `message_` on a sealed archetype actor; its component set is fixed (spec 11).
+		void rejectSealed(std::string_view message_) const;
+
 	private:
 		template <typename Fnc_>
 		void eachComponent(Fnc_&& fnc_) const {
@@ -236,6 +252,8 @@ namespace hg {
 		template <IsConstructibleComponent Component_>
 		[[nodiscard]] AutoArray<VolatileComponent<HierarchyComponent>> removeComponents(ref<Component_> component_) {
 
+			rejectSealed("Actor::removeComponents: sealed archetype actor rejects runtime component removal");
+
 			auto result = AutoArray<VolatileComponent<HierarchyComponent>> {
 				VolatileComponent<Component_> { std::addressof(component_) }
 			};
@@ -296,6 +314,8 @@ namespace hg {
 
 		template <IsConstructibleComponent Component_>
 		void destroyComponent(ref<Component_> component_) {
+			rejectSealed("Actor::destroyComponent: sealed archetype actor rejects runtime component removal");
+
 			auto* const address = std::addressof(component_);
 			_components.erase(address);
 
@@ -400,6 +420,17 @@ namespace hg {
 	}
 
 	/**
+	 * Runtime lookup of a registered archetype class (deserialization, editor, data-driven spawn)
+	 *
+	 * @details Template paths (`CreateActor<T>()`) reach `T::actorClass()` directly and need no registration.
+	 *
+	 * @param typeId_ The type id of the actor type.
+	 *
+	 * @returns The class registered for the type id, otherwise None
+	 */
+	[[nodiscard]] extern Opt<ref<const ActorClass>> FindActorClass(_In_ type_id typeId_) noexcept;
+
+	/**
 	 * Create a new default actor object
 	 *
 	 * @details This will not populate the scene like calling a actor spawn function.
@@ -437,10 +468,25 @@ namespace hg {
 	 */
 	[[nodiscard]] extern VolatileActor<> CreateActor(_In_ ptr<const MetaClass> class_) noexcept;
 
+	/**
+	 * Creates a new archetype actor in the detached space
+	 *
+	 * @details This will not populate the scene; `addActor` relocates it into the level's region.
+	 *
+	 * @param class_ The archetype class to instantiate.
+	 *
+	 * @returns A pointer to the newly created actor
+	 */
+	[[nodiscard]] extern VolatileActor<> CreateActor(_In_ ptr<const ActorClass> class_) noexcept;
+
 	template <class ActorType_>
 	[[nodiscard]] VolatileActor<ActorType_> CreateActor() {
-		// TODO: Secure cast
-		return static_cast<VolatileActor<ActorType_>>(CreateActor(ActorType_::getStaticMetaClass()));
+		if constexpr (requires { { ActorType_::actorClass() } -> std::same_as<const TypedActorClass<ActorType_>&>; }) {
+			return VolatileActor<ActorType_> { CreateActor(static_cast<ptr<const ActorClass>>(&ActorType_::actorClass())) };
+		} else {
+			// TODO: Secure cast
+			return static_cast<VolatileActor<ActorType_>>(CreateActor(ActorType_::getStaticMetaClass()));
+		}
 	}
 
 	/**
@@ -514,6 +560,28 @@ namespace hg {
 		_In_ cref<SerializedActor> serialized_,
 		_In_ cref<Universe> universe_
 	) noexcept;
+
+	/**
+	 * Creates `count_` actors of an archetype class directly in a level's region and mounts them
+	 *
+	 * @details Allocation and construction are batched; components register one by one with the scene
+	 *  of a level that is committed to a universe. Actor and component constructors and `init_` must not throw.
+	 *
+	 * @param class_ The archetype class to instantiate.
+	 * @param count_ The number of actors to create.
+	 * @param init_ Called once per actor with its batch index, before the actor is mounted.
+	 * @param universe_ The universe whose root level is used when no level is given.
+	 * @param level_ The level where to place the actors.
+	 *
+	 * @returns A future, containing the mounted actors in batch order
+	 */
+	[[nodiscard]] extern Future<std::vector<ptr<Actor>>> SpawnActors(
+		_In_ ptr<const ActorClass> class_,
+		_In_ size_t count_,
+		_In_ FnRef<void(ref<Actor>, size_t)> init_,
+		_In_ cref<Universe> universe_,
+		_In_ Opt<ref<engine::core::Level>> level_ = None
+	);
 
 	/**
 	 * Destroys the provided volatile actor instance
