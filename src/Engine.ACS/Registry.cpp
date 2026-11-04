@@ -125,6 +125,14 @@ ref<Housekeeping> Registry::housekeeping() noexcept {
 	return _housekeeping;
 }
 
+ref<RelocationBarrier> Registry::relocation() noexcept {
+	return _relocation;
+}
+
+MoveRequest Registry::debugMoveRequest(const SpaceId space_, const ptr<const ActorClass> class_, const u32 chunk_) {
+	return MoveRequest { &regionFor(space_, class_), chunk_, class_->ops().relocate, class_->desc().stride };
+}
+
 /* Archetype Clusters */
 
 namespace {

@@ -19,6 +19,7 @@
 #include "Traits.hpp"
 #include "Archetype/LayoutInfo.hpp"
 #include "Cluster/ClusterRegion.hpp"
+#include "Cluster/RelocationBarrier.hpp"
 #include "Cluster/Span.hpp"
 #include "Handle/HandleTable.hpp"
 
@@ -353,5 +354,16 @@ namespace hg::engine::acs {
 
 	public:
 		[[nodiscard]] ref<Housekeeping> housekeeping() noexcept;
+
+	private:
+		RelocationBarrier _relocation;
+
+	public:
+		[[nodiscard]] ref<RelocationBarrier> relocation() noexcept;
+
+		/**
+		 * Builds a request that empties `chunk_` of the class's region in `space_`; for tests and compaction drivers.
+		 */
+		[[nodiscard]] MoveRequest debugMoveRequest(SpaceId space_, ptr<const ActorClass> class_, u32 chunk_);
 	};
 }

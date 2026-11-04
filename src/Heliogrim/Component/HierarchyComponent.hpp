@@ -6,6 +6,10 @@
 #include "LogicComponent.hpp"
 #include "../Math/BuildIn.hpp"
 
+namespace hg::engine::acs {
+	class RelocationTable;
+}
+
 namespace hg {
 	/**
 	 * Forward Declaration
@@ -58,6 +62,11 @@ namespace hg {
 		[[nodiscard]] ptr<Actor> getRootActor() const noexcept;
 
 		[[nodiscard]] ptr<HierarchyComponent> getRootComponent() const noexcept;
+
+		/**
+		 * Remaps owner and parent through `table_`; pointers that did not move stay as they are.
+		 */
+		void relocate(ref<const engine::acs::RelocationTable> table_) noexcept;
 
 		[[nodiscard]] ptr<HierarchyComponent> getParentComponent() const noexcept;
 
