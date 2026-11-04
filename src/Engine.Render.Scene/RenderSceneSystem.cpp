@@ -1,5 +1,6 @@
 #include "RenderSceneSystem.hpp"
 
+#include <Engine.ACS/Cluster/RelocationTable.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.GFX/Graphics.hpp>
 #include <Engine.GFX/Pool/SceneResourcePool.hpp>
@@ -111,5 +112,11 @@ void RenderSceneSystem::clear() {
 				model_.markAsDeleted();
 			}
 		);
+	}
+}
+
+void RenderSceneSystem::relocate(ref<const acs::RelocationTable> table_) {
+	for (auto& storage : _storage.storageMap.values()) {
+		storage.second->forEachMut([&table_](ref<RenderSceneSystemModel> model_) { model_.relocate(table_); });
 	}
 }

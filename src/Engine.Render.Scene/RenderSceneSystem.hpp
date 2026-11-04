@@ -1,5 +1,4 @@
 #pragma once
-#include <Engine.Common/Collection/DenseMap.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.Scene/SceneSystem.hpp>
 
@@ -50,5 +49,7 @@ namespace hg::engine::render {
 		void remove(const ptr<const MetaClass> meta_, std::span<const ptr<const SceneComponent>> batch_) override;
 
 		void clear() override;
+
+		void relocate(ref<const acs::RelocationTable> table_) override;
 	};
 }

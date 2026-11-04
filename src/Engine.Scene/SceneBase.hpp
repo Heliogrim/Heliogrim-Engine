@@ -1,4 +1,5 @@
 #pragma once
+#include <Engine.Common/Functional/FnRef.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.Reflect/Inherit/InheritBase.hpp>
 
@@ -73,5 +74,7 @@ namespace hg::engine::scene {
 				static_cast<ptr<SystemType_>>(getSceneSystem(SystemType_::getStaticMetaClass()).get())
 			};
 		}
+
+		void forEachSystem(FnRef<void(ref<SceneSystemBase>)> fn_) const;
 	};
 }

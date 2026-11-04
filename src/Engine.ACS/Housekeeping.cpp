@@ -34,12 +34,12 @@ void Housekeeping::storePendingRelease(mref<VolatileComponent<>> component_) {
 	);
 }
 
-void Housekeeping::commit() {
+bool Housekeeping::commit() {
 	for (auto&& [type, batch] : _pendingReleases) {
 		for (auto&& component : batch) {
 			_registry.removeActorComponent(component->guid(), type);
 		}
 	}
 	_pendingReleases.clear();
-	_registry.reclaimSlots();
+	return _registry.reclaimSlots();
 }

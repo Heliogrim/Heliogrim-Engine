@@ -1,10 +1,10 @@
 #pragma once
 
-#include <Engine.Common/Collection/Vector.hpp>
 #include <vector>
-#include <Engine.Common/Make.hpp>
 #include <Engine.Common/Optional.hpp>
+#include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/DenseMap.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Functional/FnRef.hpp>
 #include <Engine.Reflect/TypeId.hpp>
 #include <Engine.Reflect/Inherit/Concept.hpp>
@@ -20,6 +20,7 @@
 #include "Traits.hpp"
 #include "Archetype/LayoutInfo.hpp"
 #include "Cluster/ClusterRegion.hpp"
+#include "Cluster/RelocationBarrier.hpp"
 #include "Cluster/Span.hpp"
 #include "Handle/HandleTable.hpp"
 
@@ -239,8 +240,6 @@ namespace hg::engine::acs {
 		#pragma region Archetype Clusters
 
 	private:
-		DenseMap<type_id, ptr<const ActorClass>> _classes;
-
 		struct Space {
 			explicit Space(SpaceId id_) :
 				handles(id_) {}
@@ -250,16 +249,18 @@ namespace hg::engine::acs {
 			DenseMap<ptr<const ActorClass>, uptr<ClusterRegion>> regions;
 		};
 
-		// Spaces with regions, including detachedSpace once used.
-		DenseMap<SpaceId, uptr<Space>> _spaces;
-
 		struct Location {
 			ptr<Space> space;
 			ptr<ClusterRegion> region;
-			std::byte* slot;
+			ptr<std::byte> slot;
 			Handle handle;
 		};
 
+		DenseMap<type_id, ptr<const ActorClass>> _classes;
+		// Spaces with regions, including detachedSpace once used.
+		DenseMap<SpaceId, uptr<Space>> _spaces;
+
+	private:
 		[[nodiscard]] Location locate(cref<Actor> actor_) const;
 
 		[[nodiscard]] ref<ClusterRegion> regionFor(SpaceId space_, ptr<const ActorClass> class_);
@@ -283,6 +284,7 @@ namespace hg::engine::acs {
 
 		[[nodiscard]] Opt<ref<const ActorClass>> findActorClass(type_id typeId_) const noexcept;
 
+	public:
 		/**
 		 * Acquires a space for cluster regions (one per level).
 		 */
@@ -295,11 +297,13 @@ namespace hg::engine::acs {
 
 		[[nodiscard]] bool hasSpace(SpaceId space_) const noexcept;
 
+	public:
 		/**
 		 * @returns the region of `class_` in `space_`, or nullptr if none exists
 		 */
 		[[nodiscard]] ptr<const ClusterRegion> region(SpaceId space_, ptr<const ActorClass> class_) const noexcept;
 
+	public:
 		/**
 		 * Allocates and constructs `count_` archetype actors in `space_`, one construct call per contiguous run.
 		 */
@@ -358,5 +362,24 @@ namespace hg::engine::acs {
 
 	public:
 		[[nodiscard]] ref<Housekeeping> housekeeping() noexcept;
+
+	private:
+		RelocationBarrier _relocation;
+
+	public:
+		[[nodiscard]] ref<RelocationBarrier> relocation() noexcept;
+
+		/**
+		 * Builds a request that empties `chunk_` of the class's region in `space_`; for tests and compaction drivers.
+		 *
+		 * @returns None if the class has no region in `space_`; never creates one
+		 */
+		[[nodiscard]] Opt<MoveRequest> debugMoveRequest(SpaceId space_, ptr<const ActorClass> class_, u32 chunk_);
+
+		/**
+		 * Housekeeping point: commit, apply the barrier, hand each table to `relocate_` in order, then bump the
+		 * epoch if any slot was reclaimed or moved.
+		 */
+		void housekeep(FnRef<void(ref<const RelocationTable>)> relocate_);
 	};
 }
