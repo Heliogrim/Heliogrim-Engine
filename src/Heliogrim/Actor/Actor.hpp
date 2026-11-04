@@ -564,7 +564,7 @@ namespace hg {
 	 * Creates `count_` actors of an archetype class directly in a level's region and mounts them
 	 *
 	 * @details Allocation and construction are batched; components register one by one with the scene
-	 *  of a level that is committed to a universe.
+	 *  of a level that is committed to a universe. Actor and component constructors and `init_` must not throw.
 	 *
 	 * @param class_ The archetype class to instantiate.
 	 * @param count_ The number of actors to create.

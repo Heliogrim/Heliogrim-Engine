@@ -323,7 +323,7 @@ namespace HeliogrimApi {
 		EXPECT_EQ(_context->adds, count * entries);
 	}
 
-	TEST_F(Spawn, DetachedThenAdd) {
+	TEST_F(Spawn, DetachedThenAddPreMountHandleStale) {
 		auto created = CreateActor<Body>();
 		auto* const before = static_cast<ptr<Actor>>(created.get());
 		const auto detached = registry().handleOf(*before);
@@ -336,7 +336,8 @@ namespace HeliogrimApi {
 		const auto mounted = registry().handleOf(*after);
 		EXPECT_EQ(mounted.space(), rootLevel().space());
 		EXPECT_EQ(registry().resolve(mounted), after);
-		// Handles belong to their space: the detached one goes stale, never aliasing another actor.
+		// Intended: a handle taken before addActor goes stale on mount (handles belong to their space) and never aliases
+		// another actor; the new handle from the level space resolves.
 		EXPECT_EQ(registry().resolve(detached), nullptr);
 
 		auto& body = as<Body>(after);
@@ -345,6 +346,30 @@ namespace HeliogrimApi {
 		EXPECT_EQ(body.getRootComponent().address(), &body.get<"body">());
 		EXPECT_TRUE(_context->live.contains(&body.get<"camera">()));
 		EXPECT_EQ(rootLevel().getActors().size(), 1uLL);
+	}
+
+	TEST_F(Spawn, DetachedThenAddKeepsLabel) {
+		// Longer than any small-string buffer, so the text lives on the heap and must be re-seated, not byte-copied.
+		const String text = "a detached archetype actor with a heap-allocated label";
+
+		auto created = CreateActor<Body>();
+		created->setLabel(ActorLabel { text });
+		auto* const before = static_cast<ptr<Actor>>(created.get());
+
+		auto* const after = _universe.addActor(VolatileActor<> { std::move(created) });
+		ASSERT_NE(after, before);
+
+		const auto& moved = after->label().text;
+		EXPECT_EQ(moved, text);
+		String copy {};
+		for (const char c : moved) {
+			copy.push_back(c);
+		}
+		EXPECT_EQ(copy, text);
+
+		// The moved label stays usable: write through it and rewrite it.
+		after->setLabel(ActorLabel { moved + "!" });
+		EXPECT_EQ(after->label().text, text + "!");
 	}
 
 	TEST_F(Spawn, DestroyReusesSlotStaleRefNone) {

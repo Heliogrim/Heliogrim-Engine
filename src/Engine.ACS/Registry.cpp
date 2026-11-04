@@ -256,8 +256,8 @@ ptr<Actor> Registry::moveActor(const ptr<Actor> actor_, const SpaceId space_) {
 	auto* const slot = target.allocate(handle);
 
 	actorClass->ops().relocate(from.slot, slot, 1u, actorClass->desc().stride);
-	// The source slot holds no live object any more, so it is free for reuse right away.
-	from.region->free(from.slot);
+	// Retired, not freed: a pointer to the old address taken this frame must not alias a new occupant.
+	from.region->retire(from.slot);
 	return actorAt(slot, *actorClass);
 }
 

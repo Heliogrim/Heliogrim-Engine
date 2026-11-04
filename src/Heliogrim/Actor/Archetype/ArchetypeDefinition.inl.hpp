@@ -155,7 +155,7 @@ namespace hg {
 		using tables = archetype_detail::class_tables<Type_>;
 		using entry_sequence = std::make_integer_sequence<u32, info::entry_count>;
 
-		static_assert(relocatable_v<Type_>, "Archetype actors are relocated by byte copy; Actor has no move constructor.");
+		static_assert(relocatable_v<Type_>, "Archetype actors are relocated by byte copy, with Actor's label and component set re-seated by move.");
 
 		ArchetypeOps ops {};
 
@@ -214,8 +214,10 @@ namespace hg {
 					std::memcpy(dst + info::actor_offset, src + info::actor_offset, sizeof(Type_));
 				}
 
-				// Links are fixed by the layout, so they are re-stamped instead of offset-adjusted.
 				auto* const actor = actorAt(dst);
+				reseat(*actor, *actorAt(src));
+
+				// Links are fixed by the layout, so they are re-stamped instead of offset-adjusted.
 				[&]<u32... Entries_>(std::integer_sequence<u32, Entries_...>) {
 					(rebind(
 						*archetype_detail::component_at<info, Entries_>(dst),

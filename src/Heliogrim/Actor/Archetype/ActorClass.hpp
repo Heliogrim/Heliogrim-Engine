@@ -153,5 +153,9 @@ namespace hg {
 		static void rebind(ref<HierarchyComponent> component_, ptr<Actor> owner_, ptr<HierarchyComponent> parent_) noexcept;
 
 		static void rebindRoot(ref<Actor> actor_, ref<HierarchyComponent> root_) noexcept;
+
+		// Move-constructs the actor members that are not byte-safe (label, component set) over their byte copies in `dst_`
+		// and destroys them in `src_`.
+		static void reseat(ref<Actor> dst_, ref<Actor> src_) noexcept;
 	};
 }
