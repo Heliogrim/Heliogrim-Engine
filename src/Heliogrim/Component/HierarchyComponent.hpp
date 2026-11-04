@@ -6,11 +6,16 @@
 #include "LogicComponent.hpp"
 #include "../Math/BuildIn.hpp"
 
+namespace hg::engine::acs {
+	class RelocationTable;
+}
+
 namespace hg {
 	/**
 	 * Forward Declaration
 	 */
 	class Actor;
+	class ActorClass;
 
 	// Question: Do we still need the HierarchyComponent do be available, or should we fuse it with the SceneComponent?
 	class HierarchyComponent :
@@ -18,6 +23,9 @@ namespace hg {
 	public:
 		ACCESS_LAYOUT
 		ACCESS_STRUCTURE
+
+		// Re-stamps owner and parent after an archetype slot moved.
+		friend class ::hg::ActorClass;
 
 	public:
 		using this_type = HierarchyComponent;
@@ -54,6 +62,11 @@ namespace hg {
 		[[nodiscard]] ptr<Actor> getRootActor() const noexcept;
 
 		[[nodiscard]] ptr<HierarchyComponent> getRootComponent() const noexcept;
+
+		/**
+		 * Remaps owner and parent through `table_`; pointers that did not move stay as they are.
+		 */
+		void relocate(ref<const engine::acs::RelocationTable> table_) noexcept;
 
 		[[nodiscard]] ptr<HierarchyComponent> getParentComponent() const noexcept;
 

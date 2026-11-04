@@ -41,4 +41,5 @@ void Housekeeping::commit() {
 		}
 	}
 	_pendingReleases.clear();
+	_registry.reclaimSlots();
 }

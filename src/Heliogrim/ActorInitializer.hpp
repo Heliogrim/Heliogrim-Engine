@@ -16,6 +16,7 @@ namespace hg {
 	 * Forward Declaration
 	 */
 	class Actor;
+	class ActorClass;
 	class HierarchyComponent;
 	class Session;
 
@@ -57,6 +58,8 @@ namespace hg {
 	public:
 		ActorGuid _guid = invalid_actor_guid;
 		ActorInitializationFlags _flags;
+		// Set by `ArchetypeOps::construct`: the actor sits in an archetype slot, its components already exist.
+		ptr<const ActorClass> _archetype = nullptr;
 
 	public:
 		[[nodiscard]] constexpr bool shouldAutoInitialize() const noexcept {

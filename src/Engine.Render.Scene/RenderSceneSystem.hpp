@@ -50,5 +50,7 @@ namespace hg::engine::render {
 		void remove(const ptr<const MetaClass> meta_, std::span<const ptr<const SceneComponent>> batch_) override;
 
 		void clear() override;
+
+		void relocate(ref<const acs::RelocationTable> table_) override;
 	};
 }

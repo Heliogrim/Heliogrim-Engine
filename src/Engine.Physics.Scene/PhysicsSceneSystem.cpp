@@ -1,5 +1,6 @@
 #include "PhysicsSceneSystem.hpp"
 
+#include <Engine.ACS/Cluster/RelocationTable.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.PFX/jolt.inc.hpp>
 #include <Engine.PFX/Physics.hpp>
@@ -124,6 +125,12 @@ void PhysicsSceneSystem::clear() {
 }
 
 /**/
+
+void PhysicsSceneSystem::relocate(ref<const acs::RelocationTable> table_) {
+	for (auto& storage : _registry.getTypeStorages()) {
+		storage->forEachMut([&table_](ref<PhysicsSceneSystemModel> model_) { model_.relocate(table_); });
+	}
+}
 
 #include <Engine.Physics.Scene.Model/BoxShapeCollisionModel.hpp>
 #include <Engine.Physics.Scene.Model/SphereShapeCollisionModel.hpp>

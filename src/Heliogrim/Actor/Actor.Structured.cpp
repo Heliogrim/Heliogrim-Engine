@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <Engine.Common/Move.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Module/Modules.hpp>
@@ -37,13 +38,14 @@ void access::Structure<Actor>::serialize(
 	auto components = record_.insertRecordSlot(Symbols::Components).intoSeq();
 
 	u64 idx = 0;
-	for (const auto& component : self_.getComponents()) {
+	const auto actorComponents = self_.getComponents();
+	for (auto* const component : actorComponents) {
 
 		s8 recordParentIdx = -1;
 		if (component->getParentComponent() != nullptr) {
-			auto parentIt = self_.getComponents().find(component->getParentComponent());
-			::hg::assertd(parentIt != self_.getComponents().end());
-			recordParentIdx = static_cast<s8>(std::distance(self_.getComponents().begin(), parentIt));
+			const auto parentIt = std::ranges::find(actorComponents, component->getParentComponent());
+			::hg::assertd(parentIt != actorComponents.end());
+			recordParentIdx = static_cast<s8>(std::distance(actorComponents.begin(), parentIt));
 		}
 
 		/**/

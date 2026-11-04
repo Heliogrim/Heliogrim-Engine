@@ -2,6 +2,7 @@
 
 #include <array>
 #include <Engine.Common/Move.hpp>
+#include <Engine.ACS/Cluster/RelocationTable.hpp>
 #include <Engine.Common/Collection/InlineAutoArray.hpp>
 
 using namespace hg;
@@ -229,4 +230,13 @@ math::Rotator HierarchyComponent::getUniverseRotator() const noexcept {
 
 math::fmat4 HierarchyComponent::getUniverseMatrix() const noexcept {
 	return asMatrix(accumulate(this));
+}
+
+void HierarchyComponent::relocate(ref<const engine::acs::RelocationTable> table_) noexcept {
+	if (auto* const owner = table_.lookup(reinterpret_cast<const std::byte*>(_owner.cached)); owner != nullptr) {
+		_owner.cached = reinterpret_cast<ptr<Actor>>(owner);
+	}
+	if (auto* const parent = table_.lookup(reinterpret_cast<const std::byte*>(_parent)); parent != nullptr) {
+		_parent = reinterpret_cast<ptr<HierarchyComponent>>(parent);
+	}
 }
