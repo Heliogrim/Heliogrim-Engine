@@ -14,7 +14,7 @@ namespace hg::engine::render {
 	namespace {
 		struct hash_helper {
 			[[nodiscard]] size_t operator()(const ptr<const MetaClass> obj_) const noexcept {
-				constexpr static auto ih = ankerl::unordered_dense::v4_5_0::hash<uintptr_t> {};
+				constexpr static auto ih = ankerl::unordered_dense::v5_3_3::hash<uintptr_t> {};
 				return ih(reinterpret_cast<uintptr_t>(obj_));
 			}
 		};
