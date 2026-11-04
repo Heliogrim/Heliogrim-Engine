@@ -14,7 +14,7 @@ namespace hg::engine::scene {
 	namespace {
 		struct hash_helper {
 			[[nodiscard]] size_t operator()(const ptr<const MetaClass> obj_) const noexcept {
-				constexpr auto ih = ankerl::unordered_dense::v4_5_0::hash<std::uintptr_t> {};
+				constexpr auto ih = ankerl::unordered_dense::v5_3_3::hash<std::uintptr_t> {};
 				return ih(reinterpret_cast<std::uintptr_t>(obj_));
 			}
 		};
