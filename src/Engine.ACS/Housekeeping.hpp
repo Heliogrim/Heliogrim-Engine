@@ -35,6 +35,9 @@ namespace hg::engine::acs {
 		void storePendingRelease(mref<VolatileComponent<>> component_);
 
 	public:
-		void commit();
+		/**
+		 * @returns true if any retired slot became claimable
+		 */
+		bool commit();
 	};
 }

@@ -8,6 +8,10 @@ namespace hg {
 	class SceneComponent;
 }
 
+namespace hg::engine::acs {
+	class RelocationTable;
+}
+
 namespace hg::engine::physics {
 	class PhysicsSceneSystem;
 }
@@ -40,6 +44,8 @@ namespace hg::engine::physics {
 
 	public:
 		[[nodiscard]] const nmpt<SceneComponent> owner() const noexcept;
+
+		void relocate(ref<const acs::RelocationTable> table_) noexcept;
 
 	public:
 		virtual void create(ref<PhysicsSceneSystem> system_) = 0;
