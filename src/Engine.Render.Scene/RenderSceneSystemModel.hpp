@@ -7,6 +7,10 @@ namespace hg {
 	class SceneComponent;
 }
 
+namespace hg::engine::acs {
+	class RelocationTable;
+}
+
 namespace hg::engine::render {
 	class RenderSceneSystem;
 }
@@ -39,6 +43,8 @@ namespace hg::engine::render {
 
 	public:
 		[[nodiscard]] const nmpt<SceneComponent> owner() const noexcept;
+
+		void relocate(ref<const acs::RelocationTable> table_) noexcept;
 
 	public:
 		virtual void create(const ptr<RenderSceneSystem> system_/* const ptr<SceneComponent> origin_ */) = 0;
