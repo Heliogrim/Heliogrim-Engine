@@ -1,12 +1,13 @@
 #include "Registry.hpp"
 
-#include <Engine.Common/Wrapper.hpp>
-
 #include <algorithm>
-#include <bit>
 #include <new>
 #include <Engine.ACS/Handle/Epoch.hpp>
 #include <Engine.Asserts/Asserts.hpp>
+#include <Engine.Common/Make.hpp>
+#include <Engine.Common/Move.hpp>
+#include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 #include <Heliogrim/ActorInitializer.hpp>
 #include <Heliogrim/Actor/Actor.hpp>
 #include <Heliogrim/Actor/Archetype/ActorClass.hpp>
@@ -127,6 +128,33 @@ void Registry::hackActorInit(cref<ActorInitializer> initializer_, cref<ActorGuid
 
 ref<Housekeeping> Registry::housekeeping() noexcept {
 	return _housekeeping;
+}
+
+ref<RelocationBarrier> Registry::relocation() noexcept {
+	return _relocation;
+}
+
+Opt<MoveRequest> Registry::debugMoveRequest(const SpaceId space_, const ptr<const ActorClass> class_, const u32 chunk_) {
+	// region() is the non-creating lookup; the region itself is owned by this non-const registry.
+	auto* const found = const_cast<ptr<ClusterRegion>>(region(space_, class_));
+	if (found == nullptr) {
+		return None;
+	}
+
+	return SomeVal<MoveRequest>(found, chunk_, class_->ops().relocate, class_->desc().stride);
+}
+
+void Registry::housekeep(const FnRef<void(ref<const RelocationTable>)> relocate_) {
+	// Moves first: reclaim() frees empty chunks and shifts the chunk indices queued requests refer to.
+	const auto tables = _relocation.apply();
+	const bool reclaimed = _housekeeping.commit();
+	for (const auto& table : tables) {
+		relocate_(table);
+	}
+	// Reclaimed slots may be reused and moved ones were rebound in place; either way cached refs must re-resolve.
+	if (reclaimed || not tables.empty()) {
+		Epoch::bump();
+	}
 }
 
 /* Archetype Clusters */
