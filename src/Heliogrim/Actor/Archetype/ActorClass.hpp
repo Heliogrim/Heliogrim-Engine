@@ -21,6 +21,15 @@ namespace hg {
 	class TypedActorClass;
 
 	/**
+	 * Component type of one layout entry, for type-erased queries (spans per type).
+	 * `tag` identifies the exact type; `meta` is the nearest meta class (the type's own, or its closest base's).
+	 */
+	struct ArchetypeEntryType {
+		const void* tag;
+		ptr<const MetaClass> meta;
+	};
+
+	/**
 	 * Everything captured from an archetype's templates: meta class, slot layout and operations.
 	 *
 	 * Exists only for registered archetypes; built once per archetype by `make<T>()` as a `constinit` static
@@ -41,7 +50,8 @@ namespace hg {
 			const ptr<const u64> startBitmap_,
 			const u32 minAlign_,
 			const std::span<const engine::acs::SlotEntry> entries_,
-			const std::span<const std::string_view> slotPaths_
+			const std::span<const std::string_view> slotPaths_,
+			const std::span<const ArchetypeEntryType> entryTypes_
 		) noexcept :
 			_metaClass(metaClass_),
 			_layoutHash(layoutHash_),
@@ -51,7 +61,8 @@ namespace hg {
 			_startBitmap(startBitmap_),
 			_minAlign(minAlign_),
 			_entries(entries_),
-			_slotPaths(slotPaths_) {}
+			_slotPaths(slotPaths_),
+			_entryTypes(entryTypes_) {}
 
 	public:
 		ActorClass(const ActorClass&) = delete;
@@ -77,6 +88,7 @@ namespace hg {
 		u32 _minAlign;
 		std::span<const engine::acs::SlotEntry> _entries;
 		std::span<const std::string_view> _slotPaths;
+		std::span<const ArchetypeEntryType> _entryTypes;
 
 	public:
 		[[nodiscard]] constexpr ptr<const MetaClass> metaClass() const noexcept {
@@ -126,6 +138,13 @@ namespace hg {
 		 */
 		[[nodiscard]] constexpr std::span<const std::string_view> slotPaths() const noexcept {
 			return _slotPaths;
+		}
+
+		/**
+		 * Component type of each entry, in entry order.
+		 */
+		[[nodiscard]] constexpr std::span<const ArchetypeEntryType> entryTypes() const noexcept {
+			return _entryTypes;
 		}
 
 	private:

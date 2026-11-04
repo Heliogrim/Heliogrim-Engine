@@ -61,6 +61,22 @@ namespace hg::engine::acs {
 
 		void free(std::byte* slot_);
 
+		/**
+		 * Frees a slot and its handle now, but keeps the slot from reuse until `reclaim`.
+		 * Raw pointers taken earlier in the frame phase never alias a new occupant.
+		 */
+		void retire(std::byte* slot_);
+
+		/**
+		 * Makes retired slots claimable again and returns chunks left empty.
+		 */
+		void reclaim();
+
+		/**
+		 * @returns the handle of a live slot, or an invalid handle if the slot is not live in this region
+		 */
+		[[nodiscard]] Handle handleOf(const std::byte* slot_) const;
+
 		/** `count_` is the chunk capacity; `liveMask_` marks the live slots. */
 		void forEachChunk(FnRef<void(std::byte* base_, u32 count_, u32 stride_, const u64* liveMask_)> fn_) const;
 
@@ -81,7 +97,9 @@ namespace hg::engine::acs {
 			std::byte* base;
 			u32 live = 0u;
 			u32 churn = 0u;
+			u32 retired = 0u;
 			std::vector<u64> liveMask;
+			std::vector<u64> retiredMask;
 			std::vector<Handle> handles;
 		};
 

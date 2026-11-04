@@ -128,6 +128,16 @@ namespace hg::archetype_detail {
 			return result;
 		}();
 
+		static constexpr std::array<ArchetypeEntryType, info::entry_count> types =
+			[]<u32... Entries_>(std::integer_sequence<u32, Entries_...>) {
+				return std::array<ArchetypeEntryType, info::entry_count> {
+					ArchetypeEntryType {
+						&engine::acs::detail::type_tag<slot_type_t<info, info::slot_of(Entries_)>>,
+						static_cast<ptr<const MetaClass>>(slot_type_t<info, info::slot_of(Entries_)>::getStaticMetaClass())
+					}...
+				};
+			}(std::make_integer_sequence<u32, info::entry_count> {});
+
 		[[nodiscard]] static constexpr ptr<const u64> bitmap() noexcept {
 			if constexpr (info::bitmap_words == 1u) {
 				return &info::startBitmap;
@@ -238,7 +248,8 @@ namespace hg {
 			tables::bitmap(),
 			info::min_align,
 			std::span<const engine::acs::SlotEntry> { info::entries },
-			std::span<const std::string_view> { tables::paths }
+			std::span<const std::string_view> { tables::paths },
+			std::span<const ArchetypeEntryType> { tables::types }
 		};
 	}
 

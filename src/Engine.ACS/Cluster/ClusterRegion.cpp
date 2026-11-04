@@ -42,7 +42,7 @@ ClusterRegion::Slot ClusterRegion::claim(const Chunk* const exclude_) {
 	Chunk* chunk = nullptr;
 	// shortcut: linear scan for a non-full chunk, add a free-chunk list if regions grow past a few hundred chunks
 	for (const auto& candidate : _chunks) {
-		if (candidate.get() != exclude_ && candidate->live < _capacity) {
+		if (candidate.get() != exclude_ && candidate->live + candidate->retired < _capacity) {
 			chunk = candidate.get();
 			break;
 		}
@@ -53,15 +53,23 @@ ClusterRegion::Slot ClusterRegion::claim(const Chunk* const exclude_) {
 		auto* const base = static_cast<std::byte*>(::operator new(_chunkSize, chunkAlign(_desc)));
 		const auto words = (_capacity + 63u) / 64u;
 		chunk = _chunks.emplace_back(
-			std::make_unique<Chunk>(Chunk { .base = base, .liveMask = std::vector<u64>(words, 0uLL), .handles = std::vector<Handle>(_capacity) })
+			std::make_unique<Chunk>(
+				Chunk {
+					.base = base,
+					.liveMask = std::vector<u64>(words, 0uLL),
+					.retiredMask = std::vector<u64>(words, 0uLL),
+					.handles = std::vector<Handle>(_capacity)
+				}
+			)
 		).get();
 		_byBase.insert(std::ranges::upper_bound(_byBase, address(base), std::less<> {}, chunkAddress), chunk);
 	}
 
 	// The lowest free bit is below capacity because the chunk is not full.
 	for (u32 word = 0u; ; ++word) {
-		if (~chunk->liveMask[word] != 0uLL) {
-			const auto bit = static_cast<u32>(std::countr_one(chunk->liveMask[word]));
+		const auto taken = chunk->liveMask[word] | chunk->retiredMask[word];
+		if (~taken != 0uLL) {
+			const auto bit = static_cast<u32>(std::countr_one(taken));
 			chunk->liveMask[word] |= 1uLL << bit;
 			++chunk->live;
 			++chunk->churn;
@@ -121,9 +129,48 @@ void ClusterRegion::free(std::byte* const slot_) {
 	chunk->handles[index] = Handle {};
 	chunk->liveMask[index / 64u] &= ~(1uLL << (index % 64u));
 	++chunk->churn;
-	if (--chunk->live == 0u) {
+	if (--chunk->live == 0u && chunk->retired == 0u) {
 		returnChunk(chunk);
 	}
+}
+
+void ClusterRegion::retire(std::byte* const slot_) {
+	const auto [chunk, index] = find(slot_);
+	if (chunk == nullptr || not (chunk->liveMask[index / 64u] & (1uLL << (index % 64u)))) {
+		return;
+	}
+	_handles.release(chunk->handles[index]);
+	chunk->handles[index] = Handle {};
+	chunk->liveMask[index / 64u] &= ~(1uLL << (index % 64u));
+	chunk->retiredMask[index / 64u] |= 1uLL << (index % 64u);
+	++chunk->churn;
+	--chunk->live;
+	++chunk->retired;
+}
+
+void ClusterRegion::reclaim() {
+	std::vector<const Chunk*> empty {};
+	for (const auto& chunk : _chunks) {
+		if (chunk->retired == 0u) {
+			continue;
+		}
+		std::ranges::fill(chunk->retiredMask, 0uLL);
+		chunk->retired = 0u;
+		if (chunk->live == 0u) {
+			empty.push_back(chunk.get());
+		}
+	}
+	for (const auto* const chunk : empty) {
+		returnChunk(chunk);
+	}
+}
+
+Handle ClusterRegion::handleOf(const std::byte* const slot_) const {
+	const auto [chunk, index] = find(slot_);
+	if (chunk == nullptr || not (chunk->liveMask[index / 64u] & (1uLL << (index % 64u)))) {
+		return Handle {};
+	}
+	return chunk->handles[index];
 }
 
 void ClusterRegion::forEachChunk(const FnRef<void(std::byte*, u32, u32, const u64*)> fn_) const {

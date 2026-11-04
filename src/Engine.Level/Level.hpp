@@ -1,6 +1,7 @@
 #pragma once
 
 #include <span>
+#include <Engine.ACS/Handle/Handle.hpp>
 #include <Engine.Common/Optional.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/DenseSet.hpp>
@@ -64,14 +65,33 @@ namespace hg::engine::core {
 		void setOwnerUniverse(mref<Opt<ref<engine::core::Universe>>> owner_);
 
 	private:
+		// Space of this level's cluster regions and handles; acquired with the first archetype actor.
+		acs::SpaceId _space = acs::detachedSpace;
+
+	public:
+		/**
+		 * @returns the space of this level, acquired on first use
+		 */
+		[[nodiscard]] acs::SpaceId space();
+
+	private:
 		DenseSet<owner_ptr<Actor>> _actors;
 
 	public:
-		void addActor(_In_ mref<VolatileActor<>> actor_);
+		/**
+		 * Mounts an actor; an archetype actor from another space (e.g. detached) is relocated into this level's region.
+		 *
+		 * @returns the actor's address after mounting
+		 */
+		ptr<Actor> addActor(_In_ mref<VolatileActor<>> actor_);
 
-		[[nodiscard]] std::span<const owner_ptr<Actor>> getActors() const noexcept;
+		/**
+		 * Unmounts an actor; an archetype actor is relocated to the detached space, so it outlives this level.
+		 */
 
 		[[nodiscard]] Opt<VolatileActor<>> removeActor(nmpt<Actor> actor_);
+
+		[[nodiscard]] std::span<const owner_ptr<Actor>> getActors() const noexcept;
 	};
 
 	/**/
