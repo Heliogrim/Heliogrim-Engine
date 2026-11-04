@@ -12,6 +12,7 @@
 #include <Engine.Reflect/IsType.hpp>
 #include <Engine.Scene/SceneBase.hpp>
 
+#include "Archetype/ActorClass.hpp"
 #include "../ActorInitializer.hpp"
 #include "../IComponentRegisterContext.hpp"
 #include "../Component/HierarchyComponent.hpp"
@@ -26,7 +27,17 @@ Actor::Actor(cref<ActorInitializer> initializer_) noexcept :
 	_label(),
 	_universe(None),
 	_rootComponent(None),
-	_components() {}
+	_archetype(initializer_._archetype),
+	_components() {
+
+	if (_archetype != nullptr) {
+		// The root is entry 0, constructed in front of the actor before this constructor runs.
+		auto* const slot = reinterpret_cast<std::byte*>(this) - _archetype->desc().actorOffset;
+		_rootComponent = Some<ref<HierarchyComponent>>(
+			*std::launder(reinterpret_cast<ptr<HierarchyComponent>>(slot + _archetype->componentOffsets().front()))
+		);
+	}
+}
 
 Actor::~Actor() noexcept = default;
 
@@ -74,11 +85,28 @@ void Actor::scheduleComponentRelease(mref<ptr<LogicComponent>> component_) const
 	engine::Engine::getEngine()->getActors()->getRegistry()->releaseActorComponent(VolatileComponent<> { ::hg::move(component_) });
 }
 
-cref<CompactSet<ptr<HierarchyComponent>>> Actor::getComponents() const noexcept {
-	return _components;
+ComponentRange Actor::getComponents() const noexcept {
+	if (_archetype == nullptr) {
+		return ComponentRange::dynamic(_components);
+	}
+
+	const auto desc = _archetype->desc();
+	return ComponentRange::archetype(
+		const_cast<std::byte*>(reinterpret_cast<const std::byte*>(this)) - desc.actorOffset,
+		_archetype->componentOffsets(),
+		_archetype->startBitmap(),
+		desc.actorOffset,
+		_archetype->minAlign()
+	);
 }
 
 void Actor::addComponent(mref<VolatileComponent<HierarchyComponent>> component_, Opt<ref<const AddComponentOptions>> options_) {
+
+	// shortcut: sealed archetypes reject runtime components until de-optimization exists (spec 11).
+	if (_archetype != nullptr) [[unlikely]] {
+		::hg::panic_details::PanicErrorSink {} << std::string_view { "Actor::addComponent: sealed archetype actor rejects runtime components" };
+		::hg::panic();
+	}
 
 	if (not options_.is_null() && options_->autoRegister && not _universe.is_null()) {
 		scheduleComponentRegister(component_.get());
@@ -118,9 +146,19 @@ void Actor::registerComponents(ref<engine::core::Universe> universe_, ref<ICompo
 	}
 
 	/**
+	 * Archetype entries are already ordered parent before child
+	 */
+	if (_archetype != nullptr) {
+		for (auto* const entry : getComponents()) {
+			context_.add(entry);
+		}
+		return;
+	}
+
+	/**
 	 * Insert components ordered by hierarchy from parent to child (copy components)
 	 */
-	auto components { getComponents() };
+	auto components { _components };
 
 	auto iter { components.begin() };
 	while (!components.empty()) {
@@ -198,7 +236,7 @@ Future<VolatileActor<>> hg::CreateActor(async_t) {
 	return Future { std::move(f) };
 }
 
-VolatileActor<> hg::CreateActor(ptr<const ActorClass> class_) noexcept {
+VolatileActor<> hg::CreateActor(ptr<const MetaClass> class_) noexcept {
 	auto& registry = *engine::Engine::getEngine()->getActors()->getRegistry();
 	return VolatileActor<> { registry.createActor(class_, ActorInitializer { registry }) };
 }

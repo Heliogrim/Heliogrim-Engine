@@ -21,8 +21,8 @@ Vector<nmpt<const Property>> PropertyService::fetchPropertiesFor(nmpt<const Acto
 
 	auto result = Vector<nmpt<const Property>> {};
 	for (const auto& property : _registered) {
-		if (property->selector.is<nmpt<const ActorClass>>()) {
-			if (property->selector.as<nmpt<const ActorClass>>()->exact(actorClassId)) {
+		if (property->selector.is<nmpt<const MetaClass>>()) {
+			if (property->selector.as<nmpt<const MetaClass>>()->exact(actorClassId)) {
 				result.emplace_back(property.get());
 			}
 			continue;
