@@ -485,7 +485,6 @@ void editor::boot::initDefaultAssets() {
 
 /**/
 
-#include <Engine.Reflect/Reflect.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Archive/StructuredArchive.hpp>
 #include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>

@@ -53,9 +53,9 @@ Opt<ActorGuid> spawnActorImpl(SpawnShapeActor::ShapeType shapeType_, ref<const m
 	auto session = GetSession();
 	auto universe = GetUniverse(session);
 
-	const ptr<const ActorClass> actorClass = shapeType_ == SpawnShapeActor::ShapeType::eBox ?
-		static_cast<ptr<const ActorClass>>(BoxShapeGeometryActor::getStaticMetaClass<>()) :
-		static_cast<ptr<const ActorClass>>(SphereShapeGeometryActor::getStaticMetaClass<>());
+	const ptr<const MetaClass> actorClass = shapeType_ == SpawnShapeActor::ShapeType::eBox ?
+		static_cast<ptr<const MetaClass>>(BoxShapeGeometryActor::getStaticMetaClass<>()) :
+		static_cast<ptr<const MetaClass>>(SphereShapeGeometryActor::getStaticMetaClass<>());
 	auto volatileActor = CreateActor(actorClass);
 
 	/* Configure components */

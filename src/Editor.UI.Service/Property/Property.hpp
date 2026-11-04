@@ -15,7 +15,7 @@ namespace hg::editor::ui::service {
 
 		String debugName;
 		String section;
-		Variant<nmpt<const ActorClass>, ComponentTypeId, selector_fn> selector;
+		Variant<nmpt<const MetaClass>, ComponentTypeId, selector_fn> selector;
 		std::function<SharedPtr<engine::reflow::Widget>(view_fn_arg)> view;
 	};
 }

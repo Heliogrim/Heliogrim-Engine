@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <array>
 #include <string_view>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 #include <Engine.Common/Types.hpp>
@@ -47,6 +48,33 @@ namespace hg::engine::acs {
 			bool duplicatePath = false;
 		};
 
+		/* Type lists */
+
+		template <typename...>
+		struct type_list {};
+
+		template <typename... Lists_>
+		struct concat {
+			using type = type_list<>;
+		};
+
+		template <typename... Types_>
+		struct concat<type_list<Types_...>> {
+			using type = type_list<Types_...>;
+		};
+
+		template <typename... First_, typename... Second_, typename... Rest_>
+		struct concat<type_list<First_...>, type_list<Second_...>, Rest_...> :
+			concat<type_list<First_..., Second_...>, Rest_...> {};
+
+		template <u32 Index_, typename List_>
+		struct type_at;
+
+		template <u32 Index_, typename... Types_>
+		struct type_at<Index_, type_list<Types_...>> {
+			using type = std::tuple_element_t<Index_, std::tuple<Types_...>>;
+		};
+
 		template <typename Slot_, typename Children_ = typename Slot_::children>
 		struct slot_metrics;
 
@@ -68,11 +96,13 @@ namespace hg::engine::acs {
 				return align_up(offset, element_align);
 			}();
 
-			static constexpr u32 element_entries = 1u + (
+			constexpr static u32 element_entries = 1u + (
 				(static_cast<u32>(Children_::count) * slot_metrics<Children_>::element_entries) + ... + 0u
 			);
-			static constexpr u32 slots = 1u + (slot_metrics<Children_>::slots + ... + 0u);
-			static constexpr u32 max_path = static_cast<u32>(Slot_::name.size())
+			constexpr static u32 slots = 1u + (slot_metrics<Children_>::slots + ... + 0u);
+			// Component type per slot in slot index order (pre-order, as emit numbers them).
+			using types = typename concat<type_list<type>, typename slot_metrics<Children_>::types...>::type;
+			constexpr static u32 max_path = static_cast<u32>(Slot_::name.size())
 				+ std::max({ 0u, (1u + slot_metrics<Children_>::max_path)... });
 
 			template <typename Table_>
@@ -190,13 +220,14 @@ namespace hg::engine::acs {
 		struct layout_builder<ActorLayout<Root_>, ActorAlign_> {
 			using metrics = slot_metrics<Root_>;
 
-			static constexpr u32 entries = metrics::element_entries;
-			static constexpr u32 slots = metrics::slots;
-			static constexpr u32 max_path = metrics::max_path;
-			static constexpr u32 block_size = metrics::element_size;
-			static constexpr u32 block_align = metrics::element_align;
-			static constexpr u32 min_align = metrics::min_align;
-			static constexpr auto table = build_layout_table<Root_>();
+			constexpr static u32 entries = metrics::element_entries;
+			constexpr static u32 slots = metrics::slots;
+			constexpr static u32 max_path = metrics::max_path;
+			constexpr static u32 block_size = metrics::element_size;
+			constexpr static u32 block_align = metrics::element_align;
+			constexpr static u32 min_align = metrics::min_align;
+			constexpr static auto table = build_layout_table<Root_>();
+			using slot_types = typename metrics::types;
 		};
 
 		template <typename Layout_, u32 ActorAlign_>
@@ -216,25 +247,6 @@ namespace hg::engine::acs {
 			}
 			return true;
 		}
-
-		/* Type lists */
-
-		template <typename...>
-		struct type_list {};
-
-		template <typename... Lists_>
-		struct concat {
-			using type = type_list<>;
-		};
-
-		template <typename... Types_>
-		struct concat<type_list<Types_...>> {
-			using type = type_list<Types_...>;
-		};
-
-		template <typename... First_, typename... Second_, typename... Rest_>
-		struct concat<type_list<First_...>, type_list<Second_...>, Rest_...> :
-			concat<type_list<First_..., Second_...>, Rest_...> {};
 
 		/* Override substitution by slot path */
 
@@ -523,8 +535,12 @@ namespace hg::engine::acs {
 				Base_::max_path,
 				(attach_path_length<Base_, Attach_>() + 1u + slot_metrics<typename Attach_::slot>::max_path)...
 			});
-			static constexpr u32 block_size = base_offset + Base_::block_size;
-			static constexpr u32 min_align = std::min({ Base_::min_align, slot_metrics<typename Attach_::slot>::min_align... });
+			constexpr static u32 block_size = base_offset + Base_::block_size;
+			constexpr static u32 min_align = std::min({ Base_::min_align, slot_metrics<typename Attach_::slot>::min_align... });
+			using slot_types = typename concat<
+				typename Base_::slot_types,
+				typename slot_metrics<typename Attach_::slot>::types...
+			>::type;
 
 			// Base entries keep their indices; attachments follow.
 			constexpr static auto table = [] {
@@ -606,6 +622,22 @@ namespace hg::engine::acs {
 		[[nodiscard]] constexpr static u32 actor_relative(const u32 index_) noexcept {
 			return actor_offset - entries[index_].offset;
 		}
+
+		constexpr static u32 slot_count = builder::slots;
+
+		// Slot (named layout node) an entry belongs to; all elements of an array share one slot.
+		[[nodiscard]] constexpr static u32 slot_of(const u32 entry_) noexcept {
+			return table.entrySlot[entry_];
+		}
+
+		// Full '/'-separated path of a slot, e.g. "body/wheels/hub".
+		[[nodiscard]] constexpr static std::string_view slot_path(const u32 slot_) noexcept {
+			return std::string_view { table.paths[slot_].data(), table.pathLength[slot_] };
+		}
+
+		// Component type of a slot, after Override substitution.
+		template <u32 Slot_>
+		using slot_type = typename detail::type_at<Slot_, typename builder::slot_types>::type;
 
 		// One bit per min_align step of the block; a single word while the block fits 64 steps.
 		constexpr static u32 bitmap_words = (block_size / min_align + 63u) / 64u;

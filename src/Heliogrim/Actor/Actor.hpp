@@ -9,12 +9,12 @@
 #include <Engine.Common/Collection/Set.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Reflect/IsType.hpp>
-#include <Engine.Reflect/Reflect.hpp>
 #include <Engine.Reflect/Inherit/InheritBase.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 
 #include "ActorGuid.hpp"
 #include "ActorLabel.hpp"
+#include "ComponentRange.hpp"
 #include "../ActorInitializer.hpp"
 #include "../Async/Future.hpp"
 #include "../Async/Traits.hpp"
@@ -28,6 +28,7 @@ namespace hg {
 	/**
 	 * Forward Declaration
 	 */
+	class ActorClass;
 	struct CachedActorPointer;
 	class HierarchyComponent;
 	struct SerializedActor;
@@ -35,8 +36,6 @@ namespace hg {
 	class IComponentRegisterContext;
 	class Session;
 	class Universe;
-
-	using ActorClass = ::hg::MetaClass;
 
 	/**
 	 * The base class of every actor
@@ -49,6 +48,9 @@ namespace hg {
 	public:
 		ACCESS_LAYOUT
 		ACCESS_STRUCTURE
+
+		// Re-stamps the root component after an archetype slot moved.
+		friend class ::hg::ActorClass;
 
 	public:
 		using this_type = Actor;
@@ -129,6 +131,8 @@ namespace hg {
 		void setOwnerLevel(mref<Opt<ref<engine::core::Level>>> owner_);
 
 	private:
+		// Archetype actors: their class (components sit in front of the actor in the slot); dynamic actors: nullptr.
+		ptr<const ActorClass> _archetype;
 		CompactSet<ptr<HierarchyComponent>> _components;
 
 	private:
@@ -137,7 +141,7 @@ namespace hg {
 			/**
 			 *
 			 */
-			for (auto& entry : _components) {
+			for (auto* const entry : getComponents()) {
 				fnc_(entry);
 			}
 		}
@@ -210,7 +214,10 @@ namespace hg {
 
 		void addComponent(_In_ mref<VolatileComponent<HierarchyComponent>> component_, _In_ Opt<ref<const AddComponentOptions>> options_);
 
-		[[nodiscard]] cref<CompactSet<ptr<HierarchyComponent>>> getComponents() const noexcept;
+		/**
+		 * Archetype actors: computed from the class layout; dynamic actors: a view of the stored set.
+		 */
+		[[nodiscard]] ComponentRange getComponents() const noexcept;
 
 		template <typename Selector_>
 		[[nodiscard]] CompactArray<ptr<HierarchyComponent>> selectComponents(Selector_&& selector_) const {
@@ -389,7 +396,7 @@ namespace hg {
 	 */
 	template <class ActorType_>
 	bool RegisterActorClass() noexcept {
-		return RegisterActorClass(Reflect::SubstitudeActorClass<ActorType_>::Unknown());
+		return RegisterActorClass(&ActorType_::actorClass());
 	}
 
 	/**
@@ -424,16 +431,16 @@ namespace hg {
 	 * @author Julius
 	 * @date 25.11.2021
 	 *
-	 * @param class_ The actor class to instantiate
+	 * @param class_ The meta class of the (dynamic, pooled) actor type to instantiate
 	 *
 	 * @returns A pointer to the newly created actor if succeeded, otherwise nullptr
 	 */
-	[[nodiscard]] extern VolatileActor<> CreateActor(_In_ ptr<const ActorClass> class_) noexcept;
+	[[nodiscard]] extern VolatileActor<> CreateActor(_In_ ptr<const MetaClass> class_) noexcept;
 
 	template <class ActorType_>
 	[[nodiscard]] VolatileActor<ActorType_> CreateActor() {
 		// TODO: Secure cast
-		return static_cast<VolatileActor<ActorType_>>(CreateActor(Reflect::SubstitudeActorClass<ActorType_>::Known()));
+		return static_cast<VolatileActor<ActorType_>>(CreateActor(ActorType_::getStaticMetaClass()));
 	}
 
 	/**
