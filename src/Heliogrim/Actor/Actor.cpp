@@ -103,7 +103,10 @@ ComponentRange Actor::getComponents() const noexcept {
 void Actor::addComponent(mref<VolatileComponent<HierarchyComponent>> component_, Opt<ref<const AddComponentOptions>> options_) {
 
 	// shortcut: sealed archetypes reject runtime components until de-optimization exists (spec 11).
-	::hg::assertrt(_archetype == nullptr);
+	if (_archetype != nullptr) [[unlikely]] {
+		::hg::panic_details::PanicErrorSink {} << std::string_view { "Actor::addComponent: sealed archetype actor rejects runtime components" };
+		::hg::panic();
+	}
 
 	if (not options_.is_null() && options_->autoRegister && not _universe.is_null()) {
 		scheduleComponentRegister(component_.get());

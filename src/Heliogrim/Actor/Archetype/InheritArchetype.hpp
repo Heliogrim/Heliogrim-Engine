@@ -7,6 +7,7 @@
 #include <string_view>
 #include <type_traits>
 #include <Engine.ACS/Archetype/LayoutInfo.hpp>
+#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Meta/FixedString.hpp>
@@ -193,6 +194,7 @@ namespace hg::archetype_detail {
 		}
 
 		[[nodiscard]] SlotView<Info_, Slot_, Byte_> operator[](const size_t index_) const noexcept {
+			::hg::assertd(index_ < size());
 			return { _actor, _first + static_cast<u32>(index_) * element_stride<Info_>(Slot_) };
 		}
 	};
@@ -222,8 +224,6 @@ namespace hg {
 		public InheritMeta<Derived_, Base_, Rest_...> {
 	public:
 		using InheritMeta<Derived_, Base_, Rest_...>::InheritMeta;
-
-		using archetype_base_type = Base_;
 
 	public:
 		/**

@@ -78,6 +78,33 @@ namespace HeliogrimApi {
 		u64 armor[5] {};
 	};
 
+	class TestTicker :
+		public InheritArchetype<TestTicker, Actor> {
+	public:
+		using this_type = TestTicker;
+		constexpr static type_id typeId { "TestTicker"_typeId };
+
+		using layout = ActorLayout<Slot<"body", BodyStub, Children<Slot<"camera", CameraStub>>>>;
+
+	public:
+		explicit TestTicker(cref<ActorInitializer> initializer_);
+
+		// Plain body in the .cpp; inherited by TestTickerChild, which declares no tick.
+		void tick();
+	};
+
+	class TestTickerChild :
+		public InheritArchetype<TestTickerChild, TestTicker> {
+	public:
+		using this_type = TestTickerChild;
+		constexpr static type_id typeId { "TestTickerChild"_typeId };
+
+		using layout = Extend<TestTicker::layout, Slot<"turret", TurretStub>>;
+
+	public:
+		explicit TestTickerChild(cref<ActorInitializer> initializer_);
+	};
+
 	class TestOverridable :
 		public InheritArchetype<TestOverridable, Actor> {
 	public:

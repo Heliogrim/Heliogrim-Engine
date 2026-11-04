@@ -153,6 +153,22 @@ namespace HeliogrimApi {
 		EXPECT_NE(TestOverrider::actorClass().ops().tick, nullptr);
 	}
 
+	TEST(Archetype, InheritedTickHook) {
+		static_assert(has_tick_v<TestTicker>);
+		static_assert(has_tick_v<TestTickerChild>);
+
+		// The child declares no tick of its own; the base's plain body runs on the child's slots.
+		const auto& actorClass = TestTickerChild::actorClass();
+		ASSERT_NE(actorClass.ops().tick, nullptr);
+
+		SlotSpan span { actorClass, 2u };
+		actorClass.ops().tick(span.slot(0u), 2u, span.stride());
+
+		for (u32 index = 0u; index < 2u; ++index) {
+			EXPECT_EQ(span.actor<TestTickerChild>(index).get<"camera">().ticks, 1u);
+		}
+	}
+
 	TEST(Archetype, DeducingThisOverride) {
 		using base = info_t<TestOverridable>;
 		using derived = info_t<TestOverrider>;
@@ -205,7 +221,7 @@ namespace HeliogrimApi {
 				},
 				None
 			),
-			""
+			"sealed archetype actor rejects runtime components"
 		);
 	}
 }

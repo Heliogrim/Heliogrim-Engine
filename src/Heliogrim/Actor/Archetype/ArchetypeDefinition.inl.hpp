@@ -55,8 +55,10 @@ namespace hg::archetype_detail {
 			parent_at<Info_, Entry_>(slot_)
 		);
 
-		// shortcut: componentOffsets point at the HierarchyComponent subobject only while it sits at offset 0
-		// (single-inheritance components); store per-type base offsets once a multiple-inheritance component appears.
+		// shortcut: offset-0 single inheritance assumption. componentOffsets point at the HierarchyComponent subobject
+		// only while it sits at offset 0, and construct converts the actor storage to Actor* before the actor's
+		// lifetime starts (the components only store it); upgrade with per-type base offsets and a proper cast path
+		// once a multiple-inheritance component or a non-zero Actor base offset appears.
 		::hg::assertd(static_cast<const void*>(static_cast<ptr<HierarchyComponent>>(component)) == component);
 	}
 
@@ -151,7 +153,7 @@ namespace hg {
 			for (u32 index = 0u; index < count_; ++index) {
 				std::byte* const slot = slots_ + index * stride_;
 				auto* const storage = slot + info::actor_offset;
-				// Pointer into storage the actor is constructed in below; components only store it.
+				// See the shortcut in construct_entry: converted to Actor* before the actor's lifetime starts.
 				const ptr<Actor> actor = reinterpret_cast<Type_*>(storage);
 				const auto guid = generate_actor_guid();
 

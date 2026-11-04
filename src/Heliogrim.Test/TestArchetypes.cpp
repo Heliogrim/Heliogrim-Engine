@@ -17,6 +17,16 @@ void TestBody::touchCamera() {
 TestTank::TestTank(cref<ActorInitializer> initializer_) :
 	InheritArchetype(initializer_) {}
 
+TestTicker::TestTicker(cref<ActorInitializer> initializer_) :
+	InheritArchetype(initializer_) {}
+
+void TestTicker::tick() {
+	++get<"camera">().ticks;
+}
+
+TestTickerChild::TestTickerChild(cref<ActorInitializer> initializer_) :
+	InheritArchetype(initializer_) {}
+
 TestOverridable::TestOverridable(cref<ActorInitializer> initializer_) :
 	InheritArchetype(initializer_) {}
 
@@ -29,5 +39,7 @@ template void TestOverrider::tick(this TestOverrider& self);
 
 template class hg::InheritArchetype<TestBody, Actor>;
 template class hg::InheritArchetype<TestTank, TestBody>;
+template class hg::InheritArchetype<TestTicker, Actor>;
+template class hg::InheritArchetype<TestTickerChild, TestTicker>;
 template class hg::InheritArchetype<TestOverridable, Actor>;
 template class hg::InheritArchetype<TestOverrider, TestOverridable>;
