@@ -11,6 +11,7 @@ namespace hg {
 	 * Forward Declaration
 	 */
 	class Actor;
+	class ActorClass;
 
 	// Question: Do we still need the HierarchyComponent do be available, or should we fuse it with the SceneComponent?
 	class HierarchyComponent :
@@ -18,6 +19,9 @@ namespace hg {
 	public:
 		ACCESS_LAYOUT
 		ACCESS_STRUCTURE
+
+		// Re-stamps owner and parent after an archetype slot moved.
+		friend class ::hg::ActorClass;
 
 	public:
 		using this_type = HierarchyComponent;

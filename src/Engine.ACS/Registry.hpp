@@ -21,8 +21,6 @@ namespace hg {
 	 */
 	class Actor;
 	class ActorInitializer;
-
-	using ActorClass = ::hg::MetaClass;
 }
 
 namespace hg::engine::acs {
@@ -201,12 +199,12 @@ namespace hg::engine::acs {
 		}
 
 		[[nodiscard]] ptr<Actor> createActor(
-			const ptr<const ActorClass> actorClass_,
+			const ptr<const MetaClass> actorClass_,
 			cref<ActorInitializer> initializer_
 		);
 
 		[[nodiscard]] ptr<Actor> createActor(
-			const ptr<const ActorClass> actorClass_,
+			const ptr<const MetaClass> actorClass_,
 			cref<ActorInitializer> initializer_,
 			std::nothrow_t
 		) noexcept;

@@ -24,7 +24,7 @@ void Registry::releaseActorComponent(mref<VolatileComponent<>> component_) {
 	_housekeeping.storePendingRelease(::hg::move(component_));
 }
 
-ptr<Actor> Registry::createActor(const ptr<const ActorClass> actorClass_, cref<ActorInitializer> initializer_) {
+ptr<Actor> Registry::createActor(const ptr<const MetaClass> actorClass_, cref<ActorInitializer> initializer_) {
 
 	const auto guid = generate_actor_guid();
 	hackActorInit(initializer_, guid);
@@ -47,7 +47,7 @@ ptr<Actor> Registry::createActor(const ptr<const ActorClass> actorClass_, cref<A
 }
 
 ptr<Actor> Registry::createActor(
-	const ptr<const ActorClass> actorClass_,
+	const ptr<const MetaClass> actorClass_,
 	cref<ActorInitializer> initializer_,
 	std::nothrow_t
 ) noexcept {
