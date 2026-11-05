@@ -4,9 +4,8 @@
 #include <Editor.UI.Main/EditorUI.hpp>
 #include <Editor.UI.Main/Module/EditorUI.hpp>
 #include <Engine.ACS/ActorModule.hpp>
-#include <Engine.Common/Discard.hpp>
+#include <Engine.Common/Move.hpp>
 #include <Engine.Core/Engine.hpp>
-#include <Heliogrim/ActorInitializer.hpp>
 #include <Heliogrim/Component/Scene/Light/DirectionalLightComponent.hpp>
 #include <Heliogrim/Core/Session.hpp>
 #include <Heliogrim/Universe/Universe.hpp>
@@ -60,7 +59,8 @@ Opt<ActorGuid> spawnLightActorImpl(ref<const math::Location> location_, ref<cons
 	component->_direction = options.direction;
 
 	volatileActor->getRootComponent()->getLocalTransform().location() = location_;
-	const auto* const actor = universe.addActor(std::move(volatileActor));
+	const auto guid = volatileActor->guid();
+	static_cast<void>(universe.addActor(::hg::move(volatileActor)));
 
 	/**/
 
@@ -71,7 +71,7 @@ Opt<ActorGuid> spawnLightActorImpl(ref<const math::Location> location_, ref<cons
 
 	/**/
 
-	return Some(actor->guid());
+	return Some(guid);
 }
 
 void despawnLightActorImpl(mref<ActorGuid> actorGuid_) {

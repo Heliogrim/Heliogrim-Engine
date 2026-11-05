@@ -28,7 +28,7 @@ namespace hg::engine::serialization {
 
 		/**/
 
-		const auto directionalLightGuid = get_named_guid_slot(record_, "directional"sv);
+		const auto directionalLightGuid = ComponentGuid { get_named_guid_slot(record_, "directional"sv) };
 		for (auto* const candidate : target_._components.values()) {
 			if (candidate->guid() == directionalLightGuid) {
 				target_._directionalLightComponent = static_cast<ptr<DirectionalLightComponent>>(candidate);

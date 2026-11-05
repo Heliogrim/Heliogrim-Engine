@@ -7,16 +7,12 @@
 #include <Engine.Core/Session.hpp>
 #include <Engine.Core/Universe.hpp>
 #include <Engine.Core/UniverseContext.hpp>
-#include <Engine.Core/Event/UniverseAddedEvent.hpp>
-#include <Engine.Core/Event/UniverseChangeEvent.hpp>
-#include <Engine.Core/Event/UniverseRemoveEvent.hpp>
 #include <Engine.Level/Level.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 #include <Engine.Scene.Game/GameScene.hpp>
 #include <Engine.Scene/Scene.hpp>
 
 #include "Level.hpp"
-#include "Scene.hpp"
 #include "../Async/Execute.hpp"
 #include "../Core/Session.hpp"
 
@@ -61,13 +57,13 @@ bool Universe::removeLevel(cref<Level> level_) {
 	return true;
 }
 
-ptr<Actor> Universe::addActor(mref<VolatileActor<>> actor_) {
+Opt<ActorRef<>> Universe::addActor(mref<VolatileActor<>> actor_) {
 
 	auto* const universe = _internal.get();
 	const auto& suitableLevel = universe->getRootLevel();
 
 	// Archetype actors may move into the level's region; the level returns the new address.
-	return suitableLevel->addActor(::hg::move(actor_));
+	return ActorRef<>::of(suitableLevel->addActor(::hg::move(actor_)));
 }
 
 Opt<VolatileActor<>> Universe::removeActor(ptr<Actor> actor_) {

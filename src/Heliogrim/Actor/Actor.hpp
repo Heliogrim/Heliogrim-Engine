@@ -1,16 +1,15 @@
 #pragma once
 
-#include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.Common/Move.hpp>
-#include <Engine.Common/Forward.hpp>
 #include <vector>
 #include <Engine.ACS/ActorModule.hpp>
-#include <Engine.ACS/Traits.hpp>
+#include <Engine.Common/Forward.hpp>
+#include <Engine.Common/Move.hpp>
 #include <Engine.Common/Optional.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/CompactArray.hpp>
 #include <Engine.Common/Collection/Set.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Functional/FnRef.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Reflect/IsType.hpp>
@@ -19,11 +18,11 @@
 
 #include "ActorGuid.hpp"
 #include "ActorLabel.hpp"
-#include "Archetype/ActorClass.hpp"
 #include "ComponentRange.hpp"
 #include "../ActorInitializer.hpp"
 #include "../Async/Future.hpp"
 #include "../Async/Traits.hpp"
+#include "Archetype/ActorClass.hpp"
 
 namespace hg::engine::core {
 	class Level;
@@ -35,6 +34,9 @@ namespace hg::engine::serialization {
 }
 
 namespace hg {
+	template <typename Type_>
+	struct ActorRef;
+
 	/**
 	 * Forward Declaration
 	 */
@@ -528,7 +530,7 @@ namespace hg {
 	 *
 	 * @returns A future, containing the newly created actor if succeeded, otherwise nullptr
 	 */
-	[[nodiscard]] extern Future<ptr<Actor>> CloneActorInto(
+	[[nodiscard]] extern Future<Opt<ActorRef<Actor>>> CloneActorInto(
 		_In_ cref<Actor> actor_,
 		_In_ cref<Universe> universe_
 	) noexcept;
@@ -542,9 +544,9 @@ namespace hg {
 	 * @param class_ The actor class to instantiate.
 	 * @param universe_ The universe where to create and place the new actor
 	 *
-	 * @returns A future, containing the newly created and mounted actor if succeeded, otherwise nullptr
+	 * @returns A future, containing the ref to the newly created and mounted actor if succeeded, otherwise None
 	 */
-	[[nodiscard]] extern Future<ptr<Actor>> SpawnActor(
+	[[nodiscard]] extern Future<Opt<ActorRef<Actor>>> SpawnActor(
 		_In_ ptr<const ActorClass> class_,
 		_In_ cref<Universe> universe_
 	) noexcept;
@@ -561,9 +563,9 @@ namespace hg {
 	 * @param serialized_ The serialized data to use.
 	 * @param universe_ The universe where to create and place the new actor
 	 *
-	 * @returns A future, containing the newly created and mounted actor if succeeded, otherwise nullptr
+	 * @returns A future, containing the ref to the newly created and mounted actor if succeeded, otherwise None
 	 */
-	[[nodiscard]] extern Future<ptr<Actor>> SpawnActor(
+	[[nodiscard]] extern Future<Opt<ActorRef<Actor>>> SpawnActor(
 		_In_ ptr<const ActorClass> class_,
 		_In_ cref<SerializedActor> serialized_,
 		_In_ cref<Universe> universe_
@@ -581,13 +583,13 @@ namespace hg {
 	 * @param universe_ The universe whose root level is used when no level is given.
 	 * @param level_ The level where to place the actors.
 	 *
-	 * @returns A future, containing the mounted actors in batch order
+	 * @returns A future, containing refs to the mounted actors in batch order
 	 */
-	[[nodiscard]] extern Future<std::vector<ptr<Actor>>> SpawnActors(
+	[[nodiscard]] extern Future<Vector<ActorRef<Actor>>> SpawnActors(
 		_In_ ptr<const ActorClass> class_,
 		_In_ size_t count_,
 		_In_ FnRef<void(ref<Actor>, size_t)> init_,
-		_In_ cref<Universe> universe_,
+		_In_ ref<const Universe> universe_,
 		_In_ Opt<ref<engine::core::Level>> level_ = None
 	);
 

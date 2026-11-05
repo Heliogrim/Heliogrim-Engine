@@ -1,11 +1,14 @@
 #pragma once
 
+#include <Engine.Common/Move.hpp>
 #include <Engine.Common/Optional.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Managed/Rc.hpp>
 
 #include "../Actor/Actor.hpp"
+#include "../Actor/ActorRef.hpp"
 #include "../Async/Future.hpp"
 #include "../Math/BuildIn.hpp"
 
@@ -65,13 +68,17 @@ namespace hg {
 		 *
 		 * @param actor_ The actor to add.
 		 *
-		 * @returns A reference to the added actor (managed).
+		 * @returns Some ref exactly for an archetype actor; None for a non-archetype (legacy) actor, which has no handle (it is still mounted and its pointer stays stable).
 		 */
-		ptr<Actor> addActor(_Inout_ mref<VolatileActor<>> actor_);
+		Opt<ActorRef<>> addActor(_Inout_ mref<VolatileActor<>> actor_);
 
 		template <class ActorType_>
-		ptr<ActorType_> addActor(_Inout_ mref<VolatileActor<ActorType_>> actor_) {
-			return static_cast<ptr<ActorType_>>(addActor(static_cast<mref<VolatileActor<Actor>>>(std::move(actor_))));
+		Opt<ActorRef<ActorType_>> addActor(_Inout_ mref<VolatileActor<ActorType_>> actor_) {
+			const auto added = addActor(static_cast<mref<VolatileActor<Actor>>>(::hg::move(actor_)));
+			if (not added.has_value()) {
+				return None;
+			}
+			return Some(ActorRef<ActorType_> { added.value().handle() });
 		}
 
 		/**

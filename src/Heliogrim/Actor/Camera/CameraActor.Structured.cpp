@@ -26,8 +26,8 @@ namespace hg::engine::serialization {
 
 		/**/
 
-		const auto cameraComponentGuid = get_named_guid_slot(record_, "camera"sv);
-		const auto mountComponentGuid = get_named_guid_slot(record_, "mount"sv);
+		const auto cameraComponentGuid = ComponentGuid { get_named_guid_slot(record_, "camera"sv) };
+		const auto mountComponentGuid = ComponentGuid { get_named_guid_slot(record_, "mount"sv) };
 
 		for (auto* const candidate : target_._components.values()) {
 			if (candidate->guid() == cameraComponentGuid) {

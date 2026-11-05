@@ -36,8 +36,8 @@ cref<decltype(Level::_internal)> Level::unwrap() const noexcept {
 	return _internal;
 }
 
-ptr<Actor> Level::addActor(mref<VolatileActor<>> actor_) {
-	return _internal->addActor(::hg::move(actor_));
+Opt<ActorRef<>> Level::addActor(mref<VolatileActor<>> actor_) {
+	return ActorRef<>::of(_internal->addActor(::hg::move(actor_)));
 }
 
 Opt<VolatileActor<>> Level::removeActor(ptr<Actor> actor_) {
@@ -106,13 +106,6 @@ Future<bool> SaveLevel(
 
 /* TODO: Move */
 #include <Engine.Assets.Type/Asset.hpp>
-#include <Engine.Assets.Type/Universe/LevelAsset.hpp>
-#include <Engine.Core/Engine.hpp>
-#include <Engine.Resource.Archive/BufferArchive.hpp>
-#include <Engine.Resource.Save/StorePipeline.hpp>
-#include <Engine.Serialization/Archive/StructuredArchive.hpp>
-#include <Engine.Storage.Registry/IStorageRegistry.hpp>
-#include <Engine.Storage/StorageModule.hpp>
 /**/
 
 Future<bool> SaveLevel(
