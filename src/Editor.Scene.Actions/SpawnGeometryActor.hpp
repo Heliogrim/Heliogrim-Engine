@@ -5,7 +5,7 @@
 #include <Engine.Common/Optional.hpp>
 #include <Engine.Common/Math/Location.hpp>
 #include <Heliogrim/TypedAssetGuid.hpp>
-#include <Heliogrim/Actor/ActorGuid.hpp>
+#include <Heliogrim/Actor/ActorRef.hpp>
 
 namespace hg::editor::scene::actions {
 	class SpawnGeometryActor :
@@ -16,6 +16,6 @@ namespace hg::editor::scene::actions {
 		~SpawnGeometryActor() override;
 
 	private:
-		Opt<ActorGuid> _actorGuid;
+		Opt<ActorRef<>> _actorRef;
 	};
 }
