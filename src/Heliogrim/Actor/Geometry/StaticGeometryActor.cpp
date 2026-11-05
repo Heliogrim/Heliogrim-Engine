@@ -1,18 +1,15 @@
 #include "StaticGeometryActor.hpp"
 
-#include "../../ActorInitializer.hpp"
+#include "../Archetype/ArchetypeDefinition.inl.hpp"
+#include "../../Component/Scene/Geometry/StaticGeometryComponent.Layout.hpp"
 
 using namespace hg;
 
 StaticGeometryActor::StaticGeometryActor(cref<ActorInitializer> initializer_) :
-	InheritMeta(initializer_),
-	_staticGeometryComponent(nullptr) {
+	InheritArchetype(initializer_) {}
 
-	if (initializer_.shouldAutoInitialize()) {
-		_staticGeometryComponent = initializer_.createComponent<StaticGeometryComponent>(*this, { .parent = None });
-	}
+nmpt<StaticGeometryComponent> StaticGeometryActor::getStaticGeometryComponent() noexcept {
+	return &get<"geometry">();
 }
 
-nmpt<StaticGeometryComponent> StaticGeometryActor::getStaticGeometryComponent() const noexcept {
-	return _staticGeometryComponent;
-}
+template class hg::InheritArchetype<StaticGeometryActor, Actor>;

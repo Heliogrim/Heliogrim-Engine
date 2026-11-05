@@ -1,28 +1,24 @@
 #pragma once
 
+#include <Engine.ACS/Archetype/Layout.hpp>
+
 #include "../Actor.hpp"
 #include "../../Component/Scene/Geometry/StaticGeometryComponent.hpp"
+#include "../Archetype/InheritArchetype.hpp"
 
 namespace hg {
 	class StaticGeometryActor :
-		public InheritMeta<StaticGeometryActor, Actor> {
-	public:
-		ACCESS_LAYOUT
-		ACCESS_STRUCTURE
-
+		public InheritArchetype<StaticGeometryActor, Actor> {
 	public:
 		using this_type = StaticGeometryActor;
-		using underlying_type = Actor;
-
 		constexpr static type_id typeId { "StaticGeometryActor"_typeId };
 
-	public:
-		StaticGeometryActor(cref<ActorInitializer> initializer_);
-
-	private:
-		ptr<StaticGeometryComponent> _staticGeometryComponent;
+		using layout = engine::acs::ActorLayout<engine::acs::Slot<"geometry", StaticGeometryComponent>>;
 
 	public:
-		[[nodiscard]] nmpt<StaticGeometryComponent> getStaticGeometryComponent() const noexcept;
+		explicit StaticGeometryActor(cref<ActorInitializer> initializer_);
+
+	public:
+		[[nodiscard]] nmpt<StaticGeometryComponent> getStaticGeometryComponent() noexcept;
 	};
 }

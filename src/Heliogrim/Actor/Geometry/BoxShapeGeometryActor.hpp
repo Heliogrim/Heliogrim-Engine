@@ -1,32 +1,29 @@
 #pragma once
 
+#include <Engine.ACS/Archetype/Layout.hpp>
+
 #include "../Actor.hpp"
 #include "../../Component/Scene/Collision/BoxShapeCollisionComponent.hpp"
 #include "../../Component/Scene/Geometry/BoxShapeGeometryComponent.hpp"
+#include "../Archetype/InheritArchetype.hpp"
 
 namespace hg {
 	class BoxShapeGeometryActor :
-		public InheritMeta<BoxShapeGeometryActor, Actor> {
-	public:
-		ACCESS_LAYOUT
-		ACCESS_STRUCTURE
-
+		public InheritArchetype<BoxShapeGeometryActor, Actor> {
 	public:
 		using this_type = BoxShapeGeometryActor;
-		using underlying_type = Actor;
-
 		constexpr static type_id typeId { "BoxShapeGeometryActor"_typeId };
 
-	public:
-		BoxShapeGeometryActor(cref<ActorInitializer> initializer_);
-
-	private:
-		ptr<BoxShapeCollisionComponent> _boxShapeCollisionComponent;
-		ptr<BoxShapeGeometryComponent> _boxShapeGeometryComponent;
+		using layout = engine::acs::ActorLayout<
+			engine::acs::Slot<"collision", BoxShapeCollisionComponent, engine::acs::Children<
+				engine::acs::Slot<"geometry", BoxShapeGeometryComponent>>>>;
 
 	public:
-		[[nodiscard]] nmpt<BoxShapeCollisionComponent> getBoxShapeCollisionComponent() const noexcept;
+		explicit BoxShapeGeometryActor(cref<ActorInitializer> initializer_);
 
-		[[nodiscard]] nmpt<BoxShapeGeometryComponent> getBoxShapeGeometryComponent() const noexcept;
+	public:
+		[[nodiscard]] nmpt<BoxShapeCollisionComponent> getBoxShapeCollisionComponent() noexcept;
+
+		[[nodiscard]] nmpt<BoxShapeGeometryComponent> getBoxShapeGeometryComponent() noexcept;
 	};
 }
