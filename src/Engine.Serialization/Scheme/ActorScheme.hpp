@@ -5,6 +5,7 @@
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Reflect/Cast.hpp>
+#include <Engine.Serialization/SerializationModule.hpp>
 #include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>
 #include <Engine.Serialization/Structure/RecordScopedSlot.hpp>
 #include <Engine.Serialization/Structure/SeqScopedSlot.hpp>

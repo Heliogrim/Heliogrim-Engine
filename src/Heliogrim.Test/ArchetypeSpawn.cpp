@@ -1,5 +1,6 @@
 #include "pch.h"
-#include <Engine.Common/Move.hpp>
+
+/**/
 
 #include <memory>
 #include <type_traits>
@@ -8,6 +9,7 @@
 #include <Engine.ACS/ActorModule.hpp>
 #include <Engine.ACS/Registry.hpp>
 #include <Engine.Common/Make.hpp>
+#include <Engine.Common/Move.hpp>
 #include <Engine.Config/Config.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Timing.hpp>
@@ -20,7 +22,16 @@
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 #include <Heliogrim/IComponentRegisterContext.hpp>
 #include <Heliogrim/Actor/ActorRef.hpp>
+#include <Heliogrim/Actor/Archetype/ArchetypeConcept.hpp>
 #include <Heliogrim/Actor/Archetype/ArchetypeDefinition.inl.hpp>
+#include <Heliogrim/Actor/Geometry/BoxShapeGeometryActor.hpp>
+#include <Heliogrim/Actor/Geometry/SphereShapeGeometryActor.hpp>
+#include <Heliogrim/Actor/Geometry/StaticGeometryActor.hpp>
+#include <Heliogrim/Component/Scene/Collision/BoxShapeCollisionComponent.Layout.hpp>
+#include <Heliogrim/Component/Scene/Collision/SphereShapeCollisionComponent.Layout.hpp>
+#include <Heliogrim/Component/Scene/Geometry/BoxShapeGeometryComponent.Layout.hpp>
+#include <Heliogrim/Component/Scene/Geometry/SphereShapeGeometryComponent.Layout.hpp>
+#include <Heliogrim/Component/Scene/Geometry/StaticGeometryComponent.Layout.hpp>
 #include <Heliogrim/Universe/Universe.hpp>
 
 #include "SpawnEngine.hpp"
@@ -291,6 +302,26 @@ namespace HeliogrimApi {
 		const auto handle = registry().handleOf(*actor);
 		EXPECT_EQ(handle.space(), engine::acs::detachedSpace);
 		EXPECT_EQ(registry().resolve(handle), static_cast<ptr<Actor>>(actor.get()));
+	}
+
+	TEST_F(Spawn, GeometryActorsAreArchetypes) {
+		static_assert(IsArchetype<StaticGeometryActor>);
+		static_assert(IsArchetype<BoxShapeGeometryActor>);
+		static_assert(IsArchetype<SphereShapeGeometryActor>);
+
+		auto geometry = CreateActor<StaticGeometryActor>();
+		ASSERT_NE(geometry.get(), nullptr);
+		EXPECT_EQ(geometry->getRootComponent().address(), &geometry->get<"geometry">());
+
+		auto box = CreateActor<BoxShapeGeometryActor>();
+		ASSERT_NE(box.get(), nullptr);
+		EXPECT_EQ(box->getRootComponent().address(), &box->get<"collision">());
+		EXPECT_EQ(box->get<"geometry">().getParentComponent(), &box->get<"collision">());
+
+		auto sphere = CreateActor<SphereShapeGeometryActor>();
+		ASSERT_NE(sphere.get(), nullptr);
+		EXPECT_EQ(sphere->getRootComponent().address(), &sphere->get<"collision">());
+		EXPECT_EQ(sphere->get<"geometry">().getParentComponent(), &sphere->get<"collision">());
 	}
 
 	TEST_F(Spawn, Batch10k) {
