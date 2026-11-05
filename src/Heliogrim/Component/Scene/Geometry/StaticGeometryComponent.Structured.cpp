@@ -1,7 +1,6 @@
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Structure/SeqScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
-#include <Engine.Serialization.Structures/Symbols.hpp>
 
 #include "AssetDatabase.hpp"
 #include "StaticGeometryComponent.hpp"
@@ -43,7 +42,9 @@ void access::Structure<StaticGeometryComponent>::hydrate(
 	// TODO: Implement Resolver
 	auto geometryGuid = AssetGuid {};
 	Structure<Guid>::hydrate(record_.getStructSlot("geometry"sv), geometryGuid);
-	target_.setStaticGeometry(GetAssets().find<StaticGeometryAssetHandle>(geometryGuid).value);
+	if (geometryGuid != invalid_asset_guid) {
+		target_.setStaticGeometry(GetAssets().find<StaticGeometryAssetHandle>(geometryGuid).value);
+	}
 
 	record_.getRecordSlot("materials"sv).asSeq().each(
 		[&target_](mref<RecordScopedSlot> materialSlot_, const size_t index_) {
