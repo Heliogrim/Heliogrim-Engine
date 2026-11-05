@@ -1,25 +1,20 @@
 #include "BoxShapeGeometryActor.hpp"
 
+#include "../Archetype/ArchetypeDefinition.inl.hpp"
+#include "../../Component/Scene/Collision/BoxShapeCollisionComponent.Layout.hpp"
+#include "../../Component/Scene/Geometry/BoxShapeGeometryComponent.Layout.hpp"
+
 using namespace hg;
 
 BoxShapeGeometryActor::BoxShapeGeometryActor(cref<ActorInitializer> initializer_) :
-	InheritMeta(initializer_),
-	_boxShapeCollisionComponent(nullptr),
-	_boxShapeGeometryComponent(nullptr) {
+	InheritArchetype(initializer_) {}
 
-	if (initializer_.shouldAutoInitialize()) {
-		_boxShapeCollisionComponent = initializer_.createComponent<BoxShapeCollisionComponent>(*this, { .parent = None });
-		_boxShapeGeometryComponent = initializer_.createComponent<BoxShapeGeometryComponent>(
-			*this,
-			{ .parent = Some<ref<HierarchyComponent>>(*_boxShapeCollisionComponent) }
-		);
-	}
+nmpt<BoxShapeCollisionComponent> BoxShapeGeometryActor::getBoxShapeCollisionComponent() noexcept {
+	return &get<"collision">();
 }
 
-nmpt<BoxShapeCollisionComponent> BoxShapeGeometryActor::getBoxShapeCollisionComponent() const noexcept {
-	return _boxShapeCollisionComponent;
+nmpt<BoxShapeGeometryComponent> BoxShapeGeometryActor::getBoxShapeGeometryComponent() noexcept {
+	return &get<"geometry">();
 }
 
-nmpt<BoxShapeGeometryComponent> BoxShapeGeometryActor::getBoxShapeGeometryComponent() const noexcept {
-	return _boxShapeGeometryComponent;
-}
+template class hg::InheritArchetype<BoxShapeGeometryActor, Actor>;

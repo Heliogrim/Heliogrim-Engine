@@ -1,5 +1,8 @@
 #include "Heliogrim/Actor/Actor.hpp"
+#include "Heliogrim/Actor/Archetype/ArchetypeFnSet.hpp"
 #include "Heliogrim/Actor/Camera/CameraActor.hpp"
+#include "Heliogrim/Actor/Geometry/BoxShapeGeometryActor.hpp"
+#include "Heliogrim/Actor/Geometry/SphereShapeGeometryActor.hpp"
 #include "Heliogrim/Actor/Geometry/StaticGeometryActor.hpp"
 #include "Heliogrim/Actor/Light/DirectionalLightActor.hpp"
 #include "Heliogrim/Actor/Light/PointLightActor.hpp"
@@ -13,24 +16,26 @@
 
 #include <Engine.Common/Make.hpp>
 #include <Engine.Config/Config.hpp>
-#include <Engine.Serialization/SerializationModule.hpp>
 #include <Engine.Serialization/Scheme/ActorScheme.hpp>
 #include <Engine.Serialization/Scheme/ComponentScheme.hpp>
 #include <Engine.Serialization/Scheme/DefaultScheme.hpp>
 #include <Engine.Serialization/Scheme/Scheme.hpp>
+#include <Engine.Serialization/SerializationModule.hpp>
 
 using namespace hg;
 
-void editor::boot::initSerialization(
-	[[maybe_unused]] cref<engine::Config> cfg_,
-	ref<engine::SerializationModule> module_
-) {
+void editor::boot::initSerialization([[maybe_unused]] cref<engine::Config> cfg_, ref<engine::SerializationModule> module_) {
 
 	/* Actor Schemes */
 
 	module_.addActorScheme<Actor>();
 	module_.addActorScheme<CameraActor>();
-	module_.addActorScheme<StaticGeometryActor>();
+	std::ignore = RegisterActorClass<StaticGeometryActor>();
+	module_.addActorScheme(StaticGeometryActor::typeId, MakeArchetypeFnSet(&StaticGeometryActor::actorClass()));
+	std::ignore = RegisterActorClass<BoxShapeGeometryActor>();
+	module_.addActorScheme(BoxShapeGeometryActor::typeId, MakeArchetypeFnSet(&BoxShapeGeometryActor::actorClass()));
+	std::ignore = RegisterActorClass<SphereShapeGeometryActor>();
+	module_.addActorScheme(SphereShapeGeometryActor::typeId, MakeArchetypeFnSet(&SphereShapeGeometryActor::actorClass()));
 	module_.addActorScheme<DirectionalLightActor>();
 	module_.addActorScheme<PointLightActor>();
 
@@ -43,5 +48,4 @@ void editor::boot::initSerialization(
 	module_.addComponentScheme<PointLightComponent>();
 	module_.addComponentScheme<SpotLightComponent>();
 	module_.addComponentScheme<SkyboxComponent>();
-
 }
