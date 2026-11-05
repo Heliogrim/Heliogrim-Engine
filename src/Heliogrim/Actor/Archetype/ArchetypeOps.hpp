@@ -1,11 +1,17 @@
 #pragma once
 
 #include <cstddef>
+#include <span>
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 
 namespace hg::engine::acs {
 	class Registry;
+}
+
+namespace hg::engine::serialization {
+	class StructScopedSlot;
 }
 
 namespace hg {
@@ -24,18 +30,28 @@ namespace hg {
 	 */
 	struct ArchetypeOps {
 		// Components in entry order (parents before children), then the actor.
-		void (*construct)(std::byte* slots_, u32 count_, u32 stride_, cref<ArchetypeInit> init_);
-		// Actor first, then components in reverse entry order.
-		void (*destroy)(std::byte* slots_, u32 count_, u32 stride_);
-		// Moves live slots to uninitialised memory and re-stamps owner and parent links; `src_` is left dead.
-		void (*relocate)(std::byte* src_, std::byte* dst_, u32 count_, u32 stride_);
-		// nullptr unless the archetype itself declares `tick`.
-		void (*tick)(std::byte* slots_, u32 count_, u32 stride_);
+		void (*construct)(ptr<std::byte> slots_, u32 count_, u32 stride_, cref<ArchetypeInit> init_);
 
-		// shortcut: serialization entries stay nullptr with placeholder signatures; Task 10 fills and types them.
-		void (*serialize)(const std::byte* slot_, void* record_);
-		void (*hydrate)(std::byte* slot_, const void* record_);
-		void (*dumpLayout)(const std::byte* slots_, u32 count_, u32 stride_, void* stream_);
-		void (*loadLayout)(std::byte* slots_, u32 count_, u32 stride_, const void* stream_);
+		// Actor first, then components in reverse entry order.
+		void (*destroy)(ptr<std::byte> slots_, u32 count_, u32 stride_);
+
+		// Moves live slots to uninitialised memory and re-stamps owner and parent links; `src_` is left dead.
+		void (*relocate)(ptr<std::byte> src_, ptr<std::byte> dst_, u32 count_, u32 stride_);
+
+		// nullptr unless the archetype itself declares `tick`.
+		void (*tick)(ptr<std::byte> slots_, u32 count_, u32 stride_);
+
+		// Writes the component records of one slot under `Symbols::Components` of the actor record, keyed by entry
+		// path ("body/wheels/2/hub").
+		void (*serialize)(ptr<const std::byte> slot_, ref<engine::serialization::StructScopedSlot> record_);
+
+		// Reads the component records written by `serialize` into a constructed slot.
+		void (*hydrate)(ptr<std::byte> slot_, ref<const engine::serialization::StructScopedSlot> record_);
+
+		// Appends header {layoutHash, count, stride}, then per slot each component by memcpy or `access::Layout<T>`.
+		void (*dumpLayout)(ptr<const std::byte> slots_, u32 count_, u32 stride_, ref<Vector<std::byte>> out_);
+
+		// Loads a dump into constructed slots; false on header (hash, count, stride) mismatch or truncated input.
+		bool (*loadLayout)(ptr<std::byte> slots_, u32 count_, u32 stride_, std::span<const std::byte> in_);
 	};
 }
