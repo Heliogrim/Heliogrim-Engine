@@ -2,6 +2,7 @@
 
 #include <Engine.Common/Optional.hpp>
 #include <Engine.Reflect/Inherit/InheritMeta.hpp>
+#include <Engine.Serialization/Access/__fwd.hpp>
 
 #include "ShapeGeometryComponent.hpp"
 #include "../../../Asset/MaterialAssetHandles.hpp"
