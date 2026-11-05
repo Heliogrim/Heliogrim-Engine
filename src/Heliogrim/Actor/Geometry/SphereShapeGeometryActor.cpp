@@ -1,25 +1,20 @@
 #include "SphereShapeGeometryActor.hpp"
 
+#include "../Archetype/ArchetypeDefinition.inl.hpp"
+#include "../../Component/Scene/Collision/SphereShapeCollisionComponent.Layout.hpp"
+#include "../../Component/Scene/Geometry/SphereShapeGeometryComponent.Layout.hpp"
+
 using namespace hg;
 
 SphereShapeGeometryActor::SphereShapeGeometryActor(cref<ActorInitializer> initializer_) :
-	InheritMeta(initializer_),
-	_sphereShapeCollisionComponent(nullptr),
-	_sphereShapeGeometryComponent(nullptr) {
+	InheritArchetype(initializer_) {}
 
-	if (initializer_.shouldAutoInitialize()) {
-		_sphereShapeCollisionComponent = initializer_.createComponent<SphereShapeCollisionComponent>(*this, { .parent = None });;
-		_sphereShapeGeometryComponent = initializer_.createComponent<SphereShapeGeometryComponent>(
-			*this,
-			{ .parent = Some<ref<HierarchyComponent>>(*_sphereShapeCollisionComponent) }
-		);
-	}
+nmpt<SphereShapeCollisionComponent> SphereShapeGeometryActor::getSphereShapeCollisionComponent() noexcept {
+	return &get<"collision">();
 }
 
-nmpt<SphereShapeCollisionComponent> SphereShapeGeometryActor::getSphereShapeCollisionComponent() const noexcept {
-	return _sphereShapeCollisionComponent;
+nmpt<SphereShapeGeometryComponent> SphereShapeGeometryActor::getSphereShapeGeometryComponent() noexcept {
+	return &get<"geometry">();
 }
 
-nmpt<SphereShapeGeometryComponent> SphereShapeGeometryActor::getSphereShapeGeometryComponent() const noexcept {
-	return _sphereShapeGeometryComponent;
-}
+template class hg::InheritArchetype<SphereShapeGeometryActor, Actor>;

@@ -1,5 +1,7 @@
 #include "pch.h"
 
+/**/
+
 #include <cstddef>
 #include <new>
 #include <span>
@@ -17,9 +19,11 @@
 #include <Engine.Serialization.Structures/Symbols.hpp>
 #include <Heliogrim/Actor/ActorRef.hpp>
 #include <Heliogrim/Actor/Archetype/ActorClass.hpp>
-#include <Heliogrim/Actor/Archetype/ArchetypeFnSet.hpp>
 #include <Heliogrim/Actor/Archetype/ArchetypeDefinition.inl.hpp>
+#include <Heliogrim/Actor/Archetype/ArchetypeFnSet.hpp>
+#include <Heliogrim/Actor/Geometry/StaticGeometryActor.hpp>
 #include <Heliogrim/Component/ComponentRef.hpp>
+#include <Heliogrim/Component/Scene/Geometry/StaticGeometryComponent.Layout.hpp>
 #include <Heliogrim/Universe/Universe.hpp>
 
 #include "SpawnEngine.hpp"
@@ -85,11 +89,17 @@ public:
 	}
 
 HELIOGRIM_TEST_STUB_STRUCTURE(BodyStub, mass, u64)
+
 HELIOGRIM_TEST_STUB_STRUCTURE(WheelComponentStub, radius, float)
+
 HELIOGRIM_TEST_STUB_STRUCTURE(HubStub, bolts, u32)
+
 HELIOGRIM_TEST_STUB_STRUCTURE(CameraStub, ticks, u32)
+
 HELIOGRIM_TEST_STUB_STRUCTURE(BigCameraStub, ticks, u32)
+
 HELIOGRIM_TEST_STUB_STRUCTURE(TurretStub, shells, u32)
+
 HELIOGRIM_TEST_STUB_STRUCTURE(LinkStub, tag, u32)
 
 #undef HELIOGRIM_TEST_STUB_STRUCTURE
@@ -217,16 +227,13 @@ namespace HeliogrimApi {
 		}
 		actor(tank, source.slot(0u)).setLabel(ActorLabel { "tank-7" });
 
-		auto archive = BufferArchive {};
-		{
+		auto archive = BufferArchive {}; {
 			auto structured = StructuredArchive { archive };
 			auto root = structured.insertRootSlot().intoStruct();
 			access::Structure<Actor>::serialize(actor(tank, source.slot(0u)), ::hg::move(root));
 		}
 
-		archive.seek(0);
-
-		{
+		archive.seek(0); {
 			auto structured = StructuredArchive { archive };
 			const auto root = structured.getRootSlot().asStruct();
 			const auto components = root.getRecordSlot(Symbols::Components).asStruct();
@@ -260,8 +267,7 @@ namespace HeliogrimApi {
 		const auto scheme = schemes.getActorScheme(TestTank::typeId);
 		ASSERT_TRUE(scheme.has_value());
 
-		auto archive = BufferArchive {};
-		{
+		auto archive = BufferArchive {}; {
 			auto structured = StructuredArchive { archive };
 			scheme->serialize(actor(tank, source.slot(0u)), structured.insertRootSlot().intoStruct());
 		}
@@ -286,8 +292,7 @@ namespace HeliogrimApi {
 			write(target.slot(0u), entry, 30u + entry);
 		}
 
-		auto archive = BufferArchive {};
-		{
+		auto archive = BufferArchive {}; {
 			auto structured = StructuredArchive { archive };
 			auto root = structured.insertRootSlot().intoStruct();
 			auto components = root.insertRecordSlot(Symbols::Components).intoStruct();
@@ -306,31 +311,87 @@ namespace HeliogrimApi {
 		ref<const ActorClass> body = HeliogrimApi::TestBody::actorClass();
 		const Slots source { body, 1u };
 
-		auto archive = BufferArchive {};
-		{
+		auto archive = BufferArchive {}; {
 			auto structured = StructuredArchive { archive };
 			auto root = structured.insertRootSlot().intoStruct();
 			access::Structure<Actor>::serialize(actor(body, source.slot(0u)), ::hg::move(root));
 		}
 
-		archive.seek(0);
-
-		{
+		archive.seek(0); {
 			auto structured = StructuredArchive { archive };
 			const auto root = structured.getRootSlot().asStruct();
 			const auto created = CreateActor(&TestTank::actorClass(), SerializedActor { root }).get();
 			EXPECT_EQ(created.get(), nullptr);
 		}
 
-		archive.seek(0);
-
-		{
+		archive.seek(0); {
 			// Rejection returns before the universe is touched, so an empty one suffices.
 			auto structured = StructuredArchive { archive };
 			const auto root = structured.getRootSlot().asStruct();
 			const auto spawned = SpawnActor(&TestTank::actorClass(), SerializedActor { root }, Universe {}).get();
 			EXPECT_FALSE(spawned.has_value());
 		}
+	}
+
+	// Without an asset database only unbound geometry can round trip.
+	TEST_F(ArchetypeSerPublic, StaticGeometryActorStructuredRoundTrip) {
+		ref<const ActorClass> cls = StaticGeometryActor::actorClass();
+		const Slots source { cls, 1u };
+		actor(cls, source.slot(0u)).setLabel(ActorLabel { "geo-1" });
+
+		auto archive = BufferArchive {}; {
+			auto structured = StructuredArchive { archive };
+			access::Structure<Actor>::serialize(actor(cls, source.slot(0u)), structured.insertRootSlot().intoStruct());
+		}
+
+		archive.seek(0);
+
+		auto structured = StructuredArchive { archive };
+		const auto root = structured.getRootSlot().asStruct();
+		EXPECT_TRUE(root.getRecordSlot(Symbols::Components).asStruct().hasRecordSlot("geometry"));
+
+		auto created = CreateActor(&cls, SerializedActor { root }).get();
+		ASSERT_NE(created.get(), nullptr);
+		EXPECT_EQ(created->guid(), actor(cls, source.slot(0u)).guid());
+		EXPECT_EQ(created->label().text, "geo-1");
+		EXPECT_FALSE(static_cast<ptr<StaticGeometryActor>>(created.get())->get<"geometry">().getStaticGeometry().isValid());
+	}
+
+	TEST(ArchetypeSer, StaticGeometryActorLayoutRoundTrip) {
+		ref<const ActorClass> cls = StaticGeometryActor::actorClass();
+		const Slots source { cls, 2u };
+		const Slots target { cls, 2u };
+
+		Vector<std::byte> bytes {};
+		cls.ops().dumpLayout(source.slot(0u), 2u, source.stride(), bytes);
+		ASSERT_TRUE(cls.ops().loadLayout(target.slot(0u), 2u, target.stride(), bytes));
+
+		auto& loaded = static_cast<ref<StaticGeometryActor>>(actor(cls, target.slot(1u)));
+		EXPECT_FALSE(loaded.get<"geometry">().getStaticGeometry().isValid());
+		EXPECT_TRUE(loaded.get<"geometry">().getInstanceMaterials().empty());
+	}
+
+	// Level.Structured.cpp hydrate looks the scheme up by the Symbols::Type key that Structure<Actor> writes.
+	TEST(ArchetypeSer, LevelTypeKeyFindsGeometryScheme) {
+		ref<const ActorClass> cls = StaticGeometryActor::actorClass();
+		const Slots source { cls, 1u };
+		EXPECT_EQ(actor(cls, source.slot(0u)).getMetaClass()->typeId(), StaticGeometryActor::typeId);
+
+		FnSets schemes {};
+		schemes.addActorScheme(StaticGeometryActor::typeId, MakeArchetypeFnSet(&cls));
+
+		auto archive = BufferArchive {}; {
+			auto structured = StructuredArchive { archive };
+			access::Structure<Actor>::serialize(actor(cls, source.slot(0u)), structured.insertRootSlot().intoStruct());
+		}
+
+		archive.seek(0);
+
+		auto structured = StructuredArchive { archive };
+		type_id written {};
+		structured.getRootSlot().asStruct().getSlot<u64>(Symbols::Type) >> written.data;
+		EXPECT_EQ(written, StaticGeometryActor::typeId);
+		EXPECT_TRUE(schemes.getActorScheme(written).has_value());
 	}
 
 	TEST(ArchetypeSer, LayoutRoundTrip) {
