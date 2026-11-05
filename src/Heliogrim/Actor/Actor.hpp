@@ -30,6 +30,10 @@ namespace hg::engine::core {
 	class Universe;
 }
 
+namespace hg::engine::serialization {
+	class StructScopedSlot;
+}
+
 namespace hg {
 	/**
 	 * Forward Declaration
@@ -37,7 +41,11 @@ namespace hg {
 	class ActorClass;
 	struct CachedActorPointer;
 	class HierarchyComponent;
-	struct SerializedActor;
+
+	// Actor record as written by `access::Structure<Actor>`; archetype actors hydrate their components from it.
+	struct SerializedActor {
+		ref<const engine::serialization::StructScopedSlot> record;
+	};
 
 	class IComponentRegisterContext;
 	class Session;
