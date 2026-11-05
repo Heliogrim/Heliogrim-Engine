@@ -17,6 +17,7 @@
 #include <Engine.Serialization.Structures/Symbols.hpp>
 #include <Heliogrim/Actor/ActorRef.hpp>
 #include <Heliogrim/Actor/Archetype/ActorClass.hpp>
+#include <Heliogrim/Actor/Archetype/ArchetypeFnSet.hpp>
 #include <Heliogrim/Actor/Archetype/ArchetypeDefinition.inl.hpp>
 #include <Heliogrim/Component/ComponentRef.hpp>
 #include <Heliogrim/Universe/Universe.hpp>
@@ -244,6 +245,60 @@ namespace HeliogrimApi {
 			for (u32 entry = 0u; entry < TankInfo::entry_count; ++entry) {
 				EXPECT_EQ(read(slot, entry), 10u + entry) << TankInfo::slot_path(TankInfo::slot_of(entry));
 			}
+		}
+	}
+
+	TEST_F(ArchetypeSerPublic, LevelSchemeRoundTrip) {
+		ref<const ActorClass> tank = TestTank::actorClass();
+		const Slots source { tank, 1u };
+		for (u32 entry = 0u; entry < TankInfo::entry_count; ++entry) {
+			write(source.slot(0u), entry, 20u + entry);
+		}
+
+		FnSets schemes {};
+		schemes.addActorScheme(TestTank::typeId, MakeArchetypeFnSet(&tank));
+		const auto scheme = schemes.getActorScheme(TestTank::typeId);
+		ASSERT_TRUE(scheme.has_value());
+
+		auto archive = BufferArchive {};
+		{
+			auto structured = StructuredArchive { archive };
+			scheme->serialize(actor(tank, source.slot(0u)), structured.insertRootSlot().intoStruct());
+		}
+
+		archive.seek(0);
+
+		auto structured = StructuredArchive { archive };
+		const auto created = VolatileActor<> { scheme->deserialize(structured.getRootSlot(), nullptr) };
+		ASSERT_NE(created.get(), nullptr);
+
+		const auto slot = reinterpret_cast<ptr<std::byte>>(created.get()) - tank.desc().actorOffset;
+		EXPECT_EQ(created->guid(), actor(tank, source.slot(0u)).guid());
+		for (u32 entry = 0u; entry < TankInfo::entry_count; ++entry) {
+			EXPECT_EQ(read(slot, entry), 20u + entry);
+		}
+	}
+
+	TEST_F(ArchetypeSerPublic, HydrateSkipsMissingEntries) {
+		ref<const ActorClass> tank = TestTank::actorClass();
+		const Slots target { tank, 1u };
+		for (u32 entry = 0u; entry < TankInfo::entry_count; ++entry) {
+			write(target.slot(0u), entry, 30u + entry);
+		}
+
+		auto archive = BufferArchive {};
+		{
+			auto structured = StructuredArchive { archive };
+			auto root = structured.insertRootSlot().intoStruct();
+			auto components = root.insertRecordSlot(Symbols::Components).intoStruct();
+		}
+
+		archive.seek(0);
+
+		auto structured = StructuredArchive { archive };
+		tank.ops().hydrate(target.slot(0u), structured.getRootSlot().asStruct());
+		for (u32 entry = 0u; entry < TankInfo::entry_count; ++entry) {
+			EXPECT_EQ(read(target.slot(0u), entry), 30u + entry);
 		}
 	}
 
