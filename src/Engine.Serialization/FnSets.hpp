@@ -3,11 +3,9 @@
 #include "Access/Structure.hpp"
 #include "Engine.Common/Optional.hpp"
 #include "Engine.Common/Collection/DenseMap.hpp"
-#include "Engine.Common/Functional/Function.hpp"
 #include "Engine.Common/Meta/TypeId.hpp"
 #include "Engine.Reflect/IsType.hpp"
 #include "Heliogrim/ActorInitializer.hpp"
-#include "Heliogrim/Actor/ActorGuid.hpp"
 #include "Structure/RecordScopedSlot.hpp"
 
 namespace hg::engine::serialization {
@@ -42,6 +40,10 @@ namespace hg::engine::serialization {
 		DenseMap<type_id, serialization::ComponentFnSet> _componentStructuredSchemes;
 
 	public:
+		void addActorScheme(const type_id typeId_, mref<serialization::ActorFnSet> fnSet_) {
+			_actorStructuredSchemes.insert_or_assign(typeId_, ::hg::move(fnSet_));
+		}
+
 		template <class ActorType_>
 		void addActorScheme() {
 			using record_type = serialization::RecordScopedSlot;
@@ -93,11 +95,11 @@ namespace hg::engine::serialization {
 						);
 					},
 					.deserialize = [](
-					cref<record_type> slot_,
-					nmpt<acs::Registry> allocator_,
-					ref<Actor> owner_,
-					nmpt<HierarchyComponent> maybeParent_
-				) -> VolatileComponent<> {
+						cref<record_type> slot_,
+						nmpt<acs::Registry> allocator_,
+						ref<Actor> owner_,
+						nmpt<HierarchyComponent> maybeParent_
+					) -> VolatileComponent<> {
 						return serialization::access::Structure<ComponentType_>::template deserialize(
 							slot_,
 							allocator_,
