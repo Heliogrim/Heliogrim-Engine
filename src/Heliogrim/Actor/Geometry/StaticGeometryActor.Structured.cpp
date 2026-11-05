@@ -28,7 +28,7 @@ namespace hg::engine::serialization {
 
 		/**/
 
-		const auto staticGeometryComponentGuid = get_named_guid_slot(record_, "geometry"sv);
+		const auto staticGeometryComponentGuid = ComponentGuid { get_named_guid_slot(record_, "geometry"sv) };
 		target_._staticGeometryComponent = nullptr;
 
 		for (auto* const candidate : target_._components.values()) {
