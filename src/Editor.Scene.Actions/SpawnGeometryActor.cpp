@@ -7,23 +7,21 @@ using namespace hg;
 
 /**/
 
-[[nodiscard]] static Opt<ActorGuid> spawnActorImpl(
+[[nodiscard]] static Opt<ActorRef<>> spawnActorImpl(
 	TypedAssetGuid<engine::assets::StaticGeometry> assetGuid_,
 	ref<const math::Location> location_
 );
 
-static void despawnActorImpl(mref<ActorGuid> actorGuid_);
+static void despawnActorImpl(cref<ActorRef<>> actorRef_);
 
 /**/
 
 SpawnGeometryActor::SpawnGeometryActor(TypedAssetGuid<engine::assets::StaticGeometry> assetGuid_, mref<math::Location> location_) :
 	DelegateAction(
-		[this, assetGuid_, location_] {
-			_actorGuid = spawnActorImpl(assetGuid_, location_);
-		},
+		[this, assetGuid_, location_] { _actorRef = spawnActorImpl(assetGuid_, location_); },
 		[this] {
-			if (_actorGuid != None) {
-				despawnActorImpl(*std::exchange(_actorGuid, None));
+			if (_actorRef != None) {
+				despawnActorImpl(*std::exchange(_actorRef, None));
 			}
 		}
 	) {}
@@ -48,15 +46,15 @@ SpawnGeometryActor::~SpawnGeometryActor() = default;
 #include <Heliogrim/Core/Session.hpp>
 #include <Heliogrim/Universe/Universe.hpp>
 
-Opt<ActorGuid> spawnActorImpl(TypedAssetGuid<engine::assets::StaticGeometry> assetGuid_, ref<const math::Location> location_) {
+Opt<ActorRef<>> spawnActorImpl(TypedAssetGuid<engine::assets::StaticGeometry> assetGuid_, ref<const math::Location> location_) {
 
 	/* Generate actor */
 
 	auto session = GetSession();
 	auto universe = GetUniverse(session);
 
-	auto volatileActor = CreateActor();
-	auto component = volatileActor->addComponent<StaticGeometryComponent>();
+	auto volatileActor = CreateActor<StaticGeometryActor>();
+	auto* const component = &volatileActor->get<"geometry">();
 
 	/* Configure components */
 
@@ -71,8 +69,7 @@ Opt<ActorGuid> spawnActorImpl(TypedAssetGuid<engine::assets::StaticGeometry> ass
 	/**/
 
 	volatileActor->getRootComponent()->getLocalTransform().location() = location_;
-	const auto guid = volatileActor->guid();
-	static_cast<void>(universe.addActor(::hg::move(volatileActor)));
+	auto actorRef = universe.addActor(VolatileActor<> { ::hg::move(volatileActor) });
 
 	/**/
 
@@ -83,18 +80,21 @@ Opt<ActorGuid> spawnActorImpl(TypedAssetGuid<engine::assets::StaticGeometry> ass
 
 	/**/
 
-	return Some(guid);
+	return actorRef;
 }
 
-void despawnActorImpl(mref<ActorGuid> actorGuid_) {
+void despawnActorImpl(cref<ActorRef<>> actorRef_) {
 
 	/* Generate actor */
 
 	auto session = GetSession();
 	auto universe = GetUniverse(session);
 
-	auto* actor = engine::Engine::getEngine()->getActors()->getRegistry()->getOrCreateActorPool<Actor>()->get(actorGuid_);
-	universe.dropActor(::hg::move(actor));
+	auto actor = actorRef_.get();
+	if (actor == None) {
+		return;
+	}
+	universe.dropActor(std::addressof(actor.value()));
 
 	/**/
 

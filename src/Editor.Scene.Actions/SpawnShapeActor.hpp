@@ -3,7 +3,7 @@
 #include <Editor.Action/Action/DelegateAction.hpp>
 #include <Engine.Common/Optional.hpp>
 #include <Engine.Common/Math/Location.hpp>
-#include <Heliogrim/Actor/ActorGuid.hpp>
+#include <Heliogrim/Actor/ActorRef.hpp>
 
 namespace hg::editor::scene::actions {
 	class SpawnShapeActor :
@@ -19,6 +19,6 @@ namespace hg::editor::scene::actions {
 		~SpawnShapeActor() override;
 
 	private:
-		Opt<ActorGuid> _actorGuid;
+		Opt<ActorRef<>> _actorRef;
 	};
 }

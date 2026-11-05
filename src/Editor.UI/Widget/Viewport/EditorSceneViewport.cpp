@@ -1,8 +1,6 @@
 #include "EditorSceneViewport.hpp"
 
 #include <Editor.Assets.Default/GfxMaterials/Default.hpp>
-#include <Engine.ACS/ActorModule.hpp>
-#include <Heliogrim/Actor/Camera/CameraActor.hpp>
 
 using namespace hg::editor::ui;
 using namespace hg::engine::reflow;
@@ -45,8 +43,8 @@ void experimental_add_actor(math::Transform baseTransform_) {
 	auto session = GetSession();
 	auto universe = GetUniverse(session);
 
-	auto actor = CreateActor();
-	auto component = actor->addComponent<StaticGeometryComponent>();
+	auto actor = CreateActor<StaticGeometryActor>();
+	auto* const component = &actor->get<"geometry">();
 
 	/* Configure components */
 
