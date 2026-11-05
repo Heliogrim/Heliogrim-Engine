@@ -1,6 +1,8 @@
 #include "pch.h"
 #include <Engine.Common/Move.hpp>
 
+#include <memory>
+#include <type_traits>
 #include <unordered_set>
 #include <vector>
 #include <Engine.ACS/ActorModule.hpp>
@@ -17,6 +19,7 @@
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 #include <Heliogrim/IComponentRegisterContext.hpp>
+#include <Heliogrim/Actor/ActorRef.hpp>
 #include <Heliogrim/Actor/Archetype/ArchetypeDefinition.inl.hpp>
 #include <Heliogrim/Universe/Universe.hpp>
 
@@ -168,6 +171,61 @@ namespace HeliogrimApi {
 		}
 
 		void noInit(ref<Actor>, size_t) noexcept {}
+
+		[[nodiscard]] ptr<Actor> deref(cref<ActorRef<>> ref_) noexcept {
+			auto actor = ref_.get();
+			return actor.has_value() ? std::addressof(actor.value()) : nullptr;
+		}
+
+		template <typename Left_, typename Right_>
+		concept CrossComparable = requires(cref<Left_> left_, cref<Right_> right_) {
+			left_ == right_;
+		};
+
+		static_assert(not std::is_convertible_v<ActorGuid, ComponentGuid>);
+		static_assert(not std::is_convertible_v<ComponentGuid, ActorGuid>);
+		static_assert(not std::is_convertible_v<Guid, ActorGuid>);
+		static_assert(not std::is_convertible_v<Guid, ComponentGuid>);
+		static_assert(not std::is_convertible_v<u64, engine::acs::Handle>);
+		static_assert(not std::is_convertible_v<engine::acs::Handle, u64>);
+		template <typename Left_, typename Right_>
+		concept CrossOrdered = requires(cref<Left_> left_, cref<Right_> right_) {
+			left_ <=> right_;
+		};
+
+		static_assert(not std::equality_comparable_with<ActorGuid, Guid>);
+		static_assert(not std::equality_comparable_with<ComponentGuid, Guid>);
+		static_assert(not std::equality_comparable_with<ActorGuid, ComponentGuid>);
+		static_assert(not std::three_way_comparable_with<ActorGuid, Guid>);
+		static_assert(not std::three_way_comparable_with<ComponentGuid, Guid>);
+		static_assert(not std::three_way_comparable_with<ActorGuid, ComponentGuid>);
+		static_assert(not CrossComparable<ActorGuid, Guid>);
+		static_assert(not CrossComparable<Guid, ActorGuid>);
+		static_assert(not CrossComparable<ComponentGuid, Guid>);
+		static_assert(not CrossOrdered<ActorGuid, ComponentGuid>);
+		static_assert(not CrossOrdered<ComponentGuid, ActorGuid>);
+		static_assert(not CrossOrdered<ActorGuid, Guid>);
+		static_assert(not CrossOrdered<ComponentGuid, Guid>);
+		static_assert(CrossOrdered<ActorGuid, ActorGuid>);
+		static_assert(std::three_way_comparable<ActorGuid>);
+		static_assert(std::three_way_comparable<ComponentGuid>);
+		static_assert(not std::is_convertible_v<u16, engine::acs::SpaceId>);
+		static_assert(not std::is_constructible_v<engine::acs::Handle, u64>);
+		static_assert(
+			std::is_invocable_v<
+				decltype(&engine::acs::Handle::make), engine::acs::SpaceId, engine::acs::HandleGeneration, engine::acs::HandleIndex
+			>
+		);
+		static_assert(
+			not std::is_invocable_v<
+				decltype(&engine::acs::Handle::make), engine::acs::SpaceId, engine::acs::HandleIndex, engine::acs::HandleGeneration
+			>
+		);
+		static_assert(not std::is_invocable_v<decltype(&engine::acs::Handle::make), u16, u32, u32>);
+		static_assert(not std::is_constructible_v<ActorRef<>, engine::acs::Handle>);
+		static_assert(not CrossComparable<ActorGuid, ComponentGuid>);
+		static_assert(not CrossComparable<ComponentGuid, ActorGuid>);
+		static_assert(CrossComparable<ActorGuid, ActorGuid>);
 	}
 
 	class Spawn :
@@ -255,8 +313,11 @@ namespace HeliogrimApi {
 
 		std::unordered_set<Guid> guids {};
 		for (size_t index = 0uLL; index < count; ++index) {
-			auto* const actor = actors[index];
+			auto* const actor = deref(actors[index]);
+			ASSERT_NE(actor, nullptr);
 			const auto handle = registry().handleOf(*actor);
+			ASSERT_NE(handle, engine::acs::Handle {});
+			EXPECT_EQ(actors[index].handle(), handle);
 			EXPECT_EQ(handle.space(), space);
 			EXPECT_EQ(registry().resolve(handle), actor);
 			EXPECT_EQ(as<Body>(actor).get<"body">().mass, index);
@@ -278,10 +339,13 @@ namespace HeliogrimApi {
 		ASSERT_EQ(detached.space(), engine::acs::detachedSpace);
 		created->get<"body">().mass = 7uLL;
 
-		auto* const after = _universe.addActor(VolatileActor<> { std::move(created) });
+		const auto added = _universe.addActor(VolatileActor<> { ::hg::move(created) });
+		ASSERT_TRUE(added.has_value());
+		auto* const after = deref(added.value());
 
 		EXPECT_NE(after, before);
 		const auto mounted = registry().handleOf(*after);
+		EXPECT_EQ(added.value().handle(), mounted);
 		EXPECT_EQ(mounted.space(), rootLevel().space());
 		EXPECT_EQ(registry().resolve(mounted), after);
 		// Intended: a handle taken before addActor goes stale on mount (handles belong to their space) and never aliases
@@ -304,7 +368,10 @@ namespace HeliogrimApi {
 		created->setLabel(ActorLabel { text });
 		auto* const before = static_cast<ptr<Actor>>(created.get());
 
-		auto* const after = _universe.addActor(VolatileActor<> { std::move(created) });
+		const auto added = _universe.addActor(VolatileActor<> { ::hg::move(created) });
+		ASSERT_TRUE(added.has_value());
+		auto* const after = deref(added.value());
+		ASSERT_NE(after, nullptr);
 		ASSERT_NE(after, before);
 
 		const auto& moved = after->label().text;
@@ -358,7 +425,8 @@ namespace HeliogrimApi {
 		const auto space = internal->space();
 		ASSERT_NE(space, engine::acs::detachedSpace);
 		ASSERT_NE(registry().region(space, &actorClass), nullptr);
-		const auto handle = registry().handleOf(*actors.front());
+		const auto handle = actors.front().handle();
+		EXPECT_EQ(registry().handleOf(*deref(actors.front())), handle);
 		EXPECT_EQ(countedDestroyed, 0u);
 
 		internal.reset();
@@ -367,10 +435,42 @@ namespace HeliogrimApi {
 		EXPECT_EQ(registry().region(space, &actorClass), nullptr);
 		EXPECT_FALSE(registry().hasSpace(space));
 		EXPECT_EQ(registry().resolve(handle), nullptr);
+		// Fresh refs never resolved before, so they re-resolve and see the freed handles.
+		ActorRef<> fresh {};
+		archetype_detail::RefAccess::handle(fresh) = handle;
+		EXPECT_FALSE(fresh.get().has_value());
 
 		// Destructors ran exactly once.
 		registry().housekeeping().commit();
 		EXPECT_EQ(countedDestroyed, count * perActor);
+	}
+
+	TEST_F(Spawn, LegacyActorAddsWithoutRef) {
+		auto created = CreateActor();
+		auto* const raw = created.get();
+		ASSERT_NE(raw, nullptr);
+		// Contract: Some exactly for archetype actors; a legacy actor has no handle, so None, but it is still mounted.
+		EXPECT_FALSE(ActorRef<>::of(raw).has_value());
+
+		const auto added = _universe.addActor(VolatileActor<> { ::hg::move(created) });
+		EXPECT_FALSE(added.has_value());
+		EXPECT_EQ(rootLevel().getActors().size(), 1uLL);
+		EXPECT_EQ(raw->getLevel().address(), &rootLevel());
+	}
+
+	TEST_F(Spawn, RefFailurePathsAreEmpty) {
+		EXPECT_FALSE(ActorRef<>::of(nullptr).has_value());
+		EXPECT_FALSE(ActorRef<> {}.get().has_value());
+
+		// A detached actor has a handle, but its ref stays empty until mounted.
+		auto created = CreateActor<Body>();
+		const auto detached = ActorRef<>::of(created.get());
+		ASSERT_TRUE(detached.has_value());
+		EXPECT_FALSE(detached.value().get().has_value());
+
+		const auto spawned = SpawnActor(&Body::actorClass(), _universe).get();
+		ASSERT_TRUE(spawned.has_value());
+		EXPECT_NE(deref(spawned.value()), nullptr);
 	}
 
 	TEST_F(Spawn, SpansPerType) {

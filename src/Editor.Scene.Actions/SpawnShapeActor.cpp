@@ -1,5 +1,7 @@
 #include "SpawnShapeActor.hpp"
 
+#include <Engine.Common/Move.hpp>
+
 using namespace hg::editor::scene::actions;
 using namespace hg;
 
@@ -78,7 +80,8 @@ Opt<ActorGuid> spawnActorImpl(SpawnShapeActor::ShapeType shapeType_, ref<const m
 	/**/
 
 	volatileActor->getRootComponent()->getLocalTransform().location() = location_;
-	const auto* const actor = universe.addActor(std::move(volatileActor));
+	const auto guid = volatileActor->guid();
+	static_cast<void>(universe.addActor(::hg::move(volatileActor)));
 
 	/**/
 
@@ -89,7 +92,7 @@ Opt<ActorGuid> spawnActorImpl(SpawnShapeActor::ShapeType shapeType_, ref<const m
 
 	/**/
 
-	return Some(actor->guid());
+	return Some(guid);
 }
 
 void despawnActorImpl(mref<ActorGuid> actorGuid_) {

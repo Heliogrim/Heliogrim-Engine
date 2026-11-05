@@ -1,11 +1,12 @@
 #include "Actor.hpp"
 
 #include <algorithm>
-#include <ranges>
 #include <Engine.ACS/ActorModule.hpp>
 #include <Engine.ACS/Registry.hpp>
 #include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Async/Await/Promise.hpp>
+#include <Engine.Common/Move.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Universe.hpp>
 #include <Engine.Level/Level.hpp>
@@ -17,15 +18,39 @@
 #include <Engine.Serialization.Structures/Symbols.hpp>
 #include <Engine.Serialization.Structures/Common/TypeId.hpp>
 
-#include "Archetype/ActorClass.hpp"
+#include "ActorRef.hpp"
 #include "../ActorInitializer.hpp"
 #include "../IComponentRegisterContext.hpp"
 #include "../Component/HierarchyComponent.hpp"
-#include "../Component/SceneComponent.hpp"
 #include "../Core/Session.hpp"
 #include "../Universe/Universe.hpp"
+#include "Archetype/ActorClass.hpp"
+
+/**/
 
 using namespace hg;
+
+/**/
+
+namespace {
+	[[nodiscard]] ref<engine::acs::Registry> actorRegistry() noexcept;
+
+	[[nodiscard]] Vector<ActorRef<>> spawnInto(
+		const ptr<const ActorClass> class_,
+		const size_t count_,
+		const FnRef<void(ref<Actor>, size_t)> init_,
+		cref<Universe> universe_,
+		Opt<ref<engine::core::Level>> level_
+	);
+
+	/**
+	 * A missing key yields a null record slot that later dereferences, so every key hydrate reads is probed first.
+	 */
+	[[nodiscard]] bool acceptsRecord(
+		const ptr<const ActorClass> class_,
+		ref<const engine::serialization::StructScopedSlot> record_
+	);
+}
 
 Actor::Actor(cref<ActorInitializer> initializer_) noexcept :
 	_guid(initializer_._guid),
@@ -78,33 +103,6 @@ void Actor::setOwnerLevel(mref<Opt<ref<engine::core::Level>>> owner_) {
 	_level = ::hg::move(owner_);
 }
 
-void Actor::scheduleComponentRegister(const ptr<HierarchyComponent> component_) {
-	_universe->getScene()->registerContext()->add(component_);
-}
-
-void Actor::scheduleComponentRemoval(mref<ptr<HierarchyComponent>> component_) {
-	_universe->getScene()->registerContext()->remove(component_);
-}
-
-void Actor::scheduleComponentRelease(mref<ptr<LogicComponent>> component_) const {
-	engine::Engine::getEngine()->getActors()->getRegistry()->releaseActorComponent(VolatileComponent<> { ::hg::move(component_) });
-}
-
-ComponentRange Actor::getComponents() const noexcept {
-	if (_archetype == nullptr) {
-		return ComponentRange::dynamic(_components);
-	}
-
-	const auto desc = _archetype->desc();
-	return ComponentRange::archetype(
-		const_cast<std::byte*>(reinterpret_cast<const std::byte*>(this)) - desc.actorOffset,
-		_archetype->componentOffsets(),
-		_archetype->startBitmap(),
-		desc.actorOffset,
-		_archetype->minAlign()
-	);
-}
-
 ptr<const ActorClass> Actor::getArchetype() const noexcept {
 	return _archetype;
 }
@@ -115,6 +113,18 @@ void Actor::rejectSealed(const std::string_view message_) const {
 		::hg::panic_details::PanicErrorSink {} << std::string_view { message_ };
 		::hg::panic();
 	}
+}
+
+void Actor::scheduleComponentRegister(const ptr<HierarchyComponent> component_) {
+	_universe->getScene()->registerContext()->add(component_);
+}
+
+void Actor::scheduleComponentRemoval(mref<ptr<HierarchyComponent>> component_) {
+	_universe->getScene()->registerContext()->remove(component_);
+}
+
+void Actor::scheduleComponentRelease(mref<ptr<LogicComponent>> component_) const {
+	engine::Engine::getEngine()->getActors()->getRegistry()->releaseActorComponent(VolatileComponent<> { ::hg::move(component_) });
 }
 
 void Actor::addComponent(mref<VolatileComponent<HierarchyComponent>> component_, Opt<ref<const AddComponentOptions>> options_) {
@@ -140,6 +150,21 @@ void Actor::addComponent(mref<VolatileComponent<HierarchyComponent>> component_,
 	);
 
 	_components.insert(::hg::move(component_).release());
+}
+
+ComponentRange Actor::getComponents() const noexcept {
+	if (_archetype == nullptr) {
+		return ComponentRange::dynamic(_components);
+	}
+
+	const auto desc = _archetype->desc();
+	return ComponentRange::archetype(
+		const_cast<std::byte*>(reinterpret_cast<const std::byte*>(this)) - desc.actorOffset,
+		_archetype->componentOffsets(),
+		_archetype->startBitmap(),
+		desc.actorOffset,
+		_archetype->minAlign()
+	);
 }
 
 void Actor::registerComponents(ref<engine::core::Universe> universe_, ref<IComponentRegisterContext> context_) {
@@ -232,58 +257,12 @@ void VolatileActor<Actor>::destroy(ptr<Actor> obj_) {
 	registry->destroyActor(std::move(obj_));
 }
 
-namespace {
-	[[nodiscard]] ref<engine::acs::Registry> actorRegistry() noexcept {
-		return *engine::Engine::getEngine()->getActors()->getRegistry();
-	}
-
-	[[nodiscard]] std::vector<ptr<Actor>> spawnInto(
-		const ptr<const ActorClass> class_,
-		const size_t count_,
-		const FnRef<void(ref<Actor>, size_t)> init_,
-		cref<Universe> universe_,
-		Opt<ref<engine::core::Level>> level_
-	) {
-		const auto root = universe_.unwrap()->getRootLevel();
-		auto* const level = level_.has_value() ? std::addressof(level_.value()) : root.get();
-
-		auto actors = actorRegistry().createActors(class_, count_, level->space());
-		for (size_t index = 0uLL; index < actors.size(); ++index) {
-			init_(*actors[index], index);
-		}
-		// Already in the level's space, so addActor mounts without relocating.
-		for (auto& actor : actors) {
-			actor = level->addActor(VolatileActor<> { ::hg::move(actor) });
-		}
-		return actors;
-	}
-
-	/**
-	 * A missing key yields a null record slot that later dereferences, so every key hydrate reads is probed first.
-	 */
-	[[nodiscard]] bool acceptsRecord(
-		const ptr<const ActorClass> class_,
-		ref<const engine::serialization::StructScopedSlot> record_
-	) {
-		using engine::serialization::Symbols;
-		return record_.hasRecordSlot(Symbols::Type)
-			&& record_.hasRecordSlot(Symbols::Guid)
-			&& record_.hasRecordSlot(std::string_view { "label" })
-			&& record_.hasRecordSlot(Symbols::Components)
-			&& engine::serialization::get_typeId_slot(record_) == class_->metaClass()->typeId();
-	}
-}
-
 bool hg::RegisterActorClass(ptr<const ActorClass> class_) noexcept {
 	return actorRegistry().registerActorClass(class_);
 }
 
 Opt<ref<const ActorClass>> hg::FindActorClass(const type_id typeId_) noexcept {
 	return actorRegistry().findActorClass(typeId_);
-}
-
-VolatileActor<> hg::CreateActor(ptr<const ActorClass> class_) noexcept {
-	return VolatileActor<> { ::hg::move(actorRegistry().createActors(class_, 1uLL, engine::acs::detachedSpace).front()) };
 }
 
 VolatileActor<> hg::CreateActor() {
@@ -310,6 +289,10 @@ VolatileActor<> hg::CreateActor(ptr<const MetaClass> class_) noexcept {
 	return VolatileActor<> { registry.createActor(class_, ActorInitializer { registry }) };
 }
 
+VolatileActor<> hg::CreateActor(ptr<const ActorClass> class_) noexcept {
+	return VolatileActor<> { ::hg::move(actorRegistry().createActors(class_, 1uLL, engine::acs::detachedSpace).front()) };
+}
+
 Future<VolatileActor<>> hg::CreateActor(
 	ptr<const ActorClass> class_,
 	cref<SerializedActor> serialized_
@@ -332,14 +315,14 @@ Future<VolatileActor<>> hg::CreateActor(
 	return Future { ::hg::move(f) };
 }
 
-Future<ptr<Actor>> hg::CloneActorInto(cref<Actor> actor_, cref<Universe> universe_) noexcept {
+Future<Opt<ActorRef<>>> hg::CloneActorInto(cref<Actor> actor_, cref<Universe> universe_) noexcept {
 	::hg::todo_panic();
 }
 
-Future<ptr<Actor>> hg::SpawnActor(ptr<const ActorClass> class_, cref<Universe> universe_) noexcept {
-	concurrent::promise<ptr<Actor>> p {
-		[class_, &universe_]() -> ptr<Actor> {
-			return spawnInto(class_, 1uLL, [](ref<Actor>, size_t) {}, universe_, None).front();
+Future<Opt<ActorRef<>>> hg::SpawnActor(ptr<const ActorClass> class_, cref<Universe> universe_) noexcept {
+	concurrent::promise<Opt<ActorRef<>>> p {
+		[class_, &universe_]() -> Opt<ActorRef<>> {
+			return Some(spawnInto(class_, 1uLL, [](ref<Actor>, size_t) {}, universe_, None).front());
 		}
 	};
 
@@ -349,37 +332,37 @@ Future<ptr<Actor>> hg::SpawnActor(ptr<const ActorClass> class_, cref<Universe> u
 	return Future { ::hg::move(f) };
 }
 
-Future<ptr<Actor>> hg::SpawnActor(
+Future<Opt<ActorRef<>>> hg::SpawnActor(
 	ptr<const ActorClass> class_,
 	cref<SerializedActor> serialized_,
 	cref<Universe> universe_
 ) noexcept {
-	concurrent::promise<ptr<Actor>> p {
-		[class_, &serialized_, &universe_]() -> ptr<Actor> {
+	concurrent::promise<Opt<ActorRef<>>> p {
+		[class_, &serialized_, &universe_]() -> Opt<ActorRef<>> {
 			auto created = CreateActor(class_, serialized_).get();
 			if (created == nullptr) {
-				return nullptr;
+				return None;
 			}
 			const auto level = universe_.unwrap()->getRootLevel();
-			return level->addActor(::hg::move(created));
+			return ActorRef<>::of(level->addActor(::hg::move(created)));
 		}
 	};
 
 	auto f { p.get() };
 	p();
 
-	return Future { std::move(f) };
+	return Future { ::hg::move(f) };
 }
 
-Future<std::vector<ptr<Actor>>> hg::SpawnActors(
+Future<Vector<ActorRef<>>> hg::SpawnActors(
 	ptr<const ActorClass> class_,
 	size_t count_,
 	FnRef<void(ref<Actor>, size_t)> init_,
 	cref<Universe> universe_,
 	Opt<ref<engine::core::Level>> level_
 ) {
-	concurrent::promise<std::vector<ptr<Actor>>> p {
-		[=, &universe_]() -> std::vector<ptr<Actor>> {
+	concurrent::promise<Vector<ActorRef<>>> p {
+		[=, &universe_]() -> Vector<ActorRef<>> {
 			return spawnInto(class_, count_, init_, universe_, level_);
 		}
 	};
@@ -393,4 +376,53 @@ Future<std::vector<ptr<Actor>>> hg::SpawnActors(
 bool hg::Destroy(mref<VolatileActor<>> actor_) noexcept {
 	std::move(actor_).reset();
 	return true;
+}
+
+/**/
+
+namespace {
+	[[nodiscard]] ref<engine::acs::Registry> actorRegistry() noexcept {
+		return *engine::Engine::getEngine()->getActors()->getRegistry();
+	}
+
+	[[nodiscard]] Vector<ActorRef<>> spawnInto(
+		const ptr<const ActorClass> class_,
+		const size_t count_,
+		const FnRef<void(ref<Actor>, size_t)> init_,
+		cref<Universe> universe_,
+		Opt<ref<engine::core::Level>> level_
+	) {
+		const auto root = universe_.unwrap()->getRootLevel();
+		auto* const level = level_.has_value() ? std::addressof(level_.value()) : root.get();
+
+		auto actors = actorRegistry().createActors(class_, count_, level->space());
+		for (size_t index = 0uLL; index < actors.size(); ++index) {
+			init_(*actors[index], index);
+		}
+		// Already in the level's space, so addActor mounts without relocating.
+		Vector<ActorRef<>> refs {};
+		refs.reserve(actors.size());
+		for (auto& actor : actors) {
+			auto mounted = ActorRef<>::of(level->addActor(VolatileActor<> { ::hg::move(actor) }));
+			// Invariant: SpawnActors only instantiates archetype classes, so every mounted actor has a handle.
+			::hg::assertrt([&mounted] { return mounted.has_value(); });
+			refs.emplace_back(mounted.value());
+		}
+		return refs;
+	}
+
+	/**
+	 * A missing key yields a null record slot that later dereferences, so every key hydrate reads is probed first.
+	 */
+	[[nodiscard]] bool acceptsRecord(
+		const ptr<const ActorClass> class_,
+		ref<const engine::serialization::StructScopedSlot> record_
+	) {
+		using engine::serialization::Symbols;
+		return record_.hasRecordSlot(Symbols::Type)
+			&& record_.hasRecordSlot(Symbols::Guid)
+			&& record_.hasRecordSlot(std::string_view { "label" })
+			&& record_.hasRecordSlot(Symbols::Components)
+			&& engine::serialization::get_typeId_slot(record_) == class_->metaClass()->typeId();
+	}
 }

@@ -1,5 +1,7 @@
 #include "EditorSceneViewportPanel.hpp"
 
+#include <Engine.Common/Move.hpp>
+
 #include <Editor.Core/EditorEngine.hpp>
 #include <Editor.Core/HeliogrimEditor.hpp>
 #include <Editor.UI/Widget/Viewport/EditorSceneViewport.hpp>
@@ -104,7 +106,9 @@ static void configureViewport(cref<sptr<uikit::HorizontalLayout>> parent_) {
 	/**/
 
 	camera->getRootComponent()->getLocalTransform().setLocation(math::Location { 0.F, 0.F, -5.F });
-	auto trackedActor = universe.addActor(std::move(camera));
+	// Non-archetype actor: not relocated on add, so the pointer stays valid.
+	auto* const trackedActor = camera.get();
+	static_cast<void>(universe.addActor(::hg::move(camera)));
 
 	/**/
 

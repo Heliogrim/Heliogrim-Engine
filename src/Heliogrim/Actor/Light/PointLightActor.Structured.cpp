@@ -28,7 +28,7 @@ namespace hg::engine::serialization {
 
 		/**/
 
-		const auto pointLightGuid = get_named_guid_slot(record_, "point"sv);
+		const auto pointLightGuid = ComponentGuid { get_named_guid_slot(record_, "point"sv) };
 		for (auto* const candidate : target_._components.values()) {
 			if (candidate->guid() == pointLightGuid) {
 				target_._pointLightComponent = static_cast<ptr<PointLightComponent>>(candidate);
