@@ -4,6 +4,7 @@
 #include <Engine.ACS/Archetype/Overridable.hpp>
 #include <Heliogrim/ActorInitializer.hpp>
 #include <Heliogrim/Actor/Actor.hpp>
+#include <Heliogrim/Actor/Archetype/ArchetypeLayout.inl.hpp>
 #include <Heliogrim/Actor/Archetype/InheritArchetype.hpp>
 #include <Heliogrim/Component/HierarchyComponent.hpp>
 
@@ -15,32 +16,38 @@ namespace HeliogrimApi {
 
 	struct BodyStub : HierarchyComponent {
 		using HierarchyComponent::HierarchyComponent;
+		constexpr static ComponentTypeId typeId { "BodyStub"_typeId };
 		u64 mass = 0uLL;
 	};
 
 	struct WheelComponentStub : HierarchyComponent {
 		using HierarchyComponent::HierarchyComponent;
+		constexpr static ComponentTypeId typeId { "WheelComponentStub"_typeId };
 		float radius = 0.F;
 	};
 
 	struct HubStub : HierarchyComponent {
 		using HierarchyComponent::HierarchyComponent;
+		constexpr static ComponentTypeId typeId { "HubStub"_typeId };
 		u32 bolts = 0u;
 	};
 
 	struct CameraStub : HierarchyComponent {
 		using HierarchyComponent::HierarchyComponent;
+		constexpr static ComponentTypeId typeId { "CameraStub"_typeId };
 		u32 ticks = 0u;
 	};
 
 	// Larger than CameraStub, so overriding "camera" with it moves base slots.
 	struct BigCameraStub : CameraStub {
 		using CameraStub::CameraStub;
+		constexpr static ComponentTypeId typeId { "BigCameraStub"_typeId };
 		u64 zoom[8] {};
 	};
 
 	struct TurretStub : HierarchyComponent {
 		using HierarchyComponent::HierarchyComponent;
+		constexpr static ComponentTypeId typeId { "TurretStub"_typeId };
 		u32 shells = 0u;
 	};
 
@@ -138,3 +145,21 @@ namespace HeliogrimApi {
 		void tick(this auto& self);
 	};
 }
+
+/* Layout dumps of the stub payloads; complete in every TU that instantiates the archetypes. */
+
+#define HELIOGRIM_TEST_STUB_LAYOUT(Type_, Field_) 	template <> 	class hg::engine::serialization::access::Layout<HeliogrimApi::Type_> { 	public: 		constexpr static ::hg::u64 version = 1uLL; 		constexpr static ::hg::u64 size = sizeof(HeliogrimApi::Type_::Field_); 		public: 		static void dump(::hg::ref<const HeliogrimApi::Type_> self_, ::hg::ref<::hg::Vector<std::byte>> out_) { 			::hg::archetype_detail::put_bytes(out_, self_.Field_); 		} 			static void load(std::span<const std::byte> in_, ::hg::ref<HeliogrimApi::Type_> target_) { 			std::ignore = ::hg::archetype_detail::take_bytes(in_, target_.Field_); 		} 	};
+
+HELIOGRIM_TEST_STUB_LAYOUT(BodyStub, mass)
+
+HELIOGRIM_TEST_STUB_LAYOUT(WheelComponentStub, radius)
+
+HELIOGRIM_TEST_STUB_LAYOUT(HubStub, bolts)
+
+HELIOGRIM_TEST_STUB_LAYOUT(CameraStub, ticks)
+
+HELIOGRIM_TEST_STUB_LAYOUT(BigCameraStub, ticks)
+
+HELIOGRIM_TEST_STUB_LAYOUT(TurretStub, shells)
+
+#undef HELIOGRIM_TEST_STUB_LAYOUT

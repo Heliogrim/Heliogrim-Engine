@@ -14,6 +14,7 @@
 #include <Engine.Serialization.Structures/Common/TypeId.hpp>
 
 #include "Actor.hpp"
+#include "Archetype/ActorClass.hpp"
 #include "../ActorInitializer.hpp"
 #include "../Component/LogicComponent.hpp"
 
@@ -32,7 +33,15 @@ void access::Structure<Actor>::serialize(
 
 	/**/
 
-	// TODO: Generic Serialize Components
+	if (const auto archetype = self_.getArchetype(); archetype != nullptr) {
+		archetype->ops().serialize(
+			reinterpret_cast<ptr<const std::byte>>(std::addressof(self_)) - archetype->desc().actorOffset,
+			record_
+		);
+		return;
+	}
+
+	// Dynamic actors only: generic component sequence.
 
 	const auto serial = Engine::getEngine()->getSerialization();
 	auto components = record_.insertRecordSlot(Symbols::Components).intoSeq();
@@ -73,4 +82,13 @@ void access::Structure<Actor>::hydrate(cref<StructScopedSlot> record_, ref<Actor
 
 	target_._guid = get_guid_slot<ActorGuid>(record_);
 	record_.getSlot<String>("label"sv) >> target_._label.text;
+
+	/**/
+
+	if (const auto archetype = target_.getArchetype(); archetype != nullptr) {
+		archetype->ops().hydrate(
+			reinterpret_cast<ptr<std::byte>>(std::addressof(target_)) - archetype->desc().actorOffset,
+			record_
+		);
+	}
 }

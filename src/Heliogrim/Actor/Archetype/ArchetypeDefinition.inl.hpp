@@ -25,6 +25,9 @@
 #include "../Actor.hpp"
 #include "../../ActorInitializer.hpp"
 #include "../../Component/HierarchyComponent.hpp"
+// After InheritArchetype.hpp: both use `slot_type_t`.
+#include "ArchetypeLayout.inl.hpp"
+#include "ArchetypeStructured.inl.hpp"
 
 namespace hg::archetype_detail {
 	template <typename Type_>
@@ -96,7 +99,7 @@ namespace hg::archetype_detail {
 			}
 		};
 
-		// shortcut: no per-component layout version yet; Task 10 adds it with the layout serializer.
+		mix(Type_::typeId.data);
 		mix(info::slot_stride);
 		mix(info::actor_offset);
 		mix(sizeof(Type_));
@@ -104,9 +107,15 @@ namespace hg::archetype_detail {
 			mix(entry.offset);
 			mix(entry.size);
 			mix(entry.parentIndex);
-			mix(entry.typeIndex);
 			mix(entry.arrayIndex);
 		}
+		// Stable TypeIds, not the layout-local typeIndex.
+		[&]<u32... Entries_>(std::integer_sequence<u32, Entries_...>) {
+			((
+				mix(slot_type_t<info, info::slot_of(Entries_)>::typeId.data),
+				mix(layout_version<slot_type_t<info, info::slot_of(Entries_)>>())
+			), ...);
+		}(std::make_integer_sequence<u32, info::entry_count> {});
 		return hash;
 	}
 
@@ -224,6 +233,28 @@ namespace hg {
 				}(entry_sequence {});
 				rebindRoot(*actor, *archetype_detail::component_at<info, 0u>(dst));
 			}
+		};
+
+		ops.serialize = [](const ptr<const std::byte> slot_, ref<engine::serialization::StructScopedSlot> record_) {
+			auto components = record_.insertRecordSlot(engine::serialization::Symbols::Components).intoStruct();
+			[&]<u32... Entries_>(std::integer_sequence<u32, Entries_...>) {
+				(archetype_detail::serialize_entry<info, Entries_>(slot_, components), ...);
+			}(entry_sequence {});
+		};
+
+		ops.hydrate = [](const ptr<std::byte> slot_, ref<const engine::serialization::StructScopedSlot> record_) {
+			const auto components = record_.getRecordSlot(engine::serialization::Symbols::Components).asStruct();
+			[&]<u32... Entries_>(std::integer_sequence<u32, Entries_...>) {
+				(archetype_detail::hydrate_entry<info, Entries_>(slot_, components), ...);
+			}(entry_sequence {});
+		};
+
+		ops.dumpLayout = [](const ptr<const std::byte> slots_, const u32 count_, const u32 stride_, ref<Vector<std::byte>> out_) {
+			archetype_detail::dump_layout<info>(archetype_detail::layout_hash<Type_>(), slots_, count_, stride_, out_);
+		};
+
+		ops.loadLayout = [](const ptr<std::byte> slots_, const u32 count_, const u32 stride_, std::span<const std::byte> in_) {
+			return archetype_detail::load_layout<info>(archetype_detail::layout_hash<Type_>(), slots_, count_, stride_, in_);
 		};
 
 		if constexpr (has_tick_v<Type_>) {

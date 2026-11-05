@@ -14,6 +14,8 @@
 #include <Engine.Event/GlobalEventEmitter.hpp>
 #include <Engine.Level/Level.hpp>
 #include <Engine.Scene/SceneBase.hpp>
+#include <Engine.Serialization/Access/Structure.hpp>
+#include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 #include <Heliogrim/IComponentRegisterContext.hpp>
 #include <Heliogrim/Actor/Archetype/ArchetypeDefinition.inl.hpp>
 #include <Heliogrim/Universe/Universe.hpp>
@@ -65,6 +67,31 @@ namespace HeliogrimApi::spawn_fixture {
 			InheritArchetype(initializer_) {}
 	};
 }
+
+// CountedStub carries no payload; the Layout exists so the archetype can generate its dump.
+template <>
+class hg::engine::serialization::access::Layout<HeliogrimApi::spawn_fixture::CountedStub> {
+public:
+	constexpr static ::hg::u64 version = 1uLL;
+	constexpr static ::hg::u64 size = 0uLL;
+
+public:
+	static void dump(::hg::ref<const HeliogrimApi::spawn_fixture::CountedStub>, ::hg::ref<::hg::Vector<std::byte>>) {}
+
+	static void load(std::span<const std::byte>, ::hg::ref<HeliogrimApi::spawn_fixture::CountedStub>) {}
+};
+
+template <>
+void hg::engine::serialization::access::Structure<HeliogrimApi::spawn_fixture::CountedStub>::serialize(
+	::hg::ref<const HeliogrimApi::spawn_fixture::CountedStub>,
+	::hg::mref<StructScopedSlot>
+) {}
+
+template <>
+void hg::engine::serialization::access::Structure<HeliogrimApi::spawn_fixture::CountedStub>::hydrate(
+	::hg::ref<const StructScopedSlot>,
+	::hg::ref<HeliogrimApi::spawn_fixture::CountedStub>
+) {}
 
 template class hg::InheritArchetype<HeliogrimApi::spawn_fixture::CountedActor, hg::Actor>;
 template class hg::InheritArchetype<HeliogrimApi::spawn_fixture::ShadowBody, hg::Actor>;

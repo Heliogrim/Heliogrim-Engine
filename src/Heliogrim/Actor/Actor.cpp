@@ -12,6 +12,10 @@
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Reflect/IsType.hpp>
 #include <Engine.Scene/SceneBase.hpp>
+#include <Engine.Serialization/Access/Structure.hpp>
+#include <Engine.Serialization/Structure/StructScopedSlot.hpp>
+#include <Engine.Serialization.Structures/Symbols.hpp>
+#include <Engine.Serialization.Structures/Common/TypeId.hpp>
 
 #include "Archetype/ActorClass.hpp"
 #include "../ActorInitializer.hpp"
@@ -254,14 +258,19 @@ namespace {
 		return actors;
 	}
 
-	[[nodiscard]] ptr<Actor> hydrated(const ptr<const ActorClass> class_, cref<SerializedActor> serialized_, ptr<Actor> actor_) {
-		// shortcut: ArchetypeOps::hydrate is a nullptr placeholder until Task 10 types and fills it.
-		::hg::assertrt(class_->ops().hydrate != nullptr);
-		class_->ops().hydrate(
-			reinterpret_cast<std::byte*>(actor_) - class_->desc().actorOffset,
-			std::addressof(serialized_)
-		);
-		return actor_;
+	/**
+	 * A missing key yields a null record slot that later dereferences, so every key hydrate reads is probed first.
+	 */
+	[[nodiscard]] bool acceptsRecord(
+		const ptr<const ActorClass> class_,
+		ref<const engine::serialization::StructScopedSlot> record_
+	) {
+		using engine::serialization::Symbols;
+		return record_.hasRecordSlot(Symbols::Type)
+			&& record_.hasRecordSlot(Symbols::Guid)
+			&& record_.hasRecordSlot(std::string_view { "label" })
+			&& record_.hasRecordSlot(Symbols::Components)
+			&& engine::serialization::get_typeId_slot(record_) == class_->metaClass()->typeId();
 	}
 }
 
@@ -307,8 +316,12 @@ Future<VolatileActor<>> hg::CreateActor(
 ) noexcept {
 	concurrent::promise<VolatileActor<>> p {
 		[class_, &serialized_]() -> VolatileActor<> {
+			// Validate before allocating, so a rejected record never holds a slot.
+			if (not acceptsRecord(class_, serialized_.record)) {
+				return VolatileActor<> { ptr<Actor> { nullptr } };
+			}
 			auto actor = CreateActor(class_);
-			static_cast<void>(hydrated(class_, serialized_, actor.get()));
+			engine::serialization::access::Structure<Actor>::hydrate(serialized_.record, *actor);
 			return actor;
 		}
 	};
@@ -344,6 +357,9 @@ Future<ptr<Actor>> hg::SpawnActor(
 	concurrent::promise<ptr<Actor>> p {
 		[class_, &serialized_, &universe_]() -> ptr<Actor> {
 			auto created = CreateActor(class_, serialized_).get();
+			if (created == nullptr) {
+				return nullptr;
+			}
 			const auto level = universe_.unwrap()->getRootLevel();
 			return level->addActor(::hg::move(created));
 		}
