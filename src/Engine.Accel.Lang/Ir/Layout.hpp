@@ -1,10 +1,13 @@
 #pragma once
 
+#include <expected>
+#include <span>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
+#include "Diagnostic.hpp"
 #include "Interface.hpp"
 #include "Module.hpp"
 
@@ -35,6 +38,8 @@ namespace hg::engine::accel::lang::ir {
 		String id;
 		u32 offset = 0uL;
 		u32 size = 0uL;
+		/* structural type key like `SlotAssignment::identity`; pipeline layouts compare it across stages */
+		String identity;
 
 		[[nodiscard]] bool operator==(const PushRange&) const noexcept = default;
 	};
@@ -119,5 +124,30 @@ namespace hg::engine::accel::lang::ir {
 		ref<const Vector<TypeDesc>> types_,
 		ref<const LayoutWeights> weights_,
 		ref<const Vector<Layout>> existing_ = {}
+	);
+
+	/**
+	 * One layout for a whole pipeline: a single `assignLayout` pass over the union of all stages' bind and push
+	 * entries (deduplicated by id), so an id has one (set, binding) / push range in every stage. Result per stage,
+	 * in stage order: the union slots and push ranges of the ids the stage uses, its own forward input locations.
+	 * `types_[i]` is the type table of `stages_[i]`. The same id with another class or type (or push size) in two
+	 * stages is an error naming both ("stage <i>"). `specConstants` stay empty (see `assignPipelineSpecConstants`).
+	 * shortcut: a stage that skips an id between two it uses leaves a hole in its slots; the bind-layout append
+	 * rejects that, number sets by usage when it matters.
+	 */
+	[[nodiscard]] std::expected<Vector<Layout>, Diagnostics> assignPipelineLayout(
+		std::span<const Vector<InterfaceEntry>> stages_,
+		std::span<const Vector<TypeDesc>> types_,
+		ref<const LayoutWeights> weights_
+	);
+
+	/**
+	 * Spec constant ids numbered once for the pipeline: the distinct spec ids of all stages sorted, from 0. Result
+	 * per stage lists only that stage's constants, with the pipeline-wide numbers. The same spec id with another
+	 * type in two stages is an error naming both stages.
+	 */
+	[[nodiscard]] std::expected<Vector<Vector<SpecConstant>>, Diagnostics> assignPipelineSpecConstants(
+		std::span<const Vector<ConstantDecl>> constants_,
+		std::span<const Vector<TypeDesc>> types_
 	);
 }

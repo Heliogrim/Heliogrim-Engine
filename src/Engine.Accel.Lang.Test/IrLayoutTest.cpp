@@ -387,8 +387,12 @@ namespace AccelLang {
 			)
 		);
 		ASSERT_EQ(layout.push.size(), 2uz);
-		EXPECT_EQ(layout.push[0], (PushRange { "a", 0u, 4u }));
-		EXPECT_EQ(layout.push[1], (PushRange { "b", 8u, 8u }));
+		EXPECT_EQ(layout.push[0].id, "a");
+		EXPECT_EQ(layout.push[0].offset, 0u);
+		EXPECT_EQ(layout.push[0].size, 4u);
+		EXPECT_EQ(layout.push[1].id, "b");
+		EXPECT_EQ(layout.push[1].offset, 8u);
+		EXPECT_EQ(layout.push[1].size, 8u);
 	}
 
 	TEST(LayoutTest, Std430SizesAndAlignment) {
@@ -503,5 +507,127 @@ namespace AccelLang {
 		);
 		ASSERT_EQ(layout.push.size(), 1uz);
 		EXPECT_EQ(layout.push[0].size, 0u);
+	}
+
+	namespace {
+		/* type tables that put the same struct at different indices */
+		[[nodiscard]] Vector<TypeDesc> cameraTypes(bool padded_) {
+			Vector<TypeDesc> types {};
+			if (padded_) {
+				types.emplace_back(typeOf(TypeKind::eVector, 32u, 3u));
+			}
+			types.emplace_back(typeOf(TypeKind::eScalar));
+			types.emplace_back(structOf({ FieldDesc { "x", TypeRef { padded_ ? 1u : 0u } } }));
+			return types;
+		}
+	}
+
+	TEST(LayoutTest, SharedIdGetsOneSlotAcrossStages) {
+		const auto t0 = cameraTypes(false);
+		const auto t1 = cameraTypes(true);
+		const Vector<InterfaceEntry> s0 {
+			entry("camera", TypeRef { 1u }, BindMode::eBind, BindClass::eUniformBuffer),
+			entry("model", TypeRef { 1u }, BindMode::eBind, BindClass::eStorageBuffer),
+		};
+		const Vector<InterfaceEntry> s1 {
+			entry("camera", TypeRef { 2u }, BindMode::eBind, BindClass::eUniformBuffer),
+			entry("zeta", TypeRef { 2u }, BindMode::eBind, BindClass::eStorageBuffer),
+		};
+		const std::array stages { s0, s1 };
+		const std::array types { t0, t1 };
+		const auto res = assignPipelineLayout(stages, types, {});
+		ASSERT_TRUE(res.has_value());
+		ASSERT_EQ(res->size(), 2uz);
+
+		const auto a = slotOf((*res)[0], "camera");
+		const auto b = slotOf((*res)[1], "camera");
+		ASSERT_TRUE(a.has_value() && b.has_value());
+		EXPECT_EQ(*a, *b);
+		EXPECT_EQ((*res)[0].slots.size(), 2uz);
+		EXPECT_EQ((*res)[1].slots.size(), 2uz);
+		EXPECT_FALSE(slotOf((*res)[0], "zeta").has_value());
+		EXPECT_NE(slotOf((*res)[0], "model")->binding, slotOf((*res)[1], "zeta")->binding);
+	}
+
+	TEST(LayoutTest, SharedIdTypeMismatchNamesStages) {
+		const auto t0 = cameraTypes(false);
+		const auto t1 = cameraTypes(true);
+		const Vector<InterfaceEntry> s0 { entry("camera", TypeRef { 1u }, BindMode::eBind, BindClass::eUniformBuffer) };
+		const Vector<InterfaceEntry> s1 { entry("camera", TypeRef { 0u }, BindMode::eBind, BindClass::eUniformBuffer) };
+		const std::array stages { s0, s1 };
+		const std::array types { t0, t1 };
+		const auto res = assignPipelineLayout(stages, types, {});
+		ASSERT_FALSE(res.has_value());
+		ASSERT_FALSE(res.error().empty());
+		EXPECT_NE(res.error().front().message.find("camera"), String::npos);
+		EXPECT_NE(res.error().front().message.find("stage 0"), String::npos);
+		EXPECT_NE(res.error().front().message.find("stage 1"), String::npos);
+	}
+
+	TEST(LayoutTest, SharedPushIdWithOtherTypeOfSameSizeIsRejected) {
+		/* both 16 bytes, different structure */
+		Vector<TypeDesc> t0 {};
+		t0.emplace_back(typeOf(TypeKind::eVector, 32u, 4u));
+		t0.emplace_back(structOf({ FieldDesc { "x", TypeRef { 0u } } }));
+		Vector<TypeDesc> t1 {};
+		t1.emplace_back(typeOf(TypeKind::eVector, 32u, 2u));
+		t1.emplace_back(structOf({ FieldDesc { "x", TypeRef { 0u } }, FieldDesc { "y", TypeRef { 0u } } }));
+
+		const Vector<InterfaceEntry> s0 { entry("p", TypeRef { 1u }, BindMode::eBind, BindClass::ePushConstant) };
+		const Vector<InterfaceEntry> s1 { entry("p", TypeRef { 1u }, BindMode::eBind, BindClass::ePushConstant) };
+		const std::array stages { s0, s1 };
+		const std::array types { t0, t1 };
+		const auto res = assignPipelineLayout(stages, types, {});
+		ASSERT_FALSE(res.has_value());
+		EXPECT_NE(res.error().front().message.find("'p'"), String::npos);
+	}
+
+	TEST(LayoutTest, PipelineLayoutDeterministic) {
+		const auto t0 = cameraTypes(false);
+		const auto t1 = cameraTypes(true);
+		Vector<InterfaceEntry> s0 {
+			entry("a", TypeRef { 1u }, BindMode::eBind, BindClass::eUniformBuffer),
+			entry("b", TypeRef { 1u }, BindMode::eBind, BindClass::eStorageBuffer),
+			entry("c", TypeRef { 1u }, BindMode::eBind, BindClass::eStorageBuffer),
+		};
+		const Vector<InterfaceEntry> s1 {
+			entry("c", TypeRef { 2u }, BindMode::eBind, BindClass::eStorageBuffer),
+			entry("d", TypeRef { 2u }, BindMode::eBind, BindClass::eUniformBuffer),
+		};
+		const std::array types { t0, t1 };
+
+		const std::array first { s0, s1 };
+		const auto one = assignPipelineLayout(first, types, {});
+		std::ranges::reverse(s0);
+		const std::array second { s0, s1 };
+		const auto two = assignPipelineLayout(second, types, {});
+		ASSERT_TRUE(one.has_value() && two.has_value());
+		EXPECT_EQ(*one, *two);
+	}
+
+	TEST(LayoutTest, PipelineSpecConstantsNumberedOnce) {
+		const auto types = cameraTypes(false);
+		const auto constant = [](StringView name_, StringView id_, u32 type_) {
+			ConstantDecl decl {};
+			decl.name = String(name_);
+			decl.type = TypeRef { type_ };
+			decl.specId = String(id_);
+			return decl;
+		};
+		const Vector<ConstantDecl> s0 { constant("x", "a", 0u), constant("z", "c", 0u) };
+		const Vector<ConstantDecl> s1 { constant("y", "b", 0u), constant("z", "c", 0u) };
+		const std::array constants { s0, s1 };
+		const std::array tables { types, types };
+		const auto res = assignPipelineSpecConstants(constants, tables);
+		ASSERT_TRUE(res.has_value());
+		EXPECT_EQ((*res)[0], (Vector<SpecConstant> { { "a", 0u }, { "c", 2u } }));
+		EXPECT_EQ((*res)[1], (Vector<SpecConstant> { { "b", 1u }, { "c", 2u } }));
+
+		const Vector<ConstantDecl> bad { constant("z", "c", 1u) };
+		const std::array clash { s0, bad };
+		const auto err = assignPipelineSpecConstants(clash, tables);
+		ASSERT_FALSE(err.has_value());
+		EXPECT_NE(err.error().front().message.find("stage 0"), String::npos);
+		EXPECT_NE(err.error().front().message.find("stage 1"), String::npos);
 	}
 }

@@ -48,9 +48,10 @@ Vector<smr<StageDerivat>> StageComposer::compose(
 	Vector<smr<StageDerivat>> derivats {};
 	derivats.reserve(stages.size());
 
-	/* resolved variant per derivat; null for text-only stages */
-	Vector<smr<const lang::ir::Resolved>> resolvedStages {};
-	resolvedStages.reserve(stages.size());
+	/* derivat index per ir stage, and the ir stages themselves; text-only stages are not in here */
+	Vector<size_t> irIndices {};
+	Vector<const lang::Intermediate*> irStages {};
+	Vector<StageFlagBits> irFlags {};
 
 	for (const auto& stage : stages) {
 
@@ -70,35 +71,43 @@ Vector<smr<StageDerivat>> StageComposer::compose(
 		const auto source = stage->getIntermediate();
 		if (source != nullptr && source->ir != nullptr) {
 
-			/* target symbols are the effect's exports: only the last stage is sliced to them */
-			const bool exportStage = &stage == &stages.back();
-			auto resolved = resolveStageIr(
-				*source,
-				*profile_,
-				*specifications_,
-				stage->getFlagBits(),
-				_variants,
-				exportStage
-			);
-			if (not resolved.has_value()) {
-				for (const auto& diagnostic : resolved.error()) {
-					Logger::error(
-						"Failed to compose ir stage: {} ({}:{})",
-						diagnostic.message,
-						diagnostic.line,
-						diagnostic.column
-					);
-				}
-				return {};
-			}
-
-			derivats.back()->setIntermediate(make_smr<lang::Intermediate>((*resolved)->lowered));
-			resolvedStages.emplace_back(std::move(resolved).value());
+			irIndices.emplace_back(derivats.size() - 1uLL);
+			irStages.emplace_back(source.get());
+			irFlags.emplace_back(stage->getFlagBits());
 			continue;
 		}
 
-		resolvedStages.emplace_back();
 		preprocessStageDerivat(stage, profile_, derivats.back());
+	}
+
+	/* one layout for all ir stages; the last of them is sliced to the effect's exports */
+	smr<const lang::ir::ResolvedPipeline> pipeline {};
+	if (not irStages.empty()) {
+		auto composed = composePipelineIr(
+			irStages,
+			irFlags,
+			*profile_,
+			*specifications_,
+			_variants,
+			_pipelineLayouts,
+			&pipeline,
+			irIndices.back() + 1uLL == derivats.size()
+		);
+		if (not composed.has_value()) {
+			for (const auto& diagnostic : composed.error()) {
+				Logger::error(
+					"Failed to compose ir stage: {} ({}:{})",
+					diagnostic.message,
+					diagnostic.line,
+					diagnostic.column
+				);
+			}
+			return {};
+		}
+
+		for (size_t irIdx = 0uLL; irIdx < irIndices.size(); ++irIdx) {
+			derivats[irIndices[irIdx]]->setIntermediate((*composed)[irIdx]->getIntermediate());
+		}
 	}
 
 	/**/
@@ -106,18 +115,27 @@ Vector<smr<StageDerivat>> StageComposer::compose(
 	BindLayout layout {};
 	Vector<nmpt<const lang::Symbol>> symbols {};
 
+	if (not irIndices.empty()) {
+		Vector<smr<StageDerivat>> irDerivats {};
+		for (const auto idx : irIndices) {
+			irDerivats.emplace_back(derivats[idx]);
+		}
+		const auto clash = appendBindLayout(*pipeline, irDerivats, layout);
+		if (not clash.empty()) {
+			for (const auto& diagnostic : clash) {
+				Logger::error("Failed to lay out ir stages: {}", diagnostic.message);
+			}
+			return {};
+		}
+	}
+
+	size_t irCursor = 0uLL;
 	for (size_t stageIdx = 0uLL; stageIdx < derivats.size(); ++stageIdx) {
 
 		const auto& derivat = derivats[stageIdx];
 
-		if (resolvedStages[stageIdx] != nullptr) {
-			const auto clash = appendBindLayout(*resolvedStages[stageIdx], *derivat, layout);
-			if (not clash.empty()) {
-				for (const auto& diagnostic : clash) {
-					Logger::error("Failed to lay out ir stages: {}", diagnostic.message);
-				}
-				return {};
-			}
+		if (irCursor < irIndices.size() && irIndices[irCursor] == stageIdx) {
+			++irCursor;
 			continue;
 		}
 

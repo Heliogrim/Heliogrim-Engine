@@ -23,6 +23,9 @@ namespace hg::engine::accel {
         /* resolved ir stage variants, shared by every compose of this composer */
         mutable lang::ir::VariantCache _variants;
 
+        /* laid out and lowered ir pipelines, keyed by their stages' variants */
+        mutable lang::ir::PipelineLayoutCache _pipelineLayouts;
+
     public:
         [[nodiscard]] non_owning_rptr<const class Tokenizer> getTokenizer() const noexcept;
 

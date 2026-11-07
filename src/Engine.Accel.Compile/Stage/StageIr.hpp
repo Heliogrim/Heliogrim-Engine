@@ -1,6 +1,7 @@
 #pragma once
 
 #include <expected>
+#include <span>
 #include <Engine.Accel.Effect/Stage/StageFlags.hpp>
 #include <Engine.Accel.Lang/Intermediate.hpp>
 #include <Engine.Accel.Lang/Ir/Diagnostic.hpp>
@@ -27,12 +28,12 @@ namespace hg::engine::accel {
 
 	/**
 	 * Resolves one IR stage: merges the profile modules' ir and the stage ir (in that order), fixes the profile
-	 * toggles, resolves, slices to the specification's target symbols (empty: all), checks the contract, lays out
-	 * and lowers. The result is cached by content, so a hit is a key computation and one lookup; no module is merged,
-	 * resolved or emitted again.
+	 * toggles, resolves, slices to the specification's target symbols (empty: all) and checks the contract. Layout
+	 * and lowering need the other stages: see `composePipelineIr`. The result is cached by content, so a hit is a
+	 * key computation and one lookup; no module is merged or resolved again.
 	 *
 	 * - The specification's target symbols apply to the export stage only (`exportStage_`, the last stage of the
-	 *   pipeline); earlier stages keep all their outputs.
+	 *   effect, which may be a legacy text stage); other stages keep all their outputs.
 	 * - Profile modules without ir are legacy text and are skipped (with a warning when they hold text).
 	 * - Vertex offsets for lowering come from the stage intermediate: inbound variables carrying both a
 	 *   SymbolId and a VkBindLocation annotation.
@@ -49,30 +50,34 @@ namespace hg::engine::accel {
 	);
 
 	/**
-	 * `resolveStageIr` plus a fresh derivat owning a copy of the lowered intermediate.
+	 * Composes the IR stages of one pipeline, in stage order: resolves each (`resolveStageIr`; the last stage is the
+	 * export stage only if `exportLast_`, i.e. it is also the effect's last stage), lays all of them out in one pass (ids shared by stages get one slot, spec constants are
+	 * numbered once per pipeline) and lowers each with that layout. The layout and the lowered stages are cached by
+	 * the stages' variant keys in `layouts_`, so a hit lays out and lowers nothing. Returns one derivat per stage,
+	 * owning a copy of its lowered intermediate. `pipeline_`, when given, receives the resolved pipeline (for
+	 * `appendBindLayout`).
 	 */
-	[[nodiscard]] std::expected<smr<StageDerivat>, lang::ir::Diagnostics> composeStageIr(
-		ref<const lang::Intermediate> stage_,
+	[[nodiscard]] std::expected<Vector<smr<StageDerivat>>, lang::ir::Diagnostics> composePipelineIr(
+		std::span<const lang::Intermediate* const> stages_,
+		std::span<const StageFlagBits> flags_,
 		ref<const EffectProfile> profile_,
 		ref<const EffectSpecification> spec_,
-		StageFlagBits flags_,
 		ref<lang::ir::VariantCache> cache_,
-		bool exportStage_ = true
+		ref<lang::ir::PipelineLayoutCache> layouts_,
+		smr<const lang::ir::ResolvedPipeline>* pipeline_ = nullptr,
+		bool exportLast_ = true
 	);
 
 	/**
-	 * Appends the resolved layout of one stage: groups are descriptor sets, push ranges carry the stage flag.
-	 * Symbols come from `derivat_`. The pipeline compiler numbers bindings by position in the group, so an error
-	 * is returned when
-	 * - an element's position in its group is not the slot's binding (two ids on one slot, or a gap), or
-	 * - an id an earlier stage appended sits at another (set, binding) here.
-	 * shortcut: layouts are assigned per stage and only checked here; the fix is one layout pass over the union
-	 * of all stages' bind entries deduplicated by id (`existing_` reuses by class and type key, so feeding it the
-	 * sibling layouts would deliberately alias different ids).
+	 * Builds the bind layout of a composed pipeline from all its stages at once (`derivats_[i]` is stage i of
+	 * `pipeline_`): groups are descriptor sets, the union of the stages' slots sorted by (set, binding), each symbol
+	 * taken from the first stage declaring it. Push ranges carry the flags of the stages using them. The pipeline
+	 * compiler numbers bindings by position in the group, so an error is returned when a set has a gap, i.e. an
+	 * element's position is not the slot's binding.
 	 */
 	[[nodiscard]] lang::ir::Diagnostics appendBindLayout(
-		ref<const lang::ir::Resolved> resolved_,
-		ref<const StageDerivat> derivat_,
+		ref<const lang::ir::ResolvedPipeline> pipeline_,
+		std::span<const smr<StageDerivat>> derivats_,
 		ref<BindLayout> layout_
 	);
 }
