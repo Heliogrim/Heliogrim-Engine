@@ -72,6 +72,9 @@ namespace {
 					desc.dim == ir::TextureDim::eCube ? eTextureCube : eTexture2d; // legacy has no array dim
 				return Type { .category = TypeCategory::eTexture, .textureType = texture };
 			}
+			case ir::TypeKind::eImage: {
+				return Type { .category = TypeCategory::eTexture, .textureType = TextureType::eTexture2d };
+			}
 			case ir::TypeKind::eSampler: {
 				return Type { .category = TypeCategory::eObject, .objectType = ObjectType::eSampler };
 			}
@@ -134,7 +137,7 @@ std::expected<Intermediate, ir::Diagnostics> ir::lowerToIntermediate(
 			chain = wrap<AnnotationType::eExternalLinkage>(nullptr);
 			if (entry.cls == BindClass::ePushConstant) {
 				chain = wrap<AnnotationType::eReadonly>(wrap<AnnotationType::eConstant>(std::move(chain)));
-			} else if (entry.cls == BindClass::eStorageBuffer) {
+			} else if (entry.cls == BindClass::eStorageBuffer || entry.cls == BindClass::eStorageImage) {
 				chain = wrap<AnnotationType::eStorage>(std::move(chain));
 			} else {
 				chain = wrap<AnnotationType::eUniform>(std::move(chain));

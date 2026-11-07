@@ -106,7 +106,16 @@ namespace {
 			for (const auto& extension : requirements_.extensions) {
 				out_ += "#extension " + extension + " : require\n";
 			}
-			out_ +="\nlayout(std430) buffer;\n\n" + _structs + _bindings + "\n" + _constants + _functions;
+			out_ += "\nlayout(std430) buffer;\n";
+				if (_module.entry == ir::EntryKind::eCompute) {
+					const auto& size = _module.attributes.localSize;
+					out_ += "layout(local_size_x = " + std::to_string(size[0]) + ", local_size_y = " + std::to_string(size[1]) +
+						", local_size_z = " + std::to_string(size[2]) + ") in;\n";
+				}
+				if (_module.entry == ir::EntryKind::eFragment && _module.attributes.earlyFragmentTests) {
+					out_ += "layout(early_fragment_tests) in;\n";
+				}
+				out_ += "\n" + _structs + _bindings + "\n" + _constants + _functions;
 			return std::move(_diags);
 		}
 
@@ -260,6 +269,9 @@ namespace {
 				case eSampler: {
 					return String { "sampler" };
 				}
+				case eImage: {
+					return String { desc_.name == "r32ui" ? "u" : "" } + "image" + dimName(desc_.dim);
+				}
 				default: {
 					return None;
 				}
@@ -408,6 +420,13 @@ namespace {
 				}
 				use(binding.type);
 
+				if (binding.bindClass == ir::BindClass::eWorkgroup) {
+					if (const auto decl = declareOrReport(binding.type, binding.localName); decl.has_value()) {
+						_bindings += "shared " + *decl + ";\n";
+					}
+					continue;
+				}
+
 				if (binding.mode == ir::BindMode::eForward) {
 					if (binding.input) {
 						forward(binding, forwardInputs++);
@@ -463,7 +482,7 @@ namespace {
 			using enum ir::BindClass;
 			const auto* desc = typeAt(binding_.type);
 			const auto kind = desc != nullptr ? Opt<ir::TypeKind> { desc->kind } : None;
-			const auto opaque = kind == ir::TypeKind::eTexture || kind == ir::TypeKind::eSampler;
+			const auto opaque = kind == ir::TypeKind::eTexture || kind == ir::TypeKind::eSampler || kind == ir::TypeKind::eImage;
 
 			if (binding_.bindClass == eNone) {
 				error("Binding '" + binding_.id + "' has no class.");
@@ -473,6 +492,8 @@ namespace {
 				kind == ir::TypeKind::eTexture :
 				binding_.bindClass == eSampler ?
 				kind == ir::TypeKind::eSampler :
+				binding_.bindClass == eStorageImage ?
+				kind == ir::TypeKind::eImage :
 				kind.has_value() && not opaque;
 			if (not fits) {
 				error("The type of binding '" + binding_.id + "' does not fit its class.");
@@ -507,6 +528,14 @@ namespace {
 			}
 			const auto packing = binding_.packing == ir::Packing::eStd140 ? ", std140" : binding_.packing == ir::Packing::eStd430 ? ", std430" : "";
 			const auto head = "layout(set = " + std::to_string(slot->set) + ", binding = " + std::to_string(slot->binding) + packing + ")";
+			if (kind == ir::TypeKind::eImage) {
+				const auto access = binding_.access == ir::Access::eRead ? "readonly " : binding_.access == ir::Access::eWrite ? "writeonly " : "";
+				if (const auto decl = declareOrReport(binding_.type, binding_.localName); decl.has_value()) {
+					_bindings += "layout(set = " + std::to_string(slot->set) + ", binding = " + std::to_string(slot->binding) + ", " +
+						desc->name + ") uniform " + access + *decl + ";\n";
+				}
+				return;
+			}
 			if (opaque) {
 				if (const auto decl = declareOrReport(binding_.type, binding_.localName); decl.has_value()) {
 					_bindings += head + " uniform " + *decl + ";\n";

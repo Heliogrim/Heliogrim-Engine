@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <variant>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Optional.hpp>
@@ -30,7 +31,10 @@ namespace hg::engine::accel::lang::ir {
 		eStorageBuffer,
 		eTexture,
 		eSampler,
-		ePushConstant
+		ePushConstant,
+		eStorageImage,
+		/* module-scope `workgroup` variable; not part of any interface */
+		eWorkgroup
 	};
 
 	struct TypeRef {
@@ -161,7 +165,9 @@ namespace hg::engine::accel::lang::ir {
 		eArray,
 		eStruct,
 		eTexture,
-		eSampler
+		eSampler,
+		/* storage image: `dim` plus the format in `TypeDesc::name` */
+		eImage
 	};
 
 	enum class ScalarKind : u8 {
@@ -282,9 +288,18 @@ namespace hg::engine::accel::lang::ir {
 
 	using Decl = std::variant<BindingDecl, FunctionDecl, StructDecl, ToggleDecl>;
 
+	/* execution attributes of `fn main` */
+	struct EntryAttributes {
+		std::array<u32, 3> localSize { 1uL, 1uL, 1uL };
+		bool earlyFragmentTests = false;
+
+		[[nodiscard]] bool operator==(const EntryAttributes&) const noexcept = default;
+	};
+
 	struct Module {
 		String name;
 		EntryKind entry = EntryKind::eFragment;
+		EntryAttributes attributes;
 		Vector<Toggle> toggles;
 		Vector<TypeDesc> types;
 		Vector<BindingDecl> bindings;
