@@ -110,7 +110,7 @@ std::expected<Intermediate, ir::Diagnostics> ir::lowerToIntermediate(
 		return std::unexpected(std::move(lowered.error()));
 	}
 
-	// lowering only appends nodes, so the interface and layout of `resolved_` still apply
+	// lowering appends nodes and drops or remaps region-taking functions; interface and layout never index functions, so those of `resolved_` still apply
 	Intermediate im {};
 	auto diags = GlslEmitter {}.emit(*lowered, layout_, im.lang).diagnostics;
 	im.lang.dialect = dialect_;

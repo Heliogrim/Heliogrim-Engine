@@ -69,6 +69,13 @@ namespace {
 					}
 				}
 			}
+			for (const auto& fn : _module.functions) {
+				const Here here { _loc, fn.loc };
+				reserved(fn.name, true);
+				for (const auto& param : fn.params) {
+					reserved(param.name);
+				}
+			}
 			for (auto i = 0uz; i < _module.constants.size(); ++i) {
 				constant(i);
 			}

@@ -269,6 +269,40 @@ namespace AccelCompile {
 		);
 	}
 
+	TEST(IrSpirvGateTest, MicropolygonScratchpadPattern) {
+		EXPECT_TRUE(
+			compilesToSpirv(
+				"@input (mode = bind, id = \"submit\", class = storage, access = read_write) block submit { u32[] data; };\n"
+				"workgroup scratch: u32[1024];\n"
+				"workgroup next: u32;\n"
+				"fn write_index(r: &mut u32[], i: u32, v: u32) { r[i] = v; }\n"
+				"fn write_vertex(r: &mut u32[], i: u32, v: u32) { r[i] = v + len(r); }\n"
+				"@compute (local_size = [32, 1, 1])\n"
+				"fn main() {\n"
+				"	let slot = atomic_add(next, 1u);\n"
+				"	const base: u32 = slot * 32u;\n"
+				"	let lane = &mut scratch[base .. base + 32u];\n"
+				"	const n: u32 = 12u;\n"
+				"	let idx = &mut lane[0u .. n];\n"
+				"	let vtx = &mut lane[n .. 32u];\n"
+				"	write_index(idx, 0u, 1u);\n"
+				"	write_index(idx, 1u, 2u);\n"
+				"	write_vertex(vtx, 0u, 3u);\n"
+				"	write_vertex(vtx, 1u, 4u);\n"
+				"	const o: u32 = slot * 20u;\n"
+				"	write_vertex(submit.data[o .. o + 20u], 0u, 5u);\n"
+				"	const sbase: u32 = slot * 32u;\n"
+				"	let slane = &mut submit.data[sbase .. sbase + 32u];\n"
+				"	let sidx = &mut slane[0u .. n];\n"
+				"	let svtx = &mut slane[n .. 32u];\n"
+				"	write_index(sidx, 0u, 6u);\n"
+				"	write_vertex(svtx, 0u, 7u);\n"
+				"}\n",
+				EntryKind::eCompute
+			)
+		);
+	}
+
 	TEST(IrSpirvGateTest, GeometryLayeredTriangle) {
 		EXPECT_TRUE(
 			compilesToSpirv(
