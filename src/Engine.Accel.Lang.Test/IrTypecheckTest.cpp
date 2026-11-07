@@ -402,6 +402,13 @@ namespace AccelLang {
 		);
 	}
 
+	TEST(MutabilityTest, ArgumentOverlapsLiveFieldBorrow) {
+		EXPECT_EQ(
+			messageOf("fn F(x: &mut f32, y: f32) {}\nfn main() {\n\tlet s = f32vec2(1.0);\n\tlet a = &mut s.x;\n\tF(s.x, 1.0);\n}\n"),
+			"'&mut' argument 's.x' overlaps live borrow 's.x' of call to 'F'"
+		);
+	}
+
 	TEST(MutabilityTest, AliasThroughReadRefIsDiagnostic) {
 		EXPECT_EQ(
 			firstMessage("fn F(x: &mut f32, y: &f32) {}\nfn main() {\n\tlet a = 1.0;\n\tlet r = &a;\n\tF(a, r);\n}\n"),
