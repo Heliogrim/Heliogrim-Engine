@@ -325,6 +325,9 @@ namespace {
 				return prefix + "with class " + String(className(a_.bindClass)) + in(first_) + " and " +
 					String(className(b_.bindClass)) + in(second_);
 			}
+			if (a_.arrayed != b_.arrayed) {
+				return prefix + "as per-vertex array in only one of" + in(first_) + " and " + quoted(second_);
+			}
 			if (a_.input != b_.input) {
 				const auto direction = [](bool input_) {
 					return String(input_ ? "input" : "output");
@@ -356,8 +359,9 @@ namespace {
 			auto& remap = remaps[module_];
 			for (const auto& binding : modules[module_]->bindings) {
 				auto mapped = binding;
-				auto& [id, type, mode, bindClass, implicit, input, when, localName, access, packing] = mapped;
+				auto& [id, type, mode, bindClass, implicit, input, when, localName, access, packing, arrayed] = mapped;
 				static_cast<void>(packing);
+				static_cast<void>(arrayed);
 				type = remap.type(type);
 
 				const auto it = std::ranges::find(result.bindings, id, &ir::BindingDecl::id);

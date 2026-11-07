@@ -245,6 +245,8 @@ namespace hg::engine::accel::lang::ir {
 		String localName;
 		Access access = Access::eRead;
 		Packing packing = Packing::eDefault;
+		/* per-vertex forward input of geometry/tessellation (`T[] name`); `type` is the element type */
+		bool arrayed = false;
 	};
 
 	/* module-scope `const`; a `specId` makes it a specialization constant (the layout pass assigns its constant_id) */
@@ -289,9 +291,24 @@ namespace hg::engine::accel::lang::ir {
 	using Decl = std::variant<BindingDecl, FunctionDecl, StructDecl, ToggleDecl>;
 
 	/* execution attributes of `fn main` */
+	enum class Primitive : u8 {
+		ePoints,
+		eLines,
+		eTriangles,
+		eLinesAdjacency,
+		eTrianglesAdjacency,
+		eLineStrip,
+		eTriangleStrip
+	};
+
 	struct EntryAttributes {
 		std::array<u32, 3> localSize { 1uL, 1uL, 1uL };
 		bool earlyFragmentTests = false;
+		/* geometry */
+		Primitive geometryInput = Primitive::eTriangles;
+		Primitive geometryOutput = Primitive::eTriangleStrip;
+		u32 maxVertices = 0uL;
+		u32 invocations = 1uL;
 
 		[[nodiscard]] bool operator==(const EntryAttributes&) const noexcept = default;
 	};

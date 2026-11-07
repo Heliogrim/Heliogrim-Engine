@@ -675,15 +675,25 @@ namespace {
 			if (const auto* entry = lookup(e); entry != nullptr) {
 				return entry->type;
 			}
+			/* a per-vertex input is read as an unsized array of its declared element type */
+			const auto typeOf = [this](ref<const ir::BindingDecl> decl_) {
+				if (not decl_.arrayed) {
+					return decl_.type;
+				}
+				ir::TypeDesc desc {};
+				desc.kind = ir::TypeKind::eArray;
+				desc.element = decl_.type;
+				return intern(std::move(desc));
+			};
 			if (e.binding.index < _module.bindings.size()) {
-				return _module.bindings[e.binding.index].type;
+				return typeOf(_module.bindings[e.binding.index]);
 			}
 			const auto it = std::ranges::find(_module.bindings, e.name, &ir::BindingDecl::localName);
 			if (it == _module.bindings.end()) {
 				error("unknown name '" + e.name + "'");
 				return {};
 			}
-			return it->type;
+			return typeOf(*it);
 		}
 
 		[[nodiscard]] TypeRef builtin(ref<const String> name_, ref<const Vector<ExprRef>> operands_) {
@@ -691,7 +701,14 @@ namespace {
 				if (_hasMain && (variable->stages & ir::stageBit(_module.entry)) == 0u) {
 					error("'" + name_ + "' is not available in " + String(ir::stageName(_module.entry)) + " stages");
 				}
-				return vectorOf(variable->scalar, 32uL, variable->n);
+				const auto element = vectorOf(variable->scalar, 32uL, variable->n);
+				if (variable->arrayed) {
+					ir::TypeDesc desc {};
+					desc.kind = ir::TypeKind::eArray;
+					desc.element = element;
+					return intern(std::move(desc));
+				}
+				return element;
 			}
 			Vector<TypeRef> types {};
 			for (const auto operand : operands_) {

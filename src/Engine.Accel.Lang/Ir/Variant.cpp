@@ -98,6 +98,10 @@ namespace {
 			h.put(module.attributes.localSize[1]);
 			h.put(module.attributes.localSize[2]);
 			h.put(module.attributes.earlyFragmentTests);
+			h.put(module.attributes.geometryInput);
+			h.put(module.attributes.geometryOutput);
+			h.put(module.attributes.maxVertices);
+			h.put(module.attributes.invocations);
 
 			h.put(static_cast<u64>(module.toggles.size()));
 			for (const auto& toggle : module.toggles) {
@@ -116,6 +120,7 @@ namespace {
 				h.put(binding.mode);
 				h.put(binding.bindClass);
 				h.put(binding.implicit);
+				h.put(binding.arrayed);
 				h.put(binding.input);
 				condition(binding.when);
 				h.put(binding.localName);

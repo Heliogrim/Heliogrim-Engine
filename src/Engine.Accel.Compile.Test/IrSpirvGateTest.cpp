@@ -233,6 +233,27 @@ namespace AccelCompile {
 		);
 	}
 
+	TEST(IrSpirvGateTest, GeometryLayeredTriangle) {
+		EXPECT_TRUE(
+			compilesToSpirv(
+				"@input (mode = forward, id = \"world-pos\") f32vec4[] p;\n"
+				"@input (mode = forward, id = \"tint\") f32vec4[] tint_in;\n"
+				"@output (mode = forward, id = \"tint-out\") f32vec4 tint_out;\n"
+				"@geometry (input = triangles, output = triangle_strip, max_vertices = 3, invocations = 1)\n"
+				"fn main() {\n"
+				"	layer = 1;\n"
+				"	for (let i = 0; i < 3; i++) {\n"
+				"		position = input_position[i];\n"
+				"		tint_out = tint_in[i] + p[i];\n"
+				"		emit_vertex();\n"
+				"	}\n"
+				"	end_primitive();\n"
+				"}\n",
+				EntryKind::eGeometry
+			)
+		);
+	}
+
 	TEST(IrSpirvGateTest, ComputeImageBlur) {
 		EXPECT_TRUE(
 			compilesToSpirv(

@@ -303,7 +303,7 @@ namespace hg::engine::accel::lang::ir::detail {
 				ann.redefine = &name;
 			} else if (name.text == "spec") {
 				ann.spec = &name;
-			} else if (name.text == "compute" || name.text == "fragment") {
+			} else if (name.text == "compute" || name.text == "fragment" || name.text == "geometry") {
 				if (ann.entry != nullptr) {
 					error(name, "Duplicate entry annotation.");
 				}
@@ -399,7 +399,7 @@ namespace hg::engine::accel::lang::ir::detail {
 			if (not expect(TokenKind::eAssign, "'='")) {
 				return false;
 			}
-			if (annotation_.text == "compute" || annotation_.text == "fragment") {
+			if (annotation_.text == "compute" || annotation_.text == "fragment" || annotation_.text == "geometry") {
 				if (not entryArg(annotation_, key, ann_)) {
 					return false;
 				}
@@ -465,6 +465,53 @@ namespace hg::engine::accel::lang::ir::detail {
 				error(key_, "'early_fragment_tests' applies to @fragment only.");
 			} else {
 				ann_.attributes.earlyFragmentTests = value.text == "true";
+			}
+			return true;
+		}
+		if (annotation_.text == "geometry" &&
+			(key_.text == "input" || key_.text == "output" || key_.text == "max_vertices" || key_.text == "invocations")) {
+			if (key_.text == "max_vertices" || key_.text == "invocations") {
+				if (not at(TokenKind::eInteger)) {
+					syntaxError("an integer");
+					return false;
+				}
+				const auto& number = take();
+				u32 value = 0uL;
+				for (const char digit : number.text) {
+					value = value * 10uL + static_cast<u32>(digit - '0');
+				}
+				if (number.text.size() > 9uz || value == 0uL) {
+					error(number, "Invalid " + String(key_.text) + " '" + String(number.text) + "'.");
+				} else if (key_.text == "max_vertices") {
+					ann_.attributes.maxVertices = value;
+					ann_.geometryKeys |= 4u;
+				} else {
+					ann_.attributes.invocations = value;
+				}
+				return true;
+			}
+			if (not at(TokenKind::eIdentifier)) {
+				syntaxError("a primitive name");
+				return false;
+			}
+			const auto& value = take();
+			using enum ir::Primitive;
+			constexpr std::pair<StringView, ir::Primitive> names[] {
+				{ "points", ePoints }, { "lines", eLines }, { "triangles", eTriangles }, { "lines_adjacency", eLinesAdjacency },
+				{ "triangles_adjacency", eTrianglesAdjacency }, { "line_strip", eLineStrip }, { "triangle_strip", eTriangleStrip }
+			};
+			const auto it = std::ranges::find(names, value.text, &std::pair<StringView, ir::Primitive>::first);
+			const bool isInput = key_.text == "input";
+			const bool inputKind = it != std::end(names) && it->second <= eTrianglesAdjacency;
+			const bool outputKind = it != std::end(names) && (it->second == ePoints || it->second >= eLineStrip);
+			if (it == std::end(names) || (isInput ? not inputKind : not outputKind)) {
+				error(value, "Invalid value '" + String(value.text) + "' for annotation key '" + String(key_.text) + "'.");
+			} else if (isInput) {
+				ann_.attributes.geometryInput = it->second;
+				ann_.geometryKeys |= 1u;
+			} else {
+				ann_.attributes.geometryOutput = it->second;
+				ann_.geometryKeys |= 2u;
 			}
 			return true;
 		}
@@ -895,12 +942,16 @@ namespace hg::engine::accel::lang::ir::detail {
 
 		if (ann_.entry != nullptr) {
 			const bool compute = ann_.entry->text == "compute";
-			const auto expected = compute ? ir::EntryKind::eCompute : ir::EntryKind::eFragment;
+			const bool geometry = ann_.entry->text == "geometry";
+			const auto expected = compute ? ir::EntryKind::eCompute : geometry ? ir::EntryKind::eGeometry : ir::EntryKind::eFragment;
 			if (_shared.module.entry != expected) {
 				error(*ann_.entry, "@" + String(ann_.entry->text) + " contradicts the module's stage.");
 			} else if (fn.name != "main") {
 				error(*ann_.entry, "@" + String(ann_.entry->text) + " applies to fn main only.");
 			} else {
+				if (geometry && ann_.geometryKeys != 7u) {
+					error(*ann_.entry, "@geometry requires input, output and max_vertices.");
+				}
 				_shared.module.attributes = ann_.attributes;
 			}
 		}
@@ -1061,6 +1112,15 @@ namespace hg::engine::accel::lang::ir::detail {
 				return recover();
 			}
 			decl.type = *declType;
+			{
+				const auto& declared = _shared.module.types[declType->index];
+				const auto entry = _shared.module.entry;
+				if (declared.kind == ir::TypeKind::eArray && declared.count == 0uL && decl.input && decl.mode == ir::BindMode::eForward &&
+					(entry == ir::EntryKind::eGeometry || entry == ir::EntryKind::eTessCtrl || entry == ir::EntryKind::eTessEval)) {
+					decl.arrayed = true;
+					decl.type = declared.element;
+				}
+			}
 			const auto nameToken = take();
 			decl.localName = nameToken.text;
 			const auto kind = _shared.module.types[declType->index].kind;

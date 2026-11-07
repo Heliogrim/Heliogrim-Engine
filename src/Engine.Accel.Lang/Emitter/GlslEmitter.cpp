@@ -112,6 +112,14 @@ namespace {
 					out_ += "layout(local_size_x = " + std::to_string(size[0]) + ", local_size_y = " + std::to_string(size[1]) +
 						", local_size_z = " + std::to_string(size[2]) + ") in;\n";
 				}
+				if (_module.entry == ir::EntryKind::eGeometry) {
+					const auto& a = _module.attributes;
+					out_ += "layout(" + String(primitiveName(a.geometryInput)) + ") in;\n";
+					out_ += "layout(" + String(primitiveName(a.geometryOutput)) + ", max_vertices = " + std::to_string(a.maxVertices) + ") out;\n";
+					if (a.invocations > 1uL) {
+						out_ += "layout(invocations = " + std::to_string(a.invocations) + ") in;\n";
+					}
+				}
 				if (_module.entry == ir::EntryKind::eFragment && _module.attributes.earlyFragmentTests) {
 					out_ += "layout(early_fragment_tests) in;\n";
 				}
@@ -275,6 +283,19 @@ namespace {
 				default: {
 					return None;
 				}
+			}
+		}
+
+		[[nodiscard]] static StringView primitiveName(ir::Primitive primitive_) {
+			using enum ir::Primitive;
+			switch (primitive_) {
+				case ePoints: return "points";
+				case eLines: return "lines";
+				case eLinesAdjacency: return "lines_adjacency";
+				case eTrianglesAdjacency: return "triangles_adjacency";
+				case eLineStrip: return "line_strip";
+				case eTriangleStrip: return "triangle_strip";
+				default: return "triangles";
 			}
 		}
 
@@ -475,7 +496,7 @@ namespace {
 				desc->scalar != ir::ScalarKind::eFloat;
 			const auto flat = _module.entry == ir::EntryKind::eFragment && integral;
 			_bindings += "layout(location = " + std::to_string(_layout.inputLocations[index_]) + ") " + (flat ? "flat " : "") +
-				"in " + *decl + ";\n";
+				"in " + *decl + (binding_.arrayed ? "[]" : "") + ";\n";
 		}
 
 		void resource(ref<const ir::BindingDecl> binding_) {
@@ -895,7 +916,10 @@ namespace {
 				case ir::ExprKind::eIndex: {
 					auto base = operand(0uz);
 					const auto index = operand(1uz);
-					return { base.text + "[" + index.text + "]", typeOf(e.type) };
+					const auto& baseExpr = _module.exprs[e.operands.front().index];
+					const auto* builtinVar = baseExpr.kind == ir::ExprKind::eBuiltin ? ir::findBuiltinVariable(baseExpr.name) : nullptr;
+					const String suffix = builtinVar != nullptr && builtinVar->arrayed ? ".gl_Position" : "";
+					return { base.text + "[" + index.text + "]" + suffix, typeOf(e.type) };
 				}
 				case ir::ExprKind::eUnary: {
 					auto inner = operand(0uz);

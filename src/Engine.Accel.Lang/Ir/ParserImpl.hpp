@@ -102,6 +102,8 @@ namespace hg::engine::accel::lang::ir::detail {
 		/* the @compute / @fragment name and its collected arguments */
 		const ir::Token* entry = nullptr;
 		ir::EntryAttributes attributes {};
+		/* geometry keys given: bit 0 input, 1 output, 2 max_vertices */
+		u8 geometryKeys = 0u;
 	};
 
 	class Parser {
