@@ -9,35 +9,35 @@
 #include "Stage/StageComposer.hpp"
 
 namespace hg::engine::accel {
-    class EffectCompiler {
-    public:
-        using this_type = EffectCompiler;
+	class EffectCompiler {
+	public:
+		using this_type = EffectCompiler;
 
-    public:
-        EffectCompiler() noexcept;
+	public:
+		EffectCompiler() noexcept;
 
-        EffectCompiler(
-            mref<uptr<PassBuilder>> passBuilder_,
-            mref<uptr<PassCompiler>> passCompiler_,
-            mref<uptr<StageComposer>> stageComposer_,
-            mref<uptr<ModuleBuilder>> moduleBuilder_,
-            mref<uptr<ModuleCompiler>> moduleCompiler_
-        ) noexcept;
+		EffectCompiler(
+			mref<uptr<PassBuilder>> passBuilder_,
+			mref<uptr<PassCompiler>> passCompiler_,
+			mref<uptr<StageComposer>> stageComposer_,
+			mref<uptr<ModuleBuilder>> moduleBuilder_,
+			mref<uptr<ModuleCompiler>> moduleCompiler_
+		) noexcept;
 
-        ~EffectCompiler() noexcept;
+		~EffectCompiler() noexcept;
 
-    private:
-        uptr<PassBuilder> _passBuilder;
-        uptr<PassCompiler> _passCompiler;
+	private:
+		uptr<PassBuilder> _passBuilder;
+		uptr<PassCompiler> _passCompiler;
 
-        uptr<StageComposer> _stageComposer;
+		uptr<StageComposer> _stageComposer;
 
-        uptr<ModuleBuilder> _moduleBuilder;
-        uptr<ModuleCompiler> _moduleCompiler;
+		uptr<ModuleBuilder> _moduleBuilder;
+		uptr<ModuleCompiler> _moduleCompiler;
 
-    public:
-        [[nodiscard]] EffectCompileResult compile(
-            mref<EffectCompileRequest> request_
-        ) const;
-    };
+	public:
+		[[nodiscard]] EffectCompileResult compile(
+			mref<EffectCompileRequest> request_
+		) const;
+	};
 }
