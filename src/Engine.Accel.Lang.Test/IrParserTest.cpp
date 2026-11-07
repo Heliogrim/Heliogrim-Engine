@@ -35,6 +35,16 @@ namespace AccelLang {
 		EXPECT_EQ(tokens[2].kind, TokenKind::eEof);
 	}
 
+	TEST(LexerTest, DotDotAfterInteger) {
+		for (const auto* src : { "0u..8u", "1..2" }) {
+			const auto tokens = lexOk(src);
+			ASSERT_EQ(tokens.size(), 4uz) << src;
+			EXPECT_EQ(tokens[0].kind, TokenKind::eInteger);
+			EXPECT_EQ(tokens[1].kind, TokenKind::eDotDot);
+			EXPECT_EQ(tokens[2].kind, TokenKind::eInteger);
+		}
+	}
+
 	TEST(ParserTest, ParsesConstArray) {
 		auto res = parseModule(
 			"M",

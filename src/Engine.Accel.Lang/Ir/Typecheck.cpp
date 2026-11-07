@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cstdlib>
 #include <string>
 #include <utility>
 
@@ -120,6 +121,8 @@ namespace {
 		TypeRef _ret;
 		u32 _depth = 0uL;
 		u32 _loops = 0uL;
+		/* range expressions whose context is a borrow (alias initializer or call argument) */
+		Vector<u32> _borrowed;
 
 /* head token of the node being checked; restored on scope exit so errors after operand recursion stay on the parent */ ir::SourceLoc _loc {};  struct Here { explicit Here(ref<ir::SourceLoc> slot_, ir::SourceLoc next_) : _slot(slot_), _saved(slot_) { _slot = next_; }  ~Here() { _slot = _saved; }  ref<ir::SourceLoc> _slot; ir::SourceLoc _saved; };  void error(String message_) { _diags.emplace_back( ir::Diagnostic { .severity = ir::Severity::eError, .message = std::move(message_), .line = _loc.line, .column = _loc.column } ); }
 
@@ -150,6 +153,7 @@ namespace {
 				case TypeKind::eTexture: return a_.dim == b_.dim && a_.scalar == b_.scalar;
 				case TypeKind::eImage: return a_.dim == b_.dim && a_.name == b_.name;
 				case TypeKind::eArray: return a_.count == b_.count && a_.element == b_.element;
+				case TypeKind::eRegion: return a_.element == b_.element;
 				default: return true;
 			}
 		}
@@ -326,6 +330,9 @@ namespace {
 					break;
 				}
 				case StmtKind::eDeclareRef: {
+					if (lhs.index < _module.exprs.size() && _module.exprs[lhs.index].kind == ExprKind::eRange) {
+						_borrowed.emplace_back(lhs.index);
+					}
 					const auto type = expr(lhs);
 					const auto writes = _module.stmts[ref_.index].mutable_;
 					if (lhs.index >= _module.exprs.size() || not ir::isPlace(_module, lhs)) {
@@ -494,6 +501,7 @@ namespace {
 				case ExprKind::eCall: return call(ref_, text, operands);
 				case ExprKind::eField: return field(text, operands);
 				case ExprKind::eIndex: return index(operands);
+				case ExprKind::eRange: return range(ref_, operands);
 				case ExprKind::eUnary: return unary(text, operands);
 				case ExprKind::eBinary: return binary(text, operands);
 				case ExprKind::eTernary: return ternary(operands);
@@ -553,7 +561,7 @@ namespace {
 		/* root node of a field/index chain; null when the chain breaks */
 		[[nodiscard]] const ir::Expr* rootOf(ExprRef ref_) const {
 			const ir::Expr* e = ref_.index < _module.exprs.size() ? &_module.exprs[ref_.index] : nullptr;
-			while (e != nullptr && (e->kind == ExprKind::eField || e->kind == ExprKind::eIndex)) {
+			while (e != nullptr && (e->kind == ExprKind::eField || e->kind == ExprKind::eIndex || e->kind == ExprKind::eRange)) {
 				e = not e->operands.empty() && e->operands.front().index < _module.exprs.size() ? &_module.exprs[e->operands.front().index] : nullptr;
 			}
 			return e;
@@ -745,6 +753,19 @@ namespace {
 				}
 				return element;
 			}
+			if (name_ == "len") {
+				// region length; not a GLSL builtin, lowered with the regions
+				if (operands_.size() != 1uz) {
+					error("'len' takes one region argument");
+					return {};
+				}
+				const auto arg = expr(operands_.front());
+				if (valid(arg) && not isKind(arg, TypeKind::eRegion)) {
+					error("'len' needs a region, got " + name(arg));
+					return {};
+				}
+				return valid(arg) ? scalarOf(ScalarKind::eUInt, 32uL) : TypeRef {};
+			}
 			Vector<TypeRef> types {};
 			for (const auto operand : operands_) {
 				types.emplace_back(expr(operand));
@@ -906,6 +927,41 @@ namespace {
 			return {};
 		}
 
+		/* `base[lo .. hi]`: a region over an array or region; only legal under a borrow */
+		[[nodiscard]] TypeRef range(ExprRef ref_, ref<const Vector<ExprRef>> operands_) {
+			if (operands_.size() != 3uz) {
+				return {};
+			}
+			if (std::ranges::find(_borrowed, ref_.index) == _borrowed.end()) {
+				error("a range needs a borrow");
+			}
+			const auto base = expr(operands_[0]);
+			const auto u32Type = scalarOf(ScalarKind::eUInt, 32uL);
+			auto bounds = true;
+			for (const auto bound : { operands_[1], operands_[2] }) {
+				const auto type = expr(bound);
+				bounds = bounds && valid(type) && coerce(bound, u32Type);
+			}
+			if (not bounds) {
+				error("range bounds must be u32");
+			} else if (const auto& lo = _module.exprs[operands_[1].index], &hi = _module.exprs[operands_[2].index];
+				lo.kind == ExprKind::eLiteral && hi.kind == ExprKind::eLiteral && std::strtoull(lo.name.c_str(), nullptr, 0) >= std::strtoull(hi.name.c_str(), nullptr, 0)) {
+				error("empty or reversed range");
+			}
+			if (not valid(base)) {
+				return {};
+			}
+			const auto desc = _module.types[base.index];
+			if (desc.kind != TypeKind::eArray && desc.kind != TypeKind::eRegion) {
+				error("cannot range '" + name(base) + "'");
+				return {};
+			}
+			TypeDesc region {};
+			region.kind = TypeKind::eRegion;
+			region.element = desc.element;
+			return intern(std::move(region));
+		}
+
 		[[nodiscard]] TypeRef index(ref<const Vector<ExprRef>> operands_) {
 			if (operands_.size() != 2uz) {
 				return {};
@@ -921,6 +977,7 @@ namespace {
 			const auto desc = _module.types[base.index];
 			switch (desc.kind) {
 				case TypeKind::eArray: return desc.element;
+				case TypeKind::eRegion: return desc.element;
 				case TypeKind::eVector: return scalarOf(desc.scalar, desc.bits);
 				case TypeKind::eMatrix: return vectorOf(desc.scalar, desc.bits, desc.m);
 				default: break;
@@ -1040,10 +1097,20 @@ namespace {
 
 		/* Calls: exact parameter types first, then with literal adaptation */
 
+		/* an array argument binds to a region parameter over the same element type */
+		[[nodiscard]] bool regionArgument(TypeRef arg_, TypeRef param_) const {
+			return valid(arg_) && valid(param_) && _module.types[arg_.index].kind == TypeKind::eArray &&
+				_module.types[param_.index].kind == TypeKind::eRegion && same(_module.types[arg_.index].element, _module.types[param_.index].element);
+		}
+
 		[[nodiscard]] TypeRef call(ExprRef ref_, ref<const String> name_, ref<const Vector<ExprRef>> operands_) {
 			Vector<TypeRef> args {};
 			auto known = true;
 			for (const auto operand : operands_) {
+				// a range argument is a borrow for a region parameter; other callees reject its region type
+				if (_module.exprs[operand.index].kind == ExprKind::eRange) {
+					_borrowed.emplace_back(operand.index);
+				}
 				args.emplace_back(expr(operand));
 				known = known && valid(args.back());
 			}
@@ -1066,7 +1133,7 @@ namespace {
 			const auto accepts = [&](u32 fn_, bool adapt_) {
 				const auto& params = _module.functions[fn_].params;
 				for (auto i = 0uz; i < params.size(); ++i) {
-					if (not same(args[i], params[i].type) && not (adapt_ && adaptable(operands_[i], params[i].type))) {
+					if (not same(args[i], params[i].type) && not regionArgument(args[i], params[i].type) && not (adapt_ && adaptable(operands_[i], params[i].type))) {
 						return false;
 					}
 				}
@@ -1117,6 +1184,11 @@ namespace {
 			const auto params = _module.functions[*chosen].params;
 			for (auto i = 0uz; known && i < params.size(); ++i) {
 				(void)coerce(operands_[i], params[i].type);
+			}
+			for (auto i = 0uz; known && i < params.size(); ++i) {
+				if (regionArgument(args[i], params[i].type) && _module.types[args[i].index].count == 0uL) {
+					error("unsized array needs an explicit range");
+				}
 			}
 			refArguments(name_, _module.functions[*chosen], operands_);
 			_module.exprs[ref_.index].function = ir::FunctionRef { *chosen };
@@ -1186,6 +1258,7 @@ String ir::describeType(ref<const Vector<TypeDesc>> types_, TypeRef type_, u32 d
 			constexpr std::array<StringView, 5> dims { "1d", "2d", "3d", "cube", "2darray" };
 			return "image" + String(dims[std::min(static_cast<u32>(type.dim), u32 { 4 })]) + "<" + type.name + ">";
 		}
+		case TypeKind::eRegion: return "&" + describeType(types_, type.element, depth_ + 1uL) + "[]";
 		default: return "sampler";
 	}
 }
@@ -1200,7 +1273,7 @@ String ir::signatureOf(ref<const Module> module_, ref<const FunctionDecl> fn_) {
 
 bool ir::isPlace(ref<const Module> module_, ExprRef expr_) {
 		const auto* e = expr_.index < module_.exprs.size() ? &module_.exprs[expr_.index] : nullptr;
-		while (e != nullptr && (e->kind == ExprKind::eField || e->kind == ExprKind::eIndex)) {
+		while (e != nullptr && (e->kind == ExprKind::eField || e->kind == ExprKind::eIndex || e->kind == ExprKind::eRange)) {
 			e = not e->operands.empty() && e->operands.front().index < module_.exprs.size() ? &module_.exprs[e->operands.front().index] : nullptr;
 		}
 		return e != nullptr && (e->kind == ExprKind::eNameRef || (e->kind == ExprKind::eBuiltin && ir::findBuiltinVariable(e->name) != nullptr));

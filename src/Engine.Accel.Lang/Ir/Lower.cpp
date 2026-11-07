@@ -79,6 +79,7 @@ namespace {
 				return Type { .category = TypeCategory::eObject, .objectType = ObjectType::eSampler };
 			}
 			case ir::TypeKind::eArray:
+			case ir::TypeKind::eRegion:
 			case ir::TypeKind::eStruct:
 			default: {
 				return objectType;

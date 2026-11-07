@@ -143,10 +143,10 @@ namespace {
 				StringView text;
 				ir::TokenKind kind;
 			};
-			static constexpr std::array<Op, 21> ops {
+			static constexpr std::array<Op, 22> ops {
 				{
 					{ "<<=", ir::TokenKind::eCompoundAssign }, { ">>=", ir::TokenKind::eCompoundAssign },
-					{ "->", ir::TokenKind::eArrow }, { "&&", ir::TokenKind::eAndAnd },
+					{ "->", ir::TokenKind::eArrow }, { "..", ir::TokenKind::eDotDot }, { "&&", ir::TokenKind::eAndAnd },
 					{ "||", ir::TokenKind::eOrOr }, { "==", ir::TokenKind::eEqEq },
 					{ "!=", ir::TokenKind::eNotEq }, { "<=", ir::TokenKind::eLessEq },
 					{ ">=", ir::TokenKind::eGreaterEq }, { "<<", ir::TokenKind::eShl },

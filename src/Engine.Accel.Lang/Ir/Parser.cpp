@@ -1047,7 +1047,18 @@ namespace hg::engine::accel::lang::ir::detail {
 				if (not paramType.has_value()) {
 					return recover();
 				}
-				fn.params.emplace_back(ir::ParamDecl { std::move(paramName), *paramType, kind });
+				auto finalType = *paramType;
+				if (kind != ir::ParamKind::eValue) {
+					const auto declared = _shared.module.types[finalType.index];
+					if (declared.kind == ir::TypeKind::eArray && declared.count == 0uL) {
+						// `&mut T[]` / `&T[]` is a region over any array
+						ir::TypeDesc region {};
+						region.kind = ir::TypeKind::eRegion;
+						region.element = declared.element;
+						finalType = intern(std::move(region));
+					}
+				}
+				fn.params.emplace_back(ir::ParamDecl { std::move(paramName), finalType, kind });
 			} while (accept(TokenKind::eComma));
 			if (not expect(TokenKind::eRParen, "')'")) {
 				return recover();
@@ -1216,7 +1227,7 @@ namespace hg::engine::accel::lang::ir::detail {
 		auto& module = shared_.module;
 		/* a user function shadows a builtin function of the same name */
 		for (auto& e : module.exprs) {
-			if (e.kind != ir::ExprKind::eBuiltin || ir::findBuiltinFunction(e.name) == nullptr) {
+			if (e.kind != ir::ExprKind::eBuiltin || (e.name != "len" && ir::findBuiltinFunction(e.name) == nullptr)) {
 				continue;
 			}
 			for (auto i = 0uz; i < module.functions.size(); ++i) {
