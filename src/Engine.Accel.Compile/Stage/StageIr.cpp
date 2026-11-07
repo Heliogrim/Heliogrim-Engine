@@ -77,6 +77,7 @@ namespace {
 					case BindClass::eStorageBuffer: return BindType::eStorageBuffer;
 					case BindClass::eTexture: return BindType::eTexture;
 					case BindClass::eSampler: return BindType::eTextureSampler;
+					case BindClass::eStorageImage: return BindType::eStorageImage;
 					default: return BindType::eUniformBuffer;
 				}
 			}

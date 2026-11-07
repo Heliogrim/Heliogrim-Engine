@@ -281,6 +281,11 @@ ir::Module ir::slice(ref<const Module> module_, std::span<const String> required
 		const auto required = std::ranges::find(requiredOutputIds_, bindings[i].id) != requiredOutputIds_.end();
 		dropped[i] = not bindings[i].input && not required;
 		keep[i] = not bindings[i].input && required;
+		if (bindings[i].bindClass == BindClass::eWorkgroup) {
+			// shared memory is neither an interface output nor droppable
+			dropped[i] = false;
+			keep[i] = true;
+		}
 	}
 
 	CompactPlan plan {};

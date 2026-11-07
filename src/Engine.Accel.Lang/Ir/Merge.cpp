@@ -67,7 +67,7 @@ namespace {
 	}
 
 	[[nodiscard]] StringView className(ir::BindClass class_) {
-		constexpr std::array<StringView, 6> names { "none", "uniform", "storage", "texture", "sampler", "push" };
+		constexpr std::array<StringView, 8> names { "none", "uniform", "storage", "texture", "sampler", "push", "image", "workgroup" };
 		const auto index = static_cast<u32>(class_);
 		return index < names.size() ? names[index] : "unknown";
 	}
@@ -75,7 +75,8 @@ namespace {
 	/* Input validation: every ref in range (sentinel allowed), types refer only to earlier types (no cycles) */
 
 	[[nodiscard]] Opt<String> invalidRef(ref<const ir::Module> module_) {
-		const auto& [name, entry, toggles, types, bindings, constants, functions, exprs, stmts, warnings] = module_;
+		const auto& [name, entry, attributes, toggles, types, bindings, constants, functions, exprs, stmts, warnings] = module_;
+		static_cast<void>(attributes);
 		Opt<String> found = None;
 		const auto check = [&](StringView owner_, size_t at_, StringView kind_, u32 index_, size_t limit_) {
 			if (not found.has_value() && index_ != unset && index_ >= limit_) {
@@ -532,9 +533,10 @@ namespace {
 		}
 
 		void run() {
-			auto& [name, entry, toggleList, typeList, bindingList, constantList, functionList, exprList, stmtList, warningList] = result;
+			auto& [name, entry, attributes, toggleList, typeList, bindingList, constantList, functionList, exprList, stmtList, warningList] = result;
 			name = modules.back()->name;
 			entry = modules.back()->entry;
+			attributes = modules.back()->attributes;
 
 			Vector<u32> toggleOrigins {};
 			Vector<u32> bindingOrigins {};

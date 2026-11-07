@@ -132,7 +132,17 @@ namespace AccelCompile {
 
 		/* one stage is its own pipeline */
 		const std::array<const lang::Intermediate*, 1> stages { &stage };
-		const std::array<StageFlagBits, 1> flags { entry_ == EntryKind::eFragment ? StageFlagBits::eFragment : StageFlagBits::eVertex };
+		const auto stageBit = [](EntryKind kind_) {
+			switch (kind_) {
+				case EntryKind::eFragment: return StageFlagBits::eFragment;
+				case EntryKind::eCompute: return StageFlagBits::eCompute;
+				case EntryKind::eGeometry: return StageFlagBits::eGeometry;
+				case EntryKind::eTessCtrl: return StageFlagBits::eTessellationCtrl;
+				case EntryKind::eTessEval: return StageFlagBits::eTessellationEval;
+				default: return StageFlagBits::eVertex;
+			}
+		};
+		const std::array<StageFlagBits, 1> flags { stageBit(entry_) };
 		const auto composed = composePipelineIr(stages, flags, profile, spec, cache, layouts);
 		if (not composed.has_value()) {
 			auto failure = ::testing::AssertionFailure() << "resolve failed:";

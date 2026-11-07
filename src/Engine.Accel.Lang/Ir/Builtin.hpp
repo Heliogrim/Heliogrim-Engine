@@ -57,8 +57,13 @@ namespace hg::engine::accel::lang::ir {
 		bool uniform = false;
 	};
 
-	inline constexpr std::array<BuiltinVariable, 7> builtinVariables {
+	inline constexpr std::array<BuiltinVariable, 12> builtinVariables {
 		{
+			{ "global_invocation_id", "gl_GlobalInvocationID", TypeKind::eVector, ScalarKind::eUInt, 3uL, stageCompute },
+			{ "local_invocation_id", "gl_LocalInvocationID", TypeKind::eVector, ScalarKind::eUInt, 3uL, stageCompute },
+			{ "local_invocation_index", "gl_LocalInvocationIndex", TypeKind::eScalar, ScalarKind::eUInt, 1uL, stageCompute },
+			{ "workgroup_id", "gl_WorkGroupID", TypeKind::eVector, ScalarKind::eUInt, 3uL, stageCompute, false, eNoRequirement, true },
+			{ "num_workgroups", "gl_NumWorkGroups", TypeKind::eVector, ScalarKind::eUInt, 3uL, stageCompute, false, eNoRequirement, true },
 			{ "vertex_index", "gl_VertexIndex", TypeKind::eScalar, ScalarKind::eInt, 1uL, stageVertex },
 			{ "instance_index", "gl_InstanceIndex", TypeKind::eScalar, ScalarKind::eInt, 1uL, stageVertex },
 			{ "position", "gl_Position", TypeKind::eVector, ScalarKind::eFloat, 4uL, stageVertex | stageTessEval | stageGeometry, true },
@@ -89,6 +94,8 @@ namespace hg::engine::accel::lang::ir {
 		u32 requirement = eNoRequirement;
 		/* implicit derivatives: only defined under uniform control flow */
 		bool needsUniformControl = false;
+		/* the divergence check is an error instead of a warning (lanes skipping the call deadlock the workgroup) */
+		bool errorUnderDivergence = false;
 	};
 
 	inline constexpr BuiltinFunction builtinFunctions[] = {
@@ -155,7 +162,30 @@ namespace hg::engine::accel::lang::ir {
 
 		{ "dFdx", "dFdx", "genF(genF)", stageFragment, eNoRequirement, true },
 		{ "dFdy", "dFdy", "genF(genF)", stageFragment, eNoRequirement, true },
-		{ "fwidth", "fwidth", "genF(genF)", stageFragment, eNoRequirement, true }
+		{ "fwidth", "fwidth", "genF(genF)", stageFragment, eNoRequirement, true },
+
+		{ "barrier", "barrier", "void()", stageCompute | stageTessCtrl, eNoRequirement, true, true },
+		{ "memory_barrier_shared", "memoryBarrierShared", "void()", stageCompute | stageTessCtrl, eNoRequirement, true, true },
+		{ "image_load", "imageLoad", "ival(img,icoord)" },
+		{ "image_store", "imageStore", "void(&img,icoord,ival)" },
+		{ "image_size", "imageSize", "icoord(img)" },
+
+		{ "atomic_add", "atomicAdd", "u32(&u32,u32)" },
+		{ "atomic_add", "atomicAdd", "s32(&s32,s32)" },
+		{ "atomic_min", "atomicMin", "u32(&u32,u32)" },
+		{ "atomic_min", "atomicMin", "s32(&s32,s32)" },
+		{ "atomic_max", "atomicMax", "u32(&u32,u32)" },
+		{ "atomic_max", "atomicMax", "s32(&s32,s32)" },
+		{ "atomic_and", "atomicAnd", "u32(&u32,u32)" },
+		{ "atomic_and", "atomicAnd", "s32(&s32,s32)" },
+		{ "atomic_or", "atomicOr", "u32(&u32,u32)" },
+		{ "atomic_or", "atomicOr", "s32(&s32,s32)" },
+		{ "atomic_xor", "atomicXor", "u32(&u32,u32)" },
+		{ "atomic_xor", "atomicXor", "s32(&s32,s32)" },
+		{ "atomic_exchange", "atomicExchange", "u32(&u32,u32)" },
+		{ "atomic_exchange", "atomicExchange", "s32(&s32,s32)" },
+		{ "atomic_comp_swap", "atomicCompSwap", "u32(&u32,u32,u32)" },
+		{ "atomic_comp_swap", "atomicCompSwap", "s32(&s32,s32,s32)" }
 	};
 
 	[[nodiscard]] constexpr const BuiltinFunction* findBuiltinFunction(StringView name_) noexcept {
@@ -176,7 +206,12 @@ namespace hg::engine::accel::lang::ir {
 		eTexture,
 		eSampler,
 		eCoord,
-		eSize
+		eSize,
+		/* storage image, its s32 coordinate / size, its texel (format dependent) and no value */
+		eImage,
+		eImageCoord,
+		eImageValue,
+		eVoid
 	};
 
 	struct BuiltinSigType {
@@ -207,6 +242,9 @@ namespace hg::engine::accel::lang::ir {
 		if (text_ == "tex" || text_ == "smp" || text_ == "coord" || text_ == "size") {
 			t.family = text_ == "tex" ? eTexture : text_ == "smp" ? eSampler : text_ == "coord" ? eCoord : eSize;
 			t.scalar = t.family == eSize ? ScalarKind::eInt : ScalarKind::eFloat;
+		} else if (text_ == "img" || text_ == "icoord" || text_ == "ival" || text_ == "void") {
+			t.family = text_ == "img" ? eImage : text_ == "icoord" ? eImageCoord : text_ == "ival" ? eImageValue : eVoid;
+			t.scalar = t.family == eImageCoord ? ScalarKind::eInt : ScalarKind::eFloat;
 		} else if (text_ == "genF" || text_ == "genH") {
 			t.family = text_ == "genF" ? eGenF : eGenH;
 			t.bits = text_ == "genF" ? 32uL : 16uL;
@@ -277,11 +315,35 @@ namespace hg::engine::accel::lang::ir {
 	}
 
 	/* the concrete type of a signature slot for family width `width_` (1-4, matrices 2-4); none when the family has no such width */
-	[[nodiscard]] inline Opt<TypeDesc> resolveBuiltinSigType(const BuiltinSigType& t_, u32 width_, TextureDim dim_ = TextureDim::e2D) {
+	[[nodiscard]] inline Opt<TypeDesc> resolveBuiltinSigType(
+		const BuiltinSigType& t_,
+		u32 width_,
+		TextureDim dim_ = TextureDim::e2D,
+		StringView format_ = {}
+	) {
 		TypeDesc desc {};
 		desc.scalar = t_.scalar;
 		desc.bits = t_.bits;
 		switch (t_.family) {
+			case BuiltinFamily::eImage: {
+				desc.kind = TypeKind::eImage;
+				desc.dim = dim_;
+				desc.name = String(format_);
+				return desc;
+			}
+			case BuiltinFamily::eImageCoord: {
+				const auto n = dim_ == TextureDim::e1D ? 1uL : dim_ == TextureDim::e2D ? 2uL : 3uL;
+				desc.kind = n == 1uL ? TypeKind::eScalar : TypeKind::eVector;
+				desc.n = n;
+				return desc;
+			}
+			case BuiltinFamily::eImageValue: {
+				desc.kind = TypeKind::eVector;
+				desc.n = 4uL;
+				desc.scalar = format_.ends_with("ui") ? ScalarKind::eUInt : (format_.ends_with("i") ? ScalarKind::eInt : ScalarKind::eFloat);
+				return desc;
+			}
+			case BuiltinFamily::eVoid: return desc;
 			case BuiltinFamily::eTexture: {
 				desc.kind = TypeKind::eTexture;
 				desc.dim = dim_;

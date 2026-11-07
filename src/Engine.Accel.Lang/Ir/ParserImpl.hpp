@@ -99,6 +99,9 @@ namespace hg::engine::accel::lang::ir::detail {
 		const ir::Token* allow = nullptr;
 		/* the @spec name; its id is collected in `binding.id` */
 		const ir::Token* spec = nullptr;
+		/* the @compute / @fragment name and its collected arguments */
+		const ir::Token* entry = nullptr;
+		ir::EntryAttributes attributes {};
 	};
 
 	class Parser {
@@ -176,6 +179,8 @@ namespace hg::engine::accel::lang::ir::detail {
 		void declaration(ir::Condition when_);
 		void whenBlock(ref<const ir::Condition> when_);
 		bool annotationArgs(ref<const ir::Token> annotation_, ref<Annotations> ann_);
+		bool entryArg(ref<const ir::Token> annotation_, ref<const ir::Token> key_, ref<Annotations> ann_);
+		void workgroupDecl(ref<const Annotations> ann_);
 		void annotationValue(ref<const ir::Token> annotation_, ref<const ir::Token> key_, ref<const ir::Token> value_, ref<Annotations> ann_);
 
 		/* Conditions */

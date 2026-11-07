@@ -211,4 +211,44 @@ namespace AccelCompile {
 			)
 		);
 	}
+
+	TEST(IrSpirvGateTest, ComputeReduction) {
+		EXPECT_TRUE(
+			compilesToSpirv(
+				"@input (mode = bind, id = \"data\", class = storage, access = read_write) block data { f32[] values; };\n"
+				"workgroup scratch: f32[64];\n"
+				"@compute (local_size = [64, 1, 1])\n"
+				"fn main() {\n"
+				"	let lid = local_invocation_index;\n"
+				"	scratch[lid] = data.values[global_invocation_id.x];\n"
+				"	barrier();\n"
+				"	for (let stride = 32u; stride > 0u; stride = stride / 2u) {\n"
+				"		if (lid < stride) { scratch[lid] += scratch[lid + stride]; }\n"
+				"		barrier();\n"
+				"	}\n"
+				"	if (lid == 0u) { data.values[workgroup_id.x] = scratch[0]; }\n"
+				"}\n",
+				EntryKind::eCompute
+			)
+		);
+	}
+
+	TEST(IrSpirvGateTest, ComputeImageBlur) {
+		EXPECT_TRUE(
+			compilesToSpirv(
+				"@input (mode = bind, id = \"src\", class = image, access = read) image2d<rgba16f> src;\n"
+				"@input (mode = bind, id = \"dst\", class = image, access = write) image2d<rgba16f> dst;\n"
+				"@compute (local_size = [8, 8, 1])\n"
+				"fn main() {\n"
+				"	let p = s32vec2(global_invocation_id.xy);\n"
+				"	let acc = f32vec4(0.0);\n"
+				"	for (let dx = -1; dx <= 1; dx++) {\n"
+				"		acc += image_load(src, p + s32vec2(dx, 0));\n"
+				"	}\n"
+				"	image_store(dst, p, acc / 3.0);\n"
+				"}\n",
+				EntryKind::eCompute
+			)
+		);
+	}
 }
