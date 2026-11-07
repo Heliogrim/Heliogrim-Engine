@@ -233,30 +233,12 @@ smr<AccelerationEffect> build_test_effect() {
 
 	/**/
 
-	const auto vertexShaderCode = read_shader_file(R"(test/__test__render.vs)");
-
-	vertexStage->setIntermediate(make_smr<lang::Intermediate>());
-	vertexStage->getIntermediate()->lang.dialect = lang::Dialect::eVulkanGlsl460;
-	vertexStage->getIntermediate()->lang.text.emplace_back(std::move(vertexShaderCode));
-
-	const auto fragmentShaderCode = read_shader_file(R"(text/__test__render.fs)");
-
-	fragmentStage->setIntermediate(make_smr<lang::Intermediate>());
-	fragmentStage->getIntermediate()->lang.dialect = lang::Dialect::eVulkanGlsl460;
-	fragmentStage->getIntermediate()->lang.text.emplace_back(std::move(fragmentShaderCode));
-
-	uptr<lang::Variable> tmpVar {};
-	uptr<lang::Symbol> tmpSym {};
-
-	tmpVar = make_uptr<lang::Variable>();
-	tmpVar->annotation = make_uptr<lang::SimpleAnnotation<lang::AnnotationType::eForwardLinkage>>();
-	tmpSym = make_uptr<lang::Symbol>(
-		lang::SymbolId::from("color"sv),
-		lang::VariableSymbol { lang::SymbolType::eVariableSymbol, tmpVar.get() }
+	vertexStage->setIntermediate(
+		makeIrIntermediate(R"(test/render.vs.asl)", ::hg::engine::accel::lang::ir::EntryKind::eVertex)
 	);
-
-	fragmentStage->getIntermediate()->rep.globalScope.outbound.emplace_back(std::move(tmpVar));
-	fragmentStage->getIntermediate()->rep.symbolTable.emplace(std::move(tmpSym));
+	fragmentStage->setIntermediate(
+		makeIrIntermediate(R"(test/render.fs.asl)", ::hg::engine::accel::lang::ir::EntryKind::eFragment)
+	);
 
 	/**/
 

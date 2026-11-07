@@ -281,48 +281,12 @@ smr<AccelerationEffect> build_test_effect() {
 	auto vertexStage = make_smr<Stage>(StageFlagBits::eVertex);
 	auto fragmentStage = make_smr<Stage>(StageFlagBits::eFragment);
 
-	const auto vertexShaderCode = read_shader_file(R"(visualize/__test__visualize.vs)");
-	const auto fragmentShaderCode = read_shader_file(R"(visualize/__test__visualize.fs)");
-
-	vertexStage->setIntermediate(make_smr<lang::Intermediate>());
-	vertexStage->getIntermediate()->lang.dialect = lang::Dialect::eVulkanGlsl460;
-	vertexStage->getIntermediate()->lang.text.emplace_back(std::move(vertexShaderCode));
-
-	fragmentStage->setIntermediate(make_smr<lang::Intermediate>());
-	fragmentStage->getIntermediate()->lang.dialect = lang::Dialect::eVulkanGlsl460;
-	fragmentStage->getIntermediate()->lang.text.emplace_back(std::move(fragmentShaderCode));
-
-	/**/
-
-	using namespace ::hg::engine::accel::lang;
-
-	uptr<Variable> tmpVar {};
-	uptr<Symbol> tmpSym {};
-
-	tmpVar = make_uptr<Variable>();
-	tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eExternalLinkage>>();
-	tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eUniform>>(std::move(tmpVar->annotation));
-	tmpVar->annotation = make_uptr<SymbolIdAnnotation>("vis-tex-0", std::move(tmpVar->annotation));
-	tmpVar->type = Type {
-		.category = TypeCategory::eTexture, .textureType = lang::TextureType::eTexture2d
-	};
-
-	tmpSym = make_uptr<Symbol>(
-		SymbolId::from("vis-tex-0"sv),
-		VariableSymbol { SymbolType::eVariableSymbol, tmpVar.get() }
+	vertexStage->setIntermediate(
+		makeIrIntermediate(R"(visualize/visualize.vs.asl)", ::hg::engine::accel::lang::ir::EntryKind::eVertex)
 	);
-
-	fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(std::move(tmpVar));
-	fragmentStage->getIntermediate()->rep.symbolTable.insert(std::move(tmpSym));
-
-	tmpVar = make_uptr<Variable>();
-	tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eForwardLinkage>>();
-	tmpVar->annotation = make_uptr<SymbolIdAnnotation>("color", std::move(tmpVar->annotation));
-	tmpVar->type = Type {
-		.category = TypeCategory::eTexture, .textureType = lang::TextureType::eTexture2d
-	};
-
-	fragmentStage->getIntermediate()->rep.globalScope.outbound.emplace_back(std::move(tmpVar));
+	fragmentStage->setIntermediate(
+		makeIrIntermediate(R"(visualize/visualize.fs.asl)", ::hg::engine::accel::lang::ir::EntryKind::eFragment)
+	);
 
 	/**/
 
