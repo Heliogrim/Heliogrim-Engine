@@ -69,7 +69,7 @@ namespace hg {
 		}
 
 		template <typename Fn_> requires std::is_invocable_v<Fn_, cref<managed_type>>
-		decltype(auto) tryApply(Fn_&& fn_) const noexcept
+		auto tryApply(Fn_&& fn_) const noexcept
 			requires std::is_void_v<std::invoke_result_t<Fn_, cref<managed_type>>> {
 
 			return tryAcquireReadonly().and_then(
@@ -84,7 +84,7 @@ namespace hg {
 			(not std::is_const_v<managed_type>) &&
 			std::is_invocable_v<Fn_, ref<managed_type>> &&
 			(not std::is_invocable_v<Fn_, cref<managed_type>>)
-		decltype(auto) tryApply(Fn_&& fn_) const noexcept
+		auto tryApply(Fn_&& fn_) const noexcept
 			requires std::is_void_v<std::invoke_result_t<Fn_, ref<managed_type>>> {
 
 			return tryAcquireReadWrite().and_then(
@@ -96,7 +96,7 @@ namespace hg {
 		}
 
 		template <typename Fn_> requires std::is_invocable_v<Fn_, cref<managed_type>>
-		decltype(auto) tryApply(Fn_&& fn_) const noexcept
+		auto tryApply(Fn_&& fn_) const noexcept
 			requires (not std::is_void_v<std::invoke_result_t<Fn_, cref<managed_type>>>) {
 
 			using result_type = std::invoke_result_t<Fn_, cref<managed_type>>;
@@ -116,7 +116,7 @@ namespace hg {
 			(not std::is_const_v<managed_type>) &&
 			std::is_invocable_v<Fn_, ref<managed_type>> &&
 			(not std::is_invocable_v<Fn_, cref<managed_type>>)
-		decltype(auto) tryApply(Fn_&& fn_) const noexcept
+		auto tryApply(Fn_&& fn_) const noexcept
 			requires (not std::is_void_v<std::invoke_result_t<Fn_, ref<managed_type>>>) {
 
 			using result_type = std::invoke_result_t<Fn_, ref<managed_type>>;

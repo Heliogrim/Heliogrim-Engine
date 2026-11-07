@@ -69,7 +69,7 @@ namespace hg::engine::storage {
 		}
 
 		template <typename Fn_> requires std::is_invocable_v<Fn_, std::add_lvalue_reference_t<Type_>>
-		decltype(auto) tryApply(Fn_&& fn_) const noexcept
+		auto tryApply(Fn_&& fn_) const noexcept
 			requires std::is_void_v<std::invoke_result_t<Fn_, std::add_lvalue_reference_t<Type_>>> {
 
 			return tryAcquireReadonly().and_then(
@@ -84,7 +84,7 @@ namespace hg::engine::storage {
 			(not std::is_const_v<MutableType_>) &&
 			std::is_invocable_v<Fn_, std::add_lvalue_reference_t<MutableType_>> &&
 			(not std::is_invocable_v<Fn_, std::add_lvalue_reference_t<Type_>>)
-		decltype(auto) tryApply(Fn_&& fn_) const noexcept
+		auto tryApply(Fn_&& fn_) const noexcept
 			requires std::is_void_v<std::invoke_result_t<Fn_, std::add_lvalue_reference_t<MutableType_>>> {
 
 			return tryAcquireReadWrite().and_then(
@@ -96,7 +96,7 @@ namespace hg::engine::storage {
 		}
 
 		template <typename Fn_> requires std::is_invocable_v<Fn_, std::add_lvalue_reference_t<Type_>>
-		decltype(auto) tryApply(Fn_&& fn_) const noexcept
+		auto tryApply(Fn_&& fn_) const noexcept
 			requires (not std::is_void_v<std::invoke_result_t<Fn_, std::add_lvalue_reference_t<Type_>>>) {
 
 			using result_type = std::invoke_result_t<Fn_, std::add_lvalue_reference_t<Type_>>;
@@ -116,7 +116,7 @@ namespace hg::engine::storage {
 			(not std::is_const_v<MutableType_>) &&
 			std::is_invocable_v<Fn_, std::add_lvalue_reference_t<MutableType_>> &&
 			(not std::is_invocable_v<Fn_, std::add_lvalue_reference_t<Type_>>)
-		decltype(auto) tryApply(Fn_&& fn_) const noexcept
+		auto tryApply(Fn_&& fn_) const noexcept
 			requires (not std::is_void_v<std::invoke_result_t<Fn_, std::add_lvalue_reference_t<MutableType_>>>) {
 
 			using result_type = std::invoke_result_t<Fn_, std::add_lvalue_reference_t<MutableType_>>;
