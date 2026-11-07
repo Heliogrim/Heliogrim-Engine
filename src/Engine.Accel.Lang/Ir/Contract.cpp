@@ -36,3 +36,50 @@ ir::Diagnostics ir::checkContract(
 	}
 	return diags;
 }
+
+ir::Diagnostics ir::checkStageChain(std::span<const std::pair<EntryKind, Vector<InterfaceEntry>>> stages_) {
+	const auto name = [](const EntryKind kind_) -> String {
+		switch (kind_) {
+			case EntryKind::eVertex: return "vertex";
+			case EntryKind::eTessCtrl: return "tess_ctrl";
+			case EntryKind::eTessEval: return "tess_eval";
+			case EntryKind::eGeometry: return "geometry";
+			case EntryKind::eFragment: return "fragment";
+			default: return "compute";
+		}
+	};
+
+	Diagnostics diags {};
+	for (size_t idx = 1uz; idx < stages_.size(); ++idx) {
+		const auto& [prevKind, prev] = stages_[idx - 1uz];
+		const auto& [kind, entries] = stages_[idx];
+
+		for (const auto& in : entries) {
+			if (not in.input || in.implicit || in.mode != BindMode::eForward) {
+				continue;
+			}
+
+			const auto out = std::ranges::find_if(
+				prev,
+				[&](ref<const InterfaceEntry> e_) {
+					return not e_.input && not e_.implicit && e_.mode == BindMode::eForward && not e_.arrayed && e_.id == in.id;
+				}
+			);
+			if (out == prev.end()) {
+				diags.emplace_back(
+					Diagnostic {
+						.message = name(kind) + " input '" + in.id + "' has no matching output in " + name(prevKind) + " stage"
+					}
+				);
+			} else if (out->typeName != in.typeName) {
+				diags.emplace_back(
+					Diagnostic {
+						.message = name(kind) + " input '" + in.id + "' is " + in.typeName + ", but the " + name(prevKind) +
+						" stage outputs " + out->typeName
+					}
+				);
+			}
+		}
+	}
+	return diags;
+}

@@ -1,6 +1,9 @@
 #include "pch.h"
 
+#include <array>
 #include <Engine.Accel.Lang/Ir/Contract.hpp>
+
+#include "IrShaderFixtures.hpp"
 
 using namespace hg;
 using namespace hg::engine::accel::lang::ir;
@@ -59,5 +62,58 @@ namespace AccelLang {
 
 		ASSERT_EQ(diags.size(), 1uz);
 		EXPECT_TRUE(diags[0].message.contains("'albedo'")) << diags[0].message;
+	}
+
+	namespace {
+		using Stage = std::pair<EntryKind, Vector<InterfaceEntry>>;
+
+		[[nodiscard]] InterfaceEntry fwd(StringView id_, StringView type_, bool input_, bool arrayed_ = false) {
+			return InterfaceEntry {
+				String(id_), TypeRef { 0u }, BindMode::eForward, BindClass::eNone, false, input_, arrayed_, String(type_)
+			};
+		}
+	}
+
+	TEST(ContractTest, ChainMatchesByIdAndType) {
+		const std::array<Stage, 2> ok {
+			Stage { EntryKind::eVertex, { fwd("uv", "f32vec2", true), fwd("uv", "f32vec2", false), fwd("extra", "f32", false) } },
+			Stage { EntryKind::eFragment, { fwd("uv", "f32vec2", true) } }
+		};
+		EXPECT_TRUE(checkStageChain(ok).empty());
+
+		const std::array<Stage, 2> bad {
+			Stage { EntryKind::eVertex, { fwd("uv", "f32vec3", false) } },
+			Stage { EntryKind::eFragment, { fwd("uv", "f32vec2", true) } }
+		};
+		const auto diags = checkStageChain(bad);
+		ASSERT_EQ(diags.size(), 1uz);
+		EXPECT_TRUE(diags[0].message.contains("f32vec2") && diags[0].message.contains("f32vec3")) << diags[0].message;
+	}
+
+	TEST(ContractTest, ChainMissingInputNamesStages) {
+		const std::array<Stage, 2> stages {
+			Stage { EntryKind::eGeometry, { fwd("a", "f32", false) } },
+			Stage { EntryKind::eFragment, { fwd("world-pos", "f32vec4", true) } }
+		};
+		const auto diags = checkStageChain(stages);
+		ASSERT_EQ(diags.size(), 1uz);
+		EXPECT_EQ(diags[0].message, "fragment input 'world-pos' has no matching output in geometry stage");
+	}
+
+	TEST(ContractTest, ChainArrayedMatchesScalarOutput) {
+		const std::array<Stage, 2> stages {
+			Stage { EntryKind::eVertex, { fwd("world-pos", "f32vec4", false) } },
+			Stage { EntryKind::eGeometry, { fwd("world-pos", "f32vec4", true, true) } }
+		};
+		EXPECT_TRUE(checkStageChain(stages).empty());
+	}
+
+	TEST(ContractTest, ExistingUiPipelineChainIsClean) {
+		const std::array<Stage, 2> stages {
+			Stage { EntryKind::eVertex, computeInterface(shaderAssetModule("ui/ui.vs.asl", EntryKind::eVertex)) },
+			Stage { EntryKind::eFragment, computeInterface(shaderAssetModule("ui/ui.fs.asl", EntryKind::eFragment)) }
+		};
+		const auto diags = checkStageChain(stages);
+		EXPECT_TRUE(diags.empty()) << (diags.empty() ? "" : diags.front().message);
 	}
 }

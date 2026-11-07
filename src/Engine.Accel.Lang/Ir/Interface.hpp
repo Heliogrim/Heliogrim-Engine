@@ -17,6 +17,10 @@ namespace hg::engine::accel::lang::ir {
 		BindClass cls = BindClass::eNone;
 		bool implicit = false;
 		bool input = true;
+		/* per-vertex input of geometry/tessellation; `type` is the element type */
+		bool arrayed = false;
+		/* module-independent type description (type indices differ per module); chain check only */
+		String typeName;
 
 		[[nodiscard]] bool operator==(const InterfaceEntry&) const noexcept = default;
 	};
