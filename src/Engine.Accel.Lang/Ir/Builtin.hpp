@@ -33,6 +33,31 @@ namespace hg::engine::accel::lang::ir {
 		return it != builtinVariables.end() ? &*it : nullptr;
 	}
 
-	/* builtin calls; `sample(texture, sampler, uv)` emits `texture(sampler2D(texture, sampler), uv)` (dimension of the texture) */
-	inline constexpr std::array<StringView, 1> builtinFunctions { "sample" };
+	/* parameter kinds of a builtin call */
+	enum class BuiltinParam : u8 {
+		eTexture,
+		eSampler,
+		eCoordinates
+	};
+
+	/**
+	 * A builtin call: `sample(texture, sampler, uv)` emits `texture(sampler2D(texture, sampler), uv)` (dimension of the texture).
+	 */
+	struct BuiltinFunction {
+		StringView name;
+		StringView glsl;
+		u32 arity;
+		std::array<BuiltinParam, 3> params;
+	};
+
+	inline constexpr std::array<BuiltinFunction, 1> builtinFunctions {
+		{
+			{ "sample", "texture", 3uL, { BuiltinParam::eTexture, BuiltinParam::eSampler, BuiltinParam::eCoordinates } }
+		}
+	};
+
+	[[nodiscard]] constexpr const BuiltinFunction* findBuiltinFunction(StringView name_) noexcept {
+		const auto it = std::ranges::find(builtinFunctions, name_, &BuiltinFunction::name);
+		return it != builtinFunctions.end() ? &*it : nullptr;
+	}
 }
