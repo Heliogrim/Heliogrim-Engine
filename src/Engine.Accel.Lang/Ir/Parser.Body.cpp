@@ -49,16 +49,23 @@ ir::ExprRef Parser::expr(ir::Expr expr_) {
 	return ir::ExprRef { static_cast<u32>(exprs.size() - 1uz) };
 }
 
-ir::ExprRef Parser::node(ir::ExprKind kind_, StringView name_, Vector<ir::ExprRef> operands_) {
+ir::ExprRef Parser::node(ir::ExprKind kind_, StringView name_, Vector<ir::ExprRef> operands_, ir::SourceLoc loc_) {
 	ir::Expr out {};
 	out.kind = kind_;
 	out.name = name_;
 	out.operands = std::move(operands_);
+	out.loc = loc_;
 	return expr(std::move(out));
 }
 
 ir::StmtRef Parser::add(ir::Stmt stmt_) {
 	auto& stmts = _shared.module.stmts;
+	const auto &exprs = _shared.module.exprs;
+	if (stmt_.lhs.index < exprs.size()) {
+		stmt_.loc = exprs[stmt_.lhs.index].loc;
+	} else if (_pos > 0uz) {
+		stmt_.loc = _tokens[_pos - 1uz].loc;
+	}
 	stmts.emplace_back(std::move(stmt_));
 	return ir::StmtRef { static_cast<u32>(stmts.size() - 1uz) };
 }
@@ -343,7 +350,7 @@ Opt<ir::ExprRef> Parser::expression(u32 minPrecedence_) {
 	while (lhs.has_value() && precedenceOf(peek().kind) >= minPrecedence_ && not compoundAhead()) {
 		const auto& op = take();
 		const auto rhs = expression(precedenceOf(op.kind) + 1uL);
-		lhs = rhs.has_value() ? Opt<ir::ExprRef> { node(ir::ExprKind::eBinary, op.text, { *lhs, *rhs }) } : None;
+		lhs = rhs.has_value() ? Opt<ir::ExprRef> { node(ir::ExprKind::eBinary, op.text, { *lhs, *rhs }, op.loc) } : None;
 	}
 	return lhs;
 }
@@ -359,7 +366,7 @@ Opt<ir::ExprRef> Parser::unary() {
 		if (not operand.has_value()) {
 			return None;
 		}
-		return node(ir::ExprKind::eUnary, op.text, { *operand });
+		return node(ir::ExprKind::eUnary, op.text, { *operand }, op.loc);
 	}
 	return postfix(primary());
 }
@@ -372,13 +379,13 @@ Opt<ir::ExprRef> Parser::postfix(Opt<ir::ExprRef> base_) {
 				return None;
 			}
 			// any field name is accepted here; typecheck validates struct members and swizzles against the base type
-			base_ = node(ir::ExprKind::eField, take().text, { *base_ });
+			base_ = node(ir::ExprKind::eField, take().text, { *base_ }, _shared.module.exprs[base_->index].loc);
 		} else if (accept(TokenKind::eLBracket)) {
 			const auto index = expression();
 			if (not index.has_value() || not expect(TokenKind::eRBracket, "']'")) {
 				return None;
 			}
-			base_ = node(ir::ExprKind::eIndex, {}, { *base_, *index });
+			base_ = node(ir::ExprKind::eIndex, {}, { *base_, *index }, _shared.module.exprs[base_->index].loc);
 		} else {
 			break;
 		}
@@ -390,7 +397,7 @@ Opt<ir::ExprRef> Parser::primary() {
 	const auto& token = peek();
 	if (token.kind == TokenKind::eInteger || token.kind == TokenKind::eFloat) {
 		take();
-		return node(ir::ExprKind::eLiteral, token.text);
+		return node(ir::ExprKind::eLiteral, token.text, {}, token.loc);
 	}
 	if (token.kind == TokenKind::eIdentifier) {
 		take();
@@ -437,12 +444,13 @@ ir::ExprRef Parser::callee(ref<const ir::Token> name_, Vector<ir::ExprRef> args_
 		construct.name = name_.text;
 		construct.type = *type;
 		construct.operands = std::move(args_);
+		construct.loc = name_.loc;
 		return expr(std::move(construct));
 	}
 	if (ir::findBuiltinFunction(name_.text) != nullptr) {
-		return node(ir::ExprKind::eBuiltin, name_.text, std::move(args_));
+		return node(ir::ExprKind::eBuiltin, name_.text, std::move(args_), name_.loc);
 	}
-	const auto pending = node(ir::ExprKind::eCall, name_.text, std::move(args_));
+	const auto pending = node(ir::ExprKind::eCall, name_.text, std::move(args_), name_.loc);
 	_shared.calls.emplace_back(PendingCall { diagnostic(name_, "Unknown function '" + String(name_.text) + "'."), pending.index });
 	return pending;
 }
@@ -451,12 +459,13 @@ ir::ExprRef Parser::callee(ref<const ir::Token> name_, Vector<ir::ExprRef> args_
 ir::ExprRef Parser::name(ref<const ir::Token> name_) {
 	const auto text = name_.text;
 	if (text == "true" || text == "false") {
-		return node(ir::ExprKind::eLiteral, text);
+		return node(ir::ExprKind::eLiteral, text, {}, name_.loc);
 	}
 
 	ir::Expr named {};
 	named.kind = ir::ExprKind::eNameRef;
 	named.name = text;
+	named.loc = name_.loc;
 	const auto& bindings = _shared.module.bindings;
 	const auto binding = std::ranges::find(bindings, text, &ir::BindingDecl::localName);
 	if (std::ranges::find(_locals, text) != _locals.end()) {

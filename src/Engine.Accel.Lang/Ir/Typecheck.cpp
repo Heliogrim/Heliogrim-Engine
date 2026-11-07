@@ -81,9 +81,7 @@ namespace {
 		TypeRef _ret;
 		u32 _depth = 0uL;
 
-		void error(String message_) {
-			_diags.emplace_back(ir::Diagnostic { .severity = ir::Severity::eError, .message = std::move(message_) });
-		}
+/* head token of the node being checked; restored on scope exit so errors after operand recursion stay on the parent */ ir::SourceLoc _loc {};  struct Here { explicit Here(ref<ir::SourceLoc> slot_, ir::SourceLoc next_) : _slot(slot_), _saved(slot_) { _slot = next_; }  ~Here() { _slot = _saved; }  ref<ir::SourceLoc> _slot; ir::SourceLoc _saved; };  void error(String message_) { _diags.emplace_back( ir::Diagnostic { .severity = ir::Severity::eError, .message = std::move(message_), .line = _loc.line, .column = _loc.column } ); }
 
 		[[nodiscard]] String name(TypeRef type_) const {
 			return ir::describeType(_module.types, type_);
@@ -103,7 +101,12 @@ namespace {
 				case TypeKind::eScalar: return a_.scalar == b_.scalar && a_.bits == b_.bits;
 				case TypeKind::eVector: return a_.scalar == b_.scalar && a_.bits == b_.bits && a_.n == b_.n;
 				case TypeKind::eMatrix: return a_.scalar == b_.scalar && a_.bits == b_.bits && a_.n == b_.n && a_.m == b_.m;
-				case TypeKind::eStruct: return a_.name == b_.name && a_.fields.size() == b_.fields.size();
+				case TypeKind::eStruct:
+					return a_.name == b_.name && std::ranges::equal(
+						a_.fields,
+						b_.fields,
+						[](ref<const ir::FieldDesc> l_, ref<const ir::FieldDesc> r_) { return l_.name == r_.name && l_.type == r_.type; }
+					);
 				case TypeKind::eTexture: return a_.dim == b_.dim && a_.scalar == b_.scalar;
 				case TypeKind::eArray: return a_.count == b_.count && a_.element == b_.element;
 				default: return true;
@@ -176,7 +179,7 @@ namespace {
 			}
 			const auto& desc = _module.types[type_.index];
 			return (desc.kind == TypeKind::eScalar || desc.kind == TypeKind::eVector || desc.kind == TypeKind::eMatrix) &&
-				desc.scalar != ScalarKind::eBool;
+				desc.scalar != ScalarKind::eBool && (desc.kind != TypeKind::eMatrix || desc.scalar == ScalarKind::eFloat);
 		}
 
 		[[nodiscard]] bool isKind(TypeRef type_, TypeKind kind_) const {
@@ -251,6 +254,7 @@ namespace {
 				return;
 			}
 			const Nest nest { _depth };
+			const Here here { _loc, _module.stmts[ref_.index].loc };
 			const auto kind = _module.stmts[ref_.index].kind;
 			const auto lhs = _module.stmts[ref_.index].lhs;
 			const auto rhs = _module.stmts[ref_.index].rhs;
@@ -332,6 +336,7 @@ namespace {
 				return {};
 			}
 			const Nest nest { _depth };
+			const Here here { _loc, _module.exprs[ref_.index].loc };
 			const auto result = exprImpl(ref_);
 			_module.exprs[ref_.index].type = result;
 			return result;
@@ -381,7 +386,11 @@ namespace {
 				return _module.bindings[e.binding.index].type;
 			}
 			const auto it = std::ranges::find(_module.bindings, e.name, &ir::BindingDecl::localName);
-			return it != _module.bindings.end() ? it->type : TypeRef {};
+			if (it == _module.bindings.end()) {
+				error("unknown name '" + e.name + "'");
+				return {};
+			}
+			return it->type;
 		}
 
 		[[nodiscard]] TypeRef builtin(ref<const String> name_, ref<const Vector<ExprRef>> operands_) {
@@ -573,6 +582,7 @@ namespace {
 				}
 			}
 			if (named.empty()) {
+				error("unknown function '" + name_ + "'");
 				return {};
 			}
 

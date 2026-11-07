@@ -428,7 +428,7 @@ namespace AccelLang {
 		const auto module = parse(String(shading) + "@when (Shading == Forward) fn F() -> f32 { return 1.0; }\nfn main() {\n\tfrag_depth = F();\n}\n");
 		const auto diags = resolveFail(module, { { "Shading", "Deferred" } });
 		ASSERT_EQ(diags.size(), 1uz);
-		EXPECT_EQ(diags[0].message, "no body for 'F' at Shading=Deferred");
+		EXPECT_EQ(diags[0].message, "no body for 'F()' at Shading=Deferred");
 		static_cast<void>(resolveOk(module, { { "Shading", "Forward" } }));
 
 		// a conditional function nobody calls in that variant is simply dropped

@@ -24,7 +24,7 @@ namespace hg::engine::accel::lang::ir {
 
 	struct Compacted {
 		Module module;
-		/* calls that resolve to no kept function, by name, unique, in arena order */
+		/* calls that resolve to no kept function, by signature (name when the ref is unset), unique, in arena order */
 		Vector<String> unresolvedCalls;
 	};
 

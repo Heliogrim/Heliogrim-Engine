@@ -24,7 +24,7 @@ namespace hg::engine::accel::lang::ir {
 	 * Types every expression (`Expr::type`), every `let` without declared type (`Stmt::type`) and resolves each
 	 * `eCall` to a `FunctionRef` by exact parameter types; a literal adapts to the parameter type otherwise
 	 * (an integer literal to any float or integer type, a float literal to float types only).
-	 * Never asserts; diagnostics carry no source location (the arenas hold none).
+	 * Never asserts; diagnostics carry the head-token location of the offending node.
 	 */
 	[[nodiscard]] Diagnostics typecheck(ref<Module> module_);
 }

@@ -70,6 +70,9 @@ namespace {
 			if (expr_.function.index < in.functions.size()) {
 				return expr_.function.index;
 			}
+			if (std::ranges::count(in.functions, expr_.name, &ir::FunctionDecl::name) != 1) {
+				return unset;
+			}
 			const auto it = std::ranges::find(in.functions, expr_.name, &ir::FunctionDecl::name);
 			return it == in.functions.end() ? unset : static_cast<u32>(it - in.functions.begin());
 		}

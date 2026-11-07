@@ -202,7 +202,7 @@ namespace {
 		ref<const Vector<ir::FunctionDecl>> functions_,
 		ref<const Vector<ir::FunctionDecl>> source_
 	) {
-		auto& [kind, name, binding, function, local, type, operands] = expr_;
+		auto& [kind, name, binding, function, local, type, operands, loc] = expr_;
 		/* shortcut: a binding use keeps its parse-time binding (first localName match) mapped through the id collapse,
 		 * so same-named bindings with different ids under different @when stay resolved to the first; upgrade when Task 7
 		 * slices by toggle values and can re-resolve names per variant. */
@@ -218,11 +218,12 @@ namespace {
 			op = remap_.expr(op);
 		}
 		static_cast<void>(local);
+		static_cast<void>(loc);
 		return expr_;
 	}
 
 	[[nodiscard]] ir::Stmt remapStmt(ir::Stmt stmt_, ref<const Remap> remap_) {
-		auto& [kind, name, type, lhs, rhs, children, when] = stmt_;
+		auto& [kind, name, type, lhs, rhs, children, when, loc] = stmt_;
 		type = remap_.type(type);
 		lhs = remap_.expr(lhs);
 		rhs = remap_.expr(rhs);

@@ -49,7 +49,8 @@ namespace {
 				}
 				case ir::ExprKind::eCall: {
 					auto index = e.function.index;
-					if (index == unresolved) {
+					/* an ambiguous name is no call target; typecheck sets the ref whenever an overload is chosen */
+					if (index == unresolved && std::ranges::count(module.functions, e.name, &ir::FunctionDecl::name) == 1) {
 						const auto it = std::ranges::find(module.functions, e.name, &ir::FunctionDecl::name);
 						index = it == module.functions.end() ? unresolved : static_cast<u32>(it - module.functions.begin());
 					}

@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <utility>
 
+#include "Typecheck.hpp"
+
 using namespace hg::engine::accel::lang;
 using namespace hg;
 
@@ -148,14 +150,24 @@ namespace {
 			if (old < newFunction.size() && newFunction[old] != unset) {
 				return ir::FunctionRef { newFunction[old] };
 			}
-			const auto& functions = out.module.functions;
-			const auto it = std::ranges::find(functions, expr_.name, &ir::FunctionDecl::name);
-			if (it != functions.end()) {
-				return ir::FunctionRef { static_cast<u32>(it - functions.begin()) };
+			/* dropped or unset ref: a kept function with the same signature (a name alone picks the wrong overload) */
+			const auto known = old < in.functions.size();
+			const auto wanted = known ? signatureOf(in, in.functions[old]) : expr_.name;
+			u32 found = unset;
+			auto count = 0uz;
+			for (auto i = 0uz; i < newFunction.size(); ++i) {
+				if (newFunction[i] != unset && in.functions[i].name == expr_.name && (not known || signatureOf(in, in.functions[i]) == wanted)) {
+					found = newFunction[i];
+					++count;
+				}
 			}
-			if (std::ranges::find(out.unresolvedCalls, expr_.name) == out.unresolvedCalls.end()) {
-				out.unresolvedCalls.emplace_back(expr_.name);
+			if (count == 1uz || (known && count > 1uz)) {
+				return ir::FunctionRef { found };
 			}
+			if (std::ranges::find(out.unresolvedCalls, wanted) == out.unresolvedCalls.end()) {
+				out.unresolvedCalls.emplace_back(wanted);
+			}
+			return {};
 			return {};
 		}
 

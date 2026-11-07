@@ -62,7 +62,9 @@ namespace {
 			h.put(node.binding.index);
 			h.put(node.function.index);
 			h.put(node.local);
-			type(node.type);
+			if (node.kind == ExprKind::eConstruct) {
+				type(node.type);
+			}
 			h.put(static_cast<u64>(node.operands.size()));
 			for (const auto operand : node.operands) {
 				expr(operand, depth_ + 1uL);

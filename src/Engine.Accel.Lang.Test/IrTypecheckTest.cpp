@@ -1,9 +1,14 @@
+#include <algorithm>
 #include "pch.h"
 
 #include <Engine.Accel.Lang/Emitter/GlslEmitter.hpp>
+#include <Engine.Accel.Lang/Ir/Analysis.hpp>
+#include <Engine.Accel.Lang/Ir/Compact.hpp>
 #include <Engine.Accel.Lang/Ir/Interface.hpp>
 #include <Engine.Accel.Lang/Ir/Layout.hpp>
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
+#include <Engine.Accel.Lang/Ir/Resolve.hpp>
+#include <Engine.Accel.Lang/Ir/Slice.hpp>
 #include <Engine.Accel.Lang/Ir/Typecheck.hpp>
 
 using namespace hg;
@@ -105,5 +110,100 @@ namespace AccelLang {
 	TEST(TypecheckTest, UnknownSwizzleComponent) {
 		const auto message = firstMessage("fn F(v: f32vec2) -> f32 {\n\treturn v.xyz;\n}\n");
 		EXPECT_TRUE(message.contains("unknown field 'xyz' of f32vec2")) << message;
+	}
+
+	TEST(TypecheckTest, DiagnosticsCarryTheNodeLocation) {
+		auto res = parse("fn F(v: f32vec2) -> f32 {\n\treturn v.xyz;\n}\n");
+		ASSERT_FALSE(res.has_value());
+		ASSERT_FALSE(res.error().empty());
+		EXPECT_EQ(res.error().front().line, 2u);
+		EXPECT_GT(res.error().front().column, 0u);
+	}
+
+	TEST(TypecheckTest, UnknownNameInsideCallIsReported) {
+		// the parser reports `missing` already; typecheck never runs, so the first message stays the parser's
+		EXPECT_TRUE(firstMessage("fn F() -> f32 {\n\treturn missing;\n}\n").contains("missing"));
+	}
+
+	namespace {
+		constexpr auto sliceSource =
+			"@output (mode = forward, id = \"depth\") implicit f32 depth;\n"
+			"fn f(x: f32) -> f32 { return x; }\n"
+			"fn f(x: f32vec3) -> f32vec3 { return x; }\n"
+			"fn main() {\n\tdepth = f(f32vec3(1.0)).x;\n}\n";
+
+
+		constexpr auto overloads =
+			"fn f(x: f32) -> f32 { return x; }\n"
+			"fn f(x: f32vec3) -> f32vec3 { return x; }\n"
+			"fn main() {\n\tfrag_depth = f(f32vec3(1.0)).x;\n}\n";
+
+		[[nodiscard]] Vector<String> signaturesOf(ref<const Module> module_, ref<const Vector<u32>> indices_) {
+			Vector<String> out {};
+			for (const auto i : indices_) {
+				out.emplace_back(signatureOf(module_, module_.functions[i]));
+			}
+			return out;
+		}
+
+		[[nodiscard]] u32 indexOf(ref<const Module> module_, StringView signature_) {
+			for (auto i = 0uz; i < module_.functions.size(); ++i) {
+				if (signatureOf(module_, module_.functions[i]) == signature_) {
+					return static_cast<u32>(i);
+				}
+			}
+			ADD_FAILURE() << "no function " << signature_;
+			return ~0u;
+		}
+	}
+
+	TEST(TypecheckTest, ReachabilityFollowsTheChosenOverload) {
+		const auto module = parseOk(overloads);
+		const std::array<u32, 1> roots { indexOf(module, "main()") };
+		const auto reached = reachableFunctions(module, roots);
+		auto names = signaturesOf(module, reached);
+		std::ranges::sort(names);
+		EXPECT_EQ(names, (Vector<String> { "f(f32vec3)", "main()" }));
+	}
+
+	TEST(TypecheckTest, CompactKeepsTheCalledOverloadAndNeverSubstitutes) {
+		auto module = parseOk(overloads);
+		const auto main = indexOf(module, "main()");
+		const auto vec = indexOf(module, "f(f32vec3)");
+		const auto scalar = indexOf(module, "f(f32)");
+
+		CompactPlan plan {};
+		plan.stmtAlias.resize(module.stmts.size());
+		for (auto i = 0uz; i < plan.stmtAlias.size(); ++i) {
+			plan.stmtAlias[i] = static_cast<u32>(i);
+		}
+		plan.functions = vec < main ? Vector<u32> { vec, main } : Vector<u32> { main, vec };
+		const auto kept = compact(module, plan);
+		EXPECT_TRUE(kept.unresolvedCalls.empty());
+		auto names = Vector<String> {};
+		for (const auto& fn : kept.module.functions) {
+			names.emplace_back(signatureOf(kept.module, fn));
+		}
+		std::ranges::sort(names);
+		EXPECT_EQ(names, (Vector<String> { "f(f32vec3)", "main()" }));
+
+		// the called overload is dropped: the call stays unresolved by signature, it must not bind the other overload
+		plan.functions = scalar < main ? Vector<u32> { scalar, main } : Vector<u32> { main, scalar };
+		const auto dropped = compact(module, plan);
+		EXPECT_EQ(dropped.unresolvedCalls, (Vector<String> { "f(f32vec3)" }));
+	}
+
+	TEST(TypecheckTest, SliceKeepsTheCalledOverloadOnly) {
+		const auto module = parseOk(sliceSource);
+		const auto resolved = resolveToggles(module, ToggleSet {});
+		ASSERT_TRUE(resolved.has_value());
+		const std::array<String, 1> outputs { String { "depth" } };
+		const auto sliced = slice(*resolved, std::span<const String> { outputs });
+		Vector<String> names {};
+		for (const auto& fn : sliced.functions) {
+			names.emplace_back(signatureOf(sliced, fn));
+		}
+		std::ranges::sort(names);
+		EXPECT_EQ(names, (Vector<String> { "f(f32vec3)", "main()" }));
 	}
 }

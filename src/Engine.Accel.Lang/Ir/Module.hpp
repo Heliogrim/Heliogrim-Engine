@@ -7,6 +7,7 @@
 #include <Engine.Common/Types.hpp>
 
 #include "Condition.hpp"
+#include "Diagnostic.hpp"
 
 namespace hg::engine::accel::lang::ir {
 	enum class EntryKind : u8 {
@@ -95,6 +96,9 @@ namespace hg::engine::accel::lang::ir {
 
 		/* call/construct/builtin call: arguments; field: [base]; index: [base, index]; unary: [operand]; binary: [lhs, rhs] */
 		Vector<ExprRef> operands;
+
+		/* head token; diagnostics only, not part of the content hash */
+		SourceLoc loc;
 	};
 
 	enum class StmtKind : u8 {
@@ -125,6 +129,9 @@ namespace hg::engine::accel::lang::ir {
 		/* block: children; when: [then, else?] (the parser emits [then]); if: [then, else?] */
 		Vector<StmtRef> children;
 		Condition when;
+
+		/* head token; diagnostics only, not part of the content hash */
+		SourceLoc loc;
 	};
 
 	enum class TypeKind : u8 {
