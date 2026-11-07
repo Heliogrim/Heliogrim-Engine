@@ -166,6 +166,65 @@ namespace AccelLang {
 		EXPECT_TRUE(glsl.contains("region not lowered")) << glsl;
 	}
 
+	TEST(RegionTest, HelperSpecializedOncePerRoot) {
+		auto module = parse(body("w(scratch[0u .. 8u], 0u); w(scratch[8u .. 16u], 1u); w(buf.data[0u .. 4u], 2u);"));
+		ASSERT_TRUE(module.has_value()) << module.error().front().message;
+		auto lowered = lowerRegions(*module);
+		ASSERT_TRUE(lowered.has_value()) << lowered.error().front().message;
+		Vector<String> names {};
+		for (const auto& fn : lowered->functions) {
+			if (fn.name.starts_with("w")) {
+				names.emplace_back(fn.name);
+			}
+		}
+		EXPECT_EQ(names, (Vector<String> { "w__r0", "w__r1" }));
+		const auto glsl = emitGlsl(*lowered);
+		EXPECT_TRUE(glsl.contains("scratch[(v__off + i)]")) << glsl;
+		EXPECT_TRUE(glsl.contains("buf.data[(v__off + i)]")) << glsl;
+		EXPECT_TRUE(glsl.contains("w__r0(0u, 8u, 0u)")) << glsl;
+		EXPECT_TRUE(glsl.contains("v__len = (v__end - v__off)")) << glsl;
+	}
+
+	TEST(RegionTest, HelperRangeLowerBoundEmittedOnce) {
+		auto module = parse(body("w(scratch[local_invocation_index * 4u .. 64u], 0u);"));
+		ASSERT_TRUE(module.has_value()) << module.error().front().message;
+		const auto glsl = emitLowered(*module);
+		auto count = 0uz;
+		for (auto at = glsl.find("* 4u"); at != String::npos; at = glsl.find("* 4u", at + 1uz)) {
+			++count;
+		}
+		EXPECT_EQ(count, 1uz) << glsl;
+		EXPECT_TRUE(glsl.contains(", 64u, 0u)")) << glsl;
+	}
+
+	TEST(RegionTest, TransitiveSpecialization) {
+		auto module = parse(
+			String { prelude } + "fn inner(v: &mut u32[]) { v[0u] = 1u; }\nfn outer(v: &mut u32[]) { inner(v[1u .. 3u]); }\n"
+			"fn main() { outer(scratch[0u .. 8u]); }\n"
+		);
+		ASSERT_TRUE(module.has_value()) << module.error().front().message;
+		const auto glsl = emitLowered(*module);
+		EXPECT_TRUE(glsl.contains("outer__r0(0u, 8u);")) << glsl;
+		EXPECT_TRUE(glsl.contains("inner__r0((v__off + 1u), (v__off + 3u));")) << glsl;
+		EXPECT_TRUE(glsl.contains("scratch[(v__off + 0u)] = 1u;")) << glsl;
+		EXPECT_FALSE(glsl.contains("inner(")) << glsl;
+	}
+
+	TEST(RegionTest, LocalArrayRootRejected) {
+		auto module = parse(body("let tmp: u32[4]; w(tmp[0u .. 4u], 0u);"));
+		ASSERT_TRUE(module.has_value()) << module.error().front().message;
+		const auto message = emitLowered(*module);
+		EXPECT_TRUE(message.contains("region argument to 'w' must be rooted in a buffer or workgroup array")) << message;
+	}
+
+	TEST(RegionTest, HelperLocalCapturingRootReported) {
+		auto module = parse(
+			String { prelude } + "fn h(v: &mut u32[]) { let scratch: u32 = 2u; v[0u] = scratch; }\nfn main() { h(scratch[0u .. 8u]); }\n"
+		);
+		ASSERT_TRUE(module.has_value()) << module.error().front().message;
+		EXPECT_EQ(emitLowered(*module), "error: 'scratch' shadows the root of live region 'v'");
+	}
+
 	TEST(RegionTest, RangeBorrowTypechecks) {
 		EXPECT_EQ(errorOf(body("let r = &mut scratch[0u .. 64u]; r[3u] = 1u; let n: u32 = len(r);")), "");
 	}
@@ -285,10 +344,25 @@ namespace AccelLang {
 		EXPECT_NE(errorOf(body("let a = &mut scratch[0u .. 8u]; let b = &mut a[0u .. 4u]; w(a[0u .. 2u], 0u);")), "");
 	}
 
+	TEST(RegionTest, PlainHelperAfterRegionHelperKeepsCalls) {
+		auto m = parse(String { prelude } + "fn h(v: u32) { scratch[v] = 9u; }\nfn main() { w(scratch[0u .. 8u], 0u); h(3u); }\n");
+		ASSERT_TRUE(m.has_value());
+		const auto glsl = emitLowered(*m);
+		EXPECT_TRUE(glsl.contains("w__r0(")) << glsl;
+		EXPECT_TRUE(glsl.contains("h(3u)")) << glsl;
+		EXPECT_TRUE(glsl.contains("scratch[v] = 9u")) << glsl;
+	}
+
 	TEST(RegionTest, ReservedLocalSuffixRejected) {
 		EXPECT_EQ(errorOf(body("let r__off: u32 = 1u;")), "'r__off' ends in a suffix reserved for region lowering");
 		EXPECT_EQ(errorOf(body("let a = &mut scratch[0u .. 8u]; let a__i0 = &mut a[0u .. 4u];")), "'a__i0' ends in a suffix reserved for region lowering");
 		EXPECT_EQ(errorOf(body("let a__inner: u32 = 1u; let off__x: u32 = 2u;")), "");
+	}
+
+	TEST(RegionTest, ReservedParamAndFunctionSuffixRejected) {
+		EXPECT_EQ(errorOf(String { prelude } + "fn g(p__end: u32) {}\nfn main() { g(1u); }\n"), "'p__end' ends in a suffix reserved for region lowering");
+		EXPECT_EQ(errorOf(String { prelude } + "fn g__r0() {}\nfn main() { g__r0(); }\n"), "'g__r0' ends in a suffix reserved for region lowering");
+		EXPECT_EQ(errorOf(String { prelude } + "fn g__ring(p__lens: u32) {}\nfn main() { g__ring(1u); }\n"), "");
 	}
 
 	TEST(RegionTest, ArgumentOverlappingLiveLetRejected) {
