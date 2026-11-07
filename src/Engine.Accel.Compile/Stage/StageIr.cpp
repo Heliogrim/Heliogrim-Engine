@@ -192,6 +192,7 @@ std::expected<smr<const Resolved>, Diagnostics> hg::engine::accel::resolveStageI
 			failure.clear();
 
 			auto layout = assignLayout(interfaceEntries, sliced.types, {});
+			layout.specConstants = assignSpecConstants(sliced.constants);
 
 			DenseMap<String, u32> vertexOffsets {};
 			DenseMap<String, s32> vertexFormats {};

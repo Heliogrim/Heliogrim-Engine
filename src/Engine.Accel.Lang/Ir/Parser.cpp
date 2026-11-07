@@ -293,6 +293,8 @@ namespace hg::engine::accel::lang::ir::detail {
 				ann.binding.input = name.text == "input";
 			} else if (name.text == "redefine") {
 				ann.redefine = &name;
+			} else if (name.text == "spec") {
+				ann.spec = &name;
 			} else {
 				error(name, "Unknown annotation '@" + String(name.text) + "'.");
 				if (at(TokenKind::eLParen)) {
@@ -308,6 +310,15 @@ namespace hg::engine::accel::lang::ir::detail {
 		ann.binding.implicit = accept(TokenKind::eKwImplicit);
 
 		const auto& head = peek();
+		if (head.kind == TokenKind::eKwConst) {
+			if (ann.direction != nullptr || ann.redefine != nullptr || ann.binding.implicit) {
+				error(head, "Only @spec and @when apply to a const declaration.");
+			}
+			return constantDecl(ann);
+		}
+		if (ann.spec != nullptr) {
+			error(*ann.spec, "@spec applies to const declarations only.");
+		}
 		if (head.kind == TokenKind::eKwToggle || head.kind == TokenKind::eKwStruct) {
 			if (ann.direction != nullptr || ann.redefine != nullptr || ann.binding.implicit) {
 				error(head, "Annotations do not apply to a " + String(head.text) + " declaration.");
@@ -401,6 +412,9 @@ namespace hg::engine::accel::lang::ir::detail {
 			valid = word && (value_.text == "read" || value_.text == "write" || value_.text == "read_write");
 			decl.access = valid ? (value_.text == "read" ? ir::Access::eRead : (value_.text == "write" ? ir::Access::eWrite : ir::Access::eReadWrite)) :
 				decl.access;
+		} else if (not redefine && key_.text == "packing") {
+			valid = word && (value_.text == "std140" || value_.text == "std430");
+			decl.packing = valid ? (value_.text == "std140" ? ir::Packing::eStd140 : ir::Packing::eStd430) : decl.packing;
 		} else if (not redefine && key_.text == "id") {
 			valid = not word && not value_.text.empty();
 			decl.id = valid ? String(value_.text) : decl.id;
@@ -815,6 +829,48 @@ namespace hg::engine::accel::lang::ir::detail {
 		_shared.module.functions.emplace_back(std::move(fn));
 	}
 
+	/* `const NAME: T = expr;` with an optional `@spec (id = "...")`; the initializer is checked by typecheck */
+	void Parser::constantDecl(ref<const Annotations> ann_) {
+		take();
+		if (not at(TokenKind::eIdentifier)) {
+			syntaxError("a constant name");
+			return recover();
+		}
+		ir::ConstantDecl decl {};
+		decl.loc = peek().loc;
+		const auto& nameToken = take();
+		decl.name = nameToken.text;
+		decl.when = ann_.binding.when;
+		if (ann_.spec != nullptr) {
+			if (ann_.binding.id.empty()) {
+				error(*ann_.spec, "@spec requires (id = \"...\").");
+			} else {
+				decl.specId = ann_.binding.id;
+			}
+		}
+		if (not expect(TokenKind::eColon, "':'")) {
+			return recover();
+		}
+		const auto declType = type();
+		if (not declType.has_value() || not expect(TokenKind::eAssign, "'='")) {
+			return recover();
+		}
+		decl.type = *declType;
+		const auto init = expression();
+		if (not init.has_value()) {
+			return recover();
+		}
+		decl.value = *init;
+		if (not expect(TokenKind::eSemicolon, "';'")) {
+			return recover();
+		}
+		auto& constants = _shared.module.constants;
+		if (std::ranges::find(constants, decl.name, &ir::ConstantDecl::name) != constants.end()) {
+			return error(nameToken, "Duplicate constant '" + decl.name + "'.");
+		}
+		constants.emplace_back(std::move(decl));
+	}
+
 	/* `decl_` carries the annotations; type, localName and a defaulted id are filled here */
 	void Parser::binding(ir::BindingDecl decl_) {
 		auto& decl = decl_;
@@ -846,7 +902,12 @@ namespace hg::engine::accel::lang::ir::detail {
 				return recover();
 			}
 			decl.type = *declType;
-			decl.localName = take().text;
+			const auto nameToken = take();
+			decl.localName = nameToken.text;
+			const auto kind = _shared.module.types[declType->index].kind;
+			if (decl.packing != ir::Packing::eDefault && (kind == ir::TypeKind::eTexture || kind == ir::TypeKind::eSampler)) {
+				error(nameToken, "packing is not allowed on opaque binding '" + decl.localName + "'.");
+			}
 			if (not expect(TokenKind::eSemicolon, "';'")) {
 				return recover();
 			}

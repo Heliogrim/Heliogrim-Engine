@@ -38,7 +38,9 @@ namespace AccelLang {
 		}
 
 		[[nodiscard]] Layout layoutOf(ref<const Module> module_) {
-			return assignLayout(computeInterface(module_), module_.types, {});
+			auto layout = assignLayout(computeInterface(module_), module_.types, {});
+			layout.specConstants = assignSpecConstants(module_.constants);
+			return layout;
 		}
 
 		[[nodiscard]] Intermediate lower(ref<const Module> module_, ref<const Layout> layout_) {
@@ -79,6 +81,35 @@ namespace AccelLang {
 			"}\n";
 
 		constexpr auto shadowFragment = "@output (mode = forward, id = \"depth\") implicit f32 depth;\n";
+	}
+
+	TEST(LowerTest, EmitsConstantIdFromLayout) {
+		const auto module = resolved(
+			"@spec (id = \"b\") const B: u32 = 2u;\n"
+			"@spec (id = \"a\") const A: u32 = 1u;\n"
+			"@output (mode = forward, id = \"color\") f32vec4 color;\n"
+			"fn main() {\n\tcolor = f32vec4(f32(A + B));\n}\n",
+			EntryKind::eFragment
+		);
+		const auto layout = layoutOf(module);
+		ASSERT_EQ(layout.specConstants.size(), 2uz);
+		const auto im = lower(module, layout);
+		const auto text = textOf(im);
+		EXPECT_NE(text.find("layout(constant_id = 1) const uint B = 2u;"), String::npos) << text;
+		EXPECT_NE(text.find("layout(constant_id = 0) const uint A = 1u;"), String::npos) << text;
+		EXPECT_NE(variableOf(im, "a"), nullptr);
+		EXPECT_NE(variableOf(im, "b"), nullptr);
+	}
+
+	TEST(LowerTest, EmitsStd140Packing) {
+		const auto module = resolved(
+			"@input (mode = bind, id = \"m\", class = uniform, packing = std140) block m { f32vec4 a; };\n"
+			"@output (mode = forward, id = \"color\") f32vec4 color;\n"
+			"fn main() {\n\tcolor = m.a;\n}\n",
+			EntryKind::eFragment
+		);
+		const auto text = textOf(lower(module, layoutOf(module)));
+		EXPECT_NE(text.find("std140"), String::npos) << text;
 	}
 
 	TEST(LowerTest, EmitsLayoutNumbersFromLayoutPass) {

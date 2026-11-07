@@ -75,7 +75,7 @@ namespace {
 	/* Input validation: every ref in range (sentinel allowed), types refer only to earlier types (no cycles) */
 
 	[[nodiscard]] Opt<String> invalidRef(ref<const ir::Module> module_) {
-		const auto& [name, entry, toggles, types, bindings, functions, exprs, stmts] = module_;
+		const auto& [name, entry, toggles, types, bindings, constants, functions, exprs, stmts] = module_;
 		Opt<String> found = None;
 		const auto check = [&](StringView owner_, size_t at_, StringView kind_, u32 index_, size_t limit_) {
 			if (not found.has_value() && index_ != unset && index_ >= limit_) {
@@ -93,6 +93,10 @@ namespace {
 		for (auto i = 0uz; i < bindings.size(); ++i) {
 			check("binding", i, "type", bindings[i].type.index, types.size());
 		}
+		for (auto i = 0uz; i < constants.size(); ++i) {
+			check("constant", i, "type", constants[i].type.index, types.size());
+			check("constant", i, "expr", constants[i].value.index, exprs.size());
+		}
 		for (auto i = 0uz; i < functions.size(); ++i) {
 			const auto& fn = functions[i];
 			for (const auto& param : fn.params) {
@@ -107,6 +111,7 @@ namespace {
 			const auto& e = exprs[i];
 			check("expr", i, "binding", e.binding.index, bindings.size());
 			check("expr", i, "function", e.function.index, functions.size());
+			check("expr", i, "constant", e.constant.index, constants.size());
 			check("expr", i, "type", e.type.index, types.size());
 			for (const auto& op : e.operands) {
 				check("expr", i, "expr", op.index, exprs.size());
@@ -132,6 +137,7 @@ namespace {
 	struct Remap {
 		Vector<u32> types;
 		Vector<u32> bindings;
+		Vector<u32> constants;
 		u32 exprOffset = 0uL;
 		u32 stmtOffset = 0uL;
 
@@ -141,6 +147,10 @@ namespace {
 
 		[[nodiscard]] ir::BindingRef binding(ir::BindingRef ref_) const {
 			return ref_.index == unset ? ref_ : ir::BindingRef { bindings[ref_.index] };
+		}
+
+		[[nodiscard]] ir::ConstantRef constant(ir::ConstantRef ref_) const {
+			return ref_.index == unset ? ref_ : ir::ConstantRef { constants[ref_.index] };
 		}
 
 		[[nodiscard]] ir::ExprRef expr(ir::ExprRef ref_) const {
@@ -202,7 +212,8 @@ namespace {
 		ref<const Vector<ir::FunctionDecl>> functions_,
 		ref<const Vector<ir::FunctionDecl>> source_
 	) {
-		auto& [kind, name, binding, function, local, type, operands, loc] = expr_;
+		auto& [kind, name, binding, function, constant, local, type, operands, loc] = expr_;
+		constant = remap_.constant(constant);
 		/* shortcut: a binding use keeps its parse-time binding (first localName match) mapped through the id collapse,
 		 * so same-named bindings with different ids under different @when stay resolved to the first; upgrade when Task 7
 		 * slices by toggle values and can re-resolve names per variant. */
@@ -325,6 +336,12 @@ namespace {
 				};
 				return prefix + "with access " + access(a_.access) + in(first_) + " and " + access(b_.access) + in(second_);
 			}
+			if (a_.packing != b_.packing) {
+				const auto packing = [](ir::Packing packing_) {
+					return String(packing_ == ir::Packing::eStd140 ? "std140" : (packing_ == ir::Packing::eStd430 ? "std430" : "default"));
+				};
+				return prefix + "with packing " + packing(a_.packing) + in(first_) + " and " + packing(b_.packing) + in(second_);
+			}
 			if (a_.implicit != b_.implicit) {
 				// not OR-ed: an implicit entry emits no variable, while the other module's body may use one
 				return prefix + "implicit" + in(a_.implicit ? first_ : second_) + " and not" + in(a_.implicit ? second_ : first_);
@@ -338,7 +355,8 @@ namespace {
 			auto& remap = remaps[module_];
 			for (const auto& binding : modules[module_]->bindings) {
 				auto mapped = binding;
-				auto& [id, type, mode, bindClass, implicit, input, when, localName, access] = mapped;
+				auto& [id, type, mode, bindClass, implicit, input, when, localName, access, packing] = mapped;
+				static_cast<void>(packing);
 				type = remap.type(type);
 
 				const auto it = std::ranges::find(result.bindings, id, &ir::BindingDecl::id);
@@ -361,6 +379,58 @@ namespace {
 				static_cast<void>(input);
 				static_cast<void>(localName);
 				static_cast<void>(access);
+			}
+		}
+
+		/* structural equality of two expression trees of (possibly different) modules */
+		[[nodiscard]] static bool sameExpr(ref<const ir::Module> a_, ir::ExprRef x_, ref<const ir::Module> b_, ir::ExprRef y_, u32 depth_) {
+			if (x_.index >= a_.exprs.size() || y_.index >= b_.exprs.size() || depth_ > 256uL) {
+				return x_.index >= a_.exprs.size() && y_.index >= b_.exprs.size();
+			}
+			const auto& x = a_.exprs[x_.index];
+			const auto& y = b_.exprs[y_.index];
+			if (x.kind != y.kind || x.name != y.name || x.local != y.local || x.operands.size() != y.operands.size()) {
+				return false;
+			}
+			for (auto i = 0uz; i < x.operands.size(); ++i) {
+				if (not sameExpr(a_, x.operands[i], b_, y.operands[i], depth_ + 1uL)) {
+					return false;
+				}
+			}
+			return true;
+		}
+
+		/* identity is the name; identical declarations collapse (conditions OR-ed), differing type, value or spec id is a conflict */
+		void constants(u32 module_, ref<Vector<u32>> origins_) {
+			auto& remap = remaps[module_];
+			for (const auto& constant : modules[module_]->constants) {
+				auto mapped = constant;
+				mapped.type = remap.type(mapped.type);
+				mapped.value = remap.expr(mapped.value);
+
+				const auto it = std::ranges::find(result.constants, constant.name, &ir::ConstantDecl::name);
+				const auto index = static_cast<u32>(it - result.constants.begin());
+				remap.constants.emplace_back(index);
+				if (it == result.constants.end()) {
+					result.constants.emplace_back(std::move(mapped));
+					origins_.emplace_back(module_);
+					continue;
+				}
+
+				const auto first = origins_[index];
+				const auto prefix = "constant " + quoted(constant.name) + " declared ";
+				const auto in = [&](u32 m_) {
+					return " in " + quoted(moduleName(m_));
+				};
+				if (it->type != mapped.type) {
+					diags.emplace_back(error(prefix + "as " + describe(result.types, it->type) + in(first) + " and " + describe(result.types, mapped.type) + in(module_)));
+				} else if (it->specId.has_value() != mapped.specId.has_value() || (it->specId.has_value() && *it->specId != *mapped.specId)) {
+					diags.emplace_back(error(prefix + "with a different spec id" + in(first) + " and" + in(module_)));
+				} else if (not sameExpr(*modules[first], ir::ExprRef { it->value.index - remaps[first].exprOffset }, *modules[module_], constant.value, 0uL)) {
+					diags.emplace_back(error(prefix + "with a different value" + in(first) + " and" + in(module_)));
+				} else if (not sameCondition(it->when, mapped.when) && it->when.kind != ir::ConditionKind::eTrue) {
+					it->when = mapped.when.kind == ir::ConditionKind::eTrue ? ir::Condition::always() : ir::Condition::any({ it->when, mapped.when });
+				}
 			}
 		}
 
@@ -462,12 +532,13 @@ namespace {
 		}
 
 		void run() {
-			auto& [name, entry, toggleList, typeList, bindingList, functionList, exprList, stmtList] = result;
+			auto& [name, entry, toggleList, typeList, bindingList, constantList, functionList, exprList, stmtList] = result;
 			name = modules.back()->name;
 			entry = modules.back()->entry;
 
 			Vector<u32> toggleOrigins {};
 			Vector<u32> bindingOrigins {};
+			Vector<u32> constantOrigins {};
 			u32 exprs = 0uL;
 			u32 stmts = 0uL;
 			remaps.resize(modules.size());
@@ -478,6 +549,7 @@ namespace {
 				bindings(module, bindingOrigins);
 				remaps[m].exprOffset = exprs;
 				remaps[m].stmtOffset = stmts;
+				constants(module, constantOrigins);
 				exprs += static_cast<u32>(modules[m]->exprs.size());
 				stmts += static_cast<u32>(modules[m]->stmts.size());
 			}
@@ -488,6 +560,7 @@ namespace {
 			static_cast<void>(toggleList);
 			static_cast<void>(typeList);
 			static_cast<void>(bindingList);
+			static_cast<void>(constantList);
 			static_cast<void>(functionList);
 			static_cast<void>(exprList);
 			static_cast<void>(stmtList);

@@ -38,6 +38,16 @@ namespace AccelLang {
 			"fn a() {}\nfn b() {}\nfn c() {}\n";
 	}
 
+	TEST(UniformityTest, ModuleAndSpecConstantsAreUniform) {
+		const auto m = parseOk(
+			String { head } + "const K: f32 = 1.0;\n@spec (id = \"s\") const S: f32 = 2.0;\n"
+			"fn main() {\n\tif (K > 0.0) { a(); }\n\tif (S > 0.0) { b(); }\n}\n"
+		);
+		const auto u = analyzeUniformity(m);
+		EXPECT_TRUE(uniformOfCall(m, u, "a"));
+		EXPECT_TRUE(uniformOfCall(m, u, "b"));
+	}
+
 	TEST(UniformityTest, PushConditionIsUniform) {
 		const auto m = parseOk(String { head } + "fn main() {\n\tif (p.x > 0.0) { a(); }\n}\n");
 		const auto u = analyzeUniformity(m);
