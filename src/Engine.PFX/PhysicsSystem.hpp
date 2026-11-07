@@ -45,6 +45,7 @@ namespace hg::engine::physics {
 			return objectToBroadPhaseMapping[layer_];
 		}
 
+		#if defined(JPH_EXTERNAL_PROFILE) || defined(JPH_PROFILE_ENABLED)
 		[[nodiscard]] const char* GetBroadPhaseLayerName(const JPH::BroadPhaseLayer layer_) const override {
 			switch (static_cast<JPH::BroadPhaseLayer::Type>(layer_)) {
 				case static_cast<JPH::BroadPhaseLayer::Type>(BroadPhaseLayer::eStatic): return "Static";
@@ -55,6 +56,7 @@ namespace hg::engine::physics {
 				}
 			}
 		}
+		#endif
 
 		Array<JPH::BroadPhaseLayer, 2> objectToBroadPhaseMapping;
 	};
