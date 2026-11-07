@@ -332,6 +332,18 @@ namespace AccelLang {
 		);
 	}
 
+	TEST(SliceTest, DropsUnusedConstant) {
+		const auto module = parse(
+			"const USED: f32 = 1.0;\nconst DEAD: f32 = 2.0;\n"
+			"@output (mode = forward, id = \"color\") f32vec4 color;\n"
+			"fn main() {\n\tcolor = f32vec4(USED);\n}\n"
+		);
+		ASSERT_EQ(module.constants.size(), 2uz);
+		const auto sliced = sliceChecked(module, { "color" });
+		ASSERT_EQ(sliced.constants.size(), 1uz);
+		EXPECT_EQ(sliced.constants[0].name, "USED");
+	}
+
 	TEST(SliceTest, EmptyRequiredKeepsEverything) {
 		const auto module = parse(litSource);
 		EXPECT_TRUE(same(sliceChecked(module, {}), module));
@@ -437,6 +449,39 @@ namespace AccelLang {
 			"fn main() {\n\t@when (Shading == Forward) frag_depth = F();\n}\n"
 		);
 		EXPECT_EQ(functionNames(resolveOk(guarded, { { "Shading", "Deferred" } })), (Vector<String> { "main" }));
+	}
+
+	TEST(MergeConstantTest, DifferentTypeOrValueIsDiagnosticNamingBothModules) {
+		const auto base = parse("const K: f32 = 1.0;\nfn main() {}\n", "P");
+		for (const auto* other : { "const K: u32 = 1u;\nfn main() {}\n", "const K: f32 = 2.0;\nfn main() {}\n" }) {
+			const auto second = parse(other, "S");
+			const Vector<const Module*> list { &base, &second };
+			const auto merged = merge(list);
+			ASSERT_FALSE(merged.has_value());
+			EXPECT_TRUE(mentions(merged.error().front(), "'P'") && mentions(merged.error().front(), "'S'") && mentions(merged.error().front(), "'K'"))
+				<< merged.error().front().message;
+		}
+	}
+
+	TEST(MergeConstantTest, IdenticalConstantsCollapse) {
+		const auto a = parse("const K: f32 = 1.0;\nfn helper() {}\n", "P");
+		const auto b = parse("const K: f32 = 1.0;\nfn main() {}\n", "S");
+		const Vector<const Module*> list { &a, &b };
+		const auto merged = merge(list);
+		ASSERT_TRUE(merged.has_value());
+		EXPECT_EQ(merged->constants.size(), 1uz);
+	}
+
+	TEST(SliceTest, KeepsConstantUsedByKeptConstantInitializer) {
+		const auto module = parse(
+			"const BASE: f32 = 1.0;\nconst DERIVED: f32 = BASE * 2.0;\nconst UNRELATED: f32 = 3.0;\n"
+			"@output (mode = forward, id = \"color\") f32vec4 color;\n"
+			"fn main() {\n\tcolor = f32vec4(DERIVED);\n}\n"
+		);
+		const auto sliced = sliceChecked(module, { "color" });
+		ASSERT_EQ(sliced.constants.size(), 2uz);
+		EXPECT_EQ(sliced.constants[0].name, "BASE");
+		EXPECT_EQ(sliced.constants[1].name, "DERIVED");
 	}
 
 	TEST(ResolveTest, MergedCallsResolveToSurvivingVariant) {

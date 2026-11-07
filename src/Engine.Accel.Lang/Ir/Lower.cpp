@@ -149,6 +149,22 @@ std::expected<Intermediate, ir::Diagnostics> ir::lowerToIntermediate(
 		im.rep.symbolTable.insert(std::move(symbol));
 	}
 
+	// spec constants: legacy variables id'd by their spec id, constant annotation (the constant_id comes from the layout)
+	for (const auto& constant : resolved_.constants) {
+		if (not constant.specId.has_value()) {
+			continue;
+		}
+		auto var = make_uptr<Variable>();
+		var->type = legacyType(resolved_.types, constant.type);
+		var->countTag = 1uL;
+		var->annotation = make_uptr<SymbolIdAnnotation>(String { *constant.specId }, wrap<AnnotationType::eConstant>(nullptr));
+
+		auto symbol = make_uptr<Symbol>(SymbolId::from(*constant.specId), VariableSymbol { SymbolType::eVariableSymbol, var.get() });
+		symbol->symbolName = *constant.specId;
+		im.rep.globalScope.inbound.emplace_back(std::move(var));
+		im.rep.symbolTable.insert(std::move(symbol));
+	}
+
 	if (not diags.empty()) {
 		return std::unexpected(std::move(diags));
 	}

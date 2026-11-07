@@ -285,6 +285,23 @@ Vector<u32> ir::std430Offsets(ref<const Vector<TypeDesc>> types_, TypeRef struct
 	return offsets;
 }
 
+Vector<ir::SpecConstant> ir::assignSpecConstants(ref<const Vector<ConstantDecl>> constants_) {
+	Vector<String> ids {};
+	for (const auto& constant : constants_) {
+		if (constant.specId.has_value()) {
+			ids.emplace_back(*constant.specId);
+		}
+	}
+	std::ranges::sort(ids);
+	ids.erase(std::ranges::unique(ids).begin(), ids.end());
+
+	Vector<SpecConstant> result {};
+	for (auto i = 0uz; i < ids.size(); ++i) {
+		result.emplace_back(SpecConstant { ids[i], static_cast<u32>(i) });
+	}
+	return result;
+}
+
 u32 ir::locationCount(ref<const Vector<TypeDesc>> types_, TypeRef type_) {
 	Types types { types_ };
 	const auto& info = types.of(type_);

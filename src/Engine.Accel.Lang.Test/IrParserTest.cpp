@@ -35,6 +35,48 @@ namespace AccelLang {
 		EXPECT_EQ(tokens[2].kind, TokenKind::eEof);
 	}
 
+	TEST(ParserTest, ParsesConstArray) {
+		auto res = parseModule(
+			"M",
+			"const K: f32vec3[2] = f32vec3[2](f32vec3(1.0), f32vec3(2.0));\n"
+			"const L: f32vec3[1] =f32vec3[](f32vec3(1.0));\n"
+			"fn main() {}\n",
+			EntryKind::eFragment,
+			ModuleResolver { [](StringView) -> Opt<String> { return None; } }
+		);
+		ASSERT_TRUE(res.has_value()) << (res.has_value() || res.error().empty() ? "" : res.error().front().message);
+		ASSERT_EQ(res->constants.size(), 2uz);
+		EXPECT_EQ(res->constants[0].name, "K");
+		EXPECT_FALSE(res->constants[0].specId.has_value());
+		EXPECT_EQ(res->constants[1].name, "L");
+	}
+
+	TEST(ParserTest, PackingOnOpaqueBindingIsDiagnostic) {
+		const auto res = parseModule(
+			"M",
+			"@input (mode = bind, id = \"smp\", class = sampler, packing = std140) sampler smp;\nfn main() {}\n",
+			EntryKind::eFragment,
+			ModuleResolver { [](StringView) -> Opt<String> { return None; } }
+		);
+		ASSERT_FALSE(res.has_value());
+		EXPECT_NE(res.error().front().message.find("packing"), String::npos);
+		EXPECT_EQ(res.error().front().line, 1u);
+	}
+
+	TEST(ParserTest, ParsesSpecConstant) {
+		auto res = parseModule(
+			"M",
+			"@spec (id = \"sample-count\") const SAMPLE_COUNT: u32 = 1024u;\nfn main() {}\n",
+			EntryKind::eFragment,
+			ModuleResolver { [](StringView) -> Opt<String> { return None; } }
+		);
+		ASSERT_TRUE(res.has_value());
+		ASSERT_EQ(res->constants.size(), 1uz);
+		EXPECT_EQ(res->constants[0].name, "SAMPLE_COUNT");
+		ASSERT_TRUE(res->constants[0].specId.has_value());
+		EXPECT_EQ(*res->constants[0].specId, "sample-count");
+	}
+
 	TEST(LexerTest, SkipsComments) {
 		const auto tokens = lexOk("a // line\n/* block\n x */ b");
 		ASSERT_EQ(tokens.size(), 3uz);

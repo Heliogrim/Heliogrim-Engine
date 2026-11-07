@@ -503,6 +503,9 @@ Opt<ir::ExprRef> Parser::primary() {
 		if (at(TokenKind::eLParen)) {
 			return call(token);
 		}
+		if (at(TokenKind::eLBracket) && isTypeName(token.text)) {
+			return arrayConstruct(token);
+		}
 		return name(token);
 	}
 	if (accept(TokenKind::eLParen)) {
@@ -514,6 +517,39 @@ Opt<ir::ExprRef> Parser::primary() {
 	}
 	syntaxError("an expression");
 	return None;
+}
+
+/* `T[N](args)` / `T[](args)` at '[': a construct typed as the array; `[]` takes the argument count, `[N]` is checked by typecheck */
+Opt<ir::ExprRef> Parser::arrayConstruct(ref<const ir::Token> name_) {
+	const auto& open = take();
+	u32 count = 0uL;
+	if (at(TokenKind::eInteger)) {
+		const auto text = take().text;
+		for (const char digit : text) {
+			count = count * 10uL + static_cast<u32>(digit - '0');
+		}
+		if (text.size() > 9uz || count == 0uL) {
+			error(open, "Invalid array size '" + String(text) + "'.");
+		}
+	}
+	if (not expect(TokenKind::eRBracket, "']'")) {
+		return None;
+	}
+	if (not at(TokenKind::eLParen)) {
+		syntaxError("'(' after the array type");
+		return None;
+	}
+	const auto made = call(name_);
+	if (not made.has_value()) {
+		return None;
+	}
+	auto& construct = _shared.module.exprs[made->index];
+	ir::TypeDesc desc {};
+	desc.kind = ir::TypeKind::eArray;
+	desc.element = construct.type;
+	desc.count = count != 0uL ? count : static_cast<u32>(construct.operands.size());
+	construct.type = intern(std::move(desc));
+	return made;
 }
 
 /* `name(args)` at '(' */
@@ -567,8 +603,12 @@ ir::ExprRef Parser::name(ref<const ir::Token> name_) {
 	named.loc = name_.loc;
 	const auto& bindings = _shared.module.bindings;
 	const auto binding = std::ranges::find(bindings, text, &ir::BindingDecl::localName);
+	const auto& constants = _shared.module.constants;
+	const auto constant = std::ranges::find(constants, text, &ir::ConstantDecl::name);
 	if (std::ranges::find(_locals, text) != _locals.end()) {
 		named.local = true;
+	} else if (constant != constants.end()) {
+		named.constant = ir::ConstantRef { static_cast<u32>(constant - constants.begin()) };
 	} else if (binding != bindings.end()) {
 		named.binding = ir::BindingRef { static_cast<u32>(binding - bindings.begin()) };
 	} else if (isBuiltinVariable(text)) {

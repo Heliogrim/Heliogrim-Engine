@@ -88,6 +88,7 @@ namespace {
 
 		[[nodiscard]] ir::Diagnostics run(ref<String> out_, ref<GlslRequirements> requirements_) {
 			bindings();
+			constants();
 			functions();
 
 			requirements_ = GlslRequirements { .features = _features, .extensions = extensionsOf(_features) };
@@ -95,7 +96,7 @@ namespace {
 			for (const auto& extension : requirements_.extensions) {
 				out_ += "#extension " + extension + " : require\n";
 			}
-			out_ +="\nlayout(std430) buffer;\n\n" + _structs + _bindings + "\n" + _functions;
+			out_ +="\nlayout(std430) buffer;\n\n" + _structs + _bindings + "\n" + _constants + _functions;
 			return std::move(_diags);
 		}
 
@@ -123,6 +124,7 @@ namespace {
 
 		String _structs;
 		String _bindings;
+		String _constants;
 		String _functions;
 		u32 _features = 0uL;
 
@@ -492,7 +494,8 @@ namespace {
 				error("The layout has no slot for binding '" + binding_.id + "'.");
 				return;
 			}
-			const auto head = "layout(set = " + std::to_string(slot->set) + ", binding = " + std::to_string(slot->binding) + ")";
+			const auto packing = binding_.packing == ir::Packing::eStd140 ? ", std140" : binding_.packing == ir::Packing::eStd430 ? ", std430" : "";
+			const auto head = "layout(set = " + std::to_string(slot->set) + ", binding = " + std::to_string(slot->binding) + packing + ")";
 			if (opaque) {
 				if (const auto decl = declareOrReport(binding_.type, binding_.localName); decl.has_value()) {
 					_bindings += head + " uniform " + *decl + ";\n";
@@ -501,6 +504,29 @@ namespace {
 			}
 			const auto qualifier = binding_.access == ir::Access::eRead && binding_.input ? " readonly" : binding_.access == ir::Access::eWrite ? " writeonly" : "";
 			block(head + (binding_.bindClass == eStorageBuffer ? String { qualifier } + " buffer" : String { " uniform" }), binding_, *desc);
+		}
+
+		/* module constants in declaration order (an initializer only reads earlier ones); spec constants carry their constant_id */
+		void constants() {
+			for (const auto& constant : _module.constants) {
+				const auto decl = declareOrReport(constant.type, constant.name);
+				if (not decl.has_value()) {
+					continue;
+				}
+				String head {};
+				if (constant.specId.has_value()) {
+					const auto it = std::ranges::find(_layout.specConstants, *constant.specId, &ir::SpecConstant::id);
+					if (it == _layout.specConstants.end()) {
+						error("The layout has no constant id for spec constant '" + *constant.specId + "'.");
+						continue;
+					}
+					head = "layout(constant_id = " + std::to_string(it->constantId) + ") ";
+				}
+				_constants += head + "const " + *decl + " = " + expr(constant.value).text + ";\n";
+			}
+			if (not _constants.empty()) {
+				_constants += "\n";
+			}
 		}
 
 		/* an anonymous struct becomes the block body (instance name = local name), any other type its only member */
@@ -862,6 +888,10 @@ namespace {
 					return { *local->alias, local->type };
 				}
 				return { e_.name, typeOf(e_.type).has_value() ? typeOf(e_.type) : localType(e_.name) };
+			}
+			if (e_.constant.index < _module.constants.size()) {
+				const auto& constant = _module.constants[e_.constant.index];
+				return { constant.name, typeOf(constant.type) };
 			}
 			const auto& decls = _module.bindings;
 			const auto* binding = e_.binding.index < decls.size() ? &decls[e_.binding.index] : nullptr;

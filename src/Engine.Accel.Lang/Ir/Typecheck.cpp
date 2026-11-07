@@ -51,6 +51,9 @@ namespace {
 					}
 				}
 			}
+			for (auto i = 0uz; i < _module.constants.size(); ++i) {
+				constant(i);
+			}
 			for (auto i = 0uz; i < _module.functions.size(); ++i) {
 				if (not _module.functions[i].body.has_value()) {
 					continue;
@@ -476,10 +479,24 @@ namespace {
 				case ExprKind::eBinary: return binary(text, operands);
 				case ExprKind::eTernary: return ternary(operands);
 				case ExprKind::eConstruct: {
+					Vector<TypeRef> types {};
 					for (const auto operand : operands) {
-						(void)expr(operand);
+						types.emplace_back(expr(operand));
 					}
-					return _module.exprs[ref_.index].type;
+					const auto type = _module.exprs[ref_.index].type;
+					if (valid(type) && _module.types[type.index].kind == TypeKind::eArray) {
+						const auto count = _module.types[type.index].count;
+						const auto element = _module.types[type.index].element;
+						if (operands.size() != count) {
+							error("array of " + std::to_string(count) + " elements constructed from " + std::to_string(operands.size()) + " values");
+						}
+						for (auto i = 0uz; i < operands.size(); ++i) {
+							if (valid(types[i]) && not coerce(operands[i], element)) {
+								error("array element " + std::to_string(i) + " is " + name(types[i]) + ", expected " + name(element));
+							}
+						}
+					}
+					return type;
 				}
 				default: return {};
 			}
@@ -487,7 +504,7 @@ namespace {
 
 		[[nodiscard]] const Entry* lookup(ref<const ir::Expr> e_) const {
 			for (auto it = _scope.rbegin(); it != _scope.rend(); ++it) {
-				if (it->name == e_.name && (e_.local || e_.binding.index >= _module.bindings.size())) {
+				if (it->name == e_.name && (e_.local || (e_.binding.index >= _module.bindings.size() && e_.constant.index >= _module.constants.size()))) {
 					return &*it;
 				}
 			}
@@ -508,6 +525,9 @@ namespace {
 			const auto* root = rootOf(place_);
 			if (root == nullptr || root->kind != ExprKind::eNameRef) {
 				return None;
+			}
+			if (root->constant.index < _module.constants.size()) {
+				return String("cannot assign to constant '" + root->name + "'");
 			}
 			if (const auto* entry = lookup(*root); entry != nullptr) {
 				if (entry->mode == Mode::eMutable || entry->mode == Mode::eRefWrite) {
@@ -576,8 +596,50 @@ namespace {
 			}
 		}
 
+		/* module constants: a declared type, a constant initializer; a spec constant is a scalar */
+		void constant(size_t index_) {
+			const auto& decl = _module.constants[index_];
+			const Here here { _loc, decl.loc };
+			if (not valid(decl.type)) {
+				return;
+			}
+			const auto init = expr(decl.value);
+			if (valid(init) && not coerce(decl.value, decl.type)) {
+				error("cannot initialize constant '" + decl.name + "' of type " + name(decl.type) + " with " + name(init));
+			}
+			if (decl.specId.has_value() && _module.types[decl.type.index].kind != TypeKind::eScalar) {
+				error("specialization constant '" + decl.name + "' must be a scalar, not " + name(decl.type));
+			}
+			if (not isConstant(decl.value)) {
+				error("initializer of constant '" + decl.name + "' is not a constant expression");
+			}
+		}
+
+		[[nodiscard]] bool isConstant(ExprRef ref_, u32 depth_ = 0uL) const {
+			if (ref_.index >= _module.exprs.size() || depth_ > maxDepth) {
+				return false;
+			}
+			const auto& e = _module.exprs[ref_.index];
+			switch (e.kind) {
+				case ExprKind::eLiteral: return true;
+				case ExprKind::eNameRef: return e.constant.index < _module.constants.size();
+				case ExprKind::eConstruct:
+				case ExprKind::eUnary:
+				case ExprKind::eBinary:
+				case ExprKind::eTernary:
+				case ExprKind::eField:
+				case ExprKind::eIndex: {
+					return std::ranges::all_of(e.operands, [&](ExprRef o_) { return isConstant(o_, depth_ + 1uL); });
+				}
+				default: return false;
+			}
+		}
+
 		[[nodiscard]] TypeRef nameRef(ExprRef ref_) {
 			const auto& e = _module.exprs[ref_.index];
+			if (e.constant.index < _module.constants.size()) {
+				return _module.constants[e.constant.index].type;
+			}
 			if (const auto* entry = lookup(e); entry != nullptr) {
 				return entry->type;
 			}

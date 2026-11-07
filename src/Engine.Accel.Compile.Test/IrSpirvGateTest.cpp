@@ -33,6 +33,24 @@ namespace AccelCompile {
 		EXPECT_FALSE(glslCompiles("#version 460\nvoid main(){ gl_Position = vec4(0); }", EntryKind::eFragment));
 	}
 
+	TEST(IrSpirvGateTest, ConstantsSample) {
+		EXPECT_TRUE(
+			compilesToSpirv(
+				"const SCALE: f32 = 0.5;\n"
+				"const TABLE: f32vec3[2] = f32vec3[2](f32vec3(1.0), f32vec3(2.0));\n"
+				"@spec (id = \"sample-count\") const SAMPLES: u32 = 4u;\n"
+				"@input (mode = bind, id = \"m\", class = uniform, packing = std140) block m { f32vec4 a; };\n"
+				"@output (mode = forward, id = \"color\") f32vec4 color;\n"
+				"fn main() {\n"
+				"	let acc = 0.0;\n"
+				"	for (let i = 0u; i < SAMPLES; ++i) { acc += SCALE; }\n"
+				"	color = f32vec4(TABLE[1] * acc, 1.0) + m.a;\n"
+				"}\n",
+				EntryKind::eFragment
+			)
+		);
+	}
+
 	TEST(IrSpirvGateTest, ReferencesSample) {
 		EXPECT_TRUE(
 			compilesToSpirv(

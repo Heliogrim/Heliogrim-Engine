@@ -88,6 +88,21 @@ namespace AccelLang {
 		constexpr auto shadowFragment = "@output (mode = forward, id = \"depth\") implicit f32 depth;\n";
 	}
 
+	TEST(LayoutTest, SpecConstantIdsAreDeterministic) {
+		const auto module = parse(
+			"@spec (id = \"b\") const B: u32 = 2u;\n"
+			"@spec (id = \"a\") const A: u32 = 1u;\n"
+			"const PLAIN: u32 = 3u;\n"
+			"fn main() {}\n",
+			EntryKind::eFragment
+		);
+		const auto constants = assignSpecConstants(module.constants);
+		ASSERT_EQ(constants.size(), 2uz);
+		EXPECT_EQ(constants[0], (SpecConstant { "a", 0uL }));
+		EXPECT_EQ(constants[1], (SpecConstant { "b", 1uL }));
+		EXPECT_EQ(constants, assignSpecConstants(module.constants));
+	}
+
 	TEST(InterfaceTest, ShadowVertexInterfaceIsExact) {
 		const auto vertex = resolved(shadowVertex, EntryKind::eVertex, {});
 		const auto vs = computeInterface(vertex);

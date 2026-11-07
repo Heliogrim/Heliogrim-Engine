@@ -61,6 +61,7 @@ namespace {
 			/* binding and function indices are content: both declaration lists are hashed in order */
 			h.put(node.binding.index);
 			h.put(node.function.index);
+			h.put(node.constant.index);
 			h.put(node.local);
 			if (node.kind == ExprKind::eConstruct) {
 				type(node.type);
@@ -115,6 +116,17 @@ namespace {
 				condition(binding.when);
 				h.put(binding.localName);
 				h.put(binding.access);
+				h.put(binding.packing);
+			}
+
+			h.put(static_cast<u64>(module.constants.size()));
+			for (const auto& constant : module.constants) {
+				h.put(constant.name);
+				type(constant.type);
+				expr(constant.value, 0uL);
+				h.put(constant.specId.has_value());
+				h.put(constant.specId.value_or(String {}));
+				condition(constant.when);
 			}
 
 			h.put(static_cast<u64>(module.functions.size()));

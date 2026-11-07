@@ -56,6 +56,10 @@ namespace hg::engine::accel::lang::ir {
 		u32 index = ~0uL;
 	};
 
+	struct ConstantRef {
+		u32 index = ~0uL;
+	};
+
 	struct BodyRef {
 		StmtRef root;
 	};
@@ -89,6 +93,8 @@ namespace hg::engine::accel::lang::ir {
 		 * Typed so arena merging can remap them like the other refs. */
 		BindingRef binding;
 		FunctionRef function;
+		/* nameref: resolved module or spec constant */
+		ConstantRef constant;
 
 		/* nameref resolved to a local or parameter: not a binding use, `binding` stays absent */
 		bool local = false;
@@ -214,6 +220,12 @@ namespace hg::engine::accel::lang::ir {
 		eRefMut
 	};
 
+	enum class Packing : u8 {
+		eDefault,
+		eStd140,
+		eStd430
+	};
+
 	struct BindingDecl {
 		String id;
 		TypeRef type;
@@ -225,6 +237,19 @@ namespace hg::engine::accel::lang::ir {
 		Condition when;
 		String localName;
 		Access access = Access::eRead;
+		Packing packing = Packing::eDefault;
+	};
+
+	/* module-scope `const`; a `specId` makes it a specialization constant (the layout pass assigns its constant_id) */
+	struct ConstantDecl {
+		String name;
+		TypeRef type;
+		ExprRef value;
+		Opt<String> specId;
+		Condition when;
+
+		/* name token; diagnostics only, not part of the content hash */
+		SourceLoc loc;
 	};
 
 	struct ParamDecl {
@@ -262,6 +287,7 @@ namespace hg::engine::accel::lang::ir {
 		Vector<Toggle> toggles;
 		Vector<TypeDesc> types;
 		Vector<BindingDecl> bindings;
+		Vector<ConstantDecl> constants;
 		Vector<FunctionDecl> functions;
 		Vector<Expr> exprs;
 		Vector<Stmt> stmts;

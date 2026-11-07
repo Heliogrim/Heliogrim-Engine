@@ -52,7 +52,10 @@ namespace {
 						const auto it = divergent.find(e.name);
 						return it != divergent.end() && not it->second;
 					}
-					auto index = e.binding.index;
+					if (e.constant.index < module.constants.size()) {
+							return true;
+						}
+						auto index = e.binding.index;
 					if (index == ~0uL) {
 						const auto it = std::ranges::find(module.bindings, e.name, &ir::BindingDecl::localName);
 						index = it == module.bindings.end() ? ~0uL : static_cast<u32>(it - module.bindings.begin());

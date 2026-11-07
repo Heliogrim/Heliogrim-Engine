@@ -36,6 +36,7 @@ namespace {
 		Vector<Visit> exprVisit = Vector<Visit>(in.exprs.size(), Visit::eNew);
 		Vector<u32> newFunction = Vector<u32>(in.functions.size(), unset);
 		Vector<u32> newBinding = Vector<u32>(in.bindings.size(), unset);
+		Vector<u32> newConstant = Vector<u32>(in.constants.size(), unset);
 
 		/* follows inline aliases; ~0 if dropped, out of range or an alias cycle */
 		[[nodiscard]] u32 target(u32 stmt_) const {
@@ -179,6 +180,7 @@ namespace {
 				const auto old = e.binding.index;
 				const auto uses = old < plan.bindingUses.size() ? plan.bindingUses[old] : unset;
 				e.binding.index = e.local || uses >= newBinding.size() ? unset : newBinding[uses];
+				e.constant.index = e.local || e.constant.index >= newConstant.size() ? unset : newConstant[e.constant.index];
 				e.function = e.kind == ir::ExprKind::eCall ? call(e) : ir::FunctionRef {};
 				e.type = type(e.type, types);
 			}
@@ -205,6 +207,14 @@ namespace {
 					binding.type = type(binding.type, types);
 				}
 			}
+			for (auto old = 0uz; old < in.constants.size(); ++old) {
+				if (plan.constants.has_value() && not std::ranges::binary_search(*plan.constants, static_cast<u32>(old))) {
+					continue;
+				}
+				newConstant[old] = static_cast<u32>(result.constants.size());
+				auto& constant = result.constants.emplace_back(in.constants[old]);
+				constant.type = type(constant.type, types);
+			}
 			for (const auto old : plan.functions) {
 				if (old < in.functions.size()) {
 					newFunction[old] = static_cast<u32>(result.functions.size());
@@ -227,6 +237,9 @@ namespace {
 				result.stmts[i].type = type(result.stmts[i].type, types);
 				result.stmts[i].lhs = expr(result.stmts[i].lhs);
 				result.stmts[i].rhs = expr(result.stmts[i].rhs);
+			}
+			for (auto& constant : result.constants) {
+				constant.value = expr(constant.value);
 			}
 			fixExprs();
 		}

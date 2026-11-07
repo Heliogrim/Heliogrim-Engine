@@ -39,17 +39,31 @@ namespace hg::engine::accel::lang::ir {
 		[[nodiscard]] bool operator==(const PushRange&) const noexcept = default;
 	};
 
+	struct SpecConstant {
+		String id;
+		u32 constantId = 0uL;
+
+		[[nodiscard]] bool operator==(const SpecConstant&) const noexcept = default;
+	};
+
 	/**
 	 * `slots` sorted by (set, binding); `push` in id order; `inputLocations[i]` is the first location of the i-th
 	 * forward input in id order. Forward outputs get no entry: the caller numbers them by id.
+	 * `specConstants` in id order, `constantId` counting from 0 (see `assignSpecConstants`).
 	 */
 	struct Layout {
 		Vector<SlotAssignment> slots;
 		Vector<PushRange> push;
 		Vector<u32> inputLocations;
+		Vector<SpecConstant> specConstants;
 
 		[[nodiscard]] bool operator==(const Layout&) const noexcept = default;
 	};
+
+	/**
+	 * Spec constant ids of the module's constants: distinct ids sorted, numbered from 0 (ids `b`, `a` give 1, 0).
+	 */
+	[[nodiscard]] Vector<SpecConstant> assignSpecConstants(ref<const Vector<ConstantDecl>> constants_);
 
 	/**
 	 * std430 member offsets of a struct type; empty if the type is not a struct or not laid out (see below).

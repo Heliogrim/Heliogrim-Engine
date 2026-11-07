@@ -37,6 +37,7 @@ namespace {
 		Vector<String> reads;
 		Vector<u32> calls;
 		Vector<u32> bindings;
+		Vector<u32> constants;
 		String defines;
 	};
 
@@ -68,6 +69,18 @@ namespace {
 			return it == in.bindings.end() ? unset : static_cast<u32>(it - in.bindings.begin());
 		}
 
+		/* module constant a (non-local) name ref reads: resolved index, else by name */
+		[[nodiscard]] u32 constant(ref<const ir::Expr> expr_) const {
+			if (expr_.local) {
+				return unset;
+			}
+			if (expr_.constant.index < in.constants.size()) {
+				return expr_.constant.index;
+			}
+			const auto it = std::ranges::find(in.constants, expr_.name, &ir::ConstantDecl::name);
+			return it == in.constants.end() ? unset : static_cast<u32>(it - in.constants.begin());
+		}
+
 		[[nodiscard]] u32 function(ref<const ir::Expr> expr_) const {
 			if (expr_.function.index < in.functions.size()) {
 				return expr_.function.index;
@@ -91,7 +104,9 @@ namespace {
 				if (e.kind == ir::ExprKind::eNameRef && e.local) {
 					insertSorted(facts_.reads, e.name);
 				} else if (e.kind == ir::ExprKind::eNameRef) {
-					if (const auto b = binding(e); b != unset) {
+					if (const auto c = constant(e); c != unset) {
+						insertSorted(facts_.constants, c);
+					} else if (const auto b = binding(e); b != unset) {
 						insertSorted(facts_.bindings, b);
 					}
 				} else if (e.kind == ir::ExprKind::eCall) {
@@ -305,6 +320,35 @@ ir::Module ir::slice(ref<const Module> module_, std::span<const String> required
 		for (auto s = 0uz; s < module_.stmts.size(); ++s) {
 			plan.stmtAlias[s] = slicer.live[s] ? static_cast<u32>(s) : unset;
 		}
+
+		/* constants read by live statements of kept functions, plus those their values read */
+		Vector<u32> used {};
+		for (auto f = 0uz; f < kept.size(); ++f) {
+			if (not kept[f]) {
+				continue;
+			}
+			for (const auto s : slicer.bodies[f]) {
+				if (slicer.live[s]) {
+					for (const auto c : slicer.facts[s].constants) {
+						insertSorted(used, c);
+					}
+				}
+			}
+		}
+		for (auto grown = true; grown;) {
+			grown = false;
+			const auto snapshot = used;
+			for (const auto c : snapshot) {
+				Facts nested {};
+				slicer.gather(module_.constants[c].value, nested);
+				for (const auto n : nested.constants) {
+					const auto before = used.size();
+					insertSorted(used, n);
+					grown = grown || used.size() != before;
+				}
+			}
+		}
+		plan.constants = std::move(used);
 	}
 
 	for (auto i = 0uz; i < bindings.size(); ++i) {
