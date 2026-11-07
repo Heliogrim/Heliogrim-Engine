@@ -247,6 +247,8 @@ namespace hg::engine::accel::lang::ir {
 		Packing packing = Packing::eDefault;
 		/* per-vertex forward input of geometry/tessellation (`T[] name`); `type` is the element type */
 		bool arrayed = false;
+		/* per-patch forward output of tess_ctrl / input of tess_eval (`patch out` / `patch in`) */
+		bool patch = false;
 	};
 
 	/* module-scope `const`; a `specId` makes it a specialization constant (the layout pass assigns its constant_id) */
@@ -301,6 +303,18 @@ namespace hg::engine::accel::lang::ir {
 		eTriangleStrip
 	};
 
+	enum class TessDomain : u8 {
+		eTriangles,
+		eQuads,
+		eIsolines
+	};
+
+	enum class TessSpacing : u8 {
+		eEqual,
+		eFractionalEven,
+		eFractionalOdd
+	};
+
 	struct EntryAttributes {
 		std::array<u32, 3> localSize { 1uL, 1uL, 1uL };
 		bool earlyFragmentTests = false;
@@ -309,6 +323,12 @@ namespace hg::engine::accel::lang::ir {
 		Primitive geometryOutput = Primitive::eTriangleStrip;
 		u32 maxVertices = 0uL;
 		u32 invocations = 1uL;
+		/* tess_ctrl */
+		u32 outputVertices = 0uL;
+		/* tess_eval */
+		TessDomain tessDomain = TessDomain::eTriangles;
+		TessSpacing tessSpacing = TessSpacing::eEqual;
+		bool clockwise = false;
 
 		[[nodiscard]] bool operator==(const EntryAttributes&) const noexcept = default;
 	};

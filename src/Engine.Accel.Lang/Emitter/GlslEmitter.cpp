@@ -120,7 +120,13 @@ namespace {
 						out_ += "layout(invocations = " + std::to_string(a.invocations) + ") in;\n";
 					}
 				}
-				if (_module.entry == ir::EntryKind::eFragment && _module.attributes.earlyFragmentTests) {
+				if (_module.entry == ir::EntryKind::eTessCtrl) {
+						out_ += "layout(vertices = " + std::to_string(_module.attributes.outputVertices) + ") out;\n";
+					}
+					if (_module.entry == ir::EntryKind::eTessEval) {
+						out_ += tessEvalLayout(_module.attributes);
+					}
+					if (_module.entry == ir::EntryKind::eFragment && _module.attributes.earlyFragmentTests) {
 					out_ += "layout(early_fragment_tests) in;\n";
 				}
 				out_ += "\n" + _structs + _bindings + "\n" + _constants + _functions;
@@ -284,6 +290,14 @@ namespace {
 					return None;
 				}
 			}
+		}
+
+		[[nodiscard]] static String tessEvalLayout(ref<const ir::EntryAttributes> a) {
+			const auto* domain = a.tessDomain == ir::TessDomain::eQuads ? "quads" :
+				(a.tessDomain == ir::TessDomain::eIsolines ? "isolines" : "triangles");
+			const auto* spacing = a.tessSpacing == ir::TessSpacing::eFractionalEven ? "fractional_even_spacing" :
+				(a.tessSpacing == ir::TessSpacing::eFractionalOdd ? "fractional_odd_spacing" : "equal_spacing");
+			return "layout(" + String(domain) + ", " + spacing + ", " + (a.clockwise ? "cw" : "ccw") + ") in;\n";
 		}
 
 		[[nodiscard]] static StringView primitiveName(ir::Primitive primitive_) {
@@ -453,7 +467,8 @@ namespace {
 						forward(binding, forwardInputs++);
 					} else if (not binding.implicit) {
 						if (const auto decl = declareOrReport(binding.type, binding.localName); decl.has_value()) {
-							_bindings += "layout(location = " + std::to_string(outputLocation) + ") out " + *decl + ";\n";
+							_bindings += "layout(location = " + std::to_string(outputLocation) + ") " + (binding.patch ? "patch " : "") +
+								"out " + *decl + (binding.arrayed ? "[]" : "") + ";\n";
 							storageUse(binding.type, 0uL, bit(GlslFeature::eStorageInputOutput16), binding.id);
 						}
 						outputLocation += ir::locationCount(_module.types, binding.type);
@@ -496,7 +511,7 @@ namespace {
 				desc->scalar != ir::ScalarKind::eFloat;
 			const auto flat = _module.entry == ir::EntryKind::eFragment && integral;
 			_bindings += "layout(location = " + std::to_string(_layout.inputLocations[index_]) + ") " + (flat ? "flat " : "") +
-				"in " + *decl + (binding_.arrayed ? "[]" : "") + ";\n";
+				(binding_.patch ? "patch " : "") + "in " + *decl + (binding_.arrayed ? "[]" : "") + ";\n";
 		}
 
 		void resource(ref<const ir::BindingDecl> binding_) {

@@ -328,6 +328,9 @@ namespace {
 			if (a_.arrayed != b_.arrayed) {
 				return prefix + "as per-vertex array in only one of" + in(first_) + " and " + quoted(second_);
 			}
+			if (a_.patch != b_.patch) {
+				return prefix + "as per-patch in only one of" + in(first_) + " and " + quoted(second_);
+			}
 			if (a_.input != b_.input) {
 				const auto direction = [](bool input_) {
 					return String(input_ ? "input" : "output");
@@ -359,7 +362,8 @@ namespace {
 			auto& remap = remaps[module_];
 			for (const auto& binding : modules[module_]->bindings) {
 				auto mapped = binding;
-				auto& [id, type, mode, bindClass, implicit, input, when, localName, access, packing, arrayed] = mapped;
+				auto& [id, type, mode, bindClass, implicit, input, when, localName, access, packing, arrayed, patch] = mapped;
+					static_cast<void>(patch);
 				static_cast<void>(packing);
 				static_cast<void>(arrayed);
 				type = remap.type(type);

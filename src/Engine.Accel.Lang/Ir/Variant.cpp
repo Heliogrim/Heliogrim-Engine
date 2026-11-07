@@ -102,6 +102,10 @@ namespace {
 			h.put(module.attributes.geometryOutput);
 			h.put(module.attributes.maxVertices);
 			h.put(module.attributes.invocations);
+			h.put(module.attributes.outputVertices);
+			h.put(module.attributes.tessDomain);
+			h.put(module.attributes.tessSpacing);
+			h.put(module.attributes.clockwise);
 
 			h.put(static_cast<u64>(module.toggles.size()));
 			for (const auto& toggle : module.toggles) {
@@ -121,6 +125,7 @@ namespace {
 				h.put(binding.bindClass);
 				h.put(binding.implicit);
 				h.put(binding.arrayed);
+				h.put(binding.patch);
 				h.put(binding.input);
 				condition(binding.when);
 				h.put(binding.localName);

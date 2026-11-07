@@ -254,6 +254,42 @@ namespace AccelCompile {
 		);
 	}
 
+	TEST(IrSpirvGateTest, TessControlTriangle) {
+		EXPECT_TRUE(
+			compilesToSpirv(
+				"@input (mode = forward, id = \"world-pos\") f32vec4[] p;\n"
+				"@output (mode = forward, id = \"ctrl-pos\") f32vec4[] q;\n"
+				"@output (mode = forward, id = \"level\", patch = true) f32 lvl;\n"
+				"@tess_ctrl (output_vertices = 3)\n"
+				"fn main() {\n"
+				"	q[invocation_id] = p[invocation_id];\n"
+				"	output_position[invocation_id] = input_position[invocation_id];\n"
+				"	barrier();\n"
+				"	lvl = 2.0;\n"
+				"	tess_level_outer[0] = 4.0;\n"
+				"	tess_level_outer[1] = 4.0;\n"
+				"	tess_level_outer[2] = 4.0;\n"
+				"	tess_level_inner[0] = 4.0;\n"
+				"}\n",
+				EntryKind::eTessCtrl
+			)
+		);
+	}
+
+	TEST(IrSpirvGateTest, TessEvalTriangle) {
+		EXPECT_TRUE(
+			compilesToSpirv(
+				"@input (mode = forward, id = \"ctrl-pos\") f32vec4[] q;\n"
+				"@input (mode = forward, id = \"level\", patch = true) f32 lvl;\n"
+				"@tess_eval (domain = triangles, spacing = equal, winding = ccw)\n"
+				"fn main() {\n"
+				"	position = (q[0] * tess_coord.x + q[1] * tess_coord.y + q[2] * tess_coord.z) * lvl;\n"
+				"}\n",
+				EntryKind::eTessEval
+			)
+		);
+	}
+
 	TEST(IrSpirvGateTest, ComputeImageBlur) {
 		EXPECT_TRUE(
 			compilesToSpirv(

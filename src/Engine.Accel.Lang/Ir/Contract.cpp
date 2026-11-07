@@ -62,7 +62,8 @@ ir::Diagnostics ir::checkStageChain(std::span<const std::pair<EntryKind, Vector<
 			const auto out = std::ranges::find_if(
 				prev,
 				[&](ref<const InterfaceEntry> e_) {
-					return not e_.input && not e_.implicit && e_.mode == BindMode::eForward && not e_.arrayed && e_.id == in.id;
+					return not e_.input && not e_.implicit && e_.mode == BindMode::eForward && (not e_.arrayed || in.arrayed) &&
+						e_.patch == in.patch && e_.id == in.id;
 				}
 			);
 			if (out == prev.end()) {

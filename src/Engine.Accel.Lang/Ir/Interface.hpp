@@ -21,6 +21,8 @@ namespace hg::engine::accel::lang::ir {
 		bool arrayed = false;
 		/* module-independent type description (type indices differ per module); chain check only */
 		String typeName;
+		/* per-patch forward output of tess_ctrl / input of tess_eval */
+		bool patch = false;
 
 		[[nodiscard]] bool operator==(const InterfaceEntry&) const noexcept = default;
 	};
