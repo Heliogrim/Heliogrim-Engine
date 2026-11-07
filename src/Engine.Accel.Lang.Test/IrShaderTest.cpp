@@ -359,4 +359,76 @@ namespace AccelLang {
 			}
 		);
 	}
+
+	TEST(SkyboxShaderTest, InterfaceCoversOldAnnotations) {
+		expectCovers(
+			"skybox/sky.vs.asl",
+			EntryKind::eVertex,
+			{
+				{ "view", true, BindMode::eBind, BindClass::eUniformBuffer },
+				{ "uv", false, BindMode::eForward, BindClass::eNone }
+			}
+		);
+		expectCovers(
+			"skybox/sky.fs.asl",
+			EntryKind::eFragment,
+			{
+				{ "uv", true, BindMode::eForward, BindClass::eNone },
+				{ "mat-static-0", true, BindMode::eBind, BindClass::eTexture },
+				{ "mat-static-0-sampler", true, BindMode::eBind, BindClass::eSampler },
+				{ "color", false, BindMode::eForward, BindClass::eNone }
+			}
+		);
+	}
+
+	TEST(BrdfIrradShaderTest, InterfaceCoversOldAnnotations) {
+		expectCovers(
+			"brdf/cubeGen.vs.asl",
+			EntryKind::eVertex,
+			{
+				{ "view-matrix", true, BindMode::eBind, BindClass::eUniformBuffer },
+				{ "local-uvw", false, BindMode::eForward, BindClass::eNone }
+			}
+		);
+		expectCovers(
+			"brdf/brdfIrrad.gen.fs.asl",
+			EntryKind::eFragment,
+			{
+				{ "local-uvw", true, BindMode::eForward, BindClass::eNone },
+				{ "skybox", true, BindMode::eBind, BindClass::eTexture },
+				{ "skybox-sampler", true, BindMode::eBind, BindClass::eSampler },
+				{ "color", false, BindMode::eForward, BindClass::eNone }
+			}
+		);
+	}
+
+	TEST(BrdfPrefShaderTest, InterfaceCoversOldAnnotations) {
+		expectCovers(
+			"brdf/brdfPref.gen.fs.asl",
+			EntryKind::eFragment,
+			{
+				{ "local-uvw", true, BindMode::eForward, BindClass::eNone },
+				{ "skybox", true, BindMode::eBind, BindClass::eTexture },
+				{ "skybox-sampler", true, BindMode::eBind, BindClass::eSampler },
+				{ "block", true, BindMode::eBind, BindClass::ePushConstant },
+				{ "color", false, BindMode::eForward, BindClass::eNone }
+			}
+		);
+	}
+
+	TEST(BrdfPrefShaderTest, PushLayoutIsRoughnessSamples) {
+		const auto fragment = shaderAssetModule("brdf/brdfPref.gen.fs.asl", EntryKind::eFragment);
+		const auto entries = computeInterface(fragment);
+		const auto layout = assignLayout(entries, fragment.types, {});
+
+		ASSERT_EQ(layout.push.size(), 1uz);
+		EXPECT_EQ(layout.push.front().id, "block");
+		EXPECT_EQ(layout.push.front().offset, 0u);
+		EXPECT_EQ(layout.push.front().size, 8u);
+
+		const auto offsets = std430Offsets(fragment.types, find(entries, "block", true)->type);
+		ASSERT_EQ(offsets.size(), 2uz);
+		EXPECT_EQ(offsets[0], 0u);
+		EXPECT_EQ(offsets[1], 4u);
+	}
 }
