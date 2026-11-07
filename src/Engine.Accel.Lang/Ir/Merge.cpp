@@ -162,7 +162,7 @@ namespace {
 	}
 
 	[[nodiscard]] ir::FunctionDecl remapFunction(ir::FunctionDecl fn_, ref<const Remap> remap_) {
-		auto& [name, params, ret, body, redefineAllowed, when] = fn_;
+		auto& [name, params, ret, body, redefineAllowed, when, loc] = fn_;
 		for (auto& [paramName, paramType, paramKind] : params) {
 			paramType = remap_.type(paramType);
 		}

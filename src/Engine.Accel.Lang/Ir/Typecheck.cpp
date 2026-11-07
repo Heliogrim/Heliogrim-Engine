@@ -46,6 +46,7 @@ namespace {
 					const auto& b = _module.functions[j];
 					if (a.name == b.name && a.params.size() == b.params.size() && ir::signatureOf(_module, a) == ir::signatureOf(_module, b) &&
 						not std::ranges::equal(a.params, b.params, {}, &ir::ParamDecl::kind, &ir::ParamDecl::kind)) {
+						const Here here { _loc, b.loc };
 						error("overloads of '" + a.name + "' differ only in reference kind");
 					}
 				}
@@ -99,7 +100,7 @@ namespace {
 			String name;
 			TypeRef type;
 			Mode mode;
-			/* for a `&mut` alias: the root name it borrows */
+			/* for an alias: the root name it borrows */
 			String target {};
 		};
 
@@ -323,7 +324,7 @@ namespace {
 						}
 					}
 					_module.stmts[ref_.index].type = type;
-					_scope.emplace_back(_module.stmts[ref_.index].name, type, writes ? Mode::eRefWrite : Mode::eRefRead, writes ? rootName(lhs) : String {});
+					_scope.emplace_back(_module.stmts[ref_.index].name, type, writes ? Mode::eRefWrite : Mode::eRefRead, rootName(lhs));
 					break;
 				}
 				case StmtKind::eAssign: {

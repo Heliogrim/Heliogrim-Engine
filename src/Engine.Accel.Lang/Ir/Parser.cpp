@@ -752,6 +752,7 @@ namespace hg::engine::accel::lang::ir::detail {
 			return recover();
 		}
 		ir::FunctionDecl fn {};
+		fn.loc = peek().loc;
 		fn.name = take().text;
 		fn.redefineAllowed = ann_.allow != nullptr;
 		fn.when = ann_.binding.when;
