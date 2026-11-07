@@ -383,6 +383,13 @@ namespace AccelLang {
 		);
 	}
 
+	TEST(MutabilityTest, AliasThroughReadRefIsDiagnostic) {
+		EXPECT_EQ(
+			firstMessage("fn F(x: &mut f32, y: &f32) {}\nfn main() {\n\tlet a = 1.0;\n\tlet r = &a;\n\tF(a, r);\n}\n"),
+			"'&mut' argument 'a' aliases another argument of call to 'F'"
+		);
+	}
+
 	TEST(MutabilityTest, FieldsOfOneRootAreDiagnostic) {
 		EXPECT_EQ(
 			firstMessage("fn F(x: &mut f32, y: &f32) {}\nfn main() {\n\tlet a = f32vec2(1.0);\n\tF(a.x, a.y);\n}\n"),
@@ -401,7 +408,9 @@ namespace AccelLang {
 	}
 
 	TEST(MutabilityTest, OverloadsDifferingOnlyInReferenceKindAreDiagnostic) {
-		EXPECT_EQ(firstMessage("fn f(x: f32) {}\nfn f(x: &mut f32) {}\nfn main() {}\n"), "overloads of 'f' differ only in reference kind");
+		const auto diagnostic = firstDiagnostic("fn f(x: f32) {}\nfn f(x: &mut f32) {}\nfn main() {}\n");
+		EXPECT_EQ(diagnostic.message, "overloads of 'f' differ only in reference kind");
+		EXPECT_EQ(diagnostic.line, 2uL);
 	}
 
 	TEST(MutabilityTest, AliasingMutArgumentsIsDiagnostic) {
