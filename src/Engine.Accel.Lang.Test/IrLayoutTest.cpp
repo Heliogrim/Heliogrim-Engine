@@ -103,6 +103,36 @@ namespace AccelLang {
 		EXPECT_EQ(constants, assignSpecConstants(module.constants));
 	}
 
+	TEST(SliceTest, SparseSampleWritesKeepTheStatement) {
+		constexpr auto prelude =
+			"@input (mode = bind, id = \"t2\", class = texture) texture2d t2;\n"
+			"@input (mode = bind, id = \"smp\", class = sampler) sampler smp;\n"
+			"@input (mode = forward, id = \"uv\") f32vec2 uv;\n"
+			"@output (mode = forward, id = \"color\") f32vec4 color;\n"
+			"@output (mode = forward, id = \"other\") f32vec4 other;\n";
+		const auto outputs = std::array { String("color") };
+		const auto sparseStmts = [](ref<const Module> m_) {
+			return std::ranges::count_if(m_.stmts, [&](ref<const Stmt> s_) {
+				return (s_.lhs.index < m_.exprs.size() && m_.exprs[s_.lhs.index].name == "sample_sparse") ||
+					(s_.rhs.index < m_.exprs.size() && m_.exprs[s_.rhs.index].name == "sample_sparse");
+			});
+		};
+
+		const auto unusedResult = resolved(
+			String { prelude } + "fn main() {\n\tlet texel = f32vec4(0.0);\n\tlet r = sample_sparse(t2, smp, uv, texel);\n\tcolor = texel;\n\tother = f32vec4(1.0);\n}\n",
+			EntryKind::eFragment,
+			outputs
+		);
+		EXPECT_EQ(sparseStmts(unusedResult), 1);
+
+		const auto bare = resolved(
+			String { prelude } + "fn main() {\n\tlet texel = f32vec4(0.0);\n\tsample_sparse(t2, smp, uv, texel);\n\tcolor = texel;\n\tother = f32vec4(1.0);\n}\n",
+			EntryKind::eFragment,
+			outputs
+		);
+		EXPECT_EQ(sparseStmts(bare), 1);
+	}
+
 	TEST(InterfaceTest, ShadowVertexInterfaceIsExact) {
 		const auto vertex = resolved(shadowVertex, EntryKind::eVertex, {});
 		const auto vs = computeInterface(vertex);

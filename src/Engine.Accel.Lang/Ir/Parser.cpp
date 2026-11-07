@@ -21,12 +21,17 @@ namespace hg::engine::accel::lang::ir::detail {
 		u16 bits;
 		u16 n;
 		u16 m;
+		ir::TextureDim dim = ir::TextureDim::e2D;
 	};
 
-	constexpr std::array<BuiltinType, 3> fixedTypes {
+	constexpr std::array<BuiltinType, 7> fixedTypes {
 		{
 			{ "bool", ir::TypeKind::eScalar, ir::ScalarKind::eBool, 32u, 1u, 1u },
+			{ "texture1d", ir::TypeKind::eTexture, ir::ScalarKind::eFloat, 32u, 1u, 1u, ir::TextureDim::e1D },
 			{ "texture2d", ir::TypeKind::eTexture, ir::ScalarKind::eFloat, 32u, 1u, 1u },
+			{ "texture2darray", ir::TypeKind::eTexture, ir::ScalarKind::eFloat, 32u, 1u, 1u, ir::TextureDim::e2DArray },
+			{ "texture3d", ir::TypeKind::eTexture, ir::ScalarKind::eFloat, 32u, 1u, 1u, ir::TextureDim::e3D },
+			{ "texturecube", ir::TypeKind::eTexture, ir::ScalarKind::eFloat, 32u, 1u, 1u, ir::TextureDim::eCube },
 			{ "sampler", ir::TypeKind::eSampler, ir::ScalarKind::eFloat, 32u, 1u, 1u }
 		}
 	};
@@ -597,6 +602,7 @@ namespace hg::engine::accel::lang::ir::detail {
 			desc.bits = builtin->bits;
 			desc.n = builtin->n;
 			desc.m = builtin->m;
+			desc.dim = builtin->dim;
 			return intern(std::move(desc));
 		}
 		return findStruct(name_);
@@ -984,9 +990,11 @@ namespace hg::engine::accel::lang::ir::detail {
 			shared.diags = ir::typecheck(shared.module);
 		}
 
-		if (not shared.diags.empty()) {
+		const auto failed = std::ranges::any_of(shared.diags, [](const auto& d_) { return d_.severity == ir::Severity::eError; });
+		if (failed) {
 			return std::unexpected(std::move(shared.diags));
 		}
+		shared.module.warnings = std::move(shared.diags);
 		return std::move(shared.module);
 	}
 }

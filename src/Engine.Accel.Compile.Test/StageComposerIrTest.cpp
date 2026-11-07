@@ -99,6 +99,17 @@ namespace AccelCompile {
 		EXPECT_TRUE(vertex.has_value()) << (vertex.has_value() ? "" : vertex.error().front().message);
 	}
 
+	TEST(StageIrTest, ModuleWarningsNeverFailCompose) {
+		auto stage = intermediateOf("@output (mode = forward, id = \"color\") f32vec4 color;\nfn main() { color = f32vec4(0.0); }\n", EntryKind::eFragment);
+		auto module = *stage.ir;
+		module.warnings.emplace_back(Diagnostic { .severity = Severity::eWarning, .message = "synthetic warning" });
+		stage.ir = make_smr<const Module>(new Module { std::move(module) });
+
+		VariantCache cache {};
+		const auto derivat = composeStageIr(stage, EffectProfile {}, TestSpecification { {} }, StageFlagBits::eFragment, cache);
+		EXPECT_TRUE(derivat.has_value());
+	}
+
 	TEST(StageIrTest, TargetSymbolsSliceOutputs) {
 		VariantCache cache {};
 		const auto stage = intermediateOf(stageSource, EntryKind::eFragment);

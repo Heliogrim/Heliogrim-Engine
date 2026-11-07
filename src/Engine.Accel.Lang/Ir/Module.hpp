@@ -175,7 +175,8 @@ namespace hg::engine::accel::lang::ir {
 		e1D,
 		e2D,
 		e3D,
-		eCube
+		eCube,
+		e2DArray
 	};
 
 	struct FieldDesc {
@@ -291,5 +292,8 @@ namespace hg::engine::accel::lang::ir {
 		Vector<FunctionDecl> functions;
 		Vector<Expr> exprs;
 		Vector<Stmt> stmts;
+
+		/* non-fatal diagnostics from parse/typecheck (e.g. implicit-derivative sampling under divergence); not hashed; merge and compact drop them, so consumers read them from the parsed input modules */
+		Diagnostics warnings;
 	};
 }

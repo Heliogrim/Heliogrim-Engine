@@ -69,7 +69,7 @@ namespace {
 			case ir::TypeKind::eTexture: {
 				using enum TextureType;
 				const auto texture = desc.dim == ir::TextureDim::e1D ? eTexture1d : desc.dim == ir::TextureDim::e3D ? eTexture3d :
-					desc.dim == ir::TextureDim::eCube ? eTextureCube : eTexture2d;
+					desc.dim == ir::TextureDim::eCube ? eTextureCube : eTexture2d; // legacy has no array dim
 				return Type { .category = TypeCategory::eTexture, .textureType = texture };
 			}
 			case ir::TypeKind::eSampler: {

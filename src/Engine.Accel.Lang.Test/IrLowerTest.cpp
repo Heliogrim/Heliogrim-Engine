@@ -429,6 +429,27 @@ TEST(LowerTest, ForWithOmittedInitAndStepHasValidHeader) {
 	EXPECT_FALSE(text.contains("for ({")) << text;
 }
 
+TEST(LowerTest, SparseAddsExtensions) {
+	const auto outputs = std::array { String("color") };
+	const auto module = resolved(
+		"@input (mode = bind, id = \"t2\", class = texture) texture2darray t2;\n"
+		"@input (mode = bind, id = \"smp\", class = sampler) sampler smp;\n"
+		"@input (mode = forward, id = \"uv\") f32vec3 uv;\n"
+		"@output (mode = forward, id = \"color\") f32vec4 color;\n"
+		"fn main() {\n"
+		"\tlet a = f32vec4(0.0);\n\tlet b = f32vec4(0.0);\n"
+		"\tlet r = sample_sparse(t2, smp, uv, a);\n"
+		"\tlet q = sample_sparse_clamp(t2, smp, uv, 1.0, b);\n"
+		"\tif (sparse_resident(r) && sparse_resident(q)) { color = a + b; }\n}\n",
+		EntryKind::eFragment,
+		outputs
+	);
+	const auto text = textOf(lower(module, layoutOf(module)));
+	EXPECT_TRUE(text.contains("#extension GL_ARB_sparse_texture2 : require")) << text;
+	EXPECT_TRUE(text.contains("#extension GL_ARB_sparse_texture_clamp : require")) << text;
+	EXPECT_TRUE(text.contains("sparseTextureARB(sampler2DArray(t2, smp), uv, a)")) << text;
+}
+
 TEST(LowerTest, ViewIndexAddsMultiview) {
 	const auto module = resolved("fn main() {\n\tposition = f32vec4(f32(view_index));\n}\n", EntryKind::eVertex);
 	const auto text = textOf(lower(module, layoutOf(module)));

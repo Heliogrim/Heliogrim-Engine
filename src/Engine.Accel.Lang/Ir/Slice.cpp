@@ -1,6 +1,8 @@
 #include "Slice.hpp"
 
 #include <algorithm>
+
+#include "Builtin.hpp"
 #include <utility>
 
 #include "Compact.hpp"
@@ -111,6 +113,14 @@ namespace {
 					}
 				} else if (e.kind == ir::ExprKind::eCall) {
 					insertSorted(facts_.calls, function(e));
+				}
+				if (e.kind == ir::ExprKind::eBuiltin) {
+					for (auto i = 0uz; i < e.operands.size(); ++i) {
+						/* shortcut: a builtin `&mut` out argument counts as an unknown writer, so the statement always stays; upgrade to keep it only while the written place is live */
+						if (ir::builtinWritesArg(e.name, i)) {
+							insertSorted(facts_.calls, unset);
+						}
+					}
 				}
 				for (const auto& op : e.operands) {
 					if (op.index < in.exprs.size()) {
