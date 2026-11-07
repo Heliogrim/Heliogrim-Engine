@@ -135,7 +135,7 @@ _Sorry, but there is currently no usage description available._
 
 * [GitHub Project](https://github.com/orgs/Heliogrim/projects/1/views/6)
 
-See [open issues](https://track.neogc.net:8443/issues) for a full list of proposed features (and known issues).
+See [open issues](https://github.com/Heliogrim/Heliogrim-Engine/issues) for a full list of proposed features (and known issues).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -164,9 +164,6 @@ _We will provide a more permissive and open license as soon as possible. When re
 ## Contact
 
 Julius Richter - [Twitch]([twitch-url]) | [LtJulius#1720](LtJulius#1720)
-
-GitLab Group Link: [https://git.neogc.net/heliogrim-workgroup](https://git.neogc.net/heliogrim-workgroup)  
-GitLab Project Link: [https://git.neogc.net/heliogrim-workgroup/engine](https://git.neogc.net/heliogrim-workgroup/engine)
 
 GitHub Group Link: [https://github.com/Heliogrim](https://github.com/Heliogrim)  
 GitHub Project Link: [https://github.com/Heliogrim/Heliogrim-Engine](https://github.com/Heliogrim/Heliogrim-Engine)
