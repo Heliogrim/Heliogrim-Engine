@@ -55,7 +55,8 @@ namespace hg::engine::accel {
 	 * numbered once per pipeline) and lowers each with that layout. The layout and the lowered stages are cached by
 	 * the stages' variant keys in `layouts_`, so a hit lays out and lowers nothing. Returns one derivat per stage,
 	 * owning a copy of its lowered intermediate. `pipeline_`, when given, receives the resolved pipeline (for
-	 * `appendBindLayout`).
+	 * `appendBindLayout`). `follows_[i]` (empty: all true) says stage i directly follows stage i-1 in the effect;
+	 * the stage-chain check skips a pair separated by a legacy text stage.
 	 */
 	[[nodiscard]] std::expected<Vector<smr<StageDerivat>>, lang::ir::Diagnostics> composePipelineIr(
 		std::span<const lang::Intermediate* const> stages_,
@@ -65,7 +66,8 @@ namespace hg::engine::accel {
 		ref<lang::ir::VariantCache> cache_,
 		ref<lang::ir::PipelineLayoutCache> layouts_,
 		smr<const lang::ir::ResolvedPipeline>* pipeline_ = nullptr,
-		bool exportLast_ = true
+		bool exportLast_ = true,
+		std::span<const u8> follows_ = {}
 	);
 
 	/**

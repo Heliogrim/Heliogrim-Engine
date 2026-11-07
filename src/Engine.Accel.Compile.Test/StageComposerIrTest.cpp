@@ -358,6 +358,36 @@ namespace AccelCompile {
 		}
 	}
 
+	TEST(StageIrTest, MismatchedVaryingFailsCompose) {
+		const auto vertex = intermediateOf(
+			"@output (mode = forward, id = \"uv\") f32vec3 uv;\nfn main() { uv = f32vec3(0.0); position = f32vec4(0.0); }\n",
+			EntryKind::eVertex
+		);
+		const auto fragment = intermediateOf(
+			"@input (mode = forward, id = \"uv\") f32vec2 uv;\n"
+			"@output (mode = forward, id = \"color\") f32vec4 color;\n"
+			"fn main() { color = f32vec4(uv, 0.0, 1.0); }\n",
+			EntryKind::eFragment
+		);
+
+		VariantCache cache {};
+		PipelineLayoutCache layouts {};
+		const std::array<const Intermediate*, 2> stages { &vertex, &fragment };
+		const std::array<StageFlagBits, 2> flags { StageFlagBits::eVertex, StageFlagBits::eFragment };
+		const auto composed = composePipelineIr(stages, flags, EffectProfile {}, TestSpecification { {} }, cache, layouts);
+		ASSERT_FALSE(composed.has_value());
+		const auto& message = composed.error().front().message;
+		EXPECT_TRUE(message.contains("'uv'") && message.contains("f32vec2") && message.contains("f32vec3")) << message;
+
+		/* same stages with a legacy text stage between them (follows = false): no chain check across the gap */
+		PipelineLayoutCache gapLayouts {};
+		const std::array<u8, 2> follows { 1u, 0u };
+		const auto gap = composePipelineIr(
+			stages, flags, EffectProfile {}, TestSpecification { {} }, cache, gapLayouts, nullptr, true, follows
+		);
+		EXPECT_TRUE(gap.has_value()) << (gap.has_value() ? "" : gap.error().front().message);
+	}
+
 	TEST(StageIrTest, EmptyStageListIsAnError) {
 		VariantCache cache {};
 		PipelineLayoutCache layouts {};

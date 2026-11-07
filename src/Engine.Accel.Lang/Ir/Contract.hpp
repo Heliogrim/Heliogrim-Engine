@@ -1,5 +1,8 @@
 #pragma once
 
+#include <span>
+#include <utility>
+
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Wrapper.hpp>
@@ -27,4 +30,11 @@ namespace hg::engine::accel::lang::ir {
 		ref<const StageContract> stage_,
 		ref<const Vector<String>> materialBindings_
 	);
+
+	/**
+	 * Stages in pipeline order. Every forward input of stage N+1 must match a non-implicit forward output of stage N by
+	 * id and type (`typeName`; an arrayed input of geometry/tess matches a non-arrayed output by element type).
+	 * Stage 0 inputs are vertex attributes and unchecked. Unmatched outputs are fine.
+	 */
+	[[nodiscard]] Diagnostics checkStageChain(std::span<const std::pair<EntryKind, Vector<InterfaceEntry>>> stages_);
 }

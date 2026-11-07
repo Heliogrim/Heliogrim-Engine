@@ -224,7 +224,8 @@ std::expected<Vector<smr<StageDerivat>>, Diagnostics> hg::engine::accel::compose
 	ref<VariantCache> cache_,
 	ref<PipelineLayoutCache> layouts_,
 	smr<const ResolvedPipeline>* pipeline_,
-	const bool exportLast_
+	const bool exportLast_,
+	std::span<const u8> follows_
 ) {
 
 	if (stages_.empty()) {
@@ -251,6 +252,23 @@ std::expected<Vector<smr<StageDerivat>>, Diagnostics> hg::engine::accel::compose
 		}
 		key.emplace_back((*stage)->key);
 		resolved.emplace_back(std::move(stage).value());
+	}
+
+	/* checked per run of directly adjacent stages; a legacy text stage between two ir stages breaks the run */
+	{
+		Vector<std::pair<EntryKind, Vector<InterfaceEntry>>> chain {};
+		for (size_t idx = 0uLL; idx <= resolved.size(); ++idx) {
+			if (idx == resolved.size() || (idx < follows_.size() && follows_[idx] == 0u)) {
+				auto chained = checkStageChain(chain);
+				if (hasError(chained)) {
+					return std::unexpected(std::move(chained));
+				}
+				chain.clear();
+			}
+			if (idx < resolved.size()) {
+				chain.emplace_back(stages_[idx]->ir->entry, resolved[idx]->interfaceEntries);
+			}
+		}
 	}
 
 	Diagnostics failure {};

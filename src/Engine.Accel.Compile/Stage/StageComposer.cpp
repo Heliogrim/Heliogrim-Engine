@@ -52,6 +52,8 @@ Vector<smr<StageDerivat>> StageComposer::compose(
 	Vector<size_t> irIndices {};
 	Vector<const lang::Intermediate*> irStages {};
 	Vector<StageFlagBits> irFlags {};
+	/* per ir stage: directly follows the previous ir stage in the effect (u8: no vector<bool> span) */
+	Vector<u8> irFollows {};
 
 	for (const auto& stage : stages) {
 
@@ -71,6 +73,8 @@ Vector<smr<StageDerivat>> StageComposer::compose(
 		const auto source = stage->getIntermediate();
 		if (source != nullptr && source->ir != nullptr) {
 
+			/* a legacy stage in between breaks the stage-chain check */
+			irFollows.push_back(static_cast<u8>(not irIndices.empty() && irIndices.back() + 1uLL == derivats.size() - 1uLL));
 			irIndices.emplace_back(derivats.size() - 1uLL);
 			irStages.emplace_back(source.get());
 			irFlags.emplace_back(stage->getFlagBits());
@@ -91,7 +95,8 @@ Vector<smr<StageDerivat>> StageComposer::compose(
 			_variants,
 			_pipelineLayouts,
 			&pipeline,
-			irIndices.back() + 1uLL == derivats.size()
+			irIndices.back() + 1uLL == derivats.size(),
+			irFollows
 		);
 		if (not composed.has_value()) {
 			for (const auto& diagnostic : composed.error()) {
