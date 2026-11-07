@@ -34,7 +34,9 @@ namespace hg::engine::accel::lang::ir {
 	/* extension requirements of a builtin, mapped to `#extension` lines by the emitter */
 	enum BuiltinRequirement : u32 {
 		eNoRequirement = 0uL,
-		eRequireMultiview = 1uL << 0uL
+		eRequireMultiview = 1uL << 0uL,
+		eRequireSparse = 1uL << 1uL,
+		eRequireSparseClamp = 1uL << 2uL
 	};
 
 	/**
@@ -75,7 +77,8 @@ namespace hg::engine::accel::lang::ir {
 	/**
 	 * A builtin call. `signature` is `ret(p0,p1,...)` with concrete types (`f32`, `f32vec3`, `f32mat4`, `s32`, `bool`, ...)
 	 * or families that expand together within one call: `genF` (f32, f32vec2/3/4), `genH` (f16), `genI` (s32), `genU` (u32),
-	 * `genB` (bool) and `mat` (square f32 matrices). An empty signature is handled by the typechecker (`sample`).
+	 * `genB` (bool) and `mat` (square f32 matrices). Texture calls use `tex` (any texture), `smp` (sampler), `coord` (f32 vector of
+	 * the texture's coordinate width) and `size` (s32 vector of its size width); a leading `&` marks a `&mut` argument.
 	 * The same name may appear several times (overloads, tried in order).
 	 */
 	struct BuiltinFunction {
@@ -89,7 +92,15 @@ namespace hg::engine::accel::lang::ir {
 	};
 
 	inline constexpr BuiltinFunction builtinFunctions[] = {
-		{ "sample", "texture", "", stageAll, eNoRequirement, false },
+		{ "sample", "texture", "f32vec4(tex,smp,coord)", stageAll, eNoRequirement, true },
+		{ "sample_lod", "textureLod", "f32vec4(tex,smp,coord,f32)" },
+		{ "texture_size", "textureSize", "size(tex,smp,s32)" },
+		{ "sample_sparse", "sparseTextureARB", "s32(tex,smp,coord,&f32vec4)", stageAll, eRequireSparse, true },
+		{
+			"sample_sparse_clamp", "sparseTextureClampARB", "s32(tex,smp,coord,f32,&f32vec4)", stageAll,
+			eRequireSparse | eRequireSparseClamp, true
+		},
+		{ "sparse_resident", "sparseTexelsResidentARB", "bool(s32)", stageAll, eRequireSparse },
 
 		{ "abs", "abs", "genF(genF)" },
 		{ "abs", "abs", "genI(genI)" },
@@ -161,11 +172,17 @@ namespace hg::engine::accel::lang::ir {
 		eGenI,
 		eGenU,
 		eGenB,
-		eMat
+		eMat,
+		eTexture,
+		eSampler,
+		eCoord,
+		eSize
 	};
 
 	struct BuiltinSigType {
 		BuiltinFamily family = BuiltinFamily::eConcrete;
+		/* `&mut` argument */
+		bool mut = false;
 		TypeKind kind = TypeKind::eScalar;
 		ScalarKind scalar = ScalarKind::eFloat;
 		u32 bits = 32uL;
@@ -175,7 +192,7 @@ namespace hg::engine::accel::lang::ir {
 
 	struct BuiltinSignature {
 		BuiltinSigType ret;
-		std::array<BuiltinSigType, 4> params;
+		std::array<BuiltinSigType, 5> params;
 		u32 count = 0uL;
 		bool valid = false;
 	};
@@ -183,7 +200,14 @@ namespace hg::engine::accel::lang::ir {
 	[[nodiscard]] inline BuiltinSigType parseBuiltinSigType(StringView text_) {
 		using enum BuiltinFamily;
 		BuiltinSigType t {};
-		if (text_ == "genF" || text_ == "genH") {
+		if (text_.starts_with('&')) {
+			t.mut = true;
+			text_.remove_prefix(1uz);
+		}
+		if (text_ == "tex" || text_ == "smp" || text_ == "coord" || text_ == "size") {
+			t.family = text_ == "tex" ? eTexture : text_ == "smp" ? eSampler : text_ == "coord" ? eCoord : eSize;
+			t.scalar = t.family == eSize ? ScalarKind::eInt : ScalarKind::eFloat;
+		} else if (text_ == "genF" || text_ == "genH") {
 			t.family = text_ == "genF" ? eGenF : eGenH;
 			t.bits = text_ == "genF" ? 32uL : 16uL;
 		} else if (text_ == "genI" || text_ == "genU" || text_ == "genB") {
@@ -242,11 +266,41 @@ namespace hg::engine::accel::lang::ir {
 		return parsed;
 	}
 
+	/* whether argument `at_` of builtin `name_` is a `&mut` out parameter (e.g. the texel of `sample_sparse`) */
+	[[nodiscard]] inline bool builtinWritesArg(StringView name_, size_t at_) {
+		const auto* fn = findBuiltinFunction(name_);
+		if (fn == nullptr) {
+			return false;
+		}
+		const auto& sig = parsedBuiltinSignatures()[static_cast<size_t>(fn - std::begin(builtinFunctions))];
+		return at_ < sig.count && sig.params[at_].mut;
+	}
+
 	/* the concrete type of a signature slot for family width `width_` (1-4, matrices 2-4); none when the family has no such width */
-	[[nodiscard]] inline Opt<TypeDesc> resolveBuiltinSigType(const BuiltinSigType& t_, u32 width_) {
+	[[nodiscard]] inline Opt<TypeDesc> resolveBuiltinSigType(const BuiltinSigType& t_, u32 width_, TextureDim dim_ = TextureDim::e2D) {
 		TypeDesc desc {};
 		desc.scalar = t_.scalar;
 		desc.bits = t_.bits;
+		switch (t_.family) {
+			case BuiltinFamily::eTexture: {
+				desc.kind = TypeKind::eTexture;
+				desc.dim = dim_;
+				return desc;
+			}
+			case BuiltinFamily::eSampler: {
+				desc.kind = TypeKind::eSampler;
+				return desc;
+			}
+			case BuiltinFamily::eCoord:
+			case BuiltinFamily::eSize: {
+				const auto coord = t_.family == BuiltinFamily::eCoord;
+				const auto n = dim_ == TextureDim::e1D ? 1uL : dim_ == TextureDim::e2D ? 2uL : dim_ == TextureDim::eCube ? (coord ? 3uL : 2uL) : 3uL;
+				desc.kind = n == 1uL ? TypeKind::eScalar : TypeKind::eVector;
+				desc.n = n;
+				return desc;
+			}
+			default: break;
+		}
 		if (t_.family == BuiltinFamily::eConcrete) {
 			desc.kind = t_.kind;
 			desc.n = t_.n;
