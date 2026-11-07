@@ -63,6 +63,18 @@ namespace AccelLang {
 		EXPECT_EQ(res.error().front().line, 1u);
 	}
 
+	TEST(ParserTest, UnknownAccessValueIsLocatedDiagnostic) {
+		const auto res = parseModule(
+			"M",
+			"@input (mode = bind, id = \"buf\", class = storage, access = rw) block buf { u32[] data; };\nfn main() {}\n",
+			EntryKind::eFragment,
+			ModuleResolver { [](StringView) -> Opt<String> { return None; } }
+		);
+		ASSERT_FALSE(res.has_value());
+		EXPECT_NE(res.error().front().message.find("access"), String::npos);
+		EXPECT_EQ(res.error().front().line, 1u);
+	}
+
 	TEST(ParserTest, ParsesSpecConstant) {
 		auto res = parseModule(
 			"M",

@@ -272,6 +272,42 @@ namespace {
 			}
 		}
 
+		/* entry attributes: the non-default value wins; two modules with different non-default values conflict */
+		void mergeAttributes(ref<ir::EntryAttributes> into_) {
+			const ir::EntryAttributes defaults {};
+			into_ = defaults;
+			const auto take = [&]<typename T>(T ir::EntryAttributes::* member_, StringView label_) {
+				Opt<u32> owner {};
+				for (auto m = 0uz; m < modules.size(); ++m) {
+					const auto& value = modules[m]->attributes.*member_;
+					if (value == defaults.*member_) {
+						continue;
+					}
+					if (not owner.has_value()) {
+						owner = static_cast<u32>(m);
+						into_.*member_ = value;
+					} else if (into_.*member_ != value) {
+						diags.emplace_back(
+							error(
+								"entry attribute " + quoted(String(label_)) + " differs in " + quoted(moduleName(*owner)) + " and " +
+								quoted(moduleName(static_cast<u32>(m)))
+							)
+						);
+					}
+				}
+			};
+			take(&ir::EntryAttributes::localSize, "local_size");
+			take(&ir::EntryAttributes::earlyFragmentTests, "early_fragment_tests");
+			take(&ir::EntryAttributes::geometryInput, "geometry input");
+			take(&ir::EntryAttributes::geometryOutput, "geometry output");
+			take(&ir::EntryAttributes::maxVertices, "max_vertices");
+			take(&ir::EntryAttributes::invocations, "invocations");
+			take(&ir::EntryAttributes::outputVertices, "output_vertices");
+			take(&ir::EntryAttributes::tessDomain, "tess domain");
+			take(&ir::EntryAttributes::tessSpacing, "tess spacing");
+			take(&ir::EntryAttributes::clockwise, "clockwise");
+		}
+
 		/* same value set and default collapse into the first declaration */
 		void toggles(u32 module_, ref<Vector<u32>> origins_) {
 			for (const auto& toggle : modules[module_]->toggles) {
@@ -544,7 +580,7 @@ namespace {
 			auto& [name, entry, attributes, toggleList, typeList, bindingList, constantList, functionList, exprList, stmtList, warningList] = result;
 			name = modules.back()->name;
 			entry = modules.back()->entry;
-			attributes = modules.back()->attributes;
+			mergeAttributes(attributes);
 
 			Vector<u32> toggleOrigins {};
 			Vector<u32> bindingOrigins {};
