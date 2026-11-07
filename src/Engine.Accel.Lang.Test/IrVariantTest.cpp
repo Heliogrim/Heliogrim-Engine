@@ -108,6 +108,18 @@ namespace AccelLang {
 		EXPECT_EQ(std::hash<VariantKey> {}(makeVariantKey(module, ab, o1)), std::hash<VariantKey> {}(makeVariantKey(module, ba, o2)));
 	}
 
+	TEST(VariantKeyTest, TessSpacingChangesKey) {
+		const auto eval = [](StringView spacing_) {
+			const String source = String { "@tess_eval (domain = triangles, spacing = " } + String { spacing_ } +
+				", winding = ccw)\nfn main() {\n\tposition = f32vec4(tess_coord, 1.0);\n}\n";
+			auto res = parseModule("M", source, EntryKind::eTessEval, ModuleResolver { noIncludes });
+			EXPECT_TRUE(res.has_value());
+			return res.has_value() ? std::move(res).value() : Module {};
+		};
+		EXPECT_NE(contentHash(eval("equal")), contentHash(eval("fractional_even")));
+		EXPECT_EQ(contentHash(eval("equal")), contentHash(eval("equal")));
+	}
+
 	TEST(VariantKeyTest, SpecDefaultChangesKey) {
 		const auto a = parsed("@spec (id = \"s\") const S: u32 = 1u;\nfn main() {}\n");
 		const auto b = parsed("@spec (id = \"s\") const S: u32 = 2u;\nfn main() {}\n");

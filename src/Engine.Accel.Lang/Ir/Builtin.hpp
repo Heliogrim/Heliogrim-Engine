@@ -57,9 +57,13 @@ namespace hg::engine::accel::lang::ir {
 		bool uniform = false;
 		/* per-vertex input array (`input_position[i]` -> `gl_in[i].gl_Position`); `kind`/`n` describe one element */
 		bool arrayed = false;
+		/* fixed-size array of `kind`/`n` elements (`tess_level_outer`); 0 = not an array */
+		u32 count = 0uL;
+		/* stages that may assign it (when `writable`) */
+		u8 writeStages = stageAll;
 	};
 
-	inline constexpr std::array<BuiltinVariable, 16> builtinVariables {
+	inline constexpr std::array<BuiltinVariable, 21> builtinVariables {
 		{
 			{ "global_invocation_id", "gl_GlobalInvocationID", TypeKind::eVector, ScalarKind::eUInt, 3uL, stageCompute },
 			{ "local_invocation_id", "gl_LocalInvocationID", TypeKind::eVector, ScalarKind::eUInt, 3uL, stageCompute },
@@ -73,7 +77,12 @@ namespace hg::engine::accel::lang::ir {
 			{ "frag_coord", "gl_FragCoord", TypeKind::eVector, ScalarKind::eFloat, 4uL, stageFragment },
 			{ "front_facing", "gl_FrontFacing", TypeKind::eScalar, ScalarKind::eBool, 1uL, stageFragment },
 			{ "view_index", "gl_ViewIndex", TypeKind::eScalar, ScalarKind::eInt, 1uL, stageGraphics, false, eRequireMultiview, true },
-			{ "input_position", "gl_in", TypeKind::eVector, ScalarKind::eFloat, 4uL, stageGeometry, false, eNoRequirement, false, true },
+			{ "input_position", "gl_in", TypeKind::eVector, ScalarKind::eFloat, 4uL, stageGeometry | stageTessCtrl | stageTessEval, false, eNoRequirement, false, true },
+			{ "output_position", "gl_out", TypeKind::eVector, ScalarKind::eFloat, 4uL, stageTessCtrl, true, eNoRequirement, false, true },
+			{ "tess_level_outer", "gl_TessLevelOuter", TypeKind::eScalar, ScalarKind::eFloat, 1uL, stageTessCtrl | stageTessEval, true, eNoRequirement, false, false, 4uL, stageTessCtrl },
+			{ "tess_level_inner", "gl_TessLevelInner", TypeKind::eScalar, ScalarKind::eFloat, 1uL, stageTessCtrl | stageTessEval, true, eNoRequirement, false, false, 2uL, stageTessCtrl },
+			{ "tess_coord", "gl_TessCoord", TypeKind::eVector, ScalarKind::eFloat, 3uL, stageTessEval },
+			{ "patch_vertices", "gl_PatchVerticesIn", TypeKind::eScalar, ScalarKind::eInt, 1uL, stageTessCtrl | stageTessEval, false, eNoRequirement, true },
 			{ "primitive_id", "gl_PrimitiveIDIn", TypeKind::eScalar, ScalarKind::eInt, 1uL, stageGeometry },
 			{ "invocation_id", "gl_InvocationID", TypeKind::eScalar, ScalarKind::eInt, 1uL, stageGeometry | stageTessCtrl },
 			{ "layer", "gl_Layer", TypeKind::eScalar, ScalarKind::eInt, 1uL, stageGeometry, true }

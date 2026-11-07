@@ -108,6 +108,40 @@ namespace AccelLang {
 		EXPECT_TRUE(checkStageChain(stages).empty());
 	}
 
+	namespace {
+		[[nodiscard]] InterfaceEntry patchFwd(StringView id_, StringView type_, bool input_) {
+			auto entry = fwd(id_, type_, input_);
+			entry.patch = true;
+			return entry;
+		}
+	}
+
+	TEST(ContractTest, ChainVertexTessGeomFragment) {
+		const auto chain = [](bool withPatchOutput_) {
+			Vector<InterfaceEntry> ctrl { fwd("pos", "f32vec4", true, true), fwd("cpos", "f32vec4", false, true) };
+			if (withPatchOutput_) {
+				ctrl.emplace_back(patchFwd("level", "f32", false));
+			}
+			return std::array<Stage, 5> {
+				Stage { EntryKind::eVertex, { fwd("pos", "f32vec4", false) } },
+				Stage { EntryKind::eTessCtrl, std::move(ctrl) },
+				Stage {
+					EntryKind::eTessEval,
+					{ fwd("cpos", "f32vec4", true, true), patchFwd("level", "f32", true), fwd("e", "f32", false) }
+				},
+				Stage { EntryKind::eGeometry, { fwd("e", "f32", true, true), fwd("g", "f32", false) } },
+				Stage { EntryKind::eFragment, { fwd("g", "f32", true) } }
+			};
+		};
+		const auto ok = chain(true);
+		EXPECT_TRUE(checkStageChain(ok).empty());
+
+		const auto broken = chain(false);
+		const auto diags = checkStageChain(broken);
+		ASSERT_EQ(diags.size(), 1uz);
+		EXPECT_TRUE(diags[0].message.contains("'level'")) << diags[0].message;
+	}
+
 	TEST(ContractTest, ExistingUiPipelineChainIsClean) {
 		const std::array<Stage, 2> stages {
 			Stage { EntryKind::eVertex, computeInterface(shaderAssetModule("ui/ui.vs.asl", EntryKind::eVertex)) },
