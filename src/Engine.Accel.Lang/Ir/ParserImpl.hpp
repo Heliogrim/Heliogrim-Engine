@@ -205,7 +205,7 @@ namespace hg::engine::accel::lang::ir::detail {
 		/* Bodies (Parser.Body.cpp) */
 
 		[[nodiscard]] ir::ExprRef expr(ir::Expr expr_);
-		[[nodiscard]] ir::ExprRef node(ir::ExprKind kind_, StringView name_, Vector<ir::ExprRef> operands_ = {});
+		[[nodiscard]] ir::ExprRef node(ir::ExprKind kind_, StringView name_, Vector<ir::ExprRef> operands_ = {}, ir::SourceLoc loc_ = {});
 		[[nodiscard]] ir::StmtRef add(ir::Stmt stmt_);
 		[[nodiscard]] ir::StmtRef stmt(ir::StmtKind kind_, ir::ExprRef lhs_ = {}, Vector<ir::StmtRef> children_ = {});
 		[[nodiscard]] Opt<ir::StmtRef> fail();
