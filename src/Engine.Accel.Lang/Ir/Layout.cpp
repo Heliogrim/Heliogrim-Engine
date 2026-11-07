@@ -340,7 +340,7 @@ ir::Layout ir::assignLayout(
 		const auto fixed = info.valid && not info.unsized && not info.opaque;
 		const auto offset = roundUp(cursor, std::max(fixed ? info.align : 1uLL, 4uLL));
 		const auto size = fixed ? roundUp(info.size, 4uLL) : 0uLL;
-		layout.push.emplace_back(PushRange { item.entry->id, clamp32(offset), clamp32(size) });
+		layout.push.emplace_back(PushRange { item.entry->id, clamp32(offset), clamp32(size), info.key });
 		cursor = offset + size;
 	}
 
@@ -443,4 +443,173 @@ ir::Layout ir::assignLayout(
 		location += item.info->valid ? std::max(item.info->locations, 1uLL) : 1uLL;
 	}
 	return layout;
+}
+
+namespace {
+	[[nodiscard]] ir::Diagnostics failure(String message_) {
+		return ir::Diagnostics { ir::Diagnostic { .severity = ir::Severity::eError, .message = std::move(message_) } };
+	}
+
+	[[nodiscard]] String stageName(size_t index_) {
+		return "stage " + std::to_string(index_);
+	}
+
+	template <typename Range_>
+	[[nodiscard]] bool hasId(const Range_& range_, const String& id_) {
+		return std::ranges::any_of(range_, [&](const auto& e_) { return e_.id == id_; });
+	}
+
+	/* appends the type table with every type reference moved behind the tables before */
+	void appendTypes(Vector<ir::TypeDesc>& into_, const Vector<ir::TypeDesc>& types_) {
+		const auto base = static_cast<u32>(into_.size());
+		const auto shift = [&](ir::TypeRef& ref_) {
+			if (ref_.index < types_.size()) {
+				ref_.index += base;
+			}
+		};
+		for (auto desc : types_) {
+			shift(desc.element);
+			for (auto& field : desc.fields) {
+				shift(field.type);
+			}
+			into_.emplace_back(std::move(desc));
+		}
+	}
+}
+
+std::expected<Vector<ir::Layout>, ir::Diagnostics> ir::assignPipelineLayout(
+	std::span<const Vector<InterfaceEntry>> stages_,
+	std::span<const Vector<TypeDesc>> types_,
+	ref<const LayoutWeights> weights_
+) {
+	if (stages_.size() != types_.size()) {
+		return std::unexpected(failure("pipeline layout needs one type table per stage"));
+	}
+
+	Vector<Layout> own {};
+	for (size_t i = 0uz; i < stages_.size(); ++i) {
+		own.emplace_back(assignLayout(stages_[i], types_[i], weights_));
+	}
+
+	Diagnostics errors {};
+	for (size_t i = 0uz; i < own.size(); ++i) {
+		for (size_t j = i + 1uz; j < own.size(); ++j) {
+			const auto clash = [&](const String& id_, StringView what_) {
+				errors.append_range(failure(
+					"binding '" + id_ + "' " + String { what_ } + " in " + stageName(i) + " and " + stageName(j)
+				));
+			};
+			for (const auto& slot : own[i].slots) {
+				const auto other = std::ranges::find(own[j].slots, slot.id, &SlotAssignment::id);
+				if (other != own[j].slots.end() && other->identity != slot.identity) {
+					clash(slot.id, "has another class or type");
+				} else if (hasId(own[j].push, slot.id)) {
+					clash(slot.id, "is a bind in one and a push constant in the other");
+				}
+			}
+			for (const auto& range : own[i].push) {
+				const auto other = std::ranges::find(own[j].push, range.id, &PushRange::id);
+				if (other != own[j].push.end() && (other->size != range.size || other->identity != range.identity)) {
+					clash(range.id, "has another push type or size");
+				} else if (hasId(own[j].slots, range.id)) {
+					clash(range.id, "is a push constant in one and a bind in the other");
+				}
+			}
+		}
+	}
+	if (not errors.empty()) {
+		return std::unexpected(std::move(errors));
+	}
+
+	// one pass over the union
+	Vector<InterfaceEntry> entries {};
+	Vector<TypeDesc> types {};
+	for (size_t i = 0uz; i < stages_.size(); ++i) {
+		const auto base = static_cast<u32>(types.size());
+		for (auto entry : stages_[i]) {
+			if (not hasId(own[i].slots, entry.id) && not hasId(own[i].push, entry.id)) {
+				continue;
+			}
+			if (entry.type.index < types_[i].size()) {
+				entry.type.index += base;
+			}
+			entries.emplace_back(std::move(entry));
+		}
+		appendTypes(types, types_[i]);
+	}
+	const auto merged = assignLayout(entries, types, weights_);
+
+	Vector<Layout> result {};
+	for (auto& stage : own) {
+		Layout layout {};
+		for (const auto& slot : merged.slots) {
+			if (hasId(stage.slots, slot.id)) {
+				layout.slots.emplace_back(slot);
+			}
+		}
+		for (const auto& range : merged.push) {
+			if (hasId(stage.push, range.id)) {
+				layout.push.emplace_back(range);
+			}
+		}
+		layout.inputLocations = std::move(stage.inputLocations);
+		result.emplace_back(std::move(layout));
+	}
+	return result;
+}
+
+std::expected<Vector<Vector<ir::SpecConstant>>, ir::Diagnostics> ir::assignPipelineSpecConstants(
+	std::span<const Vector<ConstantDecl>> constants_,
+	std::span<const Vector<TypeDesc>> types_
+) {
+	if (constants_.size() != types_.size()) {
+		return std::unexpected(failure("pipeline spec constants need one type table per stage"));
+	}
+
+	struct Seen {
+		String id;
+		String key;
+		size_t stage;
+	};
+
+	Vector<Seen> seen {};
+	Diagnostics errors {};
+	for (size_t i = 0uz; i < constants_.size(); ++i) {
+		Types types { types_[i] };
+		for (const auto& constant : constants_[i]) {
+			if (not constant.specId.has_value()) {
+				continue;
+			}
+			auto key = types.of(constant.type).key;
+			const auto it = std::ranges::find(seen, *constant.specId, &Seen::id);
+			if (it == seen.end()) {
+				seen.emplace_back(Seen { *constant.specId, std::move(key), i });
+			} else if (it->key != key) {
+				errors.append_range(failure(
+					"spec constant '" + *constant.specId + "' has another type in " + stageName(it->stage) + " and " +
+					stageName(i)
+				));
+			}
+		}
+	}
+	if (not errors.empty()) {
+		return std::unexpected(std::move(errors));
+	}
+
+	std::ranges::sort(seen, {}, &Seen::id);
+
+	Vector<Vector<SpecConstant>> result {};
+	for (const auto& constants : constants_) {
+		Vector<SpecConstant> own {};
+		for (const auto& constant : constants) {
+			if (constant.specId.has_value()) {
+				const auto id = static_cast<u32>(std::ranges::lower_bound(seen, *constant.specId, {}, &Seen::id) - seen.begin());
+				own.emplace_back(SpecConstant { *constant.specId, id });
+			}
+		}
+		std::ranges::sort(own, {}, &SpecConstant::id);
+		own.erase(std::ranges::unique(own, {}, &SpecConstant::id).begin(), own.end());
+		result.emplace_back(std::move(own));
+	}
+	return result;
 }

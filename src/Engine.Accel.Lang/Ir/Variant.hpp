@@ -73,14 +73,24 @@ namespace hg::engine::accel::lang::ir {
 	);
 
 	/**
-	 * One resolved variant: the resolved and sliced module, its layout and its interface.
+	 * One resolved variant: the resolved and sliced module and its interface. Layout is per pipeline (see
+	 * `ResolvedPipeline`), as it depends on the other stages.
 	 */
 	struct Resolved {
 		Module module;
-		Layout layout;
 		Vector<InterfaceEntry> interfaceEntries;
-		/* the lowered legacy form, so a cache hit emits nothing; copy it for each user */
-		Intermediate lowered;
+		/* the key it is cached under, so a pipeline key is built without hashing the inputs again */
+		VariantKey key;
+	};
+
+	/**
+	 * The stages of one pipeline laid out together: per stage, in stage order, its variant, its layout (shared ids
+	 * have one slot in every stage) and its lowered legacy form (copy it for each user).
+	 */
+	struct ResolvedPipeline {
+		Vector<smr<const Resolved>> stages;
+		Vector<Layout> layouts;
+		Vector<Intermediate> lowered;
 	};
 }
 
@@ -110,5 +120,33 @@ namespace hg::engine::accel::lang::ir {
 	private:
 		mutable std::shared_mutex _mtx;
 		DenseMap<VariantKey, smr<const Resolved>, std::hash<VariantKey>> _entries;
+	};
+
+	struct PipelineKeyHash {
+		[[nodiscard]] size_t operator()(const Vector<VariantKey>& key_) const noexcept {
+			size_t seed = key_.size();
+			for (const auto& stage : key_) {
+				::hg::hash::hashCombine(seed, std::hash<VariantKey> {}(stage));
+			}
+			return seed;
+		}
+	};
+
+	/**
+	 * Thread-safe map from the ordered variant keys of a pipeline's stages to its resolved pipeline; same contract
+	 * as `VariantCache`: a hit is one hash lookup under a shared lock, a null build result is not cached.
+	 */
+	class PipelineLayoutCache {
+	public:
+		[[nodiscard]] smr<const ResolvedPipeline> getOrCreate(
+			ref<const Vector<VariantKey>> key_,
+			FnRef<smr<const ResolvedPipeline>()> build_
+		);
+
+		[[nodiscard]] smr<const ResolvedPipeline> find(ref<const Vector<VariantKey>> key_) const noexcept;
+
+	private:
+		mutable std::shared_mutex _mtx;
+		DenseMap<Vector<VariantKey>, smr<const ResolvedPipeline>, PipelineKeyHash> _entries;
 	};
 }

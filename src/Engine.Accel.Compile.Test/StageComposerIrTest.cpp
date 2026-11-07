@@ -57,6 +57,25 @@ namespace AccelCompile {
 			const auto im = derivat_.getIntermediate();
 			return im->lang.text.empty() ? String {} : im->lang.text.front().data;
 		}
+
+		/* a single stage is its own pipeline; a fresh layout cache unless one is given */
+		[[nodiscard]] std::expected<smr<StageDerivat>, Diagnostics> composeStageIr(
+			ref<const Intermediate> stage_,
+			ref<const EffectProfile> profile_,
+			ref<const EffectSpecification> spec_,
+			const StageFlagBits flags_,
+			ref<VariantCache> cache_,
+			smr<const ResolvedPipeline>* pipeline_ = nullptr
+		) {
+			PipelineLayoutCache layouts {};
+			const std::array<const Intermediate*, 1> stages { &stage_ };
+			const std::array<StageFlagBits, 1> flags { flags_ };
+			auto composed = composePipelineIr(stages, flags, profile_, spec_, cache_, layouts, pipeline_);
+			if (not composed.has_value()) {
+				return std::unexpected(std::move(composed).error());
+			}
+			return composed->front();
+		}
 	}
 
 	TEST(StageIrTest, UsesProfileModuleBodiesInsteadOfTextConcat) {
@@ -178,7 +197,11 @@ namespace AccelCompile {
 		const auto highVariant = resolveStageIr(toggledStage, high, spec, StageFlagBits::eFragment, cache);
 		ASSERT_TRUE(lowVariant.has_value() && highVariant.has_value());
 		EXPECT_NE(lowVariant->get(), highVariant->get());
-		EXPECT_NE(lowVariant->get()->lowered.lang.text.front().data, highVariant->get()->lowered.lang.text.front().data);
+
+		const auto lowText = composeStageIr(toggledStage, EffectProfile {}, spec, StageFlagBits::eFragment, cache);
+		const auto highText = composeStageIr(toggledStage, high, spec, StageFlagBits::eFragment, cache);
+		ASSERT_TRUE(lowText.has_value() && highText.has_value());
+		EXPECT_NE(textOf(**lowText), textOf(**highText));
 
 		const auto highAgain = resolveStageIr(toggledStage, high, spec, StageFlagBits::eFragment, cache);
 		ASSERT_TRUE(highAgain.has_value());
@@ -219,18 +242,17 @@ namespace AccelCompile {
 		const auto profile = profileOf();
 		const TestSpecification spec { {} };
 
-		const auto resolved = resolveStageIr(stage, profile, spec, StageFlagBits::eFragment, cache);
-		ASSERT_TRUE(resolved.has_value());
-		ASSERT_EQ((*resolved)->layout.push.size(), 1uLL);
-
-		const auto derivat = composeStageIr(stage, profile, spec, StageFlagBits::eFragment, cache);
+		smr<const ResolvedPipeline> pipeline {};
+		const auto derivat = composeStageIr(stage, profile, spec, StageFlagBits::eFragment, cache, &pipeline);
 		ASSERT_TRUE(derivat.has_value());
+		ASSERT_EQ(pipeline->layouts.front().push.size(), 1uLL);
 
 		BindLayout layout {};
-		EXPECT_TRUE(appendBindLayout(**resolved, **derivat, layout).empty());
+		const std::array<smr<StageDerivat>, 1> derivats { *derivat };
+		EXPECT_TRUE(appendBindLayout(*pipeline, derivats, layout).empty());
 
 		ASSERT_EQ(layout.constants.size(), 1uLL);
-		EXPECT_EQ(layout.constants.front().size, (*resolved)->layout.push.front().size);
+		EXPECT_EQ(layout.constants.front().size, pipeline->layouts.front().push.front().size);
 		EXPECT_EQ(layout.constants.front().size, 4uL);
 		EXPECT_EQ(layout.constants.front().offset, 0uL);
 		EXPECT_TRUE(layout.constants.front().stages & StageFlagBits::eFragment);
@@ -240,11 +262,6 @@ namespace AccelCompile {
 		ASSERT_EQ(layout.groups.front().elements.size(), 1uLL);
 		EXPECT_EQ(layout.groups.front().elements.front().symbol->symbolName, "camera");
 		EXPECT_EQ(layout.groups.front().elements.front().type, BindType::eUniformBuffer);
-
-		/* a second stage of the same layout adds its flag and no duplicates */
-		EXPECT_TRUE(appendBindLayout(**resolved, **derivat, layout).empty());
-		EXPECT_EQ(layout.constants.size(), 1uLL);
-		EXPECT_EQ(layout.groups.front().elements.size(), 1uLL);
 	}
 
 	namespace {
@@ -260,59 +277,134 @@ namespace AccelCompile {
 			return source + "@output (mode = forward, id = \"color\") f32vec4 color;\nfn main() { color = " + sum + "; }\n";
 		}
 
-		struct Laid {
-			smr<const Resolved> resolved;
-			smr<StageDerivat> derivat;
+		struct Composed {
+			Vector<smr<StageDerivat>> derivats;
+			smr<const ResolvedPipeline> pipeline;
 		};
 
-		[[nodiscard]] Laid layoutOf(StringView ids_, ref<VariantCache> cache_, StageFlagBits flags_) {
-			const auto stage = intermediateOf(fragmentUsing(ids_), EntryKind::eFragment);
-			const TestSpecification spec { {} };
-			auto resolved = resolveStageIr(stage, EffectProfile {}, spec, flags_, cache_);
-			auto derivat = composeStageIr(stage, EffectProfile {}, spec, flags_, cache_);
-			EXPECT_TRUE(resolved.has_value() && derivat.has_value());
-			return { std::move(resolved).value(), std::move(derivat).value() };
+		/* vertex ids, then fragment ids, as one pipeline */
+		[[nodiscard]] std::expected<Composed, Diagnostics> composeUsing(
+			StringView vertexIds_,
+			StringView fragmentIds_,
+			ref<VariantCache> cache_,
+			ref<PipelineLayoutCache> layouts_
+		) {
+			const auto vertex = intermediateOf(fragmentUsing(vertexIds_), EntryKind::eVertex);
+			const auto fragment = intermediateOf(fragmentUsing(fragmentIds_), EntryKind::eFragment);
+			const std::array<const Intermediate*, 2> stages { &vertex, &fragment };
+			const std::array<StageFlagBits, 2> flags { StageFlagBits::eVertex, StageFlagBits::eFragment };
+
+			Composed result {};
+			auto composed = composePipelineIr(
+				stages, flags, EffectProfile {}, TestSpecification { {} }, cache_, layouts_, &result.pipeline
+			);
+			if (not composed.has_value()) {
+				return std::unexpected(std::move(composed).error());
+			}
+			result.derivats = std::move(composed).value();
+			return result;
 		}
 	}
 
-	TEST(StageIrTest, LayoutGuardRejectsDifferentIdsOnOneSlot) {
+	TEST(StageIrTest, DifferentIdsInStagesGetDistinctSlots) {
 		VariantCache cache {};
-		const auto first = layoutOf("a", cache, StageFlagBits::eVertex);
-		const auto second = layoutOf("b", cache, StageFlagBits::eFragment);
+		PipelineLayoutCache layouts {};
+		const auto composed = composeUsing("a", "b", cache, layouts);
+		ASSERT_TRUE(composed.has_value()) << composed.error().front().message;
 
 		BindLayout layout {};
-		EXPECT_TRUE(appendBindLayout(*first.resolved, *first.derivat, layout).empty());
+		EXPECT_TRUE(appendBindLayout(*composed->pipeline, composed->derivats, layout).empty());
 
-		const auto clash = appendBindLayout(*second.resolved, *second.derivat, layout);
-		ASSERT_FALSE(clash.empty());
-		EXPECT_TRUE(clash.front().message.contains("'b'")) << clash.front().message;
-		EXPECT_EQ(layout.groups.front().elements.size(), 1uLL);
+		/* sorted by id over the pipeline: a = binding 0, b = binding 1 */
+		ASSERT_EQ(layout.groups.size(), 1uLL);
+		ASSERT_EQ(layout.groups.front().elements.size(), 2uLL);
+		EXPECT_EQ(layout.groups.front().elements[0].symbol->symbolName, "a");
+		EXPECT_EQ(layout.groups.front().elements[1].symbol->symbolName, "b");
 	}
 
-	TEST(StageIrTest, LayoutGuardRejectsSharedIdAtDifferentSlots) {
+	TEST(StageIrTest, StageWithoutPrefixOfPipelineBindingsLaysOut) {
 		VariantCache cache {};
-		/* sorted by id: a = binding 0, b = binding 1; alone, b = binding 0 */
-		const auto first = layoutOf("ab", cache, StageFlagBits::eVertex);
-		const auto second = layoutOf("b", cache, StageFlagBits::eFragment);
+		PipelineLayoutCache layouts {};
+
+		/* vertex {b} is not a prefix of the union {a, b} */
+		const auto composed = composeUsing("b", "ab", cache, layouts);
+		ASSERT_TRUE(composed.has_value()) << composed.error().front().message;
 
 		BindLayout layout {};
-		EXPECT_TRUE(appendBindLayout(*first.resolved, *first.derivat, layout).empty());
-
-		const auto clash = appendBindLayout(*second.resolved, *second.derivat, layout);
-		ASSERT_FALSE(clash.empty());
-		EXPECT_TRUE(clash.front().message.contains("'b'")) << clash.front().message;
+		const auto diagnostics = appendBindLayout(*composed->pipeline, composed->derivats, layout);
+		ASSERT_TRUE(diagnostics.empty()) << diagnostics.front().message;
+		ASSERT_EQ(layout.groups.size(), 1uLL);
+		ASSERT_EQ(layout.groups.front().elements.size(), 2uLL);
+		EXPECT_EQ(layout.groups.front().elements[0].symbol->symbolName, "a");
+		EXPECT_EQ(layout.groups.front().elements[1].symbol->symbolName, "b");
 	}
 
-	TEST(StageIrTest, LayoutGuardAcceptsSameSlotsAndSupersets) {
+	TEST(StageIrTest, VertexAndFragmentWithInterleavedBindingsLayOut) {
 		VariantCache cache {};
-		const auto first = layoutOf("a", cache, StageFlagBits::eVertex);
-		const auto second = layoutOf("ab", cache, StageFlagBits::eFragment);
+		PipelineLayoutCache layouts {};
+
+		/* camera = c, model = m, lights = l, textures = t: union c, l, m, t; the vertex stage skips l */
+		const auto composed = composeUsing("cm", "clt", cache, layouts);
+		ASSERT_TRUE(composed.has_value()) << composed.error().front().message;
 
 		BindLayout layout {};
-		EXPECT_TRUE(appendBindLayout(*first.resolved, *first.derivat, layout).empty());
-		EXPECT_TRUE(appendBindLayout(*second.resolved, *second.derivat, layout).empty());
+		const auto diagnostics = appendBindLayout(*composed->pipeline, composed->derivats, layout);
+		ASSERT_TRUE(diagnostics.empty()) << diagnostics.front().message;
+		ASSERT_EQ(layout.groups.size(), 1uLL);
+		ASSERT_EQ(layout.groups.front().elements.size(), 4uLL);
+		const std::array<StringView, 4> expected { "c", "l", "m", "t" };
+		for (size_t idx = 0uLL; idx < expected.size(); ++idx) {
+			EXPECT_EQ(layout.groups.front().elements[idx].symbol->symbolName, expected[idx]);
+		}
+	}
+
+	TEST(StageIrTest, EmptyStageListIsAnError) {
+		VariantCache cache {};
+		PipelineLayoutCache layouts {};
+		const auto composed = composePipelineIr({}, {}, EffectProfile {}, TestSpecification { {} }, cache, layouts);
+		ASSERT_FALSE(composed.has_value());
+		EXPECT_EQ(composed.error().front().severity, Severity::eError);
+	}
+
+	TEST(StageIrTest, SharedCameraAcrossStagesComposes) {
+		VariantCache cache {};
+		PipelineLayoutCache layouts {};
+
+		/* alone, b would be binding 0 in the fragment stage; the pipeline gives it one slot in both */
+		const auto composed = composeUsing("ab", "b", cache, layouts);
+		ASSERT_TRUE(composed.has_value()) << composed.error().front().message;
+
+		const auto& vertexSlots = composed->pipeline->layouts[0].slots;
+		const auto& fragmentSlots = composed->pipeline->layouts[1].slots;
+		ASSERT_EQ(fragmentSlots.size(), 1uLL);
+		const auto shared = std::ranges::find_if(vertexSlots, [](const auto& s_) { return s_.id == "b"; });
+		ASSERT_NE(shared, vertexSlots.end());
+		EXPECT_EQ(shared->binding, fragmentSlots.front().binding);
+		EXPECT_EQ(shared->set, fragmentSlots.front().set);
+
+		BindLayout layout {};
+		EXPECT_TRUE(appendBindLayout(*composed->pipeline, composed->derivats, layout).empty());
 		ASSERT_EQ(layout.groups.size(), 1uLL);
 		EXPECT_EQ(layout.groups.front().elements.size(), 2uLL);
+	}
+
+	TEST(StageIrTest, SecondPipelineComposeHitsLayoutCache) {
+		VariantCache cache {};
+		PipelineLayoutCache layouts {};
+
+		const auto first = composeUsing("ab", "b", cache, layouts);
+		const auto second = composeUsing("ab", "b", cache, layouts);
+		ASSERT_TRUE(first.has_value() && second.has_value());
+		EXPECT_EQ(first->pipeline.get(), second->pipeline.get());
+
+		/* every composed derivat owns its own intermediate */
+		EXPECT_NE(first->derivats[1]->getIntermediate().get(), second->derivats[1]->getIntermediate().get());
+		EXPECT_EQ(textOf(*first->derivats[1]), textOf(*second->derivats[1]));
+
+		/* other stage content is another pipeline */
+		const auto other = composeUsing("ab", "a", cache, layouts);
+		ASSERT_TRUE(other.has_value());
+		EXPECT_NE(first->pipeline.get(), other->pipeline.get());
 	}
 
 	TEST(StageIrTest, TargetSymbolsOnlySliceTheExportStage) {
@@ -325,24 +417,32 @@ namespace AccelCompile {
 		const auto fragment = intermediateOf(stageSource, EntryKind::eFragment);
 		const TestSpecification spec { { "color" } };
 		const auto profile = profileOf();
+		PipelineLayoutCache layouts {};
 
-		/* the vertex stage keeps its varying although the target names a fragment output */
-		const auto kept = composeStageIr(vertex, EffectProfile {}, spec, StageFlagBits::eVertex, cache, false);
+		/* the export stage is the last one: the vertex stage keeps its varying although the target names a fragment output */
+		const std::array<const Intermediate*, 2> stages { &vertex, &fragment };
+		const std::array<StageFlagBits, 2> flags { StageFlagBits::eVertex, StageFlagBits::eFragment };
+		const auto both = composePipelineIr(stages, flags, profile, spec, cache, layouts);
+		ASSERT_TRUE(both.has_value()) << both.error().front().message;
+		EXPECT_TRUE(textOf(*(*both)[0]).contains("uv")) << textOf(*(*both)[0]);
+		EXPECT_FALSE(textOf(*(*both)[1]).contains("other")) << textOf(*(*both)[1]);
+
+		/* alone, the vertex stage is the export stage and would fail */
+		EXPECT_FALSE(composeStageIr(vertex, EffectProfile {}, spec, StageFlagBits::eVertex, cache).has_value());
+
+		/* the same fragment ahead of another stage keeps every output */
+		const std::array<const Intermediate*, 2> inner { &fragment, &fragment };
+		const std::array<StageFlagBits, 2> innerFlags { StageFlagBits::eFragment, StageFlagBits::eFragment };
+		const auto kept = composePipelineIr(inner, innerFlags, profile, spec, cache, layouts);
 		ASSERT_TRUE(kept.has_value()) << kept.error().front().message;
-		EXPECT_TRUE(textOf(**kept).contains("uv")) << textOf(**kept);
+		EXPECT_TRUE(textOf(*(*kept)[0]).contains("other")) << textOf(*(*kept)[0]);
 
-		/* as the export stage it would fail */
-		EXPECT_FALSE(composeStageIr(vertex, EffectProfile {}, spec, StageFlagBits::eVertex, cache, true).has_value());
-
-		/* the export stage slices to the target */
-		const auto exported = composeStageIr(fragment, profile, spec, StageFlagBits::eFragment, cache, true);
-		ASSERT_TRUE(exported.has_value());
-		EXPECT_FALSE(textOf(**exported).contains("other")) << textOf(**exported);
-
-		/* the same fragment as a non-export stage keeps every output */
-		const auto inner = composeStageIr(fragment, profile, spec, StageFlagBits::eFragment, cache, false);
-		ASSERT_TRUE(inner.has_value());
-		EXPECT_TRUE(textOf(**inner).contains("other")) << textOf(**inner);
+		/* a legacy text stage after the ir stages is the export stage: nothing here is sliced */
+		const auto notLast = composePipelineIr(
+			stages, flags, profile, spec, cache, layouts, nullptr, false
+		);
+		ASSERT_TRUE(notLast.has_value()) << notLast.error().front().message;
+		EXPECT_TRUE(textOf(*(*notLast)[1]).contains("other")) << textOf(*(*notLast)[1]);
 	}
 
 	TEST(StageIrTest, VertexFormatSuppliedByStageWinsOverShaderType) {
@@ -369,18 +469,11 @@ namespace AccelCompile {
 		attribute("vertex-color", 8L, static_cast<s32>(vk::Format::eR8G8B8A8Unorm));
 		attribute("vertex-position", 0L, -1L);
 
-		const auto resolved = resolveStageIr(
-			vertex,
-			EffectProfile {},
-			TestSpecification { {} },
-			StageFlagBits::eVertex,
-			cache,
-			false
-		);
+		const auto resolved = composeStageIr(vertex, EffectProfile {}, TestSpecification { {} }, StageFlagBits::eVertex, cache);
 		ASSERT_TRUE(resolved.has_value()) << resolved.error().front().message;
 
 		const auto formatOf = [&](StringView id_) {
-			for (const auto& var : (*resolved)->lowered.rep.globalScope.inbound) {
+			for (const auto& var : (*resolved)->getIntermediate()->rep.globalScope.inbound) {
 				const SymbolIdAnnotation* id = nullptr;
 				const VkBindLocationAnnotation* location = nullptr;
 				for (auto* cur = var->annotation.get(); cur != nullptr; cur = cur->next.get()) {

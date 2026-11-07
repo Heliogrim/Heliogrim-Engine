@@ -206,3 +206,26 @@ smr<const Resolved> VariantCache::find(ref<const VariantKey> key_) const noexcep
 	const auto iter = _entries.find(key_);
 	return iter != _entries.end() ? iter->second : smr<const Resolved> {};
 }
+
+smr<const ResolvedPipeline> PipelineLayoutCache::getOrCreate(
+	ref<const Vector<VariantKey>> key_,
+	FnRef<smr<const ResolvedPipeline>()> build_
+) {
+	if (auto hit = find(key_); hit != nullptr) {
+		return hit;
+	}
+
+	auto built = build_();
+	if (built == nullptr) {
+		return built;
+	}
+
+	const std::unique_lock<std::shared_mutex> lock { _mtx };
+	return _entries.try_emplace(key_, std::move(built)).first->second;
+}
+
+smr<const ResolvedPipeline> PipelineLayoutCache::find(ref<const Vector<VariantKey>> key_) const noexcept {
+	const std::shared_lock<std::shared_mutex> lock { _mtx };
+	const auto iter = _entries.find(key_);
+	return iter != _entries.end() ? iter->second : smr<const ResolvedPipeline> {};
+}

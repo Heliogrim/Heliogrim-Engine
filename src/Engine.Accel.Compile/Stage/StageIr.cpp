@@ -205,32 +205,7 @@ std::expected<smr<const Resolved>, Diagnostics> hg::engine::accel::resolveStageI
 			}
 			failure.clear();
 
-			auto layout = assignLayout(interfaceEntries, sliced.types, {});
-			layout.specConstants = assignSpecConstants(sliced.constants);
-
-			DenseMap<String, u32> vertexOffsets {};
-			DenseMap<String, s32> vertexFormats {};
-			for (const auto& [id, offset, format] : offsets) {
-				vertexOffsets.insert_or_assign(id, offset);
-				if (format >= 0L) {
-					vertexFormats.insert_or_assign(id, format);
-				}
-			}
-
-			auto lowered = lowerToIntermediate(sliced, layout, Dialect::eVulkanGlsl460, vertexOffsets, vertexFormats);
-			if (not lowered.has_value()) {
-				failure = std::move(lowered).error();
-				return {};
-			}
-
-			return make_smr<const Resolved>(
-				new Resolved {
-					std::move(sliced),
-					std::move(layout),
-					std::move(interfaceEntries),
-					std::move(lowered).value()
-				}
-			);
+			return make_smr<const Resolved>(new Resolved { std::move(sliced), std::move(interfaceEntries), key });
 		}
 	);
 
@@ -240,96 +215,201 @@ std::expected<smr<const Resolved>, Diagnostics> hg::engine::accel::resolveStageI
 	return resolved;
 }
 
-std::expected<smr<StageDerivat>, Diagnostics> hg::engine::accel::composeStageIr(
-	ref<const Intermediate> stage_,
+std::expected<Vector<smr<StageDerivat>>, Diagnostics> hg::engine::accel::composePipelineIr(
+	std::span<const Intermediate* const> stages_,
+	std::span<const StageFlagBits> flags_,
 	ref<const EffectProfile> profile_,
 	ref<const EffectSpecification> spec_,
-	const StageFlagBits flags_,
 	ref<VariantCache> cache_,
-	const bool exportStage_
+	ref<PipelineLayoutCache> layouts_,
+	smr<const ResolvedPipeline>* pipeline_,
+	const bool exportLast_
 ) {
 
-	auto resolved = resolveStageIr(stage_, profile_, spec_, flags_, cache_, exportStage_);
-	if (not resolved.has_value()) {
-		return std::unexpected(std::move(resolved).error());
+	if (stages_.empty()) {
+		return std::unexpected(fail("pipeline has no ir stages"));
+	}
+	if (stages_.size() != flags_.size()) {
+		return std::unexpected(fail("stage and flag counts differ"));
 	}
 
-	auto derivat = make_smr<StageDerivat>(
-		nmpt<Stage> {},
-		Vector<smr<Stage>> {},
-		smr<StageModule> { nullptr },
-		StageFlagBits { flags_ }
+	Vector<smr<const Resolved>> resolved {};
+	Vector<VariantKey> key {};
+	resolved.reserve(stages_.size());
+	key.reserve(stages_.size());
+	for (size_t idx = 0uLL; idx < stages_.size(); ++idx) {
+		if (stages_[idx] == nullptr) {
+			return std::unexpected(fail("stage has no ir"));
+		}
+		/* target symbols are the effect's exports: only the effect's last stage is sliced to them */
+		auto stage = resolveStageIr(
+			*stages_[idx], profile_, spec_, flags_[idx], cache_, exportLast_ && idx + 1uLL == stages_.size()
+		);
+		if (not stage.has_value()) {
+			return std::unexpected(std::move(stage).error());
+		}
+		key.emplace_back((*stage)->key);
+		resolved.emplace_back(std::move(stage).value());
+	}
+
+	Diagnostics failure {};
+	auto pipeline = layouts_.getOrCreate(
+		key,
+		[&]() -> smr<const ResolvedPipeline> {
+			Vector<Vector<InterfaceEntry>> entries {};
+			Vector<decltype(Module::types)> types {};
+			Vector<decltype(Module::constants)> constants {};
+			for (const auto& stage : resolved) {
+				entries.emplace_back(stage->interfaceEntries);
+				types.emplace_back(stage->module.types);
+				constants.emplace_back(stage->module.constants);
+			}
+
+			auto layouts = assignPipelineLayout(entries, types, {});
+			if (not layouts.has_value()) {
+				failure = std::move(layouts).error();
+				return {};
+			}
+			auto specs = assignPipelineSpecConstants(constants, types);
+			if (not specs.has_value()) {
+				failure = std::move(specs).error();
+				return {};
+			}
+
+			Vector<Intermediate> lowered {};
+			lowered.reserve(resolved.size());
+			for (size_t idx = 0uLL; idx < resolved.size(); ++idx) {
+				(*layouts)[idx].specConstants = std::move((*specs)[idx]);
+
+				DenseMap<String, u32> vertexOffsets {};
+				DenseMap<String, s32> vertexFormats {};
+				for (const auto& [id, offset, format] : vertexOffsetsOf(*stages_[idx])) {
+					vertexOffsets.insert_or_assign(id, offset);
+					if (format >= 0L) {
+						vertexFormats.insert_or_assign(id, format);
+					}
+				}
+
+				auto stage = lowerToIntermediate(
+					resolved[idx]->module,
+					(*layouts)[idx],
+					Dialect::eVulkanGlsl460,
+					vertexOffsets,
+					vertexFormats
+				);
+				if (not stage.has_value()) {
+					failure = std::move(stage).error();
+					return {};
+				}
+				lowered.emplace_back(std::move(stage).value());
+			}
+
+			return make_smr<const ResolvedPipeline>(
+				new ResolvedPipeline { resolved, std::move(layouts).value(), std::move(lowered) }
+			);
+		}
 	);
-	derivat->setIntermediate(make_smr<Intermediate>((*resolved)->lowered));
-	return derivat;
+
+	if (pipeline == nullptr) {
+		return std::unexpected(std::move(failure));
+	}
+
+	Vector<smr<StageDerivat>> derivats {};
+	derivats.reserve(stages_.size());
+	for (size_t idx = 0uLL; idx < stages_.size(); ++idx) {
+		auto derivat = make_smr<StageDerivat>(
+			nmpt<Stage> {},
+			Vector<smr<Stage>> {},
+			smr<StageModule> { nullptr },
+			StageFlagBits { flags_[idx] }
+		);
+		derivat->setIntermediate(make_smr<Intermediate>(pipeline->lowered[idx]));
+		derivats.emplace_back(std::move(derivat));
+	}
+
+	if (pipeline_ != nullptr) {
+		*pipeline_ = std::move(pipeline);
+	}
+	return derivats;
 }
 
 Diagnostics hg::engine::accel::appendBindLayout(
-	ref<const Resolved> resolved_,
-	ref<const StageDerivat> derivat_,
+	ref<const ResolvedPipeline> pipeline_,
+	std::span<const smr<StageDerivat>> derivats_,
 	ref<BindLayout> layout_
 ) {
 
-	const auto intermediate = derivat_.getIntermediate();
+	if (derivats_.size() != pipeline_.layouts.size()) {
+		return fail("pipeline and derivat counts differ");
+	}
 
-	for (const auto& slot : resolved_.layout.slots) {
-
-		const auto iter = std::ranges::find_if(
-			intermediate->rep.symbolTable,
-			[&](ref<const uptr<Symbol>> s_) { return s_->symbolName == slot.id; }
-		);
-		if (iter == intermediate->rep.symbolTable.end()) {
-			continue;
-		}
-
-		/* an id an earlier stage appended must sit at the same (set, binding) here */
-		bool known = false;
-		for (size_t set = 0uLL; set < layout_.groups.size(); ++set) {
-			const auto& elements = layout_.groups[set].elements;
-			for (size_t binding = 0uLL; binding < elements.size(); ++binding) {
-				if (elements[binding].symbol->symbolName != slot.id) {
-					continue;
-				}
-				if (set != slot.set || binding != slot.binding) {
-					return fail(
-						"binding '" + slot.id + "' is at set " + std::to_string(set) + ", binding " +
-						std::to_string(binding) + " in an earlier stage but at set " + std::to_string(slot.set) +
-						", binding " + std::to_string(slot.binding) + " here"
-					);
-				}
-				known = true;
+	/* every distinct slot of the pipeline, in (set, binding) order */
+	Vector<const SlotAssignment*> slots {};
+	for (const auto& layout : pipeline_.layouts) {
+		for (const auto& slot : layout.slots) {
+			if (std::ranges::none_of(slots, [&](const SlotAssignment* s_) { return s_->id == slot.id; })) {
+				slots.emplace_back(&slot);
 			}
 		}
-		if (known) {
+	}
+	std::ranges::sort(
+		slots,
+		[](const SlotAssignment* l_, const SlotAssignment* r_) {
+			return std::tie(l_->set, l_->binding) < std::tie(r_->set, r_->binding);
+		}
+	);
+
+	for (const auto* slot : slots) {
+
+		/* the symbol comes from whichever stage declares the id */
+		const Symbol* symbol = nullptr;
+		size_t owner = 0uLL;
+		for (size_t idx = 0uLL; idx < derivats_.size() && symbol == nullptr; ++idx) {
+			if (not std::ranges::contains(pipeline_.layouts[idx].slots, slot->id, &SlotAssignment::id)) {
+				continue;
+			}
+			const auto intermediate = derivats_[idx]->getIntermediate();
+			const auto iter = std::ranges::find_if(
+				intermediate->rep.symbolTable,
+				[&](ref<const uptr<Symbol>> s_) { return s_->symbolName == slot->id; }
+			);
+			if (iter != intermediate->rep.symbolTable.end()) {
+				symbol = iter->get();
+				owner = idx;
+			}
+		}
+		if (symbol == nullptr) {
 			continue;
 		}
 
-		if (layout_.groups.size() <= slot.set) {
-			layout_.groups.resize(slot.set + 1uLL);
+		if (layout_.groups.size() <= slot->set) {
+			layout_.groups.resize(slot->set + 1uLL);
 		}
 
 		/* the pipeline compiler numbers bindings by position in the group */
-		auto& elements = layout_.groups[slot.set].elements;
-		if (elements.size() != slot.binding) {
+		auto& elements = layout_.groups[slot->set].elements;
+		if (elements.size() != slot->binding) {
 			return fail(
-				"binding '" + slot.id + "' at set " + std::to_string(slot.set) + ", binding " +
-				std::to_string(slot.binding) + " does not line up with the bindings of the other stages"
+				"binding '" + slot->id + "' at set " + std::to_string(slot->set) + ", binding " +
+				std::to_string(slot->binding) + " does not line up with the other bindings of the pipeline"
 			);
 		}
-		elements.emplace_back(BindElement { nmpt<const Symbol> { iter->get() }, bindTypeOf(resolved_, slot.id) });
+		elements.emplace_back(BindElement { nmpt<const Symbol> { symbol }, bindTypeOf(*pipeline_.stages[owner], slot->id) });
 	}
 
-	for (const auto& range : resolved_.layout.push) {
+	for (size_t idx = 0uLL; idx < derivats_.size(); ++idx) {
+		for (const auto& range : pipeline_.layouts[idx].push) {
 
-		auto existing = std::ranges::find_if(
-			layout_.constants,
-			[&](ref<const PushConstant> c_) { return c_.offset == range.offset && c_.size == range.size; }
-		);
+			auto existing = std::ranges::find_if(
+				layout_.constants,
+				[&](ref<const PushConstant> c_) { return c_.offset == range.offset && c_.size == range.size; }
+			);
 
-		if (existing != layout_.constants.end()) {
-			existing->stages |= derivat_.getFlagBits();
-		} else {
-			layout_.constants.emplace_back(derivat_.getFlagBits(), range.offset, range.size);
+			if (existing != layout_.constants.end()) {
+				existing->stages |= derivats_[idx]->getFlagBits();
+			} else {
+				layout_.constants.emplace_back(derivats_[idx]->getFlagBits(), range.offset, range.size);
+			}
 		}
 	}
 
