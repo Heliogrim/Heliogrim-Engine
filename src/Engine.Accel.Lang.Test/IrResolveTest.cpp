@@ -701,4 +701,28 @@ namespace AccelLang {
 		static_cast<void>(sliceChecked(hand, { "out" }));
 		static_cast<void>(sliceChecked(hand, { "other" }));
 	}
+
+	TEST(SliceTest, KeepsLoopFeedingOutput) {
+		const auto module = parse(
+			"@input (mode = forward) f32 bias;\n"
+			"@output (mode = forward, id = \"color\") f32vec4 color;\n"
+			"@output (mode = forward, id = \"depth\") implicit f32 depth;\n"
+			"fn main() {\n\tlet a = 0.0;\n\tfor (let i = 0u; i < 4u; ++i) { a += bias; }\n\tfrag_depth = a;\n}\n"
+		);
+		const auto sliced = sliceChecked(module, { "depth" });
+		expectCompact(sliced);
+		EXPECT_TRUE(std::ranges::any_of(sliced.stmts, [](ref<const Stmt> s_) { return s_.kind == StmtKind::eFor; }));
+	}
+
+	TEST(SliceTest, DropsDeadLoop) {
+		const auto module = parse(
+			"@input (mode = forward) f32 bias;\n"
+			"@output (mode = forward, id = \"color\") f32 color;\n"
+			"@output (mode = forward, id = \"depth\") implicit f32 depth;\n"
+			"fn main() {\n\tfor (let i = 0u; i < 4u; ++i) { color += bias; }\n\tfrag_depth = 1.0;\n}\n"
+		);
+		const auto sliced = sliceChecked(module, { "depth" });
+		expectCompact(sliced);
+		EXPECT_FALSE(std::ranges::any_of(sliced.stmts, [](ref<const Stmt> s_) { return s_.kind == StmtKind::eFor; }));
+	}
 }

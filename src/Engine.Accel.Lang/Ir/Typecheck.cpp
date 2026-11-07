@@ -58,6 +58,7 @@ namespace {
 				const auto root = _module.functions[i].body->root;
 				_ret = _module.functions[i].ret;
 				_scope.clear();
+				_loops = 0uL;
 				for (const auto& param : _module.functions[i].params) {
 					const auto mode = param.kind == ir::ParamKind::eRefMut ? Mode::eRefWrite :
 						(param.kind == ir::ParamKind::eRef ? Mode::eRefRead : Mode::eConstant);
@@ -109,6 +110,7 @@ namespace {
 		Vector<Entry> _scope;
 		TypeRef _ret;
 		u32 _depth = 0uL;
+		u32 _loops = 0uL;
 
 /* head token of the node being checked; restored on scope exit so errors after operand recursion stay on the parent */ ir::SourceLoc _loc {};  struct Here { explicit Here(ref<ir::SourceLoc> slot_, ir::SourceLoc next_) : _slot(slot_), _saved(slot_) { _slot = next_; }  ~Here() { _slot = _saved; }  ref<ir::SourceLoc> _slot; ir::SourceLoc _saved; };  void error(String message_) { _diags.emplace_back( ir::Diagnostic { .severity = ir::Severity::eError, .message = std::move(message_), .line = _loc.line, .column = _loc.column } ); }
 
@@ -328,15 +330,58 @@ namespace {
 					break;
 				}
 				case StmtKind::eAssign: {
-					const auto target = expr(lhs);
-					const auto value = expr(rhs);
+					const auto op = _module.stmts[ref_.index].name;
+					TypeRef target;
+					TypeRef value;
+					if (op.empty()) {
+						target = expr(lhs);
+						value = expr(rhs);
+					} else {
+						// `a op= b` checks as `a op b` that must land back in `a`
+						target = expr(lhs);
+						value = binary(op.substr(0uz, op.size() - 1uz), Vector<ExprRef> { lhs, rhs });
+						if (valid(target) && valid(value) && not same(target, value)) {
+							error("cannot assign " + name(value) + " to " + name(target));
+						}
+					}
 					if (lhs.index < _module.exprs.size() && ir::isPlace(_module, lhs)) {
 						if (const auto denied = readOnly(lhs, false); denied.has_value()) {
 							error(*denied);
 						}
 					}
-					if (valid(target) && valid(value) && not coerce(rhs, target)) {
+					if (op.empty() && valid(target) && valid(value) && not coerce(rhs, target)) {
 						error("cannot assign " + name(value) + " to " + name(target));
+					}
+					break;
+				}
+				case StmtKind::eWhile:
+				case StmtKind::eFor: {
+					const auto mark = _scope.size();
+					if (kind == StmtKind::eFor && not children.empty()) {
+						stmt(children[0]);
+					}
+					loopCondition(lhs);
+					++_loops;
+					if (children.size() > 1uz) {
+						stmt(kind == StmtKind::eFor ? children[1] : children[0]);
+					}
+					--_loops;
+					if (kind == StmtKind::eFor && children.size() > 2uz) {
+						stmt(children[2]);
+					}
+					_scope.resize(mark);
+					break;
+				}
+				case StmtKind::eBreak:
+				case StmtKind::eContinue: {
+					if (_loops == 0uL) {
+						error(String(kind == StmtKind::eBreak ? "'break'" : "'continue'") + " outside a loop");
+					}
+					break;
+				}
+				case StmtKind::eDiscard: {
+					if (_module.entry != ir::EntryKind::eFragment) {
+						error("'discard' is only valid in fragment stages");
 					}
 					break;
 				}
@@ -369,6 +414,18 @@ namespace {
 					scoped(children);
 					break;
 				}
+			}
+		}
+
+		/* D8: a constant-true or missing condition keeps the whole wave in the loop */
+		void loopCondition(ExprRef cond_) {
+			if (cond_.index >= _module.exprs.size() || (_module.exprs[cond_.index].kind == ExprKind::eLiteral && _module.exprs[cond_.index].name == "true")) {
+				error("loop condition is constant; lanes that never reach 'break' keep the whole wave in the loop, use a bounded condition");
+				return;
+			}
+			const auto condition = expr(cond_);
+			if (valid(condition) && not isBool(condition)) {
+				error("condition has type " + name(condition) + ", expected bool");
 			}
 		}
 
@@ -417,6 +474,7 @@ namespace {
 				case ExprKind::eIndex: return index(operands);
 				case ExprKind::eUnary: return unary(text, operands);
 				case ExprKind::eBinary: return binary(text, operands);
+				case ExprKind::eTernary: return ternary(operands);
 				case ExprKind::eConstruct: {
 					for (const auto operand : operands) {
 						(void)expr(operand);
@@ -631,7 +689,7 @@ namespace {
 			if (not valid(inner)) {
 				return {};
 			}
-			if (op_ == "!" ? isBool(inner) : numeric(inner)) {
+			if (op_ == "!" ? isBool(inner) : (op_ == "~" ? isInteger(componentOf(inner)) : numeric(inner))) {
 				return inner;
 			}
 			error("operand of '" + op_ + "' has type " + name(inner));
@@ -664,6 +722,16 @@ namespace {
 			if (op_ == "==" || op_ == "!=") {
 				return same(lt, rt) ? boolType() : mismatch(op_, lt, rt);
 			}
+			if (op_ == "%" && numeric(lt) && numeric(rt) && not (isInteger(componentOf(lt)) && isInteger(componentOf(rt)))) {
+				error("operator '%' needs integer operands, got " + name(not isInteger(componentOf(lt)) ? lt : rt));
+				return {};
+			}
+			if (op_ == "<<" || op_ == ">>") {
+				return isInteger(componentOf(lt)) && isInteger(componentOf(rt)) ? lt : mismatch(op_, lt, rt);
+			}
+			if (op_ == "&" || op_ == "|" || op_ == "^") {
+				return isInteger(componentOf(lt)) && same(lt, rt) ? lt : mismatch(op_, lt, rt);
+			}
 			if (not numeric(lt) || not numeric(rt)) {
 				return mismatch(op_, lt, rt);
 			}
@@ -695,6 +763,26 @@ namespace {
 				return lt;
 			}
 			return mismatch(op_, lt, rt);
+		}
+
+		[[nodiscard]] TypeRef ternary(ref<const Vector<ExprRef>> operands_) {
+			if (operands_.size() != 3uz) {
+				return {};
+			}
+			const auto condition = expr(operands_[0]);
+			auto thenType = expr(operands_[1]);
+			const auto elseType = expr(operands_[2]);
+			if (valid(condition) && not isBool(condition)) {
+				error("condition has type " + name(condition) + ", expected bool");
+			}
+			if (not valid(thenType) || not valid(elseType) || same(thenType, elseType) || coerce(operands_[2], thenType)) {
+				return thenType;
+			}
+			if (coerce(operands_[1], elseType)) {
+				return elseType;
+			}
+			error("branches of '?:' have types " + name(thenType) + " and " + name(elseType));
+			return {};
 		}
 
 		[[nodiscard]] TypeRef mismatch(ref<const String> op_, TypeRef lt_, TypeRef rt_) {

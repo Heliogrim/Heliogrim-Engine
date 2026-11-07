@@ -70,7 +70,9 @@ namespace hg::engine::accel::lang::ir {
 		eBinary,
 		eConstruct,
 		/* builtin variable (`position` -> gl_Position) or builtin call (`sample(...)`) by `name`; never a binding use */
-		eBuiltin
+		eBuiltin,
+		/* operands = [cond, then, else] */
+		eTernary
 	};
 
 	/**
@@ -110,7 +112,14 @@ namespace hg::engine::accel::lang::ir {
 		eWhen,
 		eIf,
 		/* local reference alias: name, lhs = place, mutable_ = `&mut` */
-		eDeclareRef
+		eDeclareRef,
+		/* children = [init, body, step] (init/step an empty block when absent), lhs = condition (absent = missing) */
+		eFor,
+		/* lhs = condition, children = [body] */
+		eWhile,
+		eBreak,
+		eContinue,
+		eDiscard
 	};
 
 	/**
@@ -123,7 +132,7 @@ namespace hg::engine::accel::lang::ir {
 		String name;
 		TypeRef type;
 
-		/* declare-local: init (optional), assign: lhs, expr/return: value (optional for return), if: condition */
+		/* assign: `name` is the operator (`+=`; empty = plain `=`). declare-local: init (optional), assign: lhs, expr/return: value (optional for return), if: condition */
 		ExprRef lhs;
 		/* assign: rhs */
 		ExprRef rhs;

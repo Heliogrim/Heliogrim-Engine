@@ -364,4 +364,37 @@ namespace AccelLang {
 		EXPECT_LT(hoist, text.find("i = (i + 1);")) << text;
 		EXPECT_TRUE(text.contains("lights.lights[_hg_ref0] = 1.0;")) << text;
 	}
+
+TEST(LowerTest, EmitsCompoundAssignAndTernary) {
+	const auto module = resolved(
+		"@input (mode = forward) f32 bias;\n"
+		"@output (mode = forward, id = \"color\") f32 color;\n"
+		"fn main() {\n\tlet a = 0.0;\n\tfor (let i = 0u; i < 4u; ++i) { a += bias; if (a > 3.0) { break; } }\n"
+		"\tcolor = bias > 0.0 ? a : -a;\n}\n",
+		EntryKind::eFragment,
+		std::array { String("color") }
+	);
+	const auto text = textOf(lower(module, layoutOf(module)));
+	EXPECT_TRUE(text.contains("for (uint i = 0u; (i < 4u); i += 1)")) << text;
+	EXPECT_TRUE(text.contains("a += ")) << text;
+	EXPECT_TRUE(text.contains("break;")) << text;
+	EXPECT_TRUE(text.contains(" ? ")) << text;
+}
+
+TEST(LowerTest, ForWithOmittedInitAndStepHasValidHeader) {
+	const auto module = resolved(
+		"@input (mode = forward) f32 bias;\n"
+		"@output (mode = forward, id = \"color\") f32 color;\n"
+		"fn main() {\n\tlet a = 0.0;\n\tlet c = bias > 1.0;\n\tfor (; c; ) { a += bias; break; }\n"
+		"\tlet i = 0u;\n\tfor (; i < 4u; ) { a += bias; i++; }\n"
+		"\tfor (let j = 0u; j < 4u; ) { a += bias; j++; }\n\tcolor = a;\n}\n",
+		EntryKind::eFragment,
+		std::array { String("color") }
+	);
+	const auto text = textOf(lower(module, layoutOf(module)));
+	EXPECT_TRUE(text.contains("for (; c; )")) << text;
+	EXPECT_TRUE(text.contains("for (; (i < 4u); )")) << text;
+	EXPECT_TRUE(text.contains("for (uint j = 0u; (j < 4u); )")) << text;
+	EXPECT_FALSE(text.contains("for ({")) << text;
+}
 }
