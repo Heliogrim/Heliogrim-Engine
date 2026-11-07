@@ -29,6 +29,38 @@ namespace AccelCompile {
 		EXPECT_TRUE(assetCompilesToSpirv("ui/ui.fs.asl", EntryKind::eFragment));
 	}
 
+	TEST(IrSpirvGateTest, PostProcessVertex) {
+		EXPECT_TRUE(assetCompilesToSpirv("postprocessing/pp.vs.asl", EntryKind::eVertex));
+	}
+
+	TEST(IrSpirvGateTest, PostProcessFragment) {
+		EXPECT_TRUE(assetCompilesToSpirv("postprocessing/pp.fs.asl", EntryKind::eFragment));
+	}
+
+	TEST(IrSpirvGateTest, VisualizeVertex) {
+		EXPECT_TRUE(assetCompilesToSpirv("visualize/visualize.vs.asl", EntryKind::eVertex));
+	}
+
+	TEST(IrSpirvGateTest, VisualizeFragment) {
+		EXPECT_TRUE(assetCompilesToSpirv("visualize/visualize.fs.asl", EntryKind::eFragment));
+	}
+
+	TEST(IrSpirvGateTest, TriTestVertex) {
+		EXPECT_TRUE(assetCompilesToSpirv("test/render.vs.asl", EntryKind::eVertex));
+	}
+
+	TEST(IrSpirvGateTest, TriTestFragment) {
+		EXPECT_TRUE(assetCompilesToSpirv("test/render.fs.asl", EntryKind::eFragment));
+	}
+
+	TEST(IrSpirvGateTest, BrdfLutVertex) {
+		EXPECT_TRUE(assetCompilesToSpirv("brdf/brdfLut.gen.vs.asl", EntryKind::eVertex));
+	}
+
+	TEST(IrSpirvGateTest, BrdfLutFragment) {
+		EXPECT_TRUE(assetCompilesToSpirv("brdf/brdfLut.gen.fs.asl", EntryKind::eFragment));
+	}
+
 	TEST(IrSpirvGateTest, RejectsBrokenGlsl) {
 		EXPECT_FALSE(glslCompiles("#version 460\nvoid main(){ gl_Position = vec4(0); }", EntryKind::eFragment));
 	}

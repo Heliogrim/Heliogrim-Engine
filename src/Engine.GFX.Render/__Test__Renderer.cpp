@@ -257,17 +257,12 @@ smr<engine::accel::AccelerationEffect> build_test_effect() {
 
 	/**/
 
-	const auto vertexShaderCode = read_shader_file("__test__render.vs");
-
-	vertexStage->setIntermediate(make_smr<engine::accel::lang::Intermediate>());
-	vertexStage->getIntermediate()->lang.dialect = engine::accel::lang::Dialect::eVulkanGlsl460;
-	vertexStage->getIntermediate()->lang.text.emplace_back(std::move(vertexShaderCode));
-
-	const auto fragmentShaderCode = read_shader_file("__test__render.fs");
-
-	fragmentStage->setIntermediate(make_smr<engine::accel::lang::Intermediate>());
-	fragmentStage->getIntermediate()->lang.dialect = engine::accel::lang::Dialect::eVulkanGlsl460;
-	fragmentStage->getIntermediate()->lang.text.emplace_back(std::move(fragmentShaderCode));
+	vertexStage->setIntermediate(
+		makeIrIntermediate("test/render.vs.asl", ::hg::engine::accel::lang::ir::EntryKind::eVertex)
+	);
+	fragmentStage->setIntermediate(
+		makeIrIntermediate("test/render.fs.asl", ::hg::engine::accel::lang::ir::EntryKind::eFragment)
+	);
 
 	/**/
 

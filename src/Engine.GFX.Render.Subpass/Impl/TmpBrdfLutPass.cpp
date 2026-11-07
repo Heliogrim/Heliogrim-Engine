@@ -274,41 +274,12 @@ smr<AccelerationEffect> build_test_effect() {
 
 	/**/
 
-	const auto vertexShaderCode = read_shader_file(R"(brdf/__test__brdfLut.gen.vs)");
-
-	vertexStage->setIntermediate(make_smr<lang::Intermediate>());
-	vertexStage->getIntermediate()->lang.dialect = lang::Dialect::eVulkanGlsl460;
-	vertexStage->getIntermediate()->lang.text.emplace_back(std::move(vertexShaderCode));
-
-	const auto fragmentShaderCode = read_shader_file(R"(brdf/__test__brdfLut.gen.fs)");
-
-	fragmentStage->setIntermediate(make_smr<lang::Intermediate>());
-	fragmentStage->getIntermediate()->lang.dialect = lang::Dialect::eVulkanGlsl460;
-	fragmentStage->getIntermediate()->lang.text.emplace_back(std::move(fragmentShaderCode));
-
-	/**/
-
-	auto tmpVar = make_uptr<lang::Variable>();
-	auto tmpSym = make_uptr<lang::Symbol>();
-
-	tmpVar->type = lang::Type {
-		.category = lang::TypeCategory::eTexture, .textureType = lang::TextureType::eTexture2d
-	};
-	tmpVar->annotation = make_uptr<lang::SimpleAnnotation<lang::AnnotationType::eForwardLinkage>>();
-	tmpVar->annotation = make_uptr<lang::SimpleAnnotation<lang::AnnotationType::eWriteonly>>(
-		std::move(tmpVar->annotation)
+	vertexStage->setIntermediate(
+		makeIrIntermediate(R"(brdf/brdfLut.gen.vs.asl)", ::hg::engine::accel::lang::ir::EntryKind::eVertex)
 	);
-	tmpVar->annotation = make_uptr<lang::SymbolIdAnnotation>(
-		"color",
-		std::move(tmpVar->annotation)
+	fragmentStage->setIntermediate(
+		makeIrIntermediate(R"(brdf/brdfLut.gen.fs.asl)", ::hg::engine::accel::lang::ir::EntryKind::eFragment)
 	);
-
-	tmpSym->symbolId = lang::SymbolId::from("color"sv);
-	tmpSym->var.type = lang::SymbolType::eVariableSymbol;
-	tmpSym->var.data = tmpVar.get();
-
-	fragmentStage->getIntermediate()->rep.globalScope.outbound.emplace_back(std::move(tmpVar));
-	fragmentStage->getIntermediate()->rep.symbolTable.insert(std::move(tmpSym));
 
 	/**/
 
