@@ -280,11 +280,6 @@ void TmpBrdfIrradPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcep
 		}
 	);
 
-	struct IrradPushBlock {
-		float deltaPhi = 2.0F * math::pi_f / 180.0F;
-		float deltaTheta = 0.5F * math::pi_f / 64.0F;
-	} pushBlock;
-
 	for (auto mip = 0uL; mip < _brdfIrrad->mipLevels(); ++mip) {
 
 		/**/
@@ -297,27 +292,13 @@ void TmpBrdfIrradPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcep
 		/**/
 
 		cmd.lambda(
-			[this, mip, cpyPushBlock = pushBlock](ref<AccelCommandBuffer> cmd_) {
+			[this, mip](ref<AccelCommandBuffer> cmd_) {
 
 				vk::Viewport viewport {
 					0.F, 0.F, static_cast<float>(_brdfIrrad->extent().x >> mip),
 					static_cast<float>(_brdfIrrad->extent().y >> mip), 0.F, 1.F
 				};
 				cmd_.vkCommandBuffer().setViewport(0uL, 1uL, &viewport);
-
-				/**/
-
-				cmd_.vkCommandBuffer().pushConstants(
-					reinterpret_cast<VkPipelineLayout>(
-						Cast<VkGraphicsPipeline>(
-							_compiled.pipeline.get()
-						)->_vkPipeLayout
-					),
-					vk::ShaderStageFlagBits::eFragment,
-					0uL,
-					sizeof(IrradPushBlock),
-					&cpyPushBlock
-				);
 			}
 		);
 
@@ -523,110 +504,8 @@ smr<AccelerationEffect> build_test_effect() {
 
 	/**/
 
-	const auto vertexShaderCode = read_shader_file(R"(brdf/__test__brdfIrrad.gen.vs)");
-
-	vertexStage->setIntermediate(make_smr<Intermediate>());
-	vertexStage->getIntermediate()->lang.dialect = Dialect::eVulkanGlsl460;
-	vertexStage->getIntermediate()->lang.text.emplace_back(std::move(vertexShaderCode));
-
-	const auto fragmentShaderCode = read_shader_file(R"(brdf/__test__brdfIrrad.gen.fs)");
-
-	fragmentStage->setIntermediate(make_smr<Intermediate>());
-	fragmentStage->getIntermediate()->lang.dialect = Dialect::eVulkanGlsl460;
-	fragmentStage->getIntermediate()->lang.text.emplace_back(std::move(fragmentShaderCode));
-
-	/**/
-
-	{
-		auto var = make_uptr<Variable>();
-		auto sym = make_uptr<Symbol>();
-
-		var->type = Type { .category = TypeCategory::eObject, .objectType = ObjectType::eUnknown };
-		var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eExternalLinkage>>();
-		var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eReadonly>>(std::move(var->annotation));
-		var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eUniform>>(std::move(var->annotation));
-		var->annotation = make_uptr<SymbolIdAnnotation>("view-matrix", std::move(var->annotation));
-		var->annotation = make_uptr<VkBindLocationAnnotation>(0L, 0L, 0L, std::move(var->annotation));
-
-		sym->symbolId = SymbolId::from("view-matrix"sv);
-		sym->var.type = SymbolType::eVariableSymbol;
-		sym->var.data = var.get();
-
-		vertexStage->getIntermediate()->rep.globalScope.inbound.emplace_back(std::move(var));
-		vertexStage->getIntermediate()->rep.symbolTable.insert(std::move(sym));
-	} {
-		auto var = make_uptr<Variable>();
-		auto sym = make_uptr<Symbol>();
-
-		var->type = Type {
-			.category = TypeCategory::eTexture, .textureType = lang::TextureType::eTextureCube
-		};
-		var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eExternalLinkage>>();
-		var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eReadonly>>(std::move(var->annotation));
-		var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eUniform>>(std::move(var->annotation));
-		var->annotation = make_uptr<SymbolIdAnnotation>("skybox", std::move(var->annotation));
-		var->annotation = make_uptr<VkBindLocationAnnotation>(1L, 0L, 0L, std::move(var->annotation));
-
-		sym->symbolId = SymbolId::from("skybox"sv);
-		sym->var.type = SymbolType::eVariableSymbol;
-		sym->var.data = var.get();
-
-		fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(std::move(var));
-		fragmentStage->getIntermediate()->rep.symbolTable.insert(std::move(sym));
-	} {
-		auto tmpVar = make_uptr<Variable>();
-		tmpVar->type = Type { .category = TypeCategory::eObject, .objectType = ObjectType::eSampler };
-		tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eExternalLinkage>>();
-		tmpVar->annotation = make_uptr<SymbolIdAnnotation>("skybox-sampler", std::move(tmpVar->annotation));
-
-		auto tmpSym = make_uptr<Symbol>(
-			SymbolId::from("skybox-sampler"sv),
-			VariableSymbol { SymbolType::eVariableSymbol, tmpVar.get() }
-		);
-
-		fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(std::move(tmpVar));
-		fragmentStage->getIntermediate()->rep.symbolTable.insert(std::move(tmpSym));
-	} {
-		auto var = make_uptr<Variable>();
-		auto sym = make_uptr<Symbol>();
-
-		var->type = Type {
-			.category = TypeCategory::eObject, .objectType = ObjectType::eUnknown
-		};
-		var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eExternalLinkage>>();
-		var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eConstant>>(std::move(var->annotation));
-		var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eReadonly>>(std::move(var->annotation));
-		var->annotation = make_uptr<SymbolIdAnnotation>("block", std::move(var->annotation));
-
-		sym->symbolId = SymbolId::from("block"sv);
-		sym->var.type = SymbolType::eVariableSymbol;
-		sym->var.data = var.get();
-
-		fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(std::move(var));
-		fragmentStage->getIntermediate()->rep.symbolTable.insert(std::move(sym));
-	}
-
-	auto tmpVar = make_uptr<Variable>();
-	auto tmpSym = make_uptr<Symbol>();
-
-	tmpVar->type = Type {
-		.category = TypeCategory::eTexture, .textureType = lang::TextureType::eTexture2d
-	};
-	tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eForwardLinkage>>();
-	tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eWriteonly>>(
-		std::move(tmpVar->annotation)
-	);
-	tmpVar->annotation = make_uptr<SymbolIdAnnotation>(
-		"color",
-		std::move(tmpVar->annotation)
-	);
-
-	tmpSym->symbolId = SymbolId::from("color"sv);
-	tmpSym->var.type = SymbolType::eVariableSymbol;
-	tmpSym->var.data = tmpVar.get();
-
-	fragmentStage->getIntermediate()->rep.globalScope.outbound.emplace_back(std::move(tmpVar));
-	fragmentStage->getIntermediate()->rep.symbolTable.insert(std::move(tmpSym));
+	vertexStage->setIntermediate(makeIrIntermediate(R"(brdf/cubeGen.vs.asl)", ir::EntryKind::eVertex));
+	fragmentStage->setIntermediate(makeIrIntermediate(R"(brdf/brdfIrrad.gen.fs.asl)", ir::EntryKind::eFragment));
 
 	/**/
 

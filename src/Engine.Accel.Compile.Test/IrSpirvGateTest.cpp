@@ -61,6 +61,26 @@ namespace AccelCompile {
 		EXPECT_TRUE(assetCompilesToSpirv("brdf/brdfLut.gen.fs.asl", EntryKind::eFragment));
 	}
 
+	TEST(IrSpirvGateTest, SkyVertex) {
+		EXPECT_TRUE(assetCompilesToSpirv("skybox/sky.vs.asl", EntryKind::eVertex));
+	}
+
+	TEST(IrSpirvGateTest, SkyFragment) {
+		EXPECT_TRUE(assetCompilesToSpirv("skybox/sky.fs.asl", EntryKind::eFragment));
+	}
+
+	TEST(IrSpirvGateTest, CubeGenVertex) {
+		EXPECT_TRUE(assetCompilesToSpirv("brdf/cubeGen.vs.asl", EntryKind::eVertex));
+	}
+
+	TEST(IrSpirvGateTest, BrdfIrradFragment) {
+		EXPECT_TRUE(assetCompilesToSpirv("brdf/brdfIrrad.gen.fs.asl", EntryKind::eFragment));
+	}
+
+	TEST(IrSpirvGateTest, BrdfPrefFragment) {
+		EXPECT_TRUE(assetCompilesToSpirv("brdf/brdfPref.gen.fs.asl", EntryKind::eFragment));
+	}
+
 	TEST(IrSpirvGateTest, RejectsBrokenGlsl) {
 		EXPECT_FALSE(glslCompiles("#version 460\nvoid main(){ gl_Position = vec4(0); }", EntryKind::eFragment));
 	}
