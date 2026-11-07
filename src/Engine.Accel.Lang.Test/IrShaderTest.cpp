@@ -4,6 +4,7 @@
 #include <Engine.Accel.Lang/Ir/Interface.hpp>
 #include <Engine.Accel.Lang/Ir/Layout.hpp>
 #include <Engine.Accel.Lang/Ir/Lower.hpp>
+#include <Engine.Accel.Lang/Ir/Merge.hpp>
 #include <Engine.Accel.Lang/Ir/Slice.hpp>
 
 #include "IrShaderFixtures.hpp"
@@ -547,5 +548,209 @@ namespace AccelLang {
 		ASSERT_EQ(parsed->warnings.size(), 2uz);
 		EXPECT_NE(std::string { parsed->warnings[0].message }.find("'sample' uses implicit derivatives"), std::string::npos);
 		EXPECT_NE(std::string { parsed->warnings[1].message }.find("'sample_sparse_clamp' uses implicit derivatives"), std::string::npos);
+	}
+
+	namespace {
+		[[nodiscard]] std::expected<Module, Diagnostics> parseAsset(StringView path_, EntryKind kind_) {
+			const auto source = readShaderAsset(path_);
+			if (not source.has_value()) {
+				return std::unexpected(Diagnostics { Diagnostic { .message = "missing shader asset " + String { path_ } } });
+			}
+			return parseModule(path_, *source, kind_, ModuleResolver { readShaderAsset });
+		}
+
+		[[nodiscard]] Module assetWith(StringView path_, EntryKind kind_, ref<const ToggleSet> toggles_) {
+			auto parsed = parseAsset(path_, kind_);
+			EXPECT_TRUE(parsed.has_value()) << path_;
+			if (not parsed.has_value()) {
+				return {};
+			}
+			auto resolved = resolveToggles(*parsed, toggles_);
+			EXPECT_TRUE(resolved.has_value()) << path_ << (resolved.has_value() || resolved.error().empty() ? "" : ": " + String { resolved.error().front().message });
+			return resolved.has_value() ? std::move(resolved).value() : Module {};
+		}
+	}
+
+	TEST(GBufferShaderTest, InterfacePerPassContext) {
+		const auto depthOnly = assetWith("brdf/gbuffer.fs.asl", EntryKind::eFragment, { { "PassContext", "DepthOnly" } });
+		const auto depthEntries = computeInterface(depthOnly);
+		ASSERT_EQ(depthEntries.size(), 1uz);
+		EXPECT_EQ(depthEntries.front().id, "depth");
+		EXPECT_TRUE(depthEntries.front().implicit);
+		EXPECT_FALSE(depthEntries.front().input);
+
+		const auto material = assetWith("brdf/gbuffer.fs.asl", EntryKind::eFragment, { { "PassContext", "Material" } });
+		const auto entries = computeInterface(material);
+		for (const auto* id : { "brdf-albedo", "brdf-normal", "brdf-arm", "brdf-position" }) {
+			const auto* out = find(entries, id, false);
+			ASSERT_NE(out, nullptr) << id;
+			EXPECT_EQ(out->mode, BindMode::eForward) << id;
+		}
+		for (const auto* id : { "material.albedo", "material.normal", "material.arm" }) {
+			const auto* tex = find(entries, id, true);
+			ASSERT_NE(tex, nullptr) << id;
+			EXPECT_EQ(tex->cls, BindClass::eTexture) << id;
+			const auto* smp = find(entries, String { id } + "-sampler", true);
+			ASSERT_NE(smp, nullptr) << id;
+			EXPECT_EQ(smp->cls, BindClass::eSampler) << id;
+		}
+
+		const auto vertexDepth = assetWith("brdf/gbuffer.vs.asl", EntryKind::eVertex, { { "PassContext", "DepthOnly" } });
+		EXPECT_EQ(find(computeInterface(vertexDepth), "world-position", false), nullptr);
+		const auto vertexMaterial = assetWith("brdf/gbuffer.vs.asl", EntryKind::eVertex, { { "PassContext", "Material" } });
+		EXPECT_NE(find(computeInterface(vertexMaterial), "world-position", false), nullptr);
+	}
+
+	TEST(GBufferShaderTest, SparseRetryLoopsWarnUniformity) {
+		auto parsed = parseAsset("brdf/gbuffer.fs.asl", EntryKind::eFragment);
+		ASSERT_TRUE(parsed.has_value());
+
+		std::string all {};
+		for (const auto& w : parsed->warnings) {
+			all += std::string { w.message } + "\n";
+		}
+		SCOPED_TRACE(all);
+		// one retry loop per sparse helper (albedo, normal, arm), lane-dependent by `sparse_resident`
+		ASSERT_EQ(parsed->warnings.size(), 3uz);
+		for (const auto& w : parsed->warnings) {
+			EXPECT_NE(std::string { w.message }.find("'sample_sparse_clamp' uses implicit derivatives"), std::string::npos);
+		}
+	}
+
+	TEST(GBufferShaderTest, ExhaustiveOverMeshType) {
+		for (const auto* mesh : { "Static", "Skeletal" }) {
+			for (const auto* pass : { "DepthOnly", "Material" }) {
+				const auto vertex = assetWith("brdf/gbuffer.vs.asl", EntryKind::eVertex, { { "MeshType", mesh }, { "PassContext", pass } });
+				EXPECT_FALSE(vertex.functions.empty()) << mesh << "/" << pass;
+			}
+		}
+
+		// the skeletal variant reads bone indices only
+		const auto skeletal = assetWith("brdf/gbuffer.vs.asl", EntryKind::eVertex, { { "MeshType", "Skeletal" } });
+		EXPECT_NE(find(computeInterface(skeletal), "vertex-bone-idx", true), nullptr);
+		const auto fixed = assetWith("brdf/gbuffer.vs.asl", EntryKind::eVertex, { { "MeshType", "Static" } });
+		EXPECT_EQ(find(computeInterface(fixed), "vertex-bone-idx", true), nullptr);
+
+		// a module that provides only one mesh type is rejected for the other
+		const auto partial = parseModule(
+			"partial",
+			"#include <spec/defined.static.asl>\n@output (mode = forward, id = \"o\") f32vec4 o;\nfn main() { o = GetWorldPosition(); }\n",
+			EntryKind::eVertex,
+			ModuleResolver { readShaderAsset }
+		);
+		ASSERT_TRUE(partial.has_value());
+		const auto resolved = resolveToggles(*partial, ToggleSet {});
+		ASSERT_FALSE(resolved.has_value());
+		EXPECT_NE(std::string { resolved.error().front().message }.find("no body for"), std::string::npos);
+	}
+
+	TEST(TemplateShaderTest, OpaqueParsesAndResolves) {
+		// both stages resolve although the mesh-type and lighting modules are not provided by any pass
+		const auto vertex = assetWith("template/default.opaque.vs.asl", EntryKind::eVertex, {});
+		EXPECT_FALSE(vertex.functions.empty());
+
+		const auto fragment = assetWith("template/default.opaque.fs.asl", EntryKind::eFragment, {});
+		EXPECT_NE(find(computeInterface(fragment), "material.albedo", true), nullptr);
+		EXPECT_NE(find(computeInterface(fragment), "color", false), nullptr);
+	}
+
+	namespace {
+		[[nodiscard]] bool hasFunction(ref<const Module> module_, StringView name_) {
+			return std::ranges::any_of(module_.functions, [&](ref<const FunctionDecl> fn_) { return fn_.name == name_; });
+		}
+
+		[[nodiscard]] std::expected<Module, Diagnostics> mergeResolved(std::initializer_list<const Module*> modules_, ref<const ToggleSet> toggles_ = {}) {
+			const Vector<const Module*> list { modules_ };
+			auto merged = merge(list);
+			if (not merged.has_value()) {
+				return merged;
+			}
+			return resolveToggles(*merged, toggles_);
+		}
+
+		/* merges spec + user for one MeshType; the single VertexOutputPosition must return the user's constructor, not the spec's multiply */
+		void expectOverrideKept(ref<const Module> spec_, ref<const Module> user_, StringView meshType_) {
+			const auto resolved = mergeResolved({ &spec_, &user_ }, { { "MeshType", String { meshType_ } } });
+			ASSERT_TRUE(resolved.has_value()) << (resolved.has_value() ? "" : String { resolved.error().front().message });
+
+			const FunctionDecl* found = nullptr;
+			size_t count = 0;
+			for (const auto& fn : resolved->functions) {
+				if (fn.name == "VertexOutputPosition") {
+					found = &fn;
+					++count;
+				}
+			}
+			ASSERT_EQ(count, 1uz);
+			ASSERT_TRUE(found->body.has_value());
+
+			auto stmt = resolved->stmts[found->body->root.index];
+			while (stmt.kind == StmtKind::eBlock && not stmt.children.empty()) {
+				stmt = resolved->stmts[stmt.children.front().index];
+			}
+			ASSERT_EQ(stmt.kind, StmtKind::eReturn);
+			EXPECT_EQ(resolved->exprs[stmt.lhs.index].kind, ExprKind::eConstruct);
+		}
+	}
+
+	TEST(MeshTypeShaderTest, LaterModuleOverridesRedefinableVertexOutput) {
+		const auto spec = parseAsset("spec/defined.static.asl", EntryKind::eVertex);
+		ASSERT_TRUE(spec.has_value());
+		const auto user = parseModule(
+			"user",
+			"#include <spec/defined.asl>\n"
+			"@when (MeshType == Static) fn VertexOutputPosition() -> f32vec4 { return f32vec4(0.0); }\n"
+			"fn main() { position = VertexOutputPosition(); }\n",
+			EntryKind::eVertex,
+			ModuleResolver { readShaderAsset }
+		);
+		ASSERT_TRUE(user.has_value());
+
+		expectOverrideKept(*spec, *user, "Static");
+	}
+
+	TEST(MeshTypeShaderTest, LaterModuleOverridesRedefinableVertexOutputSkeletal) {
+		const auto spec = parseAsset("spec/defined.skeletal.asl", EntryKind::eVertex);
+		ASSERT_TRUE(spec.has_value());
+		const auto user = parseModule(
+			"user",
+			"#include <spec/defined.asl>\n"
+			"@when (MeshType == Skeletal) fn VertexOutputPosition() -> f32vec4 { return f32vec4(0.0); }\n"
+			"fn main() { position = VertexOutputPosition(); }\n",
+			EntryKind::eVertex,
+			ModuleResolver { readShaderAsset }
+		);
+		ASSERT_TRUE(user.has_value());
+		expectOverrideKept(*spec, *user, "Skeletal");
+	}
+
+	TEST(TemplateShaderTest, OpaqueComposesWithProviders) {
+		const auto spec = parseAsset("spec/defined.static.asl", EntryKind::eVertex);
+		const auto vertex = parseAsset("template/default.opaque.vs.asl", EntryKind::eVertex);
+		ASSERT_TRUE(spec.has_value() && vertex.has_value());
+		const auto composedVertex = mergeResolved({ &*spec, &*vertex });
+		ASSERT_TRUE(composedVertex.has_value()) << (composedVertex.has_value() ? "" : String { composedVertex.error().front().message });
+		EXPECT_TRUE(hasFunction(*composedVertex, "GetWorldToScreen"));
+
+		const auto lighting = parseModule(
+			"lighting",
+			"#include <shared/math.asl>\n#include <shared/pbr.asl>\n#include <shared/tonemap.asl>\n#include <shared/lighting.brdf.asl>\n",
+			EntryKind::eFragment,
+			ModuleResolver { readShaderAsset }
+		);
+		const auto varyings = parseAsset("spec/defined.fragment.asl", EntryKind::eFragment);
+		const auto fragment = parseAsset("template/default.opaque.fs.asl", EntryKind::eFragment);
+		ASSERT_TRUE(lighting.has_value() && varyings.has_value() && fragment.has_value());
+		const auto composedFragment = mergeResolved({ &*lighting, &*varyings, &*fragment });
+		ASSERT_TRUE(composedFragment.has_value()) << (composedFragment.has_value() ? "" : String { composedFragment.error().front().message });
+		EXPECT_TRUE(hasFunction(*composedFragment, "ColorBrdf"));
+		EXPECT_TRUE(hasFunction(*composedFragment, "GetWorldPosition"));
+	}
+
+	TEST(TemplateShaderTest, PostProcessParsesAndResolves) {
+		const auto module = assetWith("template/default.pp.asl", EntryKind::eFragment, {});
+		const auto entries = computeInterface(module);
+		EXPECT_NE(find(entries, "color", true), nullptr);
+		EXPECT_NE(find(entries, "color", false), nullptr);
 	}
 }

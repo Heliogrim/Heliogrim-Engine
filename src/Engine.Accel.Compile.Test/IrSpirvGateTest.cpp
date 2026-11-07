@@ -89,6 +89,20 @@ namespace AccelCompile {
 		EXPECT_TRUE(assetCompilesToSpirv("brdf/brdf.fs.asl", EntryKind::eFragment));
 	}
 
+	TEST(IrSpirvGateTest, GBufferFragmentPerPassContext) {
+		EXPECT_TRUE(assetCompilesToSpirv("brdf/gbuffer.fs.asl", EntryKind::eFragment, { { "PassContext", "DepthOnly" } }));
+		EXPECT_TRUE(assetCompilesToSpirv("brdf/gbuffer.fs.asl", EntryKind::eFragment, { { "PassContext", "Material" } }));
+	}
+
+	TEST(IrSpirvGateTest, GBufferVertexPerMeshTypeAndPassContext) {
+		for (const auto* mesh : { "Static", "Skeletal" }) {
+			for (const auto* pass : { "DepthOnly", "Material" }) {
+				EXPECT_TRUE(assetCompilesToSpirv("brdf/gbuffer.vs.asl", EntryKind::eVertex, { { "MeshType", mesh }, { "PassContext", pass } }))
+					<< mesh << "/" << pass;
+			}
+		}
+	}
+
 	TEST(IrSpirvGateTest, RejectsBrokenGlsl) {
 		EXPECT_FALSE(glslCompiles("#version 460\nvoid main(){ gl_Position = vec4(0); }", EntryKind::eFragment));
 	}
