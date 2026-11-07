@@ -4,29 +4,29 @@
 #include <Engine.GFX.RenderGraph/Relation/Description.hpp>
 
 namespace hg::engine::accel {
-    /**
-     * Used for contextual resolved resources (i.e. camera data)
-     */
-    struct ContextUsagePattern {
-        /**/
-        Vector<std::pair<smr<const render::graph::Description>, accel::lang::SymbolId>> pairs;
-        // i.e. pair< SceneViewDescription <-> SymbolId >
-    };
+	/**
+	 * Used for contextual resolved resources (i.e. camera data)
+	 */
+	struct ContextUsagePattern {
+		/**/
+		Vector<std::pair<smr<const render::graph::Description>, accel::lang::SymbolId>> pairs;
+		// i.e. pair< SceneViewDescription <-> SymbolId >
+	};
 
-    struct DynamicUsagePattern {
-        /**/
-        Vector<std::pair<smr<const render::graph::Description>, accel::lang::SymbolId>> pairs;
-        // i.e. pair< MeshDescription <-> SymbolId >
-    };
+	struct DynamicUsagePattern {
+		/**/
+		Vector<std::pair<smr<const render::graph::Description>, accel::lang::SymbolId>> pairs;
+		// i.e. pair< MeshDescription <-> SymbolId >
+	};
 
-    struct StaticUsagePattern {
-        // Note: Currently unsupported
-    };
+	struct StaticUsagePattern {
+		// Note: Currently unsupported
+	};
 
-    /**/
-    struct ProfileUsagePattern {
-        ContextUsagePattern ctx;
-        DynamicUsagePattern dyn;
-        StaticUsagePattern st;
-    };
+	/**/
+	struct ProfileUsagePattern {
+		ContextUsagePattern ctx;
+		DynamicUsagePattern dyn;
+		StaticUsagePattern st;
+	};
 }
