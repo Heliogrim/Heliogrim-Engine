@@ -115,6 +115,9 @@ namespace {
 					insertSorted(facts_.calls, function(e));
 				}
 				if (e.kind == ir::ExprKind::eBuiltin) {
+					if (e.name == "emit_vertex" || e.name == "end_primitive") {
+						insertSorted(facts_.calls, unset);
+					}
 					for (auto i = 0uz; i < e.operands.size(); ++i) {
 						/* shortcut: a builtin `&mut` out argument counts as an unknown writer, so the statement always stays; upgrade to keep it only while the written place is live */
 						if (ir::builtinWritesArg(e.name, i)) {
