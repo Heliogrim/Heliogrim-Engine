@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <ranges>
+#include <Editor.Boot/Boot/ActorInit.hpp>
 #include <Editor.Boot/Boot/ConfigInit.hpp>
 #include <Editor.Boot/Boot/SerializationInit.hpp>
 #include <Editor.Boot/Boot/StorageInit.hpp>
@@ -185,6 +186,10 @@ bool EditorEngine::init() {
 			setupCounter.notify_one();
 		}
 	);
+
+	/**/
+
+	boot::initActorClasses(*_actors);
 
 	/**/
 	scheduler::waitUntilAtomic(setupCounter, 1u);

@@ -30,11 +30,8 @@ void editor::boot::initSerialization([[maybe_unused]] cref<engine::Config> cfg_,
 
 	module_.addActorScheme<Actor>();
 	module_.addActorScheme<CameraActor>();
-	std::ignore = RegisterActorClass<StaticGeometryActor>();
 	module_.addActorScheme(StaticGeometryActor::typeId, MakeArchetypeFnSet(&StaticGeometryActor::actorClass()));
-	std::ignore = RegisterActorClass<BoxShapeGeometryActor>();
 	module_.addActorScheme(BoxShapeGeometryActor::typeId, MakeArchetypeFnSet(&BoxShapeGeometryActor::actorClass()));
-	std::ignore = RegisterActorClass<SphereShapeGeometryActor>();
 	module_.addActorScheme(SphereShapeGeometryActor::typeId, MakeArchetypeFnSet(&SphereShapeGeometryActor::actorClass()));
 	module_.addActorScheme<DirectionalLightActor>();
 	module_.addActorScheme<PointLightActor>();
