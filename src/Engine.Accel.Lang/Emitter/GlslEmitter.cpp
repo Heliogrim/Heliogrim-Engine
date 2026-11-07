@@ -130,7 +130,15 @@ namespace {
 		/* emitted struct name -> its member text, to emit a name once and catch conflicting definitions */
 		Vector<std::pair<String, String>> _structNames;
 		/* locals and parameters in scope, innermost last */
-		Vector<std::pair<String, Opt<ir::TypeDesc>>> _locals;
+		struct Local {
+			String name;
+			Opt<ir::TypeDesc> type;
+			/* a reference alias: the place text its uses are replaced by */
+			Opt<String> alias = None;
+		};
+
+		Vector<Local> _locals;
+		u32 _refs = 0uL;
 		u32 _depth = 0uL;
 
 		void error(String message_) {
@@ -491,7 +499,8 @@ namespace {
 				}
 				return;
 			}
-			block(head + (binding_.bindClass == eStorageBuffer ? " buffer" : " uniform"), binding_, *desc);
+			const auto qualifier = binding_.access == ir::Access::eRead ? " readonly" : binding_.access == ir::Access::eWrite ? " writeonly" : "";
+			block(head + (binding_.bindClass == eStorageBuffer ? String { qualifier } + " buffer" : String { " uniform" }), binding_, *desc);
 		}
 
 		/* an anonymous struct becomes the block body (instance name = local name), any other type its only member */
@@ -527,7 +536,7 @@ namespace {
 				if (not decl.has_value()) {
 					return None;
 				}
-				params += (params.empty() ? "" : ", ") + *decl;
+				params += (params.empty() ? "" : ", ") + String { param.kind == ir::ParamKind::eRefMut ? "inout " : "const in " } + *decl;
 			}
 			return *retName + " " + fn_.name + "(" + params + ")";
 		}
@@ -559,8 +568,9 @@ namespace {
 				}
 
 				_locals.clear();
+				_refs = 0uL;
 				for (const auto& param : fn.params) {
-					_locals.emplace_back(param.name, typeOf(param.type));
+					_locals.push_back({ param.name, typeOf(param.type) });
 				}
 				definitions += "\n" + *sig + "\n";
 				arm(fn.body->root, 0uL, definitions);
@@ -613,6 +623,11 @@ namespace {
 					declareLocal(stmt, pad, out_);
 					break;
 				}
+				case ir::StmtKind::eDeclareRef: {
+					const auto target = place(stmt.lhs, pad, out_);
+					_locals.push_back({ stmt.name, target.type, target.text });
+					break;
+				}
 				case ir::StmtKind::eAssign: {
 					const auto lhs = expr(stmt.lhs);
 					out_ += pad + lhs.text + " = " + expr(stmt.rhs).text + ";\n";
@@ -661,20 +676,47 @@ namespace {
 				error("Cannot infer the type of local '" + stmt_.name + "'.");
 			}
 			if (decl.has_value()) {
-				out_ += pad_ + *decl + (init.has_value() ? " = " + init->text : String {}) + ";\n";
+				out_ += pad_ + (stmt_.mutable_ ? "" : "const ") + *decl + (init.has_value() ? " = " + init->text : String {}) + ";\n";
 			}
-			_locals.emplace_back(stmt_.name, std::move(type));
+			_locals.push_back({ stmt_.name, std::move(type) });
 		}
 
 		/* Expressions: every unary and binary is parenthesized, so source precedence carries over */
 
-		[[nodiscard]] Opt<ir::TypeDesc> localType(ref<const String> name_) const {
+		[[nodiscard]] const Local* findLocal(ref<const String> name_) const {
 			for (auto it = _locals.rbegin(); it != _locals.rend(); ++it) {
-				if (it->first == name_) {
-					return it->second;
+				if (it->name == name_) {
+					return &*it;
 				}
 			}
-			return None;
+			return nullptr;
+		}
+
+		[[nodiscard]] Opt<ir::TypeDesc> localType(ref<const String> name_) const {
+			const auto* local = findLocal(name_);
+			return local != nullptr ? local->type : None;
+		}
+
+		/* a place for an alias: non-constant indices are evaluated once, at the alias point */
+		[[nodiscard]] Emitted place(ir::ExprRef ref_, ref<const String> pad_, ref<String> out_) {
+			if (ref_.index >= _module.exprs.size()) {
+				return expr(ref_);
+			}
+			const auto& e = _module.exprs[ref_.index];
+			if (e.kind == ir::ExprKind::eField && not e.operands.empty()) {
+				return { place(e.operands[0], pad_, out_).text + "." + e.name, typeOf(e.type) };
+			}
+			if (e.kind == ir::ExprKind::eIndex && e.operands.size() == 2uz) {
+				const auto base = place(e.operands[0], pad_, out_);
+				auto index = expr(e.operands[1]).text;
+				if (e.operands[1].index < _module.exprs.size() && _module.exprs[e.operands[1].index].kind != ir::ExprKind::eLiteral) {
+					const auto hoisted = "_hg_ref" + std::to_string(_refs++);
+					out_ += pad_ + "const uint " + hoisted + " = " + index + ";\n";
+					index = hoisted;
+				}
+				return { base.text + "[" + index + "]", typeOf(e.type) };
+			}
+			return expr(ref_);
 		}
 
 		[[nodiscard]] Emitted expr(ir::ExprRef ref_) {
@@ -767,6 +809,9 @@ namespace {
 
 		[[nodiscard]] Emitted nameRef(ref<const ir::Expr> e_) {
 			if (e_.local) {
+				if (const auto* local = findLocal(e_.name); local != nullptr && local->alias.has_value()) {
+					return { *local->alias, local->type };
+				}
 				return { e_.name, typeOf(e_.type).has_value() ? typeOf(e_.type) : localType(e_.name) };
 			}
 			const auto& decls = _module.bindings;

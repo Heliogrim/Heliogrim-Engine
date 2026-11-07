@@ -100,8 +100,8 @@ namespace AccelLang {
 		ASSERT_TRUE(lowered.has_value()) << lowered.error().front().message;
 
 		const auto& text = lowered->lang.text.front().data;
-		EXPECT_TRUE(text.contains("layout(set = 0, binding = 0) buffer")) << text;
-		EXPECT_TRUE(text.contains("layout(set = 0, binding = 1) buffer")) << text;
+		EXPECT_TRUE(text.contains("layout(set = 0, binding = 0) readonly buffer")) << text;
+		EXPECT_TRUE(text.contains("layout(set = 0, binding = 1) readonly buffer")) << text;
 		EXPECT_FALSE(text.contains("set = 1")) << text;
 	}
 

@@ -33,7 +33,7 @@ namespace hg::engine::accel::lang::ir {
 	 * in order, expressions after statements), so equal surviving code yields equal arenas whatever was dropped.
 	 * Every ref of the result is in range or ~0: out-of-range refs become ~0, a back edge (cycle) is cut, a
 	 * dropped statement leaves its block, and a dropped `if`/`when` arm or body root becomes an empty block.
-	 * Calls keep their kept target, else re-resolve by name to the first kept function of that name.
+	 * Calls keep their kept target, else re-resolve to the unique kept function with the same signature (name and parameter types).
 	 */
 	[[nodiscard]] Compacted compact(ref<const Module> module_, ref<const CompactPlan> plan_);
 }

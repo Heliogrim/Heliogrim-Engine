@@ -37,6 +37,13 @@ namespace AccelLang {
 			return res.has_value() || res.error().empty() ? String {} : res.error().front().message;
 		}
 
+		[[nodiscard]] String emitGlsl(ref<Module> module_) {
+			Language target {};
+			const auto layout = assignLayout(computeInterface(module_), module_.types, {});
+			(void)GlslEmitter {}.emit(module_, layout, target);
+			return target.text.empty() ? String {} : String { target.text.front().data };
+		}
+
 		[[nodiscard]] String typeNameOfLocal(ref<const Module> module_, StringView name_) {
 			for (const auto& stmt : module_.stmts) {
 				if (stmt.kind == StmtKind::eDeclareLocal && stmt.name == name_) {
@@ -120,8 +127,7 @@ namespace AccelLang {
 		EXPECT_GT(res.error().front().column, 0u);
 	}
 
-	TEST(TypecheckTest, UnknownNameInsideCallIsReported) {
-		// the parser reports `missing` already; typecheck never runs, so the first message stays the parser's
+	TEST(TypecheckTest, ParserReportsUnknownNameBeforeTypecheck) {
 		EXPECT_TRUE(firstMessage("fn F() -> f32 {\n\treturn missing;\n}\n").contains("missing"));
 	}
 
@@ -205,5 +211,131 @@ namespace AccelLang {
 		}
 		std::ranges::sort(names);
 		EXPECT_EQ(names, (Vector<String> { "f(f32vec3)", "main()" }));
+	}
+
+	namespace {
+		[[nodiscard]] TypeRef addType(ref<Module> m_, TypeDesc d_) {
+			m_.types.emplace_back(std::move(d_));
+			return TypeRef { static_cast<u32>(m_.types.size() - 1uz) };
+		}
+
+		[[nodiscard]] ExprRef addExpr(ref<Module> m_, Expr e_) {
+			m_.exprs.emplace_back(std::move(e_));
+			return ExprRef { static_cast<u32>(m_.exprs.size() - 1uz) };
+		}
+
+		[[nodiscard]] StmtRef addStmt(ref<Module> m_, Stmt s_) {
+			m_.stmts.emplace_back(std::move(s_));
+			return StmtRef { static_cast<u32>(m_.stmts.size() - 1uz) };
+		}
+
+		[[nodiscard]] FunctionDecl bodied(ref<Module> m_, String name_, Vector<ParamDecl> params_, TypeRef ret_, StmtKind kind_, ExprRef value_) {
+			const auto inner = addStmt(m_, Stmt { .kind = kind_, .lhs = value_ });
+			const auto root = addStmt(m_, Stmt { .kind = StmtKind::eBlock, .children = { inner } });
+			return FunctionDecl { .name = std::move(name_), .params = std::move(params_), .ret = ret_, .body = BodyRef { root } };
+		}
+	}
+
+	TEST(TypecheckTest, UnresolvedNameRefIsReported) {
+		Module module {};
+		const auto name = addExpr(module, Expr { .kind = ExprKind::eNameRef, .name = "missing" });
+		module.functions.emplace_back(bodied(module, "main", {}, {}, StmtKind::eExpr, name));
+
+		const auto diagnostics = typecheck(module);
+		ASSERT_FALSE(diagnostics.empty());
+		EXPECT_EQ(diagnostics.front().message, "unknown name 'missing'");
+	}
+
+	TEST(TypecheckTest, IntegerMatrixIsNotNumeric) {
+		Module module {};
+		const auto mat = addType(module, TypeDesc { .kind = TypeKind::eMatrix, .scalar = ScalarKind::eInt, .n = 2uL, .m = 2uL });
+		const auto x = addExpr(module, Expr { .kind = ExprKind::eNameRef, .name = "x", .local = true });
+		const auto neg = addExpr(module, Expr { .kind = ExprKind::eUnary, .name = "-", .operands = { x } });
+		module.functions.emplace_back(bodied(module, "f", { ParamDecl { .name = "x", .type = mat } }, mat, StmtKind::eReturn, neg));
+
+		EXPECT_FALSE(typecheck(module).empty());
+	}
+
+	TEST(TypecheckTest, SameNamedStructsWithDifferentFieldsAreDistinct) {
+		Module module {};
+		const auto f32t = addType(module, TypeDesc { .kind = TypeKind::eScalar, .scalar = ScalarKind::eFloat });
+		const auto i32t = addType(module, TypeDesc { .kind = TypeKind::eScalar, .scalar = ScalarKind::eInt });
+		const auto s1 = addType(module, TypeDesc { .kind = TypeKind::eStruct, .name = "S", .fields = { FieldDesc { "a", f32t } } });
+		const auto s2 = addType(module, TypeDesc { .kind = TypeKind::eStruct, .name = "S", .fields = { FieldDesc { "a", i32t } } });
+
+		const auto noop = addStmt(module, Stmt { .kind = StmtKind::eBlock });
+		module.functions.emplace_back(FunctionDecl { .name = "F", .params = { ParamDecl { .name = "x", .type = s1 } }, .body = BodyRef { noop } });
+		module.functions.emplace_back(FunctionDecl { .name = "F", .params = { ParamDecl { .name = "x", .type = s2 } }, .body = BodyRef { noop } });
+
+		const auto y = addExpr(module, Expr { .kind = ExprKind::eNameRef, .name = "y", .local = true });
+		const auto call = addExpr(module, Expr { .kind = ExprKind::eCall, .name = "F", .operands = { y } });
+		module.functions.emplace_back(bodied(module, "g", { ParamDecl { .name = "y", .type = s2 } }, {}, StmtKind::eExpr, call));
+
+		EXPECT_TRUE(typecheck(module).empty());
+		EXPECT_EQ(module.exprs[call.index].function.index, 1uL);
+	}
+
+	TEST(MutabilityTest, LetIsMutable) {
+		parseOk("fn main() {\n\tlet v = 1.0;\n\tv = 2.0;\n}\n");
+	}
+
+	TEST(MutabilityTest, ConstIsImmutable) {
+		EXPECT_TRUE(firstMessage("fn main() {\n\tconst k = 1.0;\n\tk = 2.0;\n}\n").contains("cannot assign to constant 'k'"));
+	}
+
+	TEST(MutabilityTest, ConstNeedsInitializer) {
+		EXPECT_TRUE(firstMessage("fn main() {\n\tconst k: f32;\n}\n").contains("a 'const' local needs an initializer"));
+	}
+
+	TEST(MutabilityTest, ConstWithRuntimeInitializerIsValid) {
+		const auto module = parseOk(
+			"@input (mode = forward, id = \"v\") f32vec3 v;\n"
+			"fn normalize(x: f32vec3) -> f32vec3 { return x; }\n"
+			"fn main() {\n\tconst n = normalize(v);\n}\n"
+		);
+		auto module2 = module;
+		const auto text = emitGlsl(module2);
+		EXPECT_TRUE(text.contains("const vec3 n = normalize(v);")) << text;
+	}
+
+	TEST(MutabilityTest, TypedLocalIsMutable) {
+		parseOk("fn main() {\n\tf32 x = 1.0;\n\tx = 2.0;\n}\n");
+	}
+
+	TEST(MutabilityTest, ConstMutAliasIsDiagnostic) {
+		EXPECT_TRUE(
+			firstMessage("fn main() {\n\tlet a = 1.0;\n\tconst l = &mut a;\n}\n").contains("cannot take '&mut' into a 'const' alias")
+		);
+	}
+
+	TEST(MutabilityTest, ValueParamIsImmutable) {
+		EXPECT_FALSE(parse("fn f(x: f32) { x = 1.0; }\nfn main() {}\n").has_value());
+	}
+
+	TEST(MutabilityTest, RefParamIsImmutable) {
+		EXPECT_TRUE(firstMessage("fn f(x: &f32) { x = 1.0; }\nfn main() {}\n").contains("cannot assign through immutable reference 'x'"));
+	}
+
+	TEST(MutabilityTest, RefMutParamIsAssignable) {
+		parseOk("fn f(x: &mut f32) { x = 1.0; }\nfn main() {}\n");
+	}
+
+	TEST(MutabilityTest, InputBindingIsReadOnly) {
+		const auto head = String { "@input (mode = bind, id = \"camera\", class = storage) block camera { f32 x; };\n" };
+		EXPECT_FALSE(parse(head + "fn main() {\n\tcamera.x = 1.0;\n}\n").has_value());
+		EXPECT_TRUE(
+			firstMessage(head + "fn main() {\n\tlet r = &mut camera.x;\n}\n").contains("cannot borrow read-only binding 'camera' as mutable")
+		);
+	}
+
+	TEST(MutabilityTest, StorageReadWriteIsAssignable) {
+		parseOk("@input (mode = bind, id = \"camera\", class = storage, access = read_write) block camera { f32 x; };\nfn main() {\n\tcamera.x = 1.0;\n}\n");
+	}
+
+	TEST(MutabilityTest, AliasingMutArgumentsIsDiagnostic) {
+		EXPECT_TRUE(
+			firstMessage("fn F(x: &mut f32, y: &f32) {}\nfn main() {\n\tlet a = 1.0;\n\tF(a, a);\n}\n")
+			.contains("'&mut' argument 'a' aliases another argument of call to 'F'")
+		);
 	}
 }
