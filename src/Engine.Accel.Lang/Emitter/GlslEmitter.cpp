@@ -630,7 +630,7 @@ namespace {
 				}
 				case ir::StmtKind::eAssign: {
 					const auto lhs = expr(stmt.lhs);
-					out_ += pad + lhs.text + " = " + expr(stmt.rhs).text + ";\n";
+					out_ += pad + lhs.text + (stmt.name.empty() ? String { " = " } : " " + stmt.name + " ") + expr(stmt.rhs).text + ";\n";
 					break;
 				}
 				case ir::StmtKind::eExpr: {
@@ -648,6 +648,49 @@ namespace {
 						out_ += pad + "else\n";
 						arm(stmt.children[1], indent_, out_);
 					}
+					break;
+				}
+				case ir::StmtKind::eWhile: {
+					out_ += pad + "while (" + expr(stmt.lhs).text + ")\n";
+					arm(stmt.children.empty() ? ir::StmtRef {} : stmt.children[0], indent_, out_);
+					break;
+				}
+				case ir::StmtKind::eFor: {
+					const auto mark = _locals.size();
+					const auto inline_ = [&](u32 at_) {
+						String text {};
+						if (at_ < stmt.children.size()) {
+							const auto child = stmt.children[at_];
+							// an omitted init/step is an empty block; render nothing
+							const auto omitted = child.index < _module.stmts.size() && _module.stmts[child.index].kind == ir::StmtKind::eBlock
+								&& _module.stmts[child.index].children.empty();
+							if (not omitted) {
+								statement(child, 0uL, text);
+							}
+						}
+						while (not text.empty() && (text.back() == '\n' || text.back() == ';' || text.back() == '\t')) {
+							text.pop_back();
+						}
+						return text;
+					};
+					const auto init = inline_(0uL);
+					const auto step = inline_(2uL);
+					const auto cond = stmt.lhs.index < _module.exprs.size() ? expr(stmt.lhs).text : String {};
+					out_ += pad + "for (" + init + "; " + cond + "; " + step + ")\n";
+					arm(stmt.children.size() > 1uz ? stmt.children[1] : ir::StmtRef {}, indent_, out_);
+					_locals.resize(mark);
+					break;
+				}
+				case ir::StmtKind::eBreak: {
+					out_ += pad + "break;\n";
+					break;
+				}
+				case ir::StmtKind::eContinue: {
+					out_ += pad + "continue;\n";
+					break;
+				}
+				case ir::StmtKind::eDiscard: {
+					out_ += pad + "discard;\n";
 					break;
 				}
 				case ir::StmtKind::eWhen:
@@ -791,6 +834,12 @@ namespace {
 					auto lhs = operand(0uz);
 					auto rhs = operand(1uz);
 					return { "(" + lhs.text + " " + e.name + " " + rhs.text + ")", typeOf(e.type) };
+				}
+				case ir::ExprKind::eTernary: {
+					auto c = operand(0uz);
+					auto a = operand(1uz);
+					auto b = operand(2uz);
+					return { "(" + c.text + " ? " + a.text + " : " + b.text + ")", typeOf(e.type) };
 				}
 				case ir::ExprKind::eConstruct: {
 					use(e.type);

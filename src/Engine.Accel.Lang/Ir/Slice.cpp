@@ -133,6 +133,9 @@ namespace {
 				} else if (target != nullptr && target->kind == ir::ExprKind::eNameRef && target->local) {
 					roles[stmt_] = Role::eLocal;
 					f.defines = target->name;
+					if (not s.name.empty()) {
+						insertSorted(f.reads, target->name);// `x += 1` reads x
+					}
 				} else if (target != nullptr && target->kind == ir::ExprKind::eNameRef) {
 					const auto b = binding(*target);
 					roles[stmt_] = b != unset && dropped[b] ? Role::eDead : Role::eLive;
@@ -145,7 +148,8 @@ namespace {
 				f.defines = s.name;
 			} else if (s.kind == ir::StmtKind::eExpr) {
 				roles[stmt_] = Role::eCall;
-			} else if (s.kind == ir::StmtKind::eBlock || s.kind == ir::StmtKind::eWhen || s.kind == ir::StmtKind::eIf) {
+			} else if (s.kind == ir::StmtKind::eBlock || s.kind == ir::StmtKind::eWhen || s.kind == ir::StmtKind::eIf ||
+				s.kind == ir::StmtKind::eFor || s.kind == ir::StmtKind::eWhile) {
 				roles[stmt_] = Role::eContainer;
 			}
 		}

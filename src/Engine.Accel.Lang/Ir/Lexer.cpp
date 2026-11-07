@@ -20,14 +20,17 @@ namespace {
 		ir::TokenKind kind;
 	};
 
-	constexpr std::array<Keyword, 12> keywords {
+	constexpr std::array<Keyword, 17> keywords {
 		{
 			{ "fn", ir::TokenKind::eKwFn }, { "struct", ir::TokenKind::eKwStruct },
 			{ "block", ir::TokenKind::eKwBlock }, { "toggle", ir::TokenKind::eKwToggle },
 			{ "when", ir::TokenKind::eKwWhen }, { "return", ir::TokenKind::eKwReturn },
 			{ "if", ir::TokenKind::eKwIf }, { "else", ir::TokenKind::eKwElse },
 			{ "let", ir::TokenKind::eKwLet }, { "implicit", ir::TokenKind::eKwImplicit },
-			{ "mut", ir::TokenKind::eKwMut }, { "const", ir::TokenKind::eKwConst }
+			{ "mut", ir::TokenKind::eKwMut }, { "const", ir::TokenKind::eKwConst },
+			{ "for", ir::TokenKind::eKwFor }, { "while", ir::TokenKind::eKwWhile },
+			{ "break", ir::TokenKind::eKwBreak }, { "continue", ir::TokenKind::eKwContinue },
+			{ "discard", ir::TokenKind::eKwDiscard }
 		}
 	};
 
@@ -135,29 +138,33 @@ namespace {
 				return directive();
 			}
 
-			// two-character operators first
-			struct Pair {
-				char a, b;
+			// multi-character operators, longest first
+			struct Op {
+				StringView text;
 				ir::TokenKind kind;
 			};
-			static constexpr std::array<Pair, 6> pairs {
+			static constexpr std::array<Op, 21> ops {
 				{
-					{ '-', '>', ir::TokenKind::eArrow }, { '&', '&', ir::TokenKind::eAndAnd },
-					{ '|', '|', ir::TokenKind::eOrOr }, { '=', '=', ir::TokenKind::eEqEq },
-					{ '!', '=', ir::TokenKind::eNotEq }, { '<', '=', ir::TokenKind::eLessEq }
+					{ "<<=", ir::TokenKind::eCompoundAssign }, { ">>=", ir::TokenKind::eCompoundAssign },
+					{ "->", ir::TokenKind::eArrow }, { "&&", ir::TokenKind::eAndAnd },
+					{ "||", ir::TokenKind::eOrOr }, { "==", ir::TokenKind::eEqEq },
+					{ "!=", ir::TokenKind::eNotEq }, { "<=", ir::TokenKind::eLessEq },
+					{ ">=", ir::TokenKind::eGreaterEq }, { "<<", ir::TokenKind::eShl },
+					{ ">>", ir::TokenKind::eShr }, { "++", ir::TokenKind::ePlusPlus },
+					{ "--", ir::TokenKind::eMinusMinus }, { "+=", ir::TokenKind::eCompoundAssign },
+					{ "-=", ir::TokenKind::eCompoundAssign }, { "*=", ir::TokenKind::eCompoundAssign },
+					{ "/=", ir::TokenKind::eCompoundAssign }, { "%=", ir::TokenKind::eCompoundAssign },
+					{ "&=", ir::TokenKind::eCompoundAssign }, { "|=", ir::TokenKind::eCompoundAssign },
+					{ "^=", ir::TokenKind::eCompoundAssign }
 				}
 			};
-			for (const auto& p : pairs) {
-				if (c == p.a && peek(1) == p.b) {
-					advance();
-					advance();
-					return emit(p.kind, begin, at);
+			for (const auto& op : ops) {
+				if (_src.substr(_pos, op.text.size()) == op.text) {
+					for (auto i = 0uz; i < op.text.size(); ++i) {
+						advance();
+					}
+					return emit(op.kind, begin, at);
 				}
-			}
-			if (c == '>' && peek(1) == '=') {
-				advance();
-				advance();
-				return emit(ir::TokenKind::eGreaterEq, begin, at);
 			}
 
 			ir::TokenKind kind;
@@ -184,6 +191,9 @@ namespace {
 				case '%': kind = ir::TokenKind::ePercent; break;
 				case '&': kind = ir::TokenKind::eAmp; break;
 				case '|': kind = ir::TokenKind::ePipe; break;
+				case '?': kind = ir::TokenKind::eQuestion; break;
+				case '~': kind = ir::TokenKind::eTilde; break;
+				case '^': kind = ir::TokenKind::eCaret; break;
 				default: {
 					advance();
 					error(at, std::string("Unexpected character '") + c + "'.");
@@ -199,6 +209,13 @@ namespace {
 			const auto begin = _pos;
 			bool isFloat = false;
 
+			if (peek() == '0' && (peek(1) == 'x' || peek(1) == 'X')) {
+				advance();
+				advance();
+				while (isDigit(peek()) || (peek() >= 'a' && peek() <= 'f') || (peek() >= 'A' && peek() <= 'F')) {
+					advance();
+				}
+			}
 			while (isDigit(peek())) {
 				advance();
 			}
@@ -220,6 +237,10 @@ namespace {
 						advance();
 					}
 				}
+			}
+
+			if (not isFloat && (peek() == 'u' || peek() == 'U')) {
+				advance();
 			}
 
 			// a literal running into letters or another '.' is malformed; swallow the whole run
