@@ -78,8 +78,8 @@ namespace ReflowModule {
 	}
 
 	TEST_F(LayoutingBoxFixture, EmptyUikitBreadcrumb) {
-		GTEST_SKIP() << "Will currently segfault due to the internal usage of uikit::Text."sv;
-		generic_test_empty<editor::ui::Breadcrumb>(*this);
+		// Note: Without a font the inner texts contribute no measure, only padding remains.
+		generic_test_empty<editor::ui::Breadcrumb>(*this, math::vec2 { 8.f, 20.f });
 	}
 
 	TEST_F(LayoutingBoxFixture, EmptyUikitCollapse) {

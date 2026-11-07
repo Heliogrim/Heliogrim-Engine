@@ -87,18 +87,15 @@ namespace ReflowModule {
 	}
 
 	TEST_F(LayoutingBoxFixture, EmptyUikitInputFloat) {
-		GTEST_SKIP() << "Will currently segfault due to the internal usage of uikit::Text."sv;
-		generic_test_empty_input<editor::ui::InputFloat>(*this, []() { return editor::ui::makeInputFloat(); });
+		generic_test_empty_input<editor::ui::InputFloat>(*this, []() { return editor::ui::makeInputFloat(); }, math::vec2 { 8.f });
 	}
 
 	TEST_F(LayoutingBoxFixture, EmptyUikitInputIntegral) {
-		GTEST_SKIP() << "Will currently segfault due to the internal usage of uikit::Text."sv;
-		generic_test_empty_input<editor::ui::InputIntegral>(*this, []() { return editor::ui::makeInputIntegral(); });
+		generic_test_empty_input<editor::ui::InputIntegral>(*this, []() { return editor::ui::makeInputIntegral(); }, math::vec2 { 8.f });
 	}
 
 	TEST_F(LayoutingBoxFixture, EmptyUikitInputText) {
-		GTEST_SKIP() << "Will currently segfault due to the internal usage of uikit::Text."sv;
-		generic_test_empty_input<editor::ui::InputText>(*this, []() { return editor::ui::makeInputText(); });
+		generic_test_empty_input<editor::ui::InputText>(*this, []() { return editor::ui::makeInputText(); }, math::vec2 { 8.f });
 	}
 
 	TEST_F(LayoutingBoxFixture, EmptyUikitInputToggle) {
