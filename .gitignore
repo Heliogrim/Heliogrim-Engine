@@ -36,6 +36,7 @@
 .tmp
 *.TMP
 
+/.cache
 /.idea
 /cmake-build-*/
 [Bb]uild/
