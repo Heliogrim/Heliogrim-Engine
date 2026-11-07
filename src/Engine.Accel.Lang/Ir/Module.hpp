@@ -231,6 +231,9 @@ namespace hg::engine::accel::lang::ir {
 		Opt<BodyRef> body;
 		bool redefineAllowed = false;
 		Condition when;
+
+		/* name token; diagnostics only, not part of the content hash */
+		SourceLoc loc;
 	};
 
 	struct StructDecl {
