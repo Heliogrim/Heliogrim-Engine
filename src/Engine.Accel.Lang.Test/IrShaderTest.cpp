@@ -269,4 +269,94 @@ namespace AccelLang {
 		EXPECT_EQ(formatOf("vertex-layer"), 9);
 		EXPECT_EQ(formatOf("vertex-position"), -1);
 	}
+
+	namespace {
+		struct ExpectedEntry {
+			StringView id;
+			bool input;
+			BindMode mode;
+			BindClass cls;
+		};
+
+		void expectCovers(
+			StringView path_,
+			EntryKind kind_,
+			std::initializer_list<ExpectedEntry> expected_
+		) {
+			const auto module = shaderAssetModule(path_, kind_);
+			const auto entries = computeInterface(module);
+			for (const auto& e : expected_) {
+				const auto* entry = find(entries, e.id, e.input);
+				ASSERT_NE(entry, nullptr) << path_ << ": " << e.id;
+				EXPECT_EQ(entry->mode, e.mode) << path_ << ": " << e.id;
+				EXPECT_EQ(entry->cls, e.cls) << path_ << ": " << e.id;
+			}
+		}
+	}
+
+	TEST(PostProcessShaderTest, InterfaceCoversOldAnnotations) {
+		expectCovers(
+			"postprocessing/pp.vs.asl",
+			EntryKind::eVertex,
+			{ { "local-uv", false, BindMode::eForward, BindClass::eNone } }
+		);
+		expectCovers(
+			"postprocessing/pp.fs.asl",
+			EntryKind::eFragment,
+			{
+				{ "color-tex-0", true, BindMode::eBind, BindClass::eTexture },
+				{ "color-tex-0-sampler", true, BindMode::eBind, BindClass::eSampler },
+				{ "color", false, BindMode::eForward, BindClass::eNone }
+			}
+		);
+	}
+
+	TEST(VisualizeShaderTest, InterfaceCoversOldAnnotations) {
+		expectCovers(
+			"visualize/visualize.vs.asl",
+			EntryKind::eVertex,
+			{ { "local-uv", false, BindMode::eForward, BindClass::eNone } }
+		);
+		expectCovers(
+			"visualize/visualize.fs.asl",
+			EntryKind::eFragment,
+			{
+				{ "vis-tex-0", true, BindMode::eBind, BindClass::eTexture },
+				{ "vis-tex-0-sampler", true, BindMode::eBind, BindClass::eSampler },
+				{ "color", false, BindMode::eForward, BindClass::eNone }
+			}
+		);
+	}
+
+	TEST(TriTestShaderTest, InterfaceCoversOldAnnotations) {
+		expectCovers(
+			"test/render.vs.asl",
+			EntryKind::eVertex,
+			{ { "vertex-color", false, BindMode::eForward, BindClass::eNone } }
+		);
+		expectCovers(
+			"test/render.fs.asl",
+			EntryKind::eFragment,
+			{
+				{ "vertex-color", true, BindMode::eForward, BindClass::eNone },
+				{ "color", false, BindMode::eForward, BindClass::eNone }
+			}
+		);
+	}
+
+	TEST(BrdfLutShaderTest, InterfaceCoversOldAnnotations) {
+		expectCovers(
+			"brdf/brdfLut.gen.vs.asl",
+			EntryKind::eVertex,
+			{ { "local-uv", false, BindMode::eForward, BindClass::eNone } }
+		);
+		expectCovers(
+			"brdf/brdfLut.gen.fs.asl",
+			EntryKind::eFragment,
+			{
+				{ "local-uv", true, BindMode::eForward, BindClass::eNone },
+				{ "color", false, BindMode::eForward, BindClass::eNone }
+			}
+		);
+	}
 }
