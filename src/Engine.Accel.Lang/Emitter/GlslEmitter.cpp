@@ -553,7 +553,7 @@ namespace {
 					error("Push constant '" + binding_.id + "' cannot be laid out.");
 					return;
 				}
-				block("layout(push_constant) uniform", binding_, *desc);
+				block("layout(push_constant) uniform", binding_, *desc, range->offset);
 				return;
 			}
 
@@ -606,20 +606,22 @@ namespace {
 		}
 
 		/* an anonymous struct becomes the block body (instance name = local name), any other type its only member */
-		void block(ref<const String> head_, ref<const ir::BindingDecl> binding_, ref<const ir::TypeDesc> desc_) {
+		void block(ref<const String> head_, ref<const ir::BindingDecl> binding_, ref<const ir::TypeDesc> desc_, u32 offset_ = 0uL) {
 			const auto& local = binding_.localName;
+			/* a push block starts at the range offset the pipeline layout assigned */
+			const auto first = offset_ != 0uL ? "layout(offset = " + std::to_string(offset_) + ") " : String {};
 			if (desc_.kind == ir::TypeKind::eStruct && desc_.name.empty()) {
 				String members {};
 				for (const auto& field : desc_.fields) {
 					if (const auto decl = declareOrReport(field.type, field.name); decl.has_value()) {
-						members += "\t" + *decl + ";\n";
+						members += "\t" + (members.empty() ? first : String {}) + *decl + ";\n";
 					}
 				}
 				_bindings += head_ + " " + local + "_block {\n" + members + "} " + local + ";\n";
 				return;
 			}
 			if (const auto decl = declareOrReport(binding_.type, local); decl.has_value()) {
-				_bindings += head_ + " " + local + "_block {\n\t" + *decl + ";\n};\n";
+				_bindings += head_ + " " + local + "_block {\n\t" + first + *decl + ";\n};\n";
 			}
 		}
 

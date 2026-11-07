@@ -195,6 +195,7 @@ namespace {
 
 		void loop(ref<const ir::Stmt> s_, bool cond_) {
 			const auto outer = loopTaint;
+			const auto fnBefore = fnTaint;
 			const auto isFor = s_.kind == ir::StmtKind::eFor && s_.children.size() == 3uz;
 			if (isFor) {
 				stmt(s_.children[0], cond_);
@@ -211,7 +212,8 @@ namespace {
 				} else if (not s_.children.empty()) {
 					stmt(s_.children.front(), cond_ || lane);
 				}
-				if (loopTaint && not taint) {
+				/* a divergent return in the body leaves the loop for some lanes only: same as a divergent break */
+				if ((loopTaint && not taint) || (pass == 0 && fnTaint && not fnBefore)) {
 					taint = true;
 					continue;
 				}

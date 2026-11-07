@@ -470,6 +470,53 @@ namespace AccelCompile {
 		EXPECT_NE(first->pipeline.get(), other->pipeline.get());
 	}
 
+	TEST(StageIrTest, PipelineHitResolvesNoStage) {
+		VariantCache cache {};
+		PipelineLayoutCache layouts {};
+		const auto first = composeUsing("ab", "b", cache, layouts);
+		ASSERT_TRUE(first.has_value());
+
+		VariantCache untouched {};
+		const auto second = composeUsing("ab", "b", untouched, layouts);
+		ASSERT_TRUE(second.has_value());
+		EXPECT_EQ(first->pipeline.get(), second->pipeline.get());
+		for (const auto& stage : second->pipeline->stages) {
+			EXPECT_EQ(untouched.find(stage->key), nullptr);
+		}
+	}
+
+	TEST(StageIrTest, DistinctPushIdsPublishTheirOffset) {
+		const auto pushStage = [](StringView id_, EntryKind entry_) {
+			const String id { id_ };
+			return intermediateOf(
+				"@input (mode = bind, id = \"" + id + "\", class = push) block " + id + " { u32 v; };\n"
+				"@output (mode = forward, id = \"color\") f32vec4 color;\n"
+				"fn main() { color = f32vec4(f32(" + id + ".v)); }\n",
+				entry_
+			);
+		};
+		const auto vertex = pushStage("a", EntryKind::eVertex);
+		const auto fragment = pushStage("b", EntryKind::eFragment);
+		const std::array<const Intermediate*, 2> stages { &vertex, &fragment };
+		const std::array<StageFlagBits, 2> flags { StageFlagBits::eVertex, StageFlagBits::eFragment };
+
+		VariantCache cache {};
+		PipelineLayoutCache layouts {};
+		smr<const ResolvedPipeline> pipeline {};
+		auto derivats = composePipelineIr(stages, flags, EffectProfile {}, TestSpecification { {} }, cache, layouts, &pipeline);
+		ASSERT_TRUE(derivats.has_value()) << derivats.error().front().message;
+
+		ASSERT_EQ(pipeline->layouts[1].push.size(), 1uLL);
+		EXPECT_EQ(pipeline->layouts[1].push.front().offset, 4uL);
+		EXPECT_NE(textOf(*(*derivats)[1]).find("layout(offset = 4)"), String::npos);
+		EXPECT_EQ(textOf(*(*derivats)[0]).find("layout(offset"), String::npos);
+
+		BindLayout layout {};
+		EXPECT_TRUE(appendBindLayout(*pipeline, *derivats, layout).empty());
+		ASSERT_EQ(layout.constants.size(), 2uLL);
+		EXPECT_EQ(layout.constants[1].offset, 4uL);
+	}
+
 	TEST(StageIrTest, TargetSymbolsOnlySliceTheExportStage) {
 		VariantCache cache {};
 		const auto vertex = intermediateOf(

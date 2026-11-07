@@ -108,6 +108,8 @@ namespace {
 			Mode mode;
 			/* for an alias: the root name it borrows */
 			String target {};
+			/* for an alias of a local: scope index of that local (stable, aliases always follow their target); ~0 for bindings */
+			size_t targetIndex = ~0uz;
 		};
 
 		ref<ir::Module> _module;
@@ -334,7 +336,13 @@ namespace {
 						}
 					}
 					_module.stmts[ref_.index].type = type;
-					_scope.emplace_back(_module.stmts[ref_.index].name, type, writes ? Mode::eRefWrite : Mode::eRefRead, rootName(lhs));
+					size_t targetIndex = ~0uz;
+					if (const auto* root = rootOf(lhs); root != nullptr && root->kind == ExprKind::eNameRef) {
+						if (const auto* rootEntry = lookup(*root); rootEntry != nullptr) {
+							targetIndex = rootEntry->targetIndex != ~0uz ? rootEntry->targetIndex : static_cast<size_t>(rootEntry - _scope.data());
+						}
+					}
+					_scope.emplace_back(_module.stmts[ref_.index].name, type, writes ? Mode::eRefWrite : Mode::eRefRead, rootName(lhs), targetIndex);
 					break;
 				}
 				case StmtKind::eAssign: {
@@ -754,10 +762,21 @@ namespace {
 			const StringView format = sized && isKind(types.front(), TypeKind::eImage) ? StringView { _module.types[types.front().index].name } : StringView {};
 
 			const auto& signatures = ir::parsedBuiltinSignatures();
+			/* all-integer arguments try the genI/genU overloads before genF, so `max(1, 2)` is s32 (D4) */
+			auto allInt = not types.empty();
+			for (const auto type : types) {
+				const auto& d = _module.types[type.index];
+				allInt = allInt && (d.kind == TypeKind::eScalar || d.kind == TypeKind::eVector) &&
+					(d.scalar == ScalarKind::eInt || d.scalar == ScalarKind::eUInt);
+			}
+			for (auto pass = allInt ? 0 : 1; pass < 2; ++pass)
 			for (auto i = 0uz; i < std::size(ir::builtinFunctions); ++i) {
 				const auto& fn = ir::builtinFunctions[i];
 				const auto& sig = signatures[i];
 				if (fn.name != name_ || not sig.valid || sig.count != types.size()) {
+					continue;
+				}
+				if (pass == 0 && sig.params[0].family == ir::BuiltinFamily::eGenF) {
 					continue;
 				}
 				for (auto width = 1uL; width <= 4uL; ++width) {
@@ -798,13 +817,8 @@ namespace {
 							const auto& rootLabel = entry != nullptr && not entry->target.empty() ? entry->target : rootExpr->name;
 							const auto* viaScope = entry;
 							if (entry != nullptr && not entry->target.empty()) {
-								viaScope = nullptr;
-								for (auto it = _scope.rbegin(); it != _scope.rend(); ++it) {
-									if (it->name == entry->target) {
-										viaScope = &*it;
-										break;
-									}
-								}
+								/* by scope index, not name: a shadowing local must not capture the alias */
+								viaScope = entry->targetIndex < _scope.size() ? &_scope[entry->targetIndex] : nullptr;
 							}
 							const ir::BindingDecl* bound = nullptr;
 							if (viaScope == nullptr) {
