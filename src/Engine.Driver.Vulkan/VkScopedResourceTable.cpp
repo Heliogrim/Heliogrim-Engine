@@ -215,6 +215,10 @@ bool driver::vk::VkScopedResourceTable::allocateAndCommit(
 					vkdt = ::vk::DescriptorType::eUniformBuffer;
 					break;
 				}
+				case engine::accel::BindType::eStorageImage: {
+					vkdt = ::vk::DescriptorType::eStorageImage;
+					break;
+				}
 			}
 
 			assert(static_cast<u32>(vkdt) >= 0uL && static_cast<u32>(vkdt) < 32uL);
@@ -335,6 +339,11 @@ void driver::vk::VkScopedResourceTable::updateSets(
 					assert(resource.isSampler());
 
 					writer.storeTextureSampler(idx, resource.asSampler());
+					break;
+				}
+				case engine::accel::BindType::eStorageImage: {
+					/* shortcut: no storage-image writer yet, descriptor stays unwritten; add when a compute pass binds one */
+					assert(false);
 					break;
 				}
 			}

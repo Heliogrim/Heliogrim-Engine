@@ -10,6 +10,9 @@ Vector<ir::InterfaceEntry> ir::computeInterface(ref<const Module> module_) {
 	Vector<InterfaceEntry> entries {};
 	entries.reserve(module_.bindings.size());
 	for (const auto& binding : module_.bindings) {
+		if (binding.bindClass == BindClass::eWorkgroup) {
+			continue;
+		}
 		entries.emplace_back(
 			InterfaceEntry { binding.id, binding.type, binding.mode, binding.bindClass, binding.implicit, binding.input }
 		);

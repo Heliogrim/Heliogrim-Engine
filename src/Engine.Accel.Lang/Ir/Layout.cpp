@@ -194,6 +194,9 @@ namespace {
 			if (desc_.kind == eSampler) {
 				return Info { .valid = true, .opaque = true, .key = "sampler" };
 			}
+			if (desc_.kind == eImage) {
+				return Info { .valid = true, .opaque = true, .key = "image" + std::to_string(static_cast<u32>(desc_.dim)) + desc_.name };
+			}
 			return Info {};
 		}
 	};
@@ -212,7 +215,8 @@ namespace {
 		if (entry_.cls == ir::BindClass::ePushConstant) {
 			return Category::ePush;
 		}
-		const auto resource = entry_.cls >= ir::BindClass::eUniformBuffer && entry_.cls <= ir::BindClass::eSampler;
+		const auto resource = (entry_.cls >= ir::BindClass::eUniformBuffer && entry_.cls <= ir::BindClass::eSampler) ||
+			entry_.cls == ir::BindClass::eStorageImage;
 		return resource ? Category::eSlot : Category::eSkip;
 	}
 

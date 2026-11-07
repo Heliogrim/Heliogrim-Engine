@@ -94,6 +94,10 @@ namespace {
 		void operator()() noexcept {
 			h.put(module.name);
 			h.put(module.entry);
+			h.put(module.attributes.localSize[0]);
+			h.put(module.attributes.localSize[1]);
+			h.put(module.attributes.localSize[2]);
+			h.put(module.attributes.earlyFragmentTests);
 
 			h.put(static_cast<u64>(module.toggles.size()));
 			for (const auto& toggle : module.toggles) {

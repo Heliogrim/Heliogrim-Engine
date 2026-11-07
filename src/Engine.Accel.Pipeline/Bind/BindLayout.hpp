@@ -9,7 +9,8 @@ namespace hg::engine::accel {
         eUniformBuffer,
         eStorageBuffer,
         eTexture,
-        eTextureSampler
+        eTextureSampler,
+        eStorageImage
     };
 
     struct BindElement {

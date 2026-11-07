@@ -146,6 +146,7 @@ namespace {
 						[](ref<const ir::FieldDesc> l_, ref<const ir::FieldDesc> r_) { return l_.name == r_.name && l_.type == r_.type; }
 					);
 				case TypeKind::eTexture: return a_.dim == b_.dim && a_.scalar == b_.scalar;
+				case TypeKind::eImage: return a_.dim == b_.dim && a_.name == b_.name;
 				case TypeKind::eArray: return a_.count == b_.count && a_.element == b_.element;
 				default: return true;
 			}
@@ -574,7 +575,7 @@ namespace {
 			const auto it = root->binding.index < _module.bindings.size() ?
 				_module.bindings.begin() + root->binding.index :
 				std::ranges::find(_module.bindings, root->name, &ir::BindingDecl::localName);
-			if (it == _module.bindings.end() || not it->input || it->access != ir::Access::eRead) {
+			if (it == _module.bindings.end() || it->bindClass == ir::BindClass::eWorkgroup || not it->input || it->access != ir::Access::eRead) {
 				return None;
 			}
 			return String(borrow_ ?
@@ -710,9 +711,9 @@ namespace {
 				}
 			}
 
-			const auto dim = not types.empty() && isKind(types.front(), TypeKind::eTexture) ?
-				_module.types[types.front().index].dim :
-				ir::TextureDim::e2D;
+			const auto sized = not types.empty() && (isKind(types.front(), TypeKind::eTexture) || isKind(types.front(), TypeKind::eImage));
+			const auto dim = sized ? _module.types[types.front().index].dim : ir::TextureDim::e2D;
+			const StringView format = sized && isKind(types.front(), TypeKind::eImage) ? StringView { _module.types[types.front().index].name } : StringView {};
 
 			const auto& signatures = ir::parsedBuiltinSignatures();
 			for (auto i = 0uz; i < std::size(ir::builtinFunctions); ++i) {
@@ -725,14 +726,14 @@ namespace {
 					Vector<TypeRef> targets {};
 					auto ok = true;
 					for (auto k = 0uz; k < types.size() && ok; ++k) {
-						const auto desc = ir::resolveBuiltinSigType(sig.params[k], width, dim);
+						const auto desc = ir::resolveBuiltinSigType(sig.params[k], width, dim, format);
 						ok = desc.has_value();
 						if (ok) {
 							targets.emplace_back(intern(*desc));
 							ok = same(types[k], targets.back()) || adaptable(operands_[k], targets.back());
 						}
 					}
-					const auto ret = ir::resolveBuiltinSigType(sig.ret, width, dim);
+					const auto ret = ir::resolveBuiltinSigType(sig.ret, width, dim, format);
 					if (not ok || not ret.has_value()) {
 						continue;
 					}
@@ -751,6 +752,49 @@ namespace {
 							error(*denied);
 							continue;
 						}
+						const auto isImage = name_ == "image_store";
+						if (const auto* rootExpr = rootOf(operands_[k]);
+							(isImage || name_.starts_with("atomic_")) && rootExpr != nullptr && rootExpr->kind == ExprKind::eNameRef) {
+							const auto* entry = lookup(*rootExpr);
+							/* an alias borrows `target`; resolve it to the scope entry or binding it names */
+							const auto& rootLabel = entry != nullptr && not entry->target.empty() ? entry->target : rootExpr->name;
+							const auto* viaScope = entry;
+							if (entry != nullptr && not entry->target.empty()) {
+								viaScope = nullptr;
+								for (auto it = _scope.rbegin(); it != _scope.rend(); ++it) {
+									if (it->name == entry->target) {
+										viaScope = &*it;
+										break;
+									}
+								}
+							}
+							const ir::BindingDecl* bound = nullptr;
+							if (viaScope == nullptr) {
+								if (entry == nullptr && rootExpr->binding.index < _module.bindings.size()) {
+									bound = &_module.bindings[rootExpr->binding.index];
+								} else if (const auto found = std::ranges::find(_module.bindings, rootLabel, &ir::BindingDecl::localName); found != _module.bindings.end()) {
+									bound = &*found;
+								}
+							}
+							const auto cls = bound != nullptr ? bound->bindClass : ir::BindClass::eNone;
+							const auto good = isImage ?
+								cls == ir::BindClass::eStorageImage :
+								(cls == ir::BindClass::eStorageBuffer || cls == ir::BindClass::eWorkgroup);
+							if (viaScope != nullptr && viaScope->mode == Mode::eRefWrite && viaScope->target.empty()) {
+								error(
+									"'" + name_ + "' cannot act through parameter '" + rootLabel + "'; GLSL " + (isImage ? "image access" : "atomics") +
+									" need the " + (isImage ? "storage image" : "storage buffer or workgroup variable") + " itself"
+								);
+								continue;
+							}
+							if (not good) {
+								error(
+									"'" + name_ + "' needs a " + (isImage ? "storage image" : "storage buffer or workgroup") + " place, got " +
+									(bound != nullptr ? "binding '" : "local '") + rootLabel + "'"
+								);
+								continue;
+							}
+						}
 						const auto root = rootName(operands_[k]);
 						for (auto j = 0uz; not root.empty() && j < operands_.size(); ++j) {
 							if (j != k && mentions(operands_[j], root)) {
@@ -759,7 +803,7 @@ namespace {
 							}
 						}
 					}
-					return intern(*ret);
+					return sig.ret.family == ir::BuiltinFamily::eVoid ? TypeRef {} : intern(*ret);
 				}
 			}
 
@@ -1080,6 +1124,10 @@ String ir::describeType(ref<const Vector<TypeDesc>> types_, TypeRef type_, u32 d
 			constexpr std::array<StringView, 5> dims { "1d", "2d", "3d", "cube", "2darray" };
 			return "texture" + String(dims[std::min(static_cast<u32>(type.dim), u32 { 4 })]);
 		}
+		case TypeKind::eImage: {
+			constexpr std::array<StringView, 5> dims { "1d", "2d", "3d", "cube", "2darray" };
+			return "image" + String(dims[std::min(static_cast<u32>(type.dim), u32 { 4 })]) + "<" + type.name + ">";
+		}
 		default: return "sampler";
 	}
 }
@@ -1159,14 +1207,18 @@ namespace {
 			}
 			_warned[at_.index] = true;
 			const auto& e = _module.exprs[at_.index];
+			const auto* fn = ir::findBuiltinFunction(e.name);
+			const auto fatal = fn != nullptr && fn->errorUnderDivergence;
 			String via {};
 			for (auto it = _chain.rbegin(); it != _chain.rend(); ++it) {
 				via += (via.empty() ? "" : ", ") + _module.functions[*it].name;
 			}
+			const auto tail = via.empty() ? String {} : " (via " + via + ")";
 			_diags.emplace_back(ir::Diagnostic {
-				.severity = ir::Severity::eWarning,
-				.message = "'" + e.name + "' uses implicit derivatives under lane-dependent control" +
-				(via.empty() ? String {} : " (via " + via + ")") + "; results are undefined, use sample_lod",
+				.severity = fatal ? ir::Severity::eError : ir::Severity::eWarning,
+				.message = fatal ?
+				"'" + e.name + "' under lane-dependent control" + tail + "; lanes that skip it deadlock the workgroup" :
+				"'" + e.name + "' uses implicit derivatives under lane-dependent control" + tail + "; results are undefined, use sample_lod",
 				.line = e.loc.line,
 				.column = e.loc.column
 			});

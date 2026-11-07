@@ -108,6 +108,9 @@ namespace hg::engine::accel::lang::ir::detail {
 		if (text_ == "texture") {
 			return ir::BindClass::eTexture;
 		}
+		if (text_ == "image") {
+			return ir::BindClass::eStorageImage;
+		}
 		if (text_ == "sampler") {
 			return ir::BindClass::eSampler;
 		}
@@ -300,6 +303,11 @@ namespace hg::engine::accel::lang::ir::detail {
 				ann.redefine = &name;
 			} else if (name.text == "spec") {
 				ann.spec = &name;
+			} else if (name.text == "compute" || name.text == "fragment") {
+				if (ann.entry != nullptr) {
+					error(name, "Duplicate entry annotation.");
+				}
+				ann.entry = &name;
 			} else {
 				error(name, "Unknown annotation '@" + String(name.text) + "'.");
 				if (at(TokenKind::eLParen)) {
@@ -323,6 +331,15 @@ namespace hg::engine::accel::lang::ir::detail {
 		}
 		if (ann.spec != nullptr) {
 			error(*ann.spec, "@spec applies to const declarations only.");
+		}
+		if (ann.entry != nullptr && head.kind != TokenKind::eKwFn) {
+			error(*ann.entry, "@" + String(ann.entry->text) + " applies to fn main only.");
+		}
+		if (head.kind == TokenKind::eIdentifier && head.text == "workgroup" && next().kind == TokenKind::eIdentifier) {
+			if (ann.direction != nullptr || ann.redefine != nullptr || ann.binding.implicit) {
+				error(head, "Annotations do not apply to a workgroup declaration.");
+			}
+			return workgroupDecl(ann);
 		}
 		if (head.kind == TokenKind::eKwToggle || head.kind == TokenKind::eKwStruct) {
 			if (ann.direction != nullptr || ann.redefine != nullptr || ann.binding.implicit) {
@@ -382,6 +399,12 @@ namespace hg::engine::accel::lang::ir::detail {
 			if (not expect(TokenKind::eAssign, "'='")) {
 				return false;
 			}
+			if (annotation_.text == "compute" || annotation_.text == "fragment") {
+				if (not entryArg(annotation_, key, ann_)) {
+					return false;
+				}
+				continue;
+			}
 			if (not at(TokenKind::eIdentifier) && not at(TokenKind::eString)) {
 				syntaxError("an annotation value");
 				return false;
@@ -389,6 +412,70 @@ namespace hg::engine::accel::lang::ir::detail {
 			annotationValue(annotation_, key, take(), ann_);
 		} while (accept(TokenKind::eComma));
 		return expect(TokenKind::eRParen, "')'");
+	}
+
+	/* value of `local_size = [x, y, z]` (@compute) or `early_fragment_tests = true|false` (@fragment); false after a syntax error */
+	bool Parser::entryArg(ref<const ir::Token> annotation_, ref<const ir::Token> key_, ref<Annotations> ann_) {
+		const bool compute = annotation_.text == "compute";
+		if (key_.text == "local_size") {
+			if (not expect(TokenKind::eLBracket, "'[' (local_size takes a list)")) {
+				return false;
+			}
+			std::array<u32, 3> size { 1uL, 1uL, 1uL };
+			size_t count = 0uz;
+			do {
+				if (not at(TokenKind::eInteger)) {
+					syntaxError("a local_size component");
+					return false;
+				}
+				const auto& component = take();
+				u32 value = 0uL;
+				for (const char digit : component.text) {
+					value = value * 10uL + static_cast<u32>(digit - '0');
+				}
+				if (component.text.size() > 9uz || value == 0uL) {
+					error(component, "Invalid local_size component '" + String(component.text) + "'.");
+				}
+				if (count < 3uz) {
+					size[count] = value;
+				} else if (count == 3uz) {
+					error(component, "local_size takes at most three components.");
+				}
+				++count;
+			} while (accept(TokenKind::eComma));
+			if (not expect(TokenKind::eRBracket, "']'")) {
+				return false;
+			}
+			if (not compute) {
+				error(key_, "'local_size' applies to @compute only.");
+			} else {
+				ann_.attributes.localSize = size;
+			}
+			return true;
+		}
+		if (key_.text == "early_fragment_tests") {
+			if (not at(TokenKind::eIdentifier)) {
+				syntaxError("true or false");
+				return false;
+			}
+			const auto& value = take();
+			if (value.text != "true" && value.text != "false") {
+				error(value, "Invalid value '" + String(value.text) + "' for annotation key 'early_fragment_tests'.");
+			} else if (compute) {
+				error(key_, "'early_fragment_tests' applies to @fragment only.");
+			} else {
+				ann_.attributes.earlyFragmentTests = value.text == "true";
+			}
+			return true;
+		}
+		error(key_, "Unknown annotation key '" + String(key_.text) + "' for @" + String(annotation_.text) + ".");
+		// skip the value so one bad key does not cascade
+		if (at(TokenKind::eLBracket)) {
+			skipGroup(TokenKind::eLBracket, TokenKind::eRBracket);
+		} else if (at(TokenKind::eIdentifier) || at(TokenKind::eInteger) || at(TokenKind::eString)) {
+			take();
+		}
+		return true;
 	}
 
 	void Parser::annotationValue(
@@ -413,6 +500,9 @@ namespace hg::engine::accel::lang::ir::detail {
 			const auto cls = bindClassOf(value_.text);
 			valid = word && cls.has_value();
 			decl.bindClass = valid ? *cls : decl.bindClass;
+			if (valid && *cls == ir::BindClass::eStorageImage && _shared.module.entry != ir::EntryKind::eCompute) {
+				error(value_, "storage images require a compute module.");
+			}
 		} else if (not redefine && key_.text == "access") {
 			valid = word && (value_.text == "read" || value_.text == "write" || value_.text == "read_write");
 			decl.access = valid ? (value_.text == "read" ? ir::Access::eRead : (value_.text == "write" ? ir::Access::eWrite : ir::Access::eReadWrite)) :
@@ -565,7 +655,8 @@ namespace hg::engine::accel::lang::ir::detail {
 			[&](ref<const ir::TypeDesc> type_) {
 				return type_.kind != ir::TypeKind::eStruct && type_.kind == desc_.kind && type_.scalar == desc_.scalar &&
 					type_.bits == desc_.bits && type_.n == desc_.n && type_.m == desc_.m &&
-					type_.element == desc_.element && type_.count == desc_.count && type_.dim == desc_.dim;
+					type_.element == desc_.element && type_.count == desc_.count && type_.dim == desc_.dim &&
+					type_.name == desc_.name;
 			}
 		);
 		if (it != types.end()) {
@@ -616,7 +707,32 @@ namespace hg::engine::accel::lang::ir::detail {
 		}
 		const auto& name = take();
 
-		Opt<ir::TypeRef> result = namedType(name.text);
+		Opt<ir::TypeRef> result = None;
+		if (name.text == "image2d") {
+			// `image2d<format>`
+			if (not expect(TokenKind::eLess, "'<' after image2d")) {
+				return None;
+			}
+			if (not at(TokenKind::eIdentifier)) {
+				syntaxError("an image format");
+				return None;
+			}
+			const auto& format = take();
+			if (format.text != "rgba8" && format.text != "rgba16f" && format.text != "r32f" && format.text != "r32ui") {
+				error(format, "Unknown image format '" + String(format.text) + "', expected rgba8, rgba16f, r32f or r32ui.");
+				return None;
+			}
+			if (not expect(TokenKind::eGreater, "'>'")) {
+				return None;
+			}
+			ir::TypeDesc desc {};
+			desc.kind = ir::TypeKind::eImage;
+			desc.dim = ir::TextureDim::e2D;
+			desc.name = format.text;
+			result = intern(std::move(desc));
+		} else {
+			result = namedType(name.text);
+		}
 		if (not result.has_value()) {
 			error(
 				name,
@@ -777,6 +893,18 @@ namespace hg::engine::accel::lang::ir::detail {
 		fn.redefineAllowed = ann_.allow != nullptr;
 		fn.when = ann_.binding.when;
 
+		if (ann_.entry != nullptr) {
+			const bool compute = ann_.entry->text == "compute";
+			const auto expected = compute ? ir::EntryKind::eCompute : ir::EntryKind::eFragment;
+			if (_shared.module.entry != expected) {
+				error(*ann_.entry, "@" + String(ann_.entry->text) + " contradicts the module's stage.");
+			} else if (fn.name != "main") {
+				error(*ann_.entry, "@" + String(ann_.entry->text) + " applies to fn main only.");
+			} else {
+				_shared.module.attributes = ann_.attributes;
+			}
+		}
+
 		if (not expect(TokenKind::eLParen, "'('")) {
 			return recover();
 		}
@@ -877,6 +1005,31 @@ namespace hg::engine::accel::lang::ir::detail {
 		constants.emplace_back(std::move(decl));
 	}
 
+	/* `workgroup name: T;` */
+	void Parser::workgroupDecl(ref<const Annotations> ann_) {
+		const auto& head = take();
+		if (_shared.module.entry != ir::EntryKind::eCompute) {
+			error(head, "workgroup variables require a compute module.");
+		}
+		const auto& nameToken = take();
+		if (not expect(TokenKind::eColon, "':'")) {
+			return recover();
+		}
+		const auto declType = type();
+		if (not declType.has_value() || not expect(TokenKind::eSemicolon, "';'")) {
+			return recover();
+		}
+		ir::BindingDecl decl {};
+		decl.localName = nameToken.text;
+		decl.id = decl.localName;
+		decl.type = *declType;
+		decl.bindClass = ir::BindClass::eWorkgroup;
+		decl.input = false;
+		decl.when = ann_.binding.when;
+		decl.access = ir::Access::eReadWrite;
+		_shared.module.bindings.emplace_back(std::move(decl));
+	}
+
 	/* `decl_` carries the annotations; type, localName and a defaulted id are filled here */
 	void Parser::binding(ir::BindingDecl decl_) {
 		auto& decl = decl_;
@@ -911,7 +1064,7 @@ namespace hg::engine::accel::lang::ir::detail {
 			const auto nameToken = take();
 			decl.localName = nameToken.text;
 			const auto kind = _shared.module.types[declType->index].kind;
-			if (decl.packing != ir::Packing::eDefault && (kind == ir::TypeKind::eTexture || kind == ir::TypeKind::eSampler)) {
+			if (decl.packing != ir::Packing::eDefault && (kind == ir::TypeKind::eTexture || kind == ir::TypeKind::eSampler || kind == ir::TypeKind::eImage)) {
 				error(nameToken, "packing is not allowed on opaque binding '" + decl.localName + "'.");
 			}
 			if (not expect(TokenKind::eSemicolon, "';'")) {

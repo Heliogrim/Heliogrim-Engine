@@ -190,6 +190,7 @@ namespace {
 			auto& result = out.module;
 			result.name = in.name;
 			result.entry = in.entry;
+			result.attributes = in.attributes;
 			result.toggles = in.toggles;
 			result.types = in.types;
 			const auto types = result.types.size();
