@@ -73,7 +73,22 @@ namespace AccelLang {
 		const auto shader = parse("shader", "fn GetWorldPosition() -> f32vec4;\nfn main() {\n\tposition = GetWorldPosition();\n}\n");
 		const auto diags = mergeFail({ &profile, &shader });
 		ASSERT_EQ(diags.size(), 1uz);
-		EXPECT_TRUE(mentions(diags[0], "missing body for function 'GetWorldPosition'")) << diags[0].message;
+		EXPECT_TRUE(mentions(diags[0], "missing body for function 'GetWorldPosition()'")) << diags[0].message;
+	}
+
+	TEST(MergeTest, OverloadsAreDistinctFunctions) {
+		const auto a = parse("A", "fn Sat(x: f32) -> f32 { return x; }\n");
+		const auto b = parse("B", "fn Sat(x: f32vec3) -> f32vec3 { return x; }\n");
+		const auto merged = mergeOk({ &a, &b });
+		EXPECT_EQ(merged.functions.size(), 2uz);
+	}
+
+	TEST(MergeTest, MissingBodyNamesSignature) {
+		const auto a = parse("A", "fn Sat(x: f32) -> f32;\nfn main() {\n\tfrag_depth = Sat(1.0);\n}\n");
+		const auto b = parse("B", "fn Sat(x: f32vec3) -> f32vec3 { return x; }\n");
+		const auto diags = mergeFail({ &a, &b });
+		ASSERT_EQ(diags.size(), 1uz);
+		EXPECT_TRUE(mentions(diags[0], "missing body for function 'Sat(f32)'")) << diags[0].message;
 	}
 
 	TEST(MergeTest, DuplicateBodyNamesBothModules) {
@@ -81,7 +96,7 @@ namespace AccelLang {
 		const auto b = parse("B", "fn X() -> f32 { return 0.5; }\n");
 		const auto diags = mergeFail({ &a, &b });
 		ASSERT_EQ(diags.size(), 1uz);
-		EXPECT_TRUE(mentions(diags[0], "duplicate body for function 'X' in modules 'A' and 'B'")) << diags[0].message;
+		EXPECT_TRUE(mentions(diags[0], "duplicate body for function 'X()' in modules 'A' and 'B'")) << diags[0].message;
 	}
 
 	TEST(MergeTest, RedefineAllowedLastWins) {
@@ -108,7 +123,7 @@ namespace AccelLang {
 		const auto b = parse("B", "fn Color() -> f32 { return 0.5; }\nfn Other() -> f32 { return 0.5; }\n");
 		const auto diags = mergeFail({ &a, &b });
 		ASSERT_EQ(diags.size(), 1uz);
-		EXPECT_TRUE(mentions(diags[0], "duplicate body for function 'Other' in modules 'A' and 'B'")) << diags[0].message;
+		EXPECT_TRUE(mentions(diags[0], "duplicate body for function 'Other()' in modules 'A' and 'B'")) << diags[0].message;
 	}
 
 	TEST(MergeTest, RedefineWithoutAllowOnTheReplacedBodyIsDiagnostic) {
@@ -118,7 +133,7 @@ namespace AccelLang {
 		const auto c = parse("C", "fn Color() -> f32 { return 0.25; }\n");
 		const auto diags = mergeFail({ &a, &b, &c });
 		ASSERT_EQ(diags.size(), 1uz);
-		EXPECT_TRUE(mentions(diags[0], "duplicate body for function 'Color' in modules 'B' and 'C'")) << diags[0].message;
+		EXPECT_TRUE(mentions(diags[0], "duplicate body for function 'Color()' in modules 'B' and 'C'")) << diags[0].message;
 	}
 
 	TEST(MergeTest, BindingTypeConflictNamesBothModules) {
@@ -370,7 +385,7 @@ namespace AccelLang {
 		const auto a = parse("A", String(cameraMat4) + "fn main() {\n\tlet m = camera.vp;\n}\n");
 		const auto diags = mergeFail({ &a, &a });
 		ASSERT_EQ(diags.size(), 1uz);
-		EXPECT_TRUE(mentions(diags[0], "duplicate body for function 'main' in modules 'A' and 'A'")) << diags[0].message;
+		EXPECT_TRUE(mentions(diags[0], "duplicate body for function 'main()' in modules 'A' and 'A'")) << diags[0].message;
 	}
 
 	TEST(MergeTest, OutOfRangeRefsAreDiagnostics) {

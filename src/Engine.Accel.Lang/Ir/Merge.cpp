@@ -5,6 +5,8 @@
 #include <string>
 #include <utility>
 
+#include "Typecheck.hpp"
+
 using namespace hg::engine::accel::lang;
 using namespace hg;
 
@@ -60,46 +62,8 @@ namespace {
 
 	/* Type names for diagnostics, in `.asl` spelling */
 
-	[[nodiscard]] String describe(ref<const Vector<ir::TypeDesc>> types_, ir::TypeRef ref_, u32 depth_ = 0uL) {
-		if (ref_.index >= types_.size()) {
-			return "<none>";
-		}
-		if (depth_ > 8uL) {
-			return "...";
-		}
-
-		const auto& type = types_[ref_.index];
-		const auto scalar = type.scalar == ir::ScalarKind::eBool ?
-			String("bool") :
-			(type.scalar == ir::ScalarKind::eFloat ? "f" : (type.scalar == ir::ScalarKind::eInt ? "s" : "u")) + std::to_string(type.bits);
-
-		if (type.kind == ir::TypeKind::eScalar) {
-			return String(scalar);
-		}
-		if (type.kind == ir::TypeKind::eVector) {
-			return scalar + "vec" + std::to_string(type.n);
-		}
-		if (type.kind == ir::TypeKind::eMatrix) {
-			return scalar + "mat" + std::to_string(type.n) + (type.n == type.m ? "" : "x" + std::to_string(type.m));
-		}
-		if (type.kind == ir::TypeKind::eArray) {
-			return describe(types_, type.element, depth_ + 1uL) + "[" + (type.count == 0uL ? "" : std::to_string(type.count)) + "]";
-		}
-		if (type.kind == ir::TypeKind::eStruct) {
-			if (not type.name.empty()) {
-				return type.name;
-			}
-			String text = "block { ";
-			for (const auto& field : type.fields) {
-				text += describe(types_, field.type, depth_ + 1uL) + " " + field.name + "; ";
-			}
-			return text + "}";
-		}
-		if (type.kind == ir::TypeKind::eTexture) {
-			constexpr std::array<StringView, 4> dims { "1d", "2d", "3d", "cube" };
-			return "texture" + String(dims[static_cast<u32>(type.dim) & 3uL]);
-		}
-		return "sampler";
+	[[nodiscard]] String describe(ref<const Vector<ir::TypeDesc>> types_, ir::TypeRef ref_) {
+		return ir::describeType(types_, ref_);
 	}
 
 	[[nodiscard]] StringView className(ir::BindClass class_) {
@@ -211,23 +175,44 @@ namespace {
 
 	/* shortcut: a name with several `@when` variants resolves to the last one (Task 5's rule, in merged order), so a call
 	 * cannot pick its variant; upgrade when Task 7 slices by toggle values and resolves calls per variant. */
-	[[nodiscard]] ir::FunctionRef resolveCall(ref<const Vector<ir::FunctionDecl>> functions_, StringView name_) {
+	[[nodiscard]] ir::FunctionRef resolveCall(
+		ref<const Vector<ir::FunctionDecl>> functions_,
+		StringView name_,
+		ref<const Vector<ir::ParamDecl>> source_,
+		ref<const Remap> remap_
+	) {
+		const auto matches = [&](ref<const ir::FunctionDecl> fn_) {
+			return fn_.name == name_ && std::ranges::equal(
+				fn_.params,
+				source_,
+				[&](ref<const ir::ParamDecl> x_, ref<const ir::ParamDecl> y_) { return x_.type == remap_.type(y_.type); }
+			);
+		};
 		for (auto i = functions_.size(); i > 0uz; --i) {
-			if (functions_[i - 1uz].name == name_) {
+			if (matches(functions_[i - 1uz])) {
 				return ir::FunctionRef { static_cast<u32>(i - 1uz) };
 			}
 		}
 		return {};
 	}
 
-	[[nodiscard]] ir::Expr remapExpr(ir::Expr expr_, ref<const Remap> remap_, ref<const Vector<ir::FunctionDecl>> functions_) {
+	[[nodiscard]] ir::Expr remapExpr(
+		ir::Expr expr_,
+		ref<const Remap> remap_,
+		ref<const Vector<ir::FunctionDecl>> functions_,
+		ref<const Vector<ir::FunctionDecl>> source_
+	) {
 		auto& [kind, name, binding, function, local, type, operands] = expr_;
 		/* shortcut: a binding use keeps its parse-time binding (first localName match) mapped through the id collapse,
 		 * so same-named bindings with different ids under different @when stay resolved to the first; upgrade when Task 7
 		 * slices by toggle values and can re-resolve names per variant. */
 		binding = remap_.binding(binding);
 		// calls re-resolve by name: the frozen index may name a dropped forward declaration or a replaced body
-		function = kind == ir::ExprKind::eCall ? resolveCall(functions_, name) : ir::FunctionRef {};
+		if (kind == ir::ExprKind::eCall && function.index < source_.size()) {
+			function = resolveCall(functions_, name, source_[function.index].params, remap_);
+		} else {
+			function = ir::FunctionRef {};
+		}
 		type = remap_.type(type);
 		for (auto& op : operands) {
 			op = remap_.expr(op);
@@ -405,9 +390,10 @@ namespace {
 				for (auto i = 0uz; i < modules[m]->functions.size(); ++i) {
 					const Variant at { static_cast<u32>(m), static_cast<u32>(i) };
 					const auto& fn = decl(at);
-					auto named = std::ranges::find(names, fn.name, &Named::name);
+					const auto signature = ir::signatureOf(*modules[m], fn);
+					auto named = std::ranges::find(names, signature, &Named::name);
 					if (named == names.end()) {
-						names.emplace_back(Named { fn.name, at, {} });
+						names.emplace_back(Named { signature, at, {} });
 						named = names.end() - 1;
 					} else if (not sameSignature(named->first, at)) {
 						diags.emplace_back(
@@ -434,7 +420,7 @@ namespace {
 					} else {
 						diags.emplace_back(
 							error(
-								"duplicate body for function " + quoted(fn.name) + " in modules " + quoted(moduleName(variant->module)) +
+								"duplicate body for function " + quoted(signature) + " in modules " + quoted(moduleName(variant->module)) +
 								" and " + quoted(moduleName(at.module))
 							)
 						);
@@ -458,7 +444,7 @@ namespace {
 			for (auto m = 0uz; m < modules.size(); ++m) {
 				const auto& remap = remaps[m];
 				for (const auto& e : modules[m]->exprs) {
-					result.exprs.emplace_back(remapExpr(e, remap, result.functions));
+					result.exprs.emplace_back(remapExpr(e, remap, result.functions, modules[m]->functions));
 				}
 				for (const auto& s : modules[m]->stmts) {
 					result.stmts.emplace_back(remapStmt(s, remap));

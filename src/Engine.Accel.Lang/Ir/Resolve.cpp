@@ -5,6 +5,7 @@
 #include <utility>
 
 #include "Compact.hpp"
+#include "Typecheck.hpp"
 
 using namespace hg::engine::accel::lang;
 using namespace hg;
@@ -125,12 +126,13 @@ namespace {
 	}
 
 	/* function names in first-appearance order with their declarations */
-	[[nodiscard]] Vector<std::pair<String, Vector<u32>>> byName(ref<const Vector<ir::FunctionDecl>> functions_) {
+	[[nodiscard]] Vector<std::pair<String, Vector<u32>>> byName(ref<const ir::Module> module_) {
 		Vector<std::pair<String, Vector<u32>>> names {};
-		for (auto i = 0uz; i < functions_.size(); ++i) {
-			auto it = std::ranges::find(names, functions_[i].name, &std::pair<String, Vector<u32>>::first);
+		for (auto i = 0uz; i < module_.functions.size(); ++i) {
+			const auto signature = ir::signatureOf(module_, module_.functions[i]);
+			auto it = std::ranges::find(names, signature, &std::pair<String, Vector<u32>>::first);
 			if (it == names.end()) {
-				it = names.insert(names.end(), { functions_[i].name, {} });
+				it = names.insert(names.end(), { signature, {} });
 			}
 			it->second.emplace_back(static_cast<u32>(i));
 		}
@@ -176,7 +178,7 @@ std::expected<ir::Module, ir::Diagnostics> ir::resolveToggles(ref<const Module> 
 	const auto at = combination(module_.toggles, set);
 
 	Diagnostics diags {};
-	const auto names = byName(module_.functions);
+	const auto names = byName(module_);
 	exhaustiveness(module_, names, diags);
 
 	CompactPlan plan {};

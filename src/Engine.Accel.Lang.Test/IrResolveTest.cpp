@@ -270,7 +270,7 @@ namespace AccelLang {
 		// checked ahead of time: the requested combination itself is covered
 		const auto diags = resolveFail(module, { { "Shading", "Forward" }, { "Shadows", "Off" } });
 		ASSERT_EQ(diags.size(), 1uz);
-		EXPECT_EQ(diags[0].message, "no body for 'GetWorldPosition' at Shading=Deferred, Shadows=Off");
+		EXPECT_EQ(diags[0].message, "no body for 'GetWorldPosition()' at Shading=Deferred, Shadows=Off");
 	}
 
 	TEST(ResolveTest, WhenBlockInputsAreInterfaceOfThatVariant) {
@@ -415,7 +415,7 @@ namespace AccelLang {
 		);
 		const auto diags = resolveFail(module, { { "Shading", "Forward" }, { "Shadows", "On" } });
 		ASSERT_EQ(diags.size(), 1uz);
-		EXPECT_EQ(diags[0].message, "overlapping bodies for 'F' at Shading=Forward, Shadows=On");
+		EXPECT_EQ(diags[0].message, "overlapping bodies for 'F()' at Shading=Forward, Shadows=On");
 
 		const auto resolved = resolveOk(module, { { "Shading", "Forward" }, { "Shadows", "Off" } });
 		EXPECT_EQ(functionNames(resolved), (Vector<String> { "F", "main" }));

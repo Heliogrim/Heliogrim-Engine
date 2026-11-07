@@ -844,7 +844,7 @@ namespace AccelLang {
 		EXPECT_EQ(w.name, "w");
 		EXPECT_EQ(w.type, v.type);
 		EXPECT_TRUE(exprAt(module, w.lhs).local);
-		EXPECT_EQ(u.type.index, unset);// inferred later
+		EXPECT_EQ(u.type, v.type);// inferred by typecheck
 		EXPECT_NE(u.lhs.index, unset);
 		EXPECT_EQ(module.types.at(arr.type.index).kind, TypeKind::eArray);
 		EXPECT_EQ(arr.lhs.index, unset);// no initializer
@@ -976,7 +976,7 @@ namespace AccelLang {
 
 		EXPECT_EQ(parseOk(body(repeat("(", 100uz) + "1.0" + repeat(")", 100uz))).functions.size(), 1uz);
 		EXPECT_EQ(parseOk(body(repeat("-", 100uz) + "1.0")).functions.size(), 1uz);
-		EXPECT_EQ(parseOk(body(repeat("!", 100uz) + "true")).functions.size(), 1uz);
+		EXPECT_EQ(parseOk("fn main() {\n\tlet b = " + repeat("!", 100uz) + "true;\n}\n").functions.size(), 1uz);
 	}
 
 	TEST(ParserBodyTest, DeepStatementsAreOneDepthDiagnostic) {

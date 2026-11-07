@@ -90,7 +90,7 @@ namespace hg::engine::accel::lang::ir {
 		/* nameref resolved to a local or parameter: not a binding use, `binding` stays absent */
 		bool local = false;
 
-		/* construct */
+		/* every expression after typecheck (construct: set at parse) */
 		TypeRef type;
 
 		/* call/construct/builtin call: arguments; field: [base]; index: [base, index]; unary: [operand]; binary: [lhs, rhs] */
@@ -113,7 +113,7 @@ namespace hg::engine::accel::lang::ir {
 	struct Stmt {
 		StmtKind kind = StmtKind::eExpr;
 
-		/* declare-local */
+		/* declare-local; the inferred type of a `let` after typecheck */
 		String name;
 		TypeRef type;
 

@@ -32,14 +32,6 @@ namespace {
 		return desc;
 	}
 
-	[[nodiscard]] bool isComparison(StringView op_) {
-		return op_ == "==" || op_ == "!=" || op_ == "<" || op_ == "<=" || op_ == ">" || op_ == ">=";
-	}
-
-	[[nodiscard]] bool isSwizzle(StringView name_) {
-		return not name_.empty() && name_.size() <= 4uz &&
-			std::ranges::all_of(name_, [](char c_) { return StringView { "xyzwrgbastpq" }.contains(c_); });
-	}
 
 	struct Emitted {
 		String text;
@@ -716,10 +708,11 @@ namespace {
 					// hex digits may contain 'e'/'E'; a `u` suffix makes an integer unsigned
 					const auto hex = e.name.starts_with("0x") || e.name.starts_with("0X");
 					const auto floating = not hex && e.name.find_first_of(".eE") != String::npos;
+					const auto floatType = typeOf(e.type).has_value() && typeOf(e.type)->kind == ir::TypeKind::eScalar && typeOf(e.type)->scalar == ir::ScalarKind::eFloat;
 					const auto unsignedInt = not floating && (e.name.ends_with('u') || e.name.ends_with('U'));
 					return {
-						e.name,
-						scalarDesc(floating ? ir::ScalarKind::eFloat : unsignedInt ? ir::ScalarKind::eUInt : ir::ScalarKind::eInt, 32uL)
+						floatType && not floating && not hex ? e.name + ".0" : e.name,
+						scalarDesc(floating || floatType ? ir::ScalarKind::eFloat : unsignedInt ? ir::ScalarKind::eUInt : ir::ScalarKind::eInt, 32uL)
 					};
 				}
 				case ir::ExprKind::eNameRef: {
@@ -737,25 +730,25 @@ namespace {
 				}
 				case ir::ExprKind::eCall: {
 					const auto* fn = e.function.index < _module.functions.size() ? &_module.functions[e.function.index] : nullptr;
-					return { e.name + "(" + arguments() + ")", fn != nullptr ? typeOf(fn->ret) : None };
+					return { e.name + "(" + arguments() + ")", typeOf(e.type) };
 				}
 				case ir::ExprKind::eField: {
 					auto base = operand(0uz);
-					return { base.text + "." + e.name, fieldType(base.type, e.name) };
+					return { base.text + "." + e.name, typeOf(e.type) };
 				}
 				case ir::ExprKind::eIndex: {
 					auto base = operand(0uz);
 					const auto index = operand(1uz);
-					return { base.text + "[" + index.text + "]", indexType(base.type) };
+					return { base.text + "[" + index.text + "]", typeOf(e.type) };
 				}
 				case ir::ExprKind::eUnary: {
 					auto inner = operand(0uz);
-					return { "(" + e.name + inner.text + ")", e.name == "!" ? scalarDesc(ir::ScalarKind::eBool, 32uL) : inner.type };
+					return { "(" + e.name + inner.text + ")", typeOf(e.type) };
 				}
 				case ir::ExprKind::eBinary: {
 					auto lhs = operand(0uz);
 					auto rhs = operand(1uz);
-					return { "(" + lhs.text + " " + e.name + " " + rhs.text + ")", binaryType(e.name, lhs.type, rhs.type) };
+					return { "(" + lhs.text + " " + e.name + " " + rhs.text + ")", typeOf(e.type) };
 				}
 				case ir::ExprKind::eConstruct: {
 					use(e.type);
@@ -774,7 +767,7 @@ namespace {
 
 		[[nodiscard]] Emitted nameRef(ref<const ir::Expr> e_) {
 			if (e_.local) {
-				return { e_.name, localType(e_.name) };
+				return { e_.name, typeOf(e_.type).has_value() ? typeOf(e_.type) : localType(e_.name) };
 			}
 			const auto& decls = _module.bindings;
 			const auto* binding = e_.binding.index < decls.size() ? &decls[e_.binding.index] : nullptr;
@@ -783,7 +776,7 @@ namespace {
 				binding = it != decls.end() ? &*it : nullptr;
 			}
 			if (binding == nullptr) {
-				return { e_.name, localType(e_.name) };
+				return { e_.name, typeOf(e_.type).has_value() ? typeOf(e_.type) : localType(e_.name) };
 			}
 			if (binding->implicit) {
 				error("Implicit binding '" + binding->id + "' has no GLSL variable.");
@@ -810,57 +803,6 @@ namespace {
 				"texture(" + String { prefix } + "sampler" + dimName(tex.dim) + "(" + texture.text + ", " + sampler.text + "), " + uv.text + ")",
 				vectorDesc(tex.scalar, 32uL, 4uL)
 			};
-		}
-
-		[[nodiscard]] Opt<ir::TypeDesc> fieldType(ref<const Opt<ir::TypeDesc>> base_, ref<const String> field_) const {
-			if (not base_.has_value()) {
-				return None;
-			}
-			if (base_->kind == ir::TypeKind::eStruct) {
-				const auto it = std::ranges::find(base_->fields, field_, &ir::FieldDesc::name);
-				return it != base_->fields.end() ? typeOf(it->type) : None;
-			}
-			const auto swizzlable = base_->kind == ir::TypeKind::eVector || base_->kind == ir::TypeKind::eScalar;
-			return swizzlable && isSwizzle(field_) ?
-				Opt<ir::TypeDesc> { vectorDesc(base_->scalar, base_->bits, static_cast<u32>(field_.size())) } :
-				None;
-		}
-
-		[[nodiscard]] Opt<ir::TypeDesc> indexType(ref<const Opt<ir::TypeDesc>> base_) const {
-			if (not base_.has_value()) {
-				return None;
-			}
-			if (base_->kind == ir::TypeKind::eArray) {
-				return typeOf(base_->element);
-			}
-			if (base_->kind == ir::TypeKind::eVector) {
-				return scalarDesc(base_->scalar, base_->bits);
-			}
-			return base_->kind == ir::TypeKind::eMatrix ? Opt<ir::TypeDesc> { vectorDesc(base_->scalar, base_->bits, base_->m) } : None;
-		}
-
-		[[nodiscard]] static Opt<ir::TypeDesc> binaryType(ref<const String> op_, ref<const Opt<ir::TypeDesc>> lhs_, ref<const Opt<ir::TypeDesc>> rhs_) {
-			using enum ir::TypeKind;
-			if (isComparison(op_)) {
-				return scalarDesc(ir::ScalarKind::eBool, 32uL);
-			}
-			if (not lhs_.has_value() || not rhs_.has_value()) {
-				return None;
-			}
-			const auto& l = *lhs_;
-			const auto& r = *rhs_;
-			if (op_ == "*" && l.kind == eMatrix && r.kind == eVector) {
-				return vectorDesc(l.scalar, l.bits, l.m);
-			}
-			if (op_ == "*" && l.kind == eVector && r.kind == eMatrix) {
-				return vectorDesc(r.scalar, r.bits, r.n);
-			}
-			if (op_ == "*" && l.kind == eMatrix && r.kind == eMatrix) {
-				auto out = l;
-				out.n = r.n;
-				return out;
-			}
-			return l.kind == eScalar ? r : l;
 		}
 	};
 }

@@ -1,4 +1,5 @@
 #include "Parser.hpp"
+#include "Typecheck.hpp"
 
 #include <algorithm>
 #include <array>
@@ -845,9 +846,8 @@ namespace hg::engine::accel::lang::ir::detail {
 		_shared.module.bindings.emplace_back(std::move(decl));
 	}
 
-	/* binds each call to a declaration of its name: the last one with a body (`@redefine`: the last wins), else the first
-	 * shortcut: one declaration per name, so @when-variant bodies of a function all resolve to the last; upgrade when
-	 * Task 6/7 merge and slice per variant. */
+	/* binds each call to a declaration of its name (typecheck then picks the overload by argument types)
+	 */
 	static void resolveCalls(ref<Shared> shared_) {
 		auto& module = shared_.module;
 		for (auto& pending : shared_.calls) {
@@ -895,6 +895,9 @@ namespace hg::engine::accel::lang::ir::detail {
 
 		parseSource(name_, source_, shared);
 		resolveCalls(shared);
+		if (shared.diags.empty()) {
+			shared.diags = ir::typecheck(shared.module);
+		}
 
 		if (not shared.diags.empty()) {
 			return std::unexpected(std::move(shared.diags));
