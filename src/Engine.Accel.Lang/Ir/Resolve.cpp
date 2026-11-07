@@ -224,6 +224,14 @@ std::expected<ir::Module, ir::Diagnostics> ir::resolveToggles(ref<const Module> 
 		plan.bindingUses[i] = it == plan.bindings.end() ? unset : *it;
 	}
 
+	Vector<u32> constants {};
+	for (auto i = 0uz; i < module_.constants.size(); ++i) {
+		if (evaluate(module_.constants[i].when, set)) {
+			constants.emplace_back(static_cast<u32>(i));
+		}
+	}
+	plan.constants = std::move(constants);
+
 	plan.stmtAlias.resize(module_.stmts.size());
 	for (auto i = 0uz; i < module_.stmts.size(); ++i) {
 		const auto& s = module_.stmts[i];
@@ -245,6 +253,9 @@ std::expected<ir::Module, ir::Diagnostics> ir::resolveToggles(ref<const Module> 
 	}
 	for (auto& binding : result.bindings) {
 		binding.when = Condition::always();
+	}
+	for (auto& constant : result.constants) {
+		constant.when = Condition::always();
 	}
 	for (auto& fn : result.functions) {
 		fn.when = Condition::always();

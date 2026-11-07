@@ -20,6 +20,8 @@ namespace hg::engine::accel::lang::ir {
 		Vector<u32> bindingUses;
 		/* per input statement: itself (keep), the statement replacing it (inline), or ~0 (drop) */
 		Vector<u32> stmtAlias;
+		/* kept constants, ascending; unset keeps all */
+		Opt<Vector<u32>> constants {};
 	};
 
 	struct Compacted {

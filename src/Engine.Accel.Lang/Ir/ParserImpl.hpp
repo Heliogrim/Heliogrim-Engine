@@ -97,6 +97,8 @@ namespace hg::engine::accel::lang::ir::detail {
 		const ir::Token* redefine = nullptr;
 		/* the `true` of `@redefine (allow = true)`, if given */
 		const ir::Token* allow = nullptr;
+		/* the @spec name; its id is collected in `binding.id` */
+		const ir::Token* spec = nullptr;
 	};
 
 	class Parser {
@@ -201,6 +203,7 @@ namespace hg::engine::accel::lang::ir::detail {
 		void structDecl();
 		void function(ref<const Annotations> ann_);
 		void binding(ir::BindingDecl decl_);
+		void constantDecl(ref<const Annotations> ann_);
 
 		/* Bodies (Parser.Body.cpp) */
 
@@ -231,6 +234,7 @@ namespace hg::engine::accel::lang::ir::detail {
 		[[nodiscard]] Opt<ir::ExprRef> unary();
 		[[nodiscard]] Opt<ir::ExprRef> postfix(Opt<ir::ExprRef> base_);
 		[[nodiscard]] Opt<ir::ExprRef> primary();
+		[[nodiscard]] Opt<ir::ExprRef> arrayConstruct(ref<const ir::Token> name_);
 		[[nodiscard]] Opt<ir::ExprRef> call(ref<const ir::Token> name_);
 		[[nodiscard]] ir::ExprRef callee(ref<const ir::Token> name_, Vector<ir::ExprRef> args_);
 		[[nodiscard]] ir::ExprRef name(ref<const ir::Token> name_);

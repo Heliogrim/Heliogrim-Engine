@@ -61,6 +61,13 @@ namespace AccelLang {
 		}
 	}
 
+	TEST(TypecheckTest, NonConstantInitializerIsDiagnostic) {
+		EXPECT_FALSE(parse("@input (mode = forward, id = \"x\") f32 x;\nconst C: f32 = x;\nfn main() {}\n").has_value());
+		EXPECT_FALSE(parse("@spec (id = \"s\") const S: f32vec3 = f32vec3(1.0);\nfn main() {}\n").has_value());
+		EXPECT_FALSE(parse("const K: f32vec3[36] = f32vec3[36](f32vec3(1.0), f32vec3(2.0));\nfn main() {}\n").has_value());
+		EXPECT_TRUE(parse("const C: f32 = 1.0;\nfn main() {}\n").has_value());
+	}
+
 	TEST(TypecheckTest, InfersLetFromInitializer) {
 		const auto module = parseOk("fn main() {\n\tlet v = f32vec4(1.0);\n\tlet s = v.xy;\n}\n");
 		EXPECT_EQ(typeNameOfLocal(module, "v"), "f32vec4");

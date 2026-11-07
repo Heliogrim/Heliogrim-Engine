@@ -108,6 +108,15 @@ namespace AccelLang {
 		EXPECT_EQ(std::hash<VariantKey> {}(makeVariantKey(module, ab, o1)), std::hash<VariantKey> {}(makeVariantKey(module, ba, o2)));
 	}
 
+	TEST(VariantKeyTest, SpecDefaultChangesKey) {
+		const auto a = parsed("@spec (id = \"s\") const S: u32 = 1u;\nfn main() {}\n");
+		const auto b = parsed("@spec (id = \"s\") const S: u32 = 2u;\nfn main() {}\n");
+		const auto c = parsed("@spec (id = \"t\") const S: u32 = 1u;\nfn main() {}\n");
+		EXPECT_NE(makeVariantKey(a, {}, {}), makeVariantKey(b, {}, {}));
+		EXPECT_NE(makeVariantKey(a, {}, {}), makeVariantKey(c, {}, {}));
+		EXPECT_EQ(makeVariantKey(a, {}, {}), makeVariantKey(parsed("@spec (id = \"s\") const S: u32 = 1u;\nfn main() {}\n"), {}, {}));
+	}
+
 	TEST(VariantKeyTest, DifferentToggleOrOutputChangesKey) {
 		const auto module = parsed(source);
 		const Vector<String> color { "color" };
