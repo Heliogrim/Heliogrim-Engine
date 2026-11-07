@@ -11,6 +11,10 @@ using namespace hg;
 
 /**/
 
+/**
+ * TODO: Make replacable to support unit tests for components. Currently this static function kills
+ *	most of the testability due to the direct coupling with the engine singleton and graphics interface.
+ */
 [[nodiscard]] static nmpt<Font> loadFont(cref<TypedAssetGuid<::hg::engine::assets::FontAsset>> guid_);
 
 /**/
@@ -213,15 +217,20 @@ void Text::onDetachDataWatcher(ref<DataWatcher> watcher_) {
 
 void Text::render(const ptr<ReflowCommandBuffer> cmd_) {
 
+	const auto& style = getStyleAttributes();
+
+	auto font = loadFont(style.valueOf<attr::TextStyle::font>());
+	if (font == nullptr) {
+		// Note: Without a font there is nothing to render
+		return;
+	}
+
 	const auto& data = getDataAttributes();
 	const auto& layout = getLayoutAttributes();
-	const auto& style = getStyleAttributes();
 
 	const auto& padding = layout.valueOf<attr::BoxLayout::padding>();
 	const auto shift = _layoutState.layoutOffset + math::fvec2 { padding.x, padding.y };
 	const auto space = _layoutState.layoutSize - math::fvec2 { padding.x + padding.z, padding.y + padding.w };
-
-	auto font = loadFont(style.valueOf<attr::TextStyle::font>());
 
 	/**/
 
@@ -409,23 +418,24 @@ PrefetchSizing Text::prefetchSizing(ReflowAxis axis_, ref<const ReflowState> sta
 	};
 	auto base = algorithm::prefetch(axis_, fb, children());
 
-	if (axis_ == ReflowAxis::eXAxis) {
+	// Note: Without a font, the text contributes no measure.
+	if (const auto font = loadFont(style.valueOf<attr::TextStyle::font>()); font != nullptr) {
+		if (axis_ == ReflowAxis::eXAxis) {
 
-		// TODO: Measure text requirements
-		const auto font = loadFont(style.valueOf<attr::TextStyle::font>());
-		const auto textSizing = measure1DimText(*font);
+			// TODO: Measure text requirements
+			const auto textSizing = measure1DimText(*font);
 
-		base.minSizing.x += textSizing.min;
-		base.sizing.x += textSizing.max;
+			base.minSizing.x += textSizing.min;
+			base.sizing.x += textSizing.max;
 
-	} else {
+		} else {
 
-		const auto font = loadFont(style.valueOf<attr::TextStyle::font>());
-		const auto textSizing = measure1CrossDimChunked(*font, getLayoutState().computeSize.x - fb.padding.x - fb.padding.z);
+			const auto textSizing = measure1CrossDimChunked(*font, getLayoutState().computeSize.x - fb.padding.x - fb.padding.z);
 
-		base.minSizing.y += textSizing;
-		base.sizing.y += textSizing;
+			base.minSizing.y += textSizing;
+			base.sizing.y += textSizing;
 
+		}
 	}
 
 	return {
@@ -492,7 +502,12 @@ math::fvec2 Text::getShrinkFactor() const noexcept {
 
 nmpt<Font> loadFont(cref<TypedAssetGuid<hg::engine::assets::FontAsset>> guid_) {
 
+	// Note: Without a font (unset guid or no engine) text can neither be measured nor rendered, callers skip it.
 	const auto engine = ::hg::engine::Engine::getEngine();
+	if (engine == nullptr || static_cast<::hg::AssetGuid>(guid_) == ::hg::invalid_asset_guid) {
+		return nullptr;
+	}
+
 	const auto asset = engine->getAssets()->getRegistry()->findAssetByGuid(guid_);
 	::hg::assertrt(asset != None);
 
