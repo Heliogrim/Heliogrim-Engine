@@ -10,16 +10,12 @@ using namespace hg;
 using namespace hg::engine::accel::lang::ir::detail;
 
 namespace {
-	using ir::builtinFunctions;
+	using ir::findBuiltinFunction;
 
 	[[nodiscard]] bool isBuiltinVariable(StringView name_) {
 		return ir::findBuiltinVariable(name_) != nullptr;
 	}
 
-	template <size_t Size_>
-	[[nodiscard]] bool contains(ref<const std::array<StringView, Size_>> names_, StringView name_) {
-		return std::ranges::find(names_, name_) != names_.end();
-	}
 
 	/* statement keywords the lexer leaves as identifiers; loops and switch come after this milestone */
 	constexpr std::array<StringView, 3> unsupportedStatements { "for", "while", "switch" };
@@ -375,8 +371,7 @@ Opt<ir::ExprRef> Parser::postfix(Opt<ir::ExprRef> base_) {
 				syntaxError("a field name");
 				return None;
 			}
-			// shortcut: no type inference, so any field name (struct member or swizzle) is accepted on any base;
-			// upgrade when a typing pass exists (Task 8/9 need field types anyway)
+			// any field name is accepted here; typecheck validates struct members and swizzles against the base type
 			base_ = node(ir::ExprKind::eField, take().text, { *base_ });
 		} else if (accept(TokenKind::eLBracket)) {
 			const auto index = expression();
@@ -444,7 +439,7 @@ ir::ExprRef Parser::callee(ref<const ir::Token> name_, Vector<ir::ExprRef> args_
 		construct.operands = std::move(args_);
 		return expr(std::move(construct));
 	}
-	if (contains(builtinFunctions, name_.text)) {
+	if (ir::findBuiltinFunction(name_.text) != nullptr) {
 		return node(ir::ExprKind::eBuiltin, name_.text, std::move(args_));
 	}
 	const auto pending = node(ir::ExprKind::eCall, name_.text, std::move(args_));
