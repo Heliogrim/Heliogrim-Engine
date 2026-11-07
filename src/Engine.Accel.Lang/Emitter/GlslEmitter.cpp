@@ -286,6 +286,7 @@ namespace {
 				case eImage: {
 					return String { desc_.name == "r32ui" ? "u" : "" } + "image" + dimName(desc_.dim);
 				}
+				case eRegion:
 				default: {
 					return None;
 				}
@@ -425,6 +426,7 @@ namespace {
 				}
 				case ir::TypeKind::eTexture:
 				case ir::TypeKind::eSampler:
+				case ir::TypeKind::eRegion:
 				default: {
 					return;
 				}
@@ -962,6 +964,7 @@ namespace {
 					}
 					return { typeName.value_or(e.name) + "(" + arguments() + ")", type };
 				}
+				case ir::ExprKind::eRange:// regions are not lowered to GLSL yet
 				default: {
 					return { "0", None };
 				}

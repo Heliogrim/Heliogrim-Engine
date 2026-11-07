@@ -50,6 +50,7 @@ namespace hg::engine::accel::lang::ir {
 		eComma,
 		eColon,
 		eDot,
+		eDotDot,
 		eAt,
 		eAssign,
 		eArrow,

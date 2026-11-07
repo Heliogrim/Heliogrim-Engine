@@ -481,10 +481,22 @@ Opt<ir::ExprRef> Parser::postfix(Opt<ir::ExprRef> base_) {
 			base_ = node(ir::ExprKind::eField, take().text, { *base_ }, _shared.module.exprs[base_->index].loc);
 		} else if (accept(TokenKind::eLBracket)) {
 			const auto index = expression();
-			if (not index.has_value() || not expect(TokenKind::eRBracket, "']'")) {
+			if (not index.has_value()) {
 				return None;
 			}
-			base_ = node(ir::ExprKind::eIndex, {}, { *base_, *index }, _shared.module.exprs[base_->index].loc);
+			const auto loc = _shared.module.exprs[base_->index].loc;
+			if (accept(TokenKind::eDotDot)) {
+				const auto hi = expression();
+				if (not hi.has_value() || not expect(TokenKind::eRBracket, "']'")) {
+					return None;
+				}
+				base_ = node(ir::ExprKind::eRange, {}, { *base_, *index, *hi }, loc);
+			} else {
+				if (not expect(TokenKind::eRBracket, "']'")) {
+					return None;
+				}
+				base_ = node(ir::ExprKind::eIndex, {}, { *base_, *index }, loc);
+			}
 		} else {
 			break;
 		}
@@ -582,7 +594,7 @@ ir::ExprRef Parser::callee(ref<const ir::Token> name_, Vector<ir::ExprRef> args_
 		construct.loc = name_.loc;
 		return expr(std::move(construct));
 	}
-	if (ir::findBuiltinFunction(name_.text) != nullptr) {
+	if (name_.text == "len" || ir::findBuiltinFunction(name_.text) != nullptr) {
 		return node(ir::ExprKind::eBuiltin, name_.text, std::move(args_), name_.loc);
 	}
 	const auto pending = node(ir::ExprKind::eCall, name_.text, std::move(args_), name_.loc);

@@ -80,7 +80,9 @@ namespace hg::engine::accel::lang::ir {
 		/* builtin variable (`position` -> gl_Position) or builtin call (`sample(...)`) by `name`; never a binding use */
 		eBuiltin,
 		/* operands = [cond, then, else] */
-		eTernary
+		eTernary,
+		/* `base[lo .. hi]` (only valid under a borrow); operands = [base, lo, hi]; type = region of the base element */
+		eRange
 	};
 
 	/**
@@ -167,7 +169,9 @@ namespace hg::engine::accel::lang::ir {
 		eTexture,
 		eSampler,
 		/* storage image: `dim` plus the format in `TypeDesc::name` */
-		eImage
+		eImage,
+		/* borrowed window over an array (`&mut T[]` parameter, range alias); `element` only, `count` unused */
+		eRegion
 	};
 
 	enum class ScalarKind : u8 {

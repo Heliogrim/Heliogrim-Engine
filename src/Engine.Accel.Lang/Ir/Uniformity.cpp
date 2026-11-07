@@ -97,7 +97,7 @@ namespace {
 		[[nodiscard]] String rootOf(ir::ExprRef place_) const {
 			while (place_.index < module.exprs.size()) {
 				const auto& e = module.exprs[place_.index];
-				if ((e.kind == ir::ExprKind::eField || e.kind == ir::ExprKind::eIndex) && not e.operands.empty()) {
+				if ((e.kind == ir::ExprKind::eField || e.kind == ir::ExprKind::eIndex || e.kind == ir::ExprKind::eRange) && not e.operands.empty()) {
 					place_ = e.operands.front();
 					continue;
 				}
@@ -118,7 +118,7 @@ namespace {
 			/* the written name itself too (an alias), so reads through it see the write */
 			while (place_.index < module.exprs.size()) {
 				const auto& e = module.exprs[place_.index];
-				if ((e.kind == ir::ExprKind::eField || e.kind == ir::ExprKind::eIndex) && not e.operands.empty()) {
+				if ((e.kind == ir::ExprKind::eField || e.kind == ir::ExprKind::eIndex || e.kind == ir::ExprKind::eRange) && not e.operands.empty()) {
 					place_ = e.operands.front();
 					continue;
 				}

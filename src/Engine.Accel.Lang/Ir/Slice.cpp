@@ -138,7 +138,7 @@ namespace {
 			auto at = ref_.index;
 			for (auto steps = 0uz; at < in.exprs.size() && steps <= in.exprs.size(); ++steps) {
 				const auto& e = in.exprs[at];
-				if (e.kind != ir::ExprKind::eField && e.kind != ir::ExprKind::eIndex) {
+				if (e.kind != ir::ExprKind::eField && e.kind != ir::ExprKind::eIndex && e.kind != ir::ExprKind::eRange) {
 					return at;
 				}
 				at = e.operands.empty() ? unset : e.operands.front().index;
