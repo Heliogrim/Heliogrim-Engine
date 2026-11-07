@@ -37,6 +37,12 @@ namespace AccelLang {
 			return res.has_value() || res.error().empty() ? String {} : res.error().front().message;
 		}
 
+		/* "" when the module checks; compute entry so workgroup variables are allowed */
+		[[nodiscard]] String messageOf(StringView source_) {
+			auto res = parseModule("M", source_, EntryKind::eCompute, ModuleResolver { noIncludes });
+			return res.has_value() || res.error().empty() ? String {} : res.error().front().message;
+		}
+
 		[[nodiscard]] Diagnostic firstDiagnostic(StringView source_) {
 			auto res = parse(source_);
 			EXPECT_FALSE(res.has_value());
@@ -392,22 +398,88 @@ namespace AccelLang {
 	TEST(MutabilityTest, AliasThroughMutRefIsDiagnostic) {
 		EXPECT_EQ(
 			firstMessage("fn F(x: &mut f32, y: &f32) {}\nfn main() {\n\tlet a = 1.0;\n\tlet l = &mut a;\n\tF(a, l);\n}\n"),
-			"'&mut' argument 'a' aliases another argument of call to 'F'"
+			"'&mut' argument 'a' overlaps argument 'a' of call to 'F'"
 		);
 	}
 
 	TEST(MutabilityTest, AliasThroughReadRefIsDiagnostic) {
 		EXPECT_EQ(
 			firstMessage("fn F(x: &mut f32, y: &f32) {}\nfn main() {\n\tlet a = 1.0;\n\tlet r = &a;\n\tF(a, r);\n}\n"),
-			"'&mut' argument 'a' aliases another argument of call to 'F'"
+			"'&mut' argument 'a' overlaps argument 'a' of call to 'F'"
 		);
 	}
 
-	TEST(MutabilityTest, FieldsOfOneRootAreDiagnostic) {
+	TEST(MutabilityTest, FieldsOfOneRootAreDisjoint) {
 		EXPECT_EQ(
-			firstMessage("fn F(x: &mut f32, y: &f32) {}\nfn main() {\n\tlet a = f32vec2(1.0);\n\tF(a.x, a.y);\n}\n"),
-			"'&mut' argument 'a' aliases another argument of call to 'F'"
+			messageOf("fn F(x: &mut f32, y: &f32) {}\nfn main() {\n\tlet a = f32vec2(1.0);\n\tF(a.x, a.y);\n}\n"),
+			""
 		);
+	}
+
+	TEST(TypecheckTest, SwapDisjointConstantIndices) {
+		EXPECT_EQ(
+			messageOf(
+				"fn swap(a: &mut u32, b: &mut u32) {\n\tlet t = a;\n\ta = b;\n\tb = t;\n}\n"
+				"workgroup arr: u32[8];\nfn main() {\n\tswap(arr[0u], arr[1u]);\n}\n"
+			),
+			""
+		);
+	}
+
+	TEST(TypecheckTest, RefMutWithDisjointFieldRead) {
+		EXPECT_EQ(
+			messageOf(
+				"@input (mode = bind, id = \"buf\", class = storage, access = read_write) block buf { f32 a; f32 b; };\n"
+				"fn F(a: &mut f32, b: f32) {}\nfn main() {\n\tF(buf.a, buf.b);\n}\n"
+			),
+			""
+		);
+	}
+
+	TEST(TypecheckTest, RefMutWithRuntimeIndicesRejected) {
+		EXPECT_TRUE(
+			messageOf(
+				"fn F(a: &mut u32, b: u32) {}\nworkgroup arr: u32[8];\nfn main() {\n\tlet i: u32 = 0u;\n\tlet j: u32 = 1u;\n\tF(arr[i], arr[j]);\n}\n"
+			).contains("'&mut' argument 'arr[i]' overlaps argument 'arr[j]' of call to 'F'")
+		);
+	}
+
+	namespace {
+		constexpr auto regionFn = "fn F(a: &mut u32[], b: &mut u32[]) {}\nworkgroup t: u32[16];\n";
+	}
+
+	TEST(TypecheckTest, OctalIndexIsSamePlace) {
+		const auto message = messageOf(
+			"fn swap(a: &mut u32, b: &mut u32) {\n\tlet t = a;\n\ta = b;\n\tb = t;\n}\n"
+			"workgroup a: u32[16];\nfn main() {\n\tswap(a[010u], a[8u]);\n}\n"
+		);
+		EXPECT_TRUE(message.contains("overlaps argument")) << message;
+	}
+
+	TEST(TypecheckTest, OctalRangeBoundOverlaps) {
+		const auto message = messageOf(String { regionFn } + "fn main() {\n\tF(t[0u .. 9u], t[010u .. 16u]);\n}\n");
+		EXPECT_TRUE(message.contains("overlaps argument")) << message;
+	}
+
+	TEST(TypecheckTest, SharedConstBoundIsAccepted) {
+		EXPECT_EQ(messageOf(String { regionFn } + "fn main() {\n\tconst n: u32 = 4u;\n\tF(t[0u .. n], t[n .. 16u]);\n}\n"), "");
+	}
+
+	TEST(TypecheckTest, SharedLetBoundIsRejected) {
+		const auto message = messageOf(String { regionFn } + "fn main() {\n\tlet n: u32 = 4u;\n\tF(t[0u .. n], t[n .. 16u]);\n}\n");
+		EXPECT_TRUE(message.contains("overlaps argument")) << message;
+	}
+
+	TEST(TypecheckTest, SharedByValueParameterBoundIsAccepted) {
+		EXPECT_EQ(messageOf(String { regionFn } + "fn G(n: u32) {\n\tF(t[0u .. n], t[n .. 16u]);\n}\nfn main() {}\n"), "");
+	}
+
+	TEST(TypecheckTest, ShadowedBoundDoesNotAbut) {
+		const auto message = messageOf(
+			String { regionFn } +
+			"fn main() {\n\tconst n: u32 = 4u;\n\tconst m: u32 = 8u;\n\tlet l = &mut t[n .. m];\n\t{\n\t\tconst n: u32 = 10u;\n\t\tF(l, t[0u .. n]);\n\t}\n}\n"
+		);
+		EXPECT_TRUE(message.contains("overlaps argument")) << message;
 	}
 
 	TEST(MutabilityTest, StorageOutputDefaultsToWritable) {
@@ -429,7 +501,7 @@ namespace AccelLang {
 	TEST(MutabilityTest, AliasingMutArgumentsIsDiagnostic) {
 		EXPECT_TRUE(
 			firstMessage("fn F(x: &mut f32, y: &f32) {}\nfn main() {\n\tlet a = 1.0;\n\tF(a, a);\n}\n")
-			.contains("'&mut' argument 'a' aliases another argument of call to 'F'")
+			.contains("'&mut' argument 'a' overlaps argument 'a' of call to 'F'")
 		);
 	}
 
