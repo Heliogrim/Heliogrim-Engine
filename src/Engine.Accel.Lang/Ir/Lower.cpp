@@ -3,6 +3,7 @@
 #include <Engine.Common/Make.hpp>
 
 #include "Interface.hpp"
+#include "Regions.hpp"
 #include "../Emitter/GlslEmitter.hpp"
 #include "../Rep/Annotation.hpp"
 #include "../Rep/Symbol.hpp"
@@ -104,8 +105,14 @@ std::expected<Intermediate, ir::Diagnostics> ir::lowerToIntermediate(
 		return std::unexpected(Diagnostics { Diagnostic { .message = "Only Vulkan GLSL 460 can be emitted." } });
 	}
 
+	auto lowered = lowerRegions(resolved_);
+	if (not lowered.has_value()) {
+		return std::unexpected(std::move(lowered.error()));
+	}
+
+	// lowering only appends nodes, so the interface and layout of `resolved_` still apply
 	Intermediate im {};
-	auto diags = GlslEmitter {}.emit(resolved_, layout_, im.lang).diagnostics;
+	auto diags = GlslEmitter {}.emit(*lowered, layout_, im.lang).diagnostics;
 	im.lang.dialect = dialect_;
 
 	u32 forwardInputs = 0uL;
