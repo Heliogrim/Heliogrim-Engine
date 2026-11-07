@@ -1,5 +1,7 @@
 #pragma once
 
+#include <algorithm>
+#include <array>
 #include <filesystem>
 #include <fstream>
 #include <sstream>
@@ -126,18 +128,21 @@ namespace AccelCompile {
 		profile._toggles = toggles_;
 		const TestSpecification spec { {} };
 		VariantCache cache {};
+		PipelineLayoutCache layouts {};
 
-		const auto flags = entry_ == EntryKind::eFragment ? StageFlagBits::eFragment : StageFlagBits::eVertex;
-		const auto resolved = resolveStageIr(stage, profile, spec, flags, cache);
-		if (not resolved.has_value()) {
+		/* one stage is its own pipeline */
+		const std::array<const lang::Intermediate*, 1> stages { &stage };
+		const std::array<StageFlagBits, 1> flags { entry_ == EntryKind::eFragment ? StageFlagBits::eFragment : StageFlagBits::eVertex };
+		const auto composed = composePipelineIr(stages, flags, profile, spec, cache, layouts);
+		if (not composed.has_value()) {
 			auto failure = ::testing::AssertionFailure() << "resolve failed:";
-			for (const auto& d : resolved.error()) {
+			for (const auto& d : composed.error()) {
 				failure << "\n" << d.line << ":" << d.column << " " << std::string { d.message };
 			}
 			return failure;
 		}
 
-		const auto& lowered = (*resolved)->lowered;
+		const auto& lowered = *composed->front()->getIntermediate();
 		auto result = glslCompiles(lowered.lang.text.empty() ? hg::StringView {} : hg::StringView { lowered.lang.text.front().data }, entry_);
 		if (not result) {
 			return result << "\n(emitted)";
