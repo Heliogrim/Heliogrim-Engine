@@ -158,7 +158,7 @@ endif ()
 # Compile launch options
 #
 
-option(HELIOGRIM_USE_COMPILER_CACHE "Launch compiler through sccache (switches debug info to embedded /Z7)." OFF)
+option(HELIOGRIM_USE_COMPILER_CACHE "Launch compiler through sccache (switches debug info to embedded /Z7)." ON)
 
 if (HELIOGRIM_USE_COMPILER_CACHE)
 	find_program(SCCACHE_PROGRAM sccache)
