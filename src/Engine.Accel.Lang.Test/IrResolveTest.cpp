@@ -24,8 +24,8 @@ namespace AccelLang {
 			return None;
 		}
 
-		[[nodiscard]] Module parse(StringView source_, StringView name_ = "M") {
-			auto res = parseModule(name_, source_, EntryKind::eFragment, ModuleResolver { noIncludes });
+		[[nodiscard]] Module parse(StringView source_, StringView name_ = "M", EntryKind entry_ = EntryKind::eFragment) {
+			auto res = parseModule(name_, source_, entry_, ModuleResolver { noIncludes });
 			EXPECT_TRUE(res.has_value()) << (res.has_value() || res.error().empty() ? "" : res.error().front().message);
 			return res.has_value() ? std::move(res).value() : Module {};
 		}
@@ -266,7 +266,7 @@ namespace AccelLang {
 			"@when (Shading == Forward) fn GetWorldPosition() -> f32vec4 { return f32vec4(1.0); }\n"
 			"@when (Shading == Deferred && Shadows == On) fn GetWorldPosition() -> f32vec4 { return f32vec4(0.5); }\n"
 			"fn main() {\n\tposition = GetWorldPosition();\n}\n"
-		);
+		, "M", EntryKind::eVertex);
 		// checked ahead of time: the requested combination itself is covered
 		const auto diags = resolveFail(module, { { "Shading", "Forward" }, { "Shadows", "Off" } });
 		ASSERT_EQ(diags.size(), 1uz);
@@ -493,7 +493,7 @@ namespace AccelLang {
 			"@when (Shading == Deferred) fn GetWorldPosition() -> f32vec4 { return gbuffer_position; }\n",
 			"P"
 		);
-		const auto shader = parse("fn GetWorldPosition() -> f32vec4;\nfn main() {\n\tposition = GetWorldPosition();\n}\n", "S");
+		const auto shader = parse("fn GetWorldPosition() -> f32vec4;\nfn main() {\n\tposition = GetWorldPosition();\n}\n", "S", EntryKind::eVertex);
 		const Vector<const Module*> list { &profile, &shader };
 		const auto merged = merge(list);
 		ASSERT_TRUE(merged.has_value());

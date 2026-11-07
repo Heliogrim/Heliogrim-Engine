@@ -428,4 +428,11 @@ TEST(LowerTest, ForWithOmittedInitAndStepHasValidHeader) {
 	EXPECT_TRUE(text.contains("for (uint j = 0u; (j < 4u); )")) << text;
 	EXPECT_FALSE(text.contains("for ({")) << text;
 }
+
+TEST(LowerTest, ViewIndexAddsMultiview) {
+	const auto module = resolved("fn main() {\n\tposition = f32vec4(f32(view_index));\n}\n", EntryKind::eVertex);
+	const auto text = textOf(lower(module, layoutOf(module)));
+	EXPECT_TRUE(text.contains("GL_EXT_multiview")) << text;
+	EXPECT_TRUE(text.contains("gl_ViewIndex")) << text;
+}
 }

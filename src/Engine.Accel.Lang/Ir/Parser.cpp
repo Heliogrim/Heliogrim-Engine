@@ -923,6 +923,18 @@ namespace hg::engine::accel::lang::ir::detail {
 	 */
 	static void resolveCalls(ref<Shared> shared_) {
 		auto& module = shared_.module;
+		/* a user function shadows a builtin function of the same name */
+		for (auto& e : module.exprs) {
+			if (e.kind != ir::ExprKind::eBuiltin || ir::findBuiltinFunction(e.name) == nullptr) {
+				continue;
+			}
+			for (auto i = 0uz; i < module.functions.size(); ++i) {
+				if (module.functions[i].name == e.name) {
+					e.kind = ir::ExprKind::eCall;
+					e.function = ir::FunctionRef { static_cast<u32>(i) };
+				}
+			}
+		}
 		for (auto& pending : shared_.calls) {
 			auto& call = module.exprs[pending.expr];
 			Opt<u32> found = None;
