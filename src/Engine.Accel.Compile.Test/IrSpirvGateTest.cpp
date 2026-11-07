@@ -322,4 +322,66 @@ namespace AccelCompile {
 			)
 		);
 	}
+
+	/* Disabled until the legacy glsl files are deleted from the asset checkout. */
+	TEST(IrSpirvGateTest, DISABLED_AllAssetsAreAsl) {
+		namespace fs = std::filesystem;
+		const auto root = fs::path { __FILE__ }.parent_path().parent_path().parent_path() / "assets" / "shader";
+
+		std::string stale {};
+		for (const auto& entry : fs::recursive_directory_iterator { root }) {
+			if (not entry.is_regular_file()) {
+				continue;
+			}
+			const auto name = entry.path().filename().string();
+			if (entry.path().extension() != ".asl" && name != "compile_shaders.cmd") {
+				stale += "\n  " + fs::relative(entry.path(), root).generic_string();
+			}
+		}
+		EXPECT_TRUE(stale.empty()) << "Legacy shader files remain:" << stale;
+	}
+
+	TEST(IrSpirvGateTest, NoLegacyShaderLoads) {
+		namespace fs = std::filesystem;
+		const auto src = fs::path { __FILE__ }.parent_path().parent_path();
+
+		/* split literals so this file does not match itself */
+		const std::string loadNeedle = std::string { "read_shader" } + "_file(";
+		const std::string macroNeedle = std::string { "__mac" } + "ros__";
+
+		std::string hits {};
+		size_t visited = 0uLL;
+		for (const auto& entry : fs::recursive_directory_iterator { src }) {
+			if (not entry.is_regular_file()) {
+				continue;
+			}
+			const auto ext = entry.path().extension();
+			if (ext != ".cpp" && ext != ".hpp") {
+				continue;
+			}
+			++visited;
+			const auto rel = fs::relative(entry.path(), src).generic_string();
+			if (rel == "Engine.GFX.Render.Subpass/Impl/__tmp_helper.hpp") {
+				continue;
+			}
+			/* defines its own unrelated loader for absolute paths from an old prototype */
+			if (rel == "Engine.GFX.RenderGraph/test.cpp") {
+				continue;
+			}
+
+			std::ifstream file { entry.path(), std::ios::in | std::ios::binary };
+			std::ostringstream text {};
+			text << file.rdbuf();
+			const auto content = text.str();
+
+			if (content.find(loadNeedle) != std::string::npos) {
+				hits += "\n  " + rel + " (load)";
+			}
+			if (ext == ".cpp" && content.find(macroNeedle) != std::string::npos) {
+				hits += "\n  " + rel + " (macros)";
+			}
+		}
+		EXPECT_GT(visited, 0uLL) << "scan found no sources under " << src.string();
+		EXPECT_TRUE(hits.empty()) << "Legacy shader references remain:" << hits;
+	}
 }
