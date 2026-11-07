@@ -33,6 +33,9 @@
 // #define VULKAN_HPP_NO_SETTERS
 // #define VULKAN_HPP_NO_STRUCT_CONSTRUCTORS
 #define VULKAN_HPP_NO_SPACESHIP_OPERATOR
+// Compile-time trim: vk::to_string and Unique/Shared handles are unused
+#define VULKAN_HPP_NO_TO_STRING
+#define VULKAN_HPP_NO_SMART_HANDLE
 
 #ifndef VK_NULL_HANDLE
 #define VK_NULL_HANDLE nullptr
