@@ -3,10 +3,12 @@
 #include <algorithm>
 #include <array>
 #include <cstdlib>
+#include <functional>
 #include <string>
 #include <utility>
 
 #include "Builtin.hpp"
+#include "Place.hpp"
 #include "Uniformity.hpp"
 
 using namespace hg;
@@ -111,6 +113,8 @@ namespace {
 			String target {};
 			/* for an alias of a local: scope index of that local (stable, aliases always follow their target); ~0 for bindings */
 			size_t targetIndex = ~0uz;
+			/* for an alias: the borrowed place, aliases expanded */
+			Opt<ir::PlacePath> place {};
 		};
 
 		ref<ir::Module> _module;
@@ -355,7 +359,7 @@ namespace {
 							}
 						}
 					}
-					_scope.emplace_back(_module.stmts[ref_.index].name, type, writes ? Mode::eRefWrite : Mode::eRefRead, rootName(lhs), targetIndex);
+					_scope.emplace_back(_module.stmts[ref_.index].name, type, writes ? Mode::eRefWrite : Mode::eRefRead, rootName(lhs), targetIndex, placePath(lhs));
 					break;
 				}
 				case StmtKind::eAssign: {
@@ -635,15 +639,122 @@ namespace {
 			return entry != nullptr && not entry->target.empty() ? entry->target : root->name;
 		}
 
-		[[nodiscard]] bool mentions(ExprRef ref_, ref<const String> name_, u32 depth_ = 0uL) const {
+		/* what each name in a bound resolves to right now (DFS order), so a shadowing name never compares equal to the one it hides */
+		void nameIds(ExprRef ref_, Vector<size_t>& out_, u32 depth_ = 0uL) const {
 			if (ref_.index >= _module.exprs.size() || depth_ > maxDepth) {
-				return false;
+				out_.emplace_back(ir::unknownIdentity);
+				return;
 			}
 			const auto& e = _module.exprs[ref_.index];
-			if (e.kind == ExprKind::eNameRef && rootName(ref_) == name_) {
-				return true;
+			if (e.kind == ExprKind::eNameRef || e.kind == ExprKind::eBuiltin) {
+				const auto* entry = e.kind == ExprKind::eNameRef ? lookup(e) : nullptr;
+				out_.emplace_back(
+					 not immutableName(e) ? ir::unknownIdentity : entry != nullptr ? static_cast<size_t>(entry - _scope.data()) : ir::globalIdentity
+				);
 			}
-			return std::ranges::any_of(e.operands, [&](ExprRef o_) { return mentions(o_, name_, depth_ + 1uL); });
+			for (const auto o : e.operands) {
+				nameIds(o, out_, depth_ + 1uL);
+			}
+		}
+
+		/* the place an expression names, aliases expanded to what they borrow; none when it is no place */
+		[[nodiscard]] Opt<ir::PlacePath> placePath(ExprRef ref_) const {
+			Vector<const ir::Expr*> chain {};
+			const ir::Expr* e = ref_.index < _module.exprs.size() ? &_module.exprs[ref_.index] : nullptr;
+			while (e != nullptr && (e->kind == ExprKind::eField || e->kind == ExprKind::eIndex || e->kind == ExprKind::eRange)) {
+				chain.emplace_back(e);
+				e = not e->operands.empty() && e->operands.front().index < _module.exprs.size() ? &_module.exprs[e->operands.front().index] : nullptr;
+			}
+			if (e == nullptr || (e->kind != ExprKind::eNameRef && e->kind != ExprKind::eBuiltin)) {
+				return None;
+			}
+			ir::PlacePath path { .root = e->name };
+			if (e->kind == ExprKind::eNameRef) {
+				if (const auto* entry = lookup(*e); entry != nullptr && not entry->target.empty()) {
+					if (entry->place.has_value()) {
+						path = *entry->place;
+					} else {
+						path.root = entry->target;
+						path.rootScope = entry->targetIndex;
+					}
+				} else if (entry != nullptr) {
+					path.rootScope = static_cast<size_t>(entry - _scope.data());
+				}
+			}
+			for (auto it = chain.rbegin(); it != chain.rend(); ++it) {
+				const auto& ops = (*it)->operands;
+				if ((*it)->kind == ExprKind::eField) {
+					path.steps.emplace_back(ir::PlaceStep { .kind = ir::PlaceStep::Kind::eField, .field = (*it)->name });
+				} else if ((*it)->kind == ExprKind::eIndex && ops.size() >= 2uz) {
+					ir::PlaceStep step { .kind = ir::PlaceStep::Kind::eIndex, .index = ops[1] };
+					nameIds(ops[1], step.indexIds);
+					path.steps.emplace_back(std::move(step));
+				} else if ((*it)->kind == ExprKind::eRange && ops.size() >= 3uz) {
+					ir::PlaceStep step { .kind = ir::PlaceStep::Kind::eRange, .lo = ops[1], .hi = ops[2] };
+					nameIds(ops[1], step.loIds);
+					nameIds(ops[2], step.hiIds);
+					path.steps.emplace_back(std::move(step));
+				} else {
+					return None;
+				}
+			}
+			return path;
+		}
+
+		/* maximal places inside an expression (index and range bounds included) */
+		void collectPlaces(ExprRef ref_, Vector<ir::PlacePath>& out_, u32 depth_ = 0uL) const {
+			if (ref_.index >= _module.exprs.size() || depth_ > maxDepth) {
+				return;
+			}
+			if (auto path = placePath(ref_); path.has_value()) {
+				out_.emplace_back(std::move(*path));
+				for (const auto* e = &_module.exprs[ref_.index]; e->kind != ExprKind::eNameRef && e->kind != ExprKind::eBuiltin;
+				     e = &_module.exprs[e->operands.front().index]) {
+					for (auto k = 1uz; k < e->operands.size(); ++k) {
+						collectPlaces(e->operands[k], out_, depth_ + 1uL);
+					}
+				}
+				return;
+			}
+			for (const auto o : _module.exprs[ref_.index].operands) {
+				collectPlaces(o, out_, depth_ + 1uL);
+			}
+		}
+
+		/* names a bound may mention: constants, by-value parameters and locals, read-only builtins; by-value params count because they are entered as Mode::eConstant */
+		[[nodiscard]] bool immutableName(ref<const ir::Expr> e_) const {
+			if (e_.kind == ExprKind::eBuiltin) {
+				const auto* variable = ir::findBuiltinVariable(e_.name);
+				return variable != nullptr && not variable->writable;
+			}
+			if (const auto* entry = lookup(e_); entry != nullptr) {
+				return entry->mode == Mode::eConstant;
+			}
+			return e_.constant.index < _module.constants.size();
+		}
+
+		/* the `&mut` argument `index_` must not overlap any place in the other arguments */
+		void overlap(ref<const String> name_, ref<const Vector<ExprRef>> operands_, size_t index_) {
+			const auto mine = placePath(operands_[index_]);
+			if (not mine.has_value()) {
+				return;
+			}
+			const std::function<bool(ref<const ir::Expr>)> immutable = [this](ref<const ir::Expr> e_) { return immutableName(e_); };
+			for (auto j = 0uz; j < operands_.size(); ++j) {
+				Vector<ir::PlacePath> others {};
+				if (j != index_) {
+					collectPlaces(operands_[j], others);
+				}
+				for (const auto& other : others) {
+					if (not ir::disjoint(_module, *mine, other, immutable)) {
+						error(
+							"'&mut' argument '" + ir::describePlace(_module, *mine) + "' overlaps argument '" +
+							ir::describePlace(_module, other) + "' of call to '" + name_ + "'"
+						);
+						return;
+					}
+				}
+			}
 		}
 
 		/* `&mut` parameters: the argument must be a writable place, sharing no root with another argument */
@@ -660,13 +771,7 @@ namespace {
 					error(*denied);
 					continue;
 				}
-				const auto root = rootName(operands_[i]);
-				for (auto j = 0uz; not root.empty() && j < operands_.size(); ++j) {
-					if (j != i && mentions(operands_[j], root)) {
-						error("'&mut' argument '" + root + "' aliases another argument of call to '" + name_ + "'");
-						break;
-					}
-				}
+				overlap(name_, operands_, i);
 			}
 		}
 
@@ -874,13 +979,7 @@ namespace {
 								continue;
 							}
 						}
-						const auto root = rootName(operands_[k]);
-						for (auto j = 0uz; not root.empty() && j < operands_.size(); ++j) {
-							if (j != k && mentions(operands_[j], root)) {
-								error("'&mut' argument '" + root + "' aliases another argument of call to '" + name_ + "'");
-								break;
-							}
-						}
+						overlap(name_, operands_, k);
 					}
 					return sig.ret.family == ir::BuiltinFamily::eVoid ? TypeRef {} : intern(*ret);
 				}
@@ -945,7 +1044,8 @@ namespace {
 			if (not bounds) {
 				error("range bounds must be u32");
 			} else if (const auto& lo = _module.exprs[operands_[1].index], &hi = _module.exprs[operands_[2].index];
-				lo.kind == ExprKind::eLiteral && hi.kind == ExprKind::eLiteral && std::strtoull(lo.name.c_str(), nullptr, 0) >= std::strtoull(hi.name.c_str(), nullptr, 0)) {
+				lo.kind == ExprKind::eLiteral && hi.kind == ExprKind::eLiteral && ir::integerLiteral(lo.name) && ir::integerLiteral(hi.name) &&
+				*ir::integerLiteral(lo.name) >= *ir::integerLiteral(hi.name)) {
 				error("empty or reversed range");
 			}
 			if (not valid(base)) {
