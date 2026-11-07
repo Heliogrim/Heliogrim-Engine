@@ -388,6 +388,39 @@ namespace AccelCompile {
 		EXPECT_TRUE(gap.has_value()) << (gap.has_value() ? "" : gap.error().front().message);
 	}
 
+	TEST(StageIrTest, ConsumerInputTakesProducerOutputLocation) {
+		const auto vertex = intermediateOf(
+			"@output (mode = forward, id = \"a\") f32vec4 a;\n@output (mode = forward, id = \"b\") f32vec4 b;\n"
+			"@output (mode = forward, id = \"c\") f32vec4 c;\n"
+			"fn main() { a = f32vec4(0.0); b = f32vec4(1.0); c = f32vec4(2.0); position = f32vec4(0.0); }\n",
+			EntryKind::eVertex
+		);
+		const auto fragment = intermediateOf(
+			"@input (mode = forward, id = \"c\") f32vec4 c;\n@output (mode = forward, id = \"color\") f32vec4 color;\n"
+			"fn main() { color = c; }\n",
+			EntryKind::eFragment
+		);
+
+		VariantCache cache {};
+		PipelineLayoutCache layouts {};
+		const std::array<const Intermediate*, 2> stages { &vertex, &fragment };
+		const std::array<StageFlagBits, 2> flags { StageFlagBits::eVertex, StageFlagBits::eFragment };
+		const auto composed = composePipelineIr(stages, flags, EffectProfile {}, TestSpecification { {} }, cache, layouts);
+		ASSERT_TRUE(composed.has_value()) << composed.error().front().message;
+		const auto vertexText = textOf(*(*composed)[0]);
+		const auto fragmentText = textOf(*(*composed)[1]);
+		EXPECT_TRUE(vertexText.contains("layout(location = 2) out")) << vertexText;
+		EXPECT_TRUE(fragmentText.contains("layout(location = 2) in")) << fragmentText;
+		EXPECT_FALSE(fragmentText.contains("layout(location = 0) in")) << fragmentText;
+
+		/* same stages, not directly following: the cached layout must not be reused */
+		const std::array<u8, 2> apart { 1u, 0u };
+		const auto split = composePipelineIr(stages, flags, EffectProfile {}, TestSpecification { {} }, cache, layouts, nullptr, true, apart);
+		ASSERT_TRUE(split.has_value()) << split.error().front().message;
+		const auto splitText = textOf(*(*split)[1]);
+		EXPECT_TRUE(splitText.contains("layout(location = 0) in")) << splitText;
+	}
+
 	TEST(StageIrTest, EmptyStageListIsAnError) {
 		VariantCache cache {};
 		PipelineLayoutCache layouts {};

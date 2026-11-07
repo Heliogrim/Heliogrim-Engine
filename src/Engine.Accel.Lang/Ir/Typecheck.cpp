@@ -548,9 +548,29 @@ namespace {
 		/* Why the place cannot be written (assignment) or borrowed `&mut`; none when it can */
 		[[nodiscard]] Opt<String> readOnly(ExprRef place_, bool borrow_) const {
 			const auto* root = rootOf(place_);
+			/* tess_ctrl: a per-vertex output is written at gl_InvocationID only */
+			if (_module.entry == ir::EntryKind::eTessCtrl && root != nullptr) {
+				const auto* var = root->kind == ExprKind::eBuiltin ? ir::findBuiltinVariable(root->name) : nullptr;
+				const auto bindingIt = root->kind == ExprKind::eNameRef && root->binding.index < _module.bindings.size() ?
+					_module.bindings.begin() + root->binding.index :
+					_module.bindings.end();
+				const auto perVertex = (var != nullptr && var->arrayed && var->writable) ||
+					(bindingIt != _module.bindings.end() && bindingIt->arrayed && not bindingIt->input);
+				/* the index applied to the root itself selects the vertex, however deep the place goes */
+				const ir::Expr* vertexIndex = nullptr;
+				for (const auto* e = &_module.exprs[place_.index]; e != root; e = &_module.exprs[e->operands.front().index]) {
+					vertexIndex = e->kind == ExprKind::eIndex ? e : vertexIndex;
+				}
+				const auto indexRef = vertexIndex != nullptr && vertexIndex->operands.size() == 2uz ? vertexIndex->operands[1uz] : ExprRef {};
+				const auto atInvocation = indexRef.index < _module.exprs.size() && _module.exprs[indexRef.index].kind == ExprKind::eBuiltin &&
+					_module.exprs[indexRef.index].name == "invocation_id";
+				if (perVertex && not atInvocation) {
+					return String("per-vertex output '" + root->name + "' must be written at invocation_id");
+				}
+			}
 			if (root != nullptr && root->kind == ExprKind::eBuiltin) {
 				const auto* variable = ir::findBuiltinVariable(root->name);
-				if (variable != nullptr && not variable->writable) {
+				if (variable != nullptr && (not variable->writable || (variable->writeStages & ir::stageBit(_module.entry)) == 0u)) {
 					return String("cannot assign to read-only builtin '" + root->name + "'");
 				}
 				return None;
@@ -702,10 +722,11 @@ namespace {
 					error("'" + name_ + "' is not available in " + String(ir::stageName(_module.entry)) + " stages");
 				}
 				const auto element = vectorOf(variable->scalar, 32uL, variable->n);
-				if (variable->arrayed) {
+				if (variable->arrayed || variable->count != 0uL) {
 					ir::TypeDesc desc {};
 					desc.kind = ir::TypeKind::eArray;
 					desc.element = element;
+					desc.count = variable->count;
 					return intern(std::move(desc));
 				}
 				return element;

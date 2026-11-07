@@ -303,7 +303,7 @@ namespace hg::engine::accel::lang::ir::detail {
 				ann.redefine = &name;
 			} else if (name.text == "spec") {
 				ann.spec = &name;
-			} else if (name.text == "compute" || name.text == "fragment" || name.text == "geometry") {
+			} else if (name.text == "compute" || name.text == "fragment" || name.text == "geometry" || name.text == "tess_ctrl" || name.text == "tess_eval") {
 				if (ann.entry != nullptr) {
 					error(name, "Duplicate entry annotation.");
 				}
@@ -399,7 +399,8 @@ namespace hg::engine::accel::lang::ir::detail {
 			if (not expect(TokenKind::eAssign, "'='")) {
 				return false;
 			}
-			if (annotation_.text == "compute" || annotation_.text == "fragment" || annotation_.text == "geometry") {
+			if (annotation_.text == "compute" || annotation_.text == "fragment" || annotation_.text == "geometry" ||
+				annotation_.text == "tess_ctrl" || annotation_.text == "tess_eval") {
 				if (not entryArg(annotation_, key, ann_)) {
 					return false;
 				}
@@ -515,6 +516,56 @@ namespace hg::engine::accel::lang::ir::detail {
 			}
 			return true;
 		}
+		if (annotation_.text == "tess_ctrl" && key_.text == "output_vertices") {
+			if (not at(TokenKind::eInteger)) {
+				syntaxError("an integer");
+				return false;
+			}
+			const auto& number = take();
+			u32 value = 0uL;
+			for (const char digit : number.text) {
+				value = value * 10uL + static_cast<u32>(digit - '0');
+			}
+			if (number.text.size() > 9uz || value == 0uL) {
+				error(number, "Invalid output_vertices '" + String(number.text) + "'.");
+			} else {
+				ann_.attributes.outputVertices = value;
+				ann_.geometryKeys |= 1u;
+			}
+			return true;
+		}
+		if (annotation_.text == "tess_eval" && (key_.text == "domain" || key_.text == "spacing" || key_.text == "winding")) {
+			if (not at(TokenKind::eIdentifier)) {
+				syntaxError("a name");
+				return false;
+			}
+			const auto& value = take();
+			const auto v = value.text;
+			bool valid = true;
+			if (key_.text == "domain") {
+				valid = v == "triangles" || v == "quads" || v == "isolines";
+				if (valid) {
+					ann_.attributes.tessDomain = v == "triangles" ? ir::TessDomain::eTriangles :
+						v == "quads" ? ir::TessDomain::eQuads : ir::TessDomain::eIsolines;
+					ann_.geometryKeys |= 1u;
+				}
+			} else if (key_.text == "spacing") {
+				valid = v == "equal" || v == "fractional_even" || v == "fractional_odd";
+				if (valid) {
+					ann_.attributes.tessSpacing = v == "equal" ? ir::TessSpacing::eEqual :
+						v == "fractional_even" ? ir::TessSpacing::eFractionalEven : ir::TessSpacing::eFractionalOdd;
+				}
+			} else {
+				valid = v == "cw" || v == "ccw";
+				if (valid) {
+					ann_.attributes.clockwise = v == "cw";
+				}
+			}
+			if (not valid) {
+				error(value, "Invalid value '" + String(value.text) + "' for annotation key '" + String(key_.text) + "'.");
+			}
+			return true;
+		}
 		error(key_, "Unknown annotation key '" + String(key_.text) + "' for @" + String(annotation_.text) + ".");
 		// skip the value so one bad key does not cascade
 		if (at(TokenKind::eLBracket)) {
@@ -557,6 +608,9 @@ namespace hg::engine::accel::lang::ir::detail {
 		} else if (not redefine && key_.text == "packing") {
 			valid = word && (value_.text == "std140" || value_.text == "std430");
 			decl.packing = valid ? (value_.text == "std140" ? ir::Packing::eStd140 : ir::Packing::eStd430) : decl.packing;
+		} else if (not redefine && key_.text == "patch") {
+			valid = word && (value_.text == "true" || value_.text == "false");
+			decl.patch = valid ? value_.text == "true" : decl.patch;
 		} else if (not redefine && key_.text == "id") {
 			valid = not word && not value_.text.empty();
 			decl.id = valid ? String(value_.text) : decl.id;
@@ -943,7 +997,10 @@ namespace hg::engine::accel::lang::ir::detail {
 		if (ann_.entry != nullptr) {
 			const bool compute = ann_.entry->text == "compute";
 			const bool geometry = ann_.entry->text == "geometry";
-			const auto expected = compute ? ir::EntryKind::eCompute : geometry ? ir::EntryKind::eGeometry : ir::EntryKind::eFragment;
+			const bool tessCtrl = ann_.entry->text == "tess_ctrl";
+			const bool tessEval = ann_.entry->text == "tess_eval";
+			const auto expected = compute ? ir::EntryKind::eCompute : geometry ? ir::EntryKind::eGeometry :
+				tessCtrl ? ir::EntryKind::eTessCtrl : tessEval ? ir::EntryKind::eTessEval : ir::EntryKind::eFragment;
 			if (_shared.module.entry != expected) {
 				error(*ann_.entry, "@" + String(ann_.entry->text) + " contradicts the module's stage.");
 			} else if (fn.name != "main") {
@@ -951,6 +1008,12 @@ namespace hg::engine::accel::lang::ir::detail {
 			} else {
 				if (geometry && ann_.geometryKeys != 7u) {
 					error(*ann_.entry, "@geometry requires input, output and max_vertices.");
+				}
+				if (tessCtrl && ann_.geometryKeys != 1u) {
+					error(*ann_.entry, "@tess_ctrl requires output_vertices.");
+				}
+				if (tessEval && ann_.geometryKeys != 1u) {
+					error(*ann_.entry, "@tess_eval requires domain.");
 				}
 				_shared.module.attributes = ann_.attributes;
 			}
@@ -1084,6 +1147,14 @@ namespace hg::engine::accel::lang::ir::detail {
 	/* `decl_` carries the annotations; type, localName and a defaulted id are filled here */
 	void Parser::binding(ir::BindingDecl decl_) {
 		auto& decl = decl_;
+		if (decl.patch) {
+			const auto entry = _shared.module.entry;
+			const auto allowed = decl.mode == ir::BindMode::eForward &&
+				((entry == ir::EntryKind::eTessCtrl && not decl.input) || (entry == ir::EntryKind::eTessEval && decl.input));
+			if (not allowed) {
+				error(peek(), "'patch' is only valid on forward outputs of tess_ctrl and forward inputs of tess_eval.");
+			}
+		}
 		if (accept(TokenKind::eKwBlock)) {
 			if (not at(TokenKind::eIdentifier)) {
 				syntaxError("a block name");
@@ -1115,8 +1186,9 @@ namespace hg::engine::accel::lang::ir::detail {
 			{
 				const auto& declared = _shared.module.types[declType->index];
 				const auto entry = _shared.module.entry;
-				if (declared.kind == ir::TypeKind::eArray && declared.count == 0uL && decl.input && decl.mode == ir::BindMode::eForward &&
-					(entry == ir::EntryKind::eGeometry || entry == ir::EntryKind::eTessCtrl || entry == ir::EntryKind::eTessEval)) {
+				if (declared.kind == ir::TypeKind::eArray && declared.count == 0uL && decl.mode == ir::BindMode::eForward && not decl.patch &&
+					((decl.input && (entry == ir::EntryKind::eGeometry || entry == ir::EntryKind::eTessCtrl || entry == ir::EntryKind::eTessEval)) ||
+						(not decl.input && entry == ir::EntryKind::eTessCtrl))) {
 					decl.arrayed = true;
 					decl.type = declared.element;
 				}

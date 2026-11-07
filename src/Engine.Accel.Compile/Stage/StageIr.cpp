@@ -271,6 +271,13 @@ std::expected<Vector<smr<StageDerivat>>, Diagnostics> hg::engine::accel::compose
 		}
 	}
 
+	/* the layout depends on follows_: append a sentinel entry carrying the follow flags (shortcut: 64 stages, never reached) */
+	u64 followMask = 0uLL;
+	for (size_t idx = 0uLL; idx < resolved.size() && idx < 64uLL; ++idx) {
+		followMask |= (idx < follows_.size() && follows_[idx] == 0u) ? 0uLL : (1uLL << idx);
+	}
+	key.push_back(VariantKey { .module = followMask, .toggles = ~0uLL, .outputs = ~0uLL });
+
 	Diagnostics failure {};
 	auto pipeline = layouts_.getOrCreate(
 		key,
@@ -289,6 +296,37 @@ std::expected<Vector<smr<StageDerivat>>, Diagnostics> hg::engine::accel::compose
 				failure = std::move(layouts).error();
 				return {};
 			}
+			/* no collision with unmatched inputs: an adjacent input without a producer fails checkStageChain, non-adjacent stages copy nothing;
+				 * a stage directly behind another ir stage reads its forward inputs at the producer's output locations (by id);
+			 * the producer numbers outputs as the emitter does: interface order, locationCount each */
+			for (size_t idx = 1uLL; idx < resolved.size(); ++idx) {
+				if (idx < follows_.size() && follows_[idx] == 0u) {
+					continue;
+				}
+				DenseMap<String, u32> produced {};
+				u32 next = 0uL;
+				for (const auto& entry : resolved[idx - 1uLL]->interfaceEntries) {
+					if (entry.mode == BindMode::eForward && not entry.input && not entry.implicit && entry.cls != BindClass::eWorkgroup) {
+						produced.insert_or_assign(entry.id, next);
+						next += locationCount(resolved[idx - 1uLL]->module.types, entry.type);
+					}
+				}
+				Vector<String> ids {};
+				for (const auto& entry : resolved[idx]->interfaceEntries) {
+					if (entry.mode == BindMode::eForward && entry.input) {
+						ids.emplace_back(entry.id);
+					}
+				}
+				std::ranges::sort(ids);
+				ids.erase(std::ranges::unique(ids).begin(), ids.end());
+				auto& locations = (*layouts)[idx].inputLocations;
+				for (size_t k = 0uLL; k < ids.size() && k < locations.size(); ++k) {
+					if (const auto it = produced.find(ids[k]); it != produced.end()) {
+						locations[k] = it->second;
+					}
+				}
+			}
+
 			auto specs = assignPipelineSpecConstants(constants, types);
 			if (not specs.has_value()) {
 				failure = std::move(specs).error();
