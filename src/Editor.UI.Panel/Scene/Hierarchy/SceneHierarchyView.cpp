@@ -26,6 +26,17 @@ using namespace hg;
 
 /**/
 
+static void generateSceneActions(
+	ref<MenuBuilder> builder_,
+	ref<const Variant<nmpt<engine::core::Universe>, nmpt<engine::core::Level>, nmpt<Actor>>> scene_
+);
+
+static void generateActorActions(ref<MenuBuilder> builder_, nmpt<Actor> actor_);
+
+static void generateComponentActions(ref<MenuBuilder> builder_, nmpt<HierarchyComponent> component_);
+
+/**/
+
 SceneHierarchyView::SceneHierarchyView(
 	ref<SceneHierarchyController> controller_,
 	SharedPtr<uikit::Card> main_,
