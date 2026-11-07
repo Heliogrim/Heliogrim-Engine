@@ -16,9 +16,9 @@ namespace hg {
 	 */
 	template <typename Ty_>
 	concept IsAtomicIntrusiveRefCountable = requires(const Ty_& obj_) {
-			{ obj_.ref_fetch_add(std::declval<s64>(), std::memory_order::relaxed) } -> std::same_as<s64>;
-			{ obj_.ref_count() } -> std::convertible_to<u32>;
-		};
+		{ obj_.ref_fetch_add(std::declval<s64>(), std::memory_order::relaxed) } -> std::same_as<s64>;
+		{ obj_.ref_count() } -> std::convertible_to<u32>;
+	};
 
 	template <typename Ty_>
 	concept IncompleteOrAtomicIntrusiveRefCountable = (not CompleteType<Ty_>) || (IsAtomicIntrusiveRefCountable<Ty_>);

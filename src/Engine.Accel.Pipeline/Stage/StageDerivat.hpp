@@ -7,40 +7,40 @@
 #include "../__fwd.hpp"
 
 namespace hg::engine::accel {
-    class StageDerivat :
-        public Stage {
-    public:
-        using this_type = StageDerivat;
+	class StageDerivat :
+		public Stage {
+	public:
+		using this_type = StageDerivat;
 
-    public:
-        StageDerivat() noexcept;
+	public:
+		StageDerivat() noexcept;
 
-        StageDerivat(
-            mref<nmpt<Stage>> owner_,
-            mref<Vector<smr<Stage>>> supersedes_,
-            mref<smr<StageModule>> stageModule_,
-            mref<StageFlagBits> flagBits_
-        );
+		StageDerivat(
+			mref<nmpt<Stage>> owner_,
+			mref<Vector<smr<Stage>>> supersedes_,
+			mref<smr<StageModule>> stageModule_,
+			mref<StageFlagBits> flagBits_
+		);
 
-        ~StageDerivat() override;
+		~StageDerivat() override;
 
-    private:
-        nmpt<Stage> _owner;
-        Vector<smr<Stage>> _supersedes;
+	private:
+		nmpt<Stage> _owner;
+		Vector<smr<Stage>> _supersedes;
 
-    public:
-        [[nodiscard]] nmpt<Stage> owner() const noexcept;
+	public:
+		[[nodiscard]] nmpt<Stage> owner() const noexcept;
 
-        [[nodiscard]] Vector<smr<Stage>> supersedes() const noexcept;
+		[[nodiscard]] Vector<smr<Stage>> supersedes() const noexcept;
 
-    private:
-        smr<StageModule> _stageModule;
+	private:
+		smr<StageModule> _stageModule;
 
-    public:
-        void setStageFlagBits(mref<StageFlagBits> flags_);
+	public:
+		void setStageFlagBits(mref<StageFlagBits> flags_);
 
-        void setStageModule(mref<smr<StageModule>> module_);
+		void setStageModule(mref<smr<StageModule>> module_);
 
-        [[nodiscard]] smr<StageModule> getStageModule() const noexcept;
-    };
+		[[nodiscard]] smr<StageModule> getStageModule() const noexcept;
+	};
 }

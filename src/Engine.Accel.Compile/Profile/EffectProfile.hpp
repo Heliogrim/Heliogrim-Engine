@@ -7,21 +7,21 @@
 #include "ProfileUsagePattern.hpp"
 
 namespace hg::engine::accel {
-    class EffectProfile {
-    public:
-        string _name;
+	class EffectProfile {
+	public:
+		string _name;
 
-    public:
-        Vector<ProfileDefinition> _definitions;
-        Vector<lang::Intermediate> _modules;
-        /* toggle values the profile fixes for its ir stages, sorted by toggle name */
-        lang::ir::ToggleSet _toggles;
+	public:
+		Vector<ProfileDefinition> _definitions;
+		Vector<lang::Intermediate> _modules;
+		/* toggle values the profile fixes for its ir stages, sorted by toggle name */
+		lang::ir::ToggleSet _toggles;
 
-    private:
-    public:
-        ProfileUsagePattern _usagePattern;
+	private:
+	public:
+		ProfileUsagePattern _usagePattern;
 
-    public:
-        [[nodiscard]] cref<ProfileUsagePattern> getUsagePattern() const noexcept;
-    };
+	public:
+		[[nodiscard]] cref<ProfileUsagePattern> getUsagePattern() const noexcept;
+	};
 }
