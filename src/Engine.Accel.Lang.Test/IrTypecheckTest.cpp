@@ -37,6 +37,12 @@ namespace AccelLang {
 			return res.has_value() || res.error().empty() ? String {} : res.error().front().message;
 		}
 
+		[[nodiscard]] Diagnostic firstDiagnostic(StringView source_) {
+			auto res = parse(source_);
+			EXPECT_FALSE(res.has_value());
+			return res.has_value() || res.error().empty() ? Diagnostic {} : res.error().front();
+		}
+
 		[[nodiscard]] String emitGlsl(ref<Module> module_) {
 			Language target {};
 			const auto layout = assignLayout(computeInterface(module_), module_.types, {});
@@ -199,6 +205,38 @@ namespace AccelLang {
 		EXPECT_EQ(dropped.unresolvedCalls, (Vector<String> { "f(f32vec3)" }));
 	}
 
+	namespace {
+		[[nodiscard]] u32 assignsAfterSlice(StringView source_) {
+			const auto module = parseOk(source_);
+			const auto resolved = resolveToggles(module, ToggleSet {});
+			EXPECT_TRUE(resolved.has_value());
+			const std::array<String, 1> outputs { String { "depth" } };
+			const auto sliced = slice(*resolved, std::span<const String> { outputs });
+			return static_cast<u32>(std::ranges::count(sliced.stmts, StmtKind::eAssign, &Stmt::kind));
+		}
+	}
+
+	TEST(TypecheckTest, SliceKeepsWritesThroughMutParam) {
+		EXPECT_EQ(
+			assignsAfterSlice(
+				"@output (mode = forward, id = \"depth\") implicit f32 depth;\n"
+				"fn F(a: &mut f32, b: f32, c: f32) { a = b + c; }\n"
+				"fn main() {\n\tlet t = 0.0;\n\tF(t, 1.0, 2.0);\n\tdepth = t;\n}\n"
+			),
+			2u
+		);
+	}
+
+	TEST(TypecheckTest, SliceKeepsWritesThroughMutAlias) {
+		EXPECT_EQ(
+			assignsAfterSlice(
+				"@output (mode = forward, id = \"depth\") implicit f32 depth;\n"
+				"fn main() {\n\tlet a = 0.0;\n\tlet l = &mut a;\n\tl = 1.0;\n\tdepth = a;\n}\n"
+			),
+			2u
+		);
+	}
+
 	TEST(TypecheckTest, SliceKeepsTheCalledOverloadOnly) {
 		const auto module = parseOk(sliceSource);
 		const auto resolved = resolveToggles(module, ToggleSet {});
@@ -253,7 +291,9 @@ namespace AccelLang {
 		const auto neg = addExpr(module, Expr { .kind = ExprKind::eUnary, .name = "-", .operands = { x } });
 		module.functions.emplace_back(bodied(module, "f", { ParamDecl { .name = "x", .type = mat } }, mat, StmtKind::eReturn, neg));
 
-		EXPECT_FALSE(typecheck(module).empty());
+		const auto diagnostics = typecheck(module);
+		ASSERT_FALSE(diagnostics.empty());
+		EXPECT_EQ(diagnostics.front().message, "operand of '-' has type s32mat2");
 	}
 
 	TEST(TypecheckTest, SameNamedStructsWithDifferentFieldsAreDistinct) {
@@ -309,7 +349,9 @@ namespace AccelLang {
 	}
 
 	TEST(MutabilityTest, ValueParamIsImmutable) {
-		EXPECT_FALSE(parse("fn f(x: f32) { x = 1.0; }\nfn main() {}\n").has_value());
+		const auto diagnostic = firstDiagnostic("fn f(x: f32) { x = 1.0; }\nfn main() {}\n");
+		EXPECT_EQ(diagnostic.message, "cannot assign to constant 'x'");
+		EXPECT_EQ(diagnostic.line, 1uL);
 	}
 
 	TEST(MutabilityTest, RefParamIsImmutable) {
@@ -322,7 +364,9 @@ namespace AccelLang {
 
 	TEST(MutabilityTest, InputBindingIsReadOnly) {
 		const auto head = String { "@input (mode = bind, id = \"camera\", class = storage) block camera { f32 x; };\n" };
-		EXPECT_FALSE(parse(head + "fn main() {\n\tcamera.x = 1.0;\n}\n").has_value());
+		const auto diagnostic = firstDiagnostic(head + "fn main() {\n\tcamera.x = 1.0;\n}\n");
+		EXPECT_EQ(diagnostic.message, "cannot assign to read-only binding 'camera'");
+		EXPECT_EQ(diagnostic.line, 3uL);
 		EXPECT_TRUE(
 			firstMessage(head + "fn main() {\n\tlet r = &mut camera.x;\n}\n").contains("cannot borrow read-only binding 'camera' as mutable")
 		);
@@ -330,6 +374,34 @@ namespace AccelLang {
 
 	TEST(MutabilityTest, StorageReadWriteIsAssignable) {
 		parseOk("@input (mode = bind, id = \"camera\", class = storage, access = read_write) block camera { f32 x; };\nfn main() {\n\tcamera.x = 1.0;\n}\n");
+	}
+
+	TEST(MutabilityTest, AliasThroughMutRefIsDiagnostic) {
+		EXPECT_EQ(
+			firstMessage("fn F(x: &mut f32, y: &f32) {}\nfn main() {\n\tlet a = 1.0;\n\tlet l = &mut a;\n\tF(a, l);\n}\n"),
+			"'&mut' argument 'a' aliases another argument of call to 'F'"
+		);
+	}
+
+	TEST(MutabilityTest, FieldsOfOneRootAreDiagnostic) {
+		EXPECT_EQ(
+			firstMessage("fn F(x: &mut f32, y: &f32) {}\nfn main() {\n\tlet a = f32vec2(1.0);\n\tF(a.x, a.y);\n}\n"),
+			"'&mut' argument 'a' aliases another argument of call to 'F'"
+		);
+	}
+
+	TEST(MutabilityTest, StorageOutputDefaultsToWritable) {
+		auto out = parseOk("@output (mode = bind, id = \"buf\", class = storage) block buf { f32 x; };\nfn main() {\n\tbuf.x = 1.0;\n}\n");
+		const auto text = emitGlsl(out);
+		EXPECT_TRUE(text.contains("buffer")) << text;
+		EXPECT_FALSE(text.contains("readonly")) << text;
+
+		auto in = parseOk("@input (mode = bind, id = \"buf\", class = storage) block buf { f32 x; };\nfn main() {\n\tlet v = buf.x;\n}\n");
+		EXPECT_TRUE(emitGlsl(in).contains("readonly buffer"));
+	}
+
+	TEST(MutabilityTest, OverloadsDifferingOnlyInReferenceKindAreDiagnostic) {
+		EXPECT_EQ(firstMessage("fn f(x: f32) {}\nfn f(x: &mut f32) {}\nfn main() {}\n"), "overloads of 'f' differ only in reference kind");
 	}
 
 	TEST(MutabilityTest, AliasingMutArgumentsIsDiagnostic) {
