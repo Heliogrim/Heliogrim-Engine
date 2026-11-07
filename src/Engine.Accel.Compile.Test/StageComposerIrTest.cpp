@@ -1,5 +1,7 @@
 #include "pch.h"
 
+#include "IrSpirvGate.hpp"
+
 #include <Engine.Accel.Compile/Pass/VkVertexFormat.hpp>
 #include <Engine.Accel.Compile/Profile/EffectProfile.hpp>
 #include <Engine.Accel.Compile/Spec/EffectSpecification.hpp>
@@ -14,41 +16,6 @@ using namespace hg::engine::accel::lang::ir;
 
 namespace AccelCompile {
 	namespace {
-		class TestSpecification final :
-			public EffectSpecification {
-		public:
-			explicit TestSpecification(const Vector<String>& targets_) {
-				for (const auto& target : targets_) {
-					auto symbol = make_smr<Symbol>(new Symbol {});
-					symbol->symbolName = target;
-					_targets.emplace_back(std::move(symbol).into<const Symbol>());
-				}
-			}
-
-			[[nodiscard]] ref<const Vector<smr<const Symbol>>> targetSymbols() const noexcept override {
-				return _targets;
-			}
-
-			[[nodiscard]] ComputePassSpecification getComputeSpec() const override {
-				return {};
-			}
-
-			[[nodiscard]] GraphicsPassSpecification getGraphicsSpec() const override {
-				return {};
-			}
-
-			[[nodiscard]] MeshPassSpecification getMeshSpec() const override {
-				return {};
-			}
-
-			[[nodiscard]] RaytracingPassSpecification getRaytracingSpec() const override {
-				return {};
-			}
-
-		private:
-			Vector<smr<const Symbol>> _targets;
-		};
-
 		[[nodiscard]] Intermediate intermediateOf(StringView source_, EntryKind entry_) {
 			auto parsed = parseModule(
 				"M",

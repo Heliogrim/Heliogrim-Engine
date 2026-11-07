@@ -4,6 +4,7 @@
 #include <Engine.Accel.Effect/Stage/StageFlags.hpp>
 #include <Engine.Accel.Lang/Intermediate.hpp>
 #include <Engine.Accel.Lang/Ir/Diagnostic.hpp>
+#include <Engine.Accel.Lang/Ir/Module.hpp>
 #include <Engine.Accel.Lang/Ir/Variant.hpp>
 #include <Engine.Accel.Pipeline/Bind/BindLayout.hpp>
 #include <Engine.Accel.Pipeline/Stage/StageDerivat.hpp>
@@ -11,12 +12,19 @@
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 
+#include "../Module/ModuleTargetStage.hpp"
+
 namespace hg::engine::accel {
 	class EffectProfile;
 	class EffectSpecification;
 }
 
 namespace hg::engine::accel {
+	/**
+	 * The glslang stage an IR entry kind is compiled as.
+	 */
+	[[nodiscard]] ModuleTargetStage toModuleTargetStage(lang::ir::EntryKind entry_) noexcept;
+
 	/**
 	 * Resolves one IR stage: merges the profile modules' ir and the stage ir (in that order), fixes the profile
 	 * toggles, resolves, slices to the specification's target symbols (empty: all), checks the contract, lays out
