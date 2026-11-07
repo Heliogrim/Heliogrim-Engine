@@ -18,7 +18,6 @@
 #include <Heliogrim/Component/Scene/Collision/SphereShapeCollisionComponent.hpp>
 
 #include "SceneHierarchyController.hpp"
-#include "SceneHierarchyModel.hpp"
 
 using namespace hg::editor::ui;
 using namespace hg::engine::reflow;
@@ -210,7 +209,7 @@ void generateSceneActions(
 	);
 }
 
-void generateActorActions(ref<MenuBuilder> builder_, nmpt<Actor> actor_) {
+static void generateActorActions(ref<MenuBuilder> builder_, nmpt<Actor> actor_) {
 	auto addItem = builder_.addItem("AddToActor"sv);
 	addItem.setPrecedence(10u);
 	addItem.setTitle("Add to Actor"sv);
@@ -297,7 +296,7 @@ void generateActorActions(ref<MenuBuilder> builder_, nmpt<Actor> actor_) {
 	);
 }
 
-void generateComponentActions(ref<MenuBuilder> builder_, nmpt<HierarchyComponent> component_) {
+static void generateComponentActions(ref<MenuBuilder> builder_, nmpt<HierarchyComponent> component_) {
 
 	auto addItem = builder_.addItem("AddToComponent"sv);
 
