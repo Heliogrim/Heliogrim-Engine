@@ -190,8 +190,8 @@ namespace AccelLang {
 			};
 		}
 
-		[[nodiscard]] Module parseOk(StringView source_, ref<const ModuleResolver> includes_ = noIncludes) {
-			auto res = parseModule("main", source_, EntryKind::eFragment, includes_);
+		[[nodiscard]] Module parseOk(StringView source_, ref<const ModuleResolver> includes_ = noIncludes, EntryKind entry_ = EntryKind::eFragment) {
+			auto res = parseModule("main", source_, entry_, includes_);
 			EXPECT_TRUE(res.has_value()) << (res.has_value() || res.error().empty() ? "" : res.error().front().message);
 			return res.has_value() ? std::move(res).value() : Module {};
 		}
@@ -621,7 +621,7 @@ namespace AccelLang {
 			"\tlet pos = model.model[instance_index] * f32vec4(local_position, 1.0);\n"
 			"\tposition = camera.cascadeViewProj[push.cascade] * pos;\n"
 			"}\n"
-		);
+		, noIncludes, EntryKind::eVertex);
 		ASSERT_EQ(module.functions.size(), 1uz);
 		const auto& root = bodyRoot(module, 0uz);
 		EXPECT_EQ(root.kind, StmtKind::eBlock);
@@ -658,9 +658,9 @@ namespace AccelLang {
 			"toggle Shadows : { Off, On } = Off;\n"
 			"fn main() {\n"
 			"\t@when (Shadows == On) position = f32vec4(1.0);\n"
-			"\t@when (Shadows == Off) { frag_depth = 0.5; }\n"
+			"\t@when (Shadows == Off) { position = f32vec4(0.5); }\n"
 			"}\n"
-		);
+		, noIncludes, EntryKind::eVertex);
 		const auto& root = bodyRoot(module, 0uz);
 		ASSERT_EQ(root.children.size(), 2uz);
 
@@ -774,10 +774,10 @@ namespace AccelLang {
 			"\tframe_depth_is_not_a_builtin();\n"
 			"}\n"
 			"fn frame_depth_is_not_a_builtin() {\n"
-			"\tfrag_depth = 1.0;\n"
+			"\tposition = f32vec4(1.0);\n"
 			"\tcolor = sample(albedo, smp, uv);\n"
 			"}\n"
-		);
+		, noIncludes, EntryKind::eVertex);
 		const auto& first = stmtAt(module, bodyRoot(module, 0uz).children.at(0));
 		const auto& position = exprAt(module, first.lhs);
 		EXPECT_EQ(position.kind, ExprKind::eBuiltin);

@@ -74,6 +74,31 @@ namespace AccelCompile {
 		EXPECT_EQ((*derivat)->getFlagBits(), StageFlagBits::eFragment);
 	}
 
+	TEST(StageIrTest, LibraryBuiltinStageValidityIsCheckedPerComposedStage) {
+		constexpr auto library = "fn Lib() { position = f32vec4(0.0); }\n";
+		constexpr auto main = "@output (mode = forward, id = \"color\") f32vec4 color;\nfn main() { color = f32vec4(0.0); }\n";
+
+		VariantCache cache {};
+		const auto fragment = composeStageIr(
+			intermediateOf(main, EntryKind::eFragment),
+			profileOf(library),
+			TestSpecification { {} },
+			StageFlagBits::eFragment,
+			cache
+		);
+		ASSERT_FALSE(fragment.has_value());
+		EXPECT_TRUE(fragment.error().front().message.contains("is not available in fragment stages"));
+
+		const auto vertex = composeStageIr(
+			intermediateOf(main, EntryKind::eVertex),
+			profileOf(library),
+			TestSpecification { {} },
+			StageFlagBits::eVertex,
+			cache
+		);
+		EXPECT_TRUE(vertex.has_value()) << (vertex.has_value() ? "" : vertex.error().front().message);
+	}
+
 	TEST(StageIrTest, TargetSymbolsSliceOutputs) {
 		VariantCache cache {};
 		const auto stage = intermediateOf(stageSource, EntryKind::eFragment);

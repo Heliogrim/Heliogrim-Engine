@@ -9,6 +9,7 @@
 #include <Engine.Accel.Lang/Ir/Merge.hpp>
 #include <Engine.Accel.Lang/Ir/Resolve.hpp>
 #include <Engine.Accel.Lang/Ir/Slice.hpp>
+#include <Engine.Accel.Lang/Ir/Typecheck.hpp>
 #include <Engine.Accel.Lang/Rep/Annotation.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Logging/Logger.hpp>
@@ -150,6 +151,12 @@ std::expected<smr<const Resolved>, Diagnostics> hg::engine::accel::resolveStageI
 				failure = std::move(merged).error();
 				return {};
 			}
+
+			failure = checkStageValidity(*merged, stage_.ir->entry);
+			if (hasError(failure)) {
+				return {};
+			}
+			failure.clear();
 
 			auto fixed = fixToggles(*merged, ToggleSources { .pass = {}, .profile = profile_._toggles, .material = {} });
 			if (not fixed.has_value()) {

@@ -92,6 +92,10 @@ namespace {
 			functions();
 
 			requirements_ = GlslRequirements { .features = _features, .extensions = extensionsOf(_features) };
+				if ((_builtinRequirements & ir::eRequireMultiview) != 0u) {
+					requirements_.extensions.emplace_back("GL_EXT_multiview");
+					std::ranges::sort(requirements_.extensions);
+				}
 			out_ = "#version 460\n";
 			for (const auto& extension : requirements_.extensions) {
 				out_ += "#extension " + extension + " : require\n";
@@ -127,6 +131,7 @@ namespace {
 		String _constants;
 		String _functions;
 		u32 _features = 0uL;
+		u32 _builtinRequirements = 0uL;
 
 		Vector<State> _structState;
 		/* emitted struct name -> its member text, to emit a name once and catch conflicting definitions */
@@ -831,10 +836,15 @@ namespace {
 				}
 				case ir::ExprKind::eBuiltin: {
 					if (const auto* variable = ir::findBuiltinVariable(e.name); variable != nullptr && e.operands.empty()) {
+						_builtinRequirements |= variable->requirement;
 						return { String { variable->glsl }, vectorDesc(variable->scalar, 32uL, variable->n) };
 					}
 					if (e.name == "sample") {
 						return sample(e);
+					}
+					if (const auto* fn = ir::findBuiltinFunction(e.name); fn != nullptr && not fn->signature.empty()) {
+						_builtinRequirements |= fn->requirement;
+						return { String { fn->glsl } + "(" + arguments() + ")", typeOf(e.type) };
 					}
 					error("Unknown builtin '" + e.name + "'.");
 					return { e.name, None };

@@ -70,7 +70,7 @@ namespace AccelLang {
 
 	TEST(MergeTest, MissingBodyNamesFunction) {
 		const auto profile = parse("profile", "@input (mode = forward) f32vec4 offset;\n");
-		const auto shader = parse("shader", "fn GetWorldPosition() -> f32vec4;\nfn main() {\n\tposition = GetWorldPosition();\n}\n");
+		const auto shader = parse("shader", "fn GetWorldPosition() -> f32vec4;\nfn main() {\n\tposition = GetWorldPosition();\n}\n", EntryKind::eVertex);
 		const auto diags = mergeFail({ &profile, &shader });
 		ASSERT_EQ(diags.size(), 1uz);
 		EXPECT_TRUE(mentions(diags[0], "missing body for function 'GetWorldPosition()'")) << diags[0].message;
@@ -345,9 +345,9 @@ namespace AccelLang {
 			"fn GetWorldPosition() -> f32vec4;\n"
 			"fn main() {\n\tposition = GetWorldPosition() + offset;\n}\n";
 		const auto p1 = parse("P", profileSource);
-		const auto s1 = parse("S", shaderSource);
+		const auto s1 = parse("S", shaderSource, EntryKind::eVertex);
 		const auto p2 = parse("P", profileSource);
-		const auto s2 = parse("S", shaderSource);
+		const auto s2 = parse("S", shaderSource, EntryKind::eVertex);
 
 		const auto first = mergeOk({ &p1, &s1 });
 		EXPECT_TRUE(same(first, mergeOk({ &p1, &s1 })));

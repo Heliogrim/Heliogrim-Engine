@@ -37,7 +37,8 @@ namespace {
 	class Checker {
 	public:
 		explicit Checker(ref<ir::Module> module_) :
-			_module(module_) {}
+			_module(module_),
+			_hasMain(std::ranges::any_of(module_.functions, [](ref<const ir::FunctionDecl> fn_) { return fn_.name == "main" && fn_.body.has_value(); })) {}
 
 		[[nodiscard]] ir::Diagnostics run() {
 			for (auto i = 0uz; i < _module.functions.size(); ++i) {
@@ -109,6 +110,8 @@ namespace {
 		};
 
 		ref<ir::Module> _module;
+		/* library modules (no `fn main`) are stage-checked after merge, see checkStageValidity */
+		bool _hasMain;
 		ir::Diagnostics _diags;
 		Vector<Entry> _scope;
 		TypeRef _ret;
@@ -496,6 +499,26 @@ namespace {
 							}
 						}
 					}
+					if (valid(type) && _module.types[type.index].kind == TypeKind::eMatrix) {
+						const auto desc = _module.types[type.index];
+						const auto column = vectorOf(desc.scalar, desc.bits, desc.m);
+						const auto fromMatrix = operands.size() == 1uz && valid(types[0]) && _module.types[types[0].index].kind == TypeKind::eMatrix &&
+							_module.types[types[0].index].scalar == desc.scalar && _module.types[types[0].index].n >= desc.n &&
+							_module.types[types[0].index].m >= desc.m;
+						auto fromColumns = operands.size() == desc.n;
+						for (auto i = 0uz; fromColumns && i < operands.size(); ++i) {
+							fromColumns = valid(types[i]) && same(types[i], column);
+						}
+						/* one scalar (diagonal) or n*m scalars (column-major), all of the matrix scalar kind */
+						auto fromScalars = not fromMatrix && not fromColumns && (operands.size() == 1uz || operands.size() == static_cast<size_t>(desc.n) * desc.m);
+						const auto scalarType = scalarOf(desc.scalar, desc.bits);
+						for (auto i = 0uz; fromScalars && i < operands.size(); ++i) {
+							fromScalars = valid(types[i]) && coerce(operands[i], scalarType);
+						}
+						if (not fromMatrix && not fromColumns && not fromScalars) {
+							error("cannot construct " + name(type) + " from the given arguments");
+						}
+					}
 					return type;
 				}
 				default: return {};
@@ -523,6 +546,13 @@ namespace {
 		/* Why the place cannot be written (assignment) or borrowed `&mut`; none when it can */
 		[[nodiscard]] Opt<String> readOnly(ExprRef place_, bool borrow_) const {
 			const auto* root = rootOf(place_);
+			if (root != nullptr && root->kind == ExprKind::eBuiltin) {
+				const auto* variable = ir::findBuiltinVariable(root->name);
+				if (variable != nullptr && not variable->writable) {
+					return String("cannot assign to read-only builtin '" + root->name + "'");
+				}
+				return None;
+			}
 			if (root == nullptr || root->kind != ExprKind::eNameRef) {
 				return None;
 			}
@@ -656,35 +686,79 @@ namespace {
 
 		[[nodiscard]] TypeRef builtin(ref<const String> name_, ref<const Vector<ExprRef>> operands_) {
 			if (const auto* variable = ir::findBuiltinVariable(name_); variable != nullptr && operands_.empty()) {
+				if (_hasMain && (variable->stages & ir::stageBit(_module.entry)) == 0u) {
+					error("'" + name_ + "' is not available in " + String(ir::stageName(_module.entry)) + " stages");
+				}
 				return vectorOf(variable->scalar, 32uL, variable->n);
 			}
 			Vector<TypeRef> types {};
 			for (const auto operand : operands_) {
 				types.emplace_back(expr(operand));
 			}
-			const auto* fn = ir::findBuiltinFunction(name_);
-			if (fn == nullptr) {
+			const auto* first = ir::findBuiltinFunction(name_);
+			if (first == nullptr) {
 				return {};
 			}
-			if (types.size() != fn->arity) {
-				error("'" + name_ + "' takes " + std::to_string(fn->arity) + " arguments");
+			if (_hasMain && (first->stages & ir::stageBit(_module.entry)) == 0u) {
+				error("'" + name_ + "' is not available in " + String(ir::stageName(_module.entry)) + " stages");
 				return {};
 			}
-			for (auto i = 0uz; i < types.size(); ++i) {
-				if (not valid(types[i])) {
+			for (const auto type : types) {
+				if (not valid(type)) {
 					return {};
 				}
-				const auto want = fn->params[i];
-				const auto ok = (want == ir::BuiltinParam::eTexture && isKind(types[i], TypeKind::eTexture)) ||
-					(want == ir::BuiltinParam::eSampler && isKind(types[i], TypeKind::eSampler)) ||
-					(want == ir::BuiltinParam::eCoordinates && (isKind(types[i], TypeKind::eVector) || isKind(types[i], TypeKind::eScalar)));
+			}
+
+			if (first->signature.empty()) {
+				/* `sample(texture, sampler, coordinates)` */
+				if (types.size() != 3uz) {
+					error("'" + name_ + "' takes 3 arguments");
+					return {};
+				}
+				const auto ok = isKind(types[0], TypeKind::eTexture) && isKind(types[1], TypeKind::eSampler) &&
+					(isKind(types[2], TypeKind::eVector) || isKind(types[2], TypeKind::eScalar));
 				if (not ok) {
-					error("argument " + std::to_string(i + 1uz) + " of '" + name_ + "' has type " + name(types[i]));
+					error("arguments of '" + name_ + "' have types " + name(types[0]) + ", " + name(types[1]) + ", " + name(types[2]));
 					return {};
 				}
+				return vectorOf(_module.types[types.front().index].scalar, 32uL, 4uL);
 			}
-			const auto scalar = _module.types[types.front().index].scalar;
-			return vectorOf(scalar, 32uL, 4uL);
+
+			const auto& signatures = ir::parsedBuiltinSignatures();
+			for (auto i = 0uz; i < std::size(ir::builtinFunctions); ++i) {
+				const auto& fn = ir::builtinFunctions[i];
+				const auto& sig = signatures[i];
+				if (fn.name != name_ || not sig.valid || sig.count != types.size()) {
+					continue;
+				}
+				for (auto width = 1uL; width <= 4uL; ++width) {
+					Vector<TypeRef> targets {};
+					auto ok = true;
+					for (auto k = 0uz; k < types.size() && ok; ++k) {
+						const auto desc = ir::resolveBuiltinSigType(sig.params[k], width);
+						ok = desc.has_value();
+						if (ok) {
+							targets.emplace_back(intern(*desc));
+							ok = same(types[k], targets.back()) || adaptable(operands_[k], targets.back());
+						}
+					}
+					const auto ret = ir::resolveBuiltinSigType(sig.ret, width);
+					if (not ok || not ret.has_value()) {
+						continue;
+					}
+					for (auto k = 0uz; k < types.size(); ++k) {
+						(void)coerce(operands_[k], targets[k]);
+					}
+					return intern(*ret);
+				}
+			}
+
+			String args {};
+			for (auto k = 0uz; k < types.size(); ++k) {
+				args += (k == 0uz ? "" : ", ") + name(types[k]);
+			}
+			error("no overload of '" + name_ + "' accepts (" + args + ")");
+			return {};
 		}
 
 		[[nodiscard]] TypeRef field(ref<const String> name_, ref<const Vector<ExprRef>> operands_) {
@@ -1015,6 +1089,29 @@ bool ir::isPlace(ref<const Module> module_, ExprRef expr_) {
 		}
 		return e != nullptr && (e->kind == ExprKind::eNameRef || (e->kind == ExprKind::eBuiltin && ir::findBuiltinVariable(e->name) != nullptr));
 	}
+
+ir::Diagnostics ir::checkStageValidity(ref<const Module> module_, EntryKind entry_) {
+	Diagnostics diags {};
+	for (const auto& e : module_.exprs) {
+		if (e.kind != ExprKind::eBuiltin) {
+			continue;
+		}
+		const auto* variable = findBuiltinVariable(e.name);
+		const auto* function = variable == nullptr ? findBuiltinFunction(e.name) : nullptr;
+		const auto stages = variable != nullptr ? variable->stages : (function != nullptr ? function->stages : stageAll);
+		if ((stages & stageBit(entry_)) == 0u) {
+			diags.emplace_back(
+				Diagnostic {
+					.severity = Severity::eError,
+					.message = "'" + e.name + "' is not available in " + String(stageName(entry_)) + " stages",
+					.line = e.loc.line,
+					.column = e.loc.column
+				}
+			);
+		}
+	}
+	return diags;
+}
 
 ir::Diagnostics ir::typecheck(ref<Module> module_) {
 	return Checker { module_ }.run();
