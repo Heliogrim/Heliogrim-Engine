@@ -41,6 +41,16 @@ namespace {
 
 		[[nodiscard]] ir::Diagnostics run() {
 			for (auto i = 0uz; i < _module.functions.size(); ++i) {
+				for (auto j = i + 1uz; j < _module.functions.size(); ++j) {
+					const auto& a = _module.functions[i];
+					const auto& b = _module.functions[j];
+					if (a.name == b.name && a.params.size() == b.params.size() && ir::signatureOf(_module, a) == ir::signatureOf(_module, b) &&
+						not std::ranges::equal(a.params, b.params, {}, &ir::ParamDecl::kind, &ir::ParamDecl::kind)) {
+						error("overloads of '" + a.name + "' differ only in reference kind");
+					}
+				}
+			}
+			for (auto i = 0uz; i < _module.functions.size(); ++i) {
 				if (not _module.functions[i].body.has_value()) {
 					continue;
 				}
@@ -89,6 +99,8 @@ namespace {
 			String name;
 			TypeRef type;
 			Mode mode;
+			/* for a `&mut` alias: the root name it borrows */
+			String target {};
 		};
 
 		ref<ir::Module> _module;
@@ -311,7 +323,7 @@ namespace {
 						}
 					}
 					_module.stmts[ref_.index].type = type;
-					_scope.emplace_back(_module.stmts[ref_.index].name, type, writes ? Mode::eRefWrite : Mode::eRefRead);
+					_scope.emplace_back(_module.stmts[ref_.index].name, type, writes ? Mode::eRefWrite : Mode::eRefRead, writes ? rootName(lhs) : String {});
 					break;
 				}
 				case StmtKind::eAssign: {
@@ -460,12 +472,22 @@ namespace {
 				"cannot assign to read-only binding '" + root->name + "'");
 		}
 
+		/* root name of a place with `&mut` aliases resolved to the place they borrow */
+		[[nodiscard]] String rootName(ExprRef ref_) const {
+			const auto* root = rootOf(ref_);
+			if (root == nullptr || root->kind != ExprKind::eNameRef) {
+				return {};
+			}
+			const auto* entry = lookup(*root);
+			return entry != nullptr && not entry->target.empty() ? entry->target : root->name;
+		}
+
 		[[nodiscard]] bool mentions(ExprRef ref_, ref<const String> name_, u32 depth_ = 0uL) const {
 			if (ref_.index >= _module.exprs.size() || depth_ > maxDepth) {
 				return false;
 			}
 			const auto& e = _module.exprs[ref_.index];
-			if (e.kind == ExprKind::eNameRef && e.name == name_) {
+			if (e.kind == ExprKind::eNameRef && rootName(ref_) == name_) {
 				return true;
 			}
 			return std::ranges::any_of(e.operands, [&](ExprRef o_) { return mentions(o_, name_, depth_ + 1uL); });
@@ -485,10 +507,10 @@ namespace {
 					error(*denied);
 					continue;
 				}
-				const auto* root = rootOf(operands_[i]);
-				for (auto j = 0uz; root != nullptr && j < operands_.size(); ++j) {
-					if (j != i && mentions(operands_[j], root->name)) {
-						error("'&mut' argument '" + root->name + "' aliases another argument of call to '" + name_ + "'");
+				const auto root = rootName(operands_[i]);
+				for (auto j = 0uz; not root.empty() && j < operands_.size(); ++j) {
+					if (j != i && mentions(operands_[j], root)) {
+						error("'&mut' argument '" + root + "' aliases another argument of call to '" + name_ + "'");
 						break;
 					}
 				}

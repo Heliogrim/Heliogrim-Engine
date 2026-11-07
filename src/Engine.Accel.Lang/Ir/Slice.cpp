@@ -48,6 +48,8 @@ namespace {
 		Vector<Facts> facts = Vector<Facts>(in.stmts.size());
 		Vector<Role> roles = Vector<Role>(in.stmts.size(), Role::eLive);
 		Vector<bool> seen = Vector<bool>(in.stmts.size(), false);
+		/* `&mut` params and aliases of the function being collected: writes through them are visible outside */
+		Vector<String> mutRefs {};
 		Vector<bool> live = Vector<bool>(in.stmts.size(), false);
 		/* per function: its statements in pre-order, the root first */
 		Vector<Vector<u32>> bodies = Vector<Vector<u32>>(in.functions.size());
@@ -125,7 +127,10 @@ namespace {
 			if (s.kind == ir::StmtKind::eAssign) {
 				const auto at = base(s.lhs);
 				const auto* target = at == unset ? nullptr : &in.exprs[at];
-				if (target != nullptr && target->kind == ir::ExprKind::eNameRef && target->local) {
+				if (target != nullptr && target->kind == ir::ExprKind::eNameRef && target->local &&
+					std::ranges::find(mutRefs, target->name) != mutRefs.end()) {
+					roles[stmt_] = Role::eLive;// writes the referenced place, not a local of its own
+				} else if (target != nullptr && target->kind == ir::ExprKind::eNameRef && target->local) {
 					roles[stmt_] = Role::eLocal;
 					f.defines = target->name;
 				} else if (target != nullptr && target->kind == ir::ExprKind::eNameRef) {
@@ -133,6 +138,9 @@ namespace {
 					roles[stmt_] = b != unset && dropped[b] ? Role::eDead : Role::eLive;
 				}
 			} else if (s.kind == ir::StmtKind::eDeclareLocal || s.kind == ir::StmtKind::eDeclareRef) {
+				if (s.kind == ir::StmtKind::eDeclareRef && s.mutable_) {
+					mutRefs.emplace_back(s.name);
+				}
 				roles[stmt_] = Role::eLocal;
 				f.defines = s.name;
 			} else if (s.kind == ir::StmtKind::eExpr) {
@@ -147,6 +155,12 @@ namespace {
 			if (not fn.body.has_value()) {
 				impure[function_] = true;// provided elsewhere: assume it writes
 				return;
+			}
+			mutRefs.clear();
+			for (const auto& param : fn.params) {
+				if (param.kind == ir::ParamKind::eRefMut) {
+					mutRefs.emplace_back(param.name);
+				}
 			}
 			Vector<u32> work { fn.body->root.index };
 			while (not work.empty()) {

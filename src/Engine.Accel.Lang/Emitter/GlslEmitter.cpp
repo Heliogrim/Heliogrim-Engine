@@ -499,7 +499,7 @@ namespace {
 				}
 				return;
 			}
-			const auto qualifier = binding_.access == ir::Access::eRead ? " readonly" : binding_.access == ir::Access::eWrite ? " writeonly" : "";
+			const auto qualifier = binding_.access == ir::Access::eRead && binding_.input ? " readonly" : binding_.access == ir::Access::eWrite ? " writeonly" : "";
 			block(head + (binding_.bindClass == eStorageBuffer ? String { qualifier } + " buffer" : String { " uniform" }), binding_, *desc);
 		}
 
