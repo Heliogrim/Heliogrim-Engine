@@ -55,9 +55,11 @@ namespace hg::engine::accel::lang::ir {
 		u32 requirement = eNoRequirement;
 		/* same value across all invocations of a workgroup/draw (uniform control analysis) */
 		bool uniform = false;
+		/* per-vertex input array (`input_position[i]` -> `gl_in[i].gl_Position`); `kind`/`n` describe one element */
+		bool arrayed = false;
 	};
 
-	inline constexpr std::array<BuiltinVariable, 12> builtinVariables {
+	inline constexpr std::array<BuiltinVariable, 16> builtinVariables {
 		{
 			{ "global_invocation_id", "gl_GlobalInvocationID", TypeKind::eVector, ScalarKind::eUInt, 3uL, stageCompute },
 			{ "local_invocation_id", "gl_LocalInvocationID", TypeKind::eVector, ScalarKind::eUInt, 3uL, stageCompute },
@@ -70,7 +72,11 @@ namespace hg::engine::accel::lang::ir {
 			{ "frag_depth", "gl_FragDepth", TypeKind::eScalar, ScalarKind::eFloat, 1uL, stageFragment, true },
 			{ "frag_coord", "gl_FragCoord", TypeKind::eVector, ScalarKind::eFloat, 4uL, stageFragment },
 			{ "front_facing", "gl_FrontFacing", TypeKind::eScalar, ScalarKind::eBool, 1uL, stageFragment },
-			{ "view_index", "gl_ViewIndex", TypeKind::eScalar, ScalarKind::eInt, 1uL, stageGraphics, false, eRequireMultiview, true }
+			{ "view_index", "gl_ViewIndex", TypeKind::eScalar, ScalarKind::eInt, 1uL, stageGraphics, false, eRequireMultiview, true },
+			{ "input_position", "gl_in", TypeKind::eVector, ScalarKind::eFloat, 4uL, stageGeometry, false, eNoRequirement, false, true },
+			{ "primitive_id", "gl_PrimitiveIDIn", TypeKind::eScalar, ScalarKind::eInt, 1uL, stageGeometry },
+			{ "invocation_id", "gl_InvocationID", TypeKind::eScalar, ScalarKind::eInt, 1uL, stageGeometry | stageTessCtrl },
+			{ "layer", "gl_Layer", TypeKind::eScalar, ScalarKind::eInt, 1uL, stageGeometry, true }
 		}
 	};
 
@@ -166,6 +172,8 @@ namespace hg::engine::accel::lang::ir {
 
 		{ "barrier", "barrier", "void()", stageCompute | stageTessCtrl, eNoRequirement, true, true },
 		{ "memory_barrier_shared", "memoryBarrierShared", "void()", stageCompute | stageTessCtrl, eNoRequirement, true, true },
+		{ "emit_vertex", "EmitVertex", "void()", stageGeometry },
+		{ "end_primitive", "EndPrimitive", "void()", stageGeometry },
 		{ "image_load", "imageLoad", "ival(img,icoord)" },
 		{ "image_store", "imageStore", "void(&img,icoord,ival)" },
 		{ "image_size", "imageSize", "icoord(img)" },
