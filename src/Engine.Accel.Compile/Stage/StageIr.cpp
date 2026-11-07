@@ -21,6 +21,18 @@ using namespace hg::engine::accel;
 using namespace hg::engine::accel::lang;
 using namespace hg::engine::accel::lang::ir;
 
+ModuleTargetStage hg::engine::accel::toModuleTargetStage(const EntryKind entry_) noexcept {
+	switch (entry_) {
+		case EntryKind::eVertex: return ModuleTargetStage::eVertex;
+		case EntryKind::eTessCtrl: return ModuleTargetStage::eTessCtrl;
+		case EntryKind::eTessEval: return ModuleTargetStage::eTessEval;
+		case EntryKind::eGeometry: return ModuleTargetStage::eGeometry;
+		case EntryKind::eFragment: return ModuleTargetStage::eFragment;
+		case EntryKind::eCompute: return ModuleTargetStage::eCompute;
+	}
+	return ModuleTargetStage::eUndefined;
+}
+
 namespace {
 	[[nodiscard]] Diagnostics fail(String message_) {
 		return Diagnostics { Diagnostic { .severity = Severity::eError, .message = std::move(message_) } };
