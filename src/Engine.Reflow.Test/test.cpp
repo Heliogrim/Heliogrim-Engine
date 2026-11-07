@@ -134,8 +134,8 @@ namespace ReflowModule {
 	}
 
 	TEST_F(LayoutingBoxFixture, EmptyUikitText) {
-		GTEST_SKIP_("Will break due to missing font handling.");
-		generic_test_empty<engine::reflow::uikit::Text>(*this);
+		// Note: Without a font the text contributes no measure, only its default padding (4 per side) remains.
+		generic_test_empty<engine::reflow::uikit::Text>(*this, math::vec2 { 8.f });
 	}
 
 	TEST_F(LayoutingBoxFixture, EmptyUikitTheme) {
