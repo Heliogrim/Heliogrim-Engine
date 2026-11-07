@@ -115,6 +115,8 @@ namespace {
 			size_t targetIndex = ~0uz;
 			/* for an alias: the borrowed place, aliases expanded */
 			Opt<ir::PlacePath> place {};
+			/* for an alias rooted in another alias (re-borrow): scope index of that alias */
+			size_t parentAlias = ~0uz;
 		};
 
 		ref<ir::Module> _module;
@@ -348,8 +350,12 @@ namespace {
 					}
 					_module.stmts[ref_.index].type = type;
 					size_t targetIndex = ~0uz;
+					size_t parentAlias = ~0uz;
 					if (const auto* root = rootOf(lhs); root != nullptr && root->kind == ExprKind::eNameRef) {
 						if (const auto* rootEntry = lookup(*root); rootEntry != nullptr) {
+							if (not rootEntry->target.empty()) {
+								parentAlias = static_cast<size_t>(rootEntry - _scope.data());
+							}
 							if (rootEntry->targetIndex != ~0uz) {
 								targetIndex = rootEntry->targetIndex;
 							} else if (not rootEntry->target.empty()) {
@@ -359,7 +365,22 @@ namespace {
 							}
 						}
 					}
-					_scope.emplace_back(_module.stmts[ref_.index].name, type, writes ? Mode::eRefWrite : Mode::eRefRead, rootName(lhs), targetIndex, placePath(lhs));
+					auto place = placePath(lhs);
+					if (const auto* live = place.has_value() ? liveConflict(*place, parentAlias, writes) : nullptr; live != nullptr) {
+						error(
+							"'" + String { writes ? "&mut" : "&" } + "' borrow '" + ir::describePlace(_module, *place) + "' overlaps live borrow '" +
+							ir::describePlace(_module, *live->place) + "'"
+						);
+					}
+					_scope.emplace_back(
+						_module.stmts[ref_.index].name,
+						type,
+						writes ? Mode::eRefWrite : Mode::eRefRead,
+						rootName(lhs),
+						targetIndex,
+						std::move(place),
+						parentAlias
+					);
 					break;
 				}
 				case StmtKind::eAssign: {
@@ -733,11 +754,50 @@ namespace {
 			return e_.constant.index < _module.constants.size();
 		}
 
-		/* the `&mut` argument `index_` must not overlap any place in the other arguments */
-		void overlap(ref<const String> name_, ref<const Vector<ExprRef>> operands_, size_t index_) {
-			const auto mine = placePath(operands_[index_]);
+		/* first live `let` borrow overlapping `place_` (two reads never conflict); aliases `from_` and its ancestors are exempt, as the place derives from them */
+		[[nodiscard]] const Entry* liveConflict(ref<const ir::PlacePath> place_, size_t from_, bool writes_) const {
+			const std::function<bool(ref<const ir::Expr>)> immutable = [this](ref<const ir::Expr> e_) { return immutableName(e_); };
+			for (auto i = 0uz; i < _scope.size(); ++i) {
+				const auto& live = _scope[i];
+				if (not live.place.has_value() || (not writes_ && live.mode != Mode::eRefWrite)) {
+					continue;
+				}
+				auto ancestor = false;
+				for (auto p = from_; p != ~0uz && p < _scope.size(); p = _scope[p].parentAlias) {
+					ancestor = ancestor || p == i;
+				}
+				if (not ancestor && not ir::disjoint(_module, place_, *live.place, immutable)) {
+					return &live;
+				}
+			}
+			return nullptr;
+		}
+
+		/* a borrowing argument against the live `let` borrows; none fires for an argument rooted in an alias it derives from */
+		void liveArgument(ref<const String> name_, ExprRef arg_, bool writes_) {
+			const auto mine = placePath(arg_);
 			if (not mine.has_value()) {
 				return;
+			}
+			auto from = ~0uz;
+			if (const auto* root = rootOf(arg_); root != nullptr && root->kind == ExprKind::eNameRef) {
+				if (const auto* entry = lookup(*root); entry != nullptr && not entry->target.empty()) {
+					from = static_cast<size_t>(entry - _scope.data());
+				}
+			}
+			if (const auto* live = liveConflict(*mine, from, writes_); live != nullptr) {
+				error(
+					"'" + String { writes_ ? "&mut" : "&" } + "' argument '" + ir::describePlace(_module, *mine) + "' overlaps live borrow '" +
+					ir::describePlace(_module, *live->place) + "' of call to '" + name_ + "'"
+				);
+			}
+		}
+
+		/* the `&mut` argument `index_` must not overlap any place in the other arguments; true when it reported */
+		bool overlap(ref<const String> name_, ref<const Vector<ExprRef>> operands_, size_t index_) {
+			const auto mine = placePath(operands_[index_]);
+			if (not mine.has_value()) {
+				return false;
 			}
 			const std::function<bool(ref<const ir::Expr>)> immutable = [this](ref<const ir::Expr> e_) { return immutableName(e_); };
 			for (auto j = 0uz; j < operands_.size(); ++j) {
@@ -751,15 +811,19 @@ namespace {
 							"'&mut' argument '" + ir::describePlace(_module, *mine) + "' overlaps argument '" +
 							ir::describePlace(_module, other) + "' of call to '" + name_ + "'"
 						);
-						return;
+						return true;
 					}
 				}
 			}
+			return false;
 		}
 
-		/* `&mut` parameters: the argument must be a writable place, sharing no root with another argument */
+		/* `&mut` parameters: the argument must be a writable place, sharing no root with another argument; `&` and `&mut` both respect live borrows */
 		void refArguments(ref<const String> name_, ref<const ir::FunctionDecl> fn_, ref<const Vector<ExprRef>> operands_) {
 			for (auto i = 0uz; i < fn_.params.size() && i < operands_.size(); ++i) {
+				if (fn_.params[i].kind == ir::ParamKind::eRef) {
+					liveArgument(name_, operands_[i], false);
+				}
 				if (fn_.params[i].kind != ir::ParamKind::eRefMut) {
 					continue;
 				}
@@ -771,7 +835,9 @@ namespace {
 					error(*denied);
 					continue;
 				}
-				overlap(name_, operands_, i);
+				if (not overlap(name_, operands_, i)) {
+					liveArgument(name_, operands_[i], true);
+				}
 			}
 		}
 
@@ -979,7 +1045,9 @@ namespace {
 								continue;
 							}
 						}
-						overlap(name_, operands_, k);
+						if (not overlap(name_, operands_, k)) {
+							liveArgument(name_, operands_[k], true);
+						}
 					}
 					return sig.ret.family == ir::BuiltinFamily::eVoid ? TypeRef {} : intern(*ret);
 				}

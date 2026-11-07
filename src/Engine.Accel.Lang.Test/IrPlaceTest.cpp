@@ -40,8 +40,8 @@ namespace AccelLang {
 
 		/* `decls_` are statements declaring locals; the first two `let p = &mut <place>;` borrows are compared */
 		[[nodiscard]] bool disjointOf(StringView locals_, StringView first_, StringView second_, bool boundsImmutable_ = true) {
-			const auto source = String { prelude } + "fn main() {\n" + String { locals_ } + "\nlet p = &mut " + String { first_ } + ";\nlet q = &mut " +
-				String { second_ } + ";\n}\n";
+			const auto source = String { prelude } + "fn main() {\n" + String { locals_ } + "\n{ let p = &mut " + String { first_ } + "; }\n{ let q = &mut " +
+				String { second_ } + "; }\n}\n";
 			auto res = parseModule("M", source, EntryKind::eCompute, ModuleResolver { noIncludes });
 			EXPECT_TRUE(res.has_value()) << (res.has_value() || res.error().empty() ? String {} : res.error().front().message);
 			if (not res.has_value()) {

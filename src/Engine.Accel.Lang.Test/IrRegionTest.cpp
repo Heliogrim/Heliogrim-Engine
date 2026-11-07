@@ -96,4 +96,73 @@ namespace AccelLang {
 		const String src = String { prelude } + "fn len(x: u32) -> u32 { return x; }\nfn main() { let n: u32 = len(3u); }\n";
 		EXPECT_EQ(errorOf(src), "");
 	}
+
+	TEST(RegionTest, SplitLaneIntoIndexAndVertex) {
+		EXPECT_EQ(
+			errorOf(
+				body(
+					"const base: u32 = local_invocation_index * 16u; let lane = &mut scratch[base .. base + 16u]; const n: u32 = 6u; "
+					"let idx = &mut lane[0u .. n]; let vtx = &mut lane[n .. 16u]; idx[0u] = 1u; vtx[0u] = 2u;"
+				)
+			),
+			""
+		);
+	}
+
+	TEST(RegionTest, OverlappingLetBorrowsRejected) {
+		const auto message = errorOf(body("let a = &mut scratch[0u .. 8u]; let b = &mut scratch[4u .. 12u];"));
+		EXPECT_TRUE(message.contains("overlaps live borrow")) << message;
+	}
+
+	TEST(RegionTest, ReadAndMutOverlapRejected) {
+		const auto message = errorOf(body("let a = &scratch[0u .. 8u]; let b = &mut scratch[0u .. 2u];"));
+		EXPECT_TRUE(message.contains("overlaps live borrow")) << message;
+	}
+
+	TEST(RegionTest, TwoReadsOverlapAllowed) {
+		EXPECT_EQ(errorOf(body("let a = &scratch[0u .. 8u]; let b = &scratch[0u .. 8u];")), "");
+	}
+
+	TEST(RegionTest, BorrowEndsWithScope) {
+		EXPECT_EQ(errorOf(body("{ let a = &mut scratch[0u .. 8u]; } let b = &mut scratch[0u .. 8u];")), "");
+	}
+
+	TEST(RegionTest, MutableSharedBoundRejected) {
+		const auto message = errorOf(body("let n: u32 = 4u; let a = &mut scratch[0u .. n]; n = 8u; let b = &mut scratch[n .. 16u];"));
+		EXPECT_TRUE(message.contains("overlaps live borrow")) << message;
+	}
+
+	TEST(RegionTest, ReadOnlyRegionWriteRejected) {
+		EXPECT_NE(errorOf(body("let r = &scratch[0u .. 8u]; r[0u] = 1u;")), "");
+		EXPECT_NE(errorOf(String { prelude } + "fn g(r: &u32[]) { r[0u] = 1u; }\nfn main() { g(scratch[0u .. 8u]); }\n"), "");
+	}
+
+	TEST(RegionTest, LetOverlapNamesBothPlaces) {
+		const auto msg = errorOf(body("let a = &mut scratch[0u .. 8u]; let b = &mut scratch[4u .. 12u];"));
+		EXPECT_TRUE(msg.contains("scratch[0u .. 8u]")) << msg;
+		EXPECT_TRUE(msg.contains("scratch[4u .. 12u]")) << msg;
+	}
+
+	TEST(RegionTest, SiblingReborrowRejected) {
+		EXPECT_NE(errorOf(body("let a = &mut scratch[0u .. 8u]; let b = &mut a[0u .. 4u]; let c = &mut a[2u .. 6u];")), "");
+	}
+
+	TEST(RegionTest, ParentExemptionDoesNotCoverLiveChild) {
+		EXPECT_NE(errorOf(body("let a = &mut scratch[0u .. 8u]; let b = &mut a[0u .. 4u]; w(a[0u .. 2u], 0u);")), "");
+	}
+
+	TEST(RegionTest, ArgumentOverlappingLiveLetRejected) {
+		EXPECT_EQ(
+			errorOf(body("let a = &mut scratch[0u .. 8u]; w(scratch[0u .. 8u], 0u);")),
+			"'&mut' argument 'scratch[0u .. 8u]' overlaps live borrow 'scratch[0u .. 8u]' of call to 'w'"
+		);
+	}
+
+	TEST(RegionTest, ArgumentThroughLiveAliasAllowed) {
+		EXPECT_EQ(errorOf(body("let a = &mut scratch[0u .. 8u]; w(a, 0u); w(a[0u .. 4u], 1u);")), "");
+	}
+
+	TEST(RegionTest, ArgumentDisjointFromLiveLetAllowed) {
+		EXPECT_EQ(errorOf(body("let a = &mut scratch[0u .. 8u]; w(scratch[8u .. 16u], 0u);")), "");
+	}
 }
