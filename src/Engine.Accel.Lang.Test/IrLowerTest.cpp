@@ -90,7 +90,7 @@ namespace AccelLang {
 
 		const auto text = textOf(lower(module, layout));
 
-		EXPECT_TRUE(text.contains("layout(set = 0, binding = 0) buffer")) << text;
+		EXPECT_TRUE(text.contains("layout(set = 0, binding = 0) readonly buffer")) << text;
 		EXPECT_TRUE(text.contains("layout(push_constant) uniform")) << text;
 
 		// every set/binding pair is one of the layout's slots, each slot appears once
@@ -322,5 +322,46 @@ namespace AccelLang {
 		EXPECT_TRUE(text.contains("uint c = 0x1Eu;")) << text;
 		EXPECT_TRUE(text.contains("float d = 1.5;")) << text;
 		EXPECT_TRUE(text.contains("float e = 1e3;")) << text;
+	}
+
+	TEST(LowerTest, RefMutParamEmitsInout) {
+		const auto module = resolved(
+			"@output (mode = forward, id = \"color\") f32 color;\n"
+			"fn F(x: &mut f32, y: &f32, z: f32) { x = y + z; }\n"
+			"fn main() { let a = 1.0; let b = 2.0; F(a, b, b); color = a; }\n",
+			EntryKind::eFragment,
+			std::array { String("color") }
+		);
+		const auto text = textOf(lower(module, layoutOf(module)));
+		EXPECT_TRUE(text.contains("void F(inout float x, const in float y, const in float z)")) << text;
+	}
+
+	TEST(LowerTest, LocalRefEmitsNoVariableAndSubstitutesPlace) {
+		const auto module = resolved(
+			"@input (mode = bind, id = \"lights\", class = storage, access = read_write) block lights { f32[] lights; };\n"
+			"@output (mode = forward, id = \"color\") f32 color;\n"
+			"fn main() { let l = &mut lights.lights[2]; l = 1.0; color = l; }\n",
+			EntryKind::eFragment,
+			std::array { String("color") }
+		);
+		const auto text = textOf(lower(module, layoutOf(module)));
+		EXPECT_FALSE(text.contains("float l =") || text.contains("float l;")) << text;
+		EXPECT_TRUE(text.contains("lights.lights[2] = 1.0;")) << text;
+		EXPECT_TRUE(text.contains("color = lights.lights[2];")) << text;
+	}
+
+	TEST(LowerTest, LocalRefHoistsIndex) {
+		const auto module = resolved(
+			"@input (mode = bind, id = \"lights\", class = storage, access = read_write) block lights { f32[] lights; };\n"
+			"@output (mode = forward, id = \"color\") f32 color;\n"
+			"fn main() { u32 i = 0; let l = &mut lights.lights[i]; i = i + 1; l = 1.0; color = l; }\n",
+			EntryKind::eFragment,
+			std::array { String("color") }
+		);
+		const auto text = textOf(lower(module, layoutOf(module)));
+		const auto hoist = text.find("const uint _hg_ref0 = i;");
+		ASSERT_NE(hoist, String::npos) << text;
+		EXPECT_LT(hoist, text.find("i = (i + 1);")) << text;
+		EXPECT_TRUE(text.contains("lights.lights[_hg_ref0] = 1.0;")) << text;
 	}
 }

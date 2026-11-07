@@ -32,4 +32,16 @@ namespace AccelCompile {
 	TEST(IrSpirvGateTest, RejectsBrokenGlsl) {
 		EXPECT_FALSE(glslCompiles("#version 460\nvoid main(){ gl_Position = vec4(0); }", EntryKind::eFragment));
 	}
+
+	TEST(IrSpirvGateTest, ReferencesSample) {
+		EXPECT_TRUE(
+			compilesToSpirv(
+				"@input (mode = bind, id = \"lights\", class = storage, access = read_write) block lights { f32[] lights; };\n"
+				"@output (mode = forward, id = \"color\") f32vec4 color;\n"
+				"fn F(a: &mut f32, b: &f32, c: f32) { a = b + c; }\n"
+				"fn main() {\n	u32 i = 1; let l = &mut lights.lights[i];\n	F(l, 1.0, 2.0);\n	const k = l;\n	color = f32vec4(k);\n}\n",
+				EntryKind::eFragment
+			)
+		);
+	}
 }

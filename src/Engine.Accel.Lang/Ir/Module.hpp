@@ -108,7 +108,9 @@ namespace hg::engine::accel::lang::ir {
 		eReturn,
 		eBlock,
 		eWhen,
-		eIf
+		eIf,
+		/* local reference alias: name, lhs = place, mutable_ = `&mut` */
+		eDeclareRef
 	};
 
 	/**
@@ -125,6 +127,9 @@ namespace hg::engine::accel::lang::ir {
 		ExprRef lhs;
 		/* assign: rhs */
 		ExprRef rhs;
+
+		/* declare-local: `let` / `T x` (true) or `const` (false); declare-ref: `&mut` */
+		bool mutable_ = true;
 
 		/* block: children; when: [then, else?] (the parser emits [then]); if: [then, else?] */
 		Vector<StmtRef> children;
@@ -188,6 +193,18 @@ namespace hg::engine::accel::lang::ir {
 		TextureDim dim = TextureDim::e2D;
 	};
 
+	enum class Access : u8 {
+		eRead,
+		eWrite,
+		eReadWrite
+	};
+
+	enum class ParamKind : u8 {
+		eValue,
+		eRef,
+		eRefMut
+	};
+
 	struct BindingDecl {
 		String id;
 		TypeRef type;
@@ -198,11 +215,13 @@ namespace hg::engine::accel::lang::ir {
 		bool input = true;
 		Condition when;
 		String localName;
+		Access access = Access::eRead;
 	};
 
 	struct ParamDecl {
 		String name;
 		TypeRef type;
+		ParamKind kind = ParamKind::eValue;
 	};
 
 	struct FunctionDecl {
