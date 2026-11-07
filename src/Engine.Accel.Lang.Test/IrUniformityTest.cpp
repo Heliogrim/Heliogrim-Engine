@@ -14,8 +14,8 @@ namespace AccelLang {
 			return None;
 		}
 
-		[[nodiscard]] Module parseOk(StringView source_) {
-			auto res = parseModule("M", source_, EntryKind::eFragment, ModuleResolver { noIncludes });
+		[[nodiscard]] Module parseOk(StringView source_, EntryKind entry_ = EntryKind::eFragment) {
+			auto res = parseModule("M", source_, entry_, ModuleResolver { noIncludes });
 			EXPECT_TRUE(res.has_value()) << (res.has_value() || res.error().empty() ? "" : res.error().front().message);
 			return res.has_value() ? std::move(res).value() : Module {};
 		}
@@ -128,7 +128,7 @@ namespace AccelLang {
 	}
 
 	TEST(UniformityTest, BuiltinUnderDivergentLocalDeclIsDetected) {
-		const auto m = parseOk(String { head } + "fn d() {\n\tif (in_x > 0.0) { let s = position; }\n}\nfn main() {\n\ta();\n}\n");
+		const auto m = parseOk(String { head } + "fn d() {\n\tif (in_x > 0.0) { let s = position; }\n}\nfn main() {\n\ta();\n}\n", EntryKind::eVertex);
 		const auto u = analyzeUniformity(m, [](StringView n_) { return n_ == "position"; });
 		auto count = 0uz;
 		for (const auto flag : u.requiresUniform) {
@@ -157,7 +157,7 @@ namespace AccelLang {
 	}
 
 	TEST(UniformityTest, RequiresUniformPropagatesOverCalls) {
-		const auto m = parseOk(String { head } + "fn d() { let s = position; }\nfn e() { d(); }\nfn main() {\n\ta();\n}\n");
+		const auto m = parseOk(String { head } + "fn d() { let s = position; }\nfn e() { d(); }\nfn main() {\n\ta();\n}\n", EntryKind::eVertex);
 		const auto none = analyzeUniformity(m);
 		for (const auto flag : none.requiresUniform) {
 			EXPECT_FALSE(flag);

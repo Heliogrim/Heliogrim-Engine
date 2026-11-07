@@ -32,4 +32,10 @@ namespace hg::engine::accel::lang::ir {
 	 * Never asserts; diagnostics carry the head-token location of the offending node.
 	 */
 	[[nodiscard]] Diagnostics typecheck(ref<Module> module_);
+
+	/**
+	 * Builtin variables/functions used by `module_` that are not available in `entry_`. Parse time only checks
+	 * modules with a `fn main`; run this on the merged module of a stage.
+	 */
+	[[nodiscard]] Diagnostics checkStageValidity(ref<const Module> module_, EntryKind entry_);
 }

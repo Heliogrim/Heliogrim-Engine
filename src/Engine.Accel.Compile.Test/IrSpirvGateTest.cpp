@@ -91,6 +91,24 @@ namespace AccelCompile {
 		);
 	}
 
+	TEST(IrSpirvGateTest, MathSample) {
+		EXPECT_TRUE(
+			compilesToSpirv(
+				"@output (mode = forward, id = \"color\") f32vec4 color;\n"
+				"fn main() {\n"
+				"	let v = f32vec3(0.25, 0.5, 0.75);\n"
+				"	let m = f32mat4(1.0);\n"
+				"	let n = f32mat3(m);\n"
+				"	let t = transpose(inverse(n)) * normalize(clamp(v, 0.1, 0.9));\n"
+				"	let a = mix(v, t, 0.5) + reflect(v, f32vec3(0.0, 1.0, 0.0)) + cross(v, t);\n"
+				"	let b = dot(a, v) + length(a) + distance(a, v) + pow(abs(a.x), 2.0) + smoothstep(0.0, 1.0, a.y);\n"
+				"	color = f32vec4(floor(a) + fract(a) + dFdx(a) + fwidth(a), sqrt(b) + sin(b) + max(b, 0.5));\n"
+				"}\n",
+				EntryKind::eFragment
+			)
+		);
+	}
+
 	TEST(IrSpirvGateTest, ForWithOmittedInitAndStep) {
 		EXPECT_TRUE(
 			compilesToSpirv(
