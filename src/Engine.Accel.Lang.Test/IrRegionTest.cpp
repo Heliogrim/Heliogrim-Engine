@@ -1,6 +1,12 @@
 #include "pch.h"
 
+#include <algorithm>
+
+#include <Engine.Accel.Lang/Emitter/GlslEmitter.hpp>
+#include <Engine.Accel.Lang/Ir/Interface.hpp>
+#include <Engine.Accel.Lang/Ir/Layout.hpp>
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
+#include <Engine.Accel.Lang/Ir/Regions.hpp>
 #include <Engine.Accel.Lang/Ir/Variant.hpp>
 
 using namespace hg;
@@ -30,6 +36,134 @@ namespace AccelLang {
 		[[nodiscard]] String body(StringView statements_) {
 			return String { prelude } + "fn main() {\n" + String { statements_ } + "\n}\n";
 		}
+
+		/* no region parameter: those are specialized, not lowered in-function */
+		[[nodiscard]] String lowerBody(StringView statements_) {
+			return String {
+					"@input (mode = bind, id = \"buf\", class = storage, access = read_write) block buf { u32[] data; };\n"
+					"workgroup scratch: u32[256];\n"
+					"fn main() {\nconst b: u32 = local_invocation_index * 8u;\n"
+				} + String { statements_ } + "\n}\n";
+		}
+
+		/* GLSL text, or the first diagnostic */
+		[[nodiscard]] String emitGlsl(ref<const Module> module_) {
+			const auto layout = assignLayout(computeInterface(module_), module_.types, {});
+			Language target {};
+			const auto result = GlslEmitter {}.emit(module_, layout, target);
+			if (not result.diagnostics.empty()) {
+				return "error: " + result.diagnostics.front().message;
+			}
+			return target.text.empty() ? String {} : String { target.text.front().data };
+		}
+
+		[[nodiscard]] String emitLowered(ref<const Module> module_) {
+			auto lowered = lowerRegions(module_);
+			if (not lowered.has_value()) {
+				return lowered.error().empty() ? String { "error" } : "error: " + lowered.error().front().message;
+			}
+			return emitGlsl(*lowered);
+		}
+	}
+
+	TEST(RegionTest, LowerRewritesIndex) {
+		auto module = parse(lowerBody("let r = &mut scratch[b .. b + 8u]; r[1u] = 5u;"));
+		ASSERT_TRUE(module.has_value()) << module.error().front().message;
+		const auto glsl = emitLowered(*module);
+		EXPECT_TRUE(glsl.contains("scratch[")) << glsl;
+		EXPECT_TRUE(glsl.contains("r__off + 1u")) << glsl;
+
+		auto lowered = lowerRegions(*module);
+		ASSERT_TRUE(lowered.has_value());
+		EXPECT_FALSE(std::ranges::any_of(lowered->exprs, [](const auto& e_) { return e_.kind == ExprKind::eRange; }));
+	}
+
+	TEST(RegionTest, NestedSubRangeAbsoluteOffset) {
+		auto module = parse(lowerBody("let l = &mut scratch[b .. b + 8u]; let v = &mut l[2u .. 4u]; v[1u] = 7u;"));
+		ASSERT_TRUE(module.has_value()) << module.error().front().message;
+		const auto glsl = emitLowered(*module);
+		EXPECT_TRUE(glsl.contains("v__off = (l__off + 2u)")) << glsl;
+		EXPECT_TRUE(glsl.contains("scratch[(v__off + 1u)]")) << glsl;
+	}
+
+	TEST(RegionTest, WholeReborrowKeepsLength) {
+		auto module = parse(lowerBody("let a = &mut scratch[b + 4u .. b + 12u]; let b2 = &mut a; buf.data[0u] = len(b2);"));
+		ASSERT_TRUE(module.has_value()) << module.error().front().message;
+		const auto glsl = emitLowered(*module);
+		EXPECT_TRUE(glsl.contains("b2__off = a__off")) << glsl;
+		EXPECT_TRUE(glsl.contains("b2__len = a__len")) << glsl;
+	}
+
+	TEST(RegionTest, ElementAliasOfRegionWritesRoot) {
+		auto module = parse(lowerBody("let r = &mut scratch[b + 4u .. b + 12u]; let e = &mut r[2u]; e = 5u;"));
+		ASSERT_TRUE(module.has_value()) << module.error().front().message;
+		const auto glsl = emitLowered(*module);
+		EXPECT_TRUE(glsl.contains("_hg_ref0 = (r__off + 2u)")) << glsl;
+		EXPECT_TRUE(glsl.contains("scratch[_hg_ref0] = 5u")) << glsl;
+	}
+
+	TEST(RegionTest, LenLowersToLength) {
+		auto module = parse(lowerBody("let r = &mut scratch[b .. b + 8u]; let n: u32 = len(r); buf.data[0u] = n;"));
+		ASSERT_TRUE(module.has_value()) << module.error().front().message;
+		const auto glsl = emitLowered(*module);
+		EXPECT_TRUE(glsl.contains("n = r__len")) << glsl;
+	}
+
+	[[nodiscard]] static String rowsBody(StringView statements_) {
+		return String {
+				"struct Inner { u32[16] d; }\n"
+				"struct Outer { Inner[4] l; }\n"
+				"workgroup s: Outer;\n"
+				"fn main() {\nlet i: u32 = local_invocation_index;\n"
+			} + String { statements_ } + "\n}\n";
+	}
+
+	TEST(RegionTest, RootIndexFrozenAtBorrow) {
+		auto module = parse(rowsBody("let r = &mut s.l[i].d[0u .. 4u]; i = 3u; r[0u] = 1u;"));
+		ASSERT_TRUE(module.has_value()) << module.error().front().message;
+		const auto glsl = emitLowered(*module);
+		EXPECT_TRUE(glsl.contains("r__i0 = i;")) << glsl;
+		EXPECT_TRUE(glsl.contains("s.l[r__i0].d[(r__off + 0u)]")) << glsl;
+		EXPECT_FALSE(glsl.contains("s.l[i]")) << glsl;
+	}
+
+	TEST(RegionTest, ShadowedIndexKeepsFrozenRoot) {
+		auto module = parse(rowsBody("let r = &mut s.l[i].d[0u .. 4u]; { let i: u32 = 2u; r[0u] = i; }"));
+		ASSERT_TRUE(module.has_value()) << module.error().front().message;
+		const auto glsl = emitLowered(*module);
+		EXPECT_TRUE(glsl.contains("s.l[r__i0].d[(r__off + 0u)] = i;")) << glsl;
+	}
+
+	TEST(RegionTest, ShadowedRootReported) {
+		auto module = parse(lowerBody("let r = &mut scratch[b .. b + 8u]; { let scratch: u32 = 2u; r[0u] = scratch; }"));
+		ASSERT_TRUE(module.has_value()) << module.error().front().message;
+		EXPECT_EQ(emitLowered(*module), "error: 'scratch' shadows the root of live region 'r'");
+	}
+
+	TEST(RegionTest, LenReadsHoistedOffset) {
+		auto module = parse(lowerBody("let r = &mut scratch[b .. b + 8u]; buf.data[0u] = len(r);"));
+		ASSERT_TRUE(module.has_value()) << module.error().front().message;
+		const auto glsl = emitLowered(*module);
+		EXPECT_TRUE(glsl.contains("r__len = ((b + 8u) - r__off)")) << glsl;
+	}
+
+	TEST(RegionTest, ForInitRegionHoistedBeforeLoop) {
+		auto module = parse(lowerBody("for (let r = &mut scratch[b .. b + 8u]; r[0u] < 4u; r[0u] += 1u) { r[1u] = 2u; }"));
+		ASSERT_TRUE(module.has_value()) << module.error().front().message;
+		const auto glsl = emitLowered(*module);
+		const auto off = glsl.find("r__off = ");
+		const auto loop = glsl.find("for (; ");
+		ASSERT_NE(off, String::npos) << glsl;
+		ASSERT_NE(loop, String::npos) << glsl;
+		EXPECT_LT(off, loop) << glsl;
+		EXPECT_LT(glsl.find("r__len = "), loop) << glsl;
+	}
+
+	TEST(RegionTest, EmitterRejectsUnloweredRegion) {
+		auto module = parse(lowerBody("let r = &mut scratch[0u .. 8u]; r[1u] = 5u;"));
+		ASSERT_TRUE(module.has_value()) << module.error().front().message;
+		const auto glsl = emitGlsl(*module);
+		EXPECT_TRUE(glsl.contains("region not lowered")) << glsl;
 	}
 
 	TEST(RegionTest, RangeBorrowTypechecks) {
@@ -149,6 +283,12 @@ namespace AccelLang {
 
 	TEST(RegionTest, ParentExemptionDoesNotCoverLiveChild) {
 		EXPECT_NE(errorOf(body("let a = &mut scratch[0u .. 8u]; let b = &mut a[0u .. 4u]; w(a[0u .. 2u], 0u);")), "");
+	}
+
+	TEST(RegionTest, ReservedLocalSuffixRejected) {
+		EXPECT_EQ(errorOf(body("let r__off: u32 = 1u;")), "'r__off' ends in a suffix reserved for region lowering");
+		EXPECT_EQ(errorOf(body("let a = &mut scratch[0u .. 8u]; let a__i0 = &mut a[0u .. 4u];")), "'a__i0' ends in a suffix reserved for region lowering");
+		EXPECT_EQ(errorOf(body("let a__inner: u32 = 1u; let off__x: u32 = 2u;")), "");
 	}
 
 	TEST(RegionTest, ArgumentOverlappingLiveLetRejected) {

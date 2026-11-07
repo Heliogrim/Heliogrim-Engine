@@ -177,8 +177,8 @@ namespace {
 		u32 _refs = 0uL;
 		u32 _depth = 0uL;
 
-		void error(String message_) {
-			_diags.emplace_back(ir::Diagnostic { .message = std::move(message_) });
+		void error(String message_, ir::SourceLoc loc_ = {}) {
+			_diags.emplace_back(ir::Diagnostic { .message = std::move(message_), .line = loc_.line, .column = loc_.column });
 		}
 
 		[[nodiscard]] const ir::TypeDesc* typeAt(ir::TypeRef ref_) const {
@@ -333,6 +333,10 @@ namespace {
 
 		/* declares `var_` or reports that its type has no GLSL form */
 		[[nodiscard]] Opt<String> declareOrReport(ir::TypeRef ref_, StringView var_) {
+			if (const auto* type = typeAt(ref_); type != nullptr && type->kind == ir::TypeKind::eRegion) {
+				error("region not lowered");
+				return None;
+			}
 			auto decl = declare(ref_, var_);
 			if (not decl.has_value()) {
 				error("The type of '" + String { var_ } + "' has no GLSL form.");
@@ -880,6 +884,10 @@ namespace {
 			}
 
 			const auto& e = _module.exprs[ref_.index];
+			if (const auto* type = typeAt(e.type); e.kind == ir::ExprKind::eRange || (type != nullptr && type->kind == ir::TypeKind::eRegion)) {
+				error("region not lowered", e.loc);
+				return { "0", None };
+			}
 			const auto operand = [&](size_t i_) -> Emitted {
 				return i_ < e.operands.size() ? expr(e.operands[i_]) : expr(ir::ExprRef {});
 			};
@@ -964,7 +972,6 @@ namespace {
 					}
 					return { typeName.value_or(e.name) + "(" + arguments() + ")", type };
 				}
-				case ir::ExprKind::eRange:// regions are not lowered to GLSL yet
 				default: {
 					return { "0", None };
 				}

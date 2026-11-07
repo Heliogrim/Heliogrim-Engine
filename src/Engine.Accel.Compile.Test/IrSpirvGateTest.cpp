@@ -247,6 +247,28 @@ namespace AccelCompile {
 		);
 	}
 
+	TEST(IrSpirvGateTest, ConvolutionOverTileRegion) {
+		EXPECT_TRUE(
+			compilesToSpirv(
+				"@input (mode = bind, id = \"result\", class = storage, access = read_write) block result { f32[] data; };\n"
+				"workgroup tile: f32[324];\n"
+				"@compute (local_size = [16, 16, 1])\n"
+				"fn main() {\n"
+				"	let x = local_invocation_id.x;\n"
+				"	let row = local_invocation_id.y;\n"
+				"	let base = (workgroup_id.x * 16u + row) * 16u;\n"
+				"	tile[local_invocation_index] = 1.0;\n"
+				"	barrier();\n"
+				"	let src = &tile[row * 18u .. row * 18u + 18u];\n"
+				"	let acc = src[x] + src[x + 1u] + src[x + 2u];\n"
+				"	let dst = &mut result.data[base .. base + 16u];\n"
+				"	dst[x] = acc;\n"
+				"}\n",
+				EntryKind::eCompute
+			)
+		);
+	}
+
 	TEST(IrSpirvGateTest, GeometryLayeredTriangle) {
 		EXPECT_TRUE(
 			compilesToSpirv(
