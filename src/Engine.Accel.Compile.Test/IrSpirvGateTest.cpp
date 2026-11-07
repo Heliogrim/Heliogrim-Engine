@@ -81,6 +81,14 @@ namespace AccelCompile {
 		EXPECT_TRUE(assetCompilesToSpirv("brdf/brdfPref.gen.fs.asl", EntryKind::eFragment));
 	}
 
+	TEST(IrSpirvGateTest, BrdfVertex) {
+		EXPECT_TRUE(assetCompilesToSpirv("brdf/brdf.vs.asl", EntryKind::eVertex));
+	}
+
+	TEST(IrSpirvGateTest, BrdfFragment) {
+		EXPECT_TRUE(assetCompilesToSpirv("brdf/brdf.fs.asl", EntryKind::eFragment));
+	}
+
 	TEST(IrSpirvGateTest, RejectsBrokenGlsl) {
 		EXPECT_FALSE(glslCompiles("#version 460\nvoid main(){ gl_Position = vec4(0); }", EntryKind::eFragment));
 	}

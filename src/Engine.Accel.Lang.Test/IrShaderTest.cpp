@@ -4,6 +4,7 @@
 #include <Engine.Accel.Lang/Ir/Interface.hpp>
 #include <Engine.Accel.Lang/Ir/Layout.hpp>
 #include <Engine.Accel.Lang/Ir/Lower.hpp>
+#include <Engine.Accel.Lang/Ir/Slice.hpp>
 
 #include "IrShaderFixtures.hpp"
 
@@ -430,5 +431,121 @@ namespace AccelLang {
 		ASSERT_EQ(offsets.size(), 2uz);
 		EXPECT_EQ(offsets[0], 0u);
 		EXPECT_EQ(offsets[1], 4u);
+	}
+
+	TEST(BrdfShaderTest, InterfaceCoversOldAnnotations) {
+		expectCovers(
+			"brdf/brdf.vs.asl",
+			EntryKind::eVertex,
+			{
+				{ "view", true, BindMode::eBind, BindClass::eUniformBuffer },
+				{ "model", true, BindMode::eBind, BindClass::eStorageBuffer },
+				{ "vertex-position", true, BindMode::eForward, BindClass::eNone },
+				{ "vertex-uv", true, BindMode::eForward, BindClass::eNone },
+				{ "vertex-normal", true, BindMode::eForward, BindClass::eNone }
+			}
+		);
+		expectCovers(
+			"brdf/brdf.fs.asl",
+			EntryKind::eFragment,
+			{
+				{ "light-info", true, BindMode::eBind, BindClass::eUniformBuffer },
+				{ "lights", true, BindMode::eBind, BindClass::eStorageBuffer },
+				{ "brdf-lut", true, BindMode::eBind, BindClass::eTexture },
+				{ "brdf-lut-sampler", true, BindMode::eBind, BindClass::eSampler },
+				{ "brdf-pref", true, BindMode::eBind, BindClass::eTexture },
+				{ "brdf-pref-sampler", true, BindMode::eBind, BindClass::eSampler },
+				{ "brdf-irrad", true, BindMode::eBind, BindClass::eTexture },
+				{ "brdf-irrad-sampler", true, BindMode::eBind, BindClass::eSampler },
+				{ "mat-static-0", true, BindMode::eBind, BindClass::eTexture },
+				{ "mat-static-0-sampler", true, BindMode::eBind, BindClass::eSampler },
+				{ "mat-static-1", true, BindMode::eBind, BindClass::eTexture },
+				{ "mat-static-1-sampler", true, BindMode::eBind, BindClass::eSampler },
+				{ "mat-static-2", true, BindMode::eBind, BindClass::eTexture },
+				{ "mat-static-2-sampler", true, BindMode::eBind, BindClass::eSampler },
+				{ "shadows", true, BindMode::eBind, BindClass::eStorageBuffer },
+				{ "shadow-dir", true, BindMode::eBind, BindClass::eTexture },
+				{ "shadow-dir-sampler", true, BindMode::eBind, BindClass::eSampler },
+				{ "view", true, BindMode::eBind, BindClass::eUniformBuffer },
+				{ "color", false, BindMode::eForward, BindClass::eNone },
+				{ "depth", false, BindMode::eForward, BindClass::eNone }
+			}
+		);
+	}
+
+	namespace {
+		[[nodiscard]] std::string brdfFragmentGlsl() {
+			const std::array<String, 2> required { "color", "depth" };
+			const auto fragment = slice(shaderAssetModule("brdf/brdf.fs.asl", EntryKind::eFragment), required);
+			const auto layout = assignLayout(computeInterface(fragment), fragment.types, {});
+
+			Language target {};
+			const auto result = GlslEmitter {}.emit(fragment, layout, target);
+			EXPECT_TRUE(result.diagnostics.empty()) << (result.diagnostics.empty() ? "" : result.diagnostics.front().message);
+			if (target.text.empty()) {
+				return {};
+			}
+			return std::string { target.text.front().data };
+		}
+	}
+
+	TEST(BrdfShaderTest, CameraSharedAcrossStages) {
+		const std::array stages {
+			shaderAssetModule("brdf/brdf.vs.asl", EntryKind::eVertex),
+			shaderAssetModule("brdf/brdf.fs.asl", EntryKind::eFragment)
+		};
+		const std::array<Vector<InterfaceEntry>, 2> entries { computeInterface(stages[0]), computeInterface(stages[1]) };
+		const std::array<Vector<TypeDesc>, 2> types { stages[0].types, stages[1].types };
+
+		const auto layouts = assignPipelineLayout(entries, types, LayoutWeights {});
+		ASSERT_TRUE(layouts.has_value()) << (layouts.has_value() || layouts.error().empty() ? "" : layouts.error().front().message);
+		ASSERT_EQ(layouts->size(), 2uz);
+
+		const auto slotOf = [](const Layout& layout_) -> const SlotAssignment* {
+			for (const auto& slot : layout_.slots) {
+				if (slot.id == "view") {
+					return &slot;
+				}
+			}
+			return nullptr;
+		};
+		const auto* vertex = slotOf((*layouts)[0]);
+		const auto* fragment = slotOf((*layouts)[1]);
+		ASSERT_NE(vertex, nullptr);
+		ASSERT_NE(fragment, nullptr);
+		EXPECT_EQ(vertex->set, fragment->set);
+		EXPECT_EQ(vertex->binding, fragment->binding);
+	}
+
+	TEST(BrdfShaderTest, LightLoopUsesAliasNotCopy) {
+		const auto text = brdfFragmentGlsl();
+		ASSERT_FALSE(text.empty());
+		EXPECT_EQ(text.find("GlslLight L ="), std::string::npos);
+		EXPECT_EQ(text.find("GlslLight l ="), std::string::npos);
+	}
+
+	TEST(BrdfShaderTest, UnusedFp16FunctionIsSliced) {
+		const auto text = brdfFragmentGlsl();
+		ASSERT_FALSE(text.empty());
+		SCOPED_TRACE(text);
+		EXPECT_EQ(text.find("ggxNdfFp16"), std::string::npos);
+		EXPECT_EQ(text.find("float16_t"), std::string::npos);
+	}
+
+	TEST(BrdfShaderTest, DivergentShadowSampleWarns) {
+		const auto source = readShaderAsset("brdf/brdf.fs.asl");
+		ASSERT_TRUE(source.has_value());
+		auto parsed = parseModule("brdf/brdf.fs.asl", *source, EntryKind::eFragment, ModuleResolver { readShaderAsset });
+		ASSERT_TRUE(parsed.has_value());
+
+		std::string all {};
+		for (const auto& w : parsed->warnings) {
+			all += std::string { w.message } + "\n";
+		}
+		SCOPED_TRACE(all);
+		// the shadow sample (inside `if`) and the sparse retry loop of getMappedNormal; the messages carry no function name
+		ASSERT_EQ(parsed->warnings.size(), 2uz);
+		EXPECT_NE(std::string { parsed->warnings[0].message }.find("'sample' uses implicit derivatives"), std::string::npos);
+		EXPECT_NE(std::string { parsed->warnings[1].message }.find("'sample_sparse_clamp' uses implicit derivatives"), std::string::npos);
 	}
 }
