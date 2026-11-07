@@ -7,7 +7,6 @@
 
 #include <codecvt>
 #include <format>
-#include <locale>
 #include <ShlObj_core.h>
 #include <sstream>
 
@@ -25,6 +24,7 @@ Win32DragDropReceiver::Win32DragDropReceiver(const HWND hwnd_) :
 Win32DragDropReceiver::~Win32DragDropReceiver() noexcept = default;
 
 void Win32DragDropReceiver::setup() {
+	// Error: SDL3 already registers an OLE handler for drag-drop
 	const auto result = ::RegisterDragDrop(_hwnd, this);
 	::hg::assertrt(result == S_OK);
 }
