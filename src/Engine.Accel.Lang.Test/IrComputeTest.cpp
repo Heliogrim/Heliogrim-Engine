@@ -123,6 +123,10 @@ namespace AccelLang {
 		);
 	}
 
+	TEST(ComputeTest, AtomicThroughAliasOfAliasResolvesRoot) {
+		EXPECT_EQ(errorOf(String { buffer } + "fn main() {\n\tlet l = &mut buf.data[0];\n\tlet f = &mut l.x;\n\tatomic_add(f, 1u);\n}\n"), "");
+	}
+
 	TEST(ComputeTest, AtomicAliasIgnoresShadowingLocal) {
 		EXPECT_EQ(errorOf("workgroup counter: u32;\nfn main() {\n\tlet l = &mut counter;\n\t{\n\t\tlet counter: u32 = 0u;\n\t\tatomic_add(l, 1u);\n\t}\n}\n"), "");
 	}

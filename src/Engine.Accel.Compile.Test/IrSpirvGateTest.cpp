@@ -323,8 +323,8 @@ namespace AccelCompile {
 		);
 	}
 
-	/* Disabled until the legacy glsl files are deleted from the asset checkout. */
-	TEST(IrSpirvGateTest, DISABLED_AllAssetsAreAsl) {
+	/* Legacy glsl assets are removed from the asset checkout, so every remaining shader must be ASL. */
+	TEST(IrSpirvGateTest, AllAssetsAreAsl) {
 		namespace fs = std::filesystem;
 		const auto root = fs::path { __FILE__ }.parent_path().parent_path().parent_path() / "assets" / "shader";
 
