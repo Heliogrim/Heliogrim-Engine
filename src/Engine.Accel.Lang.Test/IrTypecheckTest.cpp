@@ -419,4 +419,36 @@ namespace AccelLang {
 			.contains("'&mut' argument 'a' aliases another argument of call to 'F'")
 		);
 	}
+
+	TEST(TypecheckTest, ConstantTrueLoopIsDiagnostic) {
+		const auto d8 = "loop condition is constant; lanes that never reach 'break' keep the whole wave in the loop, use a bounded condition";
+		EXPECT_TRUE(firstMessage("fn F(x: bool) {\n\twhile (true) { if (x) { break; } }\n}\n").contains(d8));
+		EXPECT_TRUE(firstMessage("fn F(x: bool) {\n\tfor (;;) { if (x) { break; } }\n}\n").contains(d8));
+		(void)parseOk("fn F(lod: f32) {\n\twhile (lod < 14.0) { break; }\n}\n");
+	}
+
+	TEST(TypecheckTest, BreakOutsideLoopIsDiagnostic) {
+		EXPECT_TRUE(firstMessage("fn F() {\n\tbreak;\n}\n").contains("'break' outside a loop"));
+	}
+
+	TEST(TypecheckTest, DiscardInVertexIsDiagnostic) {
+		auto res = parseModule("M", "fn main() {\n\tdiscard;\n}\n", EntryKind::eVertex, ModuleResolver { noIncludes });
+		ASSERT_FALSE(res.has_value());
+		EXPECT_TRUE(res.error().front().message.contains("'discard' is only valid in fragment stages"));
+		(void)parseOk("fn main() {\n\tdiscard;\n}\n");
+	}
+
+	TEST(TypecheckTest, FloatModuloIsDiagnostic) {
+		auto res = parse("fn F(a: f32) -> f32 {\n\treturn a % 2.0;\n}\n");
+		ASSERT_FALSE(res.has_value());
+		EXPECT_TRUE(res.error().front().message.contains("operator '%' needs integer operands, got f32")) << res.error().front().message;
+		EXPECT_EQ(res.error().front().line, 2u);
+
+		auto compound = parse("fn F(a: f32) -> f32 {\n\tlet b = a;\n\tb %= 2.0;\n\treturn b;\n}\n");
+		ASSERT_FALSE(compound.has_value());
+		EXPECT_TRUE(compound.error().front().message.contains("operator '%' needs integer operands, got f32"));
+		EXPECT_EQ(compound.error().front().line, 3u);
+
+		(void)parseOk("fn F(a: u32) -> u32 {\n\tlet b = a;\n\tb %= 3u;\n\treturn b % 2u;\n}\n");
+	}
 }

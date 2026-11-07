@@ -160,4 +160,12 @@ namespace AccelLang {
 		EXPECT_NE(key("&f32", "let"), key("&mut f32", "let"));
 		EXPECT_NE(key("f32", "let"), key("f32", "const"));
 	}
+
+	TEST(VariantKeyTest, CompoundOperatorChangesKey) {
+		const auto key = [](const char* op_) {
+			return makeVariantKey(parsed(String { "fn main() {\n	let k = 1.0;\n	k " } + op_ + " 2.0;\n	position = f32vec4(k);\n}\n"), {}, {});
+		};
+		EXPECT_NE(key("+="), key("-="));
+		EXPECT_NE(key("+="), key("="));
+	}
 }

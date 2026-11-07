@@ -96,11 +96,16 @@ namespace {
 			switch (s.kind) {
 				case ir::StmtKind::eAssign: {
 					expr(s.lhs, true);
+					if (not s.name.empty()) {
+						expr(s.lhs);// compound assignment reads its target too
+					}
 					expr(s.rhs);
 					break;
 				}
 				case ir::StmtKind::eBlock:
 				case ir::StmtKind::eWhen:
+				case ir::StmtKind::eFor:
+				case ir::StmtKind::eWhile:
 				case ir::StmtKind::eIf: {
 					expr(s.lhs);// if: the condition; unset (out of range) otherwise
 					for (const auto& child : s.children) {

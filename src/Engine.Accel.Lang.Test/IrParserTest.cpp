@@ -929,26 +929,9 @@ namespace AccelLang {
 		EXPECT_EQ(light.operands.size(), 2uz);
 	}
 
-	TEST(ParserBodyTest, UnsupportedSyntaxIsDiagnostic) {
-		const auto diags = parseFail(
-			"fn main() {\n"
-			"\tfor (u32 i = 0; i < 4; i = i + 1) { frag_depth = 1.0; }\n"
-			"\twhile (true) { }\n"
-			"\tfrag_depth += 1.0;\n"
-			"\tswitch (vertex_index) { }\n"
-			"\tfrag_depth = 2.0;\n"
-			"}\n"
-		);
-		ASSERT_EQ(diags.size(), 4uz);
-		for (const auto& diag : diags) {
-			EXPECT_TRUE(mentions(diag, "unsupported in this milestone")) << diag.message;
-		}
-		EXPECT_EQ(diags[0].line, 2u);
-		EXPECT_EQ(diags[0].column, 2u);
-		EXPECT_EQ(diags[1].line, 3u);
-		EXPECT_EQ(diags[2].line, 4u);
-		EXPECT_EQ(diags[2].column, 13u);
-		EXPECT_EQ(diags[3].line, 5u);
+	TEST(ParserBodyTest, SwitchIsDiagnostic) {
+		const auto diags = parseFail("fn main() {\n\tswitch (vertex_index) { }\n\tfrag_depth = 2.0;\n}\n");
+		EXPECT_FALSE(diags.empty());
 	}
 
 	TEST(ParserBodyTest, EofInsideBodyIsOneDiagnostic) {
@@ -970,12 +953,12 @@ namespace AccelLang {
 		};
 		// statement is level 1, so unary #256 (column 15 + 255) is level 257
 		expectOnlyDepthError(parseFail(body(repeat("(", 5000uz) + "1.0" + repeat(")", 5000uz))), 2u, 270u);
-		expectOnlyDepthError(parseFail(body(repeat("-", 5000uz) + "1.0")), 2u, 270u);
+		expectOnlyDepthError(parseFail(body(repeat("- ", 5000uz) + "1.0")), 2u, 15u + 255u * 2u);
 		expectOnlyDepthError(parseFail(body(repeat("!", 5000uz) + "true")), 2u, 270u);
 		expectOnlyDepthError(parseFail(body(repeat("f32(", 5000uz) + "1.0" + repeat(")", 5000uz))), 2u, 15u + 255u * 4u);
 
 		EXPECT_EQ(parseOk(body(repeat("(", 100uz) + "1.0" + repeat(")", 100uz))).functions.size(), 1uz);
-		EXPECT_EQ(parseOk(body(repeat("-", 100uz) + "1.0")).functions.size(), 1uz);
+		EXPECT_EQ(parseOk(body(repeat("- ", 100uz) + "1.0")).functions.size(), 1uz);
 		EXPECT_EQ(parseOk("fn main() {\n\tlet b = " + repeat("!", 100uz) + "true;\n}\n").functions.size(), 1uz);
 	}
 
@@ -989,5 +972,62 @@ namespace AccelLang {
 
 		EXPECT_EQ(parseOk("fn main() {\n" + repeat("{", 100uz) + repeat("}", 100uz) + "\n}\n").functions.size(), 1uz);
 		EXPECT_EQ(parseOk("fn main() {\n" + repeat("if (true) ", 100uz) + "frag_depth = 1.0;\n}\n").functions.size(), 1uz);
+	}
+
+	TEST(LexerTest, FloatExponent) {
+		const auto tokens = lexOk("2.3283064365386963e-10 1e-4 <<= >>= ++ += ? ~ ^");
+		ASSERT_EQ(tokens.size(), 10uz);
+		EXPECT_EQ(tokens[0].kind, TokenKind::eFloat);
+		EXPECT_EQ(tokens[0].text, "2.3283064365386963e-10");
+		EXPECT_EQ(tokens[1].kind, TokenKind::eFloat);
+		EXPECT_EQ(tokens[1].text, "1e-4");
+	}
+
+	TEST(ParserBodyTest, ParsesForWithCompoundStep) {
+		const auto module = parseOk(
+			"fn f(i: u32) -> f32 { return 1.0; }\n"
+			"fn main() {\n\tlet n = 4u;\n\tlet acc = 0.0;\n"
+			"\tfor (let i = 0u; i < n; ++i) { acc += f(i); }\n\tfrag_depth = acc;\n}\n"
+		);
+		const auto& root = bodyRoot(module, 1uz);
+		const auto& loop = stmtAt(module, root.children.at(2));
+		ASSERT_EQ(loop.kind, StmtKind::eFor);
+		ASSERT_EQ(loop.children.size(), 3uz);
+		EXPECT_EQ(stmtAt(module, loop.children[0]).kind, StmtKind::eDeclareLocal);
+		EXPECT_EQ(exprAt(module, loop.lhs).kind, ExprKind::eBinary);
+		const auto& step = stmtAt(module, loop.children[2]);
+		EXPECT_EQ(step.kind, StmtKind::eAssign);
+		EXPECT_EQ(step.name, "+=");
+		const auto& body = stmtAt(module, loop.children[1]);
+		EXPECT_EQ(stmtAt(module, body.children.at(0)).name, "+=");
+	}
+
+	TEST(ParserBodyTest, ParsesWhileBreakContinue) {
+		const auto module = parseOk(
+			"fn main() {\n\tlet x = 0.0;\n\twhile (x < 3.0) { x += 1.0; if (x > 1.0) { continue; } break; }\n\tfrag_depth = x;\n}\n"
+		);
+		const auto& loop = stmtAt(module, bodyRoot(module, 0uz).children.at(1));
+		ASSERT_EQ(loop.kind, StmtKind::eWhile);
+		const auto& body = stmtAt(module, loop.children.at(0));
+		EXPECT_EQ(stmtAt(module, body.children.at(2)).kind, StmtKind::eBreak);
+		const auto& branch = stmtAt(module, body.children.at(1));
+		EXPECT_EQ(stmtAt(module, stmtAt(module, branch.children.at(0)).children.at(0)).kind, StmtKind::eContinue);
+	}
+
+	TEST(ParserBodyTest, OperatorPrecedence) {
+		const auto module = parseOk("fn main() {\n\tlet a = 1u;\n\tlet b = 2u;\n\tlet c = 3u;\n\tlet r = a | b & c << 1u;\n}\n");
+		const auto& top = exprAt(module, stmtAt(module, bodyRoot(module, 0uz).children.at(3)).lhs);
+		ASSERT_EQ(top.name, "|");
+		const auto& mid = exprAt(module, top.operands.at(1));
+		ASSERT_EQ(mid.name, "&");
+		EXPECT_EQ(exprAt(module, mid.operands.at(1)).name, "<<");
+	}
+
+	TEST(ParserBodyTest, ParsesTernary) {
+		const auto module = parseOk("fn main() {\n\tlet x = true;\n\tlet y = 1.0;\n\tlet z = 2.0;\n\tlet r = x ? y : z + 1.0;\n}\n");
+		const auto& ternary = exprAt(module, stmtAt(module, bodyRoot(module, 0uz).children.at(3)).lhs);
+		ASSERT_EQ(ternary.kind, ExprKind::eTernary);
+		ASSERT_EQ(ternary.operands.size(), 3uz);
+		EXPECT_EQ(exprAt(module, ternary.operands[2]).name, "+");
 	}
 }

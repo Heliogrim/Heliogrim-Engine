@@ -44,4 +44,49 @@ namespace AccelCompile {
 			)
 		);
 	}
+
+	TEST(IrSpirvGateTest, ControlFlowSample) {
+		EXPECT_TRUE(
+			compilesToSpirv(
+				"@output (mode = forward, id = \"color\") f32vec4 color;\n"
+				"fn radical(bits_: u32) -> f32 {\n"
+				"	let bits = bits_;\n"
+				"	bits = (bits << 16u) | (bits >> 16u);\n"
+				"	bits = ((bits & 0x55555555u) << 1u) | ((bits & 0xAAAAAAAAu) >> 1u);\n"
+				"	bits = ((bits & 0x33333333u) << 2u) | ((bits & 0xCCCCCCCCu) >> 2u);\n"
+				"	bits = ((bits & 0x0F0F0F0Fu) << 4u) | ((bits & 0xF0F0F0F0u) >> 4u);\n"
+				"	bits = ((bits & 0x00FF00FFu) << 8u) | ((bits & 0xFF00FF00u) >> 8u);\n"
+				"	return f32(bits) * 2.3283064365386963e-10;\n"
+				"}\n"
+				"fn main() {\n"
+				"	let acc = 0.0;\n"
+				"	let n = 0u;\n"
+				"	for (let i = 0u; i < 8u; ++i) { acc += radical(i); }\n"
+				"	while (acc > 1.0) { acc -= 1.0; n++; if (n > 4u) { break; } if (acc > 100.0) { continue; } }\n"
+				"	acc *= 0.5;\n"
+				"	let r = acc > 0.5 ? acc : 1.0;\n"
+				"	color = f32vec4(r, f32(n ^ 3u), f32(~n & 1u), 1.0);\n"
+				"	if (r < 0.0) { discard; }\n"
+				"}\n",
+				EntryKind::eFragment
+			)
+		);
+	}
+
+	TEST(IrSpirvGateTest, ForWithOmittedInitAndStep) {
+		EXPECT_TRUE(
+			compilesToSpirv(
+				"@output (mode = forward, id = \"color\") f32vec4 color;\n"
+				"fn main() {\n"
+				"	let acc = 0.0;\n"
+				"	let i = 0u;\n"
+				"	for (; i < 4u; ) { acc += 0.25; i++; }\n"
+				"	for (let j = 0u; j < 2u; ) { acc += 0.5; j++; }\n"
+				"	for (; acc < 8.0; ++acc) { }\n"
+				"	color = f32vec4(acc);\n"
+				"}\n",
+				EntryKind::eFragment
+			)
+		);
+	}
 }

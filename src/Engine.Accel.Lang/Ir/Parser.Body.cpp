@@ -18,22 +18,29 @@ namespace {
 	}
 
 
-	/* statement keywords the lexer leaves as identifiers; loops and switch come after this milestone */
-	constexpr std::array<StringView, 3> unsupportedStatements { "for", "while", "switch" };
-
-	constexpr u32 additive = 2uL;
-
 	/* binary operator precedence, higher binds tighter (all left-associative); 0 = no binary operator */
 	[[nodiscard]] u32 precedenceOf(TokenKind kind_) {
-		if (kind_ == TokenKind::eStar || kind_ == TokenKind::eSlash) {
-			return additive + 1uL;
+		switch (kind_) {
+			case TokenKind::eOrOr: return 1uL;
+			case TokenKind::eAndAnd: return 2uL;
+			case TokenKind::ePipe: return 3uL;
+			case TokenKind::eCaret: return 4uL;
+			case TokenKind::eAmp: return 5uL;
+			case TokenKind::eEqEq:
+			case TokenKind::eNotEq: return 6uL;
+			case TokenKind::eLess:
+			case TokenKind::eLessEq:
+			case TokenKind::eGreater:
+			case TokenKind::eGreaterEq: return 7uL;
+			case TokenKind::eShl:
+			case TokenKind::eShr: return 8uL;
+			case TokenKind::ePlus:
+			case TokenKind::eMinus: return 9uL;
+			case TokenKind::eStar:
+			case TokenKind::eSlash:
+			case TokenKind::ePercent: return 10uL;
+			default: return 0uL;
 		}
-		if (kind_ == TokenKind::ePlus || kind_ == TokenKind::eMinus) {
-			return additive;
-		}
-		const bool comparison = kind_ == TokenKind::eEqEq || kind_ == TokenKind::eNotEq || kind_ == TokenKind::eLess ||
-			kind_ == TokenKind::eLessEq || kind_ == TokenKind::eGreater || kind_ == TokenKind::eGreaterEq;
-		return comparison ? 1uL : 0uL;
 	}
 }
 
@@ -142,11 +149,23 @@ Opt<ir::StmtRef> Parser::statement() {
 	if (head.kind == TokenKind::eKwConst) {
 		return letStatement(true);
 	}
-	if (head.kind == TokenKind::eIdentifier) {
-		if (std::ranges::find(unsupportedStatements, head.text) != unsupportedStatements.end()) {
-			take();
-			return unsupported(head, head.text);
+	if (head.kind == TokenKind::eKwFor) {
+		return forStatement();
+	}
+	if (head.kind == TokenKind::eKwWhile) {
+		return whileStatement();
+	}
+	if (head.kind == TokenKind::eKwBreak || head.kind == TokenKind::eKwContinue || head.kind == TokenKind::eKwDiscard) {
+		take();
+		if (not expect(TokenKind::eSemicolon, "';'")) {
+			return fail();
 		}
+		return stmt(
+			head.kind == TokenKind::eKwBreak ? ir::StmtKind::eBreak :
+			(head.kind == TokenKind::eKwContinue ? ir::StmtKind::eContinue : ir::StmtKind::eDiscard)
+		);
+	}
+	if (head.kind == TokenKind::eIdentifier) {
 		const auto ahead = next().kind;
 		if (ahead == TokenKind::eIdentifier || (ahead == TokenKind::eLBracket && isTypeName(head.text))) {
 			return typedDeclaration();
@@ -301,54 +320,100 @@ Opt<ir::StmtRef> Parser::local(ref<const ir::Token> name_, ir::TypeRef type_, bo
 	return add(std::move(decl));
 }
 
-/* `expr;` or `lvalue = expr;` */
-Opt<ir::StmtRef> Parser::simpleStatement() {
+/* `while (cond) statement` */
+Opt<ir::StmtRef> Parser::whileStatement() {
+	take();
+	if (not expect(TokenKind::eLParen, "'(' after while")) {
+		return fail();
+	}
+	const auto cond = expression();
+	if (not cond.has_value() || not expect(TokenKind::eRParen, "')'")) {
+		return fail();
+	}
+	const auto body = branch();
+	if (not body.has_value()) {
+		return None;
+	}
+	return stmt(ir::StmtKind::eWhile, *cond, { *body });
+}
+
+/* `for (init; cond; step) statement`; init is a full statement, step a simple one, each optional */
+Opt<ir::StmtRef> Parser::forStatement() {
+	take();
+	if (not expect(TokenKind::eLParen, "'(' after for")) {
+		return fail();
+	}
+	const Scope scope { _locals, _scope };
+	const auto init = statement();
+	if (not init.has_value()) {
+		return None;
+	}
+	Opt<ir::ExprRef> cond = ir::ExprRef {};
+	if (not at(TokenKind::eSemicolon)) {
+		cond = expression();
+	}
+	if (not cond.has_value() || not expect(TokenKind::eSemicolon, "';'")) {
+		return fail();
+	}
+	Opt<ir::StmtRef> step = stmt(ir::StmtKind::eBlock);
+	if (not at(TokenKind::eRParen)) {
+		step = simpleStatement(false);
+	}
+	if (not step.has_value() || not expect(TokenKind::eRParen, "')'")) {
+		return fail();
+	}
+	const auto body = branch();
+	if (not body.has_value()) {
+		return None;
+	}
+	return stmt(ir::StmtKind::eFor, *cond, { *init, *body, *step });
+}
+
+/* `expr;`, `lvalue = expr;`, `lvalue op= expr;`, `++lvalue;`, `lvalue++;`; the `;` is left to the caller of a for step */
+Opt<ir::StmtRef> Parser::simpleStatement(bool terminated_) {
 	const auto& start = peek();
+	const auto prefix = at(TokenKind::ePlusPlus) || at(TokenKind::eMinusMinus);
+	const auto prefixToken = prefix ? &take() : nullptr;
 	const auto lhs = expression();
 	if (not lhs.has_value()) {
 		return fail();
 	}
-	if (compoundAhead()) {
-		return unsupported(peek(), String(peek().text) + String(next().text));
+	const auto* step = prefixToken;
+	if (step == nullptr && (at(TokenKind::ePlusPlus) || at(TokenKind::eMinusMinus))) {
+		step = &take();
 	}
-	if (not accept(TokenKind::eAssign)) {
-		if (not expect(TokenKind::eSemicolon, "';'")) {
+	if (step == nullptr && not at(TokenKind::eAssign) && not at(TokenKind::eCompoundAssign)) {
+		if (terminated_ && not expect(TokenKind::eSemicolon, "';'")) {
 			return fail();
 		}
 		return stmt(ir::StmtKind::eExpr, *lhs);
 	}
-	if (not assignable(*lhs)) {
-		error(start, "Cannot assign to this expression.");
-	}
-	const auto rhs = expression();
-	if (not rhs.has_value() || not expect(TokenKind::eSemicolon, "';'")) {
-		return fail();
-	}
+
 	ir::Stmt assign {};
 	assign.kind = ir::StmtKind::eAssign;
 	assign.lhs = *lhs;
-	assign.rhs = *rhs;
+	if (not assignable(*lhs)) {
+		error(start, "Cannot assign to this expression.");
+	}
+	if (step != nullptr) {
+		assign.name = step->kind == TokenKind::ePlusPlus ? "+=" : "-=";
+		assign.rhs = node(ir::ExprKind::eLiteral, "1", {}, step->loc);
+	} else {
+		if (at(TokenKind::eCompoundAssign)) {
+			assign.name = String(take().text);
+		} else {
+			take();
+		}
+		const auto rhs = expression();
+		if (not rhs.has_value()) {
+			return fail();
+		}
+		assign.rhs = *rhs;
+	}
+	if (terminated_ && not expect(TokenKind::eSemicolon, "';'")) {
+		return fail();
+	}
 	return add(std::move(assign));
-}
-
-/* reports at `at_`, then skips `(...)` and a `{...}` body or the rest of the statement */
-Opt<ir::StmtRef> Parser::unsupported(ref<const ir::Token> at_, StringView what_) {
-	error(at_, "'" + String(what_) + "' is unsupported in this milestone.");
-	if (at(TokenKind::eLParen)) {
-		skipGroup(TokenKind::eLParen, TokenKind::eRParen);
-	}
-	if (at(TokenKind::eLBrace)) {
-		skipGroup(TokenKind::eLBrace, TokenKind::eRBrace);
-		return None;
-	}
-	return fail();
-}
-
-/* `+=`, `-=`, `*=`, `/=`, `++` (lexed as two tokens) */
-bool Parser::compoundAhead() const {
-	const auto kind = peek().kind;
-	const auto ahead = next().kind;
-	return precedenceOf(kind) >= additive && (ahead == TokenKind::eAssign || (kind == TokenKind::ePlus && ahead == kind));
 }
 
 /* a name, optionally behind field and index accesses */
@@ -356,16 +421,37 @@ bool Parser::assignable(ir::ExprRef ref_) const {
 	return ir::isPlace(_shared.module, ref_);
 }
 
-/* Expressions: comparisons < `+ -` < `* /` (precedence climbing) < unary `- !` < postfix `.name [i]` < primary */
+/* Expressions: `?:` (right-assoc, only at the lowest level) < binary operators (precedence climbing, see precedenceOf) < unary `- ! ~` < postfix `.name [i]` < primary */
 
 Opt<ir::ExprRef> Parser::expression(u32 minPrecedence_) {
 	auto lhs = unary();
-	while (lhs.has_value() && precedenceOf(peek().kind) >= minPrecedence_ && not compoundAhead()) {
+	while (lhs.has_value() && precedenceOf(peek().kind) >= minPrecedence_) {
 		const auto& op = take();
 		const auto rhs = expression(precedenceOf(op.kind) + 1uL);
 		lhs = rhs.has_value() ? Opt<ir::ExprRef> { node(ir::ExprKind::eBinary, op.text, { *lhs, *rhs }, op.loc) } : None;
 	}
+	if (minPrecedence_ == 1uL && lhs.has_value() && at(TokenKind::eQuestion)) {
+		return ternary(*lhs);
+	}
 	return lhs;
+}
+
+/* at '?' after the condition; the arms recurse, so they share the Nest budget */
+Opt<ir::ExprRef> Parser::ternary(ir::ExprRef cond_) {
+	const Nest nest { _shared.depth };
+	const auto& op = take();
+	if (tooDeep(op)) {
+		return None;
+	}
+	const auto then = expression();
+	if (not then.has_value() || not expect(TokenKind::eColon, "':' in conditional expression")) {
+		return None;
+	}
+	const auto otherwise = expression();
+	if (not otherwise.has_value()) {
+		return None;
+	}
+	return node(ir::ExprKind::eTernary, {}, { cond_, *then, *otherwise }, op.loc);
 }
 
 Opt<ir::ExprRef> Parser::unary() {
@@ -373,7 +459,7 @@ Opt<ir::ExprRef> Parser::unary() {
 	if (tooDeep(peek())) {
 		return None;
 	}
-	if (at(TokenKind::eMinus) || at(TokenKind::eBang)) {
+	if (at(TokenKind::eMinus) || at(TokenKind::eBang) || at(TokenKind::eTilde)) {
 		const auto& op = take();
 		const auto operand = unary();
 		if (not operand.has_value()) {

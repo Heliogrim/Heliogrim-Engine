@@ -34,6 +34,11 @@ namespace hg::engine::accel::lang::ir {
 		eKwImplicit,
 		eKwMut,
 		eKwConst,
+		eKwFor,
+		eKwWhile,
+		eKwBreak,
+		eKwContinue,
+		eKwDiscard,
 
 		eLBrace,
 		eRBrace,
@@ -63,7 +68,16 @@ namespace hg::engine::accel::lang::ir {
 		eSlash,
 		ePercent,
 		eAmp,
-		ePipe
+		ePipe,
+		eQuestion,
+		eTilde,
+		eCaret,
+		eShl,
+		eShr,
+		/** `+= -= *= /= %= &= |= ^= <<= >>=`; the text is the operator */
+		eCompoundAssign,
+		ePlusPlus,
+		eMinusMinus
 	};
 
 	/**

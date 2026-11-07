@@ -221,12 +221,13 @@ namespace hg::engine::accel::lang::ir::detail {
 		[[nodiscard]] Opt<ir::StmtRef> letStatement(bool const_);
 		[[nodiscard]] Opt<ir::StmtRef> typedDeclaration();
 		[[nodiscard]] Opt<ir::StmtRef> local(ref<const ir::Token> name_, ir::TypeRef type_, bool const_);
-		[[nodiscard]] Opt<ir::StmtRef> simpleStatement();
-		[[nodiscard]] Opt<ir::StmtRef> unsupported(ref<const ir::Token> at_, StringView what_);
-		[[nodiscard]] bool compoundAhead() const;
+		[[nodiscard]] Opt<ir::StmtRef> whileStatement();
+		[[nodiscard]] Opt<ir::StmtRef> forStatement();
+		[[nodiscard]] Opt<ir::StmtRef> simpleStatement(bool terminated_ = true);
 		[[nodiscard]] bool assignable(ir::ExprRef ref_) const;
 
 		[[nodiscard]] Opt<ir::ExprRef> expression(u32 minPrecedence_ = 1uL);
+		[[nodiscard]] Opt<ir::ExprRef> ternary(ir::ExprRef cond_);
 		[[nodiscard]] Opt<ir::ExprRef> unary();
 		[[nodiscard]] Opt<ir::ExprRef> postfix(Opt<ir::ExprRef> base_);
 		[[nodiscard]] Opt<ir::ExprRef> primary();
