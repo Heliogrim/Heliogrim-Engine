@@ -339,7 +339,13 @@ namespace {
 					size_t targetIndex = ~0uz;
 					if (const auto* root = rootOf(lhs); root != nullptr && root->kind == ExprKind::eNameRef) {
 						if (const auto* rootEntry = lookup(*root); rootEntry != nullptr) {
-							targetIndex = rootEntry->targetIndex != ~0uz ? rootEntry->targetIndex : static_cast<size_t>(rootEntry - _scope.data());
+							if (rootEntry->targetIndex != ~0uz) {
+								targetIndex = rootEntry->targetIndex;
+							} else if (not rootEntry->target.empty()) {
+								targetIndex = ~0uz;
+							} else {
+								targetIndex = static_cast<size_t>(rootEntry - _scope.data());
+							}
 						}
 					}
 					_scope.emplace_back(_module.stmts[ref_.index].name, type, writes ? Mode::eRefWrite : Mode::eRefRead, rootName(lhs), targetIndex);
