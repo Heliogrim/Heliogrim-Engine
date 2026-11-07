@@ -168,7 +168,6 @@ namespace {
 				out.unresolvedCalls.emplace_back(wanted);
 			}
 			return {};
-			return {};
 		}
 
 		void fixExprs() {

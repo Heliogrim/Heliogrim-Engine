@@ -79,6 +79,7 @@ namespace {
 			const auto& node = module.stmts[ref_.index];
 			h.put(node.kind);
 			h.put(node.name);
+			h.put(node.mutable_);
 			type(node.type);
 			expr(node.lhs, depth_ + 1uL);
 			expr(node.rhs, depth_ + 1uL);
@@ -113,6 +114,7 @@ namespace {
 				h.put(binding.input);
 				condition(binding.when);
 				h.put(binding.localName);
+				h.put(binding.access);
 			}
 
 			h.put(static_cast<u64>(module.functions.size()));
@@ -121,6 +123,7 @@ namespace {
 				h.put(static_cast<u64>(function.params.size()));
 				for (const auto& param : function.params) {
 					h.put(param.name);
+					h.put(param.kind);
 					type(param.type);
 				}
 				type(function.ret);

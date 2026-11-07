@@ -397,6 +397,10 @@ namespace hg::engine::accel::lang::ir::detail {
 			const auto cls = bindClassOf(value_.text);
 			valid = word && cls.has_value();
 			decl.bindClass = valid ? *cls : decl.bindClass;
+		} else if (not redefine && key_.text == "access") {
+			valid = word && (value_.text == "read" || value_.text == "write" || value_.text == "read_write");
+			decl.access = valid ? (value_.text == "read" ? ir::Access::eRead : (value_.text == "write" ? ir::Access::eWrite : ir::Access::eReadWrite)) :
+				decl.access;
 		} else if (not redefine && key_.text == "id") {
 			valid = not word && not value_.text.empty();
 			decl.id = valid ? String(value_.text) : decl.id;
@@ -769,11 +773,18 @@ namespace hg::engine::accel::lang::ir::detail {
 				if (not expect(TokenKind::eColon, "':' after the parameter name")) {
 					return recover();
 				}
+				if (paramName.starts_with("_hg_")) {
+					error(paramToken, "Identifiers starting with '_hg_' are reserved.");
+				}
+				auto kind = ir::ParamKind::eValue;
+				if (accept(TokenKind::eAmp)) {
+					kind = accept(TokenKind::eKwMut) ? ir::ParamKind::eRefMut : ir::ParamKind::eRef;
+				}
 				const auto paramType = type();
 				if (not paramType.has_value()) {
 					return recover();
 				}
-				fn.params.emplace_back(ir::ParamDecl { std::move(paramName), *paramType });
+				fn.params.emplace_back(ir::ParamDecl { std::move(paramName), *paramType, kind });
 			} while (accept(TokenKind::eComma));
 			if (not expect(TokenKind::eRParen, "')'")) {
 				return recover();

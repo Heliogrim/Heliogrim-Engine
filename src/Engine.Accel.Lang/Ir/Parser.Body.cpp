@@ -4,6 +4,7 @@
 #include <cassert>
 
 #include "Builtin.hpp"
+#include "Typecheck.hpp"
 
 using namespace hg::engine::accel::lang;
 using namespace hg;
@@ -136,7 +137,10 @@ Opt<ir::StmtRef> Parser::statement() {
 		return returnStatement();
 	}
 	if (head.kind == TokenKind::eKwLet) {
-		return letStatement();
+		return letStatement(false);
+	}
+	if (head.kind == TokenKind::eKwConst) {
+		return letStatement(true);
 	}
 	if (head.kind == TokenKind::eIdentifier) {
 		if (std::ranges::find(unsupportedStatements, head.text) != unsupportedStatements.end()) {
@@ -224,8 +228,8 @@ Opt<ir::StmtRef> Parser::returnStatement() {
 	return stmt(ir::StmtKind::eReturn, *value);
 }
 
-/* `let name [: Type] [= init];`, a type or an initializer required */
-Opt<ir::StmtRef> Parser::letStatement() {
+/* `let|const name [: Type] [= init|&place|&mut place];`, a type or an initializer required */
+Opt<ir::StmtRef> Parser::letStatement(bool const_) {
 	take();
 	if (not at(TokenKind::eIdentifier)) {
 		syntaxError("a local name");
@@ -239,10 +243,10 @@ Opt<ir::StmtRef> Parser::letStatement() {
 			return fail();
 		}
 	} else if (not at(TokenKind::eAssign)) {
-		error(name, "A 'let' declaration needs a type or an initializer.");
+		error(name, "A '" + String(const_ ? "const" : "let") + "' declaration needs a type or an initializer.");
 		return fail();
 	}
-	return local(name, declType.value_or(ir::TypeRef {}));
+	return local(name, declType.value_or(ir::TypeRef {}), const_);
 }
 
 /* `Type name [= init];` */
@@ -255,18 +259,32 @@ Opt<ir::StmtRef> Parser::typedDeclaration() {
 		syntaxError("a local name");
 		return fail();
 	}
-	return local(take(), *declType);
+	return local(take(), *declType, false);
 }
 
 /* `[= init];` of both declaration forms (type unset = inferred later); the name is in scope after its
  * initializer, even after an error */
-Opt<ir::StmtRef> Parser::local(ref<const ir::Token> name_, ir::TypeRef type_) {
+Opt<ir::StmtRef> Parser::local(ref<const ir::Token> name_, ir::TypeRef type_, bool const_) {
 	ir::Stmt decl {};
 	decl.kind = ir::StmtKind::eDeclareLocal;
 	decl.name = name_.text;
 	decl.type = type_;
+	decl.mutable_ = not const_;
 	bool valid = true;
+	if (name_.text.starts_with("_hg_")) {
+		error(name_, "Identifiers starting with '_hg_' are reserved.");
+	}
 	if (accept(TokenKind::eAssign)) {
+		if (accept(TokenKind::eAmp)) {
+			decl.kind = ir::StmtKind::eDeclareRef;
+			decl.mutable_ = accept(TokenKind::eKwMut);
+			if (decl.mutable_ && const_) {
+				error(name_, "cannot take '&mut' into a 'const' alias");
+			}
+			if (type_.index != ir::TypeRef {}.index) {
+				error(name_, "A reference declaration cannot have a type annotation.");
+			}
+		}
 		const auto init = expression();
 		valid = init.has_value();
 		decl.lhs = valid ? *init : decl.lhs;
@@ -335,12 +353,7 @@ bool Parser::compoundAhead() const {
 
 /* a name, optionally behind field and index accesses */
 bool Parser::assignable(ir::ExprRef ref_) const {
-	const auto& exprs = _shared.module.exprs;
-	const auto* e = &exprs[ref_.index];
-	while ((e->kind == ir::ExprKind::eField || e->kind == ir::ExprKind::eIndex) && not e->operands.empty()) {
-		e = &exprs[e->operands.front().index];
-	}
-	return e->kind == ir::ExprKind::eNameRef || (e->kind == ir::ExprKind::eBuiltin && isBuiltinVariable(e->name));
+	return ir::isPlace(_shared.module, ref_);
 }
 
 /* Expressions: comparisons < `+ -` < `* /` (precedence climbing) < unary `- !` < postfix `.name [i]` < primary */

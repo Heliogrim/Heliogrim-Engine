@@ -48,7 +48,9 @@ namespace {
 				_ret = _module.functions[i].ret;
 				_scope.clear();
 				for (const auto& param : _module.functions[i].params) {
-					_scope.emplace_back(param.name, param.type);
+					const auto mode = param.kind == ir::ParamKind::eRefMut ? Mode::eRefWrite :
+						(param.kind == ir::ParamKind::eRef ? Mode::eRefRead : Mode::eConstant);
+					_scope.emplace_back(param.name, param.type, mode);
 				}
 				stmt(root);
 			}
@@ -75,9 +77,23 @@ namespace {
 			eFloat
 		};
 
+		/* what a name in scope allows: assignment (mutable local, `&mut`) or only reads */
+		enum class Mode : u8 {
+			eMutable,
+			eConstant,
+			eRefRead,
+			eRefWrite
+		};
+
+		struct Entry {
+			String name;
+			TypeRef type;
+			Mode mode;
+		};
+
 		ref<ir::Module> _module;
 		ir::Diagnostics _diags;
-		Vector<std::pair<String, TypeRef>> _scope;
+		Vector<Entry> _scope;
 		TypeRef _ret;
 		u32 _depth = 0uL;
 
@@ -262,6 +278,10 @@ namespace {
 
 			switch (kind) {
 				case StmtKind::eDeclareLocal: {
+					const auto mutableLocal = _module.stmts[ref_.index].mutable_;
+					if (not mutableLocal && lhs.index >= _module.exprs.size()) {
+						error("a 'const' local needs an initializer");
+					}
 					const auto declared = _module.stmts[ref_.index].type;
 					auto type = declared;
 					if (lhs.index < _module.exprs.size()) {
@@ -277,12 +297,31 @@ namespace {
 						}
 					}
 					_module.stmts[ref_.index].type = type;
-					_scope.emplace_back(_module.stmts[ref_.index].name, type);
+					_scope.emplace_back(_module.stmts[ref_.index].name, type, mutableLocal ? Mode::eMutable : Mode::eConstant);
+					break;
+				}
+				case StmtKind::eDeclareRef: {
+					const auto type = expr(lhs);
+					const auto writes = _module.stmts[ref_.index].mutable_;
+					if (lhs.index >= _module.exprs.size() || not ir::isPlace(_module, lhs)) {
+						error("'&' needs a place expression");
+					} else if (writes) {
+						if (const auto denied = readOnly(lhs, true); denied.has_value()) {
+							error(*denied);
+						}
+					}
+					_module.stmts[ref_.index].type = type;
+					_scope.emplace_back(_module.stmts[ref_.index].name, type, writes ? Mode::eRefWrite : Mode::eRefRead);
 					break;
 				}
 				case StmtKind::eAssign: {
 					const auto target = expr(lhs);
 					const auto value = expr(rhs);
+					if (lhs.index < _module.exprs.size() && ir::isPlace(_module, lhs)) {
+						if (const auto denied = readOnly(lhs, false); denied.has_value()) {
+							error(*denied);
+						}
+					}
 					if (valid(target) && valid(value) && not coerce(rhs, target)) {
 						error("cannot assign " + name(value) + " to " + name(target));
 					}
@@ -375,12 +414,91 @@ namespace {
 			}
 		}
 
+		[[nodiscard]] const Entry* lookup(ref<const ir::Expr> e_) const {
+			for (auto it = _scope.rbegin(); it != _scope.rend(); ++it) {
+				if (it->name == e_.name && (e_.local || e_.binding.index >= _module.bindings.size())) {
+					return &*it;
+				}
+			}
+			return nullptr;
+		}
+
+		/* root node of a field/index chain; null when the chain breaks */
+		[[nodiscard]] const ir::Expr* rootOf(ExprRef ref_) const {
+			const ir::Expr* e = ref_.index < _module.exprs.size() ? &_module.exprs[ref_.index] : nullptr;
+			while (e != nullptr && (e->kind == ExprKind::eField || e->kind == ExprKind::eIndex)) {
+				e = not e->operands.empty() && e->operands.front().index < _module.exprs.size() ? &_module.exprs[e->operands.front().index] : nullptr;
+			}
+			return e;
+		}
+
+		/* Why the place cannot be written (assignment) or borrowed `&mut`; none when it can */
+		[[nodiscard]] Opt<String> readOnly(ExprRef place_, bool borrow_) const {
+			const auto* root = rootOf(place_);
+			if (root == nullptr || root->kind != ExprKind::eNameRef) {
+				return None;
+			}
+			if (const auto* entry = lookup(*root); entry != nullptr) {
+				if (entry->mode == Mode::eMutable || entry->mode == Mode::eRefWrite) {
+					return None;
+				}
+				if (borrow_) {
+					return String("cannot borrow immutable '" + root->name + "' as mutable");
+				}
+				return String(entry->mode == Mode::eConstant ?
+					"cannot assign to constant '" + root->name + "'" :
+					"cannot assign through immutable reference '" + root->name + "'");
+			}
+			const auto it = root->binding.index < _module.bindings.size() ?
+				_module.bindings.begin() + root->binding.index :
+				std::ranges::find(_module.bindings, root->name, &ir::BindingDecl::localName);
+			if (it == _module.bindings.end() || not it->input || it->access != ir::Access::eRead) {
+				return None;
+			}
+			return String(borrow_ ?
+				"cannot borrow read-only binding '" + root->name + "' as mutable" :
+				"cannot assign to read-only binding '" + root->name + "'");
+		}
+
+		[[nodiscard]] bool mentions(ExprRef ref_, ref<const String> name_, u32 depth_ = 0uL) const {
+			if (ref_.index >= _module.exprs.size() || depth_ > maxDepth) {
+				return false;
+			}
+			const auto& e = _module.exprs[ref_.index];
+			if (e.kind == ExprKind::eNameRef && e.name == name_) {
+				return true;
+			}
+			return std::ranges::any_of(e.operands, [&](ExprRef o_) { return mentions(o_, name_, depth_ + 1uL); });
+		}
+
+		/* `&mut` parameters: the argument must be a writable place, sharing no root with another argument */
+		void refArguments(ref<const String> name_, ref<const ir::FunctionDecl> fn_, ref<const Vector<ExprRef>> operands_) {
+			for (auto i = 0uz; i < fn_.params.size() && i < operands_.size(); ++i) {
+				if (fn_.params[i].kind != ir::ParamKind::eRefMut) {
+					continue;
+				}
+				if (not ir::isPlace(_module, operands_[i])) {
+					error("'&' needs a place expression");
+					continue;
+				}
+				if (const auto denied = readOnly(operands_[i], true); denied.has_value()) {
+					error(*denied);
+					continue;
+				}
+				const auto* root = rootOf(operands_[i]);
+				for (auto j = 0uz; root != nullptr && j < operands_.size(); ++j) {
+					if (j != i && mentions(operands_[j], root->name)) {
+						error("'&mut' argument '" + root->name + "' aliases another argument of call to '" + name_ + "'");
+						break;
+					}
+				}
+			}
+		}
+
 		[[nodiscard]] TypeRef nameRef(ExprRef ref_) {
 			const auto& e = _module.exprs[ref_.index];
-			for (auto it = _scope.rbegin(); it != _scope.rend(); ++it) {
-				if (it->first == e.name && (e.local || e.binding.index >= _module.bindings.size())) {
-					return it->second;
-				}
+			if (const auto* entry = lookup(e); entry != nullptr) {
+				return entry->type;
 			}
 			if (e.binding.index < _module.bindings.size()) {
 				return _module.bindings[e.binding.index].type;
@@ -641,6 +759,7 @@ namespace {
 			for (auto i = 0uz; known && i < params.size(); ++i) {
 				(void)coerce(operands_[i], params[i].type);
 			}
+			refArguments(name_, _module.functions[*chosen], operands_);
 			_module.exprs[ref_.index].function = ir::FunctionRef { *chosen };
 			return _module.functions[*chosen].ret;
 		}
@@ -715,6 +834,14 @@ String ir::signatureOf(ref<const Module> module_, ref<const FunctionDecl> fn_) {
 	}
 	return text + ")";
 }
+
+bool ir::isPlace(ref<const Module> module_, ExprRef expr_) {
+		const auto* e = expr_.index < module_.exprs.size() ? &module_.exprs[expr_.index] : nullptr;
+		while (e != nullptr && (e->kind == ExprKind::eField || e->kind == ExprKind::eIndex)) {
+			e = not e->operands.empty() && e->operands.front().index < module_.exprs.size() ? &module_.exprs[e->operands.front().index] : nullptr;
+		}
+		return e != nullptr && (e->kind == ExprKind::eNameRef || (e->kind == ExprKind::eBuiltin && ir::findBuiltinVariable(e->name) != nullptr));
+	}
 
 ir::Diagnostics ir::typecheck(ref<Module> module_) {
 	return Checker { module_ }.run();

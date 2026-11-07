@@ -57,8 +57,11 @@ namespace {
 					if (index != unresolved) {
 						insertSorted(usage.calledFunctions, index);
 					}
-					for (const auto& arg : e.operands) {
-						expr(arg);
+					for (auto i = 0uz; i < e.operands.size(); ++i) {
+						/* a `&mut` argument writes its root */
+						const auto refMut = index < module.functions.size() && i < module.functions[index].params.size() &&
+							module.functions[index].params[i].kind == ir::ParamKind::eRefMut;
+						expr(e.operands[i], refMut);
 					}
 					break;
 				}
@@ -103,6 +106,10 @@ namespace {
 					for (const auto& child : s.children) {
 						stmt(child);
 					}
+					break;
+				}
+				case ir::StmtKind::eDeclareRef: {
+					expr(s.lhs, s.mutable_);
 					break;
 				}
 				default: {

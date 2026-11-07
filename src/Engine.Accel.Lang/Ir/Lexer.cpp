@@ -20,13 +20,14 @@ namespace {
 		ir::TokenKind kind;
 	};
 
-	constexpr std::array<Keyword, 10> keywords {
+	constexpr std::array<Keyword, 12> keywords {
 		{
 			{ "fn", ir::TokenKind::eKwFn }, { "struct", ir::TokenKind::eKwStruct },
 			{ "block", ir::TokenKind::eKwBlock }, { "toggle", ir::TokenKind::eKwToggle },
 			{ "when", ir::TokenKind::eKwWhen }, { "return", ir::TokenKind::eKwReturn },
 			{ "if", ir::TokenKind::eKwIf }, { "else", ir::TokenKind::eKwElse },
-			{ "let", ir::TokenKind::eKwLet }, { "implicit", ir::TokenKind::eKwImplicit }
+			{ "let", ir::TokenKind::eKwLet }, { "implicit", ir::TokenKind::eKwImplicit },
+			{ "mut", ir::TokenKind::eKwMut }, { "const", ir::TokenKind::eKwConst }
 		}
 	};
 

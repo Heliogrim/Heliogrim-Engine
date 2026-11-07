@@ -151,4 +151,13 @@ namespace AccelLang {
 		withIr.ir = make_smr<const Module>(new Module { parsed(source) });
 		EXPECT_NE(a.contentHash(), withIr.contentHash());
 	}
+
+	TEST(VariantKeyTest, RefKindAndMutabilityChangeKey) {
+		const auto key = [](const char* param_, const char* local_) {
+			return makeVariantKey(parsed(String { "fn F(x: " } + param_ + ") {}\nfn main() {\n	" + local_ + " k = 1.0;\n}\n"), {}, {});
+		};
+		EXPECT_NE(key("f32", "let"), key("&f32", "let"));
+		EXPECT_NE(key("&f32", "let"), key("&mut f32", "let"));
+		EXPECT_NE(key("f32", "let"), key("f32", "const"));
+	}
 }

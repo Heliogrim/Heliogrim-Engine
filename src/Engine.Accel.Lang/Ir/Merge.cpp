@@ -163,7 +163,7 @@ namespace {
 
 	[[nodiscard]] ir::FunctionDecl remapFunction(ir::FunctionDecl fn_, ref<const Remap> remap_) {
 		auto& [name, params, ret, body, redefineAllowed, when] = fn_;
-		for (auto& [paramName, paramType] : params) {
+		for (auto& [paramName, paramType, paramKind] : params) {
 			paramType = remap_.type(paramType);
 		}
 		ret = remap_.type(ret);
@@ -223,7 +223,7 @@ namespace {
 	}
 
 	[[nodiscard]] ir::Stmt remapStmt(ir::Stmt stmt_, ref<const Remap> remap_) {
-		auto& [kind, name, type, lhs, rhs, children, when, loc] = stmt_;
+		auto& [kind, name, type, lhs, rhs, mutable_, children, when, loc] = stmt_;
 		type = remap_.type(type);
 		lhs = remap_.expr(lhs);
 		rhs = remap_.expr(rhs);
@@ -231,6 +231,7 @@ namespace {
 			child = remap_.stmt(child);
 		}
 		static_cast<void>(kind);
+		static_cast<void>(mutable_);
 		return stmt_;
 	}
 
@@ -318,6 +319,12 @@ namespace {
 				};
 				return prefix + "as " + direction(a_.input) + in(first_) + " and " + direction(b_.input) + in(second_);
 			}
+			if (a_.access != b_.access) {
+				const auto access = [](ir::Access access_) {
+					return String(access_ == ir::Access::eRead ? "read" : (access_ == ir::Access::eWrite ? "write" : "read_write"));
+				};
+				return prefix + "with access " + access(a_.access) + in(first_) + " and " + access(b_.access) + in(second_);
+			}
 			if (a_.implicit != b_.implicit) {
 				// not OR-ed: an implicit entry emits no variable, while the other module's body may use one
 				return prefix + "implicit" + in(a_.implicit ? first_ : second_) + " and not" + in(a_.implicit ? second_ : first_);
@@ -331,7 +338,7 @@ namespace {
 			auto& remap = remaps[module_];
 			for (const auto& binding : modules[module_]->bindings) {
 				auto mapped = binding;
-				auto& [id, type, mode, bindClass, implicit, input, when, localName] = mapped;
+				auto& [id, type, mode, bindClass, implicit, input, when, localName, access] = mapped;
 				type = remap.type(type);
 
 				const auto it = std::ranges::find(result.bindings, id, &ir::BindingDecl::id);
@@ -353,6 +360,7 @@ namespace {
 				static_cast<void>(implicit);
 				static_cast<void>(input);
 				static_cast<void>(localName);
+				static_cast<void>(access);
 			}
 		}
 

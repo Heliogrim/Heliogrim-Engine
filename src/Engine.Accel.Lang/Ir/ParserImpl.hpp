@@ -218,9 +218,9 @@ namespace hg::engine::accel::lang::ir::detail {
 		[[nodiscard]] Opt<ir::StmtRef> whenHead();
 		[[nodiscard]] Opt<ir::StmtRef> ifStatement();
 		[[nodiscard]] Opt<ir::StmtRef> returnStatement();
-		[[nodiscard]] Opt<ir::StmtRef> letStatement();
+		[[nodiscard]] Opt<ir::StmtRef> letStatement(bool const_);
 		[[nodiscard]] Opt<ir::StmtRef> typedDeclaration();
-		[[nodiscard]] Opt<ir::StmtRef> local(ref<const ir::Token> name_, ir::TypeRef type_);
+		[[nodiscard]] Opt<ir::StmtRef> local(ref<const ir::Token> name_, ir::TypeRef type_, bool const_);
 		[[nodiscard]] Opt<ir::StmtRef> simpleStatement();
 		[[nodiscard]] Opt<ir::StmtRef> unsupported(ref<const ir::Token> at_, StringView what_);
 		[[nodiscard]] bool compoundAhead() const;

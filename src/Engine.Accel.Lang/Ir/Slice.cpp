@@ -132,7 +132,7 @@ namespace {
 					const auto b = binding(*target);
 					roles[stmt_] = b != unset && dropped[b] ? Role::eDead : Role::eLive;
 				}
-			} else if (s.kind == ir::StmtKind::eDeclareLocal) {
+			} else if (s.kind == ir::StmtKind::eDeclareLocal || s.kind == ir::StmtKind::eDeclareRef) {
 				roles[stmt_] = Role::eLocal;
 				f.defines = s.name;
 			} else if (s.kind == ir::StmtKind::eExpr) {
@@ -174,7 +174,7 @@ namespace {
 
 		void purity() {
 			for (auto f = 0uz; f < bodies.size(); ++f) {
-				impure[f] = impure[f] || std::ranges::any_of(
+				impure[f] = impure[f] || std::ranges::any_of(in.functions[f].params, [](const auto& p_) { return p_.kind == ir::ParamKind::eRefMut; }) || std::ranges::any_of(
 					bodies[f],
 					[&](u32 s_) { return roles[s_] == Role::eLive && in.stmts[s_].kind == ir::StmtKind::eAssign; }
 				);

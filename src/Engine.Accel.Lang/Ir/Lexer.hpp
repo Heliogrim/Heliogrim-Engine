@@ -32,6 +32,8 @@ namespace hg::engine::accel::lang::ir {
 		eKwElse,
 		eKwLet,
 		eKwImplicit,
+		eKwMut,
+		eKwConst,
 
 		eLBrace,
 		eRBrace,
