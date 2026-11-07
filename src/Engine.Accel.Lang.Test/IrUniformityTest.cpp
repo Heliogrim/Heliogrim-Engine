@@ -48,6 +48,18 @@ namespace AccelLang {
 		EXPECT_TRUE(uniformOfCall(m, u, "b"));
 	}
 
+	TEST(UniformityTest, SparseTexelIsLaneDependent) {
+		const auto m = parseOk(
+			String { head } +
+			"@input (mode = bind, id = \"t2\", class = texture) texture2d t2;\n"
+			"@input (mode = bind, id = \"smp\", class = sampler) sampler smp;\n"
+			"fn main() {\n\tlet texel = f32vec4(0.0);\n\tlet r = sample_sparse(t2, smp, f32vec2(0.5, 0.5), texel);\n"
+			"\tif (texel.x > 0.0) { a(); }\n}\n"
+		);
+		const auto u = analyzeUniformity(m);
+		EXPECT_FALSE(uniformOfCall(m, u, "a"));
+	}
+
 	TEST(UniformityTest, PushConditionIsUniform) {
 		const auto m = parseOk(String { head } + "fn main() {\n\tif (p.x > 0.0) { a(); }\n}\n");
 		const auto u = analyzeUniformity(m);

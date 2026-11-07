@@ -2,6 +2,8 @@
 
 #include <algorithm>
 
+#include "Builtin.hpp"
+
 using namespace hg;
 using namespace hg::engine::accel::lang;
 
@@ -62,6 +64,12 @@ namespace {
 						const auto refMut = index < module.functions.size() && i < module.functions[index].params.size() &&
 							module.functions[index].params[i].kind == ir::ParamKind::eRefMut;
 						expr(e.operands[i], refMut);
+					}
+					break;
+				}
+				case ir::ExprKind::eBuiltin: {
+					for (auto i = 0uz; i < e.operands.size(); ++i) {
+						expr(e.operands[i], ir::builtinWritesArg(e.name, i));
 					}
 					break;
 				}

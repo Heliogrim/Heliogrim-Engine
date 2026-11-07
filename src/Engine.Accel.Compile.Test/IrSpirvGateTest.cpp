@@ -109,6 +109,32 @@ namespace AccelCompile {
 		);
 	}
 
+	TEST(IrSpirvGateTest, TextureSample) {
+		EXPECT_TRUE(
+			compilesToSpirv(
+				"@input (mode = bind, id = \"t2\", class = texture) texture2d t2;\n"
+				"@input (mode = bind, id = \"ta\", class = texture) texture2darray ta;\n"
+				"@input (mode = bind, id = \"tc\", class = texture) texturecube tc;\n"
+				"@input (mode = bind, id = \"smp\", class = sampler) sampler smp;\n"
+				"@input (mode = forward, id = \"uv\") f32vec2 uv;\n"
+				"@output (mode = forward, id = \"color\") f32vec4 color;\n"
+				"fn main() {\n"
+				"	let uv3 = f32vec3(uv, 0.0);\n"
+				"	let a = f32vec4(0.0);\n"
+				"	let b = f32vec4(0.0);\n"
+				"	let acc = sample(t2, smp, uv) + sample(ta, smp, uv3) + sample(tc, smp, uv3);\n"
+				"	acc += sample_lod(t2, smp, uv, 1.0) + sample_lod(ta, smp, uv3, 1.0) + sample_lod(tc, smp, uv3, 1.0);\n"
+				"	let sz = texture_size(t2, smp, 0) + texture_size(tc, smp, 0) + s32vec2(texture_size(ta, smp, 0).xy);\n"
+				"	let r = sample_sparse(t2, smp, uv, a) + sample_sparse(ta, smp, uv3, a) + sample_sparse(tc, smp, uv3, a);\n"
+				"	let q = sample_sparse_clamp(t2, smp, uv, 1.0, b) + sample_sparse_clamp(ta, smp, uv3, 1.0, b) + sample_sparse_clamp(tc, smp, uv3, 1.0, b);\n"
+				"	if (sparse_resident(r) && sparse_resident(q)) { acc += a + b; }\n"
+				"	color = acc + f32vec4(f32(sz.x));\n"
+				"}\n",
+				EntryKind::eFragment
+			)
+		);
+	}
+
 	TEST(IrSpirvGateTest, ForWithOmittedInitAndStep) {
 		EXPECT_TRUE(
 			compilesToSpirv(

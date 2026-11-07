@@ -69,6 +69,12 @@ namespace {
 				}
 				case ir::ExprKind::eBuiltin: {
 					direct = direct || (needsUniform && needsUniform(e.name));
+					/* the `&mut` out argument of a builtin is filled with a lane-dependent result */
+					for (auto i = 0uz; i < e.operands.size(); ++i) {
+						if (ir::builtinWritesArg(e.name, i)) {
+							assignTo(e.operands[i], true);
+						}
+					}
 					const auto* variable = ir::findBuiltinVariable(e.name);
 					return variable != nullptr && variable->uniform && uniform;
 				}

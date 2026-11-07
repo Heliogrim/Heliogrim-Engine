@@ -142,6 +142,13 @@ std::expected<smr<const Resolved>, Diagnostics> hg::engine::accel::resolveStageI
 		key,
 		[&]() -> smr<const Resolved> {
 
+			/* non-fatal parser/typecheck diagnostics; merge drops them, so log them from the inputs */
+			for (const auto* module : modules) {
+				for (const auto& warning : module->warnings) {
+					Logger::warn("Ir stage module '{}': {}", module->name, warning.message);
+				}
+			}
+
 			if (skippedText) {
 				Logger::warn("Ir stage skips profile '{}' modules without ir; their text is not emitted", profile_._name);
 			}

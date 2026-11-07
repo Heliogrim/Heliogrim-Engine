@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "Builtin.hpp"
+#include "Uniformity.hpp"
 
 using namespace hg;
 using namespace hg::engine::accel::lang;
@@ -709,20 +710,9 @@ namespace {
 				}
 			}
 
-			if (first->signature.empty()) {
-				/* `sample(texture, sampler, coordinates)` */
-				if (types.size() != 3uz) {
-					error("'" + name_ + "' takes 3 arguments");
-					return {};
-				}
-				const auto ok = isKind(types[0], TypeKind::eTexture) && isKind(types[1], TypeKind::eSampler) &&
-					(isKind(types[2], TypeKind::eVector) || isKind(types[2], TypeKind::eScalar));
-				if (not ok) {
-					error("arguments of '" + name_ + "' have types " + name(types[0]) + ", " + name(types[1]) + ", " + name(types[2]));
-					return {};
-				}
-				return vectorOf(_module.types[types.front().index].scalar, 32uL, 4uL);
-			}
+			const auto dim = not types.empty() && isKind(types.front(), TypeKind::eTexture) ?
+				_module.types[types.front().index].dim :
+				ir::TextureDim::e2D;
 
 			const auto& signatures = ir::parsedBuiltinSignatures();
 			for (auto i = 0uz; i < std::size(ir::builtinFunctions); ++i) {
@@ -735,19 +725,39 @@ namespace {
 					Vector<TypeRef> targets {};
 					auto ok = true;
 					for (auto k = 0uz; k < types.size() && ok; ++k) {
-						const auto desc = ir::resolveBuiltinSigType(sig.params[k], width);
+						const auto desc = ir::resolveBuiltinSigType(sig.params[k], width, dim);
 						ok = desc.has_value();
 						if (ok) {
 							targets.emplace_back(intern(*desc));
 							ok = same(types[k], targets.back()) || adaptable(operands_[k], targets.back());
 						}
 					}
-					const auto ret = ir::resolveBuiltinSigType(sig.ret, width);
+					const auto ret = ir::resolveBuiltinSigType(sig.ret, width, dim);
 					if (not ok || not ret.has_value()) {
 						continue;
 					}
 					for (auto k = 0uz; k < types.size(); ++k) {
 						(void)coerce(operands_[k], targets[k]);
+					}
+					for (auto k = 0uz; k < types.size(); ++k) {
+						if (not sig.params[k].mut) {
+							continue;
+						}
+						if (not ir::isPlace(_module, operands_[k])) {
+							error("'&' needs a place expression");
+							continue;
+						}
+						if (const auto denied = readOnly(operands_[k], true); denied.has_value()) {
+							error(*denied);
+							continue;
+						}
+						const auto root = rootName(operands_[k]);
+						for (auto j = 0uz; not root.empty() && j < operands_.size(); ++j) {
+							if (j != k && mentions(operands_[j], root)) {
+								error("'&mut' argument '" + root + "' aliases another argument of call to '" + name_ + "'");
+								break;
+							}
+						}
 					}
 					return intern(*ret);
 				}
@@ -1067,8 +1077,8 @@ String ir::describeType(ref<const Vector<TypeDesc>> types_, TypeRef type_, u32 d
 			return text + "}";
 		}
 		case TypeKind::eTexture: {
-			constexpr std::array<StringView, 4> dims { "1d", "2d", "3d", "cube" };
-			return "texture" + String(dims[static_cast<u32>(type.dim) & 3uL]);
+			constexpr std::array<StringView, 5> dims { "1d", "2d", "3d", "cube", "2darray" };
+			return "texture" + String(dims[std::min(static_cast<u32>(type.dim), u32 { 4 })]);
 		}
 		default: return "sampler";
 	}
@@ -1113,6 +1123,108 @@ ir::Diagnostics ir::checkStageValidity(ref<const Module> module_, EntryKind entr
 	return diags;
 }
 
+namespace {
+	/* D8: implicit-derivative builtins reached under lane-dependent control; warnings only, never failures */
+	class DivergenceWarner {
+	public:
+		explicit DivergenceWarner(ref<const ir::Module> module_) :
+			_module(module_),
+			_uniformity(ir::analyzeUniformity(module_, [](StringView name_) {
+				const auto* fn = ir::findBuiltinFunction(name_);
+				return fn != nullptr && fn->needsUniformControl;
+			})),
+			_warned(module_.exprs.size(), false) {}
+
+		[[nodiscard]] ir::Diagnostics run() {
+			/* via-chain reports first (they win the per-call dedupe), then direct ones */
+			for (const auto recurse : { true, false }) {
+				for (auto f = 0uz; f < _module.functions.size(); ++f) {
+					visit(f, recurse, false);
+				}
+			}
+			return std::move(_diags);
+		}
+
+	private:
+		ref<const ir::Module> _module;
+		ir::Uniformity _uniformity;
+		Vector<bool> _warned;
+		ir::Diagnostics _diags;
+		Vector<u32> _chain;
+		bool _recurse = false;
+
+		void warn(ir::ExprRef at_) {
+			if (_warned[at_.index]) {
+				return;
+			}
+			_warned[at_.index] = true;
+			const auto& e = _module.exprs[at_.index];
+			String via {};
+			for (auto it = _chain.rbegin(); it != _chain.rend(); ++it) {
+				via += (via.empty() ? "" : ", ") + _module.functions[*it].name;
+			}
+			_diags.emplace_back(ir::Diagnostic {
+				.severity = ir::Severity::eWarning,
+				.message = "'" + e.name + "' uses implicit derivatives under lane-dependent control" +
+				(via.empty() ? String {} : " (via " + via + ")") + "; results are undefined, use sample_lod",
+				.line = e.loc.line,
+				.column = e.loc.column
+			});
+		}
+
+		void walkExpr(ir::ExprRef ref_) {
+			if (ref_.index >= _module.exprs.size()) {
+				return;
+			}
+			const auto& e = _module.exprs[ref_.index];
+			for (const auto operand : e.operands) {
+				walkExpr(operand);
+			}
+			if (e.kind == ir::ExprKind::eBuiltin) {
+				const auto* fn = ir::findBuiltinFunction(e.name);
+				/* the divergent call site itself is not part of the chain */
+				if (fn != nullptr && fn->needsUniformControl && (_recurse == not _chain.empty())) {
+					warn(ref_);
+				}
+			} else if (e.kind == ir::ExprKind::eCall && _recurse && e.function.index < _module.functions.size()) {
+				if (_uniformity.requiresUniform[e.function.index] && std::ranges::find(_chain, e.function.index) == _chain.end()) {
+					_chain.emplace_back(e.function.index);
+					visit(e.function.index, true, true);
+					_chain.pop_back();
+				}
+			}
+		}
+
+		void walkStmt(ir::StmtRef ref_, bool whole_) {
+			if (ref_.index >= _module.stmts.size()) {
+				return;
+			}
+			const auto& s = _module.stmts[ref_.index];
+			if (whole_ || not _uniformity.uniformStmt[ref_.index]) {
+				walkExpr(s.lhs);
+				walkExpr(s.rhs);
+			}
+			for (const auto child : s.children) {
+				walkStmt(child, whole_);
+			}
+		}
+
+		/* `whole_`: reached through a call made under lane-dependent control */
+		void visit(size_t f_, bool recurse_, bool whole_) {
+			const auto& fn = _module.functions[f_];
+			if (not fn.body.has_value()) {
+				return;
+			}
+			_recurse = recurse_;
+			walkStmt(fn.body->root, whole_);
+		}
+	};
+}
+
 ir::Diagnostics ir::typecheck(ref<Module> module_) {
-	return Checker { module_ }.run();
+	auto diags = Checker { module_ }.run();
+	if (diags.empty()) {
+		diags = DivergenceWarner { module_ }.run();
+	}
+	return diags;
 }

@@ -94,8 +94,14 @@ namespace {
 			requirements_ = GlslRequirements { .features = _features, .extensions = extensionsOf(_features) };
 				if ((_builtinRequirements & ir::eRequireMultiview) != 0u) {
 					requirements_.extensions.emplace_back("GL_EXT_multiview");
-					std::ranges::sort(requirements_.extensions);
 				}
+				if ((_builtinRequirements & ir::eRequireSparse) != 0u) {
+					requirements_.extensions.emplace_back("GL_ARB_sparse_texture2");
+				}
+				if ((_builtinRequirements & ir::eRequireSparseClamp) != 0u) {
+					requirements_.extensions.emplace_back("GL_ARB_sparse_texture_clamp");
+				}
+				std::ranges::sort(requirements_.extensions);
 			out_ = "#version 460\n";
 			for (const auto& extension : requirements_.extensions) {
 				out_ += "#extension " + extension + " : require\n";
@@ -262,7 +268,7 @@ namespace {
 
 		[[nodiscard]] static String dimName(ir::TextureDim dim_) {
 			using enum ir::TextureDim;
-			return dim_ == e1D ? "1D" : dim_ == e3D ? "3D" : dim_ == eCube ? "Cube" : "2D";
+			return dim_ == e1D ? "1D" : dim_ == e3D ? "3D" : dim_ == eCube ? "Cube" : dim_ == e2DArray ? "2DArray" : "2D";
 		}
 
 		/* `T name[2][3]`: array dimensions on the declarator, outermost first */
@@ -839,11 +845,11 @@ namespace {
 						_builtinRequirements |= variable->requirement;
 						return { String { variable->glsl }, vectorDesc(variable->scalar, 32uL, variable->n) };
 					}
-					if (e.name == "sample") {
-						return sample(e);
-					}
 					if (const auto* fn = ir::findBuiltinFunction(e.name); fn != nullptr && not fn->signature.empty()) {
 						_builtinRequirements |= fn->requirement;
+						if (fn->signature.find("(tex,smp") != StringView::npos) {
+							return textureCall(e, *fn);
+						}
 						return { String { fn->glsl } + "(" + arguments() + ")", typeOf(e.type) };
 					}
 					error("Unknown builtin '" + e.name + "'.");
@@ -918,25 +924,25 @@ namespace {
 			return { binding->localName, typeOf(binding->type) };
 		}
 
-		/* `sample(texture, sampler, uv)` -> `texture(sampler2D(texture, sampler), uv)` */
-		[[nodiscard]] Emitted sample(ref<const ir::Expr> e_) {
-			if (e_.operands.size() != 3uz) {
-				error("'sample' takes a texture, a sampler and coordinates.");
+		/* `fn(texture, sampler, ...)` -> `glsl(sampler2D(texture, sampler), ...)`; the leading texture + sampler pair is combined */
+		[[nodiscard]] Emitted textureCall(ref<const ir::Expr> e_, ref<const ir::BuiltinFunction> fn_) {
+			if (e_.operands.size() < 2uz) {
+				error("'" + e_.name + "' takes a texture and a sampler.");
 				return { "0", None };
 			}
 			const auto texture = expr(e_.operands[0]);
 			const auto sampler = expr(e_.operands[1]);
-			const auto uv = expr(e_.operands[2]);
 			if (not texture.type.has_value() || texture.type->kind != ir::TypeKind::eTexture) {
-				error("The first argument of 'sample' must be a texture.");
+				error("The first argument of '" + e_.name + "' must be a texture.");
 				return { "0", None };
 			}
 			const auto& tex = *texture.type;
 			const auto prefix = tex.scalar == ir::ScalarKind::eInt ? "i" : tex.scalar == ir::ScalarKind::eUInt ? "u" : "";
-			return {
-				"texture(" + String { prefix } + "sampler" + dimName(tex.dim) + "(" + texture.text + ", " + sampler.text + "), " + uv.text + ")",
-				vectorDesc(tex.scalar, 32uL, 4uL)
-			};
+			String text = String { fn_.glsl } + "(" + prefix + "sampler" + dimName(tex.dim) + "(" + texture.text + ", " + sampler.text + ")";
+			for (auto i = 2uz; i < e_.operands.size(); ++i) {
+				text += ", " + expr(e_.operands[i]).text;
+			}
+			return { text + ")", typeOf(e_.type) };
 		}
 	};
 }
