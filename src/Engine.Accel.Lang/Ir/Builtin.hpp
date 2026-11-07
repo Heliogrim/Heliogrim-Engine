@@ -17,6 +17,8 @@ namespace hg::engine::accel::lang::ir {
 		TypeKind kind;
 		ScalarKind scalar;
 		u32 n;
+		/* same value across all invocations of a workgroup/draw (uniform control analysis) */
+		bool uniform = false;
 	};
 
 	inline constexpr std::array<BuiltinVariable, 4> builtinVariables {

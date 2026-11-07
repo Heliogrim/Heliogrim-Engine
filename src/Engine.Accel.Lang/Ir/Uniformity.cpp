@@ -52,10 +52,7 @@ namespace {
 						const auto it = divergent.find(e.name);
 						return it != divergent.end() && not it->second;
 					}
-					if (e.constant.index < module.constants.size()) {
-							return true;
-						}
-						auto index = e.binding.index;
+					auto index = e.binding.index;
 					if (index == ~0uL) {
 						const auto it = std::ranges::find(module.bindings, e.name, &ir::BindingDecl::localName);
 						index = it == module.bindings.end() ? ~0uL : static_cast<u32>(it - module.bindings.begin());
@@ -69,12 +66,6 @@ namespace {
 				}
 				case ir::ExprKind::eBuiltin: {
 					direct = direct || (needsUniform && needsUniform(e.name));
-					/* the `&mut` out argument of a builtin is filled with a lane-dependent result */
-					for (auto i = 0uz; i < e.operands.size(); ++i) {
-						if (ir::builtinWritesArg(e.name, i)) {
-							assignTo(e.operands[i], true);
-						}
-					}
 					const auto* variable = ir::findBuiltinVariable(e.name);
 					return variable != nullptr && variable->uniform && uniform;
 				}
@@ -195,7 +186,6 @@ namespace {
 
 		void loop(ref<const ir::Stmt> s_, bool cond_) {
 			const auto outer = loopTaint;
-			const auto fnBefore = fnTaint;
 			const auto isFor = s_.kind == ir::StmtKind::eFor && s_.children.size() == 3uz;
 			if (isFor) {
 				stmt(s_.children[0], cond_);
@@ -212,8 +202,7 @@ namespace {
 				} else if (not s_.children.empty()) {
 					stmt(s_.children.front(), cond_ || lane);
 				}
-				/* a divergent return in the body leaves the loop for some lanes only: same as a divergent break */
-				if ((loopTaint && not taint) || (pass == 0 && fnTaint && not fnBefore)) {
+				if (loopTaint && not taint) {
 					taint = true;
 					continue;
 				}

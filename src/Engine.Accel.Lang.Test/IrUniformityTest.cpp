@@ -14,8 +14,8 @@ namespace AccelLang {
 			return None;
 		}
 
-		[[nodiscard]] Module parseOk(StringView source_, EntryKind entry_ = EntryKind::eFragment) {
-			auto res = parseModule("M", source_, entry_, ModuleResolver { noIncludes });
+		[[nodiscard]] Module parseOk(StringView source_) {
+			auto res = parseModule("M", source_, EntryKind::eFragment, ModuleResolver { noIncludes });
 			EXPECT_TRUE(res.has_value()) << (res.has_value() || res.error().empty() ? "" : res.error().front().message);
 			return res.has_value() ? std::move(res).value() : Module {};
 		}
@@ -36,28 +36,6 @@ namespace AccelLang {
 			"@input (mode = bind, id = \"p\", class = push) block p { f32 x; };\n"
 			"@input (mode = forward, id = \"in_x\") f32 in_x;\n"
 			"fn a() {}\nfn b() {}\nfn c() {}\n";
-	}
-
-	TEST(UniformityTest, ModuleAndSpecConstantsAreUniform) {
-		const auto m = parseOk(
-			String { head } + "const K: f32 = 1.0;\n@spec (id = \"s\") const S: f32 = 2.0;\n"
-			"fn main() {\n\tif (K > 0.0) { a(); }\n\tif (S > 0.0) { b(); }\n}\n"
-		);
-		const auto u = analyzeUniformity(m);
-		EXPECT_TRUE(uniformOfCall(m, u, "a"));
-		EXPECT_TRUE(uniformOfCall(m, u, "b"));
-	}
-
-	TEST(UniformityTest, SparseTexelIsLaneDependent) {
-		const auto m = parseOk(
-			String { head } +
-			"@input (mode = bind, id = \"t2\", class = texture) texture2d t2;\n"
-			"@input (mode = bind, id = \"smp\", class = sampler) sampler smp;\n"
-			"fn main() {\n\tlet texel = f32vec4(0.0);\n\tlet r = sample_sparse(t2, smp, f32vec2(0.5, 0.5), texel);\n"
-			"\tif (texel.x > 0.0) { a(); }\n}\n"
-		);
-		const auto u = analyzeUniformity(m);
-		EXPECT_FALSE(uniformOfCall(m, u, "a"));
 	}
 
 	TEST(UniformityTest, PushConditionIsUniform) {
@@ -120,15 +98,6 @@ namespace AccelLang {
 		EXPECT_FALSE(uniformOfCall(m, u, "b"));
 	}
 
-	TEST(UniformityTest, DivergentReturnInLoopTaintsEarlierBody) {
-		const auto m = parseOk(
-			String { head } +
-			"fn main() {\n\twhile (p.x > 0.0) {\n\t\ta();\n\t\tif (in_x > 0.0) { return; }\n\t}\n}\n"
-		);
-		const auto u = analyzeUniformity(m);
-		EXPECT_FALSE(uniformOfCall(m, u, "a"));
-	}
-
 	TEST(UniformityTest, UniformIfWrappingDivergentBreak) {
 		const auto m = parseOk(
 			String { head } +
@@ -149,7 +118,7 @@ namespace AccelLang {
 	}
 
 	TEST(UniformityTest, BuiltinUnderDivergentLocalDeclIsDetected) {
-		const auto m = parseOk(String { head } + "fn d() {\n\tif (in_x > 0.0) { let s = position; }\n}\nfn main() {\n\ta();\n}\n", EntryKind::eVertex);
+		const auto m = parseOk(String { head } + "fn d() {\n\tif (in_x > 0.0) { let s = position; }\n}\nfn main() {\n\ta();\n}\n");
 		const auto u = analyzeUniformity(m, [](StringView n_) { return n_ == "position"; });
 		auto count = 0uz;
 		for (const auto flag : u.requiresUniform) {
@@ -178,7 +147,7 @@ namespace AccelLang {
 	}
 
 	TEST(UniformityTest, RequiresUniformPropagatesOverCalls) {
-		const auto m = parseOk(String { head } + "fn d() { let s = position; }\nfn e() { d(); }\nfn main() {\n\ta();\n}\n", EntryKind::eVertex);
+		const auto m = parseOk(String { head } + "fn d() { let s = position; }\nfn e() { d(); }\nfn main() {\n\ta();\n}\n");
 		const auto none = analyzeUniformity(m);
 		for (const auto flag : none.requiresUniform) {
 			EXPECT_FALSE(flag);
