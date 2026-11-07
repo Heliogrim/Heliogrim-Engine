@@ -5,7 +5,6 @@
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
-#include <Engine.Filesystem/__fwd.hpp>
 #include <Engine.Reflect/Inherit/ClassMetaBase.hpp>
 #include <Engine.Reflect/Inherit/Concept.hpp>
 #include <Engine.Reflect/Inherit/InheritBase.hpp>
@@ -42,6 +41,8 @@ namespace hg::engine::resource {
 
 	public:
 		[[nodiscard]] inline bool shouldSwapBytes() const noexcept {
+			// Note: As the underlying data source could be any endian (we only assume native atm.)
+			// Note:	we need to handle this dynamically.
 			return std::endian::native != std::endian::little;
 		}
 		#pragma endregion
@@ -229,7 +230,6 @@ namespace hg::engine::resource {
 		}
 
 		STOP_SUPPRESS_WARNINGS
-
 		template <typename EnumType_> requires std::is_enum_v<EnumType_>
 		inline friend ref<this_type> operator>>(ref<this_type> self_, ref<EnumType_> value_) {
 
@@ -341,7 +341,6 @@ namespace hg::engine::resource {
 		}
 
 		STOP_SUPPRESS_WARNINGS
-
 		template <typename EnumType_> requires std::is_enum_v<EnumType_>
 		inline friend ref<this_type> operator<<(ref<this_type> self_, cref<EnumType_> value_) {
 
