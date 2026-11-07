@@ -117,6 +117,12 @@ namespace AccelLang {
 		EXPECT_TRUE(target.text.front().data.contains("x > 0.0")) << target.text.front().data;
 	}
 
+	TEST(TypecheckTest, IntegerLiteralsPickIntegerBuiltinOverload) {
+		const auto module = parseOk("fn main() {\n\tlet r = max(1, 2);\n\tlet f = max(1.0, 2.0);\n}\n");
+		EXPECT_EQ(typeNameOfLocal(module, "r"), "s32");
+		EXPECT_EQ(typeNameOfLocal(module, "f"), "f32");
+	}
+
 	TEST(TypecheckTest, MixedIntFloatIsDiagnostic) {
 		const auto message = firstMessage("fn F(a: s32, b: f32) -> f32 {\n\treturn a * b;\n}\n");
 		EXPECT_TRUE(message.contains("operands of '*' have types s32 and f32")) << message;

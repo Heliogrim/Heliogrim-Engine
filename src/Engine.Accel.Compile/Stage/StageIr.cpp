@@ -86,19 +86,22 @@ namespace {
 	}
 }
 
-std::expected<smr<const Resolved>, Diagnostics> hg::engine::accel::resolveStageIr(
-	ref<const Intermediate> stage_,
-	ref<const EffectProfile> profile_,
-	ref<const EffectSpecification> spec_,
-	ref<const StageFlagBits> flags_,
-	ref<VariantCache> cache_,
-	const bool exportStage_
-) {
+namespace {
+	struct StageInputs {
+		Vector<const Module*> modules;
+		Vector<String> outputs;
+		bool skippedText;
+		VariantKey key;
+	};
 
-	if (stage_.ir == nullptr) {
-		return std::unexpected(fail("stage has no ir"));
-	}
-
+	/* the input modules and the variant key of one stage; resolves nothing */
+	[[nodiscard]] StageInputs stageInputs(
+		ref<const Intermediate> stage_,
+		ref<const EffectProfile> profile_,
+		ref<const EffectSpecification> spec_,
+		ref<const StageFlagBits> flags_,
+		const bool exportStage_
+	) {
 	Vector<const Module*> modules {};
 	modules.reserve(profile_._modules.size() + 1uLL);
 	bool skippedText = false;
@@ -137,6 +140,24 @@ std::expected<smr<const Resolved>, Diagnostics> hg::engine::accel::resolveStageI
 		}
 		key.module = h.value;
 	}
+	return StageInputs { std::move(modules), std::move(outputs), skippedText, key };
+	}
+}
+
+std::expected<smr<const Resolved>, Diagnostics> hg::engine::accel::resolveStageIr(
+	ref<const Intermediate> stage_,
+	ref<const EffectProfile> profile_,
+	ref<const EffectSpecification> spec_,
+	ref<const StageFlagBits> flags_,
+	ref<VariantCache> cache_,
+	const bool exportStage_
+) {
+
+	if (stage_.ir == nullptr) {
+		return std::unexpected(fail("stage has no ir"));
+	}
+
+	auto [modules, outputs, skippedText, key] = stageInputs(stage_, profile_, spec_, flags_, exportStage_);
 
 	Diagnostics failure {};
 	auto resolved = cache_.getOrCreate(
@@ -235,45 +256,22 @@ std::expected<Vector<smr<StageDerivat>>, Diagnostics> hg::engine::accel::compose
 		return std::unexpected(fail("stage and flag counts differ"));
 	}
 
-	Vector<smr<const Resolved>> resolved {};
+	/* a pipeline hit needs only the stage keys: nothing is resolved or checked outside the build path */
 	Vector<VariantKey> key {};
-	resolved.reserve(stages_.size());
-	key.reserve(stages_.size());
+	key.reserve(stages_.size() + 1uLL);
 	for (size_t idx = 0uLL; idx < stages_.size(); ++idx) {
-		if (stages_[idx] == nullptr) {
+		if (stages_[idx] == nullptr || stages_[idx]->ir == nullptr) {
 			return std::unexpected(fail("stage has no ir"));
 		}
 		/* target symbols are the effect's exports: only the effect's last stage is sliced to them */
-		auto stage = resolveStageIr(
-			*stages_[idx], profile_, spec_, flags_[idx], cache_, exportLast_ && idx + 1uLL == stages_.size()
+		key.emplace_back(
+			stageInputs(*stages_[idx], profile_, spec_, flags_[idx], exportLast_ && idx + 1uLL == stages_.size()).key
 		);
-		if (not stage.has_value()) {
-			return std::unexpected(std::move(stage).error());
-		}
-		key.emplace_back((*stage)->key);
-		resolved.emplace_back(std::move(stage).value());
-	}
-
-	/* checked per run of directly adjacent stages; a legacy text stage between two ir stages breaks the run */
-	{
-		Vector<std::pair<EntryKind, Vector<InterfaceEntry>>> chain {};
-		for (size_t idx = 0uLL; idx <= resolved.size(); ++idx) {
-			if (idx == resolved.size() || (idx < follows_.size() && follows_[idx] == 0u)) {
-				auto chained = checkStageChain(chain);
-				if (hasError(chained)) {
-					return std::unexpected(std::move(chained));
-				}
-				chain.clear();
-			}
-			if (idx < resolved.size()) {
-				chain.emplace_back(stages_[idx]->ir->entry, resolved[idx]->interfaceEntries);
-			}
-		}
 	}
 
 	/* the layout depends on follows_: append a sentinel entry carrying the follow flags (shortcut: 64 stages, never reached) */
 	u64 followMask = 0uLL;
-	for (size_t idx = 0uLL; idx < resolved.size() && idx < 64uLL; ++idx) {
+	for (size_t idx = 0uLL; idx < stages_.size() && idx < 64uLL; ++idx) {
 		followMask |= (idx < follows_.size() && follows_[idx] == 0u) ? 0uLL : (1uLL << idx);
 	}
 	key.push_back(VariantKey { .module = followMask, .toggles = ~0uLL, .outputs = ~0uLL });
@@ -282,6 +280,37 @@ std::expected<Vector<smr<StageDerivat>>, Diagnostics> hg::engine::accel::compose
 	auto pipeline = layouts_.getOrCreate(
 		key,
 		[&]() -> smr<const ResolvedPipeline> {
+			Vector<smr<const Resolved>> resolved {};
+			resolved.reserve(stages_.size());
+			for (size_t idx = 0uLL; idx < stages_.size(); ++idx) {
+				auto stage = resolveStageIr(
+					*stages_[idx], profile_, spec_, flags_[idx], cache_, exportLast_ && idx + 1uLL == stages_.size()
+				);
+				if (not stage.has_value()) {
+					failure = std::move(stage).error();
+					return {};
+				}
+				resolved.emplace_back(std::move(stage).value());
+			}
+
+			/* checked per run of directly adjacent stages; a legacy text stage between two ir stages breaks the run */
+			{
+				Vector<std::pair<EntryKind, Vector<InterfaceEntry>>> chain {};
+				for (size_t idx = 0uLL; idx <= resolved.size(); ++idx) {
+					if (idx == resolved.size() || (idx < follows_.size() && follows_[idx] == 0u)) {
+						auto chained = checkStageChain(chain);
+						if (hasError(chained)) {
+							failure = std::move(chained);
+							return {};
+						}
+						chain.clear();
+					}
+					if (idx < resolved.size()) {
+						chain.emplace_back(stages_[idx]->ir->entry, resolved[idx]->interfaceEntries);
+					}
+				}
+			}
+
 			Vector<Vector<InterfaceEntry>> entries {};
 			Vector<decltype(Module::types)> types {};
 			Vector<decltype(Module::constants)> constants {};

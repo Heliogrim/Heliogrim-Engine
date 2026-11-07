@@ -120,6 +120,15 @@ namespace AccelLang {
 		EXPECT_FALSE(uniformOfCall(m, u, "b"));
 	}
 
+	TEST(UniformityTest, DivergentReturnInLoopTaintsEarlierBody) {
+		const auto m = parseOk(
+			String { head } +
+			"fn main() {\n\twhile (p.x > 0.0) {\n\t\ta();\n\t\tif (in_x > 0.0) { return; }\n\t}\n}\n"
+		);
+		const auto u = analyzeUniformity(m);
+		EXPECT_FALSE(uniformOfCall(m, u, "a"));
+	}
+
 	TEST(UniformityTest, UniformIfWrappingDivergentBreak) {
 		const auto m = parseOk(
 			String { head } +

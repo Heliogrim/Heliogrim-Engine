@@ -213,6 +213,24 @@ namespace AccelLang {
 		EXPECT_TRUE(mentions(diags[0], "toggle 'Shading' defaults to 'Forward' in 'A' and 'Deferred' in 'B'")) << diags[0].message;
 	}
 
+	TEST(MergeTest, EntryAttributesTakeTheNonDefaultValue) {
+		const auto a = parse("A", "@compute (local_size = [8, 4, 2])\nfn main() {}\n", EntryKind::eCompute);
+		const auto b = parse("B", "fn helper() {}\n", EntryKind::eCompute);
+		const auto merged = mergeOk({ &a, &b });
+		EXPECT_EQ(merged.attributes.localSize, (std::array<u32, 3> { 8uL, 4uL, 2uL }));
+	}
+
+	TEST(MergeTest, EntryAttributeConflictNamesBothModules) {
+		const auto a = parse("A", "@compute (local_size = [8, 4, 2])\nfn main() {}\n", EntryKind::eCompute);
+		const auto b = parse("B", "@compute (local_size = [16, 1, 1])\nfn main() {}\n", EntryKind::eCompute);
+		const auto diags = mergeFail({ &a, &b });
+		auto found = false;
+		for (const auto& d : diags) {
+			found = found || (mentions(d, "'A'") && mentions(d, "'B'") && mentions(d, "local_size"));
+		}
+		EXPECT_TRUE(found);
+	}
+
 	TEST(MergeTest, ForwardCallIntoOtherModuleIsRemapped) {
 		// P's arena comes first, so every ref of S must be shifted to be found again
 		const auto profile = parse(
