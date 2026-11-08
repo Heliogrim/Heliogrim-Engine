@@ -147,4 +147,61 @@ namespace AccelLang {
 			EXPECT_NE(e.kind, ExprKind::eBuiltin);
 		}
 	}
+
+	TEST(BuiltinTest, InverseAndTransposeKeepMatrixShape) {
+		auto res = parseModule(
+			"M",
+			"fn main() {\n\tlet m = f32mat4(1.0);\n\tlet i = inverse(m);\n\tlet t = transpose(f32mat3(m));\n\tlet c = inverse(m)[3].xyz;\n}\n",
+			EntryKind::eFragment,
+			ModuleResolver { noIncludes }
+		);
+		ASSERT_TRUE(res.has_value()) << res.error().front().message;
+		for (const auto& stmt : res->stmts) {
+			if (stmt.kind != StmtKind::eDeclareLocal) {
+				continue;
+			}
+			if (stmt.name == "i") {
+				EXPECT_EQ(describeType(res->types, stmt.type), "f32mat4");
+			} else if (stmt.name == "t") {
+				EXPECT_EQ(describeType(res->types, stmt.type), "f32mat3");
+			} else if (stmt.name == "c") {
+				EXPECT_EQ(describeType(res->types, stmt.type), "f32vec3");
+			}
+		}
+	}
+
+	TEST(BuiltinTest, InverseAndTransposeOfNonMatrixIsDiagnostic) {
+		const auto inverseMessage = errorOf("fn main() {\n\tlet v = inverse(f32vec3(1.0));\n}\n", EntryKind::eFragment);
+		EXPECT_TRUE(inverseMessage.contains("'inverse'")) << inverseMessage;
+		const auto transposeMessage = errorOf("fn main() {\n\tlet v = transpose(1.0);\n}\n", EntryKind::eFragment);
+		EXPECT_TRUE(transposeMessage.contains("'transpose'")) << transposeMessage;
+	}
+
+	TEST(BuiltinTest, VertexIndicesSelectFromConstArray) {
+		EXPECT_TRUE(
+			parses(
+				"const P: f32vec2[3] = f32vec2[3](f32vec2(-0.5, 0.5), f32vec2(0.5, 0.5), f32vec2(0.0, -0.5));\n"
+				"fn main() {\n"
+				"\tlet c = f32vec2(0.0);\n"
+				"\tif (vertex_index == 0) {\n\t\tc = P[vertex_index];\n\t}\n"
+				"\tposition = f32vec4(c, f32(instance_index), 1.0);\n"
+				"}\n",
+				EntryKind::eVertex
+			)
+		);
+	}
+
+	TEST(BuiltinTest, WritingVertexIndexIsDiagnostic) {
+		const auto message = errorOf("fn main() {\n\tvertex_index = 1;\n}\n", EntryKind::eVertex);
+		EXPECT_TRUE(message.contains("cannot assign to read-only builtin 'vertex_index'")) << message;
+	}
+
+	TEST(BuiltinTest, CubeSampleNeedsDirection) {
+		const String bindings =
+			"@input (mode = bind, id = \"tc\", class = texture) texturecube tc;\n"
+			"@input (mode = bind, id = \"smp\", class = sampler) sampler smp;\n";
+		EXPECT_TRUE(parses(bindings + "fn main() {\n\tlet c = sample(tc, smp, f32vec3(0.0, 0.0, 1.0));\n}\n"));
+		const auto message = errorOf(bindings + "fn main() {\n\tlet c = sample(tc, smp, f32vec2(0.0));\n}\n", EntryKind::eFragment);
+		EXPECT_TRUE(message.contains("'sample'")) << message;
+	}
 }
