@@ -120,15 +120,37 @@ namespace SchedulerModule {
 		structuredRuntimeTest(
 			[](nmpt<engine::Scheduler> s_) {
 				engine::scheduler::Event event {};
+				std::atomic_flag setOnce {};
+				std::atomic_bool timedOut { false };
+
+				// Watchdog keeps the main-thread park from hanging the suite.
+				std::thread watchdog {
+					[&] {
+						for (u32 i = 0; i < 2000 && not event.isSet(); ++i) {
+							thread::self::sleepFor(1);
+						}
+						if (not event.isSet()) {
+							timedOut = true;
+							if (not setOnce.test_and_set()) {
+								event.set();
+							}
+						}
+					}
+				};
+
 				s_->exec(
 					task::make_task(
 						[&] {
 							thread::self::sleepFor(5);
-							event.set();
+							if (not setOnce.test_and_set()) {
+								event.set();
+							}
 						}
 					)
 				);
 				event.wait();
+				watchdog.join();
+				ASSERT_FALSE(timedOut.load());
 				EXPECT_TRUE(event.isSet());
 			}
 		);
