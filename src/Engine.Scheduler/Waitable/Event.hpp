@@ -8,6 +8,8 @@
 namespace hg::engine::scheduler {
 	/**
 	 * One-shot event; waiters park (fiber or thread) until set() is called once.
+	 * Destroying an Event is safe once isSet() returned true or wait() returned;
+	 * the setter's _state store is its last access to the object.
 	 */
 	class Event {
 	public:
@@ -20,5 +22,7 @@ namespace hg::engine::scheduler {
 	private:
 		std::atomic<u32> _state { 0 };
 		ParkQueue _waiters;
+		// Read and written only under the _waiters lock.
+		bool _closed = false;
 	};
 }

@@ -13,9 +13,16 @@ bool Event::isSet() const noexcept {
 
 void Event::set() noexcept {
 	::hg::assertd(_state.load(std::memory_order::relaxed) == 0);
+
+	ptr<ParkNode> head = _waiters.locked(
+		[&](auto locked_) {
+			_closed = true;
+			return locked_.takeAll();
+		}
+	);
+	// Last access to *this; a waiter may destroy the event right after.
 	_state.store(1, std::memory_order::release);
 
-	auto* head = _waiters.takeAll();
 	while (head != nullptr) {
 		// A woken fiber may re-park at once and overwrite `next`.
 		auto* const next = head->next;
@@ -34,7 +41,7 @@ void Event::wait() {
 
 	const bool pushed = _waiters.locked(
 		[&](auto locked_) {
-			if (_state.load(std::memory_order::acquire) == 1) {
+			if (_closed) {
 				return false;
 			}
 			locked_.push(node);
@@ -45,6 +52,9 @@ void Event::wait() {
 	if (pushed) {
 		park(node);
 	} else {
+		while (_state.load(std::memory_order::acquire) != 1) {
+			// the setter's store is imminent
+		}
 		node.state.store(ParkNode::State::eIdle, std::memory_order::relaxed);
 	}
 }
