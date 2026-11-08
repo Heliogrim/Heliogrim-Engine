@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
-#include <Engine.Async/Await/Future.hpp>
 #include <Engine.Resource/File.hpp>
 #include <Engine.Resource/Importer/Importer.hpp>
 
