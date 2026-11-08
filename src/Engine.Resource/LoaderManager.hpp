@@ -2,7 +2,6 @@
 
 #include <Engine.Assets.Type/Asset.hpp>
 #include <Engine.Assets/AssetGuid.hpp>
-#include <Engine.Async/Await/Future.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/StableUnorderedMap.hpp>
@@ -119,10 +118,10 @@ namespace hg::engine::resource {
 		}
 
 	public:
-		// TODO: concurrent::future<ptr<res::Resource>> `preload|load|loadImmediately` (typeId_, guid_, ...args_?)
+		// TODO: Future<ptr<res::Resource>> `preload|load|loadImmediately` (typeId_, guid_, ...args_?)
 
 		// template<typename ...Args_>
-		// concurrent::future<ptr<res::Resource>> load(cref<type_id> typeId_, cref<asset_guid> guid_, mref<Args_> ...args_);
+		// Future<ptr<res::Resource>> load(cref<type_id> typeId_, cref<asset_guid> guid_, mref<Args_> ...args_);
 
 		/**
 		 * Preloads the requested resource underlying of given asset
