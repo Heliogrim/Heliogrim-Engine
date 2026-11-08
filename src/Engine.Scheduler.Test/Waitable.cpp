@@ -5,6 +5,10 @@
 #include <atomic>
 #include <thread>
 #include <vector>
+#include <Engine.Scheduler/Scheduler.hpp>
+#include <Engine.Scheduler/Task/Task.hpp>
+#include <Engine.Scheduler/Thread/Thread.hpp>
+#include <Engine.Scheduler/Waitable/Event.hpp>
 #include <Engine.Scheduler/Waitable/ParkQueue.hpp>
 
 using namespace hg::engine::scheduler;
@@ -102,5 +106,67 @@ namespace SchedulerModule {
 			EXPECT_EQ(node.visited, 1u);
 		}
 		EXPECT_TRUE(queue.empty());
+	}
+
+	TEST(Event, WaitAfterSetReturnsInline) {
+		engine::scheduler::Event event {};
+		EXPECT_FALSE(event.isSet());
+		event.set();
+		event.wait();
+		EXPECT_TRUE(event.isSet());
+	}
+
+	TEST(Event, ThreadWaitsForTask) {
+		structuredRuntimeTest(
+			[](nmpt<engine::Scheduler> s_) {
+				engine::scheduler::Event event {};
+				s_->exec(
+					task::make_task(
+						[&] {
+							thread::self::sleepFor(5);
+							event.set();
+						}
+					)
+				);
+				event.wait();
+				EXPECT_TRUE(event.isSet());
+			}
+		);
+	}
+
+	TEST(Event, ThousandParkedTasksKeepWorkersFree) {
+		structuredRuntimeTest(
+			2u,
+			[](nmpt<engine::Scheduler> s_) {
+				constexpr u32 count = 1000;
+				engine::scheduler::Event event {};
+				std::atomic<u32> completed { 0 };
+				std::atomic_bool probe { false };
+
+				for (u32 i = 0; i < count; ++i) {
+					s_->exec(
+						task::make_task(
+							[&] {
+								event.wait();
+								++completed;
+							}
+						)
+					);
+				}
+				s_->exec(task::make_task([&] { probe = true; }));
+
+				for (u32 i = 0; i < 500 && not probe.load(); ++i) {
+					thread::self::sleepFor(1);
+				}
+				EXPECT_TRUE(probe.load());
+				EXPECT_EQ(completed.load(), 0u);
+
+				event.set();
+				for (u32 i = 0; i < 5000 && completed.load() != count; ++i) {
+					thread::self::sleepFor(1);
+				}
+				EXPECT_EQ(completed.load(), count);
+			}
+		);
 	}
 }
