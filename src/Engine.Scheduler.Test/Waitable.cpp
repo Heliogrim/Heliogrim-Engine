@@ -9,6 +9,7 @@
 #include <Engine.Scheduler/Task/Task.hpp>
 #include <Engine.Scheduler/Thread/Thread.hpp>
 #include <Engine.Scheduler/Waitable/Event.hpp>
+#include <Engine.Scheduler/Waitable/JoinCounter.hpp>
 #include <Engine.Scheduler/Waitable/ParkQueue.hpp>
 
 using namespace hg::engine::scheduler;
@@ -190,5 +191,73 @@ namespace SchedulerModule {
 				EXPECT_EQ(completed.load(), count);
 			}
 		);
+	}
+
+	TEST(JoinCounter, CompletesAfterAllChildren) {
+		structuredRuntimeTest(
+			[](nmpt<engine::Scheduler> s_) {
+				engine::scheduler::JoinCounter counter { 3 };
+				std::atomic<u32> finished { 0 };
+				std::atomic_bool timedOut { false };
+
+				// Watchdog keeps the main-thread park from hanging the suite.
+				std::thread watchdog {
+					[&] {
+						for (u32 i = 0; i < 2000 && not counter.isDone(); ++i) {
+							thread::self::sleepFor(1);
+						}
+						if (not counter.isDone()) {
+							timedOut = true;
+							for (u32 missing = 3 - finished.load(); missing > 0; --missing) {
+								counter.done();
+							}
+						}
+					}
+				};
+
+				for (u32 i = 0; i < 3; ++i) {
+					s_->exec(
+						task::make_task(
+							[&] {
+								++finished;
+								counter.done();
+							}
+						)
+					);
+				}
+				counter.wait();
+				watchdog.join();
+				ASSERT_FALSE(timedOut.load());
+				EXPECT_TRUE(counter.isDone());
+			}
+		);
+	}
+
+	TEST(JoinCounter, GuardPreventsEarlyCompletion) {
+		engine::scheduler::JoinCounter counter { 0 };
+		counter.add(1);
+
+		std::thread child { [&] { counter.done(); } };
+		child.join();
+		EXPECT_FALSE(counter.isDone());
+
+		counter.wait();
+		EXPECT_TRUE(counter.isDone());
+	}
+
+	TEST(JoinCounter, ChildFinishingBeforeNextAddDoesNotComplete) {
+		engine::scheduler::JoinCounter counter { 1 };
+
+		std::thread first { [&] { counter.done(); } };
+		first.join();
+		EXPECT_FALSE(counter.isDone());
+
+		counter.add(1);
+		std::thread second { [&] { counter.done(); } };
+		second.join();
+		EXPECT_FALSE(counter.isDone());
+
+		counter.wait();
+		EXPECT_TRUE(counter.isDone());
 	}
 }
