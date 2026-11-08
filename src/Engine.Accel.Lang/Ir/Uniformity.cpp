@@ -5,8 +5,8 @@
 #include "Analysis.hpp"
 #include "Builtin.hpp"
 
-using namespace hg;
 using namespace hg::engine::accel::lang;
+using namespace hg;
 
 namespace {
 	struct FunctionWalker {

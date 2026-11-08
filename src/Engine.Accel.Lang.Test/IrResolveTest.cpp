@@ -13,8 +13,8 @@
 
 #include "IrSame.hpp"
 
-using namespace hg;
 using namespace hg::engine::accel::lang::ir;
+using namespace hg;
 
 namespace AccelLang {
 	namespace {

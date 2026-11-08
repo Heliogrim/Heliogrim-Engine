@@ -6,8 +6,8 @@
 
 /* Structural equality of whole modules (Module has no operator==); refs compare by index */
 namespace AccelLang {
-	using namespace hg;
 	using namespace hg::engine::accel::lang::ir;
+	using namespace hg;
 
 	[[nodiscard]] inline bool same(ref<const Condition> a_, ref<const Condition> b_) {
 		if (a_.kind != b_.kind || a_.toggle != b_.toggle || a_.value != b_.value || a_.children.size() != b_.children.size()) {

@@ -83,8 +83,8 @@ namespace AccelCompile {
 		hg::ref<const hg::engine::accel::lang::ir::ToggleSet> toggles_ = {},
 		IncludeTable includes_ = {}
 	) {
-		using namespace hg::engine::accel;
 		using namespace hg::engine::accel::lang::ir;
+		using namespace hg::engine::accel;
 
 		const auto resolver = [includes_](hg::StringView name_) -> hg::Opt<hg::String> {
 			const auto it = std::ranges::find(includes_, name_, &std::pair<hg::StringView, hg::StringView>::first);

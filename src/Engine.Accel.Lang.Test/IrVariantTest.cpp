@@ -6,9 +6,9 @@
 #include <Engine.Accel.Lang/Rep/Annotation.hpp>
 #include <Engine.Common/Make.hpp>
 
-using namespace hg;
-using namespace hg::engine::accel::lang;
 using namespace hg::engine::accel::lang::ir;
+using namespace hg::engine::accel::lang;
+using namespace hg;
 
 namespace AccelLang {
 	namespace {

@@ -7,8 +7,8 @@
 #include <Engine.Accel.Lang/Rep/Symbol.hpp>
 #include <Engine.Accel.Lang/Emitter/GlslEmitter.hpp>
 
-using namespace hg;
 using namespace hg::engine::accel::lang;
+using namespace hg;
 
 namespace AccelLang {
 	namespace {
