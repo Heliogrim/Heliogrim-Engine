@@ -243,7 +243,7 @@ namespace HeliogrimApi {
 			EXPECT_TRUE(components.hasRecordSlot("body/wheels/2/hub"));
 			EXPECT_TRUE(components.hasRecordSlot("body/camera"));
 
-			auto created = CreateActor(&tank, SerializedActor { root }).get();
+			auto created = hg::await(CreateActor(&tank, SerializedActor { root })).value();
 			ASSERT_NE(created.get(), nullptr);
 
 			const auto slot = reinterpret_cast<ptr<std::byte>>(created.get()) - tank.desc().actorOffset;
@@ -320,7 +320,7 @@ namespace HeliogrimApi {
 		archive.seek(0); {
 			auto structured = StructuredArchive { archive };
 			const auto root = structured.getRootSlot().asStruct();
-			const auto created = CreateActor(&TestTank::actorClass(), SerializedActor { root }).get();
+			const auto created = hg::await(CreateActor(&TestTank::actorClass(), SerializedActor { root })).value();
 			EXPECT_EQ(created.get(), nullptr);
 		}
 
@@ -328,7 +328,7 @@ namespace HeliogrimApi {
 			// Rejection returns before the universe is touched, so an empty one suffices.
 			auto structured = StructuredArchive { archive };
 			const auto root = structured.getRootSlot().asStruct();
-			const auto spawned = SpawnActor(&TestTank::actorClass(), SerializedActor { root }, Universe {}).get();
+			const auto spawned = hg::await(SpawnActor(&TestTank::actorClass(), SerializedActor { root }, Universe {})).value();
 			EXPECT_FALSE(spawned.has_value());
 		}
 	}
@@ -350,7 +350,7 @@ namespace HeliogrimApi {
 		const auto root = structured.getRootSlot().asStruct();
 		EXPECT_TRUE(root.getRecordSlot(Symbols::Components).asStruct().hasRecordSlot("geometry"));
 
-		auto created = CreateActor(&cls, SerializedActor { root }).get();
+		auto created = hg::await(CreateActor(&cls, SerializedActor { root })).value();
 		ASSERT_NE(created.get(), nullptr);
 		EXPECT_EQ(created->guid(), actor(cls, source.slot(0u)).guid());
 		EXPECT_EQ(created->label().text, "geo-1");
