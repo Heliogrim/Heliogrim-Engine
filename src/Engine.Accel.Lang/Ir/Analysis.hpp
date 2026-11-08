@@ -20,10 +20,10 @@ namespace hg::engine::accel::lang::ir {
 	/**
 	 * Both arms of a `when` count; names resolve by index, else by name (function name / BindingDecl::localName).
 	 */
-	[[nodiscard]] Usage usageOf(ref<const Module> module_, u32 functionIndex_);
+	[[nodiscard]] Usage usageOf(ref<const Module> mod_, u32 functionIndex_);
 
 	/**
 	 * Transitive closure over calls including the roots, ascending index order.
 	 */
-	[[nodiscard]] Vector<u32> reachableFunctions(ref<const Module> module_, std::span<const u32> roots_);
+	[[nodiscard]] Vector<u32> reachableFunctions(ref<const Module> mod_, std::span<const u32> roots_);
 }

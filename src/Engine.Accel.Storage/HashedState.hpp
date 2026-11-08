@@ -83,8 +83,8 @@ namespace hg::engine::accel {
 		}
 
 		h.put(static_cast<u64>(value_._modules.size()));
-		for (const auto& module : value_._modules) {
-			h.put(module.contentHash());
+		for (const auto& mod : value_._modules) {
+			h.put(mod.contentHash());
 		}
 
 		h.put(static_cast<u64>(value_._toggles.size()));

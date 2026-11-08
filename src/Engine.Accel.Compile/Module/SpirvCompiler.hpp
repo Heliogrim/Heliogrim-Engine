@@ -31,7 +31,7 @@ namespace hg::engine::accel {
 
 	public:
 		[[nodiscard]] SpirvByteCode compile(
-			cref<ModuleSource> module_,
+			cref<ModuleSource> mod_,
 			cref<InlineAutoArray<lang::TextBlock>> source_
 		) const;
 	};

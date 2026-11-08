@@ -81,10 +81,10 @@ namespace {
 
 	class Writer {
 	public:
-		Writer(ref<const ir::Module> module_, ref<const ir::Layout> layout_) :
-			_module(module_),
+		Writer(ref<const ir::Module> mod_, ref<const ir::Layout> layout_) :
+			_mod(mod_),
 			_layout(layout_),
-			_structState(module_.types.size(), State::eNew) {}
+			_structState(mod_.types.size(), State::eNew) {}
 
 		[[nodiscard]] ir::Diagnostics run(ref<String> out_, ref<GlslRequirements> requirements_) {
 			bindings();
@@ -107,26 +107,26 @@ namespace {
 				out_ += "#extension " + extension + " : require\n";
 			}
 			out_ += "\nlayout(std430) buffer;\n";
-				if (_module.entry == ir::EntryKind::eCompute) {
-					const auto& size = _module.attributes.localSize;
+				if (_mod.entry == ir::EntryKind::eCompute) {
+					const auto& size = _mod.attributes.localSize;
 					out_ += "layout(local_size_x = " + std::to_string(size[0]) + ", local_size_y = " + std::to_string(size[1]) +
 						", local_size_z = " + std::to_string(size[2]) + ") in;\n";
 				}
-				if (_module.entry == ir::EntryKind::eGeometry) {
-					const auto& a = _module.attributes;
+				if (_mod.entry == ir::EntryKind::eGeometry) {
+					const auto& a = _mod.attributes;
 					out_ += "layout(" + String(primitiveName(a.geometryInput)) + ") in;\n";
 					out_ += "layout(" + String(primitiveName(a.geometryOutput)) + ", max_vertices = " + std::to_string(a.maxVertices) + ") out;\n";
 					if (a.invocations > 1uL) {
 						out_ += "layout(invocations = " + std::to_string(a.invocations) + ") in;\n";
 					}
 				}
-				if (_module.entry == ir::EntryKind::eTessCtrl) {
-						out_ += "layout(vertices = " + std::to_string(_module.attributes.outputVertices) + ") out;\n";
+				if (_mod.entry == ir::EntryKind::eTessCtrl) {
+						out_ += "layout(vertices = " + std::to_string(_mod.attributes.outputVertices) + ") out;\n";
 					}
-					if (_module.entry == ir::EntryKind::eTessEval) {
-						out_ += tessEvalLayout(_module.attributes);
+					if (_mod.entry == ir::EntryKind::eTessEval) {
+						out_ += tessEvalLayout(_mod.attributes);
 					}
-					if (_module.entry == ir::EntryKind::eFragment && _module.attributes.earlyFragmentTests) {
+					if (_mod.entry == ir::EntryKind::eFragment && _mod.attributes.earlyFragmentTests) {
 					out_ += "layout(early_fragment_tests) in;\n";
 				}
 				out_ += "\n" + _structs + _bindings + "\n" + _constants + _functions;
@@ -151,7 +151,7 @@ namespace {
 			}
 		};
 
-		ref<const ir::Module> _module;
+		ref<const ir::Module> _mod;
 		ref<const ir::Layout> _layout;
 		ir::Diagnostics _diags;
 
@@ -182,7 +182,7 @@ namespace {
 		}
 
 		[[nodiscard]] const ir::TypeDesc* typeAt(ir::TypeRef ref_) const {
-			return ref_.index < _module.types.size() ? &_module.types[ref_.index] : nullptr;
+			return ref_.index < _mod.types.size() ? &_mod.types[ref_.index] : nullptr;
 		}
 
 		[[nodiscard]] Opt<ir::TypeDesc> typeOf(ir::TypeRef ref_) const {
@@ -357,7 +357,7 @@ namespace {
 			if (state == State::eDone) {
 				return;
 			}
-			const auto& desc = _module.types[ref_.index];
+			const auto& desc = _mod.types[ref_.index];
 			if (desc.kind == ir::TypeKind::eArray) {
 				state = State::eOpen;
 				use(desc.element, depth_ + 1uL);
@@ -440,7 +440,7 @@ namespace {
 		/* Bindings */
 
 		void bindings() {
-			const auto& decls = _module.bindings;
+			const auto& decls = _mod.bindings;
 			// interface order (computeInterface): inputs first, then id; forward inputs index `inputLocations` in it
 			Vector<u32> order(decls.size());
 			std::iota(order.begin(), order.end(), 0uL);
@@ -477,7 +477,7 @@ namespace {
 								"out " + *decl + (binding.arrayed ? "[]" : "") + ";\n";
 							storageUse(binding.type, 0uL, bit(GlslFeature::eStorageInputOutput16), binding.id);
 						}
-						outputLocation += ir::locationCount(_module.types, binding.type);
+						outputLocation += ir::locationCount(_mod.types, binding.type);
 					}
 					continue;
 				}
@@ -515,7 +515,7 @@ namespace {
 			const auto* desc = typeAt(binding_.type);
 			const auto integral = desc != nullptr && (desc->kind == ir::TypeKind::eScalar || desc->kind == ir::TypeKind::eVector) &&
 				desc->scalar != ir::ScalarKind::eFloat;
-			const auto flat = _module.entry == ir::EntryKind::eFragment && integral;
+			const auto flat = _mod.entry == ir::EntryKind::eFragment && integral;
 			_bindings += "layout(location = " + std::to_string(_layout.inputLocations[index_]) + ") " + (flat ? "flat " : "") +
 				(binding_.patch ? "patch " : "") + "in " + *decl + (binding_.arrayed ? "[]" : "") + ";\n";
 		}
@@ -590,7 +590,7 @@ namespace {
 
 		/* module constants in declaration order (an initializer only reads earlier ones); spec constants carry their constant_id */
 		void constants() {
-			for (const auto& constant : _module.constants) {
+			for (const auto& constant : _mod.constants) {
 				const auto decl = declareOrReport(constant.type, constant.name);
 				if (not decl.has_value()) {
 					continue;
@@ -655,7 +655,7 @@ namespace {
 			bool hasMain = false;
 			String prototypes {};
 			String definitions {};
-			for (const auto& fn : _module.functions) {
+			for (const auto& fn : _mod.functions) {
 				if (not fn.body.has_value()) {
 					continue;
 				}
@@ -694,7 +694,7 @@ namespace {
 		/* a statement as a braced scope */
 		void arm(ir::StmtRef ref_, u32 indent_, ref<String> out_) {
 			const String pad(indent_, '\t');
-			if (ref_.index < _module.stmts.size() && _module.stmts[ref_.index].kind == ir::StmtKind::eBlock) {
+			if (ref_.index < _mod.stmts.size() && _mod.stmts[ref_.index].kind == ir::StmtKind::eBlock) {
 				statement(ref_, indent_, out_);
 				return;
 			}
@@ -707,7 +707,7 @@ namespace {
 
 		void statement(ir::StmtRef ref_, u32 indent_, ref<String> out_) {
 			// absent (~0) or out of range: nothing
-			if (ref_.index >= _module.stmts.size()) {
+			if (ref_.index >= _mod.stmts.size()) {
 				return;
 			}
 			const Nest nest { _depth };
@@ -716,7 +716,7 @@ namespace {
 				return;
 			}
 
-			const auto& stmt = _module.stmts[ref_.index];
+			const auto& stmt = _mod.stmts[ref_.index];
 			const String pad(indent_, '\t');
 			switch (stmt.kind) {
 				case ir::StmtKind::eBlock: {
@@ -748,7 +748,7 @@ namespace {
 					break;
 				}
 				case ir::StmtKind::eReturn: {
-					out_ += pad + "return" + (stmt.lhs.index < _module.exprs.size() ? " " + expr(stmt.lhs).text : String {}) + ";\n";
+					out_ += pad + "return" + (stmt.lhs.index < _mod.exprs.size() ? " " + expr(stmt.lhs).text : String {}) + ";\n";
 					break;
 				}
 				case ir::StmtKind::eIf: {
@@ -772,8 +772,8 @@ namespace {
 						if (at_ < stmt.children.size()) {
 							const auto child = stmt.children[at_];
 							// an omitted init/step is an empty block; render nothing
-							const auto omitted = child.index < _module.stmts.size() && _module.stmts[child.index].kind == ir::StmtKind::eBlock
-								&& _module.stmts[child.index].children.empty();
+							const auto omitted = child.index < _mod.stmts.size() && _mod.stmts[child.index].kind == ir::StmtKind::eBlock
+								&& _mod.stmts[child.index].children.empty();
 							if (not omitted) {
 								statement(child, 0uL, text);
 							}
@@ -785,7 +785,7 @@ namespace {
 					};
 					const auto init = inline_(0uL);
 					const auto step = inline_(2uL);
-					const auto cond = stmt.lhs.index < _module.exprs.size() ? expr(stmt.lhs).text : String {};
+					const auto cond = stmt.lhs.index < _mod.exprs.size() ? expr(stmt.lhs).text : String {};
 					out_ += pad + "for (" + init + "; " + cond + "; " + step + ")\n";
 					arm(stmt.children.size() > 1uz ? stmt.children[1] : ir::StmtRef {}, indent_, out_);
 					_locals.resize(mark);
@@ -812,7 +812,7 @@ namespace {
 		}
 
 		void declareLocal(ref<const ir::Stmt> stmt_, ref<const String> pad_, ref<String> out_) {
-			const auto init = stmt_.lhs.index < _module.exprs.size() ? Opt<Emitted> { expr(stmt_.lhs) } : None;
+			const auto init = stmt_.lhs.index < _mod.exprs.size() ? Opt<Emitted> { expr(stmt_.lhs) } : None;
 			Opt<ir::TypeDesc> type = typeOf(stmt_.type);
 			Opt<String> decl = None;
 			if (type.has_value()) {
@@ -852,17 +852,17 @@ namespace {
 
 		/* a place for an alias: non-constant indices are evaluated once, at the alias point */
 		[[nodiscard]] Emitted place(ir::ExprRef ref_, ref<const String> pad_, ref<String> out_) {
-			if (ref_.index >= _module.exprs.size()) {
+			if (ref_.index >= _mod.exprs.size()) {
 				return expr(ref_);
 			}
-			const auto& e = _module.exprs[ref_.index];
+			const auto& e = _mod.exprs[ref_.index];
 			if (e.kind == ir::ExprKind::eField && not e.operands.empty()) {
 				return { place(e.operands[0], pad_, out_).text + "." + e.name, typeOf(e.type) };
 			}
 			if (e.kind == ir::ExprKind::eIndex && e.operands.size() == 2uz) {
 				const auto base = place(e.operands[0], pad_, out_);
 				auto index = expr(e.operands[1]).text;
-				if (e.operands[1].index < _module.exprs.size() && _module.exprs[e.operands[1].index].kind != ir::ExprKind::eLiteral) {
+				if (e.operands[1].index < _mod.exprs.size() && _mod.exprs[e.operands[1].index].kind != ir::ExprKind::eLiteral) {
 					const auto hoisted = "_hg_ref" + std::to_string(_refs++);
 					out_ += pad_ + "const uint " + hoisted + " = " + index + ";\n";
 					index = hoisted;
@@ -873,7 +873,7 @@ namespace {
 		}
 
 		[[nodiscard]] Emitted expr(ir::ExprRef ref_) {
-			if (ref_.index >= _module.exprs.size()) {
+			if (ref_.index >= _mod.exprs.size()) {
 				error("An expression is missing.");
 				return { "0", None };
 			}
@@ -883,7 +883,7 @@ namespace {
 				return { "0", None };
 			}
 
-			const auto& e = _module.exprs[ref_.index];
+			const auto& e = _mod.exprs[ref_.index];
 			if (const auto* type = typeAt(e.type); e.kind == ir::ExprKind::eRange || (type != nullptr && type->kind == ir::TypeKind::eRegion)) {
 				error("region not lowered", e.loc);
 				return { "0", None };
@@ -933,7 +933,7 @@ namespace {
 					return { e.name, None };
 				}
 				case ir::ExprKind::eCall: {
-					const auto* fn = e.function.index < _module.functions.size() ? &_module.functions[e.function.index] : nullptr;
+					const auto* fn = e.function.index < _mod.functions.size() ? &_mod.functions[e.function.index] : nullptr;
 					return { e.name + "(" + arguments() + ")", typeOf(e.type) };
 				}
 				case ir::ExprKind::eField: {
@@ -943,7 +943,7 @@ namespace {
 				case ir::ExprKind::eIndex: {
 					auto base = operand(0uz);
 					const auto index = operand(1uz);
-					const auto& baseExpr = _module.exprs[e.operands.front().index];
+					const auto& baseExpr = _mod.exprs[e.operands.front().index];
 					const auto* builtinVar = baseExpr.kind == ir::ExprKind::eBuiltin ? ir::findBuiltinVariable(baseExpr.name) : nullptr;
 					const String suffix = builtinVar != nullptr && builtinVar->arrayed ? ".gl_Position" : "";
 					return { base.text + "[" + index.text + "]" + suffix, typeOf(e.type) };
@@ -985,11 +985,11 @@ namespace {
 				}
 				return { e_.name, typeOf(e_.type).has_value() ? typeOf(e_.type) : localType(e_.name) };
 			}
-			if (e_.constant.index < _module.constants.size()) {
-				const auto& constant = _module.constants[e_.constant.index];
+			if (e_.constant.index < _mod.constants.size()) {
+				const auto& constant = _mod.constants[e_.constant.index];
 				return { constant.name, typeOf(constant.type) };
 			}
-			const auto& decls = _module.bindings;
+			const auto& decls = _mod.bindings;
 			const auto* binding = e_.binding.index < decls.size() ? &decls[e_.binding.index] : nullptr;
 			if (binding == nullptr) {
 				const auto it = std::ranges::find(decls, e_.name, &ir::BindingDecl::localName);
@@ -1032,10 +1032,10 @@ void lang::GlslEmitter::operator()(ref<const Representation>, Dialect dialect_, 
 	target_.dialect = dialect_;
 }
 
-lang::GlslEmitResult lang::GlslEmitter::emit(ref<const ir::Module> module_, ref<const ir::Layout> layout_, ref<Language> target_) const {
+lang::GlslEmitResult lang::GlslEmitter::emit(ref<const ir::Module> mod_, ref<const ir::Layout> layout_, ref<Language> target_) const {
 	String text {};
 	GlslEmitResult result {};
-	result.diagnostics = Writer { module_, layout_ }.run(text, result.requirements);
+	result.diagnostics = Writer { mod_, layout_ }.run(text, result.requirements);
 	if (not result.diagnostics.empty()) {
 		result.requirements = {};
 		return result;

@@ -25,7 +25,7 @@ namespace hg::engine::accel::lang::ir {
 	 * wins). An unknown toggle, a value outside the declared domain or a toggle set twice in one source is an error
 	 * naming the toggle and the source.
 	 */
-	[[nodiscard]] std::expected<ResolveResult, Diagnostics> fixToggles(ref<const Module> module_, ref<const ToggleSources> sources_);
+	[[nodiscard]] std::expected<ResolveResult, Diagnostics> fixToggles(ref<const Module> mod_, ref<const ToggleSources> sources_);
 
 	/**
 	 * Resolves the module for one toggle combination (validated like a pass source; unset toggles take their
@@ -38,5 +38,5 @@ namespace hg::engine::accel::lang::ir {
 	 * Calls re-resolve by name and binding uses by binding (a dropped binding's uses go to the first surviving
 	 * binding of the same local name). The arenas hold only the surviving code (see `compact`).
 	 */
-	[[nodiscard]] std::expected<Module, Diagnostics> resolveToggles(ref<const Module> module_, ref<const ToggleSet> toggles_);
+	[[nodiscard]] std::expected<Module, Diagnostics> resolveToggles(ref<const Module> mod_, ref<const ToggleSet> toggles_);
 }

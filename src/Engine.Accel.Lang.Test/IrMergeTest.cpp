@@ -42,9 +42,9 @@ namespace AccelLang {
 			return diag_.message.find(text_) != String::npos;
 		}
 
-		[[nodiscard]] u32 functionIndex(ref<const Module> module_, StringView name_) {
-			for (auto i = 0uz; i < module_.functions.size(); ++i) {
-				if (module_.functions[i].name == name_) {
+		[[nodiscard]] u32 functionIndex(ref<const Module> mod_, StringView name_) {
+			for (auto i = 0uz; i < mod_.functions.size(); ++i) {
+				if (mod_.functions[i].name == name_) {
 					return static_cast<u32>(i);
 				}
 			}
@@ -52,9 +52,9 @@ namespace AccelLang {
 			return ~0u;
 		}
 
-		[[nodiscard]] u32 bindingIndex(ref<const Module> module_, StringView id_) {
-			for (auto i = 0uz; i < module_.bindings.size(); ++i) {
-				if (module_.bindings[i].id == id_) {
+		[[nodiscard]] u32 bindingIndex(ref<const Module> mod_, StringView id_) {
+			for (auto i = 0uz; i < mod_.bindings.size(); ++i) {
+				if (mod_.bindings[i].id == id_) {
 					return static_cast<u32>(i);
 				}
 			}
@@ -438,8 +438,8 @@ namespace AccelLang {
 		invalid[6].types[0].kind = TypeKind::eArray;
 		invalid[6].types[0].element = TypeRef { 0u };
 
-		for (const auto& module : invalid) {
-			const auto diags = mergeFail({ &valid, &module });
+		for (const auto& mod : invalid) {
+			const auto diags = mergeFail({ &valid, &mod });
 			ASSERT_EQ(diags.size(), 1uz);
 			EXPECT_TRUE(mentions(diags[0], "module 'hand'")) << diags[0].message;
 			EXPECT_TRUE(mentions(diags[0], "out of range")) << diags[0].message;

@@ -30,11 +30,11 @@ namespace {
 		return it == set_.end() ? nullptr : &it->second;
 	}
 
-	void validate(ref<const ir::Module> module_, ref<const ir::ToggleSet> set_, StringView label_, ref<ir::Diagnostics> diags_) {
+	void validate(ref<const ir::Module> mod_, ref<const ir::ToggleSet> set_, StringView label_, ref<ir::Diagnostics> diags_) {
 		for (auto i = 0uz; i < set_.size(); ++i) {
 			const auto& [name, value] = set_[i];
-			const auto toggle = std::ranges::find(module_.toggles, name, &ir::Toggle::name);
-			if (toggle == module_.toggles.end()) {
+			const auto toggle = std::ranges::find(mod_.toggles, name, &ir::Toggle::name);
+			if (toggle == mod_.toggles.end()) {
 				diags_.emplace_back(error("unknown toggle " + quoted(name) + " in " + String(label_)));
 			} else if (std::ranges::find(toggle->values, value) == toggle->values.end()) {
 				diags_.emplace_back(error("toggle " + quoted(name) + " has no value " + quoted(value) + " (set by " + String(label_) + ")"));
@@ -47,14 +47,14 @@ namespace {
 	}
 
 	[[nodiscard]] std::expected<ir::ResolveResult, ir::Diagnostics> fix(
-		ref<const ir::Module> module_,
+		ref<const ir::Module> mod_,
 		ref<const ir::ToggleSources> sources_,
 		ref<const Labels> labels_
 	) {
 		ir::Diagnostics diags {};
-		validate(module_, sources_.pass, labels_[0], diags);
-		validate(module_, sources_.profile, labels_[1], diags);
-		validate(module_, sources_.material, labels_[2], diags);
+		validate(mod_, sources_.pass, labels_[0], diags);
+		validate(mod_, sources_.profile, labels_[1], diags);
+		validate(mod_, sources_.material, labels_[2], diags);
 		if (not diags.empty()) {
 			return std::unexpected(std::move(diags));
 		}
@@ -63,7 +63,7 @@ namespace {
 		const auto warn = [&](String message_) {
 			result.warnings.emplace_back(ir::Diagnostic { .severity = ir::Severity::eWarning, .message = std::move(message_) });
 		};
-		for (const auto& toggle : module_.toggles) {
+		for (const auto& toggle : mod_.toggles) {
 			const auto* pass = valueOf(sources_.pass, toggle.name);
 			const auto* profile = valueOf(sources_.profile, toggle.name);
 			const auto* material = valueOf(sources_.material, toggle.name);
@@ -126,10 +126,10 @@ namespace {
 	}
 
 	/* function names in first-appearance order with their declarations */
-	[[nodiscard]] Vector<std::pair<String, Vector<u32>>> byName(ref<const ir::Module> module_) {
+	[[nodiscard]] Vector<std::pair<String, Vector<u32>>> byName(ref<const ir::Module> mod_) {
 		Vector<std::pair<String, Vector<u32>>> names {};
-		for (auto i = 0uz; i < module_.functions.size(); ++i) {
-			const auto signature = ir::signatureOf(module_, module_.functions[i]);
+		for (auto i = 0uz; i < mod_.functions.size(); ++i) {
+			const auto signature = ir::signatureOf(mod_, mod_.functions[i]);
 			auto it = std::ranges::find(names, signature, &std::pair<String, Vector<u32>>::first);
 			if (it == names.end()) {
 				it = names.insert(names.end(), { signature, {} });
@@ -141,23 +141,23 @@ namespace {
 
 	/* shortcut: enumerates every combination of the toggles the arms name (exponential in that count, fine for a
 	 * handful), upgrade to a per-toggle cover check when shaders name many toggles in one function's variants. */
-	void exhaustiveness(ref<const ir::Module> module_, ref<const Vector<std::pair<String, Vector<u32>>>> names_, ref<ir::Diagnostics> diags_) {
+	void exhaustiveness(ref<const ir::Module> mod_, ref<const Vector<std::pair<String, Vector<u32>>>> names_, ref<ir::Diagnostics> diags_) {
 		for (const auto& [name, decls] : names_) {
 			const auto conditional = std::ranges::any_of(
 				decls,
-				[&](u32 i_) { return module_.functions[i_].when.kind != ir::ConditionKind::eTrue; }
+				[&](u32 i_) { return mod_.functions[i_].when.kind != ir::ConditionKind::eTrue; }
 			);
 			Vector<ir::Condition> arms {};
 			for (const auto i : decls) {
-				if (module_.functions[i].body.has_value()) {
-					arms.emplace_back(module_.functions[i].when);
+				if (mod_.functions[i].body.has_value()) {
+					arms.emplace_back(mod_.functions[i].when);
 				}
 			}
 			// no body at all is the merge's to report (`missing body`)
 			if (decls.size() < 2uz || not conditional || arms.empty()) {
 				continue;
 			}
-			const auto toggles = named(module_.toggles, arms);
+			const auto toggles = named(mod_.toggles, arms);
 			if (const auto missing = ir::findUncovered(toggles, arms); missing.has_value()) {
 				diags_.emplace_back(error("no body for " + quoted(name) + " at " + combination(toggles, *missing)));
 			}
@@ -165,30 +165,30 @@ namespace {
 	}
 }
 
-std::expected<ir::ResolveResult, ir::Diagnostics> ir::fixToggles(ref<const Module> module_, ref<const ToggleSources> sources_) {
-	return fix(module_, sources_, Labels { "pass", "profile", "material" });
+std::expected<ir::ResolveResult, ir::Diagnostics> ir::fixToggles(ref<const Module> mod_, ref<const ToggleSources> sources_) {
+	return fix(mod_, sources_, Labels { "pass", "profile", "material" });
 }
 
-std::expected<ir::Module, ir::Diagnostics> ir::resolveToggles(ref<const Module> module_, ref<const ToggleSet> toggles_) {
-	auto fixed = fix(module_, ToggleSources { .pass = toggles_, .profile = {}, .material = {} }, Labels { "toggle set", "", "" });
+std::expected<ir::Module, ir::Diagnostics> ir::resolveToggles(ref<const Module> mod_, ref<const ToggleSet> toggles_) {
+	auto fixed = fix(mod_, ToggleSources { .pass = toggles_, .profile = {}, .material = {} }, Labels { "toggle set", "", "" });
 	if (not fixed.has_value()) {
 		return std::unexpected(std::move(fixed).error());
 	}
 	const auto& set = fixed->toggles;
-	const auto at = combination(module_.toggles, set);
+	const auto at = combination(mod_.toggles, set);
 
 	Diagnostics diags {};
-	const auto names = byName(module_);
-	exhaustiveness(module_, names, diags);
+	const auto names = byName(mod_);
+	exhaustiveness(mod_, names, diags);
 
 	CompactPlan plan {};
 	for (const auto& [name, decls] : names) {
 		Vector<u32> active {};
 		Vector<u32> bodies {};
 		for (const auto i : decls) {
-			if (evaluate(module_.functions[i].when, set)) {
+			if (evaluate(mod_.functions[i].when, set)) {
 				active.emplace_back(i);
-				if (module_.functions[i].body.has_value()) {
+				if (mod_.functions[i].body.has_value()) {
 					bodies.emplace_back(i);
 				}
 			}
@@ -205,7 +205,7 @@ std::expected<ir::Module, ir::Diagnostics> ir::resolveToggles(ref<const Module> 
 	}
 	std::ranges::sort(plan.functions);
 
-	const auto& bindings = module_.bindings;
+	const auto& bindings = mod_.bindings;
 	for (auto i = 0uz; i < bindings.size(); ++i) {
 		if (evaluate(bindings[i].when, set)) {
 			plan.bindings.emplace_back(static_cast<u32>(i));
@@ -225,16 +225,16 @@ std::expected<ir::Module, ir::Diagnostics> ir::resolveToggles(ref<const Module> 
 	}
 
 	Vector<u32> constants {};
-	for (auto i = 0uz; i < module_.constants.size(); ++i) {
-		if (evaluate(module_.constants[i].when, set)) {
+	for (auto i = 0uz; i < mod_.constants.size(); ++i) {
+		if (evaluate(mod_.constants[i].when, set)) {
 			constants.emplace_back(static_cast<u32>(i));
 		}
 	}
 	plan.constants = std::move(constants);
 
-	plan.stmtAlias.resize(module_.stmts.size());
-	for (auto i = 0uz; i < module_.stmts.size(); ++i) {
-		const auto& s = module_.stmts[i];
+	plan.stmtAlias.resize(mod_.stmts.size());
+	for (auto i = 0uz; i < mod_.stmts.size(); ++i) {
+		const auto& s = mod_.stmts[i];
 		if (s.kind != StmtKind::eWhen) {
 			plan.stmtAlias[i] = static_cast<u32>(i);
 			continue;
@@ -244,7 +244,7 @@ std::expected<ir::Module, ir::Diagnostics> ir::resolveToggles(ref<const Module> 
 		plan.stmtAlias[i] = next == i ? unset : next;// a hand-built self arm would keep the `when`
 	}
 
-	auto [result, unresolved] = compact(module_, plan);
+	auto [result, unresolved] = compact(mod_, plan);
 	for (const auto& name : unresolved) {
 		diags.emplace_back(error("no body for " + quoted(name) + " at " + at));
 	}
