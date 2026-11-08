@@ -1,6 +1,6 @@
 #include "Session.hpp"
 
-#include <Engine.Async/Await/Promise.hpp>
+#include <Heliogrim/Async/Future.hpp>
 #include <Engine.Core/Session.hpp>
 
 #include "../Heliogrim.hpp"
@@ -27,14 +27,5 @@ Session hg::CreateSession() {
 }
 
 Future<bool> hg::Destroy(mref<Session> session_) {
-	concurrent::promise<bool> p {
-		[] {
-			return false;
-		}
-	};
-
-	auto f { p.get() };
-	p();
-
-	return f;
+	return Future<bool>::ready(false);
 }
