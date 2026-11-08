@@ -3,8 +3,8 @@
 #include <Engine.Accel.Lang/Ir/Analysis.hpp>
 #include <Engine.Accel.Lang/Ir/Module.hpp>
 
-using namespace hg;
 using namespace hg::engine::accel::lang::ir;
+using namespace hg;
 
 namespace AccelLang {
 	namespace {

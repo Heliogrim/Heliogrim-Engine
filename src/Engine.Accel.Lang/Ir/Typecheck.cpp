@@ -10,8 +10,8 @@
 #include "Place.hpp"
 #include "Uniformity.hpp"
 
-using namespace hg;
 using namespace hg::engine::accel::lang;
+using namespace hg;
 
 namespace {
 	constexpr u32 maxDepth = 256uL;

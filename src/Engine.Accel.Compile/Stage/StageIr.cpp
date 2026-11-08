@@ -17,10 +17,10 @@
 #include "../Profile/EffectProfile.hpp"
 #include "../Spec/EffectSpecification.hpp"
 
-using namespace hg;
-using namespace hg::engine::accel;
-using namespace hg::engine::accel::lang;
 using namespace hg::engine::accel::lang::ir;
+using namespace hg::engine::accel::lang;
+using namespace hg::engine::accel;
+using namespace hg;
 
 ModuleTargetStage hg::engine::accel::toModuleTargetStage(const EntryKind entry_) noexcept {
 	switch (entry_) {

@@ -9,9 +9,9 @@
 #include <Engine.Accel.Lang/Ir/Regions.hpp>
 #include <Engine.Accel.Lang/Ir/Variant.hpp>
 
-using namespace hg;
-using namespace hg::engine::accel::lang;
 using namespace hg::engine::accel::lang::ir;
+using namespace hg::engine::accel::lang;
+using namespace hg;
 
 namespace AccelLang {
 	namespace {

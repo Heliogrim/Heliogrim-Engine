@@ -3,8 +3,8 @@
 #include <array>
 #include <Engine.Accel.Lang/Ir/Contract.hpp>
 
-using namespace hg;
 using namespace hg::engine::accel::lang::ir;
+using namespace hg;
 
 namespace AccelLang {
 	namespace {
