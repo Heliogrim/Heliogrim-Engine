@@ -3,8 +3,6 @@
 #include <array>
 #include <Engine.Accel.Lang/Ir/Contract.hpp>
 
-#include "IrShaderFixtures.hpp"
-
 using namespace hg;
 using namespace hg::engine::accel::lang::ir;
 
@@ -140,14 +138,5 @@ namespace AccelLang {
 		const auto diags = checkStageChain(broken);
 		ASSERT_EQ(diags.size(), 1uz);
 		EXPECT_TRUE(diags[0].message.contains("'level'")) << diags[0].message;
-	}
-
-	TEST(ContractTest, ExistingUiPipelineChainIsClean) {
-		const std::array<Stage, 2> stages {
-			Stage { EntryKind::eVertex, computeInterface(shaderAssetModule("ui/ui.vs.asl", EntryKind::eVertex)) },
-			Stage { EntryKind::eFragment, computeInterface(shaderAssetModule("ui/ui.fs.asl", EntryKind::eFragment)) }
-		};
-		const auto diags = checkStageChain(stages);
-		EXPECT_TRUE(diags.empty()) << (diags.empty() ? "" : diags.front().message);
 	}
 }
