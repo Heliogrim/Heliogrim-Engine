@@ -2,7 +2,7 @@
 
 #include <Engine.Asserts/Todo.hpp>
 #include <Engine.Assets.Type/Universe/LevelAsset.hpp>
-#include <Engine.Async/Await/Promise.hpp>
+#include <Heliogrim/Async/Future.hpp>
 #include <Engine.Common/Discard.hpp>
 #include <Engine.Common/Move.hpp>
 #include <Engine.Core/Universe.hpp>
@@ -50,10 +50,7 @@ void Level::dropActor(mref<ptr<Actor>> actor_) {
 }
 
 Future<Level> hg::CreateLevel() noexcept {
-	auto p = concurrent::promise<Level> { [] { return Level { engine::core::make_root_like_level() }; } };
-	auto f = p.get();
-	p();
-	return f;
+	return Future<Level>::ready(Level { engine::core::make_root_like_level() });
 }
 
 Future<Level> LoadLevel(
