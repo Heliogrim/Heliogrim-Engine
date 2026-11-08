@@ -260,4 +260,14 @@ namespace SchedulerModule {
 		counter.wait();
 		EXPECT_TRUE(counter.isDone());
 	}
+
+	TEST(Event, SetAndDestroyRace) {
+		for (u32 i = 0; i < 5000; ++i) {
+			auto e = std::make_unique<engine::scheduler::Event>();
+			std::thread setter { [&] { e->set(); } };
+			while (not e->isSet()) {}
+			e.reset();
+			setter.join();
+		}
+	}
 }
