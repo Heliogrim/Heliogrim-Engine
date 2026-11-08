@@ -4,7 +4,7 @@
 #include <Engine.ACS/ActorModule.hpp>
 #include <Engine.ACS/Registry.hpp>
 #include <Engine.Asserts/Asserts.hpp>
-#include <Engine.Async/Await/Promise.hpp>
+#include <Heliogrim/Async/Future.hpp>
 #include <Engine.Common/Move.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Core/Engine.hpp>
@@ -271,17 +271,8 @@ VolatileActor<> hg::CreateActor() {
 }
 
 Future<VolatileActor<>> hg::CreateActor(async_t) {
-	concurrent::promise<VolatileActor<>> p {
-		[]() -> VolatileActor<> {
-			auto& registry = *engine::Engine::getEngine()->getActors()->getRegistry();
-			return VolatileActor<> { registry.createActor(ActorInitializer { registry }) };
-		}
-	};
-
-	auto f { p.get() };
-	p();
-
-	return Future { std::move(f) };
+	auto& registry = *engine::Engine::getEngine()->getActors()->getRegistry();
+	return Future<VolatileActor<>>::ready(VolatileActor<> { registry.createActor(ActorInitializer { registry }) });
 }
 
 VolatileActor<> hg::CreateActor(ptr<const MetaClass> class_) noexcept {
@@ -297,22 +288,13 @@ Future<VolatileActor<>> hg::CreateActor(
 	ptr<const ActorClass> class_,
 	cref<SerializedActor> serialized_
 ) noexcept {
-	concurrent::promise<VolatileActor<>> p {
-		[class_, &serialized_]() -> VolatileActor<> {
-			// Validate before allocating, so a rejected record never holds a slot.
-			if (not acceptsRecord(class_, serialized_.record)) {
-				return VolatileActor<> { ptr<Actor> { nullptr } };
-			}
-			auto actor = CreateActor(class_);
-			engine::serialization::access::Structure<Actor>::hydrate(serialized_.record, *actor);
-			return actor;
-		}
-	};
-
-	auto f { p.get() };
-	p();
-
-	return Future { ::hg::move(f) };
+	// Validate before allocating, so a rejected record never holds a slot.
+	if (not acceptsRecord(class_, serialized_.record)) {
+		return Future<VolatileActor<>>::ready(VolatileActor<> { ptr<Actor> { nullptr } });
+	}
+	auto actor = CreateActor(class_);
+	engine::serialization::access::Structure<Actor>::hydrate(serialized_.record, *actor);
+	return Future<VolatileActor<>>::ready(::hg::move(actor));
 }
 
 Future<Opt<ActorRef<>>> hg::CloneActorInto(cref<Actor> actor_, cref<Universe> universe_) noexcept {
@@ -320,16 +302,9 @@ Future<Opt<ActorRef<>>> hg::CloneActorInto(cref<Actor> actor_, cref<Universe> un
 }
 
 Future<Opt<ActorRef<>>> hg::SpawnActor(ptr<const ActorClass> class_, cref<Universe> universe_) noexcept {
-	concurrent::promise<Opt<ActorRef<>>> p {
-		[class_, &universe_]() -> Opt<ActorRef<>> {
-			return Some(spawnInto(class_, 1uLL, [](ref<Actor>, size_t) {}, universe_, None).front());
-		}
-	};
-
-	auto f { p.get() };
-	p();
-
-	return Future { ::hg::move(f) };
+	return Future<Opt<ActorRef<>>>::ready(
+		Some(spawnInto(class_, 1uLL, [](ref<Actor>, size_t) {}, universe_, None).front())
+	);
 }
 
 Future<Opt<ActorRef<>>> hg::SpawnActor(
@@ -337,21 +312,12 @@ Future<Opt<ActorRef<>>> hg::SpawnActor(
 	cref<SerializedActor> serialized_,
 	cref<Universe> universe_
 ) noexcept {
-	concurrent::promise<Opt<ActorRef<>>> p {
-		[class_, &serialized_, &universe_]() -> Opt<ActorRef<>> {
-			auto created = CreateActor(class_, serialized_).get();
-			if (created == nullptr) {
-				return None;
-			}
-			const auto level = universe_.unwrap()->getRootLevel();
-			return ActorRef<>::of(level->addActor(::hg::move(created)));
-		}
-	};
-
-	auto f { p.get() };
-	p();
-
-	return Future { ::hg::move(f) };
+	auto created = ::hg::await(CreateActor(class_, serialized_)).value();
+	if (created == nullptr) {
+		return Future<Opt<ActorRef<>>>::ready(None);
+	}
+	const auto level = universe_.unwrap()->getRootLevel();
+	return Future<Opt<ActorRef<>>>::ready(ActorRef<>::of(level->addActor(::hg::move(created))));
 }
 
 Future<Vector<ActorRef<>>> hg::SpawnActors(
@@ -361,16 +327,7 @@ Future<Vector<ActorRef<>>> hg::SpawnActors(
 	cref<Universe> universe_,
 	Opt<ref<engine::core::Level>> level_
 ) {
-	concurrent::promise<Vector<ActorRef<>>> p {
-		[=, &universe_]() -> Vector<ActorRef<>> {
-			return spawnInto(class_, count_, init_, universe_, level_);
-		}
-	};
-
-	auto f { p.get() };
-	p();
-
-	return Future { ::hg::move(f) };
+	return Future<Vector<ActorRef<>>>::ready(spawnInto(class_, count_, init_, universe_, level_));
 }
 
 bool hg::Destroy(mref<VolatileActor<>> actor_) noexcept {

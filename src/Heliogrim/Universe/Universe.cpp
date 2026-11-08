@@ -1,7 +1,7 @@
 #include "Universe.hpp"
 
 #include <Engine.Asserts/Todo.hpp>
-#include <Engine.Async/Await/Promise.hpp>
+#include <Heliogrim/Async/Future.hpp>
 #include <Engine.Common/Move.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Session.hpp>
@@ -86,29 +86,20 @@ void Universe::dropActor(mref<ptr<Actor>> actor_) {
 }
 
 Future<Universe> hg::CreateUniverse() noexcept {
-	auto prom = hg::concurrent::promise<Universe>(
-		[]() {
-			auto defaultScene = make_uptr<engine::scene::GameScene>();
-			defaultScene->prepare();
+	auto defaultScene = make_uptr<engine::scene::GameScene>();
+	defaultScene->prepare();
 
-			auto defaultLevel = engine::core::make_root_like_level();
+	auto defaultLevel = engine::core::make_root_like_level();
 
-			auto universe {
-				make_sptr<engine::core::Universe>(
-					std::move(defaultScene),
-					DenseSet<Arci<engine::core::Level>> { std::move(defaultLevel) }
-				)
-			};
-			engine::Engine::getEngine()->addUniverse(clone(universe));
+	auto universe {
+		make_sptr<engine::core::Universe>(
+			std::move(defaultScene),
+			DenseSet<Arci<engine::core::Level>> { std::move(defaultLevel) }
+		)
+	};
+	engine::Engine::getEngine()->addUniverse(clone(universe));
 
-			return Universe { std::move(universe) };
-		}
-	);
-
-	auto fut { prom.get() };
-	execute(::hg::move(prom));
-
-	return fut;
+	return Future<Universe>::ready(Universe { std::move(universe) });
 }
 
 Universe hg::GetUniverse(cref<Session> session_) noexcept {
@@ -128,25 +119,18 @@ Future<Universe> hg::GetUniverse(cref<AssetGuid> guid_) noexcept {
 }
 
 Future<bool> hg::Destroy(mref<Universe> universe_) {
-	auto prom {
-		hg::concurrent::promise<bool>(
-			[universe_ = std::move(universe_)]() {
-				auto universe = clone(universe_.unwrap());
+	return hg::async(
+		[universe_ = std::move(universe_)]() mutable {
+			auto universe = clone(universe_.unwrap());
 
-				// TODO: Remove universe from every context / session where it might be used currently
-				// TODO: Check whether we want to auto handle session's universe transition when engine propagated universe erase happens
+			// TODO: Remove universe from every context / session where it might be used currently
+			// TODO: Check whether we want to auto handle session's universe transition when engine propagated universe erase happens
 
-				engine::Engine::getEngine()->removeUniverse(std::move(universe));
+			engine::Engine::getEngine()->removeUniverse(std::move(universe));
 
-				return true;
-			}
-		)
-	};
-
-	auto fut { prom.get() };
-	execute(::hg::move(prom));
-
-	return fut;
+			return true;
+		}
+	);
 }
 
 void hg::SetUniverse(ref<Session> session_, cref<Universe> universe_) {
