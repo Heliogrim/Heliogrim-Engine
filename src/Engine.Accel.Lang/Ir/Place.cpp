@@ -22,7 +22,7 @@ namespace {
 	[[nodiscard]] bool stable(
 		ref<const ir::Module> module_,
 		ir::ExprRef ref_,
-		const std::function<bool(ref<const ir::Expr>)>& immutable_,
+		FnRef<bool(ref<const ir::Expr>)> immutable_,
 		size_t depth_ = 0uz
 	) {
 		const auto* e = at(module_, ref_);
@@ -65,7 +65,7 @@ namespace {
 		ref<const Vector<size_t>> hiIds_,
 		ir::ExprRef lo_,
 		ref<const Vector<size_t>> loIds_,
-		const std::function<bool(ref<const ir::Expr>)>& immutable_
+		FnRef<bool(ref<const ir::Expr>)> immutable_
 	) {
 		return sameBound(module_, hi_, hiIds_, lo_, loIds_) && stable(module_, hi_, immutable_);
 	}
@@ -74,7 +74,7 @@ namespace {
 		ref<const ir::Module> module_,
 		ref<const ir::PlaceStep> a_,
 		ref<const ir::PlaceStep> b_,
-		const std::function<bool(ref<const ir::Expr>)>& immutable_
+		FnRef<bool(ref<const ir::Expr>)> immutable_
 	) {
 		using Kind = ir::PlaceStep::Kind;
 		if (a_.kind == Kind::eField && b_.kind == Kind::eField) {
@@ -214,7 +214,7 @@ bool ir::disjoint(
 	ref<const Module> module_,
 	ref<const PlacePath> a_,
 	ref<const PlacePath> b_,
-	const std::function<bool(ref<const Expr>)>& immutable_
+	FnRef<bool(ref<const Expr>)> immutable_
 ) {
 	if (a_.root != b_.root || a_.rootScope != b_.rootScope) {
 		return true;

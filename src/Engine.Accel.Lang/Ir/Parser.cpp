@@ -256,10 +256,7 @@ namespace hg::engine::accel::lang::ir::detail {
 			return;
 		}
 
-		Opt<String> source = None;
-		if (_shared.resolver) {
-			source = _shared.resolver(name);
-		}
+		const Opt<String> source = _shared.resolver(name);
 		if (not source.has_value()) {
 			return error(target, "Unknown include '" + name + "'.");
 		}
@@ -1274,7 +1271,7 @@ namespace hg::engine::accel::lang::ir::detail {
 		StringView name_,
 		StringView source_,
 		ir::EntryKind entry_,
-		ref<const ir::ModuleResolver> includes_
+		ir::ModuleResolver includes_
 	) {
 		Shared shared { includes_ };
 		shared.module.name = name_;
@@ -1299,7 +1296,7 @@ std::expected<ir::Module, ir::Diagnostics> ir::parseModule(
 	StringView name_,
 	StringView source_,
 	EntryKind entry_,
-	ref<const ModuleResolver> includes_
+	ModuleResolver includes_
 ) {
 	return detail::parseWhole(name_, source_, entry_, includes_);
 }

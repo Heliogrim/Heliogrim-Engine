@@ -11,7 +11,7 @@ using namespace hg::engine::accel::lang;
 namespace {
 	struct FunctionWalker {
 		ref<const ir::Module> module;
-		const std::function<bool(StringView)>& needsUniform;
+		FnRef<bool(StringView)> needsUniform;
 		ir::Uniformity& out;
 
 		/* shortcut: locals keyed by name without scope shadowing; a shadowing redeclaration merges with the outer one (conservative) */
@@ -68,7 +68,7 @@ namespace {
 					return cls == ir::BindClass::ePushConstant || cls == ir::BindClass::eUniformBuffer || cls == ir::BindClass::eStorageBuffer;
 				}
 				case ir::ExprKind::eBuiltin: {
-					direct = direct || (needsUniform && needsUniform(e.name));
+					direct = direct || needsUniform(e.name);
 					/* the `&mut` out argument of a builtin is filled with a lane-dependent result */
 					for (auto i = 0uz; i < e.operands.size(); ++i) {
 						if (ir::builtinWritesArg(e.name, i)) {
@@ -224,7 +224,7 @@ namespace {
 	};
 }
 
-ir::Uniformity ir::analyzeUniformity(ref<const Module> module_, const std::function<bool(StringView)>& needsUniform_) {
+ir::Uniformity ir::analyzeUniformity(ref<const Module> module_, FnRef<bool(StringView)> needsUniform_) {
 	Uniformity result {};
 	result.uniformStmt.assign(module_.stmts.size(), true);
 	result.requiresUniform.assign(module_.functions.size(), false);

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <functional>
 #include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.Common/Functional/FnRef.hpp>
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
@@ -20,6 +20,6 @@ namespace hg::engine::accel::lang::ir {
 	 */
 	[[nodiscard]] Uniformity analyzeUniformity(
 		ref<const Module> module_,
-		const std::function<bool(StringView)>& needsUniform_ = {}
+		FnRef<bool(StringView)> needsUniform_ = [](StringView) { return false; }
 	);
 }
