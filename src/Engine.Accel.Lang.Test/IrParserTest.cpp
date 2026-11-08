@@ -1094,4 +1094,22 @@ namespace AccelLang {
 		ASSERT_EQ(ternary.operands.size(), 3uz);
 		EXPECT_EQ(exprAt(module, ternary.operands[2]).name, "+");
 	}
+
+	TEST(ParserTest, ImplicitOnFunctionIsDiagnostic) {
+		const auto diags = parseFail("@output (mode = forward, id = \"depth\") implicit fn main() {}\n");
+		ASSERT_FALSE(diags.empty());
+		EXPECT_TRUE(mentions(diags[0], "apply to bindings only")) << diags[0].message;
+	}
+
+	TEST(ParserTest, SpecOnNonConstIsDiagnostic) {
+		const auto diags = parseFail("@spec (id = \"n\") @input (mode = bind, id = \"m\", class = uniform) block m { u32 n; };\n");
+		ASSERT_FALSE(diags.empty());
+		EXPECT_TRUE(mentions(diags[0], "@spec applies to const declarations only")) << diags[0].message;
+	}
+
+	TEST(ParserTest, EarlyFragmentTestsValueMustBeBool) {
+		const auto diags = parseFail("@fragment (early_fragment_tests = yes)\nfn main() {}\n");
+		ASSERT_FALSE(diags.empty());
+		EXPECT_TRUE(mentions(diags[0], "Invalid value 'yes' for annotation key 'early_fragment_tests'")) << diags[0].message;
+	}
 }

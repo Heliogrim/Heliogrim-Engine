@@ -172,4 +172,9 @@ namespace AccelLang {
 		EXPECT_TRUE(module.attributes.earlyFragmentTests);
 		EXPECT_TRUE(emitGlsl(module).contains("layout(early_fragment_tests) in;"));
 	}
+
+	TEST(FragmentTest, EarlyFragmentTestsOnComputeIsDiagnostic) {
+		const auto message = errorOf("@compute (local_size = [1, 1, 1], early_fragment_tests = true)\nfn main() {}\n");
+		EXPECT_TRUE(message.contains("'early_fragment_tests' applies to @fragment only.")) << message;
+	}
 }
