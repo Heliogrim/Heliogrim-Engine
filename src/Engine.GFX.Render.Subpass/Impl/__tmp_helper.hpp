@@ -6,9 +6,10 @@
 #include <fstream>
 #include <span>
 #include <utility>
-#include <Engine.Accel.Lang/Rep/Variable.hpp>
 #include <Engine.Accel.Lang/Intermediate.hpp>
+#include <Engine.Accel.Lang/Ir/Interface.hpp>
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
+#include <Engine.Accel.Lang/Rep/Variable.hpp>
 #include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Move.hpp>
@@ -111,6 +112,19 @@ namespace hg::engine::render {
 				format != vertexFormats_.end() ? format->second : -1L
 			);
 			intermediate->rep.globalScope.inbound.emplace_back(std::move(var));
+		}
+
+		/* mirror the declared interface so effect-level symbol enumeration (material param pairing, aliasing) sees it */
+		if (intermediate->ir != nullptr) {
+			auto& scope = intermediate->rep.globalScope;
+			for (auto& entry : ir::computeInterface(*intermediate->ir)) {
+				if (entry.implicit || std::ranges::contains(vertexOffsets_, entry.id, &std::pair<String, u32>::first)) {
+					continue;
+				}
+				auto var = make_uptr<accel::lang::Variable>();
+				var->annotation = make_uptr<accel::lang::SymbolIdAnnotation>(std::move(entry.id));
+				(entry.input ? scope.inbound : scope.outbound).emplace_back(std::move(var));
+			}
 		}
 
 		return intermediate;
