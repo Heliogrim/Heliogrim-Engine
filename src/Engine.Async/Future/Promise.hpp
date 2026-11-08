@@ -89,7 +89,7 @@ namespace hg {
 
 		void finish() noexcept {
 			_finished = true;
-			_state->done.set();
+			detail::complete(_state);
 			// Keep the state while the future is untaken, so future() after completion still works.
 			if (_futureTaken) {
 				_state.reset();
