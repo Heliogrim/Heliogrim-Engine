@@ -31,12 +31,12 @@ namespace hg::engine {
 	public:
 		[[nodiscard]] ref<scheduler::task::SignaledQueue> platformQueue() const noexcept override;
 
-		[[nodiscard]] hg::concurrent::future<uptr<platform::NativeWindow>> makeNativeWindow(
+		[[nodiscard]] hg::Future<uptr<platform::NativeWindow>> makeNativeWindow(
 			const string_view title_,
 			cref<math::Extent2i32> extent_
 		) override;
 
-		[[nodiscard]] hg::concurrent::future<bool> destroyNativeWindow(
+		[[nodiscard]] hg::Future<bool> destroyNativeWindow(
 			mref<uptr<platform::NativeWindow>> window_
 		) override;
 
