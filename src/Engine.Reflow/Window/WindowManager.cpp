@@ -285,16 +285,13 @@ sptr<Window> WindowManager::requestWindow(
 	const auto gfx = Engine::getEngine()->getGraphics();
 	auto& reflow = *static_cast<Reflow* const>(Engine::getEngine()->getModules().getSubModule(ReflowDepKey).get());
 
-	auto window = await(
-		Future {
-			platform->makeNativeWindow(title_, math::Extent2i32 { size_.x, size_.y })
-		}
-	);
-	::hg::assertrt(window != nullptr);
+	auto window = await(platform->makeNativeWindow(title_, math::Extent2i32 { size_.x, size_.y }));
+	::hg::assertrt(window.has_value() && *window != nullptr);
+	auto nativeWindow = std::move(*window);
 
 	/**/
 
-	auto surface = gfx->getSurfaceManager()->makeSurface(std::move(window));
+	auto surface = gfx->getSurfaceManager()->makeSurface(std::move(nativeWindow));
 	surface->setup();
 
 	auto swapchain = make_smr<gfx::VkSurfaceSwapchain>(surface);
@@ -312,7 +309,7 @@ sptr<Window> WindowManager::requestWindow(
 
 		swapchain->destroy();
 		surface->destroy();
-		await(Future { platform->destroyNativeWindow(std::move(window)) });
+		(void)await(platform->destroyNativeWindow(std::move(nativeWindow)));
 
 		IM_CORE_ERROR("Requested new window with invalid renderer.");
 		return nullptr;

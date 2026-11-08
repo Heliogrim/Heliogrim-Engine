@@ -20,14 +20,14 @@ bool SignaledQueue::empty() const noexcept {
     return _buffer.empty();
 }
 
-bool SignaledQueue::try_push(mref<std::function<void()>> fnc_) {
+bool SignaledQueue::try_push(mref<UniqueFn<void(), 128>> fnc_) {
 
     if (_mode.test()) {
         return false;
     }
 
     std::unique_lock<decltype(_mtx)> lck { _mtx };
-    const auto pushed = _buffer.try_push(std::forward<std::function<void()>>(fnc_));
+    const auto pushed = _buffer.try_push(std::move(fnc_));
 
     lck.unlock();
     signal();
@@ -35,11 +35,11 @@ bool SignaledQueue::try_push(mref<std::function<void()>> fnc_) {
     return pushed;
 }
 
-bool SignaledQueue::pop(ref<std::function<void()>> fnc_) {
+bool SignaledQueue::pop(ref<UniqueFn<void(), 128>> fnc_) {
     return _buffer.try_pop(fnc_);
 }
 
-bool SignaledQueue::waitPop(OUT ref<std::function<void()>> fnc_) {
+bool SignaledQueue::waitPop(OUT ref<UniqueFn<void(), 128>> fnc_) {
 
     std::unique_lock<decltype(_mtx)> lck { _mtx };
     _sig.wait(

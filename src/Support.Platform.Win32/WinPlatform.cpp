@@ -3,7 +3,7 @@
 #include <ole2.h>
 
 #include <Engine.Asserts/Breakpoint.hpp>
-#include <Engine.Async/Await/Promise.hpp>
+#include <Engine.Async/Future/Promise.hpp>
 #include <Engine.Common/SDL3.hpp>
 #include <Engine.Common/stdafx.h>
 #include <Engine.Core/Engine.hpp>
@@ -46,9 +46,9 @@ void WinPlatform::setupThread() {
 			}
 
 			// While exiting, make sure queue is done
-			std::function < void() > fnc { nullptr };
+			UniqueFn<void(), 128> fnc;
 			while (_platformQueue.waitPop(fnc)) {
-				fnc();
+				std::move(fnc)();
 			}
 		}
 	};
@@ -111,18 +111,22 @@ ref<task::SignaledQueue> WinPlatform::platformQueue() const noexcept {
 	return const_cast<ref<task::SignaledQueue>>(_platformQueue);
 }
 
-hg::concurrent::future<uptr<NativeWindow>> WinPlatform::makeNativeWindow(
+hg::Future<uptr<NativeWindow>> WinPlatform::makeNativeWindow(
 	const string_view title_,
 	cref<math::Extent2i32> extent_
 ) {
 
-	::hg::concurrent::promise<uptr<NativeWindow>> promise {
-		[this, title = title_, extent = extent_] {
+	Promise<uptr<NativeWindow>> promise;
+	auto future = promise.future();
+
+	// Copy the title, the view must not dangle until the platform thread runs.
+	UniqueFn<void(), 128> item {
+		[this, promise = std::move(promise), title = std::string { title_ }, extent = extent_]() mutable {
 
 			/**/
 			auto wnd = make_uptr<Win32Window>(
 				SDL_CreateWindow(
-					title.data(),
+					title.c_str(),
 					extent.width,
 					extent.height,
 					SDL_WINDOW_VULKAN | SDL_WINDOW_HIGH_PIXEL_DENSITY | SDL_WINDOW_RESIZABLE
@@ -144,13 +148,12 @@ hg::concurrent::future<uptr<NativeWindow>> WinPlatform::makeNativeWindow(
 
 			/**/
 
-			return wnd;
+			promise.resolve(std::move(wnd));
 		}
 	};
 
-	const auto future { promise.get() };
 	while (!_platformQueue.finalized() && not
-		_platformQueue.try_push(std::move(promise))
+		_platformQueue.try_push(std::move(item))
 	) {
 		// __noop();
 	}
@@ -158,14 +161,15 @@ hg::concurrent::future<uptr<NativeWindow>> WinPlatform::makeNativeWindow(
 	return future;
 }
 
-hg::concurrent::future<bool> WinPlatform::destroyNativeWindow(
+hg::Future<bool> WinPlatform::destroyNativeWindow(
 	mref<uptr<NativeWindow>> window_
 ) {
 
-	std::shared_ptr<NativeWindow> holder { std::move(window_) };
+	Promise<bool> promise;
+	auto future = promise.future();
 
-	::hg::concurrent::promise<bool> promise {
-		[this, window = holder] {
+	UniqueFn<void(), 128> item {
+		[this, promise = std::move(promise), window = std::move(window_)]() mutable {
 
 			/**/
 			Engine::getEngine()->getInput()->releaseWindow(window.get());
@@ -175,13 +179,12 @@ hg::concurrent::future<bool> WinPlatform::destroyNativeWindow(
 			const auto sdlWnd { static_cast<ptr<Win32Window>>(window.get())->sdl() };
 			SDL_DestroyWindow(sdlWnd);
 
-			return true;
+			promise.resolve(true);
 		}
 	};
 
-	const auto future { promise.get() };
 	while (!_platformQueue.finalized() && not
-		_platformQueue.try_push(std::move(promise))
+		_platformQueue.try_push(std::move(item))
 	) {
 		// __noop();
 	}
@@ -311,10 +314,10 @@ void WinPlatform::processInternal() {
 	/**
 	 * Check for signaled queue
 	 */
-	std::function < void() > fnc { nullptr };
+	UniqueFn<void(), 128> fnc;
 	while (!_platformQueue.empty()) {
 		_platformQueue.waitPop(fnc);
-		fnc();
+		std::move(fnc)();
 	}
 
 	/**

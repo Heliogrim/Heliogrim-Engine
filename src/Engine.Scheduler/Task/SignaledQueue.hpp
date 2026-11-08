@@ -1,7 +1,7 @@
 #pragma once
 
 #include <condition_variable>
-#include <functional>
+#include <Engine.Common/Functional/UniqueFn.hpp>
 #include <Engine.Async/Collection/RingBuffer.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
@@ -26,13 +26,13 @@ namespace hg::engine::scheduler::task {
 
 		[[nodiscard]] bool empty() const noexcept;
 
-		bool try_push(mref<std::function<void()>> fnc_);
+		bool try_push(mref<hg::UniqueFn<void(), 128>> fnc_);
 
 	private:
-		bool pop(OUT ref<std::function<void()>> fnc_);
+		bool pop(OUT ref<hg::UniqueFn<void(), 128>> fnc_);
 
 	public:
-		bool waitPop(OUT ref<std::function<void()>> fnc_);
+		bool waitPop(OUT ref<hg::UniqueFn<void(), 128>> fnc_);
 
 	private:
 		std::mutex _mtx;
@@ -40,6 +40,6 @@ namespace hg::engine::scheduler::task {
 		std::atomic_flag _mode;
 
 	private:
-		concurrent::RingBuffer<std::function<void()>> _buffer;
+		concurrent::RingBuffer<hg::UniqueFn<void(), 128>> _buffer;
 	};
 }
