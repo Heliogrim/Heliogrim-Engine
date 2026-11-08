@@ -6,6 +6,7 @@
 #include <Engine.Assets.System/AssetDescriptor.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets/Assets.hpp>
+#include <Engine.Async/Future/Future.hpp>
 #include <Engine.Common/Optional.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Storage.Registry/Storage/PackageStorage.hpp>
@@ -378,11 +379,13 @@ Opt<Vector<Arci<engine::assets::Asset>>> autoImportCombinedImageTexture(
 
 	/**/
 
-	const auto result = importer.import<std::pair<Arci<engine::assets::TextureAsset>, Arci<engine::assets::ImageAsset>>>(
-		fileTypeId_,
-		{ fileUrl_.path() },
-		::hg::move(importDestination_)
-	).get();
+	const auto result = ::hg::await(
+		importer.import<std::pair<Arci<engine::assets::TextureAsset>, Arci<engine::assets::ImageAsset>>>(
+			fileTypeId_,
+			{ fileUrl_.path() },
+			::hg::move(importDestination_)
+		)
+	).value();
 
 	if (result.first == nullptr || result.second == nullptr) {
 		::hg::assertrt(result.first == nullptr && result.second == nullptr);
@@ -412,11 +415,13 @@ Opt<Vector<Arci<engine::assets::Asset>>> autoImportFont(
 
 	/**/
 
-	const auto result = importer.import<Arci<engine::assets::FontAsset>>(
-		fileTypeId_,
-		{ fileUrl_.path() },
-		::hg::move(importDestination_)
-	).get();
+	const auto result = ::hg::await(
+		importer.import<Arci<engine::assets::FontAsset>>(
+			fileTypeId_,
+			{ fileUrl_.path() },
+			::hg::move(importDestination_)
+		)
+	).value();
 
 	if (result != nullptr) {
 		return Some(std::vector { std::move(result).into<engine::assets::Asset>() });
@@ -438,11 +443,13 @@ Opt<Vector<Arci<engine::assets::Asset>>> autoImportStaticGeometry(
 
 	/**/
 
-	const auto result = importer.import<Arci<engine::assets::StaticGeometry>>(
-		fileTypeId_,
-		{ fileUrl_.path() },
-		::hg::move(importDestination_)
-	).get();
+	const auto result = ::hg::await(
+		importer.import<Arci<engine::assets::StaticGeometry>>(
+			fileTypeId_,
+			{ fileUrl_.path() },
+			::hg::move(importDestination_)
+		)
+	).value();
 
 	if (result != nullptr) {
 		return Some(std::vector { std::move(result).into<engine::assets::Asset>() });

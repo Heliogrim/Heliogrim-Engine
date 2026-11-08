@@ -14,6 +14,7 @@
 #include <fstream>
 #include <ranges>
 #include <Editor.Action/ActionManager.hpp>
+#include <Engine.Async/Future/Async.hpp>
 #include <Editor.Action/Action/Import/AutoImportAction.hpp>
 #include <Editor.Assets.Default/DefaultAssetInit.hpp>
 #include <Engine.Assets.System/AssetDescriptor.hpp>
@@ -66,7 +67,7 @@ struct Indexed {
 	size_t primaryCount;
 
 	std::filesystem::path meta;
-	Opt<concurrent::future<void>> scheduled;
+	Opt<Future<void>> scheduled;
 };
 
 struct RetryContext {
@@ -198,7 +199,7 @@ Opt<path> getBundleOrOpaqueFor(cref<path> lfsMeta_) {
 
 /**/
 
-using LoadAwait = concurrent::future<void>;
+using LoadAwait = Future<void>;
 
 // @formatter:off
 [[nodiscard]] static Opt<Indexed> buildIndexedFrom(cref<path> lfs_);
@@ -277,7 +278,7 @@ Opt<LoadAwait> enqueueIndexedLoad(cref<Indexed> indexed_) {
 	/**/
 
 	// @formatter:off
-	return Some(scheduler::async<void>([storePack = std::move(maybePackStore).value()]() mutable {
+	return Some(::hg::async([storePack = std::move(maybePackStore).value()]() mutable {
 		package_discover_assets(std::move(storePack));
 	}));
 	// @formatter:on
@@ -403,7 +404,7 @@ void autoIndex(ref<const storage::UrlScheme> baseScheme_, cref<path> root_) {
 		auto rit = std::ranges::remove_if(
 			indexSet,
 			[](auto& data_) {
-				return not data_.meta.empty() && data_.scheduled.has_value() && data_.scheduled.value().ready();
+				return not data_.meta.empty() && data_.scheduled.has_value() && data_.scheduled.value().isReady();
 			}
 		);
 		indexSet.erase(rit.begin(), rit.end());
@@ -450,7 +451,7 @@ void autoIndex(ref<const storage::UrlScheme> baseScheme_, cref<path> root_) {
 
 	for (auto&& indexed : indexSet) {
 		if (indexed.scheduled) {
-			await(std::move(indexed.scheduled)->signal().get());
+			(void)::hg::await(std::move(indexed.scheduled).value());
 		}
 	}
 }
