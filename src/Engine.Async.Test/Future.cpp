@@ -497,6 +497,26 @@ namespace AsyncModule {
 		);
 	}
 
+	TEST(Future, AsyncMoveOnlyBody) {
+		SchedulerModule::structuredRuntimeTest(
+			[](nmpt<engine::Scheduler>) {
+				auto f = async([p = make_uptr<int>(5)]() mutable { return *p + 1; });
+				ASSERT_TRUE(waitReady(f));
+				EXPECT_EQ(await(std::move(f)).value(), 6);
+			}
+		);
+	}
+
+	TEST(Future, AsyncFlattensFuture) {
+		SchedulerModule::structuredRuntimeTest(
+			[](nmpt<engine::Scheduler>) {
+				Future<int> f = async([] { return Future<int>::ready(3); });
+				ASSERT_TRUE(waitReady(f));
+				EXPECT_EQ(await(std::move(f)).value(), 3);
+			}
+		);
+	}
+
 	TEST(Future, AsyncResultRejects) {
 		SchedulerModule::structuredRuntimeTest(
 			[](nmpt<engine::Scheduler>) {
