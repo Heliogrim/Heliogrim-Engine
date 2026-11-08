@@ -1,6 +1,8 @@
 #include "pch.h"
 
-#include <Engine.Async/Await/Promise.hpp>
+/**/
+
+#include <Engine.Async/Future/Async.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Scheduler/CompScheduler.hpp>
 #include <Engine.Scheduler/Scheduler.hpp>
@@ -61,20 +63,13 @@ namespace SchedulerModule {
 				/**
 				 *
 				 */
-				auto prom { concurrent::promise<void>([]() {}) };
-				auto res { prom.get() };
-				auto task { task::make_task(prom) };
-
-				/**
-				 *
-				 */
-				scheduler_->exec(std::move(task));
+				auto fut { ::hg::async([] {}) };
 
 				/**
 				 *
 				 */
 				u32 retry { 0uL };
-				while (!res.ready() && retry < 200) {
+				while (!fut.isReady() && retry < 200) {
 					thread::self::sleepFor(5);
 					++retry;
 				}
@@ -82,7 +77,7 @@ namespace SchedulerModule {
 				/**
 				 *
 				 */
-				EXPECT_TRUE(res.ready());
+				EXPECT_TRUE(fut.isReady());
 			}
 		);
 	}
