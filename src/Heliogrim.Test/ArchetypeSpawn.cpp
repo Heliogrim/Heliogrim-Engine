@@ -328,14 +328,16 @@ namespace HeliogrimApi {
 		constexpr size_t count = 10'000uLL;
 		const auto entries = Body::actorClass().componentOffsets().size();
 
-		auto actors = SpawnActors(
-			&Body::actorClass(),
-			count,
-			[](ref<Actor> actor_, const size_t index_) {
-				static_cast<ref<Body>>(actor_).get<"body">().mass = index_;
-			},
-			_universe
-		).get();
+		auto actors = hg::await(
+			SpawnActors(
+				&Body::actorClass(),
+				count,
+				[](ref<Actor> actor_, const size_t index_) {
+					static_cast<ref<Body>>(actor_).get<"body">().mass = index_;
+				},
+				_universe
+			)
+		).value();
 		ASSERT_EQ(actors.size(), count);
 		EXPECT_EQ(rootLevel().getActors().size(), count);
 
@@ -450,7 +452,7 @@ namespace HeliogrimApi {
 
 		auto internal = Arci<engine::core::Level>::create(generate_level_guid());
 
-		auto actors = SpawnActors(&actorClass, count, noInit, _universe, Some(*internal)).get();
+		auto actors = hg::await(SpawnActors(&actorClass, count, noInit, _universe, Some(*internal))).value();
 		ASSERT_EQ(actors.size(), count);
 
 		const auto space = internal->space();
@@ -499,7 +501,7 @@ namespace HeliogrimApi {
 		ASSERT_TRUE(detached.has_value());
 		EXPECT_FALSE(detached.value().get().has_value());
 
-		const auto spawned = SpawnActor(&Body::actorClass(), _universe).get();
+		const auto spawned = hg::await(SpawnActor(&Body::actorClass(), _universe)).value();
 		ASSERT_TRUE(spawned.has_value());
 		EXPECT_NE(deref(spawned.value()), nullptr);
 	}
@@ -507,7 +509,7 @@ namespace HeliogrimApi {
 	TEST_F(Spawn, SpansPerType) {
 		constexpr size_t count = 100uLL;
 		const auto stride = Body::actorClass().desc().stride;
-		static_cast<void>(SpawnActors(&Body::actorClass(), count, noInit, _universe).get());
+		static_cast<void>(hg::await(SpawnActors(&Body::actorClass(), count, noInit, _universe)).value());
 
 		size_t wheels = 0uLL;
 		registry().forEachSpan<WheelComponentStub>(
