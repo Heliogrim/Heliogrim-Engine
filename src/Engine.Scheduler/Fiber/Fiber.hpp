@@ -5,7 +5,12 @@
 #include <Engine.Common/Wrapper.hpp>
 
 #include "Awaitable.hpp"
+#include "../Waitable/ParkQueue.hpp"
 #include "../Task/Task.hpp"
+
+namespace hg::engine::scheduler {
+	class Schedule;
+}
 
 namespace hg::engine::scheduler::fiber {
 	struct Fiber {
@@ -27,6 +32,10 @@ namespace hg::engine::scheduler::fiber {
 		non_owning_rptr<const task::TaskDelegate> task = nullptr;
 
 		FiberAwaitable awaiter = {};
+
+		ptr<Schedule> schedule = nullptr;
+
+		ParkNode parkNode;
 
 	public:
 		#if defined(WIN32)

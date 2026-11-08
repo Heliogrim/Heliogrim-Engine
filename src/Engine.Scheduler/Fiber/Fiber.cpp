@@ -34,6 +34,7 @@ void Fiber::create(ptr<Fiber> self_, void (*proc_)(void*)) {
 	self_->parent = nullptr;
 	self_->task = nullptr;
 	self_->awaiter.reset();
+	self_->schedule = nullptr;
 }
 
 #else
@@ -58,6 +59,7 @@ void Fiber::create(ptr<Fiber> self_, _In_ void (*proc_)(int, int)) {
 	self_->parent = nullptr;
 	self_->task = nullptr;
 	self_->awaiter.reset();
+	self_->schedule = nullptr;
 }
 
 #endif
@@ -78,6 +80,7 @@ bool Fiber::destroy() {
 	parent = nullptr;
 	task = nullptr;
 	awaiter.reset();
+	schedule = nullptr;
 
 	return true;
 }
