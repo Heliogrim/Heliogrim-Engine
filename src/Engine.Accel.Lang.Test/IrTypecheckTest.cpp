@@ -543,4 +543,25 @@ namespace AccelLang {
 
 		(void)parseOk("fn F(a: u32) -> u32 {\n\tlet b = a;\n\tb %= 3u;\n\treturn b % 2u;\n}\n");
 	}
+
+	TEST(TypecheckTest, ConstArrayConstructorMatchesItsType) {
+		const auto module = parseOk("const T: f32vec3[2] = f32vec3[2](f32vec3(1.0), f32vec3(0.0, 1.0, 0.0));\nfn F(i: u32) -> f32vec3 {\n\treturn T[i];\n}\n");
+		ASSERT_EQ(module.constants.size(), 1uz);
+	}
+
+	TEST(TypecheckTest, ArrayConstructorCountMismatchIsDiagnostic) {
+		const auto message = firstMessage("const T: f32vec3[3] = f32vec3[3](f32vec3(1.0), f32vec3(2.0));\n");
+		EXPECT_TRUE(message.contains("array of 3 elements constructed from 2 values")) << message;
+	}
+
+	TEST(TypecheckTest, ArrayConstructorElementTypeMismatchIsDiagnostic) {
+		const auto message = firstMessage("const T: f32vec3[2] = f32vec3[2](f32vec3(1.0), f32vec2(2.0));\n");
+		EXPECT_TRUE(message.contains("array element 1 is f32vec2, expected f32vec3")) << message;
+	}
+
+	TEST(TypecheckTest, TernaryBranchTypesMustMatch) {
+		(void)parseOk("fn F(a: f32) -> f32vec3 {\n\treturn a > 0.5 ? f32vec3(0.0, 0.0, 1.0) : f32vec3(1.0, 0.0, 0.0);\n}\n");
+		const auto message = firstMessage("fn F(a: f32) -> f32vec3 {\n\treturn a > 0.5 ? f32vec3(1.0) : f32vec2(1.0);\n}\n");
+		EXPECT_TRUE(message.contains("branches of '?:' have types")) << message;
+	}
 }

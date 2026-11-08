@@ -303,4 +303,40 @@ namespace AccelLang {
 		ASSERT_TRUE(emission.result.diagnostics.empty()) << emission.result.diagnostics.front().message;
 		EXPECT_TRUE(emission.result.requirements.has(GlslFeature::eStorageInputOutput16));
 	}
+
+	namespace {
+		[[nodiscard]] Emission emitSliced(StringView source_) {
+			auto parsed = parseModule("M", source_, EntryKind::eFragment, ModuleResolver { noIncludes });
+			EXPECT_TRUE(parsed.has_value()) << (parsed.has_value() || parsed.error().empty() ? "" : parsed.error().front().message);
+			if (not parsed.has_value()) {
+				return {};
+			}
+			auto res = resolveToggles(*parsed, ToggleSet {});
+			EXPECT_TRUE(res.has_value());
+			if (not res.has_value()) {
+				return {};
+			}
+			const std::array<String, 1> required { "color" };
+			const auto module = slice(*res, required);
+			Language target {};
+			auto result = GlslEmitter {}.emit(module, layoutOf(module), target);
+			return Emission { std::move(result), target.text.empty() ? String {} : target.text.front().data };
+		}
+
+		constexpr StringView halfHelper = "fn twice(x: f16) -> f16 {\n\treturn x * f16(2.0);\n}\n"
+			"@output (mode = forward, id = \"color\") f32vec4 color;\n";
+	}
+
+	TEST(GlslExtensionTest, UnusedHalfFloatFunctionIsSlicedWithItsExtension) {
+		const auto emission = emitSliced(String { halfHelper } + "fn main() {\n\tcolor = f32vec4(1.0);\n}\n");
+		EXPECT_FALSE(emission.text.contains("twice")) << emission.text;
+		EXPECT_FALSE(emission.text.contains("float16_t")) << emission.text;
+		EXPECT_FALSE(emission.result.requirements.has(GlslFeature::eShaderFloat16));
+	}
+
+	TEST(GlslExtensionTest, UsedHalfFloatFunctionKeepsItsExtension) {
+		const auto emission = emitSliced(String { halfHelper } + "fn main() {\n\tcolor = f32vec4(f32(twice(f16(1.0))));\n}\n");
+		EXPECT_TRUE(emission.text.contains("float16_t")) << emission.text;
+		EXPECT_TRUE(emission.result.requirements.has(GlslFeature::eShaderFloat16));
+	}
 }
