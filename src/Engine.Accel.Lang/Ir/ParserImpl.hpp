@@ -72,10 +72,10 @@ namespace hg::engine::accel::lang::ir::detail {
 	 * on include order; upgrade when per-module scopes are needed (e.g. with Task 6 merge).
 	 */
 	struct Shared {
-		explicit Shared(ref<const ir::ModuleResolver> resolver_) :
+		explicit Shared(ir::ModuleResolver resolver_) :
 			resolver(resolver_) {}
 
-		ref<const ir::ModuleResolver> resolver;
+		ir::ModuleResolver resolver;
 		ir::Module module {};
 		ir::Diagnostics diags {};
 		/* include chain, root first */

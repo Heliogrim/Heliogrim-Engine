@@ -202,7 +202,8 @@ namespace AccelLang {
 			return None;
 		}
 
-		[[nodiscard]] ModuleResolver includesFrom(std::map<String, String, std::less<>> sources_) {
+		/* returns the owning callable; a ModuleResolver only borrows it */
+		[[nodiscard]] auto includesFrom(std::map<String, String, std::less<>> sources_) {
 			return [sources = std::move(sources_)](StringView name_) -> Opt<String> {
 				const auto it = sources.find(name_);
 				if (it == sources.end()) {
@@ -523,7 +524,7 @@ namespace AccelLang {
 			EXPECT_EQ(diags_[0].column, column_);
 		}
 
-		[[nodiscard]] ModuleResolver includeChain(size_t length_, String leaf_ = "fn Leaf();") {
+		[[nodiscard]] auto includeChain(size_t length_, String leaf_ = "fn Leaf();") {
 			// module mN includes m(N+1) until the chain ends (never cyclic)
 			return [length_, leaf = std::move(leaf_)](StringView name_) -> Opt<String> {
 				const auto n = std::stoull(String(name_.substr(1uz)));

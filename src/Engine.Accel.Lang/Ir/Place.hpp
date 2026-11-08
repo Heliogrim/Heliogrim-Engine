@@ -1,6 +1,6 @@
 #pragma once
 
-#include <functional>
+#include <Engine.Common/Functional/FnRef.hpp>
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
@@ -45,7 +45,7 @@ namespace hg::engine::accel::lang::ir {
 		ref<const Module> module_,
 		ref<const PlacePath> a_,
 		ref<const PlacePath> b_,
-		const std::function<bool(ref<const Expr>)>& immutable_
+		FnRef<bool(ref<const Expr>)> immutable_
 	);
 
 	/* structural equality of two expressions (kind, name, operands); locations and types are ignored */
