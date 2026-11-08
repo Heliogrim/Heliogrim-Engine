@@ -3,7 +3,6 @@
 #include <filesystem>
 #include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Assets/Assets.hpp>
-#include <Engine.Async/Await/Promise.hpp>
 #include <Engine.Common/GuidFormat.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Core/Engine.hpp>
@@ -26,17 +25,7 @@ static FbxAssimpImportData assimpGetImportData(cref<fs::File> file_);
 /**/
 
 static FbxImporter::import_result_type makeImportResult(mref<FbxImporter::import_type> value_) {
-
-	::hg::concurrent::promise<FbxImporter::import_type> prom {
-		[value = std::move(value_)]() {
-			return value;
-		}
-	};
-
-	auto result { prom.get() };
-	prom();
-
-	return result;
+	return FbxImporter::import_result_type::ready(std::move(value_));
 }
 
 FbxImporter::FbxImporter() {}

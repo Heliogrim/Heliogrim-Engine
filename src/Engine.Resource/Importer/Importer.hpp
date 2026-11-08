@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine.Async/Await/Future.hpp>
+#include <Engine.Async/Future/Future.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
 #include "./ImportDestination.hpp"
@@ -70,7 +70,7 @@ namespace hg::engine::res {
 		using import_type = ImportType_;
 
 		template <typename Type_, typename = std::enable_if_t<!std::is_void_v<Type_>>>
-		using wrapper_type = hg::concurrent::future<Type_>;
+		using wrapper_type = ::hg::Future<Type_>;
 		using import_result_type = wrapper_type<import_type>;
 
 	protected:
