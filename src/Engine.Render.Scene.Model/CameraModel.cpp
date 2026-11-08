@@ -45,7 +45,9 @@ void CameraModel::update(const ptr<RenderSceneSystem> system_) {
 	const auto& outer = rt.rotator();
 	const auto& inner = ct.rotator();
 
-	view.updateView(rt.location(), math::Rotator::combine(outer, inner));
+	/* updateView reads raw fps angles; decomposing a quaternion product (Rotator::combine) re-splits yaw*pitch into a rolled Rx*Ry*Rz triple */
+	// shortcut: summing angles is exact only for yaw on the root and pitch on the camera (editor viewport), compose via quaternion once updateView takes one
+	view.updateView(rt.location(), outer + inner);
 
 	/**/
 
