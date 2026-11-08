@@ -7,7 +7,7 @@
 #include "Future.hpp"
 
 namespace hg {
-	template <typename T_, typename E_ = Broken>
+	template <typename T_, typename E_> requires Send<T_>
 	class Promise {
 	public:
 		using state_type = detail::FutureState<T_, E_>;

@@ -11,6 +11,7 @@
 #include <Engine.Async/Future/Async.hpp>
 #include <Engine.Async/Future/Future.hpp>
 #include <Engine.Async/Future/Promise.hpp>
+#include <Engine.Async/Future/Send.hpp>
 #include <Engine.Scheduler/Scheduler.hpp>
 #include <Engine.Scheduler/Task/Task.hpp>
 #include <Engine.Scheduler/Thread/Thread.hpp>
@@ -507,5 +508,29 @@ namespace AsyncModule {
 				EXPECT_EQ(result.error().as<std::string>(), "no");
 			}
 		);
+	}
+
+	namespace {
+		// Naming Promise<Rc<int>> outside a template is a hard error, so probe through a dependent requires.
+		template <typename T_>
+		concept PromiseNamable = requires { typename Promise<T_>; };
+
+		struct SendProbe :
+			public ArcFromThis<SendProbe> {};
+	}
+
+	TEST(Send, RefCountedIsNotSend) {
+		static_assert(not is_send_v<Rc<int>>);
+		static_assert(is_send_v<int> && is_send_v<void> && not is_send_v<ptr<void>>);
+	}
+
+	TEST(Send, ArciAndUptrAreSend) {
+		static_assert(is_send_v<Arci<SendProbe>>);
+		static_assert(is_send_v<uptr<int>>);
+	}
+
+	TEST(Send, PromiseRejectsNonSend) {
+		static_assert(not PromiseNamable<Rc<int>>);
+		static_assert(PromiseNamable<int>);
 	}
 }
