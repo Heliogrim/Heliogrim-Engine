@@ -11,6 +11,7 @@
 #include <Engine.Scheduler/Scheduler.hpp>
 
 #include "TestCompScheduler.hpp"
+#include <functional>
 
 namespace hg::test {
 	class TestSchedulerEngine final :
@@ -138,4 +139,38 @@ namespace hg::test {
 
 		void removeUniverse([[maybe_unused]] mref<SharedPtr<engine::core::Universe>> universe_) override {}
 	};
+}
+
+namespace SchedulerModule {
+	inline void structuredRuntimeTest(std::function<void(hg::nmpt<hg::engine::Scheduler>)>&& callback_) {
+
+		auto engine = hg::make_uptr<hg::test::TestSchedulerEngine>();
+		engine->preInit();
+
+		const auto scheduler = engine->getScheduler();
+
+		//
+		EXPECT_EQ(scheduler->getWorkerCount(), 0uL);
+
+		//
+		engine->init();
+		EXPECT_NE(scheduler->getWorkerCount(), 0uL);
+
+		//
+		engine->postInit();
+		engine->start();
+
+		//
+		if (callback_) {
+			std::forward<decltype(callback_)>(callback_)(scheduler);
+		}
+
+		//
+		engine->stop();
+		engine->shutdown();
+		engine->exit();
+
+		//
+		engine.reset();
+	}
 }
