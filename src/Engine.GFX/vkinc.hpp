@@ -1,7 +1,9 @@
 #pragma once
 
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Common/Math/Matrix.hpp>
+
+// Included first, so the real headers below verify every forward declaration
+#include "API/__vkFwd.hpp"
 
 /**
  * Graphic includes

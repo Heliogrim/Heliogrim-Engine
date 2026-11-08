@@ -1,5 +1,7 @@
 #include "VkTranslate.hpp"
 
+#include "../vkinc.hpp"
+
 using namespace hg::engine::gfx::api;
 
 vk::PolygonMode hg::engine::gfx::api::vkTranslateMode(RasterPolyMode mode_) {

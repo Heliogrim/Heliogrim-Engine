@@ -1,8 +1,6 @@
 #pragma once
 
-#include "../vkinc.hpp"
-
-#include "../Memory/Allocator.hpp"
+#include "../API/__vkFwd.hpp"
 #include "../Memory/VirtualMemoryPage.hpp"
 
 namespace hg::engine::gfx {
