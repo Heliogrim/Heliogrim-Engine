@@ -4,9 +4,9 @@
 #include <bit>
 #include <concepts>
 #include <functional>
-#include <shared_mutex>
 #include <span>
 #include <utility>
+#include <Engine.Async/Primitive/SpinLock.hpp>
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
@@ -105,7 +105,7 @@ struct std::hash<::hg::engine::accel::lang::ir::VariantKey> {
 
 namespace hg::engine::accel::lang::ir {
 	/**
-	 * Thread-safe map from variant key to resolved variant; a hit is one hash lookup under a shared lock.
+	 * Thread-safe map from variant key to resolved variant; a hit is one hash lookup under a fiber-safe spin lock.
 	 */
 	class VariantCache {
 	public:
@@ -118,7 +118,8 @@ namespace hg::engine::accel::lang::ir {
 		[[nodiscard]] smr<const Resolved> find(ref<const VariantKey> key_) const noexcept;
 
 	private:
-		mutable std::shared_mutex _mtx;
+		// shortcut: exclusive lock serializes concurrent hits, upgrade to a fiber-aware shared lock once Engine.Async has one
+		mutable concurrent::SpinMutex _lck;
 		DenseMap<VariantKey, smr<const Resolved>, std::hash<VariantKey>> _entries;
 	};
 
@@ -134,7 +135,7 @@ namespace hg::engine::accel::lang::ir {
 
 	/**
 	 * Thread-safe map from the ordered variant keys of a pipeline's stages to its resolved pipeline; same contract
-	 * as `VariantCache`: a hit is one hash lookup under a shared lock, a null build result is not cached.
+	 * as `VariantCache`: a hit is one hash lookup under the lock, a null build result is not cached.
 	 */
 	class PipelineLayoutCache {
 	public:
@@ -146,7 +147,8 @@ namespace hg::engine::accel::lang::ir {
 		[[nodiscard]] smr<const ResolvedPipeline> find(ref<const Vector<VariantKey>> key_) const noexcept;
 
 	private:
-		mutable std::shared_mutex _mtx;
+		// shortcut: see VariantCache::_lck
+		mutable concurrent::SpinMutex _lck;
 		DenseMap<Vector<VariantKey>, smr<const ResolvedPipeline>, PipelineKeyHash> _entries;
 	};
 }
