@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Async/Await/Promise.hpp>
 #include <Engine.Common/Sal.hpp>
 
 #include "Scheduler.hpp"
@@ -92,41 +91,4 @@ namespace hg::engine::scheduler {
 		cref<StageIdentifier> begin_,
 		cref<StageIdentifier> end_
 	);
-
-	/**
-	 * Schedules the function and return a async resolved future
-	 *
-	 * @tparam Ty Type of the ty.
-	 * @param [in] fnc_ The function.
-	 *
-	 * @returns A concurrent::future&lt;Ty&gt;
-	 */
-	template <typename Ty>
-	hg::concurrent::future<Ty> async(_In_ mref<std::function<Ty()>> fnc_) {
-		hg::concurrent::promise<Ty> p { fnc_ };
-		hg::concurrent::future<Ty> f = p.get();
-
-		exec({ std::move(p) });
-
-		return f;
-	}
-
-	/**
-	 * Schedules the function with a delay and return a async resolved future
-	 *
-	 * @tparam Ty Type of the ty.
-	 * @param [in] fnc_ The function.
-	 * @param	   ticks_ The ticks.
-	 *
-	 * @returns A concurrent::future&lt;Ty&gt;
-	 */
-	template <typename Ty>
-	hg::concurrent::future<Ty> async(_In_ mref<std::function<Ty()>> fnc_, hg::u32 ticks_) {
-		hg::concurrent::promise<Ty> p { fnc_ };
-		hg::concurrent::future<Ty> f = p.get();
-
-		delay({ std::move(p) }, ticks_);
-
-		return f;
-	}
 }

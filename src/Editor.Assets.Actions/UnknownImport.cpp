@@ -11,7 +11,7 @@
 #include <Editor.Action/ActionManager.hpp>
 #include <Editor.Action/Action/Import/AutoImportAction.hpp>
 #include <Engine.Asserts/Todo.hpp>
-#include <Engine.Async/Await/Promise.hpp>
+#include <Engine.Async/Future/Promise.hpp>
 #include <Engine.Common/Expected.hpp>
 #include <Engine.Config/Config.hpp>
 #include <Engine.Config/Enums.hpp>
@@ -32,7 +32,7 @@ struct SelectFileFilter {
 	string pattern;
 };
 
-[[nodiscard]] static concurrent::future<Result<FileUrl, std::runtime_error>> requestPlatformSelect(mref<Vector<SelectFileFilter>> filter_);
+[[nodiscard]] static Future<FileUrl, std::runtime_error> requestPlatformSelect(mref<Vector<SelectFileFilter>> filter_);
 
 [[nodiscard]] static std::wstring stringToWString(ref<const std::string> string_);
 
@@ -138,39 +138,42 @@ Result<Arci<actions::UnknownImport>, std::runtime_error> actions::makeUnknownWit
 	}
 
 	auto result = await(
-		::hg::Future {
-			requestPlatformSelect(
-				{
-					{ "EXR", "*.exr" },
-					{ "FBX", "*.fbx" },
-					{ "FLAC", "*.flac" },
-					{ "JPEG", "*.jpg;*.jpeg" },
-					{ "KTX", "*.ktx;*.ktx2" },
-					{ "OBJ Model", "*.obj" },
-					{ "OGG", "*.ogg" },
-					{ "PNG", "*.png" },
-					{ "True-Type Font", "*.ttf" },
-					{ "Vorbis", "*.vorbis" },
-					{ "Wave Audio", "*.wav" }
-				}
-			)
-		}
+		requestPlatformSelect(
+			{
+				{ "EXR", "*.exr" },
+				{ "FBX", "*.fbx" },
+				{ "FLAC", "*.flac" },
+				{ "JPEG", "*.jpg;*.jpeg" },
+				{ "KTX", "*.ktx;*.ktx2" },
+				{ "OBJ Model", "*.obj" },
+				{ "OGG", "*.ogg" },
+				{ "PNG", "*.png" },
+				{ "True-Type Font", "*.ttf" },
+				{ "Vorbis", "*.vorbis" },
+				{ "Wave Audio", "*.wav" }
+			}
+		)
 	);
-	return ::hg::move(result).map(
-		[&importPath_](mref<FileUrl> fileUrl_) {
-			return Arci<actions::UnknownImport>::create(::hg::move(fileUrl_), ::hg::move(importPath_));
+	if (not result.has_value()) {
+		if (result.error().is<std::runtime_error>()) {
+			return Unexpected { std::move(result.error().as<std::runtime_error>()) };
 		}
-	);
+		// Broken: the platform queue dropped the request, treat it as a cancelled selection.
+		return Unexpected { std::runtime_error { "File selection was cancelled." } };
+	}
+	return Arci<actions::UnknownImport>::create(::hg::move(result).value(), ::hg::move(importPath_));
 }
 
 /**/
 
 #if ENV_WIN
 
-concurrent::future<Result<FileUrl, std::runtime_error>> requestPlatformSelect(mref<Vector<SelectFileFilter>> filter_) {
+Future<FileUrl, std::runtime_error> requestPlatformSelect(mref<Vector<SelectFileFilter>> filter_) {
 
-	auto promise = concurrent::promise<Result<FileUrl, std::runtime_error>> {
-		[filters = ::hg::move(filter_)]() -> Result<FileUrl, std::runtime_error> {
+	Promise<FileUrl, std::runtime_error> promise;
+	auto future = promise.future();
+
+	auto select = [](ref<const Vector<SelectFileFilter>> filters) -> Result<FileUrl, std::runtime_error> {
 
 			::IFileOpenDialog* winFileDialog = nullptr;
 			auto result = ::CoCreateInstance(
@@ -254,16 +257,24 @@ concurrent::future<Result<FileUrl, std::runtime_error>> requestPlatformSelect(mr
 			auto report = FileUrl { clone(FileScheme), engine::fs::Path { ::hg::move(standard) } };
 
 			return Expected(::hg::move(report));
-		}
 	};
-	auto future = promise.get();
 
 	/**/
 
 	const auto engine = engine::Engine::getEngine();
 	const auto platform = engine->getPlatform();
 
-	platform->platformQueue().try_push(::hg::move(promise));
+	UniqueFn<void(), 128> item {
+		[filters = ::hg::move(filter_), promise_ = ::hg::move(promise), select]() mutable {
+			auto result = select(filters);
+			if (result.has_value()) {
+				promise_.resolve(::hg::move(result).value());
+			} else {
+				promise_.reject(::hg::move(result).error());
+			}
+		}
+	};
+	platform->platformQueue().try_push(::hg::move(item));
 	return future;
 }
 

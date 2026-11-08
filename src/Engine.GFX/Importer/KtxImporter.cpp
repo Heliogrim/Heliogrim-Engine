@@ -2,7 +2,6 @@
 #include <regex>
 #include <Engine.Assets.Type/Texture/ImageAsset.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
-#include <Engine.Async/Await/Promise.hpp>
 #include <Engine.Common/GuidFormat.hpp>
 #include <Engine.Common/Optional.hpp>
 #include <Engine.Common/Wrapper.hpp>
@@ -120,17 +119,7 @@ KtxImporter::descriptor_type KtxImporter::descriptor() const noexcept {
 }
 
 static KtxImporter::import_result_type makeImportResult(mref<KtxImporter::import_type> value_) {
-
-	::hg::concurrent::promise<KtxImporter::import_type> prom {
-		[value = std::move(value_)]() {
-			return value;
-		}
-	};
-
-	auto result { prom.get() };
-	prom();
-
-	return result;
+	return KtxImporter::import_result_type::ready(std::move(value_));
 }
 
 [[maybe_unused]] static string normalizeDirName(cref<string> value_) {

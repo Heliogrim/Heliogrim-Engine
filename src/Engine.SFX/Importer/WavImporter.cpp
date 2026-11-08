@@ -58,8 +58,5 @@ WavImporter::import_result_type WavImporter::import(
 	drwav_uninit(&wav);
 
 	//
-	auto state { make_sptr<concurrent::future_state<import_type>>() };
-	state->set(std::move(result));
-
-	return import_result_type { state };
+	return import_result_type::ready(std::move(result));
 }

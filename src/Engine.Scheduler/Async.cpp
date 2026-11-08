@@ -1,5 +1,6 @@
 #include "Async.hpp"
 
+#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Core/Engine.hpp>
 
 #include "Pipeline/CompositePipeline.hpp"
