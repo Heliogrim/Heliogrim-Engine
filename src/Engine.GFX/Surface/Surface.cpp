@@ -10,7 +10,6 @@
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Platform/Platform.hpp>
-#include <Engine.Scheduler/Fiber/Fiber.hpp>
 #include <Heliogrim/Async/Future.hpp>
 
 #include "../__macro.hpp"
@@ -69,8 +68,7 @@ void Surface::destroy() {
 
 	/**/
 
-	const auto pending = Engine::getEngine()->getPlatform()->destroyNativeWindow(std::move(_window));
-	scheduler::fiber::self::await_signal(pending.signal().get());
+	(void)await(Engine::getEngine()->getPlatform()->destroyNativeWindow(std::move(_window)));
 }
 
 TextureFormat Surface::getImageFormat(const Device& device_) const {
