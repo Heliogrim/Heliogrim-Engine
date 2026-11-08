@@ -3,7 +3,7 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 
-#include "../vkinc.hpp"
+#include "../API/__vkFwd.hpp"
 
 namespace hg::engine::gfx {
 	class Application {
@@ -42,18 +42,6 @@ namespace hg::engine::gfx {
 		void destroy();
 
 		/**
-		 * Member dereference operator
-		 *
-		 * @author Julius
-		 * @date 09.11.2020
-		 *
-		 * @returns The dereferenced object.
-		 */
-		vk::Instance* operator->();
-
-		non_owning_rptr<const vk::Instance> operator->() const noexcept;
-
-		/**
 		 * Instance casting operator
 		 *
 		 * @author Julius
@@ -64,7 +52,7 @@ namespace hg::engine::gfx {
 		operator vk::Instance() const;
 
 	private:
-		vk::Instance _instance;
+		VkInstance _instance = nullptr;
 
 		static Vector<const char*> _validation;
 

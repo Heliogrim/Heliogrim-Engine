@@ -3,6 +3,7 @@
 #include <Engine.Async/Primitive/SpinLock.hpp>
 
 #include "CommandPool.hpp"
+#include "../vkinc.hpp"
 #include "../Buffer/Buffer.hpp"
 #include "../Buffer/SparseBuffer.hpp"
 #include "../Texture/TextureBuffer.hpp"

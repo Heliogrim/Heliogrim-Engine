@@ -6,7 +6,7 @@
 
 #include "SparseTexturePageFlag.hpp"
 #include "__fwd.hpp"
-#include "../Device/Device.hpp"
+#include "../vkinc.hpp"
 #include "../Memory/VirtualMemoryPage.hpp"
 
 namespace hg::engine::gfx {

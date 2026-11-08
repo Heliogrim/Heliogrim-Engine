@@ -1,5 +1,7 @@
 #include "VirtualMemoryPage.hpp"
 
+#include <cassert>
+
 #include "AllocatedMemory.hpp"
 #include "AllocationResult.hpp"
 #include "VirtualMemory.hpp"

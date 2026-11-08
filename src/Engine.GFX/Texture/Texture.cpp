@@ -3,8 +3,10 @@
 #include <utility>
 
 #include "TextureView.hpp"
+#include "../vkinc.hpp"
 
 using namespace hg::engine::gfx;
+using namespace hg;
 
 Texture::Texture() noexcept :
 	_buffer(),
@@ -12,7 +14,7 @@ Texture::Texture() noexcept :
 	_format(TextureFormat::eUndefined),
 	_mipLevels(0),
 	_type(TextureType::eUndefined),
-	_view(vk::ImageView {}) {}
+	_view(nullptr) {}
 
 Texture::Texture(value_type&& other_) noexcept :
 	_buffer(std::exchange(other_._buffer, {})),
@@ -52,7 +54,7 @@ void Texture::destroy() {
 	}
 
 	if (_view) {
-		_buffer.vkDevice().destroy(_view);
+		vk::Device { _buffer.vkDevice() }.destroy(_view);
 		_view = VK_NULL_HANDLE;
 	}
 
@@ -157,10 +159,10 @@ TextureType Texture::type() const noexcept {
 	return _type;
 }
 
-vk::ImageView& Texture::vkView() noexcept {
+ref<VkImageView> Texture::vkView() noexcept {
 	return _view;
 }
 
-const vk::ImageView& Texture::vkView() const noexcept {
+vk::ImageView Texture::vkView() const noexcept {
 	return _view;
 }

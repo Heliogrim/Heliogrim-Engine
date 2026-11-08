@@ -107,6 +107,6 @@ namespace hg::engine::gfx {
 		/**
 		 * Vulkan API
 		 */
-		vk::CommandPool _vkPool;
+		VkCommandPool _vkPool = nullptr;
 	};
 }

@@ -126,30 +126,34 @@ void CommandBuffer::bindIndexBuffer(cref<IndexBufferView> indexBufferView_) {
 }
 
 void CommandBuffer::bindVertexBuffer(const u32 binding_, cref<Buffer> buffer_, u64 offset_) {
+	const vk::Buffer buffer { buffer_.buffer };
 	_vkCmd.bindVertexBuffers(
 		binding_,
 		1,
-		&buffer_.buffer,
+		&buffer,
 		&offset_
 	);
 }
 
 void CommandBuffer::bindVertexBuffer(const u32 binding_, const VertexBuffer& buffer_, u64 offset_) {
+	const vk::Buffer buffer { buffer_.buffer };
 	_vkCmd.bindVertexBuffers(
 		binding_,
 		1,
-		&buffer_.buffer,
+		&buffer,
 		&offset_
 	);
 }
 
 void CommandBuffer::bindVertexBuffer(const u32 binding_, const ptr<const SparseBuffer> buffer_, u64 offset_) {
-	_vkCmd.bindVertexBuffers(binding_, 1uL, &buffer_->vkBuffer(), &offset_);
+	const auto buffer { buffer_->vkBuffer() };
+	_vkCmd.bindVertexBuffers(binding_, 1uL, &buffer, &offset_);
 }
 
 void CommandBuffer::bindVertexBuffer(const u32 binding_, const ptr<const SparseBufferView> bufferView_) {
 	const auto loff = bufferView_->offset();
-	_vkCmd.bindVertexBuffers(binding_, 1uL, &bufferView_->owner().vkBuffer(), &loff);
+	const auto buffer { bufferView_->owner().vkBuffer() };
+	_vkCmd.bindVertexBuffers(binding_, 1uL, &buffer, &loff);
 }
 
 void CommandBuffer::bindVertexBuffer(const u32 index_, cref<VertexBufferView> vertexBufferView_) {
@@ -278,8 +282,7 @@ void CommandBuffer::submitWait() {
 	assert(_valid && _root);
 
 	_pool->queue()->submitWait(*this);
-	_valid = not
-	_faf;
+	_valid = not _faf;
 }
 
 void CommandBuffer::release() {

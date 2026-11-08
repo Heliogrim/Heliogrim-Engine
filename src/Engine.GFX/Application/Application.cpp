@@ -90,11 +90,13 @@ void Application::setup() {
 	};
 
 	try {
-		const vk::Result res = vk::createInstance(&instInfo, nullptr, &_instance);
+		vk::Instance instance {};
+		const vk::Result res = vk::createInstance(&instInfo, nullptr, &instance);
 
 		if (res != vk::Result::eSuccess) {
 			throw std::runtime_error(std::to_string(static_cast<VkResult>(res)));
 		}
+		_instance = instance;
 
 		IM_DEBUG_LOG("Created vk::Instance successfully.");
 	} catch (const std::exception& e_) {
@@ -105,7 +107,7 @@ void Application::setup() {
 }
 
 void Application::destroy() {
-	_instance.destroy();
+	vk::Instance { _instance }.destroy();
 	_instance = nullptr;
 }
 
@@ -132,14 +134,6 @@ Vector<const char*> Application::getExtensions() {
 	#endif
 
 	return extensions;
-}
-
-vk::Instance* Application::operator->() {
-	return &_instance;
-}
-
-non_owning_rptr<const vk::Instance> Application::operator->() const noexcept {
-	return &_instance;
 }
 
 Application::operator vk::Instance() const {

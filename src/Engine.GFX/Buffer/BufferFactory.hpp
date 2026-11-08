@@ -1,6 +1,7 @@
 #pragma once
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 
+#include "Engine.GFX/vkinc.hpp"
 #include "Engine.GFX/Device/Device.hpp"
 
 namespace hg::engine::gfx {

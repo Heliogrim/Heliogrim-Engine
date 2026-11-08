@@ -4,6 +4,8 @@
 #include <Engine.Common/Collection/Set.hpp>
 #include <Engine.Logging/Logger.hpp>
 
+#include "../vkinc.hpp"
+
 #ifdef _PROFILING
 #include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
@@ -84,7 +86,7 @@ void Device::setup() {
 
 	const auto checkSurfaceSupport { _surface != nullptr };
 
-	const std::vector<vk::PhysicalDevice> physicalCandidates = (*_application)->enumeratePhysicalDevices();
+	const std::vector<vk::PhysicalDevice> physicalCandidates = static_cast<vk::Instance>(*_application).enumeratePhysicalDevices();
 	for (const auto& entry : physicalCandidates) {
 
 		const bool extension { supportsExtensions(entry) };
@@ -152,7 +154,8 @@ void Device::setup() {
 
 	assert(qFamIndices.isComplete());
 
-	const auto features = _physicalDevice.getFeatures();
+	const vk::PhysicalDevice physicalDevice { _physicalDevice };
+	const auto features = physicalDevice.getFeatures();
 
 	vk::DeviceCreateInfo dCi = vk::DeviceCreateInfo();
 	dCi.queueCreateInfoCount = static_cast<uint32_t>(dqcis.size());
@@ -183,22 +186,26 @@ void Device::setup() {
 	pdv12f.pNext = &pdmf;
 	dCi.pNext = &pdv12f;
 
+	vk::Device device {};
+
 	#ifdef _DEBUG
-	assert(_physicalDevice.createDevice(&dCi, nullptr, &_device) == vk::Result::eSuccess);
+	assert(physicalDevice.createDevice(&dCi, nullptr, &device) == vk::Result::eSuccess);
 
 	if (checkSurfaceSupport) {
-		assert(_physicalDevice.getSurfaceSupportKHR(qFamIndices.graphicsFamily, *_surface));
+		assert(physicalDevice.getSurfaceSupportKHR(qFamIndices.graphicsFamily, *_surface));
 	}
 	IM_DEBUG_LOG("Created vk::Device successfully.");
 
 	#else
 
-	_physicalDevice.createDevice(&dCi, nullptr, &_device);
+	physicalDevice.createDevice(&dCi, nullptr, &device);
 
 	if (checkSurfaceSupport) {
-		_physicalDevice.getSurfaceSupportKHR(qFamIndices.graphicsFamily, *_surface);
+		physicalDevice.getSurfaceSupportKHR(qFamIndices.graphicsFamily, *_surface);
 	}
 	#endif
+
+	_device = device;
 
 	/**
 	 * Setup Allocator
@@ -280,15 +287,15 @@ void Device::destroy() {
 
 	/**/
 
-	_device.destroy();
+	vkDevice().destroy();
 	_device = nullptr;
 }
 
-vk::Device& Device::vkDevice() const {
+vk::Device Device::vkDevice() const noexcept {
 	return _device;
 }
 
-vk::PhysicalDevice& Device::vkPhysicalDevice() const {
+vk::PhysicalDevice Device::vkPhysicalDevice() const noexcept {
 	return _physicalDevice;
 }
 
@@ -308,8 +315,8 @@ ptr<CommandQueue> Device::transferQueue() const noexcept {
 	return _transferQueue;
 }
 
-uint32_t Device::getQueueFamilyIdx(const vk::QueueFlagBits& flag_) {
-	auto props = _physicalDevice.getQueueFamilyProperties();
+uint32_t Device::getQueueFamilyIdx(const vk::QueueFlagBits& flag_) const {
+	auto props = vkPhysicalDevice().getQueueFamilyProperties();
 
 	// Dedicated Compute
 	if (flag_ & vk::QueueFlags(vk::QueueFlagBits::eCompute)) {

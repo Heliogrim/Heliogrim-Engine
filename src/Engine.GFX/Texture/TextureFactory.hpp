@@ -1,8 +1,9 @@
 #pragma once
 
 #include <Engine.Common/Wrapper.hpp>
-#include "Texture.hpp"
 #include "SparseTexture.hpp"
+#include "Texture.hpp"
+#include "../vkinc.hpp"
 #include "../Device/Device.hpp"
 
 namespace hg::engine::gfx {

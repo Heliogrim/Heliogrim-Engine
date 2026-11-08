@@ -6,6 +6,7 @@
 #include "BufferObject.hpp"
 #include "SparseBufferPage.hpp"
 #include "__fwd.hpp"
+#include "../API/__vkFwd.hpp"
 #include "../Device/Device.hpp"
 
 namespace hg::engine::gfx {
@@ -31,7 +32,7 @@ namespace hg::engine::gfx {
 			cref<vk::BufferUsageFlags> usageFlags_
 		) noexcept;
 
-		SparseBuffer (cref<this_type>) = delete;
+		SparseBuffer(cref<this_type>) = delete;
 
 		SparseBuffer(mref<this_type> other_) noexcept;
 
@@ -68,13 +69,13 @@ namespace hg::engine::gfx {
 		[[nodiscard]] u64 memoryResidentialSize() const noexcept;
 
 	private:
-		vk::Buffer _vkBuffer;
-		vk::BufferUsageFlags _vkBufferUsageFlags;
+		VkBuffer _vkBuffer = nullptr;
+		VkFlagStore<vk::BufferUsageFlagBits> _vkBufferUsageFlags {};
 
 	public:
-		[[nodiscard]] cref<vk::Buffer> vkBuffer() const noexcept;
+		[[nodiscard]] vk::Buffer vkBuffer() const noexcept;
 
-		[[nodiscard]] cref<vk::BufferUsageFlags> vkBufferUsageFlags() const noexcept;
+		[[nodiscard]] vk::BufferUsageFlags vkBufferUsageFlags() const noexcept;
 
 	private:
 		// TODO:
@@ -124,7 +125,6 @@ namespace hg::engine::gfx {
 
 	private:
 		Vector<vk::SparseMemoryBind> _bindings;
-		vk::SparseBufferMemoryBindInfo _bindData;
 
 	public:
 		void updateBindingData();

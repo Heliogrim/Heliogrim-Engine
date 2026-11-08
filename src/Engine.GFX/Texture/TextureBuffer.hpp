@@ -1,7 +1,9 @@
 #pragma once
 
 #include <Engine.Common/Types.hpp>
-#include "../vkinc.hpp"
+#include <Engine.Common/Wrapper.hpp>
+
+#include "../API/__vkFwd.hpp"
 
 namespace hg::engine::gfx {
 	class TextureBuffer final {
@@ -44,7 +46,7 @@ namespace hg::engine::gfx {
 		/**
 		 * Device
 		 */
-		vk::Device _vkDevice;
+		VkDevice _vkDevice = nullptr;
 
 	public:
 		/**
@@ -53,15 +55,15 @@ namespace hg::engine::gfx {
 		 * @author Julius
 		 * @date 20.12.2020
 		 *
-		 * @returns A reference to a vk::Device.
+		 * @returns A reference to the VkDevice.
 		 */
-		[[nodiscard]] vk::Device& vkDevice() noexcept;
+		[[nodiscard]] ref<VkDevice> vkDevice() noexcept;
 
 	private:
 		/**
 		 * Image
 		 */
-		vk::Image _image;
+		VkImage _image = nullptr;
 
 	public:
 		/**
@@ -80,15 +82,15 @@ namespace hg::engine::gfx {
 		 * @author Julius
 		 * @date 07.12.2020
 		 *
-		 * @returns A reference to a vk::Image.
+		 * @returns A reference to the VkImage.
 		 */
-		[[nodiscard]] vk::Image& image() noexcept;
+		[[nodiscard]] ref<VkImage> image() noexcept;
 
 	private:
 		/**
 		 * Memory
 		 */
-		vk::DeviceMemory _memory;
+		VkDeviceMemory _memory = nullptr;
 
 	public:
 		/**
@@ -107,9 +109,9 @@ namespace hg::engine::gfx {
 		 * @author Julius
 		 * @date 07.12.2020
 		 *
-		 * @returns A reference to a vk::DeviceMemory.
+		 * @returns A reference to the VkDeviceMemory.
 		 */
-		[[nodiscard]] vk::DeviceMemory& memory() noexcept;
+		[[nodiscard]] ref<VkDeviceMemory> memory() noexcept;
 
 	private:
 		/**
@@ -243,9 +245,9 @@ namespace hg::engine::gfx {
 		 * Vulkan API
 		 */
 	public:
-		vk::ImageAspectFlags _vkAspect;
-		vk::ImageCreateFlags _vkCreate;
+		VkFlagStore<vk::ImageAspectFlagBits> _vkAspect {};
+		VkFlagStore<vk::ImageCreateFlagBits> _vkCreate {};
 		vk::ImageLayout _vkLayout;
-		vk::ImageUsageFlags _vkUsage;
+		VkFlagStore<vk::ImageUsageFlagBits> _vkUsage {};
 	};
 }

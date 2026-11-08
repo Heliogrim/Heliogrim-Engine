@@ -4,7 +4,7 @@
 #include <Engine.Common/Move.hpp>
 
 #include "BufferObject.hpp"
-#include "../vkinc.hpp"
+#include "../API/__vkFwd.hpp"
 #include "../Geometry/Vertex.hpp"
 #include "../Memory/AllocatedMemory.hpp"
 
@@ -46,11 +46,14 @@ namespace hg::engine::gfx {
 		uptr<memory::AllocatedMemory> memory = nullptr;
 
 	public:
-		vk::Buffer buffer = nullptr;
-		vk::Device device = nullptr;
+		VkBuffer buffer = nullptr;
+		VkDevice device = nullptr;
 		u64 size = 0;
 
-		vk::BufferUsageFlags usageFlags = vk::BufferUsageFlags {};
+		VkFlagStore<vk::BufferUsageFlagBits> usageFlags {};
+
+		/** Equals `VK_WHOLE_SIZE`, which needs the full Vulkan headers. */
+		constexpr static u64 whole_size = ~0uLL;
 
 		/**
 		 * Binds
@@ -61,7 +64,7 @@ namespace hg::engine::gfx {
 		 * @param  size_ (Optional) The size.
 		 * @param  offset_ (Optional) The offset.
 		 */
-		void bind(const u64 size_ = VK_WHOLE_SIZE, const u64 offset_ = 0);
+		void bind(const u64 size_ = whole_size, const u64 offset_ = 0);
 
 		/**
 		 * Destroys this
@@ -80,7 +83,7 @@ namespace hg::engine::gfx {
 		 * @param  size_ (Optional) The size.
 		 * @param  offset_ (Optional) The offset.
 		 */
-		void flushAligned(const u64 size_ = VK_WHOLE_SIZE, const u64 offset_ = 0);
+		void flushAligned(const u64 size_ = whole_size, const u64 offset_ = 0);
 
 		/**
 		 * Maps
@@ -91,7 +94,7 @@ namespace hg::engine::gfx {
 		 * @param  size_ (Optional) The size.
 		 * @param  offset_ (Optional) The offset.
 		 */
-		void map(const u64 size_ = VK_WHOLE_SIZE, const u64 offset_ = 0);
+		void map(const u64 size_ = whole_size, const u64 offset_ = 0);
 
 		/**
 		 * Map the buffer memory aligned (non coherent atom size) to host
@@ -102,7 +105,7 @@ namespace hg::engine::gfx {
 		 * @param  size_ (Optional) The size.
 		 * @param  offset_ (Optional) The offset.
 		 */
-		void mapAligned(const u64 size_ = VK_WHOLE_SIZE, const u64 offset_ = 0);
+		void mapAligned(const u64 size_ = whole_size, const u64 offset_ = 0);
 
 		/**
 		 * Unmaps this

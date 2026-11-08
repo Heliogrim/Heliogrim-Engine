@@ -1,11 +1,11 @@
 #include "AllocatedMemory.hpp"
 
 #include <cassert>
-#include <cstring>
 #include <utility>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 
 #include "Allocator.hpp"
+#include "../vkinc.hpp"
 
 using namespace hg::engine::gfx::memory;
 using namespace hg;
@@ -16,8 +16,8 @@ AllocatedMemory::AllocatedMemory(
 	cref<MemoryLayout> layout_,
 	cref<u64> size_,
 	cref<u64> offset_,
-	cref<vk::Device> vkDevice_,
-	cref<vk::DeviceMemory> vkMemory_,
+	VkDevice vkDevice_,
+	VkDeviceMemory vkMemory_,
 	MemoryMapping mapping_
 ) noexcept :
 	allocator(allocator_),
@@ -55,7 +55,7 @@ AllocatedMemory::~AllocatedMemory() {
 	#endif
 
 	if (vkMemory && !parent && !allocator) {
-		vkDevice.freeMemory(vkMemory);
+		vk::Device { vkDevice }.freeMemory(vkMemory);
 	}
 }
 
@@ -83,7 +83,7 @@ void AllocatedMemory::flush(const u64 size_, const u64 offset_) {
 	#endif
 
 	const vk::MappedMemoryRange range { vkMemory, offset + offset_, mapSize };
-	[[maybe_unused]] auto result = vkDevice.flushMappedMemoryRanges(1, &range);
+	[[maybe_unused]] auto result = vk::Device { vkDevice }.flushMappedMemoryRanges(1, &range);
 }
 
 MemoryMapping AllocatedMemory::map(const u64 size_, const u64 offset_) {
@@ -94,14 +94,14 @@ MemoryMapping AllocatedMemory::map(const u64 size_, const u64 offset_) {
 	assert((mapSize == VK_WHOLE_SIZE && (offset_ + offset) == 0) || mapSize <= (size - offset_));
 	#endif
 
-	mapping = vkDevice.mapMemory(vkMemory, offset + offset_, mapSize, vk::MemoryMapFlags {});
+	mapping = vk::Device { vkDevice }.mapMemory(vkMemory, offset + offset_, mapSize, vk::MemoryMapFlags {});
 	return mapping;
 }
 
 void AllocatedMemory::unmap() {
 	assert(mapping != nullptr);
 
-	vkDevice.unmapMemory(vkMemory);
+	vk::Device { vkDevice }.unmapMemory(vkMemory);
 	mapping = nullptr;
 }
 
