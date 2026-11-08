@@ -68,9 +68,9 @@ bool Fiber::destroy() {
 	::DeleteFiber(handle);
 
 	#else
-    ucontext_t* ctx { static_cast<ucontext_t*>(handle) };
-    free(ctx->uc_stack.ss_sp);
-    delete ctx;
+	ptr<ucontext_t> ctx { static_cast<ptr<ucontext_t>>(handle) };
+	free(ctx->uc_stack.ss_sp);
+	delete ctx;
 
 	#endif
 
@@ -94,7 +94,7 @@ void Fiber::yield() {
 	#ifdef ENV_MSVC
 	::SwitchToFiber(next);
 	#else
-    ::swapcontext(static_cast<ptr<ucontext_t>>(handle), static_cast<ptr<ucontext_t>>(next));
+	::swapcontext(static_cast<ptr<ucontext_t>>(handle), static_cast<ptr<ucontext_t>>(next));
 	#endif
 }
 
@@ -134,9 +134,9 @@ void self::yield() {
 	#endif
 
 	#else
-    /**
-     *
-     */
+	/**
+	 *
+	 */
 	::hg::todo_panic();
 
 	#endif
@@ -159,9 +159,9 @@ void self::await(mref<FiberAwaitable> awaitable_) {
 	#endif
 
 	#else
-    /**
-     *
-     */
+	/**
+	 *
+	 */
 	::hg::todo_panic();
 	#endif
 }
@@ -170,6 +170,6 @@ u64 engine::scheduler::fiber::default_fiber_stack_size() noexcept {
 	#ifdef ENV_MSVC
 	return 4096ui64;
 	#else
-    return static_cast<u64>(SIGSTKSZ);
+	return static_cast<u64>(SIGSTKSZ);
 	#endif
 }
