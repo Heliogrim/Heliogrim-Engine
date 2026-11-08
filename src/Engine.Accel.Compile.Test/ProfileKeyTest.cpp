@@ -5,8 +5,8 @@
 #include <Engine.Accel.Storage/HashedState.hpp>
 #include <Engine.Common/Make.hpp>
 
-using namespace hg;
 using namespace hg::engine::accel;
+using namespace hg;
 
 namespace AccelCompile {
 	namespace {

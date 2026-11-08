@@ -6,9 +6,9 @@
 #include "Builtin.hpp"
 #include "Typecheck.hpp"
 
+using namespace hg::engine::accel::lang::ir::detail;
 using namespace hg::engine::accel::lang;
 using namespace hg;
-using namespace hg::engine::accel::lang::ir::detail;
 
 namespace {
 	using ir::findBuiltinFunction;

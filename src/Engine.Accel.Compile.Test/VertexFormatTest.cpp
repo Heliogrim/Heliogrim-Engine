@@ -2,8 +2,8 @@
 
 #include <Engine.Accel.Compile/Pass/VkVertexFormat.hpp>
 
-using namespace hg;
 using namespace hg::engine::accel;
+using namespace hg;
 
 namespace AccelCompile {
 	TEST(VertexFormatTest, LegacyFormatsStayTheSame) {

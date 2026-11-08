@@ -11,9 +11,9 @@
 #include <Engine.Accel.Lang/Ir/Slice.hpp>
 #include <Engine.Accel.Lang/Ir/Typecheck.hpp>
 
-using namespace hg;
-using namespace hg::engine::accel::lang;
 using namespace hg::engine::accel::lang::ir;
+using namespace hg::engine::accel::lang;
+using namespace hg;
 
 namespace AccelLang {
 	namespace {
