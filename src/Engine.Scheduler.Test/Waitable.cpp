@@ -41,6 +41,28 @@ namespace SchedulerModule {
 		EXPECT_EQ(queue.takeAll(), nullptr);
 	}
 
+	TEST(ParkQueue, LockedPushesWithoutDeadlock) {
+		ParkQueue queue {};
+		ParkNode a, b;
+
+		const auto count = queue.locked(
+			[&](auto locked_) {
+				size_t n = 0;
+				if (locked_.empty()) {
+					locked_.push(a);
+					locked_.push(b);
+					n = 2;
+				}
+				return n;
+			}
+		);
+
+		EXPECT_EQ(count, 2u);
+		EXPECT_EQ(queue.popOne(), &a);
+		EXPECT_EQ(queue.popOne(), &b);
+		EXPECT_EQ(queue.popOne(), nullptr);
+	}
+
 	namespace {
 		struct CountedNode : ParkNode {
 			u32 visited = 0;
