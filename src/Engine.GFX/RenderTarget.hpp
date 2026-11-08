@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Async/Await/Future.hpp>
-#include <Engine.Async/Await/Promise.hpp>
 #include <Engine.Common/Expected.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
@@ -26,7 +24,6 @@ namespace hg::engine::gfx::scene {
 
 namespace hg::engine::gfx {
 	struct TransitionResult {
-		::hg::concurrent::Future<std::monostate> pending;
 		smr<Swapchain> pendingSwapchain;
 	};
 
@@ -59,11 +56,13 @@ namespace hg::engine::gfx {
 		smr<const scene::SceneView> _sceneView;
 		Vector<uptr<render::RenderPass>> _renderPasses;
 
-		uptr<::hg::concurrent::Promise<nmpt<const scene::SceneView>>> _chainSceneView;
+		// Keeps the old object alive until the transition completes
+		smr<const scene::SceneView> _previousSceneView;
+		bool _sceneViewPending;
 		u8 _chainSceneViewMask;
 
 	public:
-		[[nodiscard]] ::hg::concurrent::Future<nmpt<const scene::SceneView>> transitionToSceneView(
+		void transitionToSceneView(
 			mref<smr<const scene::SceneView>> sceneView_
 		);
 
@@ -73,7 +72,9 @@ namespace hg::engine::gfx {
 		smr<Swapchain> _swapchain;
 		nmpt<Surface> _surface;
 
-		uptr<::hg::concurrent::Promise<std::monostate>> _chainSwapChain;
+		// Keeps the old object alive until the transition completes
+		smr<Swapchain> _previousSwapchain;
+		bool _swapchainPending;
 		u8 _chainSwapChainMask;
 
 	public:
