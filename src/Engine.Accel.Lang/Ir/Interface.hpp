@@ -33,5 +33,5 @@ namespace hg::engine::accel::lang::ir {
 	 * entries too. Nothing is validated here: a bind entry without class (`eNone`, the parser does not infer one)
 	 * is listed as is; `assignLayout` skips it, so the caller's contract check must report it.
 	 */
-	[[nodiscard]] Vector<InterfaceEntry> computeInterface(ref<const Module> module_);
+	[[nodiscard]] Vector<InterfaceEntry> computeInterface(ref<const Module> mod_);
 }

@@ -19,7 +19,7 @@ namespace hg::engine::accel::lang::ir {
 	 * @param needsUniform_ true for builtin names (variable or call) that are only valid under uniform control; default none
 	 */
 	[[nodiscard]] Uniformity analyzeUniformity(
-		ref<const Module> module_,
+		ref<const Module> mod_,
 		FnRef<bool(StringView)> needsUniform_ = [](StringView) { return false; }
 	);
 }

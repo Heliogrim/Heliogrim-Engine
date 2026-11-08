@@ -32,39 +32,39 @@ namespace AccelLang {
 			"}\n";
 
 		/* same content, but a dead type at arena index 0 (every live type index shifted) and dead code nodes */
-		[[nodiscard]] Module withDeadNodes(Module module_) {
+		[[nodiscard]] Module withDeadNodes(Module mod_) {
 			const auto shift = [](ref<TypeRef> ref_) {
 				if (ref_.index != ~0uL) {
 					++ref_.index;
 				}
 			};
-			for (auto& type : module_.types) {
+			for (auto& type : mod_.types) {
 				shift(type.element);
 				for (auto& field : type.fields) {
 					shift(field.type);
 				}
 			}
-			for (auto& binding : module_.bindings) {
+			for (auto& binding : mod_.bindings) {
 				shift(binding.type);
 			}
-			for (auto& function : module_.functions) {
+			for (auto& function : mod_.functions) {
 				shift(function.ret);
 				for (auto& param : function.params) {
 					shift(param.type);
 				}
 			}
-			for (auto& expr : module_.exprs) {
+			for (auto& expr : mod_.exprs) {
 				shift(expr.type);
 			}
-			for (auto& stmt : module_.stmts) {
+			for (auto& stmt : mod_.stmts) {
 				shift(stmt.type);
 			}
-			auto& deadType = *module_.types.emplace(module_.types.begin());
+			auto& deadType = *mod_.types.emplace(mod_.types.begin());
 			deadType.kind = TypeKind::eStruct;
 			deadType.name = "Dead";
-			module_.exprs.emplace_back().name = "42";
-			module_.stmts.emplace_back().kind = StmtKind::eReturn;
-			return module_;
+			mod_.exprs.emplace_back().name = "42";
+			mod_.stmts.emplace_back().kind = StmtKind::eReturn;
+			return mod_;
 		}
 
 		[[nodiscard]] Intermediate handBuilt(StringView symbolId_) {
@@ -98,14 +98,14 @@ namespace AccelLang {
 	}
 
 	TEST(VariantKeyTest, ToggleOrderAndOutputOrderIrrelevant) {
-		const auto module = parsed(source);
+		const auto mod = parsed(source);
 		const ToggleSet ab { { "A", "x" }, { "B", "y" } };
 		const ToggleSet ba { { "B", "y" }, { "A", "x" } };
 		const Vector<String> o1 { "color", "depth" };
 		const Vector<String> o2 { "depth", "color" };
 
-		EXPECT_EQ(makeVariantKey(module, ab, o1), makeVariantKey(module, ba, o2));
-		EXPECT_EQ(std::hash<VariantKey> {}(makeVariantKey(module, ab, o1)), std::hash<VariantKey> {}(makeVariantKey(module, ba, o2)));
+		EXPECT_EQ(makeVariantKey(mod, ab, o1), makeVariantKey(mod, ba, o2));
+		EXPECT_EQ(std::hash<VariantKey> {}(makeVariantKey(mod, ab, o1)), std::hash<VariantKey> {}(makeVariantKey(mod, ba, o2)));
 	}
 
 	TEST(VariantKeyTest, TessSpacingChangesKey) {
@@ -130,14 +130,14 @@ namespace AccelLang {
 	}
 
 	TEST(VariantKeyTest, DifferentToggleOrOutputChangesKey) {
-		const auto module = parsed(source);
+		const auto mod = parsed(source);
 		const Vector<String> color { "color" };
 		const Vector<String> depth { "depth" };
-		const auto base = makeVariantKey(module, { { "Mode", "Forward" } }, color);
+		const auto base = makeVariantKey(mod, { { "Mode", "Forward" } }, color);
 
-		EXPECT_NE(base, makeVariantKey(module, { { "Mode", "Deferred" } }, color));
-		EXPECT_NE(base, makeVariantKey(module, { { "Mode", "Forward" } }, depth));
-		EXPECT_NE(base, makeVariantKey(module, { { "Mode", "Forward" } }, {}));
+		EXPECT_NE(base, makeVariantKey(mod, { { "Mode", "Deferred" } }, color));
+		EXPECT_NE(base, makeVariantKey(mod, { { "Mode", "Forward" } }, depth));
+		EXPECT_NE(base, makeVariantKey(mod, { { "Mode", "Forward" } }, {}));
 	}
 
 	TEST(VariantCacheTest, SecondLookupDoesNotBuild) {

@@ -34,16 +34,16 @@ namespace AccelLang {
 			return diag_.message.find(text_) != String::npos;
 		}
 
-		[[nodiscard]] u32 functionIndex(ref<const Module> module_, StringView name_) {
-			const auto it = std::ranges::find(module_.functions, name_, &FunctionDecl::name);
-			EXPECT_NE(it, module_.functions.end()) << "no function " << name_;
-			return it == module_.functions.end() ? unset : static_cast<u32>(it - module_.functions.begin());
+		[[nodiscard]] u32 functionIndex(ref<const Module> mod_, StringView name_) {
+			const auto it = std::ranges::find(mod_.functions, name_, &FunctionDecl::name);
+			EXPECT_NE(it, mod_.functions.end()) << "no function " << name_;
+			return it == mod_.functions.end() ? unset : static_cast<u32>(it - mod_.functions.begin());
 		}
 
-		[[nodiscard]] u32 bindingIndex(ref<const Module> module_, StringView id_) {
-			const auto it = std::ranges::find(module_.bindings, id_, &BindingDecl::id);
-			EXPECT_NE(it, module_.bindings.end()) << "no binding " << id_;
-			return it == module_.bindings.end() ? unset : static_cast<u32>(it - module_.bindings.begin());
+		[[nodiscard]] u32 bindingIndex(ref<const Module> mod_, StringView id_) {
+			const auto it = std::ranges::find(mod_.bindings, id_, &BindingDecl::id);
+			EXPECT_NE(it, mod_.bindings.end()) << "no binding " << id_;
+			return it == mod_.bindings.end() ? unset : static_cast<u32>(it - mod_.bindings.begin());
 		}
 
 		[[nodiscard]] FunctionDecl function(StringView name_, u32 root_) {
@@ -53,17 +53,17 @@ namespace AccelLang {
 			return fn;
 		}
 
-		[[nodiscard]] Vector<String> functionNames(ref<const Module> module_) {
+		[[nodiscard]] Vector<String> functionNames(ref<const Module> mod_) {
 			Vector<String> names {};
-			for (const auto& fn : module_.functions) {
+			for (const auto& fn : mod_.functions) {
 				names.emplace_back(fn.name);
 			}
 			return names;
 		}
 
-		[[nodiscard]] Vector<String> bindingIds(ref<const Module> module_, bool inputsOnly_ = false) {
+		[[nodiscard]] Vector<String> bindingIds(ref<const Module> mod_, bool inputsOnly_ = false) {
 			Vector<String> ids {};
-			for (const auto& binding : module_.bindings) {
+			for (const auto& binding : mod_.bindings) {
 				if (not inputsOnly_ || binding.input) {
 					ids.emplace_back(binding.id);
 				}
@@ -71,60 +71,60 @@ namespace AccelLang {
 			return ids;
 		}
 
-		[[nodiscard]] ref<const Stmt> bodyRoot(ref<const Module> module_, StringView function_) {
-			const auto& fn = module_.functions.at(functionIndex(module_, function_));
-			return module_.stmts.at(fn.body.value().root.index);
+		[[nodiscard]] ref<const Stmt> bodyRoot(ref<const Module> mod_, StringView function_) {
+			const auto& fn = mod_.functions.at(functionIndex(mod_, function_));
+			return mod_.stmts.at(fn.body.value().root.index);
 		}
 
 		/* every ref of the module is in range or unset */
-		void expectConsistent(ref<const Module> module_) {
+		void expectConsistent(ref<const Module> mod_) {
 			const auto check = [](u32 index_, size_t limit_, StringView what_) {
 				EXPECT_TRUE(index_ == unset || index_ < limit_) << what_ << " ref " << index_ << " out of range " << limit_;
 			};
-			const auto types = module_.types.size();
-			for (const auto& type : module_.types) {
+			const auto types = mod_.types.size();
+			for (const auto& type : mod_.types) {
 				check(type.element.index, types, "type");
 				for (const auto& field : type.fields) {
 					check(field.type.index, types, "field type");
 				}
 			}
-			for (const auto& binding : module_.bindings) {
+			for (const auto& binding : mod_.bindings) {
 				check(binding.type.index, types, "binding type");
 			}
-			for (const auto& fn : module_.functions) {
+			for (const auto& fn : mod_.functions) {
 				check(fn.ret.index, types, "return type");
 				for (const auto& param : fn.params) {
 					check(param.type.index, types, "param type");
 				}
 				if (fn.body.has_value()) {
-					check(fn.body->root.index, module_.stmts.size(), "body root");
+					check(fn.body->root.index, mod_.stmts.size(), "body root");
 				}
 			}
-			for (const auto& e : module_.exprs) {
-				check(e.binding.index, module_.bindings.size(), "expr binding");
-				check(e.function.index, module_.functions.size(), "expr function");
+			for (const auto& e : mod_.exprs) {
+				check(e.binding.index, mod_.bindings.size(), "expr binding");
+				check(e.function.index, mod_.functions.size(), "expr function");
 				check(e.type.index, types, "expr type");
 				for (const auto& op : e.operands) {
-					check(op.index, module_.exprs.size(), "operand");
+					check(op.index, mod_.exprs.size(), "operand");
 				}
 			}
-			for (const auto& s : module_.stmts) {
+			for (const auto& s : mod_.stmts) {
 				check(s.type.index, types, "stmt type");
-				check(s.lhs.index, module_.exprs.size(), "stmt lhs");
-				check(s.rhs.index, module_.exprs.size(), "stmt rhs");
+				check(s.lhs.index, mod_.exprs.size(), "stmt lhs");
+				check(s.rhs.index, mod_.exprs.size(), "stmt rhs");
 				for (const auto& child : s.children) {
-					check(child.index, module_.stmts.size(), "stmt child");
+					check(child.index, mod_.stmts.size(), "stmt child");
 				}
 			}
 		}
 
 		/* consistent, and every arena node is reachable from a function body (no dead nodes left to hash) */
-		void expectCompact(ref<const Module> module_) {
-			expectConsistent(module_);
-			Vector<bool> stmts(module_.stmts.size(), false);
-			Vector<bool> exprs(module_.exprs.size(), false);
+		void expectCompact(ref<const Module> mod_) {
+			expectConsistent(mod_);
+			Vector<bool> stmts(mod_.stmts.size(), false);
+			Vector<bool> exprs(mod_.exprs.size(), false);
 			Vector<u32> work {};
-			for (const auto& fn : module_.functions) {
+			for (const auto& fn : mod_.functions) {
 				if (fn.body.has_value() && fn.body->root.index < stmts.size()) {
 					work.emplace_back(fn.body->root.index);
 				}
@@ -137,7 +137,7 @@ namespace AccelLang {
 					continue;
 				}
 				stmts[at] = true;
-				const auto& s = module_.stmts[at];
+				const auto& s = mod_.stmts[at];
 				for (const auto ref : { s.lhs.index, s.rhs.index }) {
 					if (ref < exprs.size()) {
 						exprWork.emplace_back(ref);
@@ -156,7 +156,7 @@ namespace AccelLang {
 					continue;
 				}
 				exprs[at] = true;
-				for (const auto& op : module_.exprs[at].operands) {
+				for (const auto& op : mod_.exprs[at].operands) {
 					if (op.index < exprs.size()) {
 						exprWork.emplace_back(op.index);
 					}
@@ -166,15 +166,15 @@ namespace AccelLang {
 			EXPECT_TRUE(std::ranges::all_of(exprs, std::identity {})) << "unreachable expression";
 		}
 
-		[[nodiscard]] bool hasLiteral(ref<const Module> module_, StringView text_) {
+		[[nodiscard]] bool hasLiteral(ref<const Module> mod_, StringView text_) {
 			return std::ranges::any_of(
-				module_.exprs,
+				mod_.exprs,
 				[&](ref<const Expr> e_) { return e_.kind == ExprKind::eLiteral && e_.name == text_; }
 			);
 		}
 
-		[[nodiscard]] Module resolveOk(ref<const Module> module_, ref<const ToggleSet> toggles_) {
-			auto res = resolveToggles(module_, toggles_);
+		[[nodiscard]] Module resolveOk(ref<const Module> mod_, ref<const ToggleSet> toggles_) {
+			auto res = resolveToggles(mod_, toggles_);
 			EXPECT_TRUE(res.has_value()) << (res.has_value() || res.error().empty() ? "" : res.error().front().message);
 			if (not res.has_value()) {
 				return Module {};
@@ -183,29 +183,29 @@ namespace AccelLang {
 			return std::move(res).value();
 		}
 
-		[[nodiscard]] Diagnostics resolveFail(ref<const Module> module_, ref<const ToggleSet> toggles_) {
-			auto res = resolveToggles(module_, toggles_);
+		[[nodiscard]] Diagnostics resolveFail(ref<const Module> mod_, ref<const ToggleSet> toggles_) {
+			auto res = resolveToggles(mod_, toggles_);
 			EXPECT_FALSE(res.has_value());
 			return res.has_value() ? Diagnostics {} : std::move(res).error();
 		}
 
-		[[nodiscard]] ResolveResult fixOk(ref<const Module> module_, ref<const ToggleSources> sources_) {
-			auto res = fixToggles(module_, sources_);
+		[[nodiscard]] ResolveResult fixOk(ref<const Module> mod_, ref<const ToggleSources> sources_) {
+			auto res = fixToggles(mod_, sources_);
 			EXPECT_TRUE(res.has_value()) << (res.has_value() || res.error().empty() ? "" : res.error().front().message);
 			return res.has_value() ? std::move(res).value() : ResolveResult {};
 		}
 
-		[[nodiscard]] Diagnostics fixFail(ref<const Module> module_, ref<const ToggleSources> sources_) {
-			auto res = fixToggles(module_, sources_);
+		[[nodiscard]] Diagnostics fixFail(ref<const Module> mod_, ref<const ToggleSources> sources_) {
+			auto res = fixToggles(mod_, sources_);
 			EXPECT_FALSE(res.has_value());
 			return res.has_value() ? Diagnostics {} : std::move(res).error();
 		}
 
-		[[nodiscard]] Module sliceChecked(ref<const Module> module_, std::initializer_list<String> required_) {
+		[[nodiscard]] Module sliceChecked(ref<const Module> mod_, std::initializer_list<String> required_) {
 			const Vector<String> required { required_ };
-			const auto copy = module_;
-			auto result = slice(module_, required);
-			EXPECT_TRUE(same(copy, module_)) << "slice mutated its input";
+			const auto copy = mod_;
+			auto result = slice(mod_, required);
+			EXPECT_TRUE(same(copy, mod_)) << "slice mutated its input";
 			expectConsistent(result);
 			return result;
 		}
@@ -236,9 +236,9 @@ namespace AccelLang {
 	/* The brief's contract */
 
 	TEST(ResolveTest, PassValueWinsOverMaterialWithWarning) {
-		const auto module = parse(shading);
+		const auto mod = parse(shading);
 		const auto fixed = fixOk(
-			module,
+			mod,
 			ToggleSources { .pass = { { "Shading", "Deferred" } }, .profile = {}, .material = { { "Shading", "Forward" } } }
 		);
 		EXPECT_EQ(fixed.toggles, (ToggleSet { { "Shading", "Deferred" } }));
@@ -249,18 +249,18 @@ namespace AccelLang {
 	}
 
 	TEST(ResolveTest, DefaultsApplyWhenUnset) {
-		const auto module = parse(String(shadows) + String(shading));
-		const auto fixed = fixOk(module, ToggleSources { .pass = {}, .profile = { { "Shadows", "On" } }, .material = {} });
+		const auto mod = parse(String(shadows) + String(shading));
+		const auto fixed = fixOk(mod, ToggleSources { .pass = {}, .profile = { { "Shadows", "On" } }, .material = {} });
 		// sorted by name, every declared toggle present
 		EXPECT_EQ(fixed.toggles, (ToggleSet { { "Shading", "Forward" }, { "Shadows", "On" } }));
 		EXPECT_TRUE(fixed.warnings.empty());
 
-		const auto none = fixOk(module, {});
+		const auto none = fixOk(mod, {});
 		EXPECT_EQ(none.toggles, (ToggleSet { { "Shading", "Forward" }, { "Shadows", "Off" } }));
 	}
 
 	TEST(ResolveTest, ExhaustivenessErrorNamesCombination) {
-		const auto module = parse(
+		const auto mod = parse(
 			String(shading) + String(shadows) +
 			"fn GetWorldPosition() -> f32vec4;\n"
 			"@when (Shading == Forward) fn GetWorldPosition() -> f32vec4 { return f32vec4(1.0); }\n"
@@ -268,13 +268,13 @@ namespace AccelLang {
 			"fn main() {\n\tposition = GetWorldPosition();\n}\n"
 		, "M", EntryKind::eVertex);
 		// checked ahead of time: the requested combination itself is covered
-		const auto diags = resolveFail(module, { { "Shading", "Forward" }, { "Shadows", "Off" } });
+		const auto diags = resolveFail(mod, { { "Shading", "Forward" }, { "Shadows", "Off" } });
 		ASSERT_EQ(diags.size(), 1uz);
 		EXPECT_EQ(diags[0].message, "no body for 'GetWorldPosition()' at Shading=Deferred, Shadows=Off");
 	}
 
 	TEST(ResolveTest, WhenBlockInputsAreInterfaceOfThatVariant) {
-		const auto module = parse(
+		const auto mod = parse(
 			String(shading) +
 			"@input (mode = forward) f32vec3 normal;\n"
 			"@when (Shading == Forward) {\n"
@@ -288,7 +288,7 @@ namespace AccelLang {
 			"fn main() {\n\tcolor = f32vec4(Lit(), 1.0);\n}\n"
 		);
 
-		const auto forward = resolveOk(module, { { "Shading", "Forward" } });
+		const auto forward = resolveOk(mod, { { "Shading", "Forward" } });
 		EXPECT_EQ(bindingIds(forward, true), (Vector<String> { "normal", "light" }));
 		EXPECT_EQ(functionNames(forward), (Vector<String> { "Lit", "main" }));
 		EXPECT_EQ(
@@ -296,7 +296,7 @@ namespace AccelLang {
 			(Vector<u32> { bindingIndex(forward, "normal"), bindingIndex(forward, "light") })
 		);
 
-		const auto deferred = resolveOk(module, { { "Shading", "Deferred" } });
+		const auto deferred = resolveOk(mod, { { "Shading", "Deferred" } });
 		EXPECT_EQ(bindingIds(deferred, true), (Vector<String> { "normal" }));
 		EXPECT_EQ(usageOf(deferred, functionIndex(deferred, "main")).calledFunctions, (Vector<u32> { functionIndex(deferred, "Lit") }));
 		EXPECT_EQ(usageOf(deferred, functionIndex(deferred, "Lit")).readBindings, (Vector<u32> { bindingIndex(deferred, "normal") }));
@@ -310,8 +310,8 @@ namespace AccelLang {
 	}
 
 	TEST(SliceTest, DepthOnlyDropsLightingAndItsFunctionsAndBindings) {
-		const auto module = parse(litSource);
-		const auto sliced = sliceChecked(module, { "depth" });
+		const auto mod = parse(litSource);
+		const auto sliced = sliceChecked(mod, { "depth" });
 		expectCompact(sliced);
 
 		EXPECT_EQ(functionNames(sliced), (Vector<String> { "Depth", "main" }));
@@ -323,7 +323,7 @@ namespace AccelLang {
 		EXPECT_EQ(usageOf(sliced, functionIndex(sliced, "Depth")).readBindings, (Vector<u32> { bindingIndex(sliced, "depth_bias") }));
 
 		// color keeps lighting and the shadow map, and the depth path (frag_depth is a builtin, always kept)
-		const auto color = sliceChecked(module, { "color" });
+		const auto color = sliceChecked(mod, { "color" });
 		expectCompact(color);
 		EXPECT_EQ(functionNames(color), (Vector<String> { "ShadowFactor", "Lighting", "Depth", "main" }));
 		EXPECT_EQ(
@@ -333,30 +333,30 @@ namespace AccelLang {
 	}
 
 	TEST(SliceTest, DropsUnusedConstant) {
-		const auto module = parse(
+		const auto mod = parse(
 			"const USED: f32 = 1.0;\nconst DEAD: f32 = 2.0;\n"
 			"@output (mode = forward, id = \"color\") f32vec4 color;\n"
 			"fn main() {\n\tcolor = f32vec4(USED);\n}\n"
 		);
-		ASSERT_EQ(module.constants.size(), 2uz);
-		const auto sliced = sliceChecked(module, { "color" });
+		ASSERT_EQ(mod.constants.size(), 2uz);
+		const auto sliced = sliceChecked(mod, { "color" });
 		ASSERT_EQ(sliced.constants.size(), 1uz);
 		EXPECT_EQ(sliced.constants[0].name, "USED");
 	}
 
 	TEST(SliceTest, EmptyRequiredKeepsEverything) {
-		const auto module = parse(litSource);
-		EXPECT_TRUE(same(sliceChecked(module, {}), module));
+		const auto mod = parse(litSource);
+		EXPECT_TRUE(same(sliceChecked(mod, {}), mod));
 	}
 
 	TEST(SliceTest, ImplicitOutputOnlyShaderSlicesToEmptyBody) {
-		const auto module = parse(
+		const auto mod = parse(
 			"@output (mode = forward, id = \"depth\") implicit f32 depth;\n"
 			"@output (mode = forward, id = \"color\") f32vec4 color;\n"
 			"@input (mode = forward) f32vec4 tint;\n"
 			"fn main() {\n\tcolor = tint;\n}\n"
 		);
-		const auto sliced = sliceChecked(module, { "depth" });
+		const auto sliced = sliceChecked(mod, { "depth" });
 		expectCompact(sliced);
 		EXPECT_EQ(functionNames(sliced), (Vector<String> { "main" }));
 		EXPECT_EQ(bindingIds(sliced), (Vector<String> { "depth" }));
@@ -374,7 +374,7 @@ namespace AccelLang {
 	/* Rulings: toggle fixing */
 
 	TEST(ResolveTest, UnknownToggleOrValueNamesSource) {
-		const auto module = parse(shading);
+		const auto mod = parse(shading);
 		struct Case {
 			ToggleSources sources;
 			Vector<StringView> words;
@@ -386,7 +386,7 @@ namespace AccelLang {
 			Case { { .pass = { { "Shading", "Forward" }, { "Shading", "Forward" } }, .profile = {}, .material = {} }, { "'Shading'", "twice", "pass" } }
 		};
 		for (const auto& c : cases) {
-			const auto diags = fixFail(module, c.sources);
+			const auto diags = fixFail(mod, c.sources);
 			ASSERT_EQ(diags.size(), 1uz);
 			EXPECT_EQ(diags[0].severity, Severity::eError);
 			for (const auto word : c.words) {
@@ -395,22 +395,22 @@ namespace AccelLang {
 		}
 
 		// resolveToggles validates the fixed set the same way
-		const auto diags = resolveFail(module, { { "Shading", "Clustered" } });
+		const auto diags = resolveFail(mod, { { "Shading", "Clustered" } });
 		ASSERT_EQ(diags.size(), 1uz);
 		EXPECT_TRUE(mentions(diags[0], "'Clustered'")) << diags[0].message;
 	}
 
 	TEST(ResolveTest, PassValueWinsOverProfileWithWarning) {
-		const auto module = parse(shading);
+		const auto mod = parse(shading);
 		const auto fixed = fixOk(
-			module,
+			mod,
 			ToggleSources { .pass = { { "Shading", "Deferred" } }, .profile = { { "Shading", "Forward" } }, .material = { { "Shading", "Deferred" } } }
 		);
 		EXPECT_EQ(fixed.toggles, (ToggleSet { { "Shading", "Deferred" } }));
 		ASSERT_EQ(fixed.warnings.size(), 1uz);// the material agrees with the winning pass value
 		EXPECT_TRUE(mentions(fixed.warnings[0], "profile")) << fixed.warnings[0].message;
 
-		const auto materialOnly = fixOk(module, ToggleSources { .pass = {}, .profile = {}, .material = { { "Shading", "Deferred" } } });
+		const auto materialOnly = fixOk(mod, ToggleSources { .pass = {}, .profile = {}, .material = { { "Shading", "Deferred" } } });
 		EXPECT_EQ(materialOnly.toggles, (ToggleSet { { "Shading", "Deferred" } }));
 		EXPECT_TRUE(materialOnly.warnings.empty());
 	}
@@ -418,18 +418,18 @@ namespace AccelLang {
 	/* Rulings: resolving */
 
 	TEST(ResolveTest, OverlappingVariantsAreError) {
-		const auto module = parse(
+		const auto mod = parse(
 			String(shading) + String(shadows) +
 			"@when (Shading == Forward) fn F() -> f32 { return 1.0; }\n"
 			"@when (Shadows == On) fn F() -> f32 { return 0.5; }\n"
 			"@when (Shading == Deferred && Shadows == Off) fn F() -> f32 { return 0.25; }\n"
 			"fn main() {\n\tfrag_depth = F();\n}\n"
 		);
-		const auto diags = resolveFail(module, { { "Shading", "Forward" }, { "Shadows", "On" } });
+		const auto diags = resolveFail(mod, { { "Shading", "Forward" }, { "Shadows", "On" } });
 		ASSERT_EQ(diags.size(), 1uz);
 		EXPECT_EQ(diags[0].message, "overlapping bodies for 'F()' at Shading=Forward, Shadows=On");
 
-		const auto resolved = resolveOk(module, { { "Shading", "Forward" }, { "Shadows", "Off" } });
+		const auto resolved = resolveOk(mod, { { "Shading", "Forward" }, { "Shadows", "Off" } });
 		EXPECT_EQ(functionNames(resolved), (Vector<String> { "F", "main" }));
 		EXPECT_TRUE(hasLiteral(resolved, "1.0"));
 		EXPECT_FALSE(hasLiteral(resolved, "0.5"));
@@ -437,11 +437,11 @@ namespace AccelLang {
 	}
 
 	TEST(ResolveTest, CallInSurvivingCodeWithoutBodyIsError) {
-		const auto module = parse(String(shading) + "@when (Shading == Forward) fn F() -> f32 { return 1.0; }\nfn main() {\n\tfrag_depth = F();\n}\n");
-		const auto diags = resolveFail(module, { { "Shading", "Deferred" } });
+		const auto mod = parse(String(shading) + "@when (Shading == Forward) fn F() -> f32 { return 1.0; }\nfn main() {\n\tfrag_depth = F();\n}\n");
+		const auto diags = resolveFail(mod, { { "Shading", "Deferred" } });
 		ASSERT_EQ(diags.size(), 1uz);
 		EXPECT_EQ(diags[0].message, "no body for 'F()' at Shading=Deferred");
-		static_cast<void>(resolveOk(module, { { "Shading", "Forward" } }));
+		static_cast<void>(resolveOk(mod, { { "Shading", "Forward" } }));
 
 		// a conditional function nobody calls in that variant is simply dropped
 		const auto guarded = parse(
@@ -473,12 +473,12 @@ namespace AccelLang {
 	}
 
 	TEST(SliceTest, KeepsConstantUsedByKeptConstantInitializer) {
-		const auto module = parse(
+		const auto mod = parse(
 			"const BASE: f32 = 1.0;\nconst DERIVED: f32 = BASE * 2.0;\nconst UNRELATED: f32 = 3.0;\n"
 			"@output (mode = forward, id = \"color\") f32vec4 color;\n"
 			"fn main() {\n\tcolor = f32vec4(DERIVED);\n}\n"
 		);
-		const auto sliced = sliceChecked(module, { "color" });
+		const auto sliced = sliceChecked(mod, { "color" });
 		ASSERT_EQ(sliced.constants.size(), 2uz);
 		EXPECT_EQ(sliced.constants[0].name, "BASE");
 		EXPECT_EQ(sliced.constants[1].name, "DERIVED");
@@ -512,14 +512,14 @@ namespace AccelLang {
 	}
 
 	TEST(ResolveTest, BindingUsesReResolveToSurvivingVariant) {
-		const auto module = parse(
+		const auto mod = parse(
 			String(shading) +
 			"@when (Shading == Forward) @input (mode = forward, id = \"light_forward\") f32vec3 light;\n"
 			"@when (Shading == Deferred) @input (mode = forward, id = \"light_deferred\") f32vec3 light;\n"
 			"@output (mode = forward, id = \"color\") f32vec3 color;\n"
 			"fn main() {\n\tcolor = light;\n}\n"
 		);
-		const auto deferred = resolveOk(module, { { "Shading", "Deferred" } });
+		const auto deferred = resolveOk(mod, { { "Shading", "Deferred" } });
 		EXPECT_EQ(bindingIds(deferred), (Vector<String> { "light_deferred", "color" }));
 		const auto usage = usageOf(deferred, functionIndex(deferred, "main"));
 		EXPECT_EQ(usage.readBindings, (Vector<u32> { bindingIndex(deferred, "light_deferred") }));
@@ -543,7 +543,7 @@ namespace AccelLang {
 	}
 
 	TEST(ResolveTest, NestedWhenStatementsInline) {
-		const auto module = parse(
+		const auto mod = parse(
 			"toggle A : { Off, On } = Off;\ntoggle B : { Off, On } = Off;\n"
 			"fn main() {\n"
 			"\t@when (A == On) {\n"
@@ -553,7 +553,7 @@ namespace AccelLang {
 			"\t@when (A == Off) frag_depth = 0.25;\n"
 			"}\n"
 		);
-		const auto resolved = resolveOk(module, { { "A", "On" }, { "B", "Off" } });
+		const auto resolved = resolveOk(mod, { { "A", "On" }, { "B", "Off" } });
 		EXPECT_FALSE(std::ranges::any_of(resolved.stmts, [](ref<const Stmt> s_) { return s_.kind == StmtKind::eWhen; }));
 		const auto& root = bodyRoot(resolved, "main");
 		ASSERT_EQ(root.children.size(), 1uz);
@@ -606,7 +606,7 @@ namespace AccelLang {
 	/* Rulings: slicing */
 
 	TEST(SliceTest, RemovesStatementsWritingDroppedOutputs) {
-		const auto module = parse(
+		const auto mod = parse(
 			"@input (mode = forward) f32vec3 normal;\n"
 			"@output (mode = forward, id = \"color\") f32vec4 color;\n"
 			"@output (mode = forward, id = \"normal_out\") f32vec3 normal_out;\n"
@@ -614,7 +614,7 @@ namespace AccelLang {
 			"fn Tint() -> f32vec4 { return f32vec4(0.5); }\n"
 			"fn main() {\n\tlet unused = Tint();\n\tWrite();\n\tTint();\n\tcolor = unused;\n\tcolor.x = 1.0;\n}\n"
 		);
-		const auto sliced = sliceChecked(module, { "normal_out" });
+		const auto sliced = sliceChecked(mod, { "normal_out" });
 		expectCompact(sliced);
 		EXPECT_EQ(functionNames(sliced), (Vector<String> { "Write", "main" }));
 		EXPECT_EQ(bindingIds(sliced), (Vector<String> { "normal", "normal_out" }));
@@ -642,8 +642,8 @@ namespace AccelLang {
 			Case { "fn main() {\n\tShade();\n}\n", "Shade" }// a call statement
 		};
 		for (const auto& c : cases) {
-			const auto module = parse(String(decls) + String(c.main));
-			const auto sliced = sliceChecked(module, { "normal_out" });
+			const auto mod = parse(String(decls) + String(c.main));
+			const auto sliced = sliceChecked(mod, { "normal_out" });
 			expectCompact(sliced);
 			EXPECT_EQ(bodyRoot(sliced, "main").children.size(), 1uz) << c.main;
 			const auto writer = functionIndex(sliced, c.writer);
@@ -653,7 +653,7 @@ namespace AccelLang {
 	}
 
 	TEST(SliceTest, LocalsFeedingKeptCodeStay) {
-		const auto module = parse(
+		const auto mod = parse(
 			"@input (mode = forward) f32 bias;\n"
 			"@output (mode = forward, id = \"color\") f32vec4 color;\n"
 			"@output (mode = forward, id = \"depth\") implicit f32 depth;\n"
@@ -665,7 +665,7 @@ namespace AccelLang {
 			"\tfrag_depth = d;\n"
 			"}\n"
 		);
-		const auto sliced = sliceChecked(module, { "depth" });
+		const auto sliced = sliceChecked(mod, { "depth" });
 		expectCompact(sliced);
 		// `let c` and the `if` that only wrote color are gone; d's definitions stay
 		const auto& root = bodyRoot(sliced, "main");
@@ -678,14 +678,14 @@ namespace AccelLang {
 	}
 
 	TEST(SliceTest, NestedWhenInsideKeptFunction) {
-		const auto module = parse(
+		const auto mod = parse(
 			String(shadows) + String(litSource.substr(0, litSource.find("fn main"))) +
 			"fn main() {\n"
 			"\t@when (Shadows == On) {\n\t\tlet s = ShadowFactor();\n\t\tcolor = f32vec4(s);\n\t}\n"
 			"\tfrag_depth = 0.5;\n"
 			"}\n"
 		);
-		const auto on = resolveOk(module, { { "Shadows", "On" } });
+		const auto on = resolveOk(mod, { { "Shadows", "On" } });
 		const auto depth = sliceChecked(on, { "depth" });
 		expectCompact(depth);
 		EXPECT_EQ(functionNames(depth), (Vector<String> { "main" }));
@@ -693,7 +693,7 @@ namespace AccelLang {
 		EXPECT_EQ(bodyRoot(depth, "main").children.size(), 1uz);
 
 		// sliced before resolving, the `when` stays and keeps what it uses
-		const auto unresolved = sliceChecked(module, { "color" });
+		const auto unresolved = sliceChecked(mod, { "color" });
 		EXPECT_EQ(functionNames(unresolved), (Vector<String> { "ShadowFactor", "main" }));
 		EXPECT_EQ(bindingIds(unresolved), (Vector<String> { "uv", "shadow_map", "shadow_sampler", "color" }));
 		const auto& root = bodyRoot(unresolved, "main");
@@ -705,8 +705,8 @@ namespace AccelLang {
 		EXPECT_TRUE(same(sliceChecked(Module {}, { "depth" }), Module {}));
 
 		// unknown ids are no error (Task 11 validates them against the interface): every output is dropped
-		const auto module = parse(litSource);
-		const auto unknown = sliceChecked(module, { "nope" });
+		const auto mod = parse(litSource);
+		const auto unknown = sliceChecked(mod, { "nope" });
 		EXPECT_EQ(functionNames(unknown), (Vector<String> { "Depth", "main" }));
 		EXPECT_EQ(bindingIds(unknown), (Vector<String> { "depth_bias" }));
 
@@ -748,25 +748,25 @@ namespace AccelLang {
 	}
 
 	TEST(SliceTest, KeepsLoopFeedingOutput) {
-		const auto module = parse(
+		const auto mod = parse(
 			"@input (mode = forward) f32 bias;\n"
 			"@output (mode = forward, id = \"color\") f32vec4 color;\n"
 			"@output (mode = forward, id = \"depth\") implicit f32 depth;\n"
 			"fn main() {\n\tlet a = 0.0;\n\tfor (let i = 0u; i < 4u; ++i) { a += bias; }\n\tfrag_depth = a;\n}\n"
 		);
-		const auto sliced = sliceChecked(module, { "depth" });
+		const auto sliced = sliceChecked(mod, { "depth" });
 		expectCompact(sliced);
 		EXPECT_TRUE(std::ranges::any_of(sliced.stmts, [](ref<const Stmt> s_) { return s_.kind == StmtKind::eFor; }));
 	}
 
 	TEST(SliceTest, DropsDeadLoop) {
-		const auto module = parse(
+		const auto mod = parse(
 			"@input (mode = forward) f32 bias;\n"
 			"@output (mode = forward, id = \"color\") f32 color;\n"
 			"@output (mode = forward, id = \"depth\") implicit f32 depth;\n"
 			"fn main() {\n\tfor (let i = 0u; i < 4u; ++i) { color += bias; }\n\tfrag_depth = 1.0;\n}\n"
 		);
-		const auto sliced = sliceChecked(module, { "depth" });
+		const auto sliced = sliceChecked(mod, { "depth" });
 		expectCompact(sliced);
 		EXPECT_FALSE(std::ranges::any_of(sliced.stmts, [](ref<const Stmt> s_) { return s_.kind == StmtKind::eFor; }));
 	}

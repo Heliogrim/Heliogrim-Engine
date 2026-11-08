@@ -34,8 +34,8 @@ namespace AccelLang {
 			return res.has_value() ? slice(*res, {}) : Module {};
 		}
 
-		[[nodiscard]] Layout layoutOf(ref<const Module> module_) {
-			return assignLayout(computeInterface(module_), module_.types, {});
+		[[nodiscard]] Layout layoutOf(ref<const Module> mod_) {
+			return assignLayout(computeInterface(mod_), mod_.types, {});
 		}
 
 		struct Emission {
@@ -44,9 +44,9 @@ namespace AccelLang {
 		};
 
 		[[nodiscard]] Emission emit(StringView source_, EntryKind entry_ = EntryKind::eFragment) {
-			const auto module = resolved(source_, entry_);
+			const auto mod = resolved(source_, entry_);
 			Language target {};
-			auto result = GlslEmitter {}.emit(module, layoutOf(module), target);
+			auto result = GlslEmitter {}.emit(mod, layoutOf(mod), target);
 			return Emission { std::move(result), target.text.empty() ? String {} : target.text.front().data };
 		}
 
@@ -121,8 +121,8 @@ namespace AccelLang {
 	TEST(TypeSetTest, EveryShapeLowersToItsOwnLegacyType) {
 		std::set<u8> seen {};
 		for (const auto& [source, glsl] : typeCases()) {
-			const auto module = resolved(uniformOf(source), EntryKind::eFragment);
-			auto res = lowerToIntermediate(module, layoutOf(module), Dialect::eVulkanGlsl460);
+			const auto mod = resolved(uniformOf(source), EntryKind::eFragment);
+			auto res = lowerToIntermediate(mod, layoutOf(mod), Dialect::eVulkanGlsl460);
 			ASSERT_TRUE(res.has_value()) << source;
 
 			const StringView id { "x" };
@@ -172,19 +172,19 @@ namespace AccelLang {
 	}
 
 	TEST(TypeSetTest, IntegerMatrixInModuleIsDiagnosticNotWrongText) {
-		Module module {};
+		Module mod {};
 		TypeDesc matrix {};
 		matrix.kind = TypeKind::eMatrix;
 		matrix.scalar = ScalarKind::eInt;
 		matrix.n = 3uL;
 		matrix.m = 3uL;
-		module.types = { matrix };
-		module.bindings = {
+		mod.types = { matrix };
+		mod.bindings = {
 			BindingDecl { "x", TypeRef { 0u }, BindMode::eBind, BindClass::eUniformBuffer, false, true, {}, "x" }
 		};
 
 		Language target {};
-		const auto result = GlslEmitter {}.emit(module, layoutOf(module), target);
+		const auto result = GlslEmitter {}.emit(mod, layoutOf(mod), target);
 
 		EXPECT_FALSE(result.diagnostics.empty());
 		EXPECT_TRUE(target.text.empty());
@@ -317,9 +317,9 @@ namespace AccelLang {
 				return {};
 			}
 			const std::array<String, 1> required { "color" };
-			const auto module = slice(*res, required);
+			const auto mod = slice(*res, required);
 			Language target {};
-			auto result = GlslEmitter {}.emit(module, layoutOf(module), target);
+			auto result = GlslEmitter {}.emit(mod, layoutOf(mod), target);
 			return Emission { std::move(result), target.text.empty() ? String {} : target.text.front().data };
 		}
 

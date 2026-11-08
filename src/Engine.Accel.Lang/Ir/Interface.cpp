@@ -8,15 +8,15 @@
 using namespace hg::engine::accel::lang;
 using namespace hg;
 
-Vector<ir::InterfaceEntry> ir::computeInterface(ref<const Module> module_) {
+Vector<ir::InterfaceEntry> ir::computeInterface(ref<const Module> mod_) {
 	Vector<InterfaceEntry> entries {};
-	entries.reserve(module_.bindings.size());
-	for (const auto& binding : module_.bindings) {
+	entries.reserve(mod_.bindings.size());
+	for (const auto& binding : mod_.bindings) {
 		if (binding.bindClass == BindClass::eWorkgroup) {
 			continue;
 		}
 		entries.emplace_back(
-			InterfaceEntry { binding.id, binding.type, binding.mode, binding.bindClass, binding.implicit, binding.input, binding.arrayed, describeType(module_.types, binding.type), binding.patch }
+			InterfaceEntry { binding.id, binding.type, binding.mode, binding.bindClass, binding.implicit, binding.input, binding.arrayed, describeType(mod_.types, binding.type), binding.patch }
 		);
 	}
 

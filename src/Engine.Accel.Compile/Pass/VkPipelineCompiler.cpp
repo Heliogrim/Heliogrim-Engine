@@ -685,8 +685,8 @@ smr<VkGraphicsPipeline> VkPipelineCompiler::linkVk(
 
 	for (const auto& stage : pass_->getStageDerivates()) {
 
-		const auto& module = stage->getStageModule();
-		const auto* const native = static_cast<const ptr<const VkCompiledModule>>(module->getNativeModule());
+		const auto& mod = stage->getStageModule();
+		const auto* const native = static_cast<const ptr<const VkCompiledModule>>(mod->getNativeModule());
 
 		vk::ShaderStageFlagBits stageBits { vk::ShaderStageFlagBits::eAll };
 		switch (stage->getFlagBits()) {

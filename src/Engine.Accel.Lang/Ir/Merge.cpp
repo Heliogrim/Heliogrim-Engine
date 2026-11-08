@@ -74,8 +74,8 @@ namespace {
 
 	/* Input validation: every ref in range (sentinel allowed), types refer only to earlier types (no cycles) */
 
-	[[nodiscard]] Opt<String> invalidRef(ref<const ir::Module> module_) {
-		const auto& [name, entry, attributes, toggles, types, bindings, constants, functions, exprs, stmts, warnings] = module_;
+	[[nodiscard]] Opt<String> invalidRef(ref<const ir::Module> mod_) {
+		const auto& [name, entry, attributes, toggles, types, bindings, constants, functions, exprs, stmts, warnings] = mod_;
 		static_cast<void>(attributes);
 		Opt<String> found = None;
 		const auto check = [&](StringView owner_, size_t at_, StringView kind_, u32 index_, size_t limit_) {
@@ -255,13 +255,13 @@ namespace {
 		ir::Module result {};
 		ir::Diagnostics diags {};
 
-		[[nodiscard]] ref<const String> moduleName(u32 module_) const {
-			return modules[module_]->name;
+		[[nodiscard]] ref<const String> moduleName(u32 mod_) const {
+			return modules[mod_]->name;
 		}
 
-		void types(u32 module_) {
-			auto& remap = remaps[module_];
-			for (const auto& type : modules[module_]->types) {
+		void types(u32 mod_) {
+			auto& remap = remaps[mod_];
+			for (const auto& type : modules[mod_]->types) {
 				// refs point to earlier types (validated), so they are mapped already
 				auto mapped = remapType(type, remap);
 				const auto it = std::ranges::find_if(result.types, [&](ref<const ir::TypeDesc> t_) { return sameType(t_, mapped); });
@@ -309,13 +309,13 @@ namespace {
 		}
 
 		/* same value set and default collapse into the first declaration */
-		void toggles(u32 module_, ref<Vector<u32>> origins_) {
-			for (const auto& toggle : modules[module_]->toggles) {
+		void toggles(u32 mod_, ref<Vector<u32>> origins_) {
+			for (const auto& toggle : modules[mod_]->toggles) {
 				const auto& [name, values, defaultValue] = toggle;
 				const auto it = std::ranges::find(result.toggles, name, &ir::Toggle::name);
 				if (it == result.toggles.end()) {
 					result.toggles.emplace_back(toggle);
-					origins_.emplace_back(module_);
+					origins_.emplace_back(mod_);
 					continue;
 				}
 
@@ -328,14 +328,14 @@ namespace {
 					diags.emplace_back(
 						error(
 							"toggle " + quoted(name) + " declared with different values in " + quoted(first) + " and " +
-							quoted(moduleName(module_))
+							quoted(moduleName(mod_))
 						)
 					);
 				} else if (it->defaultValue != defaultValue) {
 					diags.emplace_back(
 						error(
 							"toggle " + quoted(name) + " defaults to " + quoted(it->defaultValue) + " in " + quoted(first) + " and " +
-							quoted(defaultValue) + " in " + quoted(moduleName(module_))
+							quoted(defaultValue) + " in " + quoted(moduleName(mod_))
 						)
 					);
 				}
@@ -344,8 +344,8 @@ namespace {
 
 		/* first difference of two declarations of one id, or empty; `a_` is in the result already */
 		[[nodiscard]] String bindingConflict(ref<const ir::BindingDecl> a_, ref<const ir::BindingDecl> b_, ref<const String> first_, ref<const String> second_) const {
-			const auto in = [](ref<const String> module_) {
-				return " in " + quoted(module_);
+			const auto in = [](ref<const String> mod_) {
+				return " in " + quoted(mod_);
 			};
 			const auto prefix = "binding " + quoted(a_.id) + " declared ";
 			if (a_.type != b_.type) {
@@ -394,9 +394,9 @@ namespace {
 
 		/* identity is the string id (a `mode = bind` input without `id` defaulted to its local name at parse, so two such
 		 * inputs of the same local name collapse too); collapsed conditions are OR-ed */
-		void bindings(u32 module_, ref<Vector<u32>> origins_) {
-			auto& remap = remaps[module_];
-			for (const auto& binding : modules[module_]->bindings) {
+		void bindings(u32 mod_, ref<Vector<u32>> origins_) {
+			auto& remap = remaps[mod_];
+			for (const auto& binding : modules[mod_]->bindings) {
 				auto mapped = binding;
 				auto& [id, type, mode, bindClass, implicit, input, when, localName, access, packing, arrayed, patch] = mapped;
 					static_cast<void>(patch);
@@ -409,11 +409,11 @@ namespace {
 				remap.bindings.emplace_back(index);
 				if (it == result.bindings.end()) {
 					result.bindings.emplace_back(std::move(mapped));
-					origins_.emplace_back(module_);
+					origins_.emplace_back(mod_);
 					continue;
 				}
 
-				if (auto conflict = bindingConflict(*it, mapped, moduleName(origins_[index]), moduleName(module_)); not conflict.empty()) {
+				if (auto conflict = bindingConflict(*it, mapped, moduleName(origins_[index]), moduleName(mod_)); not conflict.empty()) {
 					diags.emplace_back(error(std::move(conflict)));
 				} else if (not sameCondition(it->when, when) && it->when.kind != ir::ConditionKind::eTrue) {
 					it->when = when.kind == ir::ConditionKind::eTrue ? ir::Condition::always() : ir::Condition::any({ it->when, when });
@@ -446,9 +446,9 @@ namespace {
 		}
 
 		/* identity is the name; identical declarations collapse (conditions OR-ed), differing type, value or spec id is a conflict */
-		void constants(u32 module_, ref<Vector<u32>> origins_) {
-			auto& remap = remaps[module_];
-			for (const auto& constant : modules[module_]->constants) {
+		void constants(u32 mod_, ref<Vector<u32>> origins_) {
+			auto& remap = remaps[mod_];
+			for (const auto& constant : modules[mod_]->constants) {
 				auto mapped = constant;
 				mapped.type = remap.type(mapped.type);
 				mapped.value = remap.expr(mapped.value);
@@ -458,7 +458,7 @@ namespace {
 				remap.constants.emplace_back(index);
 				if (it == result.constants.end()) {
 					result.constants.emplace_back(std::move(mapped));
-					origins_.emplace_back(module_);
+					origins_.emplace_back(mod_);
 					continue;
 				}
 
@@ -468,11 +468,11 @@ namespace {
 					return " in " + quoted(moduleName(m_));
 				};
 				if (it->type != mapped.type) {
-					diags.emplace_back(error(prefix + "as " + describe(result.types, it->type) + in(first) + " and " + describe(result.types, mapped.type) + in(module_)));
+					diags.emplace_back(error(prefix + "as " + describe(result.types, it->type) + in(first) + " and " + describe(result.types, mapped.type) + in(mod_)));
 				} else if (it->specId.has_value() != mapped.specId.has_value() || (it->specId.has_value() && *it->specId != *mapped.specId)) {
-					diags.emplace_back(error(prefix + "with a different spec id" + in(first) + " and" + in(module_)));
-				} else if (not sameExpr(*modules[first], ir::ExprRef { it->value.index - remaps[first].exprOffset }, *modules[module_], constant.value, 0uL)) {
-					diags.emplace_back(error(prefix + "with a different value" + in(first) + " and" + in(module_)));
+					diags.emplace_back(error(prefix + "with a different spec id" + in(first) + " and" + in(mod_)));
+				} else if (not sameExpr(*modules[first], ir::ExprRef { it->value.index - remaps[first].exprOffset }, *modules[mod_], constant.value, 0uL)) {
+					diags.emplace_back(error(prefix + "with a different value" + in(first) + " and" + in(mod_)));
 				} else if (not sameCondition(it->when, mapped.when) && it->when.kind != ir::ConditionKind::eTrue) {
 					it->when = mapped.when.kind == ir::ConditionKind::eTrue ? ir::Condition::always() : ir::Condition::any({ it->when, mapped.when });
 				}
@@ -480,7 +480,7 @@ namespace {
 		}
 
 		struct Variant {
-			u32 module;
+			u32 mod;
 			u32 index;
 		};
 
@@ -492,14 +492,14 @@ namespace {
 		};
 
 		[[nodiscard]] ref<const ir::FunctionDecl> decl(Variant at_) const {
-			return modules[at_.module]->functions[at_.index];
+			return modules[at_.mod]->functions[at_.index];
 		}
 
 		[[nodiscard]] bool sameSignature(Variant a_, Variant b_) const {
 			const auto& a = decl(a_);
 			const auto& b = decl(b_);
-			const auto& ra = remaps[a_.module];
-			const auto& rb = remaps[b_.module];
+			const auto& ra = remaps[a_.mod];
+			const auto& rb = remaps[b_.mod];
 			return ra.type(a.ret) == rb.type(b.ret) &&
 				std::ranges::equal(
 					a.params,
@@ -522,8 +522,8 @@ namespace {
 					} else if (not sameSignature(named->first, at)) {
 						diags.emplace_back(
 							error(
-								"signature of function " + quoted(fn.name) + " differs between " + quoted(moduleName(named->first.module)) +
-								" and " + quoted(moduleName(at.module))
+								"signature of function " + quoted(fn.name) + " differs between " + quoted(moduleName(named->first.mod)) +
+								" and " + quoted(moduleName(at.mod))
 							)
 						);
 					}
@@ -544,8 +544,8 @@ namespace {
 					} else {
 						diags.emplace_back(
 							error(
-								"duplicate body for function " + quoted(signature) + " in modules " + quoted(moduleName(variant->module)) +
-								" and " + quoted(moduleName(at.module))
+								"duplicate body for function " + quoted(signature) + " in modules " + quoted(moduleName(variant->mod)) +
+								" and " + quoted(moduleName(at.mod))
 							)
 						);
 					}
@@ -555,11 +555,11 @@ namespace {
 			for (const auto& named : names) {
 				if (named.bodies.empty()) {
 					diags.emplace_back(
-						error("missing body for function " + quoted(named.name) + " declared in " + quoted(moduleName(named.first.module)))
+						error("missing body for function " + quoted(named.name) + " declared in " + quoted(moduleName(named.first.mod)))
 					);
 				}
 				for (const auto at : named.bodies) {
-					result.functions.emplace_back(remapFunction(decl(at), remaps[at.module]));
+					result.functions.emplace_back(remapFunction(decl(at), remaps[at.mod]));
 				}
 			}
 		}
@@ -589,13 +589,13 @@ namespace {
 			u32 stmts = 0uL;
 			remaps.resize(modules.size());
 			for (auto m = 0uz; m < modules.size(); ++m) {
-				const auto module = static_cast<u32>(m);
-				types(module);
-				toggles(module, toggleOrigins);
-				bindings(module, bindingOrigins);
+				const auto mod = static_cast<u32>(m);
+				types(mod);
+				toggles(mod, toggleOrigins);
+				bindings(mod, bindingOrigins);
 				remaps[m].exprOffset = exprs;
 				remaps[m].stmtOffset = stmts;
-				constants(module, constantOrigins);
+				constants(mod, constantOrigins);
 				exprs += static_cast<u32>(modules[m]->exprs.size());
 				stmts += static_cast<u32>(modules[m]->stmts.size());
 			}

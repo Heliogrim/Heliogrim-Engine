@@ -120,9 +120,9 @@ namespace AccelCompile {
 
 	TEST(StageIrTest, ModuleWarningsNeverFailCompose) {
 		auto stage = intermediateOf("@output (mode = forward, id = \"color\") f32vec4 color;\nfn main() { color = f32vec4(0.0); }\n", EntryKind::eFragment);
-		auto module = *stage.ir;
-		module.warnings.emplace_back(Diagnostic { .severity = Severity::eWarning, .message = "synthetic warning" });
-		stage.ir = make_smr<const Module>(new Module { std::move(module) });
+		auto mod = *stage.ir;
+		mod.warnings.emplace_back(Diagnostic { .severity = Severity::eWarning, .message = "synthetic warning" });
+		stage.ir = make_smr<const Module>(new Module { std::move(mod) });
 
 		VariantCache cache {};
 		const auto derivat = composeStageIr(stage, EffectProfile {}, TestSpecification { {} }, StageFlagBits::eFragment, cache);

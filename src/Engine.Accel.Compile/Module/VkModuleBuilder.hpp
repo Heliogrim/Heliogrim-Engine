@@ -21,7 +21,7 @@ namespace hg::engine::accel {
     private:
         [[nodiscard]] uptr<struct VkModuleSource> transpile(
             cref<smr<StageDerivat>> stage_,
-            mref<uptr<struct VkModuleSource>> module_
+            mref<uptr<struct VkModuleSource>> mod_
         ) const;
 
     public:

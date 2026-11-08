@@ -231,32 +231,32 @@ namespace AccelLang {
 	}
 
 	TEST(ParserTest, ParsesToggleWithDefault) {
-		const auto module = parseOk("toggle Shading : { Forward, Deferred } = Deferred;");
-		ASSERT_EQ(module.toggles.size(), 1uz);
-		EXPECT_EQ(module.toggles[0].name, "Shading");
-		EXPECT_EQ(module.toggles[0].values, (Vector<String> { "Forward", "Deferred" }));
-		EXPECT_EQ(module.toggles[0].defaultValue, "Deferred");
-		EXPECT_EQ(module.name, "main");
-		EXPECT_EQ(module.entry, EntryKind::eFragment);
+		const auto mod = parseOk("toggle Shading : { Forward, Deferred } = Deferred;");
+		ASSERT_EQ(mod.toggles.size(), 1uz);
+		EXPECT_EQ(mod.toggles[0].name, "Shading");
+		EXPECT_EQ(mod.toggles[0].values, (Vector<String> { "Forward", "Deferred" }));
+		EXPECT_EQ(mod.toggles[0].defaultValue, "Deferred");
+		EXPECT_EQ(mod.name, "main");
+		EXPECT_EQ(mod.entry, EntryKind::eFragment);
 	}
 
 	TEST(ParserTest, ParsesBoundBlockWithAnonymousStruct) {
-		const auto module = parseOk(R"(@input (mode = bind, id = "camera") block camera { f32mat4 vp; };)");
-		ASSERT_EQ(module.bindings.size(), 1uz);
-		const auto& binding = module.bindings[0];
+		const auto mod = parseOk(R"(@input (mode = bind, id = "camera") block camera { f32mat4 vp; };)");
+		ASSERT_EQ(mod.bindings.size(), 1uz);
+		const auto& binding = mod.bindings[0];
 		EXPECT_EQ(binding.id, "camera");
 		EXPECT_EQ(binding.localName, "camera");
 		EXPECT_EQ(binding.mode, BindMode::eBind);
 		EXPECT_TRUE(binding.input);
 
-		ASSERT_LT(binding.type.index, module.types.size());
-		const auto& block = module.types[binding.type.index];
+		ASSERT_LT(binding.type.index, mod.types.size());
+		const auto& block = mod.types[binding.type.index];
 		EXPECT_EQ(block.kind, TypeKind::eStruct);
 		ASSERT_EQ(block.fields.size(), 1uz);
 		EXPECT_EQ(block.fields[0].name, "vp");
 
-		ASSERT_LT(block.fields[0].type.index, module.types.size());
-		const auto& mat = module.types[block.fields[0].type.index];
+		ASSERT_LT(block.fields[0].type.index, mod.types.size());
+		const auto& mat = mod.types[block.fields[0].type.index];
 		EXPECT_EQ(mat.kind, TypeKind::eMatrix);
 		EXPECT_EQ(mat.scalar, ScalarKind::eFloat);
 		EXPECT_EQ(mat.n, 4u);
@@ -264,7 +264,7 @@ namespace AccelLang {
 	}
 
 	TEST(ParserTest, ParsesWhenBlockAffectsOnlyInnerDecls) {
-		const auto module = parseOk(
+		const auto mod = parseOk(
 			"toggle Shading : { Forward, Deferred } = Forward;\n"
 			"@when (Shading == Forward) {\n"
 			"\t@input (mode = forward) f32vec3 light;\n"
@@ -272,50 +272,50 @@ namespace AccelLang {
 			"}\n"
 			"@input (mode = forward) f32vec3 normal;\n"
 		);
-		ASSERT_EQ(module.bindings.size(), 2uz);
-		EXPECT_EQ(module.bindings[0].localName, "light");
-		EXPECT_EQ(module.bindings[0].when.kind, ConditionKind::eEquals);
-		EXPECT_EQ(module.bindings[0].when.toggle, "Shading");
-		EXPECT_EQ(module.bindings[0].when.value, "Forward");
-		EXPECT_EQ(module.bindings[1].localName, "normal");
-		EXPECT_EQ(module.bindings[1].when.kind, ConditionKind::eTrue);
+		ASSERT_EQ(mod.bindings.size(), 2uz);
+		EXPECT_EQ(mod.bindings[0].localName, "light");
+		EXPECT_EQ(mod.bindings[0].when.kind, ConditionKind::eEquals);
+		EXPECT_EQ(mod.bindings[0].when.toggle, "Shading");
+		EXPECT_EQ(mod.bindings[0].when.value, "Forward");
+		EXPECT_EQ(mod.bindings[1].localName, "normal");
+		EXPECT_EQ(mod.bindings[1].when.kind, ConditionKind::eTrue);
 
-		ASSERT_EQ(module.functions.size(), 1uz);
-		EXPECT_EQ(module.functions[0].when.kind, ConditionKind::eEquals);
+		ASSERT_EQ(mod.functions.size(), 1uz);
+		EXPECT_EQ(mod.functions[0].when.kind, ConditionKind::eEquals);
 	}
 
 	TEST(ParserTest, ForwardDeclHasNoBody) {
-		const auto module = parseOk("fn GetLocalToWorld() -> f32mat4;\nfn Mix(a: f32, b: f32vec4[4]) -> f32;");
-		ASSERT_EQ(module.functions.size(), 2uz);
-		EXPECT_EQ(module.functions[0].name, "GetLocalToWorld");
-		EXPECT_FALSE(module.functions[0].body.has_value());
-		EXPECT_TRUE(module.functions[0].params.empty());
-		EXPECT_EQ(module.types[module.functions[0].ret.index].kind, TypeKind::eMatrix);
+		const auto mod = parseOk("fn GetLocalToWorld() -> f32mat4;\nfn Mix(a: f32, b: f32vec4[4]) -> f32;");
+		ASSERT_EQ(mod.functions.size(), 2uz);
+		EXPECT_EQ(mod.functions[0].name, "GetLocalToWorld");
+		EXPECT_FALSE(mod.functions[0].body.has_value());
+		EXPECT_TRUE(mod.functions[0].params.empty());
+		EXPECT_EQ(mod.types[mod.functions[0].ret.index].kind, TypeKind::eMatrix);
 
-		ASSERT_EQ(module.functions[1].params.size(), 2uz);
-		EXPECT_EQ(module.functions[1].params[0].name, "a");
-		EXPECT_EQ(module.functions[1].params[0].type, module.functions[1].ret);// f32 interned once
-		const auto& arr = module.types[module.functions[1].params[1].type.index];
+		ASSERT_EQ(mod.functions[1].params.size(), 2uz);
+		EXPECT_EQ(mod.functions[1].params[0].name, "a");
+		EXPECT_EQ(mod.functions[1].params[0].type, mod.functions[1].ret);// f32 interned once
+		const auto& arr = mod.types[mod.functions[1].params[1].type.index];
 		EXPECT_EQ(arr.kind, TypeKind::eArray);
 		EXPECT_EQ(arr.count, 4u);
-		EXPECT_EQ(module.types[arr.element.index].kind, TypeKind::eVector);
+		EXPECT_EQ(mod.types[arr.element.index].kind, TypeKind::eVector);
 	}
 
 	TEST(ParserTest, IncludeAppendsDeclarationsFirst) {
 		const auto includes = includesFrom(
 			{ { "common", "toggle Shadows : { Off, On } = Off;\nstruct Light { f32vec3 dir; }\nfn Shared() -> f32;" } }
 		);
-		const auto module = parseOk(
+		const auto mod = parseOk(
 			"#include <common>\n"
 			"@when (Shadows == On) fn Own(l: Light) -> f32;\n",
 			includes
 		);
-		ASSERT_EQ(module.toggles.size(), 1uz);
-		EXPECT_EQ(module.toggles[0].name, "Shadows");
-		ASSERT_EQ(module.functions.size(), 2uz);
-		EXPECT_EQ(module.functions[0].name, "Shared");
-		EXPECT_EQ(module.functions[1].name, "Own");
-		EXPECT_EQ(module.types[module.functions[1].params[0].type.index].name, "Light");
+		ASSERT_EQ(mod.toggles.size(), 1uz);
+		EXPECT_EQ(mod.toggles[0].name, "Shadows");
+		ASSERT_EQ(mod.functions.size(), 2uz);
+		EXPECT_EQ(mod.functions[0].name, "Shared");
+		EXPECT_EQ(mod.functions[1].name, "Own");
+		EXPECT_EQ(mod.types[mod.functions[1].params[0].type.index].name, "Light");
 	}
 
 	TEST(ParserTest, IncludeCycleIsDiagnostic) {
@@ -389,7 +389,7 @@ namespace AccelLang {
 	}
 
 	TEST(ParserTest, WhenSingleDeclarationCoversOnlyThatDeclaration) {
-		const auto module = parseOk(
+		const auto mod = parseOk(
 			"toggle Shading : { Forward, Deferred } = Forward;\n"
 			"toggle Shadows : { Off, On } = Off;\n"
 			"@when (any(Shading == Deferred, !(Shadows != On)))\n"
@@ -399,19 +399,19 @@ namespace AccelLang {
 			"\t@when (none(Shading == Forward)) @output (mode = forward, id = \"color\") u8vec4 color;\n"
 			"}\n"
 		);
-		ASSERT_EQ(module.bindings.size(), 3uz);
+		ASSERT_EQ(mod.bindings.size(), 3uz);
 
-		const auto& light = module.bindings[0].when;
+		const auto& light = mod.bindings[0].when;
 		EXPECT_EQ(light.kind, ConditionKind::eOr);
 		ASSERT_EQ(light.children.size(), 2uz);
 		EXPECT_EQ(light.children[1].kind, ConditionKind::eNot);
 		EXPECT_TRUE(evaluate(light, { { "Shading", "Forward" }, { "Shadows", "On" } }));
 		EXPECT_FALSE(evaluate(light, { { "Shading", "Forward" }, { "Shadows", "Off" } }));
 
-		EXPECT_EQ(module.bindings[1].when.kind, ConditionKind::eTrue);
+		EXPECT_EQ(mod.bindings[1].when.kind, ConditionKind::eTrue);
 
 		// nested @when combines with the enclosing block
-		const auto& color = module.bindings[2];
+		const auto& color = mod.bindings[2];
 		EXPECT_FALSE(color.input);
 		EXPECT_EQ(color.id, "color");
 		EXPECT_EQ(color.localName, "color");
@@ -421,7 +421,7 @@ namespace AccelLang {
 	}
 
 	TEST(ParserTest, ParsesBindingClassesImplicitAndRedefine) {
-		const auto module = parseOk(
+		const auto mod = parseOk(
 			"struct Camera { f32mat4 vp; f32vec4[] planes; }\n"
 			"@input (mode = bind, id = \"camera\", class = storage) Camera cam;\n"
 			"@input (mode = bind, id = \"push\", class = push) block push { u32 cascade; };\n"
@@ -433,38 +433,38 @@ namespace AccelLang {
 			"@redefine (allow = true) fn Vertex() -> f32vec4;\n"
 			"fn main();\n"
 		);
-		ASSERT_EQ(module.bindings.size(), 7uz);
-		EXPECT_EQ(module.bindings[0].bindClass, BindClass::eStorageBuffer);
-		const auto& camera = module.types[module.bindings[0].type.index];
+		ASSERT_EQ(mod.bindings.size(), 7uz);
+		EXPECT_EQ(mod.bindings[0].bindClass, BindClass::eStorageBuffer);
+		const auto& camera = mod.types[mod.bindings[0].type.index];
 		EXPECT_EQ(camera.name, "Camera");
 		ASSERT_EQ(camera.fields.size(), 2uz);
-		EXPECT_EQ(module.types[camera.fields[1].type.index].kind, TypeKind::eArray);
-		EXPECT_EQ(module.types[camera.fields[1].type.index].count, 0u);// unsized
-		EXPECT_EQ(module.bindings[1].bindClass, BindClass::ePushConstant);
-		EXPECT_EQ(module.bindings[2].bindClass, BindClass::eTexture);
-		EXPECT_EQ(module.types[module.bindings[2].type.index].kind, TypeKind::eTexture);
-		EXPECT_EQ(module.bindings[3].bindClass, BindClass::eSampler);
-		EXPECT_EQ(module.types[module.bindings[3].type.index].kind, TypeKind::eSampler);
-		EXPECT_EQ(module.bindings[4].bindClass, BindClass::eUniformBuffer);
+		EXPECT_EQ(mod.types[camera.fields[1].type.index].kind, TypeKind::eArray);
+		EXPECT_EQ(mod.types[camera.fields[1].type.index].count, 0u);// unsized
+		EXPECT_EQ(mod.bindings[1].bindClass, BindClass::ePushConstant);
+		EXPECT_EQ(mod.bindings[2].bindClass, BindClass::eTexture);
+		EXPECT_EQ(mod.types[mod.bindings[2].type.index].kind, TypeKind::eTexture);
+		EXPECT_EQ(mod.bindings[3].bindClass, BindClass::eSampler);
+		EXPECT_EQ(mod.types[mod.bindings[3].type.index].kind, TypeKind::eSampler);
+		EXPECT_EQ(mod.bindings[4].bindClass, BindClass::eUniformBuffer);
 
-		const auto& lights = module.types[module.bindings[4].type.index];
+		const auto& lights = mod.types[mod.bindings[4].type.index];
 		ASSERT_EQ(lights.fields.size(), 3uz);
-		EXPECT_EQ(module.types[lights.fields[0].type.index].scalar, ScalarKind::eInt);
-		EXPECT_EQ(module.types[lights.fields[1].type.index].scalar, ScalarKind::eBool);
-		EXPECT_EQ(module.types[lights.fields[2].type.index].bits, 8u);
+		EXPECT_EQ(mod.types[lights.fields[0].type.index].scalar, ScalarKind::eInt);
+		EXPECT_EQ(mod.types[lights.fields[1].type.index].scalar, ScalarKind::eBool);
+		EXPECT_EQ(mod.types[lights.fields[2].type.index].bits, 8u);
 
-		EXPECT_EQ(module.bindings[5].id, "uv");// forward without id uses the declared name
-		EXPECT_EQ(module.bindings[5].bindClass, BindClass::eNone);
-		EXPECT_EQ(module.bindings[5].mode, BindMode::eForward);
+		EXPECT_EQ(mod.bindings[5].id, "uv");// forward without id uses the declared name
+		EXPECT_EQ(mod.bindings[5].bindClass, BindClass::eNone);
+		EXPECT_EQ(mod.bindings[5].mode, BindMode::eForward);
 
-		EXPECT_TRUE(module.bindings[6].implicit);
-		EXPECT_FALSE(module.bindings[6].input);
-		EXPECT_FALSE(module.bindings[5].implicit);
+		EXPECT_TRUE(mod.bindings[6].implicit);
+		EXPECT_FALSE(mod.bindings[6].input);
+		EXPECT_FALSE(mod.bindings[5].implicit);
 
-		ASSERT_EQ(module.functions.size(), 2uz);
-		EXPECT_TRUE(module.functions[0].redefineAllowed);
-		EXPECT_FALSE(module.functions[1].redefineAllowed);
-		EXPECT_EQ(module.functions[1].ret.index, TypeRef {}.index);// no return type
+		ASSERT_EQ(mod.functions.size(), 2uz);
+		EXPECT_TRUE(mod.functions[0].redefineAllowed);
+		EXPECT_FALSE(mod.functions[1].redefineAllowed);
+		EXPECT_EQ(mod.functions[1].ret.index, TypeRef {}.index);// no return type
 	}
 
 	TEST(ParserTest, ReportsSeveralDiagnosticsAndRecovers) {
@@ -569,9 +569,9 @@ namespace AccelLang {
 		expectOnlyDepthError(parseFail(String(toggleAB) + repeat("@when (A == B) {\n", 5000uz)), 258u, 8u);
 
 		const auto legal = String(toggleAB) + repeat("@when (A == B) {\n", 100uz) + "fn F();\n" + repeat("}\n", 100uz);
-		const auto module = parseOk(legal);
-		ASSERT_EQ(module.functions.size(), 1uz);
-		EXPECT_TRUE(evaluate(module.functions[0].when, { { "A", "B" } }));
+		const auto mod = parseOk(legal);
+		ASSERT_EQ(mod.functions.size(), 1uz);
+		EXPECT_TRUE(evaluate(mod.functions[0].when, { { "A", "B" } }));
 	}
 
 	TEST(ParserTest, DeepIncludeChainIsOneDepthDiagnostic) {
@@ -604,11 +604,11 @@ namespace AccelLang {
 				{ "right", "#include <base>\n@when (Shadows == On) fn R() -> f32;" }
 			}
 		);
-		const auto module = parseOk("#include <left>\n#include <right>\n", includes);
-		EXPECT_EQ(module.toggles.size(), 1uz);
-		ASSERT_EQ(module.functions.size(), 2uz);
-		EXPECT_EQ(module.functions[0].name, "L");
-		EXPECT_EQ(module.functions[1].name, "R");
+		const auto mod = parseOk("#include <left>\n#include <right>\n", includes);
+		EXPECT_EQ(mod.toggles.size(), 1uz);
+		ASSERT_EQ(mod.functions.size(), 2uz);
+		EXPECT_EQ(mod.functions[0].name, "L");
+		EXPECT_EQ(mod.functions[1].name, "R");
 	}
 }
 
@@ -619,23 +619,23 @@ namespace AccelLang {
 namespace AccelLang {
 	namespace {
 		/* a missing function or body throws out_of_range, which fails the test */
-		[[nodiscard]] ref<const Stmt> bodyRoot(ref<const Module> module_, size_t function_) {
-			return module_.stmts.at(module_.functions.at(function_).body.value_or(BodyRef {}).root.index);
+		[[nodiscard]] ref<const Stmt> bodyRoot(ref<const Module> mod_, size_t function_) {
+			return mod_.stmts.at(mod_.functions.at(function_).body.value_or(BodyRef {}).root.index);
 		}
 
-		[[nodiscard]] ref<const Stmt> stmtAt(ref<const Module> module_, StmtRef ref_) {
-			return module_.stmts.at(ref_.index);
+		[[nodiscard]] ref<const Stmt> stmtAt(ref<const Module> mod_, StmtRef ref_) {
+			return mod_.stmts.at(ref_.index);
 		}
 
-		[[nodiscard]] ref<const Expr> exprAt(ref<const Module> module_, ExprRef ref_) {
-			return module_.exprs.at(ref_.index);
+		[[nodiscard]] ref<const Expr> exprAt(ref<const Module> mod_, ExprRef ref_) {
+			return mod_.exprs.at(ref_.index);
 		}
 
 		constexpr auto unset = ~0uL;
 	}
 
 	TEST(ParserBodyTest, ParsesShadowVertexMain) {
-		const auto module = parseOk(
+		const auto mod = parseOk(
 			"@input (mode = bind, id = \"camera\", class = storage) block camera { f32mat4[4] cascadeViewProj; f32vec4 cascadeDepth; };\n"
 			"@input (mode = bind, id = \"model\", class = storage) block model { f32mat4[] model; };\n"
 			"@input (mode = bind, id = \"push\", class = push) block push { u32 cascade; };\n"
@@ -645,24 +645,24 @@ namespace AccelLang {
 			"\tposition = camera.cascadeViewProj[push.cascade] * pos;\n"
 			"}\n"
 		, noIncludes, EntryKind::eVertex);
-		ASSERT_EQ(module.functions.size(), 1uz);
-		const auto& root = bodyRoot(module, 0uz);
+		ASSERT_EQ(mod.functions.size(), 1uz);
+		const auto& root = bodyRoot(mod, 0uz);
 		EXPECT_EQ(root.kind, StmtKind::eBlock);
 		ASSERT_EQ(root.children.size(), 2uz);
 
-		const auto& let = stmtAt(module, root.children[0]);
+		const auto& let = stmtAt(mod, root.children[0]);
 		EXPECT_EQ(let.kind, StmtKind::eDeclareLocal);
 		EXPECT_EQ(let.name, "pos");
-		EXPECT_EQ(exprAt(module, let.lhs).kind, ExprKind::eBinary);
+		EXPECT_EQ(exprAt(mod, let.lhs).kind, ExprKind::eBinary);
 
-		const auto& assign = stmtAt(module, root.children[1]);
+		const auto& assign = stmtAt(mod, root.children[1]);
 		EXPECT_EQ(assign.kind, StmtKind::eAssign);
-		EXPECT_EQ(exprAt(module, assign.lhs).kind, ExprKind::eBuiltin);
-		const auto& rhs = exprAt(module, assign.rhs);
+		EXPECT_EQ(exprAt(mod, assign.lhs).kind, ExprKind::eBuiltin);
+		const auto& rhs = exprAt(mod, assign.rhs);
 		ASSERT_EQ(rhs.operands.size(), 2uz);
-		EXPECT_TRUE(exprAt(module, rhs.operands[1]).local);// pos
+		EXPECT_TRUE(exprAt(mod, rhs.operands[1]).local);// pos
 
-		const auto usage = usageOf(module, 0u);
+		const auto usage = usageOf(mod, 0u);
 		EXPECT_TRUE(usage.calledFunctions.empty());
 		EXPECT_EQ(usage.readBindings, (Vector<u32> { 0u, 1u, 2u, 3u }));// camera, model, push, local_position
 		EXPECT_TRUE(usage.writtenBindings.empty());// `position` is a builtin
@@ -677,29 +677,29 @@ namespace AccelLang {
 	}
 
 	TEST(ParserBodyTest, WhenStatementKeepsCondition) {
-		const auto module = parseOk(
+		const auto mod = parseOk(
 			"toggle Shadows : { Off, On } = Off;\n"
 			"fn main() {\n"
 			"\t@when (Shadows == On) position = f32vec4(1.0);\n"
 			"\t@when (Shadows == Off) { position = f32vec4(0.5); }\n"
 			"}\n"
 		, noIncludes, EntryKind::eVertex);
-		const auto& root = bodyRoot(module, 0uz);
+		const auto& root = bodyRoot(mod, 0uz);
 		ASSERT_EQ(root.children.size(), 2uz);
 
-		const auto& single = stmtAt(module, root.children[0]);
+		const auto& single = stmtAt(mod, root.children[0]);
 		EXPECT_EQ(single.kind, StmtKind::eWhen);
 		EXPECT_EQ(single.when.kind, ConditionKind::eEquals);
 		EXPECT_EQ(single.when.toggle, "Shadows");
 		EXPECT_EQ(single.when.value, "On");
 		ASSERT_EQ(single.children.size(), 1uz);
-		EXPECT_EQ(stmtAt(module, single.children[0]).kind, StmtKind::eAssign);
+		EXPECT_EQ(stmtAt(mod, single.children[0]).kind, StmtKind::eAssign);
 
-		const auto& block = stmtAt(module, root.children[1]);
+		const auto& block = stmtAt(mod, root.children[1]);
 		EXPECT_EQ(block.kind, StmtKind::eWhen);
 		EXPECT_EQ(block.when.value, "Off");
 		ASSERT_EQ(block.children.size(), 1uz);
-		EXPECT_EQ(stmtAt(module, block.children[0]).kind, StmtKind::eBlock);
+		EXPECT_EQ(stmtAt(mod, block.children[0]).kind, StmtKind::eBlock);
 
 		const auto diags = parseFail("toggle Shadows : { Off, On } = Off;\nfn main() {\n\t@when (Nope == On) frag_depth = 1.0;\n}\n");
 		ASSERT_EQ(diags.size(), 1uz);
@@ -709,20 +709,20 @@ namespace AccelLang {
 	}
 
 	TEST(ParserBodyTest, EmptyMainIsValid) {
-		const auto module = parseOk("@output (mode = forward, id = \"depth\") implicit f32 depth;\nfn main() {}\n");
-		ASSERT_EQ(module.bindings.size(), 1uz);
-		EXPECT_TRUE(module.bindings[0].implicit);
-		ASSERT_EQ(module.functions.size(), 1uz);
-		const auto& root = bodyRoot(module, 0uz);
+		const auto mod = parseOk("@output (mode = forward, id = \"depth\") implicit f32 depth;\nfn main() {}\n");
+		ASSERT_EQ(mod.bindings.size(), 1uz);
+		EXPECT_TRUE(mod.bindings[0].implicit);
+		ASSERT_EQ(mod.functions.size(), 1uz);
+		const auto& root = bodyRoot(mod, 0uz);
 		EXPECT_EQ(root.kind, StmtKind::eBlock);
 		EXPECT_TRUE(root.children.empty());
-		EXPECT_TRUE(usageOf(module, 0u).writtenBindings.empty());
+		EXPECT_TRUE(usageOf(mod, 0u).writtenBindings.empty());
 	}
 
 	/* Rulings pinned beyond the brief */
 
 	TEST(ParserBodyTest, LocalShadowingBindingIsNotABindingUse) {
-		const auto module = parseOk(
+		const auto mod = parseOk(
 			"@input (mode = forward) f32vec4 color;\n"
 			"@output (mode = forward) f32vec4 outColor;\n"
 			"fn main() {\n"
@@ -730,14 +730,14 @@ namespace AccelLang {
 			"\toutColor = color;\n"
 			"}\n"
 		);
-		const auto& assign = stmtAt(module, bodyRoot(module, 0uz).children.at(1));
-		const auto& read = exprAt(module, assign.rhs);
+		const auto& assign = stmtAt(mod, bodyRoot(mod, 0uz).children.at(1));
+		const auto& read = exprAt(mod, assign.rhs);
 		EXPECT_EQ(read.kind, ExprKind::eNameRef);
 		EXPECT_TRUE(read.local);
 		EXPECT_EQ(read.binding.index, unset);
-		EXPECT_EQ(exprAt(module, assign.lhs).binding.index, 1u);
+		EXPECT_EQ(exprAt(mod, assign.lhs).binding.index, 1u);
 
-		const auto usage = usageOf(module, 0u);
+		const auto usage = usageOf(mod, 0u);
 		EXPECT_TRUE(usage.readBindings.empty());
 		EXPECT_EQ(usage.writtenBindings, (Vector<u32> { 1u }));
 	}
@@ -750,10 +750,10 @@ namespace AccelLang {
 		EXPECT_EQ(diags[0].column, 15u);
 
 		// an inner shadow ends with its block; the parameter is visible again
-		const auto module = parseOk("fn F(x: f32) -> f32 {\n\t{ let x = 2.0; frag_depth = x; }\n\treturn x;\n}\n");
-		const auto& root = bodyRoot(module, 0uz);
+		const auto mod = parseOk("fn F(x: f32) -> f32 {\n\t{ let x = 2.0; frag_depth = x; }\n\treturn x;\n}\n");
+		const auto& root = bodyRoot(mod, 0uz);
 		ASSERT_EQ(root.children.size(), 2uz);
-		EXPECT_TRUE(exprAt(module, stmtAt(module, root.children[1]).lhs).local);
+		EXPECT_TRUE(exprAt(mod, stmtAt(mod, root.children[1]).lhs).local);
 
 		// duplicates in one scope are diagnostics, parameters included
 		const auto dups = parseFail("fn G(a: f32, a: f32);\nfn H() {\n\tlet b = 1.0;\n\tlet b = 2.0;\n}\n");
@@ -765,7 +765,7 @@ namespace AccelLang {
 	}
 
 	TEST(ParserBodyTest, CallsResolveForwardAndUnknownCallIsDiagnostic) {
-		const auto module = parseOk(
+		const auto mod = parseOk(
 			"fn Decl() -> f32;\n"
 			"fn main() {\n"
 			"\tfrag_depth = Later(1.0) + Decl();\n"
@@ -773,11 +773,11 @@ namespace AccelLang {
 			"fn Later(v: f32) -> f32 { return v; }\n"
 			"fn Decl() -> f32 { return 0.5; }\n"
 		);
-		ASSERT_EQ(module.functions.size(), 4uz);
-		const auto usage = usageOf(module, 1u);
+		ASSERT_EQ(mod.functions.size(), 4uz);
+		const auto usage = usageOf(mod, 1u);
 		EXPECT_EQ(usage.calledFunctions, (Vector<u32> { 2u, 3u }));// Decl resolves to its body, not the forward decl
 		const std::array<u32, 1> roots { 1u };
-		EXPECT_EQ(reachableFunctions(module, roots), (Vector<u32> { 1u, 2u, 3u }));
+		EXPECT_EQ(reachableFunctions(mod, roots), (Vector<u32> { 1u, 2u, 3u }));
 
 		const auto diags = parseFail("fn main() {\n\tMissing(1.0);\n}\n");
 		ASSERT_EQ(diags.size(), 1uz);
@@ -787,7 +787,7 @@ namespace AccelLang {
 	}
 
 	TEST(ParserBodyTest, BuiltinNamesAndSample) {
-		const auto module = parseOk(
+		const auto mod = parseOk(
 			"@input (mode = bind, id = \"albedo\", class = texture) texture2d albedo;\n"
 			"@input (mode = bind, id = \"smp\", class = sampler) sampler smp;\n"
 			"@input (mode = forward) f32vec2 uv;\n"
@@ -801,71 +801,71 @@ namespace AccelLang {
 			"\tcolor = sample(albedo, smp, uv);\n"
 			"}\n"
 		, noIncludes, EntryKind::eVertex);
-		const auto& first = stmtAt(module, bodyRoot(module, 0uz).children.at(0));
-		const auto& position = exprAt(module, first.lhs);
+		const auto& first = stmtAt(mod, bodyRoot(mod, 0uz).children.at(0));
+		const auto& position = exprAt(mod, first.lhs);
 		EXPECT_EQ(position.kind, ExprKind::eBuiltin);
 		EXPECT_EQ(position.name, "position");
-		const auto& ctor = exprAt(module, first.rhs);
+		const auto& ctor = exprAt(mod, first.rhs);
 		ASSERT_EQ(ctor.operands.size(), 4uz);
-		const auto& vertexIndex = exprAt(module, exprAt(module, ctor.operands[0]).operands.at(0));
+		const auto& vertexIndex = exprAt(mod, exprAt(mod, ctor.operands[0]).operands.at(0));
 		EXPECT_EQ(vertexIndex.kind, ExprKind::eBuiltin);
 		EXPECT_EQ(vertexIndex.name, "vertex_index");
 
-		const auto& sample = exprAt(module, stmtAt(module, bodyRoot(module, 1uz).children.at(1)).rhs);
+		const auto& sample = exprAt(mod, stmtAt(mod, bodyRoot(mod, 1uz).children.at(1)).rhs);
 		EXPECT_EQ(sample.kind, ExprKind::eBuiltin);
 		EXPECT_EQ(sample.name, "sample");
 		EXPECT_EQ(sample.operands.size(), 3uz);
 
-		const auto usage = usageOf(module, 1u);
+		const auto usage = usageOf(mod, 1u);
 		EXPECT_EQ(usage.readBindings, (Vector<u32> { 0u, 1u, 2u }));
 		EXPECT_EQ(usage.writtenBindings, (Vector<u32> { 3u }));// frag_depth is not a binding
-		EXPECT_TRUE(usageOf(module, 0u).writtenBindings.empty());
+		EXPECT_TRUE(usageOf(mod, 0u).writtenBindings.empty());
 	}
 
 	TEST(ParserBodyTest, IfElseAndPrecedenceStructure) {
-		const auto module = parseOk(
+		const auto mod = parseOk(
 			"fn F(a: f32, b: f32) -> f32 {\n"
 			"\tif (a + 1.0 < b * 2.0 - a) return 0.0; else if (a >= 1.0) { return -a; } else return a - b - 1.0;\n"
 			"\tif (!(a == b)) frag_depth = a;\n"
 			"\treturn a;\n"
 			"}\n"
 		);
-		const auto& root = bodyRoot(module, 0uz);
+		const auto& root = bodyRoot(mod, 0uz);
 		ASSERT_EQ(root.children.size(), 3uz);
 
-		const auto& outer = stmtAt(module, root.children[0]);
+		const auto& outer = stmtAt(mod, root.children[0]);
 		EXPECT_EQ(outer.kind, StmtKind::eIf);
 		ASSERT_EQ(outer.children.size(), 2uz);
-		const auto& cond = exprAt(module, outer.lhs);// (a + 1.0) < ((b * 2.0) - a)
+		const auto& cond = exprAt(mod, outer.lhs);// (a + 1.0) < ((b * 2.0) - a)
 		EXPECT_EQ(cond.kind, ExprKind::eBinary);
 		EXPECT_EQ(cond.name, "<");
-		EXPECT_EQ(exprAt(module, cond.operands.at(0)).name, "+");
-		const auto& minus = exprAt(module, cond.operands.at(1));
+		EXPECT_EQ(exprAt(mod, cond.operands.at(0)).name, "+");
+		const auto& minus = exprAt(mod, cond.operands.at(1));
 		EXPECT_EQ(minus.name, "-");
-		EXPECT_EQ(exprAt(module, minus.operands.at(0)).name, "*");
-		EXPECT_EQ(stmtAt(module, outer.children[0]).kind, StmtKind::eReturn);
+		EXPECT_EQ(exprAt(mod, minus.operands.at(0)).name, "*");
+		EXPECT_EQ(stmtAt(mod, outer.children[0]).kind, StmtKind::eReturn);
 
-		const auto& elseIf = stmtAt(module, outer.children[1]);
+		const auto& elseIf = stmtAt(mod, outer.children[1]);
 		EXPECT_EQ(elseIf.kind, StmtKind::eIf);
 		ASSERT_EQ(elseIf.children.size(), 2uz);
-		EXPECT_EQ(exprAt(module, elseIf.lhs).name, ">=");
-		EXPECT_EQ(stmtAt(module, elseIf.children[0]).kind, StmtKind::eBlock);
-		const auto& last = exprAt(module, stmtAt(module, elseIf.children[1]).lhs);// (a - b) - 1.0
+		EXPECT_EQ(exprAt(mod, elseIf.lhs).name, ">=");
+		EXPECT_EQ(stmtAt(mod, elseIf.children[0]).kind, StmtKind::eBlock);
+		const auto& last = exprAt(mod, stmtAt(mod, elseIf.children[1]).lhs);// (a - b) - 1.0
 		EXPECT_EQ(last.name, "-");
-		EXPECT_EQ(exprAt(module, last.operands.at(0)).name, "-");
-		EXPECT_EQ(exprAt(module, last.operands.at(1)).kind, ExprKind::eLiteral);
+		EXPECT_EQ(exprAt(mod, last.operands.at(0)).name, "-");
+		EXPECT_EQ(exprAt(mod, last.operands.at(1)).kind, ExprKind::eLiteral);
 
-		const auto& noElse = stmtAt(module, root.children[1]);
+		const auto& noElse = stmtAt(mod, root.children[1]);
 		EXPECT_EQ(noElse.kind, StmtKind::eIf);
 		EXPECT_EQ(noElse.children.size(), 1uz);
-		const auto& negation = exprAt(module, noElse.lhs);
+		const auto& negation = exprAt(mod, noElse.lhs);
 		EXPECT_EQ(negation.kind, ExprKind::eUnary);
 		EXPECT_EQ(negation.name, "!");
-		EXPECT_EQ(exprAt(module, negation.operands.at(0)).name, "==");
+		EXPECT_EQ(exprAt(mod, negation.operands.at(0)).name, "==");
 
-		const auto& ret = stmtAt(module, root.children[2]);
+		const auto& ret = stmtAt(mod, root.children[2]);
 		EXPECT_EQ(ret.kind, StmtKind::eReturn);
-		EXPECT_TRUE(exprAt(module, ret.lhs).local);
+		EXPECT_TRUE(exprAt(mod, ret.lhs).local);
 
 		const auto empty = parseOk("fn G() { return; }");
 		EXPECT_EQ(stmtAt(empty, bodyRoot(empty, 0uz).children.at(0)).lhs.index, unset);
@@ -880,7 +880,7 @@ namespace AccelLang {
 	}
 
 	TEST(ParserBodyTest, BothLocalDeclarationForms) {
-		const auto module = parseOk(
+		const auto mod = parseOk(
 			"struct Light { f32vec3 dir; }\n"
 			"fn main() {\n"
 			"\tlet v: f32vec4 = f32vec4(1.0);\n"
@@ -892,30 +892,30 @@ namespace AccelLang {
 			"\tfrag_depth = arr[0] + t + u.x + l.dir.y;\n"
 			"}\n"
 		);
-		const auto& root = bodyRoot(module, 0uz);
+		const auto& root = bodyRoot(mod, 0uz);
 		ASSERT_EQ(root.children.size(), 7uz);
 
-		const auto& v = stmtAt(module, root.children[0]);
-		const auto& w = stmtAt(module, root.children[1]);
-		const auto& u = stmtAt(module, root.children[2]);
-		const auto& arr = stmtAt(module, root.children[3]);
-		const auto& t = stmtAt(module, root.children[4]);
-		const auto& l = stmtAt(module, root.children[5]);
+		const auto& v = stmtAt(mod, root.children[0]);
+		const auto& w = stmtAt(mod, root.children[1]);
+		const auto& u = stmtAt(mod, root.children[2]);
+		const auto& arr = stmtAt(mod, root.children[3]);
+		const auto& t = stmtAt(mod, root.children[4]);
+		const auto& l = stmtAt(mod, root.children[5]);
 		for (const auto* decl : { &v, &w, &u, &arr, &t, &l }) {
 			EXPECT_EQ(decl->kind, StmtKind::eDeclareLocal);
 		}
 		EXPECT_EQ(v.name, "v");
-		EXPECT_EQ(module.types.at(v.type.index).kind, TypeKind::eVector);
+		EXPECT_EQ(mod.types.at(v.type.index).kind, TypeKind::eVector);
 		EXPECT_EQ(w.name, "w");
 		EXPECT_EQ(w.type, v.type);
-		EXPECT_TRUE(exprAt(module, w.lhs).local);
+		EXPECT_TRUE(exprAt(mod, w.lhs).local);
 		EXPECT_EQ(u.type, v.type);// inferred by typecheck
 		EXPECT_NE(u.lhs.index, unset);
-		EXPECT_EQ(module.types.at(arr.type.index).kind, TypeKind::eArray);
+		EXPECT_EQ(mod.types.at(arr.type.index).kind, TypeKind::eArray);
 		EXPECT_EQ(arr.lhs.index, unset);// no initializer
-		EXPECT_EQ(module.types.at(t.type.index).kind, TypeKind::eScalar);
+		EXPECT_EQ(mod.types.at(t.type.index).kind, TypeKind::eScalar);
 		EXPECT_EQ(t.lhs.index, unset);
-		EXPECT_EQ(module.types.at(l.type.index).name, "Light");
+		EXPECT_EQ(mod.types.at(l.type.index).name, "Light");
 
 		const auto diags = parseFail("fn main() {\n\tlet z;\n\tnope q = 1.0;\n}\n");
 		ASSERT_EQ(diags.size(), 2uz);
@@ -926,7 +926,7 @@ namespace AccelLang {
 	}
 
 	TEST(ParserBodyTest, FieldAndIndexWritesCountAsBaseBindingWrites) {
-		const auto module = parseOk(
+		const auto mod = parseOk(
 			"@output (mode = bind, id = \"camera\", class = storage) block camera { f32mat4 vp; };\n"
 			"@output (mode = bind, id = \"a\", class = storage) f32[8] a;\n"
 			"@input (mode = forward) u32 i;\n"
@@ -936,15 +936,15 @@ namespace AccelLang {
 			"\ta[i] = 1.0;\n"
 			"}\n"
 		);
-		const auto usage = usageOf(module, 0u);
+		const auto usage = usageOf(mod, 0u);
 		EXPECT_EQ(usage.writtenBindings, (Vector<u32> { 0u, 1u }));// camera, a
 		EXPECT_EQ(usage.readBindings, (Vector<u32> { 2u, 3u }));// i, x
 
-		const auto& index = exprAt(module, stmtAt(module, bodyRoot(module, 0uz).children.at(1)).lhs);
+		const auto& index = exprAt(mod, stmtAt(mod, bodyRoot(mod, 0uz).children.at(1)).lhs);
 		EXPECT_EQ(index.kind, ExprKind::eIndex);
 		ASSERT_EQ(index.operands.size(), 2uz);
-		EXPECT_EQ(exprAt(module, index.operands[0]).binding.index, 1u);
-		EXPECT_EQ(exprAt(module, index.operands[1]).binding.index, 2u);
+		EXPECT_EQ(exprAt(mod, index.operands[0]).binding.index, 1u);
+		EXPECT_EQ(exprAt(mod, index.operands[1]).binding.index, 2u);
 
 		const auto diags = parseFail("fn F() -> f32;\nfn main() {\n\t1.0 = frag_depth;\n\tF() = 1.0;\n}\n");
 		ASSERT_EQ(diags.size(), 2uz);
@@ -955,7 +955,7 @@ namespace AccelLang {
 	}
 
 	TEST(ParserBodyTest, ConstructorAndSwizzleShape) {
-		const auto module = parseOk(
+		const auto mod = parseOk(
 			"struct Light { f32vec3 dir; f32 power; }\n"
 			"@input (mode = forward) f32vec4 a;\n"
 			"@output (mode = forward) f32vec4 o;\n"
@@ -964,33 +964,33 @@ namespace AccelLang {
 			"\tlet l = Light(a.rgb, 1.0);\n"
 			"}\n"
 		);
-		const auto& root = bodyRoot(module, 0uz);
-		const auto& ctor = exprAt(module, stmtAt(module, root.children.at(0)).rhs);
+		const auto& root = bodyRoot(mod, 0uz);
+		const auto& ctor = exprAt(mod, stmtAt(mod, root.children.at(0)).rhs);
 		EXPECT_EQ(ctor.kind, ExprKind::eConstruct);
-		ASSERT_LT(ctor.type.index, module.types.size());
-		EXPECT_EQ(module.types[ctor.type.index].kind, TypeKind::eVector);
-		EXPECT_EQ(module.types[ctor.type.index].n, 4u);
-		EXPECT_EQ(module.types[ctor.type.index].bits, 32u);
-		EXPECT_EQ(ctor.type, module.bindings[0].type);// interned once
+		ASSERT_LT(ctor.type.index, mod.types.size());
+		EXPECT_EQ(mod.types[ctor.type.index].kind, TypeKind::eVector);
+		EXPECT_EQ(mod.types[ctor.type.index].n, 4u);
+		EXPECT_EQ(mod.types[ctor.type.index].bits, 32u);
+		EXPECT_EQ(ctor.type, mod.bindings[0].type);// interned once
 		ASSERT_EQ(ctor.operands.size(), 3uz);
 
-		const auto& swizzle = exprAt(module, ctor.operands[0]);
+		const auto& swizzle = exprAt(mod, ctor.operands[0]);
 		EXPECT_EQ(swizzle.kind, ExprKind::eField);
 		EXPECT_EQ(swizzle.name, "xy");
 		ASSERT_EQ(swizzle.operands.size(), 1uz);
-		EXPECT_EQ(exprAt(module, swizzle.operands[0]).binding.index, 0u);
+		EXPECT_EQ(exprAt(mod, swizzle.operands[0]).binding.index, 0u);
 
-		const auto& literal = exprAt(module, ctor.operands[1]);
+		const auto& literal = exprAt(mod, ctor.operands[1]);
 		EXPECT_EQ(literal.kind, ExprKind::eLiteral);
 		EXPECT_EQ(literal.name, "0.2");
 
-		const auto& negated = exprAt(module, ctor.operands[2]);// postfix binds tighter than unary
+		const auto& negated = exprAt(mod, ctor.operands[2]);// postfix binds tighter than unary
 		EXPECT_EQ(negated.kind, ExprKind::eUnary);
-		EXPECT_EQ(exprAt(module, negated.operands.at(0)).kind, ExprKind::eField);
+		EXPECT_EQ(exprAt(mod, negated.operands.at(0)).kind, ExprKind::eField);
 
-		const auto& light = exprAt(module, stmtAt(module, root.children.at(1)).lhs);
+		const auto& light = exprAt(mod, stmtAt(mod, root.children.at(1)).lhs);
 		EXPECT_EQ(light.kind, ExprKind::eConstruct);
-		EXPECT_EQ(module.types[light.type.index].name, "Light");
+		EXPECT_EQ(mod.types[light.type.index].name, "Light");
 		EXPECT_EQ(light.operands.size(), 2uz);
 	}
 
@@ -1049,51 +1049,51 @@ namespace AccelLang {
 	}
 
 	TEST(ParserBodyTest, ParsesForWithCompoundStep) {
-		const auto module = parseOk(
+		const auto mod = parseOk(
 			"fn f(i: u32) -> f32 { return 1.0; }\n"
 			"fn main() {\n\tlet n = 4u;\n\tlet acc = 0.0;\n"
 			"\tfor (let i = 0u; i < n; ++i) { acc += f(i); }\n\tfrag_depth = acc;\n}\n"
 		);
-		const auto& root = bodyRoot(module, 1uz);
-		const auto& loop = stmtAt(module, root.children.at(2));
+		const auto& root = bodyRoot(mod, 1uz);
+		const auto& loop = stmtAt(mod, root.children.at(2));
 		ASSERT_EQ(loop.kind, StmtKind::eFor);
 		ASSERT_EQ(loop.children.size(), 3uz);
-		EXPECT_EQ(stmtAt(module, loop.children[0]).kind, StmtKind::eDeclareLocal);
-		EXPECT_EQ(exprAt(module, loop.lhs).kind, ExprKind::eBinary);
-		const auto& step = stmtAt(module, loop.children[2]);
+		EXPECT_EQ(stmtAt(mod, loop.children[0]).kind, StmtKind::eDeclareLocal);
+		EXPECT_EQ(exprAt(mod, loop.lhs).kind, ExprKind::eBinary);
+		const auto& step = stmtAt(mod, loop.children[2]);
 		EXPECT_EQ(step.kind, StmtKind::eAssign);
 		EXPECT_EQ(step.name, "+=");
-		const auto& body = stmtAt(module, loop.children[1]);
-		EXPECT_EQ(stmtAt(module, body.children.at(0)).name, "+=");
+		const auto& body = stmtAt(mod, loop.children[1]);
+		EXPECT_EQ(stmtAt(mod, body.children.at(0)).name, "+=");
 	}
 
 	TEST(ParserBodyTest, ParsesWhileBreakContinue) {
-		const auto module = parseOk(
+		const auto mod = parseOk(
 			"fn main() {\n\tlet x = 0.0;\n\twhile (x < 3.0) { x += 1.0; if (x > 1.0) { continue; } break; }\n\tfrag_depth = x;\n}\n"
 		);
-		const auto& loop = stmtAt(module, bodyRoot(module, 0uz).children.at(1));
+		const auto& loop = stmtAt(mod, bodyRoot(mod, 0uz).children.at(1));
 		ASSERT_EQ(loop.kind, StmtKind::eWhile);
-		const auto& body = stmtAt(module, loop.children.at(0));
-		EXPECT_EQ(stmtAt(module, body.children.at(2)).kind, StmtKind::eBreak);
-		const auto& branch = stmtAt(module, body.children.at(1));
-		EXPECT_EQ(stmtAt(module, stmtAt(module, branch.children.at(0)).children.at(0)).kind, StmtKind::eContinue);
+		const auto& body = stmtAt(mod, loop.children.at(0));
+		EXPECT_EQ(stmtAt(mod, body.children.at(2)).kind, StmtKind::eBreak);
+		const auto& branch = stmtAt(mod, body.children.at(1));
+		EXPECT_EQ(stmtAt(mod, stmtAt(mod, branch.children.at(0)).children.at(0)).kind, StmtKind::eContinue);
 	}
 
 	TEST(ParserBodyTest, OperatorPrecedence) {
-		const auto module = parseOk("fn main() {\n\tlet a = 1u;\n\tlet b = 2u;\n\tlet c = 3u;\n\tlet r = a | b & c << 1u;\n}\n");
-		const auto& top = exprAt(module, stmtAt(module, bodyRoot(module, 0uz).children.at(3)).lhs);
+		const auto mod = parseOk("fn main() {\n\tlet a = 1u;\n\tlet b = 2u;\n\tlet c = 3u;\n\tlet r = a | b & c << 1u;\n}\n");
+		const auto& top = exprAt(mod, stmtAt(mod, bodyRoot(mod, 0uz).children.at(3)).lhs);
 		ASSERT_EQ(top.name, "|");
-		const auto& mid = exprAt(module, top.operands.at(1));
+		const auto& mid = exprAt(mod, top.operands.at(1));
 		ASSERT_EQ(mid.name, "&");
-		EXPECT_EQ(exprAt(module, mid.operands.at(1)).name, "<<");
+		EXPECT_EQ(exprAt(mod, mid.operands.at(1)).name, "<<");
 	}
 
 	TEST(ParserBodyTest, ParsesTernary) {
-		const auto module = parseOk("fn main() {\n\tlet x = true;\n\tlet y = 1.0;\n\tlet z = 2.0;\n\tlet r = x ? y : z + 1.0;\n}\n");
-		const auto& ternary = exprAt(module, stmtAt(module, bodyRoot(module, 0uz).children.at(3)).lhs);
+		const auto mod = parseOk("fn main() {\n\tlet x = true;\n\tlet y = 1.0;\n\tlet z = 2.0;\n\tlet r = x ? y : z + 1.0;\n}\n");
+		const auto& ternary = exprAt(mod, stmtAt(mod, bodyRoot(mod, 0uz).children.at(3)).lhs);
 		ASSERT_EQ(ternary.kind, ExprKind::eTernary);
 		ASSERT_EQ(ternary.operands.size(), 3uz);
-		EXPECT_EQ(exprAt(module, ternary.operands[2]).name, "+");
+		EXPECT_EQ(exprAt(mod, ternary.operands[2]).name, "+");
 	}
 
 	TEST(ParserTest, ImplicitOnFunctionIsDiagnostic) {

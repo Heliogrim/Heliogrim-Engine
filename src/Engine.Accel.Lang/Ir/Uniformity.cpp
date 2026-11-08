@@ -10,7 +10,7 @@ using namespace hg;
 
 namespace {
 	struct FunctionWalker {
-		ref<const ir::Module> module;
+		ref<const ir::Module> mod;
 		FnRef<bool(StringView)> needsUniform;
 		ir::Uniformity& out;
 
@@ -33,11 +33,11 @@ namespace {
 		}
 
 		[[nodiscard]] bool exprUniform(ir::ExprRef ref_) {
-			if (ref_.index >= module.exprs.size()) {
+			if (ref_.index >= mod.exprs.size()) {
 				return true;
 			}
 
-			const auto& e = module.exprs[ref_.index];
+			const auto& e = mod.exprs[ref_.index];
 			bool uniform = true;
 			for (const auto op : e.operands) {
 				uniform = exprUniform(op) && uniform;
@@ -52,19 +52,19 @@ namespace {
 						const auto it = divergent.find(e.name);
 						return it != divergent.end() && not it->second;
 					}
-					if (e.constant.index < module.constants.size()) {
+					if (e.constant.index < mod.constants.size()) {
 							return true;
 						}
 						auto index = e.binding.index;
 					if (index == ~0uL) {
-						const auto it = std::ranges::find(module.bindings, e.name, &ir::BindingDecl::localName);
-						index = it == module.bindings.end() ? ~0uL : static_cast<u32>(it - module.bindings.begin());
+						const auto it = std::ranges::find(mod.bindings, e.name, &ir::BindingDecl::localName);
+						index = it == mod.bindings.end() ? ~0uL : static_cast<u32>(it - mod.bindings.begin());
 					}
-					if (index >= module.bindings.size()) {
+					if (index >= mod.bindings.size()) {
 						return false;
 					}
 					/* storage reads are uniform when their index operands are (checked by the eIndex operands) */
-					const auto cls = module.bindings[index].bindClass;
+					const auto cls = mod.bindings[index].bindClass;
 					return cls == ir::BindClass::ePushConstant || cls == ir::BindClass::eUniformBuffer || cls == ir::BindClass::eStorageBuffer;
 				}
 				case ir::ExprKind::eBuiltin: {
@@ -95,8 +95,8 @@ namespace {
 
 		/* local a place is rooted at, aliases resolved to their root; empty when none */
 		[[nodiscard]] String rootOf(ir::ExprRef place_) const {
-			while (place_.index < module.exprs.size()) {
-				const auto& e = module.exprs[place_.index];
+			while (place_.index < mod.exprs.size()) {
+				const auto& e = mod.exprs[place_.index];
 				if ((e.kind == ir::ExprKind::eField || e.kind == ir::ExprKind::eIndex || e.kind == ir::ExprKind::eRange) && not e.operands.empty()) {
 					place_ = e.operands.front();
 					continue;
@@ -116,8 +116,8 @@ namespace {
 				mark(root, lane_);
 			}
 			/* the written name itself too (an alias), so reads through it see the write */
-			while (place_.index < module.exprs.size()) {
-				const auto& e = module.exprs[place_.index];
+			while (place_.index < mod.exprs.size()) {
+				const auto& e = mod.exprs[place_.index];
 				if ((e.kind == ir::ExprKind::eField || e.kind == ir::ExprKind::eIndex || e.kind == ir::ExprKind::eRange) && not e.operands.empty()) {
 					place_ = e.operands.front();
 					continue;
@@ -130,17 +130,17 @@ namespace {
 		}
 
 		void stmt(ir::StmtRef ref_, bool cond_) {
-			if (ref_.index >= module.stmts.size()) {
+			if (ref_.index >= mod.stmts.size()) {
 				return;
 			}
 
-			const auto& s = module.stmts[ref_.index];
+			const auto& s = mod.stmts[ref_.index];
 			out.uniformStmt[ref_.index] = not divergentNow(cond_);
 
 			switch (s.kind) {
 				case ir::StmtKind::eDeclareLocal: {
 					/* evaluate first: builtin detection must run under divergent control too */
-					const auto initLane = s.lhs.index < module.exprs.size() && not exprUniform(s.lhs);
+					const auto initLane = s.lhs.index < mod.exprs.size() && not exprUniform(s.lhs);
 					mark(s.name, divergentNow(cond_) || initLane);
 					break;
 				}
@@ -205,7 +205,7 @@ namespace {
 			auto taint = outer;
 			for (auto pass = 0; pass < 2; ++pass) {
 				loopTaint = taint;
-				const auto lane = not exprUniform(s_.lhs) || (s_.lhs.index >= module.exprs.size() && s_.kind == ir::StmtKind::eFor);
+				const auto lane = not exprUniform(s_.lhs) || (s_.lhs.index >= mod.exprs.size() && s_.kind == ir::StmtKind::eFor);
 				if (isFor) {
 					stmt(s_.children[1], cond_ || lane);
 					stmt(s_.children[2], cond_ || lane);
@@ -224,18 +224,18 @@ namespace {
 	};
 }
 
-ir::Uniformity ir::analyzeUniformity(ref<const Module> module_, FnRef<bool(StringView)> needsUniform_) {
+ir::Uniformity ir::analyzeUniformity(ref<const Module> mod_, FnRef<bool(StringView)> needsUniform_) {
 	Uniformity result {};
-	result.uniformStmt.assign(module_.stmts.size(), true);
-	result.requiresUniform.assign(module_.functions.size(), false);
+	result.uniformStmt.assign(mod_.stmts.size(), true);
+	result.requiresUniform.assign(mod_.functions.size(), false);
 
-	for (auto f = 0uz; f < module_.functions.size(); ++f) {
-		const auto& fn = module_.functions[f];
+	for (auto f = 0uz; f < mod_.functions.size(); ++f) {
+		const auto& fn = mod_.functions[f];
 		if (not fn.body.has_value()) {
 			continue;
 		}
 
-		FunctionWalker walker { module_, needsUniform_, result };
+		FunctionWalker walker { mod_, needsUniform_, result };
 		for (const auto& param : fn.params) {
 			walker.mark(param.name, true);
 		}
@@ -249,11 +249,11 @@ ir::Uniformity ir::analyzeUniformity(ref<const Module> module_, FnRef<bool(Strin
 
 	for (bool grew = true; grew;) {
 		grew = false;
-		for (auto f = 0u; f < module_.functions.size(); ++f) {
+		for (auto f = 0u; f < mod_.functions.size(); ++f) {
 			if (result.requiresUniform[f]) {
 				continue;
 			}
-			for (const auto callee : usageOf(module_, f).calledFunctions) {
+			for (const auto callee : usageOf(mod_, f).calledFunctions) {
 				if (callee < result.requiresUniform.size() && result.requiresUniform[callee]) {
 					result.requiresUniform[f] = grew = true;
 					break;

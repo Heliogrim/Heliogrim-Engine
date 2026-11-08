@@ -31,10 +31,10 @@ namespace AccelLang {
 			return res.has_value() || res.error().empty() ? String {} : res.error().front().message;
 		}
 
-		[[nodiscard]] String emitGlsl(ref<Module> module_) {
+		[[nodiscard]] String emitGlsl(ref<Module> mod_) {
 			Language target {};
-			const auto layout = assignLayout(computeInterface(module_), module_.types, {});
-			(void)GlslEmitter {}.emit(module_, layout, target);
+			const auto layout = assignLayout(computeInterface(mod_), mod_.types, {});
+			(void)GlslEmitter {}.emit(mod_, layout, target);
 			return target.text.empty() ? String {} : String { target.text.front().data };
 		}
 

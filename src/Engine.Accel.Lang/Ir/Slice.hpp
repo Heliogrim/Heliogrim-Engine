@@ -25,5 +25,5 @@ namespace hg::engine::accel::lang::ir {
 	 * - Bindings: those a live statement touches, plus the required outputs (an implicit one needs no function).
 	 * - Toggles and types are kept as they are; the arenas are rebuilt like `compact`, the input is not changed.
 	 */
-	[[nodiscard]] Module slice(ref<const Module> module_, std::span<const String> requiredOutputIds_);
+	[[nodiscard]] Module slice(ref<const Module> mod_, std::span<const String> requiredOutputIds_);
 }

@@ -246,7 +246,7 @@ uptr<ModuleSource> VkModuleBuilder::build(
 
 uptr<VkModuleSource> VkModuleBuilder::transpile(
 	cref<smr<StageDerivat>> stage_,
-	mref<uptr<VkModuleSource>> module_
+	mref<uptr<VkModuleSource>> mod_
 ) const {
 
 	/**
@@ -269,7 +269,7 @@ uptr<VkModuleSource> VkModuleBuilder::transpile(
 			continue;
 		}
 
-		const auto location = module_->bindings.inboundLocation(input.symbol);
+		const auto location = mod_->bindings.inboundLocation(input.symbol);
 
 		auto* nextAnnotation = &input.symbol->var.data->annotation;
 		auto* annotation = nextAnnotation->get();
@@ -293,7 +293,7 @@ uptr<VkModuleSource> VkModuleBuilder::transpile(
 
 		assert(output.symbol->var.type == lang::SymbolType::eVariableSymbol);
 
-		const auto location = module_->bindings.outboundLocation(output.symbol);
+		const auto location = mod_->bindings.outboundLocation(output.symbol);
 
 		auto* nextAnnotation = &output.symbol->var.data->annotation;
 		auto* annotation = nextAnnotation->get();
@@ -315,14 +315,14 @@ uptr<VkModuleSource> VkModuleBuilder::transpile(
 	 */
 
 	auto emitter = lang::GlslEmitter {};
-	emitter(stage_->getIntermediate()->rep, lang::Dialect::eVulkanGlsl460, module_->code);
+	emitter(stage_->getIntermediate()->rep, lang::Dialect::eVulkanGlsl460, mod_->code);
 	// Warning: Temporary Fix
-	module_->code.dialect = stage_->getIntermediate()->lang.dialect;
+	mod_->code.dialect = stage_->getIntermediate()->lang.dialect;
 	for (const auto& textBlock : stage_->getIntermediate()->lang.text) {
-		module_->code.text.emplace_back(textBlock);
+		mod_->code.text.emplace_back(textBlock);
 	}
 
 	/**/
 
-	return std::move(module_);
+	return std::move(mod_);
 }
