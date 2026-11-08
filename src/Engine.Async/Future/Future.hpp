@@ -7,13 +7,14 @@
 #include <Engine.Common/Expected.hpp>
 
 #include "FutureState.hpp"
+#include "Send.hpp"
 #include "Schedule.hpp"
 
 namespace hg {
-	template <typename T_, typename E_>
+	template <typename T_, typename E_ = Broken> requires Send<T_>
 	class Promise;
 
-	template <typename T_, typename E_ = Broken>
+	template <typename T_, typename E_ = Broken> requires Send<T_>
 	class Future;
 
 	namespace detail {
@@ -72,7 +73,7 @@ namespace hg {
 		}
 	}
 
-	template <typename T_, typename E_>
+	template <typename T_, typename E_> requires Send<T_>
 	class Future {
 	public:
 		using state_type = detail::FutureState<T_, E_>;
@@ -180,7 +181,7 @@ namespace hg {
 	private:
 		friend class Promise<T_, E_>;
 
-		template <typename, typename>
+		template <typename T, typename E> requires Send<T>
 		friend class Future;
 
 		friend struct detail::FutureAccess;

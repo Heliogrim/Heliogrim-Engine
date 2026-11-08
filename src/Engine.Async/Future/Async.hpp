@@ -19,6 +19,7 @@ namespace hg {
 		using ret_type = std::invoke_result_t<fn_type&>;
 		using traits = detail::ThenTraits<ret_type, Broken>;
 		using U = traits::value_type;
+		static_assert(Send<U>);
 		using E = traits::error_type;
 		using state_type = detail::FutureState<U, E>;
 

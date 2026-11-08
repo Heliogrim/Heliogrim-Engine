@@ -81,6 +81,9 @@ namespace hg {
 	template <IsIntrusiveRefCountable Ty_>
 	class RefCountedIntrusive final {
 	public:
+		// Non-atomic count: must not cross threads, so not Send.
+		using not_send = void;
+
 		using this_type = RefCountedIntrusive<Ty_>;
 
 		using storage_type = mpt<Ty_>;
