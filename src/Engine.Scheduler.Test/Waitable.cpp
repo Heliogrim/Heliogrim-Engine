@@ -11,6 +11,7 @@
 #include <Engine.Scheduler/Waitable/Event.hpp>
 #include <Engine.Scheduler/Waitable/JoinCounter.hpp>
 #include <Engine.Scheduler/Waitable/ParkQueue.hpp>
+#include <Heliogrim/Async/Await.hpp>
 
 using namespace hg::engine::scheduler;
 using namespace hg;
@@ -269,5 +270,33 @@ namespace SchedulerModule {
 			e.reset();
 			setter.join();
 		}
+	}
+
+	static_assert(std::is_same_v<hg::Signal, engine::scheduler::Event>);
+
+	TEST(PublicAwait, EventOverloadParksTask) {
+		structuredRuntimeTest(
+			[](nmpt<engine::Scheduler> s_) {
+				::hg::Signal event {};
+				std::atomic_bool done { false };
+
+				s_->exec(
+					task::make_task(
+						[&] {
+							::hg::await(event);
+							done = true;
+						}
+					)
+				);
+
+				thread::self::sleepFor(5);
+				event.set();
+
+				for (u32 i = 0; i < 2000 && not done.load(); ++i) {
+					thread::self::sleepFor(1);
+				}
+				ASSERT_TRUE(done.load());
+			}
+		);
 	}
 }
