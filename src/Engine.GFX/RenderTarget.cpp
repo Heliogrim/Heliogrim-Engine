@@ -35,11 +35,13 @@ RenderTarget::RenderTarget(mref<sptr<Device>> device_, const nmpt<const render::
 	_renderer(renderer_),
 	_sceneView(),
 	_renderPasses(),
-	_chainSceneView(nullptr),
+	_previousSceneView(),
+	_sceneViewPending(false),
 	_chainSceneViewMask(0u),
 	_swapchain(nullptr),
 	_surface(nullptr),
-	_chainSwapChain(nullptr),
+	_previousSwapchain(),
+	_swapchainPending(false),
 	_chainSwapChainMask(0u),
 	_otfImage(),
 	_otfFinish(),
@@ -107,11 +109,11 @@ nmpt<const Renderer> RenderTarget::getRenderer() const noexcept {
 	return _renderer;
 }
 
-concurrent::Future<nmpt<const scene::SceneView>> RenderTarget::transitionToSceneView(
+void RenderTarget::transitionToSceneView(
 	mref<smr<const scene::SceneView>> sceneView_
 ) {
 
-	assert(_chainSceneView == nullptr);
+	assert(!_sceneViewPending);
 	assert(_sceneView.get() != sceneView_.get());
 
 	_chainSceneViewMask = 0u;
@@ -119,19 +121,12 @@ concurrent::Future<nmpt<const scene::SceneView>> RenderTarget::transitionToScene
 		_chainSceneViewMask |= (0x1u << (i - 1u));
 	}
 
-	_chainSceneView = make_uptr<concurrent::Promise<nmpt<const scene::SceneView>>>(
-		concurrent::Promise<nmpt<const scene::SceneView>>(
-			// Warning: We are explicitly expanding the lifetime of the previous object
-			[prev = clone(_sceneView)] {
-				return prev.get();
-			}
-		)
-	);
+	_sceneViewPending = true;
+	_previousSceneView = clone(_sceneView);
 
 	/**/
 
 	_sceneView = std::move(sceneView_);
-	return _chainSceneView->get();
 }
 
 smr<const scene::SceneView> RenderTarget::getSceneView() const noexcept {
@@ -182,7 +177,7 @@ Result<TransitionResult, std::runtime_error> RenderTarget::transitionToTarget(
 		fullSwapChainMask |= (0x1u << (i - 1u));
 	}
 
-	if (_chainSwapChain != nullptr) {
+	if (_swapchainPending) {
 
 		/* Check for possible forceful override of untouched transition */
 		if (_chainSwapChainMask != fullSwapChainMask) {
@@ -193,26 +188,20 @@ Result<TransitionResult, std::runtime_error> RenderTarget::transitionToTarget(
 		_swapchain = std::move(nextSwapchain);
 		_surface = std::addressof(surface_);
 
-		// Attention: At this point the internal future state has some shared ownership
-		return TransitionResult { _chainSwapChain->get(), _swapchain };
+		return TransitionResult { _swapchain };
 	}
 
 	/**/
 
 	_chainSwapChainMask = fullSwapChainMask;
-	_chainSwapChain = make_uptr<concurrent::Promise<std::monostate>>(
-		concurrent::Promise<std::monostate>(
-			// Warning: We are explicitly expanding the lifetime of the previous object
-			[] { return std::monostate {}; }
-		)
-	);
+	_swapchainPending = true;
 
 	/**/
 
 	_swapchain = std::move(nextSwapchain);
 	_surface = std::addressof(surface_);
 
-	return TransitionResult { _chainSwapChain->get(), _swapchain };
+	return TransitionResult { _swapchain };
 }
 
 Result<TransitionResult, std::runtime_error> RenderTarget::transitionToTarget(mref<smr<Swapchain>> nextSwapchain_) {
@@ -236,7 +225,7 @@ Result<TransitionResult, std::runtime_error> RenderTarget::transitionToTarget(mr
 		fullSwapChainMask |= (0x1u << (i - 1u));
 	}
 
-	if (_chainSwapChain != nullptr) {
+	if (_swapchainPending) {
 
 		/* Check for possible forceful override of untouched transition */
 		if (_chainSwapChainMask != fullSwapChainMask) {
@@ -247,26 +236,21 @@ Result<TransitionResult, std::runtime_error> RenderTarget::transitionToTarget(mr
 		_swapchain = std::move(nextSwapchain_);
 		_surface = nullptr;
 
-		// Attention: At this point the internal future state has some shared ownership
-		return TransitionResult { _chainSwapChain->get(), _swapchain };
+		return TransitionResult { _swapchain };
 	}
 
 	/**/
 
 	_chainSwapChainMask = fullSwapChainMask;
-	_chainSwapChain = make_uptr<concurrent::Promise<std::monostate>>(
-		concurrent::Promise<std::monostate>(
-			// Warning: We are explicitly expanding the lifetime of the previous object
-			[previousKeepalive = clone(_swapchain)] { return std::monostate {}; }
-		)
-	);
+	_swapchainPending = true;
+	_previousSwapchain = clone(_swapchain);
 
 	/**/
 
 	_swapchain = std::move(nextSwapchain_);
 	_surface = nullptr;
 
-	return TransitionResult { _chainSwapChain->get(), _swapchain };
+	return TransitionResult { _swapchain };
 }
 
 smr<Swapchain> RenderTarget::getSwapChain() const noexcept {
@@ -355,15 +339,11 @@ void RenderTarget::setup() {
 
 	/**/
 
-	if (_chainSceneView) {
-		(*_chainSceneView)();
-		_chainSceneView.reset();
-	}
+	_sceneViewPending = false;
+	_previousSceneView.reset();
 
-	if (_chainSwapChain) {
-		(*_chainSwapChain)();
-		_chainSwapChain.reset();
-	}
+	_swapchainPending = false;
+	_previousSwapchain.reset();
 }
 
 void RenderTarget::transitionImmediately() {
@@ -393,12 +373,12 @@ void RenderTarget::transitionImmediately() {
 		auto renderPass = std::move(_renderPasses[i]);
 
 		// Conditional Update Scene View
-		if (_chainSceneView != nullptr) {
+		if (_sceneViewPending) {
 			renderPass->changeSceneView(clone(_sceneView));
 		}
 
 		// Conditional Update Render Targets
-		if (_chainSwapChain != nullptr) {
+		if (_swapchainPending) {
 			// renderPass.bindTarget(<<symbol>>, <<texture>>);
 			const auto previous = renderPass->unbindTarget(makeSceneColorSymbol());
 			const auto bindResult = renderPass->bindTarget(makeSceneColorSymbol(), clone(_swapchain->at(i)));
@@ -411,15 +391,11 @@ void RenderTarget::transitionImmediately() {
 
 	/**/
 
-	if (_chainSceneView) {
-		(*_chainSceneView)();
-		_chainSceneView.reset();
-	}
+	_sceneViewPending = false;
+	_previousSceneView.reset();
 
-	if (_chainSwapChain) {
-		(*_chainSwapChain)();
-		_chainSwapChain.reset();
-	}
+	_swapchainPending = false;
+	_previousSwapchain.reset();
 }
 
 nmpt<RenderPass> RenderTarget::next() {
@@ -520,14 +496,14 @@ void RenderTarget::update() {
 
 	/**/
 
-	if (_chainSceneView && _chainSceneViewMask == 0u) {
-		(*_chainSceneView)();
-		_chainSceneView.reset();
+	if (_sceneViewPending && _chainSceneViewMask == 0u) {
+		_sceneViewPending = false;
+		_previousSceneView.reset();
 	}
 
-	if (_chainSwapChain && _chainSwapChainMask == 0u) {
-		(*_chainSwapChain)();
-		_chainSwapChain.reset();
+	if (_swapchainPending && _chainSwapChainMask == 0u) {
+		_swapchainPending = false;
+		_previousSwapchain.reset();
 	}
 }
 
