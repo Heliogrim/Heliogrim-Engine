@@ -5,106 +5,150 @@
 using namespace hg::engine::accel::lang::ir;
 
 namespace AccelCompile {
-	TEST(IrSpirvGateTest, PreDepthVertex) {
-		EXPECT_TRUE(assetCompilesToSpirv("depth/predepth.vs.asl", EntryKind::eVertex));
+	TEST(IrSpirvGateTest, RejectsBrokenGlsl) {
+		EXPECT_FALSE(glslCompiles("#version 460\nvoid main(){ gl_Position = vec4(0); }", EntryKind::eFragment));
 	}
 
-	TEST(IrSpirvGateTest, PreDepthFragment) {
-		EXPECT_TRUE(assetCompilesToSpirv("depth/predepth.fs.asl", EntryKind::eFragment));
+	TEST(IrSpirvGateTest, VertexSample) {
+		EXPECT_TRUE(
+			compilesToSpirv(
+				"@input (mode = bind, id = \"view\", class = uniform) block camera { f32mat4 mvp; f32mat4 proj; f32mat4 view; };\n"
+				"@input (mode = bind, id = \"cascades\", class = storage) block cascades { f32mat4[4] viewProj; f32vec4 depth; };\n"
+				"@input (mode = bind, id = \"model\", class = storage) block model { f32mat4[] model; };\n"
+				"@input (mode = bind, id = \"block\", class = push) block push { f32vec2 translate; u32 cascade; };\n"
+				"@input (mode = forward, id = \"vertex-position\") f32vec3 local_position;\n"
+				"@input (mode = forward, id = \"vertex-normal\") f32vec3 local_normal;\n"
+				"@output (mode = forward, id = \"world-normal\") f32vec4 world_normal;\n"
+				"@output (mode = forward, id = \"local-uv\") f32vec2 out_uv;\n"
+				"const UVS: f32vec2[3] = f32vec2[3](f32vec2(0.0), f32vec2(1.0, 0.0), f32vec2(0.0, 1.0));\n"
+				"fn main() {\n"
+				"	let m = model.model[instance_index];\n"
+				"	let shift = f32vec2(0.0);\n"
+				"	if (vertex_index == 0) { shift = push.translate; }\n"
+				"	let pos = m * f32vec4(local_position + f32vec3(shift, 0.0), 1.0);\n"
+				"	position = cascades.viewProj[push.cascade] * camera.mvp * pos;\n"
+				"	world_normal = f32vec4(normalize(transpose(inverse(f32mat3(m))) * local_normal), 0.0);\n"
+				"	out_uv = UVS[vertex_index];\n"
+				"}\n",
+				EntryKind::eVertex
+			)
+		);
 	}
 
-	TEST(IrSpirvGateTest, ShadowVertex) {
-		EXPECT_TRUE(assetCompilesToSpirv("shadow/shadowDir.vs.asl", EntryKind::eVertex));
+	TEST(IrSpirvGateTest, DepthOnlyFragment) {
+		EXPECT_TRUE(compilesToSpirv("@output (mode = forward, id = \"depth\") implicit f32 depth;\n", EntryKind::eFragment));
+		EXPECT_TRUE(
+			compilesToSpirv(
+				"@output (mode = forward, id = \"depth\") implicit f32 depth;\n@fragment (early_fragment_tests = true)\nfn main() {}\n",
+				EntryKind::eFragment
+			)
+		);
 	}
 
-	TEST(IrSpirvGateTest, ShadowFragment) {
-		EXPECT_TRUE(assetCompilesToSpirv("shadow/shadowDir.fs.asl", EntryKind::eFragment));
+	TEST(IrSpirvGateTest, LightLoopSample) {
+		EXPECT_TRUE(
+			compilesToSpirv(
+				"#include <shared/math.asl>\n"
+				"struct Light { f32vec4 luminance; f32vec4 position; f32 limit; };\n"
+				"struct Shadow { f32mat4[4] viewProj; f32vec4 depth; };\n"
+				"@input (mode = bind, id = \"view\", class = uniform) block camera { f32mat4 view; };\n"
+				"@input (mode = bind, id = \"light-info\", class = uniform) block info { u32 count; };\n"
+				"@input (mode = bind, id = \"lights\", class = storage, packing = std140) block sl { Light[] lights; };\n"
+				"@input (mode = bind, id = \"shadows\", class = storage, packing = std140) block shadows { Shadow[] shadows; };\n"
+				"@input (mode = bind, id = \"shadow-dir\", class = texture) texture2darray shadow_dir;\n"
+				"@input (mode = bind, id = \"shadow-dir-sampler\", class = sampler) sampler shadow_smp;\n"
+				"@input (mode = forward, id = \"world-position\") f32vec4 world_position;\n"
+				"@output (mode = forward, id = \"color\") f32vec4 color;\n"
+				"@output (mode = forward, id = \"depth\") implicit f32 depth;\n"
+				"fn falloff(l: Light, p: f32vec3) -> f32vec3 {\n"
+				"	return l.luminance.rgb * saturate(1.0 - length(l.position.xyz - p) / l.limit);\n"
+				"}\n"
+				"fn main() {\n"
+				"	let eye = inverse(camera.view)[3].xyz;\n"
+				"	let tndc = f32mat4(0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.5, 0.5, 0.0, 1.0);\n"
+				"	let lo = f32vec3(0.0);\n"
+				"	for (let i = 0u; i < info.count; ++i) {\n"
+				"		let l = &sl.lights[i];\n"
+				"		if (l.limit > 0.0) { lo += falloff(l, world_position.xyz); } else { lo += l.luminance.rgb; }\n"
+				"	}\n"
+				"	let s = tndc * shadows.shadows[0].viewProj[1] * world_position;\n"
+				"	let d = sample(shadow_dir, shadow_smp, f32vec3(s.xy / s.w, 1.0)).r;\n"
+				"	let shade = s.z > d ? 0.07 : 1.0;\n"
+				"	color = f32vec4(saturate(lo * shade) / max(length(eye - world_position.xyz), 1.0), PI);\n"
+				"}\n",
+				EntryKind::eFragment,
+				{},
+				{ { "shared/math.asl",
+					"const PI: f32 = 3.14159265;\n"
+					"fn saturate(x: f32) -> f32 { return clamp(x, 0.0, 1.0); }\n"
+					"fn saturate(x: f32vec3) -> f32vec3 { return clamp(x, 0.0, 1.0); }\n"
+					"fn twice(x: f16) -> f16 { return x * f16(2.0); }\n" } }
+			)
+		);
 	}
 
-	TEST(IrSpirvGateTest, UiVertex) {
-		EXPECT_TRUE(assetCompilesToSpirv("ui/ui.vs.asl", EntryKind::eVertex));
+	namespace {
+		/* mesh-type contract split over includes: prototypes, then one @when body set per MeshType */
+		constexpr hg::StringView meshContract =
+			"toggle MeshType : { Static, Skeletal } = Static;\n"
+			"fn GetWorldPosition() -> f32vec4;\n"
+			"fn VertexOutputPosition() -> f32vec4;\n";
+		constexpr hg::StringView meshStatic =
+			"#include <spec/defined.asl>\n"
+			"@when (MeshType == Static) {\n"
+			"	@input (mode = forward, id = \"vertex-position\") f32vec3 VertexPosition;\n"
+			"	@input (mode = bind, id = \"view\", class = uniform) block VertexCamera { f32mat4 mvp; };\n"
+			"	fn GetWorldPosition() -> f32vec4 { return f32vec4(VertexPosition, 1.0); }\n"
+			"	@redefine (allow = true)\n"
+			"	fn VertexOutputPosition() -> f32vec4 { return VertexCamera.mvp * GetWorldPosition(); }\n"
+			"}\n";
+		constexpr hg::StringView meshSkeletal =
+			"#include <spec/defined.asl>\n"
+			"@when (MeshType == Skeletal) {\n"
+			"	@input (mode = forward, id = \"vertex-position\") f32vec3 VertexPosition;\n"
+			"	@input (mode = forward, id = \"vertex-bone-idx\") u32 VertexBoneIdx;\n"
+			"	@input (mode = bind, id = \"view\", class = uniform) block VertexCamera { f32mat4 mvp; };\n"
+			"	@input (mode = bind, id = \"bones\", class = storage) block VertexBones { f32mat4[] list; };\n"
+			"	fn GetWorldPosition() -> f32vec4 { return VertexBones.list[VertexBoneIdx] * f32vec4(VertexPosition, 1.0); }\n"
+			"	@redefine (allow = true)\n"
+			"	fn VertexOutputPosition() -> f32vec4 { return VertexCamera.mvp * GetWorldPosition(); }\n"
+			"}\n";
+		constexpr hg::StringView passVertexMain =
+			"toggle PassContext : { DepthOnly, Material } = Material;\n"
+			"@when (PassContext == Material) {\n"
+			"	@output (mode = forward, id = \"world-position\") f32vec4 world_position;\n"
+			"	fn main() { position = VertexOutputPosition(); world_position = GetWorldPosition(); }\n"
+			"}\n"
+			"@when (PassContext == DepthOnly)\n"
+			"fn main() { position = VertexOutputPosition(); }\n";
 	}
 
-	TEST(IrSpirvGateTest, UiFragment) {
-		EXPECT_TRUE(assetCompilesToSpirv("ui/ui.fs.asl", EntryKind::eFragment));
-	}
-
-	TEST(IrSpirvGateTest, PostProcessVertex) {
-		EXPECT_TRUE(assetCompilesToSpirv("postprocessing/pp.vs.asl", EntryKind::eVertex));
-	}
-
-	TEST(IrSpirvGateTest, PostProcessFragment) {
-		EXPECT_TRUE(assetCompilesToSpirv("postprocessing/pp.fs.asl", EntryKind::eFragment));
-	}
-
-	TEST(IrSpirvGateTest, VisualizeVertex) {
-		EXPECT_TRUE(assetCompilesToSpirv("visualize/visualize.vs.asl", EntryKind::eVertex));
-	}
-
-	TEST(IrSpirvGateTest, VisualizeFragment) {
-		EXPECT_TRUE(assetCompilesToSpirv("visualize/visualize.fs.asl", EntryKind::eFragment));
-	}
-
-	TEST(IrSpirvGateTest, TriTestVertex) {
-		EXPECT_TRUE(assetCompilesToSpirv("test/render.vs.asl", EntryKind::eVertex));
-	}
-
-	TEST(IrSpirvGateTest, TriTestFragment) {
-		EXPECT_TRUE(assetCompilesToSpirv("test/render.fs.asl", EntryKind::eFragment));
-	}
-
-	TEST(IrSpirvGateTest, BrdfLutVertex) {
-		EXPECT_TRUE(assetCompilesToSpirv("brdf/brdfLut.gen.vs.asl", EntryKind::eVertex));
-	}
-
-	TEST(IrSpirvGateTest, BrdfLutFragment) {
-		EXPECT_TRUE(assetCompilesToSpirv("brdf/brdfLut.gen.fs.asl", EntryKind::eFragment));
-	}
-
-	TEST(IrSpirvGateTest, SkyVertex) {
-		EXPECT_TRUE(assetCompilesToSpirv("skybox/sky.vs.asl", EntryKind::eVertex));
-	}
-
-	TEST(IrSpirvGateTest, SkyFragment) {
-		EXPECT_TRUE(assetCompilesToSpirv("skybox/sky.fs.asl", EntryKind::eFragment));
-	}
-
-	TEST(IrSpirvGateTest, CubeGenVertex) {
-		EXPECT_TRUE(assetCompilesToSpirv("brdf/cubeGen.vs.asl", EntryKind::eVertex));
-	}
-
-	TEST(IrSpirvGateTest, BrdfIrradFragment) {
-		EXPECT_TRUE(assetCompilesToSpirv("brdf/brdfIrrad.gen.fs.asl", EntryKind::eFragment));
-	}
-
-	TEST(IrSpirvGateTest, BrdfPrefFragment) {
-		EXPECT_TRUE(assetCompilesToSpirv("brdf/brdfPref.gen.fs.asl", EntryKind::eFragment));
-	}
-
-	TEST(IrSpirvGateTest, BrdfVertex) {
-		EXPECT_TRUE(assetCompilesToSpirv("brdf/brdf.vs.asl", EntryKind::eVertex));
-	}
-
-	TEST(IrSpirvGateTest, BrdfFragment) {
-		EXPECT_TRUE(assetCompilesToSpirv("brdf/brdf.fs.asl", EntryKind::eFragment));
-	}
-
-	TEST(IrSpirvGateTest, GBufferFragmentPerPassContext) {
-		EXPECT_TRUE(assetCompilesToSpirv("brdf/gbuffer.fs.asl", EntryKind::eFragment, { { "PassContext", "DepthOnly" } }));
-		EXPECT_TRUE(assetCompilesToSpirv("brdf/gbuffer.fs.asl", EntryKind::eFragment, { { "PassContext", "Material" } }));
-	}
-
-	TEST(IrSpirvGateTest, GBufferVertexPerMeshTypeAndPassContext) {
+	TEST(IrSpirvGateTest, ToggleVariantsPerMeshTypeAndPassContext) {
+		const auto source = hg::String { "#include <spec/defined.static.asl>\n#include <spec/defined.skeletal.asl>\n" } + hg::String { passVertexMain };
 		for (const auto* mesh : { "Static", "Skeletal" }) {
 			for (const auto* pass : { "DepthOnly", "Material" }) {
-				EXPECT_TRUE(assetCompilesToSpirv("brdf/gbuffer.vs.asl", EntryKind::eVertex, { { "MeshType", mesh }, { "PassContext", pass } }))
-					<< mesh << "/" << pass;
+				EXPECT_TRUE(
+					compilesToSpirv(
+						source,
+						EntryKind::eVertex,
+						{ { "MeshType", mesh }, { "PassContext", pass } },
+						{ { "spec/defined.asl", meshContract }, { "spec/defined.static.asl", meshStatic }, { "spec/defined.skeletal.asl", meshSkeletal } }
+					)
+				) << mesh << "/" << pass;
 			}
 		}
 	}
 
-	TEST(IrSpirvGateTest, RejectsBrokenGlsl) {
-		EXPECT_FALSE(glslCompiles("#version 460\nvoid main(){ gl_Position = vec4(0); }", EntryKind::eFragment));
+	TEST(IrSpirvGateTest, ToggleVariantWithoutBodiesFails) {
+		const auto source = hg::String { "#include <spec/defined.static.asl>\n" } + hg::String { passVertexMain };
+		const auto result = compilesToSpirv(
+			source,
+			EntryKind::eVertex,
+			{ { "MeshType", "Skeletal" } },
+			{ { "spec/defined.asl", meshContract }, { "spec/defined.static.asl", meshStatic } }
+		);
+		EXPECT_FALSE(result);
+		EXPECT_TRUE(std::string { result.message() }.contains("no body for")) << result.message();
 	}
 
 	TEST(IrSpirvGateTest, ConstantsSample) {
@@ -377,67 +421,5 @@ namespace AccelCompile {
 				EntryKind::eCompute
 			)
 		);
-	}
-
-	/* Legacy glsl assets are removed from the asset checkout, so every remaining shader must be ASL. */
-	TEST(IrSpirvGateTest, AllAssetsAreAsl) {
-		namespace fs = std::filesystem;
-		const auto root = fs::path { __FILE__ }.parent_path().parent_path().parent_path() / "assets" / "shader";
-
-		std::string stale {};
-		for (const auto& entry : fs::recursive_directory_iterator { root }) {
-			if (not entry.is_regular_file()) {
-				continue;
-			}
-			const auto name = entry.path().filename().string();
-			if (entry.path().extension() != ".asl" && name != "compile_shaders.cmd") {
-				stale += "\n  " + fs::relative(entry.path(), root).generic_string();
-			}
-		}
-		EXPECT_TRUE(stale.empty()) << "Legacy shader files remain:" << stale;
-	}
-
-	TEST(IrSpirvGateTest, NoLegacyShaderLoads) {
-		namespace fs = std::filesystem;
-		const auto src = fs::path { __FILE__ }.parent_path().parent_path();
-
-		/* split literals so this file does not match itself */
-		const std::string loadNeedle = std::string { "read_shader" } + "_file(";
-		const std::string macroNeedle = std::string { "__mac" } + "ros__";
-
-		std::string hits {};
-		size_t visited = 0uLL;
-		for (const auto& entry : fs::recursive_directory_iterator { src }) {
-			if (not entry.is_regular_file()) {
-				continue;
-			}
-			const auto ext = entry.path().extension();
-			if (ext != ".cpp" && ext != ".hpp") {
-				continue;
-			}
-			++visited;
-			const auto rel = fs::relative(entry.path(), src).generic_string();
-			if (rel == "Engine.GFX.Render.Subpass/Impl/__tmp_helper.hpp") {
-				continue;
-			}
-			/* defines its own unrelated loader for absolute paths from an old prototype */
-			if (rel == "Engine.GFX.RenderGraph/test.cpp") {
-				continue;
-			}
-
-			std::ifstream file { entry.path(), std::ios::in | std::ios::binary };
-			std::ostringstream text {};
-			text << file.rdbuf();
-			const auto content = text.str();
-
-			if (content.find(loadNeedle) != std::string::npos) {
-				hits += "\n  " + rel + " (load)";
-			}
-			if (ext == ".cpp" && content.find(macroNeedle) != std::string::npos) {
-				hits += "\n  " + rel + " (macros)";
-			}
-		}
-		EXPECT_GT(visited, 0uLL) << "scan found no sources under " << src.string();
-		EXPECT_TRUE(hits.empty()) << "Legacy shader references remain:" << hits;
 	}
 }

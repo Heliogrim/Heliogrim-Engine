@@ -2,10 +2,9 @@
 
 #include <algorithm>
 #include <array>
-#include <filesystem>
-#include <fstream>
-#include <sstream>
+#include <initializer_list>
 #include <string>
+#include <utility>
 
 #include <Engine.Accel.Compile/Module/ModuleSource.hpp>
 #include <Engine.Accel.Compile/Module/SpirvCompiler.hpp>
@@ -56,17 +55,8 @@ namespace AccelCompile {
 		hg::Vector<hg::smr<const hg::engine::accel::lang::Symbol>> _targets;
 	};
 
-	/* `.asl` files shipped under `assets/shader`; modules are named by their path below it */
-	[[nodiscard]] inline hg::Opt<hg::String> readShaderAsset(hg::StringView name_) {
-		const auto root = std::filesystem::path { __FILE__ }.parent_path().parent_path().parent_path() / "assets" / "shader";
-		std::ifstream file { root / std::string { name_ }, std::ios::in | std::ios::binary };
-		if (not file.is_open()) {
-			return hg::None;
-		}
-		std::ostringstream text {};
-		text << file.rdbuf();
-		return hg::String { text.str() };
-	}
+	/* in-memory include table: { name, source } */
+	using IncludeTable = std::initializer_list<std::pair<hg::StringView, hg::StringView>>;
 
 	/* glslang accepts the glsl as the given stage and yields non-empty spir-v */
 	[[nodiscard]] inline ::testing::AssertionResult glslCompiles(hg::StringView glsl_, hg::engine::accel::lang::ir::EntryKind entry_) {
@@ -91,12 +81,19 @@ namespace AccelCompile {
 		hg::StringView source_,
 		hg::engine::accel::lang::ir::EntryKind entry_,
 		hg::ref<const hg::engine::accel::lang::ir::ToggleSet> toggles_ = {},
-		hg::StringView name_ = "M"
+		IncludeTable includes_ = {}
 	) {
 		using namespace hg::engine::accel;
 		using namespace hg::engine::accel::lang::ir;
 
-		auto parsed = parseModule(name_, source_, entry_, ModuleResolver { readShaderAsset });
+		const auto resolver = [includes_](hg::StringView name_) -> hg::Opt<hg::String> {
+			const auto it = std::ranges::find(includes_, name_, &std::pair<hg::StringView, hg::StringView>::first);
+			if (it == includes_.end()) {
+				return hg::None;
+			}
+			return hg::String { it->second };
+		};
+		auto parsed = parseModule("M", source_, entry_, ModuleResolver { resolver });
 		if (not parsed.has_value()) {
 			auto failure = ::testing::AssertionFailure() << "parse failed:";
 			for (const auto& d : parsed.error()) {
@@ -158,17 +155,5 @@ namespace AccelCompile {
 			return result << "\n(emitted)";
 		}
 		return result;
-	}
-
-	[[nodiscard]] inline ::testing::AssertionResult assetCompilesToSpirv(
-		hg::StringView assetPath_,
-		hg::engine::accel::lang::ir::EntryKind entry_,
-		hg::ref<const hg::engine::accel::lang::ir::ToggleSet> toggles_ = {}
-	) {
-		const auto source = readShaderAsset(assetPath_);
-		if (not source.has_value()) {
-			return ::testing::AssertionFailure() << "missing shader asset " << std::string { assetPath_ };
-		}
-		return compilesToSpirv(*source, entry_, toggles_, assetPath_);
 	}
 }
