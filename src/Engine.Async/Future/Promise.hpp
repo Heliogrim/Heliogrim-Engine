@@ -7,13 +7,13 @@
 #include "Future.hpp"
 
 namespace hg {
-	template <typename T_, typename E_> requires Send<T_>
+	template <typename T_, typename E_>
 	class Promise {
 	public:
 		using state_type = detail::FutureState<T_, E_>;
 
 	public:
-		Promise() :
+		Promise() requires Send<T_> :
 			_state(Arci<state_type>::create()) {}
 
 		Promise(const Promise&) = delete;

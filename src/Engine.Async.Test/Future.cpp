@@ -531,10 +531,6 @@ namespace AsyncModule {
 	}
 
 	namespace {
-		// Naming Promise<Rc<int>> outside a template is a hard error, so probe through a dependent requires.
-		template <typename T_>
-		concept PromiseNamable = requires { typename Promise<T_>; };
-
 		struct SendProbe :
 			public ArcFromThis<SendProbe> {};
 	}
@@ -550,7 +546,8 @@ namespace AsyncModule {
 	}
 
 	TEST(Send, PromiseRejectsNonSend) {
-		static_assert(not PromiseNamable<Rc<int>>);
-		static_assert(PromiseNamable<int>);
+		static_assert(not std::is_default_constructible_v<Promise<Rc<int>>>);
+		static_assert(std::is_default_constructible_v<Promise<int>>);
+		static_assert(std::is_same_v<decltype(std::declval<Future<Rc<int>>>().isReady()), bool>);
 	}
 }
