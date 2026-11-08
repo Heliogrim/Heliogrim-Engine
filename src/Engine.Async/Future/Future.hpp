@@ -11,10 +11,10 @@
 #include "Schedule.hpp"
 
 namespace hg {
-	template <typename T_, typename E_ = Broken> requires Send<T_>
+	template <typename T_, typename E_ = Broken>
 	class Promise;
 
-	template <typename T_, typename E_ = Broken> requires Send<T_>
+	template <typename T_, typename E_ = Broken>
 	class Future;
 
 	namespace detail {
@@ -73,7 +73,7 @@ namespace hg {
 		}
 	}
 
-	template <typename T_, typename E_> requires Send<T_>
+	template <typename T_, typename E_>
 	class Future {
 	public:
 		using state_type = detail::FutureState<T_, E_>;
@@ -95,21 +95,21 @@ namespace hg {
 			return _state != nullptr && _state->done.isSet();
 		}
 
-		template <typename V_ = T_> requires (not std::is_void_v<V_>)
+		template <typename V_ = T_> requires (not std::is_void_v<V_> && Send<V_>)
 		[[nodiscard]] static Future ready(std::type_identity_t<V_>&& value_) {
 			auto state = Arci<state_type>::create();
 			state->slot.template emplace<Resolved<T_>>(Resolved<T_> { std::move(value_) });
 			return ready(std::move(state));
 		}
 
-		[[nodiscard]] static Future ready() requires std::is_void_v<T_> {
+		[[nodiscard]] static Future ready() requires (std::is_void_v<T_> && Send<T_>) {
 			auto state = Arci<state_type>::create();
 			state->slot.template emplace<Resolved<void>>();
 			return ready(std::move(state));
 		}
 
 		// The mask is inherited by every continuation chained from this future.
-		[[nodiscard]] static Future ready(const engine::scheduler::task::TaskMask mask_) requires std::is_void_v<T_> {
+		[[nodiscard]] static Future ready(const engine::scheduler::task::TaskMask mask_) requires (std::is_void_v<T_> && Send<T_>) {
 			auto state = Arci<state_type>::create();
 			state->mask = mask_;
 			state->slot.template emplace<Resolved<void>>();
@@ -129,6 +129,7 @@ namespace hg {
 			>::type;
 			using traits = detail::ThenTraits<ret_type, E_>;
 			using U = traits::value_type;
+			static_assert(Send<U>, "future values must be Send");
 			using E2 = traits::error_type;
 			using next_type = detail::FutureState<U, E2>;
 
@@ -189,7 +190,7 @@ namespace hg {
 	private:
 		friend class Promise<T_, E_>;
 
-		template <typename T, typename E> requires Send<T>
+		template <typename T, typename E>
 		friend class Future;
 
 		friend struct detail::FutureAccess;
