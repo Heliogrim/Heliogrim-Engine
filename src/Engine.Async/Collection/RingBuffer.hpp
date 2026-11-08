@@ -56,7 +56,7 @@ namespace hg::engine::concurrent {
 			const size_type n = inc(h);
 
 			if (n != _tail.load(std::memory_order_consume)) {
-				_container[n] = value_;
+				_container[n] = std::move(value_);
 				_head.store(n, std::memory_order::release);
 				return true;
 			}
