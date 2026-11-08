@@ -2,8 +2,7 @@
 
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.GFX/vkinc.hpp>
-#include <Engine.Common/Math/Vector.hpp>
+#include <Engine.GFX/API/__vkFwd.hpp>
 
 namespace hg::driver::vk {
 	struct VkDescriptorPoolSize {
@@ -18,7 +17,7 @@ namespace hg::driver::vk {
 	public:
 		VkDescriptorPool() noexcept;
 
-		VkDescriptorPool (cref<this_type>) = delete;
+		VkDescriptorPool(cref<this_type>) = delete;
 
 		VkDescriptorPool(mref<this_type> other_) noexcept;
 

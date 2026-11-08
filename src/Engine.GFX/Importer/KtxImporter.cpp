@@ -1,25 +1,19 @@
-#include <cstring>
 #include <filesystem>
 #include <regex>
-#include <sstream>
 #include <Engine.Assets.Type/Texture/ImageAsset.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 #include <Engine.Async/Await/Promise.hpp>
 #include <Engine.Common/GuidFormat.hpp>
+#include <Engine.Common/Optional.hpp>
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Core/Engine.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Serialization/Archive/LayoutArchive.hpp>
-#include <Engine.Serialization/Layout/DataLayout.hpp>
+#include <Engine.Storage.Registry/IStorageRegistry.hpp>
+#include <Engine.Storage.Registry/Storage/PackageStorage.hpp>
 
 #include "ImageImporter.hpp"
+#include "../vkinc.hpp"
 #include "../API/VkTranslate.hpp"
-#include "Engine.Assets/Assets.hpp"
-#include "Engine.Common/Optional.hpp"
-#include "Engine.Storage.Registry/IStorageRegistry.hpp"
-#include "Engine.Storage.Registry/Options/StorageDescriptor.hpp"
-#include "Engine.Storage.Registry/Storage/PackageStorage.hpp"
-#include "Engine.Storage.Registry/Url/FileUrl.hpp"
 
 /**/
 #include <Engine.Common/GLM.hpp>
