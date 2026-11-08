@@ -21,7 +21,7 @@ namespace hg {
 				nmpt<engine::acs::Registry>
 			) -> ptr<Actor> {
 				const auto record = slot_.asStruct();
-				return CreateActor(class_, SerializedActor { record }).get().release();
+				return hg::await(CreateActor(class_, SerializedActor { record })).value().release();
 			}
 		};
 	}
