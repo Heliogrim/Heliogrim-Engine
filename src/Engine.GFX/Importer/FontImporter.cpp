@@ -1,7 +1,6 @@
 #include "FontImporter.hpp"
 
 #include <Engine.Assets/Assets.hpp>
-#include <Engine.Async/Await/Promise.hpp>
 #include <Engine.Common/GuidFormat.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Core/Engine.hpp>
@@ -76,15 +75,5 @@ engine::res::Importer<AtomicRefCountedIntrusive<engine::assets::FontAsset>, void
 /**/
 
 FontImporter::import_result_type makeImportResult(mref<FontImporter::import_type> value_) {
-
-	concurrent::promise<FontImporter::import_type> prom {
-		[value = std::move(value_)]() {
-			return value;
-		}
-	};
-
-	auto result { prom.get() };
-	prom();
-
-	return result;
+	return FontImporter::import_result_type::ready(std::move(value_));
 }
