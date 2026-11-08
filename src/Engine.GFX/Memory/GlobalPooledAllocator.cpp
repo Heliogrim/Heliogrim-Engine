@@ -2,10 +2,13 @@
 
 #include <Engine.Asserts/Breakpoint.hpp>
 
+#include <cassert>
+
 #include "AllocatedMemory.hpp"
 #include "AllocationResult.hpp"
 #include "Allocator.hpp"
 #include "MemoryPool.hpp"
+#include "../vkinc.hpp"
 
 using namespace hg::engine::gfx::memory;
 using namespace hg;
@@ -122,9 +125,9 @@ void GlobalPooledAllocator::free(mref<uptr<AllocatedMemory>> mem_) {
 	_alloc->free(std::move(mem_));
 }
 
+#include "../API/VkTranslate.hpp"
 #include "../Buffer/Buffer.hpp"
 #include "../Device/Device.hpp"
-#include "../API/VkTranslate.hpp"
 
 AllocationResult engine::gfx::memory::allocate(
 	ref<GlobalPooledAllocator> alloc_,
@@ -143,7 +146,7 @@ AllocationResult engine::gfx::memory::allocate(
 	auto size { req.size };
 
 	const auto atomicNonCoherent = (
-		(buffer_.usageFlags & vk::BufferUsageFlagBits::eTransferSrc) &&
+		(vk::BufferUsageFlags { buffer_.usageFlags } & vk::BufferUsageFlagBits::eTransferSrc) &&
 		!(props_ & MemoryProperty::eHostCoherent) &&
 		(props_ & MemoryProperty::eHostVisible)
 	);

@@ -64,7 +64,7 @@ void Surface::destroy() {
 	}
 
 	if (_surface) {
-		(*_application)->destroySurfaceKHR(_surface);
+		static_cast<vk::Instance>(*_application).destroySurfaceKHR(_surface);
 	}
 
 	/**/
@@ -103,7 +103,7 @@ nmpt<engine::platform::NativeWindow> Surface::getNativeWindow() const noexcept {
 	return _window.get();
 }
 
-cref<vk::SurfaceKHR> Surface::getVkSurfaceKhr() const noexcept {
+vk::SurfaceKHR Surface::getVkSurfaceKhr() const noexcept {
 	return _surface;
 }
 

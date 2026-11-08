@@ -1,10 +1,14 @@
 #include "Buffer.hpp"
 
+#include "../vkinc.hpp"
+
+static_assert(hg::engine::gfx::Buffer::whole_size == VK_WHOLE_SIZE);
+
 using namespace hg::engine::gfx;
 using namespace hg;
 
 void Buffer::bind(const u64 size_, const u64 offset_) {
-    device.bindBufferMemory(
+    vk::Device { device }.bindBufferMemory(
         buffer,
         memory->vkMemory,
         memory->offset + offset_
@@ -13,7 +17,7 @@ void Buffer::bind(const u64 size_, const u64 offset_) {
 
 void Buffer::destroy() {
     if (buffer) {
-        device.destroyBuffer(buffer);
+        vk::Device { device }.destroyBuffer(buffer);
     }
 
     if (memory) {

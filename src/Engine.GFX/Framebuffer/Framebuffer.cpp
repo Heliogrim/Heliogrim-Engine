@@ -65,13 +65,13 @@ void Framebuffer::setup() {
 		auto view = switchType<TextureLikeObject>(
 			entry.get(),
 			[](const ptr<Texture> obj_) {
-				return obj_->vkView();
+				return vk::ImageView { obj_->vkView() };
 			},
 			[](const ptr<TextureView> obj_) {
 				if (obj_->_vkImageView != nullptr) {
 					return vk::ImageView { reinterpret_cast<VkImageView>(obj_->_vkImageView) };
 				}
-				return obj_->owner()->vkView();
+				return vk::ImageView { obj_->owner()->vkView() };
 			},
 			[](const ptr<SparseTexture> obj_) {
 				return obj_->_vkImageView;

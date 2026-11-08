@@ -5,6 +5,7 @@
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 
 #include "../TextureFormat.hpp"
+#include "../API/__vkFwd.hpp"
 #include "../Application/Application.hpp"
 #include "../Device/Device.hpp"
 
@@ -80,7 +81,7 @@ namespace hg::engine::gfx {
 
 		[[nodiscard]] nmpt<platform::NativeWindow> getNativeWindow() const noexcept;
 
-		[[nodiscard]] cref<vk::SurfaceKHR> getVkSurfaceKhr() const noexcept;
+		[[nodiscard]] vk::SurfaceKHR getVkSurfaceKhr() const noexcept;
 
 		/**
 		 * Cast that converts the given  to a SurfaceKHR
@@ -96,7 +97,7 @@ namespace hg::engine::gfx {
 		uptr<platform::NativeWindow> _window;
 		nmpt<Application> _application;
 
-		vk::SurfaceKHR _surface;
+		VkSurfaceKHR _surface = nullptr;
 
 		/**
 		 * Creates API surface

@@ -3,6 +3,7 @@
 #include <Engine.Common/Types.hpp>
 #include <Engine.Driver.Vulkan/VkNativeQueue.hpp>
 
+#include "../API/__vkFwd.hpp"
 #include "../Device/Device.hpp"
 
 namespace hg::engine::gfx {
@@ -92,7 +93,7 @@ namespace hg::engine::gfx {
 		 * @param  batch_ The batch.
 		 * @param  fence_ (Optional) The fence.
 		 */
-		void submit(const CommandBatch& batch_, const vk::Fence& fence_ = nullptr);
+		void submit(const CommandBatch& batch_, VkFence fence_ = nullptr);
 
 		/**
 		 * Submit the given buffer and waits
@@ -128,7 +129,7 @@ namespace hg::engine::gfx {
 		u32 _idx = ~0uL;
 		u32 _familyIdx = ~0uL;
 
-		vk::Queue _vkQueue;
+		VkQueue _vkQueue = nullptr;
 
 	public:
 		/**
@@ -147,9 +148,9 @@ namespace hg::engine::gfx {
 		 * @author Julius
 		 * @date 13.12.2020
 		 *
-		 * @returns A reference to a const vk::Queue.
+		 * @returns The vk::Queue.
 		 */
-		[[nodiscard]] const vk::Queue& vkQueue() const noexcept;
+		[[nodiscard]] vk::Queue vkQueue() const noexcept;
 
 	private:
 		/**

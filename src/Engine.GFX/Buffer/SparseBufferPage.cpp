@@ -2,8 +2,9 @@
 
 #include <utility>
 
+#include "../vkinc.hpp"
 #include "../Memory/AllocatedMemory.hpp"
-#include "Engine.GFX/Memory/AllocationResult.hpp"
+#include "../Memory/AllocationResult.hpp"
 
 using namespace hg::engine::gfx;
 using namespace hg;

@@ -4,7 +4,7 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 
-#include "../vkinc.hpp"
+#include "../API/__vkFwd.hpp"
 #include "../Application/Application.hpp"
 #include "../Memory/GlobalPooledAllocator.hpp"
 
@@ -69,9 +69,9 @@ namespace hg::engine::gfx {
 		 * @author Julius
 		 * @date 09.11.2020
 		 *
-		 * @returns A reference to a vk::Device.
+		 * @returns The vk::Device.
 		 */
-		vk::Device& vkDevice() const;
+		[[nodiscard]] vk::Device vkDevice() const noexcept;
 
 		/**
 		 * Gets the vk physical device
@@ -79,9 +79,9 @@ namespace hg::engine::gfx {
 		 * @author Julius
 		 * @date 09.11.2020
 		 *
-		 * @returns A reference to a vk::PhysicalDevice.
+		 * @returns The vk::PhysicalDevice.
 		 */
-		vk::PhysicalDevice& vkPhysicalDevice() const;
+		[[nodiscard]] vk::PhysicalDevice vkPhysicalDevice() const noexcept;
 
 	private:
 		uptr<memory::GlobalPooledAllocator> _alloc;
@@ -144,8 +144,8 @@ namespace hg::engine::gfx {
 		nmpt<const Application> _application;
 		ptr<Surface> _surface;
 
-		mutable vk::Device _device;
-		mutable vk::PhysicalDevice _physicalDevice;
+		VkDevice _device = nullptr;
+		VkPhysicalDevice _physicalDevice = nullptr;
 
 		/**
 		 * Gets queue family index
@@ -157,6 +157,6 @@ namespace hg::engine::gfx {
 		 *
 		 * @returns The queue family index.
 		 */
-		uint32_t getQueueFamilyIdx(const vk::QueueFlagBits& flag_);
+		uint32_t getQueueFamilyIdx(const vk::QueueFlagBits& flag_) const;
 	};
 }

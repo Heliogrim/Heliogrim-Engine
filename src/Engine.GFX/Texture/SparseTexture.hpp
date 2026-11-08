@@ -7,6 +7,7 @@
 
 #include "Texture.hpp"
 #include "__fwd.hpp"
+#include "../vkinc.hpp"
 #include "../Device/Device.hpp"
 #include "../Memory/VirtualMemory.hpp"
 

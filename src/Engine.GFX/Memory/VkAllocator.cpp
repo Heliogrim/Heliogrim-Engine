@@ -30,7 +30,7 @@ AllocationResult VkAllocator::allocate(
 		)
 	};
 
-	VkDevice vkd { *reinterpret_cast<VkDevice*>(reinterpret_cast<void*>(&_device->vkDevice())) };
+	VkDevice vkd { _device->vkDevice() };
 	VkDeviceMemory mem {};
 
 	const auto vkMemResult {

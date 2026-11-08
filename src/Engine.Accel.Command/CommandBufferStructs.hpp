@@ -1,5 +1,6 @@
 #pragma once
 #include <Engine.Accel.Pass/GraphicsPass.hpp>
+#include <Engine.GFX/vkinc.hpp>
 #include <Engine.GFX/Framebuffer/Framebuffer.hpp>
 
 namespace hg::engine::accel {

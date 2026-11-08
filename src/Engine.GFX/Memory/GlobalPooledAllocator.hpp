@@ -7,6 +7,7 @@
 #include "Allocator.hpp"
 #include "MemoryCache.hpp"
 #include "__fwd.hpp"
+#include "../API/__vkFwd.hpp"
 
 namespace hg::engine::gfx::memory {
 	class GlobalPooledAllocator final :

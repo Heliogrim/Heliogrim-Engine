@@ -285,7 +285,7 @@ namespace hg::engine::gfx {
 		/**
 		 * View
 		 */
-		vk::ImageView _view;
+		VkImageView _view = nullptr;
 
 	public:
 		/**
@@ -294,9 +294,9 @@ namespace hg::engine::gfx {
 		 * @author Julius
 		 * @date 07.12.2020
 		 *
-		 * @returns A reference to a const vk::ImageView.
+		 * @returns The vk::ImageView.
 		 */
-		[[nodiscard]] const vk::ImageView& vkView() const noexcept;
+		[[nodiscard]] vk::ImageView vkView() const noexcept;
 
 		/**
 		 * Vk view
@@ -304,8 +304,8 @@ namespace hg::engine::gfx {
 		 * @author Julius
 		 * @date 07.12.2020
 		 *
-		 * @returns A reference to a vk::ImageView.
+		 * @returns A reference to the VkImageView.
 		 */
-		[[nodiscard]] vk::ImageView& vkView() noexcept;
+		[[nodiscard]] ref<VkImageView> vkView() noexcept;
 	};
 }

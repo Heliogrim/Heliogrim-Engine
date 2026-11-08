@@ -6,6 +6,7 @@
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 
 #include "../TextureFormat.hpp"
+#include "../vkinc.hpp"
 #include "../Device/Device.hpp"
 #include "../Surface/Surface.hpp"
 #include "../Texture/Texture.hpp"

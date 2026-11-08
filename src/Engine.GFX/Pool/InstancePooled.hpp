@@ -3,9 +3,9 @@
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 
+#include "../vkinc.hpp"
 #include "../Buffer/Buffer.hpp"
 #include "../Buffer/BufferFactory.hpp"
-#include "../Memory/GlobalPooledAllocator.hpp"
 #include "../Memory/VirtualMemory.hpp"
 
 namespace hg::engine::gfx {

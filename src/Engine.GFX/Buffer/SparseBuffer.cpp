@@ -5,6 +5,7 @@
 #include <utility>
 
 #include "SparseBufferView.hpp"
+#include "../vkinc.hpp"
 #include "../Command/CommandQueue.hpp"
 #include "../Memory/VirtualMemory.hpp"
 
@@ -23,7 +24,7 @@ SparseBuffer::SparseBuffer() noexcept :
 	_bufferSize(0uLL),
 	_memory(nullptr),
 	_pages(),
-	_vkBuffer(),
+	_vkBuffer(nullptr),
 	_vkBufferUsageFlags(),
 	_changed(false) {}
 
@@ -44,11 +45,10 @@ SparseBuffer::SparseBuffer(mref<this_type> other_) noexcept :
 	_bufferSize(std::exchange(other_._bufferSize, 0uLL)),
 	_memory(std::move(other_._memory)),
 	_pages(std::move(other_._pages)),
-	_vkBuffer(std::exchange(other_._vkBuffer, {})),
+	_vkBuffer(std::exchange(other_._vkBuffer, nullptr)),
 	_vkBufferUsageFlags(std::exchange(other_._vkBufferUsageFlags, {})),
 	_changed(std::exchange(other_._changed, false)),
-	_bindings(std::move(other_._bindings)),
-	_bindData(std::exchange(other_._bindData, {})) {}
+	_bindings(std::move(other_._bindings)) {}
 
 SparseBuffer::~SparseBuffer() {
 	tidy();
@@ -67,7 +67,6 @@ ref<SparseBuffer::this_type> SparseBuffer::operator=(mref<this_type> other_) noe
 		_vkBufferUsageFlags = std::exchange(other_._vkBufferUsageFlags, _vkBufferUsageFlags);
 		_changed = std::exchange(other_._changed, _changed);
 		_bindings = std::exchange(other_._bindings, _bindings);
-		_bindData = std::exchange(other_._bindData, _bindData);
 	}
 
 	return *this;
@@ -120,11 +119,11 @@ u64 SparseBuffer::memoryResidentialSize() const noexcept {
 	return _memory->allocatedSize();
 }
 
-cref<vk::Buffer> SparseBuffer::vkBuffer() const noexcept {
+vk::Buffer SparseBuffer::vkBuffer() const noexcept {
 	return _vkBuffer;
 }
 
-cref<vk::BufferUsageFlags> SparseBuffer::vkBufferUsageFlags() const noexcept {
+vk::BufferUsageFlags SparseBuffer::vkBufferUsageFlags() const noexcept {
 	return _vkBufferUsageFlags;
 }
 
@@ -216,23 +215,19 @@ void SparseBuffer::updateBindingData() {
 	for (const auto& page : updates) {
 		_bindings.emplace_back(page->vkSparseMemoryBind());
 	}
+}
 
-	/**
-	 *
-	 */
-	_bindData = vk::SparseBufferMemoryBindInfo {
-		_vkBuffer,
-		static_cast<u32>(_bindings.size()),
-		_bindings.data()
-	};
+static vk::SparseBufferMemoryBindInfo makeBindData(VkBuffer buffer_, cref<Vector<vk::SparseMemoryBind>> bindings_) {
+	return vk::SparseBufferMemoryBindInfo { buffer_, static_cast<u32>(bindings_.size()), bindings_.data() };
 }
 
 void SparseBuffer::enqueueBinding(const ptr<CommandQueue> queue_) {
+	const auto bindData { makeBindData(_vkBuffer, _bindings) };
 	vk::BindSparseInfo bsi {
 		0,
 		nullptr,
 		1uL,
-		&_bindData,
+		&bindData,
 		0,
 		nullptr,
 		0,
@@ -255,11 +250,12 @@ void SparseBuffer::enqueueBinding(
 	cref<Vector<vk::Semaphore>> waits_,
 	cref<Vector<vk::Semaphore>> signals_
 ) {
+	const auto bindData { makeBindData(_vkBuffer, _bindings) };
 	vk::BindSparseInfo bsi {
 		static_cast<u32>(waits_.size()),
 		waits_.data(),
 		1uL,
-		&_bindData,
+		&bindData,
 		0,
 		nullptr,
 		0,
@@ -278,11 +274,12 @@ void SparseBuffer::enqueueBinding(
 }
 
 void SparseBuffer::enqueueBindingSync(const ptr<CommandQueue> queue_) {
+	const auto bindData { makeBindData(_vkBuffer, _bindings) };
 	vk::BindSparseInfo bsi {
 		0,
 		nullptr,
 		1uL,
-		&_bindData,
+		&bindData,
 		0,
 		nullptr,
 		0,
