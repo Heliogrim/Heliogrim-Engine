@@ -1,5 +1,6 @@
 #include "Housekeeping.hpp"
 
+#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Common/Move.hpp>
 #include <Heliogrim/Component/LogicComponent.hpp>
 
@@ -20,6 +21,7 @@ void Housekeeping::storePendingRelease(mref<VolatileComponent<>> component_) {
 	const auto* const component = ::hg::move(component_).release();
 	const auto meta = component->getMetaClass<>();
 
+	const concurrent::SpinLock lock { _lck };
 	const auto where = _pendingReleases.find(ComponentTypeId { meta->typeId() });
 	if (where != _pendingReleases.end()) {
 		where->second.emplace_back(component);
@@ -35,11 +37,22 @@ void Housekeeping::storePendingRelease(mref<VolatileComponent<>> component_) {
 }
 
 bool Housekeeping::commit() {
-	for (auto&& [type, batch] : _pendingReleases) {
+	decltype(_pendingReleases) pending {};
+	{
+		const concurrent::SpinLock lock { _lck };
+		std::swap(pending, _pendingReleases);
+	}
+
+	for (auto&& [type, batch] : pending) {
 		for (auto&& component : batch) {
 			_registry.removeActorComponent(component->guid(), type);
 		}
 	}
-	_pendingReleases.clear();
+
+	{
+		// A release during commit means teardown overlaps the housekeeping stage (stop ordering bug).
+		const concurrent::SpinLock lock { _lck };
+		::hg::assertd(_pendingReleases.empty());
+	}
 	return _registry.reclaimSlots();
 }

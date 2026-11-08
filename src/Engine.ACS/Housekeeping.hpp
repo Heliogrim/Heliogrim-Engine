@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Engine.Async/Primitive/SpinLock.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/DenseMap.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
@@ -29,6 +30,8 @@ namespace hg::engine::acs {
 
 	private:
 		ref<Registry> _registry;
+		/* releases arrive concurrently from parallel tick stages (actor destruction) */
+		concurrent::SpinMutex _lck;
 		DenseMap<ComponentTypeId, Vector<ptr<const LogicComponent>>> _pendingReleases;
 
 	protected:
