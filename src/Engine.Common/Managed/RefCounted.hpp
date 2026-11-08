@@ -121,6 +121,9 @@ namespace hg {
 		friend class RefCounted;
 
 	public:
+		// Non-atomic count: must not cross threads, so not Send.
+		using not_send = void;
+
 		using this_type = RefCounted<Ty_>;
 
 		using block_type = RefCountedBlock<Ty_>;
