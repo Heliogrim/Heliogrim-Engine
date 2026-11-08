@@ -5,7 +5,7 @@
 #include <Engine.Common/Wrapper.hpp>
 
 namespace hg::engine::scheduler::fiber {
-	class Fiber;
+	struct Fiber;
 }
 
 namespace hg::engine::scheduler {
@@ -25,37 +25,53 @@ namespace hg::engine::scheduler {
 
 	class ParkQueue {
 	public:
+		/**
+		 * View handed to locked sections; operates on the list without re-taking the lock.
+		 */
+		class Locked {
+		public:
+			void push(ref<ParkNode> node_) noexcept {
+				_queue.pushUnlocked(node_);
+			}
+
+			[[nodiscard]] ptr<ParkNode> popOne() noexcept {
+				return _queue.popOneUnlocked();
+			}
+
+			[[nodiscard]] ptr<ParkNode> takeAll() noexcept {
+				return _queue.takeAllUnlocked();
+			}
+
+			[[nodiscard]] bool empty() const noexcept {
+				return _queue._head == nullptr;
+			}
+
+		private:
+			friend class ParkQueue;
+
+			explicit Locked(ref<ParkQueue> queue_) noexcept :
+				_queue(queue_) {}
+
+			ref<ParkQueue> _queue;
+		};
+
+	public:
 		void push(ref<ParkNode> node_) noexcept {
 			lock();
-			node_.next = nullptr;
-			if (_tail != nullptr) {
-				_tail->next = &node_;
-			} else {
-				_head = &node_;
-			}
-			_tail = &node_;
+			pushUnlocked(node_);
 			unlock();
 		}
 
 		[[nodiscard]] ptr<ParkNode> popOne() noexcept {
 			lock();
-			auto* const node = _head;
-			if (node != nullptr) {
-				_head = node->next;
-				if (_head == nullptr) {
-					_tail = nullptr;
-				}
-				node->next = nullptr;
-			}
+			auto* const node = popOneUnlocked();
 			unlock();
 			return node;
 		}
 
 		[[nodiscard]] ptr<ParkNode> takeAll() noexcept {
 			lock();
-			auto* const node = _head;
-			_head = nullptr;
-			_tail = nullptr;
+			auto* const node = takeAllUnlocked();
 			unlock();
 			return node;
 		}
@@ -80,10 +96,39 @@ namespace hg::engine::scheduler {
 				}
 			} guard { *this };
 			lock();
-			return std::forward<Fn_>(fn_)();
+			return std::forward<Fn_>(fn_)(Locked { *this });
 		}
 
 	private:
+		void pushUnlocked(ref<ParkNode> node_) noexcept {
+			node_.next = nullptr;
+			if (_tail != nullptr) {
+				_tail->next = &node_;
+			} else {
+				_head = &node_;
+			}
+			_tail = &node_;
+		}
+
+		[[nodiscard]] ptr<ParkNode> popOneUnlocked() noexcept {
+			auto* const node = _head;
+			if (node != nullptr) {
+				_head = node->next;
+				if (_head == nullptr) {
+					_tail = nullptr;
+				}
+				node->next = nullptr;
+			}
+			return node;
+		}
+
+		[[nodiscard]] ptr<ParkNode> takeAllUnlocked() noexcept {
+			auto* const node = _head;
+			_head = nullptr;
+			_tail = nullptr;
+			return node;
+		}
+
 		void lock() const noexcept {
 			while (_lck.test_and_set(std::memory_order::acquire)) {}
 		}
