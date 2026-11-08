@@ -19,10 +19,14 @@ namespace hg::test {
 	public:
 		TestSchedulerEngine() = default;
 
+		explicit TestSchedulerEngine(const u32 workers_) :
+			_workers(workers_) {}
+
 		~TestSchedulerEngine() override = default;
 
 	private:
 		uptr<engine::Scheduler> _scheduler;
+		u32 _workers = engine::Scheduler::auto_worker_count;
 
 	public:
 		bool preInit() override {
@@ -31,7 +35,7 @@ namespace hg::test {
 		}
 
 		bool init() override {
-			_scheduler->setup(engine::Scheduler::auto_worker_count);
+			_scheduler->setup(_workers);
 			return setEngineState(engine::core::EngineState::eInitialized);
 		}
 
@@ -142,9 +146,12 @@ namespace hg::test {
 }
 
 namespace SchedulerModule {
-	inline void structuredRuntimeTest(std::function<void(hg::nmpt<hg::engine::Scheduler>)>&& callback_) {
+	inline void structuredRuntimeTest(
+		const hg::u32 workers_,
+		std::function<void(hg::nmpt<hg::engine::Scheduler>)>&& callback_
+	) {
 
-		auto engine = hg::make_uptr<hg::test::TestSchedulerEngine>();
+		auto engine = hg::make_uptr<hg::test::TestSchedulerEngine>(workers_);
 		engine->preInit();
 
 		const auto scheduler = engine->getScheduler();
@@ -172,5 +179,9 @@ namespace SchedulerModule {
 
 		//
 		engine.reset();
+	}
+
+	inline void structuredRuntimeTest(std::function<void(hg::nmpt<hg::engine::Scheduler>)>&& callback_) {
+		structuredRuntimeTest(hg::engine::Scheduler::auto_worker_count, std::move(callback_));
 	}
 }
