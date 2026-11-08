@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine.Async/Await/Future.hpp>
+#include <Engine.Async/Future/Future.hpp>
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Math/Extent.hpp>
@@ -40,12 +40,12 @@ namespace hg::engine {
 		[[nodiscard]] virtual ref<scheduler::task::SignaledQueue> platformQueue() const noexcept = 0;
 
 	public:
-		[[nodiscard]] virtual ::hg::concurrent::future<uptr<platform::NativeWindow>> makeNativeWindow(
+		[[nodiscard]] virtual ::hg::Future<uptr<platform::NativeWindow>> makeNativeWindow(
 			const string_view title_,
 			cref<math::Extent2i32> extent_
 		) = 0;
 
-		[[nodiscard]] virtual ::hg::concurrent::future<bool> destroyNativeWindow(
+		[[nodiscard]] virtual ::hg::Future<bool> destroyNativeWindow(
 			mref<uptr<platform::NativeWindow>> window_
 		) = 0;
 	};
