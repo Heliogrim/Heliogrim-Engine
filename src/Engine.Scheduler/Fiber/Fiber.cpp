@@ -119,51 +119,27 @@ void Fiber::await(mref<FiberAwaitable> awaitable_) {
 	awaiter.reset();
 }
 
-void self::yield() {
+ptr<Fiber> self::current() noexcept {
 
 	#ifdef ENV_MSVC
-	/**
-	 *
-	 */
-	#ifdef _DEBUG
-	auto* entry = ::GetFiberData();
-	::hg::assertd(entry != nullptr);
-	static_cast<ptr<Fiber>>(entry)->yield();
-	#else
-	static_cast<ptr<Fiber>>(::GetFiberData())->yield();
-	#endif
+	return ::IsThreadAFiber() ? static_cast<ptr<Fiber>>(::GetFiberData()) : nullptr;
 
 	#else
-	/**
-	 *
-	 */
 	::hg::todo_panic();
 
 	#endif
 }
 
+void self::yield() {
+	const auto fiber = current();
+	::hg::assertd(fiber != nullptr);
+	fiber->yield();
+}
+
 void self::await(mref<FiberAwaitable> awaitable_) {
-
-	#ifdef ENV_MSVC
-	/**
-	 *
-	 */
-	#ifdef _DEBUG
-	auto* entry = ::GetFiberData();
-	::hg::assertd(entry != nullptr);
-	static_cast<ptr<Fiber>>(entry)->await(std::forward<FiberAwaitable>(awaitable_));
-
-	#else
-	static_cast<ptr<Fiber>>(::GetFiberData())->await(std::forward<FiberAwaitable>(awaitable_));
-
-	#endif
-
-	#else
-	/**
-	 *
-	 */
-	::hg::todo_panic();
-	#endif
+	const auto fiber = current();
+	::hg::assertd(fiber != nullptr);
+	fiber->await(std::forward<FiberAwaitable>(awaitable_));
 }
 
 u64 engine::scheduler::fiber::default_fiber_stack_size() noexcept {

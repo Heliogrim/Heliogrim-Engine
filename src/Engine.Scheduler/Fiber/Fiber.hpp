@@ -89,6 +89,11 @@ namespace hg::engine::scheduler::fiber {
 
 	namespace self {
 		/**
+		 * The fiber running the calling task, null on a plain thread or a worker's root fiber
+		 */
+		[[nodiscard]] ptr<Fiber> current() noexcept;
+
+		/**
 		 * Yields the current fiber
 		 *
 		 * @author Julius
