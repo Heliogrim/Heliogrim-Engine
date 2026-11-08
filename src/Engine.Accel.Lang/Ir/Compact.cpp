@@ -51,8 +51,8 @@ namespace {
 		}
 
 		[[nodiscard]] u32 emptyBlock() {
-			out.module.stmts.emplace_back().kind = ir::StmtKind::eBlock;
-			return static_cast<u32>(out.module.stmts.size() - 1uz);
+			out.mod.stmts.emplace_back().kind = ir::StmtKind::eBlock;
+			return static_cast<u32>(out.mod.stmts.size() - 1uz);
 		}
 
 		/* pre-order copy; children hold input indices (~0 = dropped or back edge) until fixStmts */
@@ -73,7 +73,7 @@ namespace {
 					continue;// shared with an earlier parent
 				}
 				stmtVisit[at] = Visit::eOpen;
-				newStmt[at] = static_cast<u32>(out.module.stmts.size());
+				newStmt[at] = static_cast<u32>(out.mod.stmts.size());
 
 				auto copy = in.stmts[at];
 				work.emplace_back(at, true);
@@ -88,15 +88,15 @@ namespace {
 						work.emplace_back(copy.children[i - 1uz].index, false);
 					}
 				}
-				out.module.stmts.emplace_back(std::move(copy));
+				out.mod.stmts.emplace_back(std::move(copy));
 			}
 			return newStmt[root];
 		}
 
 		void fixStmts() {
-			for (auto i = 0uz; i < out.module.stmts.size(); ++i) {
-				auto children = std::move(out.module.stmts[i].children);
-				const auto block = out.module.stmts[i].kind == ir::StmtKind::eBlock;
+			for (auto i = 0uz; i < out.mod.stmts.size(); ++i) {
+				auto children = std::move(out.mod.stmts[i].children);
+				const auto block = out.mod.stmts[i].kind == ir::StmtKind::eBlock;
 				Vector<ir::StmtRef> mapped {};
 				for (const auto child : children) {
 					if (child.index != unset) {
@@ -105,7 +105,7 @@ namespace {
 						mapped.emplace_back(ir::StmtRef { emptyBlock() });// keeps `if` arms in place
 					}
 				}
-				out.module.stmts[i].children = std::move(mapped);
+				out.mod.stmts[i].children = std::move(mapped);
 			}
 		}
 
@@ -126,7 +126,7 @@ namespace {
 					continue;
 				}
 				exprVisit[at] = Visit::eOpen;
-				newExpr[at] = static_cast<u32>(out.module.exprs.size());
+				newExpr[at] = static_cast<u32>(out.mod.exprs.size());
 
 				auto copy = in.exprs[at];
 				work.emplace_back(at, true);
@@ -141,7 +141,7 @@ namespace {
 						work.emplace_back(copy.operands[i - 1uz].index, false);
 					}
 				}
-				out.module.exprs.emplace_back(std::move(copy));
+				out.mod.exprs.emplace_back(std::move(copy));
 			}
 			return ir::ExprRef { newExpr[root_.index] };
 		}
@@ -172,8 +172,8 @@ namespace {
 		}
 
 		void fixExprs() {
-			const auto types = out.module.types.size();
-			for (auto& e : out.module.exprs) {
+			const auto types = out.mod.types.size();
+			for (auto& e : out.mod.exprs) {
 				for (auto& op : e.operands) {
 					op.index = op.index == unset ? unset : newExpr[op.index];
 				}
@@ -187,7 +187,7 @@ namespace {
 		}
 
 		void run() {
-			auto& result = out.module;
+			auto& result = out.mod;
 			result.name = in.name;
 			result.entry = in.entry;
 			result.attributes = in.attributes;
@@ -247,8 +247,8 @@ namespace {
 	};
 }
 
-ir::Compacted ir::compact(ref<const Module> module_, ref<const CompactPlan> plan_) {
-	Compactor compactor { module_, plan_ };
+ir::Compacted ir::compact(ref<const Module> mod_, ref<const CompactPlan> plan_) {
+	Compactor compactor { mod_, plan_ };
 	compactor.run();
 	return std::move(compactor.out);
 }

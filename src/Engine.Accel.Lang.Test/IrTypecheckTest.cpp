@@ -49,17 +49,17 @@ namespace AccelLang {
 			return res.has_value() || res.error().empty() ? Diagnostic {} : res.error().front();
 		}
 
-		[[nodiscard]] String emitGlsl(ref<Module> module_) {
+		[[nodiscard]] String emitGlsl(ref<Module> mod_) {
 			Language target {};
-			const auto layout = assignLayout(computeInterface(module_), module_.types, {});
-			(void)GlslEmitter {}.emit(module_, layout, target);
+			const auto layout = assignLayout(computeInterface(mod_), mod_.types, {});
+			(void)GlslEmitter {}.emit(mod_, layout, target);
 			return target.text.empty() ? String {} : String { target.text.front().data };
 		}
 
-		[[nodiscard]] String typeNameOfLocal(ref<const Module> module_, StringView name_) {
-			for (const auto& stmt : module_.stmts) {
+		[[nodiscard]] String typeNameOfLocal(ref<const Module> mod_, StringView name_) {
+			for (const auto& stmt : mod_.stmts) {
 				if (stmt.kind == StmtKind::eDeclareLocal && stmt.name == name_) {
-					return describeType(module_.types, stmt.type);
+					return describeType(mod_.types, stmt.type);
 				}
 			}
 			ADD_FAILURE() << "no local " << name_;
@@ -75,33 +75,33 @@ namespace AccelLang {
 	}
 
 	TEST(TypecheckTest, InfersLetFromInitializer) {
-		const auto module = parseOk("fn main() {\n\tlet v = f32vec4(1.0);\n\tlet s = v.xy;\n}\n");
-		EXPECT_EQ(typeNameOfLocal(module, "v"), "f32vec4");
-		EXPECT_EQ(typeNameOfLocal(module, "s"), "f32vec2");
+		const auto mod = parseOk("fn main() {\n\tlet v = f32vec4(1.0);\n\tlet s = v.xy;\n}\n");
+		EXPECT_EQ(typeNameOfLocal(mod, "v"), "f32vec4");
+		EXPECT_EQ(typeNameOfLocal(mod, "s"), "f32vec2");
 	}
 
 	TEST(TypecheckTest, ResolvesOverloadByArgumentType) {
-		const auto module = parseOk(
+		const auto mod = parseOk(
 			"fn saturate(x: f32) -> f32 { return x; }\n"
 			"fn saturate(x: f32vec3) -> f32vec3 { return x; }\n"
 			"fn main() {\n\tlet v = f32vec3(1.0);\n\tlet r = saturate(v);\n}\n"
 		);
 		auto second = ~0u;
-		for (auto i = 0uz; i < module.functions.size(); ++i) {
-			if (module.functions[i].name == "saturate" && signatureOf(module, module.functions[i]) == "saturate(f32vec3)") {
+		for (auto i = 0uz; i < mod.functions.size(); ++i) {
+			if (mod.functions[i].name == "saturate" && signatureOf(mod, mod.functions[i]) == "saturate(f32vec3)") {
 				second = static_cast<u32>(i);
 			}
 		}
 		ASSERT_NE(second, ~0u);
 		auto found = false;
-		for (const auto& expr : module.exprs) {
+		for (const auto& expr : mod.exprs) {
 			if (expr.kind == ExprKind::eCall) {
 				found = true;
 				EXPECT_EQ(expr.function.index, second);
 			}
 		}
 		EXPECT_TRUE(found);
-		EXPECT_EQ(typeNameOfLocal(module, "r"), "f32vec3");
+		EXPECT_EQ(typeNameOfLocal(mod, "r"), "f32vec3");
 	}
 
 	TEST(TypecheckTest, NoOverloadListsCandidates) {
@@ -114,19 +114,19 @@ namespace AccelLang {
 	}
 
 	TEST(TypecheckTest, LiteralAdaptsToFloatContext) {
-		auto module = parseOk("fn F(x: f32) -> f32 {\n\tif (x > 0) {\n\t\treturn x;\n\t}\n\treturn 0.5;\n}\nfn main() {\n\tfrag_depth = F(1.0);\n}\n");
+		auto mod = parseOk("fn F(x: f32) -> f32 {\n\tif (x > 0) {\n\t\treturn x;\n\t}\n\treturn 0.5;\n}\nfn main() {\n\tfrag_depth = F(1.0);\n}\n");
 		Language target {};
-		const auto layout = assignLayout(computeInterface(module), module.types, {});
-		const auto res = GlslEmitter {}.emit(module, layout, target);
+		const auto layout = assignLayout(computeInterface(mod), mod.types, {});
+		const auto res = GlslEmitter {}.emit(mod, layout, target);
 		ASSERT_TRUE(res.diagnostics.empty()) << res.diagnostics.front().message;
 		ASSERT_FALSE(target.text.empty());
 		EXPECT_TRUE(target.text.front().data.contains("x > 0.0")) << target.text.front().data;
 	}
 
 	TEST(TypecheckTest, IntegerLiteralsPickIntegerBuiltinOverload) {
-		const auto module = parseOk("fn main() {\n\tlet r = max(1, 2);\n\tlet f = max(1.0, 2.0);\n}\n");
-		EXPECT_EQ(typeNameOfLocal(module, "r"), "s32");
-		EXPECT_EQ(typeNameOfLocal(module, "f"), "f32");
+		const auto mod = parseOk("fn main() {\n\tlet r = max(1, 2);\n\tlet f = max(1.0, 2.0);\n}\n");
+		EXPECT_EQ(typeNameOfLocal(mod, "r"), "s32");
+		EXPECT_EQ(typeNameOfLocal(mod, "f"), "f32");
 	}
 
 	TEST(TypecheckTest, MixedIntFloatIsDiagnostic) {
@@ -135,8 +135,8 @@ namespace AccelLang {
 	}
 
 	TEST(TypecheckTest, MatrixVectorProductType) {
-		const auto module = parseOk("fn F(m: f32mat4, v: f32vec4) -> f32vec4 {\n\tlet r = m * v;\n\treturn r;\n}\n");
-		EXPECT_EQ(typeNameOfLocal(module, "r"), "f32vec4");
+		const auto mod = parseOk("fn F(m: f32mat4, v: f32vec4) -> f32vec4 {\n\tlet r = m * v;\n\treturn r;\n}\n");
+		EXPECT_EQ(typeNameOfLocal(mod, "r"), "f32vec4");
 	}
 
 	TEST(TypecheckTest, UnknownSwizzleComponent) {
@@ -169,17 +169,17 @@ namespace AccelLang {
 			"fn f(x: f32vec3) -> f32vec3 { return x; }\n"
 			"fn main() {\n\tfrag_depth = f(f32vec3(1.0)).x;\n}\n";
 
-		[[nodiscard]] Vector<String> signaturesOf(ref<const Module> module_, ref<const Vector<u32>> indices_) {
+		[[nodiscard]] Vector<String> signaturesOf(ref<const Module> mod_, ref<const Vector<u32>> indices_) {
 			Vector<String> out {};
 			for (const auto i : indices_) {
-				out.emplace_back(signatureOf(module_, module_.functions[i]));
+				out.emplace_back(signatureOf(mod_, mod_.functions[i]));
 			}
 			return out;
 		}
 
-		[[nodiscard]] u32 indexOf(ref<const Module> module_, StringView signature_) {
-			for (auto i = 0uz; i < module_.functions.size(); ++i) {
-				if (signatureOf(module_, module_.functions[i]) == signature_) {
+		[[nodiscard]] u32 indexOf(ref<const Module> mod_, StringView signature_) {
+			for (auto i = 0uz; i < mod_.functions.size(); ++i) {
+				if (signatureOf(mod_, mod_.functions[i]) == signature_) {
 					return static_cast<u32>(i);
 				}
 			}
@@ -189,45 +189,45 @@ namespace AccelLang {
 	}
 
 	TEST(TypecheckTest, ReachabilityFollowsTheChosenOverload) {
-		const auto module = parseOk(overloads);
-		const std::array<u32, 1> roots { indexOf(module, "main()") };
-		const auto reached = reachableFunctions(module, roots);
-		auto names = signaturesOf(module, reached);
+		const auto mod = parseOk(overloads);
+		const std::array<u32, 1> roots { indexOf(mod, "main()") };
+		const auto reached = reachableFunctions(mod, roots);
+		auto names = signaturesOf(mod, reached);
 		std::ranges::sort(names);
 		EXPECT_EQ(names, (Vector<String> { "f(f32vec3)", "main()" }));
 	}
 
 	TEST(TypecheckTest, CompactKeepsTheCalledOverloadAndNeverSubstitutes) {
-		auto module = parseOk(overloads);
-		const auto main = indexOf(module, "main()");
-		const auto vec = indexOf(module, "f(f32vec3)");
-		const auto scalar = indexOf(module, "f(f32)");
+		auto mod = parseOk(overloads);
+		const auto main = indexOf(mod, "main()");
+		const auto vec = indexOf(mod, "f(f32vec3)");
+		const auto scalar = indexOf(mod, "f(f32)");
 
 		CompactPlan plan {};
-		plan.stmtAlias.resize(module.stmts.size());
+		plan.stmtAlias.resize(mod.stmts.size());
 		for (auto i = 0uz; i < plan.stmtAlias.size(); ++i) {
 			plan.stmtAlias[i] = static_cast<u32>(i);
 		}
 		plan.functions = vec < main ? Vector<u32> { vec, main } : Vector<u32> { main, vec };
-		const auto kept = compact(module, plan);
+		const auto kept = compact(mod, plan);
 		EXPECT_TRUE(kept.unresolvedCalls.empty());
 		auto names = Vector<String> {};
-		for (const auto& fn : kept.module.functions) {
-			names.emplace_back(signatureOf(kept.module, fn));
+		for (const auto& fn : kept.mod.functions) {
+			names.emplace_back(signatureOf(kept.mod, fn));
 		}
 		std::ranges::sort(names);
 		EXPECT_EQ(names, (Vector<String> { "f(f32vec3)", "main()" }));
 
 		// the called overload is dropped: the call stays unresolved by signature, it must not bind the other overload
 		plan.functions = scalar < main ? Vector<u32> { scalar, main } : Vector<u32> { main, scalar };
-		const auto dropped = compact(module, plan);
+		const auto dropped = compact(mod, plan);
 		EXPECT_EQ(dropped.unresolvedCalls, (Vector<String> { "f(f32vec3)" }));
 	}
 
 	namespace {
 		[[nodiscard]] u32 assignsAfterSlice(StringView source_) {
-			const auto module = parseOk(source_);
-			const auto resolved = resolveToggles(module, ToggleSet {});
+			const auto mod = parseOk(source_);
+			const auto resolved = resolveToggles(mod, ToggleSet {});
 			EXPECT_TRUE(resolved.has_value());
 			const std::array<String, 1> outputs { String { "depth" } };
 			const auto sliced = slice(*resolved, std::span<const String> { outputs });
@@ -257,8 +257,8 @@ namespace AccelLang {
 	}
 
 	TEST(TypecheckTest, SliceKeepsTheCalledOverloadOnly) {
-		const auto module = parseOk(sliceSource);
-		const auto resolved = resolveToggles(module, ToggleSet {});
+		const auto mod = parseOk(sliceSource);
+		const auto resolved = resolveToggles(mod, ToggleSet {});
 		ASSERT_TRUE(resolved.has_value());
 		const std::array<String, 1> outputs { String { "depth" } };
 		const auto sliced = slice(*resolved, std::span<const String> { outputs });
@@ -294,44 +294,44 @@ namespace AccelLang {
 	}
 
 	TEST(TypecheckTest, UnresolvedNameRefIsReported) {
-		Module module {};
-		const auto name = addExpr(module, Expr { .kind = ExprKind::eNameRef, .name = "missing" });
-		module.functions.emplace_back(bodied(module, "main", {}, {}, StmtKind::eExpr, name));
+		Module mod {};
+		const auto name = addExpr(mod, Expr { .kind = ExprKind::eNameRef, .name = "missing" });
+		mod.functions.emplace_back(bodied(mod, "main", {}, {}, StmtKind::eExpr, name));
 
-		const auto diagnostics = typecheck(module);
+		const auto diagnostics = typecheck(mod);
 		ASSERT_FALSE(diagnostics.empty());
 		EXPECT_EQ(diagnostics.front().message, "unknown name 'missing'");
 	}
 
 	TEST(TypecheckTest, IntegerMatrixIsNotNumeric) {
-		Module module {};
-		const auto mat = addType(module, TypeDesc { .kind = TypeKind::eMatrix, .scalar = ScalarKind::eInt, .n = 2uL, .m = 2uL });
-		const auto x = addExpr(module, Expr { .kind = ExprKind::eNameRef, .name = "x", .local = true });
-		const auto neg = addExpr(module, Expr { .kind = ExprKind::eUnary, .name = "-", .operands = { x } });
-		module.functions.emplace_back(bodied(module, "f", { ParamDecl { .name = "x", .type = mat } }, mat, StmtKind::eReturn, neg));
+		Module mod {};
+		const auto mat = addType(mod, TypeDesc { .kind = TypeKind::eMatrix, .scalar = ScalarKind::eInt, .n = 2uL, .m = 2uL });
+		const auto x = addExpr(mod, Expr { .kind = ExprKind::eNameRef, .name = "x", .local = true });
+		const auto neg = addExpr(mod, Expr { .kind = ExprKind::eUnary, .name = "-", .operands = { x } });
+		mod.functions.emplace_back(bodied(mod, "f", { ParamDecl { .name = "x", .type = mat } }, mat, StmtKind::eReturn, neg));
 
-		const auto diagnostics = typecheck(module);
+		const auto diagnostics = typecheck(mod);
 		ASSERT_FALSE(diagnostics.empty());
 		EXPECT_EQ(diagnostics.front().message, "operand of '-' has type s32mat2");
 	}
 
 	TEST(TypecheckTest, SameNamedStructsWithDifferentFieldsAreDistinct) {
-		Module module {};
-		const auto f32t = addType(module, TypeDesc { .kind = TypeKind::eScalar, .scalar = ScalarKind::eFloat });
-		const auto i32t = addType(module, TypeDesc { .kind = TypeKind::eScalar, .scalar = ScalarKind::eInt });
-		const auto s1 = addType(module, TypeDesc { .kind = TypeKind::eStruct, .name = "S", .fields = { FieldDesc { "a", f32t } } });
-		const auto s2 = addType(module, TypeDesc { .kind = TypeKind::eStruct, .name = "S", .fields = { FieldDesc { "a", i32t } } });
+		Module mod {};
+		const auto f32t = addType(mod, TypeDesc { .kind = TypeKind::eScalar, .scalar = ScalarKind::eFloat });
+		const auto i32t = addType(mod, TypeDesc { .kind = TypeKind::eScalar, .scalar = ScalarKind::eInt });
+		const auto s1 = addType(mod, TypeDesc { .kind = TypeKind::eStruct, .name = "S", .fields = { FieldDesc { "a", f32t } } });
+		const auto s2 = addType(mod, TypeDesc { .kind = TypeKind::eStruct, .name = "S", .fields = { FieldDesc { "a", i32t } } });
 
-		const auto noop = addStmt(module, Stmt { .kind = StmtKind::eBlock });
-		module.functions.emplace_back(FunctionDecl { .name = "F", .params = { ParamDecl { .name = "x", .type = s1 } }, .body = BodyRef { noop } });
-		module.functions.emplace_back(FunctionDecl { .name = "F", .params = { ParamDecl { .name = "x", .type = s2 } }, .body = BodyRef { noop } });
+		const auto noop = addStmt(mod, Stmt { .kind = StmtKind::eBlock });
+		mod.functions.emplace_back(FunctionDecl { .name = "F", .params = { ParamDecl { .name = "x", .type = s1 } }, .body = BodyRef { noop } });
+		mod.functions.emplace_back(FunctionDecl { .name = "F", .params = { ParamDecl { .name = "x", .type = s2 } }, .body = BodyRef { noop } });
 
-		const auto y = addExpr(module, Expr { .kind = ExprKind::eNameRef, .name = "y", .local = true });
-		const auto call = addExpr(module, Expr { .kind = ExprKind::eCall, .name = "F", .operands = { y } });
-		module.functions.emplace_back(bodied(module, "g", { ParamDecl { .name = "y", .type = s2 } }, {}, StmtKind::eExpr, call));
+		const auto y = addExpr(mod, Expr { .kind = ExprKind::eNameRef, .name = "y", .local = true });
+		const auto call = addExpr(mod, Expr { .kind = ExprKind::eCall, .name = "F", .operands = { y } });
+		mod.functions.emplace_back(bodied(mod, "g", { ParamDecl { .name = "y", .type = s2 } }, {}, StmtKind::eExpr, call));
 
-		EXPECT_TRUE(typecheck(module).empty());
-		EXPECT_EQ(module.exprs[call.index].function.index, 1uL);
+		EXPECT_TRUE(typecheck(mod).empty());
+		EXPECT_EQ(mod.exprs[call.index].function.index, 1uL);
 	}
 
 	TEST(MutabilityTest, LetIsMutable) {
@@ -347,12 +347,12 @@ namespace AccelLang {
 	}
 
 	TEST(MutabilityTest, ConstWithRuntimeInitializerIsValid) {
-		const auto module = parseOk(
+		const auto mod = parseOk(
 			"@input (mode = forward, id = \"v\") f32vec3 v;\n"
 			"fn normalize(x: f32vec3) -> f32vec3 { return x; }\n"
 			"fn main() {\n\tconst n = normalize(v);\n}\n"
 		);
-		auto module2 = module;
+		auto module2 = mod;
 		const auto text = emitGlsl(module2);
 		EXPECT_TRUE(text.contains("const vec3 n = normalize(v);")) << text;
 	}
@@ -545,8 +545,8 @@ namespace AccelLang {
 	}
 
 	TEST(TypecheckTest, ConstArrayConstructorMatchesItsType) {
-		const auto module = parseOk("const T: f32vec3[2] = f32vec3[2](f32vec3(1.0), f32vec3(0.0, 1.0, 0.0));\nfn F(i: u32) -> f32vec3 {\n\treturn T[i];\n}\n");
-		ASSERT_EQ(module.constants.size(), 1uz);
+		const auto mod = parseOk("const T: f32vec3[2] = f32vec3[2](f32vec3(1.0), f32vec3(0.0, 1.0, 0.0));\nfn F(i: u32) -> f32vec3 {\n\treturn T[i];\n}\n");
+		ASSERT_EQ(mod.constants.size(), 1uz);
 	}
 
 	TEST(TypecheckTest, ArrayConstructorCountMismatchIsDiagnostic) {

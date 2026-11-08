@@ -26,14 +26,14 @@ namespace AccelLang {
 
 		/* resolve order 1-3 (no toggles), then slice by the required outputs */
 		[[nodiscard]] Module resolved(StringView source_, EntryKind entry_, std::span<const String> outputs_) {
-			const auto module = parse(source_, entry_);
-			auto res = resolveToggles(module, ToggleSet {});
+			const auto mod = parse(source_, entry_);
+			auto res = resolveToggles(mod, ToggleSet {});
 			EXPECT_TRUE(res.has_value());
 			return res.has_value() ? slice(*res, outputs_) : Module {};
 		}
 
-		[[nodiscard]] Layout layoutOf(ref<const Module> module_, ref<const LayoutWeights> weights_ = {}, ref<const Vector<Layout>> existing_ = {}) {
-			return assignLayout(computeInterface(module_), module_.types, weights_, existing_);
+		[[nodiscard]] Layout layoutOf(ref<const Module> mod_, ref<const LayoutWeights> weights_ = {}, ref<const Vector<Layout>> existing_ = {}) {
+			return assignLayout(computeInterface(mod_), mod_.types, weights_, existing_);
 		}
 
 		[[nodiscard]] Opt<SlotAssignment> slotOf(ref<const Layout> layout_, StringView id_) {
@@ -45,14 +45,14 @@ namespace AccelLang {
 		}
 
 		[[nodiscard]] u32 pushSize(StringView fields_) {
-			const auto module = parse(String("@input (mode = bind, id = \"p\", class = push) block p { ") + String(fields_) + " };\n");
-			const auto layout = layoutOf(module);
+			const auto mod = parse(String("@input (mode = bind, id = \"p\", class = push) block p { ") + String(fields_) + " };\n");
+			const auto layout = layoutOf(mod);
 			EXPECT_EQ(layout.push.size(), 1uz);
 			return layout.push.empty() ? ~0u : layout.push.front().size;
 		}
 
-		[[nodiscard]] TypeRef pushType(ref<const Module> module_) {
-			return module_.bindings.empty() ? TypeRef {} : module_.bindings.front().type;
+		[[nodiscard]] TypeRef pushType(ref<const Module> mod_) {
+			return mod_.bindings.empty() ? TypeRef {} : mod_.bindings.front().type;
 		}
 
 		[[nodiscard]] TypeDesc structOf(Vector<FieldDesc> fields_) {
@@ -89,18 +89,18 @@ namespace AccelLang {
 	}
 
 	TEST(LayoutTest, SpecConstantIdsAreDeterministic) {
-		const auto module = parse(
+		const auto mod = parse(
 			"@spec (id = \"b\") const B: u32 = 2u;\n"
 			"@spec (id = \"a\") const A: u32 = 1u;\n"
 			"const PLAIN: u32 = 3u;\n"
 			"fn main() {}\n",
 			EntryKind::eFragment
 		);
-		const auto constants = assignSpecConstants(module.constants);
+		const auto constants = assignSpecConstants(mod.constants);
 		ASSERT_EQ(constants.size(), 2uz);
 		EXPECT_EQ(constants[0], (SpecConstant { "a", 0uL }));
 		EXPECT_EQ(constants[1], (SpecConstant { "b", 1uL }));
-		EXPECT_EQ(constants, assignSpecConstants(module.constants));
+		EXPECT_EQ(constants, assignSpecConstants(mod.constants));
 	}
 
 	TEST(SliceTest, SparseSampleWritesKeepTheStatement) {
@@ -164,12 +164,12 @@ namespace AccelLang {
 	}
 
 	TEST(InterfaceTest, InputsPrecedeOutputsThenById) {
-		const auto module = parse(
+		const auto mod = parse(
 			"@output (mode = forward, id = \"a-out\") f32vec4 o;\n"
 			"@input (mode = forward, id = \"z\") f32 z;\n"
 			"@input (mode = forward, id = \"b\") f32 b;\n"
 		);
-		const auto entries = computeInterface(module);
+		const auto entries = computeInterface(mod);
 		ASSERT_EQ(entries.size(), 3uz);
 		EXPECT_EQ(entries[0].id, "b");
 		EXPECT_EQ(entries[1].id, "z");
@@ -337,18 +337,18 @@ namespace AccelLang {
 	}
 
 	TEST(LayoutTest, DuplicateIdsCollapseDeterministically) {
-		const auto module = parse(
+		const auto mod = parse(
 			"@input (mode = bind, id = \"x\", class = storage) block x { f32 x; };\n"
 			"@input (mode = bind, id = \"y\", class = uniform) block y { f32 y; };\n"
 		);
-		auto entries = computeInterface(module);
+		auto entries = computeInterface(mod);
 		ASSERT_EQ(entries.size(), 2uz);
 		entries.emplace_back(entry("x", entries[1].type, BindMode::eBind, BindClass::eUniformBuffer));
 		entries.emplace_back(entry("x", entries[0].type, BindMode::eBind, BindClass::eStorageBuffer));
 
-		const auto forward = assignLayout(entries, module.types, {});
+		const auto forward = assignLayout(entries, mod.types, {});
 		std::ranges::reverse(entries);
-		const auto backward = assignLayout(entries, module.types, {});
+		const auto backward = assignLayout(entries, mod.types, {});
 		EXPECT_EQ(forward, backward);
 		ASSERT_EQ(forward.slots.size(), 2uz);
 		// the first in (id, class) order wins: uniform `x` with the type of `y`
@@ -356,11 +356,11 @@ namespace AccelLang {
 	}
 
 	TEST(LayoutTest, SkipsBindEntriesWithoutClass) {
-		const auto module = parse("@input (mode = bind, id = \"x\") block x { f32 x; };\n");
-		const auto entries = computeInterface(module);
+		const auto mod = parse("@input (mode = bind, id = \"x\") block x { f32 x; };\n");
+		const auto entries = computeInterface(mod);
 		ASSERT_EQ(entries.size(), 1uz);
 		EXPECT_EQ(entries[0].cls, BindClass::eNone);
-		const auto layout = assignLayout(entries, module.types, {});
+		const auto layout = assignLayout(entries, mod.types, {});
 		EXPECT_TRUE(layout.slots.empty());
 		EXPECT_TRUE(layout.push.empty());
 	}

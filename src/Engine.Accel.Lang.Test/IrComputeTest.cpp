@@ -31,10 +31,10 @@ namespace AccelLang {
 			return res.has_value() || res.error().empty() ? String {} : res.error().front().message;
 		}
 
-		[[nodiscard]] String emitGlsl(ref<Module> module_) {
+		[[nodiscard]] String emitGlsl(ref<Module> mod_) {
 			Language target {};
-			const auto layout = assignLayout(computeInterface(module_), module_.types, {});
-			(void)GlslEmitter {}.emit(module_, layout, target);
+			const auto layout = assignLayout(computeInterface(mod_), mod_.types, {});
+			(void)GlslEmitter {}.emit(mod_, layout, target);
 			return target.text.empty() ? String {} : String { target.text.front().data };
 		}
 
@@ -43,8 +43,8 @@ namespace AccelLang {
 	}
 
 	TEST(ComputeTest, ParsesLocalSize) {
-		const auto module = parseOk("@compute (local_size = [8, 4, 2])\nfn main() {}\n");
-		EXPECT_EQ(module.attributes.localSize, (std::array<u32, 3> { 8u, 4u, 2u }));
+		const auto mod = parseOk("@compute (local_size = [8, 4, 2])\nfn main() {}\n");
+		EXPECT_EQ(mod.attributes.localSize, (std::array<u32, 3> { 8u, 4u, 2u }));
 		EXPECT_EQ(parseOk("fn main() {}\n").attributes.localSize, (std::array<u32, 3> { 1u, 1u, 1u }));
 	}
 
@@ -53,8 +53,8 @@ namespace AccelLang {
 	}
 
 	TEST(ComputeTest, WorkgroupVariableEmitsShared) {
-		auto module = parseOk("workgroup tile: f32[64];\n@compute (local_size = [64, 1, 1])\nfn main() {\n\ttile[local_invocation_index] = 1.0;\n}\n");
-		const auto glsl = emitGlsl(module);
+		auto mod = parseOk("workgroup tile: f32[64];\n@compute (local_size = [64, 1, 1])\nfn main() {\n\ttile[local_invocation_index] = 1.0;\n}\n");
+		const auto glsl = emitGlsl(mod);
 		EXPECT_TRUE(glsl.contains("shared ")) << glsl;
 		EXPECT_TRUE(glsl.contains("local_size_x = 64")) << glsl;
 	}
@@ -168,9 +168,9 @@ namespace AccelLang {
 	}
 
 	TEST(FragmentTest, EarlyFragmentTestsEmitted) {
-		auto module = parseOk("@fragment (early_fragment_tests = true)\nfn main() {}\n", EntryKind::eFragment);
-		EXPECT_TRUE(module.attributes.earlyFragmentTests);
-		EXPECT_TRUE(emitGlsl(module).contains("layout(early_fragment_tests) in;"));
+		auto mod = parseOk("@fragment (early_fragment_tests = true)\nfn main() {}\n", EntryKind::eFragment);
+		EXPECT_TRUE(mod.attributes.earlyFragmentTests);
+		EXPECT_TRUE(emitGlsl(mod).contains("layout(early_fragment_tests) in;"));
 	}
 
 	TEST(FragmentTest, EarlyFragmentTestsOnComputeIsDiagnostic) {

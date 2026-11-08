@@ -76,7 +76,7 @@ namespace hg::engine::accel::lang::ir::detail {
 			resolver(resolver_) {}
 
 		ir::ModuleResolver resolver;
-		ir::Module module {};
+		ir::Module mod {};
 		ir::Diagnostics diags {};
 		/* include chain, root first */
 		Vector<String> active {};

@@ -488,12 +488,12 @@ namespace {
 	};
 }
 
-std::expected<Module, Diagnostics> ir::lowerRegions(ref<const Module> module_) {
-	Module out { module_ };
+std::expected<Module, Diagnostics> ir::lowerRegions(ref<const Module> mod_) {
+	Module out { mod_ };
 	Diagnostics diags {};
 	Specs specs {};
-	for (const auto& function : module_.functions) {
-		if (function.body.has_value() && not takesRegion(module_, function)) {
+	for (const auto& function : mod_.functions) {
+		if (function.body.has_value() && not takesRegion(mod_, function)) {
 			Rewriter { out, diags, {}, specs }.stmt(function.body->root);
 		}
 	}

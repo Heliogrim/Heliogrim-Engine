@@ -39,7 +39,7 @@ namespace hg::engine::accel {
 	public:
 		void setStageFlagBits(mref<StageFlagBits> flags_);
 
-		void setStageModule(mref<smr<StageModule>> module_);
+		void setStageModule(mref<smr<StageModule>> mod_);
 
 		[[nodiscard]] smr<StageModule> getStageModule() const noexcept;
 	};

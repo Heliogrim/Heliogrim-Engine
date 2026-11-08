@@ -14,7 +14,7 @@ namespace {
 	constexpr u8 absent_marker = 0xFFu;
 
 	struct ModuleHasher {
-		ref<const Module> module;
+		ref<const Module> mod;
 		ContentHasher h {};
 
 		void condition(ref<const Condition> condition_) noexcept {
@@ -28,11 +28,11 @@ namespace {
 		}
 
 		void type(const TypeRef ref_, const u32 depth_ = 0uL) noexcept {
-			if (ref_.index >= module.types.size() || depth_ > type_depth_limit) {
+			if (ref_.index >= mod.types.size() || depth_ > type_depth_limit) {
 				h.put(absent_marker);
 				return;
 			}
-			const auto& desc = module.types[ref_.index];
+			const auto& desc = mod.types[ref_.index];
 			h.put(desc.kind);
 			h.put(desc.scalar);
 			h.put(desc.bits);
@@ -50,11 +50,11 @@ namespace {
 		}
 
 		void expr(const ExprRef ref_, const u32 depth_) noexcept {
-			if (ref_.index >= module.exprs.size() || depth_ > code_depth_limit) {
+			if (ref_.index >= mod.exprs.size() || depth_ > code_depth_limit) {
 				h.put(absent_marker);
 				return;
 			}
-			const auto& node = module.exprs[ref_.index];
+			const auto& node = mod.exprs[ref_.index];
 			h.put(node.kind);
 			h.put(node.name);
 			/* binding and function indices are content: both declaration lists are hashed in order */
@@ -72,11 +72,11 @@ namespace {
 		}
 
 		void stmt(const StmtRef ref_, const u32 depth_) noexcept {
-			if (ref_.index >= module.stmts.size() || depth_ > code_depth_limit) {
+			if (ref_.index >= mod.stmts.size() || depth_ > code_depth_limit) {
 				h.put(absent_marker);
 				return;
 			}
-			const auto& node = module.stmts[ref_.index];
+			const auto& node = mod.stmts[ref_.index];
 			h.put(node.kind);
 			h.put(node.name);
 			h.put(node.mutable_);
@@ -91,23 +91,23 @@ namespace {
 		}
 
 		void operator()() noexcept {
-			h.put(module.name);
-			h.put(module.entry);
-			h.put(module.attributes.localSize[0]);
-			h.put(module.attributes.localSize[1]);
-			h.put(module.attributes.localSize[2]);
-			h.put(module.attributes.earlyFragmentTests);
-			h.put(module.attributes.geometryInput);
-			h.put(module.attributes.geometryOutput);
-			h.put(module.attributes.maxVertices);
-			h.put(module.attributes.invocations);
-			h.put(module.attributes.outputVertices);
-			h.put(module.attributes.tessDomain);
-			h.put(module.attributes.tessSpacing);
-			h.put(module.attributes.clockwise);
+			h.put(mod.name);
+			h.put(mod.entry);
+			h.put(mod.attributes.localSize[0]);
+			h.put(mod.attributes.localSize[1]);
+			h.put(mod.attributes.localSize[2]);
+			h.put(mod.attributes.earlyFragmentTests);
+			h.put(mod.attributes.geometryInput);
+			h.put(mod.attributes.geometryOutput);
+			h.put(mod.attributes.maxVertices);
+			h.put(mod.attributes.invocations);
+			h.put(mod.attributes.outputVertices);
+			h.put(mod.attributes.tessDomain);
+			h.put(mod.attributes.tessSpacing);
+			h.put(mod.attributes.clockwise);
 
-			h.put(static_cast<u64>(module.toggles.size()));
-			for (const auto& toggle : module.toggles) {
+			h.put(static_cast<u64>(mod.toggles.size()));
+			for (const auto& toggle : mod.toggles) {
 				h.put(toggle.name);
 				h.put(toggle.defaultValue);
 				h.put(static_cast<u64>(toggle.values.size()));
@@ -116,8 +116,8 @@ namespace {
 				}
 			}
 
-			h.put(static_cast<u64>(module.bindings.size()));
-			for (const auto& binding : module.bindings) {
+			h.put(static_cast<u64>(mod.bindings.size()));
+			for (const auto& binding : mod.bindings) {
 				h.put(binding.id);
 				type(binding.type);
 				h.put(binding.mode);
@@ -132,8 +132,8 @@ namespace {
 				h.put(binding.packing);
 			}
 
-			h.put(static_cast<u64>(module.constants.size()));
-			for (const auto& constant : module.constants) {
+			h.put(static_cast<u64>(mod.constants.size()));
+			for (const auto& constant : mod.constants) {
 				h.put(constant.name);
 				type(constant.type);
 				expr(constant.value, 0uL);
@@ -142,8 +142,8 @@ namespace {
 				condition(constant.when);
 			}
 
-			h.put(static_cast<u64>(module.functions.size()));
-			for (const auto& function : module.functions) {
+			h.put(static_cast<u64>(mod.functions.size()));
+			for (const auto& function : mod.functions) {
 				h.put(function.name);
 				h.put(static_cast<u64>(function.params.size()));
 				for (const auto& param : function.params) {
@@ -173,14 +173,14 @@ namespace {
 	}
 }
 
-u64 hg::engine::accel::lang::ir::contentHash(ref<const Module> module_) noexcept {
-	auto hasher = ModuleHasher { module_ };
+u64 hg::engine::accel::lang::ir::contentHash(ref<const Module> mod_) noexcept {
+	auto hasher = ModuleHasher { mod_ };
 	hasher();
 	return hasher.h.value;
 }
 
 VariantKey hg::engine::accel::lang::ir::makeVariantKey(
-	ref<const Module> module_,
+	ref<const Module> mod_,
 	ref<const ToggleSet> toggles_,
 	std::span<const String> requiredOutputs_
 ) {
@@ -194,7 +194,7 @@ VariantKey hg::engine::accel::lang::ir::makeVariantKey(
 	}
 
 	return VariantKey {
-		.module = contentHash(module_),
+		.mod = contentHash(mod_),
 		.toggles = h.value,
 		.outputs = hashSorted(Vector<String> { requiredOutputs_.begin(), requiredOutputs_.end() })
 	};

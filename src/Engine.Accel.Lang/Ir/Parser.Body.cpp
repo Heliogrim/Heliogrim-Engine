@@ -52,7 +52,7 @@ namespace {
  */
 
 ir::ExprRef Parser::expr(ir::Expr expr_) {
-	auto& exprs = _shared.module.exprs;
+	auto& exprs = _shared.mod.exprs;
 	exprs.emplace_back(std::move(expr_));
 	return ir::ExprRef { static_cast<u32>(exprs.size() - 1uz) };
 }
@@ -67,8 +67,8 @@ ir::ExprRef Parser::node(ir::ExprKind kind_, StringView name_, Vector<ir::ExprRe
 }
 
 ir::StmtRef Parser::add(ir::Stmt stmt_) {
-	auto& stmts = _shared.module.stmts;
-	const auto &exprs = _shared.module.exprs;
+	auto& stmts = _shared.mod.stmts;
+	const auto &exprs = _shared.mod.exprs;
 	if (stmt_.lhs.index < exprs.size()) {
 		stmt_.loc = exprs[stmt_.lhs.index].loc;
 	} else if (_pos > 0uz) {
@@ -190,7 +190,7 @@ Opt<ir::StmtRef> Parser::whenStatement() {
 	if (not child.has_value()) {
 		return None;
 	}
-	_shared.module.stmts[head->index].children.emplace_back(*child);
+	_shared.mod.stmts[head->index].children.emplace_back(*child);
 	return *head;
 }
 
@@ -418,7 +418,7 @@ Opt<ir::StmtRef> Parser::simpleStatement(bool terminated_) {
 
 /* a name, optionally behind field and index accesses */
 bool Parser::assignable(ir::ExprRef ref_) const {
-	return ir::isPlace(_shared.module, ref_);
+	return ir::isPlace(_shared.mod, ref_);
 }
 
 /* Expressions: `?:` (right-assoc, only at the lowest level) < binary operators (precedence climbing, see precedenceOf) < unary `- ! ~` < postfix `.name [i]` < primary */
@@ -478,13 +478,13 @@ Opt<ir::ExprRef> Parser::postfix(Opt<ir::ExprRef> base_) {
 				return None;
 			}
 			// any field name is accepted here; typecheck validates struct members and swizzles against the base type
-			base_ = node(ir::ExprKind::eField, take().text, { *base_ }, _shared.module.exprs[base_->index].loc);
+			base_ = node(ir::ExprKind::eField, take().text, { *base_ }, _shared.mod.exprs[base_->index].loc);
 		} else if (accept(TokenKind::eLBracket)) {
 			const auto index = expression();
 			if (not index.has_value()) {
 				return None;
 			}
-			const auto loc = _shared.module.exprs[base_->index].loc;
+			const auto loc = _shared.mod.exprs[base_->index].loc;
 			if (accept(TokenKind::eDotDot)) {
 				const auto hi = expression();
 				if (not hi.has_value() || not expect(TokenKind::eRBracket, "']'")) {
@@ -555,7 +555,7 @@ Opt<ir::ExprRef> Parser::arrayConstruct(ref<const ir::Token> name_) {
 	if (not made.has_value()) {
 		return None;
 	}
-	auto& construct = _shared.module.exprs[made->index];
+	auto& construct = _shared.mod.exprs[made->index];
 	ir::TypeDesc desc {};
 	desc.kind = ir::TypeKind::eArray;
 	desc.element = construct.type;
@@ -613,9 +613,9 @@ ir::ExprRef Parser::name(ref<const ir::Token> name_) {
 	named.kind = ir::ExprKind::eNameRef;
 	named.name = text;
 	named.loc = name_.loc;
-	const auto& bindings = _shared.module.bindings;
+	const auto& bindings = _shared.mod.bindings;
 	const auto binding = std::ranges::find(bindings, text, &ir::BindingDecl::localName);
-	const auto& constants = _shared.module.constants;
+	const auto& constants = _shared.mod.constants;
 	const auto constant = std::ranges::find(constants, text, &ir::ConstantDecl::name);
 	if (std::ranges::find(_locals, text) != _locals.end()) {
 		named.local = true;

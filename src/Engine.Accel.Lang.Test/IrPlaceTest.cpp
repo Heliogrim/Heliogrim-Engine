@@ -22,13 +22,13 @@ namespace AccelLang {
 			"workgroup t: u32[64];\n";
 
 		/* the place of an expression chain (names are not resolved; root scope stays unbound) */
-		void walk(ref<const Module> module_, ExprRef ref_, ref<PlacePath> out_) {
-			const auto& e = module_.exprs[ref_.index];
+		void walk(ref<const Module> mod_, ExprRef ref_, ref<PlacePath> out_) {
+			const auto& e = mod_.exprs[ref_.index];
 			if (e.kind == ExprKind::eNameRef || e.kind == ExprKind::eBuiltin) {
 				out_.root = e.name;
 				return;
 			}
-			walk(module_, e.operands[0], out_);
+			walk(mod_, e.operands[0], out_);
 			if (e.kind == ExprKind::eField) {
 				out_.steps.emplace_back(PlaceStep { .kind = PlaceStep::Kind::eField, .field = e.name });
 			} else if (e.kind == ExprKind::eIndex) {
@@ -47,17 +47,17 @@ namespace AccelLang {
 			if (not res.has_value()) {
 				return false;
 			}
-			const auto& module = *res;
+			const auto& mod = *res;
 			Vector<PlacePath> paths {};
-			for (const auto& stmt : module.stmts) {
+			for (const auto& stmt : mod.stmts) {
 				if (stmt.kind == StmtKind::eDeclareRef) {
 					paths.emplace_back();
-					walk(module, stmt.lhs, paths.back());
+					walk(mod, stmt.lhs, paths.back());
 				}
 			}
 			EXPECT_EQ(paths.size(), 2uz);
 			return paths.size() == 2uz && disjoint(
-				module,
+				mod,
 				paths[0],
 				paths[1],
 				[&](ref<const Expr> e_) { return boundsImmutable_ && (e_.name == "n" || e_.name == "m"); }

@@ -66,14 +66,14 @@ namespace AccelLang {
 	}
 
 	TEST(ModuleTest, CopyIsIndependent) {
-		Module module { .name = "m", .entry = EntryKind::eFragment };
-		module.bindings.emplace_back(BindingDecl { .localName = "a" });
+		Module mod { .name = "m", .entry = EntryKind::eFragment };
+		mod.bindings.emplace_back(BindingDecl { .localName = "a" });
 
-		auto copy = module;
+		auto copy = mod;
 		copy.bindings.emplace_back(BindingDecl { .localName = "b" });
 		copy.bindings.front().localName = "changed";
 
-		ASSERT_EQ(module.bindings.size(), 1uLL);
-		EXPECT_EQ(module.bindings.front().localName, "a");
+		ASSERT_EQ(mod.bindings.size(), 1uLL);
+		EXPECT_EQ(mod.bindings.front().localName, "a");
 	}
 }

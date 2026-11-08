@@ -30,6 +30,6 @@ namespace hg::engine::accel::lang {
          * their GLSL names. On any error `target_` is left unchanged.
          * Only the `#extension` lines the used types need are written (see `GlslRequirements`).
          */
-        [[nodiscard]] GlslEmitResult emit(ref<const ir::Module> module_, ref<const ir::Layout> layout_, ref<Language> target_) const;
+        [[nodiscard]] GlslEmitResult emit(ref<const ir::Module> mod_, ref<const ir::Layout> layout_, ref<Language> target_) const;
     };
 }

@@ -272,12 +272,12 @@ namespace {
 	};
 }
 
-ir::Module ir::slice(ref<const Module> module_, std::span<const String> requiredOutputIds_) {
+ir::Module ir::slice(ref<const Module> mod_, std::span<const String> requiredOutputIds_) {
 	if (requiredOutputIds_.empty()) {
-		return module_;
+		return mod_;
 	}
 
-	const auto& bindings = module_.bindings;
+	const auto& bindings = mod_.bindings;
 	Vector<bool> dropped(bindings.size(), false);
 	Vector<bool> keep(bindings.size(), false);
 	for (auto i = 0uz; i < bindings.size(); ++i) {
@@ -293,18 +293,18 @@ ir::Module ir::slice(ref<const Module> module_, std::span<const String> required
 
 	CompactPlan plan {};
 	const auto main = std::ranges::find_if(
-		module_.functions,
+		mod_.functions,
 		[](ref<const FunctionDecl> fn_) { return fn_.name == "main" && fn_.body.has_value(); }
 	);
-	if (main != module_.functions.end()) {
-		Slicer slicer { module_, dropped };
-		for (auto f = 0uz; f < module_.functions.size(); ++f) {
+	if (main != mod_.functions.end()) {
+		Slicer slicer { mod_, dropped };
+		for (auto f = 0uz; f < mod_.functions.size(); ++f) {
 			slicer.collect(static_cast<u32>(f));
 		}
 		slicer.purity();
 
-		Vector<bool> kept(module_.functions.size(), false);
-		Vector<u32> work { static_cast<u32>(main - module_.functions.begin()) };
+		Vector<bool> kept(mod_.functions.size(), false);
+		Vector<u32> work { static_cast<u32>(main - mod_.functions.begin()) };
 		kept[work.front()] = true;
 		while (not work.empty()) {
 			const auto f = work.back();
@@ -334,8 +334,8 @@ ir::Module ir::slice(ref<const Module> module_, std::span<const String> required
 				plan.functions.emplace_back(static_cast<u32>(f));
 			}
 		}
-		plan.stmtAlias.resize(module_.stmts.size());
-		for (auto s = 0uz; s < module_.stmts.size(); ++s) {
+		plan.stmtAlias.resize(mod_.stmts.size());
+		for (auto s = 0uz; s < mod_.stmts.size(); ++s) {
 			plan.stmtAlias[s] = slicer.live[s] ? static_cast<u32>(s) : unset;
 		}
 
@@ -358,7 +358,7 @@ ir::Module ir::slice(ref<const Module> module_, std::span<const String> required
 			const auto snapshot = used;
 			for (const auto c : snapshot) {
 				Facts nested {};
-				slicer.gather(module_.constants[c].value, nested);
+				slicer.gather(mod_.constants[c].value, nested);
 				for (const auto n : nested.constants) {
 					const auto before = used.size();
 					insertSorted(used, n);
@@ -375,5 +375,5 @@ ir::Module ir::slice(ref<const Module> module_, std::span<const String> required
 			plan.bindings.emplace_back(static_cast<u32>(i));
 		}
 	}
-	return compact(module_, plan).module;
+	return compact(mod_, plan).mod;
 }

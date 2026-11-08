@@ -42,18 +42,18 @@ namespace hg::engine::accel::lang::ir {
 	 * and a prefix of the other, overlaps.
 	 */
 	[[nodiscard]] bool disjoint(
-		ref<const Module> module_,
+		ref<const Module> mod_,
 		ref<const PlacePath> a_,
 		ref<const PlacePath> b_,
 		FnRef<bool(ref<const Expr>)> immutable_
 	);
 
 	/* structural equality of two expressions (kind, name, operands); locations and types are ignored */
-	[[nodiscard]] bool sameExpr(ref<const Module> module_, ExprRef a_, ExprRef b_);
+	[[nodiscard]] bool sameExpr(ref<const Module> mod_, ExprRef a_, ExprRef b_);
 
 	/* value of a GLSL integer literal (`8`, `8u`, `0x8`, `010`); none for anything else */
 	[[nodiscard]] Opt<long long> integerLiteral(StringView text_);
 
 	/* source-like rendering, e.g. `buf.data[0 .. n]` */
-	[[nodiscard]] String describePlace(ref<const Module> module_, ref<const PlacePath> path_);
+	[[nodiscard]] String describePlace(ref<const Module> mod_, ref<const PlacePath> path_);
 }

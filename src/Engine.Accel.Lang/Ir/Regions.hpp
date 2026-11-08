@@ -17,5 +17,5 @@ namespace hg::engine::accel::lang::ir {
 	 * same rewrite against the root, transitively. Region-taking originals are dropped (call `function` indices remapped).
 	 * A root that is a local/parameter array or has a runtime index is a diagnostic.
 	 */
-	[[nodiscard]] std::expected<Module, Diagnostics> lowerRegions(ref<const Module> module_);
+	[[nodiscard]] std::expected<Module, Diagnostics> lowerRegions(ref<const Module> mod_);
 }

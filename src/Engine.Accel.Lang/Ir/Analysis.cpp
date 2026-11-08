@@ -18,7 +18,7 @@ namespace {
 	}
 
 	struct Walker {
-		ref<const ir::Module> module;
+		ref<const ir::Module> mod;
 		ir::Usage usage;
 
 		void bindingAt(ref<const ir::Expr> expr_, Vector<u32>& into_) {
@@ -29,21 +29,21 @@ namespace {
 			auto index = expr_.binding.index;
 			if (index == unresolved) {
 				/* shortcut: unresolved names match BindingDecl::localName without scope shadowing, until the parser resolves them */
-				const auto it = std::ranges::find(module.bindings, expr_.name, &ir::BindingDecl::localName);
-				if (it == module.bindings.end()) {
+				const auto it = std::ranges::find(mod.bindings, expr_.name, &ir::BindingDecl::localName);
+				if (it == mod.bindings.end()) {
 					return;
 				}
-				index = static_cast<u32>(it - module.bindings.begin());
+				index = static_cast<u32>(it - mod.bindings.begin());
 			}
 			insertSorted(into_, index);
 		}
 
 		void expr(ir::ExprRef ref_, bool write_ = false) {
-			if (ref_.index >= module.exprs.size()) {
+			if (ref_.index >= mod.exprs.size()) {
 				return;
 			}
 
-			const auto& e = module.exprs[ref_.index];
+			const auto& e = mod.exprs[ref_.index];
 			switch (e.kind) {
 				case ir::ExprKind::eNameRef: {
 					bindingAt(e, write_ ? usage.writtenBindings : usage.readBindings);
@@ -52,17 +52,17 @@ namespace {
 				case ir::ExprKind::eCall: {
 					auto index = e.function.index;
 					/* an ambiguous name is no call target; typecheck sets the ref whenever an overload is chosen */
-					if (index == unresolved && std::ranges::count(module.functions, e.name, &ir::FunctionDecl::name) == 1) {
-						const auto it = std::ranges::find(module.functions, e.name, &ir::FunctionDecl::name);
-						index = it == module.functions.end() ? unresolved : static_cast<u32>(it - module.functions.begin());
+					if (index == unresolved && std::ranges::count(mod.functions, e.name, &ir::FunctionDecl::name) == 1) {
+						const auto it = std::ranges::find(mod.functions, e.name, &ir::FunctionDecl::name);
+						index = it == mod.functions.end() ? unresolved : static_cast<u32>(it - mod.functions.begin());
 					}
 					if (index != unresolved) {
 						insertSorted(usage.calledFunctions, index);
 					}
 					for (auto i = 0uz; i < e.operands.size(); ++i) {
 						/* a `&mut` argument writes its root */
-						const auto refMut = index < module.functions.size() && i < module.functions[index].params.size() &&
-							module.functions[index].params[i].kind == ir::ParamKind::eRefMut;
+						const auto refMut = index < mod.functions.size() && i < mod.functions[index].params.size() &&
+							mod.functions[index].params[i].kind == ir::ParamKind::eRefMut;
 						expr(e.operands[i], refMut);
 					}
 					break;
@@ -96,11 +96,11 @@ namespace {
 		}
 
 		void stmt(ir::StmtRef ref_) {
-			if (ref_.index >= module.stmts.size()) {
+			if (ref_.index >= mod.stmts.size()) {
 				return;
 			}
 
-			const auto& s = module.stmts[ref_.index];
+			const auto& s = mod.stmts[ref_.index];
 			switch (s.kind) {
 				case ir::StmtKind::eAssign: {
 					expr(s.lhs, true);
@@ -133,10 +133,10 @@ namespace {
 	};
 }
 
-ir::Usage ir::usageOf(ref<const Module> module_, u32 functionIndex_) {
-	Walker walker { module_, {} };
-	if (functionIndex_ < module_.functions.size()) {
-		const auto& body = module_.functions[functionIndex_].body;
+ir::Usage ir::usageOf(ref<const Module> mod_, u32 functionIndex_) {
+	Walker walker { mod_, {} };
+	if (functionIndex_ < mod_.functions.size()) {
+		const auto& body = mod_.functions[functionIndex_].body;
 		if (body.has_value()) {
 			walker.stmt(body->root);
 		}
@@ -144,8 +144,8 @@ ir::Usage ir::usageOf(ref<const Module> module_, u32 functionIndex_) {
 	return std::move(walker.usage);
 }
 
-Vector<u32> ir::reachableFunctions(ref<const Module> module_, std::span<const u32> roots_) {
-	Vector<bool> seen(module_.functions.size(), false);
+Vector<u32> ir::reachableFunctions(ref<const Module> mod_, std::span<const u32> roots_) {
+	Vector<bool> seen(mod_.functions.size(), false);
 	Vector<u32> work {};
 	for (const auto root : roots_) {
 		if (root < seen.size() && !seen[root]) {
@@ -157,7 +157,7 @@ Vector<u32> ir::reachableFunctions(ref<const Module> module_, std::span<const u3
 	while (!work.empty()) {
 		const auto next = work.back();
 		work.pop_back();
-		for (const auto callee : usageOf(module_, next).calledFunctions) {
+		for (const auto callee : usageOf(mod_, next).calledFunctions) {
 			if (callee < seen.size() && !seen[callee]) {
 				seen[callee] = true;
 				work.emplace_back(callee);

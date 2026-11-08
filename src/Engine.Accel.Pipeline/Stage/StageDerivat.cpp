@@ -32,8 +32,8 @@ void StageDerivat::setStageFlagBits(mref<StageFlagBits> flagBits_) {
     _flagBits = std::move(flagBits_);
 }
 
-void StageDerivat::setStageModule(mref<smr<StageModule>> module_) {
-    _stageModule = std::move(module_);
+void StageDerivat::setStageModule(mref<smr<StageModule>> mod_) {
+    _stageModule = std::move(mod_);
 }
 
 smr<StageModule> StageDerivat::getStageModule() const noexcept {

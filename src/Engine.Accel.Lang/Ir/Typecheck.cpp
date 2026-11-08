@@ -52,41 +52,41 @@ namespace {
 
 	class Checker {
 	public:
-		explicit Checker(ref<ir::Module> module_) :
-			_module(module_),
-			_hasMain(std::ranges::any_of(module_.functions, [](ref<const ir::FunctionDecl> fn_) { return fn_.name == "main" && fn_.body.has_value(); })) {}
+		explicit Checker(ref<ir::Module> mod_) :
+			_mod(mod_),
+			_hasMain(std::ranges::any_of(mod_.functions, [](ref<const ir::FunctionDecl> fn_) { return fn_.name == "main" && fn_.body.has_value(); })) {}
 
 		[[nodiscard]] ir::Diagnostics run() {
-			for (auto i = 0uz; i < _module.functions.size(); ++i) {
-				for (auto j = i + 1uz; j < _module.functions.size(); ++j) {
-					const auto& a = _module.functions[i];
-					const auto& b = _module.functions[j];
-					if (a.name == b.name && a.params.size() == b.params.size() && ir::signatureOf(_module, a) == ir::signatureOf(_module, b) &&
+			for (auto i = 0uz; i < _mod.functions.size(); ++i) {
+				for (auto j = i + 1uz; j < _mod.functions.size(); ++j) {
+					const auto& a = _mod.functions[i];
+					const auto& b = _mod.functions[j];
+					if (a.name == b.name && a.params.size() == b.params.size() && ir::signatureOf(_mod, a) == ir::signatureOf(_mod, b) &&
 						not std::ranges::equal(a.params, b.params, {}, &ir::ParamDecl::kind, &ir::ParamDecl::kind)) {
 						const Here here { _loc, b.loc };
 						error("overloads of '" + a.name + "' differ only in reference kind");
 					}
 				}
 			}
-			for (const auto& fn : _module.functions) {
+			for (const auto& fn : _mod.functions) {
 				const Here here { _loc, fn.loc };
 				reserved(fn.name, true);
 				for (const auto& param : fn.params) {
 					reserved(param.name);
 				}
 			}
-			for (auto i = 0uz; i < _module.constants.size(); ++i) {
+			for (auto i = 0uz; i < _mod.constants.size(); ++i) {
 				constant(i);
 			}
-			for (auto i = 0uz; i < _module.functions.size(); ++i) {
-				if (not _module.functions[i].body.has_value()) {
+			for (auto i = 0uz; i < _mod.functions.size(); ++i) {
+				if (not _mod.functions[i].body.has_value()) {
 					continue;
 				}
-				const auto root = _module.functions[i].body->root;
-				_ret = _module.functions[i].ret;
+				const auto root = _mod.functions[i].body->root;
+				_ret = _mod.functions[i].ret;
 				_scope.clear();
 				_loops = 0uL;
-				for (const auto& param : _module.functions[i].params) {
+				for (const auto& param : _mod.functions[i].params) {
 					const auto mode = param.kind == ir::ParamKind::eRefMut ? Mode::eRefWrite :
 						(param.kind == ir::ParamKind::eRef ? Mode::eRefRead : Mode::eConstant);
 					_scope.emplace_back(param.name, param.type, mode);
@@ -144,7 +144,7 @@ namespace {
 			size_t parentAlias = ~0uz;
 		};
 
-		ref<ir::Module> _module;
+		ref<ir::Module> _mod;
 		/* library modules (no `fn main`) are stage-checked after merge, see checkStageValidity */
 		bool _hasMain;
 		ir::Diagnostics _diags;
@@ -158,11 +158,11 @@ namespace {
 /* head token of the node being checked; restored on scope exit so errors after operand recursion stay on the parent */ ir::SourceLoc _loc {};  struct Here { explicit Here(ref<ir::SourceLoc> slot_, ir::SourceLoc next_) : _slot(slot_), _saved(slot_) { _slot = next_; }  ~Here() { _slot = _saved; }  ref<ir::SourceLoc> _slot; ir::SourceLoc _saved; };  void error(String message_) { _diags.emplace_back( ir::Diagnostic { .severity = ir::Severity::eError, .message = std::move(message_), .line = _loc.line, .column = _loc.column } ); }
 
 		[[nodiscard]] String name(TypeRef type_) const {
-			return ir::describeType(_module.types, type_);
+			return ir::describeType(_mod.types, type_);
 		}
 
 		[[nodiscard]] bool valid(TypeRef type_) const {
-			return type_.index < _module.types.size();
+			return type_.index < _mod.types.size();
 		}
 
 		/* Type table */
@@ -196,8 +196,8 @@ namespace {
 			if (not valid(a_) || not valid(b_) || depth_ > describeDepthLimit) {
 				return false;
 			}
-			const auto& a = _module.types[a_.index];
-			const auto& b = _module.types[b_.index];
+			const auto& a = _mod.types[a_.index];
+			const auto& b = _mod.types[b_.index];
 			if (a.kind == TypeKind::eArray && b.kind == TypeKind::eArray) {
 				return a.count == b.count && same(a.element, b.element, depth_ + 1uL);
 			}
@@ -205,13 +205,13 @@ namespace {
 		}
 
 		[[nodiscard]] TypeRef intern(TypeDesc desc_) {
-			for (auto i = 0uz; i < _module.types.size(); ++i) {
-				if (sameDesc(_module.types[i], desc_)) {
+			for (auto i = 0uz; i < _mod.types.size(); ++i) {
+				if (sameDesc(_mod.types[i], desc_)) {
 					return TypeRef { static_cast<u32>(i) };
 				}
 			}
-			_module.types.emplace_back(std::move(desc_));
-			return TypeRef { static_cast<u32>(_module.types.size() - 1uz) };
+			_mod.types.emplace_back(std::move(desc_));
+			return TypeRef { static_cast<u32>(_mod.types.size() - 1uz) };
 		}
 
 		[[nodiscard]] TypeRef scalarOf(ScalarKind kind_, u32 bits_) {
@@ -243,7 +243,7 @@ namespace {
 			if (not valid(type_)) {
 				return {};
 			}
-			const auto desc = _module.types[type_.index];
+			const auto desc = _mod.types[type_.index];
 			return desc.kind == TypeKind::eScalar || desc.kind == TypeKind::eVector || desc.kind == TypeKind::eMatrix ?
 				scalarOf(desc.scalar, desc.bits) :
 				TypeRef {};
@@ -253,34 +253,34 @@ namespace {
 			if (not valid(type_)) {
 				return false;
 			}
-			const auto& desc = _module.types[type_.index];
+			const auto& desc = _mod.types[type_.index];
 			return (desc.kind == TypeKind::eScalar || desc.kind == TypeKind::eVector || desc.kind == TypeKind::eMatrix) &&
 				desc.scalar != ScalarKind::eBool && (desc.kind != TypeKind::eMatrix || desc.scalar == ScalarKind::eFloat);
 		}
 
 		[[nodiscard]] bool isKind(TypeRef type_, TypeKind kind_) const {
-			return valid(type_) && _module.types[type_.index].kind == kind_;
+			return valid(type_) && _mod.types[type_.index].kind == kind_;
 		}
 
 		[[nodiscard]] bool isBool(TypeRef type_) const {
-			return isKind(type_, TypeKind::eScalar) && _module.types[type_.index].scalar == ScalarKind::eBool;
+			return isKind(type_, TypeKind::eScalar) && _mod.types[type_.index].scalar == ScalarKind::eBool;
 		}
 
 		[[nodiscard]] bool isInteger(TypeRef type_) const {
 			if (not isKind(type_, TypeKind::eScalar)) {
 				return false;
 			}
-			const auto scalar = _module.types[type_.index].scalar;
+			const auto scalar = _mod.types[type_.index].scalar;
 			return scalar == ScalarKind::eInt || scalar == ScalarKind::eUInt;
 		}
 
 		/* Literal adaptation (D4): a plain integer literal takes any numeric scalar type, a float literal only float types */
 
 		[[nodiscard]] Literal literalOf(ExprRef ref_) const {
-			if (ref_.index >= _module.exprs.size()) {
+			if (ref_.index >= _mod.exprs.size()) {
 				return Literal::eNone;
 			}
-			const auto& e = _module.exprs[ref_.index];
+			const auto& e = _mod.exprs[ref_.index];
 			if (e.kind == ExprKind::eUnary && e.name == "-" && e.operands.size() == 1uz) {
 				return literalOf(e.operands.front());
 			}
@@ -297,7 +297,7 @@ namespace {
 			if (not isKind(target_, TypeKind::eScalar)) {
 				return false;
 			}
-			const auto scalar = _module.types[target_.index].scalar;
+			const auto scalar = _mod.types[target_.index].scalar;
 			switch (literalOf(ref_)) {
 				case Literal::eInt: return scalar != ScalarKind::eBool;
 				case Literal::eFloat: return scalar == ScalarKind::eFloat;
@@ -306,14 +306,14 @@ namespace {
 		}
 
 		void retype(ExprRef ref_, TypeRef type_) {
-			_module.exprs[ref_.index].type = type_;
-			if (_module.exprs[ref_.index].kind == ExprKind::eUnary && _module.exprs[ref_.index].operands.size() == 1uz) {
-				retype(_module.exprs[ref_.index].operands.front(), type_);
+			_mod.exprs[ref_.index].type = type_;
+			if (_mod.exprs[ref_.index].kind == ExprKind::eUnary && _mod.exprs[ref_.index].operands.size() == 1uz) {
+				retype(_mod.exprs[ref_.index].operands.front(), type_);
 			}
 		}
 
 		[[nodiscard]] bool coerce(ExprRef ref_, TypeRef target_) {
-			if (same(_module.exprs[ref_.index].type, target_)) {
+			if (same(_mod.exprs[ref_.index].type, target_)) {
 				return true;
 			}
 			if (adaptable(ref_, target_)) {
@@ -326,56 +326,56 @@ namespace {
 		/* Statements */
 
 		void stmt(ir::StmtRef ref_) {
-			if (ref_.index >= _module.stmts.size() || _depth > maxDepth) {
+			if (ref_.index >= _mod.stmts.size() || _depth > maxDepth) {
 				return;
 			}
 			const Nest nest { _depth };
-			const Here here { _loc, _module.stmts[ref_.index].loc };
-			const auto kind = _module.stmts[ref_.index].kind;
-			const auto lhs = _module.stmts[ref_.index].lhs;
-			const auto rhs = _module.stmts[ref_.index].rhs;
-			const auto children = _module.stmts[ref_.index].children;
+			const Here here { _loc, _mod.stmts[ref_.index].loc };
+			const auto kind = _mod.stmts[ref_.index].kind;
+			const auto lhs = _mod.stmts[ref_.index].lhs;
+			const auto rhs = _mod.stmts[ref_.index].rhs;
+			const auto children = _mod.stmts[ref_.index].children;
 
 			switch (kind) {
 				case StmtKind::eDeclareLocal: {
-					reserved(_module.stmts[ref_.index].name);
-					const auto mutableLocal = _module.stmts[ref_.index].mutable_;
-					if (not mutableLocal && lhs.index >= _module.exprs.size()) {
+					reserved(_mod.stmts[ref_.index].name);
+					const auto mutableLocal = _mod.stmts[ref_.index].mutable_;
+					if (not mutableLocal && lhs.index >= _mod.exprs.size()) {
 						error("a 'const' local needs an initializer");
 					}
-					const auto declared = _module.stmts[ref_.index].type;
+					const auto declared = _mod.stmts[ref_.index].type;
 					auto type = declared;
-					if (lhs.index < _module.exprs.size()) {
+					if (lhs.index < _mod.exprs.size()) {
 						const auto init = expr(lhs);
 						if (valid(declared)) {
 							if (valid(init) && not coerce(lhs, declared)) {
 								error(
-									"cannot initialize '" + _module.stmts[ref_.index].name + "' of type " + name(declared) + " with " + name(init)
+									"cannot initialize '" + _mod.stmts[ref_.index].name + "' of type " + name(declared) + " with " + name(init)
 								);
 							}
 						} else {
 							type = init;
 						}
 					}
-					_module.stmts[ref_.index].type = type;
-					_scope.emplace_back(_module.stmts[ref_.index].name, type, mutableLocal ? Mode::eMutable : Mode::eConstant);
+					_mod.stmts[ref_.index].type = type;
+					_scope.emplace_back(_mod.stmts[ref_.index].name, type, mutableLocal ? Mode::eMutable : Mode::eConstant);
 					break;
 				}
 				case StmtKind::eDeclareRef: {
-					reserved(_module.stmts[ref_.index].name);
-					if (lhs.index < _module.exprs.size() && _module.exprs[lhs.index].kind == ExprKind::eRange) {
+					reserved(_mod.stmts[ref_.index].name);
+					if (lhs.index < _mod.exprs.size() && _mod.exprs[lhs.index].kind == ExprKind::eRange) {
 						_borrowed.emplace_back(lhs.index);
 					}
 					const auto type = expr(lhs);
-					const auto writes = _module.stmts[ref_.index].mutable_;
-					if (lhs.index >= _module.exprs.size() || not ir::isPlace(_module, lhs)) {
+					const auto writes = _mod.stmts[ref_.index].mutable_;
+					if (lhs.index >= _mod.exprs.size() || not ir::isPlace(_mod, lhs)) {
 						error("'&' needs a place expression");
 					} else if (writes) {
 						if (const auto denied = readOnly(lhs, true); denied.has_value()) {
 							error(*denied);
 						}
 					}
-					_module.stmts[ref_.index].type = type;
+					_mod.stmts[ref_.index].type = type;
 					size_t targetIndex = ~0uz;
 					size_t parentAlias = ~0uz;
 					if (const auto* root = rootOf(lhs); root != nullptr && root->kind == ExprKind::eNameRef) {
@@ -395,12 +395,12 @@ namespace {
 					auto place = placePath(lhs);
 					if (const auto* live = place.has_value() ? liveConflict(*place, parentAlias, writes) : nullptr; live != nullptr) {
 						error(
-							"'" + String { writes ? "&mut" : "&" } + "' borrow '" + ir::describePlace(_module, *place) + "' overlaps live borrow '" +
-							ir::describePlace(_module, *live->place) + "'"
+							"'" + String { writes ? "&mut" : "&" } + "' borrow '" + ir::describePlace(_mod, *place) + "' overlaps live borrow '" +
+							ir::describePlace(_mod, *live->place) + "'"
 						);
 					}
 					_scope.emplace_back(
-						_module.stmts[ref_.index].name,
+						_mod.stmts[ref_.index].name,
 						type,
 						writes ? Mode::eRefWrite : Mode::eRefRead,
 						rootName(lhs),
@@ -411,7 +411,7 @@ namespace {
 					break;
 				}
 				case StmtKind::eAssign: {
-					const auto op = _module.stmts[ref_.index].name;
+					const auto op = _mod.stmts[ref_.index].name;
 					TypeRef target;
 					TypeRef value;
 					if (op.empty()) {
@@ -425,7 +425,7 @@ namespace {
 							error("cannot assign " + name(value) + " to " + name(target));
 						}
 					}
-					if (lhs.index < _module.exprs.size() && ir::isPlace(_module, lhs)) {
+					if (lhs.index < _mod.exprs.size() && ir::isPlace(_mod, lhs)) {
 						if (const auto denied = readOnly(lhs, false); denied.has_value()) {
 							error(*denied);
 						}
@@ -461,19 +461,19 @@ namespace {
 					break;
 				}
 				case StmtKind::eDiscard: {
-					if (_module.entry != ir::EntryKind::eFragment) {
+					if (_mod.entry != ir::EntryKind::eFragment) {
 						error("'discard' is only valid in fragment stages");
 					}
 					break;
 				}
 				case StmtKind::eExpr: {
-					if (lhs.index < _module.exprs.size()) {
+					if (lhs.index < _mod.exprs.size()) {
 						(void)expr(lhs);
 					}
 					break;
 				}
 				case StmtKind::eReturn: {
-					if (lhs.index < _module.exprs.size()) {
+					if (lhs.index < _mod.exprs.size()) {
 						const auto value = expr(lhs);
 						if (valid(_ret) && valid(value) && not coerce(lhs, _ret)) {
 							error("cannot return " + name(value) + " from a function returning " + name(_ret));
@@ -500,7 +500,7 @@ namespace {
 
 		/* D8: a constant-true or missing condition keeps the whole wave in the loop */
 		void loopCondition(ExprRef cond_) {
-			if (cond_.index >= _module.exprs.size() || (_module.exprs[cond_.index].kind == ExprKind::eLiteral && _module.exprs[cond_.index].name == "true")) {
+			if (cond_.index >= _mod.exprs.size() || (_mod.exprs[cond_.index].kind == ExprKind::eLiteral && _mod.exprs[cond_.index].name == "true")) {
 				error("loop condition is constant; lanes that never reach 'break' keep the whole wave in the loop, use a bounded condition");
 				return;
 			}
@@ -522,20 +522,20 @@ namespace {
 		/* Expressions */
 
 		[[nodiscard]] TypeRef expr(ExprRef ref_) {
-			if (ref_.index >= _module.exprs.size() || _depth > maxDepth) {
+			if (ref_.index >= _mod.exprs.size() || _depth > maxDepth) {
 				return {};
 			}
 			const Nest nest { _depth };
-			const Here here { _loc, _module.exprs[ref_.index].loc };
+			const Here here { _loc, _mod.exprs[ref_.index].loc };
 			const auto result = exprImpl(ref_);
-			_module.exprs[ref_.index].type = result;
+			_mod.exprs[ref_.index].type = result;
 			return result;
 		}
 
 		[[nodiscard]] TypeRef exprImpl(ExprRef ref_) {
-			const auto kind = _module.exprs[ref_.index].kind;
-			const auto text = _module.exprs[ref_.index].name;
-			const auto operands = _module.exprs[ref_.index].operands;
+			const auto kind = _mod.exprs[ref_.index].kind;
+			const auto text = _mod.exprs[ref_.index].name;
+			const auto operands = _mod.exprs[ref_.index].operands;
 
 			switch (kind) {
 				case ExprKind::eLiteral: {
@@ -562,10 +562,10 @@ namespace {
 					for (const auto operand : operands) {
 						types.emplace_back(expr(operand));
 					}
-					const auto type = _module.exprs[ref_.index].type;
-					if (valid(type) && _module.types[type.index].kind == TypeKind::eArray) {
-						const auto count = _module.types[type.index].count;
-						const auto element = _module.types[type.index].element;
+					const auto type = _mod.exprs[ref_.index].type;
+					if (valid(type) && _mod.types[type.index].kind == TypeKind::eArray) {
+						const auto count = _mod.types[type.index].count;
+						const auto element = _mod.types[type.index].element;
 						if (operands.size() != count) {
 							error("array of " + std::to_string(count) + " elements constructed from " + std::to_string(operands.size()) + " values");
 						}
@@ -575,12 +575,12 @@ namespace {
 							}
 						}
 					}
-					if (valid(type) && _module.types[type.index].kind == TypeKind::eMatrix) {
-						const auto desc = _module.types[type.index];
+					if (valid(type) && _mod.types[type.index].kind == TypeKind::eMatrix) {
+						const auto desc = _mod.types[type.index];
 						const auto column = vectorOf(desc.scalar, desc.bits, desc.m);
-						const auto fromMatrix = operands.size() == 1uz && valid(types[0]) && _module.types[types[0].index].kind == TypeKind::eMatrix &&
-							_module.types[types[0].index].scalar == desc.scalar && _module.types[types[0].index].n >= desc.n &&
-							_module.types[types[0].index].m >= desc.m;
+						const auto fromMatrix = operands.size() == 1uz && valid(types[0]) && _mod.types[types[0].index].kind == TypeKind::eMatrix &&
+							_mod.types[types[0].index].scalar == desc.scalar && _mod.types[types[0].index].n >= desc.n &&
+							_mod.types[types[0].index].m >= desc.m;
 						auto fromColumns = operands.size() == desc.n;
 						for (auto i = 0uz; fromColumns && i < operands.size(); ++i) {
 							fromColumns = valid(types[i]) && same(types[i], column);
@@ -603,7 +603,7 @@ namespace {
 
 		[[nodiscard]] const Entry* lookup(ref<const ir::Expr> e_) const {
 			for (auto it = _scope.rbegin(); it != _scope.rend(); ++it) {
-				if (it->name == e_.name && (e_.local || (e_.binding.index >= _module.bindings.size() && e_.constant.index >= _module.constants.size()))) {
+				if (it->name == e_.name && (e_.local || (e_.binding.index >= _mod.bindings.size() && e_.constant.index >= _mod.constants.size()))) {
 					return &*it;
 				}
 			}
@@ -612,9 +612,9 @@ namespace {
 
 		/* root node of a field/index chain; null when the chain breaks */
 		[[nodiscard]] const ir::Expr* rootOf(ExprRef ref_) const {
-			const ir::Expr* e = ref_.index < _module.exprs.size() ? &_module.exprs[ref_.index] : nullptr;
+			const ir::Expr* e = ref_.index < _mod.exprs.size() ? &_mod.exprs[ref_.index] : nullptr;
 			while (e != nullptr && (e->kind == ExprKind::eField || e->kind == ExprKind::eIndex || e->kind == ExprKind::eRange)) {
-				e = not e->operands.empty() && e->operands.front().index < _module.exprs.size() ? &_module.exprs[e->operands.front().index] : nullptr;
+				e = not e->operands.empty() && e->operands.front().index < _mod.exprs.size() ? &_mod.exprs[e->operands.front().index] : nullptr;
 			}
 			return e;
 		}
@@ -623,28 +623,28 @@ namespace {
 		[[nodiscard]] Opt<String> readOnly(ExprRef place_, bool borrow_) const {
 			const auto* root = rootOf(place_);
 			/* tess_ctrl: a per-vertex output is written at gl_InvocationID only */
-			if (_module.entry == ir::EntryKind::eTessCtrl && root != nullptr) {
+			if (_mod.entry == ir::EntryKind::eTessCtrl && root != nullptr) {
 				const auto* var = root->kind == ExprKind::eBuiltin ? ir::findBuiltinVariable(root->name) : nullptr;
-				const auto bindingIt = root->kind == ExprKind::eNameRef && root->binding.index < _module.bindings.size() ?
-					_module.bindings.begin() + root->binding.index :
-					_module.bindings.end();
+				const auto bindingIt = root->kind == ExprKind::eNameRef && root->binding.index < _mod.bindings.size() ?
+					_mod.bindings.begin() + root->binding.index :
+					_mod.bindings.end();
 				const auto perVertex = (var != nullptr && var->arrayed && var->writable) ||
-					(bindingIt != _module.bindings.end() && bindingIt->arrayed && not bindingIt->input);
+					(bindingIt != _mod.bindings.end() && bindingIt->arrayed && not bindingIt->input);
 				/* the index applied to the root itself selects the vertex, however deep the place goes */
 				const ir::Expr* vertexIndex = nullptr;
-				for (const auto* e = &_module.exprs[place_.index]; e != root; e = &_module.exprs[e->operands.front().index]) {
+				for (const auto* e = &_mod.exprs[place_.index]; e != root; e = &_mod.exprs[e->operands.front().index]) {
 					vertexIndex = e->kind == ExprKind::eIndex ? e : vertexIndex;
 				}
 				const auto indexRef = vertexIndex != nullptr && vertexIndex->operands.size() == 2uz ? vertexIndex->operands[1uz] : ExprRef {};
-				const auto atInvocation = indexRef.index < _module.exprs.size() && _module.exprs[indexRef.index].kind == ExprKind::eBuiltin &&
-					_module.exprs[indexRef.index].name == "invocation_id";
+				const auto atInvocation = indexRef.index < _mod.exprs.size() && _mod.exprs[indexRef.index].kind == ExprKind::eBuiltin &&
+					_mod.exprs[indexRef.index].name == "invocation_id";
 				if (perVertex && not atInvocation) {
 					return String("per-vertex output '" + root->name + "' must be written at invocation_id");
 				}
 			}
 			if (root != nullptr && root->kind == ExprKind::eBuiltin) {
 				const auto* variable = ir::findBuiltinVariable(root->name);
-				if (variable != nullptr && (not variable->writable || (variable->writeStages & ir::stageBit(_module.entry)) == 0u)) {
+				if (variable != nullptr && (not variable->writable || (variable->writeStages & ir::stageBit(_mod.entry)) == 0u)) {
 					return String("cannot assign to read-only builtin '" + root->name + "'");
 				}
 				return None;
@@ -652,7 +652,7 @@ namespace {
 			if (root == nullptr || root->kind != ExprKind::eNameRef) {
 				return None;
 			}
-			if (root->constant.index < _module.constants.size()) {
+			if (root->constant.index < _mod.constants.size()) {
 				return String("cannot assign to constant '" + root->name + "'");
 			}
 			if (const auto* entry = lookup(*root); entry != nullptr) {
@@ -666,10 +666,10 @@ namespace {
 					"cannot assign to constant '" + root->name + "'" :
 					"cannot assign through immutable reference '" + root->name + "'");
 			}
-			const auto it = root->binding.index < _module.bindings.size() ?
-				_module.bindings.begin() + root->binding.index :
-				std::ranges::find(_module.bindings, root->name, &ir::BindingDecl::localName);
-			if (it == _module.bindings.end() || it->bindClass == ir::BindClass::eWorkgroup || not it->input || it->access != ir::Access::eRead) {
+			const auto it = root->binding.index < _mod.bindings.size() ?
+				_mod.bindings.begin() + root->binding.index :
+				std::ranges::find(_mod.bindings, root->name, &ir::BindingDecl::localName);
+			if (it == _mod.bindings.end() || it->bindClass == ir::BindClass::eWorkgroup || not it->input || it->access != ir::Access::eRead) {
 				return None;
 			}
 			return String(borrow_ ?
@@ -689,11 +689,11 @@ namespace {
 
 		/* what each name in a bound resolves to right now (DFS order), so a shadowing name never compares equal to the one it hides */
 		void nameIds(ExprRef ref_, Vector<size_t>& out_, u32 depth_ = 0uL) const {
-			if (ref_.index >= _module.exprs.size() || depth_ > maxDepth) {
+			if (ref_.index >= _mod.exprs.size() || depth_ > maxDepth) {
 				out_.emplace_back(ir::unknownIdentity);
 				return;
 			}
-			const auto& e = _module.exprs[ref_.index];
+			const auto& e = _mod.exprs[ref_.index];
 			if (e.kind == ExprKind::eNameRef || e.kind == ExprKind::eBuiltin) {
 				const auto* entry = e.kind == ExprKind::eNameRef ? lookup(e) : nullptr;
 				out_.emplace_back(
@@ -708,10 +708,10 @@ namespace {
 		/* the place an expression names, aliases expanded to what they borrow; none when it is no place */
 		[[nodiscard]] Opt<ir::PlacePath> placePath(ExprRef ref_) const {
 			Vector<const ir::Expr*> chain {};
-			const ir::Expr* e = ref_.index < _module.exprs.size() ? &_module.exprs[ref_.index] : nullptr;
+			const ir::Expr* e = ref_.index < _mod.exprs.size() ? &_mod.exprs[ref_.index] : nullptr;
 			while (e != nullptr && (e->kind == ExprKind::eField || e->kind == ExprKind::eIndex || e->kind == ExprKind::eRange)) {
 				chain.emplace_back(e);
-				e = not e->operands.empty() && e->operands.front().index < _module.exprs.size() ? &_module.exprs[e->operands.front().index] : nullptr;
+				e = not e->operands.empty() && e->operands.front().index < _mod.exprs.size() ? &_mod.exprs[e->operands.front().index] : nullptr;
 			}
 			if (e == nullptr || (e->kind != ExprKind::eNameRef && e->kind != ExprKind::eBuiltin)) {
 				return None;
@@ -751,20 +751,20 @@ namespace {
 
 		/* maximal places inside an expression (index and range bounds included) */
 		void collectPlaces(ExprRef ref_, Vector<ir::PlacePath>& out_, u32 depth_ = 0uL) const {
-			if (ref_.index >= _module.exprs.size() || depth_ > maxDepth) {
+			if (ref_.index >= _mod.exprs.size() || depth_ > maxDepth) {
 				return;
 			}
 			if (auto path = placePath(ref_); path.has_value()) {
 				out_.emplace_back(std::move(*path));
-				for (const auto* e = &_module.exprs[ref_.index]; e->kind != ExprKind::eNameRef && e->kind != ExprKind::eBuiltin;
-				     e = &_module.exprs[e->operands.front().index]) {
+				for (const auto* e = &_mod.exprs[ref_.index]; e->kind != ExprKind::eNameRef && e->kind != ExprKind::eBuiltin;
+				     e = &_mod.exprs[e->operands.front().index]) {
 					for (auto k = 1uz; k < e->operands.size(); ++k) {
 						collectPlaces(e->operands[k], out_, depth_ + 1uL);
 					}
 				}
 				return;
 			}
-			for (const auto o : _module.exprs[ref_.index].operands) {
+			for (const auto o : _mod.exprs[ref_.index].operands) {
 				collectPlaces(o, out_, depth_ + 1uL);
 			}
 		}
@@ -778,7 +778,7 @@ namespace {
 			if (const auto* entry = lookup(e_); entry != nullptr) {
 				return entry->mode == Mode::eConstant;
 			}
-			return e_.constant.index < _module.constants.size();
+			return e_.constant.index < _mod.constants.size();
 		}
 
 		/* first live `let` borrow overlapping `place_` (two reads never conflict); aliases `from_` and its ancestors are exempt, as the place derives from them */
@@ -793,7 +793,7 @@ namespace {
 				for (auto p = from_; p != ~0uz && p < _scope.size(); p = _scope[p].parentAlias) {
 					ancestor = ancestor || p == i;
 				}
-				if (not ancestor && not ir::disjoint(_module, place_, *live.place, immutable)) {
+				if (not ancestor && not ir::disjoint(_mod, place_, *live.place, immutable)) {
 					return &live;
 				}
 			}
@@ -814,8 +814,8 @@ namespace {
 			}
 			if (const auto* live = liveConflict(*mine, from, writes_); live != nullptr) {
 				error(
-					"'" + String { writes_ ? "&mut" : "&" } + "' argument '" + ir::describePlace(_module, *mine) + "' overlaps live borrow '" +
-					ir::describePlace(_module, *live->place) + "' of call to '" + name_ + "'"
+					"'" + String { writes_ ? "&mut" : "&" } + "' argument '" + ir::describePlace(_mod, *mine) + "' overlaps live borrow '" +
+					ir::describePlace(_mod, *live->place) + "' of call to '" + name_ + "'"
 				);
 			}
 		}
@@ -833,10 +833,10 @@ namespace {
 					collectPlaces(operands_[j], others);
 				}
 				for (const auto& other : others) {
-					if (not ir::disjoint(_module, *mine, other, immutable)) {
+					if (not ir::disjoint(_mod, *mine, other, immutable)) {
 						error(
-							"'&mut' argument '" + ir::describePlace(_module, *mine) + "' overlaps argument '" +
-							ir::describePlace(_module, other) + "' of call to '" + name_ + "'"
+							"'&mut' argument '" + ir::describePlace(_mod, *mine) + "' overlaps argument '" +
+							ir::describePlace(_mod, other) + "' of call to '" + name_ + "'"
 						);
 						return true;
 					}
@@ -854,7 +854,7 @@ namespace {
 				if (fn_.params[i].kind != ir::ParamKind::eRefMut) {
 					continue;
 				}
-				if (not ir::isPlace(_module, operands_[i])) {
+				if (not ir::isPlace(_mod, operands_[i])) {
 					error("'&' needs a place expression");
 					continue;
 				}
@@ -870,7 +870,7 @@ namespace {
 
 		/* module constants: a declared type, a constant initializer; a spec constant is a scalar */
 		void constant(size_t index_) {
-			const auto& decl = _module.constants[index_];
+			const auto& decl = _mod.constants[index_];
 			const Here here { _loc, decl.loc };
 			if (not valid(decl.type)) {
 				return;
@@ -879,7 +879,7 @@ namespace {
 			if (valid(init) && not coerce(decl.value, decl.type)) {
 				error("cannot initialize constant '" + decl.name + "' of type " + name(decl.type) + " with " + name(init));
 			}
-			if (decl.specId.has_value() && _module.types[decl.type.index].kind != TypeKind::eScalar) {
+			if (decl.specId.has_value() && _mod.types[decl.type.index].kind != TypeKind::eScalar) {
 				error("specialization constant '" + decl.name + "' must be a scalar, not " + name(decl.type));
 			}
 			if (not isConstant(decl.value)) {
@@ -888,13 +888,13 @@ namespace {
 		}
 
 		[[nodiscard]] bool isConstant(ExprRef ref_, u32 depth_ = 0uL) const {
-			if (ref_.index >= _module.exprs.size() || depth_ > maxDepth) {
+			if (ref_.index >= _mod.exprs.size() || depth_ > maxDepth) {
 				return false;
 			}
-			const auto& e = _module.exprs[ref_.index];
+			const auto& e = _mod.exprs[ref_.index];
 			switch (e.kind) {
 				case ExprKind::eLiteral: return true;
-				case ExprKind::eNameRef: return e.constant.index < _module.constants.size();
+				case ExprKind::eNameRef: return e.constant.index < _mod.constants.size();
 				case ExprKind::eConstruct:
 				case ExprKind::eUnary:
 				case ExprKind::eBinary:
@@ -908,9 +908,9 @@ namespace {
 		}
 
 		[[nodiscard]] TypeRef nameRef(ExprRef ref_) {
-			const auto& e = _module.exprs[ref_.index];
-			if (e.constant.index < _module.constants.size()) {
-				return _module.constants[e.constant.index].type;
+			const auto& e = _mod.exprs[ref_.index];
+			if (e.constant.index < _mod.constants.size()) {
+				return _mod.constants[e.constant.index].type;
 			}
 			if (const auto* entry = lookup(e); entry != nullptr) {
 				return entry->type;
@@ -925,11 +925,11 @@ namespace {
 				desc.element = decl_.type;
 				return intern(std::move(desc));
 			};
-			if (e.binding.index < _module.bindings.size()) {
-				return typeOf(_module.bindings[e.binding.index]);
+			if (e.binding.index < _mod.bindings.size()) {
+				return typeOf(_mod.bindings[e.binding.index]);
 			}
-			const auto it = std::ranges::find(_module.bindings, e.name, &ir::BindingDecl::localName);
-			if (it == _module.bindings.end()) {
+			const auto it = std::ranges::find(_mod.bindings, e.name, &ir::BindingDecl::localName);
+			if (it == _mod.bindings.end()) {
 				error("unknown name '" + e.name + "'");
 				return {};
 			}
@@ -938,8 +938,8 @@ namespace {
 
 		[[nodiscard]] TypeRef builtin(ref<const String> name_, ref<const Vector<ExprRef>> operands_) {
 			if (const auto* variable = ir::findBuiltinVariable(name_); variable != nullptr && operands_.empty()) {
-				if (_hasMain && (variable->stages & ir::stageBit(_module.entry)) == 0u) {
-					error("'" + name_ + "' is not available in " + String(ir::stageName(_module.entry)) + " stages");
+				if (_hasMain && (variable->stages & ir::stageBit(_mod.entry)) == 0u) {
+					error("'" + name_ + "' is not available in " + String(ir::stageName(_mod.entry)) + " stages");
 				}
 				const auto element = vectorOf(variable->scalar, 32uL, variable->n);
 				if (variable->arrayed || variable->count != 0uL) {
@@ -972,8 +972,8 @@ namespace {
 			if (first == nullptr) {
 				return {};
 			}
-			if (_hasMain && (first->stages & ir::stageBit(_module.entry)) == 0u) {
-				error("'" + name_ + "' is not available in " + String(ir::stageName(_module.entry)) + " stages");
+			if (_hasMain && (first->stages & ir::stageBit(_mod.entry)) == 0u) {
+				error("'" + name_ + "' is not available in " + String(ir::stageName(_mod.entry)) + " stages");
 				return {};
 			}
 			for (const auto type : types) {
@@ -983,14 +983,14 @@ namespace {
 			}
 
 			const auto sized = not types.empty() && (isKind(types.front(), TypeKind::eTexture) || isKind(types.front(), TypeKind::eImage));
-			const auto dim = sized ? _module.types[types.front().index].dim : ir::TextureDim::e2D;
-			const StringView format = sized && isKind(types.front(), TypeKind::eImage) ? StringView { _module.types[types.front().index].name } : StringView {};
+			const auto dim = sized ? _mod.types[types.front().index].dim : ir::TextureDim::e2D;
+			const StringView format = sized && isKind(types.front(), TypeKind::eImage) ? StringView { _mod.types[types.front().index].name } : StringView {};
 
 			const auto& signatures = ir::parsedBuiltinSignatures();
 			/* all-integer arguments try the genI/genU overloads before genF, so `max(1, 2)` is s32 (D4) */
 			auto allInt = not types.empty();
 			for (const auto type : types) {
-				const auto& d = _module.types[type.index];
+				const auto& d = _mod.types[type.index];
 				allInt = allInt && (d.kind == TypeKind::eScalar || d.kind == TypeKind::eVector) &&
 					(d.scalar == ScalarKind::eInt || d.scalar == ScalarKind::eUInt);
 			}
@@ -1026,7 +1026,7 @@ namespace {
 						if (not sig.params[k].mut) {
 							continue;
 						}
-						if (not ir::isPlace(_module, operands_[k])) {
+						if (not ir::isPlace(_mod, operands_[k])) {
 							error("'&' needs a place expression");
 							continue;
 						}
@@ -1047,9 +1047,9 @@ namespace {
 							}
 							const ir::BindingDecl* bound = nullptr;
 							if (viaScope == nullptr) {
-								if (entry == nullptr && rootExpr->binding.index < _module.bindings.size()) {
-									bound = &_module.bindings[rootExpr->binding.index];
-								} else if (const auto found = std::ranges::find(_module.bindings, rootLabel, &ir::BindingDecl::localName); found != _module.bindings.end()) {
+								if (entry == nullptr && rootExpr->binding.index < _mod.bindings.size()) {
+									bound = &_mod.bindings[rootExpr->binding.index];
+								} else if (const auto found = std::ranges::find(_mod.bindings, rootLabel, &ir::BindingDecl::localName); found != _mod.bindings.end()) {
 									bound = &*found;
 								}
 							}
@@ -1096,7 +1096,7 @@ namespace {
 			if (not valid(base)) {
 				return {};
 			}
-			const auto desc = _module.types[base.index];
+			const auto desc = _mod.types[base.index];
 			if (desc.kind == TypeKind::eStruct) {
 				const auto it = std::ranges::find(desc.fields, name_, &ir::FieldDesc::name);
 				if (it != desc.fields.end()) {
@@ -1138,7 +1138,7 @@ namespace {
 			}
 			if (not bounds) {
 				error("range bounds must be u32");
-			} else if (const auto& lo = _module.exprs[operands_[1].index], &hi = _module.exprs[operands_[2].index];
+			} else if (const auto& lo = _mod.exprs[operands_[1].index], &hi = _mod.exprs[operands_[2].index];
 				lo.kind == ExprKind::eLiteral && hi.kind == ExprKind::eLiteral && ir::integerLiteral(lo.name) && ir::integerLiteral(hi.name) &&
 				*ir::integerLiteral(lo.name) >= *ir::integerLiteral(hi.name)) {
 				error("empty or reversed range");
@@ -1146,7 +1146,7 @@ namespace {
 			if (not valid(base)) {
 				return {};
 			}
-			const auto desc = _module.types[base.index];
+			const auto desc = _mod.types[base.index];
 			if (desc.kind != TypeKind::eArray && desc.kind != TypeKind::eRegion) {
 				error("cannot range '" + name(base) + "'");
 				return {};
@@ -1169,7 +1169,7 @@ namespace {
 			if (not valid(base)) {
 				return {};
 			}
-			const auto desc = _module.types[base.index];
+			const auto desc = _mod.types[base.index];
 			switch (desc.kind) {
 				case TypeKind::eArray: return desc.element;
 				case TypeKind::eRegion: return desc.element;
@@ -1239,8 +1239,8 @@ namespace {
 				return isKind(lt, TypeKind::eScalar) && same(lt, rt) ? boolType() : mismatch(op_, lt, rt);
 			}
 
-			const auto l = _module.types[lt.index];
-			const auto r = _module.types[rt.index];
+			const auto l = _mod.types[lt.index];
+			const auto r = _mod.types[rt.index];
 			const auto comparable = l.scalar == r.scalar && l.bits == r.bits;
 			if (comparable && op_ == "*" && l.kind == TypeKind::eMatrix && r.kind == TypeKind::eVector && l.n == r.n) {
 				return vectorOf(l.scalar, l.bits, l.m);
@@ -1294,8 +1294,8 @@ namespace {
 
 		/* an array argument binds to a region parameter over the same element type */
 		[[nodiscard]] bool regionArgument(TypeRef arg_, TypeRef param_) const {
-			return valid(arg_) && valid(param_) && _module.types[arg_.index].kind == TypeKind::eArray &&
-				_module.types[param_.index].kind == TypeKind::eRegion && same(_module.types[arg_.index].element, _module.types[param_.index].element);
+			return valid(arg_) && valid(param_) && _mod.types[arg_.index].kind == TypeKind::eArray &&
+				_mod.types[param_.index].kind == TypeKind::eRegion && same(_mod.types[arg_.index].element, _mod.types[param_.index].element);
 		}
 
 		[[nodiscard]] TypeRef call(ExprRef ref_, ref<const String> name_, ref<const Vector<ExprRef>> operands_) {
@@ -1303,7 +1303,7 @@ namespace {
 			auto known = true;
 			for (const auto operand : operands_) {
 				// a range argument is a borrow for a region parameter; other callees reject its region type
-				if (_module.exprs[operand.index].kind == ExprKind::eRange) {
+				if (_mod.exprs[operand.index].kind == ExprKind::eRange) {
 					_borrowed.emplace_back(operand.index);
 				}
 				args.emplace_back(expr(operand));
@@ -1312,10 +1312,10 @@ namespace {
 
 			Vector<u32> named {};
 			Vector<u32> arity {};
-			for (auto i = 0uz; i < _module.functions.size(); ++i) {
-				if (_module.functions[i].name == name_) {
+			for (auto i = 0uz; i < _mod.functions.size(); ++i) {
+				if (_mod.functions[i].name == name_) {
 					named.emplace_back(static_cast<u32>(i));
-					if (_module.functions[i].params.size() == args.size()) {
+					if (_mod.functions[i].params.size() == args.size()) {
 						arity.emplace_back(static_cast<u32>(i));
 					}
 				}
@@ -1326,7 +1326,7 @@ namespace {
 			}
 
 			const auto accepts = [&](u32 fn_, bool adapt_) {
-				const auto& params = _module.functions[fn_].params;
+				const auto& params = _mod.functions[fn_].params;
 				for (auto i = 0uz; i < params.size(); ++i) {
 					if (not same(args[i], params[i].type) && not regionArgument(args[i], params[i].type) && not (adapt_ && adaptable(operands_[i], params[i].type))) {
 						return false;
@@ -1356,13 +1356,13 @@ namespace {
 			String chosenSignature {};
 			auto ambiguous = false;
 			for (const auto i : matches) {
-				auto signature = ir::signatureOf(_module, _module.functions[i]);
+				auto signature = ir::signatureOf(_mod, _mod.functions[i]);
 				if (not chosen.has_value()) {
 					chosen = i;
 					chosenSignature = std::move(signature);
 				} else if (chosenSignature != signature) {
 					ambiguous = true;
-				} else if (_module.functions[i].body.has_value()) {
+				} else if (_mod.functions[i].body.has_value()) {
 					chosen = i;
 				}
 			}
@@ -1376,18 +1376,18 @@ namespace {
 				return {};
 			}
 
-			const auto params = _module.functions[*chosen].params;
+			const auto params = _mod.functions[*chosen].params;
 			for (auto i = 0uz; known && i < params.size(); ++i) {
 				(void)coerce(operands_[i], params[i].type);
 			}
 			for (auto i = 0uz; known && i < params.size(); ++i) {
-				if (regionArgument(args[i], params[i].type) && _module.types[args[i].index].count == 0uL) {
+				if (regionArgument(args[i], params[i].type) && _mod.types[args[i].index].count == 0uL) {
 					error("unsized array needs an explicit range");
 				}
 			}
-			refArguments(name_, _module.functions[*chosen], operands_);
-			_module.exprs[ref_.index].function = ir::FunctionRef { *chosen };
-			return _module.functions[*chosen].ret;
+			refArguments(name_, _mod.functions[*chosen], operands_);
+			_mod.exprs[ref_.index].function = ir::FunctionRef { *chosen };
+			return _mod.functions[*chosen].ret;
 		}
 
 		[[nodiscard]] String join(ref<const Vector<TypeRef>> types_) const {
@@ -1401,7 +1401,7 @@ namespace {
 		[[nodiscard]] String candidates(ref<const Vector<u32>> named_) const {
 			Vector<String> seen {};
 			for (const auto i : named_) {
-				auto signature = ir::signatureOf(_module, _module.functions[i]);
+				auto signature = ir::signatureOf(_mod, _mod.functions[i]);
 				if (std::ranges::find(seen, signature) == seen.end()) {
 					seen.emplace_back(std::move(signature));
 				}
@@ -1458,25 +1458,25 @@ String ir::describeType(ref<const Vector<TypeDesc>> types_, TypeRef type_, u32 d
 	}
 }
 
-String ir::signatureOf(ref<const Module> module_, ref<const FunctionDecl> fn_) {
+String ir::signatureOf(ref<const Module> mod_, ref<const FunctionDecl> fn_) {
 	String text = fn_.name + "(";
 	for (auto i = 0uz; i < fn_.params.size(); ++i) {
-		text += (i != 0uz ? ", " : "") + describeType(module_.types, fn_.params[i].type);
+		text += (i != 0uz ? ", " : "") + describeType(mod_.types, fn_.params[i].type);
 	}
 	return text + ")";
 }
 
-bool ir::isPlace(ref<const Module> module_, ExprRef expr_) {
-		const auto* e = expr_.index < module_.exprs.size() ? &module_.exprs[expr_.index] : nullptr;
+bool ir::isPlace(ref<const Module> mod_, ExprRef expr_) {
+		const auto* e = expr_.index < mod_.exprs.size() ? &mod_.exprs[expr_.index] : nullptr;
 		while (e != nullptr && (e->kind == ExprKind::eField || e->kind == ExprKind::eIndex || e->kind == ExprKind::eRange)) {
-			e = not e->operands.empty() && e->operands.front().index < module_.exprs.size() ? &module_.exprs[e->operands.front().index] : nullptr;
+			e = not e->operands.empty() && e->operands.front().index < mod_.exprs.size() ? &mod_.exprs[e->operands.front().index] : nullptr;
 		}
 		return e != nullptr && (e->kind == ExprKind::eNameRef || (e->kind == ExprKind::eBuiltin && ir::findBuiltinVariable(e->name) != nullptr));
 	}
 
-ir::Diagnostics ir::checkStageValidity(ref<const Module> module_, EntryKind entry_) {
+ir::Diagnostics ir::checkStageValidity(ref<const Module> mod_, EntryKind entry_) {
 	Diagnostics diags {};
-	for (const auto& e : module_.exprs) {
+	for (const auto& e : mod_.exprs) {
 		if (e.kind != ExprKind::eBuiltin) {
 			continue;
 		}
@@ -1501,18 +1501,18 @@ namespace {
 	/* D8: implicit-derivative builtins reached under lane-dependent control; warnings only, never failures */
 	class DivergenceWarner {
 	public:
-		explicit DivergenceWarner(ref<const ir::Module> module_) :
-			_module(module_),
-			_uniformity(ir::analyzeUniformity(module_, [](StringView name_) {
+		explicit DivergenceWarner(ref<const ir::Module> mod_) :
+			_mod(mod_),
+			_uniformity(ir::analyzeUniformity(mod_, [](StringView name_) {
 				const auto* fn = ir::findBuiltinFunction(name_);
 				return fn != nullptr && fn->needsUniformControl;
 			})),
-			_warned(module_.exprs.size(), false) {}
+			_warned(mod_.exprs.size(), false) {}
 
 		[[nodiscard]] ir::Diagnostics run() {
 			/* via-chain reports first (they win the per-call dedupe), then direct ones */
 			for (const auto recurse : { true, false }) {
-				for (auto f = 0uz; f < _module.functions.size(); ++f) {
+				for (auto f = 0uz; f < _mod.functions.size(); ++f) {
 					visit(f, recurse, false);
 				}
 			}
@@ -1520,7 +1520,7 @@ namespace {
 		}
 
 	private:
-		ref<const ir::Module> _module;
+		ref<const ir::Module> _mod;
 		ir::Uniformity _uniformity;
 		Vector<bool> _warned;
 		ir::Diagnostics _diags;
@@ -1532,12 +1532,12 @@ namespace {
 				return;
 			}
 			_warned[at_.index] = true;
-			const auto& e = _module.exprs[at_.index];
+			const auto& e = _mod.exprs[at_.index];
 			const auto* fn = ir::findBuiltinFunction(e.name);
 			const auto fatal = fn != nullptr && fn->errorUnderDivergence;
 			String via {};
 			for (auto it = _chain.rbegin(); it != _chain.rend(); ++it) {
-				via += (via.empty() ? "" : ", ") + _module.functions[*it].name;
+				via += (via.empty() ? "" : ", ") + _mod.functions[*it].name;
 			}
 			const auto tail = via.empty() ? String {} : " (via " + via + ")";
 			_diags.emplace_back(ir::Diagnostic {
@@ -1551,10 +1551,10 @@ namespace {
 		}
 
 		void walkExpr(ir::ExprRef ref_) {
-			if (ref_.index >= _module.exprs.size()) {
+			if (ref_.index >= _mod.exprs.size()) {
 				return;
 			}
-			const auto& e = _module.exprs[ref_.index];
+			const auto& e = _mod.exprs[ref_.index];
 			for (const auto operand : e.operands) {
 				walkExpr(operand);
 			}
@@ -1564,7 +1564,7 @@ namespace {
 				if (fn != nullptr && fn->needsUniformControl && (_recurse == not _chain.empty())) {
 					warn(ref_);
 				}
-			} else if (e.kind == ir::ExprKind::eCall && _recurse && e.function.index < _module.functions.size()) {
+			} else if (e.kind == ir::ExprKind::eCall && _recurse && e.function.index < _mod.functions.size()) {
 				if (_uniformity.requiresUniform[e.function.index] && std::ranges::find(_chain, e.function.index) == _chain.end()) {
 					_chain.emplace_back(e.function.index);
 					visit(e.function.index, true, true);
@@ -1574,10 +1574,10 @@ namespace {
 		}
 
 		void walkStmt(ir::StmtRef ref_, bool whole_) {
-			if (ref_.index >= _module.stmts.size()) {
+			if (ref_.index >= _mod.stmts.size()) {
 				return;
 			}
-			const auto& s = _module.stmts[ref_.index];
+			const auto& s = _mod.stmts[ref_.index];
 			if (whole_ || not _uniformity.uniformStmt[ref_.index]) {
 				walkExpr(s.lhs);
 				walkExpr(s.rhs);
@@ -1589,7 +1589,7 @@ namespace {
 
 		/* `whole_`: reached through a call made under lane-dependent control */
 		void visit(size_t f_, bool recurse_, bool whole_) {
-			const auto& fn = _module.functions[f_];
+			const auto& fn = _mod.functions[f_];
 			if (not fn.body.has_value()) {
 				return;
 			}
@@ -1599,10 +1599,10 @@ namespace {
 	};
 }
 
-ir::Diagnostics ir::typecheck(ref<Module> module_) {
-	auto diags = Checker { module_ }.run();
+ir::Diagnostics ir::typecheck(ref<Module> mod_) {
+	auto diags = Checker { mod_ }.run();
 	if (diags.empty()) {
-		diags = DivergenceWarner { module_ }.run();
+		diags = DivergenceWarner { mod_ }.run();
 	}
 	return diags;
 }

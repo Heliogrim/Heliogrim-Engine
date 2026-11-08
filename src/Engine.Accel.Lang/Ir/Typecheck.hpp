@@ -18,12 +18,12 @@ namespace hg::engine::accel::lang::ir {
 	/**
 	 * Function identity: name and parameter types, e.g. `saturate(f32vec3)`. The return type is not part of it.
 	 */
-	[[nodiscard]] String signatureOf(ref<const Module> module_, ref<const FunctionDecl> fn_);
+	[[nodiscard]] String signatureOf(ref<const Module> mod_, ref<const FunctionDecl> fn_);
 
 	/**
 	 * A name, a builtin variable or a field/index chain rooted at one: what may be assigned to or referenced.
 	 */
-	[[nodiscard]] bool isPlace(ref<const Module> module_, ExprRef expr_);
+	[[nodiscard]] bool isPlace(ref<const Module> mod_, ExprRef expr_);
 
 	/**
 	 * Types every expression (`Expr::type`), every `let` without declared type (`Stmt::type`) and resolves each
@@ -31,11 +31,11 @@ namespace hg::engine::accel::lang::ir {
 	 * (an integer literal to any float or integer type, a float literal to float types only).
 	 * Never asserts; diagnostics carry the head-token location of the offending node.
 	 */
-	[[nodiscard]] Diagnostics typecheck(ref<Module> module_);
+	[[nodiscard]] Diagnostics typecheck(ref<Module> mod_);
 
 	/**
 	 * Builtin variables/functions used by `module_` that are not available in `entry_`. Parse time only checks
 	 * modules with a `fn main`; run this on the merged module of a stage.
 	 */
-	[[nodiscard]] Diagnostics checkStageValidity(ref<const Module> module_, EntryKind entry_);
+	[[nodiscard]] Diagnostics checkStageValidity(ref<const Module> mod_, EntryKind entry_);
 }

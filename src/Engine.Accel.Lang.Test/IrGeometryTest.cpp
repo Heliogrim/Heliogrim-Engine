@@ -31,10 +31,10 @@ namespace AccelLang {
 			return res.has_value() || res.error().empty() ? String {} : res.error().front().message;
 		}
 
-		[[nodiscard]] String emitGlsl(ref<Module> module_) {
+		[[nodiscard]] String emitGlsl(ref<Module> mod_) {
 			Language target {};
-			const auto layout = assignLayout(computeInterface(module_), module_.types, {});
-			(void)GlslEmitter {}.emit(module_, layout, target);
+			const auto layout = assignLayout(computeInterface(mod_), mod_.types, {});
+			(void)GlslEmitter {}.emit(mod_, layout, target);
 			return target.text.empty() ? String {} : String { target.text.front().data };
 		}
 
@@ -45,11 +45,11 @@ namespace AccelLang {
 	}
 
 	TEST(GeometryTest, ParsesPrimitiveAttributes) {
-		const auto module = parseOk(geometrySource("input = triangles, output = triangle_strip, max_vertices = 3, invocations = 2"));
-		EXPECT_EQ(module.attributes.geometryInput, Primitive::eTriangles);
-		EXPECT_EQ(module.attributes.geometryOutput, Primitive::eTriangleStrip);
-		EXPECT_EQ(module.attributes.maxVertices, 3u);
-		EXPECT_EQ(module.attributes.invocations, 2u);
+		const auto mod = parseOk(geometrySource("input = triangles, output = triangle_strip, max_vertices = 3, invocations = 2"));
+		EXPECT_EQ(mod.attributes.geometryInput, Primitive::eTriangles);
+		EXPECT_EQ(mod.attributes.geometryOutput, Primitive::eTriangleStrip);
+		EXPECT_EQ(mod.attributes.maxVertices, 3u);
+		EXPECT_EQ(mod.attributes.invocations, 2u);
 		EXPECT_EQ(parseOk(geometrySource("input = points, output = points, max_vertices = 1")).attributes.invocations, 1u);
 
 		// contradiction with the entry kind, missing required key
@@ -63,10 +63,10 @@ namespace AccelLang {
 	}
 
 	TEST(GeometryTest, ArrayedInputEmitsUnsizedArray) {
-		auto module = parseOk(geometrySource("input = triangles, output = triangle_strip, max_vertices = 3, invocations = 2"));
-		ASSERT_FALSE(module.bindings.empty());
-		EXPECT_TRUE(module.bindings.front().arrayed);
-		const auto glsl = emitGlsl(module);
+		auto mod = parseOk(geometrySource("input = triangles, output = triangle_strip, max_vertices = 3, invocations = 2"));
+		ASSERT_FALSE(mod.bindings.empty());
+		EXPECT_TRUE(mod.bindings.front().arrayed);
+		const auto glsl = emitGlsl(mod);
 		EXPECT_TRUE(glsl.contains("layout(triangles) in;")) << glsl;
 		EXPECT_TRUE(glsl.contains("layout(triangle_strip, max_vertices = 3) out;")) << glsl;
 		EXPECT_TRUE(glsl.contains("layout(invocations = 2) in;")) << glsl;

@@ -53,10 +53,10 @@ namespace hg::engine::accel::lang::ir {
 	 * Types are hashed by structure where referenced (never by arena index) and unreachable arena nodes are never
 	 * visited, so equal modules hash equal whatever their arenas hold besides the live code.
 	 */
-	[[nodiscard]] u64 contentHash(ref<const Module> module_) noexcept;
+	[[nodiscard]] u64 contentHash(ref<const Module> mod_) noexcept;
 
 	struct VariantKey {
-		u64 module = 0uLL;
+		u64 mod = 0uLL;
 		u64 toggles = 0uLL;
 		u64 outputs = 0uLL;
 
@@ -67,7 +67,7 @@ namespace hg::engine::accel::lang::ir {
 	 * Toggles and output ids are sorted before hashing, so their order does not matter.
 	 */
 	[[nodiscard]] VariantKey makeVariantKey(
-		ref<const Module> module_,
+		ref<const Module> mod_,
 		ref<const ToggleSet> toggles_,
 		std::span<const String> requiredOutputs_
 	);
@@ -77,7 +77,7 @@ namespace hg::engine::accel::lang::ir {
 	 * `ResolvedPipeline`), as it depends on the other stages.
 	 */
 	struct Resolved {
-		Module module;
+		Module mod;
 		Vector<InterfaceEntry> interfaceEntries;
 		/* the key it is cached under, so a pipeline key is built without hashing the inputs again */
 		VariantKey key;
@@ -97,7 +97,7 @@ namespace hg::engine::accel::lang::ir {
 template <>
 struct std::hash<::hg::engine::accel::lang::ir::VariantKey> {
 	[[nodiscard]] size_t operator()(const ::hg::engine::accel::lang::ir::VariantKey& key_) const noexcept {
-		size_t seed = key_.module;
+		size_t seed = key_.mod;
 		::hg::hash::hashCombine(seed, key_.toggles, key_.outputs);
 		return seed;
 	}

@@ -105,10 +105,10 @@ namespace {
 	Vector<const Module*> modules {};
 	modules.reserve(profile_._modules.size() + 1uLL);
 	bool skippedText = false;
-	for (const auto& module : profile_._modules) {
-		if (module.ir != nullptr) {
-			modules.emplace_back(module.ir.get());
-		} else if (not module.lang.text.empty()) {
+	for (const auto& mod : profile_._modules) {
+		if (mod.ir != nullptr) {
+			modules.emplace_back(mod.ir.get());
+		} else if (not mod.lang.text.empty()) {
 			skippedText = true;
 		}
 	}
@@ -128,8 +128,8 @@ namespace {
 	{
 		ContentHasher h {};
 		h.put(static_cast<u64>(modules.size()));
-		for (const auto* module : modules) {
-			h.put(contentHash(*module));
+		for (const auto* mod : modules) {
+			h.put(contentHash(*mod));
 		}
 		h.put(flags_);
 		h.put(static_cast<u64>(offsets.size()));
@@ -138,7 +138,7 @@ namespace {
 			h.put(offset);
 			h.put(format);
 		}
-		key.module = h.value;
+		key.mod = h.value;
 	}
 	return StageInputs { std::move(modules), std::move(outputs), skippedText, key };
 	}
@@ -165,9 +165,9 @@ std::expected<smr<const Resolved>, Diagnostics> hg::engine::accel::resolveStageI
 		[&]() -> smr<const Resolved> {
 
 			/* non-fatal parser/typecheck diagnostics; merge drops them, so log them from the inputs */
-			for (const auto* module : modules) {
-				for (const auto& warning : module->warnings) {
-					Logger::warn("Ir stage module '{}': {}", module->name, warning.message);
+			for (const auto* mod : modules) {
+				for (const auto& warning : mod->warnings) {
+					Logger::warn("Ir stage module '{}': {}", mod->name, warning.message);
 				}
 			}
 
@@ -274,7 +274,7 @@ std::expected<Vector<smr<StageDerivat>>, Diagnostics> hg::engine::accel::compose
 	for (size_t idx = 0uLL; idx < stages_.size() && idx < 64uLL; ++idx) {
 		followMask |= (idx < follows_.size() && follows_[idx] == 0u) ? 0uLL : (1uLL << idx);
 	}
-	key.push_back(VariantKey { .module = followMask, .toggles = ~0uLL, .outputs = ~0uLL });
+	key.push_back(VariantKey { .mod = followMask, .toggles = ~0uLL, .outputs = ~0uLL });
 
 	Diagnostics failure {};
 	auto pipeline = layouts_.getOrCreate(
@@ -316,8 +316,8 @@ std::expected<Vector<smr<StageDerivat>>, Diagnostics> hg::engine::accel::compose
 			Vector<decltype(Module::constants)> constants {};
 			for (const auto& stage : resolved) {
 				entries.emplace_back(stage->interfaceEntries);
-				types.emplace_back(stage->module.types);
-				constants.emplace_back(stage->module.constants);
+				types.emplace_back(stage->mod.types);
+				constants.emplace_back(stage->mod.constants);
 			}
 
 			auto layouts = assignPipelineLayout(entries, types, {});
@@ -337,7 +337,7 @@ std::expected<Vector<smr<StageDerivat>>, Diagnostics> hg::engine::accel::compose
 				for (const auto& entry : resolved[idx - 1uLL]->interfaceEntries) {
 					if (entry.mode == BindMode::eForward && not entry.input && not entry.implicit && entry.cls != BindClass::eWorkgroup) {
 						produced.insert_or_assign(entry.id, next);
-						next += locationCount(resolved[idx - 1uLL]->module.types, entry.type);
+						next += locationCount(resolved[idx - 1uLL]->mod.types, entry.type);
 					}
 				}
 				Vector<String> ids {};
@@ -377,7 +377,7 @@ std::expected<Vector<smr<StageDerivat>>, Diagnostics> hg::engine::accel::compose
 				}
 
 				auto stage = lowerToIntermediate(
-					resolved[idx]->module,
+					resolved[idx]->mod,
 					(*layouts)[idx],
 					Dialect::eVulkanGlsl460,
 					vertexOffsets,

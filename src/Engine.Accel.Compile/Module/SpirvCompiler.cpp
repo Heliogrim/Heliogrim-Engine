@@ -35,9 +35,9 @@ SpirvCompiler::~SpirvCompiler() {
 	}
 }
 
-SpirvByteCode SpirvCompiler::compile(cref<ModuleSource> module_, cref<InlineAutoArray<lang::TextBlock>> source_) const {
+SpirvByteCode SpirvCompiler::compile(cref<ModuleSource> mod_, cref<InlineAutoArray<lang::TextBlock>> source_) const {
 
-	const auto targetStage = static_cast<std::underlying_type_t<ModuleTargetStage>>(module_.targetStage) - 1;
+	const auto targetStage = static_cast<std::underlying_type_t<ModuleTargetStage>>(mod_.targetStage) - 1;
 	::hg::assertd(targetStage >= 0 && targetStage < EShLanguageMaskCount);
 
 	EShLanguage stage { reinterpret_cast<cref<EShLanguage>>(targetStage) };

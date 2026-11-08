@@ -8,33 +8,33 @@ using namespace hg;
 
 namespace AccelLang {
 	namespace {
-		[[nodiscard]] ExprRef addExpr(Module& module_, Expr expr_) {
-			module_.exprs.emplace_back(std::move(expr_));
-			return ExprRef { static_cast<u32>(module_.exprs.size() - 1uL) };
+		[[nodiscard]] ExprRef addExpr(Module& mod_, Expr expr_) {
+			mod_.exprs.emplace_back(std::move(expr_));
+			return ExprRef { static_cast<u32>(mod_.exprs.size() - 1uL) };
 		}
 
-		[[nodiscard]] ExprRef name(Module& module_, String name_) {
-			return addExpr(module_, Expr { .kind = ExprKind::eNameRef, .name = std::move(name_) });
+		[[nodiscard]] ExprRef name(Module& mod_, String name_) {
+			return addExpr(mod_, Expr { .kind = ExprKind::eNameRef, .name = std::move(name_) });
 		}
 
-		[[nodiscard]] StmtRef addStmt(Module& module_, Stmt stmt_) {
-			module_.stmts.emplace_back(std::move(stmt_));
-			return StmtRef { static_cast<u32>(module_.stmts.size() - 1uL) };
+		[[nodiscard]] StmtRef addStmt(Module& mod_, Stmt stmt_) {
+			mod_.stmts.emplace_back(std::move(stmt_));
+			return StmtRef { static_cast<u32>(mod_.stmts.size() - 1uL) };
 		}
 
-		[[nodiscard]] StmtRef exprStmt(Module& module_, ExprRef value_) {
-			return addStmt(module_, Stmt { .kind = StmtKind::eExpr, .lhs = value_ });
+		[[nodiscard]] StmtRef exprStmt(Module& mod_, ExprRef value_) {
+			return addStmt(mod_, Stmt { .kind = StmtKind::eExpr, .lhs = value_ });
 		}
 
 		/* Appends a function whose body is a block of the given statements */
-		u32 addFunction(Module& module_, String name_, Vector<StmtRef> stmts_) {
-			const auto root = addStmt(module_, Stmt { .kind = StmtKind::eBlock, .children = std::move(stmts_) });
-			module_.functions.emplace_back(FunctionDecl { .name = std::move(name_), .body = BodyRef { root } });
-			return static_cast<u32>(module_.functions.size() - 1uL);
+		u32 addFunction(Module& mod_, String name_, Vector<StmtRef> stmts_) {
+			const auto root = addStmt(mod_, Stmt { .kind = StmtKind::eBlock, .children = std::move(stmts_) });
+			mod_.functions.emplace_back(FunctionDecl { .name = std::move(name_), .body = BodyRef { root } });
+			return static_cast<u32>(mod_.functions.size() - 1uL);
 		}
 
-		[[nodiscard]] StmtRef callStmt(Module& module_, String callee_) {
-			return exprStmt(module_, addExpr(module_, Expr { .kind = ExprKind::eCall, .name = std::move(callee_) }));
+		[[nodiscard]] StmtRef callStmt(Module& mod_, String callee_) {
+			return exprStmt(mod_, addExpr(mod_, Expr { .kind = ExprKind::eCall, .name = std::move(callee_) }));
 		}
 
 		/* main -> a -> b, c unused; b reads `camera`, writes `depth` */

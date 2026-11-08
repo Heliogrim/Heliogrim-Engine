@@ -37,15 +37,15 @@ namespace AccelLang {
 			return res.has_value() ? slice(*res, outputs_) : Module {};
 		}
 
-		[[nodiscard]] Layout layoutOf(ref<const Module> module_) {
-			auto layout = assignLayout(computeInterface(module_), module_.types, {});
-			layout.specConstants = assignSpecConstants(module_.constants);
+		[[nodiscard]] Layout layoutOf(ref<const Module> mod_) {
+			auto layout = assignLayout(computeInterface(mod_), mod_.types, {});
+			layout.specConstants = assignSpecConstants(mod_.constants);
 			return layout;
 		}
 
-		[[nodiscard]] Intermediate lower(ref<const Module> module_, ref<const Layout> layout_) {
+		[[nodiscard]] Intermediate lower(ref<const Module> mod_, ref<const Layout> layout_) {
 			const DenseMap<String, u32> offsets { { "vertex-position", 12u } };
-			auto res = lowerToIntermediate(module_, layout_, Dialect::eVulkanGlsl460, offsets);
+			auto res = lowerToIntermediate(mod_, layout_, Dialect::eVulkanGlsl460, offsets);
 			EXPECT_TRUE(res.has_value()) << (res.has_value() || res.error().empty() ? "" : res.error().front().message);
 			return res.has_value() ? std::move(res).value() : Intermediate {};
 		}
@@ -84,16 +84,16 @@ namespace AccelLang {
 	}
 
 	TEST(LowerTest, EmitsConstantIdFromLayout) {
-		const auto module = resolved(
+		const auto mod = resolved(
 			"@spec (id = \"b\") const B: u32 = 2u;\n"
 			"@spec (id = \"a\") const A: u32 = 1u;\n"
 			"@output (mode = forward, id = \"color\") f32vec4 color;\n"
 			"fn main() {\n\tcolor = f32vec4(f32(A + B));\n}\n",
 			EntryKind::eFragment
 		);
-		const auto layout = layoutOf(module);
+		const auto layout = layoutOf(mod);
 		ASSERT_EQ(layout.specConstants.size(), 2uz);
-		const auto im = lower(module, layout);
+		const auto im = lower(mod, layout);
 		const auto text = textOf(im);
 		EXPECT_NE(text.find("layout(constant_id = 1) const uint B = 2u;"), String::npos) << text;
 		EXPECT_NE(text.find("layout(constant_id = 0) const uint A = 1u;"), String::npos) << text;
@@ -102,24 +102,24 @@ namespace AccelLang {
 	}
 
 	TEST(LowerTest, EmitsStd140Packing) {
-		const auto module = resolved(
+		const auto mod = resolved(
 			"@input (mode = bind, id = \"m\", class = uniform, packing = std140) block m { f32vec4 a; };\n"
 			"@output (mode = forward, id = \"color\") f32vec4 color;\n"
 			"fn main() {\n\tcolor = m.a;\n}\n",
 			EntryKind::eFragment
 		);
-		const auto text = textOf(lower(module, layoutOf(module)));
+		const auto text = textOf(lower(mod, layoutOf(mod)));
 		EXPECT_NE(text.find("std140"), String::npos) << text;
 	}
 
 	TEST(LowerTest, EmitsLayoutNumbersFromLayoutPass) {
-		const auto module = resolved(shadowVertex, EntryKind::eVertex);
-		const auto layout = layoutOf(module);
+		const auto mod = resolved(shadowVertex, EntryKind::eVertex);
+		const auto layout = layoutOf(mod);
 		ASSERT_FALSE(layout.slots.empty());
 		ASSERT_EQ(layout.slots.front().set, 0u);
 		ASSERT_EQ(layout.slots.front().binding, 0u);
 
-		const auto text = textOf(lower(module, layout));
+		const auto text = textOf(lower(mod, layout));
 
 		EXPECT_TRUE(text.contains("layout(set = 0, binding = 0) readonly buffer")) << text;
 		EXPECT_TRUE(text.contains("layout(push_constant) uniform")) << text;
@@ -145,8 +145,8 @@ namespace AccelLang {
 	}
 
 	TEST(LowerTest, EmitsShadowVertexBody) {
-		const auto module = resolved(shadowVertex, EntryKind::eVertex);
-		const auto text = textOf(lower(module, layoutOf(module)));
+		const auto mod = resolved(shadowVertex, EntryKind::eVertex);
+		const auto text = textOf(lower(mod, layoutOf(mod)));
 
 		EXPECT_TRUE(text.starts_with("#version 460\n")) << text;
 		EXPECT_TRUE(text.contains("buffer model_block {\n\tmat4 model[];\n} model;")) << text;
@@ -157,8 +157,8 @@ namespace AccelLang {
 	}
 
 	TEST(LowerTest, AnnotationChainKindsMatchLegacyForPushBlock) {
-		const auto module = resolved(shadowVertex, EntryKind::eVertex);
-		const auto im = lower(module, layoutOf(module));
+		const auto mod = resolved(shadowVertex, EntryKind::eVertex);
+		const auto im = lower(mod, layoutOf(mod));
 
 		using enum AnnotationType;
 		const auto* push = variableOf(im, "block");
@@ -183,21 +183,21 @@ namespace AccelLang {
 	}
 
 	TEST(LowerTest, VertexInputWithoutOffsetIsDiagnostic) {
-		const auto module = resolved(shadowVertex, EntryKind::eVertex);
+		const auto mod = resolved(shadowVertex, EntryKind::eVertex);
 
-		const auto res = lowerToIntermediate(module, layoutOf(module), Dialect::eVulkanGlsl460);
+		const auto res = lowerToIntermediate(mod, layoutOf(mod), Dialect::eVulkanGlsl460);
 
 		ASSERT_FALSE(res.has_value());
 		EXPECT_TRUE(res.error().front().message.contains("'vertex-position'"));
 	}
 
 	TEST(LowerTest, LoweringTwiceGivesIndependentIntermediates) {
-		const auto module = resolved(shadowVertex, EntryKind::eVertex);
-		const auto copy = module;
-		const auto layout = layoutOf(module);
+		const auto mod = resolved(shadowVertex, EntryKind::eVertex);
+		const auto copy = mod;
+		const auto layout = layoutOf(mod);
 
-		auto first = lower(module, layout);
-		const auto second = lower(module, layout);
+		auto first = lower(mod, layout);
+		const auto second = lower(mod, layout);
 
 		auto* firstVar = const_cast<Variable*>(variableOf(first, "block"));
 		const auto* secondVar = variableOf(second, "block");
@@ -210,18 +210,18 @@ namespace AccelLang {
 
 		EXPECT_EQ(static_cast<const SymbolIdAnnotation*>(secondVar->annotation.get())->symbolId, "block");
 		EXPECT_EQ(chainOf(secondVar).size(), 4uz);
-		EXPECT_TRUE(same(module, copy));
+		EXPECT_TRUE(same(mod, copy));
 		ASSERT_NE(first.ir, nullptr);
 		ASSERT_NE(second.ir, nullptr);
-		EXPECT_TRUE(same(*first.ir, module));
-		EXPECT_TRUE(same(*second.ir, module));
+		EXPECT_TRUE(same(*first.ir, mod));
+		EXPECT_TRUE(same(*second.ir, mod));
 	}
 
 	TEST(LowerTest, ImplicitOutputHasSymbolButNoGlslVariable) {
 		const auto outputs = std::array { String("depth") };
-		const auto module = resolved(shadowFragment, EntryKind::eFragment, outputs);
+		const auto mod = resolved(shadowFragment, EntryKind::eFragment, outputs);
 
-		const auto im = lower(module, layoutOf(module));
+		const auto im = lower(mod, layoutOf(mod));
 
 		ASSERT_EQ(im.rep.globalScope.outbound.size(), 1uz);
 		const auto* depth = variableOf(im, "depth");
@@ -235,13 +235,13 @@ namespace AccelLang {
 	}
 
 	TEST(LowerTest, ForwardOutputsAreNumberedById) {
-		const auto module = resolved(
+		const auto mod = resolved(
 			"@output (mode = forward, id = \"b\") f32mat4 second;\n"
 			"@output (mode = forward, id = \"a\") f32vec4 first;\n"
 			"@output (mode = forward, id = \"c\") f32 third;\n",
 			EntryKind::eFragment
 		);
-		const auto text = textOf(lower(module, layoutOf(module)));
+		const auto text = textOf(lower(mod, layoutOf(mod)));
 
 		EXPECT_TRUE(text.contains("layout(location = 0) out vec4 first;")) << text;
 		EXPECT_TRUE(text.contains("layout(location = 1) out mat4 second;")) << text;
@@ -250,7 +250,7 @@ namespace AccelLang {
 
 	TEST(LowerTest, SampleMapsToCombinedSampler) {
 		const auto outputs = std::array { String("color") };
-		const auto module = resolved(
+		const auto mod = resolved(
 			"@input (mode = bind, id = \"albedo\", class = texture) texture2d albedo;\n"
 			"@input (mode = bind, id = \"smp\", class = sampler) sampler smp;\n"
 			"@input (mode = forward, id = \"uv\") f32vec2 uv;\n"
@@ -259,7 +259,7 @@ namespace AccelLang {
 			EntryKind::eFragment,
 			outputs
 		);
-		const auto text = textOf(lower(module, layoutOf(module)));
+		const auto text = textOf(lower(mod, layoutOf(mod)));
 
 		EXPECT_TRUE(text.contains("uniform texture2D albedo;")) << text;
 		EXPECT_TRUE(text.contains("uniform sampler smp;")) << text;
@@ -267,13 +267,13 @@ namespace AccelLang {
 	}
 
 	TEST(LowerTest, NamedStructIsEmittedOnceBeforeUse) {
-		const auto module = resolved(
+		const auto mod = resolved(
 			"struct Light { f32vec4 color; }\n"
 			"@input (mode = bind, id = \"lights\", class = uniform) block lights { Light[4] items; };\n"
 			"@input (mode = bind, id = \"sun\", class = uniform) Light sun;\n",
 			EntryKind::eFragment
 		);
-		const auto text = textOf(lower(module, layoutOf(module)));
+		const auto text = textOf(lower(mod, layoutOf(mod)));
 
 		const auto def = text.find("struct Light {\n\tvec4 color;\n};");
 		ASSERT_NE(def, String::npos) << text;
@@ -284,8 +284,8 @@ namespace AccelLang {
 	}
 
 	TEST(LowerTest, ConflictingStructNamesAreDiagnostic) {
-		Module module {};
-		module.entry = EntryKind::eFragment;
+		Module mod {};
+		mod.entry = EntryKind::eFragment;
 		TypeDesc f32 {};
 		TypeDesc u32t {};
 		u32t.scalar = ScalarKind::eUInt;
@@ -295,14 +295,14 @@ namespace AccelLang {
 		a.fields = { FieldDesc { "x", TypeRef { 0u } } };
 		TypeDesc b = a;
 		b.fields = { FieldDesc { "x", TypeRef { 1u } } };
-		module.types = { f32, u32t, a, b };
-		module.bindings = {
+		mod.types = { f32, u32t, a, b };
+		mod.bindings = {
 			BindingDecl { "a", TypeRef { 2u }, BindMode::eBind, BindClass::eUniformBuffer, false, true, {}, "a" },
 			BindingDecl { "b", TypeRef { 3u }, BindMode::eBind, BindClass::eUniformBuffer, false, true, {}, "b" }
 		};
 
 		Language target {};
-		const auto diags = GlslEmitter {}.emit(module, layoutOf(module), target).diagnostics;
+		const auto diags = GlslEmitter {}.emit(mod, layoutOf(mod), target).diagnostics;
 
 		ASSERT_EQ(diags.size(), 1uz);
 		EXPECT_TRUE(diags[0].message.contains("'S'")) << diags[0].message;
@@ -310,12 +310,12 @@ namespace AccelLang {
 	}
 
 	TEST(LowerTest, PushBlockThatCannotBeLaidOutIsDiagnostic) {
-		const auto module = resolved("@input (mode = bind, id = \"p\", class = push) block p { u32[] tail; };\n", EntryKind::eVertex);
-		const auto layout = layoutOf(module);
+		const auto mod = resolved("@input (mode = bind, id = \"p\", class = push) block p { u32[] tail; };\n", EntryKind::eVertex);
+		const auto layout = layoutOf(mod);
 		ASSERT_EQ(layout.push.size(), 1uz);
 		ASSERT_EQ(layout.push.front().size, 0u);
 
-		const auto res = lowerToIntermediate(module, layout, Dialect::eVulkanGlsl460);
+		const auto res = lowerToIntermediate(mod, layout, Dialect::eVulkanGlsl460);
 
 		ASSERT_FALSE(res.has_value());
 		EXPECT_TRUE(res.error().front().message.contains("'p'")) << res.error().front().message;
@@ -323,8 +323,8 @@ namespace AccelLang {
 
 	/* the lexer rejects `1u` and `0x1E`, so the literals are hand-built */
 	TEST(LowerTest, LiteralSuffixAndHexInferTheirType) {
-		Module module {};
-		module.entry = EntryKind::eFragment;
+		Module mod {};
+		mod.entry = EntryKind::eFragment;
 		const auto literals = std::array<String, 5> { "1u", "0x1E", "0x1Eu", "1.5", "1e3" };
 		const auto names = std::array<String, 5> { "a", "b", "c", "d", "e" };
 		Stmt block {};
@@ -332,21 +332,21 @@ namespace AccelLang {
 		for (auto i = 0uz; i < literals.size(); ++i) {
 			Expr literal {};
 			literal.name = literals[i];
-			module.exprs.emplace_back(std::move(literal));
+			mod.exprs.emplace_back(std::move(literal));
 			Stmt local {};
 			local.kind = StmtKind::eDeclareLocal;
 			local.name = names[i];
 			local.lhs = ExprRef { static_cast<u32>(i) };
-			module.stmts.emplace_back(std::move(local));
+			mod.stmts.emplace_back(std::move(local));
 			block.children.emplace_back(StmtRef { static_cast<u32>(i) });
 		}
-		module.stmts.emplace_back(std::move(block));
+		mod.stmts.emplace_back(std::move(block));
 		FunctionDecl main {};
 		main.name = "main";
 		main.body = BodyRef { StmtRef { static_cast<u32>(literals.size()) } };
-		module.functions.emplace_back(std::move(main));
+		mod.functions.emplace_back(std::move(main));
 
-		const auto text = textOf(lower(module, layoutOf(module)));
+		const auto text = textOf(lower(mod, layoutOf(mod)));
 
 		EXPECT_TRUE(text.contains("uint a = 1u;")) << text;
 		EXPECT_TRUE(text.contains("int b = 0x1E;")) << text;
@@ -356,40 +356,40 @@ namespace AccelLang {
 	}
 
 	TEST(LowerTest, RefMutParamEmitsInout) {
-		const auto module = resolved(
+		const auto mod = resolved(
 			"@output (mode = forward, id = \"color\") f32 color;\n"
 			"fn F(x: &mut f32, y: &f32, z: f32) { x = y + z; }\n"
 			"fn main() { let a = 1.0; let b = 2.0; F(a, b, b); color = a; }\n",
 			EntryKind::eFragment,
 			std::array { String("color") }
 		);
-		const auto text = textOf(lower(module, layoutOf(module)));
+		const auto text = textOf(lower(mod, layoutOf(mod)));
 		EXPECT_TRUE(text.contains("void F(inout float x, const in float y, const in float z)")) << text;
 	}
 
 	TEST(LowerTest, LocalRefEmitsNoVariableAndSubstitutesPlace) {
-		const auto module = resolved(
+		const auto mod = resolved(
 			"@input (mode = bind, id = \"lights\", class = storage, access = read_write) block lights { f32[] lights; };\n"
 			"@output (mode = forward, id = \"color\") f32 color;\n"
 			"fn main() { let l = &mut lights.lights[2]; l = 1.0; color = l; }\n",
 			EntryKind::eFragment,
 			std::array { String("color") }
 		);
-		const auto text = textOf(lower(module, layoutOf(module)));
+		const auto text = textOf(lower(mod, layoutOf(mod)));
 		EXPECT_FALSE(text.contains("float l =") || text.contains("float l;")) << text;
 		EXPECT_TRUE(text.contains("lights.lights[2] = 1.0;")) << text;
 		EXPECT_TRUE(text.contains("color = lights.lights[2];")) << text;
 	}
 
 	TEST(LowerTest, LocalRefHoistsIndex) {
-		const auto module = resolved(
+		const auto mod = resolved(
 			"@input (mode = bind, id = \"lights\", class = storage, access = read_write) block lights { f32[] lights; };\n"
 			"@output (mode = forward, id = \"color\") f32 color;\n"
 			"fn main() { u32 i = 0; let l = &mut lights.lights[i]; i = i + 1; l = 1.0; color = l; }\n",
 			EntryKind::eFragment,
 			std::array { String("color") }
 		);
-		const auto text = textOf(lower(module, layoutOf(module)));
+		const auto text = textOf(lower(mod, layoutOf(mod)));
 		const auto hoist = text.find("const uint _hg_ref0 = i;");
 		ASSERT_NE(hoist, String::npos) << text;
 		EXPECT_LT(hoist, text.find("i = (i + 1);")) << text;
@@ -397,7 +397,7 @@ namespace AccelLang {
 	}
 
 TEST(LowerTest, EmitsCompoundAssignAndTernary) {
-	const auto module = resolved(
+	const auto mod = resolved(
 		"@input (mode = forward) f32 bias;\n"
 		"@output (mode = forward, id = \"color\") f32 color;\n"
 		"fn main() {\n\tlet a = 0.0;\n\tfor (let i = 0u; i < 4u; ++i) { a += bias; if (a > 3.0) { break; } }\n"
@@ -405,7 +405,7 @@ TEST(LowerTest, EmitsCompoundAssignAndTernary) {
 		EntryKind::eFragment,
 		std::array { String("color") }
 	);
-	const auto text = textOf(lower(module, layoutOf(module)));
+	const auto text = textOf(lower(mod, layoutOf(mod)));
 	EXPECT_TRUE(text.contains("for (uint i = 0u; (i < 4u); i += 1)")) << text;
 	EXPECT_TRUE(text.contains("a += ")) << text;
 	EXPECT_TRUE(text.contains("break;")) << text;
@@ -413,7 +413,7 @@ TEST(LowerTest, EmitsCompoundAssignAndTernary) {
 }
 
 TEST(LowerTest, ForWithOmittedInitAndStepHasValidHeader) {
-	const auto module = resolved(
+	const auto mod = resolved(
 		"@input (mode = forward) f32 bias;\n"
 		"@output (mode = forward, id = \"color\") f32 color;\n"
 		"fn main() {\n\tlet a = 0.0;\n\tlet c = bias > 1.0;\n\tfor (; c; ) { a += bias; break; }\n"
@@ -422,7 +422,7 @@ TEST(LowerTest, ForWithOmittedInitAndStepHasValidHeader) {
 		EntryKind::eFragment,
 		std::array { String("color") }
 	);
-	const auto text = textOf(lower(module, layoutOf(module)));
+	const auto text = textOf(lower(mod, layoutOf(mod)));
 	EXPECT_TRUE(text.contains("for (; c; )")) << text;
 	EXPECT_TRUE(text.contains("for (; (i < 4u); )")) << text;
 	EXPECT_TRUE(text.contains("for (uint j = 0u; (j < 4u); )")) << text;
@@ -431,7 +431,7 @@ TEST(LowerTest, ForWithOmittedInitAndStepHasValidHeader) {
 
 TEST(LowerTest, SparseAddsExtensions) {
 	const auto outputs = std::array { String("color") };
-	const auto module = resolved(
+	const auto mod = resolved(
 		"@input (mode = bind, id = \"t2\", class = texture) texture2darray t2;\n"
 		"@input (mode = bind, id = \"smp\", class = sampler) sampler smp;\n"
 		"@input (mode = forward, id = \"uv\") f32vec3 uv;\n"
@@ -444,15 +444,15 @@ TEST(LowerTest, SparseAddsExtensions) {
 		EntryKind::eFragment,
 		outputs
 	);
-	const auto text = textOf(lower(module, layoutOf(module)));
+	const auto text = textOf(lower(mod, layoutOf(mod)));
 	EXPECT_TRUE(text.contains("#extension GL_ARB_sparse_texture2 : require")) << text;
 	EXPECT_TRUE(text.contains("#extension GL_ARB_sparse_texture_clamp : require")) << text;
 	EXPECT_TRUE(text.contains("sparseTextureARB(sampler2DArray(t2, smp), uv, a)")) << text;
 }
 
 TEST(LowerTest, ViewIndexAddsMultiview) {
-	const auto module = resolved("fn main() {\n\tposition = f32vec4(f32(view_index));\n}\n", EntryKind::eVertex);
-	const auto text = textOf(lower(module, layoutOf(module)));
+	const auto mod = resolved("fn main() {\n\tposition = f32vec4(f32(view_index));\n}\n", EntryKind::eVertex);
+	const auto text = textOf(lower(mod, layoutOf(mod)));
 	EXPECT_TRUE(text.contains("GL_EXT_multiview")) << text;
 	EXPECT_TRUE(text.contains("gl_ViewIndex")) << text;
 }

@@ -9,23 +9,23 @@ using namespace hg;
 namespace {
 	constexpr auto depthLimit = 64uz;
 
-	[[nodiscard]] const ir::Expr* at(ref<const ir::Module> module_, ir::ExprRef ref_) {
-		return ref_.index < module_.exprs.size() ? &module_.exprs[ref_.index] : nullptr;
+	[[nodiscard]] const ir::Expr* at(ref<const ir::Module> mod_, ir::ExprRef ref_) {
+		return ref_.index < mod_.exprs.size() ? &mod_.exprs[ref_.index] : nullptr;
 	}
 
-	[[nodiscard]] Opt<long long> constantOf(ref<const ir::Module> module_, ir::ExprRef ref_) {
-		const auto* e = at(module_, ref_);
+	[[nodiscard]] Opt<long long> constantOf(ref<const ir::Module> mod_, ir::ExprRef ref_) {
+		const auto* e = at(mod_, ref_);
 		return e != nullptr && e->kind == ir::ExprKind::eLiteral ? ir::integerLiteral(e->name) : None;
 	}
 
 	/* an expression only built from literals, operators and names the typechecker vouches for */
 	[[nodiscard]] bool stable(
-		ref<const ir::Module> module_,
+		ref<const ir::Module> mod_,
 		ir::ExprRef ref_,
 		FnRef<bool(ref<const ir::Expr>)> immutable_,
 		size_t depth_ = 0uz
 	) {
-		const auto* e = at(module_, ref_);
+		const auto* e = at(mod_, ref_);
 		if (e == nullptr || depth_ > depthLimit) {
 			return false;
 		}
@@ -41,7 +41,7 @@ namespace {
 			case ir::ExprKind::eTernary:
 				return std::ranges::all_of(
 					e->operands,
-					[&](ir::ExprRef o_) { return stable(module_, o_, immutable_, depth_ + 1uz); }
+					[&](ir::ExprRef o_) { return stable(mod_, o_, immutable_, depth_ + 1uz); }
 				);
 			default: return false;
 		}
@@ -49,29 +49,29 @@ namespace {
 
 	/* same spelling and the same resolved identities, none of them unprovable */
 	[[nodiscard]] bool sameBound(
-		ref<const ir::Module> module_,
+		ref<const ir::Module> mod_,
 		ir::ExprRef a_,
 		ref<const Vector<size_t>> aIds_,
 		ir::ExprRef b_,
 		ref<const Vector<size_t>> bIds_
 	) {
-		return aIds_ == bIds_ && std::ranges::none_of(aIds_, [](size_t i_) { return i_ == ir::unknownIdentity; }) && ir::sameExpr(module_, a_, b_);
+		return aIds_ == bIds_ && std::ranges::none_of(aIds_, [](size_t i_) { return i_ == ir::unknownIdentity; }) && ir::sameExpr(mod_, a_, b_);
 	}
 
 	/* `a_.hi` is what `b_.lo` starts at, and that value cannot change between the two borrows */
 	[[nodiscard]] bool abuts(
-		ref<const ir::Module> module_,
+		ref<const ir::Module> mod_,
 		ir::ExprRef hi_,
 		ref<const Vector<size_t>> hiIds_,
 		ir::ExprRef lo_,
 		ref<const Vector<size_t>> loIds_,
 		FnRef<bool(ref<const ir::Expr>)> immutable_
 	) {
-		return sameBound(module_, hi_, hiIds_, lo_, loIds_) && stable(module_, hi_, immutable_);
+		return sameBound(mod_, hi_, hiIds_, lo_, loIds_) && stable(mod_, hi_, immutable_);
 	}
 
 	[[nodiscard]] bool stepsDisjoint(
-		ref<const ir::Module> module_,
+		ref<const ir::Module> mod_,
 		ref<const ir::PlaceStep> a_,
 		ref<const ir::PlaceStep> b_,
 		FnRef<bool(ref<const ir::Expr>)> immutable_
@@ -102,49 +102,49 @@ namespace {
 			return not (x && y) || (*x & *y) == 0u;
 		}
 		if (a_.kind == Kind::eIndex && b_.kind == Kind::eIndex) {
-			const auto x = constantOf(module_, a_.index);
-			const auto y = constantOf(module_, b_.index);
+			const auto x = constantOf(mod_, a_.index);
+			const auto y = constantOf(mod_, b_.index);
 			return x.has_value() && y.has_value() && *x != *y;
 		}
 		if (a_.kind == Kind::eRange && b_.kind == Kind::eRange) {
-			const auto alo = constantOf(module_, a_.lo);
-			const auto ahi = constantOf(module_, a_.hi);
-			const auto blo = constantOf(module_, b_.lo);
-			const auto bhi = constantOf(module_, b_.hi);
+			const auto alo = constantOf(mod_, a_.lo);
+			const auto ahi = constantOf(mod_, a_.hi);
+			const auto blo = constantOf(mod_, b_.lo);
+			const auto bhi = constantOf(mod_, b_.hi);
 			if (alo && ahi && blo && bhi && (*ahi <= *blo || *bhi <= *alo)) {
 				return true;
 			}
-			return abuts(module_, a_.hi, a_.hiIds, b_.lo, b_.loIds, immutable_) || abuts(module_, b_.hi, b_.hiIds, a_.lo, a_.loIds, immutable_);
+			return abuts(mod_, a_.hi, a_.hiIds, b_.lo, b_.loIds, immutable_) || abuts(mod_, b_.hi, b_.hiIds, a_.lo, a_.loIds, immutable_);
 		}
 		if (a_.kind == Kind::eRange && b_.kind == Kind::eIndex) {
-			return stepsDisjoint(module_, b_, a_, immutable_);
+			return stepsDisjoint(mod_, b_, a_, immutable_);
 		}
 		if (a_.kind == Kind::eIndex && b_.kind == Kind::eRange) {
-			const auto x = constantOf(module_, a_.index);
-			const auto lo = constantOf(module_, b_.lo);
-			const auto hi = constantOf(module_, b_.hi);
+			const auto x = constantOf(mod_, a_.index);
+			const auto lo = constantOf(mod_, b_.lo);
+			const auto hi = constantOf(mod_, b_.hi);
 			return x && lo && hi && (*x < *lo || *x >= *hi);
 		}
 		return false;
 	}
 
-	[[nodiscard]] bool sameStep(ref<const ir::Module> module_, ref<const ir::PlaceStep> a_, ref<const ir::PlaceStep> b_) {
+	[[nodiscard]] bool sameStep(ref<const ir::Module> mod_, ref<const ir::PlaceStep> a_, ref<const ir::PlaceStep> b_) {
 		if (a_.kind != b_.kind) {
 			return false;
 		}
 		switch (a_.kind) {
 			case ir::PlaceStep::Kind::eField: return a_.field == b_.field;
-			case ir::PlaceStep::Kind::eIndex: return sameBound(module_, a_.index, a_.indexIds, b_.index, b_.indexIds);
-			default: return sameBound(module_, a_.lo, a_.loIds, b_.lo, b_.loIds) && sameBound(module_, a_.hi, a_.hiIds, b_.hi, b_.hiIds);
+			case ir::PlaceStep::Kind::eIndex: return sameBound(mod_, a_.index, a_.indexIds, b_.index, b_.indexIds);
+			default: return sameBound(mod_, a_.lo, a_.loIds, b_.lo, b_.loIds) && sameBound(mod_, a_.hi, a_.hiIds, b_.hi, b_.hiIds);
 		}
 	}
 
-	[[nodiscard]] String render(ref<const ir::Module> module_, ir::ExprRef ref_, size_t depth_ = 0uz) {
-		const auto* e = at(module_, ref_);
+	[[nodiscard]] String render(ref<const ir::Module> mod_, ir::ExprRef ref_, size_t depth_ = 0uz) {
+		const auto* e = at(mod_, ref_);
 		if (e == nullptr || depth_ > depthLimit) {
 			return "?";
 		}
-		const auto sub = [&](size_t i_) { return i_ < e->operands.size() ? render(module_, e->operands[i_], depth_ + 1uz) : String("?"); };
+		const auto sub = [&](size_t i_) { return i_ < e->operands.size() ? render(mod_, e->operands[i_], depth_ + 1uz) : String("?"); };
 		switch (e->kind) {
 			case ir::ExprKind::eLiteral:
 			case ir::ExprKind::eNameRef:
@@ -190,7 +190,7 @@ Opt<long long> ir::integerLiteral(StringView text_) {
 	return value;
 }
 
-bool ir::sameExpr(ref<const Module> module_, ExprRef a_, ExprRef b_) {
+bool ir::sameExpr(ref<const Module> mod_, ExprRef a_, ExprRef b_) {
 	static constexpr auto walk = [](auto&& self, ref<const Module> m_, ExprRef a, ExprRef b, size_t depth_) -> bool {
 		const auto* x = at(m_, a);
 		const auto* y = at(m_, b);
@@ -207,11 +207,11 @@ bool ir::sameExpr(ref<const Module> module_, ExprRef a_, ExprRef b_) {
 		}
 		return true;
 	};
-	return walk(walk, module_, a_, b_, 0uz);
+	return walk(walk, mod_, a_, b_, 0uz);
 }
 
 bool ir::disjoint(
-	ref<const Module> module_,
+	ref<const Module> mod_,
 	ref<const PlacePath> a_,
 	ref<const PlacePath> b_,
 	FnRef<bool(ref<const Expr>)> immutable_
@@ -221,21 +221,21 @@ bool ir::disjoint(
 	}
 	const auto common = std::min(a_.steps.size(), b_.steps.size());
 	for (auto i = 0uz; i < common; ++i) {
-		if (sameStep(module_, a_.steps[i], b_.steps[i])) {
+		if (sameStep(mod_, a_.steps[i], b_.steps[i])) {
 			continue;
 		}
-		return stepsDisjoint(module_, a_.steps[i], b_.steps[i], immutable_);
+		return stepsDisjoint(mod_, a_.steps[i], b_.steps[i], immutable_);
 	}
 	return false;
 }
 
-String ir::describePlace(ref<const Module> module_, ref<const PlacePath> path_) {
+String ir::describePlace(ref<const Module> mod_, ref<const PlacePath> path_) {
 	String out = path_.root;
 	for (const auto& step : path_.steps) {
 		switch (step.kind) {
 			case PlaceStep::Kind::eField: out += "." + step.field; break;
-			case PlaceStep::Kind::eIndex: out += "[" + render(module_, step.index) + "]"; break;
-			default: out += "[" + render(module_, step.lo) + " .. " + render(module_, step.hi) + "]"; break;
+			case PlaceStep::Kind::eIndex: out += "[" + render(mod_, step.index) + "]"; break;
+			default: out += "[" + render(mod_, step.lo) + " .. " + render(mod_, step.hi) + "]"; break;
 		}
 	}
 	return out;

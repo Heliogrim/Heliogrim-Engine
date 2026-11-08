@@ -137,8 +137,8 @@ namespace hg::engine::accel::lang::ir::detail {
 
 	static void parseSource(StringView name_, StringView source_, ref<Shared> shared_);
 
-	[[nodiscard]] static String located(StringView module_, bool nested_, String message_) {
-		return nested_ ? "in '" + String(module_) + "': " + message_ : message_;
+	[[nodiscard]] static String located(StringView mod_, bool nested_, String message_) {
+		return nested_ ? "in '" + String(mod_) + "': " + message_ : message_;
 	}
 
 	void Parser::run() {
@@ -595,7 +595,7 @@ namespace hg::engine::accel::lang::ir::detail {
 			const auto cls = bindClassOf(value_.text);
 			valid = word && cls.has_value();
 			decl.bindClass = valid ? *cls : decl.bindClass;
-			if (valid && *cls == ir::BindClass::eStorageImage && _shared.module.entry != ir::EntryKind::eCompute) {
+			if (valid && *cls == ir::BindClass::eStorageImage && _shared.mod.entry != ir::EntryKind::eCompute) {
 				error(value_, "storage images require a compute module.");
 			}
 		} else if (not redefine && key_.text == "access") {
@@ -732,7 +732,7 @@ namespace hg::engine::accel::lang::ir::detail {
 		}
 		const auto& value = take();
 
-		const auto& toggles = _shared.module.toggles;
+		const auto& toggles = _shared.mod.toggles;
 		const auto toggle = std::ranges::find(toggles, name.text, &ir::Toggle::name);
 		if (toggle == toggles.end()) {
 			error(name, "Unknown toggle '" + String(name.text) + "'.");
@@ -747,7 +747,7 @@ namespace hg::engine::accel::lang::ir::detail {
 	/* Types */
 
 	ir::TypeRef Parser::intern(ir::TypeDesc desc_) {
-		auto& types = _shared.module.types;
+		auto& types = _shared.mod.types;
 		const auto it = std::ranges::find_if(
 			types,
 			[&](ref<const ir::TypeDesc> type_) {
@@ -765,7 +765,7 @@ namespace hg::engine::accel::lang::ir::detail {
 	}
 
 	Opt<ir::TypeRef> Parser::findStruct(StringView name_) const {
-		const auto& types = _shared.module.types;
+		const auto& types = _shared.mod.types;
 		const auto it = std::ranges::find_if(
 			types,
 			[&](ref<const ir::TypeDesc> type_) {
@@ -949,7 +949,7 @@ namespace hg::engine::accel::lang::ir::detail {
 			toggle.defaultValue = toggle.values.front();
 		}
 
-		auto& toggles = _shared.module.toggles;
+		auto& toggles = _shared.mod.toggles;
 		if (std::ranges::find(toggles, toggleName, &ir::Toggle::name) != toggles.end()) {
 			return error(name, "Duplicate toggle '" + toggleName + "'.");
 		}
@@ -976,7 +976,7 @@ namespace hg::engine::accel::lang::ir::detail {
 		desc.kind = ir::TypeKind::eStruct;
 		desc.name = name.text;
 		desc.fields = std::move(*members);
-		_shared.module.types.emplace_back(std::move(desc));
+		_shared.mod.types.emplace_back(std::move(desc));
 	}
 
 	void Parser::function(ref<const Annotations> ann_) {
@@ -998,7 +998,7 @@ namespace hg::engine::accel::lang::ir::detail {
 			const bool tessEval = ann_.entry->text == "tess_eval";
 			const auto expected = compute ? ir::EntryKind::eCompute : geometry ? ir::EntryKind::eGeometry :
 				tessCtrl ? ir::EntryKind::eTessCtrl : tessEval ? ir::EntryKind::eTessEval : ir::EntryKind::eFragment;
-			if (_shared.module.entry != expected) {
+			if (_shared.mod.entry != expected) {
 				error(*ann_.entry, "@" + String(ann_.entry->text) + " contradicts the module's stage.");
 			} else if (fn.name != "main") {
 				error(*ann_.entry, "@" + String(ann_.entry->text) + " applies to fn main only.");
@@ -1012,7 +1012,7 @@ namespace hg::engine::accel::lang::ir::detail {
 				if (tessEval && ann_.geometryKeys != 1u) {
 					error(*ann_.entry, "@tess_eval requires domain.");
 				}
-				_shared.module.attributes = ann_.attributes;
+				_shared.mod.attributes = ann_.attributes;
 			}
 		}
 
@@ -1046,7 +1046,7 @@ namespace hg::engine::accel::lang::ir::detail {
 				}
 				auto finalType = *paramType;
 				if (kind != ir::ParamKind::eValue) {
-					const auto declared = _shared.module.types[finalType.index];
+					const auto declared = _shared.mod.types[finalType.index];
 					if (declared.kind == ir::TypeKind::eArray && declared.count == 0uL) {
 						// `&mut T[]` / `&T[]` is a region over any array
 						ir::TypeDesc region {};
@@ -1082,7 +1082,7 @@ namespace hg::engine::accel::lang::ir::detail {
 		} else if (not expect(TokenKind::eSemicolon, "';' or a function body")) {
 			return recover();
 		}
-		_shared.module.functions.emplace_back(std::move(fn));
+		_shared.mod.functions.emplace_back(std::move(fn));
 	}
 
 	/* `const NAME: T = expr;` with an optional `@spec (id = "...")`; the initializer is checked by typecheck */
@@ -1120,7 +1120,7 @@ namespace hg::engine::accel::lang::ir::detail {
 		if (not expect(TokenKind::eSemicolon, "';'")) {
 			return recover();
 		}
-		auto& constants = _shared.module.constants;
+		auto& constants = _shared.mod.constants;
 		if (std::ranges::find(constants, decl.name, &ir::ConstantDecl::name) != constants.end()) {
 			return error(nameToken, "Duplicate constant '" + decl.name + "'.");
 		}
@@ -1130,7 +1130,7 @@ namespace hg::engine::accel::lang::ir::detail {
 	/* `workgroup name: T;` */
 	void Parser::workgroupDecl(ref<const Annotations> ann_) {
 		const auto& head = take();
-		if (_shared.module.entry != ir::EntryKind::eCompute) {
+		if (_shared.mod.entry != ir::EntryKind::eCompute) {
 			error(head, "workgroup variables require a compute module.");
 		}
 		const auto& nameToken = take();
@@ -1149,14 +1149,14 @@ namespace hg::engine::accel::lang::ir::detail {
 		decl.input = false;
 		decl.when = ann_.binding.when;
 		decl.access = ir::Access::eReadWrite;
-		_shared.module.bindings.emplace_back(std::move(decl));
+		_shared.mod.bindings.emplace_back(std::move(decl));
 	}
 
 	/* `decl_` carries the annotations; type, localName and a defaulted id are filled here */
 	void Parser::binding(ir::BindingDecl decl_) {
 		auto& decl = decl_;
 		if (decl.patch) {
-			const auto entry = _shared.module.entry;
+			const auto entry = _shared.mod.entry;
 			const auto allowed = decl.mode == ir::BindMode::eForward &&
 				((entry == ir::EntryKind::eTessCtrl && not decl.input) || (entry == ir::EntryKind::eTessEval && decl.input));
 			if (not allowed) {
@@ -1179,8 +1179,8 @@ namespace hg::engine::accel::lang::ir::detail {
 			ir::TypeDesc desc {};
 			desc.kind = ir::TypeKind::eStruct;
 			desc.fields = std::move(*members);
-			_shared.module.types.emplace_back(std::move(desc));
-			decl.type = ir::TypeRef { static_cast<u32>(_shared.module.types.size() - 1uz) };
+			_shared.mod.types.emplace_back(std::move(desc));
+			decl.type = ir::TypeRef { static_cast<u32>(_shared.mod.types.size() - 1uz) };
 		} else {
 			const auto declType = type();
 			if (not declType.has_value()) {
@@ -1192,8 +1192,8 @@ namespace hg::engine::accel::lang::ir::detail {
 			}
 			decl.type = *declType;
 			{
-				const auto& declared = _shared.module.types[declType->index];
-				const auto entry = _shared.module.entry;
+				const auto& declared = _shared.mod.types[declType->index];
+				const auto entry = _shared.mod.entry;
 				if (declared.kind == ir::TypeKind::eArray && declared.count == 0uL && decl.mode == ir::BindMode::eForward && not decl.patch &&
 					((decl.input && (entry == ir::EntryKind::eGeometry || entry == ir::EntryKind::eTessCtrl || entry == ir::EntryKind::eTessEval)) ||
 						(not decl.input && entry == ir::EntryKind::eTessCtrl))) {
@@ -1203,7 +1203,7 @@ namespace hg::engine::accel::lang::ir::detail {
 			}
 			const auto nameToken = take();
 			decl.localName = nameToken.text;
-			const auto kind = _shared.module.types[declType->index].kind;
+			const auto kind = _shared.mod.types[declType->index].kind;
 			if (decl.packing != ir::Packing::eDefault && (kind == ir::TypeKind::eTexture || kind == ir::TypeKind::eSampler || kind == ir::TypeKind::eImage)) {
 				error(nameToken, "packing is not allowed on opaque binding '" + decl.localName + "'.");
 			}
@@ -1215,30 +1215,30 @@ namespace hg::engine::accel::lang::ir::detail {
 		if (decl.id.empty()) {
 			decl.id = decl.localName;
 		}
-		_shared.module.bindings.emplace_back(std::move(decl));
+		_shared.mod.bindings.emplace_back(std::move(decl));
 	}
 
 	/* binds each call to a declaration of its name (typecheck then picks the overload by argument types)
 	 */
 	static void resolveCalls(ref<Shared> shared_) {
-		auto& module = shared_.module;
+		auto& mod = shared_.mod;
 		/* a user function shadows a builtin function of the same name */
-		for (auto& e : module.exprs) {
+		for (auto& e : mod.exprs) {
 			if (e.kind != ir::ExprKind::eBuiltin || (e.name != "len" && ir::findBuiltinFunction(e.name) == nullptr)) {
 				continue;
 			}
-			for (auto i = 0uz; i < module.functions.size(); ++i) {
-				if (module.functions[i].name == e.name) {
+			for (auto i = 0uz; i < mod.functions.size(); ++i) {
+				if (mod.functions[i].name == e.name) {
 					e.kind = ir::ExprKind::eCall;
 					e.function = ir::FunctionRef { static_cast<u32>(i) };
 				}
 			}
 		}
 		for (auto& pending : shared_.calls) {
-			auto& call = module.exprs[pending.expr];
+			auto& call = mod.exprs[pending.expr];
 			Opt<u32> found = None;
-			for (auto i = 0uz; i < module.functions.size(); ++i) {
-				const auto& fn = module.functions[i];
+			for (auto i = 0uz; i < mod.functions.size(); ++i) {
+				const auto& fn = mod.functions[i];
 				if (fn.name == call.name && (not found.has_value() || fn.body.has_value())) {
 					found = static_cast<u32>(i);
 				}
@@ -1274,21 +1274,21 @@ namespace hg::engine::accel::lang::ir::detail {
 		ir::ModuleResolver includes_
 	) {
 		Shared shared { includes_ };
-		shared.module.name = name_;
-		shared.module.entry = entry_;
+		shared.mod.name = name_;
+		shared.mod.entry = entry_;
 
 		parseSource(name_, source_, shared);
 		resolveCalls(shared);
 		if (shared.diags.empty()) {
-			shared.diags = ir::typecheck(shared.module);
+			shared.diags = ir::typecheck(shared.mod);
 		}
 
 		const auto failed = std::ranges::any_of(shared.diags, [](const auto& d_) { return d_.severity == ir::Severity::eError; });
 		if (failed) {
 			return std::unexpected(std::move(shared.diags));
 		}
-		shared.module.warnings = std::move(shared.diags);
-		return std::move(shared.module);
+		shared.mod.warnings = std::move(shared.diags);
+		return std::move(shared.mod);
 	}
 }
 

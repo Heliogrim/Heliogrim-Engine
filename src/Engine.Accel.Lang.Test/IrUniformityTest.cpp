@@ -21,10 +21,10 @@ namespace AccelLang {
 		}
 
 		/* uniformity of the first statement of kind `kind_` whose `name_`/operand text matches; see callers */
-		[[nodiscard]] bool uniformOfCall(ref<const Module> module_, const Uniformity& u_, StringView callee_) {
-			for (auto i = 0uz; i < module_.stmts.size(); ++i) {
-				const auto& s = module_.stmts[i];
-				if (s.kind == StmtKind::eExpr && s.lhs.index < module_.exprs.size() && module_.exprs[s.lhs.index].name == callee_) {
+		[[nodiscard]] bool uniformOfCall(ref<const Module> mod_, const Uniformity& u_, StringView callee_) {
+			for (auto i = 0uz; i < mod_.stmts.size(); ++i) {
+				const auto& s = mod_.stmts[i];
+				if (s.kind == StmtKind::eExpr && s.lhs.index < mod_.exprs.size() && mod_.exprs[s.lhs.index].name == callee_) {
 					return u_.uniformStmt[i];
 				}
 			}

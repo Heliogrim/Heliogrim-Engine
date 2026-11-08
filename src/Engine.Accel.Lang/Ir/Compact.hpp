@@ -25,7 +25,7 @@ namespace hg::engine::accel::lang::ir {
 	};
 
 	struct Compacted {
-		Module module;
+		Module mod;
 		/* calls that resolve to no kept function, by signature (name when the ref is unset), unique, in arena order */
 		Vector<String> unresolvedCalls;
 	};
@@ -37,5 +37,5 @@ namespace hg::engine::accel::lang::ir {
 	 * dropped statement leaves its block, and a dropped `if`/`when` arm or body root becomes an empty block.
 	 * Calls keep their kept target, else re-resolve to the unique kept function with the same signature (name and parameter types).
 	 */
-	[[nodiscard]] Compacted compact(ref<const Module> module_, ref<const CompactPlan> plan_);
+	[[nodiscard]] Compacted compact(ref<const Module> mod_, ref<const CompactPlan> plan_);
 }
