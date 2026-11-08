@@ -58,7 +58,7 @@ void RenderSceneManager::dropPrimaryTarget(cref<smr<RenderTarget>> renderTarget_
 void RenderSceneManager::transitionToSceneView(mref<smr<Swapchain>> targetKey_, mref<smr<SceneView>> nextView_) {
 	const auto iter = _mappedRenderTargets.find(targetKey_);
 	assert(iter != _mappedRenderTargets.end());
-	[[maybe_unused]] const auto transition = iter->second->transitionToSceneView(std::move(nextView_));
+	iter->second->transitionToSceneView(std::move(nextView_));
 }
 
 void RenderSceneManager::transitionToTarget(mref<smr<Swapchain>> from_, mref<smr<Swapchain>> next_) {
