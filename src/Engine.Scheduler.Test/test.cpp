@@ -12,38 +12,6 @@ using namespace hg::engine::scheduler;
 using namespace hg;
 
 namespace SchedulerModule {
-	static void structuredRuntimeTest(std::function<void(nmpt<engine::Scheduler>)>&& callback_) {
-
-		auto engine = make_uptr<test::TestSchedulerEngine>();
-		engine->preInit();
-
-		const auto scheduler = engine->getScheduler();
-
-		//
-		EXPECT_EQ(scheduler->getWorkerCount(), 0uL);
-
-		//
-		engine->init();
-		EXPECT_NE(scheduler->getWorkerCount(), 0uL);
-
-		//
-		engine->postInit();
-		engine->start();
-
-		//
-		if (callback_) {
-			std::forward<decltype(callback_)>(callback_)(scheduler);
-		}
-
-		//
-		engine->stop();
-		engine->shutdown();
-		engine->exit();
-
-		//
-		engine.reset();
-	}
-
 	TEST(RuntimeTest, Default) {
 		structuredRuntimeTest(nullptr);
 	}
