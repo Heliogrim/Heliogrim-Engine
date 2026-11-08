@@ -13,7 +13,6 @@
 #include <Engine.Scene/Scene.hpp>
 
 #include "Level.hpp"
-#include "../Async/Execute.hpp"
 #include "../Core/Session.hpp"
 
 using namespace hg;
@@ -86,20 +85,24 @@ void Universe::dropActor(mref<ptr<Actor>> actor_) {
 }
 
 Future<Universe> hg::CreateUniverse() noexcept {
-	auto defaultScene = make_uptr<engine::scene::GameScene>();
-	defaultScene->prepare();
+	return hg::async(
+		[]() {
+			auto defaultScene = make_uptr<engine::scene::GameScene>();
+			defaultScene->prepare();
 
-	auto defaultLevel = engine::core::make_root_like_level();
+			auto defaultLevel = engine::core::make_root_like_level();
 
-	auto universe {
-		make_sptr<engine::core::Universe>(
-			std::move(defaultScene),
-			DenseSet<Arci<engine::core::Level>> { std::move(defaultLevel) }
-		)
-	};
-	engine::Engine::getEngine()->addUniverse(clone(universe));
+			auto universe {
+				make_sptr<engine::core::Universe>(
+					std::move(defaultScene),
+					DenseSet<Arci<engine::core::Level>> { std::move(defaultLevel) }
+				)
+			};
+			engine::Engine::getEngine()->addUniverse(clone(universe));
 
-	return Future<Universe>::ready(Universe { std::move(universe) });
+			return Universe { std::move(universe) };
+		}
+	);
 }
 
 Universe hg::GetUniverse(cref<Session> session_) noexcept {
