@@ -108,6 +108,14 @@ namespace hg {
 			return ready(std::move(state));
 		}
 
+		// The mask is inherited by every continuation chained from this future.
+		[[nodiscard]] static Future ready(const engine::scheduler::task::TaskMask mask_) requires std::is_void_v<T_> {
+			auto state = Arci<state_type>::create();
+			state->mask = mask_;
+			state->slot.template emplace<Resolved<void>>();
+			return ready(std::move(state));
+		}
+
 		/**
 		 * Consumes this future; fn_ runs as a scheduler task once the value exists, a failure skips it.
 		 */
