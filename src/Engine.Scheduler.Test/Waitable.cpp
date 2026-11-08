@@ -4,6 +4,8 @@
 
 #include <atomic>
 #include <thread>
+#include <type_traits>
+#include <memory>
 #include <vector>
 #include <Engine.Scheduler/Scheduler.hpp>
 #include <Engine.Scheduler/Task/Task.hpp>
@@ -277,25 +279,41 @@ namespace SchedulerModule {
 	TEST(PublicAwait, EventOverloadParksTask) {
 		structuredRuntimeTest(
 			[](nmpt<engine::Scheduler> s_) {
-				::hg::Signal event {};
-				std::atomic_bool done { false };
+				struct State {
+					::hg::Signal event {};
+					std::atomic_bool started { false };
+					std::atomic_bool done { false };
+				};
+
+				auto state = std::make_shared<State>();
 
 				s_->exec(
 					task::make_task(
-						[&] {
-							::hg::await(event);
-							done = true;
+						[state] {
+							state->started = true;
+							::hg::await(state->event);
+							state->done = true;
 						}
 					)
 				);
 
-				thread::self::sleepFor(5);
-				event.set();
-
-				for (u32 i = 0; i < 2000 && not done.load(); ++i) {
+				for (u32 i = 0; i < 2000 && not state->started.load(); ++i) {
 					thread::self::sleepFor(1);
 				}
-				ASSERT_TRUE(done.load());
+				if (not state->started.load()) {
+					state->event.set();
+					FAIL() << "task never started";
+				}
+
+				// The task cannot pass await before the event is set.
+				const auto prematurelyDone = state->done.load();
+				state->event.set();
+
+				for (u32 i = 0; i < 2000 && not state->done.load(); ++i) {
+					thread::self::sleepFor(1);
+				}
+				EXPECT_FALSE(prematurelyDone);
+				EXPECT_TRUE(state->done.load());
 			}
 		);
 	}
