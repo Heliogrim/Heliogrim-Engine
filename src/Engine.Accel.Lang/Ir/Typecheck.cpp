@@ -3,7 +3,6 @@
 #include <algorithm>
 #include <array>
 #include <cstdlib>
-#include <functional>
 #include <string>
 #include <utility>
 
@@ -784,7 +783,7 @@ namespace {
 
 		/* first live `let` borrow overlapping `place_` (two reads never conflict); aliases `from_` and its ancestors are exempt, as the place derives from them */
 		[[nodiscard]] const Entry* liveConflict(ref<const ir::PlacePath> place_, size_t from_, bool writes_) const {
-			const std::function<bool(ref<const ir::Expr>)> immutable = [this](ref<const ir::Expr> e_) { return immutableName(e_); };
+			const auto immutable = [this](ref<const ir::Expr> e_) { return immutableName(e_); };
 			for (auto i = 0uz; i < _scope.size(); ++i) {
 				const auto& live = _scope[i];
 				if (not live.place.has_value() || (not writes_ && live.mode != Mode::eRefWrite)) {
@@ -827,7 +826,7 @@ namespace {
 			if (not mine.has_value()) {
 				return false;
 			}
-			const std::function<bool(ref<const ir::Expr>)> immutable = [this](ref<const ir::Expr> e_) { return immutableName(e_); };
+			const auto immutable = [this](ref<const ir::Expr> e_) { return immutableName(e_); };
 			for (auto j = 0uz; j < operands_.size(); ++j) {
 				Vector<ir::PlacePath> others {};
 				if (j != index_) {

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <expected>
-#include <functional>
+#include <Engine.Common/Functional/FnRef.hpp>
 #include <Engine.Common/Optional.hpp>
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Wrapper.hpp>
@@ -11,9 +11,9 @@
 
 namespace hg::engine::accel::lang::ir {
 	/**
-	 * Returns the `.asl` source of the named module, or None if there is no such module.
+	 * Returns the `.asl` source of the named module, or None if there is no such module. Only borrowed for the parse.
 	 */
-	using ModuleResolver = std::function<Opt<String>(StringView name_)>;
+	using ModuleResolver = FnRef<Opt<String>(StringView name_)>;
 
 	/**
 	 * Parses one `.asl` module. `#include <name>` is module-level: the resolved module is parsed into the same
@@ -24,6 +24,6 @@ namespace hg::engine::accel::lang::ir {
 		StringView name_,
 		StringView source_,
 		EntryKind entry_,
-		ref<const ModuleResolver> includes_
+		ModuleResolver includes_
 	);
 }
