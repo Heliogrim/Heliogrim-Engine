@@ -93,8 +93,7 @@ void AccelerationEffect::enumerateExportSymbols(ref<Vector<StageOutput>> exports
 				}
 			);
 
-			tmpBeg = result.begin();
-			tmpEnd = result.end();
+			tmpEnd = result.begin();
 		}
 
 		/**/
