@@ -321,7 +321,7 @@ sptr<Window> WindowManager::requestWindow(
 
 	auto renderTarget = make_smr<gfx::RenderTarget>(std::move(device), renderer.get());
 
-	[[maybe_unused]] auto sceneViewTransition = renderTarget->transitionToSceneView(std::move(sceneView));
+	renderTarget->transitionToSceneView(std::move(sceneView));
 	[[maybe_unused]] auto targetTransition = renderTarget->transitionToTarget(
 		*surface,
 		[swapchain]([[maybe_unused]] mref<smr<gfx::Swapchain>> prev_) { return ::hg::move(swapchain); }
