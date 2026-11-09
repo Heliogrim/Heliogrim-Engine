@@ -3,6 +3,7 @@
 #include <Engine.Asserts/Asserts.hpp>
 
 #include "../Fiber/Park.hpp"
+#include "../Thread/Thread.hpp"
 
 using namespace hg::engine::scheduler;
 using namespace hg;
@@ -32,6 +33,8 @@ void Signal::set() noexcept {
 }
 
 void Signal::wait() {
+	::hg::assertd(not thread::self::isAffine());
+
 	if (_state.load(std::memory_order::acquire) == 1) {
 		return;
 	}

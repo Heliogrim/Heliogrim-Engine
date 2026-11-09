@@ -121,6 +121,13 @@ namespace hg::engine::scheduler::thread {
 
 	namespace self {
 		/**
+		 * Marks the calling (plain, non-fiber) thread as affine; affine threads must never wait on fiber results.
+		 */
+		void markAffine(bool affine_) noexcept;
+
+		[[nodiscard]] bool isAffine() noexcept;
+
+		/**
 		 * Yields this
 		 *
 		 * @author Julius
