@@ -19,6 +19,12 @@ using namespace hg;
 
 namespace AsyncModule {
 	namespace {
+		// The analysis cannot see the lock taken through EXPECT_TRUE(try_lock()) or across lambdas.
+		template <typename Mtx_>
+		void unlockUnchecked(Mtx_& mtx_) HG_NO_THREAD_SAFETY_ANALYSIS {
+			mtx_.unlock();
+		}
+
 		template <typename Pred_>
 		bool waitFor(Pred_&& pred_, const u32 ms_) {
 			for (u32 i = 0; i < ms_ && not pred_(); ++i) {
@@ -56,7 +62,7 @@ namespace AsyncModule {
 			EXPECT_FALSE(mtx.try_lock_shared());
 		}
 		EXPECT_TRUE(mtx.try_lock());
-		mtx.unlock();
+		unlockUnchecked(mtx);
 	}
 
 	TEST(FiberSharedMutex, ReadersOverlap) {
@@ -122,7 +128,7 @@ namespace AsyncModule {
 				EXPECT_TRUE(waitFor([&] { return shared->read.load(); }, 1'000));
 				bool locked = false;
 				EXPECT_TRUE(waitFor([&] { return locked = locked || shared->mtx.try_lock(); }, 1'000));
-				shared->mtx.unlock();
+				unlockUnchecked(shared->mtx);
 			}
 		);
 	}
@@ -279,7 +285,7 @@ namespace AsyncModule {
 				EXPECT_TRUE(waitFor([&] { return shared->released2.load() == 2; }, 1'000));
 				EXPECT_EQ(shared->acquired.load(), 2u);
 				EXPECT_TRUE(shared->mtx.try_lock());
-				shared->mtx.unlock();
+				unlockUnchecked(shared->mtx);
 			}
 		);
 	}
@@ -287,7 +293,7 @@ namespace AsyncModule {
 	TEST(FiberSharedMutex, ReaderBatchAllHoldBeforeNextWriter) {
 		SchedulerModule::structuredRuntimeTest(
 			4,
-			[](nmpt<engine::Scheduler> s_) {
+			[](nmpt<engine::Scheduler> s_) HG_NO_THREAD_SAFETY_ANALYSIS {
 				struct Shared {
 					concurrent::FiberSharedMutex mtx {};
 					std::atomic<u32> arrived { 0 };

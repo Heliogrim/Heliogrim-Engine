@@ -108,7 +108,7 @@ void VkNativeBatch::commitAndDispose() {
 	InlineAutoArray<ptr<engine::gfx::CommandPool>, 2> pools {};
 	std::ranges::for_each(
 		_batched,
-		[&pools](auto&& acb_) {
+		[&pools](auto&& acb_) HG_NO_THREAD_SAFETY_ANALYSIS {
 
 			auto pool = acb_->pool();
 			if (not std::ranges::contains(pools, pool)) {
@@ -127,7 +127,7 @@ void VkNativeBatch::commitAndDispose() {
 
 	std::ranges::for_each(
 		pools,
-		[](auto pool) {
+		[](auto pool) HG_NO_THREAD_SAFETY_ANALYSIS {
 			pool->lck().unlock();
 		}
 	);

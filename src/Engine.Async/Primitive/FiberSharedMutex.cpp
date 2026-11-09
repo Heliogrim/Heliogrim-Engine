@@ -113,7 +113,8 @@ bool FiberSharedMutex::try_lock_shared() noexcept {
 	return false;
 }
 
-void FiberSharedMutex::lock_shared() {
+// The slow path drops the transient reader count taken above before parking.
+void FiberSharedMutex::lock_shared() HG_NO_THREAD_SAFETY_ANALYSIS {
 	const u32 prev = _word.fetch_add(1, std::memory_order::acquire);
 	if ((prev & writerBits) == 0) {
 		return;
@@ -124,7 +125,7 @@ void FiberSharedMutex::lock_shared() {
 	const bool pushed = lockBoth(
 		_readers,
 		_writers,
-		[&](auto readers_, auto) {
+		[&](auto readers_, auto) HG_NO_THREAD_SAFETY_ANALYSIS {
 			// CAS instead of fetch_add: a fast-path writer may take 0 -> eWriter without the queue lock.
 			if (try_lock_shared()) {
 				return false;
