@@ -40,7 +40,7 @@ namespace hg::editor {
 
 	private:
 		std::atomic_flag _running;
-		std::atomic_flag _finished;
+		mutable Signal _finished;
 		bool _failed;
 
 	private:
@@ -65,6 +65,6 @@ namespace hg::editor {
 		Result<void, std::runtime_error> undo() override;
 
 	public:
-		[[nodiscard]] operator ptr<await_signal_sub_type>() const noexcept override;
+		[[nodiscard]] ref<Signal> finished() const noexcept override;
 	};
 }

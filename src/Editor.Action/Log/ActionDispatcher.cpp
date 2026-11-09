@@ -15,14 +15,14 @@ ActionDispatcher::ActionDispatcher() = default;
 Result<void, std::runtime_error> ActionDispatcher::apply(mref<Arci<Action>> action_) const {
 	auto result = Result<void, std::runtime_error> {};
 	execute([action = action_, &result] { result = action->apply(); });
-	await(*action_);
+	await(action_->finished());
 	return result;
 }
 
 Result<void, std::runtime_error> ActionDispatcher::revoke(mref<Arci<Action>> action_) const {
 	auto result = Result<void, std::runtime_error> {};
 	execute([action = action_, &result] { result = action->revoke(); });
-	await(*action_);
+	await(action_->finished());
 	return result;
 }
 
@@ -33,6 +33,6 @@ Result<void, std::runtime_error> ActionDispatcher::undo(mref<Arci<Action>> actio
 
 	auto result = Result<void, std::runtime_error> {};
 	execute([action = action_, &result] { result = action->undo(); });
-	await(*action_);
+	await(action_->finished());
 	return result;
 }

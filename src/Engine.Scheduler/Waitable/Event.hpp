@@ -19,6 +19,9 @@ namespace hg::engine::scheduler {
 
 		void wait();
 
+		// Valid only when nothing is waiting; re-arms the one-shot.
+		void reset() noexcept;
+
 	private:
 		std::atomic<u32> _state { 0 };
 		ParkQueue _waiters;

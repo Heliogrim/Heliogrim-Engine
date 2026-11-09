@@ -31,6 +31,16 @@ void Event::set() noexcept {
 	}
 }
 
+void Event::reset() noexcept {
+	_waiters.locked(
+		[&](auto locked_) {
+			::hg::assertd(locked_.empty());
+			_closed = false;
+		}
+	);
+	_state.store(0, std::memory_order::relaxed);
+}
+
 void Event::wait() {
 	if (_state.load(std::memory_order::acquire) == 1) {
 		return;

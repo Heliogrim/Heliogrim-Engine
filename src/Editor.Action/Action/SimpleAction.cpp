@@ -6,17 +6,17 @@ using namespace hg;
 SimpleAction::~SimpleAction() noexcept = default;
 
 void SimpleAction::setRunning() {
-	_finished.clear();
+	_finished.reset();
 	_running.test_and_set();
 }
 
 void SimpleAction::setFinished() {
 	_running.clear();
-	_finished.test_and_set();
+	_finished.set();
 }
 
 bool SimpleAction::isPending() const noexcept {
-	return not _running.test() && not _finished.test();
+	return not _running.test() && not _finished.isSet();
 }
 
 bool SimpleAction::isRunning() const noexcept {
@@ -24,9 +24,9 @@ bool SimpleAction::isRunning() const noexcept {
 }
 
 bool SimpleAction::isFinished() const noexcept {
-	return _finished.test();
+	return _finished.isSet();
 }
 
-SimpleAction::operator ptr<await_signal_sub_type>() const noexcept {
-	return &_finished;
+ref<Signal> SimpleAction::finished() const noexcept {
+	return _finished;
 }

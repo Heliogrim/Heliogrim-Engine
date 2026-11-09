@@ -6,7 +6,7 @@
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 #include <Engine.Common/Functional/Function.hpp>
-#include <Engine.Scheduler/Fiber/Awaitable.hpp>
+#include <Engine.Async/Future/Future.hpp>
 
 namespace hg::engine::io {
 	class Dispatcher;
@@ -33,7 +33,7 @@ namespace hg::engine::io {
 	public:
 		void operator()(_In_ mref<std::function<void()>> fnc_, sync_t) const;
 
-		[[nodiscard]] smr<scheduler::fiber::await_signal_type> operator()(
+		[[nodiscard]] Future<void> operator()(
 			_In_ mref<std::function<void()>> fnc_,
 			async_t
 		) const;

@@ -51,13 +51,13 @@ cref<decltype(AutoImportAction::_generatedAssets)> AutoImportAction::generatedAs
 }
 
 void AutoImportAction::setRunning() {
-	_finished.clear();
+	_finished.reset();
 	_running.test_and_set();
 }
 
 void AutoImportAction::setFinished() {
 	_running.clear();
-	_finished.test_and_set();
+	_finished.set();
 }
 
 bool AutoImportAction::isReversible() const noexcept {
@@ -65,7 +65,7 @@ bool AutoImportAction::isReversible() const noexcept {
 }
 
 bool AutoImportAction::isPending() const noexcept {
-	return not _running.test() && not _finished.test();
+	return not _running.test() && not _finished.isSet();
 }
 
 bool AutoImportAction::isRunning() const noexcept {
@@ -73,7 +73,7 @@ bool AutoImportAction::isRunning() const noexcept {
 }
 
 bool AutoImportAction::isFinished() const noexcept {
-	return _finished.test();
+	return _finished.isSet();
 }
 
 Result<void, std::runtime_error> AutoImportAction::apply() {
@@ -109,8 +109,8 @@ Result<void, std::runtime_error> AutoImportAction::undo() {
 	::hg::todo_panic();
 }
 
-AutoImportAction::operator ptr<await_signal_sub_type>() const noexcept {
-	return &_finished;
+ref<Signal> AutoImportAction::finished() const noexcept {
+	return _finished;
 }
 
 /**/
