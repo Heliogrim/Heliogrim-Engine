@@ -5,6 +5,7 @@
 #include <Engine.Common/Wrapper.hpp>
 
 #include "Awaitable.hpp"
+#include "Cancellation.hpp"
 #include "../Waitable/ParkQueue.hpp"
 #include "../Task/Task.hpp"
 
@@ -36,6 +37,8 @@ namespace hg::engine::scheduler::fiber {
 		ptr<Schedule> schedule = nullptr;
 
 		ParkNode parkNode;
+
+		CancellationToken cancellation;
 
 	public:
 		#if defined(WIN32)
@@ -109,6 +112,11 @@ namespace hg::engine::scheduler::fiber {
 		 * @date 21.10.2021
 		 */
 		void yield();
+
+		/**
+		 * Whether the task running on the current fiber was asked to cancel (cooperative, never interrupts)
+		 */
+		[[nodiscard]] bool cancellationRequested() noexcept;
 
 		/**
 		 * Awaits the given awaitable_ with current fiber

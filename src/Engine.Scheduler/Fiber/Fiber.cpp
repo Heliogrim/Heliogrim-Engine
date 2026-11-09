@@ -35,6 +35,7 @@ void Fiber::create(ptr<Fiber> self_, void (*proc_)(void*)) {
 	self_->task = nullptr;
 	self_->awaiter.reset();
 	self_->schedule = nullptr;
+	self_->cancellation.reset();
 }
 
 #else
@@ -60,6 +61,7 @@ void Fiber::create(ptr<Fiber> self_, _In_ void (*proc_)(int, int)) {
 	self_->task = nullptr;
 	self_->awaiter.reset();
 	self_->schedule = nullptr;
+	self_->cancellation.reset();
 }
 
 #endif
@@ -81,6 +83,7 @@ bool Fiber::destroy() {
 	task = nullptr;
 	awaiter.reset();
 	schedule = nullptr;
+	cancellation.reset();
 
 	return true;
 }
@@ -137,6 +140,11 @@ void self::yield() {
 	const auto fiber = current();
 	::hg::assertd(fiber != nullptr);
 	fiber->yield();
+}
+
+bool self::cancellationRequested() noexcept {
+	const auto fiber = current();
+	return fiber != nullptr && fiber->cancellation != nullptr && fiber->cancellation->isCancellationRequested();
 }
 
 void self::await(mref<FiberAwaitable> awaitable_) {

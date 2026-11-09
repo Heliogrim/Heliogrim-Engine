@@ -62,6 +62,15 @@ namespace hg::engine {
 		 */
 		virtual void exec(_In_ mref<task_handle_type> task_) = 0;
 
+		/**
+		 * Executes the given task with a cooperative cancellation token
+		 */
+		void exec(_In_ mref<task_handle_type> task_, scheduler::fiber::CancellationToken token_) {
+			// Handles are const by contract; the token is set before the task is scheduled.
+			const_cast<ptr<task_type>>(task_)->cancellation() = std::move(token_);
+			exec(std::move(task_));
+		}
+
 	public:
 		[[nodiscard]] virtual const non_owning_rptr<scheduler::CompositePipeline> getCompositePipeline() const noexcept
 		= 0;
