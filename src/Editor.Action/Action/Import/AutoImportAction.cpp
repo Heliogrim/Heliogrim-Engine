@@ -56,7 +56,6 @@ void AutoImportAction::setRunning() {
 
 void AutoImportAction::setFinished() {
 	_running.clear();
-	_finished.set();
 }
 
 bool AutoImportAction::isReversible() const noexcept {

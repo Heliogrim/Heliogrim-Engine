@@ -13,17 +13,18 @@ using namespace hg;
 ActionDispatcher::ActionDispatcher() = default;
 
 Result<void, std::runtime_error> ActionDispatcher::apply(mref<Arci<Action>> action_) const {
-	// Re-arm before dispatch; the executed task must not reset a signal the caller already awaits.
+	// The dispatch owns the signal: re-arm before, set after the body.
 	action_->finished().reset();
 	auto result = Result<void, std::runtime_error> {};
-	execute([action = action_, &result] { result = action->apply(); });
+	execute([action = action_, &result] { result = action->apply(); action->finished().set(); });
 	await(action_->finished());
 	return result;
 }
 
 Result<void, std::runtime_error> ActionDispatcher::revoke(mref<Arci<Action>> action_) const {
+	action_->finished().reset();
 	auto result = Result<void, std::runtime_error> {};
-	execute([action = action_, &result] { result = action->revoke(); });
+	execute([action = action_, &result] { result = action->revoke(); action->finished().set(); });
 	await(action_->finished());
 	return result;
 }
@@ -33,8 +34,9 @@ Result<void, std::runtime_error> ActionDispatcher::undo(mref<Arci<Action>> actio
 		return Unexpected { std::runtime_error("Failed to undo irreversible action.") };
 	}
 
+	action_->finished().reset();
 	auto result = Result<void, std::runtime_error> {};
-	execute([action = action_, &result] { result = action->undo(); });
+	execute([action = action_, &result] { result = action->undo(); action->finished().set(); });
 	await(action_->finished());
 	return result;
 }
