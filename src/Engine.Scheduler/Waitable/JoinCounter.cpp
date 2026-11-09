@@ -1,6 +1,6 @@
 #include "JoinCounter.hpp"
 
-#include <cassert>
+#include <Engine.Asserts/Asserts.hpp>
 
 using namespace hg::engine::scheduler;
 using namespace hg;
@@ -14,17 +14,15 @@ void JoinCounter::add(const u32 n_) noexcept {
 
 void JoinCounter::done() noexcept {
 	const auto prev = _pending.fetch_sub(1, std::memory_order_acq_rel);
-	assert(prev != 0);
+	::hg::assertd(prev != 0);
 	if (prev == 1) {
 		_done.set();
 	}
 }
 
 void JoinCounter::wait() {
-#ifdef _DEBUG
-	assert(not _waited);
+	::hg::assertd(not _waited);
 	_waited = true;
-#endif
 	done();
 	_done.wait();
 }
