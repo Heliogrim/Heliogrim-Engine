@@ -1,7 +1,10 @@
 #pragma once
 
+#include <Engine.Async/Affine/AffineThread.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Platform/Platform.hpp>
-#include <Engine.Scheduler/Thread/Thread.hpp>
+
+union SDL_Event;
 
 namespace hg::engine {
 	class WinPlatform final :
@@ -23,13 +26,13 @@ namespace hg::engine {
 		void setup() override;
 
 	private:
-		std::thread _thread;
-		scheduler::task::SignaledQueue _platformQueue;
+		// Mutable: platformThread() is const but hands out the thread for posting.
+		mutable async::AffineThread _platformThread;
 
 		Vector<ptr<platform::NativeWindow>> _windows;
 
 	public:
-		[[nodiscard]] ref<scheduler::task::SignaledQueue> platformQueue() const noexcept override;
+		[[nodiscard]] ref<async::AffineThread> platformThread() const noexcept override;
 
 		[[nodiscard]] hg::Future<uptr<platform::NativeWindow>> makeNativeWindow(
 			const string_view title_,
@@ -41,6 +44,8 @@ namespace hg::engine {
 		) override;
 
 	private:
-		void processInternal();
+		static bool eventWatch(ptr<void> self_, ptr<SDL_Event> event_);
+
+		void translateEvent(cref<SDL_Event> event_);
 	};
 }
