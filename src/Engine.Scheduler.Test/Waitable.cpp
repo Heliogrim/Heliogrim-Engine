@@ -140,6 +140,7 @@ namespace SchedulerModule {
 
 				std::atomic_flag setOnce {};
 				std::atomic_bool timedOut { false };
+				std::atomic<bool> setterRan { false };
 				std::thread watchdog {
 					[&] {
 						for (u32 i = 0; i < 2000 && not event.isSet(); ++i) {
@@ -157,12 +158,14 @@ namespace SchedulerModule {
 					[&] {
 						thread::self::sleepFor(5);
 						if (not setOnce.test_and_set()) {
+							setterRan = true;
 							event.set();
 						}
 					}
 				};
 
 				event.wait();
+				EXPECT_TRUE(setterRan.load());
 				setter.join();
 				watchdog.join();
 				ASSERT_FALSE(timedOut.load());

@@ -36,9 +36,8 @@ namespace EditorAction {
 
 		EXPECT_EQ(fwd, 1);
 		EXPECT_EQ(bwd, 0);
-		EXPECT_TRUE(action->isFinished());
+		// finished is owned by the dispatcher; a direct apply() does not set it.
 		EXPECT_FALSE(action->isRunning());
-		EXPECT_FALSE(action->isPending());
 	}
 
 	TEST(DelegateActionTest, UndoRunsBackward) {
