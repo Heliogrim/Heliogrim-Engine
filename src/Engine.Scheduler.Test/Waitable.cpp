@@ -19,6 +19,32 @@ using namespace hg::engine::scheduler;
 using namespace hg;
 
 namespace SchedulerModule {
+	TEST(AffineFlag, DefaultsFalsePerThread) {
+		EXPECT_FALSE(thread::self::isAffine());
+		std::thread t {
+			[] {
+				EXPECT_FALSE(thread::self::isAffine());
+				thread::self::markAffine(true);
+				EXPECT_TRUE(thread::self::isAffine());
+			}
+		};
+		t.join();
+		EXPECT_FALSE(thread::self::isAffine());
+	}
+
+	#ifdef _DEBUG
+	TEST(AffineFlag, SignalWaitOnAffineThreadAsserts) {
+		EXPECT_DEATH(
+			{
+				thread::self::markAffine(true);
+				engine::scheduler::Signal event {};
+				event.wait();
+			},
+			""
+		);
+	}
+	#endif
+
 	TEST(ParkQueue, FifoOrder) {
 		ParkQueue queue {};
 		ParkNode a, b, c;
