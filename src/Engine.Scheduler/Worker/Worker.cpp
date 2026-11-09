@@ -161,6 +161,7 @@ void Worker::handle(void* args_) {
 				launcher.self = pool.acquire();
 				launcher.self->task = task;
 				launcher.self->schedule = schedule;
+				launcher.self->cancellation = fiber::CancellationToken { task->cancellation() };
 				const_cast<ptr<task::TaskDelegate>>(task)->fiber() = launcher.self;
 			}
 
@@ -216,6 +217,7 @@ void Worker::handle(void* args_) {
 				/**
 				 * Release execution context
 				 */
+				launcher.self->cancellation.reset();
 				pool.release(std::move(launcher.self));
 			}
 		}

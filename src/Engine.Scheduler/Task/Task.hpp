@@ -6,6 +6,7 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/__macro.hpp>
 
+#include "../Fiber/Cancellation.hpp"
 #include "TaskCtrl.hpp"
 #include "TaskMask.hpp"
 #include "TaskType.hpp"
@@ -134,6 +135,18 @@ namespace hg::engine::scheduler::task {
 		[[nodiscard]] ptr<TaskCtrl> ctrl() const noexcept;
 
 		[[nodiscard]] ref<ptr<TaskCtrl>> ctrl() noexcept;
+
+	private:
+		fiber::CancellationToken _cancellation;
+
+	public:
+		[[nodiscard]] cref<fiber::CancellationToken> cancellation() const noexcept {
+			return _cancellation;
+		}
+
+		[[nodiscard]] ref<fiber::CancellationToken> cancellation() noexcept {
+			return _cancellation;
+		}
 	};
 
 	class Task :
