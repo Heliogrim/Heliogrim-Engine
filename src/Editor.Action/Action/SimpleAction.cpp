@@ -11,7 +11,6 @@ void SimpleAction::setRunning() {
 
 void SimpleAction::setFinished() {
 	_running.clear();
-	_finished.set();
 }
 
 bool SimpleAction::isPending() const noexcept {
