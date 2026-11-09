@@ -199,7 +199,7 @@ EditorHdrTextureTransformer::loader_traits::response::type EditorHdrTextureTrans
 	 * Transform and transfer data
 	 */
 	auto* const pool = device->transferQueue()->pool();
-	pool->lck().acquire();
+	pool->lck().lock();
 
 	auto cmd = pool->make();
 	cmd.begin();
@@ -261,7 +261,7 @@ EditorHdrTextureTransformer::loader_traits::response::type EditorHdrTextureTrans
 	cmd.submitWait();
 	cmd.release();
 
-	pool->lck().release();
+	pool->lck().unlock();
 
 	/**
 	 * Cleanup

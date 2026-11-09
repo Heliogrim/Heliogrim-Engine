@@ -112,7 +112,7 @@ void VkNativeBatch::commitAndDispose() {
 
 			auto pool = acb_->pool();
 			if (not std::ranges::contains(pools, pool)) {
-				pool->lck().acquire();
+				pool->lck().lock();
 				pools.emplace_back(pool);
 			}
 
@@ -128,7 +128,7 @@ void VkNativeBatch::commitAndDispose() {
 	std::ranges::for_each(
 		pools,
 		[](auto pool) {
-			pool->lck().release();
+			pool->lck().unlock();
 		}
 	);
 

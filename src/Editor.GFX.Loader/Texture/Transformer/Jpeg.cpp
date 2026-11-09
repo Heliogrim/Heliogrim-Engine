@@ -204,7 +204,7 @@ EditorJpegTextureTransformer::loader_traits::response::type EditorJpegTextureTra
 	 * Transform and transfer data
 	 */
 	auto* const pool = device->transferQueue()->pool();
-	pool->lck().acquire();
+	pool->lck().lock();
 
 	auto cmd = pool->make();
 	cmd.begin();
@@ -266,7 +266,7 @@ EditorJpegTextureTransformer::loader_traits::response::type EditorJpegTextureTra
 	cmd.submitWait();
 	cmd.release();
 
-	pool->lck().release();
+	pool->lck().unlock();
 
 	/**
 	 * Cleanup

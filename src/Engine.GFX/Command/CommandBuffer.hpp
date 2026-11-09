@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine.Async/Primitive/SpinLock.hpp>
+#include <Engine.Async/Primitive/FiberMutex.hpp>
 
 #include "CommandPool.hpp"
 #include "../vkinc.hpp"
@@ -296,7 +296,7 @@ namespace hg::engine::gfx {
 		 * @author Julius
 		 * @date 25.11.2020
 		 */
-		[[nodiscard]] hg::concurrent::UnfairSpinLock& lck() const;
+		[[nodiscard]] hg::concurrent::FiberMutex& lck() const;
 
 		/**
 		 * Submits this to the CommandQueue and waits until it's finished

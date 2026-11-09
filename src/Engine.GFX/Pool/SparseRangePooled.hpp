@@ -138,7 +138,7 @@ namespace hg::engine::gfx {
 			/**/
 
 			const auto cmdPool = _device->transferQueue()->pool();
-			cmdPool->lck().acquire();
+			cmdPool->lck().lock();
 			auto cmd = cmdPool->make();
 
 			cmd.begin();
@@ -192,7 +192,7 @@ namespace hg::engine::gfx {
 			_device->transferQueue()->submitWait(cmd);
 
 			cmd.release();
-			cmdPool->lck().release();
+			cmdPool->lck().unlock();
 
 			/**/
 

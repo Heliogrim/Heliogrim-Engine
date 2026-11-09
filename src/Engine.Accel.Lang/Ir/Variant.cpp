@@ -1,6 +1,8 @@
 #include "Variant.hpp"
 
 #include <algorithm>
+#include <mutex>
+#include <shared_mutex>
 
 using namespace hg::engine::accel::lang::ir;
 using namespace hg;
@@ -210,12 +212,12 @@ smr<const Resolved> VariantCache::getOrCreate(ref<const VariantKey> key_, FnRef<
 		return built;
 	}
 
-	const concurrent::SpinLock guard { _lck };
+	const std::unique_lock lock { _lck };
 	return _entries.try_emplace(key_, std::move(built)).first->second;
 }
 
 smr<const Resolved> VariantCache::find(ref<const VariantKey> key_) const noexcept {
-	const concurrent::SpinLock guard { _lck };
+	const std::shared_lock lock { _lck };
 	const auto iter = _entries.find(key_);
 	return iter != _entries.end() ? iter->second : smr<const Resolved> {};
 }
@@ -233,12 +235,12 @@ smr<const ResolvedPipeline> PipelineLayoutCache::getOrCreate(
 		return built;
 	}
 
-	const concurrent::SpinLock guard { _lck };
+	const std::unique_lock lock { _lck };
 	return _entries.try_emplace(key_, std::move(built)).first->second;
 }
 
 smr<const ResolvedPipeline> PipelineLayoutCache::find(ref<const Vector<VariantKey>> key_) const noexcept {
-	const concurrent::SpinLock guard { _lck };
+	const std::shared_lock lock { _lck };
 	const auto iter = _entries.find(key_);
 	return iter != _entries.end() ? iter->second : smr<const ResolvedPipeline> {};
 }

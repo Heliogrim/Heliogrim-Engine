@@ -48,8 +48,8 @@ ref<engine::accel::AccelCommandBuffer> VkCmdMgr::allocate() {
 
     const auto pool = queues.front().front()->pool();
 
-    std::scoped_lock<concurrent::UnfairSpinLock> lck { pool->lck() };
-    auto result = pool->make();
+	std::scoped_lock<concurrent::FiberMutex> lck { pool->lck() };
+	auto result = pool->make();
 
     active.emplace_back(
         std::move(static_cast<engine::accel::AccelCommandBuffer&&>(result))

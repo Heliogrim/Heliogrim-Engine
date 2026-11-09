@@ -21,11 +21,11 @@ void MipMapGenerator::generate(Texture& texture_, cref<sptr<Device>> device_, Co
      */
     CommandBuffer cmd = queue_.pool()->make();
 
-    /**
-     * Acquire Pool and Begin Recording
-     */
-    cmd.lck().acquire();
-    cmd.begin();
+	/**
+	 * Acquire Pool and Begin Recording
+	 */
+	cmd.lck().lock();
+	cmd.begin();
 
     /**
      * Translate Image Memory Layout to Transfer Src and Transfer Dst
@@ -82,13 +82,13 @@ void MipMapGenerator::generate(Texture& texture_, cref<sptr<Device>> device_, Co
      */
     // TODO:
 
-    /**
-     * Release Pool and Execute Command Buffer
-     */
-    cmd.lck().release();
-    // TODO: Replace with sync command, cause submit is async submitting of command batch with signals
-    queue_.submitWait({ cmd });
-    cmd.release();
+	/**
+	 * Release Pool and Execute Command Buffer
+	 */
+	cmd.lck().unlock();
+	// TODO: Replace with sync command, cause submit is async submitting of command batch with signals
+	queue_.submitWait({ cmd });
+	cmd.release();
 
     /**
      * Replace Texture internal buffer

@@ -211,7 +211,7 @@ EditorPngTextureTransformer::loader_traits::response::type EditorPngTextureTrans
 	 * Transform and transfer data
 	 */
 	auto* const pool = device->transferQueue()->pool();
-	pool->lck().acquire();
+	pool->lck().lock();
 
 	auto cmd = pool->make();
 	cmd.begin();
@@ -273,7 +273,7 @@ EditorPngTextureTransformer::loader_traits::response::type EditorPngTextureTrans
 	cmd.submitWait();
 	cmd.release();
 
-	pool->lck().release();
+	pool->lck().unlock();
 
 	/**
 	 * Cleanup

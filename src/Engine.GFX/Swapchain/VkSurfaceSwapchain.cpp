@@ -350,7 +350,7 @@ void pretransform(cref<sptr<Device>> device_, cref<Vector<SwapchainImage>> textu
 	}
 
 	const auto pool = device_->graphicsQueue()->pool();
-	pool->lck().acquire();
+	pool->lck().lock();
 	CommandBuffer cmd = pool->make();
 	cmd.begin();
 
@@ -373,5 +373,5 @@ void pretransform(cref<sptr<Device>> device_, cref<Vector<SwapchainImage>> textu
 	cmd.submitWait();
 	cmd.release();
 
-	pool->lck().release();
+	pool->lck().unlock();
 }
