@@ -11,6 +11,7 @@
 #include <Editor.Action/ActionManager.hpp>
 #include <Editor.Action/Action/Import/AutoImportAction.hpp>
 #include <Engine.Asserts/Todo.hpp>
+#include <Engine.Async/Affine/AffineThread.hpp>
 #include <Engine.Async/Future/Promise.hpp>
 #include <Engine.Common/Expected.hpp>
 #include <Engine.Config/Config.hpp>
@@ -264,7 +265,7 @@ Future<FileUrl, std::runtime_error> requestPlatformSelect(mref<Vector<SelectFile
 	const auto engine = engine::Engine::getEngine();
 	const auto platform = engine->getPlatform();
 
-	UniqueFn<void(), 128> item {
+	platform->platformThread().postDetached(
 		[filters = ::hg::move(filter_), promise_ = ::hg::move(promise), select]() mutable {
 			auto result = select(filters);
 			if (result.has_value()) {
@@ -273,8 +274,7 @@ Future<FileUrl, std::runtime_error> requestPlatformSelect(mref<Vector<SelectFile
 				promise_.reject(::hg::move(result).error());
 			}
 		}
-	};
-	platform->platformQueue().try_push(::hg::move(item));
+	);
 	return future;
 }
 

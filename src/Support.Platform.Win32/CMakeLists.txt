@@ -7,5 +7,6 @@ if ("${CMAKE_SYSTEM_NAME}" MATCHES "Windows")
 			LIBRARIES
 			${PROJECT_NAME}::Engine.Common
 			${PROJECT_NAME}::Engine.Platform
+			${PROJECT_NAME}::Engine.Async
 	)
 endif ()

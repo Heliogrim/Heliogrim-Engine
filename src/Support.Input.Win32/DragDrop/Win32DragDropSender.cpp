@@ -1,5 +1,6 @@
 #include "Win32DragDropSender.hpp"
 
+#include <Engine.Async/Affine/AffineThread.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Platform/Platform.hpp>
@@ -23,9 +24,12 @@ void Win32DragDropSender::setup() {}
 void Win32DragDropSender::destroy() {}
 
 void Win32DragDropSender::dispatchDragDrop() {
-	Engine::getEngine()->getPlatform()->platformQueue().try_push(
-		[this]() {
-			startDragDrop();
+	// startDragDrop tidies on every path; the guard only releases `_cur` when a stopped thread destroys the item unrun.
+	using tidy_guard = std::unique_ptr<this_type, decltype([](ptr<this_type> self_) { self_->tidyDragDrop(); })>;
+	Engine::getEngine()->getPlatform()->platformThread().postDetached(
+		[guard = tidy_guard { this }]() mutable {
+			// Disarm first: a later destruction must not tidy a `_cur` set by a newer send.
+			guard.release()->startDragDrop();
 		}
 	);
 }
@@ -73,7 +77,9 @@ void Win32DragDropSender::startDragDrop() {
 	/**/
 
 	DWORD resEffect { NULL };
+	platform::dragActive().store(true, std::memory_order_release);
 	const auto result = DoDragDrop(static_cast<ptr<Win32DragDropObject>>(_cur), this, DROPEFFECT_COPY, &resEffect);
+	platform::dragActive().store(false, std::memory_order_release);
 
 	if (result == DRAGDROP_S_CANCEL) {
 		tidyDragDrop();
@@ -163,7 +169,7 @@ ULONG Win32DragDropSender::Release() {
 
 HRESULT Win32DragDropSender::QueryContinueDrag(const BOOL fEscapePressed_, const DWORD grfKeyState_) {
 
-	if (fEscapePressed_) {
+	if (fEscapePressed_ || async::AffineThread::current()->stopping()) {
 		return DRAGDROP_S_CANCEL;
 	}
 
