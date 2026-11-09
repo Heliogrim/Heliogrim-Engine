@@ -1,6 +1,6 @@
 #pragma once
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Scheduler/Helper/Wait.hpp>
+#include <Engine.Async/Primitive/FiberMutex.hpp>
 
 #include "Resource.hpp"
 
@@ -39,13 +39,11 @@ namespace hg::engine::resource {
 		~UniqueResource() override = default;
 
 	private:
-		std::atomic_flag _lck;
+		::hg::concurrent::FiberMutex _lck;
 
 	public:
 		[[nodiscard]] ManageGuard acquire(const ResourceUsageFlags flags_) override {
-			while (_lck.test_and_set(std::memory_order::release)) {
-				scheduler::waitOnAtomic(_lck, true);
-			}
+			_lck.lock();
 			return guard_type { this, flags_, std::adopt_lock };
 		}
 
@@ -53,7 +51,7 @@ namespace hg::engine::resource {
 			_Out_ ref<ManageGuard> guard_,
 			const ResourceUsageFlags flags_
 		) noexcept override {
-			if (_lck.test_and_set(std::memory_order::consume)) {
+			if (not _lck.try_lock()) {
 				return false;
 			}
 
@@ -63,8 +61,7 @@ namespace hg::engine::resource {
 
 	protected:
 		void release(const ResourceUsageFlags flags_) override {
-			_lck.clear(std::memory_order::release);
-			_lck.notify_one();
+			_lck.unlock();
 		}
 	};
 }

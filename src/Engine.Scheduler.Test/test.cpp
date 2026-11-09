@@ -6,7 +6,7 @@
 #include <Engine.Common/Make.hpp>
 #include <Engine.Scheduler/CompScheduler.hpp>
 #include <Engine.Scheduler/Scheduler.hpp>
-#include <Engine.Scheduler/Helper/Wait.hpp>
+#include <Engine.Scheduler/Waitable/JoinCounter.hpp>
 #include <Engine.Scheduler/Pipeline/CompositePipeline.hpp>
 #include <Engine.Scheduler/Pipeline/StagePipeline.hpp>
 
@@ -617,13 +617,12 @@ namespace SchedulerModule {
 		structuredRuntimeTest(
 			[&minorTimestamp, &majorTimestamp](nmpt<engine::Scheduler> scheduler_) {
 
-				std::atomic_uint_fast8_t done { 0 };
+				JoinCounter done { 3u };
 
 				auto minorTask = engine::scheduler::task::make_task(
 					[&minorTimestamp, &done]() {
 						minorTimestamp = std::chrono::high_resolution_clock::now();
-						++done;
-						done.notify_one();
+						done.done();
 					},
 					task::TaskMask::eLower
 				);
@@ -631,8 +630,7 @@ namespace SchedulerModule {
 				auto majorTask = engine::scheduler::task::make_task(
 					[&majorTimestamp, &done]() {
 						majorTimestamp = std::chrono::high_resolution_clock::now();
-						++done;
-						done.notify_one();
+						done.done();
 					},
 					task::TaskMask::eHigher
 				);
@@ -643,8 +641,7 @@ namespace SchedulerModule {
 					[&minorTask, &majorTask, &scheduler_, &done]() {
 						scheduler_->exec(std::move(minorTask));
 						scheduler_->exec(std::move(majorTask));
-						++done;
-						done.notify_one();
+						done.done();
 					}
 				);
 
@@ -653,7 +650,7 @@ namespace SchedulerModule {
 				/**
 				 *
 				 */
-				engine::scheduler::waitUntilAtomic(done, 3u);
+				done.wait();
 			}
 		);
 
@@ -717,7 +714,7 @@ namespace SchedulerModule {
 				/**
 				 *
 				 */
-				engine::scheduler::waitUntilAtomic(done, 3u);
+				// Stale: wait helper removed; port to JoinCounter with the rest of this block.
 			}
 		);
 
