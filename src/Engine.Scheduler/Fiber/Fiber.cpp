@@ -33,7 +33,6 @@ void Fiber::create(ptr<Fiber> self_, void (*proc_)(void*)) {
 	self_->handle = ctx;
 	self_->parent = nullptr;
 	self_->task = nullptr;
-	self_->awaiter.reset();
 	self_->schedule = nullptr;
 	self_->cancellation.reset();
 }
@@ -59,7 +58,6 @@ void Fiber::create(ptr<Fiber> self_, _In_ void (*proc_)(int, int)) {
 	self_->handle = ctx;
 	self_->parent = nullptr;
 	self_->task = nullptr;
-	self_->awaiter.reset();
 	self_->schedule = nullptr;
 	self_->cancellation.reset();
 }
@@ -81,7 +79,6 @@ bool Fiber::destroy() {
 	handle = nullptr;
 	parent = nullptr;
 	task = nullptr;
-	awaiter.reset();
 	schedule = nullptr;
 	cancellation.reset();
 
@@ -104,27 +101,6 @@ void Fiber::yield() {
 	#endif
 }
 
-void Fiber::await(mref<FiberAwaitable> awaitable_) {
-
-	::hg::assertd(parent != nullptr /* "Dynamic Fiber requires parent to await payload." */);
-	::hg::assertd(handle != parent /* "Current fiber and next fiber must never be the same." */);
-
-	/**
-	 *
-	 */
-	awaiter = std::move(awaitable_);
-
-	/**
-	 *
-	 */
-	yield();
-
-	/**
-	 *
-	 */
-	awaiter.reset();
-}
-
 ptr<Fiber> self::current() noexcept {
 
 	#ifdef ENV_MSVC
@@ -145,12 +121,6 @@ void self::yield() {
 bool self::cancellationRequested() noexcept {
 	const auto fiber = current();
 	return fiber != nullptr && fiber->cancellation != nullptr && fiber->cancellation->isCancellationRequested();
-}
-
-void self::await(mref<FiberAwaitable> awaitable_) {
-	const auto fiber = current();
-	::hg::assertd(fiber != nullptr);
-	fiber->await(std::forward<FiberAwaitable>(awaitable_));
 }
 
 u64 engine::scheduler::fiber::default_fiber_stack_size() noexcept {

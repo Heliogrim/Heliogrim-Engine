@@ -215,6 +215,7 @@ bool VkSwapchain::consumeNext(
         ::hg::breakpoint();
     }
 	#else
+	// shortcut: spin-yield on the presentation ring, upgrade when W02.3 gives presentation an affine seam
 	while (not _rQueue.try_push(std::move(pidx))) {
 		scheduler::fiber::self::yield();
 	}
