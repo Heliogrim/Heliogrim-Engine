@@ -7,7 +7,6 @@
 #include <Engine.Pedantic/Clone/Clone.hpp>
 
 #include "../Fiber/Fiber.hpp"
-#include "../Helper/Wait.hpp"
 #include "../Process/Schedule.hpp"
 #include "Composite/CompositeSlot.hpp"
 #include "Composite/StageDependency.hpp"
@@ -66,13 +65,8 @@ void CompositePipeline::stop() {
 	::hg::assertrt(not _stopping.test());
 
 	_stopping.test_and_set();
-	// TODO: waitOnAtomic(_stopping, true);
-	while (_stopping.test(std::memory_order::relaxed) == true) {
-		fiber::self::yield();
-	}
-	if (_stopping.test()) {
-		::hg::panic();
-	}
+	_stopped.wait();
+	_stopped.reset();
 }
 
 void CompositePipeline::destroy() {
@@ -258,6 +252,7 @@ void CompositePipeline::complete(const non_owning_rptr<CompositeSlot> slot_) {
 
 		} else [[unlikely]] {
 			_stopping.clear();
+			_stopped.set();
 		}
 	}
 
