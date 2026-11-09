@@ -7,7 +7,7 @@
 #include <Engine.Common/Functional/UniqueFn.hpp>
 #include <Engine.Common/Managed/Rc.hpp>
 #include <Engine.Scheduler/Task/TaskMask.hpp>
-#include <Engine.Scheduler/Waitable/Event.hpp>
+#include <Engine.Scheduler/Waitable/Signal.hpp>
 
 #include "Broken.hpp"
 
@@ -36,7 +36,7 @@ namespace hg {
 		class FutureState :
 			public ArcFromThis<FutureState<T_, E_>> {
 		public:
-			engine::scheduler::Event done;
+			engine::scheduler::Signal done;
 			Variant<Pending, Resolved<T_>, Failed<E_>> slot;
 			std::atomic<u8> contState { eNone };
 			// The successor's work, stored by then() on this (predecessor) state.
