@@ -66,6 +66,6 @@ ptr<CommandQueue> CommandPool::queue() noexcept {
     return _queue;
 }
 
-hg::concurrent::UnfairSpinLock& CommandPool::lck() const {
+hg::concurrent::FiberMutex& CommandPool::lck() const {
     return _lck;
 }

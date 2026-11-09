@@ -274,7 +274,7 @@ ptr<CommandPool> CommandBuffer::pool() noexcept {
 	return _pool;
 }
 
-hg::concurrent::UnfairSpinLock& CommandBuffer::lck() const {
+hg::concurrent::FiberMutex& CommandBuffer::lck() const {
 	return _pool->lck();
 }
 

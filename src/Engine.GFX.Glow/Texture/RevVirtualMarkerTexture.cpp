@@ -79,7 +79,7 @@ void RevVirtualMarkerTexture::generateMarkers() {
 	 * Transform and data transfer
 	 */
 	auto* const pool = device->transferQueue()->pool();
-	pool->lck().acquire();
+	pool->lck().lock();
 	CommandBuffer cmd = pool->make();
 
 	/**/
@@ -235,7 +235,7 @@ void RevVirtualMarkerTexture::generateMarkers() {
 	cmd.submitWait();
 	cmd.release();
 
-	pool->lck().release();
+	pool->lck().unlock();
 
 	/**
 	 *

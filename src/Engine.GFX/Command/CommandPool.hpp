@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine.Async/Primitive/SpinLock.hpp>
+#include <Engine.Async/Primitive/FiberMutex.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include "CommandQueue.hpp"
 
@@ -92,7 +92,7 @@ namespace hg::engine::gfx {
 		/**
 		 * Synchronization Lock
 		 */
-		mutable hg::concurrent::UnfairSpinLock _lck;
+		mutable hg::concurrent::FiberMutex _lck;
 
 	public:
 		/**
@@ -101,7 +101,7 @@ namespace hg::engine::gfx {
 		 * @author Julius
 		 * @date 25.11.2020
 		 */
-		[[nodiscard]] ref<hg::concurrent::UnfairSpinLock> lck() const;
+		[[nodiscard]] ref<hg::concurrent::FiberMutex> lck() const;
 
 	private:
 		/**

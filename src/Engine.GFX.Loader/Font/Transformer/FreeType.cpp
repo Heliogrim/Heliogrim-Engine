@@ -150,7 +150,7 @@ void transformer::convertFreeType(
 	/**/
 
 	auto* const pool = device_->graphicsQueue()->pool();
-	pool->lck().acquire();
+	pool->lck().lock();
 	auto cmd { pool->make() };
 
 	cmd.begin();
@@ -235,7 +235,7 @@ void transformer::convertFreeType(
 	cmd.submitWait();
 	cmd.release();
 
-	pool->lck().release();
+	pool->lck().unlock();
 	font->_atlas->buffer()._vkLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
 
 	buffer.destroy();

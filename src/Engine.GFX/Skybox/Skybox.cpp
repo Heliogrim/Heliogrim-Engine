@@ -35,7 +35,7 @@ Skybox::Skybox(cref<sptr<Device>> device_) :
 	TextureFactory::get()->buildView(_cubemap);
 
 	auto pool = _device->graphicsQueue()->pool();
-	pool->lck().acquire();
+	pool->lck().lock();
 	CommandBuffer cmd = pool->make();
 	cmd.begin();
 
@@ -80,7 +80,7 @@ Skybox::Skybox(cref<sptr<Device>> device_) :
 	cmd.submitWait();
 	cmd.release();
 
-	pool->lck().release();
+	pool->lck().unlock();
 
 	::hg::todo_panic();
 	/*
@@ -89,7 +89,7 @@ Skybox::Skybox(cref<sptr<Device>> device_) :
 
 	    auto pool = device_->transferQueue()->pool();
 
-	    pool->lck().acquire();
+	    pool->lck().lock();
 	    CommandBuffer cmd = pool->make();
 
 	    cmd.begin();
@@ -174,7 +174,7 @@ Skybox::Skybox(cref<sptr<Device>> device_) :
 	    cmd.submitWait();
 	    cmd.release();
 
-	    pool->lck().release();
+	    pool->lck().unlock();
 
 	    _cubemap.buffer()._vkLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
 	    texture_.destroy();
