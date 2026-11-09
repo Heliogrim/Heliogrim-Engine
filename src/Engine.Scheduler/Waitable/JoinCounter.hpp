@@ -3,7 +3,7 @@
 #include <atomic>
 #include <Engine.Common/Types.hpp>
 
-#include "Event.hpp"
+#include "Signal.hpp"
 
 namespace hg::engine::scheduler {
 	/**
@@ -24,7 +24,7 @@ namespace hg::engine::scheduler {
 
 	private:
 		std::atomic<u32> _pending;
-		Event _done;
+		Signal _done;
 		bool _waited = false;
 	};
 }

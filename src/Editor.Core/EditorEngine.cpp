@@ -31,7 +31,7 @@
 #include <Engine.Scene.Schedule/ScenePipeline.hpp>
 #include <Engine.Scheduler/Async.hpp>
 #include <Engine.Scheduler/CompScheduler.hpp>
-#include <Engine.Scheduler/Waitable/Event.hpp>
+#include <Engine.Scheduler/Waitable/Signal.hpp>
 #include <Engine.Scheduler/Waitable/JoinCounter.hpp>
 #include <Engine.SFX/Audio.hpp>
 
@@ -216,7 +216,7 @@ bool EditorEngine::start() {
 	}
 
 	/**/
-	scheduler::Event next1;
+	scheduler::Signal next1;
 	scheduler::exec(
 		[this, &next1] {
 			_scheduler->getCompositePipeline()->start();
@@ -229,7 +229,7 @@ bool EditorEngine::start() {
 	next1.wait();
 
 	/**/
-	scheduler::Event next2;
+	scheduler::Signal next2;
 	scheduler::exec(
 		[this, &next2] {
 			_modules.forEachCoreModule(
@@ -246,7 +246,7 @@ bool EditorEngine::start() {
 	next2.wait();
 
 	/**/
-	scheduler::Event next3;
+	scheduler::Signal next3;
 	scheduler::exec(
 		[this, &next3] {
 
@@ -269,7 +269,7 @@ bool EditorEngine::stop() {
 	}
 
 	/**/
-	scheduler::Event next1;
+	scheduler::Signal next1;
 	scheduler::exec(
 		[this, &next1] {
 
@@ -302,7 +302,7 @@ bool EditorEngine::stop() {
 	next1.wait();
 
 	/**/
-	scheduler::Event next2;
+	scheduler::Signal next2;
 	scheduler::exec(
 		[this, &next2] {
 			_modules.forEachCoreModule(
@@ -319,7 +319,7 @@ bool EditorEngine::stop() {
 	next2.wait();
 
 	/**/
-	scheduler::Event next3;
+	scheduler::Signal next3;
 	scheduler::exec(
 		[this, &next3] {
 			_scheduler->getCompositePipeline()->stop();
@@ -338,7 +338,7 @@ bool EditorEngine::shutdown() {
 		return false;
 	}
 
-	scheduler::Event subModuleFlag;
+	scheduler::Signal subModuleFlag;
 	scheduler::exec(
 		[this, &subModuleFlag] {
 

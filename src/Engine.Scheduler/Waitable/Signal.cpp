@@ -1,4 +1,4 @@
-#include "Event.hpp"
+#include "Signal.hpp"
 
 #include <Engine.Asserts/Asserts.hpp>
 
@@ -7,11 +7,11 @@
 using namespace hg::engine::scheduler;
 using namespace hg;
 
-bool Event::isSet() const noexcept {
+bool Signal::isSet() const noexcept {
 	return _state.load(std::memory_order::acquire) == 1;
 }
 
-void Event::set() noexcept {
+void Signal::set() noexcept {
 	::hg::assertd(_state.load(std::memory_order::relaxed) == 0);
 
 	ptr<ParkNode> head = _waiters.locked(
@@ -20,7 +20,7 @@ void Event::set() noexcept {
 			return locked_.takeAll();
 		}
 	);
-	// Last access to *this; a waiter may destroy the event right after.
+	// Last access to *this; a waiter may destroy the signal right after.
 	_state.store(1, std::memory_order::release);
 
 	while (head != nullptr) {
@@ -31,17 +31,7 @@ void Event::set() noexcept {
 	}
 }
 
-void Event::reset() noexcept {
-	_waiters.locked(
-		[&](auto locked_) {
-			::hg::assertd(locked_.empty());
-			_closed = false;
-		}
-	);
-	_state.store(0, std::memory_order::relaxed);
-}
-
-void Event::wait() {
+void Signal::wait() {
 	if (_state.load(std::memory_order::acquire) == 1) {
 		return;
 	}
@@ -67,4 +57,14 @@ void Event::wait() {
 		}
 		node.state.store(ParkNode::State::eIdle, std::memory_order::relaxed);
 	}
+}
+
+void Signal::reset() noexcept {
+	_waiters.locked(
+		[&](auto locked_) {
+			::hg::assertd(locked_.empty());
+			_closed = false;
+		}
+	);
+	_state.store(0, std::memory_order::relaxed);
 }

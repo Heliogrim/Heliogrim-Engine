@@ -21,7 +21,7 @@
 #include <Engine.Scene.Schedule/ScenePipeline.hpp>
 #include <Engine.Scheduler/Async.hpp>
 #include <Engine.Scheduler/CompScheduler.hpp>
-#include <Engine.Scheduler/Waitable/Event.hpp>
+#include <Engine.Scheduler/Waitable/Signal.hpp>
 #include <Engine.Scheduler/Waitable/JoinCounter.hpp>
 #include <Engine.Scheduler/Pipeline/CompositePipeline.hpp>
 #include <Engine.SFX/Audio.hpp>
@@ -165,7 +165,7 @@ bool GameEngine::start() {
 	}
 
 	/**/
-	scheduler::Event next1;
+	scheduler::Signal next1;
 	scheduler::exec(
 		[this, &next1] {
 			_scheduler->getCompositePipeline()->start();
@@ -178,7 +178,7 @@ bool GameEngine::start() {
 	next1.wait();
 
 	/**/
-	scheduler::Event next2;
+	scheduler::Signal next2;
 	scheduler::exec(
 		[this, &next2] {
 			_modules.forEachCoreModule(
@@ -195,7 +195,7 @@ bool GameEngine::start() {
 	next2.wait();
 
 	/**/
-	scheduler::Event next3;
+	scheduler::Signal next3;
 	scheduler::exec(
 		[this, &next3] {
 
@@ -223,7 +223,7 @@ bool GameEngine::stop() {
 	//	as we have to maintain the the constraints, data-integrity and immutability while within the bound cycle state.
 
 	/**/
-	scheduler::Event next1;
+	scheduler::Signal next1;
 	scheduler::exec(
 		[this, &next1] {
 
@@ -247,7 +247,7 @@ bool GameEngine::stop() {
 	next1.wait();
 
 	/**/
-	scheduler::Event next2;
+	scheduler::Signal next2;
 	scheduler::exec(
 		[this, &next2] {
 			_modules.forEachCoreModule(
@@ -264,7 +264,7 @@ bool GameEngine::stop() {
 	next2.wait();
 
 	/**/
-	scheduler::Event next3;
+	scheduler::Signal next3;
 	scheduler::exec(
 		[this, &next3] {
 			_scheduler->getCompositePipeline()->stop();
@@ -283,7 +283,7 @@ bool GameEngine::shutdown() {
 		return false;
 	}
 
-	scheduler::Event subModuleFlag;
+	scheduler::Signal subModuleFlag;
 	scheduler::exec(
 		[this, &subModuleFlag] {
 
