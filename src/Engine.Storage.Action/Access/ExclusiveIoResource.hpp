@@ -54,15 +54,16 @@ namespace hg::engine::storage {
 		mutable concurrent::FiberMutex _lck;
 
 	private:
-		void acquireLock() const noexcept {
+		// The RAII accessors release in another function, which the analysis cannot follow.
+		void acquireLock() const noexcept HG_NO_THREAD_SAFETY_ANALYSIS {
 			_lck.lock();
 		}
 
-		bool tryAcquireLock() const noexcept {
+		bool tryAcquireLock() const noexcept HG_NO_THREAD_SAFETY_ANALYSIS {
 			return _lck.try_lock();
 		}
 
-		void releaseLock() const noexcept {
+		void releaseLock() const noexcept HG_NO_THREAD_SAFETY_ANALYSIS {
 			_lck.unlock();
 		}
 
