@@ -767,7 +767,7 @@ void transformer::convertKtx10Gli(
 	 * Capture commands to copy data to image
 	 */
 	auto* const pool = device_->transferQueue()->pool();
-	pool->lck().acquire();
+	pool->lck().lock();
 	CommandBuffer cmd = pool->make();
 	cmd.begin();
 
@@ -856,7 +856,7 @@ void transformer::convertKtx10Gli(
 	cmd.submitWait();
 	cmd.release();
 
-	pool->lck().release();
+	pool->lck().unlock();
 
 	/**
 	 * Cleanup
@@ -881,7 +881,7 @@ void transformer::convertKtx20(
 		* Transform and data transfer
 		*/
 		auto* const pool = device_->transferQueue()->pool();
-		pool->lck().acquire();
+		pool->lck().lock();
 		CommandBuffer cmd = pool->make();
 		cmd.begin();
 
@@ -925,7 +925,7 @@ void transformer::convertKtx20(
 		cmd.submitWait();
 		cmd.release();
 
-		pool->lck().release();
+		pool->lck().unlock();
 
 		return;
 	}
@@ -1056,7 +1056,7 @@ void transformer::convertKtx20(
 	* Transform and data transfer
 	*/
 	auto* const pool = device_->transferQueue()->pool();
-	pool->lck().acquire();
+	pool->lck().lock();
 	CommandBuffer cmd = pool->make();
 	cmd.begin();
 
@@ -1141,7 +1141,7 @@ void transformer::convertKtx20(
 	cmd.submitWait();
 	cmd.release();
 
-	pool->lck().release();
+	pool->lck().unlock();
 
 	/**
 	* Cleanup
@@ -1649,7 +1649,7 @@ void transformer::convertKtx20Partial(
 	* Copy Data to Image
 	*/
 	auto* const pool = device_->transferQueue()->pool();
-	pool->lck().acquire();
+	pool->lck().lock();
 	CommandBuffer cmd = pool->make();
 	cmd.begin();
 
@@ -1726,7 +1726,7 @@ void transformer::convertKtx20Partial(
 	cmd.submitWait();
 	cmd.release();
 
-	pool->lck().release();
+	pool->lck().unlock();
 
 	/**
 	* Cleanup

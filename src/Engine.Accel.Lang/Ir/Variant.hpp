@@ -6,7 +6,7 @@
 #include <functional>
 #include <span>
 #include <utility>
-#include <Engine.Async/Primitive/SpinLock.hpp>
+#include <Engine.Async/Primitive/FiberSharedMutex.hpp>
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
@@ -118,8 +118,7 @@ namespace hg::engine::accel::lang::ir {
 		[[nodiscard]] smr<const Resolved> find(ref<const VariantKey> key_) const noexcept;
 
 	private:
-		// shortcut: exclusive lock serializes concurrent hits, upgrade to a fiber-aware shared lock once Engine.Async has one
-		mutable concurrent::SpinMutex _lck;
+		mutable concurrent::FiberSharedMutex _lck;
 		DenseMap<VariantKey, smr<const Resolved>, std::hash<VariantKey>> _entries;
 	};
 
@@ -147,8 +146,7 @@ namespace hg::engine::accel::lang::ir {
 		[[nodiscard]] smr<const ResolvedPipeline> find(ref<const Vector<VariantKey>> key_) const noexcept;
 
 	private:
-		// shortcut: see VariantCache::_lck
-		mutable concurrent::SpinMutex _lck;
+		mutable concurrent::FiberSharedMutex _lck;
 		DenseMap<Vector<VariantKey>, smr<const ResolvedPipeline>, PipelineKeyHash> _entries;
 	};
 }
