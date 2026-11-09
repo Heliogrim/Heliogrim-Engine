@@ -378,10 +378,12 @@ bool EditorEngine::shutdown() {
 	_universeContexts.front() = nullptr;
 	_editorSession.reset();
 
+	/* The platform thread final drain completes promises and schedules work, so the scheduler must still run. */
+	_platform->tidy();
+
 	/* Base module are setup via direct call without fiber context guarantee (which is unlikely) */
 	_resources->destroy();
 	_scheduler->destroy();
-	_platform->tidy();
 
 	return setEngineState(EngineState::eShutdown);
 }
