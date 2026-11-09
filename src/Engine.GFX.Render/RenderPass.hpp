@@ -8,7 +8,6 @@
 #include <Engine.GFX/vkinc.hpp>
 #include <Engine.GFX.RenderGraph/Pass/ExecutionPass.hpp>
 #include <Engine.GFX/Texture/__fwd.hpp>
-#include <Engine.Scheduler/Fiber/Awaitable.hpp>
 
 #include "RenderPassResult.hpp"
 #include "RenderPassState.hpp"
@@ -148,4 +147,3 @@ namespace hg::engine::render {
 	};
 }
 
-static_assert(::hg::engine::scheduler::fiber::IsAwaitable<hg::engine::render::RenderPass>);

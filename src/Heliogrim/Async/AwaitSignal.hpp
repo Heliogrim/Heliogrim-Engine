@@ -1,8 +1,9 @@
 #pragma once
 
-#include <Engine.Scheduler/Fiber/Awaitable.hpp>
+#include <atomic>
 
 namespace hg {
-	using await_signal_type = engine::scheduler::fiber::await_signal_type;
-	using await_signal_sub_type = engine::scheduler::fiber::await_signal_sub_type;
+	// Only for the deprecated await overload; removed next release.
+	using await_signal_type = std::atomic_flag;
+	using await_signal_sub_type = const std::atomic_flag;
 }
