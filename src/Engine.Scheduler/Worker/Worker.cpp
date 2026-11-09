@@ -165,26 +165,11 @@ void Worker::handle(void* args_) {
 				const_cast<ptr<task::TaskDelegate>>(task)->fiber() = launcher.self;
 			}
 
-			/**
-			 * Check for awaiter task
-			 *  // TODO: Rewrite
-			 */
-			if (launcher.self->awaiter.ready()) {
-
-				/**
-				 *
-				 */
-				::hg::assertd(launcher.self->parent == nullptr);
-				::hg::assertd(launcher.self->task != nullptr);
-				::hg::assertd(launcher.self->task->fiber() != nullptr);
-				launcher.self->parent = fiber;
-
-				/**
-				 *
-				 */
-				launcher();
-
-			}
+			::hg::assertd(launcher.self->parent == nullptr);
+			::hg::assertd(launcher.self->task != nullptr);
+			::hg::assertd(launcher.self->task->fiber() != nullptr);
+			launcher.self->parent = fiber;
+			launcher();
 
 			#ifdef _DEBUG
 			if (debugPostSwitchHook != nullptr) {
@@ -210,9 +195,6 @@ void Worker::handle(void* args_) {
 
 				::hg::assertd(launcher.self->parent == nullptr);
 				::hg::assertd(launcher.self->task == nullptr);
-				::hg::assertd(static_cast<u8>(launcher.self->awaiter.mask) == 0);
-				::hg::assertd(launcher.self->awaiter.self == nullptr);
-				::hg::assertd(launcher.self->awaiter.call == nullptr);
 
 				/**
 				 * Release execution context
