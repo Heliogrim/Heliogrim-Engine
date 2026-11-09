@@ -7,11 +7,11 @@
 
 namespace hg::engine::scheduler {
 	/**
-	 * One-shot event; waiters park (fiber or thread) until set() is called once.
-	 * Destroying an Event is safe once isSet() returned true or wait() returned;
+	 * One-shot signal; waiters park (fiber or thread) until set() is called once.
+	 * Destroying a Signal is safe once isSet() returned true or wait() returned;
 	 * the setter's _state store is its last access to the object.
 	 */
-	class Event {
+	class Signal {
 	public:
 		[[nodiscard]] bool isSet() const noexcept;
 
