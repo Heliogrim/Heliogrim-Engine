@@ -10,7 +10,7 @@
 #include <Engine.Scheduler/Scheduler.hpp>
 #include <Engine.Scheduler/Task/Task.hpp>
 #include <Engine.Scheduler/Thread/Thread.hpp>
-#include <Engine.Scheduler/Waitable/Event.hpp>
+#include <Engine.Scheduler/Waitable/Signal.hpp>
 #include <Engine.Scheduler/Waitable/JoinCounter.hpp>
 #include <Engine.Scheduler/Waitable/ParkQueue.hpp>
 #include <Heliogrim/Async/Await.hpp>
@@ -112,16 +112,16 @@ namespace SchedulerModule {
 		EXPECT_TRUE(queue.empty());
 	}
 
-	TEST(Event, WaitAfterSetReturnsInline) {
-		engine::scheduler::Event event {};
+	TEST(Signal, WaitAfterSetReturnsInline) {
+		engine::scheduler::Signal event {};
 		EXPECT_FALSE(event.isSet());
 		event.set();
 		event.wait();
 		EXPECT_TRUE(event.isSet());
 	}
 
-	TEST(Event, ResetRearms) {
-		engine::scheduler::Event event {};
+	TEST(Signal, ResetRearms) {
+		engine::scheduler::Signal event {};
 		event.set();
 		EXPECT_TRUE(event.isSet());
 		event.reset();
@@ -131,10 +131,10 @@ namespace SchedulerModule {
 		EXPECT_TRUE(event.isSet());
 	}
 
-	TEST(Event, ResetThenWaitParks) {
+	TEST(Signal, ResetThenWaitParks) {
 		structuredRuntimeTest(
 			[](nmpt<engine::Scheduler> s_) {
-				engine::scheduler::Event event {};
+				engine::scheduler::Signal event {};
 				event.set();
 				event.reset();
 
@@ -174,10 +174,10 @@ namespace SchedulerModule {
 		);
 	}
 
-	TEST(Event, ThreadWaitsForTask) {
+	TEST(Signal, ThreadWaitsForTask) {
 		structuredRuntimeTest(
 			[](nmpt<engine::Scheduler> s_) {
-				engine::scheduler::Event event {};
+				engine::scheduler::Signal event {};
 				std::atomic_flag setOnce {};
 				std::atomic_bool timedOut { false };
 
@@ -214,12 +214,12 @@ namespace SchedulerModule {
 		);
 	}
 
-	TEST(Event, ThousandParkedTasksKeepWorkersFree) {
+	TEST(Signal, ThousandParkedTasksKeepWorkersFree) {
 		structuredRuntimeTest(
 			2u,
 			[](nmpt<engine::Scheduler> s_) {
 				constexpr u32 count = 1000;
-				engine::scheduler::Event event {};
+				engine::scheduler::Signal event {};
 				std::atomic<u32> completed { 0 };
 				std::atomic_bool probe { false };
 
@@ -318,9 +318,9 @@ namespace SchedulerModule {
 		EXPECT_TRUE(counter.isDone());
 	}
 
-	TEST(Event, SetAndDestroyRace) {
+	TEST(Signal, SetAndDestroyRace) {
 		for (u32 i = 0; i < 5000; ++i) {
-			auto e = std::make_unique<engine::scheduler::Event>();
+			auto e = std::make_unique<engine::scheduler::Signal>();
 			std::thread setter { [&] { e->set(); } };
 			while (not e->isSet()) {}
 			e.reset();
@@ -328,7 +328,7 @@ namespace SchedulerModule {
 		}
 	}
 
-	static_assert(std::is_same_v<hg::Signal, engine::scheduler::Event>);
+	static_assert(std::is_same_v<hg::Signal, engine::scheduler::Signal>);
 
 	TEST(PublicAwait, EventOverloadParksTask) {
 		structuredRuntimeTest(
@@ -359,7 +359,7 @@ namespace SchedulerModule {
 					FAIL() << "task never started";
 				}
 
-				// The task cannot pass await before the event is set.
+				// The task cannot pass await before the signal is set.
 				const auto prematurelyDone = state->done.load();
 				state->event.set();
 

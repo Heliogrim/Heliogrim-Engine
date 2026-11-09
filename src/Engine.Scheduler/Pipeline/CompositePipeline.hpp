@@ -4,7 +4,7 @@
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Collection/DenseMap.hpp>
 
-#include "../Waitable/Event.hpp"
+#include "../Waitable/Signal.hpp"
 #include "CompositeDispatcher.hpp"
 #include "StagePipeline.hpp"
 #include "Composite/CompositeStage.hpp"
@@ -40,7 +40,7 @@ namespace hg::engine::scheduler {
 		 */
 		non_owning_rptr<class Schedule> _schedule;
 		std::atomic_flag _stopping;
-		Event _stopped;
+		Signal _stopped;
 
 	public:
 		[[nodiscard]] const non_owning_rptr<class Schedule> getSchedule() const noexcept;
