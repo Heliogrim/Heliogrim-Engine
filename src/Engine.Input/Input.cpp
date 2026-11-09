@@ -74,7 +74,24 @@ void Input::tick() {
 		buffered.swap(_buffered);
 	}
 
-	for (const auto& entry : buffered) {
+	for (auto it = buffered.begin(); it != buffered.end(); ++it) {
+		const auto& entry = *it;
+
+		// A live resize floods one tick with sizes; each one rebuilds the swapchain, so only the last per window counts.
+		if (entry.first == platform::PlatformResizeEvent::typeId) {
+			const auto window = static_cast<ptr<platform::PlatformResizeEvent>>(entry.second.get())->getWindow();
+			const auto superseded = std::any_of(
+				std::next(it),
+				buffered.end(),
+				[window](const auto& later_) {
+					return later_.first == platform::PlatformResizeEvent::typeId &&
+						static_cast<ptr<platform::PlatformResizeEvent>>(later_.second.get())->getWindow() == window;
+				}
+			);
+			if (superseded) {
+				continue;
+			}
+		}
 
 		switch (entry.first.data) {
 			case event::MouseMoveEvent::typeId.data: {
