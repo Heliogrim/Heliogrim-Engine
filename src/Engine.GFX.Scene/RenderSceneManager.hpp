@@ -93,7 +93,8 @@ namespace hg::engine::gfx::scene {
 			mref<smr<Swapchain>> next_
 		);
 
-		void transitionToTarget(
+		// False when a previous transition is still pending; nothing changed then.
+		[[nodiscard]] bool transitionToTarget(
 			ref<Surface> surface_,
 			mref<smr<Swapchain>> from_,
 			FnRef<smr<Swapchain>(mref<smr<Swapchain>> prev_)> transitionFn_

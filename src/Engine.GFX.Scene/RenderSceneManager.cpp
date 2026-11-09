@@ -73,21 +73,25 @@ void RenderSceneManager::transitionToTarget(mref<smr<Swapchain>> from_, mref<smr
 	_mappedRenderTargets.emplace(transition->pendingSwapchain, std::move(renderTarget));
 }
 
-void RenderSceneManager::transitionToTarget(
+bool RenderSceneManager::transitionToTarget(
 	ref<Surface> surface_,
 	mref<smr<Swapchain>> fromSwapchain_,
 	FnRef<smr<Swapchain>(mref<smr<Swapchain>> prev_)> transitionFn_
 ) {
-	auto iter = _mappedRenderTargets.find(::hg::move(fromSwapchain_));
+	auto iter = _mappedRenderTargets.find(fromSwapchain_);
 	assert(iter != _mappedRenderTargets.end());
 
 	auto renderTarget = std::move(iter->second);
 	_mappedRenderTargets.erase(iter);
 
 	const auto transition = renderTarget->transitionToTarget(surface_, ::hg::move(transitionFn_));
-	assert(transition.has_value());
+	if (not transition.has_value()) {
+		_mappedRenderTargets.emplace(::hg::move(fromSwapchain_), std::move(renderTarget));
+		return false;
+	}
 
 	_mappedRenderTargets.emplace(transition->pendingSwapchain, std::move(renderTarget));
+	return true;
 }
 
 void RenderSceneManager::selectInvokeTargets(ref<CompactSet<smr<RenderTarget>>> targets_) const noexcept {
