@@ -21,6 +21,10 @@ void scheduler::exec(mref<non_owning_rptr<const task::TaskDelegate>> task_) {
 	Engine::getEngine()->getScheduler()->exec(std::move(task_));
 }
 
+void scheduler::exec(mref<non_owning_rptr<const task::TaskDelegate>> task_, fiber::CancellationToken token_) {
+	Engine::getEngine()->getScheduler()->exec(std::move(task_), std::move(token_));
+}
+
 void scheduler::exec(task::Task::function_type&& fnc_) {
 	Engine::getEngine()->getScheduler()->exec(task::make_task(std::forward<task::Task::function_type>(fnc_)));
 }
