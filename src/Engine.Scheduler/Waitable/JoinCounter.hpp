@@ -25,8 +25,6 @@ namespace hg::engine::scheduler {
 	private:
 		std::atomic<u32> _pending;
 		Event _done;
-#ifdef _DEBUG
 		bool _waited = false;
-#endif
 	};
 }
