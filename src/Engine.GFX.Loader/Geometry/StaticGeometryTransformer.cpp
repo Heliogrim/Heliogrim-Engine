@@ -201,7 +201,7 @@ static smr<StaticGeometryResource> loadWithAssimp(
 
 	auto* const cmdQueue = pool_->device()->transferQueue();
 	auto* const cmdPool = cmdQueue->pool();
-	cmdPool->lck().acquire();
+	cmdPool->lck().lock();
 
 	CommandBuffer cmd = cmdPool->make();
 	cmd.begin();
@@ -336,7 +336,7 @@ static smr<StaticGeometryResource> loadWithAssimp(
 	cmd.submitWait();
 	cmd.release();
 
-	cmdPool->lck().release();
+	cmdPool->lck().unlock();
 
 	/**/
 
