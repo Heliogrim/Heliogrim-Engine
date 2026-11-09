@@ -5,10 +5,17 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Math/Extent.hpp>
 #include <Engine.Core/Module/RootModule.hpp>
-#include <Engine.Scheduler/Task/SignaledQueue.hpp>
+#include <atomic>
+
+namespace hg::engine::async {
+	class AffineThread;
+}
 
 namespace hg::engine::platform {
 	class NativeWindow;
+
+	// True while DoDragDrop runs on the platform thread; the platform waker then nudges the drag capture window.
+	[[nodiscard]] std::atomic<bool>& dragActive() noexcept;
 }
 
 namespace hg::engine {
@@ -37,7 +44,7 @@ namespace hg::engine {
 		virtual void setup() = 0;
 
 	public:
-		[[nodiscard]] virtual ref<scheduler::task::SignaledQueue> platformQueue() const noexcept = 0;
+		[[nodiscard]] virtual ref<async::AffineThread> platformThread() const noexcept = 0;
 
 	public:
 		[[nodiscard]] virtual ::hg::Future<uptr<platform::NativeWindow>> makeNativeWindow(

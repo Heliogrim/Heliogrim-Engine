@@ -11,7 +11,8 @@
 #include <Editor.Action/ActionManager.hpp>
 #include <Editor.Action/Action/Import/AutoImportAction.hpp>
 #include <Engine.Asserts/Todo.hpp>
-#include <Engine.Async/Future/Promise.hpp>
+#include <Engine.Async/Affine/AffineThread.hpp>
+#include <Engine.Async/Future/Future.hpp>
 #include <Engine.Common/Expected.hpp>
 #include <Engine.Config/Config.hpp>
 #include <Engine.Config/Enums.hpp>
@@ -170,9 +171,6 @@ Result<Arci<actions::UnknownImport>, std::runtime_error> actions::makeUnknownWit
 
 Future<FileUrl, std::runtime_error> requestPlatformSelect(mref<Vector<SelectFileFilter>> filter_) {
 
-	Promise<FileUrl, std::runtime_error> promise;
-	auto future = promise.future();
-
 	auto select = [](ref<const Vector<SelectFileFilter>> filters) -> Result<FileUrl, std::runtime_error> {
 
 			::IFileOpenDialog* winFileDialog = nullptr;
@@ -264,18 +262,10 @@ Future<FileUrl, std::runtime_error> requestPlatformSelect(mref<Vector<SelectFile
 	const auto engine = engine::Engine::getEngine();
 	const auto platform = engine->getPlatform();
 
-	UniqueFn<void(), 128> item {
-		[filters = ::hg::move(filter_), promise_ = ::hg::move(promise), select]() mutable {
-			auto result = select(filters);
-			if (result.has_value()) {
-				promise_.resolve(::hg::move(result).value());
-			} else {
-				promise_.reject(::hg::move(result).error());
-			}
-		}
-	};
-	platform->platformQueue().try_push(::hg::move(item));
-	return future;
+	// A closed platform inbox surfaces as Broken, which the caller treats as a cancelled selection.
+	return platform->platformThread().post([filters = ::hg::move(filter_), select] { return select(filters); }).then(
+		[](Result<FileUrl, std::runtime_error>&& result_) { return ::hg::move(result_); }
+	);
 }
 
 std::wstring stringToWString(ref<const std::string> string_) {
