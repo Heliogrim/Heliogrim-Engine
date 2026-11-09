@@ -19,7 +19,8 @@ namespace hg::engine::scheduler {
 
 		void wait();
 
-		// Valid only when nothing is waiting; re-arms the one-shot.
+		// Re-arms the one-shot; must not run concurrently with set() or wait(),
+		// and only while no waiter is queued.
 		void reset() noexcept;
 
 	private:

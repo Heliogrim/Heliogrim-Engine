@@ -51,7 +51,6 @@ cref<decltype(AutoImportAction::_generatedAssets)> AutoImportAction::generatedAs
 }
 
 void AutoImportAction::setRunning() {
-	_finished.reset();
 	_running.test_and_set();
 }
 

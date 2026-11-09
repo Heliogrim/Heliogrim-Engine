@@ -131,6 +131,46 @@ namespace SchedulerModule {
 		EXPECT_TRUE(event.isSet());
 	}
 
+	TEST(Event, ResetThenWaitParks) {
+		structuredRuntimeTest(
+			[](nmpt<engine::Scheduler> s_) {
+				engine::scheduler::Event event {};
+				event.set();
+				event.reset();
+
+				std::atomic_flag setOnce {};
+				std::atomic_bool timedOut { false };
+				std::thread watchdog {
+					[&] {
+						for (u32 i = 0; i < 2000 && not event.isSet(); ++i) {
+							thread::self::sleepFor(1);
+						}
+						if (not event.isSet()) {
+							timedOut = true;
+							if (not setOnce.test_and_set()) {
+								event.set();
+							}
+						}
+					}
+				};
+				std::thread setter {
+					[&] {
+						thread::self::sleepFor(5);
+						if (not setOnce.test_and_set()) {
+							event.set();
+						}
+					}
+				};
+
+				event.wait();
+				setter.join();
+				watchdog.join();
+				ASSERT_FALSE(timedOut.load());
+				EXPECT_TRUE(event.isSet());
+			}
+		);
+	}
+
 	TEST(Event, ThreadWaitsForTask) {
 		structuredRuntimeTest(
 			[](nmpt<engine::Scheduler> s_) {

@@ -13,6 +13,8 @@ using namespace hg;
 ActionDispatcher::ActionDispatcher() = default;
 
 Result<void, std::runtime_error> ActionDispatcher::apply(mref<Arci<Action>> action_) const {
+	// Re-arm before dispatch; the executed task must not reset a signal the caller already awaits.
+	action_->finished().reset();
 	auto result = Result<void, std::runtime_error> {};
 	execute([action = action_, &result] { result = action->apply(); });
 	await(action_->finished());
