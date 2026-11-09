@@ -6,7 +6,6 @@ using namespace hg;
 SimpleAction::~SimpleAction() noexcept = default;
 
 void SimpleAction::setRunning() {
-	_finished.reset();
 	_running.test_and_set();
 }
 
