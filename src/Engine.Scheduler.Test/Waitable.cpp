@@ -120,6 +120,17 @@ namespace SchedulerModule {
 		EXPECT_TRUE(event.isSet());
 	}
 
+	TEST(Event, ResetRearms) {
+		engine::scheduler::Event event {};
+		event.set();
+		EXPECT_TRUE(event.isSet());
+		event.reset();
+		EXPECT_FALSE(event.isSet());
+		event.set();
+		event.wait();
+		EXPECT_TRUE(event.isSet());
+	}
+
 	TEST(Event, ThreadWaitsForTask) {
 		structuredRuntimeTest(
 			[](nmpt<engine::Scheduler> s_) {
