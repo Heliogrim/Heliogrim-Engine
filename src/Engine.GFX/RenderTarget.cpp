@@ -137,6 +137,16 @@ Result<TransitionResult, std::runtime_error> RenderTarget::transitionToTarget(
 	ref<Surface> surface_,
 	FnRef<smr<Swapchain>(mref<smr<Swapchain>> prev_)> transitionFn_
 ) {
+	u8 fullSwapChainMask = 0u;
+	for (u8 i = static_cast<u8>(_renderPasses.size()); i > 0u; --i) {
+		fullSwapChainMask |= (0x1u << (i - 1u));
+	}
+
+	// Refuse before transitionFn_ destroys the current swapchain, so the caller can retry once the pending one is consumed.
+	if (_swapchainPending && _chainSwapChainMask != fullSwapChainMask) {
+		return tl::make_unexpected(std::runtime_error("Failed to override transition state."));
+	}
+
 	/**
 	 * Block render passes
 	 */
@@ -172,29 +182,10 @@ Result<TransitionResult, std::runtime_error> RenderTarget::transitionToTarget(
 
 	/**/
 
-	u8 fullSwapChainMask = 0u;
-	for (u8 i = static_cast<u8>(_renderPasses.size()); i > 0u; --i) {
-		fullSwapChainMask |= (0x1u << (i - 1u));
+	if (not _swapchainPending) {
+		_chainSwapChainMask = fullSwapChainMask;
+		_swapchainPending = true;
 	}
-
-	if (_swapchainPending) {
-
-		/* Check for possible forceful override of untouched transition */
-		if (_chainSwapChainMask != fullSwapChainMask) {
-			IM_CORE_WARN("Tried to override ongoing transition at render target.");
-			return tl::make_unexpected(std::runtime_error("Failed to override transition state."));
-		}
-
-		_swapchain = std::move(nextSwapchain);
-		_surface = std::addressof(surface_);
-
-		return TransitionResult { _swapchain };
-	}
-
-	/**/
-
-	_chainSwapChainMask = fullSwapChainMask;
-	_swapchainPending = true;
 
 	/**/
 

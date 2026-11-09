@@ -183,7 +183,7 @@ void WindowManager::handleWindowResize(const ptr<BoundWindow> wnd_, cref<math::i
 
 	// Attention: Vulkan requires that a single surface can only be bound by exactly one swapchain, so we need to cleanup before re-creating
 	const auto graphics = Engine::getEngine()->getGraphics();
-	graphics->getSceneManager()->transitionToTarget(
+	const auto transitioned = graphics->getSceneManager()->transitionToTarget(
 		*wnd_->surface,
 		clone(wnd_->surface->swapchain()),
 		[wnd_, graphics](mref<smr<gfx::Swapchain>> prev_) {
@@ -198,6 +198,15 @@ void WindowManager::handleWindowResize(const ptr<BoundWindow> wnd_, cref<math::i
 			return next;
 		}
 	);
+
+	// The previous resize is still being picked up by the render passes: retry next input tick. The rebuilt swapchain takes the surface's
+	// current extent, so the retry converges on the final size even if this one is stale.
+	if (not transitioned) {
+		Engine::getEngine()->getInput()->bufferEvent(
+			platform::PlatformResizeEvent::typeId,
+			make_uptr<platform::PlatformResizeEvent>(wnd_->surface->getNativeWindow().get(), nextSize_)
+		);
+	}
 }
 
 void WindowManager::destroyWindow(mref<sptr<Window>> window_) {
