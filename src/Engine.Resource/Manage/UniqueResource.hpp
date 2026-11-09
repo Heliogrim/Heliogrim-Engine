@@ -42,7 +42,8 @@ namespace hg::engine::resource {
 		::hg::concurrent::FiberMutex _lck;
 
 	public:
-		[[nodiscard]] ManageGuard acquire(const ResourceUsageFlags flags_) override {
+		// The RAII accessors release in another function, which the analysis cannot follow.
+		[[nodiscard]] ManageGuard acquire(const ResourceUsageFlags flags_) override HG_NO_THREAD_SAFETY_ANALYSIS {
 			_lck.lock();
 			return guard_type { this, flags_, std::adopt_lock };
 		}
@@ -50,7 +51,7 @@ namespace hg::engine::resource {
 		[[nodiscard]] bool try_acquire(
 			_Out_ ref<ManageGuard> guard_,
 			const ResourceUsageFlags flags_
-		) noexcept override {
+		) noexcept override HG_NO_THREAD_SAFETY_ANALYSIS {
 			if (not _lck.try_lock()) {
 				return false;
 			}
@@ -60,7 +61,7 @@ namespace hg::engine::resource {
 		}
 
 	protected:
-		void release(const ResourceUsageFlags flags_) override {
+		void release(const ResourceUsageFlags flags_) override HG_NO_THREAD_SAFETY_ANALYSIS {
 			_lck.unlock();
 		}
 	};
