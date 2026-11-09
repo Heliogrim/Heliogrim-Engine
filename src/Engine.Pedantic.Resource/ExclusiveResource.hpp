@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine.Scheduler/Helper/Wait.hpp>
+#include <Engine.Async/Primitive/FiberMutex.hpp>
 
 #include "Resource.hpp"
 #include "ResourceStorage.hpp"
@@ -75,22 +75,19 @@ namespace hg {
 
 	private:
 		storage_type _storage;
-		mutable std::atomic_flag _lck;
+		mutable concurrent::FiberMutex _lck;
 
 	private:
 		void acquireLock() const noexcept {
-			while (_lck.test_and_set(std::memory_order::release)) {
-				::hg::engine::scheduler::waitOnAtomic(_lck, true);
-			}
+			_lck.lock();
 		}
 
 		bool tryAcquireLock() const noexcept {
-			return not _lck.test_and_set(std::memory_order::release);
+			return _lck.try_lock();
 		}
 
 		void releaseLock() const noexcept {
-			_lck.clear(std::memory_order::release);
-			_lck.notify_one();
+			_lck.unlock();
 		}
 
 	public:
