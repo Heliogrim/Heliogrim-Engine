@@ -4,7 +4,7 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Managed/AtomicRefCountedIntrusive.hpp>
 #include <Engine.Reflect/Inherit/InheritBase.hpp>
-#include <Heliogrim/Async/AwaitSignal.hpp>
+#include <Heliogrim/Async/Waitable.hpp>
 
 #include "ActionTypeId.hpp"
 
@@ -41,6 +41,6 @@ namespace hg::editor {
 		virtual Result<void, std::runtime_error> undo() = 0;
 
 	public:
-		[[nodiscard]] virtual operator ptr<await_signal_sub_type>() const noexcept = 0;
+		[[nodiscard]] virtual ref<Signal> finished() const noexcept = 0;
 	};
 }// namespace hg::editor

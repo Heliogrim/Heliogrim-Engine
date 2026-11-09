@@ -18,7 +18,7 @@ namespace hg::editor {
 
 	private:
 		std::atomic_flag _running;
-		std::atomic_flag _finished;
+		mutable Signal _finished;
 
 	protected:
 		void setRunning();
@@ -33,6 +33,6 @@ namespace hg::editor {
 		[[nodiscard]] bool isFinished() const noexcept override;
 
 	public:
-		[[nodiscard]] operator ptr<await_signal_sub_type>() const noexcept override;
+		[[nodiscard]] ref<Signal> finished() const noexcept override;
 	};
 }
