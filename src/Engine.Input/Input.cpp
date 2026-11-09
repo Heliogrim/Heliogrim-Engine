@@ -68,9 +68,14 @@ void Input::destroy() {
 
 void Input::tick() {
 
-	std::unique_lock<std::mutex> lck { _bufferMtx };
+	// Emit outside the lock: a listener may await the platform thread, whose modal loops buffer new events.
+	decltype(_buffered) buffered {};
+	{
+		std::unique_lock<std::mutex> lck { _bufferMtx };
+		buffered.swap(_buffered);
+	}
 
-	for (const auto& entry : _buffered) {
+	for (const auto& entry : buffered) {
 
 		switch (entry.first.data) {
 			case event::MouseMoveEvent::typeId.data: {
@@ -106,7 +111,6 @@ void Input::tick() {
 
 	}
 
-	_buffered.clear();
 }
 
 cref<GlobalEventEmitter> Input::emitter() const noexcept {
