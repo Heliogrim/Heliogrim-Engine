@@ -22,6 +22,7 @@
 #include "Engine.Reflow.Uikit/Atom/Layout/VerticalLayout.hpp"
 #include "Engine.Reflow/Widget/Tree/TreeView.hpp"
 #include "Engine.Resource/ResourceManager.hpp"
+#include "Engine.Scheduler/Async.hpp"
 
 using namespace hg::editor::ui;
 using namespace hg::engine::reflow;
@@ -309,15 +310,20 @@ UniquePtr<AssetBrowserView> editor::ui::makeAssetBrowserView(ref<AssetBrowserCon
 			importItem.setTitle("Import"sv);
 			importItem.setAction(
 				[]() {
-					const auto module = engine::Engine::getEngine()->getModules().getSubModule(editor::ActionDepKey);
-					::hg::assertrt(module != nullptr);
+					// Own task: the explorer await would otherwise park the input tick, and with it the frame, until the dialog closes.
+					engine::scheduler::exec(
+						[]() {
+							const auto module = engine::Engine::getEngine()->getModules().getSubModule(editor::ActionDepKey);
+							::hg::assertrt(module != nullptr);
 
-					auto action = assets::actions::makeUnknownWithExplorer(engine::storage::FileUrl {});
-					if (not action.has_value()) {
-						return true;
-					}
+							auto action = assets::actions::makeUnknownWithExplorer(engine::storage::FileUrl {});
+							if (not action.has_value()) {
+								return;
+							}
 
-					static_cast<ptr<ActionManager>>(module.get())->apply(::hg::move(action).value());
+							static_cast<ptr<ActionManager>>(module.get())->apply(::hg::move(action).value());
+						}
+					);
 					return true;
 				}
 			);
