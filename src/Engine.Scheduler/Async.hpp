@@ -38,6 +38,8 @@ namespace hg::engine::scheduler {
 	 */
 	void exec(_In_ mref<non_owning_rptr<const task::TaskDelegate>> task_);
 
+	void exec(_In_ mref<non_owning_rptr<const task::TaskDelegate>> task_, fiber::CancellationToken token_);
+
 	/**
 	 * Executes the given function as task
 	 *
