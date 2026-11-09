@@ -1,3 +1,5 @@
+// Manual check (not a gtest): a function calling unlock() on a never-locked FiberMutex must warn
+// "releasing mutex 'm' that was not held [-Wthread-safety-analysis]" under clang-cl.
 #include "pch.h"
 
 /**/
@@ -17,6 +19,12 @@ using namespace hg;
 
 namespace AsyncModule {
 	namespace {
+		// The analysis cannot see the lock taken through EXPECT_TRUE(try_lock()) or across lambdas.
+		template <typename Mtx_>
+		void unlockUnchecked(Mtx_& mtx_) HG_NO_THREAD_SAFETY_ANALYSIS {
+			mtx_.unlock();
+		}
+
 		template <typename Pred_>
 		bool waitFor(Pred_&& pred_, const u32 ms_) {
 			for (u32 i = 0; i < ms_ && not pred_(); ++i) {
@@ -31,7 +39,7 @@ namespace AsyncModule {
 			std::scoped_lock<concurrent::FiberMutex> guard { mtx };
 		}
 		EXPECT_TRUE(mtx.try_lock());
-		mtx.unlock();
+		unlockUnchecked(mtx);
 	}
 
 	TEST(FiberMutex, TryLockFailsWhenHeld) {
@@ -40,7 +48,7 @@ namespace AsyncModule {
 		EXPECT_FALSE(mtx.try_lock());
 		mtx.unlock();
 		EXPECT_TRUE(mtx.try_lock());
-		mtx.unlock();
+		unlockUnchecked(mtx);
 	}
 
 	TEST(FiberMutex, EightFibersCountExactly) {
