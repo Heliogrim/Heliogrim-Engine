@@ -31,7 +31,8 @@
 #include <Engine.Scene.Schedule/ScenePipeline.hpp>
 #include <Engine.Scheduler/Async.hpp>
 #include <Engine.Scheduler/CompScheduler.hpp>
-#include <Engine.Scheduler/Helper/Wait.hpp>
+#include <Engine.Scheduler/Waitable/Event.hpp>
+#include <Engine.Scheduler/Waitable/JoinCounter.hpp>
 #include <Engine.SFX/Audio.hpp>
 
 #ifdef WIN32
@@ -158,32 +159,31 @@ bool EditorEngine::init() {
 	setupCorePipelines();
 
 	/* Core modules should always interact with a guaranteed fiber context and non-sequential execution */
-	std::atomic_uint_fast8_t setupCounter { 0u };
+	scheduler::JoinCounter setupCounter { _modules.getCoreModuleCount() };
 	_modules.forEachCoreModule(
 		[&setupCounter](ref<CoreModule> module_) {
 			scheduler::exec(
 				[coreModule = std::addressof(module_), &setupCounter] {
 					coreModule->setup();
-					++setupCounter;
-					setupCounter.notify_one();
+					setupCounter.done();
 				}
 			);
 		}
 	);
 
 	/**/
-	scheduler::waitUntilAtomic(setupCounter, _modules.getCoreModuleCount());
-	setupCounter.store(0u, std::memory_order_relaxed);
+	setupCounter.wait();
+
+	scheduler::JoinCounter subSetupCounter { 1u };
 
 	scheduler::exec(
-		[this, &setupCounter] {
+		[this, &subSetupCounter] {
 
 			for (const auto& subModule : _modules.getSubModules()) {
 				subModule->setup();
 			}
 
-			++setupCounter;
-			setupCounter.notify_one();
+			subSetupCounter.done();
 		}
 	);
 
@@ -192,7 +192,7 @@ bool EditorEngine::init() {
 	boot::initActorClasses(*_actors);
 
 	/**/
-	scheduler::waitUntilAtomic(setupCounter, 1u);
+	subSetupCounter.wait();
 	return setEngineState(EngineState::eInitialized);
 }
 
@@ -216,53 +216,50 @@ bool EditorEngine::start() {
 	}
 
 	/**/
-	std::atomic_flag next {};
+	scheduler::Event next1;
 	scheduler::exec(
-		[this, &next] {
+		[this, &next1] {
 			_scheduler->getCompositePipeline()->start();
 
-			next.test_and_set(std::memory_order_relaxed);
-			next.notify_one();
+			next1.set();
 		}
 	);
 
 	/**/
-	scheduler::waitUntilAtomic(next, true);
-	next.clear(std::memory_order::release);
+	next1.wait();
 
 	/**/
+	scheduler::Event next2;
 	scheduler::exec(
-		[this, &next] {
+		[this, &next2] {
 			_modules.forEachCoreModule(
 				[](ref<CoreModule> module_) {
 					module_.start();
 				}
 			);
 
-			next.test_and_set(std::memory_order::relaxed);
-			next.notify_one();
+			next2.set();
 		}
 	);
 
 	/**/
-	scheduler::waitUntilAtomic(next, true);
-	next.clear(std::memory_order::release);
+	next2.wait();
 
 	/**/
+	scheduler::Event next3;
 	scheduler::exec(
-		[this, &next] {
+		[this, &next3] {
 
 			for (const auto& subModule : _modules.getSubModules()) {
 				subModule->start();
 			}
 
-			next.test_and_set(std::memory_order::relaxed);
-			next.notify_one();
+			next3.set();
 		}
 	);
 
 	/**/
-	scheduler::waitUntilAtomic(next, true);
+	next3.wait();
 	return setEngineState(EngineState::eStarted);
 }
 
@@ -272,9 +269,9 @@ bool EditorEngine::stop() {
 	}
 
 	/**/
-	std::atomic_flag next {};
+	scheduler::Event next1;
 	scheduler::exec(
-		[this, &next] {
+		[this, &next1] {
 
 			const auto& modules = _modules.getSubModules();
 			for (auto iter = modules.rbegin(); iter != modules.rend(); ++iter) {
@@ -297,45 +294,42 @@ bool EditorEngine::stop() {
 
 			/**/
 
-			next.test_and_set(std::memory_order::relaxed);
-			next.notify_one();
+			next1.set();
 		}
 	);
 
 	/**/
-	scheduler::waitUntilAtomic(next, true);
-	next.clear(std::memory_order::release);
+	next1.wait();
 
 	/**/
+	scheduler::Event next2;
 	scheduler::exec(
-		[this, &next] {
+		[this, &next2] {
 			_modules.forEachCoreModule(
 				[](ref<CoreModule> module_) {
 					module_.stop();
 				}
 			);
 
-			next.test_and_set(std::memory_order::relaxed);
-			next.notify_one();
+			next2.set();
 		}
 	);
 
 	/**/
-	scheduler::waitUntilAtomic(next, true);
-	next.clear(std::memory_order::release);
+	next2.wait();
 
 	/**/
+	scheduler::Event next3;
 	scheduler::exec(
-		[this, &next] {
+		[this, &next3] {
 			_scheduler->getCompositePipeline()->stop();
 
-			next.test_and_set(std::memory_order_relaxed);
-			next.notify_one();
+			next3.set();
 		}
 	);
 
 	/**/
-	scheduler::waitUntilAtomic(next, true);
+	next3.wait();
 	return setEngineState(EngineState::eStopped);
 }
 
@@ -344,7 +338,7 @@ bool EditorEngine::shutdown() {
 		return false;
 	}
 
-	std::atomic_flag subModuleFlag {};
+	scheduler::Event subModuleFlag;
 	scheduler::exec(
 		[this, &subModuleFlag] {
 
@@ -355,29 +349,27 @@ bool EditorEngine::shutdown() {
 				_modules.removeSubModule(module.get());
 			}
 
-			subModuleFlag.test_and_set(std::memory_order_relaxed);
-			subModuleFlag.notify_one();
+			subModuleFlag.set();
 		}
 	);
 
-	scheduler::waitOnAtomic(subModuleFlag, false);
+	subModuleFlag.wait();
 
 	/* Core modules should always interact with a guaranteed fiber context and non-sequential execution */
-	std::atomic_uint_fast8_t moduleCount { 0u };
+	scheduler::JoinCounter moduleCount { _modules.getCoreModuleCount() };
 	_modules.forEachCoreModule(
 		[&moduleCount](ref<CoreModule> module_) {
 			scheduler::exec(
 				[coreModule = std::addressof(module_), &moduleCount] {
 					coreModule->destroy();
-					++moduleCount;
-					moduleCount.notify_one();
+					moduleCount.done();
 				}
 			);
 		}
 	);
 
 	/**/
-	scheduler::waitUntilAtomic(moduleCount, _modules.getCoreModuleCount());
+	moduleCount.wait();
 
 	/**/
 	_universeContexts.back() = nullptr;
