@@ -2,6 +2,7 @@
 
 #include "PolygonMesh.hpp"
 #include "../Graphics.hpp"
+#include "../Memory/MemoryType.hpp"
 
 using namespace hg::engine::graphics;
 using namespace hg;

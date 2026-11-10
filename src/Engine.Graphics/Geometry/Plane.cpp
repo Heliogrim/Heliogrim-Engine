@@ -3,6 +3,7 @@
 #include "PolygonMesh.hpp"
 #include "Vertex.hpp"
 #include "../Graphics.hpp"
+#include "../Memory/MemoryType.hpp"
 
 using namespace hg::engine::graphics;
 using namespace hg;
