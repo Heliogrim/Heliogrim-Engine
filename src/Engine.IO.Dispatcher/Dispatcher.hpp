@@ -1,11 +1,7 @@
 #pragma once
 
 #include <Engine.Async/Meta/Async.hpp>
-#include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/__macro.hpp>
-#include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
-#include <Engine.Common/Functional/Function.hpp>
 #include <Engine.Async/Future/Future.hpp>
 
 namespace hg::engine::io {

@@ -1,7 +1,6 @@
 #pragma once
 
-#include <type_traits>
-#include <utility>
+#include <Engine.Common/Forward.hpp>
 
 #include "Future.hpp"
 #include "Schedule.hpp"

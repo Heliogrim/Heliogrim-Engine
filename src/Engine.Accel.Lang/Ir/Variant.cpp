@@ -20,9 +20,11 @@ namespace {
 		ContentHasher h {};
 
 		void condition(ref<const Condition> condition_) noexcept {
+
 			h.put(condition_.kind);
 			h.put(condition_.toggle);
 			h.put(condition_.value);
+
 			h.put(static_cast<u64>(condition_.children.size()));
 			for (const auto& child : condition_.children) {
 				condition(child);
@@ -30,10 +32,12 @@ namespace {
 		}
 
 		void type(const TypeRef ref_, const u32 depth_ = 0uL) noexcept {
+
 			if (ref_.index >= mod.types.size() || depth_ > type_depth_limit) {
 				h.put(absent_marker);
 				return;
 			}
+
 			const auto& desc = mod.types[ref_.index];
 			h.put(desc.kind);
 			h.put(desc.scalar);
@@ -44,6 +48,7 @@ namespace {
 			h.put(desc.dim);
 			h.put(desc.name);
 			type(desc.element, depth_ + 1uL);
+
 			h.put(static_cast<u64>(desc.fields.size()));
 			for (const auto& field : desc.fields) {
 				h.put(field.name);
@@ -52,10 +57,12 @@ namespace {
 		}
 
 		void expr(const ExprRef ref_, const u32 depth_) noexcept {
+
 			if (ref_.index >= mod.exprs.size() || depth_ > code_depth_limit) {
 				h.put(absent_marker);
 				return;
 			}
+
 			const auto& node = mod.exprs[ref_.index];
 			h.put(node.kind);
 			h.put(node.name);
@@ -64,9 +71,11 @@ namespace {
 			h.put(node.function.index);
 			h.put(node.constant.index);
 			h.put(node.local);
+
 			if (node.kind == ExprKind::eConstruct) {
 				type(node.type);
 			}
+
 			h.put(static_cast<u64>(node.operands.size()));
 			for (const auto operand : node.operands) {
 				expr(operand, depth_ + 1uL);
@@ -74,10 +83,12 @@ namespace {
 		}
 
 		void stmt(const StmtRef ref_, const u32 depth_) noexcept {
+
 			if (ref_.index >= mod.stmts.size() || depth_ > code_depth_limit) {
 				h.put(absent_marker);
 				return;
 			}
+
 			const auto& node = mod.stmts[ref_.index];
 			h.put(node.kind);
 			h.put(node.name);
@@ -86,6 +97,7 @@ namespace {
 			expr(node.lhs, depth_ + 1uL);
 			expr(node.rhs, depth_ + 1uL);
 			condition(node.when);
+
 			h.put(static_cast<u64>(node.children.size()));
 			for (const auto child : node.children) {
 				stmt(child, depth_ + 1uL);
@@ -112,6 +124,7 @@ namespace {
 			for (const auto& toggle : mod.toggles) {
 				h.put(toggle.name);
 				h.put(toggle.defaultValue);
+
 				h.put(static_cast<u64>(toggle.values.size()));
 				for (const auto& value : toggle.values) {
 					h.put(value);
@@ -147,15 +160,18 @@ namespace {
 			h.put(static_cast<u64>(mod.functions.size()));
 			for (const auto& function : mod.functions) {
 				h.put(function.name);
+
 				h.put(static_cast<u64>(function.params.size()));
 				for (const auto& param : function.params) {
 					h.put(param.name);
 					h.put(param.kind);
 					type(param.type);
 				}
+
 				type(function.ret);
 				h.put(function.redefineAllowed);
 				condition(function.when);
+
 				h.put(function.body.has_value());
 				if (function.body.has_value()) {
 					stmt(function.body->root, 0uL);
@@ -167,10 +183,12 @@ namespace {
 	[[nodiscard]] u64 hashSorted(Vector<String> values_) {
 		std::ranges::sort(values_);
 		ContentHasher h {};
+
 		h.put(static_cast<u64>(values_.size()));
 		for (const auto& value : values_) {
 			h.put(value);
 		}
+
 		return h.value;
 	}
 }
@@ -189,6 +207,7 @@ VariantKey hg::engine::accel::lang::ir::makeVariantKey(
 	auto toggles = toggles_;
 	std::ranges::sort(toggles);
 	ContentHasher h {};
+
 	h.put(static_cast<u64>(toggles.size()));
 	for (const auto& [name, value] : toggles) {
 		h.put(name);

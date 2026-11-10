@@ -61,8 +61,10 @@ namespace hg::detail {
 			} else {
 				return Fail<To_> { std::in_place_type<Broken>, std::move(error_) };
 			}
+
 		} else if constexpr (std::is_same_v<To_, From_>) {
 			return std::move(error_);
+
 		} else {
 			if (error_.template is<Broken>()) {
 				if constexpr (std::is_same_v<To_, Broken>) {

@@ -146,4 +146,3 @@ namespace hg::engine::render {
 		#pragma endregion Render Pass Synchronization
 	};
 }
-

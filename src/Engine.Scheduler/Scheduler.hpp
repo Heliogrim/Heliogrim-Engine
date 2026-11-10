@@ -72,8 +72,7 @@ namespace hg::engine {
 		}
 
 	public:
-		[[nodiscard]] virtual const non_owning_rptr<scheduler::CompositePipeline> getCompositePipeline() const noexcept
-		= 0;
+		[[nodiscard]] virtual const non_owning_rptr<scheduler::CompositePipeline> getCompositePipeline() const noexcept = 0;
 
 	public:
 		virtual bool execOnStage(

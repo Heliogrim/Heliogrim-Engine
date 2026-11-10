@@ -7,8 +7,8 @@
 #include <Engine.Common/Expected.hpp>
 
 #include "FutureState.hpp"
-#include "Send.hpp"
 #include "Schedule.hpp"
+#include "Send.hpp"
 
 namespace hg {
 	template <typename T_, typename E_ = Broken>
@@ -127,6 +127,7 @@ namespace hg {
 				std::invoke_result<fn_type&>,
 				std::invoke_result<fn_type&, std::add_rvalue_reference_t<T_>>
 			>::type;
+
 			using traits = detail::ThenTraits<ret_type, E_>;
 			using U = traits::value_type;
 			static_assert(Send<U>, "future values must be Send");
@@ -175,9 +176,11 @@ namespace hg {
 								detail::complete(outer);
 							}
 						);
+
 					} else if constexpr (detail::is_result_v<ret_type>) {
 						detail::settleFrom<U, E2>(*succ.get(), invoke());
 						detail::complete(succ);
+
 					} else {
 						detail::resolveFrom<U, E2>(*succ.get(), invoke);
 						detail::complete(succ);

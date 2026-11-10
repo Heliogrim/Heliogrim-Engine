@@ -38,9 +38,7 @@ bool FbxImporter::canImport(cref<res::FileTypeId> typeId_, cref<hg::fs::File> fi
 		return false;
 	}
 
-	if (not
-		file_.exists()
-	) {
+	if (not file_.exists()) {
 		return false;
 	}
 

@@ -3,12 +3,9 @@
 /**/
 
 #include <Engine.Async/Future/Async.hpp>
-#include <Engine.Common/Make.hpp>
 #include <Engine.Scheduler/CompScheduler.hpp>
 #include <Engine.Scheduler/Scheduler.hpp>
 #include <Engine.Scheduler/Waitable/JoinCounter.hpp>
-#include <Engine.Scheduler/Pipeline/CompositePipeline.hpp>
-#include <Engine.Scheduler/Pipeline/StagePipeline.hpp>
 
 using namespace hg::engine::scheduler;
 using namespace hg;
@@ -721,6 +718,4 @@ namespace SchedulerModule {
 		EXPECT_LT(majorTimestamp, minorTimestamp);
 	}
 	#endif
-
-
 }

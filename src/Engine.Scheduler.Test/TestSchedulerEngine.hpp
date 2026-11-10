@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Config/Config.hpp>
 #include <Engine.Core/Engine.hpp>
@@ -11,7 +12,6 @@
 #include <Engine.Scheduler/Scheduler.hpp>
 
 #include "TestCompScheduler.hpp"
-#include <functional>
 
 namespace hg::test {
 	class TestSchedulerEngine final :

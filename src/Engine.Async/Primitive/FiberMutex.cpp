@@ -1,6 +1,5 @@
 #include "FiberMutex.hpp"
 
-#include <immintrin.h>
 #include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Scheduler/Fiber/Park.hpp>
 
@@ -46,6 +45,7 @@ void FiberMutex::lock() {
 				if (not _word.compare_exchange_strong(w, w | eContended, std::memory_order::relaxed)) {
 					return false;
 				}
+
 				node.state.store(ParkNode::State::eArmed, std::memory_order::relaxed);
 				locked_.push(node);
 				return true;
@@ -55,6 +55,7 @@ void FiberMutex::lock() {
 		if (acquired) {
 			return;
 		}
+
 		if (pushed) {
 			park(node);
 		}

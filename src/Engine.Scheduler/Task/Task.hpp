@@ -4,12 +4,11 @@
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/__macro.hpp>
 
-#include "../Fiber/Cancellation.hpp"
 #include "TaskCtrl.hpp"
 #include "TaskMask.hpp"
 #include "TaskType.hpp"
+#include "../Fiber/Cancellation.hpp"
 
 namespace hg::engine::scheduler::fiber {
 	struct Fiber;

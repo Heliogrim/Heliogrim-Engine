@@ -6,8 +6,8 @@
 #include <Engine.Scheduler/Scheduler.hpp>
 #include <Engine.Scheduler/Fiber/Fiber.hpp>
 #include <Engine.Scheduler/Fiber/Park.hpp>
-#include <Engine.Scheduler/Thread/Thread.hpp>
 #include <Engine.Scheduler/Task/Task.hpp>
+#include <Engine.Scheduler/Thread/Thread.hpp>
 
 using namespace hg::engine::scheduler;
 using namespace hg;

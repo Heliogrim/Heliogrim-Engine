@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Math/Vector.hpp>
 

@@ -50,6 +50,7 @@ void FiberSharedMutex::lock() {
 					return false;
 				}
 			}
+
 			node.state.store(ParkNode::State::eArmed, std::memory_order::relaxed);
 			writers_.push(node);
 			return true;
@@ -78,10 +79,12 @@ void FiberSharedMutex::unlock() noexcept {
 				for (auto* it = batch; it != nullptr; it = it->next) {
 					++n;
 				}
+
 				// Clears eWriter and admits the whole batch in one step; eWriterWaiting stays.
 				_word.fetch_sub(eWriter - n, std::memory_order::acq_rel);
 				return;
 			}
+
 			if (not writers_.empty()) {
 				writer = writers_.popOne();
 				if (writers_.empty()) {
@@ -89,6 +92,7 @@ void FiberSharedMutex::unlock() noexcept {
 				}
 				return;
 			}
+
 			_word.fetch_and(~eWriter, std::memory_order::release);
 		}
 	);
@@ -98,6 +102,7 @@ void FiberSharedMutex::unlock() noexcept {
 		unpark(*batch);
 		batch = next;
 	}
+
 	if (writer != nullptr) {
 		unpark(*writer);
 	}
@@ -115,6 +120,7 @@ bool FiberSharedMutex::try_lock_shared() noexcept {
 
 // The slow path drops the transient reader count taken above before parking.
 void FiberSharedMutex::lock_shared() HG_NO_THREAD_SAFETY_ANALYSIS {
+
 	const u32 prev = _word.fetch_add(1, std::memory_order::acquire);
 	if ((prev & writerBits) == 0) {
 		return;
@@ -130,6 +136,7 @@ void FiberSharedMutex::lock_shared() HG_NO_THREAD_SAFETY_ANALYSIS {
 			if (try_lock_shared()) {
 				return false;
 			}
+
 			node.state.store(ParkNode::State::eArmed, std::memory_order::relaxed);
 			readers_.push(node);
 			return true;
@@ -159,14 +166,17 @@ void FiberSharedMutex::unlock_shared() noexcept {
 			if ((w & (eWriter | readerMask)) != 0) {
 				return nullptr;
 			}
+
 			auto* const head = writers_.popOne();
 			if (head == nullptr) {
 				return nullptr;
 			}
+
 			_word.fetch_or(eWriter, std::memory_order::acq_rel);
 			if (writers_.empty()) {
 				_word.fetch_and(~eWriterWaiting, std::memory_order::acq_rel);
 			}
+
 			return head;
 		}
 	);
