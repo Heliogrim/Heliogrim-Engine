@@ -1,7 +1,8 @@
 #pragma once
 
-#include <algorithm>
 #include <filesystem>
+#include <Engine.Common/Algo/Copy.hpp>
+#include <Engine.Common/Algo/Search.hpp>
 #include <Engine.Common/Move.hpp>
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Types.hpp>
@@ -90,12 +91,7 @@ namespace hg::engine::fs {
 			const auto tmp = nativeName();
 			auto result = String(tmp.size(), 0);
 			// TODO: Replace with actual narrow conversion
-			std::transform(
-				tmp.begin(),
-				tmp.end(),
-				result.begin(),
-				[](string_type::value_type ch_) { return static_cast<char>(ch_); }
-			);
+			TransformTo(tmp, result.begin(), [](const string_type::value_type ch_) { return static_cast<char>(ch_); });
 			return result;
 		}
 
@@ -124,7 +120,7 @@ namespace hg::engine::fs {
 		}
 
 		[[nodiscard]] constexpr u32 segments() const noexcept {
-			return static_cast<u32>(std::count(_value.begin(), _value.end(), *separator_type::value));
+			return static_cast<u32>(CountOf(_value, *separator_type::value));
 		}
 
 	public:
