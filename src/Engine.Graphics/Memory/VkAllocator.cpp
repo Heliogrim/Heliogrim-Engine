@@ -2,6 +2,7 @@
 
 #include "AllocatedMemory.hpp"
 #include "AllocationResult.hpp"
+#include "MemoryType.hpp"
 #include "../vkinc.hpp"
 #include "../API/VkTranslate.hpp"
 #include "../Device/Device.hpp"

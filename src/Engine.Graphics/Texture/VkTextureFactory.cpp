@@ -7,6 +7,7 @@
 #include "TextureView.hpp"
 #include "SparseTextureView.hpp"
 #include "../API/VkTranslate.hpp"
+#include "../Memory/MemoryType.hpp"
 
 using namespace hg::engine::graphics;
 using namespace hg;
