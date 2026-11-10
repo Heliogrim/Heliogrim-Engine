@@ -5,6 +5,7 @@
 
 #if TRUE
 #include <Engine.Common/Math/Coordinates.hpp>
+#include <Engine.Reflow/Command/ReflowCommandBuffer.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Logging/Logger.hpp>
