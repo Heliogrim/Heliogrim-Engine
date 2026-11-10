@@ -47,6 +47,14 @@ namespace hg::engine::storage {
 	public:
 		constexpr virtual ~Mutation() noexcept = default;
 
+	protected:
+		ptr<const IStorage> _primary = nullptr;
+
+	public:
+		[[nodiscard]] ptr<const IStorage> primary() const noexcept {
+			return _primary;
+		}
+
 	public:
 		decltype(auto) exec(auto&& fn_) noexcept {
 			// TODO: We need to query/reconstruct the call parameters for fn, as we need the type for static/dynamic type validation.

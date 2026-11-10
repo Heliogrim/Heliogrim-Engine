@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Engine.Common/Functional/Lambda.hpp>
+#include <Engine.Reflect/FullTypeInfo.hpp>
 #include <Engine.Reflect/IsType.hpp>
 
 #include "__fwd.hpp"
@@ -96,10 +97,13 @@ namespace hg::engine::storage::system {
 
 		decltype(DynamicStage::acqFn) acqFnBase;
 		decltype(DynamicStage::relFn) relFnBase;
+		/* Set on registration from the stage's resource type info. */
+		type_id resourceType {};
 
 		[[nodiscard]] DynamicStage operator()() const noexcept {
 			return DynamicStage {
 				.storage = nullptr,
+				.resourceType = resourceType,
 				.acqFn = clone(acqFnBase),
 				.access = {},
 				.relFn = clone(relFnBase)
@@ -224,6 +228,7 @@ namespace hg::engine::storage::system {
 		[[nodiscard]] DynamicStage operator()() const noexcept override {
 			return DynamicStage {
 				.storage = nullptr,
+				.resourceType = refl::FullTypeInfo::from<ResourceType_>().meta->typeId(),
 				.acqFn = &this_type::morphAcqFn,
 				.access = {},
 				.relFn = &this_type::morphRelFn
@@ -258,6 +263,8 @@ namespace hg::engine::storage::system {
 		// Attention: FullTypeInfo of resource has to be exactly the same
 
 		substage_list subStageFactories;
+		/* Set on composition from the composed stage's resource type info. */
+		type_id resourceType {};
 
 	protected:
 		struct SubStage {
@@ -369,6 +376,7 @@ namespace hg::engine::storage::system {
 
 			return DynamicStage {
 				.storage = nullptr,
+				.resourceType = resourceType,
 				.acqFn = [rcSubStages = clone(rcSubStages)](auto&&... args_) mutable {
 					return this_type::composeAcqFn(*rcSubStages, ::hg::forward<decltype(args_)>(args_)...);
 				},

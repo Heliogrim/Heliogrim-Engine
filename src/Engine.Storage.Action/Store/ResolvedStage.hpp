@@ -25,8 +25,9 @@ namespace hg::engine::storage {
 	public:
 		StageKey key;
 		Arci<IStorage> storage;
-		meta::WithType<Rc<IoResourceAccessorBase>> access;
+		// Note: Declared before `access`, so the own accessor is released before the stage it reads from.
 		Arci<ResolvedStage> below;
+		meta::WithType<Rc<IoResourceAccessorBase>> access;
 		/* Bottom storage of the chain; copied from `below`, or the stage's own storage. */
 		ptr<const IStorage> primary;
 	};

@@ -3,6 +3,7 @@
 #include <functional>
 #include <Engine.Common/Expected.hpp>
 #include <Engine.Common/Managed/Rc.hpp>
+#include <Engine.Common/Meta/TypeId.hpp>
 #include <Engine.Reflect.Utils/With/WithType.hpp>
 #include <Engine.Storage.Registry/IStorage.hpp>
 
@@ -13,6 +14,7 @@
 namespace hg::engine::storage::system {
 	struct DynamicStage {
 		Arci<IStorage> storage;
+		type_id resourceType;
 		std::function<Result<meta::WithType<Rc<IoResourceAccessorBase>>, Action::acq_error_type>(
 			ref<Context>,
 			cref<Arci<IStorage>>,
