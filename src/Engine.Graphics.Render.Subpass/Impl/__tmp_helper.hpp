@@ -2,9 +2,6 @@
 
 #include <algorithm>
 #include <cassert>
-#include <filesystem>
-#include <fstream>
-#include <span>
 #include <utility>
 #include <Engine.Accel.Lang/Intermediate.hpp>
 #include <Engine.Accel.Lang/Ir/Interface.hpp>
@@ -17,53 +14,43 @@
 #include <Engine.Config/Config.hpp>
 #include <Engine.Config/Enums.hpp>
 #include <Engine.Core/Engine.hpp>
+#include <Engine.Storage.System/ReadText.hpp>
+#include <Engine.Storage.System/StorageSystem.hpp>
+#include <Engine.Storage/StorageModule.hpp>
 
 namespace hg::engine::render {
 	inline static string read_shader_file(std::filesystem::path name_) {
 
 		const auto& cfg = Engine::getEngine()->getConfig();
-		auto checks = Vector<std::filesystem::path> {};
+		auto checks = Vector<std::pair<storage::UrlScheme, std::filesystem::path>> {};
 
 		const auto& projectPath = cfg.getTyped<String>(cfg::ProjectConfigProperty::eLocalAssetPath);
 		if (projectPath.has_value() && projectPath->has_value()) {
-			checks.emplace_back(std::filesystem::path { **projectPath }.append(R"(shader)").lexically_normal());
+			checks.emplace_back(storage::FileProjectScheme, std::filesystem::path { **projectPath }.append(R"(shader)").lexically_normal());
 		}
 
 		const auto& editorPath = cfg.getTyped<String>(cfg::EditorConfigProperty::eLocalAssetPath);
 		if (editorPath.has_value() && editorPath->has_value()) {
-			checks.emplace_back(std::filesystem::path { **editorPath }.append(R"(shader)").lexically_normal());
+			checks.emplace_back(storage::FileEditorScheme, std::filesystem::path { **editorPath }.append(R"(shader)").lexically_normal());
 		}
 
-		Opt<std::filesystem::path> inputFile = None;
-		for (const auto& check : checks) {
-			auto target = check / name_;
-			if (std::filesystem::exists(target)) {
-				inputFile = Some(::hg::move(target));
-				break;
+		auto& system = *Engine::getEngine()->getStorage()->getSystem();
+		for (const auto& [scheme, base] : checks) {
+			// Note: Includes are module-controlled input; never resolve outside the shader base.
+			const auto candidate = (base / name_).lexically_normal();
+			const auto relative = candidate.lexically_relative(base);
+			if (name_.is_absolute() || relative.empty() || *relative.begin() == "..") {
+				continue;
+			}
+
+			auto text = storage::readTextViaStorage(system, scheme, fs::Path { candidate });
+			if (text.has_value()) {
+				return ::hg::move(text).value();
 			}
 		}
 
-		if (inputFile == None) {
-			::hg::breakpoint();
-			return {};
-		}
-
-		/**/
-
-		auto ifs = std::ifstream(*inputFile, std::ios_base::in | std::ios_base::binary);
-
-		ifs.seekg(0, std::ios::end);
-		const auto fsize = ifs.tellg();
-		ifs.seekg(0, std::ios::beg);
-
-		string tmp {};
-		tmp.resize(fsize);
-
-		ifs.read(tmp.data(), fsize);
-		assert(!ifs.bad());
-
-		ifs.close();
-		return tmp;
+		::hg::breakpoint();
+		return {};
 	}
 
 	/**
@@ -83,17 +70,18 @@ namespace hg::engine::render {
 		using namespace accel::lang;
 
 		const auto name = name_.generic_string();
-		auto parsed = ir::parseModule(
-			name,
-			read_shader_file(std::move(name_)),
-			entry_,
-			ir::ModuleResolver {
-				[](StringView include_) -> Opt<String> {
-					auto source = read_shader_file(std::filesystem::path { String { include_ } });
-					return source.empty() ? None : Opt<String> { std::move(source) };
+		auto parsed =
+			ir::parseModule(
+				name,
+				read_shader_file(std::move(name_)),
+				entry_,
+				ir::ModuleResolver {
+					[](StringView include_) -> Opt<String> {
+						auto source = read_shader_file(std::filesystem::path { String { include_ } });
+						return source.empty() ? None : Opt<String> { std::move(source) };
+					}
 				}
-			}
-		);
+			);
 
 		assert(parsed.has_value());
 		auto intermediate = make_smr<Intermediate>();
