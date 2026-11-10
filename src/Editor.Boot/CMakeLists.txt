@@ -8,10 +8,10 @@ make_library_project(
 		${PROJECT_NAME}::Editor.Assets.Actions
 		${PROJECT_NAME}::Editor.Assets.Default
 		${PROJECT_NAME}::Editor.Core
-		${PROJECT_NAME}::Editor.GFX.Event
-		${PROJECT_NAME}::Editor.GFX.Graphs
-		${PROJECT_NAME}::Editor.GFX.IO
-		${PROJECT_NAME}::Editor.GFX.Loader
+		${PROJECT_NAME}::Editor.Graphics.Event
+		${PROJECT_NAME}::Editor.Graphics.Graphs
+		${PROJECT_NAME}::Editor.Graphics.IO
+		${PROJECT_NAME}::Editor.Graphics.Loader
 		${PROJECT_NAME}::Editor.Render
 		${PROJECT_NAME}::Editor.Scene
 		${PROJECT_NAME}::Editor.Scene.Actions
