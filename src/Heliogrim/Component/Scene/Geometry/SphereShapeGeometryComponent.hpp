@@ -31,16 +31,16 @@ namespace hg {
 
 	private:
 		math::Vector1f32 _radius;
-		Opt<GfxMaterialAssetHandle> _instanceMaterial;
+		Opt<GraphicsMaterialAssetHandle> _instanceMaterial;
 
 	public:
 		[[nodiscard]] ref<const math::Vector1f32> getRadius() const noexcept;
 
 		void setRadius(mref<math::Vector1f32> radius_) noexcept;
 
-		[[nodiscard]] Opt<GfxMaterialAssetHandle> getInstanceMaterial() const noexcept;
+		[[nodiscard]] Opt<GraphicsMaterialAssetHandle> getInstanceMaterial() const noexcept;
 
-		void setInstanceMaterial(ref<const GfxMaterialAssetHandle> material_);
+		void setInstanceMaterial(ref<const GraphicsMaterialAssetHandle> material_);
 
 		void unsetInstanceMaterial();
 	};

@@ -9,7 +9,7 @@ namespace hg::engine {
 namespace hg::editor::boot {
 	extern void initDefaultFontAssets(ref<const engine::Engine> engine_);
 
-	extern void initDefaultGfxMaterialAssets(ref<const engine::Engine> engine_);
+	extern void initDefaultGraphicsMaterialAssets(ref<const engine::Engine> engine_);
 
 	extern void initDefaultImageAssets(ref<const engine::Engine> engine_);
 

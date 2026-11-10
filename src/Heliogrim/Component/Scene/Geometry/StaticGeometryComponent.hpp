@@ -33,7 +33,7 @@ namespace hg {
 			mref<CachedActorPointer> owner_,
 			mref<ptr<HierarchyComponent>> parent_,
 			ref<const StaticGeometryAssetHandle> geometry_,
-			ref<const AutoArray<ptr<const GfxMaterialAssetHandle>>> materials_
+			ref<const AutoArray<ptr<const GraphicsMaterialAssetHandle>>> materials_
 		);
 
 		~StaticGeometryComponent() override = default;
@@ -47,12 +47,12 @@ namespace hg {
 		bool setStaticGeometry(ref<const StaticGeometryAssetHandle> handle_);
 
 	private:
-		AutoArray<Opt<GfxMaterialAssetHandle>> _instanceMaterials;
+		AutoArray<Opt<GraphicsMaterialAssetHandle>> _instanceMaterials;
 
 	public:
-		[[nodiscard]] ref<const AutoArray<Opt<GfxMaterialAssetHandle>>> getInstanceMaterials() const noexcept;
+		[[nodiscard]] ref<const AutoArray<Opt<GraphicsMaterialAssetHandle>>> getInstanceMaterials() const noexcept;
 
-		void setInstanceMaterial(u16 index_, ref<const GfxMaterialAssetHandle> material_);
+		void setInstanceMaterial(u16 index_, ref<const GraphicsMaterialAssetHandle> material_);
 
 		void unsetInstanceMaterial(u16 index_);
 	};

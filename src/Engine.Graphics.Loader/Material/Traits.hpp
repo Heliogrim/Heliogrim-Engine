@@ -17,7 +17,7 @@ namespace hg::engine::resource::loader {
 	using namespace ::hg::engine::graphics::loader;
 
 	template <>
-	struct RequestOptions<LoaderRequest<assets::GfxMaterial>> {
+	struct RequestOptions<LoaderRequest<assets::GraphicsMaterial>> {
 		using type = MaterialLoadOptions;
 	};
 }
@@ -26,7 +26,7 @@ namespace hg::engine::resource::loader {
 	using namespace ::hg::engine::graphics::loader;
 
 	template <>
-	struct RequestOptions<CacheRequest<assets::GfxMaterial>> {
+	struct RequestOptions<CacheRequest<assets::GraphicsMaterial>> {
 		using type = MaterialLoadOptions;
 	};
 }
@@ -35,7 +35,7 @@ namespace hg::engine::resource::loader {
 	using namespace ::hg::engine::graphics::loader;
 
 	template <>
-	struct RequestOptions<FeedbackRequest<assets::GfxMaterial>> {
+	struct RequestOptions<FeedbackRequest<assets::GraphicsMaterial>> {
 		using type = MaterialLoadOptions;
 	};
 }
@@ -44,12 +44,12 @@ namespace hg::engine::resource::loader {
 	using namespace ::hg::engine::graphics::loader;
 
 	template <>
-	struct RequestOptions<SourceLoaderRequest<assets::GfxMaterial>> {
+	struct RequestOptions<SourceLoaderRequest<assets::GraphicsMaterial>> {
 		using type = RequestOptions<SourceLoaderRequest<void>>::type;
 	};
 
 	template <>
-	struct StreamOptions<SourceLoaderStreamRequest<assets::GfxMaterial>> {
+	struct StreamOptions<SourceLoaderStreamRequest<assets::GraphicsMaterial>> {
 		using type = StreamOptions<SourceLoaderStreamRequest<void>>::type;
 	};
 }
@@ -58,7 +58,7 @@ namespace hg::engine::resource::loader {
 	using namespace ::hg::engine::graphics::loader;
 
 	template <>
-	struct RequestOptions<TransformerRequest<assets::GfxMaterial>> {
+	struct RequestOptions<TransformerRequest<assets::GraphicsMaterial>> {
 		using type = MaterialLoadOptions;
 	};
 }
@@ -69,7 +69,7 @@ namespace hg::engine::resource::loader {
 	using namespace ::hg::engine::graphics::loader;
 
 	template <>
-	struct RequestOptions<LoaderRequest<assets::GfxMaterialPrototype>> {
+	struct RequestOptions<LoaderRequest<assets::GraphicsMaterialPrototype>> {
 		using type = MaterialPrototypeLoadOptions;
 	};
 }
@@ -78,7 +78,7 @@ namespace hg::engine::resource::loader {
 	using namespace ::hg::engine::graphics::loader;
 
 	template <>
-	struct RequestOptions<CacheRequest<assets::GfxMaterialPrototype>> {
+	struct RequestOptions<CacheRequest<assets::GraphicsMaterialPrototype>> {
 		using type = MaterialPrototypeLoadOptions;
 	};
 }
@@ -87,7 +87,7 @@ namespace hg::engine::resource::loader {
 	using namespace ::hg::engine::graphics::loader;
 
 	template <>
-	struct RequestOptions<FeedbackRequest<assets::GfxMaterialPrototype>> {
+	struct RequestOptions<FeedbackRequest<assets::GraphicsMaterialPrototype>> {
 		using type = MaterialPrototypeLoadOptions;
 	};
 }
@@ -96,12 +96,12 @@ namespace hg::engine::resource::loader {
 	using namespace ::hg::engine::graphics::loader;
 
 	template <>
-	struct RequestOptions<SourceLoaderRequest<assets::GfxMaterialPrototype>> {
+	struct RequestOptions<SourceLoaderRequest<assets::GraphicsMaterialPrototype>> {
 		using type = RequestOptions<SourceLoaderRequest<void>>::type;
 	};
 
 	template <>
-	struct StreamOptions<SourceLoaderStreamRequest<assets::GfxMaterialPrototype>> {
+	struct StreamOptions<SourceLoaderStreamRequest<assets::GraphicsMaterialPrototype>> {
 		using type = StreamOptions<SourceLoaderStreamRequest<void>>::type;
 	};
 }
@@ -110,7 +110,7 @@ namespace hg::engine::resource::loader {
 	using namespace ::hg::engine::graphics::loader;
 
 	template <>
-	struct RequestOptions<TransformerRequest<assets::GfxMaterialPrototype>> {
+	struct RequestOptions<TransformerRequest<assets::GraphicsMaterialPrototype>> {
 		using type = MaterialPrototypeLoadOptions;
 	};
 }

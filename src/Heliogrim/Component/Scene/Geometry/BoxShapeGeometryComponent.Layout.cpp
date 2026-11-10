@@ -7,12 +7,12 @@ using namespace hg::engine::serialization;
 using namespace hg;
 
 namespace {
-	[[nodiscard]] AssetGuid materialGuidOf(ref<const Opt<GfxMaterialAssetHandle>> material_) {
+	[[nodiscard]] AssetGuid materialGuidOf(ref<const Opt<GraphicsMaterialAssetHandle>> material_) {
 		return material_ != None ? static_cast<AssetGuid>(material_->getAssetGuid()) : invalid_asset_guid;
 	}
 
-	void restoreMaterial(ref<const AssetGuid> guid_, ref<Opt<GfxMaterialAssetHandle>> target_) {
-		target_ = guid_ != invalid_asset_guid ? Some(GetAssets().find<GfxMaterialAssetHandle>(guid_).value) : None;
+	void restoreMaterial(ref<const AssetGuid> guid_, ref<Opt<GraphicsMaterialAssetHandle>> target_) {
+		target_ = guid_ != invalid_asset_guid ? Some(GetAssets().find<GraphicsMaterialAssetHandle>(guid_).value) : None;
 	}
 }
 

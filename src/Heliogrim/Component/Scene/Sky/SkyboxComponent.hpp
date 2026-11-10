@@ -31,7 +31,7 @@ namespace hg {
 			mref<CachedActorPointer> owner_,
 			mref<ptr<HierarchyComponent>> parent_,
 			mref<StaticGeometryAssetHandle> geometry_,
-			mref<GfxMaterialAssetHandle> material_
+			mref<GraphicsMaterialAssetHandle> material_
 		);
 
 		~SkyboxComponent() override = default;
@@ -45,11 +45,11 @@ namespace hg {
 		bool setSkyboxGeometry(ref<const StaticGeometryAssetHandle> handle_);
 
 	private:
-		GfxMaterialAssetHandle _skyboxMaterial;
+		GraphicsMaterialAssetHandle _skyboxMaterial;
 
 	public:
-		[[nodiscard]] ref<const GfxMaterialAssetHandle> getSkyboxMaterial() const noexcept;
+		[[nodiscard]] ref<const GraphicsMaterialAssetHandle> getSkyboxMaterial() const noexcept;
 
-		bool setSkyboxMaterial(ref<const GfxMaterialAssetHandle> handle_);
+		bool setSkyboxMaterial(ref<const GraphicsMaterialAssetHandle> handle_);
 	};
 }

@@ -7,7 +7,7 @@
 using namespace hg;
 using namespace hg::engine::graphics::material;
 
-namespace GfxMaterial {
+namespace GraphicsMaterial {
 	TEST(MaterialParameterStorageTest, SetAndGetValue) {
 		MaterialParameterStorage<int> storage {};
 

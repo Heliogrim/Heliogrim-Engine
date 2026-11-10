@@ -43,7 +43,7 @@ ref<const AutoArray<AssetGuid>> StaticGeometry::getMeshMaterials() const noexcep
 	return _meshMaterials;
 }
 
-void StaticGeometry::setMeshMaterial(u16 index_, mref<TypedAssetGuid<GfxMaterial>> materialGuid_) {
+void StaticGeometry::setMeshMaterial(u16 index_, mref<TypedAssetGuid<GraphicsMaterial>> materialGuid_) {
 	::hg::assertd(getMeshMaterialCount() > index_ && _meshMaterials.size() > index_);
 	_meshMaterials.at(index_) = ::hg::move(materialGuid_);
 }

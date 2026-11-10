@@ -5,9 +5,9 @@
 #include <Engine.Assets.Type/Geometry/LandscapeGeometry.hpp>
 #include <Engine.Assets.Type/Geometry/SkeletalGeometry.hpp>
 #include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
-#include <Engine.Assets.Type/Material/GfxMaterial.hpp>
-#include <Engine.Assets.Type/Material/GfxMaterialPrototype.hpp>
-#include <Engine.Assets.Type/Material/PfxMaterial.hpp>
+#include <Engine.Assets.Type/Material/GraphicsMaterial.hpp>
+#include <Engine.Assets.Type/Material/GraphicsMaterialPrototype.hpp>
+#include <Engine.Assets.Type/Material/PhysicsMaterial.hpp>
 #include <Engine.Assets.Type/Material/SfxMaterial.hpp>
 #include <Engine.Assets.Type/Texture/FontAsset.hpp>
 #include <Engine.Assets.Type/Texture/ImageAsset.hpp>
@@ -27,7 +27,7 @@
 #include "Engine.Graphics.Render.Predefined/Effects/BrdfBase.hpp"
 #include "Engine.Graphics.Render.Predefined/Effects/Skybox.hpp"
 #include "Fonts/Default.hpp"
-#include "GfxMaterials/Default.hpp"
+#include "GraphicsMaterials/Default.hpp"
 #include "Images/Default.hpp"
 #include "Meshes/Default.hpp"
 #include "Textures/Default.hpp"
@@ -44,7 +44,7 @@ void editor::boot::initDefaultFontAssets(ref<const engine::Engine> engine_) {
 
 }
 
-void editor::boot::initDefaultGfxMaterialAssets(ref<const engine::Engine> engine_) {
+void editor::boot::initDefaultGraphicsMaterialAssets(ref<const engine::Engine> engine_) {
 
 	auto accelSubmodule = engine_.getModules().getSubModule(AccelDepKey);
 
@@ -69,7 +69,7 @@ void editor::boot::initDefaultGfxMaterialAssets(ref<const engine::Engine> engine
 
 	/**/
 
-	auto brdfMaterialPrototype = Arci<engine::assets::GfxMaterialPrototype>::create(
+	auto brdfMaterialPrototype = Arci<engine::assets::GraphicsMaterialPrototype>::create(
 		clone(assets::materials::default_brdf_prototype_guid),
 		brdfBaseEffect->getName(),
 		engine::assets::AssetReferenceUrl {},
@@ -80,7 +80,7 @@ void editor::boot::initDefaultGfxMaterialAssets(ref<const engine::Engine> engine
 
 	[](auto& asset_) {
 		asset_._params.push_back(
-			engine::assets::GfxMaterialPrototype::TmpParam {
+			engine::assets::GraphicsMaterialPrototype::TmpParam {
 				.identifier = engine::graphics::material::ParameterIdentifier { 0u },
 				.name = "Albedo",
 				.dataType = engine::accel::TransferDataType::eSampler,
@@ -88,7 +88,7 @@ void editor::boot::initDefaultGfxMaterialAssets(ref<const engine::Engine> engine
 			}
 		);
 		asset_._params.push_back(
-			engine::assets::GfxMaterialPrototype::TmpParam {
+			engine::assets::GraphicsMaterialPrototype::TmpParam {
 				.identifier = engine::graphics::material::ParameterIdentifier { 1u },
 				.name = "Normal",
 				.dataType = engine::accel::TransferDataType::eSampler,
@@ -96,7 +96,7 @@ void editor::boot::initDefaultGfxMaterialAssets(ref<const engine::Engine> engine
 			}
 		);
 		asset_._params.push_back(
-			engine::assets::GfxMaterialPrototype::TmpParam {
+			engine::assets::GraphicsMaterialPrototype::TmpParam {
 				.identifier = engine::graphics::material::ParameterIdentifier { 2u },
 				.name = "Arm",
 				.dataType = engine::accel::TransferDataType::eSampler,
@@ -108,7 +108,7 @@ void editor::boot::initDefaultGfxMaterialAssets(ref<const engine::Engine> engine
 
 	/**/
 
-	auto brdfMaterial = Arci<engine::assets::GfxMaterial>::create(
+	auto brdfMaterial = Arci<engine::assets::GraphicsMaterial>::create(
 		clone(assets::materials::default_brdf_guid),
 		brdfBaseEffect->getName(),
 		engine::assets::AssetReferenceUrl {},
@@ -132,7 +132,7 @@ void editor::boot::initDefaultGfxMaterialAssets(ref<const engine::Engine> engine
 
 	/**/
 
-	auto skyboxMaterialPrototype = Arci<engine::assets::GfxMaterialPrototype>::create(
+	auto skyboxMaterialPrototype = Arci<engine::assets::GraphicsMaterialPrototype>::create(
 		clone(assets::materials::default_skybox_prototype_guid),
 		skyboxBaseEffect->getName(),
 		engine::assets::AssetReferenceUrl {},
@@ -143,7 +143,7 @@ void editor::boot::initDefaultGfxMaterialAssets(ref<const engine::Engine> engine
 
 	[](auto& asset_) {
 		asset_._params.push_back(
-			engine::assets::GfxMaterialPrototype::TmpParam {
+			engine::assets::GraphicsMaterialPrototype::TmpParam {
 				.identifier = engine::graphics::material::ParameterIdentifier { 0u },
 				.name = "Texture",
 				.dataType = engine::accel::TransferDataType::eSampler,
@@ -154,7 +154,7 @@ void editor::boot::initDefaultGfxMaterialAssets(ref<const engine::Engine> engine
 
 	/**/
 
-	auto skyboxMaterial = Arci<engine::assets::GfxMaterial>::create(
+	auto skyboxMaterial = Arci<engine::assets::GraphicsMaterial>::create(
 		clone(assets::materials::default_skybox_guid),
 		skyboxBaseEffect->getName(),
 		engine::assets::AssetReferenceUrl {},

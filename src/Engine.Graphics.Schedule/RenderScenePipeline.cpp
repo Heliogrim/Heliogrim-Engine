@@ -12,7 +12,7 @@ using namespace hg::engine::scheduler;
 using namespace hg;
 
 RenderScenePipeline::RenderScenePipeline() :
-	StagePipeline(identifier_type::from("::Gfx::RenderScenePipeline")) {}
+	StagePipeline(identifier_type::from("::Graphics::RenderScenePipeline")) {}
 
 RenderScenePipeline::~RenderScenePipeline() = default;
 

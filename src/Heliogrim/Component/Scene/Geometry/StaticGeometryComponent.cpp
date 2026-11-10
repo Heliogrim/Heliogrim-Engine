@@ -19,7 +19,7 @@ StaticGeometryComponent::StaticGeometryComponent(
 	mref<CachedActorPointer> owner_,
 	mref<ptr<HierarchyComponent>> parent_,
 	ref<const StaticGeometryAssetHandle> geometry_,
-	ref<const AutoArray<ptr<const GfxMaterialAssetHandle>>> materials_
+	ref<const AutoArray<ptr<const GraphicsMaterialAssetHandle>>> materials_
 ) :
 	InheritMeta(std::move(guid_), ComponentTypeId { typeId }, std::move(owner_), std::move(parent_)),
 	_staticGeometry(::hg::move(geometry_)),
@@ -44,11 +44,11 @@ bool StaticGeometryComponent::setStaticGeometry(ref<const StaticGeometryAssetHan
 	return true;
 }
 
-ref<const AutoArray<Opt<GfxMaterialAssetHandle>>> StaticGeometryComponent::getInstanceMaterials() const noexcept {
+ref<const AutoArray<Opt<GraphicsMaterialAssetHandle>>> StaticGeometryComponent::getInstanceMaterials() const noexcept {
 	return _instanceMaterials;
 }
 
-void StaticGeometryComponent::setInstanceMaterial(const u16 index_, ref<const GfxMaterialAssetHandle> material_) {
+void StaticGeometryComponent::setInstanceMaterial(const u16 index_, ref<const GraphicsMaterialAssetHandle> material_) {
 	::hg::assertd(_staticGeometry.isValid() && _staticGeometry.getAssetRef()->getMeshMaterialCount() > index_);
 
 	while (_instanceMaterials.size() <= index_) {
