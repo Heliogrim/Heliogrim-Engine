@@ -5,7 +5,6 @@
 #include <Engine.ACS.Schedule/ActorPipeline.hpp>
 #include <Engine.ACS/ActorModule.hpp>
 #include <Engine.Assets/Assets.hpp>
-#include <Engine.Core.Schedule/CorePipeline.hpp>
 #include <Engine.Core/EngineState.hpp>
 #include <Engine.Core/Session.hpp>
 #include <Engine.Core/UniverseContext.hpp>
@@ -13,6 +12,7 @@
 #include <Engine.Core/Event/UniverseRemoveEvent.hpp>
 #include <Engine.Core/Module/CoreDependencies.hpp>
 #include <Engine.Core/Module/SubModule.hpp>
+#include <Engine.Core.Schedule/CorePipeline.hpp>
 #include <Engine.GFX/Graphics.hpp>
 #include <Engine.Input/Input.hpp>
 #include <Engine.Network/Network.hpp>
@@ -21,9 +21,9 @@
 #include <Engine.Scene.Schedule/ScenePipeline.hpp>
 #include <Engine.Scheduler/Async.hpp>
 #include <Engine.Scheduler/CompScheduler.hpp>
-#include <Engine.Scheduler/Waitable/Signal.hpp>
-#include <Engine.Scheduler/Waitable/JoinCounter.hpp>
 #include <Engine.Scheduler/Pipeline/CompositePipeline.hpp>
+#include <Engine.Scheduler/Waitable/JoinCounter.hpp>
+#include <Engine.Scheduler/Waitable/Signal.hpp>
 #include <Engine.SFX/Audio.hpp>
 
 #ifdef WIN32
@@ -57,7 +57,7 @@ bool GameEngine::preInit() {
 	#ifdef WIN32
 	_platform = make_uptr<WinPlatform>();
 	#else
-    _platform = nullptr;
+	_platform = nullptr;
 	#endif
 
 	_resources = make_uptr<ResourceManager>();
@@ -112,23 +112,22 @@ bool GameEngine::init() {
 	setupCorePipelines();
 
 	/* Core modules should always interact with a guaranteed fiber context and non-sequential execution */
-	scheduler::JoinCounter setupCounter { _modules.getCoreModuleCount() };
+	scheduler::JoinCounter coreSetupCounter { _modules.getCoreModuleCount() };
 	_modules.forEachCoreModule(
-		[&setupCounter](ref<CoreModule> module_) {
+		[&coreSetupCounter](ref<CoreModule> module_) {
 			scheduler::exec(
-				[coreModule = std::addressof(module_), &setupCounter] {
+				[coreModule = std::addressof(module_), &coreSetupCounter] {
 					coreModule->setup();
-					setupCounter.done();
+					coreSetupCounter.done();
 				}
 			);
 		}
 	);
 
 	/**/
-	setupCounter.wait();
+	coreSetupCounter.wait();
 
 	scheduler::JoinCounter subSetupCounter { 1u };
-
 	scheduler::exec(
 		[this, &subSetupCounter] {
 
@@ -165,39 +164,39 @@ bool GameEngine::start() {
 	}
 
 	/**/
-	scheduler::Signal next1;
+	scheduler::Signal schedulerStartedSignal;
 	scheduler::exec(
-		[this, &next1] {
+		[this, &schedulerStartedSignal] {
 			_scheduler->getCompositePipeline()->start();
 
-			next1.set();
+			schedulerStartedSignal.set();
 		}
 	);
 
 	/**/
-	next1.wait();
+	schedulerStartedSignal.wait();
 
 	/**/
-	scheduler::Signal next2;
+	scheduler::Signal coreStartedSignal;
 	scheduler::exec(
-		[this, &next2] {
+		[this, &coreStartedSignal] {
 			_modules.forEachCoreModule(
 				[](ref<CoreModule> module_) {
 					module_.start();
 				}
 			);
 
-			next2.set();
+			coreStartedSignal.set();
 		}
 	);
 
 	/**/
-	next2.wait();
+	coreStartedSignal.wait();
 
 	/**/
-	scheduler::Signal next3;
+	scheduler::Signal subStartedSignal;
 	scheduler::exec(
-		[this, &next3] {
+		[this, &subStartedSignal] {
 
 			for (const auto& subModule : _modules.getSubModules()) {
 				subModule->start();
@@ -205,12 +204,12 @@ bool GameEngine::start() {
 
 			/**/
 
-			next3.set();
+			subStartedSignal.set();
 		}
 	);
 
 	/**/
-	next3.wait();
+	subStartedSignal.wait();
 	return setEngineState(EngineState::eStarted);
 }
 
@@ -223,9 +222,9 @@ bool GameEngine::stop() {
 	//	as we have to maintain the the constraints, data-integrity and immutability while within the bound cycle state.
 
 	/**/
-	scheduler::Signal next1;
+	scheduler::Signal subStoppedSignal;
 	scheduler::exec(
-		[this, &next1] {
+		[this, &subStoppedSignal] {
 
 			for (const auto& subModule : _modules.getSubModules()) {
 				subModule->stop();
@@ -239,42 +238,42 @@ bool GameEngine::stop() {
 
 			/**/
 
-			next1.set();
+			subStoppedSignal.set();
 		}
 	);
 
 	/**/
-	next1.wait();
+	subStoppedSignal.wait();
 
 	/**/
-	scheduler::Signal next2;
+	scheduler::Signal coreStoppedSignal;
 	scheduler::exec(
-		[this, &next2] {
+		[this, &coreStoppedSignal] {
 			_modules.forEachCoreModule(
 				[](ref<CoreModule> module_) {
 					module_.stop();
 				}
 			);
 
-			next2.set();
+			coreStoppedSignal.set();
 		}
 	);
 
 	/**/
-	next2.wait();
+	coreStoppedSignal.wait();
 
 	/**/
-	scheduler::Signal next3;
+	scheduler::Signal schedulerStoppedSignal;
 	scheduler::exec(
-		[this, &next3] {
+		[this, &schedulerStoppedSignal] {
 			_scheduler->getCompositePipeline()->stop();
 
-			next3.set();
+			schedulerStoppedSignal.set();
 		}
 	);
 
 	/**/
-	next3.wait();
+	schedulerStoppedSignal.wait();
 	return setEngineState(EngineState::eStopped);
 }
 
@@ -283,36 +282,36 @@ bool GameEngine::shutdown() {
 		return false;
 	}
 
-	scheduler::Signal subModuleFlag;
+	scheduler::Signal subShutdownSignal;
 	scheduler::exec(
-		[this, &subModuleFlag] {
+		[this, &subShutdownSignal] {
 
 			const auto& modules = _modules.getSubModules();
 			for (auto iter = modules.rbegin(); iter != modules.rend(); ++iter) {
 				(*iter)->destroy();
 			}
 
-			subModuleFlag.set();
+			subShutdownSignal.set();
 		}
 	);
 
-	subModuleFlag.wait();
+	subShutdownSignal.wait();
 
 	/* Core modules should always interact with a guaranteed fiber context and non-sequential execution */
-	scheduler::JoinCounter moduleCount { _modules.getCoreModuleCount() };
+	scheduler::JoinCounter coreShutdownCounter { _modules.getCoreModuleCount() };
 	_modules.forEachCoreModule(
-		[&moduleCount](ref<CoreModule> module_) {
+		[&coreShutdownCounter](ref<CoreModule> module_) {
 			scheduler::exec(
-				[coreModule = std::addressof(module_), &moduleCount] {
+				[coreModule = std::addressof(module_), &coreShutdownCounter] {
 					coreModule->destroy();
-					moduleCount.done();
+					coreShutdownCounter.done();
 				}
 			);
 		}
 	);
 
 	/**/
-	moduleCount.wait();
+	coreShutdownCounter.wait();
 
 	/**/
 	_universeContexts.front() = nullptr;
