@@ -3,7 +3,6 @@
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Filesystem/Url.hpp>
 #include <Engine.Reflow/Font/GlyphRanges.hpp>
-#include <Engine.Resource/Loader/Loader.hpp>
 
 #include "../Asset.hpp"
 
