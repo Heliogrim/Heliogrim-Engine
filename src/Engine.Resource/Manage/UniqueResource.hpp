@@ -45,7 +45,7 @@ namespace hg::engine::resource {
 		// The RAII accessors release in another function, which the analysis cannot follow.
 		[[nodiscard]] ManageGuard acquire(const ResourceUsageFlags flags_) override HG_NO_THREAD_SAFETY_ANALYSIS {
 			_lck.lock();
-			return guard_type { this, flags_, std::adopt_lock };
+			return guard_type { this, flags_, ::hg::concurrent::adopt_lock };
 		}
 
 		[[nodiscard]] bool try_acquire(
@@ -56,7 +56,7 @@ namespace hg::engine::resource {
 				return false;
 			}
 
-			guard_ = guard_type { this, flags_, std::adopt_lock };
+			guard_ = guard_type { this, flags_, ::hg::concurrent::adopt_lock };
 			return true;
 		}
 

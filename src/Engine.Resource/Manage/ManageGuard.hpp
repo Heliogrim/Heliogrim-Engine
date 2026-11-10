@@ -1,6 +1,6 @@
 #pragma once
 
-#include <mutex>
+#include <Engine.Async/Meta/LockTag.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 
 #include "../ResourceUsageFlag.hpp"
@@ -24,11 +24,11 @@ namespace hg::engine::resource {
 
 		ManageGuard(const ptr<resource_type> resource_, const ResourceUsageFlags flags_);
 
-		ManageGuard(const ptr<resource_type> resource_, const ResourceUsageFlags flags_, const std::adopt_lock_t);
+		ManageGuard(const ptr<resource_type> resource_, const ResourceUsageFlags flags_, const ::hg::concurrent::adopt_lock_t);
 
 		ManageGuard(
 			const ptr<resource_type> resource_,
-			const std::defer_lock_t
+			const ::hg::concurrent::defer_lock_t
 		);
 
 	public:
