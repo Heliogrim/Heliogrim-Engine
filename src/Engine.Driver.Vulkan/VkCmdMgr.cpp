@@ -1,5 +1,6 @@
 #include "VkCmdMgr.hpp"
 
+#include <Engine.Async/Lock/UniqueLock.hpp>
 #include <Engine.GFX/Command/CommandBatch.hpp>
 #include <numeric>
 
@@ -48,7 +49,7 @@ ref<engine::accel::AccelCommandBuffer> VkCmdMgr::allocate() {
 
 	const auto pool = queues.front().front()->pool();
 
-	std::scoped_lock<concurrent::FiberMutex> lck { pool->lck() };
+	concurrent::UniqueLock<concurrent::FiberMutex> lck { pool->lck() };
 	auto result = pool->make();
 
 	active.emplace_back(

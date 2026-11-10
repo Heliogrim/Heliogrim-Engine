@@ -5,8 +5,8 @@
 #include <atomic>
 #include <chrono>
 #include <memory>
-#include <mutex>
-#include <shared_mutex>
+#include <Engine.Async/Lock/SharedLock.hpp>
+#include <Engine.Async/Lock/UniqueLock.hpp>
 #include <Engine.Async/Primitive/FiberSharedMutex.hpp>
 #include <Engine.Scheduler/Scheduler.hpp>
 #include <Engine.Scheduler/Task/Task.hpp>
@@ -55,10 +55,10 @@ namespace AsyncModule {
 
 	TEST(FiberSharedMutex, SharedLockCompiles) {
 		concurrent::FiberSharedMutex mtx {}; {
-			std::shared_lock<concurrent::FiberSharedMutex> guard { mtx };
+			concurrent::SharedLock<concurrent::FiberSharedMutex> guard { mtx };
 			EXPECT_FALSE(mtx.try_lock());
 		} {
-			std::unique_lock<concurrent::FiberSharedMutex> guard { mtx };
+			concurrent::UniqueLock<concurrent::FiberSharedMutex> guard { mtx };
 			EXPECT_FALSE(mtx.try_lock_shared());
 		}
 		EXPECT_TRUE(mtx.try_lock());
