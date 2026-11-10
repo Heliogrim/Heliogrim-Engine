@@ -1,15 +1,15 @@
 #include "EditorGraphicsIo.hpp"
 
 #include <utility>
-#include <Editor.GFX.Event/EditorGraphicsRegisterTransformerEvent.hpp>
-#include <Editor.GFX.Loader/Texture/EditorTextureLoader.hpp>
-#include <Editor.GFX.Loader/Texture/Transformer/Bmp.hpp>
-#include <Editor.GFX.Loader/Texture/Transformer/Exr.hpp>
-#include <Editor.GFX.Loader/Texture/Transformer/Hdr.hpp>
-#include <Editor.GFX.Loader/Texture/Transformer/Jpeg.hpp>
-#include <Editor.GFX.Loader/Texture/Transformer/Png.hpp>
-#include <Editor.GFX.Loader/Texture/Transformer/Tga.hpp>
-#include <Editor.GFX.Loader/Texture/Transformer/Tiff.hpp>
+#include <Editor.Graphics.Event/EditorGraphicsRegisterTransformerEvent.hpp>
+#include <Editor.Graphics.Loader/Texture/EditorTextureLoader.hpp>
+#include <Editor.Graphics.Loader/Texture/Transformer/Bmp.hpp>
+#include <Editor.Graphics.Loader/Texture/Transformer/Exr.hpp>
+#include <Editor.Graphics.Loader/Texture/Transformer/Hdr.hpp>
+#include <Editor.Graphics.Loader/Texture/Transformer/Jpeg.hpp>
+#include <Editor.Graphics.Loader/Texture/Transformer/Png.hpp>
+#include <Editor.Graphics.Loader/Texture/Transformer/Tga.hpp>
+#include <Editor.Graphics.Loader/Texture/Transformer/Tiff.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Core/Engine.hpp>
