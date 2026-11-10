@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Engine.Accel.Lang/Rep/Type.hpp>
-#include <Engine.GFX/vkinc.hpp>
+#include <Engine.Graphics/vkinc.hpp>
 
 namespace hg::engine::accel {
 	/**

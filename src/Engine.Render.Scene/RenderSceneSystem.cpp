@@ -2,8 +2,8 @@
 
 #include <Engine.ACS/Cluster/RelocationTable.hpp>
 #include <Engine.Core/Engine.hpp>
-#include <Engine.GFX/Graphics.hpp>
-#include <Engine.GFX/Pool/SceneResourcePool.hpp>
+#include <Engine.Graphics/Graphics.hpp>
+#include <Engine.Graphics/Pool/SceneResourcePool.hpp>
 
 using namespace hg::engine::render;
 using namespace hg;

@@ -1,8 +1,8 @@
 #include "EditorTextureCache.hpp"
 
-#include <Engine.GFX/Cache/CacheTextureSubject.hpp>
-#include <Engine.GFX/Cache/GlobalCacheCtrl.hpp>
-#include <Engine.GFX/Cache/GlobalResourceCache.hpp>
+#include <Engine.Graphics/Cache/CacheTextureSubject.hpp>
+#include <Engine.Graphics/Cache/GlobalCacheCtrl.hpp>
+#include <Engine.Graphics/Cache/GlobalResourceCache.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 
 using namespace ::hg::editor::gfx::loader;

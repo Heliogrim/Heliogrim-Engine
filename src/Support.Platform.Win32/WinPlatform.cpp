@@ -7,7 +7,7 @@
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Event/SignalShutdownEvent.hpp>
 #include <Engine.Event/GlobalEventEmitter.hpp>
-#include <Engine.GFX/Graphics.hpp>
+#include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Input/Input.hpp>
 #include <Engine.Input/KeyboardEvent.hpp>
 #include <Engine.Input/MouseButtonEvent.hpp>

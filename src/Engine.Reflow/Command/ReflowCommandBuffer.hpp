@@ -6,10 +6,10 @@
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Math/__default.inl>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
-#include <Engine.GFX/Aabb.hpp>
-#include <Engine.GFX/API/__vkFwd.hpp>
-#include <Engine.GFX/Color/Color.hpp>
-#include <Engine.GFX/Geometry/UIVertex.hpp>
+#include <Engine.Graphics/Aabb.hpp>
+#include <Engine.Graphics/API/__vkFwd.hpp>
+#include <Engine.Graphics/Color/Color.hpp>
+#include <Engine.Graphics/Geometry/UIVertex.hpp>
 
 #include "../ReflowAlpha.hpp"
 #include "../Font/Font.hpp"

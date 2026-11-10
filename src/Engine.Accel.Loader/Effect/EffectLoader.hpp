@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine.GFX/Cache/__fwd.hpp>
+#include <Engine.Graphics/Cache/__fwd.hpp>
 #include <Engine.Resource/Loader/LoaderChain.hpp>
 
 #include "EffectResource.hpp"

@@ -3,12 +3,12 @@
 #include <Engine.Accel.Compile/EffectCompileResult.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Math/Extent.hpp>
-#include <Engine.GFX.Loader/Texture/TextureResource.hpp>
-#include <Engine.GFX/Buffer/BufferLikeObject.hpp>
-#include <Engine.GFX/Framebuffer/Framebuffer.hpp>
-#include <Engine.GFX/Geometry/UIVertex.hpp>
-#include <Engine.GFX/Texture/TextureSampler.hpp>
-#include <Engine.GFX.Render.Subpass/SubPass.hpp>
+#include <Engine.Graphics.Loader/Texture/TextureResource.hpp>
+#include <Engine.Graphics/Buffer/BufferLikeObject.hpp>
+#include <Engine.Graphics/Framebuffer/Framebuffer.hpp>
+#include <Engine.Graphics/Geometry/UIVertex.hpp>
+#include <Engine.Graphics/Texture/TextureSampler.hpp>
+#include <Engine.Graphics.Render.Subpass/SubPass.hpp>
 
 namespace hg::engine::reflow {
 	class ReflowCommandBuffer;

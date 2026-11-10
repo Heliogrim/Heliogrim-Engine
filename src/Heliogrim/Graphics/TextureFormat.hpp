@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine.GFX/TextureFormat.hpp>
+#include <Engine.Graphics/TextureFormat.hpp>
 
 namespace hg {
 	using TextureFormat = engine::gfx::TextureFormat;

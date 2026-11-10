@@ -4,8 +4,8 @@
 #include <Engine.Accel.Pipeline/VkGraphicsPipeline.hpp>
 #include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Asserts/Todo.hpp>
-#include <Engine.GFX/Command/CommandBuffer.hpp>
-#include <Engine.GFX/Framebuffer/Framebuffer.hpp>
+#include <Engine.Graphics/Command/CommandBuffer.hpp>
+#include <Engine.Graphics/Framebuffer/Framebuffer.hpp>
 
 using namespace hg::engine::accel;
 using namespace hg::engine::gfx;

@@ -40,23 +40,23 @@ make_library_project(
 		${PROJECT_NAME}::Engine.Env
 		${PROJECT_NAME}::Engine.Event
 		${PROJECT_NAME}::Engine.Filesystem
-		${PROJECT_NAME}::Engine.GFX
-		${PROJECT_NAME}::Engine.GFX.Event
-		${PROJECT_NAME}::Engine.GFX.Geometry
-		${PROJECT_NAME}::Engine.GFX.Glow
-		${PROJECT_NAME}::Engine.GFX.IO
-		${PROJECT_NAME}::Engine.GFX.Loader
-		${PROJECT_NAME}::Engine.GFX.Material
-		${PROJECT_NAME}::Engine.GFX.Render
-		${PROJECT_NAME}::Engine.GFX.Render.Command
-		${PROJECT_NAME}::Engine.GFX.Render.Graph.Scene
-		${PROJECT_NAME}::Engine.GFX.Render.Predefined
-		${PROJECT_NAME}::Engine.GFX.Render.Subpass
-		${PROJECT_NAME}::Engine.GFX.RenderGraph
-		${PROJECT_NAME}::Engine.GFX.RenderGraph.Compile
-		${PROJECT_NAME}::Engine.GFX.Scene
-		${PROJECT_NAME}::Engine.GFX.Scene.Model
-		${PROJECT_NAME}::Engine.GFX.Schedule
+		${PROJECT_NAME}::Engine.Graphics
+		${PROJECT_NAME}::Engine.Graphics.Event
+		${PROJECT_NAME}::Engine.Graphics.Geometry
+		${PROJECT_NAME}::Engine.Graphics.Glow
+		${PROJECT_NAME}::Engine.Graphics.IO
+		${PROJECT_NAME}::Engine.Graphics.Loader
+		${PROJECT_NAME}::Engine.Graphics.Material
+		${PROJECT_NAME}::Engine.Graphics.Render
+		${PROJECT_NAME}::Engine.Graphics.Render.Command
+		${PROJECT_NAME}::Engine.Graphics.Render.Graph.Scene
+		${PROJECT_NAME}::Engine.Graphics.Render.Predefined
+		${PROJECT_NAME}::Engine.Graphics.Render.Subpass
+		${PROJECT_NAME}::Engine.Graphics.RenderGraph
+		${PROJECT_NAME}::Engine.Graphics.RenderGraph.Compile
+		${PROJECT_NAME}::Engine.Graphics.Scene
+		${PROJECT_NAME}::Engine.Graphics.Scene.Model
+		${PROJECT_NAME}::Engine.Graphics.Schedule
 		${PROJECT_NAME}::Engine.Input
 		${PROJECT_NAME}::Engine.Input.Schedule
 		${PROJECT_NAME}::Engine.IO.Dispatcher

@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Collection/Set.hpp>
-#include <Engine.GFX/API/__vkFwd.hpp>
+#include <Engine.Graphics/API/__vkFwd.hpp>
 
 #include "PassCompiler.hpp"
 

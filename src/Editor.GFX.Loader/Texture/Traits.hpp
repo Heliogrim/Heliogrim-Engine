@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine.GFX.Loader/Texture/Traits.hpp>
+#include <Engine.Graphics.Loader/Texture/Traits.hpp>
 
 #include "__fwd.hpp"
 

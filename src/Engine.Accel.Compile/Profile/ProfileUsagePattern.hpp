@@ -1,7 +1,7 @@
 #pragma once
 #include <Engine.Accel.Lang/Rep/Symbol.hpp>
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
-#include <Engine.GFX.RenderGraph/Relation/Description.hpp>
+#include <Engine.Graphics.RenderGraph/Relation/Description.hpp>
 
 namespace hg::engine::accel {
 	/**

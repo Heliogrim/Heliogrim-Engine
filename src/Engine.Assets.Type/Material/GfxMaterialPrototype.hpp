@@ -5,7 +5,7 @@
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Math/Matrix.hpp>
 #include <Engine.Common/Math/Vector.hpp>
-#include <Engine.GFX.Material/ParameterIdentifier.hpp>
+#include <Engine.Graphics.Material/ParameterIdentifier.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 
 #include "../Asset.hpp"

@@ -5,7 +5,7 @@
 #include <Engine.Accel.Pipeline/AccelerationSpecification.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
-#include <Engine.GFX/vkinc.hpp>
+#include <Engine.Graphics/vkinc.hpp>
 
 namespace hg::engine::accel {
 	struct BlendState {

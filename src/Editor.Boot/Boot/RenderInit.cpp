@@ -2,7 +2,7 @@
 
 #include <Editor.Render/Renderer/EditorRenderer.hpp>
 #include <Engine.Core/Engine.hpp>
-#include <Engine.GFX/Graphics.hpp>
+#include <Engine.Graphics/Graphics.hpp>
 
 using namespace hg::editor::boot;
 using namespace hg::engine;

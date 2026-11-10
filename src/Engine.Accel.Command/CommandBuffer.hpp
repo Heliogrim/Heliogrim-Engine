@@ -1,6 +1,6 @@
 #pragma once
 #include <Engine.Common/Memory/MemoryPointer.hpp>
-#include <Engine.GFX/Command/CommandBuffer.hpp>
+#include <Engine.Graphics/Command/CommandBuffer.hpp>
 
 #include "CommandBufferStructs.hpp"
 

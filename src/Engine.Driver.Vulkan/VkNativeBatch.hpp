@@ -1,7 +1,7 @@
 #pragma once
 #include <Engine.Accel.Command/CommandBuffer.hpp>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.GFX.Render.Command/NativeBatch.hpp>
+#include <Engine.Graphics.Render.Command/NativeBatch.hpp>
 
 namespace hg::driver::vk {
 	class VkResourceTable;

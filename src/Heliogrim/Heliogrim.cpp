@@ -4,7 +4,7 @@
 #include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Core/Engine.hpp>
-#include <Engine.GFX/Graphics.hpp>
+#include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 #include <Engine.Scheduler/Scheduler.hpp>
 

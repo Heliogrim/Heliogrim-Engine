@@ -17,9 +17,9 @@
 #include <Engine.Common/Collection/Array.hpp>
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 #include <Engine.Core/Engine.hpp>
-#include <Engine.GFX/Graphics.hpp>
-#include <Engine.GFX/Geometry/UIVertex.hpp>
-#include <Engine.GFX/Geometry/Vertex.hpp>
+#include <Engine.Graphics/Graphics.hpp>
+#include <Engine.Graphics/Geometry/UIVertex.hpp>
+#include <Engine.Graphics/Geometry/Vertex.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Reflect/Cast.hpp>
 #include <Engine.Reflect/IsType.hpp>

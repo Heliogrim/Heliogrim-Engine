@@ -14,8 +14,8 @@
 #include <Engine.Common/Math/Coordinates.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Module/Modules.hpp>
-#include <Engine.GFX.Loader/Texture/TextureResource.hpp>
-#include <Engine.GFX.Loader/Texture/Traits.hpp>
+#include <Engine.Graphics.Loader/Texture/TextureResource.hpp>
+#include <Engine.Graphics.Loader/Texture/Traits.hpp>
 #include <Engine.Reflow.Uikit/Atom/Paint.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/VerticalLayout.hpp>
 #include <Engine.Reflow/Widget/Tree/TreeView.hpp>

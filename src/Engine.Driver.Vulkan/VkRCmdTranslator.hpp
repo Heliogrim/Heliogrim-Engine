@@ -1,6 +1,6 @@
 #pragma once
 #include <Engine.Common/Memory/MemoryPointer.hpp>
-#include <Engine.GFX.Render.Command/RenderCommandTranslator.hpp>
+#include <Engine.Graphics.Render.Command/RenderCommandTranslator.hpp>
 
 #include "VkCmdMgr.hpp"
 #include "VkNativeBatch.hpp"

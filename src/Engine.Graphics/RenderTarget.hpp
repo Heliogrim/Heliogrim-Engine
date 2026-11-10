@@ -1,0 +1,171 @@
+#pragma once
+
+#include <Engine.Common/Expected.hpp>
+#include <Engine.Common/Sal.hpp>
+#include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.Common/Functional/FnRef.hpp>
+#include <Engine.Common/Memory/MemoryPointer.hpp>
+#include <Engine.Graphics.Render/Renderer.hpp>
+
+#include "RenderEnqueueResult.hpp"
+#include "vkinc.hpp"
+
+namespace hg::engine::gfx {
+	class Camera;
+	class Device;
+	class Surface;
+	class Swapchain;
+}
+
+namespace hg::engine::gfx::scene {
+	class SceneView;
+}
+
+namespace hg::engine::gfx {
+	struct TransitionResult {
+		smr<Swapchain> pendingSwapchain;
+	};
+
+	class RenderTarget {
+	public:
+		using this_type = RenderTarget;
+
+	public:
+		RenderTarget(mref<sptr<Device>> device_, nmpt<const render::Renderer> renderer_);
+
+		RenderTarget(mref<this_type>) = delete;
+
+		RenderTarget(cref<this_type>) = delete;
+
+		~RenderTarget();
+
+	private:
+		void tidy();
+
+	private:
+		sptr<Device> _device;
+		nmpt<const render::Renderer> _renderer;
+
+	public:
+		[[nodiscard]] sptr<Device> device() const noexcept;
+
+		[[nodiscard]] nmpt<const render::Renderer> getRenderer() const noexcept;
+
+	private:
+		smr<const scene::SceneView> _sceneView;
+		Vector<uptr<render::RenderPass>> _renderPasses;
+
+		// Keeps the old object alive until the transition completes
+		smr<const scene::SceneView> _previousSceneView;
+		bool _sceneViewPending;
+		u8 _chainSceneViewMask;
+
+	public:
+		void transitionToSceneView(
+			mref<smr<const scene::SceneView>> sceneView_
+		);
+
+		[[nodiscard]] smr<const scene::SceneView> getSceneView() const noexcept;
+
+	private:
+		smr<Swapchain> _swapchain;
+		nmpt<Surface> _surface;
+
+		// Keeps the old object alive until the transition completes
+		smr<Swapchain> _previousSwapchain;
+		bool _swapchainPending;
+		u8 _chainSwapChainMask;
+
+	public:
+		[[nodiscard]] Result<TransitionResult, std::runtime_error> transitionToTarget(
+			_In_ ref<Surface> surface_,
+			FnRef<smr<Swapchain>(mref<smr<Swapchain>> prev_)> transitionFn_
+		);
+
+		[[nodiscard]] Result<TransitionResult, std::runtime_error> transitionToTarget(
+			mref<smr<Swapchain>> nextSwapchain_
+		);
+
+		[[nodiscard]] smr<Swapchain> getSwapChain() const noexcept;
+
+		[[nodiscard]] u8 supportedFramesAhead() const noexcept;
+
+	private:
+		/**
+		 * Internal semaphores for synchronization
+		 */
+		Vector<vk::Semaphore> _otfImage;
+		Vector<vk::Semaphore> _otfFinish;
+
+	private:
+		/**
+		 * Internal fences for synchronization
+		 */
+		Vector<vk::Fence> _otfCpuGpu;
+
+	private:
+		/**
+		 * Internal attributes for behaviour modification
+		 */
+		bool _enforceCpuGpuSync;
+		bool _onTheFlight;
+		u8 _syncIdx;
+
+	private:
+		u8 _swapIdx;
+		vk::Semaphore _swapSignal;
+
+	private:
+		void flipRenderSync();
+
+	private:
+		/*std::atomic_flag*/
+		bool _active;
+
+	public:
+		/**
+		 *
+		 */
+		[[nodiscard]] bool ready() const noexcept;
+
+		[[nodiscard]] bool active() const noexcept;
+
+		/**
+		 * Set this render target active or inactive
+		 *
+		 * @param active_ Flag to set
+		 *
+		 * @returns True when active state has changed, otherwise false.
+		 */
+		bool setActive(const bool active_);
+
+	public:
+		void setup();
+
+		/**
+		 * 
+		 * @blocking
+		 */
+		void transitionImmediately();
+
+	public:
+		/**
+		 *
+		 * @blocking
+		 */
+		_Success_(return != nullptr) nmpt<render::RenderPass> next();
+
+		/**
+		 *
+		 * @blocking
+		 */
+		void update();
+
+		/**
+		 *
+		 * @non-blocking
+		 */
+		RenderEnqueueResult finish(cref<Vector<vk::Semaphore>> waits_/* , cref<Vector<vk::Semaphore>> signals_ */);
+	};
+}

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Engine.Common/Sal.hpp>
-#include <Engine.GFX.Loader/Texture/TextureTransformer.hpp>
+#include <Engine.Graphics.Loader/Texture/TextureTransformer.hpp>
 #include <Engine.Resource/Loader/Transformer.hpp>
 
 #include "EditorTextureSubTransformer.hpp"

@@ -4,8 +4,8 @@
 #include <Engine.Accel.Pipeline/Bind/BindLayout.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Collection/InlineAutoArray.hpp>
-#include <Engine.GFX.Render.Command/Resource/ResourceTable.hpp>
-#include <Engine.GFX/API/__vkFwd.hpp>
+#include <Engine.Graphics.Render.Command/Resource/ResourceTable.hpp>
+#include <Engine.Graphics/API/__vkFwd.hpp>
 
 #include "VkDescriptor.hpp"
 

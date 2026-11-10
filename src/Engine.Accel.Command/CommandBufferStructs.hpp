@@ -1,7 +1,7 @@
 #pragma once
 #include <Engine.Accel.Pass/GraphicsPass.hpp>
-#include <Engine.GFX/vkinc.hpp>
-#include <Engine.GFX/Framebuffer/Framebuffer.hpp>
+#include <Engine.Graphics/vkinc.hpp>
+#include <Engine.Graphics/Framebuffer/Framebuffer.hpp>
 
 namespace hg::engine::accel {
 	struct BindRenderPassStruct final {

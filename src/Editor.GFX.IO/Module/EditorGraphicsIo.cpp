@@ -15,10 +15,10 @@
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Module/CoreDependencies.hpp>
 #include <Engine.Event/GlobalEventEmitter.hpp>
-#include <Engine.GFX.Event/GraphicRegisterImporterEvent.hpp>
-#include <Engine.GFX.Event/GraphicRegisterLoaderEvent.hpp>
-#include <Engine.GFX/Graphics.hpp>
-#include <Engine.GFX.Loader/Texture/TextureResource.hpp>
+#include <Engine.Graphics.Event/GraphicRegisterImporterEvent.hpp>
+#include <Engine.Graphics.Event/GraphicRegisterLoaderEvent.hpp>
+#include <Engine.Graphics/Graphics.hpp>
+#include <Engine.Graphics.Loader/Texture/TextureResource.hpp>
 #include <Engine.Resource/LoaderManager.hpp>
 
 #include "EditorGraphicsIoDepKey.hpp"

@@ -4,7 +4,7 @@
 #include <ranges>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Core/Engine.hpp>
-#include <Engine.GFX/Graphics.hpp>
+#include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 
 #include "VkDescriptor.hpp"

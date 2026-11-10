@@ -2,8 +2,8 @@
 
 #include <algorithm>
 #include <ranges>
-#include <Engine.GFX/Command/CommandPool.hpp>
-#include <Engine.GFX/Command/CommandQueue.hpp>
+#include <Engine.Graphics/Command/CommandPool.hpp>
+#include <Engine.Graphics/Command/CommandQueue.hpp>
 
 #include "VkNativeQueue.hpp"
 #include "VkResourceTable.hpp"

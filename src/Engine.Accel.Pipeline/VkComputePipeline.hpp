@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine.GFX/API/__vkFwd.hpp>
+#include <Engine.Graphics/API/__vkFwd.hpp>
 
 #include "ComputePipeline.hpp"
 

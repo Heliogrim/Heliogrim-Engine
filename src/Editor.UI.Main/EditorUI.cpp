@@ -115,9 +115,9 @@ ref<const EditorUiServices> editor::EditorUI::getEditorServices() const noexcept
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets.Type/Texture/FontAsset.hpp>
-#include <Engine.GFX.Loader/Font/FontLoader.hpp>
-#include <Engine.GFX.Loader/Font/FontLoadOptions.hpp>
-#include <Engine.GFX.Loader/Font/FontResource.hpp>
+#include <Engine.Graphics.Loader/Font/FontLoader.hpp>
+#include <Engine.Graphics.Loader/Font/FontLoadOptions.hpp>
+#include <Engine.Graphics.Loader/Font/FontResource.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 
 ref<const AssetGuid> editor::EditorUI::getDefaultFontGuid() const noexcept {

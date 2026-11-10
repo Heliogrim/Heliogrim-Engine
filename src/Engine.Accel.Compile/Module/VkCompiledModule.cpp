@@ -2,8 +2,8 @@
 
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Core/Engine.hpp>
-#include <Engine.GFX/Graphics.hpp>
-#include <Engine.GFX/Device/Device.hpp>
+#include <Engine.Graphics/Graphics.hpp>
+#include <Engine.Graphics/Device/Device.hpp>
 
 using namespace hg::engine::accel;
 using namespace hg;

@@ -3,7 +3,7 @@
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Managed/SharedFromThis.hpp>
-#include <Engine.GFX/Aabb.hpp>
+#include <Engine.Graphics/Aabb.hpp>
 #include <Engine.Reflow.Theming/ThemeProvisioner.hpp>
 
 #include "WidgetState.hpp"
