@@ -5,20 +5,20 @@ using namespace hg;
 
 template <>
 template <>
-AssetTypeId TypedAssetHandle<GfxMaterial>::getStaticTypeId<GfxMaterial>() noexcept {
-	return GfxMaterial::typeId;
+AssetTypeId TypedAssetHandle<GraphicsMaterial>::getStaticTypeId<GraphicsMaterial>() noexcept {
+	return GraphicsMaterial::typeId;
 }
 
 template <>
 template <>
-AssetTypeId TypedAssetHandle<GfxMaterialPrototype>::getStaticTypeId<GfxMaterialPrototype>() noexcept {
-	return GfxMaterialPrototype::typeId;
+AssetTypeId TypedAssetHandle<GraphicsMaterialPrototype>::getStaticTypeId<GraphicsMaterialPrototype>() noexcept {
+	return GraphicsMaterialPrototype::typeId;
 }
 
 template <>
 template <>
-AssetTypeId TypedAssetHandle<PfxMaterial>::getStaticTypeId<PfxMaterial>() noexcept {
-	return PfxMaterial::typeId;
+AssetTypeId TypedAssetHandle<PhysicsMaterial>::getStaticTypeId<PhysicsMaterial>() noexcept {
+	return PhysicsMaterial::typeId;
 }
 
 template <>

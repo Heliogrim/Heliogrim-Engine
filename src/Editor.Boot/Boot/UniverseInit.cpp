@@ -86,7 +86,7 @@ void editor::boot::initPrimaryUniverse() {
 
 /**/
 
-#include <Editor.Assets.Default/GfxMaterials/Default.hpp>
+#include <Editor.Assets.Default/GraphicsMaterials/Default.hpp>
 #include <Editor.Assets.Default/Meshes/Default.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets/Assets.hpp>
@@ -105,7 +105,7 @@ static void add_default_skybox(mref<Level> level_) {
 	const auto meshQuery = Heliogrim::assets().find<StaticGeometryAssetHandle>(editor::assets::meshes::default_sphere_guid);
 	::hg::assertrt(static_cast<bool>(meshQuery));
 
-	const auto materialQuery = Heliogrim::assets().find<GfxMaterialAssetHandle>(editor::assets::materials::default_skybox_guid);
+	const auto materialQuery = Heliogrim::assets().find<GraphicsMaterialAssetHandle>(editor::assets::materials::default_skybox_guid);
 	::hg::assertrt(static_cast<bool>(materialQuery));
 
 	auto actor = CreateActor();
@@ -113,7 +113,7 @@ static void add_default_skybox(mref<Level> level_) {
 
 	#if 1
 	[[maybe_unused]] auto skybox = actor->addComponent<SkyboxComponent>();
-	auto box2 = actor->addComponent<StaticGeometryComponent>(StaticGeometryAssetHandle {}, AutoArray<ptr<const GfxMaterialAssetHandle>> {});
+	auto box2 = actor->addComponent<StaticGeometryComponent>(StaticGeometryAssetHandle {}, AutoArray<ptr<const GraphicsMaterialAssetHandle>> {});
 	auto parent2 = box2.map_or(
 		[](auto& obj_) -> Opt<ref<HierarchyComponent>> { return Some<ref<HierarchyComponent>>(obj_); },
 		Opt<ref<HierarchyComponent>> { None }
@@ -122,7 +122,7 @@ static void add_default_skybox(mref<Level> level_) {
 	auto box4 = actor->addComponent<StaticGeometryComponent>(
 		{ .parent = parent2 },
 		StaticGeometryAssetHandle {},
-		AutoArray<ptr<const GfxMaterialAssetHandle>> {}
+		AutoArray<ptr<const GraphicsMaterialAssetHandle>> {}
 	);
 
 	actor->destroyComponent<>(*box4);
@@ -155,13 +155,13 @@ static void add_default_box(mref<Level> level_) {
 	const auto meshQuery = Heliogrim::assets().find<StaticGeometryAssetHandle>(editor::assets::meshes::default_cube_guid);
 	::hg::assertrt(static_cast<bool>(meshQuery));
 
-	const auto materialQuery = Heliogrim::assets().find<GfxMaterialAssetHandle>(editor::assets::materials::default_brdf_guid);
+	const auto materialQuery = Heliogrim::assets().find<GraphicsMaterialAssetHandle>(editor::assets::materials::default_brdf_guid);
 	::hg::assertrt(static_cast<bool>(materialQuery));
 
 	auto actor = CreateActor();
 	actor->addComponent<StaticGeometryComponent>(
 		clone(meshQuery.value),
-		AutoArray<ptr<const GfxMaterialAssetHandle>> { &materialQuery.value }
+		AutoArray<ptr<const GraphicsMaterialAssetHandle>> { &materialQuery.value }
 	);
 
 	/**/

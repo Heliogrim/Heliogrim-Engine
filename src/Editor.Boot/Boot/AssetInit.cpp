@@ -481,7 +481,7 @@ void editor::boot::initDefaultAssets() {
 	initDefaultMeshAssets(engine);
 
 	initDefaultFontAssets(engine);
-	initDefaultGfxMaterialAssets(engine);
+	initDefaultGraphicsMaterialAssets(engine);
 }
 
 /**/

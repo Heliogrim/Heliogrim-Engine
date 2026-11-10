@@ -7,10 +7,10 @@
 
 namespace hg::engine::graphics::loader {
     class MaterialTransformer final :
-        public resource::loader::Transformer<assets::GfxMaterial, MaterialResource> {
+        public resource::loader::Transformer<assets::GraphicsMaterial, MaterialResource> {
     public:
         using this_type = MaterialTransformer;
-        using underlying_type = resource::loader::Transformer<assets::GfxMaterial, MaterialResource>;
+        using underlying_type = resource::loader::Transformer<assets::GraphicsMaterial, MaterialResource>;
 
         using underlying_type::loader_traits;
         using underlying_type::request_type;

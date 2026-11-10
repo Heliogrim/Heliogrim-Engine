@@ -30,7 +30,7 @@ SpawnShapeActor::~SpawnShapeActor() = default;
 
 /**/
 
-#include <Editor.Assets.Default/GfxMaterials/Default.hpp>
+#include <Editor.Assets.Default/GraphicsMaterials/Default.hpp>
 #include <Editor.Core/EditorEngine.hpp>
 #include <Editor.UI.Main/EditorUI.hpp>
 #include <Editor.UI.Main/Module/EditorUI.hpp>
@@ -51,7 +51,7 @@ Opt<ActorRef<>> spawnActorImpl(SpawnShapeActor::ShapeType shapeType_, ref<const 
 	auto session = GetSession();
 	auto universe = GetUniverse(session);
 
-	const auto materialQuery = Heliogrim::assets().find<GfxMaterialAssetHandle>(editor::assets::materials::default_brdf_guid);
+	const auto materialQuery = Heliogrim::assets().find<GraphicsMaterialAssetHandle>(editor::assets::materials::default_brdf_guid);
 	::hg::assertrt(materialQuery.flags & AssetDatabaseResultType::eSuccess);
 
 	auto volatileActor = [&]() -> VolatileActor<> {

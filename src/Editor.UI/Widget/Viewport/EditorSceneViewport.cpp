@@ -1,6 +1,6 @@
 #include "EditorSceneViewport.hpp"
 
-#include <Editor.Assets.Default/GfxMaterials/Default.hpp>
+#include <Editor.Assets.Default/GraphicsMaterials/Default.hpp>
 
 using namespace hg::editor::ui;
 using namespace hg::engine::reflow;
@@ -52,7 +52,7 @@ void experimental_add_actor(math::Transform baseTransform_) {
 	::hg::assertrt(meshQuery.flags & AssetDatabaseResultType::eSuccess);
 	component->setStaticGeometry(meshQuery.value);
 
-	const auto materialQuery = Heliogrim::assets().find<GfxMaterialAssetHandle>(editor::assets::materials::default_brdf_guid);
+	const auto materialQuery = Heliogrim::assets().find<GraphicsMaterialAssetHandle>(editor::assets::materials::default_brdf_guid);
 	::hg::assertrt(materialQuery.flags & AssetDatabaseResultType::eSuccess);
 	component->setInstanceMaterial(0u, materialQuery.value);
 

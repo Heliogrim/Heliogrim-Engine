@@ -4,7 +4,7 @@
 #include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets/Assets.hpp>
-#include <Engine.Assets.Type/Material/GfxMaterialPrototype.hpp>
+#include <Engine.Assets.Type/Material/GraphicsMaterialPrototype.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Graphics/Pool/GlobalResourcePool.hpp>
@@ -87,7 +87,7 @@ MaterialTransformer::response_type::type MaterialTransformer::operator()(
 		auto matParamIt = std::find_if(
 			request_->_params.begin(),
 			request_->_params.end(),
-			[&protoParam](cref<assets::GfxMaterial::TmpParam> candidate_) {
+			[&protoParam](cref<assets::GraphicsMaterial::TmpParam> candidate_) {
 				return candidate_.identifier == protoParam.getId();
 			}
 		);
@@ -401,9 +401,9 @@ smr<MaterialPrototypeResource> resolvePrototype(
 	/**
 	 * Load material prototype to get the internal resource handle
 	 */
-	//auto* matProtAsset = Cast<engine::assets::GfxMaterialPrototype, engine::assets::Asset, false>(asset);
-	auto* matProtAsset = Cast<engine::assets::GfxMaterialPrototype>(asset->get());
-	auto prototype = loader_->loadImmediately<engine::assets::GfxMaterialPrototype, MaterialPrototypeResource>(
+	//auto* matProtAsset = Cast<engine::assets::GraphicsMaterialPrototype, engine::assets::Asset, false>(asset);
+	auto* matProtAsset = Cast<engine::assets::GraphicsMaterialPrototype>(asset->get());
+	auto prototype = loader_->loadImmediately<engine::assets::GraphicsMaterialPrototype, MaterialPrototypeResource>(
 		std::move(matProtAsset),
 		{}
 	);

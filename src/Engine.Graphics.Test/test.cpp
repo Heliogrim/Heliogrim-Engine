@@ -7,7 +7,7 @@
 
 using namespace hg;
 
-namespace GfxModule {
+namespace GraphicsModule {
 	namespace Scene {
 		TEST(SceneView, StraightDirectionZ) {
 

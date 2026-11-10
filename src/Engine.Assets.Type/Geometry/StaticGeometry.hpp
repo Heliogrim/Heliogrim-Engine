@@ -8,7 +8,7 @@
 #include <Heliogrim/TypedAssetGuid.hpp>
 
 #include "Geometry.hpp"
-#include "../Material/GfxMaterial.hpp"
+#include "../Material/GraphicsMaterial.hpp"
 
 namespace hg::engine::assets {
 	class StaticGeometry final :
@@ -42,7 +42,7 @@ namespace hg::engine::assets {
 		[[nodiscard]] cref<Vector<fs::Url>> sources() const noexcept;
 
 	private:
-		// TODO: Check whether we can support `AutoArray<TypedAssetGuid<GfxMaterial>>`
+		// TODO: Check whether we can support `AutoArray<TypedAssetGuid<GraphicsMaterial>>`
 		// TODO:	As of now this will break in serialization due to ordering
 		AutoArray<AssetGuid> _meshMaterials;
 
@@ -51,7 +51,7 @@ namespace hg::engine::assets {
 
 		[[nodiscard]] ref<const AutoArray<AssetGuid>> getMeshMaterials() const noexcept;
 
-		void setMeshMaterial(u16 index_, mref<TypedAssetGuid<GfxMaterial>> materialGuid_);
+		void setMeshMaterial(u16 index_, mref<TypedAssetGuid<GraphicsMaterial>> materialGuid_);
 
 		/* TODO: Rework !?! */
 		//private:

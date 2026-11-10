@@ -3,13 +3,13 @@
 #include "Material.hpp"
 
 namespace hg::engine::assets {
-	class PfxMaterial :
-		public InheritMeta<PfxMaterial, Material> {
+	class PhysicsMaterial :
+		public InheritMeta<PhysicsMaterial, Material> {
 	public:
 		template <typename>
 		friend class ::hg::engine::serialization::DataLayout;
 
 	public:
-		constexpr static AssetTypeId typeId { "PfxMaterial"_typeId };
+		constexpr static AssetTypeId typeId { "PhysicsMaterial"_typeId };
 	};
 }

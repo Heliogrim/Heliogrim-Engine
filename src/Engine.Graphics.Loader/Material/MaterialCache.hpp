@@ -6,10 +6,10 @@
 #include "Traits.hpp"
 
 namespace hg::engine::graphics::loader {
-    class MaterialCache final : public resource::loader::Cache<assets::GfxMaterial, MaterialResource> {
+    class MaterialCache final : public resource::loader::Cache<assets::GraphicsMaterial, MaterialResource> {
     public:
         using this_type = MaterialCache;
-        using underlying_type = resource::loader::Cache<assets::GfxMaterial, MaterialResource>;
+        using underlying_type = resource::loader::Cache<assets::GraphicsMaterial, MaterialResource>;
 
         using underlying_type::loader_traits;
         using underlying_type::request_type;

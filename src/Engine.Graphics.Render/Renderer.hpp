@@ -27,7 +27,7 @@ namespace hg::engine::render {
 			mref<smr<graph::InjectGraphRegistry>> injectionRegistry_,
 			/**/
 			mref<nmpt<graphics::cache::GlobalCacheCtrl>> globalCache_,
-			mref<nmpt<graphics::memory::GlobalPooledAllocator>> globalGfxAllocator_
+			mref<nmpt<graphics::memory::GlobalPooledAllocator>> globalGraphicsAllocator_
 		) noexcept;
 
 		virtual ~Renderer();
@@ -41,7 +41,7 @@ namespace hg::engine::render {
 
 	private:
 		nmpt<graphics::cache::GlobalCacheCtrl> _globalCache;
-		nmpt<graphics::memory::GlobalPooledAllocator> _globalGfxAlloc;
+		nmpt<graphics::memory::GlobalPooledAllocator> _globalGraphicsAlloc;
 
 	private:
 		[[nodiscard]] virtual uptr<graph::RuntimeGraph> makeDefaultRuntimeGraph() const;

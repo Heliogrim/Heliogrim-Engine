@@ -12,7 +12,7 @@ namespace hg::engine::render {
     public:
         TestRenderer(
             mref<nmpt<graphics::cache::GlobalCacheCtrl>> globalCache_,
-            mref<nmpt<graphics::memory::GlobalPooledAllocator>> globalGfxAllocator_
+            mref<nmpt<graphics::memory::GlobalPooledAllocator>> globalGraphicsAllocator_
         ) noexcept;
 
         ~TestRenderer() noexcept override;

@@ -24,14 +24,14 @@ Renderer::Renderer(
 	mref<uptr<graph::CompileGraph>> compileGraph_,
 	mref<smr<graph::InjectGraphRegistry>> injectionRegistry_,
 	mref<nmpt<graphics::cache::GlobalCacheCtrl>> globalCache_,
-	mref<nmpt<graphics::memory::GlobalPooledAllocator>> globalGfxAllocator_
+	mref<nmpt<graphics::memory::GlobalPooledAllocator>> globalGraphicsAllocator_
 ) noexcept :
 	_guid(std::move(guid_)),
 	_name(std::move(name_)),
 	_compileGraph(make_smr<>(std::move(compileGraph_))),
 	_injectReg(std::move(injectionRegistry_)),
 	_globalCache(std::move(globalCache_)),
-	_globalGfxAlloc(std::move(globalGfxAllocator_)) {}
+	_globalGraphicsAlloc(std::move(globalGraphicsAllocator_)) {}
 
 Renderer::~Renderer() = default;
 
@@ -62,7 +62,7 @@ uptr<RenderPass> Renderer::allocate() const {
 		make_smr<graphics::cache::LocalCacheCtrl>(
 			make_uptr<graphics::cache::LocalResourceCache>(_globalCache)
 		),
-		make_smr<graphics::memory::LocalPooledAllocator>(_globalGfxAlloc)
+		make_smr<graphics::memory::LocalPooledAllocator>(_globalGraphicsAlloc)
 	);
 
 	// Note: We cannot to an implicit update ~> allocation due to missing external bound resources

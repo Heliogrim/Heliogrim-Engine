@@ -5,10 +5,10 @@
 #include "Traits.hpp"
 
 namespace hg::engine::graphics::loader {
-    class MaterialPrototypeFeedback final : public resource::loader::Feedback<assets::GfxMaterialPrototype, MaterialPrototypeResource> {
+    class MaterialPrototypeFeedback final : public resource::loader::Feedback<assets::GraphicsMaterialPrototype, MaterialPrototypeResource> {
     public:
         using this_type = MaterialPrototypeFeedback;
-        using underlying_type = resource::loader::Feedback<assets::GfxMaterialPrototype, MaterialPrototypeResource>;
+        using underlying_type = resource::loader::Feedback<assets::GraphicsMaterialPrototype, MaterialPrototypeResource>;
 
         using underlying_type::loader_traits;
         using underlying_type::request_type;

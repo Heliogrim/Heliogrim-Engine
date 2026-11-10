@@ -3,7 +3,7 @@
 #include <Engine.Common/Wrapper.hpp>
 
 namespace hg {
-	class PfxMaterial {
+	class PhysicsMaterial {
 	private:
 		/**
 		 * Internal

@@ -8,7 +8,7 @@
 #include <Engine.Assets.Type/Geometry/LandscapeGeometry.hpp>
 #include <Engine.Assets.Type/Geometry/SkeletalGeometry.hpp>
 #include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
-#include <Engine.Assets.Type/Material/GfxMaterial.hpp>
+#include <Engine.Assets.Type/Material/GraphicsMaterial.hpp>
 #include <Engine.Assets.Type/Texture/ImageAsset.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 
@@ -26,7 +26,7 @@ static const auto defaultFilterData = Array {
 		{ engine::assets::LandscapeGeometry::typeId, engine::assets::SkeletalGeometry::typeId, engine::assets::StaticGeometry::typeId }
 	},
 	service::AssetBrowserFilterEntry { "Image", None, { engine::assets::ImageAsset::typeId } },
-	service::AssetBrowserFilterEntry { "Material", None, { engine::assets::GfxMaterial::typeId } },
+	service::AssetBrowserFilterEntry { "Material", None, { engine::assets::GraphicsMaterial::typeId } },
 	service::AssetBrowserFilterEntry { "Texture", None, { engine::assets::TextureAsset::typeId } }
 };
 

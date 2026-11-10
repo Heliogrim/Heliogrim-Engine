@@ -21,11 +21,11 @@ void BoxShapeGeometryComponent::setExtent(mref<math::Vector3f32> extent_) noexce
 	_extent = ::hg::move(extent_);
 }
 
-Opt<GfxMaterialAssetHandle> BoxShapeGeometryComponent::getInstanceMaterial() const noexcept {
+Opt<GraphicsMaterialAssetHandle> BoxShapeGeometryComponent::getInstanceMaterial() const noexcept {
 	return _instanceMaterial;
 }
 
-void BoxShapeGeometryComponent::setInstanceMaterial(ref<const GfxMaterialAssetHandle> material_) {
+void BoxShapeGeometryComponent::setInstanceMaterial(ref<const GraphicsMaterialAssetHandle> material_) {
 	_instanceMaterial = Some(material_);
 }
 

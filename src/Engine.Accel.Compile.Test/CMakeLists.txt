@@ -1,7 +1,7 @@
 
 # Setup
-# Engine.Accel.Compile is an object library whose objects pull in the GFX backend, so the test links the engine
-# the way the GFX test does, to resolve the symbols of the bundle code it calls
+# Engine.Accel.Compile is an object library whose objects pull in the graphics backend, so the test links the engine
+# the way the Graphics test does, to resolve the symbols of the bundle code it calls
 make_test_project(
 		TEST_NAME Engine.Accel.Compile.Test
 		LIBRARIES

@@ -1,4 +1,4 @@
-#include "GfxMaterialPrototype.hpp"
+#include "GraphicsMaterial.hpp"
 
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>
@@ -12,10 +12,7 @@ using namespace hg::engine::assets;
 using namespace hg;
 
 template <>
-void access::Structure<GfxMaterialPrototype>::serialize(
-	cref<GfxMaterialPrototype> self_,
-	mref<StructScopedSlot> record_
-) {
+void access::Structure<GraphicsMaterial>::serialize(cref<GraphicsMaterial> self_, mref<StructScopedSlot> record_) {
 
 	// TODO:
 
@@ -25,10 +22,7 @@ void access::Structure<GfxMaterialPrototype>::serialize(
 }
 
 template <>
-void access::Structure<GfxMaterialPrototype>::hydrate(
-	cref<StructScopedSlot> record_,
-	GfxMaterialPrototype& target_
-) {
+void access::Structure<GraphicsMaterial>::hydrate(cref<StructScopedSlot> record_, GraphicsMaterial& target_) {
 
 	Structure<Asset>::hydrate(record_, target_);
 

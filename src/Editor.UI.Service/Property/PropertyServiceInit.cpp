@@ -1,6 +1,6 @@
 #include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
-#include <Engine.Assets.Type/Material/GfxMaterial.hpp>
-#include <Engine.Assets.Type/Material/GfxMaterialPrototype.hpp>
+#include <Engine.Assets.Type/Material/GraphicsMaterial.hpp>
+#include <Engine.Assets.Type/Material/GraphicsMaterialPrototype.hpp>
 
 /**/
 
@@ -1265,10 +1265,10 @@ void service::initPropertyService(ref<PropertyService> service_) {
 								);
 
 								auto materialAssets = Vector<nmpt<assets::Asset>> {};
-								assetRegistry.findAssetsByType(::hg::refl::TypeId<assets::GfxMaterial>(), materialAssets);
+								assetRegistry.findAssetsByType(::hg::refl::TypeId<assets::GraphicsMaterial>(), materialAssets);
 
 								auto prototypeAssets = Vector<nmpt<assets::Asset>> {};
-								assetRegistry.findAssetsByType(::hg::refl::TypeId<assets::GfxMaterialPrototype>(), prototypeAssets);
+								assetRegistry.findAssetsByType(::hg::refl::TypeId<assets::GraphicsMaterialPrototype>(), prototypeAssets);
 
 								/**/
 
@@ -1283,7 +1283,7 @@ void service::initPropertyService(ref<PropertyService> service_) {
 									item.setAction(
 										[component, materialGuid = material->getAssetGuid(), index = 0uL] {
 
-											const auto result = Heliogrim::assets().find<GfxMaterialAssetHandle>(materialGuid);
+											const auto result = Heliogrim::assets().find<GraphicsMaterialAssetHandle>(materialGuid);
 											component->setInstanceMaterial(index, result.value);
 											return true;
 										}
@@ -1313,7 +1313,7 @@ void service::initPropertyService(ref<PropertyService> service_) {
 							auto input = make_sptr<uikit::Text>();
 							input->getStyleAttributes().update<attr::TextStyle::textAlign>(TextAlign::eMiddleLeft);
 
-							const Opt<GfxMaterialAssetHandle>& material = materials.size() > i ? materials.at(i) : None;
+							const Opt<GraphicsMaterialAssetHandle>& material = materials.size() > i ? materials.at(i) : None;
 							if (material != None && material->isValid()) {
 								auto assetName = material->getAssetRef()->getAssetName();
 								// TODO: input->setText(assetName.empty() ? encodeGuid4228(material->getAssetGuid()) : assetName);

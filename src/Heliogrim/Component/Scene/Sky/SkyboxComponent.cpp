@@ -1,5 +1,5 @@
 #include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
-#include <Engine.Assets.Type/Material/GfxMaterial.hpp>
+#include <Engine.Assets.Type/Material/GraphicsMaterial.hpp>
 /**/
 
 #include "SkyboxComponent.hpp"
@@ -25,7 +25,7 @@ SkyboxComponent::SkyboxComponent(
 	mref<CachedActorPointer> owner_,
 	mref<ptr<HierarchyComponent>> parent_,
 	mref<StaticGeometryAssetHandle> geometry_,
-	mref<GfxMaterialAssetHandle> material_
+	mref<GraphicsMaterialAssetHandle> material_
 ) :
 	InheritMeta(::hg::move(guid_), ComponentTypeId { typeId }, ::hg::move(owner_), ::hg::move(parent_)),
 	_skyboxGeometry(::hg::move(geometry_)),
@@ -45,11 +45,11 @@ bool SkyboxComponent::setSkyboxGeometry(ref<const StaticGeometryAssetHandle> han
 	return true;
 }
 
-ref<const GfxMaterialAssetHandle> SkyboxComponent::getSkyboxMaterial() const noexcept {
+ref<const GraphicsMaterialAssetHandle> SkyboxComponent::getSkyboxMaterial() const noexcept {
 	return _skyboxMaterial;
 }
 
-bool SkyboxComponent::setSkyboxMaterial(ref<const GfxMaterialAssetHandle> handle_) {
+bool SkyboxComponent::setSkyboxMaterial(ref<const GraphicsMaterialAssetHandle> handle_) {
 
 	if (_skyboxMaterial == handle_) {
 		return false;

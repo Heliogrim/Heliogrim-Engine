@@ -1052,7 +1052,7 @@ classDiagram
         +as~Texture~() Texture
     }
 
-    class GfxMaterial {
+    class GraphicsMaterial {
         <<facade>>
         #ref<InternalMaterial> internal
 
@@ -1072,7 +1072,7 @@ classDiagram
         +internal() managed~void~
     }
 
-    class PfxMaterial {
+    class PhysicsMaterial {
         <<facade>>
         #ref<InternalMaterial> internal
     }

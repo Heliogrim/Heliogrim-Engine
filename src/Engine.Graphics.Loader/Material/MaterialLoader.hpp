@@ -14,7 +14,7 @@ namespace hg::engine::graphics::loader {
     using MaterialSourceLoader = ::hg::engine::resource::loader::SourceLoader;
 
     using MaterialLoaderType = resource::loader::LoaderChain<
-        assets::GfxMaterial,
+        assets::GraphicsMaterial,
         MaterialResource,
         resource::loader::MetaTypeWrapperList<std::type_identity_t, std::type_identity_t, std::type_identity_t, sptr>,
         MaterialCache,
