@@ -20,7 +20,6 @@
 #include <Engine.Core/Module/Modules.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Platform/Platform.hpp>
-#include <Heliogrim/Async/Await.hpp>
 
 using namespace hg::editor::assets;
 using namespace hg::engine::storage;
@@ -176,88 +175,88 @@ Future<FileUrl, std::runtime_error> requestPlatformSelect(mref<Vector<SelectFile
 
 	auto select = [](cref<Vector<SelectFileFilter>> filters) -> Result<FileUrl, std::runtime_error> {
 
-			::IFileOpenDialog* winFileDialog = nullptr;
-			auto result = ::CoCreateInstance(
-				::CLSID_FileOpenDialog,
-				nullptr,
-				CLSCTX_ALL,
-				::IID_IFileOpenDialog,
-				reinterpret_cast<void**>(&winFileDialog)
-			);
-			if (result != HRESULT_FROM_WIN32(ERROR_SUCCESS)) {
-				return Unexpected { std::runtime_error { "Failed to instantiate file dialog." } };
-			}
+		::IFileOpenDialog* winFileDialog = nullptr;
+		auto result = ::CoCreateInstance(
+			::CLSID_FileOpenDialog,
+			nullptr,
+			CLSCTX_ALL,
+			::IID_IFileOpenDialog,
+			reinterpret_cast<void**>(&winFileDialog)
+		);
+		if (result != HRESULT_FROM_WIN32(ERROR_SUCCESS)) {
+			return Unexpected { std::runtime_error { "Failed to instantiate file dialog." } };
+		}
 
-			auto dialog = UniquePtr<::IFileOpenDialog, void(*)(::IFileOpenDialog*)> {
-				std::exchange(winFileDialog, nullptr), [](::IFileOpenDialog* obj_) { obj_->Release(); }
-			};
+		auto dialog = UniquePtr<::IFileOpenDialog, void(*)(::IFileOpenDialog*)> {
+			std::exchange(winFileDialog, nullptr), [](::IFileOpenDialog* obj_) { obj_->Release(); }
+		};
 
-			/**/
+		/**/
 
-			auto filterStrings = Vector<std::wstring> {};
-			filterStrings.resize((filters.size() + 1uLL) * 2uLL);
-			auto filter = Vector<::COMDLG_FILTERSPEC> {};
-			filter.resize(filters.size() + 1uLL);
+		auto filterStrings = Vector<std::wstring> {};
+		filterStrings.resize((filters.size() + 1uLL) * 2uLL);
+		auto filter = Vector<::COMDLG_FILTERSPEC> {};
+		filter.resize(filters.size() + 1uLL);
 
-			for (auto idx = 0uL; idx < filters.size(); ++idx) {
+		for (auto idx = 0uL; idx < filters.size(); ++idx) {
 
-				filterStrings[idx * 2] = stringToWString(filters[idx].name);
-				filter[idx].pszName = filterStrings[idx * 2].c_str();
+			filterStrings[idx * 2] = stringToWString(filters[idx].name);
+			filter[idx].pszName = filterStrings[idx * 2].c_str();
 
-				filterStrings[idx * 2 + 1] = stringToWString(filters[idx].pattern);
-				filter[idx].pszSpec = filterStrings[idx * 2 + 1].c_str();
-			}
+			filterStrings[idx * 2 + 1] = stringToWString(filters[idx].pattern);
+			filter[idx].pszSpec = filterStrings[idx * 2 + 1].c_str();
+		}
 
-			filterStrings[filters.size() * 2] = L"All Files";
-			filter[filters.size()].pszName = filterStrings[filters.size() * 2].c_str();
+		filterStrings[filters.size() * 2] = L"All Files";
+		filter[filters.size()].pszName = filterStrings[filters.size() * 2].c_str();
 
-			filterStrings[filters.size() * 2 + 1uLL] = L"*.*";
-			filter[filters.size()].pszSpec = filterStrings[filters.size() * 2 + 1uLL].c_str();
+		filterStrings[filters.size() * 2 + 1uLL] = L"*.*";
+		filter[filters.size()].pszSpec = filterStrings[filters.size() * 2 + 1uLL].c_str();
 
-			result = dialog->SetFileTypes(static_cast<u32>(filter.size()), filter.data());
+		result = dialog->SetFileTypes(static_cast<u32>(filter.size()), filter.data());
 
-			if (result != HRESULT_FROM_WIN32(ERROR_SUCCESS)) {
-				return Unexpected { std::runtime_error { "Failed to set file type filters." } };
-			}
+		if (result != HRESULT_FROM_WIN32(ERROR_SUCCESS)) {
+			return Unexpected { std::runtime_error { "Failed to set file type filters." } };
+		}
 
-			/**/
+		/**/
 
-			result = dialog->Show(nullptr);
+		result = dialog->Show(nullptr);
 
-			if (result == HRESULT_FROM_WIN32(ERROR_CANCELLED)) {
-				return Unexpected { std::runtime_error { "File dialog was canceled." } };
-			} else if (result != HRESULT_FROM_WIN32(ERROR_SUCCESS)) {
-				return Unexpected { std::runtime_error { "Failed to open configured file dialog." } };
-			}
+		if (result == HRESULT_FROM_WIN32(ERROR_CANCELLED)) {
+			return Unexpected { std::runtime_error { "File dialog was canceled." } };
+		} else if (result != HRESULT_FROM_WIN32(ERROR_SUCCESS)) {
+			return Unexpected { std::runtime_error { "Failed to open configured file dialog." } };
+		}
 
-			/**/
+		/**/
 
-			::IShellItem* reportItem = nullptr;
-			result = dialog->GetResult(&reportItem);
+		::IShellItem* reportItem = nullptr;
+		result = dialog->GetResult(&reportItem);
 
-			if (result != HRESULT_FROM_WIN32(ERROR_SUCCESS)) {
-				return Unexpected { std::runtime_error { "Failed to get shell item from file dialog." } };
-			}
+		if (result != HRESULT_FROM_WIN32(ERROR_SUCCESS)) {
+			return Unexpected { std::runtime_error { "Failed to get shell item from file dialog." } };
+		}
 
-			auto item = UniquePtr<::IShellItem, void(*)(::IShellItem*)> {
-				std::exchange(reportItem, nullptr), [](::IShellItem* obj_) { obj_->Release(); }
-			};
+		auto item = UniquePtr<::IShellItem, void(*)(::IShellItem*)> {
+			std::exchange(reportItem, nullptr), [](::IShellItem* obj_) { obj_->Release(); }
+		};
 
-			/**/
+		/**/
 
-			wchar_t* reportPath = nullptr;
-			result = item->GetDisplayName(::SIGDN_FILESYSPATH, &reportPath);
+		wchar_t* reportPath = nullptr;
+		result = item->GetDisplayName(::SIGDN_FILESYSPATH, &reportPath);
 
-			if (result != HRESULT_FROM_WIN32(ERROR_SUCCESS)) {
-				return Unexpected { std::runtime_error { "Failed to get file path from shell item." } };
-			}
+		if (result != HRESULT_FROM_WIN32(ERROR_SUCCESS)) {
+			return Unexpected { std::runtime_error { "Failed to get file path from shell item." } };
+		}
 
-			/**/
+		/**/
 
-			auto standard = std::filesystem::path { reportPath };
-			auto report = FileUrl { clone(FileScheme), engine::fs::Path { ::hg::move(standard) } };
+		auto standard = std::filesystem::path { reportPath };
+		auto report = FileUrl { clone(FileScheme), engine::fs::Path { ::hg::move(standard) } };
 
-			return Expected(::hg::move(report));
+		return Expected(::hg::move(report));
 	};
 
 	/**/
