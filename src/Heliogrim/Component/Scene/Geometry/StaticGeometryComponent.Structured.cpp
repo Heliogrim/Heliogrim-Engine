@@ -55,7 +55,7 @@ void access::Structure<StaticGeometryComponent>::hydrate(
 			if (materialGuid == invalid_asset_guid) {
 				target_.unsetInstanceMaterial(index_);
 			} else {
-				target_.setInstanceMaterial(index_, GetAssets().find<GfxMaterialAssetHandle>(materialGuid).value);
+				target_.setInstanceMaterial(index_, GetAssets().find<GraphicsMaterialAssetHandle>(materialGuid).value);
 			}
 		}
 	);

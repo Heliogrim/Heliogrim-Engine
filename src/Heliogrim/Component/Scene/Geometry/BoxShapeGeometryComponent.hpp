@@ -30,16 +30,16 @@ namespace hg {
 
 	private:
 		math::Vector3f32 _extent;
-		Opt<GfxMaterialAssetHandle> _instanceMaterial;
+		Opt<GraphicsMaterialAssetHandle> _instanceMaterial;
 
 	public:
 		[[nodiscard]] ref<const math::Vector3f32> getExtent() const noexcept;
 
 		void setExtent(mref<math::Vector3f32> extent_) noexcept;
 
-		[[nodiscard]] Opt<GfxMaterialAssetHandle> getInstanceMaterial() const noexcept;
+		[[nodiscard]] Opt<GraphicsMaterialAssetHandle> getInstanceMaterial() const noexcept;
 
-		void setInstanceMaterial(ref<const GfxMaterialAssetHandle> material_);
+		void setInstanceMaterial(ref<const GraphicsMaterialAssetHandle> material_);
 
 		void unsetInstanceMaterial();
 	};

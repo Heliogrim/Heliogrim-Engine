@@ -1,7 +1,7 @@
 #include "StaticGeometryModel.hpp"
 
 #include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
-#include <Engine.Assets.Type/Material/GfxMaterial.hpp>
+#include <Engine.Assets.Type/Material/GraphicsMaterial.hpp>
 #include <Engine.Common/Math/Convertion.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Graphics.Loader/Geometry/Traits.hpp>
@@ -46,7 +46,7 @@ void StaticGeometryModel::create(const ptr<render::RenderSceneSystem> system_) {
 		::hg::assertrt(material != None && material->isValid());
 
 		const auto& request = *material->getAssetRef();
-		auto resource = Engine::getEngine()->getResources()->loader().load<assets::GfxMaterial, MaterialResource>(
+		auto resource = Engine::getEngine()->getResources()->loader().load<assets::GraphicsMaterial, MaterialResource>(
 			std::addressof(request),
 			{}
 		);
@@ -117,7 +117,7 @@ void StaticGeometryModel::update(const ptr<render::RenderSceneSystem> system_) {
 		if (inner->getAssociation() != outerAssetPtr) {
 
 			_materials[matIdx] = Engine::getEngine()->getResources()->loader().load<
-				assets::GfxMaterial, MaterialResource
+				assets::GraphicsMaterial, MaterialResource
 			>(
 				std::move(outerAssetPtr),
 				{}

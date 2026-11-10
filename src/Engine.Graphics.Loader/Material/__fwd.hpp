@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Engine.Assets.Type/Material/GfxMaterial.hpp>
-#include <Engine.Assets.Type/Material/GfxMaterialPrototype.hpp>
+#include <Engine.Assets.Type/Material/GraphicsMaterial.hpp>
+#include <Engine.Assets.Type/Material/GraphicsMaterialPrototype.hpp>
 #include <Engine.Resource/Loader/__fwd.hpp>
 
 namespace hg::engine::graphics {

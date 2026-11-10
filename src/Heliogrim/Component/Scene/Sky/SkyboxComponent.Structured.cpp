@@ -44,5 +44,5 @@ void access::Structure<SkyboxComponent>::hydrate(
 
 	AssetGuid materialGuid {};
 	Structure<Guid>::hydrate(record_.getStructSlot("material"sv), materialGuid);
-	target_._skyboxMaterial = GetAssets().find<GfxMaterialAssetHandle>(materialGuid).value;
+	target_._skyboxMaterial = GetAssets().find<GraphicsMaterialAssetHandle>(materialGuid).value;
 }

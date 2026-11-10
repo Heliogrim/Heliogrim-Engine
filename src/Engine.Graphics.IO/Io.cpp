@@ -81,14 +81,14 @@ void engine::graphics::loader::register_loader(
 		manager_.sharedSourceLoader()
 	);
 
-	registerIfNotPresent<MaterialPrototypeLoader, assets::GfxMaterialPrototype, MaterialPrototypeResource>(
+	registerIfNotPresent<MaterialPrototypeLoader, assets::GraphicsMaterialPrototype, MaterialPrototypeResource>(
 		manager_,
 		std::addressof(cacheCtrl_),
 		std::addressof(pool_),
 		manager_.sharedSourceLoader()
 	);
 
-	registerIfNotPresent<MaterialLoader, assets::GfxMaterial, MaterialResource>(
+	registerIfNotPresent<MaterialLoader, assets::GraphicsMaterial, MaterialResource>(
 		manager_,
 		std::addressof(cacheCtrl_),
 		std::addressof(pool_),
@@ -117,8 +117,8 @@ void engine::graphics::loader::unregister_loader(
 
 	manager_.unregisterLoader<assets::TextureAsset>();
 	manager_.unregisterLoader<assets::StaticGeometry>();
-	manager_.unregisterLoader<assets::GfxMaterial>();
-	manager_.unregisterLoader<assets::GfxMaterialPrototype>();
+	manager_.unregisterLoader<assets::GraphicsMaterial>();
+	manager_.unregisterLoader<assets::GraphicsMaterialPrototype>();
 	manager_.unregisterLoader<assets::FontAsset>();
 }
 

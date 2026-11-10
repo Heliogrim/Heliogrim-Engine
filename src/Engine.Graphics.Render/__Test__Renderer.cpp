@@ -35,7 +35,7 @@ using namespace hg;
 
 TestRenderer::TestRenderer(
 	mref<nmpt<graphics::cache::GlobalCacheCtrl>> globalCache_,
-	mref<nmpt<graphics::memory::GlobalPooledAllocator>> globalGfxAllocator_
+	mref<nmpt<graphics::memory::GlobalPooledAllocator>> globalGraphicsAllocator_
 ) noexcept :
 	Renderer(
 		Guid {},
@@ -43,7 +43,7 @@ TestRenderer::TestRenderer(
 		makeCompileGraph(),
 		nullptr,
 		std::move(globalCache_),
-		std::move(globalGfxAllocator_)
+		std::move(globalGraphicsAllocator_)
 	) {}
 
 TestRenderer::~TestRenderer() noexcept = default;

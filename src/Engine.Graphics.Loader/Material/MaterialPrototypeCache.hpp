@@ -7,10 +7,10 @@
 
 namespace hg::engine::graphics::loader {
     class MaterialPrototypeCache final :
-        public resource::loader::Cache<assets::GfxMaterialPrototype, MaterialPrototypeResource> {
+        public resource::loader::Cache<assets::GraphicsMaterialPrototype, MaterialPrototypeResource> {
     public:
         using this_type = MaterialPrototypeCache;
-        using underlying_type = resource::loader::Cache<assets::GfxMaterialPrototype, MaterialPrototypeResource>;
+        using underlying_type = resource::loader::Cache<assets::GraphicsMaterialPrototype, MaterialPrototypeResource>;
 
         using underlying_type::loader_traits;
         using underlying_type::request_type;

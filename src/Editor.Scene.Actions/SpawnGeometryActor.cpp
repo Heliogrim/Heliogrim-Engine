@@ -30,7 +30,7 @@ SpawnGeometryActor::~SpawnGeometryActor() = default;
 
 /**/
 
-#include <Editor.Assets.Default/GfxMaterials/Default.hpp>
+#include <Editor.Assets.Default/GraphicsMaterials/Default.hpp>
 #include <Editor.Assets.Default/Meshes/Default.hpp>
 #include <Editor.Core/EditorEngine.hpp>
 #include <Editor.UI.Main/EditorUI.hpp>
@@ -62,7 +62,7 @@ Opt<ActorRef<>> spawnActorImpl(TypedAssetGuid<engine::assets::StaticGeometry> as
 	::hg::assertrt(meshQuery.flags & AssetDatabaseResultType::eSuccess);
 	component->setStaticGeometry(meshQuery.value);
 
-	const auto materialQuery = Heliogrim::assets().find<GfxMaterialAssetHandle>(editor::assets::materials::default_brdf_guid);
+	const auto materialQuery = Heliogrim::assets().find<GraphicsMaterialAssetHandle>(editor::assets::materials::default_brdf_guid);
 	::hg::assertrt(materialQuery.flags & AssetDatabaseResultType::eSuccess);
 	component->setInstanceMaterial(0u, materialQuery.value);
 

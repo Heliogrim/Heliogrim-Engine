@@ -48,7 +48,7 @@ void StaticGeometryLayout::load(std::span<const std::byte> in_, ref<StaticGeomet
 		std::ignore = archetype_detail::take_bytes(in_, materialGuid);
 		target_._instanceMaterials.emplace_back(
 			materialGuid != invalid_asset_guid ?
-			Some(GetAssets().find<GfxMaterialAssetHandle>(materialGuid).value) :
+			Some(GetAssets().find<GraphicsMaterialAssetHandle>(materialGuid).value) :
 			None
 		);
 	}

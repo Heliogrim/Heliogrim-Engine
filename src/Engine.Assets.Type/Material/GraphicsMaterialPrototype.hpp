@@ -11,24 +11,23 @@
 #include "../Asset.hpp"
 
 namespace hg::engine::assets {
-	class GfxMaterial final :
-		public InheritMeta<GfxMaterial, Asset> {
+	class GraphicsMaterialPrototype :
+		public InheritMeta<GraphicsMaterialPrototype, Asset> {
 	public:
-		using this_type = GfxMaterial;
+		using this_type = GraphicsMaterialPrototype;
 
 		ACCESS_LAYOUT
 		ACCESS_STRUCTURE
 
 	public:
-		constexpr static AssetTypeId typeId { "GfxMaterial"_typeId };
+		constexpr static AssetTypeId typeId { "GraphicsMaterialPrototype"_typeId };
 
 	public:
-		GfxMaterial(
+		GraphicsMaterialPrototype(
 			mref<AssetGuid> guid_,
 			mref<StringView> name_,
 			mref<AssetReferenceUrl> storageUrl_,
-			mref<AssetUrl> vfsUrl_,
-			mref<AssetGuid> prototypeGuid_
+			mref<AssetUrl> vfsUrl_
 		);
 
 	private:
@@ -62,15 +61,11 @@ namespace hg::engine::assets {
 				math::matq3_t<float>,
 				math::matq4_t<float>,
 				::std::nullptr_t
-			> value;
+			> defaultValue;
 		};
 
-		AssetGuid _prototype;
-		Vector<TmpParam> _params;
-
-	public:
-		[[nodiscard]] AssetGuid prototype() const noexcept;
-
 		// TODO: Serialize/Map instantiated parameters
+		Vector<AssetGuid> _effects;
+		Vector<TmpParam> _params;
 	};
 }

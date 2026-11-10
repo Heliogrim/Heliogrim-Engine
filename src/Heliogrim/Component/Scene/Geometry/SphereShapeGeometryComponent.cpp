@@ -21,11 +21,11 @@ void SphereShapeGeometryComponent::setRadius(mref<math::Vector1f32> radius_) noe
 	_radius = ::hg::move(radius_);
 }
 
-Opt<GfxMaterialAssetHandle> SphereShapeGeometryComponent::getInstanceMaterial() const noexcept {
+Opt<GraphicsMaterialAssetHandle> SphereShapeGeometryComponent::getInstanceMaterial() const noexcept {
 	return _instanceMaterial;
 }
 
-void SphereShapeGeometryComponent::setInstanceMaterial(ref<const GfxMaterialAssetHandle> material_) {
+void SphereShapeGeometryComponent::setInstanceMaterial(ref<const GraphicsMaterialAssetHandle> material_) {
 	_instanceMaterial = Some(material_);
 }
 

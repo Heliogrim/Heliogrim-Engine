@@ -11,7 +11,7 @@ namespace hg::editor::render {
 	public:
 		EditorRenderer(
 			mref<nmpt<engine::graphics::cache::GlobalCacheCtrl>> globalCache_,
-			mref<nmpt<engine::graphics::memory::GlobalPooledAllocator>> globalGfxAllocator_
+			mref<nmpt<engine::graphics::memory::GlobalPooledAllocator>> globalGraphicsAllocator_
 		) noexcept;
 
 		~EditorRenderer() noexcept override;

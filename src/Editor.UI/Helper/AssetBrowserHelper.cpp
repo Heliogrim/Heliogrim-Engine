@@ -150,8 +150,8 @@ ptr<engine::assets::TextureAsset> AssetBrowserHelper::getItemIconForDirectory(cr
 }
 
 #include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
-#include <Engine.Assets.Type/Material/GfxMaterial.hpp>
-#include <Engine.Assets.Type/Material/GfxMaterialPrototype.hpp>
+#include <Engine.Assets.Type/Material/GraphicsMaterial.hpp>
+#include <Engine.Assets.Type/Material/GraphicsMaterialPrototype.hpp>
 #include <Engine.Assets.Type/Texture/FontAsset.hpp>
 #include <Engine.Assets.Type/Texture/ImageAsset.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
@@ -170,11 +170,11 @@ string AssetBrowserHelper::getAssetTypeName(cref<AssetTypeId> typeId_) const noe
 		case engine::assets::StaticGeometry::typeId.data: {
 			return "Static Geometry";
 		}
-		case engine::assets::GfxMaterial::typeId.data: {
-			return "Gfx Material";
+		case engine::assets::GraphicsMaterial::typeId.data: {
+			return "Graphics Material";
 		}
-		case engine::assets::GfxMaterialPrototype::typeId.data: {
-			return "Gfx Material Prototype";
+		case engine::assets::GraphicsMaterialPrototype::typeId.data: {
+			return "Graphics Material Prototype";
 		}
 		case engine::assets::FontAsset::typeId.data: {
 			return "FontAsset";
