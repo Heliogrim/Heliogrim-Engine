@@ -9,3 +9,9 @@ namespace hg::engine::storage::system {
 	template <typename StageType_>
 	struct StageResolutionFactory;
 }
+
+namespace hg::engine::storage {
+	struct StageKey;
+	struct ResolvedStage;
+	class StackCache;
+}
