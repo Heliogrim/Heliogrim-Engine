@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdexcept>
 #include <Engine.Common/Expected.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Managed/AtomicRefCountedIntrusive.hpp>
