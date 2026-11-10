@@ -26,7 +26,7 @@
 #include <Engine.Input/Input.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Network/Network.hpp>
-#include <Engine.PFX/Physics.hpp>
+#include <Engine.Physics/Physics.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 #include <Engine.Scene.Schedule/ScenePipeline.hpp>
 #include <Engine.Scheduler/Async.hpp>
