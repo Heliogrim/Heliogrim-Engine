@@ -1,9 +1,7 @@
 #pragma once
 
 #include <atomic>
-#include <cstdint>
 #include <Engine.Async/Affine/AffineThread.hpp>
-#include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
 namespace hg::engine::io {

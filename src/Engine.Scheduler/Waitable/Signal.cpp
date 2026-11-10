@@ -47,6 +47,7 @@ void Signal::wait() {
 			if (_closed) {
 				return false;
 			}
+
 			locked_.push(node);
 			return true;
 		}
