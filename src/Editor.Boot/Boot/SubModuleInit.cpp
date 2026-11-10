@@ -2,7 +2,7 @@
 
 #include <Editor.Action/ActionManager.hpp>
 #include <Editor.Core/EditorEngine.hpp>
-#include <Editor.GFX.IO/Module/EditorGraphicsIo.hpp>
+#include <Editor.Graphics.IO/Module/EditorGraphicsIo.hpp>
 #include <Editor.UI.Main/EditorUI.hpp>
 #include <Engine.Accel/Accel.hpp>
 #include <Engine.Common/Make.hpp>
