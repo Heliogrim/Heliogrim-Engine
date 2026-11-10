@@ -17,7 +17,7 @@ void RenderSceneSystem::prepare() {
 	assert(_sceneResourcePool == nullptr);
 
 	const auto graphics = Engine::getEngine()->getGraphics();
-	_sceneResourcePool = make_uptr<gfx::SceneResourcePool>(graphics->getCurrentDevice());
+	_sceneResourcePool = make_uptr<graphics::SceneResourcePool>(graphics->getCurrentDevice());
 
 	_sceneResourcePool->setup();
 }
@@ -31,7 +31,7 @@ void RenderSceneSystem::cleanup() {
 
 }
 
-nmpt<engine::gfx::SceneResourcePool> RenderSceneSystem::getSceneResourcePool() const noexcept {
+nmpt<engine::graphics::SceneResourcePool> RenderSceneSystem::getSceneResourcePool() const noexcept {
 	return _sceneResourcePool.get();
 }
 

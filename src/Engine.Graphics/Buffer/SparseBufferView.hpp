@@ -7,11 +7,11 @@
 #include "BufferLikeObject.hpp"
 #include "__fwd.hpp"
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	class SparseBufferView final :
 		public InheritMeta<SparseBufferView, BufferLikeObject> {
 	public:
-		friend class ::hg::engine::gfx::SparseBuffer;
+		friend class ::hg::engine::graphics::SparseBuffer;
 
 	public:
 		using this_type = SparseBufferView;

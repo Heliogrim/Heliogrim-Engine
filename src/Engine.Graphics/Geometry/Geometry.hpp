@@ -3,7 +3,7 @@
 
 #include "Mesh.hpp"
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
     class Geometry {
     public:
         using value_type = Geometry;

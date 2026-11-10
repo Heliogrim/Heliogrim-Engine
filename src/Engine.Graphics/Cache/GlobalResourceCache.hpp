@@ -10,11 +10,11 @@
 #include "__fwd.hpp"
 #include "../Device/Device.hpp"
 
-namespace hg::engine::gfx::cache {
+namespace hg::engine::graphics::cache {
 	class GlobalResourceCache final {
 	public:
-		friend class ::hg::engine::gfx::cache::GlobalCacheCtrl;
-		friend class ::hg::engine::gfx::cache::LocalResourceCache;
+		friend class ::hg::engine::graphics::cache::GlobalCacheCtrl;
+		friend class ::hg::engine::graphics::cache::LocalResourceCache;
 
 	public:
 		using this_type = GlobalResourceCache;

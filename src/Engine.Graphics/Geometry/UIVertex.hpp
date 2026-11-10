@@ -4,7 +4,7 @@
 #include <Engine.Common/Math/Vector.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	/**
 	 * A ui-vertex with template attribute types
 	 *

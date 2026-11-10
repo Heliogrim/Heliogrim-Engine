@@ -11,15 +11,15 @@
 #include "../Device/Device.hpp"
 #include "../Memory/VirtualMemory.hpp"
 
-namespace hg::engine::gfx::loader {
+namespace hg::engine::graphics::loader {
 	class TextureLoader;
 }
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	class SparseTexture final :
 		public InheritMeta<SparseTexture, TextureObject> {
 	public:
-		friend class ::hg::engine::gfx::loader::TextureLoader;
+		friend class ::hg::engine::graphics::loader::TextureLoader;
 
 	public:
 		using this_type = SparseTexture;

@@ -2,7 +2,7 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Math/Vector.hpp>
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	struct Aabb2d {
 		math::fvec2 min;
 		math::fvec2 max;

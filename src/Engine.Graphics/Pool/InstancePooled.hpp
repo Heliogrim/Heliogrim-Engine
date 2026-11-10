@@ -8,7 +8,7 @@
 #include "../Buffer/BufferFactory.hpp"
 #include "../Memory/VirtualMemory.hpp"
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	template <typename ValueType_>
 	class InstancePooled {
 	public:

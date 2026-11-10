@@ -5,7 +5,7 @@
 
 #include "CommandQueue.hpp"
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	/**
 	 * Forward Declaration CommandBuffer.
 	 *

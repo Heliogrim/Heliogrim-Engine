@@ -4,7 +4,7 @@
 
 #include "../DataAttributes.hpp"
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	class TextureLikeObject;
 }
 
@@ -18,7 +18,7 @@ namespace hg::engine::reflow {
 
 	struct ImageDataAttributes final :
 		public DataAttributes<
-			NamedAttribute<attr::ImageData::image, DataAttribute<nmpt<gfx::TextureLikeObject>>>,
+			NamedAttribute<attr::ImageData::image, DataAttribute<nmpt<graphics::TextureLikeObject>>>,
 			NamedAttribute<attr::ImageData::resource, DataAttribute<void*>>
 		> {
 		using DataAttributes::DataAttributes;

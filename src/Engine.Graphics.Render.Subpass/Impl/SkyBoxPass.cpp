@@ -28,7 +28,7 @@
 
 using namespace hg::engine::render;
 using namespace hg::engine::accel;
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 [[nodiscard]] static smr<const GraphicsPass> build_test_pass();
@@ -85,7 +85,7 @@ void SkyBoxPass::iterate(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 	/**/
 
 	auto sceneViewRes = symCtx_.getImportSymbol(makeSceneViewSymbol());
-	auto sceneView = sceneViewRes->load<smr<const gfx::scene::SceneView>>();
+	auto sceneView = sceneViewRes->load<smr<const graphics::scene::SceneView>>();
 
 	const auto sys = sceneView->getRenderSceneSystem();
 	const auto maybeSkybox = sys->getRegistry().find<SkyboxModel>([](const auto& model_) { return model_.isValid(); });
@@ -208,7 +208,7 @@ void SkyBoxPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 	}
 
 	auto sceneViewRes = symCtx_.getImportSymbol(makeSceneViewSymbol());
-	auto sceneView = sceneViewRes->load<smr<gfx::scene::SceneView>>();
+	auto sceneView = sceneViewRes->load<smr<graphics::scene::SceneView>>();
 
 	struct TmpStruct {
 		math::mat4 mvp;

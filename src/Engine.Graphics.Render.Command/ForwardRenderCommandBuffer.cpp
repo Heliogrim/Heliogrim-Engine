@@ -8,7 +8,7 @@
 #include "Commands/BindPipeline.hpp"
 
 using namespace hg::engine::render::cmd;
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 static void link(ref<nmpt<RenderCommand>> prev_, mref<ptr<RenderCommand>> next_);

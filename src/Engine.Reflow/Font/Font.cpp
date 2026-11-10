@@ -84,6 +84,6 @@ const ptr<const FontGlyph> Font::glyph(const GlyphCode code_, const u32 fontSize
     return nullptr;
 }
 
-cref<sptr<::hg::engine::gfx::Texture>> Font::atlas() const noexcept {
+cref<sptr<::hg::engine::graphics::Texture>> Font::atlas() const noexcept {
     return _atlas;
 }

@@ -8,18 +8,18 @@
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Reflect/Cast.hpp>
 
-using namespace ::hg::editor::gfx::loader;
+using namespace ::hg::editor::graphics::loader;
 using namespace ::hg;
 
 /**/
 
 [[nodiscard]] uptr<EditorTextureSubTransformer> build_proxy_transformer(
-	const ptr<engine::gfx::loader::TextureTransformer> subject_
+	const ptr<engine::graphics::loader::TextureTransformer> subject_
 );
 
 /**/
 
-EditorTextureTransformer::EditorTextureTransformer(ref<engine::gfx::pool::GlobalResourcePool> pool_) :
+EditorTextureTransformer::EditorTextureTransformer(ref<engine::graphics::pool::GlobalResourcePool> pool_) :
 	_pool(std::addressof(pool_)),
 	_mainTransformer(std::addressof(pool_)),
 	_transformers() {
@@ -114,13 +114,13 @@ EditorTextureTransformer::stream_response_type::type EditorTextureTransformer::o
 class EditorTextureMainTransformer final :
 	public EditorTextureSubTransformer {
 public:
-	EditorTextureMainTransformer(const ptr<engine::gfx::loader::TextureTransformer> proxy_) noexcept :
+	EditorTextureMainTransformer(const ptr<engine::graphics::loader::TextureTransformer> proxy_) noexcept :
 		_proxy(proxy_) {}
 
 	~EditorTextureMainTransformer() noexcept override = default;
 
 private:
-	nmpt<engine::gfx::loader::TextureTransformer> _proxy;
+	nmpt<engine::graphics::loader::TextureTransformer> _proxy;
 
 public:
 	[[nodiscard]] bool canUse(nmpt<const engine::assets::TextureAsset> asset_) const noexcept override {
@@ -174,7 +174,7 @@ public:
 };
 
 uptr<EditorTextureSubTransformer> build_proxy_transformer(
-	const ptr<engine::gfx::loader::TextureTransformer> subject_
+	const ptr<engine::graphics::loader::TextureTransformer> subject_
 ) {
 	return make_uptr<EditorTextureMainTransformer>(subject_);
 }

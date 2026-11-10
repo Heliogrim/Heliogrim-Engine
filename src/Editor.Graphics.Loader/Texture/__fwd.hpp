@@ -4,9 +4,9 @@
 #include <Engine.Graphics.Loader/Texture/__fwd.hpp>
 #include <Engine.Resource/Loader/__fwd.hpp>
 
-namespace hg::editor::gfx {}
+namespace hg::editor::graphics {}
 
-namespace hg::editor::gfx::loader {
+namespace hg::editor::graphics::loader {
 	class EditorTextureLoader;
 	class EditorTextureCache;
 	class EditorTextureFeedback;

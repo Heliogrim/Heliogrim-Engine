@@ -19,7 +19,7 @@ namespace hg::engine::reflow {
 	public:
 		static void revealArea(
 			_Inout_ ref<Widget> root_,
-			_In_ ref<const gfx::Aabb2d> aabb2d_
+			_In_ ref<const graphics::Aabb2d> aabb2d_
 		);
 
 	public:

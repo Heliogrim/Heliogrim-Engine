@@ -1,6 +1,6 @@
 #pragma once
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
     enum class CameraProjectionMode {
         ePerspective = false,
         eOrthographic = true

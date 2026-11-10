@@ -5,7 +5,7 @@
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Reflow/Font/GlyphRanges.hpp>
 
-namespace hg::engine::gfx::loader {
+namespace hg::engine::graphics::loader {
     struct FontLoadOptions {
         Vector<reflow::GlyphRange> ranges;
         Vector<reflow::GlyphCode> glyphs;

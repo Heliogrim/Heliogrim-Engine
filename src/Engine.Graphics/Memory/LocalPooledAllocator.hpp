@@ -9,7 +9,7 @@
 #include "__fwd.hpp"
 #include "../API/__vkFwd.hpp"
 
-namespace hg::engine::gfx::memory {
+namespace hg::engine::graphics::memory {
 	class LocalPooledAllocator final :
 		public Allocator {
 	public:
@@ -46,11 +46,11 @@ namespace vk {
 	class Image;
 }
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	class Device;
 }
 
-namespace hg::engine::gfx::memory {
+namespace hg::engine::graphics::memory {
 	[[nodiscard]] AllocationResult allocate(
 		const ptr<LocalPooledAllocator> alloc_,
 		cref<sptr<Device>> device_,

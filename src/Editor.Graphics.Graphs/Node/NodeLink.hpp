@@ -5,7 +5,7 @@
 
 #include "__fwd.hpp"
 
-namespace hg::editor::gfx::graph {
+namespace hg::editor::graphics::graph {
     class NodeLink {
     public:
         using this_type = NodeLink;

@@ -8,10 +8,10 @@
 #include "../Buffer/SparseBuffer.hpp"
 #include "../Texture/TextureBuffer.hpp"
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	class CommandBuffer {
 	protected:
-		friend class ::hg::engine::gfx::CommandPool;
+		friend class ::hg::engine::graphics::CommandPool;
 
 		/**
 		 * Constructor

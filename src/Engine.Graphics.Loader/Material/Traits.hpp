@@ -14,7 +14,7 @@
 #include "MaterialPrototypeResource.hpp"
 
 namespace hg::engine::resource::loader {
-	using namespace ::hg::engine::gfx::loader;
+	using namespace ::hg::engine::graphics::loader;
 
 	template <>
 	struct RequestOptions<LoaderRequest<assets::GfxMaterial>> {
@@ -23,7 +23,7 @@ namespace hg::engine::resource::loader {
 }
 
 namespace hg::engine::resource::loader {
-	using namespace ::hg::engine::gfx::loader;
+	using namespace ::hg::engine::graphics::loader;
 
 	template <>
 	struct RequestOptions<CacheRequest<assets::GfxMaterial>> {
@@ -32,7 +32,7 @@ namespace hg::engine::resource::loader {
 }
 
 namespace hg::engine::resource::loader {
-	using namespace ::hg::engine::gfx::loader;
+	using namespace ::hg::engine::graphics::loader;
 
 	template <>
 	struct RequestOptions<FeedbackRequest<assets::GfxMaterial>> {
@@ -41,7 +41,7 @@ namespace hg::engine::resource::loader {
 }
 
 namespace hg::engine::resource::loader {
-	using namespace ::hg::engine::gfx::loader;
+	using namespace ::hg::engine::graphics::loader;
 
 	template <>
 	struct RequestOptions<SourceLoaderRequest<assets::GfxMaterial>> {
@@ -55,7 +55,7 @@ namespace hg::engine::resource::loader {
 }
 
 namespace hg::engine::resource::loader {
-	using namespace ::hg::engine::gfx::loader;
+	using namespace ::hg::engine::graphics::loader;
 
 	template <>
 	struct RequestOptions<TransformerRequest<assets::GfxMaterial>> {
@@ -66,7 +66,7 @@ namespace hg::engine::resource::loader {
 /* Material Prototype */
 
 namespace hg::engine::resource::loader {
-	using namespace ::hg::engine::gfx::loader;
+	using namespace ::hg::engine::graphics::loader;
 
 	template <>
 	struct RequestOptions<LoaderRequest<assets::GfxMaterialPrototype>> {
@@ -75,7 +75,7 @@ namespace hg::engine::resource::loader {
 }
 
 namespace hg::engine::resource::loader {
-	using namespace ::hg::engine::gfx::loader;
+	using namespace ::hg::engine::graphics::loader;
 
 	template <>
 	struct RequestOptions<CacheRequest<assets::GfxMaterialPrototype>> {
@@ -84,7 +84,7 @@ namespace hg::engine::resource::loader {
 }
 
 namespace hg::engine::resource::loader {
-	using namespace ::hg::engine::gfx::loader;
+	using namespace ::hg::engine::graphics::loader;
 
 	template <>
 	struct RequestOptions<FeedbackRequest<assets::GfxMaterialPrototype>> {
@@ -93,7 +93,7 @@ namespace hg::engine::resource::loader {
 }
 
 namespace hg::engine::resource::loader {
-	using namespace ::hg::engine::gfx::loader;
+	using namespace ::hg::engine::graphics::loader;
 
 	template <>
 	struct RequestOptions<SourceLoaderRequest<assets::GfxMaterialPrototype>> {
@@ -107,7 +107,7 @@ namespace hg::engine::resource::loader {
 }
 
 namespace hg::engine::resource::loader {
-	using namespace ::hg::engine::gfx::loader;
+	using namespace ::hg::engine::graphics::loader;
 
 	template <>
 	struct RequestOptions<TransformerRequest<assets::GfxMaterialPrototype>> {

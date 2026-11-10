@@ -5,7 +5,7 @@
 #include "GlobalCacheCtrl.hpp"
 #include "LocalResourceCache.hpp"
 
-namespace hg::engine::gfx::cache {
+namespace hg::engine::graphics::cache {
 	template <
 		class SubjectType_,
 		class SubResourceType_
@@ -23,7 +23,7 @@ namespace hg::engine::gfx::cache {
 
 	class LocalCacheCtrl final {
 	public:
-		friend class ::hg::engine::gfx::cache::LocalResourceCache;
+		friend class ::hg::engine::graphics::cache::LocalResourceCache;
 
 	public:
 		using this_type = LocalCacheCtrl;

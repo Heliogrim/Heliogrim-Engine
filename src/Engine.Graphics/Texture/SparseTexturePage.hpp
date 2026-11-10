@@ -9,10 +9,10 @@
 #include "../vkinc.hpp"
 #include "../Memory/VirtualMemoryPage.hpp"
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	class SparseTexturePage final {
 	public:
-		friend class ::hg::engine::gfx::SparseTexture;
+		friend class ::hg::engine::graphics::SparseTexture;
 
 	public:
 		using this_type = SparseTexturePage;

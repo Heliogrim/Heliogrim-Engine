@@ -1,6 +1,6 @@
 #include "CommandBatch.hpp"
 
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 CommandBatch::CommandBatch(mref<CommandBuffer> buffer_) :

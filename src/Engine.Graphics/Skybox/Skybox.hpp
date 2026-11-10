@@ -3,7 +3,7 @@
 #include "../Texture/Texture.hpp"
 #include "Engine.Graphics/Geometry/Mesh.hpp"
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
     class Skybox {
     public:
         /**

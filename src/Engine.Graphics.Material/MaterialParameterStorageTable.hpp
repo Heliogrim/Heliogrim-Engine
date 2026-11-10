@@ -6,7 +6,7 @@
 
 #include "MaterialParameterStorage.hpp"
 
-namespace hg::engine::gfx::material::table {
+namespace hg::engine::graphics::material::table {
 	/**/
 	using Sampler = MaterialParameterStorage<smr<TextureResource>>;
 	using Uniform = MaterialParameterStorage<smr<void>>;

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
     class CommandBatch;
     class CommandBuffer;
     class CommandPool;

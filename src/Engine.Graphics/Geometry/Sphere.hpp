@@ -2,7 +2,7 @@
 
 #include "Geometry.hpp"
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
     class Sphere :
         public Geometry {
     public:

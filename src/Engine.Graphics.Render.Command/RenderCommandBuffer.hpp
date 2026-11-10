@@ -69,50 +69,50 @@ namespace hg::engine::render::cmd {
 
 	public:
 		void bindStaticMesh(
-			const nmpt<const gfx::Mesh> mesh_
+			const nmpt<const graphics::Mesh> mesh_
 		) noexcept override;
 
 		void bindStaticMeshInstance(
-			const nmpt<const gfx::MeshInstanceView> view_
+			const nmpt<const graphics::MeshInstanceView> view_
 		) noexcept override;
 
 		void bindSkeletalMesh(
-			const nmpt<const gfx::Mesh> mesh_
+			const nmpt<const graphics::Mesh> mesh_
 		) noexcept override;
 
 		void bindSkeletalMeshInstance(
-			const nmpt<const gfx::MeshInstanceView> meshView_,
-			const nmpt<const gfx::SkeletalBoneView> boneView_
+			const nmpt<const graphics::MeshInstanceView> meshView_,
+			const nmpt<const graphics::SkeletalBoneView> boneView_
 		) noexcept override;
 
 	public:
 		void bindIndexBuffer(
-			const nmpt<const gfx::IndexBufferView> indexView_
+			const nmpt<const graphics::IndexBufferView> indexView_
 		) noexcept override;
 
 		void bindVertexBuffer(
-			const nmpt<const gfx::VertexBufferView> vertexView_
+			const nmpt<const graphics::VertexBufferView> vertexView_
 		) noexcept override;
 
 	public:
 		void bindStorage(
 			mref<accel::lang::SymbolId> symbolId_,
-			const nmpt<const gfx::StorageBufferView> storageView_
+			const nmpt<const graphics::StorageBufferView> storageView_
 		) noexcept override;
 
 		void bindTexture(
 			mref<accel::lang::SymbolId> symbolId_,
-			mref<nmpt<const gfx::TextureLikeObject>> texture_
+			mref<nmpt<const graphics::TextureLikeObject>> texture_
 		) noexcept override;
 
 		void bindTextureSampler(
 			mref<accel::lang::SymbolId> symbolId_,
-			mref<nmpt<const gfx::TextureSampler>> sampler_
+			mref<nmpt<const graphics::TextureSampler>> sampler_
 		) noexcept override;
 
 		void bindUniform(
 			mref<accel::lang::SymbolId> symbolId_,
-			const nmpt<const gfx::UniformBufferView> uniformView_
+			const nmpt<const graphics::UniformBufferView> uniformView_
 		) noexcept override;
 
 		void bind(
@@ -179,7 +179,7 @@ namespace hg::engine::render::cmd {
 		) noexcept override;
 
 		void drawMesh(
-			const nmpt<const gfx::MeshDescription> meshDescription_,
+			const nmpt<const graphics::MeshDescription> meshDescription_,
 			u32 instanceCount_,
 			u32 instanceOffset_,
 			u32 primitiveCount_,
@@ -187,7 +187,7 @@ namespace hg::engine::render::cmd {
 		) noexcept override;
 
 		void drawMeshIdx(
-			const nmpt<const gfx::MeshDescription> meshDescription_,
+			const nmpt<const graphics::MeshDescription> meshDescription_,
 			u32 instanceCount_,
 			u32 instanceOffset_,
 			u32 primitiveCount_,

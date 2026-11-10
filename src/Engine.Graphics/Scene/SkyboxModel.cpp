@@ -8,7 +8,7 @@
 #include <Engine.Resource/ResourceManager.hpp>
 #include <Heliogrim/Component/Scene/Sky/SkyboxComponent.hpp>
 
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 SkyboxModel::SkyboxModel(const ptr<SceneComponent> owner_) :

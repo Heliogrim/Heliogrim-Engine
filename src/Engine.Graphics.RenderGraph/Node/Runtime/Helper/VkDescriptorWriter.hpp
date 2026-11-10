@@ -6,7 +6,7 @@
 #include <Engine.Graphics/API/__vkFwd.hpp>
 #include <Engine.Graphics/vkinc.hpp>
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
     class StorageBufferView;
     class UniformBufferView;
     class Buffer;
@@ -52,48 +52,48 @@ namespace hg::engine::render::graph {
         void reset(cref<vk::DescriptorSet> nextVkSet_);
 
     public:
-        void storeUniform(index_type idx_, cref<gfx::Buffer> buffer_);
+        void storeUniform(index_type idx_, cref<graphics::Buffer> buffer_);
 
-        void storeUniform(index_type idx_, cref<gfx::SparseBuffer> buffer_);
+        void storeUniform(index_type idx_, cref<graphics::SparseBuffer> buffer_);
 
-        void storeUniform(index_type idx_, cref<gfx::SparseBufferView> view_);
+        void storeUniform(index_type idx_, cref<graphics::SparseBufferView> view_);
 
-        void storeUniform(index_type idx_, nmpt<const gfx::UniformBufferView> view_);
-
-    public:
-        void storeStorage(index_type idx_, cref<gfx::Buffer> buffer_);
-
-        void storeStorage(index_type idx_, cref<gfx::SparseBuffer> buffer_);
-
-        void storeStorage(index_type idx_, cref<gfx::SparseBufferView> view_);
-
-        void storeStorage(index_type idx_, nmpt<const gfx::StorageBufferView> view_);
+        void storeUniform(index_type idx_, nmpt<const graphics::UniformBufferView> view_);
 
     public:
-        void storeTexture(index_type idx_, nmpt<const gfx::TextureLikeObject> texture_);
+        void storeStorage(index_type idx_, cref<graphics::Buffer> buffer_);
 
-        void storeTextureSampler(index_type idx_, nmpt<const gfx::TextureSampler> sampler_);
+        void storeStorage(index_type idx_, cref<graphics::SparseBuffer> buffer_);
+
+        void storeStorage(index_type idx_, cref<graphics::SparseBufferView> view_);
+
+        void storeStorage(index_type idx_, nmpt<const graphics::StorageBufferView> view_);
 
     public:
-        void store(index_type idx_, cref<gfx::Texture> texture_, cref<vk::Sampler> sampler_);
+        void storeTexture(index_type idx_, nmpt<const graphics::TextureLikeObject> texture_);
+
+        void storeTextureSampler(index_type idx_, nmpt<const graphics::TextureSampler> sampler_);
+
+    public:
+        void store(index_type idx_, cref<graphics::Texture> texture_, cref<vk::Sampler> sampler_);
 
         void storeAs(
             index_type idx_,
-            cref<gfx::Texture> texture_,
+            cref<graphics::Texture> texture_,
             cref<vk::Sampler> sampler_,
             cref<vk::ImageLayout> layout_
         );
 
     public:
-        void store(index_type idx_, const ptr<const gfx::SparseTexture> texture_, cref<vk::Sampler> sampler_);
+        void store(index_type idx_, const ptr<const graphics::SparseTexture> texture_, cref<vk::Sampler> sampler_);
 
         void storeAs(
             index_type idx_,
-            const ptr<const gfx::SparseTexture> texture_,
+            const ptr<const graphics::SparseTexture> texture_,
             cref<vk::Sampler> sampler_,
             cref<vk::ImageLayout> layout_
         );
 
-        void store(index_type idx_, const ptr<const gfx::SparseTextureView> texture_, cref<vk::Sampler> sampler_);
+        void store(index_type idx_, const ptr<const graphics::SparseTextureView> texture_, cref<vk::Sampler> sampler_);
     };
 }

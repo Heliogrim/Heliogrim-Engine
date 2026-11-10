@@ -4,7 +4,7 @@
 #include "../Device/Device.hpp"
 #include "../Texture/Texture.hpp"
 
-namespace hg::engine::gfx::generator {
+namespace hg::engine::graphics::generator {
     class MipMapGenerator {
     public:
         /**

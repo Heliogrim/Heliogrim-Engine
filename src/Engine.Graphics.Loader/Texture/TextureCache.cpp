@@ -5,8 +5,8 @@
 #include "Engine.Graphics/Cache/GlobalCacheCtrl.hpp"
 #include "Engine.Graphics/Cache/GlobalResourceCache.hpp"
 
-using namespace hg::engine::gfx::loader;
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics::loader;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 TextureCache::TextureCache(const non_owning_rptr<cache::GlobalCacheCtrl> cacheCtrl_) :

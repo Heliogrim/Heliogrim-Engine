@@ -1,7 +1,7 @@
 #pragma once
 #include <Engine.Common/Math/Vector.hpp>
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	struct alignas(alignof(float)) GlslLight {
 		// color * intensity
 		math::fvec4 luminance;

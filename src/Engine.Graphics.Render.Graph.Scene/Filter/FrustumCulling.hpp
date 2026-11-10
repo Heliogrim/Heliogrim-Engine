@@ -18,8 +18,8 @@ namespace hg::engine::render::graph {
 		constexpr ~FrustumCullingFilter() noexcept override = default;
 
 	private:
-		gfx::CameraFrustum _frustum;
-		ptr<const gfx::scene::SceneView> _sceneView;
+		graphics::CameraFrustum _frustum;
+		ptr<const graphics::scene::SceneView> _sceneView;
 
 	public:
 		[[nodiscard]] checksum_type checksum() const noexcept override {
@@ -39,7 +39,7 @@ namespace hg::engine::render::graph {
 		}
 
 	public:
-		void update(cref<gfx::scene::SceneView> sceneView_) noexcept override;
+		void update(cref<graphics::scene::SceneView> sceneView_) noexcept override;
 
 		[[nodiscard]] bool operator()(const void* node_) const noexcept override;
 	};

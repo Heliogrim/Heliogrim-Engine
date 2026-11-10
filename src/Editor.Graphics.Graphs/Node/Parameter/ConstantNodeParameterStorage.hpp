@@ -8,7 +8,7 @@
 
 #include "../NodeLinkValueType.hpp"
 
-namespace hg::editor::gfx::graph {
+namespace hg::editor::graphics::graph {
     template <NodeLinkValueType ValueType_>
     struct ConstantNodeParameterTypeStorage;
 

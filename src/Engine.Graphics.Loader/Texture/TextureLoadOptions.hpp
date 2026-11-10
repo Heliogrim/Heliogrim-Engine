@@ -2,7 +2,7 @@
 
 #include "__fwd.hpp"
 
-namespace hg::engine::gfx::loader {
+namespace hg::engine::graphics::loader {
     enum class TextureLoadDataFlagBits : u8 {
         eNone = 0b0000 << 0,
         eLazyDataLoading = 0b0001 << 0,

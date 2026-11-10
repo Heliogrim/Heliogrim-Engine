@@ -1,6 +1,6 @@
 #include "SceneView.hpp"
 
-using namespace hg::engine::gfx::scene;
+using namespace hg::engine::graphics::scene;
 using namespace hg;
 
 SceneView::SceneView(const nmpt<Actor> actor_, const nmpt<render::RenderSceneSystem> system_) :

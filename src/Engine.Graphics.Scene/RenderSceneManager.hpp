@@ -22,17 +22,17 @@ namespace hg::engine::scene {
 	class SceneBase;
 }
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	class RenderTarget;
 	class Swapchain;
 	class Surface;
 }
 
-namespace hg::engine::gfx::scene {
+namespace hg::engine::graphics::scene {
 	class SceneView;
 }
 
-namespace hg::engine::gfx::scene {
+namespace hg::engine::graphics::scene {
 	class RenderSceneManager final {
 	public:
 		using this_type = RenderSceneManager;

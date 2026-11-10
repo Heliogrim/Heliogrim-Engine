@@ -5,7 +5,7 @@
 #include "Geometry.hpp"
 #include "../Device/Device.hpp"
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
     class Plane :
         public Geometry {
     public:

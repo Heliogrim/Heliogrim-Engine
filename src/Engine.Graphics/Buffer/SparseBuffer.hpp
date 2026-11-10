@@ -9,7 +9,7 @@
 #include "../API/__vkFwd.hpp"
 #include "../Device/Device.hpp"
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	/**
 	 * TODO: Add support for software sparse buffer using underlying memory pages
 	 *  TODO: Each page has a defined size which might be mappable to any left memory sequence

@@ -23,7 +23,7 @@
 
 using namespace hg::engine::render;
 using namespace hg::engine::accel;
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 [[nodiscard]] static smr<AccelerationEffect> build_test_effect();
@@ -118,7 +118,7 @@ void PostProcessPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept
 			.vkMemoryFlags = vk::MemoryPropertyFlagBits::eDeviceLocal,
 			.vkSharing = vk::SharingMode::eExclusive
 		};
-		_colorTexture = make_uptr<gfx::Texture>(tf->build(payload));
+		_colorTexture = make_uptr<graphics::Texture>(tf->build(payload));
 		tf->buildView(*_colorTexture);
 
 		_colorView = _colorTexture->makeView(
@@ -155,7 +155,7 @@ void PostProcessPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept
 
 	cmd.lambda(
 		[sceneColorTex, colorTexture = _colorTexture.get()](ref<AccelCommandBuffer> cmd_) {
-			const auto* const texture = Cast<gfx::Texture>(sceneColorTex.get());
+			const auto* const texture = Cast<graphics::Texture>(sceneColorTex.get());
 
 			std::array<vk::ImageMemoryBarrier, 2> barriers = {
 				vk::ImageMemoryBarrier {

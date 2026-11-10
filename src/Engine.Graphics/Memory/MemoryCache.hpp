@@ -7,7 +7,7 @@
 #include "__fwd.hpp"
 #include "MemoryLayout.hpp"
 
-namespace hg::engine::gfx::memory {
+namespace hg::engine::graphics::memory {
 	class MemoryCache {
 	public:
 		using this_type = MemoryCache;

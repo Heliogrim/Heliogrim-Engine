@@ -20,7 +20,7 @@ namespace hg::engine::render::graph {
 		[[nodiscard]] virtual checksum_type checksum() const noexcept = 0;
 
 	public:
-		virtual void update(cref<gfx::scene::SceneView> sceneView_) noexcept = 0;
+		virtual void update(cref<graphics::scene::SceneView> sceneView_) noexcept = 0;
 
 		[[nodiscard]] virtual bool operator()(const void* node_) const noexcept = 0;
 	};

@@ -22,6 +22,6 @@ namespace hg::engine::render::graph {
 	public:
 		[[nodiscard]] nmpt<const GraphNodeAllocator> getGraphNodeAllocator() const noexcept;
 
-		[[nodiscard]] nmpt<const gfx::scene::SceneView> getSceneView() const noexcept;
+		[[nodiscard]] nmpt<const graphics::scene::SceneView> getSceneView() const noexcept;
 	};
 }

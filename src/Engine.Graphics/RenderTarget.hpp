@@ -11,18 +11,18 @@
 #include "RenderEnqueueResult.hpp"
 #include "vkinc.hpp"
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	class Camera;
 	class Device;
 	class Surface;
 	class Swapchain;
 }
 
-namespace hg::engine::gfx::scene {
+namespace hg::engine::graphics::scene {
 	class SceneView;
 }
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	struct TransitionResult {
 		smr<Swapchain> pendingSwapchain;
 	};

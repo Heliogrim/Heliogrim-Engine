@@ -4,11 +4,11 @@
 
 #include "../TextureTransformer.hpp"
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	class Device;
 }
 
-namespace hg::engine::gfx::loader::transformer {
+namespace hg::engine::graphics::loader::transformer {
 	void convertKtx(
 		const non_owning_rptr<const assets::TextureAsset> asset_,
 		mref<std::pair<ref<storage::StorageSystem>, Arci<storage::IStorage>>> src_,

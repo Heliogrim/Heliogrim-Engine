@@ -6,7 +6,7 @@
 
 namespace hg::engine::reflow {
 	struct ReflowPassState {
-		using Aabb2d = hg::engine::gfx::Aabb2d;
+		using Aabb2d = hg::engine::graphics::Aabb2d;
 
 		/* Bottom-Up pass requested size without relative resolving */
 		math::vec2 prefetchMinSize;

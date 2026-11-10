@@ -3,7 +3,7 @@
 #include <Engine.Graphics/Cache/GlobalResourceCache.hpp>
 #include <Engine.Graphics/Cache/GlobalCacheCtrl.hpp>
 
-using namespace hg::engine::gfx::loader;
+using namespace hg::engine::graphics::loader;
 using namespace hg;
 
 MaterialPrototypeCache::MaterialPrototypeCache(const non_owning_rptr<cache::GlobalCacheCtrl> cacheCtrl_):

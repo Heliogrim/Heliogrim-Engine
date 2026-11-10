@@ -4,7 +4,7 @@
 #include "FontFeedback.hpp"
 #include "FontTransformer.hpp"
 
-using namespace hg::engine::gfx::loader;
+using namespace hg::engine::graphics::loader;
 using namespace hg;
 
 FontLoader::FontLoader(

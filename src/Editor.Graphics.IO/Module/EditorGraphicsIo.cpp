@@ -62,7 +62,7 @@ void EditorGraphicsIo::hookGraphicsEvents() noexcept {
 	_editorTransformerHookHandle = _engine->getEmitter().on<EditorGraphicsRegisterTransformerEvent>(
 		[this](cref<EditorGraphicsRegisterTransformerEvent> event_) {
 
-			using namespace ::hg::editor::gfx::loader;
+			using namespace ::hg::editor::graphics::loader;
 
 			auto& pool = *_engine->getGraphics()->pool();
 
@@ -82,10 +82,10 @@ void EditorGraphicsIo::hookGraphicsEvents() noexcept {
 	_coreLoaderHookHandle = _engine->getEmitter().on<GraphicRegisterLoaderEvent>(
 		[this](cref<GraphicRegisterLoaderEvent> event_) {
 
-			using namespace ::hg::engine::gfx;
+			using namespace ::hg::engine::graphics;
 
 			if (not event_.getLoaderManager().hasLoader<engine::assets::TextureAsset, TextureResource>()) {
-				auto loader = make_sptr<gfx::loader::EditorTextureLoader>(
+				auto loader = make_sptr<graphics::loader::EditorTextureLoader>(
 					event_.getGraphicsGlobalCacheCtrl(),
 					event_.getGraphicsGlobalResourcePool(),
 					event_.getLoaderManager().sharedSourceLoader()

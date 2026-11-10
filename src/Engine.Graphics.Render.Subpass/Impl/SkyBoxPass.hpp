@@ -20,14 +20,14 @@ namespace hg::engine::render {
         using this_type = SkyBoxPass;
 
     private:
-        smr<gfx::MaterialResource> _material;
-        gfx::material::MaterialEffect _materialEffect;
+        smr<graphics::MaterialResource> _material;
+        graphics::material::MaterialEffect _materialEffect;
         smr<const accel::GraphicsPass> _pass;
         accel::EffectCompileResult _compiled;
-        uptr<gfx::TextureSampler> _sampler;
-        gfx::Buffer _cameraBuffer;
-        uptr<gfx::UniformBufferView> _cameraBufferView;
-        smr<gfx::Framebuffer> _framebuffer;
+        uptr<graphics::TextureSampler> _sampler;
+        graphics::Buffer _cameraBuffer;
+        uptr<graphics::UniformBufferView> _cameraBufferView;
+        smr<graphics::Framebuffer> _framebuffer;
         vk::Semaphore _tmpSignal;
 
         struct Resources {

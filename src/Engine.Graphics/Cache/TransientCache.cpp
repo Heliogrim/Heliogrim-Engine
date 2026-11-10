@@ -3,8 +3,8 @@
 #include "CacheResult.hpp"
 #include "ModelBatch.hpp"
 
-using namespace hg::engine::gfx::cache;
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics::cache;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 TransientCache::TransientCache() :

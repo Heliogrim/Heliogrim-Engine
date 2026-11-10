@@ -21,8 +21,8 @@ using namespace hg;
 RenderPass::RenderPass(
 	mref<nmpt<const Renderer>> renderer_,
 	mref<uptr<graph::RuntimeGraph>> runtimeGraph_,
-	mref<smr<gfx::cache::LocalCacheCtrl>> localGeneralCache_,
-	mref<smr<gfx::memory::LocalPooledAllocator>> localDeviceAllocator_
+	mref<smr<graphics::cache::LocalCacheCtrl>> localGeneralCache_,
+	mref<smr<graphics::memory::LocalPooledAllocator>> localDeviceAllocator_
 ) noexcept :
 	_renderer(std::move(renderer_)),
 	_graph(std::move(runtimeGraph_)),
@@ -69,8 +69,8 @@ RenderPassResult RenderPass::operator()() {
 	return RenderPassResult::eSuccess;
 }
 
-smr<const engine::gfx::scene::SceneView> RenderPass::changeSceneView(
-	mref<smr<const gfx::scene::SceneView>> nextSceneView_
+smr<const engine::graphics::scene::SceneView> RenderPass::changeSceneView(
+	mref<smr<const graphics::scene::SceneView>> nextSceneView_
 ) {
 
 	const auto symbol = makeSceneViewSymbol();
@@ -79,16 +79,16 @@ smr<const engine::gfx::scene::SceneView> RenderPass::changeSceneView(
 	if (stored == nullptr) {
 
 		stored = _state.rootSymbolContext().exportSymbol(clone(symbol));
-		stored->create<smr<const gfx::scene::SceneView>, graph::SceneViewDescription>(clone(nextSceneView_));
+		stored->create<smr<const graphics::scene::SceneView>, graph::SceneViewDescription>(clone(nextSceneView_));
 
 	} else {
-		stored->store<smr<const gfx::scene::SceneView>, graph::SceneViewDescription>(clone(nextSceneView_));
+		stored->store<smr<const graphics::scene::SceneView>, graph::SceneViewDescription>(clone(nextSceneView_));
 	}
 
 	return std::exchange(_state._sceneView, std::move(nextSceneView_));
 }
 
-smr<const engine::gfx::scene::SceneView> RenderPass::unbindSceneView() {
+smr<const engine::graphics::scene::SceneView> RenderPass::unbindSceneView() {
 
 	const auto symbol = makeSceneViewSymbol();
 
@@ -102,8 +102,8 @@ smr<const engine::gfx::scene::SceneView> RenderPass::unbindSceneView() {
 		return nullptr;
 	}
 
-	auto report = stored->load<smr<const gfx::scene::SceneView>>();
-	stored->destroy<smr<const gfx::scene::SceneView>>();
+	auto report = stored->load<smr<const graphics::scene::SceneView>>();
+	stored->destroy<smr<const graphics::scene::SceneView>>();
 
 	return report;
 }
@@ -121,7 +121,7 @@ void RenderPass::unsafeBindTarget(mref<smr<const graph::Symbol>> target_, mref<s
 	storage->create(std::move(resource_));
 }
 
-bool RenderPass::bindTarget(mref<smr<const graph::Symbol>> target_, mref<smr<gfx::Texture>> texture_) {
+bool RenderPass::bindTarget(mref<smr<const graph::Symbol>> target_, mref<smr<graphics::Texture>> texture_) {
 
 	const auto* const textureDescription = Cast<graph::TextureDescription>(target_->description.get());
 	if (not textureDescription) {
@@ -140,12 +140,12 @@ bool RenderPass::bindTarget(mref<smr<const graph::Symbol>> target_, mref<smr<gfx
 	_state._boundTargets.insert_or_assign(clone(target_), clone(texture_));
 
 	auto storage = _state.rootSymbolContext().exportSymbol(std::move(target_));
-	storage->create(texture_.into<gfx::TextureLikeObject>());
+	storage->create(texture_.into<graphics::TextureLikeObject>());
 
 	return true;
 }
 
-bool RenderPass::bindTarget(mref<smr<const graph::Symbol>> target_, mref<smr<gfx::TextureView>> textureView_) {
+bool RenderPass::bindTarget(mref<smr<const graph::Symbol>> target_, mref<smr<graphics::TextureView>> textureView_) {
 
 	const auto* const textureDescription = Cast<graph::TextureDescription>(target_->description.get());
 	if (not textureDescription) {
@@ -164,12 +164,12 @@ bool RenderPass::bindTarget(mref<smr<const graph::Symbol>> target_, mref<smr<gfx
 	_state._boundTargets.insert_or_assign(clone(target_), clone(textureView_));
 
 	auto storage = _state.rootSymbolContext().exportSymbol(std::move(target_));
-	storage->create(textureView_.into<gfx::TextureLikeObject>());
+	storage->create(textureView_.into<graphics::TextureLikeObject>());
 
 	return true;
 }
 
-bool RenderPass::bindTarget(mref<smr<const graph::Symbol>> target_, mref<smr<gfx::SparseTexture>> texture_) {
+bool RenderPass::bindTarget(mref<smr<const graph::Symbol>> target_, mref<smr<graphics::SparseTexture>> texture_) {
 
 	const auto* const textureDescription = Cast<graph::TextureDescription>(target_->description.get());
 	if (not textureDescription) {
@@ -188,12 +188,12 @@ bool RenderPass::bindTarget(mref<smr<const graph::Symbol>> target_, mref<smr<gfx
 	_state._boundTargets.insert_or_assign(clone(target_), clone(texture_));
 
 	auto storage = _state.rootSymbolContext().exportSymbol(std::move(target_));
-	storage->create(texture_.into<gfx::TextureLikeObject>());
+	storage->create(texture_.into<graphics::TextureLikeObject>());
 
 	return true;
 }
 
-bool RenderPass::bindTarget(mref<smr<const graph::Symbol>> target_, mref<smr<gfx::SparseTextureView>> textureView_) {
+bool RenderPass::bindTarget(mref<smr<const graph::Symbol>> target_, mref<smr<graphics::SparseTextureView>> textureView_) {
 
 	const auto* const textureDescription = Cast<graph::TextureDescription>(target_->description.get());
 	if (not textureDescription) {
@@ -212,7 +212,7 @@ bool RenderPass::bindTarget(mref<smr<const graph::Symbol>> target_, mref<smr<gfx
 	_state._boundTargets.insert_or_assign(clone(target_), clone(textureView_));
 
 	auto storage = _state.rootSymbolContext().exportSymbol(std::move(target_));
-	storage->create(textureView_.into<gfx::TextureLikeObject>());
+	storage->create(textureView_.into<graphics::TextureLikeObject>());
 
 	return true;
 }
@@ -358,7 +358,7 @@ bool RenderPass::addTargetWaitSignal(
 
 	const auto resource = _state.rootSymbolContext().getExportSymbol(clone(targetSymbol_));
 
-	const auto valid = resource->valid<smr<const gfx::TextureLikeObject>,
+	const auto valid = resource->valid<smr<const graphics::TextureLikeObject>,
 		graph::TextureDescription,
 		decltype([](auto&& obj_) {
 			return obj_.get();
@@ -377,7 +377,7 @@ void RenderPass::clearTargetWaitSignals(mref<smr<const graph::Symbol>> targetSym
 
 	const auto resource = _state.rootSymbolContext().getExportSymbol(clone(targetSymbol_));
 
-	const auto valid = resource->valid<smr<const gfx::TextureLikeObject>,
+	const auto valid = resource->valid<smr<const graphics::TextureLikeObject>,
 		graph::TextureDescription,
 		decltype([](auto&& obj_) {
 			return obj_.get();

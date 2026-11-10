@@ -21,7 +21,7 @@
 
 using namespace hg::engine::render;
 using namespace hg::engine::accel;
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 [[nodiscard]] static smr<AccelerationEffect> build_test_effect();
@@ -123,7 +123,7 @@ void Visualize::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 	cmd.lambda(
 		[sceneDepthTex](ref<accel::AccelCommandBuffer> cmd_) {
 
-			const auto* const texture = Cast<gfx::Texture>(sceneDepthTex.get());
+			const auto* const texture = Cast<graphics::Texture>(sceneDepthTex.get());
 
 			const auto barrier = vk::ImageMemoryBarrier {
 				vk::AccessFlags(),
@@ -203,7 +203,7 @@ void Visualize::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 	cmd.lambda(
 		[sceneDepthTex](ref<accel::AccelCommandBuffer> cmd_) {
 
-			const auto* const texture = Cast<gfx::Texture>(sceneDepthTex.get());
+			const auto* const texture = Cast<graphics::Texture>(sceneDepthTex.get());
 
 			const auto barrier = vk::ImageMemoryBarrier {
 				vk::AccessFlags(),

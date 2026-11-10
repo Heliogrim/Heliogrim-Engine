@@ -2,7 +2,7 @@
 
 #include <Engine.Reflect/Inherit/InheritBase.hpp>
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	class macro_novtable BufferLikeObject :
 		public InheritBase<BufferLikeObject> {
 	public:

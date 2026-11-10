@@ -46,14 +46,14 @@ void TmpEndPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 	}
 
 	auto sceneColorRes = symCtx_.getExportSymbol(makeSceneColorSymbol());
-	const auto& sceneColorTex = sceneColorRes->load<smr<const gfx::TextureLikeObject>>();
+	const auto& sceneColorTex = sceneColorRes->load<smr<const graphics::TextureLikeObject>>();
 
 	cmd::RenderCommandBuffer cmd {};
 	cmd.begin();
 	cmd.lambda(
 		[sceneColorTex, this](ref<accel::AccelCommandBuffer> cmd_) {
 
-			const auto* const texture = Cast<gfx::Texture>(sceneColorTex.get());
+			const auto* const texture = Cast<graphics::Texture>(sceneColorTex.get());
 
 			const auto barrier = vk::ImageMemoryBarrier {
 				vk::AccessFlags(),

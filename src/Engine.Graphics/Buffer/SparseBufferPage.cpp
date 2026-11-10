@@ -6,7 +6,7 @@
 #include "../Memory/AllocatedMemory.hpp"
 #include "../Memory/AllocationResult.hpp"
 
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 SparseBufferPage::SparseBufferPage(

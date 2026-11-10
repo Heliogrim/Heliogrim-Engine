@@ -2,7 +2,7 @@
 #include "Allocator.hpp"
 #include "../Device/Device.hpp"
 
-namespace hg::engine::gfx::memory {
+namespace hg::engine::graphics::memory {
     class VkAllocator final :
         public Allocator {
     public:

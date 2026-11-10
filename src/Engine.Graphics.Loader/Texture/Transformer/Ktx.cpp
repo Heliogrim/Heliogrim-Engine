@@ -18,9 +18,9 @@
 #include <Engine.Storage.System/StorageSystem.hpp>
 #include <gli/gli.hpp>
 
-using namespace hg::engine::gfx::loader::transformer;
-using namespace hg::engine::gfx::loader;
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics::loader::transformer;
+using namespace hg::engine::graphics::loader;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 /**/

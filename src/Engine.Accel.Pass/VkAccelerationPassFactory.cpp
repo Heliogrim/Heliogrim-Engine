@@ -123,7 +123,7 @@ tl::expected<smr<const GraphicsPass>, AccelerationPassFactoryError> VkAccelerati
 		result->_attachments.push_back(
 			vk::AttachmentDescription {
 				{},
-				gfx::api::vkTranslateFormat(targetFormat),
+				graphics::api::vkTranslateFormat(targetFormat),
 				vk::SampleCountFlagBits::e1,
 				loadOp,
 				vk::AttachmentStoreOp::eStore,
@@ -188,7 +188,7 @@ tl::expected<smr<const GraphicsPass>, AccelerationPassFactoryError> VkAccelerati
 		result->_attachments.push_back(
 			vk::AttachmentDescription {
 				{},
-				gfx::api::vkTranslateFormat(sourceFormat),
+				graphics::api::vkTranslateFormat(sourceFormat),
 				vk::SampleCountFlagBits::e1,
 				loadOp,
 				vk::AttachmentStoreOp::eDontCare,

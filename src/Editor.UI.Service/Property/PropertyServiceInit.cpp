@@ -502,14 +502,14 @@ void service::initPropertyService(ref<PropertyService> service_) {
 					auto input = makeInputToggle(::hg::move(active), ::hg::move(inactive), false);
 					input->getDataAttributes().setQuery<attr::InputData::value>(
 						[component]() {
-							return component->getProjectMode() == gfx::CameraProjectionMode::eOrthographic;
+							return component->getProjectMode() == graphics::CameraProjectionMode::eOrthographic;
 						}
 					);
 					discard = input->onInputChange(
 						[component](ref<const InputChangeEvent> event_) {
 							const auto& target = *static_cast<const ptr<const InputToggle>>(event_.target.get());
 							component->setProjectMode(
-								target.value() ? gfx::CameraProjectionMode::eOrthographic : gfx::CameraProjectionMode::ePerspective
+								target.value() ? graphics::CameraProjectionMode::eOrthographic : graphics::CameraProjectionMode::ePerspective
 							);
 							return EventResponse::eConsumed;
 						}
@@ -547,13 +547,13 @@ void service::initPropertyService(ref<PropertyService> service_) {
 					auto input = makeInputToggle(::hg::move(active), ::hg::move(inactive), false);
 					input->getDataAttributes().setQuery<attr::InputData::value>(
 						[component]() {
-							return component->getViewMode() == gfx::CameraViewMode::eLookAt;
+							return component->getViewMode() == graphics::CameraViewMode::eLookAt;
 						}
 					);
 					discard = input->onInputChange(
 						[component](ref<const InputChangeEvent> event_) {
 							const auto& target = *static_cast<const ptr<const InputToggle>>(event_.target.get());
-							component->setViewMode(target.value() ? gfx::CameraViewMode::eLookAt : gfx::CameraViewMode::eFirstPerson);
+							component->setViewMode(target.value() ? graphics::CameraViewMode::eLookAt : graphics::CameraViewMode::eFirstPerson);
 							return EventResponse::eConsumed;
 						}
 					);

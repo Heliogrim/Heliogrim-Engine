@@ -15,23 +15,23 @@
 #include <Engine.Storage.System/StorageSystem.hpp>
 #include <tinyexr/tinyexr.h>
 
-using namespace ::hg::editor::gfx::loader;
+using namespace ::hg::editor::graphics::loader;
 using namespace ::hg;
 
 /**/
 
-static engine::gfx::TextureFormat mapTextureFormat(cref<EXRHeader> header_) noexcept;
+static engine::graphics::TextureFormat mapTextureFormat(cref<EXRHeader> header_) noexcept;
 
-static engine::gfx::Buffer createStageBuffer(
-	cref<sptr<engine::gfx::Device>> device_,
-	engine::gfx::TextureFormat format_,
+static engine::graphics::Buffer createStageBuffer(
+	cref<sptr<engine::graphics::Device>> device_,
+	engine::graphics::TextureFormat format_,
 	u32 width_,
 	u32 height_
 );
 
 /**/
 
-EditorExrTextureTransformer::EditorExrTextureTransformer(ref<engine::gfx::pool::GlobalResourcePool> pool_) noexcept :
+EditorExrTextureTransformer::EditorExrTextureTransformer(ref<engine::graphics::pool::GlobalResourcePool> pool_) noexcept :
 	EditorTextureSubTransformer(),
 	_pool(std::addressof(pool_)) {}
 
@@ -74,7 +74,7 @@ EditorExrTextureTransformer::loader_traits::response::type EditorExrTextureTrans
 	cref<next_type> next_
 ) const {
 
-	::hg::assertrt(not(options_.dataFlag & engine::gfx::loader::TextureLoadDataFlagBits::eLazyDataLoading));
+	::hg::assertrt(not(options_.dataFlag & engine::graphics::loader::TextureLoadDataFlagBits::eLazyDataLoading));
 
 	const auto* const asset = static_cast<ptr<const engine::assets::TextureAsset>>(request_);
 	auto src = next_(asset, next_type::next_request_type::options {});
@@ -84,7 +84,7 @@ EditorExrTextureTransformer::loader_traits::response::type EditorExrTextureTrans
 	 */
 
 	auto view = _pool->allocateSparseTexture(
-		engine::gfx::pool::SparseTextureAllocation {
+		engine::graphics::pool::SparseTextureAllocation {
 			.layers = 1uL,
 			.extent = asset->getExtent(),
 			.format = asset->getTextureFormat(),
@@ -147,7 +147,7 @@ EditorExrTextureTransformer::loader_traits::response::type EditorExrTextureTrans
 		)
 	);
 
-	::hg::assertrt(mapTextureFormat(*header) != engine::gfx::TextureFormat::eUndefined);
+	::hg::assertrt(mapTextureFormat(*header) != engine::graphics::TextureFormat::eUndefined);
 	::hg::assertrt(view->format() == mapTextureFormat(*header));
 
 	/**
@@ -155,8 +155,8 @@ EditorExrTextureTransformer::loader_traits::response::type EditorExrTextureTrans
 	 */
 
 	::hg::assertrt(
-		(view->type() == engine::gfx::TextureType::e2d) ||
-		(view->type() == engine::gfx::TextureType::e2dArray && view->layers() == 1uL)
+		(view->type() == engine::graphics::TextureType::e2d) ||
+		(view->type() == engine::graphics::TextureType::e2dArray && view->layers() == 1uL)
 	);
 
 	::hg::assertrt(view->layers() == 1uL);
@@ -192,7 +192,7 @@ EditorExrTextureTransformer::loader_traits::response::type EditorExrTextureTrans
 	::hg::assertrt(view->width() == width && view->height() == height);
 
 	const auto device = _pool->device();
-	engine::gfx::Buffer stageBuffer = createStageBuffer(device, mapTextureFormat(*header), width, height);
+	engine::graphics::Buffer stageBuffer = createStageBuffer(device, mapTextureFormat(*header), width, height);
 
 	/**
 	 * Store image data to buffer
@@ -229,7 +229,7 @@ EditorExrTextureTransformer::loader_traits::response::type EditorExrTextureTrans
 
 	// Warning: Temporary
 	for (const auto& page : view->pages()) {
-		if (page->memory()->state() != engine::gfx::VirtualMemoryPageState::eLoaded) {
+		if (page->memory()->state() != engine::graphics::VirtualMemoryPageState::eLoaded) {
 			view->owner()->load(page);
 		}
 	}
@@ -313,9 +313,9 @@ EditorExrTextureTransformer::loader_traits::response::type EditorExrTextureTrans
 
 	/**/
 
-	using derived_type = engine::resource::UniqueResource<engine::gfx::TextureResource::value_type>;
-	auto dst = make_smr<engine::gfx::TextureResource, derived_type>(
-		new derived_type(mpt<engine::gfx::TextureLikeObject>(view.release()))
+	using derived_type = engine::resource::UniqueResource<engine::graphics::TextureResource::value_type>;
+	auto dst = make_smr<engine::graphics::TextureResource, derived_type>(
+		new derived_type(mpt<engine::graphics::TextureLikeObject>(view.release()))
 	);
 	dst->setAssociation(asset);
 
@@ -334,35 +334,35 @@ EditorExrTextureTransformer::loader_traits::stream_response::type EditorExrTextu
 
 /**/
 
-engine::gfx::TextureFormat mapTextureFormat(cref<EXRHeader> header_) noexcept {
+engine::graphics::TextureFormat mapTextureFormat(cref<EXRHeader> header_) noexcept {
 
 	switch (header_.num_channels) {
 		case 1: {
-			return engine::gfx::TextureFormat::eR32Sfloat;
+			return engine::graphics::TextureFormat::eR32Sfloat;
 		}
 		case 2: {
-			return engine::gfx::TextureFormat::eR32G32Sfloat;
+			return engine::graphics::TextureFormat::eR32G32Sfloat;
 		}
 		case 3: {
-			return engine::gfx::TextureFormat::eR32G32B32Sfloat;
+			return engine::graphics::TextureFormat::eR32G32B32Sfloat;
 		}
 		case 4: {
-			return engine::gfx::TextureFormat::eR32G32B32A32Sfloat;
+			return engine::graphics::TextureFormat::eR32G32B32A32Sfloat;
 		}
 		default: {
-			return engine::gfx::TextureFormat::eUndefined;
+			return engine::graphics::TextureFormat::eUndefined;
 		}
 	}
 }
 
-engine::gfx::Buffer createStageBuffer(
-	cref<sptr<engine::gfx::Device>> device_,
-	const engine::gfx::TextureFormat format_,
+engine::graphics::Buffer createStageBuffer(
+	cref<sptr<engine::graphics::Device>> device_,
+	const engine::graphics::TextureFormat format_,
 	const u32 width_,
 	const u32 height_
 ) {
 
-	using namespace ::hg::engine::gfx;
+	using namespace ::hg::engine::graphics;
 
 	const auto formatSize = formatDataSize(format_);
 	const size_t dataSize = width_ * height_ * formatSize;

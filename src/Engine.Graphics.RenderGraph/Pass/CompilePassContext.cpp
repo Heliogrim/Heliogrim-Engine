@@ -46,6 +46,6 @@ nmpt<const GraphNodeAllocator> CompilePassContext::getGraphNodeAllocator() const
 	return &_allocator;
 }
 
-nmpt<const engine::gfx::scene::SceneView> CompilePassContext::getSceneView() const noexcept {
+nmpt<const engine::graphics::scene::SceneView> CompilePassContext::getSceneView() const noexcept {
 	return {};
 }

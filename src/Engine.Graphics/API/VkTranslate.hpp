@@ -9,7 +9,7 @@
 #include "../TextureFormat.hpp"
 #include "../Memory/MemoryProperty.hpp"
 
-namespace hg::engine::gfx::api {
+namespace hg::engine::graphics::api {
 	/**
 	 * Translate internal to vulkan
 	 *

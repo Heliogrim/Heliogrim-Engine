@@ -5,7 +5,7 @@
 
 #include "Traits.hpp"
 
-namespace hg::engine::gfx::loader {
+namespace hg::engine::graphics::loader {
     class MaterialPrototypeTransformer final :
         public resource::loader::Transformer<assets::GfxMaterialPrototype, MaterialPrototypeResource> {
     public:

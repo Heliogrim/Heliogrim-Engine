@@ -5,7 +5,7 @@
 #include "GlobalResourceCache.hpp"
 #include "LocalResourceCache.hpp"
 
-using namespace hg::engine::gfx::cache;
+using namespace hg::engine::graphics::cache;
 using namespace hg;
 
 LocalCacheCtrl::LocalCacheCtrl(mref<uptr<LocalResourceCache>> cache_) noexcept :

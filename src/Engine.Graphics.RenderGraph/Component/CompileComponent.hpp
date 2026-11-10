@@ -2,7 +2,7 @@
 
 #include "../Component.hpp"
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::graphics::render::graph {
     class macro_novtable CompileComponent :
         public InheritMeta<CompileComponent, Component> {
     public:

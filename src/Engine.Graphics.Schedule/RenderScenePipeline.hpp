@@ -2,7 +2,7 @@
 
 #include <Engine.Scheduler/Pipeline/StagePipeline.hpp>
 
-namespace hg::engine::gfx::schedule {
+namespace hg::engine::graphics::schedule {
 	class RenderScenePipeline final :
 		public scheduler::StagePipeline {
 	public:

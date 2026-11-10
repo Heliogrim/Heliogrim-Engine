@@ -4,7 +4,7 @@
 #include "NodeOutput.hpp"
 #include "NodeParameter.hpp"
 
-using namespace hg::editor::gfx::graph;
+using namespace hg::editor::graphics::graph;
 using namespace hg;
 
 cref<string> Node::getName() const noexcept {

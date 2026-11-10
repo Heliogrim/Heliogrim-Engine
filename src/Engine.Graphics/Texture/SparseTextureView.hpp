@@ -12,16 +12,16 @@
 #include "TextureType.hpp"
 #include "../API/__vkFwd.hpp"
 
-namespace hg::engine::gfx::loader {
+namespace hg::engine::graphics::loader {
 	class TextureLoader;
 }
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	class SparseTextureView final :
 		public InheritMeta<SparseTextureView, TextureLikeObject> {
 	public:
-		friend class ::hg::engine::gfx::SparseTexture;
-		friend class ::hg::engine::gfx::loader::TextureLoader;
+		friend class ::hg::engine::graphics::SparseTexture;
+		friend class ::hg::engine::graphics::loader::TextureLoader;
 
 	public:
 		using this_type = SparseTextureView;

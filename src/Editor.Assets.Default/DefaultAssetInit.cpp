@@ -81,7 +81,7 @@ void editor::boot::initDefaultGfxMaterialAssets(ref<const engine::Engine> engine
 	[](auto& asset_) {
 		asset_._params.push_back(
 			engine::assets::GfxMaterialPrototype::TmpParam {
-				.identifier = engine::gfx::material::ParameterIdentifier { 0u },
+				.identifier = engine::graphics::material::ParameterIdentifier { 0u },
 				.name = "Albedo",
 				.dataType = engine::accel::TransferDataType::eSampler,
 				.defaultValue = editor::assets::texture::default_diffuse_guid
@@ -89,7 +89,7 @@ void editor::boot::initDefaultGfxMaterialAssets(ref<const engine::Engine> engine
 		);
 		asset_._params.push_back(
 			engine::assets::GfxMaterialPrototype::TmpParam {
-				.identifier = engine::gfx::material::ParameterIdentifier { 1u },
+				.identifier = engine::graphics::material::ParameterIdentifier { 1u },
 				.name = "Normal",
 				.dataType = engine::accel::TransferDataType::eSampler,
 				.defaultValue = editor::assets::texture::default_normal_guid
@@ -97,7 +97,7 @@ void editor::boot::initDefaultGfxMaterialAssets(ref<const engine::Engine> engine
 		);
 		asset_._params.push_back(
 			engine::assets::GfxMaterialPrototype::TmpParam {
-				.identifier = engine::gfx::material::ParameterIdentifier { 2u },
+				.identifier = engine::graphics::material::ParameterIdentifier { 2u },
 				.name = "Arm",
 				.dataType = engine::accel::TransferDataType::eSampler,
 				// Warning: This will actually break, because we change from roughness only to arm texture!
@@ -144,7 +144,7 @@ void editor::boot::initDefaultGfxMaterialAssets(ref<const engine::Engine> engine
 	[](auto& asset_) {
 		asset_._params.push_back(
 			engine::assets::GfxMaterialPrototype::TmpParam {
-				.identifier = engine::gfx::material::ParameterIdentifier { 0u },
+				.identifier = engine::graphics::material::ParameterIdentifier { 0u },
 				.name = "Texture",
 				.dataType = engine::accel::TransferDataType::eSampler,
 				.defaultValue = editor::assets::texture::default_skybox_guid

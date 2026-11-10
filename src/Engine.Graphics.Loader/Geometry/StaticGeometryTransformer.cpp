@@ -17,8 +17,8 @@
 #include <Engine.Resource/Manage/UniqueResource.hpp>
 #include <Engine.Storage.System/StorageSystem.hpp>
 
-using namespace hg::engine::gfx::loader;
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics::loader;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 static smr<StaticGeometryResource> loadWithAssimp(

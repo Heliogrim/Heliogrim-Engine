@@ -6,7 +6,7 @@
 
 #include "__fwd.hpp"
 
-namespace hg::editor::gfx::graph {
+namespace hg::editor::graphics::graph {
     class macro_novtable Node {
     public:
         using this_type = Node;

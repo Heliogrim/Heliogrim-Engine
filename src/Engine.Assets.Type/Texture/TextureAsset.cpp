@@ -10,9 +10,9 @@ TextureAsset::TextureAsset() :
 	_baseImage(invalid_asset_guid),
 	_images(),
 	_extent(math::uivec3 { 0uL }),
-	_format(gfx::TextureFormat::eUndefined),
+	_format(graphics::TextureFormat::eUndefined),
 	_mipLevel(0uL),
-	_textureType(gfx::TextureType::eUndefined) {}
+	_textureType(graphics::TextureType::eUndefined) {}
 
 TextureAsset::TextureAsset(
 	mref<AssetGuid> guid_,
@@ -22,9 +22,9 @@ TextureAsset::TextureAsset(
 	cref<AssetGuid> baseImage_,
 	mref<Vector<AssetGuid>> images_,
 	cref<math::uivec3> extent_,
-	cref<gfx::TextureFormat> format_,
+	cref<graphics::TextureFormat> format_,
 	cref<u32> mipLevel_,
-	cref<gfx::TextureType> type_
+	cref<graphics::TextureType> type_
 ) :
 	InheritMeta(std::move(guid_), typeId, ::hg::move(name_), ::hg::move(storageUrl_), ::hg::move(vfsUrl_)),
 	_baseImage(baseImage_),
@@ -63,11 +63,11 @@ void TextureAsset::setExtent(cref<math::uivec3> extent_) {
 	_extent = extent_;
 }
 
-engine::gfx::TextureFormat TextureAsset::getTextureFormat() const noexcept {
+engine::graphics::TextureFormat TextureAsset::getTextureFormat() const noexcept {
 	return _format;
 }
 
-void TextureAsset::setTextureFormat(const gfx::TextureFormat format_) {
+void TextureAsset::setTextureFormat(const graphics::TextureFormat format_) {
 	_format = format_;
 }
 
@@ -79,10 +79,10 @@ void TextureAsset::setMipLevelCount(const u32 levels_) {
 	_mipLevel = levels_;
 }
 
-engine::gfx::TextureType TextureAsset::getTextureType() const noexcept {
+engine::graphics::TextureType TextureAsset::getTextureType() const noexcept {
 	return _textureType;
 }
 
-void TextureAsset::setTextureType(const gfx::TextureType type_) {
+void TextureAsset::setTextureType(const graphics::TextureType type_) {
 	_textureType = type_;
 }

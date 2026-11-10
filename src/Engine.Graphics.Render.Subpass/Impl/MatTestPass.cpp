@@ -41,7 +41,7 @@
 
 using namespace hg::engine::render;
 using namespace hg::engine::accel;
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 [[nodiscard]] static smr<const GraphicsPass> build_test_pass();
@@ -132,13 +132,13 @@ void MatTestPass::iterate(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 	/**/
 
 	auto sceneViewRes = symCtx_.getImportSymbol(makeSceneViewSymbol());
-	auto sceneView = sceneViewRes->load<smr<const gfx::scene::SceneView>>();
+	auto sceneView = sceneViewRes->load<smr<const graphics::scene::SceneView>>();
 
 	size_t idx = 0;
 
 	const auto sys = sceneView->getRenderSceneSystem();
-	sys->getRegistry().forEach<gfx::scene::StaticGeometryModel>(
-		[this, &idx](const gfx::scene::StaticGeometryModel& model_) {
+	sys->getRegistry().forEach<graphics::scene::StaticGeometryModel>(
+		[this, &idx](const graphics::scene::StaticGeometryModel& model_) {
 
 			auto material = model_.material(0uL);
 			auto guard = material->acquire(resource::ResourceUsageFlag::eRead);
@@ -284,7 +284,7 @@ void MatTestPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 	}
 
 	auto sceneViewRes = symCtx_.getImportSymbol(makeSceneViewSymbol());
-	auto sceneView = sceneViewRes->load<smr<gfx::scene::SceneView>>();
+	auto sceneView = sceneViewRes->load<smr<graphics::scene::SceneView>>();
 
 	struct TmpStruct {
 		math::mat4 mvp;
@@ -308,7 +308,7 @@ void MatTestPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 	/**/
 
 	if (_staticInstanceView == nullptr) {
-		_staticInstanceView = make_uptr<gfx::StorageBufferView>();
+		_staticInstanceView = make_uptr<graphics::StorageBufferView>();
 	}
 
 	const auto sceneSystem = sceneView->getRenderSceneSystem();
@@ -320,7 +320,7 @@ void MatTestPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 	/**/
 
 	if (_sceneLightInfoView == nullptr) {
-		_sceneLightInfoView = make_uptr<gfx::UniformBufferView>();
+		_sceneLightInfoView = make_uptr<graphics::UniformBufferView>();
 	}
 
 	if (_sceneLightView == nullptr) {

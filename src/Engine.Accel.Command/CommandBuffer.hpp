@@ -13,12 +13,12 @@ namespace hg::engine::accel {
 
 namespace hg::engine::accel {
     class AccelCommandBuffer :
-        public ::hg::engine::gfx::CommandBuffer {
+        public ::hg::engine::graphics::CommandBuffer {
     public:
         using this_type = AccelCommandBuffer;
 
     public:
-        AccelCommandBuffer(mref<::hg::engine::gfx::CommandBuffer> commandBuffer_) noexcept;
+        AccelCommandBuffer(mref<::hg::engine::graphics::CommandBuffer> commandBuffer_) noexcept;
 
         AccelCommandBuffer(cref<this_type>) = delete;
 

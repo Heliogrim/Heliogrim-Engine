@@ -6,7 +6,7 @@
 #include "../Device/Device.hpp"
 #include "../vkinc.hpp"
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	class TextureSampler :
 		public InheritBase<TextureSampler> {
 	public:

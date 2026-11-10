@@ -59,10 +59,10 @@ namespace hg::engine::reflow {
 
         //private:
     public:
-        sptr<::hg::engine::gfx::Texture> _atlas;
+        sptr<::hg::engine::graphics::Texture> _atlas;
 
     public:
-        [[nodiscard]] cref<sptr<::hg::engine::gfx::Texture>> atlas() const noexcept;
+        [[nodiscard]] cref<sptr<::hg::engine::graphics::Texture>> atlas() const noexcept;
 
         //private:
     public:

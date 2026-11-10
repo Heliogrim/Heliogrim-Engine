@@ -10,7 +10,7 @@
 #include "MemoryPool.hpp"
 #include "../vkinc.hpp"
 
-using namespace hg::engine::gfx::memory;
+using namespace hg::engine::graphics::memory;
 using namespace hg;
 
 GlobalPooledAllocator::GlobalPooledAllocator(cref<sptr<Allocator>> nativeAllocator_) :
@@ -129,7 +129,7 @@ void GlobalPooledAllocator::free(mref<uptr<AllocatedMemory>> mem_) {
 #include "../Buffer/Buffer.hpp"
 #include "../Device/Device.hpp"
 
-AllocationResult engine::gfx::memory::allocate(
+AllocationResult engine::graphics::memory::allocate(
 	ref<GlobalPooledAllocator> alloc_,
 	cref<sptr<Device>> device_,
 	cref<MemoryProperties> props_,
@@ -176,7 +176,7 @@ AllocationResult engine::gfx::memory::allocate(
 	return alloc_.allocate(layout, size, buffer_.memory);
 }
 
-AllocationResult engine::gfx::memory::allocate(
+AllocationResult engine::graphics::memory::allocate(
 	ref<GlobalPooledAllocator> alloc_,
 	cref<sptr<Device>> device_,
 	cref<vk::Buffer> buffer_,
@@ -194,7 +194,7 @@ AllocationResult engine::gfx::memory::allocate(
 	return alloc_.allocate(layout, req.size, dst_);
 }
 
-AllocationResult engine::gfx::memory::allocate(
+AllocationResult engine::graphics::memory::allocate(
 	ref<GlobalPooledAllocator> alloc_,
 	cref<sptr<Device>> device_,
 	vk::Image image_,

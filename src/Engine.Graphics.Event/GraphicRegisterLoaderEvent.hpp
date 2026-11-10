@@ -12,11 +12,11 @@ namespace hg::engine::resource {
 	class LoaderManager;
 }
 
-namespace hg::engine::gfx::cache {
+namespace hg::engine::graphics::cache {
 	class GlobalCacheCtrl;
 }
 
-namespace hg::engine::gfx::pool {
+namespace hg::engine::graphics::pool {
 	class GlobalResourcePool;
 }
 
@@ -33,8 +33,8 @@ namespace hg {
 		explicit GraphicRegisterLoaderEvent(
 			_In_ ref<engine::resource::LoaderManager> loaderManager_,
 			_In_ ref<engine::Graphics> graphics_,
-			_In_ ref<engine::gfx::cache::GlobalCacheCtrl> globalCacheCtrl_,
-			_In_ ref<engine::gfx::pool::GlobalResourcePool> globalResourcePool_
+			_In_ ref<engine::graphics::cache::GlobalCacheCtrl> globalCacheCtrl_,
+			_In_ ref<engine::graphics::pool::GlobalResourcePool> globalResourcePool_
 		) noexcept;
 
 		constexpr GraphicRegisterLoaderEvent(cref<this_type> other_) noexcept = default;
@@ -51,16 +51,16 @@ namespace hg {
 	private:
 		nmpt<engine::resource::LoaderManager> _manager;
 		nmpt<engine::Graphics> _graphics;
-		nmpt<engine::gfx::cache::GlobalCacheCtrl> _cacheCtrl;
-		nmpt<engine::gfx::pool::GlobalResourcePool> _pool;
+		nmpt<engine::graphics::cache::GlobalCacheCtrl> _cacheCtrl;
+		nmpt<engine::graphics::pool::GlobalResourcePool> _pool;
 
 	public:
 		[[nodiscard]] ref<engine::resource::LoaderManager> getLoaderManager() const noexcept;
 
 		[[nodiscard]] ref<engine::Graphics> getGraphics() const noexcept;
 
-		[[nodiscard]] ref<engine::gfx::cache::GlobalCacheCtrl> getGraphicsGlobalCacheCtrl() const noexcept;
+		[[nodiscard]] ref<engine::graphics::cache::GlobalCacheCtrl> getGraphicsGlobalCacheCtrl() const noexcept;
 
-		[[nodiscard]] ref<engine::gfx::pool::GlobalResourcePool> getGraphicsGlobalResourcePool() const noexcept;
+		[[nodiscard]] ref<engine::graphics::pool::GlobalResourcePool> getGraphicsGlobalResourcePool() const noexcept;
 	};
 }

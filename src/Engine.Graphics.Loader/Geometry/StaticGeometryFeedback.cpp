@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 
-using namespace hg::engine::gfx::loader;
+using namespace hg::engine::graphics::loader;
 using namespace hg;
 
 StaticGeometryFeedback::StaticGeometryFeedback() {}

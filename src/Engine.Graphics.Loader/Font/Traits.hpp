@@ -12,7 +12,7 @@
 #include "FontResource.hpp"
 
 namespace hg::engine::resource::loader {
-	using namespace ::hg::engine::gfx::loader;
+	using namespace ::hg::engine::graphics::loader;
 
 	template <>
 	struct RequestOptions<LoaderRequest<assets::FontAsset>> {
@@ -21,7 +21,7 @@ namespace hg::engine::resource::loader {
 }
 
 namespace hg::engine::resource::loader {
-	using namespace ::hg::engine::gfx::loader;
+	using namespace ::hg::engine::graphics::loader;
 
 	template <>
 	struct RequestOptions<CacheRequest<assets::FontAsset>> {
@@ -30,7 +30,7 @@ namespace hg::engine::resource::loader {
 }
 
 namespace hg::engine::resource::loader {
-	using namespace ::hg::engine::gfx::loader;
+	using namespace ::hg::engine::graphics::loader;
 
 	template <>
 	struct RequestOptions<FeedbackRequest<assets::FontAsset>> {
@@ -39,7 +39,7 @@ namespace hg::engine::resource::loader {
 }
 
 namespace hg::engine::resource::loader {
-	using namespace ::hg::engine::gfx::loader;
+	using namespace ::hg::engine::graphics::loader;
 
 	template <>
 	struct RequestOptions<SourceLoaderRequest<assets::FontAsset>> {
@@ -53,7 +53,7 @@ namespace hg::engine::resource::loader {
 }
 
 namespace hg::engine::resource::loader {
-	using namespace ::hg::engine::gfx::loader;
+	using namespace ::hg::engine::graphics::loader;
 
 	template <>
 	struct RequestOptions<TransformerRequest<assets::FontAsset>> {

@@ -19,10 +19,10 @@ smr<const AccelerationEffect> engine::render::makeUiBaseEffect() {
 	/**/
 
 	const std::array vertexOffsets {
-		std::pair<String, u32> { "vertex-position", static_cast<u32>(offsetof(gfx::uivertex, position)) },
-		std::pair<String, u32> { "vertex-color", static_cast<u32>(offsetof(gfx::uivertex, color)) },
-		std::pair<String, u32> { "vertex-uv", static_cast<u32>(offsetof(gfx::uivertex, uvm)) },
-		std::pair<String, u32> { "vertex-layer", static_cast<u32>(offsetof(gfx::uivertex, layer)) }
+		std::pair<String, u32> { "vertex-position", static_cast<u32>(offsetof(graphics::uivertex, position)) },
+		std::pair<String, u32> { "vertex-color", static_cast<u32>(offsetof(graphics::uivertex, color)) },
+		std::pair<String, u32> { "vertex-uv", static_cast<u32>(offsetof(graphics::uivertex, uvm)) },
+		std::pair<String, u32> { "vertex-layer", static_cast<u32>(offsetof(graphics::uivertex, layer)) }
 	};
 
 	// the colour and layer are stored as 8 bit and normalized on fetch, so the shader reads floats

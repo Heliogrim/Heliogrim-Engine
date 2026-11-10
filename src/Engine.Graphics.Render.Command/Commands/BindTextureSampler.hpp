@@ -5,7 +5,7 @@
 
 #include "../RenderCommand.hpp"
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
     class TextureSampler;
 }
 
@@ -15,7 +15,7 @@ namespace hg::engine::render::cmd {
     public:
         constexpr BindTextureSamplerRCmd(
             mref<accel::lang::SymbolId> symbolId_,
-            mref<nmpt<const gfx::TextureSampler>> textureSampler_
+            mref<nmpt<const graphics::TextureSampler>> textureSampler_
         ) noexcept :
             RenderCommand(),
             _symbolId(std::move(symbolId_)),
@@ -26,7 +26,7 @@ namespace hg::engine::render::cmd {
     private:
     public:
         accel::lang::SymbolId _symbolId;
-        const nmpt<const gfx::TextureSampler> _textureSampler;
+        const nmpt<const graphics::TextureSampler> _textureSampler;
 
     public:
         void operator()(

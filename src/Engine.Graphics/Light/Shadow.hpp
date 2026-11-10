@@ -2,7 +2,7 @@
 #include <Engine.Common/Math/Matrix.hpp>
 #include <Engine.Common/Math/Vector.hpp>
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	constexpr static u8 cascadeCount = 4u;
 
 	struct alignas(alignof(float)) GlslDirectionalShadow {

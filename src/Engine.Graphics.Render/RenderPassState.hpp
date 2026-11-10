@@ -14,12 +14,12 @@ namespace hg::engine::render {
 
     public:
         /* Global Resources */
-        smr<gfx::cache::LocalCacheCtrl> _gfxCache;
-        smr<gfx::memory::LocalPooledAllocator> _gfxAllocator;
+        smr<graphics::cache::LocalCacheCtrl> _gfxCache;
+        smr<graphics::memory::LocalPooledAllocator> _gfxAllocator;
 
     public:
         /* Scene Resources */
-        smr<const gfx::scene::SceneView> _sceneView;
+        smr<const graphics::scene::SceneView> _sceneView;
 
     public:
         /* Scoped / Local Resources */

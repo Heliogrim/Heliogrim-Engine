@@ -4,7 +4,7 @@
 #include <Engine.Graphics/Cache/GlobalResourceCache.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 
-using namespace hg::engine::gfx::loader;
+using namespace hg::engine::graphics::loader;
 using namespace hg;
 
 FontCache::FontCache(ref<cache::GlobalCacheCtrl> cacheCtrl_):

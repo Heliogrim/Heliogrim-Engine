@@ -8,7 +8,7 @@
 #include "TextureType.hpp"
 #include "TextureObject.hpp"
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	class Texture :
 		public InheritMeta<Texture, TextureObject> {
 	public:

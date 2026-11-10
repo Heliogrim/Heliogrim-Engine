@@ -34,8 +34,8 @@ using namespace hg;
 [[nodiscard]] static smr<engine::accel::GraphicsPipeline> build_test_pipeline();
 
 TestRenderer::TestRenderer(
-	mref<nmpt<gfx::cache::GlobalCacheCtrl>> globalCache_,
-	mref<nmpt<gfx::memory::GlobalPooledAllocator>> globalGfxAllocator_
+	mref<nmpt<graphics::cache::GlobalCacheCtrl>> globalCache_,
+	mref<nmpt<graphics::memory::GlobalPooledAllocator>> globalGfxAllocator_
 ) noexcept :
 	Renderer(
 		Guid {},
