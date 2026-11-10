@@ -494,9 +494,9 @@ math::fvec2 Text::getShrinkFactor() const noexcept {
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Core/Engine.hpp>
-#include <Engine.GFX.Loader/Font/FontLoadOptions.hpp>
-#include <Engine.GFX.Loader/Font/FontResource.hpp>
-#include <Engine.GFX.Loader/Font/Traits.hpp>
+#include <Engine.Graphics.Loader/Font/FontLoadOptions.hpp>
+#include <Engine.Graphics.Loader/Font/FontResource.hpp>
+#include <Engine.Graphics.Loader/Font/Traits.hpp>
 #include <Engine.Reflect/Cast.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 

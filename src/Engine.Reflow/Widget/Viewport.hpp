@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
-#include <Engine.GFX/API/__vkFwd.hpp>
+#include <Engine.Graphics/API/__vkFwd.hpp>
 #include <Engine.Reflow.Uikit/Atom/Atom.hpp>
 #include <Heliogrim/Universe/Universe.hpp>
 

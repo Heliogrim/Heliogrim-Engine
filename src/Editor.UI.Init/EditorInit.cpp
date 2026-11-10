@@ -8,7 +8,7 @@
 #include <Engine.Core/Session.hpp>
 #include <Engine.Core/Universe.hpp>
 #include <Engine.Core/UniverseContext.hpp>
-#include <Engine.GFX/Graphics.hpp>
+#include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Reflow.Uikit/Atom/Image.hpp>
 #include <Engine.Reflow/Window/WindowManager.hpp>
 #include <Heliogrim/ActorInitializer.hpp>

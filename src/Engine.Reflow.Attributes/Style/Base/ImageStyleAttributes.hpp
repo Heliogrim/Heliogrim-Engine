@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine.GFX/Color/Color.hpp>
+#include <Engine.Graphics/Color/Color.hpp>
 #include <Engine.Reflow/ReflowAlpha.hpp>
 
 #include "../StyleAttribute.hpp"

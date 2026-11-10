@@ -10,8 +10,8 @@
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Filesystem/Url.hpp>
 #include <Engine.Filesystem/__fwd.hpp>
-#include <Engine.GFX.Loader/Texture/TextureResource.hpp>
-#include <Engine.GFX.Loader/Texture/Traits.hpp>
+#include <Engine.Graphics.Loader/Texture/TextureResource.hpp>
+#include <Engine.Graphics.Loader/Texture/Traits.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/BoxLayout.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/HorizontalLayout.hpp>

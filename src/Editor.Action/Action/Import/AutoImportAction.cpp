@@ -119,9 +119,9 @@ ref<Signal> AutoImportAction::finished() const noexcept {
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 #include <Engine.Common/GuidFormat.hpp>
 #include <Engine.Core/Engine.hpp>
-#include <Engine.GFX/Importer/FontFileTypes.hpp>
-#include <Engine.GFX/Importer/ImageFileTypes.hpp>
-#include <Engine.GFX/Importer/ModelFileTypes.hpp>
+#include <Engine.Graphics/Importer/FontFileTypes.hpp>
+#include <Engine.Graphics/Importer/ImageFileTypes.hpp>
+#include <Engine.Graphics/Importer/ModelFileTypes.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Reflect/TypeSwitch.hpp>
 #include <Engine.Resource.Archive/BufferArchive.hpp>

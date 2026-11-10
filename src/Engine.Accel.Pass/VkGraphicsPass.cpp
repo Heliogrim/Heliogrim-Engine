@@ -3,7 +3,7 @@
 #include <utility>
 #include <Engine.Accel.Pipeline/VkGraphicsPipeline.hpp>
 #include <Engine.Core/Engine.hpp>
-#include <Engine.GFX/Graphics.hpp>
+#include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Reflect/Cast.hpp>
 
 using namespace hg::engine::accel;

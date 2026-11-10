@@ -2,7 +2,7 @@
 
 #include <utility>
 #include <Engine.Core/Engine.hpp>
-#include <Engine.GFX/Graphics.hpp>
+#include <Engine.Graphics/Graphics.hpp>
 
 using namespace hg;
 

@@ -9,10 +9,10 @@
 #include <Engine.Common/Discard.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Core/Universe.hpp>
-#include <Engine.GFX.Scene/RenderSceneManager.hpp>
-#include <Engine.GFX/Graphics.hpp>
-#include <Engine.GFX/RenderTarget.hpp>
-#include <Engine.GFX/Swapchain/VkSwapchain.hpp>
+#include <Engine.Graphics.Scene/RenderSceneManager.hpp>
+#include <Engine.Graphics/Graphics.hpp>
+#include <Engine.Graphics/RenderTarget.hpp>
+#include <Engine.Graphics/Swapchain/VkSwapchain.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Reflow.Uikit/Atom/Text.hpp>
 #include <Engine.Reflow.Uikit/Exp/Button.hpp>

@@ -3,8 +3,8 @@
 #include "GraphicsPass.hpp"
 
 #include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.GFX/vkinc.hpp>
-#include <Engine.GFX/API/__vkFwd.hpp>
+#include <Engine.Graphics/vkinc.hpp>
+#include <Engine.Graphics/API/__vkFwd.hpp>
 
 namespace hg::engine::accel {
 	class VkGraphicsPass final :

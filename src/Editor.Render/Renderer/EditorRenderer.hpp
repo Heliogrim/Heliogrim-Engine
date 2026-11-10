@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine.GFX.Render/Renderer.hpp>
+#include <Engine.Graphics.Render/Renderer.hpp>
 
 namespace hg::editor::render {
 	class EditorRenderer :

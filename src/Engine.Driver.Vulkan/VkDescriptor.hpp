@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.GFX/API/__vkFwd.hpp>
+#include <Engine.Graphics/API/__vkFwd.hpp>
 
 namespace hg::driver::vk {
 	struct VkDescriptorPoolSize {

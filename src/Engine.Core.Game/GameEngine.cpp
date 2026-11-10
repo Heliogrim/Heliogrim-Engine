@@ -13,7 +13,7 @@
 #include <Engine.Core/Module/CoreDependencies.hpp>
 #include <Engine.Core/Module/SubModule.hpp>
 #include <Engine.Core.Schedule/CorePipeline.hpp>
-#include <Engine.GFX/Graphics.hpp>
+#include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Input/Input.hpp>
 #include <Engine.Network/Network.hpp>
 #include <Engine.Physics/Physics.hpp>

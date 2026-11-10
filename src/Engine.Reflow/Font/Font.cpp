@@ -1,8 +1,8 @@
 #include "Font.hpp"
 
-#include <Engine.GFX/Texture/Texture.hpp>
-#include "Engine.GFX/Command/CommandPool.hpp"
-#include "Engine.GFX/Command/CommandQueue.hpp"
+#include <Engine.Graphics/Texture/Texture.hpp>
+#include "Engine.Graphics/Command/CommandPool.hpp"
+#include "Engine.Graphics/Command/CommandQueue.hpp"
 
 using namespace hg::engine::reflow;
 using namespace hg;

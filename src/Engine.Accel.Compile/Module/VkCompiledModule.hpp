@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/DenseMap.hpp>
-#include <Engine.GFX/API/__vkFwd.hpp>
+#include <Engine.Graphics/API/__vkFwd.hpp>
 
 #include "CompiledModule.hpp"
 #include "VkModuleSource.hpp"
