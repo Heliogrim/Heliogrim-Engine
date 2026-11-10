@@ -3,11 +3,12 @@
 #include <concepts>
 #include <cstddef>
 #include <memory>
-#include <new>
 #include <type_traits>
 #include <utility>
 #include <Engine.Asserts/Asserts.hpp>
-#include <Engine.Common/Types.hpp>
+
+#include "../Forward.hpp"
+#include "../Types.hpp"
 
 namespace hg {
 	template <typename Sig_, size_t Storage_ = 64>
@@ -109,7 +110,9 @@ namespace hg {
 
 	private:
 		alignas(std::max_align_t) std::byte _storage[Storage_];
+
 		R_ (*_invoke)(void*, Args_&&...) = nullptr;
+
 		void (*_manage)(void*, void*, Op_) = nullptr;
 	};
 }

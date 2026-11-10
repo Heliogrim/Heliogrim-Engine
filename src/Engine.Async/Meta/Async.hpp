@@ -1,19 +1,19 @@
 #pragma once
 
 namespace hg {
-    struct async_t {
-        constexpr explicit async_t() = default;
-    };
+	struct async_t {
+		constexpr explicit async_t() = default;
+	};
 
-    namespace traits {
-        constexpr static async_t async;
-    };
+	namespace traits {
+		constexpr static async_t async;
+	};
 
-    struct sync_t {
-        constexpr explicit sync_t() = default;
-    };
+	struct sync_t {
+		constexpr explicit sync_t() = default;
+	};
 
-    namespace traits {
-        constexpr static sync_t sync;
-    };
+	namespace traits {
+		constexpr static sync_t sync;
+	};
 }

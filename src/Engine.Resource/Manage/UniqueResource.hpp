@@ -1,5 +1,5 @@
 #pragma once
-#include <Engine.Common/Sal.hpp>
+
 #include <Engine.Async/Primitive/FiberMutex.hpp>
 
 #include "Resource.hpp"
