@@ -143,3 +143,7 @@ void Logger::warn(mref<string> msg_) {
 void Logger::error(mref<string> msg_) {
 	log(LogLevel::eError, std::move(msg_), true);
 }
+
+void Logger::logv(LogLevel level_, std::string_view format_, std::format_args args_) {
+	log(level_, std::vformat(format_, args_), level_ == LogLevel::eError);
+}
