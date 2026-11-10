@@ -1,8 +1,8 @@
 #pragma once
 
-#include <mutex>
 #include <utility>
 #include <Engine.Asserts/Asserts.hpp>
+#include <Engine.Async/Meta/LockTag.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
 #include "ResourceAccessorBase.hpp"
@@ -33,7 +33,7 @@ namespace hg {
 			_resource(std::addressof(resource_)),
 			_owned(std::addressof(owned_)) {}
 
-		constexpr ResourceAccessor(cref<resource_type> resource_, std::defer_lock_t) :
+		constexpr ResourceAccessor(cref<resource_type> resource_, concurrent::defer_lock_t) :
 			ResourceAccessorBase<ManagedType_>(),
 			_resource(std::addressof(resource_)),
 			_owned(nullptr) {}

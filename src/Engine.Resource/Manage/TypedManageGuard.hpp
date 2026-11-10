@@ -72,9 +72,9 @@ namespace hg::engine::resource {
 		TypedManageGuard(
 			const ptr<typed_resource_type> resource_,
 			const ResourceUsageFlags flags_,
-			const std::adopt_lock_t
+			const ::hg::concurrent::adopt_lock_t
 		) :
-			ManageGuard(resource_, flags_, std::adopt_lock) {}
+			ManageGuard(resource_, flags_, ::hg::concurrent::adopt_lock) {}
 
 		/**
 		 * Constructor
@@ -88,9 +88,9 @@ namespace hg::engine::resource {
 		TypedManageGuard(
 			const ptr<typed_resource_type> resource_,
 			const ResourceUsageFlags flags_,
-			const std::defer_lock_t
+			const ::hg::concurrent::defer_lock_t
 		) :
-			ManageGuard(resource_, flags_, std::defer_lock) {}
+			ManageGuard(resource_, flags_, ::hg::concurrent::defer_lock) {}
 
 		/**
 		 * Copy Constructor
