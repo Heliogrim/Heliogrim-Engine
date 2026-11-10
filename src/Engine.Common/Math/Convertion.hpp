@@ -1,6 +1,5 @@
 #pragma once
 
-#include <algorithm>
 #include <cmath>
 #include <utility>
 
@@ -71,7 +70,7 @@ namespace hg::math {
 		 */
 		constexpr static float singularity = 0.999999F;
 
-		const auto sinYaw = std::clamp(2.F * (data.x * data.z + data.w * data.y), -1.F, 1.F);
+		const auto sinYaw = clamp(2.F * (data.x * data.z + data.w * data.y), -1.F, 1.F);
 
 		float pitch;
 		float roll;
