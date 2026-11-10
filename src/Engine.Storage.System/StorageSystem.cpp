@@ -1,5 +1,6 @@
 #include "StorageSystem.hpp"
 
+#include <Engine.Async/Lock/UniqueLock.hpp>
 #include <Engine.Common/Discard.hpp>
 #include <Engine.Common/Move.hpp>
 #include <Engine.Reflect/IsType.hpp>
@@ -90,7 +91,18 @@ Opt<Arci<IStorage>> StorageSystem::removeStorage(mref<FileUrl> fileUrl_) {
 
 	/**/
 
-	return Some(_registry.removeStorageByUrl(::hg::move(fileUrl_)));
+	// Note: The primary's unique lock spans unregister, retire and invalidate: running actions drain first, waiting ones then see the storage retired.
+	const auto stackLock = concurrent::UniqueLock { _context.stacks.lockOf(baseStorage.get()) };
+	if (_registry.findStorageByUrl(clone(fileUrl_)).get() != baseStorage.get()) {
+		// Note: A concurrent removal won the lock.
+		return None;
+	}
+
+	auto removed = _registry.removeStorageByUrl(::hg::move(fileUrl_));
+	baseStorage->retire();
+	_context.stacks.invalidateFrom(baseStorage.get());
+
+	return Some(::hg::move(removed));
 }
 
 Opt<Arci<IStorage>> StorageSystem::removeStorage(mref<MemoryUrl> memoryUrl_) {
@@ -133,7 +145,18 @@ Opt<Arci<IStorage>> StorageSystem::removeStorage(mref<MemoryUrl> memoryUrl_) {
 
 	/**/
 
-	return Some(_registry.removeStorageByUrl(::hg::move(memoryUrl_)));
+	// Note: The primary's unique lock spans unregister, retire and invalidate: running actions drain first, waiting ones then see the storage retired.
+	const auto stackLock = concurrent::UniqueLock { _context.stacks.lockOf(baseStorage.get()) };
+	if (_registry.findStorageByUrl(clone(memoryUrl_)).get() != baseStorage.get()) {
+		// Note: A concurrent removal won the lock.
+		return None;
+	}
+
+	auto removed = _registry.removeStorageByUrl(::hg::move(memoryUrl_));
+	baseStorage->retire();
+	_context.stacks.invalidateFrom(baseStorage.get());
+
+	return Some(::hg::move(removed));
 }
 
 #pragma endregion
