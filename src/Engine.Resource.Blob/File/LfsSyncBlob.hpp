@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <span>
+#include <Engine.Async/Primitive/FiberMutex.hpp>
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/UniqueValue.hpp>
 #include <Engine.Filesystem/Url.hpp>
@@ -18,7 +19,7 @@ namespace hg::engine::resource {
 
 		LfsSyncBlob(cref<LfsSyncBlob>) = delete;
 
-		constexpr LfsSyncBlob(mref<LfsSyncBlob>) noexcept = default;
+		LfsSyncBlob(mref<LfsSyncBlob>) = delete;
 
 		constexpr ~LfsSyncBlob() override = default;
 
@@ -26,6 +27,10 @@ namespace hg::engine::resource {
 		// Note: We need this for resizing operations on the target file...
 		fs::Path _path;
 		UniqueValue<std::fstream> _stream;
+		// Note: Set when the file only opens for reading; write and trim assert against it.
+		bool _readonly = false;
+		// shortcut: one stream per blob, W03.3 replaces it with positional overlapped reads
+		mutable concurrent::FiberMutex _streamLock;
 
 	public:
 		std::span<_::byte> read(streamoff offset_, mref<std::span<_::byte>> dst_) const override;
