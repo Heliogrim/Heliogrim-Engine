@@ -4,9 +4,9 @@
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Collection/DenseMap.hpp>
 
-#include "../Waitable/Signal.hpp"
 #include "CompositeDispatcher.hpp"
 #include "StagePipeline.hpp"
+#include "../Waitable/Signal.hpp"
 #include "Composite/CompositeStage.hpp"
 
 namespace hg::engine::scheduler {

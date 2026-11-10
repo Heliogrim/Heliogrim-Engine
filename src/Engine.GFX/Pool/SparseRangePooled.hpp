@@ -25,9 +25,9 @@ namespace hg::engine::gfx {
 			_monotonicOffset(0uL),
 			_releasedList() {}
 
-		SparseRangePooled (cref<this_type>) = delete;
+		SparseRangePooled(cref<this_type>) = delete;
 
-		SparseRangePooled (mref<this_type>) = delete;
+		SparseRangePooled(mref<this_type>) = delete;
 
 		~SparseRangePooled() = default;
 

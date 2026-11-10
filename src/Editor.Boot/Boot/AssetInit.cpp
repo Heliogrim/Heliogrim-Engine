@@ -14,7 +14,6 @@
 #include <fstream>
 #include <ranges>
 #include <Editor.Action/ActionManager.hpp>
-#include <Engine.Async/Future/Async.hpp>
 #include <Editor.Action/Action/Import/AutoImportAction.hpp>
 #include <Editor.Assets.Default/DefaultAssetInit.hpp>
 #include <Engine.Assets.System/AssetDescriptor.hpp>
@@ -22,6 +21,7 @@
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets/AssetTypeId.hpp>
 #include <Engine.Assets/Utils.hpp>
+#include <Engine.Async/Future/Async.hpp>
 #include <Engine.Common/GuidFormat.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Config/Config.hpp>

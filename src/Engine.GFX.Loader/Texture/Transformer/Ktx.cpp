@@ -935,8 +935,8 @@ void transformer::convertKtx20(
 	auto ioResult = src_.first.query(
 		::hg::move(src_.second),
 		[dst_, &device_](
-		_In_ cref<resource::Blob> blob_
-	) -> std::tuple<Buffer, u32, u32, vk::ImageAspectFlags, Vector<vk::BufferImageCopy>> {
+			_In_ cref<resource::Blob> blob_
+		) -> std::tuple<Buffer, u32, u32, vk::ImageAspectFlags, Vector<vk::BufferImageCopy>> {
 			using namespace ::hg::external;
 
 			ktx::InternalContext ctx {
@@ -1299,89 +1299,88 @@ void transformer::convertKtx20Partial(
 	}
 
 	#if FALSE
-    /* (Optimization II :: Early-Exit Iterator Loop) */
-    bool changedMemory{ false };
-    for (; pageIter != dst_->pages().end() && (*pageIter)->mipLevel() == options_.mip; ++pageIter) {
+	/* (Optimization II :: Early-Exit Iterator Loop) */
+	bool changedMemory { false };
+	for (; pageIter != dst_->pages().end() && (*pageIter)->mipLevel() == options_.mip; ++pageIter) {
 
-        auto* page{ *pageIter };
+		auto* page { *pageIter };
 
-        if (page->layer() != options_.layer) {
-            continue;
-        }
+		if (page->layer() != options_.layer) {
+			continue;
+		}
 
-        // Assuming the pages are sorted by there mip and linearized as grid, we can compute some `bounding box` to check
-        //bool testLower { false };
-        bool testUpper{ false };
+		// Assuming the pages are sorted by there mip and linearized as grid, we can compute some `bounding box` to check
+		//bool testLower { false };
+		bool testUpper { false };
 
-        /*
-         *              |                   |
-         *   Offset     |   Y-Skip (ax*dy)  |
-         *              |                   |
-         *  ------------|-------------------|-------
-         *              |                   |
-         *  X-Skip (dx) |   Extent          |   X-Break (ix >= ox+ex)
-         *              |                   |
-         *  ------------|-------------------|-------
-         *              |                   |
-         *              |   Y-Break (iy >= oy+ey) | Exit
-         *              |                   |
-         */
+	/*
+	 *              |                   |
+	 *   Offset     |   Y-Skip (ax*dy)  |
+	 *              |                   |
+	 *  ------------|-------------------|-------
+	 *              |                   |
+	 *  X-Skip (dx) |   Extent          |   X-Break (ix >= ox+ex)
+	 *              |                   |
+	 *  ------------|-------------------|-------
+	 *              |                   |
+	 *              |   Y-Break (iy >= oy+ey) | Exit
+	 *              |                   |
+	 */
 
 	#if FALSE
-        constexpr auto pageExt{ 128uL };
-        const math::uivec3 acc{ (dst_->width() >> options_.mip) / pageExt };
-        const math::uivec3 off{ options_.offset / pageExt };
-        const math::uivec3 ext{ options_.extent / pageExt };
+	constexpr auto pageExt { 128uL };
+	const math::uivec3 acc { (dst_->width() >> options_.mip) / pageExt };
+	const math::uivec3 off { options_.offset / pageExt };
+	const math::uivec3 ext { options_.extent / pageExt };
 
-        u32 oi{ off.x + off.y * acc.x };
-        const auto out{ (off.x + ext.x) + (off.y + ext.y) * acc.x };
+	u32 oi { off.x + off.y * acc.x };
+	const auto out { (off.x + ext.x) + (off.y + ext.y) * acc.x };
 
-        while (oi < out) {
-            for (u32 ix{ 0uL }; ix < ext.x; ++ix) {
-                u32 idx{ oi + ix };
-            }
-            oi += acc.x;
-        }
+	while (oi < out) {
+		for (u32 ix { 0uL }; ix < ext.x; ++ix) {
+			u32 idx { oi + ix };
+		}
+		oi += acc.x;
+	}
 	#endif
 
-        bool effected{ false };
-        if (page->flags() & SparseTexturePageFlag::eOpaqueTail) {
-            effected = page->mipLevel() <= options_.mip;
+	bool effected { false };
+	if (page->flags() & SparseTexturePageFlag::eOpaqueTail) {
+		effected = page->mipLevel() <= options_.mip;
 
-        }
-        else {
+	} else {
 
-            if (page->mipLevel() != options_.mip) {
-                continue;
-            }
+		if (page->mipLevel() != options_.mip) {
+			continue;
+		}
 
-            const auto minPage{ page->offset() };
-            const auto maxPage{ page->offset() + page->extent() };
+		const auto minPage { page->offset() };
+		const auto maxPage { page->offset() + page->extent() };
 
-            const auto minDst{ options_.offset };
-            const auto maxDst{ options_.offset + options_.extent };
+		const auto minDst { options_.offset };
+		const auto maxDst { options_.offset + options_.extent };
 
-            const auto pX{ minPage.x >= maxDst.x || maxPage.x <= minDst.x };
-            const auto pY{ minPage.y >= maxDst.y || maxPage.y <= minDst.y };
-            const auto pZ{ minPage.z >= maxDst.z || maxPage.z <= minDst.z };
+		const auto pX { minPage.x >= maxDst.x || maxPage.x <= minDst.x };
+		const auto pY { minPage.y >= maxDst.y || maxPage.y <= minDst.y };
+		const auto pZ { minPage.z >= maxDst.z || maxPage.z <= minDst.z };
 
-            effected = !(pX || pY || pZ);
+		effected = !(pX || pY || pZ);
 
-            // Upper `bounding box` check for early exit
-            if (maxPage.x >= maxDst.x && maxPage.y >= maxDst.y && maxPage.z >= maxDst.z) {
-                testUpper = true;
-            }
-        }
+		// Upper `bounding box` check for early exit
+		if (maxPage.x >= maxDst.x && maxPage.y >= maxDst.y && maxPage.z >= maxDst.z) {
+			testUpper = true;
+		}
+	}
 
-        if (effected && page->memory()->state() != VirtualMemoryPageState::eLoaded) {
-            dst_->owner()->load(page);
-            changedMemory = true;
-        }
+	if (effected && page->memory()->state() != VirtualMemoryPageState::eLoaded) {
+		dst_->owner()->load(page);
+		changedMemory = true;
+	}
 
-        // Early-Exit on last effected element
-        if (testUpper) {
-            break;
-        }
+	// Early-Exit on last effected element
+	if (testUpper) {
+		break;
+	}
     }
 	#endif
 
