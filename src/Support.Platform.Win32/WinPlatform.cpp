@@ -1,15 +1,14 @@
 #include "WinPlatform.hpp"
 
 #include <ole2.h>
-
 #include <Engine.Asserts/Breakpoint.hpp>
-#include <Engine.Async/Future/Promise.hpp>
 #include <Engine.Common/SDL3.hpp>
 #include <Engine.Common/stdafx.h>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Event/SignalShutdownEvent.hpp>
 #include <Engine.Event/GlobalEventEmitter.hpp>
 #include <Engine.GFX/Graphics.hpp>
+#include <Engine.Input/Input.hpp>
 #include <Engine.Input/KeyboardEvent.hpp>
 #include <Engine.Input/MouseButtonEvent.hpp>
 #include <Engine.Input/MouseMoveEvent.hpp>
@@ -18,7 +17,6 @@
 #include <Engine.Scheduler/Async.hpp>
 
 #include "Win32Window.hpp"
-#include "Engine.Input/Input.hpp"
 
 using namespace hg::engine::scheduler;
 using namespace hg::engine::platform;

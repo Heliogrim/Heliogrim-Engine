@@ -16,7 +16,6 @@
 #include <Engine.Platform/Platform.hpp>
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
 #include <Engine.Scene/SceneBase.hpp>
-#include <Heliogrim/Async/Await.hpp>
 #include <Heliogrim/Async/Future.hpp>
 
 #include "BoundWindow.hpp"
@@ -27,8 +26,6 @@
 
 using namespace hg::engine::reflow;
 using namespace hg;
-
-sptr<WindowManager> WindowManager::_instance = nullptr;
 
 cref<sptr<WindowManager::this_type>> WindowManager::get() {
 	return _instance;
@@ -45,6 +42,8 @@ cref<sptr<WindowManager::this_type>> WindowManager::make() {
 void WindowManager::destroy() {
 	_instance.reset();
 }
+
+sptr<WindowManager> WindowManager::_instance = nullptr;
 
 WindowManager::WindowManager() = default;
 
@@ -209,6 +208,32 @@ void WindowManager::handleWindowResize(const ptr<BoundWindow> wnd_, cref<math::i
 	}
 }
 
+void WindowManager::interceptFocusEvent(cref<sptr<Window>> window_, cref<FocusEvent> event_) {
+
+	if (not _focusOrder.empty()) {
+
+		if (not _focusOrder.back().expired() && _focusOrder.back().lock() == window_) {
+			return;
+		}
+
+		auto where = std::ranges::remove_if(
+			_focusOrder,
+			[window_](const auto& entry_) {
+				if (entry_.expired()) {
+					return true;
+				}
+
+				const auto wnd { entry_.lock() };
+				return wnd == window_;
+			}
+		);
+
+		_focusOrder.erase(where.begin(), where.end());
+	}
+
+	_focusOrder.push_back(window_);
+}
+
 void WindowManager::destroyWindow(mref<sptr<Window>> window_) {
 
 	const auto wnd = std::move(window_);
@@ -370,30 +395,4 @@ sptr<Window> WindowManager::requestWindow(
 
 	_windows.emplace_back(std::move(bound));
 	return wnd;
-}
-
-void WindowManager::interceptFocusEvent(cref<sptr<Window>> window_, cref<FocusEvent> event_) {
-
-	if (not _focusOrder.empty()) {
-
-		if (not _focusOrder.back().expired() && _focusOrder.back().lock() == window_) {
-			return;
-		}
-
-		auto where = std::ranges::remove_if(
-			_focusOrder,
-			[window_](const auto& entry_) {
-				if (entry_.expired()) {
-					return true;
-				}
-
-				const auto wnd { entry_.lock() };
-				return wnd == window_;
-			}
-		);
-
-		_focusOrder.erase(where.begin(), where.end());
-	}
-
-	_focusOrder.push_back(window_);
 }
