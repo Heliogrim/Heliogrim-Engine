@@ -35,33 +35,38 @@ namespace hg {
 	public:
 		static void log(LogLevel level_, mref<string> msg_, bool flush_ = false);
 
+		/**
+		 * Formats once in Logger.cpp, so std::vformat is instantiated in one TU instead of every caller.
+		 */
+		static void logv(LogLevel level_, std::string_view format_, std::format_args args_);
+
 	public:
 		static void debug(mref<string> msg_);
 
 		template <typename... Args_>
 		static void debug(format_type<Args_...> format_, Args_&&... args_) {
-			Logger::debug(std::format(format_, std::forward<Args_>(args_)...));
+			Logger::logv(LogLevel::eDebug, format_.get(), std::make_format_args(args_...));
 		}
 
 		static void info(mref<string> msg_);
 
 		template <typename... Args_>
 		static void info(format_type<Args_...> format_, Args_&&... args_) {
-			Logger::info(std::format(format_, std::forward<Args_>(args_)...));
+			Logger::logv(LogLevel::eInfo, format_.get(), std::make_format_args(args_...));
 		}
 
 		static void warn(mref<string> msg_);
 
 		template <typename... Args_>
 		static void warn(format_type<Args_...> format_, Args_&&... args_) {
-			Logger::warn(std::format(format_, std::forward<Args_>(args_)...));
+			Logger::logv(LogLevel::eWarn, format_.get(), std::make_format_args(args_...));
 		}
 
 		static void error(mref<string> msg_);
 
 		template <typename... Args_>
 		static void error(format_type<Args_...> format_, Args_&&... args_) {
-			Logger::error(std::format(format_, std::forward<Args_>(args_)...));
+			Logger::logv(LogLevel::eError, format_.get(), std::make_format_args(args_...));
 		}
 	};
 }
