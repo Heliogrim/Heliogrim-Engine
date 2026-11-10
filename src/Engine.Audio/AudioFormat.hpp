@@ -2,7 +2,7 @@
 #include <Engine.Common/Flag.hpp>
 #include <Engine.Common/Types.hpp>
 
-namespace hg::engine::sfx {
+namespace hg::engine::audio {
     enum class AudioFormat {
         eUndefined = 0x0,
         //

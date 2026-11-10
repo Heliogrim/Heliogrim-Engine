@@ -99,7 +99,7 @@ make_library_project(
 		${PROJECT_NAME}::Engine.Storage.Package
 		${PROJECT_NAME}::Engine.Storage.Registry
 		${PROJECT_NAME}::Engine.Storage.System
-		${PROJECT_NAME}::Engine.SFX
+		${PROJECT_NAME}::Engine.Audio
 		${PROJECT_NAME}::Engine.Utils
 		${__support_libraries}
 )

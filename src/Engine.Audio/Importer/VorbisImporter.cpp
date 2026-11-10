@@ -7,7 +7,7 @@
 
 #include "AudioFileTypes.hpp"
 
-using namespace hg::engine::sfx;
+using namespace hg::engine::audio;
 using namespace hg;
 
 bool VorbisImporter::canImport(cref<res::FileTypeId> typeId_, cref<::hg::fs::File> file_) const noexcept {

@@ -2,13 +2,13 @@
 #include "Material.hpp"
 
 namespace hg::engine::assets {
-	class SfxMaterial :
-		public InheritMeta<SfxMaterial, Material> {
+	class AudioMaterial :
+		public InheritMeta<AudioMaterial, Material> {
 	public:
 		template <typename>
 		friend class ::hg::engine::serialization::DataLayout;
 
 	public:
-		constexpr static AssetTypeId typeId { "SfxMaterial"_typeId };
+		constexpr static AssetTypeId typeId { "AudioMaterial"_typeId };
 	};
 }

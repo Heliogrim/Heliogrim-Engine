@@ -1,13 +1,13 @@
 #pragma once
 #include "SoundImporter.hpp"
 
-namespace hg::engine::sfx {
-	class VorbisImporter :
+namespace hg::engine::audio {
+	class FlacImporter :
 		public SoundImporter {
 	public:
 		using base_type = SoundImporter;
 
-		using value_type = VorbisImporter;
+		using value_type = FlacImporter;
 		using reference_type = ref<value_type>;
 		using const_reference_type = cref<value_type>;
 
@@ -19,17 +19,17 @@ namespace hg::engine::sfx {
 		 * Default constructor
 		 *
 		 * @author Julius
-		 * @date 13.09.2021
+		 * @date 12.09.2021
 		 */
-		VorbisImporter() noexcept = default;
+		FlacImporter() noexcept = default;
 
 		/**
 		 * Destructor
 		 *
 		 * @author Julius
-		 * @date 13.09.2021
+		 * @date 12.09.2021
 		 */
-		~VorbisImporter() noexcept override = default;
+		~FlacImporter() noexcept override = default;
 
 	public:
 		[[nodiscard]] bool canImport(cref<res::FileTypeId> typeId_, cref<::hg::fs::File> file_) const noexcept override;

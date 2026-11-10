@@ -1,6 +1,6 @@
 #include "AudioFileTypes.hpp"
 
-using namespace hg::engine::sfx;
+using namespace hg::engine::audio;
 using namespace hg;
 
 const engine::res::FileTypeId AudioFileType::Aac { "aac"_typeId, ".aac" };

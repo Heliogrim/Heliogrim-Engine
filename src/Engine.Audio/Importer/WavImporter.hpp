@@ -1,7 +1,7 @@
 #pragma once
 #include "SoundImporter.hpp"
 
-namespace hg::engine::sfx {
+namespace hg::engine::audio {
 	class WavImporter :
 		public SoundImporter {
 	public:
