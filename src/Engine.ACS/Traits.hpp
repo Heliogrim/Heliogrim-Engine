@@ -1,7 +1,5 @@
 #pragma once
 
-#include <atomic>
-#include <chrono>
 #include <Engine.Common/Guid.hpp>
 #include <Engine.Common/Hash/Murmur3.hpp>
 #include <Engine.Common/Meta/TypeId.hpp>
@@ -28,23 +26,13 @@ namespace hg {
 	 *
 	 * @returns The actor unique identifier.
 	 */
-	[[nodiscard]] inline ActorGuid generate_actor_guid() {
-		static std::atomic_uint_fast32_t ai { 1 };
-		const auto pre = ai.fetch_add(1, std::memory_order_relaxed);
-		const auto post = std::chrono::high_resolution_clock::now().time_since_epoch().count();
-		return { pre, u16 { 0u }, u16 { 0u }, static_cast<u64>(post) };
-	}
+	[[nodiscard]] ActorGuid generate_actor_guid();
 
 	/**
 	 * Generates an component unique identifier
 	 * @returns The component unique identifier.
 	 */
-	[[nodiscard]] inline ComponentGuid generate_component_guid() {
-		static std::atomic_uint_fast32_t ai { 1 };
-		const auto pre = ai.fetch_add(1, std::memory_order_relaxed);
-		const auto post = std::chrono::high_resolution_clock::now().time_since_epoch().count();
-		return { pre, u16 { 1u }, u16 { 1u }, static_cast<u64>(post) };
-	}
+	[[nodiscard]] ComponentGuid generate_component_guid();
 }
 
 namespace std {
