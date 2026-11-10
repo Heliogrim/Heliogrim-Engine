@@ -2,10 +2,10 @@
 
 #include <Engine.Common/Math/Coordinates.hpp>
 
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics;
 using namespace hg;
 
-bool engine::gfx::isDepthFormat(cref<TextureFormat> format_) noexcept {
+bool engine::graphics::isDepthFormat(cref<TextureFormat> format_) noexcept {
 	switch (format_) {
 		case TextureFormat::eD16Unorm:
 		case TextureFormat::eD16UnormS8Uint:
@@ -20,7 +20,7 @@ bool engine::gfx::isDepthFormat(cref<TextureFormat> format_) noexcept {
 	}
 }
 
-bool engine::gfx::isStencilFormat(cref<TextureFormat> format_) noexcept {
+bool engine::graphics::isStencilFormat(cref<TextureFormat> format_) noexcept {
 	switch (format_) {
 		case TextureFormat::eD16UnormS8Uint:
 		case TextureFormat::eD24UnormS8Uint:
@@ -33,11 +33,11 @@ bool engine::gfx::isStencilFormat(cref<TextureFormat> format_) noexcept {
 	}
 }
 
-bool engine::gfx::isDepthStencilFormat(cref<TextureFormat> format_) noexcept {
+bool engine::graphics::isDepthStencilFormat(cref<TextureFormat> format_) noexcept {
 	return isDepthFormat(format_) && isStencilFormat(format_);
 }
 
-s64 engine::gfx::formatDataSize(const TextureFormat format_) noexcept {
+s64 engine::graphics::formatDataSize(const TextureFormat format_) noexcept {
 	switch (format_) {
 		case TextureFormat::eR8Unorm: {
 			return 1LL;
@@ -74,7 +74,7 @@ s64 engine::gfx::formatDataSize(const TextureFormat format_) noexcept {
 	}
 }
 
-math::uivec3 engine::gfx::formatBlockSize(const TextureFormat format_) noexcept {
+math::uivec3 engine::graphics::formatBlockSize(const TextureFormat format_) noexcept {
 	switch (format_) {
 		case TextureFormat::eR8Unorm:
 		case TextureFormat::eR16Uint:

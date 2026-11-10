@@ -9,7 +9,7 @@
 #include <Engine.Graphics/Texture/TextureView.hpp>
 
 using namespace hg::engine::reflow;
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 ReflowCommandBuffer::ReflowCommandBuffer() noexcept :
@@ -339,7 +339,7 @@ u8 ReflowCommandBuffer::getCurrentMaxLayer() const noexcept {
 	return _maxLayer;
 }
 
-bool ReflowCommandBuffer::isAnyAlpha(std::span<gfx::uivertex> vertices_) const noexcept {
+bool ReflowCommandBuffer::isAnyAlpha(std::span<graphics::uivertex> vertices_) const noexcept {
 	return std::ranges::any_of(
 		vertices_,
 		[](const auto& vertex_) {
@@ -757,7 +757,7 @@ void ReflowCommandBuffer::drawImage(
 	math::vec2 uv2_,
 	math::vec2 p3_,
 	math::vec2 uv3_,
-	nmpt<gfx::TextureLikeObject> image_,
+	nmpt<graphics::TextureLikeObject> image_,
 	ImageDrawOptions options_
 ) {
 	drawImageAsync(
@@ -785,7 +785,7 @@ void ReflowCommandBuffer::drawImageAsync(
 	math::vec2 uv2_,
 	math::vec2 p3_,
 	math::vec2 uv3_,
-	nmpt<gfx::TextureLikeObject> image_,
+	nmpt<graphics::TextureLikeObject> image_,
 	_::VkSemaphore wait_,
 	_::VkSemaphore signal_,
 	ImageDrawOptions options_

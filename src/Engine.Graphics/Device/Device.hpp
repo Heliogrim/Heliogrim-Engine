@@ -8,7 +8,7 @@
 #include "../Application/Application.hpp"
 #include "../Memory/GlobalPooledAllocator.hpp"
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	/**
 	 * Forward Declaration CommandQueue.
 	 *

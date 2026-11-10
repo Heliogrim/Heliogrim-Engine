@@ -9,7 +9,7 @@
 #include "__fwd.hpp"
 #include "../API/__vkFwd.hpp"
 
-namespace hg::engine::gfx::memory {
+namespace hg::engine::graphics::memory {
 	class GlobalPooledAllocator final :
 		public Allocator {
 	public:
@@ -61,12 +61,12 @@ namespace vk {
 	class Image;
 }
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	class Buffer;
 	class Device;
 }
 
-namespace hg::engine::gfx::memory {
+namespace hg::engine::graphics::memory {
 	[[nodiscard]] AllocationResult allocate(
 		_In_ ref<GlobalPooledAllocator> alloc_,
 		cref<sptr<Device>> device_,

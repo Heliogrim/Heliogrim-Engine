@@ -33,7 +33,7 @@ namespace hg::engine::assets {
 	private:
 	public:
 		struct TmpParam {
-			gfx::material::ParameterIdentifier identifier;
+			graphics::material::ParameterIdentifier identifier;
 			string name;
 			accel::TransferDataType dataType;
 			Variant<

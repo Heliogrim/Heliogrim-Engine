@@ -18,8 +18,8 @@ using namespace hg::engine::render;
 using namespace hg;
 
 EditorRenderer::EditorRenderer(
-	mref<nmpt<engine::gfx::cache::GlobalCacheCtrl>> globalCache_,
-	mref<nmpt<engine::gfx::memory::GlobalPooledAllocator>> globalGfxAllocator_
+	mref<nmpt<engine::graphics::cache::GlobalCacheCtrl>> globalCache_,
+	mref<nmpt<engine::graphics::memory::GlobalPooledAllocator>> globalGfxAllocator_
 ) noexcept :
 	Renderer(
 		Guid { static_cast<u32>("__Static__Proxy"_typeId.data), 0u, 0u, "Editor-Renderer"_typeId.data },

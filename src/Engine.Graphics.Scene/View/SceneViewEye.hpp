@@ -7,7 +7,7 @@
 #include <Engine.Common/Math/Quaternion.hpp>
 #include <Engine.Common/Math/Rotator.hpp>
 
-namespace hg::engine::gfx::scene {
+namespace hg::engine::graphics::scene {
 	enum class SceneViewDriver : bool {
 		eNone,
 		eVulkan

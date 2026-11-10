@@ -2,7 +2,7 @@
 
 #include "BufferFactory.hpp"
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
     class VkBufferFactory final :
         public BufferFactory {
     public:

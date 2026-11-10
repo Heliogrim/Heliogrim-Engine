@@ -14,7 +14,7 @@
 #include "MaterialPrototype.hpp"
 #include "MaterialPrototypeParameter.hpp"
 
-namespace hg::engine::gfx::material {
+namespace hg::engine::graphics::material {
 	class Material {
 	public:
 		using this_type = Material;

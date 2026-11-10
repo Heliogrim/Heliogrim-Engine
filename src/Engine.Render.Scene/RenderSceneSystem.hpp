@@ -4,7 +4,7 @@
 
 #include "RenderSceneRegistry.hpp"
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	class SceneResourcePool;
 }
 
@@ -25,10 +25,10 @@ namespace hg::engine::render {
 		void cleanup() override;
 
 	private:
-		uptr<hg::engine::gfx::SceneResourcePool> _sceneResourcePool;
+		uptr<hg::engine::graphics::SceneResourcePool> _sceneResourcePool;
 
 	public:
-		[[nodiscard]] nmpt<hg::engine::gfx::SceneResourcePool> getSceneResourcePool() const noexcept;
+		[[nodiscard]] nmpt<hg::engine::graphics::SceneResourcePool> getSceneResourcePool() const noexcept;
 
 	public:
 		void broadcast(scene::SceneBroadcastFlags flags_) override;

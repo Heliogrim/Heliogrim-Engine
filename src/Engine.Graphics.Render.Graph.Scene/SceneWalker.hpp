@@ -61,9 +61,9 @@ namespace hg::engine::render::graph {
 		[[nodiscard]] bool operator()(u32 batch_, const void* node_) const;
 
 	public:
-		ref<this_type> operator()(cref<gfx::scene::SceneView> sceneView_);
+		ref<this_type> operator()(cref<graphics::scene::SceneView> sceneView_);
 
-		ref<this_type> operator()(cref<gfx::scene::SceneView> sceneView_, u32 maxBatches_);
+		ref<this_type> operator()(cref<graphics::scene::SceneView> sceneView_, u32 maxBatches_);
 
 	public:
 		[[nodiscard]] SceneWalkerFilter::checksum_type checksum() const noexcept;

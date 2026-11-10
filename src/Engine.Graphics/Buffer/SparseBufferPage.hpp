@@ -3,7 +3,7 @@
 #include "../API/__vkFwd.hpp"
 #include "../Memory/VirtualMemoryPage.hpp"
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	class SparseBufferPage final {
 	public:
 		SparseBufferPage(nmpt<VirtualMemoryPage> memory_, const u64 resourceSize_, const u64 resourceOffset_);

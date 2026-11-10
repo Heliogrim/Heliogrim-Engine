@@ -4,7 +4,7 @@
 #include <Engine.Reflect/Inherit/InheritMeta.hpp>
 #include <Engine.Render.Scene/RenderSceneSystemModel.hpp>
 
-namespace hg::engine::gfx::scene {
+namespace hg::engine::graphics::scene {
 	class SceneView;
 }
 
@@ -32,9 +32,9 @@ namespace hg::engine::render {
 		void destroy(const ptr<RenderSceneSystem> system_) override;
 
 	private:
-		smr<gfx::scene::SceneView> _sceneView;
+		smr<graphics::scene::SceneView> _sceneView;
 
 	public:
-		[[nodiscard]] smr<const gfx::scene::SceneView> getSceneView() const noexcept;
+		[[nodiscard]] smr<const graphics::scene::SceneView> getSceneView() const noexcept;
 	};
 }

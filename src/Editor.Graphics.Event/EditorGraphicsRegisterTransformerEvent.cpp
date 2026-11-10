@@ -3,7 +3,7 @@
 using namespace ::hg;
 
 EditorGraphicsRegisterTransformerEvent::EditorGraphicsRegisterTransformerEvent(
-	ref<editor::gfx::loader::EditorTextureTransformer> proxy_
+	ref<editor::graphics::loader::EditorTextureTransformer> proxy_
 ) noexcept :
 	StatefulEvent(),
 	_proxy(std::addressof(proxy_)) {}
@@ -16,6 +16,6 @@ void EditorGraphicsRegisterTransformerEvent::cancel() noexcept {
 	// __noop;
 }
 
-ref<editor::gfx::loader::EditorTextureTransformer> EditorGraphicsRegisterTransformerEvent::getProxy() const noexcept {
+ref<editor::graphics::loader::EditorTextureTransformer> EditorGraphicsRegisterTransformerEvent::getProxy() const noexcept {
 	return *_proxy.get();
 }

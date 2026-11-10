@@ -47,7 +47,7 @@ START_SUPPRESS_WARNINGS
 #include <vulkan/vulkan.hpp>
 STOP_SUPPRESS_WARNINGS
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	// TODO: Refactor / Move to other location
 	inline uint32_t get_memory_type(
 		const vk::PhysicalDevice& device_,

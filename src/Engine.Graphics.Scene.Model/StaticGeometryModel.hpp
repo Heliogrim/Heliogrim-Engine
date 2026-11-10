@@ -6,7 +6,7 @@
 
 #include "GeometryModel.hpp"
 
-namespace hg::engine::gfx::scene {
+namespace hg::engine::graphics::scene {
 	class StaticGeometryModel final :
 		public InheritMeta<StaticGeometryModel, GeometryModel> {
 	public:

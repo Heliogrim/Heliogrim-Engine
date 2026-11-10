@@ -18,8 +18,8 @@
 
 #include "RenderSceneManager.hpp"
 
-using namespace hg::engine::gfx::scene;
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics::scene;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 void RenderSceneManager::injectSceneHooks(nmpt<engine::scene::SceneBase> renderableScene_) {

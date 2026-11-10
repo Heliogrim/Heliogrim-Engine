@@ -41,7 +41,7 @@
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
 /**/
 
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics;
 using namespace hg::engine;
 using namespace hg;
 
@@ -187,7 +187,7 @@ void Graphics::setup() {
 	/**
 	 * Render Scenes
 	 */
-	_sceneManager = ::gfx::scene::RenderSceneManager::make();
+	_sceneManager = ::graphics::scene::RenderSceneManager::make();
 
 	/**
 	 * Register Hooks and consume EngineState
@@ -211,7 +211,7 @@ void Graphics::setup() {
 	/**
 	 * Scheduling Pipelines
 	 */
-	auto renderScenePipeline = make_uptr<gfx::schedule::RenderScenePipeline>();
+	auto renderScenePipeline = make_uptr<graphics::schedule::RenderScenePipeline>();
 	_engine->getScheduler()->getCompositePipeline()->addPipeline(std::move(renderScenePipeline));
 }
 
@@ -298,11 +298,11 @@ CommandQueue::reference_type Graphics::getTransferQueue() const noexcept {
 	return *_device->transferQueue();
 }
 
-const non_owning_rptr<gfx::cache::GlobalCacheCtrl> Graphics::cacheCtrl() const noexcept {
+const non_owning_rptr<graphics::cache::GlobalCacheCtrl> Graphics::cacheCtrl() const noexcept {
 	return _cacheCtrl.get();
 }
 
-const non_owning_rptr<gfx::pool::GlobalResourcePool> Graphics::pool() const noexcept {
+const non_owning_rptr<graphics::pool::GlobalResourcePool> Graphics::pool() const noexcept {
 	return _pool.get();
 }
 
@@ -328,7 +328,7 @@ bool Graphics::removeRenderer(cref<string> key_) {
 	return _cachedRenderer.erase(key_);
 }
 
-const non_owning_rptr<gfx::scene::RenderSceneManager> Graphics::getSceneManager() const noexcept {
+const non_owning_rptr<graphics::scene::RenderSceneManager> Graphics::getSceneManager() const noexcept {
 	return _sceneManager;
 }
 
@@ -351,6 +351,6 @@ void Graphics::cleanupTargetsByScene(nmpt<engine::scene::SceneBase> renderableSc
 	}
 }
 
-const non_owning_rptr<gfx::SurfaceManager> Graphics::getSurfaceManager() const noexcept {
+const non_owning_rptr<graphics::SurfaceManager> Graphics::getSurfaceManager() const noexcept {
 	return _surfaceManager.get();
 }

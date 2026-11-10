@@ -13,7 +13,7 @@
 #include "MaterialPrototype.hpp"
 #include "MaterialPrototypeParameter.hpp"
 
-using namespace hg::engine::gfx::material;
+using namespace hg::engine::graphics::material;
 using namespace hg;
 
 uptr<Material> MaterialFactory::buildMaterial(mref<smr<MaterialPrototype>> prototype_) const {

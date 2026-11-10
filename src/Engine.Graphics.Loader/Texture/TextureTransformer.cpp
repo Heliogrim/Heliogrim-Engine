@@ -9,8 +9,8 @@
 
 #include "./Transformer/Ktx.hpp"
 
-using namespace hg::engine::gfx::loader;
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics::loader;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 TextureTransformer::TextureTransformer(const non_owning_rptr<pool::GlobalResourcePool> pool_) :

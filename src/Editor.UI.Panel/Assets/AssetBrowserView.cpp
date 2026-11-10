@@ -87,7 +87,7 @@ SharedPtr<Widget> AssetBrowserView::makeItem(ref<const service::AssetBrowserEntr
 	}
 
 	auto loadIcon = engine::Engine::getEngine()->getResources()->loader().loadImmediately<
-		engine::assets::TextureAsset, engine::gfx::TextureResource
+		engine::assets::TextureAsset, engine::graphics::TextureResource
 	>(::hg::move(icon));
 
 	/**/

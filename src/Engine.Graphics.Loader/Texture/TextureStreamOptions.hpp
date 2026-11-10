@@ -2,7 +2,7 @@
 
 #include "__fwd.hpp"
 
-namespace hg::engine::gfx::loader {
+namespace hg::engine::graphics::loader {
     enum class TextureStreamOp : bool {
         eLoad = true,
         eUnload = false

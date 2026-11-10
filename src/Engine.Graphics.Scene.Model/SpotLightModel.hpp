@@ -2,7 +2,7 @@
 
 #include "LightModel.hpp"
 
-namespace hg::engine::gfx::scene {
+namespace hg::engine::graphics::scene {
     class SpotLightModel final :
         public InheritMeta<SpotLightModel, LightModel> {
     public:

@@ -2,9 +2,9 @@
 
 #include "../vkinc.hpp"
 
-using namespace hg::engine::gfx::api;
+using namespace hg::engine::graphics::api;
 
-vk::PolygonMode hg::engine::gfx::api::vkTranslateMode(RasterPolyMode mode_) {
+vk::PolygonMode hg::engine::graphics::api::vkTranslateMode(RasterPolyMode mode_) {
 	switch (mode_) {
 		case RasterPolyMode::eFace: {
 			return vk::PolygonMode::eFill;
@@ -18,7 +18,7 @@ vk::PolygonMode hg::engine::gfx::api::vkTranslateMode(RasterPolyMode mode_) {
 	}
 }
 
-vk::FrontFace hg::engine::gfx::api::vkTranslateFace(RasterPolyFront front_) {
+vk::FrontFace hg::engine::graphics::api::vkTranslateFace(RasterPolyFront front_) {
 	switch (front_) {
 		case RasterPolyFront::eClockwise: {
 			return vk::FrontFace::eClockwise;
@@ -32,7 +32,7 @@ vk::FrontFace hg::engine::gfx::api::vkTranslateFace(RasterPolyFront front_) {
 	}
 }
 
-vk::SampleCountFlagBits hg::engine::gfx::api::vkTranslateSamples(RasterSamples samples_) {
+vk::SampleCountFlagBits hg::engine::graphics::api::vkTranslateSamples(RasterSamples samples_) {
 	switch (samples_) {
 		case RasterSamples::e1: {
 			return vk::SampleCountFlagBits::e1;
@@ -59,7 +59,7 @@ vk::SampleCountFlagBits hg::engine::gfx::api::vkTranslateSamples(RasterSamples s
 	}
 }
 
-vk::VertexInputRate hg::engine::gfx::api::vkTranslateInputRate(InputRate rate_) {
+vk::VertexInputRate hg::engine::graphics::api::vkTranslateInputRate(InputRate rate_) {
 	switch (rate_) {
 		case InputRate::ePerInstance: {
 			return vk::VertexInputRate::eInstance;
@@ -73,7 +73,7 @@ vk::VertexInputRate hg::engine::gfx::api::vkTranslateInputRate(InputRate rate_) 
 	}
 }
 
-vk::CullModeFlagBits hg::engine::gfx::api::vkTranslateCull(RasterCullFace face_) {
+vk::CullModeFlagBits hg::engine::graphics::api::vkTranslateCull(RasterCullFace face_) {
 	switch (face_) {
 		case RasterCullFace::eNone: {
 			return vk::CullModeFlagBits::eNone;
@@ -93,7 +93,7 @@ vk::CullModeFlagBits hg::engine::gfx::api::vkTranslateCull(RasterCullFace face_)
 	}
 }
 
-vk::PrimitiveTopology hg::engine::gfx::api::vkTranslateTopology(PrimitiveTopology topology_) {
+vk::PrimitiveTopology hg::engine::graphics::api::vkTranslateTopology(PrimitiveTopology topology_) {
 	switch (topology_) {
 		case PrimitiveTopology::eTriangleList: {
 			return vk::PrimitiveTopology::eTriangleList;
@@ -107,7 +107,7 @@ vk::PrimitiveTopology hg::engine::gfx::api::vkTranslateTopology(PrimitiveTopolog
 	}
 }
 
-vk::Format hg::engine::gfx::api::vkTranslateFormat(TextureFormat format_) {
+vk::Format hg::engine::graphics::api::vkTranslateFormat(TextureFormat format_) {
 	switch (format_) {
 		case TextureFormat::eR16Uint: {
 			return vk::Format::eR16Uint;
@@ -178,7 +178,7 @@ vk::Format hg::engine::gfx::api::vkTranslateFormat(TextureFormat format_) {
 	}
 }
 
-hg::engine::gfx::TextureFormat hg::engine::gfx::api::vkTranslateFormat(vk::Format format_) {
+hg::engine::graphics::TextureFormat hg::engine::graphics::api::vkTranslateFormat(vk::Format format_) {
 	switch (format_) {
 		case vk::Format::eR16Uint: {
 			return TextureFormat::eR16Uint;
@@ -249,7 +249,7 @@ hg::engine::gfx::TextureFormat hg::engine::gfx::api::vkTranslateFormat(vk::Forma
 	}
 }
 
-vk::MemoryPropertyFlags hg::engine::gfx::api::vkTranslateMemoryProperties(const MemoryProperties properties_) {
+vk::MemoryPropertyFlags hg::engine::graphics::api::vkTranslateMemoryProperties(const MemoryProperties properties_) {
 
 	vk::MemoryPropertyFlags flags {};
 
@@ -280,7 +280,7 @@ vk::MemoryPropertyFlags hg::engine::gfx::api::vkTranslateMemoryProperties(const 
 	return flags;
 }
 
-hg::engine::gfx::MemoryProperties hg::engine::gfx::api::vkTranslateMemoryProperties(
+hg::engine::graphics::MemoryProperties hg::engine::graphics::api::vkTranslateMemoryProperties(
 	const vk::MemoryPropertyFlags properties_
 ) {
 

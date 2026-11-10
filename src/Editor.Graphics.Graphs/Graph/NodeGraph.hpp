@@ -8,7 +8,7 @@
 #include "NodeContainer.hpp"
 #include "NodeLinkContainer.hpp"
 
-namespace hg::editor::gfx::graph {
+namespace hg::editor::graphics::graph {
     class NodeGraph {
     private:
         NodeContainer _nodes;

@@ -5,7 +5,7 @@
 #include "__fwd.hpp"
 #include "NodeInputSpec.hpp"
 
-namespace hg::editor::gfx::graph {
+namespace hg::editor::graphics::graph {
     class NodeInput {
     public:
         using this_type = NodeInput;

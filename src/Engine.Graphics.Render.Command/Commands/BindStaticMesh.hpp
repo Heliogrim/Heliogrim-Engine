@@ -13,7 +13,7 @@ namespace hg::engine::render::cmd {
         using this_type = BindStaticMeshRCmd;
 
     public:
-        constexpr BindStaticMeshRCmd(mref<const nmpt<const gfx::Mesh>> staticMesh_) noexcept :
+        constexpr BindStaticMeshRCmd(mref<const nmpt<const graphics::Mesh>> staticMesh_) noexcept :
             RenderCommand(),
             _staticMesh(std::move(staticMesh_)) {}
 
@@ -21,7 +21,7 @@ namespace hg::engine::render::cmd {
 
     private:
     public:
-        const nmpt<const gfx::Mesh> _staticMesh;
+        const nmpt<const graphics::Mesh> _staticMesh;
 
     public:
         void operator()(

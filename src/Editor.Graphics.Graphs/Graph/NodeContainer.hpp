@@ -7,7 +7,7 @@
 #include "../Node/__fwd.hpp"
 #include "../Node/Node.hpp"
 
-namespace hg::editor::gfx::graph {
+namespace hg::editor::graphics::graph {
     class NodeContainer {
     public:
         using this_type = NodeContainer;

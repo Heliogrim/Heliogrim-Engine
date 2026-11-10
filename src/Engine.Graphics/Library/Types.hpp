@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Types.hpp>
 
-namespace hg::engine::gfx::types {
+namespace hg::engine::graphics::types {
 	struct QueueFamilyIndices {
 		int32_t computeFamily = -1;
 		int32_t transferFamily = -1;

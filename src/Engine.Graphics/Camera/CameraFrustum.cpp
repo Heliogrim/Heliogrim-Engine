@@ -3,7 +3,7 @@
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Math/Compat.inl>
 
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 void CameraFrustum::update(math::mat4 src_) {

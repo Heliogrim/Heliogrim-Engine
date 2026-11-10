@@ -13,7 +13,7 @@
 #include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
 
-using namespace hg::engine::gfx::schedule;
+using namespace hg::engine::graphics::schedule;
 using namespace hg::engine::scheduler;
 using namespace hg;
 

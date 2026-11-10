@@ -3,7 +3,7 @@
 #include "../Buffer/BufferFactory.hpp"
 #include "../Texture/TextureFactory.hpp"
 
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 SceneResourcePool::SceneResourcePool(cref<sptr<Device>> device_) :

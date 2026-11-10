@@ -16,10 +16,10 @@ namespace hg::driver::vk {
 
     class VkCmdMgr {
     public:
-        sptr<engine::gfx::Device> device;
+        sptr<engine::graphics::Device> device;
 
         InlineAutoArray<VkQueueFeatureSetFlag, 3uLL> queueFeatureSets;
-        InlineAutoArray<InlineAutoArray<nmpt<engine::gfx::CommandQueue>>, 3uLL> queues;
+        InlineAutoArray<InlineAutoArray<nmpt<engine::graphics::CommandQueue>>, 3uLL> queues;
 
     public:
         Vector<Vector<engine::accel::AccelCommandBuffer>> committed;

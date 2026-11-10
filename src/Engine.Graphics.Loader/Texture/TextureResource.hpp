@@ -4,6 +4,6 @@
 #include <Engine.Graphics/Texture/TextureLikeObject.hpp>
 #include <Engine.Resource/Manage/Resource.hpp>
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
     typedef resource::Resource<mpt<TextureLikeObject>> TextureResource;
 }

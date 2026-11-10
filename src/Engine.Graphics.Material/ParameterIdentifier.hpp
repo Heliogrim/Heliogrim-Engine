@@ -3,7 +3,7 @@
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
-namespace hg::engine::gfx::material {
+namespace hg::engine::graphics::material {
     struct ParameterIdentifier {
         u16 data;
     };

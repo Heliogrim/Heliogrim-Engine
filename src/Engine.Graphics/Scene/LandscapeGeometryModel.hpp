@@ -4,7 +4,7 @@
 
 #include "SceneNodeModel.hpp"
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
     class LandscapeGeometryModel :
         public InheritMeta<LandscapeGeometryModel, SceneNodeModel> {
     public:

@@ -6,7 +6,7 @@
 #include <Heliogrim/Component/Scene/UI/UIComponent.hpp>
 
 using namespace hg::engine::reflow;
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 UISceneModel::UISceneModel(const ptr<SceneComponent> owner_) :

@@ -7,7 +7,7 @@
 #include "Allocator.hpp"
 #include "../vkinc.hpp"
 
-using namespace hg::engine::gfx::memory;
+using namespace hg::engine::graphics::memory;
 using namespace hg;
 
 AllocatedMemory::AllocatedMemory(

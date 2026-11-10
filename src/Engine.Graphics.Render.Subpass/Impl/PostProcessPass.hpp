@@ -18,10 +18,10 @@ namespace hg::engine::render {
         smr<const accel::AccelerationEffect> _effect;
         smr<const accel::GraphicsPass> _pass;
         accel::EffectCompileResult _compiled;
-        smr<gfx::Framebuffer> _framebuffer;
-        uptr<gfx::TextureSampler> _sampler;
-        uptr<gfx::Texture> _colorTexture;
-        uptr<gfx::TextureView> _colorView;
+        smr<graphics::Framebuffer> _framebuffer;
+        uptr<graphics::TextureSampler> _sampler;
+        uptr<graphics::Texture> _colorTexture;
+        uptr<graphics::TextureView> _colorView;
         vk::Semaphore _tmpSignal;
 
         struct Resources {

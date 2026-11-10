@@ -74,7 +74,7 @@ void InputAsset::setup() {
 	auto* previewAsset = AssetBrowserHelper::get()->getItemIconByAssetType(AssetTypeId {});
 
 	auto iconRes = Engine::getEngine()->getResources()->loader().loadImmediately<assets::TextureAsset,
-		gfx::TextureResource>(std::move(previewAsset));
+		graphics::TextureResource>(std::move(previewAsset));
 
 	auto previewGuard = iconRes->acquire(resource::ResourceUsageFlag::eRead);
 

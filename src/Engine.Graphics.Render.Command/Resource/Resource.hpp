@@ -4,7 +4,7 @@
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.Reflect/Inherit/ClassMetaBase.hpp>
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
     class UniformBufferView;
     class StorageBufferView;
     class TextureLikeObject;
@@ -44,18 +44,18 @@ namespace hg::engine::render {
 
         [[nodiscard]] bool isUniformBufferView() const noexcept;
 
-        nmpt<const gfx::UniformBufferView> asUniformBufferView() const noexcept;
+        nmpt<const graphics::UniformBufferView> asUniformBufferView() const noexcept;
 
         [[nodiscard]] bool isStorageBufferView() const noexcept;
 
-        [[nodiscard]] nmpt<const gfx::StorageBufferView> asStorageBufferView() const noexcept;
+        [[nodiscard]] nmpt<const graphics::StorageBufferView> asStorageBufferView() const noexcept;
 
         [[nodiscard]] bool isTexture() const noexcept;
 
-        [[nodiscard]] nmpt<const gfx::TextureLikeObject> asTexture() const noexcept;
+        [[nodiscard]] nmpt<const graphics::TextureLikeObject> asTexture() const noexcept;
 
         [[nodiscard]] bool isSampler() const noexcept;
 
-        [[nodiscard]] nmpt<const gfx::TextureSampler> asSampler() const noexcept;
+        [[nodiscard]] nmpt<const graphics::TextureSampler> asSampler() const noexcept;
     };
 }

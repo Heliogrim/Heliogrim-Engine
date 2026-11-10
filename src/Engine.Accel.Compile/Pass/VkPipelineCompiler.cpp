@@ -645,15 +645,15 @@ smr<VkGraphicsPipeline> VkPipelineCompiler::linkVk(
 		}
 
 		// Warning: We need to take care of the vertex stride, otherwise we won't be able to use the vertex assembly
-		vertexBindings.emplace_back(0uL, sizeof(gfx::vertex), vk::VertexInputRate::eVertex);
+		vertexBindings.emplace_back(0uL, sizeof(graphics::vertex), vk::VertexInputRate::eVertex);
 	}
 
 	// Warning: Temporary Hack
 	{
 		if (std::ranges::any_of(vertexAttributes, [](const auto& attr) { return attr.format == vk::Format::eR8G8B8A8Unorm; })) {
-			vertexBindings.front().stride = sizeof(gfx::uivertex);
+			vertexBindings.front().stride = sizeof(graphics::uivertex);
 		} else if (not vertexBindings.empty()) {
-			vertexBindings.front().stride = sizeof(gfx::vertex);
+			vertexBindings.front().stride = sizeof(graphics::vertex);
 		}
 	}
 	// Warning:

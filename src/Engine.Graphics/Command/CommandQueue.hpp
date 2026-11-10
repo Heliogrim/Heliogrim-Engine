@@ -6,7 +6,7 @@
 #include "../API/__vkFwd.hpp"
 #include "../Device/Device.hpp"
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	/**
 	 * Forward Declaration CommandPool.
 	 *

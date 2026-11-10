@@ -2,11 +2,11 @@
 
 #include "../FontTransformer.hpp"
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	class Device;
 }
 
-namespace hg::engine::gfx::loader::transformer {
+namespace hg::engine::graphics::loader::transformer {
 	extern void convertFreeType(
 		const non_owning_rptr<const assets::FontAsset> assets_,
 		mref<std::pair<ref<storage::StorageSystem>, Arci<storage::IStorage>>> src_,

@@ -35,7 +35,7 @@ namespace hg::engine::render::cmd {
 
 /* Forwarded Resource Declarations */
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
     class Mesh;
     class IndexBufferView;
     class VertexBufferView;

@@ -6,8 +6,8 @@
 #include "../API/VkTranslate.hpp"
 #include "../Device/Device.hpp"
 
-using namespace hg::engine::gfx::memory;
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics::memory;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 VkAllocator::VkAllocator(cref<sptr<Device>> device_) noexcept :

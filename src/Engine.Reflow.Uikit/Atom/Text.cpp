@@ -512,9 +512,9 @@ nmpt<Font> loadFont(cref<TypedAssetGuid<hg::engine::assets::FontAsset>> guid_) {
 	::hg::assertrt(asset != None);
 
 	auto* fontAsset = Cast<::hg::engine::assets::FontAsset>(asset->get());
-	return engine->getResources()->loader().load<engine::assets::FontAsset, engine::gfx::FontResource>(
+	return engine->getResources()->loader().load<engine::assets::FontAsset, engine::graphics::FontResource>(
 		std::move(fontAsset),
-		engine::gfx::loader::FontLoadOptions {
+		engine::graphics::loader::FontLoadOptions {
 			.ranges = { BasicLatin, Latin1Supplement },
 			.glyphs = {},
 			.fontSizes = { 12uL, 16uL, 24uL }

@@ -8,7 +8,7 @@
 #include "SparseTextureView.hpp"
 #include "../API/VkTranslate.hpp"
 
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 [[nodiscard]] vk::ImageType vkTranslate(const TextureType type_) noexcept {

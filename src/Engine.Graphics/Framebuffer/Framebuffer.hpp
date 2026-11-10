@@ -9,7 +9,7 @@
 #include "../Device/Device.hpp"
 #include "Engine.Graphics/Texture/TextureLikeObject.hpp"
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	class Framebuffer {
 	public:
 		/**

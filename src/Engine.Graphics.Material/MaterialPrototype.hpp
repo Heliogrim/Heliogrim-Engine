@@ -13,7 +13,7 @@
 #include "MaterialEffect.hpp"
 #include "__fwd.hpp"
 
-namespace hg::engine::gfx::material {
+namespace hg::engine::graphics::material {
 	class MaterialPrototype {
 	public:
 		using this_type = MaterialPrototype;

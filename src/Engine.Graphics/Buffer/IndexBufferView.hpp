@@ -4,7 +4,7 @@
 
 #include "../API/__vkFwd.hpp"
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
     enum class VertexIndexType {
         eU16 = sizeof(u16),
         eU32 = sizeof(u32)

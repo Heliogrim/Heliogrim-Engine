@@ -185,10 +185,10 @@ void WindowManager::handleWindowResize(const ptr<BoundWindow> wnd_, cref<math::i
 	const auto transitioned = graphics->getSceneManager()->transitionToTarget(
 		*wnd_->surface,
 		clone(wnd_->surface->swapchain()),
-		[wnd_, graphics](mref<smr<gfx::Swapchain>> prev_) {
+		[wnd_, graphics](mref<smr<graphics::Swapchain>> prev_) {
 			::hg::move(prev_)->destroy();
 
-			auto next = make_smr<gfx::VkSurfaceSwapchain>(wnd_->surface);
+			auto next = make_smr<graphics::VkSurfaceSwapchain>(wnd_->surface);
 			next->setup(graphics->getCurrentDevice());
 
 			wnd_->surface->setSwapchain(clone(next));
@@ -328,7 +328,7 @@ sptr<Window> WindowManager::requestWindow(
 	auto surface = gfx->getSurfaceManager()->makeSurface(std::move(nativeWindow));
 	surface->setup();
 
-	auto swapchain = make_smr<gfx::VkSurfaceSwapchain>(surface);
+	auto swapchain = make_smr<graphics::VkSurfaceSwapchain>(surface);
 	swapchain->setup(gfx->getCurrentDevice());
 
 	surface->setSwapchain(clone(swapchain));
@@ -349,16 +349,16 @@ sptr<Window> WindowManager::requestWindow(
 		return nullptr;
 	}
 
-	auto sceneView = make_smr<gfx::scene::SceneView>(nullptr, renderSystem);
+	auto sceneView = make_smr<graphics::scene::SceneView>(nullptr, renderSystem);
 
 	/**/
 
-	auto renderTarget = make_smr<gfx::RenderTarget>(std::move(device), renderer.get());
+	auto renderTarget = make_smr<graphics::RenderTarget>(std::move(device), renderer.get());
 
 	renderTarget->transitionToSceneView(std::move(sceneView));
 	[[maybe_unused]] auto targetTransition = renderTarget->transitionToTarget(
 		*surface,
-		[swapchain]([[maybe_unused]] mref<smr<gfx::Swapchain>> prev_) { return ::hg::move(swapchain); }
+		[swapchain]([[maybe_unused]] mref<smr<graphics::Swapchain>> prev_) { return ::hg::move(swapchain); }
 	);
 
 	renderTarget->setup();

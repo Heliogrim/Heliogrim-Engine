@@ -2,7 +2,7 @@
 
 #include <array>
 
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 const engine::res::FileTypeId FontFileType::Ttf { "ttf"_typeId, ".ttf" };

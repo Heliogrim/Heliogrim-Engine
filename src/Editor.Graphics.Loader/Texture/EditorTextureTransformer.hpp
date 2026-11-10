@@ -7,14 +7,14 @@
 #include "EditorTextureSubTransformer.hpp"
 #include "Traits.hpp"
 
-namespace hg::editor::gfx::loader {
+namespace hg::editor::graphics::loader {
 	class EditorTextureTransformer final :
-		public ::hg::engine::resource::loader::Transformer<engine::assets::TextureAsset, engine::gfx::TextureResource> {
+		public ::hg::engine::resource::loader::Transformer<engine::assets::TextureAsset, engine::graphics::TextureResource> {
 	public:
 		using this_type = EditorTextureTransformer;
 		using underlying_type = ::hg::engine::resource::loader::Transformer<
 			engine::assets::TextureAsset,
-			engine::gfx::TextureResource
+			engine::graphics::TextureResource
 		>;
 
 		using underlying_type::loader_traits;
@@ -25,7 +25,7 @@ namespace hg::editor::gfx::loader {
 		using underlying_type::stream_response_type;
 
 	public:
-		EditorTextureTransformer(ref<engine::gfx::pool::GlobalResourcePool> pool_);
+		EditorTextureTransformer(ref<engine::graphics::pool::GlobalResourcePool> pool_);
 
 		EditorTextureTransformer(const EditorTextureTransformer&) = delete;
 
@@ -34,9 +34,9 @@ namespace hg::editor::gfx::loader {
 		~EditorTextureTransformer() override;
 
 	private:
-		nmpt<engine::gfx::pool::GlobalResourcePool> _pool;
+		nmpt<engine::graphics::pool::GlobalResourcePool> _pool;
 
-		::hg::engine::gfx::loader::TextureTransformer _mainTransformer;
+		::hg::engine::graphics::loader::TextureTransformer _mainTransformer;
 		Vector<uptr<EditorTextureSubTransformer>> _transformers;
 
 	private:

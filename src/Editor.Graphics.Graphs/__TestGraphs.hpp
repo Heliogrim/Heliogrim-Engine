@@ -17,8 +17,8 @@
 #include "Node/Output/SubGraphOutputNode.hpp"
 #include "Graph/NodeGraph.hpp"
 
-using namespace ::hg::editor::gfx::graph::nodes;
-using namespace ::hg::editor::gfx::graph;
+using namespace ::hg::editor::graphics::graph::nodes;
+using namespace ::hg::editor::graphics::graph;
 
 namespace hg::test {
     sptr<NodeGraph> fresnelSchlick() {

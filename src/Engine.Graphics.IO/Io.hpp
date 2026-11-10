@@ -7,19 +7,19 @@
 #include <Engine.Resource/ImporterManager.hpp>
 #include <Engine.Resource/LoaderManager.hpp>
 
-namespace hg::engine::gfx::loader {
+namespace hg::engine::graphics::loader {
 	extern void register_loader(
 		_In_ ref<resource::LoaderManager> manager_,
 		_In_ ref<Graphics> graphics_,
-		_In_ ref<gfx::cache::GlobalCacheCtrl> cacheCtrl_,
-		_In_ ref<gfx::pool::GlobalResourcePool> pool_
+		_In_ ref<graphics::cache::GlobalCacheCtrl> cacheCtrl_,
+		_In_ ref<graphics::pool::GlobalResourcePool> pool_
 	);
 
 	extern void unregister_loader(
 		_In_ ref<resource::LoaderManager> manager_,
 		_In_ ref<Graphics> graphics_,
-		_In_ ref<gfx::cache::GlobalCacheCtrl> cacheCtrl_,
-		_In_ ref<gfx::pool::GlobalResourcePool> pool_
+		_In_ ref<graphics::cache::GlobalCacheCtrl> cacheCtrl_,
+		_In_ ref<graphics::pool::GlobalResourcePool> pool_
 	);
 
 	extern void register_importer(

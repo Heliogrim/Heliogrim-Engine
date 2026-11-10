@@ -2,7 +2,7 @@
 
 #include "../Node.hpp"
 
-namespace hg::editor::gfx::graph::nodes {
+namespace hg::editor::graphics::graph::nodes {
     class BufferInputNode :
         public Node {
     public:

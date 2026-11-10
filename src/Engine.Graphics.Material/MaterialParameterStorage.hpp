@@ -4,7 +4,7 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Reflect/Inherit/InheritBase.hpp>
 
-namespace hg::engine::gfx::material {
+namespace hg::engine::graphics::material {
 	template <typename StoredType_>
 	struct MaterialParameterStorageTraits {
 		using data_type = std::decay_t<StoredType_>;

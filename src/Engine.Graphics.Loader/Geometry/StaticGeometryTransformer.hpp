@@ -5,7 +5,7 @@
 
 #include "Traits.hpp"
 
-namespace hg::engine::gfx::loader {
+namespace hg::engine::graphics::loader {
 	class StaticGeometryTransformer final :
 		public resource::loader::Transformer<assets::StaticGeometry, StaticGeometryResource> {
 	public:

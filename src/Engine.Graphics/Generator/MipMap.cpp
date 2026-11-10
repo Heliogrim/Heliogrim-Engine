@@ -2,8 +2,8 @@
 
 #include "../Command/CommandBuffer.hpp"
 
-using namespace hg::engine::gfx::generator;
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics::generator;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 void MipMapGenerator::generate(Texture& texture_, cref<sptr<Device>> device_, CommandQueue& queue_) {

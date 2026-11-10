@@ -4,7 +4,7 @@
 #include "Vertex.hpp"
 #include "../Graphics.hpp"
 
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 Plane::Plane() :

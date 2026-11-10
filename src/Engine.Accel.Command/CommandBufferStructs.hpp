@@ -6,7 +6,7 @@
 namespace hg::engine::accel {
 	struct BindRenderPassStruct final {
 		cref<GraphicsPass> graphicsPass;
-		cref<gfx::Framebuffer> framebuffer;
+		cref<graphics::Framebuffer> framebuffer;
 		bool subrecording : 1 = false;
 
 		/**/

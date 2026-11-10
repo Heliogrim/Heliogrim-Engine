@@ -10,7 +10,7 @@
 #include "../Buffer/VertexBufferView.hpp"
 #include "../Framebuffer/Framebuffer.hpp"
 
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 CommandBuffer::CommandBuffer(ptr<CommandPool> pool_, const vk::CommandBuffer& vkCmd_, const bool faf_) noexcept :

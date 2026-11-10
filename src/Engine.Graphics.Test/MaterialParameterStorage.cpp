@@ -5,7 +5,7 @@
 #include <Engine.Graphics.Material/ParameterIdentifier.hpp>
 
 using namespace hg;
-using namespace hg::engine::gfx::material;
+using namespace hg::engine::graphics::material;
 
 namespace GfxMaterial {
 	TEST(MaterialParameterStorageTest, SetAndGetValue) {

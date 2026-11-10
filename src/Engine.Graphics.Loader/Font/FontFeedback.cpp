@@ -1,6 +1,6 @@
 #include "FontFeedback.hpp"
 
-using namespace hg::engine::gfx::loader;
+using namespace hg::engine::graphics::loader;
 using namespace hg;
 
 FontFeedback::FontFeedback() :

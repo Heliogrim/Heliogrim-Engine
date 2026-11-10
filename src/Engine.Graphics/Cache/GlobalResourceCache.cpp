@@ -8,8 +8,8 @@
 #include "Engine.Graphics/Geometry/Vertex.hpp"
 #include "Engine.Graphics/Memory/AllocationResult.hpp"
 
-using namespace hg::engine::gfx::cache;
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics::cache;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 GlobalResourceCache::GlobalResourceCache(cref<sptr<Device>> device_) :

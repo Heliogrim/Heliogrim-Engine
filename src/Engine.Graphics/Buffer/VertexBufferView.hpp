@@ -3,7 +3,7 @@
 #include <Engine.Common/Types.hpp>
 #include "../API/__vkFwd.hpp"
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
     class VertexBufferView {
     public:
         using this_type = VertexBufferView;

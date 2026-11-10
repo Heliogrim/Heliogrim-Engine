@@ -1,6 +1,6 @@
 #pragma once
 
-namespace hg::editor::gfx::graph {
+namespace hg::editor::graphics::graph {
     class Node;
 
     class NodeInput;
@@ -21,7 +21,7 @@ namespace hg::editor::gfx::graph {
     enum class NodeInputConsumptionMode;
 }
 
-namespace hg::editor::gfx::graph::nodes {
+namespace hg::editor::graphics::graph::nodes {
     class ConstantInputNode;
     class TextureInputNode;
     class BufferInputNode;

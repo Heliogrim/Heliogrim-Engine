@@ -2,7 +2,7 @@
 
 #include <utility>
 
-using namespace hg::engine::gfx::material;
+using namespace hg::engine::graphics::material;
 using namespace hg;
 
 MaterialPrototypeParameter::MaterialPrototypeParameter(

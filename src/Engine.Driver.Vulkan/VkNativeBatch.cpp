@@ -70,8 +70,8 @@ void VkNativeBatch::commit() {
 	assert(queues.size() == 1uLL);
 	auto* const queue = static_cast<ptr<VkNativeQueue>>(queues.front());
 
-	const auto vkDevice = /* ::vk::Device {} */static_cast<ptr<engine::gfx::CommandQueue>>(queue)->device()->vkDevice();
-	const auto vkQueue = /* ::VkQueue {} */static_cast<ptr<engine::gfx::CommandQueue>>(queue)->vkQueue();
+	const auto vkDevice = /* ::vk::Device {} */static_cast<ptr<engine::graphics::CommandQueue>>(queue)->device()->vkDevice();
+	const auto vkQueue = /* ::VkQueue {} */static_cast<ptr<engine::graphics::CommandQueue>>(queue)->vkQueue();
 
 	const auto fence = vkDevice.createFence({});
 
@@ -105,7 +105,7 @@ void VkNativeBatch::commitAndDispose() {
 
 	/**/
 
-	InlineAutoArray<ptr<engine::gfx::CommandPool>, 2> pools {};
+	InlineAutoArray<ptr<engine::graphics::CommandPool>, 2> pools {};
 	std::ranges::for_each(
 		_batched,
 		[&pools](auto&& acb_) HG_NO_THREAD_SAFETY_ANALYSIS {

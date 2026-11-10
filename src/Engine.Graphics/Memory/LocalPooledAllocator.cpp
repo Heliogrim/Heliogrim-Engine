@@ -7,7 +7,7 @@
 #include "GlobalPooledAllocator.hpp"
 #include "../vkinc.hpp"
 
-using namespace hg::engine::gfx::memory;
+using namespace hg::engine::graphics::memory;
 using namespace hg;
 
 LocalPooledAllocator::LocalPooledAllocator(const nmpt<GlobalPooledAllocator> global_) noexcept :
@@ -50,7 +50,7 @@ void LocalPooledAllocator::free(mref<uptr<AllocatedMemory>> mem_) {
 #include "../API/VkTranslate.hpp"
 #include "../Device/Device.hpp"
 
-AllocationResult engine::gfx::memory::allocate(
+AllocationResult engine::graphics::memory::allocate(
 	const ptr<LocalPooledAllocator> alloc_,
 	cref<sptr<Device>> device_,
 	cref<vk::Buffer> buffer_,
@@ -68,7 +68,7 @@ AllocationResult engine::gfx::memory::allocate(
 	return alloc_->allocate(layout, req.size, dst_);
 }
 
-AllocationResult engine::gfx::memory::allocate(
+AllocationResult engine::graphics::memory::allocate(
 	const ptr<LocalPooledAllocator> alloc_,
 	cref<sptr<Device>> device_,
 	vk::Image image_,

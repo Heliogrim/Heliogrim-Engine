@@ -4,7 +4,7 @@
 #include "MaterialPrototypeFeedback.hpp"
 #include "MaterialPrototypeTransformer.hpp"
 
-using namespace hg::engine::gfx::loader;
+using namespace hg::engine::graphics::loader;
 using namespace hg;
 
 MaterialPrototypeLoader::MaterialPrototypeLoader(

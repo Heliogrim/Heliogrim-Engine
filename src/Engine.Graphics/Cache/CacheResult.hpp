@@ -5,7 +5,7 @@
 
 #include "__fwd.hpp"
 
-namespace hg::engine::gfx::cache {
+namespace hg::engine::graphics::cache {
 	enum CacheResult : u8 {
 		eUndefined = 0x0,
 		eHit = 0x1,
@@ -35,7 +35,7 @@ namespace hg::engine::gfx::cache {
 	struct Result {
 	public:
 		template <typename Rx_, typename Vx_> requires std::is_integral_v<Rx_> || std::is_enum_v<Rx_>
-		friend struct ::hg::engine::gfx::cache::Result;
+		friend struct ::hg::engine::graphics::cache::Result;
 
 	public:
 		using this_type = Result<ResultTypeType_, ValueType_>;

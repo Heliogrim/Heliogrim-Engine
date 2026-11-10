@@ -6,7 +6,7 @@
 
 #include "MaterialParameterStorage.hpp"
 
-namespace hg::engine::gfx::material {
+namespace hg::engine::graphics::material {
 	class MaterialParameter {
 	public:
 		using this_type = MaterialParameter;

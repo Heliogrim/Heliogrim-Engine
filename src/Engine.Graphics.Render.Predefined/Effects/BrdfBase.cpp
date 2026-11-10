@@ -11,9 +11,9 @@ using namespace ::hg;
 static smr<AccelerationEffect> build_test_effect() {
 
 	const std::array vertexOffsets {
-		std::pair<String, u32> { "vertex-position", static_cast<u32>(offsetof(engine::gfx::vertex, position)) },
-		std::pair<String, u32> { "vertex-uv", static_cast<u32>(offsetof(engine::gfx::vertex, uvm)) },
-		std::pair<String, u32> { "vertex-normal", static_cast<u32>(offsetof(engine::gfx::vertex, normal)) }
+		std::pair<String, u32> { "vertex-position", static_cast<u32>(offsetof(engine::graphics::vertex, position)) },
+		std::pair<String, u32> { "vertex-uv", static_cast<u32>(offsetof(engine::graphics::vertex, uvm)) },
+		std::pair<String, u32> { "vertex-normal", static_cast<u32>(offsetof(engine::graphics::vertex, normal)) }
 	};
 
 	auto vertexStage = make_smr<Stage>(StageFlagBits::eVertex);

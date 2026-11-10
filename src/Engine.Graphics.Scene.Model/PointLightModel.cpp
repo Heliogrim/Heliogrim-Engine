@@ -9,7 +9,7 @@
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
 #include <Heliogrim/Component/Scene/Light/PointLightComponent.hpp>
 
-using namespace hg::engine::gfx::scene;
+using namespace hg::engine::graphics::scene;
 using namespace hg;
 
 PointLightModel::PointLightModel(const ptr<SceneComponent> owner_) :

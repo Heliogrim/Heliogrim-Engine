@@ -14,7 +14,7 @@ namespace hg::engine::render {
     public:
         using this_type = MeshSubPass;
 
-        using model_type = gfx::scene::GeometryModel;
+        using model_type = graphics::scene::GeometryModel;
         using capture_type = MeshCaptureInterface;
 
     public:

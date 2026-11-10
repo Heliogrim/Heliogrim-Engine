@@ -1,7 +1,7 @@
 #pragma once
 #include "TextureFactory.hpp"
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
     class VkTextureFactory final :
         public TextureFactory {
     public:

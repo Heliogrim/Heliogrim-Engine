@@ -2,7 +2,7 @@
 
 #include "BufferLikeObject.hpp"
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
     class macro_novtable BufferObject :
         public InheritMeta<BufferObject, BufferLikeObject> {
     public:

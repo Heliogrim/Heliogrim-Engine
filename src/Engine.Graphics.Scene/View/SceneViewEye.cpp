@@ -3,7 +3,7 @@
 #include <Engine.Common/Math/Convertion.hpp>
 #include <Engine.Common/Math/Coordinates.hpp>
 
-using namespace hg::engine::gfx::scene;
+using namespace hg::engine::graphics::scene;
 using namespace hg;
 
 SceneViewEye::SceneViewEye() :

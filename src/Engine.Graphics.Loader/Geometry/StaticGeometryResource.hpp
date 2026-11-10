@@ -3,6 +3,6 @@
 #include <Engine.Graphics/Geometry/PolygonMesh.hpp>
 #include <Engine.Resource/Manage/Resource.hpp>
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
     typedef resource::Resource<PolygonMesh> StaticGeometryResource;
 }

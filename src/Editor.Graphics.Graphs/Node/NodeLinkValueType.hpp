@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Types.hpp>
 
-namespace hg::editor::gfx::graph {
+namespace hg::editor::graphics::graph {
     enum class NodeLinkValueType {
         eUnknown = 0x0,
 

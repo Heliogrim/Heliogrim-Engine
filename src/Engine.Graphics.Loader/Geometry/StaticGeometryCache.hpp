@@ -5,7 +5,7 @@
 
 #include "Traits.hpp"
 
-namespace hg::engine::gfx::loader {
+namespace hg::engine::graphics::loader {
     class StaticGeometryCache final : public resource::loader::Cache<assets::StaticGeometry, StaticGeometryResource> {
     public:
         using this_type = StaticGeometryCache;

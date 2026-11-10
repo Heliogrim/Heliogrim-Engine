@@ -3,7 +3,7 @@
 #include <Engine.Graphics/TextureFormat.hpp>
 
 namespace hg {
-	using TextureFormat = engine::gfx::TextureFormat;
+	using TextureFormat = engine::graphics::TextureFormat;
 
 	/**
 	 * Query if 'format_' is depth format

@@ -18,7 +18,7 @@ namespace hg::engine::render {
 		smr<const accel::AccelerationEffect> _effect;
 		smr<const accel::GraphicsPass> _pass;
 		accel::EffectCompileResult _compiled;
-		smr<gfx::Framebuffer> _framebuffer;
+		smr<graphics::Framebuffer> _framebuffer;
 		vk::Semaphore _tmpSemaphore;
 
 		struct Resources {

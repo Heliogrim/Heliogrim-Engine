@@ -1,6 +1,6 @@
 #include "ValueTypeNodeParameter.hpp"
 
-using namespace hg::editor::gfx::graph;
+using namespace hg::editor::graphics::graph;
 using namespace hg;
 
 NodeLinkValueType ValueTypeNodeParameter::getValueType() const noexcept {

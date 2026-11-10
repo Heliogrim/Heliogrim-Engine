@@ -18,7 +18,7 @@ void ttt_test() {
     constexpr auto primitiveCount = 20uL;
     constexpr auto primitiveOffset = 0uL;
 
-    constexpr engine::gfx::MeshDescription* meshDescription = nullptr;
+    constexpr engine::graphics::MeshDescription* meshDescription = nullptr;
 
     rcb->begin();
 

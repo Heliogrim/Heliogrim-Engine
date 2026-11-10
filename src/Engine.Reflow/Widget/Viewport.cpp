@@ -96,7 +96,7 @@ void Viewport::tick() {
 
 	/**/
 
-	smr<gfx::Texture> image {};
+	smr<graphics::Texture> image {};
 	vk::Semaphore imageSignal {};
 	Vector<vk::Semaphore> imageWaits {};
 
@@ -133,7 +133,7 @@ void Viewport::tidy() {
 	_viewListen.shrink_to_fit();
 }
 
-smr<engine::gfx::Swapchain> Viewport::getSwapchain() const noexcept {
+smr<engine::graphics::Swapchain> Viewport::getSwapchain() const noexcept {
 	return clone(_swapChain);
 }
 
@@ -228,12 +228,12 @@ bool Viewport::viewHasChanged() const noexcept {
 	return _swapChain->extent() != size;
 }
 
-smr<engine::gfx::VkSwapchain> Viewport::buildNextView(cref<math::uivec2> extent_) const {
+smr<engine::graphics::VkSwapchain> Viewport::buildNextView(cref<math::uivec2> extent_) const {
 
-	auto next = make_smr<gfx::VkSwapchain>();
+	auto next = make_smr<graphics::VkSwapchain>();
 
 	next->setExtent(extent_);
-	next->setFormat(gfx::TextureFormat::eB8G8R8A8Unorm);
+	next->setFormat(graphics::TextureFormat::eB8G8R8A8Unorm);
 	next->setDesiredImages(2uL);
 
 	const auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
@@ -253,7 +253,7 @@ void Viewport::remountRenderTarget() {
 	const auto* const coreUniverse = static_cast<::hg::engine::core::Universe*>(_cameraUniverse.unwrap().get());
 	const auto coreScene = coreUniverse->getScene();
 
-	auto view = smr<const hg::engine::gfx::scene::SceneView> { nullptr };
+	auto view = smr<const hg::engine::graphics::scene::SceneView> { nullptr };
 
 	const auto renderSystem = coreScene->getSceneSystem<render::RenderSceneSystem>();
 	renderSystem->getRegistry().forEach<render::CameraModel>(
@@ -272,7 +272,7 @@ void Viewport::remountRenderTarget() {
 
 	/**/
 
-	auto renderTarget = make_smr<gfx::RenderTarget>(gfx->getCurrentDevice(), renderer.get());
+	auto renderTarget = make_smr<graphics::RenderTarget>(gfx->getCurrentDevice(), renderer.get());
 	[[maybe_unused]] const auto targetTransition = renderTarget->transitionToTarget(clone(_swapChain));
 	renderTarget->transitionToSceneView(std::move(view));
 
@@ -315,7 +315,7 @@ void Viewport::rebuildView() {
 	_swapChain = std::move(next);
 }
 
-void Viewport::handleViewListener(cref<smr<gfx::VkSwapchain>> prev_, cref<smr<gfx::VkSwapchain>> next_) {
+void Viewport::handleViewListener(cref<smr<graphics::VkSwapchain>> prev_, cref<smr<graphics::VkSwapchain>> next_) {
 	for (const auto& fnc : _viewListen) {
 		fnc(clone(prev_), clone(next_));
 	}
@@ -326,7 +326,7 @@ void Viewport::resizeView(cref<math::uivec2> extent_) {
 }
 
 void Viewport::addResizeListener(
-	mref<std::function<void(mref<smr<gfx::VkSwapchain>>, mref<smr<gfx::VkSwapchain>>)>> fnc_
+	mref<std::function<void(mref<smr<graphics::VkSwapchain>>, mref<smr<graphics::VkSwapchain>>)>> fnc_
 ) {
 	_viewListen.push_back(std::move(fnc_));
 }

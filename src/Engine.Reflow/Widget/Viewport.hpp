@@ -12,7 +12,7 @@ namespace hg {
 	class CameraActor;
 }
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	class Swapchain;
 	class VkSwapchain;
 	class RenderTarget;
@@ -42,10 +42,10 @@ namespace hg::engine::reflow {
 		void tidy();
 
 	private:
-		smr<gfx::VkSwapchain> _swapChain;
-		nmpt<gfx::RenderTarget> _renderTarget;
+		smr<graphics::VkSwapchain> _swapChain;
+		nmpt<graphics::RenderTarget> _renderTarget;
 
-		smr<gfx::Texture> _currentSwapChainImage;
+		smr<graphics::Texture> _currentSwapChainImage;
 		::hg::_::VkSemaphore _currentImageSignal;
 		Vector<::hg::_::VkSemaphore> _currentImageWaits;
 
@@ -65,7 +65,7 @@ namespace hg::engine::reflow {
 		} _cameraControls;
 
 	public:
-		[[nodiscard]] smr<gfx::Swapchain> getSwapchain() const noexcept;
+		[[nodiscard]] smr<graphics::Swapchain> getSwapchain() const noexcept;
 
 		[[nodiscard]] bool hasMountedRenderTarget() const noexcept;
 
@@ -79,16 +79,16 @@ namespace hg::engine::reflow {
 		std::array<math::vec2, 4> _uvs;
 
 		math::uivec2 _viewSize;
-		Vector<std::function<void(mref<smr<gfx::VkSwapchain>>, mref<smr<gfx::VkSwapchain>>)>> _viewListen;
+		Vector<std::function<void(mref<smr<graphics::VkSwapchain>>, mref<smr<graphics::VkSwapchain>>)>> _viewListen;
 
 	private:
 		[[nodiscard]] math::uivec2 actualViewExtent() const noexcept;
 
 		[[nodiscard]] bool viewHasChanged() const noexcept;
 
-		void handleViewListener(cref<smr<gfx::VkSwapchain>> prev_, cref<smr<gfx::VkSwapchain>> next_);
+		void handleViewListener(cref<smr<graphics::VkSwapchain>> prev_, cref<smr<graphics::VkSwapchain>> next_);
 
-		[[nodiscard]] smr<gfx::VkSwapchain> buildNextView(cref<math::uivec2> extent_) const;
+		[[nodiscard]] smr<graphics::VkSwapchain> buildNextView(cref<math::uivec2> extent_) const;
 
 		void remountRenderTarget();
 
@@ -98,7 +98,7 @@ namespace hg::engine::reflow {
 		void resizeView(cref<math::uivec2> extent_);
 
 		void addResizeListener(
-			mref<std::function<void(mref<smr<gfx::VkSwapchain>>, mref<smr<gfx::VkSwapchain>>)>> fnc_
+			mref<std::function<void(mref<smr<graphics::VkSwapchain>>, mref<smr<graphics::VkSwapchain>>)>> fnc_
 		);
 
 		void removeResizeListener();

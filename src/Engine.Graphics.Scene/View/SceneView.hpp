@@ -13,7 +13,7 @@ namespace hg::engine::render {
 	class RenderSceneSystem;
 }
 
-namespace hg::engine::gfx::scene {
+namespace hg::engine::graphics::scene {
 	class SceneView :
 		public SceneViewEye {
 	public:

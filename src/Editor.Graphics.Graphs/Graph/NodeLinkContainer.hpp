@@ -7,7 +7,7 @@
 #include "../Node/__fwd.hpp"
 #include "../Node/NodeLink.hpp"
 
-namespace hg::editor::gfx::graph {
+namespace hg::editor::graphics::graph {
     class NodeLinkContainer {
     public:
         using this_type = NodeLinkContainer;

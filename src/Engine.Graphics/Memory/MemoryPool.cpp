@@ -31,7 +31,7 @@ static std::map<ptrdiff_t, mem_alloc_tracking> active_tracking {};
 
 /**/
 
-using namespace hg::engine::gfx::memory;
+using namespace hg::engine::graphics::memory;
 using namespace hg;
 
 MemoryPool::MemoryPool(cref<MemoryLayout> layout_) :

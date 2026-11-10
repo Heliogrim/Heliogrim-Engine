@@ -2,7 +2,7 @@
 #include <Engine.Common/Wrapper.hpp>
 
 //#include <Engine.Graphics/Scene/LightModel.hpp>
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
     class LightModel;
 }
 
@@ -18,7 +18,7 @@ namespace hg::engine::render {
     public:
         using this_type = LightSubPass;
 
-        using model_type = gfx::LightModel;
+        using model_type = graphics::LightModel;
         using capture_type = LightCaptureInterface;
 
     public:

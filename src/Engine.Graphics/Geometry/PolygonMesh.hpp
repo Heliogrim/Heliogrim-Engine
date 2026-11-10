@@ -3,7 +3,7 @@
 #include "Mesh.hpp"
 #include "../Buffer/SparseBufferView.hpp"
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
     class PolygonMesh :
         public Mesh {
     public:

@@ -3,7 +3,7 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Math/Vector.hpp>
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	enum class TextureFormat {
 		eUndefined = 0x0,
 

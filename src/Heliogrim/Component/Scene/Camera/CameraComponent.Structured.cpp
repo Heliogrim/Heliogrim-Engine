@@ -18,8 +18,8 @@ void access::Structure<CameraComponent>::serialize(cref<CameraComponent> self_, 
 	record_.insertSlot<bool>("lockedAspect") << self_._lockedAspect;
 	record_.insertSlot<bool>("visibleFrustum") << self_._visibleFrustum;
 	Structure<math::fvec3>::serialize(*std::addressof(self_._offset), record_.insertStructSlot("offset"));
-	record_.insertSlot<std::underlying_type_t<gfx::CameraProjectionMode>>("projectMode") << self_._projectMode;
-	record_.insertSlot<std::underlying_type_t<gfx::CameraViewMode>>("viewMode") << self_._viewMode;
+	record_.insertSlot<std::underlying_type_t<graphics::CameraProjectionMode>>("projectMode") << self_._projectMode;
+	record_.insertSlot<std::underlying_type_t<graphics::CameraViewMode>>("viewMode") << self_._viewMode;
 
 	/**/
 
@@ -38,6 +38,6 @@ void access::Structure<CameraComponent>::hydrate(cref<StructScopedSlot> record_,
 	record_.getSlot<bool>("lockedAspect") >> target_._lockedAspect;
 	record_.getSlot<bool>("visibleFrustum") >> target_._visibleFrustum;
 	Structure<math::fvec3>::hydrate(record_.getStructSlot("offset"), target_._offset);
-	record_.getSlot<std::underlying_type_t<gfx::CameraProjectionMode>>("projectMode") >> target_._projectMode;
-	record_.getSlot<std::underlying_type_t<gfx::CameraViewMode>>("viewMode") >> target_._viewMode;
+	record_.getSlot<std::underlying_type_t<graphics::CameraProjectionMode>>("projectMode") >> target_._projectMode;
+	record_.getSlot<std::underlying_type_t<graphics::CameraViewMode>>("viewMode") >> target_._viewMode;
 }

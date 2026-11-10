@@ -8,11 +8,11 @@
 #include "__fwd.hpp"
 #include "../API/__vkFwd.hpp"
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	class TextureView final :
 		public InheritMeta<TextureView, TextureLikeObject> {
 	public:
-		friend class ::hg::engine::gfx::Texture;
+		friend class ::hg::engine::graphics::Texture;
 
 	public:
 		using this_type = TextureView;

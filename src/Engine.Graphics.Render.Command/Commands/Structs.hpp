@@ -8,7 +8,7 @@
 namespace hg::engine::render::cmd {
 	struct BeginAccelerationPassStruct {
 		nmpt<const accel::AccelerationPass> pass;
-		nmpt<const gfx::Framebuffer> framebuffer;
+		nmpt<const graphics::Framebuffer> framebuffer;
 
 		/**/
 
@@ -17,6 +17,6 @@ namespace hg::engine::render::cmd {
 	};
 
 	struct BeginSubPassStruct {
-		nmpt<const gfx::Framebuffer> framebuffer = nullptr;
+		nmpt<const graphics::Framebuffer> framebuffer = nullptr;
 	};
 }

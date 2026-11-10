@@ -18,8 +18,8 @@
 #include "../Texture/TextureResource.hpp"
 #include "../Texture/Traits.hpp"
 
-using namespace hg::engine::gfx::loader;
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics::loader;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 /**/
@@ -348,7 +348,7 @@ MaterialTransformer::response_type::type MaterialTransformer::operator()(
 	return result;
 }
 
-smr<engine::gfx::TextureResource> resolveTexture(
+smr<engine::graphics::TextureResource> resolveTexture(
 	mref<AssetGuid> guid_,
 	nmpt<const engine::assets::IAssetRegistry> registry_,
 	const non_owning_rptr<const engine::resource::LoaderManager> loader_

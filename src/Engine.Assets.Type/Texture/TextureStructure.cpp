@@ -23,9 +23,9 @@ void access::Structure<TextureAsset>::serialize(const TextureAsset& self_, mref<
 	}
 
 	Structure<math::uivec3>::serialize(self_._extent, record_.insertStructSlot("extent"));
-	record_.insertSlot<gfx::TextureFormat>("format") << self_._format;
+	record_.insertSlot<graphics::TextureFormat>("format") << self_._format;
 	record_.insertSlot<u32>("mipLevel") << self_._mipLevel;
-	record_.insertSlot<gfx::TextureType>("textureType") << self_._textureType;
+	record_.insertSlot<graphics::TextureType>("textureType") << self_._textureType;
 
 	/**/
 
@@ -57,7 +57,7 @@ void access::Structure<TextureAsset>::hydrate(cref<StructScopedSlot> record_, Te
 	}
 
 	Structure<math::uivec3>::hydrate(record_.getRecordSlot("extent").asStruct(), target_._extent);
-	record_.getSlot<gfx::TextureFormat>("format") >> target_._format;
+	record_.getSlot<graphics::TextureFormat>("format") >> target_._format;
 	record_.getSlot<u32>("mipLevel") >> target_._mipLevel;
-	record_.getSlot<gfx::TextureType>("textureType") >> target_._textureType;
+	record_.getSlot<graphics::TextureType>("textureType") >> target_._textureType;
 }

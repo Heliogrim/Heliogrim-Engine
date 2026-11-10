@@ -15,7 +15,7 @@
 /* Loader Interface */
 
 namespace hg::engine::resource::loader {
-	using namespace ::hg::engine::gfx::loader;
+	using namespace ::hg::engine::graphics::loader;
 
 	template <>
 	struct RequestOptions<LoaderRequest<assets::TextureAsset>> {
@@ -31,7 +31,7 @@ namespace hg::engine::resource::loader {
 /* Cache Interface */
 
 namespace hg::engine::resource::loader {
-	using namespace ::hg::engine::gfx::loader;
+	using namespace ::hg::engine::graphics::loader;
 
 	template <>
 	struct RequestOptions<CacheRequest<assets::TextureAsset>> {
@@ -47,7 +47,7 @@ namespace hg::engine::resource::loader {
 /* Feedback Interface */
 
 namespace hg::engine::resource::loader {
-	using namespace ::hg::engine::gfx::loader;
+	using namespace ::hg::engine::graphics::loader;
 
 	template <>
 	struct RequestOptions<FeedbackRequest<assets::TextureAsset>> {
@@ -63,7 +63,7 @@ namespace hg::engine::resource::loader {
 /* Transformer Interface */
 
 namespace hg::engine::resource::loader {
-	using namespace ::hg::engine::gfx::loader;
+	using namespace ::hg::engine::graphics::loader;
 
 	template <>
 	struct RequestOptions<TransformerRequest<assets::TextureAsset>> {
@@ -79,7 +79,7 @@ namespace hg::engine::resource::loader {
 /* Source Loader Interface */
 
 namespace hg::engine::resource::loader {
-	using namespace ::hg::engine::gfx::loader;
+	using namespace ::hg::engine::graphics::loader;
 
 	template <>
 	struct RequestOptions<SourceLoaderRequest<assets::TextureAsset>> {

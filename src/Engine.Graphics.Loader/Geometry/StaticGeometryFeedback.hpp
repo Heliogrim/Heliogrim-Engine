@@ -4,7 +4,7 @@
 
 #include "Traits.hpp"
 
-namespace hg::engine::gfx::loader {
+namespace hg::engine::graphics::loader {
     class StaticGeometryFeedback final :
         public resource::loader::Feedback<assets::StaticGeometry, StaticGeometryResource> {
     public:

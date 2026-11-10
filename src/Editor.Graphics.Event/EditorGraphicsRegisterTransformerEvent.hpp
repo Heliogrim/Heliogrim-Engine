@@ -4,7 +4,7 @@
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.Event/Event.hpp>
 
-namespace hg::editor::gfx::loader {
+namespace hg::editor::graphics::loader {
 	class EditorTextureTransformer;
 }
 
@@ -19,7 +19,7 @@ namespace hg {
 
 	public:
 		explicit EditorGraphicsRegisterTransformerEvent(
-			_In_ ref<editor::gfx::loader::EditorTextureTransformer> proxy_
+			_In_ ref<editor::graphics::loader::EditorTextureTransformer> proxy_
 		) noexcept;
 
 		constexpr EditorGraphicsRegisterTransformerEvent(cref<this_type> other_) noexcept = default;
@@ -34,9 +34,9 @@ namespace hg {
 		void cancel() noexcept override;
 
 	private:
-		nmpt<editor::gfx::loader::EditorTextureTransformer> _proxy;
+		nmpt<editor::graphics::loader::EditorTextureTransformer> _proxy;
 
 	public:
-		[[nodiscard]] ref<editor::gfx::loader::EditorTextureTransformer> getProxy() const noexcept;
+		[[nodiscard]] ref<editor::graphics::loader::EditorTextureTransformer> getProxy() const noexcept;
 	};
 }

@@ -4,7 +4,7 @@
 #include "Engine.Graphics/vkinc.hpp"
 #include "Engine.Graphics/Device/Device.hpp"
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	struct BufferBuildPayload {
 		size_t byteSize = 0uLL;
 		align_t byteAlign = 0uLL;

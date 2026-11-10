@@ -9,7 +9,7 @@ namespace hg::engine::render::cmd {
         public RenderCommand {
     public:
         constexpr BindVertexBufferRCmd(
-            cref<gfx::VertexBufferView> vertexBufferView_
+            cref<graphics::VertexBufferView> vertexBufferView_
         ) noexcept :
             RenderCommand(),
             _vertexBufferView(vertexBufferView_) {}
@@ -18,7 +18,7 @@ namespace hg::engine::render::cmd {
 
     private:
     public:
-        gfx::VertexBufferView _vertexBufferView;
+        graphics::VertexBufferView _vertexBufferView;
 
     public:
         void operator()(

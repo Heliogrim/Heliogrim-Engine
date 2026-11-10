@@ -5,7 +5,7 @@
 #include "../NodeInputSpec.hpp"
 #include "../NodeOutputSpec.hpp"
 
-namespace hg::editor::gfx::graph::nodes {
+namespace hg::editor::graphics::graph::nodes {
     class VectorScaleMathNode :
         public Node {
     public:

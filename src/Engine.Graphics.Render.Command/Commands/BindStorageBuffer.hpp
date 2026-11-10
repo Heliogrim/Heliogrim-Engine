@@ -5,7 +5,7 @@
 
 #include "Engine.Graphics.Render.Command/RenderCommand.hpp"
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
     class StorageBufferView;
 }
 
@@ -15,7 +15,7 @@ namespace hg::engine::render::cmd {
     public:
         constexpr BindStorageBufferRCmd(
             mref<accel::lang::SymbolId> symbolId_,
-            mref<const nmpt<const gfx::StorageBufferView>> storageView_
+            mref<const nmpt<const graphics::StorageBufferView>> storageView_
         ) noexcept :
             RenderCommand(),
             _symbolId(std::move(symbolId_)),
@@ -26,7 +26,7 @@ namespace hg::engine::render::cmd {
     private:
     public:
         const accel::lang::SymbolId _symbolId;
-        const nmpt<const gfx::StorageBufferView> _storageView;
+        const nmpt<const graphics::StorageBufferView> _storageView;
 
     public:
         void operator()(

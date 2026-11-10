@@ -80,7 +80,7 @@ void ScenePipeline::declareDependencies(
 
 	/**/
 
-	const auto renderTick = register_.getStage(gfx::schedule::RenderScenePipeline::RenderTick);
+	const auto renderTick = register_.getStage(graphics::schedule::RenderScenePipeline::RenderTick);
 	::hg::assertrt(renderTick != None);
 
 	/**/

@@ -12,7 +12,7 @@
 #include "SparseRangePooled.hpp"
 #include "../Texture/TextureFactory.hpp"
 
-namespace hg::engine::gfx::pool {
+namespace hg::engine::graphics::pool {
 	struct IndexBufferAllocation {
 		u64 size;
 	};

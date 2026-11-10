@@ -8,7 +8,7 @@
 #include "MaterialParameterStorage.hpp"
 #include "ParameterIdentifier.hpp"
 
-namespace hg::engine::gfx::material {
+namespace hg::engine::graphics::material {
 	class MaterialPrototypeParameter {
 	public:
 		using this_type = MaterialPrototypeParameter;

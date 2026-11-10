@@ -5,7 +5,7 @@
 
 #include "Engine.Graphics.Render.Command/RenderCommand.hpp"
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
     class UniformBufferView;
 }
 
@@ -15,7 +15,7 @@ namespace hg::engine::render::cmd {
     public:
         constexpr BindUniformBufferRCmd(
             mref<accel::lang::SymbolId> symbolId_,
-            mref<const nmpt<const gfx::UniformBufferView>> uniformView_
+            mref<const nmpt<const graphics::UniformBufferView>> uniformView_
         ) noexcept :
             RenderCommand(),
             _symbolId(std::move(symbolId_)),
@@ -26,7 +26,7 @@ namespace hg::engine::render::cmd {
     private:
     public:
         const accel::lang::SymbolId _symbolId;
-        const nmpt<const gfx::UniformBufferView> _uniformView;
+        const nmpt<const graphics::UniformBufferView> _uniformView;
 
     public:
         void operator()(

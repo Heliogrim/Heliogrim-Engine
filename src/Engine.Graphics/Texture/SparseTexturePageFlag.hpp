@@ -3,7 +3,7 @@
 #include <Engine.Common/Flag.hpp>
 #include <Engine.Common/Types.hpp>
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
     enum class SparseTexturePageFlag : u8 {
         eNone = 0x0,
         //

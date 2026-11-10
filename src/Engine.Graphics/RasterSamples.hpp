@@ -1,7 +1,7 @@
 #pragma once
 #include "Engine.Common/Types.hpp"
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
     enum class RasterSamples : u8 {
         e1 = 0x1 << 0,
         e4 = 0x1 << 1,

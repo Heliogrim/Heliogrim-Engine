@@ -11,7 +11,7 @@
 #include <Engine.Storage.Registry/IStorageRegistry.hpp>
 #include <Engine.Storage.Registry/Storage/PackageStorage.hpp>
 
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 struct FbxAssimpImportData {

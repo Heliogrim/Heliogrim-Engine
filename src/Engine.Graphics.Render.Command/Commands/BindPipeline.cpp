@@ -1,7 +1,7 @@
 #include "BindPipeline.hpp"
 
 using namespace hg::engine::render::cmd;
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 void BindPipelineRCmd::operator()(

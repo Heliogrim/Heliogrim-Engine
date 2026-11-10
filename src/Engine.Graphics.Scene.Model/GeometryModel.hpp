@@ -6,7 +6,7 @@
 #include <Engine.Graphics.Render.Subpass/Mesh/MeshCaptureInterface.hpp>
 #include <Engine.Render.Scene/RenderSceneSystemModel.hpp>
 
-namespace hg::engine::gfx::scene {
+namespace hg::engine::graphics::scene {
 	class GeometryModel :
 		public InheritMeta<GeometryModel, render::RenderSceneSystemModel> {
 	public:

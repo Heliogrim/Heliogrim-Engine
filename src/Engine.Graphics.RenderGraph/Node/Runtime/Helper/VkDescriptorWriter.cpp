@@ -16,7 +16,7 @@
 #include <Engine.Reflect/TypeSwitch.hpp>
 
 using namespace hg::engine::render::graph;
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 VkDescriptorWriter::VkDescriptorWriter(cref<vk::DescriptorSet> vkSet_) :
@@ -163,7 +163,7 @@ void VkDescriptorWriter::storeUniform(index_type idx_, cref<SparseBufferView> vi
 	);
 }
 
-void VkDescriptorWriter::storeUniform(index_type idx_, nmpt<const gfx::UniformBufferView> view_) {
+void VkDescriptorWriter::storeUniform(index_type idx_, nmpt<const graphics::UniformBufferView> view_) {
 
 	const auto obj = view_->object();
 	auto write = switchType(
@@ -302,7 +302,7 @@ void VkDescriptorWriter::storeStorage(index_type idx_, cref<SparseBufferView> vi
 	);
 }
 
-void VkDescriptorWriter::storeStorage(index_type idx_, nmpt<const gfx::StorageBufferView> view_) {
+void VkDescriptorWriter::storeStorage(index_type idx_, nmpt<const graphics::StorageBufferView> view_) {
 
 	const auto obj = view_->object();
 	auto write = switchType(
@@ -375,7 +375,7 @@ void VkDescriptorWriter::storeStorage(index_type idx_, nmpt<const gfx::StorageBu
 	_writes.emplace_back(write);
 }
 
-void VkDescriptorWriter::storeTexture(index_type idx_, nmpt<const gfx::TextureLikeObject> texture_) {
+void VkDescriptorWriter::storeTexture(index_type idx_, nmpt<const graphics::TextureLikeObject> texture_) {
 
 	auto write = switchType(
 		texture_.get(),
@@ -474,7 +474,7 @@ void VkDescriptorWriter::storeTexture(index_type idx_, nmpt<const gfx::TextureLi
 	_writes.emplace_back(write);
 }
 
-void VkDescriptorWriter::storeTextureSampler(index_type idx_, nmpt<const gfx::TextureSampler> sampler_) {
+void VkDescriptorWriter::storeTextureSampler(index_type idx_, nmpt<const graphics::TextureSampler> sampler_) {
 
 	const auto marker = emplaceSamplerInfo(
 		{

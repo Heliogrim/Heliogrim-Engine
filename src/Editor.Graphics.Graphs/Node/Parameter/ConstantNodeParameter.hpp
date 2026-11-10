@@ -6,7 +6,7 @@
 #include "../NodeLinkValueType.hpp"
 #include "ConstantNodeParameterStorage.hpp"
 
-namespace hg::editor::gfx::graph {
+namespace hg::editor::graphics::graph {
     class ConstantNodeParameter :
         public NodeParameter {
     public:

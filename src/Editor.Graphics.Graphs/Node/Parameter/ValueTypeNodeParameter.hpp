@@ -3,7 +3,7 @@
 #include "../NodeParameter.hpp"
 #include "../NodeLinkValueType.hpp"
 
-namespace hg::editor::gfx::graph {
+namespace hg::editor::graphics::graph {
     class ValueTypeNodeParameter :
         public NodeParameter {
     public:

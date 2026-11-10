@@ -6,7 +6,7 @@
 #include "AllocationResult.hpp"
 #include "VirtualMemory.hpp"
 
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 VirtualMemoryPage::VirtualMemoryPage(

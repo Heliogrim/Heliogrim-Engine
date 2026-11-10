@@ -15,7 +15,7 @@
 #include <Engine.Reflect/Cast.hpp>
 
 using namespace hg::engine::render;
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 void DummyProvider::destroy() noexcept {
@@ -55,7 +55,7 @@ void DummyProvider::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 	cmd.lambda(
 		[sceneColorTex](ref<accel::AccelCommandBuffer> cmd_) {
 
-			const auto* const texture = Cast<gfx::Texture>(sceneColorTex.get());
+			const auto* const texture = Cast<graphics::Texture>(sceneColorTex.get());
 
 			const auto barrier = vk::ImageMemoryBarrier {
 				vk::AccessFlags(),

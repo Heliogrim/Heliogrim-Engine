@@ -5,7 +5,7 @@
 #include <Engine.Resource/File.hpp>
 #include <Engine.Resource/Importer/Importer.hpp>
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	class KtxImporter :
 		public res::Importer<
 			std::pair<Arci<assets::TextureAsset>, Arci<assets::ImageAsset>>,

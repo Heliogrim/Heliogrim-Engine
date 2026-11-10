@@ -5,8 +5,8 @@
 #include <Engine.Graphics.Scene/View/SceneView.hpp>
 #include <Engine.Graphics/Swapchain/Swapchain.hpp>
 
-using namespace hg::engine::gfx::scene;
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics::scene;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 [[clang::always_destroy]] uptr<RenderSceneManager> RenderSceneManager::_instance = nullptr;

@@ -3,7 +3,7 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Reflect/Inherit/InheritBase.hpp>
 
-namespace hg::engine::gfx::cache {
+namespace hg::engine::graphics::cache {
 	// Warning: Do NOT instantiate ModelBatch itself (it might fail anyway cause of `novtable` annotation)
 	struct macro_novtable ModelBatch :
 		public InheritBase<ModelBatch> {

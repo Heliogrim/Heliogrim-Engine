@@ -7,7 +7,7 @@
 #include "../Texture/TextureFactory.hpp"
 #include "Engine.Graphics/Geometry/Vertex.hpp"
 
-using namespace hg::engine::gfx::pool;
+using namespace hg::engine::graphics::pool;
 using namespace hg;
 
 GlobalResourcePool::GlobalResourcePool(cref<sptr<Device>> device_) :
@@ -73,11 +73,11 @@ void GlobalResourcePool::destroy() {
 	_globalIndexBuffer.destroy();
 }
 
-cref<sptr<engine::gfx::Device>> GlobalResourcePool::device() const noexcept {
+cref<sptr<engine::graphics::Device>> GlobalResourcePool::device() const noexcept {
 	return _device;
 }
 
-uptr<engine::gfx::SparseBufferView> GlobalResourcePool::allocateIndexBuffer(
+uptr<engine::graphics::SparseBufferView> GlobalResourcePool::allocateIndexBuffer(
 	mref<IndexBufferAllocation> allocation_
 ) {
 
@@ -186,7 +186,7 @@ uptr<engine::gfx::SparseBufferView> GlobalResourcePool::allocateIndexBuffer(
 	return ptr->makeView(/*offset*/0uLL, /*size*/allocation_.size);
 }
 
-uptr<engine::gfx::SparseBufferView> GlobalResourcePool::allocateVertexBuffer(
+uptr<engine::graphics::SparseBufferView> GlobalResourcePool::allocateVertexBuffer(
 	mref<VertexBufferAllocation> allocation_
 ) {
 
@@ -295,7 +295,7 @@ uptr<engine::gfx::SparseBufferView> GlobalResourcePool::allocateVertexBuffer(
 	return ptr->makeView(/*offset*/0uLL, /*size*/allocation_.size);
 }
 
-uptr<engine::gfx::SparseTextureView> GlobalResourcePool::allocateSparseTexture(
+uptr<engine::graphics::SparseTextureView> GlobalResourcePool::allocateSparseTexture(
 	mref<SparseTextureAllocation> allocation_
 ) {
 	u32 layers { 1uL };

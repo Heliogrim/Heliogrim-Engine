@@ -43,7 +43,7 @@ namespace hg::engine::render {
 		using layout_std140_type = ViewBufferDataLayout140;
 		using layout_std430_type = ViewBufferDataLayout430;
 
-		gfx::BufferLikeObject blo;
+		graphics::BufferLikeObject blo;
 	};
 }
 

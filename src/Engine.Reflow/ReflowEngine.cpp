@@ -45,7 +45,7 @@ u16 ReflowEngine::getGlobalRenderTick() noexcept {
 
 void ReflowEngine::revealArea(
 	ref<Widget> root_,
-	ref<const gfx::Aabb2d> aabb2d_
+	ref<const graphics::Aabb2d> aabb2d_
 ) {
 	root_.cascadeRenderVersion(getGlobalRenderTick(), aabb2d_);
 }
@@ -246,7 +246,7 @@ void finalizeLayoutAndStates(ref<const SharedPtr<Widget>> root_, ref<ReflowState
 	auto pending = Stack<nmpt<Widget>, Vector<nmpt<Widget>>> { ::hg::move(cont) };
 	pending.emplace(root_.get());
 
-	Vector<engine::gfx::Aabb2d> revealed {};
+	Vector<engine::graphics::Aabb2d> revealed {};
 
 	/**/
 
@@ -282,7 +282,7 @@ void finalizeLayoutAndStates(ref<const SharedPtr<Widget>> root_, ref<ReflowState
 			const auto childState = state_.getStateOf(*iter);
 
 			const auto prevAabb = childState->lastAabb;
-			auto nextAabb = engine::gfx::Aabb2d {
+			auto nextAabb = engine::graphics::Aabb2d {
 				childState->layoutOffset, childState->layoutOffset + childState->layoutSize
 			};
 
@@ -304,7 +304,7 @@ void finalizeLayoutAndStates(ref<const SharedPtr<Widget>> root_, ref<ReflowState
 
 		/**/
 
-		const auto nextAabb = engine::gfx::Aabb2d {
+		const auto nextAabb = engine::graphics::Aabb2d {
 			cur->getLayoutState().layoutOffset, cur->getLayoutState().layoutOffset + cur->getLayoutState().layoutSize
 		};
 

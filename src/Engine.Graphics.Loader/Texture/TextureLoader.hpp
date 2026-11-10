@@ -10,7 +10,7 @@
 
 #include "__fwd.hpp"
 
-namespace hg::engine::gfx::loader {
+namespace hg::engine::graphics::loader {
 	using TextureSourceLoader = ::hg::engine::resource::loader::SourceLoader;
 
 	using TextureLoaderType = resource::loader::LoaderChain<

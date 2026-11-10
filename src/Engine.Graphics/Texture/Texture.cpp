@@ -5,7 +5,7 @@
 #include "TextureView.hpp"
 #include "../vkinc.hpp"
 
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 Texture::Texture() noexcept :

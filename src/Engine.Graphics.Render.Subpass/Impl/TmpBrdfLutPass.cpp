@@ -21,7 +21,7 @@
 
 using namespace hg::engine::render;
 using namespace hg::engine::accel;
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 [[nodiscard]] static smr<AccelerationEffect> build_test_effect();

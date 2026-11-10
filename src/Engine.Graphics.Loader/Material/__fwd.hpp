@@ -4,11 +4,11 @@
 #include <Engine.Assets.Type/Material/GfxMaterialPrototype.hpp>
 #include <Engine.Resource/Loader/__fwd.hpp>
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	//class MaterialResource; -> Typedef
 }
 
-namespace hg::engine::gfx::loader {
+namespace hg::engine::graphics::loader {
 	class MaterialLoader;
 	class MaterialCache;
 	class MaterialFeedback;

@@ -5,8 +5,8 @@
 #include <Engine.Graphics/Command/CommandQueue.hpp>
 #include <Engine.Graphics/Texture/TextureFactory.hpp>
 
-using namespace hg::engine::gfx::glow;
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics::glow;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 constexpr u16 internal_mip_mask { 0b1111'000000'000000uL };

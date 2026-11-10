@@ -24,9 +24,9 @@ namespace AssetsSystem {
 				AssetGuid {},
 				Vector<AssetGuid> {},
 				math::uivec3 { 1u, 1u, 1u },
-				gfx::TextureFormat::eR8G8B8A8Unorm,
+				graphics::TextureFormat::eR8G8B8A8Unorm,
 				1u,
-				gfx::TextureType::e2d
+				graphics::TextureType::e2d
 			);
 			return concrete->arci_from_this<Asset>();
 		}

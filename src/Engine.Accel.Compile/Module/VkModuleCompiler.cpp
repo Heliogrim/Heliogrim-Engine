@@ -44,7 +44,7 @@ uptr<CompiledModule> VkModuleCompiler::compile(
 
 	/* Compile spirv byte code to vk shader module */
 
-	sptr<gfx::Device> device = Engine::getEngine()->getGraphics()->getCurrentDevice();
+	sptr<graphics::Device> device = Engine::getEngine()->getGraphics()->getCurrentDevice();
 
 	vk::ShaderModuleCreateInfo smci {
 		vk::ShaderModuleCreateFlags {}, byteCode.size() * sizeof(SpirvWord), reinterpret_cast<u32*>(byteCode.data()),

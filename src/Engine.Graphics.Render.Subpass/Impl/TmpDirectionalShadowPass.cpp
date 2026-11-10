@@ -33,7 +33,7 @@
 
 using namespace hg::engine::render;
 using namespace hg::engine::accel;
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 /**/
@@ -170,10 +170,10 @@ void TmpDirectionalShadowPass::iterate(cref<graph::ScopedSymbolContext> symCtx_)
 	/**/
 
 	auto sceneViewRes = symCtx_.getImportSymbol(makeSceneViewSymbol());
-	auto sceneView = sceneViewRes->load<smr<const gfx::scene::SceneView>>();
+	auto sceneView = sceneViewRes->load<smr<const graphics::scene::SceneView>>();
 
 	const auto sys = sceneView->getRenderSceneSystem();
-	sys->getRegistry().forEach<gfx::scene::DirectionalLightModel>(
+	sys->getRegistry().forEach<graphics::scene::DirectionalLightModel>(
 		[this](const auto& model_) {
 			_dirLightModel = std::addressof(model_);
 		}
@@ -206,7 +206,7 @@ void TmpDirectionalShadowPass::execute(cref<graph::ScopedSymbolContext> symCtx_)
 	/**/
 
 	auto sceneViewRes = symCtx_.getImportSymbol(makeSceneViewSymbol());
-	auto sceneView = sceneViewRes->load<smr<gfx::scene::SceneView>>();
+	auto sceneView = sceneViewRes->load<smr<graphics::scene::SceneView>>();
 
 	/**/
 
@@ -352,7 +352,7 @@ void TmpDirectionalShadowPass::execute(cref<graph::ScopedSymbolContext> symCtx_)
 	/**/
 
 	if (_staticInstanceView == nullptr) {
-		_staticInstanceView = make_uptr<gfx::StorageBufferView>();
+		_staticInstanceView = make_uptr<graphics::StorageBufferView>();
 	}
 
 	const auto& staticInstancePool = scenePool->staticInstancePool;
@@ -481,8 +481,8 @@ void TmpDirectionalShadowPass::execute(cref<graph::ScopedSymbolContext> symCtx_)
 		);
 
 		const auto sys = sceneView->getRenderSceneSystem();
-		sys->getRegistry().forEach<gfx::scene::StaticGeometryModel>(
-			[&cmd](const gfx::scene::StaticGeometryModel& model_) {
+		sys->getRegistry().forEach<graphics::scene::StaticGeometryModel>(
+			[&cmd](const graphics::scene::StaticGeometryModel& model_) {
 
 				// Warning: We need to handle empty model states.
 				const auto& modelResource = model_.geometryResource();
@@ -593,7 +593,7 @@ smr<material::MaterialEffect> build_test_effect() {
 	/**/
 
 	const std::array vertexOffsets {
-		std::pair<String, u32> { "vertex-position", static_cast<u32>(offsetof(engine::gfx::vertex, position)) }
+		std::pair<String, u32> { "vertex-position", static_cast<u32>(offsetof(engine::graphics::vertex, position)) }
 	};
 
 	vertexStage->setIntermediate(

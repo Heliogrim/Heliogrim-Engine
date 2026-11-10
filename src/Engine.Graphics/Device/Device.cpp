@@ -15,7 +15,7 @@
 #include "../Memory/VkAllocator.hpp"
 #include "../Surface/Surface.hpp"
 
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 #ifdef _DEBUG

@@ -9,13 +9,13 @@
 
 #include "__fwd.hpp"
 
-namespace hg::editor::gfx::loader {
+namespace hg::editor::graphics::loader {
 	/**/
 
 	using TextureSourceLoader = ::hg::engine::resource::loader::SourceLoader;
 	using EditorTextureLoaderType = ::hg::engine::resource::loader::LoaderChain<
 		::hg::engine::assets::TextureAsset,
-		::hg::engine::gfx::TextureResource,
+		::hg::engine::graphics::TextureResource,
 		::hg::engine::resource::loader::MetaTypeWrapperList<
 			std::type_identity_t,
 			std::type_identity_t,
@@ -37,8 +37,8 @@ namespace hg::editor::gfx::loader {
 
 	public:
 		EditorTextureLoader(
-			ref<::hg::engine::gfx::cache::GlobalCacheCtrl> cache_,
-			ref<::hg::engine::gfx::pool::GlobalResourcePool> pool_,
+			ref<::hg::engine::graphics::cache::GlobalCacheCtrl> cache_,
+			ref<::hg::engine::graphics::pool::GlobalResourcePool> pool_,
 			mref<sptr<TextureSourceLoader>> sourceLoader_
 		);
 	};

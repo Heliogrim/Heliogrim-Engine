@@ -6,7 +6,7 @@
 
 #include "ParameterIdentifier.hpp"
 
-namespace hg::engine::gfx::material {
+namespace hg::engine::graphics::material {
 	/**
 	 * Used for contextual resolved resources (i.e. camera data)
 	 */

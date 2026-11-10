@@ -5,7 +5,7 @@
 
 #include "Swapchain.hpp"
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	class VkSurfaceSwapchain final :
 		public Swapchain {
 	public:

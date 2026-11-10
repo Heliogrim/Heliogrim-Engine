@@ -5,10 +5,10 @@
 #include <Engine.Graphics/Cache/GlobalResourceCache.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 
-using namespace ::hg::editor::gfx::loader;
+using namespace ::hg::editor::graphics::loader;
 using namespace ::hg;
 
-EditorTextureCache::EditorTextureCache(ref<engine::gfx::cache::GlobalCacheCtrl> cacheCtrl_) :
+EditorTextureCache::EditorTextureCache(ref<engine::graphics::cache::GlobalCacheCtrl> cacheCtrl_) :
 	_cacheCtrl(std::addressof(cacheCtrl_)) {}
 
 EditorTextureCache::~EditorTextureCache() = default;
@@ -20,7 +20,7 @@ bool EditorTextureCache::contains(nmpt<const engine::assets::TextureAsset> asset
 EditorTextureCache::cache_result_type EditorTextureCache::query(
 	nmpt<const engine::assets::TextureAsset> asset_
 ) const noexcept {
-	return cache_result_type { engine::gfx::cache::QueryResultType::eMiss, nullptr };
+	return cache_result_type { engine::graphics::cache::QueryResultType::eMiss, nullptr };
 }
 
 bool EditorTextureCache::store(
@@ -58,7 +58,7 @@ EditorTextureCache::response_type::type EditorTextureCache::operator()(
 
 	const auto result = query(request_);
 
-	if (result == engine::gfx::cache::QueryResultType::eHit) {
+	if (result == engine::graphics::cache::QueryResultType::eHit) {
 		return result.value();
 	}
 
@@ -80,10 +80,10 @@ EditorTextureCache::stream_response_type::type EditorTextureCache::operator()(
 	cref<next_type> next_
 ) const {
 
-	engine::gfx::cache::TextureSubResource sub {};
+	engine::graphics::cache::TextureSubResource sub {};
 	if (
-		_cacheCtrl->markAsUsed(static_cast<ptr<const engine::gfx::TextureResource>>(request_.get()), std::move(sub)) ==
-		engine::gfx::cache::StreamCacheResultType::eResidential
+		_cacheCtrl->markAsUsed(static_cast<ptr<const engine::graphics::TextureResource>>(request_.get()), std::move(sub)) ==
+		engine::graphics::cache::StreamCacheResultType::eResidential
 	) {
 		// return result.value();
 		return;

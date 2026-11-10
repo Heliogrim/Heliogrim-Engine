@@ -19,14 +19,14 @@ namespace hg::engine::render::cmd {
 	class NativeBatch;
 }
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	class Texture;
 }
 
 namespace hg::engine::reflow::render {
 	struct ReflowOpaqueSubPassData {
 		accel::EffectCompileResult compiled = {};
-		uptr<gfx::TextureSampler> imageSampler = nullptr;
+		uptr<graphics::TextureSampler> imageSampler = nullptr;
 
 		streamoff vertexOffset = 0LL;
 		streamoff indexOffset = 0LL;
@@ -35,7 +35,7 @@ namespace hg::engine::reflow::render {
 
 	struct ReflowAlphaSubPassData {
 		accel::EffectCompileResult compiled = {};
-		uptr<gfx::TextureSampler> imageSampler = nullptr;
+		uptr<graphics::TextureSampler> imageSampler = nullptr;
 
 		streamoff vertexOffset = 0LL;
 		streamoff indexOffset = 0LL;
@@ -44,7 +44,7 @@ namespace hg::engine::reflow::render {
 
 	struct ReflowMsdfSubPassData {
 		accel::EffectCompileResult compiled = {};
-		uptr<gfx::TextureSampler> imageSampler = nullptr;
+		uptr<graphics::TextureSampler> imageSampler = nullptr;
 
 		streamoff vertexOffset = 0LL;
 		streamoff indexOffset = 0LL;
@@ -69,18 +69,18 @@ namespace hg::engine::reflow::render {
 	private:
 		u16 _lastRenderTick;
 
-		uptr<gfx::BufferLikeObject> _uiVertexBuffer;
-		uptr<gfx::BufferLikeObject> _uiIndexBuffer;
+		uptr<graphics::BufferLikeObject> _uiVertexBuffer;
+		uptr<graphics::BufferLikeObject> _uiIndexBuffer;
 
 		ReflowOpaqueSubPassData _opaqueSubPass;
 		ReflowAlphaSubPassData _alphaSubPass;
 		ReflowMsdfSubPassData _msdfSubPass;
 
-		smr<gfx::Texture> _depthImage;
-		smr<gfx::TextureResource> _defaultImage;
+		smr<graphics::Texture> _depthImage;
+		smr<graphics::TextureResource> _defaultImage;
 
 		smr<const accel::GraphicsPass> _graphicsPass;
-		uptr<gfx::Framebuffer> _framebuffer;
+		uptr<graphics::Framebuffer> _framebuffer;
 		vk::Semaphore _tmpSignal;
 
 		uptr<engine::render::cmd::NativeBatch> _nativeBatch;
@@ -97,16 +97,16 @@ namespace hg::engine::reflow::render {
 
 		void ensureGraphicsPass();
 
-		bool shouldChangeFrame(cref<smr<gfx::TextureLikeObject>> colorTarget_) const noexcept;
+		bool shouldChangeFrame(cref<smr<graphics::TextureLikeObject>> colorTarget_) const noexcept;
 
-		void ensureDepthBuffer(cref<gfx::TextureLikeObject> colorTarget_);
+		void ensureDepthBuffer(cref<graphics::TextureLikeObject> colorTarget_);
 
-		void ensureFramebuffer(mref<smr<gfx::TextureLikeObject>> colorTarget_);
+		void ensureFramebuffer(mref<smr<graphics::TextureLikeObject>> colorTarget_);
 
 		void updateVertices(
-			cref<std::span<gfx::uivertex>> opaque_,
-			cref<std::span<gfx::uivertex>> alpha_,
-			cref<std::span<gfx::uivertex>> msdf_
+			cref<std::span<graphics::uivertex>> opaque_,
+			cref<std::span<graphics::uivertex>> alpha_,
+			cref<std::span<graphics::uivertex>> msdf_
 		);
 
 		void updateIndices(

@@ -8,7 +8,7 @@
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
 #include <Heliogrim/Component/Scene/Light/SpotLightComponent.hpp>
 
-using namespace hg::engine::gfx::scene;
+using namespace hg::engine::graphics::scene;
 using namespace hg;
 
 SpotLightModel::SpotLightModel(const ptr<SceneComponent> owner_) :

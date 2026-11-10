@@ -27,19 +27,19 @@ namespace hg::engine::render {
 		~TmpDirectionalShadowPass() override;
 
 	private:
-		smr<gfx::material::MaterialEffect> _effect;
+		smr<graphics::material::MaterialEffect> _effect;
 		smr<const accel::GraphicsPass> _pass;
 		accel::EffectCompileResult _compiled;
 		vk::Semaphore _tmpSemaphore;
 
-		uptr<gfx::StorageBufferView> _staticInstanceView;
-		uptr<gfx::StorageBufferView> _sceneLightView;
-		uptr<gfx::StorageBufferView> _sceneShadowView;
+		uptr<graphics::StorageBufferView> _staticInstanceView;
+		uptr<graphics::StorageBufferView> _sceneLightView;
+		uptr<graphics::StorageBufferView> _sceneShadowView;
 
-		nmpt<const gfx::scene::DirectionalLightModel> _dirLightModel;
-		smr<gfx::Texture> _dirShadowMap;
-		smr<gfx::TextureView> _dirShadowCascades[4];
-		smr<gfx::Framebuffer> _framebuffer[4];
+		nmpt<const graphics::scene::DirectionalLightModel> _dirLightModel;
+		smr<graphics::Texture> _dirShadowMap;
+		smr<graphics::TextureView> _dirShadowCascades[4];
+		smr<graphics::Framebuffer> _framebuffer[4];
 
 		struct Resources {
 			graph::Subscribed<graph::SymbolizedResource> inSceneView;

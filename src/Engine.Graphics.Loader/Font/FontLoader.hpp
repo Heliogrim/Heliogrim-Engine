@@ -10,7 +10,7 @@
 
 #include "__fwd.hpp"
 
-namespace hg::engine::gfx::loader {
+namespace hg::engine::graphics::loader {
 	using FontSourceLoader = ::hg::engine::resource::loader::SourceLoader;
 
 	using FontLoaderType = resource::loader::LoaderChain<

@@ -3,7 +3,7 @@
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
-namespace hg::engine::gfx::cache {
+namespace hg::engine::graphics::cache {
     struct CacheStaticGeometrySubject {
     public:
         using this_type = CacheStaticGeometrySubject;

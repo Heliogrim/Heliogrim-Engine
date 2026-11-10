@@ -5,7 +5,7 @@
 
 #include "Traits.hpp"
 
-namespace hg::engine::gfx::loader {
+namespace hg::engine::graphics::loader {
 	class FontCache final : public resource::loader::Cache<assets::FontAsset, FontResource> {
 	public:
 		using this_type = FontCache;

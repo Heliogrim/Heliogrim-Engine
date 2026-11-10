@@ -16,8 +16,8 @@ namespace hg {
 		using this_type = CameraComponent;
 		using underlying_type = SceneComponent;
 
-		using CameraProjectMode = ::hg::engine::gfx::CameraProjectionMode;
-		using CameraViewMode = ::hg::engine::gfx::CameraViewMode;
+		using CameraProjectMode = ::hg::engine::graphics::CameraProjectionMode;
+		using CameraViewMode = ::hg::engine::graphics::CameraViewMode;
 
 		constexpr static ComponentTypeId typeId { "CameraComponent"_typeId };
 

@@ -5,7 +5,7 @@
 
 #include "Traits.hpp"
 
-namespace hg::engine::gfx::loader {
+namespace hg::engine::graphics::loader {
 	class FontTransformer final : public resource::loader::Transformer<assets::FontAsset, FontResource> {
 	public:
 		using this_type = FontTransformer;

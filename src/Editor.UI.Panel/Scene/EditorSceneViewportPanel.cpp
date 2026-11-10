@@ -118,7 +118,7 @@ static void configureViewport(cref<sptr<uikit::HorizontalLayout>> parent_) {
 	/**/
 
 	viewport->addResizeListener(
-		[instance = viewport.get()](mref<smr<engine::gfx::Swapchain>> prev_, mref<smr<engine::gfx::Swapchain>> next_) {
+		[instance = viewport.get()](mref<smr<engine::graphics::Swapchain>> prev_, mref<smr<engine::graphics::Swapchain>> next_) {
 
 			if (not instance->hasMountedRenderTarget()) {
 				return;

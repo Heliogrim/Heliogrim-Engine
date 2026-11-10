@@ -4,7 +4,7 @@
 #include <Heliogrim/Component/Scene/Geometry/StaticGeometryComponent.hpp>
 
 using namespace hg::engine::render;
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 SkeletalGeometryModel::SkeletalGeometryModel(const ptr<SceneComponent> owner_) :

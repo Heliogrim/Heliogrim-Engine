@@ -14,7 +14,7 @@ namespace hg::engine::render {
 	class RenderSceneSystem;
 }
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	class SceneResourcePool {
 	public:
 		using this_type = SceneResourcePool;

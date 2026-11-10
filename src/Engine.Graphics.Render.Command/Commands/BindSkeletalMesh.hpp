@@ -5,7 +5,7 @@
 
 #include "../RenderCommand.hpp"
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
     class Mesh;
 }
 
@@ -16,7 +16,7 @@ namespace hg::engine::render::cmd {
         using this_type = BindSkeletalMeshRCmd;
 
     public:
-        constexpr BindSkeletalMeshRCmd(mref<const nmpt<const gfx::Mesh>> skeletalMesh_) noexcept :
+        constexpr BindSkeletalMeshRCmd(mref<const nmpt<const graphics::Mesh>> skeletalMesh_) noexcept :
             RenderCommand(),
             _skeletalMesh(std::move(skeletalMesh_)) {}
 
@@ -24,7 +24,7 @@ namespace hg::engine::render::cmd {
 
     private:
     public:
-        const nmpt<const gfx::Mesh> _skeletalMesh;
+        const nmpt<const graphics::Mesh> _skeletalMesh;
 
     public:
         void operator()(

@@ -3,7 +3,7 @@
 #include <span>
 #include <Engine.Resource/FileTypeId.hpp>
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	namespace ImageFileType {
 		extern const res::FileTypeId Exr;// TODO: Check for support
 		extern const res::FileTypeId Hdr;// TODO: Check for support

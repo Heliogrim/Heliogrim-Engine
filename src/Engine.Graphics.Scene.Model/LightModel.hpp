@@ -3,7 +3,7 @@
 #include <Engine.Graphics.Render.Subpass/Light/LightCaptureInterface.hpp>
 #include <Engine.Render.Scene/RenderSceneSystemModel.hpp>
 
-namespace hg::engine::gfx::scene {
+namespace hg::engine::graphics::scene {
     class LightModel :
         public InheritMeta<LightModel, render::RenderSceneSystemModel> {
     public:
