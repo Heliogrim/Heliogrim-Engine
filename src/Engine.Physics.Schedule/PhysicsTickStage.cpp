@@ -4,7 +4,7 @@
 #include <Engine.Core/Timing.hpp>
 #include <Engine.Core/Universe.hpp>
 #include <Engine.Core/UniverseContext.hpp>
-#include <Engine.PFX/jolt.inc.hpp>
+#include <Engine.Physics/jolt.inc.hpp>
 #include <Engine.Physics.Scene/PhysicsSceneSystem.hpp>
 #include <Engine.Scene/SceneBase.hpp>
 #include <Jolt/Core/JobSystemSingleThreaded.h>
