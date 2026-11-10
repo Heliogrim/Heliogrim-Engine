@@ -1,5 +1,7 @@
 #include "ExtendedStorageSystem.hpp"
 
+#include <Engine.Async/Lock/SharedLock.hpp>
+
 using namespace hg::engine::storage;
 using namespace hg;
 
@@ -15,6 +17,8 @@ Result<void, IoMutationGuard<void>::error_type> ExtendedStorageSystem::execMutat
 	// Warning: Should have been called already while `fetching` query_.prepare()
 	auto acqResult = query_.acquire(context);
 	if (not acqResult.has_value()) {
+		// Note: Invalidate defensively; mutation stages are not cached.
+		context.stacks.invalidateFrom(query_.primary());
 		return Unexpected { IoMutationGuard<void>::error_type { ::hg::move(acqResult).error() } };
 	}
 
@@ -22,6 +26,7 @@ Result<void, IoMutationGuard<void>::error_type> ExtendedStorageSystem::execMutat
 
 	/* auto relResult = */
 	query_.release(context);
+	context.stacks.invalidateFrom(query_.primary());
 	// Warning: query_.cleanup() should be auto called after guard release.
 
 	return {};
@@ -39,12 +44,15 @@ Result<Mutation::exec_valreturn_type, IoMutationGuard<void>::error_type> Extende
 	// Error: unknown file: error: SEH exception with code 0xc0000005 thrown in the test body.
 	auto acqResult = mutation_.acquire(context);
 	if (not acqResult.has_value()) {
+		// Note: Invalidate defensively; mutation stages are not cached.
+		context.stacks.invalidateFrom(mutation_.primary());
 		return Unexpected { IoMutationGuard<void>::error_type { ::hg::move(acqResult).error() } };
 	}
 
 	auto execResult = mutation_.exec(::hg::move(mutationFn_));
 
 	mutation_.release(context);
+	context.stacks.invalidateFrom(mutation_.primary());
 	// Warning: query_.cleanup() should be auto called after guard release.
 
 	return Expected { ::hg::move(execResult) };
@@ -58,6 +66,9 @@ Result<void, IoQueryGuard<void>::error_type> ExtendedStorageSystem::execQuery(
 	auto& context = _context;
 
 	/**/
+
+	// Note: Readers share the primary's stack lock until release; commits take it exclusively.
+	const auto stackLock = concurrent::SharedLock { context.stacks.lockOf(query_.primary()) };
 
 	// Warning: Should have been called already while `fetching` query_.prepare()
 	auto acqResult = query_.acquire(context);
@@ -83,6 +94,9 @@ Result<Query::exec_valreturn_type, IoQueryGuard<void>::error_type> ExtendedStora
 	auto& context = _context;
 
 	/**/
+
+	// Note: Readers share the primary's stack lock until release; commits take it exclusively.
+	const auto stackLock = concurrent::SharedLock { context.stacks.lockOf(query_.primary()) };
 
 	// Warning: Should have been called already while `fetching` query_.prepare()
 	auto acqResult = query_.acquire(context);

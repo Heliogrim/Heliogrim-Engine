@@ -4,6 +4,7 @@
 #include <Engine.Pedantic.Resource/AccessMode.hpp>
 #include <Engine.Storage.Action/Context.hpp>
 #include <Engine.Storage.Action/Access/ExclusiveIoResource.hpp>
+#include <Engine.Storage.Action/Access/SharedReadIoResource.hpp>
 
 using namespace hg::engine::storage;
 using namespace hg::engine::resource;
@@ -64,47 +65,25 @@ void engine::storage::releaseStaticMemBlobMutation(
 /**/
 
 Result<IoResourceAccessor<const ByteSpanBlob>, Query::acq_error_type> engine::storage::resolveStaticMemVoid2MemBlobQuery(
-	ref<Context> ctx_,
+	[[maybe_unused]] ref<Context> ctx_,
 	cref<Arci<system::MemoryStorage>> storage_
 ) {
-	using resolve_type = std::function<ref<ByteSpanBlob>(ResourceAccessMode)>;
-	using resource_type = decltype(ExclusiveIoResource { std::declval<resolve_type>() });
-
-	/**/
-
 	const auto& memory = storage_->_memory;
-
 	auto value = Rc<ByteSpanBlob>::create(memory.touchedSpan(), memory.touched());
-	auto cachedValue = ctx_.objectStore.add(
-		clone(storage_).into<IStorage>(),
-		move(value),
-		std::addressof(storage_->_memory)
+	return Expected(
+		acquireSharedReadonly(
+			[_obj = move(value)](ResourceAccessMode) -> ref<const ByteSpanBlob> {
+				return *_obj;
+			}
+		)
 	);
-
-	/**/
-
-	auto resolver = [_obj = move(cachedValue)](ResourceAccessMode) mutable -> ref<ByteSpanBlob> {
-		return *_obj;
-	};
-
-	/**/
-
-	auto resource = Rc<resource_type>::create(move(resolver));
-	auto storedResource = ctx_.accessStore.add(clone(storage_).into<IStorage>(), hg::move(resource));
-
-	/**/
-
-	return Expected(storedResource->acquireReadonly());
 }
 
 void engine::storage::releaseStaticMemBlobQuery(
-	ref<Context> ctx_,
-	cref<Arci<system::MemoryStorage>> storage_,
+	[[maybe_unused]] ref<Context> ctx_,
+	[[maybe_unused]] cref<Arci<system::MemoryStorage>> storage_,
 	mref<IoResourceAccessor<const resource::ByteSpanBlob>> accessor_
 ) {
-	auto deferred = ctx_.accessStore.drop(clone(storage_).into<IStorage>());
-	ctx_.objectStore.invalidate(clone(storage_).into<IStorage>());
-
+	// Note: The shared resource owns the object and dies with its last accessor.
 	::hg::forward<decltype(accessor_)>(accessor_).reset();
-	::hg::discard(::hg::move(deferred));
 }

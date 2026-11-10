@@ -125,6 +125,7 @@ Opt<cref<std::pair<StageTypeInfo, UniquePtr<StageResolutionFactory<ComposeStageT
 		.input = nextLevelCandidates.front().resource
 	};
 	auto factory = make_uptr<StageResolutionFactory<ComposeStageType>>(::hg::move(covariantCandidates));
+	factory->resourceType = stageResource.meta->typeId();
 
 	/**/
 
@@ -465,6 +466,8 @@ void StorageActionResolver::useStage(
 	mref<StageTypeInfo> stageTypeInfo_,
 	mref<UniquePtr<StageResolutionFactory<DynamicStage>>> factory_
 ) {
+
+	factory_->resourceType = stageTypeInfo_.resource.meta->typeId();
 
 	const auto existing = findInStore(stageStore.dynamicResolved, stageTypeInfo_);
 	if (existing != stageStore.dynamicResolved.end()) {

@@ -4,6 +4,7 @@
 #include <Engine.Pedantic.Resource/AccessMode.hpp>
 #include <Engine.Storage.Action/Context.hpp>
 #include <Engine.Storage.Action/Access/ExclusiveIoResource.hpp>
+#include <Engine.Storage.Action/Access/SharedReadIoResource.hpp>
 #include <Engine.Storage.Package/Factory.hpp>
 #include <Engine.Storage.Package/Processor.hpp>
 #include <Engine.Storage.Package/Store.hpp>
@@ -96,20 +97,10 @@ Result<
 	IoResourceAccessor<const ReadonlyPackage>,
 	Query::acq_error_type
 > engine::storage::resolveStaticPackBlob2PackQuery(
-	ref<Context> ctx_,
-	cref<Arci<system::PackageStorage>> storage_,
+	[[maybe_unused]] ref<Context> ctx_,
+	[[maybe_unused]] cref<Arci<system::PackageStorage>> storage_,
 	cref<IoResourceAccessor<const Blob>> accessor_
 ) {
-	using resolve_readonly_type = std::function<ref<const ReadonlyPackage>(ResourceAccessMode)>;
-	using resolve_read_write_type = std::function<ref<ReadWritePackage>(ResourceAccessMode)>;
-
-	using resource_type = decltype(ExclusiveIoResource {
-		std::declval<resolve_read_write_type>(),
-		std::declval<resolve_readonly_type>()
-	});
-
-	/**/
-
 	auto value = Rc<ReadonlyPackage> {};
 	if (accessor_->size() < 1uLL) {
 		value = Rc<ReadonlyPackage>::create(package::make_readonly_package(accessor_.get()));
@@ -118,39 +109,23 @@ Result<
 		value = Rc<ReadonlyPackage>::create(package::reconstruct_readonly_package(accessor_.get()));
 	}
 
-	auto cachedValue = ctx_.objectStore.add(
-		clone(storage_).into<IStorage>(),
-		hg::move(value),
-		std::addressof(accessor_.get())
-	);
-
 	/**/
 
-	auto resolveReadonly = [_obj = hg::move(cachedValue)](ResourceAccessMode) mutable -> ref<ReadonlyPackage> {
+	auto resolveReadonly = [_obj = hg::move(value)](ResourceAccessMode) -> ref<const ReadonlyPackage> {
 		return *_obj;
 	};
 	auto resolveReadWrite = [](ResourceAccessMode) -> ref<ReadWritePackage> {
 		panic();
 	};
 
-	/**/
-
-	auto resource = Rc<resource_type>::create(move(resolveReadWrite), move(resolveReadonly));
-	auto storedResource = ctx_.accessStore.add(clone(storage_).into<IStorage>(), hg::move(resource));
-
-	/**/
-
-	return Expected(storedResource->acquireReadonly());
+	return Expected(acquireSharedReadonly(::hg::move(resolveReadWrite), ::hg::move(resolveReadonly)));
 }
 
 void engine::storage::releaseStaticPackQuery(
-	ref<Context> ctx_,
-	cref<Arci<system::PackageStorage>> storage_,
+	[[maybe_unused]] ref<Context> ctx_,
+	[[maybe_unused]] cref<Arci<system::PackageStorage>> storage_,
 	mref<IoResourceAccessor<const resource::ReadonlyPackage>> accessor_
 ) {
-	auto deferred = ctx_.accessStore.drop(clone(storage_).into<IStorage>());
-	ctx_.objectStore.invalidate(clone(storage_).into<IStorage>());
-
+	// Note: The shared resource owns the object and dies with its last accessor.
 	::hg::forward<decltype(accessor_)>(accessor_).reset();
-	::hg::discard(::hg::move(deferred));
 }
