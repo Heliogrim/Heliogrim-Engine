@@ -41,9 +41,9 @@ void Audio::registerImporter() {
 	const auto manager { _engine->getResources() };
 
 	//
-	manager->importer().registerImporter(sfx::AudioFileType::Flac, make_sptr<sfx::FlacImporter>());
-	manager->importer().registerImporter(sfx::AudioFileType::Ogg, make_sptr<sfx::VorbisImporter>());
-	manager->importer().registerImporter(sfx::AudioFileType::Wav, make_sptr<sfx::WavImporter>());
+	manager->importer().registerImporter(audio::AudioFileType::Flac, make_sptr<audio::FlacImporter>());
+	manager->importer().registerImporter(audio::AudioFileType::Ogg, make_sptr<audio::VorbisImporter>());
+	manager->importer().registerImporter(audio::AudioFileType::Wav, make_sptr<audio::WavImporter>());
 }
 
 void Audio::unregisterImporter() {
@@ -51,7 +51,7 @@ void Audio::unregisterImporter() {
 	const auto manager { _engine->getResources() };
 
 	/**/
-	manager->importer().unregisterImporter(sfx::AudioFileType::Flac);
-	manager->importer().unregisterImporter(sfx::AudioFileType::Ogg);
-	manager->importer().unregisterImporter(sfx::AudioFileType::Wav);
+	manager->importer().unregisterImporter(audio::AudioFileType::Flac);
+	manager->importer().unregisterImporter(audio::AudioFileType::Ogg);
+	manager->importer().unregisterImporter(audio::AudioFileType::Wav);
 }

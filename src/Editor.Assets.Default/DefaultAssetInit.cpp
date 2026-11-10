@@ -8,7 +8,7 @@
 #include <Engine.Assets.Type/Material/GraphicsMaterial.hpp>
 #include <Engine.Assets.Type/Material/GraphicsMaterialPrototype.hpp>
 #include <Engine.Assets.Type/Material/PhysicsMaterial.hpp>
-#include <Engine.Assets.Type/Material/SfxMaterial.hpp>
+#include <Engine.Assets.Type/Material/AudioMaterial.hpp>
 #include <Engine.Assets.Type/Texture/FontAsset.hpp>
 #include <Engine.Assets.Type/Texture/ImageAsset.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>

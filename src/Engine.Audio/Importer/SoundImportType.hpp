@@ -3,7 +3,7 @@
 
 #include "../AudioFormat.hpp"
 
-namespace hg::engine::sfx {
+namespace hg::engine::audio {
     struct SoundImportType {
         /** Defines the amount of supplied channels */
         u8 channels = 0u;

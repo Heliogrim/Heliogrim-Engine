@@ -3,7 +3,7 @@
 #include <Engine.Assets.Type/Material/GraphicsMaterial.hpp>
 #include <Engine.Assets.Type/Material/GraphicsMaterialPrototype.hpp>
 #include <Engine.Assets.Type/Material/PhysicsMaterial.hpp>
-#include <Engine.Assets.Type/Material/SfxMaterial.hpp>
+#include <Engine.Assets.Type/Material/AudioMaterial.hpp>
 
 #include "TypedAssetHandle.hpp"
 
@@ -11,7 +11,7 @@ namespace hg::engine::assets {
 	class GraphicsMaterial;
 	class GraphicsMaterialPrototype;
 	class PhysicsMaterial;
-	class SfxMaterial;
+	class AudioMaterial;
 }
 
 namespace hg {
@@ -33,8 +33,8 @@ namespace hg {
 		using TypedAssetHandle::TypedAssetHandle;
 	};
 
-	class SfxMaterialAssetHandle final :
-		public TypedAssetHandle<::hg::engine::assets::SfxMaterial> {
+	class AudioMaterialAssetHandle final :
+		public TypedAssetHandle<::hg::engine::assets::AudioMaterial> {
 	public:
 		using TypedAssetHandle::TypedAssetHandle;
 	};
@@ -55,5 +55,5 @@ namespace hg {
 
 	template <>
 	template <>
-	AssetTypeId TypedAssetHandle<engine::assets::SfxMaterial>::getStaticTypeId<engine::assets::SfxMaterial>() noexcept;
+	AssetTypeId TypedAssetHandle<engine::assets::AudioMaterial>::getStaticTypeId<engine::assets::AudioMaterial>() noexcept;
 }

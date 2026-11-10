@@ -1,5 +1,5 @@
 #pragma once
 
-namespace hg::engine::sfx {
+namespace hg::engine::audio {
     struct SoundImporterDescriptor { };
 }

@@ -4,7 +4,7 @@
 #include "SoundImporterDescriptor.hpp"
 #include "SoundImportType.hpp"
 
-namespace hg::engine::sfx {
+namespace hg::engine::audio {
     class SoundImporter :
         public res::Importer<SoundImportType, SoundImporterDescriptor> {
     public:

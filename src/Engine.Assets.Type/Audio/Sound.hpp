@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Engine.Common/String.hpp>
-#include <Engine.SFX/AudioFormat.hpp>
+#include <Engine.Audio/AudioFormat.hpp>
 
 #include "../Asset.hpp"
 
@@ -25,7 +25,7 @@ namespace hg::engine::assets {
 		u8 _channel;
 
 	private:
-		sfx::AudioFormat _format;
+		audio::AudioFormat _format;
 
 	private:
 		u32 _sampleRate;
