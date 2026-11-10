@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Engine.Common/Algo/Search.hpp>
+
 #include "Relation.hpp"
 #include "Table.hpp"
 
@@ -88,14 +90,14 @@ namespace hg {
 			// Threshold where to switch between linear and binary search
 			constexpr size_t threshold = 56;
 			if constexpr (Size_ < threshold) {
-				return std::ranges::find_if(
+				return FindIf(
 					_table,
 					[key_](ref<const typename table_type::node_type> node_) constexpr {
 						return node_->first == key_;
 					}
 				);
 			} else {
-				return std::ranges::lower_bound(
+				return LowerBound(
 					_table,
 					key_,
 					CompileLess<key_type> {},
