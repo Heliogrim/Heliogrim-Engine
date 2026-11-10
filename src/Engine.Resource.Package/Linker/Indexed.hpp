@@ -4,13 +4,13 @@
 #include "PackageArchiveHeader.hpp"
 
 namespace hg::engine::resource::package {
-	#pragma push
+	#pragma pack(push)
 	#pragma pack(1)
 	struct Indexed {
 		LinkedDataSpan data;
 		PackageArchiveHeader header;
 	};
-	#pragma pop
+	#pragma pack(pop)
 
 	static_assert(sizeof(Indexed) == (8 + 8 + 1 + 15));
 }
