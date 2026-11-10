@@ -6,6 +6,7 @@
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Common/GuidFormat.hpp>
+#include <Engine.Asserts/Todo.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Filesystem/Url.hpp>

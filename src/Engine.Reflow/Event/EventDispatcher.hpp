@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Collection/Stack.hpp>
 
 #include "EventResponse.hpp"
 #include "../Widget/__fwd.hpp"
