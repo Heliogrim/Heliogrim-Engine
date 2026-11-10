@@ -1,12 +1,13 @@
 #pragma once
 
 #include <atomic>
-#include <mutex>
+#include <stdexcept>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Scheduler/Thread/Thread.hpp>
 
+#include "../Meta/LockTag.hpp"
+
 namespace hg::concurrent {
-	constexpr static inline std::defer_lock_t defer_lock {};
 	using SpinMutex = std::atomic_flag;
 
 	/**/
@@ -19,7 +20,7 @@ namespace hg::concurrent {
 			lock();
 		}
 
-		explicit SpinLock(SpinMutex& mtx_, std::defer_lock_t) noexcept :
+		explicit SpinLock(SpinMutex& mtx_, defer_lock_t) noexcept :
 			_flag(mtx_),
 			_owns(false) {}
 

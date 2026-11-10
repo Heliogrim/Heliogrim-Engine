@@ -4,7 +4,7 @@
 
 #include <atomic>
 #include <memory>
-#include <mutex>
+#include <Engine.Async/Lock/UniqueLock.hpp>
 #include <Engine.Async/Primitive/FiberMutex.hpp>
 #include <Engine.Scheduler/Scheduler.hpp>
 #include <Engine.Scheduler/Task/Task.hpp>
@@ -37,7 +37,7 @@ namespace AsyncModule {
 
 	TEST(FiberMutex, ScopedLockCompiles) {
 		concurrent::FiberMutex mtx {}; {
-			std::scoped_lock<concurrent::FiberMutex> guard { mtx };
+			concurrent::UniqueLock<concurrent::FiberMutex> guard { mtx };
 		}
 		EXPECT_TRUE(mtx.try_lock());
 		unlockUnchecked(mtx);
