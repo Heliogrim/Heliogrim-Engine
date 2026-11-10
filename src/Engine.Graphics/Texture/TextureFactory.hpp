@@ -6,7 +6,7 @@
 #include "../vkinc.hpp"
 #include "../Device/Device.hpp"
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	struct TextureBuildPayload {
 		/**
 		 * Extent ( Width | Height | Depth )

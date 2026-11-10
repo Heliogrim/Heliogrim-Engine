@@ -7,7 +7,7 @@
 #include "../Parameter/ConstantNodeParameter.hpp"
 #include "../NodeOutput.hpp"
 
-namespace hg::editor::gfx::graph::nodes {
+namespace hg::editor::graphics::graph::nodes {
 	class ConstantInputNode :
 		public Node {
 	public:

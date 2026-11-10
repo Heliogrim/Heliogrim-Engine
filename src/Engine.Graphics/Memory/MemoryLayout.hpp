@@ -4,7 +4,7 @@
 
 #include "MemoryProperty.hpp"
 
-namespace hg::engine::gfx::memory {
+namespace hg::engine::graphics::memory {
     struct MemoryLayout final {
         u64 align;
         MemoryProperties props;
@@ -20,8 +20,8 @@ namespace hg::engine::gfx::memory {
 
 namespace std {
     template <>
-    struct hash<hg::engine::gfx::memory::MemoryLayout> {
-        [[nodiscard]] size_t operator()(hg::cref<hg::engine::gfx::memory::MemoryLayout> obj_) const noexcept {
+    struct hash<hg::engine::graphics::memory::MemoryLayout> {
+        [[nodiscard]] size_t operator()(hg::cref<hg::engine::graphics::memory::MemoryLayout> obj_) const noexcept {
             return (hg::u64 { obj_.typeBits } << 32uLL) ^
                 (obj_.align << 6uLL) ^
                 static_cast<hg::u64>(obj_.props.unwrap);

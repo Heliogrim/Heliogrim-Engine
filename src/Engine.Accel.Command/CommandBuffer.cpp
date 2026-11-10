@@ -8,7 +8,7 @@
 #include <Engine.Graphics/Framebuffer/Framebuffer.hpp>
 
 using namespace hg::engine::accel;
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 AccelCommandBuffer::AccelCommandBuffer(mref<CommandBuffer> commandBuffer_) noexcept :

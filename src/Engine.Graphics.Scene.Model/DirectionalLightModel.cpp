@@ -8,7 +8,7 @@
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
 #include <Heliogrim/Component/Scene/Light/DirectionalLightComponent.hpp>
 
-using namespace hg::engine::gfx::scene;
+using namespace hg::engine::graphics::scene;
 using namespace hg;
 
 DirectionalLightModel::DirectionalLightModel(const ptr<SceneComponent> owner_) :

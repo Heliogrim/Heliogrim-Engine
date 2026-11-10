@@ -89,12 +89,12 @@ void render::ReflowPass::destroy() noexcept {
 	}
 
 	if (_uiVertexBuffer) {
-		Cast<gfx::Buffer>(_uiVertexBuffer.get())->destroy();
+		Cast<graphics::Buffer>(_uiVertexBuffer.get())->destroy();
 		_uiVertexBuffer.reset();
 	}
 
 	if (_uiIndexBuffer) {
-		Cast<gfx::Buffer>(_uiIndexBuffer.get())->destroy();
+		Cast<graphics::Buffer>(_uiIndexBuffer.get())->destroy();
 		_uiIndexBuffer.reset();
 	}
 
@@ -121,7 +121,7 @@ void render::ReflowPass::resolve() noexcept {
 		_opaqueSubPass.compiled = build_test_opaque_pipeline(clone(_graphicsPass));
 
 		if (_opaqueSubPass.imageSampler == nullptr) {
-			_opaqueSubPass.imageSampler = make_uptr<gfx::TextureSampler>();
+			_opaqueSubPass.imageSampler = make_uptr<graphics::TextureSampler>();
 			_opaqueSubPass.imageSampler->setup(Engine::getEngine()->getGraphics()->getCurrentDevice());
 		}
 	}
@@ -130,7 +130,7 @@ void render::ReflowPass::resolve() noexcept {
 		_alphaSubPass.compiled = build_test_alpha_pipeline(clone(_graphicsPass));
 
 		if (_alphaSubPass.imageSampler == nullptr) {
-			_alphaSubPass.imageSampler = make_uptr<gfx::TextureSampler>();
+			_alphaSubPass.imageSampler = make_uptr<graphics::TextureSampler>();
 			_alphaSubPass.imageSampler->setup(Engine::getEngine()->getGraphics()->getCurrentDevice());
 		}
 	}
@@ -139,7 +139,7 @@ void render::ReflowPass::resolve() noexcept {
 		//_msdfSubPass.compiled = build_test_msdf_pipeline(clone(_graphicsPass));
 
 		if (_msdfSubPass.imageSampler == nullptr) {
-			_msdfSubPass.imageSampler = make_uptr<gfx::TextureSampler>();
+			_msdfSubPass.imageSampler = make_uptr<graphics::TextureSampler>();
 			_msdfSubPass.imageSampler->setup(Engine::getEngine()->getGraphics()->getCurrentDevice());
 		}
 	}
@@ -148,8 +148,8 @@ void render::ReflowPass::resolve() noexcept {
 void render::ReflowPass::execute(cref<engine::render::graph::ScopedSymbolContext> symCtx_) noexcept {
 
 	const auto sceneColor = symCtx_.getExportSymbol(makeSceneColorSymbol());
-	const auto sceneColorRes = sceneColor->load<smr<gfx::TextureLikeObject>>();
-	const auto sceneColorTex = Cast<gfx::Texture>(sceneColorRes.get());
+	const auto sceneColorRes = sceneColor->load<smr<graphics::TextureLikeObject>>();
+	const auto sceneColorTex = Cast<graphics::Texture>(sceneColorRes.get());
 
 	/**/
 
@@ -164,7 +164,7 @@ void render::ReflowPass::execute(cref<engine::render::graph::ScopedSymbolContext
 
 	ptr<const UISceneModel> uiModel = nullptr; {
 		auto sceneViewRes = symCtx_.getImportSymbol(makeSceneViewSymbol());
-		auto sceneView = sceneViewRes->load<smr<const gfx::scene::SceneView>>();
+		auto sceneView = sceneViewRes->load<smr<const graphics::scene::SceneView>>();
 
 		const auto sys = sceneView->getRenderSceneSystem();
 		sys->getRegistry().forEach<UISceneModel>(
@@ -328,16 +328,16 @@ void render::ReflowPass::ensureDefaultImage() {
 	/**/
 
 	auto request = static_cast<ptr<assets::TextureAsset>>(asset->get());
-	auto resource = Engine::getEngine()->getResources()->loader().load<assets::TextureAsset, gfx::TextureResource>(
+	auto resource = Engine::getEngine()->getResources()->loader().load<assets::TextureAsset, graphics::TextureResource>(
 		std::move(request)
 	);
 
 	auto guard = resource->acquire(resource::ResourceUsageFlag::eAll);
-	auto* const image = Cast<gfx::SparseTextureView>(guard->get());
+	auto* const image = Cast<graphics::SparseTextureView>(guard->get());
 	assert(image);
 
 	if (not image->vkImageView()) {
-		engine::gfx::TextureFactory::get()->buildView(*image, { .type = TextureType::e2d });
+		engine::graphics::TextureFactory::get()->buildView(*image, { .type = TextureType::e2d });
 	}
 
 	_defaultImage = std::move(resource);
@@ -361,7 +361,7 @@ void render::ReflowPass::ensureGraphicsPass() {
 	).value();
 }
 
-bool render::ReflowPass::shouldChangeFrame(cref<smr<gfx::TextureLikeObject>> colorTarget_) const noexcept {
+bool render::ReflowPass::shouldChangeFrame(cref<smr<graphics::TextureLikeObject>> colorTarget_) const noexcept {
 
 	if (_framebuffer == nullptr) {
 		return true;
@@ -378,7 +378,7 @@ bool render::ReflowPass::shouldChangeFrame(cref<smr<gfx::TextureLikeObject>> col
 	return false;
 }
 
-void render::ReflowPass::ensureDepthBuffer(cref<gfx::TextureLikeObject> colorTarget_) {
+void render::ReflowPass::ensureDepthBuffer(cref<graphics::TextureLikeObject> colorTarget_) {
 
 	if (_depthImage != nullptr) {
 		_depthImage.reset();
@@ -386,10 +386,10 @@ void render::ReflowPass::ensureDepthBuffer(cref<gfx::TextureLikeObject> colorTar
 
 	/**/
 
-	const auto* const factory = gfx::TextureFactory::get();
+	const auto* const factory = graphics::TextureFactory::get();
 	auto texture = switchType(
 		std::addressof(colorTarget_),
-		[factory](const ptr<const gfx::Texture> texture_) {
+		[factory](const ptr<const graphics::Texture> texture_) {
 			return factory->build(
 				{
 					math::uivec3 { texture_->width(), texture_->height(), 1uL },
@@ -412,10 +412,10 @@ void render::ReflowPass::ensureDepthBuffer(cref<gfx::TextureLikeObject> colorTar
 	);
 
 	factory->buildView(texture, { .layers = { 0L, 1L }, .type = TextureType::e2d, .mipLevels = { 0L, 1L } });
-	_depthImage = make_smr<gfx::Texture>(std::move(texture));
+	_depthImage = make_smr<graphics::Texture>(std::move(texture));
 }
 
-void render::ReflowPass::ensureFramebuffer(mref<smr<gfx::TextureLikeObject>> colorTarget_) {
+void render::ReflowPass::ensureFramebuffer(mref<smr<graphics::TextureLikeObject>> colorTarget_) {
 
 	if (_framebuffer != nullptr) {
 		_framebuffer->device()->vkDevice().destroySemaphore(_tmpSignal);
@@ -423,9 +423,9 @@ void render::ReflowPass::ensureFramebuffer(mref<smr<gfx::TextureLikeObject>> col
 		_framebuffer.reset();
 	}
 
-	_framebuffer = make_uptr<gfx::Framebuffer>(Engine::getEngine()->getGraphics()->getCurrentDevice());
+	_framebuffer = make_uptr<graphics::Framebuffer>(Engine::getEngine()->getGraphics()->getCurrentDevice());
 
-	const auto* const texture = Cast<gfx::Texture>(colorTarget_.get());
+	const auto* const texture = Cast<graphics::Texture>(colorTarget_.get());
 	_framebuffer->addAttachment(clone(colorTarget_));
 	_framebuffer->addAttachment(clone(_depthImage));
 
@@ -437,26 +437,26 @@ void render::ReflowPass::ensureFramebuffer(mref<smr<gfx::TextureLikeObject>> col
 }
 
 void render::ReflowPass::updateVertices(
-	cref<std::span<gfx::uivertex>> opaque_,
-	cref<std::span<gfx::uivertex>> alpha_,
-	cref<std::span<gfx::uivertex>> msdf_
+	cref<std::span<graphics::uivertex>> opaque_,
+	cref<std::span<graphics::uivertex>> alpha_,
+	cref<std::span<graphics::uivertex>> msdf_
 ) {
 
-	const auto alphaVertexSize = alpha_.size() * sizeof(gfx::uivertex);
-	const auto opaqueVertexSize = opaque_.size() * sizeof(gfx::uivertex);
+	const auto alphaVertexSize = alpha_.size() * sizeof(graphics::uivertex);
+	const auto opaqueVertexSize = opaque_.size() * sizeof(graphics::uivertex);
 
 	const auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
 	const auto vertexSize = alphaVertexSize + opaqueVertexSize;
 
-	if (_uiVertexBuffer == nullptr || Cast<gfx::Buffer>(_uiVertexBuffer.get())->size < vertexSize) {
+	if (_uiVertexBuffer == nullptr || Cast<graphics::Buffer>(_uiVertexBuffer.get())->size < vertexSize) {
 
 		if (_uiVertexBuffer) {
-			Cast<gfx::Buffer>(_uiVertexBuffer.get())->destroy();
+			Cast<graphics::Buffer>(_uiVertexBuffer.get())->destroy();
 			_uiVertexBuffer.reset();
 		}
 
-		_uiVertexBuffer = make_uptr<gfx::Buffer>();
-		auto& next = *Cast<gfx::Buffer>(_uiVertexBuffer.get());
+		_uiVertexBuffer = make_uptr<graphics::Buffer>();
+		auto& next = *Cast<graphics::Buffer>(_uiVertexBuffer.get());
 
 		next.size = vertexSize;
 		next.usageFlags = vk::BufferUsageFlagBits::eVertexBuffer;
@@ -470,11 +470,11 @@ void render::ReflowPass::updateVertices(
 		next.buffer = device->vkDevice().createBuffer(bci);
 		assert(next.buffer);
 
-		[[maybe_unused]] auto allocResult = gfx::memory::allocate(
+		[[maybe_unused]] auto allocResult = graphics::memory::allocate(
 			*device->allocator(),
 			device,
 			next.buffer,
-			gfx::MemoryProperty::eHostVisible,
+			graphics::MemoryProperty::eHostVisible,
 			next.memory
 		);
 		next.bind();
@@ -482,30 +482,30 @@ void render::ReflowPass::updateVertices(
 
 	/**/
 
-	ref<gfx::Buffer> target = *Cast<gfx::Buffer>(_uiVertexBuffer.get());
+	ref<graphics::Buffer> target = *Cast<graphics::Buffer>(_uiVertexBuffer.get());
 	target.map(vertexSize, 0uLL);
 
 	/**/
 
 	_opaqueSubPass.vertexOffset = 0LL;
-	std::memcpy(target.memory->mapping, opaque_.data(), opaque_.size() * sizeof(gfx::uivertex));
+	std::memcpy(target.memory->mapping, opaque_.data(), opaque_.size() * sizeof(graphics::uivertex));
 
 	/**/
 
-	_alphaSubPass.vertexOffset = _opaqueSubPass.vertexOffset + opaque_.size() * sizeof(gfx::uivertex);
+	_alphaSubPass.vertexOffset = _opaqueSubPass.vertexOffset + opaque_.size() * sizeof(graphics::uivertex);
 	std::memcpy(
 		static_cast<const ptr<char>>(target.memory->mapping) + _alphaSubPass.vertexOffset,
 		alpha_.data(),
-		alpha_.size() * sizeof(gfx::uivertex)
+		alpha_.size() * sizeof(graphics::uivertex)
 	);
 
 	/**/
 
-	_msdfSubPass.vertexOffset = _alphaSubPass.vertexOffset + alpha_.size() * sizeof(gfx::uivertex);
+	_msdfSubPass.vertexOffset = _alphaSubPass.vertexOffset + alpha_.size() * sizeof(graphics::uivertex);
 	std::memcpy(
 		static_cast<const ptr<char>>(target.memory->mapping) + _msdfSubPass.vertexOffset,
 		msdf_.data(),
-		msdf_.size() * sizeof(gfx::uivertex)
+		msdf_.size() * sizeof(graphics::uivertex)
 	);
 
 	/**/
@@ -526,15 +526,15 @@ void render::ReflowPass::updateIndices(
 	const auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
 	const auto indexSize = opaqueIndexSize + alphaIndexSize + msdfIndexSize;
 
-	if (_uiIndexBuffer == nullptr || Cast<gfx::Buffer>(_uiIndexBuffer.get())->size < indexSize) {
+	if (_uiIndexBuffer == nullptr || Cast<graphics::Buffer>(_uiIndexBuffer.get())->size < indexSize) {
 
 		if (_uiIndexBuffer) {
-			Cast<gfx::Buffer>(_uiIndexBuffer.get())->destroy();
+			Cast<graphics::Buffer>(_uiIndexBuffer.get())->destroy();
 			_uiIndexBuffer.reset();
 		}
 
-		_uiIndexBuffer = make_uptr<gfx::Buffer>();
-		auto& next = *Cast<gfx::Buffer>(_uiIndexBuffer.get());
+		_uiIndexBuffer = make_uptr<graphics::Buffer>();
+		auto& next = *Cast<graphics::Buffer>(_uiIndexBuffer.get());
 
 		next.size = indexSize;
 		next.usageFlags = vk::BufferUsageFlagBits::eIndexBuffer;
@@ -548,11 +548,11 @@ void render::ReflowPass::updateIndices(
 		next.buffer = device->vkDevice().createBuffer(bci);
 		assert(next.buffer);
 
-		[[maybe_unused]] auto allocResult = gfx::memory::allocate(
+		[[maybe_unused]] auto allocResult = graphics::memory::allocate(
 			*device->allocator(),
 			device,
 			next.buffer,
-			gfx::MemoryProperty::eHostVisible,
+			graphics::MemoryProperty::eHostVisible,
 			next.memory
 		);
 		next.bind();
@@ -560,7 +560,7 @@ void render::ReflowPass::updateIndices(
 
 	/**/
 
-	auto& target = *Cast<gfx::Buffer>(_uiIndexBuffer.get());
+	auto& target = *Cast<graphics::Buffer>(_uiIndexBuffer.get());
 	target.map(indexSize, 0uLL);
 
 	/**/
@@ -638,11 +638,11 @@ void render::ReflowPass::captureOpaque(
 
 			/**/
 
-			auto* vb = Cast<gfx::Buffer>(_uiVertexBuffer.get());
-			auto* ib = Cast<gfx::Buffer>(_uiIndexBuffer.get());
+			auto* vb = Cast<graphics::Buffer>(_uiVertexBuffer.get());
+			auto* ib = Cast<graphics::Buffer>(_uiIndexBuffer.get());
 
 			cmd_.bindVertexBuffer(0uL, *vb, _opaqueSubPass.vertexOffset);
-			cmd_.bindIndexBuffer(static_cast<ref<gfx::IndexBuffer>>(*ib), _opaqueSubPass.indexOffset);
+			cmd_.bindIndexBuffer(static_cast<ref<graphics::IndexBuffer>>(*ib), _opaqueSubPass.indexOffset);
 		}
 	);
 
@@ -653,7 +653,7 @@ void render::ReflowPass::captureOpaque(
 	}
 
 	const auto defaultImageGuard = _defaultImage->acquire(resource::ResourceUsageFlag::eRead);
-	auto* const defaultImage = Cast<gfx::SparseTextureView>(defaultImageGuard->get());
+	auto* const defaultImage = Cast<graphics::SparseTextureView>(defaultImageGuard->get());
 
 	// UIDummy
 
@@ -696,7 +696,7 @@ void render::ReflowPass::captureOpaque(
 
 		/**/
 
-		const auto image = [&]() -> nmpt<gfx::TextureLikeObject> {
+		const auto image = [&]() -> nmpt<graphics::TextureLikeObject> {
 
 			if (idx < imageIt->first || idx >= imageIt->last) {
 				return defaultImage;
@@ -722,24 +722,24 @@ void render::ReflowPass::captureOpaque(
 
 		switchType(
 			image.get(),
-			[](const ptr<gfx::Texture> texture_) {
+			[](const ptr<graphics::Texture> texture_) {
 				if (not texture_->vkView()) {
-					gfx::TextureFactory::get()->buildView(*texture_);
+					graphics::TextureFactory::get()->buildView(*texture_);
 				}
 			},
-			[](const ptr<gfx::TextureView> view_) {
+			[](const ptr<graphics::TextureView> view_) {
 				if (not view_->owner()->vkView()) {
-					gfx::TextureFactory::get()->buildView(*view_->owner());
+					graphics::TextureFactory::get()->buildView(*view_->owner());
 				}
 			},
-			[](const ptr<gfx::SparseTexture> texture_) {
+			[](const ptr<graphics::SparseTexture> texture_) {
 				if (not texture_->_vkImageView) {
-					gfx::TextureFactory::get()->buildView(*texture_);
+					graphics::TextureFactory::get()->buildView(*texture_);
 				}
 			},
-			[](const ptr<gfx::SparseTextureView> view_) {
+			[](const ptr<graphics::SparseTextureView> view_) {
 				if (not view_->vkImageView()) {
-					gfx::TextureFactory::get()->buildView(*view_);
+					graphics::TextureFactory::get()->buildView(*view_);
 				}
 			}
 		);
@@ -804,11 +804,11 @@ void render::ReflowPass::captureAlpha(
 
 			/**/
 
-			auto* vb = Cast<gfx::Buffer>(_uiVertexBuffer.get());
-			auto* ib = Cast<gfx::Buffer>(_uiIndexBuffer.get());
+			auto* vb = Cast<graphics::Buffer>(_uiVertexBuffer.get());
+			auto* ib = Cast<graphics::Buffer>(_uiIndexBuffer.get());
 
 			cmd_.bindVertexBuffer(0uL, *vb, _alphaSubPass.vertexOffset);
-			cmd_.bindIndexBuffer(static_cast<ref<gfx::IndexBuffer>>(*ib), _alphaSubPass.indexOffset);
+			cmd_.bindIndexBuffer(static_cast<ref<graphics::IndexBuffer>>(*ib), _alphaSubPass.indexOffset);
 		}
 	);
 
@@ -819,7 +819,7 @@ void render::ReflowPass::captureAlpha(
 	}
 
 	const auto defaultImageGuard = _defaultImage->acquire(resource::ResourceUsageFlag::eRead);
-	auto* const defaultImage = Cast<gfx::SparseTextureView>(defaultImageGuard->get());
+	auto* const defaultImage = Cast<graphics::SparseTextureView>(defaultImageGuard->get());
 
 	// UIDummy
 
@@ -862,7 +862,7 @@ void render::ReflowPass::captureAlpha(
 
 		/**/
 
-		const auto image = [&]() -> nmpt<gfx::TextureLikeObject> {
+		const auto image = [&]() -> nmpt<graphics::TextureLikeObject> {
 
 			if (idx < imageIt->first || idx >= imageIt->last) {
 				return defaultImage;
@@ -888,24 +888,24 @@ void render::ReflowPass::captureAlpha(
 
 		switchType(
 			image.get(),
-			[](const ptr<gfx::Texture> texture_) {
+			[](const ptr<graphics::Texture> texture_) {
 				if (not texture_->vkView()) {
-					gfx::TextureFactory::get()->buildView(*texture_);
+					graphics::TextureFactory::get()->buildView(*texture_);
 				}
 			},
-			[](const ptr<gfx::TextureView> view_) {
+			[](const ptr<graphics::TextureView> view_) {
 				if (not view_->owner()->vkView()) {
-					gfx::TextureFactory::get()->buildView(*view_->owner());
+					graphics::TextureFactory::get()->buildView(*view_->owner());
 				}
 			},
-			[](const ptr<gfx::SparseTexture> texture_) {
+			[](const ptr<graphics::SparseTexture> texture_) {
 				if (not texture_->_vkImageView) {
-					gfx::TextureFactory::get()->buildView(*texture_);
+					graphics::TextureFactory::get()->buildView(*texture_);
 				}
 			},
-			[](const ptr<gfx::SparseTextureView> view_) {
+			[](const ptr<graphics::SparseTextureView> view_) {
 				if (not view_->vkImageView()) {
-					gfx::TextureFactory::get()->buildView(*view_);
+					graphics::TextureFactory::get()->buildView(*view_);
 				}
 			}
 		);

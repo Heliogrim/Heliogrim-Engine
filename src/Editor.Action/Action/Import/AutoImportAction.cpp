@@ -239,7 +239,7 @@ Opt<AutoImportInternalResult> autoImportBundle(
 	auto fileTypeIt = fileTypes.begin();
 	while (fileTypeIt != fileTypes.end()) {
 
-		if (std::ranges::contains(engine::gfx::ImageFileType::asSpan(), fileTypeIt->fileTypeId)) {
+		if (std::ranges::contains(engine::graphics::ImageFileType::asSpan(), fileTypeIt->fileTypeId)) {
 			autoImportCombinedImageTexture(
 				clone(fileTypeIt->fileTypeId),
 				engine::storage::FileUrl { bundleUrl_.scheme(), engine::fs::Path { fileTypeIt->filePath } },
@@ -260,7 +260,7 @@ Opt<AutoImportInternalResult> autoImportBundle(
 			break;
 		}
 
-		if (std::ranges::contains(engine::gfx::ModelFileType::asSpan(), fileTypeIt->fileTypeId)) {
+		if (std::ranges::contains(engine::graphics::ModelFileType::asSpan(), fileTypeIt->fileTypeId)) {
 			autoImportStaticGeometry(
 				clone(fileTypeIt->fileTypeId),
 				engine::storage::FileUrl { bundleUrl_.scheme(), engine::fs::Path { fileTypeIt->filePath } },
@@ -325,13 +325,13 @@ Opt<AutoImportInternalResult> autoImportFile(
 
 	/**/
 
-	if (std::ranges::contains(engine::gfx::ImageFileType::asSpan(), fileTypeId.value())) {
+	if (std::ranges::contains(engine::graphics::ImageFileType::asSpan(), fileTypeId.value())) {
 		result = autoImportCombinedImageTexture(std::move(fileTypeId.take().value()), fileUrl_, ::hg::move(importDestination_));
 
-	} else if (std::ranges::contains(engine::gfx::ModelFileType::asSpan(), fileTypeId.value())) {
+	} else if (std::ranges::contains(engine::graphics::ModelFileType::asSpan(), fileTypeId.value())) {
 		result = autoImportStaticGeometry(std::move(fileTypeId.take().value()), fileUrl_, ::hg::move(importDestination_));
 
-	} else if (std::ranges::contains(engine::gfx::FontFileType::asSpan(), fileTypeId.value())) {
+	} else if (std::ranges::contains(engine::graphics::FontFileType::asSpan(), fileTypeId.value())) {
 		result = autoImportFont(std::move(fileTypeId.take().value()), fileUrl_, ::hg::move(importDestination_));
 	}
 

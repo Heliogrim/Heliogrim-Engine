@@ -4,7 +4,7 @@
 #include <Engine.Resource/File.hpp>
 #include <Engine.Resource/Importer/Importer.hpp>
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	class FbxImporter :
 		public res::Importer<Arci<assets::StaticGeometry>, ptr<void>> {
 	public:

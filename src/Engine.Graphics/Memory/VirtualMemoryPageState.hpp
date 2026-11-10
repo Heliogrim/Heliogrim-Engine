@@ -2,7 +2,7 @@
 #include <Engine.Common/Flag.hpp>
 #include <Engine.Common/Types.hpp>
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
     enum class VirtualMemoryPageState: u8 {
         eUnloaded = 0x0,
         eTransient = 0x1,

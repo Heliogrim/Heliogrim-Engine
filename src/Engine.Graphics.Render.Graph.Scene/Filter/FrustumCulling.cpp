@@ -3,7 +3,7 @@
 using namespace hg::engine::render::graph;
 using namespace hg;
 
-void FrustumCullingFilter::update(cref<gfx::scene::SceneView> sceneView_) noexcept {
+void FrustumCullingFilter::update(cref<graphics::scene::SceneView> sceneView_) noexcept {
 	_sceneView = &sceneView_;
 	_frustum.update(sceneView_.getViewMatrix() * sceneView_.getProjectionMatrix());
 }

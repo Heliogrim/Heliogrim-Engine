@@ -2,11 +2,11 @@
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 #include <Engine.Scheduler/Pipeline/Stage/PipelineStage.hpp>
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	class RenderTarget;
 }
 
-namespace hg::engine::gfx::schedule {
+namespace hg::engine::graphics::schedule {
 	class RenderTickStage final :
 		public scheduler::PipelineStage {
 	public:

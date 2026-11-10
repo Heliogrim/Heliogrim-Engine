@@ -1,6 +1,6 @@
 #pragma once
 
-namespace hg::engine::gfx::material {
+namespace hg::engine::graphics::material {
 	class Material;
 	class MaterialParameter;
 	class MaterialPrototype;

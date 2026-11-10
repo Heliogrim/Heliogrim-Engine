@@ -4,7 +4,7 @@
 
 #include "Traits.hpp"
 
-namespace hg::engine::gfx::loader {
+namespace hg::engine::graphics::loader {
     class MaterialPrototypeFeedback final : public resource::loader::Feedback<assets::GfxMaterialPrototype, MaterialPrototypeResource> {
     public:
         using this_type = MaterialPrototypeFeedback;

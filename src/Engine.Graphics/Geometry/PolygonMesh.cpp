@@ -2,7 +2,7 @@
 
 #include "../Buffer/SparseBufferView.hpp"
 
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 PolygonMesh::PolygonMesh(mref<vertex_buffer_type> vertices_, mref<index_buffer_type> indices_) noexcept :

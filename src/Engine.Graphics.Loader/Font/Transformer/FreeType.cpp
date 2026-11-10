@@ -18,9 +18,9 @@
 #include FT_FREETYPE_H
 /**/
 
-using namespace hg::engine::gfx::loader::transformer;
-using namespace hg::engine::gfx::loader;
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics::loader::transformer;
+using namespace hg::engine::graphics::loader;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 static std::atomic_uint_fast8_t ftRefCount {};
@@ -89,7 +89,7 @@ void transformer::convertFreeType(
 
 	/**/
 
-	const auto* const factory = engine::gfx::TextureFactory::get();
+	const auto* const factory = engine::graphics::TextureFactory::get();
 	auto atlas = factory->build(
 		TextureBuildPayload {
 			math::uivec3 { reqExt, 1uL },

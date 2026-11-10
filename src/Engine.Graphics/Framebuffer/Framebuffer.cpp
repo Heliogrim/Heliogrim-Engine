@@ -11,7 +11,7 @@
 #include "Engine.Graphics/Texture/Texture.hpp"
 #include "Engine.Graphics/Texture/TextureView.hpp"
 
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 Framebuffer::Framebuffer(cref<sptr<Device>> device_) :

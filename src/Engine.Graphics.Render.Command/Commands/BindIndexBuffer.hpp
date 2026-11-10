@@ -9,7 +9,7 @@ namespace hg::engine::render::cmd {
         public RenderCommand {
     public:
         constexpr BindIndexBufferRCmd(
-            cref<gfx::IndexBufferView> indexBufferView_
+            cref<graphics::IndexBufferView> indexBufferView_
         ) noexcept :
             RenderCommand(),
             _indexBufferView(indexBufferView_) {}
@@ -18,7 +18,7 @@ namespace hg::engine::render::cmd {
 
     private:
     public:
-        gfx::IndexBufferView _indexBufferView;
+        graphics::IndexBufferView _indexBufferView;
 
     public:
         void operator()(

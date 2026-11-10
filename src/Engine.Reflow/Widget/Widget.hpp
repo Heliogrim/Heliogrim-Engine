@@ -48,7 +48,7 @@ namespace hg::engine::reflow {
 	public:
 		using this_type = Widget;
 
-		using Aabb2d = ::hg::engine::gfx::Aabb2d;
+		using Aabb2d = ::hg::engine::graphics::Aabb2d;
 
 	protected:
 		Widget();

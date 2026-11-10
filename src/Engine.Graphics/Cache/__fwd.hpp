@@ -4,7 +4,7 @@
 
 #include <Engine.Common/Types.hpp>
 
-namespace hg::engine::gfx::cache {
+namespace hg::engine::graphics::cache {
 	class GlobalCacheCtrl;
 	class LocalCacheCtrl;
 	class GlobalResourceCache;

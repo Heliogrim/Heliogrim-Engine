@@ -6,7 +6,7 @@
 #include "AllocationResult.hpp"
 #include "MemoryPool.hpp"
 
-using namespace hg::engine::gfx::memory;
+using namespace hg::engine::graphics::memory;
 using namespace hg;
 
 MemoryCache::MemoryCache() noexcept :

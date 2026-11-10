@@ -2,6 +2,6 @@
 
 #include <Engine.Common/Wrapper.hpp>
 
-namespace hg::engine::gfx::memory {
+namespace hg::engine::graphics::memory {
     using MemoryMapping = ptr<void>;
 }

@@ -6,11 +6,11 @@
 #include "../Memory/__fwd.hpp"
 #include "VirtualMemoryPageState.hpp"
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	class VirtualMemory;
 }
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	class VirtualMemoryPage {
 	public:
 		using this_type = VirtualMemoryPage;

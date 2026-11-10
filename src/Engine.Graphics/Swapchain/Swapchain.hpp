@@ -11,7 +11,7 @@
 #include "../Surface/Surface.hpp"
 #include "../Texture/Texture.hpp"
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	struct SwapchainImage {
 		/**/
 		smr<Texture> image = {};

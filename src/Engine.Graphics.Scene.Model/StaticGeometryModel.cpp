@@ -12,7 +12,7 @@
 #include <Engine.Resource/ResourceManager.hpp>
 #include <Heliogrim/Component/Scene/Geometry/StaticGeometryComponent.hpp>
 
-using namespace hg::engine::gfx::scene;
+using namespace hg::engine::graphics::scene;
 using namespace hg;
 
 StaticGeometryModel::StaticGeometryModel(const ptr<SceneComponent> owner_) :
@@ -181,6 +181,6 @@ const ptr<const engine::assets::StaticGeometry> StaticGeometryModel::geometryAss
 	return _staticGeometryAsset;
 }
 
-cref<smr<engine::gfx::StaticGeometryResource>> StaticGeometryModel::geometryResource() const noexcept {
+cref<smr<engine::graphics::StaticGeometryResource>> StaticGeometryModel::geometryResource() const noexcept {
 	return _staticGeometryResource;
 }

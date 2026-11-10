@@ -29,9 +29,9 @@ namespace hg::engine::render {
         smr<const accel::AccelerationEffect> _effect;
         smr<const accel::GraphicsPass> _pass;
         accel::EffectCompileResult _compiled;
-        smr<gfx::Framebuffer> _framebuffer;
-        uptr<gfx::TextureView> _visTexView;
-        uptr<gfx::TextureSampler> _sampler;
+        smr<graphics::Framebuffer> _framebuffer;
+        uptr<graphics::TextureView> _visTexView;
+        uptr<graphics::TextureSampler> _sampler;
         vk::Semaphore _tmpSignal;
 
     public:

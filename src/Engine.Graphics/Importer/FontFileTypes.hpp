@@ -3,7 +3,7 @@
 #include <span>
 #include <Engine.Resource/FileTypeId.hpp>
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	namespace FontFileType {
 		extern const res::FileTypeId Ttf;
 		extern const res::FileTypeId Otf;

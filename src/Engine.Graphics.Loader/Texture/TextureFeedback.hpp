@@ -7,7 +7,7 @@
 
 #include "Traits.hpp"
 
-namespace hg::engine::gfx::loader {
+namespace hg::engine::graphics::loader {
 	class TextureFeedback final :
 		public resource::loader::Feedback<assets::TextureAsset, TextureResource> {
 	public:

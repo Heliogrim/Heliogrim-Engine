@@ -11,7 +11,7 @@ namespace hg::engine::render {
     class DummyProvider :
         public SubPass {
     private:
-        smr<gfx::Texture> _depthTexture;
+        smr<graphics::Texture> _depthTexture;
         void* _tmpSignal;
 
         struct Resources {

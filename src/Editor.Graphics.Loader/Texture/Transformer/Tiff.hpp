@@ -1,7 +1,7 @@
 #pragma once
 #include "../EditorTextureSubTransformer.hpp"
 
-namespace hg::editor::gfx::loader {
+namespace hg::editor::graphics::loader {
 	class EditorTiffTextureTransformer final :
 		public EditorTextureSubTransformer {
 	public:

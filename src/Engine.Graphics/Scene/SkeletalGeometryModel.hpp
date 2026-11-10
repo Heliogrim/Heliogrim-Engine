@@ -9,7 +9,7 @@ namespace hg {
 	class StaticGeometryComponent;
 }
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	class SkeletalGeometryModel :
 		public InheritMeta<StaticGeometryComponent, scene::GeometryModel> {
 	public:

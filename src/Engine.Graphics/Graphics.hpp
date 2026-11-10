@@ -22,12 +22,12 @@ namespace hg::engine::scene {
 	class SceneBase;
 }
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	class RenderTarget;
 	class SurfaceManager;
 }
 
-namespace hg::engine::gfx::scene {
+namespace hg::engine::graphics::scene {
 	class RenderSceneManager;
 	class SceneView;
 }
@@ -84,8 +84,8 @@ namespace hg::engine {
 		/**
 		 * Device
 		 */
-		gfx::Application _application;
-		sptr<gfx::Device> _device;
+		graphics::Application _application;
+		sptr<graphics::Device> _device;
 
 	public:
 		/**
@@ -96,13 +96,13 @@ namespace hg::engine {
 		 *
 		 * @returns The current device.
 		 */
-		[[nodiscard]] sptr<gfx::Device> getCurrentDevice() const noexcept;
+		[[nodiscard]] sptr<graphics::Device> getCurrentDevice() const noexcept;
 
 	private:
 		/**
 		 * Compute Queue
 		 */
-		ptr<gfx::CommandQueue> _computeQueue;
+		ptr<graphics::CommandQueue> _computeQueue;
 
 	public:
 		/**
@@ -113,13 +113,13 @@ namespace hg::engine {
 		 *
 		 * @returns The compute queue.
 		 */
-		[[nodiscard]] gfx::CommandQueue::reference_type getComputeQueue() const noexcept;
+		[[nodiscard]] graphics::CommandQueue::reference_type getComputeQueue() const noexcept;
 
 	private:
 		/**
 		 * Graphics
 		 */
-		ptr<gfx::CommandQueue> _graphicsQueue;
+		ptr<graphics::CommandQueue> _graphicsQueue;
 
 	public:
 		/**
@@ -130,13 +130,13 @@ namespace hg::engine {
 		 *
 		 * @returns The graphics queue.
 		 */
-		[[nodiscard]] gfx::CommandQueue::reference_type getGraphicsQueue() const noexcept;
+		[[nodiscard]] graphics::CommandQueue::reference_type getGraphicsQueue() const noexcept;
 
 	private:
 		/**
 		 * Transfer Queue
 		 */
-		ptr<gfx::CommandQueue> _transferQueue;
+		ptr<graphics::CommandQueue> _transferQueue;
 
 	public:
 		/**
@@ -147,16 +147,16 @@ namespace hg::engine {
 		 *
 		 * @returns The transfer queue.
 		 */
-		[[nodiscard]] gfx::CommandQueue::reference_type getTransferQueue() const noexcept;
+		[[nodiscard]] graphics::CommandQueue::reference_type getTransferQueue() const noexcept;
 
 	private:
-		uptr<gfx::cache::GlobalCacheCtrl> _cacheCtrl;
-		uptr<gfx::pool::GlobalResourcePool> _pool;
+		uptr<graphics::cache::GlobalCacheCtrl> _cacheCtrl;
+		uptr<graphics::pool::GlobalResourcePool> _pool;
 
 	public:
-		[[nodiscard]] const non_owning_rptr<gfx::cache::GlobalCacheCtrl> cacheCtrl() const noexcept;
+		[[nodiscard]] const non_owning_rptr<graphics::cache::GlobalCacheCtrl> cacheCtrl() const noexcept;
 
-		[[nodiscard]] const non_owning_rptr<gfx::pool::GlobalResourcePool> pool() const noexcept;
+		[[nodiscard]] const non_owning_rptr<graphics::pool::GlobalResourcePool> pool() const noexcept;
 
 	private:
 		/**
@@ -181,18 +181,18 @@ namespace hg::engine {
 		);
 
 	private:
-		ptr<gfx::scene::RenderSceneManager> _sceneManager;
+		ptr<graphics::scene::RenderSceneManager> _sceneManager;
 
 	public:
-		[[nodiscard]] const non_owning_rptr<gfx::scene::RenderSceneManager> getSceneManager() const noexcept;
+		[[nodiscard]] const non_owning_rptr<graphics::scene::RenderSceneManager> getSceneManager() const noexcept;
 
 	private:
 		void cleanupTargetsByScene(nmpt<engine::scene::SceneBase> renderableScene_);
 
 	private:
-		uptr<gfx::SurfaceManager> _surfaceManager;
+		uptr<graphics::SurfaceManager> _surfaceManager;
 
 	public:
-		[[nodiscard]] const non_owning_rptr<gfx::SurfaceManager> getSurfaceManager() const noexcept;
+		[[nodiscard]] const non_owning_rptr<graphics::SurfaceManager> getSurfaceManager() const noexcept;
 	};
 }

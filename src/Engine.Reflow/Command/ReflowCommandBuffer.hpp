@@ -29,7 +29,7 @@ namespace hg::engine::reflow {
 
 	struct CaptureData {
 		Vector<u32> indices;
-		Vector<gfx::uivertex> vertices;
+		Vector<graphics::uivertex> vertices;
 
 		Vector<ScissorSpan> scissorSpan;
 		Vector<ImageSpan> imageSpan;
@@ -118,12 +118,12 @@ namespace hg::engine::reflow {
 
 		Vector<math::Extent2f32> _scissors;
 
-		Vector<nmpt<gfx::TextureLikeObject>> _images;
+		Vector<nmpt<graphics::TextureLikeObject>> _images;
 		Vector<_::VkSemaphore> _imageWait;
 		Vector<_::VkSemaphore> _imageSignal;
 
 	private:
-		[[nodiscard]] bool isAnyAlpha(std::span<gfx::uivertex> vertices_) const noexcept;
+		[[nodiscard]] bool isAnyAlpha(std::span<graphics::uivertex> vertices_) const noexcept;
 
 		[[nodiscard]] u32 encodeLayerAndInstance(const layer_value_type layer_, const instance_value_type instance_);
 
@@ -190,7 +190,7 @@ namespace hg::engine::reflow {
 			math::vec2 uv2_,
 			math::vec2 p3_,
 			math::vec2 uv3_,
-			nmpt<gfx::TextureLikeObject> image_,
+			nmpt<graphics::TextureLikeObject> image_,
 			ImageDrawOptions options_
 		);
 
@@ -203,7 +203,7 @@ namespace hg::engine::reflow {
 			math::vec2 uv2_,
 			math::vec2 p3_,
 			math::vec2 uv3_,
-			nmpt<gfx::TextureLikeObject> image_,
+			nmpt<graphics::TextureLikeObject> image_,
 			_::VkSemaphore wait_,
 			_::VkSemaphore signal_,
 			ImageDrawOptions options_

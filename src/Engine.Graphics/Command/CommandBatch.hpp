@@ -4,7 +4,7 @@
 #include "CommandBuffer.hpp"
 #include "../vkinc.hpp"
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
     class CommandBatch {
     public:
         using this_type = CommandBatch;

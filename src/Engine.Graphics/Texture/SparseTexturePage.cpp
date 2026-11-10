@@ -6,7 +6,7 @@
 #include "../Memory/AllocationResult.hpp"
 #include "Engine.Graphics/Memory/VirtualMemory.hpp"
 
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 SparseTexturePage::SparseTexturePage(

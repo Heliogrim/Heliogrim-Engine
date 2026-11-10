@@ -9,7 +9,7 @@
 
 #include "Traits.hpp"
 
-namespace hg::engine::gfx::loader {
+namespace hg::engine::graphics::loader {
 	class TextureCache final :
 		public resource::loader::Cache<assets::TextureAsset, TextureResource> {
 	public:

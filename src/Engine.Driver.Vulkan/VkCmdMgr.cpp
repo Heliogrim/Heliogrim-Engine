@@ -76,8 +76,8 @@ void VkCmdMgr::commit() {
 	auto enqueue = std::move(pending);
 	const auto queue = queues.front().front();
 
-	const auto batch = engine::gfx::CommandBatch {
-		std::move(reinterpret_cast<Vector<engine::gfx::CommandBuffer>&&>(enqueue))
+	const auto batch = engine::graphics::CommandBatch {
+		std::move(reinterpret_cast<Vector<engine::graphics::CommandBuffer>&&>(enqueue))
 	};
 	const auto fence = device->vkDevice().createFence({});
 

@@ -28,8 +28,8 @@ namespace hg::engine::render {
 		RenderPass(
 			mref<nmpt<const Renderer>> renderer_,
 			mref<uptr<graph::RuntimeGraph>> runtimeGraph_,
-			mref<smr<gfx::cache::LocalCacheCtrl>> localGeneralCache_,
-			mref<smr<gfx::memory::LocalPooledAllocator>> localDeviceAllocator_
+			mref<smr<graphics::cache::LocalCacheCtrl>> localGeneralCache_,
+			mref<smr<graphics::memory::LocalPooledAllocator>> localDeviceAllocator_
 		) noexcept;
 
 		RenderPass(cref<this_type>) = delete;
@@ -61,9 +61,9 @@ namespace hg::engine::render {
 		RenderPassResult operator()();
 
 	public:
-		smr<const gfx::scene::SceneView> changeSceneView(mref<smr<const gfx::scene::SceneView>> nextSceneView_);
+		smr<const graphics::scene::SceneView> changeSceneView(mref<smr<const graphics::scene::SceneView>> nextSceneView_);
 
-		smr<const gfx::scene::SceneView> unbindSceneView();
+		smr<const graphics::scene::SceneView> unbindSceneView();
 
 	public:
 		#pragma region Render Pass Targets
@@ -74,22 +74,22 @@ namespace hg::engine::render {
 
 		[[nodiscard]] bool bindTarget(
 			mref<smr<const graph::Symbol>> target_,
-			mref<smr<gfx::Texture>> texture_
+			mref<smr<graphics::Texture>> texture_
 		);
 
 		[[nodiscard]] bool bindTarget(
 			mref<smr<const graph::Symbol>> target_,
-			mref<smr<gfx::TextureView>> textureView_
+			mref<smr<graphics::TextureView>> textureView_
 		);
 
 		[[nodiscard]] bool bindTarget(
 			mref<smr<const graph::Symbol>> target_,
-			mref<smr<gfx::SparseTexture>> texture_
+			mref<smr<graphics::SparseTexture>> texture_
 		);
 
 		[[nodiscard]] bool bindTarget(
 			mref<smr<const graph::Symbol>> target_,
-			mref<smr<gfx::SparseTextureView>> textureView_
+			mref<smr<graphics::SparseTextureView>> textureView_
 		);
 
 		_Success_(return != nullptr) smr<void> unbindTarget(mref<smr<const graph::Symbol>> target_) noexcept;

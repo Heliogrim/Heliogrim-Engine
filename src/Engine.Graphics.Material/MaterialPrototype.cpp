@@ -6,7 +6,7 @@
 #include "Material.hpp"
 #include "MaterialPrototypeParameter.hpp"
 
-using namespace hg::engine::gfx::material;
+using namespace hg::engine::graphics::material;
 using namespace hg;
 
 MaterialPrototype::MaterialPrototype(

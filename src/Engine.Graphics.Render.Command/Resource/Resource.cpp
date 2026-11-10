@@ -8,7 +8,7 @@
 #include <Engine.Reflect/Cast.hpp>
 #include <Engine.Reflect/IsType.hpp>
 
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics;
 using namespace hg::engine::render;
 using namespace hg;
 

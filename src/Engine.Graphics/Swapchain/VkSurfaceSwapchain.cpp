@@ -7,7 +7,7 @@
 #include "Engine.Graphics/Command/CommandQueue.hpp"
 #include "Engine.Graphics/Texture/TextureFactory.hpp"
 
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 /**

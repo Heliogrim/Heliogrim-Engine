@@ -4,7 +4,7 @@
 #include <Engine.Resource/File.hpp>
 #include <Engine.Resource/Importer/Importer.hpp>
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	class FontImporter :
 		public res::Importer<Arci<assets::FontAsset>, ptr<void>> {
 	public:

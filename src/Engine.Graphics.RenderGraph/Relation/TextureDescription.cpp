@@ -6,7 +6,7 @@
 #include <Engine.Graphics/Texture/SparseTextureView.hpp>
 
 using namespace hg::engine::render::graph;
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 TextureDescription::TextureDescription() noexcept :

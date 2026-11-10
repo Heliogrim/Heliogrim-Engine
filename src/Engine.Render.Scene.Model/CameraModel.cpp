@@ -22,7 +22,7 @@ ref<CameraModel::this_type> CameraModel::operator=(mref<this_type>) noexcept = d
 void CameraModel::create(const ptr<RenderSceneSystem> system_) {
 
 	auto* const actor { _owner->getRootActor() };
-	_sceneView = make_smr<gfx::scene::SceneView>(actor, system_);
+	_sceneView = make_smr<graphics::scene::SceneView>(actor, system_);
 }
 
 void CameraModel::update(const ptr<RenderSceneSystem> system_) {
@@ -52,7 +52,7 @@ void CameraModel::update(const ptr<RenderSceneSystem> system_) {
 	/**/
 
 	math::mat4 projection;
-	if (owner.getProjectMode() == gfx::CameraProjectionMode::ePerspective) {
+	if (owner.getProjectMode() == graphics::CameraProjectionMode::ePerspective) {
 		projection = math::perspective(glm::radians(owner.getFov()), owner.getAspectRatio(), ZNEAR, ZFAR);
 	} else {
 		projection = math::ortho(0.F, ORTHO_WIDTH, ORTHO_HEIGHT, 0.F, ZNEAR, ZFAR);
@@ -65,6 +65,6 @@ void CameraModel::destroy(const ptr<RenderSceneSystem> system_) {
 	_sceneView.reset();
 }
 
-smr<const engine::gfx::scene::SceneView> CameraModel::getSceneView() const noexcept {
+smr<const engine::graphics::scene::SceneView> CameraModel::getSceneView() const noexcept {
 	return _sceneView;
 }

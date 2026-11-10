@@ -8,13 +8,13 @@ namespace hg::engine::platform {
 	class NativeWindow;
 }
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	class Application;
 	class Surface;
 	class Swapchain;
 }
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	class SurfaceManager {
 	public:
 		using this_type = SurfaceManager;

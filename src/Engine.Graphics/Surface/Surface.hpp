@@ -13,11 +13,11 @@ namespace hg::engine::platform {
 	class NativeWindow;
 }
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	class Swapchain;
 }
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	class Surface {
 	public:
 		using value_type = Surface;

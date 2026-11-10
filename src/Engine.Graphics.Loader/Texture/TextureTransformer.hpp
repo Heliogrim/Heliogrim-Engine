@@ -8,7 +8,7 @@
 
 #include "Traits.hpp"
 
-namespace hg::engine::gfx::loader {
+namespace hg::engine::graphics::loader {
 	class TextureTransformer final :
 		public resource::loader::Transformer<assets::TextureAsset, TextureResource> {
 	public:

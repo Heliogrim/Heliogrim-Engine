@@ -58,7 +58,7 @@ bool SceneWalker::operator()([[maybe_unused]] u32 batch_, const void* node_) con
 	return (*this)(node_);
 }
 
-ref<SceneWalker::this_type> SceneWalker::operator()(cref<gfx::scene::SceneView> sceneView_) {
+ref<SceneWalker::this_type> SceneWalker::operator()(cref<graphics::scene::SceneView> sceneView_) {
 
 	#ifdef _DEBUG
     if (not _hook) {
@@ -83,7 +83,7 @@ ref<SceneWalker::this_type> SceneWalker::operator()(cref<gfx::scene::SceneView> 
 	return *this;
 }
 
-ref<SceneWalker::this_type> SceneWalker::operator()(cref<gfx::scene::SceneView> sceneView_, u32 maxBatches_) {
+ref<SceneWalker::this_type> SceneWalker::operator()(cref<graphics::scene::SceneView> sceneView_, u32 maxBatches_) {
 
 	if (maxBatches_ <= 1uL) {
 		return (*this)(sceneView_);

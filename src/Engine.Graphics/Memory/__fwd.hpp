@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Types.hpp>
 
-namespace hg::engine::gfx::memory {
+namespace hg::engine::graphics::memory {
     /**
      * Memory
      */

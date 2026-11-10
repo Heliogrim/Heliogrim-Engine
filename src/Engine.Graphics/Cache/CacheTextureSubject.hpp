@@ -7,7 +7,7 @@
 #include <Engine.Common/Math/Vector.hpp>
 #include <Engine.Common/Hash/Murmur3.hpp>
 
-namespace hg::engine::gfx::cache {
+namespace hg::engine::graphics::cache {
     struct CacheTextureSubject {
     public:
         using this_type = CacheTextureSubject;
@@ -156,9 +156,9 @@ namespace hg::engine::gfx::cache {
 
 namespace std {
     template <>
-    struct hash<hg::engine::gfx::cache::CacheTextureSubject> {
+    struct hash<hg::engine::graphics::cache::CacheTextureSubject> {
         [[nodiscard]] size_t operator()(
-            ::hg::cref<hg::engine::gfx::cache::CacheTextureSubject> obj_
+            ::hg::cref<hg::engine::graphics::cache::CacheTextureSubject> obj_
         ) const noexcept {
             const ::hg::u32 data[] = {
                 obj_.layer,

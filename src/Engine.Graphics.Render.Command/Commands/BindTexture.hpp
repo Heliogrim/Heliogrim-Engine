@@ -5,7 +5,7 @@
 
 #include "../RenderCommand.hpp"
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
     class TextureLikeObject;
 }
 
@@ -15,7 +15,7 @@ namespace hg::engine::render::cmd {
     public:
         constexpr BindTextureRCmd(
             mref<accel::lang::SymbolId> symbolId_,
-            mref<nmpt<const gfx::TextureLikeObject>> textureView_
+            mref<nmpt<const graphics::TextureLikeObject>> textureView_
         ) noexcept :
             RenderCommand(),
             _symbolId(std::move(symbolId_)),
@@ -26,7 +26,7 @@ namespace hg::engine::render::cmd {
     private:
     public:
         accel::lang::SymbolId _symbolId;
-        const nmpt<const gfx::TextureLikeObject> _textureView;
+        const nmpt<const graphics::TextureLikeObject> _textureView;
 
     public:
         void operator()(

@@ -17,7 +17,7 @@
 
 #include "GlobalResourceCache.hpp"
 
-using namespace hg::engine::gfx::cache;
+using namespace hg::engine::graphics::cache;
 using namespace hg;
 
 GlobalCacheCtrl::GlobalCacheCtrl(mref<uptr<GlobalResourceCache>> cache_) :

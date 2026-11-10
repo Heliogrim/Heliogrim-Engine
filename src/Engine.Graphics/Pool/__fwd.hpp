@@ -1,5 +1,5 @@
 #pragma once
 
-namespace hg::engine::gfx::pool {
+namespace hg::engine::graphics::pool {
     class GlobalResourcePool;
 }

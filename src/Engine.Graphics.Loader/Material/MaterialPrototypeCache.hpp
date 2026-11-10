@@ -5,7 +5,7 @@
 
 #include "Traits.hpp"
 
-namespace hg::engine::gfx::loader {
+namespace hg::engine::graphics::loader {
     class MaterialPrototypeCache final :
         public resource::loader::Cache<assets::GfxMaterialPrototype, MaterialPrototypeResource> {
     public:

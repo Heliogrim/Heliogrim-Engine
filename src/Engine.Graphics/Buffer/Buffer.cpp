@@ -2,9 +2,9 @@
 
 #include "../vkinc.hpp"
 
-static_assert(hg::engine::gfx::Buffer::whole_size == VK_WHOLE_SIZE);
+static_assert(hg::engine::graphics::Buffer::whole_size == VK_WHOLE_SIZE);
 
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 void Buffer::bind(const u64 size_, const u64 offset_) {

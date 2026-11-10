@@ -10,7 +10,7 @@
 #include "MemoryLayout.hpp"
 #include "__fwd.hpp"
 
-namespace hg::engine::gfx::memory {
+namespace hg::engine::graphics::memory {
 	class MemoryPool {
 	public:
 		using this_type = MemoryPool;

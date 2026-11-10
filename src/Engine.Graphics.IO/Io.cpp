@@ -24,7 +24,7 @@
 #include <Engine.Graphics/Importer/ModelFileTypes.hpp>
 #include <Engine.Graphics/Importer/ModelImporter.hpp>
 
-using namespace ::hg::engine::gfx::loader;
+using namespace ::hg::engine::graphics::loader;
 using namespace ::hg;
 
 template <typename LoaderType_, typename AssetType_, typename ResourceType_, typename... Args_>
@@ -55,11 +55,11 @@ static void registerIfNotPresent(
 
 /**/
 
-void engine::gfx::loader::register_loader(
+void engine::graphics::loader::register_loader(
 	ref<resource::LoaderManager> manager_,
 	ref<Graphics> graphics_,
-	ref<gfx::cache::GlobalCacheCtrl> cacheCtrl_,
-	ref<gfx::pool::GlobalResourcePool> pool_
+	ref<graphics::cache::GlobalCacheCtrl> cacheCtrl_,
+	ref<graphics::pool::GlobalResourcePool> pool_
 ) {
 
 	auto event = GraphicRegisterLoaderEvent { manager_, graphics_, cacheCtrl_, pool_ };
@@ -103,11 +103,11 @@ void engine::gfx::loader::register_loader(
 	);
 }
 
-void engine::gfx::loader::unregister_loader(
+void engine::graphics::loader::unregister_loader(
 	ref<resource::LoaderManager> manager_,
 	ref<Graphics> graphics_,
-	ref<gfx::cache::GlobalCacheCtrl> cacheCtrl_,
-	ref<gfx::pool::GlobalResourcePool> pool_
+	ref<graphics::cache::GlobalCacheCtrl> cacheCtrl_,
+	ref<graphics::pool::GlobalResourcePool> pool_
 ) {
 
 	auto event = GraphicUnregisterLoaderEvent { manager_, graphics_, cacheCtrl_, pool_ };
@@ -122,7 +122,7 @@ void engine::gfx::loader::unregister_loader(
 	manager_.unregisterLoader<assets::FontAsset>();
 }
 
-void engine::gfx::loader::register_importer(ref<res::ImporterManager> manager_, ref<Graphics> graphics_) {
+void engine::graphics::loader::register_importer(ref<res::ImporterManager> manager_, ref<Graphics> graphics_) {
 
 	auto event = GraphicRegisterImporterEvent { manager_, graphics_ };
 	Engine::getEngine()->getEmitter().emit(event);
@@ -137,7 +137,7 @@ void engine::gfx::loader::register_importer(ref<res::ImporterManager> manager_, 
 	registerIfNotPresent<FontImporter>(manager_, FontFileType::Ttf);
 }
 
-void engine::gfx::loader::unregister_importer(ref<res::ImporterManager> manager_, ref<Graphics> graphics_) {
+void engine::graphics::loader::unregister_importer(ref<res::ImporterManager> manager_, ref<Graphics> graphics_) {
 
 	auto event = GraphicUnregisterImporterEvent { manager_, graphics_ };
 	Engine::getEngine()->getEmitter().emit(event);

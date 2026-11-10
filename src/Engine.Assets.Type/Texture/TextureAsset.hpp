@@ -32,9 +32,9 @@ namespace hg::engine::assets {
 			cref<AssetGuid> baseImage_,
 			mref<Vector<AssetGuid>> images_,
 			cref<math::uivec3> extent_,
-			cref<gfx::TextureFormat> format_,
+			cref<graphics::TextureFormat> format_,
 			cref<u32> mipLevel_,
-			cref<gfx::TextureType> type_
+			cref<graphics::TextureType> type_
 		);
 
 	private:
@@ -61,12 +61,12 @@ namespace hg::engine::assets {
 		void setExtent(cref<math::uivec3> extent_);
 
 	private:
-		gfx::TextureFormat _format;
+		graphics::TextureFormat _format;
 
 	public:
-		[[nodiscard]] gfx::TextureFormat getTextureFormat() const noexcept;
+		[[nodiscard]] graphics::TextureFormat getTextureFormat() const noexcept;
 
-		void setTextureFormat(const gfx::TextureFormat format_);
+		void setTextureFormat(const graphics::TextureFormat format_);
 
 	private:
 		u32 _mipLevel;
@@ -77,12 +77,12 @@ namespace hg::engine::assets {
 		void setMipLevelCount(const u32 levels_);
 
 	private:
-		gfx::TextureType _textureType;
+		graphics::TextureType _textureType;
 
 	public:
-		[[nodiscard]] gfx::TextureType getTextureType() const noexcept;
+		[[nodiscard]] graphics::TextureType getTextureType() const noexcept;
 
-		void setTextureType(const gfx::TextureType type_);
+		void setTextureType(const graphics::TextureType type_);
 	};
 }
 

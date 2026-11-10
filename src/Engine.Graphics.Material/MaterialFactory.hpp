@@ -8,7 +8,7 @@
 #include "MaterialPrototypeParameter.hpp"
 #include "__fwd.hpp"
 
-namespace hg::engine::gfx::material {
+namespace hg::engine::graphics::material {
 	class MaterialFactory {
 	public:
 		[[nodiscard]] _Success_(return != nullptr) uptr<Material> buildMaterial(

@@ -3,5 +3,5 @@
 #include <Engine.Graphics/Texture/TextureType.hpp>
 
 namespace hg {
-	using TextureType = engine::gfx::TextureType;
+	using TextureType = engine::graphics::TextureType;
 }

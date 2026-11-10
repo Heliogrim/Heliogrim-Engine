@@ -8,7 +8,7 @@
 #include "../Geometry/Vertex.hpp"
 #include "../Memory/AllocatedMemory.hpp"
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	class Buffer :
 		public InheritMeta<Buffer, BufferObject> {
 	public:

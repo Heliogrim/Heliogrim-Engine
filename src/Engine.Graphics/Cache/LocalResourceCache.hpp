@@ -7,10 +7,10 @@
 #include "TransientCache.hpp"
 #include "__fwd.hpp"
 
-namespace hg::engine::gfx::cache {
+namespace hg::engine::graphics::cache {
 	class LocalResourceCache final {
 	public:
-		friend class ::hg::engine::gfx::cache::LocalCacheCtrl;
+		friend class ::hg::engine::graphics::cache::LocalCacheCtrl;
 
 	public:
 		using this_type = LocalResourceCache;

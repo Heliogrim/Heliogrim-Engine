@@ -5,7 +5,7 @@
 #include "NodeLinkValueType.hpp"
 #include "NodeOutputValueAttributes.hpp"
 
-namespace hg::editor::gfx::graph {
+namespace hg::editor::graphics::graph {
 	struct NodeOutputSpec {
 		NodeLinkValueType valueType;
 		NodeOutputValueAttributes valueAttributes;

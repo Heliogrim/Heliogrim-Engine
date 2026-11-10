@@ -2,6 +2,6 @@
 
 #include "__fwd.hpp"
 
-namespace hg::engine::gfx::loader {
+namespace hg::engine::graphics::loader {
     struct StaticGeometryLoadOptions { };
 }

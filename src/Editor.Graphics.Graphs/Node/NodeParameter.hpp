@@ -3,7 +3,7 @@
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
-namespace hg::editor::gfx::graph {
+namespace hg::editor::graphics::graph {
     class NodeParameter {
     public:
         using this_type = NodeParameter;

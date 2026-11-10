@@ -4,7 +4,7 @@
 #include <Engine.Graphics.Scene.Model/GeometryModel.hpp>
 #include <Engine.Resource/Manage/Resource.hpp>
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	class SkyboxModel final :
 		public InheritMeta<SkyboxModel, scene::GeometryModel> {
 	public:

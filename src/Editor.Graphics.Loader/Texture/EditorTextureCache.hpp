@@ -6,14 +6,14 @@
 
 #include "Traits.hpp"
 
-namespace hg::editor::gfx::loader {
+namespace hg::editor::graphics::loader {
 	class EditorTextureCache final :
-		public ::hg::engine::resource::loader::Cache<engine::assets::TextureAsset, engine::gfx::TextureResource> {
+		public ::hg::engine::resource::loader::Cache<engine::assets::TextureAsset, engine::graphics::TextureResource> {
 	public:
 		using this_type = EditorTextureCache;
 		using underlying_type = ::hg::engine::resource::loader::Cache<
 			engine::assets::TextureAsset,
-			engine::gfx::TextureResource
+			engine::graphics::TextureResource
 		>;
 
 		using underlying_type::loader_traits;
@@ -26,16 +26,16 @@ namespace hg::editor::gfx::loader {
 		/**/
 
 		using cache_key_type = const nmpt<const engine::assets::TextureAsset>;
-		using cache_value_type = smr<engine::gfx::TextureResource>;
-		using cache_result_type = engine::gfx::cache::Result<engine::gfx::cache::QueryResultType, cache_value_type>;
+		using cache_value_type = smr<engine::graphics::TextureResource>;
+		using cache_result_type = engine::graphics::cache::Result<engine::graphics::cache::QueryResultType, cache_value_type>;
 
 	public:
-		EditorTextureCache(ref<engine::gfx::cache::GlobalCacheCtrl> cacheCtrl_);
+		EditorTextureCache(ref<engine::graphics::cache::GlobalCacheCtrl> cacheCtrl_);
 
 		~EditorTextureCache() override;
 
 	private:
-		nmpt<engine::gfx::cache::GlobalCacheCtrl> _cacheCtrl;
+		nmpt<engine::graphics::cache::GlobalCacheCtrl> _cacheCtrl;
 
 	public:
 		[[nodiscard]] bool contains(

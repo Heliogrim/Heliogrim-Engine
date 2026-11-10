@@ -9,9 +9,9 @@ using namespace hg;
 
 smr<const graph::Description> engine::render::makeColorBufferDescription() {
     static auto obj = make_smr<graph::TextureDescription>(
-        graph::DescriptionValue { graph::DescriptionValueMatchingMode::eCovariant, gfx::TextureType::e2d },
+        graph::DescriptionValue { graph::DescriptionValueMatchingMode::eCovariant, graphics::TextureType::e2d },
         //graph::DescriptionValue { graph::DescriptionValueMatchingMode::eInvariant, TextureFormat::eR8G8B8A8Unorm },
-        graph::DescriptionValue { graph::DescriptionValueMatchingMode::eInvariant, gfx::TextureFormat::eB8G8R8A8Unorm },
+        graph::DescriptionValue { graph::DescriptionValueMatchingMode::eInvariant, graphics::TextureFormat::eB8G8R8A8Unorm },
         graph::DescriptionValue { graph::DescriptionValueMatchingMode::eInvariant, 1u },
         graph::DescriptionValue { graph::DescriptionValueMatchingMode::eIgnored, graph::ActiveMipBitMask {} }
     );

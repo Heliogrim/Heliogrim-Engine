@@ -2,7 +2,7 @@
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Graphics/Texture/Texture.hpp>
 
-namespace hg::engine::gfx::glow {
+namespace hg::engine::graphics::glow {
     class RevVirtualMarkerTexture final {
     public:
         RevVirtualMarkerTexture() = default;

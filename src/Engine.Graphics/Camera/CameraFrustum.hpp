@@ -4,7 +4,7 @@
 #include <Engine.Common/Math/Matrix.hpp>
 #include <Engine.Common/Math/Vector.hpp>
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
     class CameraFrustum {
     public:
         enum FrustumSide {

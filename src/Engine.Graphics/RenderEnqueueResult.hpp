@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Types.hpp>
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
     enum class RenderEnqueueResult : u8 {
         eSuccess = 0x0,
         eFailed = 0x1,

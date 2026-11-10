@@ -1,6 +1,6 @@
 #include "Swapchain.hpp"
 
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 void Swapchain::setup(cref<sptr<Device>> device_) {

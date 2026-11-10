@@ -13,14 +13,14 @@ namespace hg::engine::render {
     class TmpBrdfPrefPass :
         public SubPass {
     private:
-        smr<gfx::Texture> _brdfPref;
+        smr<graphics::Texture> _brdfPref;
         void* _tmpSignal;
 
         smr<const accel::AccelerationEffect> _effect;
         smr<const accel::GraphicsPass> _pass;
         accel::EffectCompileResult _compiled;
 
-        smr<gfx::MaterialResource> _skyboxMaterial;
+        smr<graphics::MaterialResource> _skyboxMaterial;
         bool _stored = false;
 
         struct Resources {

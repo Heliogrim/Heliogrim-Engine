@@ -5,7 +5,7 @@
 
 #include "__fwd.hpp"
 
-namespace hg::engine::gfx::memory {
+namespace hg::engine::graphics::memory {
 	class macro_novtable Allocator {
 	public:
 		using this_type = Allocator;

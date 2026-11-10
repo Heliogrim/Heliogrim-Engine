@@ -14,7 +14,7 @@ namespace GfxModule {
 			constexpr auto cameraLocation = math::fvec3 { 0.F, 0.F, -5.F };
 			constexpr auto cameraRotation = math::Rotator {};
 
-			auto sceneEye = engine::gfx::scene::SceneViewEye {};
+			auto sceneEye = engine::graphics::scene::SceneViewEye {};
 			sceneEye.updateView(math::Location { cameraLocation }, cameraRotation);
 			sceneEye.updateProjection(math::perspective(glm::radians(70.F), 1.0F, 0.01F, 100.F));
 
@@ -38,7 +38,7 @@ namespace GfxModule {
 			constexpr auto cameraLocation = math::fvec3 { 0.F, 0.F, -5.F };
 			constexpr auto cameraRotation = math::Rotator {};
 
-			auto sceneEye = engine::gfx::scene::SceneViewEye {};
+			auto sceneEye = engine::graphics::scene::SceneViewEye {};
 			sceneEye.updateView(math::Location { cameraLocation }, cameraRotation);
 			sceneEye.updateProjection(math::perspective(glm::radians(70.F), 1.0F, 0.01F, 100.F));
 
@@ -62,7 +62,7 @@ namespace GfxModule {
 			constexpr auto cameraLocation = math::fvec3 { 0.F, 0.F, -5.F };
 			constexpr auto cameraRotation = math::Rotator {};
 
-			auto sceneEye = engine::gfx::scene::SceneViewEye {};
+			auto sceneEye = engine::graphics::scene::SceneViewEye {};
 			sceneEye.updateView(math::Location { cameraLocation }, cameraRotation);
 			sceneEye.updateProjection(math::perspective(glm::radians(70.F), 1.0F, 0.01F, 100.F));
 
@@ -86,7 +86,7 @@ namespace GfxModule {
 			constexpr auto cameraLocation = math::fvec3 { 0.F, 0.F, -5.F };
 			constexpr auto cameraRotation = math::Rotator {};
 
-			auto sceneEye = engine::gfx::scene::SceneViewEye {};
+			auto sceneEye = engine::graphics::scene::SceneViewEye {};
 			sceneEye.updateView(math::Location { cameraLocation }, cameraRotation);
 			sceneEye.updateProjection(math::perspective(glm::radians(70.F), 1.0F, 0.01F, 100.F));
 

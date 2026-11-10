@@ -46,8 +46,8 @@ namespace hg::engine::render::graph {
 		TextureDescription() noexcept;
 
 		TextureDescription(
-			mref<DescriptionValue<gfx::TextureType>> textureType_,
-			mref<DescriptionValue<gfx::TextureFormat>> textureFormat_,
+			mref<DescriptionValue<graphics::TextureType>> textureType_,
+			mref<DescriptionValue<graphics::TextureFormat>> textureFormat_,
 			mref<DescriptionValue<u32>> textureLayers_,
 			//mref<DescriptionValue<math::uivec3>> textureExtent_,
 			mref<DescriptionValue<ActiveMipBitMask>> textureMips_
@@ -62,8 +62,8 @@ namespace hg::engine::render::graph {
 
 	private:
 	public:
-		DescriptionValue<gfx::TextureType> _textureType;
-		DescriptionValue<gfx::TextureFormat> _textureFormat;
+		DescriptionValue<graphics::TextureType> _textureType;
+		DescriptionValue<graphics::TextureFormat> _textureFormat;
 
 		DescriptionValue<u32> _textureLayers;
 		//DescriptionValue<math::uivec3> _textureExtent;
@@ -71,12 +71,12 @@ namespace hg::engine::render::graph {
 		DescriptionValue<ActiveMipBitMask> _textureMips;
 
 	public:
-		[[nodiscard]] bool isValidObject(const nmpt<gfx::Texture> texture_) const noexcept;
+		[[nodiscard]] bool isValidObject(const nmpt<graphics::Texture> texture_) const noexcept;
 
-		[[nodiscard]] bool isValidObject(const nmpt<gfx::TextureView> textureView_) const noexcept;
+		[[nodiscard]] bool isValidObject(const nmpt<graphics::TextureView> textureView_) const noexcept;
 
-		[[nodiscard]] bool isValidObject(const nmpt<gfx::SparseTexture> texture_) const noexcept;
+		[[nodiscard]] bool isValidObject(const nmpt<graphics::SparseTexture> texture_) const noexcept;
 
-		[[nodiscard]] bool isValidObject(const nmpt<gfx::SparseTextureView> textureView_) const noexcept;
+		[[nodiscard]] bool isValidObject(const nmpt<graphics::SparseTextureView> textureView_) const noexcept;
 	};
 }

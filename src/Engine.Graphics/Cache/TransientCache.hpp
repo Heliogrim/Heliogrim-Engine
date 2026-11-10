@@ -6,7 +6,7 @@
 
 #include "__fwd.hpp"
 
-namespace hg::engine::gfx::cache {
+namespace hg::engine::graphics::cache {
     class TransientCache {
     public:
         using this_type = TransientCache;

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
     class Swapchain;
     class VkSurfaceSwapchain;
     class VkSwapchain;

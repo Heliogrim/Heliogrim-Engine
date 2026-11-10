@@ -6,8 +6,8 @@
 
 #include "RenderTickStage.hpp"
 
-using namespace hg::engine::gfx::schedule;
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics::schedule;
+using namespace hg::engine::graphics;
 using namespace hg::engine::scheduler;
 using namespace hg;
 

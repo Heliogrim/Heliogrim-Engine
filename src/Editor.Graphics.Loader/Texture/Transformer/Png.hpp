@@ -1,11 +1,11 @@
 #pragma once
 #include "../EditorTextureSubTransformer.hpp"
 
-namespace hg::engine::gfx::pool {
+namespace hg::engine::graphics::pool {
 	class GlobalResourcePool;
 }
 
-namespace hg::editor::gfx::loader {
+namespace hg::editor::graphics::loader {
 	class EditorPngTextureTransformer final :
 		public EditorTextureSubTransformer {
 	public:
@@ -13,13 +13,13 @@ namespace hg::editor::gfx::loader {
 
 	public:
 		EditorPngTextureTransformer(
-			ref<engine::gfx::pool::GlobalResourcePool> pool_
+			ref<engine::graphics::pool::GlobalResourcePool> pool_
 		) noexcept;
 
 		~EditorPngTextureTransformer() noexcept override;
 
 	private:
-		nmpt<engine::gfx::pool::GlobalResourcePool> _pool;
+		nmpt<engine::graphics::pool::GlobalResourcePool> _pool;
 
 	public:
 		[[nodiscard]] bool canUse(nmpt<const engine::assets::TextureAsset> asset_) const noexcept override;

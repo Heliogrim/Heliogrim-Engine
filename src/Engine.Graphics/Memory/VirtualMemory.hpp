@@ -4,7 +4,7 @@
 #include "GlobalPooledAllocator.hpp"
 #include "VirtualMemoryPage.hpp"
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	class VirtualMemory {
 	public:
 		using this_type = VirtualMemory;

@@ -2,7 +2,7 @@
 #include <Engine.Common/Flag.hpp>
 #include <Engine.Common/Types.hpp>
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
     enum class MemoryProperty {
         eUndefined = 0x0,
         // 0b0000'0000

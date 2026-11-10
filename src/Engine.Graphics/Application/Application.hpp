@@ -5,7 +5,7 @@
 
 #include "../API/__vkFwd.hpp"
 
-namespace hg::engine::gfx {
+namespace hg::engine::graphics {
 	class Application {
 	public:
 		using this_type = Application;

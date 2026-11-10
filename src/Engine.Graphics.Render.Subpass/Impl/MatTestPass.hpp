@@ -20,33 +20,33 @@ namespace hg::engine::render {
 		public MeshSubPass {
 	private:
 		struct Payload {
-			gfx::material::MaterialEffect effect;
+			graphics::material::MaterialEffect effect;
 			accel::EffectCompileResult compiled;
-			Vector<smr<engine::gfx::MaterialResource>> materials;
-			Vector<ptr<const gfx::scene::StaticGeometryModel>> models;
+			Vector<smr<engine::graphics::MaterialResource>> materials;
+			Vector<ptr<const graphics::scene::StaticGeometryModel>> models;
 		};
 
 		DenseMap<smr<const accel::AccelerationEffect>, Payload> _batches;
 
 		smr<const accel::GraphicsPass> _pass;
-		uptr<gfx::TextureSampler> _sampler;
-		uptr<gfx::TextureSampler> _depthSampler;
+		uptr<graphics::TextureSampler> _sampler;
+		uptr<graphics::TextureSampler> _depthSampler;
 
-		uptr<gfx::StorageBufferView> _staticInstanceView;
-		uptr<gfx::UniformBufferView> _sceneLightInfoView;
-		uptr<gfx::StorageBufferView> _sceneLightView;
-		uptr<gfx::StorageBufferView> _sceneShadowView;
+		uptr<graphics::StorageBufferView> _staticInstanceView;
+		uptr<graphics::UniformBufferView> _sceneLightInfoView;
+		uptr<graphics::StorageBufferView> _sceneLightView;
+		uptr<graphics::StorageBufferView> _sceneShadowView;
 
-		gfx::Buffer _cameraBuffer;
-		uptr<gfx::UniformBufferView> _cameraBufferView;
+		graphics::Buffer _cameraBuffer;
+		uptr<graphics::UniformBufferView> _cameraBufferView;
 
-		uptr<gfx::TextureView> _brdfLutView;
-		uptr<gfx::TextureView> _brdfPrefView;
-		uptr<gfx::TextureView> _brdfIrradView;
-		smr<gfx::Framebuffer> _framebuffer;
+		uptr<graphics::TextureView> _brdfLutView;
+		uptr<graphics::TextureView> _brdfPrefView;
+		uptr<graphics::TextureView> _brdfIrradView;
+		smr<graphics::Framebuffer> _framebuffer;
 		vk::Semaphore _tmpSignal;
 
-		uptr<gfx::TextureView> _shadowDirView;
+		uptr<graphics::TextureView> _shadowDirView;
 
 		struct Resources {
 			graph::Subscribed<graph::SymbolizedResource> inOutSceneColor;

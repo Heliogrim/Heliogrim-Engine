@@ -12,7 +12,7 @@
 #include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
 
-using namespace hg::engine::gfx;
+using namespace hg::engine::graphics;
 using namespace hg;
 
 Vector<const char*> Application::_validation = {

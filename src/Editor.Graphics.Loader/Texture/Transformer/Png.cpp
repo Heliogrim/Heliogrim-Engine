@@ -17,7 +17,7 @@
 #define SPNG_STATIC TRUE
 #include <spng/spng.h>
 
-using namespace ::hg::editor::gfx::loader;
+using namespace ::hg::editor::graphics::loader;
 using namespace ::hg;
 
 /**/
@@ -26,11 +26,11 @@ static uptr<spng_ctx, unary_fnc<void, ptr<spng_ctx>>> create_png_ctx();
 
 static void destroy_spng_ctx(ptr<spng_ctx> obj_);
 
-static engine::gfx::Buffer createStageBuffer(cref<sptr<engine::gfx::Device>> device_, cref<spng_ihdr> ihdr_);
+static engine::graphics::Buffer createStageBuffer(cref<sptr<engine::graphics::Device>> device_, cref<spng_ihdr> ihdr_);
 
 /**/
 
-EditorPngTextureTransformer::EditorPngTextureTransformer(ref<engine::gfx::pool::GlobalResourcePool> pool_) noexcept :
+EditorPngTextureTransformer::EditorPngTextureTransformer(ref<engine::graphics::pool::GlobalResourcePool> pool_) noexcept :
 	EditorTextureSubTransformer(),
 	_pool(std::addressof(pool_)) {}
 
@@ -71,7 +71,7 @@ EditorPngTextureTransformer::loader_traits::response::type EditorPngTextureTrans
 	cref<next_type> next_
 ) const {
 
-	::hg::assertrt(not(options_.dataFlag & engine::gfx::loader::TextureLoadDataFlagBits::eLazyDataLoading));
+	::hg::assertrt(not(options_.dataFlag & engine::graphics::loader::TextureLoadDataFlagBits::eLazyDataLoading));
 
 	const auto* const asset = static_cast<ptr<const engine::assets::TextureAsset>>(request_);
 	auto src = next_(asset, next_type::next_request_type::options {});
@@ -81,7 +81,7 @@ EditorPngTextureTransformer::loader_traits::response::type EditorPngTextureTrans
 	 */
 
 	auto view = _pool->allocateSparseTexture(
-		engine::gfx::pool::SparseTextureAllocation {
+		engine::graphics::pool::SparseTextureAllocation {
 			.layers = 1uL,
 			.extent = asset->getExtent(),
 			.format = asset->getTextureFormat(),
@@ -125,17 +125,17 @@ EditorPngTextureTransformer::loader_traits::response::type EditorPngTextureTrans
 	 */
 
 	::hg::assertrt(
-		(view->type() == engine::gfx::TextureType::e2d) ||
-		(view->type() == engine::gfx::TextureType::e2dArray && view->layers() == 1uL)
+		(view->type() == engine::graphics::TextureType::e2d) ||
+		(view->type() == engine::graphics::TextureType::e2dArray && view->layers() == 1uL)
 	);
-	::hg::assertrt(view->format() == engine::gfx::TextureFormat::eR8G8B8A8Srgb);
+	::hg::assertrt(view->format() == engine::graphics::TextureFormat::eR8G8B8A8Srgb);
 
 	::hg::assertrt(view->layers() == 1uL);
 	::hg::assertrt(view->mipLevels() <= 1uL);
 	::hg::assertrt(view->width() == ihdr.width && view->height() == ihdr.height);
 
 	const auto device = _pool->device();
-	engine::gfx::Buffer stageBuffer = createStageBuffer(device, ihdr);
+	engine::graphics::Buffer stageBuffer = createStageBuffer(device, ihdr);
 
 	/**
 	 * Read image data from source
@@ -198,7 +198,7 @@ EditorPngTextureTransformer::loader_traits::response::type EditorPngTextureTrans
 
 	// Warning: Temporary
 	for (const auto& page : view->pages()) {
-		if (page->memory()->state() != engine::gfx::VirtualMemoryPageState::eLoaded) {
+		if (page->memory()->state() != engine::graphics::VirtualMemoryPageState::eLoaded) {
 			view->owner()->load(page);
 		}
 	}
@@ -282,9 +282,9 @@ EditorPngTextureTransformer::loader_traits::response::type EditorPngTextureTrans
 
 	/**/
 
-	using derived_type = engine::resource::UniqueResource<engine::gfx::TextureResource::value_type>;
-	auto dst = make_smr<engine::gfx::TextureResource, derived_type>(
-		new derived_type(mpt<engine::gfx::TextureLikeObject>(view.release()))
+	using derived_type = engine::resource::UniqueResource<engine::graphics::TextureResource::value_type>;
+	auto dst = make_smr<engine::graphics::TextureResource, derived_type>(
+		new derived_type(mpt<engine::graphics::TextureLikeObject>(view.release()))
 	);
 	dst->setAssociation(asset);
 
@@ -321,9 +321,9 @@ void destroy_spng_ctx(const ptr<spng_ctx> obj_) {
 	spng_ctx_free(obj_);
 }
 
-engine::gfx::Buffer createStageBuffer(cref<sptr<engine::gfx::Device>> device_, cref<spng_ihdr> ihdr_) {
+engine::graphics::Buffer createStageBuffer(cref<sptr<engine::graphics::Device>> device_, cref<spng_ihdr> ihdr_) {
 
-	using namespace ::hg::engine::gfx;
+	using namespace ::hg::engine::graphics;
 
 	constexpr auto format = TextureFormat::eR8G8B8A8Srgb;
 	const auto formatSize = formatDataSize(format);

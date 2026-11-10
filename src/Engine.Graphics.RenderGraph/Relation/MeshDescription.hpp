@@ -44,30 +44,30 @@ namespace hg::engine::render::graph {
 		struct MeshDataLayout {
 			MeshDataLayoutAttribute position {
 				MeshDataLayoutAttributeId::ePosition,
-				offsetof(gfx::vertex, position),
-				sizeof(gfx::vertex::position),
+				offsetof(graphics::vertex, position),
+				sizeof(graphics::vertex::position),
 				accel::TransferDataType::eF32Vec3
 			};
 			MeshDataLayoutAttribute normal {
 				MeshDataLayoutAttributeId::eNormal,
-				offsetof(gfx::vertex, normal),
-				sizeof(gfx::vertex::normal),
+				offsetof(graphics::vertex, normal),
+				sizeof(graphics::vertex::normal),
 				accel::TransferDataType::eF32Vec3
 			};
 			MeshDataLayoutAttribute uv {
 				MeshDataLayoutAttributeId::eUv,
-				offsetof(gfx::vertex, uvm),
-				sizeof(gfx::vertex::uvm),
+				offsetof(graphics::vertex, uvm),
+				sizeof(graphics::vertex::uvm),
 				accel::TransferDataType::eF32Vec3
 			};
 			MeshDataLayoutAttribute color {
 				MeshDataLayoutAttributeId::eColor,
-				offsetof(gfx::vertex, color),
-				sizeof(gfx::vertex::color),
+				offsetof(graphics::vertex, color),
+				sizeof(graphics::vertex::color),
 				accel::TransferDataType::eU8Vec3
 			};
 			/**/
-			u64 stride = sizeof(gfx::vertex);
+			u64 stride = sizeof(graphics::vertex);
 		};
 
 	private:
