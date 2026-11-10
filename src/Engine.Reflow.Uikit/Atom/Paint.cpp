@@ -2,6 +2,7 @@
 
 #include <format>
 #include <Engine.Reflow/Algorithm/Flex.hpp>
+#include <Engine.Reflow/Command/ReflowCommandBuffer.hpp>
 
 using namespace hg::engine::reflow::uikit;
 using namespace hg::engine::reflow;

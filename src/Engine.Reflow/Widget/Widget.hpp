@@ -13,7 +13,6 @@
 #include "../ReflowEventNames.hpp"
 #include "../ReflowPosition.hpp"
 #include "../ReflowState.hpp"
-#include "../Command/ReflowCommandBuffer.hpp"
 #include "../Event/DragDropEvent.hpp"
 #include "../Event/EventResponse.hpp"
 #include "../Event/FocusEvent.hpp"
@@ -27,6 +26,7 @@
 namespace hg::engine::reflow {
 	class Children;
 	class DataWatcher;
+	class ReflowCommandBuffer;
 }
 
 namespace hg::engine::reflow {
