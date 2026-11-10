@@ -17,6 +17,20 @@ namespace hg::engine::storage {
 	public:
 		constexpr ~IStorage() override = default;
 
+	private:
+		/* Guarded by the primary's stack lock: set under its unique lock, read under its shared or unique lock. */
+		bool _retired = false;
+
+	public:
+		/* True once the storage system removed this storage; actions on it are rejected. */
+		[[nodiscard]] bool isRetired() const noexcept {
+			return _retired;
+		}
+
+		void retire() noexcept {
+			_retired = true;
+		}
+
 	public:
 		[[nodiscard]] virtual bool isPrimaryStorage() const noexcept = 0;
 

@@ -80,6 +80,7 @@ void StackCache::invalidateFrom(const ptr<const IStorage> primary_) {
 ref<concurrent::FiberSharedMutex> StackCache::lockOf(const ptr<const IStorage> primary_) {
 	concurrent::SpinLock guard { _mtx };
 
+	// shortcut: one FiberSharedMutex per removed storage stays in _locks, upgrade to shared-owned mutex handles if storages churn.
 	auto& slot = _locks[primary_];
 	if (slot == nullptr) {
 		slot = make_uptr<concurrent::FiberSharedMutex>();
