@@ -27,6 +27,8 @@ function(library_jolt_init)
 	propagate_option(VAR "BUILD_SHARED_LIBS" SET ${__USE_SHARED_LINKING})
 	propagate_option(VAR "ENABLE_INSTALL" SET OFF)
 	propagate_option(VAR "JPH_ENABLE_VULKAN" SET ON)
+	# Compile-time trim: the profiler pulls <chrono> and <mutex> into every Jolt includer
+	propagate_option(VAR "PROFILER_IN_DEBUG_AND_RELEASE" SET OFF)
 
 	# Include Sub-Project
 	get_external_include_path(vendor_inc_path "jolt")
