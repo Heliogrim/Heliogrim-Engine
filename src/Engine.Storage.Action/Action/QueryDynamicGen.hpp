@@ -8,7 +8,6 @@
 
 #include "DynamicStage.hpp"
 #include "../Query.hpp"
-#include "../Access/AccessError.hpp"
 #include "../Access/IoResourceAccessor.hpp"
 
 namespace hg::engine::storage::system {
@@ -42,15 +41,15 @@ namespace hg::engine::storage::system {
 
 	public:
 		decltype(auto) exec(auto&& fn_) noexcept {
-			return std::invoke(std::forward<decltype(fn_)>(fn_), *getFirstStage().access.value);
+			return std::invoke(std::forward<decltype(fn_)>(fn_), *_top->access.value);
 		}
 
 		exec_noreturn_type exec(mref<std::function<exec_noreturn_type(cref<IoResourceAccessorBase>)>> fn_) override {
-			std::invoke(::hg::forward<decltype(fn_)>(fn_), *getFirstStage().access.value);
+			std::invoke(::hg::forward<decltype(fn_)>(fn_), *_top->access.value);
 		}
 
 		exec_valreturn_type exec(mref<std::function<exec_valreturn_type(cref<IoResourceAccessorBase>)>> fn_) override {
-			return std::invoke(::hg::forward<decltype(fn_)>(fn_), *getFirstStage().access.value);
+			return std::invoke(::hg::forward<decltype(fn_)>(fn_), *_top->access.value);
 		}
 
 	public:
@@ -75,64 +74,61 @@ namespace hg::engine::storage::system {
 				return Unexpected<pre_error_type> { IllegalTypeError { "Encountered secondary storage while concluding query stack." } };
 			}
 
+			_primary = _stages.back().storage.get();
 			return {};
 		}
 
 		[[nodiscard]] Result<void, acq_error_type> acquire(ref<Context> ctx_) override {
 
-			/**/
+			// Note: Scan from the top down for the highest cached stage; everything below it is shared.
+			const auto count = _stages.size();
+			auto hitIdx = count;
+			Arci<ResolvedStage> below {};
 
-			{
-				auto& back = _stages.back();
-				auto result = back.acqFn(ctx_, back.storage, {});
+			for (index_type stageIdx = 0; stageIdx < count; ++stageIdx) {
 
-				if (not result.has_value()) {
-					return Unexpected { ::hg::move(result).error() };
-				}
-				back.access = ::hg::move(result).value();
+				const auto& stage = *(_stages.begin() + stageIdx);
+				auto found = ctx_.stacks.find(StageKey { .storage = stage.storage.get(), .resource = stage.resourceType });
 
-				if (_stages.size() <= 1) {
-					return {};
+				if (found.has_value()) {
+					below = ::hg::move(found).value();
+					hitIdx = stageIdx;
+					break;
 				}
 			}
 
 			/**/
 
-			const auto mark = --_stages.begin();
-			for (auto iter = (_stages.end() -= 2); iter != mark; --iter) {
+			for (auto stageIdx = hitIdx; stageIdx-- > 0;) {
 
-				const auto& prev = *(iter + 1);
-				auto& cur = *iter;
+				const auto& stage = *(_stages.begin() + stageIdx);
+				auto result = stage.acqFn(
+					ctx_,
+					stage.storage,
+					below != nullptr ? below->access : meta::WithType<Rc<IoResourceAccessorBase>> {}
+				);
 
-				auto result = cur.acqFn(ctx_, cur.storage, prev.access);
 				if (not result.has_value()) {
 					return Unexpected { ::hg::move(result).error() };
 				}
 
-				cur.access = ::hg::move(result).value();
+				auto node = Arci<ResolvedStage>::create();
+				node->key = StageKey { stage.storage.get(), stage.resourceType };
+				node->storage = clone(stage.storage);
+				node->access = ::hg::move(result).value();
+				node->primary = below != nullptr ? below->primary : stage.storage.get();
+				node->below = ::hg::move(below);
+
+				// Note: First insert wins; a concurrent reader may have resolved the same stage.
+				below = ctx_.stacks.insert(::hg::move(node));
 			}
 
+			_top = ::hg::move(below);
 			return {};
 		}
 
-		void release(ref<Context> ctx_) override {
-			#if _DEBUG
-			bool stride = false;
-			for (auto& stage : _stages) {
-				if (stage.active()) {
-					stage.relFn(ctx_, stage.storage, ::hg::move(stage.access));
-					stride = true;
-					continue;
-				}
-				::hg::assertd(not stride);
-			}
-			#else
-			for (auto& stage : _stages) {
-				if (stage.active()) {
-					stage.relFn(ctx_, stage.storage, ::hg::move(stage.access));
-				}
-			}
-			#endif
+		void release([[maybe_unused]] ref<Context> ctx_) override {
+			_top.reset();
 		}
 
 		void cleanup() override {

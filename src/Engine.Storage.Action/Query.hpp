@@ -9,6 +9,7 @@
 
 #include "Action.hpp"
 #include "Context.hpp"
+#include "Store/ResolvedStage.hpp"
 
 namespace hg::engine::storage {
 	class IoResourceAccessorBase;
@@ -46,6 +47,16 @@ namespace hg::engine::storage {
 
 	public:
 		constexpr virtual ~Query() noexcept = default;
+
+	protected:
+		ptr<const IStorage> _primary = nullptr;
+		/* Top of the resolved chain, held from acquire until release. */
+		Arci<ResolvedStage> _top;
+
+	public:
+		[[nodiscard]] ptr<const IStorage> primary() const noexcept {
+			return _primary;
+		}
 
 	public:
 		decltype(auto) exec(auto&& fn_) noexcept {

@@ -2,8 +2,6 @@
 
 /**/
 
-#include "IntegrationFixture.hpp"
-
 #include <Engine.Common/Guid.hpp>
 #include <Engine.Config/Config.hpp>
 #include <Engine.Resource.Archive/StorageReadonlyArchive.hpp>
@@ -12,6 +10,7 @@
 #include <Engine.Resource.Blob/Memory/ByteSpanBlob.hpp>
 #include <Engine.Storage.Action/Context.hpp>
 #include <Engine.Storage.Action/Access/ExclusiveIoResource.hpp>
+#include <Engine.Storage.Action/Access/SharedReadIoResource.hpp>
 #include <Engine.Storage.Action/Action/StageTypeInfo.hpp>
 #include <Engine.Storage.Registry/Options/MemoryStorageDescriptor.hpp>
 #include <Engine.Storage.Registry/Options/MemoryStorageOption.hpp>
@@ -20,6 +19,8 @@
 #include <Engine.Storage.Registry/Url/MemoryUrl.hpp>
 #include <Engine.Storage.System/StorageSystem.hpp>
 #include <Engine.Storage.System/Details/StorageActionResolver.hpp>
+
+#include "IntegrationFixture.hpp"
 
 /**/
 
@@ -46,9 +47,7 @@ namespace StorageModule {
 			_registry.setup(cfg);
 		}
 
-		void TearDown() override {
-			_registry.tidy();
-		}
+		// Note: No explicit `_registry.tidy()`; `_system` must drop its cached stacks before the providers free storage memory, which member order already ensures.
 	};
 }
 
@@ -344,6 +343,60 @@ namespace StorageModule {
 			EXPECT_EQ(validation_sequence, written);
 		}
 	}
+
+	/**/
+
+	namespace {
+		struct DtorProbe {
+			ptr<int> count;
+
+			explicit DtorProbe(ptr<int> count_) noexcept :
+				count { count_ } {}
+
+			DtorProbe(DtorProbe&& other_) noexcept :
+				count { std::exchange(other_.count, nullptr) } {}
+
+			~DtorProbe() {
+				if (count != nullptr) {
+					++*count;
+				}
+			}
+		};
+	}
+
+	TEST(SharedReadIoResource, EveryAcquireSharesTheResourceAndTheLastReleaseDestroysItOnce) {
+		auto dtors = 0;
+		auto value = 7;
+		{
+			const auto* const resource = new SharedReadIoResource {
+				[probe = DtorProbe { &dtors }, &value](ResourceAccessMode) -> ref<int> {
+					static_cast<void>(probe);
+					return value;
+				},
+				[&value](ResourceAccessMode) -> ref<const int> {
+					return value;
+				}
+			};
+			ASSERT_TRUE(resource->isShared());
+
+			auto readWrite = resource->acquireReadWrite();
+			auto tryReadonly = resource->tryAcquireReadonly();
+			auto tryReadWrite = resource->tryAcquireReadWrite();
+			ASSERT_TRUE(tryReadonly.has_value());
+			ASSERT_TRUE(tryReadWrite.has_value());
+
+			*readWrite = 9;
+			EXPECT_EQ(*tryReadonly.value(), 9);
+			EXPECT_EQ(*tryReadWrite.value(), 9);
+
+			{
+				const auto readonly = resource->acquireReadonly();
+				EXPECT_EQ(*readonly, 9);
+			}
+			EXPECT_EQ(dtors, 0);
+		}
+		EXPECT_EQ(dtors, 1);
+	}
 }
 
 /**/
@@ -367,41 +420,26 @@ void supportAddMemStoreBlobQueryStages(ref<StorageActionResolver> resolver_) {
 
 		/**/
 
-		using resolve_type = std::function<ref<ByteSpanBlob>(ResourceAccessMode)>;
-		using resource_type = decltype(ExclusiveIoResource { std::declval<resolve_type>() });
-
-		/**/
-
 		const auto& memory = memStore->_memory;
-
 		auto value = Rc<ByteSpanBlob>::create(memory.touchedSpan());
-		auto cachedValue = ctx_.objectStore.add(clone(storage_), ::hg::move(value));
-
-		/**/
-
-		auto resolver = [_obj = ::hg::move(cachedValue)](ResourceAccessMode) mutable -> ref<ByteSpanBlob> {
-			return *_obj;
-		};
-
-		/**/
-
-		auto resource = Rc<resource_type>::create(::hg::move(resolver));
-		auto storedResource = ctx_.accessStore.add(::hg::move(memStore).into<IStorage>(), ::hg::move(resource));
 
 		/**/
 
 		return Expected {
 			meta::WithType<Rc<IoResourceAccessorBase>>::from(
-				Rc<IoResourceAccessor<const ByteSpanBlob>>::create(storedResource->acquireReadonly())
+				Rc<IoResourceAccessor<const ByteSpanBlob>>::create(
+					acquireSharedReadonly(
+						[_obj = ::hg::move(value)](ResourceAccessMode) -> ref<const ByteSpanBlob> {
+							return *_obj;
+						}
+					)
+				)
 			)
 		};
 	};
 
-	decltype(DynamicStage::relFn) relFn = [](Context& ctx_, cref<Arci<IStorage>>, auto&& val_) -> void {
+	decltype(DynamicStage::relFn) relFn = [](Context&, cref<Arci<IStorage>>, auto&& val_) -> void {
 		::hg::forward<decltype(val_)>(val_).value.reset();
-
-		ctx_.accessStore.map.clear();
-		ctx_.objectStore.map.clear();
 	};
 
 	auto stageTypeInfo = StageTypeInfo {
@@ -437,44 +475,32 @@ void supportAddArchiveStoreQueryStages(ref<StorageActionResolver> resolver_) {
 
 		/**/
 
-		using resolve_mut_type = std::function<ref<StorageReadWriteArchive>(ResourceAccessMode)>;
-		using resolve_const_type = std::function<ref<StorageReadonlyArchive>(ResourceAccessMode)>;
-		using resource_type = decltype(ExclusiveIoResource { std::declval<resolve_mut_type>(), std::declval<resolve_const_type>() });
-
-		/**/
-
 		auto value = Rc<StorageReadonlyArchive>::create(input.value->get(), streamoff {}, input.value->get().size());
-		auto cachedValue = ctx_.objectStore.add(clone(storage_), ::hg::move(value));
 
 		/**/
 
+		// Note: Resolvers are invoked const; keep a mutable alias next to the owning handle.
+		const auto obj = std::addressof(*value);
 		auto resolveMut = [](ResourceAccessMode) -> ref<StorageReadWriteArchive> {
 			::hg::panic();
 		};
-		auto resolveConst = [_obj = ::hg::move(cachedValue)](ResourceAccessMode) mutable -> ref<StorageReadonlyArchive> {
-			return *_obj;
+		auto resolveConst = [_owner = ::hg::move(value), obj](ResourceAccessMode) -> ref<StorageReadonlyArchive> {
+			return *obj;
 		};
-
-		/**/
-
-		auto resource = Rc<resource_type>::create(::hg::move(resolveMut), ::hg::move(resolveConst));
-		auto storedResource = ctx_.accessStore.add(clone(storage_).into<IStorage>(), ::hg::move(resource));
 
 		/**/
 
 		return Expected {
 			meta::WithType<Rc<IoResourceAccessorBase>>::from(
-				Rc<IoResourceAccessor<StorageReadonlyArchive>>::create(storedResource->acquireReadonly())
+				Rc<IoResourceAccessor<StorageReadonlyArchive>>::create(
+					acquireSharedReadonly(::hg::move(resolveMut), ::hg::move(resolveConst))
+				)
 			)
 		};
 	};
 
-	decltype(DynamicStage::relFn) relFn = [](Context& ctx_, cref<Arci<IStorage>>, auto&& val_) -> void {
+	decltype(DynamicStage::relFn) relFn = [](Context&, cref<Arci<IStorage>>, auto&& val_) -> void {
 		::hg::forward<decltype(val_)>(val_).value.reset();
-
-		// Problem: We need to identify resources and cached access to invalidate them.
-		// Warning: ctx_.store.map.clear();
-		// Warning: ctx_.caches.map.clear();
 	};
 
 	auto stageTypeInfo = StageTypeInfo {

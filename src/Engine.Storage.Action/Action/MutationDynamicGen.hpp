@@ -75,6 +75,7 @@ namespace hg::engine::storage::system {
 				return Unexpected<pre_error_type> { IllegalTypeError { "Encountered secondary storage while concluding query stack." } };
 			}
 
+			_primary = _stages.back().storage.get();
 			return {};
 		}
 

@@ -49,7 +49,11 @@ namespace hg::engine::storage::system {
 
 	public:
 		[[nodiscard]] Result<void, pre_error_type> prepare(_Inout_ mref<Arci<IStorage>> storage_) override {
-			return prepareTypeOrdered(::hg::forward<decltype(storage_)>(storage_));
+			auto result = prepareTypeOrdered(::hg::forward<decltype(storage_)>(storage_));
+			if (result.has_value()) {
+				_primary = std::get<sizeof...(Stages_) - 1uLL>(_stages).storage.get();
+			}
+			return result;
 		}
 
 	private:
