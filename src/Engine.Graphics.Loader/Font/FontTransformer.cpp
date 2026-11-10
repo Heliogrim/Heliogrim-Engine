@@ -1,6 +1,8 @@
 #include "FontTransformer.hpp"
 
+#include <Engine.Common/Make.hpp>
 #include <Engine.Graphics/Pool/GlobalResourcePool.hpp>
+#include <Engine.Resource/Manage/UniqueResource.hpp>
 
 #include "Transformer/FreeType.hpp"
 
