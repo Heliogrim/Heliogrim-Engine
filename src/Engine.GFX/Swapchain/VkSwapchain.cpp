@@ -88,7 +88,7 @@ void VkSwapchain::setup(cref<sptr<Device>> device_) {
 
 		/**/
 		#ifdef _DEBUG
-        assert(_rQueue.try_push(i));
+		assert(_rQueue.try_push(i));
 		#else
 		_rQueue.try_push(i);
 		#endif
@@ -210,10 +210,10 @@ bool VkSwapchain::consumeNext(
 	 * Rebind
 	 */
 	#ifdef _DEBUG
-    if (not _rQueue.try_push(std::move(pidx))) {
-        // Warning: We must ensure that image index is pushed to ready queue to prevent resource leak
-        ::hg::breakpoint();
-    }
+	if (not _rQueue.try_push(std::move(pidx))) {
+		// Warning: We must ensure that image index is pushed to ready queue to prevent resource leak
+		::hg::breakpoint();
+	}
 	#else
 	// shortcut: spin-yield on the presentation ring, upgrade when W02.3 gives presentation an affine seam
 	while (not _rQueue.try_push(std::move(pidx))) {
