@@ -1,5 +1,6 @@
 #include "InputBindingList.hpp"
 
+#include <algorithm>
 #include <Engine.Common/Move.hpp>
 
 using namespace hg::editor::ui::service;

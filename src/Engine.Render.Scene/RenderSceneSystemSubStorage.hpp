@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <concepts>
 #include <Engine.Common/Move.hpp>
 #include <Engine.Common/Optional.hpp>
