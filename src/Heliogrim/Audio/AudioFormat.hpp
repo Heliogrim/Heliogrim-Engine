@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Engine.SFX/AudioFormat.hpp>
+#include <Engine.Audio/AudioFormat.hpp>
 
 namespace hg {
-	using AudioFormat = hg::engine::sfx::AudioFormat;
+	using AudioFormat = hg::engine::audio::AudioFormat;
 }

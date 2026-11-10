@@ -23,6 +23,6 @@ AssetTypeId TypedAssetHandle<PhysicsMaterial>::getStaticTypeId<PhysicsMaterial>(
 
 template <>
 template <>
-AssetTypeId TypedAssetHandle<SfxMaterial>::getStaticTypeId<SfxMaterial>() noexcept {
-	return SfxMaterial::typeId;
+AssetTypeId TypedAssetHandle<AudioMaterial>::getStaticTypeId<AudioMaterial>() noexcept {
+	return AudioMaterial::typeId;
 }

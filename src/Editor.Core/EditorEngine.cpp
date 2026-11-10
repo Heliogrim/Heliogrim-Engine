@@ -33,7 +33,7 @@
 #include <Engine.Scheduler/CompScheduler.hpp>
 #include <Engine.Scheduler/Waitable/JoinCounter.hpp>
 #include <Engine.Scheduler/Waitable/Signal.hpp>
-#include <Engine.SFX/Audio.hpp>
+#include <Engine.Audio/Audio.hpp>
 
 #ifdef WIN32
 #include <Support.Platform.Win32/WinPlatform.hpp>
