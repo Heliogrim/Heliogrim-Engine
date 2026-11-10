@@ -1,7 +1,6 @@
 #pragma once
 
-#include <algorithm>
-#include <ranges>
+#include <Engine.Common/Algo/Search.hpp>
 
 #include "Hash.hpp"
 #include "Table.hpp"
@@ -105,7 +104,7 @@ namespace hg {
 			using node_type = CompileTableNode<key_type, value_type>;
 
 			[[nodiscard]] constexpr bool operator()(cref<node_type> left_, cref<node_type> right_) const noexcept {
-				return std::less<decltype(left_->first)> {}(left_->first, right_->first);
+				return CompileLess<key_type> {}(left_->first, right_->first);
 			}
 		};
 
@@ -164,7 +163,7 @@ namespace hg {
 			// Threshold where to switch between linear search and binary hash probing
 			constexpr size_t threshold = 56;
 			if constexpr (Size_ < threshold) {
-				return std::ranges::find_if(
+				return FindIf(
 					_table,
 					[key_](cref<typename table_type::node_type> node_) {
 						return node_->first == key_;
@@ -172,7 +171,7 @@ namespace hg {
 				);
 			} else {
 				// TODO: Rework hashing for constexpr tables
-				return std::ranges::lower_bound(
+				return LowerBound(
 					_table,
 					key_,
 					CompileLess<key_type> {},

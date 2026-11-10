@@ -1,5 +1,6 @@
 #include "Input.hpp"
 
+#include <algorithm>
 #include <Engine.Common/SDL3.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Event/GlobalEventEmitter.hpp>

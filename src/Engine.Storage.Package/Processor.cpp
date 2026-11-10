@@ -1,5 +1,6 @@
 #include "Processor.hpp"
 
+#include <algorithm>
 #include <Engine.Asserts/Todo.hpp>
 #include <Engine.Common/Functional/Lambda.hpp>
 #include <Engine.Crypto/Checksum/Crc32.hpp>

@@ -518,3 +518,45 @@ namespace ReflectModule {
 		}
 	}
 }
+
+namespace ReflectModule {
+	template <size_t Size_>
+	static consteval Array<int, Size_> sorted_copy(Array<int, Size_> values_) {
+		compile_sort<Size_>(values_.begin(), values_.end(), CompileLess<int> {});
+		return values_;
+	}
+
+	TEST(CompileSort, SortsSmallAndDuplicateInputs) {
+		constexpr auto one = sorted_copy<1>({ 4 });
+		constexpr auto two = sorted_copy<2>({ 9, 3 });
+		constexpr auto seven = sorted_copy<7>({ 5, -1, 5, 3, 9, 0, 3 });
+
+		EXPECT_EQ(one[0], 4);
+		EXPECT_EQ(two[0], 3);
+		EXPECT_EQ(two[1], 9);
+
+		constexpr Array<int, 7> expected { -1, 0, 3, 3, 5, 5, 9 };
+		EXPECT_EQ(seven, expected);
+	}
+
+	static consteval auto test_gen_mass_int_map() {
+		// 37 is coprime to 64, so the keys are a shuffled 0..63 and the map exceeds the linear-search threshold.
+		std::pair<int, int> pairs[64] {};
+		for (int idx = 0; idx < 64; ++idx) {
+			pairs[idx] = { (idx * 37) % 64, idx };
+		}
+		return make_compile_map<int, int>(pairs);
+	}
+
+	TEST(CompileMap, MassFindUsesBinarySearch) {
+		constexpr auto massMap = test_gen_mass_int_map();
+
+		for (int key = 0; key < 64; ++key) {
+			const auto found = massMap.find(key);
+			ASSERT_NE(found, massMap.end());
+			EXPECT_EQ(found->data.first, key);
+		}
+
+		EXPECT_EQ(massMap.find(64), massMap.end());
+	}
+}

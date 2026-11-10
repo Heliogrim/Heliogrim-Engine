@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Functional/FnRef.hpp>
