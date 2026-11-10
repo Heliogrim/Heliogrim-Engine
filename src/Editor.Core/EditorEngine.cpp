@@ -22,7 +22,7 @@
 #include <Engine.Core/Event/UniverseRemoveEvent.hpp>
 #include <Engine.Core/Module/CoreDependencies.hpp>
 #include <Engine.Core/Module/SubModule.hpp>
-#include <Engine.GFX/Graphics.hpp>
+#include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Input/Input.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Network/Network.hpp>

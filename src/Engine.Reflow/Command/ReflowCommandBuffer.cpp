@@ -4,9 +4,9 @@
 #include <ranges>
 #include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Common/Math/Compat.inl>
-#include <Engine.GFX/Texture/Texture.hpp>
-#include <Engine.GFX/Texture/TextureLikeObject.hpp>
-#include <Engine.GFX/Texture/TextureView.hpp>
+#include <Engine.Graphics/Texture/Texture.hpp>
+#include <Engine.Graphics/Texture/TextureLikeObject.hpp>
+#include <Engine.Graphics/Texture/TextureView.hpp>
 
 using namespace hg::engine::reflow;
 using namespace hg::engine::gfx;

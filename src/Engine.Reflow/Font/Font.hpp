@@ -4,7 +4,7 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/DenseMap.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.GFX/Texture/__fwd.hpp>
+#include <Engine.Graphics/Texture/__fwd.hpp>
 
 #include "FontGlyph.hpp"
 #include "GlyphCode.hpp"

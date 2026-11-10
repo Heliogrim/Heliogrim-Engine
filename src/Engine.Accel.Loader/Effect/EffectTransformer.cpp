@@ -31,7 +31,7 @@ EffectTransformer::response_type::type EffectTransformer::operator()(
 
 /**/
 
-#include <Engine.GFX.Render.Predefined/Effects/Skybox.hpp>
+#include <Engine.Graphics.Render.Predefined/Effects/Skybox.hpp>
 
 void dummy_initialize_effect(Guid guid_, ref<smr<const engine::accel::AccelEffect>> effect_) {
 

@@ -1,16 +1,16 @@
 #include "Viewport.hpp"
 
 #include "Engine.Common/Math/Convertion.hpp"
-#include "Engine.GFX/Swapchain/VkSwapchain.hpp"
+#include "Engine.Graphics/Swapchain/VkSwapchain.hpp"
 
 #if TRUE
 #include <Engine.Common/Math/Coordinates.hpp>
 #include <Engine.Core/Engine.hpp>
-#include <Engine.GFX/Graphics.hpp>
+#include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Heliogrim/Actor/Camera/CameraActor.hpp>
 
-#include "Engine.GFX/RenderTarget.hpp"
+#include "Engine.Graphics/RenderTarget.hpp"
 #endif
 
 #include <format>
@@ -18,8 +18,8 @@
 #include <Engine.Asserts/Todo.hpp>
 #include <Engine.Core/Timing.hpp>
 #include <Engine.Core/Universe.hpp>
-#include <Engine.GFX.Scene/RenderSceneManager.hpp>
-#include <Engine.GFX.Scene/View/SceneView.hpp>
+#include <Engine.Graphics.Scene/RenderSceneManager.hpp>
+#include <Engine.Graphics.Scene/View/SceneView.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 #include <Engine.Render.Scene.Model/CameraModel.hpp>
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>

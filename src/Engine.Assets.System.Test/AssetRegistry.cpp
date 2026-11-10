@@ -5,7 +5,7 @@
 #include <Engine.Assets.System/Repository/InMemAssetRepository.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 #include <Engine.Assets/AssetGuid.hpp>
-#include <Engine.GFX/Texture/TextureType.hpp>
+#include <Engine.Graphics/Texture/TextureType.hpp>
 #include <Engine.Common/Make.hpp>
 
 using namespace hg;

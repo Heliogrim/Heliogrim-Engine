@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Flag.hpp>
 #include <Engine.Common/Math/Vector.hpp>
-#include <Engine.GFX/Aabb.hpp>
+#include <Engine.Graphics/Aabb.hpp>
 
 namespace hg::engine::reflow {
 	struct ReflowPassState {

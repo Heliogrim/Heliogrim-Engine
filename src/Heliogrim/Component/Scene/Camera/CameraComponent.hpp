@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine.GFX/Camera/CameraModes.hpp>
+#include <Engine.Graphics/Camera/CameraModes.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 
 #include "../../SceneComponent.hpp"

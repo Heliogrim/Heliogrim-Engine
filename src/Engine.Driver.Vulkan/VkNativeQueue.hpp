@@ -3,7 +3,7 @@
 #include <type_traits>
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.GFX.Render.Command/NativeQueue.hpp>
+#include <Engine.Graphics.Render.Command/NativeQueue.hpp>
 
 namespace hg::driver::vk {
     enum class VkQueueTypeBits: u32 {

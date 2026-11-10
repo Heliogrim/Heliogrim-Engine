@@ -1,6 +1,6 @@
 #pragma once
 #include <Engine.Common/Memory/MemoryPointer.hpp>
-#include <Engine.GFX/Memory/AllocatedMemory.hpp>
+#include <Engine.Graphics/Memory/AllocatedMemory.hpp>
 
 #include "Expression.hpp"
 #include "Variable.hpp"

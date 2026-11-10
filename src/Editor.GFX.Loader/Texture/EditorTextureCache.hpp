@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Engine.Common/Sal.hpp>
-#include <Engine.GFX/Cache/CacheResult.hpp>
+#include <Engine.Graphics/Cache/CacheResult.hpp>
 #include <Engine.Resource/Loader/Cache.hpp>
 
 #include "Traits.hpp"

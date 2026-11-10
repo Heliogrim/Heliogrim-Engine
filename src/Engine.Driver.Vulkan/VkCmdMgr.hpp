@@ -3,7 +3,7 @@
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Flag.hpp>
 #include <Engine.Common/Collection/InlineAutoArray.hpp>
-#include <Engine.GFX/Device/Device.hpp>
+#include <Engine.Graphics/Device/Device.hpp>
 
 namespace hg::driver::vk {
     enum class VkQueueFeatureSet : u8 {

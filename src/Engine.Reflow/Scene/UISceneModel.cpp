@@ -1,7 +1,7 @@
 #include "UISceneModel.hpp"
 
 #include <Engine.Asserts/Asserts.hpp>
-#include <Engine.GFX/Cache/ModelBatch.hpp>
+#include <Engine.Graphics/Cache/ModelBatch.hpp>
 #include <Engine.Reflect/Cast.hpp>
 #include <Heliogrim/Component/Scene/UI/UIComponent.hpp>
 

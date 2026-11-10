@@ -1,8 +1,8 @@
 #pragma once
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
-#include <Engine.GFX.RenderGraph/Symbol/Symbol.hpp>
-#include <Engine.GFX/API/__vkFwd.hpp>
+#include <Engine.Graphics.RenderGraph/Symbol/Symbol.hpp>
+#include <Engine.Graphics/API/__vkFwd.hpp>
 #include <tl/expected.hpp>
 
 #include "__fwd.hpp"

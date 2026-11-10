@@ -3,7 +3,7 @@
 #include <chrono>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Module/Modules.hpp>
-#include <Engine.GFX/Surface/Surface.hpp>
+#include <Engine.Graphics/Surface/Surface.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Reflow/DataWatcher.hpp>
 #include <Engine.Reflow/Reflow.hpp>

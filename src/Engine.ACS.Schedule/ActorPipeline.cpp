@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Make.hpp>
 #include <Engine.Core.Schedule/CorePipeline.hpp>
-#include <Engine.GFX.Schedule/RenderScenePipeline.hpp>
+#include <Engine.Graphics.Schedule/RenderScenePipeline.hpp>
 #include <Engine.Input.Schedule/InputPipeline.hpp>
 #include <Engine.Physics.Schedule/PhysicsPipeline.hpp>
 #include <Engine.Scene.Schedule/ScenePipeline.hpp>

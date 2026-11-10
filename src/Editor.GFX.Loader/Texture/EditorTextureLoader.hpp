@@ -1,6 +1,6 @@
 #pragma once
-#include <Engine.GFX/Cache/GlobalCacheCtrl.hpp>
-#include <Engine.GFX/Pool/GlobalResourcePool.hpp>
+#include <Engine.Graphics/Cache/GlobalCacheCtrl.hpp>
+#include <Engine.Graphics/Pool/GlobalResourcePool.hpp>
 #include <Engine.Resource/Loader/LoaderChain.hpp>
 
 #include "EditorTextureCache.hpp"

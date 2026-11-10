@@ -1,7 +1,7 @@
 #include "VkCmdMgr.hpp"
 
 #include <Engine.Async/Lock/UniqueLock.hpp>
-#include <Engine.GFX/Command/CommandBatch.hpp>
+#include <Engine.Graphics/Command/CommandBatch.hpp>
 #include <numeric>
 
 using namespace hg::driver::vk;
