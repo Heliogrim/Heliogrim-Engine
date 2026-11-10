@@ -1,8 +1,8 @@
 #include "Variant.hpp"
 
 #include <algorithm>
-#include <mutex>
-#include <shared_mutex>
+#include <Engine.Async/Lock/SharedLock.hpp>
+#include <Engine.Async/Lock/UniqueLock.hpp>
 
 using namespace hg::engine::accel::lang::ir;
 using namespace hg;
@@ -231,12 +231,12 @@ smr<const Resolved> VariantCache::getOrCreate(ref<const VariantKey> key_, FnRef<
 		return built;
 	}
 
-	const std::unique_lock lock { _lck };
+	const concurrent::UniqueLock lock { _lck };
 	return _entries.try_emplace(key_, std::move(built)).first->second;
 }
 
 smr<const Resolved> VariantCache::find(ref<const VariantKey> key_) const noexcept {
-	const std::shared_lock lock { _lck };
+	const concurrent::SharedLock lock { _lck };
 	const auto iter = _entries.find(key_);
 	return iter != _entries.end() ? iter->second : smr<const Resolved> {};
 }
@@ -254,12 +254,12 @@ smr<const ResolvedPipeline> PipelineLayoutCache::getOrCreate(
 		return built;
 	}
 
-	const std::unique_lock lock { _lck };
+	const concurrent::UniqueLock lock { _lck };
 	return _entries.try_emplace(key_, std::move(built)).first->second;
 }
 
 smr<const ResolvedPipeline> PipelineLayoutCache::find(ref<const Vector<VariantKey>> key_) const noexcept {
-	const std::shared_lock lock { _lck };
+	const concurrent::SharedLock lock { _lck };
 	const auto iter = _entries.find(key_);
 	return iter != _entries.end() ? iter->second : smr<const ResolvedPipeline> {};
 }
