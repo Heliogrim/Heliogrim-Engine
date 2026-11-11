@@ -7,6 +7,7 @@
 #include "__fwd.hpp"
 #include "../Action/DynamicStage.hpp"
 #include "../Action/StaticStage.hpp"
+#include "ResolvedStage.hpp"
 
 /**/
 
@@ -99,11 +100,14 @@ namespace hg::engine::storage::system {
 		decltype(DynamicStage::relFn) relFnBase;
 		/* Set on registration from the stage's resource type info. */
 		type_id resourceType {};
+		/* Set with `resourceType`; false for a resource with a read cursor. */
+		bool shareable = true;
 
 		[[nodiscard]] DynamicStage operator()() const noexcept {
 			return DynamicStage {
 				.storage = nullptr,
 				.resourceType = resourceType,
+				.shareable = shareable,
 				.acqFn = clone(acqFnBase),
 				.access = {},
 				.relFn = clone(relFnBase)
@@ -229,6 +233,7 @@ namespace hg::engine::storage::system {
 			return DynamicStage {
 				.storage = nullptr,
 				.resourceType = refl::FullTypeInfo::from<ResourceType_>().meta->typeId(),
+				.shareable = not CursorResource<ResourceType_>,
 				.acqFn = &this_type::morphAcqFn,
 				.access = {},
 				.relFn = &this_type::morphRelFn
@@ -265,6 +270,8 @@ namespace hg::engine::storage::system {
 		substage_list subStageFactories;
 		/* Set on composition from the composed stage's resource type info. */
 		type_id resourceType {};
+		/* Set with `resourceType`; false for a resource with a read cursor. */
+		bool shareable = true;
 
 	protected:
 		struct SubStage {
@@ -377,6 +384,7 @@ namespace hg::engine::storage::system {
 			return DynamicStage {
 				.storage = nullptr,
 				.resourceType = resourceType,
+				.shareable = shareable,
 				.acqFn = [rcSubStages = clone(rcSubStages)](auto&&... args_) mutable {
 					return this_type::composeAcqFn(*rcSubStages, ::hg::forward<decltype(args_)>(args_)...);
 				},

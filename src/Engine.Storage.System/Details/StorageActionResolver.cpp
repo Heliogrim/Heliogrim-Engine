@@ -2,6 +2,7 @@
 
 #include <Engine.Asserts/Todo.hpp>
 #include <Engine.Pedantic/Into/Into.hpp>
+#include <Engine.Resource.Archive/Archive.hpp>
 
 using namespace hg::engine::storage::system;
 using namespace hg::engine::storage;
@@ -126,6 +127,7 @@ Opt<cref<std::pair<StageTypeInfo, UniquePtr<StageResolutionFactory<ComposeStageT
 	};
 	auto factory = make_uptr<StageResolutionFactory<ComposeStageType>>(::hg::move(covariantCandidates));
 	factory->resourceType = stageResource.meta->typeId();
+	factory->shareable = not stageResource.meta->is<::hg::engine::resource::Archive>();
 
 	/**/
 
@@ -468,6 +470,7 @@ void StorageActionResolver::useStage(
 ) {
 
 	factory_->resourceType = stageTypeInfo_.resource.meta->typeId();
+	factory_->shareable = not stageTypeInfo_.resource.meta->is<::hg::engine::resource::Archive>();
 
 	const auto existing = findInStore(stageStore.dynamicResolved, stageTypeInfo_);
 	if (existing != stageStore.dynamicResolved.end()) {

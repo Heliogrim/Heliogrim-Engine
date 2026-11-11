@@ -159,21 +159,16 @@ namespace StorageModule {
 		auto storeA = archive(_guidA);
 		ASSERT_NE(storeA, nullptr);
 
-		ptr<const void> first = nullptr;
-		ptr<const void> second = nullptr;
-		ASSERT_TRUE(
-			_system.query(clone(storeA), [&](_In_ ref<StorageReadonlyArchive> arch_) { first = std::addressof(arch_); }).has_value()
-		);
+		ASSERT_TRUE(_system.query(clone(storeA), [](_In_ ref<StorageReadonlyArchive>) {}).has_value());
+		const auto packBefore = packageAddress();
 		const auto attempts = insertAttempts();
-		ASSERT_TRUE(
-			_system.query(clone(storeA), [&](_In_ ref<StorageReadonlyArchive> arch_) { second = std::addressof(arch_); }).has_value()
-		);
+		ASSERT_TRUE(_system.query(clone(storeA), [](_In_ ref<StorageReadonlyArchive>) {}).has_value());
 
-		EXPECT_NE(first, nullptr);
-		EXPECT_EQ(first, second);
 		// Note: A rebuild would still return the stored nodes, so only the insert count proves the cache hit.
+		// Note: Blob and package are cached; the archive (a cursor resource) is built per query and never inserted.
 		EXPECT_EQ(insertAttempts() - attempts, 0uLL);
-		EXPECT_EQ(cacheSize(), 3uLL);
+		EXPECT_EQ(packBefore, packageAddress());
+		EXPECT_EQ(cacheSize(), 2uLL);
 	}
 
 	TEST_F(StackCacheIntegration, ArchiveReusesPackagePrefix) {
@@ -187,10 +182,10 @@ namespace StorageModule {
 		const auto attempts = insertAttempts();
 		ASSERT_TRUE(_system.query(clone(storeB), [](_In_ ref<StorageReadonlyArchive>) {}).has_value());
 
-		// Note: Only the archive stage is built; blob and package come from the cache.
-		EXPECT_EQ(insertAttempts() - attempts, 1uLL);
+		// Note: Only the archive stage is built, per query and uncached; blob and package come from the cache.
+		EXPECT_EQ(insertAttempts() - attempts, 0uLL);
 		EXPECT_EQ(packBefore, packageAddress());
-		EXPECT_EQ(cacheSize(), 4uLL);
+		EXPECT_EQ(cacheSize(), 2uLL);
 	}
 
 	TEST_F(StackCacheIntegration, OverlappingQueriesShareStages) {
@@ -208,8 +203,8 @@ namespace StorageModule {
 
 		EXPECT_TRUE(innerRan);
 		EXPECT_TRUE(outerRan);
-		// Note: Blob and package are shared; one stage per archive on top.
-		EXPECT_EQ(cacheSize(), 4uLL);
+		// Note: Blob and package are shared; each query builds its own archive on top.
+		EXPECT_EQ(cacheSize(), 2uLL);
 	}
 
 	TEST_F(StackCacheIntegration, FailedBuildCachesNothing) {
