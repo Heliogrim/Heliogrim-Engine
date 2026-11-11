@@ -6,9 +6,7 @@
 
 /**/
 
-#include <chrono>
 #include <filesystem>
-#include <format>
 #include <fstream>
 #include <Engine.Storage.Registry/Provider/LocalFileSystemProvider.hpp>
 #include <Engine.Storage.Registry/Repository/EditorReadOnlyRepository.hpp>
@@ -24,20 +22,7 @@ namespace StorageModule {
 	using ShaderReadTest = MutationIntegrationFixture;
 
 	TEST_F(ShaderReadTest, ResolvesThroughStorage) {
-		const auto root = std::filesystem::temp_directory_path() / std::format(
-			"hg-shader-read-{}",
-			std::chrono::steady_clock::now().time_since_epoch().count()
-		);
-
-		struct RemoveOnExit {
-			std::filesystem::path path;
-
-			~RemoveOnExit() {
-				auto ec = std::error_code {};
-				std::filesystem::remove_all(path, ec);
-			}
-		} cleanup { root };
-
+		const auto& root = _scratch.path;
 		std::filesystem::create_directories(root / "shader");
 		std::ofstream { root / "shader" / "probe.asl", std::ios::binary } << "probe";
 
@@ -61,22 +46,12 @@ namespace StorageModule {
 		void SetUp() override {
 			MutationIntegrationFixture::SetUp();
 
-			_root = std::filesystem::temp_directory_path() / std::format(
-				"hg-shader-bad-{}",
-				std::chrono::steady_clock::now().time_since_epoch().count()
-			);
-			std::filesystem::create_directories(_root);
+			_root = _scratch.path;
 
 			auto lfsOwned = make_uptr<system::LocalFileSystemProvider>();
 			auto* const lfs = lfsOwned.get();
 			_registry.addProvider(::hg::move(lfsOwned));
 			_registry.addRepository(lfs->makeEditorRepository(fs::Path { _root }));
-		}
-
-		void TearDown() override {
-			auto ec = std::error_code {};
-			std::filesystem::remove_all(_root, ec);
-			MutationIntegrationFixture::TearDown();
 		}
 
 		void put(const std::filesystem::path& file_, std::string_view text_) const {

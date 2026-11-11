@@ -417,28 +417,17 @@ namespace StorageModule {
 	}
 
 	TEST_F(StackCacheIntegration, RemoveStorageDropsEntries) {
-		const auto name = std::format("hg-stack-cache-{}.bin", std::chrono::steady_clock::now().time_since_epoch().count());
 		auto lfsOwned = make_uptr<system::LocalFileSystemProvider>();
 		auto* const lfs = lfsOwned.get();
 		_registry.addProvider(::hg::move(lfsOwned));
-		_registry.addRepository(lfs->makeCacheRepository(fs::Path { std::filesystem::temp_directory_path() }));
+		_registry.addRepository(lfs->makeCacheRepository(fs::Path { _scratch.path }));
 
-		// Note: The storage path is the url path as given, so an absolute temp path keeps the file out of the cwd.
-		auto fileUrl = FileUrl { "file+cache"sv, fs::Path { std::filesystem::temp_directory_path() / name } };
-
-		struct RemoveOnExit {
-			std::filesystem::path path;
-
-			~RemoveOnExit() {
-				auto ec = std::error_code {};
-				std::filesystem::remove(path, ec);
-			}
-		} cleanup {};// declared before `store`, so the file is removed after the storage is released
+		// Note: The storage path is the url path as given, so an absolute scratch path keeps the file out of the cwd.
+		auto fileUrl = FileUrl { "file+cache"sv, fs::Path { _scratch.path / "stack-cache.bin" } };
 
 		auto store = _registry.insert(FileStorageDescriptor { clone(fileUrl) });
 		ASSERT_NE(store, nullptr);
 		const auto path = static_cast<std::filesystem::path>(static_cast<ref<const system::LocalFileStorage>>(*store)._lfsPath);
-		cleanup.path = path;
 		std::ofstream { path, std::ios::binary } << "Stack Cache Blob";
 
 		ASSERT_TRUE(_system.query(clone(store), [](_In_ ref<const Blob>) {}).has_value());
@@ -684,22 +673,13 @@ namespace StorageModule {
 			removeBehindQuery(MemoryUrl { clone(guid) }, mem);
 		}
 
-		const auto name = std::format("hg-stack-cache-race-{}.bin", std::chrono::steady_clock::now().time_since_epoch().count());
 		auto lfsOwned = make_uptr<system::LocalFileSystemProvider>();
 		auto* const lfs = lfsOwned.get();
 		_registry.addProvider(::hg::move(lfsOwned));
-		_registry.addRepository(lfs->makeCacheRepository(fs::Path { std::filesystem::temp_directory_path() }));
+		_registry.addRepository(lfs->makeCacheRepository(fs::Path { _scratch.path }));
 
-		const auto path = std::filesystem::temp_directory_path() / name;
+		const auto path = _scratch.path / "stack-cache-race.bin";
 		std::ofstream { path, std::ios::binary } << "Stack Cache Blob";
-		struct RemoveOnExit {
-			std::filesystem::path path;
-
-			~RemoveOnExit() {
-				auto ec = std::error_code {};
-				std::filesystem::remove(path, ec);
-			}
-		} cleanup { path };// declared before `store`, so the file is removed after the storage is released
 
 		auto fileUrl = FileUrl { "file+cache"sv, fs::Path { path } };
 		auto store = _registry.insert(FileStorageDescriptor { clone(fileUrl) });

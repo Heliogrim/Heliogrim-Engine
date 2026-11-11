@@ -2,12 +2,14 @@
 
 /**/
 
+#include "Scratch.hpp"
+
+/**/
+
 #include <algorithm>
 #include <array>
 #include <atomic>
-#include <chrono>
 #include <filesystem>
-#include <format>
 #include <fstream>
 #include <thread>
 #include <vector>
@@ -19,17 +21,10 @@ using namespace hg::engine::resource;
 using namespace hg;
 
 namespace StorageModule {
-	[[nodiscard]] static std::filesystem::path uniqueTempFile() {
-		return std::filesystem::temp_directory_path() / std::format(
-			"hg-lfs-sync-blob-{}.bin",
-			std::chrono::steady_clock::now().time_since_epoch().count()
-		);
-	}
-
 	TEST(LfsSyncBlobTest, ConcurrentReadsReturnOwnRanges) {
 
-		const auto path = uniqueTempFile();
-		std::filesystem::remove(path);
+		const ScratchDir scratch {};
+		const auto path = scratch.path / "blob.bin";
 
 		std::array<_::byte, 4096> pattern {};
 		for (size_t i = 0; i < pattern.size(); ++i) {
@@ -62,13 +57,13 @@ namespace StorageModule {
 			}
 		}
 
-		std::filesystem::remove(path);
 		EXPECT_EQ(mismatches.load(), 0uz);
 	}
 
 	TEST(LfsSyncBlobTest, ReadOnlyFileReads) {
 
-		const auto path = uniqueTempFile(); {
+		const ScratchDir scratch {};
+		const auto path = scratch.path / "blob.bin"; {
 			std::ofstream { path, std::ios::binary } << "read only";
 		}
 		std::filesystem::permissions(
@@ -84,22 +79,11 @@ namespace StorageModule {
 		}
 
 		std::filesystem::permissions(path, std::filesystem::perms::owner_write, std::filesystem::perm_options::add);
-		std::filesystem::remove(path);
 
 		EXPECT_EQ(std::string_view(reinterpret_cast<const char*>(buf.data()), size), "read only");
 	}
 
 	namespace {
-		struct TempCleanup {
-			std::filesystem::path path;
-
-			~TempCleanup() {
-				auto ec = std::error_code {};
-				std::filesystem::permissions(path, std::filesystem::perms::owner_write, std::filesystem::perm_options::add, ec);
-				std::filesystem::remove_all(path, ec);
-			}
-		};
-
 		void writeFile(const std::filesystem::path& path_, std::string_view text_) {
 			std::ofstream { path_, std::ios::binary | std::ios::trunc } << text_;
 		}
@@ -115,8 +99,8 @@ namespace StorageModule {
 
 	TEST(LfsSyncBlobDeathTest, WriteOnReadOnlyBlobAsserts) {
 
-		const auto path = uniqueTempFile();
-		TempCleanup cleanup { path };
+		const ScratchDir scratch {};
+		const auto path = scratch.path / "blob.bin";
 		writeFile(path, "read only");
 		makeReadOnly(path);
 
@@ -130,8 +114,8 @@ namespace StorageModule {
 
 	TEST(LfsSyncBlobDeathTest, TrimOnReadOnlyBlobAsserts) {
 
-		const auto path = uniqueTempFile();
-		TempCleanup cleanup { path };
+		const ScratchDir scratch {};
+		const auto path = scratch.path / "blob.bin";
 		writeFile(path, "read only");
 		makeReadOnly(path);
 
@@ -142,8 +126,8 @@ namespace StorageModule {
 
 	TEST(LfsSyncBlobTest, ReadAtEndYieldsEmptySpan) {
 
-		const auto path = uniqueTempFile();
-		TempCleanup cleanup { path };
+		const ScratchDir scratch {};
+		const auto path = scratch.path / "blob.bin";
 		writeFile(path, "abcdef");
 
 		LfsSyncBlob blob { fs::Path { path } };
@@ -156,8 +140,8 @@ namespace StorageModule {
 
 	TEST(LfsSyncBlobDeathTest, ReadBeyondEndAsserts) {
 
-		const auto path = uniqueTempFile();
-		TempCleanup cleanup { path };
+		const ScratchDir scratch {};
+		const auto path = scratch.path / "blob.bin";
 		writeFile(path, "abcdef");
 
 		LfsSyncBlob blob { fs::Path { path } };
@@ -168,8 +152,8 @@ namespace StorageModule {
 
 	TEST(LfsSyncBlobTest, ReadStraddlingEndYieldsPartialSize) {
 
-		const auto path = uniqueTempFile();
-		TempCleanup cleanup { path };
+		const ScratchDir scratch {};
+		const auto path = scratch.path / "blob.bin";
 		writeFile(path, "abcdef");
 
 		LfsSyncBlob blob { fs::Path { path } };
@@ -181,8 +165,8 @@ namespace StorageModule {
 
 	TEST(LfsSyncBlobTest, ReadAfterShortReadSucceeds) {
 
-		const auto path = uniqueTempFile();
-		TempCleanup cleanup { path };
+		const ScratchDir scratch {};
+		const auto path = scratch.path / "blob.bin";
 		writeFile(path, "abcdef");
 
 		LfsSyncBlob blob { fs::Path { path } };
@@ -198,8 +182,8 @@ namespace StorageModule {
 
 	TEST(LfsSyncBlobTest, SizeOfEmptyFileIsZero) {
 
-		const auto path = uniqueTempFile();
-		TempCleanup cleanup { path };
+		const ScratchDir scratch {};
+		const auto path = scratch.path / "blob.bin";
 		writeFile(path, "");
 
 		const LfsSyncBlob blob { fs::Path { path } };
@@ -211,11 +195,8 @@ namespace StorageModule {
 
 	TEST(LfsSyncBlobTest, MissingParentDirectoriesAreCreated) {
 
-		const auto root = std::filesystem::temp_directory_path() / std::format(
-			"hg-lfs-sync-dir-{}",
-			std::chrono::steady_clock::now().time_since_epoch().count()
-		);
-		TempCleanup cleanup { root };
+		const ScratchDir scratch {};
+		const auto root = scratch.path / "root";
 		const auto path = root / "a" / "b" / "blob.bin";
 		ASSERT_FALSE(std::filesystem::exists(root));
 
@@ -230,8 +211,8 @@ namespace StorageModule {
 
 	TEST(LfsSyncBlobTest, ConcurrentDisjointWritesAndReadsKeepFinalContent) {
 
-		const auto path = uniqueTempFile();
-		TempCleanup cleanup { path };
+		const ScratchDir scratch {};
+		const auto path = scratch.path / "blob.bin";
 
 		constexpr size_t slots = 8uz;
 		constexpr size_t slotSize = 256uz;
