@@ -1,6 +1,7 @@
 #pragma once
 
 #include "pch.h"
+#include "Scratch.hpp"
 
 /**/
 
@@ -28,9 +29,12 @@ namespace StorageModule {
 			// Note: 3. System
 			// Note: 4. Resolver
 			// Note: 5. Registry
+			// Note: 6. Scratch directory
 		}
 
 	public:
+		// Note: Declared first so it is removed last, after the system has released every cached file inside it.
+		ScratchDir _scratch {};
 		hg::engine::storage::StorageRegistry _registry {};
 		hg::engine::storage::StorageActionResolver _resolver {};
 		hg::engine::storage::StorageSystem _system { _registry, _resolver };
