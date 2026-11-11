@@ -9,6 +9,8 @@ namespace hg::concurrent {
 	/**
 	 * Reader/writer mutex that parks fibers (or blocks plain threads) while contended.
 	 * Ownership is handed off: a woken waiter returns already holding the lock.
+	 * Queued writers are never overtaken by a later writer, and unlock() alternates between queued readers and
+	 *	writers, so neither side starves under a steady stream of the other (FiberSharedMutex.tla beside this header).
 	 */
 	class HG_CAPABILITY("shared mutex") FiberSharedMutex {
 	public:
@@ -34,5 +36,6 @@ namespace hg::concurrent {
 		std::atomic<u32> _word { 0 };
 		engine::scheduler::ParkQueue _readers;
 		engine::scheduler::ParkQueue _writers;
+		bool _readersLast { false }; // which queue unlock() served last; guarded by the queue locks
 	};
 }
