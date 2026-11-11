@@ -2,18 +2,18 @@
 Language: Cpp
 BasedOnStyle: LLVM
 AccessModifierOffset: -4
-AlignAfterOpenBracket: AlwaysBreak
+AlignAfterOpenBracket: BlockIndent
 AlignConsecutiveAssignments: false
 AlignConsecutiveDeclarations: false
 AlignOperands: false
 AlignTrailingComments: false
 AllowShortCaseLabelsOnASingleLine: true
+AllowShortFunctionsOnASingleLine: Empty
 AllowShortIfStatementsOnASingleLine: false
 AlwaysBreakAfterDefinitionReturnType: false
-AlwaysBreakTemplateDeclarations: Yes
 BinPackArguments: false
 BinPackParameters: false
-BraceWrapping: 
+BraceWrapping:
   AfterCaseLabel: false
   AfterClass: false
   AfterControlStatement: false
@@ -33,16 +33,21 @@ BraceWrapping:
 BreakBeforeBraces: Custom
 BreakBeforeTernaryOperators: false
 BreakConstructorInitializers: AfterColon
-BreakConstructorInitializersBeforeComma: false
+BreakInheritanceList: AfterColon
+BreakTemplateDeclarations: Yes
 ColumnLimit: 140
-ConstructorInitializerAllOnOneLineOrOnePerLine: true
 Cpp11BracedListStyle: false
-IncludeCategories: 
-  - Regex: '^<.*'
+EmptyLineBeforeAccessModifier: Always
+FixNamespaceComments: false
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex: '^<[^/]+>$'
     Priority: 1
-  - Regex: '^".*'
-    Priority: 2
-  - Regex: '.*'
+    SortPriority: 1
+  - Regex: '^<.*>$'
+    Priority: 1
+    SortPriority: 2
+  - Regex: '^".*"$'
     Priority: 3
 IncludeIsMainRegex: '([-_](test|unittest))?$'
 IndentCaseLabels: true
@@ -52,7 +57,17 @@ InsertNewlineAtEOF: true
 MacroBlockBegin: ''
 MacroBlockEnd: ''
 NamespaceIndentation: All
+PackConstructorInitializers: Never
 PointerAlignment: Left
+RequiresClausePosition: WithPreceding
+SpaceBeforeCpp11BracedList: true
+SpaceBeforeParens: Custom
+SpaceBeforeParensOptions:
+  AfterControlStatements: true
+  AfterForeachMacros: true
+  AfterIfMacros: true
+  AfterRequiresInClause: true
+  AfterRequiresInExpression: true
 SpaceInEmptyParentheses: false
 SpacesBeforeTrailingComments: 0
 SpacesInAngles: false
