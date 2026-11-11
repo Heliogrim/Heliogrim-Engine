@@ -55,3 +55,6 @@
 !**/src/**/[Bb]uild/
 !**/src/**/[Dd]ist/
 !**/src/**/[Vv]endor/
+
+# TLC model-checker output next to the .tla models
+src/**/states/
