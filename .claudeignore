@@ -1,0 +1,18 @@
+# Ignore build generators and build outputs
+build/
+out/
+cmake-build-*/
+.cache/
+
+# Ignore compiled artifacts and dependencies
+*.o
+*.a
+*.so
+*.dylib
+vcpkg_installed/
+_deps/
+.conan/
+
+# Ignore indexer caches and compile databases
+.clangd/
+compile_commands.json
