@@ -30,6 +30,15 @@ namespace hg::engine::storage {
 		meta::WithType<Rc<IoResourceAccessorBase>> access;
 		/* Bottom storage of the chain; copied from `below`, or the stage's own storage. */
 		ptr<const IStorage> primary;
+		/* False for a per-query stage: it is never inserted into the cache. */
+		bool shared = true;
+	};
+
+	/* A resource with a read cursor (an archive) carries per-reader state, so its stage and every stage above it is built per query. */
+	template <typename Type_>
+	concept CursorResource = requires(ref<Type_> resource_) {
+		resource_.seek(s64 {});
+		resource_.tell();
 	};
 }
 

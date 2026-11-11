@@ -86,10 +86,11 @@ namespace hg::engine::storage::system {
 				Rc<IoResourceAccessor<stage_resource_type<Idx_>>>::create(::hg::move(expect).value())
 			);
 			node->primary = below_ != nullptr ? below_->primary : stage.storage.get();
+			node->shared = not CursorResource<stage_resource_type<Idx_>> && (below_ == nullptr || below_->shared);
 			node->below = ::hg::move(below_);
 
 			// Note: First insert wins; a concurrent reader may have resolved the same stage.
-			below_ = ctx_.stacks.insert(::hg::move(node));
+			below_ = node->shared ? ctx_.stacks.insert(::hg::move(node)) : ::hg::move(node);
 			return {};
 		}
 

@@ -15,6 +15,8 @@ namespace hg::engine::storage::system {
 	struct DynamicStage {
 		Arci<IStorage> storage;
 		type_id resourceType;
+		/* False for a resource with a read cursor (see `CursorResource`); such a stage is built per query. */
+		bool shareable = true;
 		std::function<Result<meta::WithType<Rc<IoResourceAccessorBase>>, Action::acq_error_type>(
 			ref<Context>,
 			cref<Arci<IStorage>>,

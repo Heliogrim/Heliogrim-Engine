@@ -117,10 +117,11 @@ namespace hg::engine::storage::system {
 				node->storage = clone(stage.storage);
 				node->access = ::hg::move(result).value();
 				node->primary = below != nullptr ? below->primary : stage.storage.get();
+				node->shared = stage.shareable && (below == nullptr || below->shared);
 				node->below = ::hg::move(below);
 
 				// Note: First insert wins; a concurrent reader may have resolved the same stage.
-				below = ctx_.stacks.insert(::hg::move(node));
+				below = node->shared ? ctx_.stacks.insert(::hg::move(node)) : ::hg::move(node);
 			}
 
 			_top = ::hg::move(below);
