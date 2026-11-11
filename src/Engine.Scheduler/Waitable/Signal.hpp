@@ -8,8 +8,11 @@
 namespace hg::engine::scheduler {
 	/**
 	 * One-shot signal; waiters park (fiber or thread) until set() is called once.
-	 * Destroying a Signal is safe once isSet() returned true or wait() returned;
-	 * the setter's _state store is its last access to the object.
+	 * Destroying a Signal is safe only once every waiter has returned from wait(), the same rule as
+	 *	std::latch: one waiter's return says nothing about another waiter that passed the _state check
+	 *	but has not yet taken the _waiters lock (Signal.tla beside this header). In practice the owner destroys
+	 *	it after its own wait(), never a waiter sharing it with others.
+	 * The setter's _state store is its last access to the object.
 	 */
 	class Signal {
 	public:
