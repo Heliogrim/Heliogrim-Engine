@@ -1,0 +1,16 @@
+LENS: style
+
+Scope: STYLE.md rules that the formatter does not own. Include order, sorting, column limit, trailing newline and brace placement are already checked by clang-format; never report them.
+
+Checklist (cite the id):
+- S1 Includes: a header included but unused; a raw std header where an engine wrapper exists (`Engine.Common/Collection/Vector.hpp`, `Wrapper.hpp`, `Make.hpp`); a header the `.hpp` does not need that belongs in the `.cpp`; a header that relies on include order in its consumer.
+- S2 Test includes: tests start with `#include "pch.h"`, blank line, `/**/`, blank line, sorted block.
+- S3 Pointers and references: raw pointer spelled without `ptr<T>` (members, parameters, function-pointer signatures, casts); new signature using `cref<T>` instead of `ref<const T>`; struct larger than a couple of words passed by value; `const` dropped on a by-value parameter in either declaration or definition; `Opt<T>` built by braced conversion instead of `SomeVal<T>(...)`; specifier order other than `inline constexpr static`.
+- S4 Class layout, per the "Guidance for classes and structs" template in STYLE.md: one access label per block, repeated even when access does not change. Block order: friends; usings and `constexpr static` constants; constructors and destructor; assignment operators; then repeated semantic blocks, each a data-member block followed by one or more method blocks that belong to those members (methods inside a block semantically batched and sorted). Comparison operators grouped by family (`==`/`!=` incl. deleted overloads, then `<=>`); test-only API in its own trailing `public:`; static factories last. A method that sits in a block whose data it does not touch, or a data member split from the methods that own it, is a finding.
+- S5 Dividers and function layout, per the "Guidance for functions" template in STYLE.md: a guard block (early return) is followed by one blank line; an `if` body that continues into `else`/`else if` ends with one blank line before the `}`; statements are grouped into semantic batches separated by one blank line; a `/**/` divider marks a phase change inside a long function and between logical sections of a file; the return value's computation and the `return` form the final batch. File-local helpers in an anonymous namespace, forward-declared after `using namespace ...;` and defined at file end behind a `/**/` separator; one blank line between consecutive commented struct members, enum declarations, macro invocations, explicit instantiations.
+- S6 Source order: `.cpp` definitions follow `.hpp` declaration order, private helpers last; an out-of-line definition lives in the `.cpp` of the header that declares it, never in another TU.
+- S7 Control flow: exhaustive `if / else if` over an enum ends in `else { std::unreachable(); }`; one-statement lambdas stay on one line.
+- S8 Serialization split: `X.hpp` holds only the type plus `ACCESS_LAYOUT`/`ACCESS_STRUCTURE` friend macros; `X.Structured.cpp` holds `access::Structure<X>` specializations; `X.Layout.{hpp,cpp}` holds `access::Layout<X>`; only archetype-defining `.cpp` files and tests include `X.Layout.hpp`.
+- S9 Formatter artifacts copied by hand: a scope block glued onto the previous statement (`Handle stale; {`), a member access split across lines.
+
+Severity: S3, S6, S8 are major; everything else minor.
