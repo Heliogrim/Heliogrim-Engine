@@ -43,10 +43,10 @@ void FiberSharedMutex::lock() {
 		_writers,
 		[&](auto, auto writers_) {
 			u32 w = _word.fetch_or(eWriterWaiting, std::memory_order::acq_rel) | eWriterWaiting;
+			// Queued writers go first: a free lock with a non-empty queue is handed over by whoever freed it.
 			// A transient reader count can fail the CAS; it then reaches 0 under eWriterWaiting and hands off to us.
-			while ((w & (eWriter | readerMask)) == 0) {
-				const u32 next = writers_.empty() ? eWriter : (eWriter | eWriterWaiting);
-				if (_word.compare_exchange_weak(w, next, std::memory_order::acquire, std::memory_order::relaxed)) {
+			while (writers_.empty() && (w & (eWriter | readerMask)) == 0) {
+				if (_word.compare_exchange_weak(w, eWriter, std::memory_order::acquire, std::memory_order::relaxed)) {
 					return false;
 				}
 			}
@@ -73,7 +73,9 @@ void FiberSharedMutex::unlock() noexcept {
 		_readers,
 		_writers,
 		[&](auto readers_, auto writers_) {
-			if (not readers_.empty()) {
+			// Alternate between the queues so neither side starves under a steady stream of the other.
+			if (not readers_.empty() && (writers_.empty() || not _readersLast)) {
+				_readersLast = true;
 				batch = readers_.takeAll();
 				u32 n = 0;
 				for (auto* it = batch; it != nullptr; it = it->next) {
@@ -86,6 +88,7 @@ void FiberSharedMutex::unlock() noexcept {
 			}
 
 			if (not writers_.empty()) {
+				_readersLast = false;
 				writer = writers_.popOne();
 				if (writers_.empty()) {
 					_word.fetch_and(~eWriterWaiting, std::memory_order::acq_rel);

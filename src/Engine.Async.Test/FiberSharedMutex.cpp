@@ -183,6 +183,63 @@ namespace AsyncModule {
 		);
 	}
 
+	// The TLA+ model's starvation cycle: one writer and readers looping kept a second queued writer parked forever.
+	TEST(FiberSharedMutex, SecondWriterAcquiresUnderWriterAndReaderLoop) {
+		SchedulerModule::structuredRuntimeTest(
+			4,
+			[](nmpt<engine::Scheduler> s_) {
+				struct Shared {
+					concurrent::FiberSharedMutex mtx {};
+					std::chrono::steady_clock::time_point deadline {};
+					std::atomic<u32> loopersDone { 0 };
+					std::atomic<s64> writerMs { -1 };
+				};
+				auto shared = std::make_shared<Shared>();
+				shared->deadline = std::chrono::steady_clock::now() + std::chrono::seconds(2);
+
+				for (u32 t = 0; t < 4; ++t) {
+					s_->exec(
+						engine::scheduler::task::make_task(
+							[shared, exclusive = t == 0] HG_NO_THREAD_SAFETY_ANALYSIS {
+								while (std::chrono::steady_clock::now() < shared->deadline) {
+									if (exclusive) {
+										shared->mtx.lock();
+										::hg::yield();
+										shared->mtx.unlock();
+									} else {
+										shared->mtx.lock_shared();
+										::hg::yield();
+										shared->mtx.unlock_shared();
+									}
+								}
+								shared->loopersDone.fetch_add(1);
+							}
+						)
+					);
+				}
+
+				engine::scheduler::thread::self::sleepFor(200);
+
+				s_->exec(
+					engine::scheduler::task::make_task(
+						[shared] {
+							const auto start = std::chrono::steady_clock::now();
+							shared->mtx.lock();
+							const auto took = std::chrono::steady_clock::now() - start;
+							shared->mtx.unlock();
+							shared->writerMs = std::chrono::duration_cast<std::chrono::milliseconds>(took).count();
+						}
+					)
+				);
+
+				ASSERT_TRUE(waitFor([&] { return shared->writerMs.load() >= 0; }, 3'000));
+				EXPECT_LT(shared->writerMs.load(), 200);
+				RecordProperty("secondWriterAcquireMs", std::to_string(shared->writerMs.load()));
+				ASSERT_TRUE(waitFor([&] { return shared->loopersDone.load() == 4; }, 5'000));
+			}
+		);
+	}
+
 	TEST(FiberSharedMutex, LateReadersWaitBehindWriter) {
 		SchedulerModule::structuredRuntimeTest(
 			4,
