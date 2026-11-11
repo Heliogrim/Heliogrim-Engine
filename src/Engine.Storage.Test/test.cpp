@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "Scratch.hpp"
 
 #include <chrono>
 #include <filesystem>
@@ -43,7 +44,7 @@ namespace StorageModule {
 
 			auto& cfg = *_config;
 
-			const auto baseRoot = std::filesystem::current_path();
+			const auto& baseRoot = scratchRoot();
 			_tmpRoot = clone(baseRoot).append("tmp"sv).concat(
 				std::to_string(std::chrono::high_resolution_clock::now().time_since_epoch().count())
 			);
