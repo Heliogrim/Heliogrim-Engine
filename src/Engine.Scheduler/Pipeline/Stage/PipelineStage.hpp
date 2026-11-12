@@ -4,6 +4,7 @@
 #include "StageDispatcher.hpp"
 #include "StageIdentifier.hpp"
 #include "../StagePipeline.hpp"
+#include "../../Graph/StageDecl.hpp"
 
 namespace hg::engine::scheduler {
 	class macro_novtable PipelineStage {
@@ -38,5 +39,7 @@ namespace hg::engine::scheduler {
 		virtual void staticDispatch(cref<StaticStageDispatcher> dispatcher_) = 0;
 
 		virtual void dynamicDispatch(cref<DynamicStageDispatcher> dispatcher_) = 0;
+
+		[[nodiscard]] virtual graph::StageDecl decl() const noexcept = 0;
 	};
 }

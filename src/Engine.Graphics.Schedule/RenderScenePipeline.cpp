@@ -28,7 +28,7 @@ void RenderScenePipeline::declareDependencies(
 	cref<StageRegister> register_,
 	ref<CompactSet<StageDependency>> collection_
 ) {
-	const auto sceneUpdatePostPhysics = register_.getStage(scene::schedule::ScenePipeline::SceneUpdatePostPhysics);
+	const auto sceneUpdatePostPhysics = register_.getStage(::hg::engine::scene::schedule::ScenePipeline::SceneUpdatePostPhysics);
 	const auto reflowTick = register_.getStage(reflow::schedule::ReflowPipeline::Tick);
 	::hg::assertrt(sceneUpdatePostPhysics != None && reflowTick != None);
 

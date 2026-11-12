@@ -20,5 +20,7 @@ namespace hg::engine::acs::schedule {
 		void staticDispatch(ref<const scheduler::StaticStageDispatcher> dispatcher_) override;
 
 		void dynamicDispatch(ref<const scheduler::DynamicStageDispatcher> dispatcher_) override;
+
+		[[nodiscard]] scheduler::graph::StageDecl decl() const noexcept override;
 	};
 }

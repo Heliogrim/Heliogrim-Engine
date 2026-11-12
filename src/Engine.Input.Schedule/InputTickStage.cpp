@@ -1,5 +1,8 @@
 #include "InputTickStage.hpp"
 
+#include <Engine.Core.Schedule/CorePipeline.hpp>
+#include <Engine.Input.Schedule/InputPipeline.hpp>
+
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Input/Input.hpp>
 
@@ -28,4 +31,21 @@ void InputTickStage::staticDispatch(cref<StaticStageDispatcher> dispatcher_) {
 
 void InputTickStage::dynamicDispatch(cref<DynamicStageDispatcher> dispatcher_) {
 	// TODO:
+}
+
+namespace hg::engine { class Input; }
+
+namespace {
+	static constexpr graph::AccessKey Writes[] = { graph::AccessKey::of<engine::Input>() };
+}
+
+graph::StageDecl InputTickStage::decl() const noexcept {
+	static const string_view after[] = { engine::core::schedule::CorePipeline::TickBegin };
+	return {
+		.name = engine::input::schedule::InputPipeline::InputTick,
+		.reads = {},
+		.writes = Writes,
+		.lane = graph::Lane::eCritical,
+		.after = after
+	};
 }

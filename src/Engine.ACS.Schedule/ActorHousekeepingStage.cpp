@@ -1,5 +1,8 @@
 #include "ActorHousekeepingStage.hpp"
 
+#include <Engine.ACS.Schedule/ActorPipeline.hpp>
+#include <Engine.Scene.Schedule/ScenePipeline.hpp>
+
 #include <Engine.ACS/ActorModule.hpp>
 #include <Engine.ACS/Registry.hpp>
 #include <Engine.Core/Engine.hpp>
@@ -46,3 +49,21 @@ void ActorHousekeepingStage::staticDispatch(ref<const scheduler::StaticStageDisp
 }
 
 void ActorHousekeepingStage::dynamicDispatch(ref<const scheduler::DynamicStageDispatcher> dispatcher_) {}
+
+namespace hg::engine::acs { class Registry; }
+namespace hg::engine::scene { class SceneBase; }
+
+namespace {
+	static constexpr graph::AccessKey Writes[] = { graph::AccessKey::of<engine::acs::Registry>(), graph::AccessKey::of<engine::scene::SceneBase>() };
+}
+
+graph::StageDecl ActorHousekeepingStage::decl() const noexcept {
+	static const string_view after[] = { engine::scene::schedule::ScenePipeline::ScenePostProcess, engine::acs::schedule::ActorPipeline::ActorTickPostPhysics };
+	return {
+		.name = engine::acs::schedule::ActorPipeline::ActorHousekeeping,
+		.reads = {},
+		.writes = Writes,
+		.lane = graph::Lane::eCritical,
+		.after = after
+	};
+}
