@@ -110,6 +110,10 @@ TaskMask TaskDelegate::mask() const noexcept {
 	return _mask;
 }
 
+ref<TaskMask> TaskDelegate::mask() noexcept {
+	return _mask;
+}
+
 ptr<engine::scheduler::fiber::Fiber> TaskDelegate::fiber() const noexcept {
 	return _fiber;
 }

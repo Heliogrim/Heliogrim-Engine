@@ -5,6 +5,7 @@
 #include <Engine.Common/Collection/Vector.hpp>
 
 #include "../../Task/TaskCtrl.hpp"
+#include "../../Task/TaskMask.hpp"
 #include "../Stage/StageDispatcher.hpp"
 
 namespace hg::engine::scheduler {
@@ -16,24 +17,26 @@ namespace hg::engine::scheduler {
 	public:
 		CompositeSlot(
 			const non_owning_rptr<class CompositePipeline> pipeline_,
-			const non_owning_rptr<class Schedule> schedule_,
-			const non_owning_rptr<struct CompositeStage> stage_
+			const non_owning_rptr<class Schedule> schedule_
 		);
 
 		~CompositeSlot() override;
 
 	private:
 		non_owning_rptr<class Schedule> _schedule;
-		non_owning_rptr<struct CompositeStage> _stage;
-
 		non_owning_rptr<class CompositePipeline> _pipeline;
+
+		u16 _node;
+		task::TaskMask _mask;
 
 	public:
 		[[nodiscard]] const non_owning_rptr<class Schedule> getSchedule() const noexcept;
 
-		[[nodiscard]] const non_owning_rptr<struct CompositeStage> getCompositeStage() const noexcept;
+		[[nodiscard]] u16 getNode() const noexcept;
 
-		void setCompositeStage(const non_owning_rptr<struct CompositeStage> stage_);
+		void setNode(u16 node_) noexcept;
+
+		void setMask(task::TaskMask mask_) noexcept;
 
 	private:
 		mutable concurrent::SpinMutex _mtx;

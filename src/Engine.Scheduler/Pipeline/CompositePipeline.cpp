@@ -2,14 +2,15 @@
 
 #include <algorithm>
 #include <ranges>
+#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 
 #include "../Fiber/Fiber.hpp"
 #include "../Process/Schedule.hpp"
+#include "../Thread/Thread.hpp"
 #include "Composite/CompositeSlot.hpp"
-#include "Composite/StageDependency.hpp"
 #include "Stage/PipelineStage.hpp"
 
 using namespace hg::engine::scheduler;
@@ -18,10 +19,29 @@ using namespace hg;
 CompositePipeline::CompositePipeline(const non_owning_rptr<Schedule> schedule_) :
 	_schedule(schedule_),
 	_stopping(),
-	_stageHead(0),
-	_stageTail(0) {}
+	_remaining(0u),
+	_maxInFlight(0uL),
+	_activeCalls(0uL) {}
 
 CompositePipeline::~CompositePipeline() = default;
+
+[[noreturn]] static void failGraph(ref<const graph::GraphError> error_) {
+
+	string stages {};
+	for (const auto& stage : error_.stages) {
+		stages.append(stage);
+		stages.append(" ");
+	}
+
+	IM_CORE_ERRORF(
+		"Failed to build the stage graph. (kind: {}, stages: {}, key: {})",
+		static_cast<u32>(error_.kind),
+		stages,
+		error_.key.has_value() ? error_.key->id().data : 0uLL
+	);
+	::hg::assertrt(false);
+	std::abort();
+}
 
 void CompositePipeline::setup() {
 
@@ -29,36 +49,105 @@ void CompositePipeline::setup() {
 		pipeline->mount(*static_cast<ptr<StageRegister>>(this));
 	}
 
-	/**/
+	/* Merge every pipeline stage registered under one name into one declaration */
 
-	resolve();
+	struct Merged {
+		graph::StageDecl decl;
+		Vector<graph::AccessKey> reads;
+		Vector<graph::AccessKey> writes;
+		Vector<string_view> after;
+		Vector<string_view> before;
+		Vector<ptr<PipelineStage>> stages;
+	};
+
+	Vector<Merged> merged {};
+	for (const auto& stage : _pipelineStages) {
+
+		const string_view name = stage->stageIdentifier().value;
+		const auto decl = stage->decl();
+
+		auto where = std::ranges::find(merged, name, [](ref<const Merged> entry_) { return entry_.decl.name; });
+		if (where == merged.end()) {
+			merged.emplace_back(Merged { .decl = graph::StageDecl { .name = name, .lane = decl.lane } });
+			where = merged.end() - 1;
+		}
+
+		if (where->decl.lane != decl.lane) {
+			failGraph(graph::GraphError { graph::GraphError::Kind::eLaneMismatch, { string { name } }, None });
+		}
+
+		where->reads.insert(where->reads.end(), decl.reads.begin(), decl.reads.end());
+		where->writes.insert(where->writes.end(), decl.writes.begin(), decl.writes.end());
+		where->after.insert(where->after.end(), decl.after.begin(), decl.after.end());
+		where->before.insert(where->before.end(), decl.before.begin(), decl.before.end());
+		where->stages.push_back(stage.get());
+	}
+
+	Vector<graph::StageDecl> decls {};
+	for (auto& entry : merged) {
+		entry.decl.reads = entry.reads;
+		entry.decl.writes = entry.writes;
+		entry.decl.after = entry.after;
+		entry.decl.before = entry.before;
+		decls.push_back(entry.decl);
+	}
+
+	auto built = graph::build(decls);
+	if (not built.has_value()) {
+		failGraph(built.error());
+	}
+	_graph = std::move(built).value();
+
+	/* Bind every node to its slot and its pipeline stages */
+
+	const auto count = _graph.nodes.size();
+	_nodeStages.clear();
+	_slotOfNode.clear();
+	for (u64 idx = 0; idx < count; ++idx) {
+
+		const auto& node = _graph.nodes[idx];
+		const auto where = std::ranges::find(merged, string_view { node.name }, [](ref<const Merged> entry_) { return entry_.decl.name; });
+		::hg::assertrt(where != merged.end());
+		_nodeStages.push_back(where->stages);
+
+		const auto slot = static_cast<u16>(_stages.find(node.name)->second->getSlot());
+		_slotOfNode.push_back(slot);
+		_slots[slot]->setNode(static_cast<u16>(idx));
+		_slots[slot]->setMask(graph::toMask(node.lane));
+	}
+
+	_pending = std::make_unique<std::atomic<u16>[]>(count);
 }
 
 void CompositePipeline::start() {
 
-	for (const auto& stage : _compositeStages) {
-		for (const auto& dependency : stage->dependencies) {
-			const_cast<CompositeDependency&>(dependency).requiredGeneration = 1uLL;
+	::hg::assertrt(not _graph.nodes.empty());
+	::hg::assertrt(not _stopping.test());
+
+	for (u64 idx = 0; idx < _graph.nodes.size(); ++idx) {
+		const auto dispatcher = _slots[_slotOfNode[idx]]->getStaticDispatcher();
+		for (auto* const stage : _nodeStages[idx]) {
+			stage->staticDispatch(dispatcher);
 		}
 	}
 
-	/* Find entry point */
+	startFrame();
+}
 
-	const auto& firstStage = _compositeStages.front();
-	for (const auto& dependency : firstStage->dependencies) {
-		const_cast<ref<CompositeDependency>>(dependency).requiredGeneration = 0uLL;
-	}
+void CompositePipeline::setMaxInFlight(const u32 count_) noexcept {
+	// shortcut: only 0 (unbounded) and 1 (serial) supported; bounded window needs readyQueue (design 6.3)
+	::hg::assertrt(count_ <= 1uL);
+	// workers read _maxInFlight unsynchronised, so it may only change while no frame runs (before start() or after stop())
+	::hg::assertrt(_remaining.load(std::memory_order::relaxed) == 0u);
+	_maxInFlight = count_;
+}
 
-	assert(firstStage->ready());
+ref<const graph::Graph> CompositePipeline::graph() const noexcept {
+	return _graph;
+}
 
-	/**/
-
-	prepareSlots();
-
-	/**/
-
-	::hg::assertrt(not _stopping.test());
-	dispatch(_slots[firstStage->stage->getSlot()].get());
+bool CompositePipeline::isStopping() const noexcept {
+	return _stopping.test();
 }
 
 void CompositePipeline::stop() {
@@ -66,6 +155,16 @@ void CompositePipeline::stop() {
 
 	_stopping.test_and_set();
 	_stopped.wait();
+
+	// every runner call has returned before the pipeline may be destroyed
+	while (_activeCalls.load(std::memory_order::acquire) != 0uL) {
+		if (fiber::self::current() != nullptr) {
+			fiber::self::yield();
+		} else {
+			thread::self::yield();
+		}
+	}
+
 	_stopped.reset();
 }
 
@@ -97,7 +196,7 @@ Opt<ref<const Stage>> CompositePipeline::registerStage(mref<uptr<PipelineStage>>
 
 	/**/
 
-	auto slot = make_uptr<CompositeSlot>(this, _schedule, nullptr);
+	auto slot = make_uptr<CompositeSlot>(this, _schedule);
 
 	const auto slotIter = _slots.insert(_slots.end(), std::move(slot));
 	const auto slotBegin = _slots.begin();
@@ -191,565 +290,79 @@ void CompositePipeline::removePipeline(const non_owning_rptr<StagePipeline> pipe
 	_pipelines.erase(where.begin(), where.end());
 }
 
-void CompositePipeline::dispatch(const non_owning_rptr<CompositeSlot> slot_) {
+void CompositePipeline::startFrame() {
 
-	// TODO: increment generations of dependencies
-	// TODO: bump head/tail helper
-	// TODO: push stage tasks to schedule
+	// no node is in flight here; pushing the first root task publishes these stores to the workers
+	const auto count = _graph.nodes.size();
+	for (u64 idx = 0; idx < count; ++idx) {
+		_pending[idx].store(_graph.nodes[idx].predecessors, std::memory_order::relaxed);
+	}
+	_remaining.store(static_cast<u16>(count), std::memory_order::relaxed);
 
-	const auto& stage = slot_->getCompositeStage();
-	for (const auto& dependency : stage->dependencies) {
-		++const_cast<ref<CompositeDependency>>(dependency).requiredGeneration;
+	if (_maxInFlight == 1uL) {
+		dispatch(_graph.order.front());
+		return;
 	}
 
-	/**/
+	for (u64 idx = 0; idx < count; ++idx) {
+		if (_graph.nodes[idx].predecessors == 0u) {
+			dispatch(static_cast<u16>(idx));
+		}
+	}
+}
 
-	const auto dispatcher = slot_->getDynamicDispatcher();
-	for (const auto* const binding : stage->pipelineStages) {
-		const_cast<ptr<PipelineStage>>(binding)->dynamicDispatch(dispatcher);
+void CompositePipeline::dispatch(const u16 node_) {
+
+	auto* const slot = _slots[_slotOfNode[node_]].get();
+	const auto dispatcher = slot->getDynamicDispatcher();
+	for (auto* const stage : _nodeStages[node_]) {
+		stage->dynamicDispatch(dispatcher);
 	}
 
-	/**/
-
-	slot_->submit();
+	slot->submit();
 }
 
 void CompositePipeline::complete(const non_owning_rptr<CompositeSlot> slot_) {
 
-	auto* const stage = slot_->getCompositeStage();
-	auto compIter = std::ranges::find(
-		_compositeStages,
-		stage,
-		[](cref<uptr<CompositeStage>> entry_) {
-			return entry_.get();
+	// acq_rel: a read-modify-write before this call's _remaining decrement, so a frame end that sets _stopped already sees it counted
+	_activeCalls.fetch_add(1uL, std::memory_order::acq_rel);
+
+	auto* const schedule = _schedule;
+	const auto node = slot_->getNode();
+	const bool serial = _maxInFlight == 1uL;
+
+	for (const auto successor : _graph.nodes[node].successors) {
+		const auto prev = _pending[successor].fetch_sub(1u, std::memory_order::acq_rel);
+		if (prev == 1u && not serial) {
+			dispatch(successor);
 		}
-	);
-
-	/**/
-
-	assert(compIter != _compositeStages.end());
-	++stage->generation;
-
-	/**/
-
-	for (auto iter = compIter + 1; iter != _compositeStages.end(); ++iter) {
-
-		auto* const nextStage = iter->get();
-		if (nextStage->ready()) {
-			dispatch(_slots[nextStage->stage->getSlot()].get());
-		}
-
-		// TODO: Vector to RingBuffer behaviour
 	}
 
-	/**/
+	const auto prevRemaining = _remaining.fetch_sub(1u, std::memory_order::acq_rel);
 
-	// TODO: Rewrite ~ Just a fast forward quickfix
-	if (++compIter == _compositeStages.end()) {
-		if (not _stopping.test()) {
-			assert(_compositeStages.front()->ready());
-			dispatch(_slots[_compositeStages.front()->stage->getSlot()].get());
-
-		} else [[unlikely]] {
+	if (prevRemaining == 1u) {
+		if (_stopping.test()) {
 			_stopping.clear();
 			_stopped.set();
+		} else {
+			startFrame();
 		}
+
+	} else if (serial) {
+		// serial mode runs the topological order; (count - remaining) nodes are done, so that index is next
+		const auto done = _graph.order.size() - (prevRemaining - 1u);
+		dispatch(_graph.order[done]);
 	}
 
-	/**/
+	// last access to this; stop() waits for zero before the pipeline may be destroyed
+	_activeCalls.fetch_sub(1uL, std::memory_order::release);
 
-	// TODO: Change location for priority raising
-	_schedule->tick();
+	schedule->tick();
 }
 
 void CompositePipeline::pushTask(
 	const non_owning_rptr<const Stage> stage_,
 	mref<task_handle_type> task_
 ) {
-	//_slots[stage_->getSlot()]->dynamicEnqueue(std::move(task_));
-	IM_CORE_WARN("Tried to push a task dynamically to a stage slot. (Not Implemented)");
-}
-
-void CompositePipeline::collectDependencies(ref<compact_stage_dep_set> collection_) const {
-	for (const auto& pipeline : _pipelines) {
-		pipeline->declareDependencies(*this, collection_);
-	}
-}
-
-void CompositePipeline::inverseDependencies(
-	cref<compact_stage_dep_set> dependencies_,
-	ref<compact_stage_dep_set> inverse_
-) {
-	for (const auto& dependency : dependencies_) {
-
-		for (const auto* const requirement : dependency.required) {
-
-			auto invIter = std::ranges::find(
-				inverse_,
-				requirement,
-				[](cref<StageDependency> entry_) {
-					return entry_.stage;
-				}
-			);
-
-			if (invIter == inverse_.end()) {
-
-				const auto result = inverse_.insert(
-					StageDependency {
-						{},
-						nullptr,
-						requirement
-					}
-				);
-
-				invIter = result.first;
-			}
-
-			/**/
-
-			const_cast<ref<StageDependency>>(*invIter).required.insert(dependency.stage);
-		}
-	}
-}
-
-void CompositePipeline::collectOrders(ref<Vector<ptr<const Vector<non_owning_rptr<const Stage>>>>> collection_) const {
-	for (const auto& pipeline : _pipelines) {
-		const auto& ordered = pipeline->orderedStages();
-		collection_.push_back(&ordered);
-	}
-}
-
-void CompositePipeline::transformOrdersToDependencies(
-	cref<Vector<ptr<const ordered_stage_list>>> orders_,
-	ref<compact_stage_dep_set> dependencies_
-) const {
-
-	for (const auto* const order : orders_) {
-
-		auto head = order->begin();
-		auto tail = order->begin();
-
-		if (head == order->end()) {
-			continue;
-		}
-
-		/**/
-
-		++head;
-		while (head != order->end()) {
-
-			StageDependency dep { { *tail }, nullptr, *head };
-			dependencies_.insert(std::move(dep));
-
-			++head;
-			++tail;
-		}
-
-	}
-}
-
-bool CompositePipeline::defineCompositeStage(
-	s64 where_,
-	const ptr<const Stage> stage_,
-	cref<compact_stage_dep_set> dependencies_
-) {
-
-	CompactArray<non_owning_rptr<const PipelineStage>> pipelineStages {};
-	for (const auto& entry : _pipelineStages) {
-		if (entry->stageIdentifier().value == stage_->getIdentifier()) {
-			pipelineStages.push_back(entry.get());
-		}
-	}
-
-	auto cs = make_uptr<CompositeStage>(
-		CompositeStage {
-			stage_,
-			std::move(pipelineStages),
-			0uLL,
-			CompactSet<CompositeDependency> {}
-		}
-	);
-
-	/* Link composite stage to slot */
-
-	_slots[stage_->getSlot()]->setCompositeStage(cs.get());
-
-	/**/
-
-	for (const auto& dependency : dependencies_) {
-
-		if (dependency.stage != stage_) {
-			continue;
-		}
-
-		/**/
-
-		for (const auto* const requirement : dependency.required) {
-
-			auto* const compStage = getCompositeStage(requirement);
-			if (compStage == nullptr) {
-				throw std::runtime_error("");
-			}
-
-			cs->dependencies.insert(CompositeDependency { compStage, 0uLL });
-		}
-	}
-
-	/**/
-
-	if (where_ >= 0) {
-		_compositeStages.insert(_compositeStages.begin() + where_, std::move(cs));
-	} else {
-		_compositeStages.push_back(std::move(cs));
-	}
-
-	return true;
-}
-
-non_owning_rptr<CompositeStage> CompositePipeline::getCompositeStage(const ptr<const Stage> stage_) const {
-
-	const auto compIter = std::ranges::find(
-		_compositeStages,
-		stage_,
-		[](cref<uptr<CompositeStage>> compStage_) {
-			return compStage_->stage;
-		}
-	);
-
-	return compIter != _compositeStages.end() ? (compIter->get()) : nullptr;
-}
-
-void CompositePipeline::optimizeDependencies() {
-	// TODO: Check whether we can reduce the number of direct requirements per composite stage
-	// TODO: This will reduce the required compute power to progress further while running the pipeline
-}
-
-bool CompositePipeline::resolveCanInsertStage(
-	const non_owning_rptr<const Stage> stage_,
-	cref<compact_stage_dep_set> stageDependencies_,
-	cref<compact_stage_dep_set> invStageDependencies_,
-	cref<Vector<ptr<const Vector<non_owning_rptr<const Stage>>>>> internalOrders_,
-	cref<compact_stage_set> stated_
-) {
-	if (stated_.contains(stage_)) {
-		return false;
-	}
-
-	/* Check direct dependencies */
-
-	for (const auto& entry : stageDependencies_) {
-
-		if (entry.stage != stage_) {
-			continue;
-		}
-
-		for (const auto& required : entry.required) {
-			if (not stated_.contains(required)) {
-				return false;
-			}
-		}
-	}
-
-	/* Check inverse dependencies*/
-
-	for (const auto& entry : invStageDependencies_) {
-
-		if (entry.stage != stage_) {
-			continue;
-		}
-
-		// Attention: We check against inverse requirements ( so they should not be present )
-		for (const auto& required : entry.required) {
-			if (stated_.contains(required)) {
-				return false;
-			}
-		}
-	}
-
-	/* Check internal orders */
-
-	for (const auto* const order : internalOrders_) {
-
-		const auto stageMark = std::ranges::find(*order, stage_);
-		if (stageMark == order->end()) {
-			continue;
-		}
-
-		/**/
-
-		for (auto orderIter = order->begin(); orderIter != stageMark; ++orderIter) {
-			if (not stated_.contains(*orderIter)) {
-				return false;
-			}
-		}
-
-		for (auto orderIter = stageMark; orderIter != order->end(); ++orderIter) {
-			if (stated_.contains(*orderIter)) {
-				return false;
-			}
-		}
-
-	}
-
-	/**/
-
-	return true;
-}
-
-void CompositePipeline::resolve() {
-
-	/* Collect all defined stages */
-
-	CompactSet<ptr<const Stage>> stages {};
-	stages.reserve(_stages.size());
-
-	for (const auto& entry : _stages) {
-		stages.insert(entry.second.get());
-	}
-
-	/* Prepare working sets */
-
-	CompactSet<ptr<const Stage>> sorted {};
-
-	compact_stage_dep_set dependencies {};
-	collectDependencies(dependencies);
-
-	Vector<ptr<const Vector<non_owning_rptr<const Stage>>>> internalOrders {};
-	collectOrders(internalOrders);
-	transformOrdersToDependencies(internalOrders, dependencies);
-
-	compact_stage_dep_set invDependencies {};
-	inverseDependencies(dependencies, invDependencies);
-
-	/**/
-
-	const u64 maxIteration = stages.size() + 1uLL;
-	u64 iteration = 0;
-	while (stages.size() != sorted.size() && iteration <= maxIteration) {
-
-		for (const auto* const stage : stages) {
-
-			if (sorted.contains(stage)) {
-				continue;
-			}
-
-			/**/
-
-			compact_stage_set forward {};
-			for (u64 compIdx = 0; compIdx < _compositeStages.size();) {
-
-				auto* const compStage = _compositeStages[compIdx].get();
-				if (forward.contains(compStage->stage)) {
-					++compIdx;
-					continue;
-				}
-
-				forward.insert(compStage->stage);
-
-				/**/
-
-				const auto* const predecessor = _compositeStages[compIdx]->stage;
-				while (compIdx < _compositeStages.size() && _compositeStages[compIdx]->stage == predecessor) {
-					++compIdx;
-				}
-
-				/**/
-
-				if (resolveCanInsertStage(stage, dependencies, invDependencies, internalOrders, forward)) {
-					defineCompositeStage(compIdx, stage, dependencies);
-					sorted.insert(stage);
-					break;
-				}
-			}
-
-			/**/
-
-			if (_compositeStages.empty()) {
-
-				forward.clear();
-				if (resolveCanInsertStage(stage, dependencies, invDependencies, internalOrders, forward)) {
-					defineCompositeStage(-1, stage, dependencies);
-					sorted.insert(stage);
-				}
-			}
-		}
-
-		++iteration;
-	}
-
-	/**/
-
-	if (sorted.size() != stages.size()) {
-		IM_CORE_ERROR("Failed to resolve scheduling stages.");
-		throw std::runtime_error("");
-	}
-
-	/* Optimize Stage Order */
-
-	/* Optimize I :: Reduce Forward Staging Time */
-
-	u64 compIdx = 0;
-	const u64 compStageSize = _compositeStages.size();
-
-	while (compIdx < compStageSize) {
-
-		const auto* const stage = _compositeStages[compIdx]->stage;
-		const u64 beginCompStage = compIdx;
-		while (compIdx < compStageSize && _compositeStages[compIdx]->stage == stage) {
-			++compIdx;
-		}
-		const u64 endCompStage = compIdx;
-
-		/**/
-
-		CompactSet<ptr<const Stage>> forward {};
-		for (u64 idx = 0; idx < beginCompStage; ++idx) {
-			forward.insert(_compositeStages[idx]->stage);
-		}
-
-		/* Search forward insert position until we can't insert anymore */
-
-		u64 forwardCompIdx = endCompStage;
-		while (
-			resolveCanInsertStage(stage, dependencies, invDependencies, internalOrders, forward) &&
-			forwardCompIdx < compStageSize
-		) {
-
-			const auto* const nextForwardStage = _compositeStages[forwardCompIdx]->stage;
-			while (forwardCompIdx < compStageSize && _compositeStages[forwardCompIdx]->stage == nextForwardStage) {
-				++forwardCompIdx;
-			}
-
-			forward.insert(nextForwardStage);
-		}
-
-		/* If we found the break spot, move one sequence back (begin of prev sequence) */
-
-		if (forwardCompIdx != endCompStage) {
-
-			const auto* const breakStage = _compositeStages[forwardCompIdx - 1]->stage;
-			while (forwardCompIdx > endCompStage && _compositeStages[forwardCompIdx - 1]->stage == breakStage) {
-				--forwardCompIdx;
-			}
-
-			if (forwardCompIdx == endCompStage) {
-				continue;
-			}
-
-			/* Calculate changed pipeline staging distance */
-
-			s64 changeDistance = 0;
-			for (const auto& pipeline : _pipelines) {
-
-				const auto* const begin = pipeline->beginStage();
-				const auto* const end = pipeline->endStage();
-
-				/* Prevent failure due to single stage pipelines ~ no distance measure */
-				if (begin == end) {
-					continue;
-				}
-
-				/* Check whether current stage effects outer distance of the pipeline */
-				if (stage != begin && stage != end) {
-					continue;
-				}
-
-				auto beginIter = std::ranges::find(
-					_compositeStages,
-					begin,
-					[](const auto& entry_) {
-						return entry_->stage;
-					}
-				);
-
-				auto endIter = std::ranges::find(
-					_compositeStages,
-					end,
-					[](const auto& entry_) {
-						return entry_->stage;
-					}
-				);
-
-				u64 prevDist = 0;
-				for (auto tail = beginIter, head = beginIter + 1; head != endIter; ++tail, ++head) {
-					if ((*tail)->stage != (*head)->stage) {
-						++prevDist;
-					}
-				}
-
-				/**/
-
-				if (stage == begin) {
-					beginIter = _compositeStages.begin() + forwardCompIdx;
-				} else if (stage == end) {
-					endIter = _compositeStages.begin() + forwardCompIdx;
-				}
-
-				/**/
-
-				u64 nextDist = 0;
-
-				if (beginIter >= endIter) {
-					nextDist = 0;
-
-				} else {
-
-					for (auto tail = beginIter, head = beginIter + 1; head != endIter; ++tail, ++head) {
-						if ((*tail)->stage != (*head)->stage) {
-							++nextDist;
-						}
-					}
-
-				}
-
-				/**/
-
-				changeDistance += (prevDist - nextDist);
-			}
-
-			/**/
-
-			if (changeDistance <= 0) {
-				continue;
-			}
-
-			/* Move sequence to latest spot */
-
-			for (u64 fromIdx = endCompStage; fromIdx > beginCompStage; --fromIdx) {
-				_compositeStages.insert(
-					_compositeStages.begin() + forwardCompIdx,
-					std::move(_compositeStages[fromIdx - 1])
-				);
-			}
-
-			const auto beginErase = _compositeStages.begin() + beginCompStage;
-			const auto endErase = _compositeStages.begin() + endCompStage;
-
-			_compositeStages.erase(beginErase, endErase);
-
-		}
-
-	}
-
-	/* Optimize II :: Reduce Backward Staging Time */
-
-	/**/
-
-	invDependencies.clear();
-	dependencies.clear();
-}
-
-void CompositePipeline::prepareSlots() {
-
-	/* Resolve stages with static dispatcher */
-	for (const auto& slot : _slots) {
-
-		const auto* const stage = slot->getCompositeStage();
-		const auto dispatcher = slot->getStaticDispatcher();
-
-		for (const auto* const binding : stage->pipelineStages) {
-			const_cast<ptr<PipelineStage>>(binding)->staticDispatch(dispatcher);
-		}
-	}
-
+	_slots[stage_->getSlot()]->dynamicEnqueue(std::move(task_));
 }

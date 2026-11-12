@@ -75,7 +75,7 @@ namespace hg::engine::scheduler::task {
 		const TaskType _type;
 
 		/** The mask */
-		const TaskMask _mask;
+		TaskMask _mask;
 
 	public:
 		/**
@@ -97,6 +97,8 @@ namespace hg::engine::scheduler::task {
 		 * @returns A TaskMask.
 		 */
 		[[nodiscard]] TaskMask mask() const noexcept;
+
+		[[nodiscard]] ref<TaskMask> mask() noexcept;
 
 	protected:
 		/**
