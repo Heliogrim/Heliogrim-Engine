@@ -9,7 +9,6 @@ namespace hg::engine::reflow::schedule {
 		using this_type = ReflowPipeline;
 
 		using StageIdentifier = ::hg::engine::scheduler::StageIdentifier;
-		using StageDependency = ::hg::engine::scheduler::StageDependency;
 
 		/**/
 
@@ -23,14 +22,6 @@ namespace hg::engine::reflow::schedule {
 	public:
 		void mount(ref<scheduler::StageRegister> register_) override;
 
-		void declareDependencies(
-			cref<scheduler::StageRegister> register_,
-			ref<CompactSet<StageDependency>> collection_
-		) override;
-
 		void dismount(ref<scheduler::StageRegister> register_) override;
-
-	public:
-		[[nodiscard]] bool isSkippable() const noexcept override;
 	};
 }

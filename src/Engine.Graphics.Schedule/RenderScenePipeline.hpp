@@ -9,7 +9,6 @@ namespace hg::engine::graphics::schedule {
 		using this_type = RenderScenePipeline;
 
 		using StageIdentifier = scheduler::StageIdentifier;
-		using StageDependency = scheduler::StageDependency;
 
 		// Tick Begin -> Input Tick -> (Reflow Response) -> Actor Update -> Reflow Tick/Update/Layout -> UI Render | 3D Render | Render Tick -> Tick End
 		// ::TickBegin
@@ -29,14 +28,6 @@ namespace hg::engine::graphics::schedule {
 	public:
 		void mount(ref<scheduler::StageRegister> register_) override;
 
-		void declareDependencies(
-			cref<scheduler::StageRegister> register_,
-			ref<CompactSet<scheduler::StageDependency>> collection_
-		) override;
-
 		void dismount(ref<scheduler::StageRegister> register_) override;
-
-	public:
-		[[nodiscard]] bool isSkippable() const noexcept override;
 	};
 }

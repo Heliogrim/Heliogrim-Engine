@@ -121,9 +121,7 @@ namespace SchedulerModule {
 
 			void mount(ref<StageRegister> register_) override {
 				for (const auto& name : stageNames) {
-					if (const auto stage = register_.registerStage(makeStage(name, this)); stage.has_value()) {
-						_orderedStages.push_back(std::addressof(stage.value()));
-					}
+					(void)register_.registerStage(makeStage(name, this));
 				}
 				for (auto& stage : stages) {
 					stageNames.push_back(stage->stageIdentifier().value);
@@ -132,14 +130,9 @@ namespace SchedulerModule {
 				stages.clear();
 			}
 
-			void declareDependencies(cref<StageRegister>, ref<CompactSet<StageDependency>>) override {}
-
 			void dismount(ref<StageRegister> register_) override {
 				for (const auto& name : stageNames) { register_.removeStage(string { name }); }
-				_orderedStages.clear();
 			}
-
-			[[nodiscard]] bool isSkippable() const noexcept override { return false; }
 
 			Vector<string> stageNames {};
 			Vector<uptr<PipelineStage>> stages {};
