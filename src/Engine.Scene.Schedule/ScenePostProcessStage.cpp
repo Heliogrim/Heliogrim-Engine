@@ -1,5 +1,7 @@
 #include "ScenePostProcessStage.hpp"
 
+#include <Engine.Scene.Schedule/ScenePipeline.hpp>
+
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Universe.hpp>
 #include <Engine.Core/UniverseContext.hpp>
@@ -37,3 +39,20 @@ void ScenePostProcessStage::staticDispatch(cref<StaticStageDispatcher> dispatche
 }
 
 void ScenePostProcessStage::dynamicDispatch(cref<DynamicStageDispatcher> dispatcher_) {}
+
+namespace hg::engine::scene { class SceneBase; }
+
+namespace {
+	static constexpr graph::AccessKey Writes[] = { graph::AccessKey::of<engine::scene::SceneBase>() };
+}
+
+graph::StageDecl ScenePostProcessStage::decl() const noexcept {
+	static const string_view after[] = { engine::scene::schedule::ScenePipeline::SceneUpdatePostPhysics };
+	return {
+		.name = engine::scene::schedule::ScenePipeline::ScenePostProcess,
+		.reads = {},
+		.writes = Writes,
+		.lane = graph::Lane::eCritical,
+		.after = after
+	};
+}

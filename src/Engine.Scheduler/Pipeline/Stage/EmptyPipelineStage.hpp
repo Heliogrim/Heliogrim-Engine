@@ -9,7 +9,11 @@ namespace hg::engine::scheduler {
 		using this_type = EmptyPipelineStage;
 
 	public:
-		EmptyPipelineStage(cref<identifier_type> identifier_, pipeline_handle_type pipeline_);
+		EmptyPipelineStage(
+			cref<identifier_type> identifier_,
+			pipeline_handle_type pipeline_,
+			mref<graph::StageDecl> decl_
+		);
 
 		~EmptyPipelineStage() noexcept override;
 
@@ -17,5 +21,10 @@ namespace hg::engine::scheduler {
 		void staticDispatch(cref<StaticStageDispatcher> dispatcher_) override;
 
 		void dynamicDispatch(cref<DynamicStageDispatcher> dispatcher_) override;
+
+		[[nodiscard]] graph::StageDecl decl() const noexcept override;
+
+	private:
+		graph::StageDecl _decl;
 	};
 }

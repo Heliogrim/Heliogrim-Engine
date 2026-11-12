@@ -1,5 +1,9 @@
 #include  "PhysicsTickStage.hpp"
 
+#include <Engine.Core.Schedule/CorePipeline.hpp>
+#include <Engine.Physics.Schedule/PhysicsPipeline.hpp>
+#include <Engine.Scene.Schedule/ScenePipeline.hpp>
+
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Timing.hpp>
 #include <Engine.Core/Universe.hpp>
@@ -47,3 +51,23 @@ void PhysicsTickStage::staticDispatch(cref<StaticStageDispatcher> dispatcher_) {
 }
 
 void PhysicsTickStage::dynamicDispatch(cref<DynamicStageDispatcher> dispatcher_) {}
+
+namespace hg::engine::core { class Timing; }
+namespace hg::engine::scene { class SceneBase; }
+namespace hg::engine::physics { class PhysicsSceneSystem; }
+
+namespace {
+	static constexpr graph::AccessKey Reads[] = { graph::AccessKey::of<engine::core::Timing>(), graph::AccessKey::of<engine::scene::SceneBase>() };
+	static constexpr graph::AccessKey Writes[] = { graph::AccessKey::of<engine::physics::PhysicsSceneSystem>() };
+}
+
+graph::StageDecl PhysicsTickStage::decl() const noexcept {
+	static const string_view after[] = { engine::core::schedule::CorePipeline::TickBegin, engine::scene::schedule::ScenePipeline::SceneUpdatePrePhysics };
+	return {
+		.name = engine::physics::schedule::PhysicsPipeline::PhysicsTick,
+		.reads = Reads,
+		.writes = Writes,
+		.lane = graph::Lane::eCritical,
+		.after = after
+	};
+}

@@ -1,5 +1,8 @@
 #include "ActorTickStagePostPhysics.hpp"
 
+#include <Engine.ACS.Schedule/ActorPipeline.hpp>
+#include <Engine.Physics.Schedule/PhysicsPipeline.hpp>
+
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Universe.hpp>
 #include <Engine.Core/UniverseContext.hpp>
@@ -50,4 +53,23 @@ void ActorTickStagePostPhysics::staticDispatch(cref<StaticStageDispatcher> dispa
 
 void ActorTickStagePostPhysics::dynamicDispatch(cref<DynamicStageDispatcher> dispatcher_) {
 	// TODO:
+}
+
+namespace hg::engine::core { class Timing; }
+namespace hg::engine::acs { class Registry; }
+
+namespace {
+	static constexpr graph::AccessKey Reads[] = { graph::AccessKey::of<engine::core::Timing>() };
+	static constexpr graph::AccessKey Writes[] = { graph::AccessKey::of<engine::acs::Registry>() };
+}
+
+graph::StageDecl ActorTickStagePostPhysics::decl() const noexcept {
+	static const string_view after[] = { engine::physics::schedule::PhysicsPipeline::PhysicsReadback, engine::acs::schedule::ActorPipeline::ActorPhysicsCollision };
+	return {
+		.name = engine::acs::schedule::ActorPipeline::ActorTickPostPhysics,
+		.reads = Reads,
+		.writes = Writes,
+		.lane = graph::Lane::eCritical,
+		.after = after
+	};
 }

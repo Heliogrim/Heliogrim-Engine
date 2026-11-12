@@ -34,7 +34,8 @@ namespace SchedulerModule {
 		[[nodiscard]] uptr<PipelineStage> makeStage(const string_view name_, const ptr<const StagePipeline> pipeline_ = nullptr) {
 			return make_uptr<EmptyPipelineStage>(
 				AssocKey<StageIdentifier>::from(string { name_ }),
-				pipeline_
+				pipeline_,
+				graph::StageDecl { .name = name_ }
 			);
 		}
 

@@ -1,5 +1,8 @@
 #include "RenderTickStage.hpp"
 
+#include <Engine.Graphics.Schedule/RenderScenePipeline.hpp>
+#include <Engine.Scene.Schedule/ScenePipeline.hpp>
+
 #include <chrono>
 #include <Engine.Async/Collection/RingBuffer.hpp>
 #include <Engine.Core/Engine.hpp>
@@ -107,4 +110,26 @@ void RenderTickStage::invokeRenderTarget(cref<smr<RenderTarget>> target_) const 
 
 	const auto result = target_->finish({});
 	assert(result != RenderEnqueueResult::eFailed);
+}
+
+namespace hg::engine::scene { class SceneBase; }
+namespace hg::engine::reflow { class WindowManager; }
+namespace hg::engine::graphics::scene { class RenderSceneManager; }
+
+namespace {
+	static constexpr graph::AccessKey Reads[] = { graph::AccessKey::of<engine::scene::SceneBase>(), graph::AccessKey::of<engine::reflow::WindowManager>() };
+	static constexpr graph::AccessKey Writes[] = { graph::AccessKey::of<engine::graphics::scene::RenderSceneManager>() };
+}
+
+graph::StageDecl RenderTickStage::decl() const noexcept {
+	static const string_view after[] = { engine::scene::schedule::ScenePipeline::SceneUpdatePostPhysics };
+	static const string_view before[] = { engine::scene::schedule::ScenePipeline::ScenePostProcess };
+	return {
+		.name = engine::graphics::schedule::RenderScenePipeline::RenderTick,
+		.reads = Reads,
+		.writes = Writes,
+		.lane = graph::Lane::eCritical,
+		.after = after,
+		.before = before
+	};
 }

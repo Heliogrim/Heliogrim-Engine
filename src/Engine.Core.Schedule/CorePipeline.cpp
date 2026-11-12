@@ -21,8 +21,16 @@ void CorePipeline::mount(ref<StageRegister> register_) {
 	const auto beginStage = register_.registerStage(
 		make_uptr<TickTimingStage>(PipelineStage::identifier_type::from(TickBegin), this)
 	);
+	static const string_view endAfter[] = {
+		scene::schedule::ScenePipeline::ScenePostProcess,
+		acs::schedule::ActorPipeline::ActorHousekeeping
+	};
 	const auto endStage = register_.registerStage(
-		make_uptr<EmptyPipelineStage>(PipelineStage::identifier_type::from(TickEnd), this)
+		make_uptr<EmptyPipelineStage>(
+			PipelineStage::identifier_type::from(TickEnd),
+			this,
+			graph::StageDecl { .name = TickEnd, .lane = graph::Lane::eCritical, .after = endAfter }
+		)
 	);
 
 	/**/

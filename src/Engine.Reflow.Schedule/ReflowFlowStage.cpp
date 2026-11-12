@@ -1,5 +1,9 @@
 #include "ReflowFlowStage.hpp"
 
+#include <Engine.Graphics.Schedule/RenderScenePipeline.hpp>
+#include <Engine.Reflow.Schedule/ReflowPipeline.hpp>
+#include <Engine.Scene.Schedule/ScenePipeline.hpp>
+
 #include <chrono>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Module/Modules.hpp>
@@ -86,4 +90,23 @@ void ReflowFlowStage::staticDispatch(cref<StaticStageDispatcher> dispatcher_) {
 
 void ReflowFlowStage::dynamicDispatch(cref<DynamicStageDispatcher> dispatcher_) {
 	// TODO:
+}
+
+namespace hg::engine::reflow { class WindowManager; }
+
+namespace {
+	static constexpr graph::AccessKey Writes[] = { graph::AccessKey::of<engine::reflow::WindowManager>() };
+}
+
+graph::StageDecl ReflowFlowStage::decl() const noexcept {
+	static const string_view after[] = { engine::scene::schedule::ScenePipeline::SceneUpdatePostPhysics };
+	static const string_view before[] = { engine::graphics::schedule::RenderScenePipeline::RenderTick };
+	return {
+		.name = engine::reflow::schedule::ReflowPipeline::Tick,
+		.reads = {},
+		.writes = Writes,
+		.lane = graph::Lane::eCritical,
+		.after = after,
+		.before = before
+	};
 }
