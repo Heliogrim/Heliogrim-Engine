@@ -84,7 +84,9 @@ namespace SchedulerModule {
 		std::chrono::high_resolution_clock::time_point minorTimestamp {};
 		std::chrono::high_resolution_clock::time_point majorTimestamp {};
 
+		// one worker: with more, an idle worker pops the eLower task before the eHigher one is queued
 		structuredRuntimeTest(
+			1uL,
 			[&minorTimestamp, &majorTimestamp](nmpt<engine::Scheduler> scheduler_) {
 
 				JoinCounter done { 3u };
