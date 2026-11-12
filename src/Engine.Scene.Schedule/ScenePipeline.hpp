@@ -8,7 +8,6 @@ namespace hg::engine::scene::schedule {
 		using this_type = ScenePipeline;
 
 		using StageIdentifier = ::hg::engine::scheduler::StageIdentifier;
-		using StageDependency = ::hg::engine::scheduler::StageDependency;
 
 		/**/
 
@@ -26,14 +25,6 @@ namespace hg::engine::scene::schedule {
 	public:
 		void mount(ref<scheduler::StageRegister> register_) override;
 
-		void declareDependencies(
-			cref<scheduler::StageRegister> register_,
-			ref<CompactSet<StageDependency>> collection_
-		) override;
-
 		void dismount(ref<scheduler::StageRegister> register_) override;
-
-	public:
-		[[nodiscard]] bool isSkippable() const noexcept override;
 	};
 }
