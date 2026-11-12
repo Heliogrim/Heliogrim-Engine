@@ -6,6 +6,29 @@
 #include <format>
 #include <Engine.Scheduler/Graph/StageDecl.hpp>
 #include <Engine.Scheduler/Graph/TaskGraph.hpp>
+#include <Engine.Common/Make.hpp>
+#include <Engine.Scheduler/Pipeline/Stage/EmptyPipelineStage.hpp>
+#include <Engine.ACS.Schedule/ActorHousekeepingStage.hpp>
+#include <Engine.ACS.Schedule/ActorPhysicsStageCollision.hpp>
+#include <Engine.ACS.Schedule/ActorPhysicsStageOverlap.hpp>
+#include <Engine.ACS.Schedule/ActorPipeline.hpp>
+#include <Engine.ACS.Schedule/ActorTickStagePostPhysics.hpp>
+#include <Engine.ACS.Schedule/ActorTickStagePrePhysics.hpp>
+#include <Engine.Core.Schedule/CorePipeline.hpp>
+#include <Engine.Core.Schedule/TickTimingStage.hpp>
+#include <Engine.Graphics.Schedule/RenderScenePipeline.hpp>
+#include <Engine.Graphics.Schedule/RenderTickStage.hpp>
+#include <Engine.Input.Schedule/InputPipeline.hpp>
+#include <Engine.Input.Schedule/InputTickStage.hpp>
+#include <Engine.Physics.Schedule/PhysicsPipeline.hpp>
+#include <Engine.Physics.Schedule/PhysicsReadbackStage.hpp>
+#include <Engine.Physics.Schedule/PhysicsTickStage.hpp>
+#include <Engine.Reflow.Schedule/ReflowFlowStage.hpp>
+#include <Engine.Reflow.Schedule/ReflowPipeline.hpp>
+#include <Engine.Scene.Schedule/SceneBroadcastStage.hpp>
+#include <Engine.Scene.Schedule/ScenePipeline.hpp>
+#include <Engine.Scene.Schedule/ScenePostProcessStage.hpp>
+#include <Engine.Scene.Schedule/SceneUpdateStage.hpp>
 
 using namespace hg::engine::scheduler::graph;
 using namespace hg;
@@ -237,5 +260,130 @@ namespace SchedulerModule {
 		for (size_t idx = 0; idx < count; ++idx) {
 			EXPECT_EQ(result->order[idx], idx);
 		}
+	}
+
+	namespace {
+		using namespace hg::engine;
+		using hg::engine::scheduler::PipelineStage;
+
+		static Vector<uptr<PipelineStage>> makeFrame(const bool withReflow_) {
+			auto id = [](const string_view name_) { return string { name_ }; };
+			auto eid = [](const string_view name_) { return PipelineStage::identifier_type::from(string { name_ }); };
+			using core::schedule::CorePipeline;
+			using input::schedule::InputPipeline;
+			using acs::schedule::ActorPipeline;
+			using scene::schedule::ScenePipeline;
+			using physics::schedule::PhysicsPipeline;
+			using graphics::schedule::RenderScenePipeline;
+
+			static const string_view endAfter[] = { ScenePipeline::ScenePostProcess, ActorPipeline::ActorHousekeeping };
+
+			Vector<uptr<PipelineStage>> stages {};
+			stages.push_back(make_uptr<core::schedule::TickTimingStage>(eid(CorePipeline::TickBegin), nullptr));
+			stages.push_back(make_uptr<input::schedule::InputTickStage>(id(InputPipeline::InputTick), nullptr));
+			stages.push_back(make_uptr<acs::schedule::ActorTickStagePrePhysics>(id(ActorPipeline::ActorTickPrePhysics), nullptr));
+			stages.push_back(
+				make_uptr<scene::schedule::SceneBroadcastStage>(
+					id(ScenePipeline::SceneBroadcastPrePhysics),
+					nullptr,
+					scene::schedule::SceneBroadcastStageOptions { .flags = scene::SceneBroadcastFlagBits::ePrePhysics }
+				)
+			);
+			stages.push_back(
+				make_uptr<scene::schedule::SceneUpdateStage>(
+					id(ScenePipeline::SceneUpdatePrePhysics),
+					nullptr,
+					scene::schedule::SceneUpdateStageOptions { .flags = scene::SceneUpdateFlagBits::ePrePhysics }
+				)
+			);
+			stages.push_back(make_uptr<physics::schedule::PhysicsTickStage>(id(PhysicsPipeline::PhysicsTick), nullptr));
+			stages.push_back(make_uptr<physics::schedule::PhysicsReadbackStage>(id(PhysicsPipeline::PhysicsReadback), nullptr));
+			stages.push_back(make_uptr<acs::schedule::ActorPhysicsStageOverlap>(id(ActorPipeline::ActorPhysicsOverlap), nullptr));
+			stages.push_back(make_uptr<acs::schedule::ActorPhysicsStageCollision>(id(ActorPipeline::ActorPhysicsCollision), nullptr));
+			stages.push_back(make_uptr<acs::schedule::ActorTickStagePostPhysics>(id(ActorPipeline::ActorTickPostPhysics), nullptr));
+			stages.push_back(
+				make_uptr<scene::schedule::SceneBroadcastStage>(
+					id(ScenePipeline::SceneBroadcastPostPhysics),
+					nullptr,
+					scene::schedule::SceneBroadcastStageOptions { .flags = scene::SceneBroadcastFlagBits::ePostPhysics }
+				)
+			);
+			stages.push_back(
+				make_uptr<scene::schedule::SceneUpdateStage>(
+					id(ScenePipeline::SceneUpdatePostPhysics),
+					nullptr,
+					scene::schedule::SceneUpdateStageOptions { .flags = scene::SceneUpdateFlagBits::ePostPhysics }
+				)
+			);
+			if (withReflow_) {
+				stages.push_back(make_uptr<reflow::schedule::ReflowFlowStage>(id(reflow::schedule::ReflowPipeline::Tick), nullptr));
+			}
+			stages.push_back(make_uptr<graphics::schedule::RenderTickStage>(id(RenderScenePipeline::RenderTick), nullptr));
+			stages.push_back(make_uptr<scene::schedule::ScenePostProcessStage>(id(ScenePipeline::ScenePostProcess), nullptr));
+			stages.push_back(make_uptr<acs::schedule::ActorHousekeepingStage>(id(ActorPipeline::ActorHousekeeping), nullptr));
+			stages.push_back(
+				make_uptr<scheduler::EmptyPipelineStage>(
+					eid(CorePipeline::TickEnd),
+					nullptr,
+					StageDecl { .name = CorePipeline::TickEnd, .reads = {}, .writes = {}, .lane = Lane::eCritical, .after = endAfter }
+				)
+			);
+			return stages;
+		}
+
+		static Vector<StageDecl> declsOf(ref<const Vector<uptr<PipelineStage>>> stages_) {
+			Vector<StageDecl> decls {};
+			for (const auto& stage : stages_) {
+				decls.push_back(stage->decl());
+			}
+			return decls;
+		}
+	}
+
+	TEST(TaskGraphTest, EngineFrameBuilds) {
+		const auto stages = makeFrame(true);
+		const auto decls = declsOf(stages);
+		const auto result = build(decls);
+		ASSERT_TRUE(result.has_value());
+		ASSERT_EQ(result->order.size(), 17u);
+
+		const auto names = namedOrder(result.value());
+		ASSERT_EQ(names.size(), 17u);
+		const string_view want[] = {
+			hg::engine::core::schedule::CorePipeline::TickBegin,
+			hg::engine::input::schedule::InputPipeline::InputTick,
+			hg::engine::acs::schedule::ActorPipeline::ActorTickPrePhysics,
+			hg::engine::scene::schedule::ScenePipeline::SceneBroadcastPrePhysics,
+			hg::engine::scene::schedule::ScenePipeline::SceneUpdatePrePhysics,
+			hg::engine::physics::schedule::PhysicsPipeline::PhysicsTick,
+			hg::engine::physics::schedule::PhysicsPipeline::PhysicsReadback,
+			hg::engine::acs::schedule::ActorPipeline::ActorPhysicsOverlap,
+			hg::engine::acs::schedule::ActorPipeline::ActorPhysicsCollision,
+			hg::engine::acs::schedule::ActorPipeline::ActorTickPostPhysics,
+			hg::engine::scene::schedule::ScenePipeline::SceneBroadcastPostPhysics,
+			hg::engine::scene::schedule::ScenePipeline::SceneUpdatePostPhysics,
+			hg::engine::reflow::schedule::ReflowPipeline::Tick,
+			hg::engine::graphics::schedule::RenderScenePipeline::RenderTick,
+			hg::engine::scene::schedule::ScenePipeline::ScenePostProcess,
+			hg::engine::acs::schedule::ActorPipeline::ActorHousekeeping,
+			hg::engine::core::schedule::CorePipeline::TickEnd
+		};
+		for (size_t idx = 0; idx < 17; ++idx) {
+			EXPECT_EQ(names[idx], want[idx]) << "at " << idx;
+		}
+	}
+
+	TEST(TaskGraphTest, GameFrameWithoutReflowBuilds) {
+		const auto stages = makeFrame(false);
+		const auto decls = declsOf(stages);
+		const auto result = build(decls);
+		ASSERT_TRUE(result.has_value());
+		ASSERT_EQ(result->order.size(), 16u);
+
+		const auto names = namedOrder(result.value());
+		const auto post = std::ranges::find(names, string { hg::engine::scene::schedule::ScenePipeline::SceneUpdatePostPhysics });
+		ASSERT_NE(post, names.end());
+		ASSERT_NE(post + 1, names.end());
+		EXPECT_EQ(*(post + 1), string { hg::engine::graphics::schedule::RenderScenePipeline::RenderTick });
 	}
 }

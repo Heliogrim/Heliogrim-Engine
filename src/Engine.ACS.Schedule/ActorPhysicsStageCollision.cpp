@@ -1,5 +1,8 @@
 #include "ActorPhysicsStageCollision.hpp"
 
+#include <Engine.ACS.Schedule/ActorPipeline.hpp>
+#include <Engine.Physics.Schedule/PhysicsPipeline.hpp>
+
 using namespace hg::engine::acs::schedule;
 using namespace hg::engine::scheduler;
 using namespace hg;
@@ -17,3 +20,22 @@ void ActorPhysicsStageCollision::staticDispatch(ref<const StaticStageDispatcher>
 }
 
 void ActorPhysicsStageCollision::dynamicDispatch(ref<const DynamicStageDispatcher> dispatcher_) {}
+
+namespace hg::engine::acs { class Registry; }
+namespace hg::engine::physics { class PhysicsSceneSystem; }
+
+namespace {
+	static constexpr graph::AccessKey Reads[] = { graph::AccessKey::of<engine::physics::PhysicsSceneSystem>() };
+	static constexpr graph::AccessKey Writes[] = { graph::AccessKey::of<engine::acs::Registry>() };
+}
+
+graph::StageDecl ActorPhysicsStageCollision::decl() const noexcept {
+	static const string_view after[] = { engine::physics::schedule::PhysicsPipeline::PhysicsReadback, engine::acs::schedule::ActorPipeline::ActorPhysicsOverlap };
+	return {
+		.name = engine::acs::schedule::ActorPipeline::ActorPhysicsCollision,
+		.reads = Reads,
+		.writes = Writes,
+		.lane = graph::Lane::eNormal,
+		.after = after
+	};
+}

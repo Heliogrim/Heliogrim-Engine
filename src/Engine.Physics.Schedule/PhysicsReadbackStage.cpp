@@ -1,5 +1,7 @@
 #include "PhysicsReadbackStage.hpp"
 
+#include <Engine.Physics.Schedule/PhysicsPipeline.hpp>
+
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Universe.hpp>
 #include <Engine.Core/UniverseContext.hpp>
@@ -39,3 +41,23 @@ void PhysicsReadbackStage::staticDispatch(ref<const StaticStageDispatcher> dispa
 }
 
 void PhysicsReadbackStage::dynamicDispatch(ref<const DynamicStageDispatcher> dispatcher_) {}
+
+namespace hg::engine::acs { class Registry; }
+namespace hg::engine::scene { class SceneBase; }
+namespace hg::engine::physics { class PhysicsSceneSystem; }
+
+namespace {
+	static constexpr graph::AccessKey Reads[] = { graph::AccessKey::of<engine::scene::SceneBase>(), graph::AccessKey::of<engine::physics::PhysicsSceneSystem>() };
+	static constexpr graph::AccessKey Writes[] = { graph::AccessKey::of<engine::acs::Registry>() };
+}
+
+graph::StageDecl PhysicsReadbackStage::decl() const noexcept {
+	static const string_view after[] = { engine::physics::schedule::PhysicsPipeline::PhysicsTick };
+	return {
+		.name = engine::physics::schedule::PhysicsPipeline::PhysicsReadback,
+		.reads = Reads,
+		.writes = Writes,
+		.lane = graph::Lane::eCritical,
+		.after = after
+	};
+}

@@ -1,5 +1,11 @@
 #include "SceneBroadcastStage.hpp"
 
+#include <Engine.ACS.Schedule/ActorPipeline.hpp>
+#include <Engine.Core.Schedule/CorePipeline.hpp>
+#include <Engine.Input.Schedule/InputPipeline.hpp>
+#include <Engine.Physics.Schedule/PhysicsPipeline.hpp>
+#include <Engine.Scene.Schedule/ScenePipeline.hpp>
+
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Universe.hpp>
 #include <Engine.Core/UniverseContext.hpp>
@@ -39,3 +45,26 @@ void SceneBroadcastStage::staticDispatch(cref<StaticStageDispatcher> dispatcher_
 }
 
 void SceneBroadcastStage::dynamicDispatch(cref<DynamicStageDispatcher> dispatcher_) {}
+
+namespace hg::engine::acs { class Registry; }
+namespace hg::engine::scene { class SceneBase; }
+
+namespace {
+	static constexpr graph::AccessKey Reads[] = { graph::AccessKey::of<engine::acs::Registry>() };
+	static constexpr graph::AccessKey Writes[] = { graph::AccessKey::of<engine::scene::SceneBase>() };
+}
+
+graph::StageDecl SceneBroadcastStage::decl() const noexcept {
+	static const string_view preAfter[] = { engine::core::schedule::CorePipeline::TickBegin, engine::input::schedule::InputPipeline::InputTick, engine::acs::schedule::ActorPipeline::ActorTickPrePhysics };
+	static const string_view postAfter[] = { engine::physics::schedule::PhysicsPipeline::PhysicsTick, engine::acs::schedule::ActorPipeline::ActorTickPostPhysics, engine::scene::schedule::ScenePipeline::SceneUpdatePrePhysics };
+
+	const auto prePhysics = _options.flags.unwrap == static_cast<u8>(engine::scene::SceneBroadcastFlagBits::ePrePhysics);
+
+	return {
+		.name = prePhysics ? string_view { engine::scene::schedule::ScenePipeline::SceneBroadcastPrePhysics } : string_view { engine::scene::schedule::ScenePipeline::SceneBroadcastPostPhysics },
+		.reads = Reads,
+		.writes = Writes,
+		.lane = graph::Lane::eCritical,
+		.after = prePhysics ? std::span<const string_view> { preAfter } : std::span<const string_view> { postAfter }
+	};
+}
