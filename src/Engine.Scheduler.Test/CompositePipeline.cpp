@@ -5,6 +5,7 @@
 #include <chrono>
 #include <cstdio>
 #include <cstdlib>
+#include <format>
 #include <thread>
 #include <Engine.Async/Primitive/SpinLock.hpp>
 #include <Engine.Common/Make.hpp>
@@ -422,10 +423,108 @@ namespace SchedulerModule {
 				const auto bStart = indexOf(log.entries, "B-start");
 				const auto cStart = indexOf(log.entries, "C-start");
 				const auto bEnd = indexOf(log.entries, "B-end");
+				// B and C may start in either order once more than one worker pops
 				ASSERT_GE(bStart, 0LL);
-				EXPECT_LT(bStart, cStart);
+				ASSERT_GE(cStart, 0LL);
 				EXPECT_LT(cStart, bEnd);
 			}
+		);
+	}
+
+	TEST(CompositePipelineTest, DiamondRunsOnTwoWorkers) {
+		withComposite(
+			[](ref<CompositePipeline> composite_) {
+				std::atomic_bool bStarted { false };
+				std::atomic_bool cStarted { false };
+				Signal done {};
+				addDiamond(
+					composite_,
+					DiamondBodies {
+						.a = [] {},
+						// B and C spin on each other without parking, so both must be on a thread at once
+						.b = [&] {
+							bStarted.store(true);
+							while (not cStarted.load()) { std::this_thread::yield(); }
+						},
+						.c = [&] {
+							cStarted.store(true);
+							while (not bStarted.load()) { std::this_thread::yield(); }
+						},
+						.d = [&] { if (not done.isSet()) { done.set(); } }
+					}
+				);
+				composite_.setup();
+
+				withWatchdog(
+					[&] {
+						composite_.start();
+						done.wait();
+						composite_.stop();
+					}
+				);
+				composite_.destroy();
+
+				EXPECT_TRUE(bStarted.load());
+				EXPECT_TRUE(cStarted.load());
+			},
+			2uL
+		);
+	}
+
+	TEST(CompositePipelineTest, FanOutStressOnFourWorkers) {
+		withComposite(
+			[](ref<CompositePipeline> composite_) {
+				constexpr u32 fanOut = 8uL;
+				constexpr u32 targetFrames = 2000uL;
+
+				std::array<string, fanOut> names {};
+				std::array<string_view, fanOut> views {};
+				for (u32 i = 0; i < fanOut; ++i) {
+					names[i] = std::format("::test::B{}", i + 1uL);
+					views[i] = names[i];
+				}
+
+				std::atomic<u32> fanCount { 0uL };
+				std::atomic<u32> frames { 0uL };
+				std::atomic<u32> mismatches { 0uL };
+				Signal done {};
+
+				// A -> {B1 ... B8} -> D
+				auto pipeline = make_uptr<TestPipeline>("::test::fanout");
+				pipeline->stages.push_back(make_uptr<TestStage>(nameA, graph::StageDecl {}, [] {}));
+				for (const auto& name : names) {
+					pipeline->stages.push_back(
+						make_uptr<TestStage>(name, graph::StageDecl { .after = afterA }, [&] { fanCount.fetch_add(1uL); })
+					);
+				}
+				pipeline->stages.push_back(
+					make_uptr<TestStage>(
+						nameD,
+						graph::StageDecl { .after = views },
+						[&] {
+							const auto frame = frames.fetch_add(1uL) + 1uL;
+							if (fanCount.load() != fanOut * frame) { mismatches.fetch_add(1uL); }
+							if (frame == targetFrames) { done.set(); }
+						}
+					)
+				);
+				(void)composite_.addPipeline(std::move(pipeline));
+				composite_.setup();
+
+				withWatchdog(
+					[&] {
+						composite_.start();
+						done.wait();
+						composite_.stop();
+					}
+				);
+				composite_.destroy();
+
+				EXPECT_GE(frames.load(), targetFrames);
+				EXPECT_EQ(fanCount.load(), fanOut * frames.load());
+				EXPECT_EQ(mismatches.load(), 0uL);
+			},
+			4uL
 		);
 	}
 
