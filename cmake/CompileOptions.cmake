@@ -254,6 +254,7 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU" OR "${CMAKE_CXX_COMPILER_ID}" MATCH
 
 			-Wall
 			-Wextra
+			-Wthread-safety-analysis
 			-Wunused
 
 			-Wreorder
@@ -271,6 +272,7 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU" OR "${CMAKE_CXX_COMPILER_ID}" MATCH
 
 			-Wno-ignored-qualifiers
 			-Wno-float-equal
+			-Wno-padded
 
 			$<$<CXX_COMPILER_ID:GNU>:
 			-Wmaybe-uninitialized
