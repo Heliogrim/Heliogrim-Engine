@@ -7,7 +7,7 @@
 #include "CompositeDispatcher.hpp"
 #include "StagePipeline.hpp"
 #include "../Waitable/Signal.hpp"
-#include "Composite/CompositeStage.hpp"
+#include "../Graph/TaskGraph.hpp"
 
 namespace hg::engine::scheduler {
 	class CompositeSlot;
@@ -74,17 +74,25 @@ namespace hg::engine::scheduler {
 
 	private:
 		/**
-		 * Resolved working stages
+		 * Built stage graph and per-frame counters
 		 */
-		Vector<uptr<CompositeStage>> _compositeStages;
-		u64 _stageHead;
-		u64 _stageTail;
+		graph::Graph _graph;
+		Vector<Vector<ptr<PipelineStage>>> _nodeStages;
+		Vector<u16> _slotOfNode;
+		uptr<std::atomic<u16>[]> _pending;
+		std::atomic<u16> _remaining;
+		u32 _maxInFlight;
+		std::atomic<u32> _activeCalls;
 
 	private:
 		Vector<uptr<CompositeSlot>> _slots;
 
 	public:
-		void dispatch(const non_owning_rptr<CompositeSlot> slot_);
+		void setMaxInFlight(const u32 count_) noexcept;
+
+		[[nodiscard]] ref<const graph::Graph> graph() const noexcept;
+
+		[[nodiscard]] bool isStopping() const noexcept;
 
 		void complete(const non_owning_rptr<CompositeSlot> slot_);
 
@@ -95,53 +103,8 @@ namespace hg::engine::scheduler {
 		) override;
 
 	private:
-		/**
-		 * Composite Stage resolving and optimization
-		 */
-		using compact_stage_set = CompactSet<non_owning_rptr<const Stage>>;
-		using compact_stage_dep_set = CompactSet<struct StageDependency>;
-		using ordered_stage_list = Vector<non_owning_rptr<const Stage>>;
+		void startFrame();
 
-	private:
-		void collectDependencies(_Inout_ ref<compact_stage_dep_set> collection_) const;
-
-		void inverseDependencies(
-			_In_ cref<compact_stage_dep_set> dependencies_,
-			_Inout_ ref<compact_stage_dep_set> inverse_
-		);
-
-		void collectOrders(_Inout_ ref<Vector<ptr<const ordered_stage_list>>> collection_) const;
-
-		void transformOrdersToDependencies(
-			_In_ cref<Vector<ptr<const ordered_stage_list>>> orders_,
-			_Inout_ ref<compact_stage_dep_set> dependencies_
-		) const;
-
-		bool defineCompositeStage(
-			s64 where_,
-			const non_owning_rptr<const Stage> stage_,
-			cref<compact_stage_dep_set> dependencies_
-		);
-
-		[[nodiscard]] non_owning_rptr<CompositeStage> getCompositeStage(const ptr<const Stage> stage_) const;
-
-		/**/
-
-		void optimizeDependencies();
-
-		/**/
-
-		bool resolveCanInsertStage(
-			const non_owning_rptr<const Stage> stage_,
-			cref<compact_stage_dep_set> stageDependencies_,
-			cref<compact_stage_dep_set> invStageDependencies_,
-			cref<Vector<ptr<const ordered_stage_list>>> internalOrders_,
-			cref<compact_stage_set> stated_
-		);
-
-	protected:
-		void resolve();
-
-		void prepareSlots();
+		void dispatch(const u16 node_);
 	};
 }
