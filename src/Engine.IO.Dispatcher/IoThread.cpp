@@ -17,9 +17,10 @@ IoThread::~IoThread() {
 	}
 }
 
-void IoThread::start(mref<harvest_type> harvest_) {
+void IoThread::start(mref<harvest_type> harvest_, mref<drained_type> drained_) {
 	::hg::assertd(_port == nullptr);
 	_harvest = std::move(harvest_);
+	_drained = std::move(drained_);
 	_running = true;
 	_port = ::CreateIoCompletionPort(INVALID_HANDLE_VALUE, nullptr, 0, 1);
 	::hg::assertrt(_port != nullptr);
@@ -40,8 +41,12 @@ void IoThread::start(mref<harvest_type> harvest_) {
 					return;
 				}
 
+				const auto busy = _drained && _drained();
 				ULONG count = 0;
-				if (not ::GetQueuedCompletionStatusEx(port, entries, 64, &count, INFINITE, FALSE)) {
+				if (not ::GetQueuedCompletionStatusEx(port, entries, 64, &count, busy ? 0 : INFINITE, FALSE)) {
+					if (busy && ::GetLastError() == WAIT_TIMEOUT) {
+						continue;
+					}
 					IM_CORE_ERRORF("IO thread wait failed: {}", ::GetLastError());
 					::hg::assertd(false);
 					continue;
