@@ -87,6 +87,7 @@ void RenderSceneSystem::add(const ptr<const MetaClass> meta_, std::span<const pt
 void RenderSceneSystem::remove(const ptr<const MetaClass> meta_, std::span<const ptr<const SceneComponent>> batch_) {
 
 	// Warning: This is just a naive implementation with O^2 runtime complexity
+	// The batch is matched by address only: a queued removal may name a component housekeeping has already freed.
 	for (const auto& mapping : _storage.mapping) {
 		if (mapping.first != meta_) {
 			continue;
