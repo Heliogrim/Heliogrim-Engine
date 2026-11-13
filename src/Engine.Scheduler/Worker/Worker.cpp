@@ -52,15 +52,11 @@ bool Worker::start() {
 }
 
 bool Worker::ready() const noexcept {
-	return _interrupt_ptr != nullptr;
+	return _ready.load(std::memory_order::acquire);
 }
 
-bool Worker::stop() {
-	if (!_interrupt_ptr)
-		return false;
-
-	*_interrupt_ptr = true;
-	return join();
+void Worker::requestStop() noexcept {
+	_interrupt.store(true, std::memory_order::release);
 }
 
 bool Worker::join() {
@@ -77,10 +73,6 @@ const non_owning_rptr<Schedule> Worker::schedule() const noexcept {
 
 task::TaskMask Worker::mask() const {
 	return _mask;
-}
-
-void Worker::setInterruptPtr(ptr<volatile bool> pointer_) noexcept {
-	_interrupt_ptr = pointer_;
 }
 
 void Worker::setFiberHandle(fiber::Fiber::handle_type fiber_) noexcept {
@@ -128,23 +120,23 @@ void Worker::handle(void* args_) {
 	fiber::FiberLaunchPad launcher { nullptr };
 	non_owning_rptr<const task::TaskDelegate> task = nullptr;
 
-	/**
-	 * Prepare worker sync variables
-	 */
-	volatile bool interrupt = false;
-	worker->setInterruptPtr(&interrupt);
+	self::markWorker(true);
+	worker->_ready.store(true, std::memory_order::release);
 
-	while (!interrupt) [[likely]] {
+	while (not worker->_interrupt.load(std::memory_order::acquire)) [[likely]] {
 		/**
-		 * Acquire next task or nullptr
+		 * Load the epoch before the pop, so a push ordered after the pop moves it and the wait returns
 		 */
+		const auto epoch { schedule->epoch() };
 		task = nullptr;
-		schedule->pop(mask, task);
 
-		/**
-		 * Process Task
-		 */
-		if (task != nullptr) {
+		if (schedule->pop(mask, task)) {
+			/**
+			 * Cascade: wake one peer for the work left behind
+			 */
+			if (schedule->queued() > 0) {
+				schedule->wakeOne();
+			}
 
 			launcher.self = task->fiber();
 
@@ -196,15 +188,16 @@ void Worker::handle(void* args_) {
 				launcher.self->cancellation.reset();
 				pool.release(std::move(launcher.self));
 			}
-		}
 
-		/**
-		 * Wait if not busy
-		 */
-		if (task == nullptr) {
-			//self::yield();
+		} else {
+			if (worker->_interrupt.load(std::memory_order::acquire)) {
+				break;
+			}
+			schedule->waitForWork(epoch);
 		}
 	}
+
+	self::markWorker(false);
 
 	/**
 	 * Convert this fiber back to a thread and exit as intended
