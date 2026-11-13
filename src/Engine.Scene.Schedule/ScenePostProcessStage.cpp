@@ -40,7 +40,9 @@ void ScenePostProcessStage::staticDispatch(cref<StaticStageDispatcher> dispatche
 
 void ScenePostProcessStage::dynamicDispatch(cref<DynamicStageDispatcher> dispatcher_) {}
 
-namespace hg::engine::scene { class SceneBase; }
+namespace hg::engine::scene {
+	class SceneBase;
+}
 
 namespace {
 	static constexpr graph::AccessKey Writes[] = { graph::AccessKey::of<engine::scene::SceneBase>() };

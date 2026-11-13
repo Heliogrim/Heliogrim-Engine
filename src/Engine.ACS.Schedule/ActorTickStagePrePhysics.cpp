@@ -56,9 +56,15 @@ void ActorTickStagePrePhysics::dynamicDispatch(cref<DynamicStageDispatcher> disp
 	// TODO:
 }
 
-namespace hg::engine::core { class Timing; }
-namespace hg::engine { class Input; }
-namespace hg::engine::acs { class Registry; }
+namespace hg::engine::core {
+	class Timing;
+}
+namespace hg::engine {
+	class Input;
+}
+namespace hg::engine::acs {
+	class Registry;
+}
 
 namespace {
 	static constexpr graph::AccessKey Reads[] = { graph::AccessKey::of<engine::core::Timing>(), graph::AccessKey::of<engine::Input>() };
@@ -66,7 +72,9 @@ namespace {
 }
 
 graph::StageDecl ActorTickStagePrePhysics::decl() const noexcept {
-	static const string_view after[] = { engine::core::schedule::CorePipeline::TickBegin, engine::input::schedule::InputPipeline::InputTick };
+	static const string_view after[] = {
+		engine::core::schedule::CorePipeline::TickBegin, engine::input::schedule::InputPipeline::InputTick
+	};
 	return {
 		.name = engine::acs::schedule::ActorPipeline::ActorTickPrePhysics,
 		.reads = Reads,

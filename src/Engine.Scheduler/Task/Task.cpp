@@ -130,13 +130,6 @@ ref<ptr<TaskCtrl>> TaskDelegate::ctrl() noexcept {
 	return _ctrl;
 }
 
-Task::Task(
-	function_type&& fnc_,
-	const TaskMask mask_
-) noexcept :
-	TaskDelegate(TaskType::eTask, mask_),
-	_fnc(std::move(fnc_)) {}
-
 Task::~Task() noexcept = default;
 
 void Task::invoke() const {
@@ -152,11 +145,11 @@ const non_owning_rptr<const Task> engine::scheduler::task::make_task(
 	);
 }
 
-RepetitiveTask::RepetitiveTask(
+Task::Task(
 	function_type&& fnc_,
 	const TaskMask mask_
 ) noexcept :
-	TaskDelegate(TaskType::eRepetitive, mask_),
+	TaskDelegate(TaskType::eTask, mask_),
 	_fnc(std::move(fnc_)) {}
 
 RepetitiveTask::~RepetitiveTask() noexcept = default;
@@ -174,11 +167,11 @@ const non_owning_rptr<const RepetitiveTask> engine::scheduler::task::make_repeti
 	);
 }
 
-BatchTask::BatchTask(
+RepetitiveTask::RepetitiveTask(
 	function_type&& fnc_,
 	const TaskMask mask_
 ) noexcept :
-	TaskDelegate(TaskType::eBatch, mask_),
+	TaskDelegate(TaskType::eRepetitive, mask_),
 	_fnc(std::move(fnc_)) {}
 
 BatchTask::~BatchTask() noexcept = default;
@@ -196,3 +189,10 @@ const non_owning_rptr<const BatchTask> engine::scheduler::task::make_batch_task(
 		new BatchTask(std::forward<decltype(fnc_)>(fnc_), mask_)
 	);
 }
+
+BatchTask::BatchTask(
+	function_type&& fnc_,
+	const TaskMask mask_
+) noexcept :
+	TaskDelegate(TaskType::eBatch, mask_),
+	_fnc(std::move(fnc_)) {}

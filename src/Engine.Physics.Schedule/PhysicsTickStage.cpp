@@ -1,4 +1,4 @@
-#include  "PhysicsTickStage.hpp"
+#include "PhysicsTickStage.hpp"
 
 #include <Engine.Core.Schedule/CorePipeline.hpp>
 #include <Engine.Physics.Schedule/PhysicsPipeline.hpp>
@@ -8,8 +8,8 @@
 #include <Engine.Core/Timing.hpp>
 #include <Engine.Core/Universe.hpp>
 #include <Engine.Core/UniverseContext.hpp>
-#include <Engine.Physics/jolt.inc.hpp>
 #include <Engine.Physics.Scene/PhysicsSceneSystem.hpp>
+#include <Engine.Physics/jolt.inc.hpp>
 #include <Engine.Scene/SceneBase.hpp>
 #include <Jolt/Core/JobSystemSingleThreaded.h>
 #include <Jolt/Core/TempAllocator.h>
@@ -52,17 +52,27 @@ void PhysicsTickStage::staticDispatch(cref<StaticStageDispatcher> dispatcher_) {
 
 void PhysicsTickStage::dynamicDispatch(cref<DynamicStageDispatcher> dispatcher_) {}
 
-namespace hg::engine::core { class Timing; }
-namespace hg::engine::scene { class SceneBase; }
-namespace hg::engine::physics { class PhysicsSceneSystem; }
+namespace hg::engine::core {
+	class Timing;
+}
+namespace hg::engine::scene {
+	class SceneBase;
+}
+namespace hg::engine::physics {
+	class PhysicsSceneSystem;
+}
 
 namespace {
-	static constexpr graph::AccessKey Reads[] = { graph::AccessKey::of<engine::core::Timing>(), graph::AccessKey::of<engine::scene::SceneBase>() };
+	static constexpr graph::AccessKey Reads[] = {
+		graph::AccessKey::of<engine::core::Timing>(), graph::AccessKey::of<engine::scene::SceneBase>()
+	};
 	static constexpr graph::AccessKey Writes[] = { graph::AccessKey::of<engine::physics::PhysicsSceneSystem>() };
 }
 
 graph::StageDecl PhysicsTickStage::decl() const noexcept {
-	static const string_view after[] = { engine::core::schedule::CorePipeline::TickBegin, engine::scene::schedule::ScenePipeline::SceneUpdatePrePhysics };
+	static const string_view after[] = {
+		engine::core::schedule::CorePipeline::TickBegin, engine::scene::schedule::ScenePipeline::SceneUpdatePrePhysics
+	};
 	return {
 		.name = engine::physics::schedule::PhysicsPipeline::PhysicsTick,
 		.reads = Reads,

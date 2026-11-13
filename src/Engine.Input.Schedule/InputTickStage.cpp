@@ -33,7 +33,9 @@ void InputTickStage::dynamicDispatch(cref<DynamicStageDispatcher> dispatcher_) {
 	// TODO:
 }
 
-namespace hg::engine { class Input; }
+namespace hg::engine {
+	class Input;
+}
 
 namespace {
 	static constexpr graph::AccessKey Writes[] = { graph::AccessKey::of<engine::Input>() };

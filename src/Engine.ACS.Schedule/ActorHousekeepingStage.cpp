@@ -50,15 +50,23 @@ void ActorHousekeepingStage::staticDispatch(ref<const scheduler::StaticStageDisp
 
 void ActorHousekeepingStage::dynamicDispatch(ref<const scheduler::DynamicStageDispatcher> dispatcher_) {}
 
-namespace hg::engine::acs { class Registry; }
-namespace hg::engine::scene { class SceneBase; }
+namespace hg::engine::acs {
+	class Registry;
+}
+namespace hg::engine::scene {
+	class SceneBase;
+}
 
 namespace {
-	static constexpr graph::AccessKey Writes[] = { graph::AccessKey::of<engine::acs::Registry>(), graph::AccessKey::of<engine::scene::SceneBase>() };
+	static constexpr graph::AccessKey Writes[] = {
+		graph::AccessKey::of<engine::acs::Registry>(), graph::AccessKey::of<engine::scene::SceneBase>()
+	};
 }
 
 graph::StageDecl ActorHousekeepingStage::decl() const noexcept {
-	static const string_view after[] = { engine::scene::schedule::ScenePipeline::ScenePostProcess, engine::acs::schedule::ActorPipeline::ActorTickPostPhysics };
+	static const string_view after[] = {
+		engine::scene::schedule::ScenePipeline::ScenePostProcess, engine::acs::schedule::ActorPipeline::ActorTickPostPhysics
+	};
 	return {
 		.name = engine::acs::schedule::ActorPipeline::ActorHousekeeping,
 		.reads = {},

@@ -21,8 +21,12 @@ void ActorPhysicsStageOverlap::staticDispatch(ref<const StaticStageDispatcher> d
 
 void ActorPhysicsStageOverlap::dynamicDispatch(ref<const DynamicStageDispatcher> dispatcher_) {}
 
-namespace hg::engine::acs { class Registry; }
-namespace hg::engine::physics { class PhysicsSceneSystem; }
+namespace hg::engine::acs {
+	class Registry;
+}
+namespace hg::engine::physics {
+	class PhysicsSceneSystem;
+}
 
 namespace {
 	static constexpr graph::AccessKey Reads[] = { graph::AccessKey::of<engine::physics::PhysicsSceneSystem>() };
@@ -30,7 +34,9 @@ namespace {
 }
 
 graph::StageDecl ActorPhysicsStageOverlap::decl() const noexcept {
-	static const string_view after[] = { engine::physics::schedule::PhysicsPipeline::PhysicsReadback, engine::acs::schedule::ActorPipeline::ActorTickPrePhysics };
+	static const string_view after[] = {
+		engine::physics::schedule::PhysicsPipeline::PhysicsReadback, engine::acs::schedule::ActorPipeline::ActorTickPrePhysics
+	};
 	return {
 		.name = engine::acs::schedule::ActorPipeline::ActorPhysicsOverlap,
 		.reads = Reads,
