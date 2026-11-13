@@ -431,7 +431,7 @@ namespace StorageModule {
 		std::ofstream { path, std::ios::binary } << "Stack Cache Blob";
 
 		ASSERT_TRUE(_system.query(clone(store), [](_In_ ref<const Blob>) {}).has_value());
-		const auto key = StageKey { store.get(), refl::TypeId<Rc<IoResourceAccessor<const LfsSyncBlob>>>() };
+		const auto key = StageKey { store.get(), refl::TypeId<Rc<IoResourceAccessor<const Blob>>>() };
 		ASSERT_TRUE(stacks().find(key).has_value());
 
 		ASSERT_TRUE(_system.removeStorage(clone(fileUrl)).has_value());
