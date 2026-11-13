@@ -20,8 +20,9 @@ using namespace hg;
 
 thread_local static ptr<AffineThread> __currentAffine { nullptr };
 
-AffineThread::AffineThread(string name_, mref<AffineWaker> waker_) :
-	_name(std::move(name_)) {
+AffineThread::AffineThread(string name_, mref<AffineWaker> waker_, scheduler::thread::priority priority_) :
+	_name(std::move(name_)),
+	_priority(priority_) {
 	_wakers.emplace_back(make_uptr<AffineWaker>(std::move(waker_)));
 	_waker.store(_wakers.back().get(), std::memory_order::release);
 }
@@ -50,6 +51,7 @@ void AffineThread::start(mref<UniqueFn<void(ref<AffineThread>)>> loop_) {
 			SetThreadDescription(GetCurrentThread(), name.c_str());
 			#endif
 
+			(void)scheduler::thread::self::setPriority(_priority);
 			scheduler::thread::self::markAffine(true);
 			__currentAffine = this;
 

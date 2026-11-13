@@ -11,6 +11,7 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Functional/UniqueFn.hpp>
+#include <Engine.Scheduler/Thread/Thread.hpp>
 
 #include "../Future/Future.hpp"
 #include "../Future/Promise.hpp"
@@ -23,7 +24,11 @@ namespace hg::engine::async {
 	// Destroy only after stop() and after every in-flight post/postDetached call has returned.
 	class AffineThread final {
 	public:
-		AffineThread(string name_, mref<AffineWaker> waker_);
+		AffineThread(
+			string name_,
+			mref<AffineWaker> waker_,
+			engine::scheduler::thread::priority priority_ = engine::scheduler::thread::priority::eNormal
+		);
 
 		AffineThread(const AffineThread&) = delete;
 
@@ -118,6 +123,7 @@ namespace hg::engine::async {
 
 	private:
 		string _name;
+		engine::scheduler::thread::priority _priority;
 		std::thread _thread;
 
 		std::atomic<std::uintptr_t> _head { 0uLL };
