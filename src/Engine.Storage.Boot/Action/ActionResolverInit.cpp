@@ -3,7 +3,6 @@
 #include <Engine.Resource.Archive/StorageReadonlyArchive.hpp>
 #include <Engine.Resource.Archive/StorageReadWriteArchive.hpp>
 #include <Engine.Resource.Blob/Blob.hpp>
-#include <Engine.Resource.Blob/File/LfsSyncBlob.hpp>
 #include <Engine.Resource.Package/ReadonlyPackage.hpp>
 #include <Engine.Resource.Package/ReadWritePackage.hpp>
 #include <Engine.Storage.Action/Action/MutationStaticGen.hpp>
@@ -37,7 +36,7 @@ void engine::storage::initActionResolver(ref<StorageSystem> system_, ref<Storage
 		.acqFn = [](auto&&... args_) {
 			return resolveStaticLfsVoid2LfsBlobMutation(::hg::forward<decltype(args_)>(args_)...);
 		},
-		.access = IoResourceAccessor<resource::LfsSyncBlob> {},
+		.access = IoResourceAccessor<resource::Blob> {},
 		.relFn = [](auto&&... args_) {
 			return releaseStaticLfsBlobMutation(::hg::forward<decltype(args_)>(args_)...);
 		}
@@ -48,7 +47,7 @@ void engine::storage::initActionResolver(ref<StorageSystem> system_, ref<Storage
 		.acqFn = [](auto&&... args_) {
 			return resolveStaticLfsVoid2LfsBlobQuery(::hg::forward<decltype(args_)>(args_)...);
 		},
-		.access = IoResourceAccessor<const resource::LfsSyncBlob> {},
+		.access = IoResourceAccessor<const resource::Blob> {},
 		.relFn = [](auto&&... args_) {
 			return releaseStaticLfsBlobQuery(::hg::forward<decltype(args_)>(args_)...);
 		}
@@ -218,11 +217,11 @@ void engine::storage::initActionResolver(ref<StorageSystem> system_, ref<Storage
 		>;
 
 		auto actionTypeInfo = ActionTypeInfo {
-			.targetResourceInfo = refl::FullTypeInfo::from<resource::LfsSyncBlob>(),
+			.targetResourceInfo = refl::FullTypeInfo::from<resource::Blob>(),
 			.stageTypeInfos = {
 				StageTypeInfo {
 					.storage = refl::PartialTypeInfo::from<system::LocalFileStorage>(),
-					.resource = refl::FullTypeInfo::from<resource::LfsSyncBlob>(),
+					.resource = refl::FullTypeInfo::from<resource::Blob>(),
 					.input = { nullptr }
 				},
 			}
@@ -239,11 +238,11 @@ void engine::storage::initActionResolver(ref<StorageSystem> system_, ref<Storage
 		>;
 
 		auto actionTypeInfo = ActionTypeInfo {
-			.targetResourceInfo = refl::FullTypeInfo::from<const resource::LfsSyncBlob>(),
+			.targetResourceInfo = refl::FullTypeInfo::from<const resource::Blob>(),
 			.stageTypeInfos = {
 				StageTypeInfo {
 					.storage = refl::PartialTypeInfo::from<system::LocalFileStorage>(),
-					.resource = refl::FullTypeInfo::from<const resource::LfsSyncBlob>(),
+					.resource = refl::FullTypeInfo::from<const resource::Blob>(),
 					.input = { nullptr }
 				},
 			}
@@ -389,11 +388,11 @@ void engine::storage::initActionResolver(ref<StorageSystem> system_, ref<Storage
 				StageTypeInfo {
 					.storage = refl::PartialTypeInfo::from<system::PackageStorage>(),
 					.resource = refl::FullTypeInfo::from<resource::ReadWritePackage>(),
-					.input = refl::FullTypeInfo::from<resource::LfsSyncBlob>()
+					.input = refl::FullTypeInfo::from<resource::Blob>()
 				},
 				StageTypeInfo {
 					.storage = refl::PartialTypeInfo::from<system::LocalFileStorage>(),
-					.resource = refl::FullTypeInfo::from<resource::LfsSyncBlob>(),
+					.resource = refl::FullTypeInfo::from<resource::Blob>(),
 					.input = { nullptr }
 				},
 			}
@@ -443,11 +442,11 @@ void engine::storage::initActionResolver(ref<StorageSystem> system_, ref<Storage
 				StageTypeInfo {
 					.storage = refl::PartialTypeInfo::from<system::PackageStorage>(),
 					.resource = refl::FullTypeInfo::from<const resource::ReadonlyPackage>(),
-					.input = refl::FullTypeInfo::from<const resource::LfsSyncBlob>()
+					.input = refl::FullTypeInfo::from<const resource::Blob>()
 				},
 				StageTypeInfo {
 					.storage = refl::PartialTypeInfo::from<system::LocalFileStorage>(),
-					.resource = refl::FullTypeInfo::from<const resource::LfsSyncBlob>(),
+					.resource = refl::FullTypeInfo::from<const resource::Blob>(),
 					.input = { nullptr }
 				},
 			}
@@ -509,11 +508,11 @@ void engine::storage::initActionResolver(ref<StorageSystem> system_, ref<Storage
 				StageTypeInfo {
 					.storage = refl::PartialTypeInfo::from<system::PackageStorage>(),
 					.resource = refl::FullTypeInfo::from<resource::ReadWritePackage>(),
-					.input = refl::FullTypeInfo::from<resource::LfsSyncBlob>()
+					.input = refl::FullTypeInfo::from<resource::Blob>()
 				},
 				StageTypeInfo {
 					.storage = refl::PartialTypeInfo::from<system::LocalFileStorage>(),
-					.resource = refl::FullTypeInfo::from<resource::LfsSyncBlob>(),
+					.resource = refl::FullTypeInfo::from<resource::Blob>(),
 					.input = { nullptr }
 				},
 			}
@@ -575,11 +574,11 @@ void engine::storage::initActionResolver(ref<StorageSystem> system_, ref<Storage
 				StageTypeInfo {
 					.storage = refl::PartialTypeInfo::from<system::PackageStorage>(),
 					.resource = refl::FullTypeInfo::from<const resource::ReadonlyPackage>(),
-					.input = refl::FullTypeInfo::from<const resource::LfsSyncBlob>()
+					.input = refl::FullTypeInfo::from<const resource::Blob>()
 				},
 				StageTypeInfo {
 					.storage = refl::PartialTypeInfo::from<system::LocalFileStorage>(),
-					.resource = refl::FullTypeInfo::from<const resource::LfsSyncBlob>(),
+					.resource = refl::FullTypeInfo::from<const resource::Blob>(),
 					.input = { nullptr }
 				},
 			}

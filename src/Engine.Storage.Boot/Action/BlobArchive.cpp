@@ -6,6 +6,8 @@
 #include <Engine.Storage.Action/Access/ExclusiveIoResource.hpp>
 #include <Engine.Storage.Action/Access/SharedReadIoResource.hpp>
 
+#include "WindowedArchive.hpp"
+
 using namespace hg::engine::storage;
 using namespace hg::engine::resource;
 using namespace hg;
@@ -77,12 +79,16 @@ Result<
 	[[maybe_unused]] cref<Arci<system::ArchiveStorage>> storage_,
 	cref<IoResourceAccessor<const ByteSpanBlob>> accessor_
 ) {
-	auto value = Rc<StorageReadonlyArchive>::create(accessor_.get(), streamoff {}, accessor_->size());
+	if (not windowFits(accessor_->size(), streamoff {}, accessor_->size())) {
+		return Unexpected<Query::acq_error_type> { AccessError { "Archive range exceeds its package." } };
+	}
+
+	auto value = Rc<WindowedArchive>::create(accessor_.get(), streamoff {}, accessor_->size());
 
 	/**/
 
 	// Note: Resolvers are invoked const; keep a mutable alias next to the owning handle.
-	const auto obj = std::addressof(*value);
+	const auto obj = std::addressof(value->archive);
 	auto resolveReadonly = [_owner = hg::move(value), obj](ResourceAccessMode) -> ref<StorageReadonlyArchive> {
 		return *obj;
 	};

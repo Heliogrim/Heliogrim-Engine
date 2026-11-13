@@ -1,6 +1,7 @@
 #include "IoSystem.hpp"
 
 #include <Engine.Asserts/Asserts.hpp>
+#include <Engine.Async/Future/Promise.hpp>
 #include <Engine.Common/stdafx.h>
 
 using namespace hg::engine::io;
@@ -12,10 +13,7 @@ IoSystem::IoSystem(const IoBackendKind kind_, const u32 maxInFlight_) :
 		IoBackend::make(
 			kind_,
 			_thread,
-			[this](const ptr<void> token_, const IoCompletion completion_) {
-				--_inFlight;
-				IoQueue::complete(token_, completion_);
-			}
+			[this](const ptr<void> token_, const IoCompletion completion_) { --_inFlight; IoQueue::complete(token_, completion_); }
 		)
 	),
 	_maxInFlight(maxInFlight_) {
@@ -28,14 +26,7 @@ IoSystem::~IoSystem() {
 
 void IoSystem::start() {
 	_running = true;
-	_thread.start(
-		[this](ref<const IoPortEntry> entry_) {
-			_backend->harvest(entry_);
-		},
-		[this] {
-			return pump();
-		}
-	);
+	_thread.start([this](ref<const IoPortEntry> entry_) { _backend->harvest(entry_); }, [this] { return pump(); });
 }
 
 void IoSystem::stop() {
@@ -63,7 +54,11 @@ bool IoSystem::running() const noexcept {
 	return _running;
 }
 
-Future<Arci<IoFile>, IoError> IoSystem::open(cref<std::filesystem::path> path_, const IoOpenMode mode_) {
+u64 IoSystem::requestsIssued() const noexcept {
+	return _requestsIssued.load(std::memory_order_relaxed);
+}
+
+Future<Arci<IoFile>, IoError> IoSystem::open(ref<const std::filesystem::path> path_, const IoOpenMode mode_) {
 	Promise<Arci<IoFile>, IoError> promise {};
 	auto future = promise.future();
 
@@ -188,6 +183,7 @@ bool IoSystem::pump() {
 			return false;
 		}
 		++_inFlight;
+		_requestsIssued.fetch_add(1, std::memory_order_relaxed);
 		_backend->issue(IoQueue::requestOf(token), token);
 	}
 	return _inFlight < _maxInFlight;
