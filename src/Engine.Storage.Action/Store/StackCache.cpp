@@ -77,6 +77,21 @@ void StackCache::invalidateFrom(const ptr<const IStorage> primary_) {
 	/* Chains are released outside the spin lock. */
 }
 
+void StackCache::clear() {
+	Vector<Arci<ResolvedStage>> dropped {};
+
+	/**/
+
+	{
+		concurrent::SpinLock guard { _mtx };
+		for (auto& [key, entry] : _map) {
+			dropped.emplace_back(::hg::move(entry.node));
+		}
+		_map.clear();
+	}
+	/* Chains are released outside the spin lock. */
+}
+
 ref<concurrent::FiberSharedMutex> StackCache::lockOf(const ptr<const IStorage> primary_) {
 	concurrent::SpinLock guard { _mtx };
 

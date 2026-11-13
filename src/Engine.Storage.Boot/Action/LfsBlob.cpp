@@ -18,23 +18,7 @@ using namespace hg;
 
 namespace {
 	// Null when the io thread cannot open the file.
-	[[nodiscard]] Rc<Blob> openBlob(ref<Context> ctx_, cref<Arci<system::LocalFileStorage>> storage_, engine::io::IoOpenMode mode_) {
-
-		if (ctx_.io == nullptr || not ctx_.io->running()) {
-			return Rc<LfsSyncBlob>::create(clone(storage_->_lfsPath));
-		}
-
-		// Blocking on the io thread from an affine thread would stall its own drain loop.
-		::hg::assertd(engine::async::AffineThread::current() == nullptr);
-
-		auto opened = await(ctx_.io->open(static_cast<std::filesystem::path>(storage_->_lfsPath), mode_));
-		if (not opened.has_value()) {
-			return nullptr;
-		}
-
-		// Note: One queue per blob; the blob owns it and releases it with the file.
-		return Rc<IoFileBlob>::create(*ctx_.io, ::hg::move(opened).value(), ctx_.io->createQueue(engine::io::IoPriority::eNormal));
-	}
+	[[nodiscard]] Rc<Blob> openBlob(ref<Context> ctx_, ref<const Arci<system::LocalFileStorage>> storage_, const engine::io::IoOpenMode mode_);
 }
 
 Result<IoResourceAccessor<Blob>, Mutation::acq_error_type> engine::storage::resolveStaticLfsVoid2LfsBlobMutation(
@@ -112,4 +96,32 @@ void engine::storage::releaseStaticLfsBlobQuery(
 ) {
 	// Note: The shared resource owns the object and dies with its last accessor.
 	::hg::forward<decltype(accessor_)>(accessor_).reset();
+}
+
+/**/
+
+namespace {
+	Rc<Blob> openBlob(ref<Context> ctx_, ref<const Arci<system::LocalFileStorage>> storage_, const engine::io::IoOpenMode mode_) {
+
+		// Note: Loaded once; a stop racing past this check fails `open` or the size request and lands in AccessError.
+		const auto io = ctx_.io;
+		if (io == nullptr || not io->running()) {
+			return Rc<LfsSyncBlob>::create(clone(storage_->_lfsPath));
+		}
+
+		// Blocking on the io thread from an affine thread would stall its own drain loop.
+		::hg::assertd(engine::async::AffineThread::current() == nullptr);
+
+		auto opened = await(io->open(static_cast<std::filesystem::path>(storage_->_lfsPath), mode_));
+		if (not opened.has_value()) {
+			return nullptr;
+		}
+
+		// Note: One queue per blob; the blob owns it and releases it with the file.
+		auto blob = Rc<IoFileBlob>::create(*io, ::hg::move(opened).value(), io->createQueue(engine::io::IoPriority::eNormal));
+		if (blob->size() < 0LL) {
+			return nullptr;
+		}
+		return blob;
+	}
 }
