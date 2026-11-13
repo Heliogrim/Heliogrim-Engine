@@ -1,5 +1,6 @@
 #include "ActorPipeline.hpp"
 
+#include <ranges>
 #include <Engine.Common/Make.hpp>
 
 #include "ActorHousekeepingStage.hpp"
@@ -18,19 +19,20 @@ ActorPipeline::ActorPipeline() :
 ActorPipeline::~ActorPipeline() = default;
 
 void ActorPipeline::mount(ref<StageRegister> register_) {
-
-	(void)register_.registerStage(make_uptr<ActorTickStagePrePhysics>(ActorTickPrePhysics, this));
-	(void)register_.registerStage(make_uptr<ActorPhysicsStageOverlap>(ActorPhysicsOverlap, this));
-	(void)register_.registerStage(make_uptr<ActorPhysicsStageCollision>(ActorPhysicsCollision, this));
-	(void)register_.registerStage(make_uptr<ActorTickStagePostPhysics>(ActorTickPostPhysics, this));
-	(void)register_.registerStage(make_uptr<ActorHousekeepingStage>(ActorHousekeeping, this));
+	_stages = {
+		register_.registerStage(make_uptr<ActorTickStagePrePhysics>(ActorTickPrePhysics, this)),
+		register_.registerStage(make_uptr<ActorPhysicsStageOverlap>(ActorPhysicsOverlap, this)),
+		register_.registerStage(make_uptr<ActorPhysicsStageCollision>(ActorPhysicsCollision, this)),
+		register_.registerStage(make_uptr<ActorTickStagePostPhysics>(ActorTickPostPhysics, this)),
+		register_.registerStage(make_uptr<ActorHousekeepingStage>(ActorHousekeeping, this))
+	};
 }
 
 void ActorPipeline::dismount(ref<StageRegister> register_) {
 
-	register_.removeStage(ActorHousekeeping);
-	register_.removeStage(ActorTickPostPhysics);
-	register_.removeStage(ActorPhysicsCollision);
-	register_.removeStage(ActorPhysicsOverlap);
-	register_.removeStage(ActorTickPrePhysics);
+	for (const auto& stage : std::ranges::views::reverse(_stages)) {
+		if (stage != None) {
+			register_.removeStage(stage.value());
+		}
+	}
 }

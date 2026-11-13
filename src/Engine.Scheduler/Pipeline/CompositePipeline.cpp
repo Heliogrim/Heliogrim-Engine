@@ -134,22 +134,6 @@ void CompositePipeline::start() {
 	startFrame();
 }
 
-void CompositePipeline::setMaxInFlight(const u32 count_) noexcept {
-	// shortcut: only 0 (unbounded) and 1 (serial) supported; bounded window needs readyQueue (design 6.3)
-	::hg::assertrt(count_ <= 1uL);
-	// workers read _maxInFlight unsynchronised, so it may only change while no frame runs (before start() or after stop())
-	::hg::assertrt(_remaining.load(std::memory_order::relaxed) == 0u);
-	_maxInFlight = count_;
-}
-
-ref<const graph::Graph> CompositePipeline::graph() const noexcept {
-	return _graph;
-}
-
-bool CompositePipeline::isStopping() const noexcept {
-	return _stopping.test();
-}
-
 void CompositePipeline::stop() {
 	::hg::assertrt(not _stopping.test());
 
@@ -219,54 +203,30 @@ Opt<ref<const Stage>> CompositePipeline::getStage(cref<string> identifier_) cons
 	return where != _stages.end() ? Some(*where->second) : None;
 }
 
-void CompositePipeline::removeStage(cref<string> identifier_) {
+void CompositePipeline::removeStage(ref<const Stage> stage_) {
 
-	const auto where = _stages.find(identifier_);
-	if (where == _stages.end()) {
-		return;
-	}
+	const auto where = [&]() {
+		/* Use linear search with address comparison to protected against dangling references */
+		const auto address = std::addressof(stage_);
+		auto end = _stages.end();
+		for (auto it = _stages.begin(); it != end; ++it) {
+			if (it->second.get() == address) {
+				return it;
+			}
+		}
+		return end;
+	}();
+	::hg::assertrt(where != _stages.end());
 
 	auto* const stage = where->second.get();
 	if (stage->decRef()) {
 
-		const auto pss = std::ranges::remove(
+		const auto remove = std::ranges::remove(
 			_pipelineStages,
 			stage->getIdentifier(),
-			[](const auto& entry_) {
-				return entry_->stageIdentifier().value;
-			}
+			[](const auto& entry_) { return entry_->stageIdentifier().value; }
 		);
-		_pipelineStages.erase(pss.begin(), pss.end());
-
-		_stages.erase(where);
-	}
-}
-
-void CompositePipeline::removeStage(mref<non_owning_rptr<Stage>> stage_) {
-
-	decltype(_stages)::iterator where = _stages.begin();
-	while (where != _stages.end() && where->second.get() != stage_) {
-		++where;
-	}
-
-	/**/
-
-	if (where == _stages.end()) {
-		return;
-	}
-
-	/**/
-
-	if (where->second->decRef()) {
-
-		const auto pss = std::ranges::remove(
-			_pipelineStages,
-			where->second->getIdentifier(),
-			[](const auto& entry_) {
-				return entry_->stageIdentifier().value;
-			}
-		);
-		_pipelineStages.erase(pss.begin(), pss.end());
+		_pipelineStages.erase(remove.begin(), remove.end());
 
 		_stages.erase(where);
 	}
@@ -290,36 +250,20 @@ void CompositePipeline::removePipeline(const non_owning_rptr<StagePipeline> pipe
 	_pipelines.erase(where.begin(), where.end());
 }
 
-void CompositePipeline::startFrame() {
-
-	// no node is in flight here; pushing the first root task publishes these stores to the workers
-	const auto count = _graph.nodes.size();
-	for (u64 idx = 0; idx < count; ++idx) {
-		_pending[idx].store(_graph.nodes[idx].predecessors, std::memory_order::relaxed);
-	}
-	_remaining.store(static_cast<u16>(count), std::memory_order::relaxed);
-
-	if (_maxInFlight == 1uL) {
-		dispatch(_graph.order.front());
-		return;
-	}
-
-	for (u64 idx = 0; idx < count; ++idx) {
-		if (_graph.nodes[idx].predecessors == 0u) {
-			dispatch(static_cast<u16>(idx));
-		}
-	}
+void CompositePipeline::setMaxInFlight(const u32 count_) noexcept {
+	// shortcut: only 0 (unbounded) and 1 (serial) supported; bounded window needs readyQueue (design 6.3)
+	::hg::assertrt(count_ <= 1uL);
+	// workers read _maxInFlight unsynchronised, so it may only change while no frame runs (before start() or after stop())
+	::hg::assertrt(_remaining.load(std::memory_order::relaxed) == 0u);
+	_maxInFlight = count_;
 }
 
-void CompositePipeline::dispatch(const u16 node_) {
+ref<const graph::Graph> CompositePipeline::graph() const noexcept {
+	return _graph;
+}
 
-	auto* const slot = _slots[_slotOfNode[node_]].get();
-	const auto dispatcher = slot->getDynamicDispatcher();
-	for (auto* const stage : _nodeStages[node_]) {
-		stage->dynamicDispatch(dispatcher);
-	}
-
-	slot->submit();
+bool CompositePipeline::isStopping() const noexcept {
+	return _stopping.test();
 }
 
 void CompositePipeline::complete(const non_owning_rptr<CompositeSlot> slot_) {
@@ -365,4 +309,36 @@ void CompositePipeline::pushTask(
 	mref<task_handle_type> task_
 ) {
 	_slots[stage_->getSlot()]->dynamicEnqueue(std::move(task_));
+}
+
+void CompositePipeline::startFrame() {
+
+	// no node is in flight here; pushing the first root task publishes these stores to the workers
+	const auto count = _graph.nodes.size();
+	for (u64 idx = 0; idx < count; ++idx) {
+		_pending[idx].store(_graph.nodes[idx].predecessors, std::memory_order::relaxed);
+	}
+	_remaining.store(static_cast<u16>(count), std::memory_order::relaxed);
+
+	if (_maxInFlight == 1uL) {
+		dispatch(_graph.order.front());
+		return;
+	}
+
+	for (u64 idx = 0; idx < count; ++idx) {
+		if (_graph.nodes[idx].predecessors == 0u) {
+			dispatch(static_cast<u16>(idx));
+		}
+	}
+}
+
+void CompositePipeline::dispatch(const u16 node_) {
+
+	auto* const slot = _slots[_slotOfNode[node_]].get();
+	const auto dispatcher = slot->getDynamicDispatcher();
+	for (auto* const stage : _nodeStages[node_]) {
+		stage->dynamicDispatch(dispatcher);
+	}
+
+	slot->submit();
 }

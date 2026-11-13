@@ -1,5 +1,6 @@
 #include "RenderScenePipeline.hpp"
 
+#include <ranges>
 #include <Engine.Common/Make.hpp>
 
 #include "RenderTickStage.hpp"
@@ -16,11 +17,18 @@ RenderScenePipeline::~RenderScenePipeline() = default;
 
 void RenderScenePipeline::mount(ref<StageRegister> register_) {
 
-	(void)register_.registerStage(
-		make_uptr<RenderTickStage>(RenderTick, this)
-	);
+	_stages = {
+		register_.registerStage(
+			make_uptr<RenderTickStage>(RenderTick, this)
+		)
+	};
 }
 
 void RenderScenePipeline::dismount(ref<StageRegister> register_) {
-	register_.removeStage(RenderTick);
+
+	for (auto& stage : std::ranges::views::reverse(_stages)) {
+		if (stage != None) {
+			register_.removeStage(std::exchange(stage, None).value());
+		}
+	}
 }

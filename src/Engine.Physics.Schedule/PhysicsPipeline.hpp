@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Engine.Common/Collection/Array.hpp>
 #include <Engine.Scheduler/Pipeline/StagePipeline.hpp>
 #include <Engine.Scheduler/Pipeline/Stage/StageIdentifier.hpp>
 
@@ -20,6 +21,9 @@ namespace hg::engine::physics::schedule {
 		PhysicsPipeline();
 
 		~PhysicsPipeline() override;
+
+	private:
+		Array<Opt<ref<const ::hg::engine::scheduler::Stage>>, 2> _stages;
 
 	public:
 		void mount(ref<scheduler::StageRegister> register_) override;

@@ -1,5 +1,7 @@
 #include "pch.h"
 
+/**/
+
 #include <array>
 #include <atomic>
 #include <chrono>
@@ -122,19 +124,28 @@ namespace SchedulerModule {
 
 			void mount(ref<StageRegister> register_) override {
 				for (const auto& name : stageNames) {
-					(void)register_.registerStage(makeStage(name, this));
+					stageRefs.emplace_back(
+						register_.registerStage(makeStage(name, this))
+					);
 				}
 				for (auto& stage : stages) {
 					stageNames.push_back(stage->stageIdentifier().value);
-					(void)register_.registerStage(std::move(stage));
+					stageRefs.emplace_back(register_.registerStage(std::move(stage)));
 				}
 				stages.clear();
 			}
 
 			void dismount(ref<StageRegister> register_) override {
-				for (const auto& name : stageNames) { register_.removeStage(string { name }); }
+				for (auto& stage : stageRefs) {
+					if (stage == None) {
+						continue;
+					}
+
+					register_.removeStage(std::exchange(stage, None).value());
+				}
 			}
 
+			Vector<Opt<ref<const Stage>>> stageRefs {};
 			Vector<string> stageNames {};
 			Vector<uptr<PipelineStage>> stages {};
 		};
@@ -214,7 +225,7 @@ namespace SchedulerModule {
 				const auto second = composite_.registerStage(makeStage("::test::a"));
 
 				ASSERT_TRUE(first.has_value());
-		 		ASSERT_TRUE(second.has_value());
+				ASSERT_TRUE(second.has_value());
 				EXPECT_EQ(std::addressof(first.value()), std::addressof(second.value()));
 			}
 		);
@@ -223,35 +234,23 @@ namespace SchedulerModule {
 	TEST(CompositePipelineTest, StageIsReferenceCounted) {
 		withComposite(
 			[](ref<CompositePipeline> composite_) {
-				(void)composite_.registerStage(makeStage("::test::a"));
+				auto stage = composite_.registerStage(makeStage("::test::a"));
 				(void)composite_.registerStage(makeStage("::test::a"));
 
-				composite_.removeStage(string { "::test::a" });
+				composite_.removeStage(stage.value());
 				EXPECT_TRUE(composite_.getStage("::test::a").has_value());
 
-				composite_.removeStage(string { "::test::a" });
+				composite_.removeStage(stage.value());
 				EXPECT_FALSE(composite_.getStage("::test::a").has_value());
 			}
 		);
 	}
 
-	TEST(CompositePipelineTest, RemoveUnknownStageIsNoop) {
+	TEST(CompositePipelineTest, RemoveUnknownStageIsDeath) {
 		withComposite(
 			[](ref<CompositePipeline> composite_) {
-				EXPECT_NO_THROW(composite_.removeStage(string { "::test::unknown" }));
-			}
-		);
-	}
-
-	TEST(CompositePipelineTest, RemoveByStagePointer) {
-		withComposite(
-			[](ref<CompositePipeline> composite_) {
-				const auto stage = composite_.registerStage(makeStage("::test::a"));
-				ASSERT_TRUE(stage.has_value());
-
-				composite_.removeStage(const_cast<ptr<Stage>>(std::addressof(stage.value())));
-
-				EXPECT_FALSE(composite_.getStage("::test::a").has_value());
+				const auto& pseudoStage = *static_cast<ptr<Stage>>(nullptr);
+				EXPECT_DEATH(composite_.removeStage(pseudoStage), "");
 			}
 		);
 	}
