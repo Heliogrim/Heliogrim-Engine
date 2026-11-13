@@ -1,6 +1,7 @@
 #include "CompScheduler.hpp"
 
-#include <cmath>
+#include <bit>
+#include <cstdlib>
 #include <utility>
 #include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Common/Make.hpp>
@@ -9,6 +10,11 @@
 #ifdef _PROFILING
 #include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
+
+namespace {
+	/* Reserved for dedicated non-worker threads; raise when the audio device thread lands. */
+	inline constexpr hg::u32 hot_thread_count = 0uL;
+}
 
 using namespace hg::engine::scheduler;
 using namespace hg::engine;
@@ -25,7 +31,16 @@ CompScheduler::~CompScheduler() {
 	destroy();
 }
 
-void CompScheduler::setup(u32 workers_) {
+static u32 effectiveReserve(const u32 logical_, const u32 reserve_) noexcept {
+	return reserve_ != 0uL ? reserve_ : static_cast<u32>(std::bit_width(logical_) - 1) + hot_thread_count;
+}
+
+u32 scheduler::autoWorkerCount(const u32 logical_, const u32 reserve_) noexcept {
+	const auto reserve = effectiveReserve(logical_, reserve_);
+	return logical_ > reserve ? logical_ - reserve : 1uL;
+}
+
+void CompScheduler::setup(u32 workers_, u32 reserve_) {
 	SCOPED_STOPWATCH
 
 	_schedule = make_uptr<Schedule>();
@@ -33,13 +48,28 @@ void CompScheduler::setup(u32 workers_) {
 
 	/**/
 
+	const char* source = workers_ != 0uL ? "config" : "auto";
+
+	#ifdef USE_WORKER_RESERVE
+	reserve_ = USE_WORKER_RESERVE;
+	#endif
 	#ifdef USE_WORKER_COUNT
 	workers_ = USE_WORKER_COUNT;
+	source = "macro";
 	#endif
 
+	const auto logical = static_cast<u32>(thread::getNativeThreadCount());
 	if (workers_ == 0uL) {
-		workers_ = MAX(static_cast<u32>(MAX(static_cast<s32>(thread::getNativeThreadCount()) - 1L, 0L)), 1uL);
+		workers_ = autoWorkerCount(logical, reserve_);
 	}
+
+	IM_CORE_LOGF(
+		"Scheduler starts {} workers ({} logical threads, reserve {}, source: {})",
+		workers_,
+		logical,
+		effectiveReserve(logical, reserve_),
+		source
+	);
 
 	/**
 	 * Prepare pipeline and workers
@@ -48,46 +78,10 @@ void CompScheduler::setup(u32 workers_) {
 	_workers = static_cast<aligned_worker*>(calloc(workers_, sizeof(aligned_worker)));
 
 	/**
-	 * Construct every worker
+	 * Construct every worker with all available masks
 	 */
-	u32 critCount { 0 };
-	u32 ioCount { 0 };
-	u32 allCount { workers_ };
-
-	if (workers_ > 4) {
-		critCount = static_cast<u32>(std::log2(workers_));
-		allCount -= critCount;
-	}
-
-	if (workers_ > 8) {
-		ioCount = static_cast<u32>(std::log(workers_) / std::log(8));
-		ioCount = MIN(ioCount, (workers_ / 2) - 1);
-
-		allCount -= ioCount;
-	}
-
-	/**
-	 * Construct workers with time critical task mask
-	 */
-	u32 offset { 0 };
-	for (u32 i = 0; i < critCount; ++i) {
-		::new(&_workers[offset + i]) aligned_worker(_schedule.get(), &_fiberPool, task::TaskMask::eCritical);
-	}
-
-	/**
-	 * Construct workers with io task mask
-	 */
-	offset += critCount;
-	for (u32 i = 0; i < ioCount; ++i) {
-		::new(&_workers[offset + i]) aligned_worker(_schedule.get(), &_fiberPool, task::TaskMask::eIO);
-	}
-
-	/**
-	 * Construct workers with all available masks
-	 */
-	offset += ioCount;
-	for (u32 i = 0; i < allCount; ++i) {
-		::new(&_workers[offset + i]) aligned_worker(_schedule.get(), &_fiberPool, task::TaskMask::eAll);
+	for (u32 i = 0; i < workers_; ++i) {
+		::new(&_workers[i]) aligned_worker(_schedule.get(), &_fiberPool, task::TaskMask::eAll);
 	}
 
 	/**

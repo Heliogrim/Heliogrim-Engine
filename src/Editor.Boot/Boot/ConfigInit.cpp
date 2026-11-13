@@ -103,6 +103,11 @@ void editor::boot::initEditorConfig(ref<engine::Config> cfg_, ref<cfg::EditorPro
 		);
 	}
 
+	/**/
+
+	std::ignore = cfg_.init(engine::cfg::SchedulerConfigProperty::eWorkerCount, 0u, query_provider_id(provider_));
+	std::ignore = cfg_.init(engine::cfg::SchedulerConfigProperty::eWorkerReserve, 0u, query_provider_id(provider_));
+
 }
 
 /**/

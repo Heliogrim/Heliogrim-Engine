@@ -12,9 +12,6 @@ namespace hg::engine::scheduler::task {
 		eNormal = 0b1 << 2,
 		eLower = 0b1 << 3,
 
-		//
-		eIO = 0b1 << 4,
-
 		// Concatenated
 		eAll = 0b11111111
 	};
@@ -30,7 +27,6 @@ namespace hg::engine::scheduler::task {
 		TaskMask::eCritical,
 		TaskMask::eHigher,
 		TaskMask::eNormal,
-		TaskMask::eLower,
-		TaskMask::eIO
+		TaskMask::eLower
 	};
 }

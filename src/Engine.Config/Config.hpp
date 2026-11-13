@@ -172,13 +172,18 @@ namespace hg::engine {
 
 		template <cfg::IsConfigValue ValueType_, typename KeyType_>
 			requires cfg::IsConfigKey<std::remove_cvref_t<KeyType_>>
-		[[nodiscard]] tl::expected<tl::optional<ValueType_>, cfg::ConfigValueTypeMismatchError> getOrDefault(
+		[[nodiscard]] tl::expected<ValueType_, cfg::ConfigValueTypeMismatchError> getOrDefault(
 			KeyType_&& key_,
 			cref<ValueType_> default_
-		) noexcept {
-			return get<ValueType_>(std::forward<KeyType_>(key_)).map(
-				[&default_](tl::optional<ValueType_>&& val_) { return val_.or_else(default_); }
-			);
+		) const noexcept {
+			auto stored = get(convertKey(std::forward<KeyType_>(key_)));
+			if (not stored.has_value()) {
+				return default_;
+			}
+			if (std::holds_alternative<ValueType_>(stored.value())) {
+				return std::get<ValueType_>(stored.value());
+			}
+			return tl::make_unexpected(cfg::ConfigValueTypeMismatchError { "" });
 		}
 
 		template <typename KeyType_, typename ValueType_> requires

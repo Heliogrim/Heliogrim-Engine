@@ -18,6 +18,7 @@ namespace hg::engine {
 		using task_handle_type = non_owning_rptr<const task_type>;
 
 		constexpr static inline u32 auto_worker_count { 0uL };
+		constexpr static inline u32 default_worker_reserve { 0uL };
 
 	protected:
 		Scheduler() noexcept = default;
@@ -32,9 +33,10 @@ namespace hg::engine {
 		 * @author Julius
 		 * @date 13.11.2020
 		 *
-		 * @param  workers_ The workers.
+		 * @param  workers_ The workers (0 derives the count from the reserve).
+		 * @param  reserve_ Logical threads left to non-worker threads (0 selects the default).
 		 */
-		virtual void setup(u32 workers_) = 0;
+		virtual void setup(u32 workers_, u32 reserve_) = 0;
 
 		virtual void finalize() = 0;
 

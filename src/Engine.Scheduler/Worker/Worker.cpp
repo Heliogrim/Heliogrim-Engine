@@ -48,12 +48,6 @@ bool Worker::start() {
 		return false;
 	}
 
-	if (_mask & task::TaskMask::eCritical) {
-		// Warning: Set thread priority NEVER to eTimeCritical ... Breakdown will be guaranteed
-		// _thread.setPriority(eTimeCritical);
-		_thread.setPriority(eHigh);
-	}
-
 	return true;
 }
 
