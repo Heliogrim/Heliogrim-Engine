@@ -17,14 +17,15 @@ IoThread::~IoThread() {
 	}
 }
 
-void IoThread::start() {
+void IoThread::start(mref<harvest_type> harvest_) {
 	::hg::assertd(_port == nullptr);
+	_harvest = std::move(harvest_);
 	_running = true;
 	_port = ::CreateIoCompletionPort(INVALID_HANDLE_VALUE, nullptr, 0, 1);
 	::hg::assertrt(_port != nullptr);
 
 	_thread.start(
-		[port = _port](ref<async::AffineThread> self_) {
+		[this, port = _port](ref<async::AffineThread> self_) {
 			self_.setWaker(
 				[port] {
 					::PostQueuedCompletionStatus(port, 0, wake_key, nullptr);
@@ -47,7 +48,13 @@ void IoThread::start() {
 				}
 
 				for (ULONG i = 0; i < count; ++i) {
-					::hg::assertd(entries[i].lpCompletionKey == wake_key);
+					if (entries[i].lpCompletionKey == wake_key) {
+						continue;
+					}
+					::hg::assertd(static_cast<bool>(_harvest));
+					if (_harvest) {
+						_harvest(reinterpret_cast<const IoPortEntry&>(entries[i]));
+					}
 				}
 			}
 		}
