@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
@@ -100,14 +101,9 @@ namespace hg::engine::scheduler::worker {
 		[[nodiscard]] bool ready() const noexcept;
 
 		/**
-		 * Stops this 
-		 *
-		 * @author Julius
-		 * @date 22.07.2021
-		 *
-		 * @returns True if it succeeds, false if it fails.
+		 * Requests the worker loop to exit; a parked worker needs a `Schedule::wakeAll` afterwards.
 		 */
-		[[nodiscard]] bool stop();
+		void requestStop() noexcept;
 
 		/**
 		 * Joins this 
@@ -150,19 +146,8 @@ namespace hg::engine::scheduler::worker {
 		[[nodiscard]] task::TaskMask mask() const;
 
 	private:
-		/** The interrupt pointer */
-		ptr<volatile bool> _interrupt_ptr = nullptr;
-
-	private:
-		/**
-		 * Sets interrupt pointer
-		 *
-		 * @author Julius
-		 * @date 22.07.2021
-		 *
-		 * @param  pointer_ The pointer.
-		 */
-		void setInterruptPtr(ptr<volatile bool> pointer_) noexcept;
+		std::atomic<bool> _interrupt { false };
+		std::atomic<bool> _ready { false };
 
 	private:
 		fiber::Fiber::handle_type _fiber;
