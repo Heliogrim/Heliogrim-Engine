@@ -19,6 +19,10 @@ namespace hg::engine::scheduler {
 	public:
 		using this_type = CompositePipeline;
 
+	private:
+		// set in _activeCalls once the frame ended under stop
+		constexpr static u32 stoppedBit = 1uL << 31;
+
 	public:
 		CompositePipeline(const non_owning_rptr<class Schedule> schedule_);
 
@@ -79,6 +83,7 @@ namespace hg::engine::scheduler {
 		uptr<std::atomic<u16>[]> _pending;
 		std::atomic<u16> _remaining;
 		u32 _maxInFlight;
+		// runner calls inside complete(), plus stoppedBit once the frame ended under stop
 		std::atomic<u32> _activeCalls;
 
 	private:
