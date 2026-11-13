@@ -22,15 +22,16 @@ namespace hg::engine::io {
 		friend class IoSystem;
 
 	public:
-		IoQueue(ref<IoSystem> system_, IoPriority priority_);
+		IoQueue(ref<IoSystem> system_, const IoPriority priority_);
 
 		~IoQueue();
 
 	public:
 		[[nodiscard]] Future<Vector<IoCompletion>> submit(mref<Vector<IoRequest>> requests_);
 
-		// Completes not yet issued requests with `(tag & mask_) == value_` as eCancelled.
-		void cancel(u64 mask_, u64 value_);
+		// Cancels requests with `(tag & mask_) == value_`: not yet issued ones complete as eCancelled, issued ones go
+		// through CancelIoEx and complete as eCancelled (no bytes) or eShort/eDone.
+		void cancel(const u64 mask_, const u64 value_);
 
 		[[nodiscard]] IoPriority priority() const noexcept;
 
@@ -49,11 +50,14 @@ namespace hg::engine::io {
 
 		void resolveReady();
 
+		// Io thread: cancels unfinished requests whose tag matches; issued ones via the backend.
+		void cancelMatching(const u64 mask_, const u64 value_);
+
 		// Io thread: the next request in FIFO order as a token, or nullptr.
 		[[nodiscard]] ptr<void> next() noexcept;
 
-		[[nodiscard]] static ref<const IoRequest> requestOf(ptr<void> token_) noexcept;
+		[[nodiscard]] static ref<const IoRequest> requestOf(const ptr<void> token_) noexcept;
 
-		static void complete(ptr<void> token_, IoCompletion completion_);
+		static void complete(const ptr<void> token_, const IoCompletion completion_);
 	};
 }
