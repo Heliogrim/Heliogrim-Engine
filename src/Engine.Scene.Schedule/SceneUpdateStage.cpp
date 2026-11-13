@@ -42,7 +42,9 @@ void SceneUpdateStage::staticDispatch(cref<StaticStageDispatcher> dispatcher_) {
 
 void SceneUpdateStage::dynamicDispatch(cref<DynamicStageDispatcher> dispatcher_) {}
 
-namespace hg::engine::scene { class SceneBase; }
+namespace hg::engine::scene {
+	class SceneBase;
+}
 
 namespace {
 	static constexpr graph::AccessKey Writes[] = { graph::AccessKey::of<engine::scene::SceneBase>() };
@@ -55,7 +57,9 @@ graph::StageDecl SceneUpdateStage::decl() const noexcept {
 	const auto prePhysics = _options.flags.unwrap == static_cast<u8>(engine::scene::SceneUpdateFlagBits::ePrePhysics);
 
 	return {
-		.name = prePhysics ? string_view { engine::scene::schedule::ScenePipeline::SceneUpdatePrePhysics } : string_view { engine::scene::schedule::ScenePipeline::SceneUpdatePostPhysics },
+		.name = prePhysics ?
+		string_view { engine::scene::schedule::ScenePipeline::SceneUpdatePrePhysics } :
+		string_view { engine::scene::schedule::ScenePipeline::SceneUpdatePostPhysics },
 		.reads = {},
 		.writes = Writes,
 		.lane = graph::Lane::eCritical,

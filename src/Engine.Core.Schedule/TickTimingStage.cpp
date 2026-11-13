@@ -1,6 +1,5 @@
 #include "TickTimingStage.hpp"
 
-
 #include <Engine.Common/Move.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Timing.hpp>
@@ -31,7 +30,9 @@ void schedule::TickTimingStage::dynamicDispatch(cref<DynamicStageDispatcher> dis
 	// __noop();
 }
 
-namespace hg::engine::core { class Timing; }
+namespace hg::engine::core {
+	class Timing;
+}
 
 namespace {
 	static constexpr graph::AccessKey Writes[] = { graph::AccessKey::of<engine::core::Timing>() };
