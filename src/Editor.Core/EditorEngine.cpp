@@ -383,6 +383,8 @@ bool EditorEngine::shutdown() {
 	_universeContexts.front() = nullptr;
 	_editorSession.reset();
 
+	_storage.stopIo();
+
 	/* The platform thread final drain completes promises and schedules work, so the scheduler must still run. */
 	_platform->tidy();
 

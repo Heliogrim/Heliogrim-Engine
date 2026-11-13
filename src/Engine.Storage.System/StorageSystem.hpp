@@ -68,6 +68,12 @@ namespace hg::engine::storage {
 
 		~StorageSystem() noexcept = default;
 
+	public:
+		// Null or stopped io keeps file access synchronous on the calling thread.
+		void setIo(ptr<io::IoSystem> io_) noexcept {
+			_context.io = io_;
+		}
+
 	protected:
 		ref<IStorageRegistry> _registry;
 		ref<StorageActionResolver> _resolver;
