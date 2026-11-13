@@ -28,6 +28,6 @@ namespace hg::engine::scheduler {
 			ref<non_owning_rptr<const task::TaskDelegate>> task_
 		) override;
 
-		void transfer(const non_owning_rptr<ScheduleWorkSet> dst_) override;
+		u64 transfer(const non_owning_rptr<ScheduleWorkSet> dst_) override;
 	};
 }

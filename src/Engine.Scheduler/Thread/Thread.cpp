@@ -39,6 +39,7 @@ thread_local static thread_id __threadId { cast_ntid_tid(std::this_thread::get_i
 thread_local static uint64_t __threadIdx { generate_thread_idx() };
 
 thread_local static bool __threadAffine { false };
+thread_local static bool __threadWorker { false };
 
 FORCE_INLINE inline static bool set_priority(std::thread::native_handle_type handle_, priority priority_) {
 
@@ -179,6 +180,14 @@ void self::markAffine(bool affine_) noexcept {
 
 bool self::isAffine() noexcept {
 	return __threadAffine;
+}
+
+void self::markWorker(bool worker_) noexcept {
+	__threadWorker = worker_;
+}
+
+bool self::isWorker() noexcept {
+	return __threadWorker;
 }
 
 hg::u64 self::getIdx() noexcept {

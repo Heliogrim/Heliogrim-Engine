@@ -2,6 +2,10 @@
 
 /**/
 
+#include <atomic>
+#include <chrono>
+#include <thread>
+#include <vector>
 #include <Engine.Scheduler/Process/Schedule.hpp>
 #include <Engine.Scheduler/Task/Task.hpp>
 
@@ -83,5 +87,80 @@ namespace SchedulerModule {
 		EXPECT_TRUE(schedule.pop(task::TaskMask::eHigher, out));
 		EXPECT_EQ(out, b);
 		EXPECT_FALSE(schedule.pop(task::TaskMask::eHigher, out));
+	}
+
+	TEST(Schedule, PushBumpsEpochAndQueued) {
+		Schedule schedule;
+		schedule.setup();
+		const auto e0 = schedule.epoch();
+		ASSERT_TRUE(schedule.push(makeTask(task::TaskMask::eNormal)));
+		EXPECT_NE(schedule.epoch(), e0);
+		EXPECT_EQ(schedule.queued(), 1);
+		non_owning_rptr<const task::TaskDelegate> out = nullptr;
+		ASSERT_TRUE(schedule.pop(task::TaskMask::eAll, out));
+		EXPECT_EQ(schedule.queued(), 0);
+	}
+
+	TEST(Schedule, WaitForWorkReturnsOnPushFromPlainThread) {
+		Schedule schedule;
+		schedule.setup();
+		std::atomic<bool> returned { false };
+		const auto seen = schedule.epoch();
+		std::thread waiter {
+			[&] {
+				while (schedule.epoch() == seen) {
+					schedule.waitForWork(seen);
+				}
+				returned = true;
+			}
+		};
+		std::this_thread::sleep_for(std::chrono::milliseconds(20));
+		EXPECT_FALSE(returned.load());
+		ASSERT_TRUE(schedule.push(makeTask(task::TaskMask::eNormal)));
+		waiter.join();
+		EXPECT_TRUE(returned.load());
+	}
+
+	TEST(Schedule, WaitForWorkReturnsAtOnceWhenEpochMoved) {
+		Schedule schedule;
+		schedule.setup();
+		const auto seen = schedule.epoch();
+		ASSERT_TRUE(schedule.push(makeTask(task::TaskMask::eNormal)));
+		schedule.waitForWork(seen);
+		SUCCEED();
+	}
+
+	TEST(Schedule, TransferBumpsEpochOnlyWhenTasksMoved) {
+		Schedule schedule;
+		schedule.setup();
+		const auto e0 = schedule.epoch();
+		schedule.tick();
+		EXPECT_EQ(schedule.epoch(), e0);
+		ASSERT_TRUE(schedule.push(makeTask(task::TaskMask::eLower)));
+		const auto e1 = schedule.epoch();
+		schedule.tick();
+		EXPECT_NE(schedule.epoch(), e1);
+	}
+
+	TEST(Schedule, WakeAllReleasesEveryWaiter) {
+		Schedule schedule;
+		schedule.setup();
+		const auto seen = schedule.epoch();
+		std::vector<std::thread> waiters;
+		for (int i = 0; i < 4; ++i) {
+			waiters.emplace_back(
+				[&] {
+					while (schedule.epoch() == seen) {
+						schedule.waitForWork(seen);
+					}
+				}
+			);
+		}
+		std::this_thread::sleep_for(std::chrono::milliseconds(20));
+		schedule.wakeAll();
+		for (auto& t : waiters) {
+			t.join();
+		}
+		SUCCEED();
 	}
 }
