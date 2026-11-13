@@ -135,6 +135,11 @@ namespace hg::engine::scheduler::thread {
 		[[nodiscard]] bool isWorker() noexcept;
 
 		/**
+		 * Applies the priority to the calling thread.
+		 */
+		bool setPriority(priority priority_) noexcept;
+
+		/**
 		 * Yields this
 		 *
 		 * @author Julius

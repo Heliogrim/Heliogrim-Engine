@@ -17,6 +17,12 @@
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Scheduler/Thread/Thread.hpp>
 
+#ifdef WIN32
+#include <Engine.Common/stdafx.h>
+/**/
+#include <processthreadsapi.h>
+#endif
+
 using namespace hg;
 using namespace hg::engine::async;
 
@@ -50,9 +56,12 @@ namespace AsyncModule {
 			AffineThread thread;
 
 			// Rejection, depth and throw paths log; scoped per test like the scheduler fixture, so later suites can set up again.
-			explicit Harness(const bool lateWaker_ = false) :
+			explicit Harness(
+				const bool lateWaker_ = false,
+				const engine::scheduler::thread::priority priority_ = engine::scheduler::thread::priority::eNormal
+			) :
 				lateWaker(lateWaker_),
-				thread("Test-Affine", lateWaker_ ? AffineWaker {} : waker()) {
+				thread("Test-Affine", lateWaker_ ? AffineWaker {} : waker(), priority_) {
 				Logger::setup();
 			}
 
@@ -125,6 +134,31 @@ namespace AsyncModule {
 		EXPECT_TRUE(result.value());
 		EXPECT_EQ(AffineThread::current(), nullptr);
 	}
+
+	#ifdef WIN32
+	TEST(AffineThread, StartsAtRequestedPriority) {
+		const auto probe = [] { return ::GetThreadPriority(::GetCurrentThread()); };
+
+		// Each Harness sets up and destroys the logger, so the two may not overlap.
+		{
+			Harness high { false, engine::scheduler::thread::priority::eHigh };
+			high.start();
+			auto highFuture = high.thread.post(probe);
+			ASSERT_TRUE(waitReady(highFuture));
+			auto highResult = await(std::move(highFuture));
+			ASSERT_TRUE(highResult.has_value());
+			EXPECT_EQ(highResult.value(), THREAD_PRIORITY_HIGHEST);
+		}
+
+		Harness normal {};
+		normal.start();
+		auto normalFuture = normal.thread.post(probe);
+		ASSERT_TRUE(waitReady(normalFuture));
+		auto normalResult = await(std::move(normalFuture));
+		ASSERT_TRUE(normalResult.has_value());
+		EXPECT_EQ(normalResult.value(), THREAD_PRIORITY_NORMAL);
+	}
+	#endif
 
 	TEST(AffineThread, PerProducerFifo) {
 		constexpr u32 producers = 8u;

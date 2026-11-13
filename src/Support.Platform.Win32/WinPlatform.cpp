@@ -33,7 +33,7 @@ namespace {
 }
 
 WinPlatform::WinPlatform() :
-	_platformThread("Platform Thread", {}) {}
+	_platformThread("Platform Thread", {}, engine::scheduler::thread::priority::eHigh) {}
 
 WinPlatform::~WinPlatform() = default;
 

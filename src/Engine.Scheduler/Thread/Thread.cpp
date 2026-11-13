@@ -190,6 +190,14 @@ bool self::isWorker() noexcept {
 	return __threadWorker;
 }
 
+bool self::setPriority(priority priority_) noexcept {
+	#if defined(_WIN32) || defined(_WIN64)
+	return set_priority(::GetCurrentThread(), priority_);
+	#else
+	return set_priority(pthread_self(), priority_);
+	#endif
+}
+
 hg::u64 self::getIdx() noexcept {
 	return __threadIdx;
 }
