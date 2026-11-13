@@ -7,7 +7,6 @@
 #include <chrono>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Module/Modules.hpp>
-#include <Engine.Graphics/Surface/Surface.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Reflow/DataWatcher.hpp>
 #include <Engine.Reflow/Reflow.hpp>
@@ -92,7 +91,9 @@ void ReflowFlowStage::dynamicDispatch(cref<DynamicStageDispatcher> dispatcher_) 
 	// TODO:
 }
 
-namespace hg::engine::reflow { class WindowManager; }
+namespace hg::engine::reflow {
+	class WindowManager;
+}
 
 namespace {
 	static constexpr graph::AccessKey Writes[] = { graph::AccessKey::of<engine::reflow::WindowManager>() };

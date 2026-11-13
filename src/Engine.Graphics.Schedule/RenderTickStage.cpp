@@ -112,12 +112,20 @@ void RenderTickStage::invokeRenderTarget(cref<smr<RenderTarget>> target_) const 
 	assert(result != RenderEnqueueResult::eFailed);
 }
 
-namespace hg::engine::scene { class SceneBase; }
-namespace hg::engine::reflow { class WindowManager; }
-namespace hg::engine::graphics::scene { class RenderSceneManager; }
+namespace hg::engine::scene {
+	class SceneBase;
+}
+namespace hg::engine::reflow {
+	class WindowManager;
+}
+namespace hg::engine::graphics::scene {
+	class RenderSceneManager;
+}
 
 namespace {
-	static constexpr graph::AccessKey Reads[] = { graph::AccessKey::of<engine::scene::SceneBase>(), graph::AccessKey::of<engine::reflow::WindowManager>() };
+	static constexpr graph::AccessKey Reads[] = {
+		graph::AccessKey::of<engine::scene::SceneBase>(), graph::AccessKey::of<engine::reflow::WindowManager>()
+	};
 	static constexpr graph::AccessKey Writes[] = { graph::AccessKey::of<engine::graphics::scene::RenderSceneManager>() };
 }
 

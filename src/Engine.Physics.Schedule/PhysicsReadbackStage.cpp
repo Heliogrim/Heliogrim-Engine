@@ -42,12 +42,20 @@ void PhysicsReadbackStage::staticDispatch(ref<const StaticStageDispatcher> dispa
 
 void PhysicsReadbackStage::dynamicDispatch(ref<const DynamicStageDispatcher> dispatcher_) {}
 
-namespace hg::engine::acs { class Registry; }
-namespace hg::engine::scene { class SceneBase; }
-namespace hg::engine::physics { class PhysicsSceneSystem; }
+namespace hg::engine::acs {
+	class Registry;
+}
+namespace hg::engine::scene {
+	class SceneBase;
+}
+namespace hg::engine::physics {
+	class PhysicsSceneSystem;
+}
 
 namespace {
-	static constexpr graph::AccessKey Reads[] = { graph::AccessKey::of<engine::scene::SceneBase>(), graph::AccessKey::of<engine::physics::PhysicsSceneSystem>() };
+	static constexpr graph::AccessKey Reads[] = {
+		graph::AccessKey::of<engine::scene::SceneBase>(), graph::AccessKey::of<engine::physics::PhysicsSceneSystem>()
+	};
 	static constexpr graph::AccessKey Writes[] = { graph::AccessKey::of<engine::acs::Registry>() };
 }
 

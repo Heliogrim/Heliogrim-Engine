@@ -1,7 +1,6 @@
 #include "CompScheduler.hpp"
 
 #include <cmath>
-#include <cstdlib>
 #include <utility>
 #include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Common/Make.hpp>
@@ -35,7 +34,7 @@ void CompScheduler::setup(u32 workers_) {
 	/**/
 
 	#ifdef USE_WORKER_COUNT
-    workers_ = USE_WORKER_COUNT;
+	workers_ = USE_WORKER_COUNT;
 	#endif
 
 	if (workers_ == 0uL) {

@@ -27,6 +27,7 @@ namespace {
 				return key;
 			}
 		}
+
 		for (const auto& key : rhs_.writes) {
 			if (contains(lhs_.reads, key)) {
 				return key;
@@ -193,5 +194,7 @@ Result<Graph, GraphError> graph::build(const std::span<const StageDecl> decls_) 
 task::TaskMask graph::toMask(const Lane lane_) noexcept {
 	return lane_ == Lane::eCritical ?
 		task::TaskMask::eCritical :
-		lane_ == Lane::eBackground ? task::TaskMask::eLower : task::TaskMask::eNormal;
+		lane_ == Lane::eBackground ?
+		task::TaskMask::eLower :
+		task::TaskMask::eNormal;
 }
