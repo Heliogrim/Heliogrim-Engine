@@ -121,13 +121,19 @@ void CompScheduler::destroy() {
 		waitReadyAll(_workerCount, _workers);
 
 		/**
-		 * Destroy workers and transitive destroy threads
+		 * Request every stop first, then wake the parked workers so each re-checks its flag, then join
 		 */
 		for (u32 idx = 0; idx < _workerCount; ++idx) {
+			_workers[idx].requestStop();
+		}
+
+		_schedule->wakeAll();
+
+		for (u32 idx = 0; idx < _workerCount; ++idx) {
 			#if _DEBUG
-			assert(_workers[idx].stop());
+			assert(_workers[idx].join());
 			#else
-			_workers[idx].stop();
+			_workers[idx].join();
 			#endif
 		}
 
