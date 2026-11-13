@@ -166,6 +166,8 @@ namespace hg::engine::accel::lang::ir::detail {
 
 		[[nodiscard]] ir::Diagnostic diagnostic(ref<const ir::Token> at_, String message_) const;
 		void error(ref<const ir::Token> at_, String message_);
+		/* reports a user name that collides with GLSL or a generated name; `module_` adds the region-lowering suffixes */
+		void declaredName(ref<const ir::Token> name_, bool module_);
 		void syntaxError(StringView expected_);
 		bool expect(TokenKind kind_, StringView expected_);
 

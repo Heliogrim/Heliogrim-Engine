@@ -37,19 +37,6 @@ namespace {
 		return not isHex(text_) && (text_.contains('.') || text_.contains('e') || text_.contains('E'));
 	}
 
-	/* region lowering generates `x__off`, `x__len`, `x__end`, `x__i<k>` locals and `F__r<k>` functions */
-	[[nodiscard]] bool reservedName(StringView name_, bool function_) {
-		const auto numbered = [&](StringView tag_) {
-			const auto at = name_.rfind(tag_);
-			return at != StringView::npos && at + tag_.size() < name_.size() &&
-				std::ranges::all_of(name_.substr(at + tag_.size()), [](char c_) { return c_ >= '0' && c_ <= '9'; });
-		};
-		if (function_) {
-			return numbered("__r");
-		}
-		return name_.ends_with("__off") || name_.ends_with("__len") || name_.ends_with("__end") || numbered("__i");
-	}
-
 	class Checker {
 	public:
 		explicit Checker(ref<ir::Module> mod_) :
@@ -98,7 +85,7 @@ namespace {
 
 	private:
 		void reserved(ref<const String> name_, bool function_ = false) {
-			if (reservedName(name_, function_)) {
+			if (ir::reservedForRegions(name_, function_)) {
 				error("'" + name_ + "' ends in a suffix reserved for region lowering");
 			}
 		}
@@ -1456,6 +1443,18 @@ String ir::describeType(ref<const Vector<TypeDesc>> types_, TypeRef type_, u32 d
 		case TypeKind::eRegion: return "&" + describeType(types_, type.element, depth_ + 1uL) + "[]";
 		default: return "sampler";
 	}
+}
+
+bool ir::reservedForRegions(StringView name_, bool function_) {
+	const auto numbered = [&](StringView tag_) {
+		const auto at = name_.rfind(tag_);
+		return at != StringView::npos && at + tag_.size() < name_.size() &&
+			std::ranges::all_of(name_.substr(at + tag_.size()), [](char c_) { return c_ >= '0' && c_ <= '9'; });
+	};
+	if (function_) {
+		return numbered("__r");
+	}
+	return name_.ends_with("__off") || name_.ends_with("__len") || name_.ends_with("__end") || numbered("__i");
 }
 
 String ir::signatureOf(ref<const Module> mod_, ref<const FunctionDecl> fn_) {

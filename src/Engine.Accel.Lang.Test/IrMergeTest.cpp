@@ -165,7 +165,7 @@ namespace AccelLang {
 	}
 
 	TEST(MergeTest, SameBindingIdAcrossStagesStaysSeparate) {
-		const auto profile = parse("profile", "@input (mode = forward) f32 shared;\n");
+		const auto profile = parse("profile", "@input (mode = forward) f32 profileValue;\n");
 		const auto vertex = parse("vertex", String(cameraMat4) + "fn main() {\n\tlet m = camera.vp;\n}\n", EntryKind::eVertex);
 		const auto fragment = parse("fragment", String(cameraVec4) + "fn main() {\n\tlet v = camera.vp;\n}\n");
 

@@ -16,6 +16,12 @@ namespace hg::engine::accel::lang::ir {
 	[[nodiscard]] String describeType(ref<const Vector<TypeDesc>> types_, TypeRef type_, u32 depth_ = 0uL);
 
 	/**
+	 * Names region lowering generates: locals ending in `__off`, `__len`, `__end` or `__i<k>`, functions ending in
+	 * `__r<k>` (`function_`). A user name of that form is a diagnostic.
+	 */
+	[[nodiscard]] bool reservedForRegions(StringView name_, bool function_);
+
+	/**
 	 * Function identity: name and parameter types, e.g. `saturate(f32vec3)`. The return type is not part of it.
 	 */
 	[[nodiscard]] String signatureOf(ref<const Module> mod_, ref<const FunctionDecl> fn_);

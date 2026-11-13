@@ -88,6 +88,71 @@ namespace hg::engine::accel::lang::ir::detail {
 		return intMatrix;
 	}
 
+	/**
+	 * GLSL 4.60 keywords and reserved words (spec 3.6), Vulkan GLSL additions, the `gl_` prefix and `texture`
+	 * (the emitter calls it; a variable of that name hides it). Names stay verbatim across backends, so a
+	 * GLSL-reserved name is rejected rather than renamed by the GLSL emitter.
+	 */
+	[[nodiscard]] static bool glslReserved(StringView name_) {
+		constexpr auto words = std::to_array<StringView>({
+			"active", "asm", "atomic_uint", "attribute", "bool", "break", "buffer", "case", "cast", "centroid", "class",
+			"coherent", "common", "const", "continue", "default", "demote", "discard", "do", "double", "else", "enum",
+			"extern", "external", "false", "filter", "fixed", "flat", "float", "for", "goto", "half", "highp", "if",
+			"in", "inline", "inout", "input", "int", "interface", "invariant", "layout", "long", "lowp", "mediump",
+			"namespace", "noinline", "noperspective", "out", "output", "partition", "patch", "precise", "precision",
+			"public", "readonly", "resource", "restrict", "return", "sample", "sampler", "samplerShadow", "sampler3DRect", "shared",
+			"short", "sizeof", "smooth", "static", "struct", "subroutine", "superp", "switch", "template", "this", "true",
+			"typedef", "uint", "uniform", "union", "unsigned", "using", "varying", "void", "volatile", "while",
+			"writeonly", "subpassInput", "isubpassInput", "usubpassInput", "subpassInputMS", "isubpassInputMS",
+			"usubpassInputMS", "accelerationStructureEXT", "rayQueryEXT", "hitAttributeEXT", "rayPayloadEXT",
+			"rayPayloadInEXT", "callableDataEXT", "callableDataInEXT", "shaderRecordEXT", "taskPayloadSharedEXT",
+			"perprimitiveEXT", "nonuniformEXT", "devicecoherent", "queuefamilycoherent", "workgroupcoherent",
+			"subgroupcoherent", "nonprivate", "texture"
+		});
+		if (name_.starts_with("gl_") || std::ranges::find(words, name_) != words.end()) {
+			return true;
+		}
+
+		const auto rest = [&](StringView prefix_) -> Opt<StringView> {
+			return name_.starts_with(prefix_) ? SomeVal<StringView>(name_.substr(prefix_.size())) : None;
+		};
+		/* vector and matrix types: [b|i|u|d|f|h]vec2..4, [d]mat2..4[x2..4] */
+		for (const auto prefix : { "vec", "bvec", "ivec", "uvec", "dvec", "fvec", "hvec" }) {
+			if (const auto tail = rest(prefix); tail.has_value() && tail->size() == 1uz && (*tail)[0] >= '2' && (*tail)[0] <= '4') {
+				return true;
+			}
+		}
+		for (const auto prefix : { "mat", "dmat" }) {
+			if (const auto tail = rest(prefix); tail.has_value() && not tail->empty() && (*tail)[0] >= '2' && (*tail)[0] <= '4' &&
+				(tail->size() == 1uz || (tail->size() == 3uz && (*tail)[1] == 'x' && (*tail)[2] >= '2' && (*tail)[2] <= '4'))) {
+				return true;
+			}
+		}
+		/* opaque types: <sampler|image|texture family><dimension>; Shadow exists for `sampler` only */
+		constexpr std::array<StringView, 11> dims {
+			"1D", "2D", "3D", "Cube", "2DRect", "1DArray", "2DArray", "CubeArray", "Buffer", "2DMS", "2DMSArray"
+		};
+		constexpr std::array<StringView, 7> shadowDims { "1D", "2D", "Cube", "2DRect", "1DArray", "2DArray", "CubeArray" };
+		for (const auto prefix : { "sampler", "isampler", "usampler", "image", "iimage", "uimage", "texture", "itexture", "utexture" }) {
+			const auto tail = rest(prefix);
+			if (not tail.has_value()) {
+				continue;
+			}
+
+			if (StringView { prefix } == "sampler" && tail->ends_with("Shadow")) {
+				if (std::ranges::find(shadowDims, tail->substr(0uz, tail->size() - 6uz)) != shadowDims.end()) {
+					return true;
+				}
+				continue;
+			}
+
+			if (std::ranges::find(dims, *tail) != dims.end()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	[[nodiscard]] static Opt<ir::BindMode> bindModeOf(StringView text_) {
 		if (text_ == "forward") {
 			return ir::BindMode::eForward;
@@ -171,6 +236,19 @@ namespace hg::engine::accel::lang::ir::detail {
 			++_eofErrors;
 		}
 		_shared.diags.emplace_back(diagnostic(at_, std::move(message_)));
+	}
+
+	void Parser::declaredName(ref<const ir::Token> name_, bool module_) {
+		const auto text = name_.text;
+		if (text.starts_with("_hg_")) {
+			error(name_, "Identifiers starting with '_hg_' are reserved.");
+
+		} else if (glslReserved(text)) {
+			error(name_, "'" + String(text) + "' is reserved in GLSL.");
+
+		} else if (module_ && (reservedForRegions(text, false) || reservedForRegions(text, true))) {
+			error(name_, "'" + String(text) + "' ends in a suffix reserved for region lowering");
+		}
 	}
 
 	void Parser::syntaxError(StringView expected_) {
@@ -877,7 +955,9 @@ namespace hg::engine::accel::lang::ir::detail {
 			if (fieldType.has_value() && not at(TokenKind::eIdentifier)) {
 				syntaxError("a field name");
 			} else if (fieldType.has_value()) {
-				String name { take().text };
+				const auto& nameToken = take();
+				declaredName(nameToken, false);
+				String name { nameToken.text };
 				if (expect(TokenKind::eSemicolon, "';'")) {
 					out.emplace_back(ir::FieldDesc { std::move(name), *fieldType });
 					continue;
@@ -972,6 +1052,7 @@ namespace hg::engine::accel::lang::ir::detail {
 		if (findBuiltin(name.text).has_value() || isIntMatrixName(name.text) || findStruct(name.text).has_value()) {
 			return error(name, "Type '" + String(name.text) + "' is already declared.");
 		}
+		declaredName(name, true);
 		ir::TypeDesc desc {};
 		desc.kind = ir::TypeKind::eStruct;
 		desc.name = name.text;
@@ -987,6 +1068,7 @@ namespace hg::engine::accel::lang::ir::detail {
 		}
 		ir::FunctionDecl fn {};
 		fn.loc = peek().loc;
+		declaredName(peek(), false);
 		fn.name = take().text;
 		fn.redefineAllowed = ann_.allow != nullptr;
 		fn.when = ann_.binding.when;
@@ -1033,9 +1115,7 @@ namespace hg::engine::accel::lang::ir::detail {
 				if (not expect(TokenKind::eColon, "':' after the parameter name")) {
 					return recover();
 				}
-				if (paramName.starts_with("_hg_")) {
-					error(paramToken, "Identifiers starting with '_hg_' are reserved.");
-				}
+				declaredName(paramToken, false);
 				auto kind = ir::ParamKind::eValue;
 				if (accept(TokenKind::eAmp)) {
 					kind = accept(TokenKind::eKwMut) ? ir::ParamKind::eRefMut : ir::ParamKind::eRef;
@@ -1095,6 +1175,7 @@ namespace hg::engine::accel::lang::ir::detail {
 		ir::ConstantDecl decl {};
 		decl.loc = peek().loc;
 		const auto& nameToken = take();
+		declaredName(nameToken, true);
 		decl.name = nameToken.text;
 		decl.when = ann_.binding.when;
 		if (ann_.spec != nullptr) {
@@ -1134,6 +1215,7 @@ namespace hg::engine::accel::lang::ir::detail {
 			error(head, "workgroup variables require a compute module.");
 		}
 		const auto& nameToken = take();
+		declaredName(nameToken, true);
 		if (not expect(TokenKind::eColon, "':'")) {
 			return recover();
 		}
@@ -1168,6 +1250,7 @@ namespace hg::engine::accel::lang::ir::detail {
 				syntaxError("a block name");
 				return recover();
 			}
+			declaredName(peek(), true);
 			decl.localName = take().text;
 			auto members = fields();
 			if (not members.has_value()) {
@@ -1202,6 +1285,7 @@ namespace hg::engine::accel::lang::ir::detail {
 				}
 			}
 			const auto nameToken = take();
+			declaredName(nameToken, true);
 			decl.localName = nameToken.text;
 			const auto kind = _shared.mod.types[declType->index].kind;
 			if (decl.packing != ir::Packing::eDefault && (kind == ir::TypeKind::eTexture || kind == ir::TypeKind::eSampler || kind == ir::TypeKind::eImage)) {
