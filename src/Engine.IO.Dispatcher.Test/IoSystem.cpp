@@ -8,6 +8,7 @@
 #include <chrono>
 #include <cstdio>
 #include <filesystem>
+#include <format>
 #include <fstream>
 #include <random>
 #include <thread>
@@ -58,7 +59,7 @@ namespace IoModule {
 
 			[[nodiscard]] std::filesystem::path makeFile(const char* name_, const size_t size_ = kFileSize) const {
 				const auto path = dir / name_;
-				std::vector<char> data(std::min(size_, 64uz * 1024uz * 1024uz));
+				Vector<char> data(std::min(size_, 64uz * 1024uz * 1024uz));
 				for (size_t i = 0; i < data.size(); ++i) {
 					data[i] = static_cast<char>(i % 251);
 				}
@@ -446,6 +447,7 @@ namespace IoModule {
 		auto res = await(std::move(fut));
 		ASSERT_TRUE(res.has_value());
 
+		// Contract: eCancelled means zero bytes were written; a partly filled abort reports eShort.
 		Vector<u32> cancelled {};
 		Vector<Vector<_::byte>> snapshots {};
 		for (u32 k = 0; k < 64; ++k) {
@@ -463,6 +465,47 @@ namespace IoModule {
 			EXPECT_TRUE(std::ranges::all_of(buf, [](const _::byte b_) { return b_ == static_cast<_::byte>(0xCD); }));
 		}
 		sys.stop();
+	}
+
+	TEST_F(IoSystemTest, CancelIssuedRequest) {
+		// A pipe with no writer: the read stays pending until CancelIoEx aborts it.
+		const auto name = std::format(LR"(\\.\pipe\heliogrim-io-test-{})", ::GetCurrentProcessId());
+		const auto server = ::CreateNamedPipeW(
+			name.c_str(), PIPE_ACCESS_OUTBOUND, PIPE_TYPE_BYTE, 1, 0, 0, 0, nullptr
+		);
+		ASSERT_NE(server, INVALID_HANDLE_VALUE);
+
+		IoSystem sys {};
+		sys.start();
+		Arci<IoFile> pipe {}, file {};
+		ASSERT_NO_FATAL_FAILURE(open(sys, name, IoOpenMode::eRead, pipe));
+		ASSERT_NO_FATAL_FAILURE(open(sys, makeFile("k.bin"), IoOpenMode::eRead, file));
+
+		// Strict priority: the low marker issues only after the high pipe read, so its resolve proves the issue.
+		const auto high = sys.createQueue(IoPriority::eHigh);
+		const auto low = sys.createQueue(IoPriority::eLow);
+		Vector<_::byte> pipeBuf(4096, static_cast<_::byte>(0xCD)), markBuf(4096);
+		Vector<IoRequest> pipeReq {}, markReq {};
+		pipeReq.push_back(
+			IoRequest { .op = IoOp::eRead, .file = pipe, .offset = 0uLL, .buffer = { pipeBuf.data(), pipeBuf.size() }, .tag = 0x7uLL }
+		);
+		markReq.push_back(IoRequest { .op = IoOp::eRead, .file = file, .offset = 0uLL, .buffer = { markBuf.data(), markBuf.size() } });
+
+		auto fut = high->submit(std::move(pipeReq));
+		auto mark = low->submit(std::move(markReq));
+		ASSERT_TRUE(waitReady(mark));
+		EXPECT_FALSE(fut.isReady());
+
+		high->cancel(~0uLL, 0x7uLL);
+		ASSERT_TRUE(waitReady(fut));
+		auto res = await(std::move(fut));
+		ASSERT_TRUE(res.has_value());
+		EXPECT_EQ(res.value()[0].status, IoStatus::eCancelled);
+		EXPECT_EQ(res.value()[0].bytes, 0u);
+		EXPECT_TRUE(std::ranges::all_of(pipeBuf, [](const _::byte b_) { return b_ == static_cast<_::byte>(0xCD); }));
+
+		sys.stop();
+		::CloseHandle(server);
 	}
 
 	TEST_F(IoSystemTest, StopDrainsInFlight) {
@@ -523,7 +566,11 @@ namespace IoModule {
 			IoSystem sys { kind_, maxInFlight_ };
 			sys.start();
 			Arci<IoFile> file {};
-			open(sys, path, IoOpenMode::eRead, file);
+			EXPECT_NO_FATAL_FAILURE(open(sys, path, IoOpenMode::eRead, file));
+			if (HasFatalFailure()) {
+				sys.stop();
+				return 0.0;
+			}
 			const auto queue = sys.createQueue(IoPriority::eNormal);
 
 			// shortcut: requests share a pool of 256 buffers and contents are not checked; fine for throughput only.

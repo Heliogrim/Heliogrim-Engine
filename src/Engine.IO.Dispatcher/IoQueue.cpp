@@ -1,5 +1,6 @@
 #include "IoQueue.hpp"
 
+#include <Engine.Common/Make.hpp>
 #include <Engine.Common/stdafx.h>
 
 #include "IoSystem.hpp"
@@ -36,39 +37,13 @@ Future<Vector<IoCompletion>> IoQueue::submit(mref<Vector<IoRequest>> requests_) 
 	auto future = promise.future();
 	// A rejected post destroys the closure, which breaks the promise.
 	_system.thread().postDetached(
-		[self = arci_from_this(), promise = std::move(promise), requests = std::move(requests_)]() mutable {
-			self->accept(std::move(promise), std::move(requests));
-		}
+		[self = arci_from_this(), promise = std::move(promise), requests = std::move(requests_)]() mutable { self->accept(std::move(promise), std::move(requests)); }
 	);
 	return future;
 }
 
 void IoQueue::cancel(const u64 mask_, const u64 value_) {
-	_system.thread().postDetached(
-		[self = arci_from_this(), mask_, value_] {
-			self->cancelMatching(mask_, value_);
-		}
-	);
-}
-
-void IoQueue::cancelMatching(const u64 mask_, const u64 value_) {
-	for (auto& batch : _batches) {
-		for (u32 i = 0; i < batch->ops.size(); ++i) {
-			auto& op = batch->ops[i];
-			if (op.finished || (batch->requests[i].tag & mask_) != value_) {
-				continue;
-			}
-			if (i < batch->next) {
-				// shortcut: an aborted read may have partly filled its buffer; no caller reads cancelled buffers yet.
-				_system._backend->cancel(&op);
-				continue;
-			}
-			batch->results[i] = { IoStatus::eCancelled, 0u, 0u };
-			op.finished = true;
-			--batch->open;
-		}
-	}
-	resolveReady();
+	_system.thread().postDetached([self = arci_from_this(), mask_, value_] { self->cancelMatching(mask_, value_); });
 }
 
 IoPriority IoQueue::priority() const noexcept {
@@ -76,7 +51,7 @@ IoPriority IoQueue::priority() const noexcept {
 }
 
 void IoQueue::accept(mref<Promise<Vector<IoCompletion>>> promise_, mref<Vector<IoRequest>> requests_) {
-	auto batch = std::make_unique<Batch>();
+	auto batch = make_uptr<Batch>();
 	batch->promise = std::move(promise_);
 	batch->requests = std::move(requests_);
 
@@ -112,6 +87,25 @@ void IoQueue::resolveReady() {
 	}
 }
 
+void IoQueue::cancelMatching(const u64 mask_, const u64 value_) {
+	for (auto& batch : _batches) {
+		for (u32 i = 0; i < batch->ops.size(); ++i) {
+			auto& op = batch->ops[i];
+			if (op.finished || (batch->requests[i].tag & mask_) != value_) {
+				continue;
+			}
+			if (i < batch->next) {
+				_system._backend->cancel(&op);
+				continue;
+			}
+			batch->results[i] = { IoStatus::eCancelled, 0u, 0u };
+			op.finished = true;
+			--batch->open;
+		}
+	}
+	resolveReady();
+}
+
 ptr<void> IoQueue::next() noexcept {
 	for (auto& batch : _batches) {
 		while (batch->next < batch->ops.size() && batch->ops[batch->next].finished) {
@@ -125,12 +119,12 @@ ptr<void> IoQueue::next() noexcept {
 }
 
 ref<const IoRequest> IoQueue::requestOf(const ptr<void> token_) noexcept {
-	const auto* const op = static_cast<const Op*>(token_);
+	const auto* const op = static_cast<ptr<const Op>>(token_);
 	return op->batch->requests[op->index];
 }
 
 void IoQueue::complete(const ptr<void> token_, const IoCompletion completion_) {
-	auto* const op = static_cast<Op*>(token_);
+	auto* const op = static_cast<ptr<Op>>(token_);
 	// Local ref: resolving may drop the batch's own reference.
 	auto self = op->batch->owner;
 	op->batch->results[op->index] = completion_;
