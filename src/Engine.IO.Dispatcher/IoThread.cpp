@@ -8,7 +8,7 @@ using namespace hg::engine::io;
 using namespace hg;
 
 IoThread::IoThread() :
-	_thread("IO Thread", async::AffineWaker {}) {}
+	_thread("IO Thread", async::AffineWaker {}, engine::scheduler::thread::priority::eHigh) {}
 
 IoThread::~IoThread() {
 	::hg::assertd(not _running);
