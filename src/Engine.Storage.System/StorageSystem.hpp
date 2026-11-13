@@ -69,9 +69,15 @@ namespace hg::engine::storage {
 		~StorageSystem() noexcept = default;
 
 	public:
-		// Null or stopped io keeps file access synchronous on the calling thread.
+		// Null io keeps file access synchronous on the calling thread.
 		void setIo(ptr<io::IoSystem> io_) noexcept {
 			_context.io = io_;
+		}
+
+		// Call before stopping the io system: cached stages may hold io-backed blobs.
+		void detachIo() {
+			_context.io = nullptr;
+			_context.stacks.clear();
 		}
 
 	protected:

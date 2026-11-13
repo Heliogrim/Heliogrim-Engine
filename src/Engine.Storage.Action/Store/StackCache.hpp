@@ -29,6 +29,9 @@ namespace hg::engine::storage {
 		/* Drops entries whose `primary` or own storage is `primary_`. Held chains stay alive. */
 		void invalidateFrom(const ptr<const IStorage> primary_);
 
+		/* Drops every entry. Held chains stay alive. */
+		void clear();
+
 		/* Stable address, created on demand. Never call while holding the cache's spin mutex. */
 		[[nodiscard]] ref<concurrent::FiberSharedMutex> lockOf(const ptr<const IStorage> primary_);
 

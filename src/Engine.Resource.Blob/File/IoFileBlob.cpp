@@ -16,9 +16,9 @@ IoFileBlob::IoFileBlob(ref<io::IoSystem> system_, Arci<io::IoFile> file_, Arci<i
 	_queue(std::move(queue_)),
 	_size(0) {
 
+	// A failed size request leaves -1; the opener maps it to an access error.
 	auto size = await(_system.size(_file));
-	::hg::assertrt(size.has_value());
-	_size = static_cast<streamsize>(size.value());
+	_size = size.has_value() ? static_cast<streamsize>(size.value()) : -1LL;
 }
 
 std::span<_::byte> IoFileBlob::transfer(
@@ -28,6 +28,12 @@ std::span<_::byte> IoFileBlob::transfer(
 ) const {
 
 	::hg::assertrt(offset_ >= 0LL);
+	::hg::assertd(_system.running());
+
+	if (not _system.running()) {
+		IM_CORE_ERROR("Io blob used after its io system stopped.");
+		return buffer_.subspan(0uz, 0uz);
+	}
 
 	Vector<io::IoRequest> requests {};
 	requests.push_back(

@@ -203,7 +203,12 @@ namespace StorageModule {
 		const auto tmp = _scratch.path / "replace.tmp";
 		std::ofstream { tmp, std::ios::binary } << "new";
 
-		// Note: Legacy MoveFileExW replace still fails with ERROR_ACCESS_DENIED while the cached handle is open.
+		// Note: Legacy replace fails only while the cached handle is open; this proves the cache holds it.
+		const auto legacy = _scratch.path / "replace.legacy";
+		std::ofstream { legacy, std::ios::binary } << "legacy";
+		EXPECT_FALSE(::MoveFileExW(legacy.c_str(), path.c_str(), MOVEFILE_REPLACE_EXISTING));
+		EXPECT_EQ(::GetLastError(), static_cast<DWORD>(ERROR_ACCESS_DENIED));
+
 		const auto handle = ::CreateFileW(tmp.c_str(), DELETE, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr, OPEN_EXISTING, 0, nullptr);
 		ASSERT_NE(handle, INVALID_HANDLE_VALUE) << ::GetLastError();
 
@@ -221,6 +226,38 @@ namespace StorageModule {
 		::CloseHandle(handle);
 		ASSERT_TRUE(renamed) << error;
 		// Note: No new-bytes check: nothing invalidates the cached stage on external change, so a fresh query still reads the old file.
+	}
+
+	TEST_F(AsyncStorageTest, QueryAfterStopIoIsSync) {
+		const auto path = _scratch.path / "stop.bin";
+		std::ofstream { path, std::ios::binary } << "bytes";
+		auto store = fileStore(path);
+		ASSERT_NE(store, nullptr);
+
+		const auto readAll = [&]() {
+			auto bytes = std::string {};
+			const auto result = _system.query(
+				clone(store),
+				[&](_In_ ref<const Blob> blob_) {
+					bytes.resize(static_cast<size_t>(blob_.size()));
+					std::ignore = blob_.read(streamoff {}, std::span { reinterpret_cast<_::byte*>(bytes.data()), bytes.size() });
+				}
+			);
+			EXPECT_TRUE(result.has_value());
+			return bytes;
+		};
+
+		const auto before = _io.requestsIssued();
+		EXPECT_EQ(readAll(), "bytes");
+		EXPECT_GT(_io.requestsIssued(), before);
+
+		// Note: Same order as StorageModule::stopIo.
+		_io.stop();
+		_system.detachIo();
+
+		const auto stopped = _io.requestsIssued();
+		EXPECT_EQ(readAll(), "bytes");
+		EXPECT_EQ(_io.requestsIssued(), stopped);
 	}
 
 	#ifdef _DEBUG
