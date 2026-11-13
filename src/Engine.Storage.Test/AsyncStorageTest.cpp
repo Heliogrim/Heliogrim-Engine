@@ -5,7 +5,10 @@
 #include <filesystem>
 #include <fstream>
 #include <semaphore>
+#include <cstring>
+#include <span>
 #include <string>
+#include <vector>
 #include <Engine.Async/Affine/AffineThread.hpp>
 #include <Engine.Common/Guid.hpp>
 #include <Engine.Common/Make.hpp>
@@ -177,21 +180,47 @@ namespace StorageModule {
 		EXPECT_FALSE(std::filesystem::exists(path));
 	}
 
-	TEST_F(AsyncStorageTest, CachedFileAllowsExternalReplace) {
-		// Note: MoveFileExW renames without POSIX semantics, so it fails with ERROR_ACCESS_DENIED over any open handle, FILE_SHARE_DELETE or not.
-		GTEST_SKIP() << "Win32 replace-over-open-file needs a ruling: drop the cached handle or use a POSIX-semantics rename.";
+	TEST_F(AsyncStorageTest, CachedFileAllowsPosixReplace) {
 		const auto path = _scratch.path / "replace.bin";
 		std::ofstream { path, std::ios::binary } << "old";
 		auto store = fileStore(path);
 		ASSERT_NE(store, nullptr);
 
-		auto size = streamsize {};
-		ASSERT_TRUE(_system.query(clone(store), [&](_In_ ref<const Blob> blob_) { size = blob_.size(); }).has_value());
-		EXPECT_EQ(size, 3LL);
+		const auto readAll = [&]() {
+			auto bytes = std::string {};
+			const auto result = _system.query(
+				clone(store),
+				[&](_In_ ref<const Blob> blob_) {
+					bytes.resize(static_cast<size_t>(blob_.size()));
+					std::ignore = blob_.read(streamoff {}, std::span { reinterpret_cast<_::byte*>(bytes.data()), bytes.size() });
+				}
+			);
+			EXPECT_TRUE(result.has_value());
+			return bytes;
+		};
+		EXPECT_EQ(readAll(), "old");
 
 		const auto tmp = _scratch.path / "replace.tmp";
 		std::ofstream { tmp, std::ios::binary } << "new";
-		EXPECT_TRUE(::MoveFileExW(tmp.c_str(), path.c_str(), MOVEFILE_REPLACE_EXISTING)) << ::GetLastError();
+
+		// Note: Legacy MoveFileExW replace still fails with ERROR_ACCESS_DENIED while the cached handle is open.
+		const auto handle = ::CreateFileW(tmp.c_str(), DELETE, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr, OPEN_EXISTING, 0, nullptr);
+		ASSERT_NE(handle, INVALID_HANDLE_VALUE) << ::GetLastError();
+
+		const auto name = path.native();
+		const auto nameBytes = name.size() * sizeof(wchar_t);
+		auto buffer = std::vector<std::byte>(sizeof(FILE_RENAME_INFO) + nameBytes);
+		auto* const info = reinterpret_cast<FILE_RENAME_INFO*>(buffer.data());
+		info->Flags = FILE_RENAME_FLAG_REPLACE_IF_EXISTS | FILE_RENAME_FLAG_POSIX_SEMANTICS;
+		info->RootDirectory = nullptr;
+		info->FileNameLength = static_cast<DWORD>(nameBytes);
+		std::memcpy(info->FileName, name.c_str(), nameBytes);
+
+		const auto renamed = ::SetFileInformationByHandle(handle, FileRenameInfoEx, info, static_cast<DWORD>(buffer.size()));
+		const auto error = ::GetLastError();
+		::CloseHandle(handle);
+		ASSERT_TRUE(renamed) << error;
+		// Note: No new-bytes check: nothing invalidates the cached stage on external change, so a fresh query still reads the old file.
 	}
 
 	#ifdef _DEBUG
