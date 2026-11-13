@@ -2,16 +2,18 @@
 
 /**/
 
+#include <atomic>
 #include <filesystem>
+#include <limits>
 #include <fstream>
 #include <semaphore>
 #include <cstring>
 #include <span>
 #include <string>
-#include <vector>
 #include <Engine.Async/Affine/AffineThread.hpp>
 #include <Engine.Common/Guid.hpp>
 #include <Engine.Common/Make.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Config/Config.hpp>
 #include <Engine.IO.Dispatcher/IoSystem.hpp>
 #include <Engine.Resource.Archive/ArchiveType.hpp>
@@ -20,6 +22,7 @@
 #include <Engine.Resource.Blob/Blob.hpp>
 #include <Engine.Resource.Package/ReadWritePackage.hpp>
 #include <Engine.Storage.Action/Access/AccessError.hpp>
+#include <Engine.Storage.Boot/Action/WindowedArchive.hpp>
 #include <Engine.Storage.Boot/Action/ActionResolverInit.hpp>
 #include <Engine.Storage.Registry/Options/ArchiveStorageDescriptor.hpp>
 #include <Engine.Storage.Registry/Options/FileStorageDescriptor.hpp>
@@ -36,6 +39,8 @@
 #include <Engine.Storage.Registry/Url/PackageUrl.hpp>
 #include <Engine.Storage.System/StorageSystem.hpp>
 #include <Engine.Storage.System/Details/StorageActionResolver.hpp>
+
+#include "../Engine.Scheduler.Test/TestSchedulerEngine.hpp"
 
 #include "Scratch.hpp"
 
@@ -79,19 +84,19 @@ namespace StorageModule {
 		StorageSystem _system { _registry, _resolver };
 		ptr<LocalFileSystemProvider> _lfs = nullptr;
 
-		static constexpr size_t kSizeA = 1024uz;
-		static constexpr size_t kSizeB = 10uz * 1024uz * 1024uz;
+		constexpr static size_t kSizeA = 1024uz;
+		constexpr static size_t kSizeB = 10uz * 1024uz * 1024uz;
 
 		ArchiveGuid _guidA = ArchiveGuid::random();
 		ArchiveGuid _guidB = ArchiveGuid::random();
 		Arci<PackageStorage> _pack;
 
 	public:
-		[[nodiscard]] Arci<IStorage> fileStore(cref<std::filesystem::path> path_) {
+		[[nodiscard]] Arci<IStorage> fileStore(ref<const std::filesystem::path> path_) {
 			return _registry.insert(FileStorageDescriptor { FileUrl { "file+cache"sv, hg::fs::Path { path_ } } });
 		}
 
-		[[nodiscard]] static std::string pattern(size_t size_, char seed_) {
+		[[nodiscard]] static std::string pattern(const size_t size_, const char seed_) {
 			auto text = std::string(size_, '\0');
 			for (size_t i = 0; i < size_; ++i) {
 				text[i] = static_cast<char>(seed_ + static_cast<char>(i % 61uz));
@@ -112,10 +117,10 @@ namespace StorageModule {
 			linkArchive(_guidB, pattern(kSizeB, 'A'));
 		}
 
-		void linkArchive(cref<ArchiveGuid> guid_, cref<std::string> data_) {
+		void linkArchive(ref<const ArchiveGuid> guid_, ref<const std::string> data_) {
 			auto buffer = BufferArchive {};
 			buffer.reserve(data_.size());
-			buffer.serializeBytes(const_cast<char*>(data_.data()), data_.size(), ArchiveStreamMode::eStore);
+			buffer.serializeBytes(const_cast<ptr<char>>(data_.data()), data_.size(), ArchiveStreamMode::eStore);
 			buffer.setType(ArchiveType::eRaw);
 
 			const auto mutated = _system.mutate(
@@ -129,12 +134,12 @@ namespace StorageModule {
 			ASSERT_TRUE(mutated.has_value());
 		}
 
-		[[nodiscard]] Arci<ArchiveStorage> archive(cref<ArchiveGuid> guid_) {
+		[[nodiscard]] Arci<ArchiveStorage> archive(ref<const ArchiveGuid> guid_) {
 			return _registry.insert(ArchiveStorageDescriptor { ArchiveUrl { guid_ }, clone(_pack).into<IStorage>() }).into<
 				ArchiveStorage>();
 		}
 
-		[[nodiscard]] std::string readArchive(cref<ArchiveGuid> guid_) {
+		[[nodiscard]] std::string readArchive(ref<const ArchiveGuid> guid_) {
 			auto bytes = std::string {};
 			const auto result = _system.query(
 				archive(guid_),
@@ -148,6 +153,17 @@ namespace StorageModule {
 			return bytes;
 		}
 	};
+
+	TEST(AsyncStorageWindow, FitsOnlyInsideSource) {
+		EXPECT_TRUE(windowFits(16LL, 0LL, 16LL));
+		EXPECT_TRUE(windowFits(16LL, 16LL, 0LL));
+		EXPECT_FALSE(windowFits(16LL, 8LL, 9LL));
+		EXPECT_FALSE(windowFits(16LL, 17LL, 0LL));
+		EXPECT_FALSE(windowFits(16LL, -1LL, 4LL));
+		EXPECT_FALSE(windowFits(16LL, 4LL, -1LL));
+		// Note: base + size would overflow streamoff; the check must not.
+		EXPECT_FALSE(windowFits(16LL, 8LL, std::numeric_limits<streamsize>::max()));
+	}
 
 	TEST_F(AsyncStorageTest, SyncQueryOverIoThread) {
 		makePackage();
@@ -192,7 +208,7 @@ namespace StorageModule {
 				clone(store),
 				[&](_In_ ref<const Blob> blob_) {
 					bytes.resize(static_cast<size_t>(blob_.size()));
-					std::ignore = blob_.read(streamoff {}, std::span { reinterpret_cast<_::byte*>(bytes.data()), bytes.size() });
+					std::ignore = blob_.read(streamoff {}, std::span { reinterpret_cast<ptr<_::byte>>(bytes.data()), bytes.size() });
 				}
 			);
 			EXPECT_TRUE(result.has_value());
@@ -214,8 +230,8 @@ namespace StorageModule {
 
 		const auto name = path.native();
 		const auto nameBytes = name.size() * sizeof(wchar_t);
-		auto buffer = std::vector<std::byte>(sizeof(FILE_RENAME_INFO) + nameBytes);
-		auto* const info = reinterpret_cast<FILE_RENAME_INFO*>(buffer.data());
+		auto buffer = Vector<std::byte>(sizeof(FILE_RENAME_INFO) + nameBytes);
+		const auto info = reinterpret_cast<ptr<FILE_RENAME_INFO>>(buffer.data());
 		info->Flags = FILE_RENAME_FLAG_REPLACE_IF_EXISTS | FILE_RENAME_FLAG_POSIX_SEMANTICS;
 		info->RootDirectory = nullptr;
 		info->FileNameLength = static_cast<DWORD>(nameBytes);
@@ -240,7 +256,7 @@ namespace StorageModule {
 				clone(store),
 				[&](_In_ ref<const Blob> blob_) {
 					bytes.resize(static_cast<size_t>(blob_.size()));
-					std::ignore = blob_.read(streamoff {}, std::span { reinterpret_cast<_::byte*>(bytes.data()), bytes.size() });
+					std::ignore = blob_.read(streamoff {}, std::span { reinterpret_cast<ptr<_::byte>>(bytes.data()), bytes.size() });
 				}
 			);
 			EXPECT_TRUE(result.has_value());
@@ -258,6 +274,90 @@ namespace StorageModule {
 		const auto stopped = _io.requestsIssued();
 		EXPECT_EQ(readAll(), "bytes");
 		EXPECT_EQ(_io.requestsIssued(), stopped);
+	}
+
+	TEST_F(AsyncStorageTest, QueryAsyncReadsArchive) {
+		makePackage();
+		SchedulerModule::structuredRuntimeTest(
+			[&](nmpt<Scheduler>) {
+				auto bytes = std::string {};
+				auto future = _system.queryAsync(
+					archive(_guidA),
+					[&](_In_ ref<StorageReadonlyArchive> arch_) {
+						bytes.resize(static_cast<size_t>(arch_.totalSize()));
+						arch_.seek(0);
+						arch_.serializeBytes(bytes.data(), bytes.size(), ArchiveStreamMode::eLoad);
+					}
+				);
+				const auto result = await(::hg::move(future));
+				ASSERT_TRUE(result.has_value());
+				EXPECT_EQ(bytes, pattern(kSizeA, 'a'));
+			}
+		);
+	}
+
+	TEST_F(AsyncStorageTest, MutateAsyncCommits) {
+		makePackage();
+		SchedulerModule::structuredRuntimeTest(
+			[&](nmpt<Scheduler>) {
+				const auto guidC = ArchiveGuid::random();
+				const auto data = pattern(64uz, 'c');
+				auto buffer = BufferArchive {};
+				buffer.reserve(data.size());
+				buffer.serializeBytes(const_cast<ptr<char>>(data.data()), data.size(), ArchiveStreamMode::eStore);
+				buffer.setType(ArchiveType::eRaw);
+
+				auto added = _system.mutateAsync(
+					clone(_pack),
+					[&](_Inout_ ref<ReadWritePackage> rwp_) -> bool {
+						auto& linked = rwp_.getLinker().add({ .type = ArchiveType::eUndefined, .guid = guidC });
+						linked.changes.emplace_back(package::ArchiveDeltaAdd { .where = streamoff {}, .sizedData = buffer });
+						return true;
+					}
+				);
+				ASSERT_TRUE(await(::hg::move(added)).has_value());
+
+				auto bytes = std::string {};
+				auto read = _system.queryAsync(
+					archive(guidC),
+					[&](_In_ ref<StorageReadonlyArchive> arch_) {
+						bytes.resize(static_cast<size_t>(arch_.totalSize()));
+						arch_.seek(0);
+						arch_.serializeBytes(bytes.data(), bytes.size(), ArchiveStreamMode::eLoad);
+					}
+				);
+				ASSERT_TRUE(await(::hg::move(read)).has_value());
+				EXPECT_EQ(bytes, data);
+			}
+		);
+	}
+
+	TEST_F(AsyncStorageTest, ConcurrentQueryAsync) {
+		makePackage();
+		SchedulerModule::structuredRuntimeTest(
+			[&](nmpt<Scheduler>) {
+				std::atomic<u32> okCount { 0 };
+				Vector<Future<void, query_archive_error>> pending {};
+				for (u32 i = 0; i < 100u; ++i) {
+					const auto isA = (i % 2u) == 0u;
+					pending.emplace_back(
+						_system.queryAsync(
+							archive(isA ? _guidA : _guidB),
+							[&okCount, isA](_In_ ref<StorageReadonlyArchive> arch_) {
+								const auto size = isA ? kSizeA : kSizeB;
+								if (static_cast<size_t>(arch_.totalSize()) == size) {
+									okCount.fetch_add(1u);
+								}
+							}
+						)
+					);
+				}
+				for (auto& future : pending) {
+					EXPECT_TRUE(await(::hg::move(future)).has_value());
+				}
+				EXPECT_EQ(okCount.load(), 100u);
+			}
+		);
 	}
 
 	#ifdef _DEBUG
