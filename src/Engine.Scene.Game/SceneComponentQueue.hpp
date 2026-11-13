@@ -1,6 +1,8 @@
 #pragma once
 
+#include <utility>
 #include <Engine.Asserts/Todo.hpp>
+#include <Engine.Async/Primitive/SpinLock.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Collection/DenseMap.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
@@ -9,6 +11,7 @@
 #include <Engine.Scene/SceneBase.hpp>
 #include <Heliogrim/IComponentRegisterContext.hpp>
 #include <Heliogrim/Component/HierarchyComponent.hpp>
+#include <Heliogrim/Component/SceneComponent.hpp>
 
 namespace hg::engine::scene {
 	template <typename Scene_>
@@ -43,6 +46,8 @@ namespace hg::engine::scene {
 		}
 
 	private:
+		// Producers (actor spawn and destroy, level load) run on any worker while the scene commits.
+		concurrent::SpinMutex _lck;
 		DenseMap<MetaClassKey, Vector<ptr<SceneComponent>>> _createQueue;
 		DenseMap<MetaClassKey, Vector<ptr<SceneComponent>>> _removeQueue;
 
@@ -50,35 +55,40 @@ namespace hg::engine::scene {
 		template <std::derived_from<SceneBase> Derived_ = Scene_> requires std::is_base_of_v<SceneComponentQueue<Derived_>, Derived_>
 		void commitChanges() {
 
+			// Taken out under the lock and applied outside it: the scene systems may queue again while applying.
+			decltype(_createQueue) createQueue {};
+			decltype(_removeQueue) removeQueue {};
+			{
+				const concurrent::SpinLock lock { _lck };
+				std::swap(createQueue, _createQueue);
+				std::swap(removeQueue, _removeQueue);
+			}
+
 			if constexpr (HasBatchRemove<Derived_>) {
-				for (auto&& batch : _removeQueue) {
+				for (auto&& batch : removeQueue) {
 					static_cast<ref<Derived_>>(*this).remove(batch.first, batch.second);
 				}
 			} else {
-				for (auto&& batch : _removeQueue) {
+				for (auto&& batch : removeQueue) {
 					for (const auto* const component : batch.second) {
 						static_cast<ref<SceneBase>>(static_cast<ref<Derived_>>(*this)).remove(component);
 					}
 				}
 			}
 
-			_removeQueue.clear();
-
 			/**/
 
 			if constexpr (HasBatchAdd<Derived_>) {
-				for (auto&& batch : _createQueue) {
+				for (auto&& batch : createQueue) {
 					static_cast<ref<Derived_>>(*this).add(batch.first, batch.second);
 				}
 			} else {
-				for (auto&& batch : _createQueue) {
+				for (auto&& batch : createQueue) {
 					for (auto* const component : batch.second) {
 						static_cast<ref<SceneBase>>(static_cast<ref<Derived_>>(*this)).add(component);
 					}
 				}
 			}
-
-			_createQueue.clear();
 		}
 
 	public:
@@ -90,6 +100,7 @@ namespace hg::engine::scene {
 			}
 
 			const auto meta = component->getMetaClass();
+			const concurrent::SpinLock lock { _lck };
 			const auto foundIt = _createQueue.find(meta);
 
 			if (foundIt != _createQueue.end()) {
@@ -112,6 +123,7 @@ namespace hg::engine::scene {
 			}
 
 			const auto meta = component->getMetaClass();
+			const concurrent::SpinLock lock { _lck };
 			const auto foundIt = _removeQueue.find(meta);
 
 			if (foundIt != _removeQueue.end()) {
