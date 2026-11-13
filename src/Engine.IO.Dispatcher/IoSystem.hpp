@@ -5,7 +5,6 @@
 #include <filesystem>
 #include <Engine.Async/Affine/AffineThread.hpp>
 #include <Engine.Async/Future/Future.hpp>
-#include <Engine.Async/Future/Promise.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Managed/Rc.hpp>
@@ -22,10 +21,10 @@ namespace hg::engine::io {
 		friend class IoQueue;
 
 	public:
-		static constexpr u32 kMaxInFlight = 64;
+		constexpr static u32 kMaxInFlight = 64;
 
 	public:
-		explicit IoSystem(IoBackendKind kind_ = IoBackendKind::eIocp, u32 maxInFlight_ = kMaxInFlight);
+		explicit IoSystem(const IoBackendKind kind_ = IoBackendKind::eIocp, const u32 maxInFlight_ = kMaxInFlight);
 
 		IoSystem(const IoSystem&) = delete;
 
@@ -41,14 +40,17 @@ namespace hg::engine::io {
 
 		[[nodiscard]] bool running() const noexcept;
 
-	public:
-		[[nodiscard]] Future<Arci<IoFile>, IoError> open(cref<std::filesystem::path> path_, IoOpenMode mode_);
+		// Requests handed to the backend since construction.
+		[[nodiscard]] u64 requestsIssued() const noexcept;
 
-		[[nodiscard]] Arci<IoQueue> createQueue(IoPriority priority_);
+	public:
+		[[nodiscard]] Future<Arci<IoFile>, IoError> open(ref<const std::filesystem::path> path_, const IoOpenMode mode_);
+
+		[[nodiscard]] Arci<IoQueue> createQueue(const IoPriority priority_);
 
 		[[nodiscard]] Future<u64, IoError> size(Arci<IoFile> file_);
 
-		[[nodiscard]] Future<void, IoError> resize(Arci<IoFile> file_, u64 size_);
+		[[nodiscard]] Future<void, IoError> resize(Arci<IoFile> file_, const u64 size_);
 
 	private:
 		IoThread _thread;
@@ -57,6 +59,7 @@ namespace hg::engine::io {
 		std::atomic_bool _running { false };
 		// Set by the io thread once stopping left nothing in flight.
 		std::atomic_bool _drained { false };
+		std::atomic<u64> _requestsIssued { 0 };
 
 		// Io thread only.
 		bool _stopping = false;

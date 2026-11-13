@@ -10,6 +10,8 @@
 #include <Engine.Storage.Action/Access/ExclusiveIoResource.hpp>
 #include <Engine.Storage.Action/Access/SharedReadIoResource.hpp>
 
+#include "WindowedArchive.hpp"
+
 using namespace hg::engine::storage;
 using namespace hg::engine::resource;
 using namespace hg;
@@ -143,18 +145,20 @@ Result<
 
 	/**/
 
-	constexpr auto contentOffset = sizeof(PackageHeader);
-	auto value = Rc<StorageReadonlyArchive>::create(
-		linker.getStorage(),
-		static_cast<streamoff>(contentOffset + linked->data.offset),
-		linked->data.size
-	);
-	value->setType(linked->header.type);
+	constexpr auto contentOffset = static_cast<streamoff>(sizeof(PackageHeader));
+	const auto& source = linker.getStorage();
+	// Relative to the content, so a corrupt offset cannot overflow the absolute base.
+	if (not windowFits(static_cast<streamsize>(source.size()) - contentOffset, linked->data.offset, linked->data.size)) {
+		return Unexpected<Query::acq_error_type> { AccessError { "Archive range exceeds its package." } };
+	}
+
+	auto value = Rc<WindowedArchive>::create(source, contentOffset + linked->data.offset, linked->data.size);
+	value->archive.setType(linked->header.type);
 
 	/**/
 
 	// Note: Resolvers are invoked const; keep a mutable alias next to the owning handle.
-	const auto obj = std::addressof(*value);
+	const auto obj = std::addressof(value->archive);
 	auto resolveReadonly = [_owner = hg::move(value), obj](ResourceAccessMode) -> ref<StorageReadonlyArchive> {
 		return *obj;
 	};
