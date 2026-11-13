@@ -26,7 +26,10 @@ void StorageModule::setup(cref<Config> config_) {
 }
 
 void StorageModule::stopIo() {
+	// Note: Stop first, so queries starting after the stop resolve sync stages.
+	// shortcut: a query already past `running()` may still cache an io-backed stage after the clear (its reads then come back empty), make `StackCache::clear` wait on the per-primary locks if storage is used across shutdown.
 	_io.stop();
+	_system->detachIo();
 }
 
 nmpt<storage::IStorageRegistry> StorageModule::getRegistry() const noexcept {

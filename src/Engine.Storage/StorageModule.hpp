@@ -39,7 +39,7 @@ namespace hg::engine {
 	public:
 		void setup(_In_ cref<Config> config_);
 
-		// Stops the io thread; later file access falls back to synchronous reads and writes.
+		// Stops the io thread, then drops cached stages; later file access sees a stopped io and is synchronous.
 		void stopIo();
 
 	private:
