@@ -290,9 +290,7 @@ Opt<ir::StmtRef> Parser::local(ref<const ir::Token> name_, ir::TypeRef type_, bo
 	decl.type = type_;
 	decl.mutable_ = not const_;
 	bool valid = true;
-	if (name_.text.starts_with("_hg_")) {
-		error(name_, "Identifiers starting with '_hg_' are reserved.");
-	}
+	declaredName(name_, false);
 	if (accept(TokenKind::eAssign)) {
 		if (accept(TokenKind::eAmp)) {
 			decl.kind = ir::StmtKind::eDeclareRef;

@@ -1113,4 +1113,63 @@ namespace AccelLang {
 		ASSERT_FALSE(diags.empty());
 		EXPECT_TRUE(mentions(diags[0], "Invalid value 'yes' for annotation key 'early_fragment_tests'")) << diags[0].message;
 	}
+
+	TEST(ParserTest, GlslReservedWordsRejectedAtTheirName) {
+		const std::array<std::tuple<StringView, StringView, u32, u32>, 14> cases { {
+			{ "@input (mode = bind, id = \"o\", class = storage) block out { u32[] data; };\nfn main() {}\n", "out", 1u, 55u },
+			{ "struct input { f32 x; }\nfn main() {}\n", "input", 1u, 8u },
+			{ "struct S { f32 sample; }\nfn main() {}\n", "sample", 1u, 16u },
+			{ "const filter: u32 = 1u;\nfn main() {}\n", "filter", 1u, 7u },
+			{ "fn inline() {}\nfn main() {}\n", "inline", 1u, 4u },
+			{ "fn f(flat: u32) {}\nfn main() {}\n", "flat", 1u, 6u },
+			{ "fn main() { let sampler2DArray: u32 = 1u; }\n", "sampler2DArray", 1u, 17u },
+			{ "fn main() { let gl_Mine: u32 = 1u; }\n", "gl_Mine", 1u, 17u },
+			{ "fn main() { let vec3: u32 = 1u; }\n", "vec3", 1u, 17u },
+			{ "fn main() { let dmat4x3: u32 = 1u; }\n", "dmat4x3", 1u, 17u },
+			{ "fn main() { let mat2: u32 = 1u; }\n", "mat2", 1u, 17u },
+			{ "fn main() { let sampler3DRect: u32 = 1u; }\n", "sampler3DRect", 1u, 17u },
+			{ "fn main() { let sampler2DShadow: u32 = 1u; }\n", "sampler2DShadow", 1u, 17u },
+			{ "fn main() { let samplerCubeShadow: u32 = 1u; }\n", "samplerCubeShadow", 1u, 17u },
+		} };
+		for (const auto& [source, name, line, column] : cases) {
+			const auto diags = parseFail(source);
+			ASSERT_FALSE(diags.empty()) << source;
+			EXPECT_TRUE(mentions(diags[0], "'" + String { name } + "' is reserved in GLSL")) << diags[0].message;
+			EXPECT_EQ(diags[0].line, line) << source;
+			EXPECT_EQ(diags[0].column, column) << source;
+		}
+	}
+
+	TEST(ParserTest, NamesNearGlslReservedWordsAccepted) {
+		std::ignore = parseOk(
+			"struct Outer { f32 samples; }\nconst filters: u32 = 1u;\n"
+			"fn main() { let sampler2DArr: u32 = 1u; let glow: u32 = 2u; let input_: u32 = 3u; }\n"
+			"fn a() { let vec5: u32 = 1u; let mat4x5: u32 = 2u; let hmat3: u32 = 3u; let fmat2: u32 = 4u; }\n"
+			"fn b() { let sampler2DShadows: u32 = 1u; }\n"
+			"fn c() { let image2DShadow: u32 = 1u; let isampler2DShadow: u32 = 2u; let sampler3DShadow: u32 = 3u; let iimage3DRect: u32 = 4u; let texture3DRect: u32 = 5u; }\n"
+		);
+	}
+
+	TEST(ParserTest, GeneratedPrefixRejectedAtModuleScope) {
+		for (const auto source : {
+				 "const _hg_ref0: u32 = 1u;\nfn main() {}\n", "struct _hg_S { f32 x; }\nfn main() {}\n", "fn _hg_f() {}\nfn main() {}\n"
+			 }) {
+			const auto diags = parseFail(source);
+			ASSERT_FALSE(diags.empty()) << source;
+			EXPECT_TRUE(mentions(diags[0], "Identifiers starting with '_hg_' are reserved.")) << diags[0].message;
+		}
+	}
+
+	TEST(ParserTest, RegionSuffixRejectedAtModuleScope) {
+		for (const auto source : {
+				 "const a__len: u32 = 1u;\nfn main() {}\n",
+				 "@input (mode = bind, id = \"b\", class = storage) block b__off { u32[] data; };\nfn main() {}\n",
+				 "struct S__end { f32 x; }\nfn main() {}\n",
+					 "const w__r0: u32 = 1u;\nfn main() {}\n"
+			 }) {
+			const auto diags = parseFail(source);
+			ASSERT_FALSE(diags.empty()) << source;
+			EXPECT_TRUE(mentions(diags[0], "ends in a suffix reserved for region lowering")) << diags[0].message;
+		}
+	}
 }
