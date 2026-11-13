@@ -1,8 +1,7 @@
 #include "VkSwapchain.hpp"
 
-#include <Engine.Asserts/Breakpoint.hpp>
+#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
-#include <Engine.Scheduler/Fiber/Fiber.hpp>
 
 #include "../Texture/TextureFactory.hpp"
 
@@ -123,11 +122,6 @@ void VkSwapchain::destroy() {
 bool VkSwapchain::acquireNext(ref<s64> idx_, ref<smr<Texture>> image_, ref<vk::Semaphore> signal_) {
 
 	u64 ridx { ~0uLL };
-	/*
-	while (!_rQueue.try_pop(qidx)) {
-	    scheduler::fiber::self::yield();
-	}
-	 */
 	if (!_rQueue.try_pop(ridx)) {
 		return false;
 	}
@@ -209,17 +203,9 @@ bool VkSwapchain::consumeNext(
 	/**
 	 * Rebind
 	 */
-	#ifdef _DEBUG
-	if (not _rQueue.try_push(std::move(pidx))) {
-		// Warning: We must ensure that image index is pushed to ready queue to prevent resource leak
-		::hg::breakpoint();
-	}
-	#else
-	// shortcut: spin-yield on the presentation ring, upgrade when W02.3 gives presentation an affine seam
-	while (not _rQueue.try_push(std::move(pidx))) {
-		scheduler::fiber::self::yield();
-	}
-	#endif
+	// setup pushes at most capacity - 1 = 2 indices, so at most two circulate and the one just popped from _pQueue always fits
+	const bool rebound = _rQueue.try_push(u64 { pidx });
+	::hg::assertrt(rebound);
 
 	return true;
 }
