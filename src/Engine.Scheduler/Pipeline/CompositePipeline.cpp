@@ -7,9 +7,7 @@
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 
-#include "../Fiber/Fiber.hpp"
 #include "../Process/Schedule.hpp"
-#include "../Thread/Thread.hpp"
 #include "Composite/CompositeSlot.hpp"
 #include "Stage/PipelineStage.hpp"
 
@@ -138,17 +136,10 @@ void CompositePipeline::stop() {
 	::hg::assertrt(not _stopping.test());
 
 	_stopping.test_and_set();
+	// set by the last runner call to return after the frame ended, so the pipeline may be destroyed after this
 	_stopped.wait();
 
-	// every runner call has returned before the pipeline may be destroyed
-	while (_activeCalls.load(std::memory_order::acquire) != 0uL) {
-		if (fiber::self::current() != nullptr) {
-			fiber::self::yield();
-		} else {
-			thread::self::yield();
-		}
-	}
-
+	_activeCalls.store(0uL, std::memory_order::relaxed);
 	_stopped.reset();
 }
 
@@ -268,8 +259,8 @@ bool CompositePipeline::isStopping() const noexcept {
 
 void CompositePipeline::complete(const non_owning_rptr<CompositeSlot> slot_) {
 
-	// acq_rel: a read-modify-write before this call's _remaining decrement, so a frame end that sets _stopped already sees it counted
-	_activeCalls.fetch_add(1uL, std::memory_order::acq_rel);
+	// counted before this call's _remaining decrement, so the frame end's stoppedBit lands while this call is still counted
+	_activeCalls.fetch_add(1uL, std::memory_order::relaxed);
 
 	auto* const schedule = _schedule;
 	const auto node = slot_->getNode();
@@ -287,7 +278,8 @@ void CompositePipeline::complete(const non_owning_rptr<CompositeSlot> slot_) {
 	if (prevRemaining == 1u) {
 		if (_stopping.test()) {
 			_stopping.clear();
-			_stopped.set();
+			// this call is still counted, so the releaser below is the last call to leave
+			_activeCalls.fetch_or(stoppedBit, std::memory_order::relaxed);
 		} else {
 			startFrame();
 		}
@@ -298,8 +290,11 @@ void CompositePipeline::complete(const non_owning_rptr<CompositeSlot> slot_) {
 		dispatch(_graph.order[done]);
 	}
 
-	// last access to this; stop() waits for zero before the pipeline may be destroyed
-	_activeCalls.fetch_sub(1uL, std::memory_order::release);
+	// last access to this, unless the frame ended under stop and this is the last call to leave
+	const auto prevActive = _activeCalls.fetch_sub(1uL, std::memory_order::acq_rel);
+	if (prevActive == (stoppedBit | 1uL)) {
+		_stopped.set();
+	}
 
 	schedule->tick();
 }
