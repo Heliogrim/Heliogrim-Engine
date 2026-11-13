@@ -2,57 +2,31 @@
 
 #include <limits>
 #include <Engine.Asserts/Asserts.hpp>
+#include <Engine.Common/Make.hpp>
 #include <Engine.Common/stdafx.h>
 
-#include "BlockingBackend.hpp"
 #include "IoFile.hpp"
 
 using namespace hg::engine::io;
 using namespace hg;
 
+// Complete here: issue() and harvest() need its layout.
+struct IocpBackend::Slot :
+	OVERLAPPED {
+	ptr<void> token;
+	HANDLE file;
+	DWORD size;
+};
+
 namespace {
-	struct Slot :
-		OVERLAPPED {
-		ptr<void> token;
-		HANDLE file;
-		DWORD size;
-	};
-
-	void cancelSlot(const ptr<void> slot_) {
-		auto* const slot = static_cast<Slot*>(slot_);
-		// ERROR_NOT_FOUND: the request already finished and its packet is queued.
-		::CancelIoEx(slot->file, slot);
-	}
-}
-
-IoCompletion IoBackend::translate(const u32 error_, const u32 bytes_, const u32 size_) noexcept {
-	if (error_ == ERROR_SUCCESS) {
-		return { bytes_ == size_ ? IoStatus::eDone : IoStatus::eShort, bytes_, 0u };
-	}
-	if (error_ == ERROR_HANDLE_EOF) {
-		return { IoStatus::eShort, bytes_, 0u };
-	}
-	if (error_ == ERROR_OPERATION_ABORTED) {
-		return { IoStatus::eCancelled, bytes_, 0u };
-	}
-	return { IoStatus::eFailed, bytes_, error_ };
-}
-
-uptr<IoBackend> IoBackend::make(const IoBackendKind kind_, ref<IoThread> thread_, sink_type sink_) {
-	switch (kind_) {
-		case IoBackendKind::eBlocking: {
-			return std::make_unique<BlockingBackend>(std::move(sink_));
-		}
-		case IoBackendKind::eIocp:
-		default: {
-			return std::make_unique<IocpBackend>(thread_, std::move(sink_));
-		}
-	}
+	void cancelSlot(const HANDLE file_, const ptr<OVERLAPPED> slot_);
 }
 
 IocpBackend::IocpBackend(ref<IoThread> thread_, sink_type sink_) :
 	_thread(thread_),
 	_sink(std::move(sink_)) {}
+
+IocpBackend::~IocpBackend() = default;
 
 u32 IocpBackend::openFlags() const noexcept {
 	return FILE_FLAG_OVERLAPPED;
@@ -68,7 +42,11 @@ void IocpBackend::issue(ref<const IoRequest> request_, const ptr<void> token_) {
 		return;
 	}
 
-	auto* const slot = new Slot {};
+	// Note: Register before issuing; once the kernel owns the OVERLAPPED, nothing may free it before its packet.
+	const auto [it, inserted] = _slots.emplace(token_, make_uptr<Slot>());
+	::hg::assertrt(inserted);
+
+	const auto slot = it->second.get();
 	slot->Offset = static_cast<DWORD>(request_.offset & 0xFFFFFFFFuLL);
 	slot->OffsetHigh = static_cast<DWORD>(request_.offset >> 32uLL);
 	slot->token = token_;
@@ -82,17 +60,17 @@ void IocpBackend::issue(ref<const IoRequest> request_, const ptr<void> token_) {
 	// Success and pending both queue a packet; only a synchronous failure never will.
 	const auto error = ok ? ERROR_SUCCESS : ::GetLastError();
 	if (ok || error == ERROR_IO_PENDING) {
-		_slots.emplace(token_, slot);
 		return;
 	}
-	delete slot;
+
+	_slots.erase(token_);
 	_sink(token_, translate(error, 0, static_cast<DWORD>(request_.buffer.size())));
 }
 
 void IocpBackend::harvest(ref<const IoPortEntry> entry_) {
 	const auto& entry = reinterpret_cast<const OVERLAPPED_ENTRY&>(entry_);
 	::hg::assertd(entry.lpOverlapped != nullptr);
-	auto* const slot = static_cast<Slot*>(entry.lpOverlapped);
+	auto* const slot = static_cast<ptr<Slot>>(entry.lpOverlapped);
 
 	DWORD bytes = 0;
 	DWORD error = ERROR_SUCCESS;
@@ -102,19 +80,28 @@ void IocpBackend::harvest(ref<const IoPortEntry> entry_) {
 
 	const auto token = slot->token;
 	const auto size = slot->size;
+	// Releases the slot.
 	_slots.erase(token);
-	delete slot;
 	_sink(token, translate(error, bytes, size));
 }
 
 void IocpBackend::cancel(const ptr<void> token_) {
 	if (const auto it = _slots.find(token_); it != _slots.end()) {
-		cancelSlot(it->second);
+		cancelSlot(it->second->file, it->second.get());
 	}
 }
 
 void IocpBackend::cancelAll() {
 	for (const auto& [token, slot] : _slots) {
-		cancelSlot(slot);
+		cancelSlot(slot->file, slot.get());
+	}
+}
+
+/**/
+
+namespace {
+	void cancelSlot(const HANDLE file_, const ptr<OVERLAPPED> slot_) {
+		// ERROR_NOT_FOUND: the request already finished and its packet is queued.
+		::hg::assertd(::CancelIoEx(file_, slot_) || ::GetLastError() == ERROR_NOT_FOUND);
 	}
 }
