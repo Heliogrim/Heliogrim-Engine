@@ -128,6 +128,13 @@ namespace hg::engine::scheduler::thread {
 		[[nodiscard]] bool isAffine() noexcept;
 
 		/**
+		 * Marks the calling thread as a scheduler worker; pushes from workers skip the wake.
+		 */
+		void markWorker(bool worker_) noexcept;
+
+		[[nodiscard]] bool isWorker() noexcept;
+
+		/**
 		 * Yields this
 		 *
 		 * @author Julius

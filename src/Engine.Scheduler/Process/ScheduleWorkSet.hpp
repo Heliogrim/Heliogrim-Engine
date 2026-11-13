@@ -32,6 +32,6 @@ namespace hg::engine::scheduler {
 			_Inout_ ref<non_owning_rptr<const task::TaskDelegate>> task_
 		) = 0;
 
-		virtual void transfer(_In_ const non_owning_rptr<ScheduleWorkSet> dst_) = 0;
+		virtual u64 transfer(_In_ const non_owning_rptr<ScheduleWorkSet> dst_) = 0;
 	};
 }
