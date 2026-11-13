@@ -1,5 +1,6 @@
 #include "InputPipeline.hpp"
 
+#include <ranges>
 #include <Engine.Common/Make.hpp>
 
 #include "InputTickStage.hpp"
@@ -15,12 +16,18 @@ InputPipeline::~InputPipeline() = default;
 
 void InputPipeline::mount(ref<StageRegister> register_) {
 
-	(void)register_.registerStage(
-		make_uptr<InputTickStage>(InputTick, this)
-	);
+	_stages = {
+		register_.registerStage(
+			make_uptr<InputTickStage>(InputTick, this)
+		)
+	};
 }
 
 void InputPipeline::dismount(ref<StageRegister> register_) {
 
-	register_.removeStage(InputTick);
+	for (auto& stage : std::ranges::views::reverse(_stages)) {
+		if (stage != None) {
+			register_.removeStage(std::exchange(stage, None).value());
+		}
+	}
 }

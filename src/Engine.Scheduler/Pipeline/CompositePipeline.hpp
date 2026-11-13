@@ -1,13 +1,12 @@
 #pragma once
 
 #include <atomic>
-#include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Collection/DenseMap.hpp>
 
 #include "CompositeDispatcher.hpp"
 #include "StagePipeline.hpp"
-#include "../Waitable/Signal.hpp"
 #include "../Graph/TaskGraph.hpp"
+#include "../Waitable/Signal.hpp"
 
 namespace hg::engine::scheduler {
 	class CompositeSlot;
@@ -57,9 +56,7 @@ namespace hg::engine::scheduler {
 
 		[[nodiscard]] Opt<ref<const Stage>> getStage(cref<string> identifier_) const noexcept override;
 
-		void removeStage(cref<string> identifier_) override;
-
-		void removeStage(mref<non_owning_rptr<Stage>> stage_) override;
+		void removeStage(ref<const Stage> stage_) override;
 
 	private:
 		/**
