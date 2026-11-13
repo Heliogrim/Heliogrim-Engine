@@ -28,10 +28,6 @@ namespace hg::engine::storage {
 			_In_ cref<ActionTypeInfo> actionTypeInfo_
 		) const noexcept;
 
-		void invalidateMutation(_In_ cref<ActionTypeInfo> actionTypeInfo_) const noexcept;
-
-		void invalidateQuery(_In_ cref<ActionTypeInfo> actionTypeInfo_) const noexcept;
-
 	public:
 		[[nodiscard]] Opt<ref<system::ActionResolutionFactory<Query>>> resolveQuery(
 			_In_ cref<ActionTypeInfo> actionTypeInfo_

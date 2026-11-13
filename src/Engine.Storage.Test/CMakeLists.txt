@@ -9,6 +9,7 @@ make_test_project(
 		${PROJECT_NAME}::Engine.Common
 		${PROJECT_NAME}::Engine.Config
 		${PROJECT_NAME}::Engine.Core
+		${PROJECT_NAME}::Engine.Event
 		${PROJECT_NAME}::Engine.Filesystem
 		${PROJECT_NAME}::Engine.IO.Dispatcher
 		${PROJECT_NAME}::Engine.Logging
