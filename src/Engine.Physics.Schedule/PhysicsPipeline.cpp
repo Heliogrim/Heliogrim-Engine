@@ -1,5 +1,6 @@
 #include "PhysicsPipeline.hpp"
 
+#include <ranges>
 #include <Engine.Common/Make.hpp>
 
 #include "PhysicsReadbackStage.hpp"
@@ -15,12 +16,17 @@ PhysicsPipeline::~PhysicsPipeline() = default;
 
 void PhysicsPipeline::mount(ref<scheduler::StageRegister> register_) {
 
-	(void)register_.registerStage(make_uptr<PhysicsTickStage>(PhysicsTick, this));
-	(void)register_.registerStage(make_uptr<PhysicsReadbackStage>(PhysicsReadback, this));
+	_stages = {
+		register_.registerStage(make_uptr<PhysicsTickStage>(PhysicsTick, this)),
+		register_.registerStage(make_uptr<PhysicsReadbackStage>(PhysicsReadback, this))
+	};
 }
 
 void PhysicsPipeline::dismount(ref<scheduler::StageRegister> register_) {
 
-	register_.removeStage(PhysicsReadback);
-	register_.removeStage(PhysicsTick);
+	for (auto& stage : std::ranges::views::reverse(_stages)) {
+		if (stage != None) {
+			register_.removeStage(std::exchange(stage, None).value());
+		}
+	}
 }

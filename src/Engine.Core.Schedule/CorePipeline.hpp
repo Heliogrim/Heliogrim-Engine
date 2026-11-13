@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Engine.Common/Collection/Array.hpp>
 #include <Engine.Scheduler/Pipeline/StagePipeline.hpp>
 
 namespace hg::engine::core::schedule {
@@ -19,6 +20,9 @@ namespace hg::engine::core::schedule {
 		CorePipeline();
 
 		~CorePipeline() override;
+
+	private:
+		Array<Opt<ref<const ::hg::engine::scheduler::Stage>>, 2> _stages;
 
 	public:
 		void mount(ref<scheduler::StageRegister> register_) override;

@@ -15,12 +15,18 @@ ReflowPipeline::~ReflowPipeline() = default;
 
 void ReflowPipeline::mount(ref<StageRegister> register_) {
 
-	(void)register_.registerStage(
-		make_uptr<ReflowFlowStage>(Tick, this)
-	);
+	_stages = {
+		register_.registerStage(
+			make_uptr<ReflowFlowStage>(Tick, this)
+		)
+	};
 }
 
 void ReflowPipeline::dismount(ref<StageRegister> register_) {
 
-	register_.removeStage(Tick);
+	for (auto& stage : _stages) {
+		if (stage != None) {
+			register_.removeStage(std::exchange(stage, None).value());
+		}
+	}
 }

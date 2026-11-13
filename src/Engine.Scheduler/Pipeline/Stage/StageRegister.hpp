@@ -20,8 +20,6 @@ namespace hg::engine::scheduler {
 
 		[[nodiscard]] virtual Opt<ref<const Stage>> getStage(cref<string> identifier_) const noexcept = 0;
 
-		virtual void removeStage(cref<string> identifier_) = 0;
-
-		virtual void removeStage(mref<non_owning_rptr<Stage>> stage_) = 0;
+		virtual void removeStage(ref<const Stage> stage_) = 0;
 	};
 }
