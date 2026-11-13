@@ -46,19 +46,29 @@ Future<Vector<IoCompletion>> IoQueue::submit(mref<Vector<IoRequest>> requests_) 
 void IoQueue::cancel(const u64 mask_, const u64 value_) {
 	_system.thread().postDetached(
 		[self = arci_from_this(), mask_, value_] {
-			for (auto& batch : self->_batches) {
-				for (auto i = batch->next; i < batch->ops.size(); ++i) {
-					auto& op = batch->ops[i];
-					if (not op.finished && (batch->requests[i].tag & mask_) == value_) {
-						batch->results[i] = { IoStatus::eCancelled, 0u, 0u };
-						op.finished = true;
-						--batch->open;
-					}
-				}
-			}
-			self->resolveReady();
+			self->cancelMatching(mask_, value_);
 		}
 	);
+}
+
+void IoQueue::cancelMatching(const u64 mask_, const u64 value_) {
+	for (auto& batch : _batches) {
+		for (u32 i = 0; i < batch->ops.size(); ++i) {
+			auto& op = batch->ops[i];
+			if (op.finished || (batch->requests[i].tag & mask_) != value_) {
+				continue;
+			}
+			if (i < batch->next) {
+				// shortcut: an aborted read may have partly filled its buffer; no caller reads cancelled buffers yet.
+				_system._backend->cancel(&op);
+				continue;
+			}
+			batch->results[i] = { IoStatus::eCancelled, 0u, 0u };
+			op.finished = true;
+			--batch->open;
+		}
+	}
+	resolveReady();
 }
 
 IoPriority IoQueue::priority() const noexcept {
@@ -78,7 +88,11 @@ void IoQueue::accept(mref<Promise<Vector<IoCompletion>>> promise_, mref<Vector<I
 
 	for (u32 i = 0; i < count; ++i) {
 		batch->ops[i] = { batch.get(), i, false };
-		if (batch->requests[i].compression != IoCompression::eNone || batch->requests[i].file == nullptr) {
+		if (_system._stopping) {
+			batch->results[i].status = IoStatus::eCancelled;
+			batch->ops[i].finished = true;
+			--batch->open;
+		} else if (batch->requests[i].compression != IoCompression::eNone || batch->requests[i].file == nullptr) {
 			batch->results[i].osError = ERROR_INVALID_PARAMETER;
 			batch->ops[i].finished = true;
 			--batch->open;
