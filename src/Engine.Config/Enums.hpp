@@ -23,6 +23,14 @@ namespace hg::engine::cfg {
 
 	/**/
 
+	enum class SchedulerConfigProperty {
+		/**/
+		eWorkerCount,
+		eWorkerReserve
+	};
+
+	/**/
+
 	enum class RuntimeConfigProperty {
 		/**/
 		eLocalBasePath,
