@@ -55,8 +55,11 @@ namespace hg::engine::io {
 		uptr<IoBackend> _backend;
 		u32 _maxInFlight;
 		std::atomic_bool _running { false };
+		// Set by the io thread once stopping left nothing in flight.
+		std::atomic_bool _drained { false };
 
 		// Io thread only.
+		bool _stopping = false;
 		u32 _inFlight = 0;
 		std::array<Vector<Arci<IoQueue>>, 4> _active;
 		std::array<size_t, 4> _cursor {};
@@ -68,7 +71,7 @@ namespace hg::engine::io {
 
 		[[nodiscard]] ptr<void> pick();
 
-		// Issues while below the in-flight cap.
-		void pump();
+		// Issues while below the in-flight cap, at most one cap per call; true if it may issue more right away.
+		[[nodiscard]] bool pump();
 	};
 }

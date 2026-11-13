@@ -1,5 +1,6 @@
 #include "IoSystem.hpp"
 
+#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Common/stdafx.h>
 
 using namespace hg::engine::io;
@@ -17,7 +18,9 @@ IoSystem::IoSystem(const IoBackendKind kind_, const u32 maxInFlight_) :
 			}
 		)
 	),
-	_maxInFlight(maxInFlight_) {}
+	_maxInFlight(maxInFlight_) {
+	::hg::assertrt(maxInFlight_ > 0u);
+}
 
 IoSystem::~IoSystem() {
 	stop();
@@ -28,16 +31,32 @@ void IoSystem::start() {
 	_thread.start(
 		[this](ref<const IoPortEntry> entry_) {
 			_backend->harvest(entry_);
-			pump();
+		},
+		[this] {
+			return pump();
 		}
 	);
 }
 
 void IoSystem::stop() {
-	// shortcut: in-flight io is not drained, its slots leak and batches stay pending; Task 2 (StopDrainsInFlight).
-	if (_running.exchange(false)) {
-		_thread.stop();
+	if (not _running.exchange(false)) {
+		return;
 	}
+
+	// shortcut: a submit posted after the inbox closes breaks its promise; callers stop producing before stop().
+	_thread.thread().postDetached(
+		[this] {
+			_stopping = true;
+			for (const auto& list : _active) {
+				for (const auto& queue : list) {
+					queue->cancelMatching(0uLL, 0uLL);
+				}
+			}
+			_backend->cancelAll();
+		}
+	);
+	_drained.wait(false);
+	_thread.stop();
 }
 
 bool IoSystem::running() const noexcept {
@@ -62,7 +81,7 @@ Future<Arci<IoFile>, IoError> IoSystem::open(cref<std::filesystem::path> path_, 
 				FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
 				nullptr,
 				rw ? OPEN_ALWAYS : OPEN_EXISTING,
-				FILE_FLAG_OVERLAPPED,
+				_backend->openFlags(),
 				nullptr
 			);
 			if (handle == INVALID_HANDLE_VALUE) {
@@ -130,7 +149,6 @@ void IoSystem::activate(mref<Arci<IoQueue>> queue_) {
 		queue_->_listed = true;
 		_active[static_cast<size_t>(queue_->priority())].push_back(std::move(queue_));
 	}
-	pump();
 }
 
 ptr<void> IoSystem::pick() {
@@ -154,13 +172,23 @@ ptr<void> IoSystem::pick() {
 	return nullptr;
 }
 
-void IoSystem::pump() {
-	while (_inFlight < _maxInFlight) {
+bool IoSystem::pump() {
+	if (_stopping) {
+		if (_inFlight == 0u && not _drained) {
+			_drained = true;
+			_drained.notify_all();
+		}
+		return false;
+	}
+
+	// Bounded, so a synchronous backend returns to the inbox between rounds.
+	for (u32 issued = 0; issued < _maxInFlight && _inFlight < _maxInFlight; ++issued) {
 		const auto token = pick();
 		if (token == nullptr) {
-			break;
+			return false;
 		}
 		++_inFlight;
 		_backend->issue(IoQueue::requestOf(token), token);
 	}
+	return _inFlight < _maxInFlight;
 }
