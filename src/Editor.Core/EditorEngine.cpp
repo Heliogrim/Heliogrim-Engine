@@ -10,6 +10,7 @@
 #include <Engine.ACS.Schedule/ActorPipeline.hpp>
 #include <Engine.ACS/ActorModule.hpp>
 #include <Engine.Assets/Assets.hpp>
+#include <Engine.Config/Enums.hpp>
 #include <Engine.Config/Provider/EditorProvider.hpp>
 #include <Engine.Config/Provider/ProjectProvider.hpp>
 #include <Engine.Config/Provider/SystemProvider.hpp>
@@ -140,7 +141,11 @@ bool EditorEngine::init() {
 
 	/* Note: Root modules are setup via direct call without fiber context guarantee. */
 	_platform->setup();
-	_scheduler->setup(Scheduler::auto_worker_count);
+	// A mismatching config value silently falls back to 0 (auto).
+	_scheduler->setup(
+		_config.getOrDefault<u32>(engine::cfg::SchedulerConfigProperty::eWorkerCount, 0u).value_or(0u),
+		_config.getOrDefault<u32>(engine::cfg::SchedulerConfigProperty::eWorkerReserve, 0u).value_or(0u)
+	);
 	_storage.setup(_config);
 	_resources->setup();
 

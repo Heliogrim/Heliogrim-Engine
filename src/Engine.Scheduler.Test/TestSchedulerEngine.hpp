@@ -35,7 +35,7 @@ namespace hg::test {
 		}
 
 		bool init() override {
-			_scheduler->setup(_workers);
+			_scheduler->setup(_workers, engine::Scheduler::default_worker_reserve);
 			return setEngineState(engine::core::EngineState::eInitialized);
 		}
 

@@ -7,6 +7,13 @@
 #include "Process/Schedule.hpp"
 #include "Worker/Worker.hpp"
 
+namespace hg::engine::scheduler {
+	/**
+	 * Worker count for a machine with logical_ threads, keeping reserve_ of them free (0 selects floor(log2(logical_)) + hot).
+	 */
+	[[nodiscard]] u32 autoWorkerCount(u32 logical_, u32 reserve_) noexcept;
+}
+
 namespace hg::engine {
 	class CompScheduler /* TODO: final */ :
 		public Scheduler {
@@ -40,9 +47,10 @@ namespace hg::engine {
 		 * @author Julius
 		 * @date 13.11.2020
 		 *
-		 * @param  workers_ The workers.
+		 * @param  workers_ The workers (0 derives the count from the reserve).
+		 * @param  reserve_ Logical threads left to non-worker threads (0 selects the default).
 		 */
-		void setup(u32 workers_) override;
+		void setup(u32 workers_, u32 reserve_) override;
 
 		void finalize() override;
 
