@@ -129,6 +129,8 @@ namespace {
 			Opt<ir::PlacePath> place {};
 			/* for an alias rooted in another alias (re-borrow): scope index of that alias */
 			size_t parentAlias = ~0uz;
+			/* for a local: its `let` / `const` keyword, empty when it has none */
+			ir::SourceLoc keyword {};
 		};
 
 		ref<ir::Module> _mod;
@@ -346,6 +348,7 @@ namespace {
 					}
 					_mod.stmts[ref_.index].type = type;
 					_scope.emplace_back(_mod.stmts[ref_.index].name, type, mutableLocal ? Mode::eMutable : Mode::eConstant);
+					_scope.back().keyword = _mod.stmts[ref_.index].keyword;
 					break;
 				}
 				case StmtKind::eDeclareRef: {
@@ -359,7 +362,7 @@ namespace {
 						error(codes::asl("not-borrowable"), "'&' needs a place expression");
 					} else if (writes) {
 						if (const auto denied = readOnly(lhs, true); denied.has_value()) {
-							error(codes::asl("not-assignable"), *denied);
+							deniedBorrow(lhs, *denied);
 						}
 					}
 					_mod.stmts[ref_.index].type = type;
@@ -606,6 +609,22 @@ namespace {
 			return e;
 		}
 
+		/* reports the `&mut` borrow `readOnly` denied; a `const` local root of the root module gets the fix that declares it with `let` */
+		void deniedBorrow(ExprRef place_, String message_) {
+			auto diagnostic = ir::Diagnostic::error(codes::asl("not-assignable"), std::move(message_)).at(spanIn(_mod, _loc));
+			const auto* root = rootOf(place_);
+			const auto* entry = root != nullptr && root->kind == ExprKind::eNameRef ? lookup(*root) : nullptr;
+			if (entry != nullptr && entry->mode == Mode::eConstant && entry->keyword.length != 0uL) {
+				std::move(diagnostic).fix(
+					engine::diag::Fix {
+						"declare '" + entry->name + "' with 'let'", { engine::diag::TextEdit { spanIn(_mod, entry->keyword), "let" } },
+						engine::diag::Applicability::eMachineApplicable
+					}
+				);
+			}
+			_diags.emplace_back(std::move(diagnostic));
+		}
+
 		/* Why the place cannot be written (assignment) or borrowed `&mut`; none when it can */
 		[[nodiscard]] Opt<String> readOnly(ExprRef place_, bool borrow_) const {
 			const auto* root = rootOf(place_);
@@ -821,9 +840,14 @@ namespace {
 				}
 				for (const auto& other : others) {
 					if (not ir::disjoint(_mod, *mine, other, immutable)) {
-						error(codes::asl("borrow-conflict"), 
-							"'&mut' argument '" + ir::describePlace(_mod, *mine) + "' overlaps argument '" +
-							ir::describePlace(_mod, other) + "' of call to '" + name_ + "'"
+						_diags.emplace_back(
+							ir::Diagnostic::error(
+								codes::asl("borrow-conflict"),
+								"'&mut' argument '" + ir::describePlace(_mod, *mine) + "' overlaps argument '" + ir::describePlace(_mod, other) +
+								"' of call to '" + name_ + "'"
+							)
+							.at(spanIn(_mod, _mod.exprs[operands_[index_].index].loc))
+							.label(spanIn(_mod, _mod.exprs[operands_[j].index].loc), "overlaps the '&mut' argument")
 						);
 						return true;
 					}
@@ -846,7 +870,7 @@ namespace {
 					continue;
 				}
 				if (const auto denied = readOnly(operands_[i], true); denied.has_value()) {
-					error(codes::asl("not-assignable"), *denied);
+					deniedBorrow(operands_[i], *denied);
 					continue;
 				}
 				if (not overlap(name_, operands_, i)) {
@@ -1018,7 +1042,7 @@ namespace {
 							continue;
 						}
 						if (const auto denied = readOnly(operands_[k], true); denied.has_value()) {
-							error(codes::asl("not-assignable"), *denied);
+							deniedBorrow(operands_[k], *denied);
 							continue;
 						}
 						const auto isImage = name_ == "image_store";
