@@ -20,14 +20,14 @@ namespace AccelLang {
 
 		[[nodiscard]] Module parse(StringView name_, StringView source_, EntryKind entry_ = EntryKind::eFragment) {
 			auto res = parseModule(name_, source_, entry_, ModuleResolver { noIncludes });
-			EXPECT_TRUE(res.has_value()) << (res.has_value() || res.error().empty() ? "" : res.error().front().message);
+			EXPECT_TRUE(res.has_value()) << (res.has_value() || res.error().empty() ? "" : res.error().front().message());
 			return res.has_value() ? std::move(res).value() : Module {};
 		}
 
 		[[nodiscard]] Module mergeOk(std::initializer_list<const Module*> modules_) {
 			const Vector<const Module*> list { modules_ };
 			auto res = merge(list);
-			EXPECT_TRUE(res.has_value()) << (res.has_value() || res.error().empty() ? "" : res.error().front().message);
+			EXPECT_TRUE(res.has_value()) << (res.has_value() || res.error().empty() ? "" : res.error().front().message());
 			return res.has_value() ? std::move(res).value() : Module {};
 		}
 
@@ -39,7 +39,7 @@ namespace AccelLang {
 		}
 
 		[[nodiscard]] bool mentions(ref<const Diagnostic> diag_, StringView text_) {
-			return diag_.message.find(text_) != String::npos;
+			return diag_.message().find(text_) != String::npos;
 		}
 
 		[[nodiscard]] u32 functionIndex(ref<const Module> mod_, StringView name_) {
@@ -73,7 +73,7 @@ namespace AccelLang {
 		const auto shader = parse("shader", "fn GetWorldPosition() -> f32vec4;\nfn main() {\n\tposition = GetWorldPosition();\n}\n", EntryKind::eVertex);
 		const auto diags = mergeFail({ &profile, &shader });
 		ASSERT_EQ(diags.size(), 1uz);
-		EXPECT_TRUE(mentions(diags[0], "missing body for function 'GetWorldPosition()'")) << diags[0].message;
+		EXPECT_TRUE(mentions(diags[0], "missing body for function 'GetWorldPosition()'")) << diags[0].message();
 	}
 
 	TEST(MergeTest, OverloadsAreDistinctFunctions) {
@@ -88,7 +88,7 @@ namespace AccelLang {
 		const auto b = parse("B", "fn Sat(x: f32vec3) -> f32vec3 { return x; }\n");
 		const auto diags = mergeFail({ &a, &b });
 		ASSERT_EQ(diags.size(), 1uz);
-		EXPECT_TRUE(mentions(diags[0], "missing body for function 'Sat(f32)'")) << diags[0].message;
+		EXPECT_TRUE(mentions(diags[0], "missing body for function 'Sat(f32)'")) << diags[0].message();
 	}
 
 	TEST(MergeTest, DuplicateBodyNamesBothModules) {
@@ -96,7 +96,7 @@ namespace AccelLang {
 		const auto b = parse("B", "fn X() -> f32 { return 0.5; }\n");
 		const auto diags = mergeFail({ &a, &b });
 		ASSERT_EQ(diags.size(), 1uz);
-		EXPECT_TRUE(mentions(diags[0], "duplicate body for function 'X()' in modules 'A' and 'B'")) << diags[0].message;
+		EXPECT_TRUE(mentions(diags[0], "duplicate body for function 'X()' in modules 'A' and 'B'")) << diags[0].message();
 	}
 
 	TEST(MergeTest, RedefineAllowedLastWins) {
@@ -123,7 +123,7 @@ namespace AccelLang {
 		const auto b = parse("B", "fn Color() -> f32 { return 0.5; }\nfn Other() -> f32 { return 0.5; }\n");
 		const auto diags = mergeFail({ &a, &b });
 		ASSERT_EQ(diags.size(), 1uz);
-		EXPECT_TRUE(mentions(diags[0], "duplicate body for function 'Other()' in modules 'A' and 'B'")) << diags[0].message;
+		EXPECT_TRUE(mentions(diags[0], "duplicate body for function 'Other()' in modules 'A' and 'B'")) << diags[0].message();
 	}
 
 	TEST(MergeTest, RedefineWithoutAllowOnTheReplacedBodyIsDiagnostic) {
@@ -133,7 +133,7 @@ namespace AccelLang {
 		const auto c = parse("C", "fn Color() -> f32 { return 0.25; }\n");
 		const auto diags = mergeFail({ &a, &b, &c });
 		ASSERT_EQ(diags.size(), 1uz);
-		EXPECT_TRUE(mentions(diags[0], "duplicate body for function 'Color()' in modules 'B' and 'C'")) << diags[0].message;
+		EXPECT_TRUE(mentions(diags[0], "duplicate body for function 'Color()' in modules 'B' and 'C'")) << diags[0].message();
 	}
 
 	TEST(MergeTest, BindingTypeConflictNamesBothModules) {
@@ -143,7 +143,7 @@ namespace AccelLang {
 		ASSERT_EQ(diags.size(), 1uz);
 		EXPECT_TRUE(
 			mentions(diags[0], "binding 'camera' declared as block { f32mat4 vp; } in 'A' and block { f32vec4 vp; } in 'B'")
-		) << diags[0].message;
+		) << diags[0].message();
 	}
 
 	TEST(MergeTest, SameBindingSameTypeCollapses) {
@@ -190,7 +190,7 @@ namespace AccelLang {
 		const auto b = parse("B", "toggle Shading : { Forward, Clustered } = Forward;\n");
 		const auto diags = mergeFail({ &a, &b });
 		ASSERT_EQ(diags.size(), 1uz);
-		EXPECT_TRUE(mentions(diags[0], "toggle 'Shading' declared with different values in 'A' and 'B'")) << diags[0].message;
+		EXPECT_TRUE(mentions(diags[0], "toggle 'Shading' declared with different values in 'A' and 'B'")) << diags[0].message();
 	}
 
 	/* Rulings */
@@ -210,7 +210,7 @@ namespace AccelLang {
 		const auto b = parse("B", "toggle Shading : { Forward, Deferred } = Deferred;\n");
 		const auto diags = mergeFail({ &a, &b });
 		ASSERT_EQ(diags.size(), 1uz);
-		EXPECT_TRUE(mentions(diags[0], "toggle 'Shading' defaults to 'Forward' in 'A' and 'Deferred' in 'B'")) << diags[0].message;
+		EXPECT_TRUE(mentions(diags[0], "toggle 'Shading' defaults to 'Forward' in 'A' and 'Deferred' in 'B'")) << diags[0].message();
 	}
 
 	TEST(MergeTest, EntryAttributesTakeTheNonDefaultValue) {
@@ -271,7 +271,7 @@ namespace AccelLang {
 		const auto b = parse("B", "@input (mode = forward, id = \"tag\") u32 tag;\n");
 		const auto diags = mergeFail({ &a, &b });
 		ASSERT_EQ(diags.size(), 1uz);
-		EXPECT_TRUE(mentions(diags[0], "binding 'tag' declared as u8 in 'A' and u32 in 'B'")) << diags[0].message;
+		EXPECT_TRUE(mentions(diags[0], "binding 'tag' declared as u8 in 'A' and u32 in 'B'")) << diags[0].message();
 	}
 
 	TEST(MergeTest, StructurallyEqualTypesAreDeduplicated) {
@@ -316,7 +316,7 @@ namespace AccelLang {
 			const auto b = parse("B", c.b);
 			const auto diags = mergeFail({ &a, &b });
 			ASSERT_EQ(diags.size(), 1uz) << c.message;
-			EXPECT_TRUE(mentions(diags[0], c.message)) << diags[0].message;
+			EXPECT_TRUE(mentions(diags[0], c.message)) << diags[0].message();
 		}
 	}
 
@@ -325,7 +325,7 @@ namespace AccelLang {
 		const auto b = parse("B", "fn F() -> f32vec4 { return f32vec4(1.0); }\n");
 		const auto diags = mergeFail({ &a, &b });
 		ASSERT_EQ(diags.size(), 1uz);
-		EXPECT_TRUE(mentions(diags[0], "signature of function 'F' differs between 'A' and 'B'")) << diags[0].message;
+		EXPECT_TRUE(mentions(diags[0], "signature of function 'F' differs between 'A' and 'B'")) << diags[0].message();
 	}
 
 	TEST(MergeTest, WhenVariantBodiesAreNotDuplicates) {
@@ -377,14 +377,15 @@ namespace AccelLang {
 	TEST(MergeTest, EmptyInputIsDiagnostic) {
 		const auto diags = mergeFail({});
 		ASSERT_EQ(diags.size(), 1uz);
-		EXPECT_TRUE(mentions(diags[0], "no modules")) << diags[0].message;
+		EXPECT_TRUE(mentions(diags[0], "no modules")) << diags[0].message();
+		EXPECT_EQ(diags[0].code()->key, "internal-inconsistent-pipeline");
 	}
 
 	TEST(MergeTest, NullModuleIsDiagnostic) {
 		const auto a = parse("A", "@input (mode = forward) f32 x;\n");
 		const auto diags = mergeFail({ &a, nullptr });
 		ASSERT_EQ(diags.size(), 1uz);
-		EXPECT_TRUE(mentions(diags[0], "module #1 is null")) << diags[0].message;
+		EXPECT_TRUE(mentions(diags[0], "module #1 is null")) << diags[0].message();
 	}
 
 	TEST(MergeTest, SingleModuleMergesToItself) {
@@ -403,7 +404,7 @@ namespace AccelLang {
 		const auto a = parse("A", String(cameraMat4) + "fn main() {\n\tlet m = camera.vp;\n}\n");
 		const auto diags = mergeFail({ &a, &a });
 		ASSERT_EQ(diags.size(), 1uz);
-		EXPECT_TRUE(mentions(diags[0], "duplicate body for function 'main()' in modules 'A' and 'A'")) << diags[0].message;
+		EXPECT_TRUE(mentions(diags[0], "duplicate body for function 'main()' in modules 'A' and 'A'")) << diags[0].message();
 	}
 
 	TEST(MergeTest, OutOfRangeRefsAreDiagnostics) {
@@ -441,8 +442,8 @@ namespace AccelLang {
 		for (const auto& mod : invalid) {
 			const auto diags = mergeFail({ &valid, &mod });
 			ASSERT_EQ(diags.size(), 1uz);
-			EXPECT_TRUE(mentions(diags[0], "module 'hand'")) << diags[0].message;
-			EXPECT_TRUE(mentions(diags[0], "out of range")) << diags[0].message;
+			EXPECT_TRUE(mentions(diags[0], "module 'hand'")) << diags[0].message();
+			EXPECT_TRUE(mentions(diags[0], "out of range")) << diags[0].message();
 		}
 	}
 }

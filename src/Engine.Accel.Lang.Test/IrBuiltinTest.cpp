@@ -15,12 +15,12 @@ namespace AccelLang {
 
 		[[nodiscard]] String errorOf(StringView source_, EntryKind entry_) {
 			auto res = parseModule("M", source_, entry_, ModuleResolver { noIncludes });
-			return res.has_value() || res.error().empty() ? String {} : res.error().front().message;
+			return res.has_value() || res.error().empty() ? String {} : res.error().front().message();
 		}
 
 		[[nodiscard]] bool parses(StringView source_, EntryKind entry_ = EntryKind::eFragment) {
 			auto res = parseModule("M", source_, entry_, ModuleResolver { noIncludes });
-			EXPECT_TRUE(res.has_value()) << (res.has_value() || res.error().empty() ? "" : res.error().front().message);
+			EXPECT_TRUE(res.has_value()) << (res.has_value() || res.error().empty() ? "" : res.error().front().message());
 			return res.has_value();
 		}
 	}
@@ -83,7 +83,7 @@ namespace AccelLang {
 
 		[[nodiscard]] Diagnostics warningsOf(String body_) {
 			auto res = parseModule("M", String { texturePrelude } + body_, EntryKind::eFragment, ModuleResolver { noIncludes });
-			EXPECT_TRUE(res.has_value()) << (res.has_value() || res.error().empty() ? "" : res.error().front().message);
+			EXPECT_TRUE(res.has_value()) << (res.has_value() || res.error().empty() ? "" : res.error().front().message());
 			return res.has_value() ? res->warnings : Diagnostics {};
 		}
 	}
@@ -118,15 +118,15 @@ namespace AccelLang {
 			"fn main() {\n\tcolor = f32vec4(0.0);\n\tif (uv.x > 0.5) {\n\t\tcolor = shadowReprojectFilter(uv);\n\t}\n}\n"
 		);
 		ASSERT_EQ(warnings.size(), 1uz);
-		EXPECT_EQ(warnings.front().severity, Severity::eWarning);
+		EXPECT_EQ(warnings.front().severity(), Severity::eWarning);
 		EXPECT_EQ(
-			warnings.front().message,
+			warnings.front().message(),
 			"'sample' uses implicit derivatives under lane-dependent control (via shadowReprojectFilter); results are undefined, use sample_lod"
 		);
 
 		const auto direct = warningsOf("fn main() {\n\tcolor = f32vec4(0.0);\n\tif (uv.x > 0.5) {\n\t\tcolor = sample(t2, smp, uv);\n\t}\n}\n");
 		ASSERT_EQ(direct.size(), 1uz);
-		EXPECT_EQ(direct.front().message, "'sample' uses implicit derivatives under lane-dependent control; results are undefined, use sample_lod");
+		EXPECT_EQ(direct.front().message(), "'sample' uses implicit derivatives under lane-dependent control; results are undefined, use sample_lod");
 	}
 
 	TEST(BuiltinTest, SampleLodUnderDivergenceIsSilent) {
@@ -155,7 +155,7 @@ namespace AccelLang {
 			EntryKind::eFragment,
 			ModuleResolver { noIncludes }
 		);
-		ASSERT_TRUE(res.has_value()) << res.error().front().message;
+		ASSERT_TRUE(res.has_value()) << res.error().front().message();
 		for (const auto& stmt : res->stmts) {
 			if (stmt.kind != StmtKind::eDeclareLocal) {
 				continue;

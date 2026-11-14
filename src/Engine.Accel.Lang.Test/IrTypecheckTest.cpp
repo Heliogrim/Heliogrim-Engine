@@ -1,5 +1,10 @@
-#include <algorithm>
 #include "pch.h"
+
+/**/
+
+#include "IrSpan.hpp"
+
+#include <algorithm>
 
 #include <Engine.Accel.Lang/Emitter/GlslEmitter.hpp>
 #include <Engine.Accel.Lang/Ir/Analysis.hpp>
@@ -27,20 +32,20 @@ namespace AccelLang {
 
 		[[nodiscard]] Module parseOk(StringView source_) {
 			auto res = parse(source_);
-			EXPECT_TRUE(res.has_value()) << (res.has_value() || res.error().empty() ? "" : res.error().front().message);
+			EXPECT_TRUE(res.has_value()) << (res.has_value() || res.error().empty() ? "" : res.error().front().message());
 			return res.has_value() ? std::move(res).value() : Module {};
 		}
 
 		[[nodiscard]] String firstMessage(StringView source_) {
 			auto res = parse(source_);
 			EXPECT_FALSE(res.has_value());
-			return res.has_value() || res.error().empty() ? String {} : res.error().front().message;
+			return res.has_value() || res.error().empty() ? String {} : res.error().front().message();
 		}
 
 		/* "" when the module checks; compute entry so workgroup variables are allowed */
 		[[nodiscard]] String messageOf(StringView source_) {
 			auto res = parseModule("M", source_, EntryKind::eCompute, ModuleResolver { noIncludes });
-			return res.has_value() || res.error().empty() ? String {} : res.error().front().message;
+			return res.has_value() || res.error().empty() ? String {} : res.error().front().message();
 		}
 
 		[[nodiscard]] Diagnostic firstDiagnostic(StringView source_) {
@@ -118,7 +123,7 @@ namespace AccelLang {
 		Language target {};
 		const auto layout = assignLayout(computeInterface(mod), mod.types, {});
 		const auto res = GlslEmitter {}.emit(mod, layout, target);
-		ASSERT_TRUE(res.diagnostics.empty()) << res.diagnostics.front().message;
+		ASSERT_TRUE(res.diagnostics.empty()) << res.diagnostics.front().message();
 		ASSERT_FALSE(target.text.empty());
 		EXPECT_TRUE(target.text.front().data.contains("x > 0.0")) << target.text.front().data;
 	}
@@ -148,8 +153,8 @@ namespace AccelLang {
 		auto res = parse("fn F(v: f32vec2) -> f32 {\n\treturn v.xyz;\n}\n");
 		ASSERT_FALSE(res.has_value());
 		ASSERT_FALSE(res.error().empty());
-		EXPECT_EQ(res.error().front().line, 2u);
-		EXPECT_GT(res.error().front().column, 0u);
+		EXPECT_EQ(spanOf(res.error().front()).line, 2u);
+		EXPECT_GT(spanOf(res.error().front()).column, 0u);
 	}
 
 	TEST(TypecheckTest, ParserReportsUnknownNameBeforeTypecheck) {
@@ -300,7 +305,7 @@ namespace AccelLang {
 
 		const auto diagnostics = typecheck(mod);
 		ASSERT_FALSE(diagnostics.empty());
-		EXPECT_EQ(diagnostics.front().message, "unknown name 'missing'");
+		EXPECT_EQ(diagnostics.front().message(), "unknown name 'missing'");
 	}
 
 	TEST(TypecheckTest, IntegerMatrixIsNotNumeric) {
@@ -312,7 +317,7 @@ namespace AccelLang {
 
 		const auto diagnostics = typecheck(mod);
 		ASSERT_FALSE(diagnostics.empty());
-		EXPECT_EQ(diagnostics.front().message, "operand of '-' has type s32mat2");
+		EXPECT_EQ(diagnostics.front().message(), "operand of '-' has type s32mat2");
 	}
 
 	TEST(TypecheckTest, SameNamedStructsWithDifferentFieldsAreDistinct) {
@@ -369,8 +374,8 @@ namespace AccelLang {
 
 	TEST(MutabilityTest, ValueParamIsImmutable) {
 		const auto diagnostic = firstDiagnostic("fn f(x: f32) { x = 1.0; }\nfn main() {}\n");
-		EXPECT_EQ(diagnostic.message, "cannot assign to constant 'x'");
-		EXPECT_EQ(diagnostic.line, 1uL);
+		EXPECT_EQ(diagnostic.message(), "cannot assign to constant 'x'");
+		EXPECT_EQ(spanOf(diagnostic).line, 1uL);
 	}
 
 	TEST(MutabilityTest, RefParamIsImmutable) {
@@ -384,8 +389,8 @@ namespace AccelLang {
 	TEST(MutabilityTest, InputBindingIsReadOnly) {
 		const auto head = String { "@input (mode = bind, id = \"camera\", class = storage) block camera { f32 x; };\n" };
 		const auto diagnostic = firstDiagnostic(head + "fn main() {\n\tcamera.x = 1.0;\n}\n");
-		EXPECT_EQ(diagnostic.message, "cannot assign to read-only binding 'camera'");
-		EXPECT_EQ(diagnostic.line, 3uL);
+		EXPECT_EQ(diagnostic.message(), "cannot assign to read-only binding 'camera'");
+		EXPECT_EQ(spanOf(diagnostic).line, 3uL);
 		EXPECT_TRUE(
 			firstMessage(head + "fn main() {\n\tlet r = &mut camera.x;\n}\n").contains("cannot borrow read-only binding 'camera' as mutable")
 		);
@@ -393,6 +398,13 @@ namespace AccelLang {
 
 	TEST(MutabilityTest, StorageReadWriteIsAssignable) {
 		parseOk("@input (mode = bind, id = \"camera\", class = storage, access = read_write) block camera { f32 x; };\nfn main() {\n\tcamera.x = 1.0;\n}\n");
+	}
+
+	TEST(MutabilityTest, BorrowOfValueHasItsCode) {
+		const auto res = parse("fn main() {\n\tlet r = &1.0;\n}\n");
+		ASSERT_FALSE(res.has_value());
+		ASSERT_FALSE(res.error().empty());
+		EXPECT_EQ(res.error().front().code()->key, "not-borrowable");
 	}
 
 	TEST(MutabilityTest, AliasThroughMutRefIsDiagnostic) {
@@ -501,8 +513,8 @@ namespace AccelLang {
 
 	TEST(MutabilityTest, OverloadsDifferingOnlyInReferenceKindAreDiagnostic) {
 		const auto diagnostic = firstDiagnostic("fn f(x: f32) {}\nfn f(x: &mut f32) {}\nfn main() {}\n");
-		EXPECT_EQ(diagnostic.message, "overloads of 'f' differ only in reference kind");
-		EXPECT_EQ(diagnostic.line, 2uL);
+		EXPECT_EQ(diagnostic.message(), "overloads of 'f' differ only in reference kind");
+		EXPECT_EQ(spanOf(diagnostic).line, 2uL);
 	}
 
 	TEST(MutabilityTest, AliasingMutArgumentsIsDiagnostic) {
@@ -526,20 +538,20 @@ namespace AccelLang {
 	TEST(TypecheckTest, DiscardInVertexIsDiagnostic) {
 		auto res = parseModule("M", "fn main() {\n\tdiscard;\n}\n", EntryKind::eVertex, ModuleResolver { noIncludes });
 		ASSERT_FALSE(res.has_value());
-		EXPECT_TRUE(res.error().front().message.contains("'discard' is only valid in fragment stages"));
+		EXPECT_TRUE(res.error().front().message().contains("'discard' is only valid in fragment stages"));
 		(void)parseOk("fn main() {\n\tdiscard;\n}\n");
 	}
 
 	TEST(TypecheckTest, FloatModuloIsDiagnostic) {
 		auto res = parse("fn F(a: f32) -> f32 {\n\treturn a % 2.0;\n}\n");
 		ASSERT_FALSE(res.has_value());
-		EXPECT_TRUE(res.error().front().message.contains("operator '%' needs integer operands, got f32")) << res.error().front().message;
-		EXPECT_EQ(res.error().front().line, 2u);
+		EXPECT_TRUE(res.error().front().message().contains("operator '%' needs integer operands, got f32")) << res.error().front().message();
+		EXPECT_EQ(spanOf(res.error().front()).line, 2u);
 
 		auto compound = parse("fn F(a: f32) -> f32 {\n\tlet b = a;\n\tb %= 2.0;\n\treturn b;\n}\n");
 		ASSERT_FALSE(compound.has_value());
-		EXPECT_TRUE(compound.error().front().message.contains("operator '%' needs integer operands, got f32"));
-		EXPECT_EQ(compound.error().front().line, 3u);
+		EXPECT_TRUE(compound.error().front().message().contains("operator '%' needs integer operands, got f32"));
+		EXPECT_EQ(spanOf(compound.error().front()).line, 3u);
 
 		(void)parseOk("fn F(a: u32) -> u32 {\n\tlet b = a;\n\tb %= 3u;\n\treturn b % 2u;\n}\n");
 	}

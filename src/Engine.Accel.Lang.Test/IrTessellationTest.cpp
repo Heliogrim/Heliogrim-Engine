@@ -22,13 +22,13 @@ namespace AccelLang {
 
 		[[nodiscard]] Module parseOk(StringView source_, EntryKind entry_) {
 			auto res = parse(source_, entry_);
-			EXPECT_TRUE(res.has_value()) << (res.has_value() || res.error().empty() ? "" : res.error().front().message);
+			EXPECT_TRUE(res.has_value()) << (res.has_value() || res.error().empty() ? "" : res.error().front().message());
 			return res.has_value() ? std::move(res).value() : Module {};
 		}
 
 		[[nodiscard]] String errorOf(StringView source_, EntryKind entry_) {
 			auto res = parse(source_, entry_);
-			return res.has_value() || res.error().empty() ? String {} : res.error().front().message;
+			return res.has_value() || res.error().empty() ? String {} : res.error().front().message();
 		}
 
 		[[nodiscard]] String emitGlsl(ref<Module> mod_) {

@@ -102,7 +102,7 @@ std::expected<Intermediate, ir::Diagnostics> ir::lowerToIntermediate(
 	ref<const DenseMap<String, s32>> vertexFormats_
 ) {
 	if (dialect_ != Dialect::eVulkanGlsl460) {
-		return std::unexpected(Diagnostics { Diagnostic { .message = "Only Vulkan GLSL 460 can be emitted." } });
+		return std::unexpected(Diagnostics { Diagnostic::error(codes::asl("unsupported-target"), "Only Vulkan GLSL 460 can be emitted.") });
 	}
 
 	auto lowered = lowerRegions(resolved_);
@@ -128,7 +128,7 @@ std::expected<Intermediate, ir::Diagnostics> ir::lowerToIntermediate(
 			if (entry.input && resolved_.entry == EntryKind::eVertex) {
 				const auto offset = vertexOffsets_.find(entry.id);
 				if (offset == vertexOffsets_.end()) {
-					diags.emplace_back(Diagnostic { .message = "Vertex input '" + entry.id + "' has no vertex offset." });
+					diags.emplace_back(Diagnostic::error(codes::asl("missing-vertex-offset"), "Vertex input '" + entry.id + "' has no vertex offset."));
 				} else if (index < layout_.inputLocations.size()) {
 					const auto format = vertexFormats_.find(entry.id);
 					// set -1: vertex buffer binding 0

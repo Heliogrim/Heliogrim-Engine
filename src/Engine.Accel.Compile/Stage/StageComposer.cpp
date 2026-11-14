@@ -9,6 +9,7 @@
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
+#include <Engine.Logging/LogSink.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 
@@ -86,13 +87,10 @@ Vector<smr<StageDerivat>> StageComposer::compose(
 			&pipeline
 		);
 		if (not composed.has_value()) {
-			for (const auto& diagnostic : composed.error()) {
-				Logger::error(
-					"Failed to compose ir stage: {} ({}:{})",
-					diagnostic.message,
-					diagnostic.line,
-					diagnostic.column
-				);
+			engine::diag::LogSink sink {};
+			for (auto& diagnostic : composed.error()) {
+				diagnostic.addNote("while composing effect '" + targetPass_->getEffect()->getName() + "'");
+				sink.emit(std::move(diagnostic));
 			}
 			return {};
 		}
@@ -104,7 +102,7 @@ Vector<smr<StageDerivat>> StageComposer::compose(
 		const auto clash = appendBindLayout(*pipeline, derivats, layout);
 		if (not clash.empty()) {
 			for (const auto& diagnostic : clash) {
-				Logger::error("Failed to lay out ir stages: {}", diagnostic.message);
+				Logger::error("Failed to lay out ir stages: {}", diagnostic.message());
 			}
 			return {};
 		}
