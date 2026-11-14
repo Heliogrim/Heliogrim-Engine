@@ -402,14 +402,6 @@ Opt<ref<ActionResolutionFactory<Query>>> StorageActionResolver::buildQuery(
 	return Some(storedFactory);
 }
 
-void StorageActionResolver::invalidateQuery(cref<ActionTypeInfo> actionTypeInfo_) const noexcept {
-	::hg::todo_panic();
-}
-
-void StorageActionResolver::invalidateMutation(cref<ActionTypeInfo> actionTypeInfo_) const noexcept {
-	::hg::todo_panic();
-}
-
 Opt<ref<ActionResolutionFactory<Query>>> StorageActionResolver::resolveQuery(
 	_In_ cref<ActionTypeInfo> actionTypeInfo_
 ) const noexcept {

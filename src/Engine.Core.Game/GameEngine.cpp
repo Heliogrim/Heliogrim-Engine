@@ -322,6 +322,8 @@ bool GameEngine::shutdown() {
 	_universeContexts.front() = nullptr;
 	_gameSession.reset();
 
+	_storage.stopIo();
+
 	/* The platform thread final drain completes promises and schedules work, so the scheduler must still run. */
 	_platform->tidy();
 

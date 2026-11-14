@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <system_error>
 #include <Engine.Asserts/Todo.hpp>
+#include <Engine.Async/Future/Async.hpp>
 #include <Engine.Common/Expected.hpp>
 #include <Engine.Common/Optional.hpp>
 #include <Engine.Common/Variant.hpp>
@@ -67,6 +68,17 @@ namespace hg::engine::storage {
 		StorageSystem(mref<this_type>) = delete;
 
 		~StorageSystem() noexcept = default;
+
+	public:
+		// Null io, or a stopped one, keeps file access synchronous on the calling thread. Set once before use; the io system must outlive this.
+		void setIo(const ptr<io::IoSystem> io_) noexcept {
+			_context.io = io_;
+		}
+
+		// Call after stopping the io system: cached stages may hold io-backed blobs. Keeps io set; once stopped, `running()` routes to sync.
+		void detachIo() {
+			_context.stacks.clear();
+		}
 
 	protected:
 		ref<IStorageRegistry> _registry;
@@ -222,10 +234,14 @@ namespace hg::engine::storage {
 		auto queryAsync(
 			_In_ mref<Arci<IStorage>> storage_,
 			auto&& fn_
-		) const noexcept -> Future<Result<
+		) const noexcept -> Future<
 			std::invoke_result_t<decltype(fn_), ref<const resource::Blob>>, async_query_blob_error
-		>> {
-			::hg::todo_panic();
+			> {
+			return ::hg::async(
+				[this, storage = ::hg::move(storage_), fn = std::decay_t<decltype(fn_)>(::hg::forward<decltype(fn_)>(fn_))]() mutable {
+					return query(::hg::move(storage), ::hg::move(fn));
+				}
+			);
 		}
 
 		/**/
@@ -249,10 +265,14 @@ namespace hg::engine::storage {
 		auto queryAsync(
 			_In_ mref<Arci<system::PackageStorage>> storage_,
 			auto&& fn_
-		) const noexcept -> Future<Result<
+		) const noexcept -> Future<
 			std::invoke_result_t<decltype(fn_), ref<const resource::ReadonlyPackage>>, async_query_package_error
-		>> {
-			::hg::todo_panic();
+			> {
+			return ::hg::async(
+				[this, storage = ::hg::move(storage_), fn = std::decay_t<decltype(fn_)>(::hg::forward<decltype(fn_)>(fn_))]() mutable {
+					return query(::hg::move(storage), ::hg::move(fn));
+				}
+			);
 		}
 
 		/**/
@@ -276,10 +296,14 @@ namespace hg::engine::storage {
 		auto queryAsync(
 			_In_ mref<Arci<system::ArchiveStorage>> storage_,
 			auto&& fn_
-		) const noexcept -> Future<Result<
-			std::invoke_result_t<decltype(fn_), cref<resource::StorageReadonlyArchive>>, async_query_archive_error
-		>> {
-			::hg::todo_panic();
+		) const noexcept -> Future<
+			std::invoke_result_t<decltype(fn_), ref<resource::StorageReadonlyArchive>>, async_query_archive_error
+			> {
+			return ::hg::async(
+				[this, storage = ::hg::move(storage_), fn = std::decay_t<decltype(fn_)>(::hg::forward<decltype(fn_)>(fn_))]() mutable {
+					return query(::hg::move(storage), ::hg::move(fn));
+				}
+			);
 		}
 
 		/**/
@@ -301,12 +325,16 @@ namespace hg::engine::storage {
 		}
 
 		auto mutateAsync(
-			[[maybe_unused]] _Inout_ mref<Arci<IStorage>> storage_,
-			[[maybe_unused]] auto&& fn_
-		) const noexcept -> Future<Result<
+			_Inout_ mref<Arci<IStorage>> storage_,
+			auto&& fn_
+		) const noexcept -> Future<
 			std::invoke_result_t<decltype(fn_), ref<resource::Blob>>, async_mutate_blob_error
-		>> {
-			::hg::todo_panic();
+			> {
+			return ::hg::async(
+				[this, storage = ::hg::move(storage_), fn = std::decay_t<decltype(fn_)>(::hg::forward<decltype(fn_)>(fn_))]() mutable {
+					return mutate(::hg::move(storage), ::hg::move(fn));
+				}
+			);
 		}
 
 		/**/
@@ -330,10 +358,14 @@ namespace hg::engine::storage {
 		auto mutateAsync(
 			_Inout_ mref<Arci<system::PackageStorage>> storage_,
 			auto&& fn_
-		) const noexcept -> Future<Result<
+		) const noexcept -> Future<
 			std::invoke_result_t<decltype(fn_), ref<resource::ReadWritePackage>>, mutate_package_error
-		>> {
-			::hg::todo_panic();
+			> {
+			return ::hg::async(
+				[this, storage = ::hg::move(storage_), fn = std::decay_t<decltype(fn_)>(::hg::forward<decltype(fn_)>(fn_))]() mutable {
+					return mutate(::hg::move(storage), ::hg::move(fn));
+				}
+			);
 		}
 
 		/**/
@@ -355,12 +387,16 @@ namespace hg::engine::storage {
 		}
 
 		auto mutateAsync(
-			[[maybe_unused]] _Inout_ mref<Arci<system::ArchiveStorage>> storage_,
-			[[maybe_unused]] auto&& fn_
-		) const noexcept -> Future<Result<
+			_Inout_ mref<Arci<system::ArchiveStorage>> storage_,
+			auto&& fn_
+		) const noexcept -> Future<
 			std::invoke_result_t<decltype(fn_), ref<resource::Archive>>, async_mutate_archive_error
-		>> {
-			::hg::todo_panic();
+			> {
+			return ::hg::async(
+				[this, storage = ::hg::move(storage_), fn = std::decay_t<decltype(fn_)>(::hg::forward<decltype(fn_)>(fn_))]() mutable {
+					return mutate(::hg::move(storage), ::hg::move(fn));
+				}
+			);
 		}
 
 		/**/

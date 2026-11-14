@@ -1,8 +1,14 @@
 #include "LfsBlob.hpp"
 
+#include <filesystem>
+#include <Engine.Asserts/Asserts.hpp>
+#include <Engine.Async/Affine/AffineThread.hpp>
 #include <Engine.Common/Discard.hpp>
 #include <Engine.Pedantic.Resource/AccessMode.hpp>
+#include <Engine.Resource.Blob/File/IoFileBlob.hpp>
+#include <Engine.Resource.Blob/File/LfsSyncBlob.hpp>
 #include <Engine.Storage.Action/Context.hpp>
+#include <Engine.Storage.Action/Access/AccessError.hpp>
 #include <Engine.Storage.Action/Access/ExclusiveIoResource.hpp>
 #include <Engine.Storage.Action/Access/SharedReadIoResource.hpp>
 
@@ -10,16 +16,25 @@ using namespace hg::engine::storage;
 using namespace hg::engine::resource;
 using namespace hg;
 
-Result<IoResourceAccessor<LfsSyncBlob>, Mutation::acq_error_type> engine::storage::resolveStaticLfsVoid2LfsBlobMutation(
+namespace {
+	// Null when the io thread cannot open the file.
+	[[nodiscard]] Rc<Blob> openBlob(ref<Context> ctx_, ref<const Arci<system::LocalFileStorage>> storage_, const engine::io::IoOpenMode mode_);
+}
+
+Result<IoResourceAccessor<Blob>, Mutation::acq_error_type> engine::storage::resolveStaticLfsVoid2LfsBlobMutation(
 	ref<Context> ctx_,
 	cref<Arci<system::LocalFileStorage>> storage_
 ) {
-	using resolve_type = std::function<ref<LfsSyncBlob>(ResourceAccessMode)>;
+	using resolve_type = std::function<ref<Blob>(ResourceAccessMode)>;
 	using resource_type = decltype(ExclusiveIoResource { std::declval<resolve_type>() });
 
 	/**/
 
-	auto value = Rc<LfsSyncBlob>::create(clone(storage_->_lfsPath));
+	auto value = openBlob(ctx_, storage_, engine::io::IoOpenMode::eReadWrite);
+	if (value == nullptr) {
+		return Unexpected<Mutation::acq_error_type> { AccessError { "Failed to open file for mutation." } };
+	}
+
 	auto cachedValue = ctx_.objectStore.add(
 		clone(storage_).into<IStorage>(),
 		move(value),
@@ -28,7 +43,7 @@ Result<IoResourceAccessor<LfsSyncBlob>, Mutation::acq_error_type> engine::storag
 
 	/**/
 
-	auto resolver = [_obj = move(cachedValue)](ResourceAccessMode) mutable -> ref<LfsSyncBlob> {
+	auto resolver = [_obj = move(cachedValue)](ResourceAccessMode) mutable -> ref<Blob> {
 		return *_obj;
 	};
 
@@ -45,7 +60,7 @@ Result<IoResourceAccessor<LfsSyncBlob>, Mutation::acq_error_type> engine::storag
 void engine::storage::releaseStaticLfsBlobMutation(
 	ref<Context> ctx_,
 	cref<Arci<system::LocalFileStorage>> storage_,
-	mref<IoResourceAccessor<resource::LfsSyncBlob>> accessor_
+	mref<IoResourceAccessor<resource::Blob>> accessor_
 ) {
 	auto deferred = ctx_.accessStore.drop(clone(storage_).into<IStorage>());
 	ctx_.objectStore.invalidate(clone(storage_).into<IStorage>());
@@ -56,14 +71,18 @@ void engine::storage::releaseStaticLfsBlobMutation(
 
 /**/
 
-Result<IoResourceAccessor<const LfsSyncBlob>, Query::acq_error_type> engine::storage::resolveStaticLfsVoid2LfsBlobQuery(
-	[[maybe_unused]] ref<Context> ctx_,
+Result<IoResourceAccessor<const Blob>, Query::acq_error_type> engine::storage::resolveStaticLfsVoid2LfsBlobQuery(
+	ref<Context> ctx_,
 	cref<Arci<system::LocalFileStorage>> storage_
 ) {
-	auto value = Rc<LfsSyncBlob>::create(clone(storage_->_lfsPath));
+	auto value = openBlob(ctx_, storage_, engine::io::IoOpenMode::eRead);
+	if (value == nullptr) {
+		return Unexpected<Query::acq_error_type> { AccessError { "Failed to open file for query." } };
+	}
+
 	return Expected(
 		acquireSharedReadonly(
-			[_obj = move(value)](ResourceAccessMode) -> ref<const LfsSyncBlob> {
+			[_obj = move(value)](ResourceAccessMode) -> ref<const Blob> {
 				return *_obj;
 			}
 		)
@@ -73,8 +92,36 @@ Result<IoResourceAccessor<const LfsSyncBlob>, Query::acq_error_type> engine::sto
 void engine::storage::releaseStaticLfsBlobQuery(
 	[[maybe_unused]] ref<Context> ctx_,
 	[[maybe_unused]] cref<Arci<system::LocalFileStorage>> storage_,
-	mref<IoResourceAccessor<const resource::LfsSyncBlob>> accessor_
+	mref<IoResourceAccessor<const resource::Blob>> accessor_
 ) {
 	// Note: The shared resource owns the object and dies with its last accessor.
 	::hg::forward<decltype(accessor_)>(accessor_).reset();
+}
+
+/**/
+
+namespace {
+	Rc<Blob> openBlob(ref<Context> ctx_, ref<const Arci<system::LocalFileStorage>> storage_, const engine::io::IoOpenMode mode_) {
+
+		// Note: Loaded once; a stop racing past this check fails `open` or the size request and lands in AccessError.
+		const auto io = ctx_.io;
+		if (io == nullptr || not io->running()) {
+			return Rc<LfsSyncBlob>::create(clone(storage_->_lfsPath));
+		}
+
+		// Blocking on the io thread from an affine thread would stall its own drain loop.
+		::hg::assertd(engine::async::AffineThread::current() == nullptr);
+
+		auto opened = await(io->open(static_cast<std::filesystem::path>(storage_->_lfsPath), mode_));
+		if (not opened.has_value()) {
+			return nullptr;
+		}
+
+		// Note: One queue per blob; the blob owns it and releases it with the file.
+		auto blob = Rc<IoFileBlob>::create(*io, ::hg::move(opened).value(), io->createQueue(engine::io::IoPriority::eNormal));
+		if (blob->size() < 0LL) {
+			return nullptr;
+		}
+		return blob;
+	}
 }

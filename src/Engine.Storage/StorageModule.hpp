@@ -4,6 +4,7 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.Core/Module/RootModule.hpp>
+#include <Engine.IO.Dispatcher/IoSystem.hpp>
 
 namespace hg::engine {
 	class Config;
@@ -38,7 +39,12 @@ namespace hg::engine {
 	public:
 		void setup(_In_ cref<Config> config_);
 
+		// Stops the io thread, then drops cached stages; later file access sees a stopped io and is synchronous.
+		void stopIo();
+
 	private:
+		// Note: Declared first, so cached files and queues of the system die before it.
+		io::IoSystem _io;
 		uptr<IStorageRegistry> _registry;
 		uptr<StorageActionResolver> _resolver;
 		uptr<System> _system;
@@ -47,5 +53,7 @@ namespace hg::engine {
 		[[nodiscard]] nmpt<IStorageRegistry> getRegistry() const noexcept;
 
 		[[nodiscard]] nmpt<System> getSystem() const noexcept;
+
+		[[nodiscard]] ref<io::IoSystem> io() noexcept;
 	};
 }
