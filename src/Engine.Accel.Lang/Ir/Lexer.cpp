@@ -59,7 +59,7 @@ namespace {
 		ir::Diagnostics _diags;
 
 		[[nodiscard]] ir::SourceLoc here() const noexcept {
-			return _loc;
+			return ir::SourceLoc { _loc.line, _loc.column, static_cast<u32>(_pos), 0uL };
 		}
 
 		[[nodiscard]] char peek(size_t off_ = 0uz) const noexcept {
@@ -80,6 +80,8 @@ namespace {
 		}
 
 		void emit(ir::TokenKind kind_, size_t begin_, ir::SourceLoc at_) {
+			at_.offset = static_cast<u32>(begin_);
+			at_.length = static_cast<u32>(_pos - begin_);
 			_tokens.emplace_back(ir::Token { kind_, _src.substr(begin_, _pos - begin_), at_ });
 		}
 
@@ -266,7 +268,7 @@ namespace {
 				return;
 			}
 			const auto end = _pos;
-			const auto textLoc = at;
+			const auto textLoc = ir::SourceLoc { at.line, at.column, static_cast<u32>(begin), static_cast<u32>(end - begin) };
 			advance();// closing quote
 			_tokens.emplace_back(ir::Token { ir::TokenKind::eString, _src.substr(begin, end - begin), textLoc });
 		}
