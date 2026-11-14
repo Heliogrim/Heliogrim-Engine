@@ -105,8 +105,8 @@ namespace hg::math {
 
 		[[nodiscard]] vec3_t<value_type> __forward() const {
 			return vec3_t<value_type> {
-				2 * (_quat.x * _quat.y + _quat.w * _quat.y),
-				2 * (_quat.y * _quat.z + _quat.w * _quat.x),
+				2 * (_quat.x * _quat.z + _quat.w * _quat.y),
+				2 * (_quat.w * _quat.x - _quat.y * _quat.z),
 				1 - 2 * (_quat.x * _quat.x + _quat.y * _quat.y),
 			};
 		}
