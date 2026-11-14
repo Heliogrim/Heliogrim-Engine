@@ -215,6 +215,20 @@ namespace Common {
 		EXPECT_NEAR(back.roll(), 0.2F, 1e-3F);
 	}
 
+	/* The viewport camera combines a yawing root with a pitching camera; looking down must not depend on the heading. */
+
+	TEST(RotatorTest, ForwardHeightIgnoresYaw) {
+		constexpr auto pitch = 0.6F;
+
+		for (const auto yaw : { 0.F, 0.5F, pi / 2.F, 2.F, pi }) {
+			const auto fwd = Rotator::combine(Rotator { 0.F, yaw, 0.F }, Rotator { pitch, 0.F, 0.F }).into().__forward();
+
+			EXPECT_NEAR(fwd.y, std::sin(pitch), 1e-5F) << "yaw " << yaw;
+			EXPECT_NEAR(fwd.x, std::sin(yaw) * std::cos(pitch), 1e-5F) << "yaw " << yaw;
+			EXPECT_NEAR(fwd.z, std::cos(yaw) * std::cos(pitch), 1e-5F) << "yaw " << yaw;
+		}
+	}
+
 	/* Rotator -> rotation matrix -> Rotator is the quaternion-free way back. */
 
 	TEST(RotatorTest, RotationMatrixRoundTripCombinedAxes) {
