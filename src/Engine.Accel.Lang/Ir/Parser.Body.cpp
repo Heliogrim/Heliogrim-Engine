@@ -249,7 +249,7 @@ Opt<ir::StmtRef> Parser::returnStatement() {
 
 /* `let|const name [: Type] [= init|&place|&mut place];`, a type or an initializer required */
 Opt<ir::StmtRef> Parser::letStatement(bool const_) {
-	take();
+	const auto keyword = take().loc;
 	if (not at(TokenKind::eIdentifier)) {
 		syntaxError("a local name");
 		return fail();
@@ -265,7 +265,7 @@ Opt<ir::StmtRef> Parser::letStatement(bool const_) {
 		error(codes::asl("incomplete-local-declaration"), name, "A '" + String(const_ ? "const" : "let") + "' declaration needs a type or an initializer.");
 		return fail();
 	}
-	return local(name, declType.value_or(ir::TypeRef {}), const_);
+	return local(name, declType.value_or(ir::TypeRef {}), const_, keyword);
 }
 
 /* `Type name [= init];` */
@@ -283,12 +283,13 @@ Opt<ir::StmtRef> Parser::typedDeclaration() {
 
 /* `[= init];` of both declaration forms (type unset = inferred later); the name is in scope after its
  * initializer, even after an error */
-Opt<ir::StmtRef> Parser::local(ref<const ir::Token> name_, ir::TypeRef type_, bool const_) {
+Opt<ir::StmtRef> Parser::local(ref<const ir::Token> name_, ir::TypeRef type_, bool const_, ir::SourceLoc keyword_) {
 	ir::Stmt decl {};
 	decl.kind = ir::StmtKind::eDeclareLocal;
 	decl.name = name_.text;
 	decl.type = type_;
 	decl.mutable_ = not const_;
+	decl.keyword = keyword_;
 	bool valid = true;
 	declaredName(name_, false);
 	if (accept(TokenKind::eAssign)) {

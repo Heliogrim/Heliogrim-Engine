@@ -126,6 +126,7 @@ namespace {
 			check("stmt", i, "expr", s.lhs.index, exprs.size());
 			check("stmt", i, "expr", s.rhs.index, exprs.size());
 			check("stmt", i, "source", s.loc.source, sourceCount);
+			check("stmt", i, "source", s.keyword.source, sourceCount);
 			for (const auto& child : s.children) {
 				check("stmt", i, "stmt", child.index, stmts.size());
 			}
@@ -246,7 +247,7 @@ namespace {
 	}
 
 	[[nodiscard]] ir::Stmt remapStmt(ir::Stmt stmt_, ref<const Remap> remap_) {
-		auto& [kind, name, type, lhs, rhs, mutable_, children, when, loc] = stmt_;
+		auto& [kind, name, type, lhs, rhs, mutable_, children, when, loc, keyword] = stmt_;
 		type = remap_.type(type);
 		lhs = remap_.expr(lhs);
 		rhs = remap_.expr(rhs);
@@ -256,6 +257,7 @@ namespace {
 		static_cast<void>(kind);
 		static_cast<void>(mutable_);
 		loc = remap_.loc(loc);
+		keyword = remap_.loc(keyword);
 		return stmt_;
 	}
 

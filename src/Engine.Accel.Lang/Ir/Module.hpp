@@ -158,6 +158,8 @@ namespace hg::engine::accel::lang::ir {
 
 		/* head token; diagnostics only, not part of the content hash */
 		SourceLoc loc;
+		/* declare-local: the `let` / `const` keyword (empty for `T x`); diagnostics only, not part of the content hash */
+		SourceLoc keyword;
 	};
 
 	enum class TypeKind : u8 {
