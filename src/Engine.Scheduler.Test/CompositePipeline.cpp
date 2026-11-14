@@ -678,6 +678,45 @@ namespace SchedulerModule {
 		);
 	}
 
+	TEST(CompositePipelineTest, StopAndRestartTwice) {
+		withComposite(
+			[](ref<CompositePipeline> composite_) {
+				std::atomic<u32> frames { 0uL };
+				addDiamond(
+					composite_,
+					DiamondBodies {
+						.a = [] {},
+						.b = [] {},
+						.c = [] {},
+						.d = [&] { frames.fetch_add(1); }
+					}
+				);
+				composite_.setup();
+
+				u32 afterFirst = 0uL;
+				withWatchdog(
+					[&] {
+						for (u32 cycle = 0uL; cycle < 2uL; ++cycle) {
+							const auto before = frames.load();
+							composite_.start();
+							while (frames.load() == before) { std::this_thread::yield(); }
+							composite_.stop();
+							// the frame end clears _stopping before the release; a stale stoppedBit releases stop() early
+							EXPECT_FALSE(composite_.isStopping());
+
+							if (cycle == 0uL) {
+								afterFirst = frames.load();
+							}
+						}
+					}
+				);
+				composite_.destroy();
+
+				EXPECT_GT(frames.load(), afterFirst);
+			}
+		);
+	}
+
 	TEST(CompositePipelineTest, ExecOnStageRunsNextFrame) {
 		withComposite(
 			[](ref<CompositePipeline> composite_) {
