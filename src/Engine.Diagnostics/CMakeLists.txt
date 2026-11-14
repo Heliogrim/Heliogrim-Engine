@@ -1,0 +1,8 @@
+# Setup
+make_library_project(
+		LIB_NAME Engine.Diagnostics
+		LIB_FOLDER "${IDE_FOLDER}/Engine/Utils"
+		LIBRARIES
+		${PROJECT_NAME}::Engine.Asserts
+		${PROJECT_NAME}::Engine.Common
+)

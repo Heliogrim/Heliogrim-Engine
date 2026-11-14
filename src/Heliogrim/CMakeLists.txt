@@ -36,6 +36,7 @@ make_library_project(
 		${PROJECT_NAME}::Engine.Core
 		${PROJECT_NAME}::Engine.Core.Schedule
 		${PROJECT_NAME}::Engine.Crypto
+		${PROJECT_NAME}::Engine.Diagnostics
 		${PROJECT_NAME}::Engine.Driver.Vulkan
 		${PROJECT_NAME}::Engine.Env
 		${PROJECT_NAME}::Engine.Event

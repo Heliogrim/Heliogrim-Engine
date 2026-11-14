@@ -1,0 +1,51 @@
+#pragma once
+
+#include <Engine.Asserts/Asserts.hpp>
+#include <Engine.Common/Expected.hpp>
+#include <format>
+
+#include "Diagnostic.hpp"
+
+namespace hg::engine::diag {
+	template <typename Ty_>
+	concept PropagatableError = std::same_as<Ty_, Diagnostic> || std::same_as<Ty_, Diagnostics>;
+
+	namespace detail {
+		template <PropagatableError Error_>
+		inline void assertNonEmptyError(ref<const Error_> error_) noexcept {
+			assertrt(not error_.empty());
+		}
+	}
+
+	/**
+	 * Moves a failure one level up, unchanged.
+	 */
+	template <typename Type_, PropagatableError Error_>
+	[[nodiscard]] Unexpected<Error_> propagate(mref<Result<Type_, Error_>> result_) {
+		assertrt(not result_.has_value());
+		detail::assertNonEmptyError<Error_>(result_.error());
+		return Unexpected<Error_> { std::move(result_).error() };
+	}
+
+	/**
+	 * Moves a failure one level up and appends a context note (for a list: to the last error).
+	 */
+	template <typename Type_, PropagatableError Error_, typename... Args_>
+	[[nodiscard]] Unexpected<Error_> propagate(
+		mref<Result<Type_, Error_>> result_,
+		const std::format_string<Args_...> context_,
+		Args_&&... args_
+	) {
+		assertrt(not result_.has_value());
+
+		Error_ error = std::move(result_).error();
+		detail::assertNonEmptyError<Error_>(error);
+		if constexpr (std::same_as<Error_, Diagnostics>) {
+			error.back().addNote(std::format(context_, std::forward<Args_>(args_)...));
+		} else {
+			error.addNote(std::format(context_, std::forward<Args_>(args_)...));
+		}
+
+		return Unexpected<Error_> { std::move(error) };
+	}
+}
