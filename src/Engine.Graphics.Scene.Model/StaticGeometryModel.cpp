@@ -149,7 +149,7 @@ void StaticGeometryModel::update(const ptr<render::RenderSceneSystem> system_) {
 
 void StaticGeometryModel::destroy(const ptr<render::RenderSceneSystem> system_) {
 
-	auto origin = Cast<StaticGeometryComponent>(owner());
+	// The owner may already be freed (removal queued before housekeeping freed it, or scene teardown); never read it here.
 	const auto srp = system_->getSceneResourcePool();
 
 	srp->staticAabbPool.release(_sceneInstanceIndex);
