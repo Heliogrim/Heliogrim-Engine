@@ -1,15 +1,17 @@
 #pragma once
 
-#include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.Common/String.hpp>
 #include <Engine.Common/Types.hpp>
+#include <Engine.Diagnostics/Diagnostic.hpp>
+
+#include "../Diagnostic/Codes.hpp"
 
 namespace hg::engine::accel::lang::ir {
-	enum class Severity : u8 {
-		eNote,
-		eWarning,
-		eError
-	};
+	using Severity = diag::Severity;
+	using Diagnostic = diag::Diagnostic;
+	using Diagnostics = diag::Diagnostics;
+	using DiagnosticCodeInfo = diag::DiagnosticCodeInfo;
+	using NoLocation = diag::NoLocation;
+	using SourceSpan = diag::SourceSpan;
 
 	/**
 	 * 1-based line and column; a tab counts as one column.
@@ -19,12 +21,6 @@ namespace hg::engine::accel::lang::ir {
 		u32 column = 1uL;
 	};
 
-	struct Diagnostic {
-		Severity severity = Severity::eError;
-		String message;
-		u32 line = 0uL;
-		u32 column = 0uL;
-	};
-
-	using Diagnostics = Vector<Diagnostic>;
+	/* a point span at `loc_`, for sites that know no byte range */
+	[[nodiscard]] diag::SourceSpan pointAt(StringView file_, SourceLoc loc_);
 }

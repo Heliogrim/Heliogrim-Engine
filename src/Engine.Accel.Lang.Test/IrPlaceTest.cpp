@@ -43,7 +43,7 @@ namespace AccelLang {
 			const auto source = String { prelude } + "fn main() {\n" + String { locals_ } + "\n{ let p = &mut " + String { first_ } + "; }\n{ let q = &mut " +
 				String { second_ } + "; }\n}\n";
 			auto res = parseModule("M", source, EntryKind::eCompute, ModuleResolver { noIncludes });
-			EXPECT_TRUE(res.has_value()) << (res.has_value() || res.error().empty() ? String {} : res.error().front().message);
+			EXPECT_TRUE(res.has_value()) << (res.has_value() || res.error().empty() ? String {} : res.error().front().message());
 			if (not res.has_value()) {
 				return false;
 			}

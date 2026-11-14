@@ -5,4 +5,5 @@ make_library_project(
 		LIBRARIES
 		${PROJECT_NAME}::Engine.Common
 		${PROJECT_NAME}::Engine.Async
+		${PROJECT_NAME}::Engine.Diagnostics
 )

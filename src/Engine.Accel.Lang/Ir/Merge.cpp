@@ -19,10 +19,6 @@ using namespace hg;
 namespace {
 	constexpr u32 unset = ~0uL;
 
-	[[nodiscard]] ir::Diagnostic error(String message_) {
-		return ir::Diagnostic { .severity = ir::Severity::eError, .message = std::move(message_) };
-	}
-
 	[[nodiscard]] String quoted(StringView text_) {
 		return "'" + String(text_) + "'";
 	}
@@ -288,7 +284,7 @@ namespace {
 						into_.*member_ = value;
 					} else if (into_.*member_ != value) {
 						diags.emplace_back(
-							error(
+							ir::Diagnostic::error(codes::asl("merge-conflict"), 
 								"entry attribute " + quoted(String(label_)) + " differs in " + quoted(moduleName(*owner)) + " and " +
 								quoted(moduleName(static_cast<u32>(m)))
 							)
@@ -326,14 +322,14 @@ namespace {
 				std::ranges::sort(rhs);
 				if (lhs != rhs) {
 					diags.emplace_back(
-						error(
+						ir::Diagnostic::error(codes::asl("merge-conflict"), 
 							"toggle " + quoted(name) + " declared with different values in " + quoted(first) + " and " +
 							quoted(moduleName(mod_))
 						)
 					);
 				} else if (it->defaultValue != defaultValue) {
 					diags.emplace_back(
-						error(
+						ir::Diagnostic::error(codes::asl("merge-conflict"), 
 							"toggle " + quoted(name) + " defaults to " + quoted(it->defaultValue) + " in " + quoted(first) + " and " +
 							quoted(defaultValue) + " in " + quoted(moduleName(mod_))
 						)
@@ -414,7 +410,7 @@ namespace {
 				}
 
 				if (auto conflict = bindingConflict(*it, mapped, moduleName(origins_[index]), moduleName(mod_)); not conflict.empty()) {
-					diags.emplace_back(error(std::move(conflict)));
+					diags.emplace_back(ir::Diagnostic::error(codes::asl("merge-conflict"), std::move(conflict)));
 				} else if (not sameCondition(it->when, when) && it->when.kind != ir::ConditionKind::eTrue) {
 					it->when = when.kind == ir::ConditionKind::eTrue ? ir::Condition::always() : ir::Condition::any({ it->when, when });
 				}
@@ -468,11 +464,11 @@ namespace {
 					return " in " + quoted(moduleName(m_));
 				};
 				if (it->type != mapped.type) {
-					diags.emplace_back(error(prefix + "as " + describe(result.types, it->type) + in(first) + " and " + describe(result.types, mapped.type) + in(mod_)));
+					diags.emplace_back(ir::Diagnostic::error(codes::asl("merge-conflict"), prefix + "as " + describe(result.types, it->type) + in(first) + " and " + describe(result.types, mapped.type) + in(mod_)));
 				} else if (it->specId.has_value() != mapped.specId.has_value() || (it->specId.has_value() && *it->specId != *mapped.specId)) {
-					diags.emplace_back(error(prefix + "with a different spec id" + in(first) + " and" + in(mod_)));
+					diags.emplace_back(ir::Diagnostic::error(codes::asl("merge-conflict"), prefix + "with a different spec id" + in(first) + " and" + in(mod_)));
 				} else if (not sameExpr(*modules[first], ir::ExprRef { it->value.index - remaps[first].exprOffset }, *modules[mod_], constant.value, 0uL)) {
-					diags.emplace_back(error(prefix + "with a different value" + in(first) + " and" + in(mod_)));
+					diags.emplace_back(ir::Diagnostic::error(codes::asl("merge-conflict"), prefix + "with a different value" + in(first) + " and" + in(mod_)));
 				} else if (not sameCondition(it->when, mapped.when) && it->when.kind != ir::ConditionKind::eTrue) {
 					it->when = mapped.when.kind == ir::ConditionKind::eTrue ? ir::Condition::always() : ir::Condition::any({ it->when, mapped.when });
 				}
@@ -521,7 +517,7 @@ namespace {
 						named = names.end() - 1;
 					} else if (not sameSignature(named->first, at)) {
 						diags.emplace_back(
-							error(
+							ir::Diagnostic::error(codes::asl("merge-conflict"), 
 								"signature of function " + quoted(fn.name) + " differs between " + quoted(moduleName(named->first.mod)) +
 								" and " + quoted(moduleName(at.mod))
 							)
@@ -543,7 +539,7 @@ namespace {
 						*variant = at;// the body being replaced allowed it; the last wins
 					} else {
 						diags.emplace_back(
-							error(
+							ir::Diagnostic::error(codes::asl("overlapping-variant-bodies"), 
 								"duplicate body for function " + quoted(signature) + " in modules " + quoted(moduleName(variant->mod)) +
 								" and " + quoted(moduleName(at.mod))
 							)
@@ -555,7 +551,7 @@ namespace {
 			for (const auto& named : names) {
 				if (named.bodies.empty()) {
 					diags.emplace_back(
-						error("missing body for function " + quoted(named.name) + " declared in " + quoted(moduleName(named.first.mod)))
+						ir::Diagnostic::error(codes::asl("missing-variant-body"), "missing body for function " + quoted(named.name) + " declared in " + quoted(moduleName(named.first.mod)))
 					);
 				}
 				for (const auto at : named.bodies) {
@@ -616,15 +612,15 @@ namespace {
 
 std::expected<ir::Module, ir::Diagnostics> ir::merge(std::span<const Module* const> ordered_) {
 	if (ordered_.empty()) {
-		return std::unexpected(Diagnostics { error("merge: no modules to merge") });
+		return std::unexpected(Diagnostics { ir::Diagnostic::error(codes::asl("internal-inconsistent-pipeline"), "merge: no modules to merge") });
 	}
 
 	Diagnostics diags {};
 	for (auto i = 0uz; i < ordered_.size(); ++i) {
 		if (ordered_[i] == nullptr) {
-			diags.emplace_back(error("merge: module #" + std::to_string(i) + " is null"));
+			diags.emplace_back(ir::Diagnostic::error(codes::asl("internal-inconsistent-pipeline"), "merge: module #" + std::to_string(i) + " is null"));
 		} else if (auto invalid = invalidRef(*ordered_[i]); invalid.has_value()) {
-			diags.emplace_back(error("module " + quoted(ordered_[i]->name) + ": " + std::move(*invalid)));
+			diags.emplace_back(ir::Diagnostic::error(codes::asl("internal-inconsistent-pipeline"), "module " + quoted(ordered_[i]->name) + ": " + std::move(*invalid)));
 		}
 	}
 	if (not diags.empty()) {

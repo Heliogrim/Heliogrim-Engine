@@ -23,7 +23,7 @@ namespace AccelCompile {
 				entry_,
 				ModuleResolver { [](StringView) -> Opt<String> { return None; } }
 			);
-			EXPECT_TRUE(parsed.has_value()) << (parsed.has_value() || parsed.error().empty() ? "" : parsed.error().front().message);
+			EXPECT_TRUE(parsed.has_value()) << (parsed.has_value() || parsed.error().empty() ? "" : parsed.error().front().message());
 
 			Intermediate result {};
 			if (parsed.has_value()) {
@@ -83,7 +83,7 @@ namespace AccelCompile {
 		const auto stage = intermediateOf(stageSource, EntryKind::eFragment);
 
 		auto derivat = composeStageIr(stage, profileOf(), TestSpecification { {} }, StageFlagBits::eFragment, cache);
-		ASSERT_TRUE(derivat.has_value()) << derivat.error().front().message;
+		ASSERT_TRUE(derivat.has_value()) << derivat.error().front().message();
 
 		const auto text = textOf(**derivat);
 		EXPECT_TRUE(text.starts_with("#version 460\n")) << text;
@@ -106,7 +106,7 @@ namespace AccelCompile {
 			cache
 		);
 		ASSERT_FALSE(fragment.has_value());
-		EXPECT_TRUE(fragment.error().front().message.contains("is not available in fragment stages"));
+		EXPECT_TRUE(fragment.error().front().message().contains("is not available in fragment stages"));
 
 		const auto vertex = composeStageIr(
 			intermediateOf(main, EntryKind::eVertex),
@@ -115,13 +115,13 @@ namespace AccelCompile {
 			StageFlagBits::eVertex,
 			cache
 		);
-		EXPECT_TRUE(vertex.has_value()) << (vertex.has_value() ? "" : vertex.error().front().message);
+		EXPECT_TRUE(vertex.has_value()) << (vertex.has_value() ? "" : vertex.error().front().message());
 	}
 
 	TEST(StageIrTest, ModuleWarningsNeverFailCompose) {
 		auto stage = intermediateOf("@output (mode = forward, id = \"color\") f32vec4 color;\nfn main() { color = f32vec4(0.0); }\n", EntryKind::eFragment);
 		auto mod = *stage.ir;
-		mod.warnings.emplace_back(Diagnostic { .severity = Severity::eWarning, .message = "synthetic warning" });
+		mod.warnings.emplace_back(Diagnostic::warning(hg::engine::accel::lang::codes::asl("toggle-override"), "synthetic warning"));
 		stage.ir = make_smr<const Module>(new Module { std::move(mod) });
 
 		VariantCache cache {};
@@ -142,7 +142,7 @@ namespace AccelCompile {
 			cache
 		);
 		ASSERT_TRUE(all.has_value());
-		ASSERT_TRUE(some.has_value()) << some.error().front().message;
+		ASSERT_TRUE(some.has_value()) << some.error().front().message();
 
 		EXPECT_TRUE(textOf(**all).contains("other")) << textOf(**all);
 		EXPECT_TRUE(textOf(**some).contains("color")) << textOf(**some);
@@ -156,7 +156,7 @@ namespace AccelCompile {
 			cache
 		);
 		ASSERT_FALSE(unknown.has_value());
-		EXPECT_TRUE(unknown.error().front().message.contains("missing"));
+		EXPECT_TRUE(unknown.error().front().message().contains("missing"));
 	}
 
 	TEST(StageIrTest, SecondComposeHitsCache) {
@@ -232,8 +232,8 @@ namespace AccelCompile {
 		auto derivat = composeStageIr(stage, EffectProfile {}, TestSpecification { {} }, StageFlagBits::eFragment, cache);
 		ASSERT_FALSE(derivat.has_value());
 		ASSERT_FALSE(derivat.error().empty());
-		EXPECT_TRUE(derivat.error().front().message.contains("noclass")) << derivat.error().front().message;
-		EXPECT_EQ(derivat.error().front().severity, Severity::eError);
+		EXPECT_TRUE(derivat.error().front().message().contains("noclass")) << derivat.error().front().message();
+		EXPECT_EQ(derivat.error().front().severity(), Severity::eError);
 	}
 
 	TEST(StageIrTest, PushConstantSizeComesFromLayout) {
@@ -310,7 +310,7 @@ namespace AccelCompile {
 		VariantCache cache {};
 		PipelineLayoutCache layouts {};
 		const auto composed = composeUsing("a", "b", cache, layouts);
-		ASSERT_TRUE(composed.has_value()) << composed.error().front().message;
+		ASSERT_TRUE(composed.has_value()) << composed.error().front().message();
 
 		BindLayout layout {};
 		EXPECT_TRUE(appendBindLayout(*composed->pipeline, composed->derivats, layout).empty());
@@ -328,11 +328,11 @@ namespace AccelCompile {
 
 		/* vertex {b} is not a prefix of the union {a, b} */
 		const auto composed = composeUsing("b", "ab", cache, layouts);
-		ASSERT_TRUE(composed.has_value()) << composed.error().front().message;
+		ASSERT_TRUE(composed.has_value()) << composed.error().front().message();
 
 		BindLayout layout {};
 		const auto diagnostics = appendBindLayout(*composed->pipeline, composed->derivats, layout);
-		ASSERT_TRUE(diagnostics.empty()) << diagnostics.front().message;
+		ASSERT_TRUE(diagnostics.empty()) << diagnostics.front().message();
 		ASSERT_EQ(layout.groups.size(), 1uLL);
 		ASSERT_EQ(layout.groups.front().elements.size(), 2uLL);
 		EXPECT_EQ(layout.groups.front().elements[0].symbol->symbolName, "a");
@@ -345,11 +345,11 @@ namespace AccelCompile {
 
 		/* camera = c, model = m, lights = l, textures = t: union c, l, m, t; the vertex stage skips l */
 		const auto composed = composeUsing("cm", "clt", cache, layouts);
-		ASSERT_TRUE(composed.has_value()) << composed.error().front().message;
+		ASSERT_TRUE(composed.has_value()) << composed.error().front().message();
 
 		BindLayout layout {};
 		const auto diagnostics = appendBindLayout(*composed->pipeline, composed->derivats, layout);
-		ASSERT_TRUE(diagnostics.empty()) << diagnostics.front().message;
+		ASSERT_TRUE(diagnostics.empty()) << diagnostics.front().message();
 		ASSERT_EQ(layout.groups.size(), 1uLL);
 		ASSERT_EQ(layout.groups.front().elements.size(), 4uLL);
 		const std::array<StringView, 4> expected { "c", "l", "m", "t" };
@@ -376,7 +376,7 @@ namespace AccelCompile {
 		const std::array<StageFlagBits, 2> flags { StageFlagBits::eVertex, StageFlagBits::eFragment };
 		const auto composed = composePipelineIr(stages, flags, EffectProfile {}, TestSpecification { {} }, cache, layouts);
 		ASSERT_FALSE(composed.has_value());
-		const auto& message = composed.error().front().message;
+		const auto& message = composed.error().front().message();
 		EXPECT_TRUE(message.contains("'uv'") && message.contains("f32vec2") && message.contains("f32vec3")) << message;
 
 		/* same stages with a legacy text stage between them (follows = false): no chain check across the gap */
@@ -385,7 +385,7 @@ namespace AccelCompile {
 		const auto gap = composePipelineIr(
 			stages, flags, EffectProfile {}, TestSpecification { {} }, cache, gapLayouts, nullptr, true, follows
 		);
-		EXPECT_TRUE(gap.has_value()) << (gap.has_value() ? "" : gap.error().front().message);
+		EXPECT_TRUE(gap.has_value()) << (gap.has_value() ? "" : gap.error().front().message());
 	}
 
 	TEST(StageIrTest, ConsumerInputTakesProducerOutputLocation) {
@@ -406,7 +406,7 @@ namespace AccelCompile {
 		const std::array<const Intermediate*, 2> stages { &vertex, &fragment };
 		const std::array<StageFlagBits, 2> flags { StageFlagBits::eVertex, StageFlagBits::eFragment };
 		const auto composed = composePipelineIr(stages, flags, EffectProfile {}, TestSpecification { {} }, cache, layouts);
-		ASSERT_TRUE(composed.has_value()) << composed.error().front().message;
+		ASSERT_TRUE(composed.has_value()) << composed.error().front().message();
 		const auto vertexText = textOf(*(*composed)[0]);
 		const auto fragmentText = textOf(*(*composed)[1]);
 		EXPECT_TRUE(vertexText.contains("layout(location = 2) out")) << vertexText;
@@ -416,7 +416,7 @@ namespace AccelCompile {
 		/* same stages, not directly following: the cached layout must not be reused */
 		const std::array<u8, 2> apart { 1u, 0u };
 		const auto split = composePipelineIr(stages, flags, EffectProfile {}, TestSpecification { {} }, cache, layouts, nullptr, true, apart);
-		ASSERT_TRUE(split.has_value()) << split.error().front().message;
+		ASSERT_TRUE(split.has_value()) << split.error().front().message();
 		const auto splitText = textOf(*(*split)[1]);
 		EXPECT_TRUE(splitText.contains("layout(location = 0) in")) << splitText;
 	}
@@ -426,7 +426,7 @@ namespace AccelCompile {
 		PipelineLayoutCache layouts {};
 		const auto composed = composePipelineIr({}, {}, EffectProfile {}, TestSpecification { {} }, cache, layouts);
 		ASSERT_FALSE(composed.has_value());
-		EXPECT_EQ(composed.error().front().severity, Severity::eError);
+		EXPECT_EQ(composed.error().front().severity(), Severity::eError);
 	}
 
 	TEST(StageIrTest, SharedCameraAcrossStagesComposes) {
@@ -435,7 +435,7 @@ namespace AccelCompile {
 
 		/* alone, b would be binding 0 in the fragment stage; the pipeline gives it one slot in both */
 		const auto composed = composeUsing("ab", "b", cache, layouts);
-		ASSERT_TRUE(composed.has_value()) << composed.error().front().message;
+		ASSERT_TRUE(composed.has_value()) << composed.error().front().message();
 
 		const auto& vertexSlots = composed->pipeline->layouts[0].slots;
 		const auto& fragmentSlots = composed->pipeline->layouts[1].slots;
@@ -504,7 +504,7 @@ namespace AccelCompile {
 		PipelineLayoutCache layouts {};
 		smr<const ResolvedPipeline> pipeline {};
 		auto derivats = composePipelineIr(stages, flags, EffectProfile {}, TestSpecification { {} }, cache, layouts, &pipeline);
-		ASSERT_TRUE(derivats.has_value()) << derivats.error().front().message;
+		ASSERT_TRUE(derivats.has_value()) << derivats.error().front().message();
 
 		ASSERT_EQ(pipeline->layouts[1].push.size(), 1uLL);
 		EXPECT_EQ(pipeline->layouts[1].push.front().offset, 4uL);
@@ -533,7 +533,7 @@ namespace AccelCompile {
 		const std::array<const Intermediate*, 2> stages { &vertex, &fragment };
 		const std::array<StageFlagBits, 2> flags { StageFlagBits::eVertex, StageFlagBits::eFragment };
 		const auto both = composePipelineIr(stages, flags, profile, spec, cache, layouts);
-		ASSERT_TRUE(both.has_value()) << both.error().front().message;
+		ASSERT_TRUE(both.has_value()) << both.error().front().message();
 		EXPECT_TRUE(textOf(*(*both)[0]).contains("uv")) << textOf(*(*both)[0]);
 		EXPECT_FALSE(textOf(*(*both)[1]).contains("other")) << textOf(*(*both)[1]);
 
@@ -544,14 +544,14 @@ namespace AccelCompile {
 		const std::array<const Intermediate*, 2> inner { &fragment, &fragment };
 		const std::array<StageFlagBits, 2> innerFlags { StageFlagBits::eFragment, StageFlagBits::eFragment };
 		const auto kept = composePipelineIr(inner, innerFlags, profile, spec, cache, layouts);
-		ASSERT_TRUE(kept.has_value()) << kept.error().front().message;
+		ASSERT_TRUE(kept.has_value()) << kept.error().front().message();
 		EXPECT_TRUE(textOf(*(*kept)[0]).contains("other")) << textOf(*(*kept)[0]);
 
 		/* a legacy text stage after the ir stages is the export stage: nothing here is sliced */
 		const auto notLast = composePipelineIr(
 			stages, flags, profile, spec, cache, layouts, nullptr, false
 		);
-		ASSERT_TRUE(notLast.has_value()) << notLast.error().front().message;
+		ASSERT_TRUE(notLast.has_value()) << notLast.error().front().message();
 		EXPECT_TRUE(textOf(*(*notLast)[1]).contains("other")) << textOf(*(*notLast)[1]);
 	}
 
@@ -580,7 +580,7 @@ namespace AccelCompile {
 		attribute("vertex-position", 0L, -1L);
 
 		const auto resolved = composeStageIr(vertex, EffectProfile {}, TestSpecification { {} }, StageFlagBits::eVertex, cache);
-		ASSERT_TRUE(resolved.has_value()) << resolved.error().front().message;
+		ASSERT_TRUE(resolved.has_value()) << resolved.error().front().message();
 
 		const auto formatOf = [&](StringView id_) {
 			for (const auto& var : (*resolved)->getIntermediate()->rep.globalScope.inbound) {

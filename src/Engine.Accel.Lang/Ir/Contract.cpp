@@ -20,10 +20,10 @@ ir::Diagnostics ir::checkContract(
 			continue;
 		}
 		if (entry.cls == BindClass::eNone) {
-			diags.emplace_back(Diagnostic { .message = "Binding '" + entry.id + "' has no class." });
+			diags.emplace_back(Diagnostic::error(codes::asl("missing-binding-class"), "Binding '" + entry.id + "' has no class."));
 		} else if (not contains(materialBindings_, entry.id) && not contains(stage_.provides, entry.id)) {
 			diags.emplace_back(
-				Diagnostic { .message = "Binding '" + entry.id + "' has no material binding and is not provided by the stage." }
+				Diagnostic::error(codes::asl("missing-material-binding"), "Binding '" + entry.id + "' has no material binding and is not provided by the stage.")
 			);
 		}
 	}
@@ -31,7 +31,7 @@ ir::Diagnostics ir::checkContract(
 	for (const auto& id : stage_.requires_) {
 		const auto provided = std::ranges::any_of(shader_, [&](ref<const InterfaceEntry> e_) { return not e_.input && e_.id == id; });
 		if (not provided) {
-			diags.emplace_back(Diagnostic { .message = "Stage requires '" + id + "', which the shader does not output." });
+			diags.emplace_back(Diagnostic::error(codes::asl("missing-stage-output"), "Stage requires '" + id + "', which the shader does not output."));
 		}
 	}
 	return diags;
@@ -68,16 +68,12 @@ ir::Diagnostics ir::checkStageChain(std::span<const std::pair<EntryKind, Vector<
 			);
 			if (out == prev.end()) {
 				diags.emplace_back(
-					Diagnostic {
-						.message = name(kind) + " input '" + in.id + "' has no matching output in " + name(prevKind) + " stage"
-					}
+					Diagnostic::error(codes::asl("unmatched-stage-input"), name(kind) + " input '" + in.id + "' has no matching output in " + name(prevKind) + " stage")
 				);
 			} else if (out->typeName != in.typeName) {
 				diags.emplace_back(
-					Diagnostic {
-						.message = name(kind) + " input '" + in.id + "' is " + in.typeName + ", but the " + name(prevKind) +
-						" stage outputs " + out->typeName
-					}
+					Diagnostic::error(codes::asl("stage-interface-mismatch"), name(kind) + " input '" + in.id + "' is " + in.typeName + ", but the " + name(prevKind) +
+						" stage outputs " + out->typeName)
 				);
 			}
 		}

@@ -450,8 +450,8 @@ ir::Layout ir::assignLayout(
 }
 
 namespace {
-	[[nodiscard]] ir::Diagnostics failure(String message_) {
-		return ir::Diagnostics { ir::Diagnostic { .severity = ir::Severity::eError, .message = std::move(message_) } };
+	[[nodiscard]] ir::Diagnostics failure(const ref<const hg::engine::diag::DiagnosticCodeInfo> code_, String message_) {
+		return ir::Diagnostics { ir::Diagnostic::error(code_, std::move(message_)) };
 	}
 
 	[[nodiscard]] String stageName(size_t index_) {
@@ -487,7 +487,7 @@ std::expected<Vector<ir::Layout>, ir::Diagnostics> ir::assignPipelineLayout(
 	ref<const LayoutWeights> weights_
 ) {
 	if (stages_.size() != types_.size()) {
-		return std::unexpected(failure("pipeline layout needs one type table per stage"));
+		return std::unexpected(failure(codes::asl("internal-inconsistent-layout"), "pipeline layout needs one type table per stage"));
 	}
 
 	Vector<Layout> own {};
@@ -500,6 +500,7 @@ std::expected<Vector<ir::Layout>, ir::Diagnostics> ir::assignPipelineLayout(
 		for (size_t j = i + 1uz; j < own.size(); ++j) {
 			const auto clash = [&](const String& id_, StringView what_) {
 				errors.append_range(failure(
+					codes::asl("binding-slot-conflict"),
 					"binding '" + id_ + "' " + String { what_ } + " in " + stageName(i) + " and " + stageName(j)
 				));
 			};
@@ -567,7 +568,7 @@ std::expected<Vector<Vector<ir::SpecConstant>>, ir::Diagnostics> ir::assignPipel
 	std::span<const Vector<TypeDesc>> types_
 ) {
 	if (constants_.size() != types_.size()) {
-		return std::unexpected(failure("pipeline spec constants need one type table per stage"));
+		return std::unexpected(failure(codes::asl("internal-inconsistent-layout"), "pipeline spec constants need one type table per stage"));
 	}
 
 	struct Seen {
@@ -590,6 +591,7 @@ std::expected<Vector<Vector<ir::SpecConstant>>, ir::Diagnostics> ir::assignPipel
 				seen.emplace_back(Seen { *constant.specId, std::move(key), i });
 			} else if (it->key != key) {
 				errors.append_range(failure(
+					codes::asl("spec-constant-conflict"),
 					"spec constant '" + *constant.specId + "' has another type in " + stageName(it->stage) + " and " +
 					stageName(i)
 				));
