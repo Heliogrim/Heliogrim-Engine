@@ -20,7 +20,7 @@ namespace AccelLang {
 
 		[[nodiscard]] Module parse(StringView source_, EntryKind entry_ = EntryKind::eVertex) {
 			auto res = parseModule("M", source_, entry_, ModuleResolver { noIncludes });
-			EXPECT_TRUE(res.has_value()) << (res.has_value() || res.error().empty() ? "" : res.error().front().message);
+			EXPECT_TRUE(res.has_value()) << (res.has_value() || res.error().empty() ? "" : res.error().front().message());
 			return res.has_value() ? std::move(res).value() : Module {};
 		}
 
@@ -559,9 +559,38 @@ namespace AccelLang {
 		const auto res = assignPipelineLayout(stages, types, {});
 		ASSERT_FALSE(res.has_value());
 		ASSERT_FALSE(res.error().empty());
-		EXPECT_NE(res.error().front().message.find("camera"), String::npos);
-		EXPECT_NE(res.error().front().message.find("stage 0"), String::npos);
-		EXPECT_NE(res.error().front().message.find("stage 1"), String::npos);
+		EXPECT_NE(res.error().front().message().find("camera"), String::npos);
+		EXPECT_NE(res.error().front().message().find("stage 0"), String::npos);
+		EXPECT_NE(res.error().front().message().find("stage 1"), String::npos);
+	}
+
+	TEST(LayoutTest, SharedIdTypeMismatchHasItsCode) {
+		const Vector<InterfaceEntry> s0 { entry("camera", TypeRef { 1u }, BindMode::eBind, BindClass::eUniformBuffer) };
+		const Vector<InterfaceEntry> s1 { entry("camera", TypeRef { 0u }, BindMode::eBind, BindClass::eUniformBuffer) };
+		const std::array stages { s0, s1 };
+		const std::array types { cameraTypes(false), cameraTypes(true) };
+		const auto res = assignPipelineLayout(stages, types, {});
+		ASSERT_FALSE(res.has_value());
+		ASSERT_FALSE(res.error().empty());
+		EXPECT_EQ(res.error().front().code()->key, "binding-slot-conflict");
+	}
+
+	TEST(LayoutTest, SpecConstantTypeClashHasItsCode) {
+		const auto types = cameraTypes(false);
+		ConstantDecl x {};
+		x.name = "z";
+		x.type = TypeRef { 0u };
+		x.specId = String { "c" };
+		ConstantDecl y = x;
+		y.type = TypeRef { 1u };
+		const Vector<ConstantDecl> s0 { x };
+		const Vector<ConstantDecl> s1 { y };
+		const std::array constants { s0, s1 };
+		const std::array tables { types, types };
+		const auto res = assignPipelineSpecConstants(constants, tables);
+		ASSERT_FALSE(res.has_value());
+		ASSERT_FALSE(res.error().empty());
+		EXPECT_EQ(res.error().front().code()->key, "spec-constant-conflict");
 	}
 
 	TEST(LayoutTest, SharedPushIdWithOtherTypeOfSameSizeIsRejected) {
@@ -579,7 +608,7 @@ namespace AccelLang {
 		const std::array types { t0, t1 };
 		const auto res = assignPipelineLayout(stages, types, {});
 		ASSERT_FALSE(res.has_value());
-		EXPECT_NE(res.error().front().message.find("'p'"), String::npos);
+		EXPECT_NE(res.error().front().message().find("'p'"), String::npos);
 	}
 
 	TEST(LayoutTest, PipelineLayoutDeterministic) {
@@ -627,7 +656,7 @@ namespace AccelLang {
 		const std::array clash { s0, bad };
 		const auto err = assignPipelineSpecConstants(clash, tables);
 		ASSERT_FALSE(err.has_value());
-		EXPECT_NE(err.error().front().message.find("stage 0"), String::npos);
-		EXPECT_NE(err.error().front().message.find("stage 1"), String::npos);
+		EXPECT_NE(err.error().front().message().find("stage 0"), String::npos);
+		EXPECT_NE(err.error().front().message().find("stage 1"), String::npos);
 	}
 }

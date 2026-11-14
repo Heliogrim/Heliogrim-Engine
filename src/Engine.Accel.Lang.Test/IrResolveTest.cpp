@@ -26,12 +26,12 @@ namespace AccelLang {
 
 		[[nodiscard]] Module parse(StringView source_, StringView name_ = "M", EntryKind entry_ = EntryKind::eFragment) {
 			auto res = parseModule(name_, source_, entry_, ModuleResolver { noIncludes });
-			EXPECT_TRUE(res.has_value()) << (res.has_value() || res.error().empty() ? "" : res.error().front().message);
+			EXPECT_TRUE(res.has_value()) << (res.has_value() || res.error().empty() ? "" : res.error().front().message());
 			return res.has_value() ? std::move(res).value() : Module {};
 		}
 
 		[[nodiscard]] bool mentions(ref<const Diagnostic> diag_, StringView text_) {
-			return diag_.message.find(text_) != String::npos;
+			return diag_.message().find(text_) != String::npos;
 		}
 
 		[[nodiscard]] u32 functionIndex(ref<const Module> mod_, StringView name_) {
@@ -175,7 +175,7 @@ namespace AccelLang {
 
 		[[nodiscard]] Module resolveOk(ref<const Module> mod_, ref<const ToggleSet> toggles_) {
 			auto res = resolveToggles(mod_, toggles_);
-			EXPECT_TRUE(res.has_value()) << (res.has_value() || res.error().empty() ? "" : res.error().front().message);
+			EXPECT_TRUE(res.has_value()) << (res.has_value() || res.error().empty() ? "" : res.error().front().message());
 			if (not res.has_value()) {
 				return Module {};
 			}
@@ -191,7 +191,7 @@ namespace AccelLang {
 
 		[[nodiscard]] ResolveResult fixOk(ref<const Module> mod_, ref<const ToggleSources> sources_) {
 			auto res = fixToggles(mod_, sources_);
-			EXPECT_TRUE(res.has_value()) << (res.has_value() || res.error().empty() ? "" : res.error().front().message);
+			EXPECT_TRUE(res.has_value()) << (res.has_value() || res.error().empty() ? "" : res.error().front().message());
 			return res.has_value() ? std::move(res).value() : ResolveResult {};
 		}
 
@@ -243,9 +243,9 @@ namespace AccelLang {
 		);
 		EXPECT_EQ(fixed.toggles, (ToggleSet { { "Shading", "Deferred" } }));
 		ASSERT_EQ(fixed.warnings.size(), 1uz);
-		EXPECT_EQ(fixed.warnings[0].severity, Severity::eWarning);
-		EXPECT_TRUE(mentions(fixed.warnings[0], "'Shading'")) << fixed.warnings[0].message;
-		EXPECT_TRUE(mentions(fixed.warnings[0], "material")) << fixed.warnings[0].message;
+		EXPECT_EQ(fixed.warnings[0].severity(), Severity::eWarning);
+		EXPECT_TRUE(mentions(fixed.warnings[0], "'Shading'")) << fixed.warnings[0].message();
+		EXPECT_TRUE(mentions(fixed.warnings[0], "material")) << fixed.warnings[0].message();
 	}
 
 	TEST(ResolveTest, DefaultsApplyWhenUnset) {
@@ -270,7 +270,7 @@ namespace AccelLang {
 		// checked ahead of time: the requested combination itself is covered
 		const auto diags = resolveFail(mod, { { "Shading", "Forward" }, { "Shadows", "Off" } });
 		ASSERT_EQ(diags.size(), 1uz);
-		EXPECT_EQ(diags[0].message, "no body for 'GetWorldPosition()' at Shading=Deferred, Shadows=Off");
+		EXPECT_EQ(diags[0].message(), "no body for 'GetWorldPosition()' at Shading=Deferred, Shadows=Off");
 	}
 
 	TEST(ResolveTest, WhenBlockInputsAreInterfaceOfThatVariant) {
@@ -388,16 +388,16 @@ namespace AccelLang {
 		for (const auto& c : cases) {
 			const auto diags = fixFail(mod, c.sources);
 			ASSERT_EQ(diags.size(), 1uz);
-			EXPECT_EQ(diags[0].severity, Severity::eError);
+			EXPECT_EQ(diags[0].severity(), Severity::eError);
 			for (const auto word : c.words) {
-				EXPECT_TRUE(mentions(diags[0], word)) << diags[0].message;
+				EXPECT_TRUE(mentions(diags[0], word)) << diags[0].message();
 			}
 		}
 
 		// resolveToggles validates the fixed set the same way
 		const auto diags = resolveFail(mod, { { "Shading", "Clustered" } });
 		ASSERT_EQ(diags.size(), 1uz);
-		EXPECT_TRUE(mentions(diags[0], "'Clustered'")) << diags[0].message;
+		EXPECT_TRUE(mentions(diags[0], "'Clustered'")) << diags[0].message();
 	}
 
 	TEST(ResolveTest, PassValueWinsOverProfileWithWarning) {
@@ -408,7 +408,7 @@ namespace AccelLang {
 		);
 		EXPECT_EQ(fixed.toggles, (ToggleSet { { "Shading", "Deferred" } }));
 		ASSERT_EQ(fixed.warnings.size(), 1uz);// the material agrees with the winning pass value
-		EXPECT_TRUE(mentions(fixed.warnings[0], "profile")) << fixed.warnings[0].message;
+		EXPECT_TRUE(mentions(fixed.warnings[0], "profile")) << fixed.warnings[0].message();
 
 		const auto materialOnly = fixOk(mod, ToggleSources { .pass = {}, .profile = {}, .material = { { "Shading", "Deferred" } } });
 		EXPECT_EQ(materialOnly.toggles, (ToggleSet { { "Shading", "Deferred" } }));
@@ -427,7 +427,7 @@ namespace AccelLang {
 		);
 		const auto diags = resolveFail(mod, { { "Shading", "Forward" }, { "Shadows", "On" } });
 		ASSERT_EQ(diags.size(), 1uz);
-		EXPECT_EQ(diags[0].message, "overlapping bodies for 'F()' at Shading=Forward, Shadows=On");
+		EXPECT_EQ(diags[0].message(), "overlapping bodies for 'F()' at Shading=Forward, Shadows=On");
 
 		const auto resolved = resolveOk(mod, { { "Shading", "Forward" }, { "Shadows", "Off" } });
 		EXPECT_EQ(functionNames(resolved), (Vector<String> { "F", "main" }));
@@ -440,7 +440,7 @@ namespace AccelLang {
 		const auto mod = parse(String(shading) + "@when (Shading == Forward) fn F() -> f32 { return 1.0; }\nfn main() {\n\tfrag_depth = F();\n}\n");
 		const auto diags = resolveFail(mod, { { "Shading", "Deferred" } });
 		ASSERT_EQ(diags.size(), 1uz);
-		EXPECT_EQ(diags[0].message, "no body for 'F()' at Shading=Deferred");
+		EXPECT_EQ(diags[0].message(), "no body for 'F()' at Shading=Deferred");
 		static_cast<void>(resolveOk(mod, { { "Shading", "Forward" } }));
 
 		// a conditional function nobody calls in that variant is simply dropped
@@ -459,7 +459,7 @@ namespace AccelLang {
 			const auto merged = merge(list);
 			ASSERT_FALSE(merged.has_value());
 			EXPECT_TRUE(mentions(merged.error().front(), "'P'") && mentions(merged.error().front(), "'S'") && mentions(merged.error().front(), "'K'"))
-				<< merged.error().front().message;
+				<< merged.error().front().message();
 		}
 	}
 

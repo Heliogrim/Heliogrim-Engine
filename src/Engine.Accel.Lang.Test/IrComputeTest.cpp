@@ -22,13 +22,13 @@ namespace AccelLang {
 
 		[[nodiscard]] Module parseOk(StringView source_, EntryKind entry_ = EntryKind::eCompute) {
 			auto res = parse(source_, entry_);
-			EXPECT_TRUE(res.has_value()) << (res.has_value() || res.error().empty() ? "" : res.error().front().message);
+			EXPECT_TRUE(res.has_value()) << (res.has_value() || res.error().empty() ? "" : res.error().front().message());
 			return res.has_value() ? std::move(res).value() : Module {};
 		}
 
 		[[nodiscard]] String errorOf(StringView source_, EntryKind entry_ = EntryKind::eCompute) {
 			auto res = parse(source_, entry_);
-			return res.has_value() || res.error().empty() ? String {} : res.error().front().message;
+			return res.has_value() || res.error().empty() ? String {} : res.error().front().message();
 		}
 
 		[[nodiscard]] String emitGlsl(ref<Module> mod_) {
@@ -108,6 +108,23 @@ namespace AccelLang {
 		const auto writable = String { "@input (mode = bind, id = \"img\", class = image, access = write) image2d<rgba16f> img;\n" };
 		const auto message = errorOf(writable + "fn main() {\n\tlet c = img;\n\timage_store(c, s32vec2(0, 0), f32vec4(1.0));\n}\n");
 		EXPECT_EQ(message, "'image_store' needs a storage image place, got local 'c'");
+	}
+
+	TEST(ComputeTest, ImageStoreOnNonImageHasItsCode) {
+		const auto writable = String { "@input (mode = bind, id = \"img\", class = image, access = write) image2d<rgba16f> img;\n" };
+		const auto res = parse(writable + "fn main() {\n\tlet c = img;\n\timage_store(c, s32vec2(0, 0), f32vec4(1.0));\n}\n");
+		ASSERT_FALSE(res.has_value());
+		ASSERT_FALSE(res.error().empty());
+		EXPECT_EQ(res.error().front().code()->key, "not-storage-resource");
+	}
+
+	TEST(ComputeTest, UnsizedPushConstantHasItsCode) {
+		const auto mod = parseOk("@input (mode = bind, id = \"p\", class = push) block p { u32 count; f32[] items; };\nfn main() {}\n");
+		Language target {};
+		const auto layout = assignLayout(computeInterface(mod), mod.types, {});
+		const auto res = GlslEmitter {}.emit(mod, layout, target);
+		ASSERT_FALSE(res.diagnostics.empty());
+		EXPECT_EQ(res.diagnostics.front().code()->key, "invalid-push-constant-type");
 	}
 
 	TEST(ComputeTest, AtomicThroughParameterIsRejected) {

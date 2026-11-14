@@ -15,6 +15,7 @@
 #include <Engine.Accel.Lang/Ir/Interface.hpp>
 #include <Engine.Accel.Lang/Rep/Annotation.hpp>
 #include <Engine.Common/Make.hpp>
+#include <Engine.Diagnostics/Render.hpp>
 #include <Engine.Logging/Logger.hpp>
 
 #include "gtest/gtest.h"
@@ -97,7 +98,7 @@ namespace AccelCompile {
 		if (not parsed.has_value()) {
 			auto failure = ::testing::AssertionFailure() << "parse failed:";
 			for (const auto& d : parsed.error()) {
-				failure << "\n" << d.line << ":" << d.column << " " << std::string { d.message };
+				failure << "\n" << std::string { hg::engine::diag::render(d) };
 			}
 			return failure;
 		}
@@ -144,7 +145,7 @@ namespace AccelCompile {
 		if (not composed.has_value()) {
 			auto failure = ::testing::AssertionFailure() << "resolve failed:";
 			for (const auto& d : composed.error()) {
-				failure << "\n" << d.line << ":" << d.column << " " << std::string { d.message };
+				failure << "\n" << std::string { hg::engine::diag::render(d) };
 			}
 			return failure;
 		}

@@ -51,7 +51,7 @@ namespace {
 					if (a.name == b.name && a.params.size() == b.params.size() && ir::signatureOf(_mod, a) == ir::signatureOf(_mod, b) &&
 						not std::ranges::equal(a.params, b.params, {}, &ir::ParamDecl::kind, &ir::ParamDecl::kind)) {
 						const Here here { _loc, b.loc };
-						error("overloads of '" + a.name + "' differ only in reference kind");
+						error(codes::asl("duplicate-declaration"), "overloads of '" + a.name + "' differ only in reference kind");
 					}
 				}
 			}
@@ -86,7 +86,7 @@ namespace {
 	private:
 		void reserved(ref<const String> name_, bool function_ = false) {
 			if (ir::reservedForRegions(name_, function_)) {
-				error("'" + name_ + "' ends in a suffix reserved for region lowering");
+				error(codes::asl("reserved-name"), "'" + name_ + "' ends in a suffix reserved for region lowering");
 			}
 		}
 
@@ -142,7 +142,7 @@ namespace {
 		/* range expressions whose context is a borrow (alias initializer or call argument) */
 		Vector<u32> _borrowed;
 
-/* head token of the node being checked; restored on scope exit so errors after operand recursion stay on the parent */ ir::SourceLoc _loc {};  struct Here { explicit Here(ref<ir::SourceLoc> slot_, ir::SourceLoc next_) : _slot(slot_), _saved(slot_) { _slot = next_; }  ~Here() { _slot = _saved; }  ref<ir::SourceLoc> _slot; ir::SourceLoc _saved; };  void error(String message_) { _diags.emplace_back( ir::Diagnostic { .severity = ir::Severity::eError, .message = std::move(message_), .line = _loc.line, .column = _loc.column } ); }
+/* head token of the node being checked; restored on scope exit so errors after operand recursion stay on the parent */ ir::SourceLoc _loc {};  struct Here { explicit Here(ref<ir::SourceLoc> slot_, ir::SourceLoc next_) : _slot(slot_), _saved(slot_) { _slot = next_; }  ~Here() { _slot = _saved; }  ref<ir::SourceLoc> _slot; ir::SourceLoc _saved; };  void error(ref<const ir::DiagnosticCodeInfo> code_, String message_) { _diags.emplace_back(ir::Diagnostic::error(code_, std::move(message_)).at(ir::pointAt(_mod.name, _loc))); }
 
 		[[nodiscard]] String name(TypeRef type_) const {
 			return ir::describeType(_mod.types, type_);
@@ -328,7 +328,7 @@ namespace {
 					reserved(_mod.stmts[ref_.index].name);
 					const auto mutableLocal = _mod.stmts[ref_.index].mutable_;
 					if (not mutableLocal && lhs.index >= _mod.exprs.size()) {
-						error("a 'const' local needs an initializer");
+						error(codes::asl("incomplete-local-declaration"), "a 'const' local needs an initializer");
 					}
 					const auto declared = _mod.stmts[ref_.index].type;
 					auto type = declared;
@@ -336,7 +336,7 @@ namespace {
 						const auto init = expr(lhs);
 						if (valid(declared)) {
 							if (valid(init) && not coerce(lhs, declared)) {
-								error(
+								error(codes::asl("type-mismatch"), 
 									"cannot initialize '" + _mod.stmts[ref_.index].name + "' of type " + name(declared) + " with " + name(init)
 								);
 							}
@@ -356,10 +356,10 @@ namespace {
 					const auto type = expr(lhs);
 					const auto writes = _mod.stmts[ref_.index].mutable_;
 					if (lhs.index >= _mod.exprs.size() || not ir::isPlace(_mod, lhs)) {
-						error("'&' needs a place expression");
+						error(codes::asl("not-borrowable"), "'&' needs a place expression");
 					} else if (writes) {
 						if (const auto denied = readOnly(lhs, true); denied.has_value()) {
-							error(*denied);
+							error(codes::asl("not-assignable"), *denied);
 						}
 					}
 					_mod.stmts[ref_.index].type = type;
@@ -381,7 +381,7 @@ namespace {
 					}
 					auto place = placePath(lhs);
 					if (const auto* live = place.has_value() ? liveConflict(*place, parentAlias, writes) : nullptr; live != nullptr) {
-						error(
+						error(codes::asl("borrow-conflict"), 
 							"'" + String { writes ? "&mut" : "&" } + "' borrow '" + ir::describePlace(_mod, *place) + "' overlaps live borrow '" +
 							ir::describePlace(_mod, *live->place) + "'"
 						);
@@ -409,16 +409,16 @@ namespace {
 						target = expr(lhs);
 						value = binary(op.substr(0uz, op.size() - 1uz), Vector<ExprRef> { lhs, rhs });
 						if (valid(target) && valid(value) && not same(target, value)) {
-							error("cannot assign " + name(value) + " to " + name(target));
+							error(codes::asl("type-mismatch"), "cannot assign " + name(value) + " to " + name(target));
 						}
 					}
 					if (lhs.index < _mod.exprs.size() && ir::isPlace(_mod, lhs)) {
 						if (const auto denied = readOnly(lhs, false); denied.has_value()) {
-							error(*denied);
+							error(codes::asl("not-assignable"), *denied);
 						}
 					}
 					if (op.empty() && valid(target) && valid(value) && not coerce(rhs, target)) {
-						error("cannot assign " + name(value) + " to " + name(target));
+						error(codes::asl("type-mismatch"), "cannot assign " + name(value) + " to " + name(target));
 					}
 					break;
 				}
@@ -443,13 +443,13 @@ namespace {
 				case StmtKind::eBreak:
 				case StmtKind::eContinue: {
 					if (_loops == 0uL) {
-						error(String(kind == StmtKind::eBreak ? "'break'" : "'continue'") + " outside a loop");
+						error(codes::asl("loop-control-outside-loop"), String(kind == StmtKind::eBreak ? "'break'" : "'continue'") + " outside a loop");
 					}
 					break;
 				}
 				case StmtKind::eDiscard: {
 					if (_mod.entry != ir::EntryKind::eFragment) {
-						error("'discard' is only valid in fragment stages");
+						error(codes::asl("stage-unavailable"), "'discard' is only valid in fragment stages");
 					}
 					break;
 				}
@@ -463,7 +463,7 @@ namespace {
 					if (lhs.index < _mod.exprs.size()) {
 						const auto value = expr(lhs);
 						if (valid(_ret) && valid(value) && not coerce(lhs, _ret)) {
-							error("cannot return " + name(value) + " from a function returning " + name(_ret));
+							error(codes::asl("type-mismatch"), "cannot return " + name(value) + " from a function returning " + name(_ret));
 						}
 					}
 					break;
@@ -471,7 +471,7 @@ namespace {
 				case StmtKind::eIf: {
 					const auto condition = expr(lhs);
 					if (valid(condition) && not isBool(condition)) {
-						error("condition has type " + name(condition) + ", expected bool");
+						error(codes::asl("type-mismatch"), "condition has type " + name(condition) + ", expected bool");
 					}
 					scoped(children);
 					break;
@@ -488,12 +488,12 @@ namespace {
 		/* D8: a constant-true or missing condition keeps the whole wave in the loop */
 		void loopCondition(ExprRef cond_) {
 			if (cond_.index >= _mod.exprs.size() || (_mod.exprs[cond_.index].kind == ExprKind::eLiteral && _mod.exprs[cond_.index].name == "true")) {
-				error("loop condition is constant; lanes that never reach 'break' keep the whole wave in the loop, use a bounded condition");
+				error(codes::asl("constant-loop-condition"), "loop condition is constant; lanes that never reach 'break' keep the whole wave in the loop, use a bounded condition");
 				return;
 			}
 			const auto condition = expr(cond_);
 			if (valid(condition) && not isBool(condition)) {
-				error("condition has type " + name(condition) + ", expected bool");
+				error(codes::asl("type-mismatch"), "condition has type " + name(condition) + ", expected bool");
 			}
 		}
 
@@ -554,11 +554,11 @@ namespace {
 						const auto count = _mod.types[type.index].count;
 						const auto element = _mod.types[type.index].element;
 						if (operands.size() != count) {
-							error("array of " + std::to_string(count) + " elements constructed from " + std::to_string(operands.size()) + " values");
+							error(codes::asl("wrong-argument-count"), "array of " + std::to_string(count) + " elements constructed from " + std::to_string(operands.size()) + " values");
 						}
 						for (auto i = 0uz; i < operands.size(); ++i) {
 							if (valid(types[i]) && not coerce(operands[i], element)) {
-								error("array element " + std::to_string(i) + " is " + name(types[i]) + ", expected " + name(element));
+								error(codes::asl("type-mismatch"), "array element " + std::to_string(i) + " is " + name(types[i]) + ", expected " + name(element));
 							}
 						}
 					}
@@ -579,7 +579,7 @@ namespace {
 							fromScalars = valid(types[i]) && coerce(operands[i], scalarType);
 						}
 						if (not fromMatrix && not fromColumns && not fromScalars) {
-							error("cannot construct " + name(type) + " from the given arguments");
+							error(codes::asl("type-mismatch"), "cannot construct " + name(type) + " from the given arguments");
 						}
 					}
 					return type;
@@ -800,7 +800,7 @@ namespace {
 				}
 			}
 			if (const auto* live = liveConflict(*mine, from, writes_); live != nullptr) {
-				error(
+				error(codes::asl("borrow-conflict"), 
 					"'" + String { writes_ ? "&mut" : "&" } + "' argument '" + ir::describePlace(_mod, *mine) + "' overlaps live borrow '" +
 					ir::describePlace(_mod, *live->place) + "' of call to '" + name_ + "'"
 				);
@@ -821,7 +821,7 @@ namespace {
 				}
 				for (const auto& other : others) {
 					if (not ir::disjoint(_mod, *mine, other, immutable)) {
-						error(
+						error(codes::asl("borrow-conflict"), 
 							"'&mut' argument '" + ir::describePlace(_mod, *mine) + "' overlaps argument '" +
 							ir::describePlace(_mod, other) + "' of call to '" + name_ + "'"
 						);
@@ -842,11 +842,11 @@ namespace {
 					continue;
 				}
 				if (not ir::isPlace(_mod, operands_[i])) {
-					error("'&' needs a place expression");
+					error(codes::asl("not-borrowable"), "'&' needs a place expression");
 					continue;
 				}
 				if (const auto denied = readOnly(operands_[i], true); denied.has_value()) {
-					error(*denied);
+					error(codes::asl("not-assignable"), *denied);
 					continue;
 				}
 				if (not overlap(name_, operands_, i)) {
@@ -864,13 +864,13 @@ namespace {
 			}
 			const auto init = expr(decl.value);
 			if (valid(init) && not coerce(decl.value, decl.type)) {
-				error("cannot initialize constant '" + decl.name + "' of type " + name(decl.type) + " with " + name(init));
+				error(codes::asl("type-mismatch"), "cannot initialize constant '" + decl.name + "' of type " + name(decl.type) + " with " + name(init));
 			}
 			if (decl.specId.has_value() && _mod.types[decl.type.index].kind != TypeKind::eScalar) {
-				error("specialization constant '" + decl.name + "' must be a scalar, not " + name(decl.type));
+				error(codes::asl("type-mismatch"), "specialization constant '" + decl.name + "' must be a scalar, not " + name(decl.type));
 			}
 			if (not isConstant(decl.value)) {
-				error("initializer of constant '" + decl.name + "' is not a constant expression");
+				error(codes::asl("not-constant"), "initializer of constant '" + decl.name + "' is not a constant expression");
 			}
 		}
 
@@ -917,7 +917,7 @@ namespace {
 			}
 			const auto it = std::ranges::find(_mod.bindings, e.name, &ir::BindingDecl::localName);
 			if (it == _mod.bindings.end()) {
-				error("unknown name '" + e.name + "'");
+				error(codes::asl("unknown-name"), "unknown name '" + e.name + "'");
 				return {};
 			}
 			return typeOf(*it);
@@ -926,7 +926,7 @@ namespace {
 		[[nodiscard]] TypeRef builtin(ref<const String> name_, ref<const Vector<ExprRef>> operands_) {
 			if (const auto* variable = ir::findBuiltinVariable(name_); variable != nullptr && operands_.empty()) {
 				if (_hasMain && (variable->stages & ir::stageBit(_mod.entry)) == 0u) {
-					error("'" + name_ + "' is not available in " + String(ir::stageName(_mod.entry)) + " stages");
+					error(codes::asl("stage-unavailable"), "'" + name_ + "' is not available in " + String(ir::stageName(_mod.entry)) + " stages");
 				}
 				const auto element = vectorOf(variable->scalar, 32uL, variable->n);
 				if (variable->arrayed || variable->count != 0uL) {
@@ -941,12 +941,12 @@ namespace {
 			if (name_ == "len") {
 				// region length; not a GLSL builtin, lowered with the regions
 				if (operands_.size() != 1uz) {
-					error("'len' takes one region argument");
+					error(codes::asl("wrong-argument-count"), "'len' takes one region argument");
 					return {};
 				}
 				const auto arg = expr(operands_.front());
 				if (valid(arg) && not isKind(arg, TypeKind::eRegion)) {
-					error("'len' needs a region, got " + name(arg));
+					error(codes::asl("type-mismatch"), "'len' needs a region, got " + name(arg));
 					return {};
 				}
 				return valid(arg) ? scalarOf(ScalarKind::eUInt, 32uL) : TypeRef {};
@@ -960,7 +960,7 @@ namespace {
 				return {};
 			}
 			if (_hasMain && (first->stages & ir::stageBit(_mod.entry)) == 0u) {
-				error("'" + name_ + "' is not available in " + String(ir::stageName(_mod.entry)) + " stages");
+				error(codes::asl("stage-unavailable"), "'" + name_ + "' is not available in " + String(ir::stageName(_mod.entry)) + " stages");
 				return {};
 			}
 			for (const auto type : types) {
@@ -1014,11 +1014,11 @@ namespace {
 							continue;
 						}
 						if (not ir::isPlace(_mod, operands_[k])) {
-							error("'&' needs a place expression");
+							error(codes::asl("not-borrowable"), "'&' needs a place expression");
 							continue;
 						}
 						if (const auto denied = readOnly(operands_[k], true); denied.has_value()) {
-							error(*denied);
+							error(codes::asl("not-assignable"), *denied);
 							continue;
 						}
 						const auto isImage = name_ == "image_store";
@@ -1045,14 +1045,14 @@ namespace {
 								cls == ir::BindClass::eStorageImage :
 								(cls == ir::BindClass::eStorageBuffer || cls == ir::BindClass::eWorkgroup);
 							if (viaScope != nullptr && viaScope->mode == Mode::eRefWrite && viaScope->target.empty()) {
-								error(
+								error(codes::asl("not-storage-resource"), 
 									"'" + name_ + "' cannot act through parameter '" + rootLabel + "'; GLSL " + (isImage ? "image access" : "atomics") +
 									" need the " + (isImage ? "storage image" : "storage buffer or workgroup variable") + " itself"
 								);
 								continue;
 							}
 							if (not good) {
-								error(
+								error(codes::asl("not-storage-resource"), 
 									"'" + name_ + "' needs a " + (isImage ? "storage image" : "storage buffer or workgroup") + " place, got " +
 									(bound != nullptr ? "binding '" : "local '") + rootLabel + "'"
 								);
@@ -1071,7 +1071,7 @@ namespace {
 			for (auto k = 0uz; k < types.size(); ++k) {
 				args += (k == 0uz ? "" : ", ") + name(types[k]);
 			}
-			error("no overload of '" + name_ + "' accepts (" + args + ")");
+			error(codes::asl("no-matching-overload"), "no overload of '" + name_ + "' accepts (" + args + ")");
 			return {};
 		}
 
@@ -1104,7 +1104,7 @@ namespace {
 					}
 				}
 			}
-			error("unknown field '" + name_ + "' of " + name(base));
+			error(codes::asl("unknown-name"), "unknown field '" + name_ + "' of " + name(base));
 			return {};
 		}
 
@@ -1114,7 +1114,7 @@ namespace {
 				return {};
 			}
 			if (std::ranges::find(_borrowed, ref_.index) == _borrowed.end()) {
-				error("a range needs a borrow");
+				error(codes::asl("type-mismatch"), "a range needs a borrow");
 			}
 			const auto base = expr(operands_[0]);
 			const auto u32Type = scalarOf(ScalarKind::eUInt, 32uL);
@@ -1124,18 +1124,18 @@ namespace {
 				bounds = bounds && valid(type) && coerce(bound, u32Type);
 			}
 			if (not bounds) {
-				error("range bounds must be u32");
+				error(codes::asl("type-mismatch"), "range bounds must be u32");
 			} else if (const auto& lo = _mod.exprs[operands_[1].index], &hi = _mod.exprs[operands_[2].index];
 				lo.kind == ExprKind::eLiteral && hi.kind == ExprKind::eLiteral && ir::integerLiteral(lo.name) && ir::integerLiteral(hi.name) &&
 				*ir::integerLiteral(lo.name) >= *ir::integerLiteral(hi.name)) {
-				error("empty or reversed range");
+				error(codes::asl("empty-range"), "empty or reversed range");
 			}
 			if (not valid(base)) {
 				return {};
 			}
 			const auto desc = _mod.types[base.index];
 			if (desc.kind != TypeKind::eArray && desc.kind != TypeKind::eRegion) {
-				error("cannot range '" + name(base) + "'");
+				error(codes::asl("type-mismatch"), "cannot range '" + name(base) + "'");
 				return {};
 			}
 			TypeDesc region {};
@@ -1151,7 +1151,7 @@ namespace {
 			const auto base = expr(operands_[0]);
 			const auto at = expr(operands_[1]);
 			if (valid(at) && not isInteger(at)) {
-				error("index has type " + name(at) + ", expected an integer");
+				error(codes::asl("type-mismatch"), "index has type " + name(at) + ", expected an integer");
 			}
 			if (not valid(base)) {
 				return {};
@@ -1164,7 +1164,7 @@ namespace {
 				case TypeKind::eMatrix: return vectorOf(desc.scalar, desc.bits, desc.m);
 				default: break;
 			}
-			error("cannot index type " + name(base));
+			error(codes::asl("type-mismatch"), "cannot index type " + name(base));
 			return {};
 		}
 
@@ -1179,7 +1179,7 @@ namespace {
 			if (op_ == "!" ? isBool(inner) : (op_ == "~" ? isInteger(componentOf(inner)) : numeric(inner))) {
 				return inner;
 			}
-			error("operand of '" + op_ + "' has type " + name(inner));
+			error(codes::asl("type-mismatch"), "operand of '" + op_ + "' has type " + name(inner));
 			return {};
 		}
 
@@ -1210,7 +1210,7 @@ namespace {
 				return same(lt, rt) ? boolType() : mismatch(op_, lt, rt);
 			}
 			if (op_ == "%" && numeric(lt) && numeric(rt) && not (isInteger(componentOf(lt)) && isInteger(componentOf(rt)))) {
-				error("operator '%' needs integer operands, got " + name(not isInteger(componentOf(lt)) ? lt : rt));
+				error(codes::asl("type-mismatch"), "operator '%' needs integer operands, got " + name(not isInteger(componentOf(lt)) ? lt : rt));
 				return {};
 			}
 			if (op_ == "<<" || op_ == ">>") {
@@ -1260,7 +1260,7 @@ namespace {
 			auto thenType = expr(operands_[1]);
 			const auto elseType = expr(operands_[2]);
 			if (valid(condition) && not isBool(condition)) {
-				error("condition has type " + name(condition) + ", expected bool");
+				error(codes::asl("type-mismatch"), "condition has type " + name(condition) + ", expected bool");
 			}
 			if (not valid(thenType) || not valid(elseType) || same(thenType, elseType) || coerce(operands_[2], thenType)) {
 				return thenType;
@@ -1268,12 +1268,12 @@ namespace {
 			if (coerce(operands_[1], elseType)) {
 				return elseType;
 			}
-			error("branches of '?:' have types " + name(thenType) + " and " + name(elseType));
+			error(codes::asl("type-mismatch"), "branches of '?:' have types " + name(thenType) + " and " + name(elseType));
 			return {};
 		}
 
 		[[nodiscard]] TypeRef mismatch(ref<const String> op_, TypeRef lt_, TypeRef rt_) {
-			error("operands of '" + op_ + "' have types " + name(lt_) + " and " + name(rt_));
+			error(codes::asl("type-mismatch"), "operands of '" + op_ + "' have types " + name(lt_) + " and " + name(rt_));
 			return {};
 		}
 
@@ -1308,7 +1308,7 @@ namespace {
 				}
 			}
 			if (named.empty()) {
-				error("unknown function '" + name_ + "'");
+				error(codes::asl("unknown-function"), "unknown function '" + name_ + "'");
 				return {};
 			}
 
@@ -1356,9 +1356,9 @@ namespace {
 
 			if (not chosen.has_value() || ambiguous) {
 				if (known && ambiguous) {
-					error("call to '" + name_ + "' is ambiguous for (" + join(args) + ")");
+					error(codes::asl("ambiguous-call"), "call to '" + name_ + "' is ambiguous for (" + join(args) + ")");
 				} else if (known) {
-					error("no overload of '" + name_ + "' takes (" + join(args) + "); candidates: " + candidates(named));
+					error(codes::asl("no-matching-overload"), "no overload of '" + name_ + "' takes (" + join(args) + "); candidates: " + candidates(named));
 				}
 				return {};
 			}
@@ -1369,7 +1369,7 @@ namespace {
 			}
 			for (auto i = 0uz; known && i < params.size(); ++i) {
 				if (regionArgument(args[i], params[i].type) && _mod.types[args[i].index].count == 0uL) {
-					error("unsized array needs an explicit range");
+					error(codes::asl("type-mismatch"), "unsized array needs an explicit range");
 				}
 			}
 			refArguments(name_, _mod.functions[*chosen], operands_);
@@ -1484,12 +1484,8 @@ ir::Diagnostics ir::checkStageValidity(ref<const Module> mod_, EntryKind entry_)
 		const auto stages = variable != nullptr ? variable->stages : (function != nullptr ? function->stages : stageAll);
 		if ((stages & stageBit(entry_)) == 0u) {
 			diags.emplace_back(
-				Diagnostic {
-					.severity = Severity::eError,
-					.message = "'" + e.name + "' is not available in " + String(stageName(entry_)) + " stages",
-					.line = e.loc.line,
-					.column = e.loc.column
-				}
+				Diagnostic::error(codes::asl("stage-unavailable"), "'" + e.name + "' is not available in " + String(stageName(entry_)) + " stages")
+					.at(pointAt(mod_.name, e.loc))
 			);
 		}
 	}
@@ -1539,14 +1535,13 @@ namespace {
 				via += (via.empty() ? "" : ", ") + _mod.functions[*it].name;
 			}
 			const auto tail = via.empty() ? String {} : " (via " + via + ")";
-			_diags.emplace_back(ir::Diagnostic {
-				.severity = fatal ? ir::Severity::eError : ir::Severity::eWarning,
-				.message = fatal ?
+			auto message = fatal ?
 				"'" + e.name + "' under lane-dependent control" + tail + "; lanes that skip it deadlock the workgroup" :
-				"'" + e.name + "' uses implicit derivatives under lane-dependent control" + tail + "; results are undefined, use sample_lod",
-				.line = e.loc.line,
-				.column = e.loc.column
-			});
+				"'" + e.name + "' uses implicit derivatives under lane-dependent control" + tail + "; results are undefined, use sample_lod";
+			const auto& code = codes::asl("divergent-control");
+			_diags.emplace_back(
+				(fatal ? ir::Diagnostic::error(code, std::move(message)) : ir::Diagnostic::warning(code, std::move(message))).at(ir::pointAt(_mod.name, e.loc))
+			);
 		}
 
 		void walkExpr(ir::ExprRef ref_) {

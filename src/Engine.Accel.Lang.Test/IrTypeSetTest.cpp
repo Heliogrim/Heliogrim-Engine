@@ -1,5 +1,9 @@
 #include "pch.h"
 
+/**/
+
+#include "IrSpan.hpp"
+
 #include <array>
 #include <set>
 #include <string>
@@ -25,7 +29,7 @@ namespace AccelLang {
 
 		[[nodiscard]] Module resolved(StringView source_, EntryKind entry_) {
 			auto parsed = parseModule("M", source_, entry_, ModuleResolver { noIncludes });
-			EXPECT_TRUE(parsed.has_value()) << (parsed.has_value() || parsed.error().empty() ? "" : parsed.error().front().message);
+			EXPECT_TRUE(parsed.has_value()) << (parsed.has_value() || parsed.error().empty() ? "" : parsed.error().front().message());
 			if (not parsed.has_value()) {
 				return {};
 			}
@@ -103,7 +107,7 @@ namespace AccelLang {
 
 		const auto emission = emit(uniformOf(source));
 
-		ASSERT_TRUE(emission.result.diagnostics.empty()) << source << ": " << emission.result.diagnostics.front().message;
+		ASSERT_TRUE(emission.result.diagnostics.empty()) << source << ": " << emission.result.diagnostics.front().message();
 		EXPECT_TRUE(emission.text.contains("\t" + glsl + " x;\n")) << source << " -> " << glsl << "\n" << emission.text;
 	}
 
@@ -166,9 +170,9 @@ namespace AccelLang {
 
 		ASSERT_FALSE(parsed.has_value());
 		const auto& diag = parsed.error().front();
-		EXPECT_TRUE(diag.message.contains("integer matrix")) << diag.message;
-		EXPECT_TRUE(diag.message.contains("s32mat4")) << diag.message;
-		EXPECT_EQ(diag.line, 2u);
+		EXPECT_TRUE(diag.message().contains("integer matrix")) << diag.message();
+		EXPECT_TRUE(diag.message().contains("s32mat4")) << diag.message();
+		EXPECT_EQ(spanOf(diag).line, 2u);
 	}
 
 	TEST(TypeSetTest, IntegerMatrixInModuleIsDiagnosticNotWrongText) {
@@ -238,7 +242,7 @@ namespace AccelLang {
 			"fn main() { let x = twice(1.0); }\n"
 		);
 
-		ASSERT_TRUE(emission.result.diagnostics.empty()) << emission.result.diagnostics.front().message;
+		ASSERT_TRUE(emission.result.diagnostics.empty()) << emission.result.diagnostics.front().message();
 		const Vector<String> expected { "GL_EXT_shader_explicit_arithmetic_types_float16" };
 		EXPECT_EQ(emission.result.requirements.extensions, expected) << emission.text;
 	}
@@ -293,21 +297,21 @@ namespace AccelLang {
 		const auto emission = emit("@input (mode = forward, id = \"v\") u8vec4 v;\n");
 
 		ASSERT_FALSE(emission.result.diagnostics.empty());
-		EXPECT_TRUE(emission.result.diagnostics.front().message.contains("8-bit")) << emission.result.diagnostics.front().message;
+		EXPECT_TRUE(emission.result.diagnostics.front().message().contains("8-bit")) << emission.result.diagnostics.front().message();
 		EXPECT_TRUE(emission.text.empty());
 	}
 
 	TEST(GlslExtensionTest, SixteenBitForwardVaryingNeedsInterfaceFeature) {
 		const auto emission = emit("@output (mode = forward, id = \"v\") f16vec2 v;\n");
 
-		ASSERT_TRUE(emission.result.diagnostics.empty()) << emission.result.diagnostics.front().message;
+		ASSERT_TRUE(emission.result.diagnostics.empty()) << emission.result.diagnostics.front().message();
 		EXPECT_TRUE(emission.result.requirements.has(GlslFeature::eStorageInputOutput16));
 	}
 
 	namespace {
 		[[nodiscard]] Emission emitSliced(StringView source_) {
 			auto parsed = parseModule("M", source_, EntryKind::eFragment, ModuleResolver { noIncludes });
-			EXPECT_TRUE(parsed.has_value()) << (parsed.has_value() || parsed.error().empty() ? "" : parsed.error().front().message);
+			EXPECT_TRUE(parsed.has_value()) << (parsed.has_value() || parsed.error().empty() ? "" : parsed.error().front().message());
 			if (not parsed.has_value()) {
 				return {};
 			}

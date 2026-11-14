@@ -108,8 +108,9 @@ namespace hg::engine::accel::lang::ir::detail {
 
 	class Parser {
 	public:
-		Parser(StringView name_, ref<const Vector<ir::Token>> tokens_, ref<Shared> shared_) :
+		Parser(StringView name_, StringView source_, ref<const Vector<ir::Token>> tokens_, ref<Shared> shared_) :
 			_name(name_),
+			_source(source_),
 			_tokens(tokens_),
 			_shared(shared_) {}
 
@@ -117,6 +118,8 @@ namespace hg::engine::accel::lang::ir::detail {
 
 	private:
 		StringView _name;
+		/* the text the tokens view, for byte offsets */
+		StringView _source;
 		ref<const Vector<ir::Token>> _tokens;
 		ref<Shared> _shared;
 		size_t _pos = 0uz;
@@ -164,8 +167,8 @@ namespace hg::engine::accel::lang::ir::detail {
 			return _tokens[std::min(_pos + 1uz, _tokens.size() - 1uz)];
 		}
 
-		[[nodiscard]] ir::Diagnostic diagnostic(ref<const ir::Token> at_, String message_) const;
-		void error(ref<const ir::Token> at_, String message_);
+		[[nodiscard]] ir::Diagnostic diagnostic(ref<const ir::DiagnosticCodeInfo> code_, ref<const ir::Token> at_, String message_) const;
+		void error(ref<const ir::DiagnosticCodeInfo> code_, ref<const ir::Token> at_, String message_);
 		/* reports a user name that collides with GLSL or a generated name; `module_` adds the region-lowering suffixes */
 		void declaredName(ref<const ir::Token> name_, bool module_);
 		void syntaxError(StringView expected_);

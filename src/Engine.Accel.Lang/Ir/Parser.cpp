@@ -209,7 +209,7 @@ namespace hg::engine::accel::lang::ir::detail {
 	void Parser::run() {
 		while (not at(TokenKind::eEof)) {
 			if (at(TokenKind::eRBrace)) {
-				error(take(), "Unmatched '}'.");
+				error(codes::asl("unexpected-token"), take(), "Unmatched '}'.");
 				continue;
 			}
 			item(ir::Condition::always());
@@ -221,38 +221,38 @@ namespace hg::engine::accel::lang::ir::detail {
 			return false;
 		}
 		++_shared.depthErrors;
-		error(at_, "Nesting too deep (limit " + std::to_string(maxDepth) + ").");
+		error(codes::asl("nesting-too-deep"), at_, "Nesting too deep (limit " + std::to_string(maxDepth) + ").");
 		return true;
 	}
 
-	ir::Diagnostic Parser::diagnostic(ref<const ir::Token> at_, String message_) const {
-		return ir::Diagnostic {
-			ir::Severity::eError, located(_name, nested(), std::move(message_)), at_.loc.line, at_.loc.column
-		};
+	ir::Diagnostic Parser::diagnostic(ref<const ir::DiagnosticCodeInfo> code_, ref<const ir::Token> at_, String message_) const {
+		const auto begin = static_cast<u32>(at_.text.data() - _source.data());
+		return ir::Diagnostic::error(code_, located(_name, nested(), std::move(message_)))
+			.at(ir::SourceSpan { String(_name), begin, begin + static_cast<u32>(at_.text.size()), at_.loc.line, at_.loc.column });
 	}
 
-	void Parser::error(ref<const ir::Token> at_, String message_) {
+	void Parser::error(ref<const ir::DiagnosticCodeInfo> code_, ref<const ir::Token> at_, String message_) {
 		if (at_.kind == TokenKind::eEof) {
 			++_eofErrors;
 		}
-		_shared.diags.emplace_back(diagnostic(at_, std::move(message_)));
+		_shared.diags.emplace_back(diagnostic(code_, at_, std::move(message_)));
 	}
 
 	void Parser::declaredName(ref<const ir::Token> name_, bool module_) {
 		const auto text = name_.text;
 		if (text.starts_with("_hg_")) {
-			error(name_, "Identifiers starting with '_hg_' are reserved.");
+			error(codes::asl("reserved-name"), name_, "Identifiers starting with '_hg_' are reserved.");
 
 		} else if (glslReserved(text)) {
-			error(name_, "'" + String(text) + "' is reserved in GLSL.");
+			error(codes::asl("reserved-name"), name_, "'" + String(text) + "' is reserved in GLSL.");
 
 		} else if (module_ && (reservedForRegions(text, false) || reservedForRegions(text, true))) {
-			error(name_, "'" + String(text) + "' ends in a suffix reserved for region lowering");
+			error(codes::asl("reserved-name"), name_, "'" + String(text) + "' ends in a suffix reserved for region lowering");
 		}
 	}
 
 	void Parser::syntaxError(StringView expected_) {
-		error(peek(), "Expected " + String(expected_) + ", found " + describe(peek()) + ".");
+		error(codes::asl("unexpected-token"), peek(), "Expected " + String(expected_) + ", found " + describe(peek()) + ".");
 	}
 
 	bool Parser::expect(TokenKind kind_, StringView expected_) {
@@ -315,7 +315,7 @@ namespace hg::engine::accel::lang::ir::detail {
 		}
 		const auto& target = take();
 		if (not allowed) {
-			return error(directive, "#include must precede all declarations of a module.");
+			return error(codes::asl("misplaced-include"), directive, "#include must precede all declarations of a module.");
 		}
 
 		String name { target.text };
@@ -324,7 +324,7 @@ namespace hg::engine::accel::lang::ir::detail {
 			for (const auto& link : _shared.active) {
 				chain += link + " -> ";
 			}
-			return error(target, "Include cycle: " + chain + name + ".");
+			return error(codes::asl("include-cycle"), target, "Include cycle: " + chain + name + ".");
 		}
 		if (std::ranges::find(_shared.done, name) != _shared.done.end()) {
 			return;
@@ -336,7 +336,7 @@ namespace hg::engine::accel::lang::ir::detail {
 
 		const Opt<String> source = _shared.resolver(name);
 		if (not source.has_value()) {
-			return error(target, "Unknown include '" + name + "'.");
+			return error(codes::asl("unknown-include"), target, "Unknown include '" + name + "'.");
 		}
 		// the nested tokens view `*source`; it outlives them since the nested parse completes here
 		parseSource(name, *source, _shared);
@@ -356,7 +356,7 @@ namespace hg::engine::accel::lang::ir::detail {
 				ann.binding.when = conjoin(std::move(ann.binding.when), std::move(*cond));
 				if (at(TokenKind::eLBrace)) {
 					if (ann.direction != nullptr || ann.redefine != nullptr) {
-						error(peek(), "Only @when may precede a '{' block.");
+						error(codes::asl("misplaced-annotation"), peek(), "Only @when may precede a '{' block.");
 					}
 					return whenBlock(ann.binding.when);
 				}
@@ -370,7 +370,7 @@ namespace hg::engine::accel::lang::ir::detail {
 			const auto& name = take();
 			if (name.text == "input" || name.text == "output") {
 				if (ann.direction != nullptr) {
-					error(name, "Duplicate @input/@output annotation.");
+					error(codes::asl("duplicate-annotation"), name, "Duplicate @input/@output annotation.");
 				}
 				ann.direction = &name;
 				ann.binding.input = name.text == "input";
@@ -380,11 +380,11 @@ namespace hg::engine::accel::lang::ir::detail {
 				ann.spec = &name;
 			} else if (name.text == "compute" || name.text == "fragment" || name.text == "geometry" || name.text == "tess_ctrl" || name.text == "tess_eval") {
 				if (ann.entry != nullptr) {
-					error(name, "Duplicate entry annotation.");
+					error(codes::asl("duplicate-annotation"), name, "Duplicate entry annotation.");
 				}
 				ann.entry = &name;
 			} else {
-				error(name, "Unknown annotation '@" + String(name.text) + "'.");
+				error(codes::asl("unknown-annotation"), name, "Unknown annotation '@" + String(name.text) + "'.");
 				if (at(TokenKind::eLParen)) {
 					skipGroup(TokenKind::eLParen, TokenKind::eRParen);
 				}
@@ -400,44 +400,44 @@ namespace hg::engine::accel::lang::ir::detail {
 		const auto& head = peek();
 		if (head.kind == TokenKind::eKwConst) {
 			if (ann.direction != nullptr || ann.redefine != nullptr || ann.binding.implicit) {
-				error(head, "Only @spec and @when apply to a const declaration.");
+				error(codes::asl("misplaced-annotation"), head, "Only @spec and @when apply to a const declaration.");
 			}
 			return constantDecl(ann);
 		}
 		if (ann.spec != nullptr) {
-			error(*ann.spec, "@spec applies to const declarations only.");
+			error(codes::asl("misplaced-annotation"), *ann.spec, "@spec applies to const declarations only.");
 		}
 		if (ann.entry != nullptr && head.kind != TokenKind::eKwFn) {
-			error(*ann.entry, "@" + String(ann.entry->text) + " applies to fn main only.");
+			error(codes::asl("misplaced-annotation"), *ann.entry, "@" + String(ann.entry->text) + " applies to fn main only.");
 		}
 		if (head.kind == TokenKind::eIdentifier && head.text == "workgroup" && next().kind == TokenKind::eIdentifier) {
 			if (ann.direction != nullptr || ann.redefine != nullptr || ann.binding.implicit) {
-				error(head, "Annotations do not apply to a workgroup declaration.");
+				error(codes::asl("misplaced-annotation"), head, "Annotations do not apply to a workgroup declaration.");
 			}
 			return workgroupDecl(ann);
 		}
 		if (head.kind == TokenKind::eKwToggle || head.kind == TokenKind::eKwStruct) {
 			if (ann.direction != nullptr || ann.redefine != nullptr || ann.binding.implicit) {
-				error(head, "Annotations do not apply to a " + String(head.text) + " declaration.");
+				error(codes::asl("misplaced-annotation"), head, "Annotations do not apply to a " + String(head.text) + " declaration.");
 			}
 			if (ann.binding.when.kind != ir::ConditionKind::eTrue) {
-				error(head, "A " + String(head.text) + " declaration cannot be conditional.");
+				error(codes::asl("misplaced-annotation"), head, "A " + String(head.text) + " declaration cannot be conditional.");
 			}
 			return head.kind == TokenKind::eKwToggle ? toggleDecl() : structDecl();
 		}
 		if (head.kind == TokenKind::eKwFn) {
 			if (ann.direction != nullptr || ann.binding.implicit) {
-				error(head, "@input, @output and implicit apply to bindings only.");
+				error(codes::asl("misplaced-annotation"), head, "@input, @output and implicit apply to bindings only.");
 			}
 			return function(ann);
 		}
 		if (head.kind == TokenKind::eKwBlock || head.kind == TokenKind::eIdentifier) {
 			if (ann.direction == nullptr) {
-				error(head, "Expected a declaration, found " + describe(head) + " (variables need @input or @output).");
+				error(codes::asl("unexpected-token"), head, "Expected a declaration, found " + describe(head) + " (variables need @input or @output).");
 				return recover();
 			}
 			if (ann.redefine != nullptr) {
-				error(*ann.redefine, "@redefine applies to functions only.");
+				error(codes::asl("misplaced-annotation"), *ann.redefine, "@redefine applies to functions only.");
 			}
 			return binding(std::move(ann.binding));
 		}
@@ -455,7 +455,7 @@ namespace hg::engine::accel::lang::ir::detail {
 			item(when_);
 		}
 		if (not accept(TokenKind::eRBrace) && _shared.depthErrors == 0uL) {
-			error(open, "Unterminated @when block, expected '}'.");
+			error(codes::asl("unexpected-token"), open, "Unterminated @when block, expected '}'.");
 		}
 	}
 
@@ -510,12 +510,12 @@ namespace hg::engine::accel::lang::ir::detail {
 					value = value * 10uL + static_cast<u32>(digit - '0');
 				}
 				if (component.text.size() > 9uz || value == 0uL) {
-					error(component, "Invalid local_size component '" + String(component.text) + "'.");
+					error(codes::asl("invalid-annotation-value"), component, "Invalid local_size component '" + String(component.text) + "'.");
 				}
 				if (count < 3uz) {
 					size[count] = value;
 				} else if (count == 3uz) {
-					error(component, "local_size takes at most three components.");
+					error(codes::asl("invalid-annotation-value"), component, "local_size takes at most three components.");
 				}
 				++count;
 			} while (accept(TokenKind::eComma));
@@ -523,7 +523,7 @@ namespace hg::engine::accel::lang::ir::detail {
 				return false;
 			}
 			if (not compute) {
-				error(key_, "'local_size' applies to @compute only.");
+				error(codes::asl("misplaced-annotation"), key_, "'local_size' applies to @compute only.");
 			} else {
 				ann_.attributes.localSize = size;
 			}
@@ -536,9 +536,9 @@ namespace hg::engine::accel::lang::ir::detail {
 			}
 			const auto& value = take();
 			if (value.text != "true" && value.text != "false") {
-				error(value, "Invalid value '" + String(value.text) + "' for annotation key 'early_fragment_tests'.");
+				error(codes::asl("invalid-annotation-value"), value, "Invalid value '" + String(value.text) + "' for annotation key 'early_fragment_tests'.");
 			} else if (compute) {
-				error(key_, "'early_fragment_tests' applies to @fragment only.");
+				error(codes::asl("misplaced-annotation"), key_, "'early_fragment_tests' applies to @fragment only.");
 			} else {
 				ann_.attributes.earlyFragmentTests = value.text == "true";
 			}
@@ -557,7 +557,7 @@ namespace hg::engine::accel::lang::ir::detail {
 					value = value * 10uL + static_cast<u32>(digit - '0');
 				}
 				if (number.text.size() > 9uz || value == 0uL) {
-					error(number, "Invalid " + String(key_.text) + " '" + String(number.text) + "'.");
+					error(codes::asl("invalid-annotation-value"), number, "Invalid " + String(key_.text) + " '" + String(number.text) + "'.");
 				} else if (key_.text == "max_vertices") {
 					ann_.attributes.maxVertices = value;
 					ann_.geometryKeys |= 4u;
@@ -581,7 +581,7 @@ namespace hg::engine::accel::lang::ir::detail {
 			const bool inputKind = it != std::end(names) && it->second <= eTrianglesAdjacency;
 			const bool outputKind = it != std::end(names) && (it->second == ePoints || it->second >= eLineStrip);
 			if (it == std::end(names) || (isInput ? not inputKind : not outputKind)) {
-				error(value, "Invalid value '" + String(value.text) + "' for annotation key '" + String(key_.text) + "'.");
+				error(codes::asl("invalid-annotation-value"), value, "Invalid value '" + String(value.text) + "' for annotation key '" + String(key_.text) + "'.");
 			} else if (isInput) {
 				ann_.attributes.geometryInput = it->second;
 				ann_.geometryKeys |= 1u;
@@ -602,7 +602,7 @@ namespace hg::engine::accel::lang::ir::detail {
 				value = value * 10uL + static_cast<u32>(digit - '0');
 			}
 			if (number.text.size() > 9uz || value == 0uL) {
-				error(number, "Invalid output_vertices '" + String(number.text) + "'.");
+				error(codes::asl("invalid-annotation-value"), number, "Invalid output_vertices '" + String(number.text) + "'.");
 			} else {
 				ann_.attributes.outputVertices = value;
 				ann_.geometryKeys |= 1u;
@@ -637,11 +637,11 @@ namespace hg::engine::accel::lang::ir::detail {
 				}
 			}
 			if (not valid) {
-				error(value, "Invalid value '" + String(value.text) + "' for annotation key '" + String(key_.text) + "'.");
+				error(codes::asl("invalid-annotation-value"), value, "Invalid value '" + String(value.text) + "' for annotation key '" + String(key_.text) + "'.");
 			}
 			return true;
 		}
-		error(key_, "Unknown annotation key '" + String(key_.text) + "' for @" + String(annotation_.text) + ".");
+		error(codes::asl("unknown-annotation"), key_, "Unknown annotation key '" + String(key_.text) + "' for @" + String(annotation_.text) + ".");
 		// skip the value so one bad key does not cascade
 		if (at(TokenKind::eLBracket)) {
 			skipGroup(TokenKind::eLBracket, TokenKind::eRBracket);
@@ -674,7 +674,7 @@ namespace hg::engine::accel::lang::ir::detail {
 			valid = word && cls.has_value();
 			decl.bindClass = valid ? *cls : decl.bindClass;
 			if (valid && *cls == ir::BindClass::eStorageImage && _shared.mod.entry != ir::EntryKind::eCompute) {
-				error(value_, "storage images require a compute module.");
+				error(codes::asl("stage-unavailable"), value_, "storage images require a compute module.");
 			}
 		} else if (not redefine && key_.text == "access") {
 			valid = word && (value_.text == "read" || value_.text == "write" || value_.text == "read_write");
@@ -690,14 +690,14 @@ namespace hg::engine::accel::lang::ir::detail {
 			valid = not word && not value_.text.empty();
 			decl.id = valid ? String(value_.text) : decl.id;
 		} else {
-			return error(
+			return error(codes::asl("unknown-annotation"), 
 				key_,
 				"Unknown annotation key '" + String(key_.text) + "' for @" + String(annotation_.text) + "."
 			);
 		}
 
 		if (not valid) {
-			error(value_, "Invalid value '" + String(value_.text) + "' for annotation key '" + String(key_.text) + "'.");
+			error(codes::asl("invalid-annotation-value"), value_, "Invalid value '" + String(value_.text) + "' for annotation key '" + String(key_.text) + "'.");
 		}
 	}
 
@@ -793,7 +793,7 @@ namespace hg::engine::accel::lang::ir::detail {
 	}
 
 	void Parser::unknownCombinator(ref<const ir::Token> name_) {
-		error(name_, "Unknown condition '" + String(name_.text) + "', expected any, all or none.");
+		error(codes::asl("unexpected-token"), name_, "Unknown condition '" + String(name_.text) + "', expected any, all or none.");
 	}
 
 	/* leaf `Toggle == Value` / `Toggle != Value`; never recurses */
@@ -813,9 +813,9 @@ namespace hg::engine::accel::lang::ir::detail {
 		const auto& toggles = _shared.mod.toggles;
 		const auto toggle = std::ranges::find(toggles, name.text, &ir::Toggle::name);
 		if (toggle == toggles.end()) {
-			error(name, "Unknown toggle '" + String(name.text) + "'.");
+			error(codes::asl("unknown-toggle"), name, "Unknown toggle '" + String(name.text) + "'.");
 		} else if (std::ranges::find(toggle->values, value.text) == toggle->values.end()) {
-			error(value, "Unknown value '" + String(value.text) + "' for toggle '" + String(name.text) + "'.");
+			error(codes::asl("unknown-toggle"), value, "Unknown value '" + String(value.text) + "' for toggle '" + String(name.text) + "'.");
 		}
 
 		auto cond = ir::Condition::equals(String(name.text), String(value.text));
@@ -895,7 +895,7 @@ namespace hg::engine::accel::lang::ir::detail {
 			}
 			const auto& format = take();
 			if (format.text != "rgba8" && format.text != "rgba16f" && format.text != "r32f" && format.text != "r32ui") {
-				error(format, "Unknown image format '" + String(format.text) + "', expected rgba8, rgba16f, r32f or r32ui.");
+				error(codes::asl("unknown-type"), format, "Unknown image format '" + String(format.text) + "', expected rgba8, rgba16f, r32f or r32ui.");
 				return None;
 			}
 			if (not expect(TokenKind::eGreater, "'>'")) {
@@ -910,7 +910,7 @@ namespace hg::engine::accel::lang::ir::detail {
 			result = namedType(name.text);
 		}
 		if (not result.has_value()) {
-			error(
+			error(codes::asl("unknown-type"), 
 				name,
 				isIntMatrixName(name.text) ?
 				"GLSL has no integer matrix type '" + String(name.text) + "'; matrices are float only." :
@@ -929,7 +929,7 @@ namespace hg::engine::accel::lang::ir::detail {
 					count = count * 10uL + static_cast<u32>(digit - '0');
 				}
 				if (text.size() > 9uz || count == 0uL) {
-					error(open, "Invalid array size '" + String(text) + "'.");
+					error(codes::asl("invalid-array-size"), open, "Invalid array size '" + String(text) + "'.");
 				}
 			}
 			if (not expect(TokenKind::eRBracket, "']'")) {
@@ -1012,17 +1012,17 @@ namespace hg::engine::accel::lang::ir::detail {
 		ir::Toggle toggle { toggleName, {}, {} };
 		for (const auto* value : values) {
 			if (std::ranges::find(toggle.values, value->text) != toggle.values.end()) {
-				error(*value, "Duplicate value '" + String(value->text) + "' in toggle '" + toggleName + "'.");
+				error(codes::asl("invalid-toggle-declaration"), *value, "Duplicate value '" + String(value->text) + "' in toggle '" + toggleName + "'.");
 			} else {
 				toggle.values.emplace_back(value->text);
 			}
 		}
 		if (toggle.values.empty()) {
-			error(name, "Toggle '" + toggleName + "' declares no values.");
+			error(codes::asl("invalid-toggle-declaration"), name, "Toggle '" + toggleName + "' declares no values.");
 		}
 		if (defaultTok != nullptr) {
 			if (std::ranges::find(toggle.values, defaultTok->text) == toggle.values.end()) {
-				error(*defaultTok, "Default value '" + String(defaultTok->text) + "' is not a value of toggle '" + toggleName + "'.");
+				error(codes::asl("invalid-toggle-declaration"), *defaultTok, "Default value '" + String(defaultTok->text) + "' is not a value of toggle '" + toggleName + "'.");
 			}
 			toggle.defaultValue = defaultTok->text;
 		} else if (not toggle.values.empty()) {
@@ -1031,7 +1031,7 @@ namespace hg::engine::accel::lang::ir::detail {
 
 		auto& toggles = _shared.mod.toggles;
 		if (std::ranges::find(toggles, toggleName, &ir::Toggle::name) != toggles.end()) {
-			return error(name, "Duplicate toggle '" + toggleName + "'.");
+			return error(codes::asl("duplicate-declaration"), name, "Duplicate toggle '" + toggleName + "'.");
 		}
 		toggles.emplace_back(std::move(toggle));
 	}
@@ -1050,7 +1050,7 @@ namespace hg::engine::accel::lang::ir::detail {
 		accept(TokenKind::eSemicolon);
 
 		if (findBuiltin(name.text).has_value() || isIntMatrixName(name.text) || findStruct(name.text).has_value()) {
-			return error(name, "Type '" + String(name.text) + "' is already declared.");
+			return error(codes::asl("duplicate-declaration"), name, "Type '" + String(name.text) + "' is already declared.");
 		}
 		declaredName(name, true);
 		ir::TypeDesc desc {};
@@ -1081,18 +1081,18 @@ namespace hg::engine::accel::lang::ir::detail {
 			const auto expected = compute ? ir::EntryKind::eCompute : geometry ? ir::EntryKind::eGeometry :
 				tessCtrl ? ir::EntryKind::eTessCtrl : tessEval ? ir::EntryKind::eTessEval : ir::EntryKind::eFragment;
 			if (_shared.mod.entry != expected) {
-				error(*ann_.entry, "@" + String(ann_.entry->text) + " contradicts the module's stage.");
+				error(codes::asl("misplaced-annotation"), *ann_.entry, "@" + String(ann_.entry->text) + " contradicts the module's stage.");
 			} else if (fn.name != "main") {
-				error(*ann_.entry, "@" + String(ann_.entry->text) + " applies to fn main only.");
+				error(codes::asl("misplaced-annotation"), *ann_.entry, "@" + String(ann_.entry->text) + " applies to fn main only.");
 			} else {
 				if (geometry && ann_.geometryKeys != 7u) {
-					error(*ann_.entry, "@geometry requires input, output and max_vertices.");
+					error(codes::asl("missing-annotation-key"), *ann_.entry, "@geometry requires input, output and max_vertices.");
 				}
 				if (tessCtrl && ann_.geometryKeys != 1u) {
-					error(*ann_.entry, "@tess_ctrl requires output_vertices.");
+					error(codes::asl("missing-annotation-key"), *ann_.entry, "@tess_ctrl requires output_vertices.");
 				}
 				if (tessEval && ann_.geometryKeys != 1u) {
-					error(*ann_.entry, "@tess_eval requires domain.");
+					error(codes::asl("missing-annotation-key"), *ann_.entry, "@tess_eval requires domain.");
 				}
 				_shared.mod.attributes = ann_.attributes;
 			}
@@ -1110,7 +1110,7 @@ namespace hg::engine::accel::lang::ir::detail {
 				const auto& paramToken = take();
 				String paramName { paramToken.text };
 				if (std::ranges::find(fn.params, paramName, &ir::ParamDecl::name) != fn.params.end()) {
-					error(paramToken, "Duplicate parameter '" + paramName + "'.");
+					error(codes::asl("duplicate-declaration"), paramToken, "Duplicate parameter '" + paramName + "'.");
 				}
 				if (not expect(TokenKind::eColon, "':' after the parameter name")) {
 					return recover();
@@ -1180,7 +1180,7 @@ namespace hg::engine::accel::lang::ir::detail {
 		decl.when = ann_.binding.when;
 		if (ann_.spec != nullptr) {
 			if (ann_.binding.id.empty()) {
-				error(*ann_.spec, "@spec requires (id = \"...\").");
+				error(codes::asl("missing-annotation-key"), *ann_.spec, "@spec requires (id = \"...\").");
 			} else {
 				decl.specId = ann_.binding.id;
 			}
@@ -1203,7 +1203,7 @@ namespace hg::engine::accel::lang::ir::detail {
 		}
 		auto& constants = _shared.mod.constants;
 		if (std::ranges::find(constants, decl.name, &ir::ConstantDecl::name) != constants.end()) {
-			return error(nameToken, "Duplicate constant '" + decl.name + "'.");
+			return error(codes::asl("duplicate-declaration"), nameToken, "Duplicate constant '" + decl.name + "'.");
 		}
 		constants.emplace_back(std::move(decl));
 	}
@@ -1212,7 +1212,7 @@ namespace hg::engine::accel::lang::ir::detail {
 	void Parser::workgroupDecl(ref<const Annotations> ann_) {
 		const auto& head = take();
 		if (_shared.mod.entry != ir::EntryKind::eCompute) {
-			error(head, "workgroup variables require a compute module.");
+			error(codes::asl("stage-unavailable"), head, "workgroup variables require a compute module.");
 		}
 		const auto& nameToken = take();
 		declaredName(nameToken, true);
@@ -1242,7 +1242,7 @@ namespace hg::engine::accel::lang::ir::detail {
 			const auto allowed = decl.mode == ir::BindMode::eForward &&
 				((entry == ir::EntryKind::eTessCtrl && not decl.input) || (entry == ir::EntryKind::eTessEval && decl.input));
 			if (not allowed) {
-				error(peek(), "'patch' is only valid on forward outputs of tess_ctrl and forward inputs of tess_eval.");
+				error(codes::asl("misplaced-qualifier"), peek(), "'patch' is only valid on forward outputs of tess_ctrl and forward inputs of tess_eval.");
 			}
 		}
 		if (accept(TokenKind::eKwBlock)) {
@@ -1289,7 +1289,7 @@ namespace hg::engine::accel::lang::ir::detail {
 			decl.localName = nameToken.text;
 			const auto kind = _shared.mod.types[declType->index].kind;
 			if (decl.packing != ir::Packing::eDefault && (kind == ir::TypeKind::eTexture || kind == ir::TypeKind::eSampler || kind == ir::TypeKind::eImage)) {
-				error(nameToken, "packing is not allowed on opaque binding '" + decl.localName + "'.");
+				error(codes::asl("misplaced-qualifier"), nameToken, "packing is not allowed on opaque binding '" + decl.localName + "'.");
 			}
 			if (not expect(TokenKind::eSemicolon, "';'")) {
 				return recover();
@@ -1339,14 +1339,17 @@ namespace hg::engine::accel::lang::ir::detail {
 		auto tokens = ir::lex(source_);
 		if (not tokens.has_value()) {
 			for (auto& diag : tokens.error()) {
-				diag.message = located(name_, not shared_.active.empty(), std::move(diag.message));
+				auto span = diag.primary().as<ir::SourceSpan>();
+				span.file = String(name_);
+				diag.setPrimary(std::move(span));
+				diag.setMessage(located(name_, not shared_.active.empty(), diag.message()));
 				shared_.diags.emplace_back(std::move(diag));
 			}
 			return;
 		}
 
 		shared_.active.emplace_back(name_);
-		Parser { name_, *tokens, shared_ }.run();
+		Parser { name_, source_, *tokens, shared_ }.run();
 		shared_.active.pop_back();
 		shared_.done.emplace_back(name_);
 	}
@@ -1367,7 +1370,7 @@ namespace hg::engine::accel::lang::ir::detail {
 			shared.diags = ir::typecheck(shared.mod);
 		}
 
-		const auto failed = std::ranges::any_of(shared.diags, [](const auto& d_) { return d_.severity == ir::Severity::eError; });
+		const auto failed = std::ranges::any_of(shared.diags, [](const auto& d_) { return d_.severity() == ir::Severity::eError; });
 		if (failed) {
 			return std::unexpected(std::move(shared.diags));
 		}

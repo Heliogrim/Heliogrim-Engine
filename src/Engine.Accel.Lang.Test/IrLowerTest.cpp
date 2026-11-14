@@ -28,7 +28,7 @@ namespace AccelLang {
 
 		[[nodiscard]] Module resolved(StringView source_, EntryKind entry_, std::span<const String> outputs_ = {}) {
 			auto parsed = parseModule("M", source_, entry_, ModuleResolver { noIncludes });
-			EXPECT_TRUE(parsed.has_value()) << (parsed.has_value() || parsed.error().empty() ? "" : parsed.error().front().message);
+			EXPECT_TRUE(parsed.has_value()) << (parsed.has_value() || parsed.error().empty() ? "" : parsed.error().front().message());
 			if (not parsed.has_value()) {
 				return {};
 			}
@@ -46,7 +46,7 @@ namespace AccelLang {
 		[[nodiscard]] Intermediate lower(ref<const Module> mod_, ref<const Layout> layout_) {
 			const DenseMap<String, u32> offsets { { "vertex-position", 12u } };
 			auto res = lowerToIntermediate(mod_, layout_, Dialect::eVulkanGlsl460, offsets);
-			EXPECT_TRUE(res.has_value()) << (res.has_value() || res.error().empty() ? "" : res.error().front().message);
+			EXPECT_TRUE(res.has_value()) << (res.has_value() || res.error().empty() ? "" : res.error().front().message());
 			return res.has_value() ? std::move(res).value() : Intermediate {};
 		}
 
@@ -188,7 +188,7 @@ namespace AccelLang {
 		const auto res = lowerToIntermediate(mod, layoutOf(mod), Dialect::eVulkanGlsl460);
 
 		ASSERT_FALSE(res.has_value());
-		EXPECT_TRUE(res.error().front().message.contains("'vertex-position'"));
+		EXPECT_TRUE(res.error().front().message().contains("'vertex-position'"));
 	}
 
 	TEST(LowerTest, LoweringTwiceGivesIndependentIntermediates) {
@@ -305,7 +305,7 @@ namespace AccelLang {
 		const auto diags = GlslEmitter {}.emit(mod, layoutOf(mod), target).diagnostics;
 
 		ASSERT_EQ(diags.size(), 1uz);
-		EXPECT_TRUE(diags[0].message.contains("'S'")) << diags[0].message;
+		EXPECT_TRUE(diags[0].message().contains("'S'")) << diags[0].message();
 		EXPECT_TRUE(target.text.empty());
 	}
 
@@ -318,7 +318,7 @@ namespace AccelLang {
 		const auto res = lowerToIntermediate(mod, layout, Dialect::eVulkanGlsl460);
 
 		ASSERT_FALSE(res.has_value());
-		EXPECT_TRUE(res.error().front().message.contains("'p'")) << res.error().front().message;
+		EXPECT_TRUE(res.error().front().message().contains("'p'")) << res.error().front().message();
 	}
 
 	/* the lexer rejects `1u` and `0x1E`, so the literals are hand-built */

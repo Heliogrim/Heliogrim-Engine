@@ -12,6 +12,7 @@
 #include <Engine.Accel.Lang/Ir/Typecheck.hpp>
 #include <Engine.Accel.Lang/Rep/Annotation.hpp>
 #include <Engine.Common/Make.hpp>
+#include <Engine.Logging/LogSink.hpp>
 #include <Engine.Logging/Logger.hpp>
 
 #include "../Profile/EffectProfile.hpp"
@@ -35,14 +36,14 @@ ModuleTargetStage hg::engine::accel::toModuleTargetStage(const EntryKind entry_)
 }
 
 namespace {
-	[[nodiscard]] Diagnostics fail(String message_) {
-		return Diagnostics { Diagnostic { .severity = Severity::eError, .message = std::move(message_) } };
+	[[nodiscard]] Diagnostics fail(ref<const DiagnosticCodeInfo> code_, String message_) {
+		return Diagnostics { Diagnostic::error(code_, std::move(message_)).at(NoLocation {}) };
 	}
 
 	[[nodiscard]] bool hasError(ref<const Diagnostics> diagnostics_) {
 		return std::ranges::any_of(
 			diagnostics_,
-			[](ref<const Diagnostic> d_) { return d_.severity == Severity::eError; }
+			[](ref<const Diagnostic> d_) { return d_.severity() == Severity::eError; }
 		);
 	}
 
@@ -154,7 +155,7 @@ std::expected<smr<const Resolved>, Diagnostics> hg::engine::accel::resolveStageI
 ) {
 
 	if (stage_.ir == nullptr) {
-		return std::unexpected(fail("stage has no ir"));
+		return std::unexpected(fail(codes::asl("internal-inconsistent-pipeline"), "stage has no ir"));
 	}
 
 	auto [modules, outputs, skippedText, key] = stageInputs(stage_, profile_, spec_, flags_, exportStage_);
@@ -165,9 +166,12 @@ std::expected<smr<const Resolved>, Diagnostics> hg::engine::accel::resolveStageI
 		[&]() -> smr<const Resolved> {
 
 			/* non-fatal parser/typecheck diagnostics; merge drops them, so log them from the inputs */
+			engine::diag::LogSink sink {};
 			for (const auto* mod : modules) {
 				for (const auto& warning : mod->warnings) {
-					Logger::warn("Ir stage module '{}': {}", mod->name, warning.message);
+					Diagnostic logged { warning };
+					logged.addNote("while checking module '" + mod->name + "'");
+					sink.emit(std::move(logged));
 				}
 			}
 
@@ -203,7 +207,7 @@ std::expected<smr<const Resolved>, Diagnostics> hg::engine::accel::resolveStageI
 			const auto all = computeInterface(*flat);
 			for (const auto& id : outputs) {
 				if (std::ranges::none_of(all, [&](ref<const InterfaceEntry> e_) { return not e_.input && e_.id == id; })) {
-					failure = fail("target symbol '" + id + "' is not an output of the stage");
+					failure = fail(codes::asl("missing-stage-output"), "target symbol '" + id + "' is not an output of the stage");
 					return {};
 				}
 			}
@@ -222,8 +226,9 @@ std::expected<smr<const Resolved>, Diagnostics> hg::engine::accel::resolveStageI
 			if (hasError(failure)) {
 				return {};
 			}
-			for (const auto& warning : failure) {
-				Logger::warn("Ir stage contract: {}", warning.message);
+			for (auto& warning : failure) {
+				warning.addNote("while checking the stage contract");
+				sink.emit(std::move(warning));
 			}
 			failure.clear();
 
@@ -250,10 +255,10 @@ std::expected<Vector<smr<StageDerivat>>, Diagnostics> hg::engine::accel::compose
 ) {
 
 	if (stages_.empty()) {
-		return std::unexpected(fail("pipeline has no ir stages"));
+		return std::unexpected(fail(codes::asl("internal-inconsistent-pipeline"), "pipeline has no ir stages"));
 	}
 	if (stages_.size() != flags_.size()) {
-		return std::unexpected(fail("stage and flag counts differ"));
+		return std::unexpected(fail(codes::asl("internal-inconsistent-pipeline"), "stage and flag counts differ"));
 	}
 
 	/* a pipeline hit needs only the stage keys: nothing is resolved or checked outside the build path */
@@ -261,7 +266,7 @@ std::expected<Vector<smr<StageDerivat>>, Diagnostics> hg::engine::accel::compose
 	key.reserve(stages_.size() + 1uLL);
 	for (size_t idx = 0uLL; idx < stages_.size(); ++idx) {
 		if (stages_[idx] == nullptr || stages_[idx]->ir == nullptr) {
-			return std::unexpected(fail("stage has no ir"));
+			return std::unexpected(fail(codes::asl("internal-inconsistent-pipeline"), "stage has no ir"));
 		}
 		/* target symbols are the effect's exports: only the effect's last stage is sliced to them */
 		key.emplace_back(
@@ -426,7 +431,7 @@ Diagnostics hg::engine::accel::appendBindLayout(
 ) {
 
 	if (derivats_.size() != pipeline_.layouts.size()) {
-		return fail("pipeline and derivat counts differ");
+		return fail(codes::asl("internal-inconsistent-pipeline"), "pipeline and derivat counts differ");
 	}
 
 	/* every distinct slot of the pipeline, in (set, binding) order */
@@ -476,6 +481,7 @@ Diagnostics hg::engine::accel::appendBindLayout(
 		auto& elements = layout_.groups[slot->set].elements;
 		if (elements.size() != slot->binding) {
 			return fail(
+				codes::asl("internal-inconsistent-pipeline"),
 				"binding '" + slot->id + "' at set " + std::to_string(slot->set) + ", binding " +
 				std::to_string(slot->binding) + " does not line up with the other bindings of the pipeline"
 			);
