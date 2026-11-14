@@ -45,6 +45,17 @@ namespace Async {
 		// One slot stays free to tell full from empty.
 		EXPECT_EQ(accepted, 3uLL);
 		EXPECT_TRUE(rb.full());
+
+		// VkSwapchain sizes its rings at 3 for up to two images and asserts the push back always fits.
+		RingBuffer<int> three { 3uL };
+
+		accepted = 0uLL;
+		for (int i = 0; i < 16; ++i) {
+			accepted += three.try_push(int { i }) ? 1uLL : 0uLL;
+		}
+
+		EXPECT_EQ(accepted, 2uLL);
+		EXPECT_TRUE(three.full());
 	}
 
 	TEST(AsyncRingBuffer, WrapsAround) {
