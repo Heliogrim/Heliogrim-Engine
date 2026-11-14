@@ -241,7 +241,7 @@ namespace {
 				const auto path = r.has_value() ? place(r->root, rootName) : String {};
 				if (path.empty()) {
 					diags.emplace_back(
-						Diagnostic::error(codes::asl("region-not-rooted"), "region argument to '" + callee.name + "' must be rooted in a buffer or workgroup array").at(pointAt(m.name, e.loc))
+						Diagnostic::error(codes::asl("region-not-rooted"), "region argument to '" + callee.name + "' must be rooted in a buffer or workgroup array").at(spanIn(m, e.loc))
 					);
 					return;
 				}
@@ -266,7 +266,7 @@ namespace {
 						// a value param named like a root would capture it in the specialized body
 						if (const auto hit = std::ranges::find(bound, param.name, &Region::rootName); hit != bound.end()) {
 							diags.emplace_back(
-								Diagnostic::error(codes::asl("region-root-shadowed"), "'" + param.name + "' shadows the root of live region '" + hit->name + "'").at(pointAt(m.name, callee.loc))
+								Diagnostic::error(codes::asl("region-root-shadowed"), "'" + param.name + "' shadows the root of live region '" + hit->name + "'").at(spanIn(m, callee.loc))
 							);
 						}
 						spec.params.emplace_back(param);
@@ -352,7 +352,7 @@ namespace {
 			for (const auto& live : scope) {
 				if (live.region && live.rootName == s_.name) {
 					diags.emplace_back(
-						Diagnostic::error(codes::asl("region-root-shadowed"), "'" + s_.name + "' shadows the root of live region '" + live.name + "'").at(pointAt(m.name, s_.loc))
+						Diagnostic::error(codes::asl("region-root-shadowed"), "'" + s_.name + "' shadows the root of live region '" + live.name + "'").at(spanIn(m, s_.loc))
 					);
 					break;
 				}
@@ -400,7 +400,7 @@ namespace {
 					const auto whole = s.lhs.index < m.exprs.size() && m.exprs[s.lhs.index].kind != ExprKind::eRange;
 					auto r = regionOf(s.lhs, s.name, &hoists);
 					if (not r.has_value()) {
-						diags.emplace_back(Diagnostic::error(codes::asl("internal-inconsistent-module"), "region not lowered").at(pointAt(m.name, s.loc)));
+						diags.emplace_back(Diagnostic::error(codes::asl("internal-inconsistent-module"), "region not lowered").at(spanIn(m, s.loc)));
 					}
 					const auto u32Type = m.exprs[r->off.index].type;
 					{

@@ -108,9 +108,8 @@ namespace hg::engine::accel::lang::ir::detail {
 
 	class Parser {
 	public:
-		Parser(StringView name_, StringView source_, ref<const Vector<ir::Token>> tokens_, ref<Shared> shared_) :
+		Parser(StringView name_, ref<const Vector<ir::Token>> tokens_, ref<Shared> shared_) :
 			_name(name_),
-			_source(source_),
 			_tokens(tokens_),
 			_shared(shared_) {}
 
@@ -118,8 +117,6 @@ namespace hg::engine::accel::lang::ir::detail {
 
 	private:
 		StringView _name;
-		/* the text the tokens view, for byte offsets */
-		StringView _source;
 		ref<const Vector<ir::Token>> _tokens;
 		ref<Shared> _shared;
 		size_t _pos = 0uz;

@@ -339,6 +339,8 @@ namespace hg::engine::accel::lang::ir {
 
 	struct Module {
 		String name;
+		/* `SourceLoc::source` -> the name of the source it indexes; 0 = this module's own source. Empty for hand-built modules (all locs then sit in `name`) */
+		Vector<String> sources;
 		EntryKind entry = EntryKind::eFragment;
 		EntryAttributes attributes;
 		Vector<Toggle> toggles;
@@ -352,4 +354,7 @@ namespace hg::engine::accel::lang::ir {
 		/* non-fatal diagnostics from parse/typecheck (e.g. implicit-derivative sampling under divergence); not hashed; merge and compact drop them, so consumers read them from the parsed input modules */
 		Diagnostics warnings;
 	};
+
+	/* the span of `loc_`'s byte range under the name of the source it is in */
+	[[nodiscard]] diag::SourceSpan spanIn(ref<const Module> mod_, SourceLoc loc_);
 }
