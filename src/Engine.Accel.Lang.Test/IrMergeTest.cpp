@@ -427,7 +427,7 @@ namespace AccelLang {
 		fn.body = BodyRef { StmtRef { 0u } };
 		static_cast<void>(mergeOk({ &valid }));
 
-		std::array<Module, 8> invalid {};
+		std::array<Module, 9> invalid {};
 		std::ranges::fill(invalid, valid);
 		invalid[0].exprs[0].binding.index = 5u;
 		invalid[1].exprs[0].operands.emplace_back(ExprRef { 9u });
@@ -440,6 +440,8 @@ namespace AccelLang {
 		invalid[6].types[0].element = TypeRef { 0u };
 		// a location may only name one of the module's sources (an empty list counts as its own name)
 		invalid[7].exprs[0].loc.source = 1u;
+		invalid[8].sources = { "hand", "Inc" };
+		invalid[8].stmts[0].keyword.source = 2u;
 
 		for (const auto& mod : invalid) {
 			const auto diags = mergeFail({ &valid, &mod });

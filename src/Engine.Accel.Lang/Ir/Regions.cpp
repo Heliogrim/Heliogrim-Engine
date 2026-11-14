@@ -401,6 +401,7 @@ namespace {
 					auto r = regionOf(s.lhs, s.name, &hoists);
 					if (not r.has_value()) {
 						diags.emplace_back(Diagnostic::error(codes::asl("internal-inconsistent-module"), "region not lowered").at(spanIn(m, s.loc)));
+						return { ref_ };
 					}
 					const auto u32Type = m.exprs[r->off.index].type;
 					{
