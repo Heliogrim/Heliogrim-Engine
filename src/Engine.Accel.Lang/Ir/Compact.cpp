@@ -189,6 +189,7 @@ namespace {
 		void run() {
 			auto& result = out.mod;
 			result.name = in.name;
+			result.sources = in.sources;
 			result.entry = in.entry;
 			result.attributes = in.attributes;
 			result.toggles = in.toggles;

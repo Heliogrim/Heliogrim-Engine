@@ -14,13 +14,17 @@ namespace hg::engine::accel::lang::ir {
 	using SourceSpan = diag::SourceSpan;
 
 	/**
-	 * 1-based line and column; a tab counts as one column.
+	 * 1-based line and column; a tab counts as one column. `offset` and `length` are the byte range in the module source `source`.
 	 */
 	struct SourceLoc {
 		u32 line = 1uL;
 		u32 column = 1uL;
+		u32 offset = 0uL;
+		u32 length = 0uL;
+		/* index into `Module::sources`: the source whose bytes the range indexes */
+		u16 source = 0u;
 	};
 
-	/* a point span at `loc_`, for sites that know no byte range */
+	/* the span of `loc_`'s byte range; a point when the range is empty */
 	[[nodiscard]] diag::SourceSpan pointAt(StringView file_, SourceLoc loc_);
 }

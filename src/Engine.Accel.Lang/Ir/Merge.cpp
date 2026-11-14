@@ -71,7 +71,7 @@ namespace {
 	/* Input validation: every ref in range (sentinel allowed), types refer only to earlier types (no cycles) */
 
 	[[nodiscard]] Opt<String> invalidRef(ref<const ir::Module> mod_) {
-		const auto& [name, entry, attributes, toggles, types, bindings, constants, functions, exprs, stmts, warnings] = mod_;
+		const auto& [name, sources, entry, attributes, toggles, types, bindings, constants, functions, exprs, stmts, warnings] = mod_;
 		static_cast<void>(attributes);
 		Opt<String> found = None;
 		const auto check = [&](StringView owner_, size_t at_, StringView kind_, u32 index_, size_t limit_) {
@@ -80,6 +80,9 @@ namespace {
 					std::to_string(index_);
 			}
 		};
+
+		// a module without sources has all its locations in its own name
+		const auto sourceCount = std::max(sources.size(), 1uz);
 
 		for (auto i = 0uz; i < types.size(); ++i) {
 			check("type", i, "type (earlier types only)", types[i].element.index, i);
@@ -93,6 +96,7 @@ namespace {
 		for (auto i = 0uz; i < constants.size(); ++i) {
 			check("constant", i, "type", constants[i].type.index, types.size());
 			check("constant", i, "expr", constants[i].value.index, exprs.size());
+			check("constant", i, "source", constants[i].loc.source, sourceCount);
 		}
 		for (auto i = 0uz; i < functions.size(); ++i) {
 			const auto& fn = functions[i];
@@ -100,6 +104,7 @@ namespace {
 				check("function", i, "type", param.type.index, types.size());
 			}
 			check("function", i, "type", fn.ret.index, types.size());
+			check("function", i, "source", fn.loc.source, sourceCount);
 			if (fn.body.has_value()) {
 				check("function", i, "stmt", fn.body->root.index, stmts.size());
 			}
@@ -110,6 +115,7 @@ namespace {
 			check("expr", i, "function", e.function.index, functions.size());
 			check("expr", i, "constant", e.constant.index, constants.size());
 			check("expr", i, "type", e.type.index, types.size());
+			check("expr", i, "source", e.loc.source, sourceCount);
 			for (const auto& op : e.operands) {
 				check("expr", i, "expr", op.index, exprs.size());
 			}
@@ -119,6 +125,7 @@ namespace {
 			check("stmt", i, "type", s.type.index, types.size());
 			check("stmt", i, "expr", s.lhs.index, exprs.size());
 			check("stmt", i, "expr", s.rhs.index, exprs.size());
+			check("stmt", i, "source", s.loc.source, sourceCount);
 			for (const auto& child : s.children) {
 				check("stmt", i, "stmt", child.index, stmts.size());
 			}
@@ -137,6 +144,13 @@ namespace {
 		Vector<u32> constants;
 		u32 exprOffset = 0uL;
 		u32 stmtOffset = 0uL;
+		/* where the module's sources start in the merged `sources` */
+		u16 sourceOffset = 0u;
+
+		[[nodiscard]] ir::SourceLoc loc(ir::SourceLoc loc_) const {
+			loc_.source = static_cast<u16>(loc_.source + sourceOffset);
+			return loc_;
+		}
 
 		[[nodiscard]] ir::TypeRef type(ir::TypeRef ref_) const {
 			return ref_.index == unset ? ref_ : ir::TypeRef { types[ref_.index] };
@@ -177,6 +191,7 @@ namespace {
 		if (body.has_value()) {
 			body->root = remap_.stmt(body->root);
 		}
+		loc = remap_.loc(loc);
 		return fn_;
 	}
 
@@ -226,7 +241,7 @@ namespace {
 			op = remap_.expr(op);
 		}
 		static_cast<void>(local);
-		static_cast<void>(loc);
+		loc = remap_.loc(loc);
 		return expr_;
 	}
 
@@ -240,6 +255,7 @@ namespace {
 		}
 		static_cast<void>(kind);
 		static_cast<void>(mutable_);
+		loc = remap_.loc(loc);
 		return stmt_;
 	}
 
@@ -448,6 +464,7 @@ namespace {
 				auto mapped = constant;
 				mapped.type = remap.type(mapped.type);
 				mapped.value = remap.expr(mapped.value);
+				mapped.loc = remap.loc(mapped.loc);
 
 				const auto it = std::ranges::find(result.constants, constant.name, &ir::ConstantDecl::name);
 				const auto index = static_cast<u32>(it - result.constants.begin());
@@ -573,7 +590,7 @@ namespace {
 		}
 
 		void run() {
-			auto& [name, entry, attributes, toggleList, typeList, bindingList, constantList, functionList, exprList, stmtList, warningList] = result;
+			auto& [name, sourceList, entry, attributes, toggleList, typeList, bindingList, constantList, functionList, exprList, stmtList, warningList] = result;
 			name = modules.back()->name;
 			entry = modules.back()->entry;
 			mergeAttributes(attributes);
@@ -586,6 +603,13 @@ namespace {
 			remaps.resize(modules.size());
 			for (auto m = 0uz; m < modules.size(); ++m) {
 				const auto mod = static_cast<u32>(m);
+				// a hand-built module has no sources: its locs all sit in its name
+				remaps[m].sourceOffset = static_cast<u16>(sourceList.size());
+				if (modules[m]->sources.empty()) {
+					sourceList.emplace_back(modules[m]->name);
+				} else {
+					sourceList.append_range(modules[m]->sources);
+				}
 				types(mod);
 				toggles(mod, toggleOrigins);
 				bindings(mod, bindingOrigins);

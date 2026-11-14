@@ -142,7 +142,7 @@ namespace {
 		/* range expressions whose context is a borrow (alias initializer or call argument) */
 		Vector<u32> _borrowed;
 
-/* head token of the node being checked; restored on scope exit so errors after operand recursion stay on the parent */ ir::SourceLoc _loc {};  struct Here { explicit Here(ref<ir::SourceLoc> slot_, ir::SourceLoc next_) : _slot(slot_), _saved(slot_) { _slot = next_; }  ~Here() { _slot = _saved; }  ref<ir::SourceLoc> _slot; ir::SourceLoc _saved; };  void error(ref<const ir::DiagnosticCodeInfo> code_, String message_) { _diags.emplace_back(ir::Diagnostic::error(code_, std::move(message_)).at(ir::pointAt(_mod.name, _loc))); }
+/* head token of the node being checked; restored on scope exit so errors after operand recursion stay on the parent */ ir::SourceLoc _loc {};  struct Here { explicit Here(ref<ir::SourceLoc> slot_, ir::SourceLoc next_) : _slot(slot_), _saved(slot_) { _slot = next_; }  ~Here() { _slot = _saved; }  ref<ir::SourceLoc> _slot; ir::SourceLoc _saved; };  void error(ref<const ir::DiagnosticCodeInfo> code_, String message_) { _diags.emplace_back(ir::Diagnostic::error(code_, std::move(message_)).at(spanIn(_mod, _loc))); }
 
 		[[nodiscard]] String name(TypeRef type_) const {
 			return ir::describeType(_mod.types, type_);
@@ -1485,7 +1485,7 @@ ir::Diagnostics ir::checkStageValidity(ref<const Module> mod_, EntryKind entry_)
 		if ((stages & stageBit(entry_)) == 0u) {
 			diags.emplace_back(
 				Diagnostic::error(codes::asl("stage-unavailable"), "'" + e.name + "' is not available in " + String(stageName(entry_)) + " stages")
-					.at(pointAt(mod_.name, e.loc))
+					.at(spanIn(mod_, e.loc))
 			);
 		}
 	}
@@ -1540,7 +1540,7 @@ namespace {
 				"'" + e.name + "' uses implicit derivatives under lane-dependent control" + tail + "; results are undefined, use sample_lod";
 			const auto& code = codes::asl("divergent-control");
 			_diags.emplace_back(
-				(fatal ? ir::Diagnostic::error(code, std::move(message)) : ir::Diagnostic::warning(code, std::move(message))).at(ir::pointAt(_mod.name, e.loc))
+				(fatal ? ir::Diagnostic::error(code, std::move(message)) : ir::Diagnostic::warning(code, std::move(message))).at(spanIn(_mod, e.loc))
 			);
 		}
 

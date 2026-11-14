@@ -226,9 +226,7 @@ namespace hg::engine::accel::lang::ir::detail {
 	}
 
 	ir::Diagnostic Parser::diagnostic(ref<const ir::DiagnosticCodeInfo> code_, ref<const ir::Token> at_, String message_) const {
-		const auto begin = static_cast<u32>(at_.text.data() - _source.data());
-		return ir::Diagnostic::error(code_, located(_name, nested(), std::move(message_)))
-			.at(ir::SourceSpan { String(_name), begin, begin + static_cast<u32>(at_.text.size()), at_.loc.line, at_.loc.column });
+		return ir::Diagnostic::error(code_, located(_name, nested(), std::move(message_))).at(ir::pointAt(_name, at_.loc));
 	}
 
 	void Parser::error(ref<const ir::DiagnosticCodeInfo> code_, ref<const ir::Token> at_, String message_) {
@@ -1348,8 +1346,15 @@ namespace hg::engine::accel::lang::ir::detail {
 			return;
 		}
 
+		/* each module is lexed once, so the root is source 0 and every include, nested ones too, gets the next index */
+		const auto source = static_cast<u16>(shared_.mod.sources.size());
+		shared_.mod.sources.emplace_back(name_);
+		for (auto& token : *tokens) {
+			token.loc.source = source;
+		}
+
 		shared_.active.emplace_back(name_);
-		Parser { name_, source_, *tokens, shared_ }.run();
+		Parser { name_, *tokens, shared_ }.run();
 		shared_.active.pop_back();
 		shared_.done.emplace_back(name_);
 	}

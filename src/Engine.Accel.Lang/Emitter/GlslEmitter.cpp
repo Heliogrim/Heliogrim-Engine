@@ -182,7 +182,7 @@ namespace {
 		}
 
 		void error(ref<const ir::DiagnosticCodeInfo> code_, String message_, ir::SourceLoc loc_) {
-			_diags.emplace_back(ir::Diagnostic::error(code_, std::move(message_)).at(ir::pointAt(_mod.name, loc_)));
+			_diags.emplace_back(ir::Diagnostic::error(code_, std::move(message_)).at(ir::spanIn(_mod, loc_)));
 		}
 
 		[[nodiscard]] const ir::TypeDesc* typeAt(ir::TypeRef ref_) const {
