@@ -36,6 +36,12 @@ function(library_ryml_init)
 	add_library(${PROJECT_NAME}::${c4core_alias} ALIAS c4core)
 	add_library(${PROJECT_NAME}::${ryml_alias} ALIAS ryml)
 
+	# ryml includes <alloca.h> under clang on Windows, which the MSVC runtime lacks; cl never includes the shim, so WIN32 suffices
+	if (WIN32)
+		file(CONFIGURE OUTPUT "${CMAKE_BINARY_DIR}/ryml-shim/alloca.h" CONTENT "#pragma once\n#include <malloc.h>\n")
+		target_include_directories(ryml PUBLIC "$<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/ryml-shim>")
+	endif ()
+
 	install_includes(
 			DIRECTORY "${vendor_src_path}/src/"
 			DESTINATION "${vendor_inc_path}/ryml"
