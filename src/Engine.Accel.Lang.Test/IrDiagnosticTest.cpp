@@ -39,22 +39,6 @@ namespace AccelLang {
 			}
 			return out;
 		}
-
-		class ModuleSource final : public diag::SourceLookup {
-		public:
-			explicit ModuleSource(StringView text_) :
-				_text(text_) {}
-
-			[[nodiscard]] Optional<StringView> find(StringView file_) const override {
-				if (file_ == "M") {
-					return _text;
-				}
-				return {};
-			}
-
-		private:
-			StringView _text;
-		};
 	}
 
 	TEST(IrDiagnostic, OverlapNamesBothSpans) {
@@ -75,7 +59,7 @@ namespace AccelLang {
 		EXPECT_EQ(textOf(source, second), "x");
 		EXPECT_EQ(d.labels()[0].message, "overlaps the '&mut' argument");
 
-		const ModuleSource lookup { source };
+		const ModuleSources lookup { { "M", source } };
 		const auto rendered = diag::render(d, &lookup);
 		EXPECT_EQ(std::ranges::count(rendered, '^'), 2) << rendered;
 	}
