@@ -400,7 +400,7 @@ namespace {
 					const auto whole = s.lhs.index < m.exprs.size() && m.exprs[s.lhs.index].kind != ExprKind::eRange;
 					auto r = regionOf(s.lhs, s.name, &hoists);
 					if (not r.has_value()) {
-						diags.emplace_back(Diagnostic::error(codes::asl("internal-inconsistent-module"), "region not lowered").at(spanIn(m, s.loc)));
+						diags.emplace_back(Diagnostic::error(codes::asl("internal-inconsistent-module"), "region argument was not rewritten before code generation").at(spanIn(m, s.loc)));
 						return { ref_ };
 					}
 					const auto u32Type = m.exprs[r->off.index].type;

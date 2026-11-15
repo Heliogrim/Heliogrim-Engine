@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cassert>
 #include <cstdlib>
 #include <string>
 #include <utility>
@@ -86,7 +87,7 @@ namespace {
 	private:
 		void reserved(ref<const String> name_, bool function_ = false) {
 			if (ir::reservedForRegions(name_, function_)) {
-				error(codes::asl("reserved-name"), "'" + name_ + "' ends in a suffix reserved for region lowering");
+				error(codes::asl("reserved-name"), "'" + name_ + "' ends in a reserved suffix", "names ending in '" + ir::reservedSuffixOf(name_) + "' are reserved for borrowed regions");
 			}
 		}
 
@@ -144,7 +145,7 @@ namespace {
 		/* range expressions whose context is a borrow (alias initializer or call argument) */
 		Vector<u32> _borrowed;
 
-/* head token of the node being checked; restored on scope exit so errors after operand recursion stay on the parent */ ir::SourceLoc _loc {};  struct Here { explicit Here(ref<ir::SourceLoc> slot_, ir::SourceLoc next_) : _slot(slot_), _saved(slot_) { _slot = next_; }  ~Here() { _slot = _saved; }  ref<ir::SourceLoc> _slot; ir::SourceLoc _saved; };  void error(ref<const ir::DiagnosticCodeInfo> code_, String message_) { _diags.emplace_back(ir::Diagnostic::error(code_, std::move(message_)).at(spanIn(_mod, _loc))); }
+/* head token of the node being checked; restored on scope exit so errors after operand recursion stay on the parent */ ir::SourceLoc _loc {};  struct Here { explicit Here(ref<ir::SourceLoc> slot_, ir::SourceLoc next_) : _slot(slot_), _saved(slot_) { _slot = next_; }  ~Here() { _slot = _saved; }  ref<ir::SourceLoc> _slot; ir::SourceLoc _saved; };  void error(ref<const ir::DiagnosticCodeInfo> code_, String message_) { _diags.emplace_back(ir::Diagnostic::error(code_, std::move(message_)).at(spanIn(_mod, _loc))); }  void error(ref<const ir::DiagnosticCodeInfo> code_, String message_, String note_) { _diags.emplace_back(ir::Diagnostic::error(code_, std::move(message_)).at(spanIn(_mod, _loc)).note(std::move(note_))); }
 
 		[[nodiscard]] String name(TypeRef type_) const {
 			return ir::describeType(_mod.types, type_);
@@ -339,7 +340,7 @@ namespace {
 						if (valid(declared)) {
 							if (valid(init) && not coerce(lhs, declared)) {
 								error(codes::asl("type-mismatch"), 
-									"cannot initialize '" + _mod.stmts[ref_.index].name + "' of type " + name(declared) + " with " + name(init)
+									"cannot initialize '" + _mod.stmts[ref_.index].name + "' of type " + ir::quotedType(_mod.types, declared) + " with " + ir::quotedType(_mod.types, init)
 								);
 							}
 						} else {
@@ -359,7 +360,7 @@ namespace {
 					const auto type = expr(lhs);
 					const auto writes = _mod.stmts[ref_.index].mutable_;
 					if (lhs.index >= _mod.exprs.size() || not ir::isPlace(_mod, lhs)) {
-						error(codes::asl("not-borrowable"), "'&' needs a place expression");
+						error(codes::asl("not-borrowable"), "'&' needs a variable, a field or an element");
 					} else if (writes) {
 						if (const auto denied = readOnly(lhs, true); denied.has_value()) {
 							deniedBorrow(lhs, *denied);
@@ -412,7 +413,7 @@ namespace {
 						target = expr(lhs);
 						value = binary(op.substr(0uz, op.size() - 1uz), Vector<ExprRef> { lhs, rhs });
 						if (valid(target) && valid(value) && not same(target, value)) {
-							error(codes::asl("type-mismatch"), "cannot assign " + name(value) + " to " + name(target));
+							error(codes::asl("type-mismatch"), "cannot assign " + ir::quotedType(_mod.types, value) + " to " + ir::quotedType(_mod.types, target));
 						}
 					}
 					if (lhs.index < _mod.exprs.size() && ir::isPlace(_mod, lhs)) {
@@ -421,7 +422,7 @@ namespace {
 						}
 					}
 					if (op.empty() && valid(target) && valid(value) && not coerce(rhs, target)) {
-						error(codes::asl("type-mismatch"), "cannot assign " + name(value) + " to " + name(target));
+						error(codes::asl("type-mismatch"), "cannot assign " + ir::quotedType(_mod.types, value) + " to " + ir::quotedType(_mod.types, target));
 					}
 					break;
 				}
@@ -466,7 +467,7 @@ namespace {
 					if (lhs.index < _mod.exprs.size()) {
 						const auto value = expr(lhs);
 						if (valid(_ret) && valid(value) && not coerce(lhs, _ret)) {
-							error(codes::asl("type-mismatch"), "cannot return " + name(value) + " from a function returning " + name(_ret));
+							error(codes::asl("type-mismatch"), "cannot return " + ir::quotedType(_mod.types, value) + " from a function returning " + ir::quotedType(_mod.types, _ret));
 						}
 					}
 					break;
@@ -474,7 +475,7 @@ namespace {
 				case StmtKind::eIf: {
 					const auto condition = expr(lhs);
 					if (valid(condition) && not isBool(condition)) {
-						error(codes::asl("type-mismatch"), "condition has type " + name(condition) + ", expected bool");
+						error(codes::asl("type-mismatch"), "condition has type " + ir::quotedType(_mod.types, condition) + ", expected 'bool'");
 					}
 					scoped(children);
 					break;
@@ -491,12 +492,16 @@ namespace {
 		/* D8: a constant-true or missing condition keeps the whole wave in the loop */
 		void loopCondition(ExprRef cond_) {
 			if (cond_.index >= _mod.exprs.size() || (_mod.exprs[cond_.index].kind == ExprKind::eLiteral && _mod.exprs[cond_.index].name == "true")) {
-				error(codes::asl("constant-loop-condition"), "loop condition is constant; lanes that never reach 'break' keep the whole wave in the loop, use a bounded condition");
+				_diags.emplace_back(
+					ir::Diagnostic::error(codes::asl("constant-loop-condition"), "loop condition is always true").at(spanIn(_mod, _loc))
+					.note("invocations that never reach 'break' keep the others waiting in the loop")
+					.note("use a condition that bounds the loop")
+				);
 				return;
 			}
 			const auto condition = expr(cond_);
 			if (valid(condition) && not isBool(condition)) {
-				error(codes::asl("type-mismatch"), "condition has type " + name(condition) + ", expected bool");
+				error(codes::asl("type-mismatch"), "condition has type " + ir::quotedType(_mod.types, condition) + ", expected 'bool'");
 			}
 		}
 
@@ -561,7 +566,7 @@ namespace {
 						}
 						for (auto i = 0uz; i < operands.size(); ++i) {
 							if (valid(types[i]) && not coerce(operands[i], element)) {
-								error(codes::asl("type-mismatch"), "array element " + std::to_string(i) + " is " + name(types[i]) + ", expected " + name(element));
+								error(codes::asl("type-mismatch"), "array element " + std::to_string(i) + " is " + ir::quotedType(_mod.types, types[i]) + ", expected " + ir::quotedType(_mod.types, element));
 							}
 						}
 					}
@@ -582,7 +587,7 @@ namespace {
 							fromScalars = valid(types[i]) && coerce(operands[i], scalarType);
 						}
 						if (not fromMatrix && not fromColumns && not fromScalars) {
-							error(codes::asl("type-mismatch"), "cannot construct " + name(type) + " from the given arguments");
+							error(codes::asl("type-mismatch"), "cannot construct " + ir::quotedType(_mod.types, type) + " from the given arguments");
 						}
 					}
 					return type;
@@ -866,7 +871,7 @@ namespace {
 					continue;
 				}
 				if (not ir::isPlace(_mod, operands_[i])) {
-					error(codes::asl("not-borrowable"), "'&' needs a place expression");
+					error(codes::asl("not-borrowable"), "'&' needs a variable, a field or an element");
 					continue;
 				}
 				if (const auto denied = readOnly(operands_[i], true); denied.has_value()) {
@@ -888,10 +893,10 @@ namespace {
 			}
 			const auto init = expr(decl.value);
 			if (valid(init) && not coerce(decl.value, decl.type)) {
-				error(codes::asl("type-mismatch"), "cannot initialize constant '" + decl.name + "' of type " + name(decl.type) + " with " + name(init));
+				error(codes::asl("type-mismatch"), "cannot initialize constant '" + decl.name + "' of type " + ir::quotedType(_mod.types, decl.type) + " with " + ir::quotedType(_mod.types, init));
 			}
 			if (decl.specId.has_value() && _mod.types[decl.type.index].kind != TypeKind::eScalar) {
-				error(codes::asl("type-mismatch"), "specialization constant '" + decl.name + "' must be a scalar, not " + name(decl.type));
+				error(codes::asl("type-mismatch"), "specialization constant '" + decl.name + "' must be a scalar, not " + ir::quotedType(_mod.types, decl.type));
 			}
 			if (not isConstant(decl.value)) {
 				error(codes::asl("not-constant"), "initializer of constant '" + decl.name + "' is not a constant expression");
@@ -970,7 +975,7 @@ namespace {
 				}
 				const auto arg = expr(operands_.front());
 				if (valid(arg) && not isKind(arg, TypeKind::eRegion)) {
-					error(codes::asl("type-mismatch"), "'len' needs a region, got " + name(arg));
+					error(codes::asl("type-mismatch"), "'len' needs a region, got " + ir::quotedType(_mod.types, arg));
 					return {};
 				}
 				return valid(arg) ? scalarOf(ScalarKind::eUInt, 32uL) : TypeRef {};
@@ -1038,7 +1043,7 @@ namespace {
 							continue;
 						}
 						if (not ir::isPlace(_mod, operands_[k])) {
-							error(codes::asl("not-borrowable"), "'&' needs a place expression");
+							error(codes::asl("not-borrowable"), "'&' needs a variable, a field or an element");
 							continue;
 						}
 						if (const auto denied = readOnly(operands_[k], true); denied.has_value()) {
@@ -1069,15 +1074,17 @@ namespace {
 								cls == ir::BindClass::eStorageImage :
 								(cls == ir::BindClass::eStorageBuffer || cls == ir::BindClass::eWorkgroup);
 							if (viaScope != nullptr && viaScope->mode == Mode::eRefWrite && viaScope->target.empty()) {
-								error(codes::asl("not-storage-resource"), 
-									"'" + name_ + "' cannot act through parameter '" + rootLabel + "'; GLSL " + (isImage ? "image access" : "atomics") +
-									" need the " + (isImage ? "storage image" : "storage buffer or workgroup variable") + " itself"
-								);
+								String note = "GLSL ";
+								note += isImage ? "image access needs" : "atomics need";
+								note += " the ";
+								note += isImage ? "storage image" : "storage buffer or workgroup variable";
+								note += " itself";
+								error(codes::asl("not-storage-resource"), "'" + name_ + "' cannot act through parameter '" + rootLabel + "'", std::move(note));
 								continue;
 							}
 							if (not good) {
 								error(codes::asl("not-storage-resource"), 
-									"'" + name_ + "' needs a " + (isImage ? "storage image" : "storage buffer or workgroup") + " place, got " +
+									"'" + name_ + "' needs a " + (isImage ? "storage image" : "storage buffer or workgroup") + " variable, got " +
 									(bound != nullptr ? "binding '" : "local '") + rootLabel + "'"
 								);
 								continue;
@@ -1093,7 +1100,7 @@ namespace {
 
 			String args {};
 			for (auto k = 0uz; k < types.size(); ++k) {
-				args += (k == 0uz ? "" : ", ") + name(types[k]);
+				args += (k == 0uz ? "" : ", ") + ir::quotedType(_mod.types, types[k]);
 			}
 			error(codes::asl("no-matching-overload"), "no overload of '" + name_ + "' accepts (" + args + ")");
 			return {};
@@ -1128,7 +1135,7 @@ namespace {
 					}
 				}
 			}
-			error(codes::asl("unknown-name"), "unknown field '" + name_ + "' of " + name(base));
+			error(codes::asl("unknown-name"), "unknown field '" + name_ + "' of " + ir::quotedType(_mod.types, base));
 			return {};
 		}
 
@@ -1148,7 +1155,7 @@ namespace {
 				bounds = bounds && valid(type) && coerce(bound, u32Type);
 			}
 			if (not bounds) {
-				error(codes::asl("type-mismatch"), "range bounds must be u32");
+				error(codes::asl("type-mismatch"), "range bounds must be 'u32'");
 			} else if (const auto& lo = _mod.exprs[operands_[1].index], &hi = _mod.exprs[operands_[2].index];
 				lo.kind == ExprKind::eLiteral && hi.kind == ExprKind::eLiteral && ir::integerLiteral(lo.name) && ir::integerLiteral(hi.name) &&
 				*ir::integerLiteral(lo.name) >= *ir::integerLiteral(hi.name)) {
@@ -1159,7 +1166,7 @@ namespace {
 			}
 			const auto desc = _mod.types[base.index];
 			if (desc.kind != TypeKind::eArray && desc.kind != TypeKind::eRegion) {
-				error(codes::asl("type-mismatch"), "cannot range '" + name(base) + "'");
+				error(codes::asl("type-mismatch"), "cannot range " + ir::quotedType(_mod.types, base));
 				return {};
 			}
 			TypeDesc region {};
@@ -1175,7 +1182,7 @@ namespace {
 			const auto base = expr(operands_[0]);
 			const auto at = expr(operands_[1]);
 			if (valid(at) && not isInteger(at)) {
-				error(codes::asl("type-mismatch"), "index has type " + name(at) + ", expected an integer");
+				error(codes::asl("type-mismatch"), "index has type " + ir::quotedType(_mod.types, at) + ", expected an integer");
 			}
 			if (not valid(base)) {
 				return {};
@@ -1188,7 +1195,7 @@ namespace {
 				case TypeKind::eMatrix: return vectorOf(desc.scalar, desc.bits, desc.m);
 				default: break;
 			}
-			error(codes::asl("type-mismatch"), "cannot index type " + name(base));
+			error(codes::asl("type-mismatch"), "cannot index type " + ir::quotedType(_mod.types, base));
 			return {};
 		}
 
@@ -1203,7 +1210,7 @@ namespace {
 			if (op_ == "!" ? isBool(inner) : (op_ == "~" ? isInteger(componentOf(inner)) : numeric(inner))) {
 				return inner;
 			}
-			error(codes::asl("type-mismatch"), "operand of '" + op_ + "' has type " + name(inner));
+			error(codes::asl("type-mismatch"), "operand of '" + op_ + "' has type " + ir::quotedType(_mod.types, inner));
 			return {};
 		}
 
@@ -1234,7 +1241,7 @@ namespace {
 				return same(lt, rt) ? boolType() : mismatch(op_, lt, rt);
 			}
 			if (op_ == "%" && numeric(lt) && numeric(rt) && not (isInteger(componentOf(lt)) && isInteger(componentOf(rt)))) {
-				error(codes::asl("type-mismatch"), "operator '%' needs integer operands, got " + name(not isInteger(componentOf(lt)) ? lt : rt));
+				error(codes::asl("type-mismatch"), "operator '%' needs integer operands, got " + ir::quotedType(_mod.types, not isInteger(componentOf(lt)) ? lt : rt));
 				return {};
 			}
 			if (op_ == "<<" || op_ == ">>") {
@@ -1284,7 +1291,7 @@ namespace {
 			auto thenType = expr(operands_[1]);
 			const auto elseType = expr(operands_[2]);
 			if (valid(condition) && not isBool(condition)) {
-				error(codes::asl("type-mismatch"), "condition has type " + name(condition) + ", expected bool");
+				error(codes::asl("type-mismatch"), "condition has type " + ir::quotedType(_mod.types, condition) + ", expected 'bool'");
 			}
 			if (not valid(thenType) || not valid(elseType) || same(thenType, elseType) || coerce(operands_[2], thenType)) {
 				return thenType;
@@ -1292,12 +1299,12 @@ namespace {
 			if (coerce(operands_[1], elseType)) {
 				return elseType;
 			}
-			error(codes::asl("type-mismatch"), "branches of '?:' have types " + name(thenType) + " and " + name(elseType));
+			error(codes::asl("type-mismatch"), "branches of '?:' have types " + ir::quotedType(_mod.types, thenType) + " and " + ir::quotedType(_mod.types, elseType));
 			return {};
 		}
 
 		[[nodiscard]] TypeRef mismatch(ref<const String> op_, TypeRef lt_, TypeRef rt_) {
-			error(codes::asl("type-mismatch"), "operands of '" + op_ + "' have types " + name(lt_) + " and " + name(rt_));
+			error(codes::asl("type-mismatch"), "operands of '" + op_ + "' have types " + ir::quotedType(_mod.types, lt_) + " and " + ir::quotedType(_mod.types, rt_));
 			return {};
 		}
 
@@ -1382,7 +1389,7 @@ namespace {
 				if (known && ambiguous) {
 					error(codes::asl("ambiguous-call"), "call to '" + name_ + "' is ambiguous for (" + join(args) + ")");
 				} else if (known) {
-					error(codes::asl("no-matching-overload"), "no overload of '" + name_ + "' takes (" + join(args) + "); candidates: " + candidates(named));
+					error(codes::asl("no-matching-overload"), "no overload of '" + name_ + "' takes (" + join(args) + ")", "candidates are " + candidates(named));
 				}
 				return {};
 			}
@@ -1404,7 +1411,7 @@ namespace {
 		[[nodiscard]] String join(ref<const Vector<TypeRef>> types_) const {
 			String text {};
 			for (auto i = 0uz; i < types_.size(); ++i) {
-				text += (i != 0uz ? ", " : "") + name(types_[i]);
+				text += (i != 0uz ? ", " : "") + ir::quotedType(_mod.types, types_[i]);
 			}
 			return text;
 		}
@@ -1419,7 +1426,7 @@ namespace {
 			}
 			String text {};
 			for (auto i = 0uz; i < seen.size(); ++i) {
-				text += (i != 0uz ? ", " : "") + seen[i];
+				text += (i != 0uz ? ", '" : "'") + seen[i] + "'";
 			}
 			return text;
 		}
@@ -1469,6 +1476,10 @@ String ir::describeType(ref<const Vector<TypeDesc>> types_, TypeRef type_, u32 d
 	}
 }
 
+String ir::quotedType(ref<const Vector<TypeDesc>> types_, TypeRef type_) {
+	return "'" + describeType(types_, type_) + "'";
+}
+
 bool ir::reservedForRegions(StringView name_, bool function_) {
 	const auto numbered = [&](StringView tag_) {
 		const auto at = name_.rfind(tag_);
@@ -1479,6 +1490,17 @@ bool ir::reservedForRegions(StringView name_, bool function_) {
 		return numbered("__r");
 	}
 	return name_.ends_with("__off") || name_.ends_with("__len") || name_.ends_with("__end") || numbered("__i");
+}
+
+String ir::reservedSuffixOf(StringView name_) {
+	assert(reservedForRegions(name_, true) || reservedForRegions(name_, false));
+	for (const auto tag : { "__off", "__len", "__end" }) {
+		if (name_.ends_with(tag)) {
+			return tag;
+		}
+	}
+	const auto suffix = name_.substr(name_.rfind(reservedForRegions(name_, true) ? "__r" : "__i"));
+	return String(suffix.substr(0, 3)) + "<n>";
 }
 
 String ir::signatureOf(ref<const Module> mod_, ref<const FunctionDecl> fn_) {
@@ -1559,12 +1581,12 @@ namespace {
 				via += (via.empty() ? "" : ", ") + _mod.functions[*it].name;
 			}
 			const auto tail = via.empty() ? String {} : " (via " + via + ")";
-			auto message = fatal ?
-				"'" + e.name + "' under lane-dependent control" + tail + "; lanes that skip it deadlock the workgroup" :
-				"'" + e.name + "' uses implicit derivatives under lane-dependent control" + tail + "; results are undefined, use sample_lod";
+			auto message = "'" + e.name + (fatal ? "' needs every invocation of a group together but runs" : "' picks its detail level automatically") +
+				" under a condition that can differ between invocations" + tail;
+			String note = fatal ? "invocations that skip it leave the others in the group waiting forever" : "the result is undefined, use 'sample_lod'";
 			const auto& code = codes::asl("divergent-control");
 			_diags.emplace_back(
-				(fatal ? ir::Diagnostic::error(code, std::move(message)) : ir::Diagnostic::warning(code, std::move(message))).at(spanIn(_mod, e.loc))
+				(fatal ? ir::Diagnostic::error(code, std::move(message)) : ir::Diagnostic::warning(code, std::move(message))).at(spanIn(_mod, e.loc)).note(std::move(note))
 			);
 		}
 

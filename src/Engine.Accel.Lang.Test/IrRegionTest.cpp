@@ -1,6 +1,7 @@
 #include "pch.h"
 
 #include <algorithm>
+#include "IrWording.hpp"
 
 #include <Engine.Accel.Lang/Emitter/GlslEmitter.hpp>
 #include <Engine.Accel.Lang/Ir/Interface.hpp>
@@ -25,6 +26,9 @@ namespace AccelLang {
 
 		[[nodiscard]] String errorOf(StringView source_) {
 			auto res = parse(source_);
+			if (not res.has_value() && not res.error().empty()) {
+				AccelLang::expectWording(res.error().front());
+			}
 			return res.has_value() || res.error().empty() ? String {} : res.error().front().message();
 		}
 
@@ -259,12 +263,22 @@ namespace AccelLang {
 
 	TEST(RegionTest, RangeBoundsAreU32) {
 		const auto message = errorOf(body("let r = &mut scratch[0.0 .. 4.0];"));
-		EXPECT_TRUE(message.contains("range bounds must be u32")) << message;
+		EXPECT_TRUE(message.contains("range bounds must be 'u32'")) << message;
 	}
 
 	TEST(RegionTest, RangeOnNonArray) {
 		const auto message = errorOf(body("let x: u32 = 0u; let r = &mut x[0u .. 1u];"));
 		EXPECT_TRUE(message.contains("cannot range")) << message;
+	}
+
+	TEST(RegionTest, ReservedSuffixNoteNamesNumberedForm) {
+		auto res = parse(body("let a = &mut scratch[0u .. 8u]; let a__i0 = &mut a[0u .. 4u];"));
+		ASSERT_FALSE(res.has_value());
+		const auto& d = res.error().front();
+		AccelLang::expectWording(d);
+		EXPECT_EQ(d.message(), "'a__i0' ends in a reserved suffix");
+		ASSERT_EQ(d.notes().size(), 1uz);
+		EXPECT_EQ(d.notes().front(), "names ending in '__i<n>' are reserved for borrowed regions");
 	}
 
 	TEST(RegionTest, RangeIsHashed) {
@@ -354,14 +368,14 @@ namespace AccelLang {
 	}
 
 	TEST(RegionTest, ReservedLocalSuffixRejected) {
-		EXPECT_EQ(errorOf(body("let r__off: u32 = 1u;")), "'r__off' ends in a suffix reserved for region lowering");
-		EXPECT_EQ(errorOf(body("let a = &mut scratch[0u .. 8u]; let a__i0 = &mut a[0u .. 4u];")), "'a__i0' ends in a suffix reserved for region lowering");
+		EXPECT_EQ(errorOf(body("let r__off: u32 = 1u;")), "'r__off' ends in a reserved suffix");
+		EXPECT_EQ(errorOf(body("let a = &mut scratch[0u .. 8u]; let a__i0 = &mut a[0u .. 4u];")), "'a__i0' ends in a reserved suffix");
 		EXPECT_EQ(errorOf(body("let a__inner: u32 = 1u; let off__x: u32 = 2u;")), "");
 	}
 
 	TEST(RegionTest, ReservedParamAndFunctionSuffixRejected) {
-		EXPECT_EQ(errorOf(String { prelude } + "fn g(p__end: u32) {}\nfn main() { g(1u); }\n"), "'p__end' ends in a suffix reserved for region lowering");
-		EXPECT_EQ(errorOf(String { prelude } + "fn g__r0() {}\nfn main() { g__r0(); }\n"), "'g__r0' ends in a suffix reserved for region lowering");
+		EXPECT_EQ(errorOf(String { prelude } + "fn g(p__end: u32) {}\nfn main() { g(1u); }\n"), "'p__end' ends in a reserved suffix");
+		EXPECT_EQ(errorOf(String { prelude } + "fn g__r0() {}\nfn main() { g__r0(); }\n"), "'g__r0' ends in a reserved suffix");
 		EXPECT_EQ(errorOf(String { prelude } + "fn g__ring(p__lens: u32) {}\nfn main() { g__ring(1u); }\n"), "");
 	}
 
