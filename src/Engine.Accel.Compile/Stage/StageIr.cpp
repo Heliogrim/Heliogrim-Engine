@@ -155,7 +155,7 @@ std::expected<smr<const Resolved>, Diagnostics> hg::engine::accel::resolveStageI
 ) {
 
 	if (stage_.ir == nullptr) {
-		return std::unexpected(fail(codes::asl("internal-inconsistent-pipeline"), "stage has no ir"));
+		return std::unexpected(fail(codes::asl("internal-inconsistent-pipeline"), "stage has no shader code"));
 	}
 
 	auto [modules, outputs, skippedText, key] = stageInputs(stage_, profile_, spec_, flags_, exportStage_);
@@ -255,7 +255,7 @@ std::expected<Vector<smr<StageDerivat>>, Diagnostics> hg::engine::accel::compose
 ) {
 
 	if (stages_.empty()) {
-		return std::unexpected(fail(codes::asl("internal-inconsistent-pipeline"), "pipeline has no ir stages"));
+		return std::unexpected(fail(codes::asl("internal-inconsistent-pipeline"), "pipeline has no stages"));
 	}
 	if (stages_.size() != flags_.size()) {
 		return std::unexpected(fail(codes::asl("internal-inconsistent-pipeline"), "stage and flag counts differ"));
@@ -266,7 +266,7 @@ std::expected<Vector<smr<StageDerivat>>, Diagnostics> hg::engine::accel::compose
 	key.reserve(stages_.size() + 1uLL);
 	for (size_t idx = 0uLL; idx < stages_.size(); ++idx) {
 		if (stages_[idx] == nullptr || stages_[idx]->ir == nullptr) {
-			return std::unexpected(fail(codes::asl("internal-inconsistent-pipeline"), "stage has no ir"));
+			return std::unexpected(fail(codes::asl("internal-inconsistent-pipeline"), "stage has no shader code"));
 		}
 		/* target symbols are the effect's exports: only the effect's last stage is sliced to them */
 		key.emplace_back(
@@ -431,7 +431,7 @@ Diagnostics hg::engine::accel::appendBindLayout(
 ) {
 
 	if (derivats_.size() != pipeline_.layouts.size()) {
-		return fail(codes::asl("internal-inconsistent-pipeline"), "pipeline and derivat counts differ");
+		return fail(codes::asl("internal-inconsistent-pipeline"), "pipeline and variant counts differ");
 	}
 
 	/* every distinct slot of the pipeline, in (set, binding) order */
