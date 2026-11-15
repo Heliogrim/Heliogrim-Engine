@@ -3,6 +3,7 @@
 /**/
 
 #include "IrSpan.hpp"
+#include "IrWording.hpp"
 
 #include <array>
 #include <map>
@@ -242,6 +243,7 @@ namespace AccelLang {
 		}
 
 		[[nodiscard]] bool mentions(ref<const Diagnostic> diag_, StringView text_) {
+			expectWording(diag_);
 			return diag_.message().find(text_) != String::npos;
 		}
 	}
@@ -340,8 +342,8 @@ namespace AccelLang {
 		);
 		const auto diags = parseFail("#include <a>\n", includes);
 		ASSERT_EQ(diags.size(), 1uz);
-		EXPECT_TRUE(mentions(diags[0], "cycle")) << diags[0].message();
-		EXPECT_TRUE(mentions(diags[0], "main -> a -> b -> a")) << diags[0].message();
+		EXPECT_EQ(diags[0].message(), "include cycle through 'main', 'a', 'b', 'a'");
+		expectWording(diags[0]);
 		EXPECT_EQ(spanOf(diags[0]).line, 1u);
 		EXPECT_EQ(spanOf(diags[0]).column, 11u);
 	}
@@ -514,10 +516,10 @@ namespace AccelLang {
 		const auto includes = includesFrom({ { "broken", "\n  @input (mode = bind) nope x;" }, { "lexbad", "$" } });
 		const auto diags = parseFail("#include <broken>\n#include <lexbad>\n", includes);
 		ASSERT_EQ(diags.size(), 2uz);
-		EXPECT_TRUE(mentions(diags[0], "in 'broken'")) << diags[0].message();
+		EXPECT_TRUE(spanOf(diags[0]).file == "broken") << diags[0].message();
 		EXPECT_EQ(spanOf(diags[0]).line, 2u);
 		EXPECT_EQ(spanOf(diags[0]).column, 24u);
-		EXPECT_TRUE(mentions(diags[1], "in 'lexbad'")) << diags[1].message();
+		EXPECT_TRUE(spanOf(diags[1]).file == "lexbad") << diags[1].message();
 	}
 
 	/* Nesting depth: one limit (256) bounds every recursive production; deep input yields one located diagnostic */
@@ -609,7 +611,7 @@ namespace AccelLang {
 		const auto diags = parseFail("#include <m1>\n", includeChain(5000uz));
 		ASSERT_EQ(diags.size(), 1uz);
 		EXPECT_TRUE(mentions(diags[0], "too deep")) << diags[0].message();
-		EXPECT_TRUE(mentions(diags[0], "in 'm256'")) << diags[0].message();// including m257 is nesting level 257
+		EXPECT_TRUE(spanOf(diags[0]).file == "m256") << diags[0].message();// including m257 is nesting level 257
 		EXPECT_EQ(spanOf(diags[0]).line, 1u);
 		EXPECT_EQ(spanOf(diags[0]).column, 11u);
 
@@ -621,7 +623,7 @@ namespace AccelLang {
 		const auto leaf = String(toggleAB) + repeat("@when (A == B) {\n", 100uz) + "fn F();\n" + repeat("}\n", 100uz);
 		const auto diags = parseFail("#include <m1>\n", includeChain(200uz, leaf));
 		ASSERT_EQ(diags.size(), 1uz);
-		EXPECT_TRUE(mentions(diags[0], "in 'm200'")) << diags[0].message();
+		EXPECT_TRUE(spanOf(diags[0]).file == "m200") << diags[0].message();
 		EXPECT_TRUE(mentions(diags[0], "too deep")) << diags[0].message();
 		EXPECT_EQ(spanOf(diags[0]).line, 58u);
 		EXPECT_EQ(spanOf(diags[0]).column, 8u);
@@ -702,7 +704,7 @@ namespace AccelLang {
 	TEST(ParserBodyTest, UnresolvedNameIsDiagnostic) {
 		const auto diags = parseFail("fn main() {\n\tposition = f32vec4(nope, 1.0);\n}\n");
 		ASSERT_EQ(diags.size(), 1uz);
-		EXPECT_TRUE(mentions(diags[0], "Unknown name 'nope'")) << diags[0].message();
+		EXPECT_TRUE(mentions(diags[0], "unknown name 'nope'")) << diags[0].message();
 		EXPECT_EQ(spanOf(diags[0]).line, 2u);
 		EXPECT_EQ(spanOf(diags[0]).column, 21u);
 	}
@@ -734,7 +736,7 @@ namespace AccelLang {
 
 		const auto diags = parseFail("toggle Shadows : { Off, On } = Off;\nfn main() {\n\t@when (Nope == On) frag_depth = 1.0;\n}\n");
 		ASSERT_EQ(diags.size(), 1uz);
-		EXPECT_TRUE(mentions(diags[0], "Unknown toggle 'Nope'")) << diags[0].message();
+		EXPECT_TRUE(mentions(diags[0], "unknown toggle 'Nope'")) << diags[0].message();
 		EXPECT_EQ(spanOf(diags[0]).line, 3u);
 		EXPECT_EQ(spanOf(diags[0]).column, 9u);
 	}
@@ -812,7 +814,7 @@ namespace AccelLang {
 
 		const auto diags = parseFail("fn main() {\n\tMissing(1.0);\n}\n");
 		ASSERT_EQ(diags.size(), 1uz);
-		EXPECT_TRUE(mentions(diags[0], "Unknown function 'Missing'")) << diags[0].message();
+		EXPECT_TRUE(mentions(diags[0], "unknown function 'Missing'")) << diags[0].message();
 		EXPECT_EQ(spanOf(diags[0]).line, 2u);
 		EXPECT_EQ(spanOf(diags[0]).column, 2u);
 	}
@@ -952,7 +954,7 @@ namespace AccelLang {
 		ASSERT_EQ(diags.size(), 2uz);
 		EXPECT_EQ(spanOf(diags[0]).line, 2u);
 		EXPECT_EQ(spanOf(diags[0]).column, 6u);
-		EXPECT_TRUE(mentions(diags[1], "Unknown type 'nope'")) << diags[1].message();
+		EXPECT_TRUE(mentions(diags[1], "unknown type 'nope'")) << diags[1].message();
 		EXPECT_EQ(spanOf(diags[1]).line, 3u);
 	}
 
@@ -979,7 +981,7 @@ namespace AccelLang {
 
 		const auto diags = parseFail("fn F() -> f32;\nfn main() {\n\t1.0 = frag_depth;\n\tF() = 1.0;\n}\n");
 		ASSERT_EQ(diags.size(), 2uz);
-		EXPECT_TRUE(mentions(diags[0], "Cannot assign")) << diags[0].message();
+		EXPECT_TRUE(mentions(diags[0], "cannot assign")) << diags[0].message();
 		EXPECT_EQ(spanOf(diags[0]).line, 3u);
 		EXPECT_EQ(spanOf(diags[0]).column, 2u);
 		EXPECT_EQ(spanOf(diags[1]).line, 4u);
@@ -1033,7 +1035,7 @@ namespace AccelLang {
 	TEST(ParserBodyTest, EofInsideBodyIsOneDiagnostic) {
 		const auto open = parseFail("fn main() {\n\tif (true) {\n\t\tfrag_depth = 1.0;");
 		ASSERT_EQ(open.size(), 1uz);
-		EXPECT_TRUE(mentions(open[0], "Unterminated")) << open[0].message();
+		EXPECT_TRUE(mentions(open[0], "unterminated")) << open[0].message();
 		EXPECT_EQ(spanOf(open[0]).line, 2u);
 		EXPECT_EQ(spanOf(open[0]).column, 12u);
 
@@ -1136,13 +1138,13 @@ namespace AccelLang {
 	TEST(ParserTest, SpecOnNonConstIsDiagnostic) {
 		const auto diags = parseFail("@spec (id = \"n\") @input (mode = bind, id = \"m\", class = uniform) block m { u32 n; };\n");
 		ASSERT_FALSE(diags.empty());
-		EXPECT_TRUE(mentions(diags[0], "@spec applies to const declarations only")) << diags[0].message();
+		EXPECT_TRUE(mentions(diags[0], "'@spec' applies to const declarations only")) << diags[0].message();
 	}
 
 	TEST(ParserTest, EarlyFragmentTestsValueMustBeBool) {
 		const auto diags = parseFail("@fragment (early_fragment_tests = yes)\nfn main() {}\n");
 		ASSERT_FALSE(diags.empty());
-		EXPECT_TRUE(mentions(diags[0], "Invalid value 'yes' for annotation key 'early_fragment_tests'")) << diags[0].message();
+		EXPECT_TRUE(mentions(diags[0], "invalid value 'yes' for annotation key 'early_fragment_tests'")) << diags[0].message();
 	}
 
 	TEST(ParserTest, GlslReservedWordsRejectedAtTheirName) {
@@ -1187,20 +1189,46 @@ namespace AccelLang {
 			 }) {
 			const auto diags = parseFail(source);
 			ASSERT_FALSE(diags.empty()) << source;
-			EXPECT_TRUE(mentions(diags[0], "Identifiers starting with '_hg_' are reserved.")) << diags[0].message();
+			EXPECT_TRUE(mentions(diags[0], "identifiers starting with '_hg_' are reserved")) << diags[0].message();
 		}
 	}
 
 	TEST(ParserTest, RegionSuffixRejectedAtModuleScope) {
-		for (const auto source : {
-				 "const a__len: u32 = 1u;\nfn main() {}\n",
-				 "@input (mode = bind, id = \"b\", class = storage) block b__off { u32[] data; };\nfn main() {}\n",
-				 "struct S__end { f32 x; }\nfn main() {}\n",
-					 "const w__r0: u32 = 1u;\nfn main() {}\n"
+		struct Case {
+			StringView source;
+			StringView name;
+			StringView suffix;
+		};
+		for (const auto& c : {
+				 Case { "const a__len: u32 = 1u;\nfn main() {}\n", "a__len", "__len" },
+				 Case { "@input (mode = bind, id = \"b\", class = storage) block b__off { u32[] data; };\nfn main() {}\n", "b__off", "__off" },
+				 Case { "struct S__end { f32 x; }\nfn main() {}\n", "S__end", "__end" },
+				 Case { "const w__r0: u32 = 1u;\nfn main() {}\n", "w__r0", "__r<n>" }
 			 }) {
-			const auto diags = parseFail(source);
-			ASSERT_FALSE(diags.empty()) << source;
-			EXPECT_TRUE(mentions(diags[0], "ends in a suffix reserved for region lowering")) << diags[0].message();
+			const auto diags = parseFail(String { c.source });
+			ASSERT_FALSE(diags.empty()) << c.source;
+			EXPECT_EQ(diags[0].message(), "'" + String { c.name } + "' ends in a reserved suffix");
+			expectWording(diags[0]);
+			ASSERT_EQ(diags[0].notes().size(), 1uz);
+			EXPECT_EQ(diags[0].notes().front(), "names ending in '" + String { c.suffix } + "' are reserved for borrowed regions");
 		}
+	}
+
+	TEST(ParserTest, NestedIncludeErrorNamesItsFile) {
+		const auto includes = includesFrom({ { "B", "fn f() { $ }" } });
+		const auto diags = parseFail("#include <B>\nfn main() {}\n", includes);
+		ASSERT_FALSE(diags.empty());
+		EXPECT_EQ(diags.front().message(), "unexpected character '$'");
+		EXPECT_EQ(spanOf(diags.front()).file, "B");
+		expectWording(diags.front());
+	}
+
+	TEST(ParserTest, VariableWithoutDirectionNamesTheFix) {
+		const auto diags = parseFail("f32 x;\nfn main() {}\n");
+		ASSERT_FALSE(diags.empty());
+		EXPECT_EQ(diags[0].message(), "expected a declaration, found 'f32'");
+		expectWording(diags[0]);
+		ASSERT_EQ(diags[0].notes().size(), 1uz);
+		EXPECT_EQ(diags[0].notes().front(), "a variable needs '@input' or '@output'");
 	}
 }

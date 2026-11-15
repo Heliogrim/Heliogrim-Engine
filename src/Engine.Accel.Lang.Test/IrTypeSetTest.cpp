@@ -170,8 +170,9 @@ namespace AccelLang {
 
 		ASSERT_FALSE(parsed.has_value());
 		const auto& diag = parsed.error().front();
-		EXPECT_TRUE(diag.message().contains("integer matrix")) << diag.message();
-		EXPECT_TRUE(diag.message().contains("s32mat4")) << diag.message();
+		EXPECT_EQ(diag.message(), "GLSL has no integer matrix type 's32mat4'");
+		ASSERT_EQ(diag.notes().size(), 1uz);
+		EXPECT_EQ(diag.notes().front(), "matrices are float only");
 		EXPECT_EQ(spanOf(diag).line, 2u);
 	}
 
