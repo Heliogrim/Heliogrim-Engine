@@ -15,16 +15,9 @@
 using namespace hg::engine::graphics;
 using namespace hg;
 
-Vector<const char*> Application::_validation = {
-	#ifdef _DEBUG
-	"VK_LAYER_KHRONOS_validation",
-	"VK_LAYER_KHRONOS_synchronization2",
-	"VK_LAYER_KHRONOS_shader_object"
-	#endif
-};
-
 Application::Application(mref<Application> other_) noexcept :
-	_instance(std::exchange(other_._instance, nullptr)) {}
+	_instance(std::exchange(other_._instance, nullptr)),
+	_headless(other_._headless) {}
 
 Application::~Application() {
 	if (_instance) {
@@ -35,13 +28,16 @@ Application::~Application() {
 ref<Application::this_type> Application::operator=(mref<Application> other_) noexcept {
 	if (std::addressof(other_) != this) {
 		_instance = std::exchange(other_._instance, nullptr);
+		_headless = other_._headless;
 	}
 	return *this;
 }
 
-void Application::setup() {
+void Application::setup(const bool headless_) {
 
 	SCOPED_STOPWATCH
+
+	_headless = headless_;
 
 	uint32_t count = 0;
 	vkEnumerateInstanceLayerProperties(&count, nullptr);
@@ -102,6 +98,10 @@ void Application::setup() {
 	} catch (const std::exception& e_) {
 		IM_DEBUG_LOG("Failed to create vk::Instance.");
 		IM_CORE_ERROR(e_.what());
+		if (_headless) {
+			throw;
+		}
+
 		exit(-1);
 	}
 }
@@ -110,6 +110,22 @@ void Application::destroy() {
 	vk::Instance { _instance }.destroy();
 	_instance = nullptr;
 }
+
+Application::operator vk::Instance() const {
+	return _instance;
+}
+
+bool Application::headless() const noexcept {
+	return _headless;
+}
+
+Vector<const char*> Application::_validation = {
+	#ifdef _DEBUG
+	"VK_LAYER_KHRONOS_validation",
+	"VK_LAYER_KHRONOS_synchronization2",
+	"VK_LAYER_KHRONOS_shader_object"
+	#endif
+};
 
 Vector<const char*> Application::getExtensions() {
 	Vector<const char*> extensions;
@@ -134,8 +150,4 @@ Vector<const char*> Application::getExtensions() {
 	#endif
 
 	return extensions;
-}
-
-Application::operator vk::Instance() const {
-	return _instance;
 }

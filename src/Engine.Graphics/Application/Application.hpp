@@ -31,7 +31,7 @@ namespace hg::engine::graphics {
 		 * @author Julius
 		 * @date 09.11.2020
 		 */
-		void setup();
+		void setup(const bool headless_ = false);
 
 		/**
 		 * Destroys this
@@ -41,6 +41,11 @@ namespace hg::engine::graphics {
 		 */
 		void destroy();
 
+	private:
+		VkInstance _instance = nullptr;
+		bool _headless = false;
+
+	public:
 		/**
 		 * Instance casting operator
 		 *
@@ -51,9 +56,9 @@ namespace hg::engine::graphics {
 		 */
 		operator vk::Instance() const;
 
-	private:
-		VkInstance _instance = nullptr;
+		[[nodiscard]] bool headless() const noexcept;
 
+	private:
 		static Vector<const char*> _validation;
 
 		/**
