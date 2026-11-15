@@ -31,4 +31,30 @@ namespace Codes {
 			++expected;
 		}
 	}
+
+	TEST(Codes, SummariesFollowWording) {
+		for (const auto& info : codes::table) {
+			const StringView summary = info.summary;
+			EXPECT_FALSE(summary.empty()) << info.key;
+			if (summary.empty()) {
+				continue;
+			}
+
+			EXPECT_FALSE(summary.front() >= 'A' && summary.front() <= 'Z') << info.key << ": " << summary;
+			EXPECT_NE(summary.back(), '.') << info.key << ": " << summary;
+
+			// compiler jargon the wording rules forbid: prefix match for stems, whole word for short ones
+			for (const StringView stem : { StringView { "lane" }, StringView { "wave" }, StringView { "derivat" } }) {
+				EXPECT_EQ(summary.find(stem), StringView::npos) << info.key << ": '" << stem << "' in " << summary;
+			}
+			const auto isWord = [](char c_) { return (c_ >= 'a' && c_ <= 'z') || (c_ >= 'A' && c_ <= 'Z') || (c_ >= '0' && c_ <= '9'); };
+			for (const StringView banned : { StringView { "ir" }, StringView { "lowering" } }) {
+				for (auto at = summary.find(banned); at != StringView::npos; at = summary.find(banned, at + 1uz)) {
+					const bool before = at > 0uz && isWord(summary[at - 1uz]);
+					const bool after = at + banned.size() < summary.size() && isWord(summary[at + banned.size()]);
+					EXPECT_TRUE(before || after) << info.key << ": '" << banned << "' in " << summary;
+				}
+			}
+		}
+	}
 }
