@@ -1,5 +1,8 @@
 #include "Graphics.hpp"
 
+#include <cassert>
+#include <stdexcept>
+#include <string>
 #include <Engine.Scheduler/Async.hpp>
 
 #ifdef _PROFILING
@@ -21,15 +24,12 @@
 #include "Buffer/VkBufferFactory.hpp"
 #include "Cache/GlobalCacheCtrl.hpp"
 #include "Cache/GlobalResourceCache.hpp"
-#include "Command/CommandBatch.hpp"
 #include "Engine.Core/Engine.hpp"
 #include "Engine.Core/Universe.hpp"
 #include "Engine.Event/GlobalEventEmitter.hpp"
 #include "Engine.Resource/ResourceManager.hpp"
 #include "Engine.Scene/Scene.hpp"
-#include "Importer/ImageFileTypes.hpp"
 #include "Importer/ImageImporter.hpp"
-#include "Importer/ModelFileTypes.hpp"
 #include "Importer/ModelImporter.hpp"
 #include "Pool/GlobalResourcePool.hpp"
 #include "Surface/SurfaceManager.hpp"
@@ -280,6 +280,63 @@ void Graphics::destroy() {
 	_device.reset();
 
 	_application.destroy();
+}
+
+void Graphics::setupHeadless(const std::function<void(vk::Instance)> onInstance_) {
+
+	assert(not static_cast<vk::Instance>(_application));
+	_application = {};
+	_application.setup(true);
+
+	if (onInstance_) {
+		onInstance_(_application);
+	}
+
+	// Assigned after setup, so a throwing setup leaves nothing for `destroyHeadless` to tear down
+	auto device = make_sptr<Device>(_application);
+	device->setup();
+	_device = std::move(device);
+
+	_computeQueue = _device->computeQueue();
+	_graphicsQueue = _device->graphicsQueue();
+	_transferQueue = _device->transferQueue();
+
+	VkBufferFactory::make(_device);
+	VkTextureFactory::make(_device);
+}
+
+void Graphics::destroyHeadless(const std::function<void()> beforeInstance_) {
+
+	long holders = 0;
+	if (_device) {
+		// C call on purpose: the vk-hpp wrapper throws after a device loss and would skip the teardown
+		static_cast<void>(vkQueueWaitIdle(_device->computeQueue()->vkQueue()));
+		static_cast<void>(vkQueueWaitIdle(_device->graphicsQueue()->vkQueue()));
+		static_cast<void>(vkQueueWaitIdle(_device->transferQueue()->vkQueue()));
+
+		TextureFactory::destroy();
+		BufferFactory::destroy();
+
+		// `Device::destroy` destroys and deletes the queues itself
+		_device->destroy();
+		// Queues and allocator hold the device until `destroy`; any holder left now outlives a dead device.
+		holders = _device.use_count() - 1;
+		_device.reset();
+	}
+
+	_computeQueue = nullptr;
+	_graphicsQueue = nullptr;
+	_transferQueue = nullptr;
+
+	if (beforeInstance_) {
+		beforeInstance_();
+	}
+
+	_application.destroy();
+
+	if (holders > 0) {
+		throw std::logic_error("Device still had " + std::to_string(holders) + " holder(s) after destroy.");
+	}
 }
 
 sptr<Device> Graphics::getCurrentDevice() const noexcept {
