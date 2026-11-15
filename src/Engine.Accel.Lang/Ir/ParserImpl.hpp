@@ -129,11 +129,6 @@ namespace hg::engine::accel::lang::ir::detail {
 		/* call after entering a Nest on `_shared.depth`; reports at the offending token */
 		[[nodiscard]] bool tooDeep(ref<const ir::Token> at_);
 
-		/* the root module's diagnostics are unprefixed */
-		[[nodiscard]] bool nested() const {
-			return _shared.active.size() > 1uz;
-		}
-
 		/* Token access; the trailing eEof is never stepped over. */
 
 		[[nodiscard]] ref<const ir::Token> peek() const {
@@ -166,6 +161,8 @@ namespace hg::engine::accel::lang::ir::detail {
 
 		[[nodiscard]] ir::Diagnostic diagnostic(ref<const ir::DiagnosticCodeInfo> code_, ref<const ir::Token> at_, String message_) const;
 		void error(ref<const ir::DiagnosticCodeInfo> code_, ref<const ir::Token> at_, String message_);
+		void error(ref<const ir::DiagnosticCodeInfo> code_, ref<const ir::Token> at_, String message_, String note_);
+		void push(ir::Diagnostic&& diag_, ref<const ir::Token> at_);
 		/* reports a user name that collides with GLSL or a generated name; `module_` adds the region-lowering suffixes */
 		void declaredName(ref<const ir::Token> name_, bool module_);
 		void syntaxError(StringView expected_);
@@ -195,6 +192,7 @@ namespace hg::engine::accel::lang::ir::detail {
 		[[nodiscard]] Opt<ir::Condition> unaryCondition();
 		[[nodiscard]] Opt<ir::Condition> combinator(ref<const ir::Token> name_);
 		void unknownCombinator(ref<const ir::Token> name_);
+		void duplicateDirection(ref<const ir::Token> name_);
 		[[nodiscard]] Opt<ir::Condition> comparison(ref<const ir::Token> name);
 
 		/* Types */
