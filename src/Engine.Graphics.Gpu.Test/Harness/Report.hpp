@@ -35,6 +35,9 @@ namespace hg::test::gpu {
 		u32 changedTexels;
 		Vector<std::pair<math::uivec2, String>> inputs;
 
+		// Free text printed ahead of the checks, for example compiler diagnostics
+		String notes;
+
 		[[nodiscard]] bool passed() const noexcept;
 
 		[[nodiscard]] String text() const;
