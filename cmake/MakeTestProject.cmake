@@ -32,8 +32,8 @@ endfunction()
 function(make_test_project)
 
 	set(__single_var_options TEST_NAME TEST_FOLDER SOURCE)
-	set(__multi_var_options LIBRARIES)
-	cmake_parse_arguments(args "" "${__single_var_options}" "${__multi_var_options}" ${ARGN})
+	set(__multi_var_options LIBRARIES LABELS)
+	cmake_parse_arguments(args "EXCLUDE_FROM_ALL_TESTS" "${__single_var_options}" "${__multi_var_options}" ${ARGN})
 
 	if (NOT DEFINED args_TEST_NAME)
 		message(FATAL_ERROR "Target `${args_TEST_NAME}` is required parameter name to generate setup.")
@@ -129,10 +129,20 @@ function(make_test_project)
 	# Register Tests
 	include(CTest)
 	include(GoogleTest)
-	gtest_discover_tests(${target})
+	set(__discover_properties)
+	if (args_LABELS)
+		set(__discover_properties PROPERTIES LABELS ${args_LABELS})
+	endif ()
 
-	# Add Tests to global target
-	_load_global_test_target(global_test_target)
-	add_dependencies(${global_test_target} ${target})
+	if (args_EXCLUDE_FROM_ALL_TESTS)
+		# Discovery would otherwise run the test exe at build time
+		gtest_discover_tests(${target} DISCOVERY_MODE PRE_TEST ${__discover_properties})
+	else ()
+		gtest_discover_tests(${target} ${__discover_properties})
+
+		# Add Tests to global target
+		_load_global_test_target(global_test_target)
+		add_dependencies(${global_test_target} ${target})
+	endif ()
 
 endfunction()
