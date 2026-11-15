@@ -8,6 +8,7 @@
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
 
 #include "IrSame.hpp"
+#include "IrWording.hpp"
 
 using namespace hg::engine::accel::lang::ir;
 using namespace hg;
@@ -35,6 +36,11 @@ namespace AccelLang {
 			const Vector<const Module*> list { modules_ };
 			auto res = merge(list);
 			EXPECT_FALSE(res.has_value());
+			if (not res.has_value()) {
+				for (const auto& d : res.error()) {
+					expectWording(d);
+				}
+			}
 			return res.has_value() ? Diagnostics {} : std::move(res).error();
 		}
 
@@ -142,7 +148,7 @@ namespace AccelLang {
 		const auto diags = mergeFail({ &a, &b });
 		ASSERT_EQ(diags.size(), 1uz);
 		EXPECT_TRUE(
-			mentions(diags[0], "binding 'camera' declared as block { f32mat4 vp; } in 'A' and block { f32vec4 vp; } in 'B'")
+			mentions(diags[0], "binding 'camera' declared as 'block { f32mat4 vp; }' in 'A' and 'block { f32vec4 vp; }' in 'B'")
 		) << diags[0].message();
 	}
 
@@ -271,7 +277,7 @@ namespace AccelLang {
 		const auto b = parse("B", "@input (mode = forward, id = \"tag\") u32 tag;\n");
 		const auto diags = mergeFail({ &a, &b });
 		ASSERT_EQ(diags.size(), 1uz);
-		EXPECT_TRUE(mentions(diags[0], "binding 'tag' declared as u8 in 'A' and u32 in 'B'")) << diags[0].message();
+		EXPECT_TRUE(mentions(diags[0], "binding 'tag' declared as 'u8' in 'A' and 'u32' in 'B'")) << diags[0].message();
 	}
 
 	TEST(MergeTest, StructurallyEqualTypesAreDeduplicated) {
@@ -377,7 +383,7 @@ namespace AccelLang {
 	TEST(MergeTest, EmptyInputIsDiagnostic) {
 		const auto diags = mergeFail({});
 		ASSERT_EQ(diags.size(), 1uz);
-		EXPECT_TRUE(mentions(diags[0], "no modules")) << diags[0].message();
+		EXPECT_EQ(diags[0].message(), "no modules to combine");
 		EXPECT_EQ(diags[0].code()->key, "internal-inconsistent-pipeline");
 	}
 
@@ -385,7 +391,7 @@ namespace AccelLang {
 		const auto a = parse("A", "@input (mode = forward) f32 x;\n");
 		const auto diags = mergeFail({ &a, nullptr });
 		ASSERT_EQ(diags.size(), 1uz);
-		EXPECT_TRUE(mentions(diags[0], "module #1 is null")) << diags[0].message();
+		EXPECT_EQ(diags[0].message(), "module 1 is missing");
 	}
 
 	TEST(MergeTest, SingleModuleMergesToItself) {
@@ -446,8 +452,9 @@ namespace AccelLang {
 		for (const auto& mod : invalid) {
 			const auto diags = mergeFail({ &valid, &mod });
 			ASSERT_EQ(diags.size(), 1uz);
-			EXPECT_TRUE(mentions(diags[0], "module 'hand'")) << diags[0].message();
-			EXPECT_TRUE(mentions(diags[0], "out of range")) << diags[0].message();
+			EXPECT_EQ(diags[0].message(), "module 'hand' is malformed");
+			ASSERT_EQ(diags[0].notes().size(), 1uz);
+			EXPECT_NE(diags[0].notes()[0].find("out of range"), String::npos) << diags[0].notes()[0];
 		}
 	}
 }

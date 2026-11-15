@@ -59,7 +59,7 @@ namespace {
 	/* Type names for diagnostics, in `.asl` spelling */
 
 	[[nodiscard]] String describe(ref<const Vector<ir::TypeDesc>> types_, ir::TypeRef ref_) {
-		return ir::describeType(types_, ref_);
+		return quoted(ir::describeType(types_, ref_));
 	}
 
 	[[nodiscard]] StringView className(ir::BindClass class_) {
@@ -638,15 +638,15 @@ namespace {
 
 std::expected<ir::Module, ir::Diagnostics> ir::merge(std::span<const Module* const> ordered_) {
 	if (ordered_.empty()) {
-		return std::unexpected(Diagnostics { ir::Diagnostic::error(codes::asl("internal-inconsistent-pipeline"), "merge: no modules to merge") });
+		return std::unexpected(Diagnostics { ir::Diagnostic::error(codes::asl("internal-inconsistent-pipeline"), "no modules to combine") });
 	}
 
 	Diagnostics diags {};
 	for (auto i = 0uz; i < ordered_.size(); ++i) {
 		if (ordered_[i] == nullptr) {
-			diags.emplace_back(ir::Diagnostic::error(codes::asl("internal-inconsistent-pipeline"), "merge: module #" + std::to_string(i) + " is null"));
+			diags.emplace_back(ir::Diagnostic::error(codes::asl("internal-inconsistent-pipeline"), "module " + std::to_string(i) + " is missing"));
 		} else if (auto invalid = invalidRef(*ordered_[i]); invalid.has_value()) {
-			diags.emplace_back(ir::Diagnostic::error(codes::asl("internal-inconsistent-pipeline"), "module " + quoted(ordered_[i]->name) + ": " + std::move(*invalid)));
+			diags.emplace_back(ir::Diagnostic::error(codes::asl("internal-inconsistent-pipeline"), "module " + quoted(ordered_[i]->name) + " is malformed").note(std::move(*invalid)));
 		}
 	}
 	if (not diags.empty()) {

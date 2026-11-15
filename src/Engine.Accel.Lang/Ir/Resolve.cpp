@@ -31,13 +31,13 @@ namespace {
 			const auto& [name, value] = set_[i];
 			const auto toggle = std::ranges::find(mod_.toggles, name, &ir::Toggle::name);
 			if (toggle == mod_.toggles.end()) {
-				diags_.emplace_back(ir::Diagnostic::error(codes::asl("unknown-toggle"), "unknown toggle " + quoted(name) + " in " + String(label_)));
+				diags_.emplace_back(ir::Diagnostic::error(codes::asl("unknown-toggle"), "unknown toggle " + quoted(name) + ", set by " + String(label_)));
 			} else if (std::ranges::find(toggle->values, value) == toggle->values.end()) {
-				diags_.emplace_back(ir::Diagnostic::error(codes::asl("unknown-toggle"), "toggle " + quoted(name) + " has no value " + quoted(value) + " (set by " + String(label_) + ")"));
+				diags_.emplace_back(ir::Diagnostic::error(codes::asl("unknown-toggle"), "toggle " + quoted(name) + " has no value " + quoted(value) + ", set by " + String(label_)));
 			}
 			if (std::ranges::find(set_.begin(), set_.begin() + static_cast<ptrdiff_t>(i), name, &std::pair<String, String>::first) !=
 				set_.begin() + static_cast<ptrdiff_t>(i)) {
-				diags_.emplace_back(ir::Diagnostic::error(codes::asl("duplicate-toggle-setting"), "toggle " + quoted(name) + " set twice by " + String(label_)));
+				diags_.emplace_back(ir::Diagnostic::error(codes::asl("duplicate-toggle-setting"), "toggle " + quoted(name) + " is set twice by " + String(label_)));
 			}
 		}
 	}
@@ -66,7 +66,7 @@ namespace {
 			const auto* fixed = pass != nullptr ? pass : profile;
 			if (pass != nullptr && profile != nullptr && *pass != *profile) {
 				warn(
-					String(labels_[0]) + " sets toggle " + quoted(toggle.name) + " to " + quoted(*pass) + " over the " +
+					String(labels_[0]) + " sets toggle " + quoted(toggle.name) + " to " + quoted(*pass) + " over " +
 					String(labels_[1]) + " value " + quoted(*profile)
 				);
 			}
@@ -162,11 +162,11 @@ namespace {
 }
 
 std::expected<ir::ResolveResult, ir::Diagnostics> ir::fixToggles(ref<const Module> mod_, ref<const ToggleSources> sources_) {
-	return fix(mod_, sources_, Labels { "pass", "profile", "material" });
+	return fix(mod_, sources_, Labels { "the pass", "the profile", "the material" });
 }
 
 std::expected<ir::Module, ir::Diagnostics> ir::resolveToggles(ref<const Module> mod_, ref<const ToggleSet> toggles_) {
-	auto fixed = fix(mod_, ToggleSources { .pass = toggles_, .profile = {}, .material = {} }, Labels { "toggle set", "", "" });
+	auto fixed = fix(mod_, ToggleSources { .pass = toggles_, .profile = {}, .material = {} }, Labels { "the toggle set", "", "" });
 	if (not fixed.has_value()) {
 		return std::unexpected(std::move(fixed).error());
 	}
