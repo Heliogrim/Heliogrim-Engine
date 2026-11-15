@@ -102,7 +102,7 @@ namespace {
 						advance();
 					}
 					if (_pos >= _src.size()) {
-						error(codes::asl("unterminated-token"), at, "Unterminated block comment.");
+						error(codes::asl("unterminated-token"), at, "unterminated block comment");
 					} else {
 						advance();
 						advance();
@@ -198,7 +198,7 @@ namespace {
 				case '^': kind = ir::TokenKind::eCaret; break;
 				default: {
 					advance();
-					error(codes::asl("unexpected-character"), at, std::string("Unexpected character '") + c + "'.");
+					error(codes::asl("unexpected-character"), at, std::string("unexpected character '") + c + "'");
 					return;
 				}
 			}
@@ -250,7 +250,7 @@ namespace {
 				while (isAlpha(peek()) || isDigit(peek()) || (peek() == '.' && isDigit(peek(1)))) {
 					advance();
 				}
-				error(codes::asl("malformed-number"), at, "Malformed number literal '" + String(_src.substr(begin, _pos - begin)) + "'.");
+				error(codes::asl("malformed-number"), at, "malformed number '" + String(_src.substr(begin, _pos - begin)) + "'");
 				return;
 			}
 			emit(isFloat ? ir::TokenKind::eFloat : ir::TokenKind::eInteger, begin, at);
@@ -264,7 +264,7 @@ namespace {
 				advance();
 			}
 			if (peek() != '"') {
-				error(codes::asl("unterminated-token"), at, "Unterminated string literal.");
+				error(codes::asl("unterminated-token"), at, "unterminated string literal");
 				return;
 			}
 			const auto end = _pos;
@@ -281,7 +281,7 @@ namespace {
 				advance();
 			}
 			if (_src.substr(begin, _pos - begin) != "#include") {
-				error(codes::asl("unknown-directive"), at, "Unknown directive '" + String(_src.substr(begin, _pos - begin)) + "'.");
+				error(codes::asl("unknown-directive"), at, "unknown directive '" + String(_src.substr(begin, _pos - begin)) + "'");
 				return;
 			}
 			emit(ir::TokenKind::eInclude, begin, at);
@@ -291,7 +291,7 @@ namespace {
 			}
 			const auto openAt = here();
 			if (peek() != '<') {
-				error(codes::asl("malformed-include"), openAt, "Expected '<' after #include.");
+				error(codes::asl("malformed-include"), openAt, "expected '<' after '#include'");
 				return;
 			}
 			advance();
@@ -301,7 +301,7 @@ namespace {
 				advance();
 			}
 			if (peek() != '>') {
-				error(codes::asl("unterminated-token"), openAt, "Unterminated #include target, expected '>'.");
+				error(codes::asl("unterminated-token"), openAt, "unterminated '#include' target, expected '>'");
 				return;
 			}
 			emit(ir::TokenKind::eIncludeTarget, targetBegin, targetAt);

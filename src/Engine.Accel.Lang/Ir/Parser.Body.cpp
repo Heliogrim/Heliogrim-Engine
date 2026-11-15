@@ -93,7 +93,7 @@ Opt<ir::StmtRef> Parser::fail() {
 
 void Parser::unterminated(ref<const ir::Token> open_) {
 	if (_eofErrors == 0uz && _shared.depthErrors == 0uL) {
-		error(codes::asl("unexpected-token"), open_, "Unterminated block, expected '}'.");
+		error(codes::asl("unexpected-token"), open_, "unterminated block, expected '}'");
 	}
 	++_eofErrors;
 }
@@ -198,7 +198,7 @@ Opt<ir::StmtRef> Parser::whenStatement() {
 Opt<ir::StmtRef> Parser::whenHead() {
 	take();
 	if (not accept(TokenKind::eKwWhen)) {
-		error(codes::asl("misplaced-annotation"), peek(), "Only @when applies to a statement.");
+		error(codes::asl("misplaced-annotation"), peek(), "only '@when' applies to a statement");
 		return None;
 	}
 	auto cond = parenCondition();
@@ -262,7 +262,7 @@ Opt<ir::StmtRef> Parser::letStatement(bool const_) {
 			return fail();
 		}
 	} else if (not at(TokenKind::eAssign)) {
-		error(codes::asl("incomplete-local-declaration"), name, "A '" + String(const_ ? "const" : "let") + "' declaration needs a type or an initializer.");
+		error(codes::asl("incomplete-local-declaration"), name, "'" + String(const_ ? "const" : "let") + "' declaration needs a type or an initializer");
 		return fail();
 	}
 	return local(name, declType.value_or(ir::TypeRef {}), const_, keyword);
@@ -300,7 +300,7 @@ Opt<ir::StmtRef> Parser::local(ref<const ir::Token> name_, ir::TypeRef type_, bo
 				error(codes::asl("not-assignable"), name_, "cannot take '&mut' into a 'const' alias");
 			}
 			if (type_.index != ir::TypeRef {}.index) {
-				error(codes::asl("typed-reference-declaration"), name_, "A reference declaration cannot have a type annotation.");
+				error(codes::asl("typed-reference-declaration"), name_, "a reference declaration cannot have a type annotation");
 			}
 		}
 		const auto init = expression();
@@ -310,7 +310,7 @@ Opt<ir::StmtRef> Parser::local(ref<const ir::Token> name_, ir::TypeRef type_, bo
 	valid = valid && expect(TokenKind::eSemicolon, "';'");
 
 	if (std::find(_locals.begin() + static_cast<ptrdiff_t>(_scope), _locals.end(), name_.text) != _locals.end()) {
-		error(codes::asl("duplicate-declaration"), name_, "Duplicate local '" + String(name_.text) + "'.");
+		error(codes::asl("duplicate-declaration"), name_, "duplicate local '" + String(name_.text) + "'");
 	}
 	_locals.emplace_back(name_.text);
 	if (not valid) {
@@ -392,7 +392,7 @@ Opt<ir::StmtRef> Parser::simpleStatement(bool terminated_) {
 	assign.kind = ir::StmtKind::eAssign;
 	assign.lhs = *lhs;
 	if (not assignable(*lhs)) {
-		error(codes::asl("not-assignable"), start, "Cannot assign to this expression.");
+		error(codes::asl("not-assignable"), start, "cannot assign to this expression");
 	}
 	if (step != nullptr) {
 		assign.name = step->kind == TokenKind::ePlusPlus ? "+=" : "-=";
@@ -540,7 +540,7 @@ Opt<ir::ExprRef> Parser::arrayConstruct(ref<const ir::Token> name_) {
 			count = count * 10uL + static_cast<u32>(digit - '0');
 		}
 		if (text.size() > 9uz || count == 0uL) {
-			error(codes::asl("invalid-array-size"), open, "Invalid array size '" + String(text) + "'.");
+			error(codes::asl("invalid-array-size"), open, "invalid array size '" + String(text) + "'");
 		}
 	}
 	if (not expect(TokenKind::eRBracket, "']'")) {
@@ -597,7 +597,7 @@ ir::ExprRef Parser::callee(ref<const ir::Token> name_, Vector<ir::ExprRef> args_
 		return node(ir::ExprKind::eBuiltin, name_.text, std::move(args_), name_.loc);
 	}
 	const auto pending = node(ir::ExprKind::eCall, name_.text, std::move(args_), name_.loc);
-	_shared.calls.emplace_back(PendingCall { diagnostic(codes::asl("unknown-function"), name_, "Unknown function '" + String(name_.text) + "'."), pending.index });
+	_shared.calls.emplace_back(PendingCall { diagnostic(codes::asl("unknown-function"), name_, "unknown function '" + String(name_.text) + "'"), pending.index });
 	return pending;
 }
 
@@ -625,7 +625,7 @@ ir::ExprRef Parser::name(ref<const ir::Token> name_) {
 	} else if (isBuiltinVariable(text)) {
 		named.kind = ir::ExprKind::eBuiltin;
 	} else {
-		error(codes::asl("unknown-name"), name_, "Unknown name '" + String(text) + "'.");
+		error(codes::asl("unknown-name"), name_, "unknown name '" + String(text) + "'");
 	}
 	// a local is never a binding use (usageOf relies on it)
 	assert(not named.local || named.binding.index == ir::BindingRef {}.index);

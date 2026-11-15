@@ -1,5 +1,7 @@
 #include "pch.h"
 
+#include "IrWording.hpp"
+
 #include <Engine.Accel.Lang/Emitter/GlslEmitter.hpp>
 #include <Engine.Accel.Lang/Ir/Interface.hpp>
 #include <Engine.Accel.Lang/Ir/Layout.hpp>
@@ -28,6 +30,9 @@ namespace AccelLang {
 
 		[[nodiscard]] String errorOf(StringView source_, EntryKind entry_ = EntryKind::eCompute) {
 			auto res = parse(source_, entry_);
+			if (!res.has_value() && !res.error().empty()) {
+				AccelLang::expectWording(res.error().front());
+			}
 			return res.has_value() || res.error().empty() ? String {} : res.error().front().message();
 		}
 
@@ -160,7 +165,7 @@ namespace AccelLang {
 
 	TEST(ComputeTest, StorageImageOutsideComputeIsDiagnostic) {
 		const auto message = errorOf(String { image } + "fn main() {}\n", EntryKind::eFragment);
-		EXPECT_EQ(message, "storage images require a compute module.");
+		EXPECT_EQ(message, "storage images require a compute module");
 	}
 
 	TEST(ComputeTest, BarrierInCalleeUnderDivergenceReportsChain) {
@@ -192,6 +197,6 @@ namespace AccelLang {
 
 	TEST(FragmentTest, EarlyFragmentTestsOnComputeIsDiagnostic) {
 		const auto message = errorOf("@compute (local_size = [1, 1, 1], early_fragment_tests = true)\nfn main() {}\n");
-		EXPECT_TRUE(message.contains("'early_fragment_tests' applies to @fragment only.")) << message;
+		EXPECT_TRUE(message.contains("'early_fragment_tests' applies to '@fragment' only")) << message;
 	}
 }
