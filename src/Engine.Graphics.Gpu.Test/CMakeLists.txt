@@ -19,6 +19,8 @@ make_test_project(
 		${PROJECT_NAME}::Engine.Graphics.RenderGraph
 		${PROJECT_NAME}::Engine.Logging
 		${PROJECT_NAME}::Heliogrim
+		${PROJECT_NAME}::External-ryml
+		${PROJECT_NAME}::External-c4core
 )
 
 name_to_target(__gpu_test_target "Engine.Graphics.Gpu.Test")
