@@ -338,12 +338,12 @@ namespace {
 		/* declares `var_` or reports that its type has no GLSL form */
 		[[nodiscard]] Opt<String> declareOrReport(ir::TypeRef ref_, StringView var_) {
 			if (const auto* type = typeAt(ref_); type != nullptr && type->kind == ir::TypeKind::eRegion) {
-				error(codes::asl("internal-inconsistent-module"), "region not lowered");
+				error(codes::asl("internal-inconsistent-module"), "region argument was not rewritten before code generation");
 				return None;
 			}
 			auto decl = declare(ref_, var_);
 			if (not decl.has_value()) {
-				error(codes::asl("no-glsl-form"), "The type of '" + String { var_ } + "' has no GLSL form.");
+				error(codes::asl("no-glsl-form"), "type of '" + String { var_ } + "' has no GLSL form");
 			}
 			return decl;
 		}
@@ -355,7 +355,7 @@ namespace {
 			}
 			auto& state = _structState[ref_.index];
 			if (state == State::eOpen) {
-				error(codes::asl("recursive-struct"), "A struct type contains itself.");
+				error(codes::asl("recursive-struct"), "struct '" + _mod.types[ref_.index].name + "' contains itself");
 				return;
 			}
 			if (state == State::eDone) {
@@ -392,7 +392,7 @@ namespace {
 			const auto known = std::ranges::find(_structNames, desc.name, &std::pair<String, String>::first);
 			if (known != _structNames.end()) {
 				if (known->second != members) {
-					error(codes::asl("conflicting-struct-definitions"), "Conflicting definitions of struct '" + desc.name + "'.");
+					error(codes::asl("conflicting-struct-definitions"), "conflicting definitions of struct '" + desc.name + "'");
 				}
 				return;
 			}
@@ -417,7 +417,7 @@ namespace {
 						return;
 					}
 					if (desc->bits == 8uL && mask8_ == 0uL) {
-						error(codes::asl("no-glsl-form"), "Binding '" + id_ + "' forwards an 8-bit type; GLSL has no 8-bit stage interface variables.");
+						_diags.emplace_back(ir::Diagnostic::error(codes::asl("no-glsl-form"), "binding '" + id_ + "' forwards an 8-bit type").at(ir::NoLocation {}).note("GLSL has no 8-bit stage interface variables"));
 					}
 					_features |= desc->bits == 8uL ? mask8_ : desc->bits == 16uL ? mask16_ : 0uL;
 					return;
@@ -460,7 +460,7 @@ namespace {
 			for (auto i = 0uz; i < order.size(); ++i) {
 				const auto& binding = decls[order[i]];
 				if (i > 0uz && decls[order[i - 1uz]].id == binding.id && decls[order[i - 1uz]].input == binding.input) {
-					error(codes::asl("duplicate-binding"), "Binding '" + binding.id + "' is declared twice.");
+					error(codes::asl("duplicate-binding"), "binding '" + binding.id + "' is declared twice");
 					continue;
 				}
 				use(binding.type);
@@ -494,11 +494,11 @@ namespace {
 			}
 
 			if (forwardInputs != _layout.inputLocations.size()) {
-				error(codes::asl("internal-inconsistent-layout"), "The layout has " + std::to_string(_layout.inputLocations.size()) + " input locations, the module " +
-					std::to_string(forwardInputs) + " forward inputs.");
+				error(codes::asl("internal-inconsistent-layout"), "layout has " + std::to_string(_layout.inputLocations.size()) + " input locations, but the module has " +
+					std::to_string(forwardInputs) + " forward inputs");
 			}
 			if (pushBlocks > 1uL) {
-				error(codes::asl("too-many-push-constant-blocks"), "A stage has at most one push constant block, the module declares " + std::to_string(pushBlocks) + ".");
+				error(codes::asl("too-many-push-constant-blocks"), "a stage has at most one push constant block, but the module declares " + std::to_string(pushBlocks));
 			}
 		}
 
@@ -507,7 +507,7 @@ namespace {
 				return;
 			}
 			if (index_ >= _layout.inputLocations.size()) {
-				error(codes::asl("internal-inconsistent-layout"), "The layout has no location for input '" + binding_.id + "'.");
+				error(codes::asl("internal-inconsistent-layout"), "layout has no location for input '" + binding_.id + "'");
 				return;
 			}
 			const auto decl = declareOrReport(binding_.type, binding_.localName);
@@ -531,7 +531,7 @@ namespace {
 			const auto opaque = kind == ir::TypeKind::eTexture || kind == ir::TypeKind::eSampler || kind == ir::TypeKind::eImage;
 
 			if (binding_.bindClass == eNone) {
-				error(codes::asl("missing-binding-class"), "Binding '" + binding_.id + "' has no class.");
+				error(codes::asl("missing-binding-class"), "binding '" + binding_.id + "' has no class");
 				return;
 			}
 			const auto fits = binding_.bindClass == eTexture ?
@@ -542,7 +542,7 @@ namespace {
 				kind == ir::TypeKind::eImage :
 				kind.has_value() && not opaque;
 			if (not fits) {
-				error(codes::asl("binding-class-mismatch"), "The type of binding '" + binding_.id + "' does not fit its class.");
+				error(codes::asl("binding-class-mismatch"), "type of binding '" + binding_.id + "' does not fit its class");
 				return;
 			}
 			if (not opaque) {
@@ -562,7 +562,7 @@ namespace {
 				if (range == _layout.push.end() || range->size == 0uL) {
 					error(
 						range == _layout.push.end() ? codes::asl("internal-inconsistent-layout") : codes::asl("invalid-push-constant-type"),
-						"Push constant '" + binding_.id + "' cannot be laid out."
+						"push constant '" + binding_.id + "' cannot be laid out"
 					);
 					return;
 				}
@@ -572,7 +572,7 @@ namespace {
 
 			const auto slot = std::ranges::find(_layout.slots, binding_.id, &ir::SlotAssignment::id);
 			if (slot == _layout.slots.end()) {
-				error(codes::asl("internal-inconsistent-layout"), "The layout has no slot for binding '" + binding_.id + "'.");
+				error(codes::asl("internal-inconsistent-layout"), "layout has no slot for binding '" + binding_.id + "'");
 				return;
 			}
 			const auto packing = binding_.packing == ir::Packing::eStd140 ? ", std140" : binding_.packing == ir::Packing::eStd430 ? ", std430" : "";
@@ -606,7 +606,7 @@ namespace {
 				if (constant.specId.has_value()) {
 					const auto it = std::ranges::find(_layout.specConstants, *constant.specId, &ir::SpecConstant::id);
 					if (it == _layout.specConstants.end()) {
-						error(codes::asl("internal-inconsistent-layout"), "The layout has no constant id for spec constant '" + *constant.specId + "'.");
+						error(codes::asl("internal-inconsistent-layout"), "layout has no constant id for spec constant '" + *constant.specId + "'");
 						continue;
 					}
 					head = "layout(constant_id = " + std::to_string(it->constantId) + ") ";
@@ -644,7 +644,7 @@ namespace {
 			const auto* ret = typeAt(fn_.ret);
 			const auto retName = ret != nullptr ? name(*ret) : Opt<String> { "void" };
 			if (not retName.has_value()) {
-				error(codes::asl("no-glsl-form"), "The return type of '" + fn_.name + "' has no GLSL form.");
+				error(codes::asl("no-glsl-form"), "return type of '" + fn_.name + "' has no GLSL form");
 				return None;
 			}
 			String params {};
@@ -673,7 +673,7 @@ namespace {
 				if (fn.name == "main") {
 					hasMain = true;
 					if (not fn.params.empty() || fn.ret.index != ir::TypeRef {}.index) {
-						error(codes::asl("invalid-entry-signature"), "'main' takes no parameters and returns nothing.");
+						error(codes::asl("invalid-entry-signature"), "'main' takes no parameters and returns nothing");
 					}
 				}
 				const auto sig = signature(fn);
@@ -719,7 +719,7 @@ namespace {
 			}
 			const Nest nest { _depth };
 			if (_depth > maxDepth) {
-				error(codes::asl("internal-inconsistent-module"), "The code nests too deeply.");
+				error(codes::asl("internal-inconsistent-module"), "code nests too deeply");
 				return;
 			}
 
@@ -812,7 +812,7 @@ namespace {
 				}
 				case ir::StmtKind::eWhen:
 				default: {
-					error(codes::asl("internal-inconsistent-module"), "An unresolved @when statement cannot be emitted.");
+					error(codes::asl("internal-inconsistent-module"), "an unresolved '@when' statement cannot be emitted");
 					break;
 				}
 			}
@@ -830,10 +830,10 @@ namespace {
 				const auto typeName = name(*type);
 				decl = typeName.has_value() ? Opt<String> { *typeName + " " + stmt_.name } : None;
 				if (not decl.has_value()) {
-					error(codes::asl("no-glsl-form"), "The type of '" + stmt_.name + "' has no GLSL form.");
+					error(codes::asl("no-glsl-form"), "type of '" + stmt_.name + "' has no GLSL form");
 				}
 			} else {
-				error(codes::asl("internal-inconsistent-module"), "Cannot infer the type of local '" + stmt_.name + "'.");
+				error(codes::asl("internal-inconsistent-module"), "cannot infer the type of local '" + stmt_.name + "'");
 			}
 			if (decl.has_value()) {
 				out_ += pad_ + (stmt_.mutable_ ? "" : "const ") + *decl + (init.has_value() ? " = " + init->text : String {}) + ";\n";
@@ -881,18 +881,18 @@ namespace {
 
 		[[nodiscard]] Emitted expr(ir::ExprRef ref_) {
 			if (ref_.index >= _mod.exprs.size()) {
-				error(codes::asl("internal-inconsistent-module"), "An expression is missing.");
+				error(codes::asl("internal-inconsistent-module"), "an expression is missing");
 				return { "0", None };
 			}
 			const Nest nest { _depth };
 			if (_depth > maxDepth) {
-				error(codes::asl("internal-inconsistent-module"), "The code nests too deeply.");
+				error(codes::asl("internal-inconsistent-module"), "code nests too deeply");
 				return { "0", None };
 			}
 
 			const auto& e = _mod.exprs[ref_.index];
 			if (const auto* type = typeAt(e.type); e.kind == ir::ExprKind::eRange || (type != nullptr && type->kind == ir::TypeKind::eRegion)) {
-				error(codes::asl("internal-inconsistent-module"), "region not lowered", e.loc);
+				error(codes::asl("internal-inconsistent-module"), "region argument was not rewritten before code generation", e.loc);
 				return { "0", None };
 			}
 			const auto operand = [&](size_t i_) -> Emitted {
@@ -936,7 +936,7 @@ namespace {
 						}
 						return { String { fn->glsl } + "(" + arguments() + ")", typeOf(e.type) };
 					}
-					error(codes::asl("internal-inconsistent-module"), "Unknown builtin '" + e.name + "'.");
+					error(codes::asl("internal-inconsistent-module"), "unknown builtin '" + e.name + "'");
 					return { e.name, None };
 				}
 				case ir::ExprKind::eCall: {
@@ -975,7 +975,7 @@ namespace {
 					const auto type = typeOf(e.type);
 					const auto typeName = type.has_value() ? name(*type) : None;
 					if (not typeName.has_value()) {
-						error(codes::asl("no-glsl-form"), "Cannot construct '" + e.name + "' in GLSL.");
+						error(codes::asl("no-glsl-form"), "cannot construct '" + e.name + "' in GLSL");
 					}
 					return { typeName.value_or(e.name) + "(" + arguments() + ")", type };
 				}
@@ -1006,7 +1006,7 @@ namespace {
 				return { e_.name, typeOf(e_.type).has_value() ? typeOf(e_.type) : localType(e_.name) };
 			}
 			if (binding->implicit) {
-				error(codes::asl("internal-inconsistent-module"), "Implicit binding '" + binding->id + "' has no GLSL variable.");
+				error(codes::asl("internal-inconsistent-module"), "implicit binding '" + binding->id + "' has no GLSL variable");
 			}
 			return { binding->localName, typeOf(binding->type) };
 		}
@@ -1014,13 +1014,13 @@ namespace {
 		/* `fn(texture, sampler, ...)` -> `glsl(sampler2D(texture, sampler), ...)`; the leading texture + sampler pair is combined */
 		[[nodiscard]] Emitted textureCall(ref<const ir::Expr> e_, ref<const ir::BuiltinFunction> fn_) {
 			if (e_.operands.size() < 2uz) {
-				error(codes::asl("internal-inconsistent-module"), "'" + e_.name + "' takes a texture and a sampler.");
+				error(codes::asl("internal-inconsistent-module"), "'" + e_.name + "' takes a texture and a sampler");
 				return { "0", None };
 			}
 			const auto texture = expr(e_.operands[0]);
 			const auto sampler = expr(e_.operands[1]);
 			if (not texture.type.has_value() || texture.type->kind != ir::TypeKind::eTexture) {
-				error(codes::asl("internal-inconsistent-module"), "The first argument of '" + e_.name + "' must be a texture.");
+				error(codes::asl("internal-inconsistent-module"), "first argument of '" + e_.name + "' must be a texture");
 				return { "0", None };
 			}
 			const auto& tex = *texture.type;

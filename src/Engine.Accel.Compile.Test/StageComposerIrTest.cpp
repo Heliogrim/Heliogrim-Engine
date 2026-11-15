@@ -232,7 +232,7 @@ namespace AccelCompile {
 		auto derivat = composeStageIr(stage, EffectProfile {}, TestSpecification { {} }, StageFlagBits::eFragment, cache);
 		ASSERT_FALSE(derivat.has_value());
 		ASSERT_FALSE(derivat.error().empty());
-		EXPECT_TRUE(derivat.error().front().message().contains("noclass")) << derivat.error().front().message();
+		EXPECT_EQ(derivat.error().front().message(), "binding 'noclass' has no class");
 		EXPECT_EQ(derivat.error().front().severity(), Severity::eError);
 	}
 

@@ -8,6 +8,7 @@
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
 #include <Engine.Accel.Lang/Ir/Resolve.hpp>
 #include <Engine.Accel.Lang/Ir/Slice.hpp>
+#include "IrWording.hpp"
 
 using namespace hg::engine::accel::lang::ir;
 using namespace hg;
@@ -559,8 +560,11 @@ namespace AccelLang {
 		const auto res = assignPipelineLayout(stages, types, {});
 		ASSERT_FALSE(res.has_value());
 		ASSERT_FALSE(res.error().empty());
+		expectWording(res.error().front());
 		EXPECT_NE(res.error().front().message().find("camera"), String::npos);
+		expectWording(res.error().front());
 		EXPECT_NE(res.error().front().message().find("stage 0"), String::npos);
+		expectWording(res.error().front());
 		EXPECT_NE(res.error().front().message().find("stage 1"), String::npos);
 	}
 
@@ -608,6 +612,7 @@ namespace AccelLang {
 		const std::array types { t0, t1 };
 		const auto res = assignPipelineLayout(stages, types, {});
 		ASSERT_FALSE(res.has_value());
+		expectWording(res.error().front());
 		EXPECT_NE(res.error().front().message().find("'p'"), String::npos);
 	}
 
@@ -656,7 +661,9 @@ namespace AccelLang {
 		const std::array clash { s0, bad };
 		const auto err = assignPipelineSpecConstants(clash, tables);
 		ASSERT_FALSE(err.has_value());
+		expectWording(err.error().front());
 		EXPECT_NE(err.error().front().message().find("stage 0"), String::npos);
+		expectWording(err.error().front());
 		EXPECT_NE(err.error().front().message().find("stage 1"), String::npos);
 	}
 }
