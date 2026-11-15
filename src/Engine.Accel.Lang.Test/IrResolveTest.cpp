@@ -11,6 +11,8 @@
 #include <Engine.Accel.Lang/Ir/Resolve.hpp>
 #include <Engine.Accel.Lang/Ir/Slice.hpp>
 
+#include "IrWording.hpp"
+
 #include "IrSame.hpp"
 
 using namespace hg::engine::accel::lang::ir;
@@ -186,6 +188,11 @@ namespace AccelLang {
 		[[nodiscard]] Diagnostics resolveFail(ref<const Module> mod_, ref<const ToggleSet> toggles_) {
 			auto res = resolveToggles(mod_, toggles_);
 			EXPECT_FALSE(res.has_value());
+			if (not res.has_value()) {
+				for (const auto& d : res.error()) {
+					expectWording(d);
+				}
+			}
 			return res.has_value() ? Diagnostics {} : std::move(res).error();
 		}
 
@@ -198,6 +205,11 @@ namespace AccelLang {
 		[[nodiscard]] Diagnostics fixFail(ref<const Module> mod_, ref<const ToggleSources> sources_) {
 			auto res = fixToggles(mod_, sources_);
 			EXPECT_FALSE(res.has_value());
+			if (not res.has_value()) {
+				for (const auto& d : res.error()) {
+					expectWording(d);
+				}
+			}
 			return res.has_value() ? Diagnostics {} : std::move(res).error();
 		}
 
@@ -244,8 +256,8 @@ namespace AccelLang {
 		EXPECT_EQ(fixed.toggles, (ToggleSet { { "Shading", "Deferred" } }));
 		ASSERT_EQ(fixed.warnings.size(), 1uz);
 		EXPECT_EQ(fixed.warnings[0].severity(), Severity::eWarning);
-		EXPECT_TRUE(mentions(fixed.warnings[0], "'Shading'")) << fixed.warnings[0].message();
-		EXPECT_TRUE(mentions(fixed.warnings[0], "material")) << fixed.warnings[0].message();
+		expectWording(fixed.warnings[0]);
+		EXPECT_EQ(fixed.warnings[0].message(), "the material sets toggle 'Shading' to 'Forward', but the pass fixes it to 'Deferred'");
 	}
 
 	TEST(ResolveTest, DefaultsApplyWhenUnset) {
@@ -377,27 +389,25 @@ namespace AccelLang {
 		const auto mod = parse(shading);
 		struct Case {
 			ToggleSources sources;
-			Vector<StringView> words;
+			StringView message;
 		};
 		const std::array cases {
-			Case { { .pass = { { "Nope", "X" } }, .profile = {}, .material = {} }, { "'Nope'", "pass" } },
-			Case { { .pass = {}, .profile = { { "Shading", "Clustered" } }, .material = {} }, { "'Shading'", "'Clustered'", "profile" } },
-			Case { { .pass = {}, .profile = {}, .material = { { "Shading", "" } } }, { "'Shading'", "material" } },
-			Case { { .pass = { { "Shading", "Forward" }, { "Shading", "Forward" } }, .profile = {}, .material = {} }, { "'Shading'", "twice", "pass" } }
+			Case { { .pass = { { "Nope", "X" } }, .profile = {}, .material = {} }, "unknown toggle 'Nope', set by the pass" },
+			Case { { .pass = {}, .profile = { { "Shading", "Clustered" } }, .material = {} }, "toggle 'Shading' has no value 'Clustered', set by the profile" },
+			Case { { .pass = {}, .profile = {}, .material = { { "Shading", "" } } }, "toggle 'Shading' has no value '', set by the material" },
+			Case { { .pass = { { "Shading", "Forward" }, { "Shading", "Forward" } }, .profile = {}, .material = {} }, "toggle 'Shading' is set twice by the pass" }
 		};
 		for (const auto& c : cases) {
 			const auto diags = fixFail(mod, c.sources);
 			ASSERT_EQ(diags.size(), 1uz);
 			EXPECT_EQ(diags[0].severity(), Severity::eError);
-			for (const auto word : c.words) {
-				EXPECT_TRUE(mentions(diags[0], word)) << diags[0].message();
-			}
+			EXPECT_EQ(diags[0].message(), c.message);
 		}
 
 		// resolveToggles validates the fixed set the same way
 		const auto diags = resolveFail(mod, { { "Shading", "Clustered" } });
 		ASSERT_EQ(diags.size(), 1uz);
-		EXPECT_TRUE(mentions(diags[0], "'Clustered'")) << diags[0].message();
+		EXPECT_EQ(diags[0].message(), "toggle 'Shading' has no value 'Clustered', set by the toggle set");
 	}
 
 	TEST(ResolveTest, PassValueWinsOverProfileWithWarning) {
@@ -408,7 +418,8 @@ namespace AccelLang {
 		);
 		EXPECT_EQ(fixed.toggles, (ToggleSet { { "Shading", "Deferred" } }));
 		ASSERT_EQ(fixed.warnings.size(), 1uz);// the material agrees with the winning pass value
-		EXPECT_TRUE(mentions(fixed.warnings[0], "profile")) << fixed.warnings[0].message();
+		expectWording(fixed.warnings[0]);
+		EXPECT_EQ(fixed.warnings[0].message(), "the pass sets toggle 'Shading' to 'Deferred' over the profile value 'Forward'");
 
 		const auto materialOnly = fixOk(mod, ToggleSources { .pass = {}, .profile = {}, .material = { { "Shading", "Deferred" } } });
 		EXPECT_EQ(materialOnly.toggles, (ToggleSet { { "Shading", "Deferred" } }));
