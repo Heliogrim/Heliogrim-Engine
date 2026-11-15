@@ -49,7 +49,7 @@ namespace hg::engine::accel::lang::codes {
 		{ { { { "ASL" } }, 42 }, "not-constant", "expression is not a compile-time constant" },
 		{ { { { "ASL" } }, 43 }, "loop-control-outside-loop", "'break' or 'continue' appears outside a loop" },
 		{ { { { "ASL" } }, 44 }, "constant-loop-condition", "loop condition is always true, so the loop can only end through 'break'" },
-		{ { { { "ASL" } }, 45 }, "divergent-control", "operation that needs all lanes of a wave together runs under a condition that can differ per lane" },
+		{ { { { "ASL" } }, 45 }, "divergent-control", "operation that needs every invocation of a group together runs under a condition that can differ between invocations" },
 		{ { { { "ASL" } }, 46 }, "stage-unavailable", "feature is not available in this stage" },
 		{ { { { "ASL" } }, 47 }, "region-not-rooted", "region argument is not rooted in a buffer or workgroup array" },
 		{ { { { "ASL" } }, 48 }, "region-root-shadowed", "declaration shadows the root of a live region" },
