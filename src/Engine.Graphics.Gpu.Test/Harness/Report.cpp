@@ -34,6 +34,7 @@ bool Report::passed() const noexcept {
 
 String Report::text() const {
 	std::stringstream out;
+	out << notes;
 	for (const auto& c : checks) {
 		out << (c.passed ? "PASS " : "FAIL ") << c.name << ": failing " << c.failing << ", measured " << c.measured << '\n';
 	}
@@ -66,6 +67,7 @@ Report hg::test::gpu::makeReport(
 		Raster { math::uivec2 { 0, 0 }, {} },
 		tl::nullopt,
 		0u,
+		{},
 		{}
 	};
 
