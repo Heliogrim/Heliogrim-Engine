@@ -2,6 +2,7 @@
 
 #include <array>
 #include <Engine.Accel.Lang/Ir/Contract.hpp>
+#include "IrWording.hpp"
 
 using namespace hg::engine::accel::lang::ir;
 using namespace hg;
@@ -36,6 +37,7 @@ namespace AccelLang {
 
 		ASSERT_EQ(diags.size(), 1uz);
 		EXPECT_EQ(diags[0].severity(), Severity::eError);
+		expectWording(diags[0]);
 		EXPECT_TRUE(diags[0].message().contains("'model'")) << diags[0].message();
 	}
 
@@ -45,6 +47,7 @@ namespace AccelLang {
 		const auto diags = checkContract(shader(), stage, { "model" });
 
 		ASSERT_EQ(diags.size(), 1uz);
+		expectWording(diags[0]);
 		EXPECT_TRUE(diags[0].message().contains("'normal'")) << diags[0].message();
 	}
 
@@ -59,6 +62,7 @@ namespace AccelLang {
 		const auto diags = checkContract({ bind("albedo", BindClass::eNone) }, {}, { "albedo" });
 
 		ASSERT_EQ(diags.size(), 1uz);
+		expectWording(diags[0]);
 		EXPECT_TRUE(diags[0].message().contains("'albedo'")) << diags[0].message();
 	}
 
@@ -85,7 +89,8 @@ namespace AccelLang {
 		};
 		const auto diags = checkStageChain(bad);
 		ASSERT_EQ(diags.size(), 1uz);
-		EXPECT_TRUE(diags[0].message().contains("f32vec2") && diags[0].message().contains("f32vec3")) << diags[0].message();
+		expectWording(diags[0]);
+		EXPECT_EQ(diags[0].message(), "fragment input 'uv' is 'f32vec2', but the vertex stage outputs 'f32vec3'");
 	}
 
 	TEST(ContractTest, ChainMissingInputNamesStages) {
@@ -95,7 +100,8 @@ namespace AccelLang {
 		};
 		const auto diags = checkStageChain(stages);
 		ASSERT_EQ(diags.size(), 1uz);
-		EXPECT_EQ(diags[0].message(), "fragment input 'world-pos' has no matching output in geometry stage");
+		expectWording(diags[0]);
+		EXPECT_EQ(diags[0].message(), "fragment input 'world-pos' has no matching output in the geometry stage");
 	}
 
 	TEST(ContractTest, ChainArrayedMatchesScalarOutput) {
@@ -137,6 +143,7 @@ namespace AccelLang {
 		const auto broken = chain(false);
 		const auto diags = checkStageChain(broken);
 		ASSERT_EQ(diags.size(), 1uz);
+		expectWording(diags[0]);
 		EXPECT_TRUE(diags[0].message().contains("'level'")) << diags[0].message();
 	}
 }

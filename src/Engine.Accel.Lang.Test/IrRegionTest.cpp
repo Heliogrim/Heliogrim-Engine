@@ -167,7 +167,7 @@ namespace AccelLang {
 		auto mod = parse(lowerBody("let r = &mut scratch[0u .. 8u]; r[1u] = 5u;"));
 		ASSERT_TRUE(mod.has_value()) << mod.error().front().message();
 		const auto glsl = emitGlsl(*mod);
-		EXPECT_TRUE(glsl.contains("region not lowered")) << glsl;
+		EXPECT_TRUE(glsl.contains("region argument was not rewritten before code generation")) << glsl;
 	}
 
 	TEST(RegionTest, HelperSpecializedOncePerRoot) {

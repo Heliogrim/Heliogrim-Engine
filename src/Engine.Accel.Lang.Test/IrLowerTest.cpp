@@ -13,6 +13,7 @@
 #include <Engine.Accel.Lang/Ir/Slice.hpp>
 #include <Engine.Accel.Lang/Rep/Annotation.hpp>
 #include <Engine.Accel.Lang/Rep/Symbol.hpp>
+#include "IrWording.hpp"
 
 #include "IrSame.hpp"
 
@@ -188,6 +189,7 @@ namespace AccelLang {
 		const auto res = lowerToIntermediate(mod, layoutOf(mod), Dialect::eVulkanGlsl460);
 
 		ASSERT_FALSE(res.has_value());
+		expectWording(res.error().front());
 		EXPECT_TRUE(res.error().front().message().contains("'vertex-position'"));
 	}
 
@@ -305,6 +307,7 @@ namespace AccelLang {
 		const auto diags = GlslEmitter {}.emit(mod, layoutOf(mod), target).diagnostics;
 
 		ASSERT_EQ(diags.size(), 1uz);
+		expectWording(diags[0]);
 		EXPECT_TRUE(diags[0].message().contains("'S'")) << diags[0].message();
 		EXPECT_TRUE(target.text.empty());
 	}
@@ -318,6 +321,7 @@ namespace AccelLang {
 		const auto res = lowerToIntermediate(mod, layout, Dialect::eVulkanGlsl460);
 
 		ASSERT_FALSE(res.has_value());
+		expectWording(res.error().front());
 		EXPECT_TRUE(res.error().front().message().contains("'p'")) << res.error().front().message();
 	}
 
