@@ -56,12 +56,6 @@ namespace {
 			);
 	}
 
-	/* Type names for diagnostics, in `.asl` spelling */
-
-	[[nodiscard]] String describe(ref<const Vector<ir::TypeDesc>> types_, ir::TypeRef ref_) {
-		return quoted(ir::describeType(types_, ref_));
-	}
-
 	[[nodiscard]] StringView className(ir::BindClass class_) {
 		constexpr std::array<StringView, 8> names { "none", "uniform", "storage", "texture", "sampler", "push", "image", "workgroup" };
 		const auto index = static_cast<u32>(class_);
@@ -363,7 +357,7 @@ namespace {
 			};
 			const auto prefix = "binding " + quoted(a_.id) + " declared ";
 			if (a_.type != b_.type) {
-				return prefix + "as " + describe(result.types, a_.type) + in(first_) + " and " + describe(result.types, b_.type) + in(second_);
+				return prefix + "as " + ir::quotedType(result.types, a_.type) + in(first_) + " and " + ir::quotedType(result.types, b_.type) + in(second_);
 			}
 			if (a_.mode != b_.mode) {
 				const auto mode = [](ir::BindMode mode_) {
@@ -483,7 +477,7 @@ namespace {
 					return " in " + quoted(moduleName(m_));
 				};
 				if (it->type != mapped.type) {
-					diags.emplace_back(ir::Diagnostic::error(codes::asl("merge-conflict"), prefix + "as " + describe(result.types, it->type) + in(first) + " and " + describe(result.types, mapped.type) + in(mod_)));
+					diags.emplace_back(ir::Diagnostic::error(codes::asl("merge-conflict"), prefix + "as " + ir::quotedType(result.types, it->type) + in(first) + " and " + ir::quotedType(result.types, mapped.type) + in(mod_)));
 				} else if (it->specId.has_value() != mapped.specId.has_value() || (it->specId.has_value() && *it->specId != *mapped.specId)) {
 					diags.emplace_back(ir::Diagnostic::error(codes::asl("merge-conflict"), prefix + "with a different spec id" + in(first) + " and" + in(mod_)));
 				} else if (not sameExpr(*modules[first], ir::ExprRef { it->value.index - remaps[first].exprOffset }, *modules[mod_], constant.value, 0uL)) {

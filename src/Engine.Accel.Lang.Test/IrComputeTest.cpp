@@ -82,7 +82,7 @@ namespace AccelLang {
 
 	TEST(ComputeTest, BarrierUnderInvocationIdBranchIsError) {
 		const auto message = errorOf("fn main() {\n\tif (local_invocation_id.x > 3u) {\n\t\tbarrier();\n\t}\n}\n");
-		EXPECT_EQ(message, "'barrier' under lane-dependent control; lanes that skip it deadlock the workgroup");
+		EXPECT_EQ(message, "'barrier' needs every invocation of a group together but runs under a condition that can differ between invocations");
 	}
 
 	TEST(ComputeTest, BarrierUnderWorkgroupIdBranchIsValid) {
@@ -91,17 +91,17 @@ namespace AccelLang {
 
 	TEST(ComputeTest, BarrierAfterDivergentReturnIsError) {
 		const auto message = errorOf("fn main() {\n\tif (local_invocation_id.x > 3u) {\n\t\treturn;\n\t}\n\tbarrier();\n}\n");
-		EXPECT_EQ(message, "'barrier' under lane-dependent control; lanes that skip it deadlock the workgroup");
+		EXPECT_EQ(message, "'barrier' needs every invocation of a group together but runs under a condition that can differ between invocations");
 	}
 
 	TEST(ComputeTest, MemoryBarrierUnderDivergenceIsError) {
 		const auto message = errorOf("fn main() {\n\tif (local_invocation_id.x > 3u) {\n\t\tmemory_barrier_shared();\n\t}\n}\n");
-		EXPECT_EQ(message, "'memory_barrier_shared' under lane-dependent control; lanes that skip it deadlock the workgroup");
+		EXPECT_EQ(message, "'memory_barrier_shared' needs every invocation of a group together but runs under a condition that can differ between invocations");
 	}
 
 	TEST(ComputeTest, AtomicOnLocalIsRejected) {
 		const auto message = errorOf("fn main() {\n\tlet x: u32 = 0u;\n\tlet old = atomic_add(x, 1u);\n}\n");
-		EXPECT_EQ(message, "'atomic_add' needs a storage buffer or workgroup place, got local 'x'");
+		EXPECT_EQ(message, "'atomic_add' needs a storage buffer or workgroup variable, got local 'x'");
 	}
 
 	TEST(ComputeTest, AtomicOnWorkgroupAndStorageIsAccepted) {
@@ -112,7 +112,7 @@ namespace AccelLang {
 	TEST(ComputeTest, ImageStoreOnNonImageIsRejected) {
 		const auto writable = String { "@input (mode = bind, id = \"img\", class = image, access = write) image2d<rgba16f> img;\n" };
 		const auto message = errorOf(writable + "fn main() {\n\tlet c = img;\n\timage_store(c, s32vec2(0, 0), f32vec4(1.0));\n}\n");
-		EXPECT_EQ(message, "'image_store' needs a storage image place, got local 'c'");
+		EXPECT_EQ(message, "'image_store' needs a storage image variable, got local 'c'");
 	}
 
 	TEST(ComputeTest, ImageStoreOnNonImageHasItsCode) {
@@ -134,14 +134,14 @@ namespace AccelLang {
 
 	TEST(ComputeTest, AtomicThroughParameterIsRejected) {
 		const auto message = errorOf("fn bump(x: &mut u32) {\n\tatomic_add(x, 1u);\n}\nfn main() {}\n");
-		EXPECT_EQ(message, "'atomic_add' cannot act through parameter 'x'; GLSL atomics need the storage buffer or workgroup variable itself");
+		EXPECT_EQ(message, "'atomic_add' cannot act through parameter 'x'");
 	}
 
 	TEST(ComputeTest, AtomicThroughAliasResolvesRoot) {
 		EXPECT_EQ(errorOf(String { buffer } + "fn main() {\n\tlet l = &mut buf.data[0];\n\tatomic_add(l, 1u);\n}\n"), "");
 		EXPECT_EQ(
 			errorOf("fn main() {\n\tlet x: u32 = 0u;\n\tlet l = &mut x;\n\tatomic_add(l, 1u);\n}\n"),
-			"'atomic_add' needs a storage buffer or workgroup place, got local 'x'"
+			"'atomic_add' needs a storage buffer or workgroup variable, got local 'x'"
 		);
 	}
 
@@ -179,7 +179,7 @@ namespace AccelLang {
 		const auto message = errorOf(
 			"fn main() {\n\tfor (let i: u32 = 0u; i < 4u; i += 1u) {\n\t\tif (local_invocation_id.x > 3u) {\n\t\t\tbreak;\n\t\t}\n\t\tbarrier();\n\t}\n}\n"
 		);
-		EXPECT_TRUE(message.contains("'barrier' under lane-dependent control")) << message;
+		EXPECT_TRUE(message.contains("'barrier' needs every invocation of a group")) << message;
 	}
 
 	TEST(VariantKeyTest, LocalSizeChangesKey) {
