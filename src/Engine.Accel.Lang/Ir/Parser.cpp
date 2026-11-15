@@ -251,17 +251,7 @@ namespace hg::engine::accel::lang::ir::detail {
 			error(codes::asl("reserved-name"), name_, "'" + String(text) + "' is reserved in GLSL");
 
 		} else if (module_ && (reservedForRegions(text, false) || reservedForRegions(text, true))) {
-			String suffix;
-			for (const auto tag : { "__off", "__len", "__end" }) {
-				if (text.ends_with(tag)) {
-					suffix = tag;
-				}
-			}
-			if (suffix.empty()) {
-				suffix = text.substr(text.rfind(reservedForRegions(text, true) ? "__r" : "__i"));
-				suffix = suffix.substr(0, 3) + "<n>";
-			}
-			error(codes::asl("reserved-name"), name_, "'" + String(text) + "' ends in a reserved suffix", "names ending in '" + suffix + "' are reserved for borrowed regions");
+			error(codes::asl("reserved-name"), name_, "'" + String(text) + "' ends in a reserved suffix", "names ending in '" + reservedSuffixOf(text) + "' are reserved for borrowed regions");
 		}
 	}
 

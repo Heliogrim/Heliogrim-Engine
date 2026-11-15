@@ -1,6 +1,8 @@
 #include "pch.h"
 
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
+#include "IrWording.hpp"
+
 #include <Engine.Accel.Lang/Ir/Typecheck.hpp>
 
 using namespace hg::engine::accel::lang::ir;
@@ -15,6 +17,9 @@ namespace AccelLang {
 
 		[[nodiscard]] String errorOf(StringView source_, EntryKind entry_) {
 			auto res = parseModule("M", source_, entry_, ModuleResolver { noIncludes });
+			if (not res.has_value() && not res.error().empty()) {
+				AccelLang::expectWording(res.error().front());
+			}
 			return res.has_value() || res.error().empty() ? String {} : res.error().front().message();
 		}
 
@@ -84,6 +89,9 @@ namespace AccelLang {
 		[[nodiscard]] Diagnostics warningsOf(String body_) {
 			auto res = parseModule("M", String { texturePrelude } + body_, EntryKind::eFragment, ModuleResolver { noIncludes });
 			EXPECT_TRUE(res.has_value()) << (res.has_value() || res.error().empty() ? "" : res.error().front().message());
+			for (const auto& w : res.has_value() ? res->warnings : Diagnostics {}) {
+				AccelLang::expectWording(w);
+			}
 			return res.has_value() ? res->warnings : Diagnostics {};
 		}
 	}
@@ -121,12 +129,12 @@ namespace AccelLang {
 		EXPECT_EQ(warnings.front().severity(), Severity::eWarning);
 		EXPECT_EQ(
 			warnings.front().message(),
-			"'sample' uses implicit derivatives under lane-dependent control (via shadowReprojectFilter); results are undefined, use sample_lod"
+			"'sample' picks its detail level automatically under a condition that can differ between invocations (via shadowReprojectFilter)"
 		);
 
 		const auto direct = warningsOf("fn main() {\n\tcolor = f32vec4(0.0);\n\tif (uv.x > 0.5) {\n\t\tcolor = sample(t2, smp, uv);\n\t}\n}\n");
 		ASSERT_EQ(direct.size(), 1uz);
-		EXPECT_EQ(direct.front().message(), "'sample' uses implicit derivatives under lane-dependent control; results are undefined, use sample_lod");
+		EXPECT_EQ(direct.front().message(), "'sample' picks its detail level automatically under a condition that can differ between invocations");
 	}
 
 	TEST(BuiltinTest, SampleLodUnderDivergenceIsSilent) {

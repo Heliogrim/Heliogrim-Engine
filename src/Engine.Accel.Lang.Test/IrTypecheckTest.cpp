@@ -3,6 +3,7 @@
 /**/
 
 #include "IrSpan.hpp"
+#include "IrWording.hpp"
 
 #include <algorithm>
 
@@ -39,12 +40,18 @@ namespace AccelLang {
 		[[nodiscard]] String firstMessage(StringView source_) {
 			auto res = parse(source_);
 			EXPECT_FALSE(res.has_value());
+			if (not res.has_value() && not res.error().empty()) {
+				AccelLang::expectWording(res.error().front());
+			}
 			return res.has_value() || res.error().empty() ? String {} : res.error().front().message();
 		}
 
 		/* "" when the module checks; compute entry so workgroup variables are allowed */
 		[[nodiscard]] String messageOf(StringView source_) {
 			auto res = parseModule("M", source_, EntryKind::eCompute, ModuleResolver { noIncludes });
+			if (not res.has_value() && not res.error().empty()) {
+				AccelLang::expectWording(res.error().front());
+			}
 			return res.has_value() || res.error().empty() ? String {} : res.error().front().message();
 		}
 
@@ -110,12 +117,17 @@ namespace AccelLang {
 	}
 
 	TEST(TypecheckTest, NoOverloadListsCandidates) {
-		const auto message = firstMessage(
+		const auto res = parse(
 			"fn saturate(x: f32) -> f32 { return x; }\n"
 			"fn saturate(x: f32vec3) -> f32vec3 { return x; }\n"
 			"fn main() {\n\tlet i: s32 = 1;\n\tlet r = saturate(i);\n}\n"
 		);
-		EXPECT_TRUE(message.contains("no overload of 'saturate' takes (s32); candidates: saturate(f32), saturate(f32vec3)")) << message;
+		ASSERT_FALSE(res.has_value());
+		ASSERT_FALSE(res.error().empty());
+		AccelLang::expectWording(res.error().front());
+		EXPECT_EQ(res.error().front().message(), "no overload of 'saturate' takes ('s32')");
+		ASSERT_EQ(res.error().front().notes().size(), 1uz);
+		EXPECT_EQ(res.error().front().notes().front(), "candidates are 'saturate(f32)', 'saturate(f32vec3)'");
 	}
 
 	TEST(TypecheckTest, LiteralAdaptsToFloatContext) {
@@ -136,7 +148,7 @@ namespace AccelLang {
 
 	TEST(TypecheckTest, MixedIntFloatIsDiagnostic) {
 		const auto message = firstMessage("fn F(a: s32, b: f32) -> f32 {\n\treturn a * b;\n}\n");
-		EXPECT_TRUE(message.contains("operands of '*' have types s32 and f32")) << message;
+		EXPECT_TRUE(message.contains("operands of '*' have types 's32' and 'f32'")) << message;
 	}
 
 	TEST(TypecheckTest, MatrixVectorProductType) {
@@ -146,7 +158,7 @@ namespace AccelLang {
 
 	TEST(TypecheckTest, UnknownSwizzleComponent) {
 		const auto message = firstMessage("fn F(v: f32vec2) -> f32 {\n\treturn v.xyz;\n}\n");
-		EXPECT_TRUE(message.contains("unknown field 'xyz' of f32vec2")) << message;
+		EXPECT_TRUE(message.contains("unknown field 'xyz' of 'f32vec2'")) << message;
 	}
 
 	TEST(TypecheckTest, DiagnosticsCarryTheNodeLocation) {
@@ -317,7 +329,8 @@ namespace AccelLang {
 
 		const auto diagnostics = typecheck(mod);
 		ASSERT_FALSE(diagnostics.empty());
-		EXPECT_EQ(diagnostics.front().message(), "operand of '-' has type s32mat2");
+		EXPECT_EQ(diagnostics.front().message(), "operand of '-' has type 's32mat2'");
+		AccelLang::expectWording(diagnostics.front());
 	}
 
 	TEST(TypecheckTest, SameNamedStructsWithDifferentFieldsAreDistinct) {
@@ -525,7 +538,7 @@ namespace AccelLang {
 	}
 
 	TEST(TypecheckTest, ConstantTrueLoopIsDiagnostic) {
-		const auto d8 = "loop condition is constant; lanes that never reach 'break' keep the whole wave in the loop, use a bounded condition";
+		const auto d8 = "loop condition is always true";
 		EXPECT_TRUE(firstMessage("fn F(x: bool) {\n\twhile (true) { if (x) { break; } }\n}\n").contains(d8));
 		EXPECT_TRUE(firstMessage("fn F(x: bool) {\n\tfor (;;) { if (x) { break; } }\n}\n").contains(d8));
 		(void)parseOk("fn F(lod: f32) {\n\twhile (lod < 14.0) { break; }\n}\n");
@@ -538,6 +551,7 @@ namespace AccelLang {
 	TEST(TypecheckTest, DiscardInVertexIsDiagnostic) {
 		auto res = parseModule("M", "fn main() {\n\tdiscard;\n}\n", EntryKind::eVertex, ModuleResolver { noIncludes });
 		ASSERT_FALSE(res.has_value());
+		AccelLang::expectWording(res.error().front());
 		EXPECT_TRUE(res.error().front().message().contains("'discard' is only valid in fragment stages"));
 		(void)parseOk("fn main() {\n\tdiscard;\n}\n");
 	}
@@ -545,12 +559,14 @@ namespace AccelLang {
 	TEST(TypecheckTest, FloatModuloIsDiagnostic) {
 		auto res = parse("fn F(a: f32) -> f32 {\n\treturn a % 2.0;\n}\n");
 		ASSERT_FALSE(res.has_value());
-		EXPECT_TRUE(res.error().front().message().contains("operator '%' needs integer operands, got f32")) << res.error().front().message();
+		EXPECT_TRUE(res.error().front().message().contains("operator '%' needs integer operands, got 'f32'")) << res.error().front().message();
+		AccelLang::expectWording(res.error().front());
 		EXPECT_EQ(spanOf(res.error().front()).line, 2u);
 
 		auto compound = parse("fn F(a: f32) -> f32 {\n\tlet b = a;\n\tb %= 2.0;\n\treturn b;\n}\n");
 		ASSERT_FALSE(compound.has_value());
-		EXPECT_TRUE(compound.error().front().message().contains("operator '%' needs integer operands, got f32"));
+		EXPECT_TRUE(compound.error().front().message().contains("operator '%' needs integer operands, got 'f32'"));
+		AccelLang::expectWording(compound.error().front());
 		EXPECT_EQ(spanOf(compound.error().front()).line, 3u);
 
 		(void)parseOk("fn F(a: u32) -> u32 {\n\tlet b = a;\n\tb %= 3u;\n\treturn b % 2u;\n}\n");
@@ -568,7 +584,7 @@ namespace AccelLang {
 
 	TEST(TypecheckTest, ArrayConstructorElementTypeMismatchIsDiagnostic) {
 		const auto message = firstMessage("const T: f32vec3[2] = f32vec3[2](f32vec3(1.0), f32vec2(2.0));\n");
-		EXPECT_TRUE(message.contains("array element 1 is f32vec2, expected f32vec3")) << message;
+		EXPECT_TRUE(message.contains("array element 1 is 'f32vec2', expected 'f32vec3'")) << message;
 	}
 
 	TEST(TypecheckTest, TernaryBranchTypesMustMatch) {
