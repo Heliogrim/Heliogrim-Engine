@@ -1,5 +1,9 @@
 #include "Device.hpp"
 
+#include <algorithm>
+#include <cctype>
+#include <stdexcept>
+#include <string_view>
 #include <unordered_set>
 #include <Engine.Common/Collection/Set.hpp>
 #include <Engine.Logging/Logger.hpp>
@@ -80,6 +84,71 @@ static bool supportsExtensions(cref<vk::PhysicalDevice> device_) {
 	return requiredExtensions.empty();
 }
 
+static bool supportsHeadless(ref<const vk::PhysicalDevice> device_) {
+
+	if (not supportsExtensions(device_)) {
+		return false;
+	}
+
+	// Vulkan12Features may only be chained on 1.2 devices
+	if (device_.getProperties().apiVersion < VK_API_VERSION_1_2) {
+		return false;
+	}
+
+	const auto chain {
+		device_.getFeatures2<vk::PhysicalDeviceFeatures2, vk::PhysicalDeviceVulkan12Features, vk::PhysicalDeviceMultiviewFeatures>()
+	};
+	const auto& v12 { chain.get<vk::PhysicalDeviceVulkan12Features>() };
+	const auto& multiview { chain.get<vk::PhysicalDeviceMultiviewFeatures>() };
+	if (not v12.shaderInt8 || not v12.separateDepthStencilLayouts || not multiview.multiview) {
+		return false;
+	}
+
+	// The headless targets are float render targets read back by transfer
+	const vk::FormatFeatureFlags target { vk::FormatFeatureFlagBits::eColorAttachment | vk::FormatFeatureFlagBits::eTransferSrc };
+	const auto tiling { device_.getFormatProperties(vk::Format::eR32G32B32A32Sfloat).optimalTilingFeatures };
+	return (tiling & target) == target;
+}
+
+static string lowered(const std::string_view value_) {
+	string result { value_ };
+	std::ranges::transform(result, result.begin(), [](const unsigned char char_) { return static_cast<char>(std::tolower(char_)); });
+	return result;
+}
+
+static vk::PhysicalDevice selectHeadless(ref<const std::vector<vk::PhysicalDevice>> candidates_) {
+
+	const auto* const wanted { std::getenv("HELIOGRIM_TEST_GPU") };
+	const auto filter { wanted != nullptr ? lowered(wanted) : string {} };
+
+	vk::PhysicalDevice picked {};
+	for (const auto& entry : candidates_) {
+
+		if (not supportsHeadless(entry)) {
+			continue;
+		}
+
+		const auto properties { entry.getProperties() };
+		if (wanted != nullptr && not lowered(properties.deviceName.data()).contains(filter)) {
+			continue;
+		}
+
+		if (properties.deviceType == vk::PhysicalDeviceType::eDiscreteGpu) {
+			return entry;
+		}
+
+		if (not picked) {
+			picked = entry;
+		}
+	}
+
+	if (not picked) {
+		throw std::runtime_error("no GPU with these capabilities found");
+	}
+
+	return picked;
+}
+
 void Device::setup() {
 
 	SCOPED_STOPWATCH
@@ -87,21 +156,26 @@ void Device::setup() {
 	const auto checkSurfaceSupport { _surface != nullptr };
 
 	const std::vector<vk::PhysicalDevice> physicalCandidates = static_cast<vk::Instance>(*_application).enumeratePhysicalDevices();
-	for (const auto& entry : physicalCandidates) {
+	if (_application->headless()) {
+		_physicalDevice = selectHeadless(physicalCandidates);
 
-		const bool extension { supportsExtensions(entry) };
-		if (not extension) {
-			continue;
+	} else {
+		for (const auto& entry : physicalCandidates) {
+
+			const bool extension { supportsExtensions(entry) };
+			if (not extension) {
+				continue;
+			}
+
+			const bool surface { supportsSurface(entry, _surface) };
+			if (checkSurfaceSupport && not surface) {
+				continue;
+			}
+
+			IM_DEBUG_LOG("Found vk::PhysicsDevice matching the requirements");
+			_physicalDevice = entry;
+			break;
 		}
-
-		const bool surface { supportsSurface(entry, _surface) };
-		if (checkSurfaceSupport && not surface) {
-			continue;
-		}
-
-		IM_DEBUG_LOG("Found vk::PhysicsDevice matching the requirements");
-		_physicalDevice = entry;
-		break;
 	}
 
 	constexpr float defaultQueuePriority = 0.0F;
@@ -188,24 +262,70 @@ void Device::setup() {
 
 	vk::Device device {};
 
-	#ifdef _DEBUG
-	assert(physicalDevice.createDevice(&dCi, nullptr, &device) == vk::Result::eSuccess);
+	if (_application->headless()) {
+		// Device layers are deprecated and the loader warns about them, which the validation capture counts as a failure.
+		dCi.enabledLayerCount = 0uL;
+		dCi.ppEnabledLayerNames = nullptr;
 
-	if (checkSurfaceSupport) {
-		assert(physicalDevice.getSurfaceSupportKHR(qFamIndices.graphicsFamily, *_surface));
+		const auto result { physicalDevice.createDevice(&dCi, nullptr, &device) };
+		if (result != vk::Result::eSuccess) {
+			throw std::runtime_error("failed to create the headless vk::Device");
+		}
+
+	} else {
+		#ifdef _DEBUG
+		assert(physicalDevice.createDevice(&dCi, nullptr, &device) == vk::Result::eSuccess);
+
+		if (checkSurfaceSupport) {
+			assert(physicalDevice.getSurfaceSupportKHR(qFamIndices.graphicsFamily, *_surface));
+		}
+		IM_DEBUG_LOG("Created vk::Device successfully.");
+
+		#else
+
+		physicalDevice.createDevice(&dCi, nullptr, &device);
+
+		if (checkSurfaceSupport) {
+			physicalDevice.getSurfaceSupportKHR(qFamIndices.graphicsFamily, *_surface);
+		}
+		#endif
 	}
-	IM_DEBUG_LOG("Created vk::Device successfully.");
-
-	#else
-
-	physicalDevice.createDevice(&dCi, nullptr, &device);
-
-	if (checkSurfaceSupport) {
-		physicalDevice.getSurfaceSupportKHR(qFamIndices.graphicsFamily, *_surface);
-	}
-	#endif
 
 	_device = device;
+
+	// Headless setup throws instead of exiting, so a failure past this point must not leak the device
+	struct Rollback {
+		ptr<Device> self;
+		bool armed;
+
+		~Rollback() {
+			if (!armed) {
+				return;
+			}
+
+			// Families may share one queue; release each distinct queue once, then the allocator, then the device.
+			const auto graphics = self->_graphicsQueue;
+			const auto compute = self->_computeQueue != graphics ? self->_computeQueue : nullptr;
+			const auto transfer = self->_transferQueue != graphics && self->_transferQueue != self->_computeQueue ?
+				self->_transferQueue :
+				nullptr;
+
+			for (const auto queue : { transfer, compute, graphics }) {
+				if (queue != nullptr) {
+					queue->destroy();
+					delete queue;
+				}
+			}
+
+			self->_graphicsQueue = nullptr;
+			self->_computeQueue = nullptr;
+			self->_transferQueue = nullptr;
+			self->_alloc.reset();
+
+			vkDestroyDevice(self->_device, nullptr);
+			self->_device = nullptr;
+		}
+	} rollback { this, _application->headless() };
 
 	/**
 	 * Setup Allocator
@@ -260,6 +380,8 @@ void Device::setup() {
 		_transferQueue->setup();
 	}
 	IM_DEBUG_LOG("Acquired vk::Queue's successfully.");
+
+	rollback.armed = false;
 }
 
 void Device::destroy() {

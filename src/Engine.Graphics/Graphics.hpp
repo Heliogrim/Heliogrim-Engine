@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <map>
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Collection/AssociativeKey.hpp>
@@ -79,6 +80,13 @@ namespace hg::engine {
 		void stop() override;
 
 		void destroy() override;
+
+		/**
+		 * Instance and device only: no window, surface, swapchain, cache, pool, loaders or renderer
+		 */
+		void setupHeadless(const std::function<void(vk::Instance)> onInstance_ = {});
+
+		void destroyHeadless(const std::function<void()> beforeInstance_ = {});
 
 	private:
 		/**
