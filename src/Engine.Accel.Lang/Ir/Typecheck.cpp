@@ -25,16 +25,8 @@ namespace {
 	using ir::TypeKind;
 	using ir::TypeRef;
 
-	[[nodiscard]] bool isComparison(StringView op_) {
-		return op_ == "<" || op_ == "<=" || op_ == ">" || op_ == ">=";
-	}
-
-	[[nodiscard]] bool isHex(StringView text_) {
-		return text_.size() > 1uz && text_[0] == '0' && (text_[1] == 'x' || text_[1] == 'X');
-	}
-
-	[[nodiscard]] bool isFloatText(StringView text_) {
-		return not isHex(text_) && (text_.contains('.') || text_.contains('e') || text_.contains('E'));
+	[[nodiscard]] bool isComparison(ir::Op op_) {
+		return op_ == ir::Op::eLt || op_ == ir::Op::eLe || op_ == ir::Op::eGt || op_ == ir::Op::eGe;
 	}
 
 	class Checker {
@@ -313,19 +305,20 @@ namespace {
 			}
 
 			const auto& e = _mod.exprs[ref_.index];
-			if (e.kind == ExprKind::eUnary && e.name == "-" && e.operands.size() == 1uz) {
+			if (e.kind == ExprKind::eUnary && e.op == ir::Op::eNeg && e.operands.size() == 1uz) {
 				return literalOf(e.operands.front());
 			}
 
-			if (e.kind != ExprKind::eLiteral || e.name == "true" || e.name == "false" || e.name.empty()) {
+			if (e.kind != ExprKind::eLiteral) {
 				return Literal::eNone;
 			}
 
-			if (isFloatText(e.name)) {
+			// a plain integer (s64) adapts; unsigned (u64) and bool literals keep their type
+			if (std::holds_alternative<f64>(e.literal.value)) {
 				return Literal::eFloat;
 			}
 
-			return isHex(e.name) || e.name.back() == 'u' || e.name.back() == 'U' ? Literal::eNone : Literal::eInt;
+			return std::holds_alternative<s64>(e.literal.value) ? Literal::eInt : Literal::eNone;
 		}
 
 		[[nodiscard]] bool adaptable(ExprRef ref_, TypeRef target_) const {
@@ -467,17 +460,17 @@ namespace {
 					break;
 				}
 				case StmtKind::eAssign: {
-					const auto op = _mod.stmts[ref_.index].name;
+					const auto op = _mod.stmts[ref_.index].op;
 					TypeRef target;
 					TypeRef value;
-					if (op.empty()) {
+					if (op == ir::Op::eNone) {
 						target = expr(lhs);
 						value = expr(rhs);
 
 					} else {
 						// `a op= b` checks as `a op b` that must land back in `a`
 						target = expr(lhs);
-						value = binary(op.substr(0uz, op.size() - 1uz), Vector<ExprRef> { lhs, rhs });
+						value = binary(op, Vector<ExprRef> { lhs, rhs });
 						if (valid(target) && valid(value) && not same(target, value)) {
 							error(
 								codes::asl("type-mismatch"),
@@ -492,7 +485,7 @@ namespace {
 						}
 					}
 
-					if (op.empty() && valid(target) && valid(value) && not coerce(rhs, target)) {
+					if (op == ir::Op::eNone && valid(target) && valid(value) && not coerce(rhs, target)) {
 						error(
 							codes::asl("type-mismatch"),
 							"cannot assign " + ir::quotedType(_mod.types, value) + " to " + ir::quotedType(_mod.types, target)
@@ -578,10 +571,14 @@ namespace {
 			}
 		}
 
+		[[nodiscard]] static bool constantTrue(ref<const ir::LiteralValue> literal_) {
+			const auto* value = std::get_if<bool>(&literal_.value);
+			return value != nullptr && *value;
+		}
+
 		/* D8: a constant-true or missing condition keeps the whole wave in the loop */
 		void loopCondition(ExprRef cond_) {
-			if (cond_.index >= _mod.exprs.size() || (_mod.exprs[cond_.index].kind == ExprKind::eLiteral && _mod.exprs[cond_.index].name ==
-				"true")) {
+			if (cond_.index >= _mod.exprs.size() || (_mod.exprs[cond_.index].kind == ExprKind::eLiteral && constantTrue(_mod.exprs[cond_.index].literal))) {
 				_diags.emplace_back(
 					ir::Diagnostic::error(codes::asl("constant-loop-condition"), "loop condition is always true").at(spanIn(_mod, _loc))
 					.note("invocations that never reach 'break' keep the others waiting in the loop")
@@ -626,16 +623,13 @@ namespace {
 
 			switch (kind) {
 				case ExprKind::eLiteral: {
-					if (text == "true" || text == "false") {
+					const auto& value = _mod.exprs[ref_.index].literal.value;
+					if (std::holds_alternative<bool>(value)) {
 						return boolType();
 					}
 
-					if (isFloatText(text)) {
-						return scalarOf(ScalarKind::eFloat, 32uL);
-					}
-
-					const auto unsignedSuffix = not text.empty() && (text.back() == 'u' || text.back() == 'U');
-					return scalarOf(unsignedSuffix ? ScalarKind::eUInt : ScalarKind::eInt, 32uL);
+					const auto scalar = std::holds_alternative<f64>(value) ? ScalarKind::eFloat : std::holds_alternative<u64>(value) ? ScalarKind::eUInt : ScalarKind::eInt;
+					return scalarOf(scalar, 32uL);
 				}
 				case ExprKind::eNameRef: return nameRef(ref_);
 				case ExprKind::eBuiltin: return builtin(text, operands);
@@ -643,8 +637,8 @@ namespace {
 				case ExprKind::eField: return field(text, operands);
 				case ExprKind::eIndex: return index(operands);
 				case ExprKind::eRange: return range(ref_, operands);
-				case ExprKind::eUnary: return unary(text, operands);
-				case ExprKind::eBinary: return binary(text, operands);
+				case ExprKind::eUnary: return unary(_mod.exprs[ref_.index].op, operands);
+				case ExprKind::eBinary: return binary(_mod.exprs[ref_.index].op, operands);
 				case ExprKind::eTernary: return ternary(operands);
 				case ExprKind::eConstruct: {
 					Vector<TypeRef> types {};
@@ -1395,9 +1389,9 @@ namespace {
 				error(codes::asl("type-mismatch"), "range bounds must be 'u32'");
 
 			} else if (const auto& lo = _mod.exprs[operands_[1].index],& hi = _mod.exprs[operands_[2].index];
-				lo.kind == ExprKind::eLiteral && hi.kind == ExprKind::eLiteral && ir::integerLiteral(lo.name) && ir::integerLiteral(hi.name)
+				lo.kind == ExprKind::eLiteral && hi.kind == ExprKind::eLiteral && ir::integerLiteral(lo) && ir::integerLiteral(hi)
 				&&
-				*ir::integerLiteral(lo.name) >= *ir::integerLiteral(hi.name)) {
+				*ir::integerLiteral(lo) >= *ir::integerLiteral(hi)) {
 				error(codes::asl("empty-range"), "empty or reversed range");
 			}
 
@@ -1445,7 +1439,7 @@ namespace {
 			return {};
 		}
 
-		[[nodiscard]] TypeRef unary(ref<const String> op_, ref<const Vector<ExprRef>> operands_) {
+		[[nodiscard]] TypeRef unary(ir::Op op_, ref<const Vector<ExprRef>> operands_) {
 			if (operands_.empty()) {
 				return {};
 			}
@@ -1455,15 +1449,15 @@ namespace {
 				return {};
 			}
 
-			if (op_ == "!" ? isBool(inner) : (op_ == "~" ? isInteger(componentOf(inner)) : numeric(inner))) {
+			if (op_ == ir::Op::eNot ? isBool(inner) : (op_ == ir::Op::eBitNot ? isInteger(componentOf(inner)) : numeric(inner))) {
 				return inner;
 			}
 
-			error(codes::asl("type-mismatch"), "operand of '" + op_ + "' has type " + ir::quotedType(_mod.types, inner));
+			error(codes::asl("type-mismatch"), "operand of '" + String { ir::spelling(op_) } + "' has type " + ir::quotedType(_mod.types, inner));
 			return {};
 		}
 
-		[[nodiscard]] TypeRef binary(ref<const String> op_, ref<const Vector<ExprRef>> operands_) {
+		[[nodiscard]] TypeRef binary(ir::Op op_, ref<const Vector<ExprRef>> operands_) {
 			if (operands_.size() != 2uz) {
 				return {};
 			}
@@ -1474,8 +1468,8 @@ namespace {
 				return {};
 			}
 
-			if (op_ == "&&" || op_ == "||") {
-				return isBool(lt) && isBool(rt) ? boolType() : mismatch(op_, lt, rt);
+			if (op_ == ir::Op::eLogicalAnd || op_ == ir::Op::eLogicalOr) {
+				return isBool(lt) && isBool(rt) ? boolType() : mismatch(ir::spelling(op_), lt, rt);
 			}
 
 			/* an untyped literal takes the component type of the other side */
@@ -1492,11 +1486,11 @@ namespace {
 				retype(operands_[1], rt);
 			}
 
-			if (op_ == "==" || op_ == "!=") {
-				return same(lt, rt) ? boolType() : mismatch(op_, lt, rt);
+			if (op_ == ir::Op::eEq || op_ == ir::Op::eNe) {
+				return same(lt, rt) ? boolType() : mismatch(ir::spelling(op_), lt, rt);
 			}
 
-			if (op_ == "%" && numeric(lt) && numeric(rt) && not(isInteger(componentOf(lt)) && isInteger(componentOf(rt)))) {
+			if (op_ == ir::Op::eMod && numeric(lt) && numeric(rt) && not(isInteger(componentOf(lt)) && isInteger(componentOf(rt)))) {
 				error(
 					codes::asl("type-mismatch"),
 					"operator '%' needs integer operands, got " + ir::quotedType(_mod.types, not isInteger(componentOf(lt)) ? lt : rt)
@@ -1504,34 +1498,34 @@ namespace {
 				return {};
 			}
 
-			if (op_ == "<<" || op_ == ">>") {
-				return isInteger(componentOf(lt)) && isInteger(componentOf(rt)) ? lt : mismatch(op_, lt, rt);
+			if (op_ == ir::Op::eShl || op_ == ir::Op::eShr) {
+				return isInteger(componentOf(lt)) && isInteger(componentOf(rt)) ? lt : mismatch(ir::spelling(op_), lt, rt);
 			}
 
-			if (op_ == "&" || op_ == "|" || op_ == "^") {
-				return isInteger(componentOf(lt)) && same(lt, rt) ? lt : mismatch(op_, lt, rt);
+			if (op_ == ir::Op::eBitAnd || op_ == ir::Op::eBitOr || op_ == ir::Op::eBitXor) {
+				return isInteger(componentOf(lt)) && same(lt, rt) ? lt : mismatch(ir::spelling(op_), lt, rt);
 			}
 
 			if (not numeric(lt) || not numeric(rt)) {
-				return mismatch(op_, lt, rt);
+				return mismatch(ir::spelling(op_), lt, rt);
 			}
 
 			if (isComparison(op_)) {
-				return isKind(lt, TypeKind::eScalar) && same(lt, rt) ? boolType() : mismatch(op_, lt, rt);
+				return isKind(lt, TypeKind::eScalar) && same(lt, rt) ? boolType() : mismatch(ir::spelling(op_), lt, rt);
 			}
 
 			const auto l = _mod.types[lt.index];
 			const auto r = _mod.types[rt.index];
 			const auto comparable = l.scalar == r.scalar && l.bits == r.bits;
-			if (comparable && op_ == "*" && l.kind == TypeKind::eMatrix && r.kind == TypeKind::eVector && l.n == r.n) {
+			if (comparable && op_ == ir::Op::eMul && l.kind == TypeKind::eMatrix && r.kind == TypeKind::eVector && l.n == r.n) {
 				return vectorOf(l.scalar, l.bits, l.m);
 			}
 
-			if (comparable && op_ == "*" && l.kind == TypeKind::eVector && r.kind == TypeKind::eMatrix && r.m == l.n) {
+			if (comparable && op_ == ir::Op::eMul && l.kind == TypeKind::eVector && r.kind == TypeKind::eMatrix && r.m == l.n) {
 				return vectorOf(r.scalar, r.bits, r.n);
 			}
 
-			if (comparable && op_ == "*" && l.kind == TypeKind::eMatrix && r.kind == TypeKind::eMatrix && l.n == r.m) {
+			if (comparable && op_ == ir::Op::eMul && l.kind == TypeKind::eMatrix && r.kind == TypeKind::eMatrix && l.n == r.m) {
 				auto out = l;
 				out.n = r.n;
 				return intern(std::move(out));
@@ -1549,7 +1543,7 @@ namespace {
 				return lt;
 			}
 
-			return mismatch(op_, lt, rt);
+			return mismatch(ir::spelling(op_), lt, rt);
 		}
 
 		[[nodiscard]] TypeRef ternary(ref<const Vector<ExprRef>> operands_) {
@@ -1580,10 +1574,10 @@ namespace {
 			return {};
 		}
 
-		[[nodiscard]] TypeRef mismatch(ref<const String> op_, TypeRef lt_, TypeRef rt_) {
+		[[nodiscard]] TypeRef mismatch(StringView op_, TypeRef lt_, TypeRef rt_) {
 			error(
 				codes::asl("type-mismatch"),
-				"operands of '" + op_ + "' have types " + ir::quotedType(_mod.types, lt_) + " and " + ir::quotedType(_mod.types, rt_)
+				"operands of '" + String { op_ } + "' have types " + ir::quotedType(_mod.types, lt_) + " and " + ir::quotedType(_mod.types, rt_)
 			);
 			return {};
 		}

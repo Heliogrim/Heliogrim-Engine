@@ -57,8 +57,8 @@ namespace {
 			return StmtRef { static_cast<u32>(m.stmts.size() - 1uL) };
 		}
 
-		ExprRef binary(ExprRef lhs_, StringView op_, ExprRef rhs_, TypeRef type_, SourceLoc loc_) {
-			return push(Expr { .kind = ExprKind::eBinary, .name = String { op_ }, .type = type_, .operands = { lhs_, rhs_ }, .loc = loc_ });
+		ExprRef binary(ExprRef lhs_, Op op_, ExprRef rhs_, TypeRef type_, SourceLoc loc_) {
+			return push(Expr { .kind = ExprKind::eBinary, .op = op_, .type = type_, .operands = { lhs_, rhs_ }, .loc = loc_ });
 		}
 
 		ExprRef nameref(String name_, TypeRef type_, SourceLoc loc_) {
@@ -132,8 +132,8 @@ namespace {
 			if (auto base = regionOf(e.operands[0])) {
 				r.root = base->root;
 				r.rootName = base->rootName;
-				r.off = binary(base->off, "+", lo, u32Type, e.loc);
-				r.len = binary(base->off, "+", hi, u32Type, e.loc);
+				r.off = binary(base->off, Op::eAdd, lo, u32Type, e.loc);
+				r.len = binary(base->off, Op::eAdd, hi, u32Type, e.loc);
 
 			} else {
 				r.root = rewrite(e.operands[0]);
@@ -233,7 +233,7 @@ namespace {
 			const auto range = ref_.index < m.exprs.size() && m.exprs[ref_.index].kind == ExprKind::eRange;
 			if (auto r = regionOf(ref_)) {
 				if (not range) {
-					r->len = binary(r->off, "+", r->len, u32Type(), m.exprs[ref_.index].loc);
+					r->len = binary(r->off, Op::eAdd, r->len, u32Type(), m.exprs[ref_.index].loc);
 				}
 				return r;
 			}
@@ -331,7 +331,7 @@ namespace {
 								.kind = StmtKind::eDeclareLocal, .name = param.name + "__len", .type = u32Type(),
 								.lhs = binary(
 									nameref(param.name + "__end", u32Type(), callee.loc),
-									"-",
+									ir::Op::eSub,
 									nameref(param.name + "__off", u32Type(), callee.loc),
 									u32Type(),
 									callee.loc
@@ -383,7 +383,7 @@ namespace {
 			if (e.kind == ExprKind::eIndex && e.operands.size() == 2uL) {
 				if (auto base = regionOf(e.operands[0])) {
 					const auto index = rewrite(e.operands[1]);
-					const auto absolute = binary(base->off, "+", index, m.exprs[base->off.index].type, e.loc);
+					const auto absolute = binary(base->off, Op::eAdd, index, m.exprs[base->off.index].type, e.loc);
 					m.exprs[ref_.index].operands = { base->root, absolute };
 					return ref_;
 				}
@@ -492,7 +492,7 @@ namespace {
 					const auto len = push(
 						Stmt {
 							.kind = StmtKind::eDeclareLocal, .name = s.name + "__len", .type = u32Type,
-							.lhs = whole ? r->len : binary(r->len, "-", r->off, u32Type, s.loc), .mutable_ = false, .loc = s.loc
+							.lhs = whole ? r->len : binary(r->len, Op::eSub, r->off, u32Type, s.loc), .mutable_ = false, .loc = s.loc
 						}
 					);
 					r->name = s.name;

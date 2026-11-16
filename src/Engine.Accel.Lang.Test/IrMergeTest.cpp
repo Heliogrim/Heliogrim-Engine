@@ -118,7 +118,7 @@ namespace AccelLang {
 		ASSERT_EQ(root.children.size(), 1uz);
 		const auto& ret = merged.stmts[root.children[0].index];
 		EXPECT_EQ(ret.kind, StmtKind::eReturn);
-		EXPECT_EQ(merged.exprs[ret.lhs.index].name, "0.5");// B's body
+		EXPECT_EQ(merged.exprs[ret.lhs.index].literal, LiteralValue { 0.5 });// B's body
 
 		// A's call re-points to B's body
 		EXPECT_EQ(usageOf(merged, functionIndex(merged, "main")).calledFunctions, (Vector<u32> { color }));

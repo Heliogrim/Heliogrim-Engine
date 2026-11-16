@@ -1,7 +1,10 @@
 #include "pch.h"
 
+#include <limits>
+
 #include <Engine.Accel.Lang/Ir/Condition.hpp>
 #include <Engine.Accel.Lang/Ir/Module.hpp>
+#include <Engine.Accel.Lang/Ir/Place.hpp>
 
 using namespace hg::engine::accel::lang::ir;
 using namespace hg;
@@ -75,5 +78,32 @@ namespace AccelLang {
 
 		ASSERT_EQ(mod.bindings.size(), 1uLL);
 		EXPECT_EQ(mod.bindings.front().localName, "a");
+	}
+
+	TEST(OpTest, SpellingRoundTrips) {
+		for (auto raw = static_cast<u8>(Op::eAdd); raw <= static_cast<u8>(Op::eBitNot); ++raw) {
+			const auto op = static_cast<Op>(raw);
+			ASSERT_FALSE(spelling(op).empty()) << raw;
+			/* `-` reads as eSub; the parser picks eNeg for the prefix form */
+			EXPECT_EQ(opOf(spelling(op)), op == Op::eNeg ? Op::eSub : op) << spelling(op);
+		}
+		EXPECT_TRUE(spelling(Op::eNone).empty());
+		EXPECT_EQ(opOf("<=>"), Op::eNone);
+		EXPECT_EQ(opOf(""), Op::eNone);
+	}
+
+	TEST(LiteralTest, IntegerLiteral) {
+		const auto literal = [](LiteralValue value_) {
+			Expr e {};
+			e.kind = ExprKind::eLiteral;
+			e.literal = value_;
+			return integerLiteral(e);
+		};
+		EXPECT_EQ(literal({ s64 { -8 } }).value_or(0LL), -8LL);
+		EXPECT_EQ(literal({ u64 { 8uLL } }).value_or(0LL), 8LL);
+		EXPECT_EQ(literal({ static_cast<u64>(std::numeric_limits<s64>::max()) }).value_or(0LL), std::numeric_limits<s64>::max());
+		EXPECT_FALSE(literal({ static_cast<u64>(std::numeric_limits<s64>::max()) + 1uLL }).has_value());
+		EXPECT_FALSE(literal({ 8.0 }).has_value());
+		EXPECT_FALSE(literal({ true }).has_value());
 	}
 }

@@ -325,17 +325,17 @@ namespace AccelLang {
 		EXPECT_TRUE(res.error().front().message().contains("'p'")) << res.error().front().message();
 	}
 
-	/* the lexer rejects `1u` and `0x1E`, so the literals are hand-built */
+	/* literals are hand-built; the source spelling is what the emitter prints */
 	TEST(LowerTest, LiteralSuffixAndHexInferTheirType) {
 		Module mod {};
 		mod.entry = EntryKind::eFragment;
-		const auto literals = std::array<String, 5> { "1u", "0x1E", "0x1Eu", "1.5", "1e3" };
+		const auto literals = std::array<LiteralValue, 5> { LiteralValue { u64 { 7uLL }, "7u" }, LiteralValue { s64 { 30LL }, "0x1E" }, LiteralValue { u64 { 30uLL }, "0x1Eu" }, LiteralValue { 1.5, "1.5" }, LiteralValue { 1000.0, "1e3" } };
 		const auto names = std::array<String, 5> { "a", "b", "c", "d", "e" };
 		Stmt block {};
 		block.kind = StmtKind::eBlock;
 		for (auto i = 0uz; i < literals.size(); ++i) {
 			Expr literal {};
-			literal.name = literals[i];
+			literal.literal = literals[i];
 			mod.exprs.emplace_back(std::move(literal));
 			Stmt local {};
 			local.kind = StmtKind::eDeclareLocal;
@@ -352,7 +352,7 @@ namespace AccelLang {
 
 		const auto text = textOf(lower(mod, layoutOf(mod)));
 
-		EXPECT_TRUE(text.contains("uint a = 1u;")) << text;
+		EXPECT_TRUE(text.contains("uint a = 7u;")) << text;
 		EXPECT_TRUE(text.contains("int b = 0x1E;")) << text;
 		EXPECT_TRUE(text.contains("uint c = 0x1Eu;")) << text;
 		EXPECT_TRUE(text.contains("float d = 1.5;")) << text;

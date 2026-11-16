@@ -83,6 +83,31 @@ namespace AccelLang {
 		}
 	}
 
+	TEST(VariantKeyTest, LiteralValueIsHashed) {
+		const auto a = parsed("fn main() { let x = 2; }");
+		const auto b = parsed("fn main() { let x = 3; }");
+		EXPECT_NE(contentHash(a), contentHash(b));
+
+		auto unsignedTwo = a;
+		for (auto& e : unsignedTwo.exprs) {
+			if (e.kind == ExprKind::eLiteral) {
+				e.literal.value = u64 { 2uLL };
+			}
+		}
+		EXPECT_NE(contentHash(a), contentHash(unsignedTwo));
+	}
+
+	TEST(VariantKeyTest, OperatorIsHashed) {
+		auto a = parsed("fn main() { let x = 2 + 3; }");
+		auto b = a;
+		for (auto& e : b.exprs) {
+			if (e.kind == ExprKind::eBinary) {
+				e.op = Op::eSub;
+			}
+		}
+		EXPECT_NE(contentHash(a), contentHash(b));
+	}
+
 	TEST(VariantKeyTest, SameContentDifferentAddressSameKey) {
 		const auto a = parsed(source);
 		const auto b = parsed(source);

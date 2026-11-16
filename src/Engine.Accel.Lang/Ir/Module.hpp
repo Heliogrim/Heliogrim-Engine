@@ -68,6 +68,55 @@ namespace hg::engine::accel::lang::ir {
 		StmtRef root;
 	};
 
+	/* unary, binary and compound-assignment operators; eNone = absent (plain `=` in a statement) */
+	enum class Op : u8 {
+		eNone,
+		eAdd,
+		eSub,
+		eMul,
+		eDiv,
+		eMod,
+		eBitAnd,
+		eBitOr,
+		eBitXor,
+		eShl,
+		eShr,
+		eLogicalAnd,
+		eLogicalOr,
+		eEq,
+		eNe,
+		eLt,
+		eLe,
+		eGt,
+		eGe,
+		/* unary `-` */
+		eNeg,
+		/* unary `!` */
+		eNot,
+		/* unary `~` */
+		eBitNot
+	};
+
+	/* source spelling of an operator; empty for eNone */
+	[[nodiscard]] StringView spelling(Op op_) noexcept;
+
+	/* operator by its spelling (`-` is eSub, the parser picks eNeg for the prefix form); eNone when unknown */
+	[[nodiscard]] Op opOf(StringView text_) noexcept;
+
+	/* typed literal: `7u` is u64, a plain integer s64, `1.5` f64 */
+	struct LiteralValue {
+		std::variant<bool, u64, s64, f64> value;
+		/* source text (`0x1E`, `1e3`) kept only so the GLSL emitter reproduces it; not part of identity or hash */
+		String spelling;
+
+		[[nodiscard]] bool operator==(const LiteralValue& other_) const noexcept {
+			return value == other_.value;
+		}
+	};
+
+	/* GLSL-compatible spelling: `true`, `7u`, `3`, `1.5`, `1000.0` */
+	[[nodiscard]] String literalText(ref<const LiteralValue> literal_);
+
 	enum class ExprKind : u8 {
 		eLiteral,
 		eNameRef,
@@ -91,9 +140,14 @@ namespace hg::engine::accel::lang::ir {
 	struct Expr {
 		ExprKind kind = ExprKind::eLiteral;
 
-		/* literal: source text (`true`/`false` included); nameref/call/builtin: referenced name; field: member name
-		 * (swizzles too); unary/binary: operator text */
+		/* nameref/call/builtin: referenced name; field: member name (swizzles too) */
 		String name;
+
+		/* unary/binary */
+		Op op = Op::eNone;
+
+		/* literal; its type is in `type` after typecheck */
+		LiteralValue literal;
 
 		/* nameref: resolved binding; call: resolved function; ~0 = unresolved (then matched by name).
 		 * Typed so arena merging can remap them like the other refs. */
@@ -143,8 +197,10 @@ namespace hg::engine::accel::lang::ir {
 		/* declare-local; the inferred type of a `let` after typecheck */
 		String name;
 		TypeRef type;
+		/* assign: the compound operator (`+=` is eAdd; eNone = plain `=`) */
+		Op op = Op::eNone;
 
-		/* assign: `name` is the operator (`+=`; empty = plain `=`). declare-local: init (optional), assign: lhs, expr/return: value (optional for return), if: condition */
+		/* declare-local: init (optional), assign: lhs, expr/return: value (optional for return), if: condition */
 		ExprRef lhs;
 		/* assign: rhs */
 		ExprRef rhs;

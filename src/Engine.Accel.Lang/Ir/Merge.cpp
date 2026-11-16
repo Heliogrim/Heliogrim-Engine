@@ -236,7 +236,7 @@ namespace {
 		ref<const Vector<ir::FunctionDecl>> functions_,
 		ref<const Vector<ir::FunctionDecl>> source_
 	) {
-		auto& [kind, name, binding, function, constant, local, type, operands, loc] = expr_;
+		auto& [kind, name, unaryOp, literal, binding, function, constant, local, type, operands, loc] = expr_;
 		constant = remap_.constant(constant);
 		/* shortcut: a binding use keeps its parse-time binding (first localName match) mapped through the id collapse,
 		 * so same-named bindings with different ids under different @when stay resolved to the first; upgrade when Task 7
@@ -256,12 +256,14 @@ namespace {
 		}
 
 		static_cast<void>(local);
+		static_cast<void>(unaryOp);
+		static_cast<void>(literal);
 		loc = remap_.loc(loc);
 		return expr_;
 	}
 
 	[[nodiscard]] ir::Stmt remapStmt(ir::Stmt stmt_, ref<const Remap> remap_) {
-		auto& [kind, name, type, lhs, rhs, mutable_, children, when, loc, keyword] = stmt_;
+		auto& [kind, name, type, assignOp, lhs, rhs, mutable_, children, when, loc, keyword] = stmt_;
 		type = remap_.type(type);
 		lhs = remap_.expr(lhs);
 		rhs = remap_.expr(rhs);
@@ -272,6 +274,7 @@ namespace {
 
 		static_cast<void>(kind);
 		static_cast<void>(mutable_);
+		static_cast<void>(assignOp);
 		loc = remap_.loc(loc);
 		keyword = remap_.loc(keyword);
 		return stmt_;
@@ -491,7 +494,7 @@ namespace {
 			const auto& x = a_.exprs[x_.index];
 			const auto& y = b_.exprs[y_.index];
 
-			if (x.kind != y.kind || x.name != y.name || x.local != y.local || x.operands.size() != y.operands.size()) {
+			if (x.kind != y.kind || x.name != y.name || x.op != y.op || x.literal != y.literal || x.local != y.local || x.operands.size() != y.operands.size()) {
 				return false;
 			}
 
