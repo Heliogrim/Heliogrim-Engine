@@ -1,10 +1,11 @@
 #include "pch.h"
 
-#include <Engine.Accel.Lang/Emitter/GlslEmitter.hpp>
 #include <Engine.Accel.Lang/Ir/Interface.hpp>
 #include <Engine.Accel.Lang/Ir/Layout.hpp>
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
 #include <Engine.Accel.Lang/Ir/Variant.hpp>
+
+#include "IrSpirvText.hpp"
 
 using namespace hg::engine::accel::lang::ir;
 using namespace hg::engine::accel::lang;
@@ -31,11 +32,8 @@ namespace AccelLang {
 			return res.has_value() || res.error().empty() ? String {} : res.error().front().message();
 		}
 
-		[[nodiscard]] String emitGlsl(ref<Module> mod_) {
-			Language target {};
-			const auto layout = assignLayout(computeInterface(mod_), mod_.types, {});
-			(void)GlslEmitter {}.emit(mod_, layout, target);
-			return target.text.empty() ? String {} : String { target.text.front().data };
+		[[nodiscard]] String emitSpirv(ref<Module> mod_) {
+			return spirvTextOf(mod_);
 		}
 
 		[[nodiscard]] String ctrlSource(StringView write_) {
@@ -51,7 +49,7 @@ namespace AccelLang {
 			return String { "@input (mode = forward, id = \"ctrl-pos\") f32vec4[] q;\n" } +
 				"@input (mode = forward, id = \"level\", patch = true) f32 lvl;\n" +
 				"@tess_eval (domain = triangles, spacing = " + String { spacing_ } + ", winding = cw)\n" +
-				"fn main() {\n\tposition = q[0] * tess_coord.x + q[1] * tess_coord.y + q[2] * tess_coord.z;\n}\n";
+				"fn main() {\n\tposition = q[0] * tess_coord.x + q[1] * tess_coord.y + q[2] * tess_coord.z * lvl;\n}\n";
 		}
 	}
 
@@ -104,17 +102,18 @@ namespace AccelLang {
 
 	TEST(TessellationTest, PatchOutputEmitsPatchQualifier) {
 		auto ctrl = parseOk(ctrlSource("q[invocation_id] = p[invocation_id];"), EntryKind::eTessCtrl);
-		const auto glsl = emitGlsl(ctrl);
-		EXPECT_TRUE(glsl.contains("layout(vertices = 3) out;")) << glsl;
-		EXPECT_TRUE(glsl.contains("patch out ")) << glsl;
-		EXPECT_TRUE(glsl.contains(" q[];")) << glsl;
-		EXPECT_TRUE(glsl.contains("gl_out[gl_InvocationID].gl_Position")) << glsl;
-		EXPECT_TRUE(glsl.contains("gl_TessLevelOuter[0]")) << glsl;
+		const auto glsl = emitSpirv(ctrl);
+		EXPECT_TRUE(glsl.contains("OutputVertices 3")) << glsl;
+		EXPECT_TRUE(glsl.contains("OpDecorate") && glsl.contains(" Patch\n")) << glsl;
+		EXPECT_TRUE(glsl.contains("OpTypeArray")) << glsl;
+		EXPECT_TRUE(glsl.contains("BuiltIn Position")) << glsl;
+		EXPECT_TRUE(glsl.contains("BuiltIn TessLevelOuter")) << glsl;
 
 		auto eval = parseOk(evalSource("fractional_even"), EntryKind::eTessEval);
-		const auto evalGlsl = emitGlsl(eval);
-		EXPECT_TRUE(evalGlsl.contains("layout(triangles, fractional_even_spacing, cw) in;")) << evalGlsl;
-		EXPECT_TRUE(evalGlsl.contains("patch in ")) << evalGlsl;
-		EXPECT_TRUE(evalGlsl.contains("gl_TessCoord")) << evalGlsl;
+		const auto evalGlsl = emitSpirv(eval);
+		EXPECT_TRUE(evalGlsl.contains("SpacingFractionalEven")) << evalGlsl;
+		EXPECT_TRUE(evalGlsl.contains(" Patch\n")) << evalGlsl;
+		EXPECT_TRUE(evalGlsl.contains("VertexOrderCw")) << evalGlsl;
+		EXPECT_TRUE(evalGlsl.contains("BuiltIn TessCoord")) << evalGlsl;
 	}
 }

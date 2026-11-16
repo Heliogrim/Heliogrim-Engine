@@ -5,6 +5,12 @@
 #include "SpirvValidate.hpp"
 
 namespace hg::engine::accel::lang::ir::spirv {
+	namespace {
+		[[nodiscard]] bool failed(ref<const Diagnostics> diags_) {
+			return std::ranges::any_of(diags_, [](ref<const Diagnostic> diag_) { return diag_.severity() == Severity::eError; });
+		}
+	}
+
 	EmitResult emit(ref<const Module> lowered_, ref<const Layout> layout_, Tier tier_) {
 		// a depth-only fragment stage has no author entry and still needs an entry point: synthesize an empty one
 		if (std::ranges::none_of(lowered_.functions, [](const auto& fn_) { return fn_.name == "main" && fn_.body.has_value(); })) {
@@ -35,18 +41,21 @@ namespace hg::engine::accel::lang::ir::spirv {
 			}
 			impl.w.debug(spv::Op::OpSource, Ops { w32(spv::SourceLanguage::Unknown), 0uL, impl.debugFiles.front() });
 		}
-		impl.reach();
-		if (impl.diagnostics.empty()) {
+		impl.checkDeclarations();
+		if (not failed(impl.diagnostics)) {
+			impl.reach();
+		}
+		if (not failed(impl.diagnostics)) {
 			impl.declareGlobals();
 			impl.declareConstants();
 			impl.declareFunctions();
 		}
-		if (impl.diagnostics.empty()) {
+		if (not failed(impl.diagnostics)) {
 			impl.bodies();
 			impl.entryPoint();
 			impl.features();
 		}
-		if (not impl.diagnostics.empty()) {
+		if (failed(impl.diagnostics)) {
 			return EmitResult { {}, std::move(impl.diagnostics) };
 		}
 
@@ -60,16 +69,20 @@ namespace hg::engine::accel::lang::ir::spirv {
 		}
 		impl.w.memoryModel(spv::Op::OpMemoryModel, Ops { w32(spv::AddressingModel::Logical), w32(spv::MemoryModel::GLSL450) });
 		auto words = impl.w.finish();
+		if (impl.w.overlong()) {
+			impl.fail(codes::asl("internal-spirv-emit"), lowered_.functions[impl.entry].loc, "an instruction exceeds the 65535-word limit");
+			return EmitResult { {}, std::move(impl.diagnostics) };
+		}
 
 		if (tier_ >= Tier::eDev) {
-			auto errors = validate(words, lowered_.name);
-			if (not errors.empty()) {
-				for (auto& error : errors) {
-					error.setPrimary(spanIn(lowered_, lowered_.functions[impl.entry].loc));
-				}
-				return EmitResult { {}, std::move(errors) };
+			for (auto& diag : validate(words, lowered_.name)) {
+				diag.setPrimary(spanIn(lowered_, lowered_.functions[impl.entry].loc));
+				impl.diagnostics.emplace_back(std::move(diag));
+			}
+			if (failed(impl.diagnostics)) {
+				return EmitResult { {}, std::move(impl.diagnostics) };
 			}
 		}
-		return EmitResult { std::move(words), {} };
+		return EmitResult { std::move(words), std::move(impl.diagnostics) };
 	}
 }

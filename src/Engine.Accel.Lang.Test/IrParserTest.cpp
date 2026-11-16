@@ -4,6 +4,7 @@
 
 #include "IrSpan.hpp"
 #include "IrWording.hpp"
+#include "IrSpirvText.hpp"
 
 #include <array>
 #include <map>
@@ -240,6 +241,14 @@ namespace AccelLang {
 			auto res = parseModule("main", source_, EntryKind::eFragment, includes_);
 			EXPECT_FALSE(res.has_value());
 			return res.has_value() ? Diagnostics {} : std::move(res).error();
+		}
+
+		/* `source_` parses and emits valid SPIR-V */
+		void expectEmits(StringView source_) {
+			const auto mod = parseOk(source_);
+			const auto spirv = spirvOf(mod);
+			EXPECT_TRUE(spirv.diagnostics.empty()) << source_ << (spirv.diagnostics.empty() ? "" : ": " + spirv.diagnostics.front().message());
+			EXPECT_FALSE(spirv.text.empty()) << source_;
 		}
 
 		[[nodiscard]] bool mentions(ref<const Diagnostic> diag_, StringView text_) {
@@ -1201,29 +1210,25 @@ namespace AccelLang {
 		EXPECT_TRUE(mentions(diags[0], "invalid value 'yes' for annotation key 'early_fragment_tests'")) << diags[0].message();
 	}
 
-	TEST(ParserTest, GlslReservedWordsRejectedAtTheirName) {
-		const std::array<std::tuple<StringView, StringView, u32, u32>, 14> cases { {
-			{ "@input (mode = bind, id = \"o\", class = storage) block out { u32[] data; };\nfn main() {}\n", "out", 1u, 55u },
-			{ "struct input { f32 x; }\nfn main() {}\n", "input", 1u, 8u },
-			{ "struct S { f32 sample; }\nfn main() {}\n", "sample", 1u, 16u },
-			{ "const filter: u32 = 1u;\nfn main() {}\n", "filter", 1u, 7u },
-			{ "fn inline() {}\nfn main() {}\n", "inline", 1u, 4u },
-			{ "fn f(flat: u32) {}\nfn main() {}\n", "flat", 1u, 6u },
-			{ "fn main() { let sampler2DArray: u32 = 1u; }\n", "sampler2DArray", 1u, 17u },
-			{ "fn main() { let gl_Mine: u32 = 1u; }\n", "gl_Mine", 1u, 17u },
-			{ "fn main() { let vec3: u32 = 1u; }\n", "vec3", 1u, 17u },
-			{ "fn main() { let dmat4x3: u32 = 1u; }\n", "dmat4x3", 1u, 17u },
-			{ "fn main() { let mat2: u32 = 1u; }\n", "mat2", 1u, 17u },
-			{ "fn main() { let sampler3DRect: u32 = 1u; }\n", "sampler3DRect", 1u, 17u },
-			{ "fn main() { let sampler2DShadow: u32 = 1u; }\n", "sampler2DShadow", 1u, 17u },
-			{ "fn main() { let samplerCubeShadow: u32 = 1u; }\n", "samplerCubeShadow", 1u, 17u },
+	TEST(ParserTest, GlslReservedWordsAreNames) {
+		const std::array<StringView, 14> cases { {
+			"@input (mode = bind, id = \"o\", class = storage) block out { u32[] data; };\nfn main() {}\n",
+			"struct input { f32 x; }\nfn main() {}\n",
+			"struct S { f32 sample; }\nfn main() {}\n",
+			"const filter: u32 = 1u;\nfn main() {}\n",
+			"fn inline() {}\nfn main() {}\n",
+			"fn f(flat: u32) {}\nfn main() {}\n",
+			"fn main() { let sampler2DArray: u32 = 1u; }\n",
+			"fn main() { let gl_Mine: u32 = 1u; }\n",
+			"fn main() { let vec3: u32 = 1u; }\n",
+			"fn main() { let dmat4x3: u32 = 1u; }\n",
+			"fn main() { let mat2: u32 = 1u; }\n",
+			"fn main() { let sampler3DRect: u32 = 1u; }\n",
+			"fn main() { let sampler2DShadow: u32 = 1u; }\n",
+			"fn main() { let samplerCubeShadow: u32 = 1u; }\n",
 		} };
-		for (const auto& [source, name, line, column] : cases) {
-			const auto diags = parseFail(source);
-			ASSERT_FALSE(diags.empty()) << source;
-			EXPECT_TRUE(mentions(diags[0], "'" + String { name } + "' is reserved in GLSL")) << diags[0].message();
-			EXPECT_EQ(spanOf(diags[0]).line, line) << source;
-			EXPECT_EQ(spanOf(diags[0]).column, column) << source;
+		for (const auto source : cases) {
+			expectEmits(source);
 		}
 	}
 
@@ -1237,34 +1242,22 @@ namespace AccelLang {
 		);
 	}
 
-	TEST(ParserTest, GeneratedPrefixRejectedAtModuleScope) {
+	TEST(ParserTest, GeneratedPrefixIsAName) {
 		for (const auto source : {
-				 "const _hg_ref0: u32 = 1u;\nfn main() {}\n", "struct _hg_S { f32 x; }\nfn main() {}\n", "fn _hg_f() {}\nfn main() {}\n"
+				 "const _hg_ref0: u32 = 1u;\nfn main() { let x = _hg_ref0; }\n", "struct _hg_S { f32 x; }\nfn main() { let s = _hg_S(1.0); }\n",
+				 "fn _hg_f() {}\nfn main() { _hg_f(); }\n", "fn main() { let _hg_x = 1.0; }\n"
 			 }) {
-			const auto diags = parseFail(source);
-			ASSERT_FALSE(diags.empty()) << source;
-			EXPECT_TRUE(mentions(diags[0], "identifiers starting with '_hg_' are reserved")) << diags[0].message();
+			expectEmits(source);
 		}
 	}
 
-	TEST(ParserTest, RegionSuffixRejectedAtModuleScope) {
-		struct Case {
-			StringView source;
-			StringView name;
-			StringView suffix;
-		};
-		for (const auto& c : {
-				 Case { "const a__len: u32 = 1u;\nfn main() {}\n", "a__len", "__len" },
-				 Case { "@input (mode = bind, id = \"b\", class = storage) block b__off { u32[] data; };\nfn main() {}\n", "b__off", "__off" },
-				 Case { "struct S__end { f32 x; }\nfn main() {}\n", "S__end", "__end" },
-				 Case { "const w__r0: u32 = 1u;\nfn main() {}\n", "w__r0", "__r<n>" }
+	TEST(ParserTest, RegionSuffixIsANameAtModuleScope) {
+		for (const auto source : {
+				 "const a__len: u32 = 1u;\nfn main() { let x = a__len; }\n",
+				 "@input (mode = bind, id = \"b\", class = storage) block b__off { u32[] data; };\nfn main() { let x = b__off.data[0u]; }\n",
+				 "struct S__end { f32 x; }\nfn main() { let s = S__end(1.0); }\n", "const w__r0: u32 = 1u;\nfn main() { let x = w__r0; }\n"
 			 }) {
-			const auto diags = parseFail(String { c.source });
-			ASSERT_FALSE(diags.empty()) << c.source;
-			EXPECT_EQ(diags[0].message(), "'" + String { c.name } + "' ends in a reserved suffix");
-			expectWording(diags[0]);
-			ASSERT_EQ(diags[0].notes().size(), 1uz);
-			EXPECT_EQ(diags[0].notes().front(), "names ending in '" + String { c.suffix } + "' are reserved for borrowed regions");
+			expectEmits(source);
 		}
 	}
 
@@ -1284,5 +1277,9 @@ namespace AccelLang {
 		expectWording(diags[0]);
 		ASSERT_EQ(diags[0].notes().size(), 1uz);
 		EXPECT_EQ(diags[0].notes().front(), "a variable needs '@input' or '@output'");
+	}
+
+	TEST(IrParserTest, GlslWordsAreNames) {
+		expectEmits("const sampler2D: u32 = 1u;\nconst gl_x: u32 = 2u;\nfn max2() {}\nfn main() {}\n");
 	}
 }

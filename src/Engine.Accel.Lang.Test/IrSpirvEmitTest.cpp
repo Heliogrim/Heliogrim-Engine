@@ -382,6 +382,46 @@ TEST(IrSpirvEmitTest, TernaryPureUsesSelect) {
 	EXPECT_FALSE(has(out.text, "OpPhi")) << out.text;
 }
 
+TEST(IrSpirvEmitTest, TernaryIntegerDivisionBranches) {
+	const auto out = emitOf(
+		"@input (mode = bind, id = \"o\", class = storage, access = read_write) block o { u32 x; u32 a; u32 n; };\n"
+		"@compute (local_size = [1, 1, 1])\nfn main() { let n = o.n; o.x = n != 0u ? o.a / n : 0u; }\n",
+		EntryKind::eCompute
+	);
+	EXPECT_FALSE(has(out.text, "OpSelect ")) << out.text;
+	EXPECT_TRUE(has(out.text, "OpPhi")) << out.text;
+}
+
+TEST(IrSpirvEmitTest, TernaryDynamicIndexBranches) {
+	const auto out = emitOf(
+		"@input (mode = bind, id = \"o\", class = storage, access = read_write) block o { f32 x; u32 i; f32[4] v; };\n"
+		"@compute (local_size = [1, 1, 1])\nfn main() { let i = o.i; o.x = i < 4u ? o.v[i] : 0.0; }\n",
+		EntryKind::eCompute
+	);
+	EXPECT_FALSE(has(out.text, "OpSelect ")) << out.text;
+	EXPECT_TRUE(has(out.text, "OpPhi")) << out.text;
+}
+
+TEST(IrSpirvEmitTest, TernaryConstantIndexInRangeSelects) {
+	const auto out = emitOf(
+		"@input (mode = bind, id = \"o\", class = storage, access = read_write) block o { f32 x; u32 i; f32[4] v; };\n"
+		"@compute (local_size = [1, 1, 1])\nfn main() { let i = o.i; o.x = i < 4u ? o.v[2u] : 0.0; }\n",
+		EntryKind::eCompute
+	);
+	EXPECT_TRUE(has(out.text, "OpSelect ")) << out.text;
+	EXPECT_FALSE(has(out.text, "OpPhi")) << out.text;
+}
+
+TEST(IrSpirvEmitTest, TernaryConstantIndexOutOfRangeBranches) {
+	const auto out = emitOf(
+		"@input (mode = bind, id = \"o\", class = storage, access = read_write) block o { f32 x; u32 i; f32[4] v; };\n"
+		"@compute (local_size = [1, 1, 1])\nfn main() { let i = o.i; o.x = i < 4u ? o.v[7u] : 0.0; }\n",
+		EntryKind::eCompute
+	);
+	EXPECT_FALSE(has(out.text, "OpSelect ")) << out.text;
+	EXPECT_TRUE(has(out.text, "OpPhi")) << out.text;
+}
+
 TEST(IrSpirvEmitTest, DiscardTerminates) {
 	const auto out = emitOf(
 		"@input (mode = bind, id = \"u\", class = uniform) block u { f32 k; };\n"
@@ -486,6 +526,42 @@ TEST(IrSpirvEmitTest, SwizzleStoreEvaluatesRhsFirst) {
 	const auto reload = main.find("OpLoad %v4float %v\n", call);
 	EXPECT_LT(reload, shuffle) << out.text;
 	EXPECT_LT(call, shuffle) << out.text;
+}
+
+TEST(IrSpirvEmitTest, CompoundAssignEvaluatesRhsFirst) {
+	const auto out = emitOf(
+		"@input (mode = bind, id = \"o\", class = storage, access = read_write) block o { f32 x; };\n"
+		"fn bump(x: &mut f32) -> f32 { x = 9.0; return 1.0; }\n"
+		"@compute (local_size = [1, 1, 1])\n"
+		"fn main() { let x = o.x; x += bump(x); o.x = x; }\n",
+		EntryKind::eCompute
+	);
+	String log {};
+	EXPECT_TRUE(valid(out.result.words, log)) << log << "\n" << out.text;
+	const auto main = functionText(out.text, "main");
+	const auto call = main.find("OpFunctionCall");
+	const auto add = main.find("OpFAdd");
+	ASSERT_NE(call, String::npos) << out.text;
+	ASSERT_NE(add, String::npos) << out.text;
+	// the target is loaded after the call wrote it
+	EXPECT_LT(main.find("OpLoad %float %x\n", call), add) << out.text;
+}
+
+TEST(IrSpirvEmitTest, AtomicOnNonPlaceIsInternalDiagnostic) {
+	auto prepared = prepare(
+		"@input (mode = bind, id = \"o\", class = storage, access = read_write) block o { u32 x; };\n"
+		"@compute (local_size = [1, 1, 1])\nfn main() { let old = atomic_add(o.x, 1u); }\n",
+		EntryKind::eCompute
+	);
+	ASSERT_TRUE(prepared.has_value());
+	// sema rejects a non-place; corrupt the checked module to reach the emitter guard
+	auto atomic = std::ranges::find_if(prepared->mod.exprs, [](const auto& e_) { return e_.name == "atomic_add"; });
+	ASSERT_NE(atomic, prepared->mod.exprs.end());
+	atomic->operands[0] = atomic->operands[1];
+	const auto result = spirv::emit(prepared->mod, prepared->layout, Tier::eDev);
+	EXPECT_TRUE(result.words.empty());
+	ASSERT_FALSE(result.diagnostics.empty());
+	EXPECT_TRUE(result.diagnostics.front().message().ends_with("atomic on a non-addressable operand")) << result.diagnostics.front().message();
 }
 
 TEST(IrSpirvEmitTest, CompoundAssignIndexEvaluatedOnce) {
@@ -755,6 +831,28 @@ TEST(IrSpirvEmitTest, CompositeModuleConstantFolds) {
 	EXPECT_TRUE(has(out.text, "OpConstantComposite")) << out.text;
 }
 
+TEST(IrSpirvEmitTest, FoldConvertsVectorComponentsToComponentType) {
+	const auto out = emitOf(
+		"const V: f32vec2 = f32vec2(u32vec2(1u, 2u));\nconst W: f32vec2 = f32vec2(1, 2);\n"
+		"fn main() {\n\tposition = f32vec4(V + W, 0.0, 1.0);\n}\n",
+		EntryKind::eVertex
+	);
+	String log {};
+	EXPECT_TRUE(valid(out.result.words, log)) << log << "\n" << out.text;
+	EXPECT_TRUE(has(out.text, "OpConstant %float 2\n")) << out.text;
+}
+
+TEST(IrSpirvEmitTest, MatrixConstantFromMatrixConstantFolds) {
+	const auto out = emitOf(
+		"const M: f32mat2 = f32mat2(1.0, 2.0, 3.0, 4.0);\nconst N: f32mat2 = f32mat2(M);\n"
+		"fn main() {\n\tposition = f32vec4(N[1], 0.0, 1.0);\n}\n",
+		EntryKind::eVertex
+	);
+	String log {};
+	EXPECT_TRUE(valid(out.result.words, log)) << log << "\n" << out.text;
+	EXPECT_TRUE(has(out.text, "OpConstantComposite")) << out.text;
+}
+
 TEST(IrSpirvEmitTest, MatrixFromMatrixAndBuiltinCallIndex) {
 	const auto out = emitOf(
 		"@input (mode = bind, id = \"u\", class = uniform) block u { f32mat4 m; };\n"
@@ -793,4 +891,48 @@ TEST(IrSpirvEmitTest, SpecConstantDefaultOverSpecIsNotConstant) {
 	const auto result = spirv::emit(prepared->mod, prepared->layout, Tier::eDev);
 	ASSERT_EQ(result.diagnostics.size(), 1uz);
 	EXPECT_EQ(result.diagnostics[0].code()->key, "not-constant");
+}
+
+TEST(IrSpirvEmitTest, FloatOutOfIntegerRangeIsNotConstant) {
+	for (const auto* const init : { "s32(3000000000.0)", "u32(-2.0)", "s32(Z / Z)" }) {
+		const auto prepared = prepare(
+			String { "const Z: f32 = 0.0;\nconst X: " } + (init[0] == 'u' ? "u32" : "s32") + " = " + init + ";\n"
+			"fn main() {\n\tposition = f32vec4(f32(X));\n}\n",
+			EntryKind::eVertex
+		);
+		EXPECT_TRUE(prepared.has_value()) << init;
+		if (not prepared.has_value()) {
+			continue;
+		}
+		const auto result = spirv::emit(prepared->mod, prepared->layout, Tier::eDev);
+		ASSERT_EQ(result.diagnostics.size(), 1uz) << init;
+		EXPECT_EQ(result.diagnostics[0].code()->key, "not-constant") << init;
+	}
+}
+
+TEST(IrSpirvEmitTest, UserParamWithDoubleUnderscoreIsNamedInDevTier) {
+	const auto src = String {
+		"@input (mode = bind, id = \"o\", class = storage, access = read_write) block o { u32 v; };\n"
+		"fn bump(a__b: u32) -> u32 { return a__b + 1u; }\n"
+		"@compute (local_size = [1, 1, 1])\nfn main() { o.v = bump(o.v); }\n"
+	};
+	EXPECT_TRUE(has(emitOf(src, EntryKind::eCompute).text, "a__b"));
+	EXPECT_FALSE(has(emitOf(src, EntryKind::eCompute, Tier::eBuild).text, "OpName"));
+}
+
+TEST(IrSpirvEmitTest, MatrixStrideFollowsLayout) {
+	const auto uniform = emitOf(
+		"@input (mode = bind, id = \"u\", class = uniform) block u { f32mat2 m; };\n"
+		"@compute (local_size = [1, 1, 1])\nfn main() { f32mat2 x = u.m; }\n",
+		EntryKind::eCompute
+	);
+	EXPECT_TRUE(has(uniform.text, "MatrixStride 16")) << uniform.text;
+	EXPECT_TRUE(has(uniform.text, "ColMajor")) << uniform.text;
+
+	const auto storage = emitOf(
+		"@input (mode = bind, id = \"u\", class = storage) block u { f32mat2 m; };\n"
+		"@compute (local_size = [1, 1, 1])\nfn main() { f32mat2 x = u.m; }\n",
+		EntryKind::eCompute
+	);
+	EXPECT_TRUE(has(storage.text, "MatrixStride 8")) << storage.text;
 }

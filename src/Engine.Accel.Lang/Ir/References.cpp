@@ -106,7 +106,8 @@ namespace {
 			if (e.kind == ExprKind::eIndex && e.operands.size() == 2uL && e.operands[1].index < m.exprs.size()
 				&& m.exprs[e.operands[1].index].kind != ExprKind::eLiteral) {
 				const auto type = m.exprs[e.operands[1].index].type;
-				auto hoisted = String { name_ } + "__i" + std::to_string(hoists_.size());
+				// `$` never lexes inside an identifier, so generated names cannot collide with user names
+				auto hoisted = String { name_ } + "$i" + std::to_string(hoists_.size());
 				hoists_.emplace_back(
 					push(
 						Stmt {
@@ -290,7 +291,7 @@ namespace {
 			return path;
 		}
 
-		/* copy of the place `ref_` with the root replaced by `root_` (if set) and runtime index `k` by `<param_>__i<k>` */
+		/* copy of the place `ref_` with the root replaced by `root_` (if set) and runtime index `k` by `<param_>$i<k>` */
 		ExprRef rebase(const ExprRef ref_, const ExprRef root_, StringView param_, ref<u32> k_) {
 			auto e = m.exprs[ref_.index];
 			if (e.kind != ExprKind::eField && e.kind != ExprKind::eIndex) {
@@ -299,7 +300,7 @@ namespace {
 
 			e.operands[0] = rebase(e.operands[0], root_, param_, k_);
 			if (e.kind == ExprKind::eIndex && m.exprs[e.operands[1].index].kind != ExprKind::eLiteral) {
-				e.operands[1] = nameref(String { param_ } + "__i" + std::to_string(k_++), u32Type(), e.loc);
+				e.operands[1] = nameref(String { param_ } + "$i" + std::to_string(k_++), u32Type(), e.loc);
 			}
 			return push(::hg::move(e));
 		}
@@ -325,8 +326,8 @@ namespace {
 			return SomeVal(
 				Region {
 					.root = rewrite(ref_),
-					.off = push(Expr { .literal = LiteralValue { u64 { 0uLL }, "0u" }, .type = u32Type(), .loc = loc }),
-					.len = push(Expr { .name = std::to_string(count) + "u", .type = u32Type(), .loc = loc }),
+					.off = push(Expr { .literal = LiteralValue { u64 { 0uLL } }, .type = u32Type(), .loc = loc }),
+					.len = push(Expr { .literal = LiteralValue { u64 { count } }, .type = u32Type(), .loc = loc }),
 					.region = true
 				}
 			);
@@ -361,24 +362,24 @@ namespace {
 					args.append_range(Vector<ExprRef> { r->off, r->len });
 					bound.emplace_back(
 						Region {
-							.name = param.name, .root = r->root, .off = nameref(param.name + "__off", u32Type(), callee.loc),
-							.len = nameref(param.name + "__len", u32Type(), callee.loc), .region = true, .rootName = ::hg::move(rootName)
+							.name = param.name, .root = r->root, .off = nameref(param.name + "$off", u32Type(), callee.loc),
+							.len = nameref(param.name + "$len", u32Type(), callee.loc), .region = true, .rootName = ::hg::move(rootName)
 						}
 					);
 					params.append_range(
 						Vector<ParamDecl> {
-							ParamDecl { .name = param.name + "__off", .type = u32Type() },
-							ParamDecl { .name = param.name + "__end", .type = u32Type() }
+							ParamDecl { .name = param.name + "$off", .type = u32Type() },
+							ParamDecl { .name = param.name + "$end", .type = u32Type() }
 						}
 					);
 					prologue.emplace_back(
 						push(
 							Stmt {
-								.kind = StmtKind::eDeclareLocal, .name = param.name + "__len", .type = u32Type(),
+								.kind = StmtKind::eDeclareLocal, .name = param.name + "$len", .type = u32Type(),
 								.lhs = binary(
-									nameref(param.name + "__end", u32Type(), callee.loc),
+									nameref(param.name + "$end", u32Type(), callee.loc),
 									ir::Op::eSub,
-									nameref(param.name + "__off", u32Type(), callee.loc),
+									nameref(param.name + "$off", u32Type(), callee.loc),
 									u32Type(),
 									callee.loc
 								),
@@ -419,7 +420,7 @@ namespace {
 						index :
 						push(Expr { .kind = ExprKind::eConstruct, .name = "u32", .type = u32Type(), .operands = { index }, .loc = ie.loc })
 					);
-					params.emplace_back(ParamDecl { .name = param.name + "__i" + std::to_string(k++), .type = u32Type() });
+					params.emplace_back(ParamDecl { .name = param.name + "$i" + std::to_string(k++), .type = u32Type() });
 				}
 
 				k = 0uL;
@@ -611,22 +612,22 @@ namespace {
 					const auto u32Type = m.exprs[r->off.index].type; {
 						auto& off = m.stmts[ref_.index];
 						off.kind = StmtKind::eDeclareLocal;
-						off.name = s.name + "__off";
+						off.name = s.name + "$off";
 						off.type = u32Type;
 						off.lhs = r->off;
 						off.rhs = {};
 						off.mutable_ = false;
 						off.children.clear();
 					}
-					r->off = nameref(s.name + "__off", u32Type, s.loc);
+					r->off = nameref(s.name + "$off", u32Type, s.loc);
 					const auto len = push(
 						Stmt {
-							.kind = StmtKind::eDeclareLocal, .name = s.name + "__len", .type = u32Type,
+							.kind = StmtKind::eDeclareLocal, .name = s.name + "$len", .type = u32Type,
 							.lhs = whole ? r->len : binary(r->len, Op::eSub, r->off, u32Type, s.loc), .mutable_ = false, .loc = s.loc
 						}
 					);
 					r->name = s.name;
-					r->len = nameref(s.name + "__len", u32Type, s.loc);
+					r->len = nameref(s.name + "$len", u32Type, s.loc);
 					scope.emplace_back(::hg::move(*r));
 					hoists.append_range(Vector<StmtRef> { ref_, len });
 					return hoists;

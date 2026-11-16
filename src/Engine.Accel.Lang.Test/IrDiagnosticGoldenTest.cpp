@@ -3,7 +3,7 @@
 /**/
 
 #include <Engine.Accel.Lang/Diagnostic/Codes.hpp>
-#include <Engine.Accel.Lang/Emitter/GlslEmitter.hpp>
+#include "IrSpirvText.hpp"
 #include <Engine.Accel.Lang/Ir/Contract.hpp>
 #include <Engine.Accel.Lang/Ir/Interface.hpp>
 #include <Engine.Accel.Lang/Ir/Layout.hpp>
@@ -112,8 +112,7 @@ namespace AccelLang {
 		}
 
 		[[nodiscard]] Diagnostics emitD(ref<const Module> mod_, ref<const Layout> layout_) {
-			Language target {};
-			return GlslEmitter {}.emit(mod_, layout_, target).diagnostics;
+			return spirv::emit(mod_, layout_, Tier::eDev).diagnostics;
 		}
 
 		[[nodiscard]] InterfaceEntry ie(StringView id_, TypeRef type_, BindMode mode_, BindClass cls_, bool input_ = true) {
@@ -238,11 +237,11 @@ namespace AccelLang {
 1 | @when ((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((A == B)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) fn F();
   |                                                                                                                                                                                                                                                                        ^
 )GOLD" },
-			{ "reserved-name", "fn main() {\n\tlet _hg_x = 1.0;\n}\n", parseD<EntryKind::eFragment>, R"GOLD(error[ASL0011]: identifiers starting with '_hg_' are reserved
+			{ "reserved-name", "fn main() {\n\tlet bitcast = 1.0;\n}\n", parseD<EntryKind::eFragment>, R"GOLD(error[ASL0011]: 'bitcast' is an ASL builtin
   --> M:2:6
   |
-2 | 	let _hg_x = 1.0;
-  |      ^^^^^
+2 | 	let bitcast = 1.0;
+  |      ^^^^^^^
 )GOLD" },
 			{ "unknown-annotation", "@input (mode = forward, colour = \"x\") f32 a;", parseD<EntryKind::eFragment>, R"GOLD(error[ASL0012]: unknown annotation key 'colour' for @input
   --> M:1:25
@@ -326,6 +325,10 @@ namespace AccelLang {
 				}
 				return emitD(mod, layout);
 			}, R"GOLD(error[ASL0027]: struct 'S' contains itself
+  --> M:2:55
+  |
+2 | @input (mode = bind, id = "b", class = storage) block b { S s; };
+  |                                                       ^
 )GOLD" },
 			{ "invalid-entry-signature", "fn main() {}\n", [](StringView s_) {
 				auto mod = mk(s_);
@@ -334,6 +337,10 @@ namespace AccelLang {
 				for (auto& fn : mod.functions) { if (fn.name == "main") { fn.ret = TypeRef { static_cast<u32>(mod.types.size() - 1uz) }; } }
 				return emitD(mod, layout);
 			}, R"GOLD(error[ASL0028]: 'main' takes no parameters and returns nothing
+  --> M:1:4
+  |
+1 | fn main() {}
+  |    ^^^^
 )GOLD" },
 			{ "unknown-type", "fn main() {\n\tlet x: Foo = 1.0;\n}\n", parseD<EntryKind::eFragment>, R"GOLD(error[ASL0029]: unknown type 'Foo'
   --> M:2:9
@@ -485,6 +492,10 @@ namespace AccelLang {
 				mod.bindings.emplace_back(mod.bindings.front());
 				return emitD(mod, layout);
 			}, R"GOLD(error[ASL0050]: binding 'b' is declared twice
+  --> M:1:55
+  |
+1 | @input (mode = bind, id = "b", class = storage) block b { f32 x; };
+  |                                                       ^
 )GOLD" },
 			{ "binding-slot-conflict", "", [](StringView) {
 				const std::array types { cameraTypes(false), cameraTypes(true) };
@@ -515,6 +526,10 @@ namespace AccelLang {
 				mod.bindings.emplace_back(second);
 				return emitD(mod, layout);
 			}, R"GOLD(error[ASL0053]: a stage has at most one push constant block, but the module declares 2
+  --> M:1:52
+  |
+1 | @input (mode = bind, id = "p", class = push) block p { f32 y; };
+  |                                                    ^
 )GOLD" },
 			{ "invalid-push-constant-type", "@input (mode = bind, id = \"p\", class = push) block p { f32 y; };\nfn main() {}\n", [](StringView s_) {
 				const auto mod = mk(s_);
@@ -522,6 +537,10 @@ namespace AccelLang {
 				for (auto& range : layout.push) { range.size = 0uL; }
 				return emitD(mod, layout);
 			}, R"GOLD(error[ASL0054]: push constant 'p' cannot be laid out
+  --> M:1:52
+  |
+1 | @input (mode = bind, id = "p", class = push) block p { f32 y; };
+  |                                                    ^
 )GOLD" },
 			{ "conflicting-struct-definitions", "struct S { f32 a; }\n@input (mode = bind, id = \"b\", class = storage) block b { S s; };\nfn main() {}\n", [](StringView s_) {
 				auto mod = mk(s_);
@@ -534,6 +553,10 @@ namespace AccelLang {
 				mod.types[mod.bindings.front().type.index].fields.emplace_back(FieldDesc { "t", TypeRef { static_cast<u32>(mod.types.size() - 1uz) } });
 				return emitD(mod, layout);
 			}, R"GOLD(error[ASL0055]: conflicting definitions of struct 'S'
+  --> M:2:55
+  |
+2 | @input (mode = bind, id = "b", class = storage) block b { S s; };
+  |                                                       ^
 )GOLD" },
 			{ "missing-binding-class", "", [](StringView) {
 				return checkContract({ ie("albedo", TypeRef { 0 }, BindMode::eBind, BindClass::eNone) }, {}, { "albedo" });
@@ -546,6 +569,10 @@ namespace AccelLang {
 				mod.bindings.front().bindClass = BindClass::eTexture;
 				return emitD(mod, layout);
 			}, R"GOLD(error[ASL0057]: type of binding 'b' does not fit its class
+  --> M:1:55
+  |
+1 | @input (mode = bind, id = "b", class = storage) block b { f32 x; };
+  |                                                       ^
 )GOLD" },
 			{ "missing-material-binding", "", [](StringView) {
 				const Vector<InterfaceEntry> iface { ie("block", TypeRef { 0 }, BindMode::eBind, BindClass::ePushConstant), ie("view", TypeRef { 0 }, BindMode::eBind, BindClass::eStorageBuffer) };
@@ -578,12 +605,6 @@ namespace AccelLang {
 				auto res = lowerToIntermediate(mod, layoutOf(mod), Tier::eDev);
 				return res.has_value() ? Diagnostics {} : std::move(res).error();
 			}, R"GOLD(error[ASL0062]: vertex input 'vertex-position' has no vertex offset
-)GOLD" },
-			{ "no-glsl-form", "@input (mode = forward, id = \"v\") u8vec4 v;\n", [](StringView s_) {
-				const auto mod = mk(s_);
-				return emitD(mod, layoutOf(mod));
-			}, R"GOLD(error[ASL0064]: binding 'v' forwards an 8-bit type
-  = note: GLSL has no 8-bit stage interface variables
 )GOLD" },
 			{ "unsupported-feature", "@input (mode = forward, id = \"v\") u8vec4 v;\nfn main() {\n\tlet a = v;\n}\n", [](StringView s_) {
 				const auto mod = mk(s_);
@@ -619,16 +640,10 @@ namespace AccelLang {
 	TEST(IrDiagnosticGolden, CoversEveryCode) {
 		for (const auto& info : codes::table) {
 			const auto count = std::ranges::count_if(table, [&](const auto& r_) { return r_.key == StringView { info.key }; });
-			/* unsupported-target: retired with the GLSL path */
-			const auto exempt = StringView { info.key }.starts_with("internal-") || StringView { info.key } == "unsupported-target";
+			/* retired codes keep their number but have no case */
+			const auto exempt = StringView { info.key }.starts_with("internal-") || StringView { info.key }.starts_with("retired-");
 			EXPECT_EQ(count, exempt ? 0 : 1) << info.key;
 		}
-		EXPECT_EQ(std::size(table), 67uz);
-	}
-
-	TEST(IrDiagnosticGolden, BitcastChangingComponentCountHasNoGlslForm) {
-		const auto mod = mk("fn main() {\nlet a: u64 = 1;\nlet v = bitcast<u32vec2>(a);\n}\n");
-		const auto diags = emitD(mod, layoutOf(mod));
-		EXPECT_TRUE(std::ranges::any_of(diags, [](const auto& d_) { return d_.code() != nullptr && StringView { d_.code()->key } == "no-glsl-form"; }));
+		EXPECT_EQ(std::size(table), 66uz);
 	}
 }

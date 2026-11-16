@@ -23,7 +23,7 @@ namespace hg::engine::accel {
 
 namespace hg::engine::accel {
 	/**
-	 * The glslang stage an IR entry kind is compiled as.
+	 * The SPIR-V execution stage an IR entry kind is compiled as.
 	 */
 	[[nodiscard]] ModuleTargetStage toModuleTargetStage(lang::ir::EntryKind entry_) noexcept;
 

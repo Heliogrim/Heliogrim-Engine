@@ -1,10 +1,11 @@
 #include "pch.h"
 
-#include <Engine.Accel.Lang/Emitter/GlslEmitter.hpp>
 #include <Engine.Accel.Lang/Ir/Interface.hpp>
 #include <Engine.Accel.Lang/Ir/Layout.hpp>
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
 #include <Engine.Accel.Lang/Ir/Variant.hpp>
+
+#include "IrSpirvText.hpp"
 
 using namespace hg::engine::accel::lang::ir;
 using namespace hg::engine::accel::lang;
@@ -31,11 +32,8 @@ namespace AccelLang {
 			return res.has_value() || res.error().empty() ? String {} : res.error().front().message();
 		}
 
-		[[nodiscard]] String emitGlsl(ref<Module> mod_) {
-			Language target {};
-			const auto layout = assignLayout(computeInterface(mod_), mod_.types, {});
-			(void)GlslEmitter {}.emit(mod_, layout, target);
-			return target.text.empty() ? String {} : String { target.text.front().data };
+		[[nodiscard]] String emitSpirv(ref<Module> mod_) {
+			return spirvTextOf(mod_);
 		}
 
 		[[nodiscard]] String geometrySource(StringView attributes_) {
@@ -66,14 +64,14 @@ namespace AccelLang {
 		auto mod = parseOk(geometrySource("input = triangles, output = triangle_strip, max_vertices = 3, invocations = 2"));
 		ASSERT_FALSE(mod.bindings.empty());
 		EXPECT_TRUE(mod.bindings.front().arrayed);
-		const auto glsl = emitGlsl(mod);
-		EXPECT_TRUE(glsl.contains("layout(triangles) in;")) << glsl;
-		EXPECT_TRUE(glsl.contains("layout(triangle_strip, max_vertices = 3) out;")) << glsl;
-		EXPECT_TRUE(glsl.contains("layout(invocations = 2) in;")) << glsl;
-		EXPECT_TRUE(glsl.contains(" p[];")) << glsl;
-		EXPECT_TRUE(glsl.contains("gl_in[0].gl_Position")) << glsl;
-		EXPECT_TRUE(glsl.contains("EmitVertex();")) << glsl;
-		EXPECT_TRUE(glsl.contains("EndPrimitive();")) << glsl;
+		const auto glsl = emitSpirv(mod);
+		EXPECT_TRUE(glsl.contains(" Triangles\n")) << glsl;
+		EXPECT_TRUE(glsl.contains("OutputTriangleStrip")) << glsl;
+		EXPECT_TRUE(glsl.contains("Invocations 2")) << glsl;
+		EXPECT_TRUE(glsl.contains("OutputVertices 3")) << glsl;
+		EXPECT_TRUE(glsl.contains("BuiltIn Position")) << glsl;
+		EXPECT_TRUE(glsl.contains("OpEmitVertex")) << glsl;
+		EXPECT_TRUE(glsl.contains("OpEndPrimitive")) << glsl;
 	}
 
 	TEST(GeometryTest, MaxVerticesChangesVariantKey) {

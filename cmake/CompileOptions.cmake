@@ -39,8 +39,9 @@ set(DEFAULT_INCLUDE_DIRECTORIES
 		"${vendor}/freetype2/include"
 		"${vendor}/gli/include"
 		"${vendor}/glm/include"
-		"${vendor}/glslang/include"
 		"${vendor}/jolt/include"
+		"${vendor}/spirv-headers/include"
+		"${vendor}/spirv-tools/include"
 		"${vendor}/nontype_fn/include"
 		"${vendor}/ogg/include"
 		"${vendor}/optional/include"
@@ -74,12 +75,6 @@ set(DEFAULT_LIBRARIES
 		${PROJECT_NAME}::External-vorbisenc
 		${PROJECT_NAME}::External-vorbisfile
 		${PROJECT_NAME}::External-zlib
-		${PROJECT_NAME}::External-glslang
-		${PROJECT_NAME}::External-GenericCodeGen
-		${PROJECT_NAME}::External-glslang-default-resource-limits
-		${PROJECT_NAME}::External-MachineIndependent
-		${PROJECT_NAME}::External-OSDependent
-		${PROJECT_NAME}::External-SPIRV
 		${PROJECT_NAME}::External-vulkan-loader
 		${PROJECT_NAME}::External-jolt
 )

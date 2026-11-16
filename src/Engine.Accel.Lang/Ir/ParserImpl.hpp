@@ -169,8 +169,8 @@ namespace hg::engine::accel::lang::ir::detail {
 
 		void push(ir::Diagnostic&& diag_, ref<const ir::Token> at_);
 
-		/* reports a user name that collides with GLSL or a generated name; `module_` adds the region-lowering suffixes */
-		void declaredName(ref<const ir::Token> name_, bool module_);
+		/* reports a user name that is an ASL builtin spelling the parser cannot shadow (`bitcast`) */
+		void declaredName(ref<const ir::Token> name_);
 
 		void syntaxError(StringView expected_);
 

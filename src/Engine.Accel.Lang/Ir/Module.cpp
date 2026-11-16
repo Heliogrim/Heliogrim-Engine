@@ -47,10 +47,6 @@ ir::Op ir::opOf(const StringView text_) noexcept {
 }
 
 String ir::literalText(ref<const LiteralValue> literal_) {
-	if (not literal_.spelling.empty()) {
-		return literal_.spelling;
-	}
-
 	return std::visit(
 		[](const auto& value_) -> String {
 			using T = std::decay_t<decltype(value_)>;
@@ -67,7 +63,7 @@ String ir::literalText(ref<const LiteralValue> literal_) {
 				std::array<char, 40uz> buffer {};
 				const auto res = std::to_chars(buffer.data(), buffer.data() + buffer.size(), value_);
 				String out { buffer.data(), res.ptr };
-				// GLSL needs a float marker; shortest round-trip text of 1000.0 is `1000`
+				// keep a float marker; shortest round-trip text of 1000.0 is `1000`
 				return out.find_first_of(".eEn") == String::npos ? out + ".0" : out;
 			}
 		},

@@ -666,4 +666,57 @@ namespace AccelLang {
 		expectWording(err.error().front());
 		EXPECT_NE(err.error().front().message().find("stage 1"), String::npos);
 	}
+
+	TEST(LayoutTest, Std140StridesAndOffsets) {
+		Vector<TypeDesc> types {
+			TypeDesc {},
+			TypeDesc { .kind = TypeKind::eVector, .n = 3uL },
+			TypeDesc { .kind = TypeKind::eArray, .element = TypeRef { 0u }, .count = 4uL },
+			TypeDesc { .kind = TypeKind::eMatrix, .n = 3uL, .m = 3uL },
+			TypeDesc { .kind = TypeKind::eMatrix, .n = 2uL, .m = 2uL },
+			TypeDesc { .kind = TypeKind::eVector, .n = 2uL },
+			TypeDesc { .kind = TypeKind::eArray, .element = TypeRef { 5u }, .count = 2uL },
+		};
+		types.emplace_back(
+			TypeDesc {
+				.kind = TypeKind::eStruct,
+				.name = "S",
+				.fields = { FieldDesc { "a", TypeRef { 0u } }, FieldDesc { "b", TypeRef { 1u } }, FieldDesc { "c", TypeRef { 2u } } }
+			}
+		);
+
+		EXPECT_EQ(std140Offsets(types, TypeRef { 7u }), (Vector<u32> { 0u, 16u, 32u }));
+		EXPECT_EQ(std430Offsets(types, TypeRef { 7u }), (Vector<u32> { 0u, 16u, 28u }));
+		EXPECT_TRUE(std140Offsets(types, TypeRef { 0u }).empty());
+
+		EXPECT_EQ(arrayStride(types, TypeRef { 2u }, true), 16uL);
+		EXPECT_EQ(arrayStride(types, TypeRef { 2u }, false), 4uL);
+		EXPECT_EQ(arrayStride(types, TypeRef { 6u }, true), 16uL);
+		EXPECT_EQ(arrayStride(types, TypeRef { 6u }, false), 8uL);
+		EXPECT_EQ(arrayStride(types, TypeRef { 0u }, true), 0uL);
+
+		EXPECT_EQ(matrixStride(types, TypeRef { 3u }, true), 16uL);
+		EXPECT_EQ(matrixStride(types, TypeRef { 3u }, false), 16uL);
+		EXPECT_EQ(matrixStride(types, TypeRef { 4u }, true), 16uL);
+		EXPECT_EQ(matrixStride(types, TypeRef { 4u }, false), 8uL);
+		EXPECT_EQ(matrixStride(types, TypeRef { 1u }, false), 0uL);
+	}
+
+	TEST(InterfaceTest, DescribesWorkgroupSizeAndSpecIds) {
+		const auto compute = resolved(
+			"@spec (id = \"b\") const B: u32 = 2u;\n"
+			"@spec (id = \"a\") const A: u32 = 1u;\n"
+			"@compute (local_size = [8, 4, 2])\nfn main() {}\n",
+			EntryKind::eCompute,
+			{}
+		);
+		const auto desc = describeInterface(compute);
+		EXPECT_EQ(desc.stage, EntryKind::eCompute);
+		EXPECT_EQ(desc.workgroupSize, (std::array<u32, 3> { 8uL, 4uL, 2uL }));
+		EXPECT_EQ(desc.specConstantIds, (Vector<String> { "b", "a" }));
+
+		const auto fragment = describeInterface(resolved("fn main() {}\n", EntryKind::eFragment, {}));
+		EXPECT_EQ(fragment.workgroupSize, (std::array<u32, 3> { 1uL, 1uL, 1uL }));
+		EXPECT_TRUE(fragment.specConstantIds.empty());
+	}
 }
