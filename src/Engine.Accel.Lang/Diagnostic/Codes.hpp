@@ -76,6 +76,7 @@ namespace hg::engine::accel::lang::codes {
 		{ { { { "ASL" } }, 69 }, "implicit-conversion", "operands of different numeric types need an explicit conversion" },
 		{ { { { "ASL" } }, 70 }, "bitcast-size", "bitcast between types of different size" },
 		{ { { { "ASL" } }, 71 }, "internal-spirv-invalid", "compiler bug: the generated SPIR-V module fails validation" },
+		{ { { { "ASL" } }, 72 }, "internal-spirv-emit", "compiler bug: the lowered module cannot be emitted as SPIR-V" },
 	};
 
 	consteval ref<const diag::DiagnosticCodeInfo> asl(const StringView key_) {

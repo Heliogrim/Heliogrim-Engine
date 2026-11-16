@@ -72,8 +72,24 @@ namespace hg::engine::accel::lang::ir {
 
 	/**
 	 * std430 member offsets of a struct type; empty if the type is not a struct or not laid out (see below).
+	 * `start_`: absolute offset the members are laid out from (push range offset); offsets are absolute.
 	 */
-	[[nodiscard]] Vector<u32> std430Offsets(ref<const Vector<TypeDesc>> types_, TypeRef struct_);
+	[[nodiscard]] Vector<u32> std430Offsets(ref<const Vector<TypeDesc>> types_, TypeRef struct_, u32 start_ = 0uL);
+
+	/**
+	 * std140 member offsets: std430 with array strides, matrix column strides and struct alignment rounded up to 16.
+	 */
+	[[nodiscard]] Vector<u32> std140Offsets(ref<const Vector<TypeDesc>> types_, TypeRef struct_);
+
+	/**
+	 * Array stride of an array type under std140 or std430; 0 if it is not an array or not laid out.
+	 */
+	[[nodiscard]] u32 arrayStride(ref<const Vector<TypeDesc>> types_, TypeRef array_, bool std140_);
+
+	/**
+	 * Column stride of a column-major matrix type under std140 or std430; 0 if it is not a matrix or not laid out.
+	 */
+	[[nodiscard]] u32 matrixStride(ref<const Vector<TypeDesc>> types_, TypeRef matrix_, bool std140_);
 
 	/**
 	 * Locations a forward variable of the type takes, counted as for forward inputs below (at least 1).
