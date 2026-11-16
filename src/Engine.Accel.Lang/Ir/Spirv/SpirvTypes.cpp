@@ -324,7 +324,14 @@ namespace hg::engine::accel::lang::ir::spirv {
 			case ScalarKind::eInt:
 			case ScalarKind::eUInt: {
 				// signed narrow values keep their sign extension in the low word, as SPIR-V requires
-				const auto bits = desc.scalar == ScalarKind::eInt ? static_cast<u64>(numberOf<s64>(literal_)) : numberOf<u64>(literal_);
+				auto bits = desc.scalar == ScalarKind::eInt ? static_cast<u64>(numberOf<s64>(literal_)) : numberOf<u64>(literal_);
+				// two's complement at the declared width: signed sign-extends, unsigned masks
+				if (desc.bits > 0uL && desc.bits < 64uL) {
+					const auto shift = 64uL - desc.bits;
+					bits = desc.scalar == ScalarKind::eInt
+						? static_cast<u64>(static_cast<s64>(bits << shift) >> shift)
+						: bits & ((1uLL << desc.bits) - 1uLL);
+				}
 				out_.emplace_back(static_cast<u32>(bits));
 				if (desc.bits > 32uL) {
 					out_.emplace_back(static_cast<u32>(bits >> 32uLL));

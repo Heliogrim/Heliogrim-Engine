@@ -2,6 +2,7 @@
 
 #include <atomic>
 #include <span>
+#include <Engine.Accel.Lang/Language.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
 #include "ModuleSource.hpp"

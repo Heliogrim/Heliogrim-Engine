@@ -29,3 +29,16 @@ Vector<ir::InterfaceEntry> ir::computeInterface(ref<const Module> mod_) {
 	);
 	return entries;
 }
+
+ir::InterfaceDesc ir::describeInterface(ref<const Module> mod_) {
+	InterfaceDesc desc { .stage = mod_.entry, .entries = computeInterface(mod_) };
+	if (mod_.entry == EntryKind::eCompute) {
+		desc.workgroupSize = mod_.attributes.localSize;
+	}
+	for (const auto& constant : mod_.constants) {
+		if (constant.specId.has_value()) {
+			desc.specConstantIds.emplace_back(*constant.specId);
+		}
+	}
+	return desc;
+}

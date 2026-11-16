@@ -256,7 +256,7 @@ smr<const Resolved> VariantCache::find(ref<const VariantKey> key_) const noexcep
 }
 
 smr<const ResolvedPipeline> PipelineLayoutCache::getOrCreate(
-	ref<const Vector<VariantKey>> key_,
+	ref<const PipelineKey> key_,
 	FnRef<smr<const ResolvedPipeline>()> build_
 ) {
 	if (auto hit = find(key_); hit != nullptr) {
@@ -272,7 +272,7 @@ smr<const ResolvedPipeline> PipelineLayoutCache::getOrCreate(
 	return _entries.try_emplace(key_, std::move(built)).first->second;
 }
 
-smr<const ResolvedPipeline> PipelineLayoutCache::find(ref<const Vector<VariantKey>> key_) const noexcept {
+smr<const ResolvedPipeline> PipelineLayoutCache::find(ref<const PipelineKey> key_) const noexcept {
 	const concurrent::SharedLock lock { _lck };
 	const auto iter = _entries.find(key_);
 	return iter != _entries.end() ? iter->second : smr<const ResolvedPipeline> {};

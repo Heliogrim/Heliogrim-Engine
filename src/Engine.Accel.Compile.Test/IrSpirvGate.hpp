@@ -2,17 +2,19 @@
 
 #include <algorithm>
 #include <array>
+#include <expected>
+#include <functional>
+#include <span>
 #include <initializer_list>
 #include <string>
 #include <utility>
 
-#include <Engine.Accel.Compile/Module/ModuleSource.hpp>
-#include <Engine.Accel.Compile/Module/SpirvCompiler.hpp>
 #include <Engine.Accel.Compile/Profile/EffectProfile.hpp>
 #include <Engine.Accel.Compile/Spec/EffectSpecification.hpp>
 #include <Engine.Accel.Compile/Stage/StageIr.hpp>
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
 #include <Engine.Accel.Lang/Ir/Interface.hpp>
+#include <Engine.Accel.Lang/Ir/Spirv/SpirvValidate.hpp>
 #include <Engine.Accel.Lang/Rep/Annotation.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Diagnostics/Render.hpp>
@@ -59,65 +61,69 @@ namespace AccelCompile {
 	/* in-memory include table: { name, source } */
 	using IncludeTable = std::initializer_list<std::pair<hg::StringView, hg::StringView>>;
 
-	/* glslang accepts the glsl as the given stage and yields non-empty spir-v */
-	[[nodiscard]] inline ::testing::AssertionResult glslCompiles(hg::StringView glsl_, hg::engine::accel::lang::ir::EntryKind entry_) {
-		using namespace hg::engine::accel;
-
-		/* glslang reports through the engine logger */
-		static const bool loggerReady = (hg::Logger::setup(), true);
-		(void)loggerReady;
-
-		ModuleSource source {};
-		source.targetStage = toModuleTargetStage(entry_);
-		source.code.text.emplace_back(lang::TextBlock { hg::string { glsl_ } });
-
-		const auto byteCode = SpirvCompiler {}.compile(source, source.code.text);
-		if (byteCode.empty()) {
-			return ::testing::AssertionFailure() << "glslang rejected the glsl:\n" << std::string { glsl_ };
-		}
-		return ::testing::AssertionSuccess();
+	/* diagnostics report through the engine logger */
+	inline void ensureLogger() {
+		static const bool ready = (hg::Logger::setup(), true);
+		(void)ready;
 	}
 
-	[[nodiscard]] inline ::testing::AssertionResult compilesToSpirv(
-		hg::StringView source_,
-		hg::engine::accel::lang::ir::EntryKind entry_,
-		hg::ref<const hg::engine::accel::lang::ir::ToggleSet> toggles_ = {},
-		IncludeTable includes_ = {}
+	using GateResolver = std::function<hg::Opt<hg::String>(hg::StringView)>;
+
+	struct GateStage {
+		hg::StringView source;
+		hg::engine::accel::lang::ir::EntryKind entry;
+	};
+
+	/* parses and composes the stages as one pipeline; one stage is its own pipeline */
+	[[nodiscard]] inline std::expected<hg::Vector<hg::smr<hg::engine::accel::StageDerivat>>, std::string> composeStages(
+		std::span<const GateStage> stages_,
+		hg::ref<const hg::engine::accel::lang::ir::ToggleSet> toggles_,
+		hg::ref<const GateResolver> resolver_
 	) {
 		using namespace hg::engine::accel::lang::ir;
 		using namespace hg::engine::accel;
 
-		const auto resolver = [includes_](hg::StringView name_) -> hg::Opt<hg::String> {
-			const auto it = std::ranges::find(includes_, name_, &std::pair<hg::StringView, hg::StringView>::first);
-			if (it == includes_.end()) {
-				return hg::None;
-			}
-			return hg::String { it->second };
-		};
-		auto parsed = parseModule("M", source_, entry_, ModuleResolver { resolver });
-		if (not parsed.has_value()) {
-			auto failure = ::testing::AssertionFailure() << "parse failed:";
-			for (const auto& d : parsed.error()) {
-				failure << "\n" << std::string { hg::engine::diag::render(d) };
-			}
-			return failure;
-		}
+		ensureLogger();
 
-		lang::Intermediate stage {};
-		stage.ir = hg::make_smr<const Module>(new Module { std::move(parsed).value() });
-
-		/* the pass supplies vertex offsets; any distinct ones do for the gate */
-		if (entry_ == EntryKind::eVertex) {
-			hg::u32 offset = 0uL;
-			for (const auto& entry : computeInterface(*stage.ir)) {
-				if (entry.input and entry.mode == BindMode::eForward) {
-					auto var = hg::make_uptr<lang::Variable>();
-					var->annotation = hg::make_uptr<lang::VkBindLocationAnnotation>(
-						-1L, 0L, static_cast<hg::s32>(offset), hg::make_uptr<lang::SymbolIdAnnotation>(hg::String { entry.id }), -1L
-					);
-					stage.rep.globalScope.inbound.emplace_back(std::move(var));
-					offset += 16uL;
+		hg::Vector<lang::Intermediate> stages {};
+		stages.reserve(stages_.size());
+		hg::Vector<StageFlagBits> flags {};
+		for (const auto& gate : stages_) {
+			auto parsed = parseModule("M", gate.source, gate.entry, ModuleResolver { resolver_ });
+			if (not parsed.has_value()) {
+				std::string failure = "parse failed:";
+				for (const auto& d : parsed.error()) {
+					failure += "\n" + std::string { hg::engine::diag::render(d) };
 				}
+				return std::unexpected(std::move(failure));
+			}
+
+			auto& stage = stages.emplace_back();
+			stage.ir = hg::make_smr<const Module>(new Module { std::move(parsed).value() });
+
+			/* the pass supplies vertex offsets; any distinct ones do for the gate */
+			if (gate.entry == EntryKind::eVertex) {
+				hg::u32 offset = 0uL;
+				for (const auto& entry : computeInterface(*stage.ir)) {
+					if (entry.input and entry.mode == BindMode::eForward) {
+						auto var = hg::make_uptr<lang::Variable>();
+						var->annotation = hg::make_uptr<lang::VkBindLocationAnnotation>(
+							-1L, 0L, static_cast<hg::s32>(offset), hg::make_uptr<lang::SymbolIdAnnotation>(hg::String { entry.id }), -1L
+						);
+						stage.rep.globalScope.inbound.emplace_back(std::move(var));
+						offset += 16uL;
+					}
+				}
+			}
+
+			switch (gate.entry) {
+				case EntryKind::eFragment: flags.emplace_back(StageFlagBits::eFragment); break;
+				case EntryKind::eCompute: flags.emplace_back(StageFlagBits::eCompute); break;
+				case EntryKind::eGeometry: flags.emplace_back(StageFlagBits::eGeometry); break;
+				case EntryKind::eTessCtrl: flags.emplace_back(StageFlagBits::eTessellationCtrl); break;
+				case EntryKind::eTessEval: flags.emplace_back(StageFlagBits::eTessellationEval); break;
+				case EntryKind::eVertex:
+				default: flags.emplace_back(StageFlagBits::eVertex); break;
 			}
 		}
 
@@ -128,33 +134,55 @@ namespace AccelCompile {
 		VariantCache cache {};
 		PipelineLayoutCache layouts {};
 
-		/* one stage is its own pipeline */
-		const std::array<const lang::Intermediate*, 1> stages { &stage };
-		const auto stageBit = [](EntryKind kind_) {
-			switch (kind_) {
-				case EntryKind::eFragment: return StageFlagBits::eFragment;
-				case EntryKind::eCompute: return StageFlagBits::eCompute;
-				case EntryKind::eGeometry: return StageFlagBits::eGeometry;
-				case EntryKind::eTessCtrl: return StageFlagBits::eTessellationCtrl;
-				case EntryKind::eTessEval: return StageFlagBits::eTessellationEval;
-				default: return StageFlagBits::eVertex;
-			}
-		};
-		const std::array<StageFlagBits, 1> flags { stageBit(entry_) };
-		const auto composed = composePipelineIr(stages, flags, profile, spec, cache, layouts);
+		hg::Vector<const lang::Intermediate*> pointers {};
+		for (const auto& stage : stages) {
+			pointers.emplace_back(&stage);
+		}
+		auto composed = composePipelineIr(pointers, flags, profile, spec, cache, layouts);
 		if (not composed.has_value()) {
-			auto failure = ::testing::AssertionFailure() << "resolve failed:";
+			std::string failure = "resolve failed:";
 			for (const auto& d : composed.error()) {
-				failure << "\n" << std::string { hg::engine::diag::render(d) };
+				failure += "\n" + std::string { hg::engine::diag::render(d) };
 			}
-			return failure;
+			return std::unexpected(std::move(failure));
 		}
+		return std::move(composed).value();
+	}
 
-		const auto& lowered = *composed->front()->getIntermediate();
-		auto result = glslCompiles(lowered.lang.text.empty() ? hg::StringView {} : hg::StringView { lowered.lang.text.front().data }, entry_);
-		if (not result) {
-			return result << "\n(emitted)";
+	/* the lowered stage carries spir-v that passes the validator */
+	[[nodiscard]] inline ::testing::AssertionResult spirvValid(hg::ref<const hg::engine::accel::lang::Intermediate> lowered_) {
+		if (lowered_.spirv.empty()) {
+			return ::testing::AssertionFailure() << "no spir-v emitted";
 		}
-		return result;
+		const auto diags = hg::engine::accel::lang::ir::spirv::validate(lowered_.spirv, "M");
+		if (diags.empty()) {
+			return ::testing::AssertionSuccess();
+		}
+		auto failure = ::testing::AssertionFailure() << "spirv-val rejected the module:";
+		for (const auto& d : diags) {
+			failure << "\n" << std::string { hg::engine::diag::render(d) };
+		}
+		return failure;
+	}
+
+	[[nodiscard]] inline ::testing::AssertionResult compilesToSpirv(
+		hg::StringView source_,
+		hg::engine::accel::lang::ir::EntryKind entry_,
+		hg::ref<const hg::engine::accel::lang::ir::ToggleSet> toggles_ = {},
+		IncludeTable includes_ = {}
+	) {
+		const GateResolver resolver = [includes_](hg::StringView name_) -> hg::Opt<hg::String> {
+			const auto it = std::ranges::find(includes_, name_, &std::pair<hg::StringView, hg::StringView>::first);
+			if (it == includes_.end()) {
+				return hg::None;
+			}
+			return hg::String { it->second };
+		};
+		const std::array stages { GateStage { source_, entry_ } };
+		const auto composed = composeStages(stages, toggles_, resolver);
+		if (not composed.has_value()) {
+			return ::testing::AssertionFailure() << composed.error();
+		}
+		return spirvValid(*composed->front()->getIntermediate());
 	}
 }

@@ -9,10 +9,12 @@
 #include <Engine.Accel.Lang/Ir/Layout.hpp>
 #include <Engine.Accel.Lang/Ir/Lower.hpp>
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
+#include <Engine.Accel.Lang/Ir/References.hpp>
 #include <Engine.Accel.Lang/Ir/Resolve.hpp>
 #include <Engine.Accel.Lang/Ir/Slice.hpp>
 #include <Engine.Accel.Lang/Rep/Annotation.hpp>
 #include <Engine.Accel.Lang/Rep/Symbol.hpp>
+#include <spirv-tools/libspirv.hpp>
 #include "IrWording.hpp"
 
 #include "IrSame.hpp"
@@ -46,13 +48,30 @@ namespace AccelLang {
 
 		[[nodiscard]] Intermediate lower(ref<const Module> mod_, ref<const Layout> layout_) {
 			const DenseMap<String, u32> offsets { { "vertex-position", 12u } };
-			auto res = lowerToIntermediate(mod_, layout_, Dialect::eVulkanGlsl460, offsets);
+			auto res = lowerToIntermediate(mod_, layout_, Tier::eDev, offsets);
 			EXPECT_TRUE(res.has_value()) << (res.has_value() || res.error().empty() ? "" : res.error().front().message());
-			return res.has_value() ? std::move(res).value() : Intermediate {};
+			if (not res.has_value()) {
+				return Intermediate {};
+			}
+			return std::move(res).value();
 		}
 
+		/* validated disassembly of the production spir-v */
 		[[nodiscard]] String textOf(ref<const Intermediate> im_) {
-			return im_.lang.text.empty() ? String {} : im_.lang.text.front().data;
+			EXPECT_FALSE(im_.spirv.empty());
+			spvtools::SpirvTools tools { SPV_ENV_VULKAN_1_3 };
+			EXPECT_TRUE(tools.Validate(im_.spirv));
+			std::string text {};
+			EXPECT_TRUE(tools.Disassemble(im_.spirv, &text, SPV_BINARY_TO_TEXT_OPTION_NO_HEADER | SPV_BINARY_TO_TEXT_OPTION_FRIENDLY_NAMES));
+			return String { text };
+		}
+
+		[[nodiscard]] size_t count(StringView text_, StringView needle_) {
+			auto n = 0uz;
+			for (auto at = text_.find(needle_); at != StringView::npos; at = text_.find(needle_, at + 1uz)) {
+				++n;
+			}
+			return n;
 		}
 
 		[[nodiscard]] const Variable* variableOf(ref<const Intermediate> im_, StringView id_) {
@@ -96,21 +115,25 @@ namespace AccelLang {
 		ASSERT_EQ(layout.specConstants.size(), 2uz);
 		const auto im = lower(mod, layout);
 		const auto text = textOf(im);
-		EXPECT_NE(text.find("layout(constant_id = 1) const uint B = 2u;"), String::npos) << text;
-		EXPECT_NE(text.find("layout(constant_id = 0) const uint A = 1u;"), String::npos) << text;
+		EXPECT_TRUE(text.contains("OpDecorate %B SpecId 1\n")) << text;
+		EXPECT_TRUE(text.contains("OpDecorate %A SpecId 0\n")) << text;
+		EXPECT_TRUE(text.contains("%B = OpSpecConstant %uint 2\n")) << text;
+		EXPECT_TRUE(text.contains("%A = OpSpecConstant %uint 1\n")) << text;
 		EXPECT_NE(variableOf(im, "a"), nullptr);
 		EXPECT_NE(variableOf(im, "b"), nullptr);
 	}
 
 	TEST(LowerTest, EmitsStd140Packing) {
 		const auto mod = resolved(
-			"@input (mode = bind, id = \"m\", class = uniform, packing = std140) block m { f32vec4 a; };\n"
+			"@input (mode = bind, id = \"m\", class = uniform, packing = std140) block m { f32[2] a; f32vec4 b; };\n"
 			"@output (mode = forward, id = \"color\") f32vec4 color;\n"
-			"fn main() {\n\tcolor = m.a;\n}\n",
+			"fn main() {\n\tcolor = m.b * m.a[1];\n}\n",
 			EntryKind::eFragment
 		);
 		const auto text = textOf(lower(mod, layoutOf(mod)));
-		EXPECT_NE(text.find("std140"), String::npos) << text;
+		// std140 rounds the array stride and the next member up to 16 bytes
+		EXPECT_TRUE(text.contains("ArrayStride 16\n")) << text;
+		EXPECT_TRUE(text.contains(" 1 Offset 32\n")) << text;
 	}
 
 	TEST(LowerTest, EmitsLayoutNumbersFromLayoutPass) {
@@ -122,22 +145,26 @@ namespace AccelLang {
 
 		const auto text = textOf(lower(mod, layout));
 
-		EXPECT_TRUE(text.contains("layout(set = 0, binding = 0) readonly buffer")) << text;
-		EXPECT_TRUE(text.contains("layout(push_constant) uniform")) << text;
+		EXPECT_TRUE(text.contains(" PushConstant ")) << text;
+		EXPECT_TRUE(text.contains(" StorageBuffer ")) << text;
+		EXPECT_TRUE(text.contains(" NonWritable\n")) << text;
 
 		// every set/binding pair is one of the layout's slots, each slot appears once
-		const std::regex slotPattern { R"(set = (\d+), binding = (\d+))" };
+		const std::regex slotPattern { R"(OpDecorate (%\S+) DescriptorSet (\d+)\n)" };
 		auto slots = 0uz;
 		for (auto it = std::sregex_iterator(text.begin(), text.end(), slotPattern); it != std::sregex_iterator {}; ++it, ++slots) {
-			const auto set = static_cast<u32>(std::stoul((*it)[1].str()));
-			const auto binding = static_cast<u32>(std::stoul((*it)[2].str()));
+			const auto set = static_cast<u32>(std::stoul((*it)[2].str()));
+			std::smatch bound {};
+			const std::regex bindingPattern { "OpDecorate " + (*it)[1].str() + R"( Binding (\d+)\n)" };
+			ASSERT_TRUE(std::regex_search(text, bound, bindingPattern)) << text;
+			const auto binding = static_cast<u32>(std::stoul(bound[1].str()));
 			EXPECT_TRUE(std::ranges::any_of(layout.slots, [&](ref<const SlotAssignment> s_) { return s_.set == set && s_.binding == binding; }))
 				<< set << ", " << binding;
 		}
 		EXPECT_EQ(slots, layout.slots.size());
 
 		// input locations come from the layout
-		const std::regex locationPattern { R"(location = (\d+))" };
+		const std::regex locationPattern { R"(OpDecorate %\S+ Location (\d+)\n)" };
 		auto locations = 0uz;
 		for (auto it = std::sregex_iterator(text.begin(), text.end(), locationPattern); it != std::sregex_iterator {}; ++it, ++locations) {
 			EXPECT_TRUE(std::ranges::contains(layout.inputLocations, static_cast<u32>(std::stoul((*it)[1].str()))));
@@ -149,12 +176,13 @@ namespace AccelLang {
 		const auto mod = resolved(shadowVertex, EntryKind::eVertex);
 		const auto text = textOf(lower(mod, layoutOf(mod)));
 
-		EXPECT_TRUE(text.starts_with("#version 460\n")) << text;
-		EXPECT_TRUE(text.contains("buffer model_block {\n\tmat4 model[];\n} model;")) << text;
-		EXPECT_TRUE(text.contains("layout(location = 0) in vec3 local_position;")) << text;
-		EXPECT_TRUE(text.contains("vec4 pos = (model.model[gl_InstanceIndex] * vec4(local_position, 1.0));")) << text;
-		EXPECT_TRUE(text.contains("gl_Position = (view.cascadeViewProj[push.cascade] * pos);")) << text;
-		EXPECT_TRUE(text.contains("void main()")) << text;
+		EXPECT_TRUE(text.contains("OpEntryPoint Vertex %main \"main\"")) << text;
+		EXPECT_TRUE(text.contains("BuiltIn InstanceIndex\n")) << text;
+		EXPECT_TRUE(text.contains("BuiltIn Position\n")) << text;
+		EXPECT_TRUE(text.contains("OpTypeRuntimeArray %mat4v4float\n")) << text;
+		EXPECT_TRUE(text.contains("OpDecorate %local_position Location 0\n")) << text;
+		// model * vec4 and cascadeViewProj * pos
+		EXPECT_EQ(count(text, "OpMatrixTimesVector"), 2uz) << text;
 	}
 
 	TEST(LowerTest, AnnotationChainKindsMatchLegacyForPushBlock) {
@@ -186,7 +214,7 @@ namespace AccelLang {
 	TEST(LowerTest, VertexInputWithoutOffsetIsDiagnostic) {
 		const auto mod = resolved(shadowVertex, EntryKind::eVertex);
 
-		const auto res = lowerToIntermediate(mod, layoutOf(mod), Dialect::eVulkanGlsl460);
+		const auto res = lowerToIntermediate(mod, layoutOf(mod), Tier::eDev);
 
 		ASSERT_FALSE(res.has_value());
 		expectWording(res.error().front());
@@ -233,21 +261,22 @@ namespace AccelLang {
 
 		const auto text = textOf(im);
 		EXPECT_FALSE(text.contains("depth")) << text;
-		EXPECT_TRUE(text.contains("void main() {\n}")) << text;
+		EXPECT_TRUE(text.contains("OpLabel\nOpReturn\nOpFunctionEnd\n")) << text;
 	}
 
 	TEST(LowerTest, ForwardOutputsAreNumberedById) {
 		const auto mod = resolved(
 			"@output (mode = forward, id = \"b\") f32mat4 second;\n"
 			"@output (mode = forward, id = \"a\") f32vec4 first;\n"
-			"@output (mode = forward, id = \"c\") f32 third;\n",
+			"@output (mode = forward, id = \"c\") f32 third;\n"
+			"fn main() {\n\tfirst = f32vec4(0.0);\n\tsecond = f32mat4(first, first, first, first);\n\tthird = 0.0;\n}\n",
 			EntryKind::eFragment
 		);
 		const auto text = textOf(lower(mod, layoutOf(mod)));
 
-		EXPECT_TRUE(text.contains("layout(location = 0) out vec4 first;")) << text;
-		EXPECT_TRUE(text.contains("layout(location = 1) out mat4 second;")) << text;
-		EXPECT_TRUE(text.contains("layout(location = 5) out float third;")) << text;
+		EXPECT_TRUE(text.contains("OpDecorate %first Location 0\n")) << text;
+		EXPECT_TRUE(text.contains("OpDecorate %second Location 1\n")) << text;
+		EXPECT_TRUE(text.contains("OpDecorate %third Location 5\n")) << text;
 	}
 
 	TEST(LowerTest, SampleMapsToCombinedSampler) {
@@ -263,26 +292,27 @@ namespace AccelLang {
 		);
 		const auto text = textOf(lower(mod, layoutOf(mod)));
 
-		EXPECT_TRUE(text.contains("uniform texture2D albedo;")) << text;
-		EXPECT_TRUE(text.contains("uniform sampler smp;")) << text;
-		EXPECT_TRUE(text.contains("color = texture(sampler2D(albedo, smp), uv);")) << text;
+		EXPECT_TRUE(text.contains("OpTypeSampler\n")) << text;
+		EXPECT_TRUE(text.contains("OpSampledImage ")) << text;
+		EXPECT_TRUE(text.contains("OpImageSampleImplicitLod ")) << text;
 	}
 
 	TEST(LowerTest, NamedStructIsEmittedOnceBeforeUse) {
 		const auto mod = resolved(
 			"struct Light { f32vec4 color; }\n"
 			"@input (mode = bind, id = \"lights\", class = uniform) block lights { Light[4] items; };\n"
-			"@input (mode = bind, id = \"sun\", class = uniform) Light sun;\n",
+			"@input (mode = bind, id = \"sun\", class = uniform) Light sun;\n"
+			"@output (mode = forward, id = \"color\") f32vec4 color;\n"
+			"fn main() {\n\tcolor = lights.items[1].color + sun.color;\n}\n",
 			EntryKind::eFragment
 		);
 		const auto text = textOf(lower(mod, layoutOf(mod)));
 
-		const auto def = text.find("struct Light {\n\tvec4 color;\n};");
-		ASSERT_NE(def, String::npos) << text;
-		EXPECT_EQ(text.find("struct Light", def + 1uz), String::npos) << text;
-		EXPECT_LT(def, text.find("lights_block")) << text;
-		EXPECT_TRUE(text.contains("Light items[4];")) << text;
-		EXPECT_TRUE(text.contains("uniform sun_block {\n\tLight sun;\n};")) << text;
+		// one plain Light struct for the array element; the sun block needs its own Block-decorated copy (a Block struct cannot nest in another block)
+		EXPECT_EQ(count(text, "= OpTypeStruct %v4float\n"), 2uz) << text;
+		EXPECT_TRUE(text.contains("OpDecorate %Light_0 Block\n")) << text;
+		EXPECT_FALSE(text.contains("OpDecorate %Light Block\n")) << text;
+		EXPECT_TRUE(text.contains("OpTypeArray %Light ")) << text;
 	}
 
 	TEST(LowerTest, ConflictingStructNamesAreDiagnostic) {
@@ -313,50 +343,40 @@ namespace AccelLang {
 	}
 
 	TEST(LowerTest, PushBlockThatCannotBeLaidOutIsDiagnostic) {
-		const auto mod = resolved("@input (mode = bind, id = \"p\", class = push) block p { u32[] tail; };\n", EntryKind::eVertex);
+		const auto mod = resolved("@input (mode = bind, id = \"p\", class = push) block p { u32[] tail; };\nfn main() { position = f32vec4(f32(p.tail[0])); }\n", EntryKind::eVertex);
 		const auto layout = layoutOf(mod);
 		ASSERT_EQ(layout.push.size(), 1uz);
 		ASSERT_EQ(layout.push.front().size, 0u);
 
-		const auto res = lowerToIntermediate(mod, layout, Dialect::eVulkanGlsl460);
+		const auto res = lowerToIntermediate(mod, layout, Tier::eDev);
 
 		ASSERT_FALSE(res.has_value());
-		expectWording(res.error().front());
-		EXPECT_TRUE(res.error().front().message().contains("'p'")) << res.error().front().message();
+		const auto push = std::ranges::find_if(res.error(), [](const auto& d_) { return d_.message().contains("'p'"); });
+		ASSERT_NE(push, res.error().end()) << res.error().front().message();
+		expectWording(*push);
 	}
 
-	/* literals are hand-built; the source spelling is what the emitter prints */
+	/* a wrong literal type fails the typed declarations; the constants carry the inferred type */
 	TEST(LowerTest, LiteralSuffixAndHexInferTheirType) {
-		Module mod {};
-		mod.entry = EntryKind::eFragment;
-		const auto literals = std::array<LiteralValue, 5> { LiteralValue { u64 { 7uLL }, "7u" }, LiteralValue { s64 { 30LL }, "0x1E" }, LiteralValue { u64 { 30uLL }, "0x1Eu" }, LiteralValue { 1.5, "1.5" }, LiteralValue { 1000.0, "1e3" } };
-		const auto names = std::array<String, 5> { "a", "b", "c", "d", "e" };
-		Stmt block {};
-		block.kind = StmtKind::eBlock;
-		for (auto i = 0uz; i < literals.size(); ++i) {
-			Expr literal {};
-			literal.literal = literals[i];
-			mod.exprs.emplace_back(std::move(literal));
-			Stmt local {};
-			local.kind = StmtKind::eDeclareLocal;
-			local.name = names[i];
-			local.lhs = ExprRef { static_cast<u32>(i) };
-			mod.stmts.emplace_back(std::move(local));
-			block.children.emplace_back(StmtRef { static_cast<u32>(i) });
-		}
-		mod.stmts.emplace_back(std::move(block));
-		FunctionDecl main {};
-		main.name = "main";
-		main.body = BodyRef { StmtRef { static_cast<u32>(literals.size()) } };
-		mod.functions.emplace_back(std::move(main));
+		const auto mod = resolved(
+			"@output (mode = forward, id = \"color\") f32vec4 color;\n"
+			"fn main() {\n\tu32 a = 7u;\n\ts32 b = 0x1E;\n\tu32 c = 0x1Eu;\n\tf32 d = 1.5;\n\tf32 e = 1e3;\n"
+			"\tcolor = f32vec4(f32(a + c), f32(b), d, e);\n}\n",
+			EntryKind::eFragment
+		);
+		const auto im = lower(mod, layoutOf(mod));
+		ASSERT_FALSE(im.spirv.empty());
 
-		const auto text = textOf(lower(mod, layoutOf(mod)));
+		spvtools::SpirvTools tools { SPV_ENV_VULKAN_1_3 };
+		std::string text {};
+		ASSERT_TRUE(tools.Validate(im.spirv));
+		ASSERT_TRUE(tools.Disassemble(im.spirv, &text, SPV_BINARY_TO_TEXT_OPTION_NO_HEADER | SPV_BINARY_TO_TEXT_OPTION_FRIENDLY_NAMES));
 
-		EXPECT_TRUE(text.contains("uint a = 7u;")) << text;
-		EXPECT_TRUE(text.contains("int b = 0x1E;")) << text;
-		EXPECT_TRUE(text.contains("uint c = 0x1Eu;")) << text;
-		EXPECT_TRUE(text.contains("float d = 1.5;")) << text;
-		EXPECT_TRUE(text.contains("float e = 1e3;")) << text;
+		EXPECT_TRUE(text.contains("OpConstant %uint 7\n")) << text;
+		EXPECT_TRUE(text.contains("OpConstant %int 30\n")) << text;
+		EXPECT_TRUE(text.contains("OpConstant %uint 30\n")) << text;
+		EXPECT_TRUE(text.contains("OpConstant %float 1.5\n")) << text;
+		EXPECT_TRUE(text.contains("OpConstant %float 1000\n")) << text;
 	}
 
 	TEST(LowerTest, RefMutParamEmitsInout) {
@@ -368,7 +388,9 @@ namespace AccelLang {
 			std::array { String("color") }
 		);
 		const auto text = textOf(lower(mod, layoutOf(mod)));
-		EXPECT_TRUE(text.contains("void _hg_fn1(inout float x, const in float y, const in float z)")) << text;
+		// x and y by reference, z by value
+		EXPECT_EQ(count(text, "OpFunctionParameter %_ptr_Function_float\n"), 2uz) << text;
+		EXPECT_EQ(count(text, "OpFunctionParameter %float\n"), 1uz) << text;
 	}
 
 	TEST(LowerTest, LocalRefEmitsNoVariableAndSubstitutesPlace) {
@@ -380,9 +402,10 @@ namespace AccelLang {
 			std::array { String("color") }
 		);
 		const auto text = textOf(lower(mod, layoutOf(mod)));
-		EXPECT_FALSE(text.contains("float l =") || text.contains("float l;")) << text;
-		EXPECT_TRUE(text.contains("lights.lights[2] = 1.0;")) << text;
-		EXPECT_TRUE(text.contains("color = lights.lights[2];")) << text;
+		EXPECT_FALSE(text.contains("OpName %l ")) << text;
+		EXPECT_FALSE(text.contains("%l = OpVariable")) << text;
+		// the store and the load both go through lights.lights[2]
+		EXPECT_TRUE(std::regex_search(text, std::regex { R"(OpAccessChain %\S+ %lights %\w+_0 %\w+_2\n)" })) << text;
 	}
 
 	TEST(LowerTest, LocalRefHoistsIndex) {
@@ -394,10 +417,16 @@ namespace AccelLang {
 			std::array { String("color") }
 		);
 		const auto text = textOf(lower(mod, layoutOf(mod)));
-		const auto hoist = text.find("const uint l__i0 = i;");
-		ASSERT_NE(hoist, String::npos) << text;
-		EXPECT_LT(hoist, text.find("i = (i + 1);")) << text;
-		EXPECT_TRUE(text.contains("lights.lights[l__i0] = 1.0;")) << text;
+		// the index is read once into a hoisted local before `i = i + 1`, and only that local indexes the place
+		std::smatch hoist {};
+		ASSERT_TRUE(std::regex_search(text, hoist, std::regex { R"((%\S+) = OpLoad %uint %i\nOpStore (%\S+) \1\n)" })) << text;
+		EXPECT_LT(static_cast<size_t>(hoist.position(0)), text.find("OpIAdd")) << text;
+		const std::regex place { R"((%\S+) = OpLoad %uint (%\S+)\n%\S+ = OpAccessChain %\S+ %lights %\w+_0 \1\n)" };
+		size_t places = 0uz;
+		for (auto it = std::sregex_iterator(text.begin(), text.end(), place); it != std::sregex_iterator {}; ++it, ++places) {
+			EXPECT_EQ((*it)[2].str(), hoist[2].str()) << text;
+		}
+		EXPECT_EQ(places, 2uz) << text;
 	}
 
 TEST(LowerTest, EmitsCompoundAssignAndTernary) {
@@ -410,10 +439,10 @@ TEST(LowerTest, EmitsCompoundAssignAndTernary) {
 		std::array { String("color") }
 	);
 	const auto text = textOf(lower(mod, layoutOf(mod)));
-	EXPECT_TRUE(text.contains("for (uint i = 0u; (i < 4u); i += 1)")) << text;
-	EXPECT_TRUE(text.contains("a += ")) << text;
-	EXPECT_TRUE(text.contains("break;")) << text;
-	EXPECT_TRUE(text.contains(" ? ")) << text;
+	EXPECT_EQ(count(text, "OpLoopMerge"), 1uz) << text;
+	EXPECT_TRUE(text.contains("OpFAdd")) << text;
+	EXPECT_TRUE(text.contains("OpULessThan")) << text;
+	EXPECT_TRUE(text.contains("OpSelect") || text.contains("OpPhi")) << text;
 }
 
 TEST(LowerTest, ForWithOmittedInitAndStepHasValidHeader) {
@@ -427,10 +456,7 @@ TEST(LowerTest, ForWithOmittedInitAndStepHasValidHeader) {
 		std::array { String("color") }
 	);
 	const auto text = textOf(lower(mod, layoutOf(mod)));
-	EXPECT_TRUE(text.contains("for (; c; )")) << text;
-	EXPECT_TRUE(text.contains("for (; (i < 4u); )")) << text;
-	EXPECT_TRUE(text.contains("for (uint j = 0u; (j < 4u); )")) << text;
-	EXPECT_FALSE(text.contains("for ({")) << text;
+	EXPECT_EQ(count(text, "OpLoopMerge"), 3uz) << text;
 }
 
 TEST(LowerTest, SparseAddsExtensions) {
@@ -449,15 +475,16 @@ TEST(LowerTest, SparseAddsExtensions) {
 		outputs
 	);
 	const auto text = textOf(lower(mod, layoutOf(mod)));
-	EXPECT_TRUE(text.contains("#extension GL_ARB_sparse_texture2 : require")) << text;
-	EXPECT_TRUE(text.contains("#extension GL_ARB_sparse_texture_clamp : require")) << text;
-	EXPECT_TRUE(text.contains("sparseTextureARB(sampler2DArray(t2, smp), uv, a)")) << text;
+	EXPECT_TRUE(text.contains("OpCapability SparseResidency\n")) << text;
+	EXPECT_TRUE(text.contains("OpCapability MinLod\n")) << text;
+	EXPECT_EQ(count(text, "OpImageSparseSampleImplicitLod"), 2uz) << text;
+	EXPECT_EQ(count(text, "OpImageSparseTexelsResident"), 2uz) << text;
 }
 
 TEST(LowerTest, ViewIndexAddsMultiview) {
 	const auto mod = resolved("fn main() {\n\tposition = f32vec4(f32(view_index));\n}\n", EntryKind::eVertex);
 	const auto text = textOf(lower(mod, layoutOf(mod)));
-	EXPECT_TRUE(text.contains("GL_EXT_multiview")) << text;
-	EXPECT_TRUE(text.contains("gl_ViewIndex")) << text;
+	EXPECT_TRUE(text.contains("OpCapability MultiView\n")) << text;
+	EXPECT_TRUE(text.contains("BuiltIn ViewIndex\n")) << text;
 }
 }
