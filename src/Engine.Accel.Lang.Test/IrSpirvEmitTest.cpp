@@ -1,11 +1,13 @@
 #include "pch.h"
 
+/**/
+
 #include <Engine.Accel.Lang/Ir/Interface.hpp>
 #include <Engine.Accel.Lang/Ir/Layout.hpp>
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
 #include <Engine.Accel.Lang/Ir/References.hpp>
-#include <Engine.Accel.Lang/Ir/Tier.hpp>
 #include <Engine.Accel.Lang/Ir/Spirv/SpirvEmitter.hpp>
+#include <Engine.Accel.Lang/Ir/Tier.hpp>
 #include <spirv-tools/libspirv.hpp>
 
 using namespace hg::engine::accel::lang::ir;
@@ -907,7 +909,24 @@ TEST(IrSpirvEmitTest, FloatOutOfIntegerRangeIsNotConstant) {
 		const auto result = spirv::emit(prepared->mod, prepared->layout, Tier::eDev);
 		ASSERT_EQ(result.diagnostics.size(), 1uz) << init;
 		EXPECT_EQ(result.diagnostics[0].code()->key, "not-constant") << init;
+		// the initializer on line 2, not the entry function on line 3
+		EXPECT_EQ(result.diagnostics[0].primary().as<engine::diag::SourceSpan>().line, 2uL) << init;
 	}
+}
+
+TEST(IrSpirvEmitTest, SpecFloatOutOfIntegerRangeIsDiagnosedAtInitializer) {
+	const auto prepared = prepare(
+		"const Z: f32 = 0.0;\n"
+		"@spec (id = \"x\") const X: s32 = s32(3000000000.0);\n"
+		"fn main() {\n\tposition = f32vec4(f32(X));\n}\n",
+		EntryKind::eVertex
+	);
+	ASSERT_TRUE(prepared.has_value());
+	const auto result = spirv::emit(prepared->mod, prepared->layout, Tier::eDev);
+	ASSERT_EQ(result.diagnostics.size(), 1uz);
+	EXPECT_EQ(result.diagnostics[0].code()->key, "not-constant");
+	// the initializer on line 2, not the entry function on line 3
+	EXPECT_EQ(result.diagnostics[0].primary().as<engine::diag::SourceSpan>().line, 2uL);
 }
 
 TEST(IrSpirvEmitTest, UserParamWithDoubleUnderscoreIsNamedInDevTier) {

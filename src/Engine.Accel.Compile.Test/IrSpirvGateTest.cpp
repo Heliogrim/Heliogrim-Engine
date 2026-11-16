@@ -466,49 +466,6 @@ namespace AccelCompile {
 		);
 	}
 
-	namespace {
-		[[nodiscard]] hg::Opt<hg::String> readShader(hg::StringView name_) {
-			std::ifstream file { std::filesystem::path { HG_TEST_SHADER_ROOT } / std::filesystem::path { std::string { name_ } } };
-			if (not file) {
-				return hg::None;
-			}
-			std::stringstream text {};
-			text << file.rdbuf();
-			return hg::String { text.str() };
-		}
-
-		/* the stage of `fn main`'s entry annotation; the parser only checks it against the given kind, so read it here */
-		[[nodiscard]] EntryKind entryOf(const std::string& name_, const std::string& text_) {
-			std::smatch annotation {};
-			if (std::regex_search(text_, annotation, std::regex { R"(@(compute|fragment|geometry|tess_ctrl|tess_eval)\b)" })) {
-				const auto kind = annotation[1].str();
-				return kind == "compute" ? EntryKind::eCompute :
-					kind == "geometry" ? EntryKind::eGeometry :
-					kind == "tess_ctrl" ? EntryKind::eTessCtrl :
-					kind == "tess_eval" ? EntryKind::eTessEval : EntryKind::eFragment;
-			}
-			// shortcut: most engine fragment shaders carry no @fragment yet, so unannotated stages fall back to the file suffix; drop it once every .fs is annotated
-			return name_.contains(".fs") ? EntryKind::eFragment : EntryKind::eVertex;
-		}
-
-		/* engine shaders with an entry point: { root-relative name, entry } */
-		[[nodiscard]] hg::Vector<std::pair<std::string, EntryKind>> engineShaders() {
-			hg::Vector<std::pair<std::string, EntryKind>> shaders {};
-			const std::filesystem::path root { HG_TEST_SHADER_ROOT };
-			for (const auto& file : std::filesystem::recursive_directory_iterator { root }) {
-				const auto name = std::filesystem::relative(file.path(), root).generic_string();
-				const auto text = file.is_regular_file() ? readShader(name) : hg::None;
-				/* templates declare the material's functions without bodies; a material completes them */
-				if (name.starts_with("template/") or not text.has_value() or not text->contains("fn main")) {
-					continue;
-				}
-				shaders.emplace_back(name, entryOf(name, *text));
-			}
-			std::ranges::sort(shaders);
-			return shaders;
-		}
-	}
-
 	TEST(IrSpirvGateTest, EngineShaders) {
 		const GateResolver resolver { readShader };
 		const auto shaders = engineShaders();

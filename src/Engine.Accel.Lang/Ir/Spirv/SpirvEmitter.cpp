@@ -1,6 +1,6 @@
-#include "SpirvEmitter.hpp"
 #include <algorithm>
 
+#include "SpirvEmitter.hpp"
 #include "SpirvEmitter.Impl.hpp"
 #include "SpirvValidate.hpp"
 

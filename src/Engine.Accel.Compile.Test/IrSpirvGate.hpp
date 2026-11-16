@@ -3,9 +3,14 @@
 #include <algorithm>
 #include <array>
 #include <expected>
+#include <filesystem>
+#include <fstream>
+#include <regex>
+#include <sstream>
 #include <functional>
 #include <span>
 #include <initializer_list>
+#include <iterator>
 #include <string>
 #include <utility>
 
@@ -16,6 +21,7 @@
 #include <Engine.Accel.Lang/Ir/Interface.hpp>
 #include <Engine.Accel.Lang/Ir/Spirv/SpirvValidate.hpp>
 #include <Engine.Accel.Lang/Rep/Annotation.hpp>
+#include <Engine.Common/Algo/Copy.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Diagnostics/Render.hpp>
 #include <Engine.Logging/Logger.hpp>
@@ -26,7 +32,7 @@ namespace AccelCompile {
 	class TestSpecification final :
 		public hg::engine::accel::EffectSpecification {
 	public:
-		explicit TestSpecification(const hg::Vector<hg::String>& targets_) {
+		explicit TestSpecification(hg::ref<const hg::Vector<hg::String>> targets_) {
 			for (const auto& target : targets_) {
 				auto symbol = hg::make_smr<hg::engine::accel::lang::Symbol>(new hg::engine::accel::lang::Symbol {});
 				symbol->symbolName = target;
@@ -78,7 +84,8 @@ namespace AccelCompile {
 	[[nodiscard]] inline std::expected<hg::Vector<hg::smr<hg::engine::accel::StageDerivat>>, std::string> composeStages(
 		std::span<const GateStage> stages_,
 		hg::ref<const hg::engine::accel::lang::ir::ToggleSet> toggles_,
-		hg::ref<const GateResolver> resolver_
+		hg::ref<const GateResolver> resolver_,
+		hg::engine::accel::lang::ir::Tier tier_ = hg::engine::accel::lang::ir::Tier::eDev
 	) {
 		using namespace hg::engine::accel::lang::ir;
 		using namespace hg::engine::accel;
@@ -135,10 +142,8 @@ namespace AccelCompile {
 		PipelineLayoutCache layouts {};
 
 		hg::Vector<const lang::Intermediate*> pointers {};
-		for (const auto& stage : stages) {
-			pointers.emplace_back(&stage);
-		}
-		auto composed = composePipelineIr(pointers, flags, profile, spec, cache, layouts);
+		hg::TransformTo(stages, std::back_inserter(pointers), [](const auto& stage_) { return &stage_; });
+		auto composed = composePipelineIr(pointers, flags, profile, spec, cache, layouts, nullptr, true, {}, tier_);
 		if (not composed.has_value()) {
 			std::string failure = "resolve failed:";
 			for (const auto& d : composed.error()) {
@@ -184,5 +189,47 @@ namespace AccelCompile {
 			return ::testing::AssertionFailure() << composed.error();
 		}
 		return spirvValid(*composed->front()->getIntermediate());
+	}
+
+	/* engine shader helpers: the shader root walk shared by the gate and the spirv-opt measurement */
+	[[nodiscard]] inline hg::Opt<hg::String> readShader(hg::StringView name_) {
+		std::ifstream file { std::filesystem::path { HG_TEST_SHADER_ROOT } / std::filesystem::path { std::string { name_ } } };
+		if (not file) {
+			return hg::None;
+		}
+		std::stringstream text {};
+		text << file.rdbuf();
+		return hg::String { text.str() };
+	}
+
+	/* the stage of `fn main`'s entry annotation; the parser only checks it against the given kind, so read it here */
+	[[nodiscard]] inline hg::engine::accel::lang::ir::EntryKind entryOf(hg::ref<const std::string> name_, hg::ref<const std::string> text_) {
+		std::smatch annotation {};
+		if (std::regex_search(text_, annotation, std::regex { R"(@(compute|fragment|geometry|tess_ctrl|tess_eval)\b)" })) {
+			const auto kind = annotation[1].str();
+			return kind == "compute" ? hg::engine::accel::lang::ir::EntryKind::eCompute :
+				kind == "geometry" ? hg::engine::accel::lang::ir::EntryKind::eGeometry :
+				kind == "tess_ctrl" ? hg::engine::accel::lang::ir::EntryKind::eTessCtrl :
+				kind == "tess_eval" ? hg::engine::accel::lang::ir::EntryKind::eTessEval : hg::engine::accel::lang::ir::EntryKind::eFragment;
+		}
+		// shortcut: most engine fragment shaders carry no @fragment yet, so unannotated stages fall back to the file suffix; drop it once every .fs is annotated
+		return name_.contains(".fs") ? hg::engine::accel::lang::ir::EntryKind::eFragment : hg::engine::accel::lang::ir::EntryKind::eVertex;
+	}
+
+	/* engine shaders with an entry point: { root-relative name, entry } */
+	[[nodiscard]] inline hg::Vector<std::pair<std::string, hg::engine::accel::lang::ir::EntryKind>> engineShaders() {
+		hg::Vector<std::pair<std::string, hg::engine::accel::lang::ir::EntryKind>> shaders {};
+		const std::filesystem::path root { HG_TEST_SHADER_ROOT };
+		for (const auto& file : std::filesystem::recursive_directory_iterator { root }) {
+			const auto name = std::filesystem::relative(file.path(), root).generic_string();
+			const auto text = file.is_regular_file() ? readShader(name) : hg::None;
+			/* templates declare the material's functions without bodies; a material completes them */
+			if (name.starts_with("template/") or not text.has_value() or not text->contains("fn main")) {
+				continue;
+			}
+			shaders.emplace_back(name, entryOf(name, *text));
+		}
+		std::ranges::sort(shaders);
+		return shaders;
 	}
 }
