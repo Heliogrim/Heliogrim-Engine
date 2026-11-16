@@ -1,14 +1,18 @@
 #pragma once
 
-namespace hg::engine::reflow {
-    enum class ReflowUnitType {
-        eAuto,
-        eAbsolute,
-        eRelative
-    };
+#include <Engine.Common/Wrapper.hpp>
 
-    struct ReflowUnit {
-        ReflowUnitType type = ReflowUnitType::eAuto;
-        float value = 0.F;
-    };
+namespace hg::engine::reflow {
+	enum class ReflowUnitType {
+		eAuto,
+		eAbsolute,
+		eRelative
+	};
+
+	struct ReflowUnit {
+		ReflowUnitType type = ReflowUnitType::eAuto;
+		float value = 0.F;
+
+		[[nodiscard]] constexpr bool operator==(ref<const ReflowUnit>) const noexcept = default;
+	};
 }
