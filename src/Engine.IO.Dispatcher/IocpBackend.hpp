@@ -12,6 +12,15 @@ namespace hg::engine::io {
 
 		~IocpBackend() override;
 
+	private:
+		struct Slot;
+
+	private:
+		ref<IoThread> _thread;
+		sink_type _sink;
+		// Token to its OVERLAPPED slot while the request awaits its packet; heap-owned, so the address stays stable.
+		DenseMap<ptr<void>, uptr<Slot>> _slots;
+
 	public:
 		[[nodiscard]] u32 openFlags() const noexcept override;
 
@@ -24,14 +33,5 @@ namespace hg::engine::io {
 		void cancel(ptr<void> token_) override;
 
 		void cancelAll() override;
-
-	private:
-		struct Slot;
-
-	private:
-		ref<IoThread> _thread;
-		sink_type _sink;
-		// Token to its OVERLAPPED slot while the request awaits its packet; heap-owned, so the address stays stable.
-		DenseMap<ptr<void>, uptr<Slot>> _slots;
 	};
 }

@@ -2,7 +2,6 @@
 
 #include <span>
 #include <Engine.Common/Types.hpp>
-#include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Managed/Rc.hpp>
 
 namespace hg::engine::io {

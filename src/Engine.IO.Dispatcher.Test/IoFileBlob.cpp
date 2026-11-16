@@ -20,7 +20,14 @@ namespace IoModule {
 		const auto path = std::filesystem::temp_directory_path() / "heliogrim-test" / "io-blob" /
 			(std::to_string(::GetCurrentProcessId()) + ".bin");
 		std::filesystem::create_directories(path.parent_path());
-		{ std::ofstream { path, std::ios::binary }; }
+
+		/**/
+
+		{
+			std::ofstream { path, std::ios::binary };
+		}
+
+		/**/
 
 		{
 			io::IoSystem sys {};

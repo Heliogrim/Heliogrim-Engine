@@ -9,6 +9,9 @@ namespace hg::engine::io {
 	public:
 		explicit BlockingBackend(sink_type sink_);
 
+	private:
+		sink_type _sink;
+
 	public:
 		[[nodiscard]] u32 openFlags() const noexcept override;
 
@@ -21,8 +24,5 @@ namespace hg::engine::io {
 		void cancel(ptr<void> token_) override;
 
 		void cancelAll() override;
-
-	private:
-		sink_type _sink;
 	};
 }

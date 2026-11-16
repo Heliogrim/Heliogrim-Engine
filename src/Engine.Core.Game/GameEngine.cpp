@@ -5,6 +5,7 @@
 #include <Engine.ACS.Schedule/ActorPipeline.hpp>
 #include <Engine.ACS/ActorModule.hpp>
 #include <Engine.Assets/Assets.hpp>
+#include <Engine.Audio/Audio.hpp>
 #include <Engine.Config/Enums.hpp>
 #include <Engine.Core/EngineState.hpp>
 #include <Engine.Core/Session.hpp>
@@ -25,7 +26,6 @@
 #include <Engine.Scheduler/Pipeline/CompositePipeline.hpp>
 #include <Engine.Scheduler/Waitable/JoinCounter.hpp>
 #include <Engine.Scheduler/Waitable/Signal.hpp>
-#include <Engine.Audio/Audio.hpp>
 
 #ifdef WIN32
 #include <Support.Platform.Win32/WinPlatform.hpp>
