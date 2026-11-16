@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Engine.Accel.Lang/Ir/Tier.hpp>
 #include <Engine.Accel.Lang/Ir/Variant.hpp>
 #include <Engine.Accel.Pipeline/AccelerationPipeline.hpp>
 #include <Engine.Accel.Pipeline/Stage/StageDerivat.hpp>
@@ -35,7 +36,8 @@ namespace hg::engine::accel {
         [[nodiscard]] Vector<smr<StageDerivat>> compose(
             cref<smr<const class EffectProfile>> profile_,
             cref<smr<const class EffectSpecification>> specifications_,
-            cref<smr<AccelerationPipeline>> targetPass_
+            cref<smr<AccelerationPipeline>> targetPass_,
+            lang::ir::Tier tier_
         ) const;
     };
 }

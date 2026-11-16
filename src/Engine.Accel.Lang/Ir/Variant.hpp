@@ -20,6 +20,7 @@
 #include "Interface.hpp"
 #include "Layout.hpp"
 #include "Module.hpp"
+#include "Tier.hpp"
 #include "../Intermediate.hpp"
 
 namespace hg::engine::accel::lang::ir {
@@ -122,31 +123,45 @@ namespace hg::engine::accel::lang::ir {
 		DenseMap<VariantKey, smr<const Resolved>, std::hash<VariantKey>> _entries;
 	};
 
+	/**
+	 * A pipeline's stage keys in order, plus what the layout and lowering depend on beyond them: the follow mask
+	 * (bit k set when stage k follows its predecessor's interface) and the emission tier.
+	 */
+	struct PipelineKey {
+		Vector<VariantKey> stages;
+		u64 follows = 0uLL;
+		Tier tier = Tier::eBuild;
+
+		[[nodiscard]] bool operator==(const PipelineKey&) const noexcept = default;
+	};
+
 	struct PipelineKeyHash {
-		[[nodiscard]] size_t operator()(const Vector<VariantKey>& key_) const noexcept {
-			size_t seed = key_.size();
-			for (const auto& stage : key_) {
+		[[nodiscard]] size_t operator()(ref<const PipelineKey> key_) const noexcept {
+			size_t seed = key_.stages.size();
+			for (const auto& stage : key_.stages) {
 				::hg::hash::hashCombine(seed, std::hash<VariantKey> {}(stage));
 			}
+			::hg::hash::hashCombine(seed, key_.follows);
+			::hg::hash::hashCombine(seed, static_cast<u64>(key_.tier));
 			return seed;
 		}
 	};
 
 	/**
-	 * Thread-safe map from the ordered variant keys of a pipeline's stages to its resolved pipeline; same contract
+	 * Thread-safe map from a pipeline key to its resolved pipeline; same contract
 	 * as `VariantCache`: a hit is one hash lookup under the lock, a null build result is not cached.
 	 */
 	class PipelineLayoutCache {
 	public:
 		[[nodiscard]] smr<const ResolvedPipeline> getOrCreate(
-			ref<const Vector<VariantKey>> key_,
+			ref<const PipelineKey> key_,
 			FnRef<smr<const ResolvedPipeline>()> build_
 		);
 
-		[[nodiscard]] smr<const ResolvedPipeline> find(ref<const Vector<VariantKey>> key_) const noexcept;
+		[[nodiscard]] smr<const ResolvedPipeline> find(ref<const PipelineKey> key_) const noexcept;
 
 	private:
 		mutable concurrent::FiberSharedMutex _lck;
-		DenseMap<Vector<VariantKey>, smr<const ResolvedPipeline>, PipelineKeyHash> _entries;
+		DenseMap<PipelineKey, smr<const ResolvedPipeline>, PipelineKeyHash> _entries;
 	};
 }

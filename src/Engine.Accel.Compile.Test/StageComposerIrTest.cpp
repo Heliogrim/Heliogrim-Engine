@@ -9,6 +9,9 @@
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
 #include <Engine.Common/Make.hpp>
 
+#include <regex>
+#include <spirv-tools/libspirv.hpp>
+
 #include "IrSpirvGate.hpp"
 
 using namespace hg::engine::accel::lang::ir;
@@ -55,9 +58,55 @@ namespace AccelCompile {
 			return profile;
 		}
 
+		[[nodiscard]] std::string disassembly(ref<const StageDerivat> derivat_) {
+			std::string text {};
+			EXPECT_TRUE(
+				spvtools::SpirvTools { SPV_ENV_VULKAN_1_3 }.Disassemble(
+					derivat_.getIntermediate()->spirv,
+					&text,
+					SPV_BINARY_TO_TEXT_OPTION_NO_HEADER | SPV_BINARY_TO_TEXT_OPTION_FRIENDLY_NAMES
+				)
+			);
+			return text;
+		}
+
+		/* every `Offset` member decoration, in order */
+		[[nodiscard]] Vector<u32> memberOffsets(ref<const StageDerivat> derivat_) {
+			const auto text = disassembly(derivat_);
+			const std::regex pattern { R"(OpMemberDecorate %\S+ \d+ Offset (\d+)\n)" };
+			Vector<u32> offsets {};
+			for (auto it = std::sregex_iterator(text.begin(), text.end(), pattern); it != std::sregex_iterator {}; ++it) {
+				offsets.emplace_back(static_cast<u32>(std::stoul((*it)[1].str())));
+			}
+			return offsets;
+		}
+
+		[[nodiscard]] Vector<u32> wordsOf(ref<const StageDerivat> derivat_) {
+			return derivat_.getIntermediate()->spirv;
+		}
+
+		/* the facts of the spir-v the tests check: debug names, "location in|out N" and "offset N" lines */
 		[[nodiscard]] String textOf(ref<const StageDerivat> derivat_) {
-			const auto im = derivat_.getIntermediate();
-			return im->lang.text.empty() ? String {} : im->lang.text.front().data;
+			const auto words = wordsOf(derivat_);
+			const auto literal = [&](size_t at_) { return String { reinterpret_cast<const char*>(words.data() + at_) }; };
+			DenseMap<u32, u32> storage {};
+			Vector<std::pair<u32, u32>> locations {};
+			String text {};
+			for (auto at = 5uz; at < words.size(); at += words[at] >> 16u) {
+				switch (words[at] & 0xFFFFu) {
+					case 5u: text += literal(at + 2uz) + "\n"; break;
+					case 6u: text += literal(at + 3uz) + "\n"; break;
+					case 59u: storage[words[at + 2uz]] = words[at + 3uz]; break;
+					case 71u: if (words[at + 2uz] == 30u) { locations.emplace_back(words[at + 1uz], words[at + 3uz]); } break;
+					case 72u: if (words[at + 3uz] == 35u) { text += "offset " + std::to_string(words[at + 4uz]) + "\n"; } break;
+					default: break;
+				}
+				if (words[at] >> 16u == 0u) { break; }
+			}
+			for (const auto& [id, location] : locations) {
+				text += String { storage[id] == 1u ? "location in " : "location out " } + std::to_string(location) + "\n";
+			}
+			return text;
 		}
 
 		/* a single stage is its own pipeline; a fresh layout cache unless one is given */
@@ -88,10 +137,14 @@ namespace AccelCompile {
 		auto derivat = composeStageIr(stage, profileOf(), TestSpecification { {} }, StageFlagBits::eFragment, cache);
 		ASSERT_TRUE(derivat.has_value()) << derivat.error().front().message();
 
+		EXPECT_TRUE(spirvValid(*(*derivat)->getIntermediate()));
 		const auto text = textOf(**derivat);
-		EXPECT_TRUE(text.starts_with("#version 460\n")) << text;
-		EXPECT_TRUE(text.contains("camera.tint")) << text;
-		EXPECT_TRUE(text.contains("Tint()")) << text;
+		const auto spirv = disassembly(**derivat);
+		// Tint's body from the profile loads camera.tint (member 0) and main calls Tint
+		std::smatch chain {};
+		ASSERT_TRUE(std::regex_search(spirv, chain, std::regex { R"((%\S+) = OpAccessChain %\S+ %camera %\w+_0\n)" })) << spirv;
+		EXPECT_TRUE(spirv.contains("OpLoad %v4float " + chain[1].str() + "\n")) << spirv;
+		EXPECT_TRUE(std::regex_search(spirv, std::regex { R"(= OpFunctionCall %v4float %Tint\n)" })) << spirv;
 		EXPECT_FALSE(text.contains("HG_SCTX")) << text;
 		EXPECT_EQ((*derivat)->getFlagBits(), StageFlagBits::eFragment);
 	}
@@ -207,7 +260,7 @@ namespace AccelCompile {
 		const auto lowText = composeStageIr(toggledStage, EffectProfile {}, spec, StageFlagBits::eFragment, cache);
 		const auto highText = composeStageIr(toggledStage, high, spec, StageFlagBits::eFragment, cache);
 		ASSERT_TRUE(lowText.has_value() && highText.has_value());
-		EXPECT_NE(textOf(**lowText), textOf(**highText));
+		EXPECT_NE(wordsOf(**lowText), wordsOf(**highText));
 
 		const auto highAgain = resolveStageIr(toggledStage, high, spec, StageFlagBits::eFragment, cache);
 		ASSERT_TRUE(highAgain.has_value());
@@ -223,7 +276,7 @@ namespace AccelCompile {
 		const auto b = composeStageIr(stage, profile, spec, StageFlagBits::eFragment, cache);
 		ASSERT_TRUE(a.has_value() && b.has_value());
 		EXPECT_NE((*a)->getIntermediate().get(), (*b)->getIntermediate().get());
-		EXPECT_EQ(textOf(**a), textOf(**b));
+		EXPECT_EQ(wordsOf(**a), wordsOf(**b));
 	}
 
 	TEST(StageIrTest, ContractFailureReturnsDiagnostics) {
@@ -432,9 +485,9 @@ namespace AccelCompile {
 		ASSERT_TRUE(composed.has_value()) << composed.error().front().message();
 		const auto vertexText = textOf(*(*composed)[0]);
 		const auto fragmentText = textOf(*(*composed)[1]);
-		EXPECT_TRUE(vertexText.contains("layout(location = 2) out")) << vertexText;
-		EXPECT_TRUE(fragmentText.contains("layout(location = 2) in")) << fragmentText;
-		EXPECT_FALSE(fragmentText.contains("layout(location = 0) in")) << fragmentText;
+		EXPECT_TRUE(vertexText.contains("location out 2")) << vertexText;
+		EXPECT_TRUE(fragmentText.contains("location in 2")) << fragmentText;
+		EXPECT_FALSE(fragmentText.contains("location in 0")) << fragmentText;
 
 		/* same stages, not directly following: the cached layout must not be reused */
 		const std::array<u8, 2> apart { 1u, 0u };
@@ -451,7 +504,7 @@ namespace AccelCompile {
 		);
 		ASSERT_TRUE(split.has_value()) << split.error().front().message();
 		const auto splitText = textOf(*(*split)[1]);
-		EXPECT_TRUE(splitText.contains("layout(location = 0) in")) << splitText;
+		EXPECT_TRUE(splitText.contains("location in 0")) << splitText;
 	}
 
 	TEST(StageIrTest, EmptyStageListIsAnError) {
@@ -496,7 +549,7 @@ namespace AccelCompile {
 
 		/* every composed derivat owns its own intermediate */
 		EXPECT_NE(first->derivats[1]->getIntermediate().get(), second->derivats[1]->getIntermediate().get());
-		EXPECT_EQ(textOf(*first->derivats[1]), textOf(*second->derivats[1]));
+		EXPECT_EQ(wordsOf(*first->derivats[1]), wordsOf(*second->derivats[1]));
 
 		/* other stage content is another pipeline */
 		const auto other = composeUsing("ab", "a", cache, layouts);
@@ -542,8 +595,9 @@ namespace AccelCompile {
 
 		ASSERT_EQ(pipeline->layouts[1].push.size(), 1uLL);
 		EXPECT_EQ(pipeline->layouts[1].push.front().offset, 4uL);
-		EXPECT_NE(textOf(*(*derivats)[1]).find("layout(offset = 4)"), String::npos);
-		EXPECT_EQ(textOf(*(*derivats)[0]).find("layout(offset"), String::npos);
+		// the push member is the only offset member in either stage: 0 for the first id, 4 for the second
+		EXPECT_EQ(memberOffsets(*(*derivats)[0]), (Vector<u32> { 0uL })) << disassembly(*(*derivats)[0]);
+		EXPECT_EQ(memberOffsets(*(*derivats)[1]), (Vector<u32> { 4uL })) << disassembly(*(*derivats)[1]);
 
 		BindLayout layout {};
 		EXPECT_TRUE(appendBindLayout(*pipeline, *derivats, layout).empty());

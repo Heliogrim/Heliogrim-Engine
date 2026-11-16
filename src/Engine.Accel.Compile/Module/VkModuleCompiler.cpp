@@ -5,7 +5,8 @@
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Graphics/Device/Device.hpp>
-#include <Engine.Logging/Logger.hpp>
+#include <Engine.Accel.Lang/Ir/Diagnostic.hpp>
+#include <Engine.Logging/LogSink.hpp>
 
 #include "VkCompiledModule.hpp"
 #include "VkModuleSource.hpp"
@@ -29,17 +30,11 @@ uptr<CompiledModule> VkModuleCompiler::compile(
 		return nullptr;
 	}
 
-	/* Fetch source code and transpile into spirv */
-
-	::hg::assertd(not source->code.text.empty());
-	auto byteCode = _spirvCompiler.compile(*source, source->code.text);
-
-	/**/
-
-	if (byteCode.empty()) {
-		IM_CORE_ERROR("Failed to compile spirv module from source code.");
-		breakpoint();
-		return {};
+	if (source->spirv.empty()) {
+		engine::diag::LogSink {}.emit(
+			lang::ir::Diagnostic::error(lang::codes::asl("internal-spirv-emit"), "module source carries no spir-v words")
+		);
+		return nullptr;
 	}
 
 	/* Compile spirv byte code to vk shader module */
@@ -47,10 +42,16 @@ uptr<CompiledModule> VkModuleCompiler::compile(
 	sptr<graphics::Device> device = Engine::getEngine()->getGraphics()->getCurrentDevice();
 
 	vk::ShaderModuleCreateInfo smci {
-		vk::ShaderModuleCreateFlags {}, byteCode.size() * sizeof(SpirvWord), reinterpret_cast<u32*>(byteCode.data()),
+		vk::ShaderModuleCreateFlags {}, source->spirv.size() * sizeof(u32), source->spirv.data(),
 		nullptr
 	};
-	const auto vkModule = device->vkDevice().createShaderModule(smci);
+	vk::ShaderModule vkModule {};
+	if (device->vkDevice().createShaderModule(&smci, nullptr, &vkModule) != vk::Result::eSuccess) {
+		engine::diag::LogSink {}.emit(
+			lang::ir::Diagnostic::error(lang::codes::asl("internal-spirv-emit"), "vulkan rejected the shader module")
+		);
+		return nullptr;
+	}
 
 	/**/
 

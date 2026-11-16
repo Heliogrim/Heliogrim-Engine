@@ -5,6 +5,7 @@
 
 #include "Language.hpp"
 #include "Representation.hpp"
+#include "Ir/Interface.hpp"
 #include "Ir/Module.hpp"
 
 namespace hg::engine::accel::lang {
@@ -26,6 +27,11 @@ namespace hg::engine::accel::lang {
 		Representation rep;
 		/* the resolved module this intermediate was lowered from; shared and never mutated (null for hand-built ones) */
 		smr<const ir::Module> ir;
+		/* the emitted SPIR-V module (empty for hand-built ones) */
+		Vector<u32> spirv;
+		ir::InterfaceDesc interface;
+		/* warnings of the lowering that built this intermediate (not hashed) */
+		ir::Diagnostics warnings;
 
 	public:
 		/* content hash for variant caching */

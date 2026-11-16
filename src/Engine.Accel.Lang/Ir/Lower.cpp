@@ -1,10 +1,12 @@
 #include "Lower.hpp"
 
+#include <algorithm>
+
 #include <Engine.Common/Make.hpp>
 
 #include "Interface.hpp"
 #include "References.hpp"
-#include "../Emitter/GlslEmitter.hpp"
+#include "Spirv/SpirvEmitter.hpp"
 #include "../Rep/Annotation.hpp"
 #include "../Rep/Symbol.hpp"
 
@@ -123,13 +125,10 @@ namespace {
 std::expected<Intermediate, ir::Diagnostics> ir::lowerToIntermediate(
 	ref<const Module> resolved_,
 	ref<const Layout> layout_,
-	Dialect dialect_,
+	Tier tier_,
 	ref<const DenseMap<String, u32>> vertexOffsets_,
 	ref<const DenseMap<String, s32>> vertexFormats_
 ) {
-	if (dialect_ != Dialect::eVulkanGlsl460) {
-		return std::unexpected(Diagnostics { Diagnostic::error(codes::asl("unsupported-target"), "only Vulkan GLSL 460 can be emitted") });
-	}
 
 	auto lowered = lowerReferences(resolved_);
 	if (not lowered.has_value()) {
@@ -138,8 +137,12 @@ std::expected<Intermediate, ir::Diagnostics> ir::lowerToIntermediate(
 
 	// lowering appends nodes and drops or remaps reference-taking functions; interface and layout never index functions, so those of `resolved_` still apply
 	Intermediate im {};
-	auto diags = GlslEmitter {}.emit(*lowered, layout_, im.lang).diagnostics;
-	im.lang.dialect = dialect_;
+	auto emitted = spirv::emit(*lowered, layout_, tier_);
+	auto diags = std::move(emitted.diagnostics);
+	im.spirv = std::move(emitted.words);
+	im.interface = describeInterface(resolved_);
+
+	// shortcut: rep symbols rebuilt for SymbolId binding and material pairing, removed by render graph v2 (W14.2)
 
 	u32 forwardInputs = 0uL;
 	for (const auto& entry : computeInterface(resolved_)) {
@@ -208,10 +211,12 @@ std::expected<Intermediate, ir::Diagnostics> ir::lowerToIntermediate(
 		im.rep.symbolTable.insert(std::move(symbol));
 	}
 
-	if (not diags.empty()) {
+	// emitter warnings pass through; only errors fail lowering
+	if (std::ranges::any_of(diags, [](const auto& d_) { return d_.severity() == ir::Severity::eError; })) {
 		return std::unexpected(std::move(diags));
 	}
 
 	im.ir = make_smr<const Module>(new Module { resolved_ });
+	im.warnings = std::move(diags);
 	return im;
 }

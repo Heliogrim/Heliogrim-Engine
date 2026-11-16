@@ -21,6 +21,10 @@ u64 Intermediate::contentHash() const noexcept {
 	for (const auto& block : lang.text) {
 		h.put(block.data);
 	}
+	h.put(static_cast<u64>(spirv.size()));
+	for (const auto word : spirv) {
+		h.put(word);
+	}
 
 	/* shortcut: legacy rep functions, mainEntry and symbol table are not hashed (symbols are derived from the
 	 * variables' SymbolId annotations; lowering emits no rep functions), hash them once hand-built ones carry code */

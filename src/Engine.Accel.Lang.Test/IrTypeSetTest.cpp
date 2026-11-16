@@ -126,7 +126,7 @@ namespace AccelLang {
 		std::set<u8> seen {};
 		for (const auto& [source, glsl] : typeCases()) {
 			const auto mod = resolved(uniformOf(source), EntryKind::eFragment);
-			auto res = lowerToIntermediate(mod, layoutOf(mod), Dialect::eVulkanGlsl460);
+			auto res = lowerToIntermediate(mod, layoutOf(mod), Tier::eDev);
 			ASSERT_TRUE(res.has_value()) << source;
 
 			const StringView id { "x" };
