@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Engine.Common/Flag.hpp>
-#include <Engine.Common/Math/Vector.hpp>
 
 namespace hg::engine::reflow {
 	enum class InteractiveStateFlagBits : u8 {
@@ -18,7 +17,8 @@ namespace hg::engine::reflow {
 		eHover = 0b0000'0010,
 		ePress = 0b0000'1000,
 		/**/
-		eVisible = 0b0010'0000,
+		eVisible = 0b0001'0000,
+		eSubtreePending = 0b0010'0000,
 		eLayoutPending = 0b0100'0000,
 		eRenderPending = 0b1000'0000
 	};
@@ -54,6 +54,14 @@ namespace hg::engine::reflow {
 
 		[[nodiscard]] constexpr bool isRenderPending() const noexcept {
 			return (*this) & WidgetStateFlagBits::eRenderPending;
+		}
+
+		[[nodiscard]] constexpr bool isSubtreePending() const noexcept {
+			return (*this) & WidgetStateFlagBits::eSubtreePending;
+		}
+
+		[[nodiscard]] constexpr bool isAnyPending() const noexcept {
+			return isLayoutPending() || isRenderPending() || isSubtreePending();
 		}
 
 		[[nodiscard]] constexpr bool isLayoutOrRenderPending() const noexcept {
