@@ -19,7 +19,9 @@ InputSelect::InputSelect(
 	Input(hg::move(content_), ReflowClassList {}, nullptr),
 	Atom({}, {}, {}),
 	_text(hg::move(text_)),
-	_runtimeMenuHost() {}
+	_runtimeMenuHost() {
+	bindAttributeOwner(this);
+}
 
 InputSelect::~InputSelect() = default;
 

@@ -55,7 +55,9 @@ UniformGridLayout::UniformGridLayout(mref<ReflowClassList> classList_, mref<Shar
 			)
 		},
 		{}
-	) {}
+	) {
+	bindAttributeOwner(this);
+}
 
 UniformGridLayout::~UniformGridLayout() = default;
 

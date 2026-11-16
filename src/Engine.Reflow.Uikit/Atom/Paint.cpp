@@ -3,6 +3,7 @@
 #include <format>
 #include <Engine.Reflow/Algorithm/Flex.hpp>
 #include <Engine.Reflow/Command/ReflowCommandBuffer.hpp>
+#include <Engine.Reflow/Widget/AttributeBatch.hpp>
 
 using namespace hg::engine::reflow::uikit;
 using namespace hg::engine::reflow;
@@ -30,7 +31,9 @@ Paint::Paint(mref<ReflowClassList> classList_, mref<SharedPtr<Widget>> parent_) 
 			}
 		},
 		{ PaintStyleAttributes {} }
-	) {}
+	) {
+	bindAttributeOwner(this);
+}
 
 Paint::~Paint() = default;
 
@@ -132,6 +135,7 @@ void Paint::render(const ptr<ReflowCommandBuffer> cmd_) {
 }
 
 void Paint::cascadeContextChange(bool invalidate_) {
+	const AttributeBatch batch { *this };
 
 	if (getEffectiveProvisioner() != None) {
 

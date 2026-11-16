@@ -3,6 +3,7 @@
 #include <format>
 #include <Engine.Reflow/Algorithm/Flex.hpp>
 #include <Engine.Reflow/Layout/Style.hpp>
+#include <Engine.Reflow/Widget/AttributeBatch.hpp>
 
 using namespace hg::engine::reflow::uikit;
 using namespace hg::engine::reflow;
@@ -27,7 +28,9 @@ uikit::Stack::Stack() :
 			}
 		},
 		{}
-	) {}
+	) {
+	bindAttributeOwner(this);
+}
 
 uikit::Stack::~Stack() = default;
 
@@ -109,6 +112,7 @@ void uikit::Stack::render(const ptr<ReflowCommandBuffer> cmd_) {
 }
 
 void uikit::Stack::cascadeContextChange(bool invalidate_) {
+	const AttributeBatch batch { *this };
 
 	if (getEffectiveProvisioner() != None) {
 

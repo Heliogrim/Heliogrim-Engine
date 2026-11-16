@@ -34,7 +34,9 @@ Collapse::Collapse(mref<engine::reflow::ReflowClassList> classList_, mref<Shared
 	),
 	_collapsed(),
 	_toggleHandle(~ReflowEventEmitter::handle_type {}),
-	_children() {}
+	_children() {
+	bindAttributeOwner(this);
+}
 
 Collapse::~Collapse() = default;
 

@@ -2,13 +2,16 @@
 
 #include <Engine.Common/Move.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Reflow/ReflowPhase.hpp>
 
 namespace hg::engine::reflow {
-	template <typename Type_>
+	template <typename Type_, ReflowPhase Phase_ = ReflowPhase::ePaint>
 	class StyleAttribute {
 	public:
-		using this_type = StyleAttribute<Type_>;
+		using this_type = StyleAttribute<Type_, Phase_>;
 		using store_type = meta::remove_reference_t<Type_>;
+
+		constexpr static ReflowPhase phase = Phase_;
 
 	public:
 		StyleAttribute() = default;

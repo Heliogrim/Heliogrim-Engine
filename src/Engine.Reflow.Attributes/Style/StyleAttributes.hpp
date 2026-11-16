@@ -4,15 +4,16 @@
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Meta/Reference.hpp>
 
+#include "../AttributeOwnerLink.hpp"
 #include "../NamedAttributeTuple.hpp"
 
 namespace hg::engine::reflow {
 	template <typename NamedAttribute_>
 	struct ExtractTypeOfImpl;
 
-	template <ref<const StringView> Name_, typename Attribute_>
-	struct ExtractTypeOfImpl<NamedAttribute<Name_, StyleAttribute<Attribute_>>> {
-		using named_type = NamedAttribute<Name_, StyleAttribute<Attribute_>>;
+	template <ref<const StringView> Name_, typename Attribute_, ReflowPhase Phase_>
+	struct ExtractTypeOfImpl<NamedAttribute<Name_, StyleAttribute<Attribute_, Phase_>>> {
+		using named_type = NamedAttribute<Name_, StyleAttribute<Attribute_, Phase_>>;
 		using type = Attribute_;
 	};
 
@@ -26,6 +27,7 @@ namespace hg::engine::reflow {
 
 	private:
 		attributes_type _attributes;
+		AttributeOwnerLink _owner;
 
 		template <std::size_t Index_, typename Dummy_ = void>
 		struct GetTypeOfImpl {
@@ -36,6 +38,11 @@ namespace hg::engine::reflow {
 		template <typename Dummy_>
 		struct GetTypeOfImpl<(~0uLL), Dummy_> {
 			using type = std::void_t<Dummy_>;
+		};
+
+	public:
+		constexpr static Flag<ReflowPhase, u8> phaseMask {
+			static_cast<u8>((static_cast<u8>(decltype(Attributes_::attribute)::phase) | ... | 0u))
 		};
 
 	public:
@@ -52,9 +59,26 @@ namespace hg::engine::reflow {
 		constexpr ~StyleAttributes() = default;
 
 	public:
-		ref<this_type> operator=(cref<this_type> other_) noexcept = default;
+		ref<this_type> operator=(ref<const this_type> other_) noexcept {
+			if (std::addressof(other_) != this) {
+				_attributes = other_._attributes;
+				_owner.notify(phaseMask);
+			}
+			return *this;
+		}
 
-		ref<this_type> operator=(mref<this_type> other_) noexcept = default;
+		ref<this_type> operator=(mref<this_type> other_) noexcept {
+			if (std::addressof(other_) != this) {
+				_attributes = ::hg::move(other_._attributes);
+				_owner.notify(phaseMask);
+			}
+			return *this;
+		}
+
+	public:
+		void bindOwner(nmpt<Widget> owner_) noexcept {
+			_owner.owner = owner_;
+		}
 
 	public:
 		template <ref<const StringView> Name_, std::size_t Index_>
@@ -83,14 +107,24 @@ namespace hg::engine::reflow {
 		bool update(cref<GetTypeOf<AttributeName_>> next_) noexcept {
 			constexpr auto index = namedIndex<AttributeName_, 0uLL>();
 			static_assert(index != (~0uLL), "Failed to find attribute with name.");
-			return std::get<index>(_attributes).attribute.update(::hg::forward<decltype(next_)>(next_));
+			auto& slot = std::get<index>(_attributes).attribute;
+			if (not slot.update(::hg::forward<decltype(next_)>(next_))) {
+				return false;
+			}
+			_owner.notify(slot.phase);
+			return true;
 		}
 
 		template <ref<const StringView> AttributeName_>
 		bool update(mref<GetTypeOf<AttributeName_>> next_) noexcept {
 			constexpr auto index = namedIndex<AttributeName_, 0uLL>();
 			static_assert(index != (~0uLL), "Failed to find attribute with name.");
-			return std::get<index>(_attributes).attribute.update(::hg::forward<decltype(next_)>(next_));
+			auto& slot = std::get<index>(_attributes).attribute;
+			if (not slot.update(::hg::forward<decltype(next_)>(next_))) {
+				return false;
+			}
+			_owner.notify(slot.phase);
+			return true;
 		}
 
 		template <ref<const StringView> AttributeName_>

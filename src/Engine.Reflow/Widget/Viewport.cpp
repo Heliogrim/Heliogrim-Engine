@@ -68,7 +68,9 @@ Viewport::Viewport() :
 		}
 	),
 	_viewSize(),
-	_viewListen() {}
+	_viewListen() {
+	bindAttributeOwner(this);
+}
 
 Viewport::~Viewport() {
 	tidy();
