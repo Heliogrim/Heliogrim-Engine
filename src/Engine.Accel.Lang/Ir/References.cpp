@@ -1,6 +1,8 @@
-#include "Regions.hpp"
+#include "References.hpp"
 
 #include <algorithm>
+#include <cassert>
+#include <variant>
 
 using namespace hg::engine::accel::lang;
 using namespace hg;
@@ -8,14 +10,22 @@ using namespace hg;
 namespace {
 	using namespace hg::engine::accel::lang::ir;
 
-	[[nodiscard]] bool takesRegion(ref<const Module> m_, ref<const FunctionDecl> fn_) {
-		return std::ranges::any_of(
+	/* key text of a literal index by value, so `[0]` and `[0u]` share one key */
+	String valueKey(ref<const LiteralValue> literal_) {
+		return std::visit([](const auto value_) { return std::to_string(value_); }, literal_.value);
+	}
+
+	[[nodiscard]] bool takesReference(ref<const Module> m_, ref<const FunctionDecl> fn_) {
+		return fn_.body.has_value() && std::ranges::any_of(
 			fn_.params,
-			[&](const auto& param_) { return param_.type.index < m_.types.size() && m_.types[param_.type.index].kind == TypeKind::eRegion; }
+			[&](const auto& param_) {
+				return param_.kind != ParamKind::eValue
+					|| (param_.type.index < m_.types.size() && m_.types[param_.type.index].kind == TypeKind::eRegion);
+			}
 		);
 	}
 
-	/* scope entry; `region = false` shadows an outer region of the same name */
+	/* scope entry; a region (`region`), a reference alias (`place` set) or, with neither, a local shadowing an outer entry */
 	struct Region {
 		String name;
 		ExprRef root;
@@ -24,9 +34,19 @@ namespace {
 		bool region = false;
 		/* root's base name (`scratch` in `scratch[..]`); a declaration of it would rebind the root at later uses */
 		String rootName;
+		/* reference alias: the lowered place every use of `name` becomes */
+		ExprRef place;
 	};
 
-	/* specialization worklist: one `F__r<k>` per (function, static root of each region param) */
+	/* reference argument as a place: root + access path, runtime indices in path order */
+	struct Path {
+		bool global = false;
+		String key;
+		ExprRef root;
+		Vector<ExprRef> dynamic;
+	};
+
+	/* specialization worklist: one per (function, shape of each reference argument) */
 	struct Specs {
 		struct Pending {
 			u32 function;
@@ -34,8 +54,6 @@ namespace {
 		};
 
 		Vector<std::pair<String, u32>> keys;
-		/* per callee name (not index), so overloads never emit two `F__r0` with one u32 signature */
-		Vector<std::pair<String, u32>> counts;
 		Vector<Pending> pending;
 	};
 
@@ -222,10 +240,68 @@ namespace {
 
 			if (e.kind == ExprKind::eIndex && e.operands.size() == 2uL && e.operands[1].index < m.exprs.size()
 				&& m.exprs[e.operands[1].index].kind == ExprKind::eLiteral) {
-				return path + "[" + m.exprs[e.operands[1].index].name + "]";
+				return path + "[" + valueKey(m.exprs[e.operands[1].index].literal) + "]";
 			}
 
 			return {};
+		}
+
+		/* a lowered place as root + path; none for anything but a name/builtin followed by fields and indices */
+		Opt<Path> pathOf(const ExprRef ref_) const {
+			if (ref_.index >= m.exprs.size()) {
+				return None;
+			}
+
+			const auto& e = m.exprs[ref_.index];
+			if (e.kind == ExprKind::eNameRef) {
+				return e.local ?
+					SomeVal(Path { .key = "L:" + std::to_string(e.type.index), .root = ref_ }) :
+					SomeVal(Path { .global = true, .key = "G:" + e.name, .root = ref_ });
+			}
+
+			if (e.kind == ExprKind::eBuiltin && e.operands.empty()) {
+				return SomeVal(Path { .global = true, .key = "G:" + e.name, .root = ref_ });
+			}
+
+			if ((e.kind != ExprKind::eField && e.kind != ExprKind::eIndex) || e.operands.empty()) {
+				return None;
+			}
+
+			auto path = pathOf(e.operands[0]);
+			if (not path.has_value()) {
+				return None;
+			}
+
+			if (e.kind == ExprKind::eField) {
+				path->key += "." + e.name;
+				return path;
+			}
+
+			if (e.operands.size() != 2uL || e.operands[1].index >= m.exprs.size()) {
+				return None;
+			}
+
+			if (m.exprs[e.operands[1].index].kind == ExprKind::eLiteral) {
+				path->key += "[" + valueKey(m.exprs[e.operands[1].index].literal) + "]";
+			} else {
+				path->key += "[*]";
+				path->dynamic.emplace_back(e.operands[1]);
+			}
+			return path;
+		}
+
+		/* copy of the place `ref_` with the root replaced by `root_` (if set) and runtime index `k` by `<param_>__i<k>` */
+		ExprRef rebase(const ExprRef ref_, const ExprRef root_, StringView param_, ref<u32> k_) {
+			auto e = m.exprs[ref_.index];
+			if (e.kind != ExprKind::eField && e.kind != ExprKind::eIndex) {
+				return root_.index < m.exprs.size() ? root_ : clone(ref_);
+			}
+
+			e.operands[0] = rebase(e.operands[0], root_, param_, k_);
+			if (e.kind == ExprKind::eIndex && m.exprs[e.operands[1].index].kind != ExprKind::eLiteral) {
+				e.operands[1] = nameref(String { param_ } + "__i" + std::to_string(k_++), u32Type(), e.loc);
+			}
+			return push(::hg::move(e));
 		}
 
 		/* a region argument as (root, off value, end value); each bound is emitted once */
@@ -249,77 +325,47 @@ namespace {
 			return SomeVal(
 				Region {
 					.root = rewrite(ref_),
-					.off = push(Expr { .name = "0u", .type = u32Type(), .loc = loc }),
+					.off = push(Expr { .literal = LiteralValue { u64 { 0uLL }, "0u" }, .type = u32Type(), .loc = loc }),
 					.len = push(Expr { .name = std::to_string(count) + "u", .type = u32Type(), .loc = loc }),
 					.region = true
 				}
 			);
 		}
 
-		/* retargets a call with region arguments to its `F__r<k>` specialization, queuing it on first use */
+		/* retargets a call with reference or region arguments to its specialization, queuing it on first use */
 		void specialize(ExprRef ref_) {
 			const auto e = m.exprs[ref_.index];
 			const auto callee = m.functions[e.function.index];
 			auto key = std::to_string(e.function.index);
 			Vector<ExprRef> args {};
 			Vector<Region> bound {};
-			for (auto i = 0uz; i < e.operands.size(); ++i) {
-				if (i >= callee.params.size() || not isRegion(callee.params[i].type)) {
-					args.emplace_back(rewrite(e.operands[i]));
-					continue;
-				}
-
-				auto r = argument(e.operands[i]);
-				String rootName {};
-				const auto path = r.has_value() ? place(r->root, rootName) : String {};
-				if (path.empty()) {
-					diags.emplace_back(
-						Diagnostic::error(
-							codes::asl("region-not-rooted"),
-							"region argument to '" + callee.name + "' must be rooted in a buffer or workgroup array"
-						).at(spanIn(m, e.loc))
-					);
-					return;
-				}
-
-				key += "|" + path;
-				args.append_range(Vector<ExprRef> { r->off, r->len });
-				bound.emplace_back(
-					Region { .name = callee.params[i].name, .root = r->root, .region = true, .rootName = ::hg::move(rootName) }
-				);
-			}
-
-			auto known = std::ranges::find(specs.keys, key, &std::pair<String, u32>::first);
-			if (known == specs.keys.end()) {
-				auto count = std::ranges::find(specs.counts, callee.name, &std::pair<String, u32>::first);
-				if (count == specs.counts.end()) {
-					count = specs.counts.emplace(specs.counts.end(), callee.name, 0uL);
-				}
-
-				FunctionDecl spec { callee };
-				spec.name = callee.name + "__r" + std::to_string(count->second++);
-				spec.params.clear();
-				auto b = bound.begin();
-				Vector<StmtRef> prologue {};
-				for (const auto& param : callee.params) {
-					if (not isRegion(param.type)) {
-						// a value param named like a root would capture it in the specialized body
-						if (const auto hit = std::ranges::find(bound, param.name, &Region::rootName); hit != bound.end()) {
-							diags.emplace_back(
-								Diagnostic::error(
-									codes::asl("region-root-shadowed"),
-									"'" + param.name + "' shadows the root of live region '" + hit->name + "'"
-								).at(spanIn(m, callee.loc))
-							);
-						}
-						spec.params.emplace_back(param);
-						continue;
+			Vector<ParamDecl> params {};
+			Vector<StmtRef> prologue {};
+			for (auto i = 0uz; i < e.operands.size() && i < callee.params.size(); ++i) {
+				const auto& param = callee.params[i];
+				if (isRegion(param.type)) {
+					auto r = argument(e.operands[i]);
+					String rootName {};
+					const auto path = r.has_value() ? place(r->root, rootName) : String {};
+					if (path.empty()) {
+						diags.emplace_back(
+							Diagnostic::error(
+								codes::asl("region-not-rooted"),
+								"region argument to '" + callee.name + "' must be rooted in a buffer or workgroup array"
+							).at(spanIn(m, e.loc))
+						);
+						return;
 					}
 
-					b->off = nameref(param.name + "__off", u32Type(), callee.loc);
-					b->len = nameref(param.name + "__len", u32Type(), callee.loc);
-					++b;
-					spec.params.append_range(
+					key += "|R:" + path;
+					args.append_range(Vector<ExprRef> { r->off, r->len });
+					bound.emplace_back(
+						Region {
+							.name = param.name, .root = r->root, .off = nameref(param.name + "__off", u32Type(), callee.loc),
+							.len = nameref(param.name + "__len", u32Type(), callee.loc), .region = true, .rootName = ::hg::move(rootName)
+						}
+					);
+					params.append_range(
 						Vector<ParamDecl> {
 							ParamDecl { .name = param.name + "__off", .type = u32Type() },
 							ParamDecl { .name = param.name + "__end", .type = u32Type() }
@@ -340,7 +386,72 @@ namespace {
 							}
 						)
 					);
+					continue;
 				}
+
+				const auto arg = rewrite(e.operands[i]);
+				const auto path = param.kind != ParamKind::eValue ? pathOf(arg) : None;
+				// typecheck admits only places to `&mut`; a non-place passed to `&` (e.g. a literal) goes by value
+				assert(path.has_value() || param.kind != ParamKind::eRefMut);
+				if (not path.has_value()) {
+					key += "|v";
+					args.emplace_back(arg);
+					params.emplace_back(ParamDecl { .name = param.name, .type = param.type });
+					continue;
+				}
+
+				key += "|" + path->key;
+				u32 k = 0uL;
+				ExprRef root {};
+				if (not path->global) {
+					// local root: the whole root passes by reference, the callee walks the path from it
+					const auto rootType = m.exprs[path->root.index].type;
+					args.emplace_back(path->root);
+					params.emplace_back(ParamDecl { .name = param.name, .type = rootType, .kind = param.kind });
+					root = nameref(param.name, rootType, callee.loc);
+				}
+
+				for (const auto index : path->dynamic) {
+					// index params are u32 (design 7.3), so the key does not depend on the index type
+					const auto ie = m.exprs[index.index];
+					args.emplace_back(
+						ie.type.index == u32Type().index ?
+						index :
+						push(Expr { .kind = ExprKind::eConstruct, .name = "u32", .type = u32Type(), .operands = { index }, .loc = ie.loc })
+					);
+					params.emplace_back(ParamDecl { .name = param.name + "__i" + std::to_string(k++), .type = u32Type() });
+				}
+
+				k = 0uL;
+				const auto lowered = rebase(arg, root, param.name, k);
+				bound.emplace_back(
+					Region {
+						.name = param.name,
+						.rootName = path->global ? m.exprs[path->root.index].name : param.name,
+						.place = lowered
+					}
+				);
+			}
+
+			auto known = std::ranges::find(specs.keys, key, &std::pair<String, u32>::first);
+			if (known == specs.keys.end()) {
+				// a value param named like a global root would capture it in the specialized body; reported once per specialisation
+				for (const auto& param : params) {
+					if (const auto hit = std::ranges::find(bound, param.name, &Region::rootName);
+						hit != bound.end() && hit->name != param.name) {
+						diags.emplace_back(
+							Diagnostic::error(
+								codes::asl("region-root-shadowed"),
+								"'" + param.name + "' shadows the root of live " + (hit->region ? "region" : "reference") + " '" + hit->name + "'"
+							).at(spanIn(m, callee.loc))
+						);
+					}
+				}
+
+				FunctionDecl spec { callee };
+				spec.name = {};
+				spec.origin = callee.name;
+				spec.params = ::hg::move(params);
 
 				const auto root = clone(callee.body->root);
 				if (m.stmts[root.index].kind == StmtKind::eBlock) {
@@ -363,7 +474,7 @@ namespace {
 			}
 
 			auto& call = m.exprs[ref_.index];
-			call.name = m.functions[known->second].name;
+			call.name = {};
 			call.function = FunctionRef { known->second };
 			call.operands = ::hg::move(args);
 		}
@@ -374,8 +485,22 @@ namespace {
 			}
 
 			const auto e = m.exprs[ref_.index];
-			if (e.kind == ExprKind::eCall && e.function.index < m.functions.size() && m.functions[e.function.index].body.has_value()
-				&& takesRegion(m, m.functions[e.function.index])) {
+			if (e.kind == ExprKind::eNameRef && e.local) {
+				for (auto it = scope.rbegin(); it != scope.rend(); ++it) {
+					if (it->name == e.name) {
+						if (it->place.index < m.exprs.size()) {
+							// the alias use becomes the full place; already lowered, so not rewritten again
+							auto place = m.exprs[clone(it->place).index];
+							place.loc = e.loc;
+							m.exprs[ref_.index] = ::hg::move(place);
+						}
+						break;
+					}
+				}
+				return ref_;
+			}
+
+			if (e.kind == ExprKind::eCall && e.function.index < m.functions.size() && takesReference(m, m.functions[e.function.index])) {
 				specialize(ref_);
 				return ref_;
 			}
@@ -413,11 +538,11 @@ namespace {
 		/* a local named like a live region's root would rebind the root in that region's lowered uses */
 		void shadow(ref<const Stmt> s_) {
 			for (const auto& live : scope) {
-				if (live.region && live.rootName == s_.name) {
+				if (not live.rootName.empty() && live.rootName == s_.name) {
 					diags.emplace_back(
 						Diagnostic::error(
 							codes::asl("region-root-shadowed"),
-							"'" + s_.name + "' shadows the root of live region '" + live.name + "'"
+							"'" + s_.name + "' shadows the root of live " + (live.region ? "region" : "reference") + " '" + live.name + "'"
 						).at(spanIn(m, s_.loc))
 					);
 					break;
@@ -459,9 +584,14 @@ namespace {
 				}
 				case StmtKind::eDeclareRef: {
 					if (not isRegion(s.type)) {
+						// the alias disappears: runtime indices are frozen here, uses become the place
+						Vector<StmtRef> hoists {};
 						rewrite(s.lhs);
+						auto rootName = freeze(s.lhs, s.name, hoists);
 						shadow(s);
-						return { ref_ };
+						scope.back().rootName = ::hg::move(rootName);
+						scope.back().place = s.lhs;
+						return hoists;
 					}
 
 					Vector<StmtRef> hoists {};
@@ -558,17 +688,17 @@ namespace {
 	};
 }
 
-std::expected<Module, Diagnostics> ir::lowerRegions(ref<const Module> mod_) {
+std::expected<Module, Diagnostics> ir::lowerReferences(ref<const Module> mod_) {
 	Module out { mod_ };
 	Diagnostics diags {};
 	Specs specs {};
 	for (const auto& function : mod_.functions) {
-		if (function.body.has_value() && not takesRegion(mod_, function)) {
+		if (function.body.has_value() && not takesReference(mod_, function)) {
 			Rewriter { out, diags, {}, specs }.stmt(function.body->root);
 		}
 	}
 
-	// specialized bodies get the same rewrite with their region params bound; the key dedupe ends the worklist
+	// specialized bodies get the same rewrite with their params bound; the key dedupe ends the worklist
 	for (auto i = 0uz; i < specs.pending.size(); ++i) {
 		auto pending = specs.pending[i];
 		const auto root = out.functions[pending.function].body->root;
@@ -579,14 +709,15 @@ std::expected<Module, Diagnostics> ir::lowerRegions(ref<const Module> mod_) {
 		return std::unexpected(::hg::move(diags));
 	}
 
-	// region-taking originals are dropped; calls name their callee, `function` indices are remapped (layout/interface never index functions)
+	// originals taking references are dropped (specialisations may keep a local-root `&`); `function` indices are remapped
 	Vector<u32> remap(out.functions.size(), ~0uL);
 	Vector<FunctionDecl> kept {};
 	for (auto i = 0uz; i < out.functions.size(); ++i) {
-		if (not takesRegion(out, out.functions[i])) {
-			remap[i] = static_cast<u32>(kept.size());
-			kept.emplace_back(::hg::move(out.functions[i]));
+		if (i < mod_.functions.size() && takesReference(mod_, mod_.functions[i])) {
+			continue;
 		}
+		remap[i] = static_cast<u32>(kept.size());
+		kept.emplace_back(::hg::move(out.functions[i]));
 	}
 
 	out.functions = ::hg::move(kept);

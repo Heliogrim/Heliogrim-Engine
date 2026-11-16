@@ -11,7 +11,7 @@
 #include <Engine.Accel.Lang/Ir/Lower.hpp>
 #include <Engine.Accel.Lang/Ir/Merge.hpp>
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
-#include <Engine.Accel.Lang/Ir/Regions.hpp>
+#include <Engine.Accel.Lang/Ir/References.hpp>
 #include <Engine.Accel.Lang/Ir/Resolve.hpp>
 #include <Engine.Accel.Lang/Ir/Slice.hpp>
 #include <Engine.Diagnostics/Render.hpp>
@@ -105,7 +105,7 @@ namespace AccelLang {
 			auto parsed = parseModule("M", src_, EntryKind::eCompute, ModuleResolver { noIncludes });
 			if (not parsed.has_value()) { return std::move(parsed).error(); }
 
-			auto res = lowerRegions(*parsed);
+			auto res = lowerReferences(*parsed);
 			return res.has_value() ? Diagnostics {} : std::move(res).error();
 		}
 

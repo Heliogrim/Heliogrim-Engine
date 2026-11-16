@@ -708,11 +708,19 @@ namespace {
 
 		/* Functions */
 
+		/* reference lowering leaves specialisations unnamed */
+		[[nodiscard]] String functionName(const u32 index_) const {
+			return index_ < _mod.functions.size() && not _mod.functions[index_].name.empty() ?
+				_mod.functions[index_].name :
+				"_hg_fn" + std::to_string(index_);
+		}
+
 		[[nodiscard]] Opt<String> signature(ref<const ir::FunctionDecl> fn_) {
+			const auto fnName = functionName(static_cast<u32>(&fn_ - _mod.functions.data()));
 			const auto* ret = typeAt(fn_.ret);
 			const auto retName = ret != nullptr ? name(*ret) : SomeVal<String>("void");
 			if (not retName.has_value()) {
-				error(codes::asl("no-glsl-form"), "return type of '" + fn_.name + "' has no GLSL form");
+				error(codes::asl("no-glsl-form"), "return type of '" + fnName + "' has no GLSL form");
 				return None;
 			}
 
@@ -724,7 +732,7 @@ namespace {
 				}
 				params += (params.empty() ? "" : ", ") + String { param.kind == ir::ParamKind::eRefMut ? "inout " : "const in " } + *decl;
 			}
-			return SomeVal(*retName + " " + fn_.name + "(" + params + ")");
+			return SomeVal(*retName + " " + fnName + "(" + params + ")");
 		}
 
 		void functions() {
@@ -1059,8 +1067,7 @@ namespace {
 					return { e.name, None };
 				}
 				case ir::ExprKind::eCall: {
-					const auto* fn = e.function.index < _mod.functions.size() ? &_mod.functions[e.function.index] : nullptr;
-					return { e.name + "(" + arguments() + ")", typeOf(e.type) };
+					return { (e.name.empty() ? functionName(e.function.index) : e.name) + "(" + arguments() + ")", typeOf(e.type) };
 				}
 				case ir::ExprKind::eField: {
 					auto base = operand(0uz);

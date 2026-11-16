@@ -368,7 +368,7 @@ namespace AccelLang {
 			std::array { String("color") }
 		);
 		const auto text = textOf(lower(mod, layoutOf(mod)));
-		EXPECT_TRUE(text.contains("void F(inout float x, const in float y, const in float z)")) << text;
+		EXPECT_TRUE(text.contains("void _hg_fn1(inout float x, const in float y, const in float z)")) << text;
 	}
 
 	TEST(LowerTest, LocalRefEmitsNoVariableAndSubstitutesPlace) {
@@ -394,10 +394,10 @@ namespace AccelLang {
 			std::array { String("color") }
 		);
 		const auto text = textOf(lower(mod, layoutOf(mod)));
-		const auto hoist = text.find("const uint _hg_ref0 = i;");
+		const auto hoist = text.find("const uint l__i0 = i;");
 		ASSERT_NE(hoist, String::npos) << text;
 		EXPECT_LT(hoist, text.find("i = (i + 1);")) << text;
-		EXPECT_TRUE(text.contains("lights.lights[_hg_ref0] = 1.0;")) << text;
+		EXPECT_TRUE(text.contains("lights.lights[l__i0] = 1.0;")) << text;
 	}
 
 TEST(LowerTest, EmitsCompoundAssignAndTernary) {

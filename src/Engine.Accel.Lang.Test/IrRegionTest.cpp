@@ -7,7 +7,7 @@
 #include <Engine.Accel.Lang/Ir/Interface.hpp>
 #include <Engine.Accel.Lang/Ir/Layout.hpp>
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
-#include <Engine.Accel.Lang/Ir/Regions.hpp>
+#include <Engine.Accel.Lang/Ir/References.hpp>
 #include <Engine.Accel.Lang/Ir/Variant.hpp>
 
 using namespace hg::engine::accel::lang::ir;
@@ -62,7 +62,7 @@ namespace AccelLang {
 		}
 
 		[[nodiscard]] String emitLowered(ref<const Module> mod_) {
-			auto lowered = lowerRegions(mod_);
+			auto lowered = lowerReferences(mod_);
 			if (not lowered.has_value()) {
 				return lowered.error().empty() ? String { "error" } : "error: " + lowered.error().front().message();
 			}
@@ -77,7 +77,7 @@ namespace AccelLang {
 		EXPECT_TRUE(glsl.contains("scratch[")) << glsl;
 		EXPECT_TRUE(glsl.contains("r__off + 1u")) << glsl;
 
-		auto lowered = lowerRegions(*mod);
+		auto lowered = lowerReferences(*mod);
 		ASSERT_TRUE(lowered.has_value());
 		EXPECT_FALSE(std::ranges::any_of(lowered->exprs, [](const auto& e_) { return e_.kind == ExprKind::eRange; }));
 	}
@@ -102,8 +102,8 @@ namespace AccelLang {
 		auto mod = parse(lowerBody("let r = &mut scratch[b + 4u .. b + 12u]; let e = &mut r[2u]; e = 5u;"));
 		ASSERT_TRUE(mod.has_value()) << mod.error().front().message();
 		const auto glsl = emitLowered(*mod);
-		EXPECT_TRUE(glsl.contains("_hg_ref0 = (r__off + 2u)")) << glsl;
-		EXPECT_TRUE(glsl.contains("scratch[_hg_ref0] = 5u")) << glsl;
+		EXPECT_TRUE(glsl.contains("e__i0 = (r__off + 2u)")) << glsl;
+		EXPECT_TRUE(glsl.contains("scratch[e__i0] = 5u")) << glsl;
 	}
 
 	TEST(RegionTest, LenLowersToLength) {
@@ -173,19 +173,15 @@ namespace AccelLang {
 	TEST(RegionTest, HelperSpecializedOncePerRoot) {
 		auto mod = parse(body("w(scratch[0u .. 8u], 0u); w(scratch[8u .. 16u], 1u); w(buf.data[0u .. 4u], 2u);"));
 		ASSERT_TRUE(mod.has_value()) << mod.error().front().message();
-		auto lowered = lowerRegions(*mod);
+		auto lowered = lowerReferences(*mod);
 		ASSERT_TRUE(lowered.has_value()) << lowered.error().front().message();
-		Vector<String> names {};
-		for (const auto& fn : lowered->functions) {
-			if (fn.name.starts_with("w")) {
-				names.emplace_back(fn.name);
-			}
-		}
-		EXPECT_EQ(names, (Vector<String> { "w__r0", "w__r1" }));
+				const auto specs = std::ranges::count_if(lowered->functions, [](const auto& fn_) { return fn_.name.empty() && fn_.origin == "w"; });
+		EXPECT_EQ(specs, 2);
+		EXPECT_FALSE(std::ranges::any_of(lowered->functions, [](const auto& fn_) { return fn_.name == "w"; }));
 		const auto glsl = emitGlsl(*lowered);
 		EXPECT_TRUE(glsl.contains("scratch[(v__off + i)]")) << glsl;
 		EXPECT_TRUE(glsl.contains("buf.data[(v__off + i)]")) << glsl;
-		EXPECT_TRUE(glsl.contains("w__r0(0u, 8u, 0u)")) << glsl;
+		EXPECT_TRUE(glsl.contains("_hg_fn1(0u, 8u, 0u)")) << glsl;
 		EXPECT_TRUE(glsl.contains("v__len = (v__end - v__off)")) << glsl;
 	}
 
@@ -208,8 +204,8 @@ namespace AccelLang {
 		);
 		ASSERT_TRUE(mod.has_value()) << mod.error().front().message();
 		const auto glsl = emitLowered(*mod);
-		EXPECT_TRUE(glsl.contains("outer__r0(0u, 8u);")) << glsl;
-		EXPECT_TRUE(glsl.contains("inner__r0((v__off + 1u), (v__off + 3u));")) << glsl;
+		EXPECT_TRUE(glsl.contains("(0u, 8u);")) << glsl;
+		EXPECT_TRUE(glsl.contains("((v__off + 1u), (v__off + 3u));")) << glsl;
 		EXPECT_TRUE(glsl.contains("scratch[(v__off + 0u)] = 1u;")) << glsl;
 		EXPECT_FALSE(glsl.contains("inner(")) << glsl;
 	}
@@ -362,7 +358,7 @@ namespace AccelLang {
 		auto m = parse(String { prelude } + "fn h(v: u32) { scratch[v] = 9u; }\nfn main() { w(scratch[0u .. 8u], 0u); h(3u); }\n");
 		ASSERT_TRUE(m.has_value());
 		const auto glsl = emitLowered(*m);
-		EXPECT_TRUE(glsl.contains("w__r0(")) << glsl;
+		EXPECT_TRUE(glsl.contains("_hg_fn")) << glsl;
 		EXPECT_TRUE(glsl.contains("h(3u)")) << glsl;
 		EXPECT_TRUE(glsl.contains("scratch[v] = 9u")) << glsl;
 	}

@@ -341,6 +341,8 @@ namespace hg::engine::accel::lang::ir {
 
 		/* name token; diagnostics only, not part of the content hash */
 		SourceLoc loc;
+		/* set by reference lowering on specialisations (empty `name`): the source function's name; `loc` stays the source's */
+		String origin;
 	};
 
 	struct StructDecl {
