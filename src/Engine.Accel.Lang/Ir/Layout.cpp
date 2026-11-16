@@ -35,8 +35,9 @@ namespace {
 
 	class Types {
 	public:
-		explicit Types(ref<const Vector<ir::TypeDesc>> types_) :
+		explicit Types(ref<const Vector<ir::TypeDesc>> types_, bool std140_ = false) :
 			_types(types_),
+			_std140(std140_),
 			_memo(types_.size()),
 			_state(types_.size(), State::eNew) {}
 
@@ -56,6 +57,8 @@ namespace {
 		};
 
 		ref<const Vector<ir::TypeDesc>> _types;
+		/* std140: array strides, matrix columns and struct alignment rounded up to 16 */
+		bool _std140;
 		Vector<Info> _memo;
 		Vector<State> _state;
 		Info _invalid {};
@@ -107,17 +110,18 @@ namespace {
 			};
 		}
 
-		[[nodiscard]] static Info matrix(ref<const ir::TypeDesc> desc_) {
+		[[nodiscard]] static Info matrix(ref<const ir::TypeDesc> desc_, bool std140_) {
 			const auto column = vector(scalar(desc_), desc_.m);
 			if (not column.valid || desc_.n < 2uL || desc_.n > 4uL) {
 				return Info {};
 			}
 			// column stride = column alignment (vec3 columns pad to 16)
+			const auto stride = std140_ ? roundUp(column.align, 16uLL) : column.align;
 			return Info {
 				.valid = true,
 				.locations = desc_.n * column.locations,
-				.size = desc_.n * column.align,
-				.align = column.align,
+				.size = desc_.n * stride,
+				.align = stride,
 				.key = scalar(desc_).key + "mat" + std::to_string(desc_.n) + "x" + std::to_string(desc_.m)
 			};
 		}
@@ -127,7 +131,7 @@ namespace {
 			if (not element.valid || element.unsized || element.opaque) {
 				return Info {};
 			}
-			const auto stride = roundUp(element.size, element.align);
+			const auto stride = roundUp(roundUp(element.size, element.align), _std140 ? 16uLL : 1uLL);
 			const auto count = desc_.count == 0uL ? 1uLL : desc_.count;
 			return Info {
 				.valid = true,
@@ -135,7 +139,7 @@ namespace {
 				// element locations are at most maxSize, so the product fits u64
 				.locations = std::min(count * element.locations, maxSize),
 				.size = desc_.count * stride,
-				.align = element.align,
+				.align = _std140 ? roundUp(element.align, 16uLL) : element.align,
 				.key = element.key.empty() ?
 					String {} :
 					element.key + "[" + (desc_.count == 0uL ? String {} : std::to_string(desc_.count)) + "]"
@@ -167,6 +171,9 @@ namespace {
 			if (not out.key.empty()) {
 				out.key += "}";
 			}
+			if (_std140) {
+				out.align = roundUp(out.align, 16uLL);
+			}
 			out.size = roundUp(end, out.align);
 			return out;
 		}
@@ -180,7 +187,7 @@ namespace {
 				return vector(scalar(desc_), desc_.n);
 			}
 			if (desc_.kind == eMatrix) {
-				return matrix(desc_);
+				return matrix(desc_, _std140);
 			}
 			if (desc_.kind == eArray) {
 				return array(desc_, depth_);
@@ -272,38 +279,46 @@ namespace {
 	};
 }
 
-Vector<u32> ir::std430Offsets(ref<const Vector<TypeDesc>> types_, TypeRef struct_) {
-	Types types { types_ };
-	const auto& info = types.of(struct_);
-	if (not info.valid || types.desc(struct_).kind != TypeKind::eStruct) {
-		return {};
+namespace {
+	[[nodiscard]] Vector<u32> memberOffsets(ref<const Vector<ir::TypeDesc>> types_, ir::TypeRef struct_, bool std140_, u32 start_) {
+		Types types { types_, std140_ };
+		const auto& info = types.of(struct_);
+		if (not info.valid || types.desc(struct_).kind != ir::TypeKind::eStruct) {
+			return {};
+		}
+		Vector<u32> offsets {};
+		u64 end = start_;
+		for (const auto& field : types.desc(struct_).fields) {
+			const auto& member = types.of(field.type);
+			const auto offset = roundUp(end, member.align);
+			offsets.emplace_back(clamp32(offset));
+			end = offset + member.size;
+		}
+		return offsets;
 	}
-	Vector<u32> offsets {};
-	u64 end = 0uLL;
-	for (const auto& field : types.desc(struct_).fields) {
-		const auto& member = types.of(field.type);
-		const auto offset = roundUp(end, member.align);
-		offsets.emplace_back(clamp32(offset));
-		end = offset + member.size;
-	}
-	return offsets;
 }
 
-Vector<ir::SpecConstant> ir::assignSpecConstants(ref<const Vector<ConstantDecl>> constants_) {
-	Vector<String> ids {};
-	for (const auto& constant : constants_) {
-		if (constant.specId.has_value()) {
-			ids.emplace_back(*constant.specId);
-		}
-	}
-	std::ranges::sort(ids);
-	ids.erase(std::ranges::unique(ids).begin(), ids.end());
+Vector<u32> ir::std430Offsets(ref<const Vector<TypeDesc>> types_, TypeRef struct_, u32 start_) {
+	return memberOffsets(types_, struct_, false, start_);
+}
 
-	Vector<SpecConstant> result {};
-	for (auto i = 0uz; i < ids.size(); ++i) {
-		result.emplace_back(SpecConstant { ids[i], static_cast<u32>(i) });
+Vector<u32> ir::std140Offsets(ref<const Vector<TypeDesc>> types_, TypeRef struct_) {
+	return memberOffsets(types_, struct_, true, 0uL);
+}
+
+u32 ir::arrayStride(ref<const Vector<TypeDesc>> types_, TypeRef array_, bool std140_) {
+	Types types { types_, std140_ };
+	if (not types.of(array_).valid || types.desc(array_).kind != TypeKind::eArray) {
+		return 0uL;
 	}
-	return result;
+	const auto& element = types.of(types.desc(array_).element);
+	return clamp32(roundUp(roundUp(element.size, element.align), std140_ ? 16uLL : 1uLL));
+}
+
+u32 ir::matrixStride(ref<const Vector<TypeDesc>> types_, TypeRef matrix_, bool std140_) {
+	Types types { types_, std140_ };
+	const auto& info = types.of(matrix_);
+	return info.valid && types.desc(matrix_).kind == TypeKind::eMatrix ? clamp32(info.align) : 0uL;
 }
 
 u32 ir::locationCount(ref<const Vector<TypeDesc>> types_, TypeRef type_) {
@@ -616,6 +631,23 @@ std::expected<Vector<Vector<ir::SpecConstant>>, ir::Diagnostics> ir::assignPipel
 		std::ranges::sort(own, {}, &SpecConstant::id);
 		own.erase(std::ranges::unique(own, {}, &SpecConstant::id).begin(), own.end());
 		result.emplace_back(std::move(own));
+	}
+	return result;
+}
+
+Vector<ir::SpecConstant> ir::assignSpecConstants(ref<const Vector<ConstantDecl>> constants_) {
+	Vector<String> ids {};
+	for (const auto& constant : constants_) {
+		if (constant.specId.has_value()) {
+			ids.emplace_back(*constant.specId);
+		}
+	}
+	std::ranges::sort(ids);
+	ids.erase(std::ranges::unique(ids).begin(), ids.end());
+
+	Vector<SpecConstant> result {};
+	for (auto i = 0uz; i < ids.size(); ++i) {
+		result.emplace_back(SpecConstant { ids[i], static_cast<u32>(i) });
 	}
 	return result;
 }
