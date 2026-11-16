@@ -171,7 +171,7 @@ namespace AccelLang {
 		[[nodiscard]] bool hasLiteral(ref<const Module> mod_, StringView text_) {
 			return std::ranges::any_of(
 				mod_.exprs,
-				[&](ref<const Expr> e_) { return e_.kind == ExprKind::eLiteral && e_.name == text_; }
+				[&](ref<const Expr> e_) { return e_.kind == ExprKind::eLiteral && literalText(e_.literal) == text_; }
 			);
 		}
 

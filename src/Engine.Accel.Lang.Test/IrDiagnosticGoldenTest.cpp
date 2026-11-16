@@ -188,6 +188,12 @@ namespace AccelLang {
 1 | 1.2.3 12ab 1e
   | ^
 )GOLD" },
+			{ "literal-out-of-range", "fn main() {\n\tlet a = 99999999999999999999;\n}\n", parseD<EntryKind::eFragment>, R"GOLD(error[ASL0068]: literal '99999999999999999999' is malformed or does not fit 64 bits
+  --> M:2:10
+  |
+2 | 	let a = 99999999999999999999;
+  |          ^^^^^^^^^^^^^^^^^^^^
+)GOLD" },
 			{ "unknown-directive", "#define x", parseD<EntryKind::eFragment>, R"GOLD(error[ASL0004]: unknown directive '#define'
   --> M:1:1
   |
@@ -596,6 +602,6 @@ namespace AccelLang {
 			const auto count = std::ranges::count_if(table, [&](const auto& r_) { return r_.key == StringView { info.key }; });
 			EXPECT_EQ(count, StringView { info.key }.starts_with("internal-") ? 0 : 1) << info.key;
 		}
-		EXPECT_EQ(std::size(table), 64uz);
+		EXPECT_EQ(std::size(table), 65uz);
 	}
 }

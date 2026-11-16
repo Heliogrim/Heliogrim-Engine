@@ -260,6 +260,8 @@ namespace hg::engine::accel::lang::ir::detail {
 			ref<const ir::SourceLoc> loc_ = {}
 		);
 
+		[[nodiscard]] ir::ExprRef literal(StringView text_, ref<const ir::Token> at_);
+
 		[[nodiscard]] ir::StmtRef add(ir::Stmt stmt_);
 
 		[[nodiscard]] ir::StmtRef stmt(ir::StmtKind kind_, ir::ExprRef lhs_ = {}, Vector<ir::StmtRef> children_ = {});

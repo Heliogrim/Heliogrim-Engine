@@ -871,21 +871,21 @@ namespace AccelLang {
 		ASSERT_EQ(outer.children.size(), 2uz);
 		const auto& cond = exprAt(mod, outer.lhs);// (a + 1.0) < ((b * 2.0) - a)
 		EXPECT_EQ(cond.kind, ExprKind::eBinary);
-		EXPECT_EQ(cond.name, "<");
-		EXPECT_EQ(exprAt(mod, cond.operands.at(0)).name, "+");
+		EXPECT_EQ(cond.op, Op::eLt);
+		EXPECT_EQ(exprAt(mod, cond.operands.at(0)).op, Op::eAdd);
 		const auto& minus = exprAt(mod, cond.operands.at(1));
-		EXPECT_EQ(minus.name, "-");
-		EXPECT_EQ(exprAt(mod, minus.operands.at(0)).name, "*");
+		EXPECT_EQ(minus.op, Op::eSub);
+		EXPECT_EQ(exprAt(mod, minus.operands.at(0)).op, Op::eMul);
 		EXPECT_EQ(stmtAt(mod, outer.children[0]).kind, StmtKind::eReturn);
 
 		const auto& elseIf = stmtAt(mod, outer.children[1]);
 		EXPECT_EQ(elseIf.kind, StmtKind::eIf);
 		ASSERT_EQ(elseIf.children.size(), 2uz);
-		EXPECT_EQ(exprAt(mod, elseIf.lhs).name, ">=");
+		EXPECT_EQ(exprAt(mod, elseIf.lhs).op, Op::eGe);
 		EXPECT_EQ(stmtAt(mod, elseIf.children[0]).kind, StmtKind::eBlock);
 		const auto& last = exprAt(mod, stmtAt(mod, elseIf.children[1]).lhs);// (a - b) - 1.0
-		EXPECT_EQ(last.name, "-");
-		EXPECT_EQ(exprAt(mod, last.operands.at(0)).name, "-");
+		EXPECT_EQ(last.op, Op::eSub);
+		EXPECT_EQ(exprAt(mod, last.operands.at(0)).op, Op::eSub);
 		EXPECT_EQ(exprAt(mod, last.operands.at(1)).kind, ExprKind::eLiteral);
 
 		const auto& noElse = stmtAt(mod, root.children[1]);
@@ -893,8 +893,8 @@ namespace AccelLang {
 		EXPECT_EQ(noElse.children.size(), 1uz);
 		const auto& negation = exprAt(mod, noElse.lhs);
 		EXPECT_EQ(negation.kind, ExprKind::eUnary);
-		EXPECT_EQ(negation.name, "!");
-		EXPECT_EQ(exprAt(mod, negation.operands.at(0)).name, "==");
+		EXPECT_EQ(negation.op, Op::eNot);
+		EXPECT_EQ(exprAt(mod, negation.operands.at(0)).op, Op::eEq);
 
 		const auto& ret = stmtAt(mod, root.children[2]);
 		EXPECT_EQ(ret.kind, StmtKind::eReturn);
@@ -1015,7 +1015,7 @@ namespace AccelLang {
 
 		const auto& literal = exprAt(mod, ctor.operands[1]);
 		EXPECT_EQ(literal.kind, ExprKind::eLiteral);
-		EXPECT_EQ(literal.name, "0.2");
+		EXPECT_EQ(std::get<f64>(literal.literal.value), 0.2);
 
 		const auto& negated = exprAt(mod, ctor.operands[2]);// postfix binds tighter than unary
 		EXPECT_EQ(negated.kind, ExprKind::eUnary);
@@ -1025,6 +1025,60 @@ namespace AccelLang {
 		EXPECT_EQ(light.kind, ExprKind::eConstruct);
 		EXPECT_EQ(mod.types[light.type.index].name, "Light");
 		EXPECT_EQ(light.operands.size(), 2uz);
+	}
+
+	TEST(ParserBodyTest, BinaryOperatorIsEnum) {
+		const auto mod = parseOk(R"(fn main() {
+	let a = 1;
+	let b = 2;
+	let c = a + b * 2;
+}
+)");
+		const auto& root = bodyRoot(mod, 0uz);
+		const auto& sum = exprAt(mod, stmtAt(mod, root.children.at(2)).lhs);
+		EXPECT_EQ(sum.op, Op::eAdd);
+		EXPECT_EQ(exprAt(mod, sum.operands.at(1)).op, Op::eMul);
+	}
+
+	TEST(ParserBodyTest, LiteralHoldsValue) {
+		/* a plain integer is s64; a negative is a unary eNeg over the magnitude */
+		const auto mod = parseOk(R"(fn main() {
+	let a = 1.5;
+	let b = 7;
+	let c = -3;
+}
+)");
+		const auto& root = bodyRoot(mod, 0uz);
+		EXPECT_EQ(std::get<f64>(exprAt(mod, stmtAt(mod, root.children.at(0)).lhs).literal.value), 1.5);
+		EXPECT_EQ(std::get<s64>(exprAt(mod, stmtAt(mod, root.children.at(1)).lhs).literal.value), 7);
+		const auto& neg = exprAt(mod, stmtAt(mod, root.children.at(2)).lhs);
+		EXPECT_EQ(neg.op, Op::eNeg);
+		EXPECT_EQ(std::get<s64>(exprAt(mod, neg.operands.at(0)).literal.value), 3);
+	}
+
+	TEST(ParserBodyTest, HexOctalAndSuffixLiterals) {
+		const auto mod = parseOk(R"(fn main() {
+	let a = 7u;
+	let b = 0xFF;
+	let c = 0x1Eu;
+	let d = 010;
+	let e = 1e3;
+}
+)");
+		const auto& root = bodyRoot(mod, 0uz);
+		const auto lit = [&](size_t i_) -> const LiteralValue& { return exprAt(mod, stmtAt(mod, root.children.at(i_)).lhs).literal; };
+		EXPECT_EQ(lit(0uz), LiteralValue { u64 { 7uLL } });
+		EXPECT_EQ(lit(1uz), LiteralValue { s64 { 255LL } });
+		EXPECT_EQ(lit(2uz), LiteralValue { u64 { 30uLL } });
+		EXPECT_EQ(lit(3uz), LiteralValue { s64 { 8LL } });
+		EXPECT_EQ(lit(4uz), LiteralValue { 1000.0 });
+	}
+
+	TEST(ParserBodyTest, OutOfRangeLiteralIsDiagnostic) {
+		for (const auto* source : { "1e999", "08", "99999999999999999999", "0xFFFFFFFFFFFFFFFFF" }) {
+			const auto diags = parseFail("fn main() {\n\tlet a = " + String { source } + ";\n}\n");
+			EXPECT_FALSE(diags.empty()) << source;
+		}
 	}
 
 	TEST(ParserBodyTest, SwitchIsDiagnostic) {
@@ -1095,9 +1149,9 @@ namespace AccelLang {
 		EXPECT_EQ(exprAt(mod, loop.lhs).kind, ExprKind::eBinary);
 		const auto& step = stmtAt(mod, loop.children[2]);
 		EXPECT_EQ(step.kind, StmtKind::eAssign);
-		EXPECT_EQ(step.name, "+=");
+		EXPECT_EQ(step.op, Op::eAdd);
 		const auto& body = stmtAt(mod, loop.children[1]);
-		EXPECT_EQ(stmtAt(mod, body.children.at(0)).name, "+=");
+		EXPECT_EQ(stmtAt(mod, body.children.at(0)).op, Op::eAdd);
 	}
 
 	TEST(ParserBodyTest, ParsesWhileBreakContinue) {
@@ -1115,10 +1169,10 @@ namespace AccelLang {
 	TEST(ParserBodyTest, OperatorPrecedence) {
 		const auto mod = parseOk("fn main() {\n\tlet a = 1u;\n\tlet b = 2u;\n\tlet c = 3u;\n\tlet r = a | b & c << 1u;\n}\n");
 		const auto& top = exprAt(mod, stmtAt(mod, bodyRoot(mod, 0uz).children.at(3)).lhs);
-		ASSERT_EQ(top.name, "|");
+		ASSERT_EQ(top.op, Op::eBitOr);
 		const auto& mid = exprAt(mod, top.operands.at(1));
-		ASSERT_EQ(mid.name, "&");
-		EXPECT_EQ(exprAt(mod, mid.operands.at(1)).name, "<<");
+		ASSERT_EQ(mid.op, Op::eBitAnd);
+		EXPECT_EQ(exprAt(mod, mid.operands.at(1)).op, Op::eShl);
 	}
 
 	TEST(ParserBodyTest, ParsesTernary) {
@@ -1126,7 +1180,7 @@ namespace AccelLang {
 		const auto& ternary = exprAt(mod, stmtAt(mod, bodyRoot(mod, 0uz).children.at(3)).lhs);
 		ASSERT_EQ(ternary.kind, ExprKind::eTernary);
 		ASSERT_EQ(ternary.operands.size(), 3uz);
-		EXPECT_EQ(exprAt(mod, ternary.operands[2]).name, "+");
+		EXPECT_EQ(exprAt(mod, ternary.operands[2]).op, Op::eAdd);
 	}
 
 	TEST(ParserTest, ImplicitOnFunctionIsDiagnostic) {

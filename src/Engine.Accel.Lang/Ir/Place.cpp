@@ -2,6 +2,8 @@
 
 #include <algorithm>
 #include <charconv>
+#include <limits>
+#include <variant>
 
 using namespace hg::engine::accel::lang;
 using namespace hg;
@@ -15,7 +17,7 @@ namespace {
 
 	[[nodiscard]] Opt<long long> constantOf(ref<const ir::Module> mod_, ir::ExprRef ref_) {
 		const auto* e = at(mod_, ref_);
-		return e != nullptr && e->kind == ir::ExprKind::eLiteral ? ir::integerLiteral(e->name) : None;
+		return e != nullptr && e->kind == ir::ExprKind::eLiteral ? ir::integerLiteral(*e) : None;
 	}
 
 	/* an expression only built from literals, operators and names the typechecker vouches for */
@@ -146,7 +148,7 @@ namespace {
 		}
 		const auto sub = [&](size_t i_) { return i_ < e->operands.size() ? render(mod_, e->operands[i_], depth_ + 1uz) : String("?"); };
 		switch (e->kind) {
-			case ir::ExprKind::eLiteral:
+			case ir::ExprKind::eLiteral: return ir::literalText(e->literal);
 			case ir::ExprKind::eNameRef:
 			case ir::ExprKind::eBuiltin:
 				if (e->operands.empty()) {
@@ -163,31 +165,21 @@ namespace {
 			case ir::ExprKind::eField: return sub(0uz) + "." + e->name;
 			case ir::ExprKind::eIndex: return sub(0uz) + "[" + sub(1uz) + "]";
 			case ir::ExprKind::eRange: return sub(0uz) + "[" + sub(1uz) + " .. " + sub(2uz) + "]";
-			case ir::ExprKind::eUnary: return e->name + sub(0uz);
-			case ir::ExprKind::eBinary: return "(" + sub(0uz) + " " + e->name + " " + sub(1uz) + ")";
+			case ir::ExprKind::eUnary: return String { ir::spelling(e->op) } + sub(0uz);
+			case ir::ExprKind::eBinary: return "(" + sub(0uz) + " " + String { ir::spelling(e->op) } + " " + sub(1uz) + ")";
 			default: return "?";
 		}
 	}
 }
 
-Opt<long long> ir::integerLiteral(StringView text_) {
-	if (not text_.empty() && (text_.back() == 'u' || text_.back() == 'U')) {
-		text_.remove_suffix(1uz);
+Opt<long long> ir::integerLiteral(ref<const Expr> literal_) {
+	if (const auto* value = std::get_if<s64>(&literal_.literal.value); value != nullptr) {
+		return *value;
 	}
-	auto base = 10;
-	if (text_.size() > 2uz && text_[0] == '0' && (text_[1] == 'x' || text_[1] == 'X')) {
-		text_.remove_prefix(2uz);
-		base = 16;
-	} else if (text_.size() > 1uz && text_[0] == '0') {
-		text_.remove_prefix(1uz);
-		base = 8;
+	if (const auto* value = std::get_if<u64>(&literal_.literal.value); value != nullptr && *value <= static_cast<u64>(std::numeric_limits<s64>::max())) {
+		return static_cast<s64>(*value);
 	}
-	long long value = 0;
-	const auto res = std::from_chars(text_.data(), text_.data() + text_.size(), value, base);
-	if (text_.empty() || res.ec != std::errc {} || res.ptr != text_.data() + text_.size()) {
-		return None;
-	}
-	return value;
+	return None;
 }
 
 bool ir::sameExpr(ref<const Module> mod_, ExprRef a_, ExprRef b_) {
@@ -197,7 +189,7 @@ bool ir::sameExpr(ref<const Module> mod_, ExprRef a_, ExprRef b_) {
 		if (x == nullptr || y == nullptr || depth_ > depthLimit) {
 			return false;
 		}
-		if (x->kind != y->kind || x->name != y->name || x->operands.size() != y->operands.size()) {
+		if (x->kind != y->kind || x->name != y->name || x->op != y->op || x->literal != y->literal || x->operands.size() != y->operands.size()) {
 			return false;
 		}
 		for (auto i = 0uz; i < x->operands.size(); ++i) {

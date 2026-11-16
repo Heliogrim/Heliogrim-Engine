@@ -816,7 +816,7 @@ namespace {
 				}
 				case ir::StmtKind::eAssign: {
 					const auto lhs = expr(stmt.lhs);
-					out_ += pad + lhs.text + (stmt.name.empty() ? String { " = " } : " " + stmt.name + " ") + expr(stmt.rhs).text + ";\n";
+					out_ += pad + lhs.text + (stmt.op == ir::Op::eNone ? String { " = " } : " " + String { ir::spelling(stmt.op) } + "= ") + expr(stmt.rhs).text + ";\n";
 					break;
 				}
 				case ir::StmtKind::eExpr: {
@@ -990,17 +990,15 @@ namespace {
 
 			switch (e.kind) {
 				case ir::ExprKind::eLiteral: {
-					if (e.name == "true" || e.name == "false") {
-						return { e.name, scalarDesc(ir::ScalarKind::eBool, 32uL) };
+					if (std::holds_alternative<bool>(e.literal.value)) {
+						return { ir::literalText(e.literal), scalarDesc(ir::ScalarKind::eBool, 32uL) };
 					}
-					// hex digits may contain 'e'/'E'; a `u` suffix makes an integer unsigned
-					const auto hex = e.name.starts_with("0x") || e.name.starts_with("0X");
-					const auto floating = not hex && e.name.find_first_of(".eE") != String::npos;
+					const auto floating = std::holds_alternative<f64>(e.literal.value);
 					const auto floatType = typeOf(e.type).has_value() && typeOf(e.type)->kind == ir::TypeKind::eScalar && typeOf(e.type)->
 						scalar == ir::ScalarKind::eFloat;
-					const auto unsignedInt = not floating && (e.name.ends_with('u') || e.name.ends_with('U'));
+					const auto unsignedInt = std::holds_alternative<u64>(e.literal.value);
 					return {
-						floatType && not floating && not hex ? e.name + ".0" : e.name,
+						floatType && not floating ? ir::literalText(ir::LiteralValue { e.literal.value }) + ".0" : ir::literalText(e.literal),
 						scalarDesc(
 							floating || floatType ? ir::ScalarKind::eFloat : unsignedInt ? ir::ScalarKind::eUInt : ir::ScalarKind::eInt,
 							32uL
@@ -1046,12 +1044,12 @@ namespace {
 				}
 				case ir::ExprKind::eUnary: {
 					auto inner = operand(0uz);
-					return { "(" + e.name + inner.text + ")", typeOf(e.type) };
+					return { "(" + String { ir::spelling(e.op) } + inner.text + ")", typeOf(e.type) };
 				}
 				case ir::ExprKind::eBinary: {
 					auto lhs = operand(0uz);
 					auto rhs = operand(1uz);
-					return { "(" + lhs.text + " " + e.name + " " + rhs.text + ")", typeOf(e.type) };
+					return { "(" + lhs.text + " " + String { ir::spelling(e.op) } + " " + rhs.text + ")", typeOf(e.type) };
 				}
 				case ir::ExprKind::eTernary: {
 					auto c = operand(0uz);

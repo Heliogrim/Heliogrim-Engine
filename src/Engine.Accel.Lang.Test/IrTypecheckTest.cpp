@@ -324,7 +324,7 @@ namespace AccelLang {
 		Module mod {};
 		const auto mat = addType(mod, TypeDesc { .kind = TypeKind::eMatrix, .scalar = ScalarKind::eInt, .n = 2uL, .m = 2uL });
 		const auto x = addExpr(mod, Expr { .kind = ExprKind::eNameRef, .name = "x", .local = true });
-		const auto neg = addExpr(mod, Expr { .kind = ExprKind::eUnary, .name = "-", .operands = { x } });
+		const auto neg = addExpr(mod, Expr { .kind = ExprKind::eUnary, .op = Op::eNeg, .operands = { x } });
 		mod.functions.emplace_back(bodied(mod, "f", { ParamDecl { .name = "x", .type = mat } }, mat, StmtKind::eReturn, neg));
 
 		const auto diagnostics = typecheck(mod);
