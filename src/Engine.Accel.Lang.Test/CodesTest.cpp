@@ -20,7 +20,9 @@ namespace Codes {
 
 			const auto& key = info.key;
 			EXPECT_FALSE(key.empty());
-			EXPECT_TRUE(std::ranges::all_of(key, [](char c_) { return (c_ >= 'a' && c_ <= 'z') || (c_ >= '0' && c_ <= '9') || c_ == '-'; })) << key;
+			EXPECT_TRUE(
+				std::ranges::all_of(key, [](char c_) { return (c_ >= 'a' && c_ <= 'z') || (c_ >= '0' && c_ <= '9') || c_ == '-'; })
+			) << key;
 			EXPECT_FALSE(key.starts_with('-') || key.ends_with('-') || key.contains("--")) << key;
 			EXPECT_FALSE(std::ranges::contains(seen, key)) << key;
 

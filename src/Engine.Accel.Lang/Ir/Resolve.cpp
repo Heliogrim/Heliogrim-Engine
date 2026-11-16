@@ -31,13 +31,27 @@ namespace {
 			const auto& [name, value] = set_[i];
 			const auto toggle = std::ranges::find(mod_.toggles, name, &ir::Toggle::name);
 			if (toggle == mod_.toggles.end()) {
-				diags_.emplace_back(ir::Diagnostic::error(codes::asl("unknown-toggle"), "unknown toggle " + quoted(name) + ", set by " + String(label_)));
+				diags_.emplace_back(
+					ir::Diagnostic::error(codes::asl("unknown-toggle"), "unknown toggle " + quoted(name) + ", set by " + String(label_))
+				);
+
 			} else if (std::ranges::find(toggle->values, value) == toggle->values.end()) {
-				diags_.emplace_back(ir::Diagnostic::error(codes::asl("unknown-toggle"), "toggle " + quoted(name) + " has no value " + quoted(value) + ", set by " + String(label_)));
+				diags_.emplace_back(
+					ir::Diagnostic::error(
+						codes::asl("unknown-toggle"),
+						"toggle " + quoted(name) + " has no value " + quoted(value) + ", set by " + String(label_)
+					)
+				);
 			}
+
 			if (std::ranges::find(set_.begin(), set_.begin() + static_cast<ptrdiff_t>(i), name, &std::pair<String, String>::first) !=
 				set_.begin() + static_cast<ptrdiff_t>(i)) {
-				diags_.emplace_back(ir::Diagnostic::error(codes::asl("duplicate-toggle-setting"), "toggle " + quoted(name) + " is set twice by " + String(label_)));
+				diags_.emplace_back(
+					ir::Diagnostic::error(
+						codes::asl("duplicate-toggle-setting"),
+						"toggle " + quoted(name) + " is set twice by " + String(label_)
+					)
+				);
 			}
 		}
 	}
@@ -52,12 +66,12 @@ namespace {
 		validate(mod_, sources_.profile, labels_[1], diags);
 		validate(mod_, sources_.material, labels_[2], diags);
 		if (not diags.empty()) {
-			return std::unexpected(std::move(diags));
+			return std::unexpected(::hg::move(diags));
 		}
 
 		ir::ResolveResult result {};
 		const auto warn = [&](String message_) {
-			result.warnings.emplace_back(ir::Diagnostic::warning(codes::asl("toggle-override"), std::move(message_)));
+			result.warnings.emplace_back(ir::Diagnostic::warning(codes::asl("toggle-override"), ::hg::move(message_)));
 		};
 		for (const auto& toggle : mod_.toggles) {
 			const auto* pass = valueOf(sources_.pass, toggle.name);
@@ -70,15 +84,18 @@ namespace {
 					String(labels_[1]) + " value " + quoted(*profile)
 				);
 			}
+
 			if (material != nullptr && fixed != nullptr && *material != *fixed) {
 				warn(
 					String(labels_[2]) + " sets toggle " + quoted(toggle.name) + " to " + quoted(*material) + ", but " +
 					String(labels_[pass != nullptr ? 0 : 1]) + " fixes it to " + quoted(*fixed)
 				);
 			}
+
 			const auto* value = fixed != nullptr ? fixed : material;
 			result.toggles.emplace_back(toggle.name, value != nullptr ? *value : toggle.defaultValue);
 		}
+
 		std::ranges::sort(result.toggles, {}, &std::pair<String, String>::first);
 		return result;
 	}
@@ -102,22 +119,26 @@ namespace {
 		for (const auto& arm : arms_) {
 			work.emplace_back(&arm);
 		}
+
 		while (not work.empty()) {
 			const auto* cond = work.back();
 			work.pop_back();
 			if (cond->kind == ir::ConditionKind::eEquals) {
 				names.emplace_back(cond->toggle);
 			}
+
 			for (const auto& child : cond->children) {
 				work.emplace_back(&child);
 			}
 		}
+
 		Vector<ir::Toggle> result {};
 		for (const auto& toggle : toggles_) {
 			if (std::ranges::find(names, toggle.name) != names.end()) {
 				result.emplace_back(toggle);
 			}
 		}
+
 		return result;
 	}
 
@@ -130,6 +151,7 @@ namespace {
 			if (it == names.end()) {
 				it = names.insert(names.end(), { signature, {} });
 			}
+
 			it->second.emplace_back(static_cast<u32>(i));
 		}
 		return names;
@@ -149,13 +171,20 @@ namespace {
 					arms.emplace_back(mod_.functions[i].when);
 				}
 			}
+
 			// no body at all is the merge's to report (`missing body`)
 			if (decls.size() < 2uz || not conditional || arms.empty()) {
 				continue;
 			}
+
 			const auto toggles = named(mod_.toggles, arms);
 			if (const auto missing = ir::findUncovered(toggles, arms); missing.has_value()) {
-				diags_.emplace_back(ir::Diagnostic::error(codes::asl("missing-variant-body"), "no body for " + quoted(name) + " at " + combination(toggles, *missing)));
+				diags_.emplace_back(
+					ir::Diagnostic::error(
+						codes::asl("missing-variant-body"),
+						"no body for " + quoted(name) + " at " + combination(toggles, *missing)
+					)
+				);
 			}
 		}
 	}
@@ -168,7 +197,7 @@ std::expected<ir::ResolveResult, ir::Diagnostics> ir::fixToggles(ref<const Modul
 std::expected<ir::Module, ir::Diagnostics> ir::resolveToggles(ref<const Module> mod_, ref<const ToggleSet> toggles_) {
 	auto fixed = fix(mod_, ToggleSources { .pass = toggles_, .profile = {}, .material = {} }, Labels { "the toggle set", "", "" });
 	if (not fixed.has_value()) {
-		return std::unexpected(std::move(fixed).error());
+		return std::unexpected(::hg::move(fixed).error());
 	}
 	const auto& set = fixed->toggles;
 	const auto at = combination(mod_.toggles, set);
@@ -189,15 +218,20 @@ std::expected<ir::Module, ir::Diagnostics> ir::resolveToggles(ref<const Module> 
 				}
 			}
 		}
+
 		if (bodies.size() > 1uz) {
-			diags.emplace_back(ir::Diagnostic::error(codes::asl("overlapping-variant-bodies"), "overlapping bodies for " + quoted(name) + " at " + at));
+			diags.emplace_back(
+				ir::Diagnostic::error(codes::asl("overlapping-variant-bodies"), "overlapping bodies for " + quoted(name) + " at " + at)
+			);
 		}
+
 		if (not active.empty()) {
 			plan.functions.emplace_back(bodies.empty() ? active.front() : bodies.front());
 		}
 	}
+
 	if (not diags.empty()) {
-		return std::unexpected(std::move(diags));
+		return std::unexpected(::hg::move(diags));
 	}
 	std::ranges::sort(plan.functions);
 
@@ -207,6 +241,7 @@ std::expected<ir::Module, ir::Diagnostics> ir::resolveToggles(ref<const Module> 
 			plan.bindings.emplace_back(static_cast<u32>(i));
 		}
 	}
+
 	/* the parser froze each use to the first binding of its local name; a dropped one hands over to the survivor */
 	plan.bindingUses.resize(bindings.size(), unset);
 	for (auto i = 0uz; i < bindings.size(); ++i) {
@@ -226,7 +261,7 @@ std::expected<ir::Module, ir::Diagnostics> ir::resolveToggles(ref<const Module> 
 			constants.emplace_back(static_cast<u32>(i));
 		}
 	}
-	plan.constants = std::move(constants);
+	plan.constants = SomeVal(::hg::move(constants));
 
 	plan.stmtAlias.resize(mod_.stmts.size());
 	for (auto i = 0uz; i < mod_.stmts.size(); ++i) {
@@ -235,6 +270,7 @@ std::expected<ir::Module, ir::Diagnostics> ir::resolveToggles(ref<const Module> 
 			plan.stmtAlias[i] = static_cast<u32>(i);
 			continue;
 		}
+
 		const auto arm = evaluate(s.when, set) ? 0uz : 1uz;
 		const auto next = arm < s.children.size() ? s.children[arm].index : unset;
 		plan.stmtAlias[i] = next == i ? unset : next;// a hand-built self arm would keep the `when`
@@ -244,9 +280,11 @@ std::expected<ir::Module, ir::Diagnostics> ir::resolveToggles(ref<const Module> 
 	for (const auto& name : unresolved) {
 		diags.emplace_back(ir::Diagnostic::error(codes::asl("missing-variant-body"), "no body for " + quoted(name) + " at " + at));
 	}
+
 	if (not diags.empty()) {
-		return std::unexpected(std::move(diags));
+		return std::unexpected(::hg::move(diags));
 	}
+
 	for (auto& binding : result.bindings) {
 		binding.when = Condition::always();
 	}
@@ -256,5 +294,6 @@ std::expected<ir::Module, ir::Diagnostics> ir::resolveToggles(ref<const Module> 
 	for (auto& fn : result.functions) {
 		fn.when = Condition::always();
 	}
-	return std::move(result);
+
+	return ::hg::move(result);
 }
