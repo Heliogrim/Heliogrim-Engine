@@ -63,36 +63,30 @@ nmpt<ReflowPassState> ReflowState::record(nmpt<Widget> widget_) {
 	return result.first->second;
 }
 
-nmpt<const ReflowPassState> ReflowState::getStateOf(cref<sptr<Widget>> widget_) const {
-	const auto iter = _recorded.find(widget_.get());
-	if (iter != _recorded.end()) {
-		return iter->second;
-	}
-	return nullptr;
+bool ReflowState::isRecorded(nmpt<const Widget> widget_) const noexcept {
+	return _recorded.contains(const_cast<ptr<Widget>>(widget_.get()));
 }
 
-nmpt<const ReflowPassState> ReflowState::getStateOf(
-	nmpt<const Widget> widget_
-) const {
-	const auto iter = _recorded.find(const_cast<const ptr<Widget>>(widget_.get()));
-	if (iter != _recorded.end()) {
-		return iter->second;
-	}
-	return nullptr;
+nmpt<const ReflowPassState> ReflowState::getStateOf(cref<sptr<Widget>> widget_) const {
+	return std::addressof(widget_->getLayoutState());
+}
+
+nmpt<const ReflowPassState> ReflowState::getStateOf(nmpt<const Widget> widget_) const {
+	return std::addressof(widget_->getLayoutState());
 }
 
 nmpt<ReflowPassState> ReflowState::getStateOf(cref<sptr<Widget>> widget_) {
-	const auto iter = _recorded.find(widget_.get());
-	if (iter != _recorded.end()) {
-		return iter->second;
-	}
-	return nullptr;
+	return std::addressof(widget_->getLayoutState());
 }
 
 nmpt<ReflowPassState> ReflowState::getStateOf(nmpt<Widget> widget_) {
-	const auto iter = _recorded.find(widget_.get());
-	if (iter != _recorded.end()) {
-		return iter->second;
-	}
-	return nullptr;
+	return std::addressof(widget_->getLayoutState());
+}
+
+u32 ReflowState::layoutCalls() const noexcept {
+	return _layoutCalls;
+}
+
+void ReflowState::countLayoutCall() noexcept {
+	++_layoutCalls;
 }

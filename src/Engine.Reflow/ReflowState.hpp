@@ -2,10 +2,9 @@
 
 #include <Engine.Common/Collection/DenseMap.hpp>
 
-#include "Widget/__fwd.hpp"
-#include "Widget/WidgetState.hpp"
 #include "ReflowPassState.hpp"
 #include "Engine.Common/Memory/MemoryPointer.hpp"
+#include "Widget/__fwd.hpp"
 
 namespace hg::engine::reflow {
 	class ReflowState {
@@ -21,8 +20,9 @@ namespace hg::engine::reflow {
 		void reset();
 
 	private:
-		u16 _renderTick;
+		u16 _renderTick = 0u;
 		DenseMap<ptr<void>, non_owning_rptr<ReflowPassState>> _recorded;
+		u32 _layoutCalls = 0u;
 
 	public:
 		[[nodiscard]] u16 getRenderTick() const noexcept;
@@ -33,6 +33,8 @@ namespace hg::engine::reflow {
 
 		[[nodiscard]] nmpt<ReflowPassState> record(nmpt<Widget> widget_);
 
+		[[nodiscard]] bool isRecorded(nmpt<const Widget> widget_) const noexcept;
+
 		[[nodiscard]] nmpt<const ReflowPassState> getStateOf(cref<sptr<Widget>> widget_) const;
 
 		[[nodiscard]] nmpt<const ReflowPassState> getStateOf(nmpt<const Widget> widget_) const;
@@ -40,5 +42,11 @@ namespace hg::engine::reflow {
 		[[nodiscard]] nmpt<ReflowPassState> getStateOf(cref<sptr<Widget>> widget_);
 
 		[[nodiscard]] nmpt<ReflowPassState> getStateOf(nmpt<Widget> widget_);
+
+	public:
+		/* Number of prefetchSizing, computeSizing and applyLayout calls; reset() keeps it */
+		[[nodiscard]] u32 layoutCalls() const noexcept;
+
+		void countLayoutCall() noexcept;
 	};
 }

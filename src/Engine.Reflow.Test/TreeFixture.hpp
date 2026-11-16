@@ -20,6 +20,7 @@ namespace ReflowModule {
 		u32 applies = 0u;
 		u32 ticks = 0u;
 		bool ticking = false;
+		bool remarkInApply = false;
 
 	public:
 		[[nodiscard]] bool shouldTick() const noexcept override {
@@ -50,6 +51,9 @@ namespace ReflowModule {
 		void applyLayout(ref<engine::reflow::ReflowState> state_) override {
 			++applies;
 			Paint::applyLayout(state_);
+			if (std::exchange(remarkInApply, false)) {
+				markLayoutPending();
+			}
 		}
 	};
 
