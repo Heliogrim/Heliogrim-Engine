@@ -1,6 +1,7 @@
 #include "Variant.hpp"
 
 #include <algorithm>
+#include <bit>
 #include <Engine.Async/Lock/SharedLock.hpp>
 #include <Engine.Async/Lock/UniqueLock.hpp>
 
@@ -66,6 +67,18 @@ namespace {
 			const auto& node = mod.exprs[ref_.index];
 			h.put(node.kind);
 			h.put(node.name);
+			h.put(node.op);
+			h.put(node.literal.value.index());
+			std::visit(
+				[this](const auto value_) {
+					if constexpr (std::is_floating_point_v<decltype(value_)>) {
+						h.put(std::bit_cast<u64>(value_));
+					} else {
+						h.put(value_);
+					}
+				},
+				node.literal.value
+			);
 			/* binding and function indices are content: both declaration lists are hashed in order */
 			h.put(node.binding.index);
 			h.put(node.function.index);
@@ -92,6 +105,7 @@ namespace {
 			const auto& node = mod.stmts[ref_.index];
 			h.put(node.kind);
 			h.put(node.name);
+			h.put(node.op);
 			h.put(node.mutable_);
 			type(node.type);
 			expr(node.lhs, depth_ + 1uL);

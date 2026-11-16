@@ -93,7 +93,7 @@ namespace AccelLang {
 		auto found = false;
 		for (auto i = 0uz; i < m.stmts.size(); ++i) {
 			const auto& s = m.stmts[i];
-			if (s.kind == StmtKind::eAssign && s.name == "+=") {
+			if (s.kind == StmtKind::eAssign && s.op == Op::eAdd) {
 				found = true;
 				EXPECT_FALSE(u.uniformStmt[i]);
 			}

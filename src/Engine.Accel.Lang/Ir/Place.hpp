@@ -48,11 +48,11 @@ namespace hg::engine::accel::lang::ir {
 		FnRef<bool(ref<const Expr>)> immutable_
 	);
 
-	/* structural equality of two expressions (kind, name, operands); locations and types are ignored */
+	/* structural equality of two expressions (kind, name, op, literal, operands); locations and types are ignored */
 	[[nodiscard]] bool sameExpr(ref<const Module> mod_, ExprRef a_, ExprRef b_);
 
-	/* value of a GLSL integer literal (`8`, `8u`, `0x8`, `010`); none for anything else */
-	[[nodiscard]] Opt<long long> integerLiteral(StringView text_);
+	/* value of an integer literal expression (`8`, `8u`); none for floats, bools and values beyond s64 */
+	[[nodiscard]] Opt<long long> integerLiteral(ref<const Expr> literal_);
 
 	/* source-like rendering, e.g. `buf.data[0 .. n]` */
 	[[nodiscard]] String describePlace(ref<const Module> mod_, ref<const PlacePath> path_);

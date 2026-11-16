@@ -1,4 +1,6 @@
 #include <cassert>
+#include <charconv>
+#include <limits>
 
 #include "Builtin.hpp"
 #include "ParserImpl.hpp"
@@ -39,6 +41,42 @@ namespace {
 			default: return 0uL;
 		}
 	}
+
+	/* bool, float or integer (`0x` hex, leading-0 octal, `u` suffix = unsigned) text from the lexer; None when malformed or out of range */
+	[[nodiscard]] Opt<ir::LiteralValue> literalOf(StringView text_) {
+		if (text_ == "true" || text_ == "false") {
+			return ir::LiteralValue { text_ == "true", String { text_ } };
+		}
+
+		const auto* first = text_.data();
+		const auto* end = first + text_.size();
+		const auto hex = text_.size() > 2uz && text_.front() == '0' && (text_[1] == 'x' || text_[1] == 'X');
+
+		if (not hex && text_.find_first_of(".eE") != StringView::npos) {
+			f64 value = 0.0;
+			const auto res = std::from_chars(first, end, value);
+			if (res.ec != std::errc {} || res.ptr != end) {
+				return None;
+			}
+			return ir::LiteralValue { value, String { text_ } };
+		}
+
+		const auto isUnsigned = text_.ends_with('u') || text_.ends_with('U');
+		const auto* digits = hex ? first + 2 : first;
+		const auto* digitsEnd = isUnsigned ? end - 1 : end;
+		const auto octal = not hex && text_.size() > 1uz && text_.front() == '0';
+
+		u64 value = 0uL;
+		const auto res = std::from_chars(digits, digitsEnd, value, hex ? 16 : (octal ? 8 : 10));
+		if (res.ec != std::errc {} || res.ptr != digitsEnd) {
+			return None;
+		}
+
+		if (isUnsigned || value > static_cast<u64>(std::numeric_limits<s64>::max())) {
+			return ir::LiteralValue { value, String { text_ } };
+		}
+		return ir::LiteralValue { static_cast<s64>(value), String { text_ } };
+	}
 }
 
 /*
@@ -61,6 +99,17 @@ ir::ExprRef Parser::node(const ir::ExprKind kind_, const StringView name_, Vecto
 	out.operands = std::move(operands_);
 	out.loc = loc_;
 	return expr(std::move(out));
+}
+
+ir::ExprRef Parser::literal(const StringView text_, ref<const ir::Token> at_) {
+	const auto out = node(ir::ExprKind::eLiteral, {}, {}, at_.loc);
+	if (auto value = literalOf(text_); value.has_value()) {
+		_shared.mod.exprs[out.index].literal = std::move(*value);
+
+	} else {
+		error(codes::asl("literal-out-of-range"), at_, "literal '" + String { text_ } + "' is malformed or does not fit 64 bits");
+	}
+	return out;
 }
 
 ir::StmtRef Parser::add(ir::Stmt stmt_) {
@@ -452,12 +501,14 @@ Opt<ir::StmtRef> Parser::simpleStatement(const bool terminated_) {
 	}
 
 	if (step != nullptr) {
-		assign.name = step->kind == TokenKind::ePlusPlus ? "+=" : "-=";
-		assign.rhs = node(ir::ExprKind::eLiteral, "1", {}, step->loc);
+		assign.op = step->kind == TokenKind::ePlusPlus ? ir::Op::eAdd : ir::Op::eSub;
+		assign.rhs = literal("1", *step);
 
 	} else {
 		if (at(TokenKind::eCompoundAssign)) {
-			assign.name = String(take().text);
+			const auto text = take().text;
+			assign.op = ir::opOf(text.substr(0uz, text.size() - 1uz));
+			assert(assign.op != ir::Op::eNone);
 		} else {
 			take();
 		}
@@ -488,7 +539,14 @@ Opt<ir::ExprRef> Parser::expression(const u32 minPrecedence_) {
 	while (lhs.has_value() && precedenceOf(peek().kind) >= minPrecedence_) {
 		const auto& op = take();
 		const auto rhs = expression(precedenceOf(op.kind) + 1uL);
-		lhs = rhs.has_value() ? SomeVal(node(ir::ExprKind::eBinary, op.text, { *lhs, *rhs }, op.loc)) : None;
+		if (not rhs.has_value()) {
+			lhs = None;
+			continue;
+		}
+
+		const auto binary = node(ir::ExprKind::eBinary, {}, { *lhs, *rhs }, op.loc);
+		_shared.mod.exprs[binary.index].op = ir::opOf(op.text);
+		lhs = SomeVal(binary);
 	}
 
 	if (minPrecedence_ == 1uL && lhs.has_value() && at(TokenKind::eQuestion)) {
@@ -531,7 +589,9 @@ Opt<ir::ExprRef> Parser::unary() {
 			return None;
 		}
 
-		return SomeVal(node(ir::ExprKind::eUnary, op.text, { *operand }, op.loc));
+		const auto unary = node(ir::ExprKind::eUnary, {}, { *operand }, op.loc);
+		_shared.mod.exprs[unary.index].op = op.kind == TokenKind::eMinus ? ir::Op::eNeg : op.kind == TokenKind::eBang ? ir::Op::eNot : ir::Op::eBitNot;
+		return SomeVal(unary);
 	}
 
 	return postfix(primary());
@@ -579,7 +639,7 @@ Opt<ir::ExprRef> Parser::primary() {
 	const auto& token = peek();
 	if (token.kind == TokenKind::eInteger || token.kind == TokenKind::eFloat) {
 		take();
-		return SomeVal(node(ir::ExprKind::eLiteral, token.text, {}, token.loc));
+		return SomeVal(literal(token.text, token));
 	}
 
 	if (token.kind == TokenKind::eIdentifier) {
@@ -693,7 +753,7 @@ ir::ExprRef Parser::callee(ref<const ir::Token> name_, Vector<ir::ExprRef> args_
 ir::ExprRef Parser::name(ref<const ir::Token> name_) {
 	const auto text = name_.text;
 	if (text == "true" || text == "false") {
-		return node(ir::ExprKind::eLiteral, text, {}, name_.loc);
+		return literal(text, name_);
 	}
 
 	ir::Expr named {};
