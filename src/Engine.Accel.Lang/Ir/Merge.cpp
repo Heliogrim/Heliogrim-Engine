@@ -192,7 +192,8 @@ namespace {
 	}
 
 	[[nodiscard]] ir::FunctionDecl remapFunction(ir::FunctionDecl fn_, ref<const Remap> remap_) {
-		auto& [name, params, ret, body, redefineAllowed, when, loc] = fn_;
+		auto& [name, params, ret, body, redefineAllowed, when, loc, origin] = fn_;
+		/* `origin` is set only by reference lowering, which runs after merge */
 		for (auto& [paramName, paramType, paramKind] : params) {
 			paramType = remap_.type(paramType);
 		}
