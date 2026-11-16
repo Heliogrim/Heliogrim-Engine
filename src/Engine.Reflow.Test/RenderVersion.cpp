@@ -59,4 +59,45 @@ namespace ReflowModule {
 		EXPECT_FALSE(leaf->state().shouldProxyRender(1u));
 		EXPECT_FALSE(mid->state().shouldProxyRender(1u));
 	}
+
+	TEST_F(RenderVersionFixture, PropagatesToRoot) {
+		leaf->updateRenderVersion(5);
+
+		EXPECT_EQ(leaf->state().shouldRenderSelf(5), true);
+		EXPECT_EQ(mid->state().proxyRenderVersion(), 5);
+		EXPECT_EQ(root->state().proxyRenderVersion(), 5);
+	}
+
+	TEST_F(RenderVersionFixture, StopsAtInheritedAncestor) {
+		mid->state().setProxyRenderVersion(5);
+
+		leaf->updateRenderVersion(5);
+
+		EXPECT_TRUE(leaf->state().shouldRenderSelf(5));
+		EXPECT_EQ(root->state().proxyRenderVersion(), 0);
+	}
+
+	TEST_F(RenderVersionFixture, EarlyExitAcrossWrap) {
+		leaf->updateRenderVersion(0xFFFF);
+		leaf->updateRenderVersion(0);
+
+		EXPECT_EQ(root->state().proxyRenderVersion(), 0);
+	}
+
+	TEST_F(RenderVersionFixture, SelfVersionDoesNotStopProxy) {
+		mid->state().setRenderVersion(5);
+
+		leaf->updateRenderVersion(5);
+
+		EXPECT_EQ(root->state().proxyRenderVersion(), 5);
+	}
+
+	TEST_F(RenderVersionFixture, UpdateAfterWrapReachesRoot) {
+		wrapWithStaleVersions(1u);
+
+		leaf->updateRenderVersion(1u);
+
+		EXPECT_EQ(mid->state().proxyRenderVersion(), 1u);
+		EXPECT_EQ(root->state().proxyRenderVersion(), 1u);
+	}
 }
