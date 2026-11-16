@@ -69,7 +69,6 @@ namespace AccelLang {
 
 		[[nodiscard]] Intermediate handBuilt(StringView symbolId_) {
 			Intermediate im {};
-			im.lang.dialect = Dialect::eVulkanGlsl460;
 			im.lang.text.emplace_back(TextBlock { "void main() {}" });
 
 			auto var = make_uptr<Variable>();
@@ -196,6 +195,22 @@ namespace AccelLang {
 		auto withIr = handBuilt("vertex-position");
 		withIr.ir = make_smr<const Module>(new Module { parsed(source) });
 		EXPECT_NE(a.contentHash(), withIr.contentHash());
+	}
+
+	TEST(IntermediateHashTest, InterfaceChangesHash) {
+		const auto a = handBuilt("vertex-position");
+
+		auto workgroup = handBuilt("vertex-position");
+		workgroup.interface.workgroupSize = { 8uL, 1uL, 1uL };
+		EXPECT_NE(a.contentHash(), workgroup.contentHash());
+
+		auto spec = handBuilt("vertex-position");
+		spec.interface.specConstantIds.emplace_back("delta");
+		EXPECT_NE(a.contentHash(), spec.contentHash());
+
+		auto entry = handBuilt("vertex-position");
+		entry.interface.entries.emplace_back(InterfaceEntry { .id = "color" });
+		EXPECT_NE(a.contentHash(), entry.contentHash());
 	}
 
 	TEST(VariantKeyTest, RefKindAndMutabilityChangeKey) {

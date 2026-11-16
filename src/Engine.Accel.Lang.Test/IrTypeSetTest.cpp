@@ -5,17 +5,21 @@
 #include "IrSpan.hpp"
 
 #include <array>
+#include <map>
 #include <set>
 #include <string>
 
-#include <Engine.Accel.Lang/Emitter/GlslEmitter.hpp>
 #include <Engine.Accel.Lang/Ir/Interface.hpp>
 #include <Engine.Accel.Lang/Ir/Layout.hpp>
 #include <Engine.Accel.Lang/Ir/Lower.hpp>
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
+#include <Engine.Accel.Lang/Ir/References.hpp>
 #include <Engine.Accel.Lang/Ir/Resolve.hpp>
 #include <Engine.Accel.Lang/Ir/Slice.hpp>
+#include <Engine.Accel.Lang/Ir/Tier.hpp>
+#include <Engine.Accel.Lang/Ir/Spirv/SpirvEmitter.hpp>
 #include <Engine.Accel.Lang/Rep/Symbol.hpp>
+#include <spirv-tools/libspirv.hpp>
 
 using namespace hg::engine::accel::lang::ir;
 using namespace hg::engine::accel::lang;
@@ -27,7 +31,7 @@ namespace AccelLang {
 			return None;
 		}
 
-		[[nodiscard]] Module resolved(StringView source_, EntryKind entry_) {
+		[[nodiscard]] Module resolved(StringView source_, EntryKind entry_, std::span<const String> required_ = {}) {
 			auto parsed = parseModule("M", source_, entry_, ModuleResolver { noIncludes });
 			EXPECT_TRUE(parsed.has_value()) << (parsed.has_value() || parsed.error().empty() ? "" : parsed.error().front().message());
 			if (not parsed.has_value()) {
@@ -35,7 +39,7 @@ namespace AccelLang {
 			}
 			auto res = resolveToggles(*parsed, ToggleSet {});
 			EXPECT_TRUE(res.has_value());
-			return res.has_value() ? slice(*res, {}) : Module {};
+			return res.has_value() ? slice(*res, required_) : Module {};
 		}
 
 		[[nodiscard]] Layout layoutOf(ref<const Module> mod_) {
@@ -43,19 +47,86 @@ namespace AccelLang {
 		}
 
 		struct Emission {
-			GlslEmitResult result;
+			Diagnostics diagnostics;
+			Vector<u32> words;
+			/* disassembly; empty when there are diagnostics */
 			String text;
+
+			[[nodiscard]] bool has(StringView capability_) const {
+				return text.contains("OpCapability " + String { capability_ } + "\n");
+			}
 		};
 
-		[[nodiscard]] Emission emit(StringView source_, EntryKind entry_ = EntryKind::eFragment) {
-			const auto mod = resolved(source_, entry_);
-			Language target {};
-			auto result = GlslEmitter {}.emit(mod, layoutOf(mod), target);
-			return Emission { std::move(result), target.text.empty() ? String {} : target.text.front().data };
+		/* lowers references, lays out and emits at the Dev tier (which validates) */
+		[[nodiscard]] Emission emitModule(ref<const Module> mod_) {
+			auto lowered = lowerReferences(mod_);
+			if (not lowered.has_value()) {
+				return Emission { std::move(lowered).error(), {}, {} };
+			}
+			auto layout = layoutOf(*lowered);
+			layout.specConstants = assignSpecConstants(lowered->constants);
+			auto res = spirv::emit(*lowered, layout, Tier::eDev);
+			if (not res.diagnostics.empty()) {
+				return Emission { std::move(res.diagnostics), std::move(res.words), {} };
+			}
+			spvtools::SpirvTools tools { SPV_ENV_VULKAN_1_3 };
+			std::string text {};
+			EXPECT_TRUE(tools.Disassemble(res.words, &text, SPV_BINARY_TO_TEXT_OPTION_NO_HEADER));
+			return Emission { {}, std::move(res.words), String { text } };
 		}
 
+		[[nodiscard]] Emission emit(StringView source_, EntryKind entry_ = EntryKind::eFragment) {
+			return emitModule(resolved(source_, entry_));
+		}
+
+		/* a uniform `x` of `type_`, read by `main` so the emitter keeps it */
 		[[nodiscard]] String uniformOf(StringView type_) {
-			return "@input (mode = bind, id = \"x\", class = uniform) " + String { type_ } + " x;\n";
+			return "@input (mode = bind, id = \"x\", class = uniform) " + String { type_ } + " x;\nfn main() {\n\tlet y = x;\n}\n";
+		}
+
+		/**
+		 * The numeric types a module declares, in source spelling: `u8` (OpTypeInt 8 0), `s16`, `f32` (OpTypeFloat 32),
+		 * `u8vec4` (OpTypeVector of u8, 4) and `f32mat3x4` (OpTypeMatrix of 3 f32vec4 columns).
+		 */
+		[[nodiscard]] std::set<String> numericTypes(ref<const Vector<u32>> words_) {
+			std::map<u32, String> names {};
+			std::set<String> out {};
+			for (auto i = 5uz; i < words_.size();) {
+				const auto count = words_[i] >> 16u;
+				const auto op = words_[i] & 0xFFFFu;
+				if (count == 0u || i + count > words_.size()) {
+					break;
+				}
+				const auto* operands = words_.data() + i + 1uz;
+				String name {};
+				if (op == 21u) {
+					name = (operands[2] != 0u ? "s" : "u") + std::to_string(operands[1]);
+				} else if (op == 22u) {
+					name = "f" + std::to_string(operands[1]);
+				} else if (op == 23u && names.contains(operands[1])) {
+					name = names[operands[1]] + "vec" + std::to_string(operands[2]);
+				} else if (op == 24u && names.contains(operands[1])) {
+					// column `<s>vec<r>` -> `<s>mat<c>x<r>`
+					const auto& column = names[operands[1]];
+					const auto at = column.find("vec");
+					name = column.substr(0uz, at) + "mat" + std::to_string(operands[2]) + "x" + column.substr(at + 3uz);
+				}
+				if (not name.empty()) {
+					names[operands[0]] = name;
+					out.insert(name);
+				}
+				i += count;
+			}
+			return out;
+		}
+
+		/* the source spelling with the square matrix shorthand written out (`f32mat4` -> `f32mat4x4`) */
+		[[nodiscard]] String canonical(StringView source_) {
+			const auto at = source_.find("mat");
+			if (at == StringView::npos || source_.find('x') != StringView::npos) {
+				return String { source_ };
+			}
+			return String { source_ } + "x" + String { source_.substr(at + 3uz) };
 		}
 
 		struct TypeCase {
@@ -102,13 +173,14 @@ namespace AccelLang {
 			public testing::TestWithParam<TypeCase> {};
 	}
 
-	TEST_P(TypeSetTest, EmitsExactGlslTypeName) {
+	TEST_P(TypeSetTest, EmitsExactSpirvType) {
 		const auto& [source, glsl] = GetParam();
 
 		const auto emission = emit(uniformOf(source));
 
-		ASSERT_TRUE(emission.result.diagnostics.empty()) << source << ": " << emission.result.diagnostics.front().message();
-		EXPECT_TRUE(emission.text.contains("\t" + glsl + " x;\n")) << source << " -> " << glsl << "\n" << emission.text;
+		ASSERT_TRUE(emission.diagnostics.empty()) << source << ": " << emission.diagnostics.front().message();
+		const auto types = numericTypes(emission.words);
+		EXPECT_TRUE(types.contains(canonical(source))) << source << "\n" << emission.text;
 	}
 
 	INSTANTIATE_TEST_SUITE_P(
@@ -176,7 +248,35 @@ namespace AccelLang {
 		EXPECT_EQ(spanOf(diag).line, 2u);
 	}
 
-	TEST(TypeSetTest, IntegerMatrixInModuleIsDiagnosticNotWrongText) {
+	TEST(TypeSetTest, RecursiveStructUsedOnlyAsLocalIsDiagnostic) {
+		auto mod = resolved("struct S { f32 a; }\nfn main() {\n\tlet s: S;\n}\n", EntryKind::eCompute);
+		const auto layout = layoutOf(mod);
+		for (auto i = 0uz; i < mod.types.size(); ++i) {
+			if (mod.types[i].kind == TypeKind::eStruct) {
+				mod.types[i].fields.emplace_back(FieldDesc { "self", TypeRef { static_cast<u32>(i) } });
+			}
+		}
+
+		const auto result = spirv::emit(mod, layout, Tier::eDev);
+
+		ASSERT_FALSE(result.diagnostics.empty());
+		EXPECT_EQ(result.diagnostics.front().code()->key, "recursive-struct");
+		EXPECT_EQ(spanOf(result.diagnostics.front()).line, 3u);
+		EXPECT_TRUE(result.words.empty());
+	}
+
+	TEST(TypeSetTest, HalfFloatConstantRoundsOnceFromDouble) {
+		// 1 + 2^-11 + 2^-24: through f32 it ties to 1.0, straight from f64 it rounds up to 1 + 2^-10
+		const auto emission = emit(
+			"@output (mode = forward, id = \"color\") f32vec4 color;\n"
+			"fn main() {\n\tlet h: f16 = 1.000488340854644775390625;\n\tcolor = f32vec4(f32(h));\n}\n"
+		);
+
+		ASSERT_TRUE(emission.diagnostics.empty()) << emission.diagnostics.front().message();
+		EXPECT_TRUE(emission.text.contains("0x1.004p+0")) << emission.text;
+	}
+
+	TEST(TypeSetTest, IntegerMatrixInModuleIsDiagnosticNotWrongWords) {
 		Module mod {};
 		TypeDesc matrix {};
 		matrix.kind = TypeKind::eMatrix;
@@ -188,160 +288,137 @@ namespace AccelLang {
 			BindingDecl { "x", TypeRef { 0u }, BindMode::eBind, BindClass::eUniformBuffer, false, true, {}, "x" }
 		};
 
-		Language target {};
-		const auto result = GlslEmitter {}.emit(mod, layoutOf(mod), target);
+		const auto result = spirv::emit(mod, layoutOf(mod), Tier::eDev);
 
 		EXPECT_FALSE(result.diagnostics.empty());
-		EXPECT_TRUE(target.text.empty());
+		EXPECT_TRUE(result.words.empty());
 	}
 
-	/* Extensions */
+	/* Capabilities */
 
-	TEST(GlslExtensionTest, FloatOnlyEmitsNoExtensionLine) {
+	TEST(SpirvCapabilityTest, FloatOnlyNeedsNoExtraCapability) {
 		const auto emission = emit(uniformOf("f32mat4"));
 
-		EXPECT_TRUE(emission.result.requirements.extensions.empty());
-		EXPECT_EQ(emission.result.requirements.features, 0u);
-		EXPECT_FALSE(emission.text.contains("#extension")) << emission.text;
+		ASSERT_TRUE(emission.diagnostics.empty()) << emission.diagnostics.front().message();
+		EXPECT_EQ(emission.text.find("OpCapability "), emission.text.rfind("OpCapability ")) << emission.text;
+		EXPECT_TRUE(emission.has("Shader"));
+		EXPECT_FALSE(emission.text.contains("OpExtension")) << emission.text;
 	}
 
-	TEST(GlslExtensionTest, EightBitStorageNeedsInt8AndStorageOnly) {
+	TEST(SpirvCapabilityTest, EightBitStorageNeedsInt8AndStorageOnly) {
 		const auto emission = emit(uniformOf("u8vec4"));
 
-		const Vector<String> expected { "GL_EXT_shader_8bit_storage", "GL_EXT_shader_explicit_arithmetic_types_int8" };
-		EXPECT_EQ(emission.result.requirements.extensions, expected);
-		EXPECT_TRUE(emission.result.requirements.has(GlslFeature::eShaderInt8));
-		EXPECT_TRUE(emission.result.requirements.has(GlslFeature::eUniformAndStorageBuffer8BitAccess));
-		EXPECT_FALSE(emission.result.requirements.has(GlslFeature::eStorageBuffer8BitAccess));
-		EXPECT_FALSE(emission.text.contains("GL_EXT_shader_explicit_arithmetic_types :")) << emission.text;
+		ASSERT_TRUE(emission.diagnostics.empty()) << emission.diagnostics.front().message();
+		EXPECT_TRUE(emission.has("Int8")) << emission.text;
+		EXPECT_TRUE(emission.has("UniformAndStorageBuffer8BitAccess")) << emission.text;
+		EXPECT_FALSE(emission.has("StorageBuffer8BitAccess")) << emission.text;
+		EXPECT_FALSE(emission.has("StoragePushConstant8")) << emission.text;
 	}
 
-	TEST(GlslExtensionTest, StorageExtensionFollowsTheBindingClass) {
-		const auto buffer = emit("@input (mode = bind, id = \"x\", class = storage) block x { s8[] values; };\n");
-		const auto push = emit("@input (mode = bind, id = \"x\", class = push) block x { u8 flag; };\n");
+	TEST(SpirvCapabilityTest, StorageCapabilityFollowsTheBindingClass) {
+		const auto buffer = emit(
+			"@input (mode = bind, id = \"x\", class = storage) block x { s8[] values; };\nfn main() {\n\tlet y = x.values[0];\n}\n"
+		);
+		const auto push = emit("@input (mode = bind, id = \"x\", class = push) block x { u8 flag; };\nfn main() {\n\tlet y = x.flag;\n}\n");
 
-		EXPECT_TRUE(buffer.result.requirements.has(GlslFeature::eStorageBuffer8BitAccess));
-		EXPECT_FALSE(buffer.result.requirements.has(GlslFeature::eStoragePushConstant8));
-		EXPECT_TRUE(push.result.requirements.has(GlslFeature::eStoragePushConstant8));
-		EXPECT_FALSE(push.result.requirements.has(GlslFeature::eStorageBuffer8BitAccess));
+		ASSERT_TRUE(buffer.diagnostics.empty()) << buffer.diagnostics.front().message();
+		ASSERT_TRUE(push.diagnostics.empty()) << push.diagnostics.front().message();
+		EXPECT_TRUE(buffer.has("StorageBuffer8BitAccess")) << buffer.text;
+		EXPECT_FALSE(buffer.has("StoragePushConstant8")) << buffer.text;
+		EXPECT_TRUE(push.has("StoragePushConstant8")) << push.text;
+		EXPECT_FALSE(push.has("StorageBuffer8BitAccess")) << push.text;
+		EXPECT_FALSE(push.has("UniformAndStorageBuffer8BitAccess")) << push.text;
 	}
 
-	TEST(GlslExtensionTest, StorageIsReachedThroughNamedStructs) {
+	TEST(SpirvCapabilityTest, StorageIsReachedThroughNamedStructs) {
 		const auto emission = emit(
 			"struct Inner { u16vec2 uv; }\n"
 			"struct Outer { Inner[2] items; }\n"
 			"@input (mode = bind, id = \"x\", class = uniform) block x { Outer data; };\n"
+			"fn main() {\n\tlet y = x.data.items[1].uv;\n}\n"
 		);
 
-		const Vector<String> expected { "GL_EXT_shader_16bit_storage", "GL_EXT_shader_explicit_arithmetic_types_int16" };
-		EXPECT_EQ(emission.result.requirements.extensions, expected) << emission.text;
+		ASSERT_TRUE(emission.diagnostics.empty()) << emission.diagnostics.front().message();
+		EXPECT_TRUE(emission.has("Int16")) << emission.text;
+		EXPECT_TRUE(emission.has("UniformAndStorageBuffer16BitAccess") || emission.has("StorageUniform16")) << emission.text;
 	}
 
-	TEST(GlslExtensionTest, LocalOnlyWideTypeNeedsNoStorageExtension) {
+	TEST(SpirvCapabilityTest, LocalOnlyWideTypeNeedsNoStorageCapability) {
 		const auto emission = emit(
 			"fn twice(a: f16) -> f16 { return a + a; }\n"
 			"fn main() { let x = twice(1.0); }\n"
 		);
 
-		ASSERT_TRUE(emission.result.diagnostics.empty()) << emission.result.diagnostics.front().message();
-		const Vector<String> expected { "GL_EXT_shader_explicit_arithmetic_types_float16" };
-		EXPECT_EQ(emission.result.requirements.extensions, expected) << emission.text;
+		ASSERT_TRUE(emission.diagnostics.empty()) << emission.diagnostics.front().message();
+		EXPECT_TRUE(emission.has("Float16")) << emission.text;
+		EXPECT_FALSE(emission.text.contains("16BitAccess")) << emission.text;
+		EXPECT_FALSE(emission.text.contains("Storage")) << emission.text;
 	}
 
-	TEST(GlslExtensionTest, DoubleNeedsNoExtensionButTheDeviceFeature) {
+	TEST(SpirvCapabilityTest, DoubleNeedsFloat64) {
 		const auto emission = emit(uniformOf("f64vec3"));
 
-		EXPECT_TRUE(emission.result.requirements.extensions.empty());
-		EXPECT_TRUE(emission.result.requirements.has(GlslFeature::eShaderFloat64));
+		ASSERT_TRUE(emission.diagnostics.empty()) << emission.diagnostics.front().message();
+		EXPECT_TRUE(emission.has("Float64")) << emission.text;
+		EXPECT_FALSE(emission.text.contains("OpExtension")) << emission.text;
 	}
 
-	TEST(GlslExtensionTest, SixtyFourBitIntegerNeedsInt64) {
+	TEST(SpirvCapabilityTest, SixtyFourBitIntegerNeedsInt64) {
 		const auto emission = emit(uniformOf("s64vec2"));
 
-		const Vector<String> expected { "GL_EXT_shader_explicit_arithmetic_types_int64" };
-		EXPECT_EQ(emission.result.requirements.extensions, expected);
-		EXPECT_TRUE(emission.result.requirements.has(GlslFeature::eShaderInt64));
+		ASSERT_TRUE(emission.diagnostics.empty()) << emission.diagnostics.front().message();
+		EXPECT_TRUE(emission.has("Int64")) << emission.text;
 	}
 
-	TEST(GlslExtensionTest, HalfFloatMatrixNeedsFloat16AndItsStorage) {
+	TEST(SpirvCapabilityTest, HalfFloatMatrixNeedsFloat16AndItsStorage) {
 		const auto emission = emit(uniformOf("f16mat3x4"));
 
-		const Vector<String> expected { "GL_EXT_shader_16bit_storage", "GL_EXT_shader_explicit_arithmetic_types_float16" };
-		EXPECT_EQ(emission.result.requirements.extensions, expected);
-		EXPECT_TRUE(emission.result.requirements.has(GlslFeature::eShaderFloat16));
+		ASSERT_TRUE(emission.diagnostics.empty()) << emission.diagnostics.front().message();
+		EXPECT_TRUE(emission.has("Float16")) << emission.text;
+		EXPECT_TRUE(emission.has("UniformAndStorageBuffer16BitAccess") || emission.has("StorageUniform16")) << emission.text;
 	}
 
-	TEST(GlslExtensionTest, ExtensionLinesAreSortedAndPrecedeCode) {
-		const auto emission = emit(
-			"@input (mode = bind, id = \"x\", class = uniform) block x { s64 a; u8 b; f16 c; u16 d; };\n"
-		);
+	TEST(SpirvCapabilityTest, EightBitForwardVaryingIsDiagnostic) {
+		const auto emission = emit("@input (mode = forward, id = \"v\") u8vec4 v;\nfn main() {\n\tlet y = v;\n}\n");
 
-		const auto at = [&](StringView name_) { return emission.text.find("#extension " + String { name_ } + " : require\n"); };
-		const auto first = at("GL_EXT_shader_16bit_storage");
-		const auto second = at("GL_EXT_shader_8bit_storage");
-		const auto third = at("GL_EXT_shader_explicit_arithmetic_types_float16");
-		const auto fourth = at("GL_EXT_shader_explicit_arithmetic_types_int16");
-		const auto fifth = at("GL_EXT_shader_explicit_arithmetic_types_int64");
-		const auto sixth = at("GL_EXT_shader_explicit_arithmetic_types_int8");
-
-		ASSERT_NE(first, String::npos) << emission.text;
-		EXPECT_LT(first, second);
-		EXPECT_LT(second, third);
-		EXPECT_LT(third, fourth);
-		EXPECT_LT(fourth, fifth);
-		EXPECT_LT(fifth, sixth);
-		EXPECT_LT(sixth, emission.text.find("layout(std430)"));
-		EXPECT_FALSE(emission.text.contains("GL_EXT_shader_explicit_arithmetic_types :"));
+		ASSERT_FALSE(emission.diagnostics.empty());
+		EXPECT_TRUE(emission.words.empty());
+		EXPECT_EQ(emission.diagnostics.front().code()->key, "unsupported-feature");
+		EXPECT_TRUE(emission.diagnostics.front().message().contains("8-bit")) << emission.diagnostics.front().message();
 	}
 
-	TEST(GlslExtensionTest, EightBitForwardVaryingIsDiagnostic) {
-		const auto emission = emit("@input (mode = forward, id = \"v\") u8vec4 v;\n");
+	TEST(SpirvCapabilityTest, SixteenBitForwardVaryingNeedsInterfaceCapability) {
+		const auto emission = emit("@output (mode = forward, id = \"v\") f16vec2 v;\nfn main() {\n\tv = f16vec2(f16(1.0));\n}\n");
 
-		ASSERT_FALSE(emission.result.diagnostics.empty());
-		EXPECT_TRUE(emission.result.diagnostics.front().message().contains("8-bit")) << emission.result.diagnostics.front().message();
-		EXPECT_TRUE(emission.text.empty());
-	}
-
-	TEST(GlslExtensionTest, SixteenBitForwardVaryingNeedsInterfaceFeature) {
-		const auto emission = emit("@output (mode = forward, id = \"v\") f16vec2 v;\n");
-
-		ASSERT_TRUE(emission.result.diagnostics.empty()) << emission.result.diagnostics.front().message();
-		EXPECT_TRUE(emission.result.requirements.has(GlslFeature::eStorageInputOutput16));
+		ASSERT_TRUE(emission.diagnostics.empty()) << emission.diagnostics.front().message();
+		EXPECT_TRUE(emission.has("StorageInputOutput16")) << emission.text;
 	}
 
 	namespace {
 		[[nodiscard]] Emission emitSliced(StringView source_) {
-			auto parsed = parseModule("M", source_, EntryKind::eFragment, ModuleResolver { noIncludes });
-			EXPECT_TRUE(parsed.has_value()) << (parsed.has_value() || parsed.error().empty() ? "" : parsed.error().front().message());
-			if (not parsed.has_value()) {
-				return {};
-			}
-			auto res = resolveToggles(*parsed, ToggleSet {});
-			EXPECT_TRUE(res.has_value());
-			if (not res.has_value()) {
-				return {};
-			}
 			const std::array<String, 1> required { "color" };
-			const auto mod = slice(*res, required);
-			Language target {};
-			auto result = GlslEmitter {}.emit(mod, layoutOf(mod), target);
-			return Emission { std::move(result), target.text.empty() ? String {} : target.text.front().data };
+			return emitModule(resolved(source_, EntryKind::eFragment, required));
 		}
 
 		constexpr StringView halfHelper = "fn twice(x: f16) -> f16 {\n\treturn x * f16(2.0);\n}\n"
 			"@output (mode = forward, id = \"color\") f32vec4 color;\n";
 	}
 
-	TEST(GlslExtensionTest, UnusedHalfFloatFunctionIsSlicedWithItsExtension) {
+	TEST(SpirvCapabilityTest, UnusedHalfFloatFunctionIsSlicedWithItsCapability) {
 		const auto emission = emitSliced(String { halfHelper } + "fn main() {\n\tcolor = f32vec4(1.0);\n}\n");
-		EXPECT_FALSE(emission.text.contains("twice")) << emission.text;
-		EXPECT_FALSE(emission.text.contains("float16_t")) << emission.text;
-		EXPECT_FALSE(emission.result.requirements.has(GlslFeature::eShaderFloat16));
+
+		ASSERT_TRUE(emission.diagnostics.empty()) << emission.diagnostics.front().message();
+		EXPECT_FALSE(emission.text.contains("\"twice")) << emission.text;
+		EXPECT_FALSE(emission.has("Float16")) << emission.text;
 	}
 
-	TEST(GlslExtensionTest, UsedHalfFloatFunctionKeepsItsExtension) {
+	TEST(SpirvCapabilityTest, UsedHalfFloatFunctionKeepsItsCapability) {
 		const auto emission = emitSliced(String { halfHelper } + "fn main() {\n\tcolor = f32vec4(f32(twice(f16(1.0))));\n}\n");
-		EXPECT_TRUE(emission.text.contains("float16_t")) << emission.text;
-		EXPECT_TRUE(emission.result.requirements.has(GlslFeature::eShaderFloat16));
+
+		ASSERT_TRUE(emission.diagnostics.empty()) << emission.diagnostics.front().message();
+		EXPECT_TRUE(emission.text.contains("\"twice")) << emission.text;
+		EXPECT_TRUE(emission.has("Float16")) << emission.text;
+
+		EXPECT_TRUE(emission.text.contains("0x1p+1")) << emission.text;
 	}
 }

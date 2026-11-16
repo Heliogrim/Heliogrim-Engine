@@ -5,7 +5,6 @@
 #include <Engine.Accel.Lang/Representation.hpp>
 #include <Engine.Accel.Lang/Rep/Annotation.hpp>
 #include <Engine.Accel.Lang/Rep/Symbol.hpp>
-#include <Engine.Accel.Lang/Emitter/GlslEmitter.hpp>
 
 using namespace hg::engine::accel::lang;
 using namespace hg;
@@ -128,12 +127,6 @@ namespace AccelLang {
 			const auto* const data = symbol->var.data.get();
 			EXPECT_TRUE(data == copy.globalScope.inbound[0].get() || data == copy.globalScope.outbound[0].get());
 		}
-	}
-
-	TEST(GlslEmitterTest, SupportsOnlyVulkanGlsl) {
-		const GlslEmitter emitter {};
-
-		EXPECT_TRUE(emitter.supportsDialect(Dialect::eVulkanGlsl460));
 	}
 
 }

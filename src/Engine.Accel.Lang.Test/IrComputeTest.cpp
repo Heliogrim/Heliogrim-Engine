@@ -1,8 +1,8 @@
 #include "pch.h"
 
 #include "IrWording.hpp"
+#include "IrSpirvText.hpp"
 
-#include <Engine.Accel.Lang/Emitter/GlslEmitter.hpp>
 #include <Engine.Accel.Lang/Ir/Interface.hpp>
 #include <Engine.Accel.Lang/Ir/Layout.hpp>
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
@@ -37,10 +37,7 @@ namespace AccelLang {
 		}
 
 		[[nodiscard]] String emitGlsl(ref<Module> mod_) {
-			Language target {};
-			const auto layout = assignLayout(computeInterface(mod_), mod_.types, {});
-			(void)GlslEmitter {}.emit(mod_, layout, target);
-			return target.text.empty() ? String {} : String { target.text.front().data };
+			return spirvTextOf(mod_);
 		}
 
 		constexpr auto buffer = "@input (mode = bind, id = \"buf\", class = storage, access = read_write) block buf { u32[] data; };\n";
@@ -60,8 +57,8 @@ namespace AccelLang {
 	TEST(ComputeTest, WorkgroupVariableEmitsShared) {
 		auto mod = parseOk("workgroup tile: f32[64];\n@compute (local_size = [64, 1, 1])\nfn main() {\n\ttile[local_invocation_index] = 1.0;\n}\n");
 		const auto glsl = emitGlsl(mod);
-		EXPECT_TRUE(glsl.contains("shared ")) << glsl;
-		EXPECT_TRUE(glsl.contains("local_size_x = 64")) << glsl;
+		EXPECT_TRUE(glsl.contains("Workgroup")) << glsl;
+		EXPECT_TRUE(glsl.contains("LocalSize 64 1 1")) << glsl;
 	}
 
 	TEST(ComputeTest, BarrierInFragmentIsDiagnostic) {
@@ -125,9 +122,7 @@ namespace AccelLang {
 
 	TEST(ComputeTest, UnsizedPushConstantHasItsCode) {
 		const auto mod = parseOk("@input (mode = bind, id = \"p\", class = push) block p { u32 count; f32[] items; };\nfn main() {}\n");
-		Language target {};
-		const auto layout = assignLayout(computeInterface(mod), mod.types, {});
-		const auto res = GlslEmitter {}.emit(mod, layout, target);
+		const auto res = spirvOf(mod);
 		ASSERT_FALSE(res.diagnostics.empty());
 		EXPECT_EQ(res.diagnostics.front().code()->key, "invalid-push-constant-type");
 	}
@@ -192,7 +187,7 @@ namespace AccelLang {
 	TEST(FragmentTest, EarlyFragmentTestsEmitted) {
 		auto mod = parseOk("@fragment (early_fragment_tests = true)\nfn main() {}\n", EntryKind::eFragment);
 		EXPECT_TRUE(mod.attributes.earlyFragmentTests);
-		EXPECT_TRUE(emitGlsl(mod).contains("layout(early_fragment_tests) in;"));
+		EXPECT_TRUE(emitGlsl(mod).contains("EarlyFragmentTests"));
 	}
 
 	TEST(FragmentTest, EarlyFragmentTestsOnComputeIsDiagnostic) {

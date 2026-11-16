@@ -10,7 +10,7 @@
 #include "../Tier.hpp"
 
 namespace hg::engine::accel::lang::ir::spirv {
-	/* `words` is empty whenever `diagnostics` is not */
+	/* `words` is empty whenever `diagnostics` holds an error; warnings come with the words */
 	struct EmitResult {
 		Vector<u32> words;
 		Diagnostics diagnostics;

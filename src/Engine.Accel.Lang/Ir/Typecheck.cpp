@@ -57,14 +57,6 @@ namespace {
 				}
 			}
 
-			for (const auto& fn : _mod.functions) {
-				const Here here { _loc, fn.loc };
-				reserved(fn.name, true);
-				for (const auto& param : fn.params) {
-					reserved(param.name);
-				}
-			}
-
 			for (auto i = 0uz; i < _mod.constants.size(); ++i) {
 				constant(i);
 			}
@@ -93,16 +85,6 @@ namespace {
 		}
 
 	private:
-		void reserved(ref<const String> name_, bool function_ = false) {
-			if (ir::reservedForRegions(name_, function_)) {
-				error(
-					codes::asl("reserved-name"),
-					"'" + name_ + "' ends in a reserved suffix",
-					"names ending in '" + ir::reservedSuffixOf(name_) + "' are reserved for borrowed regions"
-				);
-			}
-		}
-
 		struct Nest {
 			explicit Nest(ref<u32> depth_) :
 				_depth(depth_) {
@@ -381,7 +363,7 @@ namespace {
 				const auto& to = _mod.types[e.type.index];
 				const auto& value = e.literal.value;
 				bool ok = true;
-				String spelled = e.literal.spelling;
+				String spelled;
 				if (std::holds_alternative<s64>(value) || std::holds_alternative<u64>(value)) {
 					const auto v = std::holds_alternative<s64>(value) ? static_cast<u64>(std::get<s64>(value)) : std::get<u64>(value);
 					ok = fits(v, to, negated[i]);
@@ -440,7 +422,7 @@ namespace {
 				_mod.types[toType_.index].scalar != ScalarKind::eFloat) {
 				error(
 					codes::asl("literal-out-of-range"),
-					"literal '" + String { lit != e ? "-" : "" } + lit->literal.spelling + "' does not fit " + ir::quotedType(_mod.types, toType_),
+					"literal '" + String { lit != e ? "-" : "" } + ir::literalText(lit->literal) + "' does not fit " + ir::quotedType(_mod.types, toType_),
 					"write an integer literal"
 				);
 				return;
@@ -448,7 +430,7 @@ namespace {
 
 			const auto named = e != nullptr && e->kind == ExprKind::eNameRef && e->loc.length != 0uL;
 			const auto spelled = named ? e->name :
-				e != nullptr && e->kind == ExprKind::eLiteral && not e->literal.spelling.empty() ? e->literal.spelling :
+				e != nullptr && e->kind == ExprKind::eLiteral ? ir::literalText(e->literal) :
 				String { "..." };
 			const auto written = name(toType_) + "(" + spelled + ")";
 
@@ -479,7 +461,6 @@ namespace {
 
 			switch (kind) {
 				case StmtKind::eDeclareLocal: {
-					reserved(_mod.stmts[ref_.index].name);
 					const auto mutableLocal = _mod.stmts[ref_.index].mutable_;
 					if (not mutableLocal && lhs.index >= _mod.exprs.size()) {
 						error(codes::asl("incomplete-local-declaration"), "a 'const' local needs an initializer");
@@ -513,7 +494,6 @@ namespace {
 					break;
 				}
 				case StmtKind::eDeclareRef: {
-					reserved(_mod.stmts[ref_.index].name);
 					if (lhs.index < _mod.exprs.size() && _mod.exprs[lhs.index].kind == ExprKind::eRange) {
 						_borrowed.emplace_back(lhs.index);
 					}
@@ -2014,31 +1994,6 @@ String ir::describeType(ref<const Vector<TypeDesc>> types_, TypeRef type_, u32 d
 
 String ir::quotedType(ref<const Vector<TypeDesc>> types_, TypeRef type_) {
 	return "'" + describeType(types_, type_) + "'";
-}
-
-bool ir::reservedForRegions(StringView name_, bool function_) {
-	const auto numbered = [&](StringView tag_) {
-		const auto at = name_.rfind(tag_);
-		return at != StringView::npos && at + tag_.size() < name_.size() &&
-			std::ranges::all_of(name_.substr(at + tag_.size()), [](char c_) { return c_ >= '0' && c_ <= '9'; });
-	};
-
-	if (function_) {
-		return numbered("__r");
-	}
-	return name_.ends_with("__off") || name_.ends_with("__len") || name_.ends_with("__end") || numbered("__i");
-}
-
-String ir::reservedSuffixOf(StringView name_) {
-	assert(reservedForRegions(name_, true) || reservedForRegions(name_, false));
-	for (const auto tag : { "__off", "__len", "__end" }) {
-		if (name_.ends_with(tag)) {
-			return tag;
-		}
-	}
-
-	const auto suffix = name_.substr(name_.rfind(reservedForRegions(name_, true) ? "__r" : "__i"));
-	return String(suffix.substr(0, 3)) + "<n>";
 }
 
 String ir::signatureOf(ref<const Module> mod_, ref<const FunctionDecl> fn_) {
