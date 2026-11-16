@@ -548,6 +548,12 @@ namespace AccelLang {
 		EXPECT_TRUE(firstMessage("fn F() {\n\tbreak;\n}\n").contains("'break' outside a loop"));
 	}
 
+	TEST(TypecheckTest, WhileBodyIsChecked) {
+		EXPECT_TRUE(
+			firstMessage("fn F(x: bool) {\n\tconst k = 1.0;\n\twhile (x) { k = 2.0; }\n}\n").contains("cannot assign to constant 'k'")
+		);
+	}
+
 	TEST(TypecheckTest, DiscardInVertexIsDiagnostic) {
 		auto res = parseModule("M", "fn main() {\n\tdiscard;\n}\n", EntryKind::eVertex, ModuleResolver { noIncludes });
 		ASSERT_FALSE(res.has_value());

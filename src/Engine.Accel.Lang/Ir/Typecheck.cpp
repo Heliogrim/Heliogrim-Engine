@@ -618,7 +618,7 @@ namespace {
 
 					loopCondition(lhs);
 					++_loops;
-					if (children.size() > 1uz) {
+					if (children.size() > (kind == StmtKind::eFor ? 1uz : 0uz)) {
 						stmt(kind == StmtKind::eFor ? children[1] : children[0]);
 					}
 
