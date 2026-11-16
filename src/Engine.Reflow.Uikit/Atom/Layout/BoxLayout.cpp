@@ -75,7 +75,7 @@ void BoxLayout::render(const ptr<ReflowCommandBuffer> cmd_) {
 
 }
 
-PrefetchSizing BoxLayout::prefetchSizing(ReflowAxis axis_, ref<const ReflowState> state_) const {
+PrefetchSizing BoxLayout::prefetchSizing(const ReflowAxis axis_, ref<const ReflowState> state_) const {
 
 	const auto& box = getLayoutAttributes();
 
@@ -132,7 +132,7 @@ math::fvec2 BoxLayout::computeReferenceSize(ReflowAxis axis_) const {
 	return result;
 }
 
-void BoxLayout::computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) {
+void BoxLayout::computeSizing(const ReflowAxis axis_, ref<const ReflowPassState> passState_) {
 
 	algorithm::compute(
 		axis_,
@@ -213,4 +213,14 @@ math::fvec2 BoxLayout::getShrinkFactor() const noexcept {
 		getLayoutAttributes().valueOf<attr::BoxLayout::widthShrink>(),
 		getLayoutAttributes().valueOf<attr::BoxLayout::heightShrink>()
 	};
+}
+
+bool BoxLayout::isLayoutBoundary() const noexcept {
+	const auto& box = getLayoutAttributes();
+	const auto fixed = [](ref<const ReflowUnit> min_, ref<const ReflowUnit> max_) {
+		return min_.type == ReflowUnitType::eAbsolute && max_.type == ReflowUnitType::eAbsolute && min_ == max_;
+	};
+
+	return fixed(box.valueOf<attr::BoxLayout::minWidth>(), box.valueOf<attr::BoxLayout::maxWidth>()) &&
+		fixed(box.valueOf<attr::BoxLayout::minHeight>(), box.valueOf<attr::BoxLayout::maxHeight>());
 }
