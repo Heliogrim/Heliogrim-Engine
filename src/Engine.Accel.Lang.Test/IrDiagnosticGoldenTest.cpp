@@ -14,6 +14,8 @@
 #include <Engine.Accel.Lang/Ir/References.hpp>
 #include <Engine.Accel.Lang/Ir/Resolve.hpp>
 #include <Engine.Accel.Lang/Ir/Slice.hpp>
+#include <Engine.Accel.Lang/Ir/Tier.hpp>
+#include <Engine.Accel.Lang/Ir/Spirv/SpirvEmitter.hpp>
 #include <Engine.Diagnostics/Render.hpp>
 #include <algorithm>
 #include <array>
@@ -590,6 +592,17 @@ namespace AccelLang {
 			}, R"GOLD(error[ASL0064]: binding 'v' forwards an 8-bit type
   = note: GLSL has no 8-bit stage interface variables
 )GOLD" },
+			{ "unsupported-feature", "@input (mode = forward, id = \"v\") u8vec4 v;\nfn main() {\n\tlet a = v;\n}\n", [](StringView s_) {
+				const auto mod = mk(s_);
+				auto lowered = lowerReferences(mod);
+				if (not lowered.has_value()) { return std::move(lowered).error(); }
+				return spirv::emit(*lowered, layoutOf(*lowered), Tier::eDev).diagnostics;
+			}, R"GOLD(error[ASL0073]: module 'M': binding 'v' passes an 8-bit type through the stage interface
+  --> M:1:42
+  |
+1 | @input (mode = forward, id = "v") u8vec4 v;
+  |                                          ^
+)GOLD" },
 		};
 	}
 
@@ -615,7 +628,7 @@ namespace AccelLang {
 			const auto count = std::ranges::count_if(table, [&](const auto& r_) { return r_.key == StringView { info.key }; });
 			EXPECT_EQ(count, StringView { info.key }.starts_with("internal-") ? 0 : 1) << info.key;
 		}
-		EXPECT_EQ(std::size(table), 67uz);
+		EXPECT_EQ(std::size(table), 68uz);
 	}
 
 	TEST(IrDiagnosticGolden, BitcastChangingComponentCountHasNoGlslForm) {

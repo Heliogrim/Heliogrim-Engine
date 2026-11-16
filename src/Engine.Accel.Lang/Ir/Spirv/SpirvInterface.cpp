@@ -348,13 +348,11 @@ namespace hg::engine::accel::lang::ir::spirv {
 			}
 			case EntryKind::eTessCtrl: {
 				model = spv::ExecutionModel::TessellationControl;
-				require(spv::Capability::Tessellation);
 				mode(spv::ExecutionMode::OutputVertices, Ops { attributes.outputVertices });
 				break;
 			}
 			case EntryKind::eTessEval: {
 				model = spv::ExecutionModel::TessellationEvaluation;
-				require(spv::Capability::Tessellation);
 				mode(
 					attributes.tessDomain == TessDomain::eTriangles ? spv::ExecutionMode::Triangles :
 					attributes.tessDomain == TessDomain::eQuads ? spv::ExecutionMode::Quads : spv::ExecutionMode::Isolines
@@ -369,7 +367,6 @@ namespace hg::engine::accel::lang::ir::spirv {
 			}
 			case EntryKind::eGeometry: {
 				model = spv::ExecutionModel::Geometry;
-				require(spv::Capability::Geometry);
 				switch (attributes.geometryInput) {
 					case Primitive::ePoints: mode(spv::ExecutionMode::InputPoints); break;
 					case Primitive::eLines:

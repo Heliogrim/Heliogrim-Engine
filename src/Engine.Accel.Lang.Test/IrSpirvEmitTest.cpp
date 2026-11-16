@@ -204,7 +204,6 @@ TEST(IrSpirvEmitTest, OutputStorageStaysWritable) {
 }
 
 TEST(IrSpirvEmitTest, StorageImageFormats) {
-	GTEST_SKIP() << "needs the image_store builtin (Task 7)";
 	const auto out = emitOf(
 		"@input (mode = bind, id = \"a\", class = image, access = write) image2d<rgba16f> a;\n"
 		"@input (mode = bind, id = \"b\", class = image, access = write) image2d<rgba8> b;\n"
@@ -219,7 +218,7 @@ TEST(IrSpirvEmitTest, StorageImageFormats) {
 	EXPECT_TRUE(has(out.text, "OpTypeImage %float 2D 0 0 0 2 Rgba8")) << out.text;
 	EXPECT_TRUE(has(out.text, "OpTypeImage %float 2D 0 0 0 2 R32f")) << out.text;
 	EXPECT_TRUE(has(out.text, "OpTypeImage %uint 2D 0 0 0 2 R32ui")) << out.text;
-	EXPECT_FALSE(has(out.text, "Unknown")) << out.text;
+	EXPECT_FALSE(has(out.text, " 2 Unknown")) << out.text;
 }
 
 TEST(IrSpirvEmitTest, PushMembersAtAbsoluteOffsets) {
@@ -531,4 +530,155 @@ TEST(IrSpirvEmitTest, NestedLoopBreakContinueTargetInnerLoop) {
 	ASSERT_FALSE(merge.empty()) << out.text;
 	EXPECT_TRUE(has(out.text, "OpBranch " + merge + "\n")) << merge << "\n" << out.text;
 	EXPECT_GE(count(out.text, "OpBranch " + cont + "\n"), 2uz) << cont << "\n" << out.text;
+}
+
+TEST(IrSpirvEmitTest, TextureSampleValidates) {
+	const auto out = emitOf(
+		"@input (mode = bind, id = \"t\", class = texture) texture2d t;\n"
+		"@input (mode = bind, id = \"s\", class = sampler) sampler s;\n"
+		"fn main() {\n\tlet c = sample(t, s, f32vec2(0.5));\n}\n",
+		EntryKind::eFragment
+	);
+	EXPECT_TRUE(has(out.text, "OpSampledImage")) << out.text;
+	EXPECT_TRUE(has(out.text, "OpImageSampleImplicitLod")) << out.text;
+}
+
+TEST(IrSpirvEmitTest, Int64DeclaresCapability) {
+	const auto out = emitOf("fn main() {\n\tlet x: u64 = 1;\n}\n", EntryKind::eFragment);
+	EXPECT_TRUE(has(out.text, "OpCapability Int64")) << out.text;
+}
+
+TEST(IrSpirvEmitTest, DevTierHasLines) {
+	const auto src = "fn main() {\n\tlet a = 1.0;\n\tlet b = a + 2.0;\n}\n";
+	const auto dev = emitOf(src, EntryKind::eFragment);
+	EXPECT_TRUE(has(dev.text, "OpString")) << dev.text;
+	EXPECT_TRUE(has(dev.text, "OpSource Unknown 0")) << dev.text;
+	EXPECT_TRUE(has(dev.text, "OpLine %1 3 ")) << dev.text;
+	const auto build = emitOf(src, EntryKind::eFragment, Tier::eBuild);
+	EXPECT_FALSE(has(build.text, "OpLine")) << build.text;
+	EXPECT_FALSE(has(build.text, "OpString")) << build.text;
+}
+
+TEST(IrSpirvEmitTest, DerivativeAndBarrier) {
+	const auto frag = emitOf("fn main() {\n\tlet d = dFdx(frag_coord.x);\n}\n", EntryKind::eFragment);
+	EXPECT_TRUE(has(frag.text, "OpDPdx")) << frag.text;
+	EXPECT_TRUE(has(frag.text, "BuiltIn FragCoord")) << frag.text;
+	const auto comp = emitOf("@compute (local_size = [1, 1, 1])\nfn main() {\n\tbarrier();\n}\n", EntryKind::eCompute);
+	EXPECT_TRUE(has(comp.text, "OpControlBarrier")) << comp.text;
+}
+
+TEST(IrSpirvEmitTest, SampleOutsideFragmentIsExplicitLod) {
+	const auto bindings = "@input (mode = bind, id = \"t\", class = texture) texture2d t;\n"
+		"@input (mode = bind, id = \"s\", class = sampler) sampler s;\n";
+	const auto vert = emitOf(String { bindings } + "fn main() {\n\tlet c = sample(t, s, f32vec2(0.5));\n}\n", EntryKind::eVertex);
+	const auto comp = emitOf(
+		String { bindings } + "@compute (local_size = [1, 1, 1])\nfn main() {\n\tlet c = sample(t, s, f32vec2(0.5));\n}\n",
+		EntryKind::eCompute
+	);
+	for (const auto* out : { &vert, &comp }) {
+		String log {};
+		EXPECT_TRUE(valid(out->result.words, log)) << log << "\n" << out->text;
+		EXPECT_TRUE(has(out->text, "OpImageSampleExplicitLod")) << out->text;
+		EXPECT_FALSE(has(out->text, "ImplicitLod")) << out->text;
+	}
+}
+
+TEST(IrSpirvEmitTest, StorageImageExtendedFormats) {
+	// the parser only spells rgba8/rgba16f/r32f/r32ui; retag the r32f type to reach the emitter's extended formats
+	for (const auto* format : { "rg32f", "rg16f", "r16f" }) {
+		auto prepared = prepare(
+			"@input (mode = bind, id = \"a\", class = image, access = write) image2d<r32f> a;\n"
+			"@compute (local_size = [1, 1, 1])\nfn main() {\n\timage_store(a, s32vec2(0, 0), f32vec4(1.0));\n}\n",
+			EntryKind::eCompute
+		);
+		ASSERT_TRUE(prepared.has_value());
+		auto image = std::ranges::find(prepared->mod.types, String { "r32f" }, &TypeDesc::name);
+		ASSERT_NE(image, prepared->mod.types.end());
+		image->name = format;
+		const auto out = emitPrepared(*prepared);
+		String log {};
+		EXPECT_TRUE(valid(out.result.words, log)) << format << "\n" << log << "\n" << out.text;
+		EXPECT_TRUE(has(out.text, "OpCapability StorageImageExtendedFormats")) << out.text;
+	}
+}
+
+TEST(IrSpirvEmitTest, AtomicsOnBufferAndWorkgroup) {
+	const auto out = emitOf(
+		"@input (mode = bind, id = \"o\", class = storage, access = read_write) block o { u32 n; };\n"
+		"workgroup counter: u32;\n"
+		"@compute (local_size = [1, 1, 1])\nfn main() {\n"
+		"\tlet a = atomic_add(o.n, 1u);\n\tlet b = atomic_comp_swap(o.n, a, 2u);\n"
+		"\tlet c = atomic_add(counter, 1u);\n\tlet d = atomic_comp_swap(counter, c, 3u);\n}\n",
+		EntryKind::eCompute
+	);
+	String log {};
+	EXPECT_TRUE(valid(out.result.words, log)) << log << "\n" << out.text;
+	EXPECT_EQ(count(out.text, "OpAtomicIAdd"), 2uz) << out.text;
+	EXPECT_EQ(count(out.text, "OpAtomicCompareExchange"), 2uz) << out.text;
+}
+
+TEST(IrSpirvEmitTest, ImageLoadScalarResult) {
+	const auto out = emitOf(
+		"@input (mode = bind, id = \"a\", class = image, access = read) image2d<r32f> a;\n"
+		"@compute (local_size = [1, 1, 1])\nfn main() {\n\tlet v = image_load(a, s32vec2(0, 0));\n}\n",
+		EntryKind::eCompute
+	);
+	String log {};
+	EXPECT_TRUE(valid(out.result.words, log)) << log << "\n" << out.text;
+	EXPECT_TRUE(has(out.text, "OpImageRead")) << out.text;
+}
+
+TEST(IrSpirvEmitTest, TextureSizeIncludingCube) {
+	const auto out = emitOf(
+		"@input (mode = bind, id = \"t\", class = texture) texture2d t;\n"
+		"@input (mode = bind, id = \"u\", class = texture) texturecube u;\n"
+		"@input (mode = bind, id = \"s\", class = sampler) sampler s;\n"
+		"fn main() {\n\tlet a = texture_size(t, s, 0);\n\tlet b = texture_size(u, s, 0);\n}\n",
+		EntryKind::eFragment
+	);
+	String log {};
+	EXPECT_TRUE(valid(out.result.words, log)) << log << "\n" << out.text;
+	EXPECT_EQ(count(out.text, "OpImageQuerySizeLod"), 2uz) << out.text;
+}
+
+TEST(IrSpirvEmitTest, MemoryBarrierShared) {
+	const auto out = emitOf("@compute (local_size = [1, 1, 1])\nfn main() {\n\tmemory_barrier_shared();\n}\n", EntryKind::eCompute);
+	String log {};
+	EXPECT_TRUE(valid(out.result.words, log)) << log << "\n" << out.text;
+	EXPECT_TRUE(has(out.text, "OpMemoryBarrier")) << out.text;
+}
+
+TEST(IrSpirvEmitTest, FragDepthDeclaresDepthReplacing) {
+	const auto out = emitOf("fn main() {\n\tfrag_depth = 0.5;\n}\n", EntryKind::eFragment);
+	String log {};
+	EXPECT_TRUE(valid(out.result.words, log)) << log << "\n" << out.text;
+	EXPECT_TRUE(has(out.text, "DepthReplacing")) << out.text;
+}
+
+TEST(IrSpirvEmitTest, TessCtrlPerVertexBuiltins) {
+	const auto out = emitOf(
+		"@input (mode = forward, id = \"world-pos\") f32vec4[] p;\n"
+		"@output (mode = forward, id = \"ctrl-pos\") f32vec4[] q;\n"
+		"@output (mode = forward, id = \"level\", patch = true) f32 lvl;\n"
+		"@tess_ctrl (output_vertices = 3)\n"
+		"fn main() {\n\tq[invocation_id] = p[invocation_id];\n"
+		"\toutput_position[invocation_id] = input_position[invocation_id];\n"
+		"\tlvl = 2.0;\n\ttess_level_outer[0] = 2.0;\n\ttess_level_inner[0] = 2.0;\n}\n",
+		EntryKind::eTessCtrl
+	);
+	String log {};
+	EXPECT_TRUE(valid(out.result.words, log)) << log << "\n" << out.text;
+	EXPECT_TRUE(has(out.text, "BuiltIn TessLevelOuter")) << out.text;
+	EXPECT_TRUE(has(out.text, "Patch")) << out.text;
+}
+
+TEST(IrSpirvEmitTest, GeometryPerVertexBuiltins) {
+	const auto out = emitOf(
+		"@geometry (input = triangles, output = triangle_strip, max_vertices = 3)\n"
+		"fn main() {\n\tposition = input_position[0];\n\temit_vertex();\n\tend_primitive();\n}\n",
+		EntryKind::eGeometry
+	);
+	String log {};
+	EXPECT_TRUE(valid(out.result.words, log)) << log << "\n" << out.text;
+	EXPECT_TRUE(has(out.text, "OpEmitVertex")) << out.text;
 }

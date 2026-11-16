@@ -2,6 +2,7 @@
 #include <bit>
 
 #include "SpirvEmitter.Impl.hpp"
+#include "../Builtin.hpp"
 
 namespace hg::engine::accel::lang::ir::spirv {
 	namespace {
@@ -156,6 +157,9 @@ namespace hg::engine::accel::lang::ir::spirv {
 			return;
 		}
 		const auto& s = mod.stmts[stmt_.index];
+		if (tier >= Tier::eDev && s.kind != StmtKind::eBlock && s.loc.source < debugFiles.size()) {
+			code(spv::Op::OpLine, Ops { debugFiles[s.loc.source], s.loc.line, s.loc.column });
+		}
 		const auto child = [&](u32 i_) { return i_ < s.children.size() ? s.children[i_] : StmtRef {}; };
 		const auto scoped = [&](StmtRef ref_) {
 			const auto mark = scope.size();
@@ -889,7 +893,17 @@ namespace hg::engine::accel::lang::ir::spirv {
 		return result;
 	}
 
-	/* Task 7 extends these with the builtin library */
+	/* Builtin library (SPIR-V forms in Builtin.hpp) */
+
+	u32 Impl::glslStd() {
+		if (glsl450 == 0uL) {
+			glsl450 = w.id();
+			Ops ops { glsl450 };
+			SpirvWriter::string(ops, "GLSL.std.450");
+			w.extInstImport(spv::Op::OpExtInstImport, ops);
+		}
+		return glsl450;
+	}
 
 	u32 Impl::builtin(ExprRef expr_) {
 		const auto& e = mod.exprs[expr_.index];
@@ -897,13 +911,221 @@ namespace hg::engine::accel::lang::ir::spirv {
 			const auto v = value(e.operands[0]);
 			return op(spv::Op::OpBitcast, type(e.type), Ops { v });
 		}
-		internal(*this, e.loc, "builtin '" + e.name + "' is not supported by the SPIR-V emitter");
+		if (findBuiltinVariable(e.name) != nullptr) {
+			const auto p = builtinPlace(expr_);
+			return p.base != 0uL ? load(p) : 0uL;
+		}
+
+		const auto& sigs = parsedBuiltinSignatures();
+		const auto operandDesc = [&](u32 i_) -> const TypeDesc& { return desc(mod, mod.exprs[e.operands[i_].index].type); };
+		const auto familyKind = [](const BuiltinSigType& t_) {
+			switch (t_.family) {
+				case BuiltinFamily::eGenF:
+				case BuiltinFamily::eGenH:
+				case BuiltinFamily::eMat: return ScalarKind::eFloat;
+				case BuiltinFamily::eGenI: return ScalarKind::eInt;
+				case BuiltinFamily::eGenU: return ScalarKind::eUInt;
+				case BuiltinFamily::eGenB: return ScalarKind::eBool;
+				default: return t_.scalar;
+			}
+		};
+
+		// overloads share a name; the typechecked first operand picks the row (`abs` FAbs vs SAbs, atomics U vs S)
+		auto row = ~0uL;
+		for (u32 i = 0uL; i < std::size(builtinFunctions); ++i) {
+			if (builtinFunctions[i].name != e.name || static_cast<size_t>(sigs[i].count) != e.operands.size()) {
+				continue;
+			}
+			if (row == ~0uL) {
+				row = i;
+			}
+			if (e.operands.empty() || familyKind(sigs[i].params[0]) == operandDesc(0uL).scalar) {
+				row = i;
+				break;
+			}
+		}
+		if (row == ~0uL) {
+			internal(*this, e.loc, "builtin '" + e.name + "' has no matching overload");
+			return 0uL;
+		}
+
+		const auto& form = builtinFunctionSpirv[row].form;
+		require(form.capability);
+		if (not form.extension.empty()) {
+			extensions.emplace(form.extension);
+		}
+
+		// GLSL.std.450 / OpFMod operands match the result type: scalar arguments of vector calls are splatted
+		const auto args = [&](bool splat_) {
+			Ops out {};
+			for (u32 i = 0uL; i < e.operands.size(); ++i) {
+				auto v = value(e.operands[i]);
+				if (not splat_) {
+					out.emplace_back(v);
+					continue;
+				}
+				// void calls have no result type to read
+				const auto& rd = desc(mod, e.type);
+				const auto& ad = operandDesc(i);
+				if (rd.kind == TypeKind::eVector && ad.kind == TypeKind::eScalar) {
+					v = op(spv::Op::OpCompositeConstruct, shaped(ad.scalar, ad.bits, rd.n), Ops(rd.n, v));
+				}
+				out.emplace_back(v);
+			}
+			return out;
+		};
+		const auto workgroup = [&] { return u32Constant(w32(spv::Scope::Workgroup)); };
+		const auto sharedRelease = [&] {
+			return u32Constant(w32(spv::MemorySemanticsMask::AcquireRelease) | w32(spv::MemorySemanticsMask::WorkgroupMemory));
+		};
+
+		switch (form.kind) {
+			case SpirvFormKind::eExtInst: {
+				auto ops = Ops { glslStd(), form.code };
+				const auto a = args(true);
+				ops.insert(ops.end(), a.begin(), a.end());
+				return op(spv::Op::OpExtInst, type(e.type), std::move(ops));
+			}
+			case SpirvFormKind::eCore: {
+				const auto code_ = static_cast<spv::Op>(form.code);
+				if (e.name.starts_with("atomic_")) {
+					// GLSL semantics: device scope, relaxed
+					const auto ptr = pointerOf(place(e.operands[0]));
+					const auto scope = u32Constant(w32(spv::Scope::Device));
+					const auto relaxed = u32Constant(w32(spv::MemorySemanticsMask::MaskNone));
+					if (code_ == spv::Op::OpAtomicCompareExchange) {
+						const auto compare = value(e.operands[1]);
+						const auto desired = value(e.operands[2]);
+						return op(code_, type(e.type), Ops { ptr, scope, relaxed, relaxed, desired, compare });
+					}
+					const auto v = value(e.operands[1]);
+					return op(code_, type(e.type), Ops { ptr, scope, relaxed, v });
+				}
+				if (sigs[row].ret.family == BuiltinFamily::eVoid) {
+					code(code_, args(false));
+					return 0uL;
+				}
+				return op(code_, type(e.type), args(code_ == spv::Op::OpFMod));
+			}
+			case SpirvFormKind::eLower: {
+				break;
+			}
+		}
+
+		switch (static_cast<BuiltinLowering>(form.code)) {
+			case BuiltinLowering::eSample:
+			case BuiltinLowering::eSampleLod:
+			case BuiltinLowering::eSampleSparse:
+			case BuiltinLowering::eSampleSparseClamp: {
+				const auto lowering = static_cast<BuiltinLowering>(form.code);
+				const auto texture = e.operands[0];
+				// every operand before OpSampledImage: its result must be consumed in the same block
+				const auto img = value(texture);
+				const auto smp = value(e.operands[1]);
+				const auto coord = value(e.operands[2]);
+				const auto extra = lowering == BuiltinLowering::eSampleLod || lowering == BuiltinLowering::eSampleSparseClamp ? value(e.operands[3]) : 0uL;
+				const auto sampledType = w.type(spv::Op::OpTypeSampledImage, Ops { type(mod.exprs[texture.index].type) });
+				const auto sampled = op(spv::Op::OpSampledImage, sampledType, Ops { img, smp });
+				const auto vec4 = shaped(ScalarKind::eFloat, 32uL, 4uL);
+				// implicit lod needs derivatives (fragment only); elsewhere GLSL texture() samples lod 0
+				const auto implicit = mod.entry == EntryKind::eFragment;
+				const auto zero = number(ScalarKind::eFloat, 32uL, 1uL, false);
+				switch (lowering) {
+					case BuiltinLowering::eSample: {
+						if (not implicit) {
+							return op(spv::Op::OpImageSampleExplicitLod, vec4, Ops { sampled, coord, w32(spv::ImageOperandsMask::Lod), zero });
+						}
+						return op(spv::Op::OpImageSampleImplicitLod, vec4, Ops { sampled, coord });
+					}
+					case BuiltinLowering::eSampleLod: {
+						return op(spv::Op::OpImageSampleExplicitLod, vec4, Ops { sampled, coord, w32(spv::ImageOperandsMask::Lod), extra });
+					}
+					default: {
+						require(spv::Capability::SparseResidency);
+						auto ops = Ops { sampled, coord };
+						const auto clamp = lowering == BuiltinLowering::eSampleSparseClamp;
+						if (implicit && clamp) {
+							ops.insert(ops.end(), { w32(spv::ImageOperandsMask::MinLod), extra });
+						} else if (not implicit) {
+							// MinLod is invalid with an explicit Lod: lod 0 clamped from below is max(0, clamp)
+							const auto f32 = scalar(ScalarKind::eFloat, 32uL);
+							const auto lod = clamp ? op(spv::Op::OpExtInst, f32, Ops { glslStd(), w32(GLSLstd450FMax), zero, extra }) : zero;
+							ops.insert(ops.end(), { w32(spv::ImageOperandsMask::Lod), lod });
+						}
+						const auto s32 = scalar(ScalarKind::eInt, 32uL);
+						const auto result = op(implicit ? spv::Op::OpImageSparseSampleImplicitLod : spv::Op::OpImageSparseSampleExplicitLod, w.type(spv::Op::OpTypeStruct, Ops { s32, vec4 }), std::move(ops));
+						store(place(e.operands.back()), op(spv::Op::OpCompositeExtract, vec4, Ops { result, 1uL }));
+						return op(spv::Op::OpCompositeExtract, s32, Ops { result, 0uL });
+					}
+				}
+			}
+			case BuiltinLowering::eTextureSize: {
+				const auto img = value(e.operands[0]);
+				const auto lod = value(e.operands[2]);
+				return op(spv::Op::OpImageQuerySizeLod, type(e.type), Ops { img, lod });
+			}
+			case BuiltinLowering::eDot: {
+				const auto l = value(e.operands[0]);
+				const auto r = value(e.operands[1]);
+				return op(operandDesc(0uL).kind == TypeKind::eScalar ? spv::Op::OpFMul : spv::Op::OpDot, type(e.type), Ops { l, r });
+			}
+			case BuiltinLowering::eBarrier: {
+				if (mod.entry == EntryKind::eTessCtrl) {
+					// tess_ctrl orders the output patch writes only (execution barrier, no memory semantics)
+					code(spv::Op::OpControlBarrier, Ops { workgroup(), u32Constant(w32(spv::Scope::Invocation)), u32Constant(w32(spv::MemorySemanticsMask::MaskNone)) });
+				} else {
+					code(spv::Op::OpControlBarrier, Ops { workgroup(), workgroup(), sharedRelease() });
+				}
+				return 0uL;
+			}
+			case BuiltinLowering::eMemoryBarrierShared: {
+				code(spv::Op::OpMemoryBarrier, Ops { workgroup(), sharedRelease() });
+				return 0uL;
+			}
+		}
+		internal(*this, e.loc, "builtin '" + e.name + "' has no SPIR-V lowering");
 		return 0uL;
 	}
 
 	Impl::Place Impl::builtinPlace(ExprRef expr_) {
-		(void)expr_;
-		return {};
+		const auto& e = mod.exprs[expr_.index];
+		const auto* var = findBuiltinVariable(e.name);
+		if (var == nullptr) {
+			internal(*this, e.loc, "builtin '" + e.name + "' is not a variable");
+			return {};
+		}
+		if (const auto it = builtinVars.find(String { e.name }); it != builtinVars.end()) {
+			return it->second;
+		}
+
+		const auto& spirv = builtinVariableSpirv[static_cast<size_t>(var - builtinVariables.data())];
+		const auto storage = var->writable && (var->writeStages & stageBit(mod.entry)) != 0u ? spv::StorageClass::Output : spv::StorageClass::Input;
+		auto pointee = shaped(var->scalar, 32uL, var->n);
+		if (var->count > 0uL) {
+			pointee = w.type(spv::Op::OpTypeArray, Ops { pointee, u32Constant(var->count) });
+		} else if (var->arrayed) {
+			pointee = w.type(spv::Op::OpTypeArray, Ops { pointee, u32Constant(vertexCount(storage == spv::StorageClass::Input)) });
+		}
+
+		const auto id = w.id();
+		w.global(spv::Op::OpVariable, Ops { pointer(storage, pointee), id, w32(storage) });
+		w.annotation(spv::Op::OpDecorate, Ops { id, w32(spv::Decoration::BuiltIn), w32(spirv.builtIn) });
+		if (var->count > 0uL) {
+			w.annotation(spv::Op::OpDecorate, Ops { id, w32(spv::Decoration::Patch) });
+		}
+		if (storage == spv::StorageClass::Input && mod.entry == EntryKind::eFragment && (var->scalar == ScalarKind::eInt || var->scalar == ScalarKind::eUInt)) {
+			w.annotation(spv::Op::OpDecorate, Ops { id, w32(spv::Decoration::Flat) });
+		}
+		nameOf(id, var->name);
+		interface.emplace_back(id);
+		require(spirv.capability);
+		if (not spirv.extension.empty()) {
+			extensions.emplace(spirv.extension);
+		}
+
+		const Place p { .base = id, .storage = storage, .basePointee = pointee, .type = e.type };
+		builtinVars.emplace(String { e.name }, p);
+		return p;
 	}
 
 	/* Constants and types */
