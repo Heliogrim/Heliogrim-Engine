@@ -16,7 +16,9 @@ InputToggle::InputToggle() :
 	_activeToggleListener(),
 	_activeContent(),
 	_inactiveToggleListener(),
-	_inactiveContent() {}
+	_inactiveContent() {
+	bindAttributeOwner(this);
+}
 
 InputToggle::~InputToggle() = default;
 

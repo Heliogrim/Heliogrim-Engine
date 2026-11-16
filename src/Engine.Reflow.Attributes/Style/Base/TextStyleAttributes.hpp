@@ -2,7 +2,6 @@
 
 #include <Engine.Assets.Type/Texture/FontAsset.hpp>
 #include <Engine.Graphics/Color/Color.hpp>
-#include <Engine.Reflow/ReflowPlacement.hpp>
 #include <Engine.Reflow/ReflowWrap.hpp>
 #include <Engine.Reflow/TextAlign.hpp>
 #include <Heliogrim/TypedAssetGuid.hpp>
@@ -27,12 +26,12 @@ namespace hg::engine::reflow {
 
 	struct TextStyleAttributes final :
 		public StyleAttributes<
-			NamedAttribute<attr::TextStyle::font, StyleAttribute<TypedAssetGuid<engine::assets::FontAsset>>>,
-			NamedAttribute<attr::TextStyle::fontSize, StyleAttribute<float>>,
-			NamedAttribute<attr::TextStyle::lineHeight, StyleAttribute<float>>,
-			NamedAttribute<attr::TextStyle::textAlign, StyleAttribute<TextAlign>>,
-			NamedAttribute<attr::TextStyle::textEllipse, StyleAttribute<u32>>,
-			NamedAttribute<attr::TextStyle::textWrap, StyleAttribute<ReflowWrap>>,
+			NamedAttribute<attr::TextStyle::font, StyleAttribute<TypedAssetGuid<engine::assets::FontAsset>, ReflowPhase::eLayout>>,
+			NamedAttribute<attr::TextStyle::fontSize, StyleAttribute<float, ReflowPhase::eLayout>>,
+			NamedAttribute<attr::TextStyle::lineHeight, StyleAttribute<float, ReflowPhase::eLayout>>,
+			NamedAttribute<attr::TextStyle::textAlign, StyleAttribute<TextAlign, ReflowPhase::eLayout>>,
+			NamedAttribute<attr::TextStyle::textEllipse, StyleAttribute<u32, ReflowPhase::eLayout>>,
+			NamedAttribute<attr::TextStyle::textWrap, StyleAttribute<ReflowWrap, ReflowPhase::eLayout>>,
 			NamedAttribute<attr::TextStyle::color, StyleAttribute<color>>
 		> {
 		using StyleAttributes::StyleAttributes;

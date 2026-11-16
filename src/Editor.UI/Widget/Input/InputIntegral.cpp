@@ -30,7 +30,9 @@ InputIntegral::InputIntegral(mref<SharedPtr<uikit::Stack>> content_, mref<Shared
 		{}
 	),
 	_text(hg::move(text_)),
-	_stringified() {}
+	_stringified() {
+	bindAttributeOwner(this);
+}
 
 InputIntegral::~InputIntegral() = default;
 
