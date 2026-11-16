@@ -14,6 +14,8 @@ std::atomic_uint_fast16_t ReflowEngine::_globalReflowTick = 0;
 
 /**/
 
+static void tickWidgets(ref<const SharedPtr<Widget>> root_, u16 renderTick_);
+
 static void prefetchStateAlongAxis(
 	ReflowAxis axis_,
 	ref<const SharedPtr<Widget>> root_,
@@ -55,6 +57,8 @@ void ReflowEngine::tick(ref<ReflowState> state_, cref<sptr<Widget>> widget_, mre
 	// TODO: Erase temporary cleanup
 	state_.reset();
 
+	tickWidgets(widget_, state_.getRenderTick());
+
 	/**
 	 * First Pass: Recording prefetched desired size and distribute style updates
 	 */
@@ -73,6 +77,28 @@ void ReflowEngine::tick(ref<ReflowState> state_, cref<sptr<Widget>> widget_, mre
 }
 
 /**/
+
+void tickWidgets(ref<const SharedPtr<Widget>> root_, const u16 renderTick_) {
+
+	auto cont = Vector<nmpt<Widget>>();
+	cont.reserve(16uLL);
+	auto pending = Stack<nmpt<Widget>, Vector<nmpt<Widget>>> { ::hg::move(cont) };
+	pending.emplace(root_.get());
+
+	while (not pending.empty()) {
+
+		const auto cur = pending.top();
+		pending.pop();
+
+		for (const auto& child : *cur->children()) {
+			if (child->shouldTick()) {
+				child->updateRenderVersion(renderTick_);
+				child->tick();
+			}
+			pending.emplace(child.get());
+		}
+	}
+}
 
 void prefetchStateAlongAxis(
 	ReflowAxis axis_,
@@ -105,13 +131,6 @@ void prefetchStateAlongAxis(
 
 			dependencies = true;
 			pending.emplace(child.get());
-
-			/* Warning: Temporary solution */
-
-			if (child->shouldTick() && axis_ == ReflowAxis::eXAxis) {
-				child->updateRenderVersion(state_.getRenderTick());
-				child->tick();
-			}
 		}
 
 		/**
