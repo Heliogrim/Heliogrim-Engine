@@ -299,23 +299,37 @@ namespace hg::engine::accel::lang::ir::spirv {
 	}
 
 	u32 Impl::literal(TypeRef type_, ref<const LiteralValue> literal_) {
-		if (type_.index < mod.types.size() && mod.types[type_.index].kind == TypeKind::eScalar &&
-			mod.types[type_.index].scalar == ScalarKind::eBool) {
+		if (type_.index >= mod.types.size()) {
+			fail(codes::asl("internal-spirv-emit"), {}, "constant of a non-scalar type");
+			return 0uL;
+		}
+		return literal(mod.types[type_.index], literal_);
+	}
+
+	u32 Impl::literal(ref<const TypeDesc> scalar_, ref<const LiteralValue> literal_) {
+		if (scalar_.kind == TypeKind::eScalar && scalar_.scalar == ScalarKind::eBool) {
 			return w.constant(numberOf<bool>(literal_) ? spv::Op::OpConstantTrue : spv::Op::OpConstantFalse, boolType(), Ops {});
 		}
 		Ops words {};
-		if (not literalWords(type_, literal_, words)) {
+		if (not literalWords(scalar_, literal_, words)) {
 			return 0uL;
 		}
-		return w.constant(spv::Op::OpConstant, type(type_), words);
+		return w.constant(spv::Op::OpConstant, scalar(scalar_.scalar, scalar_.bits), words);
 	}
 
 	bool Impl::literalWords(TypeRef type_, ref<const LiteralValue> literal_, ref<Ops> out_) {
-		if (type_.index >= mod.types.size() || mod.types[type_.index].kind != TypeKind::eScalar) {
+		if (type_.index >= mod.types.size()) {
 			fail(codes::asl("internal-spirv-emit"), {}, "constant of a non-scalar type");
 			return false;
 		}
-		const auto& desc = mod.types[type_.index];
+		return literalWords(mod.types[type_.index], literal_, out_);
+	}
+
+	bool Impl::literalWords(ref<const TypeDesc> desc, ref<const LiteralValue> literal_, ref<Ops> out_) {
+		if (desc.kind != TypeKind::eScalar) {
+			fail(codes::asl("internal-spirv-emit"), {}, "constant of a non-scalar type");
+			return false;
+		}
 		switch (desc.scalar) {
 			case ScalarKind::eBool: {
 				out_.emplace_back(numberOf<bool>(literal_) ? 1uL : 0uL);
@@ -323,6 +337,10 @@ namespace hg::engine::accel::lang::ir::spirv {
 			}
 			case ScalarKind::eInt:
 			case ScalarKind::eUInt: {
+				if (const auto* const real = std::get_if<f64>(&literal_.value); real != nullptr && not fitsInteger(*real, desc.scalar, desc.bits)) {
+					fail(codes::asl("not-constant"), {}, "a float outside the integer range does not convert");
+					return false;
+				}
 				// signed narrow values keep their sign extension in the low word, as SPIR-V requires
 				auto bits = desc.scalar == ScalarKind::eInt ? static_cast<u64>(numberOf<s64>(literal_)) : numberOf<u64>(literal_);
 				// two's complement at the declared width: signed sign-extends, unsigned masks
@@ -350,8 +368,31 @@ namespace hg::engine::accel::lang::ir::spirv {
 					out_.emplace_back(static_cast<u32>(bits >> 32uLL));
 					return true;
 				}
-				fail(codes::asl("internal-spirv-emit"), {}, "16-bit float constants are not supported");
-				return false;
+				// f16: round the f64 value straight to nearest even half (no f32 step: that would round twice), low 16 bits of one word
+				const auto f = std::bit_cast<u64>(static_cast<double>(value));
+				const auto sign = static_cast<u32>(f >> 48uLL) & 0x8000u;
+				const auto biased = static_cast<u32>(f >> 52uLL) & 0x7FFu;
+				const auto exp = static_cast<s32>(biased) - 1008;
+				auto mant = f & 0xFFFFFFFFFFFFFuLL;
+				const auto round = [](u64 h_, u64 rem_, u64 halfway_) {
+					return static_cast<u32>(rem_ > halfway_ || (rem_ == halfway_ && (h_ & 1uLL) != 0uLL) ? h_ + 1uLL : h_);
+				};
+				u32 half {};
+				if (biased == 0x7FFu) {
+					half = 0x7C00u | (mant != 0uLL ? 0x200u : 0u);
+				} else if (exp >= 31) {
+					half = 0x7C00u;
+				} else if (exp <= 0) {
+					if (exp >= -10) {
+						mant |= 1uLL << 52uLL;
+						const auto shift = static_cast<u64>(43 - exp);
+						half = round(mant >> shift, mant & ((1uLL << shift) - 1uLL), 1uLL << (shift - 1uLL));
+					}
+				} else {
+					half = round((static_cast<u64>(exp) << 10uLL) | (mant >> 42uLL), mant & ((1uLL << 42uLL) - 1uLL), 1uLL << 41uLL);
+				}
+				out_.emplace_back(sign | half);
+				return true;
 			}
 		}
 		return false;

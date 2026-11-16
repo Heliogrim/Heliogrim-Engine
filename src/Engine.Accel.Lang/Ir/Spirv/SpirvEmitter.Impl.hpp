@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cmath>
 #include <map>
 #include <set>
 #include <utility>
@@ -20,6 +21,14 @@ namespace hg::engine::accel::lang::ir::spirv {
 	template <typename Enum_>
 	[[nodiscard]] constexpr u32 w32(Enum_ value_) noexcept {
 		return static_cast<u32>(value_);
+	}
+
+	/* a float truncates into an integer of `bits_` (0 = 64); NaN and out-of-range conversions are undefined, so they do not fold */
+	[[nodiscard]] inline bool fitsInteger(const f64 value_, const ScalarKind kind_, const u32 bits_) noexcept {
+		const auto width = bits_ == 0uL || bits_ > 64uL ? 64 : static_cast<int>(bits_);
+		return kind_ == ScalarKind::eInt ?
+			value_ >= -std::ldexp(1.0, width - 1) && value_ < std::ldexp(1.0, width - 1) :
+			value_ > -1.0 && value_ < std::ldexp(1.0, width);
 	}
 
 	/**
@@ -103,8 +112,10 @@ namespace hg::engine::accel::lang::ir::spirv {
 		[[nodiscard]] u32 u32Constant(u32 value_);
 		/* OpConstant/True/False of a scalar type; 0 after a diagnostic */
 		[[nodiscard]] u32 literal(TypeRef type_, ref<const LiteralValue> literal_);
+		[[nodiscard]] u32 literal(ref<const TypeDesc> scalar_, ref<const LiteralValue> literal_);
 		/* the OpConstant / OpSpecConstant value words of a non-bool scalar; false after a diagnostic */
 		[[nodiscard]] bool literalWords(TypeRef type_, ref<const LiteralValue> literal_, ref<Ops> out_);
+		[[nodiscard]] bool literalWords(ref<const TypeDesc> scalar_, ref<const LiteralValue> literal_, ref<Ops> out_);
 
 		void require(spv::Capability capability_);
 		void fail(ref<const DiagnosticCodeInfo> code_, SourceLoc loc_, String message_);
@@ -112,6 +123,8 @@ namespace hg::engine::accel::lang::ir::spirv {
 		void nameOf(u32 id_, StringView name_);
 
 		/* SpirvInterface.cpp */
+		/* user errors of the declarations the earlier passes leave to the emitter: bindings, structs, `main`'s signature */
+		void checkDeclarations();
 		void reach();
 		void declareGlobals();
 		void declareConstants();

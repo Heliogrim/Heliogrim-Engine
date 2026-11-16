@@ -53,6 +53,27 @@ u64 Intermediate::contentHash() const noexcept {
 	variables(rep.globalScope.outbound);
 	variables(rep.globalScope.variables);
 
+	h.put(interface.stage);
+	h.put(static_cast<u64>(interface.entries.size()));
+	for (const auto& entry : interface.entries) {
+		h.put(entry.id);
+		h.put(entry.type.index);
+		h.put(entry.mode);
+		h.put(entry.cls);
+		h.put(entry.implicit);
+		h.put(entry.input);
+		h.put(entry.arrayed);
+		h.put(entry.typeName);
+		h.put(entry.patch);
+	}
+	for (const auto size : interface.workgroupSize) {
+		h.put(size);
+	}
+	h.put(static_cast<u64>(interface.specConstantIds.size()));
+	for (const auto& id : interface.specConstantIds) {
+		h.put(id);
+	}
+
 	h.put(ir != nullptr);
 	if (ir != nullptr) {
 		h.put(ir::contentHash(*ir));

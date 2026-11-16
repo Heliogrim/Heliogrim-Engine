@@ -102,7 +102,7 @@ EffectCompileResult EffectCompiler::compile(
 	//          based on external dependencies.
 
 	// After composing the actual stage derivates, we have to re-parse the generated code or consume the resulting IR and transform
-	//  it into a IL which can be used by the spirv compiler. ( GLSL Vulkan Dialect )
+	//  it into a IL which can be used by the spirv compiler.
 
 	auto stages = _stageComposer->compose(
 		request_.profile,

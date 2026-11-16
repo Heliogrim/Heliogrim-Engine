@@ -45,7 +45,7 @@ namespace {
 	/* bool, float or integer (`0x` hex, leading-0 octal, `u` suffix = unsigned) text from the lexer; None when malformed or out of range */
 	[[nodiscard]] Opt<ir::LiteralValue> literalOf(StringView text_) {
 		if (text_ == "true" || text_ == "false") {
-			return ir::LiteralValue { text_ == "true", String { text_ } };
+			return ir::LiteralValue { text_ == "true" };
 		}
 
 		const auto* first = text_.data();
@@ -58,7 +58,7 @@ namespace {
 			if (res.ec != std::errc {} || res.ptr != end) {
 				return None;
 			}
-			return ir::LiteralValue { value, String { text_ } };
+			return ir::LiteralValue { value };
 		}
 
 		const auto isUnsigned = text_.ends_with('u') || text_.ends_with('U');
@@ -73,9 +73,9 @@ namespace {
 		}
 
 		if (isUnsigned || value > static_cast<u64>(std::numeric_limits<s64>::max())) {
-			return ir::LiteralValue { value, String { text_ } };
+			return ir::LiteralValue { value };
 		}
-		return ir::LiteralValue { static_cast<s64>(value), String { text_ } };
+		return ir::LiteralValue { static_cast<s64>(value) };
 	}
 }
 
@@ -378,7 +378,7 @@ Opt<ir::StmtRef> Parser::local(ref<const ir::Token> name_, const ir::TypeRef typ
 	decl.keyword = ::hg::move(keyword_);
 
 	bool valid = true;
-	declaredName(name_, false);
+	declaredName(name_);
 	if (accept(TokenKind::eAssign)) {
 		if (accept(TokenKind::eAmp)) {
 			decl.kind = ir::StmtKind::eDeclareRef;

@@ -106,15 +106,13 @@ namespace hg::engine::accel::lang::ir {
 	/* typed literal: `7u` is u64, a plain integer s64, `1.5` f64 */
 	struct LiteralValue {
 		std::variant<bool, u64, s64, f64> value;
-		/* source text (`0x1E`, `1e3`) kept only so the GLSL emitter reproduces it; not part of identity or hash */
-		String spelling;
 
-		[[nodiscard]] bool operator==(const LiteralValue& other_) const noexcept {
+		[[nodiscard]] bool operator==(ref<const LiteralValue> other_) const noexcept {
 			return value == other_.value;
 		}
 	};
 
-	/* GLSL-compatible spelling: `true`, `7u`, `3`, `1.5`, `1000.0` */
+	/* source-like spelling: `true`, `7u`, `3`, `1.5`, `1000.0` */
 	[[nodiscard]] String literalText(ref<const LiteralValue> literal_);
 
 	enum class ExprKind : u8 {

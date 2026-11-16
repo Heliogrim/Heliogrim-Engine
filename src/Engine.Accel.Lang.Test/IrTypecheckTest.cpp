@@ -4,10 +4,10 @@
 
 #include "IrSpan.hpp"
 #include "IrWording.hpp"
+#include "IrSpirvText.hpp"
 
 #include <algorithm>
 
-#include <Engine.Accel.Lang/Emitter/GlslEmitter.hpp>
 #include <Engine.Accel.Lang/Ir/Analysis.hpp>
 #include <Engine.Accel.Lang/Ir/Compact.hpp>
 #include <Engine.Accel.Lang/Ir/Interface.hpp>
@@ -62,10 +62,7 @@ namespace AccelLang {
 		}
 
 		[[nodiscard]] String emitGlsl(ref<Module> mod_) {
-			Language target {};
-			const auto layout = assignLayout(computeInterface(mod_), mod_.types, {});
-			(void)GlslEmitter {}.emit(mod_, layout, target);
-			return target.text.empty() ? String {} : String { target.text.front().data };
+			return spirvTextOf(mod_);
 		}
 
 		[[nodiscard]] String typeNameOfLocal(ref<const Module> mod_, StringView name_) {
@@ -132,12 +129,9 @@ namespace AccelLang {
 
 	TEST(TypecheckTest, LiteralAdaptsToFloatContext) {
 		auto mod = parseOk("fn F(x: f32) -> f32 {\n\tif (x > 0) {\n\t\treturn x;\n\t}\n\treturn 0.5;\n}\nfn main() {\n\tfrag_depth = F(1.0);\n}\n");
-		Language target {};
-		const auto layout = assignLayout(computeInterface(mod), mod.types, {});
-		const auto res = GlslEmitter {}.emit(mod, layout, target);
-		ASSERT_TRUE(res.diagnostics.empty()) << res.diagnostics.front().message();
-		ASSERT_FALSE(target.text.empty());
-		EXPECT_TRUE(target.text.front().data.contains("x > 0.0")) << target.text.front().data;
+		const auto text = spirvTextOf(mod);
+		EXPECT_TRUE(text.contains("OpFOrdGreaterThan")) << text;
+		EXPECT_FALSE(text.contains("OpSGreaterThan")) << text;
 	}
 
 	TEST(TypecheckTest, IntegerLiteralsPickIntegerBuiltinOverload) {
@@ -372,7 +366,7 @@ namespace AccelLang {
 		);
 		auto module2 = mod;
 		const auto text = emitGlsl(module2);
-		EXPECT_TRUE(text.contains("const vec3 n = normalize(v);")) << text;
+		EXPECT_TRUE(text.contains("OpFunctionCall")) << text;
 	}
 
 	TEST(MutabilityTest, TypedLocalIsMutable) {
@@ -517,11 +511,11 @@ namespace AccelLang {
 	TEST(MutabilityTest, StorageOutputDefaultsToWritable) {
 		auto out = parseOk("@output (mode = bind, id = \"buf\", class = storage) block buf { f32 x; };\nfn main() {\n\tbuf.x = 1.0;\n}\n");
 		const auto text = emitGlsl(out);
-		EXPECT_TRUE(text.contains("buffer")) << text;
-		EXPECT_FALSE(text.contains("readonly")) << text;
+		EXPECT_TRUE(text.contains("StorageBuffer")) << text;
+		EXPECT_FALSE(text.contains("NonWritable")) << text;
 
 		auto in = parseOk("@input (mode = bind, id = \"buf\", class = storage) block buf { f32 x; };\nfn main() {\n\tlet v = buf.x;\n}\n");
-		EXPECT_TRUE(emitGlsl(in).contains("readonly buffer"));
+		EXPECT_TRUE(emitGlsl(in).contains("NonWritable"));
 	}
 
 	TEST(MutabilityTest, OverloadsDifferingOnlyInReferenceKindAreDiagnostic) {

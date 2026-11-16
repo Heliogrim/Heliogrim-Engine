@@ -253,7 +253,6 @@ static auto make_accel_vertex_l0_stage() -> uptr<engine::accel::Stage> {
 	auto code = read_shader_file(R"(R:\Development\C++\Vulkan API\Game\resources\shader\depthpass_static.vs)");
 	auto snippet = string { code.begin(), code.end() };
 
-	inter->lang.dialect = engine::accel::lang::Dialect::eVulkanGlsl460;
 	inter->lang.text.emplace_back(std::move(snippet));
 
 	stage->setIntermediate(std::move(inter));
@@ -280,7 +279,6 @@ static auto make_accel_vertex_l1_stage() -> uptr<engine::accel::Stage> {
 	auto code = read_shader_file(R"(R:\Development\C++\Vulkan API\Game\resources\shader\mainpass_static.vs)");
 	auto snippet = string { code.begin(), code.end() };
 
-	inter->lang.dialect = engine::accel::lang::Dialect::eVulkanGlsl460;
 	inter->lang.text.emplace_back(std::move(snippet));
 
 	stage->setIntermediate(std::move(inter));
@@ -307,7 +305,6 @@ static auto make_accel_vertex_l2_stage() -> uptr<engine::accel::Stage> {
 	auto code = read_shader_file(R"(R:\Development\C++\Vulkan API\Game\resources\shader\finalpass.vs)");
 	auto snippet = string { code.begin(), code.end() };
 
-	inter->lang.dialect = engine::accel::lang::Dialect::eVulkanGlsl460;
 	inter->lang.text.emplace_back(std::move(snippet));
 
 	stage->setIntermediate(std::move(inter));
@@ -335,7 +332,6 @@ static auto make_accel_fragment_l0_stage() -> uptr<engine::accel::Stage> {
 	auto code = read_shader_file(R"(R:\Development\C++\Vulkan API\Game\resources\shader\depthpass_static.frag)");
 	auto snippet = string { code.begin(), code.end() };
 
-	inter->lang.dialect = engine::accel::lang::Dialect::eVulkanGlsl460;
 	inter->lang.text.emplace_back(std::move(snippet));
 
 	stage->setIntermediate(std::move(inter));
@@ -363,7 +359,6 @@ static auto make_accel_fragment_l1_stage() -> uptr<engine::accel::Stage> {
 	auto code = read_shader_file(R"(R:\Development\C++\Vulkan API\Game\resources\shader\mainpass_static.frag)");
 	auto snippet = string { code.begin(), code.end() };
 
-	inter->lang.dialect = engine::accel::lang::Dialect::eVulkanGlsl460;
 	inter->lang.text.emplace_back(std::move(snippet));
 
 	stage->setIntermediate(std::move(inter));
@@ -391,7 +386,6 @@ static auto make_accel_fragment_l2_stage() -> uptr<engine::accel::Stage> {
 	auto code = read_shader_file(R"(R:\Development\C++\Vulkan API\Game\resources\shader\finalpass.frag)");
 	auto snippet = string { code.begin(), code.end() };
 
-	inter->lang.dialect = engine::accel::lang::Dialect::eVulkanGlsl460;
 	inter->lang.text.emplace_back(std::move(snippet));
 
 	stage->setIntermediate(std::move(inter));

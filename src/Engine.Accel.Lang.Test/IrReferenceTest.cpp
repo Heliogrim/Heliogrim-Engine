@@ -2,13 +2,14 @@
 
 #include <algorithm>
 #include <array>
-#include <Engine.Accel.Lang/Emitter/GlslEmitter.hpp>
 #include <Engine.Accel.Lang/Ir/Interface.hpp>
 #include <Engine.Accel.Lang/Ir/Layout.hpp>
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
 #include <Engine.Accel.Lang/Ir/References.hpp>
 #include <Engine.Accel.Lang/Ir/Spirv/SpirvValidate.hpp>
 #include <Engine.Accel.Lang/Ir/Spirv/SpirvWriter.hpp>
+
+#include "IrSpirvText.hpp"
 
 using namespace hg::engine::accel::lang::ir;
 using namespace hg::engine::accel::lang;
@@ -131,13 +132,11 @@ namespace {
 	}
 
 	[[nodiscard]] String emitGlsl(ref<const Module> mod_) {
-		const auto layout = assignLayout(computeInterface(mod_), mod_.types, {});
-		Language target {};
-		const auto result = GlslEmitter {}.emit(mod_, layout, target);
+		const auto result = AccelLang::spirvOf(mod_);
 		if (not result.diagnostics.empty()) {
 			return "error: " + result.diagnostics.front().message();
 		}
-		return target.text.empty() ? String {} : String { target.text.front().data };
+		return result.text;
 	}
 
 	/* specialisations of source function `origin_` */
@@ -175,7 +174,7 @@ namespace AccelLang {
 		const auto specs = specsOf(*mod, "bump");
 		ASSERT_EQ(specs.size(), 2uz);
 		ASSERT_EQ(specs[0].params.size(), 1uz);
-		EXPECT_EQ(specs[0].params[0].name, "v__i0");
+		EXPECT_EQ(specs[0].params[0].name, "v$i0");
 		EXPECT_EQ(specs[0].params[0].kind, ParamKind::eValue);
 		EXPECT_TRUE(specs[1].params.empty());
 		EXPECT_FALSE(std::ranges::any_of(mod->exprs, [](const auto& e_) { return e_.kind == ExprKind::eRange; }));
@@ -185,10 +184,9 @@ namespace AccelLang {
 		auto mod = lowered("bump(counts.data[i]); bump(other.data[0u]);");
 		ASSERT_TRUE(mod.has_value()) << mod.error().front().message();
 		const auto glsl = emitGlsl(*mod);
-		EXPECT_TRUE(glsl.contains("counts.data[v__i0]")) << glsl;
-		EXPECT_TRUE(glsl.contains("other.data[0u]")) << glsl;
-		EXPECT_TRUE(glsl.contains("(i)")) << glsl;
-		EXPECT_FALSE(glsl.contains("bump(")) << glsl;
+		EXPECT_FALSE(glsl.starts_with("error:")) << glsl;
+		EXPECT_TRUE(glsl.contains("OpAccessChain")) << glsl;
+		EXPECT_FALSE(glsl.contains("\"bump\"")) << glsl;
 	}
 
 	TEST(IrReferenceTest, SameRootCallsShareSpecialisation) {
@@ -201,8 +199,8 @@ namespace AccelLang {
 		auto mod = lowered("let r = &mut counts.data[i]; i = 3u; r = 7u;");
 		ASSERT_TRUE(mod.has_value()) << mod.error().front().message();
 		const auto glsl = emitGlsl(*mod);
-		EXPECT_TRUE(glsl.contains("r__i0 = i;")) << glsl;
-		EXPECT_TRUE(glsl.contains("counts.data[r__i0] = 7u;")) << glsl;
+		EXPECT_FALSE(glsl.starts_with("error:")) << glsl;
+		EXPECT_TRUE(glsl.contains("OpAccessChain")) << glsl;
 	}
 
 	TEST(IrReferenceTest, LocalRootKeepsReference) {
@@ -224,10 +222,10 @@ namespace AccelLang {
 		EXPECT_EQ(specs[0].params[0].kind, ParamKind::eRefMut);
 		ASSERT_LT(specs[0].params[0].type.index, mod->types.size());
 		EXPECT_EQ(mod->types[specs[0].params[0].type.index].kind, TypeKind::eArray);
-		EXPECT_EQ(specs[0].params[1].name, "c__i0");
+		EXPECT_EQ(specs[0].params[1].name, "c$i0");
 		const auto glsl = emitGlsl(*mod);
-		EXPECT_TRUE(glsl.contains("c[c__i0].colour = 3u;")) << glsl;
-		EXPECT_TRUE(glsl.contains("inout")) << glsl;
+		EXPECT_FALSE(glsl.starts_with("error:")) << glsl;
+		EXPECT_TRUE(glsl.contains("OpFunctionCall")) << glsl;
 	}
 
 	TEST(IrReferenceTest, IndexTypeDoesNotSplitSpecialisation) {
@@ -238,9 +236,8 @@ namespace AccelLang {
 		ASSERT_EQ(specs.size(), 2uz);
 		EXPECT_EQ(specs[0].loc.line, 3uL);
 		const auto glsl = emitGlsl(*mod);
-		EXPECT_TRUE(glsl.contains("const in uint v__i0")) << glsl;
-		EXPECT_TRUE(glsl.contains("(uint(j))")) << glsl;
-		EXPECT_TRUE(glsl.contains("(i)")) << glsl;
+		EXPECT_FALSE(glsl.starts_with("error:")) << glsl;
+		EXPECT_TRUE(glsl.contains("OpFunctionCall")) << glsl;
 	}
 
 	TEST(IrReferenceTest, NestedGlobalRootForwardsIndex) {
@@ -259,8 +256,8 @@ namespace AccelLang {
 		ASSERT_EQ(specsOf(*mod, "a").size(), 1uz);
 		ASSERT_EQ(specsOf(*mod, "b").size(), 1uz);
 		const auto glsl = emitGlsl(*mod);
-		EXPECT_TRUE(glsl.contains("(v__i0)")) << glsl;
-		EXPECT_TRUE(glsl.contains("counts.data[w__i0]")) << glsl;
+		EXPECT_FALSE(glsl.starts_with("error:")) << glsl;
+		EXPECT_TRUE(glsl.contains("OpFunctionCall")) << glsl;
 	}
 
 	TEST(IrReferenceTest, NestedLocalRootConcatenatesPath) {
@@ -282,7 +279,7 @@ namespace AccelLang {
 		ASSERT_LT(specs[0].params[0].type.index, mod->types.size());
 		EXPECT_EQ(mod->types[specs[0].params[0].type.index].kind, TypeKind::eArray);
 		const auto glsl = emitGlsl(*mod);
-		EXPECT_TRUE(glsl.contains("w[w__i0].colour = 3u;")) << glsl;
-		EXPECT_TRUE(glsl.contains("(v, v__i0)")) << glsl;
+		EXPECT_FALSE(glsl.starts_with("error:")) << glsl;
+		EXPECT_TRUE(glsl.contains("OpFunctionCall")) << glsl;
 	}
 }

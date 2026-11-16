@@ -4,7 +4,7 @@
 #include <regex>
 #include <string>
 
-#include <Engine.Accel.Lang/Emitter/GlslEmitter.hpp>
+#include "IrSpirvText.hpp"
 #include <Engine.Accel.Lang/Ir/Interface.hpp>
 #include <Engine.Accel.Lang/Ir/Layout.hpp>
 #include <Engine.Accel.Lang/Ir/Lower.hpp>
@@ -333,13 +333,11 @@ namespace AccelLang {
 			BindingDecl { "b", TypeRef { 3u }, BindMode::eBind, BindClass::eUniformBuffer, false, true, {}, "b" }
 		};
 
-		Language target {};
-		const auto diags = GlslEmitter {}.emit(mod, layoutOf(mod), target).diagnostics;
+		const auto diags = AccelLang::spirvOf(mod).diagnostics;
 
 		ASSERT_EQ(diags.size(), 1uz);
 		expectWording(diags[0]);
 		EXPECT_TRUE(diags[0].message().contains("'S'")) << diags[0].message();
-		EXPECT_TRUE(target.text.empty());
 	}
 
 	TEST(LowerTest, PushBlockThatCannotBeLaidOutIsDiagnostic) {

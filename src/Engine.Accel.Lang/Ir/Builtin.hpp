@@ -42,11 +42,10 @@ namespace hg::engine::accel::lang::ir {
 	};
 
 	/**
-	 * A builtin variable (expression kind `eBuiltin`): its source name, GLSL name and type (scalar or vector).
+	 * A builtin variable (expression kind `eBuiltin`): its source name and type (scalar or vector).
 	 */
 	struct BuiltinVariable {
 		StringView name;
-		StringView glsl;
 		TypeKind kind;
 		ScalarKind scalar;
 		u32 n;
@@ -57,7 +56,7 @@ namespace hg::engine::accel::lang::ir {
 		u32 requirement = eNoRequirement;
 		/* same value across all invocations of a workgroup/draw (uniform control analysis) */
 		bool uniform = false;
-		/* per-vertex input array (`input_position[i]` -> `gl_in[i].gl_Position`); `kind`/`n` describe one element */
+		/* per-vertex input array (`input_position[i]`); `kind`/`n` describe one element */
 		bool arrayed = false;
 		/* fixed-size array of `kind`/`n` elements (`tess_level_outer`); 0 = not an array */
 		u32 count = 0uL;
@@ -67,27 +66,27 @@ namespace hg::engine::accel::lang::ir {
 
 	inline constexpr std::array<BuiltinVariable, 21> builtinVariables {
 		{
-			{ "global_invocation_id", "gl_GlobalInvocationID", TypeKind::eVector, ScalarKind::eUInt, 3uL, stageCompute },
-			{ "local_invocation_id", "gl_LocalInvocationID", TypeKind::eVector, ScalarKind::eUInt, 3uL, stageCompute },
-			{ "local_invocation_index", "gl_LocalInvocationIndex", TypeKind::eScalar, ScalarKind::eUInt, 1uL, stageCompute },
-			{ "workgroup_id", "gl_WorkGroupID", TypeKind::eVector, ScalarKind::eUInt, 3uL, stageCompute, false, eNoRequirement, true },
-			{ "num_workgroups", "gl_NumWorkGroups", TypeKind::eVector, ScalarKind::eUInt, 3uL, stageCompute, false, eNoRequirement, true },
-			{ "vertex_index", "gl_VertexIndex", TypeKind::eScalar, ScalarKind::eInt, 1uL, stageVertex },
-			{ "instance_index", "gl_InstanceIndex", TypeKind::eScalar, ScalarKind::eInt, 1uL, stageVertex },
-			{ "position", "gl_Position", TypeKind::eVector, ScalarKind::eFloat, 4uL, stageVertex | stageTessEval | stageGeometry, true },
-			{ "frag_depth", "gl_FragDepth", TypeKind::eScalar, ScalarKind::eFloat, 1uL, stageFragment, true },
-			{ "frag_coord", "gl_FragCoord", TypeKind::eVector, ScalarKind::eFloat, 4uL, stageFragment },
-			{ "front_facing", "gl_FrontFacing", TypeKind::eScalar, ScalarKind::eBool, 1uL, stageFragment },
-			{ "view_index", "gl_ViewIndex", TypeKind::eScalar, ScalarKind::eInt, 1uL, stageGraphics, false, eRequireMultiview, true },
-			{ "input_position", "gl_in", TypeKind::eVector, ScalarKind::eFloat, 4uL, stageGeometry | stageTessCtrl | stageTessEval, false, eNoRequirement, false, true },
-			{ "output_position", "gl_out", TypeKind::eVector, ScalarKind::eFloat, 4uL, stageTessCtrl, true, eNoRequirement, false, true },
-			{ "tess_level_outer", "gl_TessLevelOuter", TypeKind::eScalar, ScalarKind::eFloat, 1uL, stageTessCtrl | stageTessEval, true, eNoRequirement, false, false, 4uL, stageTessCtrl },
-			{ "tess_level_inner", "gl_TessLevelInner", TypeKind::eScalar, ScalarKind::eFloat, 1uL, stageTessCtrl | stageTessEval, true, eNoRequirement, false, false, 2uL, stageTessCtrl },
-			{ "tess_coord", "gl_TessCoord", TypeKind::eVector, ScalarKind::eFloat, 3uL, stageTessEval },
-			{ "patch_vertices", "gl_PatchVerticesIn", TypeKind::eScalar, ScalarKind::eInt, 1uL, stageTessCtrl | stageTessEval, false, eNoRequirement, true },
-			{ "primitive_id", "gl_PrimitiveIDIn", TypeKind::eScalar, ScalarKind::eInt, 1uL, stageGeometry },
-			{ "invocation_id", "gl_InvocationID", TypeKind::eScalar, ScalarKind::eInt, 1uL, stageGeometry | stageTessCtrl },
-			{ "layer", "gl_Layer", TypeKind::eScalar, ScalarKind::eInt, 1uL, stageGeometry, true }
+			{ "global_invocation_id", TypeKind::eVector, ScalarKind::eUInt, 3uL, stageCompute },
+			{ "local_invocation_id", TypeKind::eVector, ScalarKind::eUInt, 3uL, stageCompute },
+			{ "local_invocation_index", TypeKind::eScalar, ScalarKind::eUInt, 1uL, stageCompute },
+			{ "workgroup_id", TypeKind::eVector, ScalarKind::eUInt, 3uL, stageCompute, false, eNoRequirement, true },
+			{ "num_workgroups", TypeKind::eVector, ScalarKind::eUInt, 3uL, stageCompute, false, eNoRequirement, true },
+			{ "vertex_index", TypeKind::eScalar, ScalarKind::eInt, 1uL, stageVertex },
+			{ "instance_index", TypeKind::eScalar, ScalarKind::eInt, 1uL, stageVertex },
+			{ "position", TypeKind::eVector, ScalarKind::eFloat, 4uL, stageVertex | stageTessEval | stageGeometry, true },
+			{ "frag_depth", TypeKind::eScalar, ScalarKind::eFloat, 1uL, stageFragment, true },
+			{ "frag_coord", TypeKind::eVector, ScalarKind::eFloat, 4uL, stageFragment },
+			{ "front_facing", TypeKind::eScalar, ScalarKind::eBool, 1uL, stageFragment },
+			{ "view_index", TypeKind::eScalar, ScalarKind::eInt, 1uL, stageGraphics, false, eRequireMultiview, true },
+			{ "input_position", TypeKind::eVector, ScalarKind::eFloat, 4uL, stageGeometry | stageTessCtrl | stageTessEval, false, eNoRequirement, false, true },
+			{ "output_position", TypeKind::eVector, ScalarKind::eFloat, 4uL, stageTessCtrl, true, eNoRequirement, false, true },
+			{ "tess_level_outer", TypeKind::eScalar, ScalarKind::eFloat, 1uL, stageTessCtrl | stageTessEval, true, eNoRequirement, false, false, 4uL, stageTessCtrl },
+			{ "tess_level_inner", TypeKind::eScalar, ScalarKind::eFloat, 1uL, stageTessCtrl | stageTessEval, true, eNoRequirement, false, false, 2uL, stageTessCtrl },
+			{ "tess_coord", TypeKind::eVector, ScalarKind::eFloat, 3uL, stageTessEval },
+			{ "patch_vertices", TypeKind::eScalar, ScalarKind::eInt, 1uL, stageTessCtrl | stageTessEval, false, eNoRequirement, true },
+			{ "primitive_id", TypeKind::eScalar, ScalarKind::eInt, 1uL, stageGeometry },
+			{ "invocation_id", TypeKind::eScalar, ScalarKind::eInt, 1uL, stageGeometry | stageTessCtrl },
+			{ "layer", TypeKind::eScalar, ScalarKind::eInt, 1uL, stageGeometry, true }
 		}
 	};
 
@@ -105,7 +104,6 @@ namespace hg::engine::accel::lang::ir {
 	 */
 	struct BuiltinFunction {
 		StringView name;
-		StringView glsl;
 		StringView signature;
 		u8 stages = stageAll;
 		u32 requirement = eNoRequirement;
@@ -116,95 +114,95 @@ namespace hg::engine::accel::lang::ir {
 	};
 
 	inline constexpr BuiltinFunction builtinFunctions[] = {
-		{ "sample", "texture", "f32vec4(tex,smp,coord)", stageAll, eNoRequirement, true },
-		{ "sample_lod", "textureLod", "f32vec4(tex,smp,coord,f32)" },
-		{ "texture_size", "textureSize", "size(tex,smp,s32)" },
-		{ "sample_sparse", "sparseTextureARB", "s32(tex,smp,coord,&f32vec4)", stageAll, eRequireSparse, true },
+		{ "sample", "f32vec4(tex,smp,coord)", stageAll, eNoRequirement, true },
+		{ "sample_lod", "f32vec4(tex,smp,coord,f32)" },
+		{ "texture_size", "size(tex,smp,s32)" },
+		{ "sample_sparse", "s32(tex,smp,coord,&f32vec4)", stageAll, eRequireSparse, true },
 		{
-			"sample_sparse_clamp", "sparseTextureClampARB", "s32(tex,smp,coord,f32,&f32vec4)", stageAll,
+			"sample_sparse_clamp", "s32(tex,smp,coord,f32,&f32vec4)", stageAll,
 			eRequireSparse | eRequireSparseClamp, true
 		},
-		{ "sparse_resident", "sparseTexelsResidentARB", "bool(s32)", stageAll, eRequireSparse },
+		{ "sparse_resident", "bool(s32)", stageAll, eRequireSparse },
 
-		{ "abs", "abs", "genF(genF)" },
-		{ "abs", "abs", "genI(genI)" },
-		{ "sign", "sign", "genF(genF)" },
-		{ "floor", "floor", "genF(genF)" },
-		{ "ceil", "ceil", "genF(genF)" },
-		{ "fract", "fract", "genF(genF)" },
-		{ "mod", "mod", "genF(genF,genF)" },
-		{ "mod", "mod", "genF(genF,f32)" },
-		{ "min", "min", "genF(genF,genF)" },
-		{ "min", "min", "genF(genF,f32)" },
-		{ "min", "min", "genI(genI,genI)" },
-		{ "min", "min", "genU(genU,genU)" },
-		{ "max", "max", "genF(genF,genF)" },
-		{ "max", "max", "genF(genF,f32)" },
-		{ "max", "max", "genI(genI,genI)" },
-		{ "max", "max", "genU(genU,genU)" },
-		{ "clamp", "clamp", "genF(genF,genF,genF)" },
-		{ "clamp", "clamp", "genF(genF,f32,f32)" },
-		{ "clamp", "clamp", "genI(genI,genI,genI)" },
-		{ "clamp", "clamp", "genU(genU,genU,genU)" },
-		{ "mix", "mix", "genF(genF,genF,genF)" },
-		{ "mix", "mix", "genF(genF,genF,f32)" },
-		{ "step", "step", "genF(genF,genF)" },
-		{ "step", "step", "genF(f32,genF)" },
-		{ "smoothstep", "smoothstep", "genF(genF,genF,genF)" },
-		{ "smoothstep", "smoothstep", "genF(f32,f32,genF)" },
+		{ "abs", "genF(genF)" },
+		{ "abs", "genI(genI)" },
+		{ "sign", "genF(genF)" },
+		{ "floor", "genF(genF)" },
+		{ "ceil", "genF(genF)" },
+		{ "fract", "genF(genF)" },
+		{ "mod", "genF(genF,genF)" },
+		{ "mod", "genF(genF,f32)" },
+		{ "min", "genF(genF,genF)" },
+		{ "min", "genF(genF,f32)" },
+		{ "min", "genI(genI,genI)" },
+		{ "min", "genU(genU,genU)" },
+		{ "max", "genF(genF,genF)" },
+		{ "max", "genF(genF,f32)" },
+		{ "max", "genI(genI,genI)" },
+		{ "max", "genU(genU,genU)" },
+		{ "clamp", "genF(genF,genF,genF)" },
+		{ "clamp", "genF(genF,f32,f32)" },
+		{ "clamp", "genI(genI,genI,genI)" },
+		{ "clamp", "genU(genU,genU,genU)" },
+		{ "mix", "genF(genF,genF,genF)" },
+		{ "mix", "genF(genF,genF,f32)" },
+		{ "step", "genF(genF,genF)" },
+		{ "step", "genF(f32,genF)" },
+		{ "smoothstep", "genF(genF,genF,genF)" },
+		{ "smoothstep", "genF(f32,f32,genF)" },
 
-		{ "sqrt", "sqrt", "genF(genF)" },
-		{ "inversesqrt", "inversesqrt", "genF(genF)" },
-		{ "pow", "pow", "genF(genF,genF)" },
-		{ "exp", "exp", "genF(genF)" },
-		{ "log", "log", "genF(genF)" },
+		{ "sqrt", "genF(genF)" },
+		{ "inversesqrt", "genF(genF)" },
+		{ "pow", "genF(genF,genF)" },
+		{ "exp", "genF(genF)" },
+		{ "log", "genF(genF)" },
 
-		{ "sin", "sin", "genF(genF)" },
-		{ "cos", "cos", "genF(genF)" },
-		{ "tan", "tan", "genF(genF)" },
-		{ "asin", "asin", "genF(genF)" },
-		{ "acos", "acos", "genF(genF)" },
-		{ "atan", "atan", "genF(genF)" },
-		{ "atan", "atan", "genF(genF,genF)" },
+		{ "sin", "genF(genF)" },
+		{ "cos", "genF(genF)" },
+		{ "tan", "genF(genF)" },
+		{ "asin", "genF(genF)" },
+		{ "acos", "genF(genF)" },
+		{ "atan", "genF(genF)" },
+		{ "atan", "genF(genF,genF)" },
 
-		{ "length", "length", "f32(genF)" },
-		{ "distance", "distance", "f32(genF,genF)" },
-		{ "dot", "dot", "f32(genF,genF)" },
-		{ "cross", "cross", "f32vec3(f32vec3,f32vec3)" },
-		{ "normalize", "normalize", "genF(genF)" },
-		{ "reflect", "reflect", "genF(genF,genF)" },
+		{ "length", "f32(genF)" },
+		{ "distance", "f32(genF,genF)" },
+		{ "dot", "f32(genF,genF)" },
+		{ "cross", "f32vec3(f32vec3,f32vec3)" },
+		{ "normalize", "genF(genF)" },
+		{ "reflect", "genF(genF,genF)" },
 
-		{ "transpose", "transpose", "mat(mat)" },
-		{ "inverse", "inverse", "mat(mat)" },
+		{ "transpose", "mat(mat)" },
+		{ "inverse", "mat(mat)" },
 
-		{ "dFdx", "dFdx", "genF(genF)", stageFragment, eNoRequirement, true },
-		{ "dFdy", "dFdy", "genF(genF)", stageFragment, eNoRequirement, true },
-		{ "fwidth", "fwidth", "genF(genF)", stageFragment, eNoRequirement, true },
+		{ "dFdx", "genF(genF)", stageFragment, eNoRequirement, true },
+		{ "dFdy", "genF(genF)", stageFragment, eNoRequirement, true },
+		{ "fwidth", "genF(genF)", stageFragment, eNoRequirement, true },
 
-		{ "barrier", "barrier", "void()", stageCompute | stageTessCtrl, eNoRequirement, true, true },
-		{ "memory_barrier_shared", "memoryBarrierShared", "void()", stageCompute | stageTessCtrl, eNoRequirement, true, true },
-		{ "emit_vertex", "EmitVertex", "void()", stageGeometry },
-		{ "end_primitive", "EndPrimitive", "void()", stageGeometry },
-		{ "image_load", "imageLoad", "ival(img,icoord)" },
-		{ "image_store", "imageStore", "void(&img,icoord,ival)" },
-		{ "image_size", "imageSize", "icoord(img)" },
+		{ "barrier", "void()", stageCompute | stageTessCtrl, eNoRequirement, true, true },
+		{ "memory_barrier_shared", "void()", stageCompute | stageTessCtrl, eNoRequirement, true, true },
+		{ "emit_vertex", "void()", stageGeometry },
+		{ "end_primitive", "void()", stageGeometry },
+		{ "image_load", "ival(img,icoord)" },
+		{ "image_store", "void(&img,icoord,ival)" },
+		{ "image_size", "icoord(img)" },
 
-		{ "atomic_add", "atomicAdd", "u32(&u32,u32)" },
-		{ "atomic_add", "atomicAdd", "s32(&s32,s32)" },
-		{ "atomic_min", "atomicMin", "u32(&u32,u32)" },
-		{ "atomic_min", "atomicMin", "s32(&s32,s32)" },
-		{ "atomic_max", "atomicMax", "u32(&u32,u32)" },
-		{ "atomic_max", "atomicMax", "s32(&s32,s32)" },
-		{ "atomic_and", "atomicAnd", "u32(&u32,u32)" },
-		{ "atomic_and", "atomicAnd", "s32(&s32,s32)" },
-		{ "atomic_or", "atomicOr", "u32(&u32,u32)" },
-		{ "atomic_or", "atomicOr", "s32(&s32,s32)" },
-		{ "atomic_xor", "atomicXor", "u32(&u32,u32)" },
-		{ "atomic_xor", "atomicXor", "s32(&s32,s32)" },
-		{ "atomic_exchange", "atomicExchange", "u32(&u32,u32)" },
-		{ "atomic_exchange", "atomicExchange", "s32(&s32,s32)" },
-		{ "atomic_comp_swap", "atomicCompSwap", "u32(&u32,u32,u32)" },
-		{ "atomic_comp_swap", "atomicCompSwap", "s32(&s32,s32,s32)" }
+		{ "atomic_add", "u32(&u32,u32)" },
+		{ "atomic_add", "s32(&s32,s32)" },
+		{ "atomic_min", "u32(&u32,u32)" },
+		{ "atomic_min", "s32(&s32,s32)" },
+		{ "atomic_max", "u32(&u32,u32)" },
+		{ "atomic_max", "s32(&s32,s32)" },
+		{ "atomic_and", "u32(&u32,u32)" },
+		{ "atomic_and", "s32(&s32,s32)" },
+		{ "atomic_or", "u32(&u32,u32)" },
+		{ "atomic_or", "s32(&s32,s32)" },
+		{ "atomic_xor", "u32(&u32,u32)" },
+		{ "atomic_xor", "s32(&s32,s32)" },
+		{ "atomic_exchange", "u32(&u32,u32)" },
+		{ "atomic_exchange", "s32(&s32,s32)" },
+		{ "atomic_comp_swap", "u32(&u32,u32,u32)" },
+		{ "atomic_comp_swap", "s32(&s32,s32,s32)" }
 	};
 
 	[[nodiscard]] constexpr const BuiltinFunction* findBuiltinFunction(StringView name_) noexcept {
@@ -212,7 +210,7 @@ namespace hg::engine::accel::lang::ir {
 		return it != std::end(builtinFunctions) ? &*it : nullptr;
 	}
 
-	/* SPIR-V forms, indexed like `builtinVariables` / `builtinFunctions`; the `glsl` columns above stay for the GLSL emitter */
+	/* SPIR-V forms, indexed like `builtinVariables` / `builtinFunctions` */
 
 	struct SpirvBuiltin {
 		StringView name;

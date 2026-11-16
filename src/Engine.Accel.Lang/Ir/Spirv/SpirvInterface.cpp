@@ -10,6 +10,161 @@
 #include "../Interface.hpp"
 
 namespace hg::engine::accel::lang::ir::spirv {
+	void Impl::checkDeclarations() {
+		const auto user = [&](ref<const DiagnosticCodeInfo> code_, SourceLoc loc_, String message_) {
+			diagnostics.emplace_back(Diagnostic::error(code_, std::move(message_)).at(spanIn(mod, loc_)));
+		};
+		const auto at = [&](TypeRef ref_) -> const TypeDesc* {
+			return ref_.index < mod.types.size() ? &mod.types[ref_.index] : nullptr;
+		};
+
+		for (const auto& desc : mod.types) {
+			if (desc.kind == TypeKind::eMatrix && desc.scalar != ScalarKind::eFloat) {
+				fail(codes::asl("internal-spirv-emit"), {}, "matrices are float only");
+			}
+		}
+
+		// structs: self containment (depth first, open/done) and one shape per name
+		enum class State : u8 { eNew, eOpen, eDone };
+		Vector<State> state(mod.types.size(), State::eNew);
+		Vector<u32> named {};
+		const auto same = [&](this const auto& self_, TypeRef a_, TypeRef b_, u32 depth_) -> bool {
+			const auto* a = at(a_);
+			const auto* b = at(b_);
+			if (a == b) {
+				return true;
+			}
+			// past the depth bound the shapes are taken as equal: a deep identical struct must not conflict
+			if (depth_ > 64uL) {
+				return true;
+			}
+			if (a == nullptr || b == nullptr || a->kind != b->kind) {
+				return false;
+			}
+			if (a->kind == TypeKind::eStruct) {
+				return a->name == b->name && a->fields.size() == b->fields.size() && std::ranges::equal(
+					a->fields,
+					b->fields,
+					[&](const auto& x_, const auto& y_) { return x_.name == y_.name && self_(x_.type, y_.type, depth_ + 1uL); }
+				);
+			}
+			return a->scalar == b->scalar && a->bits == b->bits && a->n == b->n && a->m == b->m && a->count == b->count &&
+				a->name == b->name && a->dim == b->dim && (a->element == b->element || self_(a->element, b->element, depth_ + 1uL));
+		};
+		const auto use = [&](this const auto& self_, TypeRef ref_, SourceLoc loc_) -> void {
+			const auto* desc = at(ref_);
+			if (desc == nullptr || state[ref_.index] == State::eDone) {
+				return;
+			}
+			if (state[ref_.index] == State::eOpen) {
+				user(codes::asl("recursive-struct"), loc_, "struct '" + desc->name + "' contains itself");
+				return;
+			}
+			state[ref_.index] = State::eOpen;
+			if (desc->kind == TypeKind::eArray || desc->kind == TypeKind::eRegion) {
+				self_(desc->element, loc_);
+			}
+			if (desc->kind == TypeKind::eStruct) {
+				for (const auto& field : desc->fields) {
+					self_(field.type, loc_);
+				}
+				if (not desc->name.empty()) {
+					const auto known = std::ranges::find_if(named, [&](u32 i_) { return mod.types[i_].name == desc->name; });
+					if (known == named.end()) {
+						named.emplace_back(ref_.index);
+					} else if (not same(TypeRef { *known }, ref_, 0uL)) {
+						user(codes::asl("conflicting-struct-definitions"), loc_, "conflicting definitions of struct '" + desc->name + "'");
+					}
+				}
+			}
+			state[ref_.index] = State::eDone;
+		};
+
+		// interface order: inputs first, then id; neighbours with one id and direction are duplicates
+		Vector<u32> order(mod.bindings.size());
+		for (u32 i = 0uL; i < order.size(); ++i) {
+			order[i] = i;
+		}
+		std::ranges::stable_sort(
+			order,
+			[&](u32 a_, u32 b_) {
+				const auto& a = mod.bindings[a_];
+				const auto& b = mod.bindings[b_];
+				return std::forward_as_tuple(not a.input, a.id) < std::forward_as_tuple(not b.input, b.id);
+			}
+		);
+		u32 pushBlocks = 0uL;
+		for (u32 i = 0uL; i < order.size(); ++i) {
+			const auto& binding = mod.bindings[order[i]];
+			if (i > 0uL && mod.bindings[order[i - 1uL]].id == binding.id && mod.bindings[order[i - 1uL]].input == binding.input) {
+				user(codes::asl("duplicate-binding"), binding.loc, "binding '" + binding.id + "' is declared twice");
+				continue;
+			}
+			use(binding.type, binding.loc);
+			if (binding.implicit || binding.mode == BindMode::eForward || binding.bindClass == BindClass::eWorkgroup) {
+				continue;
+			}
+			if (binding.bindClass == BindClass::eNone) {
+				user(codes::asl("missing-binding-class"), binding.loc, "binding '" + binding.id + "' has no class");
+				continue;
+			}
+			const auto* desc = at(binding.type);
+			const auto opaque = desc != nullptr &&
+				(desc->kind == TypeKind::eTexture || desc->kind == TypeKind::eSampler || desc->kind == TypeKind::eImage);
+			const auto fits = binding.bindClass == BindClass::eTexture ?
+				desc != nullptr && desc->kind == TypeKind::eTexture :
+				binding.bindClass == BindClass::eSampler ?
+				desc != nullptr && desc->kind == TypeKind::eSampler :
+				binding.bindClass == BindClass::eStorageImage ?
+				desc != nullptr && desc->kind == TypeKind::eImage :
+				desc != nullptr && not opaque;
+			if (not fits) {
+				user(codes::asl("binding-class-mismatch"), binding.loc, "type of binding '" + binding.id + "' does not fit its class");
+				continue;
+			}
+			if (binding.bindClass != BindClass::ePushConstant) {
+				continue;
+			}
+			if (++pushBlocks == 2uL) {
+				const auto total = std::ranges::count_if(
+					mod.bindings,
+					[](const auto& b_) {
+						return b_.bindClass == BindClass::ePushConstant && not b_.implicit && b_.mode != BindMode::eForward;
+					}
+				);
+				user(codes::asl("too-many-push-constant-blocks"),
+					binding.loc,
+					"a stage has at most one push constant block, but the module declares " + std::to_string(total)
+				);
+			}
+			const auto range = std::ranges::find(layout.push, binding.id, &PushRange::id);
+			if (range != layout.push.end() && range->size == 0uL) {
+				user(codes::asl("invalid-push-constant-type"), binding.loc, "push constant '" + binding.id + "' cannot be laid out");
+			}
+		}
+
+		for (const auto& fn : mod.functions) {
+			for (const auto& param : fn.params) {
+				use(param.type, fn.loc);
+			}
+			use(fn.ret, fn.loc);
+			if (fn.name == "main" && fn.body.has_value() && (not fn.params.empty() || fn.ret.index != TypeRef {}.index)) {
+				user(codes::asl("invalid-entry-signature"), fn.loc, "'main' takes no parameters and returns nothing");
+			}
+		}
+
+		// every other struct the module uses: constants, locals, expressions (nested fields follow from `use`)
+		for (const auto& constant : mod.constants) {
+			use(constant.type, constant.loc);
+		}
+		for (const auto& stmt : mod.stmts) {
+			use(stmt.type, stmt.loc);
+		}
+		for (const auto& expr : mod.exprs) {
+			use(expr.type, expr.loc);
+		}
+	}
+
 	void Impl::reach() {
 		valueTypes.assign(mod.types.size(), 0uL);
 		globals.assign(mod.bindings.size(), GlobalVar {});
@@ -279,8 +434,15 @@ namespace hg::engine::accel::lang::ir::spirv {
 				static_cast<u64>(static_cast<s64>(value_ << shift) >> shift) :
 				value_ & ((1uLL << bits_) - 1uLL);
 		};
-		// a folded value converted to the scalar type `desc_` at its declared width
-		const auto convert = [&wrap](ref<const TypeDesc> desc_, const Value value_) -> Value {
+		// why the last fold failed, for the diagnostic
+		String reason {};
+		// a folded value converted to the scalar type `desc_` at its declared width; nullopt for a float outside an integer range
+		const auto convert = [&wrap, &reason](ref<const TypeDesc> desc_, const Value value_) -> std::optional<Value> {
+			if (const auto* const real = std::get_if<f64>(&value_);
+				real != nullptr && (desc_.scalar == ScalarKind::eInt || desc_.scalar == ScalarKind::eUInt) && not fitsInteger(*real, desc_.scalar, desc_.bits)) {
+				reason = "a float outside the integer range does not convert";
+				return std::nullopt;
+			}
 			return std::visit(
 				[&](const auto v_) -> Value {
 					switch (desc_.scalar) {
@@ -293,8 +455,6 @@ namespace hg::engine::accel::lang::ir::spirv {
 				value_
 			);
 		};
-		// why the last fold failed, for the diagnostic
-		String reason {};
 
 		// scalar constant expression folded to a value of the expression's own type; nullopt when it does not fold
 		const auto scalarOf = [&](this const auto& self_, const ExprRef ref_, const u32 depth_) -> std::optional<Value> {
@@ -330,7 +490,8 @@ namespace hg::engine::accel::lang::ir::spirv {
 					if (e.op != Op::eNeg || e.operands.size() != 1uL) {
 						break;
 					}
-					if (const auto operand = self_(e.operands.front(), depth_ + 1uL); operand.has_value()) {
+					const auto operand = self_(e.operands.front(), depth_ + 1uL);
+					if (const auto converted = operand.has_value() ? as(*operand) : std::nullopt; converted.has_value()) {
 						value = std::visit(
 							[](const auto value_) -> Value {
 								using T = decltype(value_);
@@ -343,7 +504,7 @@ namespace hg::engine::accel::lang::ir::spirv {
 									return -value_;
 								}
 							},
-							as(*operand)
+							*converted
 						);
 					}
 					break;
@@ -352,8 +513,10 @@ namespace hg::engine::accel::lang::ir::spirv {
 					if (e.operands.size() != 2uL) {
 						break;
 					}
-					const auto lhs = self_(e.operands[0], depth_ + 1uL);
-					const auto rhs = self_(e.operands[1], depth_ + 1uL);
+					const auto lhsValue = self_(e.operands[0], depth_ + 1uL);
+					const auto rhsValue = self_(e.operands[1], depth_ + 1uL);
+					const auto lhs = lhsValue.has_value() ? as(*lhsValue) : std::nullopt;
+					const auto rhs = rhsValue.has_value() ? as(*rhsValue) : std::nullopt;
 					if (not lhs.has_value() || not rhs.has_value()) {
 						break;
 					}
@@ -397,18 +560,29 @@ namespace hg::engine::accel::lang::ir::spirv {
 								}
 							}
 						},
-						as(*lhs),
-						as(*rhs)
+						*lhs,
+						*rhs
 					);
 					break;
 				}
 				default: break;
 			}
-			return value.has_value() ? std::optional { as(*value) } : std::nullopt;
+			return value.has_value() ? as(*value) : std::nullopt;
 		};
 
 		// components (vector) or columns (matrix) of every folded composite, to flatten nested constructs
 		std::map<u32, Ops> parts {};
+		// value of every folded scalar, to convert components to the composite's scalar type
+		std::map<u32, Value> values {};
+		const auto flatten = [&](this const auto& self_, const u32 id_, ref<Ops> out_) -> void {
+			if (const auto nested = parts.find(id_); nested != parts.end()) {
+				for (const auto part : nested->second) {
+					self_(part, out_);
+				}
+				return;
+			}
+			out_.emplace_back(id_);
+		};
 		// constant expression folded to an OpConstant / OpConstantComposite id; 0 when it does not fold
 		const auto fold = [&](this const auto& self_, const ExprRef ref_, const u32 depth_) -> u32 {
 			if (ref_.index >= mod.exprs.size() || depth_ > maxDepth) {
@@ -421,7 +595,11 @@ namespace hg::engine::accel::lang::ir::spirv {
 			const auto& t = mod.types[e.type.index];
 			if (t.kind == TypeKind::eScalar) {
 				const auto value = scalarOf(ref_, depth_);
-				return value.has_value() ? literal(e.type, LiteralValue { *value, {} }) : 0uL;
+				const auto id = value.has_value() ? literal(e.type, LiteralValue { *value }) : 0uL;
+				if (id != 0uL) {
+					values.insert_or_assign(id, *value);
+				}
+				return id;
 			}
 			if (e.kind == ExprKind::eNameRef) {
 				const bool folds = not e.local && e.constant.index < mod.constants.size() &&
@@ -440,11 +618,22 @@ namespace hg::engine::accel::lang::ir::spirv {
 					return 0uL;
 				}
 				operands.emplace_back(id);
-				const auto nested = parts.find(id);
-				if (nested == parts.end()) {
-					flat.emplace_back(id);
-				} else {
-					flat.append_range(nested->second);
+				flatten(id, flat);
+			}
+			// vector and matrix components convert to the composite's scalar type, like the runtime construct
+			if (t.kind == TypeKind::eVector || t.kind == TypeKind::eMatrix) {
+				const TypeDesc component { .scalar = t.scalar, .bits = t.bits };
+				for (auto& id : flat) {
+					const auto value = values.find(id);
+					if (value == values.end()) {
+						return 0uL;
+					}
+					const auto converted = convert(component, value->second);
+					if (not converted.has_value()) {
+						return 0uL;
+					}
+					id = literal(component, LiteralValue { *converted });
+					values.insert_or_assign(id, *converted);
 				}
 			}
 
@@ -458,15 +647,7 @@ namespace hg::engine::accel::lang::ir::spirv {
 					break;
 				}
 				case TypeKind::eMatrix: {
-					const bool columns = operands.size() == t.n && std::ranges::all_of(
-						operands,
-						[&](const u32 id_) { return parts.contains(id_) && parts.at(id_).size() == t.m; }
-					);
-					if (columns) {
-						out = operands;
-						break;
-					}
-					// shortcut: matrix from scalars or columns only; diagonal and matrix-resize constants do not fold yet, add them when a shader needs one
+					// shortcut: matrix from scalars, columns or a same-sized matrix only; diagonal and matrix-resize constants do not fold yet, add them when a shader needs one
 					if (flat.size() != t.n * t.m) {
 						return 0uL;
 					}
@@ -489,7 +670,8 @@ namespace hg::engine::accel::lang::ir::spirv {
 					for (u32 k = 0uL; k < out.size(); ++k) {
 						const auto expected = t.kind == TypeKind::eArray ? t.element : t.fields[k].type;
 						const auto actual = mod.exprs[e.operands[k].index].type;
-						if (actual == expected) {
+						// equal spir-v type ids: structurally equal types (the writer deduplicates them)
+						if (actual == expected || type(actual) == type(expected)) {
 							continue;
 						}
 						const bool scalars = expected.index < mod.types.size() && actual.index < mod.types.size() &&
@@ -499,7 +681,11 @@ namespace hg::engine::accel::lang::ir::spirv {
 							reason = "an element does not match the element type";
 							return 0uL;
 						}
-						out[k] = literal(expected, LiteralValue { convert(mod.types[expected.index], *value), {} });
+						const auto converted = convert(mod.types[expected.index], *value);
+						if (not converted.has_value()) {
+							return 0uL;
+						}
+						out[k] = literal(expected, LiteralValue { *converted });
 					}
 					break;
 				}
@@ -527,7 +713,7 @@ namespace hg::engine::accel::lang::ir::spirv {
 				reason.clear();
 				if (desc.kind == TypeKind::eScalar) {
 					const auto value = scalarOf(constant.value, 0uL);
-					constants[i] = value.has_value() ? literal(constant.type, LiteralValue { *value, {} }) : 0uL;
+					constants[i] = value.has_value() ? literal(constant.type, LiteralValue { *value }) : 0uL;
 				} else {
 					constants[i] = fold(constant.value, 0uL);
 				}
@@ -553,7 +739,7 @@ namespace hg::engine::accel::lang::ir::spirv {
 				continue;
 			}
 			const auto typeId = type(constant.type);
-			const LiteralValue folded { *value, {} };
+			const LiteralValue folded { *value };
 			if (desc.kind == TypeKind::eScalar && desc.scalar == ScalarKind::eBool) {
 				const bool truth = std::visit([](auto value_) { return static_cast<bool>(value_); }, folded.value);
 				constants[i] = w.constant(truth ? spv::Op::OpSpecConstantTrue : spv::Op::OpSpecConstantFalse, typeId, Ops {}, true);
@@ -592,12 +778,9 @@ namespace hg::engine::accel::lang::ir::spirv {
 			if (fn.origin.empty()) {
 				nameOf(info.id, fn.name);
 			}
-			// user names only: specialisations and generated (`__`) params stay unnamed
+			// user names only: specialisations (which carry the generated params) stay unnamed
 			if (fn.origin.empty()) {
 				for (u32 p = 0uL; p < fn.params.size(); ++p) {
-					if (StringView { fn.params[p].name }.contains("__")) {
-						continue;
-					}
 					nameOf(info.params[p], fn.params[p].name);
 				}
 			}

@@ -19,15 +19,6 @@ namespace hg::engine::accel::lang::ir {
 	[[nodiscard]] String quotedType(ref<const Vector<TypeDesc>> types_, TypeRef type_);
 
 	/**
-	 * Names region lowering generates: locals ending in `__off`, `__len`, `__end` or `__i<k>`, functions ending in
-	 * `__r<k>` (`function_`). A user name of that form is a diagnostic.
-	 */
-	[[nodiscard]] bool reservedForRegions(StringView name_, bool function_);
-
-	/* the reserved tag a name ends in, as shown to the user (`__off`, `__r<n>`, `__i<n>`) */
-	[[nodiscard]] String reservedSuffixOf(StringView name_);
-
-	/**
 	 * Function identity: name and parameter types, e.g. `saturate(f32vec3)`. The return type is not part of it.
 	 */
 	[[nodiscard]] String signatureOf(ref<const Module> mod_, ref<const FunctionDecl> fn_);

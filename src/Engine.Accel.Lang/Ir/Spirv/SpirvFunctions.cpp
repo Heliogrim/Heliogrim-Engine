@@ -1,5 +1,7 @@
 #include <algorithm>
 #include <bit>
+#include <type_traits>
+#include <variant>
 
 #include "SpirvEmitter.Impl.hpp"
 #include "../Builtin.hpp"
@@ -8,11 +10,11 @@ namespace hg::engine::accel::lang::ir::spirv {
 	namespace {
 		constexpr u32 none = ~0uL;
 
-		[[nodiscard]] const TypeDesc& desc(const Module& mod_, TypeRef type_) {
+		[[nodiscard]] const TypeDesc& desc(ref<const Module> mod_, TypeRef type_) {
 			return mod_.types[type_.index];
 		}
 
-		[[nodiscard]] u32 width(const TypeDesc& desc_) noexcept {
+		[[nodiscard]] u32 width(ref<const TypeDesc> desc_) noexcept {
 			return desc_.kind == TypeKind::eVector ? desc_.n : 1uL;
 		}
 
@@ -34,7 +36,7 @@ namespace hg::engine::accel::lang::ir::spirv {
 			}
 		}
 
-		[[nodiscard]] u32 fieldIndex(const TypeDesc& desc_, StringView name_) {
+		[[nodiscard]] u32 fieldIndex(ref<const TypeDesc> desc_, StringView name_) {
 			for (u32 i = 0uL; i < desc_.fields.size(); ++i) {
 				if (desc_.fields[i].name == name_) {
 					return i;
@@ -43,13 +45,44 @@ namespace hg::engine::accel::lang::ir::spirv {
 			return none;
 		}
 
-		/* a call or builtin anywhere below: the expression must not be evaluated speculatively */
-		[[nodiscard]] bool impure(const Module& mod_, ExprRef expr_) {
+		/* a literal index into a vector, matrix or sized array that lies in range */
+		[[nodiscard]] bool inRangeConstant(ref<const Module> mod_, ref<const Expr> index_) {
+			const auto base = index_.operands[0].index;
+			const auto at = index_.operands[1].index;
+			if (base >= mod_.exprs.size() || at >= mod_.exprs.size() || mod_.exprs[at].kind != ExprKind::eLiteral ||
+				mod_.exprs[base].type.index >= mod_.types.size()) {
+				return false;
+			}
+
+			const auto& desc = mod_.types[mod_.exprs[base].type.index];
+			const auto length = desc.kind == TypeKind::eVector || desc.kind == TypeKind::eMatrix ? desc.n : (desc.kind == TypeKind::eArray ? desc.count : 0uL);
+			return std::visit(
+				[length](const auto value_) {
+					using T = decltype(value_);
+					if constexpr (std::is_same_v<T, bool> || std::is_floating_point_v<T>) {
+						return false;
+					} else {
+						return value_ >= T {} && static_cast<u64>(value_) < length;
+					}
+				},
+				mod_.exprs[at].literal.value
+			);
+		}
+
+		/* a call, builtin, dynamic index or integer division anywhere below: the expression must not be evaluated speculatively (design 7.2) */
+		[[nodiscard]] bool impure(ref<const Module> mod_, ExprRef expr_) {
 			if (expr_.index >= mod_.exprs.size()) {
 				return false;
 			}
 			const auto& e = mod_.exprs[expr_.index];
 			if (e.kind == ExprKind::eCall || e.kind == ExprKind::eBuiltin) {
+				return true;
+			}
+			if (e.kind == ExprKind::eIndex && e.operands.size() == 2uz && not inRangeConstant(mod_, e)) {
+				return true;
+			}
+			if (e.kind == ExprKind::eBinary && (e.op == Op::eDiv || e.op == Op::eMod) && e.type.index < mod_.types.size() &&
+				mod_.types[e.type.index].scalar != ScalarKind::eFloat) {
 				return true;
 			}
 			return std::ranges::any_of(e.operands, [&](ExprRef o_) { return impure(mod_, o_); });
@@ -218,12 +251,10 @@ namespace hg::engine::accel::lang::ir::spirv {
 					internal(*this, s.loc, "assignment to a non-addressable place");
 					break;
 				}
-				u32 v;
-				if (s.op == Op::eNone) {
-					v = value(s.rhs);
-				} else {
-					const auto cur = load(target);
-					v = binary(s.op, lhs.type, lhs.type, cur, rhs.type, value(s.rhs), s.loc);
+				// rhs first: a call in it may write the target through `&mut`
+				auto v = value(s.rhs);
+				if (s.op != Op::eNone) {
+					v = binary(s.op, lhs.type, lhs.type, load(target), rhs.type, v, s.loc);
 				}
 				store(target, v);
 				break;
@@ -708,7 +739,7 @@ namespace hg::engine::accel::lang::ir::spirv {
 		if (op_ == Op::eMul && kind == ScalarKind::eFloat && width(ld) != width(rd)) {
 			return width(ld) > 1uL ? op(spv::Op::OpVectorTimesScalar, id, Ops { l_, r_ }) : op(spv::Op::OpVectorTimesScalar, id, Ops { r_, l_ });
 		}
-		const auto splat = [&](u32 v_, const TypeDesc& d_) {
+		const auto splat = [&](u32 v_, ref<const TypeDesc> d_) {
 			return width(d_) == n ? v_ : op(spv::Op::OpCompositeConstruct, shaped(d_.scalar, d_.bits, n), Ops(n, v_));
 		};
 		const auto l = splat(l_, ld);
@@ -764,7 +795,7 @@ namespace hg::engine::accel::lang::ir::spirv {
 		}
 		const auto firstType = mod.exprs[expr_.operands[0].index].type;
 		const auto& first = desc(mod, firstType);
-		const auto numeric = [](const TypeDesc& d_) { return d_.kind == TypeKind::eScalar || d_.kind == TypeKind::eVector; };
+		const auto numeric = [](ref<const TypeDesc> d_) { return d_.kind == TypeKind::eScalar || d_.kind == TypeKind::eVector; };
 
 		if (args.size() == 1uL) {
 			if (firstType == expr_.type) {
@@ -940,7 +971,7 @@ namespace hg::engine::accel::lang::ir::spirv {
 
 		const auto& sigs = parsedBuiltinSignatures();
 		const auto operandDesc = [&](u32 i_) -> const TypeDesc& { return desc(mod, mod.exprs[e.operands[i_].index].type); };
-		const auto familyKind = [](const BuiltinSigType& t_) {
+		const auto familyKind = [](ref<const BuiltinSigType> t_) {
 			switch (t_.family) {
 				case BuiltinFamily::eGenF:
 				case BuiltinFamily::eGenH:
@@ -1012,7 +1043,12 @@ namespace hg::engine::accel::lang::ir::spirv {
 				const auto code_ = static_cast<spv::Op>(form.code);
 				if (e.name.starts_with("atomic_")) {
 					// GLSL semantics: device scope, relaxed
-					const auto ptr = pointerOf(place(e.operands[0]));
+					const auto target = place(e.operands[0]);
+					if (target.base == 0uL) {
+						internal(*this, e.loc, "atomic on a non-addressable operand");
+						return 0uL;
+					}
+					const auto ptr = pointerOf(target);
 					const auto scope = u32Constant(w32(spv::Scope::Device));
 					const auto relaxed = u32Constant(w32(spv::MemorySemanticsMask::MaskNone));
 					if (code_ == spv::Op::OpAtomicCompareExchange) {
