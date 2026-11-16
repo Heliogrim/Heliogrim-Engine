@@ -1,6 +1,6 @@
 #include "pch.h"
 
-#include "IrSpirvGate.hpp"
+/**/
 
 #include <Engine.Accel.Compile/Pass/VkVertexFormat.hpp>
 #include <Engine.Accel.Compile/Profile/EffectProfile.hpp>
@@ -8,6 +8,8 @@
 #include <Engine.Accel.Compile/Stage/StageIr.hpp>
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
 #include <Engine.Common/Make.hpp>
+
+#include "IrSpirvGate.hpp"
 
 using namespace hg::engine::accel::lang::ir;
 using namespace hg::engine::accel::lang;
@@ -71,6 +73,7 @@ namespace AccelCompile {
 			const std::array<const Intermediate*, 1> stages { &stage_ };
 			const std::array<StageFlagBits, 1> flags { flags_ };
 			auto composed = composePipelineIr(stages, flags, profile_, spec_, cache_, layouts, pipeline_);
+
 			if (not composed.has_value()) {
 				return std::unexpected(std::move(composed).error());
 			}
@@ -119,7 +122,10 @@ namespace AccelCompile {
 	}
 
 	TEST(StageIrTest, ModuleWarningsNeverFailCompose) {
-		auto stage = intermediateOf("@output (mode = forward, id = \"color\") f32vec4 color;\nfn main() { color = f32vec4(0.0); }\n", EntryKind::eFragment);
+		auto stage = intermediateOf(
+			"@output (mode = forward, id = \"color\") f32vec4 color;\nfn main() { color = f32vec4(0.0); }\n",
+			EntryKind::eFragment
+		);
 		auto mod = *stage.ir;
 		mod.warnings.emplace_back(Diagnostic::warning(hg::engine::accel::lang::codes::asl("toggle-override"), "synthetic warning"));
 		stage.ir = make_smr<const Module>(new Module { std::move(mod) });
@@ -296,11 +302,19 @@ namespace AccelCompile {
 
 			Composed result {};
 			auto composed = composePipelineIr(
-				stages, flags, EffectProfile {}, TestSpecification { {} }, cache_, layouts_, &result.pipeline
+				stages,
+				flags,
+				EffectProfile {},
+				TestSpecification { {} },
+				cache_,
+				layouts_,
+				&result.pipeline
 			);
+
 			if (not composed.has_value()) {
 				return std::unexpected(std::move(composed).error());
 			}
+
 			result.derivats = std::move(composed).value();
 			return result;
 		}
@@ -352,6 +366,7 @@ namespace AccelCompile {
 		ASSERT_TRUE(diagnostics.empty()) << diagnostics.front().message();
 		ASSERT_EQ(layout.groups.size(), 1uLL);
 		ASSERT_EQ(layout.groups.front().elements.size(), 4uLL);
+
 		const std::array<StringView, 4> expected { "c", "l", "m", "t" };
 		for (size_t idx = 0uLL; idx < expected.size(); ++idx) {
 			EXPECT_EQ(layout.groups.front().elements[idx].symbol->symbolName, expected[idx]);
@@ -383,7 +398,15 @@ namespace AccelCompile {
 		PipelineLayoutCache gapLayouts {};
 		const std::array<u8, 2> follows { 1u, 0u };
 		const auto gap = composePipelineIr(
-			stages, flags, EffectProfile {}, TestSpecification { {} }, cache, gapLayouts, nullptr, true, follows
+			stages,
+			flags,
+			EffectProfile {},
+			TestSpecification { {} },
+			cache,
+			gapLayouts,
+			nullptr,
+			true,
+			follows
 		);
 		EXPECT_TRUE(gap.has_value()) << (gap.has_value() ? "" : gap.error().front().message());
 	}
@@ -415,7 +438,17 @@ namespace AccelCompile {
 
 		/* same stages, not directly following: the cached layout must not be reused */
 		const std::array<u8, 2> apart { 1u, 0u };
-		const auto split = composePipelineIr(stages, flags, EffectProfile {}, TestSpecification { {} }, cache, layouts, nullptr, true, apart);
+		const auto split = composePipelineIr(
+			stages,
+			flags,
+			EffectProfile {},
+			TestSpecification { {} },
+			cache,
+			layouts,
+			nullptr,
+			true,
+			apart
+		);
 		ASSERT_TRUE(split.has_value()) << split.error().front().message();
 		const auto splitText = textOf(*(*split)[1]);
 		EXPECT_TRUE(splitText.contains("layout(location = 0) in")) << splitText;
@@ -440,6 +473,7 @@ namespace AccelCompile {
 		const auto& vertexSlots = composed->pipeline->layouts[0].slots;
 		const auto& fragmentSlots = composed->pipeline->layouts[1].slots;
 		ASSERT_EQ(fragmentSlots.size(), 1uLL);
+
 		const auto shared = std::ranges::find_if(vertexSlots, [](const auto& s_) { return s_.id == "b"; });
 		ASSERT_NE(shared, vertexSlots.end());
 		EXPECT_EQ(shared->binding, fragmentSlots.front().binding);
@@ -549,7 +583,14 @@ namespace AccelCompile {
 
 		/* a legacy text stage after the ir stages is the export stage: nothing here is sliced */
 		const auto notLast = composePipelineIr(
-			stages, flags, profile, spec, cache, layouts, nullptr, false
+			stages,
+			flags,
+			profile,
+			spec,
+			cache,
+			layouts,
+			nullptr,
+			false
 		);
 		ASSERT_TRUE(notLast.has_value()) << notLast.error().front().message();
 		EXPECT_TRUE(textOf(*(*notLast)[1]).contains("other")) << textOf(*(*notLast)[1]);
@@ -584,6 +625,7 @@ namespace AccelCompile {
 
 		const auto formatOf = [&](StringView id_) {
 			for (const auto& var : (*resolved)->getIntermediate()->rep.globalScope.inbound) {
+
 				const SymbolIdAnnotation* id = nullptr;
 				const VkBindLocationAnnotation* location = nullptr;
 				for (auto* cur = var->annotation.get(); cur != nullptr; cur = cur->next.get()) {
@@ -593,6 +635,7 @@ namespace AccelCompile {
 						location = static_cast<const VkBindLocationAnnotation*>(cur);
 					}
 				}
+
 				if (id != nullptr && location != nullptr && id->symbolId == id_) {
 					return vertexFormatOf(var->type.scalarType, location->vkFormat);
 				}

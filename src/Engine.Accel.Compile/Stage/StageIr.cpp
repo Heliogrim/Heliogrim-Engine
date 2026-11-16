@@ -12,8 +12,8 @@
 #include <Engine.Accel.Lang/Ir/Typecheck.hpp>
 #include <Engine.Accel.Lang/Rep/Annotation.hpp>
 #include <Engine.Common/Make.hpp>
-#include <Engine.Logging/LogSink.hpp>
 #include <Engine.Logging/Logger.hpp>
+#include <Engine.Logging/LogSink.hpp>
 
 #include "../Profile/EffectProfile.hpp"
 #include "../Spec/EffectSpecification.hpp"
@@ -103,45 +103,44 @@ namespace {
 		ref<const StageFlagBits> flags_,
 		const bool exportStage_
 	) {
-	Vector<const Module*> modules {};
-	modules.reserve(profile_._modules.size() + 1uLL);
-	bool skippedText = false;
-	for (const auto& mod : profile_._modules) {
-		if (mod.ir != nullptr) {
-			modules.emplace_back(mod.ir.get());
-		} else if (not mod.lang.text.empty()) {
-			skippedText = true;
+		Vector<const Module*> modules {};
+		modules.reserve(profile_._modules.size() + 1uLL);
+		bool skippedText = false;
+		for (const auto& mod : profile_._modules) {
+			if (mod.ir != nullptr) {
+				modules.emplace_back(mod.ir.get());
+			} else if (not mod.lang.text.empty()) {
+				skippedText = true;
+			}
 		}
-	}
-	modules.emplace_back(stage_.ir.get());
+		modules.emplace_back(stage_.ir.get());
 
-	Vector<String> outputs {};
-	if (exportStage_) {
-		for (const auto& symbol : spec_.targetSymbols()) {
-			outputs.emplace_back(symbol->symbolName);
+		Vector<String> outputs {};
+		if (exportStage_) {
+			for (const auto& symbol : spec_.targetSymbols()) {
+				outputs.emplace_back(symbol->symbolName);
+			}
 		}
-	}
 
-	const auto offsets = vertexOffsetsOf(stage_);
+		const auto offsets = vertexOffsetsOf(stage_);
 
-	/* Key: the input modules, not the merged one, so a hit merges nothing. */
-	auto key = makeVariantKey(*stage_.ir, profile_._toggles, outputs);
-	{
-		ContentHasher h {};
-		h.put(static_cast<u64>(modules.size()));
-		for (const auto* mod : modules) {
-			h.put(contentHash(*mod));
+		/* Key: the input modules, not the merged one, so a hit merges nothing. */
+		auto key = makeVariantKey(*stage_.ir, profile_._toggles, outputs); {
+			ContentHasher h {};
+			h.put(static_cast<u64>(modules.size()));
+			for (const auto* mod : modules) {
+				h.put(contentHash(*mod));
+			}
+			h.put(flags_);
+			h.put(static_cast<u64>(offsets.size()));
+			for (const auto& [id, offset, format] : offsets) {
+				h.put(StringView { id });
+				h.put(offset);
+				h.put(format);
+			}
+			key.mod = h.value;
 		}
-		h.put(flags_);
-		h.put(static_cast<u64>(offsets.size()));
-		for (const auto& [id, offset, format] : offsets) {
-			h.put(StringView { id });
-			h.put(offset);
-			h.put(format);
-		}
-		key.mod = h.value;
-	}
-	return StageInputs { std::move(modules), std::move(outputs), skippedText, key };
+		return StageInputs { std::move(modules), std::move(outputs), skippedText, key };
 	}
 }
 
@@ -289,7 +288,12 @@ std::expected<Vector<smr<StageDerivat>>, Diagnostics> hg::engine::accel::compose
 			resolved.reserve(stages_.size());
 			for (size_t idx = 0uLL; idx < stages_.size(); ++idx) {
 				auto stage = resolveStageIr(
-					*stages_[idx], profile_, spec_, flags_[idx], cache_, exportLast_ && idx + 1uLL == stages_.size()
+					*stages_[idx],
+					profile_,
+					spec_,
+					flags_[idx],
+					cache_,
+					exportLast_ && idx + 1uLL == stages_.size()
 				);
 				if (not stage.has_value()) {
 					failure = std::move(stage).error();
@@ -310,6 +314,7 @@ std::expected<Vector<smr<StageDerivat>>, Diagnostics> hg::engine::accel::compose
 						}
 						chain.clear();
 					}
+
 					if (idx < resolved.size()) {
 						chain.emplace_back(stages_[idx]->ir->entry, resolved[idx]->interfaceEntries);
 					}
@@ -330,6 +335,7 @@ std::expected<Vector<smr<StageDerivat>>, Diagnostics> hg::engine::accel::compose
 				failure = std::move(layouts).error();
 				return {};
 			}
+
 			/* no collision with unmatched inputs: an adjacent input without a producer fails checkStageChain, non-adjacent stages copy nothing;
 				 * a stage directly behind another ir stage reads its forward inputs at the producer's output locations (by id);
 			 * the producer numbers outputs as the emitter does: interface order, locationCount each */
@@ -345,12 +351,14 @@ std::expected<Vector<smr<StageDerivat>>, Diagnostics> hg::engine::accel::compose
 						next += locationCount(resolved[idx - 1uLL]->mod.types, entry.type);
 					}
 				}
+
 				Vector<String> ids {};
 				for (const auto& entry : resolved[idx]->interfaceEntries) {
 					if (entry.mode == BindMode::eForward && entry.input) {
 						ids.emplace_back(entry.id);
 					}
 				}
+
 				std::ranges::sort(ids);
 				ids.erase(std::ranges::unique(ids).begin(), ids.end());
 				auto& locations = (*layouts)[idx].inputLocations;
@@ -459,11 +467,13 @@ Diagnostics hg::engine::accel::appendBindLayout(
 			if (not std::ranges::contains(pipeline_.layouts[idx].slots, slot->id, &SlotAssignment::id)) {
 				continue;
 			}
+
 			const auto intermediate = derivats_[idx]->getIntermediate();
 			const auto iter = std::ranges::find_if(
 				intermediate->rep.symbolTable,
 				[&](ref<const uptr<Symbol>> s_) { return s_->symbolName == slot->id; }
 			);
+
 			if (iter != intermediate->rep.symbolTable.end()) {
 				symbol = iter->get();
 				owner = idx;

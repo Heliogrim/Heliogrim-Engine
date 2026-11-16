@@ -31,9 +31,11 @@ namespace {
 		while (not work.empty()) {
 			const auto [a, b] = work.back();
 			work.pop_back();
+
 			if (a->kind != b->kind || a->toggle != b->toggle || a->value != b->value || a->children.size() != b->children.size()) {
 				return false;
 			}
+
 			for (auto i = 0uz; i < a->children.size(); ++i) {
 				work.emplace_back(&a->children[i], &b->children[i]);
 			}
@@ -70,8 +72,10 @@ namespace {
 		Opt<String> found = None;
 		const auto check = [&](StringView owner_, size_t at_, StringView kind_, u32 index_, size_t limit_) {
 			if (not found.has_value() && index_ != unset && index_ >= limit_) {
-				found = String(owner_) + " " + std::to_string(at_) + " refers to out of range " + String(kind_) + " " +
-					std::to_string(index_);
+				found = SomeVal(
+					String(owner_) + " " + std::to_string(at_) + " refers to out of range " + String(kind_) + " " +
+					std::to_string(index_)
+				);
 			}
 		};
 
@@ -84,25 +88,31 @@ namespace {
 				check("type", i, "type (earlier types only)", field.type.index, i);
 			}
 		}
+
 		for (auto i = 0uz; i < bindings.size(); ++i) {
 			check("binding", i, "type", bindings[i].type.index, types.size());
 		}
+
 		for (auto i = 0uz; i < constants.size(); ++i) {
 			check("constant", i, "type", constants[i].type.index, types.size());
 			check("constant", i, "expr", constants[i].value.index, exprs.size());
 			check("constant", i, "source", constants[i].loc.source, sourceCount);
 		}
+
 		for (auto i = 0uz; i < functions.size(); ++i) {
 			const auto& fn = functions[i];
 			for (const auto& param : fn.params) {
 				check("function", i, "type", param.type.index, types.size());
 			}
+
 			check("function", i, "type", fn.ret.index, types.size());
 			check("function", i, "source", fn.loc.source, sourceCount);
+
 			if (fn.body.has_value()) {
 				check("function", i, "stmt", fn.body->root.index, stmts.size());
 			}
 		}
+
 		for (auto i = 0uz; i < exprs.size(); ++i) {
 			const auto& e = exprs[i];
 			check("expr", i, "binding", e.binding.index, bindings.size());
@@ -110,10 +120,12 @@ namespace {
 			check("expr", i, "constant", e.constant.index, constants.size());
 			check("expr", i, "type", e.type.index, types.size());
 			check("expr", i, "source", e.loc.source, sourceCount);
+
 			for (const auto& op : e.operands) {
 				check("expr", i, "expr", op.index, exprs.size());
 			}
 		}
+
 		for (auto i = 0uz; i < stmts.size(); ++i) {
 			const auto& s = stmts[i];
 			check("stmt", i, "type", s.type.index, types.size());
@@ -121,10 +133,12 @@ namespace {
 			check("stmt", i, "expr", s.rhs.index, exprs.size());
 			check("stmt", i, "source", s.loc.source, sourceCount);
 			check("stmt", i, "source", s.keyword.source, sourceCount);
+
 			for (const auto& child : s.children) {
 				check("stmt", i, "stmt", child.index, stmts.size());
 			}
 		}
+
 		static_cast<void>(name);
 		static_cast<void>(entry);
 		static_cast<void>(toggles);
@@ -182,10 +196,12 @@ namespace {
 		for (auto& [paramName, paramType, paramKind] : params) {
 			paramType = remap_.type(paramType);
 		}
+
 		ret = remap_.type(ret);
 		if (body.has_value()) {
 			body->root = remap_.stmt(body->root);
 		}
+
 		loc = remap_.loc(loc);
 		return fn_;
 	}
@@ -205,6 +221,7 @@ namespace {
 				[&](ref<const ir::ParamDecl> x_, ref<const ir::ParamDecl> y_) { return x_.type == remap_.type(y_.type); }
 			);
 		};
+
 		for (auto i = functions_.size(); i > 0uz; --i) {
 			if (matches(functions_[i - 1uz])) {
 				return ir::FunctionRef { static_cast<u32>(i - 1uz) };
@@ -225,16 +242,19 @@ namespace {
 		 * so same-named bindings with different ids under different @when stay resolved to the first; upgrade when Task 7
 		 * slices by toggle values and can re-resolve names per variant. */
 		binding = remap_.binding(binding);
+
 		// calls re-resolve by name: the frozen index may name a dropped forward declaration or a replaced body
 		if (kind == ir::ExprKind::eCall && function.index < source_.size()) {
 			function = resolveCall(functions_, name, source_[function.index].params, remap_);
 		} else {
 			function = ir::FunctionRef {};
 		}
+
 		type = remap_.type(type);
 		for (auto& op : operands) {
 			op = remap_.expr(op);
 		}
+
 		static_cast<void>(local);
 		loc = remap_.loc(loc);
 		return expr_;
@@ -245,9 +265,11 @@ namespace {
 		type = remap_.type(type);
 		lhs = remap_.expr(lhs);
 		rhs = remap_.expr(rhs);
+
 		for (auto& child : children) {
 			child = remap_.stmt(child);
 		}
+
 		static_cast<void>(kind);
 		static_cast<void>(mutable_);
 		loc = remap_.loc(loc);
@@ -274,6 +296,7 @@ namespace {
 				auto mapped = remapType(type, remap);
 				const auto it = std::ranges::find_if(result.types, [&](ref<const ir::TypeDesc> t_) { return sameType(t_, mapped); });
 				remap.types.emplace_back(static_cast<u32>(it - result.types.begin()));
+
 				if (it == result.types.end()) {
 					result.types.emplace_back(std::move(mapped));
 				}
@@ -291,12 +314,15 @@ namespace {
 					if (value == defaults.*member_) {
 						continue;
 					}
+
 					if (not owner.has_value()) {
 						owner = static_cast<u32>(m);
 						into_.*member_ = value;
+
 					} else if (into_.*member_ != value) {
 						diags.emplace_back(
-							ir::Diagnostic::error(codes::asl("merge-conflict"), 
+							ir::Diagnostic::error(
+								codes::asl("merge-conflict"),
 								"entry attribute " + quoted(String(label_)) + " differs in " + quoted(moduleName(*owner)) + " and " +
 								quoted(moduleName(static_cast<u32>(m)))
 							)
@@ -319,6 +345,7 @@ namespace {
 		/* same value set and default collapse into the first declaration */
 		void toggles(u32 mod_, ref<Vector<u32>> origins_) {
 			for (const auto& toggle : modules[mod_]->toggles) {
+
 				const auto& [name, values, defaultValue] = toggle;
 				const auto it = std::ranges::find(result.toggles, name, &ir::Toggle::name);
 				if (it == result.toggles.end()) {
@@ -332,16 +359,20 @@ namespace {
 				auto rhs = values;
 				std::ranges::sort(lhs);
 				std::ranges::sort(rhs);
+
 				if (lhs != rhs) {
 					diags.emplace_back(
-						ir::Diagnostic::error(codes::asl("merge-conflict"), 
+						ir::Diagnostic::error(
+							codes::asl("merge-conflict"),
 							"toggle " + quoted(name) + " declared with different values in " + quoted(first) + " and " +
 							quoted(moduleName(mod_))
 						)
 					);
+
 				} else if (it->defaultValue != defaultValue) {
 					diags.emplace_back(
-						ir::Diagnostic::error(codes::asl("merge-conflict"), 
+						ir::Diagnostic::error(
+							codes::asl("merge-conflict"),
 							"toggle " + quoted(name) + " defaults to " + quoted(it->defaultValue) + " in " + quoted(first) + " and " +
 							quoted(defaultValue) + " in " + quoted(moduleName(mod_))
 						)
@@ -351,52 +382,67 @@ namespace {
 		}
 
 		/* first difference of two declarations of one id, or empty; `a_` is in the result already */
-		[[nodiscard]] String bindingConflict(ref<const ir::BindingDecl> a_, ref<const ir::BindingDecl> b_, ref<const String> first_, ref<const String> second_) const {
+		[[nodiscard]] String bindingConflict(
+			ref<const ir::BindingDecl> a_,
+			ref<const ir::BindingDecl> b_,
+			ref<const String> first_,
+			ref<const String> second_
+		) const {
 			const auto in = [](ref<const String> mod_) {
 				return " in " + quoted(mod_);
 			};
 			const auto prefix = "binding " + quoted(a_.id) + " declared ";
 			if (a_.type != b_.type) {
-				return prefix + "as " + ir::quotedType(result.types, a_.type) + in(first_) + " and " + ir::quotedType(result.types, b_.type) + in(second_);
+				return prefix + "as " + ir::quotedType(result.types, a_.type) + in(first_) + " and " + ir::quotedType(result.types, b_.type)
+					+ in(second_);
 			}
+
 			if (a_.mode != b_.mode) {
 				const auto mode = [](ir::BindMode mode_) {
 					return String(mode_ == ir::BindMode::eBind ? "bind" : "forward");
 				};
 				return prefix + "with mode " + mode(a_.mode) + in(first_) + " and " + mode(b_.mode) + in(second_);
 			}
+
 			if (a_.bindClass != b_.bindClass) {
 				return prefix + "with class " + String(className(a_.bindClass)) + in(first_) + " and " +
 					String(className(b_.bindClass)) + in(second_);
 			}
+
 			if (a_.arrayed != b_.arrayed) {
 				return prefix + "as per-vertex array in only one of" + in(first_) + " and " + quoted(second_);
 			}
+
 			if (a_.patch != b_.patch) {
 				return prefix + "as per-patch in only one of" + in(first_) + " and " + quoted(second_);
 			}
+
 			if (a_.input != b_.input) {
 				const auto direction = [](bool input_) {
 					return String(input_ ? "input" : "output");
 				};
 				return prefix + "as " + direction(a_.input) + in(first_) + " and " + direction(b_.input) + in(second_);
 			}
+
 			if (a_.access != b_.access) {
 				const auto access = [](ir::Access access_) {
 					return String(access_ == ir::Access::eRead ? "read" : (access_ == ir::Access::eWrite ? "write" : "read_write"));
 				};
 				return prefix + "with access " + access(a_.access) + in(first_) + " and " + access(b_.access) + in(second_);
 			}
+
 			if (a_.packing != b_.packing) {
 				const auto packing = [](ir::Packing packing_) {
 					return String(packing_ == ir::Packing::eStd140 ? "std140" : (packing_ == ir::Packing::eStd430 ? "std430" : "default"));
 				};
 				return prefix + "with packing " + packing(a_.packing) + in(first_) + " and " + packing(b_.packing) + in(second_);
 			}
+
 			if (a_.implicit != b_.implicit) {
 				// not OR-ed: an implicit entry emits no variable, while the other module's body may use one
 				return prefix + "implicit" + in(a_.implicit ? first_ : second_) + " and not" + in(a_.implicit ? second_ : first_);
 			}
+
 			return {};
 		}
 
@@ -407,7 +453,7 @@ namespace {
 			for (const auto& binding : modules[mod_]->bindings) {
 				auto mapped = binding;
 				auto& [id, type, mode, bindClass, implicit, input, when, localName, access, packing, arrayed, patch] = mapped;
-					static_cast<void>(patch);
+				static_cast<void>(patch);
 				static_cast<void>(packing);
 				static_cast<void>(arrayed);
 				type = remap.type(type);
@@ -426,6 +472,7 @@ namespace {
 				} else if (not sameCondition(it->when, when) && it->when.kind != ir::ConditionKind::eTrue) {
 					it->when = when.kind == ir::ConditionKind::eTrue ? ir::Condition::always() : ir::Condition::any({ it->when, when });
 				}
+
 				static_cast<void>(mode);
 				static_cast<void>(bindClass);
 				static_cast<void>(implicit);
@@ -440,16 +487,20 @@ namespace {
 			if (x_.index >= a_.exprs.size() || y_.index >= b_.exprs.size() || depth_ > 256uL) {
 				return x_.index >= a_.exprs.size() && y_.index >= b_.exprs.size();
 			}
+
 			const auto& x = a_.exprs[x_.index];
 			const auto& y = b_.exprs[y_.index];
+
 			if (x.kind != y.kind || x.name != y.name || x.local != y.local || x.operands.size() != y.operands.size()) {
 				return false;
 			}
+
 			for (auto i = 0uz; i < x.operands.size(); ++i) {
 				if (not sameExpr(a_, x.operands[i], b_, y.operands[i], depth_ + 1uL)) {
 					return false;
 				}
 			}
+
 			return true;
 		}
 
@@ -477,13 +528,44 @@ namespace {
 					return " in " + quoted(moduleName(m_));
 				};
 				if (it->type != mapped.type) {
-					diags.emplace_back(ir::Diagnostic::error(codes::asl("merge-conflict"), prefix + "as " + ir::quotedType(result.types, it->type) + in(first) + " and " + ir::quotedType(result.types, mapped.type) + in(mod_)));
-				} else if (it->specId.has_value() != mapped.specId.has_value() || (it->specId.has_value() && *it->specId != *mapped.specId)) {
-					diags.emplace_back(ir::Diagnostic::error(codes::asl("merge-conflict"), prefix + "with a different spec id" + in(first) + " and" + in(mod_)));
-				} else if (not sameExpr(*modules[first], ir::ExprRef { it->value.index - remaps[first].exprOffset }, *modules[mod_], constant.value, 0uL)) {
-					diags.emplace_back(ir::Diagnostic::error(codes::asl("merge-conflict"), prefix + "with a different value" + in(first) + " and" + in(mod_)));
+					diags.emplace_back(
+						ir::Diagnostic::error(
+							codes::asl("merge-conflict"),
+							prefix + "as " + ir::quotedType(result.types, it->type) + in(first) + " and " + ir::quotedType(
+								result.types,
+								mapped.type
+							) + in(mod_)
+						)
+					);
+
+				} else if (it->specId.has_value() != mapped.specId.has_value() ||
+					(it->specId.has_value() && *it->specId != *mapped.specId)
+				) {
+					diags.emplace_back(
+						ir::Diagnostic::error(
+							codes::asl("merge-conflict"),
+							prefix + "with a different spec id" + in(first) + " and" + in(mod_)
+						)
+					);
+
+				} else if (not sameExpr(
+					*modules[first],
+					ir::ExprRef { it->value.index - remaps[first].exprOffset },
+					*modules[mod_],
+					constant.value,
+					0uL
+				)) {
+					diags.emplace_back(
+						ir::Diagnostic::error(
+							codes::asl("merge-conflict"),
+							prefix + "with a different value" + in(first) + " and" + in(mod_)
+						)
+					);
+
 				} else if (not sameCondition(it->when, mapped.when) && it->when.kind != ir::ConditionKind::eTrue) {
-					it->when = mapped.when.kind == ir::ConditionKind::eTrue ? ir::Condition::always() : ir::Condition::any({ it->when, mapped.when });
+					it->when = mapped.when.kind == ir::ConditionKind::eTrue ?
+						ir::Condition::always() :
+						ir::Condition::any({ it->when, mapped.when });
 				}
 			}
 		}
@@ -524,13 +606,16 @@ namespace {
 					const Variant at { static_cast<u32>(m), static_cast<u32>(i) };
 					const auto& fn = decl(at);
 					const auto signature = ir::signatureOf(*modules[m], fn);
+
 					auto named = std::ranges::find(names, signature, &Named::name);
 					if (named == names.end()) {
 						names.emplace_back(Named { signature, at, {} });
 						named = names.end() - 1;
+
 					} else if (not sameSignature(named->first, at)) {
 						diags.emplace_back(
-							ir::Diagnostic::error(codes::asl("merge-conflict"), 
+							ir::Diagnostic::error(
+								codes::asl("merge-conflict"),
 								"signature of function " + quoted(fn.name) + " differs between " + quoted(moduleName(named->first.mod)) +
 								" and " + quoted(moduleName(at.mod))
 							)
@@ -540,6 +625,7 @@ namespace {
 					if (not fn.body.has_value()) {
 						continue;
 					}
+
 					/* shortcut: variants match by structurally equal conditions only; overlapping but unequal ones are not
 					 * caught here, upgrade when Task 7 checks exhaustiveness and overlap per toggle combination. */
 					const auto variant = std::ranges::find_if(
@@ -548,11 +634,14 @@ namespace {
 					);
 					if (variant == named->bodies.end()) {
 						named->bodies.emplace_back(at);
+
 					} else if (decl(*variant).redefineAllowed) {
 						*variant = at;// the body being replaced allowed it; the last wins
+
 					} else {
 						diags.emplace_back(
-							ir::Diagnostic::error(codes::asl("overlapping-variant-bodies"), 
+							ir::Diagnostic::error(
+								codes::asl("overlapping-variant-bodies"),
 								"duplicate body for function " + quoted(signature) + " in modules " + quoted(moduleName(variant->mod)) +
 								" and " + quoted(moduleName(at.mod))
 							)
@@ -564,9 +653,13 @@ namespace {
 			for (const auto& named : names) {
 				if (named.bodies.empty()) {
 					diags.emplace_back(
-						ir::Diagnostic::error(codes::asl("missing-variant-body"), "missing body for function " + quoted(named.name) + " declared in " + quoted(moduleName(named.first.mod)))
+						ir::Diagnostic::error(
+							codes::asl("missing-variant-body"),
+							"missing body for function " + quoted(named.name) + " declared in " + quoted(moduleName(named.first.mod))
+						)
 					);
 				}
+
 				for (const auto at : named.bodies) {
 					result.functions.emplace_back(remapFunction(decl(at), remaps[at.mod]));
 				}
@@ -579,6 +672,7 @@ namespace {
 				for (const auto& e : modules[m]->exprs) {
 					result.exprs.emplace_back(remapExpr(e, remap, result.functions, modules[m]->functions));
 				}
+
 				for (const auto& s : modules[m]->stmts) {
 					result.stmts.emplace_back(remapStmt(s, remap));
 				}
@@ -586,7 +680,8 @@ namespace {
 		}
 
 		void run() {
-			auto& [name, sourceList, entry, attributes, toggleList, typeList, bindingList, constantList, functionList, exprList, stmtList, warningList] = result;
+			auto& [name, sourceList, entry, attributes, toggleList, typeList, bindingList, constantList, functionList, exprList, stmtList,
+				warningList] = result;
 			name = modules.back()->name;
 			entry = modules.back()->entry;
 			mergeAttributes(attributes);
@@ -601,11 +696,13 @@ namespace {
 				const auto mod = static_cast<u32>(m);
 				// a hand-built module has no sources: its locs all sit in its name
 				remaps[m].sourceOffset = static_cast<u16>(sourceList.size());
+
 				if (modules[m]->sources.empty()) {
 					sourceList.emplace_back(modules[m]->name);
 				} else {
 					sourceList.append_range(modules[m]->sources);
 				}
+
 				types(mod);
 				toggles(mod, toggleOrigins);
 				bindings(mod, bindingOrigins);
@@ -616,9 +713,11 @@ namespace {
 				stmts += static_cast<u32>(modules[m]->stmts.size());
 			}
 			functions();
+
 			if (diags.empty()) {
 				arenas();
 			}
+
 			static_cast<void>(toggleList);
 			static_cast<void>(typeList);
 			static_cast<void>(bindingList);
@@ -632,25 +731,38 @@ namespace {
 
 std::expected<ir::Module, ir::Diagnostics> ir::merge(std::span<const Module* const> ordered_) {
 	if (ordered_.empty()) {
-		return std::unexpected(Diagnostics { ir::Diagnostic::error(codes::asl("internal-inconsistent-pipeline"), "no modules to combine") });
+		return std::unexpected(
+			Diagnostics { ir::Diagnostic::error(codes::asl("internal-inconsistent-pipeline"), "no modules to combine") }
+		);
 	}
 
 	Diagnostics diags {};
 	for (auto i = 0uz; i < ordered_.size(); ++i) {
 		if (ordered_[i] == nullptr) {
-			diags.emplace_back(ir::Diagnostic::error(codes::asl("internal-inconsistent-pipeline"), "module " + std::to_string(i) + " is missing"));
+			diags.emplace_back(
+				ir::Diagnostic::error(codes::asl("internal-inconsistent-pipeline"), "module " + std::to_string(i) + " is missing")
+			);
+
 		} else if (auto invalid = invalidRef(*ordered_[i]); invalid.has_value()) {
-			diags.emplace_back(ir::Diagnostic::error(codes::asl("internal-inconsistent-pipeline"), "module " + quoted(ordered_[i]->name) + " is malformed").note(std::move(*invalid)));
+			diags.emplace_back(
+				ir::Diagnostic::error(
+					codes::asl("internal-inconsistent-pipeline"),
+					"module " + quoted(ordered_[i]->name) + " is malformed"
+				).note(std::move(*invalid))
+			);
 		}
 	}
+
 	if (not diags.empty()) {
 		return std::unexpected(std::move(diags));
 	}
 
 	Merger merger { ordered_, {} };
 	merger.run();
+
 	if (not merger.diags.empty()) {
 		return std::unexpected(std::move(merger.diags));
 	}
+
 	return std::move(merger.result);
 }

@@ -242,7 +242,7 @@ namespace AccelLang {
 1 | @input (mode = forward, colour = "x") f32 a;
   |                         ^^^^^^
 )GOLD" },
-			{ "misplaced-annotation", "@compute (local_size = [8, 4, 2]) fn F() {}\n", parseD<EntryKind::eFragment>, R"GOLD(error[ASL0013]: '@compute' contradicts the module's stage
+			{ "misplaced-annotation", "@compute (local_size = [8, 4, 2]) fn F() {}\n", parseD<EntryKind::eFragment>, R"GOLD(error[ASL0013]: @compute contradicts the module's stage
   --> M:1:2
   |
 1 | @compute (local_size = [8, 4, 2]) fn F() {}
@@ -260,7 +260,7 @@ namespace AccelLang {
 1 | @input (mode = bind, id = "buf", class = storage, access = rw) block buf { u32[] data; };
   |                                                            ^^
 )GOLD" },
-			{ "missing-annotation-key", "@geometry fn main() {}\n", parseD<EntryKind::eGeometry>, R"GOLD(error[ASL0016]: '@geometry' requires 'input', 'output' and 'max_vertices'
+			{ "missing-annotation-key", "@geometry fn main() {}\n", parseD<EntryKind::eGeometry>, R"GOLD(error[ASL0016]: @geometry requires 'input', 'output' and 'max_vertices'
   --> M:1:2
   |
 1 | @geometry fn main() {}

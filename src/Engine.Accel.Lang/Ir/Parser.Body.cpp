@@ -1,9 +1,7 @@
-#include "ParserImpl.hpp"
-
-#include <array>
 #include <cassert>
 
 #include "Builtin.hpp"
+#include "ParserImpl.hpp"
 #include "Typecheck.hpp"
 
 using namespace hg::engine::accel::lang::ir::detail;
@@ -16,7 +14,6 @@ namespace {
 	[[nodiscard]] bool isBuiltinVariable(StringView name_) {
 		return ir::findBuiltinVariable(name_) != nullptr;
 	}
-
 
 	/* binary operator precedence, higher binds tighter (all left-associative); 0 = no binary operator */
 	[[nodiscard]] u32 precedenceOf(TokenKind kind_) {
@@ -57,7 +54,7 @@ ir::ExprRef Parser::expr(ir::Expr expr_) {
 	return ir::ExprRef { static_cast<u32>(exprs.size() - 1uz) };
 }
 
-ir::ExprRef Parser::node(ir::ExprKind kind_, StringView name_, Vector<ir::ExprRef> operands_, ir::SourceLoc loc_) {
+ir::ExprRef Parser::node(const ir::ExprKind kind_, const StringView name_, Vector<ir::ExprRef> operands_, ref<const ir::SourceLoc> loc_) {
 	ir::Expr out {};
 	out.kind = kind_;
 	out.name = name_;
@@ -68,17 +65,20 @@ ir::ExprRef Parser::node(ir::ExprKind kind_, StringView name_, Vector<ir::ExprRe
 
 ir::StmtRef Parser::add(ir::Stmt stmt_) {
 	auto& stmts = _shared.mod.stmts;
-	const auto &exprs = _shared.mod.exprs;
+	const auto& exprs = _shared.mod.exprs;
+
 	if (stmt_.lhs.index < exprs.size()) {
 		stmt_.loc = exprs[stmt_.lhs.index].loc;
+
 	} else if (_pos > 0uz) {
 		stmt_.loc = _tokens[_pos - 1uz].loc;
 	}
+
 	stmts.emplace_back(std::move(stmt_));
 	return ir::StmtRef { static_cast<u32>(stmts.size() - 1uz) };
 }
 
-ir::StmtRef Parser::stmt(ir::StmtKind kind_, ir::ExprRef lhs_, Vector<ir::StmtRef> children_) {
+ir::StmtRef Parser::stmt(const ir::StmtKind kind_, const ir::ExprRef lhs_, Vector<ir::StmtRef> children_) {
 	ir::Stmt out {};
 	out.kind = kind_;
 	out.lhs = lhs_;
@@ -104,15 +104,18 @@ void Parser::unterminated(ref<const ir::Token> open_) {
 ir::StmtRef Parser::block() {
 	const auto& open = take();
 	const Scope scope { _locals, _scope };
+
 	Vector<ir::StmtRef> children {};
 	while (not at(TokenKind::eRBrace) && not at(TokenKind::eEof)) {
 		if (const auto child = statement(); child.has_value()) {
 			children.emplace_back(*child);
 		}
 	}
+
 	if (not accept(TokenKind::eRBrace)) {
 		unterminated(open);
 	}
+
 	return stmt(ir::StmtKind::eBlock, {}, std::move(children));
 }
 
@@ -129,48 +132,63 @@ Opt<ir::StmtRef> Parser::statement() {
 
 	const auto& head = peek();
 	if (head.kind == TokenKind::eLBrace) {
-		return block();
+		return SomeVal(block());
 	}
+
 	if (accept(TokenKind::eSemicolon)) {
-		return stmt(ir::StmtKind::eBlock);
+		return SomeVal(stmt(ir::StmtKind::eBlock));
 	}
+
 	if (head.kind == TokenKind::eAt) {
 		return whenStatement();
 	}
+
 	if (head.kind == TokenKind::eKwIf) {
 		return ifStatement();
 	}
+
 	if (head.kind == TokenKind::eKwReturn) {
 		return returnStatement();
 	}
+
 	if (head.kind == TokenKind::eKwLet) {
 		return letStatement(false);
 	}
+
 	if (head.kind == TokenKind::eKwConst) {
 		return letStatement(true);
 	}
+
 	if (head.kind == TokenKind::eKwFor) {
 		return forStatement();
 	}
+
 	if (head.kind == TokenKind::eKwWhile) {
 		return whileStatement();
 	}
+
 	if (head.kind == TokenKind::eKwBreak || head.kind == TokenKind::eKwContinue || head.kind == TokenKind::eKwDiscard) {
 		take();
 		if (not expect(TokenKind::eSemicolon, "';'")) {
 			return fail();
 		}
-		return stmt(
-			head.kind == TokenKind::eKwBreak ? ir::StmtKind::eBreak :
-			(head.kind == TokenKind::eKwContinue ? ir::StmtKind::eContinue : ir::StmtKind::eDiscard)
+
+		return SomeVal(
+			stmt(
+				head.kind == TokenKind::eKwBreak ?
+				ir::StmtKind::eBreak :
+				(head.kind == TokenKind::eKwContinue ? ir::StmtKind::eContinue : ir::StmtKind::eDiscard)
+			)
 		);
 	}
+
 	if (head.kind == TokenKind::eIdentifier) {
 		const auto ahead = next().kind;
 		if (ahead == TokenKind::eIdentifier || (ahead == TokenKind::eLBracket && isTypeName(head.text))) {
 			return typedDeclaration();
 		}
 	}
+
 	return simpleStatement();
 }
 
@@ -186,29 +204,33 @@ Opt<ir::StmtRef> Parser::whenStatement() {
 	if (not head.has_value()) {
 		return fail();
 	}
+
 	const auto child = branch();
 	if (not child.has_value()) {
 		return None;
 	}
+
 	_shared.mod.stmts[head->index].children.emplace_back(*child);
-	return *head;
+	return SomeVal(*head);
 }
 
 /* keeps the condition out of the recursive frame */
 Opt<ir::StmtRef> Parser::whenHead() {
 	take();
 	if (not accept(TokenKind::eKwWhen)) {
-		error(codes::asl("misplaced-annotation"), peek(), "only '@when' applies to a statement");
+		error(codes::asl("misplaced-annotation"), peek(), "only @when applies to a statement");
 		return None;
 	}
+
 	auto cond = parenCondition();
 	if (not cond.has_value()) {
 		return None;
 	}
+
 	ir::Stmt when {};
 	when.kind = ir::StmtKind::eWhen;
 	when.when = std::move(*cond);
-	return add(std::move(when));
+	return SomeVal(add(std::move(when)));
 }
 
 /* `if (expr) statement [else statement]` */
@@ -217,34 +239,40 @@ Opt<ir::StmtRef> Parser::ifStatement() {
 	if (not expect(TokenKind::eLParen, "'(' after if")) {
 		return fail();
 	}
+
 	const auto cond = expression();
 	if (not cond.has_value() || not expect(TokenKind::eRParen, "')'")) {
 		return fail();
 	}
+
 	const auto then = branch();
 	if (not then.has_value()) {
 		return None;
 	}
+
 	if (not accept(TokenKind::eKwElse)) {
-		return stmt(ir::StmtKind::eIf, *cond, { *then });
+		return SomeVal(stmt(ir::StmtKind::eIf, *cond, { *then }));
 	}
 	const auto otherwise = branch();
 	if (not otherwise.has_value()) {
 		return None;
 	}
-	return stmt(ir::StmtKind::eIf, *cond, { *then, *otherwise });
+
+	return SomeVal(stmt(ir::StmtKind::eIf, *cond, { *then, *otherwise }));
 }
 
 Opt<ir::StmtRef> Parser::returnStatement() {
 	take();
 	if (accept(TokenKind::eSemicolon)) {
-		return stmt(ir::StmtKind::eReturn);
+		return SomeVal(stmt(ir::StmtKind::eReturn));
 	}
+
 	const auto value = expression();
 	if (not value.has_value() || not expect(TokenKind::eSemicolon, "';'")) {
 		return fail();
 	}
-	return stmt(ir::StmtKind::eReturn, *value);
+
+	return SomeVal(stmt(ir::StmtKind::eReturn, *value));
 }
 
 /* `let|const name [: Type] [= init|&place|&mut place];`, a type or an initializer required */
@@ -254,6 +282,7 @@ Opt<ir::StmtRef> Parser::letStatement(bool const_) {
 		syntaxError("a local name");
 		return fail();
 	}
+
 	const auto& name = take();
 	Opt<ir::TypeRef> declType = None;
 	if (accept(TokenKind::eColon)) {
@@ -261,10 +290,16 @@ Opt<ir::StmtRef> Parser::letStatement(bool const_) {
 		if (not declType.has_value()) {
 			return fail();
 		}
+
 	} else if (not at(TokenKind::eAssign)) {
-		error(codes::asl("incomplete-local-declaration"), name, "'" + String(const_ ? "const" : "let") + "' declaration needs a type or an initializer");
+		error(
+			codes::asl("incomplete-local-declaration"),
+			name,
+			"'" + String(const_ ? "const" : "let") + "' declaration needs a type or an initializer"
+		);
 		return fail();
 	}
+
 	return local(name, declType.value_or(ir::TypeRef {}), const_, keyword);
 }
 
@@ -274,35 +309,41 @@ Opt<ir::StmtRef> Parser::typedDeclaration() {
 	if (not declType.has_value()) {
 		return fail();
 	}
+
 	if (not at(TokenKind::eIdentifier)) {
 		syntaxError("a local name");
 		return fail();
 	}
+
 	return local(take(), *declType, false);
 }
 
 /* `[= init];` of both declaration forms (type unset = inferred later); the name is in scope after its
  * initializer, even after an error */
-Opt<ir::StmtRef> Parser::local(ref<const ir::Token> name_, ir::TypeRef type_, bool const_, ir::SourceLoc keyword_) {
+Opt<ir::StmtRef> Parser::local(ref<const ir::Token> name_, const ir::TypeRef type_, const bool const_, ir::SourceLoc keyword_) {
 	ir::Stmt decl {};
 	decl.kind = ir::StmtKind::eDeclareLocal;
 	decl.name = name_.text;
 	decl.type = type_;
 	decl.mutable_ = not const_;
-	decl.keyword = keyword_;
+	decl.keyword = ::hg::move(keyword_);
+
 	bool valid = true;
 	declaredName(name_, false);
 	if (accept(TokenKind::eAssign)) {
 		if (accept(TokenKind::eAmp)) {
 			decl.kind = ir::StmtKind::eDeclareRef;
 			decl.mutable_ = accept(TokenKind::eKwMut);
+
 			if (decl.mutable_ && const_) {
 				error(codes::asl("not-assignable"), name_, "cannot take '&mut' into a 'const' alias");
 			}
+
 			if (type_.index != ir::TypeRef {}.index) {
 				error(codes::asl("typed-reference-declaration"), name_, "a reference declaration cannot have a type annotation");
 			}
 		}
+
 		const auto init = expression();
 		valid = init.has_value();
 		decl.lhs = valid ? *init : decl.lhs;
@@ -312,11 +353,13 @@ Opt<ir::StmtRef> Parser::local(ref<const ir::Token> name_, ir::TypeRef type_, bo
 	if (std::find(_locals.begin() + static_cast<ptrdiff_t>(_scope), _locals.end(), name_.text) != _locals.end()) {
 		error(codes::asl("duplicate-declaration"), name_, "duplicate local '" + String(name_.text) + "'");
 	}
+
 	_locals.emplace_back(name_.text);
 	if (not valid) {
 		return fail();
 	}
-	return add(std::move(decl));
+
+	return SomeVal(add(std::move(decl)));
 }
 
 /* `while (cond) statement` */
@@ -325,15 +368,18 @@ Opt<ir::StmtRef> Parser::whileStatement() {
 	if (not expect(TokenKind::eLParen, "'(' after while")) {
 		return fail();
 	}
+
 	const auto cond = expression();
 	if (not cond.has_value() || not expect(TokenKind::eRParen, "')'")) {
 		return fail();
 	}
+
 	const auto body = branch();
 	if (not body.has_value()) {
 		return None;
 	}
-	return stmt(ir::StmtKind::eWhile, *cond, { *body });
+
+	return SomeVal(stmt(ir::StmtKind::eWhile, *cond, { *body }));
 }
 
 /* `for (init; cond; step) statement`; init is a full statement, step a simple one, each optional */
@@ -342,50 +388,60 @@ Opt<ir::StmtRef> Parser::forStatement() {
 	if (not expect(TokenKind::eLParen, "'(' after for")) {
 		return fail();
 	}
+
 	const Scope scope { _locals, _scope };
 	const auto init = statement();
 	if (not init.has_value()) {
 		return None;
 	}
-	Opt<ir::ExprRef> cond = ir::ExprRef {};
+
+	auto cond = SomeVal<ir::ExprRef>();
 	if (not at(TokenKind::eSemicolon)) {
 		cond = expression();
 	}
+
 	if (not cond.has_value() || not expect(TokenKind::eSemicolon, "';'")) {
 		return fail();
 	}
-	Opt<ir::StmtRef> step = stmt(ir::StmtKind::eBlock);
+
+	auto step = SomeVal(stmt(ir::StmtKind::eBlock));
 	if (not at(TokenKind::eRParen)) {
 		step = simpleStatement(false);
 	}
+
 	if (not step.has_value() || not expect(TokenKind::eRParen, "')'")) {
 		return fail();
 	}
+
 	const auto body = branch();
 	if (not body.has_value()) {
 		return None;
 	}
-	return stmt(ir::StmtKind::eFor, *cond, { *init, *body, *step });
+
+	return SomeVal(stmt(ir::StmtKind::eFor, *cond, { *init, *body, *step }));
 }
 
 /* `expr;`, `lvalue = expr;`, `lvalue op= expr;`, `++lvalue;`, `lvalue++;`; the `;` is left to the caller of a for step */
-Opt<ir::StmtRef> Parser::simpleStatement(bool terminated_) {
+Opt<ir::StmtRef> Parser::simpleStatement(const bool terminated_) {
 	const auto& start = peek();
 	const auto prefix = at(TokenKind::ePlusPlus) || at(TokenKind::eMinusMinus);
 	const auto prefixToken = prefix ? &take() : nullptr;
+
 	const auto lhs = expression();
 	if (not lhs.has_value()) {
 		return fail();
 	}
+
 	const auto* step = prefixToken;
 	if (step == nullptr && (at(TokenKind::ePlusPlus) || at(TokenKind::eMinusMinus))) {
 		step = &take();
 	}
+
 	if (step == nullptr && not at(TokenKind::eAssign) && not at(TokenKind::eCompoundAssign)) {
 		if (terminated_ && not expect(TokenKind::eSemicolon, "';'")) {
 			return fail();
 		}
-		return stmt(ir::StmtKind::eExpr, *lhs);
+		return SomeVal(stmt(ir::StmtKind::eExpr, *lhs));
 	}
 
 	ir::Stmt assign {};
@@ -394,25 +450,30 @@ Opt<ir::StmtRef> Parser::simpleStatement(bool terminated_) {
 	if (not assignable(*lhs)) {
 		error(codes::asl("not-assignable"), start, "cannot assign to this expression");
 	}
+
 	if (step != nullptr) {
 		assign.name = step->kind == TokenKind::ePlusPlus ? "+=" : "-=";
 		assign.rhs = node(ir::ExprKind::eLiteral, "1", {}, step->loc);
+
 	} else {
 		if (at(TokenKind::eCompoundAssign)) {
 			assign.name = String(take().text);
 		} else {
 			take();
 		}
+
 		const auto rhs = expression();
 		if (not rhs.has_value()) {
 			return fail();
 		}
+
 		assign.rhs = *rhs;
 	}
+
 	if (terminated_ && not expect(TokenKind::eSemicolon, "';'")) {
 		return fail();
 	}
-	return add(std::move(assign));
+	return SomeVal(add(std::move(assign)));
 }
 
 /* a name, optionally behind field and index accesses */
@@ -422,13 +483,14 @@ bool Parser::assignable(ir::ExprRef ref_) const {
 
 /* Expressions: `?:` (right-assoc, only at the lowest level) < binary operators (precedence climbing, see precedenceOf) < unary `- ! ~` < postfix `.name [i]` < primary */
 
-Opt<ir::ExprRef> Parser::expression(u32 minPrecedence_) {
+Opt<ir::ExprRef> Parser::expression(const u32 minPrecedence_) {
 	auto lhs = unary();
 	while (lhs.has_value() && precedenceOf(peek().kind) >= minPrecedence_) {
 		const auto& op = take();
 		const auto rhs = expression(precedenceOf(op.kind) + 1uL);
-		lhs = rhs.has_value() ? Opt<ir::ExprRef> { node(ir::ExprKind::eBinary, op.text, { *lhs, *rhs }, op.loc) } : None;
+		lhs = rhs.has_value() ? SomeVal(node(ir::ExprKind::eBinary, op.text, { *lhs, *rhs }, op.loc)) : None;
 	}
+
 	if (minPrecedence_ == 1uL && lhs.has_value() && at(TokenKind::eQuestion)) {
 		return ternary(*lhs);
 	}
@@ -442,15 +504,18 @@ Opt<ir::ExprRef> Parser::ternary(ir::ExprRef cond_) {
 	if (tooDeep(op)) {
 		return None;
 	}
+
 	const auto then = expression();
 	if (not then.has_value() || not expect(TokenKind::eColon, "':' in conditional expression")) {
 		return None;
 	}
+
 	const auto otherwise = expression();
 	if (not otherwise.has_value()) {
 		return None;
 	}
-	return node(ir::ExprKind::eTernary, {}, { cond_, *then, *otherwise }, op.loc);
+
+	return SomeVal(node(ir::ExprKind::eTernary, {}, { cond_, *then, *otherwise }, op.loc));
 }
 
 Opt<ir::ExprRef> Parser::unary() {
@@ -458,14 +523,17 @@ Opt<ir::ExprRef> Parser::unary() {
 	if (tooDeep(peek())) {
 		return None;
 	}
+
 	if (at(TokenKind::eMinus) || at(TokenKind::eBang) || at(TokenKind::eTilde)) {
 		const auto& op = take();
 		const auto operand = unary();
 		if (not operand.has_value()) {
 			return None;
 		}
-		return node(ir::ExprKind::eUnary, op.text, { *operand }, op.loc);
+
+		return SomeVal(node(ir::ExprKind::eUnary, op.text, { *operand }, op.loc));
 	}
+
 	return postfix(primary());
 }
 
@@ -477,25 +545,29 @@ Opt<ir::ExprRef> Parser::postfix(Opt<ir::ExprRef> base_) {
 				return None;
 			}
 			// any field name is accepted here; typecheck validates struct members and swizzles against the base type
-			base_ = node(ir::ExprKind::eField, take().text, { *base_ }, _shared.mod.exprs[base_->index].loc);
+			base_ = SomeVal(node(ir::ExprKind::eField, take().text, { *base_ }, _shared.mod.exprs[base_->index].loc));
+
 		} else if (accept(TokenKind::eLBracket)) {
 			const auto index = expression();
 			if (not index.has_value()) {
 				return None;
 			}
+
 			const auto loc = _shared.mod.exprs[base_->index].loc;
 			if (accept(TokenKind::eDotDot)) {
 				const auto hi = expression();
 				if (not hi.has_value() || not expect(TokenKind::eRBracket, "']'")) {
 					return None;
 				}
-				base_ = node(ir::ExprKind::eRange, {}, { *base_, *index, *hi }, loc);
+				base_ = SomeVal(node(ir::ExprKind::eRange, {}, { *base_, *index, *hi }, loc));
+
 			} else {
 				if (not expect(TokenKind::eRBracket, "']'")) {
 					return None;
 				}
-				base_ = node(ir::ExprKind::eIndex, {}, { *base_, *index }, loc);
+				base_ = SomeVal(node(ir::ExprKind::eIndex, {}, { *base_, *index }, loc));
 			}
+
 		} else {
 			break;
 		}
@@ -507,25 +579,30 @@ Opt<ir::ExprRef> Parser::primary() {
 	const auto& token = peek();
 	if (token.kind == TokenKind::eInteger || token.kind == TokenKind::eFloat) {
 		take();
-		return node(ir::ExprKind::eLiteral, token.text, {}, token.loc);
+		return SomeVal(node(ir::ExprKind::eLiteral, token.text, {}, token.loc));
 	}
+
 	if (token.kind == TokenKind::eIdentifier) {
 		take();
 		if (at(TokenKind::eLParen)) {
 			return call(token);
 		}
+
 		if (at(TokenKind::eLBracket) && isTypeName(token.text)) {
 			return arrayConstruct(token);
 		}
-		return name(token);
+
+		return SomeVal(name(token));
 	}
+
 	if (accept(TokenKind::eLParen)) {
 		const auto inner = expression();
 		if (not inner.has_value() || not expect(TokenKind::eRParen, "')'")) {
 			return None;
 		}
-		return *inner;
+		return SomeVal(*inner);
 	}
+
 	syntaxError("an expression");
 	return None;
 }
@@ -539,21 +616,26 @@ Opt<ir::ExprRef> Parser::arrayConstruct(ref<const ir::Token> name_) {
 		for (const char digit : text) {
 			count = count * 10uL + static_cast<u32>(digit - '0');
 		}
+
 		if (text.size() > 9uz || count == 0uL) {
 			error(codes::asl("invalid-array-size"), open, "invalid array size '" + String(text) + "'");
 		}
 	}
+
 	if (not expect(TokenKind::eRBracket, "']'")) {
 		return None;
 	}
+
 	if (not at(TokenKind::eLParen)) {
 		syntaxError("'(' after the array type");
 		return None;
 	}
+
 	const auto made = call(name_);
 	if (not made.has_value()) {
 		return None;
 	}
+
 	auto& construct = _shared.mod.exprs[made->index];
 	ir::TypeDesc desc {};
 	desc.kind = ir::TypeKind::eArray;
@@ -575,11 +657,13 @@ Opt<ir::ExprRef> Parser::call(ref<const ir::Token> name_) {
 			}
 			args.emplace_back(*arg);
 		} while (accept(TokenKind::eComma));
+
 		if (not expect(TokenKind::eRParen, "',' or ')'")) {
 			return None;
 		}
 	}
-	return callee(name_, std::move(args));
+
+	return SomeVal(callee(name_, std::move(args)));
 }
 
 /* type name -> construct, builtin function -> builtin, else a call resolved after the parse */
@@ -593,11 +677,15 @@ ir::ExprRef Parser::callee(ref<const ir::Token> name_, Vector<ir::ExprRef> args_
 		construct.loc = name_.loc;
 		return expr(std::move(construct));
 	}
+
 	if (name_.text == "len" || ir::findBuiltinFunction(name_.text) != nullptr) {
 		return node(ir::ExprKind::eBuiltin, name_.text, std::move(args_), name_.loc);
 	}
+
 	const auto pending = node(ir::ExprKind::eCall, name_.text, std::move(args_), name_.loc);
-	_shared.calls.emplace_back(PendingCall { diagnostic(codes::asl("unknown-function"), name_, "unknown function '" + String(name_.text) + "'"), pending.index });
+	_shared.calls.emplace_back(
+		PendingCall { diagnostic(codes::asl("unknown-function"), name_, "unknown function '" + String(name_.text) + "'"), pending.index }
+	);
 	return pending;
 }
 
@@ -616,17 +704,23 @@ ir::ExprRef Parser::name(ref<const ir::Token> name_) {
 	const auto binding = std::ranges::find(bindings, text, &ir::BindingDecl::localName);
 	const auto& constants = _shared.mod.constants;
 	const auto constant = std::ranges::find(constants, text, &ir::ConstantDecl::name);
+
 	if (std::ranges::find(_locals, text) != _locals.end()) {
 		named.local = true;
+
 	} else if (constant != constants.end()) {
 		named.constant = ir::ConstantRef { static_cast<u32>(constant - constants.begin()) };
+
 	} else if (binding != bindings.end()) {
 		named.binding = ir::BindingRef { static_cast<u32>(binding - bindings.begin()) };
+
 	} else if (isBuiltinVariable(text)) {
 		named.kind = ir::ExprKind::eBuiltin;
+
 	} else {
 		error(codes::asl("unknown-name"), name_, "unknown name '" + String(text) + "'");
 	}
+
 	// a local is never a binding use (usageOf relies on it)
 	assert(not named.local || named.binding.index == ir::BindingRef {}.index);
 	return expr(std::move(named));
