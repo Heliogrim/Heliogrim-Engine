@@ -1,5 +1,6 @@
 #include "Widget.hpp"
 
+#include "NullWidget.hpp"
 #include "../Children.hpp"
 #include "../DataWatcher.hpp"
 #include "../Window/Window.hpp"
@@ -183,7 +184,22 @@ EventResponse Widget::invokeOnKeyUp(ref<const KeyboardEvent> event_) {
 }
 
 void Widget::setParent(mref<sptr<Widget>> parent_) {
+
+	if (this == NullWidget::instance().get()) {
+		return;
+	}
+
+	// The new slot may place this widget at the same aabb, which finalize would not detect
+	markLayoutPending();
+
+	// Mark the old parent before the swap and the new one after; each walk climbs the current parent chain
+	if (const auto prev = _parent.lock()) {
+		prev->markLayoutPending();
+	}
 	_parent = std::move(parent_);
+	if (const auto next = _parent.lock()) {
+		next->markLayoutPending();
+	}
 
 	if (cachedUpdateNearestProvisioner(true) != None) {
 		cascadeContextChange(true);
@@ -192,7 +208,22 @@ void Widget::setParent(mref<sptr<Widget>> parent_) {
 }
 
 void Widget::setParent(cref<sptr<Widget>> parent_) {
+
+	if (this == NullWidget::instance().get()) {
+		return;
+	}
+
+	// The new slot may place this widget at the same aabb, which finalize would not detect
+	markLayoutPending();
+
+	// Mark the old parent before the swap and the new one after; each walk climbs the current parent chain
+	if (const auto prev = _parent.lock()) {
+		prev->markLayoutPending();
+	}
 	_parent = parent_;
+	if (parent_) {
+		parent_->markLayoutPending();
+	}
 
 	if (cachedUpdateNearestProvisioner(true) != None) {
 		cascadeContextChange(true);
@@ -209,8 +240,7 @@ sptr<Widget> Widget::parent() const {
 }
 
 sptr<Widget> Widget::root() const {
-	if (not hasParent()) [[unlikely]]
-	{
+	if (not hasParent()) [[unlikely]] {
 		return nullptr;
 	}
 
@@ -293,6 +323,60 @@ ReflowPosition Widget::position() const noexcept {
 	return ReflowPosition::eStatic;
 }
 
+void Widget::markAsPending(bool layout_, bool render_) {
+	if (layout_ || render_) {
+		markLayoutPending();
+	}
+}
+
+void Widget::markLayoutPending() {
+
+	// A stale own bit under a clean parent would never reach the engine, so only a layout-pending parent ends the walk early
+	if (_state.isLayoutPending()) {
+		const auto up = parent();
+		if (up == nullptr || up->_state.isLayoutPending()) {
+			return;
+		}
+	}
+
+	_state.set(WidgetStateFlagBits::eLayoutPending);
+
+	auto next = parent();
+	while (next && not next->_state.isLayoutPending()) {
+		next->_state.set(WidgetStateFlagBits::eLayoutPending);
+		next = next->parent();
+	}
+}
+
+void Widget::markPaintPending() {
+
+	_state.set(WidgetStateFlagBits::eRenderPending);
+
+	auto next = parent();
+	while (next && not next->_state.isSubtreePending() && not next->_state.isLayoutPending()) {
+		next->_state.set(WidgetStateFlagBits::eSubtreePending);
+		next = next->parent();
+	}
+}
+
+bool Widget::clearSubtreePending() {
+	auto result = _state.isSubtreePending();
+	_state.unset(WidgetStateFlagBits::eSubtreePending);
+	return result;
+}
+
+bool Widget::clearLayoutPending() {
+	auto result = _state.isLayoutPending();
+	_state.unset(WidgetStateFlagBits::eLayoutPending);
+	return result;
+}
+
+bool Widget::clearRenderPending() {
+	auto result = _state.isRenderPending();
+	_state.unset(WidgetStateFlagBits::eRenderPending);
+	return result;
+}
+
 void Widget::enumerateDistinctCapture(
 	const u16 compareVersion_,
 	ref<Vector<nmpt<const Widget>>> capture_
@@ -308,37 +392,6 @@ void Widget::enumerateDistinctCapture(
 			child->enumerateDistinctCapture(compareVersion_, capture_);
 		}
 	}
-}
-
-void Widget::markAsPending(bool layout_, bool render_) {
-
-	if (
-		(_state.isLayoutPending() && layout_) == layout_ &&
-		(_state.isRenderPending() && render_) == render_
-	) {
-		return;
-	}
-
-	if (layout_)
-		_state.set(WidgetStateFlagBits::eLayoutPending);
-	if (render_)
-		_state.set(WidgetStateFlagBits::eLayoutPending);
-
-	if (hasParent()) {
-		parent()->markAsPending(layout_, render_);
-	}
-}
-
-bool Widget::clearLayoutPending() {
-	auto result = _state.isLayoutPending();
-	_state.unset(WidgetStateFlagBits::eLayoutPending);
-	return result;
-}
-
-bool Widget::clearRenderPending() {
-	auto result = _state.isRenderPending();
-	_state.unset(WidgetStateFlagBits::eRenderPending);
-	return result;
 }
 
 void Widget::updateRenderVersion(const u16 version_, const bool inherited_) {
