@@ -535,7 +535,7 @@ namespace hg::engine::accel::lang::ir::spirv {
 		const auto& e = mod.exprs[expr_.index];
 		switch (e.kind) {
 			case ExprKind::eLiteral: {
-				return literal(e.type, e.literal);
+				return literal(e.type, e.literal, e.loc);
 			}
 			case ExprKind::eNameRef: {
 				if (e.constant.index != none) {

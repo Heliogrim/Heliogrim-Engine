@@ -1,12 +1,10 @@
-#include "SpirvEmitter.Impl.hpp"
-
 #include <algorithm>
 #include <limits>
 #include <map>
-#include <optional>
 #include <type_traits>
 #include <variant>
 
+#include "SpirvEmitter.Impl.hpp"
 #include "../Interface.hpp"
 
 namespace hg::engine::accel::lang::ir::spirv {
@@ -34,13 +32,16 @@ namespace hg::engine::accel::lang::ir::spirv {
 			if (a == b) {
 				return true;
 			}
+
 			// past the depth bound the shapes are taken as equal: a deep identical struct must not conflict
 			if (depth_ > 64uL) {
 				return true;
 			}
+
 			if (a == nullptr || b == nullptr || a->kind != b->kind) {
 				return false;
 			}
+
 			if (a->kind == TypeKind::eStruct) {
 				return a->name == b->name && a->fields.size() == b->fields.size() && std::ranges::equal(
 					a->fields,
@@ -56,10 +57,12 @@ namespace hg::engine::accel::lang::ir::spirv {
 			if (desc == nullptr || state[ref_.index] == State::eDone) {
 				return;
 			}
+
 			if (state[ref_.index] == State::eOpen) {
 				user(codes::asl("recursive-struct"), loc_, "struct '" + desc->name + "' contains itself");
 				return;
 			}
+
 			state[ref_.index] = State::eOpen;
 			if (desc->kind == TypeKind::eArray || desc->kind == TypeKind::eRegion) {
 				self_(desc->element, loc_);
@@ -100,14 +103,17 @@ namespace hg::engine::accel::lang::ir::spirv {
 				user(codes::asl("duplicate-binding"), binding.loc, "binding '" + binding.id + "' is declared twice");
 				continue;
 			}
+
 			use(binding.type, binding.loc);
 			if (binding.implicit || binding.mode == BindMode::eForward || binding.bindClass == BindClass::eWorkgroup) {
 				continue;
 			}
+
 			if (binding.bindClass == BindClass::eNone) {
 				user(codes::asl("missing-binding-class"), binding.loc, "binding '" + binding.id + "' has no class");
 				continue;
 			}
+
 			const auto* desc = at(binding.type);
 			const auto opaque = desc != nullptr &&
 				(desc->kind == TypeKind::eTexture || desc->kind == TypeKind::eSampler || desc->kind == TypeKind::eImage);
@@ -122,9 +128,11 @@ namespace hg::engine::accel::lang::ir::spirv {
 				user(codes::asl("binding-class-mismatch"), binding.loc, "type of binding '" + binding.id + "' does not fit its class");
 				continue;
 			}
+
 			if (binding.bindClass != BindClass::ePushConstant) {
 				continue;
 			}
+
 			if (++pushBlocks == 2uL) {
 				const auto total = std::ranges::count_if(
 					mod.bindings,
@@ -214,6 +222,7 @@ namespace hg::engine::accel::lang::ir::spirv {
 				}
 				continue;
 			}
+
 			if (not stmtWork.empty()) {
 				const auto& stmt = mod.stmts[stmtWork.back()];
 				stmtWork.pop_back();
@@ -226,6 +235,7 @@ namespace hg::engine::accel::lang::ir::spirv {
 				}
 				continue;
 			}
+
 			const auto& fn = mod.functions[fnWork.back()];
 			fnWork.pop_back();
 			if (fn.body.has_value() && fn.body->root.index < mod.stmts.size()) {
@@ -268,6 +278,7 @@ namespace hg::engine::accel::lang::ir::spirv {
 			if (entry.mode != BindMode::eForward) {
 				continue;
 			}
+
 			if (entry.input) {
 				inputIds.emplace_back(entry.id);
 			} else if (not entry.implicit && not outputLocations.contains(entry.id)) {
@@ -290,6 +301,7 @@ namespace hg::engine::accel::lang::ir::spirv {
 				fail(codes::asl("internal-inconsistent-layout"), {}, "binding '" + binding_.id + "' has no descriptor slot");
 				return;
 			}
+
 			decorate(id_, spv::Decoration::DescriptorSet, Ops { slot->set });
 			decorate(id_, spv::Decoration::Binding, Ops { slot->binding });
 		};
@@ -307,6 +319,7 @@ namespace hg::engine::accel::lang::ir::spirv {
 				// implicit (builtin) variables: Task 7
 				continue;
 			}
+
 			auto& global = globals[i];
 			global.id = w.id();
 
@@ -329,6 +342,7 @@ namespace hg::engine::accel::lang::ir::spirv {
 						fail(codes::asl("internal-inconsistent-layout"), {}, "input '" + binding.id + "' has no location");
 						continue;
 					}
+
 					location = layout.inputLocations[index];
 				} else {
 					location = outputLocations[binding.id];
@@ -356,6 +370,7 @@ namespace hg::engine::accel::lang::ir::spirv {
 							fail(codes::asl("internal-spirv-emit"), {}, "uniform buffer '" + binding.id + "' with std430 packing is not supported");
 							continue;
 						}
+
 						global.storage = spv::StorageClass::Uniform;
 						global.explicitLayout = true;
 						global.std140 = true;
@@ -392,14 +407,17 @@ namespace hg::engine::accel::lang::ir::spirv {
 							fail(codes::asl("internal-inconsistent-layout"), {}, "push binding '" + binding.id + "' has no range");
 							continue;
 						}
+
 						if (range->size == 0uL) {
 							fail(codes::asl("invalid-push-constant-type"), {}, "push constant '" + binding.id + "' cannot be laid out");
 							continue;
 						}
+
 						if (++pushBlocks > 1uL) {
 							fail(codes::asl("too-many-push-constant-blocks"), {}, "a stage has at most one push constant block, but the module declares more");
 							continue;
 						}
+
 						global.storage = spv::StorageClass::PushConstant;
 						global.explicitLayout = true;
 						global.pointee = block(binding.type, false, range->offset);
@@ -429,6 +447,7 @@ namespace hg::engine::accel::lang::ir::spirv {
 			if (bits_ == 0uL || bits_ >= 64uL) {
 				return value_;
 			}
+
 			const auto shift = 64uL - bits_;
 			return kind_ == ScalarKind::eInt ?
 				static_cast<u64>(static_cast<s64>(value_ << shift) >> shift) :
@@ -436,13 +455,14 @@ namespace hg::engine::accel::lang::ir::spirv {
 		};
 		// why the last fold failed, for the diagnostic
 		String reason {};
-		// a folded value converted to the scalar type `desc_` at its declared width; nullopt for a float outside an integer range
-		const auto convert = [&wrap, &reason](ref<const TypeDesc> desc_, const Value value_) -> std::optional<Value> {
+		// a folded value converted to the scalar type `desc_` at its declared width; None for a float outside an integer range
+		const auto convert = [&wrap, &reason](ref<const TypeDesc> desc_, const Value value_) -> Opt<Value> {
 			if (const auto* const real = std::get_if<f64>(&value_);
 				real != nullptr && (desc_.scalar == ScalarKind::eInt || desc_.scalar == ScalarKind::eUInt) && not fitsInteger(*real, desc_.scalar, desc_.bits)) {
 				reason = "a float outside the integer range does not convert";
-				return std::nullopt;
+				return None;
 			}
+
 			return std::visit(
 				[&](const auto v_) -> Value {
 					switch (desc_.scalar) {
@@ -456,19 +476,21 @@ namespace hg::engine::accel::lang::ir::spirv {
 			);
 		};
 
-		// scalar constant expression folded to a value of the expression's own type; nullopt when it does not fold
-		const auto scalarOf = [&](this const auto& self_, const ExprRef ref_, const u32 depth_) -> std::optional<Value> {
+		// scalar constant expression folded to a value of the expression's own type; None when it does not fold
+		const auto scalarOf = [&](this const auto& self_, const ExprRef ref_, const u32 depth_) -> Opt<Value> {
 			if (ref_.index >= mod.exprs.size() || depth_ > maxDepth) {
-				return std::nullopt;
+				return None;
 			}
+
 			const auto& e = mod.exprs[ref_.index];
 			if (e.type.index >= mod.types.size() || mod.types[e.type.index].kind != TypeKind::eScalar) {
-				return std::nullopt;
+				return None;
 			}
+
 			const auto& desc = mod.types[e.type.index];
 			const auto as = [&desc, &convert](const Value value_) { return convert(desc, value_); };
 
-			std::optional<Value> value {};
+			Opt<Value> value {};
 			switch (e.kind) {
 				case ExprKind::eLiteral: {
 					value = e.literal.value;
@@ -490,8 +512,9 @@ namespace hg::engine::accel::lang::ir::spirv {
 					if (e.op != Op::eNeg || e.operands.size() != 1uL) {
 						break;
 					}
+
 					const auto operand = self_(e.operands.front(), depth_ + 1uL);
-					if (const auto converted = operand.has_value() ? as(*operand) : std::nullopt; converted.has_value()) {
+					if (const auto converted = operand.has_value() ? as(*operand) : None; converted.has_value()) {
 						value = std::visit(
 							[](const auto value_) -> Value {
 								using T = decltype(value_);
@@ -513,25 +536,27 @@ namespace hg::engine::accel::lang::ir::spirv {
 					if (e.operands.size() != 2uL) {
 						break;
 					}
+
 					const auto lhsValue = self_(e.operands[0], depth_ + 1uL);
 					const auto rhsValue = self_(e.operands[1], depth_ + 1uL);
-					const auto lhs = lhsValue.has_value() ? as(*lhsValue) : std::nullopt;
-					const auto rhs = rhsValue.has_value() ? as(*rhsValue) : std::nullopt;
+					const auto lhs = lhsValue.has_value() ? as(*lhsValue) : None;
+					const auto rhs = rhsValue.has_value() ? as(*rhsValue) : None;
 					if (not lhs.has_value() || not rhs.has_value()) {
 						break;
 					}
+
 					value = std::visit(
-						[op = e.op, &reason, minimum = static_cast<s64>(wrap(ScalarKind::eInt, desc.bits, 1uLL << ((desc.bits == 0uL || desc.bits > 64uL ? 64uL : desc.bits) - 1uLL)))](const auto lhs_, const auto rhs_) -> std::optional<Value> {
+						[op = e.op, &reason, minimum = static_cast<s64>(wrap(ScalarKind::eInt, desc.bits, 1uLL << ((desc.bits == 0uL || desc.bits > 64uL ? 64uL : desc.bits) - 1uLL)))](const auto lhs_, const auto rhs_) -> Opt<Value> {
 							using T = decltype(lhs_);
 							if constexpr (not std::is_same_v<T, decltype(rhs_)> || std::is_same_v<T, bool>) {
-								return std::nullopt;
+								return None;
 							} else if constexpr (std::is_floating_point_v<T>) {
 								switch (op) {
 									case Op::eAdd: return Value { lhs_ + rhs_ };
 									case Op::eSub: return Value { lhs_ - rhs_ };
 									case Op::eMul: return Value { lhs_ * rhs_ };
 									case Op::eDiv: return Value { lhs_ / rhs_ };
-									default: return std::nullopt;
+									default: return None;
 								}
 							} else {
 								// integers wrap instead of overflowing (the result wraps to the declared width below); division by zero does not fold
@@ -545,18 +570,19 @@ namespace hg::engine::accel::lang::ir::spirv {
 									case Op::eMod: {
 										if (rhs_ == T {}) {
 											reason = "division by zero";
-											return std::nullopt;
+											return None;
 										}
+
 										if constexpr (std::is_signed_v<T>) {
 											if (rhs_ == T { -1 } && lhs_ == minimum) {
 												reason = "the most negative value divided by -1 overflows";
-												return std::nullopt;
+												return None;
 											}
 										}
 										// C++ `%` truncates like OpSRem / OpUMod
 										return Value { static_cast<T>(op == Op::eDiv ? lhs_ / rhs_ : lhs_ % rhs_) };
 									}
-									default: return std::nullopt;
+									default: return None;
 								}
 							}
 						},
@@ -567,7 +593,7 @@ namespace hg::engine::accel::lang::ir::spirv {
 				}
 				default: break;
 			}
-			return value.has_value() ? as(*value) : std::nullopt;
+			return value.has_value() ? as(*value) : None;
 		};
 
 		// components (vector) or columns (matrix) of every folded composite, to flatten nested constructs
@@ -581,6 +607,7 @@ namespace hg::engine::accel::lang::ir::spirv {
 				}
 				return;
 			}
+
 			out_.emplace_back(id_);
 		};
 		// constant expression folded to an OpConstant / OpConstantComposite id; 0 when it does not fold
@@ -588,24 +615,28 @@ namespace hg::engine::accel::lang::ir::spirv {
 			if (ref_.index >= mod.exprs.size() || depth_ > maxDepth) {
 				return 0uL;
 			}
+
 			const auto& e = mod.exprs[ref_.index];
 			if (e.type.index >= mod.types.size()) {
 				return 0uL;
 			}
+
 			const auto& t = mod.types[e.type.index];
 			if (t.kind == TypeKind::eScalar) {
 				const auto value = scalarOf(ref_, depth_);
-				const auto id = value.has_value() ? literal(e.type, LiteralValue { *value }) : 0uL;
+				const auto id = value.has_value() ? literal(e.type, LiteralValue { *value }, e.loc) : 0uL;
 				if (id != 0uL) {
 					values.insert_or_assign(id, *value);
 				}
 				return id;
 			}
+
 			if (e.kind == ExprKind::eNameRef) {
 				const bool folds = not e.local && e.constant.index < mod.constants.size() &&
 					not mod.constants[e.constant.index].specId.has_value();
 				return folds ? self_(mod.constants[e.constant.index].value, depth_ + 1uL) : 0uL;
 			}
+
 			if (e.kind != ExprKind::eConstruct) {
 				return 0uL;
 			}
@@ -617,6 +648,7 @@ namespace hg::engine::accel::lang::ir::spirv {
 				if (id == 0uL) {
 					return 0uL;
 				}
+
 				operands.emplace_back(id);
 				flatten(id, flat);
 			}
@@ -628,11 +660,13 @@ namespace hg::engine::accel::lang::ir::spirv {
 					if (value == values.end()) {
 						return 0uL;
 					}
+
 					const auto converted = convert(component, value->second);
 					if (not converted.has_value()) {
 						return 0uL;
 					}
-					id = literal(component, LiteralValue { *converted });
+
+					id = literal(component, LiteralValue { *converted }, e.loc);
 					values.insert_or_assign(id, *converted);
 				}
 			}
@@ -644,6 +678,7 @@ namespace hg::engine::accel::lang::ir::spirv {
 					if (out.size() != t.n) {
 						return 0uL;
 					}
+
 					break;
 				}
 				case TypeKind::eMatrix: {
@@ -651,6 +686,7 @@ namespace hg::engine::accel::lang::ir::spirv {
 					if (flat.size() != t.n * t.m) {
 						return 0uL;
 					}
+
 					const auto column = w.type(spv::Op::OpTypeVector, Ops { scalar(ScalarKind::eFloat, t.bits), t.m });
 					for (u32 c = 0uL; c < t.n; ++c) {
 						Ops cells(flat.begin() + c * t.m, flat.begin() + (c + 1uL) * t.m);
@@ -666,6 +702,7 @@ namespace hg::engine::accel::lang::ir::spirv {
 					if (out.size() != (t.kind == TypeKind::eArray ? t.count : t.fields.size())) {
 						return 0uL;
 					}
+
 					// a constituent of another type converts to the element / field type when both are scalars, else it does not fold
 					for (u32 k = 0uL; k < out.size(); ++k) {
 						const auto expected = t.kind == TypeKind::eArray ? t.element : t.fields[k].type;
@@ -674,18 +711,21 @@ namespace hg::engine::accel::lang::ir::spirv {
 						if (actual == expected || type(actual) == type(expected)) {
 							continue;
 						}
+
 						const bool scalars = expected.index < mod.types.size() && actual.index < mod.types.size() &&
 							mod.types[expected.index].kind == TypeKind::eScalar && mod.types[actual.index].kind == TypeKind::eScalar;
-						const auto value = scalars ? scalarOf(e.operands[k], depth_ + 1uL) : std::nullopt;
+						const auto value = scalars ? scalarOf(e.operands[k], depth_ + 1uL) : None;
 						if (not value.has_value()) {
 							reason = "an element does not match the element type";
 							return 0uL;
 						}
+
 						const auto converted = convert(mod.types[expected.index], *value);
 						if (not converted.has_value()) {
 							return 0uL;
 						}
-						out[k] = literal(expected, LiteralValue { *converted });
+
+						out[k] = literal(expected, LiteralValue { *converted }, mod.exprs[e.operands[k].index].loc);
 					}
 					break;
 				}
@@ -702,18 +742,21 @@ namespace hg::engine::accel::lang::ir::spirv {
 			if (not reachedConstants[i]) {
 				continue;
 			}
+
 			const auto& constant = mod.constants[i];
 			if (constant.type.index >= mod.types.size()) {
 				fail(codes::asl("internal-spirv-emit"), constant.loc, "constant '" + constant.name + "' has no type");
 				continue;
 			}
+
 			const auto& desc = mod.types[constant.type.index];
+			const auto at = constant.value.index < mod.exprs.size() ? mod.exprs[constant.value.index].loc : constant.loc;
 			if (not constant.specId.has_value()) {
 				// no name: the value is deduplicated, another constant may share it
 				reason.clear();
 				if (desc.kind == TypeKind::eScalar) {
 					const auto value = scalarOf(constant.value, 0uL);
-					constants[i] = value.has_value() ? literal(constant.type, LiteralValue { *value }) : 0uL;
+					constants[i] = value.has_value() ? literal(constant.type, LiteralValue { *value }, at) : 0uL;
 				} else {
 					constants[i] = fold(constant.value, 0uL);
 				}
@@ -733,11 +776,13 @@ namespace hg::engine::accel::lang::ir::spirv {
 				);
 				continue;
 			}
+
 			const auto spec = std::ranges::find(layout.specConstants, *constant.specId, &SpecConstant::id);
 			if (spec == layout.specConstants.end()) {
 				fail(codes::asl("internal-inconsistent-layout"), constant.loc, "spec constant '" + constant.name + "' has no id");
 				continue;
 			}
+
 			const auto typeId = type(constant.type);
 			const LiteralValue folded { *value };
 			if (desc.kind == TypeKind::eScalar && desc.scalar == ScalarKind::eBool) {
@@ -745,9 +790,10 @@ namespace hg::engine::accel::lang::ir::spirv {
 				constants[i] = w.constant(truth ? spv::Op::OpSpecConstantTrue : spv::Op::OpSpecConstantFalse, typeId, Ops {}, true);
 			} else {
 				Ops words {};
-				if (not literalWords(constant.type, folded, words)) {
+				if (not literalWords(constant.type, folded, words, at)) {
 					continue;
 				}
+
 				constants[i] = w.constant(spv::Op::OpSpecConstant, typeId, words, true);
 			}
 			w.annotation(spv::Op::OpDecorate, Ops { constants[i], w32(spv::Decoration::SpecId), spec->constantId });
@@ -760,6 +806,7 @@ namespace hg::engine::accel::lang::ir::spirv {
 			if (not reachedFunctions[i]) {
 				continue;
 			}
+
 			const auto& fn = mod.functions[i];
 			auto& info = functions[i];
 			info.ret = fn.ret.index == ~0uL ? voidType() : type(fn.ret);
