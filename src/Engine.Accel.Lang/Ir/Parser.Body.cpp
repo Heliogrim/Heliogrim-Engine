@@ -644,6 +644,10 @@ Opt<ir::ExprRef> Parser::primary() {
 
 	if (token.kind == TokenKind::eIdentifier) {
 		take();
+		if (token.text == "bitcast" && accept(TokenKind::eLess)) {
+			return bitcast(token);
+		}
+
 		if (at(TokenKind::eLParen)) {
 			return call(token);
 		}
@@ -724,6 +728,27 @@ Opt<ir::ExprRef> Parser::call(ref<const ir::Token> name_) {
 	}
 
 	return SomeVal(callee(name_, std::move(args)));
+}
+
+/* `bitcast<T>(x)` after '<': a builtin carrying its target type */
+Opt<ir::ExprRef> Parser::bitcast(ref<const ir::Token> name_) {
+	const auto target = type();
+	if (not target.has_value() || not expect(TokenKind::eGreater, "'>'") || not expect(TokenKind::eLParen, "'('")) {
+		return None;
+	}
+
+	const auto arg = expression();
+	if (not arg.has_value() || not expect(TokenKind::eRParen, "')'")) {
+		return None;
+	}
+
+	ir::Expr out {};
+	out.kind = ir::ExprKind::eBuiltin;
+	out.name = name_.text;
+	out.type = *target;
+	out.operands = { *arg };
+	out.loc = name_.loc;
+	return SomeVal(expr(std::move(out)));
 }
 
 /* type name -> construct, builtin function -> builtin, else a call resolved after the parse */

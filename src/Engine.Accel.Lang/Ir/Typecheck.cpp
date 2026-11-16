@@ -2,7 +2,10 @@
 
 #include <algorithm>
 #include <array>
+#include <bit>
 #include <cassert>
+#include <cmath>
+#include <limits>
 #include <string>
 #include <utility>
 
@@ -85,6 +88,7 @@ namespace {
 				stmt(root);
 			}
 
+			literalRanges();
 			return std::move(_diags);
 		}
 
@@ -152,6 +156,8 @@ namespace {
 		u32 _loops = 0uL;
 		/* range expressions whose context is a borrow (alias initializer or call argument) */
 		Vector<u32> _borrowed;
+		/* lhs of the compound assignment being checked: its conversion help goes on the rhs, the target cannot change */
+		size_t _compound = ~0uz;
 
 		/* head token of the node being checked; restored on scope exit so errors after operand recursion stay on the parent */
 		ir::SourceLoc _loc {};
@@ -334,10 +340,66 @@ namespace {
 			}
 		}
 
+		/* an integer literal fits when its value is exact in the target type */
+		[[nodiscard]] static bool fits(const u64 value_, ref<const TypeDesc> to_, const bool negated_) {
+			switch (to_.scalar) {
+				case ScalarKind::eInt: return value_ <= (1uLL << (to_.bits - 1uL)) - (negated_ ? 0uLL : 1uLL);
+				case ScalarKind::eUInt: return negated_ ? value_ == 0uLL : to_.bits >= 64uL || value_ < (1uLL << to_.bits);
+				case ScalarKind::eFloat: {
+					const auto mantissa = to_.bits == 16uL ? 11 : to_.bits == 32uL ? 24 : 53;
+					return value_ == 0uLL || (
+						std::bit_width(value_ >> std::countr_zero(value_)) <= mantissa && (to_.bits != 16uL || value_ <= 65504uLL)
+					);
+				}
+				default: return true;
+			}
+		}
+
 		void retype(ExprRef ref_, TypeRef type_) {
-			_mod.exprs[ref_.index].type = type_;
-			if (_mod.exprs[ref_.index].kind == ExprKind::eUnary && _mod.exprs[ref_.index].operands.size() == 1uz) {
-				retype(_mod.exprs[ref_.index].operands.front(), type_);
+			auto& e = _mod.exprs[ref_.index];
+			e.type = type_;
+			if (e.kind == ExprKind::eUnary && e.operands.size() == 1uz) {
+				retype(e.operands.front(), type_);
+			}
+		}
+
+		/* every typed literal against its final type, after context has settled it (default, coerced, or `u`-suffixed) */
+		void literalRanges() {
+			Vector<bool> negated(_mod.exprs.size(), false);
+			for (const auto& e : _mod.exprs) {
+				if (e.kind == ExprKind::eUnary && e.op == ir::Op::eNeg && e.operands.size() == 1uz && e.operands.front().index < negated.size()) {
+					negated[e.operands.front().index] = true;
+				}
+			}
+
+			for (auto i = 0uz; i < _mod.exprs.size(); ++i) {
+				const auto& e = _mod.exprs[i];
+				if (e.kind != ExprKind::eLiteral || not valid(e.type) || not isKind(e.type, TypeKind::eScalar)) {
+					continue;
+				}
+
+				const auto& to = _mod.types[e.type.index];
+				const auto& value = e.literal.value;
+				bool ok = true;
+				String spelled = e.literal.spelling;
+				if (std::holds_alternative<s64>(value) || std::holds_alternative<u64>(value)) {
+					const auto v = std::holds_alternative<s64>(value) ? static_cast<u64>(std::get<s64>(value)) : std::get<u64>(value);
+					ok = fits(v, to, negated[i]);
+					if (spelled.empty()) { spelled = std::to_string(v); }
+				} else if (std::holds_alternative<f64>(value) && to.scalar == ScalarKind::eFloat) {
+					const auto v = std::abs(std::get<f64>(value));
+					ok = to.bits == 16uL ? v <= 65504.0 : to.bits == 32uL ? v <= static_cast<f64>(std::numeric_limits<f32>::max()) : true;
+					if (spelled.empty()) { spelled = std::to_string(std::get<f64>(value)); }
+				}
+
+				if (not ok) {
+					_diags.emplace_back(
+						ir::Diagnostic::error(
+							codes::asl("literal-out-of-range"),
+							"literal '" + String { negated[i] ? "-" : "" } + spelled + "' does not fit " + ir::quotedType(_mod.types, e.type)
+						).at(spanIn(_mod, e.loc))
+					);
+				}
 			}
 		}
 
@@ -351,6 +413,54 @@ namespace {
 				return true;
 			}
 			return false;
+		}
+
+		/* numeric scalars, or vectors of one width, that differ only in their component: ASL never converts these implicitly */
+		[[nodiscard]] bool conversion(TypeRef from_, TypeRef to_) const {
+			if (not numeric(from_) || not numeric(to_)) {
+				return false;
+			}
+
+			const auto& f = _mod.types[from_.index];
+			const auto& t = _mod.types[to_.index];
+			return f.kind == t.kind && f.kind != TypeKind::eMatrix && (f.kind == TypeKind::eScalar || f.n == t.n) && not sameDesc(f, t);
+		}
+
+		/* `from_` cannot be used as `to_`; a numeric conversion gets the help that writes it out */
+		void incompatible(String message_, ExprRef from_, TypeRef fromType_, TypeRef toType_) {
+			if (not conversion(fromType_, toType_)) {
+				error(codes::asl("type-mismatch"), std::move(message_));
+				return;
+			}
+
+			const auto* e = from_.index < _mod.exprs.size() ? &_mod.exprs[from_.index] : nullptr;
+			const auto* lit = e != nullptr && e->kind == ExprKind::eUnary && e->op == ir::Op::eNeg && e->operands.size() == 1uz &&
+				e->operands.front().index < _mod.exprs.size() ? &_mod.exprs[e->operands.front().index] : e;
+			if (lit != nullptr && lit->kind == ExprKind::eLiteral && std::holds_alternative<f64>(lit->literal.value) &&
+				_mod.types[toType_.index].scalar != ScalarKind::eFloat) {
+				error(
+					codes::asl("literal-out-of-range"),
+					"literal '" + String { lit != e ? "-" : "" } + lit->literal.spelling + "' does not fit " + ir::quotedType(_mod.types, toType_),
+					"write an integer literal"
+				);
+				return;
+			}
+
+			const auto named = e != nullptr && e->kind == ExprKind::eNameRef && e->loc.length != 0uL;
+			const auto spelled = named ? e->name :
+				e != nullptr && e->kind == ExprKind::eLiteral && not e->literal.spelling.empty() ? e->literal.spelling :
+				String { "..." };
+			const auto written = name(toType_) + "(" + spelled + ")";
+
+			auto diagnostic = ir::Diagnostic::error(codes::asl("implicit-conversion"), std::move(message_)).at(spanIn(_mod, _loc));
+			std::move(diagnostic).fix(
+				engine::diag::Fix {
+					"write `" + written + "`",
+					named ? Vector<engine::diag::TextEdit> { engine::diag::TextEdit { spanIn(_mod, e->loc), written } } : Vector<engine::diag::TextEdit> {},
+					named ? engine::diag::Applicability::eMachineApplicable : engine::diag::Applicability::eHasPlaceholders
+				}
+			);
+			_diags.emplace_back(std::move(diagnostic));
 		}
 
 		/* Statements */
@@ -381,12 +491,14 @@ namespace {
 						const auto init = expr(lhs);
 						if (valid(declared)) {
 							if (valid(init) && not coerce(lhs, declared)) {
-								error(
-									codes::asl("type-mismatch"),
+								incompatible(
 									"cannot initialize '" + _mod.stmts[ref_.index].name + "' of type " + ir::quotedType(
 										_mod.types,
 										declared
-									) + " with " + ir::quotedType(_mod.types, init)
+									) + " with " + ir::quotedType(_mod.types, init),
+									lhs,
+									init,
+									declared
 								);
 							}
 
@@ -470,7 +582,9 @@ namespace {
 					} else {
 						// `a op= b` checks as `a op b` that must land back in `a`
 						target = expr(lhs);
+						_compound = lhs.index;
 						value = binary(op, Vector<ExprRef> { lhs, rhs });
+						_compound = ~0uz;
 						if (valid(target) && valid(value) && not same(target, value)) {
 							error(
 								codes::asl("type-mismatch"),
@@ -486,9 +600,11 @@ namespace {
 					}
 
 					if (op == ir::Op::eNone && valid(target) && valid(value) && not coerce(rhs, target)) {
-						error(
-							codes::asl("type-mismatch"),
-							"cannot assign " + ir::quotedType(_mod.types, value) + " to " + ir::quotedType(_mod.types, target)
+						incompatible(
+							"cannot assign " + ir::quotedType(_mod.types, value) + " to " + ir::quotedType(_mod.types, target),
+							rhs,
+							value,
+							target
 						);
 					}
 					break;
@@ -540,12 +656,14 @@ namespace {
 					if (lhs.index < _mod.exprs.size()) {
 						const auto value = expr(lhs);
 						if (valid(_ret) && valid(value) && not coerce(lhs, _ret)) {
-							error(
-								codes::asl("type-mismatch"),
+							incompatible(
 								"cannot return " + ir::quotedType(_mod.types, value) + " from a function returning " + ir::quotedType(
 									_mod.types,
 									_ret
-								)
+								),
+								lhs,
+								value,
+								_ret
 							);
 						}
 					}
@@ -632,7 +750,7 @@ namespace {
 					return scalarOf(scalar, 32uL);
 				}
 				case ExprKind::eNameRef: return nameRef(ref_);
-				case ExprKind::eBuiltin: return builtin(text, operands);
+				case ExprKind::eBuiltin: return text == "bitcast" ? bitcast(ref_, operands) : builtin(text, operands);
 				case ExprKind::eCall: return call(ref_, text, operands);
 				case ExprKind::eField: return field(text, operands);
 				case ExprKind::eIndex: return index(operands);
@@ -695,6 +813,10 @@ namespace {
 								"cannot construct " + ir::quotedType(_mod.types, type) + " from the given arguments"
 							);
 						}
+					}
+
+					if (isKind(type, TypeKind::eScalar) || isKind(type, TypeKind::eVector)) {
+						construct(type, operands, types);
 					}
 					return type;
 				}
@@ -1061,10 +1183,12 @@ namespace {
 
 			const auto init = expr(decl.value);
 			if (valid(init) && not coerce(decl.value, decl.type)) {
-				error(
-					codes::asl("type-mismatch"),
+				incompatible(
 					"cannot initialize constant '" + decl.name + "' of type " + ir::quotedType(_mod.types, decl.type) + " with " +
-					ir::quotedType(_mod.types, init)
+					ir::quotedType(_mod.types, init),
+					decl.value,
+					init,
+					decl.type
 				);
 			}
 
@@ -1487,7 +1611,7 @@ namespace {
 			}
 
 			if (op_ == ir::Op::eEq || op_ == ir::Op::eNe) {
-				return same(lt, rt) ? boolType() : mismatch(ir::spelling(op_), lt, rt);
+				return same(lt, rt) ? boolType() : mismatched(op_, operands_, lt, rt);
 			}
 
 			if (op_ == ir::Op::eMod && numeric(lt) && numeric(rt) && not(isInteger(componentOf(lt)) && isInteger(componentOf(rt)))) {
@@ -1503,7 +1627,7 @@ namespace {
 			}
 
 			if (op_ == ir::Op::eBitAnd || op_ == ir::Op::eBitOr || op_ == ir::Op::eBitXor) {
-				return isInteger(componentOf(lt)) && same(lt, rt) ? lt : mismatch(ir::spelling(op_), lt, rt);
+				return isInteger(componentOf(lt)) && same(lt, rt) ? lt : mismatched(op_, operands_, lt, rt);
 			}
 
 			if (not numeric(lt) || not numeric(rt)) {
@@ -1511,7 +1635,7 @@ namespace {
 			}
 
 			if (isComparison(op_)) {
-				return isKind(lt, TypeKind::eScalar) && same(lt, rt) ? boolType() : mismatch(ir::spelling(op_), lt, rt);
+				return isKind(lt, TypeKind::eScalar) && same(lt, rt) ? boolType() : mismatched(op_, operands_, lt, rt);
 			}
 
 			const auto l = _mod.types[lt.index];
@@ -1543,7 +1667,122 @@ namespace {
 				return lt;
 			}
 
-			return mismatch(ir::spelling(op_), lt, rt);
+			return mismatched(op_, operands_, lt, rt);
+		}
+
+		/* converts the rhs of a compound assignment, else the scalar side against a vector, else the narrower or non-float side, else the right side */
+		[[nodiscard]] TypeRef mismatched(ir::Op op_, ref<const Vector<ExprRef>> operands_, TypeRef lt_, TypeRef rt_) {
+			if (not numeric(lt_) || not numeric(rt_)) {
+				return mismatch(ir::spelling(op_), lt_, rt_);
+			}
+
+			const auto& l = _mod.types[lt_.index];
+			const auto& r = _mod.types[rt_.index];
+			const auto right = operands_[0].index == _compound ? true :
+				l.kind != TypeKind::eScalar && r.kind == TypeKind::eScalar ? true :
+				l.kind == TypeKind::eScalar && r.kind != TypeKind::eScalar ? false :
+				/* same family, different width: widen the narrower side */
+				(l.scalar == ScalarKind::eFloat) == (r.scalar == ScalarKind::eFloat) && l.bits != r.bits ? r.bits < l.bits :
+				l.scalar == ScalarKind::eFloat || r.scalar != ScalarKind::eFloat;
+			const auto from = right ? rt_ : lt_;
+			const auto other = right ? lt_ : rt_;
+			const auto to = isKind(from, TypeKind::eScalar) ? componentOf(other) : other;
+			incompatible(
+				"operands of '" + String { ir::spelling(op_) } + "' have types " + ir::quotedType(_mod.types, lt_) + " and " +
+				ir::quotedType(_mod.types, rt_),
+				operands_[right ? 1uz : 0uz],
+				from,
+				to
+			);
+			return {};
+		}
+
+		/* `T(x)` converts (component-wise; a bool to 0/1; a number never to bool); several values build a vector of T's component */
+		void construct(TypeRef type_, ref<const Vector<ExprRef>> operands_, ref<const Vector<TypeRef>> types_) {
+			const auto target = _mod.types[type_.index];
+			const auto component = scalarOf(target.scalar, target.bits);
+			const auto width = [&](TypeRef t_) { return isKind(t_, TypeKind::eVector) ? _mod.types[t_.index].n : 1uL; };
+			const auto plain = [&](TypeRef t_) { return isKind(t_, TypeKind::eScalar) || isKind(t_, TypeKind::eVector); };
+
+			if (operands_.size() == 1uz) {
+				const auto from = types_[0];
+				if (not valid(from) || coerce(operands_[0], component) || coerce(operands_[0], type_)) {
+					return;
+				}
+
+				if (not plain(from) || (width(from) != 1uL && width(from) != width(type_))) {
+					error(
+						codes::asl("type-mismatch"),
+						"cannot construct " + ir::quotedType(_mod.types, type_) + " from " + ir::quotedType(_mod.types, from)
+					);
+
+				} else if (target.scalar == ScalarKind::eBool && _mod.types[from.index].scalar != ScalarKind::eBool) {
+					error(
+						codes::asl("type-mismatch"),
+						"cannot convert " + ir::quotedType(_mod.types, from) + " to " + ir::quotedType(_mod.types, type_),
+						"a number never converts to 'bool'; compare it with zero instead"
+					);
+				}
+				return;
+			}
+
+			for (auto i = 0uz; i < operands_.size(); ++i) {
+				if (not valid(types_[i])) {
+					continue;
+				}
+
+				if (not plain(types_[i])) {
+					error(
+						codes::asl("type-mismatch"),
+						"cannot construct " + ir::quotedType(_mod.types, type_) + " from " + ir::quotedType(_mod.types, types_[i])
+					);
+					continue;
+				}
+
+				const auto want = vectorOf(target.scalar, target.bits, width(types_[i]));
+				if (not coerce(operands_[i], want)) {
+					incompatible(
+						"argument " + std::to_string(i) + " of " + ir::quotedType(_mod.types, type_) + " is " +
+						ir::quotedType(_mod.types, types_[i]) + ", expected " + ir::quotedType(_mod.types, want),
+						operands_[i],
+						types_[i],
+						want
+					);
+				}
+			}
+		}
+
+		/* `bitcast<T>(x)` reinterprets a numeric scalar or vector as one of the same size */
+		[[nodiscard]] TypeRef bitcast(ExprRef ref_, ref<const Vector<ExprRef>> operands_) {
+			const auto target = _mod.exprs[ref_.index].type;
+			const auto from = operands_.size() == 1uz ? expr(operands_[0]) : TypeRef {};
+			if (not valid(from) || not valid(target)) {
+				return {};
+			}
+
+			const auto plain = [&](TypeRef t_) { return numeric(t_) && not isKind(t_, TypeKind::eMatrix); };
+			if (not plain(from) || not plain(target)) {
+				error(
+					codes::asl("type-mismatch"),
+					"cannot bitcast " + ir::quotedType(_mod.types, from) + " to " + ir::quotedType(_mod.types, target) +
+					", both need to be numeric scalars or vectors"
+				);
+				return {};
+			}
+
+			const auto bits = [&](TypeRef t_) {
+				const auto& d = _mod.types[t_.index];
+				return d.bits * (d.kind == TypeKind::eVector ? d.n : 1uL);
+			};
+			if (bits(from) != bits(target)) {
+				error(
+					codes::asl("bitcast-size"),
+					"cannot bitcast " + ir::quotedType(_mod.types, from) + " (" + std::to_string(bits(from)) + " bits) to " +
+					ir::quotedType(_mod.types, target) + " (" + std::to_string(bits(target)) + " bits)"
+				);
+				return {};
+			}
+			return target;
 		}
 
 		[[nodiscard]] TypeRef ternary(ref<const Vector<ExprRef>> operands_) {

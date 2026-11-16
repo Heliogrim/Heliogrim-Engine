@@ -272,6 +272,9 @@ namespace hg::engine::accel::lang::ir::detail {
 		if (text.starts_with("_hg_")) {
 			error(codes::asl("reserved-name"), name_, "identifiers starting with '_hg_' are reserved");
 
+		} else if (text == "bitcast") {
+			error(codes::asl("reserved-name"), name_, "'bitcast' is an ASL builtin");
+
 		} else if (glslReserved(text)) {
 			error(codes::asl("reserved-name"), name_, "'" + String(text) + "' is reserved in GLSL");
 
