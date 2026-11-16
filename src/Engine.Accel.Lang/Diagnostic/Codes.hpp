@@ -73,6 +73,8 @@ namespace hg::engine::accel::lang::codes {
 		{ { { { "ASL" } }, 66 }, "internal-inconsistent-layout", "compiler bug: the computed layout does not match the module" },
 		{ { { { "ASL" } }, 67 }, "internal-inconsistent-pipeline", "compiler bug: compile steps passed missing or mismatched modules to each other" },
 		{ { { { "ASL" } }, 68 }, "literal-out-of-range", "literal is malformed or does not fit its type" },
+		{ { { { "ASL" } }, 69 }, "implicit-conversion", "operands of different numeric types need an explicit conversion" },
+		{ { { { "ASL" } }, 70 }, "bitcast-size", "bitcast between types of different size" },
 	};
 
 	consteval ref<const diag::DiagnosticCodeInfo> asl(const StringView key_) {

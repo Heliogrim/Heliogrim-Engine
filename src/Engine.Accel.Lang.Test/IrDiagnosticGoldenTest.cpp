@@ -357,11 +357,24 @@ namespace AccelLang {
 2 | 	let a = f32[0](1.0);
   |             ^
 )GOLD" },
-			{ "type-mismatch", "fn F(a: s32, b: f32) -> f32 {\n\treturn a * b;\n}\n", parseD<EntryKind::eFragment>, R"GOLD(error[ASL0033]: operands of '*' have types 's32' and 'f32'
+			{ "type-mismatch", "fn F(a: bool, b: f32) -> f32 {\n\treturn a * b;\n}\n", parseD<EntryKind::eFragment>, R"GOLD(error[ASL0033]: operands of '*' have types 'bool' and 'f32'
   --> M:2:11
   |
 2 | 	return a * b;
   |           ^
+)GOLD" },
+			{ "implicit-conversion", "fn F(a: s32, b: f32) -> f32 {\n\treturn a * b;\n}\n", parseD<EntryKind::eFragment>, R"GOLD(error[ASL0069]: operands of '*' have types 's32' and 'f32'
+  --> M:2:11
+  |
+2 | 	return a * b;
+  |           ^
+  = help: write `f32(a)`
+)GOLD" },
+			{ "bitcast-size", "fn F(a: f32) -> u64 {\n\treturn bitcast<u64>(a);\n}\n", parseD<EntryKind::eFragment>, R"GOLD(error[ASL0070]: cannot bitcast 'f32' (32 bits) to 'u64' (64 bits)
+  --> M:2:9
+  |
+2 | 	return bitcast<u64>(a);
+  |         ^^^^^^^
 )GOLD" },
 			{ "wrong-argument-count", "fn main() {\n\tlet n = len();\n}\n", parseD<EntryKind::eCompute>, R"GOLD(error[ASL0034]: 'len' takes one region argument
   --> M:2:10
@@ -602,6 +615,12 @@ namespace AccelLang {
 			const auto count = std::ranges::count_if(table, [&](const auto& r_) { return r_.key == StringView { info.key }; });
 			EXPECT_EQ(count, StringView { info.key }.starts_with("internal-") ? 0 : 1) << info.key;
 		}
-		EXPECT_EQ(std::size(table), 65uz);
+		EXPECT_EQ(std::size(table), 67uz);
+	}
+
+	TEST(IrDiagnosticGolden, BitcastChangingComponentCountHasNoGlslForm) {
+		const auto mod = mk("fn main() {\nlet a: u64 = 1;\nlet v = bitcast<u32vec2>(a);\n}\n");
+		const auto diags = emitD(mod, layoutOf(mod));
+		EXPECT_TRUE(std::ranges::any_of(diags, [](const auto& d_) { return d_.code() != nullptr && StringView { d_.code()->key } == "no-glsl-form"; }));
 	}
 }
