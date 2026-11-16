@@ -98,6 +98,10 @@ namespace hg::engine::reflow {
 			_renderStateVersion = version_;
 		}
 
+		[[nodiscard]] constexpr u16 proxyRenderVersion() const noexcept {
+			return _proxyRenderStateVersion;
+		}
+
 		constexpr void setProxyRenderVersion(const u16 version_) {
 			_proxyRenderStateVersion = version_;
 		}

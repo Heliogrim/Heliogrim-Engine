@@ -419,7 +419,9 @@ void Widget::updateRenderVersion(const u16 version_, const bool inherited_) {
 		_state.setRenderVersion(version_);
 	}
 
-	if (hasParent()) {
+	// Stop at the first ancestor already carrying this version; it has been propagated further up.
+	// Sound because the engine resets every version when the tick wraps, so a match was set within this cycle.
+	if (hasParent() && parent()->state().proxyRenderVersion() != version_) {
 		parent()->updateRenderVersion(version_, true);
 	}
 
