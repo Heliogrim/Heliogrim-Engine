@@ -308,6 +308,7 @@ void finalizeLayoutAndStates(ref<const SharedPtr<Widget>> root_, ref<ReflowState
 			cur->getLayoutState().layoutOffset, cur->getLayoutState().layoutOffset + cur->getLayoutState().layoutSize
 		};
 
+		const auto subtreePending = cur->clearSubtreePending();
 		const auto layoutPending = cur->clearLayoutPending();
 		const auto renderPending = cur->clearRenderPending();
 		const auto changedAabb = nextAabb != cur->getLayoutState().lastAabb;
@@ -319,6 +320,7 @@ void finalizeLayoutAndStates(ref<const SharedPtr<Widget>> root_, ref<ReflowState
 
 		// TODO: Check for layout changes -> drop sub-sequent layout operations
 		if (
+			not(subtreePending) &&
 			not(layoutPending) &&
 			not(renderPending) &&
 			not(changedAabb) &&

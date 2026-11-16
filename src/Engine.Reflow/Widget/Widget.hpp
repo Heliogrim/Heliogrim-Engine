@@ -223,7 +223,13 @@ namespace hg::engine::reflow {
 		[[nodiscard]] virtual ReflowPosition position() const noexcept;
 
 	public:
-		void markAsPending(bool layout_, bool render_);
+		void markAsPending(const bool layout_, const bool render_);
+
+		void markLayoutPending();
+
+		void markPaintPending();
+
+		[[nodiscard]] bool clearSubtreePending();
 
 		[[nodiscard]] bool clearLayoutPending();
 
