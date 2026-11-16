@@ -312,6 +312,8 @@ namespace hg::engine::accel::lang::ir::detail {
 
 		[[nodiscard]] Opt<ir::ExprRef> call(ref<const ir::Token> name_);
 
+		[[nodiscard]] Opt<ir::ExprRef> bitcast(ref<const ir::Token> name_);
+
 		[[nodiscard]] ir::ExprRef callee(ref<const ir::Token> name_, Vector<ir::ExprRef> args_);
 
 		[[nodiscard]] ir::ExprRef name(ref<const ir::Token> name_);

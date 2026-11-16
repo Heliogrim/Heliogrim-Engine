@@ -1023,6 +1023,38 @@ namespace {
 						return { String { fn->glsl } + "(" + arguments() + ")", typeOf(e.type) };
 					}
 
+					if (e.name == "bitcast" && e.operands.size() == 1uz) {
+						/* GLSL reinterprets 32-bit floats through named functions; int <-> uint through a constructor */
+						use(e.type);
+						const auto to = typeOf(e.type);
+						const auto from = operand(0uz);
+						const auto toName = to.has_value() ? name(*to) : None;
+						if (to.has_value() && from.type.has_value() && toName.has_value()) {
+							using enum ir::ScalarKind;
+							const auto f = from.type->scalar;
+							const auto t = to->scalar;
+							const auto count = [](const auto& d_) { return d_.kind == ir::TypeKind::eVector ? d_.n : 1uL; };
+							if (count(*from.type) != count(*to)) {
+								// GLSL would need pack/unpack here; the SPIR-V emitter replaces this path
+								error(codes::asl("no-glsl-form"), "bitcast to '" + toName.value_or(e.name) + "' has no GLSL form");
+								return { from.text, to };
+							}
+							if (f == t) {
+								return { from.text, to };
+							}
+							if (f != eFloat && t != eFloat) {
+								return { *toName + "(" + from.text + ")", to };
+							}
+							if (from.type->bits == 32uL && to->bits == 32uL) {
+								const auto* fn = f == eFloat ? (t == eUInt ? "floatBitsToUint" : "floatBitsToInt") : (f == eUInt ? "uintBitsToFloat" : "intBitsToFloat");
+								return { String { fn } + "(" + from.text + ")", to };
+							}
+						}
+
+						error(codes::asl("no-glsl-form"), "bitcast to '" + toName.value_or(e.name) + "' has no GLSL form");
+						return { from.text, to };
+					}
+
 					error(codes::asl("internal-inconsistent-module"), "unknown builtin '" + e.name + "'");
 					return { e.name, None };
 				}
