@@ -4,23 +4,6 @@
 #include "SpirvValidate.hpp"
 
 namespace hg::engine::accel::lang::ir::spirv {
-	// shortcut: void-return/unreachable bodies only, Task 6 (SpirvFunctions.cpp) replaces this stub
-	void Impl::bodies() {
-		for (u32 i = 0uL; i < functions.size(); ++i) {
-			const auto& fn = functions[i];
-			if (fn.id == 0uL) {
-				continue;
-			}
-			w.function(spv::Op::OpFunction, Ops { fn.ret, fn.id, 0uL, fn.type });
-			for (u32 p = 0uL; p < fn.params.size(); ++p) {
-				w.function(spv::Op::OpFunctionParameter, Ops { fn.paramTypes[p], fn.params[p] });
-			}
-			w.function(spv::Op::OpLabel, Ops { w.id() });
-			w.function(fn.ret == voidType() ? spv::Op::OpReturn : spv::Op::OpUnreachable, Ops {});
-			w.function(spv::Op::OpFunctionEnd, Ops {});
-		}
-	}
-
 	EmitResult emit(ref<const Module> lowered_, ref<const Layout> layout_, Tier tier_) {
 		Impl impl { lowered_, layout_, tier_ };
 		impl.require(spv::Capability::Shader);

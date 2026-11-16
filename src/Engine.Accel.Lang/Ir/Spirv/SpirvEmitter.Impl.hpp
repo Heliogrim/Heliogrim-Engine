@@ -113,8 +113,40 @@ namespace hg::engine::accel::lang::ir::spirv {
 		void declareFunctions();
 		void entryPoint();
 
-		/* SpirvFunctions.cpp (Task 6); SpirvEmitter.cpp holds a stub until then */
+		/* SpirvFunctions.cpp: bodies of every reached function */
 		void bodies();
+
+		/**
+		 * An addressable location: `base` (a variable or pointer parameter) plus OpAccessChain indices (ids), not yet
+		 * materialised. `base == 0` = not addressable. `basePointee` is the base's pointee, used while `indices` is empty.
+		 */
+		struct Place {
+			u32 base = 0uL;
+			Ops indices {};
+			spv::StorageClass storage = spv::StorageClass::Function;
+			bool explicitLayout = false;
+			bool std140 = false;
+			u32 basePointee = 0uL;
+			TypeRef type {};
+		};
+
+		/* function-section instruction emission of the body being built; nothing is emitted once the block has ended */
+		[[nodiscard]] u32 op(spv::Op op_, u32 resultType_, Ops operands_);
+		void code(spv::Op op_, Ops operands_);
+		/* the only way a block ends (branch, return, kill, unreachable) */
+		void terminate(spv::Op op_, Ops operands_);
+		void label(u32 label_);
+		/* OpVariable Function in the first block */
+		[[nodiscard]] u32 local(TypeRef type_);
+
+		[[nodiscard]] u32 value(ExprRef expr_);
+		[[nodiscard]] Place place(ExprRef expr_);
+		[[nodiscard]] u32 load(ref<const Place> place_);
+		void store(ref<const Place> place_, u32 value_);
+
+		/* Task 7 hooks: builtin calls / variables by `Expr::name` (only `bitcast` here) */
+		[[nodiscard]] u32 builtin(ExprRef expr_);
+		[[nodiscard]] Place builtinPlace(ExprRef expr_);
 
 	private:
 		[[nodiscard]] u32 image(ref<const TypeDesc> desc_, ScalarKind sampled_, u32 sampledMode_, spv::ImageFormat format_);
@@ -122,5 +154,39 @@ namespace hg::engine::accel::lang::ir::spirv {
 		void memberLayout(u32 struct_, u32 member_, u32 offset_, TypeRef type_, bool std140_);
 		void names(u32 id_, ref<const TypeDesc> desc_);
 		[[nodiscard]] u32 vertexCount(bool input_);
+
+		struct Instr {
+			spv::Op op;
+			Ops operands;
+		};
+
+		struct Loop {
+			u32 merge;
+			u32 cont;
+		};
+
+		/* body state, reset per function */
+		Vector<Instr> locals {};
+		Vector<Instr> body {};
+		u32 current = 0uL;
+		bool ended = false;
+		Vector<Loop> loops {};
+		Vector<std::pair<String, Place>> scope {};
+
+		void statement(StmtRef stmt_);
+		void loop(StmtRef init_, ExprRef cond_, StmtRef body_, StmtRef step_);
+		[[nodiscard]] u32 pointerOf(ref<const Place> place_);
+		[[nodiscard]] u32 pointeeOf(ref<const Place> place_);
+		[[nodiscard]] u32 fromLaid(TypeRef type_, u32 laid_, u32 value_, bool std140_);
+		[[nodiscard]] u32 toLaid(TypeRef type_, u32 laid_, u32 value_, bool std140_);
+		[[nodiscard]] u32 shortCircuit(ref<const Expr> expr_);
+		[[nodiscard]] u32 ternary(ref<const Expr> expr_);
+		[[nodiscard]] u32 binary(Op op_, TypeRef result_, TypeRef lt_, u32 l_, TypeRef rt_, u32 r_, SourceLoc loc_);
+		[[nodiscard]] u32 construct(ref<const Expr> expr_);
+		[[nodiscard]] u32 convert(TypeRef from_, u32 value_, ScalarKind kind_, u32 bits_, SourceLoc loc_);
+		[[nodiscard]] u32 call(ref<const Expr> expr_);
+		[[nodiscard]] u32 field(ExprRef expr_);
+		[[nodiscard]] u32 number(ScalarKind kind_, u32 bits_, u32 n_, bool one_);
+		[[nodiscard]] u32 shaped(ScalarKind kind_, u32 bits_, u32 n_);
 	};
 }
