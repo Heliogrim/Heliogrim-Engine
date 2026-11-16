@@ -120,6 +120,19 @@ namespace ReflowModule {
 		EXPECT_FALSE(root->state().isAnyPending());
 	}
 
+	TEST_F(InvalidationFixture, MarkDuringApplyLayoutSurvivesTick) {
+		leaf->remarkInApply = true;
+		leaf->markLayoutPending();
+		tick(root);
+		const auto applies = leaf->applies;
+
+		EXPECT_TRUE(leaf->state().isLayoutPending());
+		tick(root);
+
+		EXPECT_GT(leaf->applies, applies);
+		EXPECT_FALSE(leaf->state().isAnyPending());
+	}
+
 	TEST_F(InvalidationFixture, ReparentLaysOutMovedChild) {
 		auto host = make_sptr<uikit::Stack>();
 		auto a = make_sptr<uikit::VerticalLayout>();
