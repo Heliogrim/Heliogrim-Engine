@@ -89,6 +89,10 @@ namespace hg::engine::accel::lang::ir::spirv {
 					fail(codes::asl("internal-spirv-emit"), {}, "storage image format '" + desc.name + "' has no SPIR-V format");
 					return 0uL;
 				}
+				using enum spv::ImageFormat;
+				if (format->format == Rg32f || format->format == Rg16f || format->format == R16f) {
+					require(spv::Capability::StorageImageExtendedFormats);
+				}
 				id = image(desc, format->scalar, 2uL, format->format);
 				break;
 			}

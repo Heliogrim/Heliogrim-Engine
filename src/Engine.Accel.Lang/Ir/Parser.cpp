@@ -1467,6 +1467,7 @@ namespace hg::engine::accel::lang::ir::detail {
 
 		ir::BindingDecl decl {};
 		decl.localName = nameToken.text;
+		decl.loc = nameToken.loc;
 		decl.id = decl.localName;
 		decl.type = *declType;
 		decl.bindClass = ir::BindClass::eWorkgroup;
@@ -1500,6 +1501,7 @@ namespace hg::engine::accel::lang::ir::detail {
 			}
 
 			declaredName(peek(), true);
+			decl.loc = peek().loc;
 			decl.localName = take().text;
 			auto members = fields();
 			if (not members.has_value()) {
@@ -1541,6 +1543,7 @@ namespace hg::engine::accel::lang::ir::detail {
 
 			const auto nameToken = take();
 			declaredName(nameToken, true);
+			decl.loc = nameToken.loc;
 			decl.localName = nameToken.text;
 			const auto kind = _shared.mod.types[declType->index].kind;
 

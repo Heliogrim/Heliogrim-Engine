@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <array>
 #include <iterator>
+#include <spirv/unified1/GLSL.std.450.h>
+#include <spirv/unified1/spirv.hpp11>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Types.hpp>
@@ -209,6 +211,213 @@ namespace hg::engine::accel::lang::ir {
 		const auto it = std::ranges::find(builtinFunctions, name_, &BuiltinFunction::name);
 		return it != std::end(builtinFunctions) ? &*it : nullptr;
 	}
+
+	/* SPIR-V forms, indexed like `builtinVariables` / `builtinFunctions`; the `glsl` columns above stay for the GLSL emitter */
+
+	struct SpirvBuiltin {
+		StringView name;
+		spv::BuiltIn builtIn;
+		spv::Capability capability = spv::Capability::Shader;
+		StringView extension {};
+	};
+
+	inline constexpr std::array<SpirvBuiltin, 21> builtinVariableSpirv {
+		{
+			{ "global_invocation_id", spv::BuiltIn::GlobalInvocationId },
+			{ "local_invocation_id", spv::BuiltIn::LocalInvocationId },
+			{ "local_invocation_index", spv::BuiltIn::LocalInvocationIndex },
+			{ "workgroup_id", spv::BuiltIn::WorkgroupId },
+			{ "num_workgroups", spv::BuiltIn::NumWorkgroups },
+			{ "vertex_index", spv::BuiltIn::VertexIndex },
+			{ "instance_index", spv::BuiltIn::InstanceIndex },
+			{ "position", spv::BuiltIn::Position },
+			{ "frag_depth", spv::BuiltIn::FragDepth },
+			{ "frag_coord", spv::BuiltIn::FragCoord },
+			{ "front_facing", spv::BuiltIn::FrontFacing },
+			{ "view_index", spv::BuiltIn::ViewIndex, spv::Capability::MultiView },
+			{ "input_position", spv::BuiltIn::Position },
+			{ "output_position", spv::BuiltIn::Position },
+			{ "tess_level_outer", spv::BuiltIn::TessLevelOuter },
+			{ "tess_level_inner", spv::BuiltIn::TessLevelInner },
+			{ "tess_coord", spv::BuiltIn::TessCoord },
+			{ "patch_vertices", spv::BuiltIn::PatchVertices },
+			{ "primitive_id", spv::BuiltIn::PrimitiveId },
+			{ "invocation_id", spv::BuiltIn::InvocationId },
+			{ "layer", spv::BuiltIn::Layer }
+		}
+	};
+
+	enum class SpirvFormKind : u8 {
+		/* GLSL.std.450 extended instruction, `code` = GLSLstd450 */
+		eExtInst,
+		/* one core instruction, `code` = spv::Op */
+		eCore,
+		/* instruction sequence picked by the emitter, `code` = BuiltinLowering */
+		eLower
+	};
+
+	enum class BuiltinLowering : u32 {
+		eSample,
+		eSampleLod,
+		eTextureSize,
+		eSampleSparse,
+		eSampleSparseClamp,
+		eDot,
+		eBarrier,
+		eMemoryBarrierShared
+	};
+
+	struct SpirvForm {
+		SpirvFormKind kind;
+		u32 code;
+		spv::Capability capability = spv::Capability::Shader;
+		StringView extension {};
+	};
+
+	struct BuiltinSpirv {
+		StringView name;
+		SpirvForm form;
+	};
+
+	namespace spirv_form {
+		[[nodiscard]] constexpr SpirvForm ext(GLSLstd450 code_) noexcept {
+			return { SpirvFormKind::eExtInst, static_cast<u32>(code_) };
+		}
+
+		[[nodiscard]] constexpr SpirvForm core(spv::Op op_, spv::Capability capability_ = spv::Capability::Shader) noexcept {
+			return { SpirvFormKind::eCore, static_cast<u32>(op_), capability_ };
+		}
+
+		[[nodiscard]] constexpr SpirvForm lower(BuiltinLowering tag_, spv::Capability capability_ = spv::Capability::Shader) noexcept {
+			return { SpirvFormKind::eLower, static_cast<u32>(tag_), capability_ };
+		}
+	}
+
+	inline constexpr BuiltinSpirv builtinFunctionSpirv[] = {
+		{ "sample", spirv_form::lower(BuiltinLowering::eSample) },
+		{ "sample_lod", spirv_form::lower(BuiltinLowering::eSampleLod) },
+		{ "texture_size", spirv_form::lower(BuiltinLowering::eTextureSize, spv::Capability::ImageQuery) },
+		{ "sample_sparse", spirv_form::lower(BuiltinLowering::eSampleSparse, spv::Capability::SparseResidency) },
+		{ "sample_sparse_clamp", spirv_form::lower(BuiltinLowering::eSampleSparseClamp, spv::Capability::MinLod) },
+		{ "sparse_resident", spirv_form::core(spv::Op::OpImageSparseTexelsResident, spv::Capability::SparseResidency) },
+
+		{ "abs", spirv_form::ext(GLSLstd450FAbs) },
+		{ "abs", spirv_form::ext(GLSLstd450SAbs) },
+		{ "sign", spirv_form::ext(GLSLstd450FSign) },
+		{ "floor", spirv_form::ext(GLSLstd450Floor) },
+		{ "ceil", spirv_form::ext(GLSLstd450Ceil) },
+		{ "fract", spirv_form::ext(GLSLstd450Fract) },
+		{ "mod", spirv_form::core(spv::Op::OpFMod) },
+		{ "mod", spirv_form::core(spv::Op::OpFMod) },
+		{ "min", spirv_form::ext(GLSLstd450FMin) },
+		{ "min", spirv_form::ext(GLSLstd450FMin) },
+		{ "min", spirv_form::ext(GLSLstd450SMin) },
+		{ "min", spirv_form::ext(GLSLstd450UMin) },
+		{ "max", spirv_form::ext(GLSLstd450FMax) },
+		{ "max", spirv_form::ext(GLSLstd450FMax) },
+		{ "max", spirv_form::ext(GLSLstd450SMax) },
+		{ "max", spirv_form::ext(GLSLstd450UMax) },
+		{ "clamp", spirv_form::ext(GLSLstd450FClamp) },
+		{ "clamp", spirv_form::ext(GLSLstd450FClamp) },
+		{ "clamp", spirv_form::ext(GLSLstd450SClamp) },
+		{ "clamp", spirv_form::ext(GLSLstd450UClamp) },
+		{ "mix", spirv_form::ext(GLSLstd450FMix) },
+		{ "mix", spirv_form::ext(GLSLstd450FMix) },
+		{ "step", spirv_form::ext(GLSLstd450Step) },
+		{ "step", spirv_form::ext(GLSLstd450Step) },
+		{ "smoothstep", spirv_form::ext(GLSLstd450SmoothStep) },
+		{ "smoothstep", spirv_form::ext(GLSLstd450SmoothStep) },
+
+		{ "sqrt", spirv_form::ext(GLSLstd450Sqrt) },
+		{ "inversesqrt", spirv_form::ext(GLSLstd450InverseSqrt) },
+		{ "pow", spirv_form::ext(GLSLstd450Pow) },
+		{ "exp", spirv_form::ext(GLSLstd450Exp) },
+		{ "log", spirv_form::ext(GLSLstd450Log) },
+
+		{ "sin", spirv_form::ext(GLSLstd450Sin) },
+		{ "cos", spirv_form::ext(GLSLstd450Cos) },
+		{ "tan", spirv_form::ext(GLSLstd450Tan) },
+		{ "asin", spirv_form::ext(GLSLstd450Asin) },
+		{ "acos", spirv_form::ext(GLSLstd450Acos) },
+		{ "atan", spirv_form::ext(GLSLstd450Atan) },
+		{ "atan", spirv_form::ext(GLSLstd450Atan2) },
+
+		{ "length", spirv_form::ext(GLSLstd450Length) },
+		{ "distance", spirv_form::ext(GLSLstd450Distance) },
+		{ "dot", spirv_form::lower(BuiltinLowering::eDot) },
+		{ "cross", spirv_form::ext(GLSLstd450Cross) },
+		{ "normalize", spirv_form::ext(GLSLstd450Normalize) },
+		{ "reflect", spirv_form::ext(GLSLstd450Reflect) },
+
+		{ "transpose", spirv_form::core(spv::Op::OpTranspose) },
+		{ "inverse", spirv_form::ext(GLSLstd450MatrixInverse) },
+
+		{ "dFdx", spirv_form::core(spv::Op::OpDPdx) },
+		{ "dFdy", spirv_form::core(spv::Op::OpDPdy) },
+		{ "fwidth", spirv_form::core(spv::Op::OpFwidth) },
+
+		{ "barrier", spirv_form::lower(BuiltinLowering::eBarrier) },
+		{ "memory_barrier_shared", spirv_form::lower(BuiltinLowering::eMemoryBarrierShared) },
+		{ "emit_vertex", spirv_form::core(spv::Op::OpEmitVertex, spv::Capability::Geometry) },
+		{ "end_primitive", spirv_form::core(spv::Op::OpEndPrimitive, spv::Capability::Geometry) },
+		{ "image_load", spirv_form::core(spv::Op::OpImageRead) },
+		{ "image_store", spirv_form::core(spv::Op::OpImageWrite) },
+		{ "image_size", spirv_form::core(spv::Op::OpImageQuerySize, spv::Capability::ImageQuery) },
+
+		{ "atomic_add", spirv_form::core(spv::Op::OpAtomicIAdd) },
+		{ "atomic_add", spirv_form::core(spv::Op::OpAtomicIAdd) },
+		{ "atomic_min", spirv_form::core(spv::Op::OpAtomicUMin) },
+		{ "atomic_min", spirv_form::core(spv::Op::OpAtomicSMin) },
+		{ "atomic_max", spirv_form::core(spv::Op::OpAtomicUMax) },
+		{ "atomic_max", spirv_form::core(spv::Op::OpAtomicSMax) },
+		{ "atomic_and", spirv_form::core(spv::Op::OpAtomicAnd) },
+		{ "atomic_and", spirv_form::core(spv::Op::OpAtomicAnd) },
+		{ "atomic_or", spirv_form::core(spv::Op::OpAtomicOr) },
+		{ "atomic_or", spirv_form::core(spv::Op::OpAtomicOr) },
+		{ "atomic_xor", spirv_form::core(spv::Op::OpAtomicXor) },
+		{ "atomic_xor", spirv_form::core(spv::Op::OpAtomicXor) },
+		{ "atomic_exchange", spirv_form::core(spv::Op::OpAtomicExchange) },
+		{ "atomic_exchange", spirv_form::core(spv::Op::OpAtomicExchange) },
+		{ "atomic_comp_swap", spirv_form::core(spv::Op::OpAtomicCompareExchange) },
+		{ "atomic_comp_swap", spirv_form::core(spv::Op::OpAtomicCompareExchange) }
+	};
+
+	static_assert(std::size(builtinFunctionSpirv) == std::size(builtinFunctions));
+	static_assert([] {
+		for (auto i = 0uz; i < std::size(builtinFunctions); ++i) {
+			if (builtinFunctionSpirv[i].name != builtinFunctions[i].name) {
+				return false;
+			}
+			// shape: the form has to fit the overload's parameter list, not just its name
+			const auto sig = StringView { builtinFunctions[i].signature };
+			const auto form = builtinFunctionSpirv[i].form;
+			const auto byRef = sig.contains("(&") && not sig.contains("img");
+			const auto atomic = form.kind == SpirvFormKind::eCore
+				&& form.code >= static_cast<u32>(spv::Op::OpAtomicLoad) && form.code <= static_cast<u32>(spv::Op::OpAtomicXor);
+			if (atomic != byRef) {
+				return false;
+			}
+			if (form.kind == SpirvFormKind::eExtInst
+				&& (sig.starts_with("void(") || sig.contains("&") || sig.contains("tex") || sig.contains("img"))) {
+				return false;
+			}
+			if (form.kind == SpirvFormKind::eLower) {
+				using enum BuiltinLowering;
+				const auto lowering = static_cast<BuiltinLowering>(form.code);
+				const auto sampled = lowering == eSample || lowering == eSampleLod || lowering == eSampleSparse
+					|| lowering == eSampleSparseClamp || lowering == eTextureSize;
+				if (sampled != sig.contains("(tex,smp,")) {
+					return false;
+				}
+			}
+		}
+		for (auto i = 0uz; i < builtinVariables.size(); ++i) {
+			if (builtinVariableSpirv[i].name != builtinVariables[i].name) {
+				return false;
+			}
+		}
+		return true;
+	}(), "SPIR-V builtin tables must line up with the builtin tables");
 
 	/* parsed signatures */
 

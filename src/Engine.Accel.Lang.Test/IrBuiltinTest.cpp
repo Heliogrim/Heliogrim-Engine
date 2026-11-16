@@ -3,6 +3,7 @@
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
 #include "IrWording.hpp"
 
+#include <Engine.Accel.Lang/Ir/Builtin.hpp>
 #include <Engine.Accel.Lang/Ir/Typecheck.hpp>
 
 using namespace hg::engine::accel::lang::ir;
@@ -211,5 +212,17 @@ namespace AccelLang {
 		EXPECT_TRUE(parses(bindings + "fn main() {\n\tlet c = sample(tc, smp, f32vec3(0.0, 0.0, 1.0));\n}\n"));
 		const auto message = errorOf(bindings + "fn main() {\n\tlet c = sample(tc, smp, f32vec2(0.0));\n}\n", EntryKind::eFragment);
 		EXPECT_TRUE(message.contains("'sample'")) << message;
+	}
+
+	TEST(IrBuiltinTest, EveryBuiltinHasSpirvForm) {
+		ASSERT_EQ(std::size(builtinFunctionSpirv), std::size(builtinFunctions));
+		for (size_t i = 0uz; i < std::size(builtinFunctions); ++i) {
+			EXPECT_EQ(builtinFunctionSpirv[i].name, builtinFunctions[i].name) << i;
+			EXPECT_TRUE(builtinFunctionSpirv[i].form.kind != SpirvFormKind::eExtInst || builtinFunctionSpirv[i].form.code > 0u) << builtinFunctions[i].name;
+		}
+		ASSERT_EQ(std::size(builtinVariableSpirv), std::size(builtinVariables));
+		for (size_t i = 0uz; i < std::size(builtinVariables); ++i) {
+			EXPECT_EQ(builtinVariableSpirv[i].name, builtinVariables[i].name) << i;
+		}
 	}
 }
