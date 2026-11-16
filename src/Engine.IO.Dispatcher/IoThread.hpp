@@ -1,7 +1,6 @@
 #pragma once
 
 #include <atomic>
-#include <cstdint>
 #include <functional>
 #include <Engine.Async/Affine/AffineThread.hpp>
 #include <Engine.Common/Wrapper.hpp>
@@ -12,6 +11,12 @@ namespace hg::engine::io {
 
 	class IoThread final {
 	public:
+		// Receives every non-wake packet on the io thread. std::move_only_function, as UniqueFn is call-once.
+		using harvest_type = std::move_only_function<void(ref<const IoPortEntry>)>;
+
+		// Runs after each inbox drain; true polls the port instead of blocking, as more work is ready.
+		using drained_type = std::move_only_function<bool()>;
+
 		// Packets with this key only wake the loop; every other key is a backend completion handed to the harvest.
 		constexpr static std::uintptr_t wake_key = ~std::uintptr_t {};
 
@@ -24,12 +29,12 @@ namespace hg::engine::io {
 
 		~IoThread();
 
-	public:
-		// Receives every non-wake packet on the io thread. std::move_only_function, as UniqueFn is call-once.
-		using harvest_type = std::move_only_function<void(ref<const IoPortEntry>)>;
-
-		// Runs after each inbox drain; true polls the port instead of blocking, as more work is ready.
-		using drained_type = std::move_only_function<bool()>;
+	private:
+		async::AffineThread _thread;
+		ptr<void> _port = nullptr;
+		harvest_type _harvest;
+		drained_type _drained;
+		std::atomic_bool _running { false };
 
 	public:
 		// Creates the completion port (concurrency 1) and starts the affine thread "IO Thread".
@@ -43,12 +48,5 @@ namespace hg::engine::io {
 
 		// A HANDLE, declared as void* to keep <Windows.h> out of this header. Safe to read from any thread after start() returned until destruction (it does not change after start); nullptr before start.
 		[[nodiscard]] ptr<void> port() const noexcept;
-
-	private:
-		async::AffineThread _thread;
-		ptr<void> _port = nullptr;
-		harvest_type _harvest;
-		drained_type _drained;
-		std::atomic_bool _running { false };
 	};
 }

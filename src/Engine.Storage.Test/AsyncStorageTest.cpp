@@ -4,10 +4,9 @@
 
 #include <atomic>
 #include <filesystem>
-#include <limits>
 #include <fstream>
+#include <limits>
 #include <semaphore>
-#include <cstring>
 #include <span>
 #include <string>
 #include <Engine.Async/Affine/AffineThread.hpp>
@@ -22,15 +21,14 @@
 #include <Engine.Resource.Blob/Blob.hpp>
 #include <Engine.Resource.Package/ReadWritePackage.hpp>
 #include <Engine.Storage.Action/Access/AccessError.hpp>
-#include <Engine.Storage.Boot/Action/WindowedArchive.hpp>
 #include <Engine.Storage.Boot/Action/ActionResolverInit.hpp>
+#include <Engine.Storage.Boot/Action/WindowedArchive.hpp>
 #include <Engine.Storage.Registry/Options/ArchiveStorageDescriptor.hpp>
 #include <Engine.Storage.Registry/Options/FileStorageDescriptor.hpp>
 #include <Engine.Storage.Registry/Options/PackageStorageDescriptor.hpp>
 #include <Engine.Storage.Registry/Options/StorageDescriptor.hpp>
 #include <Engine.Storage.Registry/Provider/LocalFileSystemProvider.hpp>
 #include <Engine.Storage.Registry/Registry/StorageRegistry.hpp>
-#include <Engine.Storage.Registry/Repository/CacheFileSystemRepository.hpp>
 #include <Engine.Storage.Registry/Storage/ArchiveStorage.hpp>
 #include <Engine.Storage.Registry/Storage/LocalFileStorage.hpp>
 #include <Engine.Storage.Registry/Storage/PackageStorage.hpp>
@@ -40,9 +38,8 @@
 #include <Engine.Storage.System/StorageSystem.hpp>
 #include <Engine.Storage.System/Details/StorageActionResolver.hpp>
 
-#include "../Engine.Scheduler.Test/TestSchedulerEngine.hpp"
-
 #include "Scratch.hpp"
+#include "../Engine.Scheduler.Test/TestSchedulerEngine.hpp"
 
 #if defined(_WIN32)
 #define WIN32_LEAN_AND_MEAN
@@ -225,7 +222,15 @@ namespace StorageModule {
 		EXPECT_FALSE(::MoveFileExW(legacy.c_str(), path.c_str(), MOVEFILE_REPLACE_EXISTING));
 		EXPECT_EQ(::GetLastError(), static_cast<DWORD>(ERROR_ACCESS_DENIED));
 
-		const auto handle = ::CreateFileW(tmp.c_str(), DELETE, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr, OPEN_EXISTING, 0, nullptr);
+		const auto handle = ::CreateFileW(
+			tmp.c_str(),
+			DELETE,
+			FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+			nullptr,
+			OPEN_EXISTING,
+			0,
+			nullptr
+		);
 		ASSERT_NE(handle, INVALID_HANDLE_VALUE) << ::GetLastError();
 
 		const auto name = path.native();
@@ -368,23 +373,23 @@ namespace StorageModule {
 		ASSERT_NE(store, nullptr);
 
 		const auto probe = [&]() {
-				std::counting_semaphore<> wake { 0 };
-				async::AffineThread thread { "affine-probe", [&wake]() { wake.release(); } };
-				thread.start(
-					[&wake](ref<async::AffineThread> self_) {
-						for (;;) {
+			std::counting_semaphore<> wake { 0 };
+			async::AffineThread thread { "affine-probe", [&wake]() { wake.release(); } };
+			thread.start(
+				[&wake](ref<async::AffineThread> self_) {
+					for (;;) {
+						self_.drain();
+						if (self_.stopping()) {
 							self_.drain();
-							if (self_.stopping()) {
-								self_.drain();
-								return;
-							}
-							wake.acquire();
+							return;
 						}
+						wake.acquire();
 					}
-				);
-				auto done = thread.post([&]() { std::ignore = _system.query(clone(store), [](_In_ ref<const Blob>) {}); });
-				std::ignore = await(::hg::move(done));
-				thread.stop();
+				}
+			);
+			auto done = thread.post([&]() { std::ignore = _system.query(clone(store), [](_In_ ref<const Blob>) {}); });
+			std::ignore = await(::hg::move(done));
+			thread.stop();
 		};
 		EXPECT_DEATH(probe(), "");
 	}

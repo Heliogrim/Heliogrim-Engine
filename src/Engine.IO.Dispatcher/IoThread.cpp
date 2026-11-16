@@ -43,7 +43,7 @@ void IoThread::start(mref<harvest_type> harvest_, mref<drained_type> drained_) {
 
 				const auto busy = _drained && _drained();
 				ULONG count = 0;
-				if (not ::GetQueuedCompletionStatusEx(port, entries, 64, &count, busy ? 0 : INFINITE, FALSE)) {
+				if (not::GetQueuedCompletionStatusEx(port, entries, 64, &count, busy ? 0 : INFINITE, FALSE)) {
 					if (busy && ::GetLastError() == WAIT_TIMEOUT) {
 						continue;
 					}
