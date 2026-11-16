@@ -12,6 +12,7 @@ make_test_project(
 		${PROJECT_NAME}::Engine.Graphics
 		${PROJECT_NAME}::Engine.Logging
 		${PROJECT_NAME}::Heliogrim
+		${PROJECT_NAME}::External-spirv-opt
 )
 
 name_to_target(__compile_test_target "Engine.Accel.Compile.Test")
