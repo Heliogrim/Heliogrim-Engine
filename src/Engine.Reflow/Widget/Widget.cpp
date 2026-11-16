@@ -323,9 +323,12 @@ ReflowPosition Widget::position() const noexcept {
 	return ReflowPosition::eStatic;
 }
 
-void Widget::markAsPending(bool layout_, bool render_) {
-	if (layout_ || render_) {
+void Widget::markAsPending(const bool layout_, const bool render_) {
+	if (layout_) {
 		markLayoutPending();
+
+	} else if (render_) {
+		markPaintPending();
 	}
 }
 
