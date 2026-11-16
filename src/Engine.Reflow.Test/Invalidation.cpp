@@ -315,6 +315,35 @@ namespace ReflowModule {
 		EXPECT_FALSE(leaf->state().isLayoutPending());
 	}
 
+	TEST_F(InvalidationFixture, LegacyRenderMarksRenderOnly) {
+		leaf->markAsPending(false, true);
+
+		EXPECT_TRUE(leaf->state().isRenderPending());
+		EXPECT_FALSE(leaf->state().isLayoutPending());
+	}
+
+	TEST_F(InvalidationFixture, LegacyLayoutMarksLayout) {
+		leaf->markAsPending(true, false);
+
+		EXPECT_TRUE(leaf->state().isLayoutPending());
+		EXPECT_TRUE(root->state().isLayoutPending());
+
+		std::ignore = leaf->clearLayoutPending();
+		std::ignore = mid->clearLayoutPending();
+		std::ignore = root->clearLayoutPending();
+		leaf->markAsPending(true, true);
+
+		EXPECT_TRUE(leaf->state().isLayoutPending());
+		EXPECT_TRUE(root->state().isLayoutPending());
+	}
+
+	TEST_F(InvalidationFixture, LegacyNothingMarksNothing) {
+		leaf->markAsPending(false, false);
+
+		EXPECT_FALSE(leaf->state().isAnyPending());
+		EXPECT_FALSE(root->state().isAnyPending());
+	}
+
 	TEST_F(InvalidationFixture, ThemeSwapPaddingMarksLayout) {
 		auto provider = make_sptr<uikit::ThemeProvider>();
 		auto stack = make_sptr<uikit::Stack>();
