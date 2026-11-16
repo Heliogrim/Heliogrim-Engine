@@ -107,7 +107,8 @@ EffectCompileResult EffectCompiler::compile(
 	auto stages = _stageComposer->compose(
 		request_.profile,
 		request_.spec,
-		pass
+		pass,
+		request_.tier
 	);
 
 	// An empty list signals a failed compose (already logged by the composer).

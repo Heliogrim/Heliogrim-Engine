@@ -1,6 +1,7 @@
 #pragma once
 
-#include <Engine.Accel.Lang/Language.hpp>
+#include <Engine.Common/Types.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 
 #include "ModuleTargetStage.hpp"
 
@@ -9,6 +10,6 @@ namespace hg::engine::accel {
 		constexpr virtual ~ModuleSource() noexcept = default;
 
 		ModuleTargetStage targetStage;
-		lang::Language code;
+		Vector<u32> spirv;
 	};
 }

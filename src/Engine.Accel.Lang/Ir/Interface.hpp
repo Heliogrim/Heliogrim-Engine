@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Wrapper.hpp>
@@ -34,4 +35,20 @@ namespace hg::engine::accel::lang::ir {
 	 * is listed as is; `assignLayout` skips it, so the caller's contract check must report it.
 	 */
 	[[nodiscard]] Vector<InterfaceEntry> computeInterface(ref<const Module> mod_);
+
+	/**
+	 * The stage-facing interface of a lowered module: its entries (`computeInterface`), the compute workgroup size
+	 * (`{1, 1, 1}` for other stages) and the spec ids of its specialization constants in declaration order. The
+	 * numbers (locations, bindings, constant ids) stay in `Layout`.
+	 */
+	struct InterfaceDesc {
+		EntryKind stage = EntryKind::eFragment;
+		Vector<InterfaceEntry> entries;
+		std::array<u32, 3> workgroupSize { 1uL, 1uL, 1uL };
+		Vector<String> specConstantIds;
+
+		[[nodiscard]] bool operator==(const InterfaceDesc&) const noexcept = default;
+	};
+
+	[[nodiscard]] InterfaceDesc describeInterface(ref<const Module> mod_);
 }

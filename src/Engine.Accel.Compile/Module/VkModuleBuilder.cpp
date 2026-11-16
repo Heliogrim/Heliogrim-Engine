@@ -3,7 +3,6 @@
 #include <filesystem>
 #include <string>
 #include <Engine.Accel.Effect/Stage/StageFlags.hpp>
-#include <Engine.Accel.Lang/Emitter/GlslEmitter.hpp>
 #include <Engine.Accel.Pipeline/VkGraphicsPipeline.hpp>
 #include <Engine.Accel.Pipeline/Stage/StageDerivat.hpp>
 #include <Engine.Common/Make.hpp>
@@ -63,8 +62,24 @@ uptr<ModuleSource> VkModuleBuilder::build(
 			ms->targetStage = ModuleTargetStage::eVertex;
 			break;
 		}
+		case StageFlagBits::eTessellationCtrl: {
+			ms->targetStage = ModuleTargetStage::eTessCtrl;
+			break;
+		}
+		case StageFlagBits::eTessellationEval: {
+			ms->targetStage = ModuleTargetStage::eTessEval;
+			break;
+		}
+		case StageFlagBits::eGeometry: {
+			ms->targetStage = ModuleTargetStage::eGeometry;
+			break;
+		}
 		case StageFlagBits::eFragment: {
 			ms->targetStage = ModuleTargetStage::eFragment;
+			break;
+		}
+		case StageFlagBits::eCompute: {
+			ms->targetStage = ModuleTargetStage::eCompute;
 			break;
 		}
 		default: {
@@ -310,17 +325,7 @@ uptr<VkModuleSource> VkModuleBuilder::transpile(
 
 	}
 
-	/**
-	 * Emit new shader code into module source
-	 */
-
-	auto emitter = lang::GlslEmitter {};
-	emitter(stage_->getIntermediate()->rep, lang::Dialect::eVulkanGlsl460, mod_->code);
-	// Warning: Temporary Fix
-	mod_->code.dialect = stage_->getIntermediate()->lang.dialect;
-	for (const auto& textBlock : stage_->getIntermediate()->lang.text) {
-		mod_->code.text.emplace_back(textBlock);
-	}
+	mod_->spirv = stage_->getIntermediate()->spirv;
 
 	/**/
 

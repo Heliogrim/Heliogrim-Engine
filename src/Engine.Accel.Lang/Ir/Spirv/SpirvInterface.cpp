@@ -1,7 +1,11 @@
 #include "SpirvEmitter.Impl.hpp"
 
 #include <algorithm>
+#include <limits>
 #include <map>
+#include <optional>
+#include <type_traits>
+#include <variant>
 
 #include "../Interface.hpp"
 
@@ -233,6 +237,10 @@ namespace hg::engine::accel::lang::ir::spirv {
 							fail(codes::asl("internal-inconsistent-layout"), {}, "push binding '" + binding.id + "' has no range");
 							continue;
 						}
+						if (range->size == 0uL) {
+							fail(codes::asl("invalid-push-constant-type"), {}, "push constant '" + binding.id + "' cannot be laid out");
+							continue;
+						}
 						if (++pushBlocks > 1uL) {
 							fail(codes::asl("too-many-push-constant-blocks"), {}, "a stage has at most one push constant block, but the module declares more");
 							continue;
@@ -258,35 +266,300 @@ namespace hg::engine::accel::lang::ir::spirv {
 	}
 
 	void Impl::declareConstants() {
+		using Value = decltype(LiteralValue::value);
+		constexpr u32 maxDepth = 64uL;
+
+		// two's complement at the declared width: signed sign-extends, unsigned masks
+		const auto wrap = [](const ScalarKind kind_, const u32 bits_, const u64 value_) -> u64 {
+			if (bits_ == 0uL || bits_ >= 64uL) {
+				return value_;
+			}
+			const auto shift = 64uL - bits_;
+			return kind_ == ScalarKind::eInt ?
+				static_cast<u64>(static_cast<s64>(value_ << shift) >> shift) :
+				value_ & ((1uLL << bits_) - 1uLL);
+		};
+		// a folded value converted to the scalar type `desc_` at its declared width
+		const auto convert = [&wrap](ref<const TypeDesc> desc_, const Value value_) -> Value {
+			return std::visit(
+				[&](const auto v_) -> Value {
+					switch (desc_.scalar) {
+						case ScalarKind::eBool: return static_cast<bool>(v_);
+						case ScalarKind::eInt: return static_cast<s64>(wrap(ScalarKind::eInt, desc_.bits, static_cast<u64>(static_cast<s64>(v_))));
+						case ScalarKind::eUInt: return wrap(ScalarKind::eUInt, desc_.bits, static_cast<u64>(v_));
+						default: return desc_.bits == 32uL ? static_cast<f64>(static_cast<float>(v_)) : static_cast<f64>(v_);
+					}
+				},
+				value_
+			);
+		};
+		// why the last fold failed, for the diagnostic
+		String reason {};
+
+		// scalar constant expression folded to a value of the expression's own type; nullopt when it does not fold
+		const auto scalarOf = [&](this const auto& self_, const ExprRef ref_, const u32 depth_) -> std::optional<Value> {
+			if (ref_.index >= mod.exprs.size() || depth_ > maxDepth) {
+				return std::nullopt;
+			}
+			const auto& e = mod.exprs[ref_.index];
+			if (e.type.index >= mod.types.size() || mod.types[e.type.index].kind != TypeKind::eScalar) {
+				return std::nullopt;
+			}
+			const auto& desc = mod.types[e.type.index];
+			const auto as = [&desc, &convert](const Value value_) { return convert(desc, value_); };
+
+			std::optional<Value> value {};
+			switch (e.kind) {
+				case ExprKind::eLiteral: {
+					value = e.literal.value;
+					break;
+				}
+				case ExprKind::eNameRef: {
+					if (not e.local && e.constant.index < mod.constants.size() && not mod.constants[e.constant.index].specId.has_value()) {
+						value = self_(mod.constants[e.constant.index].value, depth_ + 1uL);
+					}
+					break;
+				}
+				case ExprKind::eConstruct: {
+					if (e.operands.size() == 1uL) {
+						value = self_(e.operands.front(), depth_ + 1uL);
+					}
+					break;
+				}
+				case ExprKind::eUnary: {
+					if (e.op != Op::eNeg || e.operands.size() != 1uL) {
+						break;
+					}
+					if (const auto operand = self_(e.operands.front(), depth_ + 1uL); operand.has_value()) {
+						value = std::visit(
+							[](const auto value_) -> Value {
+								using T = decltype(value_);
+								if constexpr (std::is_same_v<T, bool>) {
+									return value_;
+								} else if constexpr (std::is_integral_v<T>) {
+									// integers wrap instead of overflowing
+									return static_cast<T>(0uLL - static_cast<u64>(value_));
+								} else {
+									return -value_;
+								}
+							},
+							as(*operand)
+						);
+					}
+					break;
+				}
+				case ExprKind::eBinary: {
+					if (e.operands.size() != 2uL) {
+						break;
+					}
+					const auto lhs = self_(e.operands[0], depth_ + 1uL);
+					const auto rhs = self_(e.operands[1], depth_ + 1uL);
+					if (not lhs.has_value() || not rhs.has_value()) {
+						break;
+					}
+					value = std::visit(
+						[op = e.op, &reason, minimum = static_cast<s64>(wrap(ScalarKind::eInt, desc.bits, 1uLL << ((desc.bits == 0uL || desc.bits > 64uL ? 64uL : desc.bits) - 1uLL)))](const auto lhs_, const auto rhs_) -> std::optional<Value> {
+							using T = decltype(lhs_);
+							if constexpr (not std::is_same_v<T, decltype(rhs_)> || std::is_same_v<T, bool>) {
+								return std::nullopt;
+							} else if constexpr (std::is_floating_point_v<T>) {
+								switch (op) {
+									case Op::eAdd: return Value { lhs_ + rhs_ };
+									case Op::eSub: return Value { lhs_ - rhs_ };
+									case Op::eMul: return Value { lhs_ * rhs_ };
+									case Op::eDiv: return Value { lhs_ / rhs_ };
+									default: return std::nullopt;
+								}
+							} else {
+								// integers wrap instead of overflowing (the result wraps to the declared width below); division by zero does not fold
+								const auto a = static_cast<u64>(lhs_);
+								const auto b = static_cast<u64>(rhs_);
+								switch (op) {
+									case Op::eAdd: return Value { static_cast<T>(a + b) };
+									case Op::eSub: return Value { static_cast<T>(a - b) };
+									case Op::eMul: return Value { static_cast<T>(a * b) };
+									case Op::eDiv:
+									case Op::eMod: {
+										if (rhs_ == T {}) {
+											reason = "division by zero";
+											return std::nullopt;
+										}
+										if constexpr (std::is_signed_v<T>) {
+											if (rhs_ == T { -1 } && lhs_ == minimum) {
+												reason = "the most negative value divided by -1 overflows";
+												return std::nullopt;
+											}
+										}
+										// C++ `%` truncates like OpSRem / OpUMod
+										return Value { static_cast<T>(op == Op::eDiv ? lhs_ / rhs_ : lhs_ % rhs_) };
+									}
+									default: return std::nullopt;
+								}
+							}
+						},
+						as(*lhs),
+						as(*rhs)
+					);
+					break;
+				}
+				default: break;
+			}
+			return value.has_value() ? std::optional { as(*value) } : std::nullopt;
+		};
+
+		// components (vector) or columns (matrix) of every folded composite, to flatten nested constructs
+		std::map<u32, Ops> parts {};
+		// constant expression folded to an OpConstant / OpConstantComposite id; 0 when it does not fold
+		const auto fold = [&](this const auto& self_, const ExprRef ref_, const u32 depth_) -> u32 {
+			if (ref_.index >= mod.exprs.size() || depth_ > maxDepth) {
+				return 0uL;
+			}
+			const auto& e = mod.exprs[ref_.index];
+			if (e.type.index >= mod.types.size()) {
+				return 0uL;
+			}
+			const auto& t = mod.types[e.type.index];
+			if (t.kind == TypeKind::eScalar) {
+				const auto value = scalarOf(ref_, depth_);
+				return value.has_value() ? literal(e.type, LiteralValue { *value, {} }) : 0uL;
+			}
+			if (e.kind == ExprKind::eNameRef) {
+				const bool folds = not e.local && e.constant.index < mod.constants.size() &&
+					not mod.constants[e.constant.index].specId.has_value();
+				return folds ? self_(mod.constants[e.constant.index].value, depth_ + 1uL) : 0uL;
+			}
+			if (e.kind != ExprKind::eConstruct) {
+				return 0uL;
+			}
+
+			Ops operands {};
+			Ops flat {};
+			for (const auto& operand : e.operands) {
+				const auto id = self_(operand, depth_ + 1uL);
+				if (id == 0uL) {
+					return 0uL;
+				}
+				operands.emplace_back(id);
+				const auto nested = parts.find(id);
+				if (nested == parts.end()) {
+					flat.emplace_back(id);
+				} else {
+					flat.append_range(nested->second);
+				}
+			}
+
+			Ops out {};
+			switch (t.kind) {
+				case TypeKind::eVector: {
+					out = flat.size() == 1uL ? Ops(t.n, flat.front()) : flat;
+					if (out.size() != t.n) {
+						return 0uL;
+					}
+					break;
+				}
+				case TypeKind::eMatrix: {
+					const bool columns = operands.size() == t.n && std::ranges::all_of(
+						operands,
+						[&](const u32 id_) { return parts.contains(id_) && parts.at(id_).size() == t.m; }
+					);
+					if (columns) {
+						out = operands;
+						break;
+					}
+					// shortcut: matrix from scalars or columns only; diagonal and matrix-resize constants do not fold yet, add them when a shader needs one
+					if (flat.size() != t.n * t.m) {
+						return 0uL;
+					}
+					const auto column = w.type(spv::Op::OpTypeVector, Ops { scalar(ScalarKind::eFloat, t.bits), t.m });
+					for (u32 c = 0uL; c < t.n; ++c) {
+						Ops cells(flat.begin() + c * t.m, flat.begin() + (c + 1uL) * t.m);
+						const auto id = w.constant(spv::Op::OpConstantComposite, column, cells);
+						parts.insert_or_assign(id, std::move(cells));
+						out.emplace_back(id);
+					}
+					break;
+				}
+				case TypeKind::eArray:
+				case TypeKind::eStruct: {
+					out = operands;
+					if (out.size() != (t.kind == TypeKind::eArray ? t.count : t.fields.size())) {
+						return 0uL;
+					}
+					// a constituent of another type converts to the element / field type when both are scalars, else it does not fold
+					for (u32 k = 0uL; k < out.size(); ++k) {
+						const auto expected = t.kind == TypeKind::eArray ? t.element : t.fields[k].type;
+						const auto actual = mod.exprs[e.operands[k].index].type;
+						if (actual == expected) {
+							continue;
+						}
+						const bool scalars = expected.index < mod.types.size() && actual.index < mod.types.size() &&
+							mod.types[expected.index].kind == TypeKind::eScalar && mod.types[actual.index].kind == TypeKind::eScalar;
+						const auto value = scalars ? scalarOf(e.operands[k], depth_ + 1uL) : std::nullopt;
+						if (not value.has_value()) {
+							reason = "an element does not match the element type";
+							return 0uL;
+						}
+						out[k] = literal(expected, LiteralValue { convert(mod.types[expected.index], *value), {} });
+					}
+					break;
+				}
+				default: return 0uL;
+			}
+			const auto id = w.constant(spv::Op::OpConstantComposite, type(e.type), out);
+			if (t.kind == TypeKind::eVector || t.kind == TypeKind::eMatrix) {
+				parts.insert_or_assign(id, std::move(out));
+			}
+			return id;
+		};
+
 		for (u32 i = 0uL; i < mod.constants.size(); ++i) {
 			if (not reachedConstants[i]) {
 				continue;
 			}
 			const auto& constant = mod.constants[i];
-			if (constant.value.index >= mod.exprs.size() || mod.exprs[constant.value.index].kind != ExprKind::eLiteral) {
-				fail(codes::asl("internal-spirv-emit"), constant.loc, "constant '" + constant.name + "' is not a literal");
+			if (constant.type.index >= mod.types.size()) {
+				fail(codes::asl("internal-spirv-emit"), constant.loc, "constant '" + constant.name + "' has no type");
 				continue;
 			}
-			const auto& value = mod.exprs[constant.value.index].literal;
+			const auto& desc = mod.types[constant.type.index];
 			if (not constant.specId.has_value()) {
-				// no name: the literal is deduplicated, another constant may share it
-				constants[i] = literal(constant.type, value);
+				// no name: the value is deduplicated, another constant may share it
+				reason.clear();
+				if (desc.kind == TypeKind::eScalar) {
+					const auto value = scalarOf(constant.value, 0uL);
+					constants[i] = value.has_value() ? literal(constant.type, LiteralValue { *value, {} }) : 0uL;
+				} else {
+					constants[i] = fold(constant.value, 0uL);
+				}
+				if (constants[i] == 0uL) {
+					fail(codes::asl("not-constant"), constant.loc, "initializer of constant '" + constant.name + "' does not fold to a constant value" + (reason.empty() ? String {} : ": " + reason));
+				}
 				continue;
 			}
 
+			// OpSpecConstant takes a literal default, so a constant-expression default folds here
+			const auto value = scalarOf(constant.value, 0uL);
+			if (not value.has_value()) {
+				fail(
+					codes::asl("not-constant"),
+					constant.loc,
+					"default of specialization constant '" + constant.name + "' does not fold to a literal"
+				);
+				continue;
+			}
 			const auto spec = std::ranges::find(layout.specConstants, *constant.specId, &SpecConstant::id);
 			if (spec == layout.specConstants.end()) {
 				fail(codes::asl("internal-inconsistent-layout"), constant.loc, "spec constant '" + constant.name + "' has no id");
 				continue;
 			}
 			const auto typeId = type(constant.type);
-			const auto& desc = mod.types[constant.type.index];
+			const LiteralValue folded { *value, {} };
 			if (desc.kind == TypeKind::eScalar && desc.scalar == ScalarKind::eBool) {
-				const bool truth = std::visit([](auto value_) { return static_cast<bool>(value_); }, value.value);
+				const bool truth = std::visit([](auto value_) { return static_cast<bool>(value_); }, folded.value);
 				constants[i] = w.constant(truth ? spv::Op::OpSpecConstantTrue : spv::Op::OpSpecConstantFalse, typeId, Ops {}, true);
 			} else {
 				Ops words {};
-				if (not literalWords(constant.type, value, words)) {
+				if (not literalWords(constant.type, folded, words)) {
 					continue;
 				}
 				constants[i] = w.constant(spv::Op::OpSpecConstant, typeId, words, true);

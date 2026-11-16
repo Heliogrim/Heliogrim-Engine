@@ -3,7 +3,6 @@
 #include <Engine.Common/Sal.hpp>
 
 #include "ModuleCompiler.hpp"
-#include "SpirvCompiler.hpp"
 
 namespace hg::engine::accel {
 	class VkModuleCompiler final :
@@ -15,9 +14,6 @@ namespace hg::engine::accel {
 		VkModuleCompiler() = default;
 
 		~VkModuleCompiler() noexcept override;
-
-	private:
-		SpirvCompiler _spirvCompiler;
 
 	public:
 		[[nodiscard]] _Success_(return != nullptr) uptr<class CompiledModule> compile(

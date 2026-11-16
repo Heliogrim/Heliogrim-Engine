@@ -1,7 +1,6 @@
 #include "StageIr.hpp"
 
 #include <algorithm>
-#include <Engine.Accel.Lang/Dialect.hpp>
 #include <Engine.Accel.Lang/Ir/Contract.hpp>
 #include <Engine.Accel.Lang/Ir/Interface.hpp>
 #include <Engine.Accel.Lang/Ir/Layout.hpp>
@@ -250,7 +249,8 @@ std::expected<Vector<smr<StageDerivat>>, Diagnostics> hg::engine::accel::compose
 	ref<PipelineLayoutCache> layouts_,
 	smr<const ResolvedPipeline>* pipeline_,
 	const bool exportLast_,
-	std::span<const u8> follows_
+	std::span<const u8> follows_,
+	const Tier tier_
 ) {
 
 	if (stages_.empty()) {
@@ -261,24 +261,22 @@ std::expected<Vector<smr<StageDerivat>>, Diagnostics> hg::engine::accel::compose
 	}
 
 	/* a pipeline hit needs only the stage keys: nothing is resolved or checked outside the build path */
-	Vector<VariantKey> key {};
-	key.reserve(stages_.size() + 1uLL);
+	PipelineKey key { .tier = tier_ };
+	key.stages.reserve(stages_.size());
 	for (size_t idx = 0uLL; idx < stages_.size(); ++idx) {
 		if (stages_[idx] == nullptr || stages_[idx]->ir == nullptr) {
 			return std::unexpected(fail(codes::asl("internal-inconsistent-pipeline"), "stage has no shader code"));
 		}
 		/* target symbols are the effect's exports: only the effect's last stage is sliced to them */
-		key.emplace_back(
+		key.stages.emplace_back(
 			stageInputs(*stages_[idx], profile_, spec_, flags_[idx], exportLast_ && idx + 1uLL == stages_.size()).key
 		);
 	}
 
-	/* the layout depends on follows_: append a sentinel entry carrying the follow flags (shortcut: 64 stages, never reached) */
-	u64 followMask = 0uLL;
+	/* the layout depends on follows_ (shortcut: 64 stages, never reached) */
 	for (size_t idx = 0uLL; idx < stages_.size() && idx < 64uLL; ++idx) {
-		followMask |= (idx < follows_.size() && follows_[idx] == 0u) ? 0uLL : (1uLL << idx);
+		key.follows |= (idx < follows_.size() && follows_[idx] == 0u) ? 0uLL : (1uLL << idx);
 	}
-	key.push_back(VariantKey { .mod = followMask, .toggles = ~0uLL, .outputs = ~0uLL });
 
 	Diagnostics failure {};
 	auto pipeline = layouts_.getOrCreate(
@@ -392,7 +390,7 @@ std::expected<Vector<smr<StageDerivat>>, Diagnostics> hg::engine::accel::compose
 				auto stage = lowerToIntermediate(
 					resolved[idx]->mod,
 					(*layouts)[idx],
-					Dialect::eVulkanGlsl460,
+					tier_,
 					vertexOffsets,
 					vertexFormats
 				);

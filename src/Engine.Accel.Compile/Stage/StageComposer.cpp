@@ -34,7 +34,8 @@ void StageComposer::setTokenizer(mref<non_owning_rptr<const Tokenizer>> tokenize
 Vector<smr<StageDerivat>> StageComposer::compose(
 	cref<smr<const EffectProfile>> profile_,
 	cref<smr<const EffectSpecification>> specifications_,
-	cref<smr<AccelerationPipeline>> targetPass_
+	cref<smr<AccelerationPipeline>> targetPass_,
+	const lang::ir::Tier tier_
 ) const {
 
 	const auto& stages = targetPass_->getEffect()->getStages();
@@ -84,7 +85,10 @@ Vector<smr<StageDerivat>> StageComposer::compose(
 			*specifications_,
 			_variants,
 			_pipelineLayouts,
-			&pipeline
+			&pipeline,
+			true,
+			{},
+			tier_
 		);
 		if (not composed.has_value()) {
 			engine::diag::LogSink sink {};

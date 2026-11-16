@@ -1,10 +1,22 @@
 #include "SpirvEmitter.hpp"
+#include <algorithm>
 
 #include "SpirvEmitter.Impl.hpp"
 #include "SpirvValidate.hpp"
 
 namespace hg::engine::accel::lang::ir::spirv {
 	EmitResult emit(ref<const Module> lowered_, ref<const Layout> layout_, Tier tier_) {
+		// a depth-only fragment stage has no author entry and still needs an entry point: synthesize an empty one
+		if (std::ranges::none_of(lowered_.functions, [](const auto& fn_) { return fn_.name == "main" && fn_.body.has_value(); })) {
+			if (lowered_.entry != EntryKind::eFragment) {
+				return EmitResult { {}, { Diagnostic::error(codes::asl("invalid-entry-signature"), "stage has no 'main' entry function") } };
+			}
+			Module withMain = lowered_;
+			const StmtRef root { static_cast<u32>(withMain.stmts.size()) };
+			withMain.stmts.emplace_back(Stmt { .kind = StmtKind::eBlock });
+			withMain.functions.emplace_back(FunctionDecl { .name = "main", .body = BodyRef { root } });
+			return emit(withMain, layout_, tier_);
+		}
 		Impl impl { lowered_, layout_, tier_ };
 		impl.require(spv::Capability::Shader);
 		if (tier_ >= Tier::eDev) {

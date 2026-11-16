@@ -13,3 +13,6 @@ make_test_project(
 		${PROJECT_NAME}::Engine.Logging
 		${PROJECT_NAME}::Heliogrim
 )
+
+name_to_target(__compile_test_target "Engine.Accel.Compile.Test")
+target_compile_definitions(${__compile_test_target} PRIVATE HG_TEST_SHADER_ROOT="${CMAKE_SOURCE_DIR}/assets/shader")

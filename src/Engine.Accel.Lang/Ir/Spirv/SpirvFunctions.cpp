@@ -401,7 +401,8 @@ namespace hg::engine::accel::lang::ir::spirv {
 				return p;
 			}
 			case ExprKind::eBuiltin: {
-				return builtinPlace(expr_);
+				// builtin calls (`inverse(m)[0]`) are values, not variables
+				return findBuiltinVariable(mod.exprs[expr_.index].name) != nullptr ? builtinPlace(expr_) : Place {};
 			}
 			default: {
 				return {};
@@ -786,6 +787,27 @@ namespace hg::engine::accel::lang::ir::spirv {
 					Ops parts(t.m, zero);
 					if (j < t.m) {
 						parts[j] = s;
+					}
+					columns.emplace_back(op(spv::Op::OpCompositeConstruct, column, parts));
+				}
+				return op(spv::Op::OpCompositeConstruct, id, columns);
+			}
+			if (t.kind == TypeKind::eMatrix && first.kind == TypeKind::eMatrix) {
+				// resize: keep the overlap, pad with identity
+				const auto zero = number(ScalarKind::eFloat, t.bits, 1uL, false);
+				const auto one = number(ScalarKind::eFloat, t.bits, 1uL, true);
+				const auto column = shaped(ScalarKind::eFloat, t.bits, t.m);
+				const auto sourceColumn = shaped(ScalarKind::eFloat, first.bits, first.m);
+				Ops columns {};
+				for (u32 j = 0uL; j < t.n; ++j) {
+					Ops parts {};
+					const auto source = j < first.n ? op(spv::Op::OpCompositeExtract, sourceColumn, Ops { args[0], j }) : 0uL;
+					for (u32 r = 0uL; r < t.m; ++r) {
+						parts.emplace_back(
+							source != 0uL && r < first.m ?
+							op(spv::Op::OpCompositeExtract, shaped(ScalarKind::eFloat, first.bits, 1uL), Ops { source, r }) :
+							(r == j ? one : zero)
+						);
 					}
 					columns.emplace_back(op(spv::Op::OpCompositeConstruct, column, parts));
 				}

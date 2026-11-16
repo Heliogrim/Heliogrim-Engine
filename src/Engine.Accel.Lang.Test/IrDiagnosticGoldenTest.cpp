@@ -575,16 +575,9 @@ namespace AccelLang {
 )GOLD" },
 			{ "missing-vertex-offset", shadowVertex, [](StringView s_) {
 				const auto mod = mk(s_, EntryKind::eVertex);
-				auto res = lowerToIntermediate(mod, layoutOf(mod), Dialect::eVulkanGlsl460);
+				auto res = lowerToIntermediate(mod, layoutOf(mod), Tier::eDev);
 				return res.has_value() ? Diagnostics {} : std::move(res).error();
 			}, R"GOLD(error[ASL0062]: vertex input 'vertex-position' has no vertex offset
-)GOLD" },
-			{ "unsupported-target", shadowVertex, [](StringView s_) {
-				const auto mod = mk(s_, EntryKind::eVertex);
-				const DenseMap<String, u32> offsets { { "vertex-position", 12u } };
-				auto res = lowerToIntermediate(mod, layoutOf(mod), Dialect::eVulkanGlsl330, offsets);
-				return res.has_value() ? Diagnostics {} : std::move(res).error();
-			}, R"GOLD(error[ASL0063]: only Vulkan GLSL 460 can be emitted
 )GOLD" },
 			{ "no-glsl-form", "@input (mode = forward, id = \"v\") u8vec4 v;\n", [](StringView s_) {
 				const auto mod = mk(s_);
@@ -626,9 +619,11 @@ namespace AccelLang {
 	TEST(IrDiagnosticGolden, CoversEveryCode) {
 		for (const auto& info : codes::table) {
 			const auto count = std::ranges::count_if(table, [&](const auto& r_) { return r_.key == StringView { info.key }; });
-			EXPECT_EQ(count, StringView { info.key }.starts_with("internal-") ? 0 : 1) << info.key;
+			/* unsupported-target: retired with the GLSL path */
+			const auto exempt = StringView { info.key }.starts_with("internal-") || StringView { info.key } == "unsupported-target";
+			EXPECT_EQ(count, exempt ? 0 : 1) << info.key;
 		}
-		EXPECT_EQ(std::size(table), 68uz);
+		EXPECT_EQ(std::size(table), 67uz);
 	}
 
 	TEST(IrDiagnosticGolden, BitcastChangingComponentCountHasNoGlslForm) {

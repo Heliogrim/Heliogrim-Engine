@@ -1,12 +1,55 @@
 #include "pch.h"
 
+#include <filesystem>
+#include <ranges>
+#include <fstream>
+#include <regex>
+#include <sstream>
+
 #include "IrSpirvGate.hpp"
 
 using namespace hg::engine::accel::lang::ir;
 
 namespace AccelCompile {
-	TEST(IrSpirvGateTest, RejectsBrokenGlsl) {
-		EXPECT_FALSE(glslCompiles("#version 460\nvoid main(){ gl_Position = vec4(0); }", EntryKind::eFragment));
+	TEST(IrSpirvGateTest, RejectsMissingOrBrokenSpirv) {
+		hg::engine::accel::lang::Intermediate im {};
+		EXPECT_FALSE(spirvValid(im));
+		/* header only: no capability, no memory model */
+		im.spirv = { 0x07230203uL, 0x00010000uL, 0uL, 1uL, 0uL };
+		EXPECT_FALSE(spirvValid(im));
+	}
+
+	TEST(IrSpirvGateTest, InterfaceDescPerEntry) {
+		const std::array stages {
+			GateStage {
+				"@input (mode = forward, id = \"vertex-position\") f32vec3 local_position;\n"
+				"@output (mode = forward, id = \"uv\") f32vec2 uv;\n"
+				"fn main() {\n\tuv = local_position.xy;\n\tposition = f32vec4(local_position, 1.0);\n}\n",
+				EntryKind::eVertex
+			},
+			GateStage {
+				"@input (mode = forward, id = \"uv\") f32vec2 uv;\n"
+				"@output (mode = forward, id = \"color\") f32vec4 color;\n"
+				"fn main() {\n\tcolor = f32vec4(uv, 0.0, 1.0);\n}\n",
+				EntryKind::eFragment
+			}
+		};
+		const auto composed = composeStages(stages, {}, GateResolver { [](hg::StringView) -> hg::Opt<hg::String> { return hg::None; } });
+		ASSERT_TRUE(composed.has_value()) << composed.error();
+		ASSERT_EQ(composed->size(), 2uz);
+
+		const auto& vertex = *(*composed)[0]->getIntermediate();
+		const auto& fragment = *(*composed)[1]->getIntermediate();
+		EXPECT_TRUE(spirvValid(vertex));
+		EXPECT_TRUE(spirvValid(fragment));
+		EXPECT_EQ(vertex.interface.stage, EntryKind::eVertex);
+		EXPECT_EQ(fragment.interface.stage, EntryKind::eFragment);
+
+		const auto inputs = fragment.interface.entries | std::views::filter([](const auto& e_) { return e_.input; }) | std::ranges::to<hg::Vector<InterfaceEntry>>();
+		ASSERT_EQ(inputs.size(), 1uz);
+		EXPECT_EQ(inputs.front().id, "uv");
+		EXPECT_EQ(inputs.front().mode, BindMode::eForward);
+		EXPECT_TRUE(std::ranges::any_of(fragment.interface.entries, [](const auto& e_) { return not e_.input and e_.id == "color"; }));
 	}
 
 	TEST(IrSpirvGateTest, VertexSample) {
@@ -22,13 +65,13 @@ namespace AccelCompile {
 				"@output (mode = forward, id = \"local-uv\") f32vec2 out_uv;\n"
 				"const UVS: f32vec2[3] = f32vec2[3](f32vec2(0.0), f32vec2(1.0, 0.0), f32vec2(0.0, 1.0));\n"
 				"fn main() {\n"
-				"	let m = model.model[instance_index];\n"
-				"	let shift = f32vec2(0.0);\n"
-				"	if (vertex_index == 0) { shift = push.translate; }\n"
-				"	let pos = m * f32vec4(local_position + f32vec3(shift, 0.0), 1.0);\n"
-				"	position = cascades.viewProj[push.cascade] * camera.mvp * pos;\n"
-				"	world_normal = f32vec4(normalize(transpose(inverse(f32mat3(m))) * local_normal), 0.0);\n"
-				"	out_uv = UVS[vertex_index];\n"
+				"\tlet m = model.model[instance_index];\n"
+				"\tlet shift = f32vec2(0.0);\n"
+				"\tif (vertex_index == 0) { shift = push.translate; }\n"
+				"\tlet pos = m * f32vec4(local_position + f32vec3(shift, 0.0), 1.0);\n"
+				"\tposition = cascades.viewProj[push.cascade] * camera.mvp * pos;\n"
+				"\tworld_normal = f32vec4(normalize(transpose(inverse(f32mat3(m))) * local_normal), 0.0);\n"
+				"\tout_uv = UVS[vertex_index];\n"
 				"}\n",
 				EntryKind::eVertex
 			)
@@ -61,20 +104,20 @@ namespace AccelCompile {
 				"@output (mode = forward, id = \"color\") f32vec4 color;\n"
 				"@output (mode = forward, id = \"depth\") implicit f32 depth;\n"
 				"fn falloff(l: Light, p: f32vec3) -> f32vec3 {\n"
-				"	return l.luminance.rgb * saturate(1.0 - length(l.position.xyz - p) / l.limit);\n"
+				"\treturn l.luminance.rgb * saturate(1.0 - length(l.position.xyz - p) / l.limit);\n"
 				"}\n"
 				"fn main() {\n"
-				"	let eye = inverse(camera.view)[3].xyz;\n"
-				"	let tndc = f32mat4(0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.5, 0.5, 0.0, 1.0);\n"
-				"	let lo = f32vec3(0.0);\n"
-				"	for (let i = 0u; i < info.count; ++i) {\n"
-				"		let l = &sl.lights[i];\n"
-				"		if (l.limit > 0.0) { lo += falloff(l, world_position.xyz); } else { lo += l.luminance.rgb; }\n"
-				"	}\n"
-				"	let s = tndc * shadows.shadows[0].viewProj[1] * world_position;\n"
-				"	let d = sample(shadow_dir, shadow_smp, f32vec3(s.xy / s.w, 1.0)).r;\n"
-				"	let shade = s.z > d ? 0.07 : 1.0;\n"
-				"	color = f32vec4(saturate(lo * shade) / max(length(eye - world_position.xyz), 1.0), PI);\n"
+				"\tlet eye = inverse(camera.view)[3].xyz;\n"
+				"\tlet tndc = f32mat4(0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.5, 0.5, 0.0, 1.0);\n"
+				"\tlet lo = f32vec3(0.0);\n"
+				"\tfor (let i = 0u; i < info.count; ++i) {\n"
+				"\t\tlet l = &sl.lights[i];\n"
+				"\t\tif (l.limit > 0.0) { lo += falloff(l, world_position.xyz); } else { lo += l.luminance.rgb; }\n"
+				"\t}\n"
+				"\tlet s = tndc * shadows.shadows[0].viewProj[1] * world_position;\n"
+				"\tlet d = sample(shadow_dir, shadow_smp, f32vec3(s.xy / s.w, 1.0)).r;\n"
+				"\tlet shade = s.z > d ? 0.07 : 1.0;\n"
+				"\tcolor = f32vec4(saturate(lo * shade) / max(length(eye - world_position.xyz), 1.0), PI);\n"
 				"}\n",
 				EntryKind::eFragment,
 				{},
@@ -96,28 +139,28 @@ namespace AccelCompile {
 		constexpr hg::StringView meshStatic =
 			"#include <spec/defined.asl>\n"
 			"@when (MeshType == Static) {\n"
-			"	@input (mode = forward, id = \"vertex-position\") f32vec3 VertexPosition;\n"
-			"	@input (mode = bind, id = \"view\", class = uniform) block VertexCamera { f32mat4 mvp; };\n"
-			"	fn GetWorldPosition() -> f32vec4 { return f32vec4(VertexPosition, 1.0); }\n"
-			"	@redefine (allow = true)\n"
-			"	fn VertexOutputPosition() -> f32vec4 { return VertexCamera.mvp * GetWorldPosition(); }\n"
+			"\t@input (mode = forward, id = \"vertex-position\") f32vec3 VertexPosition;\n"
+			"\t@input (mode = bind, id = \"view\", class = uniform) block VertexCamera { f32mat4 mvp; };\n"
+			"\tfn GetWorldPosition() -> f32vec4 { return f32vec4(VertexPosition, 1.0); }\n"
+			"\t@redefine (allow = true)\n"
+			"\tfn VertexOutputPosition() -> f32vec4 { return VertexCamera.mvp * GetWorldPosition(); }\n"
 			"}\n";
 		constexpr hg::StringView meshSkeletal =
 			"#include <spec/defined.asl>\n"
 			"@when (MeshType == Skeletal) {\n"
-			"	@input (mode = forward, id = \"vertex-position\") f32vec3 VertexPosition;\n"
-			"	@input (mode = forward, id = \"vertex-bone-idx\") u32 VertexBoneIdx;\n"
-			"	@input (mode = bind, id = \"view\", class = uniform) block VertexCamera { f32mat4 mvp; };\n"
-			"	@input (mode = bind, id = \"bones\", class = storage) block VertexBones { f32mat4[] list; };\n"
-			"	fn GetWorldPosition() -> f32vec4 { return VertexBones.list[VertexBoneIdx] * f32vec4(VertexPosition, 1.0); }\n"
-			"	@redefine (allow = true)\n"
-			"	fn VertexOutputPosition() -> f32vec4 { return VertexCamera.mvp * GetWorldPosition(); }\n"
+			"\t@input (mode = forward, id = \"vertex-position\") f32vec3 VertexPosition;\n"
+			"\t@input (mode = forward, id = \"vertex-bone-idx\") u32 VertexBoneIdx;\n"
+			"\t@input (mode = bind, id = \"view\", class = uniform) block VertexCamera { f32mat4 mvp; };\n"
+			"\t@input (mode = bind, id = \"bones\", class = storage) block VertexBones { f32mat4[] list; };\n"
+			"\tfn GetWorldPosition() -> f32vec4 { return VertexBones.list[VertexBoneIdx] * f32vec4(VertexPosition, 1.0); }\n"
+			"\t@redefine (allow = true)\n"
+			"\tfn VertexOutputPosition() -> f32vec4 { return VertexCamera.mvp * GetWorldPosition(); }\n"
 			"}\n";
 		constexpr hg::StringView passVertexMain =
 			"toggle PassContext : { DepthOnly, Material } = Material;\n"
 			"@when (PassContext == Material) {\n"
-			"	@output (mode = forward, id = \"world-position\") f32vec4 world_position;\n"
-			"	fn main() { position = VertexOutputPosition(); world_position = GetWorldPosition(); }\n"
+			"\t@output (mode = forward, id = \"world-position\") f32vec4 world_position;\n"
+			"\tfn main() { position = VertexOutputPosition(); world_position = GetWorldPosition(); }\n"
 			"}\n"
 			"@when (PassContext == DepthOnly)\n"
 			"fn main() { position = VertexOutputPosition(); }\n";
@@ -160,9 +203,9 @@ namespace AccelCompile {
 				"@input (mode = bind, id = \"m\", class = uniform, packing = std140) block m { f32vec4 a; };\n"
 				"@output (mode = forward, id = \"color\") f32vec4 color;\n"
 				"fn main() {\n"
-				"	let acc = 0.0;\n"
-				"	for (let i = 0u; i < SAMPLES; ++i) { acc += SCALE; }\n"
-				"	color = f32vec4(TABLE[1] * acc, 1.0) + m.a;\n"
+				"\tlet acc = 0.0;\n"
+				"\tfor (let i = 0u; i < SAMPLES; ++i) { acc += SCALE; }\n"
+				"\tcolor = f32vec4(TABLE[1] * acc, 1.0) + m.a;\n"
 				"}\n",
 				EntryKind::eFragment
 			)
@@ -175,7 +218,7 @@ namespace AccelCompile {
 				"@input (mode = bind, id = \"lights\", class = storage, access = read_write) block lights { f32[] lights; };\n"
 				"@output (mode = forward, id = \"color\") f32vec4 color;\n"
 				"fn F(a: &mut f32, b: &f32, c: f32) { a = b + c; }\n"
-				"fn main() {\n	u32 i = 1; let l = &mut lights.lights[i];\n	F(l, 1.0, 2.0);\n	const k = l;\n	color = f32vec4(k);\n}\n",
+				"fn main() {\n\tu32 i = 1; let l = &mut lights.lights[i];\n\tF(l, 1.0, 2.0);\n\tconst k = l;\n\tcolor = f32vec4(k);\n}\n",
 				EntryKind::eFragment
 			)
 		);
@@ -186,23 +229,23 @@ namespace AccelCompile {
 			compilesToSpirv(
 				"@output (mode = forward, id = \"color\") f32vec4 color;\n"
 				"fn radical(bits_: u32) -> f32 {\n"
-				"	let bits = bits_;\n"
-				"	bits = (bits << 16u) | (bits >> 16u);\n"
-				"	bits = ((bits & 0x55555555u) << 1u) | ((bits & 0xAAAAAAAAu) >> 1u);\n"
-				"	bits = ((bits & 0x33333333u) << 2u) | ((bits & 0xCCCCCCCCu) >> 2u);\n"
-				"	bits = ((bits & 0x0F0F0F0Fu) << 4u) | ((bits & 0xF0F0F0F0u) >> 4u);\n"
-				"	bits = ((bits & 0x00FF00FFu) << 8u) | ((bits & 0xFF00FF00u) >> 8u);\n"
-				"	return f32(bits) * 2.3283064365386963e-10;\n"
+				"\tlet bits = bits_;\n"
+				"\tbits = (bits << 16u) | (bits >> 16u);\n"
+				"\tbits = ((bits & 0x55555555u) << 1u) | ((bits & 0xAAAAAAAAu) >> 1u);\n"
+				"\tbits = ((bits & 0x33333333u) << 2u) | ((bits & 0xCCCCCCCCu) >> 2u);\n"
+				"\tbits = ((bits & 0x0F0F0F0Fu) << 4u) | ((bits & 0xF0F0F0F0u) >> 4u);\n"
+				"\tbits = ((bits & 0x00FF00FFu) << 8u) | ((bits & 0xFF00FF00u) >> 8u);\n"
+				"\treturn f32(bits) * 2.3283064365386963e-10;\n"
 				"}\n"
 				"fn main() {\n"
-				"	let acc = 0.0;\n"
-				"	let n = 0u;\n"
-				"	for (let i = 0u; i < 8u; ++i) { acc += radical(i); }\n"
-				"	while (acc > 1.0) { acc -= 1.0; n++; if (n > 4u) { break; } if (acc > 100.0) { continue; } }\n"
-				"	acc *= 0.5;\n"
-				"	let r = acc > 0.5 ? acc : 1.0;\n"
-				"	color = f32vec4(r, f32(n ^ 3u), f32(~n & 1u), 1.0);\n"
-				"	if (r < 0.0) { discard; }\n"
+				"\tlet acc = 0.0;\n"
+				"\tlet n = 0u;\n"
+				"\tfor (let i = 0u; i < 8u; ++i) { acc += radical(i); }\n"
+				"\twhile (acc > 1.0) { acc -= 1.0; n++; if (n > 4u) { break; } if (acc > 100.0) { continue; } }\n"
+				"\tacc *= 0.5;\n"
+				"\tlet r = acc > 0.5 ? acc : 1.0;\n"
+				"\tcolor = f32vec4(r, f32(n ^ 3u), f32(~n & 1u), 1.0);\n"
+				"\tif (r < 0.0) { discard; }\n"
 				"}\n",
 				EntryKind::eFragment
 			)
@@ -214,13 +257,13 @@ namespace AccelCompile {
 			compilesToSpirv(
 				"@output (mode = forward, id = \"color\") f32vec4 color;\n"
 				"fn main() {\n"
-				"	let v = f32vec3(0.25, 0.5, 0.75);\n"
-				"	let m = f32mat4(1.0);\n"
-				"	let n = f32mat3(m);\n"
-				"	let t = transpose(inverse(n)) * normalize(clamp(v, 0.1, 0.9));\n"
-				"	let a = mix(v, t, 0.5) + reflect(v, f32vec3(0.0, 1.0, 0.0)) + cross(v, t);\n"
-				"	let b = dot(a, v) + length(a) + distance(a, v) + pow(abs(a.x), 2.0) + smoothstep(0.0, 1.0, a.y);\n"
-				"	color = f32vec4(floor(a) + fract(a) + dFdx(a) + fwidth(a), sqrt(b) + sin(b) + max(b, 0.5));\n"
+				"\tlet v = f32vec3(0.25, 0.5, 0.75);\n"
+				"\tlet m = f32mat4(1.0);\n"
+				"\tlet n = f32mat3(m);\n"
+				"\tlet t = transpose(inverse(n)) * normalize(clamp(v, 0.1, 0.9));\n"
+				"\tlet a = mix(v, t, 0.5) + reflect(v, f32vec3(0.0, 1.0, 0.0)) + cross(v, t);\n"
+				"\tlet b = dot(a, v) + length(a) + distance(a, v) + pow(abs(a.x), 2.0) + smoothstep(0.0, 1.0, a.y);\n"
+				"\tcolor = f32vec4(floor(a) + fract(a) + dFdx(a) + fwidth(a), sqrt(b) + sin(b) + max(b, 0.5));\n"
 				"}\n",
 				EntryKind::eFragment
 			)
@@ -237,16 +280,16 @@ namespace AccelCompile {
 				"@input (mode = forward, id = \"uv\") f32vec2 uv;\n"
 				"@output (mode = forward, id = \"color\") f32vec4 color;\n"
 				"fn main() {\n"
-				"	let uv3 = f32vec3(uv, 0.0);\n"
-				"	let a = f32vec4(0.0);\n"
-				"	let b = f32vec4(0.0);\n"
-				"	let acc = sample(t2, smp, uv) + sample(ta, smp, uv3) + sample(tc, smp, uv3);\n"
-				"	acc += sample_lod(t2, smp, uv, 1.0) + sample_lod(ta, smp, uv3, 1.0) + sample_lod(tc, smp, uv3, 1.0);\n"
-				"	let sz = texture_size(t2, smp, 0) + texture_size(tc, smp, 0) + s32vec2(texture_size(ta, smp, 0).xy);\n"
-				"	let r = sample_sparse(t2, smp, uv, a) + sample_sparse(ta, smp, uv3, a) + sample_sparse(tc, smp, uv3, a);\n"
-				"	let q = sample_sparse_clamp(t2, smp, uv, 1.0, b) + sample_sparse_clamp(ta, smp, uv3, 1.0, b) + sample_sparse_clamp(tc, smp, uv3, 1.0, b);\n"
-				"	if (sparse_resident(r) && sparse_resident(q)) { acc += a + b; }\n"
-				"	color = acc + f32vec4(f32(sz.x));\n"
+				"\tlet uv3 = f32vec3(uv, 0.0);\n"
+				"\tlet a = f32vec4(0.0);\n"
+				"\tlet b = f32vec4(0.0);\n"
+				"\tlet acc = sample(t2, smp, uv) + sample(ta, smp, uv3) + sample(tc, smp, uv3);\n"
+				"\tacc += sample_lod(t2, smp, uv, 1.0) + sample_lod(ta, smp, uv3, 1.0) + sample_lod(tc, smp, uv3, 1.0);\n"
+				"\tlet sz = texture_size(t2, smp, 0) + texture_size(tc, smp, 0) + s32vec2(texture_size(ta, smp, 0).xy);\n"
+				"\tlet r = sample_sparse(t2, smp, uv, a) + sample_sparse(ta, smp, uv3, a) + sample_sparse(tc, smp, uv3, a);\n"
+				"\tlet q = sample_sparse_clamp(t2, smp, uv, 1.0, b) + sample_sparse_clamp(ta, smp, uv3, 1.0, b) + sample_sparse_clamp(tc, smp, uv3, 1.0, b);\n"
+				"\tif (sparse_resident(r) && sparse_resident(q)) { acc += a + b; }\n"
+				"\tcolor = acc + f32vec4(f32(sz.x));\n"
 				"}\n",
 				EntryKind::eFragment
 			)
@@ -258,12 +301,12 @@ namespace AccelCompile {
 			compilesToSpirv(
 				"@output (mode = forward, id = \"color\") f32vec4 color;\n"
 				"fn main() {\n"
-				"	let acc = 0.0;\n"
-				"	let i = 0u;\n"
-				"	for (; i < 4u; ) { acc += 0.25; i++; }\n"
-				"	for (let j = 0u; j < 2u; ) { acc += 0.5; j++; }\n"
-				"	for (; acc < 8.0; ++acc) { }\n"
-				"	color = f32vec4(acc);\n"
+				"\tlet acc = 0.0;\n"
+				"\tlet i = 0u;\n"
+				"\tfor (; i < 4u; ) { acc += 0.25; i++; }\n"
+				"\tfor (let j = 0u; j < 2u; ) { acc += 0.5; j++; }\n"
+				"\tfor (; acc < 8.0; ++acc) { }\n"
+				"\tcolor = f32vec4(acc);\n"
 				"}\n",
 				EntryKind::eFragment
 			)
@@ -277,14 +320,14 @@ namespace AccelCompile {
 				"workgroup scratch: f32[64];\n"
 				"@compute (local_size = [64, 1, 1])\n"
 				"fn main() {\n"
-				"	let lid = local_invocation_index;\n"
-				"	scratch[lid] = data.values[global_invocation_id.x];\n"
-				"	barrier();\n"
-				"	for (let stride = 32u; stride > 0u; stride = stride / 2u) {\n"
-				"		if (lid < stride) { scratch[lid] += scratch[lid + stride]; }\n"
-				"		barrier();\n"
-				"	}\n"
-				"	if (lid == 0u) { data.values[workgroup_id.x] = scratch[0]; }\n"
+				"\tlet lid = local_invocation_index;\n"
+				"\tscratch[lid] = data.values[global_invocation_id.x];\n"
+				"\tbarrier();\n"
+				"\tfor (let stride = 32u; stride > 0u; stride = stride / 2u) {\n"
+				"\t\tif (lid < stride) { scratch[lid] += scratch[lid + stride]; }\n"
+				"\t\tbarrier();\n"
+				"\t}\n"
+				"\tif (lid == 0u) { data.values[workgroup_id.x] = scratch[0]; }\n"
 				"}\n",
 				EntryKind::eCompute
 			)
@@ -298,15 +341,15 @@ namespace AccelCompile {
 				"workgroup tile: f32[324];\n"
 				"@compute (local_size = [16, 16, 1])\n"
 				"fn main() {\n"
-				"	let x = local_invocation_id.x;\n"
-				"	let row = local_invocation_id.y;\n"
-				"	let base = (workgroup_id.x * 16u + row) * 16u;\n"
-				"	tile[local_invocation_index] = 1.0;\n"
-				"	barrier();\n"
-				"	let src = &tile[row * 18u .. row * 18u + 18u];\n"
-				"	let acc = src[x] + src[x + 1u] + src[x + 2u];\n"
-				"	let dst = &mut result.data[base .. base + 16u];\n"
-				"	dst[x] = acc;\n"
+				"\tlet x = local_invocation_id.x;\n"
+				"\tlet row = local_invocation_id.y;\n"
+				"\tlet base = (workgroup_id.x * 16u + row) * 16u;\n"
+				"\ttile[local_invocation_index] = 1.0;\n"
+				"\tbarrier();\n"
+				"\tlet src = &tile[row * 18u .. row * 18u + 18u];\n"
+				"\tlet acc = src[x] + src[x + 1u] + src[x + 2u];\n"
+				"\tlet dst = &mut result.data[base .. base + 16u];\n"
+				"\tdst[x] = acc;\n"
 				"}\n",
 				EntryKind::eCompute
 			)
@@ -323,24 +366,24 @@ namespace AccelCompile {
 				"fn write_vertex(r: &mut u32[], i: u32, v: u32) { r[i] = v + len(r); }\n"
 				"@compute (local_size = [32, 1, 1])\n"
 				"fn main() {\n"
-				"	let slot = atomic_add(next, 1u);\n"
-				"	const base: u32 = slot * 32u;\n"
-				"	let lane = &mut scratch[base .. base + 32u];\n"
-				"	const n: u32 = 12u;\n"
-				"	let idx = &mut lane[0u .. n];\n"
-				"	let vtx = &mut lane[n .. 32u];\n"
-				"	write_index(idx, 0u, 1u);\n"
-				"	write_index(idx, 1u, 2u);\n"
-				"	write_vertex(vtx, 0u, 3u);\n"
-				"	write_vertex(vtx, 1u, 4u);\n"
-				"	const o: u32 = slot * 20u;\n"
-				"	write_vertex(submit.data[o .. o + 20u], 0u, 5u);\n"
-				"	const sbase: u32 = slot * 32u;\n"
-				"	let slane = &mut submit.data[sbase .. sbase + 32u];\n"
-				"	let sidx = &mut slane[0u .. n];\n"
-				"	let svtx = &mut slane[n .. 32u];\n"
-				"	write_index(sidx, 0u, 6u);\n"
-				"	write_vertex(svtx, 0u, 7u);\n"
+				"\tlet slot = atomic_add(next, 1u);\n"
+				"\tconst base: u32 = slot * 32u;\n"
+				"\tlet lane = &mut scratch[base .. base + 32u];\n"
+				"\tconst n: u32 = 12u;\n"
+				"\tlet idx = &mut lane[0u .. n];\n"
+				"\tlet vtx = &mut lane[n .. 32u];\n"
+				"\twrite_index(idx, 0u, 1u);\n"
+				"\twrite_index(idx, 1u, 2u);\n"
+				"\twrite_vertex(vtx, 0u, 3u);\n"
+				"\twrite_vertex(vtx, 1u, 4u);\n"
+				"\tconst o: u32 = slot * 20u;\n"
+				"\twrite_vertex(submit.data[o .. o + 20u], 0u, 5u);\n"
+				"\tconst sbase: u32 = slot * 32u;\n"
+				"\tlet slane = &mut submit.data[sbase .. sbase + 32u];\n"
+				"\tlet sidx = &mut slane[0u .. n];\n"
+				"\tlet svtx = &mut slane[n .. 32u];\n"
+				"\twrite_index(sidx, 0u, 6u);\n"
+				"\twrite_vertex(svtx, 0u, 7u);\n"
 				"}\n",
 				EntryKind::eCompute
 			)
@@ -355,13 +398,13 @@ namespace AccelCompile {
 				"@output (mode = forward, id = \"tint-out\") f32vec4 tint_out;\n"
 				"@geometry (input = triangles, output = triangle_strip, max_vertices = 3, invocations = 1)\n"
 				"fn main() {\n"
-				"	layer = 1;\n"
-				"	for (let i = 0; i < 3; i++) {\n"
-				"		position = input_position[i];\n"
-				"		tint_out = tint_in[i] + p[i];\n"
-				"		emit_vertex();\n"
-				"	}\n"
-				"	end_primitive();\n"
+				"\tlayer = 1;\n"
+				"\tfor (let i = 0; i < 3; i++) {\n"
+				"\t\tposition = input_position[i];\n"
+				"\t\ttint_out = tint_in[i] + p[i];\n"
+				"\t\temit_vertex();\n"
+				"\t}\n"
+				"\tend_primitive();\n"
 				"}\n",
 				EntryKind::eGeometry
 			)
@@ -376,14 +419,14 @@ namespace AccelCompile {
 				"@output (mode = forward, id = \"level\", patch = true) f32 lvl;\n"
 				"@tess_ctrl (output_vertices = 3)\n"
 				"fn main() {\n"
-				"	q[invocation_id] = p[invocation_id];\n"
-				"	output_position[invocation_id] = input_position[invocation_id];\n"
-				"	barrier();\n"
-				"	lvl = 2.0;\n"
-				"	tess_level_outer[0] = 4.0;\n"
-				"	tess_level_outer[1] = 4.0;\n"
-				"	tess_level_outer[2] = 4.0;\n"
-				"	tess_level_inner[0] = 4.0;\n"
+				"\tq[invocation_id] = p[invocation_id];\n"
+				"\toutput_position[invocation_id] = input_position[invocation_id];\n"
+				"\tbarrier();\n"
+				"\tlvl = 2.0;\n"
+				"\ttess_level_outer[0] = 4.0;\n"
+				"\ttess_level_outer[1] = 4.0;\n"
+				"\ttess_level_outer[2] = 4.0;\n"
+				"\ttess_level_inner[0] = 4.0;\n"
 				"}\n",
 				EntryKind::eTessCtrl
 			)
@@ -397,7 +440,7 @@ namespace AccelCompile {
 				"@input (mode = forward, id = \"level\", patch = true) f32 lvl;\n"
 				"@tess_eval (domain = triangles, spacing = equal, winding = ccw)\n"
 				"fn main() {\n"
-				"	position = (q[0] * tess_coord.x + q[1] * tess_coord.y + q[2] * tess_coord.z) * lvl;\n"
+				"\tposition = (q[0] * tess_coord.x + q[1] * tess_coord.y + q[2] * tess_coord.z) * lvl;\n"
 				"}\n",
 				EntryKind::eTessEval
 			)
@@ -411,15 +454,72 @@ namespace AccelCompile {
 				"@input (mode = bind, id = \"dst\", class = image, access = write) image2d<rgba16f> dst;\n"
 				"@compute (local_size = [8, 8, 1])\n"
 				"fn main() {\n"
-				"	let p = s32vec2(global_invocation_id.xy);\n"
-				"	let acc = f32vec4(0.0);\n"
-				"	for (let dx = -1; dx <= 1; dx++) {\n"
-				"		acc += image_load(src, p + s32vec2(dx, 0));\n"
-				"	}\n"
-				"	image_store(dst, p, acc / 3.0);\n"
+				"\tlet p = s32vec2(global_invocation_id.xy);\n"
+				"\tlet acc = f32vec4(0.0);\n"
+				"\tfor (let dx = -1; dx <= 1; dx++) {\n"
+				"\t\tacc += image_load(src, p + s32vec2(dx, 0));\n"
+				"\t}\n"
+				"\timage_store(dst, p, acc / 3.0);\n"
 				"}\n",
 				EntryKind::eCompute
 			)
 		);
 	}
+
+	namespace {
+		[[nodiscard]] hg::Opt<hg::String> readShader(hg::StringView name_) {
+			std::ifstream file { std::filesystem::path { HG_TEST_SHADER_ROOT } / std::filesystem::path { std::string { name_ } } };
+			if (not file) {
+				return hg::None;
+			}
+			std::stringstream text {};
+			text << file.rdbuf();
+			return hg::String { text.str() };
+		}
+
+		/* the stage of `fn main`'s entry annotation; the parser only checks it against the given kind, so read it here */
+		[[nodiscard]] EntryKind entryOf(const std::string& name_, const std::string& text_) {
+			std::smatch annotation {};
+			if (std::regex_search(text_, annotation, std::regex { R"(@(compute|fragment|geometry|tess_ctrl|tess_eval)\b)" })) {
+				const auto kind = annotation[1].str();
+				return kind == "compute" ? EntryKind::eCompute :
+					kind == "geometry" ? EntryKind::eGeometry :
+					kind == "tess_ctrl" ? EntryKind::eTessCtrl :
+					kind == "tess_eval" ? EntryKind::eTessEval : EntryKind::eFragment;
+			}
+			// shortcut: most engine fragment shaders carry no @fragment yet, so unannotated stages fall back to the file suffix; drop it once every .fs is annotated
+			return name_.contains(".fs") ? EntryKind::eFragment : EntryKind::eVertex;
+		}
+
+		/* engine shaders with an entry point: { root-relative name, entry } */
+		[[nodiscard]] hg::Vector<std::pair<std::string, EntryKind>> engineShaders() {
+			hg::Vector<std::pair<std::string, EntryKind>> shaders {};
+			const std::filesystem::path root { HG_TEST_SHADER_ROOT };
+			for (const auto& file : std::filesystem::recursive_directory_iterator { root }) {
+				const auto name = std::filesystem::relative(file.path(), root).generic_string();
+				const auto text = file.is_regular_file() ? readShader(name) : hg::None;
+				/* templates declare the material's functions without bodies; a material completes them */
+				if (name.starts_with("template/") or not text.has_value() or not text->contains("fn main")) {
+					continue;
+				}
+				shaders.emplace_back(name, entryOf(name, *text));
+			}
+			std::ranges::sort(shaders);
+			return shaders;
+		}
+	}
+
+	TEST(IrSpirvGateTest, EngineShaders) {
+		const GateResolver resolver { readShader };
+		const auto shaders = engineShaders();
+		ASSERT_FALSE(shaders.empty());
+		for (const auto& [name, entry] : shaders) {
+			const auto source = readShader(name);
+			const std::array stages { GateStage { *source, entry } };
+			const auto composed = composeStages(stages, {}, resolver);
+			ASSERT_TRUE(composed.has_value()) << name << ": " << composed.error();
+			EXPECT_TRUE(spirvValid(*composed->front()->getIntermediate())) << name;
+		}
+	}
+
 }

@@ -39,7 +39,7 @@ namespace {
 	/* parse, lower references and lay out */
 	[[nodiscard]] Opt<Prepared> prepare(StringView src_, EntryKind entry_) {
 		auto parsed = parseModule("M", src_, entry_, ModuleResolver { noIncludes });
-		EXPECT_TRUE(parsed.has_value());
+		EXPECT_TRUE(parsed.has_value()) << (parsed.has_value() || parsed.error().empty() ? "" : parsed.error().front().message());
 		if (not parsed.has_value()) {
 			return None;
 		}
@@ -681,4 +681,116 @@ TEST(IrSpirvEmitTest, GeometryPerVertexBuiltins) {
 	String log {};
 	EXPECT_TRUE(valid(out.result.words, log)) << log << "\n" << out.text;
 	EXPECT_TRUE(has(out.text, "OpEmitVertex")) << out.text;
+}
+
+TEST(IrSpirvEmitTest, MissingMainGetsEmptyEntry) {
+	const auto out = emitOf("fn helper() {\n}\n", EntryKind::eFragment);
+	String log {};
+	EXPECT_TRUE(out.result.diagnostics.empty());
+	EXPECT_TRUE(valid(out.result.words, log)) << log << "\n" << out.text;
+	EXPECT_TRUE(has(out.text, "OpEntryPoint Fragment")) << out.text;
+}
+
+/* emit without failing on diagnostics; returns the joined diagnostic messages */
+static String emitDiagnostics(StringView src_, EntryKind entry_) {
+	const auto prepared = prepare(src_, entry_);
+	if (not prepared.has_value()) {
+		return {};
+	}
+	String joined {};
+	for (const auto& diagnostic : spirv::emit(prepared->mod, prepared->layout, Tier::eDev).diagnostics) {
+		joined += String { diagnostic.message() } + "\n";
+	}
+	return joined;
+}
+
+TEST(IrSpirvEmitTest, VertexWithoutMainIsDiagnostic) {
+	const auto diagnostics = emitDiagnostics("fn helper() {\n}\n", EntryKind::eVertex);
+	EXPECT_TRUE(has(diagnostics, "no 'main'")) << diagnostics;
+}
+
+TEST(IrSpirvEmitTest, UnsignedFoldWrapsAtDeclaredWidth) {
+	const auto out = emitOf("const H: u32 = (0u - 1u) / 2u;\nfn main() {\n\tposition = f32vec4(f32(H));\n}\n", EntryKind::eVertex);
+	EXPECT_TRUE(has(out.text, "OpConstant %uint 2147483647\n")) << out.text;
+}
+
+TEST(IrSpirvEmitTest, SignedFoldWrapsAtDeclaredWidth) {
+	const auto out = emitOf("const H: s32 = (2147483647 + 1) / 2;\nfn main() {\n\tposition = f32vec4(f32(H));\n}\n", EntryKind::eVertex);
+	EXPECT_TRUE(has(out.text, "OpConstant %int -1073741824\n")) << out.text;
+}
+
+TEST(IrSpirvEmitTest, FoldDivisionByZeroIsDiagnostic) {
+	const auto diagnostics = emitDiagnostics("const H: u32 = 1u / (1u - 1u);\nfn main() {\n\tposition = f32vec4(f32(H));\n}\n", EntryKind::eVertex);
+	EXPECT_TRUE(has(diagnostics, "division by zero")) << diagnostics;
+}
+
+TEST(IrSpirvEmitTest, FoldMostNegativeByMinusOneIsDiagnostic) {
+	const auto diagnostics = emitDiagnostics(
+		"const H: s32 = (-2147483647 - 1) / -1;\nfn main() {\n\tposition = f32vec4(f32(H));\n}\n",
+		EntryKind::eVertex
+	);
+	EXPECT_TRUE(has(diagnostics, "most negative")) << diagnostics;
+}
+
+TEST(IrSpirvEmitTest, FoldConvertsArrayElementsToElementType) {
+	const auto out = emitOf(
+		"const W: f32[2] = f32[2](1, 0.5);\nfn main() {\n\tposition = f32vec4(W[0]);\n}\n",
+		EntryKind::eVertex
+	);
+	String log {};
+	EXPECT_TRUE(valid(out.result.words, log)) << log << "\n" << out.text;
+	EXPECT_TRUE(has(out.text, "OpConstant %float 1\n")) << out.text;
+	EXPECT_FALSE(has(out.text, "OpConstant %int 1\n")) << out.text;
+}
+
+TEST(IrSpirvEmitTest, CompositeModuleConstantFolds) {
+	const auto out = emitOf(
+		"const POSITIONS: f32vec2[3] = f32vec2[3](f32vec2(0.0, 1.0), f32vec2(1.0), f32vec2(-1.0, 0.0));\n"
+		"fn main() {\n\tposition = f32vec4(POSITIONS[1], 0.0, 1.0);\n}\n",
+		EntryKind::eVertex
+	);
+	String log {};
+	EXPECT_TRUE(out.result.diagnostics.empty());
+	EXPECT_TRUE(valid(out.result.words, log)) << log << "\n" << out.text;
+	EXPECT_TRUE(has(out.text, "OpConstantComposite")) << out.text;
+}
+
+TEST(IrSpirvEmitTest, MatrixFromMatrixAndBuiltinCallIndex) {
+	const auto out = emitOf(
+		"@input (mode = bind, id = \"u\", class = uniform) block u { f32mat4 m; };\n"
+		"fn main() {\n\tf32mat3 a = f32mat3(u.m);\n\tf32vec4 c = inverse(u.m)[0];\n"
+		"\tposition = f32vec4(a[0], 1.0) + c;\n}\n",
+		EntryKind::eVertex
+	);
+	String log {};
+	EXPECT_TRUE(out.result.diagnostics.empty());
+	EXPECT_TRUE(valid(out.result.words, log)) << log << "\n" << out.text;
+	EXPECT_TRUE(has(out.text, "MatrixInverse")) << out.text;
+	EXPECT_TRUE(has(out.text, "OpCompositeExtract")) << out.text;
+}
+
+TEST(IrSpirvEmitTest, SpecConstantDefaultFoldsToLiteral) {
+	const auto out = emitOf(
+		"const PI: f32 = 3.0;\n"
+		"@spec (id = \"delta\") const DELTA: f32 = -2.0 * PI / f32(4);\n"
+		"fn main() {\n\tposition = f32vec4(DELTA);\n}\n",
+		EntryKind::eVertex
+	);
+	String log {};
+	EXPECT_TRUE(out.result.diagnostics.empty());
+	EXPECT_TRUE(valid(out.result.words, log)) << log << "\n" << out.text;
+	EXPECT_TRUE(has(out.text, "OpSpecConstant %float -1.5")) << out.text;
+}
+
+TEST(IrSpirvEmitTest, SpecConstantDefaultOverSpecIsNotConstant) {
+	const auto prepared = prepare(
+		"@spec (id = \"a\") const A: f32 = 1.0;\n"
+		"@spec (id = \"b\") const B: f32 = A * 2.0;\n"
+		"fn main() {\n\tposition = f32vec4(B);\n}\n",
+		EntryKind::eVertex
+	);
+	ASSERT_TRUE(prepared.has_value());
+	const auto result = spirv::emit(prepared->mod, prepared->layout, Tier::eDev);
+	ASSERT_EQ(result.diagnostics.size(), 1uz);
+	EXPECT_EQ(result.diagnostics[0].code()->key, "not-constant");
 }
