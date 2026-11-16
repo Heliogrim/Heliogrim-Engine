@@ -4,6 +4,7 @@
 #include <Engine.Reflow/Algorithm/Flex.hpp>
 #include <Engine.Reflow/Command/ReflowCommandBuffer.hpp>
 #include <Engine.Reflow/Layout/Style.hpp>
+#include <Engine.Reflow/Widget/AttributeBatch.hpp>
 
 using namespace hg::engine::reflow::uikit;
 using namespace hg::engine::reflow;
@@ -22,7 +23,9 @@ Image::Image(mref<ReflowClassList> classList_, mref<SharedPtr<Widget>> parent_) 
 			math::vec2 { 1.F, 1.F },
 			math::vec2 { 0.F, 1.F }
 		}
-	) {}
+	) {
+	bindAttributeOwner(this);
+}
 
 Image::~Image() {
 	// Warning: Workaround which might cause an crash or error
@@ -59,6 +62,7 @@ void Image::render(const ptr<ReflowCommandBuffer> cmd_) {
 }
 
 void Image::cascadeContextChange(bool invalidate_) {
+	const AttributeBatch batch { *this };
 
 	if (getEffectiveProvisioner() != None) {
 

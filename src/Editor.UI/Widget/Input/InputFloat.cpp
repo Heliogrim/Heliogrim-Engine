@@ -30,7 +30,9 @@ InputFloat::InputFloat(mref<SharedPtr<uikit::Stack>> content_, mref<SharedPtr<ui
 		{}
 	),
 	_text(hg::move(text_)),
-	_stringified() {}
+	_stringified() {
+	bindAttributeOwner(this);
+}
 
 InputFloat::~InputFloat() = default;
 

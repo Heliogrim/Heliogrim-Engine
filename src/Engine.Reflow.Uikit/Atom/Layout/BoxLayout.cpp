@@ -32,7 +32,9 @@ BoxLayout::BoxLayout(mref<ReflowClassList> classList_, mref<SharedPtr<Widget>> p
 		},
 		{}
 	),
-	_children() {}
+	_children() {
+	bindAttributeOwner(this);
+}
 
 BoxLayout::~BoxLayout() = default;
 

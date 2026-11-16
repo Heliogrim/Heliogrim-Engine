@@ -43,7 +43,9 @@ VerticalLayout::VerticalLayout(mref<ReflowClassList> classList_, mref<SharedPtr<
 		},
 		{}
 	),
-	_children() {}
+	_children() {
+	bindAttributeOwner(this);
+}
 
 VerticalLayout::~VerticalLayout() = default;
 

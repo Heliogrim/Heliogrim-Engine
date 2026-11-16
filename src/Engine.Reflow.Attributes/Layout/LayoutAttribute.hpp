@@ -2,6 +2,7 @@
 
 #include <Engine.Common/Move.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Reflow/ReflowPhase.hpp>
 
 namespace hg::engine::reflow {
 	template <typename Type_>
@@ -9,6 +10,8 @@ namespace hg::engine::reflow {
 	public:
 		using this_type = LayoutAttribute<Type_>;
 		using store_type = meta::remove_reference_t<Type_>;
+
+		constexpr static ReflowPhase phase = ReflowPhase::eLayout;
 
 	public:
 		LayoutAttribute() = default;

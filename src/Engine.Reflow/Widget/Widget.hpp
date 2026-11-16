@@ -1,9 +1,11 @@
 #pragma once
 
+#include <Engine.Common/Flag.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Managed/SharedFromThis.hpp>
 #include <Engine.Graphics/Aabb.hpp>
+#include <Engine.Reflow/ReflowPhase.hpp>
 #include <Engine.Reflow.Theming/ThemeProvisioner.hpp>
 
 #include "WidgetState.hpp"
@@ -45,6 +47,11 @@ namespace hg::engine::reflow {
 
 	class Widget :
 		public SharedFromThis<Widget> {
+	private:
+		friend class AttributeBatch;
+
+		friend void notifyAttributeChange(nmpt<Widget>, const Flag<ReflowPhase, u8>) noexcept;
+
 	public:
 		using this_type = Widget;
 
@@ -61,6 +68,10 @@ namespace hg::engine::reflow {
 	protected:
 		WidgetState _state;
 		ReflowPassState _layoutState;
+
+	private:
+		u8 _batchDepth = 0;
+		Flag<ReflowPhase, u8> _batchPhases {};
 
 	public:
 		[[nodiscard]] cref<WidgetState> state() const noexcept;

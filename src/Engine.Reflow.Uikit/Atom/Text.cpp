@@ -5,6 +5,7 @@
 #include <Engine.Reflow/Algorithm/Flex.hpp>
 #include <Engine.Reflow/Command/ReflowCommandBuffer.hpp>
 #include <Engine.Reflow/Layout/Style.hpp>
+#include <Engine.Reflow/Widget/AttributeBatch.hpp>
 
 using namespace hg::engine::reflow::uikit;
 using namespace hg::engine::reflow;
@@ -53,7 +54,9 @@ Text::Text(mref<ReflowClassList> classList_, mref<SharedPtr<Widget>> parent_) :
 			}
 		}
 	),
-	_measureCache() {}
+	_measureCache() {
+	bindAttributeOwner(this);
+}
 
 Text::~Text() = default;
 
@@ -351,6 +354,7 @@ void Text::render(const ptr<ReflowCommandBuffer> cmd_) {
 }
 
 void Text::cascadeContextChange(bool invalidate_) {
+	const AttributeBatch batch { *this };
 
 	if (getEffectiveProvisioner() != None) {
 

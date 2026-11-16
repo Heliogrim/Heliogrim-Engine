@@ -3,6 +3,7 @@
 #include <functional>
 #include <Engine.Common/Move.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Reflow/ReflowPhase.hpp>
 
 namespace hg::engine::reflow {
 	template <typename Type_>
@@ -11,6 +12,8 @@ namespace hg::engine::reflow {
 		using store_type = meta::remove_reference_t<Type_>;
 		using query_type = std::function<store_type()>;
 		using query_unsubscribe_type = std::function<void()>;
+
+		constexpr static ReflowPhase phase = ReflowPhase::eLayout;
 
 		~DataAttribute() {
 			if (_queryUnsubscribe != nullptr) {

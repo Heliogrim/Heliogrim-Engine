@@ -32,7 +32,9 @@ InputText::InputText(mref<SharedPtr<uikit::Stack>> content_, mref<SharedPtr<uiki
 	_text(
 		hg::move(text_)
 	),
-	_stringified() {}
+	_stringified() {
+	bindAttributeOwner(this);
+}
 
 InputText::~InputText() = default;
 

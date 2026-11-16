@@ -1,7 +1,9 @@
 #pragma once
 
+#include <tuple>
 #include <type_traits>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Reflow/Widget/Widget.hpp>
 
 namespace hg::engine::reflow::uikit {
 	template <typename DataAttributeType_>
@@ -50,6 +52,25 @@ namespace hg::engine::reflow::uikit {
 		using atom_style_attr = AtomStyleAttribute<StyleAttributeType_>;
 
 	public:
+		void bindAttributeOwner(nmpt<Widget> owner_) noexcept {
+			const auto bind = [owner_]<typename Set_>(Set_& set_) {
+				if constexpr (requires { set_.attributeSets; }) {
+					std::apply([owner_](auto&... sets_) { (sets_.bindOwner(owner_), ...); }, set_.attributeSets);
+				} else {
+					set_.bindOwner(owner_);
+				}
+			};
+			if constexpr (not std::is_void_v<typename atom_data_attr::type>) {
+				bind(atom_data_attr::dataAttributes);
+			}
+			if constexpr (not std::is_void_v<typename atom_layout_attr::type>) {
+				bind(atom_layout_attr::layoutAttributes);
+			}
+			if constexpr (not std::is_void_v<typename atom_style_attr::type>) {
+				bind(atom_style_attr::styleAttributes);
+			}
+		}
+
 		template <typename ReturnType_ = typename atom_data_attr::type>
 			requires (not std::is_void_v<typename atom_data_attr::type>)
 		[[nodiscard]] ref<const ReturnType_> getDataAttributes() const noexcept {

@@ -43,7 +43,9 @@ HorizontalLayout::HorizontalLayout(mref<ReflowClassList> classList_, mref<Shared
 		},
 		{}
 	),
-	_children() {}
+	_children() {
+	bindAttributeOwner(this);
+}
 
 HorizontalLayout::~HorizontalLayout() = default;
 
