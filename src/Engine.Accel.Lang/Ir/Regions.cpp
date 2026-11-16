@@ -47,13 +47,13 @@ namespace {
 		ref<Specs> specs;
 
 		/* nodes are copied before appending: the arenas reallocate */
-		ExprRef push(Expr expr_) {
-			m.exprs.emplace_back(std::move(expr_));
+		ExprRef push(mref<Expr> expr_) {
+			m.exprs.emplace_back(::hg::move(expr_));
 			return ExprRef { static_cast<u32>(m.exprs.size() - 1uL) };
 		}
 
 		StmtRef push(Stmt stmt_) {
-			m.stmts.emplace_back(std::move(stmt_));
+			m.stmts.emplace_back(::hg::move(stmt_));
 			return StmtRef { static_cast<u32>(m.stmts.size() - 1uL) };
 		}
 
@@ -62,7 +62,7 @@ namespace {
 		}
 
 		ExprRef nameref(String name_, TypeRef type_, SourceLoc loc_) {
-			return push(Expr { .kind = ExprKind::eNameRef, .name = std::move(name_), .local = true, .type = type_, .loc = loc_ });
+			return push(Expr { .kind = ExprKind::eNameRef, .name = ::hg::move(name_), .local = true, .type = type_, .loc = loc_ });
 		}
 
 		[[nodiscard]] bool isRegion(TypeRef type_) const {
@@ -74,24 +74,34 @@ namespace {
 			if (ref_.index >= m.exprs.size()) {
 				return {};
 			}
+
 			const auto e = m.exprs[ref_.index];
 			if (e.kind == ExprKind::eNameRef) {
 				return e.name;
 			}
+
 			if ((e.kind != ExprKind::eField && e.kind != ExprKind::eIndex) || e.operands.empty()) {
 				return {};
 			}
+
 			auto base = freeze(e.operands[0], name_, hoists_);
 			if (e.kind == ExprKind::eIndex && e.operands.size() == 2uL && e.operands[1].index < m.exprs.size()
 				&& m.exprs[e.operands[1].index].kind != ExprKind::eLiteral) {
 				const auto type = m.exprs[e.operands[1].index].type;
 				auto hoisted = String { name_ } + "__i" + std::to_string(hoists_.size());
 				hoists_.emplace_back(
-					push(Stmt { .kind = StmtKind::eDeclareLocal, .name = hoisted, .type = type, .lhs = e.operands[1], .mutable_ = false, .loc = e.loc })
+					push(
+						Stmt {
+							.kind = StmtKind::eDeclareLocal, .name = hoisted, .type = type, .lhs = e.operands[1], .mutable_ = false,
+							.loc = e.loc
+						}
+					)
 				);
-				const auto use = nameref(std::move(hoisted), type, e.loc);
+
+				const auto use = nameref(::hg::move(hoisted), type, e.loc);
 				m.exprs[ref_.index].operands[1] = use;
 			}
+
 			return base;
 		}
 
@@ -100,18 +110,21 @@ namespace {
 			if (ref_.index >= m.exprs.size()) {
 				return None;
 			}
+
 			const auto e = m.exprs[ref_.index];
 			if (e.kind == ExprKind::eNameRef && e.local) {
 				for (auto it = scope.rbegin(); it != scope.rend(); ++it) {
 					if (it->name == e.name) {
-						return it->region ? Opt<Region> { *it } : None;
+						return it->region ? SomeVal<Region>(*it) : None;
 					}
 				}
 				return None;
 			}
+
 			if (e.kind != ExprKind::eRange || e.operands.size() != 3uL) {
 				return None;
 			}
+
 			const auto lo = rewrite(e.operands[1]);
 			const auto hi = rewrite(e.operands[2]);
 			const auto u32Type = m.exprs[lo.index].type;
@@ -121,6 +134,7 @@ namespace {
 				r.rootName = base->rootName;
 				r.off = binary(base->off, "+", lo, u32Type, e.loc);
 				r.len = binary(base->off, "+", hi, u32Type, e.loc);
+
 			} else {
 				r.root = rewrite(e.operands[0]);
 				if (hoists_ != nullptr) {
@@ -129,12 +143,14 @@ namespace {
 				r.off = lo;
 				r.len = hi;
 			}
+
 			// the range node becomes the offset, so no eRange survives
 			auto off = m.exprs[r.off.index];
 			off.loc = e.loc;
-			m.exprs[ref_.index] = std::move(off);
+			m.exprs[ref_.index] = ::hg::move(off);
 			r.off = ref_;
-			return r;
+
+			return SomeVal(::hg::move(r));
 		}
 
 		TypeRef u32Type() {
@@ -144,39 +160,44 @@ namespace {
 					return TypeRef { static_cast<u32>(i) };
 				}
 			}
+
 			m.types.emplace_back(TypeDesc { .scalar = ScalarKind::eUInt });
 			return TypeRef { static_cast<u32>(m.types.size() - 1uL) };
 		}
 
-		ExprRef clone(ExprRef ref_) {
+		ExprRef clone(const ExprRef ref_) {
 			if (ref_.index >= m.exprs.size()) {
 				return ref_;
 			}
+
 			auto e = m.exprs[ref_.index];
 			for (auto& operand : e.operands) {
 				operand = clone(operand);
 			}
-			return push(std::move(e));
+			return push(::hg::move(e));
 		}
 
-		StmtRef clone(StmtRef ref_) {
+		StmtRef clone(const StmtRef ref_) {
 			if (ref_.index >= m.stmts.size()) {
 				return ref_;
 			}
+
 			auto s = m.stmts[ref_.index];
 			s.lhs = clone(s.lhs);
 			s.rhs = clone(s.rhs);
 			for (auto& child : s.children) {
 				child = clone(child);
 			}
-			return push(std::move(s));
+
+			return push(::hg::move(s));
 		}
 
 		/* key text of a static root (binding name, fields, literal indices); empty = local or runtime-indexed */
-		String place(ExprRef ref_, ref<String> base_) const {
+		String place(const ExprRef ref_, ref<String> base_) const {
 			if (ref_.index >= m.exprs.size()) {
 				return {};
 			}
+
 			const auto& e = m.exprs[ref_.index];
 			if (e.kind == ExprKind::eNameRef) {
 				if (e.local || e.binding.index >= m.bindings.size()) {
@@ -185,25 +206,30 @@ namespace {
 				base_ = e.name;
 				return e.name;
 			}
+
 			if (e.operands.empty()) {
 				return {};
 			}
+
 			auto path = place(e.operands[0], base_);
 			if (path.empty()) {
 				return {};
 			}
+
 			if (e.kind == ExprKind::eField) {
 				return path + "." + e.name;
 			}
+
 			if (e.kind == ExprKind::eIndex && e.operands.size() == 2uL && e.operands[1].index < m.exprs.size()
 				&& m.exprs[e.operands[1].index].kind == ExprKind::eLiteral) {
 				return path + "[" + m.exprs[e.operands[1].index].name + "]";
 			}
+
 			return {};
 		}
 
 		/* a region argument as (root, off value, end value); each bound is emitted once */
-		Opt<Region> argument(ExprRef ref_) {
+		Opt<Region> argument(const ExprRef ref_) {
 			const auto range = ref_.index < m.exprs.size() && m.exprs[ref_.index].kind == ExprKind::eRange;
 			if (auto r = regionOf(ref_)) {
 				if (not range) {
@@ -211,17 +237,23 @@ namespace {
 				}
 				return r;
 			}
+
 			// a sized array place passes whole
 			const auto type = ref_.index < m.exprs.size() ? m.exprs[ref_.index].type : TypeRef {};
 			if (type.index >= m.types.size() || m.types[type.index].kind != TypeKind::eArray || m.types[type.index].count == 0uL) {
 				return None;
 			}
+
 			const auto count = m.types[type.index].count;
 			const auto loc = m.exprs[ref_.index].loc;
-			return Region {
-				.root = rewrite(ref_), .off = push(Expr { .name = "0u", .type = u32Type(), .loc = loc }),
-				.len = push(Expr { .name = std::to_string(count) + "u", .type = u32Type(), .loc = loc }), .region = true
-			};
+			return SomeVal(
+				Region {
+					.root = rewrite(ref_),
+					.off = push(Expr { .name = "0u", .type = u32Type(), .loc = loc }),
+					.len = push(Expr { .name = std::to_string(count) + "u", .type = u32Type(), .loc = loc }),
+					.region = true
+				}
+			);
 		}
 
 		/* retargets a call with region arguments to its `F__r<k>` specialization, queuing it on first use */
@@ -236,18 +268,25 @@ namespace {
 					args.emplace_back(rewrite(e.operands[i]));
 					continue;
 				}
+
 				auto r = argument(e.operands[i]);
 				String rootName {};
 				const auto path = r.has_value() ? place(r->root, rootName) : String {};
 				if (path.empty()) {
 					diags.emplace_back(
-						Diagnostic::error(codes::asl("region-not-rooted"), "region argument to '" + callee.name + "' must be rooted in a buffer or workgroup array").at(spanIn(m, e.loc))
+						Diagnostic::error(
+							codes::asl("region-not-rooted"),
+							"region argument to '" + callee.name + "' must be rooted in a buffer or workgroup array"
+						).at(spanIn(m, e.loc))
 					);
 					return;
 				}
+
 				key += "|" + path;
 				args.append_range(Vector<ExprRef> { r->off, r->len });
-				bound.emplace_back(Region { .name = callee.params[i].name, .root = r->root, .region = true, .rootName = std::move(rootName) });
+				bound.emplace_back(
+					Region { .name = callee.params[i].name, .root = r->root, .region = true, .rootName = ::hg::move(rootName) }
+				);
 			}
 
 			auto known = std::ranges::find(specs.keys, key, &std::pair<String, u32>::first);
@@ -256,6 +295,7 @@ namespace {
 				if (count == specs.counts.end()) {
 					count = specs.counts.emplace(specs.counts.end(), callee.name, 0uL);
 				}
+
 				FunctionDecl spec { callee };
 				spec.name = callee.name + "__r" + std::to_string(count->second++);
 				spec.params.clear();
@@ -266,24 +306,34 @@ namespace {
 						// a value param named like a root would capture it in the specialized body
 						if (const auto hit = std::ranges::find(bound, param.name, &Region::rootName); hit != bound.end()) {
 							diags.emplace_back(
-								Diagnostic::error(codes::asl("region-root-shadowed"), "'" + param.name + "' shadows the root of live region '" + hit->name + "'").at(spanIn(m, callee.loc))
+								Diagnostic::error(
+									codes::asl("region-root-shadowed"),
+									"'" + param.name + "' shadows the root of live region '" + hit->name + "'"
+								).at(spanIn(m, callee.loc))
 							);
 						}
 						spec.params.emplace_back(param);
 						continue;
 					}
+
 					b->off = nameref(param.name + "__off", u32Type(), callee.loc);
 					b->len = nameref(param.name + "__len", u32Type(), callee.loc);
 					++b;
 					spec.params.append_range(
-						Vector<ParamDecl> { ParamDecl { .name = param.name + "__off", .type = u32Type() }, ParamDecl { .name = param.name + "__end", .type = u32Type() } }
+						Vector<ParamDecl> {
+							ParamDecl { .name = param.name + "__off", .type = u32Type() },
+							ParamDecl { .name = param.name + "__end", .type = u32Type() }
+						}
 					);
 					prologue.emplace_back(
 						push(
 							Stmt {
 								.kind = StmtKind::eDeclareLocal, .name = param.name + "__len", .type = u32Type(),
 								.lhs = binary(
-									nameref(param.name + "__end", u32Type(), callee.loc), "-", nameref(param.name + "__off", u32Type(), callee.loc), u32Type(),
+									nameref(param.name + "__end", u32Type(), callee.loc),
+									"-",
+									nameref(param.name + "__off", u32Type(), callee.loc),
+									u32Type(),
 									callee.loc
 								),
 								.mutable_ = false, .loc = callee.loc
@@ -291,36 +341,45 @@ namespace {
 						)
 					);
 				}
+
 				const auto root = clone(callee.body->root);
 				if (m.stmts[root.index].kind == StmtKind::eBlock) {
 					auto& children = m.stmts[root.index].children;
 					children.insert(children.begin(), prologue.begin(), prologue.end());
+
 				} else {
 					prologue.emplace_back(root);
 				}
-				spec.body = BodyRef { m.stmts[root.index].kind == StmtKind::eBlock ? root : push(Stmt { .kind = StmtKind::eBlock, .children = std::move(prologue) }) };
-				m.functions.emplace_back(std::move(spec));
+
+				spec.body = SomeVal<BodyRef>(
+					m.stmts[root.index].kind == StmtKind::eBlock ?
+					root :
+					push(Stmt { .kind = StmtKind::eBlock, .children = ::hg::move(prologue) })
+				);
+				m.functions.emplace_back(::hg::move(spec));
 				const auto index = static_cast<u32>(m.functions.size() - 1uL);
-				specs.pending.emplace_back(Specs::Pending { index, std::move(bound) });
-				known = specs.keys.emplace(specs.keys.end(), std::move(key), index);
+				specs.pending.emplace_back(Specs::Pending { index, ::hg::move(bound) });
+				known = specs.keys.emplace(specs.keys.end(), ::hg::move(key), index);
 			}
 
 			auto& call = m.exprs[ref_.index];
 			call.name = m.functions[known->second].name;
 			call.function = FunctionRef { known->second };
-			call.operands = std::move(args);
+			call.operands = ::hg::move(args);
 		}
 
 		ExprRef rewrite(ExprRef ref_) {
 			if (ref_.index >= m.exprs.size()) {
 				return ref_;
 			}
+
 			const auto e = m.exprs[ref_.index];
 			if (e.kind == ExprKind::eCall && e.function.index < m.functions.size() && m.functions[e.function.index].body.has_value()
 				&& takesRegion(m, m.functions[e.function.index])) {
 				specialize(ref_);
 				return ref_;
 			}
+
 			if (e.kind == ExprKind::eIndex && e.operands.size() == 2uL) {
 				if (auto base = regionOf(e.operands[0])) {
 					const auto index = rewrite(e.operands[1]);
@@ -329,21 +388,25 @@ namespace {
 					return ref_;
 				}
 			}
+
 			if (e.kind == ExprKind::eBuiltin && e.name == "len" && e.operands.size() == 1uL && e.operands[0].index < m.exprs.size()
 				&& m.exprs[e.operands[0].index].kind == ExprKind::eNameRef) {
 				if (auto r = regionOf(e.operands[0])) {
 					auto len = m.exprs[r->len.index];
 					len.loc = e.loc;
-					m.exprs[ref_.index] = std::move(len);
+					m.exprs[ref_.index] = ::hg::move(len);
 					return ref_;
 				}
 			}
+
 			if (e.kind == ExprKind::eRange) {
-				return ref_; // region argument: specialized, not lowered here
+				return ref_;// region argument: specialized, not lowered here
 			}
+
 			for (const auto operand : e.operands) {
 				rewrite(operand);
 			}
+
 			return ref_;
 		}
 
@@ -352,7 +415,10 @@ namespace {
 			for (const auto& live : scope) {
 				if (live.region && live.rootName == s_.name) {
 					diags.emplace_back(
-						Diagnostic::error(codes::asl("region-root-shadowed"), "'" + s_.name + "' shadows the root of live region '" + live.name + "'").at(spanIn(m, s_.loc))
+						Diagnostic::error(
+							codes::asl("region-root-shadowed"),
+							"'" + s_.name + "' shadows the root of live region '" + live.name + "'"
+						).at(spanIn(m, s_.loc))
 					);
 					break;
 				}
@@ -360,11 +426,11 @@ namespace {
 			scope.emplace_back(Region { .name = s_.name });
 		}
 
-		StmtRef arm(StmtRef ref_) {
+		StmtRef arm(const StmtRef ref_) {
 			const auto mark = scope.size();
 			auto stmts = stmt(ref_);
 			scope.resize(mark);
-			return stmts.size() == 1uL ? stmts.front() : push(Stmt { .kind = StmtKind::eBlock, .children = std::move(stmts) });
+			return stmts.size() == 1uL ? stmts.front() : push(Stmt { .kind = StmtKind::eBlock, .children = ::hg::move(stmts) });
 		}
 
 		/* the rewritten statement plus the declarations it adds to the enclosing block */
@@ -372,6 +438,7 @@ namespace {
 			if (ref_.index >= m.stmts.size()) {
 				return { ref_ };
 			}
+
 			const auto s = m.stmts[ref_.index];
 			switch (s.kind) {
 				case StmtKind::eBlock: {
@@ -380,8 +447,9 @@ namespace {
 					for (const auto child : s.children) {
 						children.append_range(stmt(child));
 					}
+
 					scope.resize(mark);
-					m.stmts[ref_.index].children = std::move(children);
+					m.stmts[ref_.index].children = ::hg::move(children);
 					return { ref_ };
 				}
 				case StmtKind::eDeclareLocal: {
@@ -395,16 +463,22 @@ namespace {
 						shadow(s);
 						return { ref_ };
 					}
+
 					Vector<StmtRef> hoists {};
 					// regionOf yields an end for a range, but a length for a whole region; it also overwrites the range node
 					const auto whole = s.lhs.index < m.exprs.size() && m.exprs[s.lhs.index].kind != ExprKind::eRange;
 					auto r = regionOf(s.lhs, s.name, &hoists);
 					if (not r.has_value()) {
-						diags.emplace_back(Diagnostic::error(codes::asl("internal-inconsistent-module"), "region argument was not rewritten before code generation").at(spanIn(m, s.loc)));
+						diags.emplace_back(
+							Diagnostic::error(
+								codes::asl("internal-inconsistent-module"),
+								"region argument was not rewritten before code generation"
+							).at(spanIn(m, s.loc))
+						);
 						return { ref_ };
 					}
-					const auto u32Type = m.exprs[r->off.index].type;
-					{
+
+					const auto u32Type = m.exprs[r->off.index].type; {
 						auto& off = m.stmts[ref_.index];
 						off.kind = StmtKind::eDeclareLocal;
 						off.name = s.name + "__off";
@@ -423,7 +497,7 @@ namespace {
 					);
 					r->name = s.name;
 					r->len = nameref(s.name + "__len", u32Type, s.loc);
-					scope.emplace_back(std::move(*r));
+					scope.emplace_back(::hg::move(*r));
 					hoists.append_range(Vector<StmtRef> { ref_, len });
 					return hoists;
 				}
@@ -454,22 +528,27 @@ namespace {
 						auto lowered = stmt(s.children[i]);
 						if (i == 0uz && lowered.size() > 1uL) {
 							// a for header holds one declaration: the region consts go before the loop, the init stays empty
-							before = std::move(lowered);
+							before = ::hg::move(lowered);
 							m.stmts[ref_.index].children[i] = push(Stmt { .kind = StmtKind::eBlock });
+
 						} else {
-							m.stmts[ref_.index].children[i] = lowered.size() == 1uL ? lowered.front() :
-								push(Stmt { .kind = StmtKind::eBlock, .children = std::move(lowered) });
+							m.stmts[ref_.index].children[i] = lowered.size() == 1uL ?
+								lowered.front() :
+								push(Stmt { .kind = StmtKind::eBlock, .children = ::hg::move(lowered) });
 						}
+
 						if (i == 0uz) {
 							rewrite(s.lhs);
 						}
 					}
+
 					scope.resize(mark);
 					if (before.empty()) {
 						return { ref_ };
 					}
+
 					before.emplace_back(ref_);
-					return { push(Stmt { .kind = StmtKind::eBlock, .children = std::move(before), .loc = s.loc }) };
+					return { push(Stmt { .kind = StmtKind::eBlock, .children = ::hg::move(before), .loc = s.loc }) };
 				}
 				default: {
 					return { ref_ };
@@ -488,14 +567,16 @@ std::expected<Module, Diagnostics> ir::lowerRegions(ref<const Module> mod_) {
 			Rewriter { out, diags, {}, specs }.stmt(function.body->root);
 		}
 	}
+
 	// specialized bodies get the same rewrite with their region params bound; the key dedupe ends the worklist
 	for (auto i = 0uz; i < specs.pending.size(); ++i) {
 		auto pending = specs.pending[i];
 		const auto root = out.functions[pending.function].body->root;
-		Rewriter { out, diags, std::move(pending.scope), specs }.stmt(root);
+		Rewriter { out, diags, ::hg::move(pending.scope), specs }.stmt(root);
 	}
+
 	if (not diags.empty()) {
-		return std::unexpected(std::move(diags));
+		return std::unexpected(::hg::move(diags));
 	}
 
 	// region-taking originals are dropped; calls name their callee, `function` indices are remapped (layout/interface never index functions)
@@ -504,10 +585,11 @@ std::expected<Module, Diagnostics> ir::lowerRegions(ref<const Module> mod_) {
 	for (auto i = 0uz; i < out.functions.size(); ++i) {
 		if (not takesRegion(out, out.functions[i])) {
 			remap[i] = static_cast<u32>(kept.size());
-			kept.emplace_back(std::move(out.functions[i]));
+			kept.emplace_back(::hg::move(out.functions[i]));
 		}
 	}
-	out.functions = std::move(kept);
+
+	out.functions = ::hg::move(kept);
 	for (auto& e : out.exprs) {
 		if (e.function.index < remap.size()) {
 			e.function.index = remap[e.function.index];

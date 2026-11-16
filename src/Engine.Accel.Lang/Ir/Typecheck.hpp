@@ -1,9 +1,9 @@
 #pragma once
 
-#include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 
 #include "Diagnostic.hpp"
 #include "Module.hpp"
@@ -14,6 +14,7 @@ namespace hg::engine::accel::lang::ir {
 	 * `<none>` for an invalid ref.
 	 */
 	[[nodiscard]] String describeType(ref<const Vector<TypeDesc>> types_, TypeRef type_, u32 depth_ = 0uL);
+
 	/* `describeType` in single quotes, for messages */
 	[[nodiscard]] String quotedType(ref<const Vector<TypeDesc>> types_, TypeRef type_);
 
@@ -22,6 +23,7 @@ namespace hg::engine::accel::lang::ir {
 	 * `__r<k>` (`function_`). A user name of that form is a diagnostic.
 	 */
 	[[nodiscard]] bool reservedForRegions(StringView name_, bool function_);
+
 	/* the reserved tag a name ends in, as shown to the user (`__off`, `__r<n>`, `__i<n>`) */
 	[[nodiscard]] String reservedSuffixOf(StringView name_);
 

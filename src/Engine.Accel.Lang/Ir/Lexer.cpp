@@ -58,6 +58,7 @@ namespace {
 		Vector<ir::Token> _tokens;
 		ir::Diagnostics _diags;
 
+	private:
 		[[nodiscard]] ir::SourceLoc here() const noexcept {
 			return ir::SourceLoc { _loc.line, _loc.column, static_cast<u32>(_pos), 0uL };
 		}
@@ -171,31 +172,56 @@ namespace {
 
 			ir::TokenKind kind;
 			switch (c) {
-				case '{': kind = ir::TokenKind::eLBrace; break;
-				case '}': kind = ir::TokenKind::eRBrace; break;
-				case '(': kind = ir::TokenKind::eLParen; break;
-				case ')': kind = ir::TokenKind::eRParen; break;
-				case '[': kind = ir::TokenKind::eLBracket; break;
-				case ']': kind = ir::TokenKind::eRBracket; break;
-				case ';': kind = ir::TokenKind::eSemicolon; break;
-				case ',': kind = ir::TokenKind::eComma; break;
-				case ':': kind = ir::TokenKind::eColon; break;
-				case '.': kind = ir::TokenKind::eDot; break;
-				case '@': kind = ir::TokenKind::eAt; break;
-				case '=': kind = ir::TokenKind::eAssign; break;
-				case '!': kind = ir::TokenKind::eBang; break;
-				case '<': kind = ir::TokenKind::eLess; break;
-				case '>': kind = ir::TokenKind::eGreater; break;
-				case '+': kind = ir::TokenKind::ePlus; break;
-				case '-': kind = ir::TokenKind::eMinus; break;
-				case '*': kind = ir::TokenKind::eStar; break;
-				case '/': kind = ir::TokenKind::eSlash; break;
-				case '%': kind = ir::TokenKind::ePercent; break;
-				case '&': kind = ir::TokenKind::eAmp; break;
-				case '|': kind = ir::TokenKind::ePipe; break;
-				case '?': kind = ir::TokenKind::eQuestion; break;
-				case '~': kind = ir::TokenKind::eTilde; break;
-				case '^': kind = ir::TokenKind::eCaret; break;
+				case '{': kind = ir::TokenKind::eLBrace;
+					break;
+				case '}': kind = ir::TokenKind::eRBrace;
+					break;
+				case '(': kind = ir::TokenKind::eLParen;
+					break;
+				case ')': kind = ir::TokenKind::eRParen;
+					break;
+				case '[': kind = ir::TokenKind::eLBracket;
+					break;
+				case ']': kind = ir::TokenKind::eRBracket;
+					break;
+				case ';': kind = ir::TokenKind::eSemicolon;
+					break;
+				case ',': kind = ir::TokenKind::eComma;
+					break;
+				case ':': kind = ir::TokenKind::eColon;
+					break;
+				case '.': kind = ir::TokenKind::eDot;
+					break;
+				case '@': kind = ir::TokenKind::eAt;
+					break;
+				case '=': kind = ir::TokenKind::eAssign;
+					break;
+				case '!': kind = ir::TokenKind::eBang;
+					break;
+				case '<': kind = ir::TokenKind::eLess;
+					break;
+				case '>': kind = ir::TokenKind::eGreater;
+					break;
+				case '+': kind = ir::TokenKind::ePlus;
+					break;
+				case '-': kind = ir::TokenKind::eMinus;
+					break;
+				case '*': kind = ir::TokenKind::eStar;
+					break;
+				case '/': kind = ir::TokenKind::eSlash;
+					break;
+				case '%': kind = ir::TokenKind::ePercent;
+					break;
+				case '&': kind = ir::TokenKind::eAmp;
+					break;
+				case '|': kind = ir::TokenKind::ePipe;
+					break;
+				case '?': kind = ir::TokenKind::eQuestion;
+					break;
+				case '~': kind = ir::TokenKind::eTilde;
+					break;
+				case '^': kind = ir::TokenKind::eCaret;
+					break;
 				default: {
 					advance();
 					error(codes::asl("unexpected-character"), at, std::string("unexpected character '") + c + "'");
@@ -218,9 +244,11 @@ namespace {
 					advance();
 				}
 			}
+
 			while (isDigit(peek())) {
 				advance();
 			}
+
 			if (peek() == '.' && isDigit(peek(1))) {
 				isFloat = true;
 				advance();
@@ -228,6 +256,7 @@ namespace {
 					advance();
 				}
 			}
+
 			if (peek() == 'e' || peek() == 'E') {
 				const size_t signLen = (peek(1) == '+' || peek(1) == '-') ? 1uz : 0uz;
 				if (isDigit(peek(1 + signLen))) {
@@ -263,10 +292,12 @@ namespace {
 			while (_pos < _src.size() && peek() != '"' && peek() != '\n') {
 				advance();
 			}
+
 			if (peek() != '"') {
 				error(codes::asl("unterminated-token"), at, "unterminated string literal");
 				return;
 			}
+
 			const auto end = _pos;
 			const auto textLoc = ir::SourceLoc { at.line, at.column, static_cast<u32>(begin), static_cast<u32>(end - begin) };
 			advance();// closing quote
@@ -280,6 +311,7 @@ namespace {
 			while (isAlpha(peek())) {
 				advance();
 			}
+
 			if (_src.substr(begin, _pos - begin) != "#include") {
 				error(codes::asl("unknown-directive"), at, "unknown directive '" + String(_src.substr(begin, _pos - begin)) + "'");
 				return;
@@ -289,21 +321,25 @@ namespace {
 			while (peek() == ' ' || peek() == '\t') {
 				advance();
 			}
+
 			const auto openAt = here();
 			if (peek() != '<') {
 				error(codes::asl("malformed-include"), openAt, "expected '<' after '#include'");
 				return;
 			}
+
 			advance();
 			const auto targetAt = here();
 			const auto targetBegin = _pos;
 			while (_pos < _src.size() && peek() != '>' && peek() != '\n') {
 				advance();
 			}
+
 			if (peek() != '>') {
 				error(codes::asl("unterminated-token"), openAt, "unterminated '#include' target, expected '>'");
 				return;
 			}
+
 			emit(ir::TokenKind::eIncludeTarget, targetBegin, targetAt);
 			advance();// '>'
 		}

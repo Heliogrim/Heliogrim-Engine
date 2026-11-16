@@ -32,7 +32,6 @@ namespace {
 		return desc;
 	}
 
-
 	struct Emitted {
 		String text;
 		Opt<ir::TypeDesc> type;
@@ -92,44 +91,47 @@ namespace {
 			functions();
 
 			requirements_ = GlslRequirements { .features = _features, .extensions = extensionsOf(_features) };
-				if ((_builtinRequirements & ir::eRequireMultiview) != 0u) {
-					requirements_.extensions.emplace_back("GL_EXT_multiview");
-				}
-				if ((_builtinRequirements & ir::eRequireSparse) != 0u) {
-					requirements_.extensions.emplace_back("GL_ARB_sparse_texture2");
-				}
-				if ((_builtinRequirements & ir::eRequireSparseClamp) != 0u) {
-					requirements_.extensions.emplace_back("GL_ARB_sparse_texture_clamp");
-				}
-				std::ranges::sort(requirements_.extensions);
+			if ((_builtinRequirements & ir::eRequireMultiview) != 0u) {
+				requirements_.extensions.emplace_back("GL_EXT_multiview");
+			}
+			if ((_builtinRequirements & ir::eRequireSparse) != 0u) {
+				requirements_.extensions.emplace_back("GL_ARB_sparse_texture2");
+			}
+			if ((_builtinRequirements & ir::eRequireSparseClamp) != 0u) {
+				requirements_.extensions.emplace_back("GL_ARB_sparse_texture_clamp");
+			}
+
+			std::ranges::sort(requirements_.extensions);
+
 			out_ = "#version 460\n";
 			for (const auto& extension : requirements_.extensions) {
 				out_ += "#extension " + extension + " : require\n";
 			}
 			out_ += "\nlayout(std430) buffer;\n";
-				if (_mod.entry == ir::EntryKind::eCompute) {
-					const auto& size = _mod.attributes.localSize;
-					out_ += "layout(local_size_x = " + std::to_string(size[0]) + ", local_size_y = " + std::to_string(size[1]) +
-						", local_size_z = " + std::to_string(size[2]) + ") in;\n";
+			if (_mod.entry == ir::EntryKind::eCompute) {
+				const auto& size = _mod.attributes.localSize;
+				out_ += "layout(local_size_x = " + std::to_string(size[0]) + ", local_size_y = " + std::to_string(size[1]) +
+					", local_size_z = " + std::to_string(size[2]) + ") in;\n";
+			}
+			if (_mod.entry == ir::EntryKind::eGeometry) {
+				const auto& a = _mod.attributes;
+				out_ += "layout(" + String(primitiveName(a.geometryInput)) + ") in;\n";
+				out_ += "layout(" + String(primitiveName(a.geometryOutput)) + ", max_vertices = " + std::to_string(a.maxVertices) +
+					") out;\n";
+				if (a.invocations > 1uL) {
+					out_ += "layout(invocations = " + std::to_string(a.invocations) + ") in;\n";
 				}
-				if (_mod.entry == ir::EntryKind::eGeometry) {
-					const auto& a = _mod.attributes;
-					out_ += "layout(" + String(primitiveName(a.geometryInput)) + ") in;\n";
-					out_ += "layout(" + String(primitiveName(a.geometryOutput)) + ", max_vertices = " + std::to_string(a.maxVertices) + ") out;\n";
-					if (a.invocations > 1uL) {
-						out_ += "layout(invocations = " + std::to_string(a.invocations) + ") in;\n";
-					}
-				}
-				if (_mod.entry == ir::EntryKind::eTessCtrl) {
-						out_ += "layout(vertices = " + std::to_string(_mod.attributes.outputVertices) + ") out;\n";
-					}
-					if (_mod.entry == ir::EntryKind::eTessEval) {
-						out_ += tessEvalLayout(_mod.attributes);
-					}
-					if (_mod.entry == ir::EntryKind::eFragment && _mod.attributes.earlyFragmentTests) {
-					out_ += "layout(early_fragment_tests) in;\n";
-				}
-				out_ += "\n" + _structs + _bindings + "\n" + _constants + _functions;
+			}
+			if (_mod.entry == ir::EntryKind::eTessCtrl) {
+				out_ += "layout(vertices = " + std::to_string(_mod.attributes.outputVertices) + ") out;\n";
+			}
+			if (_mod.entry == ir::EntryKind::eTessEval) {
+				out_ += tessEvalLayout(_mod.attributes);
+			}
+			if (_mod.entry == ir::EntryKind::eFragment && _mod.attributes.earlyFragmentTests) {
+				out_ += "layout(early_fragment_tests) in;\n";
+			}
+			out_ += "\n" + _structs + _bindings + "\n" + _constants + _functions;
 			return std::move(_diags);
 		}
 
@@ -165,6 +167,7 @@ namespace {
 		Vector<State> _structState;
 		/* emitted struct name -> its member text, to emit a name once and catch conflicting definitions */
 		Vector<std::pair<String, String>> _structNames;
+
 		/* locals and parameters in scope, innermost last */
 		struct Local {
 			String name;
@@ -191,14 +194,15 @@ namespace {
 
 		[[nodiscard]] Opt<ir::TypeDesc> typeOf(ir::TypeRef ref_) const {
 			const auto* desc = typeAt(ref_);
-			return desc != nullptr ? Opt<ir::TypeDesc> { *desc } : None;
+			return desc != nullptr ? SomeVal(*desc) : None;
 		}
 
 		/* Types */
 
 		/* floats are 16, 32 or 64 bits wide, integers 8, 16, 32 or 64 */
 		[[nodiscard]] static bool validWidth(ref<const ir::TypeDesc> desc_) {
-			return desc_.bits == 16uL || desc_.bits == 32uL || desc_.bits == 64uL || (desc_.bits == 8uL && desc_.scalar != ir::ScalarKind::eFloat);
+			return desc_.bits == 16uL || desc_.bits == 32uL || desc_.bits == 64uL || (desc_.bits == 8uL && desc_.scalar !=
+				ir::ScalarKind::eFloat);
 		}
 
 		/* records the device features a named scalar, vector or matrix type needs */
@@ -209,41 +213,50 @@ namespace {
 				_features |= bits == 16uL ? static_cast<u32>(eShaderFloat16) : bits == 64uL ? static_cast<u32>(eShaderFloat64) : 0uL;
 				return;
 			}
-			_features |= bits == 8uL ? static_cast<u32>(eShaderInt8) : bits == 16uL ? static_cast<u32>(eShaderInt16) :
-				bits == 64uL ? static_cast<u32>(eShaderInt64) : 0uL;
+
+			_features |= bits == 8uL ?
+				static_cast<u32>(eShaderInt8) :
+				bits == 16uL ?
+				static_cast<u32>(eShaderInt16) :
+				bits == 64uL ?
+				static_cast<u32>(eShaderInt64) :
+				0uL;
 		}
 
 		[[nodiscard]] Opt<String> scalarName(ref<const ir::TypeDesc> desc_) {
 			using enum ir::ScalarKind;
 			if (desc_.scalar == eBool) {
-				return String { "bool" };
+				return SomeVal("bool");
 			}
 			if (not validWidth(desc_)) {
 				return None;
 			}
+
 			note(desc_);
+
 			const auto bits = std::to_string(desc_.bits);
 			if (desc_.scalar == eFloat) {
-				return String { desc_.bits == 32uL ? "float" : desc_.bits == 64uL ? "double" : "float16_t" };
+				return SomeVal(desc_.bits == 32uL ? "float" : desc_.bits == 64uL ? "double" : "float16_t");
 			}
+
 			const String base = desc_.scalar == eInt ? "int" : "uint";
-			return desc_.bits == 32uL ? base : base + bits + "_t";
+			return SomeVal(desc_.bits == 32uL ? base : base + bits + "_t");
 		}
 
 		[[nodiscard]] Opt<String> vectorPrefix(ref<const ir::TypeDesc> desc_) {
 			using enum ir::ScalarKind;
 			if (desc_.scalar == eBool) {
-				return String { "b" };
+				return SomeVal("b");
 			}
 			if (not validWidth(desc_)) {
 				return None;
 			}
 			note(desc_);
 			if (desc_.scalar == eFloat) {
-				return String { desc_.bits == 32uL ? "" : desc_.bits == 64uL ? "d" : "f16" };
+				return SomeVal(desc_.bits == 32uL ? "" : desc_.bits == 64uL ? "d" : "f16");
 			}
 			const String base = desc_.scalar == eInt ? "i" : "u";
-			return desc_.bits == 32uL ? base : base + std::to_string(desc_.bits);
+			return SomeVal(desc_.bits == 32uL ? base : base + std::to_string(desc_.bits));
 		}
 
 		/* GLSL type name; arrays in type syntax (`float[4]`); None if GLSL cannot name it */
@@ -256,7 +269,7 @@ namespace {
 				}
 				case eVector: {
 					const auto prefix = vectorPrefix(desc_);
-					return prefix.has_value() && inRange(desc_.n) ? Opt<String> { *prefix + "vec" + std::to_string(desc_.n) } : None;
+					return prefix.has_value() && inRange(desc_.n) ? SomeVal(*prefix + "vec" + std::to_string(desc_.n)) : None;
 				}
 				case eMatrix: {
 					// GLSL has float matrices only (no integer or bool matrix)
@@ -264,31 +277,35 @@ namespace {
 					if (not floating || not inRange(desc_.n) || not inRange(desc_.m)) {
 						return None;
 					}
+
 					note(desc_);
+
 					const String base = desc_.bits == 64uL ? "dmat" : desc_.bits == 16uL ? "f16mat" : "mat";
-					return desc_.n == desc_.m ?
+					return SomeVal(
+						desc_.n == desc_.m ?
 						base + std::to_string(desc_.n) :
-						base + std::to_string(desc_.n) + "x" + std::to_string(desc_.m);
+						base + std::to_string(desc_.n) + "x" + std::to_string(desc_.m)
+					);
 				}
 				case eArray: {
 					const auto* element = typeAt(desc_.element);
 					const auto inner = element != nullptr && depth_ < maxDepth ? name(*element, depth_ + 1uL) : None;
 					return inner.has_value() ?
-						Opt<String> { *inner + "[" + (desc_.count == 0uL ? String {} : std::to_string(desc_.count)) + "]" } :
+						SomeVal(*inner + "[" + (desc_.count == 0uL ? String {} : std::to_string(desc_.count)) + "]") :
 						None;
 				}
 				case eStruct: {
-					return desc_.name.empty() ? None : Opt<String> { desc_.name };
+					return desc_.name.empty() ? None : SomeVal(desc_.name);
 				}
 				case eTexture: {
 					const auto prefix = desc_.scalar == ir::ScalarKind::eInt ? "i" : desc_.scalar == ir::ScalarKind::eUInt ? "u" : "";
-					return String { prefix } + "texture" + dimName(desc_.dim);
+					return SomeVal(String { prefix } + "texture" + dimName(desc_.dim));
 				}
 				case eSampler: {
-					return String { "sampler" };
+					return SomeVal("sampler");
 				}
 				case eImage: {
-					return String { desc_.name == "r32ui" ? "u" : "" } + "image" + dimName(desc_.dim);
+					return SomeVal(String { desc_.name == "r32ui" ? "u" : "" } + "image" + dimName(desc_.dim));
 				}
 				case eRegion:
 				default: {
@@ -298,9 +315,11 @@ namespace {
 		}
 
 		[[nodiscard]] static String tessEvalLayout(ref<const ir::EntryAttributes> a) {
-			const auto* domain = a.tessDomain == ir::TessDomain::eQuads ? "quads" :
+			const auto* domain = a.tessDomain == ir::TessDomain::eQuads ?
+				"quads" :
 				(a.tessDomain == ir::TessDomain::eIsolines ? "isolines" : "triangles");
-			const auto* spacing = a.tessSpacing == ir::TessSpacing::eFractionalEven ? "fractional_even_spacing" :
+			const auto* spacing = a.tessSpacing == ir::TessSpacing::eFractionalEven ?
+				"fractional_even_spacing" :
 				(a.tessSpacing == ir::TessSpacing::eFractionalOdd ? "fractional_odd_spacing" : "equal_spacing");
 			return "layout(" + String(domain) + ", " + spacing + ", " + (a.clockwise ? "cw" : "ccw") + ") in;\n";
 		}
@@ -331,8 +350,9 @@ namespace {
 				dims += "[" + (desc->count == 0uL ? String {} : std::to_string(desc->count)) + "]";
 				desc = typeAt(desc->element);
 			}
+
 			const auto base = desc != nullptr ? name(*desc) : None;
-			return base.has_value() ? Opt<String> { *base + " " + String { var_ } + dims } : None;
+			return base.has_value() ? SomeVal(*base + " " + String { var_ } + dims) : None;
 		}
 
 		/* declares `var_` or reports that its type has no GLSL form */
@@ -341,6 +361,7 @@ namespace {
 				error(codes::asl("internal-inconsistent-module"), "region argument was not rewritten before code generation");
 				return None;
 			}
+
 			auto decl = declare(ref_, var_);
 			if (not decl.has_value()) {
 				error(codes::asl("no-glsl-form"), "type of '" + String { var_ } + "' has no GLSL form");
@@ -353,14 +374,17 @@ namespace {
 			if (ref_.index >= _structState.size() || depth_ > maxDepth) {
 				return;
 			}
+
 			auto& state = _structState[ref_.index];
 			if (state == State::eOpen) {
 				error(codes::asl("recursive-struct"), "struct '" + _mod.types[ref_.index].name + "' contains itself");
 				return;
 			}
+
 			if (state == State::eDone) {
 				return;
 			}
+
 			const auto& desc = _mod.types[ref_.index];
 			if (desc.kind == ir::TypeKind::eArray) {
 				state = State::eOpen;
@@ -368,6 +392,7 @@ namespace {
 				_structState[ref_.index] = State::eDone;
 				return;
 			}
+
 			if (desc.kind != ir::TypeKind::eStruct) {
 				state = State::eDone;
 				return;
@@ -383,12 +408,14 @@ namespace {
 			if (desc.name.empty()) {
 				return;
 			}
+
 			String members {};
 			for (const auto& field : desc.fields) {
 				if (const auto decl = declareOrReport(field.type, field.name); decl.has_value()) {
 					members += "\t" + *decl + ";\n";
 				}
 			}
+
 			const auto known = std::ranges::find(_structNames, desc.name, &std::pair<String, String>::first);
 			if (known != _structNames.end()) {
 				if (known->second != members) {
@@ -396,6 +423,7 @@ namespace {
 				}
 				return;
 			}
+
 			_structNames.emplace_back(desc.name, members);
 			_structs += "struct " + desc.name + " {\n" + members + "};\n\n";
 		}
@@ -417,7 +445,11 @@ namespace {
 						return;
 					}
 					if (desc->bits == 8uL && mask8_ == 0uL) {
-						_diags.emplace_back(ir::Diagnostic::error(codes::asl("no-glsl-form"), "binding '" + id_ + "' forwards an 8-bit type").at(ir::NoLocation {}).note("GLSL has no 8-bit stage interface variables"));
+						_diags.emplace_back(
+							ir::Diagnostic::error(codes::asl("no-glsl-form"), "binding '" + id_ + "' forwards an 8-bit type").at(
+								ir::NoLocation {}
+							).note("GLSL has no 8-bit stage interface variables")
+						);
 					}
 					_features |= desc->bits == 8uL ? mask8_ : desc->bits == 16uL ? mask16_ : 0uL;
 					return;
@@ -475,6 +507,7 @@ namespace {
 				if (binding.mode == ir::BindMode::eForward) {
 					if (binding.input) {
 						forward(binding, forwardInputs++);
+
 					} else if (not binding.implicit) {
 						if (const auto decl = declareOrReport(binding.type, binding.localName); decl.has_value()) {
 							_bindings += "layout(location = " + std::to_string(outputLocation) + ") " + (binding.patch ? "patch " : "") +
@@ -489,16 +522,24 @@ namespace {
 				if (binding.implicit) {
 					continue;
 				}
+
 				pushBlocks += binding.bindClass == ir::BindClass::ePushConstant ? 1uL : 0uL;
 				resource(binding);
 			}
 
 			if (forwardInputs != _layout.inputLocations.size()) {
-				error(codes::asl("internal-inconsistent-layout"), "layout has " + std::to_string(_layout.inputLocations.size()) + " input locations, but the module has " +
-					std::to_string(forwardInputs) + " forward inputs");
+				error(
+					codes::asl("internal-inconsistent-layout"),
+					"layout has " + std::to_string(_layout.inputLocations.size()) + " input locations, but the module has " +
+					std::to_string(forwardInputs) + " forward inputs"
+				);
 			}
+
 			if (pushBlocks > 1uL) {
-				error(codes::asl("too-many-push-constant-blocks"), "a stage has at most one push constant block, but the module declares " + std::to_string(pushBlocks));
+				error(
+					codes::asl("too-many-push-constant-blocks"),
+					"a stage has at most one push constant block, but the module declares " + std::to_string(pushBlocks)
+				);
 			}
 		}
 
@@ -506,14 +547,17 @@ namespace {
 			if (binding_.implicit) {
 				return;
 			}
+
 			if (index_ >= _layout.inputLocations.size()) {
 				error(codes::asl("internal-inconsistent-layout"), "layout has no location for input '" + binding_.id + "'");
 				return;
 			}
+
 			const auto decl = declareOrReport(binding_.type, binding_.localName);
 			if (not decl.has_value()) {
 				return;
 			}
+
 			storageUse(binding_.type, 0uL, bit(GlslFeature::eStorageInputOutput16), binding_.id);
 			// integer fragment inputs cannot be interpolated
 			const auto* desc = typeAt(binding_.type);
@@ -527,13 +571,14 @@ namespace {
 		void resource(ref<const ir::BindingDecl> binding_) {
 			using enum ir::BindClass;
 			const auto* desc = typeAt(binding_.type);
-			const auto kind = desc != nullptr ? Opt<ir::TypeKind> { desc->kind } : None;
+			const auto kind = desc != nullptr ? SomeVal(desc->kind) : None;
 			const auto opaque = kind == ir::TypeKind::eTexture || kind == ir::TypeKind::eSampler || kind == ir::TypeKind::eImage;
 
 			if (binding_.bindClass == eNone) {
 				error(codes::asl("missing-binding-class"), "binding '" + binding_.id + "' has no class");
 				return;
 			}
+
 			const auto fits = binding_.bindClass == eTexture ?
 				kind == ir::TypeKind::eTexture :
 				binding_.bindClass == eSampler ?
@@ -545,6 +590,7 @@ namespace {
 				error(codes::asl("binding-class-mismatch"), "type of binding '" + binding_.id + "' does not fit its class");
 				return;
 			}
+
 			if (not opaque) {
 				using enum GlslFeature;
 				const auto push = binding_.bindClass == ePushConstant;
@@ -575,24 +621,43 @@ namespace {
 				error(codes::asl("internal-inconsistent-layout"), "layout has no slot for binding '" + binding_.id + "'");
 				return;
 			}
-			const auto packing = binding_.packing == ir::Packing::eStd140 ? ", std140" : binding_.packing == ir::Packing::eStd430 ? ", std430" : "";
+
+			const auto packing = binding_.packing == ir::Packing::eStd140 ?
+				", std140" :
+				binding_.packing == ir::Packing::eStd430 ?
+				", std430" :
+				"";
 			const auto head = "layout(set = " + std::to_string(slot->set) + ", binding = " + std::to_string(slot->binding) + packing + ")";
 			if (kind == ir::TypeKind::eImage) {
-				const auto access = binding_.access == ir::Access::eRead ? "readonly " : binding_.access == ir::Access::eWrite ? "writeonly " : "";
+				const auto access = binding_.access == ir::Access::eRead ?
+					"readonly " :
+					binding_.access == ir::Access::eWrite ?
+					"writeonly " :
+					"";
 				if (const auto decl = declareOrReport(binding_.type, binding_.localName); decl.has_value()) {
 					_bindings += "layout(set = " + std::to_string(slot->set) + ", binding = " + std::to_string(slot->binding) + ", " +
 						desc->name + ") uniform " + access + *decl + ";\n";
 				}
 				return;
 			}
+
 			if (opaque) {
 				if (const auto decl = declareOrReport(binding_.type, binding_.localName); decl.has_value()) {
 					_bindings += head + " uniform " + *decl + ";\n";
 				}
 				return;
 			}
-			const auto qualifier = binding_.access == ir::Access::eRead && binding_.input ? " readonly" : binding_.access == ir::Access::eWrite ? " writeonly" : "";
-			block(head + (binding_.bindClass == eStorageBuffer ? String { qualifier } + " buffer" : String { " uniform" }), binding_, *desc);
+
+			const auto qualifier = binding_.access == ir::Access::eRead && binding_.input ?
+				" readonly" :
+				binding_.access == ir::Access::eWrite ?
+				" writeonly" :
+				"";
+			block(
+				head + (binding_.bindClass == eStorageBuffer ? String { qualifier } + " buffer" : String { " uniform" }),
+				binding_,
+				*desc
+			);
 		}
 
 		/* module constants in declaration order (an initializer only reads earlier ones); spec constants carry their constant_id */
@@ -606,7 +671,10 @@ namespace {
 				if (constant.specId.has_value()) {
 					const auto it = std::ranges::find(_layout.specConstants, *constant.specId, &ir::SpecConstant::id);
 					if (it == _layout.specConstants.end()) {
-						error(codes::asl("internal-inconsistent-layout"), "layout has no constant id for spec constant '" + *constant.specId + "'");
+						error(
+							codes::asl("internal-inconsistent-layout"),
+							"layout has no constant id for spec constant '" + *constant.specId + "'"
+						);
 						continue;
 					}
 					head = "layout(constant_id = " + std::to_string(it->constantId) + ") ";
@@ -642,11 +710,12 @@ namespace {
 
 		[[nodiscard]] Opt<String> signature(ref<const ir::FunctionDecl> fn_) {
 			const auto* ret = typeAt(fn_.ret);
-			const auto retName = ret != nullptr ? name(*ret) : Opt<String> { "void" };
+			const auto retName = ret != nullptr ? name(*ret) : SomeVal<String>("void");
 			if (not retName.has_value()) {
 				error(codes::asl("no-glsl-form"), "return type of '" + fn_.name + "' has no GLSL form");
 				return None;
 			}
+
 			String params {};
 			for (const auto& param : fn_.params) {
 				const auto decl = declareOrReport(param.type, param.name);
@@ -655,7 +724,7 @@ namespace {
 				}
 				params += (params.empty() ? "" : ", ") + String { param.kind == ir::ParamKind::eRefMut ? "inout " : "const in " } + *decl;
 			}
-			return *retName + " " + fn_.name + "(" + params + ")";
+			return SomeVal(*retName + " " + fn_.name + "(" + params + ")");
 		}
 
 		void functions() {
@@ -742,7 +811,7 @@ namespace {
 				}
 				case ir::StmtKind::eDeclareRef: {
 					const auto target = place(stmt.lhs, pad, out_);
-					_locals.push_back({ stmt.name, target.type, target.text });
+					_locals.emplace_back(stmt.name, target.type, target.text);
 					break;
 				}
 				case ir::StmtKind::eAssign: {
@@ -785,11 +854,13 @@ namespace {
 								statement(child, 0uL, text);
 							}
 						}
+
 						while (not text.empty() && (text.back() == '\n' || text.back() == ';' || text.back() == '\t')) {
 							text.pop_back();
 						}
 						return text;
 					};
+
 					const auto init = inline_(0uL);
 					const auto step = inline_(2uL);
 					const auto cond = stmt.lhs.index < _mod.exprs.size() ? expr(stmt.lhs).text : String {};
@@ -819,26 +890,30 @@ namespace {
 		}
 
 		void declareLocal(ref<const ir::Stmt> stmt_, ref<const String> pad_, ref<String> out_) {
-			const auto init = stmt_.lhs.index < _mod.exprs.size() ? Opt<Emitted> { expr(stmt_.lhs) } : None;
+			const auto init = stmt_.lhs.index < _mod.exprs.size() ? SomeVal(expr(stmt_.lhs)) : None;
 			Opt<ir::TypeDesc> type = typeOf(stmt_.type);
 			Opt<String> decl = None;
 			if (type.has_value()) {
 				use(stmt_.type);
 				decl = declareOrReport(stmt_.type, stmt_.name);
+
 			} else if (init.has_value() && init->type.has_value()) {
 				type = init->type;
 				const auto typeName = name(*type);
-				decl = typeName.has_value() ? Opt<String> { *typeName + " " + stmt_.name } : None;
+				decl = typeName.has_value() ? SomeVal(*typeName + " " + stmt_.name) : None;
+
 				if (not decl.has_value()) {
 					error(codes::asl("no-glsl-form"), "type of '" + stmt_.name + "' has no GLSL form");
 				}
+
 			} else {
 				error(codes::asl("internal-inconsistent-module"), "cannot infer the type of local '" + stmt_.name + "'");
 			}
+
 			if (decl.has_value()) {
 				out_ += pad_ + (stmt_.mutable_ ? "" : "const ") + *decl + (init.has_value() ? " = " + init->text : String {}) + ";\n";
 			}
-			_locals.push_back({ stmt_.name, std::move(type) });
+			_locals.emplace_back(stmt_.name, std::move(type));
 		}
 
 		/* Expressions: every unary and binary is parenthesized, so source precedence carries over */
@@ -862,10 +937,12 @@ namespace {
 			if (ref_.index >= _mod.exprs.size()) {
 				return expr(ref_);
 			}
+
 			const auto& e = _mod.exprs[ref_.index];
 			if (e.kind == ir::ExprKind::eField && not e.operands.empty()) {
 				return { place(e.operands[0], pad_, out_).text + "." + e.name, typeOf(e.type) };
 			}
+
 			if (e.kind == ir::ExprKind::eIndex && e.operands.size() == 2uz) {
 				const auto base = place(e.operands[0], pad_, out_);
 				auto index = expr(e.operands[1]).text;
@@ -874,8 +951,10 @@ namespace {
 					out_ += pad_ + "const uint " + hoisted + " = " + index + ";\n";
 					index = hoisted;
 				}
+
 				return { base.text + "[" + index + "]", typeOf(e.type) };
 			}
+
 			return expr(ref_);
 		}
 
@@ -884,6 +963,7 @@ namespace {
 				error(codes::asl("internal-inconsistent-module"), "an expression is missing");
 				return { "0", None };
 			}
+
 			const Nest nest { _depth };
 			if (_depth > maxDepth) {
 				error(codes::asl("internal-inconsistent-module"), "code nests too deeply");
@@ -891,10 +971,12 @@ namespace {
 			}
 
 			const auto& e = _mod.exprs[ref_.index];
-			if (const auto* type = typeAt(e.type); e.kind == ir::ExprKind::eRange || (type != nullptr && type->kind == ir::TypeKind::eRegion)) {
+			if (const auto* type = typeAt(e.type); e.kind == ir::ExprKind::eRange || (type != nullptr && type->kind ==
+				ir::TypeKind::eRegion)) {
 				error(codes::asl("internal-inconsistent-module"), "region argument was not rewritten before code generation", e.loc);
 				return { "0", None };
 			}
+
 			const auto operand = [&](size_t i_) -> Emitted {
 				return i_ < e.operands.size() ? expr(e.operands[i_]) : expr(ir::ExprRef {});
 			};
@@ -914,11 +996,15 @@ namespace {
 					// hex digits may contain 'e'/'E'; a `u` suffix makes an integer unsigned
 					const auto hex = e.name.starts_with("0x") || e.name.starts_with("0X");
 					const auto floating = not hex && e.name.find_first_of(".eE") != String::npos;
-					const auto floatType = typeOf(e.type).has_value() && typeOf(e.type)->kind == ir::TypeKind::eScalar && typeOf(e.type)->scalar == ir::ScalarKind::eFloat;
+					const auto floatType = typeOf(e.type).has_value() && typeOf(e.type)->kind == ir::TypeKind::eScalar && typeOf(e.type)->
+						scalar == ir::ScalarKind::eFloat;
 					const auto unsignedInt = not floating && (e.name.ends_with('u') || e.name.ends_with('U'));
 					return {
 						floatType && not floating && not hex ? e.name + ".0" : e.name,
-						scalarDesc(floating || floatType ? ir::ScalarKind::eFloat : unsignedInt ? ir::ScalarKind::eUInt : ir::ScalarKind::eInt, 32uL)
+						scalarDesc(
+							floating || floatType ? ir::ScalarKind::eFloat : unsignedInt ? ir::ScalarKind::eUInt : ir::ScalarKind::eInt,
+							32uL
+						)
 					};
 				}
 				case ir::ExprKind::eNameRef: {
@@ -929,13 +1015,16 @@ namespace {
 						_builtinRequirements |= variable->requirement;
 						return { String { variable->glsl }, vectorDesc(variable->scalar, 32uL, variable->n) };
 					}
+
 					if (const auto* fn = ir::findBuiltinFunction(e.name); fn != nullptr && not fn->signature.empty()) {
 						_builtinRequirements |= fn->requirement;
 						if (fn->signature.find("(tex,smp") != StringView::npos) {
 							return textureCall(e, *fn);
 						}
+
 						return { String { fn->glsl } + "(" + arguments() + ")", typeOf(e.type) };
 					}
+
 					error(codes::asl("internal-inconsistent-module"), "unknown builtin '" + e.name + "'");
 					return { e.name, None };
 				}
@@ -977,6 +1066,7 @@ namespace {
 					if (not typeName.has_value()) {
 						error(codes::asl("no-glsl-form"), "cannot construct '" + e.name + "' in GLSL");
 					}
+
 					return { typeName.value_or(e.name) + "(" + arguments() + ")", type };
 				}
 				default: {
@@ -990,12 +1080,15 @@ namespace {
 				if (const auto* local = findLocal(e_.name); local != nullptr && local->alias.has_value()) {
 					return { *local->alias, local->type };
 				}
+
 				return { e_.name, typeOf(e_.type).has_value() ? typeOf(e_.type) : localType(e_.name) };
 			}
+
 			if (e_.constant.index < _mod.constants.size()) {
 				const auto& constant = _mod.constants[e_.constant.index];
 				return { constant.name, typeOf(constant.type) };
 			}
+
 			const auto& decls = _mod.bindings;
 			const auto* binding = e_.binding.index < decls.size() ? &decls[e_.binding.index] : nullptr;
 			if (binding == nullptr) {
@@ -1005,6 +1098,7 @@ namespace {
 			if (binding == nullptr) {
 				return { e_.name, typeOf(e_.type).has_value() ? typeOf(e_.type) : localType(e_.name) };
 			}
+
 			if (binding->implicit) {
 				error(codes::asl("internal-inconsistent-module"), "implicit binding '" + binding->id + "' has no GLSL variable");
 			}
@@ -1017,15 +1111,18 @@ namespace {
 				error(codes::asl("internal-inconsistent-module"), "'" + e_.name + "' takes a texture and a sampler");
 				return { "0", None };
 			}
+
 			const auto texture = expr(e_.operands[0]);
 			const auto sampler = expr(e_.operands[1]);
 			if (not texture.type.has_value() || texture.type->kind != ir::TypeKind::eTexture) {
 				error(codes::asl("internal-inconsistent-module"), "first argument of '" + e_.name + "' must be a texture");
 				return { "0", None };
 			}
+
 			const auto& tex = *texture.type;
 			const auto prefix = tex.scalar == ir::ScalarKind::eInt ? "i" : tex.scalar == ir::ScalarKind::eUInt ? "u" : "";
-			String text = String { fn_.glsl } + "(" + prefix + "sampler" + dimName(tex.dim) + "(" + texture.text + ", " + sampler.text + ")";
+			String text = String { fn_.glsl } + "(" + prefix + "sampler" + dimName(tex.dim) + "(" + texture.text + ", " + sampler.text +
+				")";
 			for (auto i = 2uz; i < e_.operands.size(); ++i) {
 				text += ", " + expr(e_.operands[i]).text;
 			}
@@ -1047,6 +1144,7 @@ lang::GlslEmitResult lang::GlslEmitter::emit(ref<const ir::Module> mod_, ref<con
 		result.requirements = {};
 		return result;
 	}
+
 	target_.dialect = Dialect::eVulkanGlsl460;
 	target_.text.emplace_back(TextBlock { std::move(text) });
 	return result;

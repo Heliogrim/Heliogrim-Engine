@@ -6,10 +6,10 @@
  */
 
 #include <algorithm>
-#include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Optional.hpp>
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 
 #include "Lexer.hpp"
 #include "Parser.hpp"
@@ -28,6 +28,7 @@ namespace hg::engine::accel::lang::ir::detail {
 		}
 
 		Scope(ref<const Scope>) = delete;
+
 		ref<Scope> operator=(ref<const Scope>) = delete;
 
 		~Scope() {
@@ -56,6 +57,7 @@ namespace hg::engine::accel::lang::ir::detail {
 		}
 
 		Nest(ref<const Nest>) = delete;
+
 		ref<Nest> operator=(ref<const Nest>) = delete;
 
 		~Nest() {
@@ -160,90 +162,156 @@ namespace hg::engine::accel::lang::ir::detail {
 		}
 
 		[[nodiscard]] ir::Diagnostic diagnostic(ref<const ir::DiagnosticCodeInfo> code_, ref<const ir::Token> at_, String message_) const;
+
 		void error(ref<const ir::DiagnosticCodeInfo> code_, ref<const ir::Token> at_, String message_);
+
 		void error(ref<const ir::DiagnosticCodeInfo> code_, ref<const ir::Token> at_, String message_, String note_);
+
 		void push(ir::Diagnostic&& diag_, ref<const ir::Token> at_);
+
 		/* reports a user name that collides with GLSL or a generated name; `module_` adds the region-lowering suffixes */
 		void declaredName(ref<const ir::Token> name_, bool module_);
+
 		void syntaxError(StringView expected_);
+
 		bool expect(TokenKind kind_, StringView expected_);
 
 		/* Error recovery: skip past the next `;` or balanced `{...}`, or stop before an unmatched `}`. */
 		void recover();
+
 		/* At `open_`: skips to after the matching `close_` (or to the end of input). */
 		void skipGroup(TokenKind open_, TokenKind close_);
 
 		/* Items */
 
 		void item(ir::Condition when_);
+
 		void include();
+
 		void declaration(ir::Condition when_);
+
 		void whenBlock(ref<const ir::Condition> when_);
+
 		bool annotationArgs(ref<const ir::Token> annotation_, ref<Annotations> ann_);
+
 		bool entryArg(ref<const ir::Token> annotation_, ref<const ir::Token> key_, ref<Annotations> ann_);
+
 		void workgroupDecl(ref<const Annotations> ann_);
-		void annotationValue(ref<const ir::Token> annotation_, ref<const ir::Token> key_, ref<const ir::Token> value_, ref<Annotations> ann_);
+
+		void annotationValue(
+			ref<const ir::Token> annotation_,
+			ref<const ir::Token> key_,
+			ref<const ir::Token> value_,
+			ref<Annotations> ann_
+		);
 
 		/* Conditions */
 
 		[[nodiscard]] Opt<ir::Condition> parenCondition();
+
 		[[nodiscard]] Opt<ir::Condition> condition();
+
 		[[nodiscard]] Opt<ir::Condition> chain(TokenKind op_, bool conjunction_);
+
 		[[nodiscard]] Opt<ir::Condition> unaryCondition();
+
 		[[nodiscard]] Opt<ir::Condition> combinator(ref<const ir::Token> name_);
+
 		void unknownCombinator(ref<const ir::Token> name_);
+
 		void duplicateDirection(ref<const ir::Token> name_);
+
 		[[nodiscard]] Opt<ir::Condition> comparison(ref<const ir::Token> name);
 
 		/* Types */
 
 		[[nodiscard]] ir::TypeRef intern(ir::TypeDesc desc_);
+
 		[[nodiscard]] Opt<ir::TypeRef> findStruct(StringView name_) const;
+
 		[[nodiscard]] bool isTypeName(StringView name_) const;
+
 		[[nodiscard]] Opt<ir::TypeRef> namedType(StringView name_);
+
 		[[nodiscard]] Opt<ir::TypeRef> type();
+
 		[[nodiscard]] Opt<Vector<ir::FieldDesc>> fields();
 
 		/* Declarations */
 
 		void toggleDecl();
+
 		void structDecl();
+
 		void function(ref<const Annotations> ann_);
+
 		void binding(ir::BindingDecl decl_);
+
 		void constantDecl(ref<const Annotations> ann_);
 
 		/* Bodies (Parser.Body.cpp) */
 
 		[[nodiscard]] ir::ExprRef expr(ir::Expr expr_);
-		[[nodiscard]] ir::ExprRef node(ir::ExprKind kind_, StringView name_, Vector<ir::ExprRef> operands_ = {}, ir::SourceLoc loc_ = {});
+
+		[[nodiscard]] ir::ExprRef node(
+			ir::ExprKind kind_,
+			StringView name_,
+			Vector<ir::ExprRef> operands_ = {},
+			ref<const ir::SourceLoc> loc_ = {}
+		);
+
 		[[nodiscard]] ir::StmtRef add(ir::Stmt stmt_);
+
 		[[nodiscard]] ir::StmtRef stmt(ir::StmtKind kind_, ir::ExprRef lhs_ = {}, Vector<ir::StmtRef> children_ = {});
+
 		[[nodiscard]] Opt<ir::StmtRef> fail();
+
 		void unterminated(ref<const ir::Token> open_);
 
 		[[nodiscard]] ir::StmtRef block();
+
 		[[nodiscard]] Opt<ir::StmtRef> statement();
+
 		[[nodiscard]] Opt<ir::StmtRef> branch();
+
 		[[nodiscard]] Opt<ir::StmtRef> whenStatement();
+
 		[[nodiscard]] Opt<ir::StmtRef> whenHead();
+
 		[[nodiscard]] Opt<ir::StmtRef> ifStatement();
+
 		[[nodiscard]] Opt<ir::StmtRef> returnStatement();
+
 		[[nodiscard]] Opt<ir::StmtRef> letStatement(bool const_);
+
 		[[nodiscard]] Opt<ir::StmtRef> typedDeclaration();
+
 		[[nodiscard]] Opt<ir::StmtRef> local(ref<const ir::Token> name_, ir::TypeRef type_, bool const_, ir::SourceLoc keyword_ = {});
+
 		[[nodiscard]] Opt<ir::StmtRef> whileStatement();
+
 		[[nodiscard]] Opt<ir::StmtRef> forStatement();
+
 		[[nodiscard]] Opt<ir::StmtRef> simpleStatement(bool terminated_ = true);
+
 		[[nodiscard]] bool assignable(ir::ExprRef ref_) const;
 
 		[[nodiscard]] Opt<ir::ExprRef> expression(u32 minPrecedence_ = 1uL);
+
 		[[nodiscard]] Opt<ir::ExprRef> ternary(ir::ExprRef cond_);
+
 		[[nodiscard]] Opt<ir::ExprRef> unary();
+
 		[[nodiscard]] Opt<ir::ExprRef> postfix(Opt<ir::ExprRef> base_);
+
 		[[nodiscard]] Opt<ir::ExprRef> primary();
+
 		[[nodiscard]] Opt<ir::ExprRef> arrayConstruct(ref<const ir::Token> name_);
+
 		[[nodiscard]] Opt<ir::ExprRef> call(ref<const ir::Token> name_);
+
 		[[nodiscard]] ir::ExprRef callee(ref<const ir::Token> name_, Vector<ir::ExprRef> args_);
+
 		[[nodiscard]] ir::ExprRef name(ref<const ir::Token> name_);
 	};
 }

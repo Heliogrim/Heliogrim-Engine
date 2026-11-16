@@ -1138,7 +1138,7 @@ namespace AccelLang {
 	TEST(ParserTest, SpecOnNonConstIsDiagnostic) {
 		const auto diags = parseFail("@spec (id = \"n\") @input (mode = bind, id = \"m\", class = uniform) block m { u32 n; };\n");
 		ASSERT_FALSE(diags.empty());
-		EXPECT_TRUE(mentions(diags[0], "'@spec' applies to const declarations only")) << diags[0].message();
+		EXPECT_TRUE(mentions(diags[0], "@spec applies to const declarations only")) << diags[0].message();
 	}
 
 	TEST(ParserTest, EarlyFragmentTestsValueMustBeBool) {
