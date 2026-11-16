@@ -84,6 +84,11 @@ namespace hg::engine::accel::lang::ir::spirv {
 		u32 entry = ~0uL;
 		/* OpEntryPoint interface: every declared global variable */
 		Vector<u32> interface {};
+		/* GLSL.std.450 import (0 = not yet imported) */
+		u32 glsl450 = 0uL;
+		/* OpString id per `Module::sources` entry (Tier::eDev on) */
+		Vector<u32> debugFiles {};
+		std::set<String> extensions {};
 
 		/* SpirvTypes.cpp */
 		[[nodiscard]] u32 type(TypeRef type_);
@@ -130,6 +135,12 @@ namespace hg::engine::accel::lang::ir::spirv {
 			TypeRef type {};
 		};
 
+		/* builtin variables declared so far, by source name */
+		std::map<String, Place> builtinVars {};
+
+		/* SpirvFeatures.cpp: capabilities and execution modes implied by the emitted module; diagnoses what is outside the profile */
+		void features();
+
 		/* function-section instruction emission of the body being built; nothing is emitted once the block has ended */
 		[[nodiscard]] u32 op(spv::Op op_, u32 resultType_, Ops operands_);
 		void code(spv::Op op_, Ops operands_);
@@ -154,6 +165,7 @@ namespace hg::engine::accel::lang::ir::spirv {
 		void memberLayout(u32 struct_, u32 member_, u32 offset_, TypeRef type_, bool std140_);
 		void names(u32 id_, ref<const TypeDesc> desc_);
 		[[nodiscard]] u32 vertexCount(bool input_);
+		[[nodiscard]] u32 glslStd();
 
 		struct Instr {
 			spv::Op op;

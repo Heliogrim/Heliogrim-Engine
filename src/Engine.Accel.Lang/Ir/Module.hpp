@@ -311,6 +311,8 @@ namespace hg::engine::accel::lang::ir {
 		bool arrayed = false;
 		/* per-patch forward output of tess_ctrl / input of tess_eval (`patch out` / `patch in`) */
 		bool patch = false;
+		/* the declared name */
+		SourceLoc loc {};
 	};
 
 	/* module-scope `const`; a `specId` makes it a specialization constant (the layout pass assigns its constant_id) */

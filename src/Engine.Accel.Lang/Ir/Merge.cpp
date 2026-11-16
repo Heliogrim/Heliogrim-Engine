@@ -456,7 +456,8 @@ namespace {
 			auto& remap = remaps[mod_];
 			for (const auto& binding : modules[mod_]->bindings) {
 				auto mapped = binding;
-				auto& [id, type, mode, bindClass, implicit, input, when, localName, access, packing, arrayed, patch] = mapped;
+				auto& [id, type, mode, bindClass, implicit, input, when, localName, access, packing, arrayed, patch, loc] = mapped;
+				loc = remap.loc(loc);
 				static_cast<void>(patch);
 				static_cast<void>(packing);
 				static_cast<void>(arrayed);
