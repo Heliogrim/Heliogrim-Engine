@@ -281,7 +281,7 @@ Opt<ref<DataWatcher>> Widget::getDataWatcher() const noexcept {
 	return _watcher;
 }
 
-bool Widget::updateDataWatcherReference(bool invalidate_) noexcept {
+bool Widget::updateDataWatcherReference(const bool invalidate_) noexcept {
 	if (not invalidate_ && _watcher.has_value()) {
 		return false;
 	}
@@ -323,6 +323,10 @@ ReflowPosition Widget::position() const noexcept {
 	return ReflowPosition::eStatic;
 }
 
+bool Widget::isLayoutBoundary() const noexcept {
+	return false;
+}
+
 void Widget::markAsPending(const bool layout_, const bool render_) {
 	if (layout_) {
 		markLayoutPending();
@@ -344,9 +348,19 @@ void Widget::markLayoutPending() {
 
 	_state.set(WidgetStateFlagBits::eLayoutPending);
 
+	// The marked widget's own size may have changed, so its parent always runs; above a boundary only the subtree bit is needed.
+	auto leftBoundary = false;
 	auto next = parent();
-	while (next && not next->_state.isLayoutPending()) {
-		next->_state.set(WidgetStateFlagBits::eLayoutPending);
+	while (next) {
+		if (next->_state.isLayoutPending() || (leftBoundary && next->_state.isSubtreePending())) {
+			break;
+		}
+
+		next->_state.set(leftBoundary ? WidgetStateFlagBits::eSubtreePending : WidgetStateFlagBits::eLayoutPending);
+		if (not leftBoundary) {
+			leftBoundary = next->isLayoutBoundary();
+		}
+
 		next = next->parent();
 	}
 }

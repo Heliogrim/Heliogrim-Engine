@@ -35,18 +35,20 @@ namespace hg::engine::reflow::uikit {
 		void render(const ptr<ReflowCommandBuffer> cmd_) override;
 
 	public:
-		PrefetchSizing prefetchSizing(ReflowAxis axis_, ref<const ReflowState> state_) const override;
+		PrefetchSizing prefetchSizing(const ReflowAxis axis_, ref<const ReflowState> state_) const override;
 
 		PassPrefetchSizing passPrefetchSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) const override;
 
 		math::fvec2 computeReferenceSize(ReflowAxis axis_) const override;
 
-		void computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) override;
+		void computeSizing(const ReflowAxis axis_, ref<const ReflowPassState> passState_) override;
 
 		void applyLayout(ref<ReflowState> state_) override;
 
 		math::fvec2 getGrowFactor() const noexcept override;
 
 		math::fvec2 getShrinkFactor() const noexcept override;
+
+		[[nodiscard]] bool isLayoutBoundary() const noexcept override;
 	};
 }

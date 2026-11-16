@@ -233,6 +233,11 @@ namespace hg::engine::reflow {
 
 		[[nodiscard]] virtual ReflowPosition position() const noexcept;
 
+		/**
+		 * Whether size and prefetch result are independent of the children, so layout changes below stop at this widget.
+		 */
+		[[nodiscard]] virtual bool isLayoutBoundary() const noexcept;
+
 	public:
 		void markAsPending(const bool layout_, const bool render_);
 
