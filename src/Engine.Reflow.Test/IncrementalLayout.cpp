@@ -244,4 +244,103 @@ namespace ReflowModule {
 		EXPECT_EQ(s.rightLeaf->ticks, 3u);
 		EXPECT_EQ(state.layoutCalls(), before);
 	}
+
+	TEST_F(IncrementalLayoutFixture, FixedBoxStopsLayoutPropagation) {
+		s = makeScene({ .leftMinWidth = 100.F, .fixedLeft = true });
+		tick(s.root);
+
+		s.leftLeaf->markLayoutPending();
+
+		EXPECT_TRUE(s.leftBox->state().isLayoutPending());
+		EXPECT_TRUE(s.rowA->state().isSubtreePending());
+		EXPECT_FALSE(s.rowA->state().isLayoutPending());
+		EXPECT_TRUE(s.root->state().isSubtreePending());
+		EXPECT_FALSE(s.root->state().isLayoutPending());
+	}
+
+	TEST_F(IncrementalLayoutFixture, PendingBoundaryResizeRelaysParent) {
+		s = makeScene({ .leftMinWidth = 100.F, .fixedLeft = true });
+		tick(s.root);
+		const auto offsetBefore = s.rightLeaf->getLayoutState().layoutOffset;
+
+		s.leftLeaf->getLayoutAttributes().update<attr::BoxLayout::minWidth>(abs(30.F));
+		s.leftBox->getLayoutAttributes().update<attr::BoxLayout::minWidth>(abs(120.F));
+		s.leftBox->getLayoutAttributes().update<attr::BoxLayout::maxWidth>(abs(120.F));
+		tick(s.root);
+
+		auto other = makeScene({ .leftMinWidth = 120.F, .fixedLeft = true });
+		other.leftLeaf->getLayoutAttributes().update<attr::BoxLayout::minWidth>(abs(30.F));
+		ReflowState local {};
+		ReflowEngine::tick(local, other.root, clone(ctx));
+		expectSameLayout(*s.root, *other.root);
+		EXPECT_NE(s.rightLeaf->getLayoutState().layoutOffset, offsetBefore);
+	}
+
+	TEST_F(IncrementalLayoutFixture, FixedBoxChangeSkipsAncestors) {
+		s = makeScene({ .leftMinWidth = 100.F, .fixedLeft = true });
+		tick(s.root);
+		s.rightLeaf->prefetches = 0u;
+		s.rightLeaf->computes = 0u;
+		const auto before = state.layoutCalls();
+
+		s.leftLeaf->getLayoutAttributes().update<attr::BoxLayout::minWidth>(abs(30.F));
+		state.setRenderTick(13);
+		tick(s.root);
+
+		EXPECT_EQ(s.rightLeaf->prefetches + s.rightLeaf->computes, 0u);
+		// Prefetch and compute count per axis: (2 + 2 + 1) calls for each of leftBox and leftLeaf
+		EXPECT_EQ(state.layoutCalls() - before, 10u);
+		EXPECT_TRUE(s.leftBox->state().shouldRenderSelf(13));
+	}
+
+	TEST_F(IncrementalLayoutFixture, IncrementalEqualsFull_Boundary) {
+		s = makeScene({ .leftMinWidth = 100.F, .fixedLeft = true });
+		tick(s.root);
+
+		s.leftLeaf->getLayoutAttributes().update<attr::BoxLayout::minWidth>(abs(30.F));
+		tick(s.root);
+
+		auto other = makeScene({ .leftMinWidth = 100.F, .fixedLeft = true });
+		other.leftLeaf->getLayoutAttributes().update<attr::BoxLayout::minWidth>(abs(30.F));
+		ReflowState local {};
+		ReflowEngine::tick(local, other.root, clone(ctx));
+		expectSameLayout(*s.root, *other.root);
+	}
+
+	TEST_F(IncrementalLayoutFixture, AutoBoxIsNotBoundary) {
+		EXPECT_FALSE(uikit::BoxLayout {}.isLayoutBoundary());
+	}
+
+	TEST_F(IncrementalLayoutFixture, IncrementalEqualsFull_BoundaryResizes) {
+		s = makeScene({ .leftMinWidth = 100.F, .fixedLeft = true });
+		tick(s.root);
+		const auto offsetBefore = s.rightLeaf->getLayoutState().layoutOffset;
+
+		{
+			AttributeBatch batch { *s.leftBox };
+			s.leftBox->getLayoutAttributes().update<attr::BoxLayout::minWidth>(abs(120.F));
+			s.leftBox->getLayoutAttributes().update<attr::BoxLayout::maxWidth>(abs(120.F));
+		}
+		tick(s.root);
+
+		const auto other = fresh({ .leftMinWidth = 120.F, .fixedLeft = true });
+		expectSameLayout(*s.root, *other.root);
+		EXPECT_NE(s.rightLeaf->getLayoutState().layoutOffset, offsetBefore);
+	}
+
+	TEST_F(IncrementalLayoutFixture, IncrementalEqualsFull_AutoToFixed) {
+		tick(s.root);
+
+		{
+			AttributeBatch batch { *s.leftBox };
+			s.leftBox->getLayoutAttributes().update<attr::BoxLayout::minWidth>(abs(100.F));
+			s.leftBox->getLayoutAttributes().update<attr::BoxLayout::maxWidth>(abs(100.F));
+			s.leftBox->getLayoutAttributes().update<attr::BoxLayout::minHeight>(abs(50.F));
+			s.leftBox->getLayoutAttributes().update<attr::BoxLayout::maxHeight>(abs(50.F));
+		}
+		tick(s.root);
+
+		const auto other = fresh({ .leftMinWidth = 100.F, .fixedLeft = true });
+		expectSameLayout(*s.root, *other.root);
+	}
 }
