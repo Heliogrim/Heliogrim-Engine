@@ -34,7 +34,7 @@ void WindowedBlob::load(const size_t index_) const {
 	_loadedLen = got.size();
 }
 
-std::span<_::byte> WindowedBlob::read(streamoff offset_, mref<std::span<_::byte>> dst_) const {
+std::span<_::byte> WindowedBlob::read(const streamoff offset_, mref<std::span<_::byte>> dst_) const {
 
 	::hg::assertrt(offset_ >= 0LL && offset_ <= _size);
 

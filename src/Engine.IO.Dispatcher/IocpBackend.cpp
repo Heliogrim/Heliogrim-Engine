@@ -74,7 +74,7 @@ void IocpBackend::harvest(ref<const IoPortEntry> entry_) {
 
 	DWORD bytes = 0;
 	DWORD error = ERROR_SUCCESS;
-	if (not ::GetOverlappedResult(slot->file, slot, &bytes, FALSE)) {
+	if (not::GetOverlappedResult(slot->file, slot, &bytes, FALSE)) {
 		error = ::GetLastError();
 	}
 

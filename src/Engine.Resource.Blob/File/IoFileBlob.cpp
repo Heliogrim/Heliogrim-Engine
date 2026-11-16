@@ -55,18 +55,18 @@ std::span<_::byte> IoFileBlob::transfer(
 	return buffer_.subspan(0uz, completion.bytes);
 }
 
-std::span<_::byte> IoFileBlob::read(streamoff offset_, mref<std::span<_::byte>> dst_) const {
+std::span<_::byte> IoFileBlob::read(const streamoff offset_, mref<std::span<_::byte>> dst_) const {
 	return transfer(io::IoOp::eRead, offset_, dst_);
 }
 
-std::span<_::byte> IoFileBlob::write(streamoff offset_, mref<std::span<_::byte>> src_) {
+std::span<_::byte> IoFileBlob::write(const streamoff offset_, mref<std::span<_::byte>> src_) {
 
 	auto written = transfer(io::IoOp::eWrite, offset_, src_);
 	_size = (std::max)(_size, offset_ + static_cast<streamoff>(written.size()));
 	return written;
 }
 
-bool IoFileBlob::trim(size_t tailSize_) {
+bool IoFileBlob::trim(const size_t tailSize_) {
 
 	if (tailSize_ <= 0uz) {
 		return false;

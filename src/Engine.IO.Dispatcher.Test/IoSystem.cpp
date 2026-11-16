@@ -6,7 +6,6 @@
 #include <array>
 #include <atomic>
 #include <chrono>
-#include <cstdio>
 #include <filesystem>
 #include <format>
 #include <fstream>
@@ -26,7 +25,7 @@ using namespace hg::engine::async;
 
 namespace IoModule {
 	namespace {
-		constexpr size_t kFileSize = 4uz * 1024uz * 1024uz;
+		inline constexpr static size_t default_file_size = 4uz * 1024uz * 1024uz;
 
 		[[nodiscard]] bool waitReady(auto& fut_, const std::chrono::seconds timeout_ = std::chrono::seconds { 10 }) {
 			const auto deadline = std::chrono::steady_clock::now() + timeout_;
@@ -57,7 +56,7 @@ namespace IoModule {
 				Logger::destroy();
 			}
 
-			[[nodiscard]] std::filesystem::path makeFile(const char* name_, const size_t size_ = kFileSize) const {
+			[[nodiscard]] std::filesystem::path makeFile(const char* name_, const size_t size_ = default_file_size) const {
 				const auto path = dir / name_;
 				Vector<char> data(std::min(size_, 64uz * 1024uz * 1024uz));
 				for (size_t i = 0; i < data.size(); ++i) {
@@ -172,8 +171,7 @@ namespace IoModule {
 		const auto queue = sys.createQueue(IoPriority::eNormal);
 
 		Vector<_::byte> out(8192, static_cast<_::byte>(0xAB));
-		Vector<_::byte> in(8192);
-		{
+		Vector<_::byte> in(8192); {
 			Vector<IoRequest> w {};
 			w.push_back(
 				IoRequest {
@@ -185,8 +183,7 @@ namespace IoModule {
 			auto res = await(std::move(fut));
 			ASSERT_TRUE(res.has_value());
 			EXPECT_EQ(res.value()[0].status, IoStatus::eDone);
-		}
-		{
+		} {
 			Vector<IoRequest> r {};
 			r.push_back(
 				IoRequest {
@@ -214,7 +211,7 @@ namespace IoModule {
 		Vector<IoRequest> reqs {};
 		reqs.push_back(
 			IoRequest {
-				.op = IoOp::eRead, .file = file, .offset = kFileSize - 1000, .buffer = { buf.data(), buf.size() }
+				.op = IoOp::eRead, .file = file, .offset = default_file_size - 1000, .buffer = { buf.data(), buf.size() }
 			}
 		);
 		auto fut = queue->submit(std::move(reqs));
@@ -314,8 +311,7 @@ namespace IoModule {
 		holderDestroyed = false;
 		holder.reset();
 		// The request still holds the keep-alive.
-		EXPECT_FALSE(holderDestroyed);
-		{
+		EXPECT_FALSE(holderDestroyed); {
 			auto dropped = queue->submit(std::move(reqs));
 		}
 
@@ -353,7 +349,7 @@ namespace IoModule {
 
 				// Built up front, so the submit loop only posts.
 				std::mt19937_64 rng { 0x5EEDuLL };
-				std::uniform_int_distribution<u64> offsets { 0uLL, kFileSize - kBlock };
+				std::uniform_int_distribution<u64> offsets { 0uLL, default_file_size - kBlock };
 				constexpr u32 total = kPerLevel * 3u;
 				Vector<Vector<_::byte>> bufs(total, Vector<_::byte>(kBlock));
 				Vector<Vector<IoRequest>> batches(total);
@@ -471,7 +467,14 @@ namespace IoModule {
 		// A pipe with no writer: the read stays pending until CancelIoEx aborts it.
 		const auto name = std::format(LR"(\\.\pipe\heliogrim-io-test-{})", ::GetCurrentProcessId());
 		const auto server = ::CreateNamedPipeW(
-			name.c_str(), PIPE_ACCESS_OUTBOUND, PIPE_TYPE_BYTE, 1, 0, 0, 0, nullptr
+			name.c_str(),
+			PIPE_ACCESS_OUTBOUND,
+			PIPE_TYPE_BYTE,
+			1,
+			0,
+			0,
+			0,
+			nullptr
 		);
 		ASSERT_NE(server, INVALID_HANDLE_VALUE);
 

@@ -1,9 +1,5 @@
 #pragma once
 
-#include <new>
-#include <stdexcept>
-#include <system_error>
-#include <Engine.Asserts/Todo.hpp>
 #include <Engine.Async/Future/Async.hpp>
 #include <Engine.Common/Expected.hpp>
 #include <Engine.Common/Optional.hpp>
@@ -236,7 +232,7 @@ namespace hg::engine::storage {
 			auto&& fn_
 		) const noexcept -> Future<
 			std::invoke_result_t<decltype(fn_), ref<const resource::Blob>>, async_query_blob_error
-			> {
+		> {
 			return ::hg::async(
 				[this, storage = ::hg::move(storage_), fn = std::decay_t<decltype(fn_)>(::hg::forward<decltype(fn_)>(fn_))]() mutable {
 					return query(::hg::move(storage), ::hg::move(fn));
@@ -267,7 +263,7 @@ namespace hg::engine::storage {
 			auto&& fn_
 		) const noexcept -> Future<
 			std::invoke_result_t<decltype(fn_), ref<const resource::ReadonlyPackage>>, async_query_package_error
-			> {
+		> {
 			return ::hg::async(
 				[this, storage = ::hg::move(storage_), fn = std::decay_t<decltype(fn_)>(::hg::forward<decltype(fn_)>(fn_))]() mutable {
 					return query(::hg::move(storage), ::hg::move(fn));
@@ -298,7 +294,7 @@ namespace hg::engine::storage {
 			auto&& fn_
 		) const noexcept -> Future<
 			std::invoke_result_t<decltype(fn_), ref<resource::StorageReadonlyArchive>>, async_query_archive_error
-			> {
+		> {
 			return ::hg::async(
 				[this, storage = ::hg::move(storage_), fn = std::decay_t<decltype(fn_)>(::hg::forward<decltype(fn_)>(fn_))]() mutable {
 					return query(::hg::move(storage), ::hg::move(fn));
@@ -329,7 +325,7 @@ namespace hg::engine::storage {
 			auto&& fn_
 		) const noexcept -> Future<
 			std::invoke_result_t<decltype(fn_), ref<resource::Blob>>, async_mutate_blob_error
-			> {
+		> {
 			return ::hg::async(
 				[this, storage = ::hg::move(storage_), fn = std::decay_t<decltype(fn_)>(::hg::forward<decltype(fn_)>(fn_))]() mutable {
 					return mutate(::hg::move(storage), ::hg::move(fn));
@@ -360,7 +356,7 @@ namespace hg::engine::storage {
 			auto&& fn_
 		) const noexcept -> Future<
 			std::invoke_result_t<decltype(fn_), ref<resource::ReadWritePackage>>, mutate_package_error
-			> {
+		> {
 			return ::hg::async(
 				[this, storage = ::hg::move(storage_), fn = std::decay_t<decltype(fn_)>(::hg::forward<decltype(fn_)>(fn_))]() mutable {
 					return mutate(::hg::move(storage), ::hg::move(fn));
@@ -391,7 +387,7 @@ namespace hg::engine::storage {
 			auto&& fn_
 		) const noexcept -> Future<
 			std::invoke_result_t<decltype(fn_), ref<resource::Archive>>, async_mutate_archive_error
-			> {
+		> {
 			return ::hg::async(
 				[this, storage = ::hg::move(storage_), fn = std::decay_t<decltype(fn_)>(::hg::forward<decltype(fn_)>(fn_))]() mutable {
 					return mutate(::hg::move(storage), ::hg::move(fn));

@@ -16,10 +16,15 @@ namespace hg::engine::resource {
 	class WindowedBlob final :
 		public InheritMeta<WindowedBlob, Blob> {
 	public:
-		constexpr static size_t kArchiveWindow = 8uz * 1024uz * 1024uz;
+		constexpr static size_t default_archive_window = 8uz * 1024uz * 1024uz;
 
 	public:
-		WindowedBlob(ref<const Blob> source_, const streamoff base_, const streamsize size_, const size_t window_ = kArchiveWindow);
+		WindowedBlob(
+			ref<const Blob> source_,
+			const streamoff base_,
+			const streamsize size_,
+			const size_t window_ = default_archive_window
+		);
 
 		~WindowedBlob() override = default;
 

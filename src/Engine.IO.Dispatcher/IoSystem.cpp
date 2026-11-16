@@ -13,7 +13,10 @@ IoSystem::IoSystem(const IoBackendKind kind_, const u32 maxInFlight_) :
 		IoBackend::make(
 			kind_,
 			_thread,
-			[this](const ptr<void> token_, const IoCompletion completion_) { --_inFlight; IoQueue::complete(token_, completion_); }
+			[this](const ptr<void> token_, const IoCompletion completion_) {
+				--_inFlight;
+				IoQueue::complete(token_, completion_);
+			}
 		)
 	),
 	_maxInFlight(maxInFlight_) {
@@ -107,7 +110,7 @@ Future<u64, IoError> IoSystem::size(Arci<IoFile> file_) {
 	_thread.thread().postDetached(
 		[file = std::move(file_), promise = std::move(promise)]() mutable {
 			LARGE_INTEGER value {};
-			if (not ::GetFileSizeEx(file->handle(), &value)) {
+			if (not::GetFileSizeEx(file->handle(), &value)) {
 				promise.reject(IoError { ::GetLastError() });
 				return;
 			}
@@ -125,7 +128,7 @@ Future<void, IoError> IoSystem::resize(Arci<IoFile> file_, const u64 size_) {
 		[file = std::move(file_), size_, promise = std::move(promise)]() mutable {
 			FILE_END_OF_FILE_INFO info {};
 			info.EndOfFile.QuadPart = static_cast<LONGLONG>(size_);
-			if (not ::SetFileInformationByHandle(file->handle(), FileEndOfFileInfo, &info, sizeof(info))) {
+			if (not::SetFileInformationByHandle(file->handle(), FileEndOfFileInfo, &info, sizeof(info))) {
 				promise.reject(IoError { ::GetLastError() });
 				return;
 			}

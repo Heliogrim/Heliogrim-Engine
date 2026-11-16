@@ -18,7 +18,11 @@ using namespace hg;
 
 namespace {
 	// Null when the io thread cannot open the file.
-	[[nodiscard]] Rc<Blob> openBlob(ref<Context> ctx_, ref<const Arci<system::LocalFileStorage>> storage_, const engine::io::IoOpenMode mode_);
+	[[nodiscard]] Rc<Blob> openBlob(
+		ref<Context> ctx_,
+		ref<const Arci<system::LocalFileStorage>> storage_,
+		const engine::io::IoOpenMode mode_
+	);
 }
 
 Result<IoResourceAccessor<Blob>, Mutation::acq_error_type> engine::storage::resolveStaticLfsVoid2LfsBlobMutation(

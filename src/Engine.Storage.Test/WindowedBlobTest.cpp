@@ -82,7 +82,7 @@ namespace StorageModule {
 		const WindowedBlob blob { source, 0, 10 * 1024 * 1024 };
 
 		std::array<_::byte, 16> dst {};
-		const auto off = static_cast<streamoff>(WindowedBlob::kArchiveWindow) - 8;
+		const auto off = static_cast<streamoff>(WindowedBlob::default_archive_window) - 8;
 		auto got = blob.read(off, std::span { dst });
 		ASSERT_EQ(got.size(), 16uz);
 		for (size_t k = 0; k < 16uz; ++k) {

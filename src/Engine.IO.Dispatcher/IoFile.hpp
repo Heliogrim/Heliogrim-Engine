@@ -12,10 +12,10 @@ namespace hg::engine::io {
 
 		~IoFile();
 
-	public:
-		[[nodiscard]] ptr<void> handle() const noexcept;
-
 	private:
 		ptr<void> _handle;
+
+	public:
+		[[nodiscard]] ptr<void> handle() const noexcept;
 	};
 }

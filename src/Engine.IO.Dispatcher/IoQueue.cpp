@@ -35,9 +35,12 @@ IoQueue::~IoQueue() = default;
 Future<Vector<IoCompletion>> IoQueue::submit(mref<Vector<IoRequest>> requests_) {
 	Promise<Vector<IoCompletion>> promise {};
 	auto future = promise.future();
+
 	// A rejected post destroys the closure, which breaks the promise.
 	_system.thread().postDetached(
-		[self = arci_from_this(), promise = std::move(promise), requests = std::move(requests_)]() mutable { self->accept(std::move(promise), std::move(requests)); }
+		[self = arci_from_this(), promise = std::move(promise), requests = std::move(requests_)]() mutable {
+			self->accept(std::move(promise), std::move(requests));
+		}
 	);
 	return future;
 }
@@ -67,6 +70,7 @@ void IoQueue::accept(mref<Promise<Vector<IoCompletion>>> promise_, mref<Vector<I
 			batch->results[i].status = IoStatus::eCancelled;
 			batch->ops[i].finished = true;
 			--batch->open;
+
 		} else if (batch->requests[i].compression != IoCompression::eNone || batch->requests[i].file == nullptr) {
 			batch->results[i].osError = ERROR_INVALID_PARAMETER;
 			batch->ops[i].finished = true;
@@ -94,10 +98,12 @@ void IoQueue::cancelMatching(const u64 mask_, const u64 value_) {
 			if (op.finished || (batch->requests[i].tag & mask_) != value_) {
 				continue;
 			}
+
 			if (i < batch->next) {
 				_system._backend->cancel(&op);
 				continue;
 			}
+
 			batch->results[i] = { IoStatus::eCancelled, 0u, 0u };
 			op.finished = true;
 			--batch->open;
@@ -111,6 +117,7 @@ ptr<void> IoQueue::next() noexcept {
 		while (batch->next < batch->ops.size() && batch->ops[batch->next].finished) {
 			++batch->next;
 		}
+
 		if (batch->next < batch->ops.size()) {
 			return &batch->ops[batch->next++];
 		}
