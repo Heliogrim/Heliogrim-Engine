@@ -1,43 +1,71 @@
 #include "Contract.hpp"
 
 #include <algorithm>
+#include <utility>
 
 using namespace hg::engine::accel::lang;
 using namespace hg;
+
+ir::ContractEntry ir::declared(String id_, const BindClass cls_, String typeName_, const std::source_location where_) {
+	return ContractEntry {
+		.id = std::move(id_),
+		.cls = cls_,
+		.typeName = std::move(typeName_),
+		.at = diag::SourceSpan { .file = where_.file_name(), .begin = 0uL, .end = 0uL, .line = where_.line(), .column = where_.column() }
+	};
+}
 
 ir::Diagnostics ir::checkContract(
 	ref<const Vector<InterfaceEntry>> shader_,
 	ref<const StageContract> stage_,
 	ref<const Vector<String>> materialBindings_
 ) {
-	const auto contains = [](ref<const Vector<String>> ids_, ref<const String> id_) {
-		return std::ranges::find(ids_, id_) != ids_.end();
-	};
-
 	Diagnostics diags {};
 	for (const auto& entry : shader_) {
 		if (entry.mode != BindMode::eBind || not entry.input) {
 			continue;
 		}
 
+		const auto provider = std::ranges::find(stage_.provides, entry.id, &ContractEntry::id);
 		if (entry.cls == BindClass::eNone) {
-			diags.emplace_back(Diagnostic::error(codes::asl("missing-binding-class"), "binding '" + entry.id + "' has no class"));
+			diags.emplace_back(
+				Diagnostic::error(codes::asl("missing-binding-class"), "binding '" + entry.id + "' has no class").at(entry.at)
+			);
 
-		} else if (not contains(materialBindings_, entry.id) && not contains(stage_.provides, entry.id)) {
+		} else if (provider == stage_.provides.end()) {
+			if (not std::ranges::contains(materialBindings_, entry.id)) {
+				diags.emplace_back(
+					Diagnostic::error(
+						codes::asl("missing-material-binding"),
+						"binding '" + entry.id + "' has no material binding and is not provided by the stage"
+					).at(entry.at)
+				);
+			}
+
+		} else if (provider->cls != BindClass::eNone && provider->cls != entry.cls) {
 			diags.emplace_back(
 				Diagnostic::error(
-					codes::asl("missing-material-binding"),
-					"binding '" + entry.id + "' has no material binding and is not provided by the stage"
-				)
+					codes::asl("contract-class-mismatch"),
+					"binding '" + entry.id + "' is '" + String(className(entry.cls)) + "', but the stage provides '" + String(className(provider->cls)) + "'"
+				).at(entry.at).label(provider->at, "provided here")
 			);
 		}
 	}
 
-	for (const auto& id : stage_.requires_) {
-		const auto provided = std::ranges::any_of(shader_, [&](ref<const InterfaceEntry> e_) { return not e_.input && e_.id == id; });
-		if (not provided) {
+	for (const auto& req : stage_.requires_) {
+		const auto output = std::ranges::find_if(shader_, [&](ref<const InterfaceEntry> e_) { return not e_.input && e_.id == req.id; });
+		if (output == shader_.end()) {
 			diags.emplace_back(
-				Diagnostic::error(codes::asl("missing-stage-output"), "stage requires '" + id + "', but the shader does not output it")
+				Diagnostic::error(codes::asl("missing-stage-output"), "stage requires '" + req.id + "', but the shader does not output it")
+					.at(req.at)
+			);
+
+		} else if (not req.typeName.empty() && req.typeName != output->typeName) {
+			diags.emplace_back(
+				Diagnostic::error(
+					codes::asl("contract-type-mismatch"),
+					"output '" + req.id + "' is '" + output->typeName + "', but the stage requires '" + req.typeName + "'"
+				).at(output->at.is<diag::NoLocation>() ? req.at : output->at).label(req.at, "required here")
 			);
 		}
 	}
@@ -78,7 +106,7 @@ ir::Diagnostics ir::checkStageChain(std::span<const std::pair<EntryKind, Vector<
 					Diagnostic::error(
 						codes::asl("unmatched-stage-input"),
 						name(kind) + " input '" + in.id + "' has no matching output in the " + name(prevKind) + " stage"
-					)
+					).at(in.at)
 				);
 
 			} else if (out->typeName != in.typeName) {
@@ -87,7 +115,7 @@ ir::Diagnostics ir::checkStageChain(std::span<const std::pair<EntryKind, Vector<
 						codes::asl("stage-interface-mismatch"),
 						name(kind) + " input '" + in.id + "' is '" + in.typeName + "', but the " + name(prevKind) +
 						" stage outputs '" + out->typeName + "'"
-					)
+					).at(in.at).label(out->at, "output declared here")
 				);
 			}
 		}

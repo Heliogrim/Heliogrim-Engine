@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <tuple>
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
@@ -24,8 +25,15 @@ namespace hg::engine::accel::lang::ir {
 		String typeName;
 		/* per-patch forward output of tess_ctrl / input of tess_eval */
 		bool patch = false;
+		/* the declaration's span (`NoLocation` when implicit); never compared, hashed or keyed */
+		diag::Location at {};
 
-		[[nodiscard]] bool operator==(const InterfaceEntry&) const noexcept = default;
+		[[nodiscard]] bool operator==(ref<const InterfaceEntry> other_) const noexcept {
+			const auto key = [](ref<const InterfaceEntry> e_) {
+				return std::tie(e_.id, e_.type.index, e_.mode, e_.cls, e_.implicit, e_.input, e_.arrayed, e_.typeName, e_.patch);
+			};
+			return key(*this) == key(other_);
+		}
 	};
 
 	/**
