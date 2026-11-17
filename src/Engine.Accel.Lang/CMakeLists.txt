@@ -8,4 +8,5 @@ make_library_project(
 		${PROJECT_NAME}::Engine.Diagnostics
 		${PROJECT_NAME}::External-spirv-headers
 		${PROJECT_NAME}::External-spirv-static
+		${PROJECT_NAME}::External-spirv-opt
 )

@@ -18,7 +18,8 @@ namespace hg::engine::accel::lang::ir::spirv {
 
 	/**
 	 * One SPIR-V module for the entry point `main` of a reference-lowered module; only declarations reached from `main` are emitted.
-	 * From `Tier::eDev` on user names are kept and the result is validated.
+	 * `Tier::eBuild` runs the spirv-opt performance recipe (an optimizer failure ships the unoptimized module with a warning).
+	 * From `Tier::eDev` on the module stays unoptimized, user names are kept and the result is validated.
 	 */
 	[[nodiscard]] EmitResult emit(ref<const Module> lowered_, ref<const Layout> layout_, Tier tier_);
 }

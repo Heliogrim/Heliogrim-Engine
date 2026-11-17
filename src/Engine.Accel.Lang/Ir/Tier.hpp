@@ -4,7 +4,7 @@
 
 namespace hg::engine::accel::lang::ir {
 	/**
-	 * Emission depth: build (bare module), dev (names, OpLine debug lines and validation), deep (emits as dev).
+	 * Emission depth: build (bare module, spirv-opt performance recipe), dev (names, OpLine debug lines and validation), deep (emits as dev).
 	 */
 	enum class Tier : u8 {
 		eBuild,
