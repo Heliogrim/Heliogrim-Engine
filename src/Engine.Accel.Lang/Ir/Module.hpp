@@ -37,6 +37,9 @@ namespace hg::engine::accel::lang::ir {
 		eWorkgroup
 	};
 
+	/* the class's ASL spelling, `unknown` out of range */
+	[[nodiscard]] StringView className(BindClass class_) noexcept;
+
 	struct TypeRef {
 		u32 index = ~0uL;
 

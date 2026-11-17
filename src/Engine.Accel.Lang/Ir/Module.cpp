@@ -36,6 +36,12 @@ namespace {
 	};
 }
 
+StringView ir::className(const BindClass class_) noexcept {
+	constexpr std::array<StringView, 8> names { "none", "uniform", "storage", "texture", "sampler", "push", "image", "workgroup" };
+	const auto index = static_cast<u32>(class_);
+	return index < names.size() ? names[index] : "unknown";
+}
+
 StringView ir::spelling(const Op op_) noexcept {
 	const auto it = std::ranges::find(spellings, op_, &OpSpelling::op);
 	return it != spellings.end() ? it->text : StringView {};

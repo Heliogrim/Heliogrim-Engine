@@ -15,10 +15,13 @@ Vector<ir::InterfaceEntry> ir::computeInterface(ref<const Module> mod_) {
 		if (binding.bindClass == BindClass::eWorkgroup) {
 			continue;
 		}
+		// Merged or synthesized bindings may carry a source index spanIn would assert on.
+		const bool located = not binding.implicit && binding.loc.source < std::max(mod_.sources.size(), 1uz);
 		entries.emplace_back(
 			InterfaceEntry {
 				binding.id, binding.type, binding.mode, binding.bindClass, binding.implicit, binding.input, binding.arrayed,
-				describeType(mod_.types, binding.type), binding.patch
+				describeType(mod_.types, binding.type), binding.patch,
+				located ? diag::Location { spanIn(mod_, binding.loc) } : diag::Location {}
 			}
 		);
 	}

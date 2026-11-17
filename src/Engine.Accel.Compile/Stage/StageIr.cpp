@@ -216,7 +216,7 @@ std::expected<smr<const Resolved>, Diagnostics> hg::engine::accel::resolveStageI
 			StageContract contract {};
 			for (const auto& entry : interfaceEntries) {
 				if (entry.input && entry.mode == BindMode::eBind) {
-					contract.provides.emplace_back(entry.id);
+					contract.provides.emplace_back(ContractEntry { .id = entry.id });
 				}
 			}
 
