@@ -13,6 +13,8 @@ namespace hg::engine::accel::lang::ir {
 		Vector<bool> uniformStmt;
 		/* by FunctionRef: contains (directly or through calls) a builtin that needs uniform control flow */
 		Vector<bool> requiresUniform;
+		/* by StmtRef: the outermost lane-dependent condition that makes the statement non-uniform; only meaningful where `uniformStmt` is false */
+		Vector<SourceLoc> divergedBy;
 	};
 
 	/**

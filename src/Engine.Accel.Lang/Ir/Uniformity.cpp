@@ -1,5 +1,6 @@
 #include "Uniformity.hpp"
 
+#include <algorithm>
 #include <map>
 
 #include "Analysis.hpp"
@@ -23,6 +24,9 @@ namespace {
 		/* sticky taint of a divergent break/continue in the current loop / return in the function */
 		bool loopTaint = false;
 		bool fnTaint = false;
+		/* the condition behind each taint */
+		ir::SourceLoc loopCause {};
+		ir::SourceLoc fnCause {};
 
 		void mark(const String& name_, bool lane_) {
 			auto& slot = divergent[name_];
@@ -89,8 +93,46 @@ namespace {
 			}
 		}
 
-		[[nodiscard]] bool divergentNow(bool cond_) const noexcept {
-			return cond_ || loopTaint || fnTaint;
+		/* `cond_`: the outermost lane-dependent condition around the statement, None under uniform control */
+		[[nodiscard]] bool divergentNow(ref<const Opt<ir::SourceLoc>> cond_) const noexcept {
+			return cond_.has_value() || loopTaint || fnTaint;
+		}
+
+		[[nodiscard]] ir::SourceLoc causeNow(ref<const Opt<ir::SourceLoc>> cond_) const noexcept {
+			return cond_.has_value() ? *cond_ : loopTaint ? loopCause : fnCause;
+		}
+
+		/* keeps an inherited cause: the outermost divergent condition wins */
+		[[nodiscard]] Opt<ir::SourceLoc> nest(ref<const Opt<ir::SourceLoc>> cond_, const bool lane_, const ir::SourceLoc at_) const {
+			return cond_.has_value() || not lane_ ? cond_ : SomeVal<ir::SourceLoc>(at_);
+		}
+
+		/* whole source range of the condition; an expression's own loc marks only its operator */
+		[[nodiscard]] ir::SourceLoc locOf(const ir::ExprRef ref_, ref<const ir::Stmt> owner_) const {
+			if (ref_.index >= mod.exprs.size()) {
+				return owner_.loc;
+			}
+
+			auto loc = mod.exprs[ref_.index].loc;
+			auto end = loc.offset + loc.length;
+			for (const auto operand : mod.exprs[ref_.index].operands) {
+				const auto inner = locOf(operand, owner_);
+				if (inner.source != loc.source) {
+					continue;
+				}
+				end = std::max(end, inner.offset + inner.length);
+				if (inner.offset < loc.offset) {
+					loc.line = inner.line;
+					loc.column = inner.column;
+					loc.offset = inner.offset;
+				}
+			}
+			/* a field reuses its base's loc; shortcut: closing `)`/`]` of calls and indexes are not covered, widen if labels look short */
+			if (mod.exprs[ref_.index].kind == ir::ExprKind::eField) {
+				end += 1u + static_cast<u32>(mod.exprs[ref_.index].name.size());
+			}
+			loc.length = end - loc.offset;
+			return loc;
 		}
 
 		/* local a place is rooted at, aliases resolved to their root; empty when none */
@@ -129,13 +171,16 @@ namespace {
 			}
 		}
 
-		void stmt(ir::StmtRef ref_, bool cond_) {
+		void stmt(ir::StmtRef ref_, ref<const Opt<ir::SourceLoc>> cond_) {
 			if (ref_.index >= mod.stmts.size()) {
 				return;
 			}
 
 			const auto& s = mod.stmts[ref_.index];
 			out.uniformStmt[ref_.index] = not divergentNow(cond_);
+			if (divergentNow(cond_)) {
+				out.divergedBy[ref_.index] = causeNow(cond_);
+			}
 
 			switch (s.kind) {
 				case ir::StmtKind::eDeclareLocal: {
@@ -164,18 +209,24 @@ namespace {
 				}
 				case ir::StmtKind::eReturn: {
 					(void)exprUniform(s.lhs);
-					fnTaint = fnTaint || divergentNow(cond_);
+					if (not fnTaint && divergentNow(cond_)) {
+						fnTaint = true;
+						fnCause = causeNow(cond_);
+					}
 					break;
 				}
 				case ir::StmtKind::eBreak:
 				case ir::StmtKind::eContinue: {
-					loopTaint = loopTaint || divergentNow(cond_);
+					if (not loopTaint && divergentNow(cond_)) {
+						loopTaint = true;
+						loopCause = causeNow(cond_);
+					}
 					break;
 				}
 				case ir::StmtKind::eIf: {
-					const auto lane = not exprUniform(s.lhs);
+					const auto inner = nest(cond_, not exprUniform(s.lhs), locOf(s.lhs, s));
 					for (const auto child : s.children) {
-						stmt(child, cond_ || lane);
+						stmt(child, inner);
 					}
 					break;
 				}
@@ -193,8 +244,9 @@ namespace {
 			}
 		}
 
-		void loop(ref<const ir::Stmt> s_, bool cond_) {
+		void loop(ref<const ir::Stmt> s_, ref<const Opt<ir::SourceLoc>> cond_) {
 			const auto outer = loopTaint;
+			const auto outerCause = loopCause;
 			const auto fnBefore = fnTaint;
 			const auto isFor = s_.kind == ir::StmtKind::eFor && s_.children.size() == 3uz;
 			if (isFor) {
@@ -206,20 +258,25 @@ namespace {
 			for (auto pass = 0; pass < 2; ++pass) {
 				loopTaint = taint;
 				const auto lane = not exprUniform(s_.lhs) || (s_.lhs.index >= mod.exprs.size() && s_.kind == ir::StmtKind::eFor);
+				const auto inner = nest(cond_, lane, locOf(s_.lhs, s_));
 				if (isFor) {
-					stmt(s_.children[1], cond_ || lane);
-					stmt(s_.children[2], cond_ || lane);
+					stmt(s_.children[1], inner);
+					stmt(s_.children[2], inner);
 				} else if (not s_.children.empty()) {
-					stmt(s_.children.front(), cond_ || lane);
+					stmt(s_.children.front(), inner);
 				}
 				/* a divergent return in the body leaves the loop for some lanes only: same as a divergent break */
 				if ((loopTaint && not taint) || (pass == 0 && fnTaint && not fnBefore)) {
+					if (not loopTaint) {
+						loopCause = fnCause;
+					}
 					taint = true;
 					continue;
 				}
 				break;
 			}
 			loopTaint = outer;
+			loopCause = outerCause;
 		}
 	};
 }
@@ -228,6 +285,7 @@ ir::Uniformity ir::analyzeUniformity(ref<const Module> mod_, FnRef<bool(StringVi
 	Uniformity result {};
 	result.uniformStmt.assign(mod_.stmts.size(), true);
 	result.requiresUniform.assign(mod_.functions.size(), false);
+	result.divergedBy.assign(mod_.stmts.size(), SourceLoc {});
 
 	for (auto f = 0uz; f < mod_.functions.size(); ++f) {
 		const auto& fn = mod_.functions[f];
@@ -242,7 +300,7 @@ ir::Uniformity ir::analyzeUniformity(ref<const Module> mod_, FnRef<bool(StringVi
 		do {
 			walker.changed = false;
 			walker.loopTaint = walker.fnTaint = false;
-			walker.stmt(fn.body->root, false);
+			walker.stmt(fn.body->root, None);
 		} while (walker.changed);
 		result.requiresUniform[f] = walker.direct;
 	}

@@ -2100,6 +2100,8 @@ namespace {
 		ir::Diagnostics _diags;
 		Vector<u32> _chain;
 		bool _recurse = false;
+		/* the divergent condition behind the statement being walked */
+		ir::SourceLoc _cause {};
 
 		void warn(ir::ExprRef at_) {
 			if (_warned[at_.index]) {
@@ -2127,7 +2129,7 @@ namespace {
 			_diags.emplace_back(
 				(fatal ? ir::Diagnostic::error(code, std::move(message)) : ir::Diagnostic::warning(code, std::move(message))).at(
 					spanIn(_mod, e.loc)
-				).note(std::move(note))
+				).label(spanIn(_mod, _cause), "this condition can differ between invocations").note(std::move(note))
 			);
 		}
 
@@ -2164,6 +2166,10 @@ namespace {
 
 			const auto& s = _mod.stmts[ref_.index];
 			if (whole_ || not _uniformity.uniformStmt[ref_.index]) {
+				/* a whole-body visit keeps the cause of the outermost caller's call statement */
+				if (not whole_) {
+					_cause = _uniformity.divergedBy[ref_.index];
+				}
 				walkExpr(s.lhs);
 				walkExpr(s.rhs);
 			}
