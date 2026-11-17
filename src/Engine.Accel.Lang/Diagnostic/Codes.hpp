@@ -78,6 +78,7 @@ namespace hg::engine::accel::lang::codes {
 		{ { { { "ASL" } }, 71 }, "internal-spirv-invalid", "compiler bug: the generated SPIR-V module fails validation" },
 		{ { { { "ASL" } }, 72 }, "internal-spirv-emit", "compiler bug: the lowered module cannot be emitted as SPIR-V" },
 		{ { { { "ASL" } }, 73 }, "unsupported-feature", "construct is outside the supported Vulkan 1.3 SPIR-V profile" },
+		{ { { { "ASL" } }, 74 }, "internal-spirv-optimize", "compiler bug: spirv-opt failed on the generated module, it ships unoptimized" },
 	};
 
 	consteval ref<const diag::DiagnosticCodeInfo> asl(const StringView key_) {

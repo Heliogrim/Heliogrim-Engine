@@ -44,6 +44,27 @@ namespace AccelCompile {
 		}
 	}
 
+	TEST(SpirvOptBuild, EngineShadersOptimizedAreValid) {
+		const GateResolver resolver { readShader };
+		const auto shaders = engineShaders();
+		ASSERT_FALSE(shaders.empty());
+
+		for (const auto& [name, entry] : shaders) {
+			const auto source = readShader(name);
+			const std::array stages { GateStage { *source, entry } };
+			const auto composed = composeStages(stages, {}, resolver, Tier::eBuild);
+			ASSERT_TRUE(composed.has_value()) << name << ": " << composed.error();
+			for (const auto& diag : composed->front()->getIntermediate()->warnings) {
+				EXPECT_NE(diag.code()->key, "internal-spirv-optimize") << name;
+			}
+			const auto& spirv = (*composed->front()->getIntermediate()).spirv;
+			ASSERT_FALSE(spirv.empty()) << name;
+			const auto diags = spirv::validate(spirv, name);
+			EXPECT_TRUE(diags.empty()) << name << ": " << diags.front().message();
+		}
+	}
+
+	/* the build tier output is already optimized, so 'none' measures the shipped module */
 	TEST(DISABLED_SpirvOptMeasure, EngineShaders) {
 		const GateResolver resolver { readShader };
 		const auto shaders = engineShaders();
