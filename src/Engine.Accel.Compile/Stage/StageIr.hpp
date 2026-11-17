@@ -38,8 +38,10 @@ namespace hg::engine::accel {
 	 * - Profile modules without ir are legacy text and are skipped (with a warning when they hold text).
 	 * - Vertex offsets for lowering come from the stage intermediate: inbound variables carrying both a
 	 *   SymbolId and a VkBindLocation annotation.
-	 * - shortcut: the stage side offers every bind input and requires nothing, so contract checks are inert until
-	 *   the pass supplies provides/requires; only a missing bind class and unknown target symbols fail today.
+	 * - The specification's stage contract (`stageContract()`) provides bindings to every stage and requires outputs
+	 *   of the export stage only; its ids, classes and type names are part of the variant key, its locations are not.
+	 *   Without one the stage provides every bind input itself and requires nothing, so only a missing bind class and
+	 *   unknown target symbols fail.
 	 */
 	[[nodiscard]] std::expected<smr<const lang::ir::Resolved>, lang::ir::Diagnostics> resolveStageIr(
 		ref<const lang::Intermediate> stage_,

@@ -6,6 +6,10 @@
 #include "MeshPassSpecification.hpp"
 #include "RaytracingPassSpecification.hpp"
 
+namespace hg::engine::accel::lang::ir {
+	struct StageContract;
+}
+
 namespace hg::engine::accel {
 	class macro_novtable EffectSpecification {
 	public:
@@ -27,6 +31,14 @@ namespace hg::engine::accel {
 		 *  and trimming of the provided effect.
 		 */
 		[[nodiscard]] virtual cref<Vector<smr<const lang::Symbol>>> targetSymbols() const noexcept = 0;
+
+		/**
+		 * @details The bindings the pass provides to every stage and the outputs it requires of the export stage.
+		 *  `nullptr`: the pass declares nothing and the stage only checks itself.
+		 */
+		[[nodiscard]] virtual ptr<const lang::ir::StageContract> stageContract() const noexcept {
+			return nullptr;
+		}
 
 	public:
 		template <typename Type_>
