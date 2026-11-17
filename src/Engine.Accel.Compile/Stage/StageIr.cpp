@@ -137,6 +137,22 @@ namespace {
 				h.put(offset);
 				h.put(format);
 			}
+
+			/* the pass contract as checked for this stage; `at` stays out of the key */
+			const auto putEntries = [&h](ref<const Vector<ContractEntry>> entries_) {
+				h.put(static_cast<u64>(entries_.size()));
+				for (const auto& entry : entries_) {
+					h.put(StringView { entry.id });
+					h.put(entry.cls);
+					h.put(StringView { entry.typeName });
+				}
+			};
+			const auto* const contract = spec_.stageContract();
+			h.put(contract != nullptr);
+			if (contract != nullptr) {
+				putEntries(contract->provides);
+				putEntries(exportStage_ ? contract->requires_ : Vector<ContractEntry> {});
+			}
 			key.mod = h.value;
 		}
 		return StageInputs { std::move(modules), std::move(outputs), skippedText, key };
@@ -210,12 +226,35 @@ std::expected<smr<const Resolved>, Diagnostics> hg::engine::accel::resolveStageI
 				}
 			}
 
-			auto sliced = slice(*flat, outputs);
+			const auto* const declared = spec_.stageContract();
+
+			/* required outputs survive the target slice; an empty target list already keeps every output */
+			auto kept = outputs;
+			if (exportStage_ && declared != nullptr && not kept.empty()) {
+				for (const auto& req : declared->requires_) {
+					if (not std::ranges::contains(kept, req.id)) {
+						kept.emplace_back(req.id);
+					}
+				}
+			}
+
+			auto sliced = slice(*flat, kept);
 			auto interfaceEntries = computeInterface(sliced);
 
+			/* the pass provides to every stage and requires of the export stage; bindings it does not name provide themselves */
 			StageContract contract {};
+			if (declared != nullptr) {
+				contract.provides = declared->provides;
+				if (exportStage_) {
+					contract.requires_ = declared->requires_;
+				}
+			}
+			// shortcut: unnamed bindings are self-provided until material bindings are wired; check them against materials then
 			for (const auto& entry : interfaceEntries) {
-				if (entry.input && entry.mode == BindMode::eBind) {
+				if (
+					entry.input && entry.mode == BindMode::eBind &&
+					std::ranges::find(contract.provides, entry.id, &ContractEntry::id) == contract.provides.end()
+				) {
 					contract.provides.emplace_back(ContractEntry { .id = entry.id });
 				}
 			}

@@ -13,6 +13,14 @@ cref<Vector<smr<const lang::Symbol>>> SimpleEffectSpecification::targetSymbols()
     return _targetSymbols;
 }
 
+ptr<const lang::ir::StageContract> SimpleEffectSpecification::stageContract() const noexcept {
+    return _stageContract.has_value() ? std::addressof(*_stageContract) : nullptr;
+}
+
+void SimpleEffectSpecification::setStageContract(mref<lang::ir::StageContract> contract_) {
+    _stageContract = std::move(contract_);
+}
+
 ComputePassSpecification SimpleEffectSpecification::getComputeSpec() const {
     assert(_cps);
     return *_cps;

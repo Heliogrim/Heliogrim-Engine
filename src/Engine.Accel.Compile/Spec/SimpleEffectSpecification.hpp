@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Accel.Lang/Ir/Contract.hpp>
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 
 #include "EffectSpecification.hpp"
@@ -24,6 +25,14 @@ namespace hg::engine::accel {
 
     public:
         [[nodiscard]] cref<Vector<smr<const lang::Symbol>>> targetSymbols() const noexcept override;
+
+    private:
+        Opt<lang::ir::StageContract> _stageContract;
+
+    public:
+        [[nodiscard]] ptr<const lang::ir::StageContract> stageContract() const noexcept override;
+
+        void setStageContract(mref<lang::ir::StageContract> contract_);
 
     private:
         uptr<ComputePassSpecification> _cps;
