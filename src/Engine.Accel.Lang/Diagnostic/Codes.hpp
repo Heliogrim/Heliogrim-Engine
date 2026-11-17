@@ -79,6 +79,8 @@ namespace hg::engine::accel::lang::codes {
 		{ { { { "ASL" } }, 72 }, "internal-spirv-emit", "compiler bug: the lowered module cannot be emitted as SPIR-V" },
 		{ { { { "ASL" } }, 73 }, "unsupported-feature", "construct is outside the supported Vulkan 1.3 SPIR-V profile" },
 		{ { { { "ASL" } }, 74 }, "internal-spirv-optimize", "compiler bug: spirv-opt failed on the generated module, it ships unoptimized" },
+		{ { { { "ASL" } }, 75 }, "contract-class-mismatch", "binding class differs from the class the stage provides" },
+		{ { { { "ASL" } }, 76 }, "contract-type-mismatch", "output type differs from the type the stage requires" },
 	};
 
 	consteval ref<const diag::DiagnosticCodeInfo> asl(const StringView key_) {

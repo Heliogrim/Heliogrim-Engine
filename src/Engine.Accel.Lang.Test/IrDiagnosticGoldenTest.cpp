@@ -116,6 +116,11 @@ namespace AccelLang {
 			return InterfaceEntry { String(id_), type_, mode_, cls_, false, input_ };
 		}
 
+		/* a pass-side declaration outside the module sources: rendered without a snippet */
+		[[nodiscard]] diag::Location passAt() {
+			return SourceSpan { .file = "pass", .begin = 0uL, .end = 0uL, .line = 3uL, .column = 5uL };
+		}
+
 		[[nodiscard]] InterfaceEntry fwd(StringView id_, StringView type_, bool input_) {
 			return InterfaceEntry { String(id_), TypeRef { 0 }, BindMode::eForward, BindClass::eNone, false, input_, false, String(type_) };
 		}
@@ -811,7 +816,7 @@ namespace AccelLang {
 			{
 				"missing-stage-output", "", [](StringView) {
 					const Vector<InterfaceEntry> iface { ie("model", TypeRef { 0 }, BindMode::eBind, BindClass::eStorageBuffer) };
-					return checkContract(iface, StageContract { .provides = {}, .requires_ = { "depth", "normal" } }, { "model" });
+					return checkContract(iface, StageContract { .provides = {}, .requires_ = { ContractEntry { .id = "depth" }, ContractEntry { .id = "normal" } } }, { "model" });
 				},
 				R"GOLD(error[ASL0059]: stage requires 'depth', but the shader does not output it
 )GOLD"
@@ -828,14 +833,58 @@ namespace AccelLang {
 )GOLD"
 			},
 			{
-				"stage-interface-mismatch", "", [](StringView) {
+				"stage-interface-mismatch", "out f32vec3 uv;\nin f32vec2 uv;\n", [](StringView) {
+					auto out = fwd("uv", "f32vec3", false);
+					out.at = SourceSpan { .file = "M", .begin = 12uL, .end = 14uL, .line = 1uL, .column = 13uL };
+					auto in = fwd("uv", "f32vec2", true);
+					in.at = SourceSpan { .file = "M", .begin = 27uL, .end = 29uL, .line = 2uL, .column = 12uL };
 					const std::array<std::pair<EntryKind, Vector<InterfaceEntry>>, 2> chain {
-						std::pair { EntryKind::eVertex, Vector<InterfaceEntry> { fwd("uv", "f32vec3", false) } },
-						std::pair { EntryKind::eFragment, Vector<InterfaceEntry> { fwd("uv", "f32vec2", true) } }
+						std::pair { EntryKind::eVertex, Vector<InterfaceEntry> { out } },
+						std::pair { EntryKind::eFragment, Vector<InterfaceEntry> { in } }
 					};
 					return checkStageChain(chain);
 				},
 				R"GOLD(error[ASL0061]: fragment input 'uv' is 'f32vec2', but the vertex stage outputs 'f32vec3'
+  --> M:2:12
+  |
+2 | in f32vec2 uv;
+  |            ^^
+  --> M:1:13: output declared here
+  |
+1 | out f32vec3 uv;
+  |             ^^
+)GOLD"
+			},
+			{
+				"contract-class-mismatch",
+				"@input (mode = bind, id = \"lights\", class = storage) block lights { f32 x; };\nfn main() {}\n", [](StringView s_) {
+					const StageContract stage {
+						.provides = { ContractEntry { .id = "lights", .cls = BindClass::eUniformBuffer, .at = passAt() } }, .requires_ = {}
+					};
+					return checkContract(computeInterface(mk(s_)), stage, {});
+				},
+				R"GOLD(error[ASL0075]: binding 'lights' is 'storage', but the stage provides 'uniform'
+  --> M:1:60
+  |
+1 | @input (mode = bind, id = "lights", class = storage) block lights { f32 x; };
+  |                                                            ^^^^^^
+  --> pass:3:5: provided here
+)GOLD"
+			},
+			{
+				"contract-type-mismatch",
+				"@output (mode = forward, id = \"color\") f32vec4 color;\nfn main() {\n\tcolor = f32vec4(1.0);\n}\n", [](StringView s_) {
+					const StageContract stage {
+						.provides = {}, .requires_ = { ContractEntry { .id = "color", .typeName = "f32vec3", .at = passAt() } }
+					};
+					return checkContract(computeInterface(mk(s_)), stage, {});
+				},
+				R"GOLD(error[ASL0076]: output 'color' is 'f32vec4', but the stage requires 'f32vec3'
+  --> M:1:48
+  |
+1 | @output (mode = forward, id = "color") f32vec4 color;
+  |                                                ^^^^^
+  --> pass:3:5: required here
 )GOLD"
 			},
 			{
@@ -893,6 +942,6 @@ namespace AccelLang {
 			const auto exempt = StringView { info.key }.starts_with("internal-") || StringView { info.key }.starts_with("retired-");
 			EXPECT_EQ(count, exempt ? 0 : 1) << info.key;
 		}
-		EXPECT_EQ(std::size(table), 66uz);
+		EXPECT_EQ(std::size(table), 68uz);
 	}
 }

@@ -1,7 +1,6 @@
 #include "Merge.hpp"
 
 #include <algorithm>
-#include <array>
 #include <string>
 #include <utility>
 
@@ -56,12 +55,6 @@ namespace {
 					return fieldName == y_.name && fieldType == y_.type;
 				}
 			);
-	}
-
-	[[nodiscard]] StringView className(ir::BindClass class_) {
-		constexpr std::array<StringView, 8> names { "none", "uniform", "storage", "texture", "sampler", "push", "image", "workgroup" };
-		const auto index = static_cast<u32>(class_);
-		return index < names.size() ? names[index] : "unknown";
 	}
 
 	/* Input validation: every ref in range (sentinel allowed), types refer only to earlier types (no cycles) */
