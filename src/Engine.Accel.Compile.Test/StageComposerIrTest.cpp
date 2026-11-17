@@ -5,7 +5,9 @@
 #include <Engine.Accel.Compile/Pass/VkVertexFormat.hpp>
 #include <Engine.Accel.Compile/Profile/EffectProfile.hpp>
 #include <Engine.Accel.Compile/Spec/EffectSpecification.hpp>
+#include <Engine.Accel.Compile/Spec/SimpleEffectSpecification.hpp>
 #include <Engine.Accel.Compile/Stage/StageIr.hpp>
+#include <Engine.Accel.Lang/Ir/Contract.hpp>
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
 #include <Engine.Common/Make.hpp>
 
@@ -376,6 +378,174 @@ namespace AccelCompile {
 			result.derivats = std::move(composed).value();
 			return result;
 		}
+	}
+
+	namespace {
+		/* the stages as one pipeline under a specification declaring `contract_` */
+		[[nodiscard]] std::expected<Vector<smr<StageDerivat>>, Diagnostics> composeDeclared(
+			std::span<const Intermediate* const> stages_,
+			std::span<const StageFlagBits> flags_,
+			StageContract contract_,
+			ref<VariantCache> cache_,
+			ref<PipelineLayoutCache> layouts_
+		) {
+			SimpleEffectSpecification spec {};
+			spec.setStageContract(std::move(contract_));
+			return composePipelineIr(stages_, flags_, EffectProfile {}, spec, cache_, layouts_);
+		}
+
+		[[nodiscard]] StringView keyOf(ref<const Diagnostics> diags_) {
+			return diags_.empty() || diags_.front().code() == nullptr ? StringView {} : StringView { diags_.front().code()->key };
+		}
+	}
+
+	TEST(StageIrTest, PassContractClassMismatchHasBothLocations) {
+		VariantCache cache {};
+		PipelineLayoutCache layouts {};
+		const auto fragment = intermediateOf(fragmentUsing("u"), EntryKind::eFragment);
+		const std::array<const Intermediate*, 1> stages { &fragment };
+		const std::array<StageFlagBits, 1> flags { StageFlagBits::eFragment };
+
+		const auto composed = composeDeclared(
+			stages,
+			flags,
+			StageContract { .provides = { declared("u", BindClass::eStorageBuffer) }, .requires_ = {} },
+			cache,
+			layouts
+		);
+		ASSERT_FALSE(composed.has_value());
+		const auto& d = composed.error().front();
+		EXPECT_EQ(keyOf(composed.error()), "contract-class-mismatch");
+		ASSERT_TRUE(d.primary().is<engine::diag::SourceSpan>());
+		EXPECT_FALSE(StringView { d.primary().as<engine::diag::SourceSpan>().file }.ends_with("StageComposerIrTest.cpp"));
+		ASSERT_EQ(d.labels().size(), 1uz);
+		ASSERT_TRUE(d.labels().front().at.is<engine::diag::SourceSpan>());
+		EXPECT_TRUE(StringView { d.labels().front().at.as<engine::diag::SourceSpan>().file }.ends_with("StageComposerIrTest.cpp"))
+			<< d.labels().front().at.as<engine::diag::SourceSpan>().file;
+	}
+
+	TEST(StageIrTest, PassContractMissingOutputFails) {
+		VariantCache cache {};
+		PipelineLayoutCache layouts {};
+		const auto fragment = intermediateOf(fragmentUsing(""), EntryKind::eFragment);
+		const std::array<const Intermediate*, 1> stages { &fragment };
+		const std::array<StageFlagBits, 1> flags { StageFlagBits::eFragment };
+
+		const auto composed = composeDeclared(
+			stages,
+			flags,
+			StageContract { .provides = {}, .requires_ = { declared("normal") } },
+			cache,
+			layouts
+		);
+		ASSERT_FALSE(composed.has_value());
+		EXPECT_EQ(keyOf(composed.error()), "missing-stage-output");
+	}
+
+	TEST(StageIrTest, PassContractRequiresOnlyExportStage) {
+		VariantCache cache {};
+		PipelineLayoutCache layouts {};
+		const auto vertex = intermediateOf(fragmentUsing(""), EntryKind::eVertex);
+		const auto fragment = intermediateOf(
+			"@output (mode = forward, id = \"normal\") f32vec4 normal;\nfn main() { normal = f32vec4(0.0); }\n",
+			EntryKind::eFragment
+		);
+		const std::array<const Intermediate*, 2> stages { &vertex, &fragment };
+		const std::array<StageFlagBits, 2> flags { StageFlagBits::eVertex, StageFlagBits::eFragment };
+
+		const auto composed = composeDeclared(
+			stages,
+			flags,
+			StageContract { .provides = {}, .requires_ = { declared("normal") } },
+			cache,
+			layouts
+		);
+		EXPECT_TRUE(composed.has_value()) << (composed.has_value() ? "" : composed.error().front().message());
+	}
+
+	TEST(StageIrTest, PassContractRequiredOutputSurvivesTargetSlice) {
+		VariantCache cache {};
+		PipelineLayoutCache layouts {};
+		const auto fragment = intermediateOf(
+			"@output (mode = forward, id = \"color\") f32vec4 color;\n@output (mode = forward, id = \"normal\") f32vec4 normal;\n"
+			"fn main() { color = f32vec4(0.0); normal = f32vec4(1.0); }\n",
+			EntryKind::eFragment
+		);
+		const std::array<const Intermediate*, 1> stages { &fragment };
+		const std::array<StageFlagBits, 1> flags { StageFlagBits::eFragment };
+
+		auto symbol = make_smr<Symbol>(new Symbol {});
+		symbol->symbolName = "color";
+		Vector<smr<const Symbol>> targets {};
+		targets.emplace_back(std::move(symbol).into<const Symbol>());
+		SimpleEffectSpecification spec { std::move(targets) };
+		spec.setStageContract(StageContract { .provides = {}, .requires_ = { declared("normal") } });
+
+		const auto composed = composePipelineIr(stages, flags, EffectProfile {}, spec, cache, layouts);
+		ASSERT_TRUE(composed.has_value()) << composed.error().front().message();
+		EXPECT_TRUE(textOf(*composed->front()).contains("normal")) << textOf(*composed->front());
+	}
+
+	TEST(StageIrTest, PassContractLeavesUnnamedBindingsSelfProvided) {
+		VariantCache cache {};
+		PipelineLayoutCache layouts {};
+		const auto fragment = intermediateOf(fragmentUsing("um"), EntryKind::eFragment);
+		const std::array<const Intermediate*, 1> stages { &fragment };
+		const std::array<StageFlagBits, 1> flags { StageFlagBits::eFragment };
+
+		const auto composed = composeDeclared(
+			stages,
+			flags,
+			StageContract { .provides = { declared("u", BindClass::eUniformBuffer) }, .requires_ = {} },
+			cache,
+			layouts
+		);
+		EXPECT_TRUE(composed.has_value()) << (composed.has_value() ? "" : composed.error().front().message());
+	}
+
+	TEST(StageIrTest, PassContractIsPartOfTheKey) {
+		VariantCache cache {};
+		PipelineLayoutCache layouts {};
+		const auto fragment = intermediateOf(fragmentUsing("u"), EntryKind::eFragment);
+		const std::array<const Intermediate*, 1> stages { &fragment };
+		const std::array<StageFlagBits, 1> flags { StageFlagBits::eFragment };
+
+		const auto storage = [] { return StageContract { .provides = { declared("u", BindClass::eStorageBuffer) }, .requires_ = {} }; };
+		const auto uniform = [] { return StageContract { .provides = { declared("u", BindClass::eUniformBuffer) }, .requires_ = {} }; };
+
+		EXPECT_FALSE(composeDeclared(stages, flags, storage(), cache, layouts).has_value());
+		const auto passed = composeDeclared(stages, flags, uniform(), cache, layouts);
+		EXPECT_TRUE(passed.has_value()) << (passed.has_value() ? "" : passed.error().front().message());
+		EXPECT_FALSE(composeDeclared(stages, flags, storage(), cache, layouts).has_value());
+
+		/* a type name is part of the key too */
+		const auto untyped = composeDeclared(
+			stages,
+			flags,
+			StageContract { .provides = uniform().provides, .requires_ = { declared("color") } },
+			cache,
+			layouts
+		);
+		EXPECT_TRUE(untyped.has_value()) << (untyped.has_value() ? "" : untyped.error().front().message());
+		const auto typed = composeDeclared(
+			stages,
+			flags,
+			StageContract { .provides = uniform().provides, .requires_ = { declared("color", BindClass::eNone, "nope") } },
+			cache,
+			layouts
+		);
+		ASSERT_FALSE(typed.has_value());
+		EXPECT_EQ(keyOf(typed.error()), "contract-type-mismatch");
+
+		/* where the pass declared an entry is not: the same contract on another line hits the cached variant */
+		SimpleEffectSpecification first {};
+		first.setStageContract(uniform());
+		SimpleEffectSpecification second {};
+		second.setStageContract(StageContract { .provides = { declared("u", BindClass::eUniformBuffer) }, .requires_ = {} });
+		const auto a = resolveStageIr(fragment, EffectProfile {}, first, StageFlagBits::eFragment, cache);
+		const auto b = resolveStageIr(fragment, EffectProfile {}, second, StageFlagBits::eFragment, cache);
+		ASSERT_TRUE(a.has_value() && b.has_value());
+		EXPECT_EQ(a->get(), b->get());
 	}
 
 	TEST(StageIrTest, DifferentIdsInStagesGetDistinctSlots) {
