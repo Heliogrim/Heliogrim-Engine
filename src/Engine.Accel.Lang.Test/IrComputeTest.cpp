@@ -38,6 +38,26 @@ namespace AccelLang {
 			return res.has_value() || res.error().empty() ? String {} : res.error().front().message();
 		}
 
+		[[nodiscard]] Diagnostic firstError(StringView source_) {
+			auto res = parse(source_);
+			if (res.has_value() || res.error().empty()) {
+				ADD_FAILURE() << "no error";
+				return {};
+			}
+			return res.error().front();
+		}
+
+		/* `span_` is in "M" and covers the first occurrence of `text_` in `source_` */
+		void expectCovers(const engine::diag::Location& at_, StringView source_, StringView text_) {
+			const auto* span = std::get_if<engine::diag::SourceSpan>(&at_);
+			ASSERT_NE(span, nullptr);
+			const auto pos = source_.find(text_);
+			ASSERT_NE(pos, StringView::npos);
+			EXPECT_LE(span->begin, pos);
+			EXPECT_GE(span->end, pos + text_.size());
+			EXPECT_LT(span->end - span->begin, text_.size() + 2uz) << "span wider than the text";
+		}
+
 		[[nodiscard]] String emitGlsl(ref<Module> mod_) {
 			return spirvTextOf(mod_);
 		}
@@ -89,6 +109,27 @@ namespace AccelLang {
 			message,
 			"'barrier' needs every invocation of a group together but runs under a condition that can differ between invocations"
 		);
+	}
+
+	TEST(ComputeTest, BarrierUnderDivergenceLabelsCondition) {
+		constexpr StringView source = "fn main() {\n\tif (local_invocation_id.x > 3u) {\n\t\tbarrier();\n\t}\n}\n";
+		const auto d = firstError(source);
+		ASSERT_FALSE(d.empty());
+		const auto* primary = std::get_if<engine::diag::SourceSpan>(&d.primary());
+		ASSERT_NE(primary, nullptr);
+		EXPECT_EQ(primary->begin, source.find("barrier"));
+		ASSERT_EQ(d.labels().size(), 1uz);
+		EXPECT_EQ(d.labels().front().message, "this condition can differ between invocations");
+		expectCovers(d.labels().front().at, source, "local_invocation_id.x > 3u");
+	}
+
+	TEST(ComputeTest, BarrierViaCallLabelsCallerCondition) {
+		constexpr StringView source = "fn sync() {\n\tbarrier();\n}\nfn main() {\n\tif (local_invocation_id.x == 0u) {\n\t\tsync();\n\t}\n}\n";
+		const auto d = firstError(source);
+		ASSERT_FALSE(d.empty());
+		ASSERT_EQ(d.labels().size(), 1uz);
+		EXPECT_EQ(d.labels().front().message, "this condition can differ between invocations");
+		expectCovers(d.labels().front().at, source, "local_invocation_id.x == 0u");
 	}
 
 	TEST(ComputeTest, BarrierUnderWorkgroupIdBranchIsValid) {

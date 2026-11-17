@@ -623,6 +623,10 @@ namespace AccelLang {
   |
 3 | 		barrier();
   |   ^^^^^^^
+  --> M:2:6: this condition can differ between invocations
+  |
+2 | 	if (local_invocation_id.x > 3u) {
+  |      ^^^^^^^^^^^^^^^^^^^^^^^^^^
   = note: invocations that skip it leave the others in the group waiting forever
 )GOLD"
 			},

@@ -34,6 +34,29 @@ namespace AccelLang {
 			return false;
 		}
 
+		/* `divergedBy` of the first call statement to `callee_` */
+		[[nodiscard]] SourceLoc divergedOfCall(ref<const Module> mod_, const Uniformity& u_, StringView callee_) {
+			for (auto i = 0uz; i < mod_.stmts.size(); ++i) {
+				const auto& s = mod_.stmts[i];
+				if (s.kind == StmtKind::eExpr && s.lhs.index < mod_.exprs.size() && mod_.exprs[s.lhs.index].name == callee_) {
+					EXPECT_FALSE(u_.uniformStmt[i]);
+					return u_.divergedBy[i];
+				}
+			}
+			ADD_FAILURE() << "no call statement " << callee_;
+			return {};
+		}
+
+		/* `at_` spans exactly the first occurrence of `text_` in `source_` */
+		void expectSpans(ref<const SourceLoc> at_, StringView source_, StringView text_) {
+			const auto pos = source_.find(text_);
+			ASSERT_NE(pos, StringView::npos);
+			EXPECT_EQ(at_.offset, pos);
+			EXPECT_EQ(at_.length, text_.size());
+		}
+
+		constexpr auto ubo = "@input (mode = bind, id = \"u\", class = uniform) block u { f32 k; };\n";
+
 		constexpr auto head =
 			"@input (mode = bind, id = \"p\", class = push) block p { f32 x; };\n"
 			"@input (mode = forward, id = \"in_x\") f32 in_x;\n"
@@ -197,5 +220,33 @@ namespace AccelLang {
 			count += flag ? 1uz : 0uz;
 		}
 		EXPECT_EQ(count, 2uz);
+	}
+
+	TEST(UniformityTest, DivergedByPointsAtOutermostCondition) {
+		const String source = String { ubo } + "fn a() {}\nfn main() {\n\tif (local_invocation_id.x == 0u) {\n\t\tif (u.k > 1.0) {\n\t\t\ta();\n\t\t}\n\t}\n}\n";
+		const auto m = parseOk(source, EntryKind::eCompute);
+		const auto u = analyzeUniformity(m);
+		expectSpans(divergedOfCall(m, u, "a"), source, "local_invocation_id.x == 0u");
+	}
+
+	TEST(UniformityTest, DivergedByOuterWhenInnerIsLaneDependent) {
+		const String source = "fn a() {}\nfn main() {\n\tif (local_invocation_id.x == 0u) {\n\t\tif (local_invocation_id.y == 1u) {\n\t\t\ta();\n\t\t}\n\t}\n}\n";
+		const auto m = parseOk(source, EntryKind::eCompute);
+		const auto u = analyzeUniformity(m);
+		expectSpans(divergedOfCall(m, u, "a"), source, "local_invocation_id.x == 0u");
+	}
+
+	TEST(UniformityTest, DivergedByLoopCondition) {
+		const String source = "fn a() {}\nfn main() {\n\tlet i: u32 = 0u;\n\twhile (i < local_invocation_id.x) {\n\t\ta();\n\t\ti += 1u;\n\t}\n}\n";
+		const auto m = parseOk(source, EntryKind::eCompute);
+		const auto u = analyzeUniformity(m);
+		expectSpans(divergedOfCall(m, u, "a"), source, "i < local_invocation_id.x");
+	}
+
+	TEST(UniformityTest, DivergedByEarlyReturn) {
+		const String source = "fn a() {}\nfn main() {\n\tif (local_invocation_id.x == 0u) {\n\t\treturn;\n\t}\n\ta();\n}\n";
+		const auto m = parseOk(source, EntryKind::eCompute);
+		const auto u = analyzeUniformity(m);
+		expectSpans(divergedOfCall(m, u, "a"), source, "local_invocation_id.x == 0u");
 	}
 }
