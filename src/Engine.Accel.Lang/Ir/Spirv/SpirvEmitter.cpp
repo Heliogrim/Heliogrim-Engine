@@ -2,6 +2,7 @@
 
 #include "SpirvEmitter.hpp"
 #include "SpirvEmitter.Impl.hpp"
+#include "SpirvOptimize.hpp"
 #include "SpirvValidate.hpp"
 
 namespace hg::engine::accel::lang::ir::spirv {
@@ -17,12 +18,14 @@ namespace hg::engine::accel::lang::ir::spirv {
 			if (lowered_.entry != EntryKind::eFragment) {
 				return EmitResult { {}, { Diagnostic::error(codes::asl("invalid-entry-signature"), "stage has no 'main' entry function") } };
 			}
+
 			Module withMain = lowered_;
 			const StmtRef root { static_cast<u32>(withMain.stmts.size()) };
 			withMain.stmts.emplace_back(Stmt { .kind = StmtKind::eBlock });
 			withMain.functions.emplace_back(FunctionDecl { .name = "main", .body = BodyRef { root } });
 			return emit(withMain, layout_, tier_);
 		}
+
 		Impl impl { lowered_, layout_, tier_ };
 		impl.require(spv::Capability::Shader);
 		if (tier_ >= Tier::eDev) {
@@ -74,6 +77,13 @@ namespace hg::engine::accel::lang::ir::spirv {
 			return EmitResult { {}, std::move(impl.diagnostics) };
 		}
 
+		// dev keeps the unoptimized module so names, debug lines and validator offsets match the source
+		if (tier_ == Tier::eBuild) {
+			for (auto& diag : optimize(words, lowered_.name)) {
+				diag.setPrimary(spanIn(lowered_, lowered_.functions[impl.entry].loc));
+				impl.diagnostics.emplace_back(std::move(diag));
+			}
+		}
 		if (tier_ >= Tier::eDev) {
 			for (auto& diag : validate(words, lowered_.name)) {
 				diag.setPrimary(spanIn(lowered_, lowered_.functions[impl.entry].loc));
