@@ -11,6 +11,7 @@
 
 namespace hg::engine::scheduler {
 	class Schedule;
+	struct BoostCell;
 }
 
 namespace hg::engine::scheduler::fiber {
@@ -33,6 +34,12 @@ namespace hg::engine::scheduler::fiber {
 		non_owning_rptr<const task::TaskDelegate> task = nullptr;
 
 		ptr<Schedule> schedule = nullptr;
+
+		/**
+		 * The cell the running task produces into; boosts raise it. Cleared with task. Raw: the bound task keeps the
+		 * cell alive while it runs or is parked, and every re-push passes it to pushBoostable while still owning the task.
+		 */
+		ptr<BoostCell> boost = nullptr;
 
 		ParkNode parkNode;
 
@@ -110,12 +117,23 @@ namespace hg::engine::scheduler::fiber {
 		[[nodiscard]] bool cancellationRequested() noexcept;
 
 		/**
-		 * The lane the running task counts as; the single place a wait boost will raise.
+		 * Binds the cell the running task produces into; its lane counts toward effectiveLane and every re-push.
+		 */
+		void bindBoost(ptr<BoostCell> cell_) noexcept;
+
+		/**
+		 * The cell bound to the running task, null if none or off a fiber
+		 */
+		[[nodiscard]] ptr<BoostCell> boostCell() noexcept;
+
+		/**
+		 * The lane the running task counts as: the higher of its own and its bound cell's.
 		 */
 		[[nodiscard]] Lane effectiveLane() noexcept;
 
 		/**
-		 * Yields when the running task is in a lower lane and has used its slice; no-op elsewhere
+		 * Yields when the running task is in a lower lane and has used its slice, or at once when a boost raised it
+		 * above its queued lane (the re-push then queues it in the raised lane); no-op elsewhere
 		 */
 		void checkpoint();
 	}

@@ -9,6 +9,7 @@
 namespace hg::engine::scheduler {
 	class CompositePipeline;
 	class Stage;
+	struct BoostCell;
 }
 
 namespace hg::engine {
@@ -70,6 +71,12 @@ namespace hg::engine {
 		 * Pushes the task with the lane it already carries; the lane was resolved where the task was created
 		 */
 		virtual void execResolved(_In_ mref<task_handle_type> task_) = 0;
+
+		/**
+		 * As execResolved, but queued in the higher of the task's lane and cell_'s lane; a boost of cell_ racing the push
+		 * is not lost. cell_ must outlive the task (the task holds it).
+		 */
+		virtual void execBoostable(_In_ mref<task_handle_type> task_, _In_ ptr<scheduler::BoostCell> cell_) = 0;
 
 		/**
 		 * Executes the given task with a cooperative cancellation token

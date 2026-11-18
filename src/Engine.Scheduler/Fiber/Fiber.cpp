@@ -1,8 +1,7 @@
 #include "Fiber.hpp"
 
-#include <cstddef>
-
 #include "FiberPool.hpp"
+#include "../Process/BoostCell.hpp"
 #include "../Process/Schedule.hpp"
 
 #ifdef ENV_MSVC
@@ -35,6 +34,7 @@ void Fiber::create(ptr<Fiber> self_, void (*proc_)(void*)) {
 	self_->parent = nullptr;
 	self_->task = nullptr;
 	self_->schedule = nullptr;
+	self_->boost = nullptr;
 	self_->cancellation.reset();
 }
 
@@ -60,6 +60,7 @@ void Fiber::create(ptr<Fiber> self_, _In_ void (*proc_)(int, int)) {
 	self_->parent = nullptr;
 	self_->task = nullptr;
 	self_->schedule = nullptr;
+	self_->boost = nullptr;
 	self_->cancellation.reset();
 }
 
@@ -81,6 +82,7 @@ bool Fiber::destroy() {
 	parent = nullptr;
 	task = nullptr;
 	schedule = nullptr;
+	boost = nullptr;
 	cancellation.reset();
 
 	return true;
@@ -124,22 +126,42 @@ bool self::cancellationRequested() noexcept {
 	return fiber != nullptr && fiber->cancellation != nullptr && fiber->cancellation->isCancellationRequested();
 }
 
-u64 engine::scheduler::fiber::default_fiber_stack_size() noexcept {
-	#ifdef ENV_MSVC
-	return 4096ui64;
-	#else
-	return static_cast<u64>(SIGSTKSZ);
-	#endif
+void self::bindBoost(const ptr<BoostCell> cell_) noexcept {
+	const auto fiber = current();
+	if (fiber != nullptr) {
+		fiber->boost = cell_;
+	}
+}
+
+ptr<engine::scheduler::BoostCell> self::boostCell() noexcept {
+	const auto fiber = current();
+	return fiber != nullptr ? fiber->boost : nullptr;
 }
 
 engine::scheduler::Lane self::effectiveLane() noexcept {
 	const auto fiber = current();
-	return fiber != nullptr && fiber->task != nullptr ? fiber->task->lane() : engine::scheduler::Lane::eInteractive;
+	if (fiber == nullptr || fiber->task == nullptr) {
+		return engine::scheduler::Lane::eInteractive;
+	}
+
+	const auto own = fiber->task->lane();
+	return fiber->boost != nullptr ? higher(own, fiber->boost->lane.load(std::memory_order::seq_cst)) : own;
 }
 
 void self::checkpoint() {
 	const auto fiber = current();
-	if (fiber == nullptr || fiber->task == nullptr || fiber->schedule == nullptr || effectiveLane() == engine::scheduler::Lane::eFrame) {
+	if (fiber == nullptr || fiber->task == nullptr || fiber->schedule == nullptr) {
+		return;
+	}
+
+	const auto lane = effectiveLane();
+	// Boosted above the lane it was popped from: yield now, pushBoostable re-queues it in the raised lane (design 7.3).
+	if (lane != fiber->task->lane()) {
+		fiber->yield();
+		return;
+	}
+
+	if (lane == engine::scheduler::Lane::eFrame) {
 		return;
 	}
 
@@ -147,4 +169,12 @@ void self::checkpoint() {
 	if (elapsed >= std::chrono::microseconds { fiber->schedule->sliceMicros() }) {
 		fiber->yield();
 	}
+}
+
+u64 engine::scheduler::fiber::default_fiber_stack_size() noexcept {
+	#ifdef ENV_MSVC
+	return 4096ui64;
+	#else
+	return static_cast<u64>(SIGSTKSZ);
+	#endif
 }

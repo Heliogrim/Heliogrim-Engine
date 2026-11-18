@@ -5,9 +5,10 @@
 #include <Engine.Common/Make.hpp>
 #include <Engine.Logging/Logger.hpp>
 
-#include "WorkSet/FifoWorkSet.hpp"
+#include "BoostCell.hpp"
 #include "../Task/Task.hpp"
 #include "../Thread/Thread.hpp"
+#include "WorkSet/FifoWorkSet.hpp"
 
 #ifdef WIN32
 #include <Engine.Common/stdafx.h>
@@ -24,16 +25,13 @@ namespace {
 	constexpr u64 backgroundIdx = static_cast<u64>(Lane::eBackground);
 	static_assert(frameIdx == 0uLL && interactiveIdx == 1uLL && backgroundIdx == 2uLL, "lower lanes follow the Frame lane");
 
-	Schedule::time_point::rep ticksOf(const u32 micros_) noexcept {
-		return std::chrono::duration_cast<Schedule::time_point::duration>(std::chrono::microseconds { micros_ }).count();
-	}
+	Schedule::time_point::rep ticksOf(const u32 micros_) noexcept;
 
 	template <typename Type_>
-	void raiseTo(ref<std::atomic<Type_>> value_, const Type_ target_) noexcept {
-		auto seen = value_.load(std::memory_order::relaxed);
-		while (seen < target_ && not value_.compare_exchange_weak(seen, target_, std::memory_order::relaxed)) {}
-	}
+	void raiseTo(ref<std::atomic<Type_>> value_, const Type_ target_) noexcept;
 }
+
+/**/
 
 Schedule::Schedule() :
 	_workSets() {}
@@ -87,29 +85,6 @@ u64 Schedule::queued(const Lane lane_) const noexcept {
 	return _depth[static_cast<u64>(lane_)].load(std::memory_order::acquire);
 }
 
-u32 Schedule::reserve() const noexcept {
-	return _reserve.load(std::memory_order::relaxed);
-}
-
-u32 Schedule::effectiveReserve(const time_point now_) const noexcept {
-	// seq_cst: pop's cap pairs with the reserve exchange in rollFrame
-	const auto stored = _reserve.load(std::memory_order::seq_cst);
-	if (_config.reserve != 0uL) {
-		return stored;
-	}
-
-	const auto sinceRoll = now_.time_since_epoch().count() - _lastRoll.load(std::memory_order::relaxed);
-	if (time_point::duration { sinceRoll } > std::chrono::milliseconds { reserveStaleMillis }) {
-		return _workers > 1uL ? 1uL : 0uL;
-	}
-
-	return stored;
-}
-
-u64 Schedule::frameWaitMaxMicros() const noexcept {
-	return _frameWaitMax.load(std::memory_order::relaxed);
-}
-
 void Schedule::wakeOne() noexcept {
 	WakeByAddressSingle(&_pushEpoch);
 }
@@ -149,6 +124,62 @@ bool Schedule::push(const non_owning_rptr<const task::TaskDelegate> task_) {
 	_pushEpoch.fetch_add(1uL, std::memory_order::release);
 	if (not thread::self::isWorker() || (lane == Lane::eFrame && _config.wakeOnFramePush)) {
 		wakeOne();
+	}
+	return true;
+}
+
+bool Schedule::promote(
+	const non_owning_rptr<const task::TaskDelegate> task_,
+	const Lane to_,
+	const ptr<BoostCell> cell_
+) {
+	::hg::assertd(to_ != Lane::eInherit);
+	::hg::assertd(cell_ != nullptr);
+
+	// Searches every lane below to_ instead of reading the task lane: only the entry's owner may touch it.
+	for (u64 laneIdx = static_cast<u64>(to_) + 1uLL; laneIdx < laneCount; ++laneIdx) {
+		// erase takes and releases this work set's lock; push below takes the target's, never both at once.
+		// Matching the cell too skips an unrelated task queued at a freed producer's address.
+		if (not _workSets[laneIdx]->erase(task_, cell_)) {
+			continue;
+		}
+
+		// queued() sums the depths, so it dips by one until the push below.
+		_depth[laneIdx].fetch_sub(1uLL, std::memory_order::seq_cst);
+		// The erase made this thread the only holder of the entry, so it alone writes the lane.
+		const_cast<ptr<task::TaskDelegate>>(task_)->lane() = to_;
+		// The cell may have risen past to_ while the entry was out of every queue: re-push as its owner, same cell.
+		return pushBoostable(task_, cell_);
+	}
+	return false;
+}
+
+bool Schedule::pushBoostable(const non_owning_rptr<const task::TaskDelegate> task_, const ptr<BoostCell> cell_) {
+	// Bound while this thread owns the task: a reused address queued under another cell never matches promote's erase.
+	task_->boostCell = cell_;
+	if (cell_ == nullptr) {
+		return push(task_);
+	}
+
+	// Counted reference taken while this thread owns the task (which keeps the cell alive): after push another worker
+	// may finish the task and drop the last other reference, so only keep is dereferenced below.
+	const auto keep = cell_->arci_from_this();
+
+	// The pusher owns the task until push inserts it; after that the lane is not read again (a worker may run it).
+	auto& lane = const_cast<ptr<task::TaskDelegate>>(task_)->lane();
+	const auto pushed = higher(lane, cell_->lane.load(std::memory_order::seq_cst));
+	lane = pushed;
+
+	if (not push(task_)) {
+		return false;
+	}
+
+	// Push inserts under the work set lock, then this re-reads the cell; a boost raises the cell, then erases under
+	// the same lock. In the lock order either the boost's erase sees the entry, or its raise is visible here.
+	const auto raised = keep->lane.load(std::memory_order::seq_cst);
+	::hg::assertd(raised == Lane::eFrame || raised == Lane::eInteractive || raised == Lane::eBackground);
+	if (higher(raised, pushed) != pushed) {
+		(void)promote(task_, raised, keep.get());
 	}
 	return true;
 }
@@ -230,6 +261,27 @@ bool Schedule::pop(const time_point now_, ref<non_owning_rptr<const task::TaskDe
 	return false;
 }
 
+u32 Schedule::parkTimeoutMillis(const time_point now_) const noexcept {
+
+	const auto now = now_.time_since_epoch().count();
+	auto earliest = parkForever;
+
+	for (u64 laneIdx = interactiveIdx; laneIdx < laneCount; ++laneIdx) {
+		if (_depth[laneIdx].load(std::memory_order::relaxed) == 0uLL) {
+			continue;
+		}
+
+		const auto floor = ticksOf(laneIdx == interactiveIdx ? _config.interactiveFloorMicros : _config.backgroundFloorMicros);
+		const auto due = time_point::duration {
+			std::max<time_point::rep>(floor - (now - _lastStart[laneIdx - interactiveIdx].load(std::memory_order::relaxed)), 0)
+		};
+		const auto millis = std::chrono::ceil<std::chrono::milliseconds>(due).count();
+		earliest = std::min<u32>(earliest, static_cast<u32>(std::clamp<decltype(millis)>(millis, 1, parkForever - 1uL)));
+	}
+
+	return earliest;
+}
+
 void Schedule::leave(const Lane lane_) noexcept {
 	// relaxed: the leaving worker pops again itself, so no peer needs to observe the freed slot to stay live
 	if (lane_ == Lane::eFrame) {
@@ -237,6 +289,36 @@ void Schedule::leave(const Lane lane_) noexcept {
 	} else {
 		_lowerRunning.fetch_sub(1uL, std::memory_order::relaxed);
 	}
+}
+
+void Schedule::noteRun(const Lane lane_, const u64 micros_) noexcept {
+	const auto idx = static_cast<u64>(lane_);
+
+	auto seen = _maxRun[idx].load(std::memory_order::relaxed);
+	while (seen < micros_ && not _maxRun[idx].compare_exchange_weak(seen, micros_, std::memory_order::relaxed)) {}
+
+	if (micros_ <= 2uLL * _config.sliceMicros) {
+		return;
+	}
+
+	_overruns[idx].fetch_add(1uLL, std::memory_order::relaxed);
+	#ifdef _DEBUG
+	if (not _overrunLogged[idx].exchange(true, std::memory_order::relaxed)) {
+		IM_CORE_WARNF("A lower-lane task ran {} us without a checkpoint (lane {}, slice {} us).", micros_, idx, _config.sliceMicros);
+	}
+	#endif
+}
+
+u32 Schedule::sliceMicros() const noexcept {
+	return _config.sliceMicros;
+}
+
+u64 Schedule::overruns(const Lane lane_) const noexcept {
+	return _overruns[static_cast<u64>(lane_)].load(std::memory_order::relaxed);
+}
+
+u64 Schedule::maxRunMicros(const Lane lane_) const noexcept {
+	return _maxRun[static_cast<u64>(lane_)].load(std::memory_order::relaxed);
 }
 
 void Schedule::rollFrame() noexcept {
@@ -279,6 +361,29 @@ void Schedule::resetReserve() noexcept {
 	}
 }
 
+u32 Schedule::reserve() const noexcept {
+	return _reserve.load(std::memory_order::relaxed);
+}
+
+u32 Schedule::effectiveReserve(const time_point now_) const noexcept {
+	// seq_cst: pop's cap pairs with the reserve exchange in rollFrame
+	const auto stored = _reserve.load(std::memory_order::seq_cst);
+	if (_config.reserve != 0uL) {
+		return stored;
+	}
+
+	const auto sinceRoll = now_.time_since_epoch().count() - _lastRoll.load(std::memory_order::relaxed);
+	if (time_point::duration { sinceRoll } > std::chrono::milliseconds { reserveStaleMillis }) {
+		return _workers > 1uL ? 1uL : 0uL;
+	}
+
+	return stored;
+}
+
+u64 Schedule::frameWaitMaxMicros() const noexcept {
+	return _frameWaitMax.load(std::memory_order::relaxed);
+}
+
 u32 Schedule::targetReserve() const noexcept {
 	if (_workers <= 1uL) {
 		return 0uL;
@@ -316,53 +421,16 @@ void Schedule::noteFrameWait(const time_point now_, const non_owning_rptr<const 
 	_lastRoll.store(now_.time_since_epoch().count(), std::memory_order::relaxed);
 }
 
-u32 Schedule::parkTimeoutMillis(const time_point now_) const noexcept {
+/**/
 
-	const auto now = now_.time_since_epoch().count();
-	auto earliest = parkForever;
-
-	for (u64 laneIdx = interactiveIdx; laneIdx < laneCount; ++laneIdx) {
-		if (_depth[laneIdx].load(std::memory_order::relaxed) == 0uLL) {
-			continue;
-		}
-
-		const auto floor = ticksOf(laneIdx == interactiveIdx ? _config.interactiveFloorMicros : _config.backgroundFloorMicros);
-		const auto due = time_point::duration {
-			std::max<time_point::rep>(floor - (now - _lastStart[laneIdx - interactiveIdx].load(std::memory_order::relaxed)), 0)
-		};
-		const auto millis = std::chrono::ceil<std::chrono::milliseconds>(due).count();
-		earliest = std::min<u32>(earliest, static_cast<u32>(std::clamp<decltype(millis)>(millis, 1, parkForever - 1uL)));
+namespace {
+	Schedule::time_point::rep ticksOf(const u32 micros_) noexcept {
+		return std::chrono::duration_cast<Schedule::time_point::duration>(std::chrono::microseconds { micros_ }).count();
 	}
 
-	return earliest;
-}
-
-u32 Schedule::sliceMicros() const noexcept {
-	return _config.sliceMicros;
-}
-
-u64 Schedule::overruns(const Lane lane_) const noexcept {
-	return _overruns[static_cast<u64>(lane_)].load(std::memory_order::relaxed);
-}
-
-u64 Schedule::maxRunMicros(const Lane lane_) const noexcept {
-	return _maxRun[static_cast<u64>(lane_)].load(std::memory_order::relaxed);
-}
-
-void Schedule::noteRun(const Lane lane_, const u64 micros_) noexcept {
-	const auto idx = static_cast<u64>(lane_);
-
-	auto seen = _maxRun[idx].load(std::memory_order::relaxed);
-	while (seen < micros_ && not _maxRun[idx].compare_exchange_weak(seen, micros_, std::memory_order::relaxed)) {}
-
-	if (micros_ <= 2uLL * _config.sliceMicros) {
-		return;
+	template <typename Type_>
+	void raiseTo(ref<std::atomic<Type_>> value_, const Type_ target_) noexcept {
+		auto seen = value_.load(std::memory_order::relaxed);
+		while (seen < target_ && not value_.compare_exchange_weak(seen, target_, std::memory_order::relaxed)) {}
 	}
-
-	_overruns[idx].fetch_add(1uLL, std::memory_order::relaxed);
-	#ifdef _DEBUG
-	if (not _overrunLogged[idx].exchange(true, std::memory_order::relaxed)) {
-		IM_CORE_WARNF("A lower-lane task ran {} us without a checkpoint (lane {}, slice {} us).", micros_, idx, _config.sliceMicros);
-	}
-	#endif
 }

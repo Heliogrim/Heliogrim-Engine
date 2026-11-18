@@ -81,9 +81,10 @@ namespace hg::engine {
 
 		void execResolved(_In_ mref<task_handle_type> task_) override;
 
+		void execBoostable(_In_ mref<task_handle_type> task_, _In_ ptr<scheduler::BoostCell> cell_) override;
+
 	public:
-		[[nodiscard]] const non_owning_rptr<scheduler::CompositePipeline>
-		getCompositePipeline() const noexcept override;
+		[[nodiscard]] const non_owning_rptr<scheduler::CompositePipeline> getCompositePipeline() const noexcept override;
 
 	public:
 		bool execOnStage(
