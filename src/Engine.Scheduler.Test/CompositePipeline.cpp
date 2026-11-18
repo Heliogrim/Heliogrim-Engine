@@ -330,7 +330,7 @@ namespace SchedulerModule {
 
 	TEST(CompositePipelineTest, MergedStageUnionsDeclarations) {
 		Schedule schedule {};
-		schedule.setup();
+		schedule.setup(4uL, LanePolicyConfig {});
 		CompositePipeline composite { &schedule };
 
 		auto first = make_uptr<TestPipeline>("::test::first");
@@ -356,7 +356,7 @@ namespace SchedulerModule {
 		constexpr string_view nameR = "::test::R";
 
 		Schedule schedule {};
-		schedule.setup();
+		schedule.setup(4uL, LanePolicyConfig {});
 		CompositePipeline composite { &schedule };
 
 		// only the second S registration writes K; the merged S must carry it and conflict with the unordered reader R
@@ -554,7 +554,7 @@ namespace SchedulerModule {
 
 	TEST(CompositePipelineTest, EmptyStageRunsSuccessors) {
 		Schedule schedule {};
-		schedule.setup();
+		schedule.setup(4uL, LanePolicyConfig {});
 		CompositePipeline composite { &schedule };
 
 		std::atomic_bool ranA { false };
@@ -572,7 +572,8 @@ namespace SchedulerModule {
 
 		const auto runOne = [&schedule] {
 			non_owning_rptr<const task::TaskDelegate> task = nullptr;
-			ASSERT_TRUE(schedule.pop(task));
+			Lane lane {};
+			ASSERT_TRUE(schedule.pop(Schedule::time_point {}, task, lane));
 			task->delegate();
 		};
 
@@ -751,7 +752,7 @@ namespace SchedulerModule {
 
 	TEST(CompositePipelineTest, EnqueueStampsFrameLane) {
 		Schedule schedule {};
-		schedule.setup();
+		schedule.setup(4uL, LanePolicyConfig {});
 		CompositePipeline composite { &schedule };
 
 		auto pipeline = make_uptr<TestPipeline>("::test::lane");
@@ -761,8 +762,9 @@ namespace SchedulerModule {
 		composite.start();
 
 		non_owning_rptr<const task::TaskDelegate> task = nullptr;
-		ASSERT_TRUE(schedule.pop(task));
+		Lane lane {};
+		ASSERT_TRUE(schedule.pop(Schedule::time_point {}, task, lane));
 		EXPECT_EQ(task->lane(), Lane::eFrame);
-		EXPECT_FALSE(schedule.pop(task));
+		EXPECT_FALSE(schedule.pop(Schedule::time_point {}, task, lane));
 	}
 }

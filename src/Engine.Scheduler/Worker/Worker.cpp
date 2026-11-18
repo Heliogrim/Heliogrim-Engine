@@ -112,6 +112,7 @@ void Worker::handle(void* args_) {
 	fiber::FiberPool& pool { *worker->_fiberPool };
 	fiber::FiberLaunchPad launcher { nullptr };
 	non_owning_rptr<const task::TaskDelegate> task = nullptr;
+	Lane lane = Lane::eFrame;
 
 	self::markWorker(true);
 	worker->_ready.store(true, std::memory_order::release);
@@ -123,7 +124,7 @@ void Worker::handle(void* args_) {
 		const auto epoch { schedule->epoch() };
 		task = nullptr;
 
-		if (schedule->pop(task)) {
+		if (schedule->pop(std::chrono::steady_clock::now(), task, lane)) {
 			/**
 			 * Cascade: wake one peer for the work left behind
 			 */
@@ -149,6 +150,7 @@ void Worker::handle(void* args_) {
 			::hg::assertd(launcher.self->task->fiber() != nullptr);
 			launcher.self->parent = fiber;
 			launcher();
+			schedule->leave(lane);
 
 			#ifdef _DEBUG
 			if (debugPostSwitchHook != nullptr) {
@@ -186,7 +188,8 @@ void Worker::handle(void* args_) {
 			if (worker->_interrupt.load(std::memory_order::acquire)) {
 				break;
 			}
-			schedule->waitForWork(epoch);
+			// bounded while lower work is queued: a floor only falls due for a worker that pops
+			schedule->waitForWork(epoch, schedule->parkTimeoutMillis(std::chrono::steady_clock::now()));
 		}
 	}
 

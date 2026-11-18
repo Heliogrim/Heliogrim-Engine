@@ -26,7 +26,13 @@ namespace hg::engine::cfg {
 	enum class SchedulerConfigProperty {
 		/**/
 		eWorkerCount,
-		eWorkerReserve
+		eWorkerReserve,
+		eLaneSlice,
+		eInteractiveFloor,
+		eBackgroundFloor,
+		eLaneReserve,
+		eFrameWaitLimit,
+		eWakeOnFramePush
 	};
 
 	/**/
