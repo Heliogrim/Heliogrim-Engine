@@ -254,6 +254,7 @@ namespace SchedulerModule {
 		config.backgroundFloorMicros = 0uL;
 		config.frameWaitLimitMicros = 0uL;
 		schedule.setup(4u, config);
+		EXPECT_EQ(schedule.sliceMicros(), 1u);
 
 		const auto f = makeTask(Lane::eFrame);
 		ASSERT_TRUE(schedule.push(makeTask(Lane::eInteractive)));

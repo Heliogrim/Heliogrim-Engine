@@ -56,6 +56,9 @@ namespace hg::engine::scheduler {
 		std::atomic<time_point::rep> _lastRoll { 0 };
 
 		std::atomic<u64> _frameWaitMax { 0uLL };
+		Array<std::atomic<u64>, laneCount> _overruns {};
+		Array<std::atomic<u64>, laneCount> _maxRun {};
+		Array<std::atomic<bool>, laneCount> _overrunLogged {};
 
 	private:
 		u32 _workers { 1uL };
@@ -84,6 +87,16 @@ namespace hg::engine::scheduler {
 		 * Longest Frame wait in microseconds since the last roll.
 		 */
 		[[nodiscard]] u64 frameWaitMaxMicros() const noexcept;
+
+		[[nodiscard]] u32 sliceMicros() const noexcept;
+
+		/** Runs of a lower lane that took longer than twice the slice between launch and return. */
+		[[nodiscard]] u64 overruns(const Lane lane_) const noexcept;
+
+		[[nodiscard]] u64 maxRunMicros(const Lane lane_) const noexcept;
+
+		/** Called by the worker when a fiber of lane_ returns after micros_ of running. */
+		void noteRun(const Lane lane_, const u64 micros_) noexcept;
 
 		void wakeOne() noexcept;
 

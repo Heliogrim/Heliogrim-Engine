@@ -1,5 +1,6 @@
 #include "Worker.hpp"
 
+#include <chrono>
 #include <stdexcept>
 #include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Common/stdafx.h>
@@ -149,8 +150,14 @@ void Worker::handle(void* args_) {
 			::hg::assertd(launcher.self->task != nullptr);
 			::hg::assertd(launcher.self->task->fiber() != nullptr);
 			launcher.self->parent = fiber;
+			const auto launchedAt = std::chrono::steady_clock::now();
+			launcher.self->sliceStart = launchedAt;
 			launcher();
 			schedule->leave(lane);
+			if (lane != Lane::eFrame) {
+				const auto ran = std::chrono::steady_clock::now() - launchedAt;
+				schedule->noteRun(lane, static_cast<u64>(std::chrono::duration_cast<std::chrono::microseconds>(ran).count()));
+			}
 
 			#ifdef _DEBUG
 			if (debugPostSwitchHook != nullptr) {

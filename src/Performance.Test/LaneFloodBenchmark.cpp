@@ -18,6 +18,7 @@
 #include <Engine.Scheduler/Pipeline/Stage/PipelineStage.hpp>
 #include <Engine.Scheduler/Task/Task.hpp>
 #include <Engine.Scheduler/Waitable/JoinCounter.hpp>
+#include <Heliogrim/Async/Yield.hpp>
 
 #include "../Engine.Scheduler.Test/TestCompScheduler.hpp"
 #include "../Engine.Scheduler.Test/TestSchedulerEngine.hpp"
@@ -288,10 +289,11 @@ namespace Performance {
 										s_->exec(
 											task::make_task(
 												[&st, cooperates_] {
-													// no checkpoint exists yet, so both kinds spin; the cooperating one in steps
+													// the cooperating task checkpoints every step, the other never does
 													if (cooperates_) {
 														for (u32 spun = 0; spun < floodTaskMicros; spun += floodStepMicros) {
 															spinMicros(floodStepMicros);
+															hg::checkpoint();
 														}
 													} else {
 														spinMicros(floodTaskMicros);

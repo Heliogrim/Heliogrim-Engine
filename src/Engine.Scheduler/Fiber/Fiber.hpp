@@ -1,9 +1,11 @@
 #pragma once
 
+#include <chrono>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
 #include "Cancellation.hpp"
+#include "../Lane.hpp"
 #include "../Task/Task.hpp"
 #include "../Waitable/ParkQueue.hpp"
 
@@ -35,6 +37,9 @@ namespace hg::engine::scheduler::fiber {
 		ParkNode parkNode;
 
 		CancellationToken cancellation;
+
+		/** Stamped by the worker right before each launch or resume. */
+		std::chrono::steady_clock::time_point sliceStart {};
 
 	public:
 		#if defined(WIN32)
@@ -103,6 +108,16 @@ namespace hg::engine::scheduler::fiber {
 		 * Whether the task running on the current fiber was asked to cancel (cooperative, never interrupts)
 		 */
 		[[nodiscard]] bool cancellationRequested() noexcept;
+
+		/**
+		 * The lane the running task counts as; the single place a wait boost will raise.
+		 */
+		[[nodiscard]] Lane effectiveLane() noexcept;
+
+		/**
+		 * Yields when the running task is in a lower lane and has used its slice; no-op elsewhere
+		 */
+		void checkpoint();
 	}
 
 	/**
