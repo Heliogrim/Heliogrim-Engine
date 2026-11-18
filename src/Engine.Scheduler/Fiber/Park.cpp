@@ -43,6 +43,7 @@ void hg::engine::scheduler::unpark(ref<ParkNode> node_) noexcept {
 
 	const auto prev = node_.state.exchange(ParkNode::State::eWoken, std::memory_order::acq_rel);
 	if (prev == ParkNode::State::eParked) {
-		node_.fiber->schedule->push(node_.fiber->task);
+		// After the park handshake exactly one side pushes, so the lane write in pushBoostable has a single owner.
+		(void)node_.fiber->schedule->pushBoostable(node_.fiber->task, node_.fiber->boost);
 	}
 }

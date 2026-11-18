@@ -45,6 +45,7 @@ void FiberLaunchPad::launch(const int ptrLow_, const int ptrHigh_) {
 
 		// TODO: Refactor, we need this workaround currently, cause delegate is fire and forget
 		launcher.self->task = nullptr;
+		launcher.self->boost = nullptr;
 		launcher.self->yield();
 	}
 }
