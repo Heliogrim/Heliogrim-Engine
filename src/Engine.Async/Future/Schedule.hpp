@@ -12,7 +12,7 @@ namespace hg::detail {
 	template <typename T_, typename E_>
 	void scheduleContinuation(mref<Arci<FutureState<T_, E_>>> state_) {
 		const auto lane = state_->lane;
-		::hg::engine::Engine::getEngine()->getScheduler()->exec(
+		::hg::engine::Engine::getEngine()->getScheduler()->execResolved(
 			::hg::engine::scheduler::task::make_task(
 				[state = std::move(state_)] {
 					std::move(state->cont)(*state.get());
