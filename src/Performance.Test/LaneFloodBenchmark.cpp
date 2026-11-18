@@ -11,7 +11,12 @@
 #include <limits>
 #include <thread>
 #include <Engine.Common/Make.hpp>
+#include <Engine.Async/Future/Async.hpp>
+#include <Engine.Async/Future/Future.hpp>
 #include <Engine.Scheduler/CompScheduler.hpp>
+#include <Engine.Scheduler/Lane.hpp>
+#include <Engine.Scheduler/LanePolicyConfig.hpp>
+#include <Engine.Scheduler/Process/Schedule.hpp>
 #include <Engine.Scheduler/Scheduler.hpp>
 #include <Engine.Scheduler/Graph/StageDecl.hpp>
 #include <Engine.Scheduler/Pipeline/CompositePipeline.hpp>
@@ -32,7 +37,9 @@ using namespace hg::engine::scheduler;
  *
  * DISABLED by default; run with `--gtest_also_run_disabled_tests --gtest_filter=LaneFloodBenchmark.*`.
  * Environment: `HG_BENCH_WORKERS` (0 or unset = auto), `HG_BENCH_FLOOD_COOPERATES` (unset = both flood kinds,
- *	1 = cooperating only, 0 = non-cooperating only).
+ *	1 = cooperating only, 0 = non-cooperating only). Policy knobs: `HG_BENCH_SLICE`, `HG_BENCH_FLOOR_I`, `HG_BENCH_FLOOR_B`,
+ *	`HG_BENCH_RESERVE`, `HG_BENCH_FRAME_WAIT`, `HG_BENCH_WAKE_ON_FRAME_PUSH` (unset = LanePolicyConfig default).
+ * `DISABLED_PromoteScan`: a real Frame task (execResolved, eFrame) awaits a Background `async` behind `HG_BENCH_BACKLOG` (default 100,000) queued Background tasks.
  *
  * Note: Only a debug configuration is built by default, so absolute numbers are indicative; compare before/after only.
  */
@@ -95,6 +102,27 @@ namespace Performance {
 			std::printf("[ BENCH    ] %-14s %-34s %12.1f %s\n", kind_, metric_, value_, unit_);
 		}
 
+		/** Unitless counts (reserve in workers): p50/p99/max without the us scaling of reportDist. */
+		void reportCount(const char* kind_, const char* metric_, ref<Vector<u64>> samples_) {
+			if (samples_.empty()) {
+				return;
+			}
+			std::ranges::sort(samples_);
+			const auto at = [&](const double p_) {
+				return static_cast<double>(samples_[std::min(
+					samples_.size() - 1uz,
+					static_cast<size_t>(p_ * static_cast<double>(samples_.size()))
+				)]);
+			};
+			char label[64];
+			std::snprintf(label, sizeof(label), "%s p50", metric_);
+			report(kind_, label, at(0.50), "workers", samples_.size());
+			std::snprintf(label, sizeof(label), "%s p99", metric_);
+			report(kind_, label, at(0.99), "workers", samples_.size());
+			std::snprintf(label, sizeof(label), "%s max", metric_);
+			report(kind_, label, static_cast<double>(samples_.back()), "workers", samples_.size());
+		}
+
 		void reportDist(const char* kind_, const char* metric_, ref<Vector<u64>> samples_, const bool withMax_) {
 			char label[64];
 			const auto n = samples_.size();
@@ -105,6 +133,42 @@ namespace Performance {
 			if (withMax_) {
 				std::snprintf(label, sizeof(label), "%s max", metric_);
 				report(kind_, label, samples_.empty() ? 0.0 : static_cast<double>(*std::ranges::max_element(samples_)) / 1000.0, "us", n);
+			}
+		}
+
+		[[nodiscard]] LanePolicyConfig lanesFromEnv() {
+			LanePolicyConfig cfg {};
+			cfg.sliceMicros = envU32("HG_BENCH_SLICE", cfg.sliceMicros);
+			cfg.interactiveFloorMicros = envU32("HG_BENCH_FLOOR_I", cfg.interactiveFloorMicros);
+			cfg.backgroundFloorMicros = envU32("HG_BENCH_FLOOR_B", cfg.backgroundFloorMicros);
+			cfg.reserve = envU32("HG_BENCH_RESERVE", cfg.reserve);
+			cfg.frameWaitLimitMicros = envU32("HG_BENCH_FRAME_WAIT", cfg.frameWaitLimitMicros);
+			cfg.wakeOnFramePush = envU32("HG_BENCH_WAKE_ON_FRAME_PUSH", cfg.wakeOnFramePush ? 1u : 0u) != 0u;
+			return cfg;
+		}
+
+		void printConfig(const LanePolicyConfig& c_) {
+			std::printf(
+				"[ BENCH    ] config slice=%u floorI=%u floorB=%u reserve=%u frameWait=%u wake=%u\n",
+				c_.sliceMicros,
+				c_.interactiveFloorMicros,
+				c_.backgroundFloorMicros,
+				c_.reserve,
+				c_.frameWaitLimitMicros,
+				c_.wakeOnFramePush ? 1u : 0u
+			);
+		}
+
+		void reportLaneStats(const char* kind_, const ptr<Schedule> schedule_) {
+			constexpr std::array<std::pair<const char*, Lane>, 3> lanes {
+				{ { "frame", Lane::eFrame }, { "interactive", Lane::eInteractive }, { "background", Lane::eBackground } }
+			};
+			for (const auto& [name, lane] : lanes) {
+				char label[64];
+				std::snprintf(label, sizeof(label), "overruns %s", name);
+				report(kind_, label, static_cast<double>(schedule_->overruns(lane)), "");
+				std::snprintf(label, sizeof(label), "max run %s", name);
+				report(kind_, label, static_cast<double>(schedule_->maxRunMicros(lane)), "us");
 			}
 		}
 
@@ -122,9 +186,13 @@ namespace Performance {
 			// probe
 			std::atomic_bool probeRun { false };
 			std::atomic<u32> probesPushed { 0 };
-			std::atomic<u32> probeIdx { 0 }; // next sample slot
+			std::atomic<u32> probeIdx { 0 };// next sample slot
 			std::atomic<u32> probesCompleted { 0 };
 			Vector<u64> probeNs;
+			// per-frame samples taken at the last stage
+			ptr<Schedule> schedule = nullptr;
+			Vector<u64> waitMaxNs;
+			Vector<u64> reserveSamples;
 		};
 
 		class BenchStage final :
@@ -218,25 +286,32 @@ namespace Performance {
 				const auto at = st_.frameIdx.fetch_add(1);
 				if (at < frames) {
 					st_.frameNs[at] = nowNs() - st_.frameStart;
+					st_.waitMaxNs[at] = st_.schedule->frameWaitMaxMicros() * 1000uLL;
+					st_.reserveSamples[at] = st_.schedule->reserve();
 				}
 			}
 		}
 
 		void runOnce(const u32 workers_, const char* kind_, const bool flood_, const bool cooperates_) {
+			const auto lanes = lanesFromEnv();
 			SchedulerModule::structuredRuntimeTest(
 				workers_,
+				lanes,
 				[&](nmpt<engine::Scheduler> s_) {
 					auto state = std::make_unique<BenchState>();
 					state->frameNs.resize(frames);
 					state->pickupNs.resize(static_cast<size_t>(frames) * fanOutStages);
 					state->completeNs.resize(static_cast<size_t>(frames) * fanOutStages);
 					state->probeNs.resize(maxProbes);
+					state->waitMaxNs.resize(frames);
+					state->reserveSamples.resize(frames);
 					auto& st = *state;
 					const auto workers = static_cast<u32>(s_->getWorkerCount());
 
 					auto* const comp = static_cast<ptr<engine::TestCompScheduler>>(s_.get());
 					CompositePipeline composite { comp->testGetSchedule() };
 					composite.setMaxInFlight(1);
+					st.schedule = comp->testGetSchedule();
 
 					static std::array<string, stageCount> names;
 					static std::array<std::array<string_view, 1>, stageCount> afters;
@@ -370,9 +445,20 @@ namespace Performance {
 					st.completeNs.resize(st.pickupNs.size());
 					reportDist(kind_, "fan-out pickup", st.pickupNs, false);
 					reportDist(kind_, "fan-out completion", st.completeNs, false);
-					report(kind_, "flood tasks completed", static_cast<double>(st.floodDone.load()) / (static_cast<double>(elapsed) / 1e9), "/s");
+					report(
+						kind_,
+						"flood tasks completed",
+						static_cast<double>(st.floodDone.load()) / (static_cast<double>(elapsed) / 1e9),
+						"/s"
+					);
 					st.probeNs.resize(std::min<u32>(st.probeIdx.load(), maxProbes));
 					reportDist(kind_, "probe latency", st.probeNs, false);
+					st.waitMaxNs.resize(st.frameNs.size());
+					st.reserveSamples.resize(st.frameNs.size());
+					reportDist(kind_, "per-frame max Frame wait", st.waitMaxNs, true);
+					reportCount(kind_, "reserve", st.reserveSamples);
+					reportLaneStats(kind_, st.schedule);
+					printConfig(lanes);
 				}
 			);
 		}
@@ -389,5 +475,95 @@ namespace Performance {
 		if (not coop || coop[0] == '0') {
 			runOnce(workers, "flood-noncoop", true, false);
 		}
+	}
+
+	TEST(LaneFloodBenchmark, DISABLED_PromoteScan) {
+		const u32 backlog = envU32("HG_BENCH_BACKLOG", 100'000u);
+		constexpr u32 backlogTaskMicros = 200u;
+		const auto lanes = lanesFromEnv();
+
+		SchedulerModule::structuredRuntimeTest(
+			envU32("HG_BENCH_WORKERS", 0),
+			lanes,
+			[&](nmpt<engine::Scheduler> s_) {
+				auto* const comp = static_cast<ptr<engine::TestCompScheduler>>(s_.get());
+				const auto schedule = comp->testGetSchedule();
+				std::atomic<u32> drained { 0 };
+				std::atomic_bool done { false };
+				std::atomic<u64> awaitNs { 0 };
+				std::atomic<u64> producerRunNs { 0 };
+				std::atomic<int> waiterLane { -1 };
+				std::atomic<int> producerLane { -1 };
+
+				const auto begin = nowNs();
+				for (u32 i = 0; i < backlog; ++i) {
+					s_->exec(
+						task::make_task(
+							[&drained] {
+								spinMicros(backlogTaskMicros);
+								drained.fetch_add(1);
+							},
+							Lane::eBackground
+						)
+					);
+				}
+				const auto pushedNs = nowNs() - begin;
+				const auto depth = schedule->queued(Lane::eBackground);
+
+				s_->execResolved(
+					task::make_task(
+						[&] {
+							waiterLane.store(static_cast<int>(fiber::self::effectiveLane()));
+							const auto t0 = nowNs();
+							auto fut = hg::async(
+								[&] {
+									const auto p0 = nowNs();
+									producerLane.store(static_cast<int>(fiber::self::effectiveLane()));
+									spinMicros(100u);
+									producerRunNs.store(nowNs() - p0);
+									return 1;
+								},
+								Lane::eBackground
+							);
+							std::ignore = hg::await(std::move(fut));
+							awaitNs.store(nowNs() - t0);
+							done.store(true);
+						},
+						Lane::eFrame
+					)
+				);
+
+				while (not done.load()) {
+					std::this_thread::sleep_for(std::chrono::milliseconds { 1 });
+				}
+				const auto left = schedule->queued(Lane::eBackground);
+				while (drained.load() < backlog) {
+					std::this_thread::sleep_for(std::chrono::milliseconds { 5 });
+				}
+				const auto drainNs = nowNs() - begin;
+
+				std::printf("[ BENCH    ] promote        workers=%zu\n", static_cast<size_t>(s_->getWorkerCount()));
+				report("promote", "push backlog tasks", static_cast<double>(pushedNs) / 1000.0, "us");
+				report("promote", "background depth at Frame push", static_cast<double>(depth), "tasks");
+				report("promote", "background left after await", static_cast<double>(left), "tasks");
+				report("promote", "await latency (push to return)", static_cast<double>(awaitNs.load()) / 1000.0, "us");
+				report("promote", "producer run (inside producer)", static_cast<double>(producerRunNs.load()) / 1000.0, "us");
+				report(
+					"promote",
+					"await overhead (scan+boost+pickup)",
+					static_cast<double>(awaitNs.load() - producerRunNs.load()) / 1000.0,
+					"us"
+				);
+				std::printf(
+					"[ BENCH    ] promote        lane seen: waiter=%d producer=%d (Frame=%d)\n",
+					waiterLane.load(),
+					producerLane.load(),
+					static_cast<int>(Lane::eFrame)
+				);
+				report("promote", "full backlog drain", static_cast<double>(drainNs) / 1000.0, "us");
+				reportLaneStats("promote", schedule);
+				printConfig(lanes);
+			}
+		);
 	}
 }
