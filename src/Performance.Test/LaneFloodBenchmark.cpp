@@ -10,17 +10,22 @@
 #include <functional>
 #include <limits>
 #include <thread>
-#include <Engine.Common/Make.hpp>
+#ifdef WIN32
+#include <process.h>
+#else
+#include <unistd.h>
+#endif
 #include <Engine.Async/Future/Async.hpp>
 #include <Engine.Async/Future/Future.hpp>
+#include <Engine.Common/Make.hpp>
 #include <Engine.Scheduler/CompScheduler.hpp>
 #include <Engine.Scheduler/Lane.hpp>
 #include <Engine.Scheduler/LanePolicyConfig.hpp>
-#include <Engine.Scheduler/Process/Schedule.hpp>
 #include <Engine.Scheduler/Scheduler.hpp>
 #include <Engine.Scheduler/Graph/StageDecl.hpp>
 #include <Engine.Scheduler/Pipeline/CompositePipeline.hpp>
 #include <Engine.Scheduler/Pipeline/Stage/PipelineStage.hpp>
+#include <Engine.Scheduler/Process/Schedule.hpp>
 #include <Engine.Scheduler/Task/Task.hpp>
 #include <Engine.Scheduler/Waitable/JoinCounter.hpp>
 #include <Heliogrim/Async/Yield.hpp>
@@ -47,8 +52,9 @@ namespace Performance {
 	namespace {
 		constexpr u32 stageCount = 15;
 		constexpr u32 stageSpinMicros = 200;
-		constexpr u32 fanOutStages = 8;	// the first fanOutStages stages fan out, includes stage 7
+		constexpr u32 fanOutStages = 8;// the first fanOutStages stages fan out, includes stage 7
 		constexpr u32 fanOut = 8;
+		constexpr u32 boostStage = 12;// a non-fan-out stage that awaits in the profile workload
 		constexpr u32 floodPerWorker = 4;
 		constexpr u32 floodTaskMicros = 5000;
 		constexpr u32 floodStepMicros = 100;
@@ -193,6 +199,10 @@ namespace Performance {
 			ptr<Schedule> schedule = nullptr;
 			Vector<u64> waitMaxNs;
 			Vector<u64> reserveSamples;
+			// profile workload: every boostEvery-th frame awaits a Background producer (0 = off)
+			u32 boostEvery = 0;
+			std::atomic<u32> boostPushed { 0 };
+			std::atomic<u32> boostDone { 0 };
 		};
 
 		class BenchStage final :
@@ -282,14 +292,112 @@ namespace Performance {
 				}
 			}
 
+			if (index_ == boostStage && st_.boostEvery != 0 && st_.frameIdx.load() % st_.boostEvery == 0) {
+				st_.boostPushed.fetch_add(1);
+				auto fut = hg::async(
+					[] {
+						spinMicros(100u);
+						return 1;
+					},
+					Lane::eBackground
+				);
+				std::ignore = hg::await(std::move(fut));
+				st_.boostDone.fetch_add(1);
+			}
+
 			if (index_ + 1 == stageCount) {
 				const auto at = st_.frameIdx.fetch_add(1);
-				if (at < frames) {
+				if (at < st_.frameNs.size()) {
 					st_.frameNs[at] = nowNs() - st_.frameStart;
 					st_.waitMaxNs[at] = st_.schedule->frameWaitMaxMicros() * 1000uLL;
 					st_.reserveSamples[at] = st_.schedule->reserve();
 				}
 			}
+		}
+
+		void buildFrame(nmpt<engine::Scheduler> s_, ref<BenchState> st, ref<CompositePipeline> composite) {
+			auto* const comp = static_cast<ptr<engine::TestCompScheduler>>(s_.get());
+			composite.setMaxInFlight(1);
+			st.schedule = comp->testGetSchedule();
+
+			static std::array<string, stageCount> names;
+			static std::array<std::array<string_view, 1>, stageCount> afters;
+			auto pipeline = make_uptr<BenchPipeline>();
+			for (u32 i = 0; i < stageCount; ++i) {
+				names[i] = "::bench::stage" + std::to_string(i);
+				if (i > 0) {
+					afters[i] = { string_view { names[i - 1] } };
+				}
+				pipeline->stages.push_back(
+					make_uptr<BenchStage>(
+						names[i],
+						graph::StageDecl { .after = i > 0 ? std::span<const string_view> { afters[i] } : std::span<const string_view> {} },
+						[s_, &st, i] { stageBody(s_, st, i); }
+					)
+				);
+			}
+			(void)composite.addPipeline(std::move(pipeline));
+			composite.setup();
+		}
+
+		[[nodiscard]] std::thread startFlood(nmpt<engine::Scheduler> s_, ref<BenchState> st, const u32 workers, const bool cooperates_) {
+			st.floodRun.store(true);
+			return std::thread {
+				[&st, s_, workers, cooperates_] {
+					const auto cap = floodPerWorker * workers;
+					while (st.floodRun.load()) {
+						while (st.floodOutstanding.load() < cap) {
+							st.floodOutstanding.fetch_add(1);
+							s_->exec(
+								task::make_task(
+									[&st, cooperates_] {
+										// the cooperating task checkpoints every step, the other never does
+										if (cooperates_) {
+											for (u32 spun = 0; spun < floodTaskMicros; spun += floodStepMicros) {
+												spinMicros(floodStepMicros);
+												hg::checkpoint();
+											}
+										} else {
+											spinMicros(floodTaskMicros);
+										}
+										st.floodDone.fetch_add(1);
+										st.floodOutstanding.fetch_sub(1);
+									},
+									Lane::eBackground
+								)
+							);
+						}
+						std::this_thread::sleep_for(std::chrono::microseconds { 200 });
+					}
+				}
+			};
+		}
+
+		[[nodiscard]] std::thread startProbe(nmpt<engine::Scheduler> s_, ref<BenchState> st) {
+			st.probeRun.store(true);
+			return std::thread {
+				[&st, s_] {
+					while (st.probeRun.load()) {
+						st.probesPushed.fetch_add(1);
+						const auto pushed = nowNs();
+						s_->exec(
+							task::make_task(
+								[&st, pushed] {
+									spinMicros(probeMicros);
+									const auto lat = nowNs() - pushed;
+									const auto at = st.probeIdx.fetch_add(1);
+									if (at < st.probeNs.size()) {
+										st.probeNs[at] = lat;
+									}
+									st.probesCompleted.fetch_add(1);// publish after the sample write
+								},
+								Lane::eInteractive
+							)
+						);
+						std::this_thread::sleep_for(std::chrono::milliseconds { probeEveryMillis });
+					}
+				}
+			};
 		}
 
 		void runOnce(const u32 workers_, const char* kind_, const bool flood_, const bool cooperates_) {
@@ -310,27 +418,7 @@ namespace Performance {
 
 					auto* const comp = static_cast<ptr<engine::TestCompScheduler>>(s_.get());
 					CompositePipeline composite { comp->testGetSchedule() };
-					composite.setMaxInFlight(1);
-					st.schedule = comp->testGetSchedule();
-
-					static std::array<string, stageCount> names;
-					static std::array<std::array<string_view, 1>, stageCount> afters;
-					auto pipeline = make_uptr<BenchPipeline>();
-					for (u32 i = 0; i < stageCount; ++i) {
-						names[i] = "::bench::stage" + std::to_string(i);
-						if (i > 0) {
-							afters[i] = { string_view { names[i - 1] } };
-						}
-						pipeline->stages.push_back(
-							make_uptr<BenchStage>(
-								names[i],
-								graph::StageDecl { .after = i > 0 ? std::span<const string_view> { afters[i] } : std::span<const string_view> {} },
-								[s_, &st, i] { stageBody(s_, st, i); }
-							)
-						);
-					}
-					(void)composite.addPipeline(std::move(pipeline));
-					composite.setup();
+					buildFrame(s_, st, composite);
 
 					std::atomic_bool finished { false };
 					std::thread watchdog {
@@ -354,62 +442,10 @@ namespace Performance {
 
 					std::thread floodThread;
 					if (flood_) {
-						st.floodRun.store(true);
-						floodThread = std::thread {
-							[&] {
-								const auto cap = floodPerWorker * workers;
-								while (st.floodRun.load()) {
-									while (st.floodOutstanding.load() < cap) {
-										st.floodOutstanding.fetch_add(1);
-										s_->exec(
-											task::make_task(
-												[&st, cooperates_] {
-													// the cooperating task checkpoints every step, the other never does
-													if (cooperates_) {
-														for (u32 spun = 0; spun < floodTaskMicros; spun += floodStepMicros) {
-															spinMicros(floodStepMicros);
-															hg::checkpoint();
-														}
-													} else {
-														spinMicros(floodTaskMicros);
-													}
-													st.floodDone.fetch_add(1);
-													st.floodOutstanding.fetch_sub(1);
-												},
-												Lane::eBackground
-											)
-										);
-									}
-									std::this_thread::sleep_for(std::chrono::microseconds { 200 });
-								}
-							}
-						};
+						floodThread = startFlood(s_, st, workers, cooperates_);
 					}
 
-					st.probeRun.store(true);
-					std::thread probeThread {
-						[&] {
-							while (st.probeRun.load()) {
-								st.probesPushed.fetch_add(1);
-								const auto pushed = nowNs();
-								s_->exec(
-									task::make_task(
-										[&st, pushed] {
-											spinMicros(probeMicros);
-											const auto lat = nowNs() - pushed;
-											const auto at = st.probeIdx.fetch_add(1);
-											if (at < maxProbes) {
-												st.probeNs[at] = lat;
-											}
-										st.probesCompleted.fetch_add(1); // publish after the sample write
-										},
-										Lane::eInteractive
-									)
-								);
-								std::this_thread::sleep_for(std::chrono::milliseconds { probeEveryMillis });
-							}
-						}
-					};
+					std::thread probeThread = startProbe(s_, st);
 
 					const auto start = nowNs();
 					composite.start();
@@ -563,6 +599,131 @@ namespace Performance {
 				report("promote", "full backlog drain", static_cast<double>(drainNs) / 1000.0, "us");
 				reportLaneStats("promote", schedule);
 				printConfig(lanes);
+			}
+		);
+	}
+
+	/**
+	 * Profiling workload: a steady mixed load for a sampling profiler, with almost no measurement of its own (a few atomics).
+	 * Run: `.\dist\Debug\amd64-windows\Heliogrim-Performance.Test.exe --gtest_also_run_disabled_tests --gtest_filter=LaneFloodBenchmark.DISABLED_Profile`
+	 * Environment: `HG_PROFILE_SECONDS` (30), `HG_PROFILE_FLOOD` (none | coop | noncoop, default coop), `HG_PROFILE_BOOST_EVERY`
+	 *	(4 = every 4th frame awaits a 100 us Background producer, 0 = off), `HG_PROFILE_ATTACH_SECONDS` (0, pause for attaching),
+	 *	`HG_BENCH_BACKLOG` (0, trivial Background tasks queued up front), plus `HG_BENCH_WORKERS` and the `HG_BENCH_*` policy knobs.
+	 * Launch it from, or attach to it with, a sampling profiler; the pid is printed before the timed part.
+	 */
+	TEST(LaneFloodBenchmark, DISABLED_Profile) {
+		const u32 seconds = envU32("HG_PROFILE_SECONDS", 30u);
+		const char* const floodEnv = std::getenv("HG_PROFILE_FLOOD");
+		const string floodKind = floodEnv ? floodEnv : "coop";
+		const bool flood = floodKind != "none";
+		const bool cooperates = floodKind != "noncoop";
+		const u32 boostEvery = envU32("HG_PROFILE_BOOST_EVERY", 4u);
+		const u32 attachSeconds = envU32("HG_PROFILE_ATTACH_SECONDS", 0u);
+		const u32 backlog = envU32("HG_BENCH_BACKLOG", 0u);
+		ASSERT_TRUE(floodKind == "none" || floodKind == "coop" || floodKind == "noncoop") << "HG_PROFILE_FLOOD=" << floodKind;
+		ASSERT_TRUE(seconds >= 1u && seconds <= 3600u) << "HG_PROFILE_SECONDS=" << seconds;
+		ASSERT_LE(attachSeconds, 600u) << "HG_PROFILE_ATTACH_SECONDS";
+		ASSERT_LE(boostEvery, 1000u) << "HG_PROFILE_BOOST_EVERY";
+		const auto lanes = lanesFromEnv();
+		#ifdef WIN32
+		const auto pid = static_cast<unsigned long>(_getpid());
+		#else
+		const auto pid = static_cast<unsigned long>(getpid());
+		#endif
+
+		SchedulerModule::structuredRuntimeTest(
+			envU32("HG_BENCH_WORKERS", 0),
+			lanes,
+			[&](nmpt<engine::Scheduler> s_) {
+				auto state = std::make_unique<BenchState>();
+				auto& st = *state;
+				st.boostEvery = boostEvery;
+				const auto workers = static_cast<u32>(s_->getWorkerCount());
+
+				auto* const comp = static_cast<ptr<engine::TestCompScheduler>>(s_.get());
+				CompositePipeline composite { comp->testGetSchedule() };
+				buildFrame(s_, st, composite);
+
+				std::atomic<u32> backlogLeft { backlog };
+				for (u32 i = 0; i < backlog; ++i) {
+					s_->exec(task::make_task([&backlogLeft] { backlogLeft.fetch_sub(1); }, Lane::eBackground));
+				}
+
+				std::printf(
+					"[ PROFILE  ] pid=%lu workers=%u flood=%s seconds=%u boostEvery=%u backlog=%u attach=%u\n",
+					pid,
+					workers,
+					floodKind.c_str(),
+					seconds,
+					boostEvery,
+					backlog,
+					attachSeconds
+				);
+				printConfig(lanes);
+				std::fflush(stdout);
+				if (attachSeconds != 0) {
+					std::this_thread::sleep_for(std::chrono::seconds { attachSeconds });
+				}
+
+				std::atomic_bool finished { false };
+				const u32 watchdogLimit = seconds + std::max(60u, seconds);
+				std::thread watchdog {
+					[&] {
+						const auto until = clock::now() + std::chrono::seconds { watchdogLimit };
+						while (not finished.load()) {
+							if (clock::now() > until) {
+								std::printf("[ PROFILE  ] HANG after %u s (frames done %u)\n", watchdogLimit, st.frameIdx.load());
+								std::fflush(stdout);
+								std::abort();
+							}
+							std::this_thread::sleep_for(std::chrono::milliseconds { 10 });
+						}
+					}
+				};
+
+				std::printf("[ PROFILE  ] running\n");
+				std::fflush(stdout);
+				std::thread floodThread;
+				if (flood) {
+					floodThread = startFlood(s_, st, workers, cooperates);
+				}
+				std::thread probeThread = startProbe(s_, st);
+
+				const auto start = nowNs();
+				composite.start();
+				const auto deadline = start + static_cast<u64>(seconds) * 1'000'000'000uLL;
+				while (nowNs() < deadline) {
+					std::this_thread::sleep_for(std::chrono::milliseconds { 5 });
+				}
+				const auto elapsed = nowNs() - start;
+				composite.stop();
+
+				st.probeRun.store(false);
+				probeThread.join();
+				st.floodRun.store(false);
+				if (floodThread.joinable()) {
+					floodThread.join();
+				}
+				while (st.floodOutstanding.load() > 0 || st.probesCompleted.load() != st.probesPushed.load() ||
+					st.boostDone.load() != st.boostPushed.load() || backlogLeft.load() > 0) {
+					std::this_thread::sleep_for(std::chrono::milliseconds { 1 });
+				}
+				composite.destroy();
+				finished.store(true);
+				watchdog.join();
+				std::printf("[ PROFILE  ] done\n");
+
+				const auto secs = static_cast<double>(elapsed) / 1e9;
+				report("profile", "frames completed", static_cast<double>(st.frameIdx.load()), "");
+				report("profile", "frames per second", static_cast<double>(st.frameIdx.load()) / secs, "/s");
+				report("profile", "flood tasks", static_cast<double>(st.floodDone.load()) / secs, "/s");
+				report("profile", "probes completed", static_cast<double>(st.probesCompleted.load()), "");
+				report("profile", "boosted awaits completed", static_cast<double>(st.boostDone.load()), "");
+				report("profile", "overruns interactive", static_cast<double>(st.schedule->overruns(Lane::eInteractive)), "");
+				report("profile", "max run interactive", static_cast<double>(st.schedule->maxRunMicros(Lane::eInteractive)), "us");
+				report("profile", "overruns background", static_cast<double>(st.schedule->overruns(Lane::eBackground)), "");
+				report("profile", "max run background", static_cast<double>(st.schedule->maxRunMicros(Lane::eBackground)), "us");
+				report("profile", "reserve at end", static_cast<double>(st.schedule->reserve()), "workers");
 			}
 		);
 	}
