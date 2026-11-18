@@ -19,6 +19,7 @@ namespace hg::engine {
 		public Scheduler {
 	public:
 		using aligned_worker = ALIGNED(scheduler::worker::Worker, CACHE_LINE_SIZE);
+
 		using fiber_pool_type = scheduler::fiber::FiberPool;
 
 		using task_type = ::hg::engine::scheduler::task::TaskDelegate;
@@ -77,6 +78,8 @@ namespace hg::engine {
 		 * @param [in] task_ The task.
 		 */
 		void exec(_In_ mref<task_handle_type> task_) override;
+
+		void execResolved(_In_ mref<task_handle_type> task_) override;
 
 	public:
 		[[nodiscard]] const non_owning_rptr<scheduler::CompositePipeline>

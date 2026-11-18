@@ -60,8 +60,8 @@ void Schedule::waitForWork(u32 seen_) noexcept {
 bool Schedule::push(const non_owning_rptr<const task::TaskDelegate> task_) {
 
 	const auto lane = task_->lane();
-	// the resolver replaces this line
-	const u64 laneIdx = static_cast<u64>(lane == Lane::eInherit ? Lane::eInteractive : lane);
+	::hg::assertd(lane != Lane::eInherit);
+	const u64 laneIdx = static_cast<u64>(lane);
 
 	// Count first: a worker may pop right after the insert, and its fetch_sub must not wrap below zero.
 	_queued.fetch_add(1uLL, std::memory_order::acq_rel);

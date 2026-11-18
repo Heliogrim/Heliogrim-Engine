@@ -111,7 +111,7 @@ namespace hg {
 		// The lane is inherited by every continuation chained from this future.
 		[[nodiscard]] static Future ready(const engine::scheduler::Lane lane_) requires (std::is_void_v<T_> && Send<T_>) {
 			auto state = Arci<state_type>::create();
-			state->lane = lane_;
+			state->lane = ::hg::engine::scheduler::resolveLane(lane_);
 			state->slot.template emplace<Resolved<void>>();
 			return ready(std::move(state));
 		}
@@ -142,8 +142,13 @@ namespace hg {
 
 			auto prev = std::move(_state);
 			auto next = Arci<next_type>::create();
-			next->lane = prev->lane;
+			next->lane = ::hg::engine::scheduler::lower(
+				prev->lane,
+				::hg::engine::scheduler::resolveLane(::hg::engine::scheduler::Lane::eInherit)
+			);
 			auto handle = Arci<next_type> { next };
+			// the continuation task runs in the successor's lane
+			prev->lane = next->lane;
 
 			detail::store(
 				prev,
@@ -169,6 +174,7 @@ namespace hg {
 						auto inner = invoke();
 						::hg::assertd(inner._state != nullptr);
 						auto innerState = std::move(inner._state);
+						innerState->lane = succ->lane;
 						detail::store(
 							innerState,
 							[outer = std::move(succ)](ref<next_type> inner_) mutable {

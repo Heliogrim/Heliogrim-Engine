@@ -13,6 +13,7 @@
 #include <Engine.Async/Future/Promise.hpp>
 #include <Engine.Async/Future/Send.hpp>
 #include <Engine.Scheduler/Scheduler.hpp>
+#include <Engine.Scheduler/Fiber/Fiber.hpp>
 #include <Engine.Scheduler/Task/Task.hpp>
 #include <Engine.Scheduler/Thread/Thread.hpp>
 
@@ -549,5 +550,53 @@ namespace AsyncModule {
 		static_assert(not std::is_default_constructible_v<Promise<Rc<int>>>);
 		static_assert(std::is_default_constructible_v<Promise<int>>);
 		static_assert(std::is_same_v<decltype(std::declval<Future<Rc<int>>>().isReady()), bool>);
+	}
+
+	TEST(FutureLane, ContinuationKeepsLaneResolvedAtThen) {
+		std::atomic<engine::scheduler::Lane> seen { engine::scheduler::Lane::eInherit };
+		std::atomic_bool done { false };
+		SchedulerModule::structuredRuntimeTest(
+			[&](nmpt<engine::Scheduler> s_) {
+				Promise<int> promise {};
+				std::atomic_bool built { false };
+				using engine::scheduler::Lane;
+
+				s_->exec(
+					engine::scheduler::task::make_task(
+						[&] {
+							auto next = promise.future().then(
+								[&](int) {
+									seen = engine::scheduler::fiber::self::current()->task->lane();
+									done = true;
+								}
+							);
+							(void)next;
+							built = true;
+						},
+						Lane::eBackground
+					)
+				);
+				while (not built) {
+					engine::scheduler::thread::self::sleepFor(1);
+				}
+				promise.resolve(1);
+				for (auto i = 0; i < 2000 && not done; ++i) {
+					engine::scheduler::thread::self::sleepFor(1);
+				}
+			}
+		);
+		EXPECT_TRUE(done.load());
+		EXPECT_EQ(seen.load(), engine::scheduler::Lane::eBackground);
+	}
+
+	TEST(FutureLane, AsyncFromPlainThreadIsInteractive) {
+		std::atomic<engine::scheduler::Lane> seen { engine::scheduler::Lane::eInherit };
+		SchedulerModule::structuredRuntimeTest(
+			[&](nmpt<engine::Scheduler>) {
+				auto result = await(async([&] { seen = engine::scheduler::fiber::self::current()->task->lane(); }));
+				EXPECT_TRUE(result.has_value());
+			}
+		);
+		EXPECT_EQ(seen.load(), engine::scheduler::Lane::eInteractive);
 	}
 }

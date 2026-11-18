@@ -65,6 +65,11 @@ namespace hg::engine {
 		virtual void exec(_In_ mref<task_handle_type> task_) = 0;
 
 		/**
+		 * Pushes the task with the lane it already carries; the lane was resolved where the task was created
+		 */
+		virtual void execResolved(_In_ mref<task_handle_type> task_) = 0;
+
+		/**
 		 * Executes the given task with a cooperative cancellation token
 		 */
 		void exec(_In_ mref<task_handle_type> task_, scheduler::fiber::CancellationToken token_) {
