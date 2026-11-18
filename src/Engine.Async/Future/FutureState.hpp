@@ -7,6 +7,7 @@
 #include <Engine.Common/Functional/UniqueFn.hpp>
 #include <Engine.Common/Managed/Rc.hpp>
 #include <Engine.Scheduler/Lane.hpp>
+#include <Engine.Scheduler/Process/BoostCell.hpp>
 #include <Engine.Scheduler/Waitable/Signal.hpp>
 
 #include "Broken.hpp"
@@ -41,7 +42,14 @@ namespace hg {
 			std::atomic<u8> contState { eNone };
 			// The successor's work, stored by then() on this (predecessor) state.
 			UniqueFn<void(ref<FutureState>)> cont;
+
 			engine::scheduler::Lane lane = engine::scheduler::Lane::eFrame;
+
+			// The cell of the continuation producing this state; null for promise and ready states.
+			Arci<engine::scheduler::BoostCell> producer;
+
+			// The cell the stored continuation produces into, written before cont is published; null runs cont inline.
+			Arci<engine::scheduler::BoostCell> contCell;
 		};
 	}
 }

@@ -150,8 +150,15 @@ namespace hg {
 			// the continuation task runs in the successor's lane
 			prev->lane = next->lane;
 
+			// The continuation produces next; until it runs it waits for prev's producer. Nothing is published yet.
+			// The cell lane starts at eBackground (no waiter yet) and records waiter urgency only.
+			auto cell = Arci<::hg::engine::scheduler::BoostCell>::create();
+			cell->dependsOn = Arci<::hg::engine::scheduler::BoostCell> { prev->producer };
+			next->producer = Arci<::hg::engine::scheduler::BoostCell> { cell };
+
 			detail::store(
 				prev,
+				std::move(cell),
 				[fn = fn_type(std::forward<Fn_>(fn_)), succ = std::move(next)](ref<state_type> prev_) mutable {
 					auto& slot = prev_.slot;
 					if (slot.template is<Failed<E_>>()) {
@@ -174,11 +181,30 @@ namespace hg {
 						auto inner = invoke();
 						::hg::assertd(inner._state != nullptr);
 						auto innerState = std::move(inner._state);
-						innerState->lane = succ->lane;
-						detail::store(
+
+						using ::hg::engine::scheduler::BoostCell;
+						// succ now waits for inner's producer; a later boost of succ reaches it through the link.
+						auto& outerCell = *succ->producer;
+						outerCell.setDependency(Arci<BoostCell> { innerState->producer });
+
+						// link store, then seq_cst read of the outer lane: faces a waiter's raise, then link read
+						std::atomic_thread_fence(std::memory_order::seq_cst);
+						const auto waited = outerCell.lane.load(std::memory_order::seq_cst);
+
+						// only a waiter raises: above eBackground, someone already waits on the outer cell
+						if (waited != ::hg::engine::scheduler::Lane::eBackground) {
+							::hg::engine::scheduler::boost(Arci<BoostCell> { innerState->producer }, waited);
+						}
+
+						// No cell: the forwarder runs inline where inner completes, so it never hops through a lane.
+						detail::storeInline(
 							innerState,
 							[outer = std::move(succ)](ref<next_type> inner_) mutable {
 								outer->slot = std::move(inner_.slot);
+								// a finished cell keeps no link, so completed cells never chain
+								if (outer->producer != nullptr) {
+									outer->producer->setDependency(nullptr);
+								}
 								detail::complete(outer);
 							}
 						);
@@ -234,7 +260,23 @@ namespace hg {
 		::hg::assertd(future_._state != nullptr);
 		// Consumes the future; the local keeps the state alive until the result is built.
 		auto state = std::move(future_._state);
-		state->done.wait();
+
+		using namespace ::hg::engine::scheduler;
+		// Only a waiting fiber boosts; a plain thread or a state without producer just waits.
+		if (fiber::self::current() == nullptr || state->producer == nullptr || state->done.isSet()) {
+			state->done.wait();
+		} else {
+			const auto own = fiber::self::boostCell();
+			if (own != nullptr) {
+				// a later boost of this task reaches the producer through the link
+				linkDependency(*own, state->producer);
+			}
+			boost(state->producer, resolveLane(Lane::eInherit));
+			state->done.wait();
+			if (own != nullptr) {
+				own->setDependency(nullptr);
+			}
+		}
 
 		auto& slot = state->slot;
 		if (slot.template is<Failed<E_>>()) {
