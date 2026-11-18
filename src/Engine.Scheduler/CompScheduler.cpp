@@ -183,6 +183,18 @@ void CompScheduler::execResolved(mref<task_handle_type> task_) {
 	#endif
 }
 
+void CompScheduler::execBoostable(mref<task_handle_type> task_, const ptr<BoostCell> cell_) {
+
+	[[maybe_unused]] const auto result = _schedule->pushBoostable(std::move(task_), cell_);
+
+	#ifdef _DEBUG
+	if (not result) {
+		IM_CORE_ERROR("Failed to push task.");
+		::hg::breakpoint();
+	}
+	#endif
+}
+
 const non_owning_rptr<CompositePipeline> CompScheduler::getCompositePipeline() const noexcept {
 	return _pipeline.get();
 }

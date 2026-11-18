@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../ScheduleWorkSet.hpp"
-
 #include <Engine.Async/Primitive/SpinLock.hpp>
-#include <Engine.Common/Collection/Queue.hpp>
+#include <Engine.Common/Collection/Deque.hpp>
+
+#include "../ScheduleWorkSet.hpp"
 
 namespace hg::engine::scheduler {
 	class FifoWorkSet :
@@ -17,12 +17,17 @@ namespace hg::engine::scheduler {
 		~FifoWorkSet() override;
 
 	private:
-		Queue<non_owning_rptr<const task::TaskDelegate>> _fifo;
+		Deque<non_owning_rptr<const task::TaskDelegate>> _fifo;
 		concurrent::UnfairSpinLock _lck;
 
 	public:
 		[[nodiscard]] bool push(const non_owning_rptr<const task::TaskDelegate> task_) override;
 
 		[[nodiscard]] bool pop(ref<non_owning_rptr<const task::TaskDelegate>> task_) override;
+
+		[[nodiscard]] bool erase(
+			const non_owning_rptr<const task::TaskDelegate> task_,
+			const ptr<const BoostCell> cell_
+		) override;
 	};
 }

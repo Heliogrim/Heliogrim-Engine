@@ -7,9 +7,13 @@
 #include <Engine.Common/Wrapper.hpp>
 
 #include "TaskCtrl.hpp"
-#include "../Lane.hpp"
 #include "TaskType.hpp"
+#include "../Lane.hpp"
 #include "../Fiber/Cancellation.hpp"
+
+namespace hg::engine::scheduler {
+	struct BoostCell;
+}
 
 namespace hg::engine::scheduler::fiber {
 	struct Fiber;
@@ -81,6 +85,9 @@ namespace hg::engine::scheduler::task {
 	public:
 		/** When the schedule last queued this task; stamped by Schedule::push for Frame tasks only. */
 		mutable std::chrono::steady_clock::time_point queuedAt {};
+
+		/** The cell of the last Schedule::pushBoostable of this task; promote erases an entry only under its own cell. */
+		mutable ptr<BoostCell> boostCell = nullptr;
 
 	public:
 		/**

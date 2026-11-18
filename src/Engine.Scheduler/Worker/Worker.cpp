@@ -141,6 +141,7 @@ void Worker::handle(void* args_) {
 			if (launcher.self == nullptr) {
 				launcher.self = pool.acquire();
 				launcher.self->task = task;
+				launcher.self->boost = nullptr;
 				launcher.self->schedule = schedule;
 				launcher.self->cancellation = fiber::CancellationToken { task->cancellation() };
 				const_cast<ptr<task::TaskDelegate>>(task)->fiber() = launcher.self;
@@ -174,9 +175,9 @@ void Worker::handle(void* args_) {
 				 */
 				auto& st = launcher.self->parkNode.state;
 				if (st.load(std::memory_order::relaxed) == ParkNode::State::eIdle) {
-					schedule->push(std::move(task));
+					(void)schedule->pushBoostable(task, launcher.self->boost);
 				} else if (st.exchange(ParkNode::State::eParked, std::memory_order::acq_rel) == ParkNode::State::eWoken) {
-					schedule->push(std::move(task));
+					(void)schedule->pushBoostable(task, launcher.self->boost);
 				}
 
 			} else {
@@ -188,6 +189,7 @@ void Worker::handle(void* args_) {
 				 * Release execution context
 				 */
 				launcher.self->cancellation.reset();
+				launcher.self->boost = nullptr;
 				pool.release(std::move(launcher.self));
 			}
 
