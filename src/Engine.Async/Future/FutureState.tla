@@ -6,10 +6,12 @@
    stores the continuation on s. The continuation of s either settles s+1
    directly, or (fn returned a Future) stores a forwarding continuation on an
    inner state K+s that an independent completer settles later.
+   A forwarder reached inside another runs after it returns (trampoline); no inner state here forwards into another.
    contState is the atomic: complete() exchanges eClaimed after done.set(),
    store() exchanges eStored after writing cont; the side that sees the other
    side's value schedules the task. Scheduled tasks run as their own
-   processes. Folded: slot emplace + done.set() are one step (nothing reads
+   processes; the forwarder on an inner state (null contCell) instead runs
+   inline in whichever process saw the other side's value. Folded: slot emplace + done.set() are one step (nothing reads
    the slot before done); scheduler exec is the pending set; Arci lifetime
    is covered by Arci.tla; the done Signal by Signal.tla.                  *)
 EXTENDS Naturals, FiniteSets, TLC
@@ -35,6 +37,7 @@ define
     RunOnce == \A x \in States : ran[x] <= 1
     RunsAfterBoth == \A x \in States : ran[x] = 1 => (done[x] /\ contSet[x])
     PendingIsReady == \A x \in pending : done[x] /\ contSet[x]
+    InnerInline == \A s \in Links : Inner(s) \notin pending
     EventuallyDone == <>done[K]
 end define;
 
@@ -91,9 +94,19 @@ ICFill:
     complete(Inner(l));
 ICClaim:
     if contState[Inner(l)] = "Stored" then
-        pending := pending \cup {Inner(l)};
+        contState[Inner(l)] := "Claimed";
+    else
+        contState[Inner(l)] := "Claimed";
+        goto ICDone;
     end if;
-    contState[Inner(l)] := "Claimed";
+ICForward:                                  \* the engine's forwarder runs inline: settle the outer state
+    ran[Inner(l)] := ran[Inner(l)] + 1;
+    complete(Succ(Inner(l)));
+ICForwardClaim:
+    if contState[Succ(Inner(l))] = "Stored" then
+        pending := pending \cup {Succ(Inner(l))};
+    end if;
+    contState[Succ(Inner(l))] := "Claimed";
 ICDone:
     skip;
 end process;
@@ -130,20 +143,31 @@ TStoreInner:                                \* store() the forwarding continuati
     store(Inner(self));
 TExchangeInner:
     if contState[Inner(self)] = "Claimed" then
-        pending := pending \cup {Inner(self)};
+        contState[Inner(self)] := "Stored";
+    else
+        contState[Inner(self)] := "Stored";
+        goto TDone;
     end if;
-    contState[Inner(self)] := "Stored";
+TForward:                                   \* the engine's forwarder runs inline: settle the outer state
+    ran[Inner(self)] := ran[Inner(self)] + 1;
+    complete(Succ(Inner(self)));
+TForwardClaim:
+    if contState[Succ(Inner(self))] = "Stored" then
+        pending := pending \cup {Succ(Inner(self))};
+    end if;
+    contState[Succ(Inner(self))] := "Claimed";
 TDone:
     skip;
 end process;
 end algorithm; *)
-\* BEGIN TRANSLATION (chksum(pcal) = "eec8d2a0" /\ chksum(tla) = "74e272b6")
+\* BEGIN TRANSLATION (chksum(pcal) = "5c5b9bd2" /\ chksum(tla) = "83d8c32f")
 VARIABLES done, contSet, contState, pending, ran, useInner, pc
 
 (* define statement *)
 RunOnce == \A x \in States : ran[x] <= 1
 RunsAfterBoth == \A x \in States : ran[x] = 1 => (done[x] /\ contSet[x])
 PendingIsReady == \A x \in pending : done[x] /\ contSet[x]
+InnerInline == \A s \in Links : Inner(s) \notin pending
 EventuallyDone == <>done[K]
 
 VARIABLES link, l
@@ -225,12 +249,28 @@ ICFill(self) == /\ pc[self] = "ICFill"
 
 ICClaim(self) == /\ pc[self] = "ICClaim"
                  /\ IF contState[Inner(l[self])] = "Stored"
-                       THEN /\ pending' = (pending \cup {Inner(l[self])})
-                       ELSE /\ TRUE
-                            /\ UNCHANGED pending
-                 /\ contState' = [contState EXCEPT ![Inner(l[self])] = "Claimed"]
-                 /\ pc' = [pc EXCEPT ![self] = "ICDone"]
-                 /\ UNCHANGED << done, contSet, ran, useInner, link, l >>
+                       THEN /\ contState' = [contState EXCEPT ![Inner(l[self])] = "Claimed"]
+                            /\ pc' = [pc EXCEPT ![self] = "ICForward"]
+                       ELSE /\ contState' = [contState EXCEPT ![Inner(l[self])] = "Claimed"]
+                            /\ pc' = [pc EXCEPT ![self] = "ICDone"]
+                 /\ UNCHANGED << done, contSet, pending, ran, useInner, link, 
+                                 l >>
+
+ICForward(self) == /\ pc[self] = "ICForward"
+                   /\ ran' = [ran EXCEPT ![Inner(l[self])] = ran[Inner(l[self])] + 1]
+                   /\ done' = [done EXCEPT ![(Succ(Inner(l[self])))] = TRUE]
+                   /\ pc' = [pc EXCEPT ![self] = "ICForwardClaim"]
+                   /\ UNCHANGED << contSet, contState, pending, useInner, link, 
+                                   l >>
+
+ICForwardClaim(self) == /\ pc[self] = "ICForwardClaim"
+                        /\ IF contState[Succ(Inner(l[self]))] = "Stored"
+                              THEN /\ pending' = (pending \cup {Succ(Inner(l[self]))})
+                              ELSE /\ TRUE
+                                   /\ UNCHANGED pending
+                        /\ contState' = [contState EXCEPT ![Succ(Inner(l[self]))] = "Claimed"]
+                        /\ pc' = [pc EXCEPT ![self] = "ICDone"]
+                        /\ UNCHANGED << done, contSet, ran, useInner, link, l >>
 
 ICDone(self) == /\ pc[self] = "ICDone"
                 /\ TRUE
@@ -239,6 +279,7 @@ ICDone(self) == /\ pc[self] = "ICDone"
                                 useInner, link, l >>
 
 innerCompleter(self) == ICWait(self) \/ ICFill(self) \/ ICClaim(self)
+                           \/ ICForward(self) \/ ICForwardClaim(self)
                            \/ ICDone(self)
 
 TWait(self) == /\ pc[self] = "TWait"
@@ -246,7 +287,7 @@ TWait(self) == /\ pc[self] = "TWait"
                /\ IF self \in pending
                      THEN /\ pending' = pending \ {self}
                           /\ Assert(done[self] /\ contSet[self], 
-                                    "Failure of assertion at line 108, column 9.")
+                                    "Failure of assertion at line 120, column 9.")
                           /\ ran' = [ran EXCEPT ![self] = ran[self] + 1]
                           /\ IF self <= K - 1
                                 THEN /\ \/ /\ TRUE
@@ -283,12 +324,28 @@ TStoreInner(self) == /\ pc[self] = "TStoreInner"
 
 TExchangeInner(self) == /\ pc[self] = "TExchangeInner"
                         /\ IF contState[Inner(self)] = "Claimed"
-                              THEN /\ pending' = (pending \cup {Inner(self)})
-                              ELSE /\ TRUE
-                                   /\ UNCHANGED pending
-                        /\ contState' = [contState EXCEPT ![Inner(self)] = "Stored"]
-                        /\ pc' = [pc EXCEPT ![self] = "TDone"]
-                        /\ UNCHANGED << done, contSet, ran, useInner, link, l >>
+                              THEN /\ contState' = [contState EXCEPT ![Inner(self)] = "Stored"]
+                                   /\ pc' = [pc EXCEPT ![self] = "TForward"]
+                              ELSE /\ contState' = [contState EXCEPT ![Inner(self)] = "Stored"]
+                                   /\ pc' = [pc EXCEPT ![self] = "TDone"]
+                        /\ UNCHANGED << done, contSet, pending, ran, useInner, 
+                                        link, l >>
+
+TForward(self) == /\ pc[self] = "TForward"
+                  /\ ran' = [ran EXCEPT ![Inner(self)] = ran[Inner(self)] + 1]
+                  /\ done' = [done EXCEPT ![(Succ(Inner(self)))] = TRUE]
+                  /\ pc' = [pc EXCEPT ![self] = "TForwardClaim"]
+                  /\ UNCHANGED << contSet, contState, pending, useInner, link, 
+                                  l >>
+
+TForwardClaim(self) == /\ pc[self] = "TForwardClaim"
+                       /\ IF contState[Succ(Inner(self))] = "Stored"
+                             THEN /\ pending' = (pending \cup {Succ(Inner(self))})
+                             ELSE /\ TRUE
+                                  /\ UNCHANGED pending
+                       /\ contState' = [contState EXCEPT ![Succ(Inner(self))] = "Claimed"]
+                       /\ pc' = [pc EXCEPT ![self] = "TDone"]
+                       /\ UNCHANGED << done, contSet, ran, useInner, link, l >>
 
 TDone(self) == /\ pc[self] = "TDone"
                /\ TRUE
@@ -298,7 +355,7 @@ TDone(self) == /\ pc[self] = "TDone"
 
 task(self) == TWait(self) \/ TSettle(self) \/ TClaim(self)
                  \/ TStoreInner(self) \/ TExchangeInner(self)
-                 \/ TDone(self)
+                 \/ TForward(self) \/ TForwardClaim(self) \/ TDone(self)
 
 (* Allow infinite stuttering to prevent deadlock on termination. *)
 Terminating == /\ \A self \in ProcSet: pc[self] = "Done"
