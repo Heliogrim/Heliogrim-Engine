@@ -13,6 +13,6 @@ Lane hg::engine::scheduler::resolveLane(const Lane requested_) noexcept {
 		return requested_ == Lane::eInherit || requested_ == Lane::eFrame ? Lane::eInteractive : requested_;
 	}
 
-	const auto effective = running->task->lane();
+	const auto effective = fiber::self::effectiveLane();
 	return requested_ == Lane::eInherit ? effective : lower(requested_, effective);
 }
