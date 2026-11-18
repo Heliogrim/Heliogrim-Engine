@@ -1,12 +1,14 @@
 #include "pch.h"
 
-#include "IrWording.hpp"
-#include "IrSpirvText.hpp"
+/**/
 
 #include <Engine.Accel.Lang/Ir/Interface.hpp>
 #include <Engine.Accel.Lang/Ir/Layout.hpp>
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
 #include <Engine.Accel.Lang/Ir/Variant.hpp>
+
+#include "IrSpirvText.hpp"
+#include "IrWording.hpp"
 
 using namespace hg::engine::accel::lang::ir;
 using namespace hg::engine::accel::lang;
@@ -55,7 +57,9 @@ namespace AccelLang {
 	}
 
 	TEST(ComputeTest, WorkgroupVariableEmitsShared) {
-		auto mod = parseOk("workgroup tile: f32[64];\n@compute (local_size = [64, 1, 1])\nfn main() {\n\ttile[local_invocation_index] = 1.0;\n}\n");
+		auto mod = parseOk(
+			"workgroup tile: f32[64];\n@compute (local_size = [64, 1, 1])\nfn main() {\n\ttile[local_invocation_index] = 1.0;\n}\n"
+		);
 		const auto glsl = emitGlsl(mod);
 		EXPECT_TRUE(glsl.contains("Workgroup")) << glsl;
 		EXPECT_TRUE(glsl.contains("LocalSize 64 1 1")) << glsl;
@@ -68,7 +72,9 @@ namespace AccelLang {
 	TEST(ComputeTest, ImageStoreNeedsWriteAccess) {
 		const auto store = "fn main() {\n\timage_store(img, s32vec2(0, 0), f32vec4(1.0));\n}\n";
 		EXPECT_FALSE(errorOf(String { image } + store).empty());
-		const auto writable = String { "@input (mode = bind, id = \"img\", class = image, access = write) image2d<rgba16f> img;\n" } + store;
+		const auto writable = String {
+			"@input (mode = bind, id = \"img\", class = image, access = write) image2d<rgba16f> img;\n"
+		} + store;
 		EXPECT_EQ(errorOf(writable), "") << errorOf(writable);
 	}
 
@@ -79,7 +85,10 @@ namespace AccelLang {
 
 	TEST(ComputeTest, BarrierUnderInvocationIdBranchIsError) {
 		const auto message = errorOf("fn main() {\n\tif (local_invocation_id.x > 3u) {\n\t\tbarrier();\n\t}\n}\n");
-		EXPECT_EQ(message, "'barrier' needs every invocation of a group together but runs under a condition that can differ between invocations");
+		EXPECT_EQ(
+			message,
+			"'barrier' needs every invocation of a group together but runs under a condition that can differ between invocations"
+		);
 	}
 
 	TEST(ComputeTest, BarrierUnderWorkgroupIdBranchIsValid) {
@@ -88,12 +97,18 @@ namespace AccelLang {
 
 	TEST(ComputeTest, BarrierAfterDivergentReturnIsError) {
 		const auto message = errorOf("fn main() {\n\tif (local_invocation_id.x > 3u) {\n\t\treturn;\n\t}\n\tbarrier();\n}\n");
-		EXPECT_EQ(message, "'barrier' needs every invocation of a group together but runs under a condition that can differ between invocations");
+		EXPECT_EQ(
+			message,
+			"'barrier' needs every invocation of a group together but runs under a condition that can differ between invocations"
+		);
 	}
 
 	TEST(ComputeTest, MemoryBarrierUnderDivergenceIsError) {
 		const auto message = errorOf("fn main() {\n\tif (local_invocation_id.x > 3u) {\n\t\tmemory_barrier_shared();\n\t}\n}\n");
-		EXPECT_EQ(message, "'memory_barrier_shared' needs every invocation of a group together but runs under a condition that can differ between invocations");
+		EXPECT_EQ(
+			message,
+			"'memory_barrier_shared' needs every invocation of a group together but runs under a condition that can differ between invocations"
+		);
 	}
 
 	TEST(ComputeTest, AtomicOnLocalIsRejected) {
@@ -141,7 +156,10 @@ namespace AccelLang {
 	}
 
 	TEST(ComputeTest, AtomicThroughAliasOfAliasResolvesRoot) {
-		EXPECT_EQ(errorOf(String { buffer } + "fn main() {\n\tlet l = &mut buf.data[0];\n\tlet f = &mut l.x;\n\tatomic_add(f, 1u);\n}\n"), "");
+		EXPECT_EQ(
+			errorOf(String { buffer } + "fn main() {\n\tlet l = &mut buf.data[0];\n\tlet f = &mut l.x;\n\tatomic_add(f, 1u);\n}\n"),
+			""
+		);
 	}
 
 	TEST(ComputeTest, AtomicWithDisjointFieldRead) {
@@ -155,7 +173,12 @@ namespace AccelLang {
 	}
 
 	TEST(ComputeTest, AtomicAliasIgnoresShadowingLocal) {
-		EXPECT_EQ(errorOf("workgroup counter: u32;\nfn main() {\n\tlet l = &mut counter;\n\t{\n\t\tlet counter: u32 = 0u;\n\t\tatomic_add(l, 1u);\n\t}\n}\n"), "");
+		EXPECT_EQ(
+			errorOf(
+				"workgroup counter: u32;\nfn main() {\n\tlet l = &mut counter;\n\t{\n\t\tlet counter: u32 = 0u;\n\t\tatomic_add(l, 1u);\n\t}\n}\n"
+			),
+			""
+		);
 	}
 
 	TEST(ComputeTest, StorageImageOutsideComputeIsDiagnostic) {

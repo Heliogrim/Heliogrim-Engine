@@ -590,7 +590,11 @@ Opt<ir::ExprRef> Parser::unary() {
 		}
 
 		const auto unary = node(ir::ExprKind::eUnary, {}, { *operand }, op.loc);
-		_shared.mod.exprs[unary.index].op = op.kind == TokenKind::eMinus ? ir::Op::eNeg : op.kind == TokenKind::eBang ? ir::Op::eNot : ir::Op::eBitNot;
+		_shared.mod.exprs[unary.index].op = op.kind == TokenKind::eMinus ?
+			ir::Op::eNeg :
+			op.kind == TokenKind::eBang ?
+			ir::Op::eNot :
+			ir::Op::eBitNot;
 		return SomeVal(unary);
 	}
 

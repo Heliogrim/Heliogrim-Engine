@@ -3,7 +3,6 @@
 /**/
 
 #include <chrono>
-#include <cstdio>
 #include <spirv-tools/optimizer.hpp>
 
 #include "IrSpirvGate.hpp"
@@ -88,7 +87,15 @@ namespace AccelCompile {
 			const auto c = measure(spirv, Passes::eSize);
 			std::printf(
 				"| %s | %zu | %zu | %zu | %.2f | %.2f | %s | %s | %s |\n",
-				name.c_str(), a.words, b.words, c.words, b.ms, c.ms, a.valid ? "yes" : "NO", b.valid ? "yes" : "NO", c.valid ? "yes" : "NO"
+				name.c_str(),
+				a.words,
+				b.words,
+				c.words,
+				b.ms,
+				c.ms,
+				a.valid ? "yes" : "NO",
+				b.valid ? "yes" : "NO",
+				c.valid ? "yes" : "NO"
 			);
 			EXPECT_TRUE(a.valid) << name << ": unoptimized output fails validation";
 			EXPECT_TRUE(b.valid) << name << ": spirv-opt (performance) output fails validation";

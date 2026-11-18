@@ -1,9 +1,9 @@
 #pragma once
 
 #include <array>
-#include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 
 #include "Module.hpp"
 

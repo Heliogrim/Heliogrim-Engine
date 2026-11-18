@@ -10,6 +10,7 @@ u32 SpirvWriter::id() noexcept {
 #define HG_SPIRV_SECTION(fn_, member_) \
 	void SpirvWriter::fn_(const spv::Op op_, const std::span<const u32> operands_) { append(member_, op_, operands_); }
 
+// @formatter:off
 HG_SPIRV_SECTION(capability, _capability)
 HG_SPIRV_SECTION(extension, _extension)
 HG_SPIRV_SECTION(extInstImport, _extInstImport)
@@ -21,6 +22,7 @@ HG_SPIRV_SECTION(name, _name)
 HG_SPIRV_SECTION(annotation, _annotation)
 HG_SPIRV_SECTION(global, _global)
 HG_SPIRV_SECTION(function, _function)
+// @formatter:on
 
 #undef HG_SPIRV_SECTION
 
@@ -81,8 +83,10 @@ void SpirvWriter::string(ref<Vector<u32>> out_, const StringView value_) {
 Vector<u32> SpirvWriter::finish() const {
 	// magic, version 1.6, generator 0, bound, schema 0
 	Vector<u32> out { spv::MagicNumber, spv::Version, 0uL, _bound, 0uL };
-	for (const auto* section : { &_capability, &_extension, &_extInstImport, &_memoryModel, &_entryPoint, &_executionMode, &_debug,
-		     &_name, &_annotation, &_global, &_function }) {
+	for (const auto* section : {
+		     &_capability, &_extension, &_extInstImport, &_memoryModel, &_entryPoint, &_executionMode, &_debug,
+		     &_name, &_annotation, &_global, &_function
+	     }) {
 		out.insert(out.end(), section->begin(), section->end());
 	}
 	return out;

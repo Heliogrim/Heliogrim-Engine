@@ -1,5 +1,7 @@
 #include "pch.h"
 
+/**/
+
 #include <algorithm>
 #include <array>
 
@@ -8,6 +10,7 @@
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
 #include <Engine.Accel.Lang/Ir/Resolve.hpp>
 #include <Engine.Accel.Lang/Ir/Slice.hpp>
+
 #include "IrWording.hpp"
 
 using namespace hg::engine::accel::lang::ir;
@@ -33,7 +36,11 @@ namespace AccelLang {
 			return res.has_value() ? slice(*res, outputs_) : Module {};
 		}
 
-		[[nodiscard]] Layout layoutOf(ref<const Module> mod_, ref<const LayoutWeights> weights_ = {}, ref<const Vector<Layout>> existing_ = {}) {
+		[[nodiscard]] Layout layoutOf(
+			ref<const Module> mod_,
+			ref<const LayoutWeights> weights_ = {},
+			ref<const Vector<Layout>> existing_ = {}
+		) {
 			return assignLayout(computeInterface(mod_), mod_.types, weights_, existing_);
 		}
 
@@ -113,21 +120,26 @@ namespace AccelLang {
 			"@output (mode = forward, id = \"other\") f32vec4 other;\n";
 		const auto outputs = std::array { String("color") };
 		const auto sparseStmts = [](ref<const Module> m_) {
-			return std::ranges::count_if(m_.stmts, [&](ref<const Stmt> s_) {
-				return (s_.lhs.index < m_.exprs.size() && m_.exprs[s_.lhs.index].name == "sample_sparse") ||
-					(s_.rhs.index < m_.exprs.size() && m_.exprs[s_.rhs.index].name == "sample_sparse");
-			});
+			return std::ranges::count_if(
+				m_.stmts,
+				[&](ref<const Stmt> s_) {
+					return (s_.lhs.index < m_.exprs.size() && m_.exprs[s_.lhs.index].name == "sample_sparse") ||
+						(s_.rhs.index < m_.exprs.size() && m_.exprs[s_.rhs.index].name == "sample_sparse");
+				}
+			);
 		};
 
 		const auto unusedResult = resolved(
-			String { prelude } + "fn main() {\n\tlet texel = f32vec4(0.0);\n\tlet r = sample_sparse(t2, smp, uv, texel);\n\tcolor = texel;\n\tother = f32vec4(1.0);\n}\n",
+			String { prelude } +
+			"fn main() {\n\tlet texel = f32vec4(0.0);\n\tlet r = sample_sparse(t2, smp, uv, texel);\n\tcolor = texel;\n\tother = f32vec4(1.0);\n}\n",
 			EntryKind::eFragment,
 			outputs
 		);
 		EXPECT_EQ(sparseStmts(unusedResult), 1);
 
 		const auto bare = resolved(
-			String { prelude } + "fn main() {\n\tlet texel = f32vec4(0.0);\n\tsample_sparse(t2, smp, uv, texel);\n\tcolor = texel;\n\tother = f32vec4(1.0);\n}\n",
+			String { prelude } +
+			"fn main() {\n\tlet texel = f32vec4(0.0);\n\tsample_sparse(t2, smp, uv, texel);\n\tcolor = texel;\n\tother = f32vec4(1.0);\n}\n",
 			EntryKind::eFragment,
 			outputs
 		);
@@ -584,7 +596,7 @@ namespace AccelLang {
 		ConstantDecl x {};
 		x.name = "z";
 		x.type = TypeRef { 0u };
-		x.specId = String { "c" };
+		x.specId = SomeVal<String>("c");
 		ConstantDecl y = x;
 		y.type = TypeRef { 1u };
 		const Vector<ConstantDecl> s0 { x };
@@ -645,7 +657,7 @@ namespace AccelLang {
 			ConstantDecl decl {};
 			decl.name = String(name_);
 			decl.type = TypeRef { type_ };
-			decl.specId = String(id_);
+			decl.specId = SomeVal<String>(id_);
 			return decl;
 		};
 		const Vector<ConstantDecl> s0 { constant("x", "a", 0u), constant("z", "c", 0u) };

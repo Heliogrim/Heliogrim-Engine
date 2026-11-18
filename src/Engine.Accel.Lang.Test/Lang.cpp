@@ -1,10 +1,12 @@
 #include "pch.h"
 
-#include <Engine.Common/Make.hpp>
+/**/
+
 #include <Engine.Accel.Lang/Intermediate.hpp>
 #include <Engine.Accel.Lang/Representation.hpp>
 #include <Engine.Accel.Lang/Rep/Annotation.hpp>
 #include <Engine.Accel.Lang/Rep/Symbol.hpp>
+#include <Engine.Common/Make.hpp>
 
 using namespace hg::engine::accel::lang;
 using namespace hg;
@@ -128,5 +130,4 @@ namespace AccelLang {
 			EXPECT_TRUE(data == copy.globalScope.inbound[0].get() || data == copy.globalScope.outbound[0].get());
 		}
 	}
-
 }

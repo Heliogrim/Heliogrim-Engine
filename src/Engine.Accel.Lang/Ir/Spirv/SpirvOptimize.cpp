@@ -23,7 +23,10 @@ ir::Diagnostics ir::spirv::optimize(ref<Vector<u32>> words_, const StringView mo
 	if (not optimizer.Run(words_.data(), words_.size(), &out)) {
 		Diagnostics diags {};
 		diags.emplace_back(
-			Diagnostic::warning(codes::asl("internal-spirv-optimize"), "spir-v module '" + String(module_) + "' was not optimized" + messages)
+			Diagnostic::warning(
+				codes::asl("internal-spirv-optimize"),
+				"spir-v module '" + String(module_) + "' was not optimized" + messages
+			)
 		);
 		return diags;
 	}

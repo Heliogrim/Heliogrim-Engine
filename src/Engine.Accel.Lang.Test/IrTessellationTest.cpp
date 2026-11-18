@@ -1,6 +1,7 @@
 #include "pch.h"
 
-#include <Engine.Accel.Lang/Ir/Interface.hpp>
+/**/
+
 #include <Engine.Accel.Lang/Ir/Layout.hpp>
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
 #include <Engine.Accel.Lang/Ir/Variant.hpp>
@@ -67,11 +68,13 @@ namespace AccelLang {
 
 	TEST(TessellationTest, PerVertexWriteAtOtherIndexIsDiagnostic) {
 		EXPECT_FALSE(errorOf(ctrlSource("q[0] = p[0];"), EntryKind::eTessCtrl).empty());
-		EXPECT_FALSE(errorOf(
-			String { "@output (mode = forward, id = \"o\") f32vec4[] q;\n@tess_ctrl (output_vertices = 3)\nfn main() {\n\t"
-				"output_position[1] = input_position[0];\n}\n" },
-			EntryKind::eTessCtrl
-		).empty());
+		EXPECT_FALSE(
+			errorOf(
+				String { "@output (mode = forward, id = \"o\") f32vec4[] q;\n@tess_ctrl (output_vertices = 3)\nfn main() {\n\t"
+					"output_position[1] = input_position[0];\n}\n" },
+				EntryKind::eTessCtrl
+			).empty()
+		);
 	}
 
 	TEST(TessellationTest, PerVertexFieldAndNestedWritesAreChecked) {
@@ -91,11 +94,16 @@ namespace AccelLang {
 		};
 		const auto patchOut = String { "@output (mode = forward, id = \"o\", patch = true) f32 o;\nfn main() { o = 1.0; }\n" };
 		const auto patchIn = String { "@input (mode = forward, id = \"i\", patch = true) f32 i;\nfn main() { }\n" };
-		const auto badKind = String { "@input (mode = bind, id = \"u\", class = uniform, patch = true) block u { f32 v; };\nfn main() { }\n" };
+		const auto badKind = String {
+			"@input (mode = bind, id = \"u\", class = uniform, patch = true) block u { f32 v; };\nfn main() { }\n"
+		};
 		EXPECT_TRUE(errorOf(patchOut, EntryKind::eVertex).contains("patch"));
 		EXPECT_TRUE(errorOf(patchIn, EntryKind::eTessCtrl).contains("patch"));
 		EXPECT_TRUE(errorOf(withAttr("@tess_ctrl (output_vertices = 3)\n", patchIn), EntryKind::eTessCtrl).contains("patch"));
-		EXPECT_TRUE(errorOf(withAttr("@tess_eval (domain = triangles, spacing = equal, winding = cw)\n", patchOut), EntryKind::eTessEval).contains("patch"));
+		EXPECT_TRUE(
+			errorOf(withAttr("@tess_eval (domain = triangles, spacing = equal, winding = cw)\n", patchOut), EntryKind::eTessEval).contains(
+				"patch")
+		);
 		EXPECT_TRUE(errorOf(withAttr("@tess_ctrl (output_vertices = 3)\n", badKind), EntryKind::eTessCtrl).contains("patch"));
 		EXPECT_FALSE(errorOf(withAttr("@tess_ctrl (output_vertices = 3)\n", patchOut), EntryKind::eTessCtrl).contains("patch"));
 	}

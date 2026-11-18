@@ -2,11 +2,11 @@
 
 #include <map>
 #include <span>
-#include <spirv/unified1/spirv.hpp11>
-#include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
+#include <spirv/unified1/spirv.hpp11>
 
 namespace hg::engine::accel::lang::ir::spirv {
 	/**
@@ -20,16 +20,26 @@ namespace hg::engine::accel::lang::ir::spirv {
 		[[nodiscard]] u32 id() noexcept;
 
 		void capability(const spv::Op op_, const std::span<const u32> operands_);
+
 		void extension(const spv::Op op_, const std::span<const u32> operands_);
+
 		void extInstImport(const spv::Op op_, const std::span<const u32> operands_);
+
 		void memoryModel(const spv::Op op_, const std::span<const u32> operands_);
+
 		void entryPoint(const spv::Op op_, const std::span<const u32> operands_);
+
 		void executionMode(const spv::Op op_, const std::span<const u32> operands_);
+
 		void debug(const spv::Op op_, const std::span<const u32> operands_);
+
 		void name(const spv::Op op_, const std::span<const u32> operands_);
+
 		void annotation(const spv::Op op_, const std::span<const u32> operands_);
+
 		/* types, constants and global variables, appended as given and never deduplicated */
 		void global(const spv::Op op_, const std::span<const u32> operands_);
+
 		void function(const spv::Op op_, const std::span<const u32> operands_);
 
 		/**
@@ -39,7 +49,12 @@ namespace hg::engine::accel::lang::ir::spirv {
 		[[nodiscard]] u32 type(const spv::Op op_, const std::span<const u32> operands_, const bool fresh_ = false);
 
 		/** Constant declaration, `operands_` exclude result type and result id; deduplicated like `type`. */
-		[[nodiscard]] u32 constant(const spv::Op op_, const u32 resultType_, const std::span<const u32> operands_, const bool fresh_ = false);
+		[[nodiscard]] u32 constant(
+			const spv::Op op_,
+			const u32 resultType_,
+			const std::span<const u32> operands_,
+			const bool fresh_ = false
+		);
 
 		/** Appends `value_` as nul-terminated UTF-8 packed little-endian, zero padded to a word. */
 		static void string(ref<Vector<u32>> out_, const StringView value_);

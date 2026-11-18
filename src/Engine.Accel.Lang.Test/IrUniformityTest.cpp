@@ -1,5 +1,7 @@
 #include "pch.h"
 
+/**/
+
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
 #include <Engine.Accel.Lang/Ir/Resolve.hpp>
 #include <Engine.Accel.Lang/Ir/Uniformity.hpp>
@@ -149,7 +151,10 @@ namespace AccelLang {
 	}
 
 	TEST(UniformityTest, BuiltinUnderDivergentLocalDeclIsDetected) {
-		const auto m = parseOk(String { head } + "fn d() {\n\tif (in_x > 0.0) { let s = position; }\n}\nfn main() {\n\ta();\n}\n", EntryKind::eVertex);
+		const auto m = parseOk(
+			String { head } + "fn d() {\n\tif (in_x > 0.0) { let s = position; }\n}\nfn main() {\n\ta();\n}\n",
+			EntryKind::eVertex
+		);
 		const auto u = analyzeUniformity(m, [](StringView n_) { return n_ == "position"; });
 		auto count = 0uz;
 		for (const auto flag : u.requiresUniform) {
@@ -178,7 +183,10 @@ namespace AccelLang {
 	}
 
 	TEST(UniformityTest, RequiresUniformPropagatesOverCalls) {
-		const auto m = parseOk(String { head } + "fn d() { let s = position; }\nfn e() { d(); }\nfn main() {\n\ta();\n}\n", EntryKind::eVertex);
+		const auto m = parseOk(
+			String { head } + "fn d() { let s = position; }\nfn e() { d(); }\nfn main() {\n\ta();\n}\n",
+			EntryKind::eVertex
+		);
 		const auto none = analyzeUniformity(m);
 		for (const auto flag : none.requiresUniform) {
 			EXPECT_FALSE(flag);

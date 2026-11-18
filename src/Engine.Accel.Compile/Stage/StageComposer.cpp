@@ -5,17 +5,15 @@
 
 #include <Engine.Accel.Effect/AccelerationEffect.hpp>
 #include <Engine.Accel.Pipeline/Stage/StageModule.hpp>
-#include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
-#include <Engine.Logging/LogSink.hpp>
 #include <Engine.Logging/Logger.hpp>
+#include <Engine.Logging/LogSink.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 
 #include "StageIr.hpp"
 #include "../Profile/EffectProfile.hpp"
-#include "../Profile/ProfileDefinition.hpp"
 #include "../Spec/EffectSpecification.hpp"
 
 using namespace hg::engine::accel;

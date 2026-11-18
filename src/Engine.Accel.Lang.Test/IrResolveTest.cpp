@@ -1,5 +1,7 @@
 #include "pch.h"
 
+/**/
+
 #include <algorithm>
 #include <array>
 #include <functional>
@@ -11,9 +13,8 @@
 #include <Engine.Accel.Lang/Ir/Resolve.hpp>
 #include <Engine.Accel.Lang/Ir/Slice.hpp>
 
-#include "IrWording.hpp"
-
 #include "IrSame.hpp"
+#include "IrWording.hpp"
 
 using namespace hg::engine::accel::lang::ir;
 using namespace hg;
@@ -277,8 +278,10 @@ namespace AccelLang {
 			"fn GetWorldPosition() -> f32vec4;\n"
 			"@when (Shading == Forward) fn GetWorldPosition() -> f32vec4 { return f32vec4(1.0); }\n"
 			"@when (Shading == Deferred && Shadows == On) fn GetWorldPosition() -> f32vec4 { return f32vec4(0.5); }\n"
-			"fn main() {\n\tposition = GetWorldPosition();\n}\n"
-		, "M", EntryKind::eVertex);
+			"fn main() {\n\tposition = GetWorldPosition();\n}\n",
+			"M",
+			EntryKind::eVertex
+		);
 		// checked ahead of time: the requested combination itself is covered
 		const auto diags = resolveFail(mod, { { "Shading", "Forward" }, { "Shadows", "Off" } });
 		ASSERT_EQ(diags.size(), 1uz);
@@ -393,9 +396,17 @@ namespace AccelLang {
 		};
 		const std::array cases {
 			Case { { .pass = { { "Nope", "X" } }, .profile = {}, .material = {} }, "unknown toggle 'Nope', set by the pass" },
-			Case { { .pass = {}, .profile = { { "Shading", "Clustered" } }, .material = {} }, "toggle 'Shading' has no value 'Clustered', set by the profile" },
-			Case { { .pass = {}, .profile = {}, .material = { { "Shading", "" } } }, "toggle 'Shading' has no value '', set by the material" },
-			Case { { .pass = { { "Shading", "Forward" }, { "Shading", "Forward" } }, .profile = {}, .material = {} }, "toggle 'Shading' is set twice by the pass" }
+			Case {
+				{ .pass = {}, .profile = { { "Shading", "Clustered" } }, .material = {} },
+				"toggle 'Shading' has no value 'Clustered', set by the profile"
+			},
+			Case {
+				{ .pass = {}, .profile = {}, .material = { { "Shading", "" } } }, "toggle 'Shading' has no value '', set by the material"
+			},
+			Case {
+				{ .pass = { { "Shading", "Forward" }, { "Shading", "Forward" } }, .profile = {}, .material = {} },
+				"toggle 'Shading' is set twice by the pass"
+			}
 		};
 		for (const auto& c : cases) {
 			const auto diags = fixFail(mod, c.sources);
@@ -414,7 +425,9 @@ namespace AccelLang {
 		const auto mod = parse(shading);
 		const auto fixed = fixOk(
 			mod,
-			ToggleSources { .pass = { { "Shading", "Deferred" } }, .profile = { { "Shading", "Forward" } }, .material = { { "Shading", "Deferred" } } }
+			ToggleSources {
+				.pass = { { "Shading", "Deferred" } }, .profile = { { "Shading", "Forward" } }, .material = { { "Shading", "Deferred" } }
+			}
 		);
 		EXPECT_EQ(fixed.toggles, (ToggleSet { { "Shading", "Deferred" } }));
 		ASSERT_EQ(fixed.warnings.size(), 1uz);// the material agrees with the winning pass value
@@ -448,7 +461,9 @@ namespace AccelLang {
 	}
 
 	TEST(ResolveTest, CallInSurvivingCodeWithoutBodyIsError) {
-		const auto mod = parse(String(shading) + "@when (Shading == Forward) fn F() -> f32 { return 1.0; }\nfn main() {\n\tfrag_depth = F();\n}\n");
+		const auto mod = parse(
+			String(shading) + "@when (Shading == Forward) fn F() -> f32 { return 1.0; }\nfn main() {\n\tfrag_depth = F();\n}\n"
+		);
 		const auto diags = resolveFail(mod, { { "Shading", "Deferred" } });
 		ASSERT_EQ(diags.size(), 1uz);
 		EXPECT_EQ(diags[0].message(), "no body for 'F()' at Shading=Deferred");
@@ -469,7 +484,10 @@ namespace AccelLang {
 			const Vector<const Module*> list { &base, &second };
 			const auto merged = merge(list);
 			ASSERT_FALSE(merged.has_value());
-			EXPECT_TRUE(mentions(merged.error().front(), "'P'") && mentions(merged.error().front(), "'S'") && mentions(merged.error().front(), "'K'"))
+			EXPECT_TRUE(
+				mentions(merged.error().front(), "'P'") && mentions(merged.error().front(), "'S'") && mentions(merged.error().front(), "'K'"
+				)
+			)
 				<< merged.error().front().message();
 		}
 	}
@@ -504,7 +522,11 @@ namespace AccelLang {
 			"@when (Shading == Deferred) fn GetWorldPosition() -> f32vec4 { return gbuffer_position; }\n",
 			"P"
 		);
-		const auto shader = parse("fn GetWorldPosition() -> f32vec4;\nfn main() {\n\tposition = GetWorldPosition();\n}\n", "S", EntryKind::eVertex);
+		const auto shader = parse(
+			"fn GetWorldPosition() -> f32vec4;\nfn main() {\n\tposition = GetWorldPosition();\n}\n",
+			"S",
+			EntryKind::eVertex
+		);
 		const Vector<const Module*> list { &profile, &shader };
 		const auto merged = merge(list);
 		ASSERT_TRUE(merged.has_value());
@@ -539,7 +561,10 @@ namespace AccelLang {
 
 	TEST(ResolveTest, ResultIsCompactAndCanonical) {
 		constexpr StringView live = "@when (Shading == Forward) fn F() -> f32 { return 1.0; }\n";
-		const auto a = parse(String(shading) + "@when (Shading == Deferred) fn F() -> f32 { return 0.5; }\n" + String(live) + "fn main() {\n\tfrag_depth = F();\n}\n");
+		const auto a = parse(
+			String(shading) + "@when (Shading == Deferred) fn F() -> f32 { return 0.5; }\n" + String(live) +
+			"fn main() {\n\tfrag_depth = F();\n}\n"
+		);
 		// differs only in the dead variant, which also sits elsewhere in the arena
 		const auto b = parse(
 			String(shading) + String(live) + "@when (Shading == Deferred) fn F() -> f32 { return 0.25 * (2.0 + 0.5); }\n" +
