@@ -1,16 +1,15 @@
 #include "RenderTickStage.hpp"
 
-#include <Engine.Graphics.Schedule/RenderScenePipeline.hpp>
-#include <Engine.Scene.Schedule/ScenePipeline.hpp>
-
 #include <chrono>
 #include <Engine.Async/Collection/RingBuffer.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Graphics.Scene/RenderSceneManager.hpp>
+#include <Engine.Graphics.Schedule/RenderScenePipeline.hpp>
 #include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Graphics/RenderEnqueueResult.hpp>
 #include <Engine.Graphics/RenderTarget.hpp>
 #include <Engine.Logging/Logger.hpp>
+#include <Engine.Scene.Schedule/ScenePipeline.hpp>
 
 #ifdef _PROFILING
 #include <Engine.Common/Profiling/Stopwatch.hpp>
@@ -136,7 +135,6 @@ graph::StageDecl RenderTickStage::decl() const noexcept {
 		.name = engine::graphics::schedule::RenderScenePipeline::RenderTick,
 		.reads = Reads,
 		.writes = Writes,
-		.lane = graph::Lane::eCritical,
 		.after = after,
 		.before = before
 	};

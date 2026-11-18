@@ -2,11 +2,10 @@
 
 #include <Engine.ACS.Schedule/ActorPipeline.hpp>
 #include <Engine.Core.Schedule/CorePipeline.hpp>
-#include <Engine.Input.Schedule/InputPipeline.hpp>
-
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Universe.hpp>
 #include <Engine.Core/UniverseContext.hpp>
+#include <Engine.Input.Schedule/InputPipeline.hpp>
 #include <Engine.Level/Level.hpp>
 
 using namespace hg::engine::acs::schedule;
@@ -79,7 +78,6 @@ graph::StageDecl ActorTickStagePrePhysics::decl() const noexcept {
 		.name = engine::acs::schedule::ActorPipeline::ActorTickPrePhysics,
 		.reads = Reads,
 		.writes = Writes,
-		.lane = graph::Lane::eCritical,
 		.after = after
 	};
 }

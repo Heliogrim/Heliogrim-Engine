@@ -1,12 +1,11 @@
 #pragma once
 
-#include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Functional/Function.hpp>
-#include <Engine.Scheduler/Task/TaskMask.hpp>
+#include <Engine.Scheduler/Lane.hpp>
 #include <Engine.Scheduler/Task/TaskType.hpp>
 
 namespace hg {
-	using TaskMask = engine::scheduler::task::TaskMask;
+	using Lane = engine::scheduler::Lane;
 	using TaskType = engine::scheduler::task::TaskType;
 
 	class TaskBase {
@@ -61,30 +60,30 @@ namespace hg {
 
 	protected:
 		/**
-		 * The masking for this task
+		 * The lane of this task
 		 */
-		TaskMask _mask;
+		Lane _lane;
 
 	public:
 		/**
-		 * Get the tasks mask
+		 * Get the tasks lane
 		 *
 		 * @author Julius
 		 * @date 20.11.2021
 		 *
-		 * @returns The TaskMask of this task.
+		 * @returns The Lane of this task.
 		 */
-		[[nodiscard]] TaskMask mask() const noexcept;
+		[[nodiscard]] Lane lane() const noexcept;
 
 		/**
-		 * Get the tasks mask
+		 * Get the tasks lane
 		 *
 		 * @author Julius
 		 * @date 20.11.2021
 		 *
-		 * @returns A reference to the TaskMask of this task.
+		 * @returns A reference to the Lane of this task.
 		 */
-		[[nodiscard]] ref<TaskMask> mask() noexcept;
+		[[nodiscard]] ref<Lane> lane() noexcept;
 	};
 
 	struct Task final : public TaskBase {

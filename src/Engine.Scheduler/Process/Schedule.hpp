@@ -6,19 +6,11 @@
 #include <Engine.Common/Collection/Array.hpp>
 
 #include "ScheduleWorkSet.hpp"
-#include "../Task/TaskMask.hpp"
+#include "../Lane.hpp"
 
 namespace hg::engine::scheduler {
-	namespace {
-		inline constexpr static task::TaskMask priorities[] {
-			task::TaskMask::eCritical,
-			task::TaskMask::eHigher,
-			task::TaskMask::eNormal,
-			task::TaskMask::eLower
-		};
-
-		inline constexpr static u64 priority_count = sizeof(priorities) / sizeof(task::TaskMask);
-	}
+	inline constexpr u64 laneCount = 3uLL;
+	static_assert(laneCount == static_cast<u64>(Lane::eInherit), "one work set per concrete lane");
 
 	class Schedule {
 	public:
@@ -32,8 +24,6 @@ namespace hg::engine::scheduler {
 	public:
 		void setup();
 
-		void tick();
-
 		void tidy();
 
 	private:
@@ -41,12 +31,7 @@ namespace hg::engine::scheduler {
 		alignas(64) std::atomic<u64> _queued { 0uLL };
 
 	private:
-		alignas(64) Array<uptr<ScheduleWorkSet>, priority_count> _workSets;
-
-	private:
-		[[nodiscard]] u64 maskToPriority(const task::TaskMask mask_) const noexcept;
-
-		void transfer(const task::TaskMask src_, const task::TaskMask dst_);
+		alignas(64) Array<uptr<ScheduleWorkSet>, laneCount> _workSets;
 
 	public:
 		[[nodiscard]] u32 epoch() const noexcept;
@@ -65,9 +50,6 @@ namespace hg::engine::scheduler {
 	public:
 		[[nodiscard]] bool push(_In_ const non_owning_rptr<const task::TaskDelegate> task_);
 
-		[[nodiscard]] bool pop(
-			_In_ const task::TaskMask mask_,
-			_Inout_ ref<non_owning_rptr<const task::TaskDelegate>> task_
-		);
+		[[nodiscard]] bool pop(_Inout_ ref<non_owning_rptr<const task::TaskDelegate>> task_);
 	};
 }

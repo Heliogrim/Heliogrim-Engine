@@ -96,7 +96,7 @@ namespace SchedulerModule {
 						minorTimestamp = std::chrono::high_resolution_clock::now();
 						done.done();
 					},
-					task::TaskMask::eLower
+					Lane::eBackground
 				);
 
 				auto majorTask = engine::scheduler::task::make_task(
@@ -104,7 +104,7 @@ namespace SchedulerModule {
 						majorTimestamp = std::chrono::high_resolution_clock::now();
 						done.done();
 					},
-					task::TaskMask::eHigher
+					Lane::eInteractive
 				);
 
 				/**/

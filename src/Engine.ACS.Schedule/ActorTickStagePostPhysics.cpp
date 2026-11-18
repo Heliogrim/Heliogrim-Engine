@@ -1,12 +1,11 @@
 #include "ActorTickStagePostPhysics.hpp"
 
 #include <Engine.ACS.Schedule/ActorPipeline.hpp>
-#include <Engine.Physics.Schedule/PhysicsPipeline.hpp>
-
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Universe.hpp>
 #include <Engine.Core/UniverseContext.hpp>
 #include <Engine.Level/Level.hpp>
+#include <Engine.Physics.Schedule/PhysicsPipeline.hpp>
 
 using namespace hg::engine::acs::schedule;
 using namespace hg::engine::scheduler;
@@ -75,7 +74,6 @@ graph::StageDecl ActorTickStagePostPhysics::decl() const noexcept {
 		.name = engine::acs::schedule::ActorPipeline::ActorTickPostPhysics,
 		.reads = Reads,
 		.writes = Writes,
-		.lane = graph::Lane::eCritical,
 		.after = after
 	};
 }

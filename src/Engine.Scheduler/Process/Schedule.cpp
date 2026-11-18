@@ -30,46 +30,9 @@ void Schedule::setup() {
 	}
 }
 
-void Schedule::tick() {
-	transfer(task::TaskMask::eHigher, task::TaskMask::eCritical);
-	transfer(task::TaskMask::eNormal, task::TaskMask::eHigher);
-	transfer(task::TaskMask::eLower, task::TaskMask::eNormal);
-}
-
 void Schedule::tidy() {
 	for (auto&& workSet : _workSets) {
 		workSet.reset();
-	}
-}
-
-u64 Schedule::maskToPriority(const task::TaskMask mask_) const noexcept {
-	if (mask_ & task::TaskMask::eCritical) {
-		return 0uLL;
-
-	} else if (mask_ & task::TaskMask::eHigher) {
-		return 1uLL;
-
-	} else if (mask_ & task::TaskMask::eNormal) {
-		return 2uLL;
-
-	} else if (mask_ & task::TaskMask::eLower) {
-		return 3uLL;
-
-	} else {
-		// Default to normal priority
-		return 2uLL;
-	}
-}
-
-void Schedule::transfer(const task::TaskMask src_, const task::TaskMask dst_) {
-
-	const auto src = maskToPriority(src_);
-	const auto dst = maskToPriority(dst_);
-
-	if (_workSets[src]->transfer(_workSets[dst].get()) > 0uLL) {
-		// No wake: safe only because tick() runs on a worker (the completing one in CompositePipeline) that pops again.
-		// A non-worker caller of tick() would need a wakeOne here.
-		_pushEpoch.fetch_add(1uL, std::memory_order::release);
 	}
 }
 
@@ -96,12 +59,13 @@ void Schedule::waitForWork(u32 seen_) noexcept {
 
 bool Schedule::push(const non_owning_rptr<const task::TaskDelegate> task_) {
 
-	const auto mask = task_->mask();
-	const u64 priorityIdx = maskToPriority(mask);
+	const auto lane = task_->lane();
+	// the resolver replaces this line
+	const u64 laneIdx = static_cast<u64>(lane == Lane::eInherit ? Lane::eInteractive : lane);
 
 	// Count first: a worker may pop right after the insert, and its fetch_sub must not wrap below zero.
 	_queued.fetch_add(1uLL, std::memory_order::acq_rel);
-	if (not _workSets[priorityIdx]->push(task_)) {
+	if (not _workSets[laneIdx]->push(task_)) {
 		_queued.fetch_sub(1uLL, std::memory_order::acq_rel);
 		return false;
 	}
@@ -113,11 +77,10 @@ bool Schedule::push(const non_owning_rptr<const task::TaskDelegate> task_) {
 	return true;
 }
 
-bool Schedule::pop(const task::TaskMask mask_, ref<non_owning_rptr<const task::TaskDelegate>> task_) {
+bool Schedule::pop(ref<non_owning_rptr<const task::TaskDelegate>> task_) {
 
-	u64 priorityIdx = maskToPriority(mask_);
-	for (; priorityIdx < priority_count; ++priorityIdx) {
-		if (_workSets[priorityIdx]->pop(mask_, task_)) {
+	for (u64 laneIdx = 0uLL; laneIdx < laneCount; ++laneIdx) {
+		if (_workSets[laneIdx]->pop(task_)) {
 			_queued.fetch_sub(1uLL, std::memory_order::acq_rel);
 			return true;
 		}
