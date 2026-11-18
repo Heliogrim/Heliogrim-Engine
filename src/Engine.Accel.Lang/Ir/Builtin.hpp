@@ -3,11 +3,11 @@
 #include <algorithm>
 #include <array>
 #include <iterator>
-#include <spirv/unified1/GLSL.std.450.h>
-#include <spirv/unified1/spirv.hpp11>
-#include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Types.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
+#include <spirv/unified1/GLSL.std.450.h>
+#include <spirv/unified1/spirv.hpp11>
 
 #include "Module.hpp"
 
@@ -65,6 +65,7 @@ namespace hg::engine::accel::lang::ir {
 	};
 
 	inline constexpr std::array<BuiltinVariable, 21> builtinVariables {
+		// @formatter:off
 		{
 			{ "global_invocation_id", TypeKind::eVector, ScalarKind::eUInt, 3uL, stageCompute },
 			{ "local_invocation_id", TypeKind::eVector, ScalarKind::eUInt, 3uL, stageCompute },
@@ -88,6 +89,7 @@ namespace hg::engine::accel::lang::ir {
 			{ "invocation_id", TypeKind::eScalar, ScalarKind::eInt, 1uL, stageGeometry | stageTessCtrl },
 			{ "layer", TypeKind::eScalar, ScalarKind::eInt, 1uL, stageGeometry, true }
 		}
+		// @formatter:on
 	};
 
 	[[nodiscard]] constexpr const BuiltinVariable* findBuiltinVariable(StringView name_) noexcept {
@@ -381,41 +383,44 @@ namespace hg::engine::accel::lang::ir {
 	};
 
 	static_assert(std::size(builtinFunctionSpirv) == std::size(builtinFunctions));
-	static_assert([] {
-		for (auto i = 0uz; i < std::size(builtinFunctions); ++i) {
-			if (builtinFunctionSpirv[i].name != builtinFunctions[i].name) {
-				return false;
+	static_assert(
+		[] {
+			for (auto i = 0uz; i < std::size(builtinFunctions); ++i) {
+				if (builtinFunctionSpirv[i].name != builtinFunctions[i].name) {
+					return false;
+				}
+				// shape: the form has to fit the overload's parameter list, not just its name
+				const auto sig = StringView { builtinFunctions[i].signature };
+				const auto form = builtinFunctionSpirv[i].form;
+				const auto byRef = sig.contains("(&") && not sig.contains("img");
+				const auto atomic = form.kind == SpirvFormKind::eCore
+					&& form.code >= static_cast<u32>(spv::Op::OpAtomicLoad) && form.code <= static_cast<u32>(spv::Op::OpAtomicXor);
+				if (atomic != byRef) {
+					return false;
+				}
+				if (form.kind == SpirvFormKind::eExtInst
+					&& (sig.starts_with("void(") || sig.contains("&") || sig.contains("tex") || sig.contains("img"))) {
+					return false;
+				}
+				if (form.kind == SpirvFormKind::eLower) {
+					using enum BuiltinLowering;
+					const auto lowering = static_cast<BuiltinLowering>(form.code);
+					const auto sampled = lowering == eSample || lowering == eSampleLod || lowering == eSampleSparse
+						|| lowering == eSampleSparseClamp || lowering == eTextureSize;
+					if (sampled != sig.contains("(tex,smp,")) {
+						return false;
+					}
+				}
 			}
-			// shape: the form has to fit the overload's parameter list, not just its name
-			const auto sig = StringView { builtinFunctions[i].signature };
-			const auto form = builtinFunctionSpirv[i].form;
-			const auto byRef = sig.contains("(&") && not sig.contains("img");
-			const auto atomic = form.kind == SpirvFormKind::eCore
-				&& form.code >= static_cast<u32>(spv::Op::OpAtomicLoad) && form.code <= static_cast<u32>(spv::Op::OpAtomicXor);
-			if (atomic != byRef) {
-				return false;
-			}
-			if (form.kind == SpirvFormKind::eExtInst
-				&& (sig.starts_with("void(") || sig.contains("&") || sig.contains("tex") || sig.contains("img"))) {
-				return false;
-			}
-			if (form.kind == SpirvFormKind::eLower) {
-				using enum BuiltinLowering;
-				const auto lowering = static_cast<BuiltinLowering>(form.code);
-				const auto sampled = lowering == eSample || lowering == eSampleLod || lowering == eSampleSparse
-					|| lowering == eSampleSparseClamp || lowering == eTextureSize;
-				if (sampled != sig.contains("(tex,smp,")) {
+			for (auto i = 0uz; i < builtinVariables.size(); ++i) {
+				if (builtinVariableSpirv[i].name != builtinVariables[i].name) {
 					return false;
 				}
 			}
-		}
-		for (auto i = 0uz; i < builtinVariables.size(); ++i) {
-			if (builtinVariableSpirv[i].name != builtinVariables[i].name) {
-				return false;
-			}
-		}
-		return true;
-	}(), "SPIR-V builtin tables must line up with the builtin tables");
+			return true;
+		}(),
+		"SPIR-V builtin tables must line up with the builtin tables"
+	);
 
 	/* parsed signatures */
 
@@ -564,7 +569,9 @@ namespace hg::engine::accel::lang::ir {
 			case BuiltinFamily::eImageValue: {
 				desc.kind = TypeKind::eVector;
 				desc.n = 4uL;
-				desc.scalar = format_.ends_with("ui") ? ScalarKind::eUInt : (format_.ends_with("i") ? ScalarKind::eInt : ScalarKind::eFloat);
+				desc.scalar = format_.ends_with("ui") ?
+					ScalarKind::eUInt :
+					(format_.ends_with("i") ? ScalarKind::eInt : ScalarKind::eFloat);
 				return desc;
 			}
 			case BuiltinFamily::eVoid: return desc;
@@ -580,7 +587,13 @@ namespace hg::engine::accel::lang::ir {
 			case BuiltinFamily::eCoord:
 			case BuiltinFamily::eSize: {
 				const auto coord = t_.family == BuiltinFamily::eCoord;
-				const auto n = dim_ == TextureDim::e1D ? 1uL : dim_ == TextureDim::e2D ? 2uL : dim_ == TextureDim::eCube ? (coord ? 3uL : 2uL) : 3uL;
+				const auto n = dim_ == TextureDim::e1D ?
+					1uL :
+					dim_ == TextureDim::e2D ?
+					2uL :
+					dim_ == TextureDim::eCube ?
+					(coord ? 3uL : 2uL) :
+					3uL;
 				desc.kind = n == 1uL ? TypeKind::eScalar : TypeKind::eVector;
 				desc.n = n;
 				return desc;

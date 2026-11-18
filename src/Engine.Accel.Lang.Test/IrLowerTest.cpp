@@ -1,23 +1,24 @@
 #include "pch.h"
 
+/**/
+
 #include <array>
 #include <regex>
 #include <string>
 
-#include "IrSpirvText.hpp"
 #include <Engine.Accel.Lang/Ir/Interface.hpp>
 #include <Engine.Accel.Lang/Ir/Layout.hpp>
 #include <Engine.Accel.Lang/Ir/Lower.hpp>
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
-#include <Engine.Accel.Lang/Ir/References.hpp>
 #include <Engine.Accel.Lang/Ir/Resolve.hpp>
 #include <Engine.Accel.Lang/Ir/Slice.hpp>
 #include <Engine.Accel.Lang/Rep/Annotation.hpp>
 #include <Engine.Accel.Lang/Rep/Symbol.hpp>
 #include <spirv-tools/libspirv.hpp>
-#include "IrWording.hpp"
 
 #include "IrSame.hpp"
+#include "IrSpirvText.hpp"
+#include "IrWording.hpp"
 
 using namespace hg::engine::accel::lang::ir;
 using namespace hg::engine::accel::lang;
@@ -62,7 +63,9 @@ namespace AccelLang {
 			spvtools::SpirvTools tools { SPV_ENV_VULKAN_1_3 };
 			EXPECT_TRUE(tools.Validate(im_.spirv));
 			std::string text {};
-			EXPECT_TRUE(tools.Disassemble(im_.spirv, &text, SPV_BINARY_TO_TEXT_OPTION_NO_HEADER | SPV_BINARY_TO_TEXT_OPTION_FRIENDLY_NAMES));
+			EXPECT_TRUE(
+				tools.Disassemble(im_.spirv, &text, SPV_BINARY_TO_TEXT_OPTION_NO_HEADER | SPV_BINARY_TO_TEXT_OPTION_FRIENDLY_NAMES)
+			);
 			return String { text };
 		}
 
@@ -158,7 +161,9 @@ namespace AccelLang {
 			const std::regex bindingPattern { "OpDecorate " + (*it)[1].str() + R"( Binding (\d+)\n)" };
 			ASSERT_TRUE(std::regex_search(text, bound, bindingPattern)) << text;
 			const auto binding = static_cast<u32>(std::stoul(bound[1].str()));
-			EXPECT_TRUE(std::ranges::any_of(layout.slots, [&](ref<const SlotAssignment> s_) { return s_.set == set && s_.binding == binding; }))
+			EXPECT_TRUE(
+				std::ranges::any_of(layout.slots, [&](ref<const SlotAssignment> s_) { return s_.set == set && s_.binding == binding; })
+			)
 				<< set << ", " << binding;
 		}
 		EXPECT_EQ(slots, layout.slots.size());
@@ -341,7 +346,10 @@ namespace AccelLang {
 	}
 
 	TEST(LowerTest, PushBlockThatCannotBeLaidOutIsDiagnostic) {
-		const auto mod = resolved("@input (mode = bind, id = \"p\", class = push) block p { u32[] tail; };\nfn main() { position = f32vec4(f32(p.tail[0])); }\n", EntryKind::eVertex);
+		const auto mod = resolved(
+			"@input (mode = bind, id = \"p\", class = push) block p { u32[] tail; };\nfn main() { position = f32vec4(f32(p.tail[0])); }\n",
+			EntryKind::eVertex
+		);
 		const auto layout = layoutOf(mod);
 		ASSERT_EQ(layout.push.size(), 1uz);
 		ASSERT_EQ(layout.push.front().size, 0u);
@@ -427,62 +435,62 @@ namespace AccelLang {
 		EXPECT_EQ(places, 2uz) << text;
 	}
 
-TEST(LowerTest, EmitsCompoundAssignAndTernary) {
-	const auto mod = resolved(
-		"@input (mode = forward) f32 bias;\n"
-		"@output (mode = forward, id = \"color\") f32 color;\n"
-		"fn main() {\n\tlet a = 0.0;\n\tfor (let i = 0u; i < 4u; ++i) { a += bias; if (a > 3.0) { break; } }\n"
-		"\tcolor = bias > 0.0 ? a : -a;\n}\n",
-		EntryKind::eFragment,
-		std::array { String("color") }
-	);
-	const auto text = textOf(lower(mod, layoutOf(mod)));
-	EXPECT_EQ(count(text, "OpLoopMerge"), 1uz) << text;
-	EXPECT_TRUE(text.contains("OpFAdd")) << text;
-	EXPECT_TRUE(text.contains("OpULessThan")) << text;
-	EXPECT_TRUE(text.contains("OpSelect") || text.contains("OpPhi")) << text;
-}
+	TEST(LowerTest, EmitsCompoundAssignAndTernary) {
+		const auto mod = resolved(
+			"@input (mode = forward) f32 bias;\n"
+			"@output (mode = forward, id = \"color\") f32 color;\n"
+			"fn main() {\n\tlet a = 0.0;\n\tfor (let i = 0u; i < 4u; ++i) { a += bias; if (a > 3.0) { break; } }\n"
+			"\tcolor = bias > 0.0 ? a : -a;\n}\n",
+			EntryKind::eFragment,
+			std::array { String("color") }
+		);
+		const auto text = textOf(lower(mod, layoutOf(mod)));
+		EXPECT_EQ(count(text, "OpLoopMerge"), 1uz) << text;
+		EXPECT_TRUE(text.contains("OpFAdd")) << text;
+		EXPECT_TRUE(text.contains("OpULessThan")) << text;
+		EXPECT_TRUE(text.contains("OpSelect") || text.contains("OpPhi")) << text;
+	}
 
-TEST(LowerTest, ForWithOmittedInitAndStepHasValidHeader) {
-	const auto mod = resolved(
-		"@input (mode = forward) f32 bias;\n"
-		"@output (mode = forward, id = \"color\") f32 color;\n"
-		"fn main() {\n\tlet a = 0.0;\n\tlet c = bias > 1.0;\n\tfor (; c; ) { a += bias; break; }\n"
-		"\tlet i = 0u;\n\tfor (; i < 4u; ) { a += bias; i++; }\n"
-		"\tfor (let j = 0u; j < 4u; ) { a += bias; j++; }\n\tcolor = a;\n}\n",
-		EntryKind::eFragment,
-		std::array { String("color") }
-	);
-	const auto text = textOf(lower(mod, layoutOf(mod)));
-	EXPECT_EQ(count(text, "OpLoopMerge"), 3uz) << text;
-}
+	TEST(LowerTest, ForWithOmittedInitAndStepHasValidHeader) {
+		const auto mod = resolved(
+			"@input (mode = forward) f32 bias;\n"
+			"@output (mode = forward, id = \"color\") f32 color;\n"
+			"fn main() {\n\tlet a = 0.0;\n\tlet c = bias > 1.0;\n\tfor (; c; ) { a += bias; break; }\n"
+			"\tlet i = 0u;\n\tfor (; i < 4u; ) { a += bias; i++; }\n"
+			"\tfor (let j = 0u; j < 4u; ) { a += bias; j++; }\n\tcolor = a;\n}\n",
+			EntryKind::eFragment,
+			std::array { String("color") }
+		);
+		const auto text = textOf(lower(mod, layoutOf(mod)));
+		EXPECT_EQ(count(text, "OpLoopMerge"), 3uz) << text;
+	}
 
-TEST(LowerTest, SparseAddsExtensions) {
-	const auto outputs = std::array { String("color") };
-	const auto mod = resolved(
-		"@input (mode = bind, id = \"t2\", class = texture) texture2darray t2;\n"
-		"@input (mode = bind, id = \"smp\", class = sampler) sampler smp;\n"
-		"@input (mode = forward, id = \"uv\") f32vec3 uv;\n"
-		"@output (mode = forward, id = \"color\") f32vec4 color;\n"
-		"fn main() {\n"
-		"\tlet a = f32vec4(0.0);\n\tlet b = f32vec4(0.0);\n"
-		"\tlet r = sample_sparse(t2, smp, uv, a);\n"
-		"\tlet q = sample_sparse_clamp(t2, smp, uv, 1.0, b);\n"
-		"\tif (sparse_resident(r) && sparse_resident(q)) { color = a + b; }\n}\n",
-		EntryKind::eFragment,
-		outputs
-	);
-	const auto text = textOf(lower(mod, layoutOf(mod)));
-	EXPECT_TRUE(text.contains("OpCapability SparseResidency\n")) << text;
-	EXPECT_TRUE(text.contains("OpCapability MinLod\n")) << text;
-	EXPECT_EQ(count(text, "OpImageSparseSampleImplicitLod"), 2uz) << text;
-	EXPECT_EQ(count(text, "OpImageSparseTexelsResident"), 2uz) << text;
-}
+	TEST(LowerTest, SparseAddsExtensions) {
+		const auto outputs = std::array { String("color") };
+		const auto mod = resolved(
+			"@input (mode = bind, id = \"t2\", class = texture) texture2darray t2;\n"
+			"@input (mode = bind, id = \"smp\", class = sampler) sampler smp;\n"
+			"@input (mode = forward, id = \"uv\") f32vec3 uv;\n"
+			"@output (mode = forward, id = \"color\") f32vec4 color;\n"
+			"fn main() {\n"
+			"\tlet a = f32vec4(0.0);\n\tlet b = f32vec4(0.0);\n"
+			"\tlet r = sample_sparse(t2, smp, uv, a);\n"
+			"\tlet q = sample_sparse_clamp(t2, smp, uv, 1.0, b);\n"
+			"\tif (sparse_resident(r) && sparse_resident(q)) { color = a + b; }\n}\n",
+			EntryKind::eFragment,
+			outputs
+		);
+		const auto text = textOf(lower(mod, layoutOf(mod)));
+		EXPECT_TRUE(text.contains("OpCapability SparseResidency\n")) << text;
+		EXPECT_TRUE(text.contains("OpCapability MinLod\n")) << text;
+		EXPECT_EQ(count(text, "OpImageSparseSampleImplicitLod"), 2uz) << text;
+		EXPECT_EQ(count(text, "OpImageSparseTexelsResident"), 2uz) << text;
+	}
 
-TEST(LowerTest, ViewIndexAddsMultiview) {
-	const auto mod = resolved("fn main() {\n\tposition = f32vec4(f32(view_index));\n}\n", EntryKind::eVertex);
-	const auto text = textOf(lower(mod, layoutOf(mod)));
-	EXPECT_TRUE(text.contains("OpCapability MultiView\n")) << text;
-	EXPECT_TRUE(text.contains("BuiltIn ViewIndex\n")) << text;
-}
+	TEST(LowerTest, ViewIndexAddsMultiview) {
+		const auto mod = resolved("fn main() {\n\tposition = f32vec4(f32(view_index));\n}\n", EntryKind::eVertex);
+		const auto text = textOf(lower(mod, layoutOf(mod)));
+		EXPECT_TRUE(text.contains("OpCapability MultiView\n")) << text;
+		EXPECT_TRUE(text.contains("BuiltIn ViewIndex\n")) << text;
+	}
 }

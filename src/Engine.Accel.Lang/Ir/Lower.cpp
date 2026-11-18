@@ -6,9 +6,9 @@
 
 #include "Interface.hpp"
 #include "References.hpp"
-#include "Spirv/SpirvEmitter.hpp"
 #include "../Rep/Annotation.hpp"
 #include "../Rep/Symbol.hpp"
+#include "Spirv/SpirvEmitter.hpp"
 
 using namespace hg::engine::accel::lang;
 using namespace hg;

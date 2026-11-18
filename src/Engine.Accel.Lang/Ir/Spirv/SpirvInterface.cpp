@@ -1,5 +1,4 @@
 #include <algorithm>
-#include <limits>
 #include <map>
 #include <type_traits>
 #include <variant>
@@ -140,7 +139,8 @@ namespace hg::engine::accel::lang::ir::spirv {
 						return b_.bindClass == BindClass::ePushConstant && not b_.implicit && b_.mode != BindMode::eForward;
 					}
 				);
-				user(codes::asl("too-many-push-constant-blocks"),
+				user(
+					codes::asl("too-many-push-constant-blocks"),
 					binding.loc,
 					"a stage has at most one push constant block, but the module declares " + std::to_string(total)
 				);
@@ -367,7 +367,11 @@ namespace hg::engine::accel::lang::ir::spirv {
 				switch (binding.bindClass) {
 					case BindClass::eUniformBuffer: {
 						if (binding.packing == Packing::eStd430) {
-							fail(codes::asl("internal-spirv-emit"), {}, "uniform buffer '" + binding.id + "' with std430 packing is not supported");
+							fail(
+								codes::asl("internal-spirv-emit"),
+								{},
+								"uniform buffer '" + binding.id + "' with std430 packing is not supported"
+							);
 							continue;
 						}
 
@@ -414,7 +418,11 @@ namespace hg::engine::accel::lang::ir::spirv {
 						}
 
 						if (++pushBlocks > 1uL) {
-							fail(codes::asl("too-many-push-constant-blocks"), {}, "a stage has at most one push constant block, but the module declares more");
+							fail(
+								codes::asl("too-many-push-constant-blocks"),
+								{},
+								"a stage has at most one push constant block, but the module declares more"
+							);
 							continue;
 						}
 
@@ -458,7 +466,11 @@ namespace hg::engine::accel::lang::ir::spirv {
 		// a folded value converted to the scalar type `desc_` at its declared width; None for a float outside an integer range
 		const auto convert = [&wrap, &reason](ref<const TypeDesc> desc_, const Value value_) -> Opt<Value> {
 			if (const auto* const real = std::get_if<f64>(&value_);
-				real != nullptr && (desc_.scalar == ScalarKind::eInt || desc_.scalar == ScalarKind::eUInt) && not fitsInteger(*real, desc_.scalar, desc_.bits)) {
+				real != nullptr && (desc_.scalar == ScalarKind::eInt || desc_.scalar == ScalarKind::eUInt) && not fitsInteger(
+					*real,
+					desc_.scalar,
+					desc_.bits
+				)) {
 				reason = "a float outside the integer range does not convert";
 				return None;
 			}
@@ -467,7 +479,11 @@ namespace hg::engine::accel::lang::ir::spirv {
 				[&](const auto v_) -> Value {
 					switch (desc_.scalar) {
 						case ScalarKind::eBool: return static_cast<bool>(v_);
-						case ScalarKind::eInt: return static_cast<s64>(wrap(ScalarKind::eInt, desc_.bits, static_cast<u64>(static_cast<s64>(v_))));
+						case ScalarKind::eInt: return static_cast<s64>(wrap(
+								ScalarKind::eInt,
+								desc_.bits,
+								static_cast<u64>(static_cast<s64>(v_))
+							));
 						case ScalarKind::eUInt: return wrap(ScalarKind::eUInt, desc_.bits, static_cast<u64>(v_));
 						default: return desc_.bits == 32uL ? static_cast<f64>(static_cast<float>(v_)) : static_cast<f64>(v_);
 					}
@@ -546,7 +562,11 @@ namespace hg::engine::accel::lang::ir::spirv {
 					}
 
 					value = std::visit(
-						[op = e.op, &reason, minimum = static_cast<s64>(wrap(ScalarKind::eInt, desc.bits, 1uLL << ((desc.bits == 0uL || desc.bits > 64uL ? 64uL : desc.bits) - 1uLL)))](const auto lhs_, const auto rhs_) -> Opt<Value> {
+						[op = e.op, &reason, minimum = static_cast<s64>(wrap(
+							ScalarKind::eInt,
+							desc.bits,
+							1uLL << ((desc.bits == 0uL || desc.bits > 64uL ? 64uL : desc.bits) - 1uLL)
+						))](const auto lhs_, const auto rhs_) -> Opt<Value> {
 							using T = decltype(lhs_);
 							if constexpr (not std::is_same_v<T, decltype(rhs_)> || std::is_same_v<T, bool>) {
 								return None;
@@ -761,7 +781,13 @@ namespace hg::engine::accel::lang::ir::spirv {
 					constants[i] = fold(constant.value, 0uL);
 				}
 				if (constants[i] == 0uL) {
-					fail(codes::asl("not-constant"), constant.loc, "initializer of constant '" + constant.name + "' does not fold to a constant value" + (reason.empty() ? String {} : ": " + reason));
+					fail(
+						codes::asl("not-constant"),
+						constant.loc,
+						"initializer of constant '" + constant.name + "' does not fold to a constant value" + (reason.empty() ?
+							String {} :
+							": " + reason)
+					);
 				}
 				continue;
 			}
@@ -857,12 +883,17 @@ namespace hg::engine::accel::lang::ir::spirv {
 			case EntryKind::eTessEval: {
 				model = spv::ExecutionModel::TessellationEvaluation;
 				mode(
-					attributes.tessDomain == TessDomain::eTriangles ? spv::ExecutionMode::Triangles :
-					attributes.tessDomain == TessDomain::eQuads ? spv::ExecutionMode::Quads : spv::ExecutionMode::Isolines
+					attributes.tessDomain == TessDomain::eTriangles ?
+					spv::ExecutionMode::Triangles :
+					attributes.tessDomain == TessDomain::eQuads ?
+					spv::ExecutionMode::Quads :
+					spv::ExecutionMode::Isolines
 				);
 				mode(
-					attributes.tessSpacing == TessSpacing::eEqual ? spv::ExecutionMode::SpacingEqual :
-					attributes.tessSpacing == TessSpacing::eFractionalEven ? spv::ExecutionMode::SpacingFractionalEven :
+					attributes.tessSpacing == TessSpacing::eEqual ?
+					spv::ExecutionMode::SpacingEqual :
+					attributes.tessSpacing == TessSpacing::eFractionalEven ?
+					spv::ExecutionMode::SpacingFractionalEven :
 					spv::ExecutionMode::SpacingFractionalOdd
 				);
 				mode(attributes.clockwise ? spv::ExecutionMode::VertexOrderCw : spv::ExecutionMode::VertexOrderCcw);
@@ -871,18 +902,26 @@ namespace hg::engine::accel::lang::ir::spirv {
 			case EntryKind::eGeometry: {
 				model = spv::ExecutionModel::Geometry;
 				switch (attributes.geometryInput) {
-					case Primitive::ePoints: mode(spv::ExecutionMode::InputPoints); break;
+					case Primitive::ePoints: mode(spv::ExecutionMode::InputPoints);
+						break;
 					case Primitive::eLines:
-					case Primitive::eLineStrip: mode(spv::ExecutionMode::InputLines); break;
-					case Primitive::eLinesAdjacency: mode(spv::ExecutionMode::InputLinesAdjacency); break;
-					case Primitive::eTrianglesAdjacency: mode(spv::ExecutionMode::InputTrianglesAdjacency); break;
-					default: mode(spv::ExecutionMode::Triangles); break;
+					case Primitive::eLineStrip: mode(spv::ExecutionMode::InputLines);
+						break;
+					case Primitive::eLinesAdjacency: mode(spv::ExecutionMode::InputLinesAdjacency);
+						break;
+					case Primitive::eTrianglesAdjacency: mode(spv::ExecutionMode::InputTrianglesAdjacency);
+						break;
+					default: mode(spv::ExecutionMode::Triangles);
+						break;
 				}
 				switch (attributes.geometryOutput) {
-					case Primitive::ePoints: mode(spv::ExecutionMode::OutputPoints); break;
+					case Primitive::ePoints: mode(spv::ExecutionMode::OutputPoints);
+						break;
 					case Primitive::eLines:
-					case Primitive::eLineStrip: mode(spv::ExecutionMode::OutputLineStrip); break;
-					default: mode(spv::ExecutionMode::OutputTriangleStrip); break;
+					case Primitive::eLineStrip: mode(spv::ExecutionMode::OutputLineStrip);
+						break;
+					default: mode(spv::ExecutionMode::OutputTriangleStrip);
+						break;
 				}
 				mode(spv::ExecutionMode::OutputVertices, Ops { attributes.maxVertices });
 				mode(spv::ExecutionMode::Invocations, Ops { attributes.invocations });

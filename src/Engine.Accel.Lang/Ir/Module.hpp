@@ -2,10 +2,10 @@
 
 #include <array>
 #include <variant>
-#include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Optional.hpp>
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Types.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 
 #include "Condition.hpp"
 #include "Diagnostic.hpp"

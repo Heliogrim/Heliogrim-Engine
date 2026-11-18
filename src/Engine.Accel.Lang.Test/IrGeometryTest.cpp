@@ -1,6 +1,7 @@
 #include "pch.h"
 
-#include <Engine.Accel.Lang/Ir/Interface.hpp>
+/**/
+
 #include <Engine.Accel.Lang/Ir/Layout.hpp>
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
 #include <Engine.Accel.Lang/Ir/Variant.hpp>
@@ -37,7 +38,8 @@ namespace AccelLang {
 		}
 
 		[[nodiscard]] String geometrySource(StringView attributes_) {
-			return String { "@input (mode = forward, id = \"world-pos\") f32vec4[] p;\n" } + "@geometry (" + String { attributes_ } + ")\n" +
+			return String { "@input (mode = forward, id = \"world-pos\") f32vec4[] p;\n" } + "@geometry (" + String { attributes_ } + ")\n"
+				+
 				"fn main() {\n\tposition = input_position[0];\n\temit_vertex();\n\tend_primitive();\n}\n";
 		}
 	}

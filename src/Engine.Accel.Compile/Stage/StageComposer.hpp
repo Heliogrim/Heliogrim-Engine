@@ -9,35 +9,35 @@
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 
 namespace hg::engine::accel {
-    class StageComposer {
-    public:
-        using this_type = StageComposer;
+	class StageComposer {
+	public:
+		using this_type = StageComposer;
 
-    public:
-        StageComposer() noexcept = default;
+	public:
+		StageComposer() noexcept = default;
 
-        ~StageComposer() noexcept = default;
+		~StageComposer() noexcept = default;
 
-    private:
-        non_owning_rptr<const class Tokenizer> _tokenizer;
+	private:
+		non_owning_rptr<const class Tokenizer> _tokenizer;
 
-        /* resolved ir stage variants, shared by every compose of this composer */
-        mutable lang::ir::VariantCache _variants;
+		/* resolved ir stage variants, shared by every compose of this composer */
+		mutable lang::ir::VariantCache _variants;
 
-        /* laid out and lowered ir pipelines, keyed by their stages' variants */
-        mutable lang::ir::PipelineLayoutCache _pipelineLayouts;
+		/* laid out and lowered ir pipelines, keyed by their stages' variants */
+		mutable lang::ir::PipelineLayoutCache _pipelineLayouts;
 
-    public:
-        [[nodiscard]] non_owning_rptr<const class Tokenizer> getTokenizer() const noexcept;
+	public:
+		[[nodiscard]] non_owning_rptr<const class Tokenizer> getTokenizer() const noexcept;
 
-        void setTokenizer(mref<non_owning_rptr<const class Tokenizer>> tokenizer_);
+		void setTokenizer(mref<non_owning_rptr<const class Tokenizer>> tokenizer_);
 
-    public:
-        [[nodiscard]] Vector<smr<StageDerivat>> compose(
-            cref<smr<const class EffectProfile>> profile_,
-            cref<smr<const class EffectSpecification>> specifications_,
-            cref<smr<AccelerationPipeline>> targetPass_,
-            lang::ir::Tier tier_
-        ) const;
-    };
+	public:
+		[[nodiscard]] Vector<smr<StageDerivat>> compose(
+			cref<smr<const class EffectProfile>> profile_,
+			cref<smr<const class EffectSpecification>> specifications_,
+			cref<smr<AccelerationPipeline>> targetPass_,
+			lang::ir::Tier tier_
+		) const;
+	};
 }

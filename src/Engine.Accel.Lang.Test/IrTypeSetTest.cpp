@@ -2,8 +2,6 @@
 
 /**/
 
-#include "IrSpan.hpp"
-
 #include <array>
 #include <map>
 #include <set>
@@ -20,6 +18,8 @@
 #include <Engine.Accel.Lang/Ir/Spirv/SpirvEmitter.hpp>
 #include <Engine.Accel.Lang/Rep/Symbol.hpp>
 #include <spirv-tools/libspirv.hpp>
+
+#include "IrSpan.hpp"
 
 using namespace hg::engine::accel::lang::ir;
 using namespace hg::engine::accel::lang;
@@ -144,7 +144,8 @@ namespace AccelLang {
 			constexpr std::array<Family, 11> families {
 				{
 					{ "f16", "float16_t", "f16vec" }, { "f32", "float", "vec" }, { "f64", "double", "dvec" },
-					{ "u8", "uint8_t", "u8vec" }, { "u16", "uint16_t", "u16vec" }, { "u32", "uint", "uvec" }, { "u64", "uint64_t", "u64vec" },
+					{ "u8", "uint8_t", "u8vec" }, { "u16", "uint16_t", "u16vec" }, { "u32", "uint", "uvec" },
+					{ "u64", "uint64_t", "u64vec" },
 					{ "s8", "int8_t", "i8vec" }, { "s16", "int16_t", "i16vec" }, { "s32", "int", "ivec" }, { "s64", "int64_t", "i64vec" }
 				}
 			};
@@ -154,7 +155,9 @@ namespace AccelLang {
 			for (const auto& family : families) {
 				cases.emplace_back(TypeCase { family.source, family.scalar });
 				for (auto n = 2; n <= 4; ++n) {
-					cases.emplace_back(TypeCase { String { family.source } + "vec" + std::to_string(n), String { family.vector } + std::to_string(n) });
+					cases.emplace_back(
+						TypeCase { String { family.source } + "vec" + std::to_string(n), String { family.vector } + std::to_string(n) }
+					);
 				}
 			}
 			for (auto f = 0uz; f < 3uz; ++f) {

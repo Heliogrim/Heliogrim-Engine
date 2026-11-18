@@ -16,7 +16,10 @@ Vector<ir::InterfaceEntry> ir::computeInterface(ref<const Module> mod_) {
 			continue;
 		}
 		entries.emplace_back(
-			InterfaceEntry { binding.id, binding.type, binding.mode, binding.bindClass, binding.implicit, binding.input, binding.arrayed, describeType(mod_.types, binding.type), binding.patch }
+			InterfaceEntry {
+				binding.id, binding.type, binding.mode, binding.bindClass, binding.implicit, binding.input, binding.arrayed,
+				describeType(mod_.types, binding.type), binding.patch
+			}
 		);
 	}
 

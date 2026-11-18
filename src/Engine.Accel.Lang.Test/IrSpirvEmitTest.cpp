@@ -6,8 +6,8 @@
 #include <Engine.Accel.Lang/Ir/Layout.hpp>
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
 #include <Engine.Accel.Lang/Ir/References.hpp>
-#include <Engine.Accel.Lang/Ir/Spirv/SpirvEmitter.hpp>
 #include <Engine.Accel.Lang/Ir/Tier.hpp>
+#include <Engine.Accel.Lang/Ir/Spirv/SpirvEmitter.hpp>
 #include <spirv-tools/libspirv.hpp>
 
 using namespace hg::engine::accel::lang::ir;
@@ -563,7 +563,9 @@ TEST(IrSpirvEmitTest, AtomicOnNonPlaceIsInternalDiagnostic) {
 	const auto result = spirv::emit(prepared->mod, prepared->layout, Tier::eDev);
 	EXPECT_TRUE(result.words.empty());
 	ASSERT_FALSE(result.diagnostics.empty());
-	EXPECT_TRUE(result.diagnostics.front().message().ends_with("atomic on a non-addressable operand")) << result.diagnostics.front().message();
+	EXPECT_TRUE(
+		result.diagnostics.front().message().ends_with("atomic on a non-addressable operand")
+	) << result.diagnostics.front().message();
 }
 
 TEST(IrSpirvEmitTest, CompoundAssignIndexEvaluatedOnce) {
@@ -798,7 +800,10 @@ TEST(IrSpirvEmitTest, SignedFoldWrapsAtDeclaredWidth) {
 }
 
 TEST(IrSpirvEmitTest, FoldDivisionByZeroIsDiagnostic) {
-	const auto diagnostics = emitDiagnostics("const H: u32 = 1u / (1u - 1u);\nfn main() {\n\tposition = f32vec4(f32(H));\n}\n", EntryKind::eVertex);
+	const auto diagnostics = emitDiagnostics(
+		"const H: u32 = 1u / (1u - 1u);\nfn main() {\n\tposition = f32vec4(f32(H));\n}\n",
+		EntryKind::eVertex
+	);
 	EXPECT_TRUE(has(diagnostics, "division by zero")) << diagnostics;
 }
 

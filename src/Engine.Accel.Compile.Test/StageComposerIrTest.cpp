@@ -94,11 +94,16 @@ namespace AccelCompile {
 			String text {};
 			for (auto at = 5uz; at < words.size(); at += words[at] >> 16u) {
 				switch (words[at] & 0xFFFFu) {
-					case 5u: text += literal(at + 2uz) + "\n"; break;
-					case 6u: text += literal(at + 3uz) + "\n"; break;
-					case 59u: storage[words[at + 2uz]] = words[at + 3uz]; break;
-					case 71u: if (words[at + 2uz] == 30u) { locations.emplace_back(words[at + 1uz], words[at + 3uz]); } break;
-					case 72u: if (words[at + 3uz] == 35u) { text += "offset " + std::to_string(words[at + 4uz]) + "\n"; } break;
+					case 5u: text += literal(at + 2uz) + "\n";
+						break;
+					case 6u: text += literal(at + 3uz) + "\n";
+						break;
+					case 59u: storage[words[at + 2uz]] = words[at + 3uz];
+						break;
+					case 71u: if (words[at + 2uz] == 30u) { locations.emplace_back(words[at + 1uz], words[at + 3uz]); }
+						break;
+					case 72u: if (words[at + 3uz] == 35u) { text += "offset " + std::to_string(words[at + 4uz]) + "\n"; }
+						break;
 					default: break;
 				}
 				if (words[at] >> 16u == 0u) { break; }

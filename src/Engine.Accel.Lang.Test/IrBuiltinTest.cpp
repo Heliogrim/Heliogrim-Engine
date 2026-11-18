@@ -1,10 +1,12 @@
 #include "pch.h"
 
-#include <Engine.Accel.Lang/Ir/Parser.hpp>
-#include "IrWording.hpp"
+/**/
 
 #include <Engine.Accel.Lang/Ir/Builtin.hpp>
+#include <Engine.Accel.Lang/Ir/Parser.hpp>
 #include <Engine.Accel.Lang/Ir/Typecheck.hpp>
+
+#include "IrWording.hpp"
 
 using namespace hg::engine::accel::lang::ir;
 using namespace hg::engine::accel::lang;
@@ -32,11 +34,20 @@ namespace AccelLang {
 	}
 
 	TEST(BuiltinTest, ClampFamilyAcceptsVectorAndScalar) {
-		EXPECT_TRUE(parses("fn main() {\n\tlet v = f32vec3(1.0);\n\tlet a = clamp(v, f32vec3(0.0), f32vec3(1.0));\n\tlet b = clamp(v, 0.0, 1.0);\n\tlet c = clamp(0.5, 0.0, 1.0);\n}\n"));
+		EXPECT_TRUE(
+			parses(
+				"fn main() {\n\tlet v = f32vec3(1.0);\n\tlet a = clamp(v, f32vec3(0.0), f32vec3(1.0));\n\tlet b = clamp(v, 0.0, 1.0);\n\tlet c = clamp(0.5, 0.0, 1.0);\n}\n"
+			)
+		);
 	}
 
 	TEST(BuiltinTest, DotReturnsScalar) {
-		auto res = parseModule("M", "fn main() {\n\tlet v = f32vec3(1.0);\n\tlet d = dot(v, v);\n}\n", EntryKind::eFragment, ModuleResolver { noIncludes });
+		auto res = parseModule(
+			"M",
+			"fn main() {\n\tlet v = f32vec3(1.0);\n\tlet d = dot(v, v);\n}\n",
+			EntryKind::eFragment,
+			ModuleResolver { noIncludes }
+		);
 		ASSERT_TRUE(res.has_value());
 		for (const auto& stmt : res->stmts) {
 			if (stmt.kind == StmtKind::eDeclareLocal && stmt.name == "d") {
@@ -58,7 +69,11 @@ namespace AccelLang {
 	}
 
 	TEST(BuiltinTest, Mat3FromMat4) {
-		EXPECT_TRUE(parses("fn main() {\n\tlet m = f32mat4(1.0);\n\tlet n = f32mat3(m);\n\tlet c = f32mat3(f32vec3(1.0), f32vec3(2.0), f32vec3(3.0));\n}\n"));
+		EXPECT_TRUE(
+			parses(
+				"fn main() {\n\tlet m = f32mat4(1.0);\n\tlet n = f32mat3(m);\n\tlet c = f32mat3(f32vec3(1.0), f32vec3(2.0), f32vec3(3.0));\n}\n"
+			)
+		);
 	}
 
 	TEST(BuiltinTest, MatrixScalarListConstructor) {
@@ -116,9 +131,20 @@ namespace AccelLang {
 	}
 
 	TEST(BuiltinTest, SampleSparseNeedsMutRef) {
-		EXPECT_TRUE(parses(String { texturePrelude } + "fn main() {\n\tlet texel = f32vec4(0.0);\n\tlet r = sample_sparse(t2, smp, uv, texel);\n\tcolor = texel;\n}\n"));
-		EXPECT_FALSE(errorOf(String { texturePrelude } + "fn main() {\n\tconst texel = f32vec4(0.0);\n\tlet r = sample_sparse(t2, smp, uv, texel);\n\tcolor = texel;\n}\n", EntryKind::eFragment).empty());
-		EXPECT_FALSE(errorOf(String { texturePrelude } + "fn main() {\n\tlet r = sample_sparse(t2, smp, uv, f32vec4(0.0));\n\tcolor = f32vec4(0.0);\n}\n", EntryKind::eFragment).empty());
+		EXPECT_TRUE(
+			parses(String { texturePrelude } +
+				"fn main() {\n\tlet texel = f32vec4(0.0);\n\tlet r = sample_sparse(t2, smp, uv, texel);\n\tcolor = texel;\n}\n")
+		);
+		EXPECT_FALSE(
+			errorOf(String { texturePrelude } +
+				"fn main() {\n\tconst texel = f32vec4(0.0);\n\tlet r = sample_sparse(t2, smp, uv, texel);\n\tcolor = texel;\n}\n", EntryKind
+				::eFragment).empty()
+		);
+		EXPECT_FALSE(
+			errorOf(String { texturePrelude } +
+				"fn main() {\n\tlet r = sample_sparse(t2, smp, uv, f32vec4(0.0));\n\tcolor = f32vec4(0.0);\n}\n", EntryKind::eFragment).
+			empty()
+		);
 	}
 
 	TEST(BuiltinTest, ImplicitLodSampleUnderDivergenceWarns) {
@@ -133,24 +159,38 @@ namespace AccelLang {
 			"'sample' picks its detail level automatically under a condition that can differ between invocations (via shadowReprojectFilter)"
 		);
 
-		const auto direct = warningsOf("fn main() {\n\tcolor = f32vec4(0.0);\n\tif (uv.x > 0.5) {\n\t\tcolor = sample(t2, smp, uv);\n\t}\n}\n");
+		const auto direct = warningsOf(
+			"fn main() {\n\tcolor = f32vec4(0.0);\n\tif (uv.x > 0.5) {\n\t\tcolor = sample(t2, smp, uv);\n\t}\n}\n"
+		);
 		ASSERT_EQ(direct.size(), 1uz);
-		EXPECT_EQ(direct.front().message(), "'sample' picks its detail level automatically under a condition that can differ between invocations");
+		EXPECT_EQ(
+			direct.front().message(),
+			"'sample' picks its detail level automatically under a condition that can differ between invocations"
+		);
 	}
 
 	TEST(BuiltinTest, SampleLodUnderDivergenceIsSilent) {
-		EXPECT_TRUE(warningsOf("fn main() {\n\tcolor = f32vec4(0.0);\n\tif (uv.x > 0.5) {\n\t\tcolor = sample_lod(t2, smp, uv, 0.0);\n\t}\n}\n").empty());
+		EXPECT_TRUE(
+			warningsOf("fn main() {\n\tcolor = f32vec4(0.0);\n\tif (uv.x > 0.5) {\n\t\tcolor = sample_lod(t2, smp, uv, 0.0);\n\t}\n}\n").
+			empty()
+		);
 	}
 
 	TEST(BuiltinTest, SampleUnderUniformLoopIsSilent) {
 		EXPECT_TRUE(
-			warningsOf("fn main() {\n\tcolor = f32vec4(0.0);\n\tfor (let i = 0; i < 4; ++i) {\n\t\tcolor += sample(t2, smp, uv);\n\t}\n}\n").empty()
+			warningsOf("fn main() {\n\tcolor = f32vec4(0.0);\n\tfor (let i = 0; i < 4; ++i) {\n\t\tcolor += sample(t2, smp, uv);\n\t}\n}\n")
+			.empty()
 		);
 	}
 
 	TEST(BuiltinTest, UserFunctionShadowsBuiltin) {
 		EXPECT_TRUE(parses("fn dot(a: f32, b: f32) -> f32 {\n\treturn a;\n}\nfn main() {\n\tlet d = dot(1.0, 2.0);\n}\n"));
-		auto res = parseModule("M", "fn dot(a: f32, b: f32) -> f32 {\n\treturn a;\n}\nfn main() {\n\tlet d = dot(1.0, 2.0);\n}\n", EntryKind::eFragment, ModuleResolver { noIncludes });
+		auto res = parseModule(
+			"M",
+			"fn dot(a: f32, b: f32) -> f32 {\n\treturn a;\n}\nfn main() {\n\tlet d = dot(1.0, 2.0);\n}\n",
+			EntryKind::eFragment,
+			ModuleResolver { noIncludes }
+		);
 		ASSERT_TRUE(res.has_value());
 		for (const auto& e : res->exprs) {
 			EXPECT_NE(e.kind, ExprKind::eBuiltin);
@@ -218,7 +258,9 @@ namespace AccelLang {
 		ASSERT_EQ(std::size(builtinFunctionSpirv), std::size(builtinFunctions));
 		for (size_t i = 0uz; i < std::size(builtinFunctions); ++i) {
 			EXPECT_EQ(builtinFunctionSpirv[i].name, builtinFunctions[i].name) << i;
-			EXPECT_TRUE(builtinFunctionSpirv[i].form.kind != SpirvFormKind::eExtInst || builtinFunctionSpirv[i].form.code > 0u) << builtinFunctions[i].name;
+			EXPECT_TRUE(
+				builtinFunctionSpirv[i].form.kind != SpirvFormKind::eExtInst || builtinFunctionSpirv[i].form.code > 0u
+			) << builtinFunctions[i].name;
 		}
 		ASSERT_EQ(std::size(builtinVariableSpirv), std::size(builtinVariables));
 		for (size_t i = 0uz; i < std::size(builtinVariables); ++i) {

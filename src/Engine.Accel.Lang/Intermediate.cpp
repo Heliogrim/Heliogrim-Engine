@@ -17,10 +17,12 @@ Intermediate::Intermediate(mref<this_type> other_) noexcept = default;
 u64 Intermediate::contentHash() const noexcept {
 	ir::ContentHasher h {};
 	h.put(lang.dialect);
+
 	h.put(static_cast<u64>(lang.text.size()));
 	for (const auto& block : lang.text) {
 		h.put(block.data);
 	}
+
 	h.put(static_cast<u64>(spirv.size()));
 	for (const auto word : spirv) {
 		h.put(word);
@@ -37,6 +39,7 @@ u64 Intermediate::contentHash() const noexcept {
 				h.put(cur->type);
 				if (cur->type == AnnotationType::eSymbolId) {
 					h.put(static_cast<ptr<const SymbolIdAnnotation>>(cur)->symbolId);
+
 				} else if (cur->type == AnnotationType::eVkBindLocation) {
 					const auto* const location = static_cast<ptr<const VkBindLocationAnnotation>>(cur);
 					h.put(location->vkSet);

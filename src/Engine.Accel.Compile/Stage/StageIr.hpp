@@ -1,12 +1,12 @@
 #pragma once
 
-#include <Engine.Accel.Lang/Ir/Tier.hpp>
 #include <expected>
 #include <span>
 #include <Engine.Accel.Effect/Stage/StageFlags.hpp>
 #include <Engine.Accel.Lang/Intermediate.hpp>
 #include <Engine.Accel.Lang/Ir/Diagnostic.hpp>
 #include <Engine.Accel.Lang/Ir/Module.hpp>
+#include <Engine.Accel.Lang/Ir/Tier.hpp>
 #include <Engine.Accel.Lang/Ir/Variant.hpp>
 #include <Engine.Accel.Pipeline/Bind/BindLayout.hpp>
 #include <Engine.Accel.Pipeline/Stage/StageDerivat.hpp>

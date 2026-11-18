@@ -5,24 +5,24 @@
 #include <expected>
 #include <filesystem>
 #include <fstream>
-#include <regex>
-#include <sstream>
 #include <functional>
-#include <span>
 #include <initializer_list>
 #include <iterator>
+#include <regex>
+#include <span>
+#include <sstream>
 #include <string>
 #include <utility>
 
 #include <Engine.Accel.Compile/Profile/EffectProfile.hpp>
 #include <Engine.Accel.Compile/Spec/EffectSpecification.hpp>
 #include <Engine.Accel.Compile/Stage/StageIr.hpp>
-#include <Engine.Accel.Lang/Ir/Parser.hpp>
 #include <Engine.Accel.Lang/Ir/Interface.hpp>
+#include <Engine.Accel.Lang/Ir/Parser.hpp>
 #include <Engine.Accel.Lang/Ir/Spirv/SpirvValidate.hpp>
 #include <Engine.Accel.Lang/Rep/Annotation.hpp>
-#include <Engine.Common/Algo/Copy.hpp>
 #include <Engine.Common/Make.hpp>
+#include <Engine.Common/Algo/Copy.hpp>
 #include <Engine.Diagnostics/Render.hpp>
 #include <Engine.Logging/Logger.hpp>
 
@@ -115,7 +115,11 @@ namespace AccelCompile {
 					if (entry.input and entry.mode == BindMode::eForward) {
 						auto var = hg::make_uptr<lang::Variable>();
 						var->annotation = hg::make_uptr<lang::VkBindLocationAnnotation>(
-							-1L, 0L, static_cast<hg::s32>(offset), hg::make_uptr<lang::SymbolIdAnnotation>(hg::String { entry.id }), -1L
+							-1L,
+							0L,
+							static_cast<hg::s32>(offset),
+							hg::make_uptr<lang::SymbolIdAnnotation>(hg::String { entry.id }),
+							-1L
 						);
 						stage.rep.globalScope.inbound.emplace_back(std::move(var));
 						offset += 16uL;
@@ -124,13 +128,19 @@ namespace AccelCompile {
 			}
 
 			switch (gate.entry) {
-				case EntryKind::eFragment: flags.emplace_back(StageFlagBits::eFragment); break;
-				case EntryKind::eCompute: flags.emplace_back(StageFlagBits::eCompute); break;
-				case EntryKind::eGeometry: flags.emplace_back(StageFlagBits::eGeometry); break;
-				case EntryKind::eTessCtrl: flags.emplace_back(StageFlagBits::eTessellationCtrl); break;
-				case EntryKind::eTessEval: flags.emplace_back(StageFlagBits::eTessellationEval); break;
+				case EntryKind::eFragment: flags.emplace_back(StageFlagBits::eFragment);
+					break;
+				case EntryKind::eCompute: flags.emplace_back(StageFlagBits::eCompute);
+					break;
+				case EntryKind::eGeometry: flags.emplace_back(StageFlagBits::eGeometry);
+					break;
+				case EntryKind::eTessCtrl: flags.emplace_back(StageFlagBits::eTessellationCtrl);
+					break;
+				case EntryKind::eTessEval: flags.emplace_back(StageFlagBits::eTessellationEval);
+					break;
 				case EntryKind::eVertex:
-				default: flags.emplace_back(StageFlagBits::eVertex); break;
+				default: flags.emplace_back(StageFlagBits::eVertex);
+					break;
 			}
 		}
 
@@ -203,14 +213,22 @@ namespace AccelCompile {
 	}
 
 	/* the stage of `fn main`'s entry annotation; the parser only checks it against the given kind, so read it here */
-	[[nodiscard]] inline hg::engine::accel::lang::ir::EntryKind entryOf(hg::ref<const std::string> name_, hg::ref<const std::string> text_) {
+	[[nodiscard]] inline hg::engine::accel::lang::ir::EntryKind entryOf(
+		hg::ref<const std::string> name_,
+		hg::ref<const std::string> text_
+	) {
 		std::smatch annotation {};
 		if (std::regex_search(text_, annotation, std::regex { R"(@(compute|fragment|geometry|tess_ctrl|tess_eval)\b)" })) {
 			const auto kind = annotation[1].str();
-			return kind == "compute" ? hg::engine::accel::lang::ir::EntryKind::eCompute :
-				kind == "geometry" ? hg::engine::accel::lang::ir::EntryKind::eGeometry :
-				kind == "tess_ctrl" ? hg::engine::accel::lang::ir::EntryKind::eTessCtrl :
-				kind == "tess_eval" ? hg::engine::accel::lang::ir::EntryKind::eTessEval : hg::engine::accel::lang::ir::EntryKind::eFragment;
+			return kind == "compute" ?
+				hg::engine::accel::lang::ir::EntryKind::eCompute :
+				kind == "geometry" ?
+				hg::engine::accel::lang::ir::EntryKind::eGeometry :
+				kind == "tess_ctrl" ?
+				hg::engine::accel::lang::ir::EntryKind::eTessCtrl :
+				kind == "tess_eval" ?
+				hg::engine::accel::lang::ir::EntryKind::eTessEval :
+				hg::engine::accel::lang::ir::EntryKind::eFragment;
 		}
 		// shortcut: most engine fragment shaders carry no @fragment yet, so unannotated stages fall back to the file suffix; drop it once every .fs is annotated
 		return name_.contains(".fs") ? hg::engine::accel::lang::ir::EntryKind::eFragment : hg::engine::accel::lang::ir::EntryKind::eVertex;

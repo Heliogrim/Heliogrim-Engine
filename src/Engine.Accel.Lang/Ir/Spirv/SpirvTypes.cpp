@@ -263,7 +263,11 @@ namespace hg::engine::accel::lang::ir::spirv {
 			}
 			case ScalarKind::eInt:
 			case ScalarKind::eUInt: {
-				if (const auto* const real = std::get_if<f64>(&literal_.value); real != nullptr && not fitsInteger(*real, desc.scalar, desc.bits)) {
+				if (const auto* const real = std::get_if<f64>(&literal_.value); real != nullptr && not fitsInteger(
+					*real,
+					desc.scalar,
+					desc.bits
+				)) {
 					fail(codes::asl("not-constant"), loc_, "a float outside the integer range does not convert");
 					return false;
 				}
@@ -273,9 +277,9 @@ namespace hg::engine::accel::lang::ir::spirv {
 				// two's complement at the declared width: signed sign-extends, unsigned masks
 				if (desc.bits > 0uL && desc.bits < 64uL) {
 					const auto shift = 64uL - desc.bits;
-					bits = desc.scalar == ScalarKind::eInt
-						? static_cast<u64>(static_cast<s64>(bits << shift) >> shift)
-						: bits & ((1uLL << desc.bits) - 1uLL);
+					bits = desc.scalar == ScalarKind::eInt ?
+						static_cast<u64>(static_cast<s64>(bits << shift) >> shift) :
+						bits & ((1uLL << desc.bits) - 1uLL);
 				}
 				out_.emplace_back(static_cast<u32>(bits));
 				if (desc.bits > 32uL) {

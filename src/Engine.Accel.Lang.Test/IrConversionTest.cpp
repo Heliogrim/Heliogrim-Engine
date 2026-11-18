@@ -93,11 +93,21 @@ namespace AccelLang {
 	}
 
 	TEST(IrConversionTest, LiteralRangeAtReturnAndArgument) {
-		const auto ret = parseModule("M", "fn f() -> s32 { return 3000000000; }\nfn main() { let x = f(); }\n", EntryKind::eFragment, ModuleResolver { noIncludes });
+		const auto ret = parseModule(
+			"M",
+			"fn f() -> s32 { return 3000000000; }\nfn main() { let x = f(); }\n",
+			EntryKind::eFragment,
+			ModuleResolver { noIncludes }
+		);
 		ASSERT_FALSE(ret.has_value());
 		EXPECT_EQ(ret.error().front().code()->key, "literal-out-of-range");
 
-		const auto arg = parseModule("M", "fn f(a: s32) -> s32 { return a; }\nfn main() { let x = f(3000000000); }\n", EntryKind::eFragment, ModuleResolver { noIncludes });
+		const auto arg = parseModule(
+			"M",
+			"fn f(a: s32) -> s32 { return a; }\nfn main() { let x = f(3000000000); }\n",
+			EntryKind::eFragment,
+			ModuleResolver { noIncludes }
+		);
 		ASSERT_FALSE(arg.has_value());
 		EXPECT_EQ(arg.error().front().code()->key, "literal-out-of-range");
 	}

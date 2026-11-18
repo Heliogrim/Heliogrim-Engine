@@ -2,15 +2,15 @@
 
 /**/
 
-#include "IrSpan.hpp"
-#include "IrWording.hpp"
-#include "IrSpirvText.hpp"
-
 #include <array>
 #include <map>
 
 #include <Engine.Accel.Lang/Ir/Lexer.hpp>
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
+
+#include "IrSpan.hpp"
+#include "IrSpirvText.hpp"
+#include "IrWording.hpp"
 
 using namespace hg::engine::accel::lang::ir;
 using namespace hg;
@@ -231,7 +231,11 @@ namespace AccelLang {
 			};
 		}
 
-		[[nodiscard]] Module parseOk(StringView source_, ref<const ModuleResolver> includes_ = noIncludes, EntryKind entry_ = EntryKind::eFragment) {
+		[[nodiscard]] Module parseOk(
+			StringView source_,
+			ref<const ModuleResolver> includes_ = noIncludes,
+			EntryKind entry_ = EntryKind::eFragment
+		) {
 			auto res = parseModule("main", source_, entry_, includes_);
 			EXPECT_TRUE(res.has_value()) << (res.has_value() || res.error().empty() ? "" : res.error().front().message());
 			return res.has_value() ? std::move(res).value() : Module {};
@@ -247,7 +251,9 @@ namespace AccelLang {
 		void expectEmits(StringView source_) {
 			const auto mod = parseOk(source_);
 			const auto spirv = spirvOf(mod);
-			EXPECT_TRUE(spirv.diagnostics.empty()) << source_ << (spirv.diagnostics.empty() ? "" : ": " + spirv.diagnostics.front().message());
+			EXPECT_TRUE(spirv.diagnostics.empty()) << source_ << (spirv.diagnostics.empty() ?
+					"" :
+					": " + spirv.diagnostics.front().message());
 			EXPECT_FALSE(spirv.text.empty()) << source_;
 		}
 
@@ -685,8 +691,10 @@ namespace AccelLang {
 			"fn main() {\n"
 			"\tlet pos = model.model[instance_index] * f32vec4(local_position, 1.0);\n"
 			"\tposition = camera.cascadeViewProj[push.cascade] * pos;\n"
-			"}\n"
-		, noIncludes, EntryKind::eVertex);
+			"}\n",
+			noIncludes,
+			EntryKind::eVertex
+		);
 		ASSERT_EQ(mod.functions.size(), 1uz);
 		const auto& root = bodyRoot(mod, 0uz);
 		EXPECT_EQ(root.kind, StmtKind::eBlock);
@@ -724,8 +732,10 @@ namespace AccelLang {
 			"fn main() {\n"
 			"\t@when (Shadows == On) position = f32vec4(1.0);\n"
 			"\t@when (Shadows == Off) { position = f32vec4(0.5); }\n"
-			"}\n"
-		, noIncludes, EntryKind::eVertex);
+			"}\n",
+			noIncludes,
+			EntryKind::eVertex
+		);
 		const auto& root = bodyRoot(mod, 0uz);
 		ASSERT_EQ(root.children.size(), 2uz);
 
@@ -841,8 +851,10 @@ namespace AccelLang {
 			"fn frame_depth_is_not_a_builtin() {\n"
 			"\tposition = f32vec4(1.0);\n"
 			"\tcolor = sample(albedo, smp, uv);\n"
-			"}\n"
-		, noIncludes, EntryKind::eVertex);
+			"}\n",
+			noIncludes,
+			EntryKind::eVertex
+		);
 		const auto& first = stmtAt(mod, bodyRoot(mod, 0uz).children.at(0));
 		const auto& position = exprAt(mod, first.lhs);
 		EXPECT_EQ(position.kind, ExprKind::eBuiltin);
@@ -1037,12 +1049,14 @@ namespace AccelLang {
 	}
 
 	TEST(ParserBodyTest, BinaryOperatorIsEnum) {
-		const auto mod = parseOk(R"(fn main() {
+		const auto mod = parseOk(
+			R"(fn main() {
 	let a = 1;
 	let b = 2;
 	let c = a + b * 2;
 }
-)");
+)"
+		);
 		const auto& root = bodyRoot(mod, 0uz);
 		const auto& sum = exprAt(mod, stmtAt(mod, root.children.at(2)).lhs);
 		EXPECT_EQ(sum.op, Op::eAdd);
@@ -1051,12 +1065,14 @@ namespace AccelLang {
 
 	TEST(ParserBodyTest, LiteralHoldsValue) {
 		/* a plain integer is s64; a negative is a unary eNeg over the magnitude */
-		const auto mod = parseOk(R"(fn main() {
+		const auto mod = parseOk(
+			R"(fn main() {
 	let a = 1.5;
 	let b = 7;
 	let c = -3;
 }
-)");
+)"
+		);
 		const auto& root = bodyRoot(mod, 0uz);
 		EXPECT_EQ(std::get<f64>(exprAt(mod, stmtAt(mod, root.children.at(0)).lhs).literal.value), 1.5);
 		EXPECT_EQ(std::get<s64>(exprAt(mod, stmtAt(mod, root.children.at(1)).lhs).literal.value), 7);
@@ -1066,14 +1082,16 @@ namespace AccelLang {
 	}
 
 	TEST(ParserBodyTest, HexOctalAndSuffixLiterals) {
-		const auto mod = parseOk(R"(fn main() {
+		const auto mod = parseOk(
+			R"(fn main() {
 	let a = 7u;
 	let b = 0xFF;
 	let c = 0x1Eu;
 	let d = 010;
 	let e = 1e3;
 }
-)");
+)"
+		);
 		const auto& root = bodyRoot(mod, 0uz);
 		const auto lit = [&](size_t i_) -> const LiteralValue& { return exprAt(mod, stmtAt(mod, root.children.at(i_)).lhs).literal; };
 		EXPECT_EQ(lit(0uz), LiteralValue { u64 { 7uLL } });
@@ -1211,22 +1229,24 @@ namespace AccelLang {
 	}
 
 	TEST(ParserTest, GlslReservedWordsAreNames) {
-		const std::array<StringView, 14> cases { {
-			"@input (mode = bind, id = \"o\", class = storage) block out { u32[] data; };\nfn main() {}\n",
-			"struct input { f32 x; }\nfn main() {}\n",
-			"struct S { f32 sample; }\nfn main() {}\n",
-			"const filter: u32 = 1u;\nfn main() {}\n",
-			"fn inline() {}\nfn main() {}\n",
-			"fn f(flat: u32) {}\nfn main() {}\n",
-			"fn main() { let sampler2DArray: u32 = 1u; }\n",
-			"fn main() { let gl_Mine: u32 = 1u; }\n",
-			"fn main() { let vec3: u32 = 1u; }\n",
-			"fn main() { let dmat4x3: u32 = 1u; }\n",
-			"fn main() { let mat2: u32 = 1u; }\n",
-			"fn main() { let sampler3DRect: u32 = 1u; }\n",
-			"fn main() { let sampler2DShadow: u32 = 1u; }\n",
-			"fn main() { let samplerCubeShadow: u32 = 1u; }\n",
-		} };
+		const std::array<StringView, 14> cases {
+			{
+				"@input (mode = bind, id = \"o\", class = storage) block out { u32[] data; };\nfn main() {}\n",
+				"struct input { f32 x; }\nfn main() {}\n",
+				"struct S { f32 sample; }\nfn main() {}\n",
+				"const filter: u32 = 1u;\nfn main() {}\n",
+				"fn inline() {}\nfn main() {}\n",
+				"fn f(flat: u32) {}\nfn main() {}\n",
+				"fn main() { let sampler2DArray: u32 = 1u; }\n",
+				"fn main() { let gl_Mine: u32 = 1u; }\n",
+				"fn main() { let vec3: u32 = 1u; }\n",
+				"fn main() { let dmat4x3: u32 = 1u; }\n",
+				"fn main() { let mat2: u32 = 1u; }\n",
+				"fn main() { let sampler3DRect: u32 = 1u; }\n",
+				"fn main() { let sampler2DShadow: u32 = 1u; }\n",
+				"fn main() { let samplerCubeShadow: u32 = 1u; }\n",
+			}
+		};
 		for (const auto source : cases) {
 			expectEmits(source);
 		}
@@ -1244,19 +1264,20 @@ namespace AccelLang {
 
 	TEST(ParserTest, GeneratedPrefixIsAName) {
 		for (const auto source : {
-				 "const _hg_ref0: u32 = 1u;\nfn main() { let x = _hg_ref0; }\n", "struct _hg_S { f32 x; }\nfn main() { let s = _hg_S(1.0); }\n",
-				 "fn _hg_f() {}\nfn main() { _hg_f(); }\n", "fn main() { let _hg_x = 1.0; }\n"
-			 }) {
+			     "const _hg_ref0: u32 = 1u;\nfn main() { let x = _hg_ref0; }\n",
+			     "struct _hg_S { f32 x; }\nfn main() { let s = _hg_S(1.0); }\n",
+			     "fn _hg_f() {}\nfn main() { _hg_f(); }\n", "fn main() { let _hg_x = 1.0; }\n"
+		     }) {
 			expectEmits(source);
 		}
 	}
 
 	TEST(ParserTest, RegionSuffixIsANameAtModuleScope) {
 		for (const auto source : {
-				 "const a__len: u32 = 1u;\nfn main() { let x = a__len; }\n",
-				 "@input (mode = bind, id = \"b\", class = storage) block b__off { u32[] data; };\nfn main() { let x = b__off.data[0u]; }\n",
-				 "struct S__end { f32 x; }\nfn main() { let s = S__end(1.0); }\n", "const w__r0: u32 = 1u;\nfn main() { let x = w__r0; }\n"
-			 }) {
+			     "const a__len: u32 = 1u;\nfn main() { let x = a__len; }\n",
+			     "@input (mode = bind, id = \"b\", class = storage) block b__off { u32[] data; };\nfn main() { let x = b__off.data[0u]; }\n",
+			     "struct S__end { f32 x; }\nfn main() { let s = S__end(1.0); }\n", "const w__r0: u32 = 1u;\nfn main() { let x = w__r0; }\n"
+		     }) {
 			expectEmits(source);
 		}
 	}

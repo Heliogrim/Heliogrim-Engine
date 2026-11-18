@@ -1,10 +1,10 @@
 #include "pch.h"
 
+/**/
+
 #include <filesystem>
 #include <ranges>
-#include <fstream>
 #include <regex>
-#include <sstream>
 
 #include "IrSpirvGate.hpp"
 
@@ -45,7 +45,8 @@ namespace AccelCompile {
 		EXPECT_EQ(vertex.interface.stage, EntryKind::eVertex);
 		EXPECT_EQ(fragment.interface.stage, EntryKind::eFragment);
 
-		const auto inputs = fragment.interface.entries | std::views::filter([](const auto& e_) { return e_.input; }) | std::ranges::to<hg::Vector<InterfaceEntry>>();
+		const auto inputs = fragment.interface.entries | std::views::filter([](const auto& e_) { return e_.input; }) | std::ranges::to<
+			hg::Vector<InterfaceEntry>>();
 		ASSERT_EQ(inputs.size(), 1uz);
 		EXPECT_EQ(inputs.front().id, "uv");
 		EXPECT_EQ(inputs.front().mode, BindMode::eForward);
@@ -167,7 +168,9 @@ namespace AccelCompile {
 	}
 
 	TEST(IrSpirvGateTest, ToggleVariantsPerMeshTypeAndPassContext) {
-		const auto source = hg::String { "#include <spec/defined.static.asl>\n#include <spec/defined.skeletal.asl>\n" } + hg::String { passVertexMain };
+		const auto source = hg::String { "#include <spec/defined.static.asl>\n#include <spec/defined.skeletal.asl>\n" } + hg::String {
+			passVertexMain
+		};
 		for (const auto* mesh : { "Static", "Skeletal" }) {
 			for (const auto* pass : { "DepthOnly", "Material" }) {
 				EXPECT_TRUE(
@@ -175,7 +178,8 @@ namespace AccelCompile {
 						source,
 						EntryKind::eVertex,
 						{ { "MeshType", mesh }, { "PassContext", pass } },
-						{ { "spec/defined.asl", meshContract }, { "spec/defined.static.asl", meshStatic }, { "spec/defined.skeletal.asl", meshSkeletal } }
+						{ { "spec/defined.asl", meshContract }, { "spec/defined.static.asl", meshStatic }, { "spec/defined.skeletal.asl",
+							meshSkeletal } }
 					)
 				) << mesh << "/" << pass;
 			}
@@ -478,5 +482,4 @@ namespace AccelCompile {
 			EXPECT_TRUE(spirvValid(*composed->front()->getIntermediate())) << name;
 		}
 	}
-
 }

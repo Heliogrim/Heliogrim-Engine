@@ -1,6 +1,7 @@
+#include "SpirvEmitter.hpp"
+
 #include <algorithm>
 
-#include "SpirvEmitter.hpp"
 #include "SpirvEmitter.Impl.hpp"
 #include "SpirvOptimize.hpp"
 #include "SpirvValidate.hpp"
@@ -16,7 +17,9 @@ namespace hg::engine::accel::lang::ir::spirv {
 		// a depth-only fragment stage has no author entry and still needs an entry point: synthesize an empty one
 		if (std::ranges::none_of(lowered_.functions, [](const auto& fn_) { return fn_.name == "main" && fn_.body.has_value(); })) {
 			if (lowered_.entry != EntryKind::eFragment) {
-				return EmitResult { {}, { Diagnostic::error(codes::asl("invalid-entry-signature"), "stage has no 'main' entry function") } };
+				return EmitResult {
+					{}, { Diagnostic::error(codes::asl("invalid-entry-signature"), "stage has no 'main' entry function") }
+				};
 			}
 
 			Module withMain = lowered_;

@@ -496,7 +496,8 @@ namespace {
 			const auto& x = a_.exprs[x_.index];
 			const auto& y = b_.exprs[y_.index];
 
-			if (x.kind != y.kind || x.name != y.name || x.op != y.op || x.literal != y.literal || x.local != y.local || x.operands.size() != y.operands.size()) {
+			if (x.kind != y.kind || x.name != y.name || x.op != y.op || x.literal != y.literal || x.local != y.local || x.operands.size() !=
+				y.operands.size()) {
 				return false;
 			}
 
