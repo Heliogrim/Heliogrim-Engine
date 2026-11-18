@@ -166,6 +166,12 @@ void CompScheduler::delay(mref<task_handle_type> task_, const u32 ticks_) {
 }
 
 void CompScheduler::exec(mref<task_handle_type> task_) {
+	const auto lane = resolveLane(task_->lane());
+	const_cast<ptr<task_type>>(task_)->lane() = lane;
+	execResolved(std::move(task_));
+}
+
+void CompScheduler::execResolved(mref<task_handle_type> task_) {
 
 	[[maybe_unused]] const auto result = _schedule->push(std::move(task_));
 
