@@ -100,10 +100,12 @@ bool GameEngine::init() {
 
 	/* Base module are setup via direct call without fiber context guarantee (which is unlikely) */
 	_platform->setup();
-	// A mismatching config value silently falls back to 0 (auto).
+
+	// A mismatching config value silently falls back to its default (0 = auto for the worker keys).
 	_scheduler->setup(
 		_config.getOrDefault<u32>(engine::cfg::SchedulerConfigProperty::eWorkerCount, 0u).value_or(0u),
-		_config.getOrDefault<u32>(engine::cfg::SchedulerConfigProperty::eWorkerReserve, 0u).value_or(0u)
+		_config.getOrDefault<u32>(engine::cfg::SchedulerConfigProperty::eWorkerReserve, 0u).value_or(0u),
+		scheduler::LanePolicyConfig::fromConfig(_config)
 	);
 	_resources->setup();
 

@@ -39,7 +39,7 @@ u32 scheduler::autoWorkerCount(const u32 logical_, const u32 reserve_) noexcept 
 	return logical_ > reserve ? logical_ - reserve : 1uL;
 }
 
-void CompScheduler::setup(u32 workers_, u32 reserve_) {
+void CompScheduler::setup(u32 workers_, u32 reserve_, ref<const LanePolicyConfig> lanes_) {
 	SCOPED_STOPWATCH
 
 	_schedule = make_uptr<Schedule>();
@@ -73,7 +73,7 @@ void CompScheduler::setup(u32 workers_, u32 reserve_) {
 	/**
 	 * Prepare pipeline and workers
 	 */
-	_schedule->setup();
+	_schedule->setup(workers_, lanes_);
 	_workers = static_cast<aligned_worker*>(calloc(workers_, sizeof(aligned_worker)));
 
 	/**
@@ -207,6 +207,10 @@ bool CompScheduler::execOnStages(
 
 size_t CompScheduler::getWorkerCount() const {
 	return _workerCount;
+}
+
+u64 CompScheduler::queued(const Lane lane_) const {
+	return _schedule->queued(lane_);
 }
 
 void CompScheduler::wait() const {

@@ -20,7 +20,7 @@ namespace SchedulerModule {
 
 	TEST(LaneSchedule, PopsFrameThenInteractiveThenBackground) {
 		Schedule schedule;
-		schedule.setup();
+		schedule.setup(4uL, LanePolicyConfig {});
 
 		const auto b = makeTask(Lane::eBackground);
 		const auto i = makeTask(Lane::eInteractive);
@@ -30,17 +30,18 @@ namespace SchedulerModule {
 		ASSERT_TRUE(schedule.push(f));
 
 		non_owning_rptr<const task::TaskDelegate> out = nullptr;
-		ASSERT_TRUE(schedule.pop(out));
+		Lane lane {};
+		ASSERT_TRUE(schedule.pop(Schedule::time_point {}, out, lane));
 		EXPECT_EQ(out, f);
-		ASSERT_TRUE(schedule.pop(out));
+		ASSERT_TRUE(schedule.pop(Schedule::time_point {}, out, lane));
 		EXPECT_EQ(out, i);
-		ASSERT_TRUE(schedule.pop(out));
+		ASSERT_TRUE(schedule.pop(Schedule::time_point {}, out, lane));
 		EXPECT_EQ(out, b);
 	}
 
 	TEST(LaneSchedule, FifoInsideALane) {
 		Schedule schedule;
-		schedule.setup();
+		schedule.setup(4uL, LanePolicyConfig {});
 
 		const auto first = makeTask(Lane::eInteractive);
 		const auto second = makeTask(Lane::eInteractive);
@@ -48,36 +49,38 @@ namespace SchedulerModule {
 		ASSERT_TRUE(schedule.push(second));
 
 		non_owning_rptr<const task::TaskDelegate> out = nullptr;
-		ASSERT_TRUE(schedule.pop(out));
+		Lane lane {};
+		ASSERT_TRUE(schedule.pop(Schedule::time_point {}, out, lane));
 		EXPECT_EQ(out, first);
-		ASSERT_TRUE(schedule.pop(out));
+		ASSERT_TRUE(schedule.pop(Schedule::time_point {}, out, lane));
 		EXPECT_EQ(out, second);
 	}
 
 	TEST(LaneSchedule, NothingIsPromotedByTime) {
 		Schedule schedule;
-		schedule.setup();
+		schedule.setup(4uL, LanePolicyConfig {});
 
 		const auto b = makeTask(Lane::eBackground);
 		ASSERT_TRUE(schedule.push(b));
 
 		// no ageing: pushing and draining frame work repeatedly never moves the background task
 		non_owning_rptr<const task::TaskDelegate> out = nullptr;
+		Lane lane {};
 		for (auto frame = 0; frame < 3; ++frame) {
 			const auto f = makeTask(Lane::eFrame);
 			ASSERT_TRUE(schedule.push(f));
-			ASSERT_TRUE(schedule.pop(out));
+			ASSERT_TRUE(schedule.pop(Schedule::time_point {}, out, lane));
 			EXPECT_EQ(out, f);
 		}
 
 		EXPECT_EQ(b->lane(), Lane::eBackground);
-		ASSERT_TRUE(schedule.pop(out));
+		ASSERT_TRUE(schedule.pop(Schedule::time_point {}, out, lane));
 		EXPECT_EQ(out, b);
 	}
 
 	TEST(LaneSchedule, QueuedCountsEveryLane) {
 		Schedule schedule;
-		schedule.setup();
+		schedule.setup(4uL, LanePolicyConfig {});
 
 		ASSERT_TRUE(schedule.push(makeTask(Lane::eFrame)));
 		ASSERT_TRUE(schedule.push(makeTask(Lane::eInteractive)));
@@ -85,27 +88,29 @@ namespace SchedulerModule {
 		EXPECT_EQ(schedule.queued(), 3uLL);
 
 		non_owning_rptr<const task::TaskDelegate> out = nullptr;
+		Lane lane {};
 		for (auto n = 0; n < 3; ++n) {
-			ASSERT_TRUE(schedule.pop(out));
+			ASSERT_TRUE(schedule.pop(Schedule::time_point {}, out, lane));
 		}
 		EXPECT_EQ(schedule.queued(), 0uLL);
 	}
 
 	TEST(Schedule, PushBumpsEpochAndQueued) {
 		Schedule schedule;
-		schedule.setup();
+		schedule.setup(4uL, LanePolicyConfig {});
 		const auto e0 = schedule.epoch();
 		ASSERT_TRUE(schedule.push(makeTask(Lane::eInteractive)));
 		EXPECT_NE(schedule.epoch(), e0);
 		EXPECT_EQ(schedule.queued(), 1);
 		non_owning_rptr<const task::TaskDelegate> out = nullptr;
-		ASSERT_TRUE(schedule.pop(out));
+		Lane lane {};
+		ASSERT_TRUE(schedule.pop(Schedule::time_point {}, out, lane));
 		EXPECT_EQ(schedule.queued(), 0);
 	}
 
 	TEST(Schedule, WaitForWorkReturnsOnPushFromPlainThread) {
 		Schedule schedule;
-		schedule.setup();
+		schedule.setup(4uL, LanePolicyConfig {});
 		std::atomic<bool> returned { false };
 		const auto seen = schedule.epoch();
 		std::thread waiter {
@@ -125,7 +130,7 @@ namespace SchedulerModule {
 
 	TEST(Schedule, WaitForWorkReturnsAtOnceWhenEpochMoved) {
 		Schedule schedule;
-		schedule.setup();
+		schedule.setup(4uL, LanePolicyConfig {});
 		const auto seen = schedule.epoch();
 		ASSERT_TRUE(schedule.push(makeTask(Lane::eInteractive)));
 		schedule.waitForWork(seen);
@@ -134,7 +139,7 @@ namespace SchedulerModule {
 
 	TEST(Schedule, WakeAllReleasesEveryWaiter) {
 		Schedule schedule;
-		schedule.setup();
+		schedule.setup(4uL, LanePolicyConfig {});
 		const auto seen = schedule.epoch();
 		std::vector<std::thread> waiters;
 		for (int i = 0; i < 4; ++i) {

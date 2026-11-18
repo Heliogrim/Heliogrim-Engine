@@ -9,6 +9,7 @@
 #include <Engine.Config/Provider/EditorProvider.hpp>
 #include <Engine.Config/Provider/ProjectProvider.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
+#include <Engine.Scheduler/LanePolicyConfig.hpp>
 #include <tl/expected.hpp>
 
 using namespace hg;
@@ -105,8 +106,19 @@ void editor::boot::initEditorConfig(ref<engine::Config> cfg_, ref<cfg::EditorPro
 
 	/**/
 
-	std::ignore = cfg_.init(engine::cfg::SchedulerConfigProperty::eWorkerCount, 0u, query_provider_id(provider_));
-	std::ignore = cfg_.init(engine::cfg::SchedulerConfigProperty::eWorkerReserve, 0u, query_provider_id(provider_));
+	using scheduler_props = engine::cfg::SchedulerConfigProperty;
+	const auto provider = query_provider_id(provider_);
+
+	std::ignore = cfg_.init(scheduler_props::eWorkerCount, 0u, provider);
+	std::ignore = cfg_.init(scheduler_props::eWorkerReserve, 0u, provider);
+
+	constexpr engine::scheduler::LanePolicyConfig laneDefaults {};
+	std::ignore = cfg_.init(scheduler_props::eLaneSlice, laneDefaults.sliceMicros, provider);
+	std::ignore = cfg_.init(scheduler_props::eInteractiveFloor, laneDefaults.interactiveFloorMicros, provider);
+	std::ignore = cfg_.init(scheduler_props::eBackgroundFloor, laneDefaults.backgroundFloorMicros, provider);
+	std::ignore = cfg_.init(scheduler_props::eLaneReserve, laneDefaults.reserve, provider);
+	std::ignore = cfg_.init(scheduler_props::eFrameWaitLimit, laneDefaults.frameWaitLimitMicros, provider);
+	std::ignore = cfg_.init(scheduler_props::eWakeOnFramePush, laneDefaults.wakeOnFramePush, provider);
 
 }
 

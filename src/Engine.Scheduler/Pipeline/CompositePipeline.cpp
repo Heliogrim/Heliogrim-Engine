@@ -132,6 +132,8 @@ void CompositePipeline::stop() {
 	_stopping.test_and_set();
 	// set by the last runner call to return after the frame ended, so the pipeline may be destroyed after this
 	_stopped.wait();
+	// a stopped pipeline has no Frame demand left to reserve for
+	_schedule->resetReserve();
 
 	_activeCalls.store(0uL, std::memory_order::relaxed);
 	_stopped.reset();
@@ -299,6 +301,7 @@ void CompositePipeline::pushTask(
 }
 
 void CompositePipeline::startFrame() {
+	_schedule->rollFrame();
 
 	// no node is in flight here; pushing the first root task publishes these stores to the workers
 	const auto count = _graph.nodes.size();

@@ -1,8 +1,11 @@
 
 # Setup
 make_library_project(
-        LIB_NAME Engine.Scheduler
-        LIB_FOLDER "${IDE_FOLDER}/Engine/Schedule"
-        LIBRARIES ${PROJECT_NAME}::Engine.Common ${PROJECT_NAME}::Engine.Reflect
-        $<$<PLATFORM_ID:Windows>:Synchronization.lib>
+		LIB_NAME Engine.Scheduler
+		LIB_FOLDER "${IDE_FOLDER}/Engine/Schedule"
+		LIBRARIES
+		${PROJECT_NAME}::Engine.Common
+		${PROJECT_NAME}::Engine.Config
+		${PROJECT_NAME}::Engine.Reflect
+		$<$<PLATFORM_ID:Windows>:Synchronization.lib>
 )
