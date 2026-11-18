@@ -3,6 +3,7 @@
 #include <cstddef>
 
 #include "FiberPool.hpp"
+#include "../Process/Schedule.hpp"
 
 #ifdef ENV_MSVC
 #include <Engine.Common/stdafx.h>
@@ -129,4 +130,21 @@ u64 engine::scheduler::fiber::default_fiber_stack_size() noexcept {
 	#else
 	return static_cast<u64>(SIGSTKSZ);
 	#endif
+}
+
+engine::scheduler::Lane self::effectiveLane() noexcept {
+	const auto fiber = current();
+	return fiber != nullptr && fiber->task != nullptr ? fiber->task->lane() : engine::scheduler::Lane::eInteractive;
+}
+
+void self::checkpoint() {
+	const auto fiber = current();
+	if (fiber == nullptr || fiber->task == nullptr || fiber->schedule == nullptr || effectiveLane() == engine::scheduler::Lane::eFrame) {
+		return;
+	}
+
+	const auto elapsed = std::chrono::steady_clock::now() - fiber->sliceStart;
+	if (elapsed >= std::chrono::microseconds { fiber->schedule->sliceMicros() }) {
+		fiber->yield();
+	}
 }

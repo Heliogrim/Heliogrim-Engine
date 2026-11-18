@@ -336,3 +336,33 @@ u32 Schedule::parkTimeoutMillis(const time_point now_) const noexcept {
 
 	return earliest;
 }
+
+u32 Schedule::sliceMicros() const noexcept {
+	return _config.sliceMicros;
+}
+
+u64 Schedule::overruns(const Lane lane_) const noexcept {
+	return _overruns[static_cast<u64>(lane_)].load(std::memory_order::relaxed);
+}
+
+u64 Schedule::maxRunMicros(const Lane lane_) const noexcept {
+	return _maxRun[static_cast<u64>(lane_)].load(std::memory_order::relaxed);
+}
+
+void Schedule::noteRun(const Lane lane_, const u64 micros_) noexcept {
+	const auto idx = static_cast<u64>(lane_);
+
+	auto seen = _maxRun[idx].load(std::memory_order::relaxed);
+	while (seen < micros_ && not _maxRun[idx].compare_exchange_weak(seen, micros_, std::memory_order::relaxed)) {}
+
+	if (micros_ <= 2uLL * _config.sliceMicros) {
+		return;
+	}
+
+	_overruns[idx].fetch_add(1uLL, std::memory_order::relaxed);
+	#ifdef _DEBUG
+	if (not _overrunLogged[idx].exchange(true, std::memory_order::relaxed)) {
+		IM_CORE_WARNF("A lower-lane task ran {} us without a checkpoint (lane {}, slice {} us).", micros_, idx, _config.sliceMicros);
+	}
+	#endif
+}
