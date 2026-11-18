@@ -59,7 +59,9 @@ namespace hg::engine::accel::lang::ir::spirv {
 					break;
 				}
 				case spv::StorageClass::Uniform: {
-					require(byte ? spv::Capability::UniformAndStorageBuffer8BitAccess : spv::Capability::UniformAndStorageBuffer16BitAccess);
+					require(
+						byte ? spv::Capability::UniformAndStorageBuffer8BitAccess : spv::Capability::UniformAndStorageBuffer16BitAccess
+					);
 					break;
 				}
 				case spv::StorageClass::PushConstant: {
@@ -69,7 +71,11 @@ namespace hg::engine::accel::lang::ir::spirv {
 				case spv::StorageClass::Input:
 				case spv::StorageClass::Output: {
 					if (byte) {
-						fail(codes::asl("unsupported-feature"), mod.bindings[i].loc, "binding '" + mod.bindings[i].id + "' passes an 8-bit type through the stage interface");
+						fail(
+							codes::asl("unsupported-feature"),
+							mod.bindings[i].loc,
+							"binding '" + mod.bindings[i].id + "' passes an 8-bit type through the stage interface"
+						);
 					} else {
 						require(spv::Capability::StorageInputOutput16);
 					}

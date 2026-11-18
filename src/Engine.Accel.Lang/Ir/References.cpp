@@ -443,7 +443,8 @@ namespace {
 						diags.emplace_back(
 							Diagnostic::error(
 								codes::asl("region-root-shadowed"),
-								"'" + param.name + "' shadows the root of live " + (hit->region ? "region" : "reference") + " '" + hit->name + "'"
+								"'" + param.name + "' shadows the root of live " + (hit->region ? "region" : "reference") + " '" + hit->name
+								+ "'"
 							).at(spanIn(m, callee.loc))
 						);
 					}

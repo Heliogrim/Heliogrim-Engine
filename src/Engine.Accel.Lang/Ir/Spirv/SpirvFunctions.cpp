@@ -11,11 +11,17 @@ namespace hg::engine::accel::lang::ir::spirv {
 		constexpr u32 none = ~0uL;
 
 		[[nodiscard]] const TypeDesc& desc(ref<const Module> mod_, TypeRef type_);
+
 		[[nodiscard]] u32 width(ref<const TypeDesc> desc_) noexcept;
+
 		[[nodiscard]] u32 component(char c_) noexcept;
+
 		[[nodiscard]] u32 fieldIndex(ref<const TypeDesc> desc_, StringView name_);
+
 		[[nodiscard]] bool inRangeConstant(ref<const Module> mod_, ref<const Expr> index_);
+
 		[[nodiscard]] bool impure(ref<const Module> mod_, ExprRef expr_);
+
 		void internal(Impl& impl_, SourceLoc loc_, String message_);
 	}
 
@@ -103,7 +109,9 @@ namespace hg::engine::accel::lang::ir::spirv {
 
 	u32 Impl::local(TypeRef type_) {
 		const auto id = w.id();
-		locals.emplace_back(Instr { spv::Op::OpVariable, Ops { pointer(spv::StorageClass::Function, type(type_)), id, w32(spv::StorageClass::Function) } });
+		locals.emplace_back(
+			Instr { spv::Op::OpVariable, Ops { pointer(spv::StorageClass::Function, type(type_)), id, w32(spv::StorageClass::Function) } }
+		);
 		return id;
 	}
 
@@ -436,7 +444,9 @@ namespace hg::engine::accel::lang::ir::spirv {
 				const auto img = value(texture);
 				const auto smp = value(e.operands[1]);
 				const auto coord = value(e.operands[2]);
-				const auto extra = lowering == BuiltinLowering::eSampleLod || lowering == BuiltinLowering::eSampleSparseClamp ? value(e.operands[3]) : 0uL;
+				const auto extra = lowering == BuiltinLowering::eSampleLod || lowering == BuiltinLowering::eSampleSparseClamp ?
+					value(e.operands[3]) :
+					0uL;
 				const auto sampledType = w.type(spv::Op::OpTypeSampledImage, Ops { type(mod.exprs[texture.index].type) });
 				const auto sampled = op(spv::Op::OpSampledImage, sampledType, Ops { img, smp });
 				const auto vec4 = shaped(ScalarKind::eFloat, 32uL, 4uL);
@@ -446,7 +456,11 @@ namespace hg::engine::accel::lang::ir::spirv {
 				switch (lowering) {
 					case BuiltinLowering::eSample: {
 						if (not implicit) {
-							return op(spv::Op::OpImageSampleExplicitLod, vec4, Ops { sampled, coord, w32(spv::ImageOperandsMask::Lod), zero });
+							return op(
+								spv::Op::OpImageSampleExplicitLod,
+								vec4,
+								Ops { sampled, coord, w32(spv::ImageOperandsMask::Lod), zero }
+							);
 						}
 
 						return op(spv::Op::OpImageSampleImplicitLod, vec4, Ops { sampled, coord });
@@ -463,11 +477,17 @@ namespace hg::engine::accel::lang::ir::spirv {
 						} else if (not implicit) {
 							// MinLod is invalid with an explicit Lod: lod 0 clamped from below is max(0, clamp)
 							const auto f32 = scalar(ScalarKind::eFloat, 32uL);
-							const auto lod = clamp ? op(spv::Op::OpExtInst, f32, Ops { glslStd(), w32(GLSLstd450FMax), zero, extra }) : zero;
+							const auto lod = clamp ?
+								op(spv::Op::OpExtInst, f32, Ops { glslStd(), w32(GLSLstd450FMax), zero, extra }) :
+								zero;
 							ops.insert(ops.end(), { w32(spv::ImageOperandsMask::Lod), lod });
 						}
 						const auto s32 = scalar(ScalarKind::eInt, 32uL);
-						const auto result = op(implicit ? spv::Op::OpImageSparseSampleImplicitLod : spv::Op::OpImageSparseSampleExplicitLod, w.type(spv::Op::OpTypeStruct, Ops { s32, vec4 }), std::move(ops));
+						const auto result = op(
+							implicit ? spv::Op::OpImageSparseSampleImplicitLod : spv::Op::OpImageSparseSampleExplicitLod,
+							w.type(spv::Op::OpTypeStruct, Ops { s32, vec4 }),
+							std::move(ops)
+						);
 						store(place(e.operands.back()), op(spv::Op::OpCompositeExtract, vec4, Ops { result, 1uL }));
 						return op(spv::Op::OpCompositeExtract, s32, Ops { result, 0uL });
 					}
@@ -486,7 +506,10 @@ namespace hg::engine::accel::lang::ir::spirv {
 			case BuiltinLowering::eBarrier: {
 				if (mod.entry == EntryKind::eTessCtrl) {
 					// tess_ctrl orders the output patch writes only (execution barrier, no memory semantics)
-					code(spv::Op::OpControlBarrier, Ops { workgroup(), u32Constant(w32(spv::Scope::Invocation)), u32Constant(w32(spv::MemorySemanticsMask::MaskNone)) });
+					code(
+						spv::Op::OpControlBarrier,
+						Ops { workgroup(), u32Constant(w32(spv::Scope::Invocation)), u32Constant(w32(spv::MemorySemanticsMask::MaskNone)) }
+					);
 				} else {
 					code(spv::Op::OpControlBarrier, Ops { workgroup(), workgroup(), sharedRelease() });
 				}
@@ -514,7 +537,9 @@ namespace hg::engine::accel::lang::ir::spirv {
 		}
 
 		const auto& spirv = builtinVariableSpirv[static_cast<size_t>(var - builtinVariables.data())];
-		const auto storage = var->writable && (var->writeStages & stageBit(mod.entry)) != 0u ? spv::StorageClass::Output : spv::StorageClass::Input;
+		const auto storage = var->writable && (var->writeStages & stageBit(mod.entry)) != 0u ?
+			spv::StorageClass::Output :
+			spv::StorageClass::Input;
 		auto pointee = shaped(var->scalar, 32uL, var->n);
 		if (var->count > 0uL) {
 			pointee = w.type(spv::Op::OpTypeArray, Ops { pointee, u32Constant(var->count) });
@@ -528,7 +553,8 @@ namespace hg::engine::accel::lang::ir::spirv {
 		if (var->count > 0uL) {
 			w.annotation(spv::Op::OpDecorate, Ops { id, w32(spv::Decoration::Patch) });
 		}
-		if (storage == spv::StorageClass::Input && mod.entry == EntryKind::eFragment && (var->scalar == ScalarKind::eInt || var->scalar == ScalarKind::eUInt)) {
+		if (storage == spv::StorageClass::Input && mod.entry == EntryKind::eFragment && (var->scalar == ScalarKind::eInt || var->scalar ==
+			ScalarKind::eUInt)) {
 			w.annotation(spv::Op::OpDecorate, Ops { id, w32(spv::Decoration::Flat) });
 		}
 		nameOf(id, var->name);
@@ -725,8 +751,7 @@ namespace hg::engine::accel::lang::ir::spirv {
 		}
 
 		label(entry);
-		loops.emplace_back(Loop { merge, cont });
-		{
+		loops.emplace_back(Loop { merge, cont }); {
 			const auto inner = scope.size();
 			statement(body_);
 			scope.erase(scope.begin() + static_cast<std::ptrdiff_t>(inner), scope.end());
@@ -798,7 +823,11 @@ namespace hg::engine::accel::lang::ir::spirv {
 		const auto& d = desc(mod, type_);
 		if ((d.kind == TypeKind::eScalar || d.kind == TypeKind::eVector) && d.scalar == ScalarKind::eBool) {
 			const auto n = width(d);
-			return op(spv::Op::OpSelect, laid_, Ops { value_, number(ScalarKind::eUInt, 32uL, n, true), number(ScalarKind::eUInt, 32uL, n, false) });
+			return op(
+				spv::Op::OpSelect,
+				laid_,
+				Ops { value_, number(ScalarKind::eUInt, 32uL, n, true), number(ScalarKind::eUInt, 32uL, n, false) }
+			);
 		}
 
 		Ops parts {};
@@ -891,7 +920,9 @@ namespace hg::engine::accel::lang::ir::spirv {
 				const auto code_ = op_ == Op::eAdd ? spv::Op::OpFAdd : op_ == Op::eSub ? spv::Op::OpFSub : spv::Op::OpFDiv;
 				const auto column = shaped(ScalarKind::eFloat, md.bits, md.m);
 				const auto operand = [&](u32 v_, bool matrix_, u32 j_) {
-					return matrix_ ? op(spv::Op::OpCompositeExtract, column, Ops { v_, j_ }) : op(spv::Op::OpCompositeConstruct, column, Ops(md.m, v_));
+					return matrix_ ?
+						op(spv::Op::OpCompositeExtract, column, Ops { v_, j_ }) :
+						op(spv::Op::OpCompositeConstruct, column, Ops(md.m, v_));
 				};
 				Ops columns {};
 				for (u32 j = 0uL; j < md.n; ++j) {
@@ -907,7 +938,9 @@ namespace hg::engine::accel::lang::ir::spirv {
 		const auto kind = ld.scalar;
 		const auto n = std::max(width(ld), width(rd));
 		if (op_ == Op::eMul && kind == ScalarKind::eFloat && width(ld) != width(rd)) {
-			return width(ld) > 1uL ? op(spv::Op::OpVectorTimesScalar, id, Ops { l_, r_ }) : op(spv::Op::OpVectorTimesScalar, id, Ops { r_, l_ });
+			return width(ld) > 1uL ?
+				op(spv::Op::OpVectorTimesScalar, id, Ops { l_, r_ }) :
+				op(spv::Op::OpVectorTimesScalar, id, Ops { r_, l_ });
 		}
 
 		const auto splat = [&](u32 v_, ref<const TypeDesc> d_) {
@@ -946,7 +979,9 @@ namespace hg::engine::accel::lang::ir::spirv {
 			case Op::eLt: return compare(f ? spv::Op::OpFOrdLessThan : s ? spv::Op::OpSLessThan : spv::Op::OpULessThan);
 			case Op::eLe: return compare(f ? spv::Op::OpFOrdLessThanEqual : s ? spv::Op::OpSLessThanEqual : spv::Op::OpULessThanEqual);
 			case Op::eGt: return compare(f ? spv::Op::OpFOrdGreaterThan : s ? spv::Op::OpSGreaterThan : spv::Op::OpUGreaterThan);
-			case Op::eGe: return compare(f ? spv::Op::OpFOrdGreaterThanEqual : s ? spv::Op::OpSGreaterThanEqual : spv::Op::OpUGreaterThanEqual);
+			case Op::eGe: return compare(
+					f ? spv::Op::OpFOrdGreaterThanEqual : s ? spv::Op::OpSGreaterThanEqual : spv::Op::OpUGreaterThanEqual
+				);
 			default: {
 				internal(*this, loc_, "unsupported binary operator");
 				return 0uL;
@@ -1028,7 +1063,9 @@ namespace hg::engine::accel::lang::ir::spirv {
 			for (u32 j = 0uL; j < t.n; ++j) {
 				Ops parts {};
 				for (u32 k = 0uL; k < t.m; ++k) {
-					parts.emplace_back(convert(mod.exprs[expr_.operands[j * t.m + k].index].type, args[j * t.m + k], ScalarKind::eFloat, t.bits, expr_.loc));
+					parts.emplace_back(
+						convert(mod.exprs[expr_.operands[j * t.m + k].index].type, args[j * t.m + k], ScalarKind::eFloat, t.bits, expr_.loc)
+					);
 				}
 				columns.emplace_back(op(spv::Op::OpCompositeConstruct, column, parts));
 			}
@@ -1059,7 +1096,11 @@ namespace hg::engine::accel::lang::ir::spirv {
 		}
 
 		if (kind_ == ScalarKind::eBool) {
-			return op(fk == ScalarKind::eFloat ? spv::Op::OpFUnordNotEqual : spv::Op::OpINotEqual, to, Ops { value_, number(fk, fb, n, false) });
+			return op(
+				fk == ScalarKind::eFloat ? spv::Op::OpFUnordNotEqual : spv::Op::OpINotEqual,
+				to,
+				Ops { value_, number(fk, fb, n, false) }
+			);
 		}
 
 		if (fk == ScalarKind::eBool) {
@@ -1068,8 +1109,13 @@ namespace hg::engine::accel::lang::ir::spirv {
 
 		if (fk == ScalarKind::eFloat) {
 			return op(
-				kind_ == ScalarKind::eFloat ? spv::Op::OpFConvert : kind_ == ScalarKind::eInt ? spv::Op::OpConvertFToS : spv::Op::OpConvertFToU,
-				to, Ops { value_ }
+				kind_ == ScalarKind::eFloat ?
+				spv::Op::OpFConvert :
+				kind_ == ScalarKind::eInt ?
+				spv::Op::OpConvertFToS :
+				spv::Op::OpConvertFToU,
+				to,
+				Ops { value_ }
 			);
 		}
 		if (kind_ == ScalarKind::eFloat) {
@@ -1234,7 +1280,9 @@ namespace hg::engine::accel::lang::ir::spirv {
 			}
 
 			const auto& desc = mod_.types[mod_.exprs[base].type.index];
-			const auto length = desc.kind == TypeKind::eVector || desc.kind == TypeKind::eMatrix ? desc.n : (desc.kind == TypeKind::eArray ? desc.count : 0uL);
+			const auto length = desc.kind == TypeKind::eVector || desc.kind == TypeKind::eMatrix ?
+				desc.n :
+				(desc.kind == TypeKind::eArray ? desc.count : 0uL);
 			return std::visit(
 				[length](const auto value_) {
 					using T = decltype(value_);

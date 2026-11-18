@@ -2,12 +2,7 @@
 
 /**/
 
-#include "IrSpan.hpp"
-#include "IrWording.hpp"
-#include "IrSpirvText.hpp"
-
 #include <algorithm>
-
 #include <Engine.Accel.Lang/Ir/Analysis.hpp>
 #include <Engine.Accel.Lang/Ir/Compact.hpp>
 #include <Engine.Accel.Lang/Ir/Interface.hpp>
@@ -16,6 +11,10 @@
 #include <Engine.Accel.Lang/Ir/Resolve.hpp>
 #include <Engine.Accel.Lang/Ir/Slice.hpp>
 #include <Engine.Accel.Lang/Ir/Typecheck.hpp>
+
+#include "IrSpan.hpp"
+#include "IrSpirvText.hpp"
+#include "IrWording.hpp"
 
 using namespace hg::engine::accel::lang::ir;
 using namespace hg::engine::accel::lang;
@@ -128,7 +127,9 @@ namespace AccelLang {
 	}
 
 	TEST(TypecheckTest, LiteralAdaptsToFloatContext) {
-		auto mod = parseOk("fn F(x: f32) -> f32 {\n\tif (x > 0) {\n\t\treturn x;\n\t}\n\treturn 0.5;\n}\nfn main() {\n\tfrag_depth = F(1.0);\n}\n");
+		auto mod = parseOk(
+			"fn F(x: f32) -> f32 {\n\tif (x > 0) {\n\t\treturn x;\n\t}\n\treturn 0.5;\n}\nfn main() {\n\tfrag_depth = F(1.0);\n}\n"
+		);
 		const auto text = spirvTextOf(mod);
 		EXPECT_TRUE(text.contains("OpFOrdGreaterThan")) << text;
 		EXPECT_FALSE(text.contains("OpSGreaterThan")) << text;
@@ -173,7 +174,6 @@ namespace AccelLang {
 			"fn f(x: f32) -> f32 { return x; }\n"
 			"fn f(x: f32vec3) -> f32vec3 { return x; }\n"
 			"fn main() {\n\tdepth = f(f32vec3(1.0)).x;\n}\n";
-
 
 		constexpr auto overloads =
 			"fn f(x: f32) -> f32 { return x; }\n"
@@ -297,7 +297,14 @@ namespace AccelLang {
 			return StmtRef { static_cast<u32>(m_.stmts.size() - 1uz) };
 		}
 
-		[[nodiscard]] FunctionDecl bodied(ref<Module> m_, String name_, Vector<ParamDecl> params_, TypeRef ret_, StmtKind kind_, ExprRef value_) {
+		[[nodiscard]] FunctionDecl bodied(
+			ref<Module> m_,
+			String name_,
+			Vector<ParamDecl> params_,
+			TypeRef ret_,
+			StmtKind kind_,
+			ExprRef value_
+		) {
 			const auto inner = addStmt(m_, Stmt { .kind = kind_, .lhs = value_ });
 			const auto root = addStmt(m_, Stmt { .kind = StmtKind::eBlock, .children = { inner } });
 			return FunctionDecl { .name = std::move(name_), .params = std::move(params_), .ret = ret_, .body = BodyRef { root } };
@@ -335,8 +342,12 @@ namespace AccelLang {
 		const auto s2 = addType(mod, TypeDesc { .kind = TypeKind::eStruct, .name = "S", .fields = { FieldDesc { "a", i32t } } });
 
 		const auto noop = addStmt(mod, Stmt { .kind = StmtKind::eBlock });
-		mod.functions.emplace_back(FunctionDecl { .name = "F", .params = { ParamDecl { .name = "x", .type = s1 } }, .body = BodyRef { noop } });
-		mod.functions.emplace_back(FunctionDecl { .name = "F", .params = { ParamDecl { .name = "x", .type = s2 } }, .body = BodyRef { noop } });
+		mod.functions.emplace_back(
+			FunctionDecl { .name = "F", .params = { ParamDecl { .name = "x", .type = s1 } }, .body = BodyRef { noop } }
+		);
+		mod.functions.emplace_back(
+			FunctionDecl { .name = "F", .params = { ParamDecl { .name = "x", .type = s2 } }, .body = BodyRef { noop } }
+		);
 
 		const auto y = addExpr(mod, Expr { .kind = ExprKind::eNameRef, .name = "y", .local = true });
 		const auto call = addExpr(mod, Expr { .kind = ExprKind::eCall, .name = "F", .operands = { y } });
@@ -399,12 +410,15 @@ namespace AccelLang {
 		EXPECT_EQ(diagnostic.message(), "cannot assign to read-only binding 'camera'");
 		EXPECT_EQ(spanOf(diagnostic).line, 3uL);
 		EXPECT_TRUE(
-			firstMessage(head + "fn main() {\n\tlet r = &mut camera.x;\n}\n").contains("cannot borrow read-only binding 'camera' as mutable")
+			firstMessage(head + "fn main() {\n\tlet r = &mut camera.x;\n}\n").contains("cannot borrow read-only binding 'camera' as mutable"
+			)
 		);
 	}
 
 	TEST(MutabilityTest, StorageReadWriteIsAssignable) {
-		parseOk("@input (mode = bind, id = \"camera\", class = storage, access = read_write) block camera { f32 x; };\nfn main() {\n\tcamera.x = 1.0;\n}\n");
+		parseOk(
+			"@input (mode = bind, id = \"camera\", class = storage, access = read_write) block camera { f32 x; };\nfn main() {\n\tcamera.x = 1.0;\n}\n"
+		);
 	}
 
 	TEST(MutabilityTest, BorrowOfValueHasItsCode) {
@@ -559,7 +573,9 @@ namespace AccelLang {
 	TEST(TypecheckTest, FloatModuloIsDiagnostic) {
 		auto res = parse("fn F(a: f32) -> f32 {\n\treturn a % 2.0;\n}\n");
 		ASSERT_FALSE(res.has_value());
-		EXPECT_TRUE(res.error().front().message().contains("operator '%' needs integer operands, got 'f32'")) << res.error().front().message();
+		EXPECT_TRUE(
+			res.error().front().message().contains("operator '%' needs integer operands, got 'f32'")
+		) << res.error().front().message();
 		AccelLang::expectWording(res.error().front());
 		EXPECT_EQ(spanOf(res.error().front()).line, 2u);
 
@@ -573,7 +589,9 @@ namespace AccelLang {
 	}
 
 	TEST(TypecheckTest, ConstArrayConstructorMatchesItsType) {
-		const auto mod = parseOk("const T: f32vec3[2] = f32vec3[2](f32vec3(1.0), f32vec3(0.0, 1.0, 0.0));\nfn F(i: u32) -> f32vec3 {\n\treturn T[i];\n}\n");
+		const auto mod = parseOk(
+			"const T: f32vec3[2] = f32vec3[2](f32vec3(1.0), f32vec3(0.0, 1.0, 0.0));\nfn F(i: u32) -> f32vec3 {\n\treturn T[i];\n}\n"
+		);
 		ASSERT_EQ(mod.constants.size(), 1uz);
 	}
 

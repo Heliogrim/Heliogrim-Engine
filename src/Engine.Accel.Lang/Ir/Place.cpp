@@ -34,16 +34,14 @@ namespace {
 		switch (e->kind) {
 			case ir::ExprKind::eLiteral: return true;
 			case ir::ExprKind::eNameRef:
-			case ir::ExprKind::eBuiltin:
-				return e->operands.empty() && immutable_(*e);
+			case ir::ExprKind::eBuiltin: return e->operands.empty() && immutable_(*e);
 			case ir::ExprKind::eField:
 			case ir::ExprKind::eIndex:
 			case ir::ExprKind::eUnary:
 			case ir::ExprKind::eBinary:
-			case ir::ExprKind::eTernary:
-				return std::ranges::all_of(
+			case ir::ExprKind::eTernary: return std::ranges::all_of(
 					e->operands,
-					[&](ir::ExprRef o_) { return stable(mod_, o_, immutable_, depth_ + 1uz); }
+					[&](const ir::ExprRef o_) { return stable(mod_, o_, immutable_, depth_ + 1uz); }
 				);
 			default: return false;
 		}
@@ -57,7 +55,11 @@ namespace {
 		ir::ExprRef b_,
 		ref<const Vector<size_t>> bIds_
 	) {
-		return aIds_ == bIds_ && std::ranges::none_of(aIds_, [](size_t i_) { return i_ == ir::unknownIdentity; }) && ir::sameExpr(mod_, a_, b_);
+		return aIds_ == bIds_ && std::ranges::none_of(aIds_, [](size_t i_) { return i_ == ir::unknownIdentity; }) && ir::sameExpr(
+			mod_,
+			a_,
+			b_
+		);
 	}
 
 	/* `a_.hi` is what `b_.lo` starts at, and that value cannot change between the two borrows */
@@ -94,14 +96,17 @@ namespace {
 						}
 					}
 				}
-				const auto ok = not n_.empty() && std::ranges::any_of(sets, [&](std::string_view s_) {
-					return std::ranges::all_of(n_, [&](char c) { return s_.contains(c); });
-				});
+				const auto ok = not n_.empty() && std::ranges::any_of(
+					sets,
+					[&](std::string_view s_) {
+						return std::ranges::all_of(n_, [&](char c) { return s_.contains(c); });
+					}
+				);
 				return ok ? Opt<unsigned> { mask } : None;
 			};
 			const auto x = components(a_.field);
 			const auto y = components(b_.field);
-			return not (x && y) || (*x & *y) == 0u;
+			return not(x && y) || (*x & *y) == 0u;
 		}
 		if (a_.kind == Kind::eIndex && b_.kind == Kind::eIndex) {
 			const auto x = constantOf(mod_, a_.index);
@@ -150,8 +155,7 @@ namespace {
 		switch (e->kind) {
 			case ir::ExprKind::eLiteral: return ir::literalText(e->literal);
 			case ir::ExprKind::eNameRef:
-			case ir::ExprKind::eBuiltin:
-				if (e->operands.empty()) {
+			case ir::ExprKind::eBuiltin: if (e->operands.empty()) {
 					return e->name;
 				}
 				[[fallthrough]];
@@ -176,7 +180,8 @@ Opt<long long> ir::integerLiteral(ref<const Expr> literal_) {
 	if (const auto* value = std::get_if<s64>(&literal_.literal.value); value != nullptr) {
 		return *value;
 	}
-	if (const auto* value = std::get_if<u64>(&literal_.literal.value); value != nullptr && *value <= static_cast<u64>(std::numeric_limits<s64>::max())) {
+	if (const auto* value = std::get_if<u64>(&literal_.literal.value); value != nullptr && *value <= static_cast<u64>(std::numeric_limits<
+		s64>::max())) {
 		return static_cast<s64>(*value);
 	}
 	return None;
@@ -189,7 +194,8 @@ bool ir::sameExpr(ref<const Module> mod_, ExprRef a_, ExprRef b_) {
 		if (x == nullptr || y == nullptr || depth_ > depthLimit) {
 			return false;
 		}
-		if (x->kind != y->kind || x->name != y->name || x->op != y->op || x->literal != y->literal || x->operands.size() != y->operands.size()) {
+		if (x->kind != y->kind || x->name != y->name || x->op != y->op || x->literal != y->literal || x->operands.size() != y->operands.
+			size()) {
 			return false;
 		}
 		for (auto i = 0uz; i < x->operands.size(); ++i) {
@@ -225,9 +231,12 @@ String ir::describePlace(ref<const Module> mod_, ref<const PlacePath> path_) {
 	String out = path_.root;
 	for (const auto& step : path_.steps) {
 		switch (step.kind) {
-			case PlaceStep::Kind::eField: out += "." + step.field; break;
-			case PlaceStep::Kind::eIndex: out += "[" + render(mod_, step.index) + "]"; break;
-			default: out += "[" + render(mod_, step.lo) + " .. " + render(mod_, step.hi) + "]"; break;
+			case PlaceStep::Kind::eField: out += "." + step.field;
+				break;
+			case PlaceStep::Kind::eIndex: out += "[" + render(mod_, step.index) + "]";
+				break;
+			default: out += "[" + render(mod_, step.lo) + " .. " + render(mod_, step.hi) + "]";
+				break;
 		}
 	}
 	return out;

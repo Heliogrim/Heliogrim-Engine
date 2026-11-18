@@ -1,13 +1,12 @@
 #pragma once
 
-#include <cmath>
 #include <map>
 #include <set>
 #include <utility>
-#include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 
 #include "SpirvWriter.hpp"
 #include "../Diagnostic.hpp"
@@ -121,34 +120,53 @@ namespace hg::engine::accel::lang::ir::spirv {
 	public:
 		/* SpirvTypes.cpp */
 		[[nodiscard]] u32 type(const TypeRef type_);
+
 		[[nodiscard]] u32 laidOut(const TypeRef type_, const bool std140_);
+
 		/* Block struct of a buffer/push binding, member offsets shifted by `bias_` (push range offset) */
 		[[nodiscard]] u32 block(const TypeRef type_, const bool std140_, const u32 bias_);
+
 		[[nodiscard]] u32 pointer(const spv::StorageClass storage_, const u32 pointee_);
+
 		[[nodiscard]] u32 scalar(const ScalarKind kind_, const u32 bits_);
+
 		[[nodiscard]] u32 voidType();
+
 		[[nodiscard]] u32 boolType();
+
 		[[nodiscard]] u32 u32Type();
+
 		[[nodiscard]] u32 u32Constant(const u32 value_);
+
 		/* OpConstant/True/False of a scalar type; 0 after a diagnostic */
 		[[nodiscard]] u32 literal(const TypeRef type_, ref<const LiteralValue> literal_, const SourceLoc loc_);
+
 		[[nodiscard]] u32 literal(ref<const TypeDesc> scalar_, ref<const LiteralValue> literal_, const SourceLoc loc_);
+
 		/* the OpConstant / OpSpecConstant value words of a non-bool scalar; false after a diagnostic */
 		[[nodiscard]] bool literalWords(const TypeRef type_, ref<const LiteralValue> literal_, ref<Ops> out_, const SourceLoc loc_);
+
 		[[nodiscard]] bool literalWords(ref<const TypeDesc> scalar_, ref<const LiteralValue> literal_, ref<Ops> out_, const SourceLoc loc_);
 
 		void require(const spv::Capability capability_);
+
 		void fail(ref<const DiagnosticCodeInfo> code_, SourceLoc loc_, String message_);
+
 		/* OpName from Tier::eDev on; nothing for an empty name */
 		void nameOf(const u32 id_, const StringView name_);
 
 		/* SpirvInterface.cpp */
 		/* user errors of the declarations the earlier passes leave to the emitter: bindings, structs, `main`'s signature */
 		void checkDeclarations();
+
 		void reach();
+
 		void declareGlobals();
+
 		void declareConstants();
+
 		void declareFunctions();
+
 		void entryPoint();
 
 		/* SpirvFunctions.cpp: bodies of every reached function */
@@ -159,20 +177,28 @@ namespace hg::engine::accel::lang::ir::spirv {
 
 		/* function-section instruction emission of the body being built; nothing is emitted once the block has ended */
 		[[nodiscard]] u32 op(const spv::Op op_, const u32 resultType_, Ops operands_);
+
 		void code(const spv::Op op_, Ops operands_);
+
 		/* the only way a block ends (branch, return, kill, unreachable) */
 		void terminate(const spv::Op op_, Ops operands_);
+
 		void label(const u32 label_);
+
 		/* OpVariable Function in the first block */
 		[[nodiscard]] u32 local(const TypeRef type_);
 
 		[[nodiscard]] u32 value(const ExprRef expr_);
+
 		[[nodiscard]] Place place(const ExprRef expr_);
+
 		[[nodiscard]] u32 load(ref<const Place> place_);
+
 		void store(ref<const Place> place_, const u32 value_);
 
 		/* Task 7 hooks: builtin calls / variables by `Expr::name` (only `bitcast` here) */
 		[[nodiscard]] u32 builtin(const ExprRef expr_);
+
 		[[nodiscard]] Place builtinPlace(const ExprRef expr_);
 
 	private:
@@ -196,27 +222,59 @@ namespace hg::engine::accel::lang::ir::spirv {
 		Vector<std::pair<String, Place>> scope {};
 
 	private:
-		[[nodiscard]] u32 image(ref<const TypeDesc> desc_, const ScalarKind sampled_, const u32 sampledMode_, const spv::ImageFormat format_);
+		[[nodiscard]] u32 image(
+			ref<const TypeDesc> desc_,
+			const ScalarKind sampled_,
+			const u32 sampledMode_,
+			const spv::ImageFormat format_
+		);
+
 		[[nodiscard]] u32 structure(const TypeRef type_, const bool std140_, const u32 bias_, const bool block_);
+
 		void memberLayout(const u32 struct_, const u32 member_, const u32 offset_, const TypeRef type_, const bool std140_);
+
 		void names(const u32 id_, ref<const TypeDesc> desc_);
+
 		[[nodiscard]] u32 vertexCount(const bool input_);
+
 		[[nodiscard]] u32 glslStd();
 
 		void statement(const StmtRef stmt_);
+
 		void loop(const StmtRef init_, const ExprRef cond_, const StmtRef body_, const StmtRef step_);
+
 		[[nodiscard]] u32 pointerOf(ref<const Place> place_);
+
 		[[nodiscard]] u32 pointeeOf(ref<const Place> place_);
+
 		[[nodiscard]] u32 fromLaid(const TypeRef type_, const u32 laid_, const u32 value_, const bool std140_);
+
 		[[nodiscard]] u32 toLaid(const TypeRef type_, const u32 laid_, const u32 value_, const bool std140_);
+
 		[[nodiscard]] u32 shortCircuit(ref<const Expr> expr_);
+
 		[[nodiscard]] u32 ternary(ref<const Expr> expr_);
-		[[nodiscard]] u32 binary(const Op op_, const TypeRef result_, const TypeRef lt_, const u32 l_, const TypeRef rt_, const u32 r_, const SourceLoc loc_);
+
+		[[nodiscard]] u32 binary(
+			const Op op_,
+			const TypeRef result_,
+			const TypeRef lt_,
+			const u32 l_,
+			const TypeRef rt_,
+			const u32 r_,
+			const SourceLoc loc_
+		);
+
 		[[nodiscard]] u32 construct(ref<const Expr> expr_);
+
 		[[nodiscard]] u32 convert(const TypeRef from_, const u32 value_, const ScalarKind kind_, const u32 bits_, const SourceLoc loc_);
+
 		[[nodiscard]] u32 call(ref<const Expr> expr_);
+
 		[[nodiscard]] u32 field(const ExprRef expr_);
+
 		[[nodiscard]] u32 number(const ScalarKind kind_, const u32 bits_, const u32 n_, const bool one_);
+
 		[[nodiscard]] u32 shaped(const ScalarKind kind_, const u32 bits_, const u32 n_);
 	};
 }

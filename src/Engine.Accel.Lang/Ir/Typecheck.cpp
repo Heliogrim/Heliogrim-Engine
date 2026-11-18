@@ -3,8 +3,6 @@
 #include <algorithm>
 #include <array>
 #include <bit>
-#include <cassert>
-#include <cmath>
 #include <limits>
 #include <string>
 #include <utility>
@@ -349,7 +347,8 @@ namespace {
 		void literalRanges() {
 			Vector<bool> negated(_mod.exprs.size(), false);
 			for (const auto& e : _mod.exprs) {
-				if (e.kind == ExprKind::eUnary && e.op == ir::Op::eNeg && e.operands.size() == 1uz && e.operands.front().index < negated.size()) {
+				if (e.kind == ExprKind::eUnary && e.op == ir::Op::eNeg && e.operands.size() == 1uz && e.operands.front().index < negated.
+					size()) {
 					negated[e.operands.front().index] = true;
 				}
 			}
@@ -378,7 +377,10 @@ namespace {
 					_diags.emplace_back(
 						ir::Diagnostic::error(
 							codes::asl("literal-out-of-range"),
-							"literal '" + String { negated[i] ? "-" : "" } + spelled + "' does not fit " + ir::quotedType(_mod.types, e.type)
+							"literal '" + String { negated[i] ? "-" : "" } + spelled + "' does not fit " + ir::quotedType(
+								_mod.types,
+								e.type
+							)
 						).at(spanIn(_mod, e.loc))
 					);
 				}
@@ -417,20 +419,27 @@ namespace {
 
 			const auto* e = from_.index < _mod.exprs.size() ? &_mod.exprs[from_.index] : nullptr;
 			const auto* lit = e != nullptr && e->kind == ExprKind::eUnary && e->op == ir::Op::eNeg && e->operands.size() == 1uz &&
-				e->operands.front().index < _mod.exprs.size() ? &_mod.exprs[e->operands.front().index] : e;
+				e->operands.front().index < _mod.exprs.size() ?
+				&_mod.exprs[e->operands.front().index] :
+				e;
 			if (lit != nullptr && lit->kind == ExprKind::eLiteral && std::holds_alternative<f64>(lit->literal.value) &&
 				_mod.types[toType_.index].scalar != ScalarKind::eFloat) {
 				error(
 					codes::asl("literal-out-of-range"),
-					"literal '" + String { lit != e ? "-" : "" } + ir::literalText(lit->literal) + "' does not fit " + ir::quotedType(_mod.types, toType_),
+					"literal '" + String { lit != e ? "-" : "" } + ir::literalText(lit->literal) + "' does not fit " + ir::quotedType(
+						_mod.types,
+						toType_
+					),
 					"write an integer literal"
 				);
 				return;
 			}
 
 			const auto named = e != nullptr && e->kind == ExprKind::eNameRef && e->loc.length != 0uL;
-			const auto spelled = named ? e->name :
-				e != nullptr && e->kind == ExprKind::eLiteral ? ir::literalText(e->literal) :
+			const auto spelled = named ?
+				e->name :
+				e != nullptr && e->kind == ExprKind::eLiteral ?
+				ir::literalText(e->literal) :
 				String { "..." };
 			const auto written = name(toType_) + "(" + spelled + ")";
 
@@ -438,7 +447,9 @@ namespace {
 			std::move(diagnostic).fix(
 				engine::diag::Fix {
 					"write `" + written + "`",
-					named ? Vector<engine::diag::TextEdit> { engine::diag::TextEdit { spanIn(_mod, e->loc), written } } : Vector<engine::diag::TextEdit> {},
+					named ?
+					Vector<engine::diag::TextEdit> { engine::diag::TextEdit { spanIn(_mod, e->loc), written } } :
+					Vector<engine::diag::TextEdit> {},
 					named ? engine::diag::Applicability::eMachineApplicable : engine::diag::Applicability::eHasPlaceholders
 				}
 			);
@@ -676,7 +687,9 @@ namespace {
 
 		/* D8: a constant-true or missing condition keeps the whole wave in the loop */
 		void loopCondition(ExprRef cond_) {
-			if (cond_.index >= _mod.exprs.size() || (_mod.exprs[cond_.index].kind == ExprKind::eLiteral && constantTrue(_mod.exprs[cond_.index].literal))) {
+			if (cond_.index >= _mod.exprs.size() || (_mod.exprs[cond_.index].kind == ExprKind::eLiteral && constantTrue(
+				_mod.exprs[cond_.index].literal
+			))) {
 				_diags.emplace_back(
 					ir::Diagnostic::error(codes::asl("constant-loop-condition"), "loop condition is always true").at(spanIn(_mod, _loc))
 					.note("invocations that never reach 'break' keep the others waiting in the loop")
@@ -726,7 +739,11 @@ namespace {
 						return boolType();
 					}
 
-					const auto scalar = std::holds_alternative<f64>(value) ? ScalarKind::eFloat : std::holds_alternative<u64>(value) ? ScalarKind::eUInt : ScalarKind::eInt;
+					const auto scalar = std::holds_alternative<f64>(value) ?
+						ScalarKind::eFloat :
+						std::holds_alternative<u64>(value) ?
+						ScalarKind::eUInt :
+						ScalarKind::eInt;
 					return scalarOf(scalar, 32uL);
 				}
 				case ExprKind::eNameRef: return nameRef(ref_);
@@ -1557,7 +1574,10 @@ namespace {
 				return inner;
 			}
 
-			error(codes::asl("type-mismatch"), "operand of '" + String { ir::spelling(op_) } + "' has type " + ir::quotedType(_mod.types, inner));
+			error(
+				codes::asl("type-mismatch"),
+				"operand of '" + String { ir::spelling(op_) } + "' has type " + ir::quotedType(_mod.types, inner)
+			);
 			return {};
 		}
 
@@ -1658,11 +1678,15 @@ namespace {
 
 			const auto& l = _mod.types[lt_.index];
 			const auto& r = _mod.types[rt_.index];
-			const auto right = operands_[0].index == _compound ? true :
-				l.kind != TypeKind::eScalar && r.kind == TypeKind::eScalar ? true :
-				l.kind == TypeKind::eScalar && r.kind != TypeKind::eScalar ? false :
+			const auto right = operands_[0].index == _compound ?
+				true :
+				l.kind != TypeKind::eScalar && r.kind == TypeKind::eScalar ?
+				true :
+				l.kind == TypeKind::eScalar && r.kind != TypeKind::eScalar ?
+				false :
 				/* same family, different width: widen the narrower side */
-				(l.scalar == ScalarKind::eFloat) == (r.scalar == ScalarKind::eFloat) && l.bits != r.bits ? r.bits < l.bits :
+				(l.scalar == ScalarKind::eFloat) == (r.scalar == ScalarKind::eFloat) && l.bits != r.bits ?
+				r.bits < l.bits :
 				l.scalar == ScalarKind::eFloat || r.scalar != ScalarKind::eFloat;
 			const auto from = right ? rt_ : lt_;
 			const auto other = right ? lt_ : rt_;
@@ -1796,7 +1820,10 @@ namespace {
 		[[nodiscard]] TypeRef mismatch(StringView op_, TypeRef lt_, TypeRef rt_) {
 			error(
 				codes::asl("type-mismatch"),
-				"operands of '" + String { op_ } + "' have types " + ir::quotedType(_mod.types, lt_) + " and " + ir::quotedType(_mod.types, rt_)
+				"operands of '" + String { op_ } + "' have types " + ir::quotedType(_mod.types, lt_) + " and " + ir::quotedType(
+					_mod.types,
+					rt_
+				)
 			);
 			return {};
 		}

@@ -1,5 +1,7 @@
 #include "pch.h"
 
+/**/
+
 #include <algorithm>
 #include <array>
 
@@ -76,7 +78,11 @@ namespace AccelLang {
 
 	TEST(MergeTest, MissingBodyNamesFunction) {
 		const auto profile = parse("profile", "@input (mode = forward) f32vec4 offset;\n");
-		const auto shader = parse("shader", "fn GetWorldPosition() -> f32vec4;\nfn main() {\n\tposition = GetWorldPosition();\n}\n", EntryKind::eVertex);
+		const auto shader = parse(
+			"shader",
+			"fn GetWorldPosition() -> f32vec4;\nfn main() {\n\tposition = GetWorldPosition();\n}\n",
+			EntryKind::eVertex
+		);
 		const auto diags = mergeFail({ &profile, &shader });
 		ASSERT_EQ(diags.size(), 1uz);
 		EXPECT_TRUE(mentions(diags[0], "missing body for function 'GetWorldPosition()'")) << diags[0].message();

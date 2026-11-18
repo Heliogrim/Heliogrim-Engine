@@ -90,7 +90,9 @@ namespace {
 				out = Info { .valid = true, .size = 4uLL, .align = 4uLL, .key = "bool" };
 			} else if (desc_.bits == 8uL || desc_.bits == 16uL || desc_.bits == 32uL || desc_.bits == 64uL) {
 				const auto prefix = desc_.scalar == ir::ScalarKind::eFloat ? "f" : desc_.scalar == ir::ScalarKind::eInt ? "s" : "u";
-				out = Info { .valid = true, .size = desc_.bits / 8uLL, .align = desc_.bits / 8uLL, .key = prefix + std::to_string(desc_.bits) };
+				out = Info {
+					.valid = true, .size = desc_.bits / 8uLL, .align = desc_.bits / 8uLL, .key = prefix + std::to_string(desc_.bits)
+				};
 			}
 			return out;
 		}
@@ -141,8 +143,8 @@ namespace {
 				.size = desc_.count * stride,
 				.align = _std140 ? roundUp(element.align, 16uLL) : element.align,
 				.key = element.key.empty() ?
-					String {} :
-					element.key + "[" + (desc_.count == 0uL ? String {} : std::to_string(desc_.count)) + "]"
+				String {} :
+				element.key + "[" + (desc_.count == 0uL ? String {} : std::to_string(desc_.count)) + "]"
 			};
 		}
 
@@ -236,7 +238,7 @@ namespace {
 	void collapse(ref<Vector<Item>> items_) {
 		// bitfields cannot be tied, so locations and valid are copied
 		const auto rank = [](ref<const Item> item_) {
-			return std::tuple<ref<const String>, ir::BindClass,ref<const String>, u64, u64, u64>(
+			return std::tuple<ref<const String>, ir::BindClass, ref<const String>, u64, u64, u64>(
 				item_.entry->id,
 				item_.entry->cls,
 				item_.info->key,
@@ -514,10 +516,12 @@ std::expected<Vector<ir::Layout>, ir::Diagnostics> ir::assignPipelineLayout(
 	for (size_t i = 0uz; i < own.size(); ++i) {
 		for (size_t j = i + 1uz; j < own.size(); ++j) {
 			const auto clash = [&](const String& id_, StringView what_) {
-				errors.append_range(failure(
-					codes::asl("binding-slot-conflict"),
-					"binding '" + id_ + "' " + String { what_ } + " in " + stageName(i) + " and " + stageName(j)
-				));
+				errors.append_range(
+					failure(
+						codes::asl("binding-slot-conflict"),
+						"binding '" + id_ + "' " + String { what_ } + " in " + stageName(i) + " and " + stageName(j)
+					)
+				);
 			};
 			for (const auto& slot : own[i].slots) {
 				const auto other = std::ranges::find(own[j].slots, slot.id, &SlotAssignment::id);
@@ -583,7 +587,9 @@ std::expected<Vector<Vector<ir::SpecConstant>>, ir::Diagnostics> ir::assignPipel
 	std::span<const Vector<TypeDesc>> types_
 ) {
 	if (constants_.size() != types_.size()) {
-		return std::unexpected(failure(codes::asl("internal-inconsistent-layout"), "pipeline spec constants need one type table per stage"));
+		return std::unexpected(
+			failure(codes::asl("internal-inconsistent-layout"), "pipeline spec constants need one type table per stage")
+		);
 	}
 
 	struct Seen {
@@ -605,11 +611,13 @@ std::expected<Vector<Vector<ir::SpecConstant>>, ir::Diagnostics> ir::assignPipel
 			if (it == seen.end()) {
 				seen.emplace_back(Seen { *constant.specId, std::move(key), i });
 			} else if (it->key != key) {
-				errors.append_range(failure(
-					codes::asl("spec-constant-conflict"),
-					"spec constant '" + *constant.specId + "' has another type in " + stageName(it->stage) + " and " +
-					stageName(i)
-				));
+				errors.append_range(
+					failure(
+						codes::asl("spec-constant-conflict"),
+						"spec constant '" + *constant.specId + "' has another type in " + stageName(it->stage) + " and " +
+						stageName(i)
+					)
+				);
 			}
 		}
 	}

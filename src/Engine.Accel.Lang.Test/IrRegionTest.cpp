@@ -1,15 +1,17 @@
 #include "pch.h"
 
+/**/
+
 #include <algorithm>
 #include <regex>
-#include "IrWording.hpp"
-
-#include "IrSpirvText.hpp"
 #include <Engine.Accel.Lang/Ir/Interface.hpp>
 #include <Engine.Accel.Lang/Ir/Layout.hpp>
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
 #include <Engine.Accel.Lang/Ir/References.hpp>
 #include <Engine.Accel.Lang/Ir/Variant.hpp>
+
+#include "IrSpirvText.hpp"
+#include "IrWording.hpp"
 
 using namespace hg::engine::accel::lang::ir;
 using namespace hg::engine::accel::lang;
@@ -45,10 +47,10 @@ namespace AccelLang {
 		/* no region parameter: those are specialized, not lowered in-function */
 		[[nodiscard]] String lowerBody(StringView statements_) {
 			return String {
-					"@input (mode = bind, id = \"buf\", class = storage, access = read_write) block buf { u32[] data; };\n"
-					"workgroup scratch: u32[256];\n"
-					"fn main() {\nconst b: u32 = local_invocation_index * 8u;\n"
-				} + String { statements_ } + "\n}\n";
+				"@input (mode = bind, id = \"buf\", class = storage, access = read_write) block buf { u32[] data; };\n"
+				"workgroup scratch: u32[256];\n"
+				"fn main() {\nconst b: u32 = local_invocation_index * 8u;\n"
+			} + String { statements_ } + "\n}\n";
 		}
 
 		/* validated SPIR-V disassembly, or the first diagnostic */
@@ -88,7 +90,11 @@ namespace AccelLang {
 		ASSERT_TRUE(mod.has_value()) << mod.error().front().message();
 		const auto glsl = emitLowered(*mod);
 		ASSERT_FALSE(glsl.starts_with("error:")) << glsl;
-		EXPECT_TRUE(hasSequence(glsl, R"((%\d+) = OpLoad %uint %r_off\s+(%\d+) = OpIAdd %uint \1 %uint_1\s+(%\d+) = OpAccessChain %_ptr_Workgroup_uint %scratch \2\s+OpStore \3 %uint_5)")) << glsl;
+		EXPECT_TRUE(
+			hasSequence(glsl,
+				R"((%\d+) = OpLoad %uint %r_off\s+(%\d+) = OpIAdd %uint \1 %uint_1\s+(%\d+) = OpAccessChain %_ptr_Workgroup_uint %scratch \2\s+OpStore \3 %uint_5)"
+			)
+		) << glsl;
 
 		auto lowered = lowerReferences(*mod);
 		ASSERT_TRUE(lowered.has_value());
@@ -101,7 +107,11 @@ namespace AccelLang {
 		const auto glsl = emitLowered(*mod);
 		ASSERT_FALSE(glsl.starts_with("error:")) << glsl;
 		EXPECT_TRUE(hasSequence(glsl, R"((%\d+) = OpLoad %uint %l_off\s+(%\d+) = OpIAdd %uint \1 %uint_2\s+OpStore %v_off \2)")) << glsl;
-		EXPECT_TRUE(hasSequence(glsl, R"((%\d+) = OpLoad %uint %v_off\s+(%\d+) = OpIAdd %uint \1 %uint_1\s+(%\d+) = OpAccessChain %_ptr_Workgroup_uint %scratch \2\s+OpStore \3 %uint_7)")) << glsl;
+		EXPECT_TRUE(
+			hasSequence(glsl,
+				R"((%\d+) = OpLoad %uint %v_off\s+(%\d+) = OpIAdd %uint \1 %uint_1\s+(%\d+) = OpAccessChain %_ptr_Workgroup_uint %scratch \2\s+OpStore \3 %uint_7)"
+			)
+		) << glsl;
 	}
 
 	TEST(RegionTest, WholeReborrowKeepsLength) {
@@ -110,7 +120,10 @@ namespace AccelLang {
 		const auto glsl = emitLowered(*mod);
 		ASSERT_FALSE(glsl.starts_with("error:")) << glsl;
 		EXPECT_TRUE(hasSequence(glsl, R"((%\d+) = OpLoad %uint %a_len\s+OpStore %b2_len \1)")) << glsl;
-		EXPECT_TRUE(hasSequence(glsl, R"((%\d+) = OpLoad %uint %b2_len\s+(%\d+) = OpAccessChain %_ptr_StorageBuffer_uint %buf %uint_0 %uint_0\s+OpStore \2 \1)")) << glsl;
+		EXPECT_TRUE(
+			hasSequence(glsl,
+				R"((%\d+) = OpLoad %uint %b2_len\s+(%\d+) = OpAccessChain %_ptr_StorageBuffer_uint %buf %uint_0 %uint_0\s+OpStore \2 \1)")
+		) << glsl;
 	}
 
 	TEST(RegionTest, ElementAliasOfRegionWritesRoot) {
@@ -119,7 +132,10 @@ namespace AccelLang {
 		const auto glsl = emitLowered(*mod);
 		ASSERT_FALSE(glsl.starts_with("error:")) << glsl;
 		EXPECT_TRUE(hasSequence(glsl, R"((%\d+) = OpLoad %uint %r_off\s+(%\d+) = OpIAdd %uint \1 %uint_2\s+OpStore %e_i0 \2)")) << glsl;
-		EXPECT_TRUE(hasSequence(glsl, R"((%\d+) = OpLoad %uint %e_i0\s+(%\d+) = OpAccessChain %_ptr_Workgroup_uint %scratch \1\s+OpStore \2 %uint_5)")) << glsl;
+		EXPECT_TRUE(
+			hasSequence(glsl,
+				R"((%\d+) = OpLoad %uint %e_i0\s+(%\d+) = OpAccessChain %_ptr_Workgroup_uint %scratch \1\s+OpStore \2 %uint_5)")
+		) << glsl;
 	}
 
 	TEST(RegionTest, LenLowersToLength) {
@@ -133,11 +149,11 @@ namespace AccelLang {
 
 	[[nodiscard]] static String rowsBody(StringView statements_) {
 		return String {
-				"struct Inner { u32[16] d; }\n"
-				"struct Outer { Inner[4] l; }\n"
-				"workgroup s: Outer;\n"
-				"fn main() {\nlet i: u32 = local_invocation_index;\n"
-			} + String { statements_ } + "\n}\n";
+			"struct Inner { u32[16] d; }\n"
+			"struct Outer { Inner[4] l; }\n"
+			"workgroup s: Outer;\n"
+			"fn main() {\nlet i: u32 = local_invocation_index;\n"
+		} + String { statements_ } + "\n}\n";
 	}
 
 	TEST(RegionTest, RootIndexFrozenAtBorrow) {
@@ -146,7 +162,11 @@ namespace AccelLang {
 		const auto glsl = emitLowered(*mod);
 		ASSERT_FALSE(glsl.starts_with("error:")) << glsl;
 		EXPECT_TRUE(hasSequence(glsl, R"((%\d+) = OpLoad %uint %i\s+OpStore %r_i0 \1)")) << glsl;
-		EXPECT_TRUE(hasSequence(glsl, R"(OpStore %i %uint_3\s+(%\d+) = OpLoad %uint %r_i0\s+(%\d+) = OpLoad %uint %r_off\s+(%\d+) = OpIAdd %uint \2 %uint_0\s+(%\d+) = OpAccessChain %_ptr_Workgroup_uint %s %uint_0 \1 %uint_0 \3\s+OpStore \4 %uint_1)")) << glsl;
+		EXPECT_TRUE(
+			hasSequence(glsl,
+				R"(OpStore %i %uint_3\s+(%\d+) = OpLoad %uint %r_i0\s+(%\d+) = OpLoad %uint %r_off\s+(%\d+) = OpIAdd %uint \2 %uint_0\s+(%\d+) = OpAccessChain %_ptr_Workgroup_uint %s %uint_0 \1 %uint_0 \3\s+OpStore \4 %uint_1)"
+			)
+		) << glsl;
 	}
 
 	TEST(RegionTest, ShadowedIndexKeepsFrozenRoot) {
@@ -154,8 +174,14 @@ namespace AccelLang {
 		ASSERT_TRUE(mod.has_value()) << mod.error().front().message();
 		const auto glsl = emitLowered(*mod);
 		ASSERT_FALSE(glsl.starts_with("error:")) << glsl;
-		EXPECT_TRUE(hasSequence(glsl, R"(OpStore %i_0 %uint_2[\s\S]*(%\d+) = OpLoad %uint %r_i0[\s\S]*= OpAccessChain %_ptr_Workgroup_uint %s %uint_0 \1 %uint_0 )")) << glsl;
-		EXPECT_TRUE(hasSequence(glsl, R"((%\d+) = OpLoad %uint %i_0\s+(%\d+) = OpAccessChain %_ptr_Workgroup_uint %s [^\n]*\s+OpStore \2 \1)")) << glsl;
+		EXPECT_TRUE(
+			hasSequence(glsl,
+				R"(OpStore %i_0 %uint_2[\s\S]*(%\d+) = OpLoad %uint %r_i0[\s\S]*= OpAccessChain %_ptr_Workgroup_uint %s %uint_0 \1 %uint_0 )"
+			)
+		) << glsl;
+		EXPECT_TRUE(
+			hasSequence(glsl, R"((%\d+) = OpLoad %uint %i_0\s+(%\d+) = OpAccessChain %_ptr_Workgroup_uint %s [^\n]*\s+OpStore \2 \1)")
+		) << glsl;
 	}
 
 	TEST(RegionTest, ShadowedRootReported) {
@@ -170,7 +196,10 @@ namespace AccelLang {
 		const auto glsl = emitLowered(*mod);
 		ASSERT_FALSE(glsl.starts_with("error:")) << glsl;
 		EXPECT_TRUE(hasSequence(glsl, R"((%\d+) = OpLoad %uint %r_off\s+(%\d+) = OpISub %uint %\d+ \1\s+OpStore %r_len \2)")) << glsl;
-		EXPECT_TRUE(hasSequence(glsl, R"((%\d+) = OpLoad %uint %r_len\s+(%\d+) = OpAccessChain %_ptr_StorageBuffer_uint %buf %uint_0 %uint_0\s+OpStore \2 \1)")) << glsl;
+		EXPECT_TRUE(
+			hasSequence(glsl,
+				R"((%\d+) = OpLoad %uint %r_len\s+(%\d+) = OpAccessChain %_ptr_StorageBuffer_uint %buf %uint_0 %uint_0\s+OpStore \2 \1)")
+		) << glsl;
 	}
 
 	TEST(RegionTest, ForInitRegionHoistedBeforeLoop) {
@@ -197,13 +226,17 @@ namespace AccelLang {
 		ASSERT_TRUE(mod.has_value()) << mod.error().front().message();
 		auto lowered = lowerReferences(*mod);
 		ASSERT_TRUE(lowered.has_value()) << lowered.error().front().message();
-				const auto specs = std::ranges::count_if(lowered->functions, [](const auto& fn_) { return fn_.name.empty() && fn_.origin == "w"; });
+		const auto specs = std::ranges::count_if(lowered->functions, [](const auto& fn_) { return fn_.name.empty() && fn_.origin == "w"; });
 		EXPECT_EQ(specs, 2);
 		EXPECT_FALSE(std::ranges::any_of(lowered->functions, [](const auto& fn_) { return fn_.name == "w"; }));
 		const auto glsl = emitSpirv(*lowered);
 		ASSERT_FALSE(glsl.starts_with("error:")) << glsl;
 		EXPECT_EQ(countOf(glsl, " = OpFunction "), 3);
-		EXPECT_TRUE(hasSequence(glsl, R"(OpFunctionCall %void (%\d+) %uint_0 %uint_8 %uint_0\s+%\d+ = OpFunctionCall %void \1 %uint_8 %uint_16 %uint_1\s+%\d+ = OpFunctionCall %void (?!\1 )%\d+ %uint_0 %uint_4 %uint_2)")) << glsl;
+		EXPECT_TRUE(
+			hasSequence(glsl,
+				R"(OpFunctionCall %void (%\d+) %uint_0 %uint_8 %uint_0\s+%\d+ = OpFunctionCall %void \1 %uint_8 %uint_16 %uint_1\s+%\d+ = OpFunctionCall %void (?!\1 )%\d+ %uint_0 %uint_4 %uint_2)"
+			)
+		) << glsl;
 	}
 
 	TEST(RegionTest, HelperRangeLowerBoundEmittedOnce) {
@@ -212,7 +245,9 @@ namespace AccelLang {
 		const auto glsl = emitLowered(*mod);
 		ASSERT_FALSE(glsl.starts_with("error:")) << glsl;
 		EXPECT_EQ(countOf(glsl, " = OpIMul "), 1);
-		EXPECT_TRUE(hasSequence(glsl, R"((%\d+) = OpIMul %uint %\d+ %uint_4\s+%\d+ = OpFunctionCall %void %\d+ \1 %uint_64 %uint_0)")) << glsl;
+		EXPECT_TRUE(
+			hasSequence(glsl, R"((%\d+) = OpIMul %uint %\d+ %uint_4\s+%\d+ = OpFunctionCall %void %\d+ \1 %uint_64 %uint_0)")
+		) << glsl;
 	}
 
 	TEST(RegionTest, TransitiveSpecialization) {
@@ -226,7 +261,11 @@ namespace AccelLang {
 		EXPECT_EQ(countOf(glsl, " = OpFunction "), 3);
 		EXPECT_FALSE(glsl.contains("\"inner\"") || glsl.contains("\"outer\"")) << glsl;
 		EXPECT_TRUE(hasSequence(glsl, R"(= OpFunctionCall %void %\d+ %uint_0 %uint_8\s)")) << glsl;
-		EXPECT_TRUE(hasSequence(glsl, R"((%\d+) = OpIAdd %uint %\d+ %uint_1\s+[\s\S]*?(%\d+) = OpIAdd %uint %\d+ %uint_3\s+%\d+ = OpFunctionCall %void %\d+ \1 \2)")) << glsl;
+		EXPECT_TRUE(
+			hasSequence(glsl,
+				R"((%\d+) = OpIAdd %uint %\d+ %uint_1\s+[\s\S]*?(%\d+) = OpIAdd %uint %\d+ %uint_3\s+%\d+ = OpFunctionCall %void %\d+ \1 \2)"
+			)
+		) << glsl;
 	}
 
 	TEST(RegionTest, LocalArrayRootRejected) {
@@ -375,9 +414,10 @@ namespace AccelLang {
 
 	TEST(RegionTest, RegionSuffixIsALocalName) {
 		for (const auto& source : {
-				 body("let r__off: u32 = 1u; scratch[r__off] = 2u;"), body("let a = &mut scratch[0u .. 8u]; let a__i0 = &mut a[0u .. 4u]; a__i0[1u] = 3u;"),
-				 body("let a__inner: u32 = 1u; let off__x: u32 = 2u; scratch[a__inner] = off__x;")
-			 }) {
+			     body("let r__off: u32 = 1u; scratch[r__off] = 2u;"),
+			     body("let a = &mut scratch[0u .. 8u]; let a__i0 = &mut a[0u .. 4u]; a__i0[1u] = 3u;"),
+			     body("let a__inner: u32 = 1u; let off__x: u32 = 2u; scratch[a__inner] = off__x;")
+		     }) {
 			ASSERT_EQ(errorOf(source), "") << source;
 			const auto spirv = emitLowered(*parse(source));
 			EXPECT_FALSE(spirv.starts_with("error:")) << source << "\n" << spirv;
@@ -386,10 +426,10 @@ namespace AccelLang {
 
 	TEST(RegionTest, RegionSuffixIsAParamAndFunctionName) {
 		for (const auto& source : {
-				 String { prelude } + "fn g(p__end: u32) { scratch[p__end] = 1u; }\nfn main() { g(1u); }\n",
-				 String { prelude } + "fn g__r0() { scratch[0u] = 1u; }\nfn main() { g__r0(); }\n",
-				 String { prelude } + "fn g__ring(p__lens: u32) { scratch[p__lens] = 1u; }\nfn main() { g__ring(1u); }\n"
-			 }) {
+			     String { prelude } + "fn g(p__end: u32) { scratch[p__end] = 1u; }\nfn main() { g(1u); }\n",
+			     String { prelude } + "fn g__r0() { scratch[0u] = 1u; }\nfn main() { g__r0(); }\n",
+			     String { prelude } + "fn g__ring(p__lens: u32) { scratch[p__lens] = 1u; }\nfn main() { g__ring(1u); }\n"
+		     }) {
 			ASSERT_EQ(errorOf(source), "") << source;
 			const auto spirv = emitLowered(*parse(source));
 			EXPECT_FALSE(spirv.starts_with("error:")) << source << "\n" << spirv;
@@ -409,11 +449,14 @@ namespace AccelLang {
 		const auto spirv = emitLowered(*mod);
 		ASSERT_FALSE(spirv.starts_with("error:")) << spirv;
 		EXPECT_TRUE(spirv.contains("OpName %r_len \"r$len\"")) << spirv;
-		EXPECT_TRUE(hasSequence(spirv, R"((%\d+) = OpLoad %uint %r_len\s+(%\d+) = OpLoad %uint %r__len\s+(%\d+) = OpIAdd %uint \1 \2)")) << spirv;
+		EXPECT_TRUE(
+			hasSequence(spirv, R"((%\d+) = OpLoad %uint %r_len\s+(%\d+) = OpLoad %uint %r__len\s+(%\d+) = OpIAdd %uint \1 \2)")
+		) << spirv;
 	}
 
 	TEST(RegionTest, UserParamNamedLikeGeneratedIndex) {
-		const auto source = String { prelude } + "fn put(v: &mut u32, v__i0: u32) { v = v__i0; }\nfn main() { let i: u32 = local_invocation_index; put(buf.data[i], 5u); }\n";
+		const auto source = String { prelude } +
+			"fn put(v: &mut u32, v__i0: u32) { v = v__i0; }\nfn main() { let i: u32 = local_invocation_index; put(buf.data[i], 5u); }\n";
 		const auto spirv = emitLowered(*parse(source));
 		ASSERT_FALSE(spirv.starts_with("error:")) << spirv;
 		EXPECT_TRUE(hasSequence(spirv, R"(= OpFunctionCall %void %\d+ %\d+ %uint_5)")) << spirv;

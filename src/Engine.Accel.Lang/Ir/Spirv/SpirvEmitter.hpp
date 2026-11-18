@@ -1,8 +1,8 @@
 #pragma once
 
-#include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 
 #include "../Diagnostic.hpp"
 #include "../Layout.hpp"

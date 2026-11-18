@@ -1,5 +1,7 @@
 #include "pch.h"
 
+/**/
+
 #include <Engine.Accel.Lang/Intermediate.hpp>
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
 #include <Engine.Accel.Lang/Ir/Variant.hpp>
@@ -224,7 +226,11 @@ namespace AccelLang {
 
 	TEST(VariantKeyTest, CompoundOperatorChangesKey) {
 		const auto key = [](const char* op_) {
-			return makeVariantKey(parsed(String { "fn main() {\n	let k = 1.0;\n	k " } + op_ + " 2.0;\n	position = f32vec4(k);\n}\n"), {}, {});
+			return makeVariantKey(
+				parsed(String { "fn main() {\n	let k = 1.0;\n	k " } + op_ + " 2.0;\n	position = f32vec4(k);\n}\n"),
+				{},
+				{}
+			);
 		};
 		EXPECT_NE(key("+="), key("-="));
 		EXPECT_NE(key("+="), key("="));
