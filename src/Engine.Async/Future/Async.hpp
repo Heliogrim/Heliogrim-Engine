@@ -12,8 +12,8 @@ namespace hg {
 	template <typename Fn_>
 	[[nodiscard]] auto async(
 		Fn_&& fn_,
-		const engine::scheduler::task::TaskMask mask_ = engine::scheduler::task::TaskMask::eNormal
+		const engine::scheduler::Lane lane_ = engine::scheduler::Lane::eInherit
 	) {
-		return Future<void>::ready(mask_).then(::hg::forward<Fn_>(fn_));
+		return Future<void>::ready(lane_).then(::hg::forward<Fn_>(fn_));
 	}
 }

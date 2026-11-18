@@ -1,7 +1,6 @@
 #include "CompScheduler.hpp"
 
 #include <bit>
-#include <cstdlib>
 #include <utility>
 #include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Common/Make.hpp>
@@ -78,10 +77,10 @@ void CompScheduler::setup(u32 workers_, u32 reserve_) {
 	_workers = static_cast<aligned_worker*>(calloc(workers_, sizeof(aligned_worker)));
 
 	/**
-	 * Construct every worker with all available masks
+	 * Construct every worker over the shared schedule
 	 */
 	for (u32 i = 0; i < workers_; ++i) {
-		::new(&_workers[i]) aligned_worker(_schedule.get(), &_fiberPool, task::TaskMask::eAll);
+		::new(&_workers[i]) aligned_worker(_schedule.get(), &_fiberPool);
 	}
 
 	/**

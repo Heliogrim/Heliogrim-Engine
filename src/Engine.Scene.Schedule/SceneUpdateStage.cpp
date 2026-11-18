@@ -1,10 +1,9 @@
 #include "SceneUpdateStage.hpp"
 
-#include <Engine.Scene.Schedule/ScenePipeline.hpp>
-
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Universe.hpp>
 #include <Engine.Core/UniverseContext.hpp>
+#include <Engine.Scene.Schedule/ScenePipeline.hpp>
 #include <Engine.Scene/Scene.hpp>
 
 using namespace hg::engine::scene::schedule;
@@ -62,7 +61,6 @@ graph::StageDecl SceneUpdateStage::decl() const noexcept {
 		string_view { engine::scene::schedule::ScenePipeline::SceneUpdatePostPhysics },
 		.reads = {},
 		.writes = Writes,
-		.lane = graph::Lane::eCritical,
 		.after = prePhysics ? std::span<const string_view> { preAfter } : std::span<const string_view> { postAfter }
 	};
 }

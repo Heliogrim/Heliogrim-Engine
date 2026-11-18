@@ -4,7 +4,7 @@ using namespace hg::engine::scheduler;
 using namespace hg;
 
 FifoWorkSet::FifoWorkSet() :
-    ScheduleWorkSet(task::TaskMask::eAll),
+    ScheduleWorkSet(),
     _fifo(),
     _lck() {}
 
@@ -19,7 +19,7 @@ bool FifoWorkSet::push(const non_owning_rptr<const task::TaskDelegate> task_) {
     return true;
 }
 
-bool FifoWorkSet::pop(const task::TaskMask mask_, ref<non_owning_rptr<const task::TaskDelegate>> task_) {
+bool FifoWorkSet::pop(ref<non_owning_rptr<const task::TaskDelegate>> task_) {
 
     task_ = nullptr;
 
@@ -33,22 +33,3 @@ bool FifoWorkSet::pop(const task::TaskMask mask_, ref<non_owning_rptr<const task
     return task_ != nullptr;
 }
 
-u64 FifoWorkSet::transfer(const non_owning_rptr<ScheduleWorkSet> dst_) {
-    _lck.acquire();
-
-    u64 moved = 0uLL;
-    non_owning_rptr<const task::TaskDelegate> task = nullptr;
-    while (not _fifo.empty()) {
-        task = _fifo.front();
-
-        if (not dst_->push(task)) {
-            break;
-        }
-
-        _fifo.pop();
-        ++moved;
-    }
-
-    _lck.release();
-    return moved;
-}

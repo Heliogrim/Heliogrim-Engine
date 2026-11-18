@@ -27,7 +27,7 @@ using namespace hg::engine::scheduler;
 
 /**
  * Lane flood benchmark: frame time and fan-out latency of a chained CompositePipeline while a flood of long
- *	default-mask tasks saturates the workers, plus the latency of a periodic probe task.
+ *	background-lane tasks saturates the workers, plus the latency of a periodic probe task.
  *
  * DISABLED by default; run with `--gtest_also_run_disabled_tests --gtest_filter=LaneFloodBenchmark.*`.
  * Environment: `HG_BENCH_WORKERS` (0 or unset = auto), `HG_BENCH_FLOOD_COOPERATES` (unset = both flood kinds,
@@ -298,7 +298,8 @@ namespace Performance {
 													}
 													st.floodDone.fetch_add(1);
 													st.floodOutstanding.fetch_sub(1);
-												}
+												},
+												Lane::eBackground
 											)
 										);
 									}
@@ -324,7 +325,8 @@ namespace Performance {
 												st.probeNs[at] = lat;
 											}
 										st.probesCompleted.fetch_add(1); // publish after the sample write
-										}
+										},
+										Lane::eInteractive
 									)
 								);
 								std::this_thread::sleep_for(std::chrono::milliseconds { probeEveryMillis });

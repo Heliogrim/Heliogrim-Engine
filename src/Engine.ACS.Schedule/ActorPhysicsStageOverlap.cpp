@@ -41,7 +41,6 @@ graph::StageDecl ActorPhysicsStageOverlap::decl() const noexcept {
 		.name = engine::acs::schedule::ActorPipeline::ActorPhysicsOverlap,
 		.reads = Reads,
 		.writes = Writes,
-		.lane = graph::Lane::eNormal,
 		.after = after
 	};
 }

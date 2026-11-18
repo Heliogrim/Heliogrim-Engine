@@ -325,7 +325,7 @@ namespace SchedulerModule {
 				make_uptr<scheduler::EmptyPipelineStage>(
 					eid(CorePipeline::TickEnd),
 					nullptr,
-					StageDecl { .name = CorePipeline::TickEnd, .reads = {}, .writes = {}, .lane = Lane::eCritical, .after = endAfter }
+					StageDecl { .name = CorePipeline::TickEnd, .reads = {}, .writes = {}, .after = endAfter }
 				)
 			);
 			return stages;

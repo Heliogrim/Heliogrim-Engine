@@ -32,7 +32,7 @@ void CorePipeline::mount(ref<StageRegister> register_) {
 			make_uptr<EmptyPipelineStage>(
 				PipelineStage::identifier_type::from(TickEnd),
 				this,
-				graph::StageDecl { .name = TickEnd, .lane = graph::Lane::eCritical, .after = endAfter }
+				graph::StageDecl { .name = TickEnd, .after = endAfter }
 			)
 		)
 	};

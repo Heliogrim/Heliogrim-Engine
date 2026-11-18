@@ -8,14 +8,12 @@
 #include <Engine.Common/Collection/Vector.hpp>
 
 #include "StageDecl.hpp"
-#include "../Task/TaskMask.hpp"
 
 namespace hg::engine::scheduler::graph {
 	struct GraphError {
 		enum class Kind : u8 {
 			eUnknownStage,
 			eDuplicateStage,
-			eLaneMismatch,
 			eCycle,
 			eConflict
 		};
@@ -29,7 +27,6 @@ namespace hg::engine::scheduler::graph {
 	struct Graph {
 		struct Node {
 			string name;
-			Lane lane;
 			u16 predecessors;
 			Vector<u16> successors;
 		};
@@ -39,6 +36,4 @@ namespace hg::engine::scheduler::graph {
 	};
 
 	[[nodiscard]] Result<Graph, GraphError> build(std::span<const StageDecl> decls_);
-
-	[[nodiscard]] task::TaskMask toMask(Lane lane_) noexcept;
 }

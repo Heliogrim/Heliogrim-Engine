@@ -1,10 +1,9 @@
 #include "ScenePostProcessStage.hpp"
 
-#include <Engine.Scene.Schedule/ScenePipeline.hpp>
-
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Universe.hpp>
 #include <Engine.Core/UniverseContext.hpp>
+#include <Engine.Scene.Schedule/ScenePipeline.hpp>
 #include <Engine.Scene/Scene.hpp>
 
 using namespace hg::engine::scene::schedule;
@@ -54,7 +53,6 @@ graph::StageDecl ScenePostProcessStage::decl() const noexcept {
 		.name = engine::scene::schedule::ScenePipeline::ScenePostProcess,
 		.reads = {},
 		.writes = Writes,
-		.lane = graph::Lane::eCritical,
 		.after = after
 	};
 }

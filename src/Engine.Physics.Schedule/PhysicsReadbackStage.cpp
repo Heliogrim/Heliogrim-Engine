@@ -1,11 +1,10 @@
 #include "PhysicsReadbackStage.hpp"
 
-#include <Engine.Physics.Schedule/PhysicsPipeline.hpp>
-
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Universe.hpp>
 #include <Engine.Core/UniverseContext.hpp>
 #include <Engine.Physics.Scene/PhysicsSceneSystem.hpp>
+#include <Engine.Physics.Schedule/PhysicsPipeline.hpp>
 #include <Engine.Scene/SceneBase.hpp>
 
 using namespace hg::engine::physics::schedule;
@@ -65,7 +64,6 @@ graph::StageDecl PhysicsReadbackStage::decl() const noexcept {
 		.name = engine::physics::schedule::PhysicsPipeline::PhysicsReadback,
 		.reads = Reads,
 		.writes = Writes,
-		.lane = graph::Lane::eCritical,
 		.after = after
 	};
 }

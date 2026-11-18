@@ -1,9 +1,8 @@
 #include "InputTickStage.hpp"
 
 #include <Engine.Core.Schedule/CorePipeline.hpp>
-#include <Engine.Input.Schedule/InputPipeline.hpp>
-
 #include <Engine.Core/Engine.hpp>
+#include <Engine.Input.Schedule/InputPipeline.hpp>
 #include <Engine.Input/Input.hpp>
 
 using namespace hg::engine::input::schedule;
@@ -47,7 +46,6 @@ graph::StageDecl InputTickStage::decl() const noexcept {
 		.name = engine::input::schedule::InputPipeline::InputTick,
 		.reads = {},
 		.writes = Writes,
-		.lane = graph::Lane::eCritical,
 		.after = after
 	};
 }

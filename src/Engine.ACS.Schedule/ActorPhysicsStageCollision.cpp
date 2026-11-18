@@ -41,7 +41,6 @@ graph::StageDecl ActorPhysicsStageCollision::decl() const noexcept {
 		.name = engine::acs::schedule::ActorPipeline::ActorPhysicsCollision,
 		.reads = Reads,
 		.writes = Writes,
-		.lane = graph::Lane::eNormal,
 		.after = after
 	};
 }

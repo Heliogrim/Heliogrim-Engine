@@ -20,12 +20,10 @@ namespace hg::engine::scheduler::worker {
 		 *
 		 * @param schedule_ The schedule to work with.
 		 * @param fiberPool_ The fiber pool.
-		 * @param mask_ The mask.
 		 */
 		Worker(
 			_In_ non_owning_rptr<Schedule> schedule_,
-			_In_ ptr<fiber::FiberPool> fiberPool_,
-			_In_ task::TaskMask mask_
+			_In_ ptr<fiber::FiberPool> fiberPool_
 		) noexcept;
 
 		/**
@@ -135,16 +133,6 @@ namespace hg::engine::scheduler::worker {
 		 */
 		[[nodiscard]] const non_owning_rptr<Schedule> schedule() const noexcept;
 
-		/**
-		 * Gets the mask
-		 *
-		 * @author Julius
-		 * @date 16.11.2020
-		 *
-		 * @returns A task::TaskMask.
-		 */
-		[[nodiscard]] task::TaskMask mask() const;
-
 	private:
 		std::atomic<bool> _interrupt { false };
 		std::atomic<bool> _ready { false };
@@ -180,7 +168,6 @@ namespace hg::engine::scheduler::worker {
 	private:
 		non_owning_rptr<Schedule> _schedule;
 		thread::Thread _thread;
-		task::TaskMask _mask;
 
 	private:
 		static void handle(void* args_);

@@ -2,7 +2,6 @@
 
 #include <span>
 #include <Engine.Common/String.hpp>
-#include <Engine.Common/Types.hpp>
 #include <Engine.Common/Meta/TypeId.hpp>
 #include <Engine.Reflect/Compile/TypeId.hpp>
 
@@ -43,17 +42,10 @@ namespace hg::engine::scheduler::graph {
 		}
 	};
 
-	enum class Lane : u8 {
-		eCritical,
-		eNormal,
-		eBackground
-	};
-
 	struct StageDecl {
 		string_view name;
 		std::span<const AccessKey> reads;
 		std::span<const AccessKey> writes;
-		Lane lane = Lane::eNormal;
 		std::span<const string_view> after;
 		std::span<const string_view> before;
 	};

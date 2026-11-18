@@ -167,7 +167,7 @@ Result<Graph, GraphError> graph::build(const std::span<const StageDecl> decls_) 
 	Graph result {};
 	result.nodes.reserve(count);
 	for (u16 idx = 0; idx < count; ++idx) {
-		result.nodes.emplace_back(string { decls_[idx].name }, decls_[idx].lane, u16 { 0 }, Vector<u16> {});
+		result.nodes.emplace_back(string { decls_[idx].name }, u16 { 0 }, Vector<u16> {});
 	}
 
 	for (u16 from = 0; from < count; ++from) {
@@ -189,12 +189,4 @@ Result<Graph, GraphError> graph::build(const std::span<const StageDecl> decls_) 
 
 	result.order = std::move(order);
 	return Expected { std::move(result) };
-}
-
-task::TaskMask graph::toMask(const Lane lane_) noexcept {
-	return lane_ == Lane::eCritical ?
-		task::TaskMask::eCritical :
-		lane_ == Lane::eBackground ?
-		task::TaskMask::eLower :
-		task::TaskMask::eNormal;
 }

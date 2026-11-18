@@ -7,12 +7,16 @@
 using namespace hg::engine::scheduler::task;
 using namespace hg;
 
+using hg::engine::scheduler::Lane;
+
+/**/
+
 TaskDelegate::TaskDelegate(
 	const TaskType type_,
-	const TaskMask mask_
+	const Lane lane_
 ) noexcept :
 	_type(type_),
-	_mask(mask_),
+	_lane(lane_),
 	_fiber(nullptr),
 	_ctrl(nullptr) {}
 
@@ -106,12 +110,12 @@ TaskType TaskDelegate::type() const noexcept {
 	return _type;
 }
 
-TaskMask TaskDelegate::mask() const noexcept {
-	return _mask;
+Lane TaskDelegate::lane() const noexcept {
+	return _lane;
 }
 
-ref<TaskMask> TaskDelegate::mask() noexcept {
-	return _mask;
+ref<Lane> TaskDelegate::lane() noexcept {
+	return _lane;
 }
 
 ptr<engine::scheduler::fiber::Fiber> TaskDelegate::fiber() const noexcept {
@@ -138,18 +142,18 @@ void Task::invoke() const {
 
 const non_owning_rptr<const Task> engine::scheduler::task::make_task(
 	Task::function_type&& fnc_,
-	const TaskMask mask_
+	const Lane lane_
 ) {
 	return static_cast<const non_owning_rptr<const Task>>(
-		new Task(std::forward<decltype(fnc_)>(fnc_), mask_)
+		new Task(std::forward<decltype(fnc_)>(fnc_), lane_)
 	);
 }
 
 Task::Task(
 	function_type&& fnc_,
-	const TaskMask mask_
+	const Lane lane_
 ) noexcept :
-	TaskDelegate(TaskType::eTask, mask_),
+	TaskDelegate(TaskType::eTask, lane_),
 	_fnc(std::move(fnc_)) {}
 
 RepetitiveTask::~RepetitiveTask() noexcept = default;
@@ -160,18 +164,18 @@ bool RepetitiveTask::invoke() const {
 
 const non_owning_rptr<const RepetitiveTask> engine::scheduler::task::make_repetitive_task(
 	RepetitiveTask::function_type&& fnc_,
-	const TaskMask mask_
+	const Lane lane_
 ) {
 	return static_cast<const non_owning_rptr<const RepetitiveTask>>(
-		new RepetitiveTask(std::forward<decltype(fnc_)>(fnc_), mask_)
+		new RepetitiveTask(std::forward<decltype(fnc_)>(fnc_), lane_)
 	);
 }
 
 RepetitiveTask::RepetitiveTask(
 	function_type&& fnc_,
-	const TaskMask mask_
+	const Lane lane_
 ) noexcept :
-	TaskDelegate(TaskType::eRepetitive, mask_),
+	TaskDelegate(TaskType::eRepetitive, lane_),
 	_fnc(std::move(fnc_)) {}
 
 BatchTask::~BatchTask() noexcept = default;
@@ -183,16 +187,16 @@ void BatchTask::invoke() const {
 
 const non_owning_rptr<const BatchTask> engine::scheduler::task::make_batch_task(
 	BatchTask::function_type&& fnc_,
-	const TaskMask mask_
+	const Lane lane_
 ) {
 	return static_cast<const non_owning_rptr<const BatchTask>>(
-		new BatchTask(std::forward<decltype(fnc_)>(fnc_), mask_)
+		new BatchTask(std::forward<decltype(fnc_)>(fnc_), lane_)
 	);
 }
 
 BatchTask::BatchTask(
 	function_type&& fnc_,
-	const TaskMask mask_
+	const Lane lane_
 ) noexcept :
-	TaskDelegate(TaskType::eBatch, mask_),
+	TaskDelegate(TaskType::eBatch, lane_),
 	_fnc(std::move(fnc_)) {}
