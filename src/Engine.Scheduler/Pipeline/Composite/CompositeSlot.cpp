@@ -4,6 +4,7 @@
 #include <ranges>
 
 #include "../CompositePipeline.hpp"
+#include "../../Lane.hpp"
 #include "../../Process/Schedule.hpp"
 
 using namespace hg::engine::scheduler;
@@ -16,7 +17,6 @@ CompositeSlot::CompositeSlot(
 	_schedule(schedule_),
 	_pipeline(pipeline_),
 	_node(0u),
-	_mask(task::TaskMask::eNormal),
 	_mtx() {}
 
 CompositeSlot::~CompositeSlot() = default;
@@ -33,16 +33,12 @@ void CompositeSlot::setNode(const u16 node_) noexcept {
 	_node = node_;
 }
 
-void CompositeSlot::setMask(const task::TaskMask mask_) noexcept {
-	_mask = mask_;
-}
-
 void CompositeSlot::staticEnqueue(mref<non_owning_rptr<const task::TaskDelegate>> task_) {
 
 	assert(task_->ctrl() == nullptr);
 	const_cast<ptr<task::TaskDelegate>>(task_)->ctrl() = static_cast<ptr<TaskCtrl>>(this);
-	// the lane is a property of the stage, so the slot stamps it over whatever the stage asked for
-	const_cast<ptr<task::TaskDelegate>>(task_)->mask() = _mask;
+	// every stage is Frame, so the slot stamps it over whatever the stage asked for
+	const_cast<ptr<task::TaskDelegate>>(task_)->lane() = Lane::eFrame;
 
 	concurrent::SpinLock lck { _mtx };
 	_staticTasks.push_back(std::move(task_));
@@ -52,8 +48,8 @@ void CompositeSlot::dynamicEnqueue(mref<non_owning_rptr<const task::TaskDelegate
 
 	assert(task_->ctrl() == nullptr);
 	const_cast<ptr<task::TaskDelegate>>(task_)->ctrl() = static_cast<ptr<TaskCtrl>>(this);
-	// the lane is a property of the stage, so the slot stamps it over whatever the stage asked for
-	const_cast<ptr<task::TaskDelegate>>(task_)->mask() = _mask;
+	// every stage is Frame, so the slot stamps it over whatever the stage asked for
+	const_cast<ptr<task::TaskDelegate>>(task_)->lane() = Lane::eFrame;
 
 	concurrent::SpinLock lck { _mtx };
 	_dynamicTasks.push_back(std::move(task_));
@@ -126,7 +122,7 @@ void CompositeSlot::submit() {
 		// an empty stage still completes through a task, so complete() never runs inline in the dispatcher
 		_signals.fetch_add(1uL, std::memory_order_relaxed);
 
-		const auto* dummy = task::make_task([] {}, _mask);
+		const auto* dummy = task::make_task([] {}, Lane::eFrame);
 		const_cast<ptr<task::Task>>(dummy)->ctrl() = static_cast<ptr<TaskCtrl>>(this);
 		(void)_schedule->push(static_cast<non_owning_rptr<const task::TaskDelegate>>(std::move(dummy)));
 		return;

@@ -20,14 +20,12 @@ using namespace hg;
 
 Worker::Worker(
 	const non_owning_rptr<Schedule> schedule_,
-	const ptr<fiber::FiberPool> fiberPool_,
-	const task::TaskMask mask_
+	const ptr<fiber::FiberPool> fiberPool_
 ) noexcept :
 	_fiber(nullptr),
 	_fiberPool(fiberPool_),
 	_schedule(schedule_),
-	_thread(),
-	_mask(mask_) {}
+	_thread() {}
 
 Worker::~Worker() {
 	#ifdef _DEBUG
@@ -71,10 +69,6 @@ const non_owning_rptr<Schedule> Worker::schedule() const noexcept {
 	return _schedule;
 }
 
-task::TaskMask Worker::mask() const {
-	return _mask;
-}
-
 void Worker::setFiberHandle(fiber::Fiber::handle_type fiber_) noexcept {
 	_fiber = fiber_;
 }
@@ -110,7 +104,6 @@ void Worker::handle(void* args_) {
 	/**
 	 * Presolve used data
 	 */
-	const auto mask { worker->mask() };
 	auto* const schedule { worker->schedule() };
 
 	/**
@@ -130,7 +123,7 @@ void Worker::handle(void* args_) {
 		const auto epoch { schedule->epoch() };
 		task = nullptr;
 
-		if (schedule->pop(mask, task)) {
+		if (schedule->pop(task)) {
 			/**
 			 * Cascade: wake one peer for the work left behind
 			 */

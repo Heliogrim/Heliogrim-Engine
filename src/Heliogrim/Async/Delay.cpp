@@ -11,8 +11,7 @@ void hg::delay(mref<execute_function_type> function_, ticks delay_) {
 	 * Generate task to schedule
 	 */
 	auto task = ::hg::engine::scheduler::task::make_task(
-		std::forward<execute_function_type>(function_),
-		::hg::engine::scheduler::task::TaskMask::eNormal
+		std::forward<execute_function_type>(function_)
 	);
 	/**
 	 * Schedule task
@@ -27,8 +26,7 @@ void hg::delay(execute_function_pointer_type function_, ticks delay_) {
 	 * Generate task to schedule
 	 */
 	auto task = ::hg::engine::scheduler::task::make_task(
-		std::forward<execute_function_type>(function_),
-		::hg::engine::scheduler::task::TaskMask::eNormal
+		std::forward<execute_function_type>(function_)
 	);
 
 	/**

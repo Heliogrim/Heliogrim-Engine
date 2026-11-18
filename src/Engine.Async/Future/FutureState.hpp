@@ -6,7 +6,7 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Functional/UniqueFn.hpp>
 #include <Engine.Common/Managed/Rc.hpp>
-#include <Engine.Scheduler/Task/TaskMask.hpp>
+#include <Engine.Scheduler/Lane.hpp>
 #include <Engine.Scheduler/Waitable/Signal.hpp>
 
 #include "Broken.hpp"
@@ -41,7 +41,7 @@ namespace hg {
 			std::atomic<u8> contState { eNone };
 			// The successor's work, stored by then() on this (predecessor) state.
 			UniqueFn<void(ref<FutureState>)> cont;
-			engine::scheduler::task::TaskMask mask = engine::scheduler::task::TaskMask::eNormal;
+			engine::scheduler::Lane lane = engine::scheduler::Lane::eFrame;
 		};
 	}
 }

@@ -23,11 +23,6 @@ namespace hg::engine::scheduler {
 	public:
 		[[nodiscard]] bool push(const non_owning_rptr<const task::TaskDelegate> task_) override;
 
-		[[nodiscard]] bool pop(
-			const task::TaskMask mask_,
-			ref<non_owning_rptr<const task::TaskDelegate>> task_
-		) override;
-
-		u64 transfer(const non_owning_rptr<ScheduleWorkSet> dst_) override;
+		[[nodiscard]] bool pop(ref<non_owning_rptr<const task::TaskDelegate>> task_) override;
 	};
 }

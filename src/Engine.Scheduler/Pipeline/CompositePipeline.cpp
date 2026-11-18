@@ -66,12 +66,8 @@ void CompositePipeline::setup() {
 
 		auto where = std::ranges::find(merged, name, [](ref<const Merged> entry_) { return entry_.decl.name; });
 		if (where == merged.end()) {
-			merged.emplace_back(Merged { .decl = graph::StageDecl { .name = name, .lane = decl.lane } });
+			merged.emplace_back(Merged { .decl = graph::StageDecl { .name = name } });
 			where = merged.end() - 1;
-		}
-
-		if (where->decl.lane != decl.lane) {
-			failGraph(graph::GraphError { graph::GraphError::Kind::eLaneMismatch, { string { name } }, None });
 		}
 
 		where->reads.insert(where->reads.end(), decl.reads.begin(), decl.reads.end());
@@ -102,7 +98,6 @@ void CompositePipeline::setup() {
 	_nodeStages.clear();
 	_slotOfNode.clear();
 	for (u64 idx = 0; idx < count; ++idx) {
-
 		const auto& node = _graph.nodes[idx];
 		const auto where = std::ranges::find(merged, string_view { node.name }, [](ref<const Merged> entry_) { return entry_.decl.name; });
 		::hg::assertrt(where != merged.end());
@@ -111,7 +106,6 @@ void CompositePipeline::setup() {
 		const auto slot = static_cast<u16>(_stages.find(node.name)->second->getSlot());
 		_slotOfNode.push_back(slot);
 		_slots[slot]->setNode(static_cast<u16>(idx));
-		_slots[slot]->setMask(graph::toMask(node.lane));
 	}
 
 	_pending = std::make_unique<std::atomic<u16>[]>(count);
@@ -295,8 +289,6 @@ void CompositePipeline::complete(const non_owning_rptr<CompositeSlot> slot_) {
 	if (prevActive == (stoppedBit | 1uL)) {
 		_stopped.set();
 	}
-
-	schedule->tick();
 }
 
 void CompositePipeline::pushTask(

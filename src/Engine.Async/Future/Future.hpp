@@ -108,10 +108,10 @@ namespace hg {
 			return ready(std::move(state));
 		}
 
-		// The mask is inherited by every continuation chained from this future.
-		[[nodiscard]] static Future ready(const engine::scheduler::task::TaskMask mask_) requires (std::is_void_v<T_> && Send<T_>) {
+		// The lane is inherited by every continuation chained from this future.
+		[[nodiscard]] static Future ready(const engine::scheduler::Lane lane_) requires (std::is_void_v<T_> && Send<T_>) {
 			auto state = Arci<state_type>::create();
-			state->mask = mask_;
+			state->lane = lane_;
 			state->slot.template emplace<Resolved<void>>();
 			return ready(std::move(state));
 		}
@@ -142,7 +142,7 @@ namespace hg {
 
 			auto prev = std::move(_state);
 			auto next = Arci<next_type>::create();
-			next->mask = prev->mask;
+			next->lane = prev->lane;
 			auto handle = Arci<next_type> { next };
 
 			detail::store(
@@ -234,6 +234,7 @@ namespace hg {
 		if (slot.template is<Failed<E_>>()) {
 			return Unexpected { std::move(slot.template as<Failed<E_>>().error) };
 		}
+
 		::hg::assertd(slot.template is<Resolved<T_>>());
 		if constexpr (std::is_void_v<T_>) {
 			return {};

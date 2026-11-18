@@ -103,7 +103,8 @@ namespace SchedulerModule {
 
 			void dynamicDispatch(cref<DynamicStageDispatcher> dispatcher_) override {
 				if (_body) {
-					dispatcher_.enqueue(task::make_task([this] { _body(); }));
+					// requests a lane the slot must override
+					dispatcher_.enqueue(task::make_task([this] { _body(); }, Lane::eBackground));
 				}
 			}
 
@@ -370,21 +371,6 @@ namespace SchedulerModule {
 		EXPECT_DEATH(composite.setup(), "");
 	}
 
-	TEST(CompositePipelineTest, MergedStageLaneMismatchFails) {
-		Schedule schedule {};
-		schedule.setup();
-		CompositePipeline composite { &schedule };
-
-		auto first = make_uptr<TestPipeline>("::test::first");
-		first->stages.push_back(make_uptr<TestStage>(nameS, graph::StageDecl { .lane = graph::Lane::eNormal }));
-		auto second = make_uptr<TestPipeline>("::test::second");
-		second->stages.push_back(make_uptr<TestStage>(nameS, graph::StageDecl { .lane = graph::Lane::eCritical }));
-		(void)composite.addPipeline(std::move(first));
-		(void)composite.addPipeline(std::move(second));
-
-		EXPECT_DEATH(composite.setup(), "");
-	}
-
 	TEST(CompositePipelineTest, DiamondRunsBothBranches) {
 		withComposite(
 			[](ref<CompositePipeline> composite_) {
@@ -575,18 +561,18 @@ namespace SchedulerModule {
 		std::atomic_bool ranD { false };
 		auto pipeline = make_uptr<TestPipeline>("::test::empty");
 		pipeline->stages.push_back(
-			make_uptr<TestStage>(nameA, graph::StageDecl { .lane = graph::Lane::eCritical }, [&] { ranA.store(true); })
+			make_uptr<TestStage>(nameA, graph::StageDecl {}, [&] { ranA.store(true); })
 		);
-		pipeline->stages.push_back(make_uptr<TestStage>(nameE, graph::StageDecl { .lane = graph::Lane::eCritical, .after = afterA }));
+		pipeline->stages.push_back(make_uptr<TestStage>(nameE, graph::StageDecl { .after = afterA }));
 		pipeline->stages.push_back(
-			make_uptr<TestStage>(nameD, graph::StageDecl { .lane = graph::Lane::eCritical, .after = afterE }, [&] { ranD.store(true); })
+			make_uptr<TestStage>(nameD, graph::StageDecl { .after = afterE }, [&] { ranD.store(true); })
 		);
 		(void)composite.addPipeline(std::move(pipeline));
 		composite.setup();
 
 		const auto runOne = [&schedule] {
 			non_owning_rptr<const task::TaskDelegate> task = nullptr;
-			ASSERT_TRUE(schedule.pop(task::TaskMask::eCritical, task));
+			ASSERT_TRUE(schedule.pop(task));
 			task->delegate();
 		};
 
@@ -763,20 +749,20 @@ namespace SchedulerModule {
 		);
 	}
 
-	TEST(CompositePipelineTest, EnqueueStampsLaneMask) {
+	TEST(CompositePipelineTest, EnqueueStampsFrameLane) {
 		Schedule schedule {};
 		schedule.setup();
 		CompositePipeline composite { &schedule };
 
 		auto pipeline = make_uptr<TestPipeline>("::test::lane");
-		pipeline->stages.push_back(make_uptr<TestStage>(nameA, graph::StageDecl { .lane = graph::Lane::eBackground }, [] {}));
+		pipeline->stages.push_back(make_uptr<TestStage>(nameA, graph::StageDecl {}, [] {}));
 		(void)composite.addPipeline(std::move(pipeline));
 		composite.setup();
 		composite.start();
 
 		non_owning_rptr<const task::TaskDelegate> task = nullptr;
-		ASSERT_TRUE(schedule.pop(task::TaskMask::eLower, task));
-		EXPECT_EQ(task->mask(), task::TaskMask::eLower);
-		EXPECT_FALSE(schedule.pop(task::TaskMask::eCritical, task));
+		ASSERT_TRUE(schedule.pop(task));
+		EXPECT_EQ(task->lane(), Lane::eFrame);
+		EXPECT_FALSE(schedule.pop(task));
 	}
 }

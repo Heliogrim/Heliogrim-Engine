@@ -1,15 +1,14 @@
 #include "PhysicsTickStage.hpp"
 
 #include <Engine.Core.Schedule/CorePipeline.hpp>
-#include <Engine.Physics.Schedule/PhysicsPipeline.hpp>
-#include <Engine.Scene.Schedule/ScenePipeline.hpp>
-
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Timing.hpp>
 #include <Engine.Core/Universe.hpp>
 #include <Engine.Core/UniverseContext.hpp>
 #include <Engine.Physics.Scene/PhysicsSceneSystem.hpp>
+#include <Engine.Physics.Schedule/PhysicsPipeline.hpp>
 #include <Engine.Physics/jolt.inc.hpp>
+#include <Engine.Scene.Schedule/ScenePipeline.hpp>
 #include <Engine.Scene/SceneBase.hpp>
 #include <Jolt/Core/JobSystemSingleThreaded.h>
 #include <Jolt/Core/TempAllocator.h>
@@ -77,7 +76,6 @@ graph::StageDecl PhysicsTickStage::decl() const noexcept {
 		.name = engine::physics::schedule::PhysicsPipeline::PhysicsTick,
 		.reads = Reads,
 		.writes = Writes,
-		.lane = graph::Lane::eCritical,
 		.after = after
 	};
 }

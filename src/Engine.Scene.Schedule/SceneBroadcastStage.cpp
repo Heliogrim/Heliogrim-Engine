@@ -2,13 +2,12 @@
 
 #include <Engine.ACS.Schedule/ActorPipeline.hpp>
 #include <Engine.Core.Schedule/CorePipeline.hpp>
-#include <Engine.Input.Schedule/InputPipeline.hpp>
-#include <Engine.Physics.Schedule/PhysicsPipeline.hpp>
-#include <Engine.Scene.Schedule/ScenePipeline.hpp>
-
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Universe.hpp>
 #include <Engine.Core/UniverseContext.hpp>
+#include <Engine.Input.Schedule/InputPipeline.hpp>
+#include <Engine.Physics.Schedule/PhysicsPipeline.hpp>
+#include <Engine.Scene.Schedule/ScenePipeline.hpp>
 #include <Engine.Scene/Scene.hpp>
 
 using namespace hg::engine::scene::schedule;
@@ -76,7 +75,6 @@ graph::StageDecl SceneBroadcastStage::decl() const noexcept {
 		string_view { engine::scene::schedule::ScenePipeline::SceneBroadcastPostPhysics },
 		.reads = Reads,
 		.writes = Writes,
-		.lane = graph::Lane::eCritical,
 		.after = prePhysics ? std::span<const string_view> { preAfter } : std::span<const string_view> { postAfter }
 	};
 }

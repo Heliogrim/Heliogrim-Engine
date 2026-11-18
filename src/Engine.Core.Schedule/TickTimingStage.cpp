@@ -43,7 +43,6 @@ graph::StageDecl schedule::TickTimingStage::decl() const noexcept {
 		.name = engine::core::schedule::CorePipeline::TickBegin,
 		.reads = {},
 		.writes = Writes,
-		.lane = graph::Lane::eCritical,
 		.after = {}
 	};
 }

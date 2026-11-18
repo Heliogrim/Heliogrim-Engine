@@ -6,7 +6,7 @@
 #include <Engine.Common/Wrapper.hpp>
 
 #include "TaskCtrl.hpp"
-#include "TaskMask.hpp"
+#include "../Lane.hpp"
 #include "TaskType.hpp"
 #include "../Fiber/Cancellation.hpp"
 
@@ -18,7 +18,7 @@ namespace hg::engine::scheduler::task {
 	/**
 	 * ! Important !
 	 *
-	 * A Task of any [type] with any [mask] should be allocated on a dense head block of tasks to improve cache delay
+	 * A Task of any [type] with any [lane] should be allocated on a dense head block of tasks to improve cache delay
 	 * A Task of any [type] should be based on internal type [TaskDelegate]
 	 * A Task will be invoked directly without type check of via [TaskDelegate] and get downcast internal
 	 */
@@ -35,9 +35,9 @@ namespace hg::engine::scheduler::task {
 		 * @date 16.11.2020
 		 *
 		 * @param  type_ The type.
-		 * @param  mask_ The mask.
+		 * @param  lane_ The lane.
 		 */
-		TaskDelegate(const TaskType type_, const TaskMask mask_) noexcept;
+		TaskDelegate(const TaskType type_, const Lane lane_) noexcept;
 
 	public:
 		TaskDelegate(const TaskDelegate&) = delete;
@@ -59,7 +59,7 @@ namespace hg::engine::scheduler::task {
 
 	public:
 		/**
-		 * Will downcast to masked type and execute via static cast
+		 * Will downcast to the concrete type and execute via static cast
 		 *
 		 * @author Julius
 		 * @date 16.11.2020
@@ -74,8 +74,8 @@ namespace hg::engine::scheduler::task {
 		/** The type */
 		const TaskType _type;
 
-		/** The mask */
-		TaskMask _mask;
+		/** The lane */
+		Lane _lane;
 
 	public:
 		/**
@@ -89,16 +89,16 @@ namespace hg::engine::scheduler::task {
 		[[nodiscard]] TaskType type() const noexcept;
 
 		/**
-		 * Gets the mask
+		 * Gets the lane
 		 *
 		 * @author Julius
 		 * @date 15.11.2020
 		 *
-		 * @returns A TaskMask.
+		 * @returns A Lane.
 		 */
-		[[nodiscard]] TaskMask mask() const noexcept;
+		[[nodiscard]] Lane lane() const noexcept;
 
-		[[nodiscard]] ref<TaskMask> mask() noexcept;
+		[[nodiscard]] ref<Lane> lane() noexcept;
 
 	protected:
 		/**
@@ -177,7 +177,7 @@ namespace hg::engine::scheduler::task {
 		 */
 		function_type _fnc;
 
-		friend const non_owning_rptr<const Task> make_task(function_type&&, TaskMask);
+		friend const non_owning_rptr<const Task> make_task(function_type&&, Lane);
 
 		/**
 		 * Constructor
@@ -186,9 +186,9 @@ namespace hg::engine::scheduler::task {
 		 * @date 16.11.2020
 		 *
 		 * @param fnc_ The function.
-		 * @param mask_ The mask.
+		 * @param lane_ The lane.
 		 */
-		Task(_In_ function_type&& fnc_, TaskMask mask_) noexcept;
+		Task(_In_ function_type&& fnc_, const Lane lane_) noexcept;
 	};
 
 	/**
@@ -198,11 +198,11 @@ namespace hg::engine::scheduler::task {
 	 * @date 16.11.2020
 	 *
 	 * @param fnc_ The function.
-	 * @param mask_ (Optional) The mask.
+	 * @param lane_ (Optional) The lane.
 	 */
 	const non_owning_rptr<const Task> make_task(
 		_In_ Task::function_type&& fnc_,
-		TaskMask mask_ = TaskMask::eNormal
+		const Lane lane_ = Lane::eInherit
 	);
 
 	class RepetitiveTask :
@@ -234,7 +234,7 @@ namespace hg::engine::scheduler::task {
 		 */
 		function_type _fnc;
 
-		friend const non_owning_rptr<const RepetitiveTask> make_repetitive_task(function_type&&, TaskMask);
+		friend const non_owning_rptr<const RepetitiveTask> make_repetitive_task(function_type&&, Lane);
 
 		/**
 		 * Constructor
@@ -243,9 +243,9 @@ namespace hg::engine::scheduler::task {
 		 * @date 16.11.2020
 		 *
 		 * @param fnc_ The function.
-		 * @param mask_ The mask.
+		 * @param lane_ The lane.
 		 */
-		RepetitiveTask(_In_ function_type&& fnc_, TaskMask mask_) noexcept;
+		RepetitiveTask(_In_ function_type&& fnc_, const Lane lane_) noexcept;
 	};
 
 	/**
@@ -255,11 +255,11 @@ namespace hg::engine::scheduler::task {
 	 * @date 16.11.2020
 	 *
 	 * @param fnc_ The function.
-	 * @param mask_ (Optional) The mask.
+	 * @param lane_ (Optional) The lane.
 	 */
 	const non_owning_rptr<const RepetitiveTask> make_repetitive_task(
 		_In_ RepetitiveTask::function_type&& fnc_,
-		TaskMask mask_ = TaskMask::eNormal
+		const Lane lane_ = Lane::eInherit
 	);
 
 	class BatchTask :
@@ -289,7 +289,7 @@ namespace hg::engine::scheduler::task {
 		 */
 		function_type _fnc;
 
-		friend const non_owning_rptr<const BatchTask> make_batch_task(function_type&&, TaskMask);
+		friend const non_owning_rptr<const BatchTask> make_batch_task(function_type&&, Lane);
 
 		/**
 		 * Constructor
@@ -298,9 +298,9 @@ namespace hg::engine::scheduler::task {
 		 * @date 16.11.2020
 		 *
 		 * @param fnc_ The function.
-		 * @param mask_ The mask.
+		 * @param lane_ The lane.
 		 */
-		BatchTask(_In_ function_type&& fnc_, TaskMask mask_) noexcept;
+		BatchTask(_In_ function_type&& fnc_, const Lane lane_) noexcept;
 	};
 
 	/**
@@ -310,10 +310,10 @@ namespace hg::engine::scheduler::task {
 	 * @date 16.11.2020
 	 *
 	 * @param fnc_ The function.
-	 * @param mask_ (Optional) The mask.
+	 * @param lane_ (Optional) The lane.
 	 */
 	const non_owning_rptr<const BatchTask> make_batch_task(
 		_In_ BatchTask::function_type&& fnc_,
-		TaskMask mask_ = TaskMask::eNormal
+		const Lane lane_ = Lane::eInherit
 	);
 }

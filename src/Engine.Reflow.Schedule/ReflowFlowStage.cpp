@@ -1,13 +1,11 @@
 #include "ReflowFlowStage.hpp"
 
-#include <Engine.Graphics.Schedule/RenderScenePipeline.hpp>
-#include <Engine.Reflow.Schedule/ReflowPipeline.hpp>
-#include <Engine.Scene.Schedule/ScenePipeline.hpp>
-
 #include <chrono>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Module/Modules.hpp>
+#include <Engine.Graphics.Schedule/RenderScenePipeline.hpp>
 #include <Engine.Logging/Logger.hpp>
+#include <Engine.Reflow.Schedule/ReflowPipeline.hpp>
 #include <Engine.Reflow/DataWatcher.hpp>
 #include <Engine.Reflow/Reflow.hpp>
 #include <Engine.Reflow/ReflowEngine.hpp>
@@ -15,6 +13,7 @@
 #include <Engine.Reflow/Module/Reflow.hpp>
 #include <Engine.Reflow/Window/BoundWindow.hpp>
 #include <Engine.Reflow/Window/WindowManager.hpp>
+#include <Engine.Scene.Schedule/ScenePipeline.hpp>
 
 using namespace hg::engine::reflow::schedule;
 using namespace hg::engine::scheduler;
@@ -106,7 +105,6 @@ graph::StageDecl ReflowFlowStage::decl() const noexcept {
 		.name = engine::reflow::schedule::ReflowPipeline::Tick,
 		.reads = {},
 		.writes = Writes,
-		.lane = graph::Lane::eCritical,
 		.after = after,
 		.before = before
 	};

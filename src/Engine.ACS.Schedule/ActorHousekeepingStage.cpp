@@ -1,13 +1,12 @@
 #include "ActorHousekeepingStage.hpp"
 
 #include <Engine.ACS.Schedule/ActorPipeline.hpp>
-#include <Engine.Scene.Schedule/ScenePipeline.hpp>
-
 #include <Engine.ACS/ActorModule.hpp>
 #include <Engine.ACS/Registry.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Universe.hpp>
 #include <Engine.Core/UniverseContext.hpp>
+#include <Engine.Scene.Schedule/ScenePipeline.hpp>
 #include <Engine.Scene/SceneBase.hpp>
 #include <Engine.Scene/SceneSystem.hpp>
 
@@ -71,7 +70,6 @@ graph::StageDecl ActorHousekeepingStage::decl() const noexcept {
 		.name = engine::acs::schedule::ActorPipeline::ActorHousekeeping,
 		.reads = {},
 		.writes = Writes,
-		.lane = graph::Lane::eCritical,
 		.after = after
 	};
 }
