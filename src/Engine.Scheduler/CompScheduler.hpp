@@ -51,7 +51,7 @@ namespace hg::engine {
 		 * @param  workers_ The workers (0 derives the count from the reserve).
 		 * @param  reserve_ Logical threads left to non-worker threads (0 selects the default).
 		 */
-		void setup(u32 workers_, u32 reserve_) override;
+		void setup(u32 workers_, u32 reserve_, ref<const scheduler::LanePolicyConfig> lanes_) override;
 
 		void finalize() override;
 
@@ -106,6 +106,8 @@ namespace hg::engine {
 		 * @returns The worker count.
 		 */
 		[[nodiscard]] size_t getWorkerCount() const override;
+
+		[[nodiscard]] u64 queued(const scheduler::Lane lane_) const override;
 
 		/**
 		 * Waits this 

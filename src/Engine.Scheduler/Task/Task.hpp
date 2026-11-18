@@ -1,5 +1,6 @@
 #pragma once
 
+#include <chrono>
 #include <functional>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Types.hpp>
@@ -76,6 +77,10 @@ namespace hg::engine::scheduler::task {
 
 		/** The lane */
 		Lane _lane;
+
+	public:
+		/** When the schedule last queued this task; stamped by Schedule::push for Frame tasks only. */
+		mutable std::chrono::steady_clock::time_point queuedAt {};
 
 	public:
 		/**
