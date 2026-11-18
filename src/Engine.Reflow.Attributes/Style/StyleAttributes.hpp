@@ -59,7 +59,7 @@ namespace hg::engine::reflow {
 		constexpr ~StyleAttributes() = default;
 
 	public:
-		ref<this_type> operator=(ref<const this_type> other_) noexcept {
+		ref<this_type> operator=(ref<const this_type> other_) {
 			if (std::addressof(other_) != this) {
 				_attributes = other_._attributes;
 				_owner.notify(phaseMask);
