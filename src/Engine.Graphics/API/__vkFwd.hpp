@@ -3,6 +3,9 @@
 #include <cstdint>
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import std;
+#else
+// The vulkan module's global fragment includes this file ahead of any import.
+#include <concepts>
 #endif
 
 /**

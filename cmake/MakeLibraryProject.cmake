@@ -132,7 +132,7 @@ function(_finalize_module_interfaces)
 		foreach (imported IN LISTS MODULE_INTERFACE_IMPORTS)
 			if (imported IN_LIST DEFAULT_MODULES)
 				list(APPEND import_libraries "${PROJECT_NAME}::${imported}.Module")
-			elseif (NOT imported STREQUAL "vulkan")
+			else ()
 				message(FATAL_ERROR "Headers of `${root}` import `${imported}`, which is not in `DEFAULT_MODULES`.")
 			endif ()
 		endforeach ()
@@ -258,12 +258,20 @@ function(make_library_project)
 
 	# Libraries
 	# The own provider included: the bundle's sources import their own module.
+	#  A module's bundle links only the providers listed up to its own, so foundations never depend on later ones (`vulkan`).
+	set(module_libraries ${DEFAULT_MODULE_LIBRARIES})
+	list(FIND DEFAULT_MODULES "${args_LIB_NAME}" module_at)
+	if (module_at GREATER -1)
+		math(EXPR module_count "${module_at} + 1")
+		list(SUBLIST DEFAULT_MODULE_LIBRARIES 0 ${module_count} module_libraries)
+	endif ()
+
 	target_link_libraries(
 			${target}
 			PRIVATE
 			${args_LIBRARIES}
 			${DEFAULT_LIBRARIES}
-			${DEFAULT_MODULE_LIBRARIES}
+			${module_libraries}
 	)
 
 	# Linker Options

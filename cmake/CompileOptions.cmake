@@ -110,6 +110,7 @@ endif ()
 #
 
 # Ordered list of module names; every bundle, test and app links the provider of each.
+#  A module's own bundle links only the providers up to its own: `vulkan` stays last, out of the foundation bundles.
 set(DEFAULT_MODULES
 		std
 		std.compat
@@ -120,6 +121,7 @@ set(DEFAULT_MODULES
 		glm
 		Engine.Asserts
 		Engine.Common
+		vulkan
 )
 
 set(DEFAULT_MODULE_LIBRARIES ${DEFAULT_MODULES})

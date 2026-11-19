@@ -43,11 +43,21 @@
 #define VK_NULL_HANDLE nullptr
 #endif
 
-/* Until the vulkan module: vulkan.hpp's module mode imports std instead of including std headers, so it may follow `import std;`. */
+#if defined(HG_MODULE_INTERFACE_UNIT) || defined(VK_IMPL_PLATFORM)
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+/* The platform TU follows `import std;` (from __vkFwd.hpp); vulkan.hpp's module mode imports std instead of including std headers. */
 #define VULKAN_HPP_CXX_MODULE 1
-
+#endif
 START_SUPPRESS_WARNINGS
 #include <vulkan/vulkan_hpp_macros.hpp>
 #include <vulkan/vulkan.hpp>
 STOP_SUPPRESS_WARNINGS
+#else
+// As vulkan.hpp's own module mode: macros and C functions do not come through the import.
+#include <cassert>
+#include <cstring>
+#include <vulkan/vulkan_hpp_macros.hpp>
+#include <vulkan/vulkan_core.h>
+import vulkan;
+#endif
 
