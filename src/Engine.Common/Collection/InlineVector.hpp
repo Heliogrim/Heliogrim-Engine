@@ -190,7 +190,7 @@ namespace hg {
 	public:
 		void emplace_back(auto&&... val_) {
 
-			if (inline_emplace_back(val_)) {
+			if (inline_emplace_back(std::forward<decltype(val_)>(val_)...)) {
 				return;
 			}
 
