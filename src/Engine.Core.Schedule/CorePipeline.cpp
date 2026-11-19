@@ -1,12 +1,13 @@
 #include "CorePipeline.hpp"
 
-#include <ranges>
 #include <Engine.ACS.Schedule/ActorPipeline.hpp>
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Scene.Schedule/ScenePipeline.hpp>
 #include <Engine.Scheduler/Pipeline/Stage/EmptyPipelineStage.hpp>
 
 #include "TickTimingStage.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::core::schedule;
 using namespace hg::engine::scheduler;

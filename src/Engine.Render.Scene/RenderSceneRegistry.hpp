@@ -1,14 +1,14 @@
 #pragma once
 
-#include <Engine.Common/Make.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/DenseMap.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.Common/Functional/Function.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflect/Inherit/Concept.hpp>
 #include <Engine.Reflect/Meta/MetaClass.hpp>
 
 #include "RenderSceneSystemSubStorage.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::render {
 	namespace {

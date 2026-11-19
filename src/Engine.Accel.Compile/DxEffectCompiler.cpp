@@ -1,12 +1,14 @@
 #include "DxEffectCompiler.hpp"
 
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
 
+#include "Module/DxModuleBuilder.hpp"
+#include "Module/DxModuleCompiler.hpp"
 #include "Pass/DxPassBuilder.hpp"
 #include "Pass/DxPassCompiler.hpp"
 #include "Stage/StageComposer.hpp"
-#include "Module/DxModuleBuilder.hpp"
-#include "Module/DxModuleCompiler.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::accel;
 using namespace hg;

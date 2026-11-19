@@ -1,14 +1,18 @@
 #pragma once
 
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "../Node.hpp"
-#include "../NodeLinkValueType.hpp"
-#include "../Parameter/ValueTypeNodeParameter.hpp"
 #include "../NodeInput.hpp"
 #include "../NodeInputSpec.hpp"
+#include "../NodeLinkValueType.hpp"
 #include "../NodeOutput.hpp"
 #include "../NodeOutputSpec.hpp"
+#include "../Parameter/ValueTypeNodeParameter.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::editor::graphics::graph::nodes {
 	class SubGraphInputNode :

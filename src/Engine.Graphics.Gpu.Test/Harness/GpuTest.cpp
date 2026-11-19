@@ -1,8 +1,8 @@
 #include "GpuTest.hpp"
 
-#include <algorithm>
-#include <exception>
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
+
+import Engine.Common;
 
 using namespace hg::test::gpu;
 using namespace hg;

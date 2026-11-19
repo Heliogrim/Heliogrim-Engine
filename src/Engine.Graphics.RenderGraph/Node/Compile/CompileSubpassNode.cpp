@@ -1,9 +1,11 @@
 #include "CompileSubpassNode.hpp"
 
-#include <Engine.Common/Make.hpp>
-#include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/__macro.hpp>
+#include <cassert>
 
 #include "../../Visitor/Visitor.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::render::graph;
 using namespace hg;

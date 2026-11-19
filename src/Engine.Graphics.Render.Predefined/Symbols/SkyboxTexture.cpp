@@ -1,8 +1,10 @@
 #include "SkyboxTexture.hpp"
 
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "../Descriptions/SkyboxColorBuffer.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::render;
 using namespace hg;

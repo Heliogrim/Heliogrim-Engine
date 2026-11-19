@@ -2,18 +2,13 @@
 
 #if defined(__cpp_lib_stacktrace) && (__cpp_lib_stacktrace >= 202011L) && defined(__cpp_lib_formatters) && (__cpp_lib_formatters >= 202302L)
 #define HG_PANIC_STACKTRACE 1
-#include <format>
-#include <stacktrace>
 #else
-#include <format>
 #endif
 
-#include <iostream>
-#include <mutex>
-#include <string>
-
 #include "Pal.hpp"
+
 import Engine.Asserts;
+import std;
 
 using namespace hg::panic_details;
 using namespace hg;

@@ -1,7 +1,10 @@
 #include "SceneView.hpp"
+
+#include <Engine.Common/__macro.hpp>
+
 #include "../Descriptions/SceneView.hpp"
 
-#include <Engine.Common/Make.hpp>
+import Engine.Common;
 
 using namespace hg::engine::render;
 using namespace hg;

@@ -1,10 +1,11 @@
 #pragma once
 
-#include <functional>
 #include <Editor.Action/Action/Action.hpp>
-#include <Engine.Common/String.hpp>
-#include <Engine.Common/Collection/InlineAutoArray.hpp>
-#include <Engine.Common/Managed/Rc.hpp>
+#include <Engine.Common/__macro.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::editor::ui::service {
 	struct InputBinding {

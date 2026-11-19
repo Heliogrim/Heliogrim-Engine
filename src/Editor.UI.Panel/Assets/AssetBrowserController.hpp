@@ -1,9 +1,11 @@
 #pragma once
 
-#include <span>
-#include <Engine.Common/Optional.hpp>
-#include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Filesystem/Url.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::editor::ui {
 	class AssetBrowserModel;

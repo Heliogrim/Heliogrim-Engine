@@ -1,9 +1,11 @@
 #include "RenderSceneManager.hpp"
 
-#include <Engine.Common/Move.hpp>
-#include <Engine.Graphics/RenderTarget.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.Scene/View/SceneView.hpp>
+#include <Engine.Graphics/RenderTarget.hpp>
 #include <Engine.Graphics/Swapchain/Swapchain.hpp>
+
+import Engine.Common;
 
 using namespace hg::engine::graphics::scene;
 using namespace hg::engine::graphics;

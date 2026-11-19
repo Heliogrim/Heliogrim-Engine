@@ -1,13 +1,17 @@
 #pragma once
 
+#include <Engine.Common/__macro.hpp>
 #include <cassert>
-#include <Engine.Common/Collection/Queue.hpp>
 
+#include "Engine.Graphics.RenderGraph/Node/RuntimeNode.hpp"
+#include "Engine.Graphics.RenderGraph/Visitor/Visitor.hpp"
 #include "ExecutionPass.hpp"
 #include "ExecutionPassContext.hpp"
 #include "RenderGraphPass.hpp"
-#include "Engine.Graphics.RenderGraph/Node/RuntimeNode.hpp"
-#include "Engine.Graphics.RenderGraph/Visitor/Visitor.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::render::graph {
     class ExecutionPass final :

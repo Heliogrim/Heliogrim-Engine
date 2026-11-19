@@ -1,8 +1,5 @@
 #pragma once
 
-#include <functional>
-#include <unordered_map>
-#include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/__macro.hpp>
 
 #if defined(ENV_MSVC) && defined(WIN32)
@@ -15,6 +12,10 @@
 #endif
 
 #include "../File.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::res {
 	class Watcher {

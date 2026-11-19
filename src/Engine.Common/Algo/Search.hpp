@@ -1,8 +1,10 @@
 #pragma once
 
-#include <cstddef>
-
 #include "Range.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg {
 	struct FindIfFn final {

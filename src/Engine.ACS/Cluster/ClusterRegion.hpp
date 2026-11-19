@@ -1,15 +1,14 @@
 #pragma once
 
-#include <cstddef>
-#include <span>
-#include <Engine.Common/Types.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.Common/Functional/FnRef.hpp>
-#include <Engine.Common/Managed/UniqueRef.hpp>
+#include <Engine.Common/__macro.hpp>
+#include <cstdint>
 
-#include "RelocationTable.hpp"
 #include "../Handle/HandleTable.hpp"
+#include "RelocationTable.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::acs {
 	/**

@@ -6,4 +6,6 @@
 
 #include "gtest/gtest.h"
 
-#include <chrono>
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif

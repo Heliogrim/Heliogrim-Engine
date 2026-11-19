@@ -1,12 +1,15 @@
 #pragma once
 
-#include <utility>
-#include <Engine.Common/Move.hpp>
+#include <Engine.Common/__macro.hpp>
 
-#include "BufferObject.hpp"
 #include "../API/__vkFwd.hpp"
 #include "../Geometry/Vertex.hpp"
 #include "../Memory/AllocatedMemory.hpp"
+#include "BufferObject.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::graphics {
 	class Buffer :

@@ -1,10 +1,9 @@
 #include "VirtualMemory.hpp"
 
-#include <Engine.Common/Make.hpp>
-
-#include <algorithm>
+#include <Engine.Common/__macro.hpp>
 #include <cassert>
-#include <ranges>
+
+import Engine.Common;
 
 using namespace hg::engine::graphics;
 using namespace hg;

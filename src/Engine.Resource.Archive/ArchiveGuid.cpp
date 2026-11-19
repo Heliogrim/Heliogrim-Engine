@@ -1,7 +1,9 @@
 #include "ArchiveGuid.hpp"
 
+#include <Engine.Common/__macro.hpp>
 #include <cstring>
-#include <Engine.Common/Guid.hpp>
+
+import Engine.Common;
 
 using namespace hg::engine::resource;
 using namespace hg;

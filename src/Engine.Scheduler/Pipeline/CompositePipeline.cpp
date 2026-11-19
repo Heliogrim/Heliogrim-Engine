@@ -1,15 +1,14 @@
 #include "CompositePipeline.hpp"
 
-#include <algorithm>
-#include <ranges>
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Logging/Logger.hpp>
-#include <Engine.Pedantic/Clone/Clone.hpp>
 
 #include "../Process/Schedule.hpp"
 #include "Composite/CompositeSlot.hpp"
 #include "Stage/PipelineStage.hpp"
+
 import Engine.Asserts;
+import Engine.Common;
 
 using namespace hg::engine::scheduler;
 using namespace hg;

@@ -1,8 +1,8 @@
 #include "Analysis.hpp"
 
-#include <algorithm>
-
 #include "Builtin.hpp"
+
+import std;
 
 using namespace hg::engine::accel::lang;
 using namespace hg;

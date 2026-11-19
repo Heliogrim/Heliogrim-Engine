@@ -2,26 +2,23 @@
 
 /**/
 
-#include <array>
-#include <atomic>
-#include <chrono>
-#include <cstdio>
-#include <cstdlib>
-#include <format>
-#include <thread>
 #include <Engine.Async/Primitive/SpinLock.hpp>
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Scheduler/CompScheduler.hpp>
-#include <Engine.Scheduler/Scheduler.hpp>
 #include <Engine.Scheduler/Graph/TaskGraph.hpp>
 #include <Engine.Scheduler/Pipeline/CompositePipeline.hpp>
 #include <Engine.Scheduler/Pipeline/Stage/PipelineStage.hpp>
 #include <Engine.Scheduler/Process/Schedule.hpp>
+#include <Engine.Scheduler/Scheduler.hpp>
 #include <Engine.Scheduler/Task/Task.hpp>
 #include <Engine.Scheduler/Waitable/Signal.hpp>
+#include <cstdio>
+#include <cstdlib>
 
 #include "TestCompScheduler.hpp"
 #include "TestSchedulerEngine.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::scheduler;
 using namespace hg;

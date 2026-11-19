@@ -1,8 +1,10 @@
 #pragma once
 
-#include <algorithm>
-
 #include <Engine.Accel.Lang/Ir/Module.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 /* Structural equality of whole modules (Module has no operator==); refs compare by index */
 namespace AccelLang {

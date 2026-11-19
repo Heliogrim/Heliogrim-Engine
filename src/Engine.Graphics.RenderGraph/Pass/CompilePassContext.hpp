@@ -1,10 +1,13 @@
 #pragma once
 
-#include <memory_resource>
-#include <Engine.Common/Memory/MemoryPointer.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.Scene/View/SceneView.hpp>
 
 #include "../Memory/GraphNodeAllocator.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::render::graph {
 	class CompilePassContext {

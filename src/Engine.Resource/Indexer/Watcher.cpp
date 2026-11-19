@@ -1,9 +1,9 @@
 #include "Watcher.hpp"
 
 #include <cassert>
-#include <filesystem>
-#include <thread>
+
 import Engine.Asserts;
+import std;
 
 using namespace hg::engine::res;
 using namespace hg;

@@ -2,20 +2,21 @@
 
 /**/
 
-#include <algorithm>
-#include <cstdlib>
-#include <Engine.Common/Optional.hpp>
-#include <Engine.Common/String.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Graphics/vkinc.hpp>
+#include <cstdlib>
 
 #ifdef WIN32
 #include <Engine.Common/stdafx.h>
 #endif
 
+#include <Engine.Common/__macro.hpp>
+
 #include "../Harness/GpuTest.hpp"
 #include "../Harness/HeadlessEngine.hpp"
+
+import Engine.Common;
 
 using namespace hg::test::gpu;
 using namespace hg;

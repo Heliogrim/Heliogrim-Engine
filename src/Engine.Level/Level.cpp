@@ -2,10 +2,9 @@
 
 #include <Engine.ACS/ActorModule.hpp>
 #include <Engine.ACS/Registry.hpp>
-#include <Engine.Assets/AssetGuid.hpp>
 #include <Engine.Assets.Type/Universe/LevelAsset.hpp>
-#include <Engine.Common/GuidFormat.hpp>
-#include <Engine.Common/Math/Coordinates.hpp>
+#include <Engine.Assets/AssetGuid.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Universe.hpp>
 #include <Engine.Resource.Archive/Archive.hpp>
 #include <Engine.Scene/SceneBase.hpp>
@@ -16,6 +15,8 @@
 #include <Engine.Serialization/Load/Validate.hpp>
 #include <Engine.Serialization/Structure/RootScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
+
+import Engine.Common;
 
 using namespace hg::engine::serialization;
 using namespace hg::engine::core;

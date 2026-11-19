@@ -1,7 +1,10 @@
 #include "RootScopedSlot.hpp"
 
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
+
 #include "RootSlot.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::serialization;
 using namespace hg;

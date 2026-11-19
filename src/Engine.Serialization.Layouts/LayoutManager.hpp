@@ -1,14 +1,14 @@
 #pragma once
 
-#include <Engine.Common/String.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Meta/TypeId.hpp>
-#include <Engine.Common/Collection/AssociativeKey.hpp>
-#include <Engine.Common/Collection/DenseMap.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflect/Meta/MetaClass.hpp>
 #include <Engine.Serialization/Layout/__fwd.hpp>
 
 #include "LayoutOptimizer.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::serialization {
 	class LayoutManager {

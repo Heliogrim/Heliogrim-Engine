@@ -1,13 +1,17 @@
 #pragma once
 
-#include <Engine.Common/Functional/Lambda.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflect/FullTypeInfo.hpp>
 #include <Engine.Reflect/IsType.hpp>
 
-#include "__fwd.hpp"
 #include "../Action/DynamicStage.hpp"
 #include "../Action/StaticStage.hpp"
 #include "ResolvedStage.hpp"
+#include "__fwd.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 /**/
 

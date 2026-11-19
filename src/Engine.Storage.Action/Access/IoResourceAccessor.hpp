@@ -1,15 +1,13 @@
 #pragma once
 
-#include <utility>
-#include <Engine.Common/Optional.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Functional/Function.hpp>
-#include <Engine.Common/Memory/Address.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "IoResourceAccessorBase.hpp"
 #include "IoResourceBase.hpp"
+
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Asserts;
+import Engine.Common;
 #endif
 
 namespace hg::engine::storage {

@@ -1,12 +1,15 @@
 #pragma once
 
-#include <atomic>
-#include <Engine.Common/Collection/DenseMap.hpp>
+#include <Engine.Common/__macro.hpp>
 
-#include "CompositeDispatcher.hpp"
-#include "StagePipeline.hpp"
 #include "../Graph/TaskGraph.hpp"
 #include "../Waitable/Signal.hpp"
+#include "CompositeDispatcher.hpp"
+#include "StagePipeline.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::scheduler {
 	class CompositeSlot;

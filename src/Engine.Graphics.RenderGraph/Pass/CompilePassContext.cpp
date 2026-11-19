@@ -1,8 +1,8 @@
 #include "CompilePassContext.hpp"
 
-#include <memory>
-#include <memory_resource>
-#include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/__macro.hpp>
+
+import Engine.Common;
 
 using namespace hg::engine::render::graph;
 using namespace hg;

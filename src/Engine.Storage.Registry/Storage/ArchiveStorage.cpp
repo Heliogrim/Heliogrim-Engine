@@ -1,6 +1,8 @@
 #include "ArchiveStorage.hpp"
 
-#include <Engine.Common/Move.hpp>
+#include <Engine.Common/__macro.hpp>
+
+import Engine.Common;
 
 using namespace hg::engine::storage::system;
 using namespace hg;

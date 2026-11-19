@@ -1,9 +1,13 @@
 #pragma once
-#include <Engine.Common/Collection/DenseSet.hpp>
-#include <Engine.Common/Memory/MemoryPointer.hpp>
+
+#include <Engine.Common/__macro.hpp>
 
 #include "Rep/GlobalScope.hpp"
 #include "Rep/Symbol.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::accel::lang {
     struct Representation {

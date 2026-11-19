@@ -1,8 +1,8 @@
 #include "ImageAsset.hpp"
 
-#include <algorithm>
-#include <ranges>
-#include <Engine.Pedantic/Clone/Clone.hpp>
+#include <Engine.Common/__macro.hpp>
+
+import Engine.Common;
 
 using namespace hg::engine::assets;
 using namespace hg;

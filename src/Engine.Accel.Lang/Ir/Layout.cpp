@@ -1,9 +1,6 @@
 #include "Layout.hpp"
 
-#include <algorithm>
-#include <limits>
-#include <string>
-#include <tuple>
+import std;
 
 using namespace hg::engine::accel::lang;
 using namespace hg;

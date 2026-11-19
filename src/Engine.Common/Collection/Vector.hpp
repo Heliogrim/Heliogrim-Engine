@@ -1,12 +1,14 @@
 #pragma once
 
-#include <bit>
-#include <span>
-#include <vector>
+#include <version>
 
 #include "../Types.hpp"
 #include "../Wrapper.hpp"
 #include "../__macro.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg {
 	template <typename Type_, typename Allocator_ = std::allocator<Type_>>

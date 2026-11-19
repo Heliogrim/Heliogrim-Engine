@@ -1,13 +1,14 @@
 #pragma once
-#include <algorithm>
-#include <ranges>
 #include <Engine.Accel.Lang/Rep/Symbol.hpp>
-#include <Engine.Common/Collection/DenseMap.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.Common/Memory/MemoryPointer.hpp>
+#include <Engine.Common/__macro.hpp>
+#include <cassert>
 
 #include "ModuleSource.hpp"
 #include "VkBindingLocation.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::accel {
 	struct MappedBindings {

@@ -1,14 +1,15 @@
 #pragma once
 
 #include <Engine.Accel.Effect/Stage/TransferDataType.hpp>
-#include <Engine.Common/Variant.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.Common/Math/Matrix.hpp>
-#include <Engine.Common/Math/Vector.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.Material/ParameterIdentifier.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 
 #include "../Asset.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::assets {
 	class GraphicsMaterialPrototype :

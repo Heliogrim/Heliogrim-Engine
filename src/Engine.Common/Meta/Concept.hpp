@@ -1,9 +1,11 @@
 #pragma once
 
-#include <concepts>
-
 #include "../Types.hpp"
 #include "../Wrapper.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg {
     template <typename Src_, typename Dst_>

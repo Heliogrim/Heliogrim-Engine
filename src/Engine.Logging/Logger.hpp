@@ -1,12 +1,12 @@
 #pragma once
 
-#include <format>
-
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Common/String.hpp>
-#include <Engine.Common/Wrapper.hpp>
 
 #include "LogLevel.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg {
 	class Logger {

@@ -1,15 +1,13 @@
 #pragma once
 
-#include <atomic>
-#include <concepts>
-#include <memory>
-#include <type_traits>
-#include <utility>
-
-#include "__fwd.hpp"
+#include "../Meta/Concept.hpp"
 #include "../Pair.hpp"
 #include "../Wrapper.hpp"
-#include "../Meta/Concept.hpp"
+#include "__fwd.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg {
 	template <typename Ty_, typename AllocType_, bool Atomic_>

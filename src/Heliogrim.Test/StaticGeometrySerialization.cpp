@@ -2,7 +2,7 @@
 
 /**/
 
-#include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Resource.Archive/BufferArchive.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Archive/StructuredArchive.hpp>
@@ -13,6 +13,8 @@
 #include <Engine.Serialization/Structure/SeqScopedSlot.hpp>
 #include <Heliogrim/Actor/Archetype/ArchetypeLayout.inl.hpp>
 #include <Heliogrim/Component/Scene/Geometry/StaticGeometryComponent.Layout.hpp>
+
+import Engine.Common;
 
 using namespace hg::engine::serialization;
 using namespace hg::engine::resource;

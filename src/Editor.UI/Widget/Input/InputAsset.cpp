@@ -1,12 +1,8 @@
 #include "InputAsset.hpp"
 
-#include <algorithm>
-#include <format>
-#include <ranges>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets/Assets.hpp>
-#include <Engine.Common/GuidFormat.hpp>
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Filesystem/Url.hpp>
 #include <Engine.Filesystem/__fwd.hpp>
@@ -22,7 +18,9 @@
 #include <Heliogrim/Heliogrim.hpp>
 
 #include "../../Helper/AssetBrowserHelper.hpp"
+
 import Engine.Asserts;
+import Engine.Common;
 
 using namespace hg::editor::ui;
 using namespace hg::engine::reflow;

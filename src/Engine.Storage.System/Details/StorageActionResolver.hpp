@@ -1,8 +1,11 @@
 #pragma once
 
-#include <concepts>
 #include <Engine.Storage.Action/Store/ActionTypeResolutionCache.hpp>
 #include <Engine.Storage.Action/Store/StageTypeResolutionStore.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg::engine::storage {
 	class StorageActionResolver {

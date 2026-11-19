@@ -1,7 +1,11 @@
 #pragma once
+#include <Engine.Common/__macro.hpp>
+
 #include "../RenderCommand.hpp"
 
-#include <Engine.Common/Functional/Function.hpp>
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::accel {
     class AccelCommandBuffer;

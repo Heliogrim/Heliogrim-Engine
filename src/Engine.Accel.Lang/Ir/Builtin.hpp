@@ -1,15 +1,15 @@
 #pragma once
 
-#include <algorithm>
-#include <array>
-#include <iterator>
-#include <Engine.Common/String.hpp>
-#include <Engine.Common/Types.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
-#include <spirv/unified1/GLSL.std.450.h>
 #include <spirv/unified1/spirv.hpp11>
 
+#include <Engine.Common/__macro.hpp>
+#include <spirv/unified1/GLSL.std.450.h>
+
 #include "Module.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::accel::lang::ir {
 	/* `stages` masks: one bit per `EntryKind` */

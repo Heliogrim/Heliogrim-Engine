@@ -1,9 +1,13 @@
 #pragma once
 
-#include <Engine.Common/Managed/Rc.hpp>
-#include <Engine.Common/Memory/UniquePointer.hpp>
+#include <Engine.Common/Sal.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "AssetName.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::assets {
 	class Asset;

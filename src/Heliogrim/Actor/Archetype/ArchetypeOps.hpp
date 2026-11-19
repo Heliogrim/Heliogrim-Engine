@@ -1,11 +1,10 @@
 #pragma once
 
-#include <cstddef>
-#include <span>
-#include <Engine.Common/Expected.hpp>
-#include <Engine.Common/Types.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.Common/__macro.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 #include "LayoutError.hpp"
 

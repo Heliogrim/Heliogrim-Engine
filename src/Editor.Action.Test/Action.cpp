@@ -2,8 +2,9 @@
 
 #include <Editor.Action/Action/DelegateAction.hpp>
 #include <Editor.Action/Log/ActionLog.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.Pedantic/Clone/Clone.hpp>
+#include <Engine.Common/__macro.hpp>
+
+import Engine.Common;
 
 using namespace hg;
 using namespace hg::editor;

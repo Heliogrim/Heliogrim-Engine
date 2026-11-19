@@ -1,8 +1,12 @@
 #pragma once
 
-#include <Engine.Common/Managed/Rc.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflect/Inherit/InheritBase.hpp>
 #include <Engine.Reflect/Inherit/InheritMeta.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::storage {
 	class macro_novtable IStorage :

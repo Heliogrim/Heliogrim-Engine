@@ -1,8 +1,6 @@
 #include "Profiler.hpp"
 
-#include <algorithm>
-#include <fstream>
-#include <ranges>
+import std;
 
 using namespace hg::profiling;
 using namespace hg;

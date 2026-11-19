@@ -1,10 +1,13 @@
 #pragma once
 
-#include <Engine.Common/String.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Serialization/Access/__fwd.hpp>
-#include <Engine.Filesystem/__fwd.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Filesystem/Path.hpp>
+#include <Engine.Filesystem/__fwd.hpp>
+#include <Engine.Serialization/Access/__fwd.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::fs {
 	class Url {

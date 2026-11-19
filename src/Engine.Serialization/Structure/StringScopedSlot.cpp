@@ -1,10 +1,11 @@
 #include "StringScopedSlot.hpp"
 
-#include <span>
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "ScopedSlotGuard.hpp"
 #include "StringSlot.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::serialization;
 using namespace hg;

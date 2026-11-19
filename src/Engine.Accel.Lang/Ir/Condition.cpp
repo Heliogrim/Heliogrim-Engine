@@ -1,6 +1,6 @@
 #include "Condition.hpp"
 
-#include <algorithm>
+import std;
 
 using namespace hg::engine::accel::lang;
 using namespace hg;

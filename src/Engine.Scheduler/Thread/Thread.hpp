@@ -1,11 +1,11 @@
 #pragma once
 
-#include <cassert>
-#include <functional>
-#include <thread>
-#include <Engine.Common/String.hpp>
-#include <Engine.Common/Types.hpp>
 #include <Engine.Common/__macro.hpp>
+#include <cassert>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::scheduler::thread {
 	using thread_id = std::conditional_t<sizeof(std::thread::id) == sizeof(u64), u64, u32>;

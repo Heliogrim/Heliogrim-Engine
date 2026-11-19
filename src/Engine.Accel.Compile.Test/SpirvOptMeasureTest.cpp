@@ -2,10 +2,11 @@
 
 /**/
 
-#include <chrono>
 #include <spirv-tools/optimizer.hpp>
 
 #include "IrSpirvGate.hpp"
+
+import std;
 
 using namespace hg::engine::accel::lang::ir;
 

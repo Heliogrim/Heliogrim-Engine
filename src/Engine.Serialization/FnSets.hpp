@@ -1,12 +1,15 @@
 #pragma once
 
+#include <Engine.Common/__macro.hpp>
+
 #include "Access/Structure.hpp"
-#include "Engine.Common/Optional.hpp"
-#include "Engine.Common/Collection/DenseMap.hpp"
-#include "Engine.Common/Meta/TypeId.hpp"
 #include "Engine.Reflect/IsType.hpp"
 #include "Heliogrim/ActorInitializer.hpp"
 #include "Structure/RecordScopedSlot.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::serialization {
 	struct ActorFnSet {
@@ -61,7 +64,7 @@ namespace hg::engine::serialization {
 						);
 					},
 					.deserialize = [](cref<record_type> slot_, nmpt<acs::Registry> allocator_) -> ptr<Actor> {
-						return serialization::access::Structure<ActorType_>::template deserialize(slot_, allocator_);
+						return serialization::access::Structure<ActorType_>::deserialize(slot_, allocator_);
 					}
 				}
 			);
@@ -104,7 +107,7 @@ namespace hg::engine::serialization {
 						ref<Actor> owner_,
 						nmpt<HierarchyComponent> maybeParent_
 					) -> VolatileComponent<> {
-						return serialization::access::Structure<ComponentType_>::template deserialize(
+						return serialization::access::Structure<ComponentType_>::deserialize(
 							slot_,
 							allocator_,
 							owner_,

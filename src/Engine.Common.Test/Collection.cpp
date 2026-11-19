@@ -1,8 +1,9 @@
 #include "pch.h"
 /**/
 
-#include <Engine.Common/Collection/InlineAutoArray.hpp>
-#include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
+#include <Engine.Common/__macro.hpp>
+
+import Engine.Common;
 
 using namespace hg;
 

@@ -1,12 +1,13 @@
 #pragma once
 
-#include <Engine.Common/Types.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Functional/Function.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflect/Inherit/ClassMetaBase.hpp>
-
-#include <cassert>
 #include <Engine.Reflect/Inherit/Concept.hpp>
+#include <cassert>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::serialization {
 	class DataLayoutReflect {

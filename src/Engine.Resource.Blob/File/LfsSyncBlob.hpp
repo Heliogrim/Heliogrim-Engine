@@ -1,14 +1,15 @@
 #pragma once
 
-#include <fstream>
-#include <span>
 #include <Engine.Async/Primitive/FiberMutex.hpp>
-#include <Engine.Common/Types.hpp>
-#include <Engine.Common/UniqueValue.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Filesystem/Url.hpp>
 #include <Engine.Reflect/Inherit/InheritMeta.hpp>
 
 #include "../Blob.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::resource {
 	// TODO: Determine how we should handle the difference between 'readWrite' and 'readonly' access.

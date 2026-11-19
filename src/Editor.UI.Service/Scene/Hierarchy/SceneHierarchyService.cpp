@@ -1,9 +1,11 @@
 #include "SceneHierarchyService.hpp"
 
-#include <Engine.Pedantic/Clone/Clone.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Heliogrim/Actor/Actor.hpp>
 
 #include "SceneHierarchyEntry.hpp"
+
+import Engine.Common;
 
 using namespace hg::editor::ui::service;
 using namespace hg;

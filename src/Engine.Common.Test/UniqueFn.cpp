@@ -2,11 +2,9 @@
 
 /**/
 
-#include <memory>
-#include <type_traits>
-#include <utility>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Functional/UniqueFn.hpp>
+#include <Engine.Common/__macro.hpp>
+
+import Engine.Common;
 
 using namespace hg;
 

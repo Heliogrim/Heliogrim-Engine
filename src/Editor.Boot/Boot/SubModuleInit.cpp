@@ -5,10 +5,12 @@
 #include <Editor.Graphics.IO/Module/EditorGraphicsIo.hpp>
 #include <Editor.UI.Main/EditorUI.hpp>
 #include <Engine.Accel/Accel.hpp>
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflow/Reflow.hpp>
 
 #include "../Editor.hpp"
+
+import Engine.Common;
 
 using namespace hg::editor::boot;
 using namespace hg;

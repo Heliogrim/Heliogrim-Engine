@@ -1,9 +1,13 @@
 #pragma once
 
-#include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
+#include <Engine.Common/__macro.hpp>
 
-#include "LinkMode.hpp"
 #include "../Visitor/Visitor.hpp"
+#include "LinkMode.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::render::graph {
 	class FLinkVisitor final :

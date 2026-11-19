@@ -1,14 +1,8 @@
 #include "pch.h"
 
 /**/
-#include <chrono>
-#include <cstring>
-#include <format>
-#include <list>
-#include <tuple>
-#include <utility>
 #include <Engine.Assets.Type/Asset.hpp>
-#include <Engine.Common/Collection/Array.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Resource.Archive/BufferArchive.hpp>
 #include <Engine.Serialization/Archive/LayoutArchive.hpp>
 #include <Engine.Serialization/Archive/StructuredArchive.hpp>
@@ -16,6 +10,7 @@
 #include <Engine.Serialization/Layout/LayoutDefine.hpp>
 #include <Engine.Serialization/Layout/LayoutDefineSpan.hpp>
 #include <Engine.Serialization/Layout/LayoutDefineValue.hpp>
+#include <cstring>
 
 #include "Engine.Serialization/Structure/FloatScopedSlot.hpp"
 #include "Engine.Serialization/Structure/IntegralScopedSlot.hpp"
@@ -27,6 +22,8 @@
 #include "Engine.Serialization/Structure/StringScopedSlot.hpp"
 #include "Engine.Serialization/Structure/StructScopedSlot.hpp"
 #include "Engine.Serialization/Structure/StructSlot.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::resource;
 using namespace hg::engine::serialization;

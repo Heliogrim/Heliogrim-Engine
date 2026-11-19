@@ -1,7 +1,8 @@
 #include "MemoryReadonlyArchive.hpp"
 
 #include <cstring>
-#include <utility>
+
+import std;
 
 using namespace hg::engine::resource;
 using namespace hg;

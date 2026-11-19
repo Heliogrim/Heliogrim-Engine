@@ -1,8 +1,6 @@
 #pragma once
 
-#include <cmath>
-#include <utility>
-
+#include "../Wrapper.hpp"
 #include "Compat.inl"
 #include "MathDefaultDefine.hpp"
 #include "Matrix.hpp"
@@ -10,7 +8,10 @@
 #include "Rotator.hpp"
 #include "Vector.hpp"
 #include "__const.hpp"
-#include "../Wrapper.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg::math {
 	template <class To_, class From_>

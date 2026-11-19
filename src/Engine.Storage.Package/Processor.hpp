@@ -1,9 +1,12 @@
 #pragma once
 
-#include <stdexcept>
-#include <Engine.Common/Expected.hpp>
-#include <Engine.Resource.Package/ReadWritePackage.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Resource.Package/Linker/ReadWritePackageLinker.hpp>
+#include <Engine.Resource.Package/ReadWritePackage.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::storage::package {
 	/**/

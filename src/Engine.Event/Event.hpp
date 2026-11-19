@@ -1,8 +1,10 @@
 #pragma once
 
-#include <concepts>
-
 #include "EventTypeId.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg {
 	class macro_novtable Event {

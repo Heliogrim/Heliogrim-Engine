@@ -1,6 +1,6 @@
 #include "TextureTransformer.hpp"
 
-#include <Engine.Common/Memory/MemoryPointer.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics/Pool/GlobalResourcePool.hpp>
 #include <Engine.Graphics/Texture/SparseTextureView.hpp>
 #include <Engine.Graphics/Texture/TextureLikeObject.hpp>
@@ -8,6 +8,8 @@
 #include <Engine.Resource/Manage/UniqueResource.hpp>
 
 #include "./Transformer/Ktx.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::graphics::loader;
 using namespace hg::engine::graphics;

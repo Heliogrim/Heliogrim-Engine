@@ -1,9 +1,12 @@
 #pragma once
 
-#include <Engine.Common/Variant.hpp>
-#include <Engine.Common/Memory/MemoryPointer.hpp>
-#include <Heliogrim/Component/HierarchyComponent.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Heliogrim/Actor/Actor.hpp>
+#include <Heliogrim/Component/HierarchyComponent.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::editor::ui::service {
 	enum class SceneHierarchyEntryType {

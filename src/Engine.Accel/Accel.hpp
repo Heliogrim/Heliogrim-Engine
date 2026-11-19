@@ -1,9 +1,9 @@
 #pragma once
 
 #include <Engine.Accel.Storage/GlobalStorage.hpp>
-#include <Engine.Core/Module/SubModule.hpp>
-#include <Engine.Core/Module/DependencyKey.hpp>
 #include <Engine.Common/StringLiterals.hpp>
+#include <Engine.Core/Module/DependencyKey.hpp>
+#include <Engine.Core/Module/SubModule.hpp>
 
 namespace hg::engine {
     inline constexpr static core::DependencyKey AccelDepKey { "::hg::engine::accel::Accel"sv };

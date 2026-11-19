@@ -1,15 +1,16 @@
 #pragma once
 
-#include <Engine.Common/Expected.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/InlineAutoArray.hpp>
-#include <Engine.Common/Managed/Rc.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Storage.Registry/IStorage.hpp>
 
-#include "DynamicStage.hpp"
-#include "../Mutation.hpp"
 #include "../Access/AccessError.hpp"
 #include "../Access/IoResourceAccessor.hpp"
+#include "../Mutation.hpp"
+#include "DynamicStage.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::storage::system {
 	class MutationDynamicGen final :

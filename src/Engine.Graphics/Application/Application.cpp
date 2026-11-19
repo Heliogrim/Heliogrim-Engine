@@ -3,14 +3,17 @@
 #include "../vkinc.hpp"
 #undef None
 /**/
-#include "Application.hpp"
-
 #include <Engine.Common/stdafx.h>
 #include <Engine.Logging/Logger.hpp>
 
+#include "Application.hpp"
+
 #ifdef _PROFILING
-#include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
+
+#include <Engine.Common/__macro.hpp>
+
+import Engine.Common;
 
 using namespace hg::engine::graphics;
 using namespace hg;

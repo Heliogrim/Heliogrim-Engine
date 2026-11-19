@@ -1,6 +1,8 @@
 #pragma once
 
-#include <concepts>
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg {
     template <class SourceType_, class TargetType_>

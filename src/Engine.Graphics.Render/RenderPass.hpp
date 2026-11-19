@@ -1,16 +1,18 @@
 #pragma once
 
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
-#include <Engine.Common/Memory/MemoryPointer.hpp>
-#include <Engine.Graphics.RenderGraph/__fwd.hpp>
-#include <Engine.Graphics/vkinc.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.RenderGraph/Pass/ExecutionPass.hpp>
+#include <Engine.Graphics.RenderGraph/__fwd.hpp>
 #include <Engine.Graphics/Texture/__fwd.hpp>
+#include <Engine.Graphics/vkinc.hpp>
 
 #include "RenderPassResult.hpp"
 #include "RenderPassState.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::render {
 	class Renderer;

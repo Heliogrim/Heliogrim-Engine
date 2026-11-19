@@ -1,16 +1,21 @@
 #pragma once
 
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/Wrapper.hpp>
 
-#include "__fwd.hpp"
 #include "../Buffer/SparseBuffer.hpp"
 #include "../Device/Device.hpp"
 #include "../Texture/SparseTexture.hpp"
+#include "__fwd.hpp"
 
 /**/
-#include "SparseRangePooled.hpp"
+#include <Engine.Common/__macro.hpp>
+
 #include "../Texture/TextureFactory.hpp"
+#include "SparseRangePooled.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::graphics::pool {
 	struct IndexBufferAllocation {

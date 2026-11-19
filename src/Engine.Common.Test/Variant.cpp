@@ -1,9 +1,9 @@
 #include "pch.h"
 /**/
 
-#include <Engine.Common/String.hpp>
-#include <Engine.Common/Types.hpp>
-#include <Engine.Common/Variant.hpp>
+#include <Engine.Common/__macro.hpp>
+
+import Engine.Common;
 
 using namespace hg;
 

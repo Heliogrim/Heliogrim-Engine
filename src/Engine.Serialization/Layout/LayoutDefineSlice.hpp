@@ -1,12 +1,16 @@
 #pragma once
 
-#include <cassert>
-#include <iterator>
 #include <Engine.Resource.Archive/Archive.hpp>
+#include <cassert>
+#include <cstdlib>
 
 #include "DataLayout.hpp"
 #include "LayoutDefine.hpp"
 #include "LayoutDefineValueType.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg::engine::serialization::layout {
 	template <class Type_>

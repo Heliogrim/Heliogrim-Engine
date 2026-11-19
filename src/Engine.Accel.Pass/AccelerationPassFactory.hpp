@@ -1,11 +1,13 @@
 #pragma once
-#include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.RenderGraph/Symbol/Symbol.hpp>
 #include <Engine.Graphics/API/__vkFwd.hpp>
-#include <tl/expected.hpp>
 
 #include "__fwd.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 // TODO: Rework
 namespace vk {

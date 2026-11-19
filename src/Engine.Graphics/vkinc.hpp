@@ -43,7 +43,11 @@
 #define VK_NULL_HANDLE nullptr
 #endif
 
+/* Until the vulkan module: vulkan.hpp's module mode imports std instead of including std headers, so it may follow `import std;`. */
+#define VULKAN_HPP_CXX_MODULE 1
+
 START_SUPPRESS_WARNINGS
+#include <vulkan/vulkan_hpp_macros.hpp>
 #include <vulkan/vulkan.hpp>
 STOP_SUPPRESS_WARNINGS
 

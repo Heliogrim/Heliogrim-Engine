@@ -1,14 +1,13 @@
 #include "VkResourceTable.hpp"
 
-#include <algorithm>
-#include <ranges>
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Graphics/Graphics.hpp>
-#include <Engine.Pedantic/Clone/Clone.hpp>
 
 #include "VkDescriptor.hpp"
 #include "VkScopedResourceTable.hpp"
+
+import Engine.Common;
 
 using namespace hg::driver::vk;
 using namespace hg;

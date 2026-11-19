@@ -1,9 +1,11 @@
 #include "SeqScopedSlot.hpp"
 
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "RecordScopedSlot.hpp"
 #include "SeqSlot.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::serialization;
 using namespace hg;

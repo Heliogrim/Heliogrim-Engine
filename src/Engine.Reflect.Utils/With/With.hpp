@@ -1,9 +1,10 @@
 #pragma once
 
-#include <concepts>
-#include <type_traits>
+#include <Engine.Common/__macro.hpp>
 
-#include <Engine.Common/Move.hpp>
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::meta {
 	template <typename Trait_>

@@ -1,12 +1,12 @@
 #pragma once
-#include <mutex>
-#include <shared_mutex>
-#include <type_traits>
-#include <unordered_map>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Functional/Function.hpp>
+
+#include <Engine.Common/__macro.hpp>
 
 #include "Event.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg {
 	/** The event emitter */

@@ -1,9 +1,11 @@
 #pragma once
 #include <Engine.Accel.Command/CommandBuffer.hpp>
-#include <Engine.Common/Types.hpp>
-#include <Engine.Common/Flag.hpp>
-#include <Engine.Common/Collection/InlineAutoArray.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics/Device/Device.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::driver::vk {
     enum class VkQueueFeatureSet : u8 {

@@ -1,5 +1,7 @@
 #include "StageModule.hpp"
 
+import std;
+
 using namespace hg::engine::accel;
 using namespace hg;
 

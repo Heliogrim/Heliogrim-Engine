@@ -1,9 +1,9 @@
 #include "Transform.hpp"
 
-#include <Engine.Common/Move.hpp>
-#include <Engine.Pedantic/Clone/Clone.hpp>
+#include <Engine.Common/__macro.hpp>
 
-#include "Convertion.hpp"
+import Engine.Common;
+import std;
 
 using namespace hg::math;
 using namespace hg;

@@ -1,7 +1,8 @@
 #include "pch.h"
 
-#include <array>
-#include <Engine.Common/Guid.hpp>
+#include <Engine.Common/__macro.hpp>
+
+import Engine.Common;
 
 using namespace hg;
 

@@ -1,6 +1,6 @@
 #include "MemoryType.hpp"
 
-#include <stdexcept>
+import std;
 
 using namespace hg::engine::graphics;
 using namespace hg;

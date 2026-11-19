@@ -1,9 +1,8 @@
-#include "StaticGeometryTransformer.hpp"
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
 
-#include <algorithm>
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Common/Collection/Array.hpp>
-#include <Engine.Common/Math/Coordinates.hpp>
 #include <Engine.Graphics/Buffer/Buffer.hpp>
 #include <Engine.Graphics/Buffer/SparseBufferPage.hpp>
 #include <Engine.Graphics/Buffer/SparseBufferView.hpp>
@@ -16,6 +15,10 @@
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Resource/Manage/UniqueResource.hpp>
 #include <Engine.Storage.System/StorageSystem.hpp>
+
+#include "StaticGeometryTransformer.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::graphics::loader;
 using namespace hg::engine::graphics;
@@ -49,10 +52,6 @@ StaticGeometryTransformer::response_type::type StaticGeometryTransformer::operat
 }
 
 /* Assimp Implementation */
-
-#include <assimp/Importer.hpp>
-#include <assimp/postprocess.h>
-#include <assimp/scene.h>
 
 static smr<StaticGeometryResource> loadWithAssimp(
 	const non_owning_rptr<const engine::assets::StaticGeometry> request_,

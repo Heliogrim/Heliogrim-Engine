@@ -1,8 +1,9 @@
 #include "pch.h"
 
-#include <vector>
 #include <Engine.Event/GlobalEventEmitter.hpp>
 #include <Engine.Event/TickEvent.hpp>
+
+import std;
 
 using namespace hg;
 

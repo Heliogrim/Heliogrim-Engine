@@ -2,11 +2,12 @@
 /**/
 
 #include <Engine.Assets.Type/Asset.hpp>
-#include <Engine.Common/Collection/Array.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Resource.Archive/ArchiveGuid.hpp>
 #include <Engine.Resource.Archive/BufferArchive.hpp>
 #include <Engine.Resource.Archive/MemoryReadonlyArchive.hpp>
+
+import Engine.Common;
 
 using namespace hg::engine::resource;
 using namespace hg;

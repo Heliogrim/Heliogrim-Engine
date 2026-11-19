@@ -1,7 +1,11 @@
 #pragma once
 
-#include <Engine.Common/Move.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflect/TypeId.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::meta {
 	template <typename Type_>

@@ -2,12 +2,15 @@
 
 #include <Engine.Assets.Type/Asset.hpp>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.Common/Managed/Rc.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Resource/Importer/ImportDestination.hpp>
 #include <Engine.Storage.Registry/Url/FileUrl.hpp>
 
 #include "ImportAction.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::storage::system {
 	class PackageStorage;

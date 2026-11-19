@@ -1,12 +1,15 @@
 #pragma once
 
-#include <ranges>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/Collection/Set.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "AssetBrowserFilter.hpp"
 #include "AssetBrowserProvider.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::editor::ui::service {
 	class AssetRegistryBrowserProvider :

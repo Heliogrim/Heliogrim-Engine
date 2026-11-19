@@ -4,6 +4,7 @@
 #include "../Texture/SparseTextureView.hpp"
 #include "../Texture/TextureFactory.hpp"
 #include "Engine.Graphics/Geometry/Vertex.hpp"
+
 import Engine.Asserts;
 
 using namespace hg::engine::graphics::pool;

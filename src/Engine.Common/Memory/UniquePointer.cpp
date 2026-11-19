@@ -1,6 +1,7 @@
-#include "UniquePointer.hpp"
+#include <Engine.Common/__macro.hpp>
 
-#include <Engine.Pedantic/Into/Into.hpp>
+import Engine.Common;
+import std;
 
 using namespace hg;
 

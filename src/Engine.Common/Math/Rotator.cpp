@@ -1,13 +1,9 @@
-#include "Rotator.hpp"
-
-#include <algorithm>
-#include <cmath>
+#include <Engine.Common/__macro.hpp>
 
 #include "Compat.inl"
-#include "Convertion.hpp"
-#include "Coordinates.hpp"
-#include "Matrix.hpp"
-#include "__const.hpp"
+
+import Engine.Common;
+import std;
 
 using namespace hg::math;
 using namespace hg;

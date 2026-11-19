@@ -1,18 +1,20 @@
 #pragma once
 
-#include <concepts>
-#include <type_traits>
 #include <Engine.Common/Forward.hpp>
 #include <Engine.Common/Meta/Type.hpp>
 
+#include "../Concept/SameAs.hpp"
 #include "IntoImpl.hpp"
 #include "IntoMemberFunction.hpp"
-#include "../Concept/SameAs.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg {
 	/**/
 
-	namespace {
+	namespace detail {
 		template <typename SubType_>
 		struct __unwrap_helper {
 			template <typename InjectType_>
@@ -76,7 +78,7 @@ namespace hg {
 	template <typename TargetType_, typename SourceType_> requires
 		has_into_member_function<SourceType_, TargetType_> &&
 		(not std::is_same_v<std::remove_cvref_t<TargetType_>, std::remove_cvref_t<SourceType_>>) &&
-		(std::is_same_v<typename __unwrap_helper<SourceType_>::substitution_type, SourceType_>)
+		(std::is_same_v<typename detail::__unwrap_helper<SourceType_>::substitution_type, SourceType_>)
 	[[nodiscard]] constexpr TargetType_ into(SourceType_&& val_) {
 		return ::hg::forward<SourceType_>(val_).into();
 	}
@@ -91,8 +93,8 @@ namespace hg {
 
 	template <typename TargetType_, typename SourceType_, template <typename> typename TemplateType_> requires
 		has_into_boxed_template_member_function<TemplateType_, SourceType_, TargetType_> &&
-		std::is_same_v<typename __unwrap_helper<TargetType_>::substitution_type, TargetType_> &&
-		std::is_same_v<typename __unwrap_helper<SourceType_>::substitution_type, SourceType_>
+		std::is_same_v<typename detail::__unwrap_helper<TargetType_>::substitution_type, TargetType_> &&
+		std::is_same_v<typename detail::__unwrap_helper<SourceType_>::substitution_type, SourceType_>
 	[[nodiscard]] constexpr TemplateType_<TargetType_> into(TemplateType_<SourceType_>&& val_) {
 		return ::hg::forward<TemplateType_<SourceType_>>(val_).template into<TargetType_>();
 	}
@@ -100,9 +102,9 @@ namespace hg {
 	template <
 		typename TargetType_,
 		typename SourceType_,
-		template <typename> typename TemplateType_ = __ret_type_helper<SourceType_, TargetType_>::template wrapper_type
+		template <typename> typename TemplateType_ = detail::__ret_type_helper<SourceType_, TargetType_>::template wrapper_type
 	> requires has_into_wrap_template_member_function<TemplateType_, SourceType_, TargetType_> &&
-		std::is_same_v<typename __unwrap_helper<SourceType_>::substitution_type, SourceType_>
+		std::is_same_v<typename detail::__unwrap_helper<SourceType_>::substitution_type, SourceType_>
 	[[nodiscard]] constexpr TemplateType_<TargetType_> into(SourceType_&& val_) {
 		return ::hg::forward<SourceType_>(val_).template into<TargetType_>();
 	}
@@ -110,11 +112,11 @@ namespace hg {
 	template <
 		typename ExternalType_,
 		typename SourceType_,
-		typename TargetType_ = typename __unwrap_helper<ExternalType_>::substitution_type,
-		template <typename> typename TemplateType_ = __unwrap_helper<ExternalType_>::template wrapper_type
+		typename TargetType_ = typename detail::__unwrap_helper<ExternalType_>::substitution_type,
+		template <typename> typename TemplateType_ = detail::__unwrap_helper<ExternalType_>::template wrapper_type
 	>
 		requires has_into_boxed_template_member_function<TemplateType_, SourceType_, TargetType_> &&
-		(not std::is_same_v<typename __unwrap_helper<ExternalType_>::substitution_type, ExternalType_>)
+		(not std::is_same_v<typename detail::__unwrap_helper<ExternalType_>::substitution_type, ExternalType_>)
 	[[nodiscard]] constexpr TemplateType_<TargetType_> into(TemplateType_<SourceType_>&& val_) {
 		return ::hg::forward<TemplateType_<SourceType_>>(val_).template into<TargetType_>();
 	}
@@ -122,11 +124,11 @@ namespace hg {
 	template <
 		typename ExternalType_,
 		typename SourceType_,
-		typename TargetType_ = typename __unwrap_helper<ExternalType_>::substitution_type,
-		template <typename> typename TemplateType_ = __unwrap_helper<ExternalType_>::template wrapper_type
+		typename TargetType_ = typename detail::__unwrap_helper<ExternalType_>::substitution_type,
+		template <typename> typename TemplateType_ = detail::__unwrap_helper<ExternalType_>::template wrapper_type
 	>
 		requires has_into_wrap_template_member_function<TemplateType_, SourceType_, TargetType_> &&
-		(not std::is_same_v<typename __unwrap_helper<ExternalType_>::substitution_type, ExternalType_>)
+		(not std::is_same_v<typename detail::__unwrap_helper<ExternalType_>::substitution_type, ExternalType_>)
 	[[nodiscard]] constexpr TemplateType_<TargetType_> into(SourceType_&& val_) {
 		return ::hg::forward<SourceType_>(val_).template into<TargetType_>();
 	}
@@ -136,10 +138,10 @@ namespace hg {
 	template <
 		typename TargetType_,
 		typename ExternalType_,
-		typename SourceType_ = typename __unwrap_helper<ExternalType_>::substitution_type,
-		template <typename> typename TemplateType_ = __unwrap_helper<ExternalType_>::template wrapper_type
+		typename SourceType_ = typename detail::__unwrap_helper<ExternalType_>::substitution_type,
+		template <typename> typename TemplateType_ = detail::__unwrap_helper<ExternalType_>::template wrapper_type
 	>
-	[[nodiscard]] constexpr typename __ret_type_helper<TemplateType_<SourceType_>, TargetType_>::type into(
+	[[nodiscard]] constexpr typename detail::__ret_type_helper<TemplateType_<SourceType_>, TargetType_>::type into(
 		ExternalType_&& val_
 	) {
 		return ::hg::forward<TemplateType_<SourceType_>>(val_).template into<TargetType_>();
@@ -201,10 +203,10 @@ namespace hg {
 	template <
 		typename ExDstType_,
 		typename ExSrcType_,
-		typename TargetType_ = __unwrap_substitude<ExDstType_>,
-		typename SourceType = __unwrap_substitude<ExSrcType_>,
-		template <typename...> typename DstTemplate_ = __unwrap_helper<ExDstType_>::template wrapper_type,
-		template <typename...> typename SrcTemplate_ = __unwrap_helper<ExSrcType_>::template wrapper_type
+		typename TargetType_ = detail::__unwrap_substitude<ExDstType_>,
+		typename SourceType = detail::__unwrap_substitude<ExSrcType_>,
+		template <typename...> typename DstTemplate_ = detail::__unwrap_helper<ExDstType_>::template wrapper_type,
+		template <typename...> typename SrcTemplate_ = detail::__unwrap_helper<ExSrcType_>::template wrapper_type
 	> requires (
 		not has_into_member_function<SourceType, ExSrcType_, SrcTemplate_> &&
 		not __is_into_fwd_invocable<TargetType_, ExSrcType_, SrcTemplate_>
@@ -214,7 +216,7 @@ namespace hg {
 		DstTemplate_,
 		SrcTemplate_
 	>
-	[[nodiscard]] constexpr DstTemplate_<__unwrap_substitude<TargetType_>> into(ExSrcType_&& obj_) noexcept {
+	[[nodiscard]] constexpr DstTemplate_<detail::__unwrap_substitude<TargetType_>> into(ExSrcType_&& obj_) noexcept {
 		return into_impl<DstTemplate_<TargetType_>, SrcTemplate_<SourceType>> {}(
 			::hg::forward<SrcTemplate_<SourceType>>(obj_)
 		);
@@ -223,10 +225,10 @@ namespace hg {
 	template <
 		typename ExDstType_,
 		typename ExSrcType_,
-		typename TargetType_ = __unwrap_substitude<ExDstType_>,
-		typename SourceType = __unwrap_substitude<ExSrcType_>,
-		template <typename...> typename VoidTemplate_ = __unwrap_helper<ExDstType_>::template wrapper_type,
-		template <typename...> typename Template_ = __unwrap_helper<ExSrcType_>::template wrapper_type
+		typename TargetType_ = detail::__unwrap_substitude<ExDstType_>,
+		typename SourceType = detail::__unwrap_substitude<ExSrcType_>,
+		template <typename...> typename VoidTemplate_ = detail::__unwrap_helper<ExDstType_>::template wrapper_type,
+		template <typename...> typename Template_ = detail::__unwrap_helper<ExSrcType_>::template wrapper_type
 	> requires (
 		not has_into_member_function<SourceType, ExSrcType_, Template_> &&
 		not __is_into_fwd_invocable<TargetType_, ExSrcType_, Template_>
@@ -236,7 +238,7 @@ namespace hg {
 		VoidTemplate_,
 		Template_
 	>
-	[[nodiscard]] constexpr Template_<__unwrap_substitude<TargetType_>> into(ExSrcType_&& obj_) noexcept {
+	[[nodiscard]] constexpr Template_<detail::__unwrap_substitude<TargetType_>> into(ExSrcType_&& obj_) noexcept {
 		return into_impl<Template_<TargetType_>, Template_<SourceType>> {}(
 			::hg::forward<Template_<SourceType>>(obj_)
 		);
@@ -253,10 +255,10 @@ namespace hg {
 
 	template <typename To_, typename From_>
 	concept __is_into_impl_invocable = has_into_impl<
-		__unwrap_substitude<To_>,
-		__unwrap_substitude<From_>,
-		__unwrap_helper<To_>::template wrapper_type,
-		__unwrap_helper<From_>::template wrapper_type
+		detail::__unwrap_substitude<To_>,
+		detail::__unwrap_substitude<From_>,
+		detail::__unwrap_helper<To_>::template wrapper_type,
+		detail::__unwrap_helper<From_>::template wrapper_type
 	>;
 
 	template <
@@ -277,42 +279,42 @@ namespace hg {
 	concept is_into_supported = (
 		__is_into_impl_invocable<To_, From_>
 	) || (
-		std::is_same_v<typename __unwrap_helper<To_>::substitution_type, To_> &&
-		std::is_same_v<typename __unwrap_helper<From_>::substitution_type, From_> &&
+		std::is_same_v<typename detail::__unwrap_helper<To_>::substitution_type, To_> &&
+		std::is_same_v<typename detail::__unwrap_helper<From_>::substitution_type, From_> &&
 		__is_into_invocable<To_, From_, Template_, Rest_...>
 	) || (
-		not std::is_same_v<typename __unwrap_helper<To_>::substitution_type, To_> &&
-		std::is_same_v<typename __unwrap_helper<From_>::substitution_type, From_> &&
+		not std::is_same_v<typename detail::__unwrap_helper<To_>::substitution_type, To_> &&
+		std::is_same_v<typename detail::__unwrap_helper<From_>::substitution_type, From_> &&
 		__is_into_invocable<
-			__unwrap_substitude<To_>,
+			detail::__unwrap_substitude<To_>,
 			From_,
-			__unwrap_helper<To_>::template wrapper_type,
+			detail::__unwrap_helper<To_>::template wrapper_type,
 			Rest_...
 		>
 	) || (
-		std::is_same_v<typename __unwrap_helper<To_>::substitution_type, To_> &&
-		not std::is_same_v<typename __unwrap_helper<From_>::substitution_type, From_> &&
+		std::is_same_v<typename detail::__unwrap_helper<To_>::substitution_type, To_> &&
+		not std::is_same_v<typename detail::__unwrap_helper<From_>::substitution_type, From_> &&
 		__is_into_invocable<
 			To_,
-			typename __unwrap_helper<From_>::substitution_type,
-			__unwrap_helper<From_>::template wrapper_type,
+			typename detail::__unwrap_helper<From_>::substitution_type,
+			detail::__unwrap_helper<From_>::template wrapper_type,
 			Rest_...
 		>
 	) || (
-		not std::is_same_v<typename __unwrap_helper<From_>::substitution_type, From_> &&
-		not std::is_same_v<typename __unwrap_helper<To_>::substitution_type, To_> &&
+		not std::is_same_v<typename detail::__unwrap_helper<From_>::substitution_type, From_> &&
+		not std::is_same_v<typename detail::__unwrap_helper<To_>::substitution_type, To_> &&
 		std::is_same_v<
-			typename __unwrap_helper<From_>::template wrapper_type<From_>,
-			typename __unwrap_helper<To_>::template wrapper_type<From_>
+			typename detail::__unwrap_helper<From_>::template wrapper_type<From_>,
+			typename detail::__unwrap_helper<To_>::template wrapper_type<From_>
 		> &&
 		std::is_same_v<
-			typename __unwrap_helper<From_>::template wrapper_type<To_>,
-			typename __unwrap_helper<To_>::template wrapper_type<To_>
+			typename detail::__unwrap_helper<From_>::template wrapper_type<To_>,
+			typename detail::__unwrap_helper<To_>::template wrapper_type<To_>
 		> &&
 		__is_into_invocable<
-			typename __unwrap_helper<To_>::substitution_type,
-			typename __unwrap_helper<From_>::substitution_type,
-			__unwrap_helper<From_>::template wrapper_type,
+			typename detail::__unwrap_helper<To_>::substitution_type,
+			typename detail::__unwrap_helper<From_>::substitution_type,
+			detail::__unwrap_helper<From_>::template wrapper_type,
 			Rest_...
 		>
 	);

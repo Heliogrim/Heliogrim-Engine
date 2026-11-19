@@ -1,6 +1,8 @@
 #include "pch.h"
 
-#include <Engine.Common/Math/Extent.hpp>
+#include <Engine.Common/__macro.hpp>
+
+import Engine.Common;
 
 using namespace hg;
 

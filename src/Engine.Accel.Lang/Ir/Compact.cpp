@@ -1,9 +1,8 @@
 #include "Compact.hpp"
 
-#include <algorithm>
-#include <utility>
-
 #include "Typecheck.hpp"
+
+import std;
 
 using namespace hg::engine::accel::lang;
 using namespace hg;

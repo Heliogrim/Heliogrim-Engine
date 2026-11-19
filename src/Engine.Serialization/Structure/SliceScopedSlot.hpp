@@ -1,12 +1,15 @@
 #pragma once
 
-#include <type_traits>
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "ScopedStructureSlot.hpp"
 #include "ScopedSlotGuard.hpp"
 #include "SliceSlot.hpp"
 #include "SubstitutionSlot.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::serialization {
 	template <typename ValueType_, template <typename...> typename SliceType_>

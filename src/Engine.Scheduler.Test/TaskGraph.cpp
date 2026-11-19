@@ -2,18 +2,13 @@
 
 /**/
 
-#include <array>
-#include <format>
-#include <Engine.Scheduler/Graph/StageDecl.hpp>
-#include <Engine.Scheduler/Graph/TaskGraph.hpp>
-#include <Engine.Common/Make.hpp>
-#include <Engine.Scheduler/Pipeline/Stage/EmptyPipelineStage.hpp>
 #include <Engine.ACS.Schedule/ActorHousekeepingStage.hpp>
 #include <Engine.ACS.Schedule/ActorPhysicsStageCollision.hpp>
 #include <Engine.ACS.Schedule/ActorPhysicsStageOverlap.hpp>
 #include <Engine.ACS.Schedule/ActorPipeline.hpp>
 #include <Engine.ACS.Schedule/ActorTickStagePostPhysics.hpp>
 #include <Engine.ACS.Schedule/ActorTickStagePrePhysics.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Core.Schedule/CorePipeline.hpp>
 #include <Engine.Core.Schedule/TickTimingStage.hpp>
 #include <Engine.Graphics.Schedule/RenderScenePipeline.hpp>
@@ -29,6 +24,11 @@
 #include <Engine.Scene.Schedule/ScenePipeline.hpp>
 #include <Engine.Scene.Schedule/ScenePostProcessStage.hpp>
 #include <Engine.Scene.Schedule/SceneUpdateStage.hpp>
+#include <Engine.Scheduler/Graph/StageDecl.hpp>
+#include <Engine.Scheduler/Graph/TaskGraph.hpp>
+#include <Engine.Scheduler/Pipeline/Stage/EmptyPipelineStage.hpp>
+
+import Engine.Common;
 
 using namespace hg::engine::scheduler::graph;
 using namespace hg;

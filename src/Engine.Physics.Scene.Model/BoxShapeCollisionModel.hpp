@@ -1,10 +1,17 @@
 #pragma once
 
-#include <Engine.Common/Optional.hpp>
-#include <Engine.Physics/jolt.inc.hpp>
-#include <Engine.Physics.Scene/PhysicsSceneSystemModel.hpp>
-#include <Engine.Reflect/Inherit/InheritMeta.hpp>
+#include <Jolt/Jolt.h>
+
 #include <Jolt/Physics/Collision/Shape/BoxShape.h>
+
+#include <Engine.Common/__macro.hpp>
+#include <Engine.Physics.Scene/PhysicsSceneSystemModel.hpp>
+#include <Engine.Physics/jolt.inc.hpp>
+#include <Engine.Reflect/Inherit/InheritMeta.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::physics {
 	class BoxShapeCollisionModel final :

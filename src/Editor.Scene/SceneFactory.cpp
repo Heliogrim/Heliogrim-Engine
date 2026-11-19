@@ -1,8 +1,10 @@
 #include "SceneFactory.hpp"
 
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Scene.Game/GameScene.hpp>
 #include <Engine.Scene.Preview/PreviewScene.hpp>
+
+import Engine.Common;
 
 using namespace ::hg::editor;
 using namespace ::hg::engine::scene;

@@ -1,9 +1,10 @@
 #include "Representation.hpp"
 
-#include <algorithm>
-#include <ranges>
-#include <Engine.Common/Make.hpp>
-#include <Engine.Pedantic/Clone/Clone.hpp>
+#include <Engine.Common/__macro.hpp>
+#include <cassert>
+#include <stddef.h>
+
+import Engine.Common;
 
 using namespace hg::engine::accel;
 using namespace hg;

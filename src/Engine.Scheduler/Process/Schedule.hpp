@@ -1,14 +1,15 @@
 #pragma once
 
-#include <atomic>
-#include <chrono>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/Array.hpp>
+#include <Engine.Common/__macro.hpp>
 
-#include "ScheduleWorkSet.hpp"
 #include "../Lane.hpp"
 #include "../LanePolicyConfig.hpp"
+#include "ScheduleWorkSet.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::scheduler {
 	struct BoostCell;

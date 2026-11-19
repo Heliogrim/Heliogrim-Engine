@@ -1,8 +1,11 @@
 #include "pch.h"
 
-#include <atomic>
+/**/
+
 #include <Engine.Graphics.Material/MaterialParameterStorage.hpp>
 #include <Engine.Graphics.Material/ParameterIdentifier.hpp>
+
+import std;
 
 using namespace hg;
 using namespace hg::engine::graphics::material;

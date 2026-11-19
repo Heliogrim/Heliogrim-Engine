@@ -1,12 +1,15 @@
 #pragma once
 
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/Managed/Rc.hpp>
-#include <Engine.Common/Meta/TypeId.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Filesystem/__fwd.hpp>
 #include <Engine.Resource/File.hpp>
 
 #include "../IStorageProvider.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::storage::system {
 	class LocalFileStorage;

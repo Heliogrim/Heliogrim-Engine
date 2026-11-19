@@ -1,10 +1,12 @@
 #pragma once
 
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 
-#include "Location.hpp"
-#include "Matrix.hpp"
-#include "Rotator.hpp"
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+import std;
+#endif
 
 namespace hg::math {
 	class Transform {

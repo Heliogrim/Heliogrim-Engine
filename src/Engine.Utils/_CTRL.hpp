@@ -1,7 +1,8 @@
 #pragma once
 
-#include <mutex>
-#include <shared_mutex>
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 #define _CTRL_OBJ(var_) std::mutex var_
 #define _CTRL_GATE(cond_) std::unique_lock<std::mutex> __gate_lock(cond_)

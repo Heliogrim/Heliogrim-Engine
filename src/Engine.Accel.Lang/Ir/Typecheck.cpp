@@ -1,15 +1,10 @@
 #include "Typecheck.hpp"
 
-#include <algorithm>
-#include <array>
-#include <bit>
-#include <limits>
-#include <string>
-#include <utility>
-
 #include "Builtin.hpp"
 #include "Place.hpp"
 #include "Uniformity.hpp"
+
+import std;
 
 using namespace hg::engine::accel::lang;
 using namespace hg;

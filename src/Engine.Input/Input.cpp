@@ -1,6 +1,5 @@
 #include "Input.hpp"
 
-#include <algorithm>
 #include <Engine.Common/SDL3.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Event/GlobalEventEmitter.hpp>
@@ -20,6 +19,8 @@
 #include <Support.Input.Win32/DragDrop/Win32DragDropSender.hpp>
 #include <Support.Platform.Win32/Win32Window.hpp>
 #endif
+
+import std;
 
 using namespace hg::engine::input;
 using namespace hg::engine;

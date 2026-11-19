@@ -1,15 +1,17 @@
 #pragma once
 
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/Types.hpp>
-#include <Engine.Common/Collection/Set.hpp>
-#include <Engine.Common/Math/Vector.hpp>
+#include <Engine.Common/__macro.hpp>
 
-#include "Texture.hpp"
-#include "__fwd.hpp"
-#include "../vkinc.hpp"
 #include "../Device/Device.hpp"
 #include "../Memory/VirtualMemory.hpp"
+#include "../vkinc.hpp"
+#include "Texture.hpp"
+#include "__fwd.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::graphics::loader {
 	class TextureLoader;

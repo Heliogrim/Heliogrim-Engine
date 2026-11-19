@@ -1,7 +1,7 @@
-#include "Crc32.hpp"
-
 #define CRCPP_USE_CPP11
 #include <crcpp/CRC.h>
+
+#include "Crc32.hpp"
 
 using namespace hg::engine::crypto;
 using namespace hg;

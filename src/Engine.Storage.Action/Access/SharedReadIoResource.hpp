@@ -1,11 +1,14 @@
 #pragma once
 
-#include <atomic>
-#include <Engine.Common/Types.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "IoResource.hpp"
 #include "ResourceFnStore.hpp"
 #include "ResourceStore.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::storage {
 	template <

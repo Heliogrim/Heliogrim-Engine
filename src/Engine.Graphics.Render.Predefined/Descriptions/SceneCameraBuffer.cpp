@@ -1,8 +1,9 @@
 #include "SceneCameraBuffer.hpp"
 
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.RenderGraph/Relation/SceneCameraDescription.hpp>
-#include <Engine.Pedantic/Clone/Clone.hpp>
+
+import Engine.Common;
 
 using namespace hg::engine::render;
 using namespace hg;

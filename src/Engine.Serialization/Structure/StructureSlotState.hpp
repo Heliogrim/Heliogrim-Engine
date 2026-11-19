@@ -1,12 +1,15 @@
 #pragma once
 
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Memory/MemoryPointer.hpp>
+#include <Engine.Common/__macro.hpp>
 
+#include "../Archive/__fwd.hpp"
 #include "StructureSlotHeader.hpp"
 #include "StructureSlotStateFlags.hpp"
 #include "__fwd.hpp"
-#include "../Archive/__fwd.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::serialization {
 	struct StructureSlotState {

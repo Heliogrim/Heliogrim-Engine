@@ -14,6 +14,6 @@ tl::optional<engine::accel::AccelCommandBuffer&> VkScopedCmdMgr::active() const 
                 const_cast<ref<engine::accel::AccelCommandBuffer>>(cmd_)
             );
         },
-        tl::make_optional<ref<engine::accel::AccelCommandBuffer>>(tl::nullopt)
+        tl::make_optional<ref<engine::accel::AccelCommandBuffer>>(::hg::None)
     );
 }

@@ -1,27 +1,18 @@
 #pragma once
 
-#include <array>
-#include <bit>
-#include <concepts>
-#include <functional>
-#include <span>
-#include <utility>
 #include <Engine.Async/Primitive/FiberSharedMutex.hpp>
-#include <Engine.Common/String.hpp>
-#include <Engine.Common/Types.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/DenseMap.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
-#include <Engine.Common/Functional/FnRef.hpp>
-#include <Engine.Common/Math/Hash.hpp>
+#include <Engine.Common/__macro.hpp>
 
+#include "../Intermediate.hpp"
 #include "Condition.hpp"
 #include "Interface.hpp"
 #include "Layout.hpp"
 #include "Module.hpp"
 #include "Tier.hpp"
-#include "../Intermediate.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::accel::lang::ir {
 	/**

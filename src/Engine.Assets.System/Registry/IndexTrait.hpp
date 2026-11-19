@@ -1,10 +1,12 @@
 #pragma once
 
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <concepts>
 
 #include "../__fwd.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::assets::system {
 	template <typename Index_>

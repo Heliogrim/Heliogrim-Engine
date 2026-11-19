@@ -1,14 +1,11 @@
 #pragma once
 
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.Common/Move.hpp>
-#include <algorithm>
-#include <cstddef>
-#include <functional>
-#include <span>
-#include <vector>
-#include <Engine.Common/Types.hpp>
+#include <Engine.Common/__macro.hpp>
+#include <cstdint>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::acs {
 	struct RelocationEntry {

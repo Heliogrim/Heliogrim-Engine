@@ -1,6 +1,6 @@
 #include "FifoWorkSet.hpp"
 
-#include <algorithm>
+import std;
 
 using namespace hg::engine::scheduler;
 using namespace hg;

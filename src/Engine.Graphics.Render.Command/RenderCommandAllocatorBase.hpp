@@ -1,9 +1,13 @@
 #pragma once
-#include <bit>
-#include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
-#include <tl/expected.hpp>
+
+#include <Engine.Common/__macro.hpp>
+#include <stddef.h>
 
 #include "RenderCommand.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::render::cmd {
     class AllocationError : std::exception {};

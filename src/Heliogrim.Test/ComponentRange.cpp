@@ -2,17 +2,12 @@
 
 /**/
 
-#include <algorithm>
-#include <cstddef>
-#include <ranges>
-#include <set>
-#include <span>
-#include <vector>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/Set.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Heliogrim/Actor/ComponentRange.hpp>
 #include <Heliogrim/Component/HierarchyComponent.hpp>
+#include <stddef.h>
+
+import Engine.Common;
 
 using namespace hg;
 

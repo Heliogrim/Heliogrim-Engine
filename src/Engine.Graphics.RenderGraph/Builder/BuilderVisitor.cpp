@@ -1,11 +1,11 @@
 #include "BuilderVisitor.hpp"
 
-#include <Engine.Pedantic/Clone/Clone.hpp>
+#include <Engine.Common/__macro.hpp>
+#include <cassert>
 
-#include "Linker.hpp"
+#include "../Node/Compile/CompileSubpassNode.hpp"
 #include "../Node/CompileNode.hpp"
 #include "../Node/Node.hpp"
-#include "../Node/Compile/CompileSubpassNode.hpp"
 #include "../Node/Runtime/AnchorNode.hpp"
 #include "../Node/Runtime/BarrierNode.hpp"
 #include "../Node/Runtime/ConvergeNode.hpp"
@@ -13,6 +13,9 @@
 #include "../Node/Runtime/ProviderNode.hpp"
 #include "../Node/Runtime/SelectorNode.hpp"
 #include "../Node/Runtime/SubpassNode.hpp"
+#include "Linker.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::render::graph;
 using namespace hg;

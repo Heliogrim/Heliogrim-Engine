@@ -1,8 +1,10 @@
 #pragma once
 
-#include <ranges>
-
 #include "../Optional.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg {
 	template <typename Type_>

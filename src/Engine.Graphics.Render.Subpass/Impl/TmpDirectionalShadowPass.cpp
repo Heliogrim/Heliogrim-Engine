@@ -1,35 +1,34 @@
 #include "TmpDirectionalShadowPass.hpp"
 
-#include <utility>
 #include <Engine.Accel.Command/CommandBuffer.hpp>
-#include <Engine.Accel.Compile/VkEffectCompiler.hpp>
 #include <Engine.Accel.Compile/Profile/EffectProfile.hpp>
 #include <Engine.Accel.Compile/Spec/SimpleEffectSpecification.hpp>
+#include <Engine.Accel.Compile/VkEffectCompiler.hpp>
 #include <Engine.Accel.Pass/VkAccelerationPassFactory.hpp>
 #include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
 #include <Engine.Accel.Pipeline/VkGraphicsPipeline.hpp>
 #include <Engine.Common/GLM.hpp>
-#include <Engine.Common/Math/Convertion.hpp>
-#include <Engine.Common/Math/Coordinates.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
-#include <Engine.Graphics/Buffer/BufferFactory.hpp>
-#include <Engine.Graphics/Pool/SceneResourcePool.hpp>
-#include <Engine.Graphics/Texture/SparseTextureView.hpp>
-#include <Engine.Graphics/Texture/TextureFactory.hpp>
-#include <Engine.Graphics/Texture/TextureView.hpp>
 #include <Engine.Graphics.Render.Command/RenderCommandBuffer.hpp>
-#include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/DirectionalShadow.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneDepth.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneView.hpp>
 #include <Engine.Graphics.RenderGraph/Relation/TextureDescription.hpp>
 #include <Engine.Graphics.RenderGraph/Symbol/ScopedSymbolContext.hpp>
 #include <Engine.Graphics.Scene/View/SceneView.hpp>
-#include <Engine.Pedantic/Clone/Clone.hpp>
+#include <Engine.Graphics/Buffer/BufferFactory.hpp>
+#include <Engine.Graphics/Graphics.hpp>
+#include <Engine.Graphics/Pool/SceneResourcePool.hpp>
+#include <Engine.Graphics/Texture/SparseTextureView.hpp>
+#include <Engine.Graphics/Texture/TextureFactory.hpp>
+#include <Engine.Graphics/Texture/TextureView.hpp>
 #include <Engine.Reflect/Cast.hpp>
 #include <Engine.Reflect/ExactType.hpp>
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
+
+import Engine.Common;
 
 using namespace hg::engine::render;
 using namespace hg::engine::accel;

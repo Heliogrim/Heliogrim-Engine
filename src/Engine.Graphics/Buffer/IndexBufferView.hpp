@@ -1,8 +1,12 @@
 #pragma once
 
-#include <Engine.Common/Types.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "../API/__vkFwd.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::graphics {
     enum class VertexIndexType {

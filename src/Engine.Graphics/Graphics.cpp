@@ -1,12 +1,9 @@
 #include "Graphics.hpp"
 
-#include <cassert>
-#include <stdexcept>
-#include <string>
 #include <Engine.Scheduler/Async.hpp>
+#include <cassert>
 
 #ifdef _PROFILING
-#include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
 
 #include <Engine.Async/Collection/RingBuffer.hpp>
@@ -20,7 +17,6 @@
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Scheduler/Pipeline/CompositePipeline.hpp>
 
-#include "RenderTarget.hpp"
 #include "Buffer/VkBufferFactory.hpp"
 #include "Cache/GlobalCacheCtrl.hpp"
 #include "Cache/GlobalResourceCache.hpp"
@@ -32,13 +28,17 @@
 #include "Importer/ImageImporter.hpp"
 #include "Importer/ModelImporter.hpp"
 #include "Pool/GlobalResourcePool.hpp"
+#include "RenderTarget.hpp"
 #include "Surface/SurfaceManager.hpp"
 #include "Swapchain/Swapchain.hpp"
 #include "Texture/VkTextureFactory.hpp"
 
 /* Development Testing */
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.Render/__Test__Renderer.hpp>
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
+
+import Engine.Common;
 /**/
 
 using namespace hg::engine::graphics;

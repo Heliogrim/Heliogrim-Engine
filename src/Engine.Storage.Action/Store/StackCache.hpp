@@ -2,11 +2,13 @@
 
 #include <Engine.Async/Primitive/FiberSharedMutex.hpp>
 #include <Engine.Async/Primitive/SpinLock.hpp>
-#include <Engine.Common/Optional.hpp>
-#include <Engine.Common/Collection/DenseMap.hpp>
-#include <Engine.Common/Memory/UniquePointer.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "ResolvedStage.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::storage {
 	class StackCache {

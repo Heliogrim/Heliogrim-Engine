@@ -1,10 +1,10 @@
 #include "Menu.hpp"
 
-#include <format>
-#include <Engine.Common/Make.hpp>
-#include <Engine.Common/Move.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "../Layer/Anchor.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::reflow;
 using namespace hg;

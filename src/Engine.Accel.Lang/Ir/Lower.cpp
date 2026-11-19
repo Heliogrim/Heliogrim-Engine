@@ -1,14 +1,14 @@
 #include "Lower.hpp"
 
-#include <algorithm>
+#include <Engine.Common/__macro.hpp>
 
-#include <Engine.Common/Make.hpp>
-
-#include "Interface.hpp"
-#include "References.hpp"
 #include "../Rep/Annotation.hpp"
 #include "../Rep/Symbol.hpp"
+#include "Interface.hpp"
+#include "References.hpp"
 #include "Spirv/SpirvEmitter.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::accel::lang;
 using namespace hg;

@@ -1,9 +1,13 @@
 #pragma once
 
-#include <Engine.Common/Algo/Search.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "Hash.hpp"
 #include "Table.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg {
 	template <typename Type_, size_t Size_, typename Hash_ = CompileHash<Type_>>

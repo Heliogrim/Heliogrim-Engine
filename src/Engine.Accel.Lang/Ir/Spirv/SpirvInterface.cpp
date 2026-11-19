@@ -1,10 +1,7 @@
-#include <algorithm>
-#include <map>
-#include <type_traits>
-#include <variant>
-
-#include "SpirvEmitter.Impl.hpp"
 #include "../Interface.hpp"
+#include "SpirvEmitter.Impl.hpp"
+
+import std;
 
 namespace hg::engine::accel::lang::ir::spirv {
 	void Impl::checkDeclarations() {

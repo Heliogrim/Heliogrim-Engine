@@ -1,7 +1,6 @@
 #include "Lexer.hpp"
 
-#include <array>
-#include <string>
+import std;
 
 using namespace hg::engine::accel::lang;
 using namespace hg;

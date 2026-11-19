@@ -1,23 +1,25 @@
-#include <filesystem>
-#include <regex>
+/* gli includes glm textually, so it precedes every import. */
+#include <Engine.Common/GLMConfig.hpp>
+
+#include <gli/load_ktx.hpp>
+#include <gli/texture.hpp>
+
 #include <Engine.Assets.Type/Texture/ImageAsset.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
-#include <Engine.Common/GuidFormat.hpp>
-#include <Engine.Common/Optional.hpp>
-#include <Engine.Common/Wrapper.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Serialization/Archive/LayoutArchive.hpp>
 #include <Engine.Storage.Registry/IStorageRegistry.hpp>
 #include <Engine.Storage.Registry/Storage/PackageStorage.hpp>
 
-#include "ImageImporter.hpp"
-#include "../vkinc.hpp"
 #include "../API/VkTranslate.hpp"
+#include "../vkinc.hpp"
+#include "ImageImporter.hpp"
 
 /**/
 #include <Engine.Common/GLM.hpp>
-#include <gli/load_ktx.hpp>
-#include <gli/texture.hpp>
+#include <Engine.Common/__macro.hpp>
+
+import Engine.Common;
 
 using namespace hg::engine::graphics;
 using namespace hg;

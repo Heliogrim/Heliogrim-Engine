@@ -1,12 +1,12 @@
 #pragma once
 
-#include <variant>
-
-#include <Engine.Common/Types.hpp>
-#include <Engine.Common/Math/Matrix.hpp>
-#include <Engine.Common/Math/Vector.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "../NodeLinkValueType.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::editor::graphics::graph {
     template <NodeLinkValueType ValueType_>

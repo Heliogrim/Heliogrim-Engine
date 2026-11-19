@@ -1,7 +1,10 @@
 #pragma once
 
-#include <Engine.Common/String.hpp>
-#include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/__macro.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::reflow {
 	template <ref<const StringView> Name_, typename Attribute_>

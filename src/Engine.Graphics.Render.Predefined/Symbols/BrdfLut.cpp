@@ -1,8 +1,10 @@
 #include "BrdfLut.hpp"
 
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "../Descriptions/BrdfLutBuffer.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::render;
 using namespace hg;

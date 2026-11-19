@@ -1,11 +1,13 @@
 #include "VkSurfaceSwapchain.hpp"
 
-#include <Engine.Pedantic/Clone/Clone.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "Engine.Graphics/API/VkTranslate.hpp"
 #include "Engine.Graphics/Command/CommandQueue.hpp"
 #include "Engine.Graphics/Texture/TextureFactory.hpp"
+
 import Engine.Asserts;
+import Engine.Common;
 
 using namespace hg::engine::graphics;
 using namespace hg;
@@ -283,8 +285,8 @@ void VkSurfaceSwapchain::restoreSignal(const vk::Semaphore signal_) {
  *
  */
 
-#include <Engine.Graphics/Device/Device.hpp>
 #include <Engine.Graphics/Command/CommandBuffer.hpp>
+#include <Engine.Graphics/Device/Device.hpp>
 
 math::uivec2 clampExtent(math::uivec2 extent_, cref<vk::SurfaceCapabilitiesKHR> capabilities_) noexcept {
 

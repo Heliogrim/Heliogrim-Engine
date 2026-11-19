@@ -1,11 +1,12 @@
 #pragma once
 
 #include <Editor.Action/Action/DelegateAction.hpp>
-#include <Engine.Common/Optional.hpp>
-#include <Engine.Common/Variant.hpp>
-#include <Engine.Common/Math/Location.hpp>
-#include <Engine.Common/Math/Rotator.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Heliogrim/Actor/ActorGuid.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::editor::scene::actions {
 	struct SpawnDirectionalLightActorOptions {

@@ -1,7 +1,11 @@
 #include "Convert.hpp"
 
+#include <Engine.Common/__macro.hpp>
 #include <stdlib.h>
+
 import Engine.Asserts;
+import Engine.Common;
+import std;
 
 using namespace hg;
 

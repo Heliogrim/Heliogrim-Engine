@@ -1,11 +1,15 @@
 #pragma once
-#include <Engine.Common/Memory/MemoryPointer.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.Render.Command/RenderCommandTranslator.hpp>
 
 #include "VkCmdMgr.hpp"
 #include "VkNativeBatch.hpp"
-#include "VkScopedResourceTable.hpp"
 #include "VkScopedCmdMgr.hpp"
+#include "VkScopedResourceTable.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::driver::vk {
     class VkRCmdTranslator final :

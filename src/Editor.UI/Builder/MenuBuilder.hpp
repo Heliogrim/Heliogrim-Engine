@@ -1,11 +1,14 @@
 #pragma once
 
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
-#include <Engine.Common/Collection/StableUnorderedMap.hpp>
-#include <Engine.Common/Memory/SharedPointer.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "../Widget/Menu.hpp"
 #include "../Widget/MenuItem.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::editor::ui {
 	class MenuBuilder;

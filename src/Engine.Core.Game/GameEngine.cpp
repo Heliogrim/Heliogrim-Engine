@@ -1,20 +1,18 @@
 #include "GameEngine.hpp"
 
-#include <algorithm>
-#include <ranges>
 #include <Engine.ACS.Schedule/ActorPipeline.hpp>
 #include <Engine.ACS/ActorModule.hpp>
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Audio/Audio.hpp>
 #include <Engine.Config/Enums.hpp>
+#include <Engine.Core.Schedule/CorePipeline.hpp>
 #include <Engine.Core/EngineState.hpp>
-#include <Engine.Core/Session.hpp>
-#include <Engine.Core/UniverseContext.hpp>
 #include <Engine.Core/Event/UniverseAddedEvent.hpp>
 #include <Engine.Core/Event/UniverseRemoveEvent.hpp>
 #include <Engine.Core/Module/CoreDependencies.hpp>
 #include <Engine.Core/Module/SubModule.hpp>
-#include <Engine.Core.Schedule/CorePipeline.hpp>
+#include <Engine.Core/Session.hpp>
+#include <Engine.Core/UniverseContext.hpp>
 #include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Input/Input.hpp>
 #include <Engine.Network/Network.hpp>
@@ -33,6 +31,8 @@
 #include <Engine.Platform/Platform.hpp>
 //#include <Engine.Platform/Linux>
 #endif
+
+import std;
 
 using namespace hg::engine::core;
 using namespace hg::engine;

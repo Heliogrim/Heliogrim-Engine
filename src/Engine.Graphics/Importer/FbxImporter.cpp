@@ -1,15 +1,19 @@
-#include "ModelImporter.hpp"
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
 
-#include <filesystem>
 #include <Engine.Assets/Assets.hpp>
-#include <Engine.Common/GuidFormat.hpp>
-#include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Resource.Package/Linker/PackageLinker.hpp>
 #include <Engine.Storage.Registry/IStorageRegistry.hpp>
 #include <Engine.Storage.Registry/Storage/PackageStorage.hpp>
+
+#include "ModelImporter.hpp"
+
 import Engine.Asserts;
+import Engine.Common;
 
 using namespace hg::engine::graphics;
 using namespace hg;
@@ -98,10 +102,6 @@ FbxImporter::import_result_type FbxImporter::import(
 
 	return makeImportResult(::hg::move(asset));
 }
-
-#include <assimp/Importer.hpp>
-#include <assimp/postprocess.h>
-#include <assimp/scene.h>
 
 FbxAssimpImportData assimpGetImportData(cref<fs::File> file_) {
 

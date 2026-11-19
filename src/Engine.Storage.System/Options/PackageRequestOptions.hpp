@@ -1,12 +1,13 @@
 #pragma once
 
-#include <stdexcept>
-#include <system_error>
-#include <Engine.Common/Variant.hpp>
-#include <Engine.Common/Managed/Rc.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Storage.Registry/Storage/LocalFileStorage.hpp>
 #include <Engine.Storage.Registry/Storage/MemoryStorage.hpp>
 #include <Engine.Storage.Registry/Url/FileUrl.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::storage {
 	/**/

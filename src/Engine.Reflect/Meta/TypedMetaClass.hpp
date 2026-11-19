@@ -1,12 +1,15 @@
 #pragma once
 
-#include <Engine.Common/Meta/Support.hpp>
-#include <Engine.Common/Meta/Type.hpp>
+#include <Engine.Common/__macro.hpp>
 
-#include "MetaClass.hpp"
 #include "../Compile/Map.hpp"
 #include "../Inherit/Compile.hpp"
 #include "../Template/QueryTypeId.hpp"
+#include "MetaClass.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg {
 	class ClassMetaBase;

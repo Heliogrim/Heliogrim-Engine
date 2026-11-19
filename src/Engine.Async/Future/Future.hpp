@@ -1,15 +1,14 @@
 #pragma once
 
-#include <concepts>
-#include <type_traits>
-#include <utility>
-#include <Engine.Common/Expected.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "FutureState.hpp"
 #include "Schedule.hpp"
 #include "Send.hpp"
+
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Asserts;
+import Engine.Common;
 #endif
 
 namespace hg {

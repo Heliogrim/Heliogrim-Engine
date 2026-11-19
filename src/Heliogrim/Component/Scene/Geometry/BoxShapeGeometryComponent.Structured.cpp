@@ -1,10 +1,12 @@
-#include <Engine.Common/Move.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 
 #include "AssetDatabase.hpp"
 #include "AssetResolve.hpp"
 #include "BoxShapeGeometryComponent.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::serialization;
 using namespace hg;

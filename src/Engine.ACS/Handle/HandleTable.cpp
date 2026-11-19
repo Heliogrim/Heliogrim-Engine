@@ -1,11 +1,8 @@
 #include "HandleTable.hpp"
 
-#include <algorithm>
-#include <atomic>
-#include <bitset>
-#include <mutex>
-#include <tuple>
-#include <Engine.Common/Move.hpp>
+#include <Engine.Common/__macro.hpp>
+
+import Engine.Common;
 
 using namespace hg::engine::acs;
 using namespace hg;

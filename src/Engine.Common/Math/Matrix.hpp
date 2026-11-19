@@ -1,11 +1,11 @@
 #pragma once
 
-#include <cmath>
-
 #include "MathDefaultDefine.hpp"
 #include "Vector.hpp"
+
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Asserts;
+import std;
 #endif
 
 namespace hg::math {
@@ -568,7 +568,7 @@ namespace hg::math {
 	}
 
 	template <typename T>
-	[[maybe_unused]] static matq4_t<T> lookAt(
+	[[maybe_unused]] inline matq4_t<T> lookAt(
 		const vec3_t<T> eye_,
 		const vec3_t<T>& center_,
 		const vec3_t<T>& up_
@@ -598,7 +598,7 @@ namespace hg::math {
 	}
 
 	template <typename T>
-	[[maybe_unused]] static matq4_t<T> ortho(
+	[[maybe_unused]] inline matq4_t<T> ortho(
 		const T& l_,
 		const T& r_,
 		const T& b_,
@@ -624,7 +624,7 @@ namespace hg::math {
 	}
 
 	template <typename T>
-	[[maybe_unused]] static matq4_t<T> ortho(const T& l_, const T& r_, const T& b_, const T& t_) {
+	[[maybe_unused]] inline matq4_t<T> ortho(const T& l_, const T& r_, const T& b_, const T& t_) {
 		matq4_t<T> res = matq4_t<T>(1);
 		res[0][0] = static_cast<T>(2) / (r_ - l_);
 		res[1][1] = static_cast<T>(2) / (t_ - b_);
@@ -640,7 +640,7 @@ namespace hg::math {
 		return res;
 	}
 
-	[[maybe_unused]] static mat4 perspectiveLeftHand(
+	[[maybe_unused]] inline mat4 perspectiveLeftHand(
 		const mat4::value_type& fov_,
 		const mat4::value_type& aspect_,
 		const mat4::value_type& znear_,
@@ -658,7 +658,7 @@ namespace hg::math {
 		return res;
 	}
 
-	[[maybe_unused]] static mat4 perspectiveRightHand(
+	[[maybe_unused]] inline mat4 perspectiveRightHand(
 		const mat4::value_type& fov_,
 		const mat4::value_type& aspect_,
 		const mat4::value_type& znear_,
@@ -676,7 +676,7 @@ namespace hg::math {
 		return res;
 	}
 
-	[[maybe_unused]] FORCE_INLINE static mat4 perspective(
+	[[maybe_unused]] inline mat4 perspective(
 		const mat4::value_type& fov_,
 		const mat4::value_type& aspect_,
 		const mat4::value_type& znear_,

@@ -1,13 +1,11 @@
 #pragma once
 
-#include <algorithm>
+#include <Engine.Common/__macro.hpp>
 #include <cstring>
-#include <map>
-#include <stdexcept>
-#include <utility>
-#include <Engine.Common/Types.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::scene {
 	/**

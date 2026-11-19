@@ -1,9 +1,13 @@
 #pragma once
 
-#include <Engine.Common/Types.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflow/Widget/Widget.hpp>
 
 #include "../Molecule/Layout/Stack.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::reflow::uikit {
 	class Card :

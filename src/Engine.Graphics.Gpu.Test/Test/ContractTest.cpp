@@ -2,9 +2,9 @@
 
 /**/
 
-#include <limits>
-
 #include "../Harness/Contract.hpp"
+
+import std;
 
 using namespace hg::test::gpu;
 using namespace hg;

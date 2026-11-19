@@ -1,9 +1,8 @@
 #include "pch.h"
 
-#include <set>
-#include <unordered_set>
-#include <Engine.Common/Guid.hpp>
-#include <Engine.Common/GuidFormat.hpp>
+#include <Engine.Common/__macro.hpp>
+
+import Engine.Common;
 
 using namespace hg;
 

@@ -1,17 +1,14 @@
 #include "pch.h"
 
 /**/
-#include <cstring>
-#include <list>
-#include <tuple>
-#include <utility>
 #include <Engine.Assets.Type/Asset.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 #include <Engine.Assets.Type/Universe/LevelAsset.hpp>
-#include <Engine.Common/Collection/Array.hpp>
 #include <Engine.Resource.Archive/BufferArchive.hpp>
+#include <cstring>
 
 /**/
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Structure/FloatScopedSlot.hpp>
 #include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>
@@ -27,6 +24,8 @@
 #include "Engine.Serialization/Scheme/DefaultScheme.hpp"
 #include <Engine.Serialization.Structures/Symbols.hpp>
 #include <Engine.Serialization.Structures/Common/Guid.hpp>
+
+import Engine.Common;
 
 using namespace hg::engine::resource;
 using namespace hg::engine::serialization;

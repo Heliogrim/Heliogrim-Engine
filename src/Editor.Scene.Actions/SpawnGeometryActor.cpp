@@ -1,6 +1,8 @@
 #include "SpawnGeometryActor.hpp"
 
-#include <Engine.Common/Move.hpp>
+#include <Engine.Common/__macro.hpp>
+
+import Engine.Common;
 
 using namespace hg::editor::scene::actions;
 using namespace hg;
@@ -36,14 +38,13 @@ SpawnGeometryActor::~SpawnGeometryActor() = default;
 #include <Editor.UI.Main/EditorUI.hpp>
 #include <Editor.UI.Main/Module/EditorUI.hpp>
 #include <Engine.ACS/ActorModule.hpp>
-#include <Engine.Common/Discard.hpp>
-#include <Heliogrim/ActorInitializer.hpp>
-#include <Heliogrim/Heliogrim.hpp>
 #include <Heliogrim/Actor/Actor.hpp>
 #include <Heliogrim/Actor/Geometry/StaticGeometryActor.hpp>
+#include <Heliogrim/ActorInitializer.hpp>
 #include <Heliogrim/Asset/GeometryAssetHandles.hpp>
 #include <Heliogrim/Asset/MaterialAssetHandles.hpp>
 #include <Heliogrim/Core/Session.hpp>
+#include <Heliogrim/Heliogrim.hpp>
 #include <Heliogrim/Universe/Universe.hpp>
 
 Opt<ActorRef<>> spawnActorImpl(TypedAssetGuid<engine::assets::StaticGeometry> assetGuid_, ref<const math::Location> location_) {

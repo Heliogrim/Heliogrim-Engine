@@ -1,9 +1,13 @@
 #pragma once
 
-#include <array>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 
 #include "BoxShapeCollisionComponent.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::serialization::access {
 	template <>

@@ -1,8 +1,12 @@
 #pragma once
 
-#include <Engine.Common/Collection/DenseSet.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "../Visitor/Visitor.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::render::graph {
     class DebugVisitor :

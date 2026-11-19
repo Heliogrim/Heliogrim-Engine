@@ -1,11 +1,8 @@
 #include "pch.h"
 
-#include <atomic>
-#include <thread>
-#include <type_traits>
-#include <vector>
-#include <Engine.Common/Managed/Rc.hpp>
-#include <Engine.Common/Managed/AtomicRefCountedIntrusive.hpp>
+#include <Engine.Common/__macro.hpp>
+
+import Engine.Common;
 
 using namespace hg;
 

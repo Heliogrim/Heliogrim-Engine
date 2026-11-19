@@ -1,9 +1,10 @@
 #include "InputPipeline.hpp"
 
-#include <ranges>
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "InputTickStage.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::input::schedule;
 using namespace hg::engine::scheduler;

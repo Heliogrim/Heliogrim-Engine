@@ -2,7 +2,8 @@
 
 #include <Engine.Async/Lock/UniqueLock.hpp>
 #include <Engine.Graphics/Command/CommandBatch.hpp>
-#include <numeric>
+
+import std;
 
 using namespace hg::driver::vk;
 using namespace hg;

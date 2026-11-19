@@ -1,17 +1,17 @@
 #pragma once
 
-#include <numeric>
-#include <span>
-
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/Math/Coordinates.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "../Children.hpp"
+#include "../Gapping.hpp"
+#include "../Padding.hpp"
 #include "../ReflowState.hpp"
 #include "../Widget/Widget.hpp"
 
-#include "../Gapping.hpp"
-#include "../Padding.hpp"
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::reflow {
 	class ReflowState;

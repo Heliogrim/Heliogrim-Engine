@@ -1,6 +1,6 @@
 #include "Sink.hpp"
 
-#include <utility>
+import std;
 
 using namespace hg::engine::diag;
 using namespace hg;

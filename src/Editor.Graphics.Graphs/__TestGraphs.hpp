@@ -1,10 +1,7 @@
 #pragma once
+#include <Engine.Common/__macro.hpp>
+
 #include "Graph/NodeGraph.hpp"
-#include "Node/__fwd.hpp"
-#include "Node/NodeLink.hpp"
-#include "Node/NodeOutput.hpp"
-#include "Node/NodeInput.hpp"
-#include "Node/Node.hpp"
 #include "Node/Input/BufferInputNode.hpp"
 #include "Node/Input/ConstantInputNode.hpp"
 #include "Node/Input/SubGraphInputNode.hpp"
@@ -13,9 +10,13 @@
 #include "Node/Math/VectorAddMathNode.hpp"
 #include "Node/Math/VectorAddScalarMathNode.hpp"
 #include "Node/Math/VectorScaleMathNode.hpp"
+#include "Node/Node.hpp"
+#include "Node/NodeInput.hpp"
+#include "Node/NodeLink.hpp"
+#include "Node/NodeOutput.hpp"
 #include "Node/Output/SubGraphOutputNode.hpp"
-#include "Graph/NodeGraph.hpp"
-#include <Engine.Common/__macro.hpp>
+#include "Node/__fwd.hpp"
+
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
 #endif

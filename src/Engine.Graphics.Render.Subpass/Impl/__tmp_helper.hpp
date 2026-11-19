@@ -1,23 +1,21 @@
 #pragma once
 
-#include <algorithm>
-#include <cassert>
-#include <utility>
 #include <Engine.Accel.Lang/Intermediate.hpp>
 #include <Engine.Accel.Lang/Ir/Interface.hpp>
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
 #include <Engine.Accel.Lang/Rep/Variable.hpp>
-#include <Engine.Common/Make.hpp>
-#include <Engine.Common/Move.hpp>
-#include <Engine.Common/String.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Config/Config.hpp>
 #include <Engine.Config/Enums.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Storage.System/ReadText.hpp>
 #include <Engine.Storage.System/StorageSystem.hpp>
 #include <Engine.Storage/StorageModule.hpp>
+#include <cassert>
+
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Asserts;
+import Engine.Common;
 #endif
 
 namespace hg::engine::render {

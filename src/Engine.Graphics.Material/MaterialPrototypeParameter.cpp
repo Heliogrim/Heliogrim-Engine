@@ -1,6 +1,6 @@
 #include "MaterialPrototypeParameter.hpp"
 
-#include <utility>
+import std;
 
 using namespace hg::engine::graphics::material;
 using namespace hg;

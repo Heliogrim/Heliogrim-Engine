@@ -5,8 +5,10 @@
 #include <Engine.Assets.System/Repository/InMemAssetRepository.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 #include <Engine.Assets/AssetGuid.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics/Texture/TextureType.hpp>
-#include <Engine.Common/Make.hpp>
+
+import Engine.Common;
 
 using namespace hg;
 using namespace hg::engine::assets;

@@ -1,13 +1,17 @@
 #pragma once
 
-#include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics/API/__vkFwd.hpp>
 #include <Engine.Graphics/Texture/__fwd.hpp>
 #include <Engine.Reflow.Uikit/Atom/Atom.hpp>
 #include <Heliogrim/Universe/Universe.hpp>
 
-#include "Widget.hpp"
 #include "../Children.hpp"
+#include "Widget.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg {
 	class CameraActor;

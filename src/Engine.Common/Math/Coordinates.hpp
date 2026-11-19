@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Vector.hpp"
 #include "../Sal.hpp"
 #include "../Wrapper.hpp"
+#include "Vector.hpp"
 
 namespace hg::math {
 	inline constexpr vec3 vec3_zero { 0, 0, 0 };

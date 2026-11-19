@@ -1,12 +1,12 @@
 #pragma once
 
+#include <Engine.Common/StringLiterals.hpp>
 #include <Engine.Reflow/Padding.hpp>
 #include <Engine.Reflow/ReflowPlacement.hpp>
 #include <Engine.Reflow/ReflowUnit.hpp>
 
 #include "../LayoutAttribute.hpp"
 #include "../LayoutAttributes.hpp"
-#include <Engine.Common/StringLiterals.hpp>
 
 namespace hg::engine::reflow {
 	namespace attr {

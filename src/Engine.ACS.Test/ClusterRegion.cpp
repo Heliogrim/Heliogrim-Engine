@@ -2,14 +2,12 @@
 
 /**/
 
+#include <Engine.ACS/Cluster/ClusterRegion.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <cstdio>
 #include <cstring>
-#include <map>
-#include <set>
-#include <vector>
-#include <Engine.ACS/Cluster/ClusterRegion.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
+
+import Engine.Common;
 
 using namespace hg::engine::acs;
 using namespace hg;

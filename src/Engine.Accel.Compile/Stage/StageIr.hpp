@@ -1,7 +1,5 @@
 #pragma once
 
-#include <expected>
-#include <span>
 #include <Engine.Accel.Effect/Stage/StageFlags.hpp>
 #include <Engine.Accel.Lang/Intermediate.hpp>
 #include <Engine.Accel.Lang/Ir/Diagnostic.hpp>
@@ -10,11 +8,13 @@
 #include <Engine.Accel.Lang/Ir/Variant.hpp>
 #include <Engine.Accel.Pipeline/Bind/BindLayout.hpp>
 #include <Engine.Accel.Pipeline/Stage/StageDerivat.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "../Module/ModuleTargetStage.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::accel {
 	class EffectProfile;

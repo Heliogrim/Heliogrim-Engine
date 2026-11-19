@@ -1,12 +1,15 @@
 #pragma once
 
-#include <bit>
-#include <Engine.Common/Guid.hpp>
-#include <Engine.Common/Move.hpp>
+#include <Engine.Common/Sal.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Serialization/Structure/StringScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 
 #include "../Symbols.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::serialization {
 	template <std::derived_from<Guid> GuidType_>

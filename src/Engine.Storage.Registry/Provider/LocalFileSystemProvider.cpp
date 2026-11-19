@@ -1,6 +1,6 @@
 #include "LocalFileSystemProvider.hpp"
 
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Config/Config.hpp>
 #include <Engine.Config/Enums.hpp>
 #include <Engine.Reflect/Cast.hpp>
@@ -12,6 +12,8 @@
 #include "../Repository/ProjectFileSystemRepository.hpp"
 #include "../Repository/RuntimeFileSystemRepository.hpp"
 #include "../Storage/LocalFileStorage.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::storage::system;
 using namespace hg;

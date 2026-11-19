@@ -1,10 +1,10 @@
 #include "SparseTexturePage.hpp"
 
-#include <utility>
-
 #include "../Memory/AllocatedMemory.hpp"
 #include "../Memory/AllocationResult.hpp"
 #include "Engine.Graphics/Memory/VirtualMemory.hpp"
+
+import std;
 
 using namespace hg::engine::graphics;
 using namespace hg;

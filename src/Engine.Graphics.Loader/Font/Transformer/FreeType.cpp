@@ -1,9 +1,7 @@
 #include "FreeType.hpp"
 
-#include <filesystem>
-#include <Engine.Common/Discard.hpp>
-#include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Math/Compat.inl>
+#include <Engine.Common/Sal.hpp>
 #include <Engine.Graphics/Buffer/Buffer.hpp>
 #include <Engine.Graphics/Command/CommandBuffer.hpp>
 #include <Engine.Graphics/Command/CommandPool.hpp>
@@ -15,7 +13,10 @@
 #include <ft2build.h>
 
 #include FT_FREETYPE_H
+#include <Engine.Common/__macro.hpp>
+
 import Engine.Asserts;
+import Engine.Common;
 /**/
 
 using namespace hg::engine::graphics::loader::transformer;

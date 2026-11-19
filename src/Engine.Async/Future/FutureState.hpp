@@ -1,16 +1,15 @@
 #pragma once
 
-#include <atomic>
-#include <Engine.Common/Types.hpp>
-#include <Engine.Common/Variant.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Functional/UniqueFn.hpp>
-#include <Engine.Common/Managed/Rc.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Scheduler/Lane.hpp>
 #include <Engine.Scheduler/Process/BoostCell.hpp>
 #include <Engine.Scheduler/Waitable/Signal.hpp>
 
 #include "Broken.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg {
 	struct Pending {};

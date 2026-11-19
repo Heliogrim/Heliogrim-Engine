@@ -1,16 +1,16 @@
 #include "SparseTexture.hpp"
 
-#include <algorithm>
-#include <ranges>
-#include <Engine.Common/Make.hpp>
-
 #include "SparseTexturePage.hpp"
 #include "SparseTextureView.hpp"
 
 // TODO: Remove
+#include <Engine.Common/__macro.hpp>
+
 #include "Engine.Core/Engine.hpp"
 #include "Engine.Graphics/Graphics.hpp"
+
 import Engine.Asserts;
+import Engine.Common;
 
 using namespace hg::engine::graphics;
 using namespace hg;

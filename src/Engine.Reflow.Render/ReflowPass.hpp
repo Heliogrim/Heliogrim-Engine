@@ -2,13 +2,17 @@
 
 #include <Engine.Accel.Compile/EffectCompileResult.hpp>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/Math/Extent.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.Loader/Texture/TextureResource.hpp>
+#include <Engine.Graphics.Render.Subpass/SubPass.hpp>
 #include <Engine.Graphics/Buffer/BufferLikeObject.hpp>
 #include <Engine.Graphics/Framebuffer/Framebuffer.hpp>
 #include <Engine.Graphics/Geometry/UIVertex.hpp>
 #include <Engine.Graphics/Texture/TextureSampler.hpp>
-#include <Engine.Graphics.Render.Subpass/SubPass.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::reflow {
 	class ReflowCommandBuffer;

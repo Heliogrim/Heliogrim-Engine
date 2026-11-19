@@ -1,11 +1,11 @@
 #include "Pattern.hpp"
 
-#include <cstring>
-
 #include <Engine.Resource.Package/Attribute/MagicBytes.hpp>
 #include <Engine.Resource.Package/Footer/PackageFooter.hpp>
 #include <Engine.Resource.Package/Header/PackageHeader.hpp>
 #include <Engine.Resource.Package/Linker/PackageArchiveHeader.hpp>
+#include <cstring>
+#include <stddef.h>
 
 using namespace hg::engine::storage::package;
 using namespace hg::engine::resource::package;

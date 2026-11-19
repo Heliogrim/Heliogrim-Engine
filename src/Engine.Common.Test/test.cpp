@@ -1,7 +1,9 @@
 #include "pch.h"
 /**/
 
-#include <Engine.Common/Memory/MemoryPointer.hpp>
+#include <Engine.Common/__macro.hpp>
+
+import Engine.Common;
 
 using namespace hg;
 

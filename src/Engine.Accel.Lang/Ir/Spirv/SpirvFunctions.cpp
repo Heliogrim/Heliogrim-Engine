@@ -1,10 +1,7 @@
-#include <algorithm>
-#include <bit>
-#include <type_traits>
-#include <variant>
-
-#include "SpirvEmitter.Impl.hpp"
 #include "../Builtin.hpp"
+#include "SpirvEmitter.Impl.hpp"
+
+import std;
 
 namespace hg::engine::accel::lang::ir::spirv {
 	namespace {

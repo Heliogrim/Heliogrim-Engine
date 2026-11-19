@@ -1,10 +1,12 @@
 #pragma once
 
-#include <Engine.Common/Optional.hpp>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.Common/Memory/SharedPointer.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Filesystem/Url.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::editor::ui {
 	class AssetBrowserView;

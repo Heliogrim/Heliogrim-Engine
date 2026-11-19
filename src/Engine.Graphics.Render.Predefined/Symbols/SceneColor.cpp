@@ -1,8 +1,10 @@
 #include "SceneColor.hpp"
 
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "../Descriptions/ColorBuffer.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::render;
 using namespace hg;

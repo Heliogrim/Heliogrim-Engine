@@ -1,10 +1,13 @@
 #pragma once
 
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/Types.hpp>
-#include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "Header/PackageHeader.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::resource::package {
 	[[nodiscard]] constexpr streamoff computeFooterOffset(_In_ ref<const PackageHeader> header_) noexcept {

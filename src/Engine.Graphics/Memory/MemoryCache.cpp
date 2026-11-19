@@ -1,10 +1,13 @@
 ﻿#include "MemoryCache.hpp"
 
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
+#include <cassert>
 
 #include "AllocatedMemory.hpp"
 #include "AllocationResult.hpp"
 #include "MemoryPool.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::graphics::memory;
 using namespace hg;

@@ -1,13 +1,17 @@
 #pragma once
 
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Module/RootModule.hpp>
-#include <Engine.Pedantic/Clone/Clone.hpp>
 
-#include "FnSets.hpp"
 #include "Archive/LayoutArchive.hpp"
 #include "Archive/StructuredArchive.hpp"
+#include "FnSets.hpp"
 #include "Schema/Migration.hpp"
 #include "Structure/StructScopedSlot.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine {
 	class SerializationModule final :

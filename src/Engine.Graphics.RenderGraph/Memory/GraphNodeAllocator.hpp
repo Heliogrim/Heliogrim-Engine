@@ -1,12 +1,14 @@
 #pragma once
 
-#include <memory_resource>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
 
+#include "../Component/RuntimeComponent.hpp"
 #include "../Node/CompileNode.hpp"
 #include "../Node/RuntimeNode.hpp"
-#include "../Component/RuntimeComponent.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::render::graph {
     class GraphNodeAllocator {

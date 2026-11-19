@@ -1,12 +1,13 @@
 #pragma once
 
+#include <gtest/gtest.h>
+
 #include <Engine.Accel.Lang/Ir/Diagnostic.hpp>
 #include <Engine.Diagnostics/Render.hpp>
-#include <gtest/gtest.h>
-#include <initializer_list>
-#include <map>
-#include <string>
-#include <utility>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace AccelLang {
 	/* file name to source text, for rendering diagnostics that span several modules */

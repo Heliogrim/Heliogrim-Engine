@@ -1,11 +1,15 @@
 #pragma once
 
-#include <Engine.Common/Memory/MemoryPointer.hpp>
+#include <Engine.Common/__macro.hpp>
 
+#include "../API/__vkFwd.hpp"
 #include "MemoryLayout.hpp"
 #include "MemoryMapping.hpp"
 #include "__fwd.hpp"
-#include "../API/__vkFwd.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::graphics::memory {
 	struct AllocatedMemory {

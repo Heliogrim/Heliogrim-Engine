@@ -2,11 +2,14 @@
 
 #include <Engine.Common/stdafx.h>
 /**/
-#include <atomic>
-#include <ole2.h>
 #include <Engine.Input/DragDrop/DragDropObject.hpp>
 #include <Engine.Input/DragDrop/DragDropSender.hpp>
 #include <Engine.Logging/Logger.hpp>
+#include <ole2.h>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg::engine::input {
 	class Win32DragDropSender :

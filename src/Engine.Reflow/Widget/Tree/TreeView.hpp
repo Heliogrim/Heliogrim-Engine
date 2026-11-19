@@ -1,15 +1,15 @@
 #pragma once
 
-#include <Engine.Common/Optional.hpp>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/Types.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/DenseMap.hpp>
-#include <Engine.Common/Collection/Set.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflow.Uikit/Molecule/Layout/VScrollBox.hpp>
 
-#include "TreeItem.hpp"
 #include "../Widget.hpp"
+#include "TreeItem.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::reflow {
 	template <typename DataItemType_, template <typename> typename WrappingType_>

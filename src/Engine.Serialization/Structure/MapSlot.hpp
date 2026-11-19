@@ -1,11 +1,11 @@
 #pragma once
 
-#include <algorithm>
-#include <ranges>
-#include <type_traits>
-
 #include "MapEntrySlot.hpp"
 #include "StructureSlot.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg::engine::serialization {
 	template <typename KeyType_, typename ValueType_, template <typename, typename...> typename MapType_>

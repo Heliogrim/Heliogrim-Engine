@@ -1,4 +1,4 @@
-#include <Engine.Common/Move.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Resource.Archive/Archive.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Structure/FloatScopedSlot.hpp>
@@ -7,6 +7,8 @@
 #include "AssetDatabase.hpp"
 #include "AssetResolve.hpp"
 #include "SphereShapeGeometryComponent.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::serialization;
 using namespace hg;

@@ -1,10 +1,7 @@
 #include "AffineThread.hpp"
 
-#include <bit>
-#include <exception>
-#include <Engine.Common/Make.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Common/String/Convert.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Scheduler/Thread/Thread.hpp>
 
@@ -13,7 +10,9 @@
 /**/
 #include <processthreadsapi.h>
 #endif
+
 import Engine.Asserts;
+import Engine.Common;
 
 using namespace hg::engine::async;
 using namespace hg;

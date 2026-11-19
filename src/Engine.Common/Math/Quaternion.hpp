@@ -1,13 +1,15 @@
 #pragma once
 #include <cstdint>
-#include <cmath>
 //#include <complex>
 
 #include "../GLM.hpp"
-#include <glm/gtc/quaternion.hpp>
-
 #include "MathDefaultDefine.hpp"
 #include "Vector.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import glm;
+import std;
+#endif
 
 namespace hg::math {
 	/**

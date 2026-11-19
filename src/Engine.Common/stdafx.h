@@ -1,14 +1,9 @@
 #pragma once
 
-#include "__macro.hpp"
-
-#include <cstddef>
-#include <cstdint>
-#include <memory>
-#include <stdexcept>
-#include <type_traits>
-
 #include <cassert>
+#include <cstdint>
+
+#include "__macro.hpp"
 
 #if _WIN32 || _WIN64
 #ifndef WIN32_LEAN_AND_MEAN
@@ -23,10 +18,11 @@
 #include <windowsx.h>
 #endif
 
-#include "Make.hpp"
-
 // Math
-#include <cmath>
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+import std;
+#endif
 
 using size64_t = uint64_t;
 

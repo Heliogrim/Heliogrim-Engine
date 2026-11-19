@@ -1,10 +1,14 @@
 #pragma once
 
-#include <Engine.Common/Variant.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflect.Utils/Error/IllegalArgumentError.hpp>
 #include <Engine.Reflect.Utils/Error/IllegalTypeError.hpp>
 
 #include "Access/AccessError.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::storage {
 	class Action {

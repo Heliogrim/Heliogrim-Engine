@@ -1,11 +1,11 @@
 #include "Resolve.hpp"
 
-#include <algorithm>
-#include <array>
-#include <utility>
+#include <stddef.h>
 
 #include "Compact.hpp"
 #include "Typecheck.hpp"
+
+import std;
 
 using namespace hg::engine::accel::lang;
 using namespace hg;
@@ -13,7 +13,7 @@ using namespace hg;
 namespace {
 	constexpr u32 unset = ~0uL;
 
-	[[nodiscard]] String quoted(StringView text_) {
+	[[nodiscard]] String quote(StringView text_) {
 		return "'" + String(text_) + "'";
 	}
 
@@ -32,14 +32,14 @@ namespace {
 			const auto toggle = std::ranges::find(mod_.toggles, name, &ir::Toggle::name);
 			if (toggle == mod_.toggles.end()) {
 				diags_.emplace_back(
-					ir::Diagnostic::error(codes::asl("unknown-toggle"), "unknown toggle " + quoted(name) + ", set by " + String(label_))
+					ir::Diagnostic::error(codes::asl("unknown-toggle"), "unknown toggle " + quote(name) + ", set by " + String(label_))
 				);
 
 			} else if (std::ranges::find(toggle->values, value) == toggle->values.end()) {
 				diags_.emplace_back(
 					ir::Diagnostic::error(
 						codes::asl("unknown-toggle"),
-						"toggle " + quoted(name) + " has no value " + quoted(value) + ", set by " + String(label_)
+						"toggle " + quote(name) + " has no value " + quote(value) + ", set by " + String(label_)
 					)
 				);
 			}
@@ -49,7 +49,7 @@ namespace {
 				diags_.emplace_back(
 					ir::Diagnostic::error(
 						codes::asl("duplicate-toggle-setting"),
-						"toggle " + quoted(name) + " is set twice by " + String(label_)
+						"toggle " + quote(name) + " is set twice by " + String(label_)
 					)
 				);
 			}
@@ -80,15 +80,15 @@ namespace {
 			const auto* fixed = pass != nullptr ? pass : profile;
 			if (pass != nullptr && profile != nullptr && *pass != *profile) {
 				warn(
-					String(labels_[0]) + " sets toggle " + quoted(toggle.name) + " to " + quoted(*pass) + " over " +
-					String(labels_[1]) + " value " + quoted(*profile)
+					String(labels_[0]) + " sets toggle " + quote(toggle.name) + " to " + quote(*pass) + " over " +
+					String(labels_[1]) + " value " + quote(*profile)
 				);
 			}
 
 			if (material != nullptr && fixed != nullptr && *material != *fixed) {
 				warn(
-					String(labels_[2]) + " sets toggle " + quoted(toggle.name) + " to " + quoted(*material) + ", but " +
-					String(labels_[pass != nullptr ? 0 : 1]) + " fixes it to " + quoted(*fixed)
+					String(labels_[2]) + " sets toggle " + quote(toggle.name) + " to " + quote(*material) + ", but " +
+					String(labels_[pass != nullptr ? 0 : 1]) + " fixes it to " + quote(*fixed)
 				);
 			}
 
@@ -182,7 +182,7 @@ namespace {
 				diags_.emplace_back(
 					ir::Diagnostic::error(
 						codes::asl("missing-variant-body"),
-						"no body for " + quoted(name) + " at " + combination(toggles, *missing)
+						"no body for " + quote(name) + " at " + combination(toggles, *missing)
 					)
 				);
 			}
@@ -221,7 +221,7 @@ std::expected<ir::Module, ir::Diagnostics> ir::resolveToggles(ref<const Module> 
 
 		if (bodies.size() > 1uz) {
 			diags.emplace_back(
-				ir::Diagnostic::error(codes::asl("overlapping-variant-bodies"), "overlapping bodies for " + quoted(name) + " at " + at)
+				ir::Diagnostic::error(codes::asl("overlapping-variant-bodies"), "overlapping bodies for " + quote(name) + " at " + at)
 			);
 		}
 
@@ -278,7 +278,7 @@ std::expected<ir::Module, ir::Diagnostics> ir::resolveToggles(ref<const Module> 
 
 	auto [result, unresolved] = compact(mod_, plan);
 	for (const auto& name : unresolved) {
-		diags.emplace_back(ir::Diagnostic::error(codes::asl("missing-variant-body"), "no body for " + quoted(name) + " at " + at));
+		diags.emplace_back(ir::Diagnostic::error(codes::asl("missing-variant-body"), "no body for " + quote(name) + " at " + at));
 	}
 
 	if (not diags.empty()) {

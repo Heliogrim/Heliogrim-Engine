@@ -1,7 +1,8 @@
 #pragma once
 
-#include <concepts>
-#include <type_traits>
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg {
 	template <typename AliasType_, typename SourceType_>

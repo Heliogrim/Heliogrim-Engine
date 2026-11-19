@@ -1,16 +1,18 @@
 #pragma once
 
-#include <Engine.Common/Expected.hpp>
-#include <Engine.Common/Variant.hpp>
-#include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Pedantic.Resource/Resource.hpp>
 #include <Engine.Reflect.Utils/Error/IllegalArgumentError.hpp>
 #include <Engine.Reflect.Utils/Error/IllegalTypeError.hpp>
 #include <Engine.Reflect.Utils/With/WithType.hpp>
 
-#include "../Query.hpp"
 #include "../Access/IoResourceAccessor.hpp"
 #include "../Access/IoResourceAccessorBase.hpp"
+#include "../Query.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::storage {
 	class ExtendedStorageSystem;

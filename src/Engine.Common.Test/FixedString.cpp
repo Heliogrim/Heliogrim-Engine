@@ -1,7 +1,10 @@
 #include "pch.h"
 
-#include <type_traits>
-#include <Engine.Common/Meta/FixedString.hpp>
+/**/
+
+#include <Engine.Common/__macro.hpp>
+
+import Engine.Common;
 
 using namespace hg;
 

@@ -1,10 +1,15 @@
 #pragma once
-#include <Engine.Common/Collection/AssociativeKey.hpp>
 
+#include <Engine.Common/__macro.hpp>
+
+#include "../../Graph/StageDecl.hpp"
+#include "../StagePipeline.hpp"
 #include "StageDispatcher.hpp"
 #include "StageIdentifier.hpp"
-#include "../StagePipeline.hpp"
-#include "../../Graph/StageDecl.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::scheduler {
 	class macro_novtable PipelineStage {

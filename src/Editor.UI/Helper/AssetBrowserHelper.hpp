@@ -1,13 +1,13 @@
 #pragma once
 
-#include <filesystem>
 #include <Engine.Assets.System/__fwd.hpp>
-#include <Engine.Assets/AssetTypeId.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
-#include <Engine.Common/String.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/DenseMap.hpp>
-#include <Engine.Common/Memory/MemoryPointer.hpp>
+#include <Engine.Assets/AssetTypeId.hpp>
+#include <Engine.Common/__macro.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::editor::ui {
 	class AssetBrowserHelper final {

@@ -1,11 +1,15 @@
 #pragma once
 
 #include <Engine.ACS/ActorModule.hpp>
-#include <Engine.ACS/Registry.hpp>
 #include <Engine.ACS/Handle/Epoch.hpp>
 #include <Engine.ACS/Handle/Handle.hpp>
-#include <Engine.Common/Optional.hpp>
+#include <Engine.ACS/Registry.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Engine.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::archetype_detail {
 	struct RefAccess;

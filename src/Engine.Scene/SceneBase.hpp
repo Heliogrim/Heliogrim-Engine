@@ -1,13 +1,15 @@
 #pragma once
-#include <Engine.Common/Functional/FnRef.hpp>
-#include <Engine.Common/Memory/MemoryPointer.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflect/Inherit/InheritBase.hpp>
 
 #include "SceneBroadcastFlags.hpp"
 #include "ScenePostProcessFlags.hpp"
+#include "SceneSystem.hpp"
 #include "SceneUpdateFlags.hpp"
 
-#include "SceneSystem.hpp"
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg {
 	class SceneComponent;

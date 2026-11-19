@@ -1,11 +1,13 @@
 #pragma once
 
-#include <Engine.Common/Guid.hpp>
-#include <Engine.Common/Hash/Murmur3.hpp>
-#include <Engine.Common/Meta/TypeId.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Heliogrim/Actor/ActorGuid.hpp>
 
 #include "ComponentGuid.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg {
 	/**

@@ -8,6 +8,7 @@
 #include <Engine.Scheduler/Scheduler.hpp>
 
 #include "HeliogrimStatic.hpp"
+
 import Engine.Asserts;
 
 using namespace hg;

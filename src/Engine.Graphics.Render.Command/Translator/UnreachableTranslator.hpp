@@ -1,8 +1,10 @@
 #pragma once
 
-#include <utility>
-
 #include "../RenderCommandTranslator.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg::engine::render::cmd {
 	class macro_novtable UnreachableCmdTl :

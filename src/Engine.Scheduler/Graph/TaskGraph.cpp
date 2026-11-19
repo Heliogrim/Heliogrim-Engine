@@ -1,10 +1,9 @@
 #include "TaskGraph.hpp"
 
-#include <algorithm>
-#include <bitset>
-#include <set>
-#include <Engine.Common/Collection/DenseMap.hpp>
+#include <Engine.Common/__macro.hpp>
+
 import Engine.Asserts;
+import Engine.Common;
 
 using namespace hg::engine::scheduler;
 using namespace hg::engine::scheduler::graph;

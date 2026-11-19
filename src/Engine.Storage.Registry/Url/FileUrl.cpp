@@ -1,7 +1,8 @@
 #include "FileUrl.hpp"
 
-#include <format>
-#include <Engine.Common/GuidFormat.hpp>
+#include <Engine.Common/__macro.hpp>
+
+import Engine.Common;
 
 using namespace hg::engine::storage;
 using namespace hg;

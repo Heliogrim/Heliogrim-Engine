@@ -1,10 +1,13 @@
 #pragma once
 
-#include <functional>
-#include <Engine.Common/Functional/Function.hpp>
+#include <Engine.Common/__macro.hpp>
 
-#include "TypeId.hpp"
 #include "Inherit/Concept.hpp"
+#include "TypeId.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg {
 	namespace {

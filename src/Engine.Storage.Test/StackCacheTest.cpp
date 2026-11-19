@@ -2,11 +2,7 @@
 
 /**/
 
-#include <atomic>
-#include <thread>
-#include <vector>
-
-#include <Engine.Common/Guid.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Config/Config.hpp>
 #include <Engine.Storage.Action/Store/StackCache.hpp>
 #include <Engine.Storage.Registry/Options/MemoryStorageDescriptor.hpp>
@@ -14,6 +10,8 @@
 #include <Engine.Storage.Registry/Options/StorageDescriptor.hpp>
 #include <Engine.Storage.Registry/Registry/StorageRegistry.hpp>
 #include <Engine.Storage.Registry/Url/MemoryUrl.hpp>
+
+import Engine.Common;
 
 /**/
 

@@ -1,11 +1,13 @@
 #include "Skybox.hpp"
 
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.Render.Subpass/Impl/__tmp_helper.hpp>
 
 #include "Engine.Graphics.Render.Predefined/Symbols/SceneCamera.hpp"
 #include "Engine.Graphics.Render.Predefined/Symbols/SceneColor.hpp"
 #include "Engine.Graphics.Render.Predefined/Symbols/SkyboxTexture.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::render;
 using namespace hg;

@@ -1,13 +1,15 @@
 #pragma once
 
-#include <Engine.Common/Move.hpp>
-#include <Engine.Common/Optional.hpp>
-#include <Engine.Common/Collection/DenseMap.hpp>
-#include <Engine.Common/Managed/Rc.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflect/TypeId.hpp>
 #include <Engine.Storage.Registry/IStorage.hpp>
 
 #include "../Access/IoResourceBase.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Asserts;
+import Engine.Common;
+#endif
 
 namespace hg::engine::storage {
 	struct ResourceAccessStore {

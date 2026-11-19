@@ -1,6 +1,7 @@
-#include "Coordinates.hpp"
+#include <Engine.Common/__macro.hpp>
 
-#include <cmath>
+import Engine.Common;
+import std;
 
 using namespace hg::math;
 using namespace hg;

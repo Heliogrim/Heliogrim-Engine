@@ -1,6 +1,6 @@
 #include "File.hpp"
 
-#include <stdexcept>
+import std;
 
 using namespace hg::fs;
 using namespace hg;

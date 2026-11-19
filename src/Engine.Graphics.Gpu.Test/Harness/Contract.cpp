@@ -1,8 +1,6 @@
 #include "Contract.hpp"
 
-#include <algorithm>
-#include <cmath>
-#include <utility>
+import std;
 
 using namespace hg::test::gpu;
 using namespace hg;

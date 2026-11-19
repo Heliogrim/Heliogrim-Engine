@@ -1,13 +1,15 @@
 #pragma once
-#include <map>
-#include <variant>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/Memory/MemoryPointer.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "Observed.hpp"
 #include "Subscribed.hpp"
 #include "Symbol.hpp"
 #include "SymbolizedResource.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::render::graph {
 	class SymbolContext {

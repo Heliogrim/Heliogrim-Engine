@@ -1,6 +1,5 @@
 #include "StageIr.hpp"
 
-#include <algorithm>
 #include <Engine.Accel.Lang/Ir/Contract.hpp>
 #include <Engine.Accel.Lang/Ir/Interface.hpp>
 #include <Engine.Accel.Lang/Ir/Layout.hpp>
@@ -10,12 +9,14 @@
 #include <Engine.Accel.Lang/Ir/Slice.hpp>
 #include <Engine.Accel.Lang/Ir/Typecheck.hpp>
 #include <Engine.Accel.Lang/Rep/Annotation.hpp>
-#include <Engine.Common/Make.hpp>
-#include <Engine.Logging/Logger.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Logging/LogSink.hpp>
+#include <Engine.Logging/Logger.hpp>
 
 #include "../Profile/EffectProfile.hpp"
 #include "../Spec/EffectSpecification.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::accel::lang::ir;
 using namespace hg::engine::accel::lang;

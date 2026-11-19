@@ -1,6 +1,8 @@
 #pragma once
 
-#include <type_traits>
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 /**
  * The closed set of state a stage may declare in its reads and writes.

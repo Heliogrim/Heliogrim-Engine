@@ -1,9 +1,11 @@
 #include "IoQueue.hpp"
 
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Common/stdafx.h>
 
 #include "IoSystem.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::io;
 using namespace hg;

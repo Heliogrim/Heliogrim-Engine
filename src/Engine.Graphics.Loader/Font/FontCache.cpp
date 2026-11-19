@@ -1,8 +1,10 @@
 #include "FontCache.hpp"
 
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics/Cache/GlobalCacheCtrl.hpp>
 #include <Engine.Graphics/Cache/GlobalResourceCache.hpp>
-#include <Engine.Pedantic/Clone/Clone.hpp>
+
+import Engine.Common;
 
 using namespace hg::engine::graphics::loader;
 using namespace hg;

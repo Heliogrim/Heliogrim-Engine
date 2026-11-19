@@ -1,7 +1,6 @@
 #pragma once
 
-#include <Engine.Common/Make.hpp>
-#include <Engine.Common/Memory/MemoryPointer.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "../Buffer/SparseBuffer.hpp"
 #include "../Buffer/SparseBufferView.hpp"
@@ -10,6 +9,10 @@
 #include "../Command/CommandQueue.hpp"
 #include "../Memory/GlobalPooledAllocator.hpp"
 #include "../Memory/VirtualMemory.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::graphics {
 	template <typename ValueType_>

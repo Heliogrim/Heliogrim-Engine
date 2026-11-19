@@ -1,9 +1,12 @@
 #pragma once
 
-#include <type_traits>
 #include <Engine.Common/Make.hpp>
-#include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Meta/Type.hpp>
+#include <Engine.Common/Wrapper.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg {
 	template <typename Type_>

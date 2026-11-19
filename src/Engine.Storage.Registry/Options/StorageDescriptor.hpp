@@ -1,12 +1,16 @@
 #pragma once
 
-#include <Engine.Common/Variant.hpp>
-#include <Engine.Common/Meta/IsAnyOf.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "ArchiveStorageDescriptor.hpp"
 #include "FileStorageDescriptor.hpp"
 #include "MemoryStorageDescriptor.hpp"
 #include "PackageStorageDescriptor.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Asserts;
+import Engine.Common;
+#endif
 
 namespace hg::engine::storage {
 	template <class Type_>

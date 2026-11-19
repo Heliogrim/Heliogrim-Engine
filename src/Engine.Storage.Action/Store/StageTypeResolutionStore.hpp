@@ -1,9 +1,13 @@
 #pragma once
 
-#include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.Common/__macro.hpp>
 
-#include "StageResolutionFactory.hpp"
 #include "../Action/StageTypeInfo.hpp"
+#include "StageResolutionFactory.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::storage {
 	struct StageTypeResolutionStore {

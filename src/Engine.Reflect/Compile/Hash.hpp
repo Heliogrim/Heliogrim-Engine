@@ -1,7 +1,12 @@
 #pragma once
 
-#include <Engine.Common/Meta/Concept.hpp>
+#include <Engine.Common/__macro.hpp>
+
 #include "String.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg {
 	template <typename Type_>

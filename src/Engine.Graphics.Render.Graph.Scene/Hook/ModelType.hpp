@@ -1,10 +1,13 @@
 #pragma once
 
-#include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.Common/Math/Hash.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflect/TypeId.hpp>
 
 #include "../SceneHookFilter.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::render::graph {
 	enum class ModelTypeFilterMode : bool {

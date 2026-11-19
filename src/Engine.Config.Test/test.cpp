@@ -1,10 +1,12 @@
 #include "pch.h"
 
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Config/Config.hpp>
 #include <Engine.Config/Enums.hpp>
 #include <Engine.Config/Provider/RuntimeProvider.hpp>
 #include <Engine.Config/Provider/SystemProvider.hpp>
+
+import Engine.Common;
 
 using namespace hg;
 

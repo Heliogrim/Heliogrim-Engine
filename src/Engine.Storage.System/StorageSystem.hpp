@@ -1,10 +1,7 @@
 #pragma once
 
 #include <Engine.Async/Future/Async.hpp>
-#include <Engine.Common/Expected.hpp>
-#include <Engine.Common/Optional.hpp>
-#include <Engine.Common/Variant.hpp>
-#include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Resource.Archive/Archive.hpp>
 #include <Engine.Resource.Archive/__fwd.hpp>
 #include <Engine.Storage.Action/Guard/IoMutationGuard.hpp>
@@ -27,6 +24,10 @@
 #include "Options/PackageMutateOptions.hpp"
 #include "Options/PackageQueryOptions.hpp"
 #include "Options/PackageRequestOptions.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::resource {
 	class ReadonlyPackage;

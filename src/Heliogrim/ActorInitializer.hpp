@@ -1,15 +1,14 @@
 #pragma once
 
-#include <memory>
 #include <Engine.ACS/Registry.hpp>
-#include <Engine.Common/Move.hpp>
-#include <Engine.Common/Optional.hpp>
-#include <Engine.Common/Memory/MemoryPointer.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "Component/CachedActorPointer.hpp"
 #include "Component/HierarchyComponent.hpp"
+
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Asserts;
+import Engine.Common;
 #endif
 
 namespace hg {

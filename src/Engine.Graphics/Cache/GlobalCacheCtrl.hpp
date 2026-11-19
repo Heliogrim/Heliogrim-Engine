@@ -1,12 +1,8 @@
 #pragma once
 
-#include <concepts>
 #include <Engine.Accel.Pipeline/__fwd.hpp>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/AssociativeKey.hpp>
-#include <Engine.Common/Collection/DenseMap.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.Loader/Geometry/StaticGeometryResource.hpp>
 #include <Engine.Graphics.Loader/Material/MaterialResource.hpp>
 #include <Engine.Graphics.Loader/Texture/TextureResource.hpp>
@@ -17,6 +13,10 @@
 #include "CacheStaticGeometrySubject.hpp"
 #include "CacheTextureSubject.hpp"
 #include "__fwd.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::graphics::cache {
 	struct TextureSubResourceRange {

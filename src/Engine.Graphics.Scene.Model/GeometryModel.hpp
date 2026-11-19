@@ -1,10 +1,13 @@
 #pragma once
 
-#include <Engine.Common/Collection/AutoArray.hpp>
-#include <Engine.Common/Managed/Rc.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.Loader/Material/MaterialResource.hpp>
 #include <Engine.Graphics.Render.Subpass/Mesh/MeshCaptureInterface.hpp>
 #include <Engine.Render.Scene/RenderSceneSystemModel.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::graphics::scene {
 	class GeometryModel :

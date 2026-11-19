@@ -2,7 +2,6 @@
 
 /**/
 
-#include <algorithm>
 #include <Engine.Accel.Lang/Ir/Analysis.hpp>
 #include <Engine.Accel.Lang/Ir/Compact.hpp>
 #include <Engine.Accel.Lang/Ir/Interface.hpp>
@@ -15,6 +14,8 @@
 #include "IrSpan.hpp"
 #include "IrSpirvText.hpp"
 #include "IrWording.hpp"
+
+import std;
 
 using namespace hg::engine::accel::lang::ir;
 using namespace hg::engine::accel::lang;

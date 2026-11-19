@@ -1,14 +1,16 @@
 #pragma once
 
 #include <Engine.Assets/AssetGuid.hpp>
-#include <Engine.Common/Move.hpp>
-#include <Engine.Common/Optional.hpp>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "../Actor/Actor.hpp"
 #include "../Actor/ActorRef.hpp"
 #include "../Async/Future.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg {
 	class Level;

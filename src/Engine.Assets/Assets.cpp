@@ -2,7 +2,9 @@
 
 #include <Engine.Assets.System/AssetRegistry.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
+
+import Engine.Common;
 
 using namespace hg::engine::assets;
 using namespace hg::engine;

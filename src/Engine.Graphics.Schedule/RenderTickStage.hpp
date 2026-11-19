@@ -1,6 +1,10 @@
 #pragma once
-#include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Scheduler/Pipeline/Stage/PipelineStage.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::graphics {
 	class RenderTarget;

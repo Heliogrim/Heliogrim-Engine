@@ -1,9 +1,9 @@
 #include "HierarchyComponent.hpp"
 
-#include <array>
 #include <Engine.ACS/Cluster/RelocationTable.hpp>
-#include <Engine.Common/Move.hpp>
-#include <Engine.Common/Collection/InlineAutoArray.hpp>
+#include <Engine.Common/__macro.hpp>
+
+import Engine.Common;
 
 using namespace hg;
 

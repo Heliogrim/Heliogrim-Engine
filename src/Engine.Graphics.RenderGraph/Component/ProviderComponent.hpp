@@ -1,10 +1,14 @@
 #pragma once
 
-#include <Engine.Common/Collection/DenseSet.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflect/Compile/TypeId.hpp>
 
-#include "Component.hpp"
 #include "../Relation/Provision.hpp"
+#include "Component.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::render::graph {
 	class ProviderComponent :

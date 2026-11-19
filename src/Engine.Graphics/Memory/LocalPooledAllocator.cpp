@@ -1,9 +1,10 @@
 ﻿#include "LocalPooledAllocator.hpp"
 
+#include "../vkinc.hpp"
 #include "AllocatedMemory.hpp"
 #include "AllocationResult.hpp"
 #include "GlobalPooledAllocator.hpp"
-#include "../vkinc.hpp"
+
 import Engine.Asserts;
 
 using namespace hg::engine::graphics::memory;

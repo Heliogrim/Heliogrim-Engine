@@ -1,11 +1,12 @@
 #include "ScenePipeline.hpp"
 
-#include <ranges>
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "SceneBroadcastStage.hpp"
 #include "ScenePostProcessStage.hpp"
 #include "SceneUpdateStage.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::scene::schedule;
 using namespace hg::engine::scheduler;

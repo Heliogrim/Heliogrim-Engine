@@ -1,8 +1,11 @@
 #pragma once
 
-#include <Engine.Common/String.hpp>
-#include <Engine.Common/Meta/Support.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Filesystem/Path.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::assets {
 	class AssetPath final {

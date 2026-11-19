@@ -1,14 +1,13 @@
 #include "Parser.hpp"
 
-#include <algorithm>
-#include <array>
-#include <string>
-#include <tuple>
+#include <stddef.h>
 
 #include "Builtin.hpp"
 #include "Lexer.hpp"
 #include "ParserImpl.hpp"
 #include "Typecheck.hpp"
+
+import std;
 
 using namespace hg::engine::accel::lang;
 using namespace hg;

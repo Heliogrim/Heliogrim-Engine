@@ -2,7 +2,9 @@
 
 #include "../__macro.hpp"
 
-#include <stack>
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg {
 	template <class Type_, class ContainerType_ = std::deque<Type_>>

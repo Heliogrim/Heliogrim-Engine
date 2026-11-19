@@ -1,15 +1,16 @@
 #pragma once
 
-#include <functional>
-#include <Engine.Common/Expected.hpp>
-#include <Engine.Common/Managed/Rc.hpp>
-#include <Engine.Common/Meta/TypeId.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflect.Utils/With/WithType.hpp>
 #include <Engine.Storage.Registry/IStorage.hpp>
 
+#include "../Access/IoResourceAccessorBase.hpp"
 #include "../Action.hpp"
 #include "../__fwd.hpp"
-#include "../Access/IoResourceAccessorBase.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::storage::system {
 	struct DynamicStage {

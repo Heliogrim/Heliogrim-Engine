@@ -2,6 +2,7 @@
 
 #include <Engine.Async/Future/Promise.hpp>
 #include <Engine.Common/stdafx.h>
+
 import Engine.Asserts;
 
 using namespace hg::engine::io;

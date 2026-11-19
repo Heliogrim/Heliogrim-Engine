@@ -1,8 +1,10 @@
 #pragma once
 
-#include <Engine.Common/Collection/Array.hpp>
-#include <Engine.Common/Math/Matrix.hpp>
-#include <Engine.Common/Math/Vector.hpp>
+#include <Engine.Common/__macro.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::graphics {
     class CameraFrustum {

@@ -1,11 +1,13 @@
 #include "FlacImporter.hpp"
 
-#include <Engine.Common/Buffer.hpp>
-
 #define DR_FLAC_IMPLEMENTATION
+#include <Engine.Common/Buffer.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <dr_libs/dr_flac.h>
 
 #include "AudioFileTypes.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::audio;
 using namespace hg;

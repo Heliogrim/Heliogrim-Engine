@@ -1,6 +1,8 @@
 #include "TextureAsset.hpp"
 
-#include <Engine.Pedantic/Clone/Clone.hpp>
+#include <Engine.Common/__macro.hpp>
+
+import Engine.Common;
 
 using namespace hg::engine::assets;
 using namespace hg;

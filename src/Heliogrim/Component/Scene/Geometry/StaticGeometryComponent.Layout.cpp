@@ -4,6 +4,7 @@
 #include <Engine.Core/Engine.hpp>
 
 #include "StaticGeometryComponent.Layout.hpp"
+
 import Engine.Asserts;
 #include "AssetDatabase.hpp"
 

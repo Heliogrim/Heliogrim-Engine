@@ -1,9 +1,6 @@
 #include "Place.hpp"
 
-#include <algorithm>
-#include <charconv>
-#include <limits>
-#include <variant>
+import std;
 
 using namespace hg::engine::accel::lang;
 using namespace hg;

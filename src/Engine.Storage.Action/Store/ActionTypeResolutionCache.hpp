@@ -1,11 +1,15 @@
 #pragma once
 
-#include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.Common/__macro.hpp>
 
-#include "ActionResolutionFactory.hpp"
+#include "../Action/ActionTypeInfo.hpp"
 #include "../Mutation.hpp"
 #include "../Query.hpp"
-#include "../Action/ActionTypeInfo.hpp"
+#include "ActionResolutionFactory.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::storage {
 	struct ActionTypeResolutionCache {

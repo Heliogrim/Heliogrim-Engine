@@ -1,26 +1,26 @@
 #include "MaterialPrototypeTransformer.hpp"
 
-#include <ranges>
+#include <Engine.Accel.Loader/Effect/EffectResource.hpp>
+#include <Engine.Accel.Loader/Effect/Traits.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
-#include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets.Type/Accel/AccelEffect.hpp>
 #include <Engine.Assets.Type/Material/GraphicsMaterialPrototype.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
+#include <Engine.Assets/Assets.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Engine.hpp>
-#include <Engine.Graphics/Pool/GlobalResourcePool.hpp>
 #include <Engine.Graphics.Material/MaterialFactory.hpp>
-#include <Engine.Pedantic/Clone/Clone.hpp>
+#include <Engine.Graphics.Render.Predefined/Descriptions/SceneView.hpp>
+#include <Engine.Graphics/Pool/GlobalResourcePool.hpp>
 #include <Engine.Reflect/Cast.hpp>
 #include <Engine.Resource/LoaderManager.hpp>
-#include <Engine.Resource/ResourceManager.hpp>
 #include <Engine.Resource/Manage/UniqueResource.hpp>
+#include <Engine.Resource/ResourceManager.hpp>
 
 #include "../Texture/TextureResource.hpp"
 #include "../Texture/Traits.hpp"
 
-#include <Engine.Accel.Loader/Effect/EffectResource.hpp>
-#include <Engine.Accel.Loader/Effect/Traits.hpp>
-#include <Engine.Graphics.Render.Predefined/Descriptions/SceneView.hpp>
+import Engine.Common;
 
 using namespace hg::engine::graphics::loader;
 using namespace hg::engine::graphics;

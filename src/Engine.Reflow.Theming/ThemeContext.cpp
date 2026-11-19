@@ -1,6 +1,8 @@
 #include "ThemeContext.hpp"
 
-#include <Engine.Common/Algo/FirstOf.hpp>
+#include <Engine.Common/__macro.hpp>
+
+import Engine.Common;
 
 using namespace hg::engine::reflow::theming;
 using namespace hg::engine::reflow;

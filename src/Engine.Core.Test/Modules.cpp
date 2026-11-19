@@ -1,9 +1,10 @@
 #include "pch.h"
 
-#include <algorithm>
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Module/Modules.hpp>
 #include <Engine.Core/Module/SubModule.hpp>
+
+import Engine.Common;
 
 using namespace hg;
 using namespace hg::engine::core;

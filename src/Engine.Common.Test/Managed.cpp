@@ -1,10 +1,9 @@
 #include "pch.h"
 /**/
 
-#include <Engine.Common/String.hpp>
-#include <Engine.Common/UniqueValue.hpp>
-#include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
-#include <Engine.Common/Managed/Rc.hpp>
+#include <Engine.Common/__macro.hpp>
+
+import Engine.Common;
 
 using namespace hg;
 

@@ -1,19 +1,14 @@
 #pragma once
 
-#include <cstddef>
-#include <memory>
-#include <new>
-#include <type_traits>
 #include <Engine.ACS/Archetype/LayoutInfo.hpp>
-#include <Engine.Common/Types.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/Array.hpp>
-#include <Engine.Common/Meta/FixedString.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflect/Inherit/InheritMeta.hpp>
 
 #include "TypedActorClass.hpp"
+
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Asserts;
+import Engine.Common;
 #endif
 
 namespace hg::archetype_detail {

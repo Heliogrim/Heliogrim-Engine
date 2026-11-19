@@ -1,9 +1,11 @@
 #include "ProviderNode.hpp"
 
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "../../Component/ProviderComponent.hpp"
 #include "../../Visitor/Visitor.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::render::graph;
 using namespace hg;

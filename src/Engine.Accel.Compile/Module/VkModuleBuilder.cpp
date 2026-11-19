@@ -1,15 +1,16 @@
 #include "VkModuleBuilder.hpp"
 
-#include <filesystem>
-#include <string>
 #include <Engine.Accel.Effect/Stage/StageFlags.hpp>
-#include <Engine.Accel.Pipeline/VkGraphicsPipeline.hpp>
 #include <Engine.Accel.Pipeline/Stage/StageDerivat.hpp>
-#include <Engine.Common/Make.hpp>
+#include <Engine.Accel.Pipeline/VkGraphicsPipeline.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Logging/Logger.hpp>
 
-#include "VkModuleSource.hpp"
 #include "../Spec/EffectSpecification.hpp"
+#include "VkModuleSource.hpp"
+
+import Engine.Asserts;
+import Engine.Common;
 
 using namespace hg::engine::accel;
 using namespace hg;

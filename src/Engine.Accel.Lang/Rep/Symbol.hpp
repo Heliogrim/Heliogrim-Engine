@@ -1,11 +1,13 @@
 #pragma once
-#include <Engine.Common/String.hpp>
-#include <Engine.Common/Hash/Fnv-1a.hpp>
-#include <Engine.Common/Memory/MemoryPointer.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflect/Compile/String.hpp>
 
 #include "Function.hpp"
 #include "Variable.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::accel::lang {
 	struct SymbolId final {

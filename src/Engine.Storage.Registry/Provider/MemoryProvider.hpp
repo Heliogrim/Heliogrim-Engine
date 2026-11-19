@@ -1,10 +1,12 @@
 #pragma once
-#include <memory_resource>
-#include <Engine.Common/Collection/InlineAutoArray.hpp>
-#include <Engine.Common/Managed/Rc.hpp>
-#include <Engine.Common/Memory/MemoryPointer.hpp>
+
+#include <Engine.Common/__macro.hpp>
 
 #include "../IStorageProvider.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::storage {
 	class IStorageRegistry;

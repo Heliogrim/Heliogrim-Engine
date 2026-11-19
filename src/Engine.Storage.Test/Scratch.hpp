@@ -1,6 +1,8 @@
 #pragma once
 
-#include <filesystem>
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace StorageModule {
 	/**

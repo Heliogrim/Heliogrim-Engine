@@ -1,6 +1,9 @@
 #pragma once
-#include <bitset>
 #include <Engine.Reflect/Inherit/InheritBase.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg::engine::render {
 	class RenderSceneSystemModel;

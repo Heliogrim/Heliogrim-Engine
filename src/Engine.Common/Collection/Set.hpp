@@ -1,8 +1,9 @@
 #pragma once
 
-#include <limits>
-#include <unordered_set>
-#include <ankerl/unordered_dense.h>
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import ankerl.unordered_dense;
+import std;
+#endif
 
 namespace hg {
 	template <

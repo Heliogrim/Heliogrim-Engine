@@ -1,13 +1,14 @@
 #include "ResourceManager.hpp"
 
 #ifdef _PROFILING
-#include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
 
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Serialization.Layouts/LayoutManager.hpp>
 
 #include "Engine.Core/Engine.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::resource;
 using namespace hg::engine;

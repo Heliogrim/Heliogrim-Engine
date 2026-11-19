@@ -1,7 +1,6 @@
 #include "Traits.hpp"
 
-#include <atomic>
-#include <chrono>
+import std;
 
 using namespace hg;
 

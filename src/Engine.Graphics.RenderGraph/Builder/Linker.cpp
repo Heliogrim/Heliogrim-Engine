@@ -1,10 +1,12 @@
 #include "Linker.hpp"
 
-#include <Engine.Pedantic/Clone/Clone.hpp>
+#include <Engine.Common/__macro.hpp>
 
+#include "../Node/Node.hpp"
 #include "BLinkVisitor.hpp"
 #include "FLinkVisitor.hpp"
-#include "../Node/Node.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::render::graph;
 using namespace hg::engine::render;

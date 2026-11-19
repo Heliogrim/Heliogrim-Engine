@@ -12,23 +12,19 @@
  * ComponentRef fields; they travel through the fixup table.
  */
 
-#include <array>
-#include <memory>
-#include <new>
-#include <span>
-#include <tuple>
-#include <type_traits>
+#include <Engine.ACS/Archetype/LayoutInfo.hpp>
 #include <Engine.ACS/Handle/Handle.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Assets/AssetGuid.hpp>
-#include <Engine.Common/Expected.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.Common/Meta/Reference.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
+#include <cstring>
 #include <Engine.Serialization/Load/LoadContext.hpp>
 
 #include "InheritArchetype.hpp"
+
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Asserts;
+import Engine.Common;
 #endif
 #include "LayoutError.hpp"
 

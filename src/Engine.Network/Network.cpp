@@ -3,8 +3,9 @@
 #include <Engine.Common/__macro.hpp>
 
 #ifdef _PROFILING
-#include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
+
+import Engine.Common;
 
 using namespace hg::engine;
 using namespace hg;

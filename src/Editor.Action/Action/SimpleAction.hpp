@@ -2,7 +2,9 @@
 
 #include "Action.hpp"
 
-#include <atomic>
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg::editor {
 	class macro_novtable SimpleAction :

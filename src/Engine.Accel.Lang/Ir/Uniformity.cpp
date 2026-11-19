@@ -1,10 +1,9 @@
 #include "Uniformity.hpp"
 
-#include <algorithm>
-#include <map>
-
 #include "Analysis.hpp"
 #include "Builtin.hpp"
+
+import std;
 
 using namespace hg::engine::accel::lang;
 using namespace hg;

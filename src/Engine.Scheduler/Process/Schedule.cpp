@@ -1,13 +1,11 @@
 #include <thread>
 #include "Schedule.hpp"
 
-#include <algorithm>
-#include <Engine.Common/Make.hpp>
 #include <Engine.Logging/Logger.hpp>
 
-#include "BoostCell.hpp"
 #include "../Task/Task.hpp"
 #include "../Thread/Thread.hpp"
+#include "BoostCell.hpp"
 #include "WorkSet/FifoWorkSet.hpp"
 
 #ifdef WIN32
@@ -15,7 +13,11 @@
 /**/
 #include <synchapi.h>
 #endif
+
+#include <Engine.Common/__macro.hpp>
+
 import Engine.Asserts;
+import Engine.Common;
 
 using namespace hg::engine::scheduler;
 using namespace hg;

@@ -1,8 +1,7 @@
 #include "Thread.hpp"
 
-#include <stdexcept>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Common/String/Convert.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #ifdef WIN32
 #include <Engine.Common/stdafx.h>
@@ -11,7 +10,9 @@
 #else
 #include <pthread.h>
 #endif
+
 import Engine.Asserts;
+import Engine.Common;
 
 using namespace hg::engine::scheduler::thread;
 

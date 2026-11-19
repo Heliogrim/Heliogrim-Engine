@@ -2,8 +2,11 @@
 
 #include <Engine.Assets/AssetGuid.hpp>
 #include <Engine.Assets/AssetTypeId.hpp>
-#include <Engine.Common/Optional.hpp>
-#include <Engine.Common/Meta/Type.hpp>
+#include <Engine.Common/__macro.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg {
 	class AssetDatabase;

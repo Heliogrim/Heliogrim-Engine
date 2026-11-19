@@ -1,6 +1,7 @@
-#include "GuidFormat.hpp"
+#include <Engine.Common/__macro.hpp>
 
-#include <sstream>
+import Engine.Common;
+import std;
 
 using namespace hg;
 

@@ -3,8 +3,9 @@
 /**/
 
 #include <Engine.Accel.Lang/Diagnostic/Codes.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
-#include <algorithm>
+#include <Engine.Common/__macro.hpp>
+
+import Engine.Common;
 
 using namespace hg::engine::accel::lang;
 using namespace hg;

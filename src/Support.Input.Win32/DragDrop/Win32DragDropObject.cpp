@@ -1,9 +1,10 @@
 #include "Win32DragDropObject.hpp"
 
-#include <cstring>
-#include <ShlObj_core.h>
-#include <sstream>
 #include <Engine.Logging/Logger.hpp>
+#include <ShlObj_core.h>
+#include <cstring>
+
+import std;
 
 using namespace hg::engine::input;
 using namespace hg;
@@ -206,8 +207,6 @@ HRESULT Win32DragDropObject::QueryInterface(const IID& riid, void** ppvObject) {
 
 	return E_NOINTERFACE;
 }
-
-#include <stacktrace>
 
 ULONG Win32DragDropObject::AddRef() {
 	Logger::debug("AddRef: {}", std::stacktrace::current());

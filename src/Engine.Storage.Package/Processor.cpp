@@ -1,15 +1,16 @@
 #include "Processor.hpp"
 
-#include <algorithm>
-#include <Engine.Common/Functional/Lambda.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Crypto/Checksum/Crc32.hpp>
-#include <Engine.Pedantic/Clone/Clone.hpp>
 #include <Engine.Resource.Archive/Archive.hpp>
 #include <Engine.Resource.Package/Utils.hpp>
+#include <cstring>
 
 #include "Load.hpp"
 #include "Store.hpp"
+
 import Engine.Asserts;
+import Engine.Common;
 
 using namespace hg::engine::storage::package;
 using namespace hg::engine::resource::package;

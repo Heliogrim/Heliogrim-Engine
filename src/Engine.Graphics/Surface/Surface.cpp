@@ -4,7 +4,6 @@
 #include <Engine.Common/stdafx.h>
 
 #ifdef _PROFILING
-#include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
 
 #include <Engine.Core/Engine.hpp>
@@ -12,15 +11,17 @@
 #include <Engine.Platform/Platform.hpp>
 #include <Heliogrim/Async/Future.hpp>
 
-#include "../__macro.hpp"
 #include "../API/VkTranslate.hpp"
 #include "../Swapchain/Swapchain.hpp"
+#include "../__macro.hpp"
 
 #if defined(WIN32)
 #include <Support.Platform.Win32/Win32Window.hpp>
 #else
 #include <Engine.Platform/NativeWindow.hpp>
 #endif
+
+import Engine.Common;
 
 using namespace hg::engine::graphics;
 using namespace hg;

@@ -1,14 +1,13 @@
 #include "AssetRegistryBrowserProvider.hpp"
 
-#include <algorithm>
-#include <cassert>
-#include <filesystem>
-#include <ranges>
 #include <Engine.Assets.System/AssetRegistry.hpp>
 #include <Engine.Assets.Type/Asset.hpp>
+#include <cassert>
 
 #include "AssetBrowserFilter.hpp"
 #include "AssetBrowserFilterEntry.hpp"
+
+import std;
 
 using namespace hg::editor::ui::service;
 using namespace hg;

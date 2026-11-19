@@ -1,11 +1,14 @@
 #pragma once
 
-#include <concepts>
-#include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "IntegralSlot.hpp"
 #include "StringSlot.hpp"
 #include "__fwd.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::serialization {
 	template <typename ValueType_>

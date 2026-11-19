@@ -1,7 +1,9 @@
 #include "SessionState.hpp"
 
-#include <Engine.Common/Make.hpp>
 #include <Engine.ACS/Registry.hpp>
+#include <Engine.Common/__macro.hpp>
+
+import Engine.Common;
 
 using namespace hg::engine::core;
 using namespace hg;

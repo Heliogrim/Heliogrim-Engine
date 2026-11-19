@@ -2,16 +2,15 @@
 
 /**/
 
-#include <cstddef>
-#include <new>
-#include <type_traits>
-#include <Engine.ACS/Registry.hpp>
 #include <Engine.ACS/Archetype/LayoutInfo.hpp>
-#include <Engine.Common/Wrapper.hpp>
+#include <Engine.ACS/Registry.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Heliogrim/Actor/Archetype/ActorClass.hpp>
 #include <Heliogrim/Actor/Archetype/ArchetypeConcept.hpp>
 
 #include "TestArchetypes.hpp"
+
+import Engine.Common;
 
 using namespace HeliogrimApi;
 

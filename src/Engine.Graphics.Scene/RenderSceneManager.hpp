@@ -1,14 +1,12 @@
 #pragma once
 
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/CompactArray.hpp>
-#include <Engine.Common/Collection/DenseMap.hpp>
-#include <Engine.Common/Collection/Set.hpp>
-#include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
-#include <Engine.Common/Functional/FnRef.hpp>
-#include <Engine.Common/Memory/MemoryPointer.hpp>
-#include <Engine.Pedantic/Clone/Clone.hpp>
+#include <Engine.Common/Sal.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Utils/_CTRL.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg {
 	class CameraComponent;

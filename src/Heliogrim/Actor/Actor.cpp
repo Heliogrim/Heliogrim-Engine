@@ -1,29 +1,30 @@
 #include "Actor.hpp"
 
-#include <algorithm>
 #include <Engine.ACS/ActorModule.hpp>
 #include <Engine.ACS/Registry.hpp>
-#include <Heliogrim/Async/Future.hpp>
-#include <Engine.Common/Move.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Universe.hpp>
 #include <Engine.Level/Level.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Reflect/IsType.hpp>
 #include <Engine.Scene/SceneBase.hpp>
+#include <Engine.Serialization.Structures/Common/TypeId.hpp>
+#include <Engine.Serialization.Structures/Symbols.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
-#include <Engine.Serialization.Structures/Symbols.hpp>
-#include <Engine.Serialization.Structures/Common/TypeId.hpp>
+#include <Heliogrim/Async/Future.hpp>
 
-#include "ActorRef.hpp"
 #include "../ActorInitializer.hpp"
-#include "../IComponentRegisterContext.hpp"
 #include "../Component/HierarchyComponent.hpp"
+#include "../Core/Session.hpp"
+#include "../IComponentRegisterContext.hpp"
 #include "../Universe/Universe.hpp"
+#include "ActorRef.hpp"
 #include "Archetype/ActorClass.hpp"
+
 import Engine.Asserts;
+import Engine.Common;
 
 /**/
 
