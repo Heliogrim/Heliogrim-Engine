@@ -269,14 +269,13 @@ function(make_library_project)
 	endif ()
 
 	# Libraries
-	set(module_libraries ${DEFAULT_MODULE_LIBRARIES})
-	list(REMOVE_ITEM module_libraries "${PROJECT_NAME}::${args_LIB_NAME}.Module")
+	# The own provider included: the bundle's sources import their own module.
 	target_link_libraries(
 			${target}
 			PRIVATE
 			${args_LIBRARIES}
 			${DEFAULT_LIBRARIES}
-			${module_libraries}
+			${DEFAULT_MODULE_LIBRARIES}
 	)
 
 	# Linker Options
