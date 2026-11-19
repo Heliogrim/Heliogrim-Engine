@@ -6,6 +6,6 @@ namespace hg {
     };
 
     namespace traits {
-        constexpr static nothrow_t nothrow;
+        inline constexpr nothrow_t nothrow;
     };
 }
