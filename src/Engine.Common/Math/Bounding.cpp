@@ -1,4 +1,5 @@
-#include "Bounding.hpp"
+#include <Engine.Common/__macro.hpp>
+import Engine.Common;
 
 using namespace hg::math;
 using namespace hg;

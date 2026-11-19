@@ -6,6 +6,7 @@
 #include "../Repository/PackageSystemRepository.hpp"
 #include "../Storage/ArchiveStorage.hpp"
 #include "../Storage/PackageStorage.hpp"
+import Engine.Asserts;
 
 using namespace hg::engine::storage::system;
 using namespace hg;

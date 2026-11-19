@@ -4,6 +4,7 @@
 #include <Engine.Resource.Package/Attribute/PackageGuid.hpp>
 
 #include "Load.hpp"
+import Engine.Asserts;
 
 using namespace hg::engine::storage::package;
 using namespace hg::engine::resource;

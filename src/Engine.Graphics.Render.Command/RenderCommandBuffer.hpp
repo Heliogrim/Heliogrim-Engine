@@ -5,6 +5,9 @@
 #include "RenderCommandAllocator.hpp"
 #include "RenderCommandBufferBase.hpp"
 #include "RenderResourceTable.hpp"
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Asserts;
+#endif
 
 namespace hg::engine::render::cmd {
 	class RenderCommandBuffer :

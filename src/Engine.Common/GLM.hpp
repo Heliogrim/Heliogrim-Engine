@@ -14,9 +14,7 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #endif
 
-START_SUPPRESS_WARNINGS
-#include <glm/glm.hpp>
-#include <glm/gtx/rotate_vector.hpp>
-#include <glm/gtx/transform.hpp>
-#include <glm/trigonometric.hpp>
-START_SUPPRESS_WARNINGS
+/* The glm provider includes this header for its configuration and wraps glm itself; everyone else imports it. */
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import glm;
+#endif

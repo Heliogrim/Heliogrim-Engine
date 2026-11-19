@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Engine.Common/__macro.hpp>
+
 #if !defined MATH_DEFAULT_SINGLE_PRECISION && !defined MATH_DEFAULT_DOUBLE_PRECISION
 #define MATH_DEFAULT_SINGLE_PRECISION
 #endif

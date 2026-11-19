@@ -1,6 +1,6 @@
-#include "Murmur3.hpp"
-
 #include <cstring>
+#include <Engine.Common/__macro.hpp>
+import Engine.Common;
 
 using namespace hg::hash;
 using namespace hg;
