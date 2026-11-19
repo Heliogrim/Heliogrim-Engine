@@ -1,7 +1,7 @@
 
 # Setup
-make_library_project(
+make_library_sub_project(
         LIB_NAME Engine.Pedantic
-        LIB_FOLDER "${IDE_FOLDER}/Engine/Utils"
+        SUB_OF Engine.Common
         LIBRARIES ${PROJECT_NAME}::Engine.Common
 )
