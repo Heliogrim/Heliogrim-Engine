@@ -95,6 +95,7 @@ function(make_test_project)
 			PRIVATE
 			${args_LIBRARIES}
 			${DEFAULT_LIBRARIES}
+			${DEFAULT_MODULE_LIBRARIES}
 			${TEST_LIBRARIES}
 	)
 

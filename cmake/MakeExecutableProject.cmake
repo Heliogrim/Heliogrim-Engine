@@ -111,12 +111,14 @@ function(make_app_project)
 			PRIVATE
 			${args_LIBRARIES}
 			${DEFAULT_LIBRARIES}
+			${DEFAULT_MODULE_LIBRARIES}
 	)
 	target_link_libraries(
 			${lib_target}
 			PRIVATE
 			${args_LIBRARIES}
 			${DEFAULT_LIBRARIES}
+			${DEFAULT_MODULE_LIBRARIES}
 	)
 
 	# Compile Definitions
