@@ -29,6 +29,15 @@ function(library_glm_init)
             DESTINATION "${vendor_inc_path}/glm/"
     )
 
+    # Generated rather than upstream `glm.cppm`: a style A wrapper mixes with gli's textual glm; the prelude is our configuration.
+    make_vendor_module(
+            MODULE_NAME glm
+            PRELUDE Engine.Common/GLM.hpp
+            HEADERS glm/glm.hpp glm/gtc/quaternion.hpp glm/gtx/rotate_vector.hpp glm/gtx/transform.hpp glm/trigonometric.hpp
+            SCAN_DIR "${vendor_inc_path}"
+            SKIP arm_neon.h cuda.h
+    )
+
 endfunction()
 
 # Push to setup

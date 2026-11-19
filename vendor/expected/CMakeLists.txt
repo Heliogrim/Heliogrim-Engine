@@ -30,6 +30,8 @@ function(library_expected_init)
             DESTINATION "${vendor_inc_path}/"
     )
 
+    make_vendor_module(MODULE_NAME tl.expected HEADERS tl/expected.hpp SCAN_DIR "${vendor_inc_path}")
+
 endfunction()
 
 # Push to setup

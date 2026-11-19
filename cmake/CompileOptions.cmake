@@ -110,7 +110,17 @@ endif ()
 #
 
 # Ordered list of module names; every bundle, test and app links the provider of each.
-set(DEFAULT_MODULES Engine.Asserts)
+set(DEFAULT_MODULES
+		std
+		std.compat
+		tl.optional
+		tl.expected
+		ankerl.unordered_dense
+		std23.function_ref
+		glm
+		Engine.Asserts
+		Engine.Common
+)
 
 set(DEFAULT_MODULE_LIBRARIES ${DEFAULT_MODULES})
 list(TRANSFORM DEFAULT_MODULE_LIBRARIES PREPEND "${PROJECT_NAME}::")

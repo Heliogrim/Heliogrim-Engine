@@ -112,13 +112,7 @@ function(_finalize_module_interfaces)
 		get_property(exclude GLOBAL PROPERTY global_module_${root}_exclude)
 
 		name_to_target(root_target "${root}")
-		name_to_target(provider "${root}.Module")
-
-		add_library(${provider} OBJECT)
-		add_library(${PROJECT_NAME}::${root}.Module ALIAS ${provider})
-		# Bundles linking the provider are exported, so the provider has to be too.
-		export(TARGETS ${provider} NAMESPACE ${PROJECT_NAME}:: FILE ${PROJECT_BINARY_DIR}/cmake/${provider}/${provider}-export.cmake)
-		__apply_default_compile_settings(${provider})
+		_make_module_provider(provider "${root}")
 
 		get_target_property(folder ${root_target} FOLDER)
 		if (folder)
@@ -143,13 +137,7 @@ function(_finalize_module_interfaces)
 			endif ()
 		endforeach ()
 
-		# External targets only, so the interface compiles with the include dirs and definitions of its importers.
-		target_link_libraries(
-				${provider}
-				PRIVATE
-				${DEFAULT_LIBRARIES}
-				${import_libraries}
-		)
+		target_link_libraries(${provider} PRIVATE ${import_libraries})
 	endforeach ()
 endfunction()
 

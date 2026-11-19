@@ -30,6 +30,8 @@ function(library_nontype_fn_init)
 			DESTINATION "${vendor_inc_path}/"
 	)
 
+	make_vendor_module(MODULE_NAME std23.function_ref HEADERS std23/function_ref.h SCAN_DIR "${vendor_inc_path}")
+
 endfunction()
 
 # Push to setup

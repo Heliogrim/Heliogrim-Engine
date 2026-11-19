@@ -64,6 +64,7 @@ include(cmake/PreprocDefinitions.cmake)
 include(cmake/CompileOptions.cmake)
 
 # Modules
+make_std_module()
 discover_and_hydrate_vendor()
 discover_and_hydrate_targets()
 discover_and_hydrate_tests()
