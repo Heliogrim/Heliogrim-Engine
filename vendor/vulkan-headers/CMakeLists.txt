@@ -36,6 +36,20 @@ function(library_vulkan_headers_init)
 	export(TARGETS Vulkan-Headers NAMESPACE External:: FILE ${PROJECT_BINARY_DIR}/cmake/${alias}/${alias}-export.cmake)
 	export(TARGETS Vulkan-Headers NAMESPACE Vulkan:: FILE ${PROJECT_BINARY_DIR}/cmake/${alias}/VulkanHeadersConfig.cmake)
 
+	# Upstream export list over our configuration (`vkinc.hpp`, built without a platform); the `:video` partition is dropped.
+	make_vendor_module(
+			MODULE_NAME vulkan
+			SOURCE "${vendor_inc_path}/vulkan/vulkan.cppm"
+			PRELUDE
+			Engine.Common/__macro.hpp
+			Engine.Graphics/vkinc.hpp
+			vulkan/vulkan_extension_inspection.hpp
+			vulkan/vulkan_format_traits.hpp
+			vulkan/vulkan_hash.hpp
+			vulkan/vulkan_raii.hpp
+			vulkan/vulkan_shared.hpp
+	)
+
 endfunction()
 
 # Push to setup
