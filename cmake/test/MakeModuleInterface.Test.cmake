@@ -1,0 +1,66 @@
+include(${CMAKE_CURRENT_LIST_DIR}/../MakeModuleInterface.cmake)
+
+function(_expect_true condition message)
+	cmake_language(EVAL CODE "if (${condition})
+else ()
+	message(FATAL_ERROR \"FAILED: ${message}\")
+endif ()")
+endfunction()
+
+set(base "${CMAKE_CURRENT_BINARY_DIR}/mmi-fixture")
+file(REMOVE_RECURSE "${base}")
+file(WRITE "${base}/Fix/Config.hpp" "#pragma once\n#define FIX_X 1\n")
+file(WRITE "${base}/Fix/A.hpp" "#pragma once\n#include <vector>\n#include <Other/B.hpp>\n#include <Fix/Config.hpp>\n")
+file(WRITE "${base}/Fix/Bad.hpp" "#pragma once\n")
+file(WRITE "${base}/Fix/UsesBad.hpp" "#pragma once\n#include \"Bad.hpp\"\n")
+file(WRITE "${base}/Fix/Imp.hpp" "#pragma once\n#if not defined(HG_MODULE_INTERFACE_UNIT)\nimport Engine.Asserts;\n#endif\n")
+
+set(headers)
+foreach (name Config A Bad UsesBad Imp)
+	list(APPEND headers "${base}/Fix/${name}.hpp")
+endforeach ()
+
+_make_module_interface_content(text MODULE_NAME Fix BASE_DIR "${base}" HEADERS ${headers} OWN_PREFIXES Fix EXCLUDE Fix/Bad.hpp)
+
+string(FIND "${text}" "export module Fix;" module_at)
+string(FIND "${text}" "export extern \"C++\" {" export_at)
+_expect_true("module_at GREATER 0" "module declaration present")
+_expect_true("export_at GREATER module_at" "export block after module declaration")
+string(SUBSTRING "${text}" 0 ${module_at} fragment)
+string(SUBSTRING "${text}" ${module_at} -1 purview)
+string(SUBSTRING "${text}" ${export_at} -1 export_block)
+
+_expect_true("text MATCHES \"\nmodule;\n#define HG_MODULE_INTERFACE_UNIT\n\"" "define is first line after `module;`")
+_expect_true("fragment MATCHES \"#include <Fix/Config.hpp>\"" "config header in global fragment")
+_expect_true("NOT export_block MATCHES \"Config.hpp\"" "config header not exported")
+_expect_true("fragment MATCHES \"#include <vector>\"" "foreign std include hoisted")
+_expect_true("fragment MATCHES \"#include <Other/B.hpp>\"" "foreign prefixed include hoisted")
+_expect_true("NOT fragment MATCHES \"#include <Fix/A.hpp>\"" "own header not hoisted")
+_expect_true("export_block MATCHES \"#include \\\"Fix/A.hpp\\\"\"" "own header exported (quoted)")
+_expect_true("NOT text MATCHES \"Bad.hpp\"" "excluded header absent")
+_expect_true("NOT text MATCHES \"UsesBad.hpp\"" "includer of excluded header absent")
+
+string(REGEX MATCHALL "import Engine[.]Asserts" import_matches "${text}")
+list(LENGTH import_matches import_count)
+_expect_true("import_count EQUAL 1" "import emitted exactly once")
+string(FIND "${text}" "import Engine.Asserts;" import_at)
+_expect_true("import_at GREATER module_at" "import after module declaration")
+_expect_true("import_at LESS export_at" "import before export block")
+_expect_true("text_IMPORTS STREQUAL \"Engine.Asserts\"" "imports list")
+
+# Exclusion by resolved path: a same-named header in another directory is not affected.
+file(WRITE "${base}/Fix/Sub/Bad.hpp" "#pragma once\n")
+file(WRITE "${base}/Fix/Sub/Ok.hpp" "#pragma once\n#include \"Bad.hpp\"\n")
+_make_module_interface_content(text2 MODULE_NAME Fix BASE_DIR "${base}" HEADERS "${base}/Fix/Bad.hpp" "${base}/Fix/Sub/Bad.hpp" "${base}/Fix/Sub/Ok.hpp" OWN_PREFIXES Fix EXCLUDE Fix/Bad.hpp)
+_expect_true("text2 MATCHES \"Fix/Sub/Ok.hpp\"" "same-named header elsewhere is not over-excluded")
+
+# Vendor
+file(WRITE "${base}/vk.cppm" "module;\n#include <x>\nexport module upstream;\nexport import std;\nexport import :video;\nexport namespace vk { using vk::A; }\n")
+_make_vendor_module_content(vtext MODULE_NAME vulkan SOURCE "${base}/vk.cppm" PRELUDE vulkan/vulkan_config.hpp)
+_expect_true("vtext MATCHES \"module;\n#define HG_MODULE_INTERFACE_UNIT\n#include <vulkan/vulkan_config.hpp>\n\"" "vendor prelude")
+_expect_true("vtext MATCHES \"export module vulkan;\"" "vendor module renamed")
+_expect_true("vtext MATCHES \"export namespace vk \\\\{ using vk::A; \\\\}\"" "vendor export block kept")
+_expect_true("NOT vtext MATCHES \"export import\"" "export import dropped")
+_expect_true("NOT vtext MATCHES \"#include <x>\"" "vendor global fragment dropped")
+
+message(STATUS "MakeModuleInterface.Test passed")
