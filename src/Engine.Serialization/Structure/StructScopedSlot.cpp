@@ -1,10 +1,11 @@
 #include "StructScopedSlot.hpp"
 
-#include <Engine.Asserts/Todo.hpp>
 #include <Engine.Common/Make.hpp>
 
 #include "IntegralScopedSlot.hpp"
 #include "StructSlot.hpp"
+#include "StructureSlotTypeTraits.hpp"
+import Engine.Asserts;
 
 using namespace hg::engine::serialization;
 using namespace hg;

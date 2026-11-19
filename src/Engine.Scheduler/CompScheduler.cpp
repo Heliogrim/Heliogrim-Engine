@@ -2,13 +2,13 @@
 
 #include <bit>
 #include <utility>
-#include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Logging/Logger.hpp>
 
 #ifdef _PROFILING
 #include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
+import Engine.Asserts;
 
 namespace {
 	/* Reserved for dedicated non-worker threads; raise when the audio device thread lands. */

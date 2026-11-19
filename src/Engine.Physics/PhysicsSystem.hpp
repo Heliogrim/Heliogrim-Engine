@@ -4,7 +4,6 @@
 
 /**/
 
-#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Array.hpp>
 #include <Engine.Common/Meta/IsAnyOf.hpp>
@@ -12,6 +11,9 @@
 #include <Jolt/Physics/Collision/BroadPhase/BroadPhaseLayer.h>
 
 #include "PhysicsLayer.hpp"
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Asserts;
+#endif
 
 namespace hg::engine::physics {
 	struct ObjectLayerPairFilterImpl : JPH::ObjectLayerPairFilter {

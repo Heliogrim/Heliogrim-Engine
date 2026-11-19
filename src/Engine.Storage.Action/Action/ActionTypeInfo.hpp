@@ -1,10 +1,12 @@
 #pragma once
 
-#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Reflect/FullTypeInfo.hpp>
 
 #include "StageTypeInfo.hpp"
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Asserts;
+#endif
 
 namespace hg::engine::storage {
 	struct ActionTypeInfo {

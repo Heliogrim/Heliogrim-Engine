@@ -4,7 +4,6 @@
 #include <limits>
 #include <new>
 #include <Engine.ACS/Handle/Epoch.hpp>
-#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Move.hpp>
 #include <Engine.Common/Wrapper.hpp>
@@ -12,6 +11,7 @@
 #include <Heliogrim/ActorInitializer.hpp>
 #include <Heliogrim/Actor/Actor.hpp>
 #include <Heliogrim/Actor/Archetype/ActorClass.hpp>
+import Engine.Asserts;
 
 using namespace hg::engine::acs;
 using namespace hg;

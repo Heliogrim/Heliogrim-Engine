@@ -1,6 +1,6 @@
 #include "JoinCounter.hpp"
 
-#include <Engine.Asserts/Asserts.hpp>
+import Engine.Asserts;
 
 using namespace hg::engine::scheduler;
 using namespace hg;

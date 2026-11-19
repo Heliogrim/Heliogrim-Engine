@@ -1,7 +1,6 @@
 #include "ModelImporter.hpp"
 
 #include <filesystem>
-#include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Common/GuidFormat.hpp>
 #include <Engine.Common/Wrapper.hpp>
@@ -10,6 +9,7 @@
 #include <Engine.Resource.Package/Linker/PackageLinker.hpp>
 #include <Engine.Storage.Registry/IStorageRegistry.hpp>
 #include <Engine.Storage.Registry/Storage/PackageStorage.hpp>
+import Engine.Asserts;
 
 using namespace hg::engine::graphics;
 using namespace hg;

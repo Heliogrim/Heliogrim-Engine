@@ -1,8 +1,8 @@
 #include "IoThread.hpp"
 
-#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Common/stdafx.h>
 #include <Engine.Logging/Logger.hpp>
+import Engine.Asserts;
 
 using namespace hg::engine::io;
 using namespace hg;

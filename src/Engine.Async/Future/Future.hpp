@@ -3,12 +3,14 @@
 #include <concepts>
 #include <type_traits>
 #include <utility>
-#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Common/Expected.hpp>
 
 #include "FutureState.hpp"
 #include "Schedule.hpp"
 #include "Send.hpp"
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Asserts;
+#endif
 
 namespace hg {
 	template <typename T_, typename E_ = Broken>

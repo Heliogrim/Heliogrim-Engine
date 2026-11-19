@@ -1,7 +1,6 @@
 #pragma once
 
 #include <tuple>
-#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Common/Expected.hpp>
 #include <Engine.Common/Move.hpp>
 #include <Engine.Common/Sal.hpp>
@@ -10,6 +9,9 @@
 
 #include "../Action.hpp"
 #include "../Context.hpp"
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Asserts;
+#endif
 
 namespace hg::engine::storage::system {
 	template <typename Type_, typename... Stages_>

@@ -1,7 +1,5 @@
 ﻿#include "GlobalPooledAllocator.hpp"
 
-#include <Engine.Asserts/Breakpoint.hpp>
-
 #include <cassert>
 
 #include "AllocatedMemory.hpp"
@@ -9,6 +7,7 @@
 #include "Allocator.hpp"
 #include "MemoryPool.hpp"
 #include "../vkinc.hpp"
+import Engine.Asserts;
 
 using namespace hg::engine::graphics::memory;
 using namespace hg;

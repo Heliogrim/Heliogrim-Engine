@@ -1,7 +1,6 @@
 #pragma once
 
 #include <stdexcept>
-#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
@@ -13,6 +12,9 @@
 #include "ConfigKey.hpp"
 #include "ConfigValue.hpp"
 #include "Provider.hpp"
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Asserts;
+#endif
 
 namespace hg::engine::cfg {
 	class ConfigValueTypeMismatchError final : public std::runtime_error {

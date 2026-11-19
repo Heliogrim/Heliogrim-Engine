@@ -3,10 +3,12 @@
 #include <functional>
 #include <span>
 #include <utility>
-#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Common/Types.hpp>
 
 #include "../IStorage.hpp"
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Asserts;
+#endif
 
 namespace hg::engine::storage {
 	class StorageIo;

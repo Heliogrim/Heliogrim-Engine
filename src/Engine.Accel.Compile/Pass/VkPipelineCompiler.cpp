@@ -11,7 +11,6 @@
 #include <Engine.Accel.Pipeline/VkRaytracingPipeline.hpp>
 #include <Engine.Accel.Pipeline/Stage/StageDerivat.hpp>
 #include <Engine.Accel.Pipeline/Stage/StageModule.hpp>
-#include <Engine.Asserts/Panic.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Collection/Array.hpp>
@@ -29,6 +28,7 @@
 #include "../Module/VkCompiledModule.hpp"
 #include "../Spec/EffectSpecification.hpp"
 #include "VkVertexFormat.hpp"
+import Engine.Asserts;
 
 using namespace hg::engine::accel;
 using namespace hg;

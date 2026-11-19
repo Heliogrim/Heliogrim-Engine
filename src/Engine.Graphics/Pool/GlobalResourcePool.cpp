@@ -1,11 +1,10 @@
 #include "GlobalResourcePool.hpp"
 
-#include <Engine.Asserts/Breakpoint.hpp>
-
 #include "../Buffer/SparseBufferView.hpp"
 #include "../Texture/SparseTextureView.hpp"
 #include "../Texture/TextureFactory.hpp"
 #include "Engine.Graphics/Geometry/Vertex.hpp"
+import Engine.Asserts;
 
 using namespace hg::engine::graphics::pool;
 using namespace hg;

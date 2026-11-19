@@ -3,12 +3,14 @@
 #include <concepts>
 #include <map>
 #include <ranges>
-#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Common/Forward.hpp>
 #include <Engine.Common/Meta/Reference.hpp>
 
 #include "Subscriber.hpp"
 #include "Subscription.hpp"
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Asserts;
+#endif
 
 namespace hg::editor::ui::rx {
 	template <typename Type_>

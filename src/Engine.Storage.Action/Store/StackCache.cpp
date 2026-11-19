@@ -1,9 +1,9 @@
 #include "StackCache.hpp"
 
-#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Move.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
+import Engine.Asserts;
 
 using namespace hg::engine::storage;
 using namespace hg;

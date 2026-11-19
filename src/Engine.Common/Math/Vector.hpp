@@ -4,13 +4,15 @@
 #include <cstddef>
 #include <cstring>
 #include <limits>
-#include <Engine.Asserts/Asserts.hpp>
 
 #include "Hash.hpp"
 #include "MathDefaultDefine.hpp"
 #include "../Types.hpp"
 #include "../Wrapper.hpp"
 #include "../__macro.hpp"
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Asserts;
+#endif
 
 #if defined(ENV_WIN)
 #pragma warning (disable: 4201)

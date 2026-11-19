@@ -1,7 +1,9 @@
 #pragma once
 
-#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Asserts;
+#endif
 
 namespace hg {
 	template <typename ManagedType_>

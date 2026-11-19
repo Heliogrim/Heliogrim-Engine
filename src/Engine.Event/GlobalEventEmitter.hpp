@@ -1,10 +1,12 @@
 #pragma once
 
 #include <cassert>
-#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Common/Collection/DenseMap.hpp>
 
 #include "EventEmitter.hpp"
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Asserts;
+#endif
 
 namespace hg {
 	/*

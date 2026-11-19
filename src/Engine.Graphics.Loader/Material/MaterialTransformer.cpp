@@ -1,7 +1,6 @@
 #include "MaterialTransformer.hpp"
 
 #include <ranges>
-#include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets.Type/Material/GraphicsMaterialPrototype.hpp>
@@ -17,6 +16,7 @@
 
 #include "../Texture/TextureResource.hpp"
 #include "../Texture/Traits.hpp"
+import Engine.Asserts;
 
 using namespace hg::engine::graphics::loader;
 using namespace hg::engine::graphics;

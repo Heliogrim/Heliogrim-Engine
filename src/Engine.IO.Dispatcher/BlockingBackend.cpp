@@ -1,10 +1,10 @@
 #include "BlockingBackend.hpp"
 
 #include <limits>
-#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Common/stdafx.h>
 
 #include "IoFile.hpp"
+import Engine.Asserts;
 
 using namespace hg::engine::io;
 using namespace hg;

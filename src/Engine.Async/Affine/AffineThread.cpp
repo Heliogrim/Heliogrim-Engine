@@ -2,7 +2,6 @@
 
 #include <bit>
 #include <exception>
-#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/String/Convert.hpp>
@@ -14,6 +13,7 @@
 /**/
 #include <processthreadsapi.h>
 #endif
+import Engine.Asserts;
 
 using namespace hg::engine::async;
 using namespace hg;

@@ -1,6 +1,12 @@
 #include "ScopedSlotGuard.hpp"
 
+#ifdef _DEBUG
+#include <Engine.Logging/Logger.hpp>
+#include "StructureSlotTypeTraits.hpp"
+#endif
+
 #include "ScopedStructureSlot.hpp"
+import Engine.Asserts;
 
 using namespace hg::engine::serialization;
 using namespace hg;

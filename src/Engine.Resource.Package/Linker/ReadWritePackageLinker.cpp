@@ -2,11 +2,10 @@
 
 #include <algorithm>
 #include <memory>
-#include <Engine.Asserts/Asserts.hpp>
-#include <Engine.Asserts/Todo.hpp>
 #include <Engine.Common/Move.hpp>
 
 #include "Indexed.hpp"
+import Engine.Asserts;
 
 using namespace hg::engine::resource::package;
 using namespace hg::engine::resource;

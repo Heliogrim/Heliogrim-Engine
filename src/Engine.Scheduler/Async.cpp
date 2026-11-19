@@ -1,9 +1,9 @@
 #include "Async.hpp"
 
-#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Core/Engine.hpp>
 
 #include "Pipeline/CompositePipeline.hpp"
+import Engine.Asserts;
 
 using namespace hg::engine::scheduler;
 using namespace hg::engine;

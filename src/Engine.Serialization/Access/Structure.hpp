@@ -2,12 +2,14 @@
 
 #include <concepts>
 #include <type_traits>
-#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Meta/Type.hpp>
 
 #include "../Scheme/Selector.hpp"
 #include "../Structure/RecordScopedSlot.hpp"
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Asserts;
+#endif
 
 namespace hg::engine::serialization::access {
 	template <class Type_, class Derived_>

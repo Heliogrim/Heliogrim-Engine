@@ -1,10 +1,12 @@
 #pragma once
 
-#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Common/Expected.hpp>
 #include <format>
 
 #include "Diagnostic.hpp"
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Asserts;
+#endif
 
 namespace hg::engine::diag {
 	template <typename Ty_>

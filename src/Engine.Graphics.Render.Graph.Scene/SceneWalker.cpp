@@ -1,6 +1,6 @@
 #include "SceneWalker.hpp"
 
-#include <Engine.Asserts/Breakpoint.hpp>
+import Engine.Asserts;
 
 using namespace hg::engine::render::graph;
 using namespace hg;
