@@ -1,8 +1,10 @@
 #pragma once
 
-#include <concepts>
-#include <utility>
 #include <Engine.Assets/AssetGuid.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg::engine::assets {
 	class Asset;

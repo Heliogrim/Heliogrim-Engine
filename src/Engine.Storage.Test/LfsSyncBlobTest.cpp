@@ -6,14 +6,9 @@
 
 /**/
 
-#include <algorithm>
-#include <array>
-#include <atomic>
-#include <filesystem>
-#include <fstream>
-#include <thread>
-#include <vector>
 #include <Engine.Resource.Blob/File/LfsSyncBlob.hpp>
+
+import std;
 
 /**/
 

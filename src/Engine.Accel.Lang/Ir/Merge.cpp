@@ -1,10 +1,8 @@
 #include "Merge.hpp"
 
-#include <algorithm>
-#include <string>
-#include <utility>
-
 #include "Typecheck.hpp"
+
+import std;
 
 using namespace hg::engine::accel::lang;
 using namespace hg;
@@ -18,7 +16,7 @@ using namespace hg;
 namespace {
 	constexpr u32 unset = ~0uL;
 
-	[[nodiscard]] String quoted(StringView text_) {
+	[[nodiscard]] String quote(StringView text_) {
 		return "'" + String(text_) + "'";
 	}
 
@@ -320,8 +318,8 @@ namespace {
 						diags.emplace_back(
 							ir::Diagnostic::error(
 								codes::asl("merge-conflict"),
-								"entry attribute " + quoted(String(label_)) + " differs in " + quoted(moduleName(*owner)) + " and " +
-								quoted(moduleName(static_cast<u32>(m)))
+								"entry attribute " + quote(String(label_)) + " differs in " + quote(moduleName(*owner)) + " and " +
+								quote(moduleName(static_cast<u32>(m)))
 							)
 						);
 					}
@@ -361,8 +359,8 @@ namespace {
 					diags.emplace_back(
 						ir::Diagnostic::error(
 							codes::asl("merge-conflict"),
-							"toggle " + quoted(name) + " declared with different values in " + quoted(first) + " and " +
-							quoted(moduleName(mod_))
+							"toggle " + quote(name) + " declared with different values in " + quote(first) + " and " +
+							quote(moduleName(mod_))
 						)
 					);
 
@@ -370,8 +368,8 @@ namespace {
 					diags.emplace_back(
 						ir::Diagnostic::error(
 							codes::asl("merge-conflict"),
-							"toggle " + quoted(name) + " defaults to " + quoted(it->defaultValue) + " in " + quoted(first) + " and " +
-							quoted(defaultValue) + " in " + quoted(moduleName(mod_))
+							"toggle " + quote(name) + " defaults to " + quote(it->defaultValue) + " in " + quote(first) + " and " +
+							quote(defaultValue) + " in " + quote(moduleName(mod_))
 						)
 					);
 				}
@@ -386,9 +384,9 @@ namespace {
 			ref<const String> second_
 		) const {
 			const auto in = [](ref<const String> mod_) {
-				return " in " + quoted(mod_);
+				return " in " + quote(mod_);
 			};
-			const auto prefix = "binding " + quoted(a_.id) + " declared ";
+			const auto prefix = "binding " + quote(a_.id) + " declared ";
 			if (a_.type != b_.type) {
 				return prefix + "as " + ir::quotedType(result.types, a_.type) + in(first_) + " and " + ir::quotedType(result.types, b_.type)
 					+ in(second_);
@@ -407,11 +405,11 @@ namespace {
 			}
 
 			if (a_.arrayed != b_.arrayed) {
-				return prefix + "as per-vertex array in only one of" + in(first_) + " and " + quoted(second_);
+				return prefix + "as per-vertex array in only one of" + in(first_) + " and " + quote(second_);
 			}
 
 			if (a_.patch != b_.patch) {
-				return prefix + "as per-patch in only one of" + in(first_) + " and " + quoted(second_);
+				return prefix + "as per-patch in only one of" + in(first_) + " and " + quote(second_);
 			}
 
 			if (a_.input != b_.input) {
@@ -522,9 +520,9 @@ namespace {
 				}
 
 				const auto first = origins_[index];
-				const auto prefix = "constant " + quoted(constant.name) + " declared ";
+				const auto prefix = "constant " + quote(constant.name) + " declared ";
 				const auto in = [&](u32 m_) {
-					return " in " + quoted(moduleName(m_));
+					return " in " + quote(moduleName(m_));
 				};
 				if (it->type != mapped.type) {
 					diags.emplace_back(
@@ -615,8 +613,8 @@ namespace {
 						diags.emplace_back(
 							ir::Diagnostic::error(
 								codes::asl("merge-conflict"),
-								"signature of function " + quoted(fn.name) + " differs between " + quoted(moduleName(named->first.mod)) +
-								" and " + quoted(moduleName(at.mod))
+								"signature of function " + quote(fn.name) + " differs between " + quote(moduleName(named->first.mod)) +
+								" and " + quote(moduleName(at.mod))
 							)
 						);
 					}
@@ -641,8 +639,8 @@ namespace {
 						diags.emplace_back(
 							ir::Diagnostic::error(
 								codes::asl("overlapping-variant-bodies"),
-								"duplicate body for function " + quoted(signature) + " in modules " + quoted(moduleName(variant->mod)) +
-								" and " + quoted(moduleName(at.mod))
+								"duplicate body for function " + quote(signature) + " in modules " + quote(moduleName(variant->mod)) +
+								" and " + quote(moduleName(at.mod))
 							)
 						);
 					}
@@ -654,7 +652,7 @@ namespace {
 					diags.emplace_back(
 						ir::Diagnostic::error(
 							codes::asl("missing-variant-body"),
-							"missing body for function " + quoted(named.name) + " declared in " + quoted(moduleName(named.first.mod))
+							"missing body for function " + quote(named.name) + " declared in " + quote(moduleName(named.first.mod))
 						)
 					);
 				}
@@ -746,7 +744,7 @@ std::expected<ir::Module, ir::Diagnostics> ir::merge(std::span<const Module* con
 			diags.emplace_back(
 				ir::Diagnostic::error(
 					codes::asl("internal-inconsistent-pipeline"),
-					"module " + quoted(ordered_[i]->name) + " is malformed"
+					"module " + quote(ordered_[i]->name) + " is malformed"
 				).note(std::move(*invalid))
 			);
 		}

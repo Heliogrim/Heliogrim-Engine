@@ -1,10 +1,10 @@
 #include "Material.hpp"
 
-#include <algorithm>
 #include <cassert>
-#include <ranges>
 
 #include "MaterialPrototype.hpp"
+
+import std;
 
 using namespace hg::engine::graphics::material;
 using namespace hg;

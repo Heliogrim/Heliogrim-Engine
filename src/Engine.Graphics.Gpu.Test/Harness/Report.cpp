@@ -1,17 +1,15 @@
-#include "Report.hpp"
-
-#include <algorithm>
-#include <format>
-#include <fstream>
-#include <sstream>
 #include <ryml/ryml.hpp>
 #include <ryml/ryml_std.hpp>
+
+#include "Report.hpp"
 
 #ifdef WIN32
 #include <Engine.Common/stdafx.h>
 /**/
 #include <libloaderapi.h>
 #endif
+
+import std;
 
 using namespace hg;
 using namespace hg::test::gpu;
@@ -65,7 +63,7 @@ Report hg::test::gpu::makeReport(
 		std::move(checks_),
 		ErrorSummary { 0.F, math::uivec2 { 0, 0 }, 0.F },
 		Raster { math::uivec2 { 0, 0 }, {} },
-		tl::nullopt,
+		::hg::None,
 		0u,
 		{},
 		{}
@@ -147,25 +145,25 @@ Opt<Raster> store::loadPrevious(const StringView test_) {
 	const auto size = std::filesystem::file_size(path, ec);
 	std::ifstream in { path, std::ios::binary };
 	if (ec || not in) {
-		return tl::nullopt;
+		return ::hg::None;
 	}
 
 	u32 extent[2] {};
 	in.read(reinterpret_cast<ptr<char>>(extent), sizeof(extent));
 	if (not in) {
-		return tl::nullopt;
+		return ::hg::None;
 	}
 
 	// Compare texel counts instead of bytes so a corrupt header cannot overflow or request an absurd buffer.
 	const auto payload = size - sizeof(extent);
 	if (payload % sizeof(math::fvec4) != 0 || static_cast<u64>(extent[0]) * extent[1] != payload / sizeof(math::fvec4)) {
-		return tl::nullopt;
+		return ::hg::None;
 	}
 
 	Raster raster { math::uivec2 { extent[0], extent[1] }, Vector<math::fvec4>(static_cast<size_t>(extent[0]) * extent[1]) };
 	in.read(reinterpret_cast<ptr<char>>(raster.texels.data()), static_cast<std::streamsize>(payload));
 	if (not in) {
-		return tl::nullopt;
+		return ::hg::None;
 	}
 
 	return SomeVal<Raster>(std::move(raster));

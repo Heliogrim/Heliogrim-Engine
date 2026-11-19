@@ -2,11 +2,12 @@
 
 /**/
 
-#include <array>
-#include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflect/Inherit/InheritMeta.hpp>
-#include <Engine.Resource.Blob/WindowedBlob.hpp>
 #include <Engine.Resource.Blob/Memory/ByteSpanBlob.hpp>
+#include <Engine.Resource.Blob/WindowedBlob.hpp>
+
+import Engine.Common;
 
 /**/
 

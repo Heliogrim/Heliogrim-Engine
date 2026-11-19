@@ -1,5 +1,8 @@
-#include <Engine.Common/Guid.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Serialization/Layout/DataLayout.hpp>
+#include <stddef.h>
+
+import Engine.Common;
 
 namespace hg::engine::serialization {
     template <>

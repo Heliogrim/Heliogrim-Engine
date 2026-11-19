@@ -1,18 +1,20 @@
 #pragma once
 
-#include "jolt.inc.hpp"
+/* Jolt stays textual and has to precede every import in a TU (`import std;` forbids std headers after it). */
+#include <Jolt/Jolt.h>
 
-/**/
-
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/Array.hpp>
-#include <Engine.Common/Meta/IsAnyOf.hpp>
-#include <Jolt/Physics/PhysicsSystem.h>
 #include <Jolt/Physics/Collision/BroadPhase/BroadPhaseLayer.h>
+#include <Jolt/Physics/Collision/ObjectLayer.h>
+#include <Jolt/Physics/PhysicsSystem.h>
+
+#include <Engine.Common/__macro.hpp>
 
 #include "PhysicsLayer.hpp"
+#include "jolt.inc.hpp"
+
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Asserts;
+import Engine.Common;
 #endif
 
 namespace hg::engine::physics {

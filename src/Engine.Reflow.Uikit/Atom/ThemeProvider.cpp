@@ -1,8 +1,8 @@
 #include "ThemeProvider.hpp"
 
-#include <format>
+#include <Engine.Common/__macro.hpp>
 
-#include <Engine.Common/Discard.hpp>
+import Engine.Common;
 
 using namespace hg::engine::reflow;
 using namespace hg;

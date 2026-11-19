@@ -1,12 +1,14 @@
 #include "Component.hpp"
 
-#include <Engine.Common/Move.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Heliogrim/Actor/ActorGuid.hpp>
 #include <Heliogrim/Component/LogicComponent.hpp>
 
 #include "ActorModule.hpp"
 #include "Registry.hpp"
+
+import Engine.Common;
 
 using namespace hg;
 

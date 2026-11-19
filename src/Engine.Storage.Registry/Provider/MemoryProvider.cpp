@@ -1,12 +1,13 @@
 #include "MemoryProvider.hpp"
 
-#include <Engine.Common/Make.hpp>
-#include <Engine.Common/Managed/AtomicRefCountedIntrusive.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "../Options/MemoryStorageDescriptor.hpp"
-#include"../Repository/MemoryRepository.hpp"
+#include "../Repository/MemoryRepository.hpp"
 #include "../Storage/MemoryStorage.hpp"
+
 import Engine.Asserts;
+import Engine.Common;
 
 using namespace hg::engine::storage::system;
 using namespace hg;

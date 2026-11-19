@@ -1,11 +1,10 @@
 #include "RelocationBarrier.hpp"
 
-#include <algorithm>
-#include <functional>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "ClusterRegion.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::acs;
 using namespace hg;

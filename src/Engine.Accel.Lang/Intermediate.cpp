@@ -1,11 +1,12 @@
 #include "Intermediate.hpp"
 
-#include <algorithm>
-#include <ranges>
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
+#include <cassert>
 
 #include "Ir/Variant.hpp"
+
 import Engine.Asserts;
+import Engine.Common;
 
 using namespace hg::engine::accel::lang;
 using namespace hg;

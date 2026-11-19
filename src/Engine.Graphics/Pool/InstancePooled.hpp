@@ -1,12 +1,15 @@
 #pragma once
-#include <Engine.Common/Make.hpp>
-#include <Engine.Common/Memory/MemoryPointer.hpp>
-#include <Engine.Pedantic/Clone/Clone.hpp>
 
-#include "../vkinc.hpp"
+#include <Engine.Common/__macro.hpp>
+
 #include "../Buffer/Buffer.hpp"
 #include "../Buffer/BufferFactory.hpp"
 #include "../Memory/VirtualMemory.hpp"
+#include "../vkinc.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::graphics {
 	template <typename ValueType_>

@@ -1,14 +1,9 @@
 #include "FunctionTier.hpp"
 
-#include <algorithm>
-#include <filesystem>
-#include <fstream>
-#include <sstream>
-#include <utility>
 #include <Engine.Accel.Compile/EffectCompileResult.hpp>
-#include <Engine.Accel.Compile/VkEffectCompiler.hpp>
 #include <Engine.Accel.Compile/Profile/EffectProfile.hpp>
 #include <Engine.Accel.Compile/Spec/SimpleEffectSpecification.hpp>
+#include <Engine.Accel.Compile/VkEffectCompiler.hpp>
 #include <Engine.Accel.Effect/AccelerationEffect.hpp>
 #include <Engine.Accel.Lang/Intermediate.hpp>
 #include <Engine.Accel.Lang/Ir/Interface.hpp>
@@ -16,8 +11,7 @@
 #include <Engine.Accel.Lang/Rep/Variable.hpp>
 #include <Engine.Accel.Pass/VkAccelerationPassFactory.hpp>
 #include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
-#include <Engine.Common/Guid.hpp>
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Diagnostics/Render.hpp>
 #include <Engine.Driver.Vulkan/VkNativeBatch.hpp>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
@@ -26,9 +20,10 @@
 #include <Engine.Graphics.RenderGraph/Symbol/Symbol.hpp>
 #include <Engine.Graphics/Command/CommandQueue.hpp>
 #include <Engine.Graphics/Framebuffer/Framebuffer.hpp>
-#include <Engine.Pedantic/Clone/Clone.hpp>
 
 #include "FunctionTarget.hpp"
+
+import Engine.Common;
 
 using namespace hg::test::gpu;
 using namespace hg::engine::accel;

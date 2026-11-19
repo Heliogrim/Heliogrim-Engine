@@ -1,17 +1,11 @@
 #pragma once
 
-#include <bit>
-#include <compare>
-#include <cstddef>
-#include <iterator>
-#include <ranges>
-#include <span>
-#include <Engine.Common/Types.hpp>
-#include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Common/__warning.hpp>
-#include <Engine.Common/Collection/Set.hpp>
+
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Asserts;
+import Engine.Common;
 #endif
 
 namespace hg {

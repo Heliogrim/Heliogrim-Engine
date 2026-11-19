@@ -1,9 +1,9 @@
 #include "MemoryReadWriteArchive.hpp"
 
+#include <Engine.Common/__macro.hpp>
 #include <cstring>
-#include <utility>
 
-#include <Engine.Common/Move.hpp>
+import Engine.Common;
 
 using namespace hg::engine::resource;
 using namespace hg;

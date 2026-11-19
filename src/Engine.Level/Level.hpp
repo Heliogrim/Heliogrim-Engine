@@ -1,15 +1,7 @@
 #pragma once
 
-#include <span>
 #include <Engine.ACS/Handle/Handle.hpp>
-#include <Engine.Common/Expected.hpp>
-#include <Engine.Common/Optional.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/DenseSet.hpp>
-#include <Engine.Common/Managed/AtomicRefCountedIntrusive.hpp>
-#include <Engine.Common/Managed/Rc.hpp>
-#include <Engine.Common/Math/Bounding.hpp>
-#include <Engine.Common/Memory/Pointer.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Diagnostics/Diagnostic.hpp>
 #include <Engine.Diagnostics/Sink.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
@@ -17,6 +9,10 @@
 #include <Heliogrim/Actor/Actor.hpp>
 
 #include "LevelGuid.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::resource {
 	class Archive;

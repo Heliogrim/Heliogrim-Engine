@@ -1,9 +1,12 @@
 #pragma once
 
-#include <memory>
 #include <Engine.Pedantic/Into/IntoImpl.hpp>
 
 #include "../__macro.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg {
 	template <typename Ty_>

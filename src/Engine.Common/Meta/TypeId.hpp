@@ -1,10 +1,12 @@
 #pragma once
 
-#include <concepts>
-
+#include "../Hash/Murmur3.hpp"
 #include "../Types.hpp"
 #include "../Wrapper.hpp"
-#include "../Hash/Murmur3.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg {
 	/**
@@ -59,7 +61,7 @@ namespace hg {
 		u64 data;
 	};
 
-	namespace {
+	namespace detail {
 		/**
 		 * Fnv-1a 86
 		 *
@@ -92,7 +94,7 @@ namespace hg {
 	 * @returns The result of the operation.
 	 */
 	consteval type_id operator""_typeId(const char* str_, const std::size_t count_) noexcept {
-		return fnv1a_86(str_, count_);
+		return detail::fnv1a_86(str_, count_);
 	}
 
 	/**

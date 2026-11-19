@@ -1,14 +1,16 @@
 #pragma once
 
 #include <cassert>
-#include <memory>
-#include <utility>
 
-#include "InlineArray.hpp"
+#include "../Memory/Destroy.hpp"
 #include "../Move.hpp"
 #include "../Wrapper.hpp"
 #include "../__macro.hpp"
-#include "../Memory/Destroy.hpp"
+#include "InlineArray.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg {
 	/*

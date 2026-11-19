@@ -1,12 +1,14 @@
 #pragma once
 
-#include <concepts>
-#include <type_traits>
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "FloatSlot.hpp"
 #include "ScopedSlotGuard.hpp"
 #include "ScopedStructureSlot.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::serialization {
 	template <std::floating_point FloatType_>

@@ -4,15 +4,16 @@
 #include <Engine.Resource/ResourceManager.hpp>
 
 #ifdef _PROFILING
-#include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
 
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "Importer/AudioFileTypes.hpp"
 #include "Importer/FlacImporter.hpp"
 #include "Importer/VorbisImporter.hpp"
 #include "Importer/WavImporter.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine;
 using namespace hg;

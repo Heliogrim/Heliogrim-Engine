@@ -2,9 +2,6 @@
 
 /**/
 
-#include <algorithm>
-#include <array>
-
 #include <Engine.Accel.Lang/Ir/Interface.hpp>
 #include <Engine.Accel.Lang/Ir/Layout.hpp>
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
@@ -12,6 +9,8 @@
 #include <Engine.Accel.Lang/Ir/Slice.hpp>
 
 #include "IrWording.hpp"
+
+import std;
 
 using namespace hg::engine::accel::lang::ir;
 using namespace hg;

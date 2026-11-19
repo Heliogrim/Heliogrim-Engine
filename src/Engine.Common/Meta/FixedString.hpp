@@ -1,7 +1,8 @@
 #pragma once
 
-#include <algorithm>
-#include <string_view>
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg {
 	/**

@@ -1,9 +1,9 @@
-#include "Stopwatch.hpp"
-
-#include <thread>
+#include <Engine.Common/__macro.hpp>
 
 #include "Profiler.hpp"
-#include "../Types.hpp"
+
+import Engine.Common;
+import std;
 
 using namespace hg::profiling;
 using namespace hg;

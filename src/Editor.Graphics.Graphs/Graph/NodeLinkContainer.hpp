@@ -1,11 +1,13 @@
 #pragma once
 
-#include <Engine.Common/Collection/CompactArray.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
 
-#include "../Node/__fwd.hpp"
 #include "../Node/NodeLink.hpp"
+#include "../Node/__fwd.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::editor::graphics::graph {
     class NodeLinkContainer {

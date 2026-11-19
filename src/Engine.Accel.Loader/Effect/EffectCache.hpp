@@ -1,11 +1,15 @@
 #pragma once
 
-#include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 #include <Engine.Accel.Storage/GlobalStorage.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Resource/Loader/Cache.hpp>
 
-#include "__fwd.hpp"
 #include "Traits.hpp"
+#include "__fwd.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::accel::loader {
 	class EffectCache final :

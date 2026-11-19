@@ -1,8 +1,10 @@
 #pragma once
 
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Common/Algo/Copy.hpp>
-#include <Engine.Common/Collection/Array.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg {
 	namespace {

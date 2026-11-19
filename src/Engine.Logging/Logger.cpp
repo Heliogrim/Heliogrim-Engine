@@ -1,35 +1,29 @@
-#include "Logger.hpp"
-
-#include <algorithm>
-#include <ctime>
-#include <mutex>
-#include <ranges>
-#include <Engine.Common/Make.hpp>
-#include <Engine.Common/Move.hpp>
-#include <Engine.Common/__macro.hpp>
-
-#if defined(WIN32)
-#include <Engine.Common/stdafx.h>
-#endif
-
 #if not defined(SPDLOG_USE_STD_FORMAT)
 #define SPDLOG_USE_STD_FORMAT
 #endif
 
-#include <filesystem>
 #include <spdlog/async.h>
-#include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/dup_filter_sink.h>
+#include <spdlog/spdlog.h>
+#if defined(_DEBUG)
+#include <spdlog/sinks/stdout_color_sinks.h>
+#endif
+
+#include <Engine.Common/__macro.hpp>
+
+#include "Logger.hpp"
+
+#if defined(WIN32)
+#include <Engine.Common/stdafx.h>
+#endif
 
 /*
 #if defined(_DEBUG) && defined(_MSC_VER) && defined(WIN32)
 #include <spdlog/sinks/msvc_sink.h>
 #endif
 */
-#if defined(_DEBUG)
-#include <spdlog/sinks/stdout_color_sinks.h>
-#endif
+import Engine.Common;
 
 using namespace hg;
 

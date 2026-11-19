@@ -1,10 +1,10 @@
 #include <cassert>
-#include <charconv>
-#include <limits>
 
 #include "Builtin.hpp"
 #include "ParserImpl.hpp"
 #include "Typecheck.hpp"
+
+import std;
 
 using namespace hg::engine::accel::lang::ir::detail;
 using namespace hg::engine::accel::lang;

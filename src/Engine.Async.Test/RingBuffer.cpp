@@ -1,8 +1,8 @@
 #include "pch.h"
 
-#include <atomic>
-#include <thread>
 #include <Engine.Async/Collection/RingBuffer.hpp>
+
+import std;
 
 using namespace hg;
 using namespace hg::engine::concurrent;

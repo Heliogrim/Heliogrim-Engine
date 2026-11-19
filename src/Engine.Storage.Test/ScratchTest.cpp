@@ -6,15 +6,13 @@
 
 /**/
 
-#include <filesystem>
-#include <fstream>
-#include <string>
-
 #if !defined(_WIN32)
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
 #endif
+
+import std;
 
 /**/
 

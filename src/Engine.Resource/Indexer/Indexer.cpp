@@ -1,9 +1,8 @@
 #include "Indexer.hpp"
 
-#include <algorithm>
-#include <ranges>
-#include <utility>
-#include <Engine.Common/Collection/Queue.hpp>
+#include <Engine.Common/__macro.hpp>
+
+import Engine.Common;
 
 using namespace hg::engine::res;
 using namespace hg;

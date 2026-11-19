@@ -1,11 +1,8 @@
 #include "pch.h"
 
-#include <array>
-#include <numbers>
-#include <Engine.Common/Hash/Fnv-1a.hpp>
-#include <Engine.Common/Math/Bezier.hpp>
-#include <Engine.Common/Math/Hash.hpp>
-#include <Engine.Common/Math/Rotator.hpp>
+#include <Engine.Common/__macro.hpp>
+
+import Engine.Common;
 
 using namespace hg;
 using namespace hg::math;

@@ -1,9 +1,10 @@
 #pragma once
 
-#include <concepts>
-#include <type_traits>
-
 #include "Compile/TypeName.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg::refl {
 	template <typename Type_>

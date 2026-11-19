@@ -1,7 +1,8 @@
 #pragma once
 
-#include <type_traits>
-#include <utility>
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg {
 	/* Note: This is a straight copy from the msvc xmemory header... */

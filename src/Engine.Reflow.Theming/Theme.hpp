@@ -1,13 +1,15 @@
 #pragma once
 
-#include <map>
-#include <Engine.Common/Optional.hpp>
-#include <Engine.Common/String.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflow.Attributes/Layout/Base/BoxLayoutAttributes.hpp>
 #include <Engine.Reflow.Attributes/Layout/Base/FlexLayoutAttributes.hpp>
 #include <Engine.Reflow.Attributes/Style/Base/ImageStyleAttributes.hpp>
 #include <Engine.Reflow.Attributes/Style/Base/PaintStyle.hpp>
 #include <Engine.Reflow.Attributes/Style/Base/TextStyleAttributes.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::reflow::theming {
 	class Theme final {

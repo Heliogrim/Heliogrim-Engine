@@ -3,6 +3,7 @@
 #include <Engine.Core/Engine.hpp>
 
 #include "Pipeline/CompositePipeline.hpp"
+
 import Engine.Asserts;
 
 using namespace hg::engine::scheduler;

@@ -1,9 +1,9 @@
 #include "pch.h"
 /**/
 
-#include <string>
-#include <vector>
 #include <Engine.Scene/Scene.hpp>
+
+import std;
 
 using namespace hg::engine::scene;
 using namespace hg;

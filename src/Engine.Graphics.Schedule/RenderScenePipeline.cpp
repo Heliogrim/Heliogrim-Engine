@@ -1,9 +1,10 @@
 #include "RenderScenePipeline.hpp"
 
-#include <ranges>
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "RenderTickStage.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::graphics::schedule;
 using namespace hg::engine::graphics;

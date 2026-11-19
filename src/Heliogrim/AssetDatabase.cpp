@@ -4,9 +4,11 @@
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets.Type/Asset.hpp>
 #include <Engine.Assets/Assets.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Engine.hpp>
-#include <Engine.Pedantic/Clone/Clone.hpp>
+
 import Engine.Asserts;
+import Engine.Common;
 
 using namespace hg;
 

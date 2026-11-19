@@ -2,7 +2,6 @@
 
 /**/
 
-#include <filesystem>
 #include <Engine.Serialization.Structures/Common/Guid.hpp>
 #include <Engine.Serialization.Structures/Common/TypeId.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
@@ -11,6 +10,8 @@
 #include <Engine.Serialization/Structure/SliceScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StringScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
+
+import std;
 
 using namespace hg::engine::serialization;
 using namespace hg::engine::assets;

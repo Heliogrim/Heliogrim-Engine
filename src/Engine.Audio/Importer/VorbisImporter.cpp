@@ -1,11 +1,13 @@
 #include "VorbisImporter.hpp"
 
+#include <Engine.Common/__macro.hpp>
+#include <cstdlib>
 #include <cstring>
-#include <Engine.Common/Make.hpp>
-#include <Engine.Common/String.hpp>
 #include <vorbis/vorbisfile.h>
 
 #include "AudioFileTypes.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::audio;
 using namespace hg;

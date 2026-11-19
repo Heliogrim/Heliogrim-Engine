@@ -1,7 +1,9 @@
 #pragma once
 
-#include "RecordScopedSlot.hpp"
+#include <Engine.Common/Sal.hpp>
+
 #include "../Archive/__fwd.hpp"
+#include "RecordScopedSlot.hpp"
 
 namespace hg::engine::serialization {
 	class RootScopedSlot final :

@@ -1,9 +1,11 @@
 #pragma once
 
-#include <chrono>
-
 #include "../String.hpp"
 #include "../Wrapper.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg::profiling {
     class Stopwatch {

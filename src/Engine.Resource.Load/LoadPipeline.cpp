@@ -1,8 +1,9 @@
 #include "LoadPipeline.hpp"
 
-#include <Engine.Common/String.hpp>
+#include <Engine.Common/StringLiterals.hpp>
+#include <Engine.Common/__macro.hpp>
 
-#include "Engine.Pedantic/Clone/Clone.hpp"
+import Engine.Common;
 
 using namespace hg;
 

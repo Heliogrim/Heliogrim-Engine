@@ -1,7 +1,8 @@
 #include "pch.h"
 
-#include <Engine.Common/Math/Transformation.hpp>
-#include <Engine.Common/Math/Vector.hpp>
+#include <Engine.Common/__macro.hpp>
+
+import Engine.Common;
 
 using namespace hg;
 

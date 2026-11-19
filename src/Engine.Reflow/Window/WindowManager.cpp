@@ -1,28 +1,28 @@
 #include "WindowManager.hpp"
 
-#include <algorithm>
-#include <ranges>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Engine.hpp>
+#include <Engine.Graphics.Scene/RenderSceneManager.hpp>
+#include <Engine.Graphics.Scene/View/SceneView.hpp>
+#include <Engine.Graphics/Graphics.hpp>
+#include <Engine.Graphics/RenderTarget.hpp>
 #include <Engine.Graphics/Surface/Surface.hpp>
 #include <Engine.Graphics/Surface/SurfaceManager.hpp>
 #include <Engine.Graphics/Swapchain/VkSurfaceSwapchain.hpp>
-#include <Engine.Graphics.Scene/RenderSceneManager.hpp>
-#include <Engine.Graphics/Graphics.hpp>
-#include <Engine.Graphics/RenderTarget.hpp>
-#include <Engine.Graphics.Scene/View/SceneView.hpp>
 #include <Engine.Input/Input.hpp>
 #include <Engine.Logging/Logger.hpp>
-#include <Engine.Pedantic/Clone/Clone.hpp>
 #include <Engine.Platform/Platform.hpp>
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
 #include <Engine.Scene/SceneBase.hpp>
 #include <Heliogrim/Async/Future.hpp>
 
 #include "BoundWindow.hpp"
-#include "Reflow.hpp"
-#include "Window.hpp"
 #include "Engine.Core/Module/Modules.hpp"
 #include "Module/Reflow.hpp"
+#include "Reflow.hpp"
+#include "Window.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::reflow;
 using namespace hg;

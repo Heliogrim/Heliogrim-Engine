@@ -1,6 +1,8 @@
 #pragma once
 
-#include <tuple>
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg::engine::reflow {
 	template <class... AttributeSets_>

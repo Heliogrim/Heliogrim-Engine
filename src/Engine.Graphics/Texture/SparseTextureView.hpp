@@ -1,16 +1,17 @@
 #pragma once
 
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Types.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Math/__default.inl>
-#include <Engine.Common/Memory/MemoryPointer.hpp>
+#include <Engine.Common/__macro.hpp>
 
-#include "TextureLikeObject.hpp"
-#include "__fwd.hpp"
-#include "../TextureFormat.hpp"
-#include "TextureType.hpp"
 #include "../API/__vkFwd.hpp"
+#include "../TextureFormat.hpp"
+#include "TextureLikeObject.hpp"
+#include "TextureType.hpp"
+#include "__fwd.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::graphics::loader {
 	class TextureLoader;

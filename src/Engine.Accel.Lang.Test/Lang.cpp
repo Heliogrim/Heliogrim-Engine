@@ -3,10 +3,12 @@
 /**/
 
 #include <Engine.Accel.Lang/Intermediate.hpp>
-#include <Engine.Accel.Lang/Representation.hpp>
 #include <Engine.Accel.Lang/Rep/Annotation.hpp>
 #include <Engine.Accel.Lang/Rep/Symbol.hpp>
-#include <Engine.Common/Make.hpp>
+#include <Engine.Accel.Lang/Representation.hpp>
+#include <Engine.Common/__macro.hpp>
+
+import Engine.Common;
 
 using namespace hg::engine::accel::lang;
 using namespace hg;

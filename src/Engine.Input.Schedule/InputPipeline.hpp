@@ -1,7 +1,11 @@
 #pragma once
 
-#include <Engine.Common/Collection/Array.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Scheduler/Pipeline/StagePipeline.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::input::schedule {
 	class InputPipeline final :

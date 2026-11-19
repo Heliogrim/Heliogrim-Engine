@@ -1,9 +1,10 @@
 #include "pch.h"
 
-#include <vector>
 #include <Engine.ACS/Traits.hpp>
-#include <Engine.Common/Move.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Heliogrim/Component/HierarchyComponent.hpp>
+
+import Engine.Common;
 
 using namespace hg;
 

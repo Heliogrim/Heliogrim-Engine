@@ -1,8 +1,8 @@
 #include "pch.h"
 
-#include <string>
-#include <vector>
 #include <Editor.UI.Rx/Subject.hpp>
+
+import std;
 
 using namespace hg;
 using namespace hg::editor::ui::rx;

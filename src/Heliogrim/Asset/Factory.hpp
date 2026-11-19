@@ -1,8 +1,8 @@
 #pragma once
 
-#include <concepts>
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Asserts;
+import std;
 #endif
 
 namespace hg {

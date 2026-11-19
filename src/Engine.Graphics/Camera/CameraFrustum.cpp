@@ -1,7 +1,9 @@
 #include "CameraFrustum.hpp"
 
-#include <Engine.Common/Types.hpp>
 #include <Engine.Common/Math/Compat.inl>
+#include <Engine.Common/__macro.hpp>
+
+import Engine.Common;
 
 using namespace hg::engine::graphics;
 using namespace hg;

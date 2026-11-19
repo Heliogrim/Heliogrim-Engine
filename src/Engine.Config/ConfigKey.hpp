@@ -1,8 +1,11 @@
 #pragma once
 
-#include <type_traits>
-#include <Engine.Common/String.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflect/Compile/String.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::cfg {
 	template <typename Ty_>

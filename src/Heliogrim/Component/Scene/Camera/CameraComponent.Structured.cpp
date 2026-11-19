@@ -1,11 +1,13 @@
-#include <Engine.Common/Move.hpp>
+#include <Engine.Common/__macro.hpp>
+#include <Engine.Serialization.Structures/Symbols.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Structure/FloatScopedSlot.hpp>
 #include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
-#include <Engine.Serialization.Structures/Symbols.hpp>
 
 #include "CameraComponent.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::serialization;
 using namespace hg;

@@ -1,8 +1,10 @@
 #include "pch.h"
 
-#include <array>
 #include <Engine.Accel.Lang/Ir/Contract.hpp>
+
 #include "IrWording.hpp"
+
+import std;
 
 using namespace hg::engine::accel::lang::ir;
 using namespace hg;

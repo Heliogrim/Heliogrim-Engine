@@ -6,6 +6,7 @@
 #endif
 
 #include "ScopedStructureSlot.hpp"
+
 import Engine.Asserts;
 
 using namespace hg::engine::serialization;

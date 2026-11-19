@@ -4,14 +4,12 @@
 
 /**/
 
-#include "PropertyServiceInit.hpp"
-
 #include <Engine.Reflect/IsType.hpp>
 #include <Engine.Reflect/TypeId.hpp>
-#include <Engine.Reflow.Uikit/Atom/Text.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/HorizontalLayout.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/UniformGridLayout.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/VerticalLayout.hpp>
+#include <Engine.Reflow.Uikit/Atom/Text.hpp>
 #include <Heliogrim/Component/Scene/Camera/CameraComponent.hpp>
 #include <Heliogrim/Component/Scene/Collision/BoxShapeCollisionComponent.hpp>
 #include <Heliogrim/Component/Scene/Geometry/StaticGeometryComponent.hpp>
@@ -19,6 +17,8 @@
 #include <Heliogrim/Component/Scene/Light/PointLightComponent.hpp>
 #include <Heliogrim/Component/Scene/Light/SpotLightComponent.hpp>
 #include <Heliogrim/Component/Scene/Sky/SkyboxComponent.hpp>
+
+#include "PropertyServiceInit.hpp"
 
 /**/
 
@@ -31,14 +31,16 @@
 #include <Engine.Assets.System/AssetRegistry.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets/Assets.hpp>
-#include <Engine.Common/Discard.hpp>
-#include <Engine.Common/GuidFormat.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Reflect/Cast.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/BoxLayout.hpp>
 #include <Heliogrim/AssetDatabase.hpp>
 #include <Heliogrim/Heliogrim.hpp>
+
 #include "PropertyService.hpp"
+
+import Engine.Common;
 
 using namespace hg::editor::ui::service;
 using namespace hg::editor::ui;

@@ -2,7 +2,7 @@
 
 #include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
 #include <Engine.Assets.Type/Material/GraphicsMaterial.hpp>
-#include <Engine.Common/Math/Convertion.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Graphics.Loader/Geometry/Traits.hpp>
 #include <Engine.Graphics.Loader/Material/Traits.hpp>
@@ -11,6 +11,8 @@
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 #include <Heliogrim/Component/Scene/Geometry/StaticGeometryComponent.hpp>
+
+import Engine.Common;
 
 using namespace hg::engine::graphics::scene;
 using namespace hg;

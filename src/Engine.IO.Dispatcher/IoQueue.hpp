@@ -2,12 +2,13 @@
 
 #include <Engine.Async/Future/Future.hpp>
 #include <Engine.Async/Future/Promise.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/Deque.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.Common/Managed/Rc.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "IoTypes.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::io {
 	class IoSystem;

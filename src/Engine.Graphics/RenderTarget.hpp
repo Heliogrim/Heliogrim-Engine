@@ -1,15 +1,15 @@
 #pragma once
 
-#include <Engine.Common/Expected.hpp>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.Common/Functional/FnRef.hpp>
-#include <Engine.Common/Memory/MemoryPointer.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.Render/Renderer.hpp>
 
 #include "RenderEnqueueResult.hpp"
 #include "vkinc.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::graphics {
 	class Camera;

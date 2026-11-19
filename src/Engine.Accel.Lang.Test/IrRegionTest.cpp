@@ -2,8 +2,6 @@
 
 /**/
 
-#include <algorithm>
-#include <regex>
 #include <Engine.Accel.Lang/Ir/Interface.hpp>
 #include <Engine.Accel.Lang/Ir/Layout.hpp>
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
@@ -12,6 +10,8 @@
 
 #include "IrSpirvText.hpp"
 #include "IrWording.hpp"
+
+import std;
 
 using namespace hg::engine::accel::lang::ir;
 using namespace hg::engine::accel::lang;

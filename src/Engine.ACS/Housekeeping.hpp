@@ -1,13 +1,15 @@
 #pragma once
 
 #include <Engine.Async/Primitive/SpinLock.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/DenseMap.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Heliogrim/Actor/ActorGuid.hpp>
 
 #include "Component.hpp"
 #include "ComponentTypeId.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::acs {
 	class Registry;

@@ -2,10 +2,10 @@
 
 /**/
 
-#include <ostream>
-
 #include "../Harness/FunctionTarget.hpp"
 #include "../Harness/GpuTest.hpp"
+
+import std;
 
 using namespace hg::test::gpu;
 using namespace hg;

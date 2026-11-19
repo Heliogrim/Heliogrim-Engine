@@ -1,10 +1,6 @@
 #include "FunctionTarget.hpp"
 
-#include <array>
-#include <stdexcept>
-#include <utility>
-#include <Engine.Common/Make.hpp>
-#include <Engine.Graphics/vkinc.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics/Buffer/Buffer.hpp>
 #include <Engine.Graphics/Command/CommandBuffer.hpp>
 #include <Engine.Graphics/Command/CommandPool.hpp>
@@ -12,6 +8,9 @@
 #include <Engine.Graphics/Memory/AllocationResult.hpp>
 #include <Engine.Graphics/Memory/GlobalPooledAllocator.hpp>
 #include <Engine.Graphics/Texture/TextureFactory.hpp>
+#include <Engine.Graphics/vkinc.hpp>
+
+import Engine.Common;
 
 using namespace hg::test::gpu;
 using namespace hg::engine::graphics;

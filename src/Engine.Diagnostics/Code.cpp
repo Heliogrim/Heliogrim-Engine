@@ -1,8 +1,7 @@
 #include "Code.hpp"
 
-#include <algorithm>
-#include <format>
 import Engine.Asserts;
+import std;
 
 using namespace hg::engine;
 using namespace hg;

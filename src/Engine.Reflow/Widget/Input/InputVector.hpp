@@ -1,9 +1,11 @@
 #pragma once
 
-#include <tuple>
-
-#include "../Input.hpp"
 #include "../../Children.hpp"
+#include "../Input.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg::engine::reflow {
 	template <typename... InputTypes_>

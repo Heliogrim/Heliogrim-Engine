@@ -1,13 +1,14 @@
 #pragma once
 
-#include <algorithm>
-#include <cstring>
-#include <stdexcept>
-#include <unordered_set>
-#include <utility>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.Common/Memory/Address.hpp>
+#include <Engine.Common/__macro.hpp>
+#include <cstdint>
+#include <cstdlib>
+#include <cstring>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::acs {
 	template <typename Ty>

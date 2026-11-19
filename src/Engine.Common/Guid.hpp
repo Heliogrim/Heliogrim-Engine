@@ -1,16 +1,14 @@
 #pragma once
 
-#include <array>
-#include <bit>
-#include <compare>
-#include <concepts>
-#include <span>
-
+#include "Math/Hash.hpp"
 #include "Sal.hpp"
 #include "Types.hpp"
 #include "Wrapper.hpp"
 #include "__macro.hpp"
-#include "Math/Hash.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 #ifdef _WIN32
 struct _GUID;

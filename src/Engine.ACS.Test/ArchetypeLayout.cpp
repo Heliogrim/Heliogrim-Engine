@@ -2,13 +2,11 @@
 
 /**/
 
-#include <algorithm>
-#include <array>
-#include <concepts>
-#include <set>
 #include <Engine.ACS/Archetype/Layout.hpp>
 #include <Engine.ACS/Archetype/LayoutInfo.hpp>
-#include <Engine.Common/Collection/Array.hpp>
+#include <Engine.Common/__macro.hpp>
+
+import Engine.Common;
 
 using namespace hg::engine::acs;
 using namespace hg;

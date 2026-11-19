@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Meta/NoThrow.hpp>
 #include <Engine.Core/Module/RootModule.hpp>
 
 #include "ImporterManager.hpp"
@@ -9,6 +7,12 @@
 
 #ifdef _EDITOR
 #include "Indexer/Indexer.hpp"
+#endif
+
+#include <Engine.Common/__macro.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
 #endif
 
 namespace hg::engine::resource {

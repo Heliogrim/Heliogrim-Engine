@@ -1,13 +1,16 @@
 #pragma once
 
-#include <span>
 #include "../String.hpp"
 #include "../Types.hpp"
 #include "../Wrapper.hpp"
 #include "../__macro.hpp"
 
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
+
 namespace hg::hash {
-	namespace {
+	namespace detail {
 		START_SUPPRESS_WARNINGS
 		/**
 		 * Fnv-1a 86
@@ -33,19 +36,19 @@ namespace hg::hash {
 	}
 
 	constexpr u64 operator ""_fnv1a(const char* str_, const std::size_t count_) noexcept {
-		return fnv1a_86(str_, count_);
+		return detail::fnv1a_86(str_, count_);
 	}
 
 	[[nodiscard]] constexpr u64 fnv1a(cref<string_view> src_) noexcept {
-		return fnv1a_86(src_.data(), src_.length());
+		return detail::fnv1a_86(src_.data(), src_.length());
 	}
 
 	[[nodiscard]] constexpr u64 fnv1a(cref<string> src_) noexcept {
-		return fnv1a_86(src_.data(), src_.length());
+		return detail::fnv1a_86(src_.data(), src_.length());
 	}
 
 	[[nodiscard]] constexpr u64 fnv1a(const std::span<const char> src_) noexcept {
-		return fnv1a_86(src_.data(), src_.size());
+		return detail::fnv1a_86(src_.data(), src_.size());
 	}
 }
 

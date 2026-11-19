@@ -1,16 +1,14 @@
 ﻿#include "MemoryPool.hpp"
 
-#include <algorithm>
-#include <cassert>
-#include <map>
-#include <ranges>
-#include <Engine.Common/Make.hpp>
-#include <Engine.Common/Optional.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Logging/Logger.hpp>
+#include <cassert>
 
 #include "AllocatedMemory.hpp"
 #include "AllocationResult.hpp"
+
 import Engine.Asserts;
+import Engine.Common;
 
 /**/
 

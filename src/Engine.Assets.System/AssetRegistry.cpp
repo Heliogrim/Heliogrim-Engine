@@ -1,23 +1,17 @@
 #include "AssetRegistry.hpp"
 
-#include <algorithm>
-#include <filesystem>
-#include <ranges>
-
 #include <Engine.Assets.Type/Asset.hpp>
-#include <Engine.Common/Make.hpp>
-#include <Engine.Common/Memory/MemoryPointer.hpp>
-#include <Engine.Pedantic/Clone/Clone.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "AssetDescriptor.hpp"
 #include "AssetRepository.hpp"
-
 #include "Registry/Index.hpp"
 #include "Registry/IndexTable.hpp"
 #include "Registry/IndexTrait.hpp"
-
 #include "Repository/InMemAssetRepository.hpp"
+
 import Engine.Asserts;
+import Engine.Common;
 
 using namespace hg::engine::assets::system;
 using namespace hg::engine::assets;

@@ -1,13 +1,16 @@
 #pragma once
 
-#include <Engine.Common/Types.hpp>
-#include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Math/__default.inl>
+#include <Engine.Common/__macro.hpp>
 
+#include "../Memory/VirtualMemoryPage.hpp"
+#include "../vkinc.hpp"
 #include "SparseTexturePageFlag.hpp"
 #include "__fwd.hpp"
-#include "../vkinc.hpp"
-#include "../Memory/VirtualMemoryPage.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::graphics {
 	class SparseTexturePage final {

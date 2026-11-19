@@ -1,12 +1,14 @@
 #pragma once
 
-#include <type_traits>
-#include <Engine.Common/Optional.hpp>
-#include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Pedantic.Resource/AccessMode.hpp>
 
 #include "IoResourceAccessor.hpp"
 #include "IoResourceBase.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::storage {
 	template <typename MutableType_, typename Type_ = std::add_const_t<MutableType_>>

@@ -2,13 +2,9 @@
 
 /**/
 
-#include <array>
-#include <deque>
-#include <string>
-#include <Engine.Common/Algo/Copy.hpp>
-#include <Engine.Common/Algo/Search.hpp>
-#include <Engine.Common/Algo/Slice.hpp>
-#include <Engine.Common/Types.hpp>
+#include <Engine.Common/__macro.hpp>
+
+import Engine.Common;
 
 using namespace hg;
 

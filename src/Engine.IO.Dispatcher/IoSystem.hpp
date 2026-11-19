@@ -1,19 +1,18 @@
 #pragma once
 
-#include <array>
-#include <atomic>
-#include <filesystem>
 #include <Engine.Async/Affine/AffineThread.hpp>
 #include <Engine.Async/Future/Future.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.Common/Managed/Rc.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "IoBackend.hpp"
 #include "IoFile.hpp"
 #include "IoQueue.hpp"
 #include "IoThread.hpp"
 #include "IoTypes.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::io {
 	class IoSystem final {

@@ -1,15 +1,15 @@
 #pragma once
 
-#include <format>
-#include <Engine.Common/Make.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/Array.hpp>
-#include <Engine.Common/Math/Vector.hpp>
-#include <Engine.Reflow/Widget/Input.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/HorizontalLayout.hpp>
+#include <Engine.Reflow/Widget/Input.hpp>
 
 #include "./InputFloat.hpp"
 #include "./InputIntegral.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::editor::ui {
 	template <typename VectorType_>

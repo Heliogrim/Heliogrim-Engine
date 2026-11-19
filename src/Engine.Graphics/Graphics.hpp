@@ -1,20 +1,20 @@
 #pragma once
 
-#include <functional>
-#include <map>
-#include <Engine.Common/String.hpp>
-#include <Engine.Common/Collection/AssociativeKey.hpp>
-#include <Engine.Common/Math/Vector.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Module/CoreModule.hpp>
 #include <Engine.Graphics.Render/Renderer.hpp>
 
 #include "Application/Application.hpp"
 #include "Cache/__fwd.hpp"
-#include "Pool/__fwd.hpp"
 #include "Command/CommandQueue.hpp"
 #include "Device/Device.hpp"
+#include "Pool/__fwd.hpp"
 #include "Surface/Surface.hpp"
 #include "Swapchain/Swapchain.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 /**
  * Forward Declaration

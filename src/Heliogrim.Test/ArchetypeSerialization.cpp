@@ -2,18 +2,12 @@
 
 /**/
 
-#include <array>
-#include <cstddef>
-#include <cstring>
-#include <limits>
-#include <new>
-#include <span>
-#include <string_view>
-#include <Engine.ACS/Registry.hpp>
 #include <Engine.ACS/Archetype/LayoutInfo.hpp>
+#include <Engine.ACS/Registry.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Resource.Archive/BufferArchive.hpp>
+#include <Engine.Serialization.Structures/Symbols.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Archive/StructuredArchive.hpp>
 #include <Engine.Serialization/Load/LoadContext.hpp>
@@ -22,7 +16,6 @@
 #include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>
 #include <Engine.Serialization/Structure/RecordScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
-#include <Engine.Serialization.Structures/Symbols.hpp>
 #include <Engine.Serialization.Structures/Common/Guid.hpp>
 #include <Engine.Serialization.Structures/Common/TypeId.hpp>
 #include <Heliogrim/Actor/Actor.hpp>
@@ -40,6 +33,8 @@
 
 #include "SpawnEngine.hpp"
 #include "TestArchetypes.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::serialization;
 using namespace hg::engine::resource;

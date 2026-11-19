@@ -1,8 +1,10 @@
 #include "DeferredPosition.hpp"
 
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "../Descriptions/V4F32DataBuffer.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::render;
 using namespace hg;

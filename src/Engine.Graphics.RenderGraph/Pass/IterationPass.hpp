@@ -1,11 +1,16 @@
 #pragma once
-#include <Engine.Common/Collection/Queue.hpp>
 
-#include "RenderGraphPass.hpp"
+#include <Engine.Common/__macro.hpp>
+#include <cassert>
 
-#include "IterationPassContext.hpp"
 #include "../Node/RuntimeNode.hpp"
 #include "../Visitor/Visitor.hpp"
+#include "IterationPassContext.hpp"
+#include "RenderGraphPass.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::render::graph {
 	class IterationPass :

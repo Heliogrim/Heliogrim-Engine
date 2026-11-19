@@ -1,14 +1,15 @@
 #include "Accel.hpp"
 
 #include <Engine.Accel.Loader/Manager.hpp>
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Module/CoreDependencies.hpp>
 #include <Engine.Core/Module/DependencyKey.hpp>
 #include <Engine.Core/Module/SubModuleDependency.hpp>
-#include <Engine.Pedantic/Clone/Clone.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 #include <Engine.Scheduler/Pipeline/CompositePipeline.hpp>
+
+import Engine.Common;
 
 using namespace hg::engine::core;
 using namespace hg::engine;

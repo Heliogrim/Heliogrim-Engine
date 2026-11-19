@@ -4,22 +4,25 @@
 #include <tuple>
 
 #include <Engine.ACS/Registry.hpp>
-#include <Engine.Common/Optional.hpp>
-#include <Engine.Common/Memory/MemoryPointer.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Reflect/Cast.hpp>
-#include <Engine.Serialization/SerializationModule.hpp>
 #include <Engine.Serialization.Structures/Common/Guid.hpp>
 #include <Engine.Serialization.Structures/Common/TypeId.hpp>
+#include <Engine.Serialization.Structures/Symbols.hpp>
+#include <Engine.Serialization/SerializationModule.hpp>
 #include <Engine.Serialization/Schema/Migration.hpp>
 #include <Engine.Serialization/Structure/RecordScopedSlot.hpp>
 #include <Engine.Serialization/Structure/SeqScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
-#include <Engine.Serialization.Structures/Symbols.hpp>
 #include <Heliogrim/Actor/ActorGuid.hpp>
 
 #include "Scheme.hpp"
 #include "__fwd.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::serialization {
 	/**/

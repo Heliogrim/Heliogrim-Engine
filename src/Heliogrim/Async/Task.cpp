@@ -1,5 +1,7 @@
 #include "Task.hpp"
 
+import std;
+
 using namespace hg;
 
 TaskBase::TaskBase(cref<TaskType> type_) noexcept :

@@ -1,8 +1,5 @@
 #include "SurfaceManager.hpp"
 
-#include <algorithm>
-#include <ranges>
-#include <Engine.Common/Make.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Platform/NativeWindow.hpp>
 
@@ -12,7 +9,11 @@
 //#include <Engine.Platform/Linux>
 #endif
 
+#include <Engine.Common/__macro.hpp>
+
 #include "Surface.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::graphics;
 using namespace hg::engine::platform;

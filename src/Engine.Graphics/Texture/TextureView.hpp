@@ -1,12 +1,14 @@
 #pragma once
 
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Math/Extent.hpp>
-#include <Engine.Common/Math/Vector.hpp>
+#include <Engine.Common/__macro.hpp>
 
+#include "../API/__vkFwd.hpp"
 #include "TextureLikeObject.hpp"
 #include "__fwd.hpp"
-#include "../API/__vkFwd.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::graphics {
 	class TextureView final :

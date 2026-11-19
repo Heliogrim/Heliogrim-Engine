@@ -1,28 +1,24 @@
 #pragma once
 
-#include <vector>
 #include <Engine.ACS/ActorModule.hpp>
-#include <Engine.Common/Forward.hpp>
-#include <Engine.Common/Move.hpp>
-#include <Engine.Common/Optional.hpp>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/CompactArray.hpp>
-#include <Engine.Common/Collection/Set.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.Common/Functional/FnRef.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Engine.hpp>
-#include <Engine.Reflect/IsType.hpp>
 #include <Engine.Reflect/Inherit/InheritBase.hpp>
+#include <Engine.Reflect/IsType.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 
-#include "ActorGuid.hpp"
-#include "ActorLabel.hpp"
-#include "ComponentRange.hpp"
 #include "../ActorInitializer.hpp"
 #include "../Async/Future.hpp"
 #include "../Async/Traits.hpp"
+#include "ActorGuid.hpp"
+#include "ActorLabel.hpp"
 #include "Archetype/ActorClass.hpp"
+#include "ComponentRange.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::core {
 	class Level;

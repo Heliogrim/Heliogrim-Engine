@@ -1,9 +1,11 @@
 #pragma once
 
-#include <cmath>
-
-#include "../Forward.hpp"
 #include "../__macro.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+import std;
+#endif
 
 #if defined(_MSC_VER)
 

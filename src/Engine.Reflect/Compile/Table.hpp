@@ -1,14 +1,14 @@
 #pragma once
 
-#include <concepts>
-#include <iterator>
-#include <type_traits>
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Common/Memory/Address.hpp>
-#include <Engine.Common/Meta/Concept.hpp>
+#include <version>
 
 #include "Relation.hpp"
 #include "Sort.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg {
 	template <typename Key_, typename Value_>

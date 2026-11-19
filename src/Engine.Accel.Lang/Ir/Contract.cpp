@@ -1,7 +1,6 @@
 #include "Contract.hpp"
 
-#include <algorithm>
-#include <utility>
+import std;
 
 using namespace hg::engine::accel::lang;
 using namespace hg;

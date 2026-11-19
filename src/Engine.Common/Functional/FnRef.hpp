@@ -1,6 +1,8 @@
 #pragma once
 
-#include <std23/function_ref.h>
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std23.function_ref;
+#endif
 
 namespace hg {
 	template <typename Fn_, typename... Args_>

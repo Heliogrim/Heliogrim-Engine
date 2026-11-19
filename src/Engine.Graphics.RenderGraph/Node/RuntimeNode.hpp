@@ -1,11 +1,15 @@
 #pragma once
-#include <Engine.Common/Flag.hpp>
-#include <concepts>
 
-#include "Node.hpp"
-#include "../Pass/IterationPassContext.hpp"
+#include <Engine.Common/__macro.hpp>
+
 #include "../Pass/ExecutionPassContext.hpp"
+#include "../Pass/IterationPassContext.hpp"
 #include "../Pass/ResolvePassContext.hpp"
+#include "Node.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::render::graph {
     enum class IterationResultBits {

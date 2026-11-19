@@ -1,10 +1,12 @@
 #pragma once
 
-#include <type_traits>
-#include <utility>
 #include <Engine.Common/Forward.hpp>
 
 #include "../Concept/SameAs.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg {
 	template <

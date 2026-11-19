@@ -1,12 +1,15 @@
 #pragma once
 
-#include <Engine.Common/Expected.hpp>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Managed/Rc.hpp>
+#include <Engine.Common/StringLiterals.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Module/SubModule.hpp>
 
 #include "Log/__fwd.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::editor {
 	class Action;

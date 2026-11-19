@@ -1,8 +1,10 @@
 #pragma once
 
-#include <tl/expected.hpp>
-
 #include "Forward.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import tl.expected;
+#endif
 
 namespace hg {
 	/**/

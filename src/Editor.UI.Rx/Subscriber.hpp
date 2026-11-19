@@ -1,7 +1,10 @@
 #pragma once
 
-#include <functional>
-#include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/__macro.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::editor::ui::rx {
 	template <typename Type_>

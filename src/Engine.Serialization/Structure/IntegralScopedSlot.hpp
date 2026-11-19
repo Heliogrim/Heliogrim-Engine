@@ -1,15 +1,15 @@
 #pragma once
 
-#include <algorithm>
-#include <concepts>
-#include <span>
-#include <type_traits>
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "IntegralSlot.hpp"
 #include "ScopedSlotGuard.hpp"
 #include "ScopedStructureSlot.hpp"
 #include "__fwd.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::serialization {
 	template <IsIntegralSlotType IntegralType_>

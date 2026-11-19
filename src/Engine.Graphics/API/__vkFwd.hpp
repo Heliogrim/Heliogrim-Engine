@@ -1,6 +1,9 @@
 #pragma once
 
-#include <concepts>
+#include <cstdint>
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 /**
  * Vulkan forward declarations, cheap to parse in headers.

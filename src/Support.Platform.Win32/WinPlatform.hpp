@@ -1,8 +1,12 @@
 #pragma once
 
 #include <Engine.Async/Affine/AffineThread.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Platform/Platform.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 union SDL_Event;
 

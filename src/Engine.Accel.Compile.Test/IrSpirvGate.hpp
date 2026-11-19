@@ -1,18 +1,6 @@
 #pragma once
 
-#include <algorithm>
-#include <array>
-#include <expected>
-#include <filesystem>
-#include <fstream>
-#include <functional>
-#include <initializer_list>
-#include <iterator>
-#include <regex>
-#include <span>
-#include <sstream>
-#include <string>
-#include <utility>
+#include "gtest/gtest.h"
 
 #include <Engine.Accel.Compile/Profile/EffectProfile.hpp>
 #include <Engine.Accel.Compile/Spec/EffectSpecification.hpp>
@@ -21,12 +9,13 @@
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
 #include <Engine.Accel.Lang/Ir/Spirv/SpirvValidate.hpp>
 #include <Engine.Accel.Lang/Rep/Annotation.hpp>
-#include <Engine.Common/Make.hpp>
-#include <Engine.Common/Algo/Copy.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Diagnostics/Render.hpp>
 #include <Engine.Logging/Logger.hpp>
 
-#include "gtest/gtest.h"
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace AccelCompile {
 	class TestSpecification final :

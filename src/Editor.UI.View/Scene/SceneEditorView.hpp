@@ -1,7 +1,11 @@
 #pragma once
 
-#include <Engine.Common/Memory/SharedPointer.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflow/Widget/Widget.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::editor::ui {
 	class SceneEditorController;

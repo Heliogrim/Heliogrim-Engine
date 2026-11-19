@@ -2,9 +2,10 @@
 
 /**/
 
-#include <type_traits>
 #include <Engine.Async/Lock/SharedLock.hpp>
 #include <Engine.Async/Lock/UniqueLock.hpp>
+
+import std;
 
 using namespace hg::concurrent;
 using namespace hg;

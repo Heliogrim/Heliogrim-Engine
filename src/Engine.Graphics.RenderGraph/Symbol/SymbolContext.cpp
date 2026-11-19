@@ -1,11 +1,11 @@
 #include "SymbolContext.hpp"
 
-#include <algorithm>
-#include <ranges>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Logging/Logger.hpp>
-#include <Engine.Pedantic/Clone/Clone.hpp>
+#include <cassert>
+
 import Engine.Asserts;
+import Engine.Common;
 
 using namespace hg::engine::render::graph;
 using namespace hg;

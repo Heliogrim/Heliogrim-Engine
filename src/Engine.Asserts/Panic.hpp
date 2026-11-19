@@ -5,7 +5,9 @@
 
 // Note: We can pay the price for the internal link chain
 //	(_MSC_VER => #<xstring>) as <format> will probably do the same
-#include <string_view>
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg::panic_details {
 	class PanicErrorSink final {

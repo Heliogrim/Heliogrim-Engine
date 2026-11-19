@@ -1,28 +1,27 @@
 #pragma once
 
-#include <vector>
-#include <Engine.Common/Optional.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/DenseMap.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.Common/Functional/FnRef.hpp>
-#include <Engine.Reflect/TypeId.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflect/Inherit/Concept.hpp>
+#include <Engine.Reflect/TypeId.hpp>
 #include <Heliogrim/Actor/ActorGuid.hpp>
 
 #include "ActorPoolWrapper.hpp"
+#include "Archetype/LayoutInfo.hpp"
+#include "Cluster/ClusterRegion.hpp"
+#include "Cluster/RelocationBarrier.hpp"
+#include "Cluster/Span.hpp"
 #include "ComponentGuid.hpp"
 #include "ComponentTypeId.hpp"
+#include "Handle/HandleTable.hpp"
 #include "Housekeeping.hpp"
 #include "Pool.hpp"
 #include "PoolWrapper.hpp"
 #include "Registry.hpp"
 #include "Traits.hpp"
-#include "Archetype/LayoutInfo.hpp"
-#include "Cluster/ClusterRegion.hpp"
-#include "Cluster/RelocationBarrier.hpp"
-#include "Cluster/Span.hpp"
-#include "Handle/HandleTable.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg {
 	/**

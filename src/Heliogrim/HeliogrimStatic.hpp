@@ -1,9 +1,11 @@
 #pragma once
 
-#include <concepts>
-#include <Engine.Common/Make.hpp>
-#include <Engine.Common/Functional/Function.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Engine.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::core {
 	class Session;

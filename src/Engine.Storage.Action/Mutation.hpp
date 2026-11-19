@@ -1,14 +1,15 @@
 #pragma once
 
-#include <Engine.Common/Expected.hpp>
-#include <Engine.Common/Variant.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Managed/Rc.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflect.Utils/With/WithType.hpp>
 #include <Engine.Storage.Registry/IStorage.hpp>
 
 #include "Action.hpp"
 #include "Context.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::storage {
 	class IoResourceAccessorBase;

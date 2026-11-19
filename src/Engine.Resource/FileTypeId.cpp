@@ -1,7 +1,6 @@
 #include "FileTypeId.hpp"
 
-#include <algorithm>
-#include <ranges>
+import std;
 
 using namespace hg::engine::res;
 using namespace hg;

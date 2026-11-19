@@ -1,8 +1,10 @@
 #include "RenderCommandAllocator.hpp"
 
-#include <memory_resource>
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
+#include <cassert>
+
 import Engine.Asserts;
+import Engine.Common;
 
 using namespace hg::engine::render::cmd;
 using namespace hg;

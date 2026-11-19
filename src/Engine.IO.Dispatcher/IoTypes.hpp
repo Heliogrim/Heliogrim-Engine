@@ -1,8 +1,10 @@
 #pragma once
 
-#include <span>
-#include <Engine.Common/Types.hpp>
-#include <Engine.Common/Managed/Rc.hpp>
+#include <Engine.Common/__macro.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::io {
 	class IoFile;

@@ -1,14 +1,13 @@
 #pragma once
 
-#include <memory>
-#include <utility>
-
+#include "Meta/Type.hpp"
 #include "Optional.hpp"
 #include "Sal.hpp"
 #include "Wrapper.hpp"
-#include "Meta/Type.hpp"
+
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Asserts;
+import std;
 #endif
 
 namespace hg {
@@ -108,7 +107,7 @@ namespace hg {
 				_value.and_then(
 					[deleter = std::move(_deleter)](_In_ ref<value_type> obj_) -> decltype(_value) {
 						deleter(std::addressof(obj_));
-						return { tl::nullopt };
+						return { ::hg::None };
 					}
 				);
 			}

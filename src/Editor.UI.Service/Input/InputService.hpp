@@ -1,10 +1,13 @@
 #pragma once
 
-#include <Engine.Common/String.hpp>
-#include <Engine.Common/Collection/DenseMap.hpp>
+#include <Engine.Common/__macro.hpp>
 
-#include "InputBindingList.hpp"
 #include "../UiService.hpp"
+#include "InputBindingList.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::editor::ui::service {
 	inline constexpr auto general_input_binding_list = "General"sv;

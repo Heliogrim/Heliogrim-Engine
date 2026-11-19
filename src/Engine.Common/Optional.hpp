@@ -1,11 +1,13 @@
 #pragma once
 
-#include <type_traits>
-#include <tl/optional.hpp>
-
+#include "Meta/Reference.hpp"
 #include "Move.hpp"
 #include "Wrapper.hpp"
-#include "Meta/Reference.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+import tl.optional;
+#endif
 
 namespace hg {
 	template <typename Ty_>
@@ -67,7 +69,8 @@ namespace hg {
 
 	/**/
 
-	constexpr inline auto None = tl::nullopt;
+	/* Spelled out: `tl::nullopt` and `tl::in_place` are `static`, so the tl.optional module does not export them. */
+	constexpr inline tl::nullopt_t None { tl::nullopt_t::do_not_use {}, tl::nullopt_t::do_not_use {} };
 
 	template <typename Type_>
 	[[nodiscard]] constexpr ::hg::Opt<::hg::ref<Type_>> Some(::hg::ref<Type_> ref_) noexcept {
@@ -101,7 +104,7 @@ namespace hg {
 
 	template <typename Type_>
 	[[nodiscard]] constexpr hg::Opt<::hg::meta::drop_ref_t<Type_>> SomeVal(auto&&... args_) noexcept {
-		return ::hg::Opt<::hg::meta::drop_ref_t<Type_>>(::tl::in_place, ::hg::forward<decltype(args_)>(args_)...);
+		return ::hg::Opt<::hg::meta::drop_ref_t<Type_>>(::tl::in_place_t {},::hg::forward<decltype(args_)>(args_)...);
 	}
 
 	/**/

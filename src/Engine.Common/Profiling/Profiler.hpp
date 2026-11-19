@@ -1,11 +1,12 @@
 #pragma once
 
-#include <ostream>
 #include <Engine.Async/Primitive/SpinLock.hpp>
+#include <Engine.Common/__macro.hpp>
 
-#include "../String.hpp"
-#include "../Types.hpp"
-#include "../Wrapper.hpp"
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+import std;
+#endif
 
 namespace hg::profiling {
 	struct ProfileResult {

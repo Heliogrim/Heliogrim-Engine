@@ -1,8 +1,8 @@
 #include "pch.h"
 
-#include <string_view>
-#include <Engine.Common/Hash/Fnv-1a.hpp>
-#include <Engine.Common/Hash/Murmur3.hpp>
+#include <Engine.Common/__macro.hpp>
+
+import Engine.Common;
 
 using namespace hg;
 using hg::hash::operator""_fnv1a;

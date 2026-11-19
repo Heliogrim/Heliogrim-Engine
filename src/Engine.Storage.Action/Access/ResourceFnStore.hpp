@@ -1,8 +1,10 @@
 #pragma once
 
-#include <concepts>
-
 #include "IoResource.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg::engine::storage {
 	template <typename MutValFn_, typename ConstValFn_ = MutValFn_>

@@ -1,10 +1,10 @@
 #pragma once
 
-#include <atomic>
-#include <condition_variable>
-#include <mutex>
-
 #include "Inc.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 // Comment: Look like it's broken
 template <typename Ty_>

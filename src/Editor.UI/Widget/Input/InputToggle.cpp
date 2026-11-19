@@ -1,10 +1,11 @@
 #include "InputToggle.hpp"
 
-#include <format>
+#include <Engine.Common/__macro.hpp>
 
 #include "EditorUiEventNames.hpp"
-#include "Engine.Common/Discard.hpp"
 #include "Engine.Reflow/DataWatcher.hpp"
+
+import Engine.Common;
 
 using namespace hg::editor::ui;
 using namespace hg::engine::reflow;

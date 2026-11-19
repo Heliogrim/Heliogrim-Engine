@@ -6,7 +6,9 @@
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
 #include <Engine.Accel.Lang/Ir/Variant.hpp>
 #include <Engine.Accel.Lang/Rep/Annotation.hpp>
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
+
+import Engine.Common;
 
 using namespace hg::engine::accel::lang::ir;
 using namespace hg::engine::accel::lang;

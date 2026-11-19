@@ -1,12 +1,13 @@
 #include "DirectionalLightModel.hpp"
 
-#include <cstring>
-#include <Engine.Common/Collection/Array.hpp>
-#include <Engine.Common/Math/Coordinates.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics/Pool/SceneResourcePool.hpp>
 #include <Engine.Reflect/Cast.hpp>
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
 #include <Heliogrim/Component/Scene/Light/DirectionalLightComponent.hpp>
+#include <cstring>
+
+import Engine.Common;
 
 using namespace hg::engine::graphics::scene;
 using namespace hg;

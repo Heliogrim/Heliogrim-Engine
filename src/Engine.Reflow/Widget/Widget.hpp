@@ -2,19 +2,11 @@
 
 #include <Engine.Common/Flag.hpp>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Managed/SharedFromThis.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics/Aabb.hpp>
 #include <Engine.Reflow/ReflowPhase.hpp>
 #include <Engine.Reflow.Theming/ThemeProvisioner.hpp>
 
-#include "WidgetState.hpp"
-#include "../ReflowAxis.hpp"
-#include "../ReflowClassList.hpp"
-#include "../ReflowEventEmitter.hpp"
-#include "../ReflowEventNames.hpp"
-#include "../ReflowPosition.hpp"
-#include "../ReflowState.hpp"
 #include "../Event/DragDropEvent.hpp"
 #include "../Event/EventResponse.hpp"
 #include "../Event/FocusEvent.hpp"
@@ -24,6 +16,17 @@
 #include "../Event/TouchEvent.hpp"
 #include "../Event/WheelEvent.hpp"
 #include "../Layout/LayoutContext.hpp"
+#include "../ReflowAxis.hpp"
+#include "../ReflowClassList.hpp"
+#include "../ReflowEventEmitter.hpp"
+#include "../ReflowEventNames.hpp"
+#include "../ReflowPosition.hpp"
+#include "../ReflowState.hpp"
+#include "WidgetState.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::reflow {
 	class Children;

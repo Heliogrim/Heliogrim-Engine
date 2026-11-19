@@ -1,12 +1,16 @@
 #pragma once
 
-#include <Engine.Common/Memory/MemoryPointer.hpp>
-#include <Engine.Graphics/TextureFormat.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics/Texture/TextureType.hpp>
 #include <Engine.Graphics/Texture/__fwd.hpp>
+#include <Engine.Graphics/TextureFormat.hpp>
 #include <Engine.Reflect/Compile/TypeId.hpp>
 
 #include "Description.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::render::graph {
 	struct ActiveMipBitMask {

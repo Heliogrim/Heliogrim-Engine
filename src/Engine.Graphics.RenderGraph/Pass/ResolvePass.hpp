@@ -1,11 +1,16 @@
 #pragma once
 
-#include <Engine.Common/Collection/Queue.hpp>
+#include <Engine.Common/__macro.hpp>
+#include <cassert>
 
+#include "../Node/RuntimeNode.hpp"
+#include "../Visitor/Visitor.hpp"
 #include "RenderGraphPass.hpp"
 #include "ResolvePassContext.hpp"
-#include "../Visitor/Visitor.hpp"
-#include "../Node/RuntimeNode.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::render::graph {
 	class ResolvePass final :

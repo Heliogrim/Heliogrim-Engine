@@ -1,8 +1,12 @@
 #pragma once
 
-#include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflect/Inherit/InheritMeta.hpp>
 #include <Engine.Render.Scene/RenderSceneSystemModel.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::graphics::scene {
 	class SceneView;

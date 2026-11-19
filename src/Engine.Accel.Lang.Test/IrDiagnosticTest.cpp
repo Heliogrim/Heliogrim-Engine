@@ -2,12 +2,13 @@
 
 /**/
 
-#include "IrSpan.hpp"
-
 #include <Engine.Accel.Lang/Ir/Merge.hpp>
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
 #include <Engine.Diagnostics/Render.hpp>
-#include <algorithm>
+
+#include "IrSpan.hpp"
+
+import std;
 
 using namespace hg::engine::accel::lang::ir;
 using namespace hg::engine::accel::lang;

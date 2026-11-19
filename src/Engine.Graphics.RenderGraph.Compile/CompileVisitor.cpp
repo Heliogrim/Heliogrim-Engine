@@ -1,16 +1,16 @@
 #include "CompileVisitor.hpp"
 
-#include <Engine.Common/Memory/MemoryPointer.hpp>
-#include <Engine.Graphics.RenderGraph/RuntimeGraph.hpp>
 #include <Engine.Graphics.RenderGraph/Builder/Builder.hpp>
+#include <Engine.Graphics.RenderGraph/RuntimeGraph.hpp>
 #include <Engine.Reflect/TypeSwitch.hpp>
 
 /**/
-#include <Engine.Accel.Compile/VkEffectCompiler.hpp>
 #include <Engine.Accel.Compile/Spec/SimpleEffectSpecification.hpp>
+#include <Engine.Accel.Compile/VkEffectCompiler.hpp>
+#include <Engine.Common/__macro.hpp>
+#include <Engine.Graphics.RenderGraph/Node/Compile/CompileSubpassNode.hpp>
 #include <Engine.Graphics.RenderGraph/Node/CompileNode.hpp>
 #include <Engine.Graphics.RenderGraph/Node/Node.hpp>
-#include <Engine.Graphics.RenderGraph/Node/Compile/CompileSubpassNode.hpp>
 #include <Engine.Graphics.RenderGraph/Node/Runtime/AnchorNode.hpp>
 #include <Engine.Graphics.RenderGraph/Node/Runtime/BarrierNode.hpp>
 #include <Engine.Graphics.RenderGraph/Node/Runtime/ConvergeNode.hpp>
@@ -18,8 +18,9 @@
 #include <Engine.Graphics.RenderGraph/Node/Runtime/ProviderNode.hpp>
 #include <Engine.Graphics.RenderGraph/Node/Runtime/SelectorNode.hpp>
 #include <Engine.Graphics.RenderGraph/Pass/CompilePassContext.hpp>
-#include <Engine.Pedantic/Clone/Clone.hpp>
 #include <Engine.Reflect/Cast.hpp>
+
+import Engine.Common;
 /**/
 
 using namespace hg::engine::render::graph;

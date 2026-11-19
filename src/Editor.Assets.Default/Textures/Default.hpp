@@ -3,10 +3,14 @@
 #include <Engine.Assets.Type/Asset.hpp>
 #include <Engine.Assets.Type/AssetConcept.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
-#include <Engine.Common/Optional.hpp>
 #include <Engine.Common/Sal.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Reflect/Cast.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::editor::assets::texture {
 	/**/

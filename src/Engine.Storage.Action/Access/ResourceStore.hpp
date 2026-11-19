@@ -1,8 +1,10 @@
 #pragma once
 
-#include <concepts>
-#include <type_traits>
 #include <Engine.Pedantic.Resource/AccessMode.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg::engine::storage {
 	template <typename MutableType_, typename Type_>

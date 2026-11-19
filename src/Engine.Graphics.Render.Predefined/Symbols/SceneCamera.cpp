@@ -1,7 +1,10 @@
 #include "SceneCamera.hpp"
+
+#include <Engine.Common/__macro.hpp>
+
 #include "../Descriptions/SceneCameraBuffer.hpp"
 
-#include <Engine.Common/Make.hpp>
+import Engine.Common;
 
 using namespace hg::engine::render;
 using namespace hg;

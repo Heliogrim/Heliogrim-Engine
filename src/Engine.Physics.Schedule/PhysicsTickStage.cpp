@@ -1,4 +1,8 @@
-#include "PhysicsTickStage.hpp"
+#include <Jolt/Jolt.h>
+
+#include <Jolt/Core/JobSystemSingleThreaded.h>
+#include <Jolt/Core/TempAllocator.h>
+#include <Jolt/Physics/PhysicsSystem.h>
 
 #include <Engine.Core.Schedule/CorePipeline.hpp>
 #include <Engine.Core/Engine.hpp>
@@ -10,9 +14,8 @@
 #include <Engine.Physics/jolt.inc.hpp>
 #include <Engine.Scene.Schedule/ScenePipeline.hpp>
 #include <Engine.Scene/SceneBase.hpp>
-#include <Jolt/Core/JobSystemSingleThreaded.h>
-#include <Jolt/Core/TempAllocator.h>
-#include <Jolt/Physics/PhysicsSystem.h>
+
+#include "PhysicsTickStage.hpp"
 
 using namespace hg::engine::physics::schedule;
 using namespace hg::engine::scheduler;

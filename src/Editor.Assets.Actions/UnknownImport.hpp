@@ -2,11 +2,13 @@
 
 #include <Editor.Action/Action/SimpleAction.hpp>
 #include <Engine.Assets/AssetGuid.hpp>
-#include <Engine.Common/Expected.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.Common/Managed/Rc.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Storage.Registry/Url/FileUrl.hpp>
 #include <Engine.Storage.Registry/Url/StorageUrl.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::editor::assets::actions {
 	class UnknownImport :

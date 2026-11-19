@@ -1,7 +1,8 @@
 #include "pch.h"
 
-#include <vector>
-#include <Engine.Common/Collection/InlineAutoArray.hpp>
+#include <Engine.Common/__macro.hpp>
+
+import Engine.Common;
 
 using namespace hg;
 

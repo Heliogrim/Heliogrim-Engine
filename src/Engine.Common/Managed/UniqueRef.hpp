@@ -1,10 +1,12 @@
 #pragma once
 
-#include <functional>
-
 #include "../Move.hpp"
 #include "../Optional.hpp"
 #include "../Wrapper.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg {
 	template <typename Type_>

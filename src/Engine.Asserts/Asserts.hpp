@@ -1,10 +1,13 @@
 #pragma once
 
-#include <type_traits>
 #include <Engine.Common/__macro.hpp>
 
 #include "Breakpoint.hpp"
 #include "Panic.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg {
 	struct assert_compile_error final {

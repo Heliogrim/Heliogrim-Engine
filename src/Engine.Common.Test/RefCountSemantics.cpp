@@ -1,10 +1,8 @@
 #include "pch.h"
 
-#include <atomic>
-#include <thread>
-#include <vector>
-#include <Engine.Common/Make.hpp>
-#include <Engine.Common/Managed/Rc.hpp>
+#include <Engine.Common/__macro.hpp>
+
+import Engine.Common;
 
 using namespace hg;
 

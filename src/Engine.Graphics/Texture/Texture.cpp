@@ -1,9 +1,9 @@
 #include "Texture.hpp"
 
-#include <utility>
-
-#include "TextureView.hpp"
 #include "../vkinc.hpp"
+#include "TextureView.hpp"
+
+import std;
 
 using namespace hg::engine::graphics;
 using namespace hg;

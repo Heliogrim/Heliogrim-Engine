@@ -1,11 +1,8 @@
 #include "Module.hpp"
 
-#include <algorithm>
-#include <array>
 #include <cassert>
-#include <charconv>
-#include <string>
-#include <type_traits>
+
+import std;
 
 using namespace hg::engine::accel::lang;
 using namespace hg;

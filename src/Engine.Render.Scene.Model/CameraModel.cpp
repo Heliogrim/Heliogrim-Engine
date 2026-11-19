@@ -1,10 +1,12 @@
 #include "CameraModel.hpp"
 
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.Scene/View/SceneView.hpp>
 #include <Engine.Scene/Scene.hpp>
-#include <Heliogrim/Component/SceneComponent.hpp>
 #include <Heliogrim/Component/Scene/Camera/CameraComponent.hpp>
+#include <Heliogrim/Component/SceneComponent.hpp>
+
+import Engine.Common;
 
 using namespace hg::engine::render;
 using namespace hg;

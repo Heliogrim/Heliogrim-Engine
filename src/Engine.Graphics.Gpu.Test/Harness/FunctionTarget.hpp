@@ -1,13 +1,14 @@
 #pragma once
 
-#include <Engine.Common/Types.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Managed/Rc.hpp>
-#include <Engine.Common/Math/Vector.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics/Device/Device.hpp>
 #include <Engine.Graphics/Texture/Texture.hpp>
 
 #include "Raster.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::test::gpu {
 	// A value no shading function under test writes; exactly representable

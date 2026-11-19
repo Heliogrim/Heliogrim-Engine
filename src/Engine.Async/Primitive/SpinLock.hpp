@@ -1,11 +1,13 @@
 #pragma once
 
-#include <atomic>
-#include <stdexcept>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Scheduler/Thread/Thread.hpp>
 
 #include "../Meta/LockTag.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg::concurrent {
 	using SpinMutex = std::atomic_flag;

@@ -1,16 +1,18 @@
 #pragma once
 
-#include <memory>
-#include <utility>
 #include <Engine.ACS/ComponentGuid.hpp>
 #include <Engine.ACS/Registry.hpp>
-#include <Engine.Common/Memory/MemoryPointer.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Serialization/Structure/RecordScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 #include <Heliogrim/Component/CachedActorPointer.hpp>
 
 #include "Scheme.hpp"
 #include "__fwd.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::serialization {
 	/**/

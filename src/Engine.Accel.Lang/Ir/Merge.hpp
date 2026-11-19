@@ -1,10 +1,11 @@
 #pragma once
 
-#include <expected>
-#include <span>
-
 #include "Diagnostic.hpp"
 #include "Module.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg::engine::accel::lang::ir {
 	/**

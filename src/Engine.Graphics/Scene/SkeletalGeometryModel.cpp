@@ -1,7 +1,9 @@
 #include "SkeletalGeometryModel.hpp"
 
-#include <Engine.Common/Math/Convertion.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Heliogrim/Component/Scene/Geometry/StaticGeometryComponent.hpp>
+
+import Engine.Common;
 
 using namespace hg::engine::render;
 using namespace hg::engine::graphics;

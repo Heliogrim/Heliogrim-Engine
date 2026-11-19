@@ -1,15 +1,16 @@
 #include "InputText.hpp"
 
-#include <format>
-#include <Engine.Common/Discard.hpp>
-#include <Engine.Reflow/DataWatcher.hpp>
-#include <Engine.Reflow/Window/WindowManager.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflow.Attributes/Layout/Base/BoxLayoutAttributes.hpp>
 #include <Engine.Reflow.Uikit/Atom/Paint.hpp>
 #include <Engine.Reflow.Uikit/Molecule/Layout/Stack.hpp>
+#include <Engine.Reflow/DataWatcher.hpp>
+#include <Engine.Reflow/Window/WindowManager.hpp>
 
 #include "../../EditorUiEventNames.hpp"
 #include "../../Event/InputChangeEvent.hpp"
+
+import Engine.Common;
 
 using namespace hg::editor::ui;
 using namespace hg::engine::reflow;

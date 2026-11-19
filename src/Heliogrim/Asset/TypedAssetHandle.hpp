@@ -1,9 +1,12 @@
 #pragma once
 
-#include <Engine.Common/Move.hpp>
-#include <Engine.Pedantic/Clone/Clone.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "AssetHandle.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg {
 	template <class AssetType_>

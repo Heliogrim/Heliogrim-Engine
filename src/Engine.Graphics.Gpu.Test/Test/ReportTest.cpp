@@ -1,16 +1,14 @@
+#include <ryml/ryml.hpp>
+#include <ryml/ryml_std.hpp>
+
 #include "../pch.h"
 
 /**/
 
-#include <filesystem>
-#include <fstream>
-#include <sstream>
-#include <string>
-#include <ryml/ryml.hpp>
-#include <ryml/ryml_std.hpp>
-
 #include "../Harness/Contract.hpp"
 #include "../Harness/Report.hpp"
+
+import std;
 
 using namespace hg::test::gpu;
 using namespace hg;

@@ -1,10 +1,7 @@
 #pragma once
 
-#include <bit>
-#include <type_traits>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.Reflect/Inherit/ClassMetaBase.hpp>
 #include <Engine.Reflect/Inherit/Concept.hpp>
 #include <Engine.Reflect/Inherit/InheritBase.hpp>
@@ -14,6 +11,10 @@
 #include "ArchiveVersion.hpp"
 #include "Compression/__fwd.hpp"
 #include "Filter/__fwd.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::resource {
 	class macro_novtable Archive :

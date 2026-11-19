@@ -1,10 +1,13 @@
 #pragma once
 
-#include <Engine.Common/Math/Matrix.hpp>
-#include <Engine.Common/Math/Vector.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.Loader/Texture/TextureResource.hpp>
 
 #include "MaterialParameterStorage.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::graphics::material::table {
 	/**/

@@ -1,11 +1,12 @@
 #pragma once
 
-#include <Engine.Common/Expected.hpp>
-#include <format>
+#include <Engine.Common/__macro.hpp>
 
 #include "Diagnostic.hpp"
+
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Asserts;
+import Engine.Common;
 #endif
 
 namespace hg::engine::diag {

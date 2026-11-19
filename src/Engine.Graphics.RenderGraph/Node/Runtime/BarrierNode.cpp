@@ -1,9 +1,11 @@
 #include "BarrierNode.hpp"
 
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "../../Component/BarrierComponent.hpp"
 #include "../../Visitor/Visitor.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::render::graph;
 using namespace hg;

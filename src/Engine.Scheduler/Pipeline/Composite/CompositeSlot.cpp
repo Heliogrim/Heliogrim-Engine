@@ -1,11 +1,10 @@
 #include "CompositeSlot.hpp"
 
-#include <algorithm>
-#include <ranges>
-
-#include "../CompositePipeline.hpp"
 #include "../../Lane.hpp"
 #include "../../Process/Schedule.hpp"
+#include "../CompositePipeline.hpp"
+
+import std;
 
 using namespace hg::engine::scheduler;
 using namespace hg;

@@ -1,12 +1,15 @@
 #pragma once
 
-#include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.Common/Math/Vector.hpp>
-#include <Engine.Graphics/TextureFormat.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics/Texture/TextureType.hpp>
+#include <Engine.Graphics/TextureFormat.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 
 #include "../AssetConcept.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::assets {
 	class TextureAsset :

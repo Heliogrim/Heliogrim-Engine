@@ -1,10 +1,9 @@
 #include "MaterialPrototype.hpp"
 
-#include <algorithm>
-#include <ranges>
-
 #include "Material.hpp"
 #include "MaterialPrototypeParameter.hpp"
+
+import std;
 
 using namespace hg::engine::graphics::material;
 using namespace hg;
@@ -69,7 +68,7 @@ tl::optional<cref<MaterialPrototypeParameter>> MaterialPrototype::getParameter(
 
 	return it != _parameters.end() ?
 		tl::make_optional<cref<MaterialPrototypeParameter>>(*it) :
-		tl::make_optional<cref<MaterialPrototypeParameter>>(tl::nullopt);
+		tl::make_optional<cref<MaterialPrototypeParameter>>(::hg::None);
 }
 
 tl::optional<cref<MaterialPrototypeParameter>> MaterialPrototype::getFirstParameter(
@@ -85,7 +84,7 @@ tl::optional<cref<MaterialPrototypeParameter>> MaterialPrototype::getFirstParame
 
 	return it != _parameters.end() ?
 		tl::make_optional<cref<MaterialPrototypeParameter>>(*it) :
-		tl::make_optional<cref<MaterialPrototypeParameter>>(tl::nullopt);
+		tl::make_optional<cref<MaterialPrototypeParameter>>(::hg::None);
 }
 
 bool MaterialPrototype::removeParameter(ParameterIdentifier identifier_) {

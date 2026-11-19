@@ -1,13 +1,14 @@
 #pragma once
 
-#include <stdexcept>
-#include <Engine.Common/Expected.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Managed/AtomicRefCountedIntrusive.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflect/Inherit/InheritBase.hpp>
 #include <Heliogrim/Async/Waitable.hpp>
 
 #include "ActionTypeId.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::editor {
 	class macro_novtable Action :

@@ -6,13 +6,15 @@
 #include <Editor.UI/Widget/Collapse.hpp>
 #include <Editor.UI/Widget/MenuItem.hpp>
 #include <Editor.UI/Widget/MenuSpacer.hpp>
-#include <Engine.Common/Memory/SharedPointer.hpp>
-#include <Engine.Reflow/ReflowEngine.hpp>
-#include <Engine.Reflow.Uikit/Atom/Text.hpp>
-#include <Engine.Reflow/Widget/Viewport.hpp>
-#include <Engine.Reflow/Window/Window.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/BoxLayout.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/VerticalLayout.hpp>
+#include <Engine.Reflow.Uikit/Atom/Text.hpp>
+#include <Engine.Reflow/ReflowEngine.hpp>
+#include <Engine.Reflow/Widget/Viewport.hpp>
+#include <Engine.Reflow/Window/Window.hpp>
+
+import Engine.Common;
 
 using namespace hg;
 

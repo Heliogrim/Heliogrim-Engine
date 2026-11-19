@@ -1,13 +1,17 @@
 #pragma once
 
 #include <Engine.ACS/ActorModule.hpp>
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Config/Config.hpp>
 #include <Engine.Core/Engine.hpp>
-#include <Engine.Core/Timing.hpp>
 #include <Engine.Core/Module/Modules.hpp>
+#include <Engine.Core/Timing.hpp>
 #include <Engine.Event/GlobalEventEmitter.hpp>
 #include <Engine.Serialization/SerializationModule.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace HeliogrimApi::test_engine {
 	using namespace hg;

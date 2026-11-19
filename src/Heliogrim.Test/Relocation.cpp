@@ -2,14 +2,9 @@
 
 /**/
 
-#include <cstddef>
-#include <limits>
-#include <vector>
-#include <Engine.ACS/Registry.hpp>
 #include <Engine.ACS/Handle/Epoch.hpp>
-#include <Engine.Common/Move.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.ACS/Registry.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Scene/SceneSystem.hpp>
 #include <Heliogrim/Actor/ActorRef.hpp>
 #include <Heliogrim/Actor/Archetype/ArchetypeDefinition.inl.hpp>
@@ -17,6 +12,8 @@
 
 #include "SpawnEngine.hpp"
 #include "TestArchetypes.hpp"
+
+import Engine.Common;
 
 using namespace HeliogrimApi;
 using namespace hg;

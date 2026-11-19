@@ -2,7 +2,6 @@
 
 /**/
 
-#include <algorithm>
 #include <Engine.Accel.Lang/Diagnostic/Codes.hpp>
 #include <Engine.Accel.Lang/Ir/Contract.hpp>
 #include <Engine.Accel.Lang/Ir/Interface.hpp>
@@ -13,13 +12,15 @@
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
 #include <Engine.Accel.Lang/Ir/References.hpp>
 #include <Engine.Accel.Lang/Ir/Resolve.hpp>
-#include <Engine.Accel.Lang/Ir/Tier.hpp>
 #include <Engine.Accel.Lang/Ir/Spirv/SpirvEmitter.hpp>
+#include <Engine.Accel.Lang/Ir/Tier.hpp>
 #include <Engine.Diagnostics/Render.hpp>
 
 #include "IrSpan.hpp"
 #include "IrSpirvText.hpp"
 #include "IrWording.hpp"
+
+import std;
 
 using namespace hg::engine::accel::lang::ir;
 using namespace hg::engine::accel::lang;

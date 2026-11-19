@@ -1,15 +1,17 @@
 #pragma once
 
-#include <Engine.Common/Expected.hpp>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Managed/Rc.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Resource.Blob/Blob.hpp>
+#include <Engine.Storage.Action/Access/IoResourceAccessor.hpp>
 #include <Engine.Storage.Action/Context.hpp>
 #include <Engine.Storage.Action/Mutation.hpp>
 #include <Engine.Storage.Action/Query.hpp>
-#include <Engine.Storage.Action/Access/IoResourceAccessor.hpp>
 #include <Engine.Storage.Registry/Storage/LocalFileStorage.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::storage {
 	[[nodiscard]] Result<

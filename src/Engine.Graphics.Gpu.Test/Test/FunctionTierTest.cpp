@@ -2,13 +2,11 @@
 
 /**/
 
-#include <algorithm>
-#include <filesystem>
-#include <string>
-
 #include "../Harness/FunctionTarget.hpp"
 #include "../Harness/FunctionTier.hpp"
 #include "../Harness/GpuTest.hpp"
+
+import std;
 
 using namespace hg::test::gpu;
 using namespace hg;

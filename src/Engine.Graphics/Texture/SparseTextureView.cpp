@@ -1,8 +1,8 @@
 #include "SparseTextureView.hpp"
 
-#include <utility>
-
 #include "SparseTexture.hpp"
+
+import std;
 
 using namespace hg::engine::graphics;
 using namespace hg;

@@ -1,8 +1,8 @@
 #include "Tga.hpp"
 
 #include <Engine.Assets.System/IAssetRegistry.hpp>
-#include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets.Type/Texture/ImageAsset.hpp>
+#include <Engine.Assets/Assets.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Graphics/Buffer/BufferFactory.hpp>
 #include <Engine.Graphics/Device/Device.hpp>
@@ -13,6 +13,7 @@
 #include <Engine.Resource/Manage/UniqueResource.hpp>
 #include <Engine.Storage.System/StorageSystem.hpp>
 #include <stb/stb_image.h>
+
 import Engine.Asserts;
 
 using namespace ::hg::editor::graphics::loader;

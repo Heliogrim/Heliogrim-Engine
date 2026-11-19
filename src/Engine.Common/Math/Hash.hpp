@@ -1,14 +1,15 @@
 #pragma once
 
-#include <concepts>
-#include <type_traits>
-
 #include "../Types.hpp"
 #include "../__macro.hpp"
 
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
+
 /** . */
 namespace hg::hash {
-	namespace {
+	namespace detail {
 		constexpr size_t magic_number = 0x9e3779b9;
 	}
 
@@ -22,7 +23,7 @@ namespace hg::hash {
 	 * @param 		   hash_ The hash.
 	 */
 	constexpr void hash_combine(size_t& seed_, size_t hash_) {
-		hash_ += magic_number + (seed_ << 6) + (seed_ >> 2);
+		hash_ += detail::magic_number + (seed_ << 6) + (seed_ >> 2);
 		seed_ ^= hash_;
 	}
 
@@ -32,7 +33,7 @@ namespace hg::hash {
 		constexpr static auto rotl = 6 * (sizeof(ValueType_) / sizeof(size_t));
 		constexpr static auto rotr = 2 * (sizeof(ValueType_) / sizeof(size_t));
 
-		seed_ ^= value_ + magic_number + (seed_ << rotl) + (seed_ >> rotr);
+		seed_ ^= value_ + detail::magic_number + (seed_ << rotl) + (seed_ >> rotr);
 	}
 
 	template <std::integral SeedType_, typename FirstType_, typename... Rest_> requires

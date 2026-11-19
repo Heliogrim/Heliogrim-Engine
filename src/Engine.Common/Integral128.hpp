@@ -1,8 +1,8 @@
 #pragma once
 
-#include <concepts>
-#include <cmath>
-#include <type_traits>
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg {
 	struct uint128_t {

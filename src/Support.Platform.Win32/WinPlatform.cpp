@@ -1,6 +1,5 @@
 #include "WinPlatform.hpp"
 
-#include <ole2.h>
 #include <Engine.Common/SDL3.hpp>
 #include <Engine.Common/stdafx.h>
 #include <Engine.Core/Engine.hpp>
@@ -14,8 +13,10 @@
 #include <Engine.Input/MouseWheelEvent.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Scheduler/Async.hpp>
+#include <ole2.h>
 
 #include "Win32Window.hpp"
+
 import Engine.Asserts;
 
 using namespace hg::engine::scheduler;

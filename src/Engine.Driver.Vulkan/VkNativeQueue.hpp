@@ -1,9 +1,11 @@
 #pragma once
-#include <cassert>
-#include <type_traits>
-#include <Engine.Common/Types.hpp>
-#include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.Render.Command/NativeQueue.hpp>
+#include <cassert>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::driver::vk {
     enum class VkQueueTypeBits: u32 {

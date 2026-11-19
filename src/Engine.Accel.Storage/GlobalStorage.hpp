@@ -1,10 +1,12 @@
 #pragma once
 
-#include <set>
-#include <Engine.Common/Collection/DenseMap.hpp>
-#include <Engine.Common/Collection/DenseSet.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "Storage.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::accel {
 	class GlobalStorage final :

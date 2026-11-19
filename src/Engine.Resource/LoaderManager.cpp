@@ -1,8 +1,10 @@
 #include "LoaderManager.hpp"
 
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "Loader/SourceLoader/SourceLoader.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::resource;
 using namespace hg;

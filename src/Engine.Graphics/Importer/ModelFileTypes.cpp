@@ -1,6 +1,6 @@
 #include "ModelFileTypes.hpp"
 
-#include <array>
+import std;
 
 using namespace hg::engine::graphics;
 using namespace hg;

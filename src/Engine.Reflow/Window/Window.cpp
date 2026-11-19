@@ -1,15 +1,13 @@
 #include "Window.hpp"
 
-#include <algorithm>
-#include <format>
-#include <Engine.Common/Discard.hpp>
-#include <Engine.Common/Make.hpp>
-#include <Engine.Common/Move.hpp>
+#include <Engine.Common/__macro.hpp>
 
-#include "Layer.hpp"
-#include "../ReflowEngine.hpp"
 #include "../Command/ReflowCommandLayer.hpp"
+#include "../ReflowEngine.hpp"
 #include "../Widget/Layer/Host.hpp"
+#include "Layer.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::reflow;
 using namespace hg;

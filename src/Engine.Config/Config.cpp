@@ -1,9 +1,7 @@
 #include "Config.hpp"
 
-#include <algorithm>
-#include <ranges>
-#include <utility>
 import Engine.Asserts;
+import std;
 
 using namespace ::hg::engine;
 using namespace ::hg;
@@ -57,7 +55,7 @@ tl::optional<cfg::ConfigValue> Config::get(cref<cfg::InternalConfigKey> key_) co
 			return it->second->get(key_);
 		}
 	}
-	return tl::nullopt;
+	return ::hg::None;
 }
 
 tl::expected<void, cfg::ConfigUpdateError> Config::update(

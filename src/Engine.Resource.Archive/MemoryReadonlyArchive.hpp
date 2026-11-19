@@ -1,9 +1,12 @@
 #pragma once
 
-#include <span>
 #include <Engine.Common/Sal.hpp>
 
 #include "MemoryArchive.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg::engine::resource {
 	class MemoryReadonlyArchive :

@@ -1,11 +1,11 @@
 #pragma once
 
-#include <memory>
-#include <stdexcept>
-#include <utility>
-
-#include "../Wrapper.hpp"
 #include "../Memory/MemoryPointer.hpp"
+#include "../Wrapper.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg {
 	template <typename Ty_>

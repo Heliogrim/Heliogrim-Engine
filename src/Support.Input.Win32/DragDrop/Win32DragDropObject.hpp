@@ -1,12 +1,15 @@
 #pragma once
 
 #include <Engine.Common/stdafx.h>
-#include <Engine.Common/Variant.hpp>
-#include <Engine.Common/Managed/Rc.hpp>
 #include <Engine.Input/DragDrop/DragDropObject.hpp>
 
 /**/
+#include <Engine.Common/__macro.hpp>
 #include <objidl.h>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::input {
 	// @see https://learn.microsoft.com/en-us/windows/win32/shell/clipboard#cf_hdrop

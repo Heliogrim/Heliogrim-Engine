@@ -1,11 +1,13 @@
 #pragma once
 
-#include <tuple>
-#include <Engine.Common/String.hpp>
-#include <Engine.Common/Meta/Reference.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "../AttributeOwnerLink.hpp"
 #include "../NamedAttributeTuple.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::reflow {
 	template <typename NamedAttribute_>

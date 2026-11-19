@@ -1,12 +1,15 @@
 #pragma once
 
-#include <Engine.Common/Make.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Memory/MemoryPointer.hpp>
+#include <Engine.Common/__macro.hpp>
+#include <cstdint>
 
 #include "../API/__vkFwd.hpp"
 #include "../Application/Application.hpp"
 #include "../Memory/GlobalPooledAllocator.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::graphics {
 	/**

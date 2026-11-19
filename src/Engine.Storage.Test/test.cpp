@@ -1,11 +1,6 @@
 #include "pch.h"
-#include "Scratch.hpp"
 
-#include <chrono>
-#include <filesystem>
-#include <string>
-#include <Engine.Common/Guid.hpp>
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Config/Config.hpp>
 #include <Engine.Config/Enums.hpp>
 #include <Engine.Config/Provider/EditorProvider.hpp>
@@ -13,7 +8,6 @@
 #include <Engine.Config/Provider/RuntimeProvider.hpp>
 #include <Engine.Config/Provider/SystemProvider.hpp>
 #include <Engine.Filesystem/Path.hpp>
-#include <Engine.Pedantic/Clone/Clone.hpp>
 #include <Engine.Storage.Registry/IStorage.hpp>
 #include <Engine.Storage.Registry/Options/StorageDescriptor.hpp>
 #include <Engine.Storage.Registry/Provider/LocalFileSystemProvider.hpp>
@@ -23,6 +17,10 @@
 #include <Engine.Storage.Registry/Repository/ProjectFileSystemRepository.hpp>
 #include <Engine.Storage.Registry/Repository/RuntimeFileSystemRepository.hpp>
 #include <Engine.Storage.Registry/Url/StorageUrl.hpp>
+
+#include "Scratch.hpp"
+
+import Engine.Common;
 
 using namespace hg;
 

@@ -1,25 +1,22 @@
 #pragma once
 
-#include <atomic>
-#include <bit>
-#include <cassert>
-#include <concepts>
-#include <cstdint>
-#include <type_traits>
-#include <utility>
 #include <Engine.Common/Meta/Type.hpp>
+#include <cassert>
+#include <cstdint>
 
 #include "../Cast.hpp"
+#include "../Meta/Concept.hpp"
 #include "../Sal.hpp"
 #include "../Wrapper.hpp"
 #include "../__macro.hpp"
-#include "../Meta/Concept.hpp"
+
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Asserts;
+import std;
 #endif
 
 namespace hg {
-	namespace {
+	namespace detail {
 		using packed_type = std::uintptr_t;
 		using atomic_packed_type = std::atomic_uintptr_t;
 
@@ -70,7 +67,7 @@ namespace hg {
 		template <typename CtrlBlockType_ = ctrl_block_type> requires std::is_same_v<CtrlBlockType_, ctrl_block_type>
 		constexpr SharedMemoryReference(
 			_In_ const non_owning_rptr<CtrlBlockType_> ctrlBlock_,
-			_In_ const packed_type packed_
+			_In_ const detail::packed_type packed_
 		) noexcept :
 			_ctrlBlock(ctrlBlock_),
 			_packed(packed_) {}
@@ -165,7 +162,7 @@ namespace hg {
 
 	private:
 		ptr<ctrl_block_type> _ctrlBlock;
-		packed_type _packed;
+		detail::packed_type _packed;
 
 	public:
 		/**
@@ -196,7 +193,7 @@ namespace hg {
 		 * @returns The stored pointer or nullptr.
 		 */
 		[[nodiscard]] non_owning_rptr<value_type> get() const noexcept {
-			return reinterpret_cast<non_owning_rptr<value_type>>(_packed >> packed_shift);
+			return reinterpret_cast<non_owning_rptr<value_type>>(_packed >> detail::packed_shift);
 		}
 
 		/**
@@ -302,7 +299,7 @@ namespace hg {
 
 	/**/
 
-	namespace {
+	namespace detail {
 		class VirtualBase {
 		public:
 			virtual constexpr ~VirtualBase() noexcept = default;
@@ -315,7 +312,7 @@ namespace hg {
 
 	template <typename PayloadType_, typename DeleterType_>
 	class SharedMemoryReferenceCtrlBlock final :
-		public VirtualBase {
+		public detail::VirtualBase {
 	public:
 		using this_type = SharedMemoryReferenceCtrlBlock<PayloadType_, DeleterType_>;
 
@@ -327,14 +324,14 @@ namespace hg {
 	public:
 		template <typename Type_ = vty> requires std::is_same_v<Type_, vty>
 		constexpr SharedMemoryReferenceCtrlBlock() noexcept :
-			VirtualBase(),
+			detail::VirtualBase(),
 			_packed(0) {
 			static_assert(CompleteType<Type_>, "Prevent handling of incomplete types.");
 		}
 
 		template <typename Type_ = vty> requires std::is_same_v<Type_, vty>
 		SharedMemoryReferenceCtrlBlock(_In_ mref<ptr<Type_>> payload_) :
-			VirtualBase(),
+			detail::VirtualBase(),
 			_packed(0) {
 			static_assert(sizeof(ivty) > 0, "Prevent handling of incomplete types.");
 			this_type::store(std::move(payload_));
@@ -349,7 +346,7 @@ namespace hg {
 		}
 
 	private:
-		atomic_packed_type _packed;
+		detail::atomic_packed_type _packed;
 
 	private:
 		/**
@@ -363,7 +360,7 @@ namespace hg {
 			const auto packed = _packed.load(std::memory_order_relaxed);
 
 			/**/
-			auto* ctrlp = reinterpret_cast<ptr<ivty>>(packed >> packed_shift);
+			auto* ctrlp = reinterpret_cast<ptr<ivty>>(packed >> detail::packed_shift);
 			if (ctrlp == nullptr) {
 				return;
 			}
@@ -391,7 +388,7 @@ namespace hg {
 
 		STOP_SUPPRESS_WARNINGS
 
-		[[nodiscard]] constexpr ptr<VirtualBase> vdb() noexcept {
+		[[nodiscard]] constexpr ptr<detail::VirtualBase> vdb() noexcept {
 			return this;
 		}
 
@@ -413,7 +410,7 @@ namespace hg {
 			auto packed = _packed.fetch_add(1, std::memory_order_release);
 
 			/**/
-			if ((packed >> packed_shift) == 0) {
+			if ((packed >> detail::packed_shift) == 0) {
 				rel();
 				return smr_type {};
 			}
@@ -435,15 +432,15 @@ namespace hg {
 			/**
 			 * Check if this was last reference
 			 */
-			if ((packed & packed_ref_mask) == 0x1) {
+			if ((packed & detail::packed_ref_mask) == 0x1) {
 
-				auto expect = _packed.fetch_and(packed_ref_mask, std::memory_order_release);
-				const auto maskedPtr = expect & packed_ptr_mask;
+				auto expect = _packed.fetch_and(detail::packed_ref_mask, std::memory_order_release);
+				const auto maskedPtr = expect & detail::packed_ptr_mask;
 
 				/**
 				 * Check whether another execution acquired reference in the mean time
 				 */
-				if ((expect & packed_ref_mask) != 0) {
+				if ((expect & detail::packed_ref_mask) != 0) {
 					/**
 					 * Loop fallback strategy
 					 */
@@ -454,10 +451,10 @@ namespace hg {
 					 * Releasing responsibility for releasing underlying resource will prevent starvation problem, if other execution suspend with acquired resource
 					 */
 					while (
-						(expect & packed_ref_mask) != 0 &&
+						(expect & detail::packed_ref_mask) != 0 &&
 						!_packed.compare_exchange_weak(
 							expect,
-							(expect & packed_ref_mask) | maskedPtr,
+							(expect & detail::packed_ref_mask) | maskedPtr,
 							std::memory_order_release,
 							std::memory_order_relaxed
 						)
@@ -468,9 +465,9 @@ namespace hg {
 				/**
 				 * Check whether this is last reference ( or fallback took place )
 				 */
-				// if (expect & packed_ref_mask)
-				if ((expect & packed_ref_mask) == 0 && maskedPtr) {
-					auto* ctrlp = reinterpret_cast<ptr<ivty>>(packed >> packed_shift);
+				// if (expect & detail::packed_ref_mask)
+				if ((expect & detail::packed_ref_mask) == 0 && maskedPtr) {
+					auto* ctrlp = reinterpret_cast<ptr<ivty>>(packed >> detail::packed_shift);
 
 					// Prevent final override polymorphic optimization
 					//  ~> otherwise will break virtual deleter overload
@@ -489,14 +486,14 @@ namespace hg {
 		 * @param ptr_ The pointer to store into this ctrl block
 		 */
 		void store(_In_ const ptr<vty> ptr_) {
-			const auto original = reinterpret_cast<packed_type>(ptr_);
-			const auto packed = original << packed_shift;
+			const auto original = reinterpret_cast<detail::packed_type>(ptr_);
+			const auto packed = original << detail::packed_shift;
 
 			::hg::assertd(
-				original == (packed >> packed_shift)/* "Exceeded addressable memory of shifted memory address." */
+				original == (packed >> detail::packed_shift)/* "Exceeded addressable memory of shifted memory address." */
 			);
 
-			_packed.fetch_and(packed_ref_mask, std::memory_order_release);
+			_packed.fetch_and(detail::packed_ref_mask, std::memory_order_release);
 			_packed.fetch_or(packed, std::memory_order_release);
 		}
 
@@ -525,14 +522,14 @@ namespace hg {
 		 */
 		[[nodiscard]] bool try_push(_In_ const ptr<vty> ptr_) {
 
-			const auto original = reinterpret_cast<packed_type>(ptr_);
-			const auto packed = (original << packed_shift) | 0x1;
+			const auto original = reinterpret_cast<detail::packed_type>(ptr_);
+			const auto packed = (original << detail::packed_shift) | 0x1;
 
 			::hg::assertd(
-				original == (packed >> packed_shift)/* "Exceeded adressable memory of shifted memory address." */
+				original == (packed >> detail::packed_shift)/* "Exceeded adressable memory of shifted memory address." */
 			);
 
-			packed_type expect { 0 };
+			detail::packed_type expect { 0 };
 			return _packed.compare_exchange_strong(
 				expect,
 				packed,

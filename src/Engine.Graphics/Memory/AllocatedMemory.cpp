@@ -1,11 +1,12 @@
 #include "AllocatedMemory.hpp"
 
+#include <Engine.Common/__macro.hpp>
 #include <cassert>
-#include <utility>
-#include <Engine.Common/Memory/MemoryPointer.hpp>
 
-#include "Allocator.hpp"
 #include "../vkinc.hpp"
+#include "Allocator.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::graphics::memory;
 using namespace hg;

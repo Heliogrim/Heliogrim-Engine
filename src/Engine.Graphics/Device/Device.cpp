@@ -1,23 +1,21 @@
 #include "Device.hpp"
 
-#include <algorithm>
-#include <cctype>
-#include <stdexcept>
-#include <string_view>
-#include <unordered_set>
-#include <Engine.Common/Collection/Set.hpp>
 #include <Engine.Logging/Logger.hpp>
+#include <cctype>
 
 #include "../vkinc.hpp"
 
 #ifdef _PROFILING
-#include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
+
+#include <Engine.Common/__macro.hpp>
 
 #include "../Command/CommandQueue.hpp"
 #include "../Library/Types.hpp"
 #include "../Memory/VkAllocator.hpp"
 #include "../Surface/Surface.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::graphics;
 using namespace hg;

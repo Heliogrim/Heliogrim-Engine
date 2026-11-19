@@ -1,14 +1,14 @@
 #pragma once
 
-#include <concepts>
-#include <type_traits>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/Meta/Type.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "../Scheme/Selector.hpp"
 #include "../Structure/RecordScopedSlot.hpp"
+
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Asserts;
+import Engine.Common;
 #endif
 
 namespace hg::engine::serialization::access {

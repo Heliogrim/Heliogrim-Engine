@@ -1,8 +1,8 @@
 #include "Fiber.hpp"
 
-#include "FiberPool.hpp"
 #include "../Process/BoostCell.hpp"
 #include "../Process/Schedule.hpp"
+#include "FiberPool.hpp"
 
 #ifdef ENV_MSVC
 #include <Engine.Common/stdafx.h>
@@ -13,6 +13,7 @@
 #endif
 
 #include <cassert>
+
 import Engine.Asserts;
 
 using namespace hg::engine::scheduler::fiber;

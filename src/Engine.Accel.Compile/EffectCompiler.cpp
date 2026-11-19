@@ -1,7 +1,5 @@
 #include "EffectCompiler.hpp"
 
-#include <algorithm>
-#include <chrono>
 #include <Engine.Accel.Pipeline/Stage/StageModule.hpp>
 #include <Engine.Env/Check.hpp>
 #include <Engine.Logging/Logger.hpp>
@@ -9,7 +7,9 @@
 #include "Module/ModuleBuilder.hpp"
 #include "Module/ModuleCompiler.hpp"
 #include "Stage/StageComposer.hpp"
+
 import Engine.Asserts;
+import std;
 
 using namespace hg::engine::accel;
 using namespace hg;

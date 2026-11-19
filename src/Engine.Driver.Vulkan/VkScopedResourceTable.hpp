@@ -1,13 +1,18 @@
 #pragma once
 
-#include <Engine.Accel.Pipeline/__fwd.hpp>
 #include <Engine.Accel.Pipeline/Bind/BindLayout.hpp>
+#include <Engine.Accel.Pipeline/__fwd.hpp>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/Collection/InlineAutoArray.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.Render.Command/Resource/ResourceTable.hpp>
 #include <Engine.Graphics/API/__vkFwd.hpp>
+#include <cstdint>
 
 #include "VkDescriptor.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::driver::vk {
 	class VkResourceTable;

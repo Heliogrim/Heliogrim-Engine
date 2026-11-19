@@ -1,8 +1,13 @@
 #pragma once
-#include <Engine.Common/Collection/Vector.hpp>
+
+#include <Engine.Common/__macro.hpp>
 
 #include "GlobalPooledAllocator.hpp"
 #include "VirtualMemoryPage.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::graphics {
 	class VirtualMemory {

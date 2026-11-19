@@ -1,9 +1,13 @@
 #pragma once
 
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Meta/Type.hpp>
+#include <Engine.Common/__macro.hpp>
+
 #include "Inherit/ClassMetaBase.hpp"
 #include "Inherit/Concept.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg {
 	/**/
@@ -43,8 +47,6 @@ namespace hg {
 }
 
 /**/
-
-#include <Engine.Common/Memory/MemoryPointer.hpp>
 
 namespace hg {
 	template <

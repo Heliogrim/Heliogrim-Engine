@@ -1,3 +1,7 @@
+#include "Level.hpp"
+
+#include <Engine.Common/__macro.hpp>
+#include <Engine.Serialization.Structures/Symbols.hpp>
 #include <Engine.ACS/ActorModule.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Module/Modules.hpp>
@@ -10,9 +14,9 @@
 #include <Engine.Serialization/Structure/RecordScopedSlot.hpp>
 #include <Engine.Serialization/Structure/SeqScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
-#include <Engine.Serialization.Structures/Symbols.hpp>
 
-#include "Level.hpp"
+
+import Engine.Common;
 
 using namespace ::hg::engine::serialization;
 using namespace ::hg::engine::core;

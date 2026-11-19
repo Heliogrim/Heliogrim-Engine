@@ -1,14 +1,16 @@
 #pragma once
 
-#include <Engine.Common/Collection/AutoArray.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.Common/Math/Bounding.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Filesystem/Url.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 #include <Heliogrim/TypedAssetGuid.hpp>
 
-#include "Geometry.hpp"
 #include "../Material/GraphicsMaterial.hpp"
+#include "Geometry.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::assets {
 	class StaticGeometry final :

@@ -1,10 +1,11 @@
 #include "PhysicsPipeline.hpp"
 
-#include <ranges>
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "PhysicsReadbackStage.hpp"
 #include "PhysicsTickStage.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::physics::schedule;
 using namespace hg;

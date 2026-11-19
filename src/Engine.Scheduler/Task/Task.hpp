@@ -1,15 +1,16 @@
 #pragma once
 
-#include <chrono>
-#include <functional>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/Types.hpp>
-#include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/__macro.hpp>
 
+#include "../Fiber/Cancellation.hpp"
+#include "../Lane.hpp"
 #include "TaskCtrl.hpp"
 #include "TaskType.hpp"
-#include "../Lane.hpp"
-#include "../Fiber/Cancellation.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::scheduler {
 	struct BoostCell;

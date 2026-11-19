@@ -1,8 +1,3 @@
-#include "Guid.hpp"
-
-#include <bit>
-#include <utility>
-
 #include "__macro.hpp"
 
 #ifdef _WIN32
@@ -17,6 +12,9 @@
 
 #include <uuid/uuid.h>
 #endif
+
+import Engine.Common;
+import std;
 
 using namespace hg;
 

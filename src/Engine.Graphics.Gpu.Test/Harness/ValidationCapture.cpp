@@ -1,6 +1,6 @@
 #include "ValidationCapture.hpp"
 
-#include <stdexcept>
+import std;
 
 using namespace hg::test::gpu;
 using namespace hg;

@@ -1,5 +1,7 @@
 #include "Stage.hpp"
 
+import std;
+
 using namespace hg::engine::scheduler;
 using namespace hg;
 

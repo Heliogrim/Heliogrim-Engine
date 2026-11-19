@@ -1,13 +1,16 @@
 #pragma once
 
-#include <Engine.Common/Optional.hpp>
-#include <Engine.Common/Types.hpp>
-#include <Engine.Reflow/Widget/Widget.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflow.Theming/Theme.hpp>
+#include <Engine.Reflow/Widget/Widget.hpp>
 
 #include "../Atom/Image.hpp"
 #include "../Atom/Text.hpp"
 #include "../Molecule/Layout/Stack.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::reflow::uikit {
 	class Button :

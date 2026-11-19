@@ -1,9 +1,8 @@
 #include "AssetGuid.hpp"
 
-#include <atomic>
-#include <chrono>
+#include <Engine.Common/__macro.hpp>
 
-#include <Engine.Common/Guid.hpp>
+import Engine.Common;
 
 using namespace hg;
 

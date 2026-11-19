@@ -1,29 +1,23 @@
 #include "test.hpp"
 
-#include <fstream>
-#include <map>
 #include <Engine.Accel.Pipeline/Stage/StageModule.hpp>
-#include <Engine.Common/GuidFormat.hpp>
-#include <Engine.Common/Make.hpp>
-#include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 #include <Engine.Graphics.Loader/Material/MaterialResource.hpp>
 #include <Engine.Graphics.Material/Material.hpp>
 #include <Engine.Graphics.Material/MaterialParameter.hpp>
 #include <Engine.Graphics.Material/MaterialPrototype.hpp>
 #include <Engine.Graphics.Render.Command/RenderCommandBufferBase.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneColor.hpp>
-#include <Engine.Graphics.RenderGraph/RuntimeGraph.hpp>
+#include <Engine.Graphics.RenderGraph.Compile/RenderGraphCompiler.hpp>
 #include <Engine.Graphics.RenderGraph/Builder/BuilderVisitor.hpp>
 #include <Engine.Graphics.RenderGraph/Relation/Description.hpp>
 #include <Engine.Graphics.RenderGraph/Relation/Provision.hpp>
-#include <Engine.Graphics.RenderGraph.Compile/RenderGraphCompiler.hpp>
+#include <Engine.Graphics.RenderGraph/RuntimeGraph.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Resource/Manage/UniqueResource.hpp>
 
-#include "CompileGraph.hpp"
 #include "Builder/Builder.hpp"
+#include "CompileGraph.hpp"
 #include "Component/BarrierComponent.hpp"
 #include "Component/ProviderComponent.hpp"
 #include "Debug/DebugVisitor.hpp"
@@ -33,6 +27,8 @@
 #include "Node/Runtime/ProviderNode.hpp"
 #include "Relation/SceneViewDescription.hpp"
 #include "Relation/TextureDescription.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::render;
 using namespace hg::engine::graphics;

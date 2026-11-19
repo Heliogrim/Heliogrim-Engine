@@ -1,16 +1,14 @@
 #pragma once
 
-#include <algorithm>
-#include <cstring>
-#include <ranges>
-#include <span>
-#include <utility>
-#include <Engine.Common/Types.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflect/Inherit/InheritMeta.hpp>
+#include <cstring>
 
 #include "../Blob.hpp"
+
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Asserts;
+import Engine.Common;
 #endif
 
 namespace hg::engine::resource {

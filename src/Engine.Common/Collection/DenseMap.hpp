@@ -3,8 +3,11 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/__macro.hpp>
 
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import ankerl.unordered_dense;
+#endif
+
 START_SUPPRESS_WARNINGS
-#include <ankerl/unordered_dense.h>
 STOP_SUPPRESS_WARNINGS
 
 namespace hg {

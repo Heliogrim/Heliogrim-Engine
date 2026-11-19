@@ -1,11 +1,12 @@
 #include "VkPassBuilder.hpp"
 
 #include <Engine.Accel.Pipeline/VkGraphicsPipeline.hpp>
-#include <Engine.Common/Make.hpp>
-#include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
+#include <Engine.Common/__macro.hpp>
 
-#include "../Spec/EffectSpecification.hpp"
 #include "../Profile/EffectProfile.hpp"
+#include "../Spec/EffectSpecification.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::accel;
 using namespace hg;

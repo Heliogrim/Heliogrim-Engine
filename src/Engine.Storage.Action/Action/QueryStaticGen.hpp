@@ -1,13 +1,15 @@
 #pragma once
 
-#include <type_traits>
-#include <utility>
 #include <Engine.Reflect/FullTypeInfo.hpp>
 
-#include "StaticGen.hpp"
-#include "StaticStage.hpp"
 #include "../Context.hpp"
 #include "../Query.hpp"
+#include "StaticGen.hpp"
+#include "StaticStage.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg::engine::storage::system {
 	template <typename... Stages_>

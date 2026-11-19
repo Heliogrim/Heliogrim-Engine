@@ -1,12 +1,15 @@
 #pragma once
 
-#include <Engine.Common/Optional.hpp>
-#include <Engine.Common/Collection/AutoArray.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 
-#include "../ModelComponent.hpp"
 #include "../../../Asset/GeometryAssetHandles.hpp"
 #include "../../../Asset/MaterialAssetHandles.hpp"
+#include "../ModelComponent.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg {
 	class StaticGeometryComponent :

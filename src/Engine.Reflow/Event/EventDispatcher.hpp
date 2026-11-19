@@ -1,18 +1,19 @@
 #pragma once
 
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/Stack.hpp>
+#include <Engine.Common/__macro.hpp>
 
-#include "EventResponse.hpp"
 #include "../Widget/__fwd.hpp"
 #include "../Window/Window.hpp"
-
 #include "DragDropEvent.hpp"
+#include "Engine.Reflow/Widget/Widget.hpp"
+#include "EventResponse.hpp"
 #include "FocusEvent.hpp"
 #include "MouseMoveEvent.hpp"
 #include "WheelEvent.hpp"
-#include "Engine.Common/Collection/Vector.hpp"
-#include "Engine.Reflow/Widget/Widget.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::reflow {
 	class EventDispatcher {

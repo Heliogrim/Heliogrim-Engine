@@ -1,6 +1,5 @@
 #include "RenderTickStage.hpp"
 
-#include <chrono>
 #include <Engine.Async/Collection/RingBuffer.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Graphics.Scene/RenderSceneManager.hpp>
@@ -12,8 +11,11 @@
 #include <Engine.Scene.Schedule/ScenePipeline.hpp>
 
 #ifdef _PROFILING
-#include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
+
+#include <Engine.Common/__macro.hpp>
+
+import Engine.Common;
 
 using namespace hg::engine::graphics::schedule;
 using namespace hg::engine::scheduler;

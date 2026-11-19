@@ -2,16 +2,6 @@
 
 /**/
 
-#include <atomic>
-#include <chrono>
-#include <functional>
-#include <memory>
-#include <semaphore>
-#include <stdexcept>
-#include <string>
-#include <thread>
-#include <utility>
-#include <vector>
 #include <Engine.Async/Affine/AffineThread.hpp>
 #include <Engine.Async/Future/Future.hpp>
 #include <Engine.Logging/Logger.hpp>
@@ -22,6 +12,8 @@
 /**/
 #include <processthreadsapi.h>
 #endif
+
+import std;
 
 using namespace hg;
 using namespace hg::engine::async;

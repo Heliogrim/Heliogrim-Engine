@@ -1,17 +1,13 @@
 #pragma once
 
-#include <filesystem>
-#include <functional>
-#include <utility>
-#include <Engine.Common/Optional.hpp>
-#include <Engine.Common/String.hpp>
-#include <Engine.Common/Types.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.Common/Math/Vector.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "Contract.hpp"
 #include "Raster.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::test::gpu {
 	/**

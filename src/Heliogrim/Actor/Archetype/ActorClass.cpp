@@ -1,10 +1,11 @@
 #include "ActorClass.hpp"
 
-#include <memory>
-#include <Engine.Common/Move.hpp>
+#include <Engine.Common/__macro.hpp>
 
-#include "../Actor.hpp"
 #include "../../Component/HierarchyComponent.hpp"
+#include "../Actor.hpp"
+
+import Engine.Common;
 
 using namespace hg;
 

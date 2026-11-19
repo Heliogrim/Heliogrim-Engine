@@ -1,8 +1,8 @@
 #include "pch.h"
 
-#include <algorithm>
-#include <string>
 #include <Engine.ACS/Pool.hpp>
+
+import std;
 
 using namespace hg;
 using namespace hg::engine::acs;

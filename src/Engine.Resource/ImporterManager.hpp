@@ -1,10 +1,13 @@
 #pragma once
-#include <map>
-#include <Engine.Common/Cast.hpp>
-#include <Engine.Common/Wrapper.hpp>
+
+#include <Engine.Common/__macro.hpp>
 
 #include "FileTypeId.hpp"
 #include "Importer/Importer.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::res {
 	class ImporterManager {

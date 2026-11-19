@@ -1,8 +1,10 @@
 #include "ActorModule.hpp"
 
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "Registry.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::acs;
 using namespace hg::engine;

@@ -1,7 +1,8 @@
 #include "FiberSharedMutex.hpp"
 
-#include <immintrin.h>
 #include <Engine.Scheduler/Fiber/Park.hpp>
+#include <immintrin.h>
+
 import Engine.Asserts;
 
 using namespace hg::concurrent;

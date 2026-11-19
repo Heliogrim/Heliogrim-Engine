@@ -1,13 +1,15 @@
 #pragma once
 
-#include <Engine.Common/Types.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "../Diagnostic.hpp"
 #include "../Layout.hpp"
 #include "../Module.hpp"
 #include "../Tier.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::accel::lang::ir::spirv {
 	/* `words` is empty whenever `diagnostics` holds an error; warnings come with the words */

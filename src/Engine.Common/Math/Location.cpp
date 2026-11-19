@@ -1,4 +1,7 @@
-#include "Location.hpp"
+#include <Engine.Common/__macro.hpp>
+
+import Engine.Common;
+import std;
 
 using namespace hg::math;
 using namespace hg;

@@ -1,11 +1,13 @@
 #pragma once
 
-#include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflect/FullTypeInfo.hpp>
 
 #include "StageTypeInfo.hpp"
+
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Asserts;
+import Engine.Common;
 #endif
 
 namespace hg::engine::storage {

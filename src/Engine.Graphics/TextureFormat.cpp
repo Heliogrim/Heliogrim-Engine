@@ -1,6 +1,8 @@
 #include "TextureFormat.hpp"
 
-#include <Engine.Common/Math/Coordinates.hpp>
+#include <Engine.Common/__macro.hpp>
+
+import Engine.Common;
 
 using namespace hg::engine::graphics;
 using namespace hg;

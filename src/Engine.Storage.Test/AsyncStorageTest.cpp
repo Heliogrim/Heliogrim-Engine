@@ -2,17 +2,7 @@
 
 /**/
 
-#include <atomic>
-#include <filesystem>
-#include <fstream>
-#include <limits>
-#include <semaphore>
-#include <span>
-#include <string>
 #include <Engine.Async/Affine/AffineThread.hpp>
-#include <Engine.Common/Guid.hpp>
-#include <Engine.Common/Make.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Config/Config.hpp>
 #include <Engine.IO.Dispatcher/IoSystem.hpp>
 #include <Engine.Resource.Archive/ArchiveType.hpp>
@@ -36,17 +26,21 @@
 #include <Engine.Storage.Registry/Url/ArchiveUrl.hpp>
 #include <Engine.Storage.Registry/Url/FileUrl.hpp>
 #include <Engine.Storage.Registry/Url/PackageUrl.hpp>
-#include <Engine.Storage.System/StorageSystem.hpp>
 #include <Engine.Storage.System/Details/StorageActionResolver.hpp>
+#include <Engine.Storage.System/StorageSystem.hpp>
 
-#include "Scratch.hpp"
 #include "../Engine.Scheduler.Test/TestSchedulerEngine.hpp"
+#include "Scratch.hpp"
 
 #if defined(_WIN32)
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #include <Windows.h>
 #endif
+
+#include <Engine.Common/__macro.hpp>
+
+import Engine.Common;
 
 /**/
 

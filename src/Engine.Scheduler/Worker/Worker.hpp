@@ -1,13 +1,16 @@
 #pragma once
 
-#include <atomic>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "../Fiber/Fiber.hpp"
 #include "../Fiber/FiberPool.hpp"
 #include "../Process/Schedule.hpp"
 #include "../Thread/Thread.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::scheduler::worker {
 	class Worker final {

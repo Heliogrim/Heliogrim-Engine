@@ -1,21 +1,17 @@
 #include "SparseBuffer.hpp"
 
-#include <algorithm>
-#include <ranges>
-#include <utility>
-
-#include "SparseBufferView.hpp"
-#include "../vkinc.hpp"
 #include "../Command/CommandQueue.hpp"
 #include "../Memory/VirtualMemory.hpp"
+#include "../vkinc.hpp"
+#include "SparseBufferView.hpp"
 
 // TODO: Remove
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Engine.hpp>
 
-#include <Engine.Common/Discard.hpp>
-#include <Engine.Common/Move.hpp>
-
 #include "../Graphics.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::graphics;
 using namespace hg;

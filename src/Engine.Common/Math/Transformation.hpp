@@ -1,10 +1,12 @@
 #pragma once
 
-#include <utility>
-
 #include "Coordinates.hpp"
 #include "Matrix.hpp"
 #include "Quaternion.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg::math {
 	class Transformation {

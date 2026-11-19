@@ -2,6 +2,7 @@
 
 #include <Engine.Common/stdafx.h>
 #include <Engine.Logging/Logger.hpp>
+
 import Engine.Asserts;
 
 using namespace hg::engine::io;

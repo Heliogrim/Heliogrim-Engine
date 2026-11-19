@@ -1,10 +1,12 @@
 ﻿#pragma once
 
-#include <type_traits>
-
 #include "Sal.hpp"
 #include "Types.hpp"
 #include "Wrapper.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg {
 	template <

@@ -1,13 +1,14 @@
 #pragma once
 
-#include <Engine.Common/Make.hpp>
-#include <Engine.Common/Variant.hpp>
-#include <Engine.Common/Memory/UniquePointer.hpp>
-#include <Engine.Common/Meta/IsAnyOf.hpp>
+#include <Engine.Common/__macro.hpp>
 
-#include "__fwd.hpp"
 #include "../Action/MutationDynamicGen.hpp"
 #include "../Action/QueryDynamicGen.hpp"
+#include "__fwd.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::storage::system {
 	class ComposeStageType;

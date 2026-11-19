@@ -1,7 +1,5 @@
 #include "EditorEngine.hpp"
 
-#include <algorithm>
-#include <ranges>
 #include <Editor.Boot/Boot/ActorInit.hpp>
 #include <Editor.Boot/Boot/ConfigInit.hpp>
 #include <Editor.Boot/Boot/SerializationInit.hpp>
@@ -10,19 +8,20 @@
 #include <Engine.ACS.Schedule/ActorPipeline.hpp>
 #include <Engine.ACS/ActorModule.hpp>
 #include <Engine.Assets/Assets.hpp>
+#include <Engine.Audio/Audio.hpp>
 #include <Engine.Config/Enums.hpp>
 #include <Engine.Config/Provider/EditorProvider.hpp>
 #include <Engine.Config/Provider/ProjectProvider.hpp>
 #include <Engine.Config/Provider/SystemProvider.hpp>
 #include <Engine.Core.Schedule/CorePipeline.hpp>
 #include <Engine.Core/EngineState.hpp>
-#include <Engine.Core/Session.hpp>
-#include <Engine.Core/Universe.hpp>
-#include <Engine.Core/UniverseContext.hpp>
 #include <Engine.Core/Event/UniverseAddedEvent.hpp>
 #include <Engine.Core/Event/UniverseRemoveEvent.hpp>
 #include <Engine.Core/Module/CoreDependencies.hpp>
 #include <Engine.Core/Module/SubModule.hpp>
+#include <Engine.Core/Session.hpp>
+#include <Engine.Core/Universe.hpp>
+#include <Engine.Core/UniverseContext.hpp>
 #include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Input/Input.hpp>
 #include <Engine.Logging/Logger.hpp>
@@ -34,7 +33,6 @@
 #include <Engine.Scheduler/CompScheduler.hpp>
 #include <Engine.Scheduler/Waitable/JoinCounter.hpp>
 #include <Engine.Scheduler/Waitable/Signal.hpp>
-#include <Engine.Audio/Audio.hpp>
 
 #ifdef WIN32
 #include <Support.Platform.Win32/WinPlatform.hpp>
@@ -42,6 +40,8 @@
 #include <Engine.Platform/Platform.hpp>
 //#include <Engine.Platform/Linux>
 #endif
+
+import std;
 
 using namespace hg::editor;
 using namespace hg::engine::core;

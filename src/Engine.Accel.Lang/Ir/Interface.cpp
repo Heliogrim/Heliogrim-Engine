@@ -1,9 +1,8 @@
 #include "Interface.hpp"
 
-#include <algorithm>
-#include <tuple>
-
 #include "Typecheck.hpp"
+
+import std;
 
 using namespace hg::engine::accel::lang;
 using namespace hg;

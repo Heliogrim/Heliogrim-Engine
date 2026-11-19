@@ -1,8 +1,8 @@
 #include "pch.h"
 
-#include <thread>
-#include <vector>
 #include <Engine.Async/Primitive/SpinLock.hpp>
+
+import std;
 
 using namespace hg::concurrent;
 

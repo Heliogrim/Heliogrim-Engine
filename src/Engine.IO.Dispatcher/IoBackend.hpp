@@ -1,11 +1,13 @@
 #pragma once
 
-#include <functional>
-#include <Engine.Common/Types.hpp>
-#include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "IoThread.hpp"
 #include "IoTypes.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::io {
 	enum class IoBackendKind : u8 {

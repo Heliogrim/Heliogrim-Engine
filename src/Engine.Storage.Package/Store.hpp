@@ -1,9 +1,11 @@
 #pragma once
 
-#include "Engine.Common/Sal.hpp"
-#include "Engine.Resource.Package/ReadonlyPackage.hpp"
-#include "Engine.Resource.Package/ReadWritePackage.hpp"
 #include <Engine.Common/__macro.hpp>
+
+#include "Engine.Common/Sal.hpp"
+#include "Engine.Resource.Package/ReadWritePackage.hpp"
+#include "Engine.Resource.Package/ReadonlyPackage.hpp"
+
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
 #endif

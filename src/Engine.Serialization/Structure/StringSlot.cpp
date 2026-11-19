@@ -1,8 +1,9 @@
 #include "StringSlot.hpp"
 
-#include <span>
 #include <Engine.Resource.Archive/Archive.hpp>
 #include <Engine.Resource.Archive/ArchiveStreamMode.hpp>
+
+import std;
 
 using namespace hg::engine::serialization;
 using namespace hg;

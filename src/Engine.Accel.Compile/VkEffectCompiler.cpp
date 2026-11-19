@@ -1,13 +1,14 @@
 #include "VkEffectCompiler.hpp"
 
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
 
+#include "Module/VkModuleBuilder.hpp"
+#include "Module/VkModuleCompiler.hpp"
 #include "Pass/VkPassBuilder.hpp"
 #include "Pass/VkPipelineCompiler.hpp"
 #include "Stage/StageComposer.hpp"
-#include "Module/VkModuleBuilder.hpp"
-#include "Module/VkModuleCompiler.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::accel;
 using namespace hg;

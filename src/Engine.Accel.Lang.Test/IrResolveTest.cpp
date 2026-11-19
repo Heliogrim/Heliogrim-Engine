@@ -2,11 +2,6 @@
 
 /**/
 
-#include <algorithm>
-#include <array>
-#include <functional>
-#include <utility>
-
 #include <Engine.Accel.Lang/Ir/Analysis.hpp>
 #include <Engine.Accel.Lang/Ir/Merge.hpp>
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
@@ -15,6 +10,8 @@
 
 #include "IrSame.hpp"
 #include "IrWording.hpp"
+
+import std;
 
 using namespace hg::engine::accel::lang::ir;
 using namespace hg;

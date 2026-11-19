@@ -1,18 +1,16 @@
 #pragma once
 
-#include <map>
-#include <set>
-#include <utility>
-#include <Engine.Common/String.hpp>
-#include <Engine.Common/Types.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.Common/__macro.hpp>
 
-#include "SpirvWriter.hpp"
 #include "../Diagnostic.hpp"
 #include "../Layout.hpp"
 #include "../Module.hpp"
 #include "../Tier.hpp"
+#include "SpirvWriter.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::accel::lang::ir::spirv {
 	using Ops = Vector<u32>;

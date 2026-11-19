@@ -2,16 +2,13 @@
 
 /**/
 
-#include <algorithm>
-#include <numbers>
-#include <string>
-#include <Engine.Common/String.hpp>
-#include <Engine.Common/Types.hpp>
-#include <Engine.Common/Math/Vector.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "../Harness/Contract.hpp"
 #include "../Harness/FunctionTier.hpp"
 #include "../Harness/GpuTest.hpp"
+
+import Engine.Common;
 
 using namespace hg::test::gpu;
 using namespace hg;

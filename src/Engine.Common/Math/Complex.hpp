@@ -1,7 +1,10 @@
 #pragma once
 
 #include "../__macro.hpp"
-#include <complex>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg::math {
     typedef std::complex<double> complex_t;

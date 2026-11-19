@@ -1,8 +1,10 @@
 #include "pch.h"
 
-#include <Engine.Common/Make.hpp>
 #include <Editor.UI.Service/Input/InputBindingList.hpp>
 #include <Editor.UI.Service/Input/InputService.hpp>
+#include <Engine.Common/__macro.hpp>
+
+import Engine.Common;
 
 using namespace hg;
 using namespace hg::editor::ui::service;

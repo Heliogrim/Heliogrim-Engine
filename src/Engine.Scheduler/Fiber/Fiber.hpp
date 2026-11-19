@@ -1,13 +1,16 @@
 #pragma once
 
-#include <chrono>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/__macro.hpp>
 
-#include "Cancellation.hpp"
 #include "../Lane.hpp"
 #include "../Task/Task.hpp"
 #include "../Waitable/ParkQueue.hpp"
+#include "Cancellation.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::scheduler {
 	class Schedule;

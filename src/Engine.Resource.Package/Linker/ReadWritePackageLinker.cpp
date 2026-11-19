@@ -1,11 +1,11 @@
 #include "ReadWritePackageLinker.hpp"
 
-#include <algorithm>
-#include <memory>
-#include <Engine.Common/Move.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "Indexed.hpp"
+
 import Engine.Asserts;
+import Engine.Common;
 
 using namespace hg::engine::resource::package;
 using namespace hg::engine::resource;

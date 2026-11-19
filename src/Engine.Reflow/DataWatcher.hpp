@@ -1,11 +1,13 @@
 #pragma once
 
-#include <Engine.Common/Collection/DenseMap.hpp>
-#include <Engine.Common/Functional/Function.hpp>
-#include <Engine.Common/Memory/MemoryPointer.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflow.Attributes/Data/DataAttribute.hpp>
 
 #include "Widget/Widget.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::reflow {
 	class DataWatcher final {

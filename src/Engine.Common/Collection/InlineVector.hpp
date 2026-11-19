@@ -1,10 +1,13 @@
 #pragma once
 
 #include <cassert>
-#include <memory>
 
-#include "InlineArray.hpp"
 #include "../Wrapper.hpp"
+#include "InlineArray.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg {
 	template <class Type_, size_t Capacity_ = 1, typename Allocator_ = std::allocator<Type_>>

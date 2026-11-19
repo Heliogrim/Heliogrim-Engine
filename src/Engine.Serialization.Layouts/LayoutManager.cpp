@@ -1,8 +1,9 @@
 #include "LayoutManager.hpp"
 
+#include <Engine.Common/StringLiterals.hpp>
+
 #include "Engine.Serialization/Layout/DataLayout.hpp"
 #include "Engine.Serialization/Layout/DataLayoutBase.hpp"
-#include <Engine.Common/StringLiterals.hpp>
 
 using namespace hg::engine::serialization;
 using namespace hg;

@@ -1,13 +1,13 @@
 #pragma once
 
-#include <functional>
-#include <map>
-#include <ranges>
-#include <Engine.Common/Move.hpp>
-#include <Engine.Common/Types.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Event/Event.hpp>
 
 #include "Event/EventResponse.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::reflow {
 	class ReflowEventEmitter final {

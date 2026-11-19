@@ -1,8 +1,8 @@
 #include "Png.hpp"
 
 #include <Engine.Assets.System/IAssetRegistry.hpp>
-#include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets.Type/Texture/ImageAsset.hpp>
+#include <Engine.Assets/Assets.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Graphics/Buffer/BufferFactory.hpp>
 #include <Engine.Graphics/Pool/GlobalResourcePool.hpp>
@@ -15,6 +15,7 @@
 
 #define SPNG_STATIC TRUE
 #include <spng/spng.h>
+
 import Engine.Asserts;
 
 using namespace ::hg::editor::graphics::loader;

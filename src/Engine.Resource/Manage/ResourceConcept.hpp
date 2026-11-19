@@ -1,9 +1,11 @@
 #pragma once
 
-#include <concepts>
-
-#include "__fwd.hpp"
 #include "Resource.hpp"
+#include "__fwd.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace hg::engine::resource {
     template <class Type_>

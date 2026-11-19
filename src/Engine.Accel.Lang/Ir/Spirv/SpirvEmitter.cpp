@@ -1,10 +1,10 @@
 #include "SpirvEmitter.hpp"
 
-#include <algorithm>
-
 #include "SpirvEmitter.Impl.hpp"
 #include "SpirvOptimize.hpp"
 #include "SpirvValidate.hpp"
+
+import std;
 
 namespace hg::engine::accel::lang::ir::spirv {
 	namespace {

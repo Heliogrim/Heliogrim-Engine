@@ -1,9 +1,11 @@
-#include <Engine.Common/Guid.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 #include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 #include <Engine.Serialization/Structure/__fwd.hpp>
+
+import Engine.Common;
 
 using namespace hg::engine::serialization;
 using namespace hg;

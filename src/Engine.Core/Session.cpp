@@ -1,9 +1,11 @@
 #include "Session.hpp"
 
-#include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "SessionState.hpp"
 #include "UniverseContext.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::core;
 using namespace hg;

@@ -2,11 +2,9 @@
 
 /**/
 
-#include <filesystem>
-#include <ranges>
-#include <regex>
-
 #include "IrSpirvGate.hpp"
+
+import std;
 
 using namespace hg::engine::accel::lang::ir;
 

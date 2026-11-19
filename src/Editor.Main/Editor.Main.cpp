@@ -1,14 +1,15 @@
 #ifdef _PROFILING
 #include <Engine.Common/Profiling/Profiler.hpp>
-#include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
 
+#include <Editor.Core/EditorEngine.hpp>
+#include <Engine.Common/__macro.hpp>
+#include <Engine.Core/Event/SignalShutdownEvent.hpp>
+#include <Engine.Event/GlobalEventEmitter.hpp>
 #include <Heliogrim/Heliogrim.hpp>
 #include <Heliogrim/HeliogrimStatic.hpp>
 
-#include <Editor.Core/EditorEngine.hpp>
-#include <Engine.Core/Event/SignalShutdownEvent.hpp>
-#include <Engine.Event/GlobalEventEmitter.hpp>
+import Engine.Common;
 
 using namespace hg;
 

@@ -1,6 +1,8 @@
 #include "Path.hpp"
 
-#include <Engine.Common/Types.hpp>
+#include <Engine.Common/__macro.hpp>
+
+import Engine.Common;
 
 using namespace hg::engine::fs;
 using namespace hg;

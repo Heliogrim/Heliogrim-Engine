@@ -1,18 +1,17 @@
 #pragma once
 
-#include <utility>
 #include <Engine.Async/Primitive/SpinLock.hpp>
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Common/Collection/DenseMap.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Reflect/Cast.hpp>
 #include <Engine.Reflect/Meta/MetaClass.hpp>
 #include <Engine.Scene/SceneBase.hpp>
-#include <Heliogrim/IComponentRegisterContext.hpp>
 #include <Heliogrim/Component/HierarchyComponent.hpp>
 #include <Heliogrim/Component/SceneComponent.hpp>
+#include <Heliogrim/IComponentRegisterContext.hpp>
+
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Asserts;
+import Engine.Common;
 #endif
 
 namespace hg::engine::scene {

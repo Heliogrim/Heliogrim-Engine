@@ -1,11 +1,14 @@
 #pragma once
-#include <Engine.Common/Types.hpp>
-#include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.RenderGraph/Relation/MeshDescription.hpp>
 
 #include "Commands/Structs.hpp"
 #include "Resource/Pipeline.hpp"
 #include "Resource/ResourceTable.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::accel {
     class AccelCommandBuffer;

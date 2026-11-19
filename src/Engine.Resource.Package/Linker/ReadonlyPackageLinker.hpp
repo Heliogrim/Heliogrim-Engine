@@ -1,12 +1,15 @@
 #pragma once
 
-#include <Engine.Common/Optional.hpp>
-#include <Engine.Common/Collection/DenseMap.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Resource.Blob/Blob.hpp>
 
 #include "PackageLinker.hpp"
 #include "ReadonlyLinkedArchive.hpp"
 #include "ReadonlyPackageIterator.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::resource {
 	class ReadonlyPackageLinker final :

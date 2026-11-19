@@ -1,18 +1,14 @@
 #pragma once
 
-#include <optional>
-
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Guid.hpp>
-#include <Engine.Common/Collection/Set.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
-#include <Engine.Common/String.hpp>
-#include <Engine.Common/Meta/NoThrow.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "MaterialParameter.hpp"
 #include "MaterialPrototype.hpp"
 #include "MaterialPrototypeParameter.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::graphics::material {
 	class Material {

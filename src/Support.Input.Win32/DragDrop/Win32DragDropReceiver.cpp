@@ -1,14 +1,11 @@
 #include "Win32DragDropReceiver.hpp"
 
-#include <Engine.Common/Make.hpp>
-#include <Engine.Common/String.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Input/DragDropEvent.hpp>
-
-#include <codecvt>
-#include <format>
 #include <ShlObj_core.h>
-#include <sstream>
+
+import Engine.Asserts;
+import Engine.Common;
 
 using namespace hg::engine::input;
 using namespace hg;

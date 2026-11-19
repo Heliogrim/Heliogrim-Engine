@@ -1,10 +1,15 @@
-#include "PhysicsSceneSystem.hpp"
+#include <Jolt/Jolt.h>
+
+#include <Jolt/Physics/Collision/Shape/BoxShape.h>
+#include <Jolt/Physics/Collision/Shape/SphereShape.h>
+#include <Jolt/Physics/PhysicsSystem.h>
 
 #include <Engine.ACS/Cluster/RelocationTable.hpp>
 #include <Engine.Core/Engine.hpp>
-#include <Engine.Physics/jolt.inc.hpp>
 #include <Engine.Physics/Physics.hpp>
-#include <Jolt/Physics/PhysicsSystem.h>
+#include <Engine.Physics/jolt.inc.hpp>
+
+#include "PhysicsSceneSystem.hpp"
 
 using namespace hg::engine::physics;
 using namespace hg;

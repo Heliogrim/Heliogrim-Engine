@@ -1,13 +1,10 @@
 #include "ClusterRegion.hpp"
 
-#include <algorithm>
-#include <bit>
-#include <new>
-#include <stdexcept>
-#include <Engine.Common/Move.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.Common/__macro.hpp>
+#include <cstdint>
+
 import Engine.Asserts;
+import Engine.Common;
 
 using namespace hg::engine::acs;
 using namespace hg;

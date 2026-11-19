@@ -1,17 +1,14 @@
 #include "MaterialFactory.hpp"
 
-#include <Engine.Common/Guid.hpp>
-#include <Engine.Common/Types.hpp>
-#include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
-#include <Engine.Common/Math/Matrix.hpp>
-#include <Engine.Common/Math/Vector.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.Loader/Texture/TextureResource.hpp>
-#include <Engine.Pedantic/Clone/Clone.hpp>
 
 #include "Material.hpp"
 #include "MaterialParameter.hpp"
 #include "MaterialPrototype.hpp"
 #include "MaterialPrototypeParameter.hpp"
+
+import Engine.Common;
 
 using namespace hg::engine::graphics::material;
 using namespace hg;

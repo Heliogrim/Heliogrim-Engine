@@ -1,11 +1,9 @@
 #include "Slice.hpp"
 
-#include <algorithm>
-
 #include "Builtin.hpp"
-#include <utility>
-
 #include "Compact.hpp"
+
+import std;
 
 using namespace hg::engine::accel::lang;
 using namespace hg;

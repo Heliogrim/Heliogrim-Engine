@@ -1,12 +1,16 @@
 #pragma once
 
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
+#include <Engine.Common/__macro.hpp>
 
-#include "Language.hpp"
-#include "Representation.hpp"
 #include "Ir/Interface.hpp"
 #include "Ir/Module.hpp"
+#include "Language.hpp"
+#include "Representation.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::accel::lang {
 	class Intermediate {

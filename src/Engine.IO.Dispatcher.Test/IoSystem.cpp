@@ -2,15 +2,6 @@
 
 /**/
 
-#include <algorithm>
-#include <array>
-#include <atomic>
-#include <chrono>
-#include <filesystem>
-#include <format>
-#include <fstream>
-#include <random>
-#include <thread>
 #include <Engine.Common/stdafx.h>
 #include <Engine.IO.Dispatcher/IoSystem.hpp>
 #include <Engine.Logging/Logger.hpp>
@@ -18,6 +9,8 @@
 #include <Engine.Scheduler/Task/Task.hpp>
 
 #include "../Engine.Scheduler.Test/TestSchedulerEngine.hpp"
+
+import std;
 
 using namespace hg;
 using namespace hg::engine::io;

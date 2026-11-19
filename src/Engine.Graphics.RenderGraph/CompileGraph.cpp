@@ -1,7 +1,9 @@
 #include "CompileGraph.hpp"
 
-#include <Engine.Common/Collection/DenseSet.hpp>
-#include <Engine.Pedantic/Clone/Clone.hpp>
+#include <Engine.Common/__macro.hpp>
+#include <cassert>
+
+import Engine.Common;
 
 using namespace hg::engine::render::graph;
 using namespace hg;

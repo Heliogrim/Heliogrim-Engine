@@ -1,9 +1,10 @@
 #pragma once
 
 #include "../Node.hpp"
-#include "../Parameter/ValueTypeNodeParameter.hpp"
-#include "../Parameter/ConstantNodeParameter.hpp"
 #include "../NodeOutput.hpp"
+#include "../Parameter/ConstantNodeParameter.hpp"
+#include "../Parameter/ValueTypeNodeParameter.hpp"
+
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Asserts;
 #endif

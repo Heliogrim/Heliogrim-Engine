@@ -1,25 +1,23 @@
 #pragma once
 
-#include <span>
 #include <Engine.Assets/AssetGuid.hpp>
 #include <Engine.Assets/AssetPath.hpp>
 #include <Engine.Assets/AssetTypeId.hpp>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/Set.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.Common/Functional/Function.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Filesystem/__fwd.hpp>
 #include <Engine.Utils/_CTRL.hpp>
 
-#include "__fwd.hpp"
-
+#include "IAssetRegistry.hpp"
 #include "Options/FindPathOptions.hpp"
 #include "Options/FindPathsOptions.hpp"
 #include "Options/RemovePathOptions.hpp"
 #include "Options/RemovePathsOptions.hpp"
+#include "__fwd.hpp"
 
-#include "IAssetRegistry.hpp"
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::assets {
 	class AssetRegistry :

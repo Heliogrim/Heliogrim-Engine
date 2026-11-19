@@ -1,13 +1,17 @@
 #pragma once
 
-#include <string>
+#include <gtest/gtest.h>
+#include <spirv-tools/libspirv.hpp>
+
 #include <Engine.Accel.Lang/Ir/Interface.hpp>
 #include <Engine.Accel.Lang/Ir/Layout.hpp>
 #include <Engine.Accel.Lang/Ir/References.hpp>
-#include <Engine.Accel.Lang/Ir/Tier.hpp>
 #include <Engine.Accel.Lang/Ir/Spirv/SpirvEmitter.hpp>
-#include <gtest/gtest.h>
-#include <spirv-tools/libspirv.hpp>
+#include <Engine.Accel.Lang/Ir/Tier.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+#endif
 
 namespace AccelLang {
 	struct SpirvText {

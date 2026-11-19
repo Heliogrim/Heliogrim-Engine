@@ -2,15 +2,14 @@
 
 /**/
 
-#include <array>
-#include <map>
-
 #include <Engine.Accel.Lang/Ir/Lexer.hpp>
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
 
 #include "IrSpan.hpp"
 #include "IrSpirvText.hpp"
 #include "IrWording.hpp"
+
+import std;
 
 using namespace hg::engine::accel::lang::ir;
 using namespace hg;

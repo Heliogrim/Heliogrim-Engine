@@ -6,15 +6,16 @@
  * Every slot type needs `access::Structure<T>`; records are keyed by entry path, e.g. "body/wheels/2/hub".
  */
 
-#include <new>
-#include <string>
 #include <Engine.ACS/Archetype/LayoutInfo.hpp>
-#include <Engine.Common/String.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 
-#include "ArchetypeMigration.hpp"
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
+#include "ArchetypeMigration.hpp"
 namespace hg::archetype_detail {
 	template <typename Info_>
 	[[nodiscard]] constexpr bool slot_is_array(const u32 slot_) noexcept {

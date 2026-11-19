@@ -1,10 +1,14 @@
 #pragma once
 
-#include <Engine.Common/Variant.hpp>
-#include <Engine.Common/Meta/IsAnyOf.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Storage.Registry/Url/ArchiveUrl.hpp>
 #include <Engine.Storage.Registry/Url/FileUrl.hpp>
 #include <Engine.Storage.Registry/Url/RfclUrl.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Asserts;
+import Engine.Common;
+#endif
 
 namespace hg::engine::assets {
 	template <class Type_>

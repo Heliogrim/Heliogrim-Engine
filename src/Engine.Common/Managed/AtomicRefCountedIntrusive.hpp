@@ -1,13 +1,13 @@
 #pragma once
 
-#include <atomic>
-#include <memory>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 
-#include "../Wrapper.hpp"
 #include "../Meta/Type.hpp"
+#include "../Wrapper.hpp"
+
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Asserts;
+import std;
 #endif
 
 namespace hg {
@@ -43,7 +43,7 @@ namespace hg {
 		}
 	};
 
-	namespace {
+	namespace detail {
 		constexpr s64 arci_live_one = s64 { 1 } << 32;
 	}
 
@@ -70,7 +70,7 @@ namespace hg {
 		// Starts with one live word and its net credit, adopted by `Arci::create` / `create_from_storage`.
 		template <typename DerivedType_ = Derived_>
 		constexpr ArcFromThis() noexcept :
-			_refs(arci_live_one + 1) {
+			_refs(detail::arci_live_one + 1) {
 			static_assert(
 				std::derived_from<DerivedType_, this_type>,
 				"Used crtp helper class for ref counting incorrectly."
@@ -110,7 +110,7 @@ namespace hg {
 
 	/**/
 
-	namespace {
+	namespace detail {
 		using arci_packed_type = std::uintptr_t;
 
 		constexpr arci_packed_type arci_packed_shift = 16uLL;
@@ -139,7 +139,7 @@ namespace hg {
 	public:
 		using this_type = AtomicRefCountedIntrusive<Ty_, Policy_>;
 
-		using storage_type = typename Policy_::template atomic<arci_packed_type>;
+		using storage_type = typename Policy_::template atomic<detail::arci_packed_type>;
 		using value_type = Ty_;
 
 		/**
@@ -150,27 +150,27 @@ namespace hg {
 		static constexpr u16 pin_flush_at = 1u << 14;
 
 	private:
-		[[nodiscard]] static arci_packed_type encode(const ptr<Ty_> pt_, const u16 pins_) noexcept {
-			return (reinterpret_cast<arci_packed_type>(pt_) << arci_packed_shift) | arci_packed_type { pins_ };
+		[[nodiscard]] static detail::arci_packed_type encode(const ptr<Ty_> pt_, const u16 pins_) noexcept {
+			return (reinterpret_cast<detail::arci_packed_type>(pt_) << detail::arci_packed_shift) | detail::arci_packed_type { pins_ };
 		}
 
-		[[nodiscard]] static Ty_* decode_pointer(const arci_packed_type& packed_) noexcept {
-			return reinterpret_cast<Ty_*>((packed_ & arci_packed_ptr_mask) >> arci_packed_shift);
+		[[nodiscard]] static Ty_* decode_pointer(const detail::arci_packed_type& packed_) noexcept {
+			return reinterpret_cast<Ty_*>((packed_ & detail::arci_packed_ptr_mask) >> detail::arci_packed_shift);
 		}
 
-		[[nodiscard]] static u16 decode_pins(const arci_packed_type& packed_) noexcept {
-			return static_cast<u16>(packed_ & arci_packed_ref_mask);
+		[[nodiscard]] static u16 decode_pins(const detail::arci_packed_type& packed_) noexcept {
+			return static_cast<u16>(packed_ & detail::arci_packed_ref_mask);
 		}
 
 		// Stale pins on a null word are ignored; drop them so they never travel.
-		[[nodiscard]] static arci_packed_type normalize(const arci_packed_type packed_) noexcept {
-			return decode_pointer(packed_) == nullptr ? arci_packed_type { 0 } : packed_;
+		[[nodiscard]] static detail::arci_packed_type normalize(const detail::arci_packed_type packed_) noexcept {
+			return decode_pointer(packed_) == nullptr ? detail::arci_packed_type { 0 } : packed_;
 		}
 
-		[[nodiscard]] static arci_packed_type pin_copy(ref<storage_type> slot_) noexcept {
+		[[nodiscard]] static detail::arci_packed_type pin_copy(ref<storage_type> slot_) noexcept {
 
 			if (decode_pointer(slot_.load(std::memory_order::relaxed)) == nullptr) {
-				return arci_packed_type { 0 };
+				return detail::arci_packed_type { 0 };
 			}
 
 			// Reads inside the release sequence of the writer's exchange, so the object is visible.
@@ -178,10 +178,10 @@ namespace hg {
 			const auto old = slot_.fetch_add(1u, std::memory_order::acquire);
 			auto* const subject = decode_pointer(old);
 			if (subject == nullptr) {
-				return arci_packed_type { 0 };
+				return detail::arci_packed_type { 0 };
 			}
 
-			subject->ref_fetch_add(arci_live_one, std::memory_order::relaxed);
+			subject->ref_fetch_add(detail::arci_live_one, std::memory_order::relaxed);
 
 			if (decode_pins(old) >= pin_flush_at) {
 				flush(slot_, subject);
@@ -213,7 +213,7 @@ namespace hg {
 			}
 		}
 
-		static void fold(const arci_packed_type packed_) noexcept {
+		static void fold(const detail::arci_packed_type packed_) noexcept {
 
 			auto* const subject = decode_pointer(packed_);
 			if (subject == nullptr) {
@@ -222,7 +222,7 @@ namespace hg {
 
 			// shortcut: |net| must stay below 2^31 (about 131k live words each holding about 16k pins), when to upgrade: a 64-bit net field or a bounded-pin guard
 			// unverified: needs weak-memory check (release fold pairs with the acquire fence on zero before delete)
-			const s64 delta = -arci_live_one + (s64 { decode_pins(packed_) } - 1);
+			const s64 delta = -detail::arci_live_one + (s64 { decode_pins(packed_) } - 1);
 			if (subject->ref_fetch_add(delta, std::memory_order::release) + delta == 0) {
 				Policy_::fence(std::memory_order::acquire);
 				// Note: Matches the allocation of `create`.
@@ -256,7 +256,7 @@ namespace hg {
 		}
 
 	private:
-		explicit constexpr AtomicRefCountedIntrusive(mref<arci_packed_type> storage_) noexcept :
+		explicit constexpr AtomicRefCountedIntrusive(mref<detail::arci_packed_type> storage_) noexcept :
 			_obj(storage_) {}
 
 	public:
@@ -302,7 +302,7 @@ namespace hg {
 		// Mutable: copying pins the source word, also for a `const` source.
 		mutable storage_type _obj;
 
-		constexpr void throw_if_null(const arci_packed_type packed_) const {
+		constexpr void throw_if_null(const detail::arci_packed_type packed_) const {
 			::hg::assertrt(decode_pointer(packed_) != nullptr);
 		}
 
@@ -441,7 +441,7 @@ namespace hg {
 	AtomicRefCountedIntrusive<Proxy_, Policy_> ArcFromThis<Derived_, Policy_>::arci_from_this() noexcept {
 		// No pin supplies the new word's net credit, so add it with the live one.
 		// unverified: needs weak-memory check (relaxed by analogy with the shared_ptr copy)
-		const auto previous = ref_fetch_add(arci_live_one + 1, std::memory_order::relaxed);
+		const auto previous = ref_fetch_add(detail::arci_live_one + 1, std::memory_order::relaxed);
 		::hg::assertd(previous != 0);
 		return AtomicRefCountedIntrusive<Proxy_, Policy_>::create_from_storage(static_cast<ptr<Derived_>>(this));
 	}

@@ -1,8 +1,9 @@
 #include "EffectCache.hpp"
 
-#include <Engine.Pedantic/Clone/Clone.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Resource/Manage/UniqueResource.hpp>
-#include <utility>
+
+import Engine.Common;
 
 using namespace hg::engine::resource::loader;
 using namespace hg::engine::accel::loader;

@@ -2,7 +2,7 @@
 
 /**/
 
-#include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Diagnostics/Sink.hpp>
 #include <Engine.Resource.Archive/BufferArchive.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
@@ -16,6 +16,8 @@
 #include <Heliogrim/Component/Scene/Collision/SphereShapeCollisionComponent.Layout.hpp>
 #include <Heliogrim/Component/Scene/Geometry/BoxShapeGeometryComponent.Layout.hpp>
 #include <Heliogrim/Component/Scene/Geometry/SphereShapeGeometryComponent.Layout.hpp>
+
+import Engine.Common;
 
 using namespace hg::engine::serialization;
 using namespace hg::engine::resource;

@@ -1,10 +1,14 @@
 #pragma once
-#include <Engine.Common/Math/Hash.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.Scene/View/SceneView.hpp>
 #include <Engine.Graphics/Camera/CameraFrustum.hpp>
 #include <Engine.Reflect/TypeId.hpp>
 
 #include "Culling.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::render::graph {
 	class FrustumCullingFilter :

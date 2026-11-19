@@ -1,8 +1,9 @@
 #include "Store.hpp"
 
 #include <Engine.Resource.Archive/BufferArchive.hpp>
-#include <Engine.Resource.Package/Utils.hpp>
 #include <Engine.Resource.Package/Linker/Indexed.hpp>
+#include <Engine.Resource.Package/Utils.hpp>
+
 import Engine.Asserts;
 
 using namespace hg::engine::storage::package;

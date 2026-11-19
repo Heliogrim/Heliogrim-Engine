@@ -1,9 +1,9 @@
 #include "pch.h"
 
-#include <vector>
-#include <Engine.Common/Algo/FirstOf.hpp>
-#include <Engine.Common/Functional/FnRef.hpp>
 #include <Engine.Common/String/Convert.hpp>
+#include <Engine.Common/__macro.hpp>
+
+import Engine.Common;
 
 using namespace hg;
 

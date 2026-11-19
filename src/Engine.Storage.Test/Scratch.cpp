@@ -6,13 +6,6 @@
 
 /**/
 
-#include <algorithm>
-#include <atomic>
-#include <charconv>
-#include <format>
-#include <string>
-#include <system_error>
-
 #if defined(_WIN32)
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
@@ -23,6 +16,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 #endif
+
+import std;
 
 /**/
 
