@@ -6,6 +6,7 @@
 
 #include "../LayoutAttribute.hpp"
 #include "../LayoutAttributes.hpp"
+#include <Engine.Common/StringLiterals.hpp>
 
 namespace hg::engine::reflow {
 	namespace attr {

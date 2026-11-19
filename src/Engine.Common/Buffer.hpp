@@ -1,6 +1,9 @@
 #pragma once
 
-#include "Types.hpp"
+#include <Engine.Common/__macro.hpp>
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg {
 	struct Buffer {

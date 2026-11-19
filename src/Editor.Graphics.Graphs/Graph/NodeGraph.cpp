@@ -1,4 +1,5 @@
 #include "NodeGraph.hpp"
+#include <Engine.Common/StringLiterals.hpp>
 
 using namespace hg::editor::graphics::graph;
 using namespace hg;
