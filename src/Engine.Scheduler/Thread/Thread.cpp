@@ -1,8 +1,6 @@
 #include "Thread.hpp"
 
 #include <stdexcept>
-#include <Engine.Asserts/Asserts.hpp>
-#include <Engine.Asserts/Todo.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/String/Convert.hpp>
 
@@ -13,6 +11,7 @@
 #else
 #include <pthread.h>
 #endif
+import Engine.Asserts;
 
 using namespace hg::engine::scheduler::thread;
 

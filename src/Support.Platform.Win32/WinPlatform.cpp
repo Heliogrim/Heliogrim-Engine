@@ -1,7 +1,6 @@
 #include "WinPlatform.hpp"
 
 #include <ole2.h>
-#include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Common/SDL3.hpp>
 #include <Engine.Common/stdafx.h>
 #include <Engine.Core/Engine.hpp>
@@ -17,6 +16,7 @@
 #include <Engine.Scheduler/Async.hpp>
 
 #include "Win32Window.hpp"
+import Engine.Asserts;
 
 using namespace hg::engine::scheduler;
 using namespace hg::engine::platform;

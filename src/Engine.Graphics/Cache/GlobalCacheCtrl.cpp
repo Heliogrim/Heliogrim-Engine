@@ -1,8 +1,6 @@
 #include "GlobalCacheCtrl.hpp"
 
 #include <Engine.Accel.Pipeline/AccelerationPipeline.hpp>
-#include <Engine.Asserts/Breakpoint.hpp>
-#include <Engine.Asserts/Todo.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 #include <Engine.Common/GuidFormat.hpp>
 #include <Engine.Common/__macro.hpp>
@@ -16,6 +14,7 @@
 #include <Engine.Resource/ResourceManager.hpp>
 
 #include "GlobalResourceCache.hpp"
+import Engine.Asserts;
 
 using namespace hg::engine::graphics::cache;
 using namespace hg;

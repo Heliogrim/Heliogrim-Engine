@@ -1,6 +1,5 @@
 #include "BoxShapeCollisionModel.hpp"
 
-#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Heliogrim/Component/SceneComponent.hpp>
 
@@ -10,6 +9,7 @@
 #include "Jolt/Physics/Body/Body.h"
 #include "Jolt/Physics/Body/BodyCreationSettings.h"
 #include "Jolt/Physics/Body/BodyInterface.h"
+import Engine.Asserts;
 
 using namespace hg::engine::physics;
 using namespace hg;

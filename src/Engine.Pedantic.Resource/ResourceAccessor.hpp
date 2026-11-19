@@ -1,11 +1,13 @@
 #pragma once
 
 #include <utility>
-#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Async/Meta/LockTag.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
 #include "ResourceAccessorBase.hpp"
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Asserts;
+#endif
 
 namespace hg {
 	template <typename ManagedType_>

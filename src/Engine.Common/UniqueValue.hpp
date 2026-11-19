@@ -3,12 +3,13 @@
 #include <memory>
 #include <utility>
 
-#include <Engine.Asserts/Asserts.hpp>
-
 #include "Optional.hpp"
 #include "Sal.hpp"
 #include "Wrapper.hpp"
 #include "Meta/Type.hpp"
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Asserts;
+#endif
 
 namespace hg {
 	struct UniqueValueDefaultDestroyer {

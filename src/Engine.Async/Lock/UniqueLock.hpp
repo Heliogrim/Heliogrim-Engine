@@ -1,11 +1,13 @@
 #pragma once
 
-#include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Common/Move.hpp>
 #include <Engine.Common/ThreadSafety.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
 #include "../Meta/LockTag.hpp"
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Asserts;
+#endif
 
 namespace hg::concurrent {
 	/**

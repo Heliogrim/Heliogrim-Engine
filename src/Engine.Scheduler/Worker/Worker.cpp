@@ -2,7 +2,6 @@
 
 #include <chrono>
 #include <stdexcept>
-#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Common/stdafx.h>
 
 #if not defined(WIN32)
@@ -13,6 +12,7 @@
 #include "../Fiber/FiberLaunchPad.hpp"
 #include "../Fiber/FiberPool.hpp"
 #include "../Fiber/Park.hpp"
+import Engine.Asserts;
 
 using namespace hg::engine::scheduler::worker;
 using namespace hg::engine::scheduler::thread;

@@ -2,11 +2,13 @@
 
 #include <atomic>
 #include <memory>
-#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 
 #include "../Wrapper.hpp"
 #include "../Meta/Type.hpp"
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Asserts;
+#endif
 
 namespace hg {
 	/**

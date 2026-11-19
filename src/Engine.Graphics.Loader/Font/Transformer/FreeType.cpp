@@ -1,7 +1,6 @@
 #include "FreeType.hpp"
 
 #include <filesystem>
-#include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Common/Discard.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Math/Compat.inl>
@@ -16,6 +15,7 @@
 #include <ft2build.h>
 
 #include FT_FREETYPE_H
+import Engine.Asserts;
 /**/
 
 using namespace hg::engine::graphics::loader::transformer;

@@ -2,11 +2,11 @@
 
 #include <algorithm>
 #include <ranges>
-#include <Engine.Asserts/Asserts.hpp>
 
 #include "CoreDependencies.hpp"
 #include "SubModule.hpp"
 #include "SubModuleDependency.hpp"
+import Engine.Asserts;
 
 using namespace hg::engine::core;
 using namespace hg;

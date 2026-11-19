@@ -1,8 +1,7 @@
+#include <thread>
 #include "Schedule.hpp"
 
 #include <algorithm>
-#include <thread>
-#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Logging/Logger.hpp>
 
@@ -16,6 +15,7 @@
 /**/
 #include <synchapi.h>
 #endif
+import Engine.Asserts;
 
 using namespace hg::engine::scheduler;
 using namespace hg;

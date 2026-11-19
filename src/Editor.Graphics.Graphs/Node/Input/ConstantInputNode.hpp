@@ -1,11 +1,12 @@
 #pragma once
 
-#include <Engine.Asserts/Todo.hpp>
-
 #include "../Node.hpp"
 #include "../Parameter/ValueTypeNodeParameter.hpp"
 #include "../Parameter/ConstantNodeParameter.hpp"
 #include "../NodeOutput.hpp"
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Asserts;
+#endif
 
 namespace hg::editor::graphics::graph::nodes {
 	class ConstantInputNode :

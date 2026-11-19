@@ -2,13 +2,15 @@
 
 #include <memory>
 #include <Engine.ACS/Registry.hpp>
-#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Common/Move.hpp>
 #include <Engine.Common/Optional.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 
 #include "Component/CachedActorPointer.hpp"
 #include "Component/HierarchyComponent.hpp"
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Asserts;
+#endif
 
 namespace hg {
 	/**

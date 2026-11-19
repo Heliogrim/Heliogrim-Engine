@@ -7,7 +7,6 @@
 #include <Engine.Accel.Lang/Ir/Interface.hpp>
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
 #include <Engine.Accel.Lang/Rep/Variable.hpp>
-#include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Move.hpp>
 #include <Engine.Common/String.hpp>
@@ -17,6 +16,9 @@
 #include <Engine.Storage.System/ReadText.hpp>
 #include <Engine.Storage.System/StorageSystem.hpp>
 #include <Engine.Storage/StorageModule.hpp>
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Asserts;
+#endif
 
 namespace hg::engine::render {
 	inline static string read_shader_file(std::filesystem::path name_) {

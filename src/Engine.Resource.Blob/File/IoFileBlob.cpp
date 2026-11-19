@@ -1,9 +1,9 @@
 #include "IoFileBlob.hpp"
 
 #include <algorithm>
-#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Logging/Logger.hpp>
+import Engine.Asserts;
 
 using namespace hg::engine::resource;
 using namespace hg::engine;

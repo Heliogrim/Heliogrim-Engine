@@ -5,11 +5,13 @@
 #include <ranges>
 #include <span>
 #include <utility>
-#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Common/Types.hpp>
 #include <Engine.Reflect/Inherit/InheritMeta.hpp>
 
 #include "../Blob.hpp"
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Asserts;
+#endif
 
 namespace hg::engine::resource {
 	class ByteSpanBlob final :

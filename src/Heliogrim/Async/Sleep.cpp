@@ -1,7 +1,7 @@
 #include "Sleep.hpp"
 
-#include <Engine.Asserts/Todo.hpp>
 #include <Engine.Scheduler/Thread/Thread.hpp>
+import Engine.Asserts;
 
 void hg::sleep(const u64 milliseconds_) {
 	#ifdef _DEBUG

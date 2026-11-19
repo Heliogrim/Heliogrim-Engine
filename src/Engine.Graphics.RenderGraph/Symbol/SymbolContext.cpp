@@ -2,10 +2,10 @@
 
 #include <algorithm>
 #include <ranges>
-#include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
+import Engine.Asserts;
 
 using namespace hg::engine::render::graph;
 using namespace hg;

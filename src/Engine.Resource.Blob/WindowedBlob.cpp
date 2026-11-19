@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <cstring>
 #include <limits>
-#include <Engine.Asserts/Asserts.hpp>
+import Engine.Asserts;
 
 using namespace hg::engine::resource;
 using namespace hg;

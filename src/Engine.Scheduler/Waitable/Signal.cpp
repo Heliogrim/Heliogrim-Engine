@@ -1,9 +1,8 @@
 #include "Signal.hpp"
 
-#include <Engine.Asserts/Asserts.hpp>
-
 #include "../Fiber/Park.hpp"
 #include "../Thread/Thread.hpp"
+import Engine.Asserts;
 
 using namespace hg::engine::scheduler;
 using namespace hg;

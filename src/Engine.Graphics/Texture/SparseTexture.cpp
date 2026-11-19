@@ -2,8 +2,6 @@
 
 #include <algorithm>
 #include <ranges>
-#include <Engine.Asserts/Breakpoint.hpp>
-#include <Engine.Asserts/Todo.hpp>
 #include <Engine.Common/Make.hpp>
 
 #include "SparseTexturePage.hpp"
@@ -12,6 +10,7 @@
 // TODO: Remove
 #include "Engine.Core/Engine.hpp"
 #include "Engine.Graphics/Graphics.hpp"
+import Engine.Asserts;
 
 using namespace hg::engine::graphics;
 using namespace hg;

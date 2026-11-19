@@ -7,7 +7,6 @@
 #include <cstdint>
 #include <type_traits>
 #include <utility>
-#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Common/Meta/Type.hpp>
 
 #include "../Cast.hpp"
@@ -15,6 +14,9 @@
 #include "../Wrapper.hpp"
 #include "../__macro.hpp"
 #include "../Meta/Concept.hpp"
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Asserts;
+#endif
 
 namespace hg {
 	namespace {

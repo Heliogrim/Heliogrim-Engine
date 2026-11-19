@@ -1,9 +1,9 @@
 #include "VkSwapchain.hpp"
 
-#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 
 #include "../Texture/TextureFactory.hpp"
+import Engine.Asserts;
 
 using namespace hg::engine::graphics;
 using namespace hg;

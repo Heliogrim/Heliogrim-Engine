@@ -6,6 +6,9 @@
 
 #include "AssetDatabaseResult.hpp"
 #include "Asset/AssetHandle.hpp"
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Asserts;
+#endif
 
 namespace hg::engine::assets {
 	class IAssetRegistry;

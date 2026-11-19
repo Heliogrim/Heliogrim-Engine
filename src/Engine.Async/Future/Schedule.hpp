@@ -3,7 +3,6 @@
 #include <thread>
 #include <type_traits>
 #include <utility>
-#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Scheduler/Scheduler.hpp>
@@ -12,6 +11,9 @@
 #include <Engine.Scheduler/Task/Task.hpp>
 
 #include "FutureState.hpp"
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Asserts;
+#endif
 
 namespace hg::detail {
 	// Runs engine forwarders iteratively: a forwarder reached inside another one is queued for the outermost.

@@ -11,13 +11,13 @@
 
 #include "AssetDescriptor.hpp"
 #include "AssetRepository.hpp"
-#include "Engine.Asserts/Todo.hpp"
 
 #include "Registry/Index.hpp"
 #include "Registry/IndexTable.hpp"
 #include "Registry/IndexTrait.hpp"
 
 #include "Repository/InMemAssetRepository.hpp"
+import Engine.Asserts;
 
 using namespace hg::engine::assets::system;
 using namespace hg::engine::assets;

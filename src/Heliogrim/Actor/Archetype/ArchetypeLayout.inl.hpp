@@ -27,6 +27,9 @@
 #include <Engine.Serialization/Load/LoadContext.hpp>
 
 #include "InheritArchetype.hpp"
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Asserts;
+#endif
 #include "LayoutError.hpp"
 
 namespace hg {

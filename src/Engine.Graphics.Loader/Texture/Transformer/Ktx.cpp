@@ -5,7 +5,6 @@
 #include <filesystem>
 #include <ranges>
 #include <stdexcept>
-#include <Engine.Asserts/Breakpoint.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Math/Coordinates.hpp>
 #include <Engine.Graphics/API/VkTranslate.hpp>
@@ -17,6 +16,7 @@
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Storage.System/StorageSystem.hpp>
 #include <gli/gli.hpp>
+import Engine.Asserts;
 
 using namespace hg::engine::graphics::loader::transformer;
 using namespace hg::engine::graphics::loader;

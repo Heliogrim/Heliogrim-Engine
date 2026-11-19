@@ -1,8 +1,8 @@
 #include "IoSystem.hpp"
 
-#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Async/Future/Promise.hpp>
 #include <Engine.Common/stdafx.h>
+import Engine.Asserts;
 
 using namespace hg::engine::io;
 using namespace hg;

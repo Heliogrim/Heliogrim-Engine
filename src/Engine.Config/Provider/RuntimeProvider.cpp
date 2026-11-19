@@ -1,6 +1,6 @@
 #include "RuntimeProvider.hpp"
 
-#include <Engine.Asserts/Asserts.hpp>
+import Engine.Asserts;
 
 using namespace ::hg::engine::cfg;
 using namespace ::hg;

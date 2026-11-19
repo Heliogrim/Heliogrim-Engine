@@ -1,10 +1,10 @@
 #include "Housekeeping.hpp"
 
-#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Common/Move.hpp>
 #include <Heliogrim/Component/LogicComponent.hpp>
 
 #include "Registry.hpp"
+import Engine.Asserts;
 
 using namespace hg::engine::acs;
 using namespace hg;

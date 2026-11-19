@@ -1,4 +1,4 @@
-#include "Panic.hpp"
+#include <version>
 
 #if defined(__cpp_lib_stacktrace) && (__cpp_lib_stacktrace >= 202011L) && defined(__cpp_lib_formatters) && (__cpp_lib_formatters >= 202302L)
 #define HG_PANIC_STACKTRACE 1
@@ -13,6 +13,7 @@
 #include <string>
 
 #include "Pal.hpp"
+import Engine.Asserts;
 
 using namespace hg::panic_details;
 using namespace hg;

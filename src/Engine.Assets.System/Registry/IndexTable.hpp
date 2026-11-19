@@ -3,7 +3,6 @@
 #include <algorithm>
 #include <map>
 #include <ranges>
-#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/DenseMap.hpp>
@@ -12,6 +11,9 @@
 #include "Index.hpp"
 #include "IndexTrait.hpp"
 #include "../__fwd.hpp"
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Asserts;
+#endif
 
 namespace hg::engine::assets::system {
 	template <typename>

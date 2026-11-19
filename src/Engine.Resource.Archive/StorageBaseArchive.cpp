@@ -1,7 +1,7 @@
 #include "StorageBaseArchive.hpp"
 
 #include <format>
-#include <Engine.Asserts/Panic.hpp>
+import Engine.Asserts;
 
 using namespace hg::engine::resource;
 using namespace hg;

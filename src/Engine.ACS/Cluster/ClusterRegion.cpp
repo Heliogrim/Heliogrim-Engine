@@ -4,10 +4,10 @@
 #include <bit>
 #include <new>
 #include <stdexcept>
-#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Common/Move.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
+import Engine.Asserts;
 
 using namespace hg::engine::acs;
 using namespace hg;

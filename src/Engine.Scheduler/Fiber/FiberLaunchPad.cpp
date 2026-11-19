@@ -1,7 +1,6 @@
 #include "FiberLaunchPad.hpp"
 
 #include <cstddef>
-#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/__macro.hpp>
 
@@ -10,6 +9,7 @@
 #else
 #include <ucontext.h>
 #endif
+import Engine.Asserts;
 
 using namespace hg::engine::scheduler::fiber;
 using namespace hg;

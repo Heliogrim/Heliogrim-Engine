@@ -1,9 +1,8 @@
 #include "BoostCell.hpp"
 
-#include <Engine.Asserts/Asserts.hpp>
-
 #include "Schedule.hpp"
 #include "../Fiber/Fiber.hpp"
+import Engine.Asserts;
 
 using namespace hg::engine::scheduler;
 using namespace hg;

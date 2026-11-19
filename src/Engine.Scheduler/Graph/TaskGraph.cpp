@@ -3,8 +3,8 @@
 #include <algorithm>
 #include <bitset>
 #include <set>
-#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Common/Collection/DenseMap.hpp>
+import Engine.Asserts;
 
 using namespace hg::engine::scheduler;
 using namespace hg::engine::scheduler::graph;

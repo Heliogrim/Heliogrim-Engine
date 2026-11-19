@@ -5,7 +5,6 @@
 #include <new>
 #include <type_traits>
 #include <Engine.ACS/Archetype/LayoutInfo.hpp>
-#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Array.hpp>
@@ -13,6 +12,9 @@
 #include <Engine.Reflect/Inherit/InheritMeta.hpp>
 
 #include "TypedActorClass.hpp"
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Asserts;
+#endif
 
 namespace hg::archetype_detail {
 	template <typename Byte_, typename Type_>

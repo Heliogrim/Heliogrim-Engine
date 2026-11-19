@@ -1,7 +1,7 @@
 #include "StaticGeometry.hpp"
 
-#include <Engine.Asserts/Todo.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
+import Engine.Asserts;
 
 using namespace hg::engine::assets;
 using namespace hg;

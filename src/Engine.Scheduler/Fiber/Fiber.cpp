@@ -13,8 +13,7 @@
 #endif
 
 #include <cassert>
-#include <Engine.Asserts/Asserts.hpp>
-#include <Engine.Asserts/Todo.hpp>
+import Engine.Asserts;
 
 using namespace hg::engine::scheduler::fiber;
 using namespace hg;

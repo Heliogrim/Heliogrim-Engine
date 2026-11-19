@@ -110,7 +110,7 @@ endif ()
 #
 
 # Ordered list of module names; every bundle, test and app links the provider of each.
-set(DEFAULT_MODULES)
+set(DEFAULT_MODULES Engine.Asserts)
 
 set(DEFAULT_MODULE_LIBRARIES ${DEFAULT_MODULES})
 list(TRANSFORM DEFAULT_MODULE_LIBRARIES PREPEND "${PROJECT_NAME}::")

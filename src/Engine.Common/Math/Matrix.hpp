@@ -1,10 +1,12 @@
 #pragma once
 
 #include <cmath>
-#include <Engine.Asserts/Todo.hpp>
 
 #include "MathDefaultDefine.hpp"
 #include "Vector.hpp"
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Asserts;
+#endif
 
 namespace hg::math {
 	template <typename T, std::size_t R, std::size_t C>

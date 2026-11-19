@@ -10,7 +10,6 @@
 #include <new>
 #include <utility>
 #include <Engine.ACS/ComponentGuid.hpp>
-#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Common/Move.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Array.hpp>
@@ -28,6 +27,9 @@
 // After InheritArchetype.hpp: both use `slot_type_t`.
 #include "ArchetypeLayout.inl.hpp"
 #include "ArchetypeStructured.inl.hpp"
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Asserts;
+#endif
 
 namespace hg::archetype_detail {
 	template <typename Type_>
