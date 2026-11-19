@@ -30,12 +30,80 @@ function(__apply_default_compile_settings target)
 	)
 endfunction()
 
+# Source directory (`<src>/<source>`, else `<src>/<name>`) with its headers and sources, grouped for IDEs.
+function(__discover_sources name source out_dir out_headers out_sources)
+	get_src_path(proj_src_dir)
+
+	if (source)
+		set(source_directory "${proj_src_dir}/${source}")
+	else ()
+		set(source_directory "${proj_src_dir}/${name}")
+	endif ()
+
+	file(GLOB_RECURSE header_files CONFIGURE_DEPENDS ${source_directory}/*.hpp ${source_directory}/*.h ${source_directory}/*.hh)
+	file(GLOB_RECURSE source_files CONFIGURE_DEPENDS ${source_directory}/*.cpp ${source_directory}/*.c ${source_directory}/*.cc)
+	map_source_groups(BASE_PATH "${source_directory}" SOURCES ${source_files} ${header_files})
+
+	set(${out_dir} "${source_directory}" PARENT_SCOPE)
+	set(${out_headers} ${header_files} PARENT_SCOPE)
+	set(${out_sources} ${source_files} PARENT_SCOPE)
+endfunction()
+
 #
 # Module Providers
 #
 
+# Folds a sub-project's headers and prefix into its root's module; `out_libraries` are the sub's libraries without the root.
+function(_record_module_sub sub out_root out_libraries)
+	get_property(declared GLOBAL PROPERTY global_module_declared)
+	get_property(root GLOBAL PROPERTY global_module_sub_${sub}_root)
+	if (NOT root IN_LIST declared)
+		message(FATAL_ERROR "Sub-project `${sub}` is `SUB_OF` `${root}`, which is not declared by `make_library_project`.")
+	endif ()
+
+	get_property(headers GLOBAL PROPERTY global_module_sub_${sub}_headers)
+	get_property(libraries GLOBAL PROPERTY global_module_sub_${sub}_libraries)
+	list(REMOVE_ITEM libraries "${PROJECT_NAME}::${root}")
+
+	set_property(GLOBAL APPEND PROPERTY global_module_${root}_headers ${headers})
+	set_property(GLOBAL APPEND PROPERTY global_module_${root}_prefixes "${sub}")
+
+	set(${out_root} "${root}" PARENT_SCOPE)
+	set(${out_libraries} "${libraries}" PARENT_SCOPE)
+endfunction()
+
+function(_merge_module_subs)
+	get_property(subs GLOBAL PROPERTY global_module_subs)
+
+	foreach (sub IN LISTS subs)
+		_record_module_sub("${sub}" root libraries)
+
+		get_src_path(proj_src_dir)
+		name_to_target(root_target "${root}")
+		get_property(sources GLOBAL PROPERTY global_module_sub_${sub}_sources)
+		get_property(headers GLOBAL PROPERTY global_module_sub_${sub}_headers)
+		get_property(sub_dir GLOBAL PROPERTY global_module_sub_${sub}_dir)
+
+		if (sources)
+			target_sources(${root_target} PRIVATE ${sources})
+		endif ()
+		if (headers)
+			target_sources(${root_target}
+					PRIVATE FILE_SET private_HEADERS TYPE HEADERS BASE_DIRS ${sub_dir} FILES ${headers}
+					INTERFACE FILE_SET interface_HEADERS TYPE HEADERS BASE_DIRS ${proj_src_dir} FILES ${headers}
+			)
+		endif ()
+		if (libraries)
+			target_link_libraries(${root_target} PRIVATE ${libraries})
+		endif ()
+
+		add_library(${PROJECT_NAME}::${sub} ALIAS ${root_target})
+	endforeach ()
+endfunction()
+
 function(_finalize_module_interfaces)
 	get_src_path(proj_src_dir)
+	_merge_module_subs()
 	get_property(roots GLOBAL PROPERTY global_module_roots)
 
 	foreach (root IN LISTS roots)
@@ -85,6 +153,44 @@ function(_finalize_module_interfaces)
 	endforeach ()
 endfunction()
 
+function(_defer_finalize_module_interfaces)
+	get_property(finalize_deferred GLOBAL PROPERTY global_module_finalize_deferred)
+	if (NOT finalize_deferred)
+		cmake_language(DEFER DIRECTORY "${CMAKE_SOURCE_DIR}" CALL _finalize_module_interfaces)
+		set_property(GLOBAL PROPERTY global_module_finalize_deferred ON)
+	endif ()
+endfunction()
+
+function(make_library_sub_project)
+
+	set(__single_var_options LIB_NAME SUB_OF)
+	set(__multi_var_options LIBRARIES)
+	cmake_parse_arguments(args "" "${__single_var_options}" "${__multi_var_options}" ${ARGN})
+
+	if (NOT DEFINED args_LIB_NAME OR NOT DEFINED args_SUB_OF)
+		message(FATAL_ERROR "Sub-project requires `LIB_NAME` and `SUB_OF`, got `${args_LIB_NAME}` of `${args_SUB_OF}`.")
+		return()
+	endif ()
+
+	message(STATUS "Setup library sub-project `${args_LIB_NAME}` of `${args_SUB_OF}`.")
+
+	list(LENGTH args_LIBRARIES link_libraries_size)
+	if (link_libraries_size GREATER 0)
+		__prepare_link_libs(${args_LIBRARIES} args_LIBRARIES)
+	endif ()
+
+	__discover_sources("${args_LIB_NAME}" "" source_directory header_files source_files)
+
+	set_property(GLOBAL APPEND PROPERTY global_module_subs "${args_LIB_NAME}")
+	set_property(GLOBAL PROPERTY global_module_sub_${args_LIB_NAME}_root "${args_SUB_OF}")
+	set_property(GLOBAL PROPERTY global_module_sub_${args_LIB_NAME}_dir "${source_directory}")
+	set_property(GLOBAL PROPERTY global_module_sub_${args_LIB_NAME}_sources ${source_files})
+	set_property(GLOBAL PROPERTY global_module_sub_${args_LIB_NAME}_headers ${header_files})
+	set_property(GLOBAL PROPERTY global_module_sub_${args_LIB_NAME}_libraries ${args_LIBRARIES})
+
+	_defer_finalize_module_interfaces()
+endfunction()
+
 function(make_library_project)
 
 	set(__single_var_options LIB_NAME LIB_FOLDER SOURCE FORCE_TYPE_STATIC)
@@ -108,18 +214,7 @@ function(make_library_project)
 
 	# Discover Sources
 	get_src_path(proj_src_dir)
-
-	if (DEFINED args_SOURCE)
-		set(source_directory "${proj_src_dir}/${args_SOURCE}")
-	else ()
-		set(source_directory "${proj_src_dir}/${args_LIB_NAME}")
-	endif ()
-
-	file(GLOB_RECURSE header_files CONFIGURE_DEPENDS ${source_directory}/*.hpp ${source_directory}/*.h ${source_directory}/*.hh)
-	file(GLOB_RECURSE source_files CONFIGURE_DEPENDS ${source_directory}/*.cpp ${source_directory}/*.c ${source_directory}/*.cc)
-
-	# Sources
-	map_source_groups(BASE_PATH "${source_directory}" SOURCES ${source_files} ${header_files})
+	__discover_sources("${args_LIB_NAME}" "${args_SOURCE}" source_directory header_files source_files)
 
 	# Library
 	if (DEFINED args_FORCE_TYPE_STATIC)
@@ -146,19 +241,15 @@ function(make_library_project)
 		endif ()
 	endif ()
 
-	# Module Provider (generated once all bundles are known)
+	# Module Provider and Sub-Projects (generated once all bundles are known)
+	set_property(GLOBAL APPEND PROPERTY global_module_declared "${args_LIB_NAME}")
 	if (args_LIB_NAME IN_LIST DEFAULT_MODULES)
 		set_property(GLOBAL APPEND PROPERTY global_module_roots "${args_LIB_NAME}")
 		set_property(GLOBAL APPEND PROPERTY global_module_${args_LIB_NAME}_headers ${header_files})
 		set_property(GLOBAL APPEND PROPERTY global_module_${args_LIB_NAME}_prefixes "${args_LIB_NAME}")
 		set_property(GLOBAL APPEND PROPERTY global_module_${args_LIB_NAME}_exclude ${args_MODULE_EXCLUDE})
-
-		get_property(finalize_deferred GLOBAL PROPERTY global_module_finalize_deferred)
-		if (NOT finalize_deferred)
-			cmake_language(DEFER DIRECTORY "${CMAKE_SOURCE_DIR}" CALL _finalize_module_interfaces)
-			set_property(GLOBAL PROPERTY global_module_finalize_deferred ON)
-		endif ()
 	endif ()
+	_defer_finalize_module_interfaces()
 
 	add_library(${PROJECT_NAME}::${args_LIB_NAME} ALIAS ${target})
 
