@@ -30,6 +30,8 @@ function(library_ankerl_init)
 			DESTINATION "${vendor_inc_path}/"
 	)
 
+	make_vendor_module(MODULE_NAME ankerl.unordered_dense HEADERS ankerl/unordered_dense.h SCAN_DIR "${vendor_inc_path}" SKIP arm_neon.h experimental/memory_resource fcntl.h sys/mman.h sys/stat.h unistd.h)
+
 endfunction()
 
 # Push to setup
