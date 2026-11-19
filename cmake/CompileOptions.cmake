@@ -106,6 +106,17 @@ else ()
 endif ()
 
 #
+# Modules
+#
+
+# Ordered list of module names; every bundle, test and app links the provider of each.
+set(DEFAULT_MODULES)
+
+set(DEFAULT_MODULE_LIBRARIES ${DEFAULT_MODULES})
+list(TRANSFORM DEFAULT_MODULE_LIBRARIES PREPEND "${PROJECT_NAME}::")
+list(TRANSFORM DEFAULT_MODULE_LIBRARIES APPEND ".Module")
+
+#
 # Compile definitions
 #
 set(DEFAULT_COMPILE_DEFINITIONS
