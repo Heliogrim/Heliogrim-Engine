@@ -1,11 +1,11 @@
 include_guard(GLOBAL)
 
-function(__prepare_link_libs libs out)
+function(_prepare_link_libs libs out)
 	list(TRANSFORM libs STRIP)
 	set("${out}" ${libs} PARENT_SCOPE)
 endfunction()
 
-function(__apply_default_compile_settings target)
+function(_apply_default_compile_settings target)
 	get_src_path(proj_src_dir)
 
 	# Project Options
@@ -31,7 +31,7 @@ function(__apply_default_compile_settings target)
 endfunction()
 
 # Source directory (`<src>/<source>`, else `<src>/<name>`) with its headers and sources, grouped for IDEs.
-function(__discover_sources name source out_dir out_headers out_sources)
+function(_discover_sources name source out_dir out_headers out_sources)
 	get_src_path(proj_src_dir)
 
 	if (source)
@@ -87,12 +87,14 @@ function(_merge_module_subs)
 		if (sources)
 			target_sources(${root_target} PRIVATE ${sources})
 		endif ()
+
 		if (headers)
 			target_sources(${root_target}
 					PRIVATE FILE_SET private_HEADERS TYPE HEADERS BASE_DIRS ${sub_dir} FILES ${headers}
 					INTERFACE FILE_SET interface_HEADERS TYPE HEADERS BASE_DIRS ${proj_src_dir} FILES ${headers}
 			)
 		endif ()
+
 		if (libraries)
 			target_link_libraries(${root_target} PRIVATE ${libraries})
 		endif ()
@@ -164,10 +166,10 @@ function(make_library_sub_project)
 
 	list(LENGTH args_LIBRARIES link_libraries_size)
 	if (link_libraries_size GREATER 0)
-		__prepare_link_libs(${args_LIBRARIES} args_LIBRARIES)
+		_prepare_link_libs(${args_LIBRARIES} args_LIBRARIES)
 	endif ()
 
-	__discover_sources("${args_LIB_NAME}" "" source_directory header_files source_files)
+	_discover_sources("${args_LIB_NAME}" "" source_directory header_files source_files)
 
 	set_property(GLOBAL APPEND PROPERTY global_module_subs "${args_LIB_NAME}")
 	set_property(GLOBAL PROPERTY global_module_sub_${args_LIB_NAME}_root "${args_SUB_OF}")
@@ -195,14 +197,14 @@ function(make_library_project)
 
 	list(LENGTH args_LIBRARIES link_libraries_size)
 	if (link_libraries_size GREATER 0)
-		__prepare_link_libs(${args_LIBRARIES} args_LIBRARIES)
+		_prepare_link_libs(${args_LIBRARIES} args_LIBRARIES)
 		list(LENGTH args_LIBRARIES link_libraries_size)
 	endif ()
 	message(STATUS "Using `${link_libraries_size}` libraries at linker.")
 
 	# Discover Sources
 	get_src_path(proj_src_dir)
-	__discover_sources("${args_LIB_NAME}" "${args_SOURCE}" source_directory header_files source_files)
+	_discover_sources("${args_LIB_NAME}" "${args_SOURCE}" source_directory header_files source_files)
 
 	# Library
 	if (DEFINED args_FORCE_TYPE_STATIC)
@@ -245,7 +247,8 @@ function(make_library_project)
 	export(TARGETS ${target} NAMESPACE ${PROJECT_NAME}:: FILE ${PROJECT_BINARY_DIR}/cmake/${target}/${target}-export.cmake)
 
 	# Project Options, Include Directories, Compile Definitions and Options
-	__apply_default_compile_settings(${target})
+	_apply_default_compile_settings(${target})
+	
 	if (NOT DEFINED args_LIB_FOLDER)
 		try_generate_project_groups("${args_LIB_NAME}" may_sub_folder)
 		if (DEFINED may_sub_folder)

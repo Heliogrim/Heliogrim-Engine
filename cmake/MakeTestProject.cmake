@@ -24,7 +24,7 @@ endif ()
 
 #
 
-function(__prepare_link_libs libs out)
+function(_prepare_link_libs libs out)
 	list(TRANSFORM libs STRIP)
 	set("${out}" ${libs} PARENT_SCOPE)
 endfunction()
@@ -45,7 +45,7 @@ function(make_test_project)
 
 	list(LENGTH args_LIBRARIES link_libraries_size)
 	if (link_libraries_size GREATER 0)
-		__prepare_link_libs(${args_LIBRARIES} args_LIBRARIES)
+		_prepare_link_libs(${args_LIBRARIES} args_LIBRARIES)
 		list(LENGTH args_LIBRARIES link_libraries_size)
 	endif ()
 	message(STATUS "Using `${link_libraries_size}` libraries at linker.")
