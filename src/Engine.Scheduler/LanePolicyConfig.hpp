@@ -23,9 +23,6 @@ namespace hg::engine::scheduler {
 		/** A Frame task waiting longer than this while lower work runs raises the reserve at once (demand mode). */
 		u32 frameWaitLimitMicros = 250uL;
 
-		/** A Frame push from a worker also wakes a parked worker. */
-		bool wakeOnFramePush = false;
-
 	public:
 		[[nodiscard]] static LanePolicyConfig fromConfig(ref<const ::hg::engine::Config> config_);
 	};

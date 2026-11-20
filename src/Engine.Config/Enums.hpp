@@ -31,8 +31,7 @@ namespace hg::engine::cfg {
 		eInteractiveFloor,
 		eBackgroundFloor,
 		eLaneReserve,
-		eFrameWaitLimit,
-		eWakeOnFramePush
+		eFrameWaitLimit
 	};
 
 	/**/

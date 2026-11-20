@@ -43,7 +43,7 @@ using namespace hg::engine::scheduler;
  * DISABLED by default; run with `--gtest_also_run_disabled_tests --gtest_filter=LaneFloodBenchmark.*`.
  * Environment: `HG_BENCH_WORKERS` (0 or unset = auto), `HG_BENCH_FLOOD_COOPERATES` (unset = both flood kinds,
  *	1 = cooperating only, 0 = non-cooperating only). Policy knobs: `HG_BENCH_SLICE`, `HG_BENCH_FLOOR_I`, `HG_BENCH_FLOOR_B`,
- *	`HG_BENCH_RESERVE`, `HG_BENCH_FRAME_WAIT`, `HG_BENCH_WAKE_ON_FRAME_PUSH` (unset = LanePolicyConfig default).
+ *	`HG_BENCH_RESERVE`, `HG_BENCH_FRAME_WAIT` (unset = LanePolicyConfig default).
  * `DISABLED_PromoteScan`: a real Frame task (execResolved, eFrame) awaits a Background `async` behind `HG_BENCH_BACKLOG` (default 100,000) queued Background tasks.
  *
  * Note: Only a debug configuration is built by default, so absolute numbers are indicative; compare before/after only.
@@ -149,19 +149,17 @@ namespace Performance {
 			cfg.backgroundFloorMicros = envU32("HG_BENCH_FLOOR_B", cfg.backgroundFloorMicros);
 			cfg.reserve = envU32("HG_BENCH_RESERVE", cfg.reserve);
 			cfg.frameWaitLimitMicros = envU32("HG_BENCH_FRAME_WAIT", cfg.frameWaitLimitMicros);
-			cfg.wakeOnFramePush = envU32("HG_BENCH_WAKE_ON_FRAME_PUSH", cfg.wakeOnFramePush ? 1u : 0u) != 0u;
 			return cfg;
 		}
 
 		void printConfig(const LanePolicyConfig& c_) {
 			std::printf(
-				"[ BENCH    ] config slice=%u floorI=%u floorB=%u reserve=%u frameWait=%u wake=%u\n",
+				"[ BENCH    ] config slice=%u floorI=%u floorB=%u reserve=%u frameWait=%u\n",
 				c_.sliceMicros,
 				c_.interactiveFloorMicros,
 				c_.backgroundFloorMicros,
 				c_.reserve,
-				c_.frameWaitLimitMicros,
-				c_.wakeOnFramePush ? 1u : 0u
+				c_.frameWaitLimitMicros
 			);
 		}
 
