@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Core/Universe.hpp>
 #include <Engine.Level/Level.hpp>
 #include <Heliogrim/Actor/Actor.hpp>
 #include <Heliogrim/Component/HierarchyComponent.hpp>
@@ -8,6 +7,7 @@
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Editor.UI.Rx;
 import Engine.Common;
+import Engine.Core;
 #endif
 
 namespace hg::editor::ui {

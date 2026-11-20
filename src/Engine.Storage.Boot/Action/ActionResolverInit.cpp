@@ -1,7 +1,5 @@
 #include "ActionResolverInit.hpp"
 
-#include <Engine.Resource.Archive/StorageReadonlyArchive.hpp>
-#include <Engine.Resource.Archive/StorageReadWriteArchive.hpp>
 #include <Engine.Resource.Blob/Blob.hpp>
 #include <Engine.Resource.Package/ReadonlyPackage.hpp>
 #include <Engine.Resource.Package/ReadWritePackage.hpp>
@@ -18,6 +16,8 @@
 #include "LfsBlob.hpp"
 #include "MemBlob.hpp"
 #include "PackArchive.hpp"
+
+import Engine.Resource.Archive;
 
 using namespace hg::engine::storage;
 using namespace hg;

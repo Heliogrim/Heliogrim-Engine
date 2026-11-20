@@ -15,11 +15,11 @@
 #include <Engine.Graphics/Texture/SparseTexturePage.hpp>
 #include <Engine.Graphics/Texture/SparseTextureView.hpp>
 #include <Engine.Graphics/Texture/TextureFactory.hpp>
-#include <Engine.Logging/Logger.hpp>
 #include <Engine.Storage.System/StorageSystem.hpp>
 
 import Engine.Asserts;
 import Engine.Common;
+import Engine.Logging;
 
 using namespace hg::engine::graphics::loader::transformer;
 using namespace hg::engine::graphics::loader;

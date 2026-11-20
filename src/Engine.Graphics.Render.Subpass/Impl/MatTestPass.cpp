@@ -7,7 +7,6 @@
 #include <Engine.Accel.Pass/VkAccelerationPassFactory.hpp>
 #include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
-#include <Engine.Core/Engine.hpp>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
 #include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Graphics/Buffer/Buffer.hpp>
@@ -27,12 +26,13 @@
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneDepth.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneView.hpp>
 #include <Engine.Graphics.RenderGraph/Symbol/ScopedSymbolContext.hpp>
-#include <Engine.Graphics.Scene/View/SceneView.hpp>
 #include <Engine.Graphics.Scene.Model/StaticGeometryModel.hpp>
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
 #include <Heliogrim/Component/SceneComponent.hpp>
 
 import Engine.Common;
+import Engine.Core;
+import Engine.Graphics.Scene;
 import Engine.Reflect;
 
 using namespace hg::engine::render;

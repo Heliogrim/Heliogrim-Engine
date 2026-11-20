@@ -1,5 +1,7 @@
 #pragma once
-#include <Engine.Core/Module/DependencyKey.hpp>
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Core;
+#endif
 
 namespace hg::editor {
 	constexpr inline static engine::core::DependencyKey EditorGraphicsIoDepKey { "::hg::editor::EditorGraphicsIo"sv };

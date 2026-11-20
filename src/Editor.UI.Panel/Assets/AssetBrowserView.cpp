@@ -10,8 +10,6 @@
 #include <Editor.UI.Theme/EditorTheme.hpp>
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
-#include <Engine.Core/Engine.hpp>
-#include <Engine.Core/Module/Modules.hpp>
 #include <Engine.Graphics.Loader/Texture/TextureResource.hpp>
 #include <Engine.Graphics.Loader/Texture/Traits.hpp>
 #include <Engine.Reflow/Widget/Tree/TreeView.hpp>
@@ -23,6 +21,7 @@
 #include "AssetBrowserController.hpp"
 
 import Engine.Common;
+import Engine.Core;
 
 using namespace hg::editor::ui;
 using namespace hg::engine::reflow;

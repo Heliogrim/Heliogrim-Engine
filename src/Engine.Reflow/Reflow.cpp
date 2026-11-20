@@ -1,9 +1,5 @@
 #include "Reflow.hpp"
 
-#include <Engine.Core/Engine.hpp>
-#include <Engine.Core/Module/CoreDependencies.hpp>
-#include <Engine.Core/Module/DependencyKey.hpp>
-#include <Engine.Core/Module/SubModuleDependency.hpp>
 #include <Engine.Reflow.Schedule/ReflowPipeline.hpp>
 #include <Engine.Reflow.Theming/Theming.hpp>
 #include <Engine.Scheduler/Scheduler.hpp>
@@ -14,6 +10,7 @@
 #include "Window/WindowManager.hpp"
 
 import Engine.Common;
+import Engine.Core;
 
 using namespace hg::engine::core;
 using namespace hg::engine;

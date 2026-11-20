@@ -1,9 +1,10 @@
 #include "Session.hpp"
 
-#include <Engine.Core/Session.hpp>
 #include <Heliogrim/Async/Future.hpp>
 
 #include "../Heliogrim.hpp"
+
+import Engine.Core;
 
 using namespace hg;
 

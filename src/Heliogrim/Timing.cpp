@@ -1,6 +1,6 @@
 #include "Timing.hpp"
 
-#include <Engine.Core/Timing.hpp>
+import Engine.Core;
 
 using namespace hg::engine;
 using namespace hg;

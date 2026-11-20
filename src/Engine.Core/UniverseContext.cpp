@@ -1,9 +1,4 @@
-#include "UniverseContext.hpp"
-
-#include "Engine.hpp"
-#include "Universe.hpp"
-#include "Event/UniverseChangeEvent.hpp"
-
+import Engine.Core;
 import Engine.Event;
 
 using namespace hg::engine::core;

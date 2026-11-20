@@ -1,5 +1,3 @@
-#include "RenderSceneManager.hpp"
-
 #include <Engine.Graphics/RenderTarget.hpp>
 #include <Engine.Graphics/Scene/SkyboxModel.hpp>
 #include <Engine.Graphics.Scene.Model/DirectionalLightModel.hpp>
@@ -17,6 +15,8 @@
 #include <Heliogrim/Component/Scene/Light/SpotLightComponent.hpp>
 #include <Heliogrim/Component/Scene/Sky/SkyboxComponent.hpp>
 #include <Heliogrim/Component/Scene/UI/UIComponent.hpp>
+
+import Engine.Graphics.Scene;
 
 using namespace hg::engine::graphics::scene;
 using namespace hg::engine::graphics;

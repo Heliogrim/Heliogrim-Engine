@@ -5,7 +5,6 @@
 #include <Engine.Accel.Compile/Spec/SimpleEffectSpecification.hpp>
 #include <Engine.Accel.Pass/VkAccelerationPassFactory.hpp>
 #include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
-#include <Engine.Core/Engine.hpp>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
 #include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Graphics.Render.Command/RenderCommandBuffer.hpp>
@@ -18,6 +17,7 @@
 #include "__tmp_helper.hpp"
 
 import Engine.Common;
+import Engine.Core;
 import Engine.Reflect;
 
 using namespace hg::engine::render;

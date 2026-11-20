@@ -10,22 +10,9 @@
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Audio/Audio.hpp>
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Config/Enums.hpp>
-#include <Engine.Config/Provider/EditorProvider.hpp>
-#include <Engine.Config/Provider/ProjectProvider.hpp>
-#include <Engine.Config/Provider/SystemProvider.hpp>
-#include <Engine.Core/EngineState.hpp>
-#include <Engine.Core/Session.hpp>
-#include <Engine.Core/Universe.hpp>
-#include <Engine.Core/UniverseContext.hpp>
-#include <Engine.Core/Event/UniverseAddedEvent.hpp>
-#include <Engine.Core/Event/UniverseRemoveEvent.hpp>
-#include <Engine.Core/Module/CoreDependencies.hpp>
-#include <Engine.Core/Module/SubModule.hpp>
 #include <Engine.Core.Schedule/CorePipeline.hpp>
 #include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Input/Input.hpp>
-#include <Engine.Logging/Logger.hpp>
 #include <Engine.Network/Network.hpp>
 #include <Engine.Physics/Physics.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
@@ -42,6 +29,9 @@
 //#include <Engine.Platform/Linux>
 #endif
 
+import Engine.Config;
+import Engine.Core;
+import Engine.Logging;
 import std;
 
 using namespace hg::editor;

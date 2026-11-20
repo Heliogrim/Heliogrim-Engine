@@ -10,12 +10,12 @@
 #include "SphereShapeCollisionModel.hpp"
 
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Logging/Logger.hpp>
 #include <Engine.Physics/PhysicsLayer.hpp>
 #include <Engine.Physics.Scene/PhysicsSceneSystem.hpp>
 #include <Heliogrim/Component/Scene/Collision/SphereShapeCollisionComponent.hpp>
 
 import Engine.Asserts;
+import Engine.Logging;
 import Engine.Reflect;
 
 using namespace hg::engine::physics;

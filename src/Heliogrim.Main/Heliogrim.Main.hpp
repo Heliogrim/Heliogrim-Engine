@@ -1,10 +1,10 @@
 #pragma once
 
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Core/Engine.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Core;
 #endif
 
 #ifndef USE_MAIN_THREAD_INJECTION

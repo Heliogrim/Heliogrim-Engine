@@ -5,7 +5,6 @@
 #include <Engine.Assets.Type/Asset.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 #include <Engine.Assets.Type/Universe/LevelAsset.hpp>
-#include <Engine.Resource.Archive/BufferArchive.hpp>
 
 /**/
 #include <Engine.Serialization/Access/Structure.hpp>
@@ -25,6 +24,7 @@
 #include <Engine.Serialization.Structures/Common/Guid.hpp>
 
 import Engine.Common;
+import Engine.Resource.Archive;
 
 using namespace hg::engine::resource;
 using namespace hg::engine::serialization;

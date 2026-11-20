@@ -1,9 +1,7 @@
-#include "Engine.hpp"
-
 #include <cassert>
-#include <Engine.Logging/Logger.hpp>
 
-#include "EngineState.hpp"
+import Engine.Core;
+import Engine.Logging;
 
 using namespace hg::engine::core;
 using namespace hg::engine;

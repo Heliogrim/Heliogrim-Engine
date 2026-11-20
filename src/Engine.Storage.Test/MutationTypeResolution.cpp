@@ -2,7 +2,6 @@
 
 /**/
 
-#include <Engine.Resource.Archive/StorageReadWriteArchive.hpp>
 #include <Engine.Resource.Blob/File/LfsSyncBlob.hpp>
 #include <Engine.Resource.Blob/Memory/ByteSpanBlob.hpp>
 #include <Engine.Resource.Package/Package.hpp>
@@ -14,6 +13,7 @@
 #include <Engine.Storage.System/Details/StorageActionResolver.hpp>
 
 import Engine.Reflect;
+import Engine.Resource.Archive;
 
 using namespace hg::engine::storage::system;
 using namespace hg::engine::storage;

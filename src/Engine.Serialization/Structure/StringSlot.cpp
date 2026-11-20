@@ -1,8 +1,6 @@
 #include "StringSlot.hpp"
 
-#include <Engine.Resource.Archive/Archive.hpp>
-#include <Engine.Resource.Archive/ArchiveStreamMode.hpp>
-
+import Engine.Resource.Archive;
 import std;
 
 using namespace hg::engine::serialization;

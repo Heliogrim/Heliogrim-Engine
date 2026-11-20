@@ -3,11 +3,11 @@
 /**/
 
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Logging/Logger.hpp>
 
 #include "ActionLog.hpp"
 
 import Engine.Common;
+import Engine.Logging;
 
 using namespace hg::editor;
 using namespace hg;

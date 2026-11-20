@@ -6,11 +6,11 @@
 #include "../Memory/VirtualMemory.hpp"
 
 // TODO: Remove
-#include <Engine.Core/Engine.hpp>
 
 #include "../Graphics.hpp"
 
 import Engine.Common;
+import Engine.Core;
 
 using namespace hg::engine::graphics;
 using namespace hg;

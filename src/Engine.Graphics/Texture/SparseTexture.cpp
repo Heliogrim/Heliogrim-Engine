@@ -5,11 +5,11 @@
 
 // TODO: Remove
 
-#include "Engine.Core/Engine.hpp"
 #include "Engine.Graphics/Graphics.hpp"
 
 import Engine.Asserts;
 import Engine.Common;
+import Engine.Core;
 
 using namespace hg::engine::graphics;
 using namespace hg;

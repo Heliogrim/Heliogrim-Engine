@@ -3,10 +3,7 @@
 #include <Engine.ACS/ActorModule.hpp>
 #include <Engine.ACS/Registry.hpp>
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Core/Engine.hpp>
-#include <Engine.Core/Universe.hpp>
 #include <Engine.Level/Level.hpp>
-#include <Engine.Logging/Logger.hpp>
 #include <Engine.Scene/SceneBase.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
@@ -24,6 +21,8 @@
 
 import Engine.Asserts;
 import Engine.Common;
+import Engine.Core;
+import Engine.Logging;
 import Engine.Reflect;
 
 /**/

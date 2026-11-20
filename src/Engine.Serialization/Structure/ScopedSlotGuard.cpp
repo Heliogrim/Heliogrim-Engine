@@ -2,13 +2,13 @@
 
 #ifdef _DEBUG
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Logging/Logger.hpp>
 #include "StructureSlotTypeTraits.hpp"
 #endif
 
 #include "ScopedStructureSlot.hpp"
 
 import Engine.Asserts;
+import Engine.Logging;
 
 using namespace hg::engine::serialization;
 using namespace hg;

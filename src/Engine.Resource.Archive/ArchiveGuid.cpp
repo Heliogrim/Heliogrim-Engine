@@ -1,8 +1,7 @@
-#include "ArchiveGuid.hpp"
-
 #include <cstring>
 
 import Engine.Common;
+import Engine.Resource.Archive;
 
 using namespace hg::engine::resource;
 using namespace hg;

@@ -3,9 +3,9 @@
 /**/
 
 #include <Engine.Common/stdafx.h>
-#include <Engine.Logging/Logger.hpp>
 #include <Engine.Resource.Blob/File/IoFileBlob.hpp>
 
+import Engine.Logging;
 import std;
 
 /**/

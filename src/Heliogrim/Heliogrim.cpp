@@ -2,7 +2,6 @@
 
 #include <Engine.ACS/Registry.hpp>
 #include <Engine.Assets/Assets.hpp>
-#include <Engine.Core/Engine.hpp>
 #include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 #include <Engine.Scheduler/Scheduler.hpp>
@@ -10,6 +9,7 @@
 #include "HeliogrimStatic.hpp"
 
 import Engine.Asserts;
+import Engine.Core;
 
 using namespace hg;
 

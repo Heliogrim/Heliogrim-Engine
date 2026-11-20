@@ -1,8 +1,5 @@
-#include "LogSink.hpp"
-
-#include "Logger.hpp"
-
 import Engine.Diagnostics;
+import Engine.Logging;
 
 using namespace hg::engine::diag;
 using namespace hg;

@@ -6,7 +6,11 @@ make_library_project(
 		LIBRARIES
 		${PROJECT_NAME}::Engine.Asserts
 		${PROJECT_NAME}::Engine.Common
+		${PROJECT_NAME}::Engine.Config
+		${PROJECT_NAME}::Engine.Core
+		${PROJECT_NAME}::Engine.Graphics.Scene
 		${PROJECT_NAME}::Engine.Reflect
+		${PROJECT_NAME}::Engine.Reflect.Utils
 		${PROJECT_NAME}::Engine.Storage
 		${PROJECT_NAME}::Engine.Storage.System
 		${PROJECT_NAME}::vulkan.Module

@@ -1,15 +1,14 @@
 #include "Editor.hpp"
 
 #include <Editor.Action/ActionManager.hpp>
-#include <Engine.Core/Module/CoreDependencies.hpp>
-#include <Engine.Core/Module/DependencyKey.hpp>
-#include <Engine.Core/Module/SubModuleDependency.hpp>
 #include <Engine.Reflow/Module/Reflow.hpp>
 
 #include "Boot/AssetInit.hpp"
 #include "Boot/RenderInit.hpp"
 #include "Boot/UniverseInit.hpp"
 #include "Module/Editor.hpp"
+
+import Engine.Core;
 
 using namespace hg::editor;
 using namespace hg::engine::core;

@@ -5,7 +5,6 @@
 #include <Engine.ACS/Registry.hpp>
 #include <Engine.ACS/Archetype/LayoutInfo.hpp>
 #include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
-#include <Engine.Resource.Archive/BufferArchive.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Archive/StructuredArchive.hpp>
 #include <Engine.Serialization/Load/LoadContext.hpp>
@@ -34,6 +33,7 @@
 #include "TestArchetypes.hpp"
 
 import Engine.Common;
+import Engine.Resource.Archive;
 
 using namespace hg::engine::serialization;
 using namespace hg::engine::resource;

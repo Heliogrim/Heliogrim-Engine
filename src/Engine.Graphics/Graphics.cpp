@@ -8,21 +8,14 @@
 
 #include <Engine.Async/Collection/RingBuffer.hpp>
 #include <Engine.Common/Math/__default.inl>
-#include <Engine.Core/Event/UniverseAddedEvent.hpp>
-#include <Engine.Core/Event/UniverseChangeEvent.hpp>
-#include <Engine.Core/Event/UniverseRemoveEvent.hpp>
 #include <Engine.Graphics.IO/Io.hpp>
-#include <Engine.Graphics.Scene/RenderSceneManager.hpp>
 #include <Engine.Graphics.Schedule/RenderScenePipeline.hpp>
-#include <Engine.Logging/Logger.hpp>
 #include <Engine.Scheduler/Pipeline/CompositePipeline.hpp>
 
 #include "RenderTarget.hpp"
 #include "Buffer/VkBufferFactory.hpp"
 #include "Cache/GlobalCacheCtrl.hpp"
 #include "Cache/GlobalResourceCache.hpp"
-#include "Engine.Core/Engine.hpp"
-#include "Engine.Core/Universe.hpp"
 #include "Engine.Resource/ResourceManager.hpp"
 #include "Engine.Scene/Scene.hpp"
 #include "Importer/ImageImporter.hpp"
@@ -38,7 +31,10 @@
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
 
 import Engine.Common;
+import Engine.Core;
 import Engine.Event;
+import Engine.Graphics.Scene;
+import Engine.Logging;
 /**/
 
 using namespace hg::engine::graphics;

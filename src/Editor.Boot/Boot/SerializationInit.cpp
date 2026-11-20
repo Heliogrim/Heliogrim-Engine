@@ -13,7 +13,6 @@
 /**/
 
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Config/Config.hpp>
 #include <Engine.Serialization/SerializationModule.hpp>
 #include <Engine.Serialization/Scheme/ActorScheme.hpp>
 #include <Engine.Serialization/Scheme/ComponentScheme.hpp>
@@ -23,6 +22,7 @@
 #include "SerializationInit.hpp"
 
 import Engine.Common;
+import Engine.Config;
 
 using namespace hg;
 

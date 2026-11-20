@@ -1,11 +1,9 @@
 #include "TickTimingStage.hpp"
 
-#include <Engine.Core/Engine.hpp>
-#include <Engine.Core/Timing.hpp>
-
 #include "CorePipeline.hpp"
 
 import Engine.Common;
+import Engine.Core;
 
 using namespace hg::engine::scheduler;
 using namespace hg::engine::core;

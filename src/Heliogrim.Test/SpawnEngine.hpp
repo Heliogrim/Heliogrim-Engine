@@ -1,14 +1,12 @@
 #pragma once
 
 #include <Engine.ACS/ActorModule.hpp>
-#include <Engine.Config/Config.hpp>
-#include <Engine.Core/Engine.hpp>
-#include <Engine.Core/Timing.hpp>
-#include <Engine.Core/Module/Modules.hpp>
 #include <Engine.Serialization/SerializationModule.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Config;
+import Engine.Core;
 import Engine.Event;
 #endif
 

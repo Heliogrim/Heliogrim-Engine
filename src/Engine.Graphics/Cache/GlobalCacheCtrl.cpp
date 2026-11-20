@@ -3,11 +3,9 @@
 #include <Engine.Accel.Pipeline/AccelerationPipeline.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Core/Engine.hpp>
 #include <Engine.Graphics.Loader/Material/MaterialLoader.hpp>
 #include <Engine.Graphics.Loader/Texture/TextureLoader.hpp>
 #include <Engine.Graphics.Loader/Texture/Traits.hpp>
-#include <Engine.Logging/Logger.hpp>
 #include <Engine.Resource/LoaderManager.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 
@@ -15,6 +13,8 @@
 
 import Engine.Asserts;
 import Engine.Common;
+import Engine.Core;
+import Engine.Logging;
 
 using namespace hg::engine::graphics::cache;
 using namespace hg;

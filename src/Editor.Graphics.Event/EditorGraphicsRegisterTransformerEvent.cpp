@@ -1,4 +1,4 @@
-#include "EditorGraphicsRegisterTransformerEvent.hpp"
+import Editor.Graphics.Event;
 
 using namespace ::hg;
 

@@ -8,7 +8,6 @@
 
 #include <Engine.Assets.Type/Texture/ImageAsset.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
-#include <Engine.Logging/Logger.hpp>
 #include <Engine.Serialization/Archive/LayoutArchive.hpp>
 #include <Engine.Storage.Registry/IStorageRegistry.hpp>
 #include <Engine.Storage.Registry/Storage/PackageStorage.hpp>
@@ -22,6 +21,7 @@
 #include <Engine.Common/GLM.hpp>
 
 import Engine.Common;
+import Engine.Logging;
 
 using namespace hg::engine::graphics;
 using namespace hg;

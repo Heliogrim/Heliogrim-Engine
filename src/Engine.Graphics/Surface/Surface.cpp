@@ -7,8 +7,6 @@
 #ifdef _PROFILING
 #endif
 
-#include <Engine.Core/Engine.hpp>
-#include <Engine.Logging/Logger.hpp>
 #include <Engine.Platform/Platform.hpp>
 #include <Heliogrim/Async/Future.hpp>
 
@@ -23,6 +21,8 @@
 #endif
 
 import Engine.Common;
+import Engine.Core;
+import Engine.Logging;
 
 using namespace hg::engine::graphics;
 using namespace hg;

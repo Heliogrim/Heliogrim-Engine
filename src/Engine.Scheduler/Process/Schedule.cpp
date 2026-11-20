@@ -1,8 +1,6 @@
 #include <thread>
 #include "Schedule.hpp"
 
-#include <Engine.Logging/Logger.hpp>
-
 #include "BoostCell.hpp"
 #include "WorkSet/FifoWorkSet.hpp"
 #include "../Task/Task.hpp"
@@ -18,6 +16,7 @@
 
 import Engine.Asserts;
 import Engine.Common;
+import Engine.Logging;
 
 using namespace hg::engine::scheduler;
 using namespace hg;

@@ -9,13 +9,13 @@
 #include "BoxShapeCollisionModel.hpp"
 
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Logging/Logger.hpp>
 #include <Heliogrim/Component/SceneComponent.hpp>
 
 #include "Engine.Physics.Scene/PhysicsSceneSystem.hpp"
 #include "Heliogrim/Component/Scene/Collision/BoxShapeCollisionComponent.hpp"
 
 import Engine.Asserts;
+import Engine.Logging;
 import Engine.Reflect;
 
 using namespace hg::engine::physics;

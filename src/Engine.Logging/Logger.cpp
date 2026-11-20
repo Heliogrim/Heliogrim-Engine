@@ -10,8 +10,6 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #endif
 
-#include "Logger.hpp"
-
 #include <Engine.Common/__macro.hpp>
 
 #if defined(WIN32)
@@ -24,6 +22,7 @@
 #endif
 */
 import Engine.Common;
+import Engine.Logging;
 
 using namespace hg;
 

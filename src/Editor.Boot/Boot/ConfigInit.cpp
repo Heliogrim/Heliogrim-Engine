@@ -1,13 +1,10 @@
 #include "ConfigInit.hpp"
 
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Config/Config.hpp>
-#include <Engine.Config/Enums.hpp>
-#include <Engine.Config/Provider/EditorProvider.hpp>
-#include <Engine.Config/Provider/ProjectProvider.hpp>
 #include <Engine.Scheduler/LanePolicyConfig.hpp>
 
 import Engine.Common;
+import Engine.Config;
 
 using namespace hg;
 

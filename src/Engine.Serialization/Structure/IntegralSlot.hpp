@@ -1,8 +1,10 @@
 #pragma once
 
-#include <Engine.Resource.Archive/Archive.hpp>
-
 #include "StructureSlot.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Resource.Archive;
+#endif
 
 namespace hg::engine::serialization {
 	template <std::integral Type_>

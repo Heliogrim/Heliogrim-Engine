@@ -10,9 +10,10 @@
 #include <Engine.Graphics.RenderGraph/Pass/ExecutionPass.hpp>
 #include <Engine.Graphics.RenderGraph/Relation/SceneViewDescription.hpp>
 #include <Engine.Graphics.RenderGraph/Relation/TextureDescription.hpp>
-#include <Engine.Logging/Logger.hpp>
 
 import Engine.Common;
+import Engine.Core;
+import Engine.Logging;
 import Engine.Reflect;
 
 using namespace hg::engine::render;
@@ -242,7 +243,6 @@ smr<void> RenderPass::unbindTarget(mref<smr<const graph::Symbol>> target_) noexc
 
 /**/
 
-#include <Engine.Core/Engine.hpp>
 #include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Graphics/Device/Device.hpp>
 

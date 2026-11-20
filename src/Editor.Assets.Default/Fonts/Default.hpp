@@ -3,12 +3,12 @@
 #include <Engine.Assets.Type/Asset.hpp>
 #include <Engine.Assets.Type/AssetConcept.hpp>
 #include <Engine.Assets.Type/Texture/FontAsset.hpp>
-#include <Engine.Common/Sal.hpp>
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Core/Engine.hpp>
+#include <Engine.Common/Sal.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Core;
 import Engine.Reflect;
 #endif
 

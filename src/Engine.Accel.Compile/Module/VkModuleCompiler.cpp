@@ -1,15 +1,15 @@
 #include "VkModuleCompiler.hpp"
 
 #include <Engine.Accel.Lang/Ir/Diagnostic.hpp>
-#include <Engine.Core/Engine.hpp>
 #include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Graphics/Device/Device.hpp>
-#include <Engine.Logging/LogSink.hpp>
 
 #include "VkCompiledModule.hpp"
 #include "VkModuleSource.hpp"
 
 import Engine.Common;
+import Engine.Core;
+import Engine.Logging;
 
 using namespace hg::engine::accel;
 using namespace hg;

@@ -1,12 +1,12 @@
 #pragma once
 
-#include <Engine.Reflect.Utils/With/WithType.hpp>
 #include <Engine.Storage.Registry/IStorage.hpp>
 
 #include "../Access/IoResourceAccessorBase.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Reflect.Utils;
 #endif
 
 namespace hg::engine::storage {

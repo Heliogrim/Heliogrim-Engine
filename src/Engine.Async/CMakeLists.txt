@@ -5,6 +5,7 @@ make_library_project(
 		LIBRARIES
 		${PROJECT_NAME}::Engine.Asserts
 		${PROJECT_NAME}::Engine.Common
+		${PROJECT_NAME}::Engine.Core
 		${PROJECT_NAME}::Engine.Logging
 		${PROJECT_NAME}::Engine.Scheduler
 )

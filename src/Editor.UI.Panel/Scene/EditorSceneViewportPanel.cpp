@@ -8,8 +8,6 @@
 #include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Graphics/RenderTarget.hpp>
 #include <Engine.Graphics/Swapchain/VkSwapchain.hpp>
-#include <Engine.Graphics.Scene/RenderSceneManager.hpp>
-#include <Engine.Logging/Logger.hpp>
 #include <Engine.Reflow/Widget/Viewport.hpp>
 #include <Engine.Reflow.Uikit/Atom/Text.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/HorizontalLayout.hpp>
@@ -18,6 +16,8 @@
 #include <Heliogrim/Actor/Camera/CameraActor.hpp>
 
 import Engine.Common;
+import Engine.Graphics.Scene;
+import Engine.Logging;
 
 using namespace hg::editor::ui;
 using namespace hg::engine::reflow;

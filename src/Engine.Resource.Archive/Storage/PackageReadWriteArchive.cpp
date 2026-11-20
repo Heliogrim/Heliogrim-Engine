@@ -1,10 +1,9 @@
-#include "PackageReadWriteArchive.hpp"
-
 #include <cstring>
 #include <Engine.Resource.Blob/Blob.hpp>
 #include <Engine.Resource.Package/ReadWritePackage.hpp>
 
 import Engine.Asserts;
+import Engine.Resource.Archive;
 
 using namespace hg::engine::resource;
 using namespace hg;

@@ -1,12 +1,12 @@
 #pragma once
 
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Core/Module/SubModule.hpp>
 
 #include "Log/__fwd.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Core;
 #endif
 
 namespace hg::editor {

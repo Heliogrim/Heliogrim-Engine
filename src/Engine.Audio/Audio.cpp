@@ -1,6 +1,5 @@
 #include "Audio.hpp"
 
-#include <Engine.Core/Engine.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 
 #ifdef _PROFILING
@@ -14,6 +13,7 @@
 #include "Importer/WavImporter.hpp"
 
 import Engine.Common;
+import Engine.Core;
 
 using namespace hg::engine;
 using namespace hg;

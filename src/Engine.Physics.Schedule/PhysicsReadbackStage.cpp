@@ -1,11 +1,10 @@
 #include "PhysicsReadbackStage.hpp"
 
-#include <Engine.Core/Engine.hpp>
-#include <Engine.Core/Universe.hpp>
-#include <Engine.Core/UniverseContext.hpp>
 #include <Engine.Physics.Scene/PhysicsSceneSystem.hpp>
 #include <Engine.Physics.Schedule/PhysicsPipeline.hpp>
 #include <Engine.Scene/SceneBase.hpp>
+
+import Engine.Core;
 
 using namespace hg::engine::physics::schedule;
 using namespace hg::engine::scheduler;

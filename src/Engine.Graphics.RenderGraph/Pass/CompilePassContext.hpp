@@ -1,11 +1,10 @@
 #pragma once
 
-#include <Engine.Graphics.Scene/View/SceneView.hpp>
-
 #include "../Memory/GraphNodeAllocator.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Graphics.Scene;
 #endif
 
 namespace hg::engine::render::graph {

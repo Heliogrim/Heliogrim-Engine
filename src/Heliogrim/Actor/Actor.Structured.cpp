@@ -2,8 +2,6 @@
 
 #include "Actor.hpp"
 
-#include <Engine.Core/Engine.hpp>
-#include <Engine.Core/Module/Modules.hpp>
 #include <Engine.Serialization/SerializationModule.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>
@@ -18,6 +16,7 @@
 #include "../Component/LogicComponent.hpp"
 
 import Engine.Common;
+import Engine.Core;
 
 using namespace hg::engine::serialization;
 using namespace hg;

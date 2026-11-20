@@ -1,10 +1,10 @@
 #pragma once
 
-#include <Engine.Resource.Archive/StorageReadonlyArchive.hpp>
 #include <Engine.Resource.Blob/WindowedBlob.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Resource.Archive;
 #endif
 
 namespace hg::engine::storage {

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Core/Engine.hpp>
 #include <Engine.Scheduler/Scheduler.hpp>
 #include <Engine.Scheduler/Fiber/Fiber.hpp>
 #include <Engine.Scheduler/Process/BoostCell.hpp>
@@ -11,6 +10,7 @@
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Asserts;
 import Engine.Common;
+import Engine.Core;
 #endif
 
 namespace hg::detail {

@@ -1,9 +1,10 @@
 #include "InputTickStage.hpp"
 
-#include <Engine.Core/Engine.hpp>
 #include <Engine.Core.Schedule/CorePipeline.hpp>
 #include <Engine.Input/Input.hpp>
 #include <Engine.Input.Schedule/InputPipeline.hpp>
+
+import Engine.Core;
 
 using namespace hg::engine::input::schedule;
 using namespace hg::engine::scheduler;

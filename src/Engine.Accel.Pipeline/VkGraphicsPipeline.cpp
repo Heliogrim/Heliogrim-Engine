@@ -1,9 +1,9 @@
 #include "VkGraphicsPipeline.hpp"
 
 #include <Engine.Accel.Pipeline/Stage/StageDerivat.hpp>
-#include <Engine.Core/Engine.hpp>
 #include <Engine.Graphics/Graphics.hpp>
 
+import Engine.Core;
 import std;
 
 using namespace hg::engine::accel;

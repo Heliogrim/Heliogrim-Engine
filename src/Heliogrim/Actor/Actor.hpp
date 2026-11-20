@@ -2,7 +2,6 @@
 
 #include <Engine.ACS/ActorModule.hpp>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Core/Engine.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 
 #include "ActorGuid.hpp"
@@ -15,6 +14,7 @@
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Core;
 import Engine.Reflect;
 #endif
 

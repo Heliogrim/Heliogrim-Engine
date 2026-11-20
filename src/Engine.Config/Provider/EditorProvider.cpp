@@ -1,6 +1,5 @@
-#include "EditorProvider.hpp"
-
 import Engine.Asserts;
+import Engine.Config;
 
 using namespace ::hg::engine::cfg;
 using namespace ::hg::editor::cfg;

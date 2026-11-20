@@ -4,7 +4,6 @@
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets.Type/Texture/ImageAsset.hpp>
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Core/Engine.hpp>
 #include <Engine.Graphics/Buffer/BufferFactory.hpp>
 #include <Engine.Graphics/Pool/GlobalResourcePool.hpp>
 #include <Engine.Graphics/Texture/SparseTexturePage.hpp>
@@ -17,6 +16,7 @@
 #include <spng/spng.h>
 
 import Engine.Asserts;
+import Engine.Core;
 import Engine.Reflect;
 import vulkan;
 

@@ -3,9 +3,9 @@
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets.Type/Texture/ImageAsset.hpp>
-#include <Engine.Core/Engine.hpp>
 
 import Engine.Asserts;
+import Engine.Core;
 import Engine.Reflect;
 
 using namespace ::hg::editor::graphics::loader;

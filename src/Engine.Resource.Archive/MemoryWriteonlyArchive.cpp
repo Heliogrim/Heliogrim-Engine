@@ -1,7 +1,6 @@
-#include "MemoryWriteonlyArchive.hpp"
-
 #include <cstring>
 
+import Engine.Resource.Archive;
 import std;
 
 using namespace hg::engine::resource;

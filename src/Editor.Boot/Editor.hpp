@@ -1,6 +1,8 @@
 #pragma once
 
-#include <Engine.Core/Module/SubModule.hpp>
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Core;
+#endif
 
 namespace hg::editor {
 	class Editor :

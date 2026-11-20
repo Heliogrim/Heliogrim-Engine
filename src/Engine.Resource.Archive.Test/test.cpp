@@ -2,11 +2,9 @@
 /**/
 
 #include <Engine.Assets.Type/Asset.hpp>
-#include <Engine.Resource.Archive/ArchiveGuid.hpp>
-#include <Engine.Resource.Archive/BufferArchive.hpp>
-#include <Engine.Resource.Archive/MemoryReadonlyArchive.hpp>
 
 import Engine.Common;
+import Engine.Resource.Archive;
 
 using namespace hg::engine::resource;
 using namespace hg;

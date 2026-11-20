@@ -1,9 +1,9 @@
 #include "Delay.hpp"
 
-#include <Engine.Core/Engine.hpp>
 #include <Engine.Scheduler/Scheduler.hpp>
 
 import Engine.Asserts;
+import Engine.Core;
 
 void hg::delay(mref<execute_function_type> function_, ticks delay_) {
 	::hg::todo_panic();

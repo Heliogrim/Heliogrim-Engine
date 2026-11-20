@@ -1,4 +1,4 @@
-#include "UniverseAddedEvent.hpp"
+import Engine.Core;
 
 using namespace hg::engine::core;
 using namespace hg;

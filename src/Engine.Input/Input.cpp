@@ -1,7 +1,6 @@
 #include "Input.hpp"
 
 #include <Engine.Common/SDL3.hpp>
-#include <Engine.Core/Engine.hpp>
 #include <Engine.Input.Schedule/InputPipeline.hpp>
 #include <Engine.Scheduler/Async.hpp>
 #include <Engine.Scheduler/Fiber/Fiber.hpp>
@@ -19,6 +18,7 @@
 #include <Support.Platform.Win32/Win32Window.hpp>
 #endif
 
+import Engine.Core;
 import Engine.Event;
 import std;
 

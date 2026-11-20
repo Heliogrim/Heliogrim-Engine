@@ -1,7 +1,8 @@
 #pragma once
 
-#include <Engine.Resource.Archive/ArchiveGuid.hpp>
-#include <Engine.Resource.Archive/ArchiveType.hpp>
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Resource.Archive;
+#endif
 
 namespace hg::engine::resource::package {
 	#pragma pack(push)

@@ -3,11 +3,7 @@
 /**/
 
 #include <Engine.Async/Affine/AffineThread.hpp>
-#include <Engine.Config/Config.hpp>
 #include <Engine.IO.Dispatcher/IoSystem.hpp>
-#include <Engine.Resource.Archive/ArchiveType.hpp>
-#include <Engine.Resource.Archive/BufferArchive.hpp>
-#include <Engine.Resource.Archive/StorageReadonlyArchive.hpp>
 #include <Engine.Resource.Blob/Blob.hpp>
 #include <Engine.Resource.Package/ReadWritePackage.hpp>
 #include <Engine.Storage.Action/Access/AccessError.hpp>
@@ -42,6 +38,8 @@
 #include <Engine.Common/__macro.hpp>
 
 import Engine.Common;
+import Engine.Config;
+import Engine.Resource.Archive;
 
 /**/
 

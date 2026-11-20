@@ -5,10 +5,10 @@
 #include <Engine.Assets.Type/Material/GraphicsMaterial.hpp>
 #include <Engine.Assets.Type/Material/GraphicsMaterialPrototype.hpp>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Core/Engine.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Core;
 import Engine.Reflect;
 #endif
 

@@ -1,7 +1,6 @@
 #include "Level.hpp"
 
 #include <Engine.Assets.Type/Universe/LevelAsset.hpp>
-#include <Engine.Core/Universe.hpp>
 #include <Engine.Level/Level.hpp>
 #include <Heliogrim/Async/Future.hpp>
 
@@ -10,6 +9,7 @@
 
 import Engine.Asserts;
 import Engine.Common;
+import Engine.Core;
 
 using namespace hg;
 

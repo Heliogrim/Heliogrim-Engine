@@ -1,12 +1,10 @@
 #pragma once
 
-#include <Engine.Reflect.Utils/Error/IllegalArgumentError.hpp>
-#include <Engine.Reflect.Utils/Error/IllegalTypeError.hpp>
-
 #include "Access/AccessError.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Reflect.Utils;
 #endif
 
 namespace hg::engine::storage {

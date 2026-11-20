@@ -2,5 +2,5 @@
 # Setup
 make_library_project(
 		LIB_NAME Engine.Scene.Schedule
-		LIBRARIES ${PROJECT_NAME}::Engine.Common ${PROJECT_NAME}::Engine.Reflect
+		LIBRARIES ${PROJECT_NAME}::Engine.Common ${PROJECT_NAME}::Engine.Reflect ${PROJECT_NAME}::Engine.Core
 )

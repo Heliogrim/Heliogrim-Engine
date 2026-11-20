@@ -1,14 +1,13 @@
 #include "StructSlot.hpp"
 
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Resource.Archive/Archive.hpp>
-#include <Engine.Resource.Archive/ArchiveStreamMode.hpp>
 
 #include "RecordSlot.hpp"
 #include "StringSlot.hpp"
 #include "../Load/LoadContext.hpp"
 
 import Engine.Common;
+import Engine.Resource.Archive;
 
 using namespace hg::engine::serialization;
 using namespace hg;

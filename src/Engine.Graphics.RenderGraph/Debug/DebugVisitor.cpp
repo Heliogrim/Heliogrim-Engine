@@ -1,7 +1,6 @@
 #include "DebugVisitor.hpp"
 
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Logging/Logger.hpp>
 
 #include "../Component/AnchorComponent.hpp"
 #include "../Component/BarrierComponent.hpp"
@@ -9,6 +8,8 @@
 #include "../Node/Node.hpp"
 #include "../Node/Runtime/AnchorNode.hpp"
 #include "../Node/Runtime/BarrierNode.hpp"
+
+import Engine.Logging;
 
 using namespace hg::engine::render::graph;
 using namespace hg;

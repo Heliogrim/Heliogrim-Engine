@@ -1,11 +1,10 @@
 #pragma once
 
 #include <Engine.Accel.Storage/GlobalStorage.hpp>
-#include <Engine.Core/Module/DependencyKey.hpp>
-#include <Engine.Core/Module/SubModule.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Core;
 #endif
 
 namespace hg::engine {

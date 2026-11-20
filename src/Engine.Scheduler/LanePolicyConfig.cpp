@@ -1,7 +1,6 @@
 #include "LanePolicyConfig.hpp"
 
-#include <Engine.Config/Config.hpp>
-#include <Engine.Config/Enums.hpp>
+import Engine.Config;
 
 using namespace hg::engine::scheduler;
 using namespace hg;

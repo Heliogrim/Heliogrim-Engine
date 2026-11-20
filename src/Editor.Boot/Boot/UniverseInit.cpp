@@ -6,19 +6,16 @@
 #include <Editor.Scene.Actions/LoadLevel.hpp>
 #include <Editor.Scene/SceneFactory.hpp>
 #include <Engine.Assets.Type/Universe/LevelAsset.hpp>
-#include <Engine.Core/Session.hpp>
-#include <Engine.Core/Universe.hpp>
-#include <Engine.Core/UniverseContext.hpp>
-#include <Engine.Diagnostics/Render.hpp>
-#include <Engine.Diagnostics/Sink.hpp>
-#include <Engine.Logging/Logger.hpp>
-#include <Engine.Logging/LogSink.hpp>
 #include <Engine.Serialization/Diagnostic/Codes.hpp>
 #include <Heliogrim/Universe/Level.hpp>
 
 #include "UniverseInit.hpp"
 
 import Engine.Common;
+import Engine.Config;
+import Engine.Core;
+import Engine.Diagnostics;
+import Engine.Logging;
 
 using namespace hg::editor::boot;
 using namespace hg::engine;
@@ -118,7 +115,6 @@ void editor::boot::initPrimaryUniverse() {
 #include <Editor.Assets.Default/Meshes/Default.hpp>
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
-#include <Engine.Config/Enums.hpp>
 #include <Engine.Storage.System/StorageSystem.hpp>
 #include <Heliogrim/Heliogrim.hpp>
 #include <Heliogrim/Actor/Actor.hpp>

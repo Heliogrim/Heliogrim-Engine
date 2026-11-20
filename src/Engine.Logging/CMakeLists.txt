@@ -1,7 +1,8 @@
 
 # Setup
 make_library_project(
-        LIB_NAME Engine.Logging
+        LIB_NAME Engine.Logging
+        MODULE
         LIB_FOLDER "${IDE_FOLDER}/Engine/Utils"
         LIBRARIES ${PROJECT_NAME}::Engine.Common ${PROJECT_NAME}::Engine.Diagnostics
 )

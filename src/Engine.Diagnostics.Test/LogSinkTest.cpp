@@ -2,8 +2,7 @@
 
 /**/
 
-#include <Engine.Logging/Logger.hpp>
-#include <Engine.Logging/LogSink.hpp>
+import Engine.Logging;
 
 using namespace hg::engine::diag;
 using namespace hg;

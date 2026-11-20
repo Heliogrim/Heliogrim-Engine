@@ -1,7 +1,5 @@
 #include "CompScheduler.hpp"
 
-#include <Engine.Logging/Logger.hpp>
-
 #ifdef _PROFILING
 #endif
 
@@ -10,6 +8,7 @@
 
 import Engine.Asserts;
 import Engine.Common;
+import Engine.Logging;
 
 namespace {
 	/* Reserved for dedicated non-worker threads; raise when the audio device thread lands. */

@@ -1,8 +1,6 @@
 #include "PackArchive.hpp"
 
 #include <Engine.Pedantic.Resource/AccessMode.hpp>
-#include <Engine.Resource.Archive/BufferArchive.hpp>
-#include <Engine.Resource.Archive/Storage/PackageReadWriteArchive.hpp>
 #include <Engine.Storage.Action/Context.hpp>
 #include <Engine.Storage.Action/Access/ExclusiveIoResource.hpp>
 #include <Engine.Storage.Action/Access/SharedReadIoResource.hpp>
@@ -12,6 +10,7 @@
 import Engine.Asserts;
 import Engine.Common;
 import Engine.Reflect;
+import Engine.Resource.Archive;
 
 using namespace hg::engine::storage;
 using namespace hg::engine::resource;

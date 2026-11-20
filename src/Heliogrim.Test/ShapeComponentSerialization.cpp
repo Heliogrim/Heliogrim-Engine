@@ -2,8 +2,6 @@
 
 /**/
 
-#include <Engine.Diagnostics/Sink.hpp>
-#include <Engine.Resource.Archive/BufferArchive.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Archive/StructuredArchive.hpp>
 #include <Engine.Serialization/Load/LoadContext.hpp>
@@ -17,6 +15,8 @@
 #include <Heliogrim/Component/Scene/Geometry/SphereShapeGeometryComponent.Layout.hpp>
 
 import Engine.Common;
+import Engine.Resource.Archive;
+import Engine.Diagnostics;
 
 using namespace hg::engine::serialization;
 using namespace hg::engine::resource;

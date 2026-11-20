@@ -1,12 +1,12 @@
 #pragma once
 
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Resource.Archive/ArchiveGuid.hpp>
 
 #include "../IStorageRepository.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Resource.Archive;
 #endif
 
 namespace hg::engine::storage::system {

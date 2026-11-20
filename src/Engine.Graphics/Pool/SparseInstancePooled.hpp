@@ -2,7 +2,6 @@
 
 #include <cstdlib>
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Logging/Logger.hpp>
 
 #include "../Buffer/SparseBuffer.hpp"
 #include "../Buffer/SparseBufferView.hpp"
@@ -14,6 +13,7 @@
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Logging;
 #endif
 
 namespace hg::engine::graphics {

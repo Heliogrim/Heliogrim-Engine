@@ -2,12 +2,13 @@
 
 #include <Engine.Async/Affine/AffineThread.hpp>
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Core/Engine.hpp>
-#include <Engine.Logging/Logger.hpp>
 #include <Engine.Platform/Platform.hpp>
 #include <Engine.Scheduler/Thread/Thread.hpp>
 
 #include "Win32DragDropObject.hpp"
+
+import Engine.Core;
+import Engine.Logging;
 
 using namespace hg::engine::input;
 using namespace hg;
