@@ -51,8 +51,12 @@ namespace hg::engine::serialization {
 		}
 
 		SlotOpResult operator>>(ref<value_type> value_) override {
-			auto archive = this_type::_state.root->archive;
-			(*archive) >> value_;
+			double value = 0.;
+			if (not this_type::readFloat(trait_type::slot_type, value)) {
+				return SlotOpResult::eFailed;
+			}
+
+			value_ = static_cast<value_type>(value);
 			return SlotOpResult::eSuccess;
 		}
 	};

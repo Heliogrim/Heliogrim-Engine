@@ -58,3 +58,22 @@ s64 StructureSlotTypeTrait::const_size(const StructureSlotType type_) noexcept {
 
 #undef RESOLVE_R
 #undef RESOLVE
+
+/* Constant-size tags are exactly 0x01..0x0B; every other valid tag carries an s64 length (bounded reader relies on it). */
+static_assert(StructureSlotTypeTraits<StructureSlotType::eBool>::const_size > 0);
+static_assert(StructureSlotTypeTraits<StructureSlotType::eU8>::const_size > 0);
+static_assert(StructureSlotTypeTraits<StructureSlotType::eS8>::const_size > 0);
+static_assert(StructureSlotTypeTraits<StructureSlotType::eU16>::const_size > 0);
+static_assert(StructureSlotTypeTraits<StructureSlotType::eS16>::const_size > 0);
+static_assert(StructureSlotTypeTraits<StructureSlotType::eU32>::const_size > 0);
+static_assert(StructureSlotTypeTraits<StructureSlotType::eS32>::const_size > 0);
+static_assert(StructureSlotTypeTraits<StructureSlotType::eU64>::const_size > 0);
+static_assert(StructureSlotTypeTraits<StructureSlotType::eS64>::const_size > 0);
+static_assert(StructureSlotTypeTraits<StructureSlotType::eFloat>::const_size > 0);
+static_assert(StructureSlotTypeTraits<StructureSlotType::eDouble>::const_size > 0);
+static_assert(StructureSlotTypeTraits<StructureSlotType::eString>::const_size <= 0);
+static_assert(StructureSlotTypeTraits<StructureSlotType::eSlice>::const_size <= 0);
+static_assert(StructureSlotTypeTraits<StructureSlotType::eMap>::const_size <= 0);
+static_assert(StructureSlotTypeTraits<StructureSlotType::eMapEntry>::const_size <= 0);
+static_assert(StructureSlotTypeTraits<StructureSlotType::eStruct>::const_size <= 0);
+static_assert(StructureSlotTypeTraits<StructureSlotType::eSeq>::const_size <= 0);

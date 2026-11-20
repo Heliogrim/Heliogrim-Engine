@@ -1,11 +1,5 @@
 #include "ScopedSlotGuard.hpp"
 
-#ifdef _DEBUG
-#include <Engine.Asserts/Asserts.hpp>
-#include <Engine.Logging/Logger.hpp>
-#include "StructureSlotTypeTraits.hpp"
-#endif
-
 #include "ScopedStructureSlot.hpp"
 
 using namespace hg::engine::serialization;
@@ -21,18 +15,6 @@ ScopedSlotGuard::ScopedSlotGuard(
 	auto* const slot = _scopedSlot->slot();
 	if (_mode == ScopedSlotGuardMode::eRead) {
 		slot->readHeader();
-
-		#ifdef _DEBUG
-		if (not
-			slot->validateType()) {
-			IM_CORE_ERRORF(
-				"Tried to deserialize a `{}` into a `{}`.",
-				StructureSlotTypeTrait::canonical(slot->getSlotHeader().type),
-				StructureSlotTypeTrait::canonical(slot->getSlotType())
-			);
-			::hg::assertd(slot->validateType());
-		}
-		#endif
 
 	} else {
 		slot->writeHeader();

@@ -47,6 +47,8 @@ namespace hg::engine::serialization {
 
 		[[nodiscard]] bool failed() const noexcept;
 
+		[[nodiscard]] ptr<const ReadError> firstError() const noexcept;
+
 		void warn(ReadError error_);
 
 	public:

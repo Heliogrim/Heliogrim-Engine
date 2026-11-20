@@ -1,7 +1,5 @@
 #pragma once
 
-#include <cassert>
-
 #include "StructureSlot.hpp"
 #include "SubstitutionSlot.hpp"
 
@@ -118,43 +116,74 @@ namespace hg::engine::serialization {
 
 		SlotOpResult operator>>(ref<value_type> value_) override {
 
-			if (this_type::_state.header.size <= 0) {
+			if (not this_type::hasPayload()) {
+				return SlotOpResult::eFailed;
+			}
+
+			const auto& header = this_type::_state.header;
+			if (header.type != StructureSlotType::eSlice) {
+				this_type::fail(
+					ReadError::Kind::eTypeMismatch,
+					this_type::_state.offset,
+					this_type::slotSpan(header),
+					"slot is not a slice"
+				);
+				return SlotOpResult::eFailed;
+			}
+
+			if (header.size < static_cast<s64>(sizeof(u64))) {
+				this_type::fail(
+					ReadError::Kind::eMalformed,
+					this_type::_state.offset,
+					this_type::slotSpan(header),
+					"slice too small for its count"
+				);
 				return SlotOpResult::eFailed;
 			}
 
 			/**/
 
 			auto archive = this_type::_state.root->archive;
+			archive->seek(this_type::payloadBegin());
 
-			/**/
-
-			u64 storedCount = ~0uLL;
+			u64 storedCount = 0uLL;
 			(*archive) >> storedCount;
 
-			assert(storedCount != ~0uLL);
+			if (not this_type::checkArchive(this_type::_state.offset, this_type::slotSpan(header))) {
+				return SlotOpResult::eFailed;
+			}
+
+			if (storedCount > static_cast<u64>(header.size) - sizeof(u64)) {
+				this_type::fail(ReadError::Kind::eMalformed, this_type::payloadBegin(), sizeof(u64), "slice count exceeds its bytes");
+				return SlotOpResult::eFailed;
+			}
 
 			/**/
 
-			// TODO: if constexpr (std::is_constructible_v<slice_value_type, ...>)
+			value_type tmp {};
 
 			if constexpr (HasResizeFnc<value_type>) {
-				value_.resize(storedCount);
+				if (not this_type::charge(storedCount * sizeof(slice_value_type))) {
+					return SlotOpResult::eFailed;
+				}
+				tmp.resize(storedCount);
+
 			} else {
-				assert(value_.size() >= storedCount);
+				if (storedCount != static_cast<u64>(std::ranges::size(tmp))) {
+					this_type::fail(
+						ReadError::Kind::eMalformed,
+						this_type::payloadBegin(),
+						sizeof(u64),
+						"slice count differs from the fixed extent"
+					);
+					return SlotOpResult::eFailed;
+				}
 			}
 
-			auto begin = std::ranges::begin(value_);
-			const auto end = std::ranges::end(value_);
+			s64 offset = this_type::payloadBegin() + static_cast<s64>(sizeof(u64));
 
-			constexpr s64 off = sizeof(/* StructureSlotHeader::type */StructureSlotType) + sizeof(
-				/* StructureSlotHeader::size */s64);
-			constexpr s64 ioff = sizeof(storedCount);
-
-			s64 offset = this_type::_state.offset + off + ioff;
-
-			auto it = begin;
-			u64 i = 0;
-			while (i < storedCount) {
+			auto it = std::ranges::begin(tmp);
+			for (u64 i = 0; i < storedCount; ++i, ++it) {
 
 				StructureSlotState state {
 					StructureSlotStateFlag::eImmutable,
@@ -166,32 +195,24 @@ namespace hg::engine::serialization {
 
 				entry_type slot { std::move(state) };
 
-				/**/
-
-				slot.readHeader();
-				slot.enter();
-
-				slot >> (*it);
-
-				slot.leave();
-
-				/**/
-
-				offset += slot.getSlotHeader().size;
-				offset += sizeof(/* StructureSlotHeader::type */StructureSlotType);
-
-				if (not slot.getSlotHeader().sizeInferred) {
-					offset += sizeof(/* StructureSlotHeader::size */s64);
+				if (not slot.readHeader()) {
+					return SlotOpResult::eFailed;
 				}
 
-				/**/
+				slot.enter();
+				const auto result = slot >> (*it);
+				slot.leave();
 
-				++it;
-				++i;
+				if (result != SlotOpResult::eSuccess) {
+					return SlotOpResult::eFailed;
+				}
+
+				offset = slot.payloadEnd();
 			}
 
 			/**/
 
+			value_ = std::move(tmp);
 			return SlotOpResult::eSuccess;
 		}
 	};

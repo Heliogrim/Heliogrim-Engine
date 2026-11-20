@@ -2,6 +2,7 @@
 
 #include <Engine.Common/Make.hpp>
 #include <Engine.Resource.Archive/Archive.hpp>
+#include <Engine.Resource.Archive/ArchiveStreamMode.hpp>
 
 #include "RecordSlot.hpp"
 #include "StringSlot.hpp"
@@ -50,69 +51,67 @@ void StructSlot::feedback(const non_owning_rptr<const StructureSlotBase> other_)
 
 s64 StructSlot::findRecord(cref<record_key_type> key_) const {
 
-	constexpr auto off = sizeof(StructureSlotHeader::type) + sizeof(StructureSlotHeader::size);
+	if (not hasPayload()) {
+		return -1LL;
+	}
 
-	s64 offset = _state.offset + off;
-	_state.root->archive->seek(offset);
-
-	/**/
-
-	const auto end = _state.offset + _state.header.size;
-	string tmp {};
-
-	while (offset < end) {
-
-		StructureSlotState identifierState {
-			StructureSlotStateFlag::eImmutable,
-			offset,
-			StructureSlotHeader::from<StructureSlotType::eString>(),
-			const_cast<ptr<this_type>>(this)->shared_from_this(),
-			_state.root
-		};
-
-		StringSlot identifier { std::move(identifierState) };
-		identifier.readHeader();
-		identifier.enter();
-
-		identifier >> tmp;
-
-		identifier.leave();
-
-		/**/
-
-		offset += identifier.getState().header.size;
-		offset += sizeof(StructureSlotHeader::type);
-		offset += sizeof(StructureSlotHeader::size);
-
-		/**/
-
-		if (key_ == tmp) {
-			break;
-		}
-
-		/**/
-
-		StructureSlotType valueType = StructureSlotType::eUndefined;
-		(*_state.root->archive) >> valueType;
-
-		auto valueHeader = StructureSlotHeader::from(valueType);
-		if (not valueHeader.sizeInferred) {
-			(*_state.root->archive) >> valueHeader.size;
-		}
-
-		/**/
-
-		offset += valueHeader.size;
-		offset += sizeof(StructureSlotHeader::type);
-
-		if (not valueHeader.sizeInferred) {
-			offset += sizeof(StructureSlotHeader::size);
-		}
+	if (_state.header.type != StructureSlotType::eStruct) {
+		fail(ReadError::Kind::eTypeMismatch, _state.offset, slotSpan(_state.header), "slot is not a struct");
+		return -1LL;
 	}
 
 	/**/
 
-	return tmp == key_ ? offset : -1LL;
+	const auto archive = _state.root->archive;
+	const s64 end = payloadEnd();
+
+	s64 offset = payloadBegin();
+	s64 found = -1LL;
+
+	// shortcut: full scan per lookup so duplicate keys are always detected; index the keys if lookups get hot.
+	while (offset < end) {
+
+		StructureSlotHeader keyHeader {};
+		if (not readHeaderAt(offset, end, keyHeader)) {
+			return -1LL;
+		}
+
+		if (keyHeader.type != StructureSlotType::eString) {
+			fail(ReadError::Kind::eMalformed, offset, slotSpan(keyHeader), "struct key is not a string");
+			return -1LL;
+		}
+
+		const s64 keyBegin = offset + slotSpan(keyHeader) - keyHeader.size;
+		const s64 valueAt = offset + slotSpan(keyHeader);
+
+		bool match = false;
+		if (static_cast<u64>(keyHeader.size) == key_.size()) {
+			string tmp(static_cast<size_t>(keyHeader.size), '\0');
+			archive->seek(keyBegin);
+			archive->serializeBytes(reinterpret_cast<ptr<u8>>(tmp.data()), tmp.size(), resource::ArchiveStreamMode::eLoad);
+			if (not checkArchive(offset, slotSpan(keyHeader))) {
+				return -1LL;
+			}
+			match = tmp == key_;
+		}
+
+		StructureSlotHeader valueHeader {};
+		if (not readHeaderAt(valueAt, end, valueHeader)) {
+			return -1LL;
+		}
+
+		if (match) {
+			if (found != -1LL) {
+				fail(ReadError::Kind::eDuplicateKey, offset, slotSpan(keyHeader), "duplicate struct key");
+				return -1LL;
+			}
+			found = valueAt;
+		}
+
+		offset = valueAt + slotSpan(valueHeader);
+	}
+
+	return found;
 }
 
 sptr<RecordSlot> StructSlot::insertRecord(cref<record_key_type> key_) {
@@ -168,19 +167,10 @@ bool StructSlot::hasRecord(cref<record_key_type> key_) {
 
 sptr<RecordSlot> StructSlot::getRecord(cref<record_key_type> key_) {
 
-	const s64 offset = findRecord(key_);
-
-	/**/
-
-	if (offset == -1) {
-		return nullptr;
-	}
-
-	/**/
-
+	/* A missing key yields an empty record (offset -1): reads through it fail and leave the target untouched. */
 	StructureSlotState slotState {
 		StructureSlotStateFlag::eImmutable,
-		offset,
+		findRecord(key_),
 		StructureSlotHeader::from<StructureSlotType::eRecord>(),
 		shared_from_this(),
 		_state.root
