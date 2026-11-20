@@ -7,7 +7,6 @@
 #include <Engine.Graphics/Surface/SurfaceManager.hpp>
 #include <Engine.Graphics/Swapchain/VkSurfaceSwapchain.hpp>
 #include <Engine.Input/Input.hpp>
-#include <Engine.Platform/Platform.hpp>
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
 #include <Engine.Scene/SceneBase.hpp>
 #include <Heliogrim/Async/Future.hpp>
@@ -21,6 +20,7 @@ import Engine.Common;
 import Engine.Core;
 import Engine.Graphics.Scene;
 import Engine.Logging;
+import Engine.Platform;
 
 using namespace hg::engine::reflow;
 using namespace hg;

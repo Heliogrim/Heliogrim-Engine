@@ -1,11 +1,11 @@
 #pragma once
 
 #include <Engine.Common/Sal.hpp>
-#include <Engine.IO.Dispatcher/IoSystem.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
 import Engine.Core;
+import Engine.IO.Dispatcher;
 #endif
 
 namespace hg::engine {

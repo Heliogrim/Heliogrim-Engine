@@ -1,8 +1,5 @@
 #include "BlobPack.hpp"
 
-#include <Engine.Diagnostics/Render.hpp>
-#include <Engine.Diagnostics/Sink.hpp>
-#include <Engine.Pedantic.Resource/AccessMode.hpp>
 #include <Engine.Storage.Action/Context.hpp>
 #include <Engine.Storage.Action/Access/ExclusiveIoResource.hpp>
 #include <Engine.Storage.Action/Access/SharedReadIoResource.hpp>
@@ -12,6 +9,8 @@
 #include <Engine.Storage.Registry/Storage/StorageName.hpp>
 
 import Engine.Common;
+import Engine.Pedantic.Resource;
+import Engine.Diagnostics;
 
 using namespace hg::engine::storage;
 using namespace hg::engine::resource;

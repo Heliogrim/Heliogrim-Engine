@@ -1,8 +1,7 @@
 #pragma once
 
-#include <Engine.Pedantic.Resource/AccessMode.hpp>
-
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Pedantic.Resource;
 import std;
 #endif
 

@@ -1,11 +1,11 @@
 #include "MemBlob.hpp"
 
-#include <Engine.Pedantic.Resource/AccessMode.hpp>
 #include <Engine.Storage.Action/Context.hpp>
 #include <Engine.Storage.Action/Access/ExclusiveIoResource.hpp>
 #include <Engine.Storage.Action/Access/SharedReadIoResource.hpp>
 
 import Engine.Common;
+import Engine.Pedantic.Resource;
 
 using namespace hg::engine::storage;
 using namespace hg::engine::resource;

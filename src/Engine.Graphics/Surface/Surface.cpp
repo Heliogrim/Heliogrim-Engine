@@ -7,7 +7,6 @@
 #ifdef _PROFILING
 #endif
 
-#include <Engine.Platform/Platform.hpp>
 #include <Heliogrim/Async/Future.hpp>
 
 #include "../__macro.hpp"
@@ -17,12 +16,12 @@
 #if defined(WIN32)
 #include <Support.Platform.Win32/Win32Window.hpp>
 #else
-#include <Engine.Platform/NativeWindow.hpp>
 #endif
 
 import Engine.Common;
 import Engine.Core;
 import Engine.Logging;
+import Engine.Platform;
 
 using namespace hg::engine::graphics;
 using namespace hg;

@@ -1,6 +1,8 @@
 #pragma once
 
-#include <Engine.Platform/NativeWindow.hpp>
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Platform;
+#endif
 
 struct SDL_Window;
 

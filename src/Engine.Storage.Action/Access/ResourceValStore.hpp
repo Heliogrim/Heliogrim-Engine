@@ -1,11 +1,10 @@
 #pragma once
 
-#include <Engine.Pedantic.Resource/AccessMode.hpp>
-
 #include "IoResource.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Pedantic.Resource;
 #endif
 
 namespace hg::engine::storage {

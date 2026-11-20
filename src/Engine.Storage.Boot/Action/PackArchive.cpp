@@ -1,6 +1,5 @@
 #include "PackArchive.hpp"
 
-#include <Engine.Pedantic.Resource/AccessMode.hpp>
 #include <Engine.Storage.Action/Context.hpp>
 #include <Engine.Storage.Action/Access/ExclusiveIoResource.hpp>
 #include <Engine.Storage.Action/Access/SharedReadIoResource.hpp>
@@ -9,6 +8,7 @@
 
 import Engine.Asserts;
 import Engine.Common;
+import Engine.Pedantic.Resource;
 import Engine.Reflect;
 import Engine.Resource.Archive;
 
