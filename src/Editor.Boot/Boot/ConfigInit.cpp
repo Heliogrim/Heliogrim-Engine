@@ -1,8 +1,7 @@
-#include "ConfigInit.hpp"
-
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Scheduler/LanePolicyConfig.hpp>
 
+import Editor.Boot;
 import Engine.Common;
 import Engine.Config;
 

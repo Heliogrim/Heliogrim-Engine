@@ -6,11 +6,11 @@
 
 /**/
 
-#include <Engine.Physics/jolt.inc.hpp>
 #include <Engine.Physics.Scene/PhysicsSceneSystemModel.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Physics;
 import Engine.Reflect;
 #endif
 

@@ -6,5 +6,5 @@ import Engine.Core;
 #endif
 
 namespace hg::editor {
-	inline constexpr static engine::core::DependencyKey EditorDepKey { "::hg::editor::Editor"sv };
+	inline constexpr engine::core::DependencyKey EditorDepKey { "::hg::editor::Editor"sv };
 }

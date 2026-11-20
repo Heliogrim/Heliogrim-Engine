@@ -1,10 +1,5 @@
 #include "EditorEngine.hpp"
 
-#include <Editor.Boot/Boot/ActorInit.hpp>
-#include <Editor.Boot/Boot/ConfigInit.hpp>
-#include <Editor.Boot/Boot/SerializationInit.hpp>
-#include <Editor.Boot/Boot/StorageInit.hpp>
-#include <Editor.Boot/Boot/SubModuleInit.hpp>
 #include <Engine.ACS/ActorModule.hpp>
 #include <Engine.ACS.Schedule/ActorPipeline.hpp>
 #include <Engine.Assets/Assets.hpp>
@@ -13,8 +8,6 @@
 #include <Engine.Core.Schedule/CorePipeline.hpp>
 #include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Input/Input.hpp>
-#include <Engine.Network/Network.hpp>
-#include <Engine.Physics/Physics.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 #include <Engine.Scene.Schedule/ScenePipeline.hpp>
 #include <Engine.Scheduler/Async.hpp>
@@ -29,9 +22,12 @@
 //#include <Engine.Platform/Linux>
 #endif
 
+import Editor.Boot;
 import Engine.Config;
 import Engine.Core;
 import Engine.Logging;
+import Engine.Network;
+import Engine.Physics;
 import std;
 
 using namespace hg::editor;

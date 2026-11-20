@@ -9,10 +9,9 @@
 #include "PhysicsSceneSystem.hpp"
 
 #include <Engine.ACS/Cluster/RelocationTable.hpp>
-#include <Engine.Physics/jolt.inc.hpp>
-#include <Engine.Physics/Physics.hpp>
 
 import Engine.Core;
+import Engine.Physics;
 
 using namespace hg::engine::physics;
 using namespace hg;

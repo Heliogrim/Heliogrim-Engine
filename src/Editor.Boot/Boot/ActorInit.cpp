@@ -1,9 +1,9 @@
-#include "ActorInit.hpp"
-
 #include <Heliogrim/Actor/Actor.hpp>
 #include <Heliogrim/Actor/Geometry/BoxShapeGeometryActor.hpp>
 #include <Heliogrim/Actor/Geometry/SphereShapeGeometryActor.hpp>
 #include <Heliogrim/Actor/Geometry/StaticGeometryActor.hpp>
+
+import Editor.Boot;
 
 using namespace hg;
 

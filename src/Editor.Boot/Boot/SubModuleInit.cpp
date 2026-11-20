@@ -1,14 +1,11 @@
-#include "SubModuleInit.hpp"
-
 #include <Editor.Action/ActionManager.hpp>
 #include <Editor.Core/EditorEngine.hpp>
-#include <Editor.Graphics.IO/Module/EditorGraphicsIo.hpp>
 #include <Editor.UI.Main/EditorUI.hpp>
 #include <Engine.Accel/Accel.hpp>
 #include <Engine.Reflow/Reflow.hpp>
 
-#include "../Editor.hpp"
-
+import Editor.Boot;
+import Editor.Graphics.IO;
 import Engine.Common;
 
 using namespace hg::editor::boot;

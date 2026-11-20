@@ -1,5 +1,4 @@
-#include "RuntimeConfigInit.hpp"
-
+import Editor.Boot;
 import Engine.Common;
 import Engine.Config;
 
