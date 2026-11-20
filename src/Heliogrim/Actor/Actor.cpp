@@ -7,7 +7,6 @@
 #include <Engine.Core/Universe.hpp>
 #include <Engine.Level/Level.hpp>
 #include <Engine.Logging/Logger.hpp>
-#include <Engine.Reflect/IsType.hpp>
 #include <Engine.Scene/SceneBase.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
@@ -25,6 +24,7 @@
 
 import Engine.Asserts;
 import Engine.Common;
+import Engine.Reflect;
 
 /**/
 

@@ -1,7 +1,6 @@
-#include "Diagnostic.hpp"
-
 import Engine.Asserts;
 import Engine.Common;
+import Engine.Diagnostics;
 
 using namespace hg::engine::diag;
 using namespace hg;

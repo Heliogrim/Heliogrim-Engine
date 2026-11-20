@@ -6,10 +6,10 @@
 #include <Engine.Assets.Type/Material/GraphicsMaterialPrototype.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Core/Engine.hpp>
-#include <Engine.Reflect/Cast.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Reflect;
 #endif
 
 namespace hg::editor::assets::materials {

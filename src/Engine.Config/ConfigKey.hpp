@@ -1,9 +1,8 @@
 #pragma once
 
-#include <Engine.Reflect/Compile/String.hpp>
-
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Reflect;
 #endif
 
 namespace hg::engine::cfg {

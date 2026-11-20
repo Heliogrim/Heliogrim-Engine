@@ -4,9 +4,9 @@
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets.Type/Texture/ImageAsset.hpp>
 #include <Engine.Core/Engine.hpp>
-#include <Engine.Reflect/Cast.hpp>
 
 import Engine.Asserts;
+import Engine.Reflect;
 
 using namespace ::hg::editor::graphics::loader;
 using namespace ::hg;

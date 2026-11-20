@@ -1,10 +1,13 @@
 #pragma once
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Reflect/Inherit/InheritBase.hpp>
 
 #include "SceneBroadcastFlags.hpp"
 #include "ScenePostProcessFlags.hpp"
 #include "SceneUpdateFlags.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Reflect;
+#endif
 
 namespace hg {
 	class SceneComponent;

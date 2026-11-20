@@ -5,14 +5,13 @@
 #include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Graphics/API/VkTranslate.hpp>
 #include <Engine.Graphics.RenderGraph/Relation/TextureDescription.hpp>
-#include <Engine.Reflect/Cast.hpp>
-#include <Engine.Reflect/IsType.hpp>
 
 #include "MeshPass.hpp"
 #include "RaytracingPass.hpp"
 #include "VkGraphicsPass.hpp"
 
 import Engine.Common;
+import Engine.Reflect;
 
 using namespace hg::engine::accel;
 using namespace hg;

@@ -1,12 +1,11 @@
 #pragma once
 
-#include <Engine.Reflect/FullTypeInfo.hpp>
-
 #include "StageTypeInfo.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Asserts;
 import Engine.Common;
+import Engine.Reflect;
 #endif
 
 namespace hg::engine::storage {

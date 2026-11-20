@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine.Reflect/TypeId.hpp>
+#include <Engine.Common/Sal.hpp>
 #include <Engine.Storage.Registry/IStorage.hpp>
 
 #include "../Access/IoResourceBase.hpp"
@@ -8,6 +8,7 @@
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Asserts;
 import Engine.Common;
+import Engine.Reflect;
 #endif
 
 namespace hg::engine::storage {

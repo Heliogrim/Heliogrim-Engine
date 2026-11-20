@@ -32,7 +32,7 @@ namespace HeliogrimApi {
 
 		struct ArchetypeFixture {
 			FakeSlot slot {};
-			Vector<uintptr_t> offsets {};
+			Vector<std::uintptr_t> offsets {};
 			u64 bitmap = 0uLL;
 
 			ArchetypeFixture() {
@@ -42,8 +42,8 @@ namespace HeliogrimApi {
 				}
 			}
 
-			[[nodiscard]] uintptr_t offsetOf(const ptr<const void> p_) const noexcept {
-				return reinterpret_cast<uintptr_t>(p_) - reinterpret_cast<uintptr_t>(&slot);
+			[[nodiscard]] std::uintptr_t offsetOf(const ptr<const void> p_) const noexcept {
+				return reinterpret_cast<std::uintptr_t>(p_) - reinterpret_cast<std::uintptr_t>(&slot);
 			}
 
 			[[nodiscard]] ComponentRange range() noexcept {
@@ -134,11 +134,11 @@ namespace HeliogrimApi {
 
 	TEST(ComponentRange, PolymorphicSubobject) {
 		alignas(16) PolyComponent poly {};
-		const auto base = reinterpret_cast<uintptr_t>(&poly);
+		const auto base = reinterpret_cast<std::uintptr_t>(&poly);
 		const auto* const subobject = static_cast<HierarchyComponent*>(&poly);
-		ASSERT_NE(reinterpret_cast<uintptr_t>(subobject), base);
+		ASSERT_NE(reinterpret_cast<std::uintptr_t>(subobject), base);
 
-		const Vector<uintptr_t> offsets { reinterpret_cast<uintptr_t>(subobject) - base };
+		const Vector<std::uintptr_t> offsets { reinterpret_cast<std::uintptr_t>(subobject) - base };
 		ASSERT_EQ(offsets.front() % min_align, 0uLL) << "fixture assumes the subobject lands on the minimum alignment";
 		const u64 bitmap = 1uLL << (offsets.front() / min_align);
 

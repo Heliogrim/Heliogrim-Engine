@@ -4,7 +4,6 @@
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Timing.hpp>
 #include <Engine.Core/Module/Modules.hpp>
-#include <Engine.Event/GlobalEventEmitter.hpp>
 
 /**/
 #include <Engine.Serialization/SerializationModule.hpp>
@@ -12,6 +11,7 @@
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Event;
 #endif
 /**/
 

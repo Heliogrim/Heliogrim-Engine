@@ -26,7 +26,6 @@
 #include <Engine.Core/Module/Modules.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Logging/LogSink.hpp>
-#include <Engine.Reflect/IsType.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 #include <Engine.Resource.Archive/StorageReadonlyArchive.hpp>
 #include <Engine.Resource.Package/Attribute/MagicBytes.hpp>
@@ -40,6 +39,7 @@
 #include <Engine.Storage.System/StorageSystem.hpp>
 
 import Engine.Common;
+import Engine.Reflect;
 
 using namespace hg::editor::boot;
 using namespace hg::engine;

@@ -1,10 +1,12 @@
 #pragma once
 
-#include <Engine.Event/EventEmitter.hpp>
-
 #include "../Widget.hpp"
 #include "../../Children.hpp"
 #include "../../Event/FormSubmitEvent.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Event;
+#endif
 
 namespace hg::engine::reflow {
 	class Form :

@@ -125,7 +125,7 @@ namespace hg::engine::acs {
 	private:
 		[[nodiscard]] Slot claim(ptr<const Chunk> exclude_);
 
-		[[nodiscard]] static uintptr_t chunkAddress(ptr<const Chunk> chunk_) noexcept;
+		[[nodiscard]] static std::uintptr_t chunkAddress(ptr<const Chunk> chunk_) noexcept;
 
 		[[nodiscard]] Slot find(ptr<const std::byte> slot_) const;
 

@@ -1,8 +1,10 @@
 #pragma once
 
-#include <Engine.Reflect/Inherit/InheritMeta.hpp>
-
 #include "CollisionComponent.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Reflect;
+#endif
 
 namespace hg {
 	class ShapeCollisionComponent :

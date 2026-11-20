@@ -1,6 +1,8 @@
 #pragma once
 
-#include <Engine.Diagnostics/Code.hpp>
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Diagnostics;
+#endif
 
 namespace hg::engine::accel::lang::codes {
 	// numbered from 1 in compiler phase order, internal-* (compiler bugs) last; numbers are frozen once published

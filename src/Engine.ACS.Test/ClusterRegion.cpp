@@ -40,7 +40,7 @@ namespace Acs {
 		Handle handle {};
 		auto* const slot = region.allocate(handle);
 		ASSERT_NE(slot, nullptr);
-		EXPECT_EQ(reinterpret_cast<uintptr_t>(slot) % testDesc.align, 0u);
+		EXPECT_EQ(reinterpret_cast<std::uintptr_t>(slot) % testDesc.align, 0u);
 		EXPECT_EQ(table.resolve(handle), slot + testDesc.actorOffset);
 		EXPECT_EQ(region.stats(0u).live, 1u);
 
@@ -65,7 +65,7 @@ namespace Acs {
 
 		std::set<std::byte*> distinct {};
 		for (size_t i = 0; i < n; ++i) {
-			EXPECT_EQ(reinterpret_cast<uintptr_t>(slots[i]) % testDesc.align, 0u);
+			EXPECT_EQ(reinterpret_cast<std::uintptr_t>(slots[i]) % testDesc.align, 0u);
 			EXPECT_EQ(table.resolve(handles[i]), slots[i] + testDesc.actorOffset);
 			distinct.insert(slots[i]);
 		}

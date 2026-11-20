@@ -458,7 +458,7 @@ std::byte* Registry::resolveComponent(const Handle handle_, const std::ptrdiff_t
 		return nullptr;
 	}
 
-	const auto fromSlot = static_cast<uintptr_t>(offset_ + actorOffset);
+	const auto fromSlot = static_cast<std::uintptr_t>(offset_ + actorOffset);
 	const auto offsets = actorClass->componentOffsets();
 	const auto at = std::ranges::find(offsets, fromSlot);
 	if (at == offsets.end()) {

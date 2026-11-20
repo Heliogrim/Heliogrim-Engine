@@ -3,13 +3,13 @@
 #include <Engine.Assets.Type/Asset.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Reflect/Inherit/ClassMetaBase.hpp>
 
 #include "__fwd.hpp"
 #include "../ResourceUsageFlag.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Reflect;
 #endif
 
 namespace hg::engine::resource {

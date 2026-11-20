@@ -1,8 +1,7 @@
-#include "LoadPipeline.hpp"
-
 #include <Engine.Common/StringLiterals.hpp>
 
 import Engine.Common;
+import Engine.Resource.Load;
 
 using namespace hg;
 

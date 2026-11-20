@@ -8,5 +8,6 @@ if ("${CMAKE_SYSTEM_NAME}" MATCHES "Windows")
 			${PROJECT_NAME}::Engine.Asserts
 			${PROJECT_NAME}::Engine.Common
 			${PROJECT_NAME}::Engine.Input
+			${PROJECT_NAME}::Engine.Reflect
 	)
 endif ()

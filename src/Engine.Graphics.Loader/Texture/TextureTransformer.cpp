@@ -3,12 +3,12 @@
 #include <Engine.Graphics/Pool/GlobalResourcePool.hpp>
 #include <Engine.Graphics/Texture/SparseTextureView.hpp>
 #include <Engine.Graphics/Texture/TextureLikeObject.hpp>
-#include <Engine.Reflect/Cast.hpp>
 #include <Engine.Resource/Manage/UniqueResource.hpp>
 
 #include "./Transformer/Ktx.hpp"
 
 import Engine.Common;
+import Engine.Reflect;
 
 using namespace hg::engine::graphics::loader;
 using namespace hg::engine::graphics;

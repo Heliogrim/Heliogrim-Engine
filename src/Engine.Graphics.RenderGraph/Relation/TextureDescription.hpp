@@ -3,12 +3,12 @@
 #include <Engine.Graphics/TextureFormat.hpp>
 #include <Engine.Graphics/Texture/__fwd.hpp>
 #include <Engine.Graphics/Texture/TextureType.hpp>
-#include <Engine.Reflect/Compile/TypeId.hpp>
 
 #include "Description.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Reflect;
 #endif
 
 namespace hg::engine::render::graph {

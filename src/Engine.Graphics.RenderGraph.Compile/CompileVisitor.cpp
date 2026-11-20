@@ -2,7 +2,6 @@
 
 #include <Engine.Graphics.RenderGraph/RuntimeGraph.hpp>
 #include <Engine.Graphics.RenderGraph/Builder/Builder.hpp>
-#include <Engine.Reflect/TypeSwitch.hpp>
 
 /**/
 #include <Engine.Accel.Compile/VkEffectCompiler.hpp>
@@ -17,9 +16,9 @@
 #include <Engine.Graphics.RenderGraph/Node/Runtime/ProviderNode.hpp>
 #include <Engine.Graphics.RenderGraph/Node/Runtime/SelectorNode.hpp>
 #include <Engine.Graphics.RenderGraph/Pass/CompilePassContext.hpp>
-#include <Engine.Reflect/Cast.hpp>
 
 import Engine.Common;
+import Engine.Reflect;
 /**/
 
 using namespace hg::engine::render::graph;

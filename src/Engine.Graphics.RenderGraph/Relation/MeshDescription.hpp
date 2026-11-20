@@ -3,9 +3,12 @@
 #include <stddef.h>
 #include <Engine.Accel.Effect/Stage/TransferDataType.hpp>
 #include <Engine.Graphics/Geometry/Vertex.hpp>
-#include <Engine.Reflect/Compile/TypeId.hpp>
 
 #include "Description.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Reflect;
+#endif
 
 namespace hg::engine::render::graph {
 	class MeshDescription :

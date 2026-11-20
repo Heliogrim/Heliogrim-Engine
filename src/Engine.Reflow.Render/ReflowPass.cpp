@@ -31,9 +31,6 @@
 #include <Engine.Graphics.RenderGraph/Relation/TextureDescription.hpp>
 #include <Engine.Graphics.RenderGraph/Symbol/ScopedSymbolContext.hpp>
 #include <Engine.Graphics.Scene/View/SceneView.hpp>
-#include <Engine.Reflect/Cast.hpp>
-#include <Engine.Reflect/ExactType.hpp>
-#include <Engine.Reflect/TypeSwitch.hpp>
 #include <Engine.Reflow/ReflowEngine.hpp>
 #include <Engine.Reflow/Command/ReflowCommandBuffer.hpp>
 #include <Engine.Reflow/Scene/UISceneModel.hpp>
@@ -45,6 +42,7 @@
 
 import Engine.Asserts;
 import Engine.Common;
+import Engine.Reflect;
 
 /**/
 

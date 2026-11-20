@@ -1,13 +1,13 @@
 #pragma once
 
 #include <Engine.ACS/Archetype/LayoutInfo.hpp>
-#include <Engine.Reflect/Inherit/InheritMeta.hpp>
 
 #include "TypedActorClass.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Asserts;
 import Engine.Common;
+import Engine.Reflect;
 #endif
 
 namespace hg::archetype_detail {

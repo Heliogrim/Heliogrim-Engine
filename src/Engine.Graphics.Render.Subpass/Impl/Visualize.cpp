@@ -13,11 +13,11 @@
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneColor.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneDepth.hpp>
 #include <Engine.Graphics.RenderGraph/Symbol/ScopedSymbolContext.hpp>
-#include <Engine.Reflect/Cast.hpp>
 
 #include "__tmp_helper.hpp"
 
 import Engine.Common;
+import Engine.Reflect;
 
 using namespace hg::engine::render;
 using namespace hg::engine::accel;

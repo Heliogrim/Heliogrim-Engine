@@ -1,3 +1,3 @@
-#include "MetaClass.hpp"
+import Engine.Reflect;
 
 using namespace hg;

@@ -3,5 +3,5 @@
 make_library_project(
 		LIB_NAME "Editor.Core"
 		LIB_FOLDER "${IDE_FOLDER}/Editor"
-		LIBRARIES ${PROJECT_NAME}::Heliogrim ${PROJECT_NAME}::Engine.Common
+		LIBRARIES ${PROJECT_NAME}::Heliogrim ${PROJECT_NAME}::Engine.Common ${PROJECT_NAME}::Engine.Event
 )

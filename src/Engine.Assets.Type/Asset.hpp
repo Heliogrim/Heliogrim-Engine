@@ -5,12 +5,12 @@
 #include <Engine.Assets/AssetReferenceUrl.hpp>
 #include <Engine.Assets/AssetTypeId.hpp>
 #include <Engine.Assets/AssetUrl.hpp>
-#include <Engine.Reflect/Inherit/InheritBase.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 #include <Engine.Serialization/Layout/__fwd.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Reflect;
 #endif
 
 namespace hg::engine::assets {

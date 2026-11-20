@@ -1,12 +1,12 @@
 #pragma once
 
-#include <Engine.Reflect/Meta/MetaClass.hpp>
 #include <Engine.Serialization/Layout/__fwd.hpp>
 
 #include "LayoutOptimizer.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Reflect;
 #endif
 
 namespace hg::engine::serialization {

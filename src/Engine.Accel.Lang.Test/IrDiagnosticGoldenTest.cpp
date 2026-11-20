@@ -14,12 +14,12 @@
 #include <Engine.Accel.Lang/Ir/Resolve.hpp>
 #include <Engine.Accel.Lang/Ir/Tier.hpp>
 #include <Engine.Accel.Lang/Ir/Spirv/SpirvEmitter.hpp>
-#include <Engine.Diagnostics/Render.hpp>
 
 #include "IrSpan.hpp"
 #include "IrSpirvText.hpp"
 #include "IrWording.hpp"
 
+import Engine.Diagnostics;
 import std;
 
 using namespace hg::engine::accel::lang::ir;

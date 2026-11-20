@@ -1,11 +1,10 @@
 #pragma once
 
-#include <Engine.Event/Event.hpp>
-
 #include "Event/EventResponse.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Event;
 #endif
 
 namespace hg::engine::reflow {

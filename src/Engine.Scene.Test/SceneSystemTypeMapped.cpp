@@ -1,11 +1,10 @@
 #include "pch.h"
 /**/
 
-#include <Engine.Reflect/Inherit/InheritBase.hpp>
-#include <Engine.Reflect/Inherit/InheritMeta.hpp>
 #include <Engine.Scene.Support/SceneSystemTypeMappedRegistry.hpp>
 #include <Heliogrim/Component/SceneComponent.hpp>
 
+import Engine.Reflect;
 import std;
 
 using namespace hg::engine::scene;

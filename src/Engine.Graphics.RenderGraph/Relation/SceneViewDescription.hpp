@@ -1,8 +1,10 @@
 #pragma once
 
-#include <Engine.Reflect/Compile/TypeId.hpp>
-
 #include "Description.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Reflect;
+#endif
 
 namespace hg::engine::render::graph {
 	class SceneViewDescription final :

@@ -1,12 +1,12 @@
 #pragma once
 
 #include "Access/Structure.hpp"
-#include "Engine.Reflect/IsType.hpp"
 #include "Heliogrim/ActorInitializer.hpp"
 #include "Structure/RecordScopedSlot.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Reflect;
 #endif
 
 namespace hg::engine::serialization {

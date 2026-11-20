@@ -1,12 +1,11 @@
 #pragma once
 
-#include <Engine.Reflect/Inherit/InheritBase.hpp>
-
 #include "__fwd.hpp"
 #include "Bind/BindLayout.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Reflect;
 #endif
 
 namespace hg::engine::accel {

@@ -1,12 +1,11 @@
 #pragma once
 
-#include <Engine.Reflect/Compile/TypeId.hpp>
-
 #include "Component.hpp"
 #include "../Relation/Provision.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Reflect;
 #endif
 
 namespace hg::engine::render::graph {

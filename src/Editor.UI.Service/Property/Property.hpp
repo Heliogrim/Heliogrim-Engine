@@ -1,12 +1,12 @@
 #pragma once
 
 #include <Engine.ACS/ComponentTypeId.hpp>
-#include <Engine.Reflect/Meta/MetaClass.hpp>
 #include <Engine.Reflow/Widget/Widget.hpp>
 #include <Heliogrim/Actor/Actor.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Reflect;
 #endif
 
 namespace hg::editor::ui::service {

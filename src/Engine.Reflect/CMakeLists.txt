@@ -1,7 +1,8 @@
 
 # Setup
 make_library_project(
-		LIB_NAME Engine.Reflect
+		LIB_NAME Engine.Reflect
+		MODULE
 		LIB_FOLDER "${IDE_FOLDER}/Engine/Utils"
 		LIBRARIES
 		${PROJECT_NAME}::Engine.Asserts

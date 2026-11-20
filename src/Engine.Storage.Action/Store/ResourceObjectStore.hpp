@@ -9,7 +9,7 @@ import Engine.Common;
 namespace hg::engine::storage {
 	struct ResourceObjectStore {
 		struct CachedResource {
-			using address_type = uintptr_t;
+			using address_type = std::uintptr_t;
 			using dep_type = std::pair<type_id, address_type>;
 
 			Rc<void> data;

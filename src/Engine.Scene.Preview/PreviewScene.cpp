@@ -1,10 +1,10 @@
 #include "PreviewScene.hpp"
 
-#include <Engine.Reflect/Cast.hpp>
 #include <Heliogrim/Component/HierarchyComponent.hpp>
 #include <Heliogrim/Component/SceneComponent.hpp>
 
 import Engine.Asserts;
+import Engine.Reflect;
 
 using namespace hg::engine::scene;
 using namespace hg;

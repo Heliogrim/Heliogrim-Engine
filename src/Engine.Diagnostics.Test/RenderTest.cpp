@@ -2,8 +2,7 @@
 
 /**/
 
-#include <Engine.Diagnostics/Diagnostic.hpp>
-#include <Engine.Diagnostics/Render.hpp>
+import Engine.Diagnostics;
 
 using namespace hg::engine::diag;
 using namespace hg;

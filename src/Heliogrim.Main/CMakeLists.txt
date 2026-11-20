@@ -6,5 +6,6 @@ make_library_project(
         LIBRARIES
         ${PROJECT_NAME}::Engine.Common
         ${PROJECT_NAME}::Engine.Core.Game
+        ${PROJECT_NAME}::Engine.Event
         ${PROJECT_NAME}::Heliogrim
 )

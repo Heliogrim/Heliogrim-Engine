@@ -1,4 +1,4 @@
-#include "GlobalEventEmitter.hpp"
+import Engine.Event;
 
 using namespace hg;
 

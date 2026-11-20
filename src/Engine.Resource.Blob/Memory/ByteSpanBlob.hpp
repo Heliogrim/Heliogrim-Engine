@@ -1,13 +1,13 @@
 #pragma once
 
 #include <cstring>
-#include <Engine.Reflect/Inherit/InheritMeta.hpp>
 
 #include "../Blob.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Asserts;
 import Engine.Common;
+import Engine.Reflect;
 #endif
 
 namespace hg::engine::resource {

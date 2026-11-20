@@ -1,6 +1,6 @@
 #include "PropertyService.hpp"
 
-#include <Engine.Reflect/Meta/MetaClass.hpp>
+import Engine.Reflect;
 
 using namespace hg::editor::ui::service;
 using namespace hg::editor::ui;

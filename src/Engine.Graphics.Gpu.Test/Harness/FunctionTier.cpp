@@ -11,7 +11,6 @@
 #include <Engine.Accel.Lang/Rep/Variable.hpp>
 #include <Engine.Accel.Pass/VkAccelerationPassFactory.hpp>
 #include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
-#include <Engine.Diagnostics/Render.hpp>
 #include <Engine.Driver.Vulkan/VkNativeBatch.hpp>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
 #include <Engine.Graphics/Command/CommandQueue.hpp>
@@ -23,6 +22,7 @@
 #include "FunctionTarget.hpp"
 
 import Engine.Common;
+import Engine.Diagnostics;
 
 using namespace hg::test::gpu;
 using namespace hg::engine::accel;

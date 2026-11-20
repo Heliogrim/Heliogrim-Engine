@@ -3,8 +3,8 @@
 #include <Engine.Accel.Pipeline/VkGraphicsPipeline.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Graphics/Graphics.hpp>
-#include <Engine.Reflect/Cast.hpp>
 
+import Engine.Reflect;
 import std;
 
 using namespace hg::engine::accel;

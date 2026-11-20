@@ -7,12 +7,12 @@
 #include <Engine.Graphics/Pool/SceneResourcePool.hpp>
 #include <Engine.Graphics.Loader/Geometry/Traits.hpp>
 #include <Engine.Graphics.Loader/Material/Traits.hpp>
-#include <Engine.Reflect/Cast.hpp>
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 #include <Heliogrim/Component/Scene/Geometry/StaticGeometryComponent.hpp>
 
 import Engine.Common;
+import Engine.Reflect;
 
 using namespace hg::engine::graphics::scene;
 using namespace hg;

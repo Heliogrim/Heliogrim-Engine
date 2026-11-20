@@ -1,10 +1,10 @@
 #include "UniverseContext.hpp"
 
-#include <Engine.Event/GlobalEventEmitter.hpp>
-
 #include "Engine.hpp"
 #include "Universe.hpp"
 #include "Event/UniverseChangeEvent.hpp"
+
+import Engine.Event;
 
 using namespace hg::engine::core;
 using namespace hg;

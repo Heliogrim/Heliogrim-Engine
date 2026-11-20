@@ -13,6 +13,7 @@
 
 import Engine.Asserts;
 import Engine.Common;
+import Engine.Reflect;
 
 using namespace hg::engine::resource::loader;
 using namespace hg;
@@ -79,7 +80,6 @@ SourceLoaderStreamResponse<void>::type SourceLoader::operator()(
 #include <Engine.Assets.Type/Texture/ImageAsset.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 #include <Engine.Core/Engine.hpp>
-#include <Engine.Reflect/Cast.hpp>
 
 engine::storage::FileUrl getLfsUrl(const non_owning_rptr<const engine::assets::Asset> asset_) {
 

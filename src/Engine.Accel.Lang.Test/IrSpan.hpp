@@ -5,9 +5,9 @@
 /**/
 
 #include <Engine.Accel.Lang/Ir/Diagnostic.hpp>
-#include <Engine.Diagnostics/Render.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Diagnostics;
 import std;
 #endif
 

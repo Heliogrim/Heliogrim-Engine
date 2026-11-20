@@ -40,10 +40,10 @@ namespace HeliogrimApi {
 				storage(std::make_unique<std::byte[]>(blockSize + bench_align)),
 				bitmap((blockSize / bench_align + 63u) / 64u, 0uLL) {
 				auto* const raw = storage.get();
-				slot = raw + ((bench_align - reinterpret_cast<uintptr_t>(raw) % bench_align) % bench_align);
+				slot = raw + ((bench_align - reinterpret_cast<std::uintptr_t>(raw) % bench_align) % bench_align);
 
 				for (u32 i = 0u; i < count_; ++i) {
-					const auto offset = static_cast<uintptr_t>(i) * bench_stride;
+					const auto offset = static_cast<std::uintptr_t>(i) * bench_stride;
 					offsets.emplace_back(offset);
 					bitmap[offset / bench_align / 64u] |= 1uLL << (offset / bench_align % 64u);
 					set.insert(component(i));
@@ -61,7 +61,7 @@ namespace HeliogrimApi {
 			u64 blockSize;
 			std::unique_ptr<std::byte[]> storage;
 			std::byte* slot = nullptr;
-			Vector<uintptr_t> offsets {};
+			Vector<std::uintptr_t> offsets {};
 			Vector<u64> bitmap;
 			CompactSet<ptr<HierarchyComponent>> set {};
 		};
@@ -85,9 +85,9 @@ namespace HeliogrimApi {
 			return nanosPer(
 				reps_,
 				[&range_] {
-					uintptr_t sum = 0uLL;
+					std::uintptr_t sum = 0uLL;
 					for (const auto* const component : range_) {
-						sum += reinterpret_cast<uintptr_t>(component);
+						sum += reinterpret_cast<std::uintptr_t>(component);
 					}
 					keep(sum);
 				}

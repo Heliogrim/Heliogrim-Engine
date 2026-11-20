@@ -1,11 +1,13 @@
 #pragma once
 
-#include <Engine.Reflect/Inherit/InheritMeta.hpp>
-
 #include "Package.hpp"
 #include "Footer/PackageFooter.hpp"
 #include "Header/PackageHeader.hpp"
 #include "Linker/ReadWritePackageLinker.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Reflect;
+#endif
 
 namespace hg::engine::resource {
 	class ReadWritePackage :

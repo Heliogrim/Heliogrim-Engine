@@ -11,6 +11,7 @@
 
 import Engine.Asserts;
 import Engine.Common;
+import Engine.Reflect;
 
 using namespace hg::editor;
 using namespace hg;
@@ -127,7 +128,6 @@ ref<Signal> AutoImportAction::finished() const noexcept {
 #include <Engine.Graphics/Importer/ModelFileTypes.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Logging/LogSink.hpp>
-#include <Engine.Reflect/TypeSwitch.hpp>
 #include <Engine.Resource/FileTypeId.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 #include <Engine.Resource.Archive/BufferArchive.hpp>

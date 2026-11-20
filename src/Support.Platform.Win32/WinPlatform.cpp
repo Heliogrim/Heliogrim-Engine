@@ -6,7 +6,6 @@
 #include <Engine.Common/stdafx.h>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Event/SignalShutdownEvent.hpp>
-#include <Engine.Event/GlobalEventEmitter.hpp>
 #include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Input/Input.hpp>
 #include <Engine.Input/KeyboardEvent.hpp>
@@ -19,6 +18,7 @@
 #include "Win32Window.hpp"
 
 import Engine.Asserts;
+import Engine.Event;
 
 using namespace hg::engine::scheduler;
 using namespace hg::engine::platform;

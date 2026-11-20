@@ -12,8 +12,8 @@ namespace {
 	constexpr u32 pageBytes = 4096u;
 	constexpr u32 cacheLine = 64u;
 
-	[[nodiscard]] uintptr_t address(ptr<const std::byte> ptr_) noexcept {
-		return reinterpret_cast<uintptr_t>(ptr_);
+	[[nodiscard]] std::uintptr_t address(ptr<const std::byte> ptr_) noexcept {
+		return reinterpret_cast<std::uintptr_t>(ptr_);
 	}
 
 	[[nodiscard]] std::align_val_t chunkAlign(ref<const ClusterDesc> desc_) noexcept {
@@ -205,7 +205,7 @@ ClusterRegion::Slot ClusterRegion::claim(const ptr<const Chunk> exclude_) {
 	}
 }
 
-uintptr_t ClusterRegion::chunkAddress(const ptr<const Chunk> chunk_) noexcept {
+std::uintptr_t ClusterRegion::chunkAddress(const ptr<const Chunk> chunk_) noexcept {
 	return address(chunk_->base);
 }
 
@@ -217,7 +217,7 @@ ClusterRegion::Slot ClusterRegion::find(const ptr<const std::byte> slot_) const 
 	}
 	auto* const chunk = *std::prev(next);
 	const auto offset = ptr - chunkAddress(chunk);
-	if (offset >= static_cast<uintptr_t>(_capacity) * _desc.stride) {
+	if (offset >= static_cast<std::uintptr_t>(_capacity) * _desc.stride) {
 		return Slot { nullptr, 0u };
 	}
 	return Slot { chunk, static_cast<u32>(offset / _desc.stride) };

@@ -1,8 +1,10 @@
 #pragma once
 
-#include <Engine.Event/Event.hpp>
-
 #include "../Builder/MenuBuilder.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Event;
+#endif
 
 namespace hg::engine::reflow {
 	class ContextMenuEvent :

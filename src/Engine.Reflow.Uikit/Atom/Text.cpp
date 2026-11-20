@@ -6,6 +6,7 @@
 #include <Engine.Reflow/Layout/Style.hpp>
 #include <Engine.Reflow/Widget/AttributeBatch.hpp>
 
+import Engine.Reflect;
 import std;
 
 using namespace hg::engine::reflow::uikit;
@@ -503,7 +504,6 @@ math::fvec2 Text::getShrinkFactor() const noexcept {
 #include <Engine.Graphics.Loader/Font/FontLoadOptions.hpp>
 #include <Engine.Graphics.Loader/Font/FontResource.hpp>
 #include <Engine.Graphics.Loader/Font/Traits.hpp>
-#include <Engine.Reflect/Cast.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 
 nmpt<Font> loadFont(cref<TypedAssetGuid<hg::engine::assets::FontAsset>> guid_) {

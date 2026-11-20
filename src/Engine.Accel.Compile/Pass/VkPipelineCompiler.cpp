@@ -13,9 +13,6 @@
 #include <Engine.Graphics/Geometry/UIVertex.hpp>
 #include <Engine.Graphics/Geometry/Vertex.hpp>
 #include <Engine.Logging/Logger.hpp>
-#include <Engine.Reflect/Cast.hpp>
-#include <Engine.Reflect/IsType.hpp>
-#include <Engine.Reflect/TypeSwitch.hpp>
 
 #include "VkVertexFormat.hpp"
 #include "../VkApi.hpp"
@@ -24,6 +21,7 @@
 
 import Engine.Asserts;
 import Engine.Common;
+import Engine.Reflect;
 
 using namespace hg::engine::accel;
 using namespace hg;

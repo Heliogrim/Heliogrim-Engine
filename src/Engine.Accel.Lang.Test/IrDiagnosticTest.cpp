@@ -4,10 +4,10 @@
 
 #include <Engine.Accel.Lang/Ir/Merge.hpp>
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
-#include <Engine.Diagnostics/Render.hpp>
 
 #include "IrSpan.hpp"
 
+import Engine.Diagnostics;
 import std;
 
 using namespace hg::engine::accel::lang::ir;

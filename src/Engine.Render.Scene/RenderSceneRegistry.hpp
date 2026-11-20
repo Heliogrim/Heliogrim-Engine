@@ -1,20 +1,18 @@
 #pragma once
 
-#include <Engine.Reflect/Inherit/Concept.hpp>
-#include <Engine.Reflect/Meta/MetaClass.hpp>
-
 #include "RenderSceneSystemSubStorage.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Reflect;
 #endif
 
 namespace hg::engine::render {
 	namespace {
 		struct hash_helper {
 			[[nodiscard]] size_t operator()(const ptr<const MetaClass> obj_) const noexcept {
-				constexpr static auto ih = ankerl::unordered_dense::v5_3_3::hash<uintptr_t> {};
-				return ih(reinterpret_cast<uintptr_t>(obj_));
+				constexpr static auto ih = ankerl::unordered_dense::v5_3_3::hash<std::uintptr_t> {};
+				return ih(reinterpret_cast<std::uintptr_t>(obj_));
 			}
 		};
 

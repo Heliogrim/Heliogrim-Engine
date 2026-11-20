@@ -1,5 +1,4 @@
-#include "Sink.hpp"
-
+import Engine.Diagnostics;
 import std;
 
 using namespace hg::engine::diag;

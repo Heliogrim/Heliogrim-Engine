@@ -2,14 +2,13 @@
 
 #include <Engine.Accel.Pass/AccelerationPass.hpp>
 #include <Engine.Accel.Pass/VkGraphicsPass.hpp>
-#include <Engine.Reflect/Cast.hpp>
-#include <Engine.Reflect/TypeSwitch.hpp>
 
 #include "Engine.Graphics/Texture/SparseTexture.hpp"
 #include "Engine.Graphics/Texture/SparseTextureView.hpp"
 #include "Engine.Graphics/Texture/Texture.hpp"
 #include "Engine.Graphics/Texture/TextureView.hpp"
 
+import Engine.Reflect;
 import std;
 
 using namespace hg::engine::graphics;
