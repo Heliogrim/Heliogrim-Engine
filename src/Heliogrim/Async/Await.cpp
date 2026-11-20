@@ -7,3 +7,7 @@ void hg::await(ref<Signal> signal_) {
 void hg::await(ref<JoinCounter> counter_) {
 	counter_.wait();
 }
+
+void hg::await(ref<Batch> batch_) {
+	batch_.wait();
+}
