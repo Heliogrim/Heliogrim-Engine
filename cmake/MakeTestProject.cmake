@@ -99,6 +99,8 @@ function(make_test_project)
 			${TEST_LIBRARIES}
 	)
 
+	_record_module_project("${args_TEST_NAME}" "${args_LIBRARIES}" ${target})
+
 	# Compile
 	target_compile_definitions(
 			${target}

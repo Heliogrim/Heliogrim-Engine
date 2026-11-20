@@ -32,6 +32,7 @@ function(_make_module_provider out name)
 	name_to_target(provider "${name}.Module")
 	add_library(${provider} OBJECT)
 	add_library(${PROJECT_NAME}::${name}.Module ALIAS ${provider})
+	set_property(GLOBAL APPEND PROPERTY global_module_providers "${name}")
 
 	# Bundles linking the provider are exported, so the provider has to be too.
 	export(TARGETS ${provider} NAMESPACE ${PROJECT_NAME}:: FILE ${PROJECT_BINARY_DIR}/cmake/${provider}/${provider}-export.cmake)

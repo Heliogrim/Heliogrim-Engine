@@ -77,6 +77,7 @@ function(_merge_module_subs)
 
 	foreach (sub IN LISTS subs)
 		_record_module_sub("${sub}" root libraries)
+		set_property(GLOBAL APPEND PROPERTY global_module_project_${root}_libraries ${libraries})
 
 		get_src_path(proj_src_dir)
 		name_to_target(root_target "${root}")
@@ -130,17 +131,75 @@ function(_finalize_module_interfaces)
 				EXCLUDE ${exclude}
 		)
 
+		get_property(known GLOBAL PROPERTY global_module_providers)
 		set(import_libraries "")
 		foreach (imported IN LISTS MODULE_INTERFACE_IMPORTS)
-			if (imported IN_LIST DEFAULT_MODULES)
+			if (imported IN_LIST known OR imported IN_LIST roots)
 				list(APPEND import_libraries "${PROJECT_NAME}::${imported}.Module")
 			else ()
-				message(FATAL_ERROR "Headers of `${root}` import `${imported}`, which is not in `DEFAULT_MODULES`.")
+				message(FATAL_ERROR "Headers of `${root}` import `${imported}`, which no module provider declares.")
 			endif ()
 		endforeach ()
 
 		target_link_libraries(${provider} PRIVATE ${import_libraries})
 	endforeach ()
+
+	get_property(projects GLOBAL PROPERTY global_module_projects)
+	foreach (project IN LISTS projects)
+		get_property(targets GLOBAL PROPERTY global_module_project_${project}_targets)
+		_module_closure("${project}" providers)
+		foreach (target IN LISTS targets)
+			target_link_libraries(${target} PRIVATE ${providers})
+		endforeach ()
+	endforeach ()
+endfunction()
+
+# Module providers `name` needs: its own module, the modules in its `LIBRARIES`, and theirs, transitively
+#  (a dependency's headers import that dependency's modules). Vendor providers are listed as `<name>.Module`.
+function(_module_closure name out)
+	get_property(roots GLOBAL PROPERTY global_module_roots)
+	set(pending "${name}")
+	set(visited "")
+	set(providers "")
+	while (pending)
+		list(POP_FRONT pending current)
+		if (current IN_LIST visited)
+			continue()
+		endif ()
+		list(APPEND visited "${current}")
+
+		get_property(module GLOBAL PROPERTY global_module_sub_${current}_root)
+		if (NOT module)
+			set(module "${current}")
+		endif ()
+		if (module IN_LIST roots)
+			list(APPEND providers "${PROJECT_NAME}::${module}.Module")
+		endif ()
+
+		get_property(libraries GLOBAL PROPERTY global_module_project_${current}_libraries)
+		foreach (library IN LISTS libraries)
+			if (NOT library MATCHES "^${PROJECT_NAME}::(.+)$")
+				continue()
+			endif ()
+			set(dependency "${CMAKE_MATCH_1}")
+			if (dependency MATCHES "\\.Module$")
+				list(APPEND providers "${library}")
+			else ()
+				list(APPEND pending "${dependency}")
+			endif ()
+		endforeach ()
+	endwhile ()
+
+	list(REMOVE_DUPLICATES providers)
+	set(${out} "${providers}" PARENT_SCOPE)
+endfunction()
+
+# Declares a project's `LIBRARIES` for the module closure; `ARGN` are the targets that link the providers it needs.
+function(_record_module_project name libraries)
+	set_property(GLOBAL APPEND PROPERTY global_module_projects "${name}")
+	set_property(GLOBAL PROPERTY global_module_project_${name}_libraries ${libraries})
+	set_property(GLOBAL PROPERTY global_module_project_${name}_targets ${ARGN})
+	_defer_finalize_module_interfaces()
 endfunction()
 
 function(_defer_finalize_module_interfaces)
@@ -177,15 +236,17 @@ function(make_library_sub_project)
 	set_property(GLOBAL PROPERTY global_module_sub_${args_LIB_NAME}_sources ${source_files})
 	set_property(GLOBAL PROPERTY global_module_sub_${args_LIB_NAME}_headers ${header_files})
 	set_property(GLOBAL PROPERTY global_module_sub_${args_LIB_NAME}_libraries ${args_LIBRARIES})
+	set_property(GLOBAL PROPERTY global_module_project_${args_LIB_NAME}_libraries ${args_LIBRARIES})
 
 	_defer_finalize_module_interfaces()
 endfunction()
 
 function(make_library_project)
 
+	# MODULE: generate a named module `LIB_NAME` from the bundle's headers (`MODULE_EXCLUDE`: headers kept textual).
 	set(__single_var_options LIB_NAME LIB_FOLDER SOURCE FORCE_TYPE_STATIC)
 	set(__multi_var_options LIBRARIES MODULE_EXCLUDE)
-	cmake_parse_arguments(args "" "${__single_var_options}" "${__multi_var_options}" ${ARGN})
+	cmake_parse_arguments(args "MODULE" "${__single_var_options}" "${__multi_var_options}" ${ARGN})
 
 	if (NOT DEFINED args_LIB_NAME)
 		message(FATAL_ERROR "Target `${args_LIB_NAME}` is required parameter name to generate setup.")
@@ -233,13 +294,13 @@ function(make_library_project)
 
 	# Module Provider and Sub-Projects (generated once all bundles are known)
 	set_property(GLOBAL APPEND PROPERTY global_module_declared "${args_LIB_NAME}")
-	if (args_LIB_NAME IN_LIST DEFAULT_MODULES)
+	if (args_MODULE)
 		set_property(GLOBAL APPEND PROPERTY global_module_roots "${args_LIB_NAME}")
 		set_property(GLOBAL APPEND PROPERTY global_module_${args_LIB_NAME}_headers ${header_files})
 		set_property(GLOBAL APPEND PROPERTY global_module_${args_LIB_NAME}_prefixes "${args_LIB_NAME}")
 		set_property(GLOBAL APPEND PROPERTY global_module_${args_LIB_NAME}_exclude ${args_MODULE_EXCLUDE})
 	endif ()
-	_defer_finalize_module_interfaces()
+	_record_module_project("${args_LIB_NAME}" "${args_LIBRARIES}" ${target})
 
 	add_library(${PROJECT_NAME}::${args_LIB_NAME} ALIAS ${target})
 
@@ -259,22 +320,13 @@ function(make_library_project)
 		set_target_properties(${target} PROPERTIES FOLDER "${args_LIB_FOLDER}")
 	endif ()
 
-	# Libraries
-	# The own provider included: the bundle's sources import their own module.
-	#  A module's bundle links only the providers listed up to its own, so foundations never depend on later ones (`vulkan`).
-	set(module_libraries ${DEFAULT_MODULE_LIBRARIES})
-	list(FIND DEFAULT_MODULES "${args_LIB_NAME}" module_at)
-	if (module_at GREATER -1)
-		math(EXPR module_count "${module_at} + 1")
-		list(SUBLIST DEFAULT_MODULE_LIBRARIES 0 ${module_count} module_libraries)
-	endif ()
-
+	# Libraries (module providers beyond the defaults, the own one included, follow in `_finalize_module_interfaces`)
 	target_link_libraries(
 			${target}
 			PRIVATE
 			${args_LIBRARIES}
 			${DEFAULT_LIBRARIES}
-			${module_libraries}
+			${DEFAULT_MODULE_LIBRARIES}
 	)
 
 	# Linker Options

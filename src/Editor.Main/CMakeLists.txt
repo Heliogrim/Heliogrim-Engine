@@ -27,5 +27,6 @@ make_app_project(
 		${PROJECT_NAME}::Editor.UI.Service
 		${PROJECT_NAME}::Editor.UI.Theme
 		${PROJECT_NAME}::Editor.UI.View
+		${PROJECT_NAME}::Engine.Common
 		${PROJECT_NAME}::Heliogrim
 )

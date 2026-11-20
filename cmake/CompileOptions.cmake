@@ -109,8 +109,9 @@ endif ()
 # Modules
 #
 
-# Ordered list of module names; every bundle, test and app links the provider of each.
-#  A module's own bundle links only the providers up to its own: `vulkan` stays last, out of the foundation bundles.
+# Modules every bundle, test and app may import without declaring them: std and the header-only vocabulary types.
+#  Any other module is a dependency in `LIBRARIES`: a bundle module by its bundle (`${PROJECT_NAME}::Engine.Common`),
+#  a vendor module by its provider (`${PROJECT_NAME}::glm.Module`). Providers reach dependents transitively.
 set(DEFAULT_MODULES
 		std
 		std.compat
@@ -118,10 +119,6 @@ set(DEFAULT_MODULES
 		tl.expected
 		ankerl.unordered_dense
 		std23.function_ref
-		glm
-		Engine.Asserts
-		Engine.Common
-		vulkan
 )
 
 set(DEFAULT_MODULE_LIBRARIES ${DEFAULT_MODULES})

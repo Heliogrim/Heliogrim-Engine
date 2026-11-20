@@ -6,5 +6,6 @@ make_library_project(
         LIBRARIES
         ${PROJECT_NAME}::Editor.UI
         ${PROJECT_NAME}::Editor.UI.Init
+        ${PROJECT_NAME}::Engine.Common
         ${PROJECT_NAME}::Heliogrim
 )
