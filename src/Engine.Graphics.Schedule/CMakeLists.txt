@@ -3,5 +3,5 @@
 make_library_project(
         LIB_NAME Engine.Graphics.Schedule
         LIB_FOLDER "${IDE_FOLDER}/Engine/Render"
-        LIBRARIES ${PROJECT_NAME}::Engine.Common
+        LIBRARIES ${PROJECT_NAME}::Engine.Common ${PROJECT_NAME}::vulkan.Module
 )

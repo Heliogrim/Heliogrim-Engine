@@ -7,4 +7,5 @@ make_library_project(
 		${PROJECT_NAME}::Engine.Common
 		${PROJECT_NAME}::Engine.Crypto
 		${PROJECT_NAME}::Engine.Diagnostics
+		${PROJECT_NAME}::Engine.Asserts
 )

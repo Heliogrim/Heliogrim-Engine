@@ -5,8 +5,10 @@ if ("${CMAKE_SYSTEM_NAME}" MATCHES "Windows")
 			LIB_NAME Support.Platform.Win32
 			LIB_FOLDER "${IDE_FOLDER}/Support"
 			LIBRARIES
+			${PROJECT_NAME}::Engine.Asserts
+			${PROJECT_NAME}::Engine.Async
 			${PROJECT_NAME}::Engine.Common
 			${PROJECT_NAME}::Engine.Platform
-			${PROJECT_NAME}::Engine.Async
+			${PROJECT_NAME}::vulkan.Module
 	)
 endif ()

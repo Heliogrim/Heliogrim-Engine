@@ -5,5 +5,6 @@ make_library_project(
         LIB_FOLDER "${IDE_FOLDER}/Editor"
         LIBRARIES
         ${PROJECT_NAME}::Editor.UI
+        ${PROJECT_NAME}::Engine.Common
         ${PROJECT_NAME}::Heliogrim
 )

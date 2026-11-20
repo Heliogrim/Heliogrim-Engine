@@ -121,6 +121,8 @@ function(make_app_project)
 			${DEFAULT_MODULE_LIBRARIES}
 	)
 
+	_record_module_project("${args_APP_NAME}" "${args_LIBRARIES}" ${app_target} ${lib_target})
+
 	# Compile Definitions
 	target_compile_definitions(
 			${app_target}
