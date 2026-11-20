@@ -5,12 +5,26 @@ include_guard(GLOBAL)
 #  Own headers go into `export extern "C++" {}`, so entities stay attached to the global module
 #  and remain the same entities a textual `#include` sees.
 
+# CLion excludes its build dirs from indexing, so interfaces generated there stay unresolved in the editor.
+#  One dir shared by all profiles: the content depends only on headers, and a copy per profile makes names ambiguous.
+if (DEFINED ENV{CLION_IDE})
+	set(__default_module_dir "${CMAKE_SOURCE_DIR}/.modules")
+else ()
+	set(__default_module_dir "${CMAKE_BINARY_DIR}/modules")
+endif ()
+set(HELIOGRIM_MODULE_DIR "${__default_module_dir}" CACHE PATH "Directory receiving generated module interfaces; keep it out of IDE-excluded dirs to get editor support.")
+
 # Internal Functions
 
 function(_write_if_changed path content)
-	file(WRITE "${path}.tmp" "${content}")
-	file(COPY_FILE "${path}.tmp" "${path}" ONLY_IF_DIFFERENT)
-	file(REMOVE "${path}.tmp")
+	# Temp file per build dir: profiles sharing `HELIOGRIM_MODULE_DIR` may configure concurrently.
+	cmake_path(GET path FILENAME name)
+	set(tmp "${CMAKE_BINARY_DIR}/module-tmp/${name}")
+	file(WRITE "${tmp}" "${content}")
+	cmake_path(GET path PARENT_PATH dir)
+	file(MAKE_DIRECTORY "${dir}")
+	file(COPY_FILE "${tmp}" "${path}" ONLY_IF_DIFFERENT)
+	file(REMOVE "${tmp}")
 endfunction()
 
 # Provider target `${PROJECT_NAME}-<name>.Module` (alias `${PROJECT_NAME}::<name>.Module`), built like a library project.
@@ -216,10 +230,10 @@ function(make_module_interface)
 			HEADERS ${args_HEADERS} OWN_PREFIXES ${args_OWN_PREFIXES} EXCLUDE ${args_EXCLUDE}
 	)
 
-	set(path "${CMAKE_BINARY_DIR}/modules/${args_MODULE_NAME}.cppm")
+	set(path "${HELIOGRIM_MODULE_DIR}/${args_MODULE_NAME}.cppm")
 	_write_if_changed("${path}" "${content}")
 
-	target_sources(${args_TARGET} PUBLIC FILE_SET CXX_MODULES BASE_DIRS "${CMAKE_BINARY_DIR}/modules" FILES "${path}")
+	target_sources(${args_TARGET} PUBLIC FILE_SET CXX_MODULES BASE_DIRS "${HELIOGRIM_MODULE_DIR}" FILES "${path}")
 	# `HG_MODULE_INTERFACE_UNIT` is only read by headers that import.
 	target_compile_options(${args_TARGET} PRIVATE -Wno-unused-macros)
 
@@ -242,11 +256,11 @@ function(make_vendor_module)
 			PRELUDE ${args_PRELUDE} HEADERS ${args_HEADERS} SKIP ${args_SKIP}
 	)
 
-	set(path "${CMAKE_BINARY_DIR}/modules/${args_MODULE_NAME}.cppm")
+	set(path "${HELIOGRIM_MODULE_DIR}/${args_MODULE_NAME}.cppm")
 	_write_if_changed("${path}" "${content}")
 
 	_make_module_provider(provider "${args_MODULE_NAME}")
-	target_sources(${provider} PUBLIC FILE_SET CXX_MODULES BASE_DIRS "${CMAKE_BINARY_DIR}/modules" FILES "${path}")
+	target_sources(${provider} PUBLIC FILE_SET CXX_MODULES BASE_DIRS "${HELIOGRIM_MODULE_DIR}" FILES "${path}")
 
 	# Third-party code; `HG_MODULE_INTERFACE_UNIT` is unused by most.
 	target_compile_options(${provider} PRIVATE -w)
