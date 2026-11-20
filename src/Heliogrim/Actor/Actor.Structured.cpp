@@ -29,6 +29,9 @@ void access::Structure<Actor>::serialize(
 
 	insert_guid_slot(record_, self_._guid);
 	insert_typeId_slot(record_, self_.getMetaClass<>()->typeId());
+	if (const auto engine = Engine::getEngine(); engine != nullptr) {
+		engine->getSerialization()->migrations().writeRevision(record_, self_.getMetaClass<>()->typeId());
+	}
 	record_.insertSlot<String>("label"sv) << self_._label.text;
 
 	/**/

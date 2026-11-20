@@ -6,6 +6,7 @@
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 
 #include "ActorClass.hpp"
+#include "ArchetypeMigration.hpp"
 #include "../Actor.hpp"
 
 namespace hg {
@@ -20,8 +21,13 @@ namespace hg {
 				ref<const engine::serialization::RecordScopedSlot> slot_,
 				nmpt<engine::acs::Registry>
 			) -> ptr<Actor> {
-				const auto record = slot_.asStruct();
-				return hg::await(CreateActor(class_, SerializedActor { record })).value().release();
+				const auto migrated = migrateArchetypeRecord(class_->metaClass()->typeId(), slot_.asStruct());
+				if (not migrated.has_value()) {
+					return nullptr;
+				}
+
+				// The future is always ready; a rejected record yields a null actor, never an error.
+				return hg::await(CreateActor(class_, SerializedActor { migrated->slot() })).value().release();
 			}
 		};
 	}

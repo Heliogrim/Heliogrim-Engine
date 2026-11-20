@@ -244,9 +244,13 @@ namespace hg {
 
 		ops.hydrate = [](const ptr<std::byte> slot_, ref<const engine::serialization::StructScopedSlot> record_) {
 			const auto components = record_.getRecordSlot(engine::serialization::Symbols::Components).asStruct();
-			[&]<u32... Entries_>(std::integer_sequence<u32, Entries_...>) {
-				(archetype_detail::hydrate_entry<info, Entries_>(slot_, components), ...);
+			// `&` (not `&&`) so every entry hydrates even after a refused one.
+			const bool complete = [&]<u32... Entries_>(std::integer_sequence<u32, Entries_...>) {
+				return (true & ... & archetype_detail::hydrate_entry<info, Entries_>(slot_, components));
 			}(entry_sequence {});
+			if (not complete) {
+				std::launder(reinterpret_cast<ptr<Type_>>(slot_ + info::actor_offset))->markUnknownData();
+			}
 		};
 
 		ops.dumpLayout = [](const ptr<const std::byte> slots_, const u32 count_, const u32 stride_, ref<Vector<std::byte>> out_) {

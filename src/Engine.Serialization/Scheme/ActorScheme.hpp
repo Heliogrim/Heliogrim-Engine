@@ -1,12 +1,15 @@
 #pragma once
 
+#include <format>
+#include <tuple>
+
 #include <Engine.ACS/Registry.hpp>
 #include <Engine.Common/Optional.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Reflect/Cast.hpp>
-#include <Engine.Resource.Archive/Archive.hpp>
 #include <Engine.Serialization/SerializationModule.hpp>
+#include <Engine.Serialization/Schema/Migration.hpp>
 #include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>
 #include <Engine.Serialization/Structure/RecordScopedSlot.hpp>
 #include <Engine.Serialization/Structure/SeqScopedSlot.hpp>
@@ -44,25 +47,76 @@ namespace hg::engine::serialization {
 			auto&&... args_
 		) {
 
-			const auto slot = slot_.asStruct();
+			using result_type = decltype(AccessType_::template instantiate(
+				allocator_,
+				std::declval<ref<const ActorGuid>>(),
+				std::forward<decltype(args_)>(args_)...
+			));
+			const auto original = slot_.asStruct();
+			if (original.getRecordSlot(Symbols::Components).asSeq().getRecordCount() < 0LL) {
+				// getRecordCount already latched the failure on the context; create no actor.
+				return static_cast<result_type>(nullptr);
+			}
+
+			const auto serial = Engine::getEngine()->getSerialization();
+			const auto& migrations = serial->migrations();
+			const auto& root = original.slot()->getState().root;
+			auto ctx = root != nullptr ? root->context : nullptr;
+			const auto migrate = [&ctx, &migrations](ref<const StructScopedSlot> record_) -> Opt<Migrated> {
+				// shortcut: a contextless load hydrates as written, without migration; give every load a context to upgrade
+				if (ctx == nullptr) {
+					return SomeVal<Migrated>(StructScopedSlot { record_ });
+				}
+				return migrations.migrateToCurrent(get_typeId_slot(record_), record_, *ctx);
+			};
+
+			const auto migrated = migrate(original);
+			if (not migrated.has_value()) {
+				return static_cast<result_type>(nullptr);
+			}
+
+			const auto& slot = migrated->slot();
+			std::ignore = get_typeId_slot(slot);
 			const auto actorGuid = get_guid_slot<ActorGuid>(slot);
 
 			auto components = slot.getRecordSlot(Symbols::Components).asSeq();
 			const auto count = components.getRecordCount();
 			if (count < 0LL) {
 				// getRecordCount already latched the failure on the context; create no actor.
-				return static_cast<decltype(AccessType_::template instantiate(allocator_, actorGuid, std::forward<decltype(args_)>(args_)...))>(nullptr);
+				return static_cast<result_type>(nullptr);
 			}
 
-			const auto serial = Engine::getEngine()->getSerialization();
-
-			// An actor missing one of its components cannot round-trip; skip it whole.
+			// An actor missing one of its components cannot round-trip; skip it whole. A level skips with a warning, a root actor has nothing left to load.
+			const bool isRoot = original.slot()->getState().parent == nullptr;
+			const auto skip = [isRoot](ref<const StructScopedSlot> structured_, ref<const String> detail_) {
+				if (isRoot) {
+					structured_.slot()->fail(ReadError::Kind::eUnknownType, structured_.slot()->getState().offset, 0LL, detail_.c_str());
+				} else {
+					structured_.warn(ReadError::Kind::eUnknownType, detail_);
+				}
+				return static_cast<result_type>(nullptr);
+			};
 			for (s64 idx = 0; idx < count; ++idx) {
 				const auto structured = components.getRecordSlot(idx).asStruct();
-				const auto typeId = get_typeId_slot<ComponentTypeId>(structured);
-				if (typeId != ComponentTypeId {} && not serial->getComponentScheme(typeId).has_value()) {
-					structured.warn(ReadError::Kind::eUnknownType, "component type has no scheme; actor skipped");
-					return static_cast<decltype(AccessType_::template instantiate(allocator_, actorGuid, std::forward<decltype(args_)>(args_)...))>(nullptr);
+				if (not has_typeId_slot(structured)) {
+					return skip(structured, std::format("component '{}' has no '@type'; actor skipped", idx));
+				}
+
+				if (not serial->getComponentScheme(get_typeId_slot<ComponentTypeId>(structured)).has_value()) {
+					return skip(structured, std::format("component '{}' type has no scheme; actor skipped", idx));
+				}
+
+				s8 parentIdx { -1 };
+				structured.template getSlot<s8>(Symbols::Parent) >> parentIdx;
+				if (parentIdx < -1 || parentIdx >= idx) {
+					const auto detail = std::format(
+						"parent index '{}' is out of range for component '{}', expected -1 to {}",
+						parentIdx,
+						idx,
+						idx - 1
+					);
+					structured.slot()->fail(ReadError::Kind::eInvalidValue, structured.slot()->getState().offset, 0LL, detail.c_str());
+					return static_cast<result_type>(nullptr);
 				}
 			}
 
@@ -81,33 +135,40 @@ namespace hg::engine::serialization {
 
 			for (s64 idx = 0; idx < count; ++idx) {
 
-				auto record = components.getRecordSlot(idx);
-				auto structured = record.asStruct();
+				const auto component = migrate(components.getRecordSlot(idx).asStruct());
+				if (not component.has_value()) {
+					unknown = true;
+					continue;
+				}
+
+				const auto& structured = component->slot();
+				const auto record = RecordScopedSlot {
+					ScopedSlotState { structured.getScopedState() },
+					StructureSlotState { structured.slot()->getState() }
+				};
 
 				/**/
 
 				const auto checkTypeId = get_typeId_slot<ComponentTypeId>(structured);
-				::hg::assertrt(checkTypeId != ComponentTypeId {});
-
-				/**/
-
 				s8 recordParentIdx { -1 };
 				structured.getSlot<s8>(Symbols::Parent) >> recordParentIdx;
-				::hg::assertrt(recordParentIdx == -1 || (recordParentIdx >= 0 && recordParentIdx < /* ~instanced.size() */idx));
-
-				/**/
 
 				const auto fnSet = serial->getComponentScheme(checkTypeId);
 				if (not fnSet.has_value()) {
 					// Unreachable after the pre-pass; kept so a scheme race cannot crash the load.
+					unknown = true;
 					continue;
 				}
 
-				const auto hasParent = recordParentIdx >= 0;
+				const auto hasParent = recordParentIdx >= 0 && recordParentIdx < idx;
 				auto* const parent = hasParent && instanced[recordParentIdx] ?
 					Cast<HierarchyComponent>(instanced[recordParentIdx]) :
 					nullptr;
-				::hg::assertd(hasParent == !!parent);
+				if (hasParent && parent == nullptr) {
+					// The parent failed or is no hierarchy component; the child cannot attach.
+					unknown = true;
+					continue;
+				}
 
 				/**/
 
@@ -123,6 +184,7 @@ namespace hg::engine::serialization {
 				/**/
 
 				if (next.get() == nullptr) {
+					unknown = true;
 					continue;
 				}
 
@@ -138,6 +200,10 @@ namespace hg::engine::serialization {
 							}
 						)
 					);
+
+				} else {
+					// Actors only attach hierarchy components; the dropped one must not vanish silently on save.
+					unknown = true;
 				}
 			}
 
