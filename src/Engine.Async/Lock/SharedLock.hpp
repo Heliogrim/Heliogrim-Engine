@@ -2,8 +2,6 @@
 
 #include <Engine.Common/ThreadSafety.hpp>
 
-#include "../Meta/LockTag.hpp"
-
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Asserts;
 import Engine.Common;

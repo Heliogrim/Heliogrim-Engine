@@ -6,7 +6,6 @@
 #ifdef _PROFILING
 #endif
 
-#include <Engine.Async/Collection/RingBuffer.hpp>
 #include <Engine.Common/Math/__default.inl>
 #include <Engine.Graphics.IO/Io.hpp>
 #include <Engine.Graphics.Schedule/RenderScenePipeline.hpp>

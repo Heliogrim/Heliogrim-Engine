@@ -1,9 +1,12 @@
 #pragma once
 
-#include <Engine.Async/Collection/RingBuffer.hpp>
 #include <Engine.Common/Sal.hpp>
 
 #include "Fiber.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::scheduler::fiber {
 	class FiberPool {

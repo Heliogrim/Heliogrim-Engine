@@ -9,7 +9,6 @@ make_library_project(
 		Engine.Common/Buffer.hpp
 		Engine.Common/String/Convert.hpp
 		Engine.Common/String/Text.hpp
-		Engine.Common/Collection/RingBuffer.hpp
 		Engine.Common/Math/Transform.hpp
 		Engine.Common/Profiling/Profiler.hpp
 		Engine.Common/StringLiterals.hpp

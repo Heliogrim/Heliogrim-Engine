@@ -2,12 +2,11 @@
 
 /**/
 
-#include <Engine.Async/Collection/RingBuffer.hpp>
-
+import Engine.Common;
 import std;
 
 using namespace hg;
-using namespace hg::engine::concurrent;
+using namespace hg::concurrent;
 
 namespace Async {
 	TEST(AsyncRingBuffer, StartsEmpty) {

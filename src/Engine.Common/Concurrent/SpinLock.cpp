@@ -1,7 +1,13 @@
 #include "SpinLock.hpp"
 
 using namespace hg::concurrent;
-using namespace hg::engine::scheduler;
+using namespace hg;
+
+// Address of a thread-local is non-zero and unique among live threads; no scheduler dependency needed.
+static u64 selfId() noexcept {
+	thread_local constinit char anchor = 0;
+	return reinterpret_cast<u64>(&anchor);
+}
 
 UnfairSpinLock::UnfairSpinLock() :
 	_gate(0) {}
@@ -9,16 +15,16 @@ UnfairSpinLock::UnfairSpinLock() :
 UnfairSpinLock::~UnfairSpinLock() noexcept {
 	// Assuming that spin lock is used while destroying is erroneous
 	/*
-	thread::thread_id expect { 0 };
+	u64 expect { 0 };
 	if (_gate != expect && !try_release())
 	    throw std::runtime_error("Can not destroy spin lock while gate is locked by other thread");
 	 */
 }
 
 void UnfairSpinLock::acquire() noexcept {
-	const auto tid = thread::self::getId();
+	const auto tid = selfId();
 
-	thread::thread_id expect { 0 };
+	u64 expect { 0 };
 	while (!_gate.compare_exchange_strong(expect, tid, std::memory_order::seq_cst)) {
 
 		spin();
@@ -27,25 +33,25 @@ void UnfairSpinLock::acquire() noexcept {
 }
 
 bool UnfairSpinLock::try_acquire() noexcept {
-	const auto tid = thread::self::getId();
+	const auto tid = selfId();
 
-	thread::thread_id expect { 0 };
+	u64 expect { 0 };
 	return _gate.compare_exchange_strong(expect, tid, std::memory_order::seq_cst);
 }
 
 void UnfairSpinLock::release() {
-	const auto tid = thread::self::getId();
+	const auto tid = selfId();
 
-	thread::thread_id expect { tid };
+	u64 expect { tid };
 	if (!_gate.compare_exchange_strong(expect, 0, std::memory_order::seq_cst)) {
 		throw std::runtime_error("Can not release spin lock, which belongs to other thread.");
 	}
 }
 
 bool UnfairSpinLock::try_release() noexcept {
-	const auto tid = thread::self::getId();
+	const auto tid = selfId();
 
-	thread::thread_id expect { tid };
+	u64 expect { tid };
 	return _gate.compare_exchange_strong(expect, 0, std::memory_order::seq_cst);
 }
 

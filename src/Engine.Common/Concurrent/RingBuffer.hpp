@@ -1,12 +1,13 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
+#include "../__macro.hpp"
+#include "../Collection/Vector.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
-import Engine.Common;
+import std;
 #endif
 
-namespace hg::engine::concurrent {
+namespace hg::concurrent {
 	/**
 	 * A Single-Producer, Single-Consumer - Ring Buffer
 	 *
