@@ -3,6 +3,8 @@
 #include <Engine.Async/Lock/UniqueLock.hpp>
 #include <Engine.Common/Discard.hpp>
 #include <Engine.Common/Move.hpp>
+#include <Engine.Diagnostics/Render.hpp>
+#include <Engine.Diagnostics/Sink.hpp>
 #include <Engine.Reflect/IsType.hpp>
 #include <Engine.Reflect/TypeSwitch.hpp>
 #include <Engine.Resource.Archive/StorageReadonlyArchive.hpp>
@@ -14,6 +16,7 @@
 #include <Engine.Storage.Registry/IStorageRegistry.hpp>
 #include <Engine.Storage.Registry/Options/ArchiveStorageDescriptor.hpp>
 #include <Engine.Storage.Registry/Options/StorageDescriptor.hpp>
+#include <Engine.Storage.Registry/Storage/StorageName.hpp>
 #include <Engine.Storage.Registry/Url/StorageUrl.hpp>
 
 #include "Details/StorageActionResolver.hpp"
@@ -249,19 +252,25 @@ Result<Arci<system::PackageStorage>, request_package_error> StorageSystem::reque
 	// TODO: Create a new package storage based on the provided storage unit
 	// TODO: Load data from underlying storage and recover the package meta data (e.g. package guid)
 
+	using recover_data = std::pair<resource::PackageGuid, Vector<ArchiveStorageDescriptor>>;
+	auto sink = diag::CollectingSink {};
+	auto backingName = storageName(*genericStore);
+
 	auto recoverResult = query(
 		clone(genericStore),
-		[](_In_ ref<const resource::Blob> blob_) -> Opt<std::pair<resource::PackageGuid, Vector<ArchiveStorageDescriptor>>> {
+		[&sink, &backingName](_In_ ref<const resource::Blob> blob_) -> Result<Opt<recover_data>, diag::Diagnostics> {
 
 			if (blob_.size() == 0LL) {
-				return None;
+				return Result<Opt<recover_data>, diag::Diagnostics>::expected(None);
 			}
 
-			// Error: This will break when using memory blob, as we have `-1` as a indeterminate size.
+			auto opened = package::open_readonly_package(blob_, clone(backingName), sink);
+			if (not opened.has_value()) {
+				// Note: A rejected package must never be renewed, the caller has to see the failure.
+				return Result<Opt<recover_data>, diag::Diagnostics>::unexpected(::hg::move(opened).error());
+			}
 
-			::hg::assertrt(package::isPackageBlob(blob_));
-			auto package = package::reconstruct_readonly_package(blob_);
-
+			auto package = ::hg::move(opened).value();
 			auto packageGuid = resource::PackageGuid::networkToHost(package.getHeader().guid);
 			::hg::assertd(packageGuid != resource::PackageGuid {});
 
@@ -272,7 +281,9 @@ Result<Arci<system::PackageStorage>, request_package_error> StorageSystem::reque
 				packedArchives.emplace_back(ArchiveUrl { linked.first }, nullptr);
 			}
 
-			return Some(std::make_pair(::hg::move(packageGuid), ::hg::move(packedArchives)));
+			return Result<Opt<recover_data>, diag::Diagnostics>::expected(
+				Some(std::make_pair(::hg::move(packageGuid), ::hg::move(packedArchives)))
+			);
 		}
 	);
 
@@ -284,9 +295,15 @@ Result<Arci<system::PackageStorage>, request_package_error> StorageSystem::reque
 		);
 	}
 
+	if (not recoverResult->has_value()) {
+		return result_type::unexpected(std::invalid_argument { diag::render(recoverResult->error().front()) });
+	}
+
+	auto& recovered = **recoverResult;
+
 	/**/
 
-	if (*recoverResult == None) {
+	if (recovered == None) {
 
 		auto guid = resource::PackageGuid {};
 		GuidGenerate(guid);
@@ -300,7 +317,7 @@ Result<Arci<system::PackageStorage>, request_package_error> StorageSystem::reque
 
 	/**/
 
-	auto& recoverData = **recoverResult;
+	auto& recoverData = *recovered;
 	auto upsert = _registry.insert(
 		PackageStorageDescriptor {
 			PackageUrl { ::hg::move(recoverData.first) }, ::hg::move(genericStore)

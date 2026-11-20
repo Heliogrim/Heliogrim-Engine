@@ -2,13 +2,13 @@
 
 #include <algorithm>
 #include <Engine.Asserts/Todo.hpp>
-#include <Engine.Common/Optional.hpp>
 #include <Engine.Common/Functional/Lambda.hpp>
 #include <Engine.Crypto/Checksum/Crc32.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 #include <Engine.Resource.Archive/Archive.hpp>
 #include <Engine.Resource.Package/Utils.hpp>
 
+#include "Load.hpp"
 #include "Store.hpp"
 
 using namespace hg::engine::storage::package;
@@ -17,8 +17,6 @@ using namespace hg::engine::resource;
 using namespace hg;
 
 /**/
-
-[[nodiscard]] static Opt<u32> computeCheckSum(_In_ cref<Blob> blob_, _In_ streamsize length_);
 
 [[nodiscard]] constexpr static Vector<std::pair<streamoff, size_t>> sortedIndices(
 	_In_ ref<const Vector<ArchiveDelta>> changeList_
@@ -293,8 +291,11 @@ Result<void, std::runtime_error> engine::storage::package::commit_package_change
 	const auto prevIndexSize = header.indexSize;
 	const auto prevTailSize = header.packageSize - computeContentSize(header);
 
-	// TODO: This is just for testing purposes. We may include a rt-check later for reasonable sizes
-	::hg::assertd(prevTailSize < 4 * 1024 * 1024);
+	// Note: The header may stem from an untrusted blob, bound the tail before sizing anything by it.
+	if (header.packageSize < static_cast<u64>(computeContentSize(header)) ||
+		prevTailSize < prevIndexSize) {
+		return Unexpected { std::runtime_error("Package header is inconsistent with its storage.") };
+	}
 
 	auto preserve = Vector<_::byte> {};
 	preserve.resize(prevTailSize);
@@ -352,8 +353,8 @@ Result<void, std::runtime_error> engine::storage::package::commit_package_change
 		{ preserve.begin() + static_cast<streamsize>(prevIndexSize), prevTailSize - prevIndexSize }
 	);
 
-	const auto checksum = computeCheckSum(blob, computeFooterOffset(header));
-	if (checksum == None) {
+	const auto checksum = computeChecksum(blob, computeFooterOffset(header));
+	if (not checksum.has_value()) {
 		return Unexpected { std::runtime_error("Failed to read back the package content for its checksum.") };
 	}
 
@@ -383,29 +384,6 @@ Result<void, std::runtime_error> engine::storage::package::commit_package_change
 
 /**/
 
-Opt<u32> computeCheckSum(cref<Blob> blob_, streamsize length_) {
-
-	constexpr auto chunkSize = std::size_t { 4096uLL };
-	auto buffer = Array<_::byte, chunkSize> {};
-	auto checksum = engine::crypto::Crc32 {};
-
-	auto it = streampos {};
-	while (it < length_) {
-
-		const auto nextChunkSize = std::min(static_cast<size_t>(length_ - it), chunkSize);
-		auto nextChunk = std::span { buffer.data(), nextChunkSize };
-
-		if (blob_.read(it, clone(nextChunk)).size() != nextChunkSize) {
-			return None;
-		}
-
-		checksum.update(nextChunk);
-
-		it += nextChunkSize;
-	}
-
-	return Some(::hg::move(checksum).finalize());
-}
 constexpr Vector<std::pair<streamoff, size_t>> sortedIndices(ref<const Vector<ArchiveDelta>> changeList_) noexcept {
 	auto result = Vector<std::pair<streamoff, size_t>> {};
 	result.reserve(changeList_.size());
