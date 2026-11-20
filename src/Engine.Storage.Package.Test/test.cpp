@@ -25,6 +25,7 @@
 #include <Engine.Resource.Package/Header/PackageHeader.hpp>
 #include <Engine.Resource.Package/Linker/Indexed.hpp>
 #include <Engine.Storage.Package/Factory.hpp>
+#include <Engine.Storage.Package/Load.hpp>
 #include <Engine.Storage.Package/Processor.hpp>
 #include <Engine.Storage.Package/Store.hpp>
 #include <Engine.Storage.Registry/Registry/StorageRegistry.hpp>
@@ -167,7 +168,7 @@ namespace PackageModule {
 
 		/**/
 
-		PackageVersion version { 27859368927uLL };
+		PackageVersion version { 1uLL };
 		PackageGuid guid { 278608376uL, 11632uL, 7635uL, 36758197986519uLL };
 
 		/**/
@@ -200,13 +201,20 @@ namespace PackageModule {
 
 			std::memcpy(memory.data(), &header, sizeof(header));
 			std::memcpy(memory.data() + sizeof(header), &footer, sizeof(footer));
+
+			// Seal: footer crc covers everything before the footer (stored big-endian in the 8-byte field).
+			ByteSpanBlob sealBlob { memory, memory.size() };
+			const u64 crc = std::byteswap(engine::storage::package::computeChecksum(sealBlob, sizeof(header)).value());
+			std::memcpy(memory.data() + sizeof(header), &crc, sizeof(crc));
 		}
 
 		/**/
 
 		{
 			auto blob = ByteSpanBlob { memory, memory.size() };
-			auto package = engine::storage::package::reconstruct_readonly_package(blob);
+			auto opened = engine::storage::package::reconstruct_readonly_package(blob);
+			ASSERT_TRUE(opened.has_value()) << "kind=" << static_cast<int>(opened.error().kind) << " off=" << opened.error().offset << " len=" << opened.error().length;
+			auto package = ::hg::move(opened).value();
 			const auto& header = package.getHeader();
 
 			// Check Magic Bytes

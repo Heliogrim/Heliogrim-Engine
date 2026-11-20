@@ -120,7 +120,7 @@ namespace StorageModule {
 				ASSERT_GE(rp_.getHeader().packageSize, initialArchiveSize_);
 				ASSERT_GE(rp_.getHeader().indexSize, sizeof(package::Indexed));
 
-				EXPECT_NE(reinterpret_cast<u64>(rp_.getFooter().crc32.data()), u64 {});
+				EXPECT_FALSE(std::ranges::all_of(rp_.getFooter().crc32, [](const auto b_) { return b_ == _::byte {}; }));
 
 				/**/
 
@@ -215,7 +215,7 @@ namespace StorageModule {
 				ASSERT_GE(rp_.getHeader().packageSize, replaceArchiveSize_);
 				ASSERT_GE(rp_.getHeader().indexSize, sizeof(package::Indexed));
 
-				EXPECT_NE(reinterpret_cast<u64>(rp_.getFooter().crc32.data()), u64 {});
+				EXPECT_FALSE(std::ranges::all_of(rp_.getFooter().crc32, [](const auto b_) { return b_ == _::byte {}; }));
 
 				/**/
 
@@ -295,7 +295,7 @@ namespace StorageModule {
 				ASSERT_EQ(rp_.getHeader().packageSize, 0uLL);
 				ASSERT_GE(rp_.getHeader().indexSize, 0uLL);
 
-				EXPECT_NE(reinterpret_cast<u64>(rp_.getFooter().crc32.data()), u64 {});
+				EXPECT_FALSE(std::ranges::all_of(rp_.getFooter().crc32, [](const auto b_) { return b_ == _::byte {}; }));
 
 				/**/
 

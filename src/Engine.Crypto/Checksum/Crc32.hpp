@@ -14,9 +14,10 @@ namespace hg::engine::crypto {
 
 	private:
 		result_type _intermediate {};
+		bool _started = false;
 
 	public:
-		ref<Crc32> update(_In_ std::span<_::byte> data_);
+		ref<Crc32> update(_In_ std::span<const _::byte> data_);
 
 		[[nodiscard]] result_type finalize() &&;
 	};

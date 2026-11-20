@@ -3,6 +3,7 @@ make_test_project(
 		TEST_NAME Engine.DiagnosticCodes.Test
 		LIBRARIES
 		${PROJECT_NAME}::Engine.Diagnostics
+		${PROJECT_NAME}::Engine.Storage.Package
 		${PROJECT_NAME}::Engine.Accel.Lang
 		${PROJECT_NAME}::Engine.Async
 		${PROJECT_NAME}::Engine.Config

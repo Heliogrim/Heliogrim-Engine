@@ -4,6 +4,7 @@
 
 #include <Engine.Accel.Lang/Diagnostic/Codes.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.Storage.Package/Diagnostic/Codes.hpp>
 #include <Engine.Diagnostics/Code.hpp>
 #include <algorithm>
 #include <array>
@@ -18,8 +19,9 @@ using namespace hg;
 
 namespace HgDiagCodes {
 	namespace {
-		const std::array<std::span<const DiagnosticCodeInfo>, 1uLL> tables {
-			std::span<const DiagnosticCodeInfo> { hg::engine::accel::lang::codes::table }
+		const std::array<std::span<const DiagnosticCodeInfo>, 2uLL> tables {
+			std::span<const DiagnosticCodeInfo> { hg::engine::accel::lang::codes::table },
+			std::span<const DiagnosticCodeInfo> { hg::engine::storage::package::codes::table }
 		};
 
 		String escaped(const StringView text_) {

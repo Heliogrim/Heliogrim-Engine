@@ -1,6 +1,8 @@
 #include "BlobPack.hpp"
 
 #include <Engine.Common/Discard.hpp>
+#include <Engine.Diagnostics/Render.hpp>
+#include <Engine.Diagnostics/Sink.hpp>
 #include <Engine.Pedantic.Resource/AccessMode.hpp>
 #include <Engine.Storage.Action/Context.hpp>
 #include <Engine.Storage.Action/Access/ExclusiveIoResource.hpp>
@@ -8,10 +10,17 @@
 #include <Engine.Storage.Package/Factory.hpp>
 #include <Engine.Storage.Package/Processor.hpp>
 #include <Engine.Storage.Package/Store.hpp>
+#include <Engine.Storage.Registry/Storage/StorageName.hpp>
 
 using namespace hg::engine::storage;
 using namespace hg::engine::resource;
 using namespace hg;
+
+namespace {
+	[[nodiscard]] String renderAll(ref<const engine::diag::Diagnostics> diagnostics_);
+}
+
+/**/
 
 Result<
 	IoResourceAccessor<ReadWritePackage>,
@@ -42,7 +51,15 @@ Result<
 		::hg::assertrt(package::writeFooter(value->getHeader(), value->getFooter(), blob));
 
 	} else {
-		value = Rc<ReadWritePackage>::create(package::reconstruct_read_write_package(accessor_.get()));
+		auto sink = diag::CollectingSink {};
+		auto opened = package::open_read_write_package(accessor_.get(), storageName(*storage_), sink);
+		if (not opened.has_value()) {
+			return Result<IoResourceAccessor<ReadWritePackage>, Mutation::acq_error_type>::unexpected(
+				IllegalArgumentError { renderAll(opened.error()) }
+			);
+		}
+
+		value = Rc<ReadWritePackage>::create(::hg::move(opened).value());
 	}
 
 	auto cachedValue = ctx_.objectStore.add(
@@ -106,7 +123,15 @@ Result<
 		value = Rc<ReadonlyPackage>::create(package::make_readonly_package(accessor_.get()));
 
 	} else {
-		value = Rc<ReadonlyPackage>::create(package::reconstruct_readonly_package(accessor_.get()));
+		auto sink = diag::CollectingSink {};
+		auto opened = package::open_readonly_package(accessor_.get(), storageName(*storage_), sink);
+		if (not opened.has_value()) {
+			return Result<IoResourceAccessor<const ReadonlyPackage>, Query::acq_error_type>::unexpected(
+				IllegalArgumentError { renderAll(opened.error()) }
+			);
+		}
+
+		value = Rc<ReadonlyPackage>::create(::hg::move(opened).value());
 	}
 
 	/**/
@@ -128,4 +153,16 @@ void engine::storage::releaseStaticPackQuery(
 ) {
 	// Note: The shared resource owns the object and dies with its last accessor.
 	::hg::forward<decltype(accessor_)>(accessor_).reset();
+}
+
+/**/
+
+namespace {
+	String renderAll(ref<const engine::diag::Diagnostics> diagnostics_) {
+		auto text = String {};
+		for (const auto& entry : diagnostics_) {
+			text += engine::diag::render(entry);
+		}
+		return text;
+	}
 }
