@@ -18,9 +18,11 @@ function(_make_module_provider out name)
 	name_to_target(provider "${name}.Module")
 	add_library(${provider} OBJECT)
 	add_library(${PROJECT_NAME}::${name}.Module ALIAS ${provider})
+
 	# Bundles linking the provider are exported, so the provider has to be too.
 	export(TARGETS ${provider} NAMESPACE ${PROJECT_NAME}:: FILE ${PROJECT_BINARY_DIR}/cmake/${provider}/${provider}-export.cmake)
-	__apply_default_compile_settings(${provider})
+	_apply_default_compile_settings(${provider})
+
 	# External targets only: importers get their usage requirements (e.g. Jolt's `-mavx2`), and a BMI must match them,
 	#  else CMake 4.4 builds a second, synthetic BMI per consumer.
 	target_link_libraries(${provider} PRIVATE ${DEFAULT_LIBRARIES})
@@ -48,6 +50,7 @@ function(_make_module_interface_content out)
 			if (header_path IN_LIST excluded_paths)
 				continue()
 			endif ()
+
 			cmake_path(GET header_path PARENT_PATH header_dir)
 
 			file(STRINGS "${header}" include_lines REGEX "^[ \t]*#[ \t]*include[ \t]*[<\"]")
@@ -59,6 +62,7 @@ function(_make_module_interface_content out)
 				else ()
 					continue()
 				endif ()
+
 				if (resolved IN_LIST excluded_paths)
 					list(APPEND excluded_paths "${header_path}")
 					set(changed ON)
@@ -77,6 +81,7 @@ function(_make_module_interface_content out)
 		if (header_path IN_LIST excluded_paths)
 			continue()
 		endif ()
+
 		file(RELATIVE_PATH rel "${args_BASE_DIR}" "${header}")
 
 		file(STRINGS "${header}" import_lines REGEX "^[ \t]*import[ \t]+[A-Za-z0-9_.:]+[ \t]*;")
@@ -91,6 +96,7 @@ function(_make_module_interface_content out)
 			string(APPEND config_lines "#include <${rel}>\n")
 			continue()
 		endif ()
+
 		# Quoted on purpose: clang-scan-deps reports angled purview includes regardless of `-Wno-include-angled-in-module-purview`.
 		string(APPEND own_lines "#include \"${rel}\"\n")
 
@@ -103,6 +109,7 @@ function(_make_module_interface_content out)
 			endif ()
 		endforeach ()
 	endforeach ()
+
 	list(REMOVE_DUPLICATES foreign_names)
 	list(REMOVE_DUPLICATES import_names)
 
@@ -145,6 +152,7 @@ function(_make_vendor_module_content out)
 				endif ()
 			endforeach ()
 		endforeach ()
+
 		list(REMOVE_DUPLICATES foreign_names)
 
 		set(foreign_lines "")
@@ -166,9 +174,11 @@ function(_make_vendor_module_content out)
 	if (body_at EQUAL -1)
 		message(FATAL_ERROR "Vendor module source `${args_SOURCE}` has no `export module` declaration.")
 	endif ()
+
 	# The vendor's global module fragment is dropped; PRELUDE (our config) replaces it.
 	string(SUBSTRING "${text}" ${body_at} -1 body)
 	string(REGEX REPLACE "export module [^;]+;" "export module ${args_MODULE_NAME};" body "${body}")
+
 	# `export import` (`import std`, partitions) is dropped; std comes in through the prelude.
 	string(REGEX REPLACE "export import [^;]+;[ \t]*\r?\n?" "" body "${body}")
 
@@ -182,11 +192,13 @@ function(_find_std_toolset_dir out out_error)
 	if (NOT EXISTS "${toolset_dir}/modules/std.ixx")
 		set(toolset_dir "${HELIOGRIM_MSVC_TOOLSET_DIR}")
 	endif ()
+
 	if (NOT EXISTS "${toolset_dir}/modules/std.ixx")
 		set(${out} "" PARENT_SCOPE)
 		set(${out_error} "No `modules/std.ixx` below `VCToolsInstallDir` (`$ENV{VCToolsInstallDir}`) or `HELIOGRIM_MSVC_TOOLSET_DIR` (`${HELIOGRIM_MSVC_TOOLSET_DIR}`)." PARENT_SCOPE)
 		return()
 	endif ()
+
 	cmake_path(NORMAL_PATH toolset_dir)
 	set(${out} "${toolset_dir}" PARENT_SCOPE)
 	set(${out_error} "" PARENT_SCOPE)
@@ -200,8 +212,8 @@ function(make_module_interface)
 	cmake_parse_arguments(args "" "${__single_var_options}" "${__multi_var_options}" ${ARGN})
 
 	_make_module_interface_content(content
-		MODULE_NAME "${args_MODULE_NAME}" BASE_DIR "${args_BASE_DIR}"
-		HEADERS ${args_HEADERS} OWN_PREFIXES ${args_OWN_PREFIXES} EXCLUDE ${args_EXCLUDE}
+			MODULE_NAME "${args_MODULE_NAME}" BASE_DIR "${args_BASE_DIR}"
+			HEADERS ${args_HEADERS} OWN_PREFIXES ${args_OWN_PREFIXES} EXCLUDE ${args_EXCLUDE}
 	)
 
 	set(path "${CMAKE_BINARY_DIR}/modules/${args_MODULE_NAME}.cppm")
@@ -235,6 +247,7 @@ function(make_vendor_module)
 
 	_make_module_provider(provider "${args_MODULE_NAME}")
 	target_sources(${provider} PUBLIC FILE_SET CXX_MODULES BASE_DIRS "${CMAKE_BINARY_DIR}/modules" FILES "${path}")
+
 	# Third-party code; `HG_MODULE_INTERFACE_UNIT` is unused by most.
 	target_compile_options(${provider} PRIVATE -w)
 endfunction()
@@ -253,5 +266,6 @@ function(make_std_module)
 		target_sources(${provider} PUBLIC FILE_SET CXX_MODULES BASE_DIRS "${toolset_dir}/modules" FILES "${toolset_dir}/modules/${name}.ixx")
 		target_compile_options(${provider} PRIVATE -w)
 	endforeach ()
+
 	target_link_libraries(${PROJECT_NAME}-std.compat.Module PRIVATE ${PROJECT_NAME}::std.Module)
 endfunction()
