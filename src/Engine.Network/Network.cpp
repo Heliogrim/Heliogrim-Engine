@@ -1,11 +1,10 @@
-#include "Network.hpp"
-
 #include <Engine.Common/__macro.hpp>
 
 #ifdef _PROFILING
 #endif
 
 import Engine.Common;
+import Engine.Network;
 
 using namespace hg::engine;
 using namespace hg;

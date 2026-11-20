@@ -1,8 +1,7 @@
-#include "RenderInit.hpp"
-
 #include <Editor.Render/Renderer/EditorRenderer.hpp>
 #include <Engine.Graphics/Graphics.hpp>
 
+import Editor.Boot;
 import Engine.Core;
 
 using namespace hg::editor::boot;

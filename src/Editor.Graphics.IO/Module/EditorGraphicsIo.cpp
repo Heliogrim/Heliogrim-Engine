@@ -1,5 +1,3 @@
-#include "EditorGraphicsIo.hpp"
-
 #include <Editor.Graphics.Loader/Texture/EditorTextureLoader.hpp>
 #include <Editor.Graphics.Loader/Texture/Transformer/Bmp.hpp>
 #include <Editor.Graphics.Loader/Texture/Transformer/Exr.hpp>
@@ -13,9 +11,8 @@
 #include <Engine.Graphics.Loader/Texture/TextureResource.hpp>
 #include <Engine.Resource/LoaderManager.hpp>
 
-#include "EditorGraphicsIoDepKey.hpp"
-
 import Editor.Graphics.Event;
+import Editor.Graphics.IO;
 import Engine.Common;
 import Engine.Core;
 import Engine.Event;

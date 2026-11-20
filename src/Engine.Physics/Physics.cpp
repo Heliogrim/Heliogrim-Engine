@@ -8,20 +8,15 @@
 
 /**/
 
-#include "Physics.hpp"
-
-#include "jolt.inc.hpp"
-
 /**/
 
 #include <Engine.Physics.Schedule/PhysicsPipeline.hpp>
 #include <Engine.Scheduler/Scheduler.hpp>
 #include <Engine.Scheduler/Pipeline/CompositePipeline.hpp>
 
-#include "PhysicsSystem.hpp"
-
 import Engine.Common;
 import Engine.Core;
+import Engine.Physics;
 
 using namespace hg::engine;
 using namespace hg;

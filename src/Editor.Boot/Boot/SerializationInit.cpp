@@ -19,8 +19,7 @@
 #include <Engine.Serialization/Scheme/DefaultScheme.hpp>
 #include <Engine.Serialization/Scheme/Scheme.hpp>
 
-#include "SerializationInit.hpp"
-
+import Editor.Boot;
 import Engine.Common;
 import Engine.Config;
 

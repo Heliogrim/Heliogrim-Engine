@@ -1,5 +1,3 @@
-#include "AssetInit.hpp"
-
 /**/
 #include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
 #include <Engine.Assets.Type/Texture/FontAsset.hpp>
@@ -31,6 +29,7 @@
 #include <Engine.Storage.Registry/Storage/LocalFileStorage.hpp>
 #include <Engine.Storage.System/StorageSystem.hpp>
 
+import Editor.Boot;
 import Engine.Common;
 import Engine.Config;
 import Engine.Core;

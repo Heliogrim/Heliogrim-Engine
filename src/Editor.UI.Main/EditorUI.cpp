@@ -1,7 +1,6 @@
 #include "EditorUI.hpp"
 
 #include <Editor.Assets.Default/Textures/Default.hpp>
-#include <Editor.Boot/Module/Editor.hpp>
 #include <Editor.Core/EditorEngine.hpp>
 #include <Editor.UI/Helper/AssetBrowserHelper.hpp>
 #include <Editor.UI.Service/Input/InputService.hpp>
@@ -15,6 +14,7 @@
 
 #include "Module/EditorUI.hpp"
 
+import Editor.Boot;
 import Editor.UI.Init;
 import Engine.Common;
 

@@ -9,8 +9,7 @@
 #include <Engine.Serialization/Diagnostic/Codes.hpp>
 #include <Heliogrim/Universe/Level.hpp>
 
-#include "UniverseInit.hpp"
-
+import Editor.Boot;
 import Engine.Common;
 import Engine.Config;
 import Engine.Core;

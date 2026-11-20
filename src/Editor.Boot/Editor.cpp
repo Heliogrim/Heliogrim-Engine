@@ -1,13 +1,7 @@
-#include "Editor.hpp"
-
 #include <Editor.Action/ActionManager.hpp>
 #include <Engine.Reflow/Module/Reflow.hpp>
 
-#include "Boot/AssetInit.hpp"
-#include "Boot/RenderInit.hpp"
-#include "Boot/UniverseInit.hpp"
-#include "Module/Editor.hpp"
-
+import Editor.Boot;
 import Engine.Core;
 
 using namespace hg::editor;

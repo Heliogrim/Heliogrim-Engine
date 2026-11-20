@@ -7,8 +7,6 @@
 #include <Engine.Core.Schedule/CorePipeline.hpp>
 #include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Input/Input.hpp>
-#include <Engine.Network/Network.hpp>
-#include <Engine.Physics/Physics.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 #include <Engine.Scene.Schedule/ScenePipeline.hpp>
 #include <Engine.Scheduler/Async.hpp>
@@ -26,6 +24,8 @@
 
 import Engine.Config;
 import Engine.Core;
+import Engine.Network;
+import Engine.Physics;
 import std;
 
 using namespace hg::engine::core;

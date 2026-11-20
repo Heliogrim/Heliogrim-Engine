@@ -4,5 +4,5 @@ import Engine.Core;
 #endif
 
 namespace hg::editor {
-	constexpr inline static engine::core::DependencyKey EditorGraphicsIoDepKey { "::hg::editor::EditorGraphicsIo"sv };
+	inline constexpr engine::core::DependencyKey EditorGraphicsIoDepKey { "::hg::editor::EditorGraphicsIo"sv };
 }

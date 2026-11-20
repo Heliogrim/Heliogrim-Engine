@@ -29,8 +29,8 @@ namespace hg::engine::physics {
 	};
 
 	namespace BroadPhaseLayer {
-		constexpr static auto eStatic = JPH::BroadPhaseLayer { 0 };
-		constexpr static auto eMoving = JPH::BroadPhaseLayer { 1 };
+		inline constexpr auto eStatic = JPH::BroadPhaseLayer { 0 };
+		inline constexpr auto eMoving = JPH::BroadPhaseLayer { 1 };
 	}
 
 	struct BroadPhaseLayerImpl : JPH::BroadPhaseLayerInterface {
