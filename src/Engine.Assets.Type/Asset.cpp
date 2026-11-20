@@ -32,6 +32,14 @@ void Asset::setAssetName(mref<AssetName> assetName_) {
 	_assetName = assetName_;
 }
 
+bool Asset::carriesUnknownData() const noexcept {
+	return _unknownData;
+}
+
+void Asset::markUnknownData() noexcept {
+	_unknownData = true;
+}
+
 ref<const AssetReferenceUrl> Asset::getAssetStorageUrl() const noexcept {
 	return _assetStorageUrl;
 }

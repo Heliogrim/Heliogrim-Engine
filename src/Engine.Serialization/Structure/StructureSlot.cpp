@@ -68,37 +68,15 @@ bool StructureSlotBase::readHeader() {
 	return true;
 }
 
-void StructureSlotBase::enter() {
-
-	auto archive = _state.root->archive;
-
-	if (_state.header.sizeInferred) {
-		constexpr s64 off = sizeof(_state.header.type);
-		archive->seek(_state.offset + off);
-
-	} else {
-		constexpr s64 off = sizeof(_state.header.type) + sizeof(_state.header.size);
-		archive->seek(_state.offset + off);
-	}
-}
-
-void StructureSlotBase::leave() {
-	if (
-		_state.flags & StructureSlotStateFlag::eMutable &&
-		_state.flags & StructureSlotStateFlag::eDirty &&
-		_state.parent
-	) {
-		_state.parent->feedback(this);
-	}
-
-	_state.flags.unwrap &= ~(static_cast<StructureSlotStateFlags::value_type>(StructureSlotStateFlag::eDirty));
-}
-
-void StructureSlotBase::feedback(const non_owning_rptr<const StructureSlotBase> other_) {}
-
 void StructureSlotBase::fail(const ReadError::Kind kind_, const s64 offset_, const s64 length_, ptr<const char> detail_) const {
 	if (const auto ctx = contextOf(_state)) {
 		ctx->fail(atOrigin(_state, ReadError { kind_, offset_, length_, String { detail_ } }));
+	}
+}
+
+void StructureSlotBase::warn(const ReadError::Kind kind_, const s64 offset_, const s64 length_, String detail_) const {
+	if (const auto ctx = contextOf(_state)) {
+		ctx->warn(atOrigin(_state, ReadError { kind_, offset_, length_, ::hg::move(detail_) }));
 	}
 }
 
@@ -117,6 +95,11 @@ s64 StructureSlotBase::payloadEnd() const noexcept {
 	return payloadBegin() + (_state.header.size > 0 ? _state.header.size : 0LL);
 }
 
+s64 StructureSlotBase::slotSpan(ref<const StructureSlotHeader> header_) noexcept {
+	return static_cast<s64>(sizeof(StructureSlotType)) + (header_.sizeInferred ? 0LL : static_cast<s64>(sizeof(s64))) +
+		(header_.size > 0 ? header_.size : 0LL);
+}
+
 s64 StructureSlotBase::slotLimit() const noexcept {
 	if (_state.parent && _state.parent->hasPayload()) {
 		return _state.parent->payloadEnd();
@@ -133,11 +116,6 @@ bool StructureSlotBase::readHeaderAt(const s64 at_, const s64 limit_, ref<Struct
 		return false;
 	}
 	return true;
-}
-
-s64 StructureSlotBase::slotSpan(ref<const StructureSlotHeader> header_) noexcept {
-	return static_cast<s64>(sizeof(StructureSlotType)) + (header_.sizeInferred ? 0LL : static_cast<s64>(sizeof(s64))) +
-		(header_.size > 0 ? header_.size : 0LL);
 }
 
 bool StructureSlotBase::checkArchive(const s64 offset_, const s64 length_) const {
@@ -255,6 +233,34 @@ bool StructureSlotBase::readFloat(const StructureSlotType target_, ref<double> v
 
 	return checkArchive(_state.offset, slotSpan(_state.header));
 }
+
+void StructureSlotBase::enter() {
+
+	auto archive = _state.root->archive;
+
+	if (_state.header.sizeInferred) {
+		constexpr s64 off = sizeof(_state.header.type);
+		archive->seek(_state.offset + off);
+
+	} else {
+		constexpr s64 off = sizeof(_state.header.type) + sizeof(_state.header.size);
+		archive->seek(_state.offset + off);
+	}
+}
+
+void StructureSlotBase::leave() {
+	if (
+		_state.flags & StructureSlotStateFlag::eMutable &&
+		_state.flags & StructureSlotStateFlag::eDirty &&
+		_state.parent
+	) {
+		_state.parent->feedback(this);
+	}
+
+	_state.flags.unwrap &= ~(static_cast<StructureSlotStateFlags::value_type>(StructureSlotStateFlag::eDirty));
+}
+
+void StructureSlotBase::feedback(const non_owning_rptr<const StructureSlotBase> other_) {}
 
 /**/
 

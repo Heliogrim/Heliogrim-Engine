@@ -86,6 +86,15 @@ namespace hg::engine::assets {
 		void setAssetName(mref<AssetName> assetName_);
 
 	protected:
+		bool _unknownData = false;
+
+	public:
+		/* Set when a load met data this build does not understand; such an asset must not be saved back. */
+		[[nodiscard]] bool carriesUnknownData() const noexcept;
+
+		void markUnknownData() noexcept;
+
+	protected:
 		// Question: Where to we store the information about the storage location?
 		// Note: The storage sub-system maps specific urls to the corresponding repository of a provider ( storage object only ).
 		// Note: The asset registry uses one in-memory table to hold the Arci<...> of the assets, while maintaining

@@ -75,6 +75,14 @@ ActorGuid Actor::guid() const noexcept {
 	return _guid;
 }
 
+bool Actor::carriesUnknownData() const noexcept {
+	return _unknownData;
+}
+
+void Actor::markUnknownData() noexcept {
+	_unknownData = true;
+}
+
 ref<const ActorLabel> Actor::label() const noexcept {
 	return _label;
 }

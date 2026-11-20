@@ -4,9 +4,11 @@
 #include <Engine.ACS/Registry.hpp>
 #include <Engine.Assets/AssetGuid.hpp>
 #include <Engine.Assets.Type/Universe/LevelAsset.hpp>
+#include <Engine.Common/GuidFormat.hpp>
 #include <Engine.Common/Math/Coordinates.hpp>
 #include <Engine.Core/Universe.hpp>
 #include <Engine.Scene/SceneBase.hpp>
+#include <Engine.Serialization/Diagnostic/Codes.hpp>
 
 using namespace hg::engine::core;
 using namespace hg;
@@ -24,6 +26,43 @@ namespace {
 }
 
 /**/
+
+bool Level::carriesUnknownData() const noexcept {
+	return _unknownData;
+}
+
+void Level::markUnknownData() noexcept {
+	_unknownData = true;
+}
+
+Result<void, engine::diag::Diagnostics> engine::core::checkSaveAllowed(ref<const Level> level_) {
+
+	Vector<String> notes {};
+	if (level_.carriesUnknownData()) {
+		notes.push_back("level " + encodeGuid4228(level_.guid()) + ": records were skipped on load");
+	}
+	for (const auto actor : level_.getActors()) {
+		if (actor->carriesUnknownData()) {
+			notes.push_back("level " + encodeGuid4228(level_.guid()) + " / actor " + encodeGuid4228(actor->guid()) + ": fields or components were not understood on load");
+		}
+	}
+
+	if (notes.empty()) {
+		return {};
+	}
+
+	engine::diag::Diagnostic refusal = engine::diag::Diagnostic::error(
+		engine::serialization::codes::ser("save-refused"),
+		"level holds data this build did not understand; saving would drop it"
+	);
+	for (auto& note : notes) {
+		refusal.addNote(::hg::move(note));
+	}
+
+	engine::diag::Diagnostics out {};
+	out.push_back(::hg::move(refusal));
+	return Unexpected<engine::diag::Diagnostics> { ::hg::move(out) };
+}
 
 Level::Level(mref<LevelGuid> guid_) noexcept :
 	_guid(::hg::move(guid_)) {}

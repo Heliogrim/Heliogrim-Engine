@@ -53,6 +53,9 @@ namespace hg::engine::serialization {
 		/* Reports to the load context of the root, if any. */
 		void fail(ReadError::Kind kind_, s64 offset_, s64 length_, ptr<const char> detail_) const;
 
+		/* Warns through the load context of the root, if any. */
+		void warn(ReadError::Kind kind_, s64 offset_, s64 length_, String detail_) const;
+
 		[[nodiscard]] bool hasPayload() const noexcept;
 
 		[[nodiscard]] s64 payloadBegin() const noexcept;
