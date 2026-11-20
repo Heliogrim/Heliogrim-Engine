@@ -25,6 +25,10 @@ bool LoadContext::failed() const noexcept {
 	return _failed;
 }
 
+ptr<const ReadError> LoadContext::firstError() const noexcept {
+	return _failed ? &_first.error : nullptr;
+}
+
 void LoadContext::warn(ReadError error_) {
 	_warnings.push_back(Entry { ::hg::move(error_), recordPath() });
 }

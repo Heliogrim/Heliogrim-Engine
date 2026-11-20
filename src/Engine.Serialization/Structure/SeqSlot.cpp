@@ -1,6 +1,5 @@
 #include "SeqSlot.hpp"
 
-#include <cassert>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Resource.Archive/Archive.hpp>
 
@@ -94,68 +93,36 @@ sptr<RecordSlot> SeqSlot::addRecord() {
 
 sptr<RecordSlot> SeqSlot::getRecord(const u64 index_) {
 
-	if (_state.header.size <= sizeof(u64)) {
-		return nullptr;
+	const auto empty = [this] {
+		return make_sptr<RecordSlot>(
+			StructureSlotState {
+				StructureSlotStateFlag::eImmutable, -1LL, StructureSlotHeader::from<StructureSlotType::eRecord>(), shared_from_this(),
+				_state.root
+			}
+		);
+	};
+
+	const auto count = getRecordCount();
+	if (count <= 0LL || index_ >= static_cast<u64>(count)) {
+		return empty();
 	}
 
 	/**/
 
-	auto archive = _state.root->archive;
+	const s64 end = payloadEnd();
+	s64 offset = payloadBegin() + static_cast<s64>(sizeof(u64));
 
-	constexpr s64 off = sizeof(StructureSlotHeader::type) + sizeof(StructureSlotHeader::size);
-	archive->seek(_state.offset + off);
-
-	/**/
-
-	u64 storedCount = ~0uLL;
-	(*archive) >> storedCount;
-
-	assert(storedCount != ~0uLL);
-
-	/**/
-
-	if (index_ >= storedCount) {
-		return nullptr;
-	}
-
-	/**/
-
-	constexpr s64 ioff = sizeof(storedCount);
-
-	const s64 end = _state.offset + off + _state.header.size;
-
-	u64 i = 0;
-	s64 offset = _state.offset + off + ioff;
-
-	while (i != index_ && offset < end) {
-
-		archive->seek(offset);
-
-		StructureSlotType storedType = StructureSlotType::eUndefined;
-		(*archive) >> storedType;
-
-		auto storedHeader = StructureSlotHeader::from(storedType);
-		if (not storedHeader.sizeInferred) {
-			(*archive) >> storedHeader.size;
+	for (u64 i = 0; i != index_; ++i) {
+		StructureSlotHeader header {};
+		if (not readHeaderAt(offset, end, header)) {
+			return empty();
 		}
-
-		/**/
-
-		offset += storedHeader.size;
-		offset += sizeof(StructureSlotHeader::type);
-
-		if (not storedHeader.sizeInferred) {
-			offset += sizeof(StructureSlotHeader::size);
-		}
-
-		/**/
-		++i;
+		offset += slotSpan(header);
 	}
 
-	/**/
-
-	if (i != index_ || offset >= end) {
-		return nullptr;
+	if (offset >= end) {
+		fail(ReadError::Kind::eMalformed, offset, 0LL, "seq record past the end of its parent");
+		return empty();
 	}
 
 	/**/
@@ -173,25 +140,36 @@ sptr<RecordSlot> SeqSlot::getRecord(const u64 index_) {
 
 s64 SeqSlot::getRecordCount() {
 
-	if (_state.header.size == 0LL) {
+	if (not hasPayload() || _state.header.size == 0LL) {
 		return 0LL;
 	}
 
-	if (_state.header.size < sizeof(u64)) {
+	if (_state.header.type != StructureSlotType::eSeq) {
+		fail(ReadError::Kind::eTypeMismatch, _state.offset, slotSpan(_state.header), "slot is not a seq");
+		return -1LL;
+	}
+
+	if (_state.header.size < static_cast<s64>(sizeof(u64))) {
+		fail(ReadError::Kind::eMalformed, _state.offset, slotSpan(_state.header), "seq too small for its count");
 		return -1LL;
 	}
 
 	/**/
 
 	auto archive = _state.root->archive;
+	archive->seek(payloadBegin());
 
-	constexpr s64 off = sizeof(StructureSlotHeader::type) + sizeof(StructureSlotHeader::size);
-	archive->seek(_state.offset + off);
-
-	/**/
-
-	u64 storedCount = ~0uLL;
+	u64 storedCount = 0uLL;
 	(*archive) >> storedCount;
 
-	return storedCount != ~0uLL ? static_cast<s64>(storedCount) : -1LL;
+	if (not checkArchive(_state.offset, slotSpan(_state.header))) {
+		return -1LL;
+	}
+
+	if (storedCount > static_cast<u64>(_state.header.size) - sizeof(u64)) {
+		fail(ReadError::Kind::eMalformed, payloadBegin(), sizeof(u64), "seq count exceeds its bytes");
+		return -1LL;
+	}
+
+	return static_cast<s64>(storedCount);
 }

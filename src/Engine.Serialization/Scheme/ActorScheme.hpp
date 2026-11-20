@@ -47,6 +47,13 @@ namespace hg::engine::serialization {
 			const auto slot = slot_.asStruct();
 			const auto actorGuid = get_guid_slot<ActorGuid>(slot);
 
+			auto components = slot.getRecordSlot(Symbols::Components).asSeq();
+			const auto count = components.getRecordCount();
+			if (count < 0LL) {
+				// getRecordCount already latched the failure on the context; create no actor.
+				return static_cast<decltype(AccessType_::template instantiate(allocator_, actorGuid, std::forward<decltype(args_)>(args_)...))>(nullptr);
+			}
+
 			auto* target = AccessType_::template instantiate(
 				allocator_,
 				actorGuid,
@@ -57,11 +64,6 @@ namespace hg::engine::serialization {
 			/**/
 
 			const auto serial = Engine::getEngine()->getSerialization();
-			// Error: SEH / We need to check whether there is any component data available
-			auto components = slot.getRecordSlot(Symbols::Components).asSeq();
-
-			// TODO:
-			const auto count = components.getRecordCount();
 			auto instanced = Vector<ptr<LogicComponent>>();
 			instanced.resize(count, nullptr);
 

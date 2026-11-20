@@ -57,15 +57,30 @@ void StringSlot::operator<<(cref<value_type> value_) {
 
 SlotOpResult StringSlot::operator>>(ref<value_type> value_) {
 
-	value_.resize(_state.header.size / sizeof(value_type::value_type));
+	if (not hasPayload()) {
+		return SlotOpResult::eFailed;
+	}
 
-	const auto dst = std::span<u8, std::dynamic_extent>(
-		reinterpret_cast<ptr<u8>>(value_.data()),
-		_state.header.size
-	);
+	if (_state.header.type != StructureSlotType::eString) {
+		fail(ReadError::Kind::eTypeMismatch, _state.offset, slotSpan(_state.header), "slot is not a string");
+		return SlotOpResult::eFailed;
+	}
+
+	const auto size = _state.header.size;
+	if (not charge(static_cast<u64>(size))) {
+		return SlotOpResult::eFailed;
+	}
+
+	value_type tmp(static_cast<size_t>(size) / sizeof(value_type::value_type), '\0');
 
 	const auto archive = _state.root->archive;
-	archive->serializeBytes(dst.data(), dst.size(), resource::ArchiveStreamMode::eLoad);
+	archive->seek(payloadBegin());
+	archive->serializeBytes(reinterpret_cast<ptr<u8>>(tmp.data()), static_cast<u64>(size), resource::ArchiveStreamMode::eLoad);
 
+	if (not checkArchive(_state.offset, slotSpan(_state.header))) {
+		return SlotOpResult::eFailed;
+	}
+
+	value_ = std::move(tmp);
 	return SlotOpResult::eSuccess;
 }

@@ -13,6 +13,6 @@ namespace hg::engine::serialization {
 		using this_type = RootScopedSlot;
 
 	public:
-		RootScopedSlot(_Inout_ ref<resource::Archive> archive_, const ScopedSlotStateFlags flags_);
+		RootScopedSlot(_Inout_ ref<resource::Archive> archive_, const ScopedSlotStateFlags flags_, nmpt<LoadContext> context_ = nullptr);
 	};
 }
