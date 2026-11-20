@@ -2,9 +2,10 @@
 
 #include <cassert>
 
-#include "../Node/Compile/CompileSubpassNode.hpp"
+#include "Linker.hpp"
 #include "../Node/CompileNode.hpp"
 #include "../Node/Node.hpp"
+#include "../Node/Compile/CompileSubpassNode.hpp"
 #include "../Node/Runtime/AnchorNode.hpp"
 #include "../Node/Runtime/BarrierNode.hpp"
 #include "../Node/Runtime/ConvergeNode.hpp"
@@ -12,7 +13,6 @@
 #include "../Node/Runtime/ProviderNode.hpp"
 #include "../Node/Runtime/SelectorNode.hpp"
 #include "../Node/Runtime/SubpassNode.hpp"
-#include "Linker.hpp"
 
 import Engine.Common;
 

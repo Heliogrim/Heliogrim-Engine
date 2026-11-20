@@ -1,8 +1,8 @@
 #pragma once
 
-#include "EventTypeId.hpp"
-
 #include <Engine.Common/__macro.hpp>
+
+#include "EventTypeId.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import std;

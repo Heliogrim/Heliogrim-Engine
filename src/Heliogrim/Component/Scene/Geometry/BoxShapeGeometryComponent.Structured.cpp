@@ -1,9 +1,10 @@
+#include "BoxShapeGeometryComponent.hpp"
+
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 
 #include "AssetDatabase.hpp"
 #include "AssetResolve.hpp"
-#include "BoxShapeGeometryComponent.hpp"
 
 import Engine.Common;
 

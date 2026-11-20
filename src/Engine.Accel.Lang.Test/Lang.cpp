@@ -3,9 +3,9 @@
 /**/
 
 #include <Engine.Accel.Lang/Intermediate.hpp>
+#include <Engine.Accel.Lang/Representation.hpp>
 #include <Engine.Accel.Lang/Rep/Annotation.hpp>
 #include <Engine.Accel.Lang/Rep/Symbol.hpp>
-#include <Engine.Accel.Lang/Representation.hpp>
 
 import Engine.Common;
 

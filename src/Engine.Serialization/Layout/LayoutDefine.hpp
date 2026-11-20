@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../Archive/__fwd.hpp"
-#include "DataLayoutBase.hpp"
 #include "__fwd.hpp"
+#include "DataLayoutBase.hpp"
+#include "../Archive/__fwd.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

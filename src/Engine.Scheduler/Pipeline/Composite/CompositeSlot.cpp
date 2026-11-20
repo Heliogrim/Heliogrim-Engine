@@ -1,8 +1,8 @@
 #include "CompositeSlot.hpp"
 
+#include "../CompositePipeline.hpp"
 #include "../../Lane.hpp"
 #include "../../Process/Schedule.hpp"
-#include "../CompositePipeline.hpp"
 
 import std;
 

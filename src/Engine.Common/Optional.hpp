@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Meta/Reference.hpp"
 #include "Move.hpp"
 #include "Wrapper.hpp"
+#include "Meta/Reference.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import std;

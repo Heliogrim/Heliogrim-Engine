@@ -1,8 +1,8 @@
 #pragma once
 
-#include <Engine.Graphics/Texture/TextureType.hpp>
-#include <Engine.Graphics/Texture/__fwd.hpp>
 #include <Engine.Graphics/TextureFormat.hpp>
+#include <Engine.Graphics/Texture/__fwd.hpp>
+#include <Engine.Graphics/Texture/TextureType.hpp>
 #include <Engine.Reflect/Compile/TypeId.hpp>
 
 #include "Description.hpp"

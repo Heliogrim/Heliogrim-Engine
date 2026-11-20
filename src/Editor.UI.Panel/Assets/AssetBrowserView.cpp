@@ -8,15 +8,15 @@
 #include <Editor.UI.Service/Assets/Browser/AssetBrowserEntry.hpp>
 #include <Editor.UI.Service/Assets/Browser/AssetBrowserFilterEntry.hpp>
 #include <Editor.UI.Theme/EditorTheme.hpp>
-#include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets/Assets.hpp>
+#include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Module/Modules.hpp>
 #include <Engine.Graphics.Loader/Texture/TextureResource.hpp>
 #include <Engine.Graphics.Loader/Texture/Traits.hpp>
+#include <Engine.Reflow/Widget/Tree/TreeView.hpp>
 #include <Engine.Reflow.Uikit/Atom/Paint.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/VerticalLayout.hpp>
-#include <Engine.Reflow/Widget/Tree/TreeView.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 #include <Engine.Scheduler/Async.hpp>
 

@@ -1,7 +1,7 @@
 #include "FreeType.hpp"
 
-#include <Engine.Common/Math/Compat.inl>
 #include <Engine.Common/Sal.hpp>
+#include <Engine.Common/Math/Compat.inl>
 #include <Engine.Graphics/Buffer/Buffer.hpp>
 #include <Engine.Graphics/Command/CommandBuffer.hpp>
 #include <Engine.Graphics/Command/CommandPool.hpp>

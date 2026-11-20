@@ -1,5 +1,4 @@
 #include "Editor.hpp"
-#include "Module/Editor.hpp"
 
 #include <Editor.Action/ActionManager.hpp>
 #include <Engine.Core/Module/CoreDependencies.hpp>
@@ -10,6 +9,7 @@
 #include "Boot/AssetInit.hpp"
 #include "Boot/RenderInit.hpp"
 #include "Boot/UniverseInit.hpp"
+#include "Module/Editor.hpp"
 
 using namespace hg::editor;
 using namespace hg::engine::core;

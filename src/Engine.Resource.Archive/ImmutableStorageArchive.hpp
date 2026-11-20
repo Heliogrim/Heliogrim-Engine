@@ -1,8 +1,8 @@
 #pragma once
 
-#include "StorageBaseArchive.hpp"
-
 #include <Engine.Common/__macro.hpp>
+
+#include "StorageBaseArchive.hpp"
 
 namespace hg::engine::resource {
 	/**/

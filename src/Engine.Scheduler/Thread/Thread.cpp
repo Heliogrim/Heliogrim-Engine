@@ -1,7 +1,7 @@
 #include "Thread.hpp"
 
-#include <Engine.Common/String/Convert.hpp>
 #include <Engine.Common/__macro.hpp>
+#include <Engine.Common/String/Convert.hpp>
 
 #ifdef WIN32
 #include <Engine.Common/stdafx.h>

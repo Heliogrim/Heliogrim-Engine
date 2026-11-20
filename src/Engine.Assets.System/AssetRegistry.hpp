@@ -7,12 +7,12 @@
 #include <Engine.Filesystem/__fwd.hpp>
 #include <Engine.Utils/_CTRL.hpp>
 
+#include "__fwd.hpp"
 #include "IAssetRegistry.hpp"
 #include "Options/FindPathOptions.hpp"
 #include "Options/FindPathsOptions.hpp"
 #include "Options/RemovePathOptions.hpp"
 #include "Options/RemovePathsOptions.hpp"
-#include "__fwd.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

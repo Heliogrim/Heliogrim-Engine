@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Engine.Scheduler/Pipeline/Stage/StageIdentifier.hpp>
 #include <Engine.Scheduler/Pipeline/StagePipeline.hpp>
+#include <Engine.Scheduler/Pipeline/Stage/StageIdentifier.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

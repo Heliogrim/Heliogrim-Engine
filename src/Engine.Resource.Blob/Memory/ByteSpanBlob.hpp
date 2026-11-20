@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Engine.Reflect/Inherit/InheritMeta.hpp>
 #include <cstring>
+#include <Engine.Reflect/Inherit/InheritMeta.hpp>
 
 #include "../Blob.hpp"
 

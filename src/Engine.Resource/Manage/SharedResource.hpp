@@ -1,7 +1,7 @@
 #pragma once
-#include "Resource.hpp"
-
 #include <Engine.Common/__macro.hpp>
+
+#include "Resource.hpp"
 
 namespace hg::engine::resource {
     template <typename ManagedType_>

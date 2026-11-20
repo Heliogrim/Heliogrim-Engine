@@ -1,10 +1,10 @@
-#include <Engine.Serialization.Structures/Symbols.hpp>
+#include "SpotLightComponent.hpp"
+
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Structure/FloatScopedSlot.hpp>
 #include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
-
-#include "SpotLightComponent.hpp"
+#include <Engine.Serialization.Structures/Symbols.hpp>
 
 import Engine.Common;
 

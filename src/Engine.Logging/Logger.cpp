@@ -10,9 +10,9 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #endif
 
-#include <Engine.Common/__macro.hpp>
-
 #include "Logger.hpp"
+
+#include <Engine.Common/__macro.hpp>
 
 #if defined(WIN32)
 #include <Engine.Common/stdafx.h>

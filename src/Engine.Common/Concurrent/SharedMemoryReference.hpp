@@ -1,14 +1,14 @@
 #pragma once
 
-#include <Engine.Common/Meta/Type.hpp>
 #include <cassert>
 #include <cstdint>
+#include <Engine.Common/Meta/Type.hpp>
 
+#include "../__macro.hpp"
 #include "../Cast.hpp"
-#include "../Meta/Concept.hpp"
 #include "../Sal.hpp"
 #include "../Wrapper.hpp"
-#include "../__macro.hpp"
+#include "../Meta/Concept.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Asserts;

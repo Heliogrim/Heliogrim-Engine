@@ -1,8 +1,8 @@
 #pragma once
 
+#include "__fwd.hpp"
 #include "MapSlot.hpp"
 #include "ScopedStructureSlot.hpp"
-#include "__fwd.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

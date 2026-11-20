@@ -2,7 +2,6 @@
 
 #include "__macro.hpp"
 #include "Wrapper.hpp"
-
 #include "Concurrent/SharedMemoryReference.hpp"
 #include "Meta/Concept.hpp"
 #include "Meta/Type.hpp"

@@ -1,10 +1,10 @@
 ﻿#include "Skybox.hpp"
 
+#include <Engine.Common/__macro.hpp>
+
 #include "../Command/CommandBuffer.hpp"
 #include "../Geometry/Cube.hpp"
 #include "../Texture/TextureFactory.hpp"
-
-#include <Engine.Common/__macro.hpp>
 
 import Engine.Asserts;
 

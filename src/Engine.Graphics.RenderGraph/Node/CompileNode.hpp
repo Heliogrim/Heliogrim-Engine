@@ -1,9 +1,9 @@
 #pragma once
 
+#include <Engine.Common/__macro.hpp>
+
 #include "Node.hpp"
 #include "RuntimeNode.hpp"
-
-#include <Engine.Common/__macro.hpp>
 
 namespace hg::engine::render::graph {
     class CompilePassContext;

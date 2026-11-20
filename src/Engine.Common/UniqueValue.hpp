@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Meta/Type.hpp"
 #include "Optional.hpp"
 #include "Sal.hpp"
 #include "Wrapper.hpp"
+#include "Meta/Type.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Asserts;

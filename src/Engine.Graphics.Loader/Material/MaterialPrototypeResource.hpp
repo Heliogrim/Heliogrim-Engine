@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Engine.Resource/Manage/Resource.hpp>
 #include <Engine.Graphics.Material/Material.hpp>
+#include <Engine.Resource/Manage/Resource.hpp>
 
 namespace hg::engine::graphics {
     struct MaterialPrototypeWrapper {

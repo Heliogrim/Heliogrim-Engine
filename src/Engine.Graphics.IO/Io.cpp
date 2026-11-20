@@ -4,6 +4,12 @@
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Event/GlobalEventEmitter.hpp>
+#include <Engine.Graphics/Importer/FontFileTypes.hpp>
+#include <Engine.Graphics/Importer/FontImporter.hpp>
+#include <Engine.Graphics/Importer/ImageFileTypes.hpp>
+#include <Engine.Graphics/Importer/ImageImporter.hpp>
+#include <Engine.Graphics/Importer/ModelFileTypes.hpp>
+#include <Engine.Graphics/Importer/ModelImporter.hpp>
 #include <Engine.Graphics.Event/GraphicRegisterImporterEvent.hpp>
 #include <Engine.Graphics.Event/GraphicRegisterLoaderEvent.hpp>
 #include <Engine.Graphics.Event/GraphicUnregisterImporterEvent.hpp>
@@ -17,12 +23,6 @@
 #include <Engine.Graphics.Loader/Material/MaterialResource.hpp>
 #include <Engine.Graphics.Loader/Texture/TextureLoader.hpp>
 #include <Engine.Graphics.Loader/Texture/TextureResource.hpp>
-#include <Engine.Graphics/Importer/FontFileTypes.hpp>
-#include <Engine.Graphics/Importer/FontImporter.hpp>
-#include <Engine.Graphics/Importer/ImageFileTypes.hpp>
-#include <Engine.Graphics/Importer/ImageImporter.hpp>
-#include <Engine.Graphics/Importer/ModelFileTypes.hpp>
-#include <Engine.Graphics/Importer/ModelImporter.hpp>
 
 using namespace ::hg::engine::graphics::loader;
 using namespace ::hg;

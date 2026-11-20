@@ -7,7 +7,6 @@
 #include <Engine.Resource/Loader/TransformerTraits.hpp>
 
 #include "__fwd.hpp"
-
 #include "FontLoadOptions.hpp"
 #include "FontResource.hpp"
 

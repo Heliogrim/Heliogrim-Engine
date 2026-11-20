@@ -1,7 +1,7 @@
 #include "ActorClass.hpp"
 
-#include "../../Component/HierarchyComponent.hpp"
 #include "../Actor.hpp"
+#include "../../Component/HierarchyComponent.hpp"
 
 import Engine.Common;
 

@@ -1,7 +1,10 @@
 #pragma once
 
-#include <Engine.Accel.Lang/Ir/Diagnostic.hpp>
 #include <gtest/gtest.h>
+
+/**/
+
+#include <Engine.Accel.Lang/Ir/Diagnostic.hpp>
 
 namespace AccelLang {
 	/* the message style rules: lower-case start (except proper nouns and quoted names), no trailing period; context notes start with `while` */

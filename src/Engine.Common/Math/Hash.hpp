@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../Types.hpp"
 #include "../__macro.hpp"
+#include "../Types.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import std;

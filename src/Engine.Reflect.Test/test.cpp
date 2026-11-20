@@ -1,5 +1,10 @@
 #include "pch.h"
 
+/**/
+
+#include <Engine.Reflect/PartialTypeInfo.hpp>
+#include <Engine.Reflect/TypeId.hpp>
+#include <Engine.Reflect/TypeName.hpp>
 #include <Engine.Reflect/Compile/HashMap.hpp>
 #include <Engine.Reflect/Compile/Map.hpp>
 #include <Engine.Reflect/Compile/TypeId.hpp>
@@ -7,9 +12,6 @@
 #include <Engine.Reflect/Inherit/InheritBase.hpp>
 #include <Engine.Reflect/Inherit/InheritMeta.hpp>
 #include <Engine.Reflect/Meta/TypedMetaClass.hpp>
-#include <Engine.Reflect/PartialTypeInfo.hpp>
-#include <Engine.Reflect/TypeId.hpp>
-#include <Engine.Reflect/TypeName.hpp>
 
 import Engine.Common;
 

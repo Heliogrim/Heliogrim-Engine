@@ -1,5 +1,7 @@
 #include <spirv-tools/optimizer.hpp>
 
+/**/
+
 #include "SpirvOptimize.hpp"
 
 using namespace hg::engine::accel::lang;

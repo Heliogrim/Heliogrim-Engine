@@ -1,9 +1,9 @@
 #include "SparseBuffer.hpp"
 
+#include "SparseBufferView.hpp"
+#include "../vkinc.hpp"
 #include "../Command/CommandQueue.hpp"
 #include "../Memory/VirtualMemory.hpp"
-#include "../vkinc.hpp"
-#include "SparseBufferView.hpp"
 
 // TODO: Remove
 #include <Engine.Core/Engine.hpp>

@@ -2,11 +2,11 @@
 
 #include <Engine.Common/__macro.hpp>
 
+#include "__fwd.hpp"
 #include "SlotOpResult.hpp"
 #include "StructurePath.hpp"
 #include "StructureSlotState.hpp"
 #include "StructureSlotType.hpp"
-#include "__fwd.hpp"
 #include "../Load/ReadError.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)

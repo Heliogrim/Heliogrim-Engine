@@ -4,6 +4,8 @@
 
 #include <spirv-tools/libspirv.hpp>
 
+/**/
+
 #include <Engine.Accel.Lang/Ir/Interface.hpp>
 #include <Engine.Accel.Lang/Ir/Layout.hpp>
 #include <Engine.Accel.Lang/Ir/Lower.hpp>
@@ -11,8 +13,8 @@
 #include <Engine.Accel.Lang/Ir/References.hpp>
 #include <Engine.Accel.Lang/Ir/Resolve.hpp>
 #include <Engine.Accel.Lang/Ir/Slice.hpp>
-#include <Engine.Accel.Lang/Ir/Spirv/SpirvEmitter.hpp>
 #include <Engine.Accel.Lang/Ir/Tier.hpp>
+#include <Engine.Accel.Lang/Ir/Spirv/SpirvEmitter.hpp>
 #include <Engine.Accel.Lang/Rep/Symbol.hpp>
 
 #include "IrSpan.hpp"

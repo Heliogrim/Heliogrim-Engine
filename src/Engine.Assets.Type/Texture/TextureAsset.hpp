@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Engine.Graphics/Texture/TextureType.hpp>
 #include <Engine.Graphics/TextureFormat.hpp>
+#include <Engine.Graphics/Texture/TextureType.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 
 #include "../AssetConcept.hpp"

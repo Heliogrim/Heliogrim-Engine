@@ -1,7 +1,7 @@
 #include "TextureCache.hpp"
 
-#include <Engine.Common/Sal.hpp>
 #include <Engine.Common/__macro.hpp>
+#include <Engine.Common/Sal.hpp>
 
 #include "Engine.Graphics/Cache/GlobalCacheCtrl.hpp"
 #include "Engine.Graphics/Cache/GlobalResourceCache.hpp"

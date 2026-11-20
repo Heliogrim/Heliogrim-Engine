@@ -1,8 +1,8 @@
 #include "FlacImporter.hpp"
 
 #define DR_FLAC_IMPLEMENTATION
-#include <Engine.Common/Buffer.hpp>
 #include <dr_libs/dr_flac.h>
+#include <Engine.Common/Buffer.hpp>
 
 #include "AudioFileTypes.hpp"
 

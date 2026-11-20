@@ -1,3 +1,5 @@
+#include "SphereShapeGeometryComponent.hpp"
+
 #include <Engine.Resource.Archive/Archive.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Structure/FloatScopedSlot.hpp>
@@ -5,7 +7,6 @@
 
 #include "AssetDatabase.hpp"
 #include "AssetResolve.hpp"
-#include "SphereShapeGeometryComponent.hpp"
 
 import Engine.Common;
 

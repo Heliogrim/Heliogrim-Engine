@@ -7,11 +7,11 @@
 #include <Engine.Graphics.Loader/Texture/TextureResource.hpp>
 #include <Engine.Resource/LoaderManager.hpp>
 
+#include "__fwd.hpp"
 #include "CacheCtrlSubject.hpp"
 #include "CacheResult.hpp"
 #include "CacheStaticGeometrySubject.hpp"
 #include "CacheTextureSubject.hpp"
-#include "__fwd.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

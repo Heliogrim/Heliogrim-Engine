@@ -2,12 +2,12 @@
 
 #include <Engine.Async/Primitive/FiberSharedMutex.hpp>
 
-#include "../Intermediate.hpp"
 #include "Condition.hpp"
 #include "Interface.hpp"
 #include "Layout.hpp"
 #include "Module.hpp"
 #include "Tier.hpp"
+#include "../Intermediate.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

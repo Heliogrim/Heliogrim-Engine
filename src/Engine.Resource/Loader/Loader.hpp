@@ -4,10 +4,10 @@
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Reflect/Inherit/InheritBase.hpp>
 
+#include "__fwd.hpp"
+#include "LoaderTraits.hpp"
 #include "../Manage/ResourceConcept.hpp"
 #include "../Manage/UniqueResource.hpp"
-#include "LoaderTraits.hpp"
-#include "__fwd.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

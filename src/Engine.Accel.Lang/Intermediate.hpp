@@ -2,10 +2,10 @@
 
 #include <Engine.Common/Sal.hpp>
 
-#include "Ir/Interface.hpp"
-#include "Ir/Module.hpp"
 #include "Language.hpp"
 #include "Representation.hpp"
+#include "Ir/Interface.hpp"
+#include "Ir/Module.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

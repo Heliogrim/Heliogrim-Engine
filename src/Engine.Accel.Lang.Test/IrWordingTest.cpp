@@ -4,6 +4,8 @@
 
 #include <gtest/gtest-spi.h>
 
+/**/
+
 #include "IrWording.hpp"
 
 using namespace hg::engine::accel::lang::ir;

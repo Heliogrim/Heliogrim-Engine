@@ -4,12 +4,14 @@
 #include <Jolt/Physics/Collision/Shape/SphereShape.h>
 #include <Jolt/Physics/PhysicsSystem.h>
 
-#include <Engine.ACS/Cluster/RelocationTable.hpp>
-#include <Engine.Core/Engine.hpp>
-#include <Engine.Physics/Physics.hpp>
-#include <Engine.Physics/jolt.inc.hpp>
+/**/
 
 #include "PhysicsSceneSystem.hpp"
+
+#include <Engine.ACS/Cluster/RelocationTable.hpp>
+#include <Engine.Core/Engine.hpp>
+#include <Engine.Physics/jolt.inc.hpp>
+#include <Engine.Physics/Physics.hpp>
 
 using namespace hg::engine::physics;
 using namespace hg;

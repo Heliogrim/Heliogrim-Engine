@@ -2,14 +2,14 @@
 
 /**/
 
-#include <Engine.Serialization.Structures/Common/Guid.hpp>
-#include <Engine.Serialization.Structures/Common/TypeId.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>
 #include <Engine.Serialization/Structure/SeqScopedSlot.hpp>
 #include <Engine.Serialization/Structure/SliceScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StringScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
+#include <Engine.Serialization.Structures/Common/Guid.hpp>
+#include <Engine.Serialization.Structures/Common/TypeId.hpp>
 
 import std;
 

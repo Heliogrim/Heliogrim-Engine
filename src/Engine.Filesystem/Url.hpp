@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Engine.Filesystem/Path.hpp>
 #include <Engine.Filesystem/__fwd.hpp>
+#include <Engine.Filesystem/Path.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)

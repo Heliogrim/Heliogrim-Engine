@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Engine.Common/Sal.hpp>
 #include <Engine.Common/__macro.hpp>
+#include <Engine.Common/Sal.hpp>
 
 #include "NativeBatch.hpp"
 #include "Commands/__fwd.hpp"

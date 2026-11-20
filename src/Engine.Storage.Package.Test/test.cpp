@@ -2,6 +2,7 @@
 
 /**/
 
+#include <cstring>
 #include <Engine.Config/Config.hpp>
 #include <Engine.Resource.Archive/BufferArchive.hpp>
 #include <Engine.Resource.Archive/MemoryReadonlyArchive.hpp>
@@ -9,19 +10,18 @@
 #include <Engine.Resource.Archive/Storage/PackageReadWriteArchive.hpp>
 #include <Engine.Reflect/Inherit/InheritMeta.hpp>
 #include <Engine.Resource.Blob/Memory/ByteSpanBlob.hpp>
+#include <Engine.Resource.Package/ReadonlyPackage.hpp>
+#include <Engine.Resource.Package/ReadWritePackage.hpp>
 #include <Engine.Resource.Package/Attribute/MagicBytes.hpp>
 #include <Engine.Resource.Package/Attribute/PackageGuid.hpp>
 #include <Engine.Resource.Package/Header/PackageHeader.hpp>
 #include <Engine.Resource.Package/Linker/Indexed.hpp>
-#include <Engine.Resource.Package/ReadWritePackage.hpp>
-#include <Engine.Resource.Package/ReadonlyPackage.hpp>
 #include <Engine.Storage.Package/Factory.hpp>
 #include <Engine.Storage.Package/Load.hpp>
 #include <Engine.Storage.Package/Processor.hpp>
 #include <Engine.Storage.Package/Store.hpp>
 #include <Engine.Storage.Registry/Registry/StorageRegistry.hpp>
 #include <Engine.Storage.Registry/Storage/MemoryStorage.hpp>
-#include <cstring>
 
 import Engine.Common;
 

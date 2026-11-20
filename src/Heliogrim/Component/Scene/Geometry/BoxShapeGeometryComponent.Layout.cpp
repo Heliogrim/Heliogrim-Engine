@@ -1,5 +1,7 @@
 #include "BoxShapeGeometryComponent.Layout.hpp"
 
+#include <Heliogrim/Actor/Archetype/ArchetypeLayout.inl.hpp>
+
 #include "AssetDatabase.hpp"
 
 using namespace hg::engine::serialization;

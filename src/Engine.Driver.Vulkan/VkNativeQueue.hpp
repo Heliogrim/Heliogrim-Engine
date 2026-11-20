@@ -1,6 +1,6 @@
 #pragma once
-#include <Engine.Graphics.Render.Command/NativeQueue.hpp>
 #include <cassert>
+#include <Engine.Graphics.Render.Command/NativeQueue.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

@@ -3,9 +3,9 @@
 #include <Engine.ACS/Archetype/Layout.hpp>
 
 #include "../Actor.hpp"
-#include "../Archetype/InheritArchetype.hpp"
 #include "../../Component/Scene/Collision/SphereShapeCollisionComponent.hpp"
 #include "../../Component/Scene/Geometry/SphereShapeGeometryComponent.hpp"
+#include "../Archetype/InheritArchetype.hpp"
 
 namespace hg {
 	class SphereShapeGeometryActor :

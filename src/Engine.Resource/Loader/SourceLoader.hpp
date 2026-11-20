@@ -1,10 +1,10 @@
 #pragma once
 
-#include <Engine.Common/Sal.hpp>
 #include <Engine.Common/__macro.hpp>
+#include <Engine.Common/Sal.hpp>
 
-#include "SourceLoaderTraits.hpp"
 #include "__fwd.hpp"
+#include "SourceLoaderTraits.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

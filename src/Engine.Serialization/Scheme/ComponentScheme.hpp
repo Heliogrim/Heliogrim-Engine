@@ -6,8 +6,8 @@
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 #include <Heliogrim/Component/CachedActorPointer.hpp>
 
-#include "Scheme.hpp"
 #include "__fwd.hpp"
+#include "Scheme.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

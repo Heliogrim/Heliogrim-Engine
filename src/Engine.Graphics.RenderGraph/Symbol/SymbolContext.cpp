@@ -1,8 +1,8 @@
 #include "SymbolContext.hpp"
 
+#include <cassert>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Logging/Logger.hpp>
-#include <cassert>
 
 import Engine.Asserts;
 import Engine.Common;

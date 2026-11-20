@@ -1,5 +1,7 @@
 #include "pch.h"
 
+/**/
+
 #include <Engine.Pedantic.Resource/ExclusiveResource.hpp>
 
 using namespace hg;

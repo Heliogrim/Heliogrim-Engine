@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Engine.Reflect/IsType.hpp>
 #include <cassert>
+#include <Engine.Reflect/IsType.hpp>
 
 #include "Symbol.hpp"
 

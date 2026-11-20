@@ -1,8 +1,8 @@
 #pragma once
 
 #include <Engine.Accel.Pipeline/AccelerationPipeline.hpp>
-#include <Engine.Common/Sal.hpp>
 #include <Engine.Common/__macro.hpp>
+#include <Engine.Common/Sal.hpp>
 
 #include "../Module/CompiledModule.hpp"
 

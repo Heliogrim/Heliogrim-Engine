@@ -1,8 +1,8 @@
 #pragma once
 
-#include "BufferLikeObject.hpp"
-
 #include <Engine.Common/__macro.hpp>
+
+#include "BufferLikeObject.hpp"
 
 namespace hg::engine::graphics {
     class macro_novtable BufferObject :

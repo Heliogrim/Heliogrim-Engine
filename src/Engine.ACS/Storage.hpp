@@ -1,10 +1,10 @@
 #pragma once
 
-#include <Engine.Common/Sal.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
+#include <Engine.Common/__macro.hpp>
+#include <Engine.Common/Sal.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

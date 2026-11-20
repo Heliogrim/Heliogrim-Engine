@@ -1,9 +1,9 @@
 #pragma once
 
+#include <Engine.Common/__macro.hpp>
+
 #include "Pool.hpp"
 #include "Traits.hpp"
-
-#include <Engine.Common/__macro.hpp>
 
 namespace hg::engine::acs {
 	template <typename KeyType_>

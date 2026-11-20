@@ -3,13 +3,12 @@
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Logging/Logger.hpp>
 
+#include "../Component/AnchorComponent.hpp"
+#include "../Component/BarrierComponent.hpp"
+#include "../Node/CompileNode.hpp"
 #include "../Node/Node.hpp"
 #include "../Node/Runtime/AnchorNode.hpp"
 #include "../Node/Runtime/BarrierNode.hpp"
-#include "../Node/CompileNode.hpp"
-
-#include "../Component/AnchorComponent.hpp"
-#include "../Component/BarrierComponent.hpp"
 
 using namespace hg::engine::render::graph;
 using namespace hg;

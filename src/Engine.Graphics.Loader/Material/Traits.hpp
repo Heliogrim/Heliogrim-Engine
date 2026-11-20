@@ -7,11 +7,10 @@
 #include <Engine.Resource/Loader/TransformerTraits.hpp>
 
 #include "__fwd.hpp"
-
 #include "MaterialLoadOptions.hpp"
 #include "MaterialPrototypeLoadOptions.hpp"
-#include "MaterialResource.hpp"
 #include "MaterialPrototypeResource.hpp"
+#include "MaterialResource.hpp"
 
 namespace hg::engine::resource::loader {
 	using namespace ::hg::engine::graphics::loader;

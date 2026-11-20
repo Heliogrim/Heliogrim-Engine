@@ -2,9 +2,9 @@
 
 /**/
 
+#include <Engine.Scheduler/Scheduler.hpp>
 #include <Engine.Scheduler/Fiber/Cancellation.hpp>
 #include <Engine.Scheduler/Fiber/Fiber.hpp>
-#include <Engine.Scheduler/Scheduler.hpp>
 #include <Engine.Scheduler/Task/Task.hpp>
 #include <Engine.Scheduler/Thread/Thread.hpp>
 #include <Engine.Scheduler/Waitable/Signal.hpp>

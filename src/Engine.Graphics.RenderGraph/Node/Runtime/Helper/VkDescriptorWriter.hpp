@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Engine.Graphics/API/__vkFwd.hpp>
 #include <Engine.Graphics/vkinc.hpp>
+#include <Engine.Graphics/API/__vkFwd.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

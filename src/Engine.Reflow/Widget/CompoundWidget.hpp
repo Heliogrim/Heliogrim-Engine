@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../Children.hpp"
 #include "Widget.hpp"
+#include "../Children.hpp"
 
 namespace hg::engine::reflow {
 	class CompoundWidget :

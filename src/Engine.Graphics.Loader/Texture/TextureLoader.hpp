@@ -3,12 +3,11 @@
 #include <Engine.Graphics/Cache/__fwd.hpp>
 #include <Engine.Resource/Loader/LoaderChain.hpp>
 
-#include "TextureResource.hpp"
+#include "__fwd.hpp"
 #include "TextureCache.hpp"
 #include "TextureFeedback.hpp"
+#include "TextureResource.hpp"
 #include "TextureTransformer.hpp"
-
-#include "__fwd.hpp"
 
 namespace hg::engine::graphics::loader {
 	using TextureSourceLoader = ::hg::engine::resource::loader::SourceLoader;

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../Archive/__fwd.hpp"
+#include "__fwd.hpp"
 #include "StructureSlotHeader.hpp"
 #include "StructureSlotStateFlags.hpp"
-#include "__fwd.hpp"
+#include "../Archive/__fwd.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

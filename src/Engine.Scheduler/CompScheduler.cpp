@@ -5,8 +5,8 @@
 #ifdef _PROFILING
 #endif
 
-#include <Engine.Common/__macro.hpp>
 #include <cstdlib>
+#include <Engine.Common/__macro.hpp>
 
 import Engine.Asserts;
 import Engine.Common;

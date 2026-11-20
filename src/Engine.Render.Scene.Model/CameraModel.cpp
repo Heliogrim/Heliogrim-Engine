@@ -2,8 +2,8 @@
 
 #include <Engine.Graphics.Scene/View/SceneView.hpp>
 #include <Engine.Scene/Scene.hpp>
-#include <Heliogrim/Component/Scene/Camera/CameraComponent.hpp>
 #include <Heliogrim/Component/SceneComponent.hpp>
+#include <Heliogrim/Component/Scene/Camera/CameraComponent.hpp>
 
 import Engine.Common;
 

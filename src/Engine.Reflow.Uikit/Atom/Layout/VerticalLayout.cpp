@@ -1,7 +1,7 @@
 #include "VerticalLayout.hpp"
 
-#include <Engine.Reflow/Algorithm/Flex.hpp>
 #include <Engine.Reflow/Children.hpp>
+#include <Engine.Reflow/Algorithm/Flex.hpp>
 #include <Engine.Reflow/Command/ReflowCommandLayer.hpp>
 #include <Engine.Reflow/Layout/Style.hpp>
 

@@ -1,9 +1,9 @@
 #pragma once
 
+#include <cstdint>
 #include <Engine.ACS/Archetype/LayoutInfo.hpp>
 #include <Engine.ACS/Cluster/ClusterRegion.hpp>
 #include <Engine.Reflect/Meta/MetaClass.hpp>
-#include <cstdint>
 
 #include "ArchetypeOps.hpp"
 

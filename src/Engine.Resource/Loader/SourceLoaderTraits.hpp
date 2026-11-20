@@ -5,7 +5,6 @@
 #include <Engine.Storage.Registry/IStorage.hpp>
 
 #include "__fwd.hpp"
-
 #include "SourceLoader/SourceLoadOptions.hpp"
 #include "SourceLoader/SourceStreamOptions.hpp"
 

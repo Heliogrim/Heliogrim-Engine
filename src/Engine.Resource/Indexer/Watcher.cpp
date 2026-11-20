@@ -1,7 +1,7 @@
 #include "Watcher.hpp"
 
-#include <Engine.Common/__macro.hpp>
 #include <cassert>
+#include <Engine.Common/__macro.hpp>
 
 import Engine.Asserts;
 import std;

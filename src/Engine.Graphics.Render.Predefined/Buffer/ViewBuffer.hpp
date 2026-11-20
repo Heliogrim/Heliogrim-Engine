@@ -1,7 +1,7 @@
 #pragma once
+#include <stddef.h>
 #include <Engine.Graphics/Buffer/BufferLikeObject.hpp>
 #include <Engine.Serialization/Layout/DataLayout.hpp>
-#include <stddef.h>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

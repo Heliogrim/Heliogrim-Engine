@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../Task/Task.hpp"
-
 #include <Engine.Common/__macro.hpp>
+
+#include "../Task/Task.hpp"
 
 namespace hg::engine::scheduler {
     class macro_novtable CompositeDispatcher {

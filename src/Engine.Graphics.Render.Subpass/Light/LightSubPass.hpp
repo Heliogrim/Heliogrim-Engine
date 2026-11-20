@@ -10,8 +10,8 @@ namespace hg::engine::graphics {
     class LightModel;
 }
 
-#include "../SubPass.hpp"
 #include "LightCaptureInterface.hpp"
+#include "../SubPass.hpp"
 
 namespace hg::engine::render {
     class macro_novtable LightSubPassBase :

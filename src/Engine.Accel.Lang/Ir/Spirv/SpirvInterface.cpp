@@ -1,5 +1,5 @@
-#include "../Interface.hpp"
 #include "SpirvEmitter.Impl.hpp"
+#include "../Interface.hpp"
 
 import std;
 

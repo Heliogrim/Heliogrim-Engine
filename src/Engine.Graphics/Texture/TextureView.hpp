@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../API/__vkFwd.hpp"
-#include "TextureLikeObject.hpp"
 #include "__fwd.hpp"
+#include "TextureLikeObject.hpp"
+#include "../API/__vkFwd.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

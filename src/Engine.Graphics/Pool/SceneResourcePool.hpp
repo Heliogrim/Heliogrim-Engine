@@ -1,11 +1,11 @@
 #pragma once
 
+#include "InstancePooled.hpp"
+#include "SparseInstancePooled.hpp"
 #include "../Aabb.hpp"
 #include "../Device/Device.hpp"
 #include "../Light/Light.hpp"
 #include "../Light/Shadow.hpp"
-#include "InstancePooled.hpp"
-#include "SparseInstancePooled.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

@@ -1,9 +1,8 @@
 #pragma once
 
-#include <Engine.Common/Collection/Vector.hpp>
-
-#include "StructureSlot.hpp"
 #include "__fwd.hpp"
+#include "StructureSlot.hpp"
+import Engine.Common;
 
 namespace hg::engine::serialization {
 	class StructSlot final :

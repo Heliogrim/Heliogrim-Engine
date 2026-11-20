@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../Types.hpp"
 #include "../__macro.hpp"
+#include "../Types.hpp"
 
 namespace hg::hash {
 	/**

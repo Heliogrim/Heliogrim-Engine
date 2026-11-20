@@ -3,12 +3,11 @@
 #include <Engine.Graphics/Cache/__fwd.hpp>
 #include <Engine.Resource/Loader/LoaderChain.hpp>
 
-#include "MaterialPrototypeResource.hpp"
+#include "__fwd.hpp"
 #include "MaterialPrototypeCache.hpp"
 #include "MaterialPrototypeFeedback.hpp"
+#include "MaterialPrototypeResource.hpp"
 #include "MaterialPrototypeTransformer.hpp"
-
-#include "__fwd.hpp"
 
 namespace hg::engine::graphics::loader {
     using MaterialPrototypeSourceLoader = ::hg::engine::resource::loader::SourceLoader;

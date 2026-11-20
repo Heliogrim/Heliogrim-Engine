@@ -1,8 +1,8 @@
 #pragma once
 
+#include <cstdlib>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Logging/Logger.hpp>
-#include <cstdlib>
 
 #include "../Buffer/SparseBuffer.hpp"
 #include "../Buffer/SparseBufferView.hpp"

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../__macro.hpp"
 #include "Address.hpp"
+#include "../__macro.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import std;

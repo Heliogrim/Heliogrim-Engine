@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../Memory/MemoryPointer.hpp"
 #include "../Move.hpp"
 #include "../Wrapper.hpp"
+#include "../Memory/MemoryPointer.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import std;

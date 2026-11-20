@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Engine.Serialization/Access/__fwd.hpp>
+
 #include "ShapeCollisionComponent.hpp"
 #include "Engine.Reflect/Inherit/InheritMeta.hpp"
 

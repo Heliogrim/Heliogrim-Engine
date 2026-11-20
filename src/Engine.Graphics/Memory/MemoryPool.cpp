@@ -1,8 +1,8 @@
 ﻿#include "MemoryPool.hpp"
 
+#include <cassert>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Logging/Logger.hpp>
-#include <cassert>
 
 #include "AllocatedMemory.hpp"
 #include "AllocationResult.hpp"

@@ -3,10 +3,10 @@
 
 #include <Engine.Logging/Logger.hpp>
 
-#include "../Task/Task.hpp"
-#include "../Thread/Thread.hpp"
 #include "BoostCell.hpp"
 #include "WorkSet/FifoWorkSet.hpp"
+#include "../Task/Task.hpp"
+#include "../Thread/Thread.hpp"
 
 #ifdef WIN32
 #include <Engine.Common/stdafx.h>

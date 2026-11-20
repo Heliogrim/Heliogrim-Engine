@@ -1,4 +1,3 @@
-#include <Engine.Common/__macro.hpp>
 #include <Jolt/Jolt.h>
 
 #include <Jolt/Physics/Body/Body.h>
@@ -6,13 +5,16 @@
 #include <Jolt/Physics/Body/BodyInterface.h>
 #include <Jolt/Physics/Collision/ObjectLayer.h>
 
-#include <Engine.Logging/Logger.hpp>
-#include <Engine.Physics.Scene/PhysicsSceneSystem.hpp>
-#include <Engine.Physics/PhysicsLayer.hpp>
-#include <Engine.Reflect/Cast.hpp>
-#include <Heliogrim/Component/Scene/Collision/SphereShapeCollisionComponent.hpp>
+/**/
 
 #include "SphereShapeCollisionModel.hpp"
+
+#include <Engine.Common/__macro.hpp>
+#include <Engine.Logging/Logger.hpp>
+#include <Engine.Physics/PhysicsLayer.hpp>
+#include <Engine.Physics.Scene/PhysicsSceneSystem.hpp>
+#include <Engine.Reflect/Cast.hpp>
+#include <Heliogrim/Component/Scene/Collision/SphereShapeCollisionComponent.hpp>
 
 import Engine.Asserts;
 

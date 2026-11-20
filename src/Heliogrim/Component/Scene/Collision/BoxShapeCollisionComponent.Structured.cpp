@@ -1,8 +1,8 @@
+#include "BoxShapeCollisionComponent.hpp"
+
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
-
-#include "BoxShapeCollisionComponent.hpp"
 
 import Engine.Common;
 

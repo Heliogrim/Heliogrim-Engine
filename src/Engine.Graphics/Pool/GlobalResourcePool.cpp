@@ -1,9 +1,9 @@
 #include "GlobalResourcePool.hpp"
 
+#include "Engine.Graphics/Geometry/Vertex.hpp"
 #include "../Buffer/SparseBufferView.hpp"
 #include "../Texture/SparseTextureView.hpp"
 #include "../Texture/TextureFactory.hpp"
-#include "Engine.Graphics/Geometry/Vertex.hpp"
 
 import Engine.Asserts;
 

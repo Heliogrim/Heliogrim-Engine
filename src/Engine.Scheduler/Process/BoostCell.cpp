@@ -1,7 +1,7 @@
 #include "BoostCell.hpp"
 
-#include "../Fiber/Fiber.hpp"
 #include "Schedule.hpp"
+#include "../Fiber/Fiber.hpp"
 
 import Engine.Asserts;
 

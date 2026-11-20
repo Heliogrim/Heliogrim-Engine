@@ -4,18 +4,20 @@
 #include <Jolt/Core/TempAllocator.h>
 #include <Jolt/Physics/PhysicsSystem.h>
 
-#include <Engine.Core.Schedule/CorePipeline.hpp>
+/**/
+
+#include "PhysicsTickStage.hpp"
+
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Timing.hpp>
 #include <Engine.Core/Universe.hpp>
 #include <Engine.Core/UniverseContext.hpp>
+#include <Engine.Core.Schedule/CorePipeline.hpp>
+#include <Engine.Physics/jolt.inc.hpp>
 #include <Engine.Physics.Scene/PhysicsSceneSystem.hpp>
 #include <Engine.Physics.Schedule/PhysicsPipeline.hpp>
-#include <Engine.Physics/jolt.inc.hpp>
-#include <Engine.Scene.Schedule/ScenePipeline.hpp>
 #include <Engine.Scene/SceneBase.hpp>
-
-#include "PhysicsTickStage.hpp"
+#include <Engine.Scene.Schedule/ScenePipeline.hpp>
 
 using namespace hg::engine::physics::schedule;
 using namespace hg::engine::scheduler;

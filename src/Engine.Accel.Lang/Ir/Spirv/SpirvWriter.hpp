@@ -2,6 +2,8 @@
 
 #include <spirv/unified1/spirv.hpp11>
 
+/**/
+
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
 #endif

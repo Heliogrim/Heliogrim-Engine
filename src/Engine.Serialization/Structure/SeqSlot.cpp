@@ -1,8 +1,8 @@
 #include "SeqSlot.hpp"
 
+#include <cassert>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Resource.Archive/Archive.hpp>
-#include <cassert>
 
 #include "RecordSlot.hpp"
 

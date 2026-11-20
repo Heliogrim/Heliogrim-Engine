@@ -2,6 +2,10 @@
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 
+/**/
+
+#include "StaticGeometryTransformer.hpp"
+
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics/Buffer/Buffer.hpp>
 #include <Engine.Graphics/Buffer/SparseBufferPage.hpp>
@@ -15,8 +19,6 @@
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Resource/Manage/UniqueResource.hpp>
 #include <Engine.Storage.System/StorageSystem.hpp>
-
-#include "StaticGeometryTransformer.hpp"
 
 import Engine.Common;
 

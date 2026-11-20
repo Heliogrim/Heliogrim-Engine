@@ -1,7 +1,6 @@
 #pragma once
 
 #include "__fwd.hpp"
-
 #include "NodeLinkValueType.hpp"
 #include "NodeOutputValueAttributes.hpp"
 

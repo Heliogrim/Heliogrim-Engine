@@ -2,8 +2,8 @@
 
 #include <Editor.Core/EditorEngine.hpp>
 #include <Editor.Scene.Actions/SaveLevel.hpp>
-#include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets/Assets.hpp>
+#include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets.Type/Universe/LevelAsset.hpp>
 #include <Engine.Core/Session.hpp>
 #include <Engine.Core/Universe.hpp>

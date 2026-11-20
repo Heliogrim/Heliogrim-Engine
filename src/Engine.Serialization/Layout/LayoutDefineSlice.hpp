@@ -1,8 +1,8 @@
 #pragma once
 
-#include <Engine.Resource.Archive/Archive.hpp>
 #include <cassert>
 #include <cstdlib>
+#include <Engine.Resource.Archive/Archive.hpp>
 
 #include "DataLayout.hpp"
 #include "LayoutDefine.hpp"

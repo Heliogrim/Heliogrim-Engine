@@ -1,8 +1,8 @@
-#include <Engine.Serialization.Structures/Common/Guid.hpp>
+#include "DirectionalLightActor.hpp"
+
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
-
-#include "DirectionalLightActor.hpp"
+#include <Engine.Serialization.Structures/Common/Guid.hpp>
 
 namespace hg::engine::serialization {
 	template <>

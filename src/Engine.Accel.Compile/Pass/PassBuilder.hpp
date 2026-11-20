@@ -1,8 +1,8 @@
 #pragma once
 #include <Engine.Accel.Effect/AccelerationEffect.hpp>
 #include <Engine.Accel.Pipeline/AccelerationPipeline.hpp>
-#include <Engine.Common/Sal.hpp>
 #include <Engine.Common/__macro.hpp>
+#include <Engine.Common/Sal.hpp>
 
 namespace hg::engine::accel {
 	class macro_novtable PassBuilder {
