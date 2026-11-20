@@ -6,6 +6,7 @@
 
 #include "RecordSlot.hpp"
 #include "StringSlot.hpp"
+#include "../Load/LoadContext.hpp"
 
 using namespace hg::engine::serialization;
 using namespace hg;
@@ -111,6 +112,9 @@ s64 StructSlot::findRecord(cref<record_key_type> key_) const {
 		offset = valueAt + slotSpan(valueHeader);
 	}
 
+	if (found != -1LL && _state.root->context) {
+		_state.root->context->markRead(&*archive, _state.offset, key_);
+	}
 	return found;
 }
 
@@ -177,4 +181,60 @@ sptr<RecordSlot> StructSlot::getRecord(cref<record_key_type> key_) {
 	};
 
 	return make_sptr<RecordSlot>(std::move(slotState));
+}
+
+Vector<String> StructSlot::keys() const {
+
+	Vector<String> out {};
+	if (not hasPayload() || _state.header.type != StructureSlotType::eStruct) {
+		return out;
+	}
+
+	const auto archive = _state.root->archive;
+	const s64 end = payloadEnd();
+
+	for (s64 offset = payloadBegin(); offset < end;) {
+
+		StructureSlotHeader keyHeader {};
+		if (not readHeaderAt(offset, end, keyHeader) || keyHeader.type != StructureSlotType::eString) {
+			return {};
+		}
+
+		const s64 valueAt = offset + slotSpan(keyHeader);
+		String key(static_cast<size_t>(keyHeader.size), '\0');
+		archive->seek(valueAt - keyHeader.size);
+		archive->serializeBytes(reinterpret_cast<ptr<u8>>(key.data()), key.size(), resource::ArchiveStreamMode::eLoad);
+		if (not checkArchive(offset, slotSpan(keyHeader))) {
+			return {};
+		}
+
+		StructureSlotHeader valueHeader {};
+		if (not readHeaderAt(valueAt, end, valueHeader)) {
+			return {};
+		}
+
+		out.emplace_back(::hg::move(key));
+		offset = valueAt + slotSpan(valueHeader);
+	}
+	return out;
+}
+
+void StructSlot::warn(const ReadError::Kind kind_, String detail_) const {
+	StructureSlotBase::warn(kind_, _state.offset, slotSpan(_state.header), ::hg::move(detail_));
+}
+
+bool StructSlot::reportUnreadKeys() const {
+
+	if (not hasPayload() || not _state.root->context) {
+		return false;
+	}
+
+	auto present = keys();
+	std::erase_if(present, [](ref<const String> key_) { return key_ == "@type" || key_ == "@rev"; });
+
+	const auto unread = _state.root->context->unreadKeys(&*_state.root->archive, _state.offset, present);
+	for (const auto& key : unread) {
+		warn(ReadError::Kind::eUnknownField, "key `" + key + "` was not read");
+	}
+	return not unread.empty();
 }
