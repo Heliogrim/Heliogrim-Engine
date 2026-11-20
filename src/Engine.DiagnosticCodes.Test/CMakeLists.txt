@@ -4,6 +4,7 @@ make_test_project(
 		LIBRARIES
 		${PROJECT_NAME}::Engine.Diagnostics
 		${PROJECT_NAME}::Engine.Storage.Package
+		${PROJECT_NAME}::Engine.Serialization
 		${PROJECT_NAME}::Engine.Accel.Lang
 		${PROJECT_NAME}::Engine.Async
 		${PROJECT_NAME}::Engine.Config

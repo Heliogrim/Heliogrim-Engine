@@ -2,10 +2,6 @@
 
 /**/
 
-#include <Engine.Accel.Lang/Diagnostic/Codes.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.Storage.Package/Diagnostic/Codes.hpp>
-#include <Engine.Diagnostics/Code.hpp>
 #include <algorithm>
 #include <array>
 #include <fstream>
@@ -13,15 +9,21 @@
 #include <span>
 #include <string>
 #include <utility>
+#include <Engine.Accel.Lang/Diagnostic/Codes.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.Diagnostics/Code.hpp>
+#include <Engine.Serialization/Diagnostic/Codes.hpp>
+#include <Engine.Storage.Package/Diagnostic/Codes.hpp>
 
 using namespace hg::engine::diag;
 using namespace hg;
 
 namespace HgDiagCodes {
 	namespace {
-		const std::array<std::span<const DiagnosticCodeInfo>, 2uLL> tables {
+		const std::array<std::span<const DiagnosticCodeInfo>, 3uLL> tables {
 			std::span<const DiagnosticCodeInfo> { hg::engine::accel::lang::codes::table },
-			std::span<const DiagnosticCodeInfo> { hg::engine::storage::package::codes::table }
+			std::span<const DiagnosticCodeInfo> { hg::engine::storage::package::codes::table },
+			std::span<const DiagnosticCodeInfo> { hg::engine::serialization::codes::table }
 		};
 
 		String escaped(const StringView text_) {
