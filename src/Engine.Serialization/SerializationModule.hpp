@@ -6,6 +6,7 @@
 #include "FnSets.hpp"
 #include "Archive/LayoutArchive.hpp"
 #include "Archive/StructuredArchive.hpp"
+#include "Schema/Migration.hpp"
 #include "Structure/StructScopedSlot.hpp"
 
 namespace hg::engine {
@@ -23,6 +24,14 @@ namespace hg::engine {
 		SerializationModule(mref<this_type>) = delete;
 
 		~SerializationModule() = default;
+
+	private:
+		serialization::MigrationRegistry _migrations;
+
+	public:
+		[[nodiscard]] ref<serialization::MigrationRegistry> migrations() noexcept;
+
+		[[nodiscard]] cref<serialization::MigrationRegistry> migrations() const noexcept;
 
 	public:
 		decltype(auto) serialize(_In_ auto&& obj_, _Inout_ mref<serialization::LayoutArchiveBase> archive_) const {

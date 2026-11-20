@@ -63,6 +63,9 @@ namespace hg::engine::serialization {
 
 		[[nodiscard]] StructScopedSlot getStructSlot(cref<record_key_type> key_) const;
 
+		/* Stored `@rev`; a missing key means 0. */
+		[[nodiscard]] u16 revision() const noexcept;
+
 	public:
 		template <typename VoidType_> requires std::is_void_v<VoidType_>
 		[[nodiscard]] RecordScopedSlot getSlot(cref<record_key_type> key_) const {
