@@ -3,12 +3,11 @@
 #include <Engine.Graphics/Cache/__fwd.hpp>
 #include <Engine.Resource/Loader/LoaderChain.hpp>
 
+#include "__fwd.hpp"
 #include "StaticGeometryCache.hpp"
 #include "StaticGeometryFeedback.hpp"
 #include "StaticGeometryResource.hpp"
 #include "StaticGeometryTransformer.hpp"
-
-#include "__fwd.hpp"
 
 namespace hg::engine::graphics::loader {
 	using StaticGeometrySourceLoader = ::hg::engine::resource::loader::SourceLoader;

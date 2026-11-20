@@ -1,9 +1,9 @@
 #pragma once
 
 #include "../Node.hpp"
-#include "../Parameter/ValueTypeNodeParameter.hpp"
 #include "../NodeInputSpec.hpp"
 #include "../NodeOutputSpec.hpp"
+#include "../Parameter/ValueTypeNodeParameter.hpp"
 
 namespace hg::editor::graphics::graph::nodes {
     class VectorScaleMathNode :

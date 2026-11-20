@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../NodeParameter.hpp"
 #include "../NodeLinkValueType.hpp"
+#include "../NodeParameter.hpp"
 
 namespace hg::editor::graphics::graph {
     class ValueTypeNodeParameter :

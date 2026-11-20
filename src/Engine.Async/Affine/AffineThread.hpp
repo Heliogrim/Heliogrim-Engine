@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Engine.Scheduler/Thread/Thread.hpp>
 #include <cstdint>
+#include <Engine.Scheduler/Thread/Thread.hpp>
 
 #include "../Future/Future.hpp"
 #include "../Future/Promise.hpp"

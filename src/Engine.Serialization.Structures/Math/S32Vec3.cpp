@@ -1,9 +1,9 @@
-#include "fwd.hpp"
-
 #include <Engine.Resource.Archive/Archive.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
+
+#include "fwd.hpp"
 
 using namespace hg::engine::serialization;
 using namespace hg;

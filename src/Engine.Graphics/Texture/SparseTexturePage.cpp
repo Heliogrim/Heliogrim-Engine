@@ -1,10 +1,10 @@
 #include "SparseTexturePage.hpp"
 
+#include <Engine.Common/__macro.hpp>
+
+#include "Engine.Graphics/Memory/VirtualMemory.hpp"
 #include "../Memory/AllocatedMemory.hpp"
 #include "../Memory/AllocationResult.hpp"
-#include "Engine.Graphics/Memory/VirtualMemory.hpp"
-
-#include <Engine.Common/__macro.hpp>
 
 import std;
 

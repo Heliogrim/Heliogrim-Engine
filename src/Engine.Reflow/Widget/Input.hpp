@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CompoundWidget.hpp"
-
 #include <Engine.Common/__macro.hpp>
+
+#include "CompoundWidget.hpp"
 
 namespace hg::engine::reflow {
 	enum class InputControlStatus {

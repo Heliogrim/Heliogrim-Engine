@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../Context.hpp"
-#include "../Mutation.hpp"
 #include "StaticGen.hpp"
 #include "StaticStage.hpp"
+#include "../Context.hpp"
+#include "../Mutation.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import std;

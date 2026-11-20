@@ -3,8 +3,8 @@
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Event/EventEmitter.hpp>
 
-#include "Event/PlatformResizeEvent.hpp"
 #include "NativeWindowFlags.hpp"
+#include "Event/PlatformResizeEvent.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

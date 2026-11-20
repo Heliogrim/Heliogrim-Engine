@@ -1,8 +1,8 @@
 #pragma once
 
-#include "TextureLikeObject.hpp"
-
 #include <Engine.Common/__macro.hpp>
+
+#include "TextureLikeObject.hpp"
 
 namespace hg::engine::graphics {
     class macro_novtable TextureObject :

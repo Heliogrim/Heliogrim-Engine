@@ -5,6 +5,7 @@
 #include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
 #include <Engine.Graphics.Geometry/StaticMeshLayout.hpp>
 
+#include "RenderCommandIterator.hpp"
 #include "Commands/AttachResource.hpp"
 #include "Commands/Begin.hpp"
 #include "Commands/BeginAccelerationPass.hpp"
@@ -27,7 +28,6 @@
 #include "Commands/EndSubPass.hpp"
 #include "Commands/Lambda.hpp"
 #include "Commands/NextSubpass.hpp"
-#include "RenderCommandIterator.hpp"
 
 import std;
 

@@ -1,9 +1,9 @@
 #include "TextureDescription.hpp"
 
-#include <Engine.Graphics/Texture/Texture.hpp>
-#include <Engine.Graphics/Texture/TextureView.hpp>
 #include <Engine.Graphics/Texture/SparseTexture.hpp>
 #include <Engine.Graphics/Texture/SparseTextureView.hpp>
+#include <Engine.Graphics/Texture/Texture.hpp>
+#include <Engine.Graphics/Texture/TextureView.hpp>
 
 using namespace hg::engine::render::graph;
 using namespace hg::engine::graphics;

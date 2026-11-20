@@ -1,8 +1,8 @@
 #include "Text.hpp"
 
+#include <Engine.Reflow/DataWatcher.hpp>
 #include <Engine.Reflow/Algorithm/Flex.hpp>
 #include <Engine.Reflow/Command/ReflowCommandBuffer.hpp>
-#include <Engine.Reflow/DataWatcher.hpp>
 #include <Engine.Reflow/Layout/Style.hpp>
 #include <Engine.Reflow/Widget/AttributeBatch.hpp>
 
@@ -497,8 +497,8 @@ math::fvec2 Text::getShrinkFactor() const noexcept {
 
 /**/
 
-#include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets/Assets.hpp>
+#include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Graphics.Loader/Font/FontLoadOptions.hpp>
 #include <Engine.Graphics.Loader/Font/FontResource.hpp>

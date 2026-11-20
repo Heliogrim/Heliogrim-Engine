@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../Action/ActionTypeInfo.hpp"
+#include "ActionResolutionFactory.hpp"
 #include "../Mutation.hpp"
 #include "../Query.hpp"
-#include "ActionResolutionFactory.hpp"
+#include "../Action/ActionTypeInfo.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

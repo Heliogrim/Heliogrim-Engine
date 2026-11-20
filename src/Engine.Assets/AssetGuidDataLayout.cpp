@@ -1,7 +1,7 @@
-#include "AssetGuid.hpp"
-
-#include <Engine.Serialization/Layout/DataLayout.hpp>
 #include <stddef.h>
+#include <Engine.Serialization/Layout/DataLayout.hpp>
+
+#include "AssetGuid.hpp"
 
 using namespace hg;
 

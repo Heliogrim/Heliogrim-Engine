@@ -1,8 +1,8 @@
-#include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
+#include <Engine.Serialization/Access/Structure.hpp>
+#include <Engine.Serialization/Structure/__fwd.hpp>
 #include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
-#include <Engine.Serialization/Structure/__fwd.hpp>
 
 import Engine.Common;
 

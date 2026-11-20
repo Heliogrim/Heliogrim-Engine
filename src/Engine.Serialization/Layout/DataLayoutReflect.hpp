@@ -1,8 +1,8 @@
 #pragma once
 
+#include <cassert>
 #include <Engine.Reflect/Inherit/ClassMetaBase.hpp>
 #include <Engine.Reflect/Inherit/Concept.hpp>
-#include <cassert>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

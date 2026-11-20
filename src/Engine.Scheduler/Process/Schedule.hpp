@@ -2,9 +2,9 @@
 
 #include <Engine.Common/Sal.hpp>
 
+#include "ScheduleWorkSet.hpp"
 #include "../Lane.hpp"
 #include "../LanePolicyConfig.hpp"
-#include "ScheduleWorkSet.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

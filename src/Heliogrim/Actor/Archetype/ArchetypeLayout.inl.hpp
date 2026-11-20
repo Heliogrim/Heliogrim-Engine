@@ -12,11 +12,11 @@
  * ComponentRef fields; they travel through the fixup table.
  */
 
+#include <cstring>
 #include <Engine.ACS/Archetype/LayoutInfo.hpp>
 #include <Engine.ACS/Handle/Handle.hpp>
 #include <Engine.Assets/AssetGuid.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
-#include <cstring>
 #include <Engine.Serialization/Load/LoadContext.hpp>
 
 #include "InheritArchetype.hpp"

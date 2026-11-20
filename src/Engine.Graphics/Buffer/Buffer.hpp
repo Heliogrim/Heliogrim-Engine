@@ -1,9 +1,9 @@
 #pragma once
 
+#include "BufferObject.hpp"
 #include "../API/__vkFwd.hpp"
 #include "../Geometry/Vertex.hpp"
 #include "../Memory/AllocatedMemory.hpp"
-#include "BufferObject.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

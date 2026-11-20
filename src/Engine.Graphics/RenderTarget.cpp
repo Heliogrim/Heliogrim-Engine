@@ -1,9 +1,9 @@
 #include "RenderTarget.hpp"
 
 #include <Engine.Common/__macro.hpp>
+#include <Engine.Graphics.Render/RenderPass.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneColor.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneView.hpp>
-#include <Engine.Graphics.Render/RenderPass.hpp>
 #include <Engine.Graphics.Scene/View/SceneView.hpp>
 #include <Engine.Logging/Logger.hpp>
 

@@ -2,8 +2,8 @@
 
 #include <Editor.Action/Action/DelegateAction.hpp>
 #include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
-#include <Heliogrim/Actor/ActorRef.hpp>
 #include <Heliogrim/TypedAssetGuid.hpp>
+#include <Heliogrim/Actor/ActorRef.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

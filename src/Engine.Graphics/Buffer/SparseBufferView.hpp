@@ -1,7 +1,7 @@
 #pragma once
 
-#include "BufferLikeObject.hpp"
 #include "__fwd.hpp"
+#include "BufferLikeObject.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

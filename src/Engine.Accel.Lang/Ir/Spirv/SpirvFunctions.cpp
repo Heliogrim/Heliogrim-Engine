@@ -1,5 +1,5 @@
-#include "../Builtin.hpp"
 #include "SpirvEmitter.Impl.hpp"
+#include "../Builtin.hpp"
 
 import std;
 

@@ -4,6 +4,8 @@
 
 #include <spirv-tools/optimizer.hpp>
 
+/**/
+
 #include "IrSpirvGate.hpp"
 
 import std;

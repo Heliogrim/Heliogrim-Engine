@@ -2,11 +2,11 @@
 
 #include <Engine.Common/Sal.hpp>
 
+#include "__fwd.hpp"
+#include "Texture.hpp"
+#include "../vkinc.hpp"
 #include "../Device/Device.hpp"
 #include "../Memory/VirtualMemory.hpp"
-#include "../vkinc.hpp"
-#include "Texture.hpp"
-#include "__fwd.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

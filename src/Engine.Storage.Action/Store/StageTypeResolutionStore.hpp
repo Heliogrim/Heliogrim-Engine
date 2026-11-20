@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../Action/StageTypeInfo.hpp"
 #include "StageResolutionFactory.hpp"
+#include "../Action/StageTypeInfo.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

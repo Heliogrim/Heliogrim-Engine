@@ -1,9 +1,9 @@
+#include "SphereShapeCollisionComponent.hpp"
+
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Structure/FloatScopedSlot.hpp>
 #include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
-
-#include "SphereShapeCollisionComponent.hpp"
 
 import Engine.Common;
 

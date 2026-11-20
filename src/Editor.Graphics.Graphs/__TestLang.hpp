@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Graph/NodeGraph.hpp"
-#include "Node/Node.hpp"
 #include "Node/__fwd.hpp"
+#include "Node/Node.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

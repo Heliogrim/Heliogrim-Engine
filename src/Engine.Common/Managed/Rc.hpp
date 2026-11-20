@@ -1,11 +1,10 @@
 #pragma once
 
-#include "../Concurrent/SharedMemoryReference.hpp"
-
 #include "AtomicRefCounted.hpp"
 #include "AtomicRefCountedIntrusive.hpp"
 #include "RefCounted.hpp"
 #include "RefCountedIntrusive.hpp"
+#include "../Concurrent/SharedMemoryReference.hpp"
 
 namespace hg {
 	/**

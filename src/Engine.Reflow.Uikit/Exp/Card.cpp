@@ -2,8 +2,8 @@
 
 #include <Engine.Reflow.Theming/Theming.hpp>
 
-#include "../Atom/Paint.hpp"
 #include "../Themes.hpp"
+#include "../Atom/Paint.hpp"
 
 import Engine.Common;
 

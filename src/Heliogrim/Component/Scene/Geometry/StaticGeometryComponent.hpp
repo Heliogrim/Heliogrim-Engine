@@ -2,9 +2,9 @@
 
 #include <Engine.Serialization/Access/__fwd.hpp>
 
+#include "../ModelComponent.hpp"
 #include "../../../Asset/GeometryAssetHandles.hpp"
 #include "../../../Asset/MaterialAssetHandles.hpp"
-#include "../ModelComponent.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "ReflowPassState.hpp"
-#include "Widget/WidgetState.hpp"
 #include "Widget/__fwd.hpp"
+#include "Widget/WidgetState.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

@@ -1,9 +1,9 @@
 #include "Registry.hpp"
 
 #include <Engine.ACS/Handle/Epoch.hpp>
+#include <Heliogrim/ActorInitializer.hpp>
 #include <Heliogrim/Actor/Actor.hpp>
 #include <Heliogrim/Actor/Archetype/ActorClass.hpp>
-#include <Heliogrim/ActorInitializer.hpp>
 
 import Engine.Asserts;
 import Engine.Common;

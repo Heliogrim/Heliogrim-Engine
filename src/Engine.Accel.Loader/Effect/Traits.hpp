@@ -7,9 +7,8 @@
 #include <Engine.Resource/Loader/TransformerTraits.hpp>
 
 #include "__fwd.hpp"
-
-#include "EffectResource.hpp"
 #include "EffectLoadOptions.hpp"
+#include "EffectResource.hpp"
 
 namespace hg::engine::resource::loader {
 	using namespace ::hg::engine::accel::loader;

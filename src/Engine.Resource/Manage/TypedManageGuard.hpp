@@ -1,7 +1,7 @@
 #pragma once
 
-#include "ManageGuard.hpp"
 #include "__fwd.hpp"
+#include "ManageGuard.hpp"
 
 namespace hg::engine::resource {
 	template <typename>

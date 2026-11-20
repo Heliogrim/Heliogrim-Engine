@@ -1,7 +1,7 @@
 #include "Texture.hpp"
 
-#include "../vkinc.hpp"
 #include "TextureView.hpp"
+#include "../vkinc.hpp"
 
 import std;
 

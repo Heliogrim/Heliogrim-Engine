@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../Event/EventDispatcher.hpp"
 #include "__fwd.hpp"
+#include "../Event/EventDispatcher.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

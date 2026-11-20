@@ -5,9 +5,9 @@
 
 #define DR_WAV_IMPLEMENTATION
 #define DR_WAV_NO_WCHAR
-#include <Engine.Common/Buffer.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <dr_libs/dr_wav.h>
+#include <Engine.Common/__macro.hpp>
+#include <Engine.Common/Buffer.hpp>
 
 #include "AudioFileTypes.hpp"
 

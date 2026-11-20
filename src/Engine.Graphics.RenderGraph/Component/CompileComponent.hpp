@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../Component.hpp"
-
 #include <Engine.Common/__macro.hpp>
+
+#include "../Component.hpp"
 
 namespace hg::engine::graphics::render::graph {
     class macro_novtable CompileComponent :

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
 #include <cassert>
+#include <Engine.Common/__macro.hpp>
 
 #include "EventEmitter.hpp"
 

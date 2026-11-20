@@ -1,9 +1,9 @@
 #pragma once
 
 #include "__macro.hpp"
+#include "Memory/__fwd.hpp"
 #include "Memory/SharedPointer.hpp"
 #include "Memory/UniquePointer.hpp"
-#include "Memory/__fwd.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import std;

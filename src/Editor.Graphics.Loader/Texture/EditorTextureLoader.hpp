@@ -3,11 +3,10 @@
 #include <Engine.Graphics/Pool/GlobalResourcePool.hpp>
 #include <Engine.Resource/Loader/LoaderChain.hpp>
 
+#include "__fwd.hpp"
 #include "EditorTextureCache.hpp"
 #include "EditorTextureFeedback.hpp"
 #include "EditorTextureTransformer.hpp"
-
-#include "__fwd.hpp"
 
 namespace hg::editor::graphics::loader {
 	/**/

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../Graph/TaskGraph.hpp"
-#include "../Waitable/Signal.hpp"
 #include "CompositeDispatcher.hpp"
 #include "StagePipeline.hpp"
+#include "../Graph/TaskGraph.hpp"
+#include "../Waitable/Signal.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

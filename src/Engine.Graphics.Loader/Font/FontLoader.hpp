@@ -3,12 +3,11 @@
 #include <Engine.Graphics/Cache/__fwd.hpp>
 #include <Engine.Resource/Loader/LoaderChain.hpp>
 
-#include "FontResource.hpp"
+#include "__fwd.hpp"
 #include "FontCache.hpp"
 #include "FontFeedback.hpp"
+#include "FontResource.hpp"
 #include "FontTransformer.hpp"
-
-#include "__fwd.hpp"
 
 namespace hg::engine::graphics::loader {
 	using FontSourceLoader = ::hg::engine::resource::loader::SourceLoader;

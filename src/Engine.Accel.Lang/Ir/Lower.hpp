@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../Intermediate.hpp"
 #include "Diagnostic.hpp"
 #include "Layout.hpp"
 #include "Module.hpp"
 #include "Tier.hpp"
+#include "../Intermediate.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

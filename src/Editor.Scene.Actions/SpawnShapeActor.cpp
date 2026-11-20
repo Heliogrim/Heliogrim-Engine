@@ -36,12 +36,12 @@ SpawnShapeActor::~SpawnShapeActor() = default;
 #include <Editor.Core/EditorEngine.hpp>
 #include <Editor.UI.Main/EditorUI.hpp>
 #include <Editor.UI.Main/Module/EditorUI.hpp>
+#include <Heliogrim/Heliogrim.hpp>
 #include <Heliogrim/Actor/Actor.hpp>
 #include <Heliogrim/Actor/Geometry/BoxShapeGeometryActor.hpp>
 #include <Heliogrim/Actor/Geometry/SphereShapeGeometryActor.hpp>
 #include <Heliogrim/Asset/MaterialAssetHandles.hpp>
 #include <Heliogrim/Core/Session.hpp>
-#include <Heliogrim/Heliogrim.hpp>
 #include <Heliogrim/Universe/Universe.hpp>
 
 Opt<ActorRef<>> spawnActorImpl(SpawnShapeActor::ShapeType shapeType_, ref<const math::Location> location_) {

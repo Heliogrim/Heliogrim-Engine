@@ -1,8 +1,8 @@
 #pragma once
 
+#include "__fwd.hpp"
 #include "../Action/MutationDynamicGen.hpp"
 #include "../Action/QueryDynamicGen.hpp"
-#include "__fwd.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

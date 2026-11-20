@@ -2,10 +2,10 @@
 
 #include <Engine.Common/stdafx.h>
 /**/
+#include <ole2.h>
 #include <Engine.Input/DragDrop/DragDropObject.hpp>
 #include <Engine.Input/DragDrop/DragDropSender.hpp>
 #include <Engine.Logging/Logger.hpp>
-#include <ole2.h>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import std;

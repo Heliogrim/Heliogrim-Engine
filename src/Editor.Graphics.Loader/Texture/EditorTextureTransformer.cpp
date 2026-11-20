@@ -1,7 +1,7 @@
 #include "EditorTextureTransformer.hpp"
 
-#include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets/Assets.hpp>
+#include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets.Type/Texture/ImageAsset.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Reflect/Cast.hpp>

@@ -2,11 +2,11 @@
 
 #include <cassert>
 
-#include "../vkinc.hpp"
 #include "AllocatedMemory.hpp"
 #include "AllocationResult.hpp"
 #include "Allocator.hpp"
 #include "MemoryPool.hpp"
+#include "../vkinc.hpp"
 
 import Engine.Asserts;
 

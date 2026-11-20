@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../Memory/__fwd.hpp"
 #include "VirtualMemoryPageState.hpp"
+#include "../Memory/__fwd.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

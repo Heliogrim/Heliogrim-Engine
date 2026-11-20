@@ -1,6 +1,7 @@
 #include "pch.h"
 
 /**/
+#include <cstring>
 #include <Engine.Assets.Type/Asset.hpp>
 #include <Engine.Resource.Archive/BufferArchive.hpp>
 #include <Engine.Serialization/Archive/LayoutArchive.hpp>
@@ -9,7 +10,6 @@
 #include <Engine.Serialization/Layout/LayoutDefine.hpp>
 #include <Engine.Serialization/Layout/LayoutDefineSpan.hpp>
 #include <Engine.Serialization/Layout/LayoutDefineValue.hpp>
-#include <cstring>
 
 #include "Engine.Serialization/Structure/FloatScopedSlot.hpp"
 #include "Engine.Serialization/Structure/IntegralScopedSlot.hpp"

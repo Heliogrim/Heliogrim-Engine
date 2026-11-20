@@ -2,8 +2,8 @@
 
 /**/
 
-#include <Engine.ACS/Archetype/LayoutInfo.hpp>
 #include <Engine.ACS/Registry.hpp>
+#include <Engine.ACS/Archetype/LayoutInfo.hpp>
 #include <Heliogrim/Actor/Archetype/ActorClass.hpp>
 #include <Heliogrim/Actor/Archetype/ArchetypeConcept.hpp>
 

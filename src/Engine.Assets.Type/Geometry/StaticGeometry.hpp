@@ -4,8 +4,8 @@
 #include <Engine.Serialization/Access/__fwd.hpp>
 #include <Heliogrim/TypedAssetGuid.hpp>
 
-#include "../Material/GraphicsMaterial.hpp"
 #include "Geometry.hpp"
+#include "../Material/GraphicsMaterial.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

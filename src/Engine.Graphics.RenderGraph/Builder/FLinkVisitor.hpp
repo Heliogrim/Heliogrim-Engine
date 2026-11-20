@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../Visitor/Visitor.hpp"
 #include "LinkMode.hpp"
+#include "../Visitor/Visitor.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

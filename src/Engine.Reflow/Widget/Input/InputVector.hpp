@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../Children.hpp"
 #include "../Input.hpp"
+#include "../../Children.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import std;

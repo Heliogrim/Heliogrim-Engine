@@ -1,9 +1,9 @@
 #pragma once
 
+#include <stddef.h>
 #include <Engine.Accel.Effect/Stage/TransferDataType.hpp>
 #include <Engine.Graphics/Geometry/Vertex.hpp>
 #include <Engine.Reflect/Compile/TypeId.hpp>
-#include <stddef.h>
 
 #include "Description.hpp"
 

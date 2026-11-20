@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../Device/Device.hpp"
 #include "Geometry.hpp"
+#include "../Device/Device.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

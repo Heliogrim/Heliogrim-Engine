@@ -2,9 +2,9 @@
 
 #include <version>
 
+#include "../__macro.hpp"
 #include "../Types.hpp"
 #include "../Wrapper.hpp"
-#include "../__macro.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import std;

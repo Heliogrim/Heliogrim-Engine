@@ -2,8 +2,8 @@
 
 #include <Engine.Common/Sal.hpp>
 
-#include "MemoryLayout.hpp"
 #include "__fwd.hpp"
+#include "MemoryLayout.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

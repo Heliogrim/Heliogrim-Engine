@@ -1,11 +1,10 @@
 #include "Heliogrim.Main.hpp"
 
-#include <Heliogrim/Heliogrim.hpp>
-#include <Heliogrim/HeliogrimStatic.hpp>
-
 #include <Engine.Core/Event/SignalShutdownEvent.hpp>
 #include <Engine.Core.Game/GameEngine.hpp>
 #include <Engine.Event/GlobalEventEmitter.hpp>
+#include <Heliogrim/Heliogrim.hpp>
+#include <Heliogrim/HeliogrimStatic.hpp>
 
 using namespace hg;
 

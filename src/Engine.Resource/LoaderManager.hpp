@@ -1,9 +1,9 @@
 #pragma once
 
-#include <Engine.Assets.Type/Asset.hpp>
-#include <Engine.Assets/AssetGuid.hpp>
-#include <Engine.Common/Sal.hpp>
 #include <cassert>
+#include <Engine.Assets/AssetGuid.hpp>
+#include <Engine.Assets.Type/Asset.hpp>
+#include <Engine.Common/Sal.hpp>
 
 #include "Loader/Loader.hpp"
 #include "Manage/Resource.hpp"

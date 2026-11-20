@@ -1,8 +1,8 @@
 #pragma once
 
+#include <Engine.Graphics/API/__vkFwd.hpp>
 #include <Engine.Graphics.RenderGraph/Symbol/Subscribed.hpp>
 #include <Engine.Graphics.RenderGraph/Symbol/SymbolizedResource.hpp>
-#include <Engine.Graphics/API/__vkFwd.hpp>
 
 #include "../SubPass.hpp"
 

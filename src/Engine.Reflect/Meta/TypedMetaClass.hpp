@@ -1,9 +1,9 @@
 #pragma once
 
+#include "MetaClass.hpp"
 #include "../Compile/Map.hpp"
 #include "../Inherit/Compile.hpp"
 #include "../Template/QueryTypeId.hpp"
-#include "MetaClass.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

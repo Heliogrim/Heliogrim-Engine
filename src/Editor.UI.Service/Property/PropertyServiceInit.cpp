@@ -4,8 +4,6 @@
 
 /**/
 
-#include "PropertyServiceInit.hpp"
-
 #include <Engine.Reflect/IsType.hpp>
 #include <Engine.Reflect/TypeId.hpp>
 #include <Engine.Reflow.Uikit/Atom/Text.hpp>
@@ -20,6 +18,8 @@
 #include <Heliogrim/Component/Scene/Light/SpotLightComponent.hpp>
 #include <Heliogrim/Component/Scene/Sky/SkyboxComponent.hpp>
 
+#include "PropertyServiceInit.hpp"
+
 /**/
 
 #include <Editor.UI/Event/SelectMenuEvent.hpp>
@@ -28,9 +28,9 @@
 #include <Editor.UI/Widget/Input/InputSelect.hpp>
 #include <Editor.UI/Widget/Input/InputText.hpp>
 #include <Editor.UI/Widget/Input/InputToggle.hpp>
+#include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets.System/AssetRegistry.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
-#include <Engine.Assets/Assets.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Reflect/Cast.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/BoxLayout.hpp>

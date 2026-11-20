@@ -1,12 +1,12 @@
 #pragma once
 
 #include "../Node.hpp"
-#include "../NodeLinkValueType.hpp"
-#include "../Parameter/ValueTypeNodeParameter.hpp"
 #include "../NodeInput.hpp"
 #include "../NodeInputSpec.hpp"
+#include "../NodeLinkValueType.hpp"
 #include "../NodeOutput.hpp"
 #include "../NodeOutputSpec.hpp"
+#include "../Parameter/ValueTypeNodeParameter.hpp"
 
 namespace hg::editor::graphics::graph::nodes {
     class SubGraphOutputNode :

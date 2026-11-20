@@ -6,8 +6,8 @@
 #include <Engine.Core/Module/SubModuleDependency.hpp>
 #include <Engine.Reflow.Schedule/ReflowPipeline.hpp>
 #include <Engine.Reflow.Theming/Theming.hpp>
-#include <Engine.Scheduler/Pipeline/CompositePipeline.hpp>
 #include <Engine.Scheduler/Scheduler.hpp>
+#include <Engine.Scheduler/Pipeline/CompositePipeline.hpp>
 
 #include "DataWatcher.hpp"
 #include "Module/Reflow.hpp"

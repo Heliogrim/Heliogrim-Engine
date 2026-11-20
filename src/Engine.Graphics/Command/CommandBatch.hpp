@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../vkinc.hpp"
 #include "CommandBuffer.hpp"
+#include "../vkinc.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

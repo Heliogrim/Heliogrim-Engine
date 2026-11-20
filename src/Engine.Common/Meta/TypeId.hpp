@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../Hash/Murmur3.hpp"
 #include "../Types.hpp"
 #include "../Wrapper.hpp"
+#include "../Hash/Murmur3.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import std;

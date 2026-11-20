@@ -12,8 +12,8 @@
 #include <Engine.Resource.Archive/StorageReadonlyArchive.hpp>
 #include <Engine.Resource.Blob/Blob.hpp>
 #include <Engine.Resource.Blob/File/LfsSyncBlob.hpp>
-#include <Engine.Resource.Package/Linker/Indexed.hpp>
 #include <Engine.Resource.Package/ReadonlyPackage.hpp>
+#include <Engine.Resource.Package/Linker/Indexed.hpp>
 #include <Engine.Storage.Registry/Options/ArchiveStorageDescriptor.hpp>
 #include <Engine.Storage.Registry/Options/FileStorageDescriptor.hpp>
 #include <Engine.Storage.Registry/Options/MemoryStorageDescriptor.hpp>

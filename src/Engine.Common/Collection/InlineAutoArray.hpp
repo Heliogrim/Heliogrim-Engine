@@ -2,11 +2,11 @@
 
 #include <cassert>
 
-#include "../Memory/Destroy.hpp"
+#include "InlineArray.hpp"
+#include "../__macro.hpp"
 #include "../Move.hpp"
 #include "../Wrapper.hpp"
-#include "../__macro.hpp"
-#include "InlineArray.hpp"
+#include "../Memory/Destroy.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import std;

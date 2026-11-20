@@ -1,7 +1,7 @@
 ﻿#pragma once
+#include "Engine.Graphics/Geometry/Mesh.hpp"
 #include "../Device/Device.hpp"
 #include "../Texture/Texture.hpp"
-#include "Engine.Graphics/Geometry/Mesh.hpp"
 
 namespace hg::engine::graphics {
     class Skybox {

@@ -2,12 +2,12 @@
 
 #include <Engine.Platform/NativeWindow.hpp>
 
-#include "../Children.hpp"
-#include "../FocusPath.hpp"
-#include "../Widget/Widget.hpp"
-#include "../Widget/__fwd.hpp"
 #include "Layer.hpp"
 #include "WindowType.hpp"
+#include "../Children.hpp"
+#include "../FocusPath.hpp"
+#include "../Widget/__fwd.hpp"
+#include "../Widget/Widget.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

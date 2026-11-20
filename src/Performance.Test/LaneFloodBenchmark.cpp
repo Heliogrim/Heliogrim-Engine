@@ -12,13 +12,13 @@
 #include <Engine.Async/Future/Async.hpp>
 #include <Engine.Async/Future/Future.hpp>
 #include <Engine.Scheduler/CompScheduler.hpp>
-#include <Engine.Scheduler/Graph/StageDecl.hpp>
 #include <Engine.Scheduler/Lane.hpp>
 #include <Engine.Scheduler/LanePolicyConfig.hpp>
+#include <Engine.Scheduler/Scheduler.hpp>
+#include <Engine.Scheduler/Graph/StageDecl.hpp>
 #include <Engine.Scheduler/Pipeline/CompositePipeline.hpp>
 #include <Engine.Scheduler/Pipeline/Stage/PipelineStage.hpp>
 #include <Engine.Scheduler/Process/Schedule.hpp>
-#include <Engine.Scheduler/Scheduler.hpp>
 #include <Engine.Scheduler/Task/Task.hpp>
 #include <Engine.Scheduler/Waitable/JoinCounter.hpp>
 #include <Heliogrim/Async/Yield.hpp>

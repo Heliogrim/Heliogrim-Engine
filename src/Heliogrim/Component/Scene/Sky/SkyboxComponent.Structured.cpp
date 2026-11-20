@@ -1,7 +1,9 @@
+#include "SkyboxComponent.hpp"
+
+#include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 
-#include "SkyboxComponent.hpp"
 #include "../../../AssetDatabase.hpp"
 #include "../../../AssetResolve.hpp"
 

@@ -1,8 +1,8 @@
-#include <Engine.Serialization.Structures/Common/Guid.hpp>
+#include "PointLightActor.hpp"
+
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
-
-#include "PointLightActor.hpp"
+#include <Engine.Serialization.Structures/Common/Guid.hpp>
 
 namespace hg::engine::serialization {
 	template <>

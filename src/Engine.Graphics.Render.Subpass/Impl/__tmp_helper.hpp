@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cassert>
 #include <Engine.Accel.Lang/Intermediate.hpp>
 #include <Engine.Accel.Lang/Ir/Interface.hpp>
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
@@ -7,10 +8,9 @@
 #include <Engine.Config/Config.hpp>
 #include <Engine.Config/Enums.hpp>
 #include <Engine.Core/Engine.hpp>
+#include <Engine.Storage/StorageModule.hpp>
 #include <Engine.Storage.System/ReadText.hpp>
 #include <Engine.Storage.System/StorageSystem.hpp>
-#include <Engine.Storage/StorageModule.hpp>
-#include <cassert>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Asserts;

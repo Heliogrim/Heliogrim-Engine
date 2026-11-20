@@ -17,8 +17,8 @@
 #include <Engine.Core/Universe.hpp>
 #include <Engine.Graphics.Scene/RenderSceneManager.hpp>
 #include <Engine.Graphics.Scene/View/SceneView.hpp>
-#include <Engine.Render.Scene.Model/CameraModel.hpp>
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
+#include <Engine.Render.Scene.Model/CameraModel.hpp>
 #include <Engine.Scene/SceneBase.hpp>
 
 #include "../Algorithm/Flex.hpp"

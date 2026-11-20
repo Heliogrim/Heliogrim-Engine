@@ -3,8 +3,8 @@
 #include <Engine.Reflect/Inherit/InheritMeta.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 
-#include "../../../Asset/MaterialAssetHandles.hpp"
 #include "ShapeGeometryComponent.hpp"
+#include "../../../Asset/MaterialAssetHandles.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

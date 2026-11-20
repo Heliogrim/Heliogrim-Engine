@@ -7,7 +7,6 @@
 #include <Engine.Resource/Loader/TransformerTraits.hpp>
 
 #include "__fwd.hpp"
-
 #include "TextureLoadOptions.hpp"
 #include "TextureResource.hpp"
 #include "TextureStreamOptions.hpp"

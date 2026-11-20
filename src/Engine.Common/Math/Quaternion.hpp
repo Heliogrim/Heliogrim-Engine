@@ -2,9 +2,9 @@
 #include <cstdint>
 //#include <complex>
 
-#include "../GLM.hpp"
 #include "MathDefaultDefine.hpp"
 #include "Vector.hpp"
+#include "../GLM.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import glm;

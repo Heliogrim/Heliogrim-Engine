@@ -1,7 +1,9 @@
 #include "pch.h"
 
-#include <Engine.Filesystem/Path.hpp>
+/**/
+
 #include <Engine.Filesystem/__fwd.hpp>
+#include <Engine.Filesystem/Path.hpp>
 
 using namespace hg;
 

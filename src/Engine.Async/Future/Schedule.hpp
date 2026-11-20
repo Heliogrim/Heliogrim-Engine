@@ -1,9 +1,9 @@
 #pragma once
 
 #include <Engine.Core/Engine.hpp>
+#include <Engine.Scheduler/Scheduler.hpp>
 #include <Engine.Scheduler/Fiber/Fiber.hpp>
 #include <Engine.Scheduler/Process/BoostCell.hpp>
-#include <Engine.Scheduler/Scheduler.hpp>
 #include <Engine.Scheduler/Task/Task.hpp>
 
 #include "FutureState.hpp"

@@ -2,9 +2,10 @@
 
 /**/
 
+#include "TestArchetypes.hpp"
+
 #include <Heliogrim/Actor/Archetype/ArchetypeDefinition.inl.hpp>
 
-#include "TestArchetypes.hpp"
 #include "TestArchetypes.inl.hpp"
 
 using namespace HeliogrimApi;

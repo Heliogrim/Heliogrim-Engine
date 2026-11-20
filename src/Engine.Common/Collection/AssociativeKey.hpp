@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../Wrapper.hpp"
 #include "../__macro.hpp"
+#include "../Wrapper.hpp"
 
 namespace hg {
 	template <typename KeyType_, class Hasher_ = std::hash<KeyType_>>

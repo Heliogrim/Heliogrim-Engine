@@ -1,7 +1,7 @@
 #include "PropertyView.hpp"
 
-#include <Editor.UI.Service/Property/Property.hpp>
 #include <Editor.UI/Widget/Collapse.hpp>
+#include <Editor.UI.Service/Property/Property.hpp>
 #include <Engine.Reflow.Uikit/Atom/Paint.hpp>
 #include <Engine.Reflow.Uikit/Atom/Text.hpp>
 

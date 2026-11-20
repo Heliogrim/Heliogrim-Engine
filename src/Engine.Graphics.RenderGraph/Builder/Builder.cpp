@@ -1,8 +1,8 @@
 #include "Builder.hpp"
 
+#include "BuilderVisitor.hpp"
 #include "../CompileGraph.hpp"
 #include "../RuntimeGraph.hpp"
-#include "BuilderVisitor.hpp"
 
 import Engine.Asserts;
 import Engine.Common;

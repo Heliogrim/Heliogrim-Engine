@@ -1,11 +1,11 @@
-#include "Asset.hpp"
-
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 #include <Engine.Serialization.Structures/Symbols.hpp>
 #include <Engine.Serialization.Structures/Common/Guid.hpp>
 #include <Engine.Serialization.Structures/Common/TypeId.hpp>
+
+#include "Asset.hpp"
 
 using namespace hg::engine::assets;
 using namespace hg::engine::serialization;

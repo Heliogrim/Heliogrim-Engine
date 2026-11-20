@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../Meta/Concept.hpp"
+#include "__fwd.hpp"
 #include "../Pair.hpp"
 #include "../Wrapper.hpp"
-#include "__fwd.hpp"
+#include "../Meta/Concept.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import std;

@@ -1,7 +1,7 @@
 #include "Device.hpp"
 
-#include <Engine.Logging/Logger.hpp>
 #include <cctype>
+#include <Engine.Logging/Logger.hpp>
 
 #include "../vkinc.hpp"
 

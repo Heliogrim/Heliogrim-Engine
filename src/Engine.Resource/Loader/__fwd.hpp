@@ -2,8 +2,8 @@
 
 #include <Engine.Assets.Type/AssetConcept.hpp>
 
-#include "../Manage/ResourceConcept.hpp"
 #include "../Manage/__fwd.hpp"
+#include "../Manage/ResourceConcept.hpp"
 
 namespace hg::engine::resource::loader {
 	template <typename Type_>

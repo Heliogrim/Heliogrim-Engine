@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Engine.Resource.Package/Linker/ReadWritePackageLinker.hpp>
 #include <Engine.Resource.Package/ReadWritePackage.hpp>
+#include <Engine.Resource.Package/Linker/ReadWritePackageLinker.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

@@ -1,7 +1,7 @@
 #include "Surface.hpp"
 
-#include <Engine.Common/SDL3.hpp>
 #include <Engine.Common/__macro.hpp>
+#include <Engine.Common/SDL3.hpp>
 #include <Engine.Common/stdafx.h>
 
 #ifdef _PROFILING
@@ -12,9 +12,9 @@
 #include <Engine.Platform/Platform.hpp>
 #include <Heliogrim/Async/Future.hpp>
 
+#include "../__macro.hpp"
 #include "../API/VkTranslate.hpp"
 #include "../Swapchain/Swapchain.hpp"
-#include "../__macro.hpp"
 
 #if defined(WIN32)
 #include <Support.Platform.Win32/Win32Window.hpp>

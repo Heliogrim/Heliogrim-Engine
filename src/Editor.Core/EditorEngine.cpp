@@ -5,8 +5,8 @@
 #include <Editor.Boot/Boot/SerializationInit.hpp>
 #include <Editor.Boot/Boot/StorageInit.hpp>
 #include <Editor.Boot/Boot/SubModuleInit.hpp>
-#include <Engine.ACS.Schedule/ActorPipeline.hpp>
 #include <Engine.ACS/ActorModule.hpp>
+#include <Engine.ACS.Schedule/ActorPipeline.hpp>
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Audio/Audio.hpp>
 #include <Engine.Common/__macro.hpp>

@@ -5,9 +5,9 @@
 #include <Engine.Reflect.Utils/Error/IllegalTypeError.hpp>
 #include <Engine.Reflect.Utils/With/WithType.hpp>
 
+#include "../Query.hpp"
 #include "../Access/IoResourceAccessor.hpp"
 #include "../Access/IoResourceAccessorBase.hpp"
-#include "../Query.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

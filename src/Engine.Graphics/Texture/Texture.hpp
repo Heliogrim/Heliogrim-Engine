@@ -3,10 +3,10 @@
 #include <Engine.Common/Math/__default.inl>
 
 #include "__fwd.hpp"
-#include "../TextureFormat.hpp"
 #include "TextureBuffer.hpp"
-#include "TextureType.hpp"
 #include "TextureObject.hpp"
+#include "TextureType.hpp"
+#include "../TextureFormat.hpp"
 
 namespace hg::engine::graphics {
 	class Texture :

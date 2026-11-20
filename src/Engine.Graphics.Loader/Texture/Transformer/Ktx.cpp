@@ -3,8 +3,12 @@
 
 #include <gli/gli.hpp>
 
-#include <Engine.Common/Sal.hpp>
+/**/
+
+#include "Ktx.hpp"
+
 #include <Engine.Common/__macro.hpp>
+#include <Engine.Common/Sal.hpp>
 #include <Engine.Graphics/API/VkTranslate.hpp>
 #include <Engine.Graphics/Command/CommandBuffer.hpp>
 #include <Engine.Graphics/Device/Device.hpp>
@@ -13,8 +17,6 @@
 #include <Engine.Graphics/Texture/TextureFactory.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Storage.System/StorageSystem.hpp>
-
-#include "Ktx.hpp"
 
 import Engine.Asserts;
 import Engine.Common;

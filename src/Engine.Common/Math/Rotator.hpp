@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../Wrapper.hpp"
 #include "Quaternion.hpp"
 #include "Vector.hpp"
+#include "../Wrapper.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import std;

@@ -2,9 +2,9 @@
 
 #include <Engine.Common/Sal.hpp>
 
+#include "__fwd.hpp"
 #include "MaterialParameter.hpp"
 #include "MaterialPrototypeParameter.hpp"
-#include "__fwd.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

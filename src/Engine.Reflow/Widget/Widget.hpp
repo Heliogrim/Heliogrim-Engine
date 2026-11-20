@@ -6,6 +6,13 @@
 #include <Engine.Reflow/ReflowPhase.hpp>
 #include <Engine.Reflow.Theming/ThemeProvisioner.hpp>
 
+#include "WidgetState.hpp"
+#include "../ReflowAxis.hpp"
+#include "../ReflowClassList.hpp"
+#include "../ReflowEventEmitter.hpp"
+#include "../ReflowEventNames.hpp"
+#include "../ReflowPosition.hpp"
+#include "../ReflowState.hpp"
 #include "../Event/DragDropEvent.hpp"
 #include "../Event/EventResponse.hpp"
 #include "../Event/FocusEvent.hpp"
@@ -15,13 +22,6 @@
 #include "../Event/TouchEvent.hpp"
 #include "../Event/WheelEvent.hpp"
 #include "../Layout/LayoutContext.hpp"
-#include "../ReflowAxis.hpp"
-#include "../ReflowClassList.hpp"
-#include "../ReflowEventEmitter.hpp"
-#include "../ReflowEventNames.hpp"
-#include "../ReflowPosition.hpp"
-#include "../ReflowState.hpp"
-#include "WidgetState.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

@@ -2,9 +2,9 @@
 
 #include <Engine.Common/__macro.hpp>
 
+#include "__fwd.hpp"
 #include "DataLayoutDispatch.hpp"
 #include "DataLayoutReflect.hpp"
-#include "__fwd.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

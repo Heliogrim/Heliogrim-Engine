@@ -3,9 +3,9 @@
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Logging/Logger.hpp>
 
-#include "../Process/Schedule.hpp"
 #include "Composite/CompositeSlot.hpp"
 #include "Stage/PipelineStage.hpp"
+#include "../Process/Schedule.hpp"
 
 import Engine.Asserts;
 import Engine.Common;

@@ -1,8 +1,8 @@
 #include "Linker.hpp"
 
-#include "../Node/Node.hpp"
 #include "BLinkVisitor.hpp"
 #include "FLinkVisitor.hpp"
+#include "../Node/Node.hpp"
 
 import Engine.Common;
 

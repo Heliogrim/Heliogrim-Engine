@@ -1,7 +1,7 @@
 #include "Graphics.hpp"
 
-#include <Engine.Scheduler/Async.hpp>
 #include <cassert>
+#include <Engine.Scheduler/Async.hpp>
 
 #ifdef _PROFILING
 #endif
@@ -17,6 +17,7 @@
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Scheduler/Pipeline/CompositePipeline.hpp>
 
+#include "RenderTarget.hpp"
 #include "Buffer/VkBufferFactory.hpp"
 #include "Cache/GlobalCacheCtrl.hpp"
 #include "Cache/GlobalResourceCache.hpp"
@@ -28,7 +29,6 @@
 #include "Importer/ImageImporter.hpp"
 #include "Importer/ModelImporter.hpp"
 #include "Pool/GlobalResourcePool.hpp"
-#include "RenderTarget.hpp"
 #include "Surface/SurfaceManager.hpp"
 #include "Swapchain/Swapchain.hpp"
 #include "Texture/VkTextureFactory.hpp"

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../RenderCommandTranslator.hpp"
-
 #include <Engine.Common/__macro.hpp>
+
+#include "../RenderCommandTranslator.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import std;

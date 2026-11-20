@@ -1,11 +1,11 @@
 #include "SpotLightModel.hpp"
 
+#include <cstring>
 #include <Engine.Graphics/Light/Light.hpp>
 #include <Engine.Graphics/Pool/SceneResourcePool.hpp>
 #include <Engine.Reflect/Cast.hpp>
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
 #include <Heliogrim/Component/Scene/Light/SpotLightComponent.hpp>
-#include <cstring>
 
 import Engine.Common;
 

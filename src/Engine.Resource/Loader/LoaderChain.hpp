@@ -3,12 +3,10 @@
 #include <Engine.Common/Sal.hpp>
 
 #include "__fwd.hpp"
-
-#include "LoaderTraits.hpp"
-
 #include "Cache.hpp"
 #include "Feedback.hpp"
 #include "Loader.hpp"
+#include "LoaderTraits.hpp"
 #include "Transformer.hpp"
 #include "SourceLoader/SourceLoader.hpp"
 

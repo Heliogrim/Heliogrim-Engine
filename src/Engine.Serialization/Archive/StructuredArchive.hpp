@@ -3,8 +3,8 @@
 #include <Engine.Common/Sal.hpp>
 
 #include "__fwd.hpp"
-#include "../Structure/RootScopedSlot.hpp"
 #include "../Structure/__fwd.hpp"
+#include "../Structure/RootScopedSlot.hpp"
 
 namespace hg::engine::serialization {
 	class StructuredArchive {

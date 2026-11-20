@@ -1,8 +1,8 @@
 #pragma once
 
 #include "DataAttribute.hpp"
-#include "../AttributeOwnerLink.hpp"
 #include "../NamedAttributeTuple.hpp"
+#include "../AttributeOwnerLink.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

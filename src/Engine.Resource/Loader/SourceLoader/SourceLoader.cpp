@@ -1,15 +1,15 @@
 #include "SourceLoader.hpp"
 
 #include <Engine.Assets.System/IAssetRegistry.hpp>
-#include <Engine.Common/Sal.hpp>
 #include <Engine.Common/__macro.hpp>
+#include <Engine.Common/Sal.hpp>
 #include <Engine.Filesystem/Url.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Resource/File.hpp>
+#include <Engine.Storage/StorageModule.hpp>
 #include <Engine.Storage.Registry/IStorageRegistry.hpp>
 #include <Engine.Storage.Registry/Url/FileUrl.hpp>
 #include <Engine.Storage.Registry/Url/StorageUrl.hpp>
-#include <Engine.Storage/StorageModule.hpp>
 
 import Engine.Asserts;
 import Engine.Common;
@@ -73,11 +73,11 @@ SourceLoaderStreamResponse<void>::type SourceLoader::operator()(
 
 /* Asset Specific Implementation */
 
+#include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
 #include <Engine.Assets.Type/Texture/FontAsset.hpp>
 #include <Engine.Assets.Type/Texture/ImageAsset.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
-#include <Engine.Assets/Assets.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Reflect/Cast.hpp>
 

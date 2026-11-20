@@ -1,10 +1,10 @@
 #include "Lower.hpp"
 
-#include "../Rep/Annotation.hpp"
-#include "../Rep/Symbol.hpp"
 #include "Interface.hpp"
 #include "References.hpp"
 #include "Spirv/SpirvEmitter.hpp"
+#include "../Rep/Annotation.hpp"
+#include "../Rep/Symbol.hpp"
 
 import Engine.Common;
 

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Engine.Common/Sal.hpp>
 #include <Engine.Common/__macro.hpp>
+#include <Engine.Common/Sal.hpp>
 #include <Engine.Reflect/Inherit/ClassMetaBase.hpp>
 #include <Engine.Reflect/Inherit/Concept.hpp>
 #include <Engine.Reflect/Inherit/InheritBase.hpp>

@@ -1,11 +1,11 @@
 #include "pch.h"
 
 /**/
+#include <cstring>
 #include <Engine.Assets.Type/Asset.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 #include <Engine.Assets.Type/Universe/LevelAsset.hpp>
 #include <Engine.Resource.Archive/BufferArchive.hpp>
-#include <cstring>
 
 /**/
 #include <Engine.Serialization/Access/Structure.hpp>

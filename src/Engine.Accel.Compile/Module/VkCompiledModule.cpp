@@ -1,9 +1,9 @@
 #include "VkCompiledModule.hpp"
 
-#include <Engine.Logging/Logger.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Graphics/Device/Device.hpp>
+#include <Engine.Logging/Logger.hpp>
 
 using namespace hg::engine::accel;
 using namespace hg;

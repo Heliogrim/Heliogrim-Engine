@@ -12,8 +12,8 @@
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
 #include <Engine.Accel.Lang/Ir/References.hpp>
 #include <Engine.Accel.Lang/Ir/Resolve.hpp>
-#include <Engine.Accel.Lang/Ir/Spirv/SpirvEmitter.hpp>
 #include <Engine.Accel.Lang/Ir/Tier.hpp>
+#include <Engine.Accel.Lang/Ir/Spirv/SpirvEmitter.hpp>
 #include <Engine.Diagnostics/Render.hpp>
 
 #include "IrSpan.hpp"

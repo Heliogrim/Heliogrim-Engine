@@ -4,9 +4,9 @@
 #include <Engine.Graphics.Loader/Geometry/Traits.hpp>
 #include <Engine.Graphics.Loader/Texture/Traits.hpp>
 
-#include "../Texture/TextureFactory.hpp"
 #include "Engine.Graphics/Geometry/Vertex.hpp"
 #include "Engine.Graphics/Memory/AllocationResult.hpp"
+#include "../Texture/TextureFactory.hpp"
 
 using namespace hg::engine::graphics::cache;
 using namespace hg::engine::graphics;

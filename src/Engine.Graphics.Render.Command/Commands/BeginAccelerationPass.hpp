@@ -1,6 +1,6 @@
 #pragma once
-#include "../RenderCommand.hpp"
 #include "Structs.hpp"
+#include "../RenderCommand.hpp"
 
 namespace hg::engine::render::cmd {
     class BeginAccelerationPassRCmd :
