@@ -1,6 +1,5 @@
 #include "CompileSubpassNode.hpp"
 
-#include <Engine.Common/__macro.hpp>
 #include <cassert>
 
 #include "../../Visitor/Visitor.hpp"

@@ -4,6 +4,8 @@
 #include "../Geometry/Cube.hpp"
 #include "../Texture/TextureFactory.hpp"
 
+#include <Engine.Common/__macro.hpp>
+
 import Engine.Asserts;
 
 using namespace hg::engine::graphics;

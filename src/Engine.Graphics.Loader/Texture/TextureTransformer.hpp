@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics/Pool/__fwd.hpp>
 #include <Engine.Resource/Loader/Transformer.hpp>
 

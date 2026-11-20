@@ -3,7 +3,6 @@
 #include <Engine.Assets.Type/Asset.hpp>
 #include <Engine.Assets/AssetGuid.hpp>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <cassert>
 
 #include "Loader/Loader.hpp"

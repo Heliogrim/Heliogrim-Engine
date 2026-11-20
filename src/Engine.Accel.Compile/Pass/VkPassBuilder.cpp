@@ -1,7 +1,6 @@
 #include "VkPassBuilder.hpp"
 
 #include <Engine.Accel.Pipeline/VkGraphicsPipeline.hpp>
-#include <Engine.Common/__macro.hpp>
 
 #include "../Profile/EffectProfile.hpp"
 #include "../Spec/EffectSpecification.hpp"
@@ -16,12 +15,12 @@ VkPassBuilder::VkPassBuilder() = default;
 VkPassBuilder::~VkPassBuilder() = default;
 
 smr<AccelerationPipeline> VkPassBuilder::build(
-    mref<smr<const AccelerationEffect>> effect_,
-    cref<smr<const class EffectSpecification>> specifications_,
-    cref<smr<const class EffectProfile>> profile_
+	mref<smr<const AccelerationEffect>> effect_,
+	cref<smr<const class EffectSpecification>> specifications_,
+	cref<smr<const class EffectProfile>> profile_
 ) const noexcept {
-    //assert(specifications_.getGraphicsSpec().renderPass);
-    return make_smr<VkGraphicsPipeline>(
-        new VkGraphicsPipeline(std::move(effect_))
-    );
+	//assert(specifications_.getGraphicsSpec().renderPass);
+	return make_smr<VkGraphicsPipeline>(
+		new VkGraphicsPipeline(std::move(effect_))
+	);
 }

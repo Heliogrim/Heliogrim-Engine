@@ -11,7 +11,6 @@
 #include <Engine.Assets.Type/Texture/ImageAsset.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 #include <Engine.Assets/Assets.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
 #include <Engine.Graphics.Loader/Texture/TextureLoader.hpp>

@@ -1,7 +1,5 @@
 #include "ActorModule.hpp"
 
-#include <Engine.Common/__macro.hpp>
-
 #include "Registry.hpp"
 
 import Engine.Common;

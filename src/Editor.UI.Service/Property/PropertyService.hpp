@@ -1,12 +1,10 @@
 #pragma once
 
-#include <Engine.Common/Sal.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Heliogrim/Actor/Actor.hpp>
 #include <Heliogrim/Component/HierarchyComponent.hpp>
 
-#include "../UiService.hpp"
 #include "Property.hpp"
+#include "../UiService.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

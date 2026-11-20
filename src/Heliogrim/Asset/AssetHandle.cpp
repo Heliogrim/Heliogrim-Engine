@@ -1,7 +1,6 @@
 #include "AssetHandle.hpp"
 
 #include <Engine.Assets.Type/Asset.hpp>
-#include <Engine.Common/__macro.hpp>
 
 import Engine.Common;
 

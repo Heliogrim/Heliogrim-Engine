@@ -1,7 +1,7 @@
 #pragma once
-#include <Engine.Accel.Lang/Rep/Symbol.hpp>
-#include <Engine.Common/__macro.hpp>
+
 #include <cassert>
+#include <Engine.Accel.Lang/Rep/Symbol.hpp>
 
 #include "ModuleSource.hpp"
 #include "VkBindingLocation.hpp"

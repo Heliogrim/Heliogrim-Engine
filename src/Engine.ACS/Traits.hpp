@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
 #include <Heliogrim/Actor/ActorGuid.hpp>
 
 #include "ComponentGuid.hpp"

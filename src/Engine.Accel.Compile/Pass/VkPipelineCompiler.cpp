@@ -1,27 +1,26 @@
 #include "VkPipelineCompiler.hpp"
 
-#include <Engine.Accel.Effect/AccelerationEffect.hpp>
 #include <Engine.Accel.Pass/VkGraphicsPass.hpp>
-#include <Engine.Accel.Pipeline/Stage/StageDerivat.hpp>
-#include <Engine.Accel.Pipeline/Stage/StageModule.hpp>
 #include <Engine.Accel.Pipeline/VkComputePipeline.hpp>
 #include <Engine.Accel.Pipeline/VkGraphicsPipeline.hpp>
 #include <Engine.Accel.Pipeline/VkMeshPipeline.hpp>
 #include <Engine.Accel.Pipeline/VkRaytracingPipeline.hpp>
+#include <Engine.Accel.Pipeline/Stage/StageDerivat.hpp>
+#include <Engine.Accel.Pipeline/Stage/StageModule.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Engine.hpp>
+#include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Graphics/Geometry/UIVertex.hpp>
 #include <Engine.Graphics/Geometry/Vertex.hpp>
-#include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Reflect/Cast.hpp>
 #include <Engine.Reflect/IsType.hpp>
 #include <Engine.Reflect/TypeSwitch.hpp>
 
+#include "VkVertexFormat.hpp"
+#include "../VkApi.hpp"
 #include "../Module/VkCompiledModule.hpp"
 #include "../Spec/EffectSpecification.hpp"
-#include "../VkApi.hpp"
-#include "VkVertexFormat.hpp"
 
 import Engine.Asserts;
 import Engine.Common;

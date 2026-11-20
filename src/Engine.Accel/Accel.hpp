@@ -1,46 +1,49 @@
 #pragma once
 
 #include <Engine.Accel.Storage/GlobalStorage.hpp>
-#include <Engine.Common/StringLiterals.hpp>
 #include <Engine.Core/Module/DependencyKey.hpp>
 #include <Engine.Core/Module/SubModule.hpp>
 
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
+
 namespace hg::engine {
-    inline constexpr static core::DependencyKey AccelDepKey { "::hg::engine::accel::Accel"sv };
+	inline constexpr static core::DependencyKey AccelDepKey { "::hg::engine::accel::Accel"sv };
 }
 
 namespace hg::engine {
-    class Accel :
-        public core::SubModule {
-    public:
-        using this_type = Accel;
+	class Accel :
+		public core::SubModule {
+	public:
+		using this_type = Accel;
 
-    public:
-        Accel(const non_owning_rptr<Engine> engine_);
+	public:
+		Accel(const non_owning_rptr<Engine> engine_);
 
-        ~Accel() override;
+		~Accel() override;
 
-    private:
-        CompactSet<core::SubModuleDependency> _dependencies;
+	private:
+		CompactSet<core::SubModuleDependency> _dependencies;
 
-    public:
-        [[nodiscard]] core::DependencyKey moduleKey() const noexcept override;
+	public:
+		[[nodiscard]] core::DependencyKey moduleKey() const noexcept override;
 
-        [[nodiscard]] cref<CompactSet<core::SubModuleDependency>> dependencies() const noexcept override;
+		[[nodiscard]] cref<CompactSet<core::SubModuleDependency>> dependencies() const noexcept override;
 
-    public:
-        void setup() override;
+	public:
+		void setup() override;
 
-        void start() override;
+		void start() override;
 
-        void stop() override;
+		void stop() override;
 
-        void destroy() override;
+		void destroy() override;
 
-    private:
-        smr<accel::GlobalStorage> _globalStorage;
+	private:
+		smr<accel::GlobalStorage> _globalStorage;
 
-    public:
-        [[nodiscard]] cref<smr<accel::GlobalStorage>> getGlobalStorage() const noexcept;
-    };
+	public:
+		[[nodiscard]] cref<smr<accel::GlobalStorage>> getGlobalStorage() const noexcept;
+	};
 }

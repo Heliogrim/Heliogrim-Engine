@@ -1,6 +1,5 @@
 #include "ClusterRegion.hpp"
 
-#include <Engine.Common/__macro.hpp>
 #include <cstdint>
 
 import Engine.Asserts;

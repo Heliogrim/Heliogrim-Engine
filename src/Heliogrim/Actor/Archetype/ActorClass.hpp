@@ -2,7 +2,6 @@
 
 #include <Engine.ACS/Archetype/LayoutInfo.hpp>
 #include <Engine.ACS/Cluster/ClusterRegion.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflect/Meta/MetaClass.hpp>
 #include <cstdint>
 

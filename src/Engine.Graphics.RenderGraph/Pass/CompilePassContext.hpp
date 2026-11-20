@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.Scene/View/SceneView.hpp>
 
 #include "../Memory/GraphNodeAllocator.hpp"

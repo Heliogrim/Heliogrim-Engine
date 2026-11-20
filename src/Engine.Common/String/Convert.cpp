@@ -1,6 +1,5 @@
 #include "Convert.hpp"
 
-#include <Engine.Common/__macro.hpp>
 #include <stdlib.h>
 
 import Engine.Asserts;

@@ -1,6 +1,7 @@
 #include "VkScopedResourceTable.hpp"
 
 #include <Engine.Accel.Pipeline/AccelerationPipeline.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Graphics.RenderGraph/Node/Runtime/Helper/VkDescriptorWriter.hpp>
 #include <Engine.Graphics/Graphics.hpp>

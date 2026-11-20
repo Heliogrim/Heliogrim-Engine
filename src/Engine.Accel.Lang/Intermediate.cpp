@@ -1,6 +1,5 @@
 #include "Intermediate.hpp"
 
-#include <Engine.Common/__macro.hpp>
 #include <cassert>
 
 #include "Ir/Variant.hpp"

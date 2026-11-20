@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Filesystem/Path.hpp>
 
 #include "../IStorage.hpp"

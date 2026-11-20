@@ -1,7 +1,6 @@
 #include "LfsBlob.hpp"
 
 #include <Engine.Async/Affine/AffineThread.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Pedantic.Resource/AccessMode.hpp>
 #include <Engine.Resource.Blob/File/IoFileBlob.hpp>
 #include <Engine.Resource.Blob/File/LfsSyncBlob.hpp>

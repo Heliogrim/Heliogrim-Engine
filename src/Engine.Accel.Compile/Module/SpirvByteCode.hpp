@@ -1,13 +1,11 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
-
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
 #endif
 
 namespace hg::engine::accel {
-    enum class SpirvWord : u32 {};
+	enum class SpirvWord : u32 {};
 
-    using SpirvByteCode = Vector<SpirvWord>;
+	using SpirvByteCode = Vector<SpirvWord>;
 }

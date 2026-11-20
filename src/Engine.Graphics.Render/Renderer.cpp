@@ -1,6 +1,5 @@
 #include "Renderer.hpp"
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.RenderGraph.Compile/RenderGraphCompiler.hpp>
 #include <Engine.Graphics.RenderGraph/CompileGraph.hpp>
 #include <Engine.Graphics.RenderGraph/Pass/IterationPass.hpp>

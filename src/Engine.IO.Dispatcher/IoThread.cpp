@@ -1,5 +1,6 @@
 #include "IoThread.hpp"
 
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Common/stdafx.h>
 #include <Engine.Logging/Logger.hpp>
 

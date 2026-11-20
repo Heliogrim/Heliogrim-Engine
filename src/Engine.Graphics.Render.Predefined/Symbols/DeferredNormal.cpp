@@ -1,7 +1,5 @@
 #include "DeferredNormal.hpp"
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../Descriptions/V4F32DataBuffer.hpp"
 
 import Engine.Common;

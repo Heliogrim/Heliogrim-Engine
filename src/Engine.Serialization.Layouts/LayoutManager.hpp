@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflect/Meta/MetaClass.hpp>
 #include <Engine.Serialization/Layout/__fwd.hpp>
 

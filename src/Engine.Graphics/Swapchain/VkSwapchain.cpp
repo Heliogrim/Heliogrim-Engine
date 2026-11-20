@@ -1,7 +1,5 @@
 #include "VkSwapchain.hpp"
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../Texture/TextureFactory.hpp"
 
 import Engine.Asserts;

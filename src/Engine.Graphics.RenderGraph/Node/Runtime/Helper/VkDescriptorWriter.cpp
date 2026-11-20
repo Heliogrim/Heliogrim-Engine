@@ -1,6 +1,5 @@
 #include "VkDescriptorWriter.hpp"
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics/Buffer/Buffer.hpp>
 #include <Engine.Graphics/Buffer/SparseBuffer.hpp>
 #include <Engine.Graphics/Buffer/SparseBufferView.hpp>

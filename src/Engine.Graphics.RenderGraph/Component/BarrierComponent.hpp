@@ -1,5 +1,4 @@
 #pragma once
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflect/Compile/TypeId.hpp>
 
 #include "Component.hpp"

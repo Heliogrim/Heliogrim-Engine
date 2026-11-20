@@ -6,7 +6,6 @@
 #include <Engine.Accel.Lang/Rep/Annotation.hpp>
 #include <Engine.Accel.Lang/Rep/Symbol.hpp>
 #include <Engine.Accel.Lang/Representation.hpp>
-#include <Engine.Common/__macro.hpp>
 
 import Engine.Common;
 

@@ -1,5 +1,3 @@
-#include <Engine.Common/__macro.hpp>
-
 #include "Compat.inl"
 
 import Engine.Common;

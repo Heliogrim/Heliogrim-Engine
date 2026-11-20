@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Module/CoreModule.hpp>
 #include <Engine.Graphics.Render/Renderer.hpp>
 

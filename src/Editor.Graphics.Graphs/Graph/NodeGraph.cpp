@@ -1,7 +1,5 @@
 #include "NodeGraph.hpp"
 
-#include <Engine.Common/StringLiterals.hpp>
-
 using namespace hg::editor::graphics::graph;
 using namespace hg;
 
@@ -10,59 +8,59 @@ using namespace hg;
 [[nodiscard]] static bool isOutputNode(const ptr<const Node> node_);
 
 cref<NodeContainer> NodeGraph::nodes() const noexcept {
-    return _nodes;
+	return _nodes;
 }
 
 ref<NodeContainer> NodeGraph::nodes() noexcept {
-    return _nodes;
+	return _nodes;
 }
 
 cref<NodeLinkContainer> NodeGraph::links() const noexcept {
-    return _links;
+	return _links;
 }
 
 ref<NodeLinkContainer> NodeGraph::links() noexcept {
-    return _links;
+	return _links;
 }
 
 void NodeGraph::exposeNodes() noexcept {
 
-    _inputs.clear();
-    _outputs.clear();
+	_inputs.clear();
+	_outputs.clear();
 
-    /**/
+	/**/
 
-    for (const auto& node : _nodes.nodes) {
+	for (const auto& node : _nodes.nodes) {
 
-        if (isInputNode(node)) {
-            _inputs.push_back(node);
-        }
+		if (isInputNode(node)) {
+			_inputs.push_back(node);
+		}
 
-        if (isOutputNode(node)) {
-            _outputs.push_back(node);
-        }
+		if (isOutputNode(node)) {
+			_outputs.push_back(node);
+		}
 
-    }
+	}
 }
 
 [[nodiscard]] static bool isInputNode(const ptr<const Node> node_) {
 
-    // TODO: Replace with reflected type id checks
-    const auto typeName = node_->getNodeTypeName();
+	// TODO: Replace with reflected type id checks
+	const auto typeName = node_->getNodeTypeName();
 
-    if (typeName == "SubGraphInputNode"sv) {
-        return true;
-    }
-    return false;
+	if (typeName == "SubGraphInputNode"sv) {
+		return true;
+	}
+	return false;
 }
 
 [[nodiscard]] static bool isOutputNode(const ptr<const Node> node_) {
 
-    // TODO: Replace with reflected type id checks
-    const auto typeName = node_->getNodeTypeName();
+	// TODO: Replace with reflected type id checks
+	const auto typeName = node_->getNodeTypeName();
 
-    if (typeName == "SubGraphOutputNode"sv) {
-        return true;
-    }
-    return false;
+	if (typeName == "SubGraphOutputNode"sv) {
+		return true;
+	}
+	return false;
 }

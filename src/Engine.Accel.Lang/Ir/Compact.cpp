@@ -156,7 +156,8 @@ namespace {
 			u32 found = unset;
 			auto count = 0uz;
 			for (auto i = 0uz; i < newFunction.size(); ++i) {
-				if (newFunction[i] != unset && in.functions[i].name == expr_.name && (not known || signatureOf(in, in.functions[i]) == wanted)) {
+				if (newFunction[i] != unset && in.functions[i].name == expr_.name && (not known || signatureOf(in, in.functions[i]) ==
+					wanted)) {
 					found = newFunction[i];
 					++count;
 				}

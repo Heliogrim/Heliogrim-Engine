@@ -11,8 +11,6 @@
 #include <Engine.Common/stdafx.h>
 #endif
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../Harness/GpuTest.hpp"
 #include "../Harness/HeadlessEngine.hpp"
 

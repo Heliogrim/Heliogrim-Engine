@@ -1,4 +1,3 @@
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 #include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>

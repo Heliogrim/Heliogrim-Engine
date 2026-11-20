@@ -14,7 +14,6 @@
 
 #include <Engine.ACS/Archetype/LayoutInfo.hpp>
 #include <Engine.ACS/Handle/Handle.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Assets/AssetGuid.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 #include <cstring>

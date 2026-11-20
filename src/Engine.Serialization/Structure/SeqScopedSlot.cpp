@@ -1,7 +1,5 @@
 #include "SeqScopedSlot.hpp"
 
-#include <Engine.Common/__macro.hpp>
-
 #include "RecordScopedSlot.hpp"
 #include "SeqSlot.hpp"
 

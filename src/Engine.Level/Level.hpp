@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Engine.ACS/Handle/Handle.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Diagnostics/Diagnostic.hpp>
 #include <Engine.Diagnostics/Sink.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>

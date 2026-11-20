@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 
 #include "BoxShapeCollisionComponent.hpp"

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/__macro.hpp>
 
 #include "../Scheme/Selector.hpp"
 #include "../Structure/RecordScopedSlot.hpp"

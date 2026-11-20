@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflow/Font/GlyphRanges.hpp>
 
 #include "__fwd.hpp"

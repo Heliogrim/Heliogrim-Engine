@@ -5,8 +5,6 @@
  * annotations, conditions, types, declarations) and Parser.Body.cpp (function bodies: statements and expressions).
  */
 
-#include <Engine.Common/__macro.hpp>
-
 #include "Lexer.hpp"
 #include "Parser.hpp"
 

@@ -1,6 +1,5 @@
 #pragma once
 #include <Engine.Accel.Lang/Rep/Symbol.hpp>
-#include <Engine.Common/__macro.hpp>
 
 #include "../RenderCommand.hpp"
 

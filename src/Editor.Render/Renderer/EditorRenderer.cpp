@@ -1,11 +1,10 @@
 #include "EditorRenderer.hpp"
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneColor.hpp>
 #include <Engine.Graphics.Render.Subpass/Impl/DummyProvider.hpp>
 #include <Engine.Graphics.Render.Subpass/Impl/TmpEndPass.hpp>
-#include <Engine.Graphics.RenderGraph/Builder/Builder.hpp>
 #include <Engine.Graphics.RenderGraph/CompileGraph.hpp>
+#include <Engine.Graphics.RenderGraph/Builder/Builder.hpp>
 #include <Engine.Graphics.RenderGraph/Node/Compile/CompileSubpassNode.hpp>
 #include <Engine.Graphics.RenderGraph/Node/Runtime/BarrierNode.hpp>
 #include <Engine.Graphics.RenderGraph/Pass/CompilePassContext.hpp>

@@ -1,6 +1,7 @@
 #include "WinPlatform.hpp"
 
 #include <Engine.Common/SDL3.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Common/stdafx.h>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Event/SignalShutdownEvent.hpp>

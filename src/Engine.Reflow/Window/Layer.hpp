@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../Widget/Layer/Host.hpp"
 #include "__fwd.hpp"
 

@@ -1,7 +1,5 @@
 #include "ActorPipeline.hpp"
 
-#include <Engine.Common/__macro.hpp>
-
 #include "ActorHousekeepingStage.hpp"
 #include "ActorPhysicsStageCollision.hpp"
 #include "ActorPhysicsStageOverlap.hpp"

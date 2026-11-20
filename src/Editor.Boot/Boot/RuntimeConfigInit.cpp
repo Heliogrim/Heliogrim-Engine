@@ -1,6 +1,5 @@
 #include "RuntimeConfigInit.hpp"
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Config/Config.hpp>
 #include <Engine.Config/Enums.hpp>
 #include <Engine.Config/Provider/RuntimeProvider.hpp>

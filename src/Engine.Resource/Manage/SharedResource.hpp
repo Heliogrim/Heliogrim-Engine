@@ -1,6 +1,8 @@
 #pragma once
 #include "Resource.hpp"
 
+#include <Engine.Common/__macro.hpp>
+
 namespace hg::engine::resource {
     template <typename ManagedType_>
     class macro_novtable SharedResource :

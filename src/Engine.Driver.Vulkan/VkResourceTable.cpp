@@ -1,6 +1,5 @@
 #include "VkResourceTable.hpp"
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Graphics/Graphics.hpp>
 

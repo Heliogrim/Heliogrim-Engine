@@ -5,7 +5,6 @@
 #include <Engine.Assets.Type/Material/GraphicsMaterial.hpp>
 #include <Engine.Assets.Type/Material/GraphicsMaterialPrototype.hpp>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Reflect/Cast.hpp>
 

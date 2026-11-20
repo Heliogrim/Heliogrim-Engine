@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
 #include <cstdlib>
 
 // Note: We can pay the price for the internal link chain

@@ -1,7 +1,5 @@
 #include "BrdfIrradiance.hpp"
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../Descriptions/BrdfIrradianceBuffer.hpp"
 
 import Engine.Common;

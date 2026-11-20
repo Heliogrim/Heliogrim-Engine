@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
 #include <cassert>
 
 #include "../Node/RuntimeNode.hpp"

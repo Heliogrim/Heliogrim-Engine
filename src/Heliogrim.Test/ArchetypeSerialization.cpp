@@ -4,7 +4,6 @@
 
 #include <Engine.ACS/Archetype/LayoutInfo.hpp>
 #include <Engine.ACS/Registry.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
 #include <Engine.Resource.Archive/BufferArchive.hpp>
 #include <Engine.Serialization.Structures/Symbols.hpp>

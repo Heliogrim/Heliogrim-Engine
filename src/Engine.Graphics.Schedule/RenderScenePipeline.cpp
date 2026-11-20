@@ -1,7 +1,5 @@
 #include "RenderScenePipeline.hpp"
 
-#include <Engine.Common/__macro.hpp>
-
 #include "RenderTickStage.hpp"
 
 import Engine.Common;

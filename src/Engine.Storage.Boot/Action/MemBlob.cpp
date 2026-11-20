@@ -1,6 +1,5 @@
 #include "MemBlob.hpp"
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Pedantic.Resource/AccessMode.hpp>
 #include <Engine.Storage.Action/Access/ExclusiveIoResource.hpp>
 #include <Engine.Storage.Action/Access/SharedReadIoResource.hpp>

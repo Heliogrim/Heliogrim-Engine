@@ -1,6 +1,5 @@
 #include "FontTransformer.hpp"
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics/Pool/GlobalResourcePool.hpp>
 #include <Engine.Resource/Manage/UniqueResource.hpp>
 

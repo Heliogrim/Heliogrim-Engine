@@ -1,7 +1,5 @@
 #include "Session.hpp"
 
-#include <Engine.Common/__macro.hpp>
-
 #include "SessionState.hpp"
 #include "UniverseContext.hpp"
 

@@ -1,7 +1,6 @@
 #include "pch.h"
 
 #include <Engine.Common/String/Convert.hpp>
-#include <Engine.Common/__macro.hpp>
 
 import Engine.Common;
 

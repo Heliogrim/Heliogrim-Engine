@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.IO.Dispatcher/IoSystem.hpp>
 #include <Engine.Reflect/Inherit/InheritMeta.hpp>
 

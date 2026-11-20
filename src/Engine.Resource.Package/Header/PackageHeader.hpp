@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../Attribute/PackageCompression.hpp"
 #include "../Attribute/PackageEndianness.hpp"
 #include "../Attribute/PackageVersion.hpp"

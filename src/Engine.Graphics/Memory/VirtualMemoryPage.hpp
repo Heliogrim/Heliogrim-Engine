@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../Memory/__fwd.hpp"
 #include "VirtualMemoryPageState.hpp"
 

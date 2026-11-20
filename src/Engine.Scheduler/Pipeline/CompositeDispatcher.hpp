@@ -2,6 +2,8 @@
 
 #include "../Task/Task.hpp"
 
+#include <Engine.Common/__macro.hpp>
+
 namespace hg::engine::scheduler {
     class macro_novtable CompositeDispatcher {
     public:

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Storage.Registry/Storage/LocalFileStorage.hpp>
 #include <Engine.Storage.Registry/Storage/MemoryStorage.hpp>
 #include <Engine.Storage.Registry/Url/FileUrl.hpp>

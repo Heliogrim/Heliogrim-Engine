@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.RenderGraph/Pass/ExecutionPass.hpp>
 #include <Engine.Graphics.RenderGraph/__fwd.hpp>
 #include <Engine.Graphics/Texture/__fwd.hpp>

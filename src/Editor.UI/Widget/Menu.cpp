@@ -1,7 +1,7 @@
 #include "Menu.hpp"
 
-#include <Engine.Reflow.Uikit/Atom/Layout/VerticalLayout.hpp>
 #include <Engine.Reflow.Uikit/Atom/Paint.hpp>
+#include <Engine.Reflow.Uikit/Atom/Layout/VerticalLayout.hpp>
 #include <Engine.Reflow.Uikit/Molecule/Layout/Stack.hpp>
 
 #include "MenuItem.hpp"

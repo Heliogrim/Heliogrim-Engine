@@ -1,6 +1,5 @@
 #include "MaterialFactory.hpp"
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.Loader/Texture/TextureResource.hpp>
 
 #include "Material.hpp"

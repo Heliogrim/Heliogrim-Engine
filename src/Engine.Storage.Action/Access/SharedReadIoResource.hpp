@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
-
 #include "IoResource.hpp"
 #include "ResourceFnStore.hpp"
 #include "ResourceStore.hpp"

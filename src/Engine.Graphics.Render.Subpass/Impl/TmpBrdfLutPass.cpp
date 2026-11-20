@@ -6,7 +6,6 @@
 #include <Engine.Accel.Compile/VkEffectCompiler.hpp>
 #include <Engine.Accel.Pass/VkAccelerationPassFactory.hpp>
 #include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
 #include <Engine.Graphics.Render.Command/RenderCommandBuffer.hpp>

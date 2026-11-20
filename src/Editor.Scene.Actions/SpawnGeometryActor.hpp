@@ -2,7 +2,6 @@
 
 #include <Editor.Action/Action/DelegateAction.hpp>
 #include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Heliogrim/Actor/ActorRef.hpp>
 #include <Heliogrim/TypedAssetGuid.hpp>
 

@@ -1,7 +1,6 @@
 #include "AssetBrowserService.hpp"
 
 #include <Engine.Assets/Assets.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Engine.hpp>
 
 #include "AssetBrowserEntry.hpp"

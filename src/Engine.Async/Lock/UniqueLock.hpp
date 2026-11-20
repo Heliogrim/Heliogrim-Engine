@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Engine.Common/ThreadSafety.hpp>
-#include <Engine.Common/__macro.hpp>
 
 #include "../Meta/LockTag.hpp"
 

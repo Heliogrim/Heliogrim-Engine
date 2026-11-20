@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../Aabb.hpp"
 #include "../Device/Device.hpp"
 #include "../Light/Light.hpp"

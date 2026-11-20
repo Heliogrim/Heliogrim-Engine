@@ -4,7 +4,6 @@
 
 #include <Engine.ACS/Archetype/LayoutInfo.hpp>
 #include <Engine.ACS/Registry.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Heliogrim/Actor/Archetype/ActorClass.hpp>
 #include <Heliogrim/Actor/Archetype/ArchetypeConcept.hpp>
 

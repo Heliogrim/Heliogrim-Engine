@@ -1,6 +1,6 @@
 #pragma once
+
 #include <Engine.Accel.Lang/Intermediate.hpp>
-#include <Engine.Common/__macro.hpp>
 
 #include "ProfileDefinition.hpp"
 #include "ProfileUsagePattern.hpp"

@@ -4,7 +4,6 @@
 
 #include <Jolt/Physics/Collision/Shape/SphereShape.h>
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Physics.Scene/PhysicsSceneSystemModel.hpp>
 #include <Engine.Physics/jolt.inc.hpp>
 #include <Engine.Reflect/Inherit/InheritMeta.hpp>

@@ -1,6 +1,5 @@
 #include "EditorTextureCache.hpp"
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics/Cache/CacheTextureSubject.hpp>
 #include <Engine.Graphics/Cache/GlobalCacheCtrl.hpp>
 #include <Engine.Graphics/Cache/GlobalResourceCache.hpp>

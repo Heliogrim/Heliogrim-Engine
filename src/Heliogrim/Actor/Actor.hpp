@@ -2,7 +2,6 @@
 
 #include <Engine.ACS/ActorModule.hpp>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Reflect/Inherit/InheritBase.hpp>
 #include <Engine.Reflect/IsType.hpp>

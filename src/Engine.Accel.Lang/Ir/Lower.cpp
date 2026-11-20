@@ -1,7 +1,5 @@
 #include "Lower.hpp"
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../Rep/Annotation.hpp"
 #include "../Rep/Symbol.hpp"
 #include "Interface.hpp"

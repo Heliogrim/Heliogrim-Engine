@@ -1,6 +1,5 @@
 #include "TickTimingStage.hpp"
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Timing.hpp>
 

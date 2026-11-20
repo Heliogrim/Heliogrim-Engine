@@ -4,7 +4,6 @@
 #include <Engine.Input/DragDrop/DragDropObject.hpp>
 
 /**/
-#include <Engine.Common/__macro.hpp>
 #include <objidl.h>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)

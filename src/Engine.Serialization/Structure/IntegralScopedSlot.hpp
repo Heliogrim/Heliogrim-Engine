@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
-
 #include "IntegralSlot.hpp"
 #include "ScopedSlotGuard.hpp"
 #include "ScopedStructureSlot.hpp"

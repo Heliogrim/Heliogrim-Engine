@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../Graph/TaskGraph.hpp"
 #include "../Waitable/Signal.hpp"
 #include "CompositeDispatcher.hpp"

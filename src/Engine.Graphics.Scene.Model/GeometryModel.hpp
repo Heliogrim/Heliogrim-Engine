@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.Loader/Material/MaterialResource.hpp>
 #include <Engine.Graphics.Render.Subpass/Mesh/MeshCaptureInterface.hpp>
 #include <Engine.Render.Scene/RenderSceneSystemModel.hpp>

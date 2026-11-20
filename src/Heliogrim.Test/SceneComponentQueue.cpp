@@ -2,7 +2,6 @@
 
 /**/
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Scene.Game/SceneComponentQueue.hpp>
 #include <Engine.Scene/SceneBase.hpp>
 #include <Heliogrim/Component/CachedActorPointer.hpp>

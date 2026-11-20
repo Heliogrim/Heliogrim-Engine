@@ -1,6 +1,5 @@
 #include "IoQueue.hpp"
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Common/stdafx.h>
 
 #include "IoSystem.hpp"

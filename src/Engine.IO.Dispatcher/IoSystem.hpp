@@ -2,7 +2,6 @@
 
 #include <Engine.Async/Affine/AffineThread.hpp>
 #include <Engine.Async/Future/Future.hpp>
-#include <Engine.Common/__macro.hpp>
 
 #include "IoBackend.hpp"
 #include "IoFile.hpp"

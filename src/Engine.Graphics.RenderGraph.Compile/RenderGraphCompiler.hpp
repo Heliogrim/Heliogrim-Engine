@@ -1,5 +1,4 @@
 #pragma once
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.RenderGraph/CompileGraph.hpp>
 
 #include "CompileRequest.hpp"

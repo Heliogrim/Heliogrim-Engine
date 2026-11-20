@@ -1,7 +1,5 @@
 #include "SceneView.hpp"
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../Descriptions/SceneView.hpp"
 
 import Engine.Common;

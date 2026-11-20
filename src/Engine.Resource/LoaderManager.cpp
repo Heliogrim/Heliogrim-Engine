@@ -1,7 +1,5 @@
 #include "LoaderManager.hpp"
 
-#include <Engine.Common/__macro.hpp>
-
 #include "Loader/SourceLoader/SourceLoader.hpp"
 
 import Engine.Common;

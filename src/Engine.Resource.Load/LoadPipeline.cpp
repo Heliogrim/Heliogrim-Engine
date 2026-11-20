@@ -1,7 +1,6 @@
 #include "LoadPipeline.hpp"
 
 #include <Engine.Common/StringLiterals.hpp>
-#include <Engine.Common/__macro.hpp>
 
 import Engine.Common;
 

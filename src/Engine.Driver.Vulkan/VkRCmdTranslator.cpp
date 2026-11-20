@@ -2,7 +2,6 @@
 
 #include <Engine.Accel.Pass/VkGraphicsPass.hpp>
 #include <Engine.Accel.Pipeline/VkGraphicsPipeline.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Graphics.Render.Command/Commands/AttachResource.hpp>
 #include <Engine.Graphics.Render.Command/Commands/BeginAccelerationPass.hpp>

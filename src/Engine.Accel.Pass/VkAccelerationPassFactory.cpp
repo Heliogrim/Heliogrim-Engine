@@ -1,7 +1,6 @@
 #include "VkAccelerationPassFactory.hpp"
 
 #include <Engine.Accel.Pipeline/VkGraphicsPipeline.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Graphics.RenderGraph/Relation/TextureDescription.hpp>
 #include <Engine.Graphics/API/VkTranslate.hpp>

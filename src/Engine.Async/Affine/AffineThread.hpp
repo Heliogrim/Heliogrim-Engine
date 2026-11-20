@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Scheduler/Thread/Thread.hpp>
 #include <cstdint>
 

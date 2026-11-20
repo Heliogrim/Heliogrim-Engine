@@ -1,7 +1,5 @@
 #include "SkyboxTexture.hpp"
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../Descriptions/SkyboxColorBuffer.hpp"
 
 import Engine.Common;

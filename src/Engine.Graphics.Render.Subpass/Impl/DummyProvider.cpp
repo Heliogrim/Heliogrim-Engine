@@ -1,7 +1,6 @@
 #include "DummyProvider.hpp"
 
 #include <Engine.Accel.Command/CommandBuffer.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
 #include <Engine.Graphics.Render.Command/RenderCommandBuffer.hpp>

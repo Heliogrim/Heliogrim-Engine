@@ -1,5 +1,4 @@
 #pragma once
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics/Buffer/BufferLikeObject.hpp>
 #include <Engine.Serialization/Layout/DataLayout.hpp>
 #include <stddef.h>

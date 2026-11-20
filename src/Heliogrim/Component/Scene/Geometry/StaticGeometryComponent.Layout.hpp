@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Assets/AssetGuid.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 

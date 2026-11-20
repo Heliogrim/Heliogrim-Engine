@@ -1,7 +1,5 @@
 #include "SceneStencil.hpp"
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../Descriptions/StencilBuffer.hpp"
 
 import Engine.Common;

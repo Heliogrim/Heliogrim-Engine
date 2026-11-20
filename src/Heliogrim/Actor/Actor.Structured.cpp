@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Module/Modules.hpp>
 #include <Engine.Serialization.Structures/Common/Guid.hpp>

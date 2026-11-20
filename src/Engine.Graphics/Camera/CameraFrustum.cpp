@@ -1,7 +1,6 @@
 #include "CameraFrustum.hpp"
 
 #include <Engine.Common/Math/Compat.inl>
-#include <Engine.Common/__macro.hpp>
 
 import Engine.Common;
 

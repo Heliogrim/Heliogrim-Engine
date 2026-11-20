@@ -1,6 +1,5 @@
 #include "Processor.hpp"
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Crypto/Checksum/Crc32.hpp>
 #include <Engine.Resource.Archive/Archive.hpp>
 #include <Engine.Resource.Package/Utils.hpp>

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Storage.Registry/IStorage.hpp>
 
 #include "../Access/IoResourceAccessor.hpp"

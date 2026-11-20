@@ -2,7 +2,6 @@
 
 /**/
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Resource.Archive/BufferArchive.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Archive/StructuredArchive.hpp>

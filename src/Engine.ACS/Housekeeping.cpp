@@ -1,6 +1,5 @@
 #include "Housekeeping.hpp"
 
-#include <Engine.Common/__macro.hpp>
 #include <Heliogrim/Component/LogicComponent.hpp>
 
 #include "Registry.hpp"

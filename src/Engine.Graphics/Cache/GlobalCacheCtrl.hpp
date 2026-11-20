@@ -2,7 +2,6 @@
 
 #include <Engine.Accel.Pipeline/__fwd.hpp>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.Loader/Geometry/StaticGeometryResource.hpp>
 #include <Engine.Graphics.Loader/Material/MaterialResource.hpp>
 #include <Engine.Graphics.Loader/Texture/TextureResource.hpp>

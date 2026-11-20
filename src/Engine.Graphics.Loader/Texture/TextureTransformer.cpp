@@ -1,6 +1,5 @@
 #include "TextureTransformer.hpp"
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics/Pool/GlobalResourcePool.hpp>
 #include <Engine.Graphics/Texture/SparseTextureView.hpp>
 #include <Engine.Graphics/Texture/TextureLikeObject.hpp>

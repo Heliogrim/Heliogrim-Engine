@@ -1,7 +1,5 @@
 #include "ReadWritePackageLinker.hpp"
 
-#include <Engine.Common/__macro.hpp>
-
 #include "Indexed.hpp"
 
 import Engine.Asserts;

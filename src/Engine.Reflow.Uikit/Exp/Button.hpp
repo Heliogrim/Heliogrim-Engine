@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflow.Theming/Theme.hpp>
 #include <Engine.Reflow/Widget/Widget.hpp>
 

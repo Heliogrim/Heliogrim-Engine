@@ -2,7 +2,6 @@
 
 #include <Engine.Common/Math/__default.inl>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics/API/__vkFwd.hpp>
 #include <Engine.Graphics/Aabb.hpp>
 #include <Engine.Graphics/Color/Color.hpp>

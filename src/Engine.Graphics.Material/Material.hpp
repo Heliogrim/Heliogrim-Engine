@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
-
 #include "MaterialParameter.hpp"
 #include "MaterialPrototype.hpp"
 #include "MaterialPrototypeParameter.hpp"

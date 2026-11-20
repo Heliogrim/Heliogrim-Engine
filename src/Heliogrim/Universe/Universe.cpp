@@ -1,6 +1,5 @@
 #include "Universe.hpp"
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Session.hpp>
 #include <Engine.Core/Universe.hpp>

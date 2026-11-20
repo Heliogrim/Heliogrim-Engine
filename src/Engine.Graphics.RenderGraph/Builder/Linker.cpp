@@ -1,7 +1,5 @@
 #include "Linker.hpp"
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../Node/Node.hpp"
 #include "BLinkVisitor.hpp"
 #include "FLinkVisitor.hpp"

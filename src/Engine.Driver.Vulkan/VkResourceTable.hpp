@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics/API/__vkFwd.hpp>
 
 #include "VkDescriptor.hpp"

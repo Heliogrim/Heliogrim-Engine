@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflect/Inherit/InheritBase.hpp>
 
 namespace hg::engine::graphics {

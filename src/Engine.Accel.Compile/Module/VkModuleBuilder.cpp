@@ -1,13 +1,13 @@
 #include "VkModuleBuilder.hpp"
 
 #include <Engine.Accel.Effect/Stage/StageFlags.hpp>
-#include <Engine.Accel.Pipeline/Stage/StageDerivat.hpp>
 #include <Engine.Accel.Pipeline/VkGraphicsPipeline.hpp>
+#include <Engine.Accel.Pipeline/Stage/StageDerivat.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Logging/Logger.hpp>
 
-#include "../Spec/EffectSpecification.hpp"
 #include "VkModuleSource.hpp"
+#include "../Spec/EffectSpecification.hpp"
 
 import Engine.Asserts;
 import Engine.Common;
@@ -126,7 +126,7 @@ uptr<ModuleSource> VkModuleBuilder::build(
 
 	/**/
 
-    if (isFirstStage(targetPass_, stage_)) {
+	if (isFirstStage(targetPass_, stage_)) {
 
 		// If we are the first stage within the effect pipe, we are required to generate our own input locations
 		constexpr s32 invalidSet = -1L;

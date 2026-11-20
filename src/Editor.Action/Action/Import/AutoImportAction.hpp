@@ -2,7 +2,6 @@
 
 #include <Engine.Assets.Type/Asset.hpp>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Resource/Importer/ImportDestination.hpp>
 #include <Engine.Storage.Registry/Url/FileUrl.hpp>
 

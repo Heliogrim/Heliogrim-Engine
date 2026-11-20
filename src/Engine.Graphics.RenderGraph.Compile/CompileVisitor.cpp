@@ -7,7 +7,6 @@
 /**/
 #include <Engine.Accel.Compile/Spec/SimpleEffectSpecification.hpp>
 #include <Engine.Accel.Compile/VkEffectCompiler.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.RenderGraph/Node/Compile/CompileSubpassNode.hpp>
 #include <Engine.Graphics.RenderGraph/Node/CompileNode.hpp>
 #include <Engine.Graphics.RenderGraph/Node/Node.hpp>

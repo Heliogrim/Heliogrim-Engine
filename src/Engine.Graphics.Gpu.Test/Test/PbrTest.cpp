@@ -2,8 +2,6 @@
 
 /**/
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../Harness/Contract.hpp"
 #include "../Harness/FunctionTier.hpp"
 #include "../Harness/GpuTest.hpp"

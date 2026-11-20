@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../API/__vkFwd.hpp"
 #include "TextureLikeObject.hpp"
 #include "__fwd.hpp"

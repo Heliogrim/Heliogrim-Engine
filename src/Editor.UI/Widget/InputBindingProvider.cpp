@@ -3,6 +3,7 @@
 #include <Editor.Action/ActionManager.hpp>
 #include <Editor.UI.Main/EditorUI.hpp>
 #include <Editor.UI.Main/Module/EditorUI.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Module/Modules.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Reflow/Window/Window.hpp>

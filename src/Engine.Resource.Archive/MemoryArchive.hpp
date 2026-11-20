@@ -1,6 +1,8 @@
 #pragma once
 #include "Archive.hpp"
 
+#include <Engine.Common/__macro.hpp>
+
 namespace hg::engine::resource {
 	class macro_novtable MemoryBaseArchive :
 		public Archive {

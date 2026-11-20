@@ -1,6 +1,5 @@
 #include "PackArchive.hpp"
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Pedantic.Resource/AccessMode.hpp>
 #include <Engine.Reflect/IsType.hpp>
 #include <Engine.Resource.Archive/BufferArchive.hpp>

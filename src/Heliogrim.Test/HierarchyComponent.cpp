@@ -1,7 +1,6 @@
 #include "pch.h"
 
 #include <Engine.ACS/Traits.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Heliogrim/Component/HierarchyComponent.hpp>
 
 import Engine.Common;

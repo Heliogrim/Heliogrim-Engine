@@ -1,7 +1,5 @@
 #include "Anchor.hpp"
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../../Window/Layer.hpp"
 #include "../../Window/Window.hpp"
 

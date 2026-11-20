@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Config/Config.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/EngineState.hpp>

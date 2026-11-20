@@ -1,8 +1,6 @@
 #pragma once
 
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/StringLiterals.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Module/SubModule.hpp>
 
 #include "Log/__fwd.hpp"

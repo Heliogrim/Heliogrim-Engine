@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
-
 #include "Code.hpp"
 #include "Fix.hpp"
 #include "Location.hpp"

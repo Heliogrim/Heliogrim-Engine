@@ -1,5 +1,7 @@
 #include "pch.h"
 
+/**/
+
 #include <Editor.UI.Rx/Subject.hpp>
 
 import std;
@@ -94,7 +96,6 @@ namespace EditorUiRx {
 		subject.next(1);
 		EXPECT_EQ(calls, 1);
 	}
-
 
 	TEST(Subject, StringPayload) {
 		Subject<std::string> subject { "a" };

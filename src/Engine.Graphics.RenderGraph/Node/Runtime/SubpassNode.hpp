@@ -1,6 +1,7 @@
 #pragma once
 #include "SLNode.hpp"
 
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.Render.Subpass/SubPass.hpp>
 #include "../../Symbol/ScopedSymbolContext.hpp"
 

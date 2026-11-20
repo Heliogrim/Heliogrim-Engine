@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Pedantic.Resource/Resource.hpp>
 #include <Engine.Reflect.Utils/Error/IllegalArgumentError.hpp>
 #include <Engine.Reflect.Utils/Error/IllegalTypeError.hpp>

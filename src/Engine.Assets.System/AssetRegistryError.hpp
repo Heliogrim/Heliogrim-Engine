@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
-
 #include "Error/IndexFailure.hpp"
 #include "Error/IndexSoftFailure.hpp"
 #include "Error/RepositoryFailure.hpp"

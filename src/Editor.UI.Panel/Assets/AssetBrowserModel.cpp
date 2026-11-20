@@ -103,8 +103,8 @@ void AssetBrowserModel::changeDirectory(ref<const fs::Path> nextPath_) {
 	Vector<string> proxyParts {};
 
 	while (not proxyUrl
-	.
-	empty() && proxyUrl != proxyUrl.parent_path()
+		.
+		empty() && proxyUrl != proxyUrl.parent_path()
 	) {
 		proxyParts.emplace_back(proxyUrl.filename().string());
 		proxyUrl = proxyUrl.parent_path();
@@ -154,7 +154,7 @@ UniquePtr<AssetBrowserModel> editor::ui::makeAssetBrowserModel(
 	fs::Path basePath_,
 	fs::Path currentPath_
 ) {
-	return make_uptr < AssetBrowserModel > (
+	return make_uptr<AssetBrowserModel>(
 		view_,
 		::hg::move(service_),
 		::hg::move(basePath_),

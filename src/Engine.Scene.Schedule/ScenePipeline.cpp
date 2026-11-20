@@ -1,7 +1,5 @@
 #include "ScenePipeline.hpp"
 
-#include <Engine.Common/__macro.hpp>
-
 #include "SceneBroadcastStage.hpp"
 #include "ScenePostProcessStage.hpp"
 #include "SceneUpdateStage.hpp"

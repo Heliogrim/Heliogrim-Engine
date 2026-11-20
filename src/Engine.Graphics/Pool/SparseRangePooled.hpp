@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../Buffer/SparseBuffer.hpp"
 #include "../Buffer/SparseBufferView.hpp"
 #include "../Command/CommandBuffer.hpp"

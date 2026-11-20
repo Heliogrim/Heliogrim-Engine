@@ -1,6 +1,5 @@
 #include "LevelAsset.hpp"
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Load/ReadError.hpp>
 #include <Engine.Serialization/Structure/StringScopedSlot.hpp>

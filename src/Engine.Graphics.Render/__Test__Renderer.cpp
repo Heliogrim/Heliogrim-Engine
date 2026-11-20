@@ -3,7 +3,6 @@
 #include <Engine.Accel.Effect/AccelerationEffect.hpp>
 #include <Engine.Accel.Effect/Stage/Stage.hpp>
 #include <Engine.Accel.Effect/Stage/StageFlags.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneColor.hpp>
 #include <Engine.Graphics.Render.Subpass/Impl/DepthPrePass.hpp>
 #include <Engine.Graphics.Render.Subpass/Impl/DummyProvider.hpp>

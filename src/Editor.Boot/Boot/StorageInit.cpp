@@ -1,14 +1,13 @@
 #include "StorageInit.hpp"
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Config/Config.hpp>
 #include <Engine.Config/Enums.hpp>
 #include <Engine.Storage.Registry/IStorageRegistry.hpp>
+#include <Engine.Storage/StorageModule.hpp>
 #include <Engine.Storage.Registry/Provider/LocalFileSystemProvider.hpp>
 #include <Engine.Storage.Registry/Repository/CacheFileSystemRepository.hpp>
 #include <Engine.Storage.Registry/Repository/EditorReadOnlyRepository.hpp>
 #include <Engine.Storage.Registry/Repository/ProjectFileSystemRepository.hpp>
-#include <Engine.Storage/StorageModule.hpp>
 
 import Engine.Common;
 

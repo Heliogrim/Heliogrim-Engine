@@ -7,8 +7,6 @@
 #include <Jolt/Physics/Collision/ObjectLayer.h>
 #include <Jolt/Physics/PhysicsSystem.h>
 
-#include <Engine.Common/__macro.hpp>
-
 #include "PhysicsLayer.hpp"
 #include "jolt.inc.hpp"
 

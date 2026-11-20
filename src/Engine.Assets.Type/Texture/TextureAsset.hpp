@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics/Texture/TextureType.hpp>
 #include <Engine.Graphics/TextureFormat.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>

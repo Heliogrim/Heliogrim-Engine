@@ -1,6 +1,5 @@
 #pragma once
 #include <Engine.Accel.Lang/Rep/Symbol.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.Render.Predefined/Buffer/ViewBuffer.hpp>
 #include <Engine.Graphics.RenderGraph/Relation/Description.hpp>
 

@@ -1,7 +1,5 @@
 #include "PhysicsPipeline.hpp"
 
-#include <Engine.Common/__macro.hpp>
-
 #include "PhysicsReadbackStage.hpp"
 #include "PhysicsTickStage.hpp"
 

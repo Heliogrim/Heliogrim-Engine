@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Engine.Common/StringLiterals.hpp>
-#include <Engine.Common/__macro.hpp>
 
 #include "StructureSlotType.hpp"
 

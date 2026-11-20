@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../RenderCommand.hpp"
 #include "../Resource/ResourceTable.hpp"
 

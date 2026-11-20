@@ -1,6 +1,5 @@
 #include "ColorBuffer.hpp"
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.RenderGraph/Relation/TextureDescription.hpp>
 
 import Engine.Common;

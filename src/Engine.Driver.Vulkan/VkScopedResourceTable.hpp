@@ -3,7 +3,6 @@
 #include <Engine.Accel.Pipeline/Bind/BindLayout.hpp>
 #include <Engine.Accel.Pipeline/__fwd.hpp>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.Render.Command/Resource/ResourceTable.hpp>
 #include <Engine.Graphics/API/__vkFwd.hpp>
 #include <cstdint>

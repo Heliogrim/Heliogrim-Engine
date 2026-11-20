@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Engine.Async/Primitive/FiberSharedMutex.hpp>
-#include <Engine.Common/__macro.hpp>
 
 #include "../Intermediate.hpp"
 #include "Condition.hpp"

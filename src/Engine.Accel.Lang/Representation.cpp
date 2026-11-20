@@ -1,6 +1,5 @@
 #include "Representation.hpp"
 
-#include <Engine.Common/__macro.hpp>
 #include <cassert>
 #include <stddef.h>
 

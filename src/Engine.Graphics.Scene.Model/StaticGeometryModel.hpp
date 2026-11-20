@@ -1,6 +1,5 @@
 #pragma once
 #include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.Loader/Geometry/StaticGeometryResource.hpp>
 #include <Engine.Resource/Manage/Resource.hpp>
 

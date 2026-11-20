@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Engine.Common/__macro.hpp>
+
 namespace hg {
 	class macro_novtable ResourceBase {
 	public:

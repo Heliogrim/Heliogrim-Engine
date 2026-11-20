@@ -1,6 +1,5 @@
 #include "RenderGraphCompiler.hpp"
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.RenderGraph/RuntimeGraph.hpp>
 
 #include "CompileVisitor.hpp"

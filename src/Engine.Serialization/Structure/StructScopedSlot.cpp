@@ -1,7 +1,5 @@
 #include "StructScopedSlot.hpp"
 
-#include <Engine.Common/__macro.hpp>
-
 #include "IntegralScopedSlot.hpp"
 #include "StructSlot.hpp"
 #include "StructureSlotTypeTraits.hpp"

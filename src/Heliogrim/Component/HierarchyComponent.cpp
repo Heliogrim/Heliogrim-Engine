@@ -1,7 +1,6 @@
 #include "HierarchyComponent.hpp"
 
 #include <Engine.ACS/Cluster/RelocationTable.hpp>
-#include <Engine.Common/__macro.hpp>
 
 import Engine.Common;
 

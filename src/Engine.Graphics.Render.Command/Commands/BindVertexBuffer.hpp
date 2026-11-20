@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics/Buffer/VertexBufferView.hpp>
 
 #include "Engine.Graphics.Render.Command/RenderCommand.hpp"

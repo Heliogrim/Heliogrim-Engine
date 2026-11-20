@@ -3,7 +3,6 @@
 /**/
 
 #include <Engine.Async/Primitive/SpinLock.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Scheduler/CompScheduler.hpp>
 #include <Engine.Scheduler/Graph/TaskGraph.hpp>
 #include <Engine.Scheduler/Pipeline/CompositePipeline.hpp>

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Engine.Accel.Effect/Stage/TransferDataType.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.Material/ParameterIdentifier.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 

@@ -1,9 +1,7 @@
 #pragma once
-#include <Engine.Accel.Lang/Intermediate.hpp>
-#include <Engine.Common/Sal.hpp>
-#include <Engine.Common/__macro.hpp>
 
-#include "../__fwd.hpp"
+#include <Engine.Accel.Lang/Intermediate.hpp>
+
 #include "StageFlags.hpp"
 #include "StageInput.hpp"
 #include "StageOutput.hpp"

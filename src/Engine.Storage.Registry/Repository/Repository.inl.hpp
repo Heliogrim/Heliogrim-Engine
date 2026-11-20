@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../IStorage.hpp"
 #include "../Url/StorageUrl.hpp"
 

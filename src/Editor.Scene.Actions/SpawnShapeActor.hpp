@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Editor.Action/Action/DelegateAction.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Heliogrim/Actor/ActorRef.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)

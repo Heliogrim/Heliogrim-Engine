@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Engine.Async/Future/Async.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Resource.Archive/Archive.hpp>
 #include <Engine.Resource.Archive/__fwd.hpp>
 #include <Engine.Storage.Action/Guard/IoMutationGuard.hpp>

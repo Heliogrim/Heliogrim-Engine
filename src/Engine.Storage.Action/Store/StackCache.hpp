@@ -2,7 +2,6 @@
 
 #include <Engine.Async/Primitive/FiberSharedMutex.hpp>
 #include <Engine.Async/Primitive/SpinLock.hpp>
-#include <Engine.Common/__macro.hpp>
 
 #include "ResolvedStage.hpp"
 

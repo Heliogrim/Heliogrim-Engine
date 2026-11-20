@@ -1,6 +1,5 @@
 #include "Level.hpp"
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Serialization.Structures/Symbols.hpp>
 #include <Engine.ACS/ActorModule.hpp>
 #include <Engine.Core/Engine.hpp>

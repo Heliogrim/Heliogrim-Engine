@@ -2,7 +2,6 @@
 
 /**/
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Config/Config.hpp>
 #include <Engine.Storage.Action/Store/StackCache.hpp>
 #include <Engine.Storage.Registry/Options/MemoryStorageDescriptor.hpp>

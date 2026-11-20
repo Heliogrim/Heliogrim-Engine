@@ -2,6 +2,7 @@
 
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets/Assets.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Serialization/SerializationModule.hpp>
 #include <Engine.Storage.System/StorageSystem.hpp>

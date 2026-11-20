@@ -4,7 +4,6 @@
 #include <Engine.ACS/Handle/Epoch.hpp>
 #include <Engine.ACS/Handle/Handle.hpp>
 #include <Engine.ACS/Registry.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Engine.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)

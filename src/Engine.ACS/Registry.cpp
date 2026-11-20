@@ -1,7 +1,6 @@
 #include "Registry.hpp"
 
 #include <Engine.ACS/Handle/Epoch.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Heliogrim/Actor/Actor.hpp>
 #include <Heliogrim/Actor/Archetype/ActorClass.hpp>
 #include <Heliogrim/ActorInitializer.hpp>

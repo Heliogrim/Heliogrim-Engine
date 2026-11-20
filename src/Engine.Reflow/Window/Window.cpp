@@ -1,7 +1,5 @@
 #include "Window.hpp"
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../Command/ReflowCommandLayer.hpp"
 #include "../ReflowEngine.hpp"
 #include "../Widget/Layer/Host.hpp"

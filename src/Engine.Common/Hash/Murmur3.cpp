@@ -1,4 +1,3 @@
-#include <Engine.Common/__macro.hpp>
 #include <cstring>
 
 import Engine.Common;

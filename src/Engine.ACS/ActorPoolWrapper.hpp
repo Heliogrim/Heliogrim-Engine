@@ -3,6 +3,8 @@
 #include "Pool.hpp"
 #include "Traits.hpp"
 
+#include <Engine.Common/__macro.hpp>
+
 namespace hg {
 	class Actor;
 	class ActorInitializer;

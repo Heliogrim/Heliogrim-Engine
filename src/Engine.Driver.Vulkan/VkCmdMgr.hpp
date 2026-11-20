@@ -1,6 +1,5 @@
 #pragma once
 #include <Engine.Accel.Command/CommandBuffer.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics/Device/Device.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)

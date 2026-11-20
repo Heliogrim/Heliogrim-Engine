@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../Event/EventDispatcher.hpp"
 #include "__fwd.hpp"
 

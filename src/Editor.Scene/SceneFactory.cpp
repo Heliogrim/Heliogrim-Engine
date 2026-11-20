@@ -1,6 +1,5 @@
 #include "SceneFactory.hpp"
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Scene.Game/GameScene.hpp>
 #include <Engine.Scene.Preview/PreviewScene.hpp>
 

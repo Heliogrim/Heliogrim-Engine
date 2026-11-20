@@ -1,6 +1,5 @@
 #include "AllocatedMemory.hpp"
 
-#include <Engine.Common/__macro.hpp>
 #include <cassert>
 
 #include "../vkinc.hpp"

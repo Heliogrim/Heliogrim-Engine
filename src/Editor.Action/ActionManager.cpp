@@ -2,10 +2,11 @@
 
 /**/
 
+#include "ActionManager.hpp"
+
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Logging/Logger.hpp>
 
-#include "ActionManager.hpp"
 #include "Log/ActionDispatcher.hpp"
 #include "Log/ActionLog.hpp"
 
