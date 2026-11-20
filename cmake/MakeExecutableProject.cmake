@@ -1,5 +1,7 @@
 include_guard(GLOBAL)
 
+include(${CMAKE_CURRENT_LIST_DIR}/MakeTools.cmake)
+
 function(_prepare_link_libs libs out)
 	list(TRANSFORM libs STRIP)
 	set("${out}" ${libs} PARENT_SCOPE)
@@ -121,7 +123,7 @@ function(make_app_project)
 			${DEFAULT_MODULE_LIBRARIES}
 	)
 
-	_record_module_project("${args_APP_NAME}" "${args_LIBRARIES}" ${app_target} ${lib_target})
+	record_module_project("${args_APP_NAME}" "${args_LIBRARIES}" ${app_target} ${lib_target})
 
 	# Compile Definitions
 	target_compile_definitions(

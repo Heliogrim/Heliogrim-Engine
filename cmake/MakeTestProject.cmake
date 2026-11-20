@@ -1,5 +1,7 @@
 include_guard(GLOBAL)
 
+include(${CMAKE_CURRENT_LIST_DIR}/MakeTools.cmake)
+
 #
 
 macro(_load_global_test_target out)
@@ -99,7 +101,7 @@ function(make_test_project)
 			${TEST_LIBRARIES}
 	)
 
-	_record_module_project("${args_TEST_NAME}" "${args_LIBRARIES}" ${target})
+	record_module_project("${args_TEST_NAME}" "${args_LIBRARIES}" ${target})
 
 	# Compile
 	target_compile_definitions(
