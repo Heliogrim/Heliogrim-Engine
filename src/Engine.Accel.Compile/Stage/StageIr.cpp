@@ -69,7 +69,7 @@ namespace {
 		return offsets;
 	}
 
-	[[nodiscard]] BindType bindTypeOf(ref<const Resolved> resolved_, ref<const String> id_) {
+	[[nodiscard]] BindType bindTypeOf(ref<const hg::engine::accel::lang::ir::Resolved> resolved_, ref<const String> id_) {
 		for (const auto& entry : resolved_.interfaceEntries) {
 			if (entry.input && entry.id == id_) {
 				switch (entry.cls) {
@@ -158,7 +158,7 @@ namespace {
 	}
 }
 
-std::expected<smr<const Resolved>, Diagnostics> hg::engine::accel::resolveStageIr(
+std::expected<smr<const hg::engine::accel::lang::ir::Resolved>, Diagnostics> hg::engine::accel::resolveStageIr(
 	ref<const Intermediate> stage_,
 	ref<const EffectProfile> profile_,
 	ref<const EffectSpecification> spec_,
@@ -176,7 +176,7 @@ std::expected<smr<const Resolved>, Diagnostics> hg::engine::accel::resolveStageI
 	Diagnostics failure {};
 	auto resolved = cache_.getOrCreate(
 		key,
-		[&]() -> smr<const Resolved> {
+		[&]() -> smr<const hg::engine::accel::lang::ir::Resolved> {
 
 			/* non-fatal parser/typecheck diagnostics; merge drops them, so log them from the inputs */
 			engine::diag::LogSink sink {};
@@ -268,7 +268,7 @@ std::expected<smr<const Resolved>, Diagnostics> hg::engine::accel::resolveStageI
 			}
 			failure.clear();
 
-			return make_smr<const Resolved>(new Resolved { std::move(sliced), std::move(interfaceEntries), key });
+			return make_smr<const hg::engine::accel::lang::ir::Resolved>(new hg::engine::accel::lang::ir::Resolved { std::move(sliced), std::move(interfaceEntries), key });
 		}
 	);
 
@@ -320,7 +320,7 @@ std::expected<Vector<smr<StageDerivat>>, Diagnostics> hg::engine::accel::compose
 	auto pipeline = layouts_.getOrCreate(
 		key,
 		[&]() -> smr<const ResolvedPipeline> {
-			Vector<smr<const Resolved>> resolved {};
+			Vector<smr<const hg::engine::accel::lang::ir::Resolved>> resolved {};
 			resolved.reserve(stages_.size());
 			for (size_t idx = 0uLL; idx < stages_.size(); ++idx) {
 				auto stage = resolveStageIr(

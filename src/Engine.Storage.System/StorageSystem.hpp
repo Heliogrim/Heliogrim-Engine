@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Async/Future/Async.hpp>
 #include <Engine.Storage.Action/Guard/IoMutationGuard.hpp>
 #include <Engine.Storage.Action/Guard/IoQueryGuard.hpp>
 #include <Engine.Storage.Registry/IStorage.hpp>
@@ -23,6 +22,7 @@
 #include "Options/PackageRequestOptions.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Async;
 import Engine.Common;
 import Engine.Resource.Archive;
 #endif

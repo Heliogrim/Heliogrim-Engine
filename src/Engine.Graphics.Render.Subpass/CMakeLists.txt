@@ -5,6 +5,7 @@ make_library_project(
 		LIB_FOLDER "${IDE_FOLDER}/Engine/Render"
 		LIBRARIES
 		${PROJECT_NAME}::Engine.Asserts
+		${PROJECT_NAME}::Engine.Async
 		${PROJECT_NAME}::Engine.Common
 		${PROJECT_NAME}::Engine.Config
 		${PROJECT_NAME}::Engine.Core

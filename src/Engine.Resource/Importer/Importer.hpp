@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Async/Future/Future.hpp>
 #include <Engine.Common/__macro.hpp>
 
 #include "./ImportDestination.hpp"
@@ -8,6 +7,7 @@
 #include "../FileTypeId.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Async;
 import Engine.Common;
 #endif
 

@@ -1,10 +1,9 @@
 #pragma once
 
-#include <Engine.Async/Primitive/FiberSharedMutex.hpp>
-
 #include "ResolvedStage.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Async;
 import Engine.Common;
 #endif
 

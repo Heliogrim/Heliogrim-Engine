@@ -2,12 +2,12 @@
 
 /**/
 
-#include <Engine.Async/Lock/UniqueLock.hpp>
-#include <Engine.Async/Primitive/FiberMutex.hpp>
+#include <Engine.Common/ThreadSafety.hpp>
 #include <Heliogrim/Async/Yield.hpp>
 
 #include "../Engine.Scheduler.Test/TestSchedulerEngine.hpp"
 
+import Engine.Async;
 import Engine.Scheduler;
 import std;
 

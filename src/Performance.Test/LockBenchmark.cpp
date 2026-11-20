@@ -2,11 +2,11 @@
 
 /**/
 #include <cstdio>
-#include <Engine.Async/Primitive/FiberMutex.hpp>
-#include <Engine.Async/Primitive/FiberSharedMutex.hpp>
+#include <Engine.Common/ThreadSafety.hpp>
 
 #include "../Engine.Scheduler.Test/TestSchedulerEngine.hpp"
 
+import Engine.Async;
 import Engine.Scheduler;
 import std;
 

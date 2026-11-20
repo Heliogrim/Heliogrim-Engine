@@ -31,5 +31,6 @@ make_library_project(
 		${PROJECT_NAME}::Engine.Reflect
 		${PROJECT_NAME}::Engine.Resource.Archive
 		${PROJECT_NAME}::Heliogrim
+		${PROJECT_NAME}::Engine.Async
 		${PROJECT_NAME}::Engine.Scheduler
 )

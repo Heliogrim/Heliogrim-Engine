@@ -2,7 +2,6 @@
 
 /**/
 
-#include <Engine.Async/Affine/AffineThread.hpp>
 #include <Engine.IO.Dispatcher/IoSystem.hpp>
 #include <Engine.Resource.Blob/Blob.hpp>
 #include <Engine.Resource.Package/ReadWritePackage.hpp>
@@ -37,6 +36,7 @@
 
 #include <Engine.Common/__macro.hpp>
 
+import Engine.Async;
 import Engine.Common;
 import Engine.Config;
 import Engine.Resource.Archive;

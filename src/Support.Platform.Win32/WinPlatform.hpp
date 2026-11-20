@@ -1,9 +1,9 @@
 #pragma once
 
-#include <Engine.Async/Affine/AffineThread.hpp>
 #include <Engine.Platform/Platform.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Async;
 import Engine.Common;
 #endif
 

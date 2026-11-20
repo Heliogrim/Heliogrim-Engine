@@ -15,7 +15,6 @@
 #include <Engine.Assets/Utils.hpp>
 #include <Engine.Assets.System/AssetDescriptor.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
-#include <Engine.Async/Future/Async.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
@@ -30,6 +29,7 @@
 #include <Engine.Storage.System/StorageSystem.hpp>
 
 import Editor.Boot;
+import Engine.Async;
 import Engine.Common;
 import Engine.Config;
 import Engine.Core;

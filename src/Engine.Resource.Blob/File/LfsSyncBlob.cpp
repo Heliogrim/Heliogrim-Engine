@@ -1,6 +1,6 @@
 #include "LfsSyncBlob.hpp"
 
-#include <Engine.Async/Lock/UniqueLock.hpp>
+import Engine.Async;
 
 using namespace hg::engine::resource;
 using namespace hg;

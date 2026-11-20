@@ -18,6 +18,7 @@ make_test_project(
 		${PROJECT_NAME}::Engine.Resource.Archive
 		${PROJECT_NAME}::Engine.Resource.Blob
 		${PROJECT_NAME}::Engine.Resource.Package
+		${PROJECT_NAME}::Engine.Async
 		${PROJECT_NAME}::Engine.Scheduler
 		${PROJECT_NAME}::Engine.Serialization
 		${PROJECT_NAME}::Engine.Serialization.Layouts

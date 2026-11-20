@@ -1,11 +1,11 @@
 #pragma once
 
-#include <Engine.Async/Primitive/FiberMutex.hpp>
 #include <Engine.Filesystem/Url.hpp>
 
 #include "../Blob.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Async;
 import Engine.Common;
 import Engine.Reflect;
 #endif
