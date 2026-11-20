@@ -28,9 +28,11 @@ function(library_vulkan_headers_init)
 	)
 
 	# Setup Library
+	# Upstream module sources stay out: an indexed `export module vulkan` beside ours makes the name ambiguous in CLion.
 	install_includes(
 			DIRECTORY "${vendor_src_path}/include/"
 			DESTINATION "${vendor_inc_path}/"
+			EXCLUDE_PATTERN "*.cppm"
 	)
 
 	export(TARGETS Vulkan-Headers NAMESPACE External:: FILE ${PROJECT_BINARY_DIR}/cmake/${alias}/${alias}-export.cmake)
@@ -39,7 +41,7 @@ function(library_vulkan_headers_init)
 	# Upstream export list over our configuration (`vkinc.hpp`, built without a platform); the `:video` partition is dropped.
 	make_vendor_module(
 			MODULE_NAME vulkan
-			SOURCE "${vendor_inc_path}/vulkan/vulkan.cppm"
+			SOURCE "${vendor_src_path}/include/vulkan/vulkan.cppm"
 			PRELUDE
 			Engine.Common/__macro.hpp
 			Engine.Graphics/vkinc.hpp

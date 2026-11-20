@@ -58,3 +58,6 @@
 
 # TLC model-checker output next to the .tla models
 src/**/states/
+
+# Generated C++ module interfaces (HELIOGRIM_MODULE_DIR under CLion)
+/.modules/
