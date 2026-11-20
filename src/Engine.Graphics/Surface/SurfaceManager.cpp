@@ -1,7 +1,5 @@
 #include "SurfaceManager.hpp"
 
-#include <Engine.Platform/NativeWindow.hpp>
-
 #ifdef _WIN32
 //#include <Engine.Platform/Windows/Win32Window.hpp>
 #else
@@ -14,6 +12,7 @@
 
 import Engine.Common;
 import Engine.Logging;
+import Engine.Platform;
 
 using namespace hg::engine::graphics;
 using namespace hg::engine::platform;

@@ -10,7 +10,6 @@
 
 #include <Editor.Action/ActionManager.hpp>
 #include <Editor.Action/Action/Import/AutoImportAction.hpp>
-#include <Engine.Platform/Platform.hpp>
 
 import Engine.Asserts;
 import Engine.Async;
@@ -18,6 +17,7 @@ import Engine.Common;
 import Engine.Config;
 import Engine.Core;
 import Engine.Logging;
+import Engine.Platform;
 
 using namespace hg::editor::assets;
 using namespace hg::engine::storage;

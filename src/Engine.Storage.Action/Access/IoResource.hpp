@@ -1,13 +1,13 @@
 #pragma once
 
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Pedantic.Resource/AccessMode.hpp>
 
 #include "IoResourceAccessor.hpp"
 #include "IoResourceBase.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Pedantic.Resource;
 #endif
 
 namespace hg::engine::storage {

@@ -15,4 +15,5 @@ make_library_project(
 		${PROJECT_NAME}::Engine.Storage
 		${PROJECT_NAME}::Engine.Storage.System
 		${PROJECT_NAME}::vulkan.Module
+		${PROJECT_NAME}::Engine.Pedantic.Resource
 )

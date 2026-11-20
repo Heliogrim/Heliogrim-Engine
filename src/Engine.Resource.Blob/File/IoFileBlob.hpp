@@ -1,11 +1,10 @@
 #pragma once
 
-#include <Engine.IO.Dispatcher/IoSystem.hpp>
-
 #include "../Blob.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.IO.Dispatcher;
 import Engine.Reflect;
 #endif
 

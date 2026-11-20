@@ -5,8 +5,8 @@
 #include <cstdio>
 #include <cstdlib>
 #include <Engine.Common/stdafx.h>
-#include <Engine.IO.Dispatcher/IoThread.hpp>
 
+import Engine.IO.Dispatcher;
 import Engine.Logging;
 import std;
 

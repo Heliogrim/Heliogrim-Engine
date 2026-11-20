@@ -2,7 +2,7 @@
 
 /**/
 
-#include <Engine.Pedantic.Resource/ExclusiveResource.hpp>
+import Engine.Pedantic.Resource;
 
 using namespace hg;
 

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Platform/NativeWindow.hpp>
-
 #include "Layer.hpp"
 #include "WindowType.hpp"
 #include "../Children.hpp"
@@ -11,6 +9,7 @@
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Platform;
 #endif
 
 namespace hg::engine::reflow {

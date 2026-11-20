@@ -1,13 +1,12 @@
 #pragma once
 
-#include <Engine.Platform/NativeWindow.hpp>
-
 #include "DragDrop/DragDropReceiver.hpp"
 #include "DragDrop/DragDropSender.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Core;
 import Engine.Event;
+import Engine.Platform;
 #endif
 
 namespace hg::engine::input::schedule {

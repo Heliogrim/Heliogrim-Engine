@@ -1,10 +1,9 @@
 #pragma once
 
-#include <Engine.Platform/Platform.hpp>
-
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Async;
 import Engine.Common;
+import Engine.Platform;
 #endif
 
 union SDL_Event;

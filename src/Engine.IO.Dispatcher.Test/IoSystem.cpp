@@ -3,10 +3,10 @@
 /**/
 
 #include <Engine.Common/stdafx.h>
-#include <Engine.IO.Dispatcher/IoSystem.hpp>
 
 #include "../Engine.Scheduler.Test/TestSchedulerEngine.hpp"
 
+import Engine.IO.Dispatcher;
 import Engine.Logging;
 import Engine.Scheduler;
 import std;

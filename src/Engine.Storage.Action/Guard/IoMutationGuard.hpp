@@ -1,13 +1,12 @@
 #pragma once
 
-#include <Engine.Pedantic.Resource/Resource.hpp>
-
 #include "../Mutation.hpp"
 #include "../Access/IoResourceAccessor.hpp"
 #include "../Access/IoResourceAccessorBase.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Pedantic.Resource;
 import Engine.Reflect.Utils;
 #endif
 

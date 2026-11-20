@@ -13,7 +13,6 @@
 #ifdef WIN32
 #include <Support.Platform.Win32/WinPlatform.hpp>
 #else
-#include <Engine.Platform/Platform.hpp>
 //#include <Engine.Platform/Linux>
 #endif
 
@@ -21,6 +20,7 @@ import Engine.Config;
 import Engine.Core;
 import Engine.Network;
 import Engine.Physics;
+import Engine.Platform;
 import Engine.Scheduler;
 import std;
 
