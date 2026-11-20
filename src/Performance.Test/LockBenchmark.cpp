@@ -4,12 +4,10 @@
 #include <cstdio>
 #include <Engine.Async/Primitive/FiberMutex.hpp>
 #include <Engine.Async/Primitive/FiberSharedMutex.hpp>
-#include <Engine.Scheduler/Scheduler.hpp>
-#include <Engine.Scheduler/Task/Task.hpp>
-#include <Engine.Scheduler/Thread/Thread.hpp>
 
 #include "../Engine.Scheduler.Test/TestSchedulerEngine.hpp"
 
+import Engine.Scheduler;
 import std;
 
 using namespace hg;

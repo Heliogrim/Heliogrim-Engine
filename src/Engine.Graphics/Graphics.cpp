@@ -1,7 +1,6 @@
 #include "Graphics.hpp"
 
 #include <cassert>
-#include <Engine.Scheduler/Async.hpp>
 
 #ifdef _PROFILING
 #endif
@@ -9,7 +8,6 @@
 #include <Engine.Common/Math/__default.inl>
 #include <Engine.Graphics.IO/Io.hpp>
 #include <Engine.Graphics.Schedule/RenderScenePipeline.hpp>
-#include <Engine.Scheduler/Pipeline/CompositePipeline.hpp>
 
 #include "RenderTarget.hpp"
 #include "Buffer/VkBufferFactory.hpp"
@@ -34,6 +32,7 @@ import Engine.Core;
 import Engine.Event;
 import Engine.Graphics.Scene;
 import Engine.Logging;
+import Engine.Scheduler;
 /**/
 
 using namespace hg::engine::graphics;

@@ -4,7 +4,6 @@
 
 #include <Engine.Async/Affine/AffineThread.hpp>
 #include <Engine.Async/Future/Future.hpp>
-#include <Engine.Scheduler/Thread/Thread.hpp>
 
 #ifdef WIN32
 #include <Engine.Common/stdafx.h>
@@ -13,6 +12,7 @@
 #endif
 
 import Engine.Logging;
+import Engine.Scheduler;
 import std;
 
 using namespace hg;

@@ -10,10 +10,6 @@
 #include <Engine.Input/Input.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 #include <Engine.Scene.Schedule/ScenePipeline.hpp>
-#include <Engine.Scheduler/Async.hpp>
-#include <Engine.Scheduler/CompScheduler.hpp>
-#include <Engine.Scheduler/Waitable/JoinCounter.hpp>
-#include <Engine.Scheduler/Waitable/Signal.hpp>
 
 #ifdef WIN32
 #include <Support.Platform.Win32/WinPlatform.hpp>
@@ -28,6 +24,7 @@ import Engine.Core;
 import Engine.Logging;
 import Engine.Network;
 import Engine.Physics;
+import Engine.Scheduler;
 import std;
 
 using namespace hg::editor;

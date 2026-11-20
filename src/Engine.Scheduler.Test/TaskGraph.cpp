@@ -23,11 +23,9 @@
 #include <Engine.Scene.Schedule/ScenePipeline.hpp>
 #include <Engine.Scene.Schedule/ScenePostProcessStage.hpp>
 #include <Engine.Scene.Schedule/SceneUpdateStage.hpp>
-#include <Engine.Scheduler/Graph/StageDecl.hpp>
-#include <Engine.Scheduler/Graph/TaskGraph.hpp>
-#include <Engine.Scheduler/Pipeline/Stage/EmptyPipelineStage.hpp>
 
 import Engine.Common;
+import Engine.Scheduler;
 
 using namespace hg::engine::scheduler::graph;
 using namespace hg;

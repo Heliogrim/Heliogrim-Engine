@@ -2,9 +2,6 @@
 
 #include <Engine.Common/SDL3.hpp>
 #include <Engine.Input.Schedule/InputPipeline.hpp>
-#include <Engine.Scheduler/Async.hpp>
-#include <Engine.Scheduler/Fiber/Fiber.hpp>
-#include <Engine.Scheduler/Pipeline/CompositePipeline.hpp>
 
 #include "DragDropEvent.hpp"
 #include "KeyboardEvent.hpp"
@@ -20,6 +17,7 @@
 
 import Engine.Core;
 import Engine.Event;
+import Engine.Scheduler;
 import std;
 
 using namespace hg::engine::input;

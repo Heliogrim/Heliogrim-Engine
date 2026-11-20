@@ -2,11 +2,11 @@
 
 #include <Engine.ACS.Schedule/ActorPipeline.hpp>
 #include <Engine.Scene.Schedule/ScenePipeline.hpp>
-#include <Engine.Scheduler/Pipeline/Stage/EmptyPipelineStage.hpp>
 
 #include "TickTimingStage.hpp"
 
 import Engine.Common;
+import Engine.Scheduler;
 
 using namespace hg::engine::core::schedule;
 using namespace hg::engine::scheduler;

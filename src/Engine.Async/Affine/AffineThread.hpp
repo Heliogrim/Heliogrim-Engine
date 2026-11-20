@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cstdint>
-#include <Engine.Scheduler/Thread/Thread.hpp>
 
 #include "../Future/Future.hpp"
 #include "../Future/Promise.hpp"
@@ -9,6 +8,7 @@
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Scheduler;
 #endif
 
 namespace hg::engine::async {

@@ -1,8 +1,8 @@
 #pragma once
-#include <Engine.Scheduler/Pipeline/Stage/PipelineStage.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Scheduler;
 #endif
 
 namespace hg::engine::graphics {

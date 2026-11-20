@@ -11,12 +11,11 @@
 /**/
 
 #include <Engine.Physics.Schedule/PhysicsPipeline.hpp>
-#include <Engine.Scheduler/Scheduler.hpp>
-#include <Engine.Scheduler/Pipeline/CompositePipeline.hpp>
 
 import Engine.Common;
 import Engine.Core;
 import Engine.Physics;
+import Engine.Scheduler;
 
 using namespace hg::engine;
 using namespace hg;

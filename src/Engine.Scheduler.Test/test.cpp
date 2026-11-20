@@ -3,9 +3,8 @@
 /**/
 
 #include <Engine.Async/Future/Async.hpp>
-#include <Engine.Scheduler/CompScheduler.hpp>
-#include <Engine.Scheduler/Scheduler.hpp>
-#include <Engine.Scheduler/Waitable/JoinCounter.hpp>
+
+import Engine.Scheduler;
 
 using namespace hg::engine::scheduler;
 using namespace hg;

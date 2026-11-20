@@ -10,7 +10,6 @@
 #include <Engine.Input/MouseButtonEvent.hpp>
 #include <Engine.Input/MouseMoveEvent.hpp>
 #include <Engine.Input/MouseWheelEvent.hpp>
-#include <Engine.Scheduler/Async.hpp>
 
 #include "Win32Window.hpp"
 
@@ -18,6 +17,7 @@ import Engine.Asserts;
 import Engine.Core;
 import Engine.Event;
 import Engine.Logging;
+import Engine.Scheduler;
 
 using namespace hg::engine::scheduler;
 using namespace hg::engine::platform;

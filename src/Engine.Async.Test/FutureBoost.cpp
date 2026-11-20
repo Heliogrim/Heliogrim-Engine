@@ -5,16 +5,11 @@
 #include <Engine.Async/Future/Async.hpp>
 #include <Engine.Async/Future/Future.hpp>
 #include <Engine.Async/Future/Promise.hpp>
-#include <Engine.Scheduler/Lane.hpp>
-#include <Engine.Scheduler/Scheduler.hpp>
-#include <Engine.Scheduler/Fiber/Fiber.hpp>
-#include <Engine.Scheduler/Process/Schedule.hpp>
-#include <Engine.Scheduler/Task/Task.hpp>
-#include <Engine.Scheduler/Thread/Thread.hpp>
 
 #include "../Engine.Scheduler.Test/TestCompScheduler.hpp"
 #include "../Engine.Scheduler.Test/TestSchedulerEngine.hpp"
 
+import Engine.Scheduler;
 import std;
 
 using namespace hg::engine::scheduler;

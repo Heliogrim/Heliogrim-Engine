@@ -2,14 +2,9 @@
 
 /**/
 
-#include <Engine.Scheduler/Scheduler.hpp>
-#include <Engine.Scheduler/Task/Task.hpp>
-#include <Engine.Scheduler/Thread/Thread.hpp>
-#include <Engine.Scheduler/Waitable/JoinCounter.hpp>
-#include <Engine.Scheduler/Waitable/ParkQueue.hpp>
-#include <Engine.Scheduler/Waitable/Signal.hpp>
 #include <Heliogrim/Async/Await.hpp>
 
+import Engine.Scheduler;
 import std;
 
 using namespace hg::engine::scheduler;

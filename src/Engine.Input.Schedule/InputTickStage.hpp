@@ -1,5 +1,7 @@
 #pragma once
-#include <Engine.Scheduler/Pipeline/Stage/PipelineStage.hpp>
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Scheduler;
+#endif
 
 namespace hg::engine::input::schedule {
 	class InputTickStage final :

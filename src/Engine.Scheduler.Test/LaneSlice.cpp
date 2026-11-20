@@ -2,17 +2,10 @@
 
 /**/
 
-#include <Engine.Scheduler/Lane.hpp>
-#include <Engine.Scheduler/LanePolicyConfig.hpp>
-#include <Engine.Scheduler/Scheduler.hpp>
-#include <Engine.Scheduler/Fiber/Fiber.hpp>
-#include <Engine.Scheduler/Process/Schedule.hpp>
-#include <Engine.Scheduler/Task/Task.hpp>
-#include <Engine.Scheduler/Thread/Thread.hpp>
-
 #include "TestCompScheduler.hpp"
 #include "TestSchedulerEngine.hpp"
 
+import Engine.Scheduler;
 import std;
 
 using namespace hg::engine::scheduler;
