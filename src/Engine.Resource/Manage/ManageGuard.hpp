@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Async/Meta/LockTag.hpp>
 #include <Engine.Common/__macro.hpp>
 
 #include "../ResourceUsageFlag.hpp"

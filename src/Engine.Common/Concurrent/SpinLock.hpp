@@ -1,8 +1,7 @@
 #pragma once
 
-#include <Engine.Scheduler/Thread/Thread.hpp>
-
-#include "../Meta/LockTag.hpp"
+#include "LockTag.hpp"
+#include "../Types.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import std;
@@ -163,7 +162,7 @@ namespace hg::concurrent {
 
 	private:
 		/** The gate */
-		std::atomic<hg::engine::scheduler::thread::thread_id> _gate;
+		std::atomic<u64> _gate;
 
 		/**
 		 * Spins this 

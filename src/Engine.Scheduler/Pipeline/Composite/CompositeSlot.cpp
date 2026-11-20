@@ -1,5 +1,7 @@
 #include "CompositeSlot.hpp"
 
+#include <cassert>
+
 #include "../CompositePipeline.hpp"
 #include "../../Lane.hpp"
 #include "../../Process/Schedule.hpp"

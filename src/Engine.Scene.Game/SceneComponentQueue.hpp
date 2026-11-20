@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Async/Primitive/SpinLock.hpp>
 #include <Engine.Scene/SceneBase.hpp>
 #include <Heliogrim/IComponentRegisterContext.hpp>
 #include <Heliogrim/Component/HierarchyComponent.hpp>

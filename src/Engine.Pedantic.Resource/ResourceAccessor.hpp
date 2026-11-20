@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Async/Meta/LockTag.hpp>
 
 #include "ResourceAccessorBase.hpp"
 

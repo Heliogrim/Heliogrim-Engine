@@ -1,6 +1,5 @@
 #include "RenderTickStage.hpp"
 
-#include <Engine.Async/Collection/RingBuffer.hpp>
 #include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Graphics/RenderEnqueueResult.hpp>
 #include <Engine.Graphics/RenderTarget.hpp>
