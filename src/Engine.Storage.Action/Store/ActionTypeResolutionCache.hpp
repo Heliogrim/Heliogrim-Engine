@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../Action/ActionTypeInfo.hpp"
 #include "../Mutation.hpp"
 #include "../Query.hpp"

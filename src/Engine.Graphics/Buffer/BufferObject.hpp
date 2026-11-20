@@ -2,6 +2,8 @@
 
 #include "BufferLikeObject.hpp"
 
+#include <Engine.Common/__macro.hpp>
+
 namespace hg::engine::graphics {
     class macro_novtable BufferObject :
         public InheritMeta<BufferObject, BufferLikeObject> {

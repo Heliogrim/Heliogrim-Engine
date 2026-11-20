@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Scheduler/Pipeline/Stage/StageIdentifier.hpp>
 #include <Engine.Scheduler/Pipeline/StagePipeline.hpp>
 

@@ -1,7 +1,5 @@
 #include "BarrierNode.hpp"
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../../Component/BarrierComponent.hpp"
 #include "../../Visitor/Visitor.hpp"
 

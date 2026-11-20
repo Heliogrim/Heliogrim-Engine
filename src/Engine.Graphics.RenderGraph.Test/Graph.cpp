@@ -1,6 +1,5 @@
 #include "pch.h"
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.RenderGraph/CompileGraph.hpp>
 #include <Engine.Graphics.RenderGraph/Component/AnchorComponent.hpp>
 #include <Engine.Graphics.RenderGraph/Node/CompileNode.hpp>

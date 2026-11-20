@@ -1,6 +1,5 @@
 ﻿#include "MemoryCache.hpp"
 
-#include <Engine.Common/__macro.hpp>
 #include <cassert>
 
 #include "AllocatedMemory.hpp"

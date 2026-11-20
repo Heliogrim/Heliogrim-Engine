@@ -1,5 +1,4 @@
 #pragma once
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Scene/SceneSystem.hpp>
 
 #include "RenderSceneRegistry.hpp"

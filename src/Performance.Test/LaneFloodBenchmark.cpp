@@ -11,7 +11,6 @@
 
 #include <Engine.Async/Future/Async.hpp>
 #include <Engine.Async/Future/Future.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Scheduler/CompScheduler.hpp>
 #include <Engine.Scheduler/Graph/StageDecl.hpp>
 #include <Engine.Scheduler/Lane.hpp>

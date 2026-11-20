@@ -4,7 +4,6 @@
 
 /**/
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Storage.Registry/Options/MemoryStorageDescriptor.hpp>
 #include <Engine.Storage.Registry/Options/MemoryStorageOption.hpp>
 #include <Engine.Storage.Registry/Options/StorageDescriptor.hpp>

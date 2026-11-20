@@ -1,6 +1,5 @@
 #include "Resource.hpp"
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics/Buffer/StorageBufferView.hpp>
 #include <Engine.Graphics/Buffer/UniformBufferView.hpp>
 #include <Engine.Graphics/Texture/TextureLikeObject.hpp>

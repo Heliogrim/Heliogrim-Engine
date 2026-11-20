@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
-#include <Engine.Common/__macro.hpp>
 
 #include "../Widget/Menu.hpp"
 #include "../Widget/MenuItem.hpp"
@@ -41,9 +40,9 @@ namespace hg::editor::ui {
 			_self(self_),
 			_builder(builder_) {}
 
-		MenuBuilderSubItem (ref<const MenuBuilderSubItem>) = delete;
+		MenuBuilderSubItem(ref<const MenuBuilderSubItem>) = delete;
 
-		MenuBuilderSubItem (mref<MenuBuilderSubItem>) = delete;
+		MenuBuilderSubItem(mref<MenuBuilderSubItem>) = delete;
 
 	public:
 		ref<decltype(MenuItemData::subItems)::value_type> _self;
@@ -69,9 +68,9 @@ namespace hg::editor::ui {
 			_itemId(itemId_),
 			_builder(builder_) {}
 
-		MenuBuilderItem (ref<const MenuBuilderItem>) = delete;
+		MenuBuilderItem(ref<const MenuBuilderItem>) = delete;
 
-		MenuBuilderItem (mref<MenuBuilderItem>) = delete;
+		MenuBuilderItem(mref<MenuBuilderItem>) = delete;
 
 	public:
 		StringView _itemId;

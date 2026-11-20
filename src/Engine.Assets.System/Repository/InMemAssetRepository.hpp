@@ -2,7 +2,6 @@
 
 #include <Engine.Assets.Type/AssetConcept.hpp>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/__macro.hpp>
 
 #include "../AssetRepository.hpp"
 #include "AssetRepositoryItem.hpp"

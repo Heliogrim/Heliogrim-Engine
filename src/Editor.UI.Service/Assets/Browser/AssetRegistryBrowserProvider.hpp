@@ -1,8 +1,6 @@
 #pragma once
 
 #include <Engine.Assets.System/IAssetRegistry.hpp>
-#include <Engine.Common/Sal.hpp>
-#include <Engine.Common/__macro.hpp>
 
 #include "AssetBrowserFilter.hpp"
 #include "AssetBrowserProvider.hpp"

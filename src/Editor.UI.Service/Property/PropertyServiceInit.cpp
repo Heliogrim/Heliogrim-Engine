@@ -4,12 +4,14 @@
 
 /**/
 
+#include "PropertyServiceInit.hpp"
+
 #include <Engine.Reflect/IsType.hpp>
 #include <Engine.Reflect/TypeId.hpp>
+#include <Engine.Reflow.Uikit/Atom/Text.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/HorizontalLayout.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/UniformGridLayout.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/VerticalLayout.hpp>
-#include <Engine.Reflow.Uikit/Atom/Text.hpp>
 #include <Heliogrim/Component/Scene/Camera/CameraComponent.hpp>
 #include <Heliogrim/Component/Scene/Collision/BoxShapeCollisionComponent.hpp>
 #include <Heliogrim/Component/Scene/Geometry/StaticGeometryComponent.hpp>
@@ -17,8 +19,6 @@
 #include <Heliogrim/Component/Scene/Light/PointLightComponent.hpp>
 #include <Heliogrim/Component/Scene/Light/SpotLightComponent.hpp>
 #include <Heliogrim/Component/Scene/Sky/SkyboxComponent.hpp>
-
-#include "PropertyServiceInit.hpp"
 
 /**/
 
@@ -31,7 +31,6 @@
 #include <Engine.Assets.System/AssetRegistry.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets/Assets.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Reflect/Cast.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/BoxLayout.hpp>
@@ -511,7 +510,9 @@ void service::initPropertyService(ref<PropertyService> service_) {
 						[component](ref<const InputChangeEvent> event_) {
 							const auto& target = *static_cast<const ptr<const InputToggle>>(event_.target.get());
 							component->setProjectMode(
-								target.value() ? graphics::CameraProjectionMode::eOrthographic : graphics::CameraProjectionMode::ePerspective
+								target.value() ?
+								graphics::CameraProjectionMode::eOrthographic :
+								graphics::CameraProjectionMode::ePerspective
 							);
 							return EventResponse::eConsumed;
 						}
@@ -555,7 +556,9 @@ void service::initPropertyService(ref<PropertyService> service_) {
 					discard = input->onInputChange(
 						[component](ref<const InputChangeEvent> event_) {
 							const auto& target = *static_cast<const ptr<const InputToggle>>(event_.target.get());
-							component->setViewMode(target.value() ? graphics::CameraViewMode::eLookAt : graphics::CameraViewMode::eFirstPerson);
+							component->setViewMode(
+								target.value() ? graphics::CameraViewMode::eLookAt : graphics::CameraViewMode::eFirstPerson
+							);
 							return EventResponse::eConsumed;
 						}
 					);

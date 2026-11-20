@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
-
 #include "Node/Runtime/AnchorNode.hpp"
 #include "Relation/Provision.hpp"
 #include "Relation/Requirement.hpp"

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
-
 #include "Engine.Common/Sal.hpp"
 #include "Engine.Resource.Package/ReadWritePackage.hpp"
 #include "Engine.Resource.Package/ReadonlyPackage.hpp"

@@ -8,8 +8,8 @@
 #include <ShObjIdl_core.h>
 #endif
 
-#include <Editor.Action/Action/Import/AutoImportAction.hpp>
 #include <Editor.Action/ActionManager.hpp>
+#include <Editor.Action/Action/Import/AutoImportAction.hpp>
 #include <Engine.Async/Affine/AffineThread.hpp>
 #include <Engine.Async/Future/Future.hpp>
 #include <Engine.Config/Config.hpp>

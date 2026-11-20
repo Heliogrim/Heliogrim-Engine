@@ -1,7 +1,6 @@
 #include "CorePipeline.hpp"
 
 #include <Engine.ACS.Schedule/ActorPipeline.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Scene.Schedule/ScenePipeline.hpp>
 #include <Engine.Scheduler/Pipeline/Stage/EmptyPipelineStage.hpp>
 

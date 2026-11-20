@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Editor.UI/Widget/Breadcrumb.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/UniformGridLayout.hpp>
 #include <Engine.Reflow.Uikit/Exp/Button.hpp>
 #include <Engine.Reflow.Uikit/Exp/Card.hpp>
@@ -60,8 +59,8 @@ namespace hg::editor::ui {
 		void displayFilterItems(
 			ref<const Vector<service::AssetBrowserFilterEntry>> baseFilters_,
 			mref<std::function<void(
-				ref<const service::AssetBrowserFilterEntry > parent_,
-				ref<Vector<service::AssetBrowserFilterEntry> > children_
+				ref<const service::AssetBrowserFilterEntry> parent_,
+				ref<Vector<service::AssetBrowserFilterEntry>> children_
 			)>> resolver_
 		);
 

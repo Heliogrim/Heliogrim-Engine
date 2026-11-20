@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../Component/RuntimeComponent.hpp"
 #include "../Node/CompileNode.hpp"
 #include "../Node/RuntimeNode.hpp"

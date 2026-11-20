@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Platform/NativeWindow.hpp>
 
 #include "../Children.hpp"

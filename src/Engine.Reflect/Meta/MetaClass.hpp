@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../Template/QueryTypeId.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)

@@ -1,7 +1,5 @@
 #include "FilesystemBrowserProvider.hpp"
 
-#include <Engine.Common/__macro.hpp>
-
 #include "AssetBrowserFilter.hpp"
 
 import Engine.Common;

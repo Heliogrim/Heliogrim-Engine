@@ -1,6 +1,5 @@
 #include "pch.h"
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflect/Compile/HashMap.hpp>
 #include <Engine.Reflect/Compile/Map.hpp>
 #include <Engine.Reflect/Compile/TypeId.hpp>

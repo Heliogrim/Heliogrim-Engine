@@ -4,7 +4,6 @@
 
 #include <Engine.ACS/Traits.hpp>
 #include <Engine.Common/Math/Transform.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Heliogrim/Component/HierarchyComponent.hpp>
 #include <cstdio>
 

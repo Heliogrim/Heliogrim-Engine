@@ -1,5 +1,4 @@
 #pragma once
-#include <Engine.Common/__macro.hpp>
 
 #include "Node/Node.hpp"
 #include "Node/Runtime/AnchorNode.hpp"

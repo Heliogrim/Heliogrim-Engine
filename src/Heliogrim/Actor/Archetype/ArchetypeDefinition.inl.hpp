@@ -16,7 +16,6 @@
 #include "InheritArchetype.hpp"
 #include "TypedActorClass.hpp"
 // After InheritArchetype.hpp: both use `slot_type_t`.
-#include <Engine.Common/__macro.hpp>
 
 #include "ArchetypeLayout.inl.hpp"
 #include "ArchetypeStructured.inl.hpp"

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
 #include <cassert>
 
 #include "Engine.Graphics.RenderGraph/Node/RuntimeNode.hpp"

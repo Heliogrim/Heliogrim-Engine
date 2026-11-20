@@ -6,7 +6,6 @@
 
 /**/
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflect/FullTypeInfo.hpp>
 #include <Engine.Resource.Archive/ArchiveType.hpp>
 #include <Engine.Resource.Archive/BufferArchive.hpp>

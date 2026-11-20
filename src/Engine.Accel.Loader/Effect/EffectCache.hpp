@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Engine.Accel.Storage/GlobalStorage.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Resource/Loader/Cache.hpp>
 
 #include "Traits.hpp"

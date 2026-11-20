@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Engine.Accel.Effect/Stage/Stage.hpp>
-#include <Engine.Common/__macro.hpp>
 
 #include "../__fwd.hpp"
 

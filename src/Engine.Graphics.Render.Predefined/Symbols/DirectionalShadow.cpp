@@ -1,7 +1,5 @@
 #include "DirectionalShadow.hpp"
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../Descriptions/DepthBuffer.hpp"
 
 import Engine.Common;

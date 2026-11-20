@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../File.hpp"
 #include "../FileTypeId.hpp"
 #include "Watcher.hpp"

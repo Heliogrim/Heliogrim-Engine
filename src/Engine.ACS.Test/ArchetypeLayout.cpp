@@ -4,7 +4,6 @@
 
 #include <Engine.ACS/Archetype/Layout.hpp>
 #include <Engine.ACS/Archetype/LayoutInfo.hpp>
-#include <Engine.Common/__macro.hpp>
 
 import Engine.Common;
 

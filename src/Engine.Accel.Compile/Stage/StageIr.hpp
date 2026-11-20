@@ -8,7 +8,6 @@
 #include <Engine.Accel.Lang/Ir/Variant.hpp>
 #include <Engine.Accel.Pipeline/Bind/BindLayout.hpp>
 #include <Engine.Accel.Pipeline/Stage/StageDerivat.hpp>
-#include <Engine.Common/__macro.hpp>
 
 #include "../Module/ModuleTargetStage.hpp"
 

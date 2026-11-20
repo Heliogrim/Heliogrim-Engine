@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Engine.Async/Primitive/SpinLock.hpp>
-#include <Engine.Common/__macro.hpp>
 
 #include "../../Task/TaskCtrl.hpp"
 #include "../Stage/StageDispatcher.hpp"

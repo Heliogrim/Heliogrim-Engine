@@ -3,7 +3,6 @@
 /**/
 
 #include <Engine.ACS/Handle/HandleTable.hpp>
-#include <Engine.Common/__macro.hpp>
 
 import Engine.Common;
 

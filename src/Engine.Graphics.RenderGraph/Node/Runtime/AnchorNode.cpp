@@ -1,7 +1,5 @@
 #include "AnchorNode.hpp"
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../../Component/AnchorComponent.hpp"
 #include "../../Visitor/Visitor.hpp"
 

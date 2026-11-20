@@ -1,6 +1,5 @@
 #include "Card.hpp"
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflow.Theming/Theming.hpp>
 
 #include "../Atom/Paint.hpp"

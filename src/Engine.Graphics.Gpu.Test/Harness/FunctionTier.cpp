@@ -11,7 +11,6 @@
 #include <Engine.Accel.Lang/Rep/Variable.hpp>
 #include <Engine.Accel.Pass/VkAccelerationPassFactory.hpp>
 #include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Diagnostics/Render.hpp>
 #include <Engine.Driver.Vulkan/VkNativeBatch.hpp>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>

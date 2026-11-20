@@ -1,7 +1,5 @@
 #include "BrdfPrefilter.hpp"
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../Descriptions/BrdfPrefilterBuffer.hpp"
 
 import Engine.Common;

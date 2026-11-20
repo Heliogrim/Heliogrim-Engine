@@ -1,7 +1,6 @@
 #include "RootSlot.hpp"
 
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Resource.Archive/Archive.hpp>
 
 import Engine.Common;

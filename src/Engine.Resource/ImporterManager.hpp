@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
-
 #include "FileTypeId.hpp"
 #include "Importer/Importer.hpp"
 

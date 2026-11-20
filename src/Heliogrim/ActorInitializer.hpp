@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Engine.ACS/Registry.hpp>
-#include <Engine.Common/__macro.hpp>
 
 #include "Component/CachedActorPointer.hpp"
 #include "Component/HierarchyComponent.hpp"

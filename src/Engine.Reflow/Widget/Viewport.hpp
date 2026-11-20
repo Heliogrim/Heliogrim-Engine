@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics/API/__vkFwd.hpp>
 #include <Engine.Graphics/Texture/__fwd.hpp>
 #include <Engine.Reflow.Uikit/Atom/Atom.hpp>

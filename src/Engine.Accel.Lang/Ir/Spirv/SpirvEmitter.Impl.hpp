@@ -1,12 +1,10 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
-
+#include "SpirvWriter.hpp"
 #include "../Diagnostic.hpp"
 #include "../Layout.hpp"
 #include "../Module.hpp"
 #include "../Tier.hpp"
-#include "SpirvWriter.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

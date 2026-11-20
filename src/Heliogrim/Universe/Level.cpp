@@ -1,7 +1,6 @@
 #include "Level.hpp"
 
 #include <Engine.Assets.Type/Universe/LevelAsset.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Universe.hpp>
 #include <Engine.Level/Level.hpp>
 #include <Heliogrim/Async/Future.hpp>

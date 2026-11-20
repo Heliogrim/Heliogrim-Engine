@@ -1,7 +1,5 @@
 #include "MemoryProvider.hpp"
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../Options/MemoryStorageDescriptor.hpp"
 #include "../Repository/MemoryRepository.hpp"
 #include "../Storage/MemoryStorage.hpp"

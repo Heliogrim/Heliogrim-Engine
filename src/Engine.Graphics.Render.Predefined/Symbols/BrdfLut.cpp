@@ -1,7 +1,5 @@
 #include "BrdfLut.hpp"
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../Descriptions/BrdfLutBuffer.hpp"
 
 import Engine.Common;

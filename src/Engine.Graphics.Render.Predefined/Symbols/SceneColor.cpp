@@ -1,7 +1,5 @@
 #include "SceneColor.hpp"
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../Descriptions/ColorBuffer.hpp"
 
 import Engine.Common;

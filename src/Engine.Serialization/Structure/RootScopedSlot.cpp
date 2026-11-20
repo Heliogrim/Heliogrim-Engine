@@ -1,7 +1,5 @@
 #include "RootScopedSlot.hpp"
 
-#include <Engine.Common/__macro.hpp>
-
 #include "RootSlot.hpp"
 
 import Engine.Common;

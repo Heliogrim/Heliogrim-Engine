@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Engine.ACS/ComponentTypeId.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflect/Meta/MetaClass.hpp>
 #include <Engine.Reflow/Widget/Widget.hpp>
 #include <Heliogrim/Actor/Actor.hpp>

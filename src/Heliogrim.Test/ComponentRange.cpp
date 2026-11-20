@@ -2,7 +2,6 @@
 
 /**/
 
-#include <Engine.Common/__macro.hpp>
 #include <Heliogrim/Actor/ComponentRange.hpp>
 #include <Heliogrim/Component/HierarchyComponent.hpp>
 #include <stddef.h>

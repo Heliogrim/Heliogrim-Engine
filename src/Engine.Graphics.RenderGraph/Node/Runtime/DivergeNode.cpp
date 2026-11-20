@@ -1,7 +1,5 @@
 #include "DivergeNode.hpp"
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../../Visitor/Visitor.hpp"
 
 import Engine.Common;

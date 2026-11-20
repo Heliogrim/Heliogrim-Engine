@@ -1,6 +1,7 @@
 #include "Win32DragDropSender.hpp"
 
 #include <Engine.Async/Affine/AffineThread.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Platform/Platform.hpp>

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../Intermediate.hpp"
 #include "Diagnostic.hpp"
 #include "Layout.hpp"

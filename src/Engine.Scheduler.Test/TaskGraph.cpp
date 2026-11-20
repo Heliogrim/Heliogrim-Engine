@@ -8,7 +8,6 @@
 #include <Engine.ACS.Schedule/ActorPipeline.hpp>
 #include <Engine.ACS.Schedule/ActorTickStagePostPhysics.hpp>
 #include <Engine.ACS.Schedule/ActorTickStagePrePhysics.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Core.Schedule/CorePipeline.hpp>
 #include <Engine.Core.Schedule/TickTimingStage.hpp>
 #include <Engine.Graphics.Schedule/RenderScenePipeline.hpp>

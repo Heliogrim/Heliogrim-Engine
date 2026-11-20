@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
-
 #include "EffectUsagePattern.hpp"
 #include "MaterialEffect.hpp"
 #include "__fwd.hpp"

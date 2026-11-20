@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../Archive/__fwd.hpp"
 #include "__fwd.hpp"
 

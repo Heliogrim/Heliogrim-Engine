@@ -3,7 +3,6 @@
 /**/
 
 #include <Engine.ACS/Cluster/ClusterRegion.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <cstdio>
 #include <cstring>
 

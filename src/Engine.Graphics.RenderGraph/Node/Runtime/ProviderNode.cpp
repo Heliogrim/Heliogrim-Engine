@@ -1,7 +1,5 @@
 #include "ProviderNode.hpp"
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../../Component/ProviderComponent.hpp"
 #include "../../Visitor/Visitor.hpp"
 

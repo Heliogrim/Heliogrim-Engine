@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Scheduler/Lane.hpp>
 #include <Engine.Scheduler/Process/BoostCell.hpp>
 #include <Engine.Scheduler/Waitable/Signal.hpp>

@@ -1,7 +1,5 @@
 #include "Builder.hpp"
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../CompileGraph.hpp"
 #include "../RuntimeGraph.hpp"
 #include "BuilderVisitor.hpp"

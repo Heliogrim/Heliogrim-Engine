@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.RenderGraph/Relation/MeshDescription.hpp>
 
 #include "../RenderCommand.hpp"

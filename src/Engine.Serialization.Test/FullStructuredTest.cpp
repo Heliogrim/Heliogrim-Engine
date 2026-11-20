@@ -8,7 +8,6 @@
 #include <cstring>
 
 /**/
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Structure/FloatScopedSlot.hpp>
 #include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>

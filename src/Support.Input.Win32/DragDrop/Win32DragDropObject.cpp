@@ -1,5 +1,6 @@
 #include "Win32DragDropObject.hpp"
 
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <ShlObj_core.h>
 #include <cstring>

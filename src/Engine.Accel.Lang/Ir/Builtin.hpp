@@ -1,9 +1,7 @@
 #pragma once
 
-#include <spirv/unified1/spirv.hpp11>
-
-#include <Engine.Common/__macro.hpp>
 #include <spirv/unified1/GLSL.std.450.h>
+#include <spirv/unified1/spirv.hpp11>
 
 #include "Module.hpp"
 

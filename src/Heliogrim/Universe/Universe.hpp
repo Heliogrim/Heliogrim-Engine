@@ -2,7 +2,6 @@
 
 #include <Engine.Assets/AssetGuid.hpp>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/__macro.hpp>
 
 #include "../Actor/Actor.hpp"
 #include "../Actor/ActorRef.hpp"

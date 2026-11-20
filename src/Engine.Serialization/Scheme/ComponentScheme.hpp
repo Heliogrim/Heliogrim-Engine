@@ -2,7 +2,6 @@
 
 #include <Engine.ACS/ComponentGuid.hpp>
 #include <Engine.ACS/Registry.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Serialization/Structure/RecordScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 #include <Heliogrim/Component/CachedActorPointer.hpp>

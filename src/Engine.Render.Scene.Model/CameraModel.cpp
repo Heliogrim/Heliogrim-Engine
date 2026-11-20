@@ -1,6 +1,5 @@
 #include "CameraModel.hpp"
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.Scene/View/SceneView.hpp>
 #include <Engine.Scene/Scene.hpp>
 #include <Heliogrim/Component/Scene/Camera/CameraComponent.hpp>

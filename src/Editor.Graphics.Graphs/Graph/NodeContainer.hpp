@@ -1,52 +1,49 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../Node/Node.hpp"
-#include "../Node/__fwd.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
 #endif
 
 namespace hg::editor::graphics::graph {
-    class NodeContainer {
-    public:
-        using this_type = NodeContainer;
+	class NodeContainer {
+	public:
+		using this_type = NodeContainer;
 
-    public:
-        NodeContainer() = default;
+	public:
+		NodeContainer() = default;
 
-        NodeContainer(mref<this_type>) noexcept = delete;
+		NodeContainer(mref<this_type>) noexcept = delete;
 
-        NodeContainer(cref<this_type>) = delete;
+		NodeContainer(cref<this_type>) = delete;
 
-        ~NodeContainer() {
-            for (const auto* node : nodes) {
-                delete node;
-            }
-        }
+		~NodeContainer() {
+			for (const auto* node : nodes) {
+				delete node;
+			}
+		}
 
-    public:
-        ref<this_type> operator=(mref<this_type>) noexcept = delete;
+	public:
+		ref<this_type> operator=(mref<this_type>) noexcept = delete;
 
-        ref<this_type> operator=(cref<this_type>) = delete;
+		ref<this_type> operator=(cref<this_type>) = delete;
 
-    public:
-        CompactArray<ptr<Node>> nodes;
+	public:
+		CompactArray<ptr<Node>> nodes;
 
-        template <class NodeType_, typename... Args_> requires
-            std::derived_from<NodeType_, Node> &&
-            std::is_constructible_v<NodeType_, Args_...>
-        [[nodiscard]] non_owning_rptr<NodeType_> makeNode(Args_&&... args_) {
+		template <class NodeType_, typename... Args_> requires
+			std::derived_from<NodeType_, Node> &&
+			std::is_constructible_v<NodeType_, Args_...>
+		[[nodiscard]] non_owning_rptr<NodeType_> makeNode(Args_&&... args_) {
 
-            ptr<NodeType_> tmp = make_ptr<NodeType_, Args_...>(std::forward<Args_>(args_)...);
-            tmp->regenerate();
+			ptr<NodeType_> tmp = make_ptr<NodeType_, Args_...>(std::forward<Args_>(args_)...);
+			tmp->regenerate();
 
-            /**/
+			/**/
 
-            nodes.push_back(tmp);
-            return tmp;
-        }
-    };
+			nodes.push_back(tmp);
+			return tmp;
+		}
+	};
 }

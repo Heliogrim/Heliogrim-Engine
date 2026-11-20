@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../Compile/Map.hpp"
 #include "../Inherit/Compile.hpp"
 #include "../Template/QueryTypeId.hpp"

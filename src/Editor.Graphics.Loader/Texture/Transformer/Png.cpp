@@ -1,8 +1,9 @@
 #include "Png.hpp"
 
 #include <Engine.Assets.System/IAssetRegistry.hpp>
-#include <Engine.Assets.Type/Texture/ImageAsset.hpp>
 #include <Engine.Assets/Assets.hpp>
+#include <Engine.Assets.Type/Texture/ImageAsset.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Graphics/Buffer/BufferFactory.hpp>
 #include <Engine.Graphics/Pool/GlobalResourcePool.hpp>
@@ -17,6 +18,7 @@
 #include <spng/spng.h>
 
 import Engine.Asserts;
+import vulkan;
 
 using namespace ::hg::editor::graphics::loader;
 using namespace ::hg;

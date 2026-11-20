@@ -1,6 +1,5 @@
 #include "DirectionalLightModel.hpp"
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics/Pool/SceneResourcePool.hpp>
 #include <Engine.Reflect/Cast.hpp>
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>

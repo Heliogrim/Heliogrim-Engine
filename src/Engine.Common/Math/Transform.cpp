@@ -1,7 +1,5 @@
 #include "Transform.hpp"
 
-#include <Engine.Common/__macro.hpp>
-
 import Engine.Common;
 import std;
 

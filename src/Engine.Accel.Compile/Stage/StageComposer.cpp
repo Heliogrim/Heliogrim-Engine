@@ -2,14 +2,12 @@
 
 #include <Engine.Accel.Effect/AccelerationEffect.hpp>
 #include <Engine.Accel.Pipeline/Stage/StageModule.hpp>
-#include <Engine.Common/Sal.hpp>
-#include <Engine.Common/__macro.hpp>
-#include <Engine.Logging/LogSink.hpp>
 #include <Engine.Logging/Logger.hpp>
+#include <Engine.Logging/LogSink.hpp>
 
+#include "StageIr.hpp"
 #include "../Profile/EffectProfile.hpp"
 #include "../Spec/EffectSpecification.hpp"
-#include "StageIr.hpp"
 
 import Engine.Common;
 

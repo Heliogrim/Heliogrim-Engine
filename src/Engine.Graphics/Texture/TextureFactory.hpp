@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../Device/Device.hpp"
 #include "../vkinc.hpp"
 #include "SparseTexture.hpp"

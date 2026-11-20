@@ -1,6 +1,5 @@
 #pragma once
-#include <Engine.Common/Sal.hpp>
-#include <Engine.Common/__macro.hpp>
+
 #include <Engine.Resource/Loader/Feedback.hpp>
 
 #include "Traits.hpp"

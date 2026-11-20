@@ -1,7 +1,6 @@
 #include "AssetRegistry.hpp"
 
 #include <Engine.Assets.Type/Asset.hpp>
-#include <Engine.Common/__macro.hpp>
 
 #include "AssetDescriptor.hpp"
 #include "AssetRepository.hpp"

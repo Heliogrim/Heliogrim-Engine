@@ -1,5 +1,6 @@
 #include "ReflowFlowStage.hpp"
 
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Module/Modules.hpp>
 #include <Engine.Graphics.Schedule/RenderScenePipeline.hpp>

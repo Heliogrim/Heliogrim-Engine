@@ -8,7 +8,6 @@
 #include "__fwd.hpp"
 
 /**/
-#include <Engine.Common/__macro.hpp>
 
 #include "../Texture/TextureFactory.hpp"
 #include "SparseRangePooled.hpp"

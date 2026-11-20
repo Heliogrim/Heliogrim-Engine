@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflect/TypeId.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)

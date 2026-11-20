@@ -2,7 +2,6 @@
 
 #include <Engine.Assets.System/AssetRegistry.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
-#include <Engine.Common/__macro.hpp>
 
 import Engine.Common;
 

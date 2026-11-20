@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Editor.UI.Rx/Subject.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Universe.hpp>
 #include <Engine.Level/Level.hpp>
 #include <Heliogrim/Actor/Actor.hpp>

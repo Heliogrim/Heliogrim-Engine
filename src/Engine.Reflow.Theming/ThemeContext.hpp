@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
-
 #include "Engine.Reflow.Attributes/Style/Base/ImageStyleAttributes.hpp"
 #include "Theme.hpp"
 

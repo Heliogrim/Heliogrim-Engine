@@ -6,7 +6,6 @@
 #include <Editor.Scene.Actions/LoadLevel.hpp>
 #include <Editor.Scene/SceneFactory.hpp>
 #include <Engine.Assets.Type/Universe/LevelAsset.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Session.hpp>
 #include <Engine.Core/Universe.hpp>
 #include <Engine.Core/UniverseContext.hpp>

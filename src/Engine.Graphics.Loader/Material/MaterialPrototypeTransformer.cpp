@@ -7,7 +7,6 @@
 #include <Engine.Assets.Type/Material/GraphicsMaterialPrototype.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 #include <Engine.Assets/Assets.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Graphics.Material/MaterialFactory.hpp>
 #include <Engine.Graphics.Render.Predefined/Descriptions/SceneView.hpp>

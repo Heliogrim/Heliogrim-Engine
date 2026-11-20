@@ -1,11 +1,8 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
-
 #include "DataAttribute.hpp"
 #include "../AttributeOwnerLink.hpp"
 #include "../NamedAttributeTuple.hpp"
-#include "DataAttribute.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

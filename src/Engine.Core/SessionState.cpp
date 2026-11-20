@@ -1,7 +1,6 @@
 #include "SessionState.hpp"
 
 #include <Engine.ACS/Registry.hpp>
-#include <Engine.Common/__macro.hpp>
 
 import Engine.Common;
 

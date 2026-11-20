@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
-
 #include "ArchiveUrl.hpp"
 #include "FileUrl.hpp"
 #include "MemoryUrl.hpp"

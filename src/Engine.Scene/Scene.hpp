@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
 #include <Heliogrim/Component/SceneComponent.hpp>
 
 #include "SceneBase.hpp"

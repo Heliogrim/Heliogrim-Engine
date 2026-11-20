@@ -4,7 +4,6 @@
 #include <Engine.Assets/AssetPath.hpp>
 #include <Engine.Assets/AssetTypeId.hpp>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Filesystem/__fwd.hpp>
 #include <Engine.Utils/_CTRL.hpp>
 

@@ -1,7 +1,5 @@
 #include "ActorClass.hpp"
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../../Component/HierarchyComponent.hpp"
 #include "../Actor.hpp"
 

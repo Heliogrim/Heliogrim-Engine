@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflect/Inherit/ClassMetaBase.hpp>
 #include <Engine.Reflect/Inherit/Concept.hpp>
 #include <cassert>

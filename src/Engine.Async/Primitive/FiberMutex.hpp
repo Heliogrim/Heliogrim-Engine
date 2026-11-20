@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Engine.Common/ThreadSafety.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Scheduler/Waitable/ParkQueue.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)

@@ -1,4 +1,5 @@
 #pragma once
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflect/Inherit/InheritBase.hpp>
 #include "__fwd.hpp"
 

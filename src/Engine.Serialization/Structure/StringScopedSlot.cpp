@@ -1,7 +1,5 @@
 #include "StringScopedSlot.hpp"
 
-#include <Engine.Common/__macro.hpp>
-
 #include "ScopedSlotGuard.hpp"
 #include "StringSlot.hpp"
 

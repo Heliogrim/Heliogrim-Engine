@@ -2,6 +2,8 @@
 
 #include "../Url/IUrlComp.hpp"
 
+#include <Engine.Common/__macro.hpp>
+
 namespace hg::engine::storage {
 	/**/
 

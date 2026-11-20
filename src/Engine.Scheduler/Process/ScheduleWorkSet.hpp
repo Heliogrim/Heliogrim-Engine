@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Engine.Common/Sal.hpp>
+#include <Engine.Common/__macro.hpp>
 
 #include "../Task/Task.hpp"
 

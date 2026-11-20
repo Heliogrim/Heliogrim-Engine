@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Engine.Async/Primitive/FiberMutex.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Filesystem/Url.hpp>
 #include <Engine.Reflect/Inherit/InheritMeta.hpp>
 

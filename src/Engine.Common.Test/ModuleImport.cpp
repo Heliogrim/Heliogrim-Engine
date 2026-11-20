@@ -2,8 +2,6 @@
 
 /**/
 
-#include <Engine.Common/__macro.hpp>
-
 import Engine.Common;
 
 /* Config headers stay textual and may follow the import. */

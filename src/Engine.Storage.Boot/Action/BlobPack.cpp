@@ -1,6 +1,5 @@
 #include "BlobPack.hpp"
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Diagnostics/Render.hpp>
 #include <Engine.Diagnostics/Sink.hpp>
 #include <Engine.Pedantic.Resource/AccessMode.hpp>

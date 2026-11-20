@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Engine.Async/Primitive/SpinLock.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflect/Cast.hpp>
 #include <Engine.Reflect/Meta/MetaClass.hpp>
 #include <Engine.Scene/SceneBase.hpp>

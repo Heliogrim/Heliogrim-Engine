@@ -1,7 +1,5 @@
 #include "TaskGraph.hpp"
 
-#include <Engine.Common/__macro.hpp>
-
 import Engine.Asserts;
 import Engine.Common;
 

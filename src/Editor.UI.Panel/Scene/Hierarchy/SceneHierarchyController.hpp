@@ -1,8 +1,6 @@
 #pragma once
 
 #include <Editor.UI.Main/EditorUiModel.hpp>
-#include <Engine.Common/__macro.hpp>
-#include <Engine.Filesystem/Url.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

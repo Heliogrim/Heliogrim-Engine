@@ -6,8 +6,6 @@
 #include <Jolt/Physics/PhysicsSystem.h>
 #include <Jolt/RegisterTypes.h>
 
-#include <Engine.Common/__macro.hpp>
-
 #include "Physics.hpp"
 #include "jolt.inc.hpp"
 

@@ -2,11 +2,11 @@
 
 #include <Engine.Accel.Pass/GraphicsPass.hpp>
 #include <Engine.Accel.Pipeline/AccelerationSpecification.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics/vkinc.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import vulkan;
 #endif
 
 namespace hg::engine::accel {

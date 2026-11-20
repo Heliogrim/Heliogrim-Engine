@@ -1,6 +1,5 @@
 #include "Win32DragDropReceiver.hpp"
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Input/DragDropEvent.hpp>
 #include <ShlObj_core.h>
 

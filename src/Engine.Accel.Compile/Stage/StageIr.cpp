@@ -9,9 +9,8 @@
 #include <Engine.Accel.Lang/Ir/Slice.hpp>
 #include <Engine.Accel.Lang/Ir/Typecheck.hpp>
 #include <Engine.Accel.Lang/Rep/Annotation.hpp>
-#include <Engine.Common/__macro.hpp>
-#include <Engine.Logging/LogSink.hpp>
 #include <Engine.Logging/Logger.hpp>
+#include <Engine.Logging/LogSink.hpp>
 
 #include "../Profile/EffectProfile.hpp"
 #include "../Spec/EffectSpecification.hpp"

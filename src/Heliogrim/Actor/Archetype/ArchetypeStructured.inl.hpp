@@ -7,7 +7,6 @@
  */
 
 #include <Engine.ACS/Archetype/LayoutInfo.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 

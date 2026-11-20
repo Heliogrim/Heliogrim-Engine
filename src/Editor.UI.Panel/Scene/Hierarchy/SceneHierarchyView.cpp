@@ -4,14 +4,14 @@
 #include <Editor.Assets.Default/Meshes/Default.hpp>
 #include <Editor.Scene.Actions/SpawnGeometryActor.hpp>
 #include <Editor.Scene.Actions/SpawnLightActor.hpp>
-#include <Editor.UI.Main/EditorUI.hpp>
-#include <Editor.UI.Service/Scene/Hierarchy/SceneHierarchyEntry.hpp>
 #include <Editor.UI/Builder/MenuBuilder.hpp>
 #include <Editor.UI/Widget/ContextMenuProvider.hpp>
+#include <Editor.UI.Main/EditorUI.hpp>
+#include <Editor.UI.Service/Scene/Hierarchy/SceneHierarchyEntry.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Module/Modules.hpp>
-#include <Engine.Reflow.Uikit/Atom/Layout/HorizontalLayout.hpp>
 #include <Engine.Reflow.Uikit/Atom/Paint.hpp>
+#include <Engine.Reflow.Uikit/Atom/Layout/HorizontalLayout.hpp>
 #include <Heliogrim/Actor/Actor.hpp>
 #include <Heliogrim/Component/Scene/Collision/BoxShapeCollisionComponent.hpp>
 #include <Heliogrim/Component/Scene/Collision/SphereShapeCollisionComponent.hpp>
@@ -333,8 +333,8 @@ UniquePtr<SceneHierarchyView> editor::ui::makeSceneHierarchyView(ref<SceneHierar
 	contentStack->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
 	contentStack->getLayoutAttributes().update<attr::BoxLayout::heightGrow>(1.F);
 	contentStack->getLayoutAttributes().update<attr::BoxLayout::padding>(Padding { 8.F });
-	(std::get<0>(tree->getLayoutAttributes().attributeSets)).update<attr::BoxLayout::widthGrow>(1.F);
-	(std::get<0>(tree->getLayoutAttributes().attributeSets)).update<attr::BoxLayout::heightGrow>(1.F);
+	(std::get<0>(tree->getLayoutAttributes().attributeSets)).update < attr::BoxLayout::widthGrow > (1.F);
+	(std::get<0>(tree->getLayoutAttributes().attributeSets)).update < attr::BoxLayout::heightGrow > (1.F);
 
 	//content->addChild(clone(tree));
 	contentStack->addChild(::hg::move(contentBg));

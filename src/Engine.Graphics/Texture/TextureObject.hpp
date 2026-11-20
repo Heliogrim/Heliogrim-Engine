@@ -2,6 +2,8 @@
 
 #include "TextureLikeObject.hpp"
 
+#include <Engine.Common/__macro.hpp>
+
 namespace hg::engine::graphics {
     class macro_novtable TextureObject :
         public InheritMeta<TextureObject, TextureLikeObject> {

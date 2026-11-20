@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Storage.Registry/Url/ArchiveUrl.hpp>
 #include <Engine.Storage.Registry/Url/FileUrl.hpp>
 #include <Engine.Storage.Registry/Url/RfclUrl.hpp>

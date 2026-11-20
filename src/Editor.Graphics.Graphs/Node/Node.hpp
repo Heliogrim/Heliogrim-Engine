@@ -9,64 +9,64 @@ import Engine.Common;
 #endif
 
 namespace hg::editor::graphics::graph {
-    class macro_novtable Node {
-    public:
-        using this_type = Node;
+	class macro_novtable Node {
+	public:
+		using this_type = Node;
 
-    public:
-        virtual ~Node() = default;
+	public:
+		virtual ~Node() = default;
 
-    private:
-        string _name;
+	private:
+		string _name;
 
-    public:
-        [[nodiscard]] cref<string> getName() const noexcept;
+	public:
+		[[nodiscard]] cref<string> getName() const noexcept;
 
-        void setName(string_view name_);
+		void setName(string_view name_);
 
-        [[nodiscard]] virtual string_view getNodeTypeName() const noexcept = 0;
+		[[nodiscard]] virtual string_view getNodeTypeName() const noexcept = 0;
 
-    public:
-        [[nodiscard]] virtual bool carriesInternalDependencies() const noexcept;
+	public:
+		[[nodiscard]] virtual bool carriesInternalDependencies() const noexcept;
 
-        [[nodiscard]] virtual bool carriesGraphDependencies() const noexcept;
+		[[nodiscard]] virtual bool carriesGraphDependencies() const noexcept;
 
-        [[nodiscard]] virtual bool carriesExternalDependencies() const noexcept;
+		[[nodiscard]] virtual bool carriesExternalDependencies() const noexcept;
 
-    public:
-        [[nodiscard]] virtual bool isAssociative() const noexcept;
+	public:
+		[[nodiscard]] virtual bool isAssociative() const noexcept;
 
-        [[nodiscard]] virtual bool isCommutative() const noexcept;
+		[[nodiscard]] virtual bool isCommutative() const noexcept;
 
-    protected:
-        CompactArray<sptr<NodeInput>> _inputs;
-        CompactArray<sptr<NodeOutput>> _outputs;
+	protected:
+		CompactArray<sptr<NodeInput>> _inputs;
+		CompactArray<sptr<NodeOutput>> _outputs;
 
-    public:
-        [[nodiscard]] u64 countInputSlots() const noexcept;
+	public:
+		[[nodiscard]] u64 countInputSlots() const noexcept;
 
-        [[nodiscard]] sptr<NodeInput> getInputSlot(const u8 inputIndex_) const noexcept;
+		[[nodiscard]] sptr<NodeInput> getInputSlot(const u8 inputIndex_) const noexcept;
 
-        [[nodiscard]] sptr<NodeInput> getInputSlot(string_view uniqueName_) const noexcept;
+		[[nodiscard]] sptr<NodeInput> getInputSlot(string_view uniqueName_) const noexcept;
 
-    public:
-        [[nodiscard]] u64 countOutputSlots() const noexcept;
+	public:
+		[[nodiscard]] u64 countOutputSlots() const noexcept;
 
-        [[nodiscard]] sptr<NodeOutput> getOutputSlot(const u8 outputIndex_) const noexcept;
+		[[nodiscard]] sptr<NodeOutput> getOutputSlot(const u8 outputIndex_) const noexcept;
 
-        [[nodiscard]] sptr<NodeOutput> getOutputSlot(string_view uniqueName_) const noexcept;
+		[[nodiscard]] sptr<NodeOutput> getOutputSlot(string_view uniqueName_) const noexcept;
 
-    protected:
-        CompactArray<sptr<NodeParameter>> _parameter;
+	protected:
+		CompactArray<sptr<NodeParameter>> _parameter;
 
-    public:
-        [[nodiscard]] u64 countParameters() const noexcept;
+	public:
+		[[nodiscard]] u64 countParameters() const noexcept;
 
-        [[nodiscard]] const non_owning_rptr<NodeParameter> getParameter(const u8 parameterIdx_) const noexcept;
+		[[nodiscard]] const non_owning_rptr<NodeParameter> getParameter(const u8 parameterIdx_) const noexcept;
 
-        [[nodiscard]] const non_owning_rptr<NodeParameter> getParameter(string_view uniqueName_) const noexcept;
+		[[nodiscard]] const non_owning_rptr<NodeParameter> getParameter(string_view uniqueName_) const noexcept;
 
-    public:
-        virtual void regenerate() = 0;
-    };
+	public:
+		virtual void regenerate() = 0;
+	};
 }

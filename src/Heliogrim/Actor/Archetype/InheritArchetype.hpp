@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Engine.ACS/Archetype/LayoutInfo.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflect/Inherit/InheritMeta.hpp>
 
 #include "TypedActorClass.hpp"

@@ -3,7 +3,6 @@
 /**/
 
 #include <Engine.Accel.Lang/Diagnostic/Codes.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Diagnostics/Code.hpp>
 
 import Engine.Common;

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflow.Attributes/Data/DataAttribute.hpp>
 
 #include "Widget/Widget.hpp"

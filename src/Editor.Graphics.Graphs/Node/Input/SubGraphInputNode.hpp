@@ -1,10 +1,6 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../Node.hpp"
-#include "../NodeInput.hpp"
-#include "../NodeInputSpec.hpp"
 #include "../NodeLinkValueType.hpp"
 #include "../NodeOutput.hpp"
 #include "../NodeOutputSpec.hpp"

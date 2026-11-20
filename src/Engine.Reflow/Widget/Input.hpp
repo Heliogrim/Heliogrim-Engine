@@ -2,6 +2,8 @@
 
 #include "CompoundWidget.hpp"
 
+#include <Engine.Common/__macro.hpp>
+
 namespace hg::engine::reflow {
 	enum class InputControlStatus {
 		eValid,

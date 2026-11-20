@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Event/Event.hpp>
 
 #include "Event/EventResponse.hpp"

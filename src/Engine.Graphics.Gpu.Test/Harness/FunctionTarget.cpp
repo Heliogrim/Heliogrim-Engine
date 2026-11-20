@@ -1,6 +1,5 @@
 #include "FunctionTarget.hpp"
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics/Buffer/Buffer.hpp>
 #include <Engine.Graphics/Command/CommandBuffer.hpp>
 #include <Engine.Graphics/Command/CommandPool.hpp>

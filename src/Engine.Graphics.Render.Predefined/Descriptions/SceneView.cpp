@@ -1,6 +1,5 @@
 #include "SceneView.hpp"
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.RenderGraph/Relation/SceneViewDescription.hpp>
 
 import Engine.Common;

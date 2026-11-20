@@ -1,4 +1,5 @@
 #pragma once
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Resource/Loader/Transformer.hpp>
 
 #include "Traits.hpp"

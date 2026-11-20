@@ -2,21 +2,20 @@
 
 #include <Editor.Action/ActionManager.hpp>
 #include <Editor.Assets.Actions/UnknownImport.hpp>
-#include <Editor.UI.Service/Assets/Browser/AssetBrowserEntry.hpp>
-#include <Editor.UI.Service/Assets/Browser/AssetBrowserFilterEntry.hpp>
-#include <Editor.UI.Theme/EditorTheme.hpp>
 #include <Editor.UI/Helper/AssetBrowserHelper.hpp>
 #include <Editor.UI/Widget/Breadcrumb.hpp>
 #include <Editor.UI/Widget/ContextMenuProvider.hpp>
+#include <Editor.UI.Service/Assets/Browser/AssetBrowserEntry.hpp>
+#include <Editor.UI.Service/Assets/Browser/AssetBrowserFilterEntry.hpp>
+#include <Editor.UI.Theme/EditorTheme.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets/Assets.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Module/Modules.hpp>
 #include <Engine.Graphics.Loader/Texture/TextureResource.hpp>
 #include <Engine.Graphics.Loader/Texture/Traits.hpp>
-#include <Engine.Reflow.Uikit/Atom/Layout/VerticalLayout.hpp>
 #include <Engine.Reflow.Uikit/Atom/Paint.hpp>
+#include <Engine.Reflow.Uikit/Atom/Layout/VerticalLayout.hpp>
 #include <Engine.Reflow/Widget/Tree/TreeView.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 #include <Engine.Scheduler/Async.hpp>
@@ -393,8 +392,8 @@ std::pair<SharedPtr<uikit::VerticalLayout>, SharedPtr<AssetBrowserView::FilterTr
 		attr::BoxLayout::maxHeight>({ ReflowUnitType::eRelative, 1.F });
 
 	auto navTree = make_sptr<TreeView<service::AssetBrowserFilterEntry, std::type_identity_t>>();
-	std::get<0>(navTree->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
-	std::get<0>(navTree->getLayoutAttributes().attributeSets).update<attr::BoxLayout::heightGrow>(1.F);
+	std::get<0>(navTree->getLayoutAttributes().attributeSets).update < attr::BoxLayout::widthGrow > (1.F);
+	std::get<0>(navTree->getLayoutAttributes().attributeSets).update < attr::BoxLayout::heightGrow > (1.F);
 
 	navScroll->addChild(navTree);
 

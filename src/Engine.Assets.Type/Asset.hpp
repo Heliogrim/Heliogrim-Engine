@@ -5,7 +5,6 @@
 #include <Engine.Assets/AssetReferenceUrl.hpp>
 #include <Engine.Assets/AssetTypeId.hpp>
 #include <Engine.Assets/AssetUrl.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Reflect/Inherit/InheritBase.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 #include <Engine.Serialization/Layout/__fwd.hpp>

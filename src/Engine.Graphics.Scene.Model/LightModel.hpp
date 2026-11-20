@@ -1,5 +1,4 @@
 #pragma once
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.Render.Subpass/Light/LightCaptureInterface.hpp>
 #include <Engine.Render.Scene/RenderSceneSystemModel.hpp>
 

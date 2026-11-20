@@ -1,6 +1,5 @@
 #include "EffectCache.hpp"
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Resource/Manage/UniqueResource.hpp>
 
 import Engine.Common;

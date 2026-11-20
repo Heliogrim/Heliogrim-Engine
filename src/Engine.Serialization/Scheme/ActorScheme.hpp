@@ -4,7 +4,6 @@
 #include <tuple>
 
 #include <Engine.ACS/Registry.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Reflect/Cast.hpp>
 #include <Engine.Serialization.Structures/Common/Guid.hpp>

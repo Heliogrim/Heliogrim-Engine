@@ -2,7 +2,6 @@
 
 #include <Editor.Action/Action/SimpleAction.hpp>
 #include <Engine.Assets/AssetGuid.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Storage.Registry/Url/FileUrl.hpp>
 #include <Engine.Storage.Registry/Url/StorageUrl.hpp>
 

@@ -2,7 +2,6 @@
 
 /**/
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Config/Config.hpp>
 #include <Engine.Resource.Archive/StorageReadWriteArchive.hpp>
 #include <Engine.Resource.Archive/StorageReadonlyArchive.hpp>

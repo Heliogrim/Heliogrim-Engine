@@ -4,6 +4,8 @@
 #include "../Memory/AllocationResult.hpp"
 #include "Engine.Graphics/Memory/VirtualMemory.hpp"
 
+#include <Engine.Common/__macro.hpp>
+
 import std;
 
 using namespace hg::engine::graphics;

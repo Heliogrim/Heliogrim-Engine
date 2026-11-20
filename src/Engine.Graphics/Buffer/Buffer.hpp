@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../API/__vkFwd.hpp"
 #include "../Geometry/Vertex.hpp"
 #include "../Memory/AllocatedMemory.hpp"

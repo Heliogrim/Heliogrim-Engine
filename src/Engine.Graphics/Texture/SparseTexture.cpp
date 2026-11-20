@@ -4,7 +4,6 @@
 #include "SparseTextureView.hpp"
 
 // TODO: Remove
-#include <Engine.Common/__macro.hpp>
 
 #include "Engine.Core/Engine.hpp"
 #include "Engine.Graphics/Graphics.hpp"

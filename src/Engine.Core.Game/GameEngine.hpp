@@ -7,7 +7,6 @@
 #include <Engine.Event/GlobalEventEmitter.hpp>
 
 /**/
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Serialization/SerializationModule.hpp>
 #include <Engine.Storage/StorageModule.hpp>
 

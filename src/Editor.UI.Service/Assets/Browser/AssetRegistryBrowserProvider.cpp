@@ -1,8 +1,8 @@
 #include "AssetRegistryBrowserProvider.hpp"
 
+#include <cassert>
 #include <Engine.Assets.System/AssetRegistry.hpp>
 #include <Engine.Assets.Type/Asset.hpp>
-#include <cassert>
 
 #include "AssetBrowserFilter.hpp"
 #include "AssetBrowserFilterEntry.hpp"
@@ -27,16 +27,16 @@ std::ranges::subrange<AssetRegistryBrowserProvider::data_list_type::iterator> As
 		range_,
 		[filters_](nmpt<engine::assets::Asset> entry_) {
 			return not
-			std::ranges::any_of(
-				filters_,
-				[&entry_](ref<const AssetBrowserFilterEntry> filter_) {
-					if (not std::ranges::contains(filter_.types, entry_->getTypeId())) {
-						return false;
+				std::ranges::any_of(
+					filters_,
+					[&entry_](ref<const AssetBrowserFilterEntry> filter_) {
+						if (not std::ranges::contains(filter_.types, entry_->getTypeId())) {
+							return false;
+						}
+						// TODO: Check asset tags
+						return true;
 					}
-					// TODO: Check asset tags
-					return true;
-				}
-			);
+				);
 		}
 	);
 	return std::ranges::subrange { range_.begin(), removed.begin() };

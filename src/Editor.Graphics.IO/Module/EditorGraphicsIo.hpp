@@ -1,5 +1,5 @@
 #pragma once
-#include <Engine.Common/__macro.hpp>
+
 #include <Engine.Core/Module/SubModule.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)

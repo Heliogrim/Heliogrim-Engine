@@ -2,7 +2,6 @@
 
 #include <Engine.Accel.Compile/EffectCompileResult.hpp>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.Loader/Texture/TextureResource.hpp>
 #include <Engine.Graphics.Render.Subpass/SubPass.hpp>
 #include <Engine.Graphics/Buffer/BufferLikeObject.hpp>

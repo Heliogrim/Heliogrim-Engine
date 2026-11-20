@@ -2,6 +2,8 @@
 
 #include "../Command/CommandBuffer.hpp"
 
+#include <Engine.Common/__macro.hpp>
+
 using namespace hg::engine::graphics::generator;
 using namespace hg::engine::graphics;
 using namespace hg;

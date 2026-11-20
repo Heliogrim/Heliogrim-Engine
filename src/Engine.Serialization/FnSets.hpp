@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
-
 #include "Access/Structure.hpp"
 #include "Engine.Reflect/IsType.hpp"
 #include "Heliogrim/ActorInitializer.hpp"

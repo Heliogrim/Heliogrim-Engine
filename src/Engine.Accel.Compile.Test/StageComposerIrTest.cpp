@@ -2,8 +2,6 @@
 
 /**/
 
-#include <spirv-tools/libspirv.hpp>
-
 #include <Engine.Accel.Compile/Pass/VkVertexFormat.hpp>
 #include <Engine.Accel.Compile/Profile/EffectProfile.hpp>
 #include <Engine.Accel.Compile/Spec/EffectSpecification.hpp>
@@ -11,11 +9,12 @@
 #include <Engine.Accel.Compile/Stage/StageIr.hpp>
 #include <Engine.Accel.Lang/Ir/Contract.hpp>
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
-#include <Engine.Common/__macro.hpp>
+#include <spirv-tools/libspirv.hpp>
 
 #include "IrSpirvGate.hpp"
 
 import Engine.Common;
+import vulkan;
 
 using namespace hg::engine::accel::lang::ir;
 using namespace hg::engine::accel::lang;

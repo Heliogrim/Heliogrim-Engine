@@ -1,6 +1,5 @@
 #include "RuntimeGraph.hpp"
 
-#include <Engine.Common/__macro.hpp>
 #include <cassert>
 
 import Engine.Common;

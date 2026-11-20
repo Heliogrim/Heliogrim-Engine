@@ -1,7 +1,5 @@
 #include "VkSurfaceSwapchain.hpp"
 
-#include <Engine.Common/__macro.hpp>
-
 #include "Engine.Graphics/API/VkTranslate.hpp"
 #include "Engine.Graphics/Command/CommandQueue.hpp"
 #include "Engine.Graphics/Texture/TextureFactory.hpp"

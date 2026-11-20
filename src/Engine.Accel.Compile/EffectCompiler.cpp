@@ -1,6 +1,7 @@
 #include "EffectCompiler.hpp"
 
 #include <Engine.Accel.Pipeline/Stage/StageModule.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Env/Check.hpp>
 #include <Engine.Logging/Logger.hpp>
 

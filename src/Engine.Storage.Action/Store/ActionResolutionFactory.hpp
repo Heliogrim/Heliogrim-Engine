@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../Action/MutationDynamicGen.hpp"
 #include "../Action/QueryDynamicGen.hpp"
 #include "__fwd.hpp"

@@ -1,7 +1,5 @@
 #include "Menu.hpp"
 
-#include <Engine.Common/__macro.hpp>
-
 #include "../Layer/Anchor.hpp"
 
 import Engine.Common;

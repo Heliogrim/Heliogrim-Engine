@@ -1,5 +1,3 @@
-#include <Engine.Common/__macro.hpp>
-
 #include "Profiler.hpp"
 
 import Engine.Common;

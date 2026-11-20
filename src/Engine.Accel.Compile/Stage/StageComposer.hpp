@@ -4,7 +4,6 @@
 #include <Engine.Accel.Lang/Ir/Variant.hpp>
 #include <Engine.Accel.Pipeline/AccelerationPipeline.hpp>
 #include <Engine.Accel.Pipeline/Stage/StageDerivat.hpp>
-#include <Engine.Common/__macro.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

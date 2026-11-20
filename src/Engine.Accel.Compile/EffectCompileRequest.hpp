@@ -2,7 +2,6 @@
 
 #include <Engine.Accel.Effect/AccelerationEffect.hpp>
 #include <Engine.Accel.Lang/Ir/Tier.hpp>
-#include <Engine.Common/__macro.hpp>
 
 #include "Profile/EffectProfile.hpp"
 #include "Spec/EffectSpecification.hpp"

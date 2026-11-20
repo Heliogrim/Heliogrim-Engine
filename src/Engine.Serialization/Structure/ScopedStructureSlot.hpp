@@ -3,6 +3,8 @@
 #include "ScopedSlotState.hpp"
 #include "StructureSlot.hpp"
 
+#include <Engine.Common/__macro.hpp>
+
 namespace hg::engine::serialization {
 	class macro_novtable ScopedSlot {
 	public:

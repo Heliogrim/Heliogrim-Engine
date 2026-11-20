@@ -1,6 +1,5 @@
 #include "SceneCameraBuffer.hpp"
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.RenderGraph/Relation/SceneCameraDescription.hpp>
 
 import Engine.Common;

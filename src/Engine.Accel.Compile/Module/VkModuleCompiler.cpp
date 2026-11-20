@@ -1,10 +1,9 @@
 #include "VkModuleCompiler.hpp"
 
 #include <Engine.Accel.Lang/Ir/Diagnostic.hpp>
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Engine.hpp>
-#include <Engine.Graphics/Device/Device.hpp>
 #include <Engine.Graphics/Graphics.hpp>
+#include <Engine.Graphics/Device/Device.hpp>
 #include <Engine.Logging/LogSink.hpp>
 
 #include "VkCompiledModule.hpp"

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Engine.Common/Math/__default.inl>
-#include <Engine.Common/__macro.hpp>
 
 #include "../API/__vkFwd.hpp"
 #include "../TextureFormat.hpp"

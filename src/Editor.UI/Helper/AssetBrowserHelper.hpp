@@ -1,9 +1,8 @@
 #pragma once
 
 #include <Engine.Assets.System/__fwd.hpp>
-#include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 #include <Engine.Assets/AssetTypeId.hpp>
-#include <Engine.Common/__macro.hpp>
+#include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

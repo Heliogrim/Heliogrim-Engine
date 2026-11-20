@@ -2,7 +2,6 @@
 
 #include <gtest/gtest.h>
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics/Device/Device.hpp>
 
 #include "HeadlessEngine.hpp"

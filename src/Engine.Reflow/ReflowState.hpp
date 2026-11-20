@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Common/__macro.hpp>
-
 #include "ReflowPassState.hpp"
 #include "Widget/WidgetState.hpp"
 #include "Widget/__fwd.hpp"
