@@ -5,6 +5,7 @@
 #include <Engine.Asserts/Todo.hpp>
 #include <Engine.Assets.System/AssetDescriptor.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
+#include <Engine.Assets.Type/Asset.hpp>
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Async/Future/Future.hpp>
 #include <Engine.Common/Optional.hpp>
@@ -473,6 +474,11 @@ Opt<Arci<engine::storage::system::PackageStorage>> autoStoreAssets(
 			"Failed to auto generate the package file `{}`, cause the targeted package file does already exist.",
 			packageFileUrl.string()
 		);
+		return None;
+	}
+
+	if (std::ranges::any_of(assets_, [](const auto& asset_) { return asset_->carriesUnknownData(); })) {
+		IM_CORE_ERRORF("Refused to store package `{}`: an asset carries data this build did not understand.", packageFileUrl.string());
 		return None;
 	}
 

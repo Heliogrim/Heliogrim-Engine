@@ -22,6 +22,11 @@ SaveLevel::SaveLevel(mref<Arci<engine::core::Level>> level_) :
 			if (this->_level == nullptr)
 				return;
 
+			if (not engine::core::checkSaveAllowed(*_level).has_value()) {
+				IM_CORE_ERRORF("Refused to save level: it carries data this build did not understand.");
+				return;
+			}
+
 			_levelAsset = save_level_in_asset(*_level);
 		},
 		[] { ::hg::todo_panic(); }
