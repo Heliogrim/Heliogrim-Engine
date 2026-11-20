@@ -1,4 +1,3 @@
-#include <Engine.Resource.Archive/Archive.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Structure/FloatScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
@@ -6,6 +5,7 @@
 #include "fwd.hpp"
 
 import Engine.Common;
+import Engine.Resource.Archive;
 
 using namespace hg::engine::serialization;
 using namespace hg;

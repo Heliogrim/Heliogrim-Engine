@@ -1,7 +1,6 @@
 #include "AssetBrowserService.hpp"
 
 #include <Engine.Assets/Assets.hpp>
-#include <Engine.Core/Engine.hpp>
 
 #include "AssetBrowserEntry.hpp"
 #include "AssetBrowserFilter.hpp"
@@ -9,6 +8,7 @@
 #include "AssetRegistryBrowserProvider.hpp"
 
 import Engine.Common;
+import Engine.Core;
 
 using namespace hg::editor::ui::service;
 using namespace hg;

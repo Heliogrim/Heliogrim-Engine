@@ -3,7 +3,6 @@
 /**/
 
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Logging/Logger.hpp>
 
 #include "ActionManager.hpp"
 #include "Log/ActionDispatcher.hpp"
@@ -11,6 +10,7 @@
 
 import Engine.Asserts;
 import Engine.Common;
+import Engine.Logging;
 
 using namespace hg::editor;
 using namespace hg;

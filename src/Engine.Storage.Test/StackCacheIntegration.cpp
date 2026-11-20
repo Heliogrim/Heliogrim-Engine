@@ -6,9 +6,6 @@
 
 /**/
 
-#include <Engine.Resource.Archive/ArchiveType.hpp>
-#include <Engine.Resource.Archive/BufferArchive.hpp>
-#include <Engine.Resource.Archive/StorageReadonlyArchive.hpp>
 #include <Engine.Resource.Blob/Blob.hpp>
 #include <Engine.Resource.Blob/File/LfsSyncBlob.hpp>
 #include <Engine.Resource.Package/ReadonlyPackage.hpp>
@@ -27,6 +24,7 @@
 
 import Engine.Common;
 import Engine.Reflect;
+import Engine.Resource.Archive;
 
 /**/
 

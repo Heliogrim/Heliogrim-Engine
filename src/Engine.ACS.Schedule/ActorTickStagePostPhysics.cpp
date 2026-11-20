@@ -1,11 +1,10 @@
 #include "ActorTickStagePostPhysics.hpp"
 
 #include <Engine.ACS.Schedule/ActorPipeline.hpp>
-#include <Engine.Core/Engine.hpp>
-#include <Engine.Core/Universe.hpp>
-#include <Engine.Core/UniverseContext.hpp>
 #include <Engine.Level/Level.hpp>
 #include <Engine.Physics.Schedule/PhysicsPipeline.hpp>
+
+import Engine.Core;
 
 using namespace hg::engine::acs::schedule;
 using namespace hg::engine::scheduler;

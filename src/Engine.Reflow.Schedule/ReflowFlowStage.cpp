@@ -1,10 +1,7 @@
 #include "ReflowFlowStage.hpp"
 
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Core/Engine.hpp>
-#include <Engine.Core/Module/Modules.hpp>
 #include <Engine.Graphics.Schedule/RenderScenePipeline.hpp>
-#include <Engine.Logging/Logger.hpp>
 #include <Engine.Reflow/DataWatcher.hpp>
 #include <Engine.Reflow/Reflow.hpp>
 #include <Engine.Reflow/ReflowEngine.hpp>
@@ -15,6 +12,8 @@
 #include <Engine.Reflow.Schedule/ReflowPipeline.hpp>
 #include <Engine.Scene.Schedule/ScenePipeline.hpp>
 
+import Engine.Core;
+import Engine.Logging;
 import std;
 
 using namespace hg::engine::reflow::schedule;

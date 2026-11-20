@@ -1,4 +1,4 @@
-#include "GraphicUnregisterLoaderEvent.hpp"
+import Engine.Graphics.Event;
 
 using namespace hg;
 

@@ -5,7 +5,6 @@
 #include <Engine.Accel.Compile/Spec/SimpleEffectSpecification.hpp>
 #include <Engine.Accel.Pass/VkAccelerationPassFactory.hpp>
 #include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
-#include <Engine.Core/Engine.hpp>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
 #include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Graphics/Scene/SkyboxModel.hpp>
@@ -18,10 +17,11 @@
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneDepth.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneView.hpp>
 #include <Engine.Graphics.RenderGraph/Symbol/ScopedSymbolContext.hpp>
-#include <Engine.Graphics.Scene/View/SceneView.hpp>
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
 
 import Engine.Common;
+import Engine.Core;
+import Engine.Graphics.Scene;
 import Engine.Reflect;
 
 using namespace hg::engine::render;

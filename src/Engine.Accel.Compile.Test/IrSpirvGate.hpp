@@ -11,11 +11,11 @@
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
 #include <Engine.Accel.Lang/Ir/Spirv/SpirvValidate.hpp>
 #include <Engine.Accel.Lang/Rep/Annotation.hpp>
-#include <Engine.Logging/Logger.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
 import Engine.Diagnostics;
+import Engine.Logging;
 #endif
 
 namespace AccelCompile {

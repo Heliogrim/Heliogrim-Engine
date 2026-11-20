@@ -1,4 +1,4 @@
-#include "GraphicRegisterImporterEvent.hpp"
+import Engine.Graphics.Event;
 
 using namespace hg;
 

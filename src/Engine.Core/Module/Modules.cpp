@@ -1,10 +1,5 @@
-#include "Modules.hpp"
-
-#include "CoreDependencies.hpp"
-#include "SubModule.hpp"
-#include "SubModuleDependency.hpp"
-
 import Engine.Asserts;
+import Engine.Core;
 import std;
 
 using namespace hg::engine::core;

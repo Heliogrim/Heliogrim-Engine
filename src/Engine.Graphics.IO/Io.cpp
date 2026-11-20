@@ -2,17 +2,12 @@
 
 #include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
-#include <Engine.Core/Engine.hpp>
 #include <Engine.Graphics/Importer/FontFileTypes.hpp>
 #include <Engine.Graphics/Importer/FontImporter.hpp>
 #include <Engine.Graphics/Importer/ImageFileTypes.hpp>
 #include <Engine.Graphics/Importer/ImageImporter.hpp>
 #include <Engine.Graphics/Importer/ModelFileTypes.hpp>
 #include <Engine.Graphics/Importer/ModelImporter.hpp>
-#include <Engine.Graphics.Event/GraphicRegisterImporterEvent.hpp>
-#include <Engine.Graphics.Event/GraphicRegisterLoaderEvent.hpp>
-#include <Engine.Graphics.Event/GraphicUnregisterImporterEvent.hpp>
-#include <Engine.Graphics.Event/GraphicUnregisterLoaderEvent.hpp>
 #include <Engine.Graphics.Loader/Font/FontLoader.hpp>
 #include <Engine.Graphics.Loader/Geometry/StaticGeometryLoader.hpp>
 #include <Engine.Graphics.Loader/Geometry/StaticGeometryResource.hpp>
@@ -23,7 +18,9 @@
 #include <Engine.Graphics.Loader/Texture/TextureLoader.hpp>
 #include <Engine.Graphics.Loader/Texture/TextureResource.hpp>
 
+import Engine.Core;
 import Engine.Event;
+import Engine.Graphics.Event;
 
 using namespace ::hg::engine::graphics::loader;
 using namespace ::hg;

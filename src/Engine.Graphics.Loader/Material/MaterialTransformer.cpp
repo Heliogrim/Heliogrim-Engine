@@ -4,7 +4,6 @@
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets.Type/Material/GraphicsMaterialPrototype.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
-#include <Engine.Core/Engine.hpp>
 #include <Engine.Graphics/Pool/GlobalResourcePool.hpp>
 #include <Engine.Graphics.Material/MaterialFactory.hpp>
 #include <Engine.Resource/LoaderManager.hpp>
@@ -16,6 +15,7 @@
 
 import Engine.Asserts;
 import Engine.Common;
+import Engine.Core;
 import Engine.Reflect;
 
 using namespace hg::engine::graphics::loader;

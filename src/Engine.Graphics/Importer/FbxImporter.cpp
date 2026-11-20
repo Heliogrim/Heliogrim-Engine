@@ -6,8 +6,6 @@
 
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Core/Engine.hpp>
-#include <Engine.Logging/Logger.hpp>
 #include <Engine.Resource.Package/Linker/PackageLinker.hpp>
 #include <Engine.Storage.Registry/IStorageRegistry.hpp>
 #include <Engine.Storage.Registry/Storage/PackageStorage.hpp>
@@ -16,6 +14,8 @@
 
 import Engine.Asserts;
 import Engine.Common;
+import Engine.Core;
+import Engine.Logging;
 
 using namespace hg::engine::graphics;
 using namespace hg;

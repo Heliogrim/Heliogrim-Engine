@@ -1,6 +1,5 @@
 #include "Component.hpp"
 
-#include <Engine.Core/Engine.hpp>
 #include <Heliogrim/Actor/ActorGuid.hpp>
 #include <Heliogrim/Component/LogicComponent.hpp>
 
@@ -8,6 +7,7 @@
 #include "Registry.hpp"
 
 import Engine.Common;
+import Engine.Core;
 
 using namespace hg;
 

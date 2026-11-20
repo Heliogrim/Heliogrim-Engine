@@ -1,7 +1,6 @@
 #include "Device.hpp"
 
 #include <cctype>
-#include <Engine.Logging/Logger.hpp>
 
 #include "../vkinc.hpp"
 
@@ -16,6 +15,7 @@
 #include "../Surface/Surface.hpp"
 
 import Engine.Common;
+import Engine.Logging;
 
 using namespace hg::engine::graphics;
 using namespace hg;

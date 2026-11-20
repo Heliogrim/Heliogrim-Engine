@@ -15,14 +15,11 @@
 #include <Engine.Assets.Type/Universe/LevelAsset.hpp>
 /* Note: Why-so-ever, this is order dependent... */
 
-#include <Engine.Core/Engine.hpp>
-
 #include "DefaultAssetInit.hpp"
 #include "Engine.Accel/Accel.hpp"
 #include "Engine.Assets/Assets.hpp"
 #include "Engine.Assets.System/AssetDescriptor.hpp"
 #include "Engine.Assets.System/IAssetRegistry.hpp"
-#include "Engine.Core/Module/Modules.hpp"
 #include "Engine.Graphics.Render.Predefined/Effects/BrdfBase.hpp"
 #include "Engine.Graphics.Render.Predefined/Effects/Skybox.hpp"
 #include "Fonts/Default.hpp"
@@ -30,6 +27,8 @@
 #include "Images/Default.hpp"
 #include "Meshes/Default.hpp"
 #include "Textures/Default.hpp"
+
+import Engine.Core;
 
 using namespace hg::editor::boot;
 using namespace hg::engine;

@@ -16,11 +16,11 @@
 #include <Engine.Graphics/Memory/AllocationResult.hpp>
 #include <Engine.Graphics/Memory/VkAllocator.hpp>
 #include <Engine.Graphics/Pool/GlobalResourcePool.hpp>
-#include <Engine.Logging/Logger.hpp>
 #include <Engine.Resource/Manage/UniqueResource.hpp>
 #include <Engine.Storage.System/StorageSystem.hpp>
 
 import Engine.Common;
+import Engine.Logging;
 
 using namespace hg::engine::graphics::loader;
 using namespace hg::engine::graphics;

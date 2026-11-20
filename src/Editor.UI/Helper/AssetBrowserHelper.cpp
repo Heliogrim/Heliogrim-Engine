@@ -3,8 +3,8 @@
 #include <Editor.Assets.Default/Textures/Default.hpp>
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
-#include <Engine.Core/Engine.hpp>
 
+import Engine.Core;
 import Engine.Reflect;
 
 using namespace hg::editor::ui;

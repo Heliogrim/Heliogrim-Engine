@@ -8,7 +8,9 @@ if ("${CMAKE_SYSTEM_NAME}" MATCHES "Windows")
 			${PROJECT_NAME}::Engine.Asserts
 			${PROJECT_NAME}::Engine.Async
 			${PROJECT_NAME}::Engine.Common
+			${PROJECT_NAME}::Engine.Core
 			${PROJECT_NAME}::Engine.Event
+			${PROJECT_NAME}::Engine.Logging
 			${PROJECT_NAME}::Engine.Platform
 			${PROJECT_NAME}::vulkan.Module
 	)

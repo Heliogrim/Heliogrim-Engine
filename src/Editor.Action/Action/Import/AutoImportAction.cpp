@@ -11,7 +11,11 @@
 
 import Engine.Asserts;
 import Engine.Common;
+import Engine.Core;
+import Engine.Logging;
 import Engine.Reflect;
+import Engine.Resource.Archive;
+import Engine.Diagnostics;
 
 using namespace hg::editor;
 using namespace hg;
@@ -120,17 +124,11 @@ ref<Signal> AutoImportAction::finished() const noexcept {
 #include <Engine.Assets.Type/Texture/FontAsset.hpp>
 #include <Engine.Assets.Type/Texture/ImageAsset.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
-#include <Engine.Core/Engine.hpp>
-#include <Engine.Diagnostics/Render.hpp>
-#include <Engine.Diagnostics/Sink.hpp>
 #include <Engine.Graphics/Importer/FontFileTypes.hpp>
 #include <Engine.Graphics/Importer/ImageFileTypes.hpp>
 #include <Engine.Graphics/Importer/ModelFileTypes.hpp>
-#include <Engine.Logging/Logger.hpp>
-#include <Engine.Logging/LogSink.hpp>
 #include <Engine.Resource/FileTypeId.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
-#include <Engine.Resource.Archive/BufferArchive.hpp>
 #include <Engine.Serialization/SerializationModule.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Archive/StructuredArchive.hpp>

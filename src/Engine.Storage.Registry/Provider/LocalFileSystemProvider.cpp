@@ -1,8 +1,5 @@
 #include "LocalFileSystemProvider.hpp"
 
-#include <Engine.Config/Config.hpp>
-#include <Engine.Config/Enums.hpp>
-
 #include "../IStorage.hpp"
 #include "../IStorageFileRepository.hpp"
 #include "../Repository/CacheFileSystemRepository.hpp"
@@ -12,6 +9,7 @@
 #include "../Storage/LocalFileStorage.hpp"
 
 import Engine.Common;
+import Engine.Config;
 import Engine.Reflect;
 
 using namespace hg::engine::storage::system;

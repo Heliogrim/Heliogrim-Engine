@@ -12,15 +12,13 @@
 #include <Editor.Action/Action/Import/AutoImportAction.hpp>
 #include <Engine.Async/Affine/AffineThread.hpp>
 #include <Engine.Async/Future/Future.hpp>
-#include <Engine.Config/Config.hpp>
-#include <Engine.Config/Enums.hpp>
-#include <Engine.Core/Engine.hpp>
-#include <Engine.Core/Module/Modules.hpp>
-#include <Engine.Logging/Logger.hpp>
 #include <Engine.Platform/Platform.hpp>
 
 import Engine.Asserts;
 import Engine.Common;
+import Engine.Config;
+import Engine.Core;
+import Engine.Logging;
 
 using namespace hg::editor::assets;
 using namespace hg::engine::storage;

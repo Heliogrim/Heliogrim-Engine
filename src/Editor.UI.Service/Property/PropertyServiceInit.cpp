@@ -29,7 +29,6 @@
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets.System/AssetRegistry.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
-#include <Engine.Core/Engine.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/BoxLayout.hpp>
 #include <Heliogrim/AssetDatabase.hpp>
 #include <Heliogrim/Heliogrim.hpp>
@@ -37,6 +36,7 @@
 #include "PropertyService.hpp"
 
 import Engine.Common;
+import Engine.Core;
 import Engine.Reflect;
 
 using namespace hg::editor::ui::service;

@@ -4,11 +4,11 @@
 
 namespace hg::engine::core {
 	/**/
-	constexpr static DependencyKey ActorDepKey { "::hg::engine::ActorModule"sv };
-	constexpr static DependencyKey AssetsDepKey { "::hg::engine::Assets"sv };
-	constexpr static DependencyKey AudioDepKey { "::hg::engine::Audio"sv };
-	constexpr static DependencyKey GraphicsDepKey { "::hg::engine::Graphics"sv };
-	constexpr static DependencyKey InputDepKey { "::hg::engine::Input"sv };
-	constexpr static DependencyKey NetworkDepKey { "::hg::engine::Network"sv };
-	constexpr static DependencyKey PhysicsDepKey { "::hg::engine::Physics"sv };
+	inline constexpr DependencyKey ActorDepKey { "::hg::engine::ActorModule"sv };
+	inline constexpr DependencyKey AssetsDepKey { "::hg::engine::Assets"sv };
+	inline constexpr DependencyKey AudioDepKey { "::hg::engine::Audio"sv };
+	inline constexpr DependencyKey GraphicsDepKey { "::hg::engine::Graphics"sv };
+	inline constexpr DependencyKey InputDepKey { "::hg::engine::Input"sv };
+	inline constexpr DependencyKey NetworkDepKey { "::hg::engine::Network"sv };
+	inline constexpr DependencyKey PhysicsDepKey { "::hg::engine::Physics"sv };
 }

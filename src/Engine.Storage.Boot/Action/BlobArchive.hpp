@@ -1,8 +1,6 @@
 #pragma once
 
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Resource.Archive/StorageReadonlyArchive.hpp>
-#include <Engine.Resource.Archive/StorageReadWriteArchive.hpp>
 #include <Engine.Resource.Blob/Memory/ByteSpanBlob.hpp>
 #include <Engine.Storage.Action/Context.hpp>
 #include <Engine.Storage.Action/Mutation.hpp>
@@ -12,6 +10,7 @@
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Resource.Archive;
 #endif
 
 namespace hg::engine::storage {

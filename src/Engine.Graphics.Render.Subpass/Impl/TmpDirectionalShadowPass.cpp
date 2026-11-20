@@ -9,7 +9,6 @@
 #include <Engine.Accel.Pipeline/VkGraphicsPipeline.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/GLM.hpp>
-#include <Engine.Core/Engine.hpp>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
 #include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Graphics/Buffer/BufferFactory.hpp>
@@ -23,10 +22,11 @@
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneView.hpp>
 #include <Engine.Graphics.RenderGraph/Relation/TextureDescription.hpp>
 #include <Engine.Graphics.RenderGraph/Symbol/ScopedSymbolContext.hpp>
-#include <Engine.Graphics.Scene/View/SceneView.hpp>
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
 
 import Engine.Common;
+import Engine.Core;
+import Engine.Graphics.Scene;
 import Engine.Reflect;
 
 using namespace hg::engine::render;

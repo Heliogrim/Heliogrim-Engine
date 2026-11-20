@@ -4,7 +4,6 @@
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Filesystem/Url.hpp>
-#include <Engine.Logging/Logger.hpp>
 #include <Engine.Resource/File.hpp>
 #include <Engine.Storage/StorageModule.hpp>
 #include <Engine.Storage.Registry/IStorageRegistry.hpp>
@@ -13,6 +12,8 @@
 
 import Engine.Asserts;
 import Engine.Common;
+import Engine.Core;
+import Engine.Logging;
 import Engine.Reflect;
 
 using namespace hg::engine::resource::loader;
@@ -79,7 +80,6 @@ SourceLoaderStreamResponse<void>::type SourceLoader::operator()(
 #include <Engine.Assets.Type/Texture/FontAsset.hpp>
 #include <Engine.Assets.Type/Texture/ImageAsset.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
-#include <Engine.Core/Engine.hpp>
 
 engine::storage::FileUrl getLfsUrl(const non_owning_rptr<const engine::assets::Asset> asset_) {
 

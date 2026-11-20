@@ -3,7 +3,6 @@
 /**/
 
 #include <cstdlib>
-#include <Engine.Core/Engine.hpp>
 #include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Graphics/vkinc.hpp>
 
@@ -15,6 +14,7 @@
 #include "../Harness/HeadlessEngine.hpp"
 
 import Engine.Common;
+import Engine.Core;
 
 using namespace hg::test::gpu;
 using namespace hg;

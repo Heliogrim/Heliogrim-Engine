@@ -2,14 +2,13 @@
 
 #include <Editor.UI.Main/EditorUI.hpp>
 #include <Editor.UI.Main/Module/EditorUI.hpp>
-#include <Engine.Core/Engine.hpp>
-#include <Engine.Core/Module/Modules.hpp>
 #include <Engine.Reflow/Window/Window.hpp>
 #include <Engine.Reflow/Window/WindowManager.hpp>
 
 #include "../EditorUiEventNames.hpp"
 
 import Engine.Common;
+import Engine.Core;
 
 using namespace hg::editor::ui;
 using namespace hg::engine::reflow;

@@ -4,7 +4,6 @@
 #include <tuple>
 
 #include <Engine.ACS/Registry.hpp>
-#include <Engine.Core/Engine.hpp>
 #include <Engine.Serialization/SerializationModule.hpp>
 #include <Engine.Serialization/Schema/Migration.hpp>
 #include <Engine.Serialization/Structure/RecordScopedSlot.hpp>
@@ -20,6 +19,7 @@
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Core;
 import Engine.Reflect;
 #endif
 

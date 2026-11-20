@@ -1,9 +1,5 @@
 #include "Universe.hpp"
 
-#include <Engine.Core/Engine.hpp>
-#include <Engine.Core/Session.hpp>
-#include <Engine.Core/Universe.hpp>
-#include <Engine.Core/UniverseContext.hpp>
 #include <Engine.Level/Level.hpp>
 #include <Engine.Scene/Scene.hpp>
 #include <Engine.Scene.Game/GameScene.hpp>
@@ -14,6 +10,7 @@
 
 import Engine.Asserts;
 import Engine.Common;
+import Engine.Core;
 
 using namespace hg;
 

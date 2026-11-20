@@ -1,9 +1,6 @@
 #pragma once
 
 #include <Engine.Pedantic.Resource/Resource.hpp>
-#include <Engine.Reflect.Utils/Error/IllegalArgumentError.hpp>
-#include <Engine.Reflect.Utils/Error/IllegalTypeError.hpp>
-#include <Engine.Reflect.Utils/With/WithType.hpp>
 
 #include "../Query.hpp"
 #include "../Access/IoResourceAccessor.hpp"
@@ -11,6 +8,7 @@
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Reflect.Utils;
 #endif
 
 namespace hg::engine::storage {

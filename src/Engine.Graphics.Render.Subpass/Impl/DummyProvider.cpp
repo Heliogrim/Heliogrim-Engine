@@ -1,7 +1,6 @@
 #include "DummyProvider.hpp"
 
 #include <Engine.Accel.Command/CommandBuffer.hpp>
-#include <Engine.Core/Engine.hpp>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
 #include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Graphics/Texture/TextureFactory.hpp>
@@ -12,6 +11,7 @@
 #include <Engine.Graphics.RenderGraph/Symbol/ScopedSymbolContext.hpp>
 
 import Engine.Common;
+import Engine.Core;
 import Engine.Reflect;
 
 using namespace hg::engine::render;

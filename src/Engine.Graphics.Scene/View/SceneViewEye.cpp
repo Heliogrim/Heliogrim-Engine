@@ -1,6 +1,5 @@
-#include "SceneViewEye.hpp"
-
 import Engine.Common;
+import Engine.Graphics.Scene;
 
 using namespace hg::engine::graphics::scene;
 using namespace hg;

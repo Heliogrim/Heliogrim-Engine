@@ -1,7 +1,7 @@
-#include "Universe.hpp"
-
 #include <Engine.Level/Level.hpp>
 #include <Engine.Scene/SceneBase.hpp>
+
+import Engine.Core;
 
 using namespace hg::engine::core;
 using namespace hg;

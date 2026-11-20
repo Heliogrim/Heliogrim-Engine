@@ -7,7 +7,9 @@ if ("${CMAKE_SYSTEM_NAME}" MATCHES "Windows")
 			LIBRARIES
 			${PROJECT_NAME}::Engine.Asserts
 			${PROJECT_NAME}::Engine.Common
+			${PROJECT_NAME}::Engine.Core
 			${PROJECT_NAME}::Engine.Input
+			${PROJECT_NAME}::Engine.Logging
 			${PROJECT_NAME}::Engine.Reflect
 	)
 endif ()

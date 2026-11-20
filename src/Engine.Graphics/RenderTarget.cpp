@@ -4,8 +4,6 @@
 #include <Engine.Graphics.Render/RenderPass.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneColor.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneView.hpp>
-#include <Engine.Graphics.Scene/View/SceneView.hpp>
-#include <Engine.Logging/Logger.hpp>
 
 #include "Command/CommandBatch.hpp"
 #include "Command/CommandQueue.hpp"
@@ -14,6 +12,8 @@
 #include "Swapchain/Swapchain.hpp"
 
 import Engine.Common;
+import Engine.Graphics.Scene;
+import Engine.Logging;
 
 using namespace hg::engine::render;
 using namespace hg::engine::graphics;

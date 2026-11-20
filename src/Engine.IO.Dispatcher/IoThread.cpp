@@ -2,9 +2,9 @@
 
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/stdafx.h>
-#include <Engine.Logging/Logger.hpp>
 
 import Engine.Asserts;
+import Engine.Logging;
 
 using namespace hg::engine::io;
 using namespace hg;

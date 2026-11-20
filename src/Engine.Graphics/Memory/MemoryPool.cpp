@@ -2,13 +2,13 @@
 
 #include <cassert>
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Logging/Logger.hpp>
 
 #include "AllocatedMemory.hpp"
 #include "AllocationResult.hpp"
 
 import Engine.Asserts;
 import Engine.Common;
+import Engine.Logging;
 
 /**/
 

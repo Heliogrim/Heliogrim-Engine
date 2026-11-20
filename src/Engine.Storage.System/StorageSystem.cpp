@@ -1,8 +1,6 @@
 #include "StorageSystem.hpp"
 
 #include <Engine.Async/Lock/UniqueLock.hpp>
-#include <Engine.Resource.Archive/StorageReadonlyArchive.hpp>
-#include <Engine.Resource.Archive/StorageReadWriteArchive.hpp>
 #include <Engine.Resource.Blob/Blob.hpp>
 #include <Engine.Resource.Package/Attribute/PackageGuid.hpp>
 #include <Engine.Storage.Package/Factory.hpp>
@@ -17,7 +15,7 @@
 
 import Engine.Common;
 import Engine.Reflect;
-import Engine.Diagnostics;
+import Engine.Resource.Archive;
 
 using namespace hg::engine::storage;
 using namespace hg;

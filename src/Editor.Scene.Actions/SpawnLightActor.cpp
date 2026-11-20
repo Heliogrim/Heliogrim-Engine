@@ -4,12 +4,12 @@
 #include <Editor.UI.Main/EditorUI.hpp>
 #include <Editor.UI.Main/Module/EditorUI.hpp>
 #include <Engine.ACS/ActorModule.hpp>
-#include <Engine.Core/Engine.hpp>
 #include <Heliogrim/Component/Scene/Light/DirectionalLightComponent.hpp>
 #include <Heliogrim/Core/Session.hpp>
 #include <Heliogrim/Universe/Universe.hpp>
 
 import Engine.Common;
+import Engine.Core;
 
 using namespace hg::editor::scene::actions;
 using namespace hg;

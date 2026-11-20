@@ -1,6 +1,6 @@
-#include "StorageWriteonlyArchive.hpp"
-
 #include <Engine.Resource.Blob/Blob.hpp>
+
+import Engine.Resource.Archive;
 
 using namespace hg::engine::resource;
 using namespace hg;

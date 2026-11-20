@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Core/Module/RootModule.hpp>
-
 #include "ImporterManager.hpp"
 #include "LoaderManager.hpp"
 
@@ -13,6 +11,7 @@
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Core;
 #endif
 
 namespace hg::engine::resource {

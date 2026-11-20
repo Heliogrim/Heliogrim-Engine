@@ -7,6 +7,8 @@ make_library_project(
 		${PROJECT_NAME}::Engine.Asserts
 		${PROJECT_NAME}::Engine.Common
 		${PROJECT_NAME}::Engine.Config
+		${PROJECT_NAME}::Engine.Core
+		${PROJECT_NAME}::Engine.Logging
 		${PROJECT_NAME}::Engine.Reflect
 		$<$<PLATFORM_ID:Windows>:Synchronization.lib>
 )

@@ -2,10 +2,10 @@
 
 #include <Engine.Async/Future/Future.hpp>
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Core/Module/RootModule.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Core;
 #endif
 
 namespace hg::engine::async {

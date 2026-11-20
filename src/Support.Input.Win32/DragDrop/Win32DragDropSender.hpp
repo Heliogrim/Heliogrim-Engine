@@ -5,9 +5,9 @@
 #include <ole2.h>
 #include <Engine.Input/DragDrop/DragDropObject.hpp>
 #include <Engine.Input/DragDrop/DragDropSender.hpp>
-#include <Engine.Logging/Logger.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Logging;
 import std;
 #endif
 

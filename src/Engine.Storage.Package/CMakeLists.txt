@@ -9,4 +9,5 @@ make_library_project(
 		${PROJECT_NAME}::Engine.Diagnostics
 		${PROJECT_NAME}::Engine.Asserts
 		${PROJECT_NAME}::Engine.Reflect
+		${PROJECT_NAME}::Engine.Resource.Archive
 )

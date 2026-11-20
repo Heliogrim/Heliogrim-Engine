@@ -14,8 +14,11 @@
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 #include <Engine.Serialization.Structures/Symbols.hpp>
 
+#include "Engine.ACS/ActorModule.hpp"
+#include "Engine.Serialization/SerializationModule.hpp"
 
 import Engine.Common;
+import Engine.Core;
 
 using namespace ::hg::engine::serialization;
 using namespace ::hg::engine::core;

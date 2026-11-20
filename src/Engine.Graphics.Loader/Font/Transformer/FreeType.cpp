@@ -7,7 +7,6 @@
 #include <Engine.Graphics/Command/CommandPool.hpp>
 #include <Engine.Graphics/Command/CommandQueue.hpp>
 #include <Engine.Graphics/Texture/TextureFactory.hpp>
-#include <Engine.Logging/Logger.hpp>
 
 /**/
 #include <ft2build.h>
@@ -17,6 +16,7 @@
 
 import Engine.Asserts;
 import Engine.Common;
+import Engine.Logging;
 /**/
 
 using namespace hg::engine::graphics::loader::transformer;

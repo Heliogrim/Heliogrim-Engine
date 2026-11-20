@@ -1,7 +1,6 @@
 #include "TmpEndPass.hpp"
 
 #include <Engine.Accel.Command/CommandBuffer.hpp>
-#include <Engine.Core/Engine.hpp>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
 #include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Graphics/Texture/Texture.hpp>
@@ -10,6 +9,7 @@
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneDepth.hpp>
 #include <Engine.Graphics.RenderGraph/Symbol/ScopedSymbolContext.hpp>
 
+import Engine.Core;
 import Engine.Reflect;
 import std;
 

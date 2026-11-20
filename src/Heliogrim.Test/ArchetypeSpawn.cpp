@@ -4,11 +4,6 @@
 
 #include <Engine.ACS/ActorModule.hpp>
 #include <Engine.ACS/Registry.hpp>
-#include <Engine.Config/Config.hpp>
-#include <Engine.Core/Engine.hpp>
-#include <Engine.Core/Timing.hpp>
-#include <Engine.Core/Universe.hpp>
-#include <Engine.Core/Module/Modules.hpp>
 #include <Engine.Level/Level.hpp>
 #include <Engine.Scene/SceneBase.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
@@ -31,6 +26,8 @@
 #include "TestArchetypes.hpp"
 
 import Engine.Common;
+import Engine.Config;
+import Engine.Core;
 import Engine.Event;
 
 using namespace HeliogrimApi;

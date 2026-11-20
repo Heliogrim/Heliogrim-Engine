@@ -1,10 +1,10 @@
 #include "FontImporter.hpp"
 
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Core/Engine.hpp>
-#include <Engine.Logging/Logger.hpp>
 
 import Engine.Common;
+import Engine.Core;
+import Engine.Logging;
 
 using namespace hg::engine::graphics;
 using namespace hg;

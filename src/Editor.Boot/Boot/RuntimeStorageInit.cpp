@@ -1,7 +1,5 @@
 #include "RuntimeStorageInit.hpp"
 
-#include <Engine.Config/Config.hpp>
-#include <Engine.Config/Enums.hpp>
 #include <Engine.Storage/StorageModule.hpp>
 #include <Engine.Storage.Registry/IStorageRegistry.hpp>
 #include <Engine.Storage.Registry/Provider/LocalFileSystemProvider.hpp>
@@ -9,6 +7,7 @@
 #include <Engine.Storage.Registry/Repository/RuntimeFileSystemRepository.hpp>
 
 import Engine.Common;
+import Engine.Config;
 
 using namespace hg;
 

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Core/Module/RootModule.hpp>
-
 #include "FnSets.hpp"
 #include "Archive/LayoutArchive.hpp"
 #include "Archive/StructuredArchive.hpp"
@@ -10,6 +8,7 @@
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Core;
 #endif
 
 namespace hg::engine {

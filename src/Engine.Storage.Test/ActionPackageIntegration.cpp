@@ -6,11 +6,6 @@
 
 /**/
 
-#include <Engine.Config/Config.hpp>
-#include <Engine.Resource.Archive/ArchiveType.hpp>
-#include <Engine.Resource.Archive/BufferArchive.hpp>
-#include <Engine.Resource.Archive/StorageReadonlyArchive.hpp>
-#include <Engine.Resource.Archive/StorageReadWriteArchive.hpp>
 #include <Engine.Resource.Blob/Memory/ByteSpanBlob.hpp>
 #include <Engine.Resource.Package/Utils.hpp>
 #include <Engine.Resource.Package/Attribute/PackageGuid.hpp>
@@ -32,6 +27,8 @@
 #include <Engine.Storage.System/StorageSystem.hpp>
 
 import Engine.Common;
+import Engine.Config;
+import Engine.Resource.Archive;
 
 /**/
 

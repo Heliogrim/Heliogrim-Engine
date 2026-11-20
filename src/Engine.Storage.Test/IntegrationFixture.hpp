@@ -8,12 +8,15 @@
 
 /**/
 
-#include <Engine.Config/Config.hpp>
 #include <Engine.Storage.Action/Context.hpp>
 #include <Engine.Storage.Boot/Action/ActionResolverInit.hpp>
 #include <Engine.Storage.Registry/Registry/StorageRegistry.hpp>
 #include <Engine.Storage.System/StorageSystem.hpp>
 #include <Engine.Storage.System/Details/StorageActionResolver.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Config;
+#endif
 
 namespace StorageModule {
 	class MutationIntegrationFixture :

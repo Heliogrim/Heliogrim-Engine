@@ -24,6 +24,10 @@ make_library_project(
 		${PROJECT_NAME}::Editor.UI.Theme
 		${PROJECT_NAME}::Editor.UI.View
 		${PROJECT_NAME}::Engine.Common
+		${PROJECT_NAME}::Engine.Config
+		${PROJECT_NAME}::Engine.Core
+		${PROJECT_NAME}::Engine.Logging
 		${PROJECT_NAME}::Engine.Reflect
+		${PROJECT_NAME}::Engine.Resource.Archive
 		${PROJECT_NAME}::Heliogrim
 )

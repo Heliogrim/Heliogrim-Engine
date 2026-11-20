@@ -1,14 +1,15 @@
+#include <span>
+#include <limits>
+#include <bit>
+#include <algorithm>
 #include "Load.hpp"
 
-#include <algorithm>
-#include <bit>
-#include <limits>
-#include <span>
-#include <Engine.Crypto/Checksum/Crc32.hpp>
-#include <Engine.Resource.Archive/BufferArchive.hpp>
 #include <Engine.Resource.Package/Utils.hpp>
 #include <Engine.Resource.Package/Attribute/MagicBytes.hpp>
 #include <Engine.Resource.Package/Linker/Indexed.hpp>
+
+import Engine.Resource.Archive;
+import Engine.Crypto;
 
 using namespace hg::engine::storage::package;
 using namespace hg::engine::resource::package;

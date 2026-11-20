@@ -4,19 +4,13 @@
 
 #if TRUE
 #include <Engine.Reflow/Command/ReflowCommandBuffer.hpp>
-#include <Engine.Core/Engine.hpp>
 #include <Engine.Graphics/Graphics.hpp>
-#include <Engine.Logging/Logger.hpp>
 #include <Heliogrim/Actor/Camera/CameraActor.hpp>
 
 #include "Engine.Graphics/RenderTarget.hpp"
 #endif
 
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Core/Timing.hpp>
-#include <Engine.Core/Universe.hpp>
-#include <Engine.Graphics.Scene/RenderSceneManager.hpp>
-#include <Engine.Graphics.Scene/View/SceneView.hpp>
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
 #include <Engine.Render.Scene.Model/CameraModel.hpp>
 #include <Engine.Scene/SceneBase.hpp>
@@ -26,6 +20,9 @@
 
 import Engine.Asserts;
 import Engine.Common;
+import Engine.Core;
+import Engine.Graphics.Scene;
+import Engine.Logging;
 
 using namespace hg::engine::reflow;
 using namespace hg;

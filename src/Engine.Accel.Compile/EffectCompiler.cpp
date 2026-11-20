@@ -2,7 +2,6 @@
 
 #include <Engine.Accel.Pipeline/Stage/StageModule.hpp>
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Logging/Logger.hpp>
 
 #include "Module/ModuleBuilder.hpp"
 #include "Module/ModuleCompiler.hpp"
@@ -10,6 +9,7 @@
 
 import Engine.Asserts;
 import Engine.Env;
+import Engine.Logging;
 import std;
 
 using namespace hg::engine::accel;

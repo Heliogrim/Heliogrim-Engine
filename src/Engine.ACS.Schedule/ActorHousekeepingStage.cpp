@@ -3,12 +3,11 @@
 #include <Engine.ACS/ActorModule.hpp>
 #include <Engine.ACS/Registry.hpp>
 #include <Engine.ACS.Schedule/ActorPipeline.hpp>
-#include <Engine.Core/Engine.hpp>
-#include <Engine.Core/Universe.hpp>
-#include <Engine.Core/UniverseContext.hpp>
 #include <Engine.Scene/SceneBase.hpp>
 #include <Engine.Scene/SceneSystem.hpp>
 #include <Engine.Scene.Schedule/ScenePipeline.hpp>
+
+import Engine.Core;
 
 using namespace hg::engine::acs::schedule;
 using namespace hg::engine::scheduler;

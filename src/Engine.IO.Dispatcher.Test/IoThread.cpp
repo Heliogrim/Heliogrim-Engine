@@ -6,8 +6,8 @@
 #include <cstdlib>
 #include <Engine.Common/stdafx.h>
 #include <Engine.IO.Dispatcher/IoThread.hpp>
-#include <Engine.Logging/Logger.hpp>
 
+import Engine.Logging;
 import std;
 
 using namespace hg;

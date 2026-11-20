@@ -1,8 +1,6 @@
 #pragma once
 
 #include <Engine.Async/Future/Async.hpp>
-#include <Engine.Resource.Archive/__fwd.hpp>
-#include <Engine.Resource.Archive/Archive.hpp>
 #include <Engine.Storage.Action/Guard/IoMutationGuard.hpp>
 #include <Engine.Storage.Action/Guard/IoQueryGuard.hpp>
 #include <Engine.Storage.Registry/IStorage.hpp>
@@ -26,6 +24,7 @@
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Resource.Archive;
 #endif
 
 namespace hg::engine::resource {

@@ -2,10 +2,8 @@
 
 /**/
 
-#include <Engine.Core/Module/Modules.hpp>
-#include <Engine.Core/Module/SubModule.hpp>
-
 import Engine.Common;
+import Engine.Core;
 
 using namespace hg;
 using namespace hg::engine::core;

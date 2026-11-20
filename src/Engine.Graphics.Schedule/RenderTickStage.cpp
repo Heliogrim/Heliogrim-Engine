@@ -1,13 +1,10 @@
 #include "RenderTickStage.hpp"
 
 #include <Engine.Async/Collection/RingBuffer.hpp>
-#include <Engine.Core/Engine.hpp>
 #include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Graphics/RenderEnqueueResult.hpp>
 #include <Engine.Graphics/RenderTarget.hpp>
-#include <Engine.Graphics.Scene/RenderSceneManager.hpp>
 #include <Engine.Graphics.Schedule/RenderScenePipeline.hpp>
-#include <Engine.Logging/Logger.hpp>
 #include <Engine.Scene.Schedule/ScenePipeline.hpp>
 
 #ifdef _PROFILING
@@ -16,6 +13,9 @@
 #include <Engine.Common/__macro.hpp>
 
 import Engine.Common;
+import Engine.Core;
+import Engine.Graphics.Scene;
+import Engine.Logging;
 
 using namespace hg::engine::graphics::schedule;
 using namespace hg::engine::scheduler;

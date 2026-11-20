@@ -1,8 +1,8 @@
 #include "Task.hpp"
 
-#include <Engine.Core/Engine.hpp>
-
 #include "../Scheduler.hpp"
+
+import Engine.Core;
 
 using namespace hg::engine::scheduler::task;
 using namespace hg;

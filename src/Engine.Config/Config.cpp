@@ -1,6 +1,5 @@
-#include "Config.hpp"
-
 import Engine.Asserts;
+import Engine.Config;
 import std;
 
 using namespace ::hg::engine;

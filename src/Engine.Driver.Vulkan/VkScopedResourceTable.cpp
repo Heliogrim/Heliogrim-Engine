@@ -2,13 +2,13 @@
 
 #include <Engine.Accel.Pipeline/AccelerationPipeline.hpp>
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Core/Engine.hpp>
 #include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Graphics/vkinc.hpp>
 #include <Engine.Graphics.RenderGraph/Node/Runtime/Helper/VkDescriptorWriter.hpp>
-#include <Engine.Logging/Logger.hpp>
 
 import Engine.Asserts;
+import Engine.Core;
+import Engine.Logging;
 import std;
 
 using namespace hg;

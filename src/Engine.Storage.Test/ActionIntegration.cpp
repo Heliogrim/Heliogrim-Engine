@@ -2,9 +2,6 @@
 
 /**/
 
-#include <Engine.Config/Config.hpp>
-#include <Engine.Resource.Archive/StorageReadonlyArchive.hpp>
-#include <Engine.Resource.Archive/StorageReadWriteArchive.hpp>
 #include <Engine.Resource.Blob/Blob.hpp>
 #include <Engine.Resource.Blob/Memory/ByteSpanBlob.hpp>
 #include <Engine.Storage.Action/Context.hpp>
@@ -22,6 +19,8 @@
 #include "IntegrationFixture.hpp"
 
 import Engine.Common;
+import Engine.Config;
+import Engine.Resource.Archive;
 
 /**/
 

@@ -4,7 +4,6 @@
 #undef None
 /**/
 #include <Engine.Common/stdafx.h>
-#include <Engine.Logging/Logger.hpp>
 
 #include "Application.hpp"
 
@@ -14,6 +13,7 @@
 #include <Engine.Common/__macro.hpp>
 
 import Engine.Common;
+import Engine.Logging;
 
 using namespace hg::engine::graphics;
 using namespace hg;

@@ -4,8 +4,6 @@
 #include <Engine.ACS/Registry.hpp>
 #include <Engine.Assets/AssetGuid.hpp>
 #include <Engine.Assets.Type/Universe/LevelAsset.hpp>
-#include <Engine.Core/Universe.hpp>
-#include <Engine.Resource.Archive/Archive.hpp>
 #include <Engine.Scene/SceneBase.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Diagnostic/Codes.hpp>
@@ -16,6 +14,8 @@
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 
 import Engine.Common;
+import Engine.Core;
+import Engine.Resource.Archive;
 
 using namespace hg::engine::serialization;
 using namespace hg::engine::core;

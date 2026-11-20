@@ -8,5 +8,6 @@ make_library_project(
 		${PROJECT_NAME}::Engine.Async
 		${PROJECT_NAME}::Engine.Common
 		${PROJECT_NAME}::Engine.IO.Dispatcher
+		${PROJECT_NAME}::Engine.Logging
 		${PROJECT_NAME}::Engine.Reflect
 )

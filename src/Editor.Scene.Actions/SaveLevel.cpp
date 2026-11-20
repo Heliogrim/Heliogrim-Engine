@@ -3,10 +3,11 @@
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Logging/Logger.hpp>
 #include <Engine.Serialization/SerializationModule.hpp>
 #include <Engine.Storage/StorageModule.hpp>
 #include <Engine.Storage.System/StorageSystem.hpp>
+
+import Engine.Logging;
 
 using namespace hg::editor::scene::actions;
 using namespace hg;

@@ -3,8 +3,8 @@
 #include <cstring>
 #include <ShlObj_core.h>
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Logging/Logger.hpp>
 
+import Engine.Logging;
 import std;
 
 using namespace hg::engine::input;

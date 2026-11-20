@@ -2,10 +2,10 @@
 
 #include <cassert>
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Logging/Logger.hpp>
 
 import Engine.Asserts;
 import Engine.Common;
+import Engine.Logging;
 
 using namespace hg::engine::render::graph;
 using namespace hg;

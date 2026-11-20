@@ -1,7 +1,7 @@
+#include <limits>
 #include "StructureSlot.hpp"
 
-#include <limits>
-#include <Engine.Resource.Archive/Archive.hpp>
+import Engine.Resource.Archive;
 
 #include "SlotCursor.hpp"
 #include "../Load/LoadContext.hpp"

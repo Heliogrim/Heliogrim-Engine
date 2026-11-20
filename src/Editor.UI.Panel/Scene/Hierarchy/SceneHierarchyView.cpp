@@ -8,8 +8,6 @@
 #include <Editor.UI/Widget/ContextMenuProvider.hpp>
 #include <Editor.UI.Main/EditorUI.hpp>
 #include <Editor.UI.Service/Scene/Hierarchy/SceneHierarchyEntry.hpp>
-#include <Engine.Core/Engine.hpp>
-#include <Engine.Core/Module/Modules.hpp>
 #include <Engine.Reflow.Uikit/Atom/Paint.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/HorizontalLayout.hpp>
 #include <Heliogrim/Actor/Actor.hpp>
@@ -18,6 +16,7 @@
 
 #include "SceneHierarchyController.hpp"
 
+import Engine.Core;
 import std;
 
 using namespace hg::editor::ui;

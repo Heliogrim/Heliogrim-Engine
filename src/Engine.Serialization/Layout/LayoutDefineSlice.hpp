@@ -2,13 +2,13 @@
 
 #include <cassert>
 #include <cstdlib>
-#include <Engine.Resource.Archive/Archive.hpp>
 
 #include "DataLayout.hpp"
 #include "LayoutDefine.hpp"
 #include "LayoutDefineValueType.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Resource.Archive;
 import std;
 #endif
 

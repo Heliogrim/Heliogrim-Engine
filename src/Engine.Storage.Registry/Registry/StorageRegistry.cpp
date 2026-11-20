@@ -1,9 +1,6 @@
 #include "StorageRegistry.hpp"
 
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Config/Config.hpp>
-#include <Engine.Config/Enums.hpp>
-#include <Engine.Logging/Logger.hpp>
 #include <Engine.Storage.Registry/Url/StorageUrl.hpp>
 
 #include "../IStorage.hpp"
@@ -24,7 +21,9 @@
 
 import Engine.Asserts;
 import Engine.Common;
+import Engine.Config;
 import Engine.Env;
+import Engine.Logging;
 
 using namespace hg::engine::storage;
 using namespace hg;
