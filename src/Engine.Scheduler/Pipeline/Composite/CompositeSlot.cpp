@@ -81,10 +81,6 @@ static void disposeTask(const non_owning_rptr<const task::TaskDelegate> task_) {
 			delete static_cast<ptr<const task::RepetitiveTask>>(task_);
 			break;
 		}
-		case task::TaskType::eBatch: {
-			delete static_cast<ptr<const task::BatchTask>>(task_);
-			break;
-		}
 			[[unlikely]] default: {}
 	}
 

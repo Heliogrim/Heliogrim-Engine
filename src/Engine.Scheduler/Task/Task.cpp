@@ -68,23 +68,6 @@ void TaskDelegate::delegate() const {
 			}
 			break;
 		}
-		case TaskType::eBatch: {
-			/**
-			 * Batch Task
-			 *
-			 * -> downcast to [BatchTask] ...
-			 */
-			static_cast<const BatchTask*>(this)->invoke();
-			// TODO: Implement special behaviour
-			// TODO: destruct
-			/* TODO: Temporary */
-			if (_ctrl) {
-				_ctrl->onComplete(this);
-			} else {
-				delete static_cast<const BatchTask*>(this);
-			}
-			break;
-		}
 		case TaskType::eTickTask: {
 			/**
 			 * Tick Task
@@ -176,27 +159,4 @@ RepetitiveTask::RepetitiveTask(
 	const Lane lane_
 ) noexcept :
 	TaskDelegate(TaskType::eRepetitive, lane_),
-	_fnc(std::move(fnc_)) {}
-
-BatchTask::~BatchTask() noexcept = default;
-
-void BatchTask::invoke() const {
-	// TODO:
-	_fnc(0);
-}
-
-const non_owning_rptr<const BatchTask> engine::scheduler::task::make_batch_task(
-	BatchTask::function_type&& fnc_,
-	const Lane lane_
-) {
-	return static_cast<const non_owning_rptr<const BatchTask>>(
-		new BatchTask(std::forward<decltype(fnc_)>(fnc_), lane_)
-	);
-}
-
-BatchTask::BatchTask(
-	function_type&& fnc_,
-	const Lane lane_
-) noexcept :
-	TaskDelegate(TaskType::eBatch, lane_),
 	_fnc(std::move(fnc_)) {}
