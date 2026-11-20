@@ -27,23 +27,6 @@ function(_write_if_changed path content)
 	file(REMOVE "${tmp}")
 endfunction()
 
-# Provider target `${PROJECT_NAME}-<name>.Module` (alias `${PROJECT_NAME}::<name>.Module`), built like a library project.
-function(_make_module_provider out name)
-	name_to_target(provider "${name}.Module")
-	add_library(${provider} OBJECT)
-	add_library(${PROJECT_NAME}::${name}.Module ALIAS ${provider})
-	set_property(GLOBAL APPEND PROPERTY global_module_providers "${name}")
-
-	# Bundles linking the provider are exported, so the provider has to be too.
-	export(TARGETS ${provider} NAMESPACE ${PROJECT_NAME}:: FILE ${PROJECT_BINARY_DIR}/cmake/${provider}/${provider}-export.cmake)
-	_apply_default_compile_settings(${provider})
-
-	# External targets only: importers get their usage requirements (e.g. Jolt's `-mavx2`), and a BMI must match them,
-	#  else CMake 4.4 builds a second, synthetic BMI per consumer.
-	target_link_libraries(${provider} PRIVATE ${DEFAULT_LIBRARIES})
-	set(${out} "${provider}" PARENT_SCOPE)
-endfunction()
-
 function(_make_module_interface_content out)
 	set(__single_var_options MODULE_NAME BASE_DIR)
 	set(__multi_var_options HEADERS OWN_PREFIXES EXCLUDE)
@@ -260,7 +243,7 @@ function(make_vendor_module)
 	set(path "${HELIOGRIM_MODULE_DIR}/${args_MODULE_NAME}.cppm")
 	_write_if_changed("${path}" "${content}")
 
-	_make_module_provider(provider "${args_MODULE_NAME}")
+	make_module_provider(provider "${args_MODULE_NAME}")
 	target_sources(${provider} PUBLIC FILE_SET CXX_MODULES BASE_DIRS "${HELIOGRIM_MODULE_DIR}" FILES "${path}")
 
 	# Third-party code; `HG_MODULE_INTERFACE_UNIT` is unused by most.
@@ -277,7 +260,7 @@ function(make_std_module)
 	endif ()
 
 	foreach (name IN ITEMS std std.compat)
-		_make_module_provider(provider "${name}")
+		make_module_provider(provider "${name}")
 		target_sources(${provider} PUBLIC FILE_SET CXX_MODULES BASE_DIRS "${toolset_dir}/modules" FILES "${toolset_dir}/modules/${name}.ixx")
 		target_compile_options(${provider} PRIVATE -w)
 	endforeach ()
