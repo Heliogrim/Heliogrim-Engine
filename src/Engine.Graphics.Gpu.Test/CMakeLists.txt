@@ -13,14 +13,15 @@ make_test_project(
 		${PROJECT_NAME}::Engine.Asserts
 		${PROJECT_NAME}::Engine.Common
 		${PROJECT_NAME}::Engine.Config
+		${PROJECT_NAME}::Engine.Diagnostics
 		${PROJECT_NAME}::Engine.Driver.Vulkan
 		${PROJECT_NAME}::Engine.Event
 		${PROJECT_NAME}::Engine.Graphics
 		${PROJECT_NAME}::Engine.Graphics.RenderGraph
 		${PROJECT_NAME}::Engine.Logging
-		${PROJECT_NAME}::Heliogrim
-		${PROJECT_NAME}::External-ryml
 		${PROJECT_NAME}::External-c4core
+		${PROJECT_NAME}::External-ryml
+		${PROJECT_NAME}::Heliogrim
 )
 
 name_to_target(__gpu_test_target "Engine.Graphics.Gpu.Test")

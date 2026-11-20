@@ -12,7 +12,6 @@
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Module/CoreDependencies.hpp>
-#include <Engine.Event/GlobalEventEmitter.hpp>
 #include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Graphics.Event/GraphicRegisterImporterEvent.hpp>
 #include <Engine.Graphics.Event/GraphicRegisterLoaderEvent.hpp>
@@ -22,6 +21,7 @@
 #include "EditorGraphicsIoDepKey.hpp"
 
 import Engine.Common;
+import Engine.Event;
 
 using namespace ::hg::editor;
 using namespace ::hg;

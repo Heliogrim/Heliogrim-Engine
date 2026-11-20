@@ -5,11 +5,11 @@
 #include <Editor.Core/EditorEngine.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Core/Event/SignalShutdownEvent.hpp>
-#include <Engine.Event/GlobalEventEmitter.hpp>
 #include <Heliogrim/Heliogrim.hpp>
 #include <Heliogrim/HeliogrimStatic.hpp>
 
 import Engine.Common;
+import Engine.Event;
 
 using namespace hg;
 

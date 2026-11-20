@@ -1,7 +1,6 @@
 #include "Processor.hpp"
 
 #include <cstring>
-#include <Engine.Crypto/Checksum/Crc32.hpp>
 #include <Engine.Resource.Archive/Archive.hpp>
 #include <Engine.Resource.Package/Utils.hpp>
 
@@ -10,6 +9,7 @@
 
 import Engine.Asserts;
 import Engine.Common;
+import Engine.Crypto;
 
 using namespace hg::engine::storage::package;
 using namespace hg::engine::resource::package;

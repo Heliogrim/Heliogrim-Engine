@@ -38,7 +38,7 @@ namespace HeliogrimApi {
 	}
 
 	TEST(HierarchyComponentTest, RootActorIsOwnerOfRoot) {
-		auto* const owner = reinterpret_cast<ptr<Actor>>(static_cast<uintptr_t>(0x1000));
+		auto* const owner = reinterpret_cast<ptr<Actor>>(static_cast<std::uintptr_t>(0x1000));
 		auto root = make(nullptr, owner);
 		auto child = make(&root, nullptr);
 

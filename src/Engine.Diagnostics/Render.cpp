@@ -1,6 +1,5 @@
-#include "Render.hpp"
-
 import Engine.Asserts;
+import Engine.Diagnostics;
 import std;
 
 using namespace hg::engine;

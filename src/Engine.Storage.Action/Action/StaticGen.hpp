@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Reflect/IsType.hpp>
 
 #include "../Action.hpp"
 #include "../Context.hpp"
@@ -9,6 +8,7 @@
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Asserts;
 import Engine.Common;
+import Engine.Reflect;
 #endif
 
 namespace hg::engine::storage::system {

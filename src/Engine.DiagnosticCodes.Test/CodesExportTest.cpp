@@ -3,9 +3,9 @@
 /**/
 
 #include <Engine.Accel.Lang/Diagnostic/Codes.hpp>
-#include <Engine.Diagnostics/Code.hpp>
 
 import Engine.Common;
+import Engine.Diagnostics;
 #include <Engine.Serialization/Diagnostic/Codes.hpp>
 #include <Engine.Storage.Package/Diagnostic/Codes.hpp>
 

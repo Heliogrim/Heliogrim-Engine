@@ -1,4 +1,4 @@
-#include "ValueTypeNodeParameter.hpp"
+import Editor.Graphics.Graphs;
 
 using namespace hg::editor::graphics::graph;
 using namespace hg;

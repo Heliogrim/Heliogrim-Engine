@@ -3,5 +3,5 @@
 make_library_project(
         LIB_NAME Engine.Accel
         LIB_FOLDER "${IDE_FOLDER}/Engine/Accel"
-        LIBRARIES ${PROJECT_NAME}::Engine.Common
+        LIBRARIES ${PROJECT_NAME}::Engine.Common ${PROJECT_NAME}::Engine.Reflect ${PROJECT_NAME}::Engine.Diagnostics
 )

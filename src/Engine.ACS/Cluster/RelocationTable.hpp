@@ -38,7 +38,7 @@ namespace hg::engine::acs {
 			}
 			const auto& entry = *std::prev(next);
 			// Integer difference: `ptr_` may point into an allocation unrelated to `entry.from`.
-			const auto offset = reinterpret_cast<uintptr_t>(ptr_) - reinterpret_cast<uintptr_t>(entry.from);
+			const auto offset = reinterpret_cast<std::uintptr_t>(ptr_) - reinterpret_cast<std::uintptr_t>(entry.from);
 			return offset < _stride ? entry.to + offset : nullptr;
 		}
 

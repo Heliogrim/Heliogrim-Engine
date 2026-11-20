@@ -10,7 +10,6 @@
 #include <Engine.Graphics/Texture/SparseTexturePage.hpp>
 #include <Engine.Graphics/Texture/SparseTextureView.hpp>
 #include <Engine.Graphics/Texture/TextureLikeObject.hpp>
-#include <Engine.Reflect/Cast.hpp>
 #include <Engine.Resource/Manage/UniqueResource.hpp>
 #include <Engine.Storage.System/StorageSystem.hpp>
 
@@ -18,6 +17,7 @@
 #include <spng/spng.h>
 
 import Engine.Asserts;
+import Engine.Reflect;
 import vulkan;
 
 using namespace ::hg::editor::graphics::loader;

@@ -1,8 +1,5 @@
 #pragma once
 
-#include <Engine.Reflect/FullTypeInfo.hpp>
-#include <Engine.Reflect/IsType.hpp>
-
 #include "__fwd.hpp"
 #include "ResolvedStage.hpp"
 #include "../Action/DynamicStage.hpp"
@@ -10,6 +7,7 @@
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Reflect;
 #endif
 
 /**/

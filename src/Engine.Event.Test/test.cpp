@@ -2,8 +2,7 @@
 
 /**/
 
-#include <Engine.Event/GlobalEventEmitter.hpp>
-#include <Engine.Event/TickEvent.hpp>
+import Engine.Event;
 
 using namespace hg;
 

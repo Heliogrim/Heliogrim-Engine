@@ -9,8 +9,8 @@
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneColor.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneDepth.hpp>
 #include <Engine.Graphics.RenderGraph/Symbol/ScopedSymbolContext.hpp>
-#include <Engine.Reflect/Cast.hpp>
 
+import Engine.Reflect;
 import std;
 
 using namespace hg::engine::render;

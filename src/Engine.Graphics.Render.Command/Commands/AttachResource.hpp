@@ -1,9 +1,12 @@
 #pragma once
 
 #include <Engine.Accel.Lang/Rep/Symbol.hpp>
-#include <Engine.Reflect/Inherit/ClassMetaBase.hpp>
 
 #include "../RenderCommand.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Reflect;
+#endif
 
 namespace hg::engine::render::cmd {
     class AttachResourceRCmd :

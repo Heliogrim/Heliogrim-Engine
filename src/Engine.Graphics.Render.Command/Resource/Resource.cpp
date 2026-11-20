@@ -4,10 +4,9 @@
 #include <Engine.Graphics/Buffer/UniformBufferView.hpp>
 #include <Engine.Graphics/Texture/TextureLikeObject.hpp>
 #include <Engine.Graphics/Texture/TextureSampler.hpp>
-#include <Engine.Reflect/Cast.hpp>
-#include <Engine.Reflect/IsType.hpp>
 
 import Engine.Common;
+import Engine.Reflect;
 
 using namespace hg::engine::graphics;
 using namespace hg::engine::render;

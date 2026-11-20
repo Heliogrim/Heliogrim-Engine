@@ -5,7 +5,6 @@
 
 #include <Engine.ACS/Registry.hpp>
 #include <Engine.Core/Engine.hpp>
-#include <Engine.Reflect/Cast.hpp>
 #include <Engine.Serialization/SerializationModule.hpp>
 #include <Engine.Serialization/Schema/Migration.hpp>
 #include <Engine.Serialization/Structure/RecordScopedSlot.hpp>
@@ -21,6 +20,7 @@
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Reflect;
 #endif
 
 namespace hg::engine::serialization {

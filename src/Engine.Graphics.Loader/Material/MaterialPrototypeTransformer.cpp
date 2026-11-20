@@ -11,7 +11,6 @@
 #include <Engine.Graphics/Pool/GlobalResourcePool.hpp>
 #include <Engine.Graphics.Material/MaterialFactory.hpp>
 #include <Engine.Graphics.Render.Predefined/Descriptions/SceneView.hpp>
-#include <Engine.Reflect/Cast.hpp>
 #include <Engine.Resource/LoaderManager.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 #include <Engine.Resource/Manage/UniqueResource.hpp>
@@ -20,6 +19,7 @@
 #include "../Texture/Traits.hpp"
 
 import Engine.Common;
+import Engine.Reflect;
 
 using namespace hg::engine::graphics::loader;
 using namespace hg::engine::graphics;

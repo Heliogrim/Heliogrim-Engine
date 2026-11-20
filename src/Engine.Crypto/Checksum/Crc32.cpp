@@ -3,7 +3,7 @@
 
 /**/
 
-#include "Crc32.hpp"
+import Engine.Crypto;
 
 using namespace hg::engine::crypto;
 using namespace hg;

@@ -3,8 +3,11 @@
 #include <Engine.ACS/ComponentGuid.hpp>
 #include <Engine.ACS/ComponentLabel.hpp>
 #include <Engine.ACS/ComponentTypeId.hpp>
-#include <Engine.Reflect/Inherit/InheritBase.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Reflect;
+#endif
 
 namespace hg {
 	class LogicComponent :

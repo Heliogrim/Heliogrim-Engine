@@ -3,12 +3,12 @@
 #include <cstdint>
 #include <Engine.ACS/Archetype/LayoutInfo.hpp>
 #include <Engine.ACS/Cluster/ClusterRegion.hpp>
-#include <Engine.Reflect/Meta/MetaClass.hpp>
 
 #include "ArchetypeOps.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Reflect;
 #endif
 
 namespace hg {
@@ -47,7 +47,7 @@ namespace hg {
 			const u64 layoutHash_,
 			const engine::acs::ClusterDesc desc_,
 			ref<const ArchetypeOps> ops_,
-			const std::span<const uintptr_t> componentOffsets_,
+			const std::span<const std::uintptr_t> componentOffsets_,
 			const ptr<const u64> startBitmap_,
 			const u32 minAlign_,
 			const std::span<const engine::acs::SlotEntry> entries_,
@@ -82,7 +82,7 @@ namespace hg {
 		u64 _layoutHash;
 		engine::acs::ClusterDesc _desc;
 		ArchetypeOps _ops;
-		std::span<const uintptr_t> _componentOffsets;
+		std::span<const std::uintptr_t> _componentOffsets;
 		ptr<const u64> _startBitmap;
 		u32 _minAlign;
 		std::span<const engine::acs::SlotEntry> _entries;
@@ -109,7 +109,7 @@ namespace hg {
 		 * Offset of each component's `HierarchyComponent` subobject from the slot base, in entry order
 		 * (parents before children).
 		 */
-		[[nodiscard]] constexpr std::span<const uintptr_t> componentOffsets() const noexcept {
+		[[nodiscard]] constexpr std::span<const std::uintptr_t> componentOffsets() const noexcept {
 			return _componentOffsets;
 		}
 

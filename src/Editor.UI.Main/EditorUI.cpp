@@ -4,7 +4,6 @@
 #include <Editor.Boot/Module/Editor.hpp>
 #include <Editor.Core/EditorEngine.hpp>
 #include <Editor.UI/Helper/AssetBrowserHelper.hpp>
-#include <Editor.UI.Init/EditorInit.hpp>
 #include <Editor.UI.Service/Input/InputService.hpp>
 #include <Editor.UI.Service/Input/InputServiceInit.hpp>
 #include <Editor.UI.Service/Property/PropertyServiceInit.hpp>
@@ -16,6 +15,7 @@
 
 #include "Module/EditorUI.hpp"
 
+import Editor.UI.Init;
 import Engine.Common;
 
 using namespace hg::editor::ui;

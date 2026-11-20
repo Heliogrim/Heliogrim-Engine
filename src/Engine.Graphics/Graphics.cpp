@@ -23,7 +23,6 @@
 #include "Cache/GlobalResourceCache.hpp"
 #include "Engine.Core/Engine.hpp"
 #include "Engine.Core/Universe.hpp"
-#include "Engine.Event/GlobalEventEmitter.hpp"
 #include "Engine.Resource/ResourceManager.hpp"
 #include "Engine.Scene/Scene.hpp"
 #include "Importer/ImageImporter.hpp"
@@ -39,6 +38,7 @@
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
 
 import Engine.Common;
+import Engine.Event;
 /**/
 
 using namespace hg::engine::graphics;

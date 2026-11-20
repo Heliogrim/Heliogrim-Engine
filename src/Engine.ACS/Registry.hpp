@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Reflect/TypeId.hpp>
-#include <Engine.Reflect/Inherit/Concept.hpp>
 #include <Heliogrim/Actor/ActorGuid.hpp>
 
 #include "ActorPoolWrapper.hpp"
@@ -20,6 +18,7 @@
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Reflect;
 #endif
 
 namespace hg {

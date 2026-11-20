@@ -1,9 +1,10 @@
 #include "pch.h"
 /**/
 
-#include <Engine.Event/GlobalEventEmitter.hpp>
 #include <Engine.Graphics.Scene/View/SceneViewEye.hpp>
 #include <Engine.Render.Scene.Model/CameraModel.hpp>
+
+import Engine.Event;
 
 using namespace hg;
 

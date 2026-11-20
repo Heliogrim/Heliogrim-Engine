@@ -40,18 +40,18 @@ namespace hg {
 
 			constexpr iterator() noexcept = default;
 
-			constexpr iterator(const uintptr_t base_, const ptr<const uintptr_t> entry_) noexcept :
+			constexpr iterator(const std::uintptr_t base_, const ptr<const std::uintptr_t> entry_) noexcept :
 				_base(base_),
 				_entry(entry_) {}
 
 		private:
-			uintptr_t _base = 0uLL;
-			ptr<const uintptr_t> _entry = nullptr;
+			std::uintptr_t _base = 0uLL;
+			ptr<const std::uintptr_t> _entry = nullptr;
 
 		public:
 			[[nodiscard]] value_type operator*() const noexcept {
 				// Dynamic entries are pointer objects, not uintptr_t objects; memcpy keeps the load free of aliasing UB.
-				uintptr_t entry;
+				std::uintptr_t entry;
 				std::memcpy(&entry, _entry, sizeof(entry));
 				return std::bit_cast<value_type>(_base + entry);
 			}
@@ -130,7 +130,7 @@ namespace hg {
 		 */
 		[[nodiscard]] static ComponentRange archetype(
 			std::byte* const slotBase_,
-			const std::span<const uintptr_t> offsets_,
+			const std::span<const std::uintptr_t> offsets_,
 			const ptr<const u64> bitmap_,
 			const u32 blockSize_,
 			const u32 minAlign_
@@ -138,7 +138,7 @@ namespace hg {
 			::hg::assertrt(std::has_single_bit(minAlign_));
 
 			ComponentRange range {};
-			range._base = reinterpret_cast<uintptr_t>(slotBase_);
+			range._base = reinterpret_cast<std::uintptr_t>(slotBase_);
 			range._entries = offsets_.data();
 			range._count = offsets_.size();
 			range._bitmap = bitmap_;
@@ -148,12 +148,12 @@ namespace hg {
 		}
 
 		[[nodiscard]] static ComponentRange dynamic(cref<dynamic_set_type> set_) noexcept {
-			static_assert(sizeof(ptr<HierarchyComponent>) == sizeof(uintptr_t));
+			static_assert(sizeof(ptr<HierarchyComponent>) == sizeof(std::uintptr_t));
 
 			const auto& values = set_.values();
 
 			ComponentRange range {};
-			range._entries = reinterpret_cast<const uintptr_t*>(values.data());
+			range._entries = reinterpret_cast<const std::uintptr_t*>(values.data());
 			range._count = values.size();
 			range._set = &set_;
 			return range;
@@ -162,8 +162,8 @@ namespace hg {
 		static ComponentRange dynamic(mref<dynamic_set_type>) = delete;
 
 	private:
-		uintptr_t _base = 0uLL;
-		ptr<const uintptr_t> _entries = nullptr;
+		std::uintptr_t _base = 0uLL;
+		ptr<const std::uintptr_t> _entries = nullptr;
 		size_t _count = 0uLL;
 
 		/* Dynamic only; nullptr marks an archetype range. */
@@ -197,7 +197,7 @@ namespace hg {
 			}
 
 			// Unsigned wrap sends addresses below slotBase (and nullptr) past blockSize.
-			const auto offset = reinterpret_cast<uintptr_t>(component_) - _base;
+			const auto offset = reinterpret_cast<std::uintptr_t>(component_) - _base;
 			if (offset >= _blockSize || (offset & ((1uLL << _alignShift) - 1uLL)) != 0uLL) {
 				return false;
 			}

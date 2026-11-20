@@ -6,7 +6,6 @@
 
 /**/
 
-#include <Engine.Reflect/FullTypeInfo.hpp>
 #include <Engine.Resource.Archive/ArchiveType.hpp>
 #include <Engine.Resource.Archive/BufferArchive.hpp>
 #include <Engine.Resource.Archive/StorageReadonlyArchive.hpp>
@@ -27,6 +26,7 @@
 #include <Engine.Storage.Registry/Url/StorageUrl.hpp>
 
 import Engine.Common;
+import Engine.Reflect;
 
 /**/
 

@@ -2,8 +2,7 @@
 
 /**/
 
-#include <Editor.UI.Rx/Subject.hpp>
-
+import Editor.UI.Rx;
 import std;
 
 using namespace hg;

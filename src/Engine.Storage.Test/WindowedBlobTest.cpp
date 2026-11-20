@@ -2,11 +2,11 @@
 
 /**/
 
-#include <Engine.Reflect/Inherit/InheritMeta.hpp>
 #include <Engine.Resource.Blob/WindowedBlob.hpp>
 #include <Engine.Resource.Blob/Memory/ByteSpanBlob.hpp>
 
 import Engine.Common;
+import Engine.Reflect;
 
 /**/
 

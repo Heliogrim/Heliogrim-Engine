@@ -1,11 +1,10 @@
 #pragma once
 
-#include <Engine.Diagnostics/Diagnostic.hpp>
-
 #include "../Diagnostic/Codes.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Diagnostics;
 #endif
 
 namespace hg::engine::accel::lang::ir {

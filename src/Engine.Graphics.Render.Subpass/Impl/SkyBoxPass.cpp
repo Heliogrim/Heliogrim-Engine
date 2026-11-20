@@ -19,11 +19,10 @@
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneView.hpp>
 #include <Engine.Graphics.RenderGraph/Symbol/ScopedSymbolContext.hpp>
 #include <Engine.Graphics.Scene/View/SceneView.hpp>
-#include <Engine.Reflect/Cast.hpp>
-#include <Engine.Reflect/ExactType.hpp>
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
 
 import Engine.Common;
+import Engine.Reflect;
 
 using namespace hg::engine::render;
 using namespace hg::engine::accel;

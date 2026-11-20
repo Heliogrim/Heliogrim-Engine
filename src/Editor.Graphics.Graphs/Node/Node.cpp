@@ -1,8 +1,4 @@
-#include "Node.hpp"
-
-#include "NodeInput.hpp"
-#include "NodeOutput.hpp"
-#include "NodeParameter.hpp"
+import Editor.Graphics.Graphs;
 
 using namespace hg::editor::graphics::graph;
 using namespace hg;

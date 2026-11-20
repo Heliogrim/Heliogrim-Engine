@@ -1,7 +1,8 @@
 #pragma once
 
-#include <Engine.Diagnostics/Diagnostic.hpp>
-#include <Engine.Diagnostics/Sink.hpp>
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Diagnostics;
+#endif
 
 namespace hg::engine::diag {
 	/**

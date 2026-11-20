@@ -4,7 +4,8 @@
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Core/Engine.hpp>
-#include <Engine.Reflect/Cast.hpp>
+
+import Engine.Reflect;
 
 using namespace hg::editor::ui;
 using namespace hg;

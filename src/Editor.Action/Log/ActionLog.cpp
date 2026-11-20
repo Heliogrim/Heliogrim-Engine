@@ -15,7 +15,7 @@ using namespace hg;
 ActionLog::ActionLog() :
 	_log(),
 	_relog(),
-	_saveState(NULL) {}
+	_saveState(0) {}
 
 void ActionLog::storeLog(mref<Arci<Action>> entry_) {
 	if (_log.size() >= action_log_size) {

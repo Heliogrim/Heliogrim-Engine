@@ -11,9 +11,9 @@
 #include <Engine.Graphics/Texture/TextureLikeObject.hpp>
 #include <Engine.Graphics/Texture/TextureSampler.hpp>
 #include <Engine.Graphics/Texture/TextureView.hpp>
-#include <Engine.Reflect/TypeSwitch.hpp>
 
 import Engine.Common;
+import Engine.Reflect;
 
 using namespace hg::engine::render::graph;
 using namespace hg::engine::graphics;

@@ -1,10 +1,12 @@
 
 # Setup
 make_library_project(
-        LIB_NAME Editor.UI.Init
+        LIB_NAME Editor.UI.Init
+        MODULE
         LIB_FOLDER "${IDE_FOLDER}/Editor"
         LIBRARIES
         ${PROJECT_NAME}::Editor.UI
+        ${PROJECT_NAME}::Editor.UI.Rx
         ${PROJECT_NAME}::Engine.Common
         ${PROJECT_NAME}::Heliogrim
 )

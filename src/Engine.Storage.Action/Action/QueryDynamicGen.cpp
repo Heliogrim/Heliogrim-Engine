@@ -1,6 +1,6 @@
 #include "QueryDynamicGen.hpp"
 
-#include <Engine.Reflect/IsType.hpp>
+import Engine.Reflect;
 
 using namespace hg::engine::storage::system;
 using namespace hg::engine::storage;

@@ -2,7 +2,7 @@
 
 /**/
 
-#include <Engine.Diagnostics/Sink.hpp>
+import Engine.Diagnostics;
 
 using namespace hg::engine::diag;
 using namespace hg;

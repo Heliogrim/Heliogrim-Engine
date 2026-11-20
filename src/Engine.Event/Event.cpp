@@ -1,3 +1,3 @@
-#include "Event.hpp"
+import Engine.Event;
 
 using namespace hg;

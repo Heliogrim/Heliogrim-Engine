@@ -1,11 +1,10 @@
 #pragma once
 
-#include <Engine.Reflect/TypeId.hpp>
-
 #include "../SceneHookFilter.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Reflect;
 #endif
 
 namespace hg::engine::render::graph {

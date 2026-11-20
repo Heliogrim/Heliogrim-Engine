@@ -2,13 +2,13 @@
 
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Reflect/TypeId.hpp>
 
 #include "ConfigEntry.hpp"
 #include "ConfigKey.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Reflect;
 #endif
 
 namespace hg::engine::cfg {

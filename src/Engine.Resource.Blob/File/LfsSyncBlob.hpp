@@ -2,12 +2,12 @@
 
 #include <Engine.Async/Primitive/FiberMutex.hpp>
 #include <Engine.Filesystem/Url.hpp>
-#include <Engine.Reflect/Inherit/InheritMeta.hpp>
 
 #include "../Blob.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Reflect;
 #endif
 
 namespace hg::engine::resource {

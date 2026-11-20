@@ -9,7 +9,6 @@
 #include <Engine.Core/Timing.hpp>
 #include <Engine.Core/Universe.hpp>
 #include <Engine.Core/Module/Modules.hpp>
-#include <Engine.Event/GlobalEventEmitter.hpp>
 #include <Engine.Level/Level.hpp>
 #include <Engine.Scene/SceneBase.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
@@ -32,6 +31,7 @@
 #include "TestArchetypes.hpp"
 
 import Engine.Common;
+import Engine.Event;
 
 using namespace HeliogrimApi;
 

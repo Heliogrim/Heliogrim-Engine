@@ -1,12 +1,12 @@
 #pragma once
 #include <Engine.Graphics/Camera/CameraFrustum.hpp>
 #include <Engine.Graphics.Scene/View/SceneView.hpp>
-#include <Engine.Reflect/TypeId.hpp>
 
 #include "Culling.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Reflect;
 #endif
 
 namespace hg::engine::render::graph {

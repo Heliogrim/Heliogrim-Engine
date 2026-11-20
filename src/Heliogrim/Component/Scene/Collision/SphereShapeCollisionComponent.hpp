@@ -3,7 +3,10 @@
 #include <Engine.Serialization/Access/__fwd.hpp>
 
 #include "ShapeCollisionComponent.hpp"
-#include "Engine.Reflect/Inherit/InheritMeta.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Reflect;
+#endif
 
 namespace hg {
 	class SphereShapeCollisionComponent final :

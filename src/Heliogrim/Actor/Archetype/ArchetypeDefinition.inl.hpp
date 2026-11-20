@@ -115,8 +115,8 @@ namespace hg::archetype_detail {
 	struct ClassTables {
 		using info = info_of<Type_>;
 
-		constexpr static Array<uintptr_t, info::entry_count> offsets = [] {
-			Array<uintptr_t, info::entry_count> result {};
+		constexpr static Array<std::uintptr_t, info::entry_count> offsets = [] {
+			Array<std::uintptr_t, info::entry_count> result {};
 			for (u32 entry = 0u; entry < info::entry_count; ++entry) {
 				result[entry] = info::entries[entry].offset;
 			}
@@ -288,7 +288,7 @@ namespace hg {
 				info::actor_offset
 			},
 			ops,
-			std::span<const uintptr_t> { tables::offsets },
+			std::span<const std::uintptr_t> { tables::offsets },
 			tables::bitmap(),
 			info::min_align,
 			std::span<const engine::acs::SlotEntry> { info::entries },

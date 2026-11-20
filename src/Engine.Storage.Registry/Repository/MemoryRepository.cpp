@@ -1,7 +1,5 @@
 #include "MemoryRepository.hpp"
 
-#include <Engine.Reflect/Compile/String.hpp>
-
 #include "../IStorage.hpp"
 #include "../Options/StorageDescriptor.hpp"
 #include "../Provider/MemoryProvider.hpp"
@@ -10,6 +8,7 @@
 #include "../Url/StorageUrl.hpp"
 
 import Engine.Asserts;
+import Engine.Reflect;
 
 using namespace hg::engine::storage::system;
 using namespace hg;

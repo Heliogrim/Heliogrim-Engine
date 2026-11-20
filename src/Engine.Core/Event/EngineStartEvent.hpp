@@ -1,6 +1,8 @@
 #pragma once
 
-#include <Engine.Event/Event.hpp>
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Event;
+#endif
 
 namespace hg::engine::core {
 	class EngineStartEvent final :

@@ -7,7 +7,6 @@
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Graphics/Pool/GlobalResourcePool.hpp>
 #include <Engine.Graphics.Material/MaterialFactory.hpp>
-#include <Engine.Reflect/Cast.hpp>
 #include <Engine.Resource/LoaderManager.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 #include <Engine.Resource/Manage/UniqueResource.hpp>
@@ -17,6 +16,7 @@
 
 import Engine.Asserts;
 import Engine.Common;
+import Engine.Reflect;
 
 using namespace hg::engine::graphics::loader;
 using namespace hg::engine::graphics;
