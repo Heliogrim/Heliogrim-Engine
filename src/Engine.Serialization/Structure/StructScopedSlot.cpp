@@ -5,7 +5,6 @@
 
 #include "IntegralScopedSlot.hpp"
 #include "StructSlot.hpp"
-#include "StructureSlotTypeTraits.hpp"
 
 using namespace hg::engine::serialization;
 using namespace hg;
@@ -39,6 +38,24 @@ StructScopedSlot::~StructScopedSlot() {
 	}
 }
 
+u16 StructScopedSlot::revision() const noexcept {
+	u16 value = 0;
+	if (slot() && slot()->hasPayload()) {
+		getSlot<u16>("@rev") >> value;
+	}
+	return value;
+}
+
+void StructScopedSlot::warn(const ReadError::Kind kind_, String detail_) const {
+	if (slot()) {
+		static_cast<ptr<StructSlot>>(slot())->warn(kind_, std::move(detail_));
+	}
+}
+
+bool StructScopedSlot::reportUnreadKeys() const {
+	return slot() && static_cast<ptr<StructSlot>>(slot())->reportUnreadKeys();
+}
+
 RecordScopedSlot StructScopedSlot::insertRecordSlot(cref<record_key_type> key_) {
 
 	auto record = static_cast<ptr<StructSlot>>(slot())->insertRecord(key_);
@@ -70,12 +87,4 @@ RecordScopedSlot StructScopedSlot::getRecordSlot(const size_t index_) const {
 StructScopedSlot StructScopedSlot::getStructSlot(cref<record_key_type> key_) const {
 	// Note: We need to use into, as `asStruct` would make the returned slot immutable.
 	return getRecordSlot(key_).intoStruct();
-}
-
-u16 StructScopedSlot::revision() const noexcept {
-	u16 value = 0;
-	if (slot() && slot()->hasPayload()) {
-		getSlot<u16>("@rev") >> value;
-	}
-	return value;
 }

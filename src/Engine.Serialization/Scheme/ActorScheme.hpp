@@ -54,6 +54,18 @@ namespace hg::engine::serialization {
 				return static_cast<decltype(AccessType_::template instantiate(allocator_, actorGuid, std::forward<decltype(args_)>(args_)...))>(nullptr);
 			}
 
+			const auto serial = Engine::getEngine()->getSerialization();
+
+			// An actor missing one of its components cannot round-trip; skip it whole.
+			for (s64 idx = 0; idx < count; ++idx) {
+				const auto structured = components.getRecordSlot(idx).asStruct();
+				const auto typeId = get_typeId_slot<ComponentTypeId>(structured);
+				if (typeId != ComponentTypeId {} && not serial->getComponentScheme(typeId).has_value()) {
+					structured.warn(ReadError::Kind::eUnknownType, "component type has no scheme; actor skipped");
+					return static_cast<decltype(AccessType_::template instantiate(allocator_, actorGuid, std::forward<decltype(args_)>(args_)...))>(nullptr);
+				}
+			}
+
 			auto* target = AccessType_::template instantiate(
 				allocator_,
 				actorGuid,
@@ -63,7 +75,7 @@ namespace hg::engine::serialization {
 
 			/**/
 
-			const auto serial = Engine::getEngine()->getSerialization();
+			bool unknown = false;
 			auto instanced = Vector<ptr<LogicComponent>>();
 			instanced.resize(count, nullptr);
 
@@ -86,7 +98,10 @@ namespace hg::engine::serialization {
 				/**/
 
 				const auto fnSet = serial->getComponentScheme(checkTypeId);
-				::hg::assertrt(fnSet.has_value());
+				if (not fnSet.has_value()) {
+					// Unreachable after the pre-pass; kept so a scheme race cannot crash the load.
+					continue;
+				}
 
 				const auto hasParent = recordParentIdx >= 0;
 				auto* const parent = hasParent && instanced[recordParentIdx] ?
@@ -103,13 +118,15 @@ namespace hg::engine::serialization {
 					parent
 				);
 
+				unknown |= structured.reportUnreadKeys();
+
 				/**/
 
-				if (IsType<HierarchyComponent>(*next.get()) && parent == nullptr && target->getRootComponent().has_value()) {
-					// addComponent asserts a single root; a second parentless hierarchy component is bad data.
-					structured.slot()->getState().root->archive->setError();
+				if (next.get() == nullptr) {
+					continue;
+				}
 
-				} else if (IsType<HierarchyComponent>(*next.get())) {
+				if (IsType<HierarchyComponent>(*next.get())) {
 					// Keep back-reference for parent resolving with pure pointers
 					instanced[idx] = next.get();
 					target->addComponent(
@@ -126,6 +143,9 @@ namespace hg::engine::serialization {
 
 			/**/
 
+			if (slot.reportUnreadKeys() || unknown) {
+				target->markUnknownData();
+			}
 			return target;
 		}
 	};

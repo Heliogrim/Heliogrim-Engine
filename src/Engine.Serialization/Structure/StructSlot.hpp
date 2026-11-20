@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Engine.Common/Collection/Vector.hpp>
+
 #include "StructureSlot.hpp"
 #include "__fwd.hpp"
 
@@ -35,5 +37,14 @@ namespace hg::engine::serialization {
 		[[nodiscard]] bool hasRecord(cref<record_key_type> key_);
 
 		[[nodiscard]] sptr<RecordSlot> getRecord(cref<record_key_type> key_);
+
+	public:
+		/* Stored keys in order; empty on a malformed payload (failure latched). */
+		[[nodiscard]] Vector<String> keys() const;
+
+		void warn(ReadError::Kind kind_, String detail_) const;
+
+		/* Warns `unknown-field` per stored key no alias of this struct read (`@type`, `@rev` aside); true if any. */
+		[[nodiscard]] bool reportUnreadKeys() const;
 	};
 }

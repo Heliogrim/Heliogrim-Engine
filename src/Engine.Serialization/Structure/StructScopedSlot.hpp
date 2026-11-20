@@ -19,6 +19,16 @@ namespace hg::engine::serialization {
 		~StructScopedSlot() override;
 
 	public:
+		/* Stored `@rev`; a missing key means 0. */
+		[[nodiscard]] u16 revision() const noexcept;
+
+		/* Warns at this struct through the load context, if any. */
+		void warn(ReadError::Kind kind_, String detail_) const;
+
+		/* Call once the owning object is fully hydrated; see StructSlot::reportUnreadKeys. */
+		[[nodiscard]] bool reportUnreadKeys() const;
+
+	public:
 		[[nodiscard]] RecordScopedSlot insertRecordSlot(cref<record_key_type> key_);
 
 		[[nodiscard]] StructScopedSlot insertStructSlot(cref<record_key_type> key_);
@@ -62,9 +72,6 @@ namespace hg::engine::serialization {
 		[[nodiscard]] RecordScopedSlot getRecordSlot(size_t index_) const;
 
 		[[nodiscard]] StructScopedSlot getStructSlot(cref<record_key_type> key_) const;
-
-		/* Stored `@rev`; a missing key means 0. */
-		[[nodiscard]] u16 revision() const noexcept;
 
 	public:
 		template <typename VoidType_> requires std::is_void_v<VoidType_>

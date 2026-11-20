@@ -114,6 +114,7 @@ namespace hg {
 	private:
 		ActorGuid _guid;
 		ActorLabel _label;
+		bool _unknownData = false;
 
 	public:
 		/**
@@ -131,6 +132,11 @@ namespace hg {
 		void setLabel(mref<ActorLabel> label_);
 
 		void unsafe_set_guid(cref<ActorGuid> guid_);
+
+		/* Set when a load met data this build does not understand; such an actor must not be saved back. */
+		[[nodiscard]] bool carriesUnknownData() const noexcept;
+
+		void markUnknownData() noexcept;
 
 	protected:
 		Opt<ref<engine::core::Universe>> _universe;

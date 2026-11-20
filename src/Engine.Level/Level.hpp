@@ -3,7 +3,9 @@
 #include <span>
 #include <Engine.ACS/Handle/Handle.hpp>
 #include <Engine.Common/Optional.hpp>
+#include <Engine.Common/Expected.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Diagnostics/Diagnostic.hpp>
 #include <Engine.Common/Collection/DenseSet.hpp>
 #include <Engine.Common/Managed/AtomicRefCountedIntrusive.hpp>
 #include <Engine.Common/Managed/Rc.hpp>
@@ -54,6 +56,10 @@ namespace hg::engine::core {
 
 		[[nodiscard]] ref<const LevelGuid> guid() const noexcept;
 
+	private:
+		bool _unknownData = false;
+
+	public:
 		[[nodiscard]] ref<const AssetGuid> assetGuid() const noexcept;
 
 		[[nodiscard]] cref<math::Bounding> getBounding() const noexcept;
@@ -63,6 +69,11 @@ namespace hg::engine::core {
 		[[nodiscard]] Opt<ref<engine::core::Universe>> getUniverse() const noexcept;
 
 		void setOwnerUniverse(mref<Opt<ref<engine::core::Universe>>> owner_);
+
+		/* Set when a load met data this build does not understand (e.g. a skipped actor); such a level must not be saved back. */
+		[[nodiscard]] bool carriesUnknownData() const noexcept;
+
+		void markUnknownData() noexcept;
 
 	private:
 		// Space of this level's cluster regions and handles; acquired with the first archetype actor.
@@ -94,4 +105,9 @@ namespace hg::engine::core {
 	/**/
 
 	[[nodiscard]] extern Arci<Level> make_root_like_level();
+
+	/**
+	 * Save boundary check: refuses (`save-refused`, one note per marked object) when the level or any of its actors carries unknown data.
+	 */
+	[[nodiscard]] extern Result<void, diag::Diagnostics> checkSaveAllowed(ref<const Level> level_);
 }

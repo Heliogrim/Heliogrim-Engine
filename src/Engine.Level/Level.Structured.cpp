@@ -62,14 +62,23 @@ void access::Structure<Level>::hydrate(cref<StructScopedSlot> record_, Level& ta
 		record.asStruct().getSlot<u64>(Symbols::Type) >> actorTypeId.data;
 
 		auto fnSet = serial->getActorScheme(actorTypeId);
-		::hg::assertrt(fnSet.has_value());
+		if (not fnSet.has_value()) {
+			record.asStruct().warn(ReadError::Kind::eUnknownType, "actor type has no scheme; actor skipped");
+			target_.markUnknownData();
+			continue;
+		}
 
 		auto re = fnSet->deserialize(record, std::addressof(registry));
 		if (re == nullptr) {
-			// Malformed actor record; the failure is latched on the load context.
+			// Malformed or unknown actor record (reported on the load context); a save would drop it.
+			target_.markUnknownData();
 			continue;
 		}
 
 		target_.addActor(VolatileActor<> { ::hg::move(re) });
+	}
+
+	if (record_.reportUnreadKeys()) {
+		target_.markUnknownData();
 	}
 }
