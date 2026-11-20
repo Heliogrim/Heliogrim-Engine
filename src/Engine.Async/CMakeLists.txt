@@ -2,6 +2,7 @@
 # Setup
 make_library_project(
 		LIB_NAME Engine.Async
+		MODULE
 		LIBRARIES
 		${PROJECT_NAME}::Engine.Asserts
 		${PROJECT_NAME}::Engine.Common

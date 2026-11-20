@@ -1,5 +1,6 @@
 #include "VkNativeBatch.hpp"
 
+#include <Engine.Common/ThreadSafety.hpp>
 #include <Engine.Graphics/Command/CommandPool.hpp>
 #include <Engine.Graphics/Command/CommandQueue.hpp>
 

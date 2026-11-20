@@ -1,9 +1,13 @@
 #pragma once
 
-#include <Engine.Async/Primitive/FiberMutex.hpp>
+#include <Engine.Common/ThreadSafety.hpp>
 
 #include "Resource.hpp"
 #include "ResourceStorage.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Async;
+#endif
 
 namespace hg {
 	template <typename ManagedType_, typename StorageType_ = ResourceStorage<ManagedType_>>

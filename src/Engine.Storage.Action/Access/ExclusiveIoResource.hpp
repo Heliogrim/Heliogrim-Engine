@@ -1,11 +1,15 @@
 #pragma once
 
-#include <Engine.Async/Primitive/FiberMutex.hpp>
+#include <Engine.Common/ThreadSafety.hpp>
 
 #include "IoResource.hpp"
 #include "ResourceFnStore.hpp"
 #include "ResourceStore.hpp"
 #include "ResourceValStore.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Async;
+#endif
 
 namespace hg::engine::storage {
 	template <

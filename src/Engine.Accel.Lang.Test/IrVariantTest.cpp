@@ -175,7 +175,7 @@ namespace AccelLang {
 		auto builds = 0;
 		const auto build = [&builds]() {
 			++builds;
-			return make_smr<const Resolved>(new Resolved {});
+			return make_smr<const hg::engine::accel::lang::ir::Resolved>(new hg::engine::accel::lang::ir::Resolved {});
 		};
 
 		const auto first = cache.getOrCreate(key, build);

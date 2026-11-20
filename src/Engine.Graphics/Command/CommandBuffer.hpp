@@ -1,12 +1,14 @@
 #pragma once
 
-#include <Engine.Async/Primitive/FiberMutex.hpp>
-
 #include "CommandPool.hpp"
 #include "../vkinc.hpp"
 #include "../Buffer/Buffer.hpp"
 #include "../Buffer/SparseBuffer.hpp"
 #include "../Texture/TextureBuffer.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Async;
+#endif
 
 namespace hg::engine::graphics {
 	class CommandBuffer {

@@ -1,8 +1,8 @@
 #include "ExtendedStorageSystem.hpp"
 
-#include <Engine.Async/Lock/SharedLock.hpp>
-#include <Engine.Async/Lock/UniqueLock.hpp>
 #include <Engine.Storage.Action/Access/AccessError.hpp>
+
+import Engine.Async;
 
 using namespace hg::engine::storage;
 using namespace hg;

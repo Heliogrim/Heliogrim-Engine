@@ -1,8 +1,12 @@
 #pragma once
 
-#include <Engine.Async/Primitive/FiberMutex.hpp>
+#include <Engine.Common/ThreadSafety.hpp>
 
 #include "Resource.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Async;
+#endif
 
 namespace hg::engine::resource {
 	template <typename ManagedType_>

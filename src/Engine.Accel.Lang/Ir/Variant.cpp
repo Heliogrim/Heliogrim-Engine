@@ -1,8 +1,6 @@
 #include "Variant.hpp"
 
-#include <Engine.Async/Lock/SharedLock.hpp>
-#include <Engine.Async/Lock/UniqueLock.hpp>
-
+import Engine.Async;
 import std;
 
 using namespace hg::engine::accel::lang::ir;
@@ -235,7 +233,7 @@ VariantKey hg::engine::accel::lang::ir::makeVariantKey(
 	};
 }
 
-smr<const Resolved> VariantCache::getOrCreate(ref<const VariantKey> key_, FnRef<smr<const Resolved>()> build_) {
+smr<const hg::engine::accel::lang::ir::Resolved> VariantCache::getOrCreate(ref<const VariantKey> key_, FnRef<smr<const hg::engine::accel::lang::ir::Resolved>()> build_) {
 	if (auto hit = find(key_); hit != nullptr) {
 		return hit;
 	}
@@ -249,10 +247,10 @@ smr<const Resolved> VariantCache::getOrCreate(ref<const VariantKey> key_, FnRef<
 	return _entries.try_emplace(key_, std::move(built)).first->second;
 }
 
-smr<const Resolved> VariantCache::find(ref<const VariantKey> key_) const noexcept {
+smr<const hg::engine::accel::lang::ir::Resolved> VariantCache::find(ref<const VariantKey> key_) const noexcept {
 	const concurrent::SharedLock lock { _lck };
 	const auto iter = _entries.find(key_);
-	return iter != _entries.end() ? iter->second : smr<const Resolved> {};
+	return iter != _entries.end() ? iter->second : smr<const hg::engine::accel::lang::ir::Resolved> {};
 }
 
 smr<const ResolvedPipeline> PipelineLayoutCache::getOrCreate(

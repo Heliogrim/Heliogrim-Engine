@@ -9,6 +9,7 @@ make_test_project(
 		${PROJECT_NAME}::Engine.Core
 		${PROJECT_NAME}::Engine.Logging
 		${PROJECT_NAME}::Engine.Pedantic.Resource
+		${PROJECT_NAME}::Engine.Async
 		${PROJECT_NAME}::Engine.Scheduler
 		${PROJECT_NAME}::Heliogrim
 )

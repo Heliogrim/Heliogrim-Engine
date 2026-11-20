@@ -1,11 +1,11 @@
 #include "Win32DragDropSender.hpp"
 
-#include <Engine.Async/Affine/AffineThread.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Platform/Platform.hpp>
 
 #include "Win32DragDropObject.hpp"
 
+import Engine.Async;
 import Engine.Core;
 import Engine.Logging;
 import Engine.Scheduler;

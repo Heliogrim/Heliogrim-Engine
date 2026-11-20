@@ -9,6 +9,7 @@ make_library_project(
         ${PROJECT_NAME}::Editor.UI
         ${PROJECT_NAME}::Editor.UI.Init
         ${PROJECT_NAME}::Editor.UI.Rx
+        ${PROJECT_NAME}::Engine.Async
         ${PROJECT_NAME}::Engine.Common
         ${PROJECT_NAME}::Engine.Core
         ${PROJECT_NAME}::Heliogrim

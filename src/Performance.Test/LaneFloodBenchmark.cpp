@@ -9,13 +9,12 @@
 #include <unistd.h>
 #endif
 
-#include <Engine.Async/Future/Async.hpp>
-#include <Engine.Async/Future/Future.hpp>
 #include <Heliogrim/Async/Yield.hpp>
 
 #include "../Engine.Scheduler.Test/TestCompScheduler.hpp"
 #include "../Engine.Scheduler.Test/TestSchedulerEngine.hpp"
 
+import Engine.Async;
 import Engine.Common;
 import Engine.Scheduler;
 

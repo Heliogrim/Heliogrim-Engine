@@ -1,6 +1,5 @@
 #include "LfsBlob.hpp"
 
-#include <Engine.Async/Affine/AffineThread.hpp>
 #include <Engine.Pedantic.Resource/AccessMode.hpp>
 #include <Engine.Resource.Blob/File/IoFileBlob.hpp>
 #include <Engine.Resource.Blob/File/LfsSyncBlob.hpp>
@@ -10,6 +9,7 @@
 #include <Engine.Storage.Action/Access/SharedReadIoResource.hpp>
 
 import Engine.Asserts;
+import Engine.Async;
 import Engine.Common;
 
 using namespace hg::engine::storage;

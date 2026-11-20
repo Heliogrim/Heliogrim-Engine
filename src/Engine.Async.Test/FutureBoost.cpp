@@ -2,13 +2,10 @@
 
 /**/
 
-#include <Engine.Async/Future/Async.hpp>
-#include <Engine.Async/Future/Future.hpp>
-#include <Engine.Async/Future/Promise.hpp>
-
 #include "../Engine.Scheduler.Test/TestCompScheduler.hpp"
 #include "../Engine.Scheduler.Test/TestSchedulerEngine.hpp"
 
+import Engine.Async;
 import Engine.Scheduler;
 import std;
 
