@@ -115,20 +115,27 @@ namespace hg::engine::serialization {
 
 		SlotOpResult operator>>(ref<value_type> value_) override {
 
-			if (this_type::_state.header.size <= 0) {
+			if (not this_type::hasPayload()) {
 				return SlotOpResult::eFailed;
 			}
 
-			/**/
+			if (this_type::_state.header.type != StructureSlotType::eMapEntry) {
+				this_type::fail(
+					ReadError::Kind::eTypeMismatch,
+					this_type::_state.offset,
+					this_type::slotSpan(this_type::_state.header),
+					"slot is not a map entry"
+				);
+				return SlotOpResult::eFailed;
+			}
 
-			constexpr s64 off = sizeof(StructureSlotHeader::type) + sizeof(StructureSlotHeader::size);
-			s64 offset = this_type::_state.offset + off;
+			value_type tmp {};
 
 			/**/
 
 			StructureSlotState keyState {
 				StructureSlotStateFlag::eImmutable,
-				offset,
+				this_type::payloadBegin(),
 				StructureSlotHeader::from<StructureSlotType::eUndefined>(),
 				this_type::shared_from_this(),
 				this_type::_state.root
@@ -136,29 +143,23 @@ namespace hg::engine::serialization {
 
 			entry_key_slot_type keySlot { std::move(keyState) };
 
-			/**/
+			if (not keySlot.readHeader()) {
+				return SlotOpResult::eFailed;
+			}
 
-			keySlot.readHeader();
 			keySlot.enter();
-
-			keySlot >> value_.first;
-
+			const auto keyResult = keySlot >> tmp.first;
 			keySlot.leave();
 
-			/**/
-
-			offset += keySlot.getSlotHeader().size;
-			offset += sizeof(StructureSlotHeader::type);
-
-			if (not keySlot.getSlotHeader().sizeInferred) {
-				offset += sizeof(StructureSlotHeader::size);
+			if (keyResult != SlotOpResult::eSuccess) {
+				return SlotOpResult::eFailed;
 			}
 
 			/**/
 
 			StructureSlotState valueState {
 				StructureSlotStateFlag::eImmutable,
-				offset,
+				keySlot.payloadEnd(),
 				StructureSlotHeader::from<StructureSlotType::eUndefined>(),
 				this_type::shared_from_this(),
 				this_type::_state.root
@@ -166,17 +167,19 @@ namespace hg::engine::serialization {
 
 			entry_value_slot_type valueSlot { std::move(valueState) };
 
-			/**/
+			if (not valueSlot.readHeader()) {
+				return SlotOpResult::eFailed;
+			}
 
-			valueSlot.readHeader();
 			valueSlot.enter();
-
-			valueSlot >> value_.second;
-
+			const auto valueResult = valueSlot >> tmp.second;
 			valueSlot.leave();
 
-			/**/
+			if (valueResult != SlotOpResult::eSuccess) {
+				return SlotOpResult::eFailed;
+			}
 
+			value_ = std::move(tmp);
 			return SlotOpResult::eSuccess;
 		}
 	};

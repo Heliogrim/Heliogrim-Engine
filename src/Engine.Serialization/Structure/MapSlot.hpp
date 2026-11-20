@@ -116,30 +116,49 @@ namespace hg::engine::serialization {
 
 		SlotOpResult operator>>(ref<value_type> value_) override {
 
-			if (this_type::_state.header.size <= 0) {
+			if (not this_type::hasPayload()) {
+				return SlotOpResult::eFailed;
+			}
+
+			const auto& header = this_type::_state.header;
+			if (header.type != StructureSlotType::eMap) {
+				this_type::fail(ReadError::Kind::eTypeMismatch, this_type::_state.offset, this_type::slotSpan(header), "slot is not a map");
+				return SlotOpResult::eFailed;
+			}
+
+			if (header.size < static_cast<s64>(sizeof(u64))) {
+				this_type::fail(
+					ReadError::Kind::eMalformed,
+					this_type::_state.offset,
+					this_type::slotSpan(header),
+					"map too small for its count"
+				);
 				return SlotOpResult::eFailed;
 			}
 
 			/**/
 
 			auto archive = this_type::_state.root->archive;
+			archive->seek(this_type::payloadBegin());
 
-			/**/
-
-			u64 storedCount = ~0uLL;
+			u64 storedCount = 0uLL;
 			(*archive) >> storedCount;
 
-			assert(storedCount != ~0uLL);
+			if (not this_type::checkArchive(this_type::_state.offset, this_type::slotSpan(header))) {
+				return SlotOpResult::eFailed;
+			}
+
+			if (storedCount > static_cast<u64>(header.size) - sizeof(u64)) {
+				this_type::fail(ReadError::Kind::eMalformed, this_type::payloadBegin(), sizeof(u64), "map count exceeds its bytes");
+				return SlotOpResult::eFailed;
+			}
 
 			/**/
 
-			auto end = std::ranges::end(value_);
-			std::insert_iterator<std::remove_reference_t<decltype(value_)>> inserter { value_, end };
+			value_type tmp {};
+			std::insert_iterator<value_type> inserter { tmp, std::ranges::end(tmp) };
 
-			constexpr s64 off = sizeof(StructureSlotHeader::type) + sizeof(StructureSlotHeader::size);
-			constexpr s64 ioff = sizeof(storedCount);
-
-			s64 offset = this_type::_state.offset + off + ioff;
+			s64 offset = this_type::payloadBegin() + static_cast<s64>(sizeof(u64));
 
 			for (u64 i = 0; i < storedCount; ++i) {
 
@@ -153,24 +172,24 @@ namespace hg::engine::serialization {
 
 				auto slot = make_sptr<entry_type>(std::move(state));
 
-				/**/
-
-				slot->readHeader();
-				slot->enter();
-
-				typename entry_type::value_type dummy {};
-				if (((*slot) >> dummy) == SlotOpResult::eSuccess) {
-					inserter = std::move(dummy);
+				if (not slot->readHeader()) {
+					return SlotOpResult::eFailed;
 				}
 
+				slot->enter();
+				typename entry_type::value_type entry {};
+				const auto result = (*slot) >> entry;
 				slot->leave();
 
-				/**/
+				if (result != SlotOpResult::eSuccess) {
+					return SlotOpResult::eFailed;
+				}
 
-				offset += slot->getSlotHeader().size;
-				offset += sizeof(StructureSlotHeader::type) + sizeof(StructureSlotHeader::size);
+				inserter = std::move(entry);
+				offset = slot->payloadEnd();
 			}
 
+			value_ = std::move(tmp);
 			return SlotOpResult::eSuccess;
 		}
 	};

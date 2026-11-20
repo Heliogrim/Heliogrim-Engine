@@ -65,7 +65,10 @@ void access::Structure<Level>::hydrate(cref<StructScopedSlot> record_, Level& ta
 		::hg::assertrt(fnSet.has_value());
 
 		auto re = fnSet->deserialize(record, std::addressof(registry));
-		::hg::assertrt(re != nullptr);
+		if (re == nullptr) {
+			// Malformed actor record; the failure is latched on the load context.
+			continue;
+		}
 
 		target_.addActor(VolatileActor<> { ::hg::move(re) });
 	}

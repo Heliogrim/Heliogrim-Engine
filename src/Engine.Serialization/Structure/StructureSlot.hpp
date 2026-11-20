@@ -8,6 +8,7 @@
 #include "StructureSlotState.hpp"
 #include "StructureSlotType.hpp"
 #include "__fwd.hpp"
+#include "../Load/ReadError.hpp"
 
 namespace hg::engine::serialization {
 	class macro_novtable StructureSlotBase :
@@ -23,7 +24,7 @@ namespace hg::engine::serialization {
 			_state(std::move(state_)) {}
 
 	public:
-		virtual ~StructureSlotBase() = default;
+		virtual ~StructureSlotBase();
 
 	protected:
 		StructureSlotState _state;
@@ -45,7 +46,34 @@ namespace hg::engine::serialization {
 	public:
 		void writeHeader();
 
-		void readHeader();
+		/* Bounded by the parent payload; false (header reset, error reported) on any violation. */
+		bool readHeader();
+
+	public:
+		/* Reports to the load context of the root, if any. */
+		void fail(ReadError::Kind kind_, s64 offset_, s64 length_, ptr<const char> detail_) const;
+
+		[[nodiscard]] bool hasPayload() const noexcept;
+
+		[[nodiscard]] s64 payloadBegin() const noexcept;
+
+		[[nodiscard]] s64 payloadEnd() const noexcept;
+
+	protected:
+		[[nodiscard]] s64 slotLimit() const noexcept;
+
+		[[nodiscard]] bool readHeaderAt(s64 at_, s64 limit_, _Out_ ref<StructureSlotHeader> out_) const;
+
+		[[nodiscard]] static s64 slotSpan(cref<StructureSlotHeader> header_) noexcept;
+
+		[[nodiscard]] bool checkArchive(s64 offset_, s64 length_) const;
+
+		[[nodiscard]] bool charge(u64 bytes_) const;
+
+		/* Reads the stored integral (lossless widening only) as raw bits of the target type. */
+		[[nodiscard]] bool readIntegral(StructureSlotType target_, _Out_ ref<u64> raw_);
+
+		[[nodiscard]] bool readFloat(StructureSlotType target_, _Out_ ref<double> value_);
 
 	public:
 		virtual void enter();

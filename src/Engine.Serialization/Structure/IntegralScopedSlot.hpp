@@ -1,6 +1,8 @@
 #pragma once
 
+#include <algorithm>
 #include <concepts>
+#include <span>
 #include <type_traits>
 #include <Engine.Common/Make.hpp>
 
@@ -58,4 +60,30 @@ namespace hg::engine::serialization {
 			(*underlying_type::slot()) >> value_;
 		}
 	};
+
+	/* Reads an enum and rejects stored values outside `valid_` (eInvalidValue); `out_` is untouched on failure. */
+	template <typename EnumType_> requires std::is_enum_v<EnumType_>
+	[[nodiscard]] bool readEnum(
+		ref<const IntegralScopedSlot<std::underlying_type_t<EnumType_>>> slot_,
+		std::span<const EnumType_> valid_,
+		_Out_ ref<EnumType_> out_
+	) {
+		const ScopedSlotGuard guard { std::addressof(slot_), ScopedSlotGuardMode::eRead };
+		const auto slot = slot_.slot();
+
+		std::underlying_type_t<EnumType_> raw {};
+		if ((*slot) >> raw != SlotOpResult::eSuccess) {
+			return false;
+		}
+
+		const auto value = static_cast<EnumType_>(raw);
+		if (std::ranges::find(valid_, value) == std::ranges::end(valid_)) {
+			const auto& state = slot->getState();
+			slot->fail(ReadError::Kind::eInvalidValue, state.offset, -1LL, "enum value outside the valid set");
+			return false;
+		}
+
+		out_ = value;
+		return true;
+	}
 }

@@ -16,7 +16,7 @@ RootSlot::RootSlot(mref<StructureSlotState> state_) :
 RootSlot::RootSlot(_Inout_ ref<resource::Archive> archive_) :
 	RecordSlot(makeRootState(archive_)) {}
 
-StructureSlotState RootSlot::makeRootState(_In_ ref<resource::Archive> archive_) {
+StructureSlotState RootSlot::makeRootState(_In_ ref<resource::Archive> archive_, nmpt<LoadContext> context_) {
 	return StructureSlotState {
 		.flags = StructureSlotStateFlag::eUndefined,
 		.offset = archive_.tell(),
@@ -29,7 +29,8 @@ StructureSlotState RootSlot::makeRootState(_In_ ref<resource::Archive> archive_)
 				StructureSlotHeader {},
 				nullptr,
 				nullptr,
-				std::addressof(archive_)
+				std::addressof(archive_),
+				context_
 			}
 		)
 	};

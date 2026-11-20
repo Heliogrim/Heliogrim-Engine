@@ -19,6 +19,6 @@ namespace hg::engine::serialization {
 		explicit RootSlot(_Inout_ ref<resource::Archive> archive_);
 
 	public:
-		[[nodiscard]] static StructureSlotState makeRootState(_In_ ref<resource::Archive> archive_);
+		[[nodiscard]] static StructureSlotState makeRootState(_In_ ref<resource::Archive> archive_, nmpt<LoadContext> context_ = nullptr);
 	};
 }
