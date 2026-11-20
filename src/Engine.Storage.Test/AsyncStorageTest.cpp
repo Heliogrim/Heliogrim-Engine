@@ -20,6 +20,7 @@
 #include <Engine.Storage.Registry/Repository/CacheFileSystemRepository.hpp>
 #include <Engine.Storage.Registry/Provider/LocalFileSystemProvider.hpp>
 #include <Engine.Storage.Registry/Registry/StorageRegistry.hpp>
+#include <Engine.Storage.Registry/Repository/CacheFileSystemRepository.hpp>
 #include <Engine.Storage.Registry/Storage/ArchiveStorage.hpp>
 #include <Engine.Storage.Registry/Storage/LocalFileStorage.hpp>
 #include <Engine.Storage.Registry/Storage/PackageStorage.hpp>
