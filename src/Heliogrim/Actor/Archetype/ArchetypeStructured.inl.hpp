@@ -13,6 +13,8 @@
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 
+#include "ArchetypeMigration.hpp"
+
 namespace hg::archetype_detail {
 	template <typename Info_>
 	[[nodiscard]] constexpr bool slot_is_array(const u32 slot_) noexcept {
@@ -60,18 +62,26 @@ namespace hg::archetype_detail {
 		);
 	}
 
+	/* False when the entry's record was refused by migration; the entry keeps its constructed defaults. */
 	template <typename Info_, u32 Entry_>
-	void hydrate_entry(const ptr<std::byte> slot_, ref<const engine::serialization::StructScopedSlot> components_) {
+	[[nodiscard]] bool hydrate_entry(const ptr<std::byte> slot_, ref<const engine::serialization::StructScopedSlot> components_) {
 		using type = slot_type_t<Info_, Info_::slot_of(Entry_)>;
 		const auto key = entry_key<Info_>(Entry_);
 		// Archives are untrusted input; a missing entry leaves the constructed defaults in place.
 		if (not components_.hasRecordSlot(key)) {
-			return;
+			return true;
+		}
+
+		// The slot type is authoritative for archetype entries, so a stored `@type` is not consulted.
+		const auto migrated = migrateArchetypeRecord(type::typeId, components_.getRecordSlot(key).asStruct());
+		if (not migrated.has_value()) {
+			return false;
 		}
 
 		engine::serialization::access::Structure<type>::hydrate(
-			components_.getRecordSlot(key).asStruct(),
+			migrated->slot(),
 			*std::launder(reinterpret_cast<ptr<type>>(slot_ + Info_::entries[Entry_].offset))
 		);
+		return true;
 	}
 }

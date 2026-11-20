@@ -1,5 +1,7 @@
 #include <Engine.ACS/ComponentGuid.hpp>
 #include <Engine.ACS/ComponentTypeId.hpp>
+#include <Engine.Core/Engine.hpp>
+#include <Engine.Serialization/SerializationModule.hpp>
 #include <Engine.Serialization.Structures/Common/Guid.hpp>
 #include <Engine.Serialization.Structures/Common/TypeId.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
@@ -14,6 +16,9 @@ namespace hg::engine::serialization {
 		mref<StructScopedSlot> record_
 	) {
 		insert_typeId_slot<>(record_, self_._typeId);
+		if (const auto engine = Engine::getEngine(); engine != nullptr) {
+			engine->getSerialization()->migrations().writeRevision(record_, self_._typeId);
+		}
 		insert_guid_slot<>(record_, self_._guid);
 		record_.insertSlot<String>("label"sv) << self_._label.text;
 	}
