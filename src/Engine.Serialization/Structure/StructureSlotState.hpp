@@ -22,5 +22,6 @@ namespace hg::engine::serialization {
 	struct RootStructureSlotState final :
 		public StructureSlotState {
 		nmpt<resource::Archive> archive = nullptr;
+		nmpt<class LoadContext> context = nullptr;
 	};
 }
