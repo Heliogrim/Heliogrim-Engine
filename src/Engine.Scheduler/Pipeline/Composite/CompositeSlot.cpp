@@ -110,32 +110,39 @@ void CompositeSlot::onComplete(const non_owning_rptr<const task::TaskDelegate> t
 
 void CompositeSlot::submit() {
 
-	// lock order: slot _mtx, then any lock inside Schedule::push; the schedule never calls back into a slot
-	concurrent::SpinLock lck { _mtx };
+	// the first pushed task may complete the slot and the frame may destroy it before the wakes below
+	const auto schedule = _schedule;
+	u32 pushed = 0uL;
 
-	/**/
+	{
+		// lock order: slot _mtx, then any lock inside Schedule::push; the schedule never calls back into a slot
+		concurrent::SpinLock lck { _mtx };
 
-	// a batch task counts one signal, it completes through onComplete once
-	_signals.fetch_add(static_cast<u32>(_staticTasks.size() + _dynamicTasks.size()), std::memory_order_relaxed);
+		// each task counts one signal; it completes through onComplete once
+		_signals.fetch_add(static_cast<u32>(_staticTasks.size() + _dynamicTasks.size()), std::memory_order_relaxed);
 
-	if (_signals.load(std::memory_order_relaxed) == 0uL) {
-		// an empty stage still completes through a task, so complete() never runs inline in the dispatcher
-		_signals.fetch_add(1uL, std::memory_order_relaxed);
+		if (_signals.load(std::memory_order_relaxed) == 0uL) {
+			// an empty stage still completes through a task, so complete() never runs inline in the dispatcher
+			_signals.fetch_add(1uL, std::memory_order_relaxed);
 
-		const auto* dummy = task::make_task([] {}, Lane::eFrame);
-		const_cast<ptr<task::Task>>(dummy)->ctrl() = static_cast<ptr<TaskCtrl>>(this);
-		(void)_schedule->push(static_cast<non_owning_rptr<const task::TaskDelegate>>(std::move(dummy)));
-		return;
+			const auto* dummy = task::make_task([] {}, Lane::eFrame);
+			const_cast<ptr<task::Task>>(dummy)->ctrl() = static_cast<ptr<TaskCtrl>>(this);
+			(void)schedule->push(static_cast<non_owning_rptr<const task::TaskDelegate>>(dummy), false);
+			pushed = 1uL;
+
+		} else {
+			// quiet pushes: one wake pass after the lock instead of one wake per task
+			pushed = static_cast<u32>(_staticTasks.size() + _dynamicTasks.size());
+			for (const auto* const task : _staticTasks) {
+				(void)schedule->push(task, false);
+			}
+
+			for (auto&& task : _dynamicTasks) {
+				(void)schedule->push(task, false);
+			}
+			_dynamicTasks.clear();
+		}
 	}
 
-	/**/
-
-	for (const auto* const task : _staticTasks) {
-		(void)_schedule->push(task);
-	}
-
-	for (auto&& task : _dynamicTasks) {
-		(void)_schedule->push(std::move(task));
-	}
-	_dynamicTasks.clear();
+	schedule->wakeAfterSubmit(pushed);
 }

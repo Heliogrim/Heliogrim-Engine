@@ -127,11 +127,9 @@ void Worker::handle(void* args_) {
 
 		if (schedule->pop(std::chrono::steady_clock::now(), task, lane)) {
 			/**
-			 * Cascade: wake one peer for the work left behind
+			 * Cascade: wake two peers while more work is takeable
 			 */
-			if (schedule->queued() > 0) {
-				schedule->wakeOne();
-			}
+			schedule->cascade(std::chrono::steady_clock::now());
 
 			launcher.self = task->fiber();
 
@@ -175,9 +173,11 @@ void Worker::handle(void* args_) {
 				 */
 				auto& st = launcher.self->parkNode.state;
 				if (st.load(std::memory_order::relaxed) == ParkNode::State::eIdle) {
-					(void)schedule->pushBoostable(task, launcher.self->boost);
+					// quiet: this worker pops next
+					(void)schedule->pushBoostable(task, launcher.self->boost, false);
 				} else if (st.exchange(ParkNode::State::eParked, std::memory_order::acq_rel) == ParkNode::State::eWoken) {
-					(void)schedule->pushBoostable(task, launcher.self->boost);
+					// quiet: this worker pops next
+					(void)schedule->pushBoostable(task, launcher.self->boost, false);
 				}
 
 			} else {
@@ -197,7 +197,7 @@ void Worker::handle(void* args_) {
 			if (worker->_interrupt.load(std::memory_order::acquire)) {
 				break;
 			}
-			// bounded while lower work is queued: a floor only falls due for a worker that pops
+			// bounded while lower work is queued (a floor only falls due for a worker that pops); skipped while a Frame push is in flight
 			schedule->waitForWork(epoch, schedule->parkTimeoutMillis(std::chrono::steady_clock::now()));
 		}
 	}

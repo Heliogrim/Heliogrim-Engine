@@ -1,6 +1,7 @@
 #include "Schedule.hpp"
 
 #include <algorithm>
+#include <thread>
 #include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Logging/Logger.hpp>
@@ -86,7 +87,12 @@ u64 Schedule::queued(const Lane lane_) const noexcept {
 }
 
 void Schedule::wakeOne() noexcept {
+	_wakeCalls.fetch_add(1uLL, std::memory_order::relaxed);
 	WakeByAddressSingle(&_pushEpoch);
+}
+
+u64 Schedule::wakeCalls() const noexcept {
+	return _wakeCalls.load(std::memory_order::relaxed);
 }
 
 void Schedule::wakeAll() noexcept {
@@ -96,10 +102,15 @@ void Schedule::wakeAll() noexcept {
 
 void Schedule::waitForWork(u32 seen_, const u32 timeoutMillis_) noexcept {
 	static_assert(parkForever == INFINITE);
+	if (timeoutMillis_ == 0uL) {
+		// zero is the parker guard while a Frame push is in flight: yield so a pre-empted pusher or lock holder runs
+		std::this_thread::yield();
+		return;
+	}
 	WaitOnAddress(&_pushEpoch, &seen_, sizeof(u32), timeoutMillis_);
 }
 
-bool Schedule::push(const non_owning_rptr<const task::TaskDelegate> task_) {
+bool Schedule::push(const non_owning_rptr<const task::TaskDelegate> task_, const bool wake_) {
 
 	const auto lane = task_->lane();
 	::hg::assertd(lane != Lane::eInherit);
@@ -122,7 +133,8 @@ bool Schedule::push(const non_owning_rptr<const task::TaskDelegate> task_) {
 	}
 
 	_pushEpoch.fetch_add(1uL, std::memory_order::release);
-	if (not thread::self::isWorker() || (lane == Lane::eFrame && _config.wakeOnFramePush)) {
+	// tree rule: a worker push wakes one peer only when it fills an empty lane, the cascade spreads the rest
+	if (wake_ && (not thread::self::isWorker() || depth == 1uLL)) {
 		wakeOne();
 	}
 	return true;
@@ -154,11 +166,15 @@ bool Schedule::promote(
 	return false;
 }
 
-bool Schedule::pushBoostable(const non_owning_rptr<const task::TaskDelegate> task_, const ptr<BoostCell> cell_) {
+bool Schedule::pushBoostable(
+	const non_owning_rptr<const task::TaskDelegate> task_,
+	const ptr<BoostCell> cell_,
+	const bool wake_
+) {
 	// Bound while this thread owns the task: a reused address queued under another cell never matches promote's erase.
 	task_->boostCell = cell_;
 	if (cell_ == nullptr) {
-		return push(task_);
+		return push(task_, wake_);
 	}
 
 	// Counted reference taken while this thread owns the task (which keeps the cell alive): after push another worker
@@ -170,7 +186,7 @@ bool Schedule::pushBoostable(const non_owning_rptr<const task::TaskDelegate> tas
 	const auto pushed = higher(lane, cell_->lane.load(std::memory_order::seq_cst));
 	lane = pushed;
 
-	if (not push(task_)) {
+	if (not push(task_, wake_)) {
 		return false;
 	}
 
@@ -182,6 +198,43 @@ bool Schedule::pushBoostable(const non_owning_rptr<const task::TaskDelegate> tas
 		(void)promote(task_, raised, keep.get());
 	}
 	return true;
+}
+
+bool Schedule::takeable(const time_point now_) const noexcept {
+	if (_depth[frameIdx].load(std::memory_order::relaxed) != 0uLL) {
+		return true;
+	}
+
+	const auto now = now_.time_since_epoch().count();
+	bool lower = false;
+	for (u64 laneIdx = interactiveIdx; laneIdx < laneCount; ++laneIdx) {
+		if (_depth[laneIdx].load(std::memory_order::relaxed) == 0uLL) {
+			continue;
+		}
+		lower = true;
+		const auto floor = ticksOf(laneIdx == interactiveIdx ? _config.interactiveFloorMicros : _config.backgroundFloorMicros);
+		if (now - _lastStart[laneIdx - interactiveIdx].load(std::memory_order::relaxed) >= floor) {
+			return true;
+		}
+	}
+
+	return lower && _lowerRunning.load(std::memory_order::relaxed) < _workers - effectiveReserve(now_);
+}
+
+void Schedule::cascade(const time_point now_) noexcept {
+	// two wakes per pop: the woken peers cascade in turn, so a burst reaches every worker in log steps
+	if (takeable(now_)) {
+		wakeOne();
+		wakeOne();
+	}
+}
+
+void Schedule::wakeAfterSubmit(const u32 pushed_) noexcept {
+	// a dispatching worker pops one of the pushed tasks itself and the cascade spreads the rest
+	const u32 wakes = thread::self::isWorker() ? std::min<u32>(pushed_ - std::min<u32>(pushed_, 1uL), 1uL) : pushed_;
+	for (u32 i = 0; i < wakes; ++i) {
+		wakeOne();
+	}
 }
 
 bool Schedule::pop(const time_point now_, ref<non_owning_rptr<const task::TaskDelegate>> task_, ref<Lane> lane_) {
@@ -262,6 +315,12 @@ bool Schedule::pop(const time_point now_, ref<non_owning_rptr<const task::TaskDe
 }
 
 u32 Schedule::parkTimeoutMillis(const time_point now_) const noexcept {
+
+	// depth counts a push before its insert: Frame depth after a failed pop is a push in flight whose epoch bump may not wake
+	// relaxed suffices: a stale 0 parks, and the epoch compare in WaitOnAddress catches the bump that follows the insert
+	if (_depth[frameIdx].load(std::memory_order::relaxed) != 0uLL) {
+		return 0uL;
+	}
 
 	const auto now = now_.time_since_epoch().count();
 	auto earliest = parkForever;

@@ -47,7 +47,8 @@
    - WCasc reads the Frame and lower depths in one step; the code does
      separate loads. A stale load only skips or adds one wake, both covered
      by the cascade and spurious paths.
-   - wakeOnFramePush is not modelled: the extra wake it adds is the same as
+   - The tree rule's worker-push wake (a push into an empty lane) is not
+     modelled: the extra wake it adds is the same as
      a spurious return, which the unfair Spurious process covers (at most
      Spurs spurious returns per behaviour).
    - Scheduler stop sets every worker's interrupt in one step.

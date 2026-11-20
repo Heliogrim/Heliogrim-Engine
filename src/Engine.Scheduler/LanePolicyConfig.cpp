@@ -18,10 +18,6 @@ LanePolicyConfig LanePolicyConfig::fromConfig(ref<const engine::Config> config_)
 		.interactiveFloorMicros = laneValue(engine::cfg::SchedulerConfigProperty::eInteractiveFloor, fallback.interactiveFloorMicros),
 		.backgroundFloorMicros = laneValue(engine::cfg::SchedulerConfigProperty::eBackgroundFloor, fallback.backgroundFloorMicros),
 		.reserve = laneValue(engine::cfg::SchedulerConfigProperty::eLaneReserve, fallback.reserve),
-		.frameWaitLimitMicros = laneValue(engine::cfg::SchedulerConfigProperty::eFrameWaitLimit, fallback.frameWaitLimitMicros),
-		.wakeOnFramePush = config_.getOrDefault<bool>(
-			engine::cfg::SchedulerConfigProperty::eWakeOnFramePush,
-			fallback.wakeOnFramePush
-		).value_or(fallback.wakeOnFramePush)
+		.frameWaitLimitMicros = laneValue(engine::cfg::SchedulerConfigProperty::eFrameWaitLimit, fallback.frameWaitLimitMicros)
 	};
 }
