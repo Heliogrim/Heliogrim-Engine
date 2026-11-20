@@ -1,11 +1,10 @@
 #pragma once
 
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Scheduler/Lane.hpp>
-#include <Engine.Scheduler/Task/TaskType.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Scheduler;
 #endif
 
 namespace hg {

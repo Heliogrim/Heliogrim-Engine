@@ -1,8 +1,7 @@
 #include "Execute.hpp"
 
-#include <Engine.Scheduler/Scheduler.hpp>
-
 import Engine.Core;
+import Engine.Scheduler;
 
 void hg::execute(mref<execute_function_type> function_) {
 	/**

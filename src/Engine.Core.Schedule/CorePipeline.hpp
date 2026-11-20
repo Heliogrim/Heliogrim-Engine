@@ -1,9 +1,8 @@
 #pragma once
 
-#include <Engine.Scheduler/Pipeline/StagePipeline.hpp>
-
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Scheduler;
 #endif
 
 namespace hg::engine::core::schedule {

@@ -1,8 +1,8 @@
 #pragma once
 
-#include <Engine.Scheduler/Task/Batch.hpp>
-#include <Engine.Scheduler/Waitable/JoinCounter.hpp>
-#include <Engine.Scheduler/Waitable/Signal.hpp>
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Scheduler;
+#endif
 
 namespace hg {
 	using Signal = engine::scheduler::Signal;

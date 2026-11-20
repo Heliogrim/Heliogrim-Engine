@@ -4,12 +4,12 @@
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
-#include <Engine.Scheduler/Scheduler.hpp>
 
 #include "HeliogrimStatic.hpp"
 
 import Engine.Asserts;
 import Engine.Core;
+import Engine.Scheduler;
 
 using namespace hg;
 

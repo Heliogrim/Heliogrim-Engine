@@ -2,7 +2,6 @@
 
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/String/Convert.hpp>
-#include <Engine.Scheduler/Thread/Thread.hpp>
 
 #ifdef WIN32
 #include <Engine.Common/stdafx.h>
@@ -13,6 +12,7 @@
 import Engine.Asserts;
 import Engine.Common;
 import Engine.Logging;
+import Engine.Scheduler;
 
 using namespace hg::engine::async;
 using namespace hg;

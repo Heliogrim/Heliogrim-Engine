@@ -1,8 +1,5 @@
 #pragma once
 
-#include <Engine.Scheduler/CompScheduler.hpp>
-#include <Engine.Scheduler/Scheduler.hpp>
-
 #include "TestCompScheduler.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
@@ -10,6 +7,7 @@ import Engine.Common;
 import Engine.Config;
 import Engine.Core;
 import Engine.Event;
+import Engine.Scheduler;
 #endif
 
 namespace hg::test {

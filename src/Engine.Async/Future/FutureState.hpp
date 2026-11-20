@@ -1,13 +1,10 @@
 #pragma once
 
-#include <Engine.Scheduler/Lane.hpp>
-#include <Engine.Scheduler/Process/BoostCell.hpp>
-#include <Engine.Scheduler/Waitable/Signal.hpp>
-
 #include "Broken.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Scheduler;
 #endif
 
 namespace hg {

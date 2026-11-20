@@ -2,8 +2,6 @@
 
 #include <Engine.Reflow.Schedule/ReflowPipeline.hpp>
 #include <Engine.Reflow.Theming/Theming.hpp>
-#include <Engine.Scheduler/Scheduler.hpp>
-#include <Engine.Scheduler/Pipeline/CompositePipeline.hpp>
 
 #include "DataWatcher.hpp"
 #include "Module/Reflow.hpp"
@@ -11,6 +9,7 @@
 
 import Engine.Common;
 import Engine.Core;
+import Engine.Scheduler;
 
 using namespace hg::engine::core;
 using namespace hg::engine;

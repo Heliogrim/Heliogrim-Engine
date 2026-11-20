@@ -4,12 +4,11 @@
 
 #include <Engine.Common/stdafx.h>
 #include <Engine.IO.Dispatcher/IoSystem.hpp>
-#include <Engine.Scheduler/Fiber/Fiber.hpp>
-#include <Engine.Scheduler/Task/Task.hpp>
 
 #include "../Engine.Scheduler.Test/TestSchedulerEngine.hpp"
 
 import Engine.Logging;
+import Engine.Scheduler;
 import std;
 
 using namespace hg;

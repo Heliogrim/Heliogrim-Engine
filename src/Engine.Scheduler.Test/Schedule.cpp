@@ -2,10 +2,7 @@
 
 /**/
 
-#include <Engine.Scheduler/Lane.hpp>
-#include <Engine.Scheduler/Process/Schedule.hpp>
-#include <Engine.Scheduler/Task/Task.hpp>
-
+import Engine.Scheduler;
 import std;
 
 using namespace hg::engine::scheduler;

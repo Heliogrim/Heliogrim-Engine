@@ -1,10 +1,10 @@
 #pragma once
 
 #include <Engine.Common/ThreadSafety.hpp>
-#include <Engine.Scheduler/Waitable/ParkQueue.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Scheduler;
 #endif
 
 namespace hg::concurrent {

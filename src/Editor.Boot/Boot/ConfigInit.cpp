@@ -1,9 +1,9 @@
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Scheduler/LanePolicyConfig.hpp>
 
 import Editor.Boot;
 import Engine.Common;
 import Engine.Config;
+import Engine.Scheduler;
 
 using namespace hg;
 

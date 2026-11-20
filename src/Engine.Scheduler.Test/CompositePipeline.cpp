@@ -4,19 +4,12 @@
 
 #include <cstdio>
 #include <cstdlib>
-#include <Engine.Scheduler/CompScheduler.hpp>
-#include <Engine.Scheduler/Scheduler.hpp>
-#include <Engine.Scheduler/Graph/TaskGraph.hpp>
-#include <Engine.Scheduler/Pipeline/CompositePipeline.hpp>
-#include <Engine.Scheduler/Pipeline/Stage/PipelineStage.hpp>
-#include <Engine.Scheduler/Process/Schedule.hpp>
-#include <Engine.Scheduler/Task/Task.hpp>
-#include <Engine.Scheduler/Waitable/Signal.hpp>
 
 #include "TestCompScheduler.hpp"
 #include "TestSchedulerEngine.hpp"
 
 import Engine.Common;
+import Engine.Scheduler;
 
 using namespace hg::engine::scheduler;
 using namespace hg;
