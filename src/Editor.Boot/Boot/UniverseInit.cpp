@@ -12,6 +12,7 @@
 #include <Engine.Core/Session.hpp>
 #include <Engine.Core/Universe.hpp>
 #include <Engine.Core/UniverseContext.hpp>
+#include <Engine.Logging/Logger.hpp>
 #include <Heliogrim/Universe/Level.hpp>
 
 using namespace hg::editor::boot;
@@ -338,6 +339,11 @@ Arci<core::Level> experimentalLoadLevel() {
 }
 
 void experimentalSaveLevel(ref<core::Level> level_) {
+	if (not core::checkSaveAllowed(level_).has_value()) {
+		IM_CORE_ERRORF("Refused to save the level: it carries data this build did not understand.");
+		return;
+	}
+
 	const auto asset = experimentalResolveLevelAsset(level_);
 	wantedSave(level_, *asset);
 }
