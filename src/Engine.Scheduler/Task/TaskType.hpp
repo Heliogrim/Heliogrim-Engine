@@ -41,10 +41,6 @@ namespace hg::engine::scheduler::task {
 		// Primitive Task
 		eTask = 0x1 << 0,
 		eRepetitive = 0x1 << 1,
-
-		// Batch Task
-		eBatch = 0x1 << 2,
-
 		// Tick Task
 		eTickTask = 0x1 << 3,
 	};

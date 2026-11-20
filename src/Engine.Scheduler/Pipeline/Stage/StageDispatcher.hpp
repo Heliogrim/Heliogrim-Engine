@@ -48,5 +48,5 @@ namespace hg::engine::scheduler {
 	/**/
 
 	using StaticStageDispatcher = StageDispatcher<task::RepetitiveTask>;
-	using DynamicStageDispatcher = StageDispatcher<task::Task, task::BatchTask>;
+	using DynamicStageDispatcher = StageDispatcher<task::Task>;
 }
