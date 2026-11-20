@@ -10,10 +10,12 @@ static auto crc32Table = CRC::CRC_32().MakeTable();
 
 /**/
 
-ref<Crc32> Crc32::update(std::span<_::byte> data_) {
+ref<Crc32> Crc32::update(std::span<const _::byte> data_) {
 	// @see: https://d-bahr.github.io/CRCpp/
-	if (not _intermediate) {
+	// Note: A finished crc of zero is a valid state, so the first call is tracked explicitly.
+	if (not _started) {
 		_intermediate = CRC::Calculate(data_.data(), data_.size(), crc32Table);
+		_started = true;
 	} else {
 		_intermediate = CRC::Calculate(data_.data(), data_.size(), crc32Table, _intermediate);
 	}
