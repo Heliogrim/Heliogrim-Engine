@@ -56,6 +56,9 @@ namespace hg::engine::scheduler {
 		std::atomic<u32> _framePeak { 0uL };
 		std::atomic<u32> _reserve { 0uL };
 
+		/** wakeOne calls so far; read by tests and benchmarks only. */
+		alignas(64) std::atomic<u64> _wakeCalls { 0uLL };
+
 		/** Time of the last roll (or setup), in steady_clock ticks. */
 		std::atomic<time_point::rep> _lastRoll { 0 };
 
@@ -84,6 +87,8 @@ namespace hg::engine::scheduler {
 
 		void wakeOne() noexcept;
 
+		[[nodiscard]] u64 wakeCalls() const noexcept;
+
 		void wakeAll() noexcept;
 
 		/**
@@ -92,7 +97,11 @@ namespace hg::engine::scheduler {
 		void waitForWork(u32 seen_, const u32 timeoutMillis_ = parkForever) noexcept;
 
 	public:
-		[[nodiscard]] bool push(_In_ const non_owning_rptr<const task::TaskDelegate> task_);
+		/**
+		 * Queues task_ at its lane. With wake_, a non-worker push wakes one worker and a worker push wakes one only
+		 * when it fills an empty lane; the cascade on pop spreads the rest. wake_ false never wakes.
+		 */
+		[[nodiscard]] bool push(_In_ const non_owning_rptr<const task::TaskDelegate> task_, const bool wake_ = true);
 
 		/**
 		 * Moves task_ from a lane below to_ into to_; false if it is not queued below to_ (running, gone, or already
@@ -113,8 +122,21 @@ namespace hg::engine::scheduler {
 		 */
 		[[nodiscard]] bool pushBoostable(
 			_In_ const non_owning_rptr<const task::TaskDelegate> task_,
-			_In_opt_ ptr<BoostCell> cell_
+			_In_opt_ ptr<BoostCell> cell_,
+			const bool wake_ = true
 		);
+
+		/**
+		 * True if a pop at now_ could take work: the frame lane is queued, or a lower lane is queued and its floor is
+		 * due or the reserve leaves it a worker. A racy hint; a false positive only costs a wake.
+		 */
+		[[nodiscard]] bool takeable(const time_point now_) const noexcept;
+
+		/** Called by a worker after a pop: wakes two peers if more work is takeable. */
+		void cascade(const time_point now_) noexcept;
+
+		/** Wakes for pushed_ quiet pushes: all of them from a non-worker, at most one from a worker. */
+		void wakeAfterSubmit(const u32 pushed_) noexcept;
 
 		[[nodiscard]] bool pop(
 			_In_ const time_point now_,
@@ -124,7 +146,7 @@ namespace hg::engine::scheduler {
 
 		/**
 		 * Park bound for a worker whose pop failed: until the earliest floor of a lower lane with queued work falls due,
-		 * else parkForever.
+		 * else parkForever. Returns 0 while a Frame push is in flight (Frame depth > 0).
 		 */
 		[[nodiscard]] u32 parkTimeoutMillis(const time_point now_) const noexcept;
 

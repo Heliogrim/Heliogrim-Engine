@@ -4,16 +4,24 @@
 
 #include <atomic>
 #include <chrono>
+#include <format>
 #include <functional>
 #include <mutex>
 #include <set>
+#include <span>
 #include <thread>
+#include <Engine.Common/Make.hpp>
 #include <Engine.Scheduler/CompScheduler.hpp>
 #include <Engine.Scheduler/Scheduler.hpp>
+#include <Engine.Scheduler/Fiber/Fiber.hpp>
+#include <Engine.Scheduler/Pipeline/CompositePipeline.hpp>
+#include <Engine.Scheduler/Pipeline/Stage/PipelineStage.hpp>
+#include <Engine.Scheduler/Process/Schedule.hpp>
 #include <Engine.Scheduler/Task/Task.hpp>
 #include <Engine.Scheduler/Thread/Thread.hpp>
 #include <Engine.Scheduler/Waitable/Signal.hpp>
 
+#include "TestCompScheduler.hpp"
 #include "TestSchedulerEngine.hpp"
 
 #ifdef WIN32
@@ -196,6 +204,213 @@ namespace SchedulerModule {
 						<< "round " << round << " stalled at " << count.load();
 					thread::self::sleepFor(5);
 				}
+			}
+		);
+	}
+
+	namespace {
+		ptr<Schedule> scheduleOf(nmpt<engine::Scheduler> s_) {
+			return static_cast<ptr<engine::TestCompScheduler>>(s_.get())->testGetSchedule();
+		}
+
+		class ChainStage final :
+			public PipelineStage {
+		public:
+			ChainStage(
+				const string_view name_,
+				const std::span<const string_view> after_,
+				const std::function<void()> body_,
+				const ptr<const StagePipeline> pipeline_
+			) :
+				PipelineStage(AssocKey<StageIdentifier>::from(string { name_ }), pipeline_),
+				_decl({ .name = name_, .after = after_ }),
+				_body(body_) {}
+
+		private:
+			graph::StageDecl _decl;
+			std::function<void()> _body;
+
+		public:
+			void staticDispatch(cref<StaticStageDispatcher>) override {}
+
+			void dynamicDispatch(cref<DynamicStageDispatcher> dispatcher_) override {
+				dispatcher_.enqueue(task::make_task([this] { _body(); }));
+			}
+
+			[[nodiscard]] graph::StageDecl decl() const noexcept override { return _decl; }
+		};
+
+		class ChainPipeline final :
+			public StagePipeline {
+		public:
+			ChainPipeline() :
+				StagePipeline(AssocKey<string>::from(string { "::test::chain" })) {}
+
+			Vector<uptr<PipelineStage>> stages {};
+			Vector<Opt<ref<const Stage>>> stageRefs {};
+
+			void mount(ref<StageRegister> register_) override {
+				for (auto& stage : stages) {
+					stageRefs.emplace_back(register_.registerStage(std::move(stage)));
+				}
+				stages.clear();
+			}
+
+			void dismount(ref<StageRegister> register_) override {
+				for (auto& stage : stageRefs) {
+					register_.removeStage(stage.value());
+				}
+				stageRefs.clear();
+			}
+		};
+	}
+
+	TEST(WorkerPolicy, WorkerPushWakesParkedPeer) {
+		// pushed as Frame directly: exec from a plain thread resolves to Interactive, whose lower cap of 1 would leave
+		// only the floor to serve the child
+		structuredRuntimeTest(
+			2u,
+			[](nmpt<engine::Scheduler> s_) {
+				thread::self::sleepFor(50);
+				std::atomic_bool ran { false };
+				std::atomic_bool inTime { false };
+				std::atomic_bool finished { false };
+				std::atomic<thread::thread_id> parentId {};
+				std::atomic<thread::thread_id> childId {};
+
+				auto* const parent = task::make_task(
+					[&, s = s_.get()] {
+						parentId = thread::self::getId();
+						s->exec(
+							task::make_task(
+								[&] {
+									childId = thread::self::getId();
+									ran = true;
+								}
+							)
+						);
+						const auto until = clock::now() + std::chrono::seconds { 1 };
+						while (not ran.load() && clock::now() < until) {}
+						inTime = ran.load();
+						finished = true;
+					},
+					Lane::eFrame
+				);
+				ASSERT_TRUE(scheduleOf(s_)->push(parent));
+
+				ASSERT_TRUE(pollFor(std::chrono::seconds { 3 }, [&] { return finished.load() && ran.load(); }));
+				EXPECT_TRUE(inTime.load()) << "the child waited for its parent's worker";
+				EXPECT_NE(childId.load(), parentId.load());
+			}
+		);
+	}
+
+	TEST(WorkerPolicy, SingleTaskChainIssuesNoWakePerStage) {
+		constexpr u32 stageCount = 10u;
+		constexpr u32 frameCount = 200u;
+
+		Array<string, stageCount> names {};
+		Array<Array<string_view, 1>, stageCount> afters {};
+		for (u32 i = 0; i < stageCount; ++i) {
+			names[i] = std::format("::test::chain{}", i);
+		}
+		for (u32 i = 1; i < stageCount; ++i) {
+			afters[i][0] = names[i - 1u];
+		}
+
+		structuredRuntimeTest(
+			4u,
+			[&](ref<const nmpt<engine::Scheduler>> s_) {
+				const auto schedule = scheduleOf(s_);
+				CompositePipeline composite { schedule };
+
+				std::atomic<u32> frames { 0u };
+				Signal done {};
+				auto pipeline = make_uptr<ChainPipeline>();
+				for (u32 i = 0; i < stageCount; ++i) {
+					std::function<void()> body = [] {};
+					if (i == stageCount - 1u) {
+						body = [&] {
+							if (frames.fetch_add(1u) + 1u == frameCount) {
+								done.set();
+							}
+						};
+					}
+					const auto after = i == 0u ? std::span<const string_view> {} : std::span<const string_view> { afters[i] };
+					pipeline->stages.push_back(make_uptr<ChainStage>(names[i], after, std::move(body), pipeline.get()));
+				}
+				(void)composite.addPipeline(std::move(pipeline));
+				composite.setup();
+				composite.setMaxInFlight(1uL);
+
+				const auto before = schedule->wakeCalls();
+				composite.start();
+				done.wait();
+				const auto delta = schedule->wakeCalls() - before;
+				composite.stop();
+				composite.destroy();
+
+				EXPECT_LT(delta, static_cast<u64>(frameCount)) << delta << " wakes over " << frameCount << " frames";
+			}
+		);
+	}
+
+	TEST(WorkerPolicy, CascadeSkipsReserveBlockedLowerWork) {
+		constexpr u32 queuedLower = 50u;
+		constexpr u32 yields = 100u;
+
+		LanePolicyConfig config {};
+		config.reserve = 3u;
+		config.backgroundFloorMicros = 1'000'000u;
+
+		structuredRuntimeTest(
+			4u,
+			config,
+			[&](ref<const nmpt<engine::Scheduler>> s_) {
+				const auto schedule = scheduleOf(s_);
+				std::atomic_bool spinning { false };
+				std::atomic_bool release { false };
+				std::atomic<u32> lowerDone { 0u };
+
+				ASSERT_TRUE(
+					schedule->push(
+						task::make_task(
+							[&] {
+								spinning = true;
+								while (not release.load()) {}
+								lowerDone.fetch_add(1u);
+							},
+							Lane::eBackground
+						)
+					)
+				);
+				ASSERT_TRUE(pollFor(std::chrono::seconds { 2 }, [&] { return spinning.load(); }));
+				for (u32 i = 0; i < queuedLower; ++i) {
+					ASSERT_TRUE(schedule->push(task::make_task([&] { lowerDone.fetch_add(1u); }, Lane::eBackground)));
+				}
+				// the pushes' wakes find no takeable work; let those workers park again
+				thread::self::sleepFor(20);
+
+				std::atomic<u64> delta { ~0uLL };
+				ASSERT_TRUE(
+					schedule->push(
+						task::make_task(
+							[&] {
+								const auto before = schedule->wakeCalls();
+								for (u32 i = 0; i < yields; ++i) {
+									fiber::self::yield();
+								}
+								delta = schedule->wakeCalls() - before;
+							},
+							Lane::eFrame
+						)
+					)
+				);
+				const bool yielded = pollFor(std::chrono::seconds { 2 }, [&] { return delta.load() != ~0uLL; });
+				release = true;
+				ASSERT_TRUE(pollFor(std::chrono::seconds { 10 }, [&] { return lowerDone.load() == queuedLower + 1u; }));
+				ASSERT_TRUE(yielded);
+				EXPECT_LE(delta.load(), 2uLL) << delta.load() << " wakes over " << yields << " yields";
 			}
 		);
 	}

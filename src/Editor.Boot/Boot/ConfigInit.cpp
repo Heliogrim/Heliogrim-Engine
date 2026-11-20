@@ -118,7 +118,6 @@ void editor::boot::initEditorConfig(ref<engine::Config> cfg_, ref<cfg::EditorPro
 	std::ignore = cfg_.init(scheduler_props::eBackgroundFloor, laneDefaults.backgroundFloorMicros, provider);
 	std::ignore = cfg_.init(scheduler_props::eLaneReserve, laneDefaults.reserve, provider);
 	std::ignore = cfg_.init(scheduler_props::eFrameWaitLimit, laneDefaults.frameWaitLimitMicros, provider);
-	std::ignore = cfg_.init(scheduler_props::eWakeOnFramePush, laneDefaults.wakeOnFramePush, provider);
 
 }
 

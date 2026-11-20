@@ -433,67 +433,6 @@ namespace SchedulerModule {
 		EXPECT_EQ(schedule.queued(), 5uLL);
 	}
 
-	namespace {
-		// A Frame parent fans out 3 children and spins 20 ms; returns child start offsets from the fan-out and the spin end.
-		void fanOutFromSpinningParent(
-			const bool wakeOnFramePush_,
-			ref<std::atomic<clock::rep>> childMax_,
-			ref<std::atomic<clock::rep>> childMin_,
-			ref<std::atomic<clock::rep>> parentEnd_
-		) {
-			LanePolicyConfig config {};
-			config.wakeOnFramePush = wakeOnFramePush_;
-
-			std::atomic<int> started { 0 };
-			std::atomic<clock::rep> fanOut { 0 };
-			childMax_ = 0;
-			childMin_ = std::numeric_limits<clock::rep>::max();
-
-			structuredRuntimeTest(
-				4u,
-				config,
-				[&](nmpt<engine::Scheduler> s_) {
-					thread::self::sleepFor(50);
-					auto parent = task::make_task(
-						[&, s = s_.get()] {
-							const auto t0 = clock::now();
-							fanOut = t0.time_since_epoch().count();
-							for (auto n = 0; n < 3; ++n) {
-								s->exec(
-									task::make_task(
-										[&] {
-											const auto at = clock::now().time_since_epoch().count() - fanOut.load();
-											auto seen = childMax_.load();
-											while (seen < at && not childMax_.compare_exchange_weak(seen, at)) {}
-											seen = childMin_.load();
-											while (seen > at && not childMin_.compare_exchange_weak(seen, at)) {}
-											started.fetch_add(1);
-										}
-									)
-								);
-							}
-							spinFor(20ms);
-							parentEnd_ = clock::now().time_since_epoch().count() - fanOut.load();
-						},
-						Lane::eFrame
-					);
-					ASSERT_TRUE(scheduleOf(s_)->push(parent));
-					EXPECT_TRUE(pollFor(2000ms, [&] { return started.load() == 3; }));
-				}
-			);
-		}
-	}
-
-	TEST(LanePolicy, WakeOnFramePushWakesAParkedWorker) {
-		std::atomic<clock::rep> childMax { 0 }, childMin { 0 }, parentEnd { 0 };
-
-		fanOutFromSpinningParent(true, childMax, childMin, parentEnd);
-		EXPECT_LE(std::chrono::duration_cast<std::chrono::microseconds>(clock::duration { childMax.load() }), 5ms);
-
-		fanOutFromSpinningParent(false, childMax, childMin, parentEnd);
-		EXPECT_GE(childMin.load(), parentEnd.load());
-	}
-
 	TEST(LanePolicy, ReservedWorkerParksAndFloorStillServes) {
 		LanePolicyConfig config = fixedReserve(2u);
 		config.backgroundFloorMicros = 5'000u;
@@ -709,14 +648,69 @@ namespace SchedulerModule {
 		);
 	}
 
-	TEST(LanePolicy, ParkTimeoutIsForeverWithoutLowerWork) {
+	TEST(LanePolicy, TakeableSeesFrameWorkReserveAndFloor) {
+		{
+			Schedule schedule {};
+			schedule.setup(3u, fixedReserve(2u));
+			const auto now = ScheduleTestAccess::setupStamp(schedule);
+
+			EXPECT_FALSE(schedule.takeable(now));
+			ScheduleTestAccess::countWithoutInsert(schedule, Lane::eFrame);
+			EXPECT_TRUE(schedule.takeable(now));
+		}
+		{
+			Schedule schedule {};
+			schedule.setup(3u, fixedReserve(2u));
+			const auto now = ScheduleTestAccess::setupStamp(schedule);
+
+			// one background task running fills the single non-reserved worker
+			ASSERT_TRUE(schedule.push(makeTask(Lane::eBackground)));
+			ASSERT_NE(popAt(schedule, now), nullptr);
+			ScheduleTestAccess::countWithoutInsert(schedule, Lane::eBackground);
+
+			EXPECT_FALSE(schedule.takeable(now));
+			EXPECT_TRUE(schedule.takeable(now + 100ms));
+			schedule.leave(Lane::eBackground);
+			EXPECT_TRUE(schedule.takeable(now));
+		}
+	}
+
+	TEST(LanePolicy, WakeAfterSubmitWakesPerTaskOffWorkerAndOnceOnWorker) {
+		Schedule schedule {};
+		schedule.setup(4u, LanePolicyConfig {});
+
+		const auto wakesFor = [&schedule](const u32 pushed_) {
+			const auto before = schedule.wakeCalls();
+			schedule.wakeAfterSubmit(pushed_);
+			return schedule.wakeCalls() - before;
+		};
+
+		EXPECT_EQ(wakesFor(0u), 0uLL);
+		EXPECT_EQ(wakesFor(3u), 3uLL);
+
+		// a worker pops one pushed task itself; the cascade spreads the rest
+		thread::self::markWorker(true);
+		EXPECT_EQ(wakesFor(0u), 0uLL);
+		EXPECT_EQ(wakesFor(1u), 0uLL);
+		EXPECT_EQ(wakesFor(2u), 1uLL);
+		EXPECT_EQ(wakesFor(5u), 1uLL);
+		thread::self::markWorker(false);
+	}
+
+	TEST(LanePolicy, ParkTimeoutIsForeverWhenEmpty) {
 		Schedule schedule {};
 		schedule.setup(4u, LanePolicyConfig {});
 
 		EXPECT_EQ(schedule.parkTimeoutMillis(clock::now()), parkForever);
-		// Frame depth has no floor
+	}
+
+	TEST(LanePolicy, ParkTimeoutIsZeroWhileFramePushInFlight) {
+		Schedule schedule {};
+		schedule.setup(4u, LanePolicyConfig {});
+
+		// Frame depth without an insert is a push in flight: retry at once instead of parking (lost wakeup otherwise)
 		ScheduleTestAccess::countWithoutInsert(schedule, Lane::eFrame);
-		EXPECT_EQ(schedule.parkTimeoutMillis(clock::now()), parkForever);
+		EXPECT_EQ(schedule.parkTimeoutMillis(clock::now()), 0u);
 	}
 
 	TEST(LanePolicy, ParkTimeoutIsTheTimeToTheEarliestFloor) {
