@@ -3,6 +3,7 @@
 #include <Engine.Asserts/Todo.hpp>
 #include <Engine.Common/Make.hpp>
 
+#include "IntegralScopedSlot.hpp"
 #include "StructSlot.hpp"
 #include "StructureSlotTypeTraits.hpp"
 
@@ -69,4 +70,12 @@ RecordScopedSlot StructScopedSlot::getRecordSlot(const size_t index_) const {
 StructScopedSlot StructScopedSlot::getStructSlot(cref<record_key_type> key_) const {
 	// Note: We need to use into, as `asStruct` would make the returned slot immutable.
 	return getRecordSlot(key_).intoStruct();
+}
+
+u16 StructScopedSlot::revision() const noexcept {
+	u16 value = 0;
+	if (slot() && slot()->hasPayload()) {
+		getSlot<u16>("@rev") >> value;
+	}
+	return value;
 }

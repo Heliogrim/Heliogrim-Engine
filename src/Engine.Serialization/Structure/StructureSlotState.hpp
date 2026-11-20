@@ -23,5 +23,8 @@ namespace hg::engine::serialization {
 		public StructureSlotState {
 		nmpt<resource::Archive> archive = nullptr;
 		nmpt<class LoadContext> context = nullptr;
+		/* Set on scratch roots of migrated records: errors report the original record, not scratch offsets. */
+		s64 originOffset = -1;
+		s64 originLength = 0;
 	};
 }

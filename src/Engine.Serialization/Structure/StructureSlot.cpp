@@ -9,6 +9,22 @@
 using namespace hg::engine::serialization;
 using namespace hg;
 
+namespace {
+	[[nodiscard]] nmpt<LoadContext> contextOf(ref<const StructureSlotState> state_) noexcept;
+
+	/* Errors inside a migrated record point at the original record (record granularity). */
+	[[nodiscard]] ReadError atOrigin(ref<const StructureSlotState> state_, mref<ReadError> error_) noexcept;
+
+	/* 0 for bool, 1..4 for 8..64 bit; -1 for non-integral. */
+	[[nodiscard]] s32 integralRank(const StructureSlotType type_) noexcept;
+
+	[[nodiscard]] bool isSigned(const StructureSlotType type_) noexcept;
+}
+
+/**/
+
+StructureSlotBase::~StructureSlotBase() = default;
+
 cref<StructureSlotHeader> StructureSlotBase::getSlotHeader() const noexcept {
 	return _state.header;
 }
@@ -33,6 +49,24 @@ void StructureSlotBase::writeHeader() {
 	}
 }
 
+bool StructureSlotBase::readHeader() {
+
+	if (_state.offset < 0 || not _state.root || not _state.root->archive) {
+		_state.header = StructureSlotHeader {};
+		return false;
+	}
+
+	if (const auto ctx = contextOf(_state); ctx && ctx->failed()) {
+		_state.header = StructureSlotHeader {};
+		return false;
+	}
+
+	if (not readHeaderAt(_state.offset, slotLimit(), _state.header)) {
+		return false;
+	}
+
+	return true;
+}
 
 void StructureSlotBase::enter() {
 
@@ -62,49 +96,9 @@ void StructureSlotBase::leave() {
 
 void StructureSlotBase::feedback(const non_owning_rptr<const StructureSlotBase> other_) {}
 
-namespace {
-	[[nodiscard]] nmpt<LoadContext> contextOf(ref<const StructureSlotState> state_) noexcept {
-		return state_.root ? state_.root->context : nullptr;
-	}
-
-	/* 0 for bool, 1..4 for 8..64 bit; -1 for non-integral. */
-	[[nodiscard]] s32 integralRank(const StructureSlotType type_) noexcept {
-		const auto code = static_cast<u8>(type_);
-		if (code == static_cast<u8>(StructureSlotType::eBool)) {
-			return 0;
-		}
-		return code >= static_cast<u8>(StructureSlotType::eU8) && code <= static_cast<u8>(StructureSlotType::eS64) ? code / 2 : -1;
-	}
-
-	[[nodiscard]] bool isSigned(const StructureSlotType type_) noexcept {
-		return integralRank(type_) > 0 && (static_cast<u8>(type_) & 1u) != 0u;
-	}
-}
-
-StructureSlotBase::~StructureSlotBase() = default;
-
-bool StructureSlotBase::readHeader() {
-
-	if (_state.offset < 0 || not _state.root || not _state.root->archive) {
-		_state.header = StructureSlotHeader {};
-		return false;
-	}
-
-	if (const auto ctx = contextOf(_state); ctx && ctx->failed()) {
-		_state.header = StructureSlotHeader {};
-		return false;
-	}
-
-	if (not readHeaderAt(_state.offset, slotLimit(), _state.header)) {
-		return false;
-	}
-
-	return true;
-}
-
 void StructureSlotBase::fail(const ReadError::Kind kind_, const s64 offset_, const s64 length_, ptr<const char> detail_) const {
 	if (const auto ctx = contextOf(_state)) {
-		ctx->fail(ReadError { kind_, offset_, length_, String { detail_ } });
+		ctx->fail(atOrigin(_state, ReadError { kind_, offset_, length_, String { detail_ } }));
 	}
 }
 
@@ -134,7 +128,7 @@ s64 StructureSlotBase::slotLimit() const noexcept {
 bool StructureSlotBase::readHeaderAt(const s64 at_, const s64 limit_, ref<StructureSlotHeader> out_) const {
 	if (auto error = readSlotHeader(*_state.root->archive, SlotCursor { at_, limit_ }, at_, out_)) {
 		if (const auto ctx = contextOf(_state)) {
-			ctx->fail(std::move(*error));
+			ctx->fail(atOrigin(_state, std::move(*error)));
 		}
 		return false;
 	}
@@ -260,4 +254,32 @@ bool StructureSlotBase::readFloat(const StructureSlotType target_, ref<double> v
 	}
 
 	return checkArchive(_state.offset, slotSpan(_state.header));
+}
+
+/**/
+
+namespace {
+	nmpt<LoadContext> contextOf(ref<const StructureSlotState> state_) noexcept {
+		return state_.root ? state_.root->context : nullptr;
+	}
+
+	ReadError atOrigin(ref<const StructureSlotState> state_, mref<ReadError> error_) noexcept {
+		if (state_.root && state_.root->originOffset >= 0) {
+			error_.offset = state_.root->originOffset;
+			error_.length = state_.root->originLength;
+		}
+		return std::move(error_);
+	}
+
+	s32 integralRank(const StructureSlotType type_) noexcept {
+		const auto code = static_cast<u8>(type_);
+		if (code == static_cast<u8>(StructureSlotType::eBool)) {
+			return 0;
+		}
+		return code >= static_cast<u8>(StructureSlotType::eU8) && code <= static_cast<u8>(StructureSlotType::eS64) ? code / 2 : -1;
+	}
+
+	bool isSigned(const StructureSlotType type_) noexcept {
+		return integralRank(type_) > 0 && (static_cast<u8>(type_) & 1u) != 0u;
+	}
 }

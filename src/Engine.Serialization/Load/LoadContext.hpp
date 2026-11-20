@@ -1,15 +1,16 @@
 #pragma once
 
 #include <span>
-#include <unordered_map>
-#include <unordered_set>
 #include <utility>
 
+#include <Engine.Common/Collection/DenseMap.hpp>
+#include <Engine.Common/Collection/DenseSet.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Expected.hpp>
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Math/Hash.hpp>
 #include <Engine.Diagnostics/Diagnostic.hpp>
 #include <Engine.Diagnostics/Sink.hpp>
 
@@ -39,7 +40,18 @@ namespace hg::engine::serialization {
 		Vector<Entry> _notes;
 		Vector<Entry> _warnings;
 
-		std::unordered_map<s64, std::unordered_set<String>> _read;
+		using read_key = std::pair<ptr<const void>, s64>;
+
+		struct ReadKeyHash {
+			[[nodiscard]] size_t operator()(ref<const read_key> key_) const noexcept {
+				size_t seed = std::hash<ptr<const void>> {}(key_.first);
+				hash::hash_combine(seed, std::hash<s64> {}(key_.second));
+				return seed;
+			}
+		};
+
+		/* Keyed by (archive, struct offset): scratch archives of migrated records reuse offsets. */
+		DenseMap<read_key, DenseSet<String>, ReadKeyHash> _read;
 
 	public:
 		/* The first failure latches, later ones become notes. */
@@ -66,9 +78,9 @@ namespace hg::engine::serialization {
 		[[nodiscard]] bool charge(const u64 bytes_);
 
 	public:
-		void markRead(const s64 structOffset_, const StringView key_);
+		void markRead(ptr<const void> archive_, const s64 structOffset_, const StringView key_);
 
-		[[nodiscard]] Vector<String> unreadKeys(const s64 structOffset_, std::span<const String> present_) const;
+		[[nodiscard]] Vector<String> unreadKeys(ptr<const void> archive_, const s64 structOffset_, std::span<const String> present_) const;
 
 	public:
 		/* Emits warnings to the sink; on a latched failure returns it (with the later ones as notes). */
