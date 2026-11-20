@@ -59,12 +59,13 @@ namespace hg::engine::serialization {
 
 		[[nodiscard]] s64 payloadEnd() const noexcept;
 
+		/* Bytes a slot with this header spans: tag, size field if any, payload. */
+		[[nodiscard]] static s64 slotSpan(ref<const StructureSlotHeader> header_) noexcept;
+
 	protected:
 		[[nodiscard]] s64 slotLimit() const noexcept;
 
 		[[nodiscard]] bool readHeaderAt(s64 at_, s64 limit_, _Out_ ref<StructureSlotHeader> out_) const;
-
-		[[nodiscard]] static s64 slotSpan(cref<StructureSlotHeader> header_) noexcept;
 
 		[[nodiscard]] bool checkArchive(s64 offset_, s64 length_) const;
 

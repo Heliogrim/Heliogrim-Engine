@@ -109,13 +109,14 @@ namespace HgTestLoadContext {
 
 	TEST(LoadContext, UnreadKeysAcrossAliases) {
 		LoadContext ctx { 100 };
-		ctx.markRead(40, "a");
-		ctx.markRead(40, String { "b" });
+		ctx.markRead(&ctx, 40, "a");
+		ctx.markRead(&ctx, 40, String { "b" });
 		const Vector<String> present { "a", "b", "c" };
-		const auto unread = ctx.unreadKeys(40, present);
+		const auto unread = ctx.unreadKeys(&ctx, 40, present);
 		ASSERT_EQ(unread.size(), 1uLL);
 		EXPECT_EQ(unread.front(), "c");
-		EXPECT_EQ(ctx.unreadKeys(8, present).size(), 3uLL);
+		EXPECT_EQ(ctx.unreadKeys(&ctx, 8, present).size(), 3uLL);
+		EXPECT_EQ(ctx.unreadKeys(&present, 40, present).size(), 3uLL);
 	}
 
 	TEST(LoadContext, WarningsReachSinkAndFinishMapsMalformed) {

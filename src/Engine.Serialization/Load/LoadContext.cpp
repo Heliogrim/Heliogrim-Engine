@@ -78,12 +78,12 @@ bool LoadContext::charge(const u64 bytes_) {
 	return true;
 }
 
-void LoadContext::markRead(const s64 structOffset_, const StringView key_) {
-	_read[structOffset_].emplace(key_);
+void LoadContext::markRead(ptr<const void> archive_, const s64 structOffset_, const StringView key_) {
+	_read[read_key { archive_, structOffset_ }].emplace(key_);
 }
 
-Vector<String> LoadContext::unreadKeys(const s64 structOffset_, std::span<const String> present_) const {
-	const auto it = _read.find(structOffset_);
+Vector<String> LoadContext::unreadKeys(ptr<const void> archive_, const s64 structOffset_, std::span<const String> present_) const {
+	const auto it = _read.find(read_key { archive_, structOffset_ });
 	Vector<String> out {};
 	for (const auto& key : present_) {
 		if (it == _read.end() || not it->second.contains(key)) {
