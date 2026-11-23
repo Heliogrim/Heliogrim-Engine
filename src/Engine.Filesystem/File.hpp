@@ -1,8 +1,9 @@
 #pragma once
 
+#include <Engine.Filesystem/Path.hpp>
+
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
-import Engine.Filesystem;
 #endif
 
 namespace hg::fs {

@@ -3,12 +3,12 @@
 #include <Engine.Common/__macro.hpp>
 
 #include "./ImportDestination.hpp"
-#include "../File.hpp"
 #include "../FileTypeId.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Async;
 import Engine.Common;
+import Engine.Filesystem;
 #endif
 
 namespace hg::engine::res {

@@ -1,8 +1,11 @@
 #pragma once
 
 #include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
-#include <Engine.Resource/File.hpp>
 #include <Engine.Resource/Importer/Importer.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Filesystem;
+#endif
 
 namespace hg::engine::graphics {
 	class FbxImporter :
