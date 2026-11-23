@@ -1,6 +1,9 @@
 #include "LoadLevel.hpp"
 
-#include <Engine.Serialization/SerializationModule.hpp>
+#include <Engine.Diagnostics/Render.hpp>
+#include <Engine.Diagnostics/Sink.hpp>
+#include <Engine.Logging/Logger.hpp>
+#include <Engine.Serialization/Diagnostic/Codes.hpp>
 #include <Engine.Storage.System/StorageSystem.hpp>
 #include <Engine.Storage/StorageModule.hpp>
 
@@ -9,7 +12,13 @@ using namespace hg;
 
 /**/
 
-static Arci<engine::core::Level> load_level_from_asset(_In_ ref<const engine::assets::LevelAsset> levelAsset_);
+static Result<Arci<engine::core::Level>, engine::diag::Diagnostics> reject_level(
+	_Inout_ ref<engine::diag::DiagnosticSink> sink_,
+	_In_ ref<const engine::diag::DiagnosticCodeInfo> code_,
+	_In_ mref<String> message_
+);
+
+static void log_diagnostics(_In_ ref<const engine::diag::Diagnostics> diagnostics_);
 
 /**/
 
@@ -19,7 +28,10 @@ LoadLevel::LoadLevel(mref<Arci<engine::assets::LevelAsset>> levelAsset_) :
 			if (this->_levelAsset == nullptr)
 				return;
 
-			_level = load_level_from_asset(*this->_levelAsset);
+			auto sink = engine::diag::CollectingSink {};
+			auto loaded = loadLevelFromAsset(*this->_levelAsset, sink);
+			log_diagnostics(sink.items());
+			_level = loaded.has_value() ? ::hg::move(loaded).value() : nullptr;
 		},
 		[] { ::hg::todo_panic(); }
 	),
@@ -28,30 +40,90 @@ LoadLevel::LoadLevel(mref<Arci<engine::assets::LevelAsset>> levelAsset_) :
 
 LoadLevel::~LoadLevel() = default;
 
-/**/
-
-static Arci<engine::core::Level> load_level_from_asset(ref<const engine::assets::LevelAsset> levelAsset_) {
+Result<Arci<engine::core::Level>, engine::diag::Diagnostics> editor::scene::actions::loadLevelFromAsset(
+	ref<const engine::assets::LevelAsset> levelAsset_,
+	ref<engine::diag::DiagnosticSink> sink_
+) {
 
 	auto engine = engine::Engine::getEngine();
-	const auto serial = engine->getSerialization();
 	auto ssys = engine->getStorage()->getSystem();
 
 	/**/
 
 	const auto& dataUrl = levelAsset_.getLevelData();
+	if (not dataUrl.is<engine::storage::ArchiveUrl>()) {
+		return reject_level(
+			sink_,
+			engine::serialization::codes::ser("missing-field"),
+			std::format("level `{}` has no level data archive", levelAsset_.getAssetName())
+		);
+	}
+
+	const auto archiveUrl = dataUrl.as<engine::storage::ArchiveUrl>().encode();
 	auto dataArchive = ssys->findArchive(clone(dataUrl.as<engine::storage::ArchiveUrl>()));
-	::hg::assertrt(dataArchive != None);
+	if (dataArchive == None) {
+		return reject_level(
+			sink_,
+			engine::serialization::codes::ser("unresolved-reference"),
+			std::format("level `{}`: level data archive `{}` is missing", levelAsset_.getAssetName(), archiveUrl)
+		);
+	}
 
 	/**/
 
-	auto level = Arci<engine::core::Level>::create(levelAsset_);
+	// Seed without emitting; the error is only reported when the query never ran.
+	bool queried = false;
+	Result<Arci<engine::core::Level>, engine::diag::Diagnostics> loaded = Unexpected<engine::diag::Diagnostics> {
+		engine::diag::Diagnostics {}
+	};
 	ssys->query(
 		std::move(dataArchive).value(),
-		[&level_ = *level, serial](engine::resource::StorageReadonlyArchive& archive_) -> void {
-			auto structured = engine::serialization::StructuredArchive { archive_ };
-			serial->hydrate(structured, level_);
+		[&](engine::resource::StorageReadonlyArchive& archive_) -> void {
+			queried = true;
+			loaded = engine::core::loadLevel(archive_, archiveUrl, sink_, Arci<engine::core::Level>::create(levelAsset_));
 		}
 	);
 
-	return level;
+	if (not queried) {
+		return reject_level(
+			sink_,
+			engine::serialization::codes::ser("truncated"),
+			std::format("level `{}`: level data archive `{}` could not be queried", levelAsset_.getAssetName(), archiveUrl)
+		);
+	}
+
+	return loaded;
+}
+
+/**/
+
+static Result<Arci<engine::core::Level>, engine::diag::Diagnostics> reject_level(
+	ref<engine::diag::DiagnosticSink> sink_,
+	ref<const engine::diag::DiagnosticCodeInfo> code_,
+	mref<String> message_
+) {
+	engine::diag::Diagnostic diagnostic = engine::diag::Diagnostic::error(code_, ::hg::move(message_));
+	sink_.emit(engine::diag::Diagnostic { diagnostic });
+
+	engine::diag::Diagnostics out {};
+	out.emplace_back(::hg::move(diagnostic));
+	return Unexpected<engine::diag::Diagnostics> { ::hg::move(out) };
+}
+
+static void log_diagnostics(ref<const engine::diag::Diagnostics> diagnostics_) {
+	for (const auto& diagnostic : diagnostics_) {
+		switch (diagnostic.severity()) {
+			case engine::diag::Severity::eError: {
+				IM_CORE_ERRORF("{}", engine::diag::render(diagnostic));
+				break;
+			}
+			case engine::diag::Severity::eWarning: {
+				IM_CORE_WARNF("{}", engine::diag::render(diagnostic));
+				break;
+			}
+			default: {
+				IM_CORE_INFOF("{}", engine::diag::render(diagnostic));
+			}
+		}
+	}
 }

@@ -716,6 +716,20 @@ namespace LoadBoundaryModule {
 		EXPECT_NE(std::ranges::find(notes, String { "while loading level 'Sandbox'" }), notes.end());
 	}
 
+	TEST_F(LoadBoundary, StructurallyInvalidLevelRejectedBeforeHydrate) {
+		{
+			auto structured = StructuredArchive { _archive };
+			auto root = structured.insertRootSlot().intoStruct();
+			root.insertSlot<String>("name") << String { "first" };
+			root.insertSlot<String>("name") << String { "second" };
+		}
+		const auto level = loadLevel(_archive, "Sandbox", _sink);
+
+		ASSERT_FALSE(level.has_value());
+		ASSERT_FALSE(level.error().empty());
+		EXPECT_NE(level.error().front().message().find("duplicate struct key"), String::npos) << level.error().front().message();
+	}
+
 	TEST_F(LoadBoundary, ContextFillsAssetUrl) {
 		{
 			auto structured = StructuredArchive { _archive };
