@@ -17,14 +17,13 @@
 #include <Engine.Graphics.Render.Predefined/Symbols/DirectionalShadow.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneDepth.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneView.hpp>
-#include <Engine.Graphics.RenderGraph/Relation/TextureDescription.hpp>
-#include <Engine.Graphics.RenderGraph/Symbol/ScopedSymbolContext.hpp>
 
 #include "TmpDirectionalShadowPass.hpp"
 
 import Engine.Common;
 import Engine.Core;
 import Engine.Graphics;
+import Engine.Graphics.RenderGraph;
 import Engine.Graphics.Scene;
 import Engine.Reflect;
 import Engine.Render.Scene;

@@ -1,7 +1,10 @@
 #pragma once
 
 #include <Editor.UI.Service/Input/InputBindingList.hpp>
-#include <Engine.Reflow/Widget/CompoundWidget.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Reflow;
+#endif
 
 namespace hg::editor::ui {
 	class InputBindingProvider :

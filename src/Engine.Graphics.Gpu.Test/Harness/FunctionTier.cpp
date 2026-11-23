@@ -11,8 +11,6 @@
 #include <Engine.Driver.Vulkan/VkNativeBatch.hpp>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
 #include <Engine.Graphics.Render.Command/RenderCommandBuffer.hpp>
-#include <Engine.Graphics.RenderGraph/Relation/TextureDescription.hpp>
-#include <Engine.Graphics.RenderGraph/Symbol/Symbol.hpp>
 
 #include "FunctionTarget.hpp"
 
@@ -20,6 +18,7 @@ import Engine.Accel.Lang;
 import Engine.Common;
 import Engine.Diagnostics;
 import Engine.Graphics;
+import Engine.Graphics.RenderGraph;
 
 using namespace hg::test::gpu;
 using namespace hg::engine::accel;

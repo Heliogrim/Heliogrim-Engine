@@ -3,9 +3,6 @@
 #include <Engine.Accel.Compile/EffectCompileResult.hpp>
 #include <Engine.Accel.Pass/GraphicsPass.hpp>
 #include <Engine.Accel.Pass/Framebuffer/Framebuffer.hpp>
-#include <Engine.Graphics.RenderGraph/Symbol/Observed.hpp>
-#include <Engine.Graphics.RenderGraph/Symbol/Subscribed.hpp>
-#include <Engine.Graphics.RenderGraph/Symbol/SymbolizedResource.hpp>
 #include <Engine.Graphics.Scene.Model/DirectionalLightModel.hpp>
 #include <Engine.Graphics.Scene.Model/StaticGeometryModel.hpp>
 
@@ -13,6 +10,7 @@
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Graphics;
+import Engine.Graphics.RenderGraph;
 #endif
 
 namespace hg::engine::render {

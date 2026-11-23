@@ -1,5 +1,4 @@
 #pragma once
-#include <Engine.Graphics.RenderGraph/Relation/MeshDescription.hpp>
 
 #include "Commands/Structs.hpp"
 #include "Resource/Pipeline.hpp"
@@ -7,6 +6,7 @@
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Graphics.RenderGraph;
 #endif
 
 namespace hg::engine::accel {

@@ -13,14 +13,13 @@
 #include <Engine.Graphics.Render.Command/RenderCommandBuffer.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/BrdfLut.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneColor.hpp>
-#include <Engine.Graphics.RenderGraph/Relation/TextureDescription.hpp>
-#include <Engine.Graphics.RenderGraph/Symbol/ScopedSymbolContext.hpp>
 
 #include "TmpBrdfLutPass.hpp"
 
 import Engine.Common;
 import Engine.Core;
 import Engine.Graphics;
+import Engine.Graphics.RenderGraph;
 import Engine.Reflect;
 
 using namespace hg::engine::render;

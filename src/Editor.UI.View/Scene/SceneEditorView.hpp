@@ -1,9 +1,8 @@
 #pragma once
 
-#include <Engine.Reflow/Widget/Widget.hpp>
-
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Reflow;
 #endif
 
 namespace hg::editor::ui {

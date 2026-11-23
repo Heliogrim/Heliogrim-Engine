@@ -1,13 +1,13 @@
 #pragma once
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics/API/__vkFwd.hpp>
-#include <Engine.Graphics.RenderGraph/Symbol/Symbol.hpp>
 
 #include "__fwd.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
 import Engine.Graphics;
+import Engine.Graphics.RenderGraph;
 #endif
 
 // TODO: Rework

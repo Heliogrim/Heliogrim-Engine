@@ -1,8 +1,10 @@
 #pragma once
 
-#include <Engine.Reflow/Widget/CompoundWidget.hpp>
-
 #include "../Event/ContextMenuEvent.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Reflow;
+#endif
 
 namespace hg::engine::reflow {
 	class Host;

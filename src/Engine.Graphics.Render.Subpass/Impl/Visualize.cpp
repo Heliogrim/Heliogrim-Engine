@@ -12,7 +12,6 @@
 #include <Engine.Graphics.Render.Command/RenderCommandBuffer.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneColor.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneDepth.hpp>
-#include <Engine.Graphics.RenderGraph/Symbol/ScopedSymbolContext.hpp>
 
 #include "__tmp_helper.hpp"
 #include "Visualize.hpp"
@@ -20,6 +19,7 @@
 import Engine.Common;
 import Engine.Core;
 import Engine.Graphics;
+import Engine.Graphics.RenderGraph;
 import Engine.Reflect;
 
 using namespace hg::engine::render;

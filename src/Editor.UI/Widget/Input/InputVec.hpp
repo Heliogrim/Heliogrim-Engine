@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Reflow/Widget/Input.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/HorizontalLayout.hpp>
 
 #include "./InputFloat.hpp"
@@ -8,6 +7,7 @@
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Reflow;
 #endif
 
 namespace hg::editor::ui {

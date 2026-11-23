@@ -4,10 +4,10 @@
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics/vkinc.hpp>
 #include <Engine.Graphics.Core/Graphics.hpp>
-#include <Engine.Graphics.RenderGraph/Node/Runtime/Helper/VkDescriptorWriter.hpp>
 
 import Engine.Asserts;
 import Engine.Core;
+import Engine.Graphics.RenderGraph;
 import Engine.Logging;
 import std;
 

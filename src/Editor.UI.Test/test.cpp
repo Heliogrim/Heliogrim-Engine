@@ -7,12 +7,12 @@
 #include <Editor.UI/Widget/MenuItem.hpp>
 #include <Editor.UI/Widget/MenuSpacer.hpp>
 #include <Editor.UI/Widget/Viewport/Viewport.hpp>
-#include <Engine.Reflow/ReflowEngine.hpp>
 #include <Engine.Reflow.Uikit/Atom/Text.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/BoxLayout.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/VerticalLayout.hpp>
 
 import Engine.Common;
+import Engine.Reflow;
 
 using namespace hg;
 
