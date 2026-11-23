@@ -70,7 +70,7 @@ void access::Structure<StaticGeometry>::hydrate(cref<StructScopedSlot> record_, 
 		const auto materialSeq = record_.getSlot<void>("materials").asSeq();
 		const auto materialSeqCount = materialSeq.getRecordCount();
 
-		for (auto index = 0uL; index < materialSeqCount; ++index) {
+		for (s64 index = 0LL; index < materialSeqCount; ++index) {
 
 			auto materialGuid = AssetGuid {};
 			Structure<Guid>::hydrate(materialSeq.getRecordSlot(index).asStruct(), materialGuid);

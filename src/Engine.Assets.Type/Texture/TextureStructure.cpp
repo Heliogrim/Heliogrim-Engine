@@ -47,7 +47,7 @@ void access::Structure<TextureAsset>::hydrate(cref<StructScopedSlot> record_, Te
 		const auto images = record_.getSlot<void>("images").asSeq();
 		const auto count = images.getRecordCount();
 
-		target_._images.reserve(count);
+		target_._images.reserve(count > 0LL ? static_cast<size_t>(count) : 0uLL);
 		for (s64 i = 0; i < count; ++i) {
 			Guid tmp {};
 			Structure<Guid>::hydrate(images.getRecordSlot(i).asStruct(), tmp);
