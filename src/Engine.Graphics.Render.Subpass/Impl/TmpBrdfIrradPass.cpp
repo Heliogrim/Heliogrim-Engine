@@ -13,7 +13,6 @@
 #include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Graphics/Buffer/BufferFactory.hpp>
 #include <Engine.Graphics/Buffer/UniformBufferView.hpp>
-#include <Engine.Graphics/Scene/SkyboxModel.hpp>
 #include <Engine.Graphics/Texture/SparseTextureView.hpp>
 #include <Engine.Graphics/Texture/TextureFactory.hpp>
 #include <Engine.Graphics/Texture/TextureResource.hpp>
@@ -22,6 +21,7 @@
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneView.hpp>
 #include <Engine.Graphics.RenderGraph/Relation/TextureDescription.hpp>
 #include <Engine.Graphics.RenderGraph/Symbol/ScopedSymbolContext.hpp>
+#include <Engine.Graphics.Scene.Model/Scene/SkyboxModel.hpp>
 
 import Engine.Common;
 import Engine.Core;

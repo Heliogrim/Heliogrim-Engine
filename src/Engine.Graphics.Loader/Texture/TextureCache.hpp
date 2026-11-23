@@ -1,8 +1,8 @@
 #pragma once
 
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Graphics/Cache/__fwd.hpp>
-#include <Engine.Graphics/Cache/CacheResult.hpp>
+#include <Engine.Graphics.Loader/Cache/__fwd.hpp>
+#include <Engine.Graphics.Loader/Cache/CacheResult.hpp>
 
 #include "Traits.hpp"
 

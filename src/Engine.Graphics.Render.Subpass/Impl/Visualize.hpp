@@ -2,7 +2,7 @@
 
 #include <Engine.Accel.Compile/EffectCompileResult.hpp>
 #include <Engine.Accel.Effect/AccelerationEffect.hpp>
-#include <Engine.Graphics/Framebuffer/Framebuffer.hpp>
+#include <Engine.Accel.Pass/Framebuffer/Framebuffer.hpp>
 #include <Engine.Graphics/Texture/Texture.hpp>
 #include <Engine.Graphics/Texture/TextureSampler.hpp>
 #include <Engine.Graphics/Texture/TextureView.hpp>

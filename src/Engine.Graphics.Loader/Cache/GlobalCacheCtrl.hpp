@@ -2,6 +2,7 @@
 
 #include <Engine.Accel.Pipeline/__fwd.hpp>
 #include <Engine.Common/Sal.hpp>
+#include <Engine.Graphics/Texture/TextureResource.hpp>
 #include <Engine.Graphics.Loader/Geometry/StaticGeometryResource.hpp>
 #include <Engine.Graphics.Loader/Material/MaterialResource.hpp>
 
@@ -10,7 +11,6 @@
 #include "CacheResult.hpp"
 #include "CacheStaticGeometrySubject.hpp"
 #include "CacheTextureSubject.hpp"
-#include "../Texture/TextureResource.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

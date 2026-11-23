@@ -3,8 +3,8 @@
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Sal.hpp>
 
-#include "Engine.Graphics/Cache/GlobalCacheCtrl.hpp"
-#include "Engine.Graphics/Cache/GlobalResourceCache.hpp"
+#include "../Cache/GlobalCacheCtrl.hpp"
+#include "../Cache/GlobalResourceCache.hpp"
 
 using namespace hg::engine::graphics::loader;
 using namespace hg::engine::graphics;

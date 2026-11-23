@@ -1,7 +1,7 @@
 #include "StaticGeometryCache.hpp"
 
-#include <Engine.Graphics/Cache/GlobalCacheCtrl.hpp>
-#include <Engine.Graphics/Cache/GlobalResourceCache.hpp>
+#include <Engine.Graphics.Loader/Cache/GlobalCacheCtrl.hpp>
+#include <Engine.Graphics.Loader/Cache/GlobalResourceCache.hpp>
 
 using namespace hg::engine::graphics::loader;
 using namespace hg;

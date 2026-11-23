@@ -1,9 +1,9 @@
 #include "Renderer.hpp"
 
-#include <Engine.Graphics/Cache/GlobalCacheCtrl.hpp>
-#include <Engine.Graphics/Cache/LocalResourceCache.hpp>
 #include <Engine.Graphics/Memory/GlobalPooledAllocator.hpp>
 #include <Engine.Graphics/Memory/LocalPooledAllocator.hpp>
+#include <Engine.Graphics.Loader/Cache/GlobalCacheCtrl.hpp>
+#include <Engine.Graphics.Loader/Cache/LocalResourceCache.hpp>
 #include <Engine.Graphics.RenderGraph/CompileGraph.hpp>
 #include <Engine.Graphics.RenderGraph/RuntimeGraph.hpp>
 #include <Engine.Graphics.RenderGraph/Pass/IterationPass.hpp>

@@ -1,6 +1,6 @@
 #pragma once
-#include <Engine.Graphics/Cache/LocalCacheCtrl.hpp>
 #include <Engine.Graphics/Memory/LocalPooledAllocator.hpp>
+#include <Engine.Graphics.Loader/Cache/LocalCacheCtrl.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Graphics.Scene;

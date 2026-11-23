@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Engine.Accel.Command/CommandBufferStructs.hpp>
-#include <Engine.Graphics/Framebuffer/Framebuffer.hpp>
+#include <Engine.Accel.Pass/Framebuffer/Framebuffer.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
