@@ -1,11 +1,10 @@
 #include "BoxShapeGeometryComponent.hpp"
 
+#include <Engine.Assets.Database/AssetDatabase.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 
-#include "AssetDatabase.hpp"
 #include "AssetResolve.hpp"
-
 import Engine.Common;
 
 using namespace hg::engine::serialization;

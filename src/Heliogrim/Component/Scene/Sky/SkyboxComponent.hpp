@@ -1,10 +1,9 @@
 #pragma once
 
 #include <Engine.ACS/Component/SceneComponent.hpp>
+#include <Engine.Assets.Database/Asset/GeometryAssetHandles.hpp>
+#include <Engine.Assets.Database/Asset/MaterialAssetHandles.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
-
-#include "../../../Asset/GeometryAssetHandles.hpp"
-#include "../../../Asset/MaterialAssetHandles.hpp"
 
 namespace hg {
 	class SkyboxComponent :

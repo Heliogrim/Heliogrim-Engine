@@ -1,10 +1,9 @@
 #pragma once
 
 #include <Engine.ACS/Component/ModelComponent.hpp>
+#include <Engine.Assets.Database/Asset/GeometryAssetHandles.hpp>
+#include <Engine.Assets.Database/Asset/MaterialAssetHandles.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
-
-#include "../../../Asset/GeometryAssetHandles.hpp"
-#include "../../../Asset/MaterialAssetHandles.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

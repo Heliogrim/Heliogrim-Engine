@@ -1,8 +1,7 @@
 #include "BoxShapeGeometryComponent.Layout.hpp"
 
 #include <Engine.ACS/Archetype/ArchetypeLayout.inl.hpp>
-
-#include "AssetDatabase.hpp"
+#include <Engine.Assets.Database/AssetDatabase.hpp>
 
 using namespace hg::engine::serialization;
 using namespace hg;

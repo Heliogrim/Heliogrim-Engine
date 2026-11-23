@@ -28,6 +28,7 @@ make_library_project(
 		${PROJECT_NAME}::Engine.Accel.Storage
 		${PROJECT_NAME}::Engine.Asserts
 		${PROJECT_NAME}::Engine.Assets
+		${PROJECT_NAME}::Engine.Assets.Database
 		${PROJECT_NAME}::Engine.Assets.System
 		${PROJECT_NAME}::Engine.Assets.Type
 		${PROJECT_NAME}::Engine.Async

@@ -37,10 +37,10 @@ SpawnShapeActor::~SpawnShapeActor() = default;
 #include <Editor.UI.Main/EditorUI.hpp>
 #include <Editor.UI.Main/Module/EditorUI.hpp>
 #include <Engine.ACS/Actor/Actor.hpp>
+#include <Engine.Assets.Database/Asset/MaterialAssetHandles.hpp>
 #include <Heliogrim/Heliogrim.hpp>
 #include <Heliogrim/Actor/Geometry/BoxShapeGeometryActor.hpp>
 #include <Heliogrim/Actor/Geometry/SphereShapeGeometryActor.hpp>
-#include <Heliogrim/Asset/MaterialAssetHandles.hpp>
 #include <Heliogrim/Core/Session.hpp>
 #include <Heliogrim/Universe/Universe.hpp>
 

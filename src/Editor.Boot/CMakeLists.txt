@@ -6,6 +6,7 @@ make_library_project(
 		LIB_FOLDER "${IDE_FOLDER}/Editor"
 		LIBRARIES
 			${PROJECT_NAME}::Engine.Storage
+		${PROJECT_NAME}::Engine.Assets.Database
 		${PROJECT_NAME}::Editor.Action
 		${PROJECT_NAME}::Editor.Assets.Actions
 		${PROJECT_NAME}::Editor.Assets.Default
