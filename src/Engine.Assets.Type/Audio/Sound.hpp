@@ -1,7 +1,6 @@
 #pragma once
 
-#include <Engine.Audio/AudioFormat.hpp>
-
+#include "AudioFormat.hpp"
 #include "../Asset.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)

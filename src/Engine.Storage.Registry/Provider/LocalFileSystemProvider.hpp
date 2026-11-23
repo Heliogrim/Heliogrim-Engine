@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Resource/File.hpp>
 
 #include "../IStorageProvider.hpp"
 

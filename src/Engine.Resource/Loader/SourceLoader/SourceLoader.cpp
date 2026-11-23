@@ -3,7 +3,6 @@
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Resource/File.hpp>
 #include <Engine.Storage.Registry/IStorageRegistry.hpp>
 #include <Engine.Storage.Registry/Url/FileUrl.hpp>
 #include <Engine.Storage.Registry/Url/StorageUrl.hpp>
