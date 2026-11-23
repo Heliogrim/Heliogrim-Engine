@@ -1,4 +1,3 @@
-#include <Engine.Resource.Archive/Archive.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Structure/SeqScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
@@ -52,7 +51,12 @@ void access::Structure<StaticGeometryComponent>::hydrate(
 
 			// The setters only assert on the index, so a record that exceeds the geometry is rejected here.
 			if (not target_.getStaticGeometry().isValid() || index_ >= target_.getStaticGeometry().getAssetRef()->getMeshMaterialCount()) {
-				record_.slot()->getState().root->archive->setError();
+				record_.slot()->fail(
+					ReadError::Kind::eInvalidValue,
+					record_.slot()->getState().offset,
+					0LL,
+					"instance material index is out of range of the static geometry"
+				);
 				return;
 			}
 
