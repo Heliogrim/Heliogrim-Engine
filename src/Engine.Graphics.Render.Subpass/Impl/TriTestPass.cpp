@@ -6,7 +6,7 @@
 #include <Engine.Accel.Pass/VkAccelerationPassFactory.hpp>
 #include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
-#include <Engine.Graphics/Graphics.hpp>
+#include <Engine.Graphics.Core/Graphics.hpp>
 #include <Engine.Graphics.Render.Command/RenderCommandBuffer.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneColor.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneDepth.hpp>

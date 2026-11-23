@@ -1,7 +1,7 @@
 #include "VkGraphicsPipeline.hpp"
 
 #include <Engine.Accel.Pipeline/Stage/StageDerivat.hpp>
-#include <Engine.Graphics/Graphics.hpp>
+#include <Engine.Graphics.Core/Graphics.hpp>
 
 import Engine.Core;
 import std;

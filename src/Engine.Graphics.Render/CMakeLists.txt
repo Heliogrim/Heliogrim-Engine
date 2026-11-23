@@ -7,3 +7,4 @@ make_library_project(
         ${PROJECT_NAME}::Engine.IO.Dispatcher
         ${PROJECT_NAME}::Engine.Pedantic.Resource ${PROJECT_NAME}::Engine.Graphics.Types ${PROJECT_NAME}::Engine.Assets ${PROJECT_NAME}::Engine.Assets.Type ${PROJECT_NAME}::Engine.Storage.Action ${PROJECT_NAME}::Engine.Graphics.Loader
 )
+# shortcut: Engine.Graphics.Render .cpp files reach the graphics front via getEngine()->getGraphics(), drop when the service-locator design lands

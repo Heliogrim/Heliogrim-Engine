@@ -10,12 +10,12 @@
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/GLM.hpp>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
-#include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Graphics/Buffer/BufferFactory.hpp>
 #include <Engine.Graphics/Pool/SceneResourcePool.hpp>
 #include <Engine.Graphics/Texture/SparseTextureView.hpp>
 #include <Engine.Graphics/Texture/TextureFactory.hpp>
 #include <Engine.Graphics/Texture/TextureView.hpp>
+#include <Engine.Graphics.Core/Graphics.hpp>
 #include <Engine.Graphics.Render.Command/RenderCommandBuffer.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/DirectionalShadow.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneDepth.hpp>

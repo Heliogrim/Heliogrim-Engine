@@ -1,10 +1,10 @@
 #include "Plane.hpp"
 
 #include <Engine.Common/__macro.hpp>
+#include <Engine.Graphics.Core/Graphics.hpp>
 
 #include "PolygonMesh.hpp"
 #include "Vertex.hpp"
-#include "../Graphics.hpp"
 #include "../Memory/MemoryType.hpp"
 
 using namespace hg::engine::graphics;

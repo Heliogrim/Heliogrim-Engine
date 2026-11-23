@@ -10,12 +10,12 @@
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Math/Compat.inl>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
-#include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Graphics/Buffer/BufferFactory.hpp>
 #include <Engine.Graphics/Buffer/UniformBufferView.hpp>
 #include <Engine.Graphics/Texture/SparseTextureView.hpp>
 #include <Engine.Graphics/Texture/TextureFactory.hpp>
 #include <Engine.Graphics/Texture/TextureResource.hpp>
+#include <Engine.Graphics.Core/Graphics.hpp>
 #include <Engine.Graphics.Render.Command/RenderCommandBuffer.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/BrdfPrefilter.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneView.hpp>

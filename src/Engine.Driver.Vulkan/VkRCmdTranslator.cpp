@@ -2,12 +2,12 @@
 
 #include <Engine.Accel.Pass/VkGraphicsPass.hpp>
 #include <Engine.Accel.Pipeline/VkGraphicsPipeline.hpp>
-#include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Graphics/Buffer/StorageBufferView.hpp>
 #include <Engine.Graphics/Buffer/UniformBufferView.hpp>
 #include <Engine.Graphics/Texture/SparseTextureView.hpp>
 #include <Engine.Graphics/Texture/TextureSampler.hpp>
 #include <Engine.Graphics/Texture/TextureView.hpp>
+#include <Engine.Graphics.Core/Graphics.hpp>
 #include <Engine.Graphics.Render.Command/RenderCommandBuffer.hpp>
 #include <Engine.Graphics.Render.Command/RenderCommandIterator.hpp>
 #include <Engine.Graphics.Render.Command/Commands/AttachResource.hpp>

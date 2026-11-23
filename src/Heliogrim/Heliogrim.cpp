@@ -1,6 +1,6 @@
 #include "Heliogrim.hpp"
 
-#include <Engine.Graphics/Graphics.hpp>
+#include <Engine.Graphics.Core/Graphics.hpp>
 
 #include "HeliogrimStatic.hpp"
 

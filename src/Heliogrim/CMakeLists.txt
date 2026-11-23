@@ -45,6 +45,7 @@ make_library_project(
 		${PROJECT_NAME}::Engine.Filesystem
 		${PROJECT_NAME}::Engine.Graphics
 		${PROJECT_NAME}::Engine.Graphics.Components
+		${PROJECT_NAME}::Engine.Graphics.Core
 		${PROJECT_NAME}::Engine.Graphics.Event
 		${PROJECT_NAME}::Engine.Graphics.Geometry
 		${PROJECT_NAME}::Engine.Graphics.Glow

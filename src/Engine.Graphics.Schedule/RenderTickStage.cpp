@@ -1,8 +1,8 @@
 #include "RenderTickStage.hpp"
 
-#include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Graphics/RenderEnqueueResult.hpp>
-#include <Engine.Graphics/RenderTarget.hpp>
+#include <Engine.Graphics.Core/Graphics.hpp>
+#include <Engine.Graphics.Render/RenderTarget.hpp>
 #include <Engine.Graphics.Schedule/RenderScenePipeline.hpp>
 
 #ifdef _PROFILING

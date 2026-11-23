@@ -1,6 +1,6 @@
 #include "VkResourceTable.hpp"
 
-#include <Engine.Graphics/Graphics.hpp>
+#include <Engine.Graphics.Core/Graphics.hpp>
 
 #include "VkDescriptor.hpp"
 #include "VkScopedResourceTable.hpp"

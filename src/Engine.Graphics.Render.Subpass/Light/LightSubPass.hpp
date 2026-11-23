@@ -5,7 +5,6 @@
 import Engine.Common;
 #endif
 
-//#include <Engine.Graphics/Scene/LightModel.hpp>
 namespace hg::engine::graphics {
     class LightModel;
 }
