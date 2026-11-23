@@ -60,9 +60,9 @@ namespace {
 			auto* const self = new HeliogrimApi::test_engine::SpawnEngine {};
 			auto& module = *self->_serialization;
 			module.addActorScheme<Actor>();
-			module.addActorScheme(StaticGeometryActor::typeId, MakeArchetypeFnSet(&StaticGeometryActor::actorClass()));
-			module.addActorScheme(BoxShapeGeometryActor::typeId, MakeArchetypeFnSet(&BoxShapeGeometryActor::actorClass()));
-			module.addActorScheme(SphereShapeGeometryActor::typeId, MakeArchetypeFnSet(&SphereShapeGeometryActor::actorClass()));
+			module.addActorScheme(StaticGeometryActor::typeId, ::hg::engine::acs::MakeArchetypeFnSet(&StaticGeometryActor::actorClass()));
+			module.addActorScheme(BoxShapeGeometryActor::typeId, ::hg::engine::acs::MakeArchetypeFnSet(&BoxShapeGeometryActor::actorClass()));
+			module.addActorScheme(SphereShapeGeometryActor::typeId, ::hg::engine::acs::MakeArchetypeFnSet(&SphereShapeGeometryActor::actorClass()));
 			module.addComponentScheme<HierarchyComponent>();
 			module.addComponentScheme<CameraComponent>();
 			module.addComponentScheme<StaticGeometryComponent>();

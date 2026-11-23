@@ -31,9 +31,9 @@ void editor::boot::initSerialization([[maybe_unused]] cref<engine::Config> cfg_,
 
 	module_.addActorScheme<Actor>();
 	module_.addActorScheme<CameraActor>();
-	module_.addActorScheme(StaticGeometryActor::typeId, MakeArchetypeFnSet(&StaticGeometryActor::actorClass()));
-	module_.addActorScheme(BoxShapeGeometryActor::typeId, MakeArchetypeFnSet(&BoxShapeGeometryActor::actorClass()));
-	module_.addActorScheme(SphereShapeGeometryActor::typeId, MakeArchetypeFnSet(&SphereShapeGeometryActor::actorClass()));
+	module_.addActorScheme(StaticGeometryActor::typeId, ::hg::engine::acs::MakeArchetypeFnSet(&StaticGeometryActor::actorClass()));
+	module_.addActorScheme(BoxShapeGeometryActor::typeId, ::hg::engine::acs::MakeArchetypeFnSet(&BoxShapeGeometryActor::actorClass()));
+	module_.addActorScheme(SphereShapeGeometryActor::typeId, ::hg::engine::acs::MakeArchetypeFnSet(&SphereShapeGeometryActor::actorClass()));
 	module_.addActorScheme<DirectionalLightActor>();
 	module_.addActorScheme<PointLightActor>();
 

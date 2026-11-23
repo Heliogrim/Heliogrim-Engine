@@ -10,7 +10,7 @@ import Engine.Common;
 import Engine.Reflect;
 #endif
 
-namespace hg::archetype_detail {
+namespace hg::engine::acs {
 	template <typename Byte_, typename Type_>
 	using like_t = std::conditional_t<std::is_const_v<Byte_>, const Type_, Type_>;
 
@@ -233,12 +233,12 @@ namespace hg {
 		 */
 		template <FixedString Path_>
 		[[nodiscard]] decltype(auto) get() noexcept {
-			return archetype_detail::get<Derived_, Path_>(reinterpret_cast<std::byte*>(static_cast<Derived_*>(this)));
+			return ::hg::engine::acs::get<Derived_, Path_>(reinterpret_cast<std::byte*>(static_cast<Derived_*>(this)));
 		}
 
 		template <FixedString Path_>
 		[[nodiscard]] decltype(auto) get() const noexcept {
-			return archetype_detail::get<Derived_, Path_>(
+			return ::hg::engine::acs::get<Derived_, Path_>(
 				reinterpret_cast<const std::byte*>(static_cast<const Derived_*>(this))
 			);
 		}

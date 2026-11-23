@@ -365,7 +365,7 @@ namespace HeliogrimApi::schema_fixtures {
 				)
 			) {
 			std::memset(_memory, 0, static_cast<size_t>(count_) * class_.desc().stride);
-			_class.ops().construct(_memory, _count, stride(), ArchetypeInit { *Engine::getEngine()->getActors()->getRegistry() });
+			_class.ops().construct(_memory, _count, stride(), ::hg::engine::acs::ArchetypeInit { *Engine::getEngine()->getActors()->getRegistry() });
 		}
 
 		Slots(ref<const Slots>) = delete;
@@ -405,9 +405,9 @@ namespace HeliogrimApi::schema_fixtures {
 			activeSerial = _engine->_serialization.get();
 			module.addActorScheme<Actor>();
 			module.addActorScheme<CameraActor>();
-			module.addActorScheme(StaticGeometryActor::typeId, MakeArchetypeFnSet(&StaticGeometryActor::actorClass()));
-			module.addActorScheme(BoxShapeGeometryActor::typeId, MakeArchetypeFnSet(&BoxShapeGeometryActor::actorClass()));
-			module.addActorScheme(SphereShapeGeometryActor::typeId, MakeArchetypeFnSet(&SphereShapeGeometryActor::actorClass()));
+			module.addActorScheme(StaticGeometryActor::typeId, ::hg::engine::acs::MakeArchetypeFnSet(&StaticGeometryActor::actorClass()));
+			module.addActorScheme(BoxShapeGeometryActor::typeId, ::hg::engine::acs::MakeArchetypeFnSet(&BoxShapeGeometryActor::actorClass()));
+			module.addActorScheme(SphereShapeGeometryActor::typeId, ::hg::engine::acs::MakeArchetypeFnSet(&SphereShapeGeometryActor::actorClass()));
 			module.addActorScheme<DirectionalLightActor>();
 			module.addActorScheme<PointLightActor>();
 			module.addComponentScheme<HierarchyComponent>();

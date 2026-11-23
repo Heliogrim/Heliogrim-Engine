@@ -144,7 +144,7 @@ namespace LoadBoundaryModule {
 
 			_engine->_serialization->addActorScheme(
 				HeliogrimApi::TestTank::typeId,
-				MakeArchetypeFnSet(&HeliogrimApi::TestTank::actorClass())
+				::hg::engine::acs::MakeArchetypeFnSet(&HeliogrimApi::TestTank::actorClass())
 			);
 			hydratedValue = 0u;
 		}

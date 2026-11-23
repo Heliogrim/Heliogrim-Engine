@@ -39,12 +39,12 @@ namespace {
 	template <typename Type_>
 	void layoutRoundTrip(ref<const Type_> source_, ref<Type_> target_) {
 		Vector<std::byte> bytes {};
-		archetype_detail::dump_payload(source_, bytes);
-		ASSERT_EQ(bytes.size(), archetype_detail::payload_size<Type_>());
-		ASSERT_EQ(archetype_detail::check_payload<Type_>(bytes, 0uLL), ~0uLL);
-		archetype_detail::commit_payload(bytes, 0uLL, target_);
+		::hg::engine::acs::dump_payload(source_, bytes);
+		ASSERT_EQ(bytes.size(), ::hg::engine::acs::payload_size<Type_>());
+		ASSERT_EQ(::hg::engine::acs::check_payload<Type_>(bytes, 0uLL), ~0uLL);
+		::hg::engine::acs::commit_payload(bytes, 0uLL, target_);
 		LoadContext ctx { bytes.size() };
-		archetype_detail::resolve_payload(bytes, 0uLL, target_, ctx);
+		::hg::engine::acs::resolve_payload(bytes, 0uLL, target_, ctx);
 	}
 }
 
@@ -72,7 +72,7 @@ namespace {
 	[[nodiscard]] Vector<std::byte> payloadWithMaterialCount(const u64 count_) {
 		const auto source = make<StaticGeometryComponent>();
 		Vector<std::byte> bytes {};
-		archetype_detail::dump_payload(*source, bytes);
+		::hg::engine::acs::dump_payload(*source, bytes);
 		std::memcpy(bytes.data(), &count_, sizeof(count_));
 		return bytes;
 	}
@@ -81,40 +81,40 @@ namespace {
 TEST(StaticGeometrySerialization, TrailingNoneMaterialSlotsSurvive) {
 	const auto bytes = payloadWithMaterialCount(3uLL);
 	const auto target = make<StaticGeometryComponent>();
-	ASSERT_EQ(archetype_detail::check_payload<StaticGeometryComponent>(bytes, 0uLL), ~0uLL);
-	archetype_detail::commit_payload(bytes, 0uLL, *target);
+	ASSERT_EQ(::hg::engine::acs::check_payload<StaticGeometryComponent>(bytes, 0uLL), ~0uLL);
+	::hg::engine::acs::commit_payload(bytes, 0uLL, *target);
 	LoadContext ctx { bytes.size() };
-	archetype_detail::resolve_payload(bytes, 0uLL, *target, ctx);
+	::hg::engine::acs::resolve_payload(bytes, 0uLL, *target, ctx);
 	EXPECT_EQ(target->getInstanceMaterials().size(), 3uLL);
 	for (const auto& material : target->getInstanceMaterials()) {
 		EXPECT_FALSE(material.has_value());
 	}
 
 	Vector<std::byte> again {};
-	archetype_detail::dump_payload(*target, again);
+	::hg::engine::acs::dump_payload(*target, again);
 	EXPECT_EQ(again, bytes);
 }
 
 TEST(StaticGeometrySerialization, MaterialCountOverCapacityRejected) {
 	const auto bytes = payloadWithMaterialCount(17uLL);
-	EXPECT_EQ(archetype_detail::check_payload<StaticGeometryComponent>(bytes, 0uLL), 0uLL);
-	EXPECT_NE(archetype_detail::check_payload<StaticGeometryComponent>(payloadWithMaterialCount(16uLL), 0uLL), 0uLL);
+	EXPECT_EQ(::hg::engine::acs::check_payload<StaticGeometryComponent>(bytes, 0uLL), 0uLL);
+	EXPECT_NE(::hg::engine::acs::check_payload<StaticGeometryComponent>(payloadWithMaterialCount(16uLL), 0uLL), 0uLL);
 }
 
 TEST(StaticGeometrySerialization, MaterialGuidPastCountRejected) {
 	auto bytes = payloadWithMaterialCount(2uLL);
 	const u64 guidsAt = bytes.size() - StaticGeometryLayout::assets * sizeof(AssetGuid);
-	ASSERT_EQ(archetype_detail::check_payload<StaticGeometryComponent>(bytes, 0uLL), ~0uLL);
+	ASSERT_EQ(::hg::engine::acs::check_payload<StaticGeometryComponent>(bytes, 0uLL), ~0uLL);
 
 	// Guid index 3 is a material slot past the count of 2 (index 0 is the geometry).
 	const u64 stray = guidsAt + 3uLL * sizeof(AssetGuid);
 	bytes[stray] = std::byte { 0x5A };
-	EXPECT_EQ(archetype_detail::check_payload<StaticGeometryComponent>(bytes, 0uLL), stray);
+	EXPECT_EQ(::hg::engine::acs::check_payload<StaticGeometryComponent>(bytes, 0uLL), stray);
 
 	// Within the count it stays acceptable; resolveAsset reports what it cannot find.
 	auto inside = payloadWithMaterialCount(2uLL);
 	inside[guidsAt + 2uLL * sizeof(AssetGuid)] = std::byte { 0x5A };
-	EXPECT_EQ(archetype_detail::check_payload<StaticGeometryComponent>(inside, 0uLL), ~0uLL);
+	EXPECT_EQ(::hg::engine::acs::check_payload<StaticGeometryComponent>(inside, 0uLL), ~0uLL);
 }
 
 namespace {

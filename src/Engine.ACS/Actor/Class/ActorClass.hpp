@@ -46,7 +46,7 @@ namespace hg {
 			const ptr<const MetaClass> metaClass_,
 			const u64 layoutHash_,
 			const engine::acs::ClusterDesc desc_,
-			ref<const ArchetypeOps> ops_,
+			ref<const engine::acs::ArchetypeOps> ops_,
 			const std::span<const std::uintptr_t> componentOffsets_,
 			const ptr<const u64> startBitmap_,
 			const u32 minAlign_,
@@ -81,7 +81,7 @@ namespace hg {
 		ptr<const MetaClass> _metaClass;
 		u64 _layoutHash;
 		engine::acs::ClusterDesc _desc;
-		ArchetypeOps _ops;
+		engine::acs::ArchetypeOps _ops;
 		std::span<const std::uintptr_t> _componentOffsets;
 		ptr<const u64> _startBitmap;
 		u32 _minAlign;
@@ -101,7 +101,7 @@ namespace hg {
 			return _desc;
 		}
 
-		[[nodiscard]] constexpr cref<ArchetypeOps> ops() const noexcept {
+		[[nodiscard]] constexpr cref<engine::acs::ArchetypeOps> ops() const noexcept {
 			return _ops;
 		}
 

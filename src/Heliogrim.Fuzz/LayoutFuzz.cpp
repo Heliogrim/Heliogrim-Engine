@@ -141,19 +141,19 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* const data_, const size_t s
 		// the resolve pass, so they are zeroed on both sides.
 		Vector<std::byte> again {};
 		cls.ops().dumpLayout(target.data(), count, target.stride(), again);
-		constexpr u64 linkSize = hg::archetype_detail::payload_size<FuzzLink>();
-		constexpr u64 geometrySize = hg::archetype_detail::payload_size<StaticGeometryComponent>();
+		constexpr u64 linkSize = ::hg::engine::acs::payload_size<FuzzLink>();
+		constexpr u64 geometrySize = ::hg::engine::acs::payload_size<StaticGeometryComponent>();
 		constexpr u64 guidSize = access::Layout<StaticGeometryComponent>::assets * sizeof(AssetGuid);
 		if (again.size() != bytes.size()) {
 			std::abort();
 		}
 		for (u32 slot = 0u; slot < count; ++slot) {
-			const u64 guids = sizeof(hg::archetype_detail::LayoutHeader) + (slot + 1uLL) * (linkSize + geometrySize) - guidSize;
+			const u64 guids = sizeof(::hg::engine::acs::LayoutHeader) + (slot + 1uLL) * (linkSize + geometrySize) - guidSize;
 			std::memset(bytes.data() + guids, 0, guidSize);
 			std::memset(again.data() + guids, 0, guidSize);
 		}
 		// Fixups are skipped: an actor ref ignores its stored component offset, so it need not round-trip.
-		const u64 payloadEnd = sizeof(hg::archetype_detail::LayoutHeader) + count * (linkSize + geometrySize);
+		const u64 payloadEnd = sizeof(::hg::engine::acs::LayoutHeader) + count * (linkSize + geometrySize);
 		if (std::memcmp(bytes.data(), again.data(), payloadEnd) != 0) {
 			std::abort();
 		}

@@ -42,12 +42,12 @@ namespace {
 	template <typename Type_>
 	void layoutRoundTrip(ref<const Type_> source_, ref<Type_> target_) {
 		Vector<std::byte> bytes {};
-		archetype_detail::dump_payload(source_, bytes);
-		ASSERT_EQ(bytes.size(), archetype_detail::payload_size<Type_>());
-		ASSERT_EQ(archetype_detail::check_payload<Type_>(bytes, 0uLL), ~0uLL);
-		archetype_detail::commit_payload(bytes, 0uLL, target_);
+		::hg::engine::acs::dump_payload(source_, bytes);
+		ASSERT_EQ(bytes.size(), ::hg::engine::acs::payload_size<Type_>());
+		ASSERT_EQ(::hg::engine::acs::check_payload<Type_>(bytes, 0uLL), ~0uLL);
+		::hg::engine::acs::commit_payload(bytes, 0uLL, target_);
 		LoadContext ctx { bytes.size() };
-		archetype_detail::resolve_payload(bytes, 0uLL, target_, ctx);
+		::hg::engine::acs::resolve_payload(bytes, 0uLL, target_, ctx);
 	}
 }
 

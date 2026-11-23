@@ -31,7 +31,7 @@ namespace HeliogrimApi {
 				),
 				_live(construct_) {
 				if (_live) {
-					_class.ops().construct(_memory, _count, stride(), ArchetypeInit { registry() });
+					_class.ops().construct(_memory, _count, stride(), engine::acs::ArchetypeInit { registry() });
 				}
 			}
 

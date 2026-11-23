@@ -15,7 +15,7 @@ import Engine.Common;
 #endif
 
 #include "ArchetypeMigration.hpp"
-namespace hg::archetype_detail {
+namespace hg::engine::acs {
 	template <typename Info_>
 	[[nodiscard]] constexpr bool slot_is_array(const u32 slot_) noexcept {
 		for (u32 entry = 0u; entry < Info_::entry_count; ++entry) {

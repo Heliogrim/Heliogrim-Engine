@@ -9,7 +9,7 @@
 #include "../Actor/Class/ActorClass.hpp"
 #include "ArchetypeMigration.hpp"
 
-namespace hg {
+namespace hg::engine::acs {
 	/* Level scheme of an archetype; the class is captured here because Engine.Level cannot resolve actor classes. */
 	// `class_` must be a static ActorClass (`X::actorClass()`); the scheme keeps the pointer.
 	[[nodiscard]] inline engine::serialization::ActorFnSet MakeArchetypeFnSet(const ptr<const ActorClass> class_) {

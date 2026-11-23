@@ -158,7 +158,7 @@ namespace Performance {
 				) {
 				std::memset(_memory, 0, static_cast<size_t>(count_) * class_.desc().stride);
 				static Registry instance {};
-				_class.ops().construct(_memory, _count, stride(), ArchetypeInit { instance });
+				_class.ops().construct(_memory, _count, stride(), ::hg::engine::acs::ArchetypeInit { instance });
 			}
 
 			Slots(ref<const Slots>) = delete;
@@ -261,8 +261,8 @@ namespace Performance {
 			pinThread();
 
 			using info = LayoutInfo<typename Archetype_::layout, Archetype_>;
-			constexpr size_t headerSize = sizeof(archetype_detail::LayoutHeader);
-			constexpr size_t payload = archetype_detail::payload_size<Stub_>();
+			constexpr size_t headerSize = sizeof(::hg::engine::acs::LayoutHeader);
+			constexpr size_t payload = ::hg::engine::acs::payload_size<Stub_>();
 			constexpr size_t shift = 8uz;
 
 			ref<const ActorClass> cls = Archetype_::actorClass();

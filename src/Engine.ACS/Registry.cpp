@@ -389,7 +389,7 @@ Vector<ptr<Actor>> Registry::createActors(const ptr<const ActorClass> class_, co
 			++last;
 		}
 
-		class_->ops().construct(slots[first], static_cast<u32>(last - first), stride, ArchetypeInit { *this });
+		class_->ops().construct(slots[first], static_cast<u32>(last - first), stride, engine::acs::ArchetypeInit { *this });
 		for (; first < last; ++first) {
 			result.emplace_back(actorAt(slots[first], *class_));
 		}

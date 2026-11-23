@@ -183,7 +183,7 @@ namespace HeliogrimApi {
 				) {
 				// Construction leaves padding as it finds it, so a fill makes padding leaks visible.
 				std::memset(_memory, std::to_integer<int>(fill_), static_cast<size_t>(count_) * class_.desc().stride);
-				_class.ops().construct(_memory, _count, stride(), ArchetypeInit { registry() });
+				_class.ops().construct(_memory, _count, stride(), ::hg::engine::acs::ArchetypeInit { registry() });
 			}
 
 			Slots(ref<const Slots>) = delete;
@@ -324,7 +324,7 @@ namespace HeliogrimApi {
 		}
 
 		FnSets schemes {};
-		schemes.addActorScheme(TestTank::typeId, MakeArchetypeFnSet(&tank));
+		schemes.addActorScheme(TestTank::typeId, ::hg::engine::acs::MakeArchetypeFnSet(&tank));
 		const auto scheme = schemes.getActorScheme(TestTank::typeId);
 		ASSERT_TRUE(scheme.has_value());
 
@@ -561,7 +561,7 @@ namespace HeliogrimApi {
 		EXPECT_EQ(actor(cls, source.slot(0u)).getMetaClass()->typeId(), StaticGeometryActor::typeId);
 
 		FnSets schemes {};
-		schemes.addActorScheme(StaticGeometryActor::typeId, MakeArchetypeFnSet(&cls));
+		schemes.addActorScheme(StaticGeometryActor::typeId, ::hg::engine::acs::MakeArchetypeFnSet(&cls));
 
 		auto archive = BufferArchive {}; {
 			auto structured = StructuredArchive { archive };
@@ -622,7 +622,7 @@ namespace HeliogrimApi {
 	}
 
 	TEST(ArchetypeSer, LayoutFixupRestoresRefs) {
-		using access_t = archetype_detail::RefAccess;
+		using access_t = ::hg::engine::acs::RefAccess;
 		constexpr u32 count = 4u;
 		ref<const ActorClass> linker = TestLinker::actorClass();
 		const Slots source { linker, count };
@@ -677,12 +677,12 @@ namespace HeliogrimApi {
 		ref<const ActorClass> linker = TestLinker::actorClass();
 		const Slots links { linker, 2u };
 		const Slots linkTarget { linker, 2u };
-		archetype_detail::RefAccess::handle(link(linkTarget.slot(1u)).target) = testHandle(42u);
+		::hg::engine::acs::RefAccess::handle(link(linkTarget.slot(1u)).target) = testHandle(42u);
 		link(linkTarget.slot(1u)).tag = 99u;
 
 		bytes.clear();
 		linker.ops().dumpLayout(links.slot(0u), 2u, links.stride(), bytes);
-		bytes[bytes.size() - sizeof(archetype_detail::LayoutFixup)] ^= std::byte { 0x01 };
+		bytes[bytes.size() - sizeof(::hg::engine::acs::LayoutFixup)] ^= std::byte { 0x01 };
 		EXPECT_FALSE(linker.ops().loadLayout(linkTarget.slot(0u), 2u, linkTarget.stride(), bytes).has_value());
 		EXPECT_EQ(link(linkTarget.slot(0u)).tag, 0u);
 		EXPECT_EQ(link(linkTarget.slot(1u)).tag, 99u);
@@ -699,7 +699,7 @@ namespace HeliogrimApi {
 	static_assert(access::raw_copyable_leaf<u16>);
 
 	TEST(ArchetypeSer, CopyPlanMergesAdjacentRuns) {
-		using plan = archetype_detail::copy_plan<PlanProbe>;
+		using plan = ::hg::engine::acs::copy_plan<PlanProbe>;
 		static_assert(plan::stream_size == 23uLL);
 		static_assert(plan::runs.size() == 2uLL);
 		static_assert(plan::checks.size() == 1uLL);
@@ -715,13 +715,13 @@ namespace HeliogrimApi {
 	}
 
 	TEST(ArchetypeSer, LayoutHashChangesWithFields) {
-		EXPECT_NE(archetype_detail::field_hash<PlanProbe>(), archetype_detail::field_hash<HashProbe>());
-		EXPECT_NE(archetype_detail::field_hash<HashProbe>(), archetype_detail::field_hash<HashProbeRenamed>());
+		EXPECT_NE(::hg::engine::acs::field_hash<PlanProbe>(), ::hg::engine::acs::field_hash<HashProbe>());
+		EXPECT_NE(::hg::engine::acs::field_hash<HashProbe>(), ::hg::engine::acs::field_hash<HashProbeRenamed>());
 	}
 
 	TEST(ArchetypeSer, LayoutHashIgnoresMemberOffsets) {
 		static_assert(offsetof(HashProbe, a) != offsetof(HashProbeMoved, a));
-		EXPECT_EQ(archetype_detail::field_hash<HashProbe>(), archetype_detail::field_hash<HashProbeMoved>());
+		EXPECT_EQ(::hg::engine::acs::field_hash<HashProbe>(), ::hg::engine::acs::field_hash<HashProbeMoved>());
 	}
 
 	TEST(ArchetypeSer, BoolFieldTwoRejectedBeforeWrite) {
@@ -768,14 +768,14 @@ namespace HeliogrimApi {
 		};
 
 		// Shorter than the header.
-		expectMismatch(Vector<std::byte>(valid.begin(), valid.begin() + sizeof(archetype_detail::LayoutHeader) - 1uLL), 2u, 0uLL);
+		expectMismatch(Vector<std::byte>(valid.begin(), valid.begin() + sizeof(::hg::engine::acs::LayoutHeader) - 1uLL), 2u, 0uLL);
 		// Header names another slot count.
 		expectMismatch(valid, 1u, 0uLL);
 		// Header fits, the body is one byte short.
-		expectMismatch(Vector<std::byte>(valid.begin(), valid.end() - 1), 2u, sizeof(archetype_detail::LayoutHeader));
+		expectMismatch(Vector<std::byte>(valid.begin(), valid.end() - 1), 2u, sizeof(::hg::engine::acs::LayoutHeader));
 		// Second fixup names the wrong slot.
 		auto fixup = valid;
-		const u64 lastFixup = fixup.size() - sizeof(archetype_detail::LayoutFixup);
+		const u64 lastFixup = fixup.size() - sizeof(::hg::engine::acs::LayoutFixup);
 		fixup[lastFixup] ^= std::byte { 0x01 };
 		expectMismatch(fixup, 2u, lastFixup);
 
@@ -832,7 +832,7 @@ namespace HeliogrimApi {
 		cls.ops().dumpLayout(source.slot(0u), 1u, source.stride(), bytes);
 		// Material count over capacity: rejected by the check hook, after the header and size fit.
 		const u64 tooMany = 17uLL;
-		std::memcpy(bytes.data() + sizeof(hg::archetype_detail::LayoutHeader), &tooMany, sizeof(tooMany));
+		std::memcpy(bytes.data() + sizeof(::hg::engine::acs::LayoutHeader), &tooMany, sizeof(tooMany));
 		for (size_t index = 32uLL; index < 48uLL; ++index) {
 			bytes[index] = std::byte { 0x5A };
 		}
