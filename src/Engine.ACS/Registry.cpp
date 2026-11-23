@@ -1,6 +1,7 @@
 #include "Registry.hpp"
 
 #include <algorithm>
+#include <limits>
 #include <new>
 #include <Engine.ACS/Handle/Epoch.hpp>
 #include <Engine.Asserts/Asserts.hpp>
@@ -321,15 +322,31 @@ ptr<Actor> Registry::resolve(const Handle handle_) const noexcept {
 	return static_cast<ptr<Actor>>(space->second->handles.resolve(handle_));
 }
 
-std::byte* Registry::resolveComponent(const Handle handle_, const std::ptrdiff_t offset_) const noexcept {
+ptr<Actor> Registry::resolve(const Handle handle_, const type_id expected_) const noexcept {
+	const auto actor = resolve(handle_);
+	const auto actorClass = actor != nullptr ? actor->getArchetype() : nullptr;
+	return actorClass != nullptr && actorClass->metaClass()->is(expected_) ? actor : nullptr;
+}
+
+std::byte* Registry::resolveComponent(const Handle handle_, const std::ptrdiff_t offset_, const type_id expected_) const noexcept {
 	auto* const actor = resolve(handle_);
 	const auto* const actorClass = actor != nullptr ? actor->getArchetype() : nullptr;
 	if (actorClass == nullptr) {
 		return nullptr;
 	}
 	// Component offsets are slot-relative, ref offsets actor-relative.
-	const auto fromSlot = offset_ + static_cast<std::ptrdiff_t>(actorClass->desc().actorOffset);
-	if (fromSlot < 0 || not std::ranges::contains(actorClass->componentOffsets(), static_cast<uintptr_t>(fromSlot))) {
+	const auto actorOffset = static_cast<std::ptrdiff_t>(actorClass->desc().actorOffset);
+	if (offset_ < 0 ? offset_ < -actorOffset : offset_ > std::numeric_limits<std::ptrdiff_t>::max() - actorOffset) {
+		return nullptr;
+	}
+	const auto fromSlot = static_cast<uintptr_t>(offset_ + actorOffset);
+	const auto offsets = actorClass->componentOffsets();
+	const auto at = std::ranges::find(offsets, fromSlot);
+	if (at == offsets.end()) {
+		return nullptr;
+	}
+	const auto meta = actorClass->entryTypes()[static_cast<size_t>(at - offsets.begin())].meta;
+	if (meta == nullptr || not meta->is(expected_)) {
 		return nullptr;
 	}
 	return reinterpret_cast<std::byte*>(actor) + offset_;

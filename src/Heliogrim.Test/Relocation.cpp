@@ -3,6 +3,7 @@
 /**/
 
 #include <cstddef>
+#include <limits>
 #include <vector>
 #include <Engine.ACS/Registry.hpp>
 #include <Engine.ACS/Handle/Epoch.hpp>
@@ -333,5 +334,38 @@ namespace HeliogrimApi {
 		EXPECT_EQ(system.owners[0], &moved->getRootComponent().value());
 		EXPECT_EQ(system.owners[1], nullptr);
 		EXPECT_EQ(system.owners[2], outside);
+	}
+}
+
+namespace HeliogrimApi {
+	TEST_F(Relocation, ActorRefWrongClassDoesNotResolve) {
+		// As a loaded ref would restore it: a live handle whose actor is not of the ref's class.
+		ActorRef<TestTank> forged {};
+		archetype_detail::RefAccess::handle(forged) = registry().handleOf(*_actors[1]);
+		EXPECT_FALSE(forged.get().has_value());
+
+		ActorRef<Actor> base {};
+		archetype_detail::RefAccess::handle(base) = registry().handleOf(*_actors[1]);
+		EXPECT_TRUE(base.get().has_value());
+	}
+
+	TEST_F(Relocation, ComponentRefWrongEntryTypeDoesNotResolve) {
+		auto* const actor = _actors[1];
+		const auto root = ComponentRef<HierarchyComponent>::of(&actor->getRootComponent().value()).value();
+
+		// Right component offset, but the entry there is a BodyStub, not a CameraStub.
+		ComponentRef<CameraStub> forged {};
+		archetype_detail::RefAccess::handle(forged) = root.handle();
+		archetype_detail::RefAccess::offset(forged) = root.offset();
+		EXPECT_FALSE(forged.get().has_value());
+	}
+
+	TEST_F(Relocation, ComponentOffsetExtremesDoNotResolve) {
+		for (const auto offset : { std::numeric_limits<std::ptrdiff_t>::max(), std::numeric_limits<std::ptrdiff_t>::min() }) {
+			ComponentRef<HierarchyComponent> forged {};
+			archetype_detail::RefAccess::handle(forged) = registry().handleOf(*_actors[1]);
+			archetype_detail::RefAccess::offset(forged) = offset;
+			EXPECT_FALSE(forged.get().has_value()) << offset;
+		}
 	}
 }
