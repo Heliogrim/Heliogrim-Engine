@@ -55,7 +55,7 @@ namespace hg {
 				// The offset may come from a loaded layout; the registry rejects one that is no component of the actor's class.
 				const auto core = engine::Engine::getEngine();
 				_cached = core && _handle.space() != engine::acs::detachedSpace ?
-					reinterpret_cast<ptr<Type_>>(core->getActors()->getRegistry()->resolveComponent(_handle, _offset)) :
+					reinterpret_cast<ptr<Type_>>(core->getActors()->getRegistry()->resolveComponent(_handle, _offset, typename ::hg::refl::query_type_id<Type_>::result {}())) :
 					nullptr;
 				_epoch = engine::acs::Epoch::current();
 			}
