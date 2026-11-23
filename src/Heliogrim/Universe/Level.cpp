@@ -1,12 +1,12 @@
 #include "Level.hpp"
 
 #include <Engine.Assets.Database/Asset/UniverseAssetHandles.hpp>
-#include <Engine.Assets.Type/Universe/LevelAsset.hpp>
 #include <Heliogrim/Async/Future.hpp>
 
 #include "Universe.hpp"
 
 import Engine.Asserts;
+import Engine.Assets.Type;
 import Engine.Common;
 import Engine.Core;
 import Engine.Level;
@@ -102,7 +102,6 @@ Future<bool> SaveLevel(
 }
 
 /* TODO: Move */
-#include <Engine.Assets.Type/Asset.hpp>
 /**/
 
 Future<bool> SaveLevel(

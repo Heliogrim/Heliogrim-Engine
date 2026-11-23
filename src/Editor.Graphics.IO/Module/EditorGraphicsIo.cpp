@@ -6,13 +6,13 @@
 #include <Editor.Graphics.Loader/Texture/Transformer/Png.hpp>
 #include <Editor.Graphics.Loader/Texture/Transformer/Tga.hpp>
 #include <Editor.Graphics.Loader/Texture/Transformer/Tiff.hpp>
-#include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 #include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Graphics.Loader/Texture/TextureResource.hpp>
 #include <Engine.Resource/LoaderManager.hpp>
 
 import Editor.Graphics.Event;
 import Editor.Graphics.IO;
+import Engine.Assets.Type;
 import Engine.Common;
 import Engine.Core;
 import Engine.Event;

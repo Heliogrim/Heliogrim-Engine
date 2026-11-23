@@ -1,12 +1,12 @@
 #pragma once
 
-#include <Engine.Assets.Type/AssetConcept.hpp>
 #include <Engine.Common/Sal.hpp>
 
 #include "AssetRepositoryItem.hpp"
 #include "../AssetRepository.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Assets.Type;
 import Engine.Common;
 #endif
 

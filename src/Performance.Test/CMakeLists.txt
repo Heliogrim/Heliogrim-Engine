@@ -10,5 +10,5 @@ make_test_project(
 		${PROJECT_NAME}::Engine.Common
 		${PROJECT_NAME}::Engine.Resource.Archive
 		${PROJECT_NAME}::Heliogrim
-		${PROJECT_NAME}::Engine.Assets
+		${PROJECT_NAME}::Engine.Assets ${PROJECT_NAME}::Engine.Assets.Type
 )

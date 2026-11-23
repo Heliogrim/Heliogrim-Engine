@@ -1,21 +1,8 @@
 /* Note: Why-so-ever, this is order dependent... */
-#include <Engine.Assets.Type/Asset.hpp>
-#include <Engine.Assets.Type/Accel/AccelEffect.hpp>
-#include <Engine.Assets.Type/Audio/Sound.hpp>
-#include <Engine.Assets.Type/Geometry/LandscapeGeometry.hpp>
-#include <Engine.Assets.Type/Geometry/SkeletalGeometry.hpp>
-#include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
-#include <Engine.Assets.Type/Material/AudioMaterial.hpp>
-#include <Engine.Assets.Type/Material/GraphicsMaterial.hpp>
-#include <Engine.Assets.Type/Material/GraphicsMaterialPrototype.hpp>
-#include <Engine.Assets.Type/Material/PhysicsMaterial.hpp>
-#include <Engine.Assets.Type/Texture/FontAsset.hpp>
-#include <Engine.Assets.Type/Texture/ImageAsset.hpp>
-#include <Engine.Assets.Type/Texture/TextureAsset.hpp>
-#include <Engine.Assets.Type/Universe/LevelAsset.hpp>
 /* Note: Why-so-ever, this is order dependent... */
 
 #include "DefaultAssetInit.hpp"
+
 #include "Engine.Accel/Accel.hpp"
 #include "Engine.Assets.System/AssetDescriptor.hpp"
 #include "Engine.Assets.System/IAssetRegistry.hpp"
@@ -28,6 +15,7 @@
 #include "Textures/Default.hpp"
 
 import Engine.Assets;
+import Engine.Assets.Type;
 import Engine.Core;
 
 using namespace hg::editor::boot;

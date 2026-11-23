@@ -1,9 +1,9 @@
 #pragma once
 
-#include <Engine.Assets.Type/Audio/AudioFormat.hpp>
 #include <Engine.Common/Buffer.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Assets.Type;
 import Engine.Common;
 #endif
 

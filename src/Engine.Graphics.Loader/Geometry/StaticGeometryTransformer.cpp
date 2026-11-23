@@ -17,10 +17,10 @@
 #include <Engine.Graphics/Memory/VkAllocator.hpp>
 #include <Engine.Graphics/Pool/GlobalResourcePool.hpp>
 #include <Engine.Resource/Manage/UniqueResource.hpp>
-#include <Engine.Storage.System/StorageSystem.hpp>
 
 import Engine.Common;
 import Engine.Logging;
+import Engine.Storage.System;
 
 using namespace hg::engine::graphics::loader;
 using namespace hg::engine::graphics;

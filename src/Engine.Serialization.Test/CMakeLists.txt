@@ -6,7 +6,7 @@ make_test_project(
 		${PROJECT_NAME}::Engine.ACS
 		${PROJECT_NAME}::Engine.Asserts
 		${PROJECT_NAME}::Engine.Assets
-		${PROJECT_NAME}::Engine.Assets.System
+		${PROJECT_NAME}::Engine.Assets.System ${PROJECT_NAME}::Engine.Assets.Type
 		${PROJECT_NAME}::Engine.Common
 		${PROJECT_NAME}::Engine.Core
 		${PROJECT_NAME}::Engine.Filesystem

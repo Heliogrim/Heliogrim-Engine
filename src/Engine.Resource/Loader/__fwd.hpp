@@ -1,9 +1,11 @@
 #pragma once
 
-#include <Engine.Assets.Type/AssetConcept.hpp>
-
 #include "../Manage/__fwd.hpp"
 #include "../Manage/ResourceConcept.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Assets.Type;
+#endif
 
 namespace hg::engine::resource::loader {
 	template <typename Type_>

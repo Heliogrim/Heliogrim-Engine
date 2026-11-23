@@ -6,9 +6,8 @@
 
 /**/
 
-#include <Engine.Storage.System/ReadText.hpp>
-
 import Engine.Storage.Registry;
+import Engine.Storage.System;
 import std;
 
 /**/

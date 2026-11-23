@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Assets.Type/Asset.hpp>
 #include <Engine.Common/__macro.hpp>
 
 #include "__fwd.hpp"
@@ -9,6 +8,7 @@
 #include "../Manage/UniqueResource.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Assets.Type;
 import Engine.Common;
 import Engine.Reflect;
 #endif

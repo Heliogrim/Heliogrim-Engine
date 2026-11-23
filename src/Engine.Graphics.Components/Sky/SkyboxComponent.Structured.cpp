@@ -1,8 +1,8 @@
 #include "SkyboxComponent.hpp"
 
 #include <Engine.Assets.Database/AssetDatabase.hpp>
-#include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
 
+import Engine.Assets.Type;
 import Engine.Serialization;
 import Engine.Serialization.Structures;
 

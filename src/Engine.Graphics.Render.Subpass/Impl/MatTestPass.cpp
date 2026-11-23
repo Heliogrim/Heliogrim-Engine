@@ -6,7 +6,6 @@
 #include <Engine.Accel.Compile/Spec/SimpleEffectSpecification.hpp>
 #include <Engine.Accel.Pass/VkAccelerationPassFactory.hpp>
 #include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
-#include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
 #include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Graphics/Buffer/Buffer.hpp>
@@ -29,6 +28,7 @@
 #include <Engine.Graphics.Scene.Model/StaticGeometryModel.hpp>
 
 import Engine.ACS;
+import Engine.Assets.Type;
 import Engine.Common;
 import Engine.Core;
 import Engine.Graphics.Scene;

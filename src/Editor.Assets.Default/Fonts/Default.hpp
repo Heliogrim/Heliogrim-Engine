@@ -1,8 +1,5 @@
 #pragma once
 
-#include <Engine.Assets.Type/Asset.hpp>
-#include <Engine.Assets.Type/AssetConcept.hpp>
-#include <Engine.Assets.Type/Texture/FontAsset.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Sal.hpp>
 
@@ -10,6 +7,7 @@
 import Engine.Common;
 import Engine.Core;
 import Engine.Reflect;
+import Engine.Assets.Type;
 #endif
 
 namespace hg::editor::assets::font {

@@ -1,7 +1,6 @@
 #include "AssetHandle.hpp"
 
-#include <Engine.Assets.Type/Asset.hpp>
-
+import Engine.Assets.Type;
 import Engine.Common;
 
 using namespace hg;

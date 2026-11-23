@@ -5,8 +5,6 @@
 #include <Engine.Accel.Lang/Ir/Interface.hpp>
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
 #include <Engine.Accel.Lang/Rep/Variable.hpp>
-#include <Engine.Storage.System/ReadText.hpp>
-#include <Engine.Storage.System/StorageSystem.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Asserts;
@@ -14,6 +12,7 @@ import Engine.Common;
 import Engine.Config;
 import Engine.Core;
 import Engine.Storage;
+import Engine.Storage.System;
 #endif
 
 namespace hg::engine::render {

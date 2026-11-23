@@ -1,8 +1,8 @@
-#include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
-#include <Engine.Assets.Type/Material/GraphicsMaterial.hpp>
 /**/
 
 #include "SkyboxComponent.hpp"
+
+import Engine.Assets.Type;
 
 using namespace hg;
 

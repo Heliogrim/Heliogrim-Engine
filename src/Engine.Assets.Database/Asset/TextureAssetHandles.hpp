@@ -1,10 +1,10 @@
 #pragma once
 
-#include <Engine.Assets.Type/Texture/FontAsset.hpp>
-#include <Engine.Assets.Type/Texture/ImageAsset.hpp>
-#include <Engine.Assets.Type/Texture/TextureAsset.hpp>
-
 #include "TypedAssetHandle.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Assets.Type;
+#endif
 
 namespace hg::engine::assets {
 	class FontAsset;
