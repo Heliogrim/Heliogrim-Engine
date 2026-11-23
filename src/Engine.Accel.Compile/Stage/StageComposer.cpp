@@ -1,12 +1,12 @@
 #include "StageComposer.hpp"
 
-#include <Engine.Accel.Effect/AccelerationEffect.hpp>
 #include <Engine.Accel.Pipeline/Stage/StageModule.hpp>
 
 #include "StageIr.hpp"
 #include "../Profile/EffectProfile.hpp"
 #include "../Spec/EffectSpecification.hpp"
 
+import Engine.Accel.Effect;
 import Engine.Common;
 import Engine.Logging;
 

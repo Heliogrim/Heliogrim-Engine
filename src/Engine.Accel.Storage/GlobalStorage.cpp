@@ -1,9 +1,8 @@
 #include "GlobalStorage.hpp"
 
-#include <Engine.Accel.Effect/AccelerationEffect.hpp>
-#include <Engine.Accel.Effect/Stage/Stage.hpp>
 #include <Engine.Accel.Pipeline/AccelerationPipeline.hpp>
 
+import Engine.Accel.Effect;
 import std;
 
 using namespace hg::engine::accel;

@@ -1,9 +1,8 @@
 #include "CommandBuffer.hpp"
 
-#include <Engine.Accel.Pass/VkGraphicsPass.hpp>
-#include <Engine.Accel.Pass/Framebuffer/Framebuffer.hpp>
 #include <Engine.Accel.Pipeline/VkGraphicsPipeline.hpp>
 
+import Engine.Accel.Pass;
 import Engine.Asserts;
 import Engine.Graphics;
 

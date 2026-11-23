@@ -1,6 +1,5 @@
 #include "VkPipelineCompiler.hpp"
 
-#include <Engine.Accel.Pass/VkGraphicsPass.hpp>
 #include <Engine.Accel.Pipeline/VkComputePipeline.hpp>
 #include <Engine.Accel.Pipeline/VkGraphicsPipeline.hpp>
 #include <Engine.Accel.Pipeline/VkMeshPipeline.hpp>
@@ -15,6 +14,7 @@
 #include "../Module/VkCompiledModule.hpp"
 #include "../Spec/EffectSpecification.hpp"
 
+import Engine.Accel.Pass;
 import Engine.Asserts;
 import Engine.Common;
 import Engine.Core;

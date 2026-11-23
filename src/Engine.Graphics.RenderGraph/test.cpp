@@ -8,10 +8,10 @@
 #include <Engine.Graphics.Material/MaterialPrototype.hpp>
 #include <Engine.Graphics.Render.Command/RenderCommandBufferBase.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneColor.hpp>
-#include <Engine.Graphics.RenderGraph.Compile/RenderGraphCompiler.hpp>
 
 import Engine.Common;
 import Engine.Graphics.RenderGraph;
+import Engine.Graphics.RenderGraph.Compile;
 import Engine.Logging;
 import Engine.Resource;
 

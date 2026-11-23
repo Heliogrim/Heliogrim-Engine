@@ -1,7 +1,8 @@
 #include "AccelerationPipeline.hpp"
 
-#include <Engine.Accel.Effect/AccelerationEffect.hpp>
 #include <Engine.Accel.Pipeline/Stage/StageDerivat.hpp>
+
+import Engine.Accel.Effect;
 
 using namespace hg::engine::accel;
 using namespace hg;

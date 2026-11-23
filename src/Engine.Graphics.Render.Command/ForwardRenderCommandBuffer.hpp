@@ -1,9 +1,11 @@
 #pragma once
 
-#include <Engine.Accel.Effect/__fwd.hpp>
-
 #include "RenderCommandBuffer.hpp"
 #include "Resource/Pipeline.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Accel.Effect;
+#endif
 
 namespace hg::engine::render::cmd {
     class ForwardRenderCommandBuffer final :
