@@ -1,3 +1,7 @@
+// Textual vulkan_core.h must precede any import reaching Engine.Graphics, or its C enums merge with the GMF copy and lose their enumerators.
+#include <Engine.Graphics/vkinc.hpp>
+/**/
+
 #include "DummyProvider.hpp"
 
 #include <Engine.Accel.Command/CommandBuffer.hpp>

@@ -1,4 +1,6 @@
-#include "PostProcessPass.hpp"
+// Textual vulkan_core.h must precede any import reaching Engine.Graphics, or its C enums merge with the GMF copy and lose their enumerators.
+#include <Engine.Graphics/vkinc.hpp>
+/**/
 
 #include <Engine.Accel.Command/CommandBuffer.hpp>
 #include <Engine.Accel.Compile/EffectCompileResult.hpp>
@@ -14,6 +16,7 @@
 #include <Engine.Graphics.RenderGraph/Symbol/ScopedSymbolContext.hpp>
 
 #include "__tmp_helper.hpp"
+#include "PostProcessPass.hpp"
 
 import Engine.Common;
 import Engine.Core;

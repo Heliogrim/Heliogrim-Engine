@@ -4,7 +4,9 @@
 
 /**/
 
-#include <Engine.Accel.Lang/Ir/Diagnostic.hpp>
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Accel.Lang;
+#endif
 
 namespace AccelLang {
 	/* the message style rules: lower-case start (except proper nouns and quoted names), no trailing period; context notes start with `while` */

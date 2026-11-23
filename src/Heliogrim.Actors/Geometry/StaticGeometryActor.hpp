@@ -1,9 +1,8 @@
 #pragma once
 
-#include <Engine.Graphics.Components/Geometry/StaticGeometryComponent.hpp>
-
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.ACS;
+import Engine.Graphics.Components;
 #endif
 
 namespace hg {

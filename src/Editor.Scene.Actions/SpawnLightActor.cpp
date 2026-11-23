@@ -3,13 +3,13 @@
 #include <Editor.Core/EditorEngine.hpp>
 #include <Editor.UI.Main/EditorUI.hpp>
 #include <Editor.UI.Main/Module/EditorUI.hpp>
-#include <Engine.Graphics.Components/Light/DirectionalLightComponent.hpp>
 #include <Heliogrim/Core/Session.hpp>
 #include <Heliogrim/Universe/Universe.hpp>
 
 import Engine.ACS;
 import Engine.Common;
 import Engine.Core;
+import Engine.Graphics.Components;
 
 using namespace hg::editor::scene::actions;
 using namespace hg;

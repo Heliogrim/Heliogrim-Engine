@@ -1,9 +1,3 @@
-#include <Engine.Graphics.Components/Camera/CameraComponent.hpp>
-#include <Engine.Graphics.Components/Geometry/StaticGeometryComponent.hpp>
-#include <Engine.Graphics.Components/Light/DirectionalLightComponent.hpp>
-#include <Engine.Graphics.Components/Light/PointLightComponent.hpp>
-#include <Engine.Graphics.Components/Light/SpotLightComponent.hpp>
-#include <Engine.Graphics.Components/Sky/SkyboxComponent.hpp>
 #include <Engine.Graphics.Render/RenderTarget.hpp>
 #include <Engine.Graphics.Scene.Model/DirectionalLightModel.hpp>
 #include <Engine.Graphics.Scene.Model/PointLightModel.hpp>
@@ -13,6 +7,7 @@
 #include <Engine.Reflow/Scene/UISceneModel.hpp>
 #include <Engine.Reflow.Components/UI/UIComponent.hpp>
 
+import Engine.Graphics.Components;
 import Engine.Graphics.Scene;
 import Engine.Render.Scene;
 import Engine.Render.Scene.Model;

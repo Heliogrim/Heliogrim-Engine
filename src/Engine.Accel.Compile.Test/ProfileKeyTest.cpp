@@ -3,9 +3,9 @@
 /**/
 
 #include <Engine.Accel.Effect/Stage/Stage.hpp>
-#include <Engine.Accel.Lang/Rep/Annotation.hpp>
 #include <Engine.Accel.Storage/HashedState.hpp>
 
+import Engine.Accel.Lang;
 import Engine.Common;
 
 using namespace hg::engine::accel;

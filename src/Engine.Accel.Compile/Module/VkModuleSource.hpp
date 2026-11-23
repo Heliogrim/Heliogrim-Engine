@@ -1,12 +1,12 @@
 #pragma once
 
 #include <cassert>
-#include <Engine.Accel.Lang/Rep/Symbol.hpp>
 
 #include "ModuleSource.hpp"
 #include "VkBindingLocation.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Accel.Lang;
 import Engine.Common;
 #endif
 

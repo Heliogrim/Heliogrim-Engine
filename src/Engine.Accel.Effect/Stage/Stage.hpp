@@ -1,12 +1,13 @@
 #pragma once
 
-#include <Engine.Accel.Lang/Intermediate.hpp>
+#include <Engine.Common/Sal.hpp>
 
 #include "StageFlags.hpp"
 #include "StageInput.hpp"
 #include "StageOutput.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Accel.Lang;
 import Engine.Common;
 #endif
 

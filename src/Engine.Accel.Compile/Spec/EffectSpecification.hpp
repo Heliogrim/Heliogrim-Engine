@@ -1,5 +1,4 @@
 #pragma once
-#include <Engine.Accel.Lang/Rep/Symbol.hpp>
 #include <Engine.Common/__macro.hpp>
 
 #include "ComputePassSpecification.hpp"
@@ -7,9 +6,9 @@
 #include "MeshPassSpecification.hpp"
 #include "RaytracingPassSpecification.hpp"
 
-namespace hg::engine::accel::lang::ir {
-	struct StageContract;
-}
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Accel.Lang;
+#endif
 
 namespace hg::engine::accel {
 	class macro_novtable EffectSpecification {

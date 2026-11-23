@@ -2,9 +2,11 @@
 
 /**/
 
-#include <Engine.Accel.Lang/Ir/Spirv/SpirvValidate.hpp>
-#include <Engine.Accel.Lang/Ir/Spirv/SpirvWriter.hpp>
+#include <spirv/unified1/spirv.hpp11>
 
+/**/
+
+import Engine.Accel.Lang;
 import std;
 
 using namespace hg;

@@ -2,9 +2,7 @@
 
 /**/
 
-#include <Engine.Accel.Lang/Ir/Parser.hpp>
-#include <Engine.Accel.Lang/Ir/Resolve.hpp>
-#include <Engine.Accel.Lang/Ir/Uniformity.hpp>
+import Engine.Accel.Lang;
 
 using namespace hg::engine::accel::lang::ir;
 using namespace hg::engine::accel::lang;

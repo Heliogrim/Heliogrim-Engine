@@ -2,23 +2,11 @@
 
 /**/
 
-#include <Engine.Accel.Lang/Diagnostic/Codes.hpp>
-#include <Engine.Accel.Lang/Ir/Contract.hpp>
-#include <Engine.Accel.Lang/Ir/Interface.hpp>
-#include <Engine.Accel.Lang/Ir/Layout.hpp>
-#include <Engine.Accel.Lang/Ir/Lexer.hpp>
-#include <Engine.Accel.Lang/Ir/Lower.hpp>
-#include <Engine.Accel.Lang/Ir/Merge.hpp>
-#include <Engine.Accel.Lang/Ir/Parser.hpp>
-#include <Engine.Accel.Lang/Ir/References.hpp>
-#include <Engine.Accel.Lang/Ir/Resolve.hpp>
-#include <Engine.Accel.Lang/Ir/Tier.hpp>
-#include <Engine.Accel.Lang/Ir/Spirv/SpirvEmitter.hpp>
-
 #include "IrSpan.hpp"
 #include "IrSpirvText.hpp"
 #include "IrWording.hpp"
 
+import Engine.Accel.Lang;
 import Engine.Diagnostics;
 import std;
 

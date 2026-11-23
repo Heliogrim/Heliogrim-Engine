@@ -1,9 +1,9 @@
 #include "SkeletalGeometryModel.hpp"
 
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Graphics.Components/Geometry/StaticGeometryComponent.hpp>
 
 import Engine.Common;
+import Engine.Graphics.Components;
 
 using namespace hg::engine::render;
 using namespace hg::engine::graphics;

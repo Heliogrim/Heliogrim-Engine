@@ -1,3 +1,7 @@
+// Textual vulkan_core.h must precede any import reaching Engine.Graphics, or its C enums merge with the GMF copy and lose their enumerators.
+#include <Engine.Graphics/vkinc.hpp>
+/**/
+
 #include "DepthPrePass.hpp"
 
 #include <Engine.Accel.Compile/VkEffectCompiler.hpp>
@@ -6,7 +10,6 @@
 #include <Engine.Accel.Effect/AccelerationEffect.hpp>
 #include <Engine.Accel.Effect/Stage/StageFlags.hpp>
 #include <Engine.Accel.Effect/Stage/TransferType.hpp>
-#include <Engine.Accel.Lang/Intermediate.hpp>
 #include <Engine.Accel.Pass/VkAccelerationPassFactory.hpp>
 #include <Engine.Accel.Pipeline/AccelerationPipeline.hpp>
 #include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
@@ -20,6 +23,7 @@
 #include <Engine.Graphics.RenderGraph/Relation/TextureDescription.hpp>
 #include <Engine.Graphics.RenderGraph/Symbol/ScopedSymbolContext.hpp>
 
+import Engine.Accel.Lang;
 import Engine.Common;
 import Engine.Core;
 import Engine.Reflect;

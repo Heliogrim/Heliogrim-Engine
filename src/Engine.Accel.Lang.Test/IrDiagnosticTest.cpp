@@ -2,11 +2,9 @@
 
 /**/
 
-#include <Engine.Accel.Lang/Ir/Merge.hpp>
-#include <Engine.Accel.Lang/Ir/Parser.hpp>
-
 #include "IrSpan.hpp"
 
+import Engine.Accel.Lang;
 import Engine.Diagnostics;
 import std;
 

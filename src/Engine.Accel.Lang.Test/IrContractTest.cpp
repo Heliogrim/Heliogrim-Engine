@@ -2,10 +2,9 @@
 
 /**/
 
-#include <Engine.Accel.Lang/Ir/Contract.hpp>
-
 #include "IrWording.hpp"
 
+import Engine.Accel.Lang;
 import std;
 
 using namespace hg::engine::accel::lang::ir;

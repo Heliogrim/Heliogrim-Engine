@@ -1,9 +1,9 @@
 #pragma once
-#include <Engine.Accel.Lang/Rep/Symbol.hpp>
 
 #include "Engine.Graphics.Render.Command/RenderCommand.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Accel.Lang;
 import Engine.Common;
 #endif
 

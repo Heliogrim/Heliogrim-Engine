@@ -1,9 +1,8 @@
 #include "CameraModel.hpp"
 
-#include <Engine.Graphics.Components/Camera/CameraComponent.hpp>
-
 import Engine.ACS;
 import Engine.Common;
+import Engine.Graphics.Components;
 import Engine.Graphics.Scene;
 import Engine.Scene;
 

@@ -2,19 +2,11 @@
 
 /**/
 
-#include <Engine.Accel.Lang/Ir/Analysis.hpp>
-#include <Engine.Accel.Lang/Ir/Compact.hpp>
-#include <Engine.Accel.Lang/Ir/Interface.hpp>
-#include <Engine.Accel.Lang/Ir/Layout.hpp>
-#include <Engine.Accel.Lang/Ir/Parser.hpp>
-#include <Engine.Accel.Lang/Ir/Resolve.hpp>
-#include <Engine.Accel.Lang/Ir/Slice.hpp>
-#include <Engine.Accel.Lang/Ir/Typecheck.hpp>
-
 #include "IrSpan.hpp"
 #include "IrSpirvText.hpp"
 #include "IrWording.hpp"
 
+import Engine.Accel.Lang;
 import std;
 
 using namespace hg::engine::accel::lang::ir;

@@ -1,18 +1,9 @@
 #include "StageIr.hpp"
 
-#include <Engine.Accel.Lang/Ir/Contract.hpp>
-#include <Engine.Accel.Lang/Ir/Interface.hpp>
-#include <Engine.Accel.Lang/Ir/Layout.hpp>
-#include <Engine.Accel.Lang/Ir/Lower.hpp>
-#include <Engine.Accel.Lang/Ir/Merge.hpp>
-#include <Engine.Accel.Lang/Ir/Resolve.hpp>
-#include <Engine.Accel.Lang/Ir/Slice.hpp>
-#include <Engine.Accel.Lang/Ir/Typecheck.hpp>
-#include <Engine.Accel.Lang/Rep/Annotation.hpp>
-
 #include "../Profile/EffectProfile.hpp"
 #include "../Spec/EffectSpecification.hpp"
 
+import Engine.Accel.Lang;
 import Engine.Common;
 import Engine.Logging;
 

@@ -2,10 +2,7 @@
 
 /**/
 
-#include <Engine.Accel.Lang/Ir/Condition.hpp>
-#include <Engine.Accel.Lang/Ir/Module.hpp>
-#include <Engine.Accel.Lang/Ir/Place.hpp>
-
+import Engine.Accel.Lang;
 import std;
 
 using namespace hg::engine::accel::lang::ir;
