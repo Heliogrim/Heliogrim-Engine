@@ -1,12 +1,12 @@
-#include "LevelAsset.hpp"
-
 #include <charconv>
-#include <Engine.Common/GuidFormat.hpp>
+#include <format>
 #include <Engine.Common/Optional.hpp>
-#include <Engine.Resource.Archive/Archive.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
+#include <Engine.Serialization/Load/ReadError.hpp>
 #include <Engine.Serialization/Structure/StringScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
+
+#include "LevelAsset.hpp"
 
 using namespace ::hg::engine::serialization;
 using namespace ::hg::engine::assets;
@@ -66,11 +66,18 @@ void access::Structure<LevelAsset>::hydrate(cref<StructScopedSlot> record_, Leve
 	const auto archiveGuid = levelData.starts_with(storage::ArchiveScheme) && levelData.size() > prefix ?
 		try_decode_guid4228(StringView { levelData }.substr(prefix)) :
 		None;
-	if (not archiveGuid.has_value()) {
-		// The value is file data; reject it like any other unreadable record.
-		record_.slot()->getState().root->archive->setError();
+	if (archiveGuid.has_value()) {
+		target_._levelData = storage::ArchiveUrl { resource::ArchiveGuid::from(archiveGuid.value()) };
 		return;
 	}
 
-	target_._levelData = storage::ArchiveUrl { resource::ArchiveGuid::from(archiveGuid.value()) };
+	// The value is untrusted; cap what goes into the diagnostic.
+	constexpr auto max_shown = 64uLL;
+	const auto shown = levelData.size() > max_shown ? levelData.substr(0, max_shown) + "..." : levelData;
+	record_.slot()->fail(
+		ReadError::Kind::eInvalidValue,
+		record_.slot()->getState().offset,
+		0LL,
+		std::format("level data '{}' is not an archive url", shown).c_str()
+	);
 }

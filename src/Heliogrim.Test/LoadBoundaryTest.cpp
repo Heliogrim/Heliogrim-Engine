@@ -5,6 +5,7 @@
 #include <Engine.ACS/Registry.hpp>
 #include <Engine.Assets.Type/AssetLoad.hpp>
 #include <Engine.Assets.Type/Texture/FontAsset.hpp>
+#include <Engine.Assets.Type/Universe/LevelAsset.hpp>
 #include <Engine.ACS/Traits.hpp>
 #include <Engine.Diagnostics/Render.hpp>
 #include <Engine.Diagnostics/Sink.hpp>
@@ -828,5 +829,46 @@ namespace LoadBoundaryModule {
 		EXPECT_TRUE(load.finished.has_value());
 		EXPECT_FALSE(load.font.carriesUnknownData());
 		EXPECT_FALSE(hasCode(_sink, "unknown-field"));
+	}
+
+	TEST_F(LoadBoundary, LevelAssetBadLevelDataRejected) {
+		const auto load = [this](const StringView value_, ref<engine::assets::LevelAsset> asset_) {
+			_archive = BufferArchive {};
+			{
+				auto structured = StructuredArchive { _archive };
+				auto root = structured.insertRootSlot().intoStruct();
+				insert_guid_slot(root, AssetGuid {});
+				insert_typeId_slot(root, engine::assets::LevelAsset::typeId);
+				root.insertSlot<String>("name") << String { "level" };
+				root.insertSlot<String>("levelData") << String { value_ };
+			}
+			auto ctx = LoadContext { static_cast<u64>(_archive.totalSize()), "levels/level" };
+			_archive.seek(0);
+			bool hydrated = false;
+			{
+				const auto root = RootScopedSlot { _archive, ScopedSlotStateFlag::eClean, &ctx };
+				hydrated = engine::assets::hydrateArchivedAsset(_engine->_serialization->migrations(), root.asStruct(), ctx, asset_);
+			}
+			return std::make_pair(hydrated, ctx.finish(_sink, "while loading asset 'levels/level'"));
+		};
+		const auto unset = engine::assets::LevelAsset {}.getLevelData().encode();
+
+		for (const auto bad : {
+			     "file://nope", "archive://zz", "archive://99999999999999999999", "archive://1-2-3",
+			     "archive://x-2-3-4", "archive://1a-2-3-4", "archive://-2-3-4"
+		     }) {
+			engine::assets::LevelAsset asset {};
+			const auto [hydrated, finished] = load(bad, asset);
+			EXPECT_FALSE(hydrated) << bad;
+			EXPECT_EQ(asset.getLevelData().encode(), unset) << bad;
+			ASSERT_FALSE(finished.has_value()) << bad;
+			EXPECT_EQ(finished.error().front().code()->key, "invalid-value") << bad;
+		}
+
+		engine::assets::LevelAsset asset {};
+		const auto [hydrated, finished] = load("archive://1-2-3-4", asset);
+		EXPECT_TRUE(hydrated);
+		EXPECT_TRUE(finished.has_value());
+		EXPECT_NE(asset.getLevelData().encode(), unset);
 	}
 }
