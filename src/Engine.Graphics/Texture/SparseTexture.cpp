@@ -5,7 +5,7 @@
 
 // TODO: Remove
 
-#include "Engine.Graphics/Graphics.hpp"
+#include <Engine.Graphics.Core/Graphics.hpp>
 
 import Engine.Asserts;
 import Engine.Common;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine.Graphics/Graphics.hpp>
+#include <Engine.Graphics.Core/Graphics.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

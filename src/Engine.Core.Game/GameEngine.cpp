@@ -1,6 +1,6 @@
 #include "GameEngine.hpp"
 
-#include <Engine.Graphics/Graphics.hpp>
+#include <Engine.Graphics.Core/Graphics.hpp>
 
 #ifdef WIN32
 import Support.Platform.Win32;

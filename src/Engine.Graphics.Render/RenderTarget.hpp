@@ -1,10 +1,9 @@
 #pragma once
 
 #include <Engine.Common/Sal.hpp>
+#include <Engine.Graphics/RenderEnqueueResult.hpp>
+#include <Engine.Graphics/vkinc.hpp>
 #include <Engine.Graphics.Render/Renderer.hpp>
-
-#include "RenderEnqueueResult.hpp"
-#include "vkinc.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

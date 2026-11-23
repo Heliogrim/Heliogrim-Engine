@@ -1,10 +1,10 @@
-#include <Engine.Graphics/RenderTarget.hpp>
 #include <Engine.Graphics.Components/Camera/CameraComponent.hpp>
 #include <Engine.Graphics.Components/Geometry/StaticGeometryComponent.hpp>
 #include <Engine.Graphics.Components/Light/DirectionalLightComponent.hpp>
 #include <Engine.Graphics.Components/Light/PointLightComponent.hpp>
 #include <Engine.Graphics.Components/Light/SpotLightComponent.hpp>
 #include <Engine.Graphics.Components/Sky/SkyboxComponent.hpp>
+#include <Engine.Graphics.Render/RenderTarget.hpp>
 #include <Engine.Graphics.Scene.Model/DirectionalLightModel.hpp>
 #include <Engine.Graphics.Scene.Model/PointLightModel.hpp>
 #include <Engine.Graphics.Scene.Model/SpotLightModel.hpp>

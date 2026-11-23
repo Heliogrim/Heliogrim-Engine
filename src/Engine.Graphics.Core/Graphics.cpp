@@ -6,18 +6,17 @@
 #endif
 
 #include <Engine.Common/Math/__default.inl>
+#include <Engine.Graphics/Buffer/VkBufferFactory.hpp>
+#include <Engine.Graphics/Importer/ImageImporter.hpp>
+#include <Engine.Graphics/Importer/ModelImporter.hpp>
+#include <Engine.Graphics/Pool/GlobalResourcePool.hpp>
+#include <Engine.Graphics/Surface/SurfaceManager.hpp>
+#include <Engine.Graphics/Swapchain/Swapchain.hpp>
+#include <Engine.Graphics/Texture/VkTextureFactory.hpp>
 #include <Engine.Graphics.IO/Io.hpp>
 #include <Engine.Graphics.Loader/Cache/GlobalCacheCtrl.hpp>
 #include <Engine.Graphics.Loader/Cache/GlobalResourceCache.hpp>
-
-#include "RenderTarget.hpp"
-#include "Buffer/VkBufferFactory.hpp"
-#include "Importer/ImageImporter.hpp"
-#include "Importer/ModelImporter.hpp"
-#include "Pool/GlobalResourcePool.hpp"
-#include "Surface/SurfaceManager.hpp"
-#include "Swapchain/Swapchain.hpp"
-#include "Texture/VkTextureFactory.hpp"
+#include <Engine.Graphics.Render/RenderTarget.hpp>
 
 /* Development Testing */
 #include <Engine.Common/__macro.hpp>

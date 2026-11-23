@@ -4,7 +4,7 @@
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/SDL3.hpp>
 #include <Engine.Common/stdafx.h>
-#include <Engine.Graphics/Graphics.hpp>
+#include <Engine.Graphics.Core/Graphics.hpp>
 
 #include "Win32Window.hpp"
 

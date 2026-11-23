@@ -2,8 +2,8 @@
 
 #include <Engine.Accel.Pipeline/AccelerationPipeline.hpp>
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Graphics/vkinc.hpp>
+#include <Engine.Graphics.Core/Graphics.hpp>
 #include <Engine.Graphics.RenderGraph/Node/Runtime/Helper/VkDescriptorWriter.hpp>
 
 import Engine.Asserts;

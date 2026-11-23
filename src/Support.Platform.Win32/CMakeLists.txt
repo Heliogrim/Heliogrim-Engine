@@ -18,3 +18,4 @@ if ("${CMAKE_SYSTEM_NAME}" MATCHES "Windows")
 			${PROJECT_NAME}::vulkan.Module
 	)
 endif ()
+# shortcut: Support.Platform.Win32 .cpp files reach the graphics front via getEngine()->getGraphics(), drop when the service-locator design lands

@@ -1,7 +1,7 @@
 #include "VkCompiledModule.hpp"
 
-#include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Graphics/Device/Device.hpp>
+#include <Engine.Graphics.Core/Graphics.hpp>
 
 import Engine.Core;
 import Engine.Logging;

@@ -7,7 +7,7 @@
 
 // TODO: Remove
 
-#include "../Graphics.hpp"
+#include <Engine.Graphics.Core/Graphics.hpp>
 
 import Engine.Common;
 import Engine.Core;

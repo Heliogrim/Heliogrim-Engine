@@ -1,11 +1,11 @@
 #include "WindowManager.hpp"
 
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Graphics/Graphics.hpp>
-#include <Engine.Graphics/RenderTarget.hpp>
 #include <Engine.Graphics/Surface/Surface.hpp>
 #include <Engine.Graphics/Surface/SurfaceManager.hpp>
 #include <Engine.Graphics/Swapchain/VkSurfaceSwapchain.hpp>
+#include <Engine.Graphics.Core/Graphics.hpp>
+#include <Engine.Graphics.Render/RenderTarget.hpp>
 #include <Heliogrim/Async/Future.hpp>
 
 #include "BoundWindow.hpp"

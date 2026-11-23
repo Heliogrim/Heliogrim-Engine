@@ -243,8 +243,8 @@ smr<void> RenderPass::unbindTarget(mref<smr<const graph::Symbol>> target_) noexc
 
 /**/
 
-#include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Graphics/Device/Device.hpp>
+#include <Engine.Graphics.Core/Graphics.hpp>
 
 void RenderPass::clearSync() {
 

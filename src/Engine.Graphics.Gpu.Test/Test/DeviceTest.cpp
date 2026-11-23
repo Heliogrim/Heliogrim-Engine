@@ -3,8 +3,8 @@
 /**/
 
 #include <cstdlib>
-#include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Graphics/vkinc.hpp>
+#include <Engine.Graphics.Core/Graphics.hpp>
 
 #ifdef WIN32
 #include <Engine.Common/stdafx.h>

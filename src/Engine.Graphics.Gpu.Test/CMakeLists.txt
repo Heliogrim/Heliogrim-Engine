@@ -18,6 +18,7 @@ make_test_project(
 		${PROJECT_NAME}::Engine.Driver.Vulkan
 		${PROJECT_NAME}::Engine.Event
 		${PROJECT_NAME}::Engine.Graphics
+		${PROJECT_NAME}::Engine.Graphics.Core
 		${PROJECT_NAME}::Engine.Graphics.RenderGraph
 		${PROJECT_NAME}::Engine.Logging
 		${PROJECT_NAME}::External-c4core

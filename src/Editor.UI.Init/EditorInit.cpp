@@ -11,6 +11,8 @@ import Engine.ACS;
 #include <Engine.Core/Session.hpp>
 #include <Engine.Core/Universe.hpp>
 #include <Engine.Core/UniverseContext.hpp>
+#include <Engine.Graphics.Core/Graphics.hpp>
+#include <Engine.Reflow.Uikit/Atom/Image.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/VerticalLayout.hpp>
 #include <Engine.Reflow/Window/Window.hpp>
 #include <Engine.Reflow/Window/WindowManager.hpp>

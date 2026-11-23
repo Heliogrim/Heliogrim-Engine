@@ -12,4 +12,5 @@ make_library_project(
         ${PROJECT_NAME}::Heliogrim
         ${PROJECT_NAME}::Engine.Reflow.Components
         ${PROJECT_NAME}::Engine.Assets ${PROJECT_NAME}::Engine.Assets.Type
+        ${PROJECT_NAME}::Engine.Graphics.Core ${PROJECT_NAME}::Engine.Graphics.Render
 )

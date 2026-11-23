@@ -1,7 +1,7 @@
 #include "RenderSceneSystem.hpp"
 
-#include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Graphics/Pool/SceneResourcePool.hpp>
+#include <Engine.Graphics.Core/Graphics.hpp>
 
 import Engine.ACS;
 import Engine.Core;

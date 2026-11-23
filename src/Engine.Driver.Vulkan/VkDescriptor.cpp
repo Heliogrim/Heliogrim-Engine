@@ -1,6 +1,6 @@
 #include "VkDescriptor.hpp"
 
-#include <Engine.Graphics/Graphics.hpp>
+#include <Engine.Graphics.Core/Graphics.hpp>
 
 import Engine.Core;
 import std;

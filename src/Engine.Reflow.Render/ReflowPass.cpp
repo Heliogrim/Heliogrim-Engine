@@ -10,13 +10,13 @@
 #include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
 #include <Engine.Accel.Pipeline/VkGraphicsPipeline.hpp>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
-#include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Graphics/Buffer/Buffer.hpp>
 #include <Engine.Graphics/Texture/SparseTextureView.hpp>
 #include <Engine.Graphics/Texture/Texture.hpp>
 #include <Engine.Graphics/Texture/TextureFactory.hpp>
 #include <Engine.Graphics/Texture/TextureResource.hpp>
 #include <Engine.Graphics/Texture/TextureView.hpp>
+#include <Engine.Graphics.Core/Graphics.hpp>
 #include <Engine.Graphics.Loader/Texture/TextureLoader.hpp>
 #include <Engine.Graphics.Render.Command/RenderCommandBuffer.hpp>
 #include <Engine.Graphics.Render.Predefined/Effects/UIBase.hpp>
