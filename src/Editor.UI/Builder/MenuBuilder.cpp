@@ -1,8 +1,8 @@
 #include "MenuBuilder.hpp"
 
-#include <Engine.Reflow.Uikit/Atom/Paint.hpp>
-#include <Engine.Reflow.Uikit/Exp/Button.hpp>
 #include <Widget/MenuSpacer.hpp>
+
+import Engine.Reflow.Uikit;
 
 using namespace hg::editor::ui;
 using namespace hg::engine::reflow;

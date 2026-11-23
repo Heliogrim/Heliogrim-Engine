@@ -1,6 +1,8 @@
 #pragma once
 
-#include <Engine.Reflow.Uikit/Atom/Layout/BoxLayout.hpp>
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Reflow.Uikit;
+#endif
 
 namespace hg::editor::ui {
 	class MenuSpacer :

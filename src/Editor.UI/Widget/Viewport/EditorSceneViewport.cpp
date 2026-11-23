@@ -32,7 +32,7 @@ EventResponse EditorSceneViewport::invokeOnKeyDown(ref<const KeyboardEvent> even
 import Engine.ACS;
 #include <Heliogrim/Heliogrim.hpp>
 import Engine.ACS;
-#include <Heliogrim.Actors/Geometry/StaticGeometryActor.hpp>
+import Heliogrim.Actors;
 #include <Heliogrim/Core/Session.hpp>
 #include <Heliogrim/Universe/Universe.hpp>
 

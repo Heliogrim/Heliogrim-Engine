@@ -5,7 +5,6 @@
 #include <Engine.ACS/Archetype/ArchetypeDefinition.inl.hpp>
 #include <Heliogrim/Actor/Actor.hpp>
 #include <Heliogrim/Universe/Universe.hpp>
-#include <Heliogrim.Actors/Geometry/StaticGeometryActor.hpp>
 
 #include "SpawnEngine.hpp"
 #include "TestArchetypes.hpp"
@@ -16,7 +15,7 @@ import Engine.Graphics.Components;
 import Engine.Resource.Archive;
 import Engine.Serialization;
 import Engine.Serialization.Structures;
-import Engine.Assets.Type;
+import Heliogrim.Actors;
 
 using namespace hg::engine::serialization;
 using namespace hg::engine::resource;

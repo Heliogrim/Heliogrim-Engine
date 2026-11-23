@@ -1,13 +1,11 @@
 #include "InputText.hpp"
 
-#include <Engine.Reflow.Uikit/Atom/Paint.hpp>
-#include <Engine.Reflow.Uikit/Molecule/Layout/Stack.hpp>
-
 #include "../../EditorUiEventNames.hpp"
 #include "../../Event/InputChangeEvent.hpp"
 
 import Engine.Common;
 import Engine.Reflow;
+import Engine.Reflow.Uikit;
 
 using namespace hg::editor::ui;
 using namespace hg::engine::reflow;

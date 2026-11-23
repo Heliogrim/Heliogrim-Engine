@@ -1,10 +1,8 @@
 #include <Engine.Common/Sal.hpp>
-#include <Heliogrim.Actors/Geometry/BoxShapeGeometryActor.hpp>
-#include <Heliogrim.Actors/Geometry/SphereShapeGeometryActor.hpp>
-#include <Heliogrim.Actors/Geometry/StaticGeometryActor.hpp>
 
 import Editor.Boot;
 import Engine.ACS;
+import Heliogrim.Actors;
 
 using namespace hg;
 

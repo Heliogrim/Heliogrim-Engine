@@ -4,6 +4,7 @@ import Editor.Assets.Default;
 import Engine.ACS;
 import Engine.Assets.Database;
 import Engine.Common;
+import Heliogrim.Actors;
 
 using namespace hg::editor::scene::actions;
 using namespace hg;
@@ -41,8 +42,6 @@ SpawnShapeActor::~SpawnShapeActor() = default;
 #include <Heliogrim/Heliogrim.hpp>
 #include <Heliogrim/Core/Session.hpp>
 #include <Heliogrim/Universe/Universe.hpp>
-#include <Heliogrim.Actors/Geometry/BoxShapeGeometryActor.hpp>
-#include <Heliogrim.Actors/Geometry/SphereShapeGeometryActor.hpp>
 
 Opt<ActorRef<>> spawnActorImpl(SpawnShapeActor::ShapeType shapeType_, ref<const math::Location> location_) {
 

@@ -3,7 +3,7 @@
 make_test_project(
 		TEST_NAME Editor.UI.Test
 		LIBRARIES
-		${PROJECT_NAME}::Editor.Action ${PROJECT_NAME}::Engine.Reflow
+		${PROJECT_NAME}::Editor.Action ${PROJECT_NAME}::Engine.Reflow ${PROJECT_NAME}::Engine.Reflow.Uikit
 		${PROJECT_NAME}::Editor.Assets.Actions
 		${PROJECT_NAME}::Editor.Assets.Default
 		${PROJECT_NAME}::Editor.Boot

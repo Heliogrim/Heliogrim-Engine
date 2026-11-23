@@ -1,10 +1,3 @@
-#include "Heliogrim.Actors/Camera/CameraActor.hpp"
-#include "Heliogrim.Actors/Geometry/BoxShapeGeometryActor.hpp"
-#include "Heliogrim.Actors/Geometry/SphereShapeGeometryActor.hpp"
-#include "Heliogrim.Actors/Geometry/StaticGeometryActor.hpp"
-#include "Heliogrim.Actors/Light/DirectionalLightActor.hpp"
-#include "Heliogrim.Actors/Light/PointLightActor.hpp"
-
 /**/
 
 #include <Engine.Common/__macro.hpp>
@@ -15,6 +8,7 @@ import Engine.Common;
 import Engine.Config;
 import Engine.Graphics.Components;
 import Engine.Serialization;
+import Heliogrim.Actors;
 
 using namespace hg;
 

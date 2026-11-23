@@ -4,9 +4,6 @@
 
 #include <Engine.ACS/Archetype/ArchetypeDefinition.inl.hpp>
 #include <Heliogrim/Universe/Universe.hpp>
-#include <Heliogrim.Actors/Geometry/BoxShapeGeometryActor.hpp>
-#include <Heliogrim.Actors/Geometry/SphereShapeGeometryActor.hpp>
-#include <Heliogrim.Actors/Geometry/StaticGeometryActor.hpp>
 
 #include "SpawnEngine.hpp"
 #include "TestArchetypes.hpp"
@@ -21,6 +18,7 @@ import Engine.Level;
 import Engine.Physics.Components;
 import Engine.Scene;
 import Engine.Serialization;
+import Heliogrim.Actors;
 
 using namespace HeliogrimApi;
 
