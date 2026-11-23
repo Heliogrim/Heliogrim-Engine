@@ -1,24 +1,31 @@
+module;
+
+module Engine.Config.Providers;
+
 import Engine.Asserts;
 import Engine.Config;
 
+import :EditorProvider;
+
 using namespace ::hg::engine::cfg;
+using namespace ::hg::editor::cfg;
 using namespace ::hg;
 
-void SystemProvider::add(mref<ConfigEntry> entry_) {
+void EditorProvider::add(mref<ConfigEntry> entry_) {
 	const auto key = entry_.hashId;
 	_props.emplace(key, std::move(entry_));
 }
 
-bool SystemProvider::contains(InternalConfigKey key_) const noexcept {
+bool EditorProvider::contains(InternalConfigKey key_) const noexcept {
 	return _props.contains(key_);
 }
 
-ConfigValue SystemProvider::get(InternalConfigKey key_) const {
+ConfigValue EditorProvider::get(InternalConfigKey key_) const {
 	::hg::assertd([this, key_]() { return _props.contains(key_); });
 	return _props.at(key_).holder;
 }
 
-bool SystemProvider::set(InternalConfigKey key_, mref<ConfigValue> next_) noexcept {
+bool EditorProvider::set(InternalConfigKey key_, mref<ConfigValue> next_) noexcept {
 
 	const auto it = _props.find(key_);
 	if (it == _props.end()) {
@@ -33,11 +40,11 @@ bool SystemProvider::set(InternalConfigKey key_, mref<ConfigValue> next_) noexce
 	return true;
 }
 
-bool SystemProvider::remove(InternalConfigKey key_) {
+bool EditorProvider::remove(InternalConfigKey key_) {
 	return _props.erase(key_) != 0;
 }
 
-bool SystemProvider::isConfigType(InternalConfigKey key_, type_id typeId_) const noexcept {
+bool EditorProvider::isConfigType(InternalConfigKey key_, type_id typeId_) const noexcept {
 	if (const auto it = _props.find(key_); it != _props.end()) {
 		return it->second.typeId == typeId_;
 	}

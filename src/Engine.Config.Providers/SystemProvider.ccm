@@ -1,12 +1,11 @@
-#pragma once
+module;
 
-#include "../Provider.hpp"
+export module Engine.Config.Providers:SystemProvider;
 
-#if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
-#endif
+import Engine.Config;
 
-namespace hg::engine::cfg {
+export namespace hg::engine::cfg {
 	class SystemProvider final :
 		public Provider {
 	public:

@@ -17,6 +17,7 @@
 
 import Engine.Common;
 import Engine.Config;
+import Engine.Config.Providers;
 
 using namespace hg;
 

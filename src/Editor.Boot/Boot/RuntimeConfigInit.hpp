@@ -4,18 +4,12 @@
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Config;
+import Engine.Config.Providers;
 #endif
-
-namespace hg::engine {
-	class Config;
-}
 
 namespace hg::editor {
 	class EditorEngine;
-}
-
-namespace hg::engine::cfg {
-	class RuntimeProvider;
 }
 
 namespace hg::editor::boot {
