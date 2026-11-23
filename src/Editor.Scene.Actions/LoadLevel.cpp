@@ -1,12 +1,10 @@
 #include "LoadLevel.hpp"
 
-#include <Engine.Storage.System/StorageSystem.hpp>
+#include <Engine.Common/Sal.hpp>
 
 import Engine.ACS;
 import Engine.Storage;
-import Engine.Diagnostics;
-import Engine.Logging;
-import Engine.Serialization;
+import Engine.Storage.System;
 
 using namespace hg::editor::scene::actions;
 using namespace hg;

@@ -6,6 +6,7 @@
 
 import Engine.Asserts;
 import Engine.Assets;
+import Engine.Assets.Type;
 import Engine.Common;
 import Engine.Core;
 import Engine.Filesystem;
@@ -72,11 +73,6 @@ SourceLoaderStreamResponse<void>::type SourceLoader::operator()(
 }
 
 /* Asset Specific Implementation */
-
-#include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
-#include <Engine.Assets.Type/Texture/FontAsset.hpp>
-#include <Engine.Assets.Type/Texture/ImageAsset.hpp>
-#include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 
 engine::storage::FileUrl getLfsUrl(const non_owning_rptr<const engine::assets::Asset> asset_) {
 

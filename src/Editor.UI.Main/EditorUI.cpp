@@ -17,6 +17,7 @@
 import Editor.Boot;
 import Editor.UI.Init;
 import Engine.Assets;
+import Engine.Assets.Type;
 import Engine.Common;
 
 using namespace hg::editor::ui;
@@ -117,7 +118,6 @@ ref<const EditorUiServices> editor::EditorUI::getEditorServices() const noexcept
 
 #include <Editor.Assets.Default/Fonts/Default.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
-#include <Engine.Assets.Type/Texture/FontAsset.hpp>
 #include <Engine.Graphics.Loader/Font/FontLoadOptions.hpp>
 #include <Engine.Graphics.Loader/Font/FontResource.hpp>
 #include <Engine.Resource/ResourceManager.hpp>

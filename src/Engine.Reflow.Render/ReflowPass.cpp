@@ -10,8 +10,6 @@
 #include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
 #include <Engine.Accel.Pipeline/VkGraphicsPipeline.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
-#include <Engine.Assets.Type/Texture/ImageAsset.hpp>
-#include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
 #include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Graphics/Buffer/Buffer.hpp>
@@ -38,6 +36,7 @@
 
 import Engine.Asserts;
 import Engine.Assets;
+import Engine.Assets.Type;
 import Engine.Common;
 import Engine.Core;
 import Engine.Graphics.Scene;

@@ -4,15 +4,10 @@
 #include <Editor.UI.Service/Assets/Browser/AssetBrowserFilter.hpp>
 #include <Editor.UI.Service/Assets/Browser/AssetBrowserFilterEntry.hpp>
 #include <Editor.UI.Service/Assets/Browser/AssetBrowserService.hpp>
-#include <Engine.Assets.Type/Geometry/LandscapeGeometry.hpp>
-#include <Engine.Assets.Type/Geometry/SkeletalGeometry.hpp>
-#include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
-#include <Engine.Assets.Type/Material/GraphicsMaterial.hpp>
-#include <Engine.Assets.Type/Texture/ImageAsset.hpp>
-#include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 
 #include "AssetBrowserView.hpp"
 
+import Engine.Assets.Type;
 import std;
 
 using namespace hg::editor::ui;

@@ -2,14 +2,12 @@
 
 /**/
 #include <cstring>
-#include <Engine.Assets.Type/Asset.hpp>
-#include <Engine.Assets.Type/Texture/TextureAsset.hpp>
-#include <Engine.Assets.Type/Universe/LevelAsset.hpp>
 
 /**/
 #include <Engine.Serialization.Structures/Symbols.hpp>
 #include <Engine.Serialization.Structures/Common/Guid.hpp>
 
+import Engine.Assets.Type;
 import Engine.Common;
 import Engine.Resource.Archive;
 import Engine.Serialization;

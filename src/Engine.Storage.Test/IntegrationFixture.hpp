@@ -8,14 +8,12 @@
 
 /**/
 
-#include <Engine.Storage.Boot/Action/ActionResolverInit.hpp>
-#include <Engine.Storage.System/StorageSystem.hpp>
-#include <Engine.Storage.System/Details/StorageActionResolver.hpp>
-
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Config;
 import Engine.Storage.Action;
+import Engine.Storage.Boot;
 import Engine.Storage.Registry;
+import Engine.Storage.System;
 #endif
 
 namespace StorageModule {

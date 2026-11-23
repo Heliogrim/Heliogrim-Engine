@@ -4,6 +4,7 @@
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 
 import Engine.Assets;
+import Engine.Assets.Type;
 import Engine.Core;
 import Engine.Reflect;
 
@@ -149,13 +150,6 @@ ptr<engine::assets::TextureAsset> AssetBrowserHelper::getItemIconForDirectory(cr
 
 	return tex;
 }
-
-#include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
-#include <Engine.Assets.Type/Material/GraphicsMaterial.hpp>
-#include <Engine.Assets.Type/Material/GraphicsMaterialPrototype.hpp>
-#include <Engine.Assets.Type/Texture/FontAsset.hpp>
-#include <Engine.Assets.Type/Texture/ImageAsset.hpp>
-#include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 
 string AssetBrowserHelper::getAssetTypeName(cref<AssetTypeId> typeId_) const noexcept {
 

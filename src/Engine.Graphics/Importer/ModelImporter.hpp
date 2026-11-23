@@ -1,9 +1,9 @@
 #pragma once
 
-#include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
 #include <Engine.Resource/Importer/Importer.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Assets.Type;
 import Engine.Filesystem;
 #endif
 

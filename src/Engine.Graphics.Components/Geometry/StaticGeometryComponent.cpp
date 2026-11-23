@@ -1,8 +1,9 @@
-#include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
 /**/
 
 #include "StaticGeometryComponent.hpp"
 #include "StaticGeometryComponent.Layout.hpp"
+
+import Engine.Assets.Type;
 
 using namespace hg;
 

@@ -1,12 +1,12 @@
 #pragma once
 
-#include <Engine.Assets.Type/Asset.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Resource/Importer/ImportDestination.hpp>
 
 #include "ImportAction.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Assets.Type;
 import Engine.Common;
 import Engine.Storage.Registry;
 #endif

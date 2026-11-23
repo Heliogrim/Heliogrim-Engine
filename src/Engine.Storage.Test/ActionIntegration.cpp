@@ -2,9 +2,6 @@
 
 /**/
 
-#include <Engine.Storage.System/StorageSystem.hpp>
-#include <Engine.Storage.System/Details/StorageActionResolver.hpp>
-
 #include "IntegrationFixture.hpp"
 
 import Engine.Common;
@@ -13,6 +10,7 @@ import Engine.Resource.Archive;
 import Engine.Resource.Blob;
 import Engine.Storage.Action;
 import Engine.Storage.Registry;
+import Engine.Storage.System;
 
 /**/
 

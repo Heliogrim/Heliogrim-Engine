@@ -1,10 +1,10 @@
 #pragma once
 
-#include <Engine.Assets.Type/Geometry/LandscapeGeometry.hpp>
-#include <Engine.Assets.Type/Geometry/SkeletalGeometry.hpp>
-#include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
-
 #include "TypedAssetHandle.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Assets.Type;
+#endif
 
 namespace hg::engine::assets {
 	class LandscapeGeometry;

@@ -1,7 +1,5 @@
 #include "Io.hpp"
 
-#include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
-#include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 #include <Engine.Graphics/Importer/FontFileTypes.hpp>
 #include <Engine.Graphics/Importer/FontImporter.hpp>
 #include <Engine.Graphics/Importer/ImageFileTypes.hpp>
@@ -18,6 +16,7 @@
 #include <Engine.Graphics.Loader/Texture/TextureLoader.hpp>
 #include <Engine.Graphics.Loader/Texture/TextureResource.hpp>
 
+import Engine.Assets.Type;
 import Engine.Core;
 import Engine.Event;
 import Engine.Graphics.Event;

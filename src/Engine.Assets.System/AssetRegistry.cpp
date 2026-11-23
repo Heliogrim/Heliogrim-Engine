@@ -1,7 +1,5 @@
 #include "AssetRegistry.hpp"
 
-#include <Engine.Assets.Type/Asset.hpp>
-
 #include "AssetDescriptor.hpp"
 #include "AssetRepository.hpp"
 #include "Registry/Index.hpp"
@@ -10,6 +8,7 @@
 #include "Repository/InMemAssetRepository.hpp"
 
 import Engine.Asserts;
+import Engine.Assets.Type;
 import Engine.Common;
 
 using namespace hg::engine::assets::system;

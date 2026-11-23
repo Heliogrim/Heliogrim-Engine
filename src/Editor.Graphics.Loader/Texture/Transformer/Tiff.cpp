@@ -1,10 +1,10 @@
 #include "Tiff.hpp"
 
 #include <Engine.Assets.System/IAssetRegistry.hpp>
-#include <Engine.Assets.Type/Texture/ImageAsset.hpp>
 
 import Engine.Asserts;
 import Engine.Assets;
+import Engine.Assets.Type;
 import Engine.Core;
 import Engine.Reflect;
 

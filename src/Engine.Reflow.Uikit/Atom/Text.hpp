@@ -1,12 +1,15 @@
 #pragma once
 
-#include <Engine.Assets.Type/Texture/FontAsset.hpp>
 #include <Engine.Reflow/Children.hpp>
 #include <Engine.Reflow/Widget/LeafWidget.hpp>
 #include <Engine.Reflow.Attributes/Data/Base/TextDataAttributes.hpp>
 #include <Engine.Reflow.Attributes/Style/Base/TextStyleAttributes.hpp>
 
 #include "Atom.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Assets.Type;
+#endif
 
 namespace hg::engine::reflow {
 	class Font;

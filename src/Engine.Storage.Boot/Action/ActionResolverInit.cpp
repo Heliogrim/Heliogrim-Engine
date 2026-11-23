@@ -1,8 +1,5 @@
 #include "ActionResolverInit.hpp"
 
-#include <Engine.Storage.System/StorageSystem.hpp>
-#include <Engine.Storage.System/Details/StorageActionResolver.hpp>
-
 #include "BlobArchive.hpp"
 #include "BlobPack.hpp"
 #include "LfsBlob.hpp"
@@ -14,6 +11,7 @@ import Engine.Resource.Blob;
 import Engine.Resource.Package;
 import Engine.Storage.Action;
 import Engine.Storage.Registry;
+import Engine.Storage.System;
 
 using namespace hg::engine::storage;
 using namespace hg;

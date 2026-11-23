@@ -1,10 +1,9 @@
 #include "SkyboxModel.hpp"
 
-#include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
-#include <Engine.Assets.Type/Material/GraphicsMaterial.hpp>
-#include <Engine.Resource/ResourceManager.hpp>
 #include <Engine.Graphics.Components/Sky/SkyboxComponent.hpp>
+#include <Engine.Resource/ResourceManager.hpp>
 
+import Engine.Assets.Type;
 import Engine.Common;
 import Engine.Core;
 import Engine.Reflect;

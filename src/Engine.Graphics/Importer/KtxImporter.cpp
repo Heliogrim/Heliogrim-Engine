@@ -6,9 +6,6 @@
 
 /**/
 
-#include <Engine.Assets.Type/Texture/ImageAsset.hpp>
-#include <Engine.Assets.Type/Texture/TextureAsset.hpp>
-
 #include "ImageImporter.hpp"
 #include "../vkinc.hpp"
 #include "../API/VkTranslate.hpp"
@@ -17,6 +14,7 @@
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/GLM.hpp>
 
+import Engine.Assets.Type;
 import Engine.Common;
 import Engine.Logging;
 import Engine.Serialization;

@@ -2,11 +2,11 @@
 
 #include <cassert>
 #include <Engine.Assets.System/AssetRegistry.hpp>
-#include <Engine.Assets.Type/Asset.hpp>
 
 #include "AssetBrowserFilter.hpp"
 #include "AssetBrowserFilterEntry.hpp"
 
+import Engine.Assets.Type;
 import std;
 
 using namespace hg::editor::ui::service;

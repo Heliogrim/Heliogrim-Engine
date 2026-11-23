@@ -1,12 +1,9 @@
 #pragma once
 
-#include <Engine.Assets.Type/Asset.hpp>
-#include <Engine.Assets.Type/AssetConcept.hpp>
-#include <Engine.Assets.Type/Material/GraphicsMaterial.hpp>
-#include <Engine.Assets.Type/Material/GraphicsMaterialPrototype.hpp>
 #include <Engine.Common/Sal.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Assets.Type;
 import Engine.Common;
 import Engine.Core;
 import Engine.Reflect;

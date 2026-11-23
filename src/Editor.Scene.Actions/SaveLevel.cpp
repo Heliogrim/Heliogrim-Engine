@@ -2,12 +2,12 @@
 
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Storage.System/StorageSystem.hpp>
 
 import Engine.ACS;
 import Engine.Assets;
 import Engine.Logging;
 import Engine.Storage;
+import Engine.Storage.System;
 
 using namespace hg::editor::scene::actions;
 using namespace hg;

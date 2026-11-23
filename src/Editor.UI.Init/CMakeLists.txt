@@ -1,7 +1,7 @@
 
 # Setup
 make_library_project(
-        LIB_NAME Editor.UI.Init
+        LIB_NAME Editor.UI.Init
         MODULE
         LIB_FOLDER "${IDE_FOLDER}/Editor"
         LIBRARIES
@@ -11,5 +11,5 @@ make_library_project(
         ${PROJECT_NAME}::Engine.Common
         ${PROJECT_NAME}::Heliogrim
         ${PROJECT_NAME}::Engine.Reflow.Components
-        ${PROJECT_NAME}::Engine.Assets
+        ${PROJECT_NAME}::Engine.Assets ${PROJECT_NAME}::Engine.Assets.Type
 )

@@ -1,11 +1,9 @@
 #include "StorageModule.hpp"
 
-#include <Engine.Storage.Boot/Action/ActionResolverInit.hpp>
-#include <Engine.Storage.System/StorageSystem.hpp>
-#include <Engine.Storage.System/Details/StorageActionResolver.hpp>
-
 import Engine.Common;
+import Engine.Storage.Boot;
 import Engine.Storage.Registry;
+import Engine.Storage.System;
 
 using namespace hg::engine;
 using namespace hg;

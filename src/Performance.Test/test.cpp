@@ -2,8 +2,8 @@
 
 /**/
 #include <cstring>
-#include <Engine.Assets.Type/Asset.hpp>
 
+import Engine.Assets.Type;
 import Engine.Common;
 import Engine.Resource.Archive;
 import Engine.Serialization;

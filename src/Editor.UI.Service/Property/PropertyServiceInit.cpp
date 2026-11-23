@@ -1,8 +1,6 @@
-#include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
-#include <Engine.Assets.Type/Material/GraphicsMaterial.hpp>
-#include <Engine.Assets.Type/Material/GraphicsMaterialPrototype.hpp>
-
 /**/
+
+#include "PropertyServiceInit.hpp"
 
 #include <Engine.Graphics.Components/Camera/CameraComponent.hpp>
 #include <Engine.Graphics.Components/Geometry/StaticGeometryComponent.hpp>
@@ -14,8 +12,6 @@
 #include <Engine.Reflow.Uikit/Atom/Layout/HorizontalLayout.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/UniformGridLayout.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/VerticalLayout.hpp>
-
-#include "PropertyServiceInit.hpp"
 
 /**/
 
@@ -34,6 +30,7 @@
 #include "PropertyService.hpp"
 
 import Engine.Assets;
+import Engine.Assets.Type;
 import Engine.Common;
 import Engine.Core;
 import Engine.Physics.Components;

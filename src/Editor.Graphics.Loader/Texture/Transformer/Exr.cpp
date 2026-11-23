@@ -6,19 +6,19 @@
 
 #include <cstdlib>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
-#include <Engine.Assets.Type/Texture/ImageAsset.hpp>
 #include <Engine.Graphics/Buffer/Buffer.hpp>
 #include <Engine.Graphics/Buffer/BufferFactory.hpp>
 #include <Engine.Graphics/Pool/GlobalResourcePool.hpp>
 #include <Engine.Graphics/Texture/SparseTexturePage.hpp>
 #include <Engine.Graphics/Texture/SparseTextureView.hpp>
 #include <Engine.Resource/Manage/UniqueResource.hpp>
-#include <Engine.Storage.System/StorageSystem.hpp>
 
 import Engine.Asserts;
 import Engine.Assets;
+import Engine.Assets.Type;
 import Engine.Core;
 import Engine.Reflect;
+import Engine.Storage.System;
 import vulkan;
 
 using namespace ::hg::editor::graphics::loader;

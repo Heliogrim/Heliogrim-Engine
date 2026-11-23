@@ -1,9 +1,4 @@
 /**/
-#include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
-#include <Engine.Assets.Type/Texture/FontAsset.hpp>
-#include <Engine.Assets.Type/Texture/ImageAsset.hpp>
-#include <Engine.Assets.Type/Texture/TextureAsset.hpp>
-#include <Engine.Assets.Type/Universe/LevelAsset.hpp>
 /**/
 
 #include <Editor.Action/ActionManager.hpp>
@@ -14,10 +9,10 @@
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
-#include <Engine.Storage.System/StorageSystem.hpp>
 
 import Editor.Boot;
 import Engine.Assets;
+import Engine.Assets.Type;
 import Engine.Async;
 import Engine.Common;
 import Engine.Config;
@@ -31,6 +26,7 @@ import Engine.Serialization.Structures;
 import Engine.Storage;
 import Engine.Storage.Package;
 import Engine.Storage.Registry;
+import Engine.Storage.System;
 
 using namespace hg::editor::boot;
 using namespace hg::engine;

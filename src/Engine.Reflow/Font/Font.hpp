@@ -1,11 +1,11 @@
 #pragma once
 
-#include <Engine.Assets.Type/Font/GlyphCode.hpp>
 #include <Engine.Graphics/Texture/__fwd.hpp>
 
 #include "FontGlyph.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Assets.Type;
 import Engine.Common;
 #endif
 
