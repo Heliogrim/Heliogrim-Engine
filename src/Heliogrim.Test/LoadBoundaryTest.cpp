@@ -3,6 +3,8 @@
 /**/
 
 #include <Engine.ACS/Registry.hpp>
+#include <Engine.Assets.Type/AssetLoad.hpp>
+#include <Engine.Assets.Type/Texture/FontAsset.hpp>
 #include <Engine.ACS/Traits.hpp>
 #include <Engine.Diagnostics/Render.hpp>
 #include <Engine.Diagnostics/Sink.hpp>
@@ -29,6 +31,7 @@ using namespace hg::engine::serialization;
 using namespace hg::engine::resource;
 using namespace hg::engine::core;
 using namespace hg;
+using hg::engine::assets::FontAsset;
 
 namespace LoadBoundaryModule {
 	constexpr u64 testActorType = 0x7E57'0000'0000'0011uLL;
@@ -483,7 +486,7 @@ namespace LoadBoundaryModule {
 			auto root = structured.insertRootSlot().intoStruct();
 			root.insertSlot<u64>(Symbols::Type) << 0xDEAD'0000'0000'0001uLL;
 		}
-		const auto level = loadLevel(_archive, _sink);
+		const auto level = loadLevel(_archive, "Sandbox", _sink);
 
 		EXPECT_FALSE(level.has_value());
 		EXPECT_TRUE(hasCode(_sink, "unknown-type"));
@@ -495,7 +498,7 @@ namespace LoadBoundaryModule {
 			auto structured = StructuredArchive { _archive };
 			structured.insertRootSlot().intoIntegral<u64>() << 7uLL;
 		}
-		const auto level = loadLevel(_archive, _sink);
+		const auto level = loadLevel(_archive, "Sandbox", _sink);
 
 		EXPECT_FALSE(level.has_value());
 		EXPECT_TRUE(hasCode(_sink, "malformed-slot"));
@@ -697,5 +700,133 @@ namespace LoadBoundaryModule {
 		ASSERT_EQ(level->getActors().size(), 1uLL);
 		EXPECT_TRUE(level->getActors().front()->carriesUnknownData());
 		EXPECT_TRUE(hasCode(_sink, "revision-newer"));
+	}
+
+	TEST_F(LoadBoundary, ContextNoteNamesLevel) {
+		{
+			auto structured = StructuredArchive { _archive };
+			structured.insertRootSlot().intoIntegral<u64>() << 7uLL;
+		}
+		const auto level = loadLevel(_archive, "Sandbox", _sink);
+
+		ASSERT_FALSE(level.has_value());
+		ASSERT_FALSE(level.error().empty());
+		const auto& notes = level.error().front().notes();
+		EXPECT_NE(std::ranges::find(notes, String { "while loading level 'Sandbox'" }), notes.end());
+	}
+
+	TEST_F(LoadBoundary, ContextFillsAssetUrl) {
+		{
+			auto structured = StructuredArchive { _archive };
+			auto root = structured.insertRootSlot().intoStruct();
+			root.insertSlot<u64>(Symbols::Type) << 0xDEAD'0000'0000'0001uLL;
+		}
+		const auto level = loadLevel(_archive, "Sandbox", _sink);
+
+		ASSERT_FALSE(level.has_value());
+		const auto* at = std::get_if<engine::diag::AssetPath>(&level.error().front().primary());
+		ASSERT_NE(at, nullptr);
+		EXPECT_EQ(at->url, "Sandbox");
+	}
+
+	/* Writes a font asset record by hand so tests control `@rev` and stray keys. */
+	void writeFont(ref<BufferArchive> archive_, const u16 rev_, const StringView sourcesKey_, const bool strayKey_) {
+		auto structured = StructuredArchive { archive_ };
+		auto root = structured.insertRootSlot().intoStruct();
+		if (rev_ > 0) {
+			root.insertSlot<u16>("@rev") << rev_;
+		}
+		insert_guid_slot(root, AssetGuid {});
+		insert_typeId_slot(root, FontAsset::typeId);
+		root.insertSlot<String>("name") << String { "font" };
+		root.insertSlot<String, Vector>(sourcesKey_) << Vector<String> {};
+		if (strayKey_) {
+			root.insertSlot<u32>("futureField") << 1u;
+		}
+	}
+
+	struct FontLoad {
+		FontAsset font {};
+		bool hydrated = false;
+		Result<void, engine::diag::Diagnostics> finished {};
+	};
+
+	void loadFont(ref<BufferArchive> archive_, cref<MigrationRegistry> migrations_, ref<engine::diag::CollectingSink> sink_, ref<FontLoad> out_) {
+		auto ctx = LoadContext { static_cast<u64>(archive_.totalSize()), "fonts/font" };
+		archive_.seek(0);
+		{
+			const auto root = RootScopedSlot { archive_, ScopedSlotStateFlag::eClean, &ctx };
+			out_.hydrated = engine::assets::hydrateArchivedAsset(migrations_, root.asStruct(), ctx, out_.font);
+		}
+		out_.finished = ctx.finish(sink_, "while loading asset 'fonts/font'");
+	}
+
+	TEST_F(LoadBoundary, LegacyAssetKeysStillLoad) {
+		const auto guid = Guid { 1u, 2u, 3u, 4uLL };
+		{
+			auto structured = StructuredArchive { _archive };
+			auto root = structured.insertRootSlot().intoStruct();
+			access::Structure<Guid>::serialize(guid, root.insertSlot<void>("__guid__").intoStruct());
+			root.insertSlot<u64>("__type__") << engine::assets::LevelAsset::typeId.data;
+			root.insertSlot<String>("name") << String { "legacy" };
+			root.insertSlot<String>("levelData") << String {};
+		}
+		auto ctx = LoadContext { static_cast<u64>(_archive.totalSize()), "levels/legacy" };
+		_archive.seek(0);
+		engine::assets::LevelAsset asset {};
+		{
+			const auto root = RootScopedSlot { _archive, ScopedSlotStateFlag::eClean, &ctx };
+			EXPECT_TRUE(engine::assets::hydrateArchivedAsset(_engine->_serialization->migrations(), root.asStruct(), ctx, asset));
+		}
+		EXPECT_TRUE(ctx.finish(_sink, "while loading asset 'levels/legacy'").has_value());
+		EXPECT_EQ(static_cast<Guid>(asset.getAssetGuid()), guid);
+		EXPECT_EQ(asset.getAssetName(), "legacy");
+	}
+
+	TEST_F(LoadBoundary, AssetUnreadKeyMarksAndRefusesStore) {
+		writeFont(_archive, 0, "sources", true);
+		FontLoad load {};
+		loadFont(_archive, _engine->_serialization->migrations(), _sink, load);
+
+		EXPECT_TRUE(load.hydrated);
+		EXPECT_TRUE(load.finished.has_value());
+		EXPECT_TRUE(hasCode(_sink, "unknown-field"));
+		EXPECT_TRUE(load.font.carriesUnknownData());
+
+		const nmpt<const engine::assets::Asset> assets[] { &load.font };
+		const auto store = engine::assets::checkStoreAllowed(assets);
+		ASSERT_FALSE(store.has_value());
+		EXPECT_EQ(store.error().front().code()->key, "save-refused");
+	}
+
+	TEST_F(LoadBoundary, AssetNewerRevisionRefused) {
+		writeFont(_archive, 1, "sources", false);
+		FontLoad load {};
+		loadFont(_archive, _engine->_serialization->migrations(), _sink, load);
+
+		EXPECT_FALSE(load.hydrated);
+		ASSERT_FALSE(load.finished.has_value());
+		EXPECT_EQ(load.finished.error().front().code()->key, "revision-newer");
+	}
+
+	Result<void, MigrateError> renameSources(ref<const StructScopedSlot> old_, ref<StructScopedSlot> new_) {
+		forwardEntries(old_, new_, { "fontSources" });
+		Vector<String> sources {};
+		old_.getSlot<String, Vector>("fontSources") >> sources;
+		new_.insertSlot<String, Vector>("sources") << sources;
+		return {};
+	}
+
+	TEST_F(LoadBoundary, AssetOlderRevisionMigrates) {
+		const Migration steps[] { { FontAsset::typeId, 0, &renameSources } };
+		_engine->_serialization->migrations().add(steps);
+		writeFont(_archive, 0, "fontSources", false);
+		FontLoad load {};
+		loadFont(_archive, _engine->_serialization->migrations(), _sink, load);
+
+		EXPECT_TRUE(load.hydrated);
+		EXPECT_TRUE(load.finished.has_value());
+		EXPECT_FALSE(load.font.carriesUnknownData());
+		EXPECT_FALSE(hasCode(_sink, "unknown-field"));
 	}
 }

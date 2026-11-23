@@ -23,7 +23,8 @@ namespace hg::engine::serialization {
 		inline constexpr static u64 minBudget = 64uLL * 1024uLL * 1024uLL;
 
 	public:
-		explicit LoadContext(const u64 archiveSize_);
+		/* `url_` names the loaded asset or level; diagnostics carry it in their location. */
+		explicit LoadContext(const u64 archiveSize_, String url_ = {});
 
 	private:
 		struct Entry {
@@ -31,6 +32,7 @@ namespace hg::engine::serialization {
 			String path;
 		};
 
+		String _url;
 		Vector<String> _path;
 		u32 _depth = 0;
 		u64 _budget;

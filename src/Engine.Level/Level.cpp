@@ -179,9 +179,8 @@ Result<void, engine::diag::Diagnostics> engine::core::checkSaveAllowed(ref<const
 template <>
 void access::Structure<Level>::hydrate(cref<StructScopedSlot> record_, Level& target_);
 
-Result<Arci<Level>, engine::diag::Diagnostics> engine::core::loadLevel(ref<engine::resource::Archive> archive_, const StringView url_, ref<engine::diag::DiagnosticSink> sink_, mref<Arci<Level>> into_) {
+Result<Arci<Level>, engine::diag::Diagnostics> engine::core::loadLevel(ref<engine::resource::Archive> archive_, const StringView url_, ref<engine::diag::DiagnosticSink> sink_) {
 	auto ctx = LoadContext { static_cast<u64>(std::max(archive_.totalSize(), 0LL)), String { url_ } };
-	const auto valid = validate(archive_, 0LL, ctx).has_value();
 	archive_.seek(0LL);
 
 	auto level = into_ != nullptr ? ::hg::move(into_) : make_root_like_level();
@@ -196,7 +195,7 @@ Result<Arci<Level>, engine::diag::Diagnostics> engine::core::loadLevel(ref<engin
 		}
 	}
 
-	auto finished = ctx.finish(sink_, "level");
+	auto finished = ctx.finish(sink_, std::format("while loading level '{}'", url_));
 	if (not finished.has_value()) {
 		// finish hands errors back without emitting them; the boundary reports them.
 		for (const auto& diagnostic : finished.error()) {
