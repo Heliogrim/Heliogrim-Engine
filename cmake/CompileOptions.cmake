@@ -173,12 +173,12 @@ endif ()
 # Compile launch options
 #
 
-option(HELIOGRIM_USE_COMPILER_CACHE "Launch compiler through sccache (switches debug info to embedded /Z7)." ON)
+option(HELIOGRIM_USE_COMPILER_CACHE "Launch the C compiler through sccache (switches debug info to embedded /Z7)." ON)
 
 if (HELIOGRIM_USE_COMPILER_CACHE)
 	find_program(SCCACHE_PROGRAM sccache)
 	if (SCCACHE_PROGRAM)
-		set(CMAKE_CXX_COMPILER_LAUNCHER "${SCCACHE_PROGRAM}")
+		# C only: sccache inlines C++ module maps (@*.modmap) into one command line, which exceeds the Windows limit (os error 206).
 		set(CMAKE_C_COMPILER_LAUNCHER "${SCCACHE_PROGRAM}")
 		# The launcher is for compiling only; linking stays uncached
 
