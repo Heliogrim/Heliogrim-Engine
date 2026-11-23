@@ -5,7 +5,6 @@
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Filesystem/Url.hpp>
 #include <Engine.Resource/File.hpp>
-#include <Engine.Storage/StorageModule.hpp>
 #include <Engine.Storage.Registry/IStorageRegistry.hpp>
 #include <Engine.Storage.Registry/Url/FileUrl.hpp>
 #include <Engine.Storage.Registry/Url/StorageUrl.hpp>
@@ -15,6 +14,7 @@ import Engine.Common;
 import Engine.Core;
 import Engine.Logging;
 import Engine.Reflect;
+import Engine.Storage;
 
 using namespace hg::engine::resource::loader;
 using namespace hg;

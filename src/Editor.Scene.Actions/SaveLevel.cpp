@@ -4,10 +4,10 @@
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Serialization/SerializationModule.hpp>
-#include <Engine.Storage/StorageModule.hpp>
 #include <Engine.Storage.System/StorageSystem.hpp>
 
 import Engine.Logging;
+import Engine.Storage;
 
 using namespace hg::editor::scene::actions;
 using namespace hg;

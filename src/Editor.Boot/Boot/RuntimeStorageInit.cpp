@@ -1,4 +1,3 @@
-#include <Engine.Storage/StorageModule.hpp>
 #include <Engine.Storage.Registry/IStorageRegistry.hpp>
 #include <Engine.Storage.Registry/Provider/LocalFileSystemProvider.hpp>
 #include <Engine.Storage.Registry/Repository/CacheFileSystemRepository.hpp>
@@ -7,6 +6,7 @@
 import Editor.Boot;
 import Engine.Common;
 import Engine.Config;
+import Engine.Storage;
 
 using namespace hg;
 

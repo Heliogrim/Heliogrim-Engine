@@ -21,7 +21,6 @@
 #include <Engine.Resource.Package/Attribute/MagicBytes.hpp>
 #include <Engine.Serialization.Structures/Common/Guid.hpp>
 #include <Engine.Serialization.Structures/Common/TypeId.hpp>
-#include <Engine.Storage/StorageModule.hpp>
 #include <Engine.Storage.Package/Pattern.hpp>
 #include <Engine.Storage.Registry/IStorage.hpp>
 #include <Engine.Storage.Registry/Options/StorageDescriptor.hpp>
@@ -36,6 +35,7 @@ import Engine.Core;
 import Engine.Logging;
 import Engine.Reflect;
 import Engine.Resource.Archive;
+import Engine.Storage;
 
 using namespace hg::editor::boot;
 using namespace hg::engine;

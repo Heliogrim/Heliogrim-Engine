@@ -1,7 +1,8 @@
 #include "ActorPhysicsStageCollision.hpp"
 
 #include <Engine.ACS.Schedule/ActorPipeline.hpp>
-#include <Engine.Physics.Schedule/PhysicsPipeline.hpp>
+
+import Engine.Physics.Schedule;
 
 using namespace hg::engine::acs::schedule;
 using namespace hg::engine::scheduler;

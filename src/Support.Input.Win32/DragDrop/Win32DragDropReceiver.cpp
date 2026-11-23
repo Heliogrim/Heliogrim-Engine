@@ -1,10 +1,10 @@
 #include "Win32DragDropReceiver.hpp"
 
 #include <ShlObj_core.h>
-#include <Engine.Input/DragDropEvent.hpp>
 
 import Engine.Asserts;
 import Engine.Common;
+import Engine.Input;
 
 using namespace hg::engine::input;
 using namespace hg;

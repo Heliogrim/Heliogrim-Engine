@@ -1,6 +1,8 @@
 #pragma once
 
-#include <Engine.Input/KeyboardEvent.hpp>
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Input;
+#endif
 
 namespace hg::engine::reflow {
     using KeyboardEvent = input::event::KeyboardEvent;

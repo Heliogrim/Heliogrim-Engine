@@ -1,6 +1,8 @@
 #pragma once
 
-#include <Engine.Input/DragDropEvent.hpp>
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Input;
+#endif
 
 namespace hg::engine::reflow {
     using DragDropEvent = input::event::DragDropEvent;

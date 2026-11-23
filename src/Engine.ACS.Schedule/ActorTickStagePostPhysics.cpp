@@ -2,9 +2,9 @@
 
 #include <Engine.ACS.Schedule/ActorPipeline.hpp>
 #include <Engine.Level/Level.hpp>
-#include <Engine.Physics.Schedule/PhysicsPipeline.hpp>
 
 import Engine.Core;
+import Engine.Physics.Schedule;
 
 using namespace hg::engine::acs::schedule;
 using namespace hg::engine::scheduler;

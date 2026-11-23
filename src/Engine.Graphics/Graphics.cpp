@@ -7,7 +7,6 @@
 
 #include <Engine.Common/Math/__default.inl>
 #include <Engine.Graphics.IO/Io.hpp>
-#include <Engine.Graphics.Schedule/RenderScenePipeline.hpp>
 
 #include "RenderTarget.hpp"
 #include "Buffer/VkBufferFactory.hpp"
@@ -31,6 +30,7 @@ import Engine.Common;
 import Engine.Core;
 import Engine.Event;
 import Engine.Graphics.Scene;
+import Engine.Graphics.Schedule;
 import Engine.Logging;
 import Engine.Scheduler;
 /**/

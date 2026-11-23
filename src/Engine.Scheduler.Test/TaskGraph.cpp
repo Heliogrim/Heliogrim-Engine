@@ -2,29 +2,18 @@
 
 /**/
 
-#include <Engine.ACS.Schedule/ActorHousekeepingStage.hpp>
-#include <Engine.ACS.Schedule/ActorPhysicsStageCollision.hpp>
-#include <Engine.ACS.Schedule/ActorPhysicsStageOverlap.hpp>
-#include <Engine.ACS.Schedule/ActorPipeline.hpp>
-#include <Engine.ACS.Schedule/ActorTickStagePostPhysics.hpp>
-#include <Engine.ACS.Schedule/ActorTickStagePrePhysics.hpp>
-#include <Engine.Core.Schedule/CorePipeline.hpp>
-#include <Engine.Core.Schedule/TickTimingStage.hpp>
-#include <Engine.Graphics.Schedule/RenderScenePipeline.hpp>
-#include <Engine.Graphics.Schedule/RenderTickStage.hpp>
-#include <Engine.Input.Schedule/InputPipeline.hpp>
-#include <Engine.Input.Schedule/InputTickStage.hpp>
-#include <Engine.Physics.Schedule/PhysicsPipeline.hpp>
-#include <Engine.Physics.Schedule/PhysicsReadbackStage.hpp>
-#include <Engine.Physics.Schedule/PhysicsTickStage.hpp>
-#include <Engine.Reflow.Schedule/ReflowFlowStage.hpp>
-#include <Engine.Reflow.Schedule/ReflowPipeline.hpp>
 #include <Engine.Scene.Schedule/SceneBroadcastStage.hpp>
 #include <Engine.Scene.Schedule/ScenePipeline.hpp>
 #include <Engine.Scene.Schedule/ScenePostProcessStage.hpp>
 #include <Engine.Scene.Schedule/SceneUpdateStage.hpp>
 
+import Engine.ACS.Schedule;
 import Engine.Common;
+import Engine.Core.Schedule;
+import Engine.Graphics.Schedule;
+import Engine.Input.Schedule;
+import Engine.Physics.Schedule;
+import Engine.Reflow.Schedule;
 import Engine.Scheduler;
 
 using namespace hg::engine::scheduler::graph;

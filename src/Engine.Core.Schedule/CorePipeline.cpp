@@ -1,10 +1,10 @@
 #include "CorePipeline.hpp"
 
-#include <Engine.ACS.Schedule/ActorPipeline.hpp>
 #include <Engine.Scene.Schedule/ScenePipeline.hpp>
 
 #include "TickTimingStage.hpp"
 
+import Engine.ACS.Schedule;
 import Engine.Common;
 import Engine.Scheduler;
 

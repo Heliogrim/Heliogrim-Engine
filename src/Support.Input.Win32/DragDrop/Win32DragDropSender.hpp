@@ -3,10 +3,9 @@
 #include <Engine.Common/stdafx.h>
 /**/
 #include <ole2.h>
-#include <Engine.Input/DragDrop/DragDropObject.hpp>
-#include <Engine.Input/DragDrop/DragDropSender.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Input;
 import Engine.Logging;
 import std;
 #endif
