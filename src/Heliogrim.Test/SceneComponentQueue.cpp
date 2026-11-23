@@ -5,7 +5,7 @@
 #include <Engine.ACS/Component/CachedActorPointer.hpp>
 #include <Engine.Scene/SceneBase.hpp>
 #include <Engine.Scene.Game/SceneComponentQueue.hpp>
-#include <Heliogrim/Component/Scene/Collision/BoxShapeCollisionComponent.hpp>
+#include <Engine.Physics.Components/Collision/BoxShapeCollisionComponent.hpp>
 
 import Engine.Common;
 

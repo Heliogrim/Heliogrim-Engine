@@ -141,8 +141,8 @@ void PhysicsSceneSystem::relocate(ref<const acs::RelocationTable> table_) {
 
 #include <Engine.Physics.Scene.Model/BoxShapeCollisionModel.hpp>
 #include <Engine.Physics.Scene.Model/SphereShapeCollisionModel.hpp>
-#include <Heliogrim/Component/Scene/Collision/BoxShapeCollisionComponent.hpp>
-#include <Heliogrim/Component/Scene/Collision/SphereShapeCollisionComponent.hpp>
+#include <Engine.Physics.Components/Collision/BoxShapeCollisionComponent.hpp>
+#include <Engine.Physics.Components/Collision/SphereShapeCollisionComponent.hpp>
 
 void registerTypeMappings(ref<PhysicsSceneRegistry> registry_) {
 

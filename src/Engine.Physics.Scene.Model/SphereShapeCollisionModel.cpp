@@ -11,7 +11,7 @@
 
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Physics.Scene/PhysicsSceneSystem.hpp>
-#include <Heliogrim/Component/Scene/Collision/SphereShapeCollisionComponent.hpp>
+#include <Engine.Physics.Components/Collision/SphereShapeCollisionComponent.hpp>
 
 import Engine.Asserts;
 import Engine.Logging;

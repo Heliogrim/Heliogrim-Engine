@@ -8,13 +8,13 @@
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
 #include <Engine.Render.Scene.Model/CameraModel.hpp>
 #include <Engine.Scene/SceneBase.hpp>
-#include <Heliogrim/Component/Scene/Camera/CameraComponent.hpp>
-#include <Heliogrim/Component/Scene/Geometry/StaticGeometryComponent.hpp>
-#include <Heliogrim/Component/Scene/Light/DirectionalLightComponent.hpp>
-#include <Heliogrim/Component/Scene/Light/PointLightComponent.hpp>
-#include <Heliogrim/Component/Scene/Light/SpotLightComponent.hpp>
-#include <Heliogrim/Component/Scene/Sky/SkyboxComponent.hpp>
-#include <Heliogrim/Component/Scene/UI/UIComponent.hpp>
+#include <Engine.Graphics.Components/Camera/CameraComponent.hpp>
+#include <Engine.Graphics.Components/Geometry/StaticGeometryComponent.hpp>
+#include <Engine.Graphics.Components/Light/DirectionalLightComponent.hpp>
+#include <Engine.Graphics.Components/Light/PointLightComponent.hpp>
+#include <Engine.Graphics.Components/Light/SpotLightComponent.hpp>
+#include <Engine.Graphics.Components/Sky/SkyboxComponent.hpp>
+#include <Engine.Reflow.Components/UI/UIComponent.hpp>
 
 import Engine.Graphics.Scene;
 

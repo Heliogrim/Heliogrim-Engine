@@ -4,7 +4,7 @@
 #include <Engine.Graphics/Light/Light.hpp>
 #include <Engine.Graphics/Pool/SceneResourcePool.hpp>
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
-#include <Heliogrim/Component/Scene/Light/PointLightComponent.hpp>
+#include <Engine.Graphics.Components/Light/PointLightComponent.hpp>
 
 import Engine.Common;
 import Engine.Reflect;

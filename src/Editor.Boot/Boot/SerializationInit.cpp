@@ -1,14 +1,14 @@
 #include "Engine.ACS/Actor/Actor.hpp"
 #include "Engine.ACS/Serialization/ArchetypeFnSet.hpp"
-#include "Heliogrim/Actor/Camera/CameraActor.hpp"
-#include "Heliogrim/Actor/Geometry/BoxShapeGeometryActor.hpp"
-#include "Heliogrim/Actor/Geometry/SphereShapeGeometryActor.hpp"
-#include "Heliogrim/Actor/Geometry/StaticGeometryActor.hpp"
-#include "Heliogrim/Actor/Light/DirectionalLightActor.hpp"
-#include "Heliogrim/Actor/Light/PointLightActor.hpp"
-#include "Heliogrim/Component/Scene/Light/PointLightComponent.hpp"
-#include "Heliogrim/Component/Scene/Light/SpotLightComponent.hpp"
-#include "Heliogrim/Component/Scene/Sky/SkyboxComponent.hpp"
+#include "Heliogrim.Actors/Camera/CameraActor.hpp"
+#include "Heliogrim.Actors/Geometry/BoxShapeGeometryActor.hpp"
+#include "Heliogrim.Actors/Geometry/SphereShapeGeometryActor.hpp"
+#include "Heliogrim.Actors/Geometry/StaticGeometryActor.hpp"
+#include "Heliogrim.Actors/Light/DirectionalLightActor.hpp"
+#include "Heliogrim.Actors/Light/PointLightActor.hpp"
+#include "Engine.Graphics.Components/Light/PointLightComponent.hpp"
+#include "Engine.Graphics.Components/Light/SpotLightComponent.hpp"
+#include "Engine.Graphics.Components/Sky/SkyboxComponent.hpp"
 
 /**/
 

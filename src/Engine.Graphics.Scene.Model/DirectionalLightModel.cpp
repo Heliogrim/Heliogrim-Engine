@@ -3,7 +3,7 @@
 #include <cstring>
 #include <Engine.Graphics/Pool/SceneResourcePool.hpp>
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
-#include <Heliogrim/Component/Scene/Light/DirectionalLightComponent.hpp>
+#include <Engine.Graphics.Components/Light/DirectionalLightComponent.hpp>
 
 import Engine.Common;
 import Engine.Reflect;

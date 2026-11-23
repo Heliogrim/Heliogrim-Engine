@@ -8,9 +8,9 @@
 #include <Engine.Serialization/Structure/RootScopedSlot.hpp>
 #include <Engine.Serialization.Structures/Common/Guid.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
+#include <Engine.Graphics.Components/Geometry/StaticGeometryComponent.Layout.hpp>
 #include <Engine.Serialization/Structure/SeqScopedSlot.hpp>
 #include <Heliogrim/Actor/Archetype/ArchetypeLayout.inl.hpp>
-#include <Heliogrim/Component/Scene/Geometry/StaticGeometryComponent.Layout.hpp>
 
 import Engine.Common;
 import Engine.Resource.Archive;

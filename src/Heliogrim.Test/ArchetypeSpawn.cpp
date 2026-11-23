@@ -12,14 +12,14 @@
 #include <Engine.Scene/SceneBase.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
-#include <Heliogrim/Actor/Geometry/BoxShapeGeometryActor.hpp>
-#include <Heliogrim/Actor/Geometry/SphereShapeGeometryActor.hpp>
-#include <Heliogrim/Actor/Geometry/StaticGeometryActor.hpp>
-#include <Heliogrim/Component/Scene/Collision/BoxShapeCollisionComponent.Layout.hpp>
-#include <Heliogrim/Component/Scene/Collision/SphereShapeCollisionComponent.Layout.hpp>
-#include <Heliogrim/Component/Scene/Geometry/BoxShapeGeometryComponent.Layout.hpp>
-#include <Heliogrim/Component/Scene/Geometry/SphereShapeGeometryComponent.Layout.hpp>
-#include <Heliogrim/Component/Scene/Geometry/StaticGeometryComponent.Layout.hpp>
+#include <Heliogrim.Actors/Geometry/BoxShapeGeometryActor.hpp>
+#include <Heliogrim.Actors/Geometry/SphereShapeGeometryActor.hpp>
+#include <Heliogrim.Actors/Geometry/StaticGeometryActor.hpp>
+#include <Engine.Physics.Components/Collision/BoxShapeCollisionComponent.Layout.hpp>
+#include <Engine.Physics.Components/Collision/SphereShapeCollisionComponent.Layout.hpp>
+#include <Engine.Graphics.Components/Geometry/BoxShapeGeometryComponent.Layout.hpp>
+#include <Engine.Graphics.Components/Geometry/SphereShapeGeometryComponent.Layout.hpp>
+#include <Engine.Graphics.Components/Geometry/StaticGeometryComponent.Layout.hpp>
 #include <Heliogrim/Universe/Universe.hpp>
 
 #include "SpawnEngine.hpp"

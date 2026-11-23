@@ -44,6 +44,7 @@ make_library_project(
 		${PROJECT_NAME}::Engine.Event
 		${PROJECT_NAME}::Engine.Filesystem
 		${PROJECT_NAME}::Engine.Graphics
+		${PROJECT_NAME}::Engine.Graphics.Components
 		${PROJECT_NAME}::Engine.Graphics.Event
 		${PROJECT_NAME}::Engine.Graphics.Geometry
 		${PROJECT_NAME}::Engine.Graphics.Glow
@@ -69,6 +70,7 @@ make_library_project(
 		${PROJECT_NAME}::Engine.Pedantic
 		${PROJECT_NAME}::Engine.Pedantic.Resource
 		${PROJECT_NAME}::Engine.Physics
+		${PROJECT_NAME}::Engine.Physics.Components
 		${PROJECT_NAME}::Engine.Physics.Scene
 		${PROJECT_NAME}::Engine.Physics.Scene.Model
 		${PROJECT_NAME}::Engine.Physics.Schedule
@@ -76,6 +78,7 @@ make_library_project(
 		${PROJECT_NAME}::Engine.Reflect
 		${PROJECT_NAME}::Engine.Reflow
 		${PROJECT_NAME}::Engine.Reflow.Attributes
+		${PROJECT_NAME}::Engine.Reflow.Components
 		${PROJECT_NAME}::Engine.Reflow.Render
 		${PROJECT_NAME}::Engine.Reflow.Schedule
 		${PROJECT_NAME}::Engine.Reflow.Theming
@@ -104,5 +107,6 @@ make_library_project(
 		${PROJECT_NAME}::Engine.Storage.System
 		${PROJECT_NAME}::Engine.Audio
 		${PROJECT_NAME}::Engine.Utils
+		${PROJECT_NAME}::Heliogrim.Actors
 		${__support_libraries}
 )

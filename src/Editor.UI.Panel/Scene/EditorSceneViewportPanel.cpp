@@ -13,7 +13,7 @@
 #include <Engine.Reflow.Uikit/Atom/Layout/HorizontalLayout.hpp>
 #include <Engine.Reflow.Uikit/Exp/Button.hpp>
 #include <Engine.Reflow.Uikit/Exp/Card.hpp>
-#include <Heliogrim/Actor/Camera/CameraActor.hpp>
+#include <Heliogrim.Actors/Camera/CameraActor.hpp>
 
 import Engine.Common;
 import Engine.Graphics.Scene;

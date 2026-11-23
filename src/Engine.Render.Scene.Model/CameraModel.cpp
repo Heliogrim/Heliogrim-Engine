@@ -2,7 +2,7 @@
 
 #include <Engine.ACS/Component/SceneComponent.hpp>
 #include <Engine.Scene/Scene.hpp>
-#include <Heliogrim/Component/Scene/Camera/CameraComponent.hpp>
+#include <Engine.Graphics.Components/Camera/CameraComponent.hpp>
 
 import Engine.Common;
 import Engine.Graphics.Scene;
