@@ -1,3 +1,4 @@
+#include <Engine.Resource.Archive/Archive.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Structure/SeqScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
@@ -47,7 +48,13 @@ void access::Structure<StaticGeometryComponent>::hydrate(
 	}
 
 	record_.getRecordSlot("materials"sv).asSeq().each(
-		[&target_](mref<RecordScopedSlot> materialSlot_, const size_t index_) {
+		[&target_, &record_](mref<RecordScopedSlot> materialSlot_, const size_t index_) {
+
+			// The setters only assert on the index, so a record that exceeds the geometry is rejected here.
+			if (not target_.getStaticGeometry().isValid() || index_ >= target_.getStaticGeometry().getAssetRef()->getMeshMaterialCount()) {
+				record_.slot()->getState().root->archive->setError();
+				return;
+			}
 
 			auto materialGuid = AssetGuid {};
 			Structure<Guid>::hydrate(::hg::move(materialSlot_).asStruct(), materialGuid);
