@@ -19,6 +19,7 @@ make_test_project(
 		${PROJECT_NAME}::Heliogrim.Actors
 		${PROJECT_NAME}::Engine.Graphics.Components
 		${PROJECT_NAME}::Engine.Physics.Components
+		${PROJECT_NAME}::Engine.Assets
 )
 
 name_to_target(__target Heliogrim.Test)

@@ -6,6 +6,7 @@
 #include <Engine.Reflow/Layout/Style.hpp>
 #include <Engine.Reflow/Widget/AttributeBatch.hpp>
 
+import Engine.Assets;
 import Engine.Core;
 import Engine.Reflect;
 import std;
@@ -499,7 +500,6 @@ math::fvec2 Text::getShrinkFactor() const noexcept {
 
 /**/
 
-#include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Graphics.Loader/Font/FontLoadOptions.hpp>
 #include <Engine.Graphics.Loader/Font/FontResource.hpp>

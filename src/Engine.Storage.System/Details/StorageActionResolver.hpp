@@ -1,9 +1,9 @@
 #pragma once
 
-#include <Engine.Storage.Action/Store/ActionTypeResolutionCache.hpp>
-#include <Engine.Storage.Action/Store/StageTypeResolutionStore.hpp>
+#include <Engine.Common/Sal.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Storage.Action;
 import std;
 #endif
 

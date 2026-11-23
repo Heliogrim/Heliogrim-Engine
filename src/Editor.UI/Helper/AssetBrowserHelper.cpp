@@ -1,9 +1,9 @@
 #include "AssetBrowserHelper.hpp"
 
 #include <Editor.Assets.Default/Textures/Default.hpp>
-#include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 
+import Engine.Assets;
 import Engine.Core;
 import Engine.Reflect;
 

@@ -1,6 +1,5 @@
 #include "Heliogrim.hpp"
 
-#include <Engine.Assets/Assets.hpp>
 #include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 
@@ -8,6 +7,7 @@
 
 import Engine.ACS;
 import Engine.Asserts;
+import Engine.Assets;
 import Engine.Core;
 import Engine.Scheduler;
 

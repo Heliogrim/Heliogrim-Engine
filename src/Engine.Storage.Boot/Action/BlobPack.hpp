@@ -1,15 +1,12 @@
 #pragma once
 
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Storage.Action/Context.hpp>
-#include <Engine.Storage.Action/Mutation.hpp>
-#include <Engine.Storage.Action/Query.hpp>
-#include <Engine.Storage.Action/Access/IoResourceAccessor.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
 import Engine.Resource.Blob;
 import Engine.Resource.Package;
+import Engine.Storage.Action;
 import Engine.Storage.Registry;
 #endif
 

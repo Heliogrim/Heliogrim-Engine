@@ -1,12 +1,11 @@
 #include "AssetBrowserService.hpp"
 
-#include <Engine.Assets/Assets.hpp>
-
 #include "AssetBrowserEntry.hpp"
 #include "AssetBrowserFilter.hpp"
 #include "AssetBrowserProvider.hpp"
 #include "AssetRegistryBrowserProvider.hpp"
 
+import Engine.Assets;
 import Engine.Common;
 import Engine.Core;
 

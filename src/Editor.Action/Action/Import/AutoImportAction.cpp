@@ -1,6 +1,5 @@
 #include "AutoImportAction.hpp"
 
-#include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets.System/AssetDescriptor.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets.Type/Asset.hpp>
@@ -8,6 +7,7 @@
 #include <Engine.Common/Sal.hpp>
 
 import Engine.Asserts;
+import Engine.Assets;
 import Engine.Async;
 import Engine.Common;
 import Engine.Core;

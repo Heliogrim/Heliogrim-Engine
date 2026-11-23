@@ -1,10 +1,10 @@
 #pragma once
 
-#include <Engine.Assets/AssetTypeId.hpp>
 #include <Engine.Assets.System/__fwd.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Assets;
 import Engine.Common;
 #endif
 

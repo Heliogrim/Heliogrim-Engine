@@ -2,12 +2,12 @@
 
 /**/
 
-#include <Engine.Assets/AssetGuid.hpp>
 #include <Engine.Assets.System/AssetDescriptor.hpp>
 #include <Engine.Assets.System/AssetRegistry.hpp>
 #include <Engine.Assets.System/Repository/InMemAssetRepository.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 
+import Engine.Assets;
 import Engine.Common;
 import Engine.Graphics.Types;
 

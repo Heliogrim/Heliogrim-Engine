@@ -5,7 +5,6 @@
 #include "Exr.hpp"
 
 #include <cstdlib>
-#include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets.Type/Texture/ImageAsset.hpp>
 #include <Engine.Graphics/Buffer/Buffer.hpp>
@@ -17,6 +16,7 @@
 #include <Engine.Storage.System/StorageSystem.hpp>
 
 import Engine.Asserts;
+import Engine.Assets;
 import Engine.Core;
 import Engine.Reflect;
 import vulkan;

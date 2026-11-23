@@ -1,6 +1,5 @@
 #include "MaterialTransformer.hpp"
 
-#include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets.Type/Material/GraphicsMaterialPrototype.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
@@ -14,6 +13,7 @@
 #include "../Texture/Traits.hpp"
 
 import Engine.Asserts;
+import Engine.Assets;
 import Engine.Common;
 import Engine.Core;
 import Engine.Reflect;

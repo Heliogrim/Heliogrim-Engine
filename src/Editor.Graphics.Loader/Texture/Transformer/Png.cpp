@@ -1,6 +1,5 @@
 #include "Png.hpp"
 
-#include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets.Type/Texture/ImageAsset.hpp>
 #include <Engine.Common/__macro.hpp>
@@ -16,6 +15,7 @@
 #include <spng/spng.h>
 
 import Engine.Asserts;
+import Engine.Assets;
 import Engine.Core;
 import Engine.Reflect;
 import vulkan;

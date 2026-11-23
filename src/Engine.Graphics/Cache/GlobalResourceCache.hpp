@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Assets/AssetGuid.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Resource/Manage/ResourceBase.hpp>
 
@@ -9,6 +8,7 @@
 #include "../Device/Device.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Assets;
 import Engine.Common;
 #endif
 

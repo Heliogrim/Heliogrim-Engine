@@ -1,11 +1,11 @@
 #include "SaveLevel.hpp"
 
-#include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Storage.System/StorageSystem.hpp>
 
 import Engine.ACS;
+import Engine.Assets;
 import Engine.Logging;
 import Engine.Storage;
 

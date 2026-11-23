@@ -1,7 +1,8 @@
 #include "Default.hpp"
 
-#include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
+
+import Engine.Assets;
 
 using namespace hg;
 

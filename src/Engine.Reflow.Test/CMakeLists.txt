@@ -7,4 +7,5 @@ make_test_project(
 		${PROJECT_NAME}::Engine.Common
 		${PROJECT_NAME}::Engine.Reflow
 		${PROJECT_NAME}::Heliogrim
+		${PROJECT_NAME}::Engine.Assets
 )

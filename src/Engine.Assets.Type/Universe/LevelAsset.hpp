@@ -1,9 +1,12 @@
 #pragma once
 
-#include <Engine.Assets/AssetReferenceUrl.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 
 #include "../Asset.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Assets;
+#endif
 
 namespace hg::engine::core {
 	class Level;

@@ -1,13 +1,15 @@
 #pragma once
 
-#include <Engine.Assets/AssetGuid.hpp>
-#include <Engine.Assets/AssetTypeId.hpp>
 #include <Engine.Reflow/Widget/Input.hpp>
 #include <Engine.Reflow.Uikit/Atom/Image.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/VerticalLayout.hpp>
 #include <Engine.Reflow.Uikit/Exp/Button.hpp>
 
 #include "InputText.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Assets;
+#endif
 
 namespace hg::editor::ui {
 	class InputAsset :

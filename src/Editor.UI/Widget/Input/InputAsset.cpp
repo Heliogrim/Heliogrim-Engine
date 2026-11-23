@@ -1,6 +1,5 @@
 #include "InputAsset.hpp"
 
-#include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets.Database/AssetDatabase.hpp>
 #include <Engine.Assets.Database/AssetDatabaseResult.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
@@ -16,6 +15,7 @@
 #include "../../Helper/AssetBrowserHelper.hpp"
 
 import Engine.Asserts;
+import Engine.Assets;
 import Engine.Common;
 import Engine.Core;
 import Engine.Filesystem;
