@@ -4,7 +4,6 @@
 #include <Engine.ACS/ActorModule.hpp>
 #include <Engine.ACS/Registry.hpp>
 #include <Engine.Asserts/Asserts.hpp>
-#include <Heliogrim/Async/Future.hpp>
 #include <Engine.Common/Move.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Core/Engine.hpp>
@@ -17,12 +16,12 @@
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 #include <Engine.Serialization.Structures/Symbols.hpp>
 #include <Engine.Serialization.Structures/Common/TypeId.hpp>
+#include <Heliogrim/Async/Future.hpp>
 
 #include "ActorRef.hpp"
 #include "../ActorInitializer.hpp"
 #include "../IComponentRegisterContext.hpp"
 #include "../Component/HierarchyComponent.hpp"
-#include "../Core/Session.hpp"
 #include "../Universe/Universe.hpp"
 #include "Archetype/ActorClass.hpp"
 
@@ -75,14 +74,6 @@ ActorGuid Actor::guid() const noexcept {
 	return _guid;
 }
 
-bool Actor::carriesUnknownData() const noexcept {
-	return _unknownData;
-}
-
-void Actor::markUnknownData() noexcept {
-	_unknownData = true;
-}
-
 ref<const ActorLabel> Actor::label() const noexcept {
 	return _label;
 }
@@ -93,6 +84,14 @@ void Actor::setLabel(mref<ActorLabel> label_) {
 
 void Actor::unsafe_set_guid(cref<ActorGuid> guid_) {
 	_guid = guid_;
+}
+
+bool Actor::carriesUnknownData() const noexcept {
+	return _unknownData;
+}
+
+void Actor::markUnknownData() noexcept {
+	_unknownData = true;
 }
 
 Opt<ref<engine::core::Universe>> Actor::getUniverse() const noexcept {
@@ -384,10 +383,23 @@ namespace {
 		ref<const engine::serialization::StructScopedSlot> record_
 	) {
 		using engine::serialization::Symbols;
-		return record_.hasRecordSlot(Symbols::Type)
-			&& record_.hasRecordSlot(Symbols::Guid)
-			&& record_.hasRecordSlot(std::string_view { "label" })
-			&& record_.hasRecordSlot(Symbols::Components)
-			&& engine::serialization::get_typeId_slot(record_) == class_->metaClass()->typeId();
+		using Kind = engine::serialization::ReadError::Kind;
+		// Every reject reports on the slot, so a caller never sees a silent nullptr.
+		const auto reject = [&record_](const Kind kind_, ptr<const char> detail_) {
+			record_.slot()->fail(kind_, record_.slot()->getState().offset, 0LL, detail_);
+			return false;
+		};
+		if (not record_.hasRecordSlot(Symbols::Type)
+			|| not record_.hasRecordSlot(Symbols::Guid)
+			|| not record_.hasRecordSlot(std::string_view { "label" })
+			|| not record_.hasRecordSlot(Symbols::Components)) {
+			return reject(Kind::eMissingField, "actor record misses '@type', '@guid', 'label' or 'components'");
+		}
+
+		if (engine::serialization::get_typeId_slot(record_) != class_->metaClass()->typeId()) {
+			return reject(Kind::eTypeMismatch, "actor record type does not match the actor class");
+		}
+
+		return true;
 	}
 }
