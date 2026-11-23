@@ -14,9 +14,9 @@
 #include <Engine.Serialization.Structures/Common/TypeId.hpp>
 
 #include "Actor.hpp"
-#include "Archetype/ActorClass.hpp"
 #include "../ActorInitializer.hpp"
 #include "../Component/LogicComponent.hpp"
+#include "Archetype/ActorClass.hpp"
 
 using namespace hg::engine::serialization;
 using namespace hg;
@@ -79,7 +79,15 @@ template <>
 void access::Structure<Actor>::hydrate(cref<StructScopedSlot> record_, ref<Actor> target_) {
 
 	const auto checkTypeId = get_typeId_slot(record_);
-	::hg::assertrt(checkTypeId == target_.getMetaClass<>()->typeId());
+	if (checkTypeId != target_.getMetaClass<>()->typeId()) {
+		record_.slot()->fail(
+			ReadError::Kind::eTypeMismatch,
+			record_.slot()->getState().offset,
+			0LL,
+			"actor record type does not match the target actor"
+		);
+		return;
+	}
 
 	/**/
 

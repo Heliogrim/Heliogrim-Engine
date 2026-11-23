@@ -126,6 +126,10 @@ namespace hg::engine::serialization {
 				std::forward<decltype(args_)>(args_)...
 			);
 			AccessType_::hydrate(slot, *target);
+			if (ctx != nullptr && ctx->failed()) {
+				// shortcut: the half-hydrated actor leaks (known default-deleter crash); release it once that is fixed
+				return static_cast<result_type>(nullptr);
+			}
 
 			/**/
 
