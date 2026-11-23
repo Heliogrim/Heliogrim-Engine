@@ -7,6 +7,7 @@
 #include <Engine.Core/Timing.hpp>
 #include <Engine.Core/Module/Modules.hpp>
 #include <Engine.Event/GlobalEventEmitter.hpp>
+#include <Engine.Serialization/SerializationModule.hpp>
 
 namespace HeliogrimApi::test_engine {
 	using namespace hg;
@@ -61,7 +62,10 @@ namespace HeliogrimApi::test_engine {
 
 		[[nodiscard]] nmpt<engine::Scheduler> getScheduler() const noexcept override { return nullptr; }
 
-		[[nodiscard]] nmpt<const engine::SerializationModule> getSerialization() const noexcept override { return nullptr; }
+		[[nodiscard]] nmpt<const engine::SerializationModule> getSerialization() const noexcept override { return _serialization.get(); }
+
+		/* Empty scheme registry; tests register the schemes they load through. */
+		uptr<engine::SerializationModule> _serialization = make_uptr<engine::SerializationModule>();
 
 		[[nodiscard]] nmpt<const engine::StorageModule> getStorage() const noexcept override { return nullptr; }
 
