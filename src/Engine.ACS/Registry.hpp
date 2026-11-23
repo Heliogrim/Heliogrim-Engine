@@ -329,10 +329,15 @@ namespace hg::engine::acs {
 		[[nodiscard]] ptr<Actor> resolve(Handle handle_) const noexcept;
 
 		/**
-		 * @returns the component at offset_ from the resolved actor, or nullptr if the handle is stale or offset_ is not a
-		 *	component offset of the actor's class
+		 * @returns the resolved actor, or nullptr if its class is not expected_ or derived from it; handles may come from files
 		 */
-		[[nodiscard]] std::byte* resolveComponent(Handle handle_, std::ptrdiff_t offset_) const noexcept;
+		[[nodiscard]] ptr<Actor> resolve(Handle handle_, type_id expected_) const noexcept;
+
+		/**
+		 * @returns the component at offset_ from the resolved actor, or nullptr if the handle is stale or offset_ is not a
+		 *	component offset of the actor's class or the entry there is not of (or derived from) expected_
+		 */
+		[[nodiscard]] std::byte* resolveComponent(Handle handle_, std::ptrdiff_t offset_, type_id expected_) const noexcept;
 
 		/**
 		 * Visits the archetype regions of all levels (detached actors excluded): one span per contiguous
