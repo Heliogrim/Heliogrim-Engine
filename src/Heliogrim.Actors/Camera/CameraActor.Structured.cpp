@@ -1,8 +1,7 @@
 #include "CameraActor.hpp"
 
-#include <Engine.Serialization.Structures/Common/Guid.hpp>
-
 import Engine.Serialization;
+import Engine.Serialization.Structures;
 
 namespace hg::engine::serialization {
 	template <>

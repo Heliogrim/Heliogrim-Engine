@@ -5,9 +5,6 @@
 
 #include <Engine.ACS/Registry.hpp>
 #include <Engine.ACS/Actor/ActorGuid.hpp>
-#include <Engine.Serialization.Structures/Symbols.hpp>
-#include <Engine.Serialization.Structures/Common/Guid.hpp>
-#include <Engine.Serialization.Structures/Common/TypeId.hpp>
 
 #include "SelectScheme.hpp"
 #include "SerializationModule.hpp"
@@ -17,6 +14,7 @@ import Engine.Common;
 import Engine.Core;
 import Engine.Reflect;
 import Engine.Serialization;
+import Engine.Serialization.Structures;
 #endif
 
 namespace hg::engine::serialization {

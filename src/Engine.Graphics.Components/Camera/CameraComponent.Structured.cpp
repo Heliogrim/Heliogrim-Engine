@@ -1,9 +1,8 @@
 #include "CameraComponent.hpp"
 
-#include <Engine.Serialization.Structures/Symbols.hpp>
-
 import Engine.Common;
 import Engine.Serialization;
+import Engine.Serialization.Structures;
 
 using namespace hg::engine::serialization;
 using namespace hg;

@@ -11,9 +11,6 @@
 #include <Engine.ACS/Serialization/ArchetypeFnSet.hpp>
 #include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
 #include <Engine.Graphics.Components/Geometry/StaticGeometryComponent.Layout.hpp>
-#include <Engine.Serialization.Structures/Symbols.hpp>
-#include <Engine.Serialization.Structures/Common/Guid.hpp>
-#include <Engine.Serialization.Structures/Common/TypeId.hpp>
 #include <Heliogrim/Actor/Actor.hpp>
 #include <Heliogrim/Universe/Universe.hpp>
 #include <Heliogrim.Actors/Geometry/StaticGeometryActor.hpp>
@@ -24,7 +21,7 @@
 import Engine.Common;
 import Engine.Resource.Archive;
 import Engine.Serialization;
-import Engine.Diagnostics;
+import Engine.Serialization.Structures;
 
 using namespace hg::engine::serialization;
 using namespace hg::engine::resource;

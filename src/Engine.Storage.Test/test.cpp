@@ -2,7 +2,6 @@
 
 /**/
 
-#include <Engine.Filesystem/Path.hpp>
 #include <Engine.Storage.Registry/IStorage.hpp>
 #include <Engine.Storage.Registry/Options/StorageDescriptor.hpp>
 #include <Engine.Storage.Registry/Provider/LocalFileSystemProvider.hpp>
@@ -18,6 +17,7 @@
 import Engine.Common;
 import Engine.Config;
 import Engine.Config.Providers;
+import Engine.Filesystem;
 
 using namespace hg;
 

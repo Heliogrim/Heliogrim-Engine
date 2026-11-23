@@ -2,8 +2,7 @@
 
 /**/
 
-#include <Engine.Filesystem/Path.hpp>
-#include <Engine.Filesystem/Url.hpp>
+import Engine.Filesystem;
 
 using namespace hg;
 

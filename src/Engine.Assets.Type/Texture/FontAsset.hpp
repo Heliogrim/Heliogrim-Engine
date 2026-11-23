@@ -1,12 +1,12 @@
 #pragma once
 
 #include <Engine.Assets.Type/Font/GlyphRanges.hpp>
-#include <Engine.Filesystem/Url.hpp>
 
 #include "../Asset.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Filesystem;
 #endif
 
 namespace hg::engine::assets {

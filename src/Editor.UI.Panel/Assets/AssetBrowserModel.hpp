@@ -1,10 +1,10 @@
 #pragma once
 
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Filesystem/Url.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Filesystem;
 #endif
 
 namespace hg::editor::ui {

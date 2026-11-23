@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Engine.Assets.Type/TypedAssetGuid.hpp>
-#include <Engine.Filesystem/Url.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 
 #include "Geometry.hpp"
@@ -9,6 +8,7 @@
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Filesystem;
 #endif
 
 namespace hg::engine::assets {

@@ -5,8 +5,6 @@
 #include <Engine.Assets.Database/AssetDatabaseResult.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Filesystem/__fwd.hpp>
-#include <Engine.Filesystem/Url.hpp>
 #include <Engine.Graphics.Loader/Texture/TextureResource.hpp>
 #include <Engine.Graphics.Loader/Texture/Traits.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/BoxLayout.hpp>
@@ -20,6 +18,7 @@
 import Engine.Asserts;
 import Engine.Common;
 import Engine.Core;
+import Engine.Filesystem;
 import Engine.Logging;
 
 using namespace hg::editor::ui;

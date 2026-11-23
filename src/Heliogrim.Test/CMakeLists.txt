@@ -3,6 +3,7 @@ make_test_project(
 		TEST_NAME Heliogrim.Test
 		LIBRARIES
 		${PROJECT_NAME}::Engine.ACS
+		${PROJECT_NAME}::Engine.Serialization.Structures
 		${PROJECT_NAME}::Engine.Asserts
 		${PROJECT_NAME}::Engine.Common
 		${PROJECT_NAME}::Engine.Config

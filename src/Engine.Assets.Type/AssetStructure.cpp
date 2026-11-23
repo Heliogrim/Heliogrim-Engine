@@ -1,10 +1,7 @@
-#include <Engine.Serialization.Structures/Symbols.hpp>
-#include <Engine.Serialization.Structures/Common/Guid.hpp>
-#include <Engine.Serialization.Structures/Common/TypeId.hpp>
-
 #include "Asset.hpp"
 
 import Engine.Serialization;
+import Engine.Serialization.Structures;
 
 using namespace hg::engine::assets;
 using namespace hg::engine::serialization;

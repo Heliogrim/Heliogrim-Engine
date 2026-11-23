@@ -5,6 +5,7 @@ make_library_project(
 		LIB_FOLDER "${IDE_FOLDER}/Engine/IO"
 		LIBRARIES
 		${PROJECT_NAME}::Engine.Asserts
+		${PROJECT_NAME}::Engine.Filesystem
 		${PROJECT_NAME}::Engine.Async
 		${PROJECT_NAME}::Engine.Common
 		${PROJECT_NAME}::Engine.IO.Dispatcher

@@ -2,8 +2,7 @@
 
 /**/
 
-#include <Engine.Filesystem/__fwd.hpp>
-#include <Engine.Filesystem/Path.hpp>
+import Engine.Filesystem;
 
 using namespace hg;
 
