@@ -17,6 +17,12 @@
 #include <Engine.Serialization/Structure/RecordScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 #include <Engine.Serialization.Structures/Symbols.hpp>
+#include <Engine.Serialization.Structures/Common/Guid.hpp>
+#include <Engine.Serialization.Structures/Common/TypeId.hpp>
+#include <Heliogrim/Actor/Actor.hpp>
+#include <Engine.Serialization/Scheme/ActorScheme.hpp>
+#include <Engine.Serialization/Scheme/ComponentScheme.hpp>
+#include <Engine.Serialization/Structure/SeqScopedSlot.hpp>
 #include <Heliogrim/Actor/ActorRef.hpp>
 #include <Heliogrim/Actor/Archetype/ActorClass.hpp>
 #include <Heliogrim/Actor/Archetype/ArchetypeDefinition.inl.hpp>
@@ -504,5 +510,63 @@ namespace HeliogrimApi {
 		EXPECT_EQ(link(linkTarget.slot(0u)).tag, 0u);
 		EXPECT_EQ(link(linkTarget.slot(1u)).tag, 99u);
 		EXPECT_EQ(link(linkTarget.slot(1u)).target.handle(), testHandle(42u));
+	}
+}
+
+namespace HeliogrimApi {
+	TEST_F(ArchetypeSerPublic, SecondRootComponentRejected) {
+		// The kept root is pooled so the registry owns it; the rejected one is plain heap and dropped by its own deleter.
+		constexpr ComponentTypeId bodyType { 0x7E57'0000'0000'00A2uLL };
+		_engine->_serialization->addComponentScheme(
+			bodyType,
+			ComponentFnSet {
+				.serialize = [](cref<LogicComponent>, mref<StructScopedSlot>) {},
+				.deserialize = [](cref<RecordScopedSlot>, nmpt<engine::acs::Registry> allocator_, ref<Actor> owner_, nmpt<HierarchyComponent> parent_) {
+					return VolatileComponent<> { ComponentScheme<BodyStub>::instantiate<void>(allocator_, ComponentGuid { generate_component_guid() }, owner_, parent_).release() };
+				}
+			}
+		);
+
+		constexpr ComponentTypeId rootType { 0x7E57'0000'0000'00A1uLL };
+		_engine->_serialization->addComponentScheme(
+			rootType,
+			ComponentFnSet {
+				.serialize = [](cref<LogicComponent>, mref<StructScopedSlot>) {},
+				.deserialize = [](cref<RecordScopedSlot>, nmpt<engine::acs::Registry>, ref<Actor> owner_, nmpt<HierarchyComponent> parent_) {
+					return VolatileComponent<> {
+						new HierarchyComponent { generate_component_guid(), CachedActorPointer { owner_.guid(), &owner_ }, parent_.get() },
+						[](ptr<LogicComponent> obj_) { delete obj_; }
+					};
+				}
+			}
+		);
+		_engine->_serialization->addActorScheme<Actor>();
+
+		auto archive = BufferArchive {}; {
+			auto structured = StructuredArchive { archive };
+			auto root = structured.insertRootSlot().intoStruct();
+			insert_guid_slot(root, ActorGuid { generate_actor_guid() });
+			insert_typeId_slot(root, Actor::typeId);
+			root.insertSlot<String>("label"sv) << String { "two-roots" };
+			auto components = root.insertRecordSlot(Symbols::Components).intoSeq();
+			for (const auto type : { bodyType, rootType }) {
+				auto record = components.addRecordSlot().intoStruct();
+				insert_typeId_slot(record, type);
+				record.insertSlot<s8>(Symbols::Parent) << s8 { -1 };
+			}
+		}
+
+		archive.seek(0);
+
+		auto structured = StructuredArchive { archive };
+		const auto scheme = _engine->_serialization->getActorScheme(Actor::typeId);
+		ASSERT_TRUE(scheme.has_value());
+		// shortcut: the actor is leaked, releasing a loaded actor's components hits the known default-deleter crash.
+		const auto actor = scheme->deserialize(structured.getRootSlot(), _engine->getActors()->getRegistry());
+
+		ASSERT_NE(actor, nullptr);
+		EXPECT_TRUE(archive.hasError());
+		EXPECT_TRUE(actor->getRootComponent().has_value());
+		EXPECT_EQ(actor->getComponents().size(), 1uLL);
 	}
 }

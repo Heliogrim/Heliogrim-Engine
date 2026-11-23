@@ -78,6 +78,10 @@ namespace hg::engine::serialization {
 			return getActorScheme(typeId);
 		}
 
+		void addComponentScheme(const type_id typeId_, mref<serialization::ComponentFnSet> fnSet_) {
+			_componentStructuredSchemes.insert_or_assign(typeId_, ::hg::move(fnSet_));
+		}
+
 		template <class ComponentType_>
 		void addComponentScheme() {
 			using record_type = serialization::RecordScopedSlot;
