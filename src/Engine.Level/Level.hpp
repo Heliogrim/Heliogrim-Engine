@@ -119,6 +119,8 @@ namespace hg::engine::core {
 	 */
 	[[nodiscard]] extern Result<Arci<Level>, engine::diag::Diagnostics> loadLevel(
 		_Inout_ ref<engine::resource::Archive> archive_,
-		_Inout_ ref<engine::diag::DiagnosticSink> sink_
+		_In_ const StringView url_,
+		_Inout_ ref<engine::diag::DiagnosticSink> sink_,
+		_In_ mref<Arci<Level>> into_ = nullptr
 	);
 }
