@@ -7,14 +7,13 @@
 #include <Engine.Storage.Package/Load.hpp>
 #include <Engine.Storage.Package/Processor.hpp>
 #include <Engine.Storage.Package/Store.hpp>
-#include <Engine.Storage.Registry/Registry/StorageRegistry.hpp>
-#include <Engine.Storage.Registry/Storage/MemoryStorage.hpp>
 
 import Engine.Common;
 import Engine.Config;
 import Engine.Resource.Archive;
 import Engine.Resource.Blob;
 import Engine.Resource.Package;
+import Engine.Storage.Registry;
 
 using namespace hg::engine::storage::package;
 using namespace hg::engine::resource;

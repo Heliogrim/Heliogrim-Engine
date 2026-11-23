@@ -3,9 +3,6 @@
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Storage.Registry/IStorageRegistry.hpp>
-#include <Engine.Storage.Registry/Url/FileUrl.hpp>
-#include <Engine.Storage.Registry/Url/StorageUrl.hpp>
 
 import Engine.Asserts;
 import Engine.Common;
@@ -14,6 +11,7 @@ import Engine.Filesystem;
 import Engine.Logging;
 import Engine.Reflect;
 import Engine.Storage;
+import Engine.Storage.Registry;
 
 using namespace hg::engine::resource::loader;
 using namespace hg;

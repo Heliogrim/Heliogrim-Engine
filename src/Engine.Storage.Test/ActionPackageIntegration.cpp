@@ -11,15 +11,7 @@
 #include <Engine.Storage.Package/Factory.hpp>
 #include <Engine.Storage.Package/Load.hpp>
 #include <Engine.Storage.Package/Processor.hpp>
-#include <Engine.Storage.Registry/Options/MemoryStorageDescriptor.hpp>
-#include <Engine.Storage.Registry/Options/MemoryStorageOption.hpp>
-#include <Engine.Storage.Registry/Options/StorageDescriptor.hpp>
-#include <Engine.Storage.Registry/Registry/StorageRegistry.hpp>
-#include <Engine.Storage.Registry/Url/ArchiveUrl.hpp>
-#include <Engine.Storage.Registry/Url/MemoryUrl.hpp>
-#include <Engine.Storage.Registry/Url/Scheme.hpp>
 #include <Engine.Storage.System/Options/PackageRequestOptions.hpp>
-#include <Engine.Storage.Registry/Url/StorageUrl.hpp>
 #include <Engine.Storage.System/StorageSystem.hpp>
 
 import Engine.Common;
@@ -27,6 +19,7 @@ import Engine.Config;
 import Engine.Resource.Archive;
 import Engine.Resource.Blob;
 import Engine.Resource.Package;
+import Engine.Storage.Registry;
 
 /**/
 

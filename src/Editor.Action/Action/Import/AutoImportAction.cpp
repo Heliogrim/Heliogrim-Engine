@@ -6,7 +6,6 @@
 #include <Engine.Assets.Type/Asset.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Storage.Registry/Storage/PackageStorage.hpp>
 
 import Engine.Asserts;
 import Engine.Async;
@@ -17,6 +16,7 @@ import Engine.Reflect;
 import Engine.Resource.Archive;
 import Engine.Serialization;
 import Engine.Storage;
+import Engine.Storage.Registry;
 
 using namespace hg::editor;
 using namespace hg;
@@ -130,11 +130,6 @@ ref<Signal> AutoImportAction::finished() const noexcept {
 #include <Engine.Graphics/Importer/ModelFileTypes.hpp>
 #include <Engine.Resource/FileTypeId.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
-#include <Engine.Storage.Registry/IStorageRegistry.hpp>
-#include <Engine.Storage.Registry/Options/FileStorageDescriptor.hpp>
-#include <Engine.Storage.Registry/Options/PackageStorageDescriptor.hpp>
-#include <Engine.Storage.Registry/Options/StorageDescriptor.hpp>
-#include <Engine.Storage.Registry/Url/StorageUrl.hpp>
 #include <Engine.Storage.System/StorageSystem.hpp>
 
 /**/

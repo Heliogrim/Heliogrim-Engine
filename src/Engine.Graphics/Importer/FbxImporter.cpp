@@ -6,8 +6,6 @@
 
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Storage.Registry/IStorageRegistry.hpp>
-#include <Engine.Storage.Registry/Storage/PackageStorage.hpp>
 
 #include "ModelImporter.hpp"
 
@@ -16,6 +14,7 @@ import Engine.Common;
 import Engine.Core;
 import Engine.Logging;
 import Engine.Resource.Package;
+import Engine.Storage.Registry;
 
 using namespace hg::engine::graphics;
 using namespace hg;

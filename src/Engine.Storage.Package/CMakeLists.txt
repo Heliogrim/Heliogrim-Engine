@@ -13,4 +13,5 @@ make_library_project(
 		${PROJECT_NAME}::Engine.Filesystem
 		${PROJECT_NAME}::Engine.Resource.Blob
 		${PROJECT_NAME}::Engine.Resource.Package
+		${PROJECT_NAME}::Engine.Storage.Registry
 )

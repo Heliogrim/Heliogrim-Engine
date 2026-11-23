@@ -2,9 +2,6 @@
 
 #include <Engine.Storage.Action/Action/MutationStaticGen.hpp>
 #include <Engine.Storage.Action/Action/QueryStaticGen.hpp>
-#include <Engine.Storage.Registry/Storage/ArchiveStorage.hpp>
-#include <Engine.Storage.Registry/Storage/LocalFileStorage.hpp>
-#include <Engine.Storage.Registry/Storage/PackageStorage.hpp>
 #include <Engine.Storage.System/StorageSystem.hpp>
 #include <Engine.Storage.System/Details/StorageActionResolver.hpp>
 
@@ -17,6 +14,7 @@
 import Engine.Resource.Archive;
 import Engine.Resource.Blob;
 import Engine.Resource.Package;
+import Engine.Storage.Registry;
 
 using namespace hg::engine::storage;
 using namespace hg;

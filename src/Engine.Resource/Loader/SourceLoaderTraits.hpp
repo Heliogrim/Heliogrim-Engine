@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Storage.Registry/IStorage.hpp>
-
 #include "__fwd.hpp"
 #include "SourceLoader/SourceLoadOptions.hpp"
 #include "SourceLoader/SourceStreamOptions.hpp"
@@ -9,6 +7,7 @@
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Pedantic.Resource;
 import Engine.Resource.Blob;
+import Engine.Storage.Registry;
 #endif
 
 namespace hg::engine::storage {

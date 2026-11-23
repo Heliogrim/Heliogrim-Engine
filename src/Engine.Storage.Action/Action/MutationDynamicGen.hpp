@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Storage.Registry/IStorage.hpp>
-
 #include "DynamicStage.hpp"
 #include "../Mutation.hpp"
 #include "../Access/AccessError.hpp"
@@ -9,6 +7,7 @@
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Storage.Registry;
 #endif
 
 namespace hg::engine::storage::system {

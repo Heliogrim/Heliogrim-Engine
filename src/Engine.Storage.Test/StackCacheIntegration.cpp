@@ -6,23 +6,12 @@
 
 /**/
 
-#include <Engine.Storage.Registry/Options/ArchiveStorageDescriptor.hpp>
-#include <Engine.Storage.Registry/Options/FileStorageDescriptor.hpp>
-#include <Engine.Storage.Registry/Options/MemoryStorageDescriptor.hpp>
-#include <Engine.Storage.Registry/Options/StorageDescriptor.hpp>
-#include <Engine.Storage.Registry/Provider/LocalFileSystemProvider.hpp>
-#include <Engine.Storage.Registry/Repository/CacheFileSystemRepository.hpp>
-#include <Engine.Storage.Registry/Storage/LocalFileStorage.hpp>
-#include <Engine.Storage.Registry/Url/ArchiveUrl.hpp>
-#include <Engine.Storage.Registry/Url/FileUrl.hpp>
-#include <Engine.Storage.Registry/Url/MemoryUrl.hpp>
-#include <Engine.Storage.Registry/Url/StorageUrl.hpp>
-
 import Engine.Common;
 import Engine.Reflect;
 import Engine.Resource.Archive;
 import Engine.Resource.Blob;
 import Engine.Resource.Package;
+import Engine.Storage.Registry;
 
 /**/
 

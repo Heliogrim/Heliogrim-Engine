@@ -1,11 +1,8 @@
 #pragma once
 
-#include <Engine.Storage.Registry/Storage/LocalFileStorage.hpp>
-#include <Engine.Storage.Registry/Storage/MemoryStorage.hpp>
-#include <Engine.Storage.Registry/Url/FileUrl.hpp>
-
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Storage.Registry;
 #endif
 
 namespace hg::engine::storage {
