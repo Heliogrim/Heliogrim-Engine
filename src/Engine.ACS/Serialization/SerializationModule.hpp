@@ -1,10 +1,11 @@
 #pragma once
 
+#include <Engine.Serialization/Archive/LayoutArchive.hpp>
+#include <Engine.Serialization/Archive/StructuredArchive.hpp>
+#include <Engine.Serialization/Structure/StructScopedSlot.hpp>
+
 #include "FnSets.hpp"
-#include "Archive/LayoutArchive.hpp"
-#include "Archive/StructuredArchive.hpp"
 #include "Schema/Migration.hpp"
-#include "Structure/StructScopedSlot.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

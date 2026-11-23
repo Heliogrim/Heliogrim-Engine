@@ -7,14 +7,4 @@ namespace hg::engine::serialization {
 	struct SelectScheme {
 		using default_type = DefaultScheme<Type_>;
 	};
-
-	template <CompleteType Type_> requires std::derived_from<Type_, LogicComponent>
-	struct SelectScheme<Type_> {
-		using default_type = ComponentScheme<Type_>;
-	};
-
-	template <CompleteType Type_> requires std::derived_from<Type_, Actor>
-	struct SelectScheme<Type_> {
-		using default_type = ActorScheme<Type_>;
-	};
 }

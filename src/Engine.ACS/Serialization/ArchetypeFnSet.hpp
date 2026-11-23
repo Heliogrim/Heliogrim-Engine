@@ -1,10 +1,10 @@
 #pragma once
 
-#include <Engine.Serialization/FnSets.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Structure/RecordScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 
+#include "FnSets.hpp"
 #include "../Actor/Actor.hpp"
 #include "../Actor/Class/ActorClass.hpp"
 #include "ArchetypeMigration.hpp"

@@ -3,6 +3,7 @@
 #include <Engine.ACS/Component/ComponentGuid.hpp>
 #include <Engine.ACS/Component/ComponentLabel.hpp>
 #include <Engine.ACS/Component/ComponentTypeId.hpp>
+#include <Engine.ACS/Serialization/SelectScheme.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
