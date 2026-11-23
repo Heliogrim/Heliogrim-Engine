@@ -8,7 +8,22 @@ using namespace hg::engine;
 using namespace hg::engine::serialization;
 using namespace hg;
 
-LoadContext::LoadContext(const u64 archiveSize_) :
+namespace {
+	struct Mapped {
+		ref<const diag::DiagnosticCodeInfo> code;
+		bool root;
+		bool bytes;
+	};
+
+	Mapped mapKind(const ReadError::Kind kind_);
+
+	diag::Diagnostic toDiagnostic(ref<const ReadError> error_, ref<const String> url_, String path_, const bool asError_);
+}
+
+/**/
+
+LoadContext::LoadContext(const u64 archiveSize_, String url_) :
+	_url(::hg::move(url_)),
 	_budget(std::max(archiveSize_ * 4uLL, minBudget)) {}
 
 void LoadContext::fail(ReadError error_) {
@@ -82,10 +97,6 @@ void LoadContext::markRead(ptr<const void> archive_, const s64 structOffset_, co
 	_read[read_key { archive_, structOffset_ }].emplace(key_);
 }
 
-void LoadContext::forgetArchive(ptr<const void> archive_) {
-	std::erase_if(_read, [archive_](const auto& entry_) { return entry_.first.first == archive_; });
-}
-
 Vector<String> LoadContext::unreadKeys(ptr<const void> archive_, const s64 structOffset_, std::span<const String> present_) const {
 	const auto it = _read.find(read_key { archive_, structOffset_ });
 	Vector<String> out {};
@@ -97,13 +108,41 @@ Vector<String> LoadContext::unreadKeys(ptr<const void> archive_, const s64 struc
 	return out;
 }
 
-namespace {
-	struct Mapped {
-		ref<const diag::DiagnosticCodeInfo> code;
-		bool root;
-		bool bytes;
-	};
+void LoadContext::forgetArchive(ptr<const void> archive_) {
+	std::erase_if(_read, [archive_](const auto& entry_) { return entry_.first.first == archive_; });
+}
 
+Result<void, diag::Diagnostics> LoadContext::finish(
+	ref<diag::DiagnosticSink> sink_,
+	const StringView contextNote_
+) {
+	for (auto& entry : _warnings) {
+		auto diagnostic = toDiagnostic(entry.error, _url, ::hg::move(entry.path), false);
+		diagnostic.addNote(String { contextNote_ });
+		sink_.emit(::hg::move(diagnostic));
+	}
+	_warnings.clear();
+
+	if (not _failed) {
+		return {};
+	}
+
+	auto diagnostic = toDiagnostic(_first.error, _url, _first.path, true);
+	for (const auto& note : _notes) {
+		diagnostic.addNote(String { mapKind(note.error.kind).code.key } + (note.error.detail.empty() ? "" : ": " + note.error.detail));
+	}
+	diagnostic.addNote(String { contextNote_ });
+	_notes.clear();
+	_failed = false;
+
+	diag::Diagnostics out {};
+	out.emplace_back(::hg::move(diagnostic));
+	return Unexpected<diag::Diagnostics> { ::hg::move(out) };
+}
+
+/**/
+
+namespace {
 	Mapped mapKind(const ReadError::Kind kind_) {
 		using enum ReadError::Kind;
 		switch (kind_) {
@@ -126,45 +165,17 @@ namespace {
 		}
 	}
 
-	diag::Diagnostic toDiagnostic(cref<ReadError> error_, String path_, const bool asError_) {
+	diag::Diagnostic toDiagnostic(ref<const ReadError> error_, ref<const String> url_, String path_, const bool asError_) {
 
 		const auto mapped = mapKind(error_.kind);
 		String message = error_.detail.empty() ? String { mapped.code.summary } : error_.detail;
 
 		diag::Location at = mapped.bytes ?
 			diag::Location { diag::ByteOffset { ::hg::move(path_), static_cast<u64>(error_.offset), static_cast<u64>(error_.length) } } :
-			diag::Location { diag::AssetPath { String {}, ::hg::move(path_) } };
+			diag::Location { diag::AssetPath { url_, ::hg::move(path_) } };
 
 		return asError_ ?
 			diag::Diagnostic::error(mapped.code, ::hg::move(message)).at(::hg::move(at)) :
 			diag::Diagnostic::warning(mapped.code, ::hg::move(message)).at(::hg::move(at));
 	}
-}
-
-Result<void, diag::Diagnostics> LoadContext::finish(
-	ref<diag::DiagnosticSink> sink_,
-	const StringView contextNote_
-) {
-	for (auto& entry : _warnings) {
-		auto diagnostic = toDiagnostic(entry.error, ::hg::move(entry.path), false);
-		diagnostic.addNote(String { contextNote_ });
-		sink_.emit(::hg::move(diagnostic));
-	}
-	_warnings.clear();
-
-	if (not _failed) {
-		return {};
-	}
-
-	auto diagnostic = toDiagnostic(_first.error, _first.path, true);
-	for (const auto& note : _notes) {
-		diagnostic.addNote(String { mapKind(note.error.kind).code.key } + (note.error.detail.empty() ? "" : ": " + note.error.detail));
-	}
-	diagnostic.addNote(String { contextNote_ });
-	_notes.clear();
-	_failed = false;
-
-	diag::Diagnostics out {};
-	out.push_back(::hg::move(diagnostic));
-	return Unexpected<diag::Diagnostics> { ::hg::move(out) };
 }
