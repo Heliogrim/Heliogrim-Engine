@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Access/Structure.hpp"
-#include "Engine.ACS/Actor/ActorInitializer.hpp"
-#include "Structure/RecordScopedSlot.hpp"
+#include <Engine.ACS/Actor/ActorInitializer.hpp>
+#include <Engine.Serialization/Access/Structure.hpp>
+#include <Engine.Serialization/Structure/RecordScopedSlot.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

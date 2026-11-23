@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Engine.ACS/ActorModule.hpp>
+#include <Engine.ACS/Serialization/SelectScheme.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 

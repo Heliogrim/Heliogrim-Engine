@@ -12,10 +12,10 @@
 
 /**/
 
+#include <Engine.ACS/Serialization/ActorScheme.hpp>
+#include <Engine.ACS/Serialization/ComponentScheme.hpp>
+#include <Engine.ACS/Serialization/SerializationModule.hpp>
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Serialization/SerializationModule.hpp>
-#include <Engine.Serialization/Scheme/ActorScheme.hpp>
-#include <Engine.Serialization/Scheme/ComponentScheme.hpp>
 #include <Engine.Serialization/Scheme/DefaultScheme.hpp>
 #include <Engine.Serialization/Scheme/Scheme.hpp>
 

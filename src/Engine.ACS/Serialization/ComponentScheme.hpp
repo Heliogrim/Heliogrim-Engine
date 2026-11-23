@@ -3,11 +3,11 @@
 #include <Engine.ACS/Registry.hpp>
 #include <Engine.ACS/Component/CachedActorPointer.hpp>
 #include <Engine.ACS/Component/ComponentGuid.hpp>
+#include <Engine.Serialization/Scheme/Scheme.hpp>
 #include <Engine.Serialization/Structure/RecordScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 
-#include "__fwd.hpp"
-#include "Scheme.hpp"
+#include "SelectScheme.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

@@ -2,7 +2,7 @@
 
 #include "Actor.hpp"
 
-#include <Engine.Serialization/SerializationModule.hpp>
+#include <Engine.ACS/Serialization/SerializationModule.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>
 #include <Engine.Serialization/Structure/SeqScopedSlot.hpp>
