@@ -6,9 +6,11 @@
 #include <Engine.Resource.Archive/BufferArchive.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Archive/StructuredArchive.hpp>
+#include <Engine.Serialization/Load/LoadContext.hpp>
+#include <Engine.Serialization/Structure/RootScopedSlot.hpp>
 #include <Engine.Serialization.Structures/Common/Guid.hpp>
-#include <Engine.Serialization/Structure/SeqScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
+#include <Engine.Serialization/Structure/SeqScopedSlot.hpp>
 #include <Heliogrim/Actor/Archetype/ArchetypeLayout.inl.hpp>
 #include <Heliogrim/Component/Scene/Geometry/StaticGeometryComponent.Layout.hpp>
 
@@ -125,10 +127,13 @@ TEST(StaticGeometrySerialization, MaterialIndexWithoutGeometryRejected) {
 	}
 	archive.seek(0);
 
+	auto ctx = LoadContext { static_cast<u64>(archive.totalSize()) };
 	const auto target = make<StaticGeometryComponent>(); {
-		auto structured = StructuredArchive { archive };
-		access::Structure<StaticGeometryComponent>::hydrate(structured.getRootSlot().asStruct(), *target);
+		const auto root = RootScopedSlot { archive, ScopedSlotStateFlag::eClean, &ctx };
+		access::Structure<StaticGeometryComponent>::hydrate(root.asStruct(), *target);
 	}
 
-	EXPECT_TRUE(archive.hasError());
+	EXPECT_TRUE(ctx.failed());
+	ASSERT_NE(ctx.firstError(), nullptr);
+	EXPECT_EQ(ctx.firstError()->kind, ReadError::Kind::eInvalidValue);
 }
