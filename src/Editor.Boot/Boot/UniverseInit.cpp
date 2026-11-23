@@ -6,13 +6,17 @@
 
 #include <Editor.Core/EditorEngine.hpp>
 #include <Editor.Scene/SceneFactory.hpp>
+#include <Editor.Scene.Actions/LoadLevel.hpp>
 #include <Engine.Assets.Type/Universe/LevelAsset.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Move.hpp>
 #include <Engine.Core/Session.hpp>
 #include <Engine.Core/Universe.hpp>
 #include <Engine.Core/UniverseContext.hpp>
+#include <Engine.Diagnostics/Render.hpp>
+#include <Engine.Diagnostics/Sink.hpp>
 #include <Engine.Logging/Logger.hpp>
+#include <Engine.Serialization/Diagnostic/Codes.hpp>
 #include <Heliogrim/Universe/Level.hpp>
 
 using namespace hg::editor::boot;
@@ -29,7 +33,15 @@ static void add_default_box(mref<Level> level_);
 
 static bool experimentalHasLevel();
 
-static Arci<core::Level> experimentalLoadLevel();
+static void log_diagnostics(ref<const diag::Diagnostics> diagnostics_);
+
+static Result<Arci<core::Level>, diag::Diagnostics> reject_level(
+	ref<diag::DiagnosticSink> sink_,
+	ref<const diag::DiagnosticCodeInfo> code_,
+	mref<String> message_
+);
+
+static Result<Arci<core::Level>, diag::Diagnostics> experimentalLoadLevel(ref<diag::DiagnosticSink> sink_);
 
 static void experimentalSaveLevel(ref<core::Level> level_);
 
@@ -60,18 +72,34 @@ void editor::boot::initPrimaryUniverse() {
 
 	/**/
 
-	auto level = experimentalHasLevel() ?
-		experimentalLoadLevel() :
-		([] {
-			auto nextLevel = core::make_root_like_level();
+	const auto makeDefaultLevel = [] {
+		auto nextLevel = core::make_root_like_level();
 
-			add_default_skybox(Level { clone(nextLevel) });
-			add_default_light(Level { clone(nextLevel) });
-			add_default_box(Level { clone(nextLevel) });
-			experimentalSaveLevel(*nextLevel);
+		add_default_skybox(Level { clone(nextLevel) });
+		add_default_light(Level { clone(nextLevel) });
+		add_default_box(Level { clone(nextLevel) });
 
-			return nextLevel;
-		})();
+		return nextLevel;
+	};
+
+	auto level = Arci<core::Level> {};
+	if (experimentalHasLevel()) {
+		auto sink = diag::CollectingSink {};
+		auto loaded = experimentalLoadLevel(sink);
+		log_diagnostics(sink.items());
+		if (loaded.has_value()) {
+			level = ::hg::move(loaded).value();
+
+		} else {
+			// Never save over a level file this build could not read.
+			IM_CORE_ERRORF("Starting with a default level that will not be saved, since the stored level failed to load.");
+			level = makeDefaultLevel();
+		}
+
+	} else {
+		level = makeDefaultLevel();
+		experimentalSaveLevel(*level);
+	}
 
 	/**/
 
@@ -93,7 +121,6 @@ void editor::boot::initPrimaryUniverse() {
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets.Type/Universe/LevelAsset.hpp>
 #include <Engine.Config/Enums.hpp>
-#include <Engine.Logging/Logger.hpp>
 #include <Engine.Storage.System/StorageSystem.hpp>
 #include <Heliogrim/Heliogrim.hpp>
 #include <Heliogrim/Actor/Actor.hpp>
@@ -115,7 +142,10 @@ static void add_default_skybox(mref<Level> level_) {
 
 	#if 1
 	[[maybe_unused]] auto skybox = actor->addComponent<SkyboxComponent>();
-	auto box2 = actor->addComponent<StaticGeometryComponent>(StaticGeometryAssetHandle {}, AutoArray<ptr<const GraphicsMaterialAssetHandle>> {});
+	auto box2 = actor->addComponent<StaticGeometryComponent>(
+		StaticGeometryAssetHandle {},
+		AutoArray<ptr<const GraphicsMaterialAssetHandle>> {}
+	);
 	auto parent2 = box2.map_or(
 		[](auto& obj_) -> Opt<ref<HierarchyComponent>> { return Some<ref<HierarchyComponent>>(obj_); },
 		Opt<ref<HierarchyComponent>> { None }
@@ -173,30 +203,35 @@ static void add_default_box(mref<Level> level_) {
 
 /**/
 
-static decltype(auto) wantedLoad(_In_ cref<assets::LevelAsset> levelAsset_) {
+static Result<Arci<core::Level>, diag::Diagnostics> reject_level(
+	ref<diag::DiagnosticSink> sink_,
+	ref<const diag::DiagnosticCodeInfo> code_,
+	mref<String> message_
+) {
+	diag::Diagnostic diagnostic = diag::Diagnostic::error(code_, ::hg::move(message_));
+	sink_.emit(diag::Diagnostic { diagnostic });
 
-	auto engine = Engine::getEngine();
-	const auto serial = engine->getSerialization();
-	auto ssys = engine->getStorage()->getSystem();
+	diag::Diagnostics out {};
+	out.emplace_back(::hg::move(diagnostic));
+	return Unexpected<diag::Diagnostics> { ::hg::move(out) };
+}
 
-	/**/
-
-	const auto& dataUrl = levelAsset_.getLevelData();
-	auto dataArchive = ssys->findArchive(clone(dataUrl.as<storage::ArchiveUrl>()));
-	::hg::assertrt(dataArchive != None);
-
-	/**/
-
-	auto level = Arci<core::Level>::create(levelAsset_);
-	ssys->query(
-		std::move(dataArchive).value(),
-		[&level_ = *level, serial](resource::StorageReadonlyArchive& archive_) -> void {
-			auto structured = serialization::StructuredArchive { archive_ };
-			serial->hydrate(structured, level_);
+static void log_diagnostics(ref<const diag::Diagnostics> diagnostics_) {
+	for (const auto& diagnostic : diagnostics_) {
+		switch (diagnostic.severity()) {
+			case diag::Severity::eError: {
+				IM_CORE_ERRORF("{}", diag::render(diagnostic));
+				break;
+			}
+			case diag::Severity::eWarning: {
+				IM_CORE_WARNF("{}", diag::render(diagnostic));
+				break;
+			}
+			default: {
+				IM_CORE_INFOF("{}", diag::render(diagnostic));
+			}
 		}
-	);
-
-	return level;
+	}
 }
 
 static decltype(auto) wantedSave(_In_ cref<core::Level> level_, _In_ cref<assets::LevelAsset> levelAsset_) {
@@ -209,12 +244,15 @@ static decltype(auto) wantedSave(_In_ cref<core::Level> level_, _In_ cref<assets
 
 	const auto& dataUrl = levelAsset_.getLevelData();
 	if (not dataUrl.is<storage::ArchiveUrl>()) {
-		IM_CORE_ERROR("Failed to save the level: its level data is not an archive url.");
+		IM_CORE_ERRORF("Failed to save level `{}`: it has no level data archive.", levelAsset_.getAssetName());
 		return;
 	}
 
 	auto dataArchive = ssys->findArchive(clone(dataUrl.as<storage::ArchiveUrl>()));
-	::hg::assertrt(dataArchive != None);
+	if (dataArchive == None) {
+		IM_CORE_ERRORF("Failed to save level `{}`: its level data archive is missing.", levelAsset_.getAssetName());
+		return;
+	}
 
 	ssys->mutate(
 		std::move(dataArchive).value(),
@@ -229,14 +267,19 @@ static decltype(auto) wantedSave(_In_ cref<core::Level> level_, _In_ cref<assets
 
 	auto assetUrl = levelAsset_.getAssetStorageUrl();
 	auto assetArchive = ssys->findArchive(clone(assetUrl.as<storage::ArchiveUrl>()));
-	::hg::assertrt(assetArchive != None);
+	if (assetArchive == None) {
+		IM_CORE_ERRORF("Failed to save level asset `{}`: its archive is missing.", levelAsset_.getAssetName());
+		return;
+	}
 
 	ssys->mutate(
 		::hg::move(assetArchive).value(),
 		[&levelAsset_, serial](auto& archive_) {
 			archive_.setType(resource::ArchiveType::eSerializedStructure);
 			auto structured = serialization::StructuredArchive { archive_ };
-			serial->serialize(levelAsset_, structured);
+			auto record = structured.insertRootSlot().intoStruct();
+			serial->migrations().writeRevision(record, assets::LevelAsset::typeId);
+			serial->serialize(levelAsset_, ::hg::move(record));
 		}
 	);
 }
@@ -277,8 +320,6 @@ static Arci<assets::LevelAsset> experimentalResolveLevelAsset() {
 	auto results = Vector<nmpt<assets::Asset>> {};
 	assets->getRegistry()->findAssetsByPath(assets::AssetPath { "universe/default"sv }, { .recursive = true }, results);
 
-	::hg::assertrt(not results.empty());
-
 	const auto guesswork = std::ranges::find_if(
 		results,
 		[](const nmpt<assets::Asset> asset_) {
@@ -287,7 +328,10 @@ static Arci<assets::LevelAsset> experimentalResolveLevelAsset() {
 		}
 	);
 
-	::hg::assertrt(guesswork != results.end());
+	if (guesswork == results.end()) {
+		return nullptr;
+	}
+
 	return (*guesswork)->arci_from_this<>().into<assets::LevelAsset>();
 }
 
@@ -300,7 +344,10 @@ static Arci<assets::LevelAsset> experimentalResolveLevelAsset(ref<const engine::
 	/**/
 
 	auto asset = assets->getRegistry()->findAssetByGuid(level_.assetGuid());
-	::hg::assertrt(asset == None);
+	if (asset != None) {
+		IM_CORE_ERRORF("Refused to save the level: a level asset with its guid is already registered.");
+		return nullptr;
+	}
 
 	/**/
 
@@ -333,9 +380,17 @@ bool experimentalHasLevel() {
 	return Engine::getEngine()->getStorage()->getSystem()->hasStorage(experimentalResolveLevelFileUrl());
 }
 
-Arci<core::Level> experimentalLoadLevel() {
+Result<Arci<core::Level>, diag::Diagnostics> experimentalLoadLevel(ref<diag::DiagnosticSink> sink_) {
 	const auto asset = experimentalResolveLevelAsset();
-	return wantedLoad(*asset);
+	if (asset == nullptr) {
+		return reject_level(
+			sink_,
+			serialization::codes::ser("unresolved-reference"),
+			"no level asset was registered under `universe/default`"
+		);
+	}
+
+	return editor::scene::actions::loadLevelFromAsset(*asset, sink_);
 }
 
 void experimentalSaveLevel(ref<core::Level> level_) {
@@ -345,5 +400,7 @@ void experimentalSaveLevel(ref<core::Level> level_) {
 	}
 
 	const auto asset = experimentalResolveLevelAsset(level_);
-	wantedSave(level_, *asset);
+	if (asset != nullptr) {
+		wantedSave(level_, *asset);
+	}
 }
