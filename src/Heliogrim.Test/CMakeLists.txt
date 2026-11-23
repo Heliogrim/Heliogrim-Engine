@@ -9,3 +9,6 @@ make_test_project(
 		${PROJECT_NAME}::Engine.Reflect
 		${PROJECT_NAME}::Heliogrim
 )
+
+name_to_target(__target Heliogrim.Test)
+target_compile_definitions(${__target} PRIVATE HG_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/fixtures/serialization")
