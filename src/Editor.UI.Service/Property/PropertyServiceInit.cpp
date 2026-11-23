@@ -27,10 +27,10 @@
 #include <Editor.UI/Widget/Input/InputText.hpp>
 #include <Editor.UI/Widget/Input/InputToggle.hpp>
 #include <Engine.Assets/Assets.hpp>
+#include <Engine.Assets.Database/AssetDatabase.hpp>
 #include <Engine.Assets.System/AssetRegistry.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/BoxLayout.hpp>
-#include <Heliogrim/AssetDatabase.hpp>
 #include <Heliogrim/Heliogrim.hpp>
 
 #include "PropertyService.hpp"

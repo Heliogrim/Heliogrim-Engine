@@ -1,9 +1,9 @@
 #pragma once
 
+#include <Engine.Assets.Database/Asset/MaterialAssetHandles.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 
 #include "ShapeGeometryComponent.hpp"
-#include "../../../Asset/MaterialAssetHandles.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

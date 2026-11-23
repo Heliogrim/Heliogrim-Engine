@@ -2,9 +2,8 @@
 #include "StaticGeometryComponent.Layout.hpp"
 
 #include <Engine.ACS/Archetype/ArchetypeLayout.inl.hpp>
+#include <Engine.Assets.Database/AssetDatabase.hpp>
 #include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
-
-#include "AssetDatabase.hpp"
 
 import Engine.Asserts;
 import Engine.Core;

@@ -1,12 +1,11 @@
 #include "SkyboxComponent.hpp"
 
+#include <Engine.Assets.Database/AssetDatabase.hpp>
 #include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 
-#include "../../../AssetDatabase.hpp"
 #include "../../../AssetResolve.hpp"
-
 using namespace hg::engine::serialization;
 using namespace hg;
 

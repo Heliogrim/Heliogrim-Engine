@@ -1,6 +1,8 @@
 #include "InputAsset.hpp"
 
 #include <Engine.Assets/Assets.hpp>
+#include <Engine.Assets.Database/AssetDatabase.hpp>
+#include <Engine.Assets.Database/AssetDatabaseResult.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Filesystem/__fwd.hpp>
@@ -11,8 +13,6 @@
 #include <Engine.Reflow.Uikit/Atom/Layout/HorizontalLayout.hpp>
 #include <Engine.Resource/LoaderManager.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
-#include <Heliogrim/AssetDatabase.hpp>
-#include <Heliogrim/AssetDatabaseResult.hpp>
 #include <Heliogrim/Heliogrim.hpp>
 
 #include "../../Helper/AssetBrowserHelper.hpp"
