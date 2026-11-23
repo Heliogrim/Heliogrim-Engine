@@ -2,13 +2,7 @@
 
 /**/
 
-#include <Engine.ACS/Registry.hpp>
-#include <Engine.ACS/Actor/ActorRef.hpp>
-#include <Engine.ACS/Actor/Class/ActorClass.hpp>
 #include <Engine.ACS/Archetype/ArchetypeDefinition.inl.hpp>
-#include <Engine.ACS/Archetype/LayoutInfo.hpp>
-#include <Engine.ACS/Component/ComponentRef.hpp>
-#include <Engine.ACS/Serialization/ArchetypeFnSet.hpp>
 #include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
 #include <Engine.Graphics.Components/Geometry/StaticGeometryComponent.Layout.hpp>
 #include <Heliogrim/Actor/Actor.hpp>
@@ -18,6 +12,7 @@
 #include "SpawnEngine.hpp"
 #include "TestArchetypes.hpp"
 
+import Engine.ACS;
 import Engine.Common;
 import Engine.Resource.Archive;
 import Engine.Serialization;

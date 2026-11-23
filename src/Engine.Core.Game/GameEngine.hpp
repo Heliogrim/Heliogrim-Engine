@@ -1,9 +1,9 @@
 #pragma once
 
 /**/
-#include <Engine.ACS/Serialization/SerializationModule.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.ACS;
 import Engine.Common;
 import Engine.Config;
 import Engine.Core;

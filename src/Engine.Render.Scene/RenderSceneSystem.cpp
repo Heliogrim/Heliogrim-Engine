@@ -1,9 +1,9 @@
 #include "RenderSceneSystem.hpp"
 
-#include <Engine.ACS/Cluster/RelocationTable.hpp>
 #include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Graphics/Pool/SceneResourcePool.hpp>
 
+import Engine.ACS;
 import Engine.Core;
 
 using namespace hg::engine::render;

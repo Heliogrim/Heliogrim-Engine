@@ -2,9 +2,7 @@
 
 /**/
 
-#include <Engine.ACS/Actor/Actor.hpp>
-#include <Engine.ACS/Component/LogicComponent.hpp>
-
+import Engine.ACS;
 import Engine.Serialization;
 import std;
 

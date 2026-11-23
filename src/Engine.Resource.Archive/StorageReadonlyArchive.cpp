@@ -1,6 +1,5 @@
-#include <Engine.Resource.Blob/Blob.hpp>
-
 import Engine.Resource.Archive;
+import Engine.Resource.Blob;
 
 using namespace hg::engine::resource;
 using namespace hg;

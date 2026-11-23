@@ -4,8 +4,8 @@
 
 #include <cstdio>
 #include <cstring>
-#include <Engine.ACS/Cluster/ClusterRegion.hpp>
 
+import Engine.ACS;
 import Engine.Common;
 
 using namespace hg::engine::acs;

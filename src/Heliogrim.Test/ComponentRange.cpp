@@ -3,9 +3,8 @@
 /**/
 
 #include <stddef.h>
-#include <Engine.ACS/Actor/ComponentRange.hpp>
-#include <Engine.ACS/Component/HierarchyComponent.hpp>
 
+import Engine.ACS;
 import Engine.Common;
 
 using namespace hg;

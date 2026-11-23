@@ -1,14 +1,13 @@
 #pragma once
 
-#include <Engine.ACS/Actor/Actor.hpp>
-#include <Engine.ACS/Handle/Handle.hpp>
-#include <Engine.Diagnostics/Diagnostic.hpp>
-#include <Engine.Diagnostics/Sink.hpp>
+#include <Engine.Common/Sal.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 
 #include "LevelGuid.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Diagnostics;
+import Engine.ACS;
 import Engine.Common;
 import Engine.Serialization;
 #endif

@@ -2,16 +2,13 @@
 
 /**/
 
-#include <Engine.ACS/Registry.hpp>
-#include <Engine.ACS/Actor/ActorRef.hpp>
 #include <Engine.ACS/Archetype/ArchetypeDefinition.inl.hpp>
-#include <Engine.ACS/Component/ComponentRef.hpp>
-#include <Engine.ACS/Handle/Epoch.hpp>
 #include <Engine.Scene/SceneSystem.hpp>
 
 #include "SpawnEngine.hpp"
 #include "TestArchetypes.hpp"
 
+import Engine.ACS;
 import Engine.Common;
 
 using namespace HeliogrimApi;

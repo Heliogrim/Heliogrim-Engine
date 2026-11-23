@@ -1,12 +1,12 @@
 #include "Heliogrim.hpp"
 
-#include <Engine.ACS/Registry.hpp>
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 
 #include "HeliogrimStatic.hpp"
 
+import Engine.ACS;
 import Engine.Asserts;
 import Engine.Core;
 import Engine.Scheduler;

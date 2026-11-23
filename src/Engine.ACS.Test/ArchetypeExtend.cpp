@@ -2,10 +2,7 @@
 
 /**/
 
-#include <Engine.ACS/Archetype/Layout.hpp>
-#include <Engine.ACS/Archetype/LayoutInfo.hpp>
-#include <Engine.ACS/Archetype/Overridable.hpp>
-
+import Engine.ACS;
 import std;
 
 using namespace hg::engine::acs;

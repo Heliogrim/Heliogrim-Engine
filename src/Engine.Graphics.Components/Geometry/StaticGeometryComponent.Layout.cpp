@@ -5,6 +5,7 @@
 #include <Engine.Assets.Database/AssetDatabase.hpp>
 #include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
 
+import Engine.ACS;
 import Engine.Asserts;
 import Engine.Core;
 

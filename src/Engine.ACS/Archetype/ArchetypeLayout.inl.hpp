@@ -13,15 +13,12 @@
  */
 
 #include <cstring>
-#include <Engine.ACS/Archetype/LayoutInfo.hpp>
-#include <Engine.ACS/Handle/Handle.hpp>
 #include <Engine.Assets/AssetGuid.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 #include <Engine.Serialization/Load/LoadContext.hpp>
 
-#include "InheritArchetype.hpp"
-
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.ACS;
 import Engine.Asserts;
 import Engine.Common;
 #endif

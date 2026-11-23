@@ -2,10 +2,6 @@
 
 /**/
 
-#include <Engine.ACS/ActorModule.hpp>
-#include <Engine.ACS/Registry.hpp>
-#include <Engine.ACS/Actor/ActorRef.hpp>
-#include <Engine.ACS/Actor/Class/ArchetypeConcept.hpp>
 #include <Engine.ACS/Archetype/ArchetypeDefinition.inl.hpp>
 #include <Engine.Graphics.Components/Geometry/BoxShapeGeometryComponent.Layout.hpp>
 #include <Engine.Graphics.Components/Geometry/SphereShapeGeometryComponent.Layout.hpp>
@@ -23,6 +19,7 @@
 #include "SpawnEngine.hpp"
 #include "TestArchetypes.hpp"
 
+import Engine.ACS;
 import Engine.Common;
 import Engine.Config;
 import Engine.Core;

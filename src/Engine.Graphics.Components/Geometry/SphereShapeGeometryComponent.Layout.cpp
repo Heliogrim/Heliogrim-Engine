@@ -3,6 +3,8 @@
 #include <Engine.ACS/Archetype/ArchetypeLayout.inl.hpp>
 #include <Engine.Assets.Database/AssetDatabase.hpp>
 
+import Engine.ACS;
+
 using namespace hg::engine::serialization;
 using namespace hg;
 

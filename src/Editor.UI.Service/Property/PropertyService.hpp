@@ -1,12 +1,10 @@
 #pragma once
 
-#include <Engine.ACS/Actor/Actor.hpp>
-#include <Engine.ACS/Component/HierarchyComponent.hpp>
-
 #include "Property.hpp"
 #include "../UiService.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.ACS;
 import Engine.Common;
 #endif
 

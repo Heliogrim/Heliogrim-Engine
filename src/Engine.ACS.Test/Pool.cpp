@@ -2,8 +2,7 @@
 
 /**/
 
-#include <Engine.ACS/Pool.hpp>
-
+import Engine.ACS;
 import std;
 
 using namespace hg;

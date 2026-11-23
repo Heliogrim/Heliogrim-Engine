@@ -1,5 +1,4 @@
-#include <Engine.ACS/Registry.hpp>
-
+import Engine.ACS;
 import Engine.Common;
 import Engine.Core;
 

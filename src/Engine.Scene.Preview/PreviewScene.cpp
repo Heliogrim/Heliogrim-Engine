@@ -1,8 +1,6 @@
 #include "PreviewScene.hpp"
 
-#include <Engine.ACS/Component/HierarchyComponent.hpp>
-#include <Engine.ACS/Component/SceneComponent.hpp>
-
+import Engine.ACS;
 import Engine.Asserts;
 import Engine.Reflect;
 

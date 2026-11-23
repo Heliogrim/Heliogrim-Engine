@@ -1,9 +1,8 @@
 #include "SceneHierarchyService.hpp"
 
-#include <Engine.ACS/Actor/Actor.hpp>
-
 #include "SceneHierarchyEntry.hpp"
 
+import Engine.ACS;
 import Engine.Common;
 
 using namespace hg::editor::ui::service;

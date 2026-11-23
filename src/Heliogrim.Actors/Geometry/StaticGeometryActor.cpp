@@ -1,8 +1,9 @@
 #include "StaticGeometryActor.hpp"
 
 #include <Engine.ACS/Archetype/ArchetypeDefinition.inl.hpp>
-
 #include <Engine.Graphics.Components/Geometry/StaticGeometryComponent.Layout.hpp>
+
+import Engine.ACS;
 
 using namespace hg;
 

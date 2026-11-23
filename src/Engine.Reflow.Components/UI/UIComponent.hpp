@@ -1,7 +1,10 @@
 #pragma once
 
-#include <Engine.ACS/Component/SceneComponent.hpp>
 #include <Engine.Reflow/Window/Window.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.ACS;
+#endif
 
 namespace hg {
 	class UIComponent :

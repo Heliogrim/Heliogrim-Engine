@@ -1,9 +1,9 @@
 #pragma once
 
 #include <Editor.Action/Action/DelegateAction.hpp>
-#include <Engine.ACS/Actor/ActorGuid.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.ACS;
 import Engine.Common;
 #endif
 

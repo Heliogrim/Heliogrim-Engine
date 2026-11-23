@@ -1,6 +1,5 @@
 #include "ActionResolverInit.hpp"
 
-#include <Engine.Resource.Blob/Blob.hpp>
 #include <Engine.Resource.Package/ReadonlyPackage.hpp>
 #include <Engine.Resource.Package/ReadWritePackage.hpp>
 #include <Engine.Storage.Action/Action/MutationStaticGen.hpp>
@@ -18,6 +17,7 @@
 #include "PackArchive.hpp"
 
 import Engine.Resource.Archive;
+import Engine.Resource.Blob;
 
 using namespace hg::engine::storage;
 using namespace hg;

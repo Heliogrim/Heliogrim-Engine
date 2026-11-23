@@ -3,10 +3,10 @@
 /**/
 
 #include <cstdio>
-#include <Engine.ACS/Actor/ComponentRange.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/__warning.hpp>
 
+import Engine.ACS;
 import Engine.Common;
 
 using namespace hg;

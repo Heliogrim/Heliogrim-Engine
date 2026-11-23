@@ -1,5 +1,3 @@
-#include "Engine.ACS/Actor/Actor.hpp"
-#include "Engine.ACS/Serialization/ArchetypeFnSet.hpp"
 #include "Engine.Graphics.Components/Light/PointLightComponent.hpp"
 #include "Engine.Graphics.Components/Light/SpotLightComponent.hpp"
 #include "Engine.Graphics.Components/Sky/SkyboxComponent.hpp"
@@ -12,12 +10,10 @@
 
 /**/
 
-#include <Engine.ACS/Serialization/ActorScheme.hpp>
-#include <Engine.ACS/Serialization/ComponentScheme.hpp>
-#include <Engine.ACS/Serialization/SerializationModule.hpp>
 #include <Engine.Common/__macro.hpp>
 
 import Editor.Boot;
+import Engine.ACS;
 import Engine.Common;
 import Engine.Config;
 import Engine.Serialization;

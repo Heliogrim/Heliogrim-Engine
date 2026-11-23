@@ -29,9 +29,9 @@ EventResponse EditorSceneViewport::invokeOnKeyDown(ref<const KeyboardEvent> even
 #include <Editor.Core/EditorEngine.hpp>
 #include <Editor.UI.Main/EditorUI.hpp>
 #include <Editor.UI.Main/Module/EditorUI.hpp>
-#include <Engine.ACS/Actor/ActorInitializer.hpp>
+import Engine.ACS;
 #include <Heliogrim/Heliogrim.hpp>
-#include <Engine.ACS/Actor/Actor.hpp>
+import Engine.ACS;
 #include <Heliogrim.Actors/Geometry/StaticGeometryActor.hpp>
 #include <Heliogrim/Core/Session.hpp>
 #include <Heliogrim/Universe/Universe.hpp>

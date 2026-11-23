@@ -1,11 +1,11 @@
 #pragma once
 
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Resource.Blob/Blob.hpp>
 #include <Engine.Storage.Registry/Url/FileUrl.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Resource.Blob;
 #endif
 
 namespace hg::engine::storage::package {

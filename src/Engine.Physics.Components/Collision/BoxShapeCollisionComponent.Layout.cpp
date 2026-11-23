@@ -2,6 +2,7 @@
 
 #include <Engine.ACS/Archetype/ArchetypeLayout.inl.hpp>
 
+import Engine.ACS;
 import std;
 
 using namespace hg::engine::serialization;

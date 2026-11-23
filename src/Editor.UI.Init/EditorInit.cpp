@@ -5,6 +5,7 @@
 #include <Editor.UI.Main/EditorUI.hpp>
 #include <Editor.UI.Theme/EditorTheme.hpp>
 #include <Editor.UI.View/Scene/SceneEditorController.hpp>
+import Engine.ACS;
 #include <Editor.UI.View/Scene/SceneEditorView.hpp>
 #include <Editor.UI/Widget/InputBindingProvider.hpp>
 #include <Engine.Core/Session.hpp>
@@ -13,8 +14,8 @@
 #include <Engine.Reflow.Uikit/Atom/Layout/VerticalLayout.hpp>
 #include <Engine.Reflow/Window/Window.hpp>
 #include <Engine.Reflow/Window/WindowManager.hpp>
-#include <Engine.ACS/Actor/ActorInitializer.hpp>
-#include <Engine.ACS/Actor/Actor.hpp>
+import Engine.ACS;
+import Engine.ACS;
 #include <Engine.Reflow.Components/UI/UIComponent.hpp>
 #include <Heliogrim/Universe/Universe.hpp>
 

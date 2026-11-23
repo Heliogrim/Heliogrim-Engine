@@ -1,9 +1,10 @@
 #include "SphereShapeGeometryActor.hpp"
 
 #include <Engine.ACS/Archetype/ArchetypeDefinition.inl.hpp>
-
-#include <Engine.Physics.Components/Collision/SphereShapeCollisionComponent.Layout.hpp>
 #include <Engine.Graphics.Components/Geometry/SphereShapeGeometryComponent.Layout.hpp>
+#include <Engine.Physics.Components/Collision/SphereShapeCollisionComponent.Layout.hpp>
+
+import Engine.ACS;
 
 using namespace hg;
 

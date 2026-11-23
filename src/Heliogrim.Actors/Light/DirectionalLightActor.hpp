@@ -1,8 +1,10 @@
 #pragma once
 
-#include <Engine.ACS/Actor/Actor.hpp>
-
 #include <Engine.Graphics.Components/Light/DirectionalLightComponent.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.ACS;
+#endif
 
 namespace hg {
 	class DirectionalLightActor :

@@ -12,12 +12,12 @@ namespace hg {
 	/**
 	 * Identifier for the invalid actor
 	 */
-	inline constexpr static ActorGuid invalid_actor_guid {};
+	inline constexpr ActorGuid invalid_actor_guid {};
 
 	/**
 	 * Identifier for the invalid component
 	 */
-	inline constexpr static ComponentGuid invalid_component_guid {};
+	inline constexpr ComponentGuid invalid_component_guid {};
 
 	/**
 	 * Generates an actor unique identifier

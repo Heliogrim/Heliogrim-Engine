@@ -1,10 +1,6 @@
 #include "Level.hpp"
 
-#include <Engine.ACS/Serialization/SerializationModule.hpp>
-#include <Engine.ACS/ActorModule.hpp>
-
-#include "Engine.ACS/ActorModule.hpp"
-
+import Engine.ACS;
 import Engine.Common;
 import Engine.Core;
 import Engine.Serialization;
@@ -15,7 +11,7 @@ using namespace ::hg::engine::core;
 using namespace ::hg;
 
 template <>
-void access::Structure<Level>::serialize(const Level& self_, mref<StructScopedSlot> record_) {
+void access::Structure<engine::core::Level>::serialize(const engine::core::Level& self_, mref<StructScopedSlot> record_) {
 	Structure<math::Bounding>::serialize(self_._bounding, record_.insertStructSlot("bounding"));
 
 	/**/
@@ -34,7 +30,7 @@ void access::Structure<Level>::serialize(const Level& self_, mref<StructScopedSl
 }
 
 template <>
-void access::Structure<Level>::hydrate(cref<StructScopedSlot> record_, Level& target_) {
+void access::Structure<engine::core::Level>::hydrate(cref<StructScopedSlot> record_, engine::core::Level& target_) {
 	Structure<math::Bounding>::hydrate(record_.getStructSlot("bounding"), target_._bounding);
 
 	/**/

@@ -1,11 +1,10 @@
 #pragma once
 
-#include <Engine.ACS/Component/HierarchyComponent.hpp>
-#include <Engine.ACS/Component/SceneComponent.hpp>
 #include <Engine.Scene/IComponentRegisterContext.hpp>
 #include <Engine.Scene/SceneBase.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.ACS;
 import Engine.Asserts;
 import Engine.Common;
 import Engine.Reflect;

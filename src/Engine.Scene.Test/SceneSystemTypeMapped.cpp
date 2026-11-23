@@ -1,9 +1,9 @@
 #include "pch.h"
 /**/
 
-#include <Engine.ACS/Component/SceneComponent.hpp>
 #include <Engine.Scene.Support/SceneSystemTypeMappedRegistry.hpp>
 
+import Engine.ACS;
 import Engine.Reflect;
 import std;
 

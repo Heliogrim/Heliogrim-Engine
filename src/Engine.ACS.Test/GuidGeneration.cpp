@@ -2,7 +2,7 @@
 
 /**/
 
-#include <Engine.ACS/Traits.hpp>
+import Engine.ACS;
 
 using namespace hg;
 
