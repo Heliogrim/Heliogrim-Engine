@@ -192,7 +192,17 @@ namespace hg::engine::serialization {
 					continue;
 				}
 
-				if (IsType<HierarchyComponent>(*next.get())) {
+				if (IsType<HierarchyComponent>(*next.get()) && parent == nullptr && target->getRootComponent().has_value()) {
+					// addComponent asserts a single root; a second parentless hierarchy component is bad data.
+					structured.slot()->fail(
+						ReadError::Kind::eInvalidValue,
+						structured.slot()->getState().offset,
+						0LL,
+						"actor has more than one root component"
+					);
+					unknown = true;
+
+				} else if (IsType<HierarchyComponent>(*next.get())) {
 					// Keep back-reference for parent resolving with pure pointers
 					instanced[idx] = next.get();
 					target->addComponent(

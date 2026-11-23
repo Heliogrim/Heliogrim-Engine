@@ -19,6 +19,7 @@
 #include <Engine.Serialization/Load/RootKind.hpp>
 #include <Engine.Serialization.Structures/Common/Guid.hpp>
 #include <Engine.Serialization/Scheme/ActorScheme.hpp>
+#include <Engine.Serialization/Scheme/ComponentScheme.hpp>
 #include <Engine.Serialization/Structure/RootScopedSlot.hpp>
 #include <Engine.Serialization/Structure/SeqScopedSlot.hpp>
 #include <Heliogrim/Actor/Actor.hpp>
@@ -884,5 +885,42 @@ namespace LoadBoundaryModule {
 		EXPECT_TRUE(hydrated);
 		EXPECT_TRUE(finished.has_value());
 		EXPECT_NE(asset.getLevelData().encode(), unset);
+	}
+}
+
+namespace LoadBoundaryModule {
+	TEST_F(LoadBoundary, SecondRootComponentRejected) {
+		constexpr u64 rootType = 0x7E57'0000'0000'00A1uLL;
+		_engine->_serialization->addComponentScheme(
+			typeOf(rootType),
+			ComponentFnSet {
+				.serialize = [](cref<LogicComponent>, mref<StructScopedSlot>) {},
+				.deserialize = [](cref<RecordScopedSlot>, nmpt<engine::acs::Registry>, ref<Actor> owner_, nmpt<HierarchyComponent> parent_) {
+					return VolatileComponent<> {
+						new HierarchyComponent { generate_component_guid(), CachedActorPointer { owner_.guid(), &owner_ }, parent_.get() },
+						[](ptr<LogicComponent> obj_) { delete obj_; }
+					};
+				}
+			}
+		);
+
+		// The kept root is pooled so actor teardown frees it; the rejected one is plain heap and dropped by its own deleter.
+		constexpr u64 bodyType = 0x7E57'0000'0000'00A2uLL;
+		_engine->_serialization->addComponentScheme(
+			typeOf(bodyType),
+			ComponentFnSet {
+				.serialize = [](cref<LogicComponent>, mref<StructScopedSlot>) {},
+				.deserialize = [](cref<RecordScopedSlot>, nmpt<engine::acs::Registry> allocator_, ref<Actor> owner_, nmpt<HierarchyComponent> parent_) {
+					return VolatileComponent<> { ComponentScheme<HeliogrimApi::BodyStub>::instantiate<void>(allocator_, ComponentGuid { generate_component_guid() }, owner_, parent_).release() };
+				}
+			}
+		);
+
+		const ComponentSpec components[] { { .type = bodyType }, { .type = rootType } };
+		writeLevel(0, components);
+		std::ignore = hydrateLevel();
+
+		EXPECT_TRUE(hasCode(_sink, "invalid-value"));
+		EXPECT_TRUE(_sink.hasErrors());
 	}
 }
