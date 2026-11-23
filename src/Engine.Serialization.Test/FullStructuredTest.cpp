@@ -6,6 +6,7 @@
 #include <tuple>
 #include <utility>
 #include <Engine.Assets.Type/Asset.hpp>
+#include <Engine.Assets.Type/Universe/LevelAsset.hpp>
 #include <Engine.Common/Collection/Array.hpp>
 #include <Engine.Resource.Archive/BufferArchive.hpp>
 
@@ -506,6 +507,34 @@ namespace SerializationModule {
 			const auto record = structured.getRootSlot().asStruct();
 			EXPECT_EQ(get_named_guid_slot(record, "named"), Guid {});
 			EXPECT_TRUE(archive.hasError());
+		}
+	}
+}
+
+namespace SerializationModule {
+	TEST(FullStructuredTest, LevelAssetBadLevelDataRejected) {
+		for (const auto bad : { "file://nope", "archive://zz", "archive://99999999999999999999", "archive://1-2-3" }) {
+
+			auto archive = BufferArchive {};
+			{
+				auto structured = StructuredArchive { archive };
+				auto record = structured.insertRootSlot().intoStruct();
+				record.insertSlot<String>("levelData") << String { bad };
+				access::Structure<engine::assets::Asset>::serialize(engine::assets::LevelAsset {}, ::hg::move(record));
+			}
+
+			archive.seek(0);
+
+			engine::assets::LevelAsset asset {};
+			{
+				auto structured = StructuredArchive { archive };
+				access::Structure<engine::assets::LevelAsset>::hydrate(structured.getRootSlot().asStruct(), asset);
+			}
+
+			EXPECT_TRUE(archive.hasError()) << bad;
+			// A rejected url leaves the default (null) archive url.
+			ASSERT_TRUE(asset.getLevelData().is<engine::storage::ArchiveUrl>()) << bad;
+			EXPECT_EQ(asset.getLevelData().as<engine::storage::ArchiveUrl>().guid(), engine::resource::ArchiveGuid {}) << bad;
 		}
 	}
 }
