@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Reflow/Widget/Input.hpp>
 #include <Engine.Reflow.Uikit/Atom/Image.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/VerticalLayout.hpp>
 #include <Engine.Reflow.Uikit/Exp/Button.hpp>
@@ -9,6 +8,7 @@
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Assets;
+import Engine.Reflow;
 #endif
 
 namespace hg::editor::ui {

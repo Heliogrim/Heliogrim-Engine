@@ -1,10 +1,9 @@
 #pragma once
 
-#include <Engine.Graphics.RenderGraph/Relation/Description.hpp>
-
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Accel.Lang;
 import Engine.Common;
+import Engine.Graphics.RenderGraph;
 #endif
 
 namespace hg::engine::accel {

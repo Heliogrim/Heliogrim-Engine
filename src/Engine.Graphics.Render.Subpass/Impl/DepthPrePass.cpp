@@ -2,8 +2,6 @@
 #include <Engine.Graphics/vkinc.hpp>
 /**/
 
-#include "DepthPrePass.hpp"
-
 #include <Engine.Accel.Compile/VkEffectCompiler.hpp>
 #include <Engine.Accel.Compile/Profile/EffectProfile.hpp>
 #include <Engine.Accel.Compile/Spec/SimpleEffectSpecification.hpp>
@@ -16,16 +14,16 @@
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
 #include <Engine.Graphics.Core/Graphics.hpp>
 #include <Engine.Graphics.Render.Command/RenderCommandBuffer.hpp>
-#include <Engine.Graphics.Render.Graph.Scene/Hook/ModelType.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneDepth.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneView.hpp>
-#include <Engine.Graphics.RenderGraph/Relation/SceneViewDescription.hpp>
-#include <Engine.Graphics.RenderGraph/Relation/TextureDescription.hpp>
-#include <Engine.Graphics.RenderGraph/Symbol/ScopedSymbolContext.hpp>
+
+#include "DepthPrePass.hpp"
 
 import Engine.Accel.Lang;
 import Engine.Common;
 import Engine.Core;
+import Engine.Graphics.Render.Graph.Scene;
+import Engine.Graphics.RenderGraph;
 import Engine.Reflect;
 
 using namespace hg::engine::render;

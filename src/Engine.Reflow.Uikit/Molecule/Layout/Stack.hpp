@@ -1,10 +1,10 @@
 #pragma once
 
-#include <Engine.Reflow/Children.hpp>
-#include <Engine.Reflow/Widget/Widget.hpp>
-#include <Engine.Reflow.Attributes/Layout/Base/BoxLayoutAttributes.hpp>
-
 #include "../../Atom/Atom.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Reflow;
+#endif
 
 namespace hg::engine::reflow::uikit {
 	class Stack :

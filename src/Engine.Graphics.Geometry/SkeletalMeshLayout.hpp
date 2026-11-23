@@ -1,8 +1,8 @@
 #pragma once
-#include <Engine.Graphics.RenderGraph/Relation/MeshDescription.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Graphics.RenderGraph;
 #endif
 
 namespace hg::engine::graphics {

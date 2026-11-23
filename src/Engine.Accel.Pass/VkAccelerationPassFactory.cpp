@@ -2,7 +2,6 @@
 
 #include <Engine.Accel.Pipeline/VkGraphicsPipeline.hpp>
 #include <Engine.Graphics.Core/Graphics.hpp>
-#include <Engine.Graphics.RenderGraph/Relation/TextureDescription.hpp>
 
 #include "MeshPass.hpp"
 #include "RaytracingPass.hpp"
@@ -11,6 +10,7 @@
 import Engine.Common;
 import Engine.Core;
 import Engine.Graphics;
+import Engine.Graphics.RenderGraph;
 import Engine.Reflect;
 
 using namespace hg::engine::accel;

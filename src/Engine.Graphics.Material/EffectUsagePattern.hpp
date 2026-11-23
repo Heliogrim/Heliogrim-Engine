@@ -1,10 +1,10 @@
 #pragma once
 #include <Engine.Graphics.Render.Predefined/Buffer/ViewBuffer.hpp>
-#include <Engine.Graphics.RenderGraph/Relation/Description.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Accel.Lang;
 import Engine.Common;
+import Engine.Graphics.RenderGraph;
 import Engine.Graphics.Types;
 #endif
 

@@ -4,7 +4,7 @@ make_library_project(
 		LIB_NAME Engine.Graphics.Render.Subpass
 		LIB_FOLDER "${IDE_FOLDER}/Engine/Render"
 		LIBRARIES
-		${PROJECT_NAME}::Engine.Graphics ${PROJECT_NAME}::Engine.ACS ${PROJECT_NAME}::Engine.Resource
+		${PROJECT_NAME}::Engine.Graphics ${PROJECT_NAME}::Engine.ACS ${PROJECT_NAME}::Engine.Resource ${PROJECT_NAME}::Engine.Graphics.RenderGraph ${PROJECT_NAME}::Engine.Graphics.Render.Graph.Scene
 		${PROJECT_NAME}::Engine.Asserts
 		${PROJECT_NAME}::Engine.Async
 		${PROJECT_NAME}::Engine.Common

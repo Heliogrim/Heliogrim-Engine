@@ -4,9 +4,8 @@
 #include <Editor.UI/Event/ContextMenuEvent.hpp>
 #include <Editor.UI/Widget/ContextMenuProvider.hpp>
 #include <Editor.UI/Widget/Menu.hpp>
-#include <Engine.Reflow/Widget/Widget.hpp>
-#include <Engine.Reflow/Window/Window.hpp>
 
+import Engine.Reflow;
 import std;
 
 using namespace hg::editor::ui::service;

@@ -1,8 +1,7 @@
 #include "V4F32DataBuffer.hpp"
 
-#include <Engine.Graphics.RenderGraph/Relation/TextureDescription.hpp>
-
 import Engine.Common;
+import Engine.Graphics.RenderGraph;
 
 using namespace hg::engine::render;
 using namespace hg;

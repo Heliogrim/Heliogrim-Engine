@@ -2,16 +2,13 @@
 
 #include <Engine.Graphics.Loader/Cache/GlobalCacheCtrl.hpp>
 #include <Engine.Graphics.Loader/Cache/LocalResourceCache.hpp>
-#include <Engine.Graphics.RenderGraph/CompileGraph.hpp>
-#include <Engine.Graphics.RenderGraph/RuntimeGraph.hpp>
-#include <Engine.Graphics.RenderGraph/Pass/IterationPass.hpp>
-#include <Engine.Graphics.RenderGraph/Pass/ResolvePass.hpp>
 #include <Engine.Graphics.RenderGraph.Compile/RenderGraphCompiler.hpp>
 
 #include "RenderPass.hpp"
 
 import Engine.Common;
 import Engine.Graphics;
+import Engine.Graphics.RenderGraph;
 
 using namespace hg::engine::render;
 using namespace hg;

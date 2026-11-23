@@ -8,8 +8,6 @@
 #include <Editor.UI.Theme/EditorTheme.hpp>
 #include <Editor.UI.View/Scene/SceneEditorController.hpp>
 #include <Engine.Graphics.Loader/Font/FontLoader.hpp>
-#include <Engine.Reflow/Reflow.hpp>
-#include <Engine.Reflow/Module/Reflow.hpp>
 
 #include "Module/EditorUI.hpp"
 
@@ -20,6 +18,7 @@ import Engine.Assets;
 import Engine.Assets.System;
 import Engine.Assets.Type;
 import Engine.Common;
+import Engine.Reflow;
 import Engine.Resource;
 
 using namespace hg::editor::ui;

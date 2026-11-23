@@ -1,14 +1,10 @@
 #pragma once
 
-#include <Engine.Reflow/Children.hpp>
-#include <Engine.Reflow/Widget/LeafWidget.hpp>
-#include <Engine.Reflow.Attributes/Data/Base/TextDataAttributes.hpp>
-#include <Engine.Reflow.Attributes/Style/Base/TextStyleAttributes.hpp>
-
 #include "Atom.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Assets.Type;
+import Engine.Reflow;
 #endif
 
 namespace hg::engine::reflow {

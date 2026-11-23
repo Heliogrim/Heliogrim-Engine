@@ -1,9 +1,11 @@
 #pragma once
 
-#include <Engine.Reflow.Attributes/Layout/CompositeLayoutAttributes.hpp>
-
 #include "GridLayoutBase.hpp"
 #include "../Atom.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Reflow;
+#endif
 
 namespace hg::engine::reflow::uikit {
 	/**

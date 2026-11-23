@@ -13,7 +13,6 @@
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneColor.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneDepth.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneView.hpp>
-#include <Engine.Graphics.RenderGraph/Symbol/ScopedSymbolContext.hpp>
 #include <Engine.Graphics.Scene.Model/Scene/SkyboxModel.hpp>
 
 #include "SkyBoxPass.hpp"
@@ -21,6 +20,7 @@
 import Engine.Common;
 import Engine.Core;
 import Engine.Graphics;
+import Engine.Graphics.RenderGraph;
 import Engine.Graphics.Scene;
 import Engine.Reflect;
 import Engine.Render.Scene;

@@ -2,14 +2,11 @@
 
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneView.hpp>
-#include <Engine.Graphics.RenderGraph/RuntimeGraph.hpp>
-#include <Engine.Graphics.RenderGraph/Pass/ExecutionPass.hpp>
-#include <Engine.Graphics.RenderGraph/Relation/SceneViewDescription.hpp>
-#include <Engine.Graphics.RenderGraph/Relation/TextureDescription.hpp>
 
 import Engine.Common;
 import Engine.Core;
 import Engine.Graphics;
+import Engine.Graphics.RenderGraph;
 import Engine.Logging;
 import Engine.Reflect;
 

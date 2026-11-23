@@ -2,13 +2,13 @@
 
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Graphics.Loader/Cache/__fwd.hpp>
-#include <Engine.Graphics.RenderGraph/__fwd.hpp>
 
 #include "InjectGraphRegistry.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
 import Engine.Graphics;
+import Engine.Graphics.RenderGraph;
 #endif
 
 namespace hg::engine::render {

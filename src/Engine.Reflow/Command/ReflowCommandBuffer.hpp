@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Common/Math/__default.inl>
 #include <Engine.Graphics/API/__vkFwd.hpp>
 
 #include "../ReflowAlpha.hpp"

@@ -2,6 +2,10 @@
 # Setup
 make_library_project(
         LIB_NAME Engine.Reflow
+        MODULE
+        MODULE_EXCLUDE
+        # Unused and stale: names `input_type` from a dependent base without `typename`.
+        Engine.Reflow/Widget/Input/InputVector.hpp
         LIB_FOLDER "${IDE_FOLDER}/Engine/UI"
         LIBRARIES
         	${PROJECT_NAME}::Engine.Graphics ${PROJECT_NAME}::Engine.Scene ${PROJECT_NAME}::Engine.Render.Scene ${PROJECT_NAME}::Engine.Reflow.Schedule

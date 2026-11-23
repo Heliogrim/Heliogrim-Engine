@@ -1,9 +1,8 @@
 #pragma once
 
-#include <Engine.Reflow/Window/Window.hpp>
-
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.ACS;
+import Engine.Reflow;
 #endif
 
 namespace hg {

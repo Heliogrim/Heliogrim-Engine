@@ -1,11 +1,10 @@
 #include "RenderGraphCompiler.hpp"
 
-#include <Engine.Graphics.RenderGraph/RuntimeGraph.hpp>
-
 #include "CompileVisitor.hpp"
 
 import Engine.Asserts;
 import Engine.Common;
+import Engine.Graphics.RenderGraph;
 
 using namespace hg::engine::render::graph;
 using namespace hg;

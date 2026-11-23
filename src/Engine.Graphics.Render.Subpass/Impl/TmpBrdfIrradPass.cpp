@@ -16,8 +16,6 @@
 #include <Engine.Graphics.Render.Command/RenderCommandBuffer.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/BrdfIrradiance.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneView.hpp>
-#include <Engine.Graphics.RenderGraph/Relation/TextureDescription.hpp>
-#include <Engine.Graphics.RenderGraph/Symbol/ScopedSymbolContext.hpp>
 #include <Engine.Graphics.Scene.Model/Scene/SkyboxModel.hpp>
 
 #include "TmpBrdfIrradPass.hpp"
@@ -25,6 +23,7 @@
 import Engine.Common;
 import Engine.Core;
 import Engine.Graphics;
+import Engine.Graphics.RenderGraph;
 import Engine.Graphics.Scene;
 import Engine.Reflect;
 import Engine.Render.Scene;
