@@ -4,6 +4,7 @@
 #include <Engine.ACS/Registry.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Level/Level.hpp>
+#include <Engine.Scene/IComponentRegisterContext.hpp>
 #include <Engine.Scene/SceneBase.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
@@ -14,7 +15,6 @@
 #include "ActorRef.hpp"
 #include "Archetype/ActorClass.hpp"
 #include "../ActorInitializer.hpp"
-#include "../IComponentRegisterContext.hpp"
 #include "../Component/HierarchyComponent.hpp"
 #include "../Core/Session.hpp"
 #include "../Universe/Universe.hpp"

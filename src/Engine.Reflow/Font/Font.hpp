@@ -1,9 +1,9 @@
 #pragma once
 
+#include <Engine.Assets.Type/Font/GlyphCode.hpp>
 #include <Engine.Graphics/Texture/__fwd.hpp>
 
 #include "FontGlyph.hpp"
-#include "GlyphCode.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

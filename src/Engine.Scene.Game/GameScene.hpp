@@ -2,8 +2,8 @@
 
 #include <Engine.Physics.Scene/PhysicsSceneSystem.hpp>
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
+#include <Engine.Scene/IComponentRegisterContext.hpp>
 #include <Engine.Scene/Scene.hpp>
-#include <Heliogrim/IComponentRegisterContext.hpp>
 
 #include "SceneComponentQueue.hpp"
 

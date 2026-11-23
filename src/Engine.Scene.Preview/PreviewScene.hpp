@@ -1,7 +1,7 @@
 #pragma once
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
+#include <Engine.Scene/IComponentRegisterContext.hpp>
 #include <Engine.Scene/Scene.hpp>
-#include <Heliogrim/IComponentRegisterContext.hpp>
 
 namespace hg::engine::scene {
 	class PreviewScene :

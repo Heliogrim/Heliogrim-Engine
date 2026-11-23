@@ -4,7 +4,10 @@
 
 #include "CachedActorPointer.hpp"
 #include "LogicComponent.hpp"
-#include "../Math/BuildIn.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::acs {
 	class RelocationTable;

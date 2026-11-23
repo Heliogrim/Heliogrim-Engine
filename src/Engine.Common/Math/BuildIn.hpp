@@ -1,5 +1,14 @@
 #pragma once
 
+#if defined(HG_MODULE_INTERFACE_UNIT)
+// Module aggregation includes this header before Location/Matrix/Rotator; Transform.hpp needs them first.
+#include "Location.hpp"
+#include "Matrix.hpp"
+#include "Quaternion.hpp"
+#include "Rotator.hpp"
+#include "Vector.hpp"
+#endif
+
 #include <Engine.Common/Math/__default.inl>
 
 namespace hg {

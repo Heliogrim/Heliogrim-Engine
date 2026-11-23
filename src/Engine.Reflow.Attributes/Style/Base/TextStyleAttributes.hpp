@@ -1,10 +1,10 @@
 #pragma once
 
+#include <Engine.Assets.Type/TypedAssetGuid.hpp>
 #include <Engine.Assets.Type/Texture/FontAsset.hpp>
 #include <Engine.Graphics/Color/Color.hpp>
 #include <Engine.Reflow/ReflowWrap.hpp>
 #include <Engine.Reflow/TextAlign.hpp>
-#include <Heliogrim/TypedAssetGuid.hpp>
 
 #include "../StyleAttribute.hpp"
 #include "../StyleAttributes.hpp"
