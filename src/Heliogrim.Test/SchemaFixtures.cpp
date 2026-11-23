@@ -556,4 +556,10 @@ namespace HeliogrimApi::schema_fixtures {
 		EXPECT_TRUE(loaded.errors) << loaded.diagnostics;
 		EXPECT_NE(loaded.diagnostics.find("[type-mismatch]"), String::npos) << loaded.diagnostics;
 	}
+
+	TEST_F(SchemaFixtures, FindingStaticGeometryActorRejectedWithError) {
+		const auto loaded = replayActorFinding<StaticGeometryActor>("StaticGeometryActorSilent.bin");
+		EXPECT_FALSE(loaded.ok);
+		EXPECT_TRUE(loaded.errors) << loaded.diagnostics;
+	}
 }
