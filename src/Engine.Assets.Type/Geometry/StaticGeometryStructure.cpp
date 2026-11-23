@@ -2,10 +2,8 @@
 
 /**/
 
-#include <Engine.Serialization.Structures/Common/Guid.hpp>
-#include <Engine.Serialization.Structures/Common/TypeId.hpp>
-
 import Engine.Serialization;
+import Engine.Serialization.Structures;
 import std;
 
 using namespace hg::engine::serialization;

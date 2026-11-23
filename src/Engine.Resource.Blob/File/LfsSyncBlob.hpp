@@ -1,12 +1,11 @@
 #pragma once
 
-#include <Engine.Filesystem/Url.hpp>
-
 #include "../Blob.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Async;
 import Engine.Common;
+import Engine.Filesystem;
 import Engine.Reflect;
 #endif
 

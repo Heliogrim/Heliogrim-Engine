@@ -4,10 +4,10 @@
 #endif
 
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Serialization.Layouts/LayoutManager.hpp>
 
 import Engine.Common;
 import Engine.Core;
+import Engine.Serialization.Layouts;
 
 using namespace hg::engine::resource;
 using namespace hg::engine;

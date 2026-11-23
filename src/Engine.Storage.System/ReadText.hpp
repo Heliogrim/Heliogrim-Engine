@@ -1,11 +1,11 @@
 #pragma once
 
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Filesystem/Path.hpp>
 #include <Engine.Storage.Registry/Url/Scheme.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Filesystem;
 #endif
 
 namespace hg::engine::storage {

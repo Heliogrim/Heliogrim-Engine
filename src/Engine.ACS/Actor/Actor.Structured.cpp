@@ -3,9 +3,6 @@
 #include "Actor.hpp"
 
 #include <Engine.ACS/Serialization/SerializationModule.hpp>
-#include <Engine.Serialization.Structures/Symbols.hpp>
-#include <Engine.Serialization.Structures/Common/Guid.hpp>
-#include <Engine.Serialization.Structures/Common/TypeId.hpp>
 
 #include "ActorInitializer.hpp"
 #include "Class/ActorClass.hpp"
@@ -14,6 +11,7 @@
 import Engine.Common;
 import Engine.Core;
 import Engine.Serialization;
+import Engine.Serialization.Structures;
 
 using namespace hg::engine::serialization;
 using namespace hg;

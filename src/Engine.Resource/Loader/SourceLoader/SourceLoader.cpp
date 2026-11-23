@@ -3,7 +3,6 @@
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Filesystem/Url.hpp>
 #include <Engine.Resource/File.hpp>
 #include <Engine.Storage.Registry/IStorageRegistry.hpp>
 #include <Engine.Storage.Registry/Url/FileUrl.hpp>
@@ -12,6 +11,7 @@
 import Engine.Asserts;
 import Engine.Common;
 import Engine.Core;
+import Engine.Filesystem;
 import Engine.Logging;
 import Engine.Reflect;
 import Engine.Storage;

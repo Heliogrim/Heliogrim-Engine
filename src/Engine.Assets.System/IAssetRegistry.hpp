@@ -5,7 +5,6 @@
 #include <Engine.Assets/AssetUrl.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Filesystem/Url.hpp>
 
 #include "__fwd.hpp"
 #include "AssetRegistryError.hpp"
@@ -16,6 +15,7 @@
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Filesystem;
 #endif
 
 namespace hg::engine::assets {

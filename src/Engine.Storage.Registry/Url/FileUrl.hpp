@@ -1,8 +1,10 @@
 #pragma once
 
-#include <Engine.Filesystem/Path.hpp>
-
 #include "IUrlComp.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Filesystem;
+#endif
 
 namespace hg::engine::storage {
 	/**

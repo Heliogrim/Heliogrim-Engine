@@ -6,7 +6,6 @@
  */
 
 #include <Engine.ACS/Component/ComponentGuid.hpp>
-#include <Engine.Serialization.Structures/Symbols.hpp>
 
 #include "InheritArchetype.hpp"
 #include "../Actor/Actor.hpp"
@@ -23,6 +22,7 @@
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Asserts;
 import Engine.Common;
+import Engine.Serialization.Structures;
 #endif
 
 namespace hg::engine::acs {
