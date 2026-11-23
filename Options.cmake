@@ -24,3 +24,9 @@ make_option(VAR "HELIOGRIM_PLATFORM_X11" NAME "PLATFORM_X11" CALLBACK support_op
 make_option(VAR "HELIOGRIM_ASSETS_FORCE_HTTPS" NAME "ASSETS_FORCE_HTTPS" DEFAULT OFF)
 
 # ------------------------------
+# Heliogrim Fuzz Options
+# ------------------------------
+
+option(HG_FUZZ "Build fuzz targets" OFF)
+
+# ------------------------------
