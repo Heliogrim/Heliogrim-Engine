@@ -1,11 +1,11 @@
 #include "ActorHousekeepingStage.hpp"
 
 #include <Engine.ACS.Schedule/ActorPipeline.hpp>
-#include <Engine.Scene.Schedule/ScenePipeline.hpp>
 
 import Engine.ACS;
 import Engine.Core;
 import Engine.Scene;
+import Engine.Scene.Schedule;
 
 using namespace hg::engine::acs::schedule;
 using namespace hg::engine::scheduler;

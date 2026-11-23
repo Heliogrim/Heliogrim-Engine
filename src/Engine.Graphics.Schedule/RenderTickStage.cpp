@@ -4,7 +4,6 @@
 #include <Engine.Graphics/RenderEnqueueResult.hpp>
 #include <Engine.Graphics/RenderTarget.hpp>
 #include <Engine.Graphics.Schedule/RenderScenePipeline.hpp>
-#include <Engine.Scene.Schedule/ScenePipeline.hpp>
 
 #ifdef _PROFILING
 #endif
@@ -15,6 +14,7 @@ import Engine.Common;
 import Engine.Core;
 import Engine.Graphics.Scene;
 import Engine.Logging;
+import Engine.Scene.Schedule;
 
 using namespace hg::engine::graphics::schedule;
 using namespace hg::engine::scheduler;

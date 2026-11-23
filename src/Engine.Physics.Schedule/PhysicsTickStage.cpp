@@ -8,14 +8,14 @@
 
 #include "PhysicsTickStage.hpp"
 
-#include <Engine.Physics.Scene/PhysicsSceneSystem.hpp>
 #include <Engine.Physics.Schedule/PhysicsPipeline.hpp>
-#include <Engine.Scene.Schedule/ScenePipeline.hpp>
 
 import Engine.Core;
 import Engine.Core.Schedule;
 import Engine.Physics;
+import Engine.Physics.Scene;
 import Engine.Scene;
+import Engine.Scene.Schedule;
 
 using namespace hg::engine::physics::schedule;
 using namespace hg::engine::scheduler;

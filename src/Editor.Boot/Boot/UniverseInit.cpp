@@ -2,12 +2,12 @@
 
 #include <Editor.Core/EditorEngine.hpp>
 #include <Editor.Scene.Actions/LoadLevel.hpp>
-#include <Editor.Scene/SceneFactory.hpp>
 #include <Engine.Assets.Type/Universe/LevelAsset.hpp>
 #include <Engine.Serialization/Diagnostic/Codes.hpp>
 #include <Heliogrim/Universe/Level.hpp>
 
 import Editor.Boot;
+import Editor.Scene;
 import Engine.ACS;
 import Engine.Common;
 import Engine.Config;

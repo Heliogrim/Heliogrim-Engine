@@ -27,13 +27,13 @@
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneView.hpp>
 #include <Engine.Graphics.RenderGraph/Symbol/ScopedSymbolContext.hpp>
 #include <Engine.Graphics.Scene.Model/StaticGeometryModel.hpp>
-#include <Engine.Render.Scene/RenderSceneSystem.hpp>
 
 import Engine.ACS;
 import Engine.Common;
 import Engine.Core;
 import Engine.Graphics.Scene;
 import Engine.Reflect;
+import Engine.Render.Scene;
 
 using namespace hg::engine::render;
 using namespace hg::engine::accel;

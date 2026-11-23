@@ -5,7 +5,6 @@
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
-#include <Engine.Scene.Schedule/ScenePipeline.hpp>
 
 #ifdef WIN32
 import Support.Platform.Win32;
@@ -25,6 +24,7 @@ import Engine.Logging;
 import Engine.Network;
 import Engine.Physics;
 import Engine.Platform;
+import Engine.Scene.Schedule;
 import Engine.Scheduler;
 import std;
 

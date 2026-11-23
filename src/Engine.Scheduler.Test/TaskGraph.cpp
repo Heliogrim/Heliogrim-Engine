@@ -2,11 +2,6 @@
 
 /**/
 
-#include <Engine.Scene.Schedule/SceneBroadcastStage.hpp>
-#include <Engine.Scene.Schedule/ScenePipeline.hpp>
-#include <Engine.Scene.Schedule/ScenePostProcessStage.hpp>
-#include <Engine.Scene.Schedule/SceneUpdateStage.hpp>
-
 import Engine.ACS.Schedule;
 import Engine.Common;
 import Engine.Core.Schedule;
@@ -14,6 +9,7 @@ import Engine.Graphics.Schedule;
 import Engine.Input.Schedule;
 import Engine.Physics.Schedule;
 import Engine.Reflow.Schedule;
+import Engine.Scene.Schedule;
 import Engine.Scheduler;
 
 using namespace hg::engine::scheduler::graph;

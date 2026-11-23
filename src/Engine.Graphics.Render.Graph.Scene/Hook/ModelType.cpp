@@ -1,6 +1,6 @@
 #include "ModelType.hpp"
 
-#include <Engine.Render.Scene/RenderSceneSystemModel.hpp>
+import Engine.Render.Scene;
 
 using namespace hg::engine::render::graph;
 using namespace hg;
