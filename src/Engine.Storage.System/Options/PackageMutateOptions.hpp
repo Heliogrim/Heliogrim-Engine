@@ -1,7 +1,10 @@
 #pragma once
 
-#include <Engine.Resource.Package/ReadWritePackage.hpp>
 #include <Engine.Storage.Action/Guard/IoMutationGuard.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Resource.Package;
+#endif
 
 namespace hg::engine::storage {
 	/**/

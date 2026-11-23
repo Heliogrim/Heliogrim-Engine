@@ -1,10 +1,9 @@
 #include "pch.h"
 /**/
 
-#include <Engine.Scene.Support/SceneSystemTypeMappedRegistry.hpp>
-
 import Engine.ACS;
 import Engine.Reflect;
+import Engine.Scene.Support;
 import std;
 
 using namespace hg::engine::scene;

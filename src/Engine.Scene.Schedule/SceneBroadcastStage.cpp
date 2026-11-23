@@ -1,6 +1,5 @@
 #include "SceneBroadcastStage.hpp"
 
-#include <Engine.Scene/Scene.hpp>
 #include <Engine.Scene.Schedule/ScenePipeline.hpp>
 
 import Engine.ACS.Schedule;
@@ -8,6 +7,7 @@ import Engine.Core;
 import Engine.Core.Schedule;
 import Engine.Input.Schedule;
 import Engine.Physics.Schedule;
+import Engine.Scene;
 
 using namespace hg::engine::scene::schedule;
 using namespace hg::engine::scheduler;

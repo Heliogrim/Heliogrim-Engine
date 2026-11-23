@@ -2,12 +2,12 @@
 
 /**/
 
-#include <Engine.Physics.Components/Collision/BoxShapeCollisionComponent.hpp>
-#include <Engine.Scene/SceneBase.hpp>
 #include <Engine.Scene.Game/SceneComponentQueue.hpp>
 
 import Engine.ACS;
 import Engine.Common;
+import Engine.Physics.Components;
+import Engine.Scene;
 
 using namespace hg::engine::scene;
 using namespace hg;

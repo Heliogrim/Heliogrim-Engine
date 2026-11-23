@@ -8,6 +8,7 @@ endif ()
 # Setup
 make_library_project(
         LIB_NAME Engine.Core.Game
+        MODULE
         LIBRARIES
         ${__support_libraries}
         	${PROJECT_NAME}::Engine.Core.Schedule

@@ -1,11 +1,11 @@
 #include "ActorTickStagePrePhysics.hpp"
 
 #include <Engine.ACS.Schedule/ActorPipeline.hpp>
-#include <Engine.Level/Level.hpp>
 
 import Engine.Core;
 import Engine.Core.Schedule;
 import Engine.Input.Schedule;
+import Engine.Level;
 
 using namespace hg::engine::acs::schedule;
 using namespace hg::engine::scheduler;

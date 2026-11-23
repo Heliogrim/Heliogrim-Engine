@@ -6,11 +6,6 @@
 #include <Engine.Graphics.Components/Geometry/BoxShapeGeometryComponent.Layout.hpp>
 #include <Engine.Graphics.Components/Geometry/SphereShapeGeometryComponent.Layout.hpp>
 #include <Engine.Graphics.Components/Geometry/StaticGeometryComponent.Layout.hpp>
-#include <Engine.Level/Level.hpp>
-#include <Engine.Physics.Components/Collision/BoxShapeCollisionComponent.Layout.hpp>
-#include <Engine.Physics.Components/Collision/SphereShapeCollisionComponent.Layout.hpp>
-#include <Engine.Scene/IComponentRegisterContext.hpp>
-#include <Engine.Scene/SceneBase.hpp>
 #include <Heliogrim/Universe/Universe.hpp>
 #include <Heliogrim.Actors/Geometry/BoxShapeGeometryActor.hpp>
 #include <Heliogrim.Actors/Geometry/SphereShapeGeometryActor.hpp>
@@ -24,6 +19,9 @@ import Engine.Common;
 import Engine.Config;
 import Engine.Core;
 import Engine.Event;
+import Engine.Level;
+import Engine.Physics.Components;
+import Engine.Scene;
 import Engine.Serialization;
 
 using namespace HeliogrimApi;

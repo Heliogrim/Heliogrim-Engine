@@ -1,10 +1,8 @@
 #include "Store.hpp"
 
-#include <Engine.Resource.Package/Utils.hpp>
-#include <Engine.Resource.Package/Linker/Indexed.hpp>
-
 import Engine.Asserts;
 import Engine.Resource.Archive;
+import Engine.Resource.Package;
 
 using namespace hg::engine::storage::package;
 using namespace hg::engine::resource::package;

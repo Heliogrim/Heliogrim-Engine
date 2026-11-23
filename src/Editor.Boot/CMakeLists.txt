@@ -5,7 +5,7 @@ make_library_project(
 		MODULE
 		LIB_FOLDER "${IDE_FOLDER}/Editor"
 		LIBRARIES
-			${PROJECT_NAME}::Engine.ACS
+			${PROJECT_NAME}::Engine.Level ${PROJECT_NAME}::Engine.Resource.Package ${PROJECT_NAME}::Engine.ACS
 			${PROJECT_NAME}::Engine.Storage
 		${PROJECT_NAME}::Engine.Serialization
 		${PROJECT_NAME}::Engine.Serialization.Structures

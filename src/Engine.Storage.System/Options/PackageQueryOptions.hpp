@@ -1,7 +1,10 @@
 #pragma once
 
-#include <Engine.Resource.Package/ReadonlyPackage.hpp>
 #include <Engine.Storage.Action/Guard/IoQueryGuard.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Resource.Package;
+#endif
 
 namespace hg::engine::storage {
 	/**/

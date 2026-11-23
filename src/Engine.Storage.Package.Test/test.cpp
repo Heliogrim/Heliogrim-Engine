@@ -3,12 +3,6 @@
 /**/
 
 #include <cstring>
-#include <Engine.Resource.Package/ReadonlyPackage.hpp>
-#include <Engine.Resource.Package/ReadWritePackage.hpp>
-#include <Engine.Resource.Package/Attribute/MagicBytes.hpp>
-#include <Engine.Resource.Package/Attribute/PackageGuid.hpp>
-#include <Engine.Resource.Package/Header/PackageHeader.hpp>
-#include <Engine.Resource.Package/Linker/Indexed.hpp>
 #include <Engine.Storage.Package/Factory.hpp>
 #include <Engine.Storage.Package/Load.hpp>
 #include <Engine.Storage.Package/Processor.hpp>
@@ -20,6 +14,7 @@ import Engine.Common;
 import Engine.Config;
 import Engine.Resource.Archive;
 import Engine.Resource.Blob;
+import Engine.Resource.Package;
 
 using namespace hg::engine::storage::package;
 using namespace hg::engine::resource;

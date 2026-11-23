@@ -1,10 +1,12 @@
 #pragma once
 
-#include <Engine.Common/Expected.hpp>
-#include <Engine.Diagnostics/Diagnostic.hpp>
-#include <Engine.Diagnostics/Sink.hpp>
-#include <Engine.Resource.Package/ReadonlyPackage.hpp>
-#include <Engine.Resource.Package/ReadWritePackage.hpp>
+#include <Engine.Common/Sal.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Diagnostics;
+import Engine.Common;
+import Engine.Resource.Package;
+#endif
 
 #include "PackageError.hpp"
 

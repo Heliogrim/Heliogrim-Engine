@@ -1,11 +1,11 @@
 #include "CameraModel.hpp"
 
 #include <Engine.Graphics.Components/Camera/CameraComponent.hpp>
-#include <Engine.Scene/Scene.hpp>
 
 import Engine.ACS;
 import Engine.Common;
 import Engine.Graphics.Scene;
+import Engine.Scene;
 
 using namespace hg::engine::render;
 using namespace hg;

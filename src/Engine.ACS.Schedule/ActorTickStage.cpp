@@ -1,8 +1,7 @@
 #include "ActorTickStage.hpp"
 
-#include <Engine.Level/Level.hpp>
-
 import Engine.Core;
+import Engine.Level;
 
 using namespace hg::engine::acs::schedule;
 using namespace hg::engine::scheduler;

@@ -1,6 +1,6 @@
 #include "LevelAsset.hpp"
 
-#include <Engine.Level/Level.hpp>
+import Engine.Level;
 
 using namespace hg::engine::assets;
 using namespace hg;

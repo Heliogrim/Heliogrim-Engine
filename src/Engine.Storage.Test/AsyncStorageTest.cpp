@@ -2,7 +2,6 @@
 
 /**/
 
-#include <Engine.Resource.Package/ReadWritePackage.hpp>
 #include <Engine.Storage.Action/Access/AccessError.hpp>
 #include <Engine.Storage.Boot/Action/ActionResolverInit.hpp>
 #include <Engine.Storage.Boot/Action/WindowedArchive.hpp>
@@ -40,6 +39,7 @@ import Engine.Config;
 import Engine.IO.Dispatcher;
 import Engine.Resource.Archive;
 import Engine.Resource.Blob;
+import Engine.Resource.Package;
 
 /**/
 

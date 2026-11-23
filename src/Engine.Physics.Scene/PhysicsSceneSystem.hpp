@@ -1,11 +1,10 @@
 #pragma once
 
-#include <Engine.Scene/SceneSystem.hpp>
-
 #include "PhysicsSceneRegistry.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Scene;
 #endif
 
 namespace JPH {

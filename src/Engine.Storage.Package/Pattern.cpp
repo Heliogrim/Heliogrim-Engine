@@ -2,10 +2,8 @@
 
 #include <cstring>
 #include <stddef.h>
-#include <Engine.Resource.Package/Attribute/MagicBytes.hpp>
-#include <Engine.Resource.Package/Footer/PackageFooter.hpp>
-#include <Engine.Resource.Package/Header/PackageHeader.hpp>
-#include <Engine.Resource.Package/Linker/PackageArchiveHeader.hpp>
+
+import Engine.Resource.Package;
 
 using namespace hg::engine::storage::package;
 using namespace hg::engine::resource::package;

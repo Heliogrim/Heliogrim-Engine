@@ -5,11 +5,10 @@
 #include <Engine.Serialization.Structures/Common/Guid.hpp>
 #include <Engine.Graphics.Components/Geometry/BoxShapeGeometryComponent.Layout.hpp>
 #include <Engine.Graphics.Components/Geometry/SphereShapeGeometryComponent.Layout.hpp>
-#include <Engine.Physics.Components/Collision/BoxShapeCollisionComponent.Layout.hpp>
-#include <Engine.Physics.Components/Collision/SphereShapeCollisionComponent.Layout.hpp>
 #include <Heliogrim/Actor/Archetype/ArchetypeLayout.inl.hpp>
 
 import Engine.Common;
+import Engine.Physics.Components;
 import Engine.Resource.Archive;
 import Engine.Serialization;
 

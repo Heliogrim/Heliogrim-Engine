@@ -1,6 +1,5 @@
 #include "StorageSystem.hpp"
 
-#include <Engine.Resource.Package/Attribute/PackageGuid.hpp>
 #include <Engine.Storage.Package/Factory.hpp>
 #include <Engine.Storage.Package/Pattern.hpp>
 #include <Engine.Storage.Registry/IStorageRegistry.hpp>
@@ -16,6 +15,7 @@ import Engine.Common;
 import Engine.Reflect;
 import Engine.Resource.Archive;
 import Engine.Resource.Blob;
+import Engine.Resource.Package;
 
 using namespace hg::engine::storage;
 using namespace hg;

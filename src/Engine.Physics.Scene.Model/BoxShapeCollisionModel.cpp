@@ -10,12 +10,12 @@
 
 #include <Engine.Common/__macro.hpp>
 
-#include "Engine.Physics.Components/Collision/BoxShapeCollisionComponent.hpp"
 #include "Engine.Physics.Scene/PhysicsSceneSystem.hpp"
 
 import Engine.ACS;
 import Engine.Asserts;
 import Engine.Logging;
+import Engine.Physics.Components;
 import Engine.Reflect;
 
 using namespace hg::engine::physics;

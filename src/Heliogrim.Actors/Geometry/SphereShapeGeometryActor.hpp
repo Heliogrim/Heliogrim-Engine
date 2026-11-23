@@ -1,10 +1,10 @@
 #pragma once
 
 #include <Engine.Graphics.Components/Geometry/SphereShapeGeometryComponent.hpp>
-#include <Engine.Physics.Components/Collision/SphereShapeCollisionComponent.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.ACS;
+import Engine.Physics.Components;
 #endif
 
 namespace hg {

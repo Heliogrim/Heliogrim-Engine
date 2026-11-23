@@ -1,5 +1,7 @@
 #pragma once
-#include <Engine.Scene/SceneBase.hpp>
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Scene;
+#endif
 
 namespace hg::editor {
     class SceneFactory {

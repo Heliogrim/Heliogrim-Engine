@@ -5,12 +5,12 @@
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets.Type/Universe/LevelAsset.hpp>
-#include <Engine.Level/Level.hpp>
 
 #include "InputBindingList.hpp"
 #include "InputService.hpp"
 
 import Engine.Core;
+import Engine.Level;
 
 using namespace hg::editor::ui::service;
 using namespace hg;

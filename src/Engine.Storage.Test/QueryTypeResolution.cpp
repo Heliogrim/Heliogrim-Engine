@@ -2,7 +2,6 @@
 
 /**/
 
-#include <Engine.Resource.Package/Package.hpp>
 #include <Engine.Storage.Action/Access/ExclusiveIoResource.hpp>
 #include <Engine.Storage.Action/Action/QueryStaticGen.hpp>
 #include <Engine.Storage.Boot/Action/ActionResolverInit.hpp>
@@ -13,6 +12,7 @@
 import Engine.Reflect;
 import Engine.Resource.Archive;
 import Engine.Resource.Blob;
+import Engine.Resource.Package;
 
 using namespace hg::engine::storage::system;
 using namespace hg::engine::storage;

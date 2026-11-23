@@ -2,7 +2,7 @@
 # Setup
 make_library_project(
 		LIB_NAME Engine.Scene.Schedule
-		LIBRARIES ${PROJECT_NAME}::Engine.Serialization
+		LIBRARIES ${PROJECT_NAME}::Engine.Serialization ${PROJECT_NAME}::Engine.Scene
 			${PROJECT_NAME}::Engine.Physics.Schedule
 			${PROJECT_NAME}::Engine.Input.Schedule
 			${PROJECT_NAME}::Engine.Core.Schedule

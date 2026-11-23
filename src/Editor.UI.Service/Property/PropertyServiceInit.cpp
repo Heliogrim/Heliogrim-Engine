@@ -4,17 +4,16 @@
 
 /**/
 
-#include <Engine.Reflow.Uikit/Atom/Text.hpp>
-#include <Engine.Reflow.Uikit/Atom/Layout/HorizontalLayout.hpp>
-#include <Engine.Reflow.Uikit/Atom/Layout/UniformGridLayout.hpp>
-#include <Engine.Reflow.Uikit/Atom/Layout/VerticalLayout.hpp>
 #include <Engine.Graphics.Components/Camera/CameraComponent.hpp>
-#include <Engine.Physics.Components/Collision/BoxShapeCollisionComponent.hpp>
 #include <Engine.Graphics.Components/Geometry/StaticGeometryComponent.hpp>
 #include <Engine.Graphics.Components/Light/DirectionalLightComponent.hpp>
 #include <Engine.Graphics.Components/Light/PointLightComponent.hpp>
 #include <Engine.Graphics.Components/Light/SpotLightComponent.hpp>
 #include <Engine.Graphics.Components/Sky/SkyboxComponent.hpp>
+#include <Engine.Reflow.Uikit/Atom/Text.hpp>
+#include <Engine.Reflow.Uikit/Atom/Layout/HorizontalLayout.hpp>
+#include <Engine.Reflow.Uikit/Atom/Layout/UniformGridLayout.hpp>
+#include <Engine.Reflow.Uikit/Atom/Layout/VerticalLayout.hpp>
 
 #include "PropertyServiceInit.hpp"
 
@@ -37,6 +36,7 @@
 
 import Engine.Common;
 import Engine.Core;
+import Engine.Physics.Components;
 import Engine.Reflect;
 
 using namespace hg::editor::ui::service;

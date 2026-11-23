@@ -1,10 +1,10 @@
 #pragma once
-#include <Engine.Scene/SceneSystem.hpp>
 
 #include "RenderSceneRegistry.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Scene;
 #endif
 
 namespace hg::engine::graphics {

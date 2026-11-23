@@ -6,8 +6,6 @@
 
 /**/
 
-#include <Engine.Resource.Package/ReadonlyPackage.hpp>
-#include <Engine.Resource.Package/Linker/Indexed.hpp>
 #include <Engine.Storage.Registry/Options/ArchiveStorageDescriptor.hpp>
 #include <Engine.Storage.Registry/Options/FileStorageDescriptor.hpp>
 #include <Engine.Storage.Registry/Options/MemoryStorageDescriptor.hpp>
@@ -24,6 +22,7 @@ import Engine.Common;
 import Engine.Reflect;
 import Engine.Resource.Archive;
 import Engine.Resource.Blob;
+import Engine.Resource.Package;
 
 /**/
 

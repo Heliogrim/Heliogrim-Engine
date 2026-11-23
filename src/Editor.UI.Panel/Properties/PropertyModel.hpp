@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Editor.UI.Main/EditorUiModel.hpp>
+#include <Engine.Common/Sal.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

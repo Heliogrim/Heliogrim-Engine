@@ -1,8 +1,7 @@
 #pragma once
 
-#include <Engine.Scene/SceneBroadcastFlags.hpp>
-
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Scene;
 import Engine.Scheduler;
 #endif
 

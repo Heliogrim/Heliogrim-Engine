@@ -3,13 +3,13 @@
 /**/
 
 #include <Engine.ACS/Archetype/ArchetypeDefinition.inl.hpp>
-#include <Engine.Scene/SceneSystem.hpp>
 
 #include "SpawnEngine.hpp"
 #include "TestArchetypes.hpp"
 
 import Engine.ACS;
 import Engine.Common;
+import Engine.Scene;
 
 using namespace HeliogrimApi;
 using namespace hg;

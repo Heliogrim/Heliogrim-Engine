@@ -3,9 +3,6 @@
 #include <Engine.ACS/ActorModule.hpp>
 #include <Engine.ACS/Registry.hpp>
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Level/Level.hpp>
-#include <Engine.Scene/IComponentRegisterContext.hpp>
-#include <Engine.Scene/SceneBase.hpp>
 #include <Heliogrim/Core/Session.hpp>
 #include <Heliogrim/Universe/Universe.hpp>
 
@@ -17,8 +14,10 @@
 import Engine.Asserts;
 import Engine.Common;
 import Engine.Core;
+import Engine.Level;
 import Engine.Logging;
 import Engine.Reflect;
+import Engine.Scene;
 import Engine.Serialization;
 import Engine.Serialization.Structures;
 

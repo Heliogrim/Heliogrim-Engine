@@ -1,13 +1,11 @@
 #pragma once
 
-#include <Engine.Scene/IComponentRegisterContext.hpp>
-#include <Engine.Scene/SceneBase.hpp>
-
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.ACS;
 import Engine.Asserts;
 import Engine.Common;
 import Engine.Reflect;
+import Engine.Scene;
 #endif
 
 namespace hg::engine::scene {

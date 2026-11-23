@@ -1,10 +1,10 @@
 #pragma once
 
-#include <Engine.Resource.Package/ReadWritePackage.hpp>
-#include <Engine.Resource.Package/Linker/ReadWritePackageLinker.hpp>
+#include <Engine.Common/Sal.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Resource.Package;
 #endif
 
 namespace hg::engine::storage::package {
