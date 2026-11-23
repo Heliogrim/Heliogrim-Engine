@@ -233,8 +233,11 @@ namespace hg::engine::acs {
 
 		void destroyActor(mref<ptr<Actor>> actor_);
 
-		/* Checked lookup over the pooled actors; archetype actors carry no guid index. */
+		/* Checked lookup over the pooled actors and the live archetype slots of every space (linear scan). */
 		[[nodiscard]] bool contains(ref<const ActorGuid> guid_) const noexcept;
+
+		/* Pooled components only; archetype components live inside their actor's slot and have no guid lookup. */
+		[[nodiscard]] bool contains(ref<const ComponentGuid> guid_) const noexcept;
 
 	private:
 		void hackActorInit(cref<ActorInitializer> initializer_, cref<ActorGuid> guid_) const noexcept;
