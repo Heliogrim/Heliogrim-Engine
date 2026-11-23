@@ -494,8 +494,9 @@ namespace hg {
 		if constexpr (requires { { ActorType_::actorClass() } -> std::same_as<const TypedActorClass<ActorType_>&>; }) {
 			return VolatileActor<ActorType_> { CreateActor(static_cast<ptr<const ActorClass>>(&ActorType_::actorClass())) };
 		} else {
-			// TODO: Secure cast
-			return static_cast<VolatileActor<ActorType_>>(CreateActor(ActorType_::getStaticMetaClass()));
+			// Typed path: the meta-class overload needs a pool registered beforehand; this one creates it on first use.
+			auto& registry = *engine::Engine::getEngine()->getActors()->getRegistry();
+			return VolatileActor<ActorType_> { registry.createActor<ActorType_>(ActorInitializer { registry }) };
 		}
 	}
 
