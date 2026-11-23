@@ -4,6 +4,7 @@
 #include <Engine.Common/Make.hpp>
 
 #include "ScopedStructureSlot.hpp"
+#include "ScopedSlotGuard.hpp"
 #include "SliceSlot.hpp"
 #include "SubstitutionSlot.hpp"
 
