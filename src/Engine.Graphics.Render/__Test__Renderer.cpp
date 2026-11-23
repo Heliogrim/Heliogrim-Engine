@@ -1,8 +1,5 @@
 #include "__Test__Renderer.hpp"
 
-#include <Engine.Accel.Effect/AccelerationEffect.hpp>
-#include <Engine.Accel.Effect/Stage/Stage.hpp>
-#include <Engine.Accel.Effect/Stage/StageFlags.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneColor.hpp>
 #include <Engine.Graphics.Render.Subpass/Impl/__tmp_helper.hpp>
 #include <Engine.Graphics.Render.Subpass/Impl/DepthPrePass.hpp>
@@ -19,6 +16,7 @@
 #include <Engine.Graphics.Render.Subpass/Impl/Visualize.hpp>
 #include <Engine.Reflow.Render/ReflowPass.hpp>
 
+import Engine.Accel.Effect;
 import Engine.Common;
 import Engine.Graphics.RenderGraph;
 

@@ -1,11 +1,10 @@
 #pragma once
 
-#include <Engine.Accel.Effect/AccelerationEffect.hpp>
-
 #include "Profile/EffectProfile.hpp"
 #include "Spec/EffectSpecification.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Accel.Effect;
 import Engine.Accel.Lang;
 import Engine.Common;
 #endif

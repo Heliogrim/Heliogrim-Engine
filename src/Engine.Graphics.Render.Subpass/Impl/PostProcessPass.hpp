@@ -1,11 +1,10 @@
 #pragma once
 
 #include <Engine.Accel.Compile/EffectCompileResult.hpp>
-#include <Engine.Accel.Effect/AccelerationEffect.hpp>
-#include <Engine.Accel.Pass/GraphicsPass.hpp>
-#include <Engine.Accel.Pass/Framebuffer/Framebuffer.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Accel.Effect;
+import Engine.Accel.Pass;
 import Engine.Graphics;
 import Engine.Graphics.RenderGraph;
 #endif

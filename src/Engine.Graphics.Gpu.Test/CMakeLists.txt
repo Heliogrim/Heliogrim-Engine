@@ -9,6 +9,7 @@ make_test_project(
 		LIBRARIES
 		${PROJECT_NAME}::Engine.Accel.Compile
 		${PROJECT_NAME}::Engine.Accel.Lang
+		${PROJECT_NAME}::Engine.Accel.Effect
 		${PROJECT_NAME}::Engine.Accel.Pass
 		${PROJECT_NAME}::Engine.Asserts
 		${PROJECT_NAME}::Engine.Common

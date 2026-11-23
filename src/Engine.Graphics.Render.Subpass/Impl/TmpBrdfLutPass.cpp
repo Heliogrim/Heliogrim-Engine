@@ -6,7 +6,6 @@
 #include <Engine.Accel.Compile/VkEffectCompiler.hpp>
 #include <Engine.Accel.Compile/Profile/EffectProfile.hpp>
 #include <Engine.Accel.Compile/Spec/SimpleEffectSpecification.hpp>
-#include <Engine.Accel.Pass/VkAccelerationPassFactory.hpp>
 #include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
 #include <Engine.Graphics.Core/Graphics.hpp>
@@ -16,6 +15,7 @@
 
 #include "TmpBrdfLutPass.hpp"
 
+import Engine.Accel.Pass;
 import Engine.Common;
 import Engine.Core;
 import Engine.Graphics;

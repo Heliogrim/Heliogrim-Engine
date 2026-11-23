@@ -4,9 +4,6 @@
 #include <Engine.Accel.Compile/VkEffectCompiler.hpp>
 #include <Engine.Accel.Compile/Profile/EffectProfile.hpp>
 #include <Engine.Accel.Compile/Spec/SimpleEffectSpecification.hpp>
-#include <Engine.Accel.Effect/AccelerationEffect.hpp>
-#include <Engine.Accel.Pass/VkAccelerationPassFactory.hpp>
-#include <Engine.Accel.Pass/Framebuffer/Framebuffer.hpp>
 #include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
 #include <Engine.Driver.Vulkan/VkNativeBatch.hpp>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
@@ -14,7 +11,9 @@
 
 #include "FunctionTarget.hpp"
 
+import Engine.Accel.Effect;
 import Engine.Accel.Lang;
+import Engine.Accel.Pass;
 import Engine.Common;
 import Engine.Diagnostics;
 import Engine.Graphics;

@@ -3,7 +3,6 @@
 #include <Engine.Accel.Pipeline/AccelerationPipeline.hpp>
 #include <Engine.Accel.Pipeline/ComputePipeline.hpp>
 #include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
-#include <Engine.Graphics.Geometry/StaticMeshLayout.hpp>
 
 #include "RenderCommandIterator.hpp"
 #include "Commands/AttachResource.hpp"
@@ -29,6 +28,7 @@
 #include "Commands/Lambda.hpp"
 #include "Commands/NextSubpass.hpp"
 
+import Engine.Graphics.Geometry;
 import std;
 
 using namespace hg::engine::render::cmd;

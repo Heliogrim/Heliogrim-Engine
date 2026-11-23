@@ -1,6 +1,5 @@
 #include "VkModuleBuilder.hpp"
 
-#include <Engine.Accel.Effect/Stage/StageFlags.hpp>
 #include <Engine.Accel.Pipeline/VkGraphicsPipeline.hpp>
 #include <Engine.Accel.Pipeline/Stage/StageDerivat.hpp>
 #include <Engine.Common/__macro.hpp>
@@ -8,6 +7,7 @@
 #include "VkModuleSource.hpp"
 #include "../Spec/EffectSpecification.hpp"
 
+import Engine.Accel.Effect;
 import Engine.Asserts;
 import Engine.Common;
 import Engine.Logging;

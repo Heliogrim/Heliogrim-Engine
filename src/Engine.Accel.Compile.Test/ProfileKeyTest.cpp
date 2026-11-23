@@ -2,9 +2,9 @@
 
 /**/
 
-#include <Engine.Accel.Effect/Stage/Stage.hpp>
 #include <Engine.Accel.Storage/HashedState.hpp>
 
+import Engine.Accel.Effect;
 import Engine.Accel.Lang;
 import Engine.Common;
 

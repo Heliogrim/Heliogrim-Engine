@@ -8,7 +8,6 @@
 #include <Engine.Accel.Compile/VkEffectCompiler.hpp>
 #include <Engine.Accel.Compile/Profile/EffectProfile.hpp>
 #include <Engine.Accel.Compile/Spec/SimpleEffectSpecification.hpp>
-#include <Engine.Accel.Pass/VkAccelerationPassFactory.hpp>
 #include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
 #include <Engine.Accel.Pipeline/VkGraphicsPipeline.hpp>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
@@ -24,6 +23,7 @@
 
 #include "ReflowPass.hpp"
 
+import Engine.Accel.Pass;
 import Engine.Asserts;
 import Engine.Assets;
 import Engine.Assets.System;

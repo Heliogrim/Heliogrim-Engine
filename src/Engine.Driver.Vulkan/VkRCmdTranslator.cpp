@@ -1,6 +1,5 @@
 #include "VkRCmdTranslator.hpp"
 
-#include <Engine.Accel.Pass/VkGraphicsPass.hpp>
 #include <Engine.Accel.Pipeline/VkGraphicsPipeline.hpp>
 #include <Engine.Graphics.Core/Graphics.hpp>
 #include <Engine.Graphics.Render.Command/RenderCommandBuffer.hpp>
@@ -21,6 +20,7 @@
 
 #include "VkResourceTable.hpp"
 
+import Engine.Accel.Pass;
 import Engine.Common;
 import Engine.Core;
 import Engine.Graphics;

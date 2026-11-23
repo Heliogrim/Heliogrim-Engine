@@ -1,10 +1,10 @@
 #pragma once
 #include <Engine.Accel.Compile/EffectCompileResult.hpp>
-#include <Engine.Accel.Pass/Framebuffer/Framebuffer.hpp>
 
 #include "../Mesh/MeshSubPass.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Accel.Pass;
 import Engine.Graphics;
 import Engine.Graphics.RenderGraph;
 #endif
