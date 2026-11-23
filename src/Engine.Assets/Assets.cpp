@@ -1,8 +1,6 @@
 #include "Assets.hpp"
 
-#include <Engine.Assets.System/AssetRegistry.hpp>
-#include <Engine.Assets.System/IAssetRegistry.hpp>
-
+import Engine.Assets.System;
 import Engine.Common;
 
 using namespace hg::engine::assets;

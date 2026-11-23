@@ -2,12 +2,11 @@
 #include "StaticGeometryComponent.Layout.hpp"
 
 #include <Engine.ACS/Archetype/ArchetypeLayout.inl.hpp>
-#include <Engine.Assets.Database/AssetDatabase.hpp>
-#include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
 
 import Engine.ACS;
 import Engine.Asserts;
-import Engine.Core;
+import Engine.Assets.Database;
+import Engine.Assets.Type;
 
 using namespace hg::engine::serialization;
 using namespace hg;

@@ -2,10 +2,13 @@
 
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Graphics.Loader/Texture/TextureTransformer.hpp>
-#include <Engine.Resource/Loader/Transformer.hpp>
 
 #include "EditorTextureSubTransformer.hpp"
 #include "Traits.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Resource;
+#endif
 
 namespace hg::editor::graphics::loader {
 	class EditorTextureTransformer final :

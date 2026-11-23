@@ -5,13 +5,13 @@
 #include <Engine.Graphics.Components/Geometry/StaticGeometryComponent.hpp>
 #include <Engine.Graphics.Loader/Geometry/Traits.hpp>
 #include <Engine.Graphics.Loader/Material/Traits.hpp>
-#include <Engine.Resource/ResourceManager.hpp>
 
 import Engine.Assets.Type;
 import Engine.Common;
 import Engine.Core;
 import Engine.Reflect;
 import Engine.Render.Scene;
+import Engine.Resource;
 
 using namespace hg::engine::graphics::scene;
 using namespace hg;

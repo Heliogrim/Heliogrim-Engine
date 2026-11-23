@@ -2,22 +2,20 @@
 
 #include <Engine.Accel.Loader/Effect/EffectResource.hpp>
 #include <Engine.Accel.Loader/Effect/Traits.hpp>
-#include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Graphics/Pool/GlobalResourcePool.hpp>
 #include <Engine.Graphics.Material/MaterialFactory.hpp>
 #include <Engine.Graphics.Render.Predefined/Descriptions/SceneView.hpp>
-#include <Engine.Resource/LoaderManager.hpp>
-#include <Engine.Resource/ResourceManager.hpp>
-#include <Engine.Resource/Manage/UniqueResource.hpp>
 
 #include "../Texture/TextureResource.hpp"
 #include "../Texture/Traits.hpp"
 
 import Engine.Assets;
+import Engine.Assets.System;
 import Engine.Assets.Type;
 import Engine.Common;
 import Engine.Core;
 import Engine.Reflect;
+import Engine.Resource;
 
 using namespace hg::engine::graphics::loader;
 using namespace hg::engine::graphics;

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Resource/Manage/ResourceBase.hpp>
 
 #include "__fwd.hpp"
 #include "CacheResult.hpp"
@@ -10,6 +9,7 @@
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Assets;
 import Engine.Common;
+import Engine.Resource;
 #endif
 
 namespace hg::engine::graphics::cache {

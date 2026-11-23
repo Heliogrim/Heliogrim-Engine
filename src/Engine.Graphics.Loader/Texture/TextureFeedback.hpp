@@ -1,12 +1,12 @@
 #pragma once
 
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Resource/Loader/Feedback.hpp>
 
 #include "Traits.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Resource;
 #endif
 
 namespace hg::engine::graphics::loader {

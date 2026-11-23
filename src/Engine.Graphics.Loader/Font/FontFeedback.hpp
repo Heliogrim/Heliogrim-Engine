@@ -1,8 +1,10 @@
 #pragma once
 
-#include <Engine.Resource/Loader/Feedback.hpp>
-
 #include "Traits.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Resource;
+#endif
 
 namespace hg::engine::graphics::loader {
     class FontFeedback final : public resource::loader::Feedback<assets::FontAsset, FontResource> {

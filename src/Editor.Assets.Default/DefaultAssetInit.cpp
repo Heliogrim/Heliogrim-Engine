@@ -4,8 +4,6 @@
 #include "DefaultAssetInit.hpp"
 
 #include "Engine.Accel/Accel.hpp"
-#include "Engine.Assets.System/AssetDescriptor.hpp"
-#include "Engine.Assets.System/IAssetRegistry.hpp"
 #include "Engine.Graphics.Render.Predefined/Effects/BrdfBase.hpp"
 #include "Engine.Graphics.Render.Predefined/Effects/Skybox.hpp"
 #include "Fonts/Default.hpp"
@@ -15,6 +13,7 @@
 #include "Textures/Default.hpp"
 
 import Engine.Assets;
+import Engine.Assets.System;
 import Engine.Assets.Type;
 import Engine.Core;
 

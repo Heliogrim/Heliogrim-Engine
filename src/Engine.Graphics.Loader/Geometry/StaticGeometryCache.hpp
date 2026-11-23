@@ -1,9 +1,12 @@
 #pragma once
 
 #include <Engine.Graphics/Cache/__fwd.hpp>
-#include <Engine.Resource/Loader/Cache.hpp>
 
 #include "Traits.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Resource;
+#endif
 
 namespace hg::engine::graphics::loader {
     class StaticGeometryCache final : public resource::loader::Cache<assets::StaticGeometry, StaticGeometryResource> {

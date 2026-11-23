@@ -3,12 +3,12 @@
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Graphics/Cache/__fwd.hpp>
 #include <Engine.Graphics/Cache/CacheResult.hpp>
-#include <Engine.Resource/Loader/Cache.hpp>
 
 #include "Traits.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Resource;
 #endif
 
 namespace hg::engine::graphics::loader {

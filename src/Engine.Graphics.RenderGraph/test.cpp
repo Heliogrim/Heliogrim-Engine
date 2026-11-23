@@ -13,7 +13,6 @@
 #include <Engine.Graphics.RenderGraph/Relation/Description.hpp>
 #include <Engine.Graphics.RenderGraph/Relation/Provision.hpp>
 #include <Engine.Graphics.RenderGraph.Compile/RenderGraphCompiler.hpp>
-#include <Engine.Resource/Manage/UniqueResource.hpp>
 
 #include "CompileGraph.hpp"
 #include "Builder/Builder.hpp"
@@ -29,6 +28,7 @@
 
 import Engine.Common;
 import Engine.Logging;
+import Engine.Resource;
 
 using namespace hg::engine::render;
 using namespace hg::engine::graphics;

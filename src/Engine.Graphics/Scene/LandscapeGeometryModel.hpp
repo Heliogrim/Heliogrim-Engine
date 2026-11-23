@@ -1,8 +1,11 @@
 #pragma once
 #include <Engine.Assets/Types/LandscapeGeometry.hpp>
-#include <Engine.Resource/Manage/Resource.hpp>
 
 #include "SceneNodeModel.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Resource;
+#endif
 
 namespace hg::engine::graphics {
     class LandscapeGeometryModel :

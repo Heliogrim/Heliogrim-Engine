@@ -1,12 +1,12 @@
 #include "SkyboxModel.hpp"
 
 #include <Engine.Graphics.Components/Sky/SkyboxComponent.hpp>
-#include <Engine.Resource/ResourceManager.hpp>
 
 import Engine.Assets.Type;
 import Engine.Common;
 import Engine.Core;
 import Engine.Reflect;
+import Engine.Resource;
 
 using namespace hg::engine::graphics;
 using namespace hg;

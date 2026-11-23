@@ -1,12 +1,12 @@
 #pragma once
 #include <Engine.Graphics.Loader/Geometry/StaticGeometryResource.hpp>
-#include <Engine.Resource/Manage/Resource.hpp>
 
 #include "GeometryModel.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Assets.Type;
 import Engine.Common;
+import Engine.Resource;
 #endif
 
 namespace hg::engine::graphics::scene {

@@ -1,10 +1,8 @@
 #include "AssetDatabase.hpp"
 
-#include <Engine.Assets.System/AssetDescriptor.hpp>
-#include <Engine.Assets.System/IAssetRegistry.hpp>
-
 import Engine.Asserts;
 import Engine.Assets;
+import Engine.Assets.System;
 import Engine.Assets.Type;
 import Engine.Common;
 import Engine.Core;

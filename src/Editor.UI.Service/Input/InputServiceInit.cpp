@@ -2,12 +2,12 @@
 
 #include <Editor.Core/EditorEngine.hpp>
 #include <Editor.Scene.Actions/SaveLevel.hpp>
-#include <Engine.Assets.System/IAssetRegistry.hpp>
 
 #include "InputBindingList.hpp"
 #include "InputService.hpp"
 
 import Engine.Assets;
+import Engine.Assets.System;
 import Engine.Assets.Type;
 import Engine.Core;
 import Engine.Level;

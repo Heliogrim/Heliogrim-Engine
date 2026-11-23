@@ -1,9 +1,12 @@
 #pragma once
 
 #include <Engine.Graphics/Pool/__fwd.hpp>
-#include <Engine.Resource/Loader/Transformer.hpp>
 
 #include "Traits.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Resource;
+#endif
 
 namespace hg::engine::graphics::loader {
     class MaterialPrototypeTransformer final :

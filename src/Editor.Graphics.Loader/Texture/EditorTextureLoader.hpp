@@ -1,12 +1,15 @@
 #pragma once
 #include <Engine.Graphics/Cache/GlobalCacheCtrl.hpp>
 #include <Engine.Graphics/Pool/GlobalResourcePool.hpp>
-#include <Engine.Resource/Loader/LoaderChain.hpp>
 
 #include "__fwd.hpp"
 #include "EditorTextureCache.hpp"
 #include "EditorTextureFeedback.hpp"
 #include "EditorTextureTransformer.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Resource;
+#endif
 
 namespace hg::editor::graphics::loader {
 	/**/

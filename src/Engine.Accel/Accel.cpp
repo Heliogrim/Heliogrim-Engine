@@ -1,10 +1,10 @@
 #include "Accel.hpp"
 
 #include <Engine.Accel.Loader/Manager.hpp>
-#include <Engine.Resource/ResourceManager.hpp>
 
 import Engine.Common;
 import Engine.Core;
+import Engine.Resource;
 
 using namespace hg::engine::core;
 using namespace hg::engine;

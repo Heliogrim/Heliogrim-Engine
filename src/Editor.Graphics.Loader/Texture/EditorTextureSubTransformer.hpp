@@ -1,8 +1,11 @@
 #pragma once
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Resource/Loader/Transformer.hpp>
 
 #include "Traits.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Resource;
+#endif
 
 namespace hg::editor::graphics::loader {
 	class macro_novtable EditorTextureSubTransformer :

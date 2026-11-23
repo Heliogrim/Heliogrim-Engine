@@ -1,20 +1,20 @@
 #include "Jpeg.hpp"
 
-#include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Graphics/Buffer/Buffer.hpp>
 #include <Engine.Graphics/Buffer/BufferFactory.hpp>
 #include <Engine.Graphics/Device/Device.hpp>
 #include <Engine.Graphics/Pool/GlobalResourcePool.hpp>
 #include <Engine.Graphics/Texture/SparseTexturePage.hpp>
 #include <Engine.Graphics/Texture/SparseTextureView.hpp>
-#include <Engine.Resource/Manage/UniqueResource.hpp>
 #include <stb/stb_image.h>
 
 import Engine.Asserts;
 import Engine.Assets;
+import Engine.Assets.System;
 import Engine.Assets.Type;
 import Engine.Core;
 import Engine.Reflect;
+import Engine.Resource;
 import Engine.Storage.System;
 import vulkan;
 

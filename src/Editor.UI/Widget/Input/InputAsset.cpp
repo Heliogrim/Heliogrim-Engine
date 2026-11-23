@@ -1,25 +1,23 @@
 #include "InputAsset.hpp"
 
-#include <Engine.Assets.Database/AssetDatabase.hpp>
-#include <Engine.Assets.Database/AssetDatabaseResult.hpp>
-#include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.Loader/Texture/TextureResource.hpp>
 #include <Engine.Graphics.Loader/Texture/Traits.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/BoxLayout.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/HorizontalLayout.hpp>
-#include <Engine.Resource/LoaderManager.hpp>
-#include <Engine.Resource/ResourceManager.hpp>
 #include <Heliogrim/Heliogrim.hpp>
 
 #include "../../Helper/AssetBrowserHelper.hpp"
 
 import Engine.Asserts;
 import Engine.Assets;
+import Engine.Assets.Database;
+import Engine.Assets.System;
 import Engine.Common;
 import Engine.Core;
 import Engine.Filesystem;
 import Engine.Logging;
+import Engine.Resource;
 
 using namespace hg::editor::ui;
 using namespace hg::engine::reflow;

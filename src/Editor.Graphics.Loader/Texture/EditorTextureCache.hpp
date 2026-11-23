@@ -2,9 +2,12 @@
 
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Graphics/Cache/CacheResult.hpp>
-#include <Engine.Resource/Loader/Cache.hpp>
 
 #include "Traits.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Resource;
+#endif
 
 namespace hg::editor::graphics::loader {
 	class EditorTextureCache final :

@@ -9,7 +9,6 @@
 #include <Engine.Accel.Pass/VkAccelerationPassFactory.hpp>
 #include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
 #include <Engine.Accel.Pipeline/VkGraphicsPipeline.hpp>
-#include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
 #include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Graphics/Buffer/Buffer.hpp>
@@ -30,18 +29,19 @@
 #include <Engine.Reflow/Command/ReflowCommandBuffer.hpp>
 #include <Engine.Reflow/Scene/UISceneModel.hpp>
 #include <Engine.Reflow/Window/Window.hpp>
-#include <Engine.Resource/ResourceManager.hpp>
 #include <Heliogrim/Graphics/TextureFormat.hpp>
 #include <Heliogrim/Graphics/TextureType.hpp>
 
 import Engine.Asserts;
 import Engine.Assets;
+import Engine.Assets.System;
 import Engine.Assets.Type;
 import Engine.Common;
 import Engine.Core;
 import Engine.Graphics.Scene;
 import Engine.Reflect;
 import Engine.Render.Scene;
+import Engine.Resource;
 
 /**/
 

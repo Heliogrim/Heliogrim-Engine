@@ -9,7 +9,7 @@ make_library_project(
 			${PROJECT_NAME}::Engine.Storage
 		${PROJECT_NAME}::Engine.Serialization
 		${PROJECT_NAME}::Engine.Serialization.Structures
-		${PROJECT_NAME}::Engine.Assets.Database
+		${PROJECT_NAME}::Engine.Assets.Database ${PROJECT_NAME}::Engine.Assets.System ${PROJECT_NAME}::Engine.Resource
 		${PROJECT_NAME}::Editor.Action
 		${PROJECT_NAME}::Editor.Assets.Actions
 		${PROJECT_NAME}::Editor.Assets.Default

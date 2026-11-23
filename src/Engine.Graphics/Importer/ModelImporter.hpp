@@ -1,10 +1,9 @@
 #pragma once
 
-#include <Engine.Resource/Importer/Importer.hpp>
-
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Assets.Type;
 import Engine.Filesystem;
+import Engine.Resource;
 #endif
 
 namespace hg::engine::graphics {

@@ -1,7 +1,6 @@
 #include "StaticGeometryComponent.hpp"
 
-#include <Engine.Assets.Database/AssetDatabase.hpp>
-
+import Engine.Assets.Database;
 import Engine.Serialization;
 
 #include "AssetResolve.hpp"

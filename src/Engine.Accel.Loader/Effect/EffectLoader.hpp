@@ -1,13 +1,16 @@
 #pragma once
 
 #include <Engine.Graphics/Cache/__fwd.hpp>
-#include <Engine.Resource/Loader/LoaderChain.hpp>
 
 #include "__fwd.hpp"
 #include "EffectCache.hpp"
 #include "EffectFeedback.hpp"
 #include "EffectResource.hpp"
 #include "EffectTransformer.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Resource;
+#endif
 
 namespace hg::engine::accel::loader {
     using EffectSourceLoader = ::hg::engine::resource::loader::SourceLoader;

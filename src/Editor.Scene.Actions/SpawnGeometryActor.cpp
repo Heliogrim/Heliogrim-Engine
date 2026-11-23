@@ -1,6 +1,8 @@
 #include "SpawnGeometryActor.hpp"
 
+import Editor.Assets.Default;
 import Engine.ACS;
+import Engine.Assets.Database;
 import Engine.Common;
 
 using namespace hg::editor::scene::actions;
@@ -31,13 +33,9 @@ SpawnGeometryActor::~SpawnGeometryActor() = default;
 
 /**/
 
-#include <Editor.Assets.Default/GraphicsMaterials/Default.hpp>
-#include <Editor.Assets.Default/Meshes/Default.hpp>
 #include <Editor.Core/EditorEngine.hpp>
 #include <Editor.UI.Main/EditorUI.hpp>
 #include <Editor.UI.Main/Module/EditorUI.hpp>
-#include <Engine.Assets.Database/Asset/GeometryAssetHandles.hpp>
-#include <Engine.Assets.Database/Asset/MaterialAssetHandles.hpp>
 #include <Heliogrim/Heliogrim.hpp>
 #include <Heliogrim/Core/Session.hpp>
 #include <Heliogrim/Universe/Universe.hpp>

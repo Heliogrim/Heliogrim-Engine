@@ -1,11 +1,11 @@
 #pragma once
 
-#include <Engine.Assets.Database/AssetDatabase.hpp>
 #include <Engine.Common/Sal.hpp>
 
 #include "Core/Session.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Assets.Database;
 import Engine.Common;
 #endif
 

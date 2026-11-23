@@ -2,7 +2,7 @@
 
 /**/
 
-#include <Engine.Resource/Manage/UniqueResource.hpp>
+import Engine.Resource;
 
 using namespace hg;
 using namespace hg::engine::resource;

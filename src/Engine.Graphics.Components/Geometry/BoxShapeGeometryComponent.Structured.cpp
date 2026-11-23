@@ -1,7 +1,6 @@
 #include "BoxShapeGeometryComponent.hpp"
 
-#include <Engine.Assets.Database/AssetDatabase.hpp>
-
+import Engine.Assets.Database;
 #include "AssetResolve.hpp"
 import Engine.Common;
 import Engine.Serialization;
