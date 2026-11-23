@@ -2,11 +2,6 @@
 
 #include <Engine.Storage.Package/Factory.hpp>
 #include <Engine.Storage.Package/Pattern.hpp>
-#include <Engine.Storage.Registry/IStorageRegistry.hpp>
-#include <Engine.Storage.Registry/Options/ArchiveStorageDescriptor.hpp>
-#include <Engine.Storage.Registry/Options/StorageDescriptor.hpp>
-#include <Engine.Storage.Registry/Storage/StorageName.hpp>
-#include <Engine.Storage.Registry/Url/StorageUrl.hpp>
 
 #include "Details/StorageActionResolver.hpp"
 
@@ -16,6 +11,7 @@ import Engine.Reflect;
 import Engine.Resource.Archive;
 import Engine.Resource.Blob;
 import Engine.Resource.Package;
+import Engine.Storage.Registry;
 
 using namespace hg::engine::storage;
 using namespace hg;

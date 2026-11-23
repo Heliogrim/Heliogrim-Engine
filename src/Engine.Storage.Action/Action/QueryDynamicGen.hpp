@@ -1,13 +1,12 @@
 #pragma once
 
-#include <Engine.Storage.Registry/IStorage.hpp>
-
 #include "DynamicStage.hpp"
 #include "../Query.hpp"
 #include "../Access/IoResourceAccessor.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Storage.Registry;
 #endif
 
 namespace hg::engine::storage::system {

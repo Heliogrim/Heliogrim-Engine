@@ -2,12 +2,6 @@
 
 #include <Engine.Storage.Action/Guard/IoMutationGuard.hpp>
 #include <Engine.Storage.Action/Guard/IoQueryGuard.hpp>
-#include <Engine.Storage.Registry/IStorage.hpp>
-#include <Engine.Storage.Registry/Storage/ArchiveStorage.hpp>
-#include <Engine.Storage.Registry/Storage/LocalFileStorage.hpp>
-#include <Engine.Storage.Registry/Storage/MemoryStorage.hpp>
-#include <Engine.Storage.Registry/Storage/PackageStorage.hpp>
-#include <Engine.Storage.Registry/Url/FileUrl.hpp>
 
 #include "Options/ArchiveMutateOptions.hpp"
 #include "Options/ArchiveQueryOptions.hpp"
@@ -24,6 +18,7 @@
 import Engine.Async;
 import Engine.Common;
 import Engine.Resource.Archive;
+import Engine.Storage.Registry;
 #endif
 
 namespace hg::engine::resource {

@@ -41,4 +41,5 @@ make_library_project(
 		${PROJECT_NAME}::Engine.Graphics.Components
 		${PROJECT_NAME}::Engine.Async
 		${PROJECT_NAME}::Engine.Scheduler
+		${PROJECT_NAME}::Engine.Storage.Registry
 )

@@ -8,8 +8,6 @@
 
 #include <Engine.Assets.Type/Texture/ImageAsset.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
-#include <Engine.Storage.Registry/IStorageRegistry.hpp>
-#include <Engine.Storage.Registry/Storage/PackageStorage.hpp>
 
 #include "ImageImporter.hpp"
 #include "../vkinc.hpp"
@@ -22,6 +20,7 @@
 import Engine.Common;
 import Engine.Logging;
 import Engine.Serialization;
+import Engine.Storage.Registry;
 
 using namespace hg::engine::graphics;
 using namespace hg;

@@ -5,20 +5,6 @@
 #include <Engine.Storage.Action/Access/AccessError.hpp>
 #include <Engine.Storage.Boot/Action/ActionResolverInit.hpp>
 #include <Engine.Storage.Boot/Action/WindowedArchive.hpp>
-#include <Engine.Storage.Registry/Options/ArchiveStorageDescriptor.hpp>
-#include <Engine.Storage.Registry/Options/FileStorageDescriptor.hpp>
-#include <Engine.Storage.Registry/Options/PackageStorageDescriptor.hpp>
-#include <Engine.Storage.Registry/Options/StorageDescriptor.hpp>
-#include <Engine.Storage.Registry/Repository/CacheFileSystemRepository.hpp>
-#include <Engine.Storage.Registry/Provider/LocalFileSystemProvider.hpp>
-#include <Engine.Storage.Registry/Registry/StorageRegistry.hpp>
-#include <Engine.Storage.Registry/Repository/CacheFileSystemRepository.hpp>
-#include <Engine.Storage.Registry/Storage/ArchiveStorage.hpp>
-#include <Engine.Storage.Registry/Storage/LocalFileStorage.hpp>
-#include <Engine.Storage.Registry/Storage/PackageStorage.hpp>
-#include <Engine.Storage.Registry/Url/ArchiveUrl.hpp>
-#include <Engine.Storage.Registry/Url/FileUrl.hpp>
-#include <Engine.Storage.Registry/Url/PackageUrl.hpp>
 #include <Engine.Storage.System/StorageSystem.hpp>
 #include <Engine.Storage.System/Details/StorageActionResolver.hpp>
 
@@ -40,6 +26,7 @@ import Engine.IO.Dispatcher;
 import Engine.Resource.Archive;
 import Engine.Resource.Blob;
 import Engine.Resource.Package;
+import Engine.Storage.Registry;
 
 /**/
 

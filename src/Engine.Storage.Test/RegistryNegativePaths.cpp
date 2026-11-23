@@ -6,13 +6,8 @@
 
 /**/
 
-#include <Engine.Storage.Registry/Options/MemoryStorageDescriptor.hpp>
-#include <Engine.Storage.Registry/Options/MemoryStorageOption.hpp>
-#include <Engine.Storage.Registry/Options/StorageDescriptor.hpp>
-#include <Engine.Storage.Registry/Url/MemoryUrl.hpp>
-#include <Engine.Storage.Registry/Url/StorageUrl.hpp>
-
 import Engine.Common;
+import Engine.Storage.Registry;
 
 using namespace hg;
 

@@ -1,9 +1,8 @@
 #pragma once
 
-#include <Engine.Storage.Registry/Url/Scheme.hpp>
-
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Filesystem;
+import Engine.Storage.Registry;
 #endif
 
 namespace hg::engine::res {

@@ -2,22 +2,13 @@
 
 /**/
 
-#include <Engine.Storage.Registry/IStorage.hpp>
-#include <Engine.Storage.Registry/Options/StorageDescriptor.hpp>
-#include <Engine.Storage.Registry/Provider/LocalFileSystemProvider.hpp>
-#include <Engine.Storage.Registry/Registry/StorageRegistry.hpp>
-#include <Engine.Storage.Registry/Repository/CacheFileSystemRepository.hpp>
-#include <Engine.Storage.Registry/Repository/EditorReadOnlyRepository.hpp>
-#include <Engine.Storage.Registry/Repository/ProjectFileSystemRepository.hpp>
-#include <Engine.Storage.Registry/Repository/RuntimeFileSystemRepository.hpp>
-#include <Engine.Storage.Registry/Url/StorageUrl.hpp>
-
 #include "Scratch.hpp"
 
 import Engine.Common;
 import Engine.Config;
 import Engine.Config.Providers;
 import Engine.Filesystem;
+import Engine.Storage.Registry;
 
 using namespace hg;
 

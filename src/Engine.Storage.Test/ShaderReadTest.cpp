@@ -6,11 +6,9 @@
 
 /**/
 
-#include <Engine.Storage.Registry/Provider/LocalFileSystemProvider.hpp>
-#include <Engine.Storage.Registry/Repository/EditorReadOnlyRepository.hpp>
-#include <Engine.Storage.Registry/Url/Scheme.hpp>
 #include <Engine.Storage.System/ReadText.hpp>
 
+import Engine.Storage.Registry;
 import std;
 
 /**/

@@ -4,7 +4,6 @@
 #include <Engine.Assets.Type/Texture/ImageAsset.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 #include <Engine.Assets.Type/Universe/LevelAsset.hpp>
-#include <Engine.Storage.Registry/Storage/PackageStorage.hpp>
 /**/
 
 #include <Editor.Action/ActionManager.hpp>
@@ -19,9 +18,6 @@
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 #include <Engine.Storage.Package/Pattern.hpp>
-#include <Engine.Storage.Registry/IStorage.hpp>
-#include <Engine.Storage.Registry/Options/StorageDescriptor.hpp>
-#include <Engine.Storage.Registry/Storage/LocalFileStorage.hpp>
 #include <Engine.Storage.System/StorageSystem.hpp>
 
 import Editor.Boot;
@@ -36,7 +32,7 @@ import Engine.Resource.Package;
 import Engine.Serialization;
 import Engine.Serialization.Structures;
 import Engine.Storage;
-import Engine.Diagnostics;
+import Engine.Storage.Registry;
 
 using namespace hg::editor::boot;
 using namespace hg::engine;
