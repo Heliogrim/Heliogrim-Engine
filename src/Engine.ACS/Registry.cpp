@@ -25,8 +25,20 @@ Registry::~Registry() {
 }
 
 void Registry::removeActorComponent(ref<const ComponentGuid> guid_, ref<const ComponentTypeId> typeId_) {
-	auto* pool = _pools.at(typeId_);
-	pool->erase(guid_);
+	// Pools are keyed by static type id, but a type without its own meta class reports its base's id; find the owner.
+	if (const auto where = _pools.find(typeId_); where != _pools.end() && where->second->get(guid_) != nullptr) {
+		where->second->erase(guid_);
+		return;
+	}
+
+	for (const auto& [id, pool] : _pools) {
+		if (pool->get(guid_) != nullptr) {
+			pool->erase(guid_);
+			return;
+		}
+	}
+
+	::hg::assertd(false && "released component is not held by any pool of this registry");
 }
 
 void Registry::releaseActorComponent(mref<VolatileComponent<>> component_) {
