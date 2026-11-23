@@ -73,13 +73,21 @@ void PackageReadWriteArchive::serializeBytes(const ptr<void> value_, u64 size_, 
 
 void PackageReadWriteArchive::preload(streamsize size_) {
 
+	if (size_ < 0 || size_ > _linked.data.size) {
+		setError();
+		return;
+	}
+
 	_buffer.resize(size_, _::byte {});
 
 	/**/
 
 	constexpr streamoff contentOffset = sizeof(PackageHeader);
 	auto result = _storage.read(contentOffset + _linked.data.offset, _buffer.getByteSpan());
-	::hg::assertrt(result.size() >= size_);
+	if (static_cast<streamsize>(result.size()) < size_) {
+		setError();
+		return;
+	}
 
 	_size = size_;
 	_cursor = streamoff {};

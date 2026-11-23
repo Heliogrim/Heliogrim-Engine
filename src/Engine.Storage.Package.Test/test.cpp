@@ -15,6 +15,7 @@
 #include <Engine.Resource.Archive/BufferArchive.hpp>
 #include <Engine.Resource.Archive/MemoryReadonlyArchive.hpp>
 #include <Engine.Resource.Archive/StorageReadWriteArchive.hpp>
+#include <Engine.Resource.Archive/Storage/PackageReadWriteArchive.hpp>
 #include <Engine.Resource.Blob/Memory/ByteSpanBlob.hpp>
 #include <Engine.Resource.Package/ReadonlyPackage.hpp>
 #include <Engine.Resource.Package/ReadWritePackage.hpp>
@@ -689,5 +690,31 @@ namespace PackageModule {
 		}
 
 		EXPECT_EQ(recover, data2);
+	}
+}
+
+namespace PackageModule {
+	TEST(PackageReadWriteArchive, PreloadOutOfRangeFails) {
+
+		auto raw = Array<_::byte, sizeof(PackageHeader) + sizeof(PackageFooter) + 16uLL> {};
+		auto blob = ByteSpanBlob { raw };
+		auto package = make_read_write_package(blob);
+		auto& linked = package.getLinker().add({ .type = ArchiveType::eRaw, .guid = ArchiveGuid::random() });
+
+		// The linked size comes from the package index; here it claims more than the storage holds.
+		linked.data = LinkedDataSpan { .offset = 0LL, .size = 1024LL };
+		{
+			auto archive = PackageReadWriteArchive { package, linked };
+			archive.preload(linked.data.size);
+			EXPECT_TRUE(archive.hasError());
+		}
+
+		// A preload larger than the linked span must not read past it.
+		linked.data = LinkedDataSpan { .offset = 0LL, .size = 8LL };
+		{
+			auto archive = PackageReadWriteArchive { package, linked };
+			archive.preload(16LL);
+			EXPECT_TRUE(archive.hasError());
+		}
 	}
 }
