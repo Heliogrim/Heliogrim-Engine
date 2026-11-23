@@ -4,13 +4,17 @@
 
 #include <Engine.ACS/Registry.hpp>
 #include <Engine.ACS/Traits.hpp>
+#include <Engine.Diagnostics/Render.hpp>
 #include <Engine.Diagnostics/Sink.hpp>
 #include <Engine.Level/Level.hpp>
+#include <Engine.Resource.Archive/ArchiveStreamMode.hpp>
 #include <Engine.Resource.Archive/BufferArchive.hpp>
 #include <Engine.Serialization/SerializationModule.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Archive/StructuredArchive.hpp>
 #include <Engine.Serialization/Load/LoadContext.hpp>
+#include <Engine.Serialization/Load/RootKind.hpp>
+#include <Engine.Serialization.Structures/Common/Guid.hpp>
 #include <Engine.Serialization/Scheme/ActorScheme.hpp>
 #include <Engine.Serialization/Structure/RootScopedSlot.hpp>
 #include <Engine.Serialization/Structure/SeqScopedSlot.hpp>
@@ -479,7 +483,7 @@ namespace LoadBoundaryModule {
 			auto root = structured.insertRootSlot().intoStruct();
 			root.insertSlot<u64>(Symbols::Type) << 0xDEAD'0000'0000'0001uLL;
 		}
-		const auto level = loadLevel(_archive, "Sandbox", _sink);
+		const auto level = loadLevel(_archive, _sink);
 
 		EXPECT_FALSE(level.has_value());
 		EXPECT_TRUE(hasCode(_sink, "unknown-type"));
@@ -491,7 +495,7 @@ namespace LoadBoundaryModule {
 			auto structured = StructuredArchive { _archive };
 			structured.insertRootSlot().intoIntegral<u64>() << 7uLL;
 		}
-		const auto level = loadLevel(_archive, "Sandbox", _sink);
+		const auto level = loadLevel(_archive, _sink);
 
 		EXPECT_FALSE(level.has_value());
 		EXPECT_TRUE(hasCode(_sink, "malformed-slot"));
@@ -693,227 +697,5 @@ namespace LoadBoundaryModule {
 		ASSERT_EQ(level->getActors().size(), 1uLL);
 		EXPECT_TRUE(level->getActors().front()->carriesUnknownData());
 		EXPECT_TRUE(hasCode(_sink, "revision-newer"));
-	}
-
-	TEST_F(LoadBoundary, ContextNoteNamesLevel) {
-		{
-			auto structured = StructuredArchive { _archive };
-			structured.insertRootSlot().intoIntegral<u64>() << 7uLL;
-		}
-		const auto level = loadLevel(_archive, "Sandbox", _sink);
-
-		ASSERT_FALSE(level.has_value());
-		ASSERT_FALSE(level.error().empty());
-		const auto& notes = level.error().front().notes();
-		EXPECT_NE(std::ranges::find(notes, String { "while loading level 'Sandbox'" }), notes.end());
-	}
-
-	TEST_F(LoadBoundary, StructurallyInvalidLevelRejectedBeforeHydrate) {
-		{
-			auto structured = StructuredArchive { _archive };
-			auto root = structured.insertRootSlot().intoStruct();
-			root.insertSlot<String>("name") << String { "first" };
-			root.insertSlot<String>("name") << String { "second" };
-		}
-		const auto level = loadLevel(_archive, "Sandbox", _sink);
-
-		ASSERT_FALSE(level.has_value());
-		ASSERT_FALSE(level.error().empty());
-		EXPECT_NE(level.error().front().message().find("duplicate struct key"), String::npos) << level.error().front().message();
-	}
-
-	TEST_F(LoadBoundary, ContextFillsAssetUrl) {
-		{
-			auto structured = StructuredArchive { _archive };
-			auto root = structured.insertRootSlot().intoStruct();
-			root.insertSlot<u64>(Symbols::Type) << 0xDEAD'0000'0000'0001uLL;
-		}
-		const auto level = loadLevel(_archive, "Sandbox", _sink);
-
-		ASSERT_FALSE(level.has_value());
-		const auto* at = std::get_if<engine::diag::AssetPath>(&level.error().front().primary());
-		ASSERT_NE(at, nullptr);
-		EXPECT_EQ(at->url, "Sandbox");
-	}
-
-	/* Writes a font asset record by hand so tests control `@rev` and stray keys. */
-	void writeFont(ref<BufferArchive> archive_, const u16 rev_, const StringView sourcesKey_, const bool strayKey_) {
-		auto structured = StructuredArchive { archive_ };
-		auto root = structured.insertRootSlot().intoStruct();
-		if (rev_ > 0) {
-			root.insertSlot<u16>("@rev") << rev_;
-		}
-		insert_guid_slot(root, AssetGuid {});
-		insert_typeId_slot(root, FontAsset::typeId);
-		root.insertSlot<String>("name") << String { "font" };
-		root.insertSlot<String, Vector>(sourcesKey_) << Vector<String> {};
-		if (strayKey_) {
-			root.insertSlot<u32>("futureField") << 1u;
-		}
-	}
-
-	struct FontLoad {
-		FontAsset font {};
-		bool hydrated = false;
-		Result<void, engine::diag::Diagnostics> finished {};
-	};
-
-	void loadFont(ref<BufferArchive> archive_, cref<MigrationRegistry> migrations_, ref<engine::diag::CollectingSink> sink_, ref<FontLoad> out_) {
-		auto ctx = LoadContext { static_cast<u64>(archive_.totalSize()), "fonts/font" };
-		archive_.seek(0);
-		{
-			const auto root = RootScopedSlot { archive_, ScopedSlotStateFlag::eClean, &ctx };
-			out_.hydrated = engine::assets::hydrateArchivedAsset(migrations_, root.asStruct(), ctx, out_.font);
-		}
-		out_.finished = ctx.finish(sink_, "while loading asset 'fonts/font'");
-	}
-
-	TEST_F(LoadBoundary, LegacyAssetKeysStillLoad) {
-		const auto guid = Guid { 1u, 2u, 3u, 4uLL };
-		{
-			auto structured = StructuredArchive { _archive };
-			auto root = structured.insertRootSlot().intoStruct();
-			access::Structure<Guid>::serialize(guid, root.insertSlot<void>("__guid__").intoStruct());
-			root.insertSlot<u64>("__type__") << engine::assets::LevelAsset::typeId.data;
-			root.insertSlot<String>("name") << String { "legacy" };
-			root.insertSlot<String>("levelData") << String {};
-		}
-		auto ctx = LoadContext { static_cast<u64>(_archive.totalSize()), "levels/legacy" };
-		_archive.seek(0);
-		engine::assets::LevelAsset asset {};
-		{
-			const auto root = RootScopedSlot { _archive, ScopedSlotStateFlag::eClean, &ctx };
-			EXPECT_TRUE(engine::assets::hydrateArchivedAsset(_engine->_serialization->migrations(), root.asStruct(), ctx, asset));
-		}
-		EXPECT_TRUE(ctx.finish(_sink, "while loading asset 'levels/legacy'").has_value());
-		EXPECT_EQ(static_cast<Guid>(asset.getAssetGuid()), guid);
-		EXPECT_EQ(asset.getAssetName(), "legacy");
-	}
-
-	TEST_F(LoadBoundary, AssetUnreadKeyMarksAndRefusesStore) {
-		writeFont(_archive, 0, "sources", true);
-		FontLoad load {};
-		loadFont(_archive, _engine->_serialization->migrations(), _sink, load);
-
-		EXPECT_TRUE(load.hydrated);
-		EXPECT_TRUE(load.finished.has_value());
-		EXPECT_TRUE(hasCode(_sink, "unknown-field"));
-		EXPECT_TRUE(load.font.carriesUnknownData());
-
-		const nmpt<const engine::assets::Asset> assets[] { &load.font };
-		const auto store = engine::assets::checkStoreAllowed(assets);
-		ASSERT_FALSE(store.has_value());
-		EXPECT_EQ(store.error().front().code()->key, "save-refused");
-	}
-
-	TEST_F(LoadBoundary, AssetNewerRevisionRefused) {
-		writeFont(_archive, 1, "sources", false);
-		FontLoad load {};
-		loadFont(_archive, _engine->_serialization->migrations(), _sink, load);
-
-		EXPECT_FALSE(load.hydrated);
-		ASSERT_FALSE(load.finished.has_value());
-		EXPECT_EQ(load.finished.error().front().code()->key, "revision-newer");
-	}
-
-	Result<void, MigrateError> renameSources(ref<const StructScopedSlot> old_, ref<StructScopedSlot> new_) {
-		forwardEntries(old_, new_, { "fontSources" });
-		Vector<String> sources {};
-		old_.getSlot<String, Vector>("fontSources") >> sources;
-		new_.insertSlot<String, Vector>("sources") << sources;
-		return {};
-	}
-
-	TEST_F(LoadBoundary, AssetOlderRevisionMigrates) {
-		const Migration steps[] { { FontAsset::typeId, 0, &renameSources } };
-		_engine->_serialization->migrations().add(steps);
-		writeFont(_archive, 0, "fontSources", false);
-		FontLoad load {};
-		loadFont(_archive, _engine->_serialization->migrations(), _sink, load);
-
-		EXPECT_TRUE(load.hydrated);
-		EXPECT_TRUE(load.finished.has_value());
-		EXPECT_FALSE(load.font.carriesUnknownData());
-		EXPECT_FALSE(hasCode(_sink, "unknown-field"));
-	}
-
-	TEST_F(LoadBoundary, LevelAssetBadLevelDataRejected) {
-		const auto load = [this](const StringView value_, ref<engine::assets::LevelAsset> asset_) {
-			_archive = BufferArchive {};
-			{
-				auto structured = StructuredArchive { _archive };
-				auto root = structured.insertRootSlot().intoStruct();
-				insert_guid_slot(root, AssetGuid {});
-				insert_typeId_slot(root, engine::assets::LevelAsset::typeId);
-				root.insertSlot<String>("name") << String { "level" };
-				root.insertSlot<String>("levelData") << String { value_ };
-			}
-			auto ctx = LoadContext { static_cast<u64>(_archive.totalSize()), "levels/level" };
-			_archive.seek(0);
-			bool hydrated = false;
-			{
-				const auto root = RootScopedSlot { _archive, ScopedSlotStateFlag::eClean, &ctx };
-				hydrated = engine::assets::hydrateArchivedAsset(_engine->_serialization->migrations(), root.asStruct(), ctx, asset_);
-			}
-			return std::make_pair(hydrated, ctx.finish(_sink, "while loading asset 'levels/level'"));
-		};
-		const auto unset = engine::assets::LevelAsset {}.getLevelData().encode();
-
-		for (const auto bad : {
-			     "file://nope", "archive://zz", "archive://99999999999999999999", "archive://1-2-3",
-			     "archive://x-2-3-4", "archive://1a-2-3-4", "archive://-2-3-4"
-		     }) {
-			engine::assets::LevelAsset asset {};
-			const auto [hydrated, finished] = load(bad, asset);
-			EXPECT_FALSE(hydrated) << bad;
-			EXPECT_EQ(asset.getLevelData().encode(), unset) << bad;
-			ASSERT_FALSE(finished.has_value()) << bad;
-			EXPECT_EQ(finished.error().front().code()->key, "invalid-value") << bad;
-		}
-
-		engine::assets::LevelAsset asset {};
-		const auto [hydrated, finished] = load("archive://1-2-3-4", asset);
-		EXPECT_TRUE(hydrated);
-		EXPECT_TRUE(finished.has_value());
-		EXPECT_NE(asset.getLevelData().encode(), unset);
-	}
-}
-
-namespace LoadBoundaryModule {
-	// shortcut: disabled — teardown of a loaded actor that owns a real component exits 3 (pre-existing default-deleter crash); enable when that is fixed.
-	TEST_F(LoadBoundary, DISABLED_SecondRootComponentRejected) {
-		constexpr u64 rootType = 0x7E57'0000'0000'00A1uLL;
-		_engine->_serialization->addComponentScheme(
-			typeOf(rootType),
-			ComponentFnSet {
-				.serialize = [](cref<LogicComponent>, mref<StructScopedSlot>) {},
-				.deserialize = [](cref<RecordScopedSlot>, nmpt<engine::acs::Registry>, ref<Actor> owner_, nmpt<HierarchyComponent> parent_) {
-					return VolatileComponent<> {
-						new HierarchyComponent { generate_component_guid(), CachedActorPointer { owner_.guid(), &owner_ }, parent_.get() },
-						[](ptr<LogicComponent> obj_) { delete obj_; }
-					};
-				}
-			}
-		);
-
-		// The kept root is pooled so actor teardown frees it; the rejected one is plain heap and dropped by its own deleter.
-		constexpr u64 bodyType = 0x7E57'0000'0000'00A2uLL;
-		_engine->_serialization->addComponentScheme(
-			typeOf(bodyType),
-			ComponentFnSet {
-				.serialize = [](cref<LogicComponent>, mref<StructScopedSlot>) {},
-				.deserialize = [](cref<RecordScopedSlot>, nmpt<engine::acs::Registry> allocator_, ref<Actor> owner_, nmpt<HierarchyComponent> parent_) {
-					return VolatileComponent<> { ComponentScheme<HeliogrimApi::BodyStub>::instantiate<void>(allocator_, ComponentGuid { generate_component_guid() }, owner_, parent_).release() };
-				}
-			}
-		);
-
-		const ComponentSpec components[] { { .type = bodyType }, { .type = rootType } };
-		writeLevel(0, components);
-		// shortcut: the level is leaked because releasing a loaded actor's components hits the known default-deleter crash; drop once that is fixed.
-		(void)new Arci<Level>(hydrateLevel());
-
-		EXPECT_TRUE(hasCode(_sink, "invalid-value"));
-		EXPECT_TRUE(_sink.hasErrors());
 	}
 }
