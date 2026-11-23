@@ -152,11 +152,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* const data_, const size_t s
 	if (not type.hydrate) {
 		const auto level = loadLevel(archive, type.name, sink);
 		accepted = level.has_value() && level.value() != nullptr;
-		if (accepted) {
-			// shortcut: levels own pooled actors (known default-deleter crash), so accepted levels leak.
-			static Vector<Arci<Level>> keep {};
-			keep.push_back(level.value());
-		}
 	} else {
 		auto ctx = LoadContext { static_cast<u64>(archive.totalSize()), String { type.name } };
 		bool hydrated = false;

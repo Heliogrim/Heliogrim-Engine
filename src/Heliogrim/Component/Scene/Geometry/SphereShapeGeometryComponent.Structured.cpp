@@ -5,6 +5,7 @@
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 
 #include "AssetDatabase.hpp"
+#include "AssetResolve.hpp"
 #include "SphereShapeGeometryComponent.hpp"
 
 using namespace hg::engine::serialization;
@@ -15,8 +16,8 @@ namespace {
 		return material_ != None ? static_cast<AssetGuid>(material_->getAssetGuid()) : invalid_asset_guid;
 	}
 
-	void restoreMaterial(ref<const AssetGuid> guid_, ref<Opt<GraphicsMaterialAssetHandle>> target_) {
-		target_ = guid_ != invalid_asset_guid ? Some(GetAssets().find<GraphicsMaterialAssetHandle>(guid_).value) : None;
+	void restoreMaterial(ref<const StructScopedSlot> slot_, ref<const AssetGuid> guid_, ref<Opt<GraphicsMaterialAssetHandle>> target_) {
+		target_ = guid_ != invalid_asset_guid ? ResolveAssetHandle<GraphicsMaterialAssetHandle>(slot_, guid_) : None;
 	}
 }
 
@@ -41,5 +42,5 @@ void access::Structure<SphereShapeGeometryComponent>::hydrate(cref<StructScopedS
 	record_.getSlot<f32>("radius") >> target_._radius.at<0>();
 	auto materialGuid = AssetGuid {};
 	Structure<Guid>::hydrate(record_.getStructSlot("material"), materialGuid);
-	restoreMaterial(materialGuid, target_._instanceMaterial);
+	restoreMaterial(record_, materialGuid,target_._instanceMaterial);
 }

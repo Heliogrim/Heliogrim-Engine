@@ -246,9 +246,14 @@ namespace hg {
 			const auto components = record_.getRecordSlot(engine::serialization::Symbols::Components).asStruct();
 			// Comma fold: left-to-right, and every entry hydrates even after a refused one.
 			bool complete = true;
+			const auto& root = record_.slot()->getState().root;
+			const auto ctx = root != nullptr ? root->context : nullptr;
+			const auto warned = ctx != nullptr ? ctx->warningCount() : 0uz;
 			[&]<u32... Entries_>(std::integer_sequence<u32, Entries_...>) {
 				((complete = archetype_detail::hydrate_entry<info, Entries_>(slot_, components) && complete), ...);
 			}(entry_sequence {});
+			// A warned (e.g. unresolved) value is dropped from the object, so a later save must be refused.
+			complete = (ctx == nullptr || ctx->warningCount() == warned) && complete;
 			// Keys no entry consumed are unknown data (e.g. a mistyped entry path).
 			complete = not components.reportUnreadKeys() && complete;
 			if (not complete) {

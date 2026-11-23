@@ -135,6 +135,7 @@ namespace HgTestLoadContext {
 	TEST(LoadContext, WarningsReachSinkAndFinishMapsMalformed) {
 		LoadContext ctx { 100 };
 		ctx.warn({ eUnknownField, 0, 0, "k" });
+		EXPECT_EQ(ctx.warningCount(), 1uLL);
 		ctx.fail({ eMalformed, 12, 4, {} });
 
 		CollectingSink sink {};
