@@ -25,4 +25,5 @@ make_test_project(
 		${PROJECT_NAME}::Editor.UI.View
 		${PROJECT_NAME}::Engine.Common
 		${PROJECT_NAME}::Heliogrim
+		${PROJECT_NAME}::Engine.Assets
 )

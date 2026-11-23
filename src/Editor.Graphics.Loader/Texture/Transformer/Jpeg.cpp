@@ -1,6 +1,5 @@
 #include "Jpeg.hpp"
 
-#include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets.Type/Texture/ImageAsset.hpp>
 #include <Engine.Graphics/Buffer/Buffer.hpp>
@@ -14,6 +13,7 @@
 #include <stb/stb_image.h>
 
 import Engine.Asserts;
+import Engine.Assets;
 import Engine.Core;
 import Engine.Reflect;
 import vulkan;

@@ -1,7 +1,6 @@
 #pragma once
 
-#include <Engine.Storage.Action/Guard/IoMutationGuard.hpp>
-#include <Engine.Storage.Action/Guard/IoQueryGuard.hpp>
+#include <Engine.Common/Sal.hpp>
 
 #include "Options/ArchiveMutateOptions.hpp"
 #include "Options/ArchiveQueryOptions.hpp"
@@ -18,6 +17,7 @@
 import Engine.Async;
 import Engine.Common;
 import Engine.Resource.Archive;
+import Engine.Storage.Action;
 import Engine.Storage.Registry;
 #endif
 

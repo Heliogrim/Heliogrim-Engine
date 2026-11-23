@@ -5,6 +5,7 @@
 #include <Engine.Common/Sal.hpp>
 
 import Engine.Asserts;
+import Engine.Assets;
 import Engine.Common;
 import Engine.Core;
 import Engine.Filesystem;
@@ -72,7 +73,6 @@ SourceLoaderStreamResponse<void>::type SourceLoader::operator()(
 
 /* Asset Specific Implementation */
 
-#include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
 #include <Engine.Assets.Type/Texture/FontAsset.hpp>
 #include <Engine.Assets.Type/Texture/ImageAsset.hpp>

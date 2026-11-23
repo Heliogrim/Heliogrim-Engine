@@ -8,7 +8,6 @@
 #include <Editor.UI.Service/Assets/Browser/AssetBrowserEntry.hpp>
 #include <Editor.UI.Service/Assets/Browser/AssetBrowserFilterEntry.hpp>
 #include <Editor.UI.Theme/EditorTheme.hpp>
-#include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Graphics.Loader/Texture/TextureResource.hpp>
 #include <Engine.Graphics.Loader/Texture/Traits.hpp>
@@ -19,6 +18,7 @@
 
 #include "AssetBrowserController.hpp"
 
+import Engine.Assets;
 import Engine.Common;
 import Engine.Core;
 import Engine.Scheduler;

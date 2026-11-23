@@ -15,7 +15,7 @@ namespace hg {
 	/**
 	 * Identifier for the invalid asset
 	 */
-	inline constexpr static AssetGuid invalid_asset_guid {};
+	inline constexpr AssetGuid invalid_asset_guid {};
 
 	/**
 	 * Generates an unstable asset unique identifier

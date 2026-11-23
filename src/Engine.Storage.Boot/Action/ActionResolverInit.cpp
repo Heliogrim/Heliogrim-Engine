@@ -1,7 +1,5 @@
 #include "ActionResolverInit.hpp"
 
-#include <Engine.Storage.Action/Action/MutationStaticGen.hpp>
-#include <Engine.Storage.Action/Action/QueryStaticGen.hpp>
 #include <Engine.Storage.System/StorageSystem.hpp>
 #include <Engine.Storage.System/Details/StorageActionResolver.hpp>
 
@@ -14,6 +12,7 @@
 import Engine.Resource.Archive;
 import Engine.Resource.Blob;
 import Engine.Resource.Package;
+import Engine.Storage.Action;
 import Engine.Storage.Registry;
 
 using namespace hg::engine::storage;

@@ -2,7 +2,6 @@
 
 #include <Engine.Accel.Loader/Effect/EffectResource.hpp>
 #include <Engine.Accel.Loader/Effect/Traits.hpp>
-#include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets.Type/Accel/AccelEffect.hpp>
 #include <Engine.Assets.Type/Material/GraphicsMaterialPrototype.hpp>
@@ -17,6 +16,7 @@
 #include "../Texture/TextureResource.hpp"
 #include "../Texture/Traits.hpp"
 
+import Engine.Assets;
 import Engine.Common;
 import Engine.Core;
 import Engine.Reflect;

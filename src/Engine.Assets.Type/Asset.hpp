@@ -1,13 +1,9 @@
 #pragma once
 
-#include <Engine.Assets/AssetGuid.hpp>
-#include <Engine.Assets/AssetName.hpp>
-#include <Engine.Assets/AssetReferenceUrl.hpp>
-#include <Engine.Assets/AssetTypeId.hpp>
-#include <Engine.Assets/AssetUrl.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Assets;
 import Engine.Common;
 import Engine.Reflect;
 import Engine.Serialization;

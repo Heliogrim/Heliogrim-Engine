@@ -1,9 +1,9 @@
 #pragma once
 
 #include <Editor.Action/Action/SimpleAction.hpp>
-#include <Engine.Assets/AssetGuid.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Assets;
 import Engine.Common;
 import Engine.Storage.Registry;
 #endif

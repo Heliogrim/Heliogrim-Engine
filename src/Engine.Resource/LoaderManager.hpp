@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cassert>
-#include <Engine.Assets/AssetGuid.hpp>
 #include <Engine.Assets.Type/Asset.hpp>
 #include <Engine.Common/Sal.hpp>
 
@@ -9,6 +8,7 @@
 #include "Manage/Resource.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Assets;
 import Engine.Common;
 #endif
 

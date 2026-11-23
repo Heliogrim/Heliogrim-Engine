@@ -25,7 +25,6 @@
 #include <Editor.UI/Widget/Input/InputSelect.hpp>
 #include <Editor.UI/Widget/Input/InputText.hpp>
 #include <Editor.UI/Widget/Input/InputToggle.hpp>
-#include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets.Database/AssetDatabase.hpp>
 #include <Engine.Assets.System/AssetRegistry.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
@@ -34,6 +33,7 @@
 
 #include "PropertyService.hpp"
 
+import Engine.Assets;
 import Engine.Common;
 import Engine.Core;
 import Engine.Physics.Components;

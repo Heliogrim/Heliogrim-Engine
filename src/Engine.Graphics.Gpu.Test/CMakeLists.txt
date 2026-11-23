@@ -23,6 +23,7 @@ make_test_project(
 		${PROJECT_NAME}::External-c4core
 		${PROJECT_NAME}::External-ryml
 		${PROJECT_NAME}::Heliogrim
+		${PROJECT_NAME}::Engine.Storage.Package
 )
 
 name_to_target(__gpu_test_target "Engine.Graphics.Gpu.Test")

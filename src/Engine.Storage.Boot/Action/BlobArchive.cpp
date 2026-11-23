@@ -1,13 +1,10 @@
 #include "BlobArchive.hpp"
 
-#include <Engine.Storage.Action/Context.hpp>
-#include <Engine.Storage.Action/Access/ExclusiveIoResource.hpp>
-#include <Engine.Storage.Action/Access/SharedReadIoResource.hpp>
-
 #include "WindowedArchive.hpp"
 
 import Engine.Common;
 import Engine.Pedantic.Resource;
+import Engine.Storage.Action;
 
 using namespace hg::engine::storage;
 using namespace hg::engine::resource;

@@ -42,4 +42,7 @@ make_library_project(
 		${PROJECT_NAME}::Engine.Async
 		${PROJECT_NAME}::Engine.Scheduler
 		${PROJECT_NAME}::Engine.Storage.Registry
+		${PROJECT_NAME}::Engine.Assets
+		${PROJECT_NAME}::Engine.Storage.Action
+		${PROJECT_NAME}::Engine.Storage.Package
 )

@@ -1,8 +1,5 @@
 #include "StorageSystem.hpp"
 
-#include <Engine.Storage.Package/Factory.hpp>
-#include <Engine.Storage.Package/Pattern.hpp>
-
 #include "Details/StorageActionResolver.hpp"
 
 import Engine.Async;
@@ -11,6 +8,7 @@ import Engine.Reflect;
 import Engine.Resource.Archive;
 import Engine.Resource.Blob;
 import Engine.Resource.Package;
+import Engine.Storage.Package;
 import Engine.Storage.Registry;
 
 using namespace hg::engine::storage;

@@ -1,6 +1,5 @@
 #include "GameEngine.hpp"
 
-#include <Engine.Assets/Assets.hpp>
 #include <Engine.Audio/Audio.hpp>
 #include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
@@ -13,6 +12,7 @@ import Support.Platform.Win32;
 
 import Engine.ACS;
 import Engine.ACS.Schedule;
+import Engine.Assets;
 import Engine.Config;
 import Engine.Core;
 import Engine.Core.Schedule;

@@ -3,16 +3,13 @@
 /**/
 
 #include <cstring>
-#include <Engine.Storage.Package/Factory.hpp>
-#include <Engine.Storage.Package/Load.hpp>
-#include <Engine.Storage.Package/Processor.hpp>
-#include <Engine.Storage.Package/Store.hpp>
 
 import Engine.Common;
 import Engine.Config;
 import Engine.Resource.Archive;
 import Engine.Resource.Blob;
 import Engine.Resource.Package;
+import Engine.Storage.Package;
 import Engine.Storage.Registry;
 
 using namespace hg::engine::storage::package;

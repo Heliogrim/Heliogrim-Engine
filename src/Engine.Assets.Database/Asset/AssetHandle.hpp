@@ -1,9 +1,7 @@
 #pragma once
 
-#include <Engine.Assets/AssetGuid.hpp>
-#include <Engine.Assets/AssetTypeId.hpp>
-
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Assets;
 import Engine.Common;
 #endif
 

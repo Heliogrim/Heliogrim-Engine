@@ -46,7 +46,7 @@ namespace SerializationModule {
 
 namespace hg::engine::serialization {
 	template <>
-	void DataLayout<SerializationModule::TestSubTypePayload>::describe() {
+	void DataLayout<::SerializationModule::TestSubTypePayload>::describe() {
 
 		using namespace ::SerializationModule;
 		using namespace ::hg::engine::serialization::layout;
@@ -59,7 +59,7 @@ namespace hg::engine::serialization {
 	}
 
 	template <>
-	void DataLayout<SerializationModule::TestSerialSubTypeVectorizedSliceAsset>::describe() {
+	void DataLayout<::SerializationModule::TestSerialSubTypeVectorizedSliceAsset>::describe() {
 
 		using namespace ::SerializationModule;
 		using namespace ::hg::engine::serialization::layout;

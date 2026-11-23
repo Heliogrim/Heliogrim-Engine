@@ -1,16 +1,10 @@
 #include "BlobPack.hpp"
 
-#include <Engine.Storage.Action/Context.hpp>
-#include <Engine.Storage.Action/Access/ExclusiveIoResource.hpp>
-#include <Engine.Storage.Action/Access/SharedReadIoResource.hpp>
-#include <Engine.Storage.Package/Factory.hpp>
-#include <Engine.Storage.Package/Processor.hpp>
-#include <Engine.Storage.Package/Store.hpp>
-#include <Engine.Storage.Registry/Storage/StorageName.hpp>
-
 import Engine.Common;
 import Engine.Pedantic.Resource;
-import Engine.Diagnostics;
+import Engine.Storage.Action;
+import Engine.Storage.Package;
+import Engine.Storage.Registry;
 
 using namespace hg::engine::storage;
 using namespace hg::engine::resource;

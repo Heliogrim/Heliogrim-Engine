@@ -11,4 +11,5 @@ make_library_project(
         ${PROJECT_NAME}::Engine.Common
         ${PROJECT_NAME}::Heliogrim
         ${PROJECT_NAME}::Engine.Reflow.Components
+        ${PROJECT_NAME}::Engine.Assets
 )

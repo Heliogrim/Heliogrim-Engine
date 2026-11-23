@@ -1,8 +1,5 @@
 #pragma once
 
-#include <Engine.Assets/AssetGuid.hpp>
-#include <Engine.Assets/AssetTypeId.hpp>
-#include <Engine.Assets/AssetUrl.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Sal.hpp>
 
@@ -14,6 +11,7 @@
 #include "Options/RemovePathsOptions.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Assets;
 import Engine.Common;
 import Engine.Filesystem;
 #endif

@@ -4,12 +4,12 @@
 
 /**/
 
-#include <Engine.Assets/Assets.hpp>
 #include <Engine.Common/__macro.hpp>
 
 #include "ModelImporter.hpp"
 
 import Engine.Asserts;
+import Engine.Assets;
 import Engine.Common;
 import Engine.Core;
 import Engine.Logging;
