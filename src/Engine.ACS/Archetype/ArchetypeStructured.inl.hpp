@@ -6,9 +6,8 @@
  * Every slot type needs `access::Structure<T>`; records are keyed by entry path, e.g. "body/wheels/2/hub".
  */
 
-#include <Engine.ACS/Archetype/LayoutInfo.hpp>
-
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.ACS;
 import Engine.Common;
 import Engine.Serialization;
 #endif

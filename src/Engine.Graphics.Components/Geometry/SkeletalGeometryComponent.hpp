@@ -1,6 +1,8 @@
 #pragma once
 
-#include <Engine.ACS/Component/ModelComponent.hpp>
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.ACS;
+#endif
 
 namespace hg {
 	class SkeletalGeometryComponent :

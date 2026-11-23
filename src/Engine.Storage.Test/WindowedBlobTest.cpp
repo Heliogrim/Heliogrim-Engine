@@ -2,11 +2,9 @@
 
 /**/
 
-#include <Engine.Resource.Blob/WindowedBlob.hpp>
-#include <Engine.Resource.Blob/Memory/ByteSpanBlob.hpp>
-
 import Engine.Common;
 import Engine.Reflect;
+import Engine.Resource.Blob;
 
 /**/
 

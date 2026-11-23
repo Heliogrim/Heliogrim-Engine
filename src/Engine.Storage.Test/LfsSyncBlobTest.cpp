@@ -6,8 +6,7 @@
 
 /**/
 
-#include <Engine.Resource.Blob/File/LfsSyncBlob.hpp>
-
+import Engine.Resource.Blob;
 import std;
 
 /**/

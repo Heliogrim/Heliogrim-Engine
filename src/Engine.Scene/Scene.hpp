@@ -1,11 +1,10 @@
 #pragma once
 
-#include <Engine.ACS/Component/SceneComponent.hpp>
-
 #include "SceneBase.hpp"
 #include "SceneSystem.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.ACS;
 import Engine.Common;
 #endif
 

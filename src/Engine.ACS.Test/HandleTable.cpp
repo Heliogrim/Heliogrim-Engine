@@ -2,8 +2,7 @@
 
 /**/
 
-#include <Engine.ACS/Handle/HandleTable.hpp>
-
+import Engine.ACS;
 import Engine.Common;
 
 using namespace hg::engine::acs;

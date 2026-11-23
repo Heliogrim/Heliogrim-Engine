@@ -1,11 +1,11 @@
 #pragma once
 
 #include <Editor.Action/Action/DelegateAction.hpp>
-#include <Engine.ACS/Actor/ActorRef.hpp>
 #include <Engine.Assets.Type/TypedAssetGuid.hpp>
 #include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.ACS;
 import Engine.Common;
 #endif
 

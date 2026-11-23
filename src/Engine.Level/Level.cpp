@@ -1,7 +1,5 @@
 #include "Level.hpp"
 
-#include <Engine.ACS/ActorModule.hpp>
-#include <Engine.ACS/Registry.hpp>
 #include <Engine.Assets/AssetGuid.hpp>
 #include <Engine.Assets.Type/Universe/LevelAsset.hpp>
 #include <Engine.Scene/SceneBase.hpp>
@@ -13,6 +11,7 @@
 #include <Engine.Serialization/Structure/RootScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 
+import Engine.ACS;
 import Engine.Common;
 import Engine.Core;
 import Engine.Resource.Archive;
@@ -35,13 +34,13 @@ namespace {
 
 /**/
 
-Level::Level(mref<LevelGuid> guid_) noexcept :
+engine::core::Level::Level(mref<LevelGuid> guid_) noexcept :
 	_guid(::hg::move(guid_)) {}
 
-Level::Level(ref<const assets::LevelAsset> asset_) noexcept :
+engine::core::Level::Level(ref<const assets::LevelAsset> asset_) noexcept :
 	_guid(asset_.getAssetGuid()) {}
 
-Level::~Level() {
+engine::core::Level::~Level() {
 	for (const auto actor : _actors) {
 		VolatileActor<>::destroy(actor);
 	}
@@ -53,51 +52,51 @@ Level::~Level() {
 	}
 }
 
-bool Level::isRootLike() const noexcept {
+bool engine::core::Level::isRootLike() const noexcept {
 	return _bounding.center() == level_root_bounding.center() &&
 		_bounding.extent() == level_root_bounding.extent();
 }
 
-ref<const LevelGuid> Level::guid() const noexcept {
+ref<const LevelGuid> engine::core::Level::guid() const noexcept {
 	return _guid;
 }
 
-ref<const AssetGuid> Level::assetGuid() const noexcept {
+ref<const AssetGuid> engine::core::Level::assetGuid() const noexcept {
 	return reinterpret_cast<ref<const AssetGuid>>(_guid);
 }
 
-cref<math::Bounding> Level::getBounding() const noexcept {
+cref<math::Bounding> engine::core::Level::getBounding() const noexcept {
 	return _bounding;
 }
 
-void Level::setBounding(cref<math::Bounding> bounding_) noexcept {
+void engine::core::Level::setBounding(cref<math::Bounding> bounding_) noexcept {
 	_bounding = bounding_;
 }
 
-Opt<ref<engine::core::Universe>> Level::getUniverse() const noexcept {
+Opt<ref<engine::core::Universe>> engine::core::Level::getUniverse() const noexcept {
 	return _universe;
 }
 
-void Level::setOwnerUniverse(mref<Opt<ref<engine::core::Universe>>> owner_) {
+void engine::core::Level::setOwnerUniverse(mref<Opt<ref<engine::core::Universe>>> owner_) {
 	_universe = ::hg::move(owner_);
 }
 
-bool Level::carriesUnknownData() const noexcept {
+bool engine::core::Level::carriesUnknownData() const noexcept {
 	return _unknownData;
 }
 
-void Level::markUnknownData() noexcept {
+void engine::core::Level::markUnknownData() noexcept {
 	_unknownData = true;
 }
 
-engine::acs::SpaceId Level::space() {
+engine::acs::SpaceId engine::core::Level::space() {
 	if (_space == acs::detachedSpace) {
 		_space = actorRegistry().acquireSpace();
 	}
 	return _space;
 }
 
-ptr<Actor> Level::addActor(mref<VolatileActor<>> actor_) {
+ptr<Actor> engine::core::Level::addActor(mref<VolatileActor<>> actor_) {
 
 	auto* actor = actor_.release();
 	if (actor->getArchetype() != nullptr) {
@@ -114,11 +113,11 @@ ptr<Actor> Level::addActor(mref<VolatileActor<>> actor_) {
 	return actor;
 }
 
-std::span<const owner_ptr<Actor>> Level::getActors() const noexcept {
+std::span<const owner_ptr<Actor>> engine::core::Level::getActors() const noexcept {
 	return std::span { _actors.values() };
 }
 
-Opt<VolatileActor<>> Level::removeActor(const nmpt<Actor> actor_) {
+Opt<VolatileActor<>> engine::core::Level::removeActor(const nmpt<Actor> actor_) {
 	if (not _actors.contains(actor_.get())) [[unlikely]] {
 		return None;
 	}
@@ -138,8 +137,8 @@ Opt<VolatileActor<>> Level::removeActor(const nmpt<Actor> actor_) {
 	return SomeVal<VolatileActor<>>(::hg::move(actor));
 }
 
-Arci<Level> engine::core::make_root_like_level() {
-	auto level = Arci<Level>::create(generate_level_guid());
+Arci<engine::core::Level> engine::core::make_root_like_level() {
+	auto level = Arci<engine::core::Level>::create(generate_level_guid());
 	level->setBounding(level_root_bounding);
 	return level;
 }
@@ -179,11 +178,11 @@ Result<void, engine::diag::Diagnostics> engine::core::checkSaveAllowed(ref<const
 template <>
 void access::Structure<Level>::hydrate(cref<StructScopedSlot> record_, Level& target_);
 
-Result<Arci<Level>, engine::diag::Diagnostics> engine::core::loadLevel(
+Result<Arci<engine::core::Level>, engine::diag::Diagnostics> engine::core::loadLevel(
 	ref<engine::resource::Archive> archive_,
 	const StringView url_,
 	ref<engine::diag::DiagnosticSink> sink_,
-	mref<Arci<Level>> into_
+	mref<Arci<engine::core::Level>> into_
 ) {
 	auto ctx = LoadContext { static_cast<u64>(std::max(archive_.totalSize(), 0LL)), String { url_ } };
 	const auto valid = validate(archive_, 0LL, ctx).has_value();

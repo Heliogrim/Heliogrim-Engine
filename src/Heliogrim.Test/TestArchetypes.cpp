@@ -8,6 +8,8 @@
 
 #include "TestArchetypes.inl.hpp"
 
+import Engine.ACS;
+
 using namespace HeliogrimApi;
 
 TestBody::TestBody(cref<ActorInitializer> initializer_) :

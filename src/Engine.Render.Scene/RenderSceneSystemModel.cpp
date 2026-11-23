@@ -1,6 +1,6 @@
 #include "RenderSceneSystemModel.hpp"
 
-#include <Engine.ACS/Cluster/RelocationTable.hpp>
+import Engine.ACS;
 
 using namespace hg::engine::render;
 using namespace hg;

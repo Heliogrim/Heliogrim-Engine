@@ -8,8 +8,7 @@
 
 #include "PhysicsSceneSystem.hpp"
 
-#include <Engine.ACS/Cluster/RelocationTable.hpp>
-
+import Engine.ACS;
 import Engine.Core;
 import Engine.Physics;
 
@@ -139,10 +138,10 @@ void PhysicsSceneSystem::relocate(ref<const acs::RelocationTable> table_) {
 	}
 }
 
-#include <Engine.Physics.Scene.Model/BoxShapeCollisionModel.hpp>
-#include <Engine.Physics.Scene.Model/SphereShapeCollisionModel.hpp>
 #include <Engine.Physics.Components/Collision/BoxShapeCollisionComponent.hpp>
 #include <Engine.Physics.Components/Collision/SphereShapeCollisionComponent.hpp>
+#include <Engine.Physics.Scene.Model/BoxShapeCollisionModel.hpp>
+#include <Engine.Physics.Scene.Model/SphereShapeCollisionModel.hpp>
 
 void registerTypeMappings(ref<PhysicsSceneRegistry> registry_) {
 

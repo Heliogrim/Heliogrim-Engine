@@ -58,11 +58,11 @@ void engine::core::Universe::addLevel(mref<Arci<core::Level>> level_) {
 	commitLevel(*level_);
 }
 
-std::span<const Arci<Level>> engine::core::Universe::getLevels() const noexcept {
+std::span<const Arci<engine::core::Level>> engine::core::Universe::getLevels() const noexcept {
 	return _levels.values();
 }
 
-Arci<Level> engine::core::Universe::getRootLevel() const noexcept {
+Arci<engine::core::Level> engine::core::Universe::getRootLevel() const noexcept {
 	return *_rootLevel;
 }
 

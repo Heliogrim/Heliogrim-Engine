@@ -3,7 +3,6 @@
 /**/
 
 #include <cstring>
-#include <Engine.Resource.Blob/Memory/ByteSpanBlob.hpp>
 #include <Engine.Resource.Package/ReadonlyPackage.hpp>
 #include <Engine.Resource.Package/ReadWritePackage.hpp>
 #include <Engine.Resource.Package/Attribute/MagicBytes.hpp>
@@ -20,7 +19,7 @@
 import Engine.Common;
 import Engine.Config;
 import Engine.Resource.Archive;
-import Engine.Reflect;
+import Engine.Resource.Blob;
 
 using namespace hg::engine::storage::package;
 using namespace hg::engine::resource;

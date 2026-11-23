@@ -2,9 +2,7 @@
 
 /**/
 
-#include <Engine.ACS/Archetype/Layout.hpp>
-#include <Engine.ACS/Archetype/LayoutInfo.hpp>
-
+import Engine.ACS;
 import Engine.Common;
 
 using namespace hg::engine::acs;

@@ -1,13 +1,11 @@
 #pragma once
 #include <array>
 
-#include <Engine.ACS/Actor/Actor.hpp>
-#include <Engine.ACS/Actor/ActorInitializer.hpp>
 #include <Engine.ACS/Archetype/ArchetypeLayout.inl.hpp>
-#include <Engine.ACS/Archetype/InheritArchetype.hpp>
-#include <Engine.ACS/Archetype/Layout.hpp>
-#include <Engine.ACS/Archetype/Overridable.hpp>
-#include <Engine.ACS/Component/HierarchyComponent.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.ACS;
+#endif
 
 namespace HeliogrimApi {
 	using namespace ::hg::engine::acs;

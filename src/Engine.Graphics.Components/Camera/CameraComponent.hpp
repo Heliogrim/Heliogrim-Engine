@@ -1,8 +1,11 @@
 #pragma once
 
-#include <Engine.ACS/Component/SceneComponent.hpp>
 #include <Engine.Graphics/Camera/CameraModes.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.ACS;
+#endif
 
 namespace hg {
 	class CameraComponent :

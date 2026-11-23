@@ -1,11 +1,10 @@
 #pragma once
 
-#include <Engine.ACS/Actor/Actor.hpp>
-#include <Engine.ACS/Component/HierarchyComponent.hpp>
 #include <Engine.Level/Level.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Editor.UI.Rx;
+import Engine.ACS;
 import Engine.Common;
 import Engine.Core;
 #endif

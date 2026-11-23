@@ -1,7 +1,5 @@
 #include "LfsBlob.hpp"
 
-#include <Engine.Resource.Blob/File/IoFileBlob.hpp>
-#include <Engine.Resource.Blob/File/LfsSyncBlob.hpp>
 #include <Engine.Storage.Action/Context.hpp>
 #include <Engine.Storage.Action/Access/AccessError.hpp>
 #include <Engine.Storage.Action/Access/ExclusiveIoResource.hpp>
@@ -11,6 +9,7 @@ import Engine.Asserts;
 import Engine.Async;
 import Engine.Common;
 import Engine.Pedantic.Resource;
+import Engine.Resource.Blob;
 
 using namespace hg::engine::storage;
 using namespace hg::engine::resource;

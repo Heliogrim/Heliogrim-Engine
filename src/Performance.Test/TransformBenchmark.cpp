@@ -3,10 +3,9 @@
 /**/
 
 #include <cstdio>
-#include <Engine.ACS/Traits.hpp>
-#include <Engine.ACS/Component/HierarchyComponent.hpp>
 #include <Engine.Common/Math/Transform.hpp>
 
+import Engine.ACS;
 import Engine.Common;
 
 using namespace hg;

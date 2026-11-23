@@ -1,6 +1,6 @@
 #include "CameraActor.hpp"
 
-#include <Engine.ACS/Actor/ActorInitializer.hpp>
+import Engine.ACS;
 
 using namespace hg;
 

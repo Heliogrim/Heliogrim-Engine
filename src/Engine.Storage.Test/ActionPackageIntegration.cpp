@@ -6,7 +6,6 @@
 
 /**/
 
-#include <Engine.Resource.Blob/Memory/ByteSpanBlob.hpp>
 #include <Engine.Resource.Package/Utils.hpp>
 #include <Engine.Resource.Package/Attribute/PackageGuid.hpp>
 #include <Engine.Resource.Package/Linker/Indexed.hpp>
@@ -29,6 +28,7 @@
 import Engine.Common;
 import Engine.Config;
 import Engine.Resource.Archive;
+import Engine.Resource.Blob;
 
 /**/
 

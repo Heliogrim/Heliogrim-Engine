@@ -1,10 +1,10 @@
 #include "ReadText.hpp"
 
-#include <Engine.Resource.Blob/Blob.hpp>
 #include <Engine.Storage.Registry/Url/FileUrl.hpp>
 
 #include "StorageSystem.hpp"
 
+import Engine.Resource.Blob;
 import std;
 
 using namespace hg;

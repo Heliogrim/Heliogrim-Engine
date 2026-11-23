@@ -1,6 +1,5 @@
 #include "EditorEngine.hpp"
 
-#include <Engine.ACS/ActorModule.hpp>
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Audio/Audio.hpp>
 #include <Engine.Common/__macro.hpp>
@@ -15,6 +14,7 @@ import Support.Platform.Win32;
 #endif
 
 import Editor.Boot;
+import Engine.ACS;
 import Engine.ACS.Schedule;
 import Engine.Config;
 import Engine.Config.Providers;

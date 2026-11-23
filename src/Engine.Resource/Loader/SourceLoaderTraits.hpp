@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Resource.Blob/Blob.hpp>
 #include <Engine.Storage.Registry/IStorage.hpp>
 
 #include "__fwd.hpp"
@@ -9,6 +8,7 @@
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Pedantic.Resource;
+import Engine.Resource.Blob;
 #endif
 
 namespace hg::engine::storage {

@@ -1,13 +1,12 @@
 #pragma once
 
-#include <Engine.Resource.Blob/Blob.hpp>
-
 #include "PackageLinker.hpp"
 #include "ReadonlyLinkedArchive.hpp"
 #include "ReadonlyPackageIterator.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Resource.Blob;
 #endif
 
 namespace hg::engine::resource {

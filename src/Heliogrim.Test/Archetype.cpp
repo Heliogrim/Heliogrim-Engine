@@ -2,13 +2,9 @@
 
 /**/
 
-#include <Engine.ACS/Registry.hpp>
-#include <Engine.ACS/Actor/Class/ActorClass.hpp>
-#include <Engine.ACS/Actor/Class/ArchetypeConcept.hpp>
-#include <Engine.ACS/Archetype/LayoutInfo.hpp>
-
 #include "TestArchetypes.hpp"
 
+import Engine.ACS;
 import Engine.Common;
 
 using namespace HeliogrimApi;

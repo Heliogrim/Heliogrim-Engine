@@ -1,10 +1,9 @@
 #pragma once
 
-#include <Engine.ACS/Actor/Actor.hpp>
-#include <Engine.ACS/Component/ComponentTypeId.hpp>
 #include <Engine.Reflow/Widget/Widget.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.ACS;
 import Engine.Common;
 import Engine.Reflect;
 #endif
