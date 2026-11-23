@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Asserts/Asserts.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
@@ -72,6 +71,13 @@ namespace hg {
 			return AssetDatabaseResult<HandleType_> { AssetDatabaseResultType::eSuccess, *result };
 		}
 	};
+
+	/**/
+
+	/**
+	 * Whether an engine with an asset module is present (false in headless tools and tests).
+	 */
+	[[nodiscard]] bool IsAssetsAvailable() noexcept;
 
 	/**/
 

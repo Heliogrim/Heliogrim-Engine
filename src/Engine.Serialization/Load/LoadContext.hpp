@@ -65,6 +65,10 @@ namespace hg::engine::serialization {
 
 		void warn(ReadError error_);
 
+		[[nodiscard]] size_t warningCount() const noexcept {
+			return _warnings.size();
+		}
+
 	public:
 		void pushPath(String segment_);
 

@@ -9,14 +9,13 @@
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Reflect/Cast.hpp>
 #include <Engine.Serialization/SerializationModule.hpp>
+#include <Engine.Serialization.Structures/Common/Guid.hpp>
+#include <Engine.Serialization.Structures/Common/TypeId.hpp>
 #include <Engine.Serialization/Schema/Migration.hpp>
-#include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>
 #include <Engine.Serialization/Structure/RecordScopedSlot.hpp>
 #include <Engine.Serialization/Structure/SeqScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 #include <Engine.Serialization.Structures/Symbols.hpp>
-#include <Engine.Serialization.Structures/Common/Guid.hpp>
-#include <Engine.Serialization.Structures/Common/TypeId.hpp>
 #include <Heliogrim/Actor/ActorGuid.hpp>
 
 #include "Scheme.hpp"
@@ -120,6 +119,7 @@ namespace hg::engine::serialization {
 				}
 			}
 
+			const auto warned = ctx != nullptr ? ctx->warningCount() : 0uz;
 			auto* target = AccessType_::template instantiate(
 				allocator_,
 				actorGuid,
@@ -155,7 +155,7 @@ namespace hg::engine::serialization {
 
 				const auto checkTypeId = get_typeId_slot<ComponentTypeId>(structured);
 				s8 recordParentIdx { -1 };
-				structured.getSlot<s8>(Symbols::Parent) >> recordParentIdx;
+				structured.template getSlot<s8>(Symbols::Parent) >> recordParentIdx;
 
 				const auto fnSet = serial->getComponentScheme(checkTypeId);
 				if (not fnSet.has_value()) {
@@ -207,7 +207,7 @@ namespace hg::engine::serialization {
 					instanced[idx] = next.get();
 					target->addComponent(
 						VolatileComponent<HierarchyComponent> { ::hg::move(next) },
-						Some<ref<const Type_::AddComponentOptions>>(
+						Some<ref<const typename Type_::AddComponentOptions>>(
 							{
 								.autoRegister = false,
 								.parent = !!parent ? Some<ref<HierarchyComponent>>(*parent) : None
@@ -223,7 +223,8 @@ namespace hg::engine::serialization {
 
 			/**/
 
-			if (slot.reportUnreadKeys() || unknown) {
+			// A warned (e.g. unresolved) value is dropped from the object, so a later save must be refused.
+			if (slot.reportUnreadKeys() || unknown || (ctx != nullptr && ctx->warningCount() != warned)) {
 				target->markUnknownData();
 			}
 			return target;
