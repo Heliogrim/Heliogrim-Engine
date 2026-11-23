@@ -5,6 +5,7 @@
 #include <array>
 #include <atomic>
 #include <chrono>
+#include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include <functional>
@@ -44,6 +45,9 @@ using namespace hg::engine::scheduler;
  * Environment: `HG_BENCH_WORKERS` (0 or unset = auto), `HG_BENCH_FLOOD_COOPERATES` (unset = both flood kinds,
  *	1 = cooperating only, 0 = non-cooperating only). Policy knobs: `HG_BENCH_SLICE`, `HG_BENCH_FLOOR_I`, `HG_BENCH_FLOOR_B`,
  *	`HG_BENCH_RESERVE`, `HG_BENCH_FRAME_WAIT` (unset = LanePolicyConfig default).
+ * `HG_BENCH_FRAMES` (default 2000; the time budget is 60 s per 2000 frames). Frames over 30 ms are listed with their time since start.
+ * Fan-out knobs: `HG_BENCH_FANOUT` (width of the first fanOutStages stages, default 8), `HG_BENCH_SHAPE` (0 = `exec` all children and `JoinCounter::wait`,
+ *	1 = parallelFor shape: width - 1 helpers claim indices from a shared counter, the stage claims too, then `JoinCounter::wait`). Reports `wake calls per frame`.
  * `DISABLED_PromoteScan`: a real Frame task (execResolved, eFrame) awaits a Background `async` behind `HG_BENCH_BACKLOG` (default 100,000) queued Background tasks.
  *
  * Note: Only a debug configuration is built by default, so absolute numbers are indicative; compare before/after only.
@@ -53,17 +57,18 @@ namespace Performance {
 		constexpr u32 stageCount = 15;
 		constexpr u32 stageSpinMicros = 200;
 		constexpr u32 fanOutStages = 8;// the first fanOutStages stages fan out, includes stage 7
-		constexpr u32 fanOut = 8;
+		u32 fanOut = 8;// HG_BENCH_FANOUT, set once by DISABLED_Flood before the scheduler starts
+		bool callerJoins = false;// HG_BENCH_SHAPE=1
 		constexpr u32 boostStage = 12;// a non-fan-out stage that awaits in the profile workload
 		constexpr u32 floodPerWorker = 4;
 		constexpr u32 floodTaskMicros = 5000;
 		constexpr u32 floodStepMicros = 100;
 		constexpr u32 probeEveryMillis = 50;
 		constexpr u32 probeMicros = 2000;
-		constexpr u32 frames = 2000;
-		constexpr u32 maxProbes = 8192;
-		constexpr u32 watchdogSeconds = 240;
-		constexpr u32 budgetSeconds = 60;// a starved run reports the frames it finished instead of running for minutes
+		u32 frames = 2000;// HG_BENCH_FRAMES, set once by DISABLED_Flood before the scheduler starts
+		u32 maxProbes = 8192;
+		u32 budgetSeconds = 60;// a starved run reports the frames it finished instead of running for minutes; scales with frames
+		u32 watchdogSeconds = 240;// budgetSeconds + 180
 
 		using clock = std::chrono::steady_clock;
 
@@ -139,7 +144,48 @@ namespace Performance {
 			if (withMax_) {
 				std::snprintf(label, sizeof(label), "%s max", metric_);
 				report(kind_, label, samples_.empty() ? 0.0 : static_cast<double>(*std::ranges::max_element(samples_)) / 1000.0, "us", n);
+				if (samples_.empty()) {
+					return;
+				}
+				double sum = 0.0;
+				for (const auto s : samples_) {
+					sum += static_cast<double>(s);
+				}
+				const double mean = sum / static_cast<double>(n);
+				double squares = 0.0;
+				for (const auto s : samples_) {
+					squares += (static_cast<double>(s) - mean) * (static_cast<double>(s) - mean);
+				}
+				std::snprintf(label, sizeof(label), "%s min", metric_);
+				report(kind_, label, static_cast<double>(samples_.front()) / 1000.0, "us", n);// sorted by pct above
+				std::snprintf(label, sizeof(label), "%s mean", metric_);
+				report(kind_, label, mean / 1000.0, "us", n);
+				std::snprintf(label, sizeof(label), "%s stddev", metric_);
+				report(kind_, label, std::sqrt(squares / static_cast<double>(n)) / 1000.0, "us", n);
 			}
+		}
+
+		/** Frames over spikeNs, with their end time since the run started, so they can be lined up with a profiler capture. */
+		void reportSpikes(const char* kind_, ref<const Vector<u64>> frameNs_, ref<const Vector<u64>> frameEndNs_, const u64 startNs_) {
+			constexpr u64 spikeNs = 30'000'000uLL;
+			constexpr u32 listed = 16;
+			u32 spikes = 0;
+			for (size_t i = 0; i < frameNs_.size(); ++i) {
+				if (frameNs_[i] <= spikeNs) {
+					continue;
+				}
+				if (spikes < listed) {
+					std::printf(
+						"[ BENCH    ] %-14s spike frame %zu: %.1f us, ends at +%.1f ms\n",
+						kind_,
+						i,
+						static_cast<double>(frameNs_[i]) / 1000.0,
+						static_cast<double>(frameEndNs_[i] - startNs_) / 1e6
+					);
+				}
+				++spikes;
+			}
+			report(kind_, "frames over 30 ms", static_cast<double>(spikes), "", frameNs_.size());
 		}
 
 		[[nodiscard]] LanePolicyConfig lanesFromEnv() {
@@ -180,6 +226,7 @@ namespace Performance {
 			std::atomic<u32> frameIdx { 0 };
 			u64 frameStart = 0;
 			Vector<u64> frameNs;
+			Vector<u64> frameEndNs;
 			Vector<u64> pickupNs;
 			Vector<u64> completeNs;
 			std::atomic<u32> fanIdx { 0 };
@@ -201,6 +248,7 @@ namespace Performance {
 			u32 boostEvery = 0;
 			std::atomic<u32> boostPushed { 0 };
 			std::atomic<u32> boostDone { 0 };
+			std::atomic<u64> wakeInWindows { 0 };// wakeCalls() deltas summed over the fan-out windows
 		};
 
 		class BenchStage final :
@@ -264,9 +312,46 @@ namespace Performance {
 			}
 			spinMicros(stageSpinMicros);
 
-			if (index_ < fanOutStages) {
+			if (index_ < fanOutStages && callerJoins) {
+				// parallelFor shape: fanOut indices, fanOut - 1 helpers, the stage claims indices too
+				std::atomic<u32> next { 0 };
+				std::atomic<u64> lastStart { 0 };
+				const auto runIndices = [&next, &lastStart] {
+					while (next.fetch_add(1) < fanOut) {
+						const auto started = nowNs();
+						u64 prev = lastStart.load(std::memory_order::relaxed);
+						// shape 1: pickupNs is the start of the last claimed index, not the last helper pickup
+						while (started > prev && not lastStart.compare_exchange_weak(prev, started)) {}
+						spinMicros(stageSpinMicros);
+					}
+				};
+				const auto helpers = fanOut - 1u;
+				JoinCounter join { helpers };
+				const auto wakesBefore = st_.schedule->wakeCalls();// sampled around the fan-out only; other workers wakes can land in the window
+				const auto first = nowNs();
+				for (u32 c = 0; c < helpers; ++c) {
+					sched_->exec(
+						task::make_task(
+							[&join, &runIndices] {
+								runIndices();
+								join.done();
+							}
+						)
+					);
+				}
+				runIndices();
+				join.wait();
+				const auto end = nowNs();
+				st_.wakeInWindows.fetch_add(st_.schedule->wakeCalls() - wakesBefore);
+				const auto at = st_.fanIdx.fetch_add(1);
+				if (at < st_.pickupNs.size()) {
+					st_.pickupNs[at] = lastStart.load() - first;
+					st_.completeNs[at] = end - first;
+				}
+			} else if (index_ < fanOutStages) {
 				JoinCounter join { fanOut };
 				std::atomic<u64> lastStart { 0 };
+				const auto wakesBefore = st_.schedule->wakeCalls();// sampled around the fan-out only; other workers wakes can land in the window
 				const auto first = nowNs();
 				for (u32 c = 0; c < fanOut; ++c) {
 					sched_->exec(
@@ -283,6 +368,7 @@ namespace Performance {
 				}
 				join.wait();
 				const auto end = nowNs();
+				st_.wakeInWindows.fetch_add(st_.schedule->wakeCalls() - wakesBefore);
 				const auto at = st_.fanIdx.fetch_add(1);
 				if (at < st_.pickupNs.size()) {
 					st_.pickupNs[at] = lastStart.load() - first;
@@ -306,7 +392,8 @@ namespace Performance {
 			if (index_ + 1 == stageCount) {
 				const auto at = st_.frameIdx.fetch_add(1);
 				if (at < st_.frameNs.size()) {
-					st_.frameNs[at] = nowNs() - st_.frameStart;
+					st_.frameEndNs[at] = nowNs();
+					st_.frameNs[at] = st_.frameEndNs[at] - st_.frameStart;
 					st_.waitMaxNs[at] = st_.schedule->frameWaitMaxMicros() * 1000uLL;
 					st_.reserveSamples[at] = st_.schedule->reserve();
 				}
@@ -406,6 +493,7 @@ namespace Performance {
 				[&](nmpt<engine::Scheduler> s_) {
 					auto state = std::make_unique<BenchState>();
 					state->frameNs.resize(frames);
+					state->frameEndNs.resize(frames);
 					state->pickupNs.resize(static_cast<size_t>(frames) * fanOutStages);
 					state->completeNs.resize(static_cast<size_t>(frames) * fanOutStages);
 					state->probeNs.resize(maxProbes);
@@ -474,6 +562,7 @@ namespace Performance {
 					std::printf("[ BENCH    ] %-14s workers=%u\n", kind_, workers);
 					st.frameNs.resize(std::min(st.frameIdx.load(), frames));
 					std::printf("[ BENCH    ] %-14s frames completed=%zu of %u\n", kind_, st.frameNs.size(), frames);
+					reportSpikes(kind_, st.frameNs, st.frameEndNs, start);// before reportDist sorts frameNs
 					reportDist(kind_, "frame time", st.frameNs, true);
 					st.pickupNs.resize(std::min<size_t>(st.fanIdx.load(), st.pickupNs.size()));
 					st.completeNs.resize(st.pickupNs.size());
@@ -491,6 +580,7 @@ namespace Performance {
 					st.reserveSamples.resize(st.frameNs.size());
 					reportDist(kind_, "per-frame max Frame wait", st.waitMaxNs, true);
 					reportCount(kind_, "reserve", st.reserveSamples);
+					report(kind_, "wake calls per frame (fan-out window)", static_cast<double>(st.wakeInWindows.load()) / std::max(1.0, static_cast<double>(st.frameNs.size())), "");
 					reportLaneStats(kind_, st.schedule);
 					printConfig(lanes);
 				}
@@ -501,6 +591,13 @@ namespace Performance {
 	TEST(LaneFloodBenchmark, DISABLED_Flood) {
 		const auto workers = envU32("HG_BENCH_WORKERS", 0);
 		const char* const coop = std::getenv("HG_BENCH_FLOOD_COOPERATES");
+		fanOut = std::max(1u, envU32("HG_BENCH_FANOUT", fanOut));
+		callerJoins = envU32("HG_BENCH_SHAPE", 0) != 0;
+		frames = std::max(1u, envU32("HG_BENCH_FRAMES", 2000u));
+		budgetSeconds = std::max(60u, frames / 2000u * 60u);
+		watchdogSeconds = budgetSeconds + 180u;
+		maxProbes = std::max(8192u, budgetSeconds * (1000u / probeEveryMillis) + 64u);
+		std::printf("[ BENCH    ] fan-out width=%u shape=%u\n", fanOut, callerJoins ? 1u : 0u);
 
 		runOnce(workers, "idle", false, true);
 		if (not coop || coop[0] != '0') {
