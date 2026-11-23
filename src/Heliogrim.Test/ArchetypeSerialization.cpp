@@ -506,6 +506,37 @@ namespace HeliogrimApi {
 		EXPECT_TRUE(component.getStaticGeometry().isValid());
 	}
 
+	// A material index past the layout capacity is ignored instead of tripping dumpAssets later.
+	TEST(ArchetypeSer, StaticGeometryInstanceMaterialBeyondCapacityIgnored) {
+		using StaticGeometryLayout = access::Layout<StaticGeometryComponent>;
+		struct Access : AssetHandle {
+			static auto guidMember() noexcept { return &Access::_guid; }
+			static auto typeMember() noexcept { return &Access::_type; }
+			static auto refMember() noexcept { return &Access::_ref; }
+		};
+
+		auto geometry = engine::assets::StaticGeometry {
+			AssetGuid { 1uL, 2u, 3u, 4uLL }, StringView { "geometry" }, engine::assets::AssetReferenceUrl {}, engine::assets::AssetUrl {},
+			Vector<fs::Url> {}, AutoArray<AssetGuid>(StaticGeometryLayout::material_capacity + 4uLL, invalid_asset_guid)
+		};
+		StaticGeometryAssetHandle handle {};
+		handle.*Access::guidMember() = geometry.getAssetGuid();
+		handle.*Access::typeMember() = engine::assets::StaticGeometry::typeId;
+		handle.*Access::refMember() = Some(static_cast<ref<engine::assets::Asset>>(geometry));
+
+		ref<const ActorClass> cls = StaticGeometryActor::actorClass();
+		const Slots slots { cls, 1u };
+		auto& component = static_cast<ref<StaticGeometryActor>>(actor(cls, slots.slot(0u))).get<"geometry">();
+		ASSERT_TRUE(component.setStaticGeometry(handle));
+
+		GraphicsMaterialAssetHandle material {};
+		component.setInstanceMaterial(static_cast<u16>(StaticGeometryLayout::material_capacity), material);
+		EXPECT_TRUE(component.getInstanceMaterials().empty());
+
+		component.setInstanceMaterial(static_cast<u16>(StaticGeometryLayout::material_capacity - 1uLL), material);
+		EXPECT_EQ(component.getInstanceMaterials().size(), StaticGeometryLayout::material_capacity);
+	}
+
 	// Level.Structured.cpp hydrate looks the scheme up by the Symbols::Type key that Structure<Actor> writes.
 	TEST(ArchetypeSer, LevelTypeKeyFindsGeometryScheme) {
 		ref<const ActorClass> cls = StaticGeometryActor::actorClass();

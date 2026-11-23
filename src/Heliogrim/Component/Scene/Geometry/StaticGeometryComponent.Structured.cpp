@@ -5,6 +5,7 @@
 #include "AssetDatabase.hpp"
 #include "AssetResolve.hpp"
 #include "StaticGeometryComponent.hpp"
+#include "StaticGeometryComponent.Layout.hpp"
 
 using namespace hg::engine::serialization;
 using namespace hg;
@@ -52,6 +53,17 @@ void access::Structure<StaticGeometryComponent>::hydrate(
 	record_.getRecordSlot("materials"sv).asSeq().each(
 		[&target_, &record_, geometryGuid](mref<RecordScopedSlot> materialSlot_, const size_t index_) {
 
+			// setInstanceMaterial silently drops an index beyond the layout capacity, so reject it like the layout path.
+			if (index_ >= Layout<StaticGeometryComponent>::material_capacity) {
+				record_.slot()->fail(
+					ReadError::Kind::eInvalidValue,
+					record_.slot()->getState().offset,
+					0LL,
+					"instance material index exceeds the material capacity"
+				);
+				return;
+			}
+
 			// The setters only assert on the index, so a record that exceeds the geometry is rejected here.
 			// An unresolved geometry was already warned about; its materials cannot be applied.
 			if (geometryGuid != invalid_asset_guid && not target_.getStaticGeometry().isValid()) {
@@ -73,6 +85,7 @@ void access::Structure<StaticGeometryComponent>::hydrate(
 
 			if (materialGuid == invalid_asset_guid) {
 				target_.unsetInstanceMaterial(index_);
+
 			} else {
 				if (auto material = ResolveAssetHandle<GraphicsMaterialAssetHandle>(record_, materialGuid); material != None) {
 					target_.setInstanceMaterial(index_, *material);
