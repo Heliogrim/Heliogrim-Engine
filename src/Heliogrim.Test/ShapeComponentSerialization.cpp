@@ -3,9 +3,13 @@
 /**/
 
 #include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.Diagnostics/Sink.hpp>
 #include <Engine.Resource.Archive/BufferArchive.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Archive/StructuredArchive.hpp>
+#include <Engine.Serialization/Load/LoadContext.hpp>
+#include <Engine.Serialization/Structure/RootScopedSlot.hpp>
+#include <Engine.Serialization.Structures/Common/Guid.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 #include <Heliogrim/Actor/Archetype/ArchetypeLayout.inl.hpp>
 #include <Heliogrim/Component/Scene/Collision/BoxShapeCollisionComponent.Layout.hpp>
@@ -94,4 +98,29 @@ TEST(ShapeComponentSerialization, SphereCollisionRoundTrip) {
 		EXPECT_TRUE(target->settings.isTrigger);
 		EXPECT_EQ(target->radius.at<0>(), 8.F);
 	}
+}
+
+TEST(ShapeComponentSerialization, MaterialGuidWithoutEngineIsUnresolvedWarning) {
+	auto archive = BufferArchive {}; {
+		const auto source = make<BoxShapeGeometryComponent>();
+		auto structured = StructuredArchive { archive };
+		auto record = structured.insertRootSlot().intoStruct();
+		access::Structure<math::fvec3>::serialize(math::fvec3 { 1.F }, record.insertStructSlot("extent"));
+		access::Structure<Guid>::serialize(AssetGuid { 1uL, 2u, 3u, 4uLL }, record.insertStructSlot("material"));
+		access::Structure<HierarchyComponent>::serialize(*source, ::hg::move(record));
+	}
+	archive.seek(0);
+
+	auto ctx = LoadContext { static_cast<u64>(archive.totalSize()) };
+	const auto target = make<BoxShapeGeometryComponent>(); {
+		const auto root = RootScopedSlot { archive, ScopedSlotStateFlag::eClean, &ctx };
+		access::Structure<BoxShapeGeometryComponent>::hydrate(root.asStruct(), *target);
+	}
+
+	EXPECT_FALSE(ctx.failed());
+	EXPECT_EQ(target->getInstanceMaterial(), None);
+	engine::diag::CollectingSink sink {};
+	ASSERT_TRUE(ctx.finish(sink, "box").has_value());
+	ASSERT_EQ(sink.items().size(), 1uLL);
+	EXPECT_EQ(sink.items()[0].code()->key, "unresolved-reference");
 }

@@ -201,7 +201,6 @@ namespace HeliogrimApi::schema_fixtures {
 				auto actor = sampleActor<ActorType_>(seed_);
 				auto structured = StructuredArchive { archive_ };
 				saveActor(*actor, ActorType_::typeId, structured.insertRootSlot().intoStruct());
-				(void)actor.release(); // shortcut: the default VolatileActor deleter crashes on pooled actors (known), leak until fixed.
 			},
 			.reload = [name = String { name_ }](cref<Bytes> bytes_) {
 				Opt<VolatileActor<>> loaded {};
@@ -219,9 +218,6 @@ namespace HeliogrimApi::schema_fixtures {
 				);
 				if (result.ok) {
 					result.resaved = saveWith([&](mref<StructScopedSlot> slot_) { saveActor(**loaded, ActorType_::typeId, ::hg::move(slot_)); });
-				}
-				if (loaded.has_value()) {
-					(void)loaded->release(); // shortcut: see write above.
 				}
 				return result;
 			}
@@ -287,12 +283,6 @@ namespace HeliogrimApi::schema_fixtures {
 		};
 	}
 
-	/* shortcut: levels own pooled actors whose default deleter crashes (known), so they are kept alive until the deleter is fixed. */
-	[[nodiscard]] ref<Vector<Arci<Level>>> keepAlive() {
-		static auto* const levels = new Vector<Arci<Level>> {};
-		return *levels;
-	}
-
 	[[nodiscard]] Case levelCase(StringView name_, const bool withActors_) {
 		return Case {
 			.name = String { name_ },
@@ -305,7 +295,6 @@ namespace HeliogrimApi::schema_fixtures {
 				}
 				auto structured = StructuredArchive { archive_ };
 				access::Structure<Level>::serialize(*level, structured.insertRootSlot().intoStruct());
-				keepAlive().push_back(::hg::move(level));
 			},
 			.reload = [name = String { name_ }](cref<Bytes> bytes_) {
 				auto archive = BufferArchive {};
@@ -318,9 +307,6 @@ namespace HeliogrimApi::schema_fixtures {
 				}
 				if (result.ok) {
 					result.resaved = saveWith([&](mref<StructScopedSlot> slot_) { access::Structure<Level>::serialize(**level, ::hg::move(slot_)); });
-				}
-				if (level.has_value() && level.value() != nullptr) {
-					keepAlive().push_back(level.value());
 				}
 				return result;
 			}
@@ -561,5 +547,52 @@ namespace HeliogrimApi::schema_fixtures {
 		const auto loaded = replayActorFinding<StaticGeometryActor>("StaticGeometryActorSilent.bin");
 		EXPECT_FALSE(loaded.ok);
 		EXPECT_TRUE(loaded.errors) << loaded.diagnostics;
+	}
+
+	TEST_F(SchemaFixtures, UnresolvedAssetMarksArchetypeActorUnknownData) {
+		auto source = sampleActor<StaticGeometryActor>(1u);
+		auto geometry = static_cast<StaticGeometryActor&>(*source).getStaticGeometryComponent();
+		ASSERT_TRUE(geometry != nullptr);
+		struct Access : AssetHandle {
+			static auto guidMember() noexcept { return &Access::_guid; }
+		};
+		StaticGeometryAssetHandle bare {};
+		bare.*Access::guidMember() = AssetGuid { 1uL, 2u, 3u, 4uLL };
+		geometry->setStaticGeometry(bare);
+
+		auto archive = BufferArchive {}; {
+			auto structured = StructuredArchive { archive };
+			saveActor(*source, StaticGeometryActor::typeId, structured.insertRootSlot().intoStruct());
+		}
+
+		bool unknown = false;
+		ptr<Actor> reloaded = nullptr;
+		const auto loaded = loadWith(
+			drain(archive),
+			"unresolved",
+			[&unknown, &reloaded](cref<RootScopedSlot> root_, ref<LoadContext>) {
+				const auto scheme = serial().getActorScheme(StaticGeometryActor::typeId);
+				auto* const actor = scheme->deserialize(root_, Engine::getEngine()->getActors()->getRegistry());
+				unknown = actor != nullptr && actor->carriesUnknownData();
+				reloaded = actor;
+				return actor != nullptr;
+			}
+		);
+		EXPECT_TRUE(loaded.ok) << loaded.diagnostics;
+		EXPECT_TRUE(unknown);
+		ASSERT_NE(reloaded, nullptr);
+
+		// The mark has to reach the save boundary: a level holding the actor refuses to save.
+		auto level = make_root_like_level();
+		std::ignore = level->addActor(VolatileActor<> { ::hg::move(reloaded) });
+		const auto saved = checkSaveAllowed(*level);
+		ASSERT_FALSE(saved.has_value());
+		ASSERT_EQ(saved.error().size(), 1uLL);
+		EXPECT_EQ(String { saved.error().front().code()->key }, "save-refused");
+		ASSERT_EQ(saved.error().front().notes().size(), 1uLL);
+		EXPECT_NE(saved.error().front().notes().front().find("actor"), String::npos);
+
+		// A clean level next to it still saves.
+		EXPECT_TRUE(checkSaveAllowed(*make_root_like_level()).has_value());
 	}
 }

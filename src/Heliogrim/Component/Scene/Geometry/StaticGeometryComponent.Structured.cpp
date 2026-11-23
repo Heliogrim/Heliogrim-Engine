@@ -3,6 +3,7 @@
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 
 #include "AssetDatabase.hpp"
+#include "AssetResolve.hpp"
 #include "StaticGeometryComponent.hpp"
 
 using namespace hg::engine::serialization;
@@ -43,13 +44,20 @@ void access::Structure<StaticGeometryComponent>::hydrate(
 	auto geometryGuid = AssetGuid {};
 	Structure<Guid>::hydrate(record_.getStructSlot("geometry"sv), geometryGuid);
 	if (geometryGuid != invalid_asset_guid) {
-		target_.setStaticGeometry(GetAssets().find<StaticGeometryAssetHandle>(geometryGuid).value);
+		if (auto geometry = ResolveAssetHandle<StaticGeometryAssetHandle>(record_, geometryGuid); geometry != None) {
+			target_.setStaticGeometry(*geometry);
+		}
 	}
 
 	record_.getRecordSlot("materials"sv).asSeq().each(
-		[&target_, &record_](mref<RecordScopedSlot> materialSlot_, const size_t index_) {
+		[&target_, &record_, geometryGuid](mref<RecordScopedSlot> materialSlot_, const size_t index_) {
 
 			// The setters only assert on the index, so a record that exceeds the geometry is rejected here.
+			// An unresolved geometry was already warned about; its materials cannot be applied.
+			if (geometryGuid != invalid_asset_guid && not target_.getStaticGeometry().isValid()) {
+				return;
+			}
+
 			if (not target_.getStaticGeometry().isValid() || index_ >= target_.getStaticGeometry().getAssetRef()->getMeshMaterialCount()) {
 				record_.slot()->fail(
 					ReadError::Kind::eInvalidValue,
@@ -66,7 +74,9 @@ void access::Structure<StaticGeometryComponent>::hydrate(
 			if (materialGuid == invalid_asset_guid) {
 				target_.unsetInstanceMaterial(index_);
 			} else {
-				target_.setInstanceMaterial(index_, GetAssets().find<GraphicsMaterialAssetHandle>(materialGuid).value);
+				if (auto material = ResolveAssetHandle<GraphicsMaterialAssetHandle>(record_, materialGuid); material != None) {
+					target_.setInstanceMaterial(index_, *material);
+				}
 			}
 		}
 	);

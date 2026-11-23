@@ -1,12 +1,9 @@
-#include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
-#include <Engine.Serialization/Structure/FloatScopedSlot.hpp>
-#include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
-#include <Engine.Serialization.Structures/Symbols.hpp>
 
 #include "SkyboxComponent.hpp"
 #include "../../../AssetDatabase.hpp"
+#include "../../../AssetResolve.hpp"
 
 using namespace hg::engine::serialization;
 using namespace hg;
@@ -40,9 +37,17 @@ void access::Structure<SkyboxComponent>::hydrate(
 	// TODO: Implement Resolver
 	AssetGuid geometryGuid {};
 	Structure<Guid>::hydrate(record_.getStructSlot("geometry"sv), geometryGuid);
-	target_._skyboxGeometry = GetAssets().find<StaticGeometryAssetHandle>(geometryGuid).value;
+	if (geometryGuid != invalid_asset_guid) {
+		if (auto geometry = ResolveAssetHandle<StaticGeometryAssetHandle>(record_, geometryGuid); geometry != None) {
+			target_._skyboxGeometry = *geometry;
+		}
+	}
 
 	AssetGuid materialGuid {};
 	Structure<Guid>::hydrate(record_.getStructSlot("material"sv), materialGuid);
-	target_._skyboxMaterial = GetAssets().find<GraphicsMaterialAssetHandle>(materialGuid).value;
+	if (materialGuid != invalid_asset_guid) {
+		if (auto material = ResolveAssetHandle<GraphicsMaterialAssetHandle>(record_, materialGuid); material != None) {
+			target_._skyboxMaterial = *material;
+		}
+	}
 }

@@ -1,12 +1,9 @@
 #include "AssetDatabase.hpp"
 
-#include <Engine.Asserts/Todo.hpp>
-#include <Engine.Assets.System/AssetDescriptor.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets.Type/Asset.hpp>
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Core/Engine.hpp>
-#include <Engine.Pedantic/Clone/Clone.hpp>
 
 using namespace hg;
 
@@ -47,6 +44,12 @@ AssetDatabaseResult<AssetHandle> AssetDatabase::operator[](ref<const AssetGuid> 
 }
 
 /**/
+
+bool hg::IsAssetsAvailable() noexcept {
+	return engine::Engine::getEngine() != nullptr
+		&& engine::Engine::getEngine()->getAssets() != nullptr
+		&& engine::Engine::getEngine()->getAssets()->getRegistry() != nullptr;
+}
 
 AssetDatabase hg::GetAssets() {
 	return AssetDatabase {
