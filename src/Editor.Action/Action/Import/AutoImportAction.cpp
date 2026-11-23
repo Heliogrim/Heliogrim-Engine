@@ -114,12 +114,15 @@ ref<Signal> AutoImportAction::finished() const noexcept {
 
 /**/
 
+#include <Engine.Assets.Type/AssetLoad.hpp>
 #include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
 #include <Engine.Assets.Type/Texture/FontAsset.hpp>
 #include <Engine.Assets.Type/Texture/ImageAsset.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 #include <Engine.Common/GuidFormat.hpp>
 #include <Engine.Core/Engine.hpp>
+#include <Engine.Diagnostics/Render.hpp>
+#include <Engine.Diagnostics/Sink.hpp>
 #include <Engine.Graphics/Importer/FontFileTypes.hpp>
 #include <Engine.Graphics/Importer/ImageFileTypes.hpp>
 #include <Engine.Graphics/Importer/ModelFileTypes.hpp>
@@ -128,8 +131,10 @@ ref<Signal> AutoImportAction::finished() const noexcept {
 #include <Engine.Resource.Archive/BufferArchive.hpp>
 #include <Engine.Resource/FileTypeId.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
+#include <Engine.Serialization/SerializationModule.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Archive/StructuredArchive.hpp>
+#include <Engine.Serialization/Diagnostic/Codes.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 #include <Engine.Storage.Registry/IStorageRegistry.hpp>
 #include <Engine.Storage/StorageModule.hpp>
@@ -152,8 +157,13 @@ using namespace hg::engine::resource;
 [[nodiscard]] static Opt<Vector<Arci<engine::assets::Asset>>> autoImportStaticGeometry(
 	_In_ mref<engine::res::FileTypeId> fileTypeId_, _In_ cref<engine::storage::FileUrl> fileUrl_, _In_ mref<engine::res::ImportDestination> importDestination_);
 
-[[nodiscard]] static Opt<Arci<engine::storage::system::PackageStorage>> autoStoreAssets(
-	_In_ cref<engine::storage::FileUrl> baseFileUrl_, _In_ ref<const Vector<Arci<engine::assets::Asset>>> assets_);
+[[nodiscard]] static Result<Arci<engine::storage::system::PackageStorage>, engine::diag::Diagnostics> autoStoreAssets(
+	_In_ cref<engine::storage::FileUrl> baseFileUrl_,
+	_In_ ref<const Vector<Arci<engine::assets::Asset>>> assets_,
+	_Inout_ ref<engine::diag::DiagnosticSink> sink_
+);
+
+static void log_diagnostics(ref<const engine::diag::Diagnostics> diagnostics_);
 
 [[nodiscard]] static BufferArchive autoStoreFont(_In_ nmpt<engine::assets::FontAsset> fontAsset_);
 [[nodiscard]] static BufferArchive autoStoreImage(_In_ nmpt<engine::assets::ImageAsset> imageAsset_);
@@ -293,7 +303,9 @@ Opt<AutoImportInternalResult> autoImportBundle(
 	/**/
 
 	associateBundle(combinedResult.value(), std::move(fileTypes));
-	auto package = autoStoreAssets(bundleUrl_, combinedResult.value());
+	auto sink = engine::diag::CollectingSink {};
+	auto package = autoStoreAssets(bundleUrl_, combinedResult.value(), sink);
+	log_diagnostics(sink.items());
 	if (not package.has_value()) {
 		return None;
 	}
@@ -344,7 +356,9 @@ Opt<AutoImportInternalResult> autoImportFile(
 
 	/**/
 
-	auto package = autoStoreAssets(fileUrl_, result.value());
+	auto sink = engine::diag::CollectingSink {};
+	auto package = autoStoreAssets(fileUrl_, result.value(), sink);
+	log_diagnostics(sink.items());
 	if (not package.has_value()) {
 		return None;
 	}
@@ -463,23 +477,59 @@ constexpr static auto prefix_extension = '.';
 constexpr static auto packed_extension = std::string_view { R"(.imp)" };
 #endif
 
-Opt<Arci<engine::storage::system::PackageStorage>> autoStoreAssets(
+static void log_diagnostics(ref<const engine::diag::Diagnostics> diagnostics_) {
+	for (const auto& diagnostic : diagnostics_) {
+		switch (diagnostic.severity()) {
+			case engine::diag::Severity::eError: {
+				IM_CORE_ERRORF("{}", engine::diag::render(diagnostic));
+				break;
+			}
+			case engine::diag::Severity::eWarning: {
+				IM_CORE_WARNF("{}", engine::diag::render(diagnostic));
+				break;
+			}
+			default: {
+				IM_CORE_INFOF("{}", engine::diag::render(diagnostic));
+			}
+		}
+	}
+}
+
+Result<Arci<engine::storage::system::PackageStorage>, engine::diag::Diagnostics> autoStoreAssets(
 	cref<engine::storage::FileUrl> baseFileUrl_,
-	ref<const Vector<Arci<engine::assets::Asset>>> assets_
+	ref<const Vector<Arci<engine::assets::Asset>>> assets_,
+	ref<engine::diag::DiagnosticSink> sink_
 ) {
 
 	const auto packageFileUrl = std::filesystem::path { baseFileUrl_.path() }.concat(packed_extension);
-	if (std::filesystem::exists(packageFileUrl)) {
-		IM_CORE_ERRORF(
-			"Failed to auto generate the package file `{}`, cause the targeted package file does already exist.",
-			packageFileUrl.string()
+	const auto reject = [&sink_](mref<String> message_) {
+		engine::diag::Diagnostic diagnostic = engine::diag::Diagnostic::error(
+			engine::serialization::codes::ser("write-failed"),
+			::hg::move(message_)
 		);
-		return None;
+		sink_.emit(engine::diag::Diagnostic { diagnostic });
+		engine::diag::Diagnostics out {};
+		out.emplace_back(::hg::move(diagnostic));
+		return Unexpected<engine::diag::Diagnostics> { ::hg::move(out) };
+	};
+
+	if (std::filesystem::exists(packageFileUrl)) {
+		return reject(
+			std::format(
+				"Failed to auto generate the package file `{}`, cause the targeted package file does already exist.",
+				packageFileUrl.string()
+			)
+		);
 	}
 
-	if (std::ranges::any_of(assets_, [](const auto& asset_) { return asset_->carriesUnknownData(); })) {
-		IM_CORE_ERRORF("Refused to store package `{}`: an asset carries data this build did not understand.", packageFileUrl.string());
-		return None;
+	const auto checked = assets_
+		| std::views::transform([](const auto& asset_) { return nmpt<const engine::assets::Asset> { asset_.get() }; })
+		| std::ranges::to<Vector<nmpt<const engine::assets::Asset>>>();
+	if (auto allowed = engine::assets::checkStoreAllowed(checked); not allowed.has_value()) {
+		for (const auto& diagnostic : allowed.error()) {
+			sink_.emit(engine::diag::Diagnostic { diagnostic });
+		}
+		return Unexpected<engine::diag::Diagnostics> { ::hg::move(allowed).error() };
 	}
 
 	/**/
@@ -504,11 +554,9 @@ Opt<Arci<engine::storage::system::PackageStorage>> autoStoreAssets(
 	}(storeReg, storageFileUrl);
 
 	if (storageUnit == nullptr) {
-		IM_CORE_ERRORF(
-			"Failed to auto generate the package storage unit with backing file `{}`.",
-			packageFileUrl.string()
+		return reject(
+			std::format("Failed to auto generate the package storage unit with backing file `{}`.", packageFileUrl.string())
 		);
-		return None;
 	}
 
 	/* Morph the underlying storage unit into a package storage */
@@ -518,11 +566,9 @@ Opt<Arci<engine::storage::system::PackageStorage>> autoStoreAssets(
 	);
 
 	if (not maybePackage.has_value()) {
-		IM_CORE_ERRORF(
-			"Failed to request newly generate package based on file url storage `{}`.",
-			packageFileUrl.string()
+		return reject(
+			std::format("Failed to request newly generate package based on file url storage `{}`.", packageFileUrl.string())
 		);
-		return None;
 	}
 
 	auto packageStore = ::hg::move(maybePackage).value();
@@ -556,7 +602,7 @@ Opt<Arci<engine::storage::system::PackageStorage>> autoStoreAssets(
 
 	/* Write data collection to package */
 
-	auto ioFailed = false;
+	auto ioFailed = String {};
 	for (auto idx = 0uLL; idx < serialized.size(); ++idx) {
 
 		auto result = storeSys->addArchiveToPackage(
@@ -567,12 +613,11 @@ Opt<Arci<engine::storage::system::PackageStorage>> autoStoreAssets(
 		/**/
 
 		if (not result.has_value()) {
-			IM_CORE_ERRORF(
+			ioFailed = std::format(
 				"Failed to store serialized asset data of `{}` into auto generated package `{}`.",
 				encodeGuid4228(assets_[idx]->getAssetGuid()),
 				packageFileUrl.string()
 			);
-			ioFailed = true;
 			break;
 		}
 
@@ -583,7 +628,7 @@ Opt<Arci<engine::storage::system::PackageStorage>> autoStoreAssets(
 
 	/* Recover from storing failure */
 
-	if (ioFailed) {
+	if (not ioFailed.empty()) {
 		// Note: We need to improve the error recovery... This is just a dirty quickfix.
 		for (auto& asset : assets_) {
 			asset->setAssetStorageUrl(engine::assets::AssetReferenceUrl {});
@@ -591,12 +636,12 @@ Opt<Arci<engine::storage::system::PackageStorage>> autoStoreAssets(
 
 		std::ignore = storeSys->removeStorage(clone(storageFileUrl));
 		std::filesystem::remove(packageFileUrl);
-		return None;
+		return reject(::hg::move(ioFailed));
 	}
 
 	/**/
 
-	return Some(std::move(packageStore));
+	return std::move(packageStore);
 }
 
 /**/
@@ -609,10 +654,9 @@ BufferArchive autoStoreFont(
 	auto archive = BufferArchive {};
 
 	auto structured = engine::serialization::StructuredArchive { archive };
-	engine::serialization::access::Structure<engine::assets::FontAsset>::serialize(
-		*fontAsset_,
-		structured.insertRootSlot().intoStruct()
-	);
+	auto record = structured.insertRootSlot().intoStruct();
+	engine::Engine::getEngine()->getSerialization()->migrations().writeRevision(record, engine::assets::FontAsset::typeId);
+	engine::serialization::access::Structure<engine::assets::FontAsset>::serialize(*fontAsset_, ::hg::move(record));
 
 	archive.setType(ArchiveType::eSerializedStructure);
 	return archive;
@@ -625,10 +669,9 @@ BufferArchive autoStoreImage(
 	auto archive = BufferArchive {};
 
 	auto structured = engine::serialization::StructuredArchive { archive };
-	engine::serialization::access::Structure<engine::assets::ImageAsset>::serialize(
-		*imageAsset_,
-		structured.insertRootSlot().intoStruct()
-	);
+	auto record = structured.insertRootSlot().intoStruct();
+	engine::Engine::getEngine()->getSerialization()->migrations().writeRevision(record, engine::assets::ImageAsset::typeId);
+	engine::serialization::access::Structure<engine::assets::ImageAsset>::serialize(*imageAsset_, ::hg::move(record));
 
 	archive.setType(ArchiveType::eSerializedStructure);
 	return archive;
@@ -641,10 +684,9 @@ BufferArchive autoStoreTexture(
 	auto archive = BufferArchive {};
 
 	auto structured = engine::serialization::StructuredArchive { archive };
-	engine::serialization::access::Structure<engine::assets::TextureAsset>::serialize(
-		*textureAsset_,
-		structured.insertRootSlot().intoStruct()
-	);
+	auto record = structured.insertRootSlot().intoStruct();
+	engine::Engine::getEngine()->getSerialization()->migrations().writeRevision(record, engine::assets::TextureAsset::typeId);
+	engine::serialization::access::Structure<engine::assets::TextureAsset>::serialize(*textureAsset_, ::hg::move(record));
 
 	archive.setType(ArchiveType::eSerializedStructure);
 	return archive;
@@ -657,10 +699,9 @@ BufferArchive autoStoreStaticGeometry(
 	auto archive = BufferArchive {};
 
 	auto structured = engine::serialization::StructuredArchive { archive };
-	engine::serialization::access::Structure<engine::assets::StaticGeometry>::serialize(
-		*staticGeometryAsset_,
-		structured.insertRootSlot().intoStruct()
-	);
+	auto record = structured.insertRootSlot().intoStruct();
+	engine::Engine::getEngine()->getSerialization()->migrations().writeRevision(record, engine::assets::StaticGeometry::typeId);
+	engine::serialization::access::Structure<engine::assets::StaticGeometry>::serialize(*staticGeometryAsset_, ::hg::move(record));
 
 	archive.setType(ArchiveType::eSerializedStructure);
 	return archive;
