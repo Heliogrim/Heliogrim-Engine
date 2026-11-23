@@ -118,9 +118,9 @@ void editor::boot::initPrimaryUniverse() {
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Storage.System/StorageSystem.hpp>
 #include <Heliogrim/Heliogrim.hpp>
-#include <Heliogrim/Component/Scene/Geometry/StaticGeometryComponent.hpp>
-#include <Heliogrim/Component/Scene/Light/DirectionalLightComponent.hpp>
-#include <Heliogrim/Component/Scene/Sky/SkyboxComponent.hpp>
+#include <Engine.Graphics.Components/Geometry/StaticGeometryComponent.hpp>
+#include <Engine.Graphics.Components/Light/DirectionalLightComponent.hpp>
+#include <Engine.Graphics.Components/Sky/SkyboxComponent.hpp>
 
 static void add_default_skybox(mref<Level> level_) {
 

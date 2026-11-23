@@ -8,11 +8,11 @@
 #include <Engine.Serialization/Structure/RootScopedSlot.hpp>
 #include <Engine.Serialization.Structures/Common/Guid.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
+#include <Engine.Physics.Components/Collision/BoxShapeCollisionComponent.Layout.hpp>
+#include <Engine.Physics.Components/Collision/SphereShapeCollisionComponent.Layout.hpp>
+#include <Engine.Graphics.Components/Geometry/BoxShapeGeometryComponent.Layout.hpp>
+#include <Engine.Graphics.Components/Geometry/SphereShapeGeometryComponent.Layout.hpp>
 #include <Heliogrim/Actor/Archetype/ArchetypeLayout.inl.hpp>
-#include <Heliogrim/Component/Scene/Collision/BoxShapeCollisionComponent.Layout.hpp>
-#include <Heliogrim/Component/Scene/Collision/SphereShapeCollisionComponent.Layout.hpp>
-#include <Heliogrim/Component/Scene/Geometry/BoxShapeGeometryComponent.Layout.hpp>
-#include <Heliogrim/Component/Scene/Geometry/SphereShapeGeometryComponent.Layout.hpp>
 
 import Engine.Common;
 import Engine.Resource.Archive;

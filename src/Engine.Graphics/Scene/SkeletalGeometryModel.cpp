@@ -1,7 +1,7 @@
 #include "SkeletalGeometryModel.hpp"
 
 #include <Engine.Common/__macro.hpp>
-#include <Heliogrim/Component/Scene/Geometry/StaticGeometryComponent.hpp>
+#include <Engine.Graphics.Components/Geometry/StaticGeometryComponent.hpp>
 
 import Engine.Common;
 

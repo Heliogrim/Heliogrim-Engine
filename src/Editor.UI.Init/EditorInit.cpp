@@ -15,7 +15,7 @@
 #include <Engine.Reflow/Window/WindowManager.hpp>
 #include <Engine.ACS/Actor/ActorInitializer.hpp>
 #include <Engine.ACS/Actor/Actor.hpp>
-#include <Heliogrim/Component/Scene/UI/UIComponent.hpp>
+#include <Engine.Reflow.Components/UI/UIComponent.hpp>
 #include <Heliogrim/Universe/Universe.hpp>
 
 using namespace hg::editor::ui;

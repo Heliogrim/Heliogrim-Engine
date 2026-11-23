@@ -1,7 +1,7 @@
 #include "UISceneModel.hpp"
 
 #include <Engine.Graphics/Cache/ModelBatch.hpp>
-#include <Heliogrim/Component/Scene/UI/UIComponent.hpp>
+#include <Engine.Reflow.Components/UI/UIComponent.hpp>
 
 import Engine.Asserts;
 import Engine.Reflect;

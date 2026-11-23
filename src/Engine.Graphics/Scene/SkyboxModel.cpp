@@ -3,7 +3,7 @@
 #include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
 #include <Engine.Assets.Type/Material/GraphicsMaterial.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
-#include <Heliogrim/Component/Scene/Sky/SkyboxComponent.hpp>
+#include <Engine.Graphics.Components/Sky/SkyboxComponent.hpp>
 
 import Engine.Common;
 import Engine.Core;

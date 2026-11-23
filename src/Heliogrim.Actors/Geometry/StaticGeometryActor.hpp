@@ -4,7 +4,7 @@
 #include <Engine.ACS/Archetype/InheritArchetype.hpp>
 #include <Engine.ACS/Archetype/Layout.hpp>
 
-#include "../../Component/Scene/Geometry/StaticGeometryComponent.hpp"
+#include <Engine.Graphics.Components/Geometry/StaticGeometryComponent.hpp>
 
 namespace hg {
 	class StaticGeometryActor :

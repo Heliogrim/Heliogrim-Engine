@@ -2,7 +2,7 @@
 
 #include <Engine.ACS/Actor/Actor.hpp>
 
-#include "../../Component/Scene/Camera/CameraComponent.hpp"
+#include <Engine.Graphics.Components/Camera/CameraComponent.hpp>
 
 namespace hg {
 	class CameraActor :

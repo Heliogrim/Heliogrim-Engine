@@ -2,7 +2,7 @@
 
 #include <Engine.ACS/Actor/Actor.hpp>
 
-#include "../../Component/Scene/Light/DirectionalLightComponent.hpp"
+#include <Engine.Graphics.Components/Light/DirectionalLightComponent.hpp>
 
 namespace hg {
 	class DirectionalLightActor :

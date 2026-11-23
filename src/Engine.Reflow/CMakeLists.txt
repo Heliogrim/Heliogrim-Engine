@@ -7,3 +7,5 @@ make_library_project(
         	${PROJECT_NAME}::Engine.Reflow.Schedule
         	${PROJECT_NAME}::Engine.Input ${PROJECT_NAME}::Engine.Assets.Type ${PROJECT_NAME}::Engine.Async ${PROJECT_NAME}::Engine.Scheduler ${PROJECT_NAME}::Engine.Common ${PROJECT_NAME}::Engine.Asserts ${PROJECT_NAME}::vulkan.Module ${PROJECT_NAME}::Engine.Event ${PROJECT_NAME}::Engine.Reflect ${PROJECT_NAME}::Engine.Core ${PROJECT_NAME}::Engine.Graphics.Scene ${PROJECT_NAME}::Engine.Logging ${PROJECT_NAME}::Engine.Resource.Archive ${PROJECT_NAME}::Engine.Platform
 )
+# shortcut: Scene/UISceneModel.cpp uses Engine.Reflow.Components (scene-model downcast to UIComponent), drop when the model moves next to the component
+# shortcut: Widget/Viewport.cpp uses Heliogrim.Actors CameraActor (viewport camera binding), drop when Viewport moves to Editor.UI (Task 10)

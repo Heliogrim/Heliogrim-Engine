@@ -2,7 +2,7 @@
 
 #include <Engine.ACS/Actor/Actor.hpp>
 
-#include "../../Component/Scene/Light/PointLightComponent.hpp"
+#include <Engine.Graphics.Components/Light/PointLightComponent.hpp>
 
 namespace hg {
 	class PointLightActor :

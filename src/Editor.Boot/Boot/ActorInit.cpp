@@ -1,7 +1,7 @@
 #include <Engine.ACS/Actor/Actor.hpp>
-#include <Heliogrim/Actor/Geometry/BoxShapeGeometryActor.hpp>
-#include <Heliogrim/Actor/Geometry/SphereShapeGeometryActor.hpp>
-#include <Heliogrim/Actor/Geometry/StaticGeometryActor.hpp>
+#include <Heliogrim.Actors/Geometry/BoxShapeGeometryActor.hpp>
+#include <Heliogrim.Actors/Geometry/SphereShapeGeometryActor.hpp>
+#include <Heliogrim.Actors/Geometry/StaticGeometryActor.hpp>
 
 import Editor.Boot;
 

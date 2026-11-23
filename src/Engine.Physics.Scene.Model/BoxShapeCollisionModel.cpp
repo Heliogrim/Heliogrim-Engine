@@ -12,7 +12,7 @@
 #include <Engine.Common/__macro.hpp>
 
 #include "Engine.Physics.Scene/PhysicsSceneSystem.hpp"
-#include "Heliogrim/Component/Scene/Collision/BoxShapeCollisionComponent.hpp"
+#include "Engine.Physics.Components/Collision/BoxShapeCollisionComponent.hpp"
 
 import Engine.Asserts;
 import Engine.Logging;

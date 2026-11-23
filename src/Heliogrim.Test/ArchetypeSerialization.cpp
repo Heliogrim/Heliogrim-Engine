@@ -19,14 +19,14 @@
 #include <Engine.Serialization/Structure/RecordScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 #include <Engine.Serialization.Structures/Symbols.hpp>
+#include <Heliogrim.Actors/Geometry/StaticGeometryActor.hpp>
+#include <Engine.Graphics.Components/Geometry/StaticGeometryComponent.Layout.hpp>
 #include <Engine.Serialization.Structures/Common/Guid.hpp>
 #include <Engine.Serialization.Structures/Common/TypeId.hpp>
 #include <Heliogrim/Actor/Actor.hpp>
 #include <Engine.Serialization/Scheme/ActorScheme.hpp>
 #include <Engine.Serialization/Scheme/ComponentScheme.hpp>
 #include <Engine.Serialization/Structure/SeqScopedSlot.hpp>
-#include <Heliogrim/Actor/Geometry/StaticGeometryActor.hpp>
-#include <Heliogrim/Component/Scene/Geometry/StaticGeometryComponent.Layout.hpp>
 #include <Heliogrim/Universe/Universe.hpp>
 
 #include "SpawnEngine.hpp"

@@ -11,8 +11,8 @@
 #include <Engine.ACS/Actor/Actor.hpp>
 #include <Engine.Reflow.Uikit/Atom/Paint.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/HorizontalLayout.hpp>
-#include <Heliogrim/Component/Scene/Collision/BoxShapeCollisionComponent.hpp>
-#include <Heliogrim/Component/Scene/Collision/SphereShapeCollisionComponent.hpp>
+#include <Engine.Physics.Components/Collision/BoxShapeCollisionComponent.hpp>
+#include <Engine.Physics.Components/Collision/SphereShapeCollisionComponent.hpp>
 
 #include "SceneHierarchyController.hpp"
 

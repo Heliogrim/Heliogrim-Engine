@@ -5,7 +5,7 @@
 #if TRUE
 #include <Engine.Reflow/Command/ReflowCommandBuffer.hpp>
 #include <Engine.Graphics/Graphics.hpp>
-#include <Heliogrim/Actor/Camera/CameraActor.hpp>
+#include <Heliogrim.Actors/Camera/CameraActor.hpp>
 
 #include "Engine.Graphics/RenderTarget.hpp"
 #endif

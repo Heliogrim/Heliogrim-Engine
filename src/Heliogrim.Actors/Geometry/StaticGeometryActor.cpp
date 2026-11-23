@@ -2,7 +2,7 @@
 
 #include <Engine.ACS/Archetype/ArchetypeDefinition.inl.hpp>
 
-#include "../../Component/Scene/Geometry/StaticGeometryComponent.Layout.hpp"
+#include <Engine.Graphics.Components/Geometry/StaticGeometryComponent.Layout.hpp>
 
 using namespace hg;
 

@@ -4,8 +4,8 @@
 #include <Engine.ACS/Archetype/InheritArchetype.hpp>
 #include <Engine.ACS/Archetype/Layout.hpp>
 
-#include "../../Component/Scene/Collision/BoxShapeCollisionComponent.hpp"
-#include "../../Component/Scene/Geometry/BoxShapeGeometryComponent.hpp"
+#include <Engine.Physics.Components/Collision/BoxShapeCollisionComponent.hpp>
+#include <Engine.Graphics.Components/Geometry/BoxShapeGeometryComponent.hpp>
 
 namespace hg {
 	class BoxShapeGeometryActor :

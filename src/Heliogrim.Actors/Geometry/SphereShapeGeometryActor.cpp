@@ -2,8 +2,8 @@
 
 #include <Engine.ACS/Archetype/ArchetypeDefinition.inl.hpp>
 
-#include "../../Component/Scene/Collision/SphereShapeCollisionComponent.Layout.hpp"
-#include "../../Component/Scene/Geometry/SphereShapeGeometryComponent.Layout.hpp"
+#include <Engine.Physics.Components/Collision/SphereShapeCollisionComponent.Layout.hpp>
+#include <Engine.Graphics.Components/Geometry/SphereShapeGeometryComponent.Layout.hpp>
 
 using namespace hg;
 
