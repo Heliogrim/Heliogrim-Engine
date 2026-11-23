@@ -2,12 +2,11 @@
 
 /**/
 
-#include <Engine.Scene.Game/SceneComponentQueue.hpp>
-
 import Engine.ACS;
 import Engine.Common;
 import Engine.Physics.Components;
 import Engine.Scene;
+import Engine.Scene.Game;
 
 using namespace hg::engine::scene;
 using namespace hg;

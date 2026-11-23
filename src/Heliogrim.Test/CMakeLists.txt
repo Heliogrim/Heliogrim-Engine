@@ -14,6 +14,7 @@ make_test_project(
 		${PROJECT_NAME}::Engine.Reflect
 		${PROJECT_NAME}::Engine.Resource.Archive
 		${PROJECT_NAME}::Engine.Scene
+		${PROJECT_NAME}::Engine.Scene.Game
 		${PROJECT_NAME}::Heliogrim
 		${PROJECT_NAME}::Heliogrim.Actors
 		${PROJECT_NAME}::Engine.Graphics.Components
