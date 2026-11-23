@@ -16,6 +16,7 @@
 #include <Engine.Resource.Archive/MemoryReadonlyArchive.hpp>
 #include <Engine.Resource.Archive/StorageReadWriteArchive.hpp>
 #include <Engine.Resource.Archive/Storage/PackageReadWriteArchive.hpp>
+#include <Engine.Reflect/Inherit/InheritMeta.hpp>
 #include <Engine.Resource.Blob/Memory/ByteSpanBlob.hpp>
 #include <Engine.Resource.Package/ReadonlyPackage.hpp>
 #include <Engine.Resource.Package/ReadWritePackage.hpp>
@@ -716,5 +717,54 @@ namespace PackageModule {
 			archive.preload(16LL);
 			EXPECT_TRUE(archive.hasError());
 		}
+	}
+}
+
+namespace PackageModule {
+	namespace {
+		/* Serves reads of up to `limit` bytes only, as a failing or truncated storage would. */
+		class ShortReadBlob final :
+			public InheritMeta<ShortReadBlob, Blob> {
+		public:
+			explicit ShortReadBlob(std::span<_::byte> bytes_, const size_t limit_) :
+				inner(bytes_),
+				limit(limit_) {}
+
+			ByteSpanBlob inner;
+			size_t limit;
+
+			std::span<_::byte> read(streamoff offset_, mref<std::span<_::byte>> dst_) const override {
+				return inner.read(offset_, dst_.first((std::min)(dst_.size(), limit)));
+			}
+
+			std::span<_::byte> write(streamoff offset_, mref<std::span<_::byte>> src_) override {
+				return inner.write(offset_, ::hg::move(src_));
+			}
+
+			bool trim(size_t tailSize_) override { return inner.trim(tailSize_); }
+
+			[[nodiscard]] streamsize size() const noexcept override { return inner.size(); }
+		};
+	}
+
+	TEST(PackageLinker, CommitFailsOnShortChecksumRead) {
+
+		constexpr auto dataSize = 512uLL;
+		auto raw = Array<_::byte, sizeof(PackageHeader) + sizeof(PackageFooter) + sizeof(package::Indexed) + dataSize> {};
+		ShortReadBlob blob { raw, 256uLL };
+
+		auto package = make_read_write_package(blob);
+		ASSERT_TRUE(commit_package_changes(package).has_value());
+
+		auto archive = make_uptr<BufferArchive>();
+		archive->reserve(dataSize);
+		archive->setType(ArchiveType::eRaw);
+		for (size_t i = 0; i < dataSize; ++i) { *archive << static_cast<u8>(i); }
+
+		auto& linked = package.getLinker().add({ .type = ArchiveType::eUndefined, .guid = ArchiveGuid::random() });
+		linked.changes.emplace_back(package::ArchiveDeltaAdd { .where = streamoff {}, .sizedData = *archive });
+
+		// The checksum pass reads the content back; a short read must not yield a checksum over stale bytes.
+		EXPECT_FALSE(commit_package_changes(package).has_value());
 	}
 }

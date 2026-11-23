@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <Engine.Asserts/Todo.hpp>
+#include <Engine.Common/Optional.hpp>
 #include <Engine.Common/Functional/Lambda.hpp>
 #include <Engine.Crypto/Checksum/Crc32.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
@@ -17,7 +18,7 @@ using namespace hg;
 
 /**/
 
-[[nodiscard]] static u32 computeCheckSum(_In_ cref<Blob> blob_, _In_ streamsize length_);
+[[nodiscard]] static Opt<u32> computeCheckSum(_In_ cref<Blob> blob_, _In_ streamsize length_);
 
 [[nodiscard]] constexpr static Vector<std::pair<streamoff, size_t>> sortedIndices(
 	_In_ ref<const Vector<ArchiveDelta>> changeList_
@@ -351,14 +352,16 @@ Result<void, std::runtime_error> engine::storage::package::commit_package_change
 		{ preserve.begin() + static_cast<streamsize>(prevIndexSize), prevTailSize - prevIndexSize }
 	);
 
+	const auto checksum = computeCheckSum(blob, computeFooterOffset(header));
+	if (checksum == None) {
+		return Unexpected { std::runtime_error("Failed to read back the package content for its checksum.") };
+	}
+
+	auto& dst = *std::bit_cast<ptr<u64>>(footer.crc32.data());
 	if constexpr (std::endian::native == std::endian::little) {
-		const auto offset = computeFooterOffset(header);
-		auto& dst = *std::bit_cast<ptr<u64>>(footer.crc32.data());
-		dst = std::byteswap(computeCheckSum(blob, offset));
+		dst = std::byteswap(checksum.value());
 	} else {
-		const auto offset = computeFooterOffset(header);
-		auto& dst = *std::bit_cast<ptr<u64>>(footer.crc32.data());
-		dst = computeCheckSum(blob, offset);
+		dst = checksum.value();
 	}
 
 	const auto footerResult = writeFooter(header, footer, blob);
@@ -380,7 +383,7 @@ Result<void, std::runtime_error> engine::storage::package::commit_package_change
 
 /**/
 
-u32 computeCheckSum(cref<Blob> blob_, streamsize length_) {
+Opt<u32> computeCheckSum(cref<Blob> blob_, streamsize length_) {
 
 	constexpr auto chunkSize = std::size_t { 4096uLL };
 	auto buffer = Array<_::byte, chunkSize> {};
@@ -392,13 +395,15 @@ u32 computeCheckSum(cref<Blob> blob_, streamsize length_) {
 		const auto nextChunkSize = std::min(static_cast<size_t>(length_ - it), chunkSize);
 		auto nextChunk = std::span { buffer.data(), nextChunkSize };
 
-		blob_.read(it, clone(nextChunk));
+		if (blob_.read(it, clone(nextChunk)).size() != nextChunkSize) {
+			return None;
+		}
 		checksum.update(nextChunk);
 
 		it += nextChunkSize;
 	}
 
-	return ::hg::move(checksum).finalize();
+	return Some(::hg::move(checksum).finalize());
 }
 constexpr Vector<std::pair<streamoff, size_t>> sortedIndices(ref<const Vector<ArchiveDelta>> changeList_) noexcept {
 	auto result = Vector<std::pair<streamoff, size_t>> {};
