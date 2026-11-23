@@ -65,6 +65,7 @@ namespace HeliogrimApi::schema_fixtures {
 
 	struct Loaded {
 		bool ok = false;
+		bool errors = false;
 		String diagnostics {};
 		Bytes resaved {};
 	};
@@ -139,8 +140,13 @@ namespace HeliogrimApi::schema_fixtures {
 			const auto root = RootScopedSlot { archive, ScopedSlotStateFlag::eClean, &ctx };
 			hydrated = hydrate_(root, ctx);
 		}
-		const auto finished = ctx.finish(sink, std::format("while loading fixture '{}'", url_));
-		return Loaded { .ok = hydrated && finished.has_value() && not sink.hasErrors(), .diagnostics = describe(sink), .resaved = {} };
+		auto finished = ctx.finish(sink, std::format("while loading fixture '{}'", url_));
+		if (not finished.has_value()) {
+			for (auto& diagnostic : finished.error()) {
+				sink.emit(::hg::move(diagnostic));
+			}
+		}
+		return Loaded { .ok = hydrated && finished.has_value() && not sink.hasErrors(), .errors = sink.hasErrors(), .diagnostics = describe(sink), .resaved = {} };
 	}
 
 	template <typename Fn_>
@@ -517,5 +523,37 @@ namespace HeliogrimApi::schema_fixtures {
 		EXPECT_EQ(Actor::typeId.data, ("Actor"_typeId).data);
 		EXPECT_EQ(CameraActor::typeId.data, ("CameraActor"_typeId).data);
 		EXPECT_EQ(TextureAsset::typeId.data, ("Texture"_typeId).data);
+	}
+
+	/* Fuzz findings (seed 2605599740): byte 0 is the harness type selector, the rest the archive. */
+	template <class ActorType_>
+	[[nodiscard]] Loaded replayActorFinding(StringView file_, bool* returned_ = nullptr) {
+		const auto bytes = readFile(fixtureDir() / "findings" / fs::path { file_ });
+		if (not bytes.has_value() || bytes->empty()) {
+			ADD_FAILURE() << "missing finding " << file_;
+			return {};
+		}
+		const Bytes archive { bytes->begin() + 1, bytes->end() };
+		return loadWith(
+			archive,
+			file_,
+			[returned_](cref<RootScopedSlot> root_, ref<LoadContext>) {
+				const auto scheme = serial().getActorScheme(ActorType_::typeId);
+				const auto produced = scheme.has_value() && scheme->deserialize(root_, Engine::getEngine()->getActors()->getRegistry()) != nullptr;
+				if (returned_ != nullptr) {
+					*returned_ = produced;
+				}
+				return produced;
+			}
+		);
+	}
+
+	TEST_F(SchemaFixtures, FindingActorTypeMismatchRejected) {
+		bool returned = true;
+		const auto loaded = replayActorFinding<Actor>("ActorHydratePanic.bin", &returned);
+		EXPECT_FALSE(returned) << "a rejected actor record must not yield an actor";
+		EXPECT_FALSE(loaded.ok);
+		EXPECT_TRUE(loaded.errors) << loaded.diagnostics;
+		EXPECT_NE(loaded.diagnostics.find("[type-mismatch]"), String::npos) << loaded.diagnostics;
 	}
 }
