@@ -1,10 +1,10 @@
 #pragma once
-#include <Engine.Accel.Pipeline/AccelerationPipeline.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Sal.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Accel.Effect;
+import Engine.Accel.Pipeline;
 #endif
 
 namespace hg::engine::accel {

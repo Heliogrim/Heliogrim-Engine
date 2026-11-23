@@ -4,12 +4,9 @@
 
 #include <cassert>
 #include <cstring>
-#include <Engine.Accel.Command/CommandBuffer.hpp>
 #include <Engine.Accel.Compile/VkEffectCompiler.hpp>
 #include <Engine.Accel.Compile/Profile/EffectProfile.hpp>
 #include <Engine.Accel.Compile/Spec/SimpleEffectSpecification.hpp>
-#include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
-#include <Engine.Accel.Pipeline/VkGraphicsPipeline.hpp>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
 #include <Engine.Graphics.Core/Graphics.hpp>
 #include <Engine.Graphics.Loader/Texture/TextureLoader.hpp>
@@ -23,7 +20,9 @@
 
 #include "ReflowPass.hpp"
 
+import Engine.Accel.Command;
 import Engine.Accel.Pass;
+import Engine.Accel.Pipeline;
 import Engine.Asserts;
 import Engine.Assets;
 import Engine.Assets.System;

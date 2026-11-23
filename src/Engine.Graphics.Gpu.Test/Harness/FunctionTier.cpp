@@ -4,7 +4,6 @@
 #include <Engine.Accel.Compile/VkEffectCompiler.hpp>
 #include <Engine.Accel.Compile/Profile/EffectProfile.hpp>
 #include <Engine.Accel.Compile/Spec/SimpleEffectSpecification.hpp>
-#include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
 #include <Engine.Driver.Vulkan/VkNativeBatch.hpp>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
 #include <Engine.Graphics.Render.Command/RenderCommandBuffer.hpp>
@@ -14,6 +13,7 @@
 import Engine.Accel.Effect;
 import Engine.Accel.Lang;
 import Engine.Accel.Pass;
+import Engine.Accel.Pipeline;
 import Engine.Common;
 import Engine.Diagnostics;
 import Engine.Graphics;

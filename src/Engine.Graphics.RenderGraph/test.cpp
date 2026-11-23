@@ -1,6 +1,5 @@
 #include "test.hpp"
 
-#include <Engine.Accel.Pipeline/Stage/StageModule.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.Loader/Material/MaterialResource.hpp>
 #include <Engine.Graphics.Material/Material.hpp>
@@ -9,6 +8,7 @@
 #include <Engine.Graphics.Render.Command/RenderCommandBufferBase.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneColor.hpp>
 
+import Engine.Accel.Pipeline;
 import Engine.Common;
 import Engine.Graphics.RenderGraph;
 import Engine.Graphics.RenderGraph.Compile;

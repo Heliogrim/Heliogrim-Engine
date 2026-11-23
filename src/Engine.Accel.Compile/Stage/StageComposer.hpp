@@ -1,10 +1,8 @@
 #pragma once
 
-#include <Engine.Accel.Pipeline/AccelerationPipeline.hpp>
-#include <Engine.Accel.Pipeline/Stage/StageDerivat.hpp>
-
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Accel.Lang;
+import Engine.Accel.Pipeline;
 import Engine.Common;
 #endif
 

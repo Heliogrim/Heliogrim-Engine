@@ -1,5 +1,8 @@
 #include "VkCmdMgr.hpp"
 
+#include <cassert>
+#include <cstdint>
+
 import Engine.Async;
 import Engine.Graphics;
 import std;

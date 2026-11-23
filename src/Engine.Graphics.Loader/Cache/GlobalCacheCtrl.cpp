@@ -1,6 +1,5 @@
 #include "GlobalCacheCtrl.hpp"
 
-#include <Engine.Accel.Pipeline/AccelerationPipeline.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.Loader/Material/MaterialLoader.hpp>
 #include <Engine.Graphics.Loader/Texture/TextureLoader.hpp>
@@ -8,6 +7,7 @@
 
 #include "GlobalResourceCache.hpp"
 
+import Engine.Accel.Pipeline;
 import Engine.Asserts;
 import Engine.Assets.Type;
 import Engine.Common;
