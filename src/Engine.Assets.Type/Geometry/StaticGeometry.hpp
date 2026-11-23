@@ -1,8 +1,8 @@
 #pragma once
 
+#include <Engine.Assets.Type/TypedAssetGuid.hpp>
 #include <Engine.Filesystem/Url.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
-#include <Heliogrim/TypedAssetGuid.hpp>
 
 #include "Geometry.hpp"
 #include "../Material/GraphicsMaterial.hpp"

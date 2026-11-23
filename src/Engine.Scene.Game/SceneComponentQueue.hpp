@@ -1,7 +1,7 @@
 #pragma once
 
+#include <Engine.Scene/IComponentRegisterContext.hpp>
 #include <Engine.Scene/SceneBase.hpp>
-#include <Heliogrim/IComponentRegisterContext.hpp>
 #include <Heliogrim/Component/HierarchyComponent.hpp>
 #include <Heliogrim/Component/SceneComponent.hpp>
 

@@ -10,9 +10,9 @@
 #include "Archetype/ActorClass.hpp"
 #include "../ActorInitializer.hpp"
 #include "../Async/Future.hpp"
-#include "../Async/Traits.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Async;
 import Engine.Common;
 import Engine.Core;
 import Engine.Reflect;
