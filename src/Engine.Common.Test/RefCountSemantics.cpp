@@ -203,6 +203,20 @@ namespace Common {
 		EXPECT_EQ(semLive, 0);
 	}
 
+	/* A derived object larger than its base must be freed with its own size (ASan: new-delete-type-mismatch). */
+	TEST_F(RcSemantics, ConvertedFromLargerDerivedFreesDerived) {
+		struct Wide : Base {
+			using Base::Base;
+			u64 payload[3] {};
+		};
+
+		Rc<Base> base { Rc<Wide>::create(9) };
+		EXPECT_EQ(base->value, 9);
+
+		base.reset();
+		EXPECT_EQ(semLive, 0);
+	}
+
 	/* Rci */
 
 	TEST_F(RciSemantics, ReadAfterMove) {

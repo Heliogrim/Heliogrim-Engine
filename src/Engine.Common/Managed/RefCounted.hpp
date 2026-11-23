@@ -22,8 +22,9 @@ namespace hg {
 		virtual void destroy_obj() = 0;
 	};
 
+	// Not final: a RefCounted<Base> may hold the block of a derived type, so destroy_obj must dispatch dynamically.
 	template <typename Ty_>
-	class RefCountedBlock final :
+	class RefCountedBlock :
 		public RefCountedBlockBase {
 	public:
 		template <typename>
