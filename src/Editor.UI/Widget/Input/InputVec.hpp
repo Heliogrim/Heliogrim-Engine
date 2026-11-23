@@ -1,13 +1,12 @@
 #pragma once
 
-#include <Engine.Reflow.Uikit/Atom/Layout/HorizontalLayout.hpp>
-
 #include "./InputFloat.hpp"
 #include "./InputIntegral.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
 import Engine.Reflow;
+import Engine.Reflow.Uikit;
 #endif
 
 namespace hg::editor::ui {

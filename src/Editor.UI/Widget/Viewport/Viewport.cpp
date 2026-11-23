@@ -2,7 +2,6 @@
 
 #if TRUE
 #include <Engine.Graphics.Core/Graphics.hpp>
-#include <Heliogrim.Actors/Camera/CameraActor.hpp>
 
 #include <Engine.Graphics.Render/RenderTarget.hpp>
 #endif
@@ -19,6 +18,7 @@ import Engine.Reflow;
 import Engine.Render.Scene;
 import Engine.Render.Scene.Model;
 import Engine.Scene;
+import Heliogrim.Actors;
 
 using namespace hg::engine::reflow;
 using namespace hg;

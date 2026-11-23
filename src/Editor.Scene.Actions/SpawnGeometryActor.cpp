@@ -4,6 +4,7 @@ import Editor.Assets.Default;
 import Engine.ACS;
 import Engine.Assets.Database;
 import Engine.Common;
+import Heliogrim.Actors;
 
 using namespace hg::editor::scene::actions;
 using namespace hg;
@@ -39,7 +40,6 @@ SpawnGeometryActor::~SpawnGeometryActor() = default;
 #include <Heliogrim/Heliogrim.hpp>
 #include <Heliogrim/Core/Session.hpp>
 #include <Heliogrim/Universe/Universe.hpp>
-#include <Heliogrim.Actors/Geometry/StaticGeometryActor.hpp>
 
 Opt<ActorRef<>> spawnActorImpl(TypedAssetGuid<engine::assets::StaticGeometry> assetGuid_, ref<const math::Location> location_) {
 

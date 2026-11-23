@@ -1,7 +1,6 @@
 #include "MenuSpacer.hpp"
 
-#include <Engine.Reflow.Uikit/Atom/Paint.hpp>
-
+import Engine.Reflow.Uikit;
 import std;
 
 using namespace hg::editor::ui;

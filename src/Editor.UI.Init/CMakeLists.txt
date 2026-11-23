@@ -5,7 +5,7 @@ make_library_project(
         MODULE
         LIB_FOLDER "${IDE_FOLDER}/Editor"
         LIBRARIES
-        ${PROJECT_NAME}::Editor.UI
+        ${PROJECT_NAME}::Editor.UI ${PROJECT_NAME}::Editor.UI.Theme ${PROJECT_NAME}::Editor.UI.View ${PROJECT_NAME}::Engine.Reflow.Uikit
         ${PROJECT_NAME}::Engine.Graphics ${PROJECT_NAME}::Engine.ACS
         ${PROJECT_NAME}::Editor.UI.Rx
         ${PROJECT_NAME}::Engine.Common

@@ -7,8 +7,6 @@
 #include <Editor.UI/Widget/ContextMenuProvider.hpp>
 #include <Editor.UI.Main/EditorUI.hpp>
 #include <Editor.UI.Service/Scene/Hierarchy/SceneHierarchyEntry.hpp>
-#include <Engine.Reflow.Uikit/Atom/Paint.hpp>
-#include <Engine.Reflow.Uikit/Atom/Layout/HorizontalLayout.hpp>
 
 #include "SceneHierarchyController.hpp"
 
@@ -16,6 +14,7 @@ import Editor.Assets.Default;
 import Engine.ACS;
 import Engine.Core;
 import Engine.Physics.Components;
+import Engine.Reflow.Uikit;
 import std;
 
 using namespace hg::editor::ui;

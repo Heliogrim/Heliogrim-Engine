@@ -1,10 +1,10 @@
 #include "UISceneModel.hpp"
 
 #include <Engine.Graphics.Loader/Cache/ModelBatch.hpp>
-#include <Engine.Reflow.Components/UI/UIComponent.hpp>
 
 import Engine.Asserts;
 import Engine.Reflect;
+import Engine.Reflow.Components;
 
 using namespace hg::engine::reflow;
 using namespace hg::engine::graphics;

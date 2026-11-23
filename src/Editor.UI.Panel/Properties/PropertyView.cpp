@@ -2,8 +2,8 @@
 
 #include <Editor.UI/Widget/Collapse.hpp>
 #include <Editor.UI.Service/Property/Property.hpp>
-#include <Engine.Reflow.Uikit/Atom/Paint.hpp>
-#include <Engine.Reflow.Uikit/Atom/Text.hpp>
+
+import Engine.Reflow.Uikit;
 
 using namespace hg::editor::ui;
 using namespace hg::engine::reflow;

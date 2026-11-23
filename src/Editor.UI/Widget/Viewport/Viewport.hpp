@@ -1,13 +1,13 @@
 #pragma once
 
 #include <Engine.Graphics/API/__vkFwd.hpp>
-#include <Engine.Reflow.Uikit/Atom/Atom.hpp>
 #include <Heliogrim/Universe/Universe.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
 import Engine.Graphics;
 import Engine.Reflow;
+import Engine.Reflow.Uikit;
 #endif
 
 namespace hg {

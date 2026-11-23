@@ -5,8 +5,6 @@
 #include <Editor.UI.Service/Input/InputService.hpp>
 #include <Editor.UI.Service/Input/InputServiceInit.hpp>
 #include <Editor.UI.Service/Property/PropertyServiceInit.hpp>
-#include <Editor.UI.Theme/EditorTheme.hpp>
-#include <Editor.UI.View/Scene/SceneEditorController.hpp>
 #include <Engine.Graphics.Loader/Font/FontLoader.hpp>
 
 #include "Module/EditorUI.hpp"
@@ -14,6 +12,8 @@
 import Editor.Assets.Default;
 import Editor.Boot;
 import Editor.UI.Init;
+import Editor.UI.Theme;
+import Editor.UI.View;
 import Engine.Assets;
 import Engine.Assets.System;
 import Engine.Assets.Type;

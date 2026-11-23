@@ -3,8 +3,7 @@
 #include <Editor.Core/EditorEngine.hpp>
 #include <Editor.Core/HeliogrimEditor.hpp>
 #include <Editor.UI.Main/EditorUI.hpp>
-#include <Editor.UI.Theme/EditorTheme.hpp>
-#include <Editor.UI.View/Scene/SceneEditorController.hpp>
+import Editor.UI.View;
 import Engine.ACS;
 #include <Editor.UI.View/Scene/SceneEditorView.hpp>
 #include <Editor.UI/Widget/InputBindingProvider.hpp>
@@ -12,12 +11,13 @@ import Engine.ACS;
 #include <Engine.Core/Universe.hpp>
 #include <Engine.Core/UniverseContext.hpp>
 #include <Engine.Graphics.Core/Graphics.hpp>
-#include <Engine.Reflow.Uikit/Atom/Image.hpp>
+import Engine.Reflow.Uikit;
 import Engine.Reflow;
 #include <Engine.Reflow.Uikit/Atom/Layout/VerticalLayout.hpp>
 import Engine.ACS;
 import Engine.ACS;
-#include <Engine.Reflow.Components/UI/UIComponent.hpp>
+import Engine.Reflow.Components;
+import Editor.UI.Theme;
 #include <Heliogrim/Universe/Universe.hpp>
 
 using namespace hg::editor::ui;

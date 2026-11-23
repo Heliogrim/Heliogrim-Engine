@@ -8,9 +8,10 @@
 #include <Editor.UI.Panel/Scene/EditorSceneViewportPanel.hpp>
 #include <Editor.UI.Panel/Scene/Hierarchy/SceneHierarchyController.hpp>
 #include <Editor.UI.Panel/Scene/Hierarchy/SceneHierarchyView.hpp>
-#include <Engine.Reflow.Uikit/Atom/Layout/BoxLayout.hpp>
 
 #include "SceneEditorController.hpp"
+
+import Engine.Reflow.Uikit;
 
 using namespace hg::editor::ui;
 using namespace hg::engine::reflow;
