@@ -12,7 +12,8 @@ StaticGeometryComponent::StaticGeometryComponent(
 ) :
 	InheritMeta(std::move(guid_), ComponentTypeId { typeId }, std::move(owner_), std::move(parent_)),
 	_staticGeometry(),
-	_instanceMaterials() {}
+	_instanceMaterials(),
+	_materialSlots(0uLL) {}
 
 StaticGeometryComponent::StaticGeometryComponent(
 	mref<ComponentGuid> guid_,
@@ -23,7 +24,9 @@ StaticGeometryComponent::StaticGeometryComponent(
 ) :
 	InheritMeta(std::move(guid_), ComponentTypeId { typeId }, std::move(owner_), std::move(parent_)),
 	_staticGeometry(::hg::move(geometry_)),
-	_instanceMaterials() {
+	_instanceMaterials(),
+	_materialSlots(0uLL) {
+
 	for (auto index = 0uLL; index < materials_.size(); ++index) {
 		::hg::assertrt(materials_[index] != nullptr);
 		setInstanceMaterial(index, *materials_[index]);
@@ -55,6 +58,7 @@ void StaticGeometryComponent::setInstanceMaterial(const u16 index_, ref<const Gr
 		_instanceMaterials.emplace_back(None);
 	}
 	_instanceMaterials.at(index_) = Some(material_);
+	_materialSlots = _instanceMaterials.size();
 }
 
 void StaticGeometryComponent::unsetInstanceMaterial(u16 index_) {

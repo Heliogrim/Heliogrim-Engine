@@ -5,12 +5,13 @@
  *
  * Format: `LayoutHeader`, then per slot and entry the payload, then one `LayoutFixup` per ActorRef/ComponentRef field.
  *
- * Slot types that are relocatable and trivially copyable are copied as bytes; every other slot type needs an
- * `access::Layout<T>` specialization (see `layout_dumpable`) with a fixed payload `size`, so a load validates the
- * whole input before it writes a single slot. Its optional `refs` tuple of member pointers names the ActorRef and
- * ComponentRef fields, which `dump` skips; they travel through the fixup table instead.
+ * Every slot type specializes `access::Layout<T>` with a constexpr `fields` array (HG_LAYOUT_RAW / HG_LAYOUT_MASK);
+ * its copy plan streams the listed members only. Optional `assets` with `dumpAssets` / `resolveAsset` append asset
+ * guids, resolved in a separate pass. The optional `refs` tuple of member pointers names the ActorRef and
+ * ComponentRef fields; they travel through the fixup table.
  */
 
+#include <array>
 #include <concepts>
 #include <cstring>
 #include <memory>
@@ -18,15 +19,16 @@
 #include <span>
 #include <tuple>
 #include <type_traits>
-#include <Engine.ACS/Archetype/LayoutInfo.hpp>
 #include <Engine.ACS/Handle/Handle.hpp>
-#include <Engine.Asserts/Asserts.hpp>
+#include <Engine.Assets/AssetGuid.hpp>
+#include <Engine.Common/Expected.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Meta/Reference.hpp>
-#include <Engine.Common/Meta/Relocatable.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
+#include <Engine.Serialization/Load/LoadContext.hpp>
 
 #include "InheritArchetype.hpp"
+#include "LayoutError.hpp"
 
 namespace hg {
 	template <typename>
@@ -72,25 +74,6 @@ namespace hg::archetype_detail {
 		}
 	};
 
-	template <typename Type_>
-	concept byte_copyable = relocatable_v<Type_> && std::is_trivially_copyable_v<Type_>;
-
-	template <typename Type_>
-	concept layout_dumpable = requires(
-		ref<const Type_> self_,
-		ref<Type_> target_,
-		ref<Vector<std::byte>> out_,
-		std::span<const std::byte> in_
-	) {
-		{ engine::serialization::access::Layout<Type_>::version } -> std::convertible_to<u64>;
-		{ engine::serialization::access::Layout<Type_>::size } -> std::convertible_to<u64>;
-		engine::serialization::access::Layout<Type_>::dump(self_, out_);
-		engine::serialization::access::Layout<Type_>::load(in_, target_);
-	};
-
-	template <typename Type_>
-	concept dumpable = byte_copyable<Type_> || layout_dumpable<Type_>;
-
 	// ActorRef / ComponentRef: a handle plus a per-session pointer cache.
 	template <typename Type_>
 	concept ref_field = is_actor_ref_v<std::remove_cv_t<Type_>> || is_component_ref_v<std::remove_cv_t<Type_>>;
@@ -124,38 +107,221 @@ namespace hg::archetype_detail {
 		return true;
 	}
 
-	template <dumpable Type_>
-	[[nodiscard]] consteval u64 layout_version() noexcept {
-		if constexpr (byte_copyable<Type_>) {
-			// Byte copies change with sizeof, which the hash already covers.
+	/* Copy plan: `Layout<T>::fields` folded at compile time into constant-size runs and masked bytes. */
+
+	struct CopyRun {
+		u64 stream;
+		u64 member;
+		u64 size;
+	};
+
+	struct CheckedByte {
+		u64 stream;
+		u64 member;
+		u8 mask;
+	};
+
+	template <typename Type_>
+	struct copy_plan {
+		static_assert(
+			engine::serialization::access::layout_fields<Type_>,
+			"Archetype slot types specialize access::Layout with a `fields` array."
+		);
+
+		using layout = engine::serialization::access::Layout<Type_>;
+		using kind = engine::serialization::access::LayoutFieldKind;
+
+		// {runs, checks, stream size}
+		[[nodiscard]] static consteval std::array<u64, 3uLL> counts() noexcept {
+			std::array<u64, 3uLL> result {};
+			bool merge = false;
+			u64 end = 0uLL;
+			for (const auto& field : layout::fields) {
+				if (field.kind == kind::eRaw) {
+					result[0] += (merge && end == field.offset) ? 0uLL : 1uLL;
+					end = field.offset + field.size;
+					merge = true;
+
+				} else {
+					++result[1];
+					merge = false;
+				}
+
+				result[2] += field.size;
+			}
+			return result;
+		}
+
+		inline constexpr static u64 stream_size = counts()[2];
+
+		inline constexpr static auto runs = [] {
+			std::array<CopyRun, counts()[0]> result {};
+			u64 count = 0uLL;
+			u64 stream = 0uLL;
+			bool merge = false;
+			for (const auto& field : layout::fields) {
+				if (field.kind == kind::eRaw) {
+					if (merge && result[count - 1uLL].member + result[count - 1uLL].size == field.offset) {
+						result[count - 1uLL].size += field.size;
+
+					} else {
+						result[count++] = CopyRun { stream, field.offset, field.size };
+					}
+
+					merge = true;
+
+				} else {
+					merge = false;
+				}
+				stream += field.size;
+			}
+			return result;
+		}();
+
+		inline constexpr static auto checks = [] {
+			std::array<CheckedByte, counts()[1]> result {};
+			u64 count = 0uLL;
+			u64 stream = 0uLL;
+			for (const auto& field : layout::fields) {
+				if (field.kind == kind::eMask) {
+					result[count++] = CheckedByte { stream, field.offset, field.mask };
+				}
+				stream += field.size;
+			}
+			return result;
+		}();
+	};
+
+	// Asset guids follow the copy plan payload; `Layout<T>::assets` of them.
+	template <typename Type_>
+	[[nodiscard]] consteval u64 asset_count() noexcept {
+		if constexpr (requires { engine::serialization::access::Layout<Type_>::assets; }) {
+			return engine::serialization::access::Layout<Type_>::assets;
+
+		} else {
 			return 0uLL;
-		} else {
-			return engine::serialization::access::Layout<Type_>::version;
 		}
 	}
 
-	template <dumpable Type_>
+	template <typename Type_>
 	[[nodiscard]] consteval u64 payload_size() noexcept {
-		if constexpr (byte_copyable<Type_>) {
-			return sizeof(Type_);
-		} else {
-			return engine::serialization::access::Layout<Type_>::size;
-		}
+		return copy_plan<Type_>::stream_size + asset_count<Type_>() * sizeof(AssetGuid);
 	}
 
-	template <dumpable Type_>
+	template <typename Type_>
 	[[nodiscard]] consteval auto refs_of() noexcept {
-		if constexpr (byte_copyable<Type_>) {
-			// A byte copy would carry a stale handle and cache without a fixup.
-			static_assert(
-				not ref_field<Type_> && not requires { engine::serialization::access::Layout<Type_>::refs; },
-				"Byte copyable archetype slot types must not hold ActorRef / ComponentRef."
-			);
-			return std::tuple {};
-		} else if constexpr (requires { engine::serialization::access::Layout<Type_>::refs; }) {
+		if constexpr (requires { engine::serialization::access::Layout<Type_>::refs; }) {
 			return engine::serialization::access::Layout<Type_>::refs;
 		} else {
 			return std::tuple {};
+		}
+	}
+
+	// FNV-1a over the field list, asset and ref counts: a field change changes the archetype layout hash.
+	template <typename Type_>
+	[[nodiscard]] consteval u64 field_hash() noexcept {
+		u64 hash = 14695981039346656037uLL;
+		const auto mix = [&](const u64 value_) {
+			for (u64 shift = 0uLL; shift < 64uLL; shift += 8uLL) {
+				hash = (hash ^ ((value_ >> shift) & 0xFFuLL)) * 1099511628211uLL;
+			}
+		};
+		for (const auto& field : engine::serialization::access::Layout<Type_>::fields) {
+			mix(static_cast<u64>(field.kind));
+			mix(field.offset);
+			mix(field.size);
+			mix(field.mask);
+		}
+		mix(asset_count<Type_>());
+		mix(std::tuple_size_v<decltype(refs_of<Type_>())>);
+		return hash;
+	}
+
+	template <typename Type_>
+	void dump_payload(ref<const Type_> self_, ref<Vector<std::byte>> out_) {
+		using plan = copy_plan<Type_>;
+		const auto base = out_.size();
+		out_.resize(base + plan::stream_size);
+
+		const ptr<std::byte> dst = out_.data() + base;
+		const auto src = reinterpret_cast<ptr<const std::byte>>(std::addressof(self_));
+		for (const auto& run : plan::runs) {
+			std::memcpy(dst + run.stream, src + run.member, run.size);
+		}
+		for (const auto& check : plan::checks) {
+			dst[check.stream] = src[check.member] & static_cast<std::byte>(check.mask);
+		}
+
+		if constexpr (asset_count<Type_>() > 0uLL) {
+			std::array<AssetGuid, asset_count<Type_>()> guids {};
+			engine::serialization::access::Layout<Type_>::dumpAssets(self_, guids);
+			for (const auto& guid : guids) {
+				put_bytes(out_, guid);
+			}
+		}
+	}
+
+	// First offset into in_ whose checked byte holds bits outside its mask, else ~0; the payload starts at at_.
+	template <typename Type_>
+	[[nodiscard]] u64 check_payload(std::span<const std::byte> in_, const u64 at_) noexcept {
+		// Optional value check beyond the masks; returns an offset into the payload.
+		if constexpr (requires { engine::serialization::access::Layout<Type_>::check(in_); }) {
+			const u64 bad = engine::serialization::access::Layout<Type_>::check(
+				in_.subspan(static_cast<size_t>(at_), static_cast<size_t>(payload_size<Type_>()))
+			);
+			if (bad != ~0uLL) {
+				return at_ + bad;
+			}
+		}
+
+		for (const auto& check : copy_plan<Type_>::checks) {
+			if ((in_[at_ + check.stream] & ~static_cast<std::byte>(check.mask)) != std::byte {}) {
+				return at_ + check.stream;
+			}
+		}
+
+		return ~0uLL;
+	}
+
+	// Input is pre-validated; writes the member bytes only, never views the input as Type_.
+	template <typename Type_>
+	void commit_payload(std::span<const std::byte> in_, const u64 at_, ref<Type_> target_) noexcept {
+		using plan = copy_plan<Type_>;
+		const auto dst = reinterpret_cast<ptr<std::byte>>(std::addressof(target_));
+		const ptr<const std::byte> src = in_.data() + at_;
+		for (const auto& run : plan::runs) {
+			std::memcpy(dst + run.member, src + run.stream, run.size);
+		}
+		for (const auto& check : plan::checks) {
+			dst[check.member] = (dst[check.member] & ~static_cast<std::byte>(check.mask)) | src[check.stream];
+		}
+	}
+
+	template <typename Type_>
+	void resolve_payload(
+		std::span<const std::byte> in_,
+		const u64 at_,
+		ref<Type_> target_,
+		ref<engine::serialization::LoadContext> ctx_
+	) {
+		if constexpr (asset_count<Type_>() == 0uLL) {
+			return;
+
+		} else {
+		for (u64 index = 0uLL; index < asset_count<Type_>(); ++index) {
+			const u64 offset = at_ + copy_plan<Type_>::stream_size + index * sizeof(AssetGuid);
+			AssetGuid guid = invalid_asset_guid;
+			std::memcpy(std::addressof(guid), in_.data() + offset, sizeof(AssetGuid));
+			if (not engine::serialization::access::Layout<Type_>::resolveAsset(target_, index, guid)) {
+				ctx_.warn(
+					engine::serialization::ReadError {
+						engine::serialization::ReadError::Kind::eUnresolvedReference,
+						static_cast<s64>(offset),
+						static_cast<s64>(sizeof(AssetGuid)),
+						{}
+					}
+				);
+			}
 		}
 	}
 
@@ -167,6 +333,23 @@ namespace hg::archetype_detail {
 	template <typename Info_, u32... Entries_>
 	[[nodiscard]] consteval u64 slot_ref_count(std::integer_sequence<u32, Entries_...>) noexcept {
 		return (std::tuple_size_v<decltype(refs_of<slot_type_t<Info_, Info_::slot_of(Entries_)>>())> + ... + 0uLL);
+	}
+
+	/* Visits every entry of a slot in stream order as `fn_(component, payloadOffset)`; Byte_ carries the constness. */
+
+	template <typename Info_, u32 Entry_, typename Byte_, typename Fn_>
+	void visit_entry(const ptr<Byte_> slot_, ref<u64> at_, ref<Fn_> fn_) {
+		using type = slot_type_t<Info_, Info_::slot_of(Entry_)>;
+		using object = std::conditional_t<std::is_const_v<Byte_>, const type, type>;
+		fn_(*std::launder(reinterpret_cast<ptr<object>>(slot_ + Info_::entries[Entry_].offset)), at_);
+		at_ += payload_size<type>();
+	}
+
+	template <typename Info_, typename Byte_, typename Fn_>
+	void visit_entries(const ptr<Byte_> slot_, ref<u64> at_, Fn_&& fn_) {
+		[&]<u32... Entries_>(std::integer_sequence<u32, Entries_...>) {
+			(visit_entry<Info_, Entries_>(slot_, at_, fn_), ...);
+		}(std::make_integer_sequence<u32, Info_::entry_count> {});
 	}
 
 	/* Visits every ref field of a slot in table order as `fn_(field, offsetInSlot)`; Byte_ carries the constness. */
@@ -192,36 +375,6 @@ namespace hg::archetype_detail {
 		}(std::make_integer_sequence<u32, Info_::entry_count> {});
 	}
 
-	template <typename Info_, u32 Entry_>
-	void dump_entry(const ptr<const std::byte> slot_, ref<Vector<std::byte>> out_) {
-		using type = slot_type_t<Info_, Info_::slot_of(Entry_)>;
-		static_assert(dumpable<type>, "Archetype slot types are byte copyable or specialize access::Layout.");
-		const ptr<const std::byte> at = slot_ + Info_::entries[Entry_].offset;
-
-		if constexpr (byte_copyable<type>) {
-			out_.insert(out_.end(), at, at + sizeof(type));
-		} else {
-			[[maybe_unused]] const auto before = out_.size();
-			engine::serialization::access::Layout<type>::dump(*std::launder(reinterpret_cast<ptr<const type>>(at)), out_);
-			::hg::assertd(out_.size() - before == payload_size<type>());
-		}
-	}
-
-	// Input is pre-validated, so this only consumes exactly the entry's payload.
-	template <typename Info_, u32 Entry_>
-	void load_entry(const ptr<std::byte> slot_, ref<std::span<const std::byte>> in_) {
-		using type = slot_type_t<Info_, Info_::slot_of(Entry_)>;
-		const ptr<std::byte> at = slot_ + Info_::entries[Entry_].offset;
-		const auto payload = in_.first(payload_size<type>());
-		in_ = in_.subspan(payload.size());
-
-		if constexpr (byte_copyable<type>) {
-			std::memcpy(at, payload.data(), payload.size());
-		} else {
-			engine::serialization::access::Layout<type>::load(payload, *std::launder(reinterpret_cast<ptr<type>>(at)));
-		}
-	}
-
 	template <typename Info_>
 	void dump_layout(
 		const u64 hash_,
@@ -230,14 +383,16 @@ namespace hg::archetype_detail {
 		const u32 stride_,
 		ref<Vector<std::byte>> out_
 	) {
-		using entry_sequence = std::make_integer_sequence<u32, Info_::entry_count>;
-
 		put_bytes(out_, LayoutHeader { hash_, count_, stride_ });
 		for (u32 index = 0u; index < count_; ++index) {
-			const ptr<const std::byte> slot = slots_ + static_cast<size_t>(index) * stride_;
-			[&]<u32... Entries_>(std::integer_sequence<u32, Entries_...>) {
-				(dump_entry<Info_, Entries_>(slot, out_), ...);
-			}(entry_sequence {});
+			u64 at = 0uLL;
+			visit_entries<Info_>(
+				slots_ + static_cast<size_t>(index) * stride_,
+				at,
+				[&](const auto& self_, u64) {
+					dump_payload(self_, out_);
+				}
+			);
 		}
 
 		for (u32 index = 0u; index < count_; ++index) {
@@ -254,16 +409,41 @@ namespace hg::archetype_detail {
 		}
 	}
 
+	// Header and total size against the target; the slot payloads and fixups follow the header.
+	template <typename Info_>
+	[[nodiscard]] bool layout_fits(
+		const u64 hash_,
+		const u32 count_,
+		const u32 stride_,
+		std::span<const std::byte> in_
+	) noexcept {
+		using entry_sequence = std::make_integer_sequence<u32, Info_::entry_count>;
+		constexpr u64 slotSize = slot_payload_size<Info_>(entry_sequence {}) +
+			slot_ref_count<Info_>(entry_sequence {}) * sizeof(LayoutFixup);
+
+		LayoutHeader header {};
+		if (not take_bytes(in_, header) || header.hash != hash_ || header.count != count_ || header.stride != stride_) {
+			return false;
+		}
+
+		if constexpr (slotSize == 0uLL) {
+			return in_.empty();
+
+		} else {
+			return in_.size() % slotSize == 0uLL && in_.size() / slotSize == count_;
+		}
+	}
+
 	/**
-	 * Validates header, total size and the fixup table against the target before writing; false leaves slots_ untouched.
-	 * Component offsets are not checked here (no registry); ComponentRef::get rejects one that is no component of the
-	 * resolved actor's class.
+	 * Validates header, total size, the fixup table and every checked byte before writing; an error leaves slots_
+	 * untouched. Asset guids are left to `resolve_layout`. Component offsets are not checked here (no registry);
+	 * ComponentRef::get rejects one that is no component of the resolved actor's class.
 	 *
 	 * shortcut: fixup handles are restored verbatim, so refs only survive a load within the same registry session;
 	 * remap them through the actor guid once cross-session layout loads exist.
 	 */
 	template <typename Info_>
-	[[nodiscard]] bool load_layout(
+	[[nodiscard]] Result<void, LayoutError> validate_layout(
 		const u64 hash_,
 		const ptr<std::byte> slots_,
 		const u32 count_,
@@ -272,43 +452,89 @@ namespace hg::archetype_detail {
 	) {
 		using entry_sequence = std::make_integer_sequence<u32, Info_::entry_count>;
 		constexpr u64 slotPayload = slot_payload_size<Info_>(entry_sequence {});
-		constexpr u64 slotFixups = slot_ref_count<Info_>(entry_sequence {}) * sizeof(LayoutFixup);
 
-		LayoutHeader header {};
-		if (not take_bytes(in_, header)) {
-			return false;
-		}
-		if (header.hash != hash_ || header.count != count_ || header.stride != stride_) {
-			return false;
-		}
-		if (in_.size() != static_cast<u64>(count_) * (slotPayload + slotFixups)) {
-			return false;
+		if (in_.size() < sizeof(LayoutHeader)) {
+			return Unexpected<LayoutError> { LayoutError { LayoutError::Kind::eMismatch, 0uLL } };
 		}
 
-		const auto fixups = in_.subspan(static_cast<size_t>(count_ * slotPayload));
-		auto check = fixups;
-		bool valid = true;
-		for (u32 index = 0u; index < count_ && valid; ++index) {
+		/**/
+
+		{
+			LayoutHeader header {};
+			std::memcpy(std::addressof(header), in_.data(), sizeof(LayoutHeader));
+			if (header.hash != hash_ || header.count != count_ || header.stride != stride_) {
+				return Unexpected<LayoutError> { LayoutError { LayoutError::Kind::eMismatch, 0uLL } };
+			}
+		}
+		if (not layout_fits<Info_>(hash_, count_, stride_, in_)) {
+			return Unexpected<LayoutError> { LayoutError { LayoutError::Kind::eMismatch, sizeof(LayoutHeader) } };
+		}
+
+		const u64 fixupBase = sizeof(LayoutHeader) + static_cast<u64>(count_) * slotPayload;
+		u64 fixupAt = fixupBase;
+		u64 bad = ~0uLL;
+		for (u32 index = 0u; index < count_ && bad == ~0uLL; ++index) {
 			visit_refs<Info_>(
 				static_cast<ptr<const std::byte>>(slots_ + static_cast<size_t>(index) * stride_),
 				[&](const auto&, const u32 offset_) {
 					LayoutFixup fixup {};
-					valid = valid && take_bytes(check, fixup) && fixup.slot == index && fixup.offset == offset_;
+					std::memcpy(std::addressof(fixup), in_.data() + fixupAt, sizeof(LayoutFixup));
+					if (bad == ~0uLL && (fixup.slot != index || fixup.offset != offset_)) {
+						bad = fixupAt;
+					}
+					fixupAt += sizeof(LayoutFixup);
 				}
 			);
 		}
-		if (not valid) {
-			return false;
+		if (bad != ~0uLL) {
+			return Unexpected<LayoutError> { LayoutError { LayoutError::Kind::eMismatch, bad } };
 		}
 
-		/* Commit. */
+		u64 at = sizeof(LayoutHeader);
+		for (u32 index = 0u; index < count_ && bad == ~0uLL; ++index) {
+			visit_entries<Info_>(
+				static_cast<ptr<const std::byte>>(slots_ + static_cast<size_t>(index) * stride_),
+				at,
+				[&](const auto& self_, const u64 payloadAt_) {
+					if (bad == ~0uLL) {
+						bad = check_payload<std::remove_cvref_t<decltype(self_)>>(in_, payloadAt_);
+					}
+				}
+			);
+		}
+		if (bad != ~0uLL) {
+			return Unexpected<LayoutError> { LayoutError { LayoutError::Kind::eInvalidValue, bad } };
+		}
+		return {};
+	}
 
-		auto cursor = fixups;
+	// Validates, then commits.
+	template <typename Info_>
+	[[nodiscard]] Result<void, LayoutError> load_layout(
+		const u64 hash_,
+		const ptr<std::byte> slots_,
+		const u32 count_,
+		const u32 stride_,
+		std::span<const std::byte> in_
+	) {
+		using entry_sequence = std::make_integer_sequence<u32, Info_::entry_count>;
+		constexpr u64 slotPayload = slot_payload_size<Info_>(entry_sequence {});
+		if (auto valid = validate_layout<Info_>(hash_, slots_, count_, stride_, in_); not valid.has_value()) {
+			return valid;
+		}
+		const u64 fixupBase = sizeof(LayoutHeader) + static_cast<u64>(count_) * slotPayload;
+
+		u64 at = sizeof(LayoutHeader);
+		auto cursor = in_.subspan(static_cast<size_t>(fixupBase));
 		for (u32 index = 0u; index < count_; ++index) {
 			const ptr<std::byte> slot = slots_ + static_cast<size_t>(index) * stride_;
-			[&]<u32... Entries_>(std::integer_sequence<u32, Entries_...>) {
-				(load_entry<Info_, Entries_>(slot, in_), ...);
-			}(entry_sequence {});
+			visit_entries<Info_>(
+				slot,
+				at,
+				[&](auto& self_, const u64 payloadAt_) {
+					commit_payload(in_, payloadAt_, self_);
+				}
+			);
 
 			visit_refs<Info_>(
 				slot,
@@ -326,6 +552,33 @@ namespace hg::archetype_detail {
 				}
 			);
 		}
-		return true;
+		return {};
+	}
+
+	// Resolve pass after a successful load; a rejected input is ignored, load_layout already reported it.
+	template <typename Info_>
+	void resolve_layout(
+		const u64 hash_,
+		const ptr<std::byte> slots_,
+		const u32 count_,
+		const u32 stride_,
+		std::span<const std::byte> in_,
+		ref<engine::serialization::LoadContext> ctx_
+	) {
+		// A rejected load committed nothing, so resolving its guids would write into untouched slots.
+		if (not validate_layout<Info_>(hash_, slots_, count_, stride_, in_).has_value()) {
+			return;
+		}
+
+		u64 at = sizeof(LayoutHeader);
+		for (u32 index = 0u; index < count_; ++index) {
+			visit_entries<Info_>(
+				slots_ + static_cast<size_t>(index) * stride_,
+				at,
+				[&](auto& self_, const u64 payloadAt_) {
+					resolve_payload(in_, payloadAt_, self_, ctx_);
+				}
+			);
+		}
 	}
 }
