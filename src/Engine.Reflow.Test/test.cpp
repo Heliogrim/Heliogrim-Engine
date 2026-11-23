@@ -3,7 +3,6 @@
 /**/
 
 #include <Engine.Reflow/ReflowEngine.hpp>
-#include <Engine.Reflow/Widget/Viewport.hpp>
 #include <Engine.Reflow/Widget/Layer/Anchor.hpp>
 #include <Engine.Reflow/Widget/Menu/Menu.hpp>
 #include <Engine.Reflow/Window/Window.hpp>
@@ -99,11 +98,6 @@ namespace ReflowModule {
 
 	TEST_F(LayoutingBoxFixture, EmptyUikitBox) {
 		generic_test_empty<engine::reflow::uikit::BoxLayout>(*this);
-	}
-
-	TEST_F(LayoutingBoxFixture, EmptyUikitViewport) {
-		GTEST_SKIP_("Will break due to deep integration with render system.");
-		generic_test_empty<engine::reflow::Viewport>(*this);
 	}
 
 	TEST_F(LayoutingBoxFixture, EmptyUikitAnchor) {

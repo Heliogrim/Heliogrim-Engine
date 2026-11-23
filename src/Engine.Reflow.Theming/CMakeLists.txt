@@ -1,7 +1,6 @@
-
 # Setup
-make_library_project(
+make_library_sub_project(
 		LIB_NAME Engine.Reflow.Theming
-		LIB_FOLDER "${IDE_FOLDER}/Engine/UI"
+		SUB_OF Engine.Reflow
 		LIBRARIES ${PROJECT_NAME}::Engine.Common ${PROJECT_NAME}::Engine.Reflect ${PROJECT_NAME}::Engine.Resource.Archive
 )
