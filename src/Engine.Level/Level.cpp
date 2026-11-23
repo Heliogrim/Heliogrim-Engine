@@ -8,8 +8,16 @@
 #include <Engine.Common/Math/Coordinates.hpp>
 #include <Engine.Core/Universe.hpp>
 #include <Engine.Scene/SceneBase.hpp>
+#include <Engine.Resource.Archive/Archive.hpp>
+#include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Diagnostic/Codes.hpp>
+#include <Engine.Serialization/Load/LoadContext.hpp>
+#include <Engine.Serialization/Load/RootKind.hpp>
+#include <Engine.Serialization/Load/Validate.hpp>
+#include <Engine.Serialization/Structure/RootScopedSlot.hpp>
+#include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 
+using namespace hg::engine::serialization;
 using namespace hg::engine::core;
 using namespace hg;
 
@@ -26,43 +34,6 @@ namespace {
 }
 
 /**/
-
-bool Level::carriesUnknownData() const noexcept {
-	return _unknownData;
-}
-
-void Level::markUnknownData() noexcept {
-	_unknownData = true;
-}
-
-Result<void, engine::diag::Diagnostics> engine::core::checkSaveAllowed(ref<const Level> level_) {
-
-	Vector<String> notes {};
-	if (level_.carriesUnknownData()) {
-		notes.push_back("level " + encodeGuid4228(level_.guid()) + ": records were skipped on load");
-	}
-	for (const auto actor : level_.getActors()) {
-		if (actor->carriesUnknownData()) {
-			notes.push_back("level " + encodeGuid4228(level_.guid()) + " / actor " + encodeGuid4228(actor->guid()) + ": fields or components were not understood on load");
-		}
-	}
-
-	if (notes.empty()) {
-		return {};
-	}
-
-	engine::diag::Diagnostic refusal = engine::diag::Diagnostic::error(
-		engine::serialization::codes::ser("save-refused"),
-		"level holds data this build did not understand; saving would drop it"
-	);
-	for (auto& note : notes) {
-		refusal.addNote(::hg::move(note));
-	}
-
-	engine::diag::Diagnostics out {};
-	out.push_back(::hg::move(refusal));
-	return Unexpected<engine::diag::Diagnostics> { ::hg::move(out) };
-}
 
 Level::Level(mref<LevelGuid> guid_) noexcept :
 	_guid(::hg::move(guid_)) {}
@@ -109,6 +80,14 @@ void Level::setBounding(cref<math::Bounding> bounding_) noexcept {
 
 void Level::setOwnerUniverse(mref<Opt<ref<engine::core::Universe>>> owner_) {
 	_universe = ::hg::move(owner_);
+}
+
+bool Level::carriesUnknownData() const noexcept {
+	return _unknownData;
+}
+
+void Level::markUnknownData() noexcept {
+	_unknownData = true;
 }
 
 engine::acs::SpaceId Level::space() {
@@ -162,5 +141,69 @@ Opt<VolatileActor<>> Level::removeActor(const nmpt<Actor> actor_) {
 Arci<Level> engine::core::make_root_like_level() {
 	auto level = Arci<Level>::create(generate_level_guid());
 	level->setBounding(level_root_bounding);
+	return level;
+}
+
+Result<void, engine::diag::Diagnostics> engine::core::checkSaveAllowed(ref<const Level> level_) {
+
+	Vector<String> notes {};
+	if (level_.carriesUnknownData()) {
+		notes.emplace_back("level " + encodeGuid4228(level_.guid()) + ": records were skipped on load");
+	}
+	for (const auto actor : level_.getActors()) {
+		if (actor->carriesUnknownData()) {
+			notes.push_back(
+				"level " + encodeGuid4228(level_.guid()) + " / actor " + encodeGuid4228(actor->guid()) +
+				": fields or components were not understood on load"
+			);
+		}
+	}
+
+	if (notes.empty()) {
+		return {};
+	}
+
+	engine::diag::Diagnostic refusal = engine::diag::Diagnostic::error(
+		engine::serialization::codes::ser("save-refused"),
+		"level holds data this build did not understand; saving would drop it"
+	);
+	for (auto& note : notes) {
+		refusal.addNote(::hg::move(note));
+	}
+
+	engine::diag::Diagnostics out {};
+	out.emplace_back(::hg::move(refusal));
+	return Unexpected<engine::diag::Diagnostics> { ::hg::move(out) };
+}
+
+template <>
+void access::Structure<Level>::hydrate(cref<StructScopedSlot> record_, Level& target_);
+
+Result<Arci<Level>, engine::diag::Diagnostics> engine::core::loadLevel(ref<engine::resource::Archive> archive_, const StringView url_, ref<engine::diag::DiagnosticSink> sink_, mref<Arci<Level>> into_) {
+	auto ctx = LoadContext { static_cast<u64>(std::max(archive_.totalSize(), 0LL)), String { url_ } };
+	const auto valid = validate(archive_, 0LL, ctx).has_value();
+	archive_.seek(0LL);
+
+	auto level = into_ != nullptr ? ::hg::move(into_) : make_root_like_level();
+	if (valid) {
+		const auto root = RootScopedSlot { archive_, ScopedSlotStateFlag::eClean, &ctx };
+		const auto kind = classifyRoot(root, ctx);
+		if (kind == RootKind::eRecord) {
+			access::Structure<Level>::hydrate(root.asStruct(), *level);
+
+		} else if (kind.has_value()) {
+			ctx.fail(ReadError { ReadError::Kind::eMalformed, root.slot()->getState().offset, 0LL, "level root must be a record" });
+		}
+	}
+
+	auto finished = ctx.finish(sink_, "level");
+	if (not finished.has_value()) {
+		// finish hands errors back without emitting them; the boundary reports them.
+		for (const auto& diagnostic : finished.error()) {
+			sink_.emit(engine::diag::Diagnostic { diagnostic });
+		}
+		return Unexpected<engine::diag::Diagnostics> { ::hg::move(finished.error()) };
+	}
+
 	return level;
 }
