@@ -36,7 +36,9 @@ void WindowedBlob::load(const size_t index_) const {
 
 std::span<_::byte> WindowedBlob::read(const streamoff offset_, mref<std::span<_::byte>> dst_) const {
 
-	::hg::assertrt(offset_ >= 0LL && offset_ <= _size);
+	if (offset_ < 0LL || offset_ > _size) {
+		return {};
+	}
 
 	const auto total = (std::min)(static_cast<size_t>(_size - offset_), dst_.size());
 	size_t done = 0uz;
