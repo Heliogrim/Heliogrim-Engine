@@ -17,12 +17,12 @@
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneDepth.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneView.hpp>
 #include <Engine.Graphics.RenderGraph/Symbol/ScopedSymbolContext.hpp>
-#include <Engine.Render.Scene/RenderSceneSystem.hpp>
 
 import Engine.Common;
 import Engine.Core;
 import Engine.Graphics.Scene;
 import Engine.Reflect;
+import Engine.Render.Scene;
 
 using namespace hg::engine::render;
 using namespace hg::engine::accel;

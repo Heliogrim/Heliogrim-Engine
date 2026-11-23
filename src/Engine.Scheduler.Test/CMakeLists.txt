@@ -9,6 +9,7 @@ make_test_project(
 			${PROJECT_NAME}::Engine.Graphics.Schedule
 			${PROJECT_NAME}::Engine.Core.Schedule
 			${PROJECT_NAME}::Engine.ACS.Schedule
+			${PROJECT_NAME}::Engine.Scene.Schedule
 		${PROJECT_NAME}::Engine.Asserts
 		${PROJECT_NAME}::Engine.Async
 		${PROJECT_NAME}::Engine.Common

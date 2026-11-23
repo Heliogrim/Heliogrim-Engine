@@ -33,7 +33,6 @@
 #include <Engine.Reflow/Command/ReflowCommandBuffer.hpp>
 #include <Engine.Reflow/Scene/UISceneModel.hpp>
 #include <Engine.Reflow/Window/Window.hpp>
-#include <Engine.Render.Scene/RenderSceneSystem.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 #include <Heliogrim/Graphics/TextureFormat.hpp>
 #include <Heliogrim/Graphics/TextureType.hpp>
@@ -43,6 +42,7 @@ import Engine.Common;
 import Engine.Core;
 import Engine.Graphics.Scene;
 import Engine.Reflect;
+import Engine.Render.Scene;
 
 /**/
 

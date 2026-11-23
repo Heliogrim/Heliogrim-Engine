@@ -4,15 +4,15 @@
 #include <Engine.Assets.Type/Material/GraphicsMaterial.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics/Pool/SceneResourcePool.hpp>
+#include <Engine.Graphics.Components/Geometry/StaticGeometryComponent.hpp>
 #include <Engine.Graphics.Loader/Geometry/Traits.hpp>
 #include <Engine.Graphics.Loader/Material/Traits.hpp>
-#include <Engine.Render.Scene/RenderSceneSystem.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
-#include <Engine.Graphics.Components/Geometry/StaticGeometryComponent.hpp>
 
 import Engine.Common;
 import Engine.Core;
 import Engine.Reflect;
+import Engine.Render.Scene;
 
 using namespace hg::engine::graphics::scene;
 using namespace hg;

@@ -1,9 +1,9 @@
 #include "PhysicsReadbackStage.hpp"
 
-#include <Engine.Physics.Scene/PhysicsSceneSystem.hpp>
 #include <Engine.Physics.Schedule/PhysicsPipeline.hpp>
 
 import Engine.Core;
+import Engine.Physics.Scene;
 import Engine.Scene;
 
 using namespace hg::engine::physics::schedule;

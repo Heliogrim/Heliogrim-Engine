@@ -1,9 +1,9 @@
 #pragma once
 
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Render.Scene/RenderSceneSystem.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Render.Scene;
 import Engine.Scene;
 #endif
 

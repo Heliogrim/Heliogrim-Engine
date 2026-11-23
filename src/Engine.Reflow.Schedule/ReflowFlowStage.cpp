@@ -9,11 +9,11 @@
 #include <Engine.Reflow/Window/BoundWindow.hpp>
 #include <Engine.Reflow/Window/WindowManager.hpp>
 #include <Engine.Reflow.Schedule/ReflowPipeline.hpp>
-#include <Engine.Scene.Schedule/ScenePipeline.hpp>
 
 import Engine.Core;
 import Engine.Graphics.Schedule;
 import Engine.Logging;
+import Engine.Scene.Schedule;
 import std;
 
 using namespace hg::engine::reflow::schedule;

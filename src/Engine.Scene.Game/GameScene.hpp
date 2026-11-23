@@ -1,11 +1,10 @@
 #pragma once
 
-#include <Engine.Physics.Scene/PhysicsSceneSystem.hpp>
-#include <Engine.Render.Scene/RenderSceneSystem.hpp>
-
 #include "SceneComponentQueue.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Physics.Scene;
+import Engine.Render.Scene;
 import Engine.Scene;
 #endif
 

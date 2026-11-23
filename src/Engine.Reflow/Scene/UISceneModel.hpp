@@ -1,8 +1,8 @@
 #pragma once
-#include <Engine.Render.Scene/RenderSceneSystemModel.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Reflect;
+import Engine.Render.Scene;
 #endif
 
 namespace hg::engine::reflow {

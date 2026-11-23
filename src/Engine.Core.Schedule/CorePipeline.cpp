@@ -1,11 +1,10 @@
 #include "CorePipeline.hpp"
 
-#include <Engine.Scene.Schedule/ScenePipeline.hpp>
-
 #include "TickTimingStage.hpp"
 
 import Engine.ACS.Schedule;
 import Engine.Common;
+import Engine.Scene.Schedule;
 import Engine.Scheduler;
 
 using namespace hg::engine::core::schedule;

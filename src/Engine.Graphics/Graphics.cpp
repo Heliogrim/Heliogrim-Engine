@@ -23,7 +23,6 @@
 /* Development Testing */
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.Render/__Test__Renderer.hpp>
-#include <Engine.Render.Scene/RenderSceneSystem.hpp>
 
 import Engine.Common;
 import Engine.Core;
@@ -31,6 +30,7 @@ import Engine.Event;
 import Engine.Graphics.Scene;
 import Engine.Graphics.Schedule;
 import Engine.Logging;
+import Engine.Render.Scene;
 import Engine.Scene;
 import Engine.Scheduler;
 /**/

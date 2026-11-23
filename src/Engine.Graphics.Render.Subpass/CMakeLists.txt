@@ -13,6 +13,7 @@ make_library_project(
 		${PROJECT_NAME}::Engine.Graphics.Scene
 		${PROJECT_NAME}::Engine.Reflect
 		${PROJECT_NAME}::Engine.Reflect.Utils
+		${PROJECT_NAME}::Engine.Render.Scene
 		${PROJECT_NAME}::Engine.Storage
 		${PROJECT_NAME}::Engine.Storage.System
 		${PROJECT_NAME}::vulkan.Module
