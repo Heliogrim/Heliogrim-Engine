@@ -4,7 +4,7 @@
 
 #include "TestArchetypes.hpp"
 
-#include <Heliogrim/Actor/Archetype/ArchetypeDefinition.inl.hpp>
+#include <Engine.ACS/Archetype/ArchetypeDefinition.inl.hpp>
 
 #include "TestArchetypes.inl.hpp"
 

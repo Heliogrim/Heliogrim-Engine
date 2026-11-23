@@ -1,6 +1,6 @@
 #include "SceneHierarchyService.hpp"
 
-#include <Heliogrim/Actor/Actor.hpp>
+#include <Engine.ACS/Actor/Actor.hpp>
 
 #include "SceneHierarchyEntry.hpp"
 

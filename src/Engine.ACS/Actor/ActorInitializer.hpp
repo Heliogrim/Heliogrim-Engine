@@ -2,8 +2,8 @@
 
 #include <Engine.ACS/Registry.hpp>
 
-#include "Component/CachedActorPointer.hpp"
-#include "Component/HierarchyComponent.hpp"
+#include "../Component/CachedActorPointer.hpp"
+#include "../Component/HierarchyComponent.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Asserts;

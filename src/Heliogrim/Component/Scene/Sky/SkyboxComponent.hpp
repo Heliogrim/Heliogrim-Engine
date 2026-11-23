@@ -1,8 +1,8 @@
 #pragma once
 
+#include <Engine.ACS/Component/SceneComponent.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 
-#include "../../SceneComponent.hpp"
 #include "../../../Asset/GeometryAssetHandles.hpp"
 #include "../../../Asset/MaterialAssetHandles.hpp"
 

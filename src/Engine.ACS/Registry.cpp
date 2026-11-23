@@ -1,9 +1,9 @@
 #include "Registry.hpp"
 
+#include <Engine.ACS/Actor/Actor.hpp>
+#include <Engine.ACS/Actor/ActorInitializer.hpp>
+#include <Engine.ACS/Actor/Class/ActorClass.hpp>
 #include <Engine.ACS/Handle/Epoch.hpp>
-#include <Heliogrim/ActorInitializer.hpp>
-#include <Heliogrim/Actor/Actor.hpp>
-#include <Heliogrim/Actor/Archetype/ActorClass.hpp>
 
 import Engine.Asserts;
 import Engine.Common;

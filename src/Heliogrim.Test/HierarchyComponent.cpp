@@ -3,7 +3,7 @@
 /**/
 
 #include <Engine.ACS/Traits.hpp>
-#include <Heliogrim/Component/HierarchyComponent.hpp>
+#include <Engine.ACS/Component/HierarchyComponent.hpp>
 
 import Engine.Common;
 

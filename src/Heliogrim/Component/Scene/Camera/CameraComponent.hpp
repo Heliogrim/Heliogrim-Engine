@@ -1,9 +1,8 @@
 #pragma once
 
+#include <Engine.ACS/Component/SceneComponent.hpp>
 #include <Engine.Graphics/Camera/CameraModes.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
-
-#include "../../SceneComponent.hpp"
 
 namespace hg {
 	class CameraComponent :

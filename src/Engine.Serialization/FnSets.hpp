@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Access/Structure.hpp"
-#include "Heliogrim/ActorInitializer.hpp"
+#include "Engine.ACS/Actor/ActorInitializer.hpp"
 #include "Structure/RecordScopedSlot.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)

@@ -1,10 +1,10 @@
 #pragma once
 
-#include <Engine.ACS/ComponentGuid.hpp>
 #include <Engine.ACS/Registry.hpp>
+#include <Engine.ACS/Component/CachedActorPointer.hpp>
+#include <Engine.ACS/Component/ComponentGuid.hpp>
 #include <Engine.Serialization/Structure/RecordScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
-#include <Heliogrim/Component/CachedActorPointer.hpp>
 
 #include "__fwd.hpp"
 #include "Scheme.hpp"

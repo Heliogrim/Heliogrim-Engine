@@ -1,9 +1,9 @@
 #pragma once
 
+#include <Engine.ACS/Actor/Actor.hpp>
+#include <Engine.ACS/Actor/ActorRef.hpp>
 #include <Engine.Common/Sal.hpp>
 
-#include "../Actor/Actor.hpp"
-#include "../Actor/ActorRef.hpp"
 #include "../Async/Future.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../SceneComponent.hpp"
+#include <Engine.ACS/Component/SceneComponent.hpp>
 
 namespace hg {
 	class LightComponent :

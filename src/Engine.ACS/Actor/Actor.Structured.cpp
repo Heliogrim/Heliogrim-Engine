@@ -11,8 +11,8 @@
 #include <Engine.Serialization.Structures/Common/Guid.hpp>
 #include <Engine.Serialization.Structures/Common/TypeId.hpp>
 
-#include "Archetype/ActorClass.hpp"
-#include "../ActorInitializer.hpp"
+#include "ActorInitializer.hpp"
+#include "Class/ActorClass.hpp"
 #include "../Component/LogicComponent.hpp"
 
 import Engine.Common;

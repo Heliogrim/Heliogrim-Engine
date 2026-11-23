@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Editor.Action/Action/DelegateAction.hpp>
-#include <Heliogrim/Actor/ActorGuid.hpp>
+#include <Engine.ACS/Actor/ActorGuid.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

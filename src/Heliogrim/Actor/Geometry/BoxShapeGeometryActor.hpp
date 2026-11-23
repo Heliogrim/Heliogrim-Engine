@@ -1,11 +1,11 @@
 #pragma once
 
+#include <Engine.ACS/Actor/Actor.hpp>
+#include <Engine.ACS/Archetype/InheritArchetype.hpp>
 #include <Engine.ACS/Archetype/Layout.hpp>
 
-#include "../Actor.hpp"
 #include "../../Component/Scene/Collision/BoxShapeCollisionComponent.hpp"
 #include "../../Component/Scene/Geometry/BoxShapeGeometryComponent.hpp"
-#include "../Archetype/InheritArchetype.hpp"
 
 namespace hg {
 	class BoxShapeGeometryActor :

@@ -1,8 +1,7 @@
 #pragma once
 
+#include <Engine.ACS/Component/SceneComponent.hpp>
 #include <Engine.Reflow/Window/Window.hpp>
-
-#include "../../SceneComponent.hpp"
 
 namespace hg {
 	class UIComponent :

@@ -10,14 +10,13 @@
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 #include <Engine.Serialization.Structures/Symbols.hpp>
 #include <Engine.Serialization.Structures/Common/TypeId.hpp>
-#include <Heliogrim/Async/Future.hpp>
+#include <Heliogrim/Core/Session.hpp>
+#include <Heliogrim/Universe/Universe.hpp>
 
+#include "ActorInitializer.hpp"
 #include "ActorRef.hpp"
-#include "Archetype/ActorClass.hpp"
-#include "../ActorInitializer.hpp"
+#include "Class/ActorClass.hpp"
 #include "../Component/HierarchyComponent.hpp"
-#include "../Core/Session.hpp"
-#include "../Universe/Universe.hpp"
 
 import Engine.Asserts;
 import Engine.Common;

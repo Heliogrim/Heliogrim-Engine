@@ -112,11 +112,11 @@ void editor::boot::initPrimaryUniverse() {
 
 #include <Editor.Assets.Default/GraphicsMaterials/Default.hpp>
 #include <Editor.Assets.Default/Meshes/Default.hpp>
+#include <Engine.ACS/Actor/Actor.hpp>
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Storage.System/StorageSystem.hpp>
 #include <Heliogrim/Heliogrim.hpp>
-#include <Heliogrim/Actor/Actor.hpp>
 #include <Heliogrim/Asset/GeometryAssetHandles.hpp>
 #include <Heliogrim/Component/Scene/Geometry/StaticGeometryComponent.hpp>
 #include <Heliogrim/Component/Scene/Light/DirectionalLightComponent.hpp>

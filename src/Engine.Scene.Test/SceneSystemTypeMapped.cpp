@@ -1,8 +1,8 @@
 #include "pch.h"
 /**/
 
+#include <Engine.ACS/Component/SceneComponent.hpp>
 #include <Engine.Scene.Support/SceneSystemTypeMappedRegistry.hpp>
-#include <Heliogrim/Component/SceneComponent.hpp>
 
 import Engine.Reflect;
 import std;

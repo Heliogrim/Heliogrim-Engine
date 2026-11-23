@@ -1,10 +1,8 @@
 #pragma once
 
-#include <Heliogrim/Actor/ActorGuid.hpp>
+#include <Engine.ACS/Actor/ActorGuid.hpp>
 
 #include "ActorPoolWrapper.hpp"
-#include "ComponentGuid.hpp"
-#include "ComponentTypeId.hpp"
 #include "Housekeeping.hpp"
 #include "Pool.hpp"
 #include "PoolWrapper.hpp"
@@ -14,6 +12,8 @@
 #include "Cluster/ClusterRegion.hpp"
 #include "Cluster/RelocationBarrier.hpp"
 #include "Cluster/Span.hpp"
+#include "Component/ComponentGuid.hpp"
+#include "Component/ComponentTypeId.hpp"
 #include "Handle/HandleTable.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)

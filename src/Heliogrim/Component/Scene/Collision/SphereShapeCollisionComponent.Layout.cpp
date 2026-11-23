@@ -1,6 +1,6 @@
 #include "SphereShapeCollisionComponent.Layout.hpp"
 
-#include <Heliogrim/Actor/Archetype/ArchetypeLayout.inl.hpp>
+#include <Engine.ACS/Archetype/ArchetypeLayout.inl.hpp>
 
 import std;
 

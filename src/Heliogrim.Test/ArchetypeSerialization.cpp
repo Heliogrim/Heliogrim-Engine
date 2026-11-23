@@ -3,7 +3,12 @@
 /**/
 
 #include <Engine.ACS/Registry.hpp>
+#include <Engine.ACS/Actor/ActorRef.hpp>
+#include <Engine.ACS/Actor/Class/ActorClass.hpp>
+#include <Engine.ACS/Archetype/ArchetypeDefinition.inl.hpp>
 #include <Engine.ACS/Archetype/LayoutInfo.hpp>
+#include <Engine.ACS/Component/ComponentRef.hpp>
+#include <Engine.ACS/Serialization/ArchetypeFnSet.hpp>
 #include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Archive/StructuredArchive.hpp>
@@ -20,12 +25,7 @@
 #include <Engine.Serialization/Scheme/ActorScheme.hpp>
 #include <Engine.Serialization/Scheme/ComponentScheme.hpp>
 #include <Engine.Serialization/Structure/SeqScopedSlot.hpp>
-#include <Heliogrim/Actor/ActorRef.hpp>
-#include <Heliogrim/Actor/Archetype/ActorClass.hpp>
-#include <Heliogrim/Actor/Archetype/ArchetypeDefinition.inl.hpp>
-#include <Heliogrim/Actor/Archetype/ArchetypeFnSet.hpp>
 #include <Heliogrim/Actor/Geometry/StaticGeometryActor.hpp>
-#include <Heliogrim/Component/ComponentRef.hpp>
 #include <Heliogrim/Component/Scene/Geometry/StaticGeometryComponent.Layout.hpp>
 #include <Heliogrim/Universe/Universe.hpp>
 

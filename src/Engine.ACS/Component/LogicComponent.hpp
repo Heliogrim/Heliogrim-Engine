@@ -1,8 +1,8 @@
 #pragma once
 
-#include <Engine.ACS/ComponentGuid.hpp>
-#include <Engine.ACS/ComponentLabel.hpp>
-#include <Engine.ACS/ComponentTypeId.hpp>
+#include <Engine.ACS/Component/ComponentGuid.hpp>
+#include <Engine.ACS/Component/ComponentLabel.hpp>
+#include <Engine.ACS/Component/ComponentTypeId.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
