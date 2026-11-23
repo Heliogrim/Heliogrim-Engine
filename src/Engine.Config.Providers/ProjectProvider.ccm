@@ -1,19 +1,18 @@
-#pragma once
+module;
 
-#include "../Provider.hpp"
+export module Engine.Config.Providers:ProjectProvider;
 
-#if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
-#endif
+import Engine.Config;
 
-namespace hg::engine::cfg {
-	class RuntimeProvider final :
+export namespace hg::engine::cfg {
+	class ProjectProvider final :
 		public Provider {
 	public:
-		using this_type = RuntimeProvider;
+		using this_type = ProjectProvider;
 
 	public:
-		~RuntimeProvider() override = default;
+		~ProjectProvider() override = default;
 
 	private:
 		DenseMap<InternalConfigKey, ConfigEntry> _props;

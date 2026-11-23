@@ -19,6 +19,7 @@
 
 import Editor.Boot;
 import Engine.Config;
+import Engine.Config.Providers;
 import Engine.Core;
 import Engine.Logging;
 import Engine.Network;

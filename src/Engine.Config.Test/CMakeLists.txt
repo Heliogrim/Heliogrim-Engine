@@ -6,5 +6,6 @@ make_test_project(
 		${PROJECT_NAME}::Engine.Asserts
 		${PROJECT_NAME}::Engine.Common
 		${PROJECT_NAME}::Engine.Config
+		${PROJECT_NAME}::Engine.Config.Providers
 		${PROJECT_NAME}::Engine.Reflect
 )

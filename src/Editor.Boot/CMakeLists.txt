@@ -1,7 +1,7 @@
 
 # Setup
 make_library_project(
-		LIB_NAME "Editor.Boot"
+		LIB_NAME "Editor.Boot"
 		MODULE
 		LIB_FOLDER "${IDE_FOLDER}/Editor"
 		LIBRARIES
@@ -26,6 +26,7 @@ make_library_project(
 		${PROJECT_NAME}::Editor.UI.View
 		${PROJECT_NAME}::Engine.Common
 		${PROJECT_NAME}::Engine.Config
+		${PROJECT_NAME}::Engine.Config.Providers
 		${PROJECT_NAME}::Engine.Core
 		${PROJECT_NAME}::Engine.Logging
 		${PROJECT_NAME}::Engine.Reflect

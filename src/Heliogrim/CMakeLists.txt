@@ -33,6 +33,7 @@ make_library_project(
 		${PROJECT_NAME}::Engine.Async
 		${PROJECT_NAME}::Engine.Common
 		${PROJECT_NAME}::Engine.Config
+		${PROJECT_NAME}::Engine.Config.Providers
 		${PROJECT_NAME}::Engine.Core
 		${PROJECT_NAME}::Engine.Core.Schedule
 		${PROJECT_NAME}::Engine.Crypto

@@ -1,12 +1,11 @@
-#pragma once
+module;
 
-#include "../Provider.hpp"
+export module Engine.Config.Providers:EditorProvider;
 
-#if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
-#endif
+import Engine.Config;
 
-namespace hg::editor::cfg {
+export namespace hg::editor::cfg {
 	class EditorProvider final :
 		public engine::cfg::Provider {
 	public:
