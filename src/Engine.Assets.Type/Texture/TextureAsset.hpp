@@ -1,13 +1,12 @@
 #pragma once
 
-#include <Engine.Graphics/TextureFormat.hpp>
-#include <Engine.Graphics/Texture/TextureType.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 
 #include "../AssetConcept.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Graphics.Types;
 #endif
 
 namespace hg::engine::assets {

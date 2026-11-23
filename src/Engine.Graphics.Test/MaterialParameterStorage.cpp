@@ -3,8 +3,8 @@
 /**/
 
 #include <Engine.Graphics.Material/MaterialParameterStorage.hpp>
-#include <Engine.Graphics.Material/ParameterIdentifier.hpp>
 
+import Engine.Graphics.Types;
 import std;
 
 using namespace hg;

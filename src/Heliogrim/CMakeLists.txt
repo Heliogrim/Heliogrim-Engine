@@ -61,6 +61,7 @@ make_library_project(
 		${PROJECT_NAME}::Engine.Graphics.Scene
 		${PROJECT_NAME}::Engine.Graphics.Scene.Model
 		${PROJECT_NAME}::Engine.Graphics.Schedule
+		${PROJECT_NAME}::Engine.Graphics.Types
 		${PROJECT_NAME}::Engine.Input
 		${PROJECT_NAME}::Engine.Input.Schedule
 		${PROJECT_NAME}::Engine.IO.Dispatcher

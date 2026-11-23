@@ -12,6 +12,7 @@ make_test_project(
 		${PROJECT_NAME}::Engine.Common
 		${PROJECT_NAME}::Engine.Core
 		${PROJECT_NAME}::Engine.Filesystem
+		${PROJECT_NAME}::Engine.Graphics.Types
 		${PROJECT_NAME}::Engine.Logging
 		${PROJECT_NAME}::Engine.Reflect
 		${PROJECT_NAME}::Engine.Resource

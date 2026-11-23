@@ -1,12 +1,10 @@
 #pragma once
 
-#include <Engine.Accel.Effect/Stage/TransferDataType.hpp>
-
 #include "MaterialParameterStorage.hpp"
-#include "ParameterIdentifier.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Graphics.Types;
 #endif
 
 namespace hg::engine::graphics::material {

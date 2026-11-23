@@ -1,12 +1,12 @@
 #pragma once
 
 #include <stddef.h>
-#include <Engine.Accel.Effect/Stage/TransferDataType.hpp>
 #include <Engine.Graphics/Geometry/Vertex.hpp>
 
 #include "Description.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Graphics.Types;
 import Engine.Reflect;
 #endif
 

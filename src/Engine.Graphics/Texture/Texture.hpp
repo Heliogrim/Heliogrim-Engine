@@ -5,8 +5,10 @@
 #include "__fwd.hpp"
 #include "TextureBuffer.hpp"
 #include "TextureObject.hpp"
-#include "TextureType.hpp"
-#include "../TextureFormat.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Graphics.Types;
+#endif
 
 namespace hg::engine::graphics {
 	class Texture :

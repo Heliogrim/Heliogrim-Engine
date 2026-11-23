@@ -1,13 +1,12 @@
 #pragma once
 
-#include <Engine.Graphics/TextureFormat.hpp>
 #include <Engine.Graphics/Texture/__fwd.hpp>
-#include <Engine.Graphics/Texture/TextureType.hpp>
 
 #include "Description.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Graphics.Types;
 import Engine.Reflect;
 #endif
 

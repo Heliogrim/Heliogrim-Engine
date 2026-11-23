@@ -3,7 +3,6 @@
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Sal.hpp>
 
-#include "../TextureFormat.hpp"
 #include "../vkinc.hpp"
 #include "../Device/Device.hpp"
 #include "../Surface/Surface.hpp"
@@ -11,6 +10,7 @@
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Graphics.Types;
 #endif
 
 namespace hg::engine::graphics {
