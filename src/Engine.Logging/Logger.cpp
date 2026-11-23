@@ -1,11 +1,13 @@
+module;
+
 #if not defined(SPDLOG_USE_STD_FORMAT)
 #define SPDLOG_USE_STD_FORMAT
 #endif
 
 #include <spdlog/async.h>
+#include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/dup_filter_sink.h>
-#include <spdlog/spdlog.h>
 #if defined(_DEBUG)
 #include <spdlog/sinks/stdout_color_sinks.h>
 #endif
@@ -16,13 +18,16 @@
 #include <Engine.Common/stdafx.h>
 #endif
 
+module Engine.Logging;
+
 /*
 #if defined(_DEBUG) && defined(_MSC_VER) && defined(WIN32)
 #include <spdlog/sinks/msvc_sink.h>
 #endif
 */
 import Engine.Common;
-import Engine.Logging;
+
+import :Logger;
 
 using namespace hg;
 

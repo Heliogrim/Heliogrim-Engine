@@ -1,3 +1,5 @@
+module;
+
 #include <version>
 
 #if defined(__cpp_lib_stacktrace) && (__cpp_lib_stacktrace >= 202011L) && defined(__cpp_lib_formatters) && (__cpp_lib_formatters >= 202302L)
@@ -7,8 +9,11 @@
 
 #include "Pal.hpp"
 
-import Engine.Asserts;
+module Engine.Asserts;
+
 import std;
+
+import :Panic;
 
 using namespace hg::panic_details;
 using namespace hg;
@@ -39,6 +44,11 @@ void hg::panic_stacktrace() noexcept {
 	const auto guard = std::scoped_lock<std::recursive_mutex> { global_sink_mutex };
 	write_panic_text(std::format("{}\n", std::stacktrace::current()));
 	#endif
+}
+
+void hg::panic(std::string_view message_) noexcept {
+	PanicErrorSink {} << std::string_view { message_ };
+	::hg::panic();
 }
 
 /**/

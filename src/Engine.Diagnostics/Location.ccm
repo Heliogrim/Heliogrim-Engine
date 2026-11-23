@@ -1,10 +1,9 @@
-#pragma once
+module;
+export module Engine.Diagnostics:Location;
 
-#if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
-#endif
 
-namespace hg::engine::diag {
+export namespace hg::engine::diag {
 	struct NoLocation {};
 
 	/* byte offsets [begin, end); line and column are 1-based and describe `begin` */

@@ -1,6 +1,11 @@
+module;
+
+module Engine.Config;
+
 import Engine.Asserts;
-import Engine.Config;
 import std;
+
+import :Config;
 
 using namespace ::hg::engine;
 using namespace ::hg;

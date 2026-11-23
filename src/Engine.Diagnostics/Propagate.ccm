@@ -1,13 +1,12 @@
-#pragma once
+module;
+export module Engine.Diagnostics:Propagate;
 
-#include "Diagnostic.hpp"
-
-#if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Asserts;
 import Engine.Common;
-#endif
 
-namespace hg::engine::diag {
+import :Diagnostic;
+
+export namespace hg::engine::diag {
 	template <typename Ty_>
 	concept PropagatableError = std::same_as<Ty_, Diagnostic> || std::same_as<Ty_, Diagnostics>;
 

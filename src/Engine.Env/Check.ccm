@@ -1,11 +1,11 @@
-#pragma once
+module;
 
-#if not defined(HG_MODULE_INTERFACE_UNIT)
+export module Engine.Env:Check;
+
 import Engine.Asserts;
 import Engine.Common;
-#endif
 
-namespace hg::env {
+export namespace hg::env {
 	enum class EnvProps {
 		/**/
 		eIsRuntime,

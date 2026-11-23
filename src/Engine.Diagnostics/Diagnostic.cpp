@@ -1,6 +1,10 @@
+module;
+module Engine.Diagnostics;
+
 import Engine.Asserts;
 import Engine.Common;
-import Engine.Diagnostics;
+
+import :Diagnostic;
 
 using namespace hg::engine::diag;
 using namespace hg;

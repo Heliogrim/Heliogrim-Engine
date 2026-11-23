@@ -1,10 +1,10 @@
-#pragma once
+module;
+export module Engine.Logging:LogSink;
 
-#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
 import Engine.Diagnostics;
-#endif
 
-namespace hg::engine::diag {
+export namespace hg::engine::diag {
 	/**
 	 * Forwards each diagnostic to the Logger; error maps to error, warning to warn, note and help to info.
 	 */

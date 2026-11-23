@@ -1,17 +1,17 @@
-#pragma once
+module;
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Sal.hpp>
+#include <Engine.Common/__macro.hpp>
 
-#include "ConfigEntry.hpp"
-#include "ConfigKey.hpp"
+export module Engine.Config:Provider;
 
-#if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
 import Engine.Reflect;
-#endif
 
-namespace hg::engine::cfg {
+import :ConfigEntry;
+import :ConfigValue;
+
+export namespace hg::engine::cfg {
 	class macro_novtable Provider {
 	public:
 		constexpr virtual ~Provider() noexcept = default;

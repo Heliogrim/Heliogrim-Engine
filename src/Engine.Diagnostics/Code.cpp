@@ -1,6 +1,10 @@
+module;
+module Engine.Diagnostics;
+
 import Engine.Asserts;
-import Engine.Diagnostics;
 import std;
+
+import :Code;
 
 using namespace hg::engine;
 using namespace hg;

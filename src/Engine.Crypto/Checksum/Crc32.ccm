@@ -1,12 +1,12 @@
-#pragma once
+module;
 
 #include <Engine.Common/Sal.hpp>
 
-#if not defined(HG_MODULE_INTERFACE_UNIT)
-import Engine.Common;
-#endif
+export module Engine.Crypto:Checksum.Crc32;
 
-namespace hg::engine::crypto {
+import Engine.Common;
+
+export namespace hg::engine::crypto {
 	class Crc32 {
 	public:
 		using this_type = Crc32;

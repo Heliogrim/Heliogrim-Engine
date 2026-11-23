@@ -2,6 +2,8 @@
 
 /**/
 
+import Engine.Common;
+import Engine.Diagnostics;
 import Engine.Logging;
 
 using namespace hg::engine::diag;

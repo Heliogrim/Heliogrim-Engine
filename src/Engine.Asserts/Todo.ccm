@@ -1,12 +1,12 @@
-#pragma once
+module;
 
-#include "Panic.hpp"
+export module Engine.Asserts:Todo;
 
-#if not defined(HG_MODULE_INTERFACE_UNIT)
 import std;
-#endif
 
-namespace hg {
+import :Panic;
+
+export namespace hg {
 	template <typename ErrorType_>
 	struct ErrorPanicFn;
 

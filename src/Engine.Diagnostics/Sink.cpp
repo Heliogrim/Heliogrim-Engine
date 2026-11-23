@@ -1,5 +1,9 @@
-import Engine.Diagnostics;
+module;
+module Engine.Diagnostics;
+
 import std;
+
+import :Sink;
 
 using namespace hg::engine::diag;
 using namespace hg;

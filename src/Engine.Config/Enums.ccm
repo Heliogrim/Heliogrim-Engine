@@ -1,6 +1,8 @@
-#pragma once
+module;
 
-namespace hg::engine::cfg {
+export module Engine.Config:Enums;
+
+export namespace hg::engine::cfg {
 	/**/
 
 	enum class ProjectConfigProperty {

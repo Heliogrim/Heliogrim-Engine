@@ -7,11 +7,8 @@
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Config;
 #endif
-
-namespace hg::engine {
-	class Config;
-}
 
 namespace hg::engine::storage {
 	class StorageRegistry final :

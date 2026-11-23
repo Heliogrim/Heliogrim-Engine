@@ -1,0 +1,9 @@
+module;
+
+export module Engine.Env:System;
+
+import Engine.Common;
+
+export namespace hg::env {
+	extern hg::size_t get_memory_page_size();
+}

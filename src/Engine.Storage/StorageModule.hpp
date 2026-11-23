@@ -4,12 +4,12 @@
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Config;
 import Engine.Core;
 import Engine.IO.Dispatcher;
 #endif
 
 namespace hg::engine {
-	class Config;
 	class Engine;
 }
 
