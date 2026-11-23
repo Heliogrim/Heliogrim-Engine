@@ -3,6 +3,7 @@
 /**/
 
 #include <cstddef>
+#include <limits>
 #include <new>
 #include <span>
 #include <string_view>
@@ -361,6 +362,32 @@ namespace HeliogrimApi {
 		EXPECT_EQ(created->guid(), actor(cls, source.slot(0u)).guid());
 		EXPECT_EQ(created->label().text, "geo-1");
 		EXPECT_FALSE(static_cast<ptr<StaticGeometryActor>>(created.get())->get<"geometry">().getStaticGeometry().isValid());
+	}
+
+	TEST_F(ArchetypeSerPublic, ComponentOffsetMaxRejected) {
+		auto &registry = *_engine->getActors()->getRegistry();
+		auto created = CreateActor<TestTank>();
+		const auto handle = registry.handleOf(*created.get());
+		constexpr auto componentId = refl::TypeId<HierarchyComponent>();
+		const auto &tank = TestTank::actorClass();
+		const auto valid = static_cast<std::ptrdiff_t>(tank.componentOffsets().front()) - static_cast<std::ptrdiff_t>(tank.desc().actorOffset);
+
+		EXPECT_NE(registry.resolveComponent(handle, valid, componentId), nullptr);
+		EXPECT_EQ(registry.resolveComponent(handle, std::numeric_limits<std::ptrdiff_t>::max(), componentId), nullptr);
+		EXPECT_EQ(registry.resolveComponent(handle, std::numeric_limits<std::ptrdiff_t>::min(), componentId), nullptr);
+		EXPECT_EQ(registry.resolveComponent(handle, -static_cast<std::ptrdiff_t>(tank.desc().actorOffset) - 1, componentId), nullptr);
+		// Right offset, wrong entry type.
+		EXPECT_EQ(registry.resolveComponent(handle, valid, refl::TypeId<LinkStub>()), nullptr);
+	}
+
+	TEST_F(ArchetypeSerPublic, ActorRefWrongClassResolvesNull) {
+		auto &registry = *_engine->getActors()->getRegistry();
+		auto created = CreateActor<TestTank>();
+		const auto handle = registry.handleOf(*created.get());
+
+		EXPECT_NE(registry.resolve(handle, refl::TypeId<TestTank>()), nullptr);
+		EXPECT_NE(registry.resolve(handle, refl::TypeId<Actor>()), nullptr);
+		EXPECT_EQ(registry.resolve(handle, refl::TypeId<TestLinker>()), nullptr);
 	}
 
 	TEST(ArchetypeSer, StaticGeometryActorLayoutRoundTrip) {
