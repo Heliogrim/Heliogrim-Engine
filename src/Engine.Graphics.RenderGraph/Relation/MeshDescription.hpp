@@ -1,11 +1,11 @@
 #pragma once
 
 #include <stddef.h>
-#include <Engine.Graphics/Geometry/Vertex.hpp>
 
 #include "Description.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Graphics;
 import Engine.Graphics.Types;
 import Engine.Reflect;
 #endif

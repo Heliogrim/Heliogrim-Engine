@@ -1,7 +1,5 @@
 #include "Renderer.hpp"
 
-#include <Engine.Graphics/Memory/GlobalPooledAllocator.hpp>
-#include <Engine.Graphics/Memory/LocalPooledAllocator.hpp>
 #include <Engine.Graphics.Loader/Cache/GlobalCacheCtrl.hpp>
 #include <Engine.Graphics.Loader/Cache/LocalResourceCache.hpp>
 #include <Engine.Graphics.RenderGraph/CompileGraph.hpp>
@@ -13,6 +11,7 @@
 #include "RenderPass.hpp"
 
 import Engine.Common;
+import Engine.Graphics;
 
 using namespace hg::engine::render;
 using namespace hg;

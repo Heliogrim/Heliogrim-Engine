@@ -3,9 +3,9 @@
 #include <Engine.Accel.Pass/VkGraphicsPass.hpp>
 #include <Engine.Accel.Pass/Framebuffer/Framebuffer.hpp>
 #include <Engine.Accel.Pipeline/VkGraphicsPipeline.hpp>
-#include <Engine.Graphics/Command/CommandBuffer.hpp>
 
 import Engine.Asserts;
+import Engine.Graphics;
 
 using namespace hg::engine::accel;
 using namespace hg::engine::graphics;

@@ -1,9 +1,9 @@
 #pragma once
 #include <stddef.h>
-#include <Engine.Graphics/Buffer/BufferLikeObject.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Graphics;
 import Engine.Serialization;
 #endif
 

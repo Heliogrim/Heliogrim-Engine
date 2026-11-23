@@ -1,45 +1,41 @@
 #include "Resource.hpp"
 
-#include <Engine.Graphics/Buffer/StorageBufferView.hpp>
-#include <Engine.Graphics/Buffer/UniformBufferView.hpp>
-#include <Engine.Graphics/Texture/TextureLikeObject.hpp>
-#include <Engine.Graphics/Texture/TextureSampler.hpp>
-
 import Engine.Common;
+import Engine.Graphics;
 import Engine.Reflect;
 
 using namespace hg::engine::graphics;
 using namespace hg::engine::render;
 using namespace hg;
 
-bool Resource::isUniformBufferView() const noexcept {
+bool hg::engine::render::Resource::isUniformBufferView() const noexcept {
     return view && IsType<UniformBufferView>(*view);
 }
 
-nmpt<const UniformBufferView> Resource::asUniformBufferView() const noexcept {
+nmpt<const UniformBufferView> hg::engine::render::Resource::asUniformBufferView() const noexcept {
     return Cast<UniformBufferView>(view.get());
 }
 
-bool Resource::isStorageBufferView() const noexcept {
+bool hg::engine::render::Resource::isStorageBufferView() const noexcept {
     return view && IsType<StorageBufferView>(*view);
 }
 
-nmpt<const StorageBufferView> Resource::asStorageBufferView() const noexcept {
+nmpt<const StorageBufferView> hg::engine::render::Resource::asStorageBufferView() const noexcept {
     return Cast<StorageBufferView>(view.get());
 }
 
-bool Resource::isTexture() const noexcept {
+bool hg::engine::render::Resource::isTexture() const noexcept {
     return view && IsType<TextureLikeObject>(*view);
 }
 
-nmpt<const TextureLikeObject> Resource::asTexture() const noexcept {
+nmpt<const TextureLikeObject> hg::engine::render::Resource::asTexture() const noexcept {
     return Cast<TextureLikeObject>(view.get());
 }
 
-bool Resource::isSampler() const noexcept {
+bool hg::engine::render::Resource::isSampler() const noexcept {
     return view && IsType<TextureSampler>(*view);
 }
 
-nmpt<const TextureSampler> Resource::asSampler() const noexcept {
+nmpt<const TextureSampler> hg::engine::render::Resource::asSampler() const noexcept {
     return Cast<TextureSampler>(view.get());
 }

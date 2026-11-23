@@ -1,7 +1,5 @@
 #include "Viewport.hpp"
 
-#include "Engine.Graphics/Swapchain/VkSwapchain.hpp"
-
 #if TRUE
 #include <Engine.Reflow/Command/ReflowCommandBuffer.hpp>
 #include <Engine.Graphics.Core/Graphics.hpp>
@@ -17,6 +15,7 @@
 import Engine.Asserts;
 import Engine.Common;
 import Engine.Core;
+import Engine.Graphics;
 import Engine.Graphics.Scene;
 import Engine.Logging;
 import Engine.Render.Scene;

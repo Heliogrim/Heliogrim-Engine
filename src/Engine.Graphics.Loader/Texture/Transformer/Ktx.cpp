@@ -9,15 +9,11 @@
 
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Graphics/API/VkTranslate.hpp>
-#include <Engine.Graphics/Command/CommandBuffer.hpp>
-#include <Engine.Graphics/Device/Device.hpp>
-#include <Engine.Graphics/Texture/SparseTexturePage.hpp>
-#include <Engine.Graphics/Texture/SparseTextureView.hpp>
-#include <Engine.Graphics/Texture/TextureFactory.hpp>
+#include <Engine.Graphics/vkinc.hpp>
 
 import Engine.Asserts;
 import Engine.Common;
+import Engine.Graphics;
 import Engine.Logging;
 import Engine.Storage.System;
 

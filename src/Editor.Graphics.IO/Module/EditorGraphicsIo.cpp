@@ -6,7 +6,6 @@
 #include <Editor.Graphics.Loader/Texture/Transformer/Png.hpp>
 #include <Editor.Graphics.Loader/Texture/Transformer/Tga.hpp>
 #include <Editor.Graphics.Loader/Texture/Transformer/Tiff.hpp>
-#include <Engine.Graphics/Texture/TextureResource.hpp>
 #include <Engine.Graphics.Core/Graphics.hpp>
 
 import Editor.Graphics.Event;
@@ -15,6 +14,7 @@ import Engine.Assets.Type;
 import Engine.Common;
 import Engine.Core;
 import Engine.Event;
+import Engine.Graphics;
 import Engine.Graphics.Event;
 import Engine.Resource;
 

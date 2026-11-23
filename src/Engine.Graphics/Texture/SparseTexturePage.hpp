@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Common/Math/__default.inl>
 
 #include "__fwd.hpp"
 #include "SparseTexturePageFlag.hpp"

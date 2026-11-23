@@ -1,17 +1,12 @@
 #pragma once
 
-#include <Engine.Graphics/Application/Application.hpp>
-#include <Engine.Graphics/Command/CommandQueue.hpp>
-#include <Engine.Graphics/Device/Device.hpp>
-#include <Engine.Graphics/Pool/__fwd.hpp>
-#include <Engine.Graphics/Surface/Surface.hpp>
-#include <Engine.Graphics/Swapchain/Swapchain.hpp>
 #include <Engine.Graphics.Loader/Cache/__fwd.hpp>
 #include <Engine.Graphics.Render/Renderer.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
 import Engine.Core;
+import Engine.Graphics;
 #endif
 
 /**

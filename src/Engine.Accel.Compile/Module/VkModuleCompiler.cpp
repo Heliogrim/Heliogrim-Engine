@@ -1,7 +1,6 @@
 #include "VkModuleCompiler.hpp"
 
 #include <Engine.Accel.Lang/Ir/Diagnostic.hpp>
-#include <Engine.Graphics/Device/Device.hpp>
 #include <Engine.Graphics.Core/Graphics.hpp>
 
 #include "VkCompiledModule.hpp"
@@ -9,6 +8,7 @@
 
 import Engine.Common;
 import Engine.Core;
+import Engine.Graphics;
 import Engine.Logging;
 
 using namespace hg::engine::accel;

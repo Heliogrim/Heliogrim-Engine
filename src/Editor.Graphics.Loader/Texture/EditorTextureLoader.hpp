@@ -1,5 +1,4 @@
 #pragma once
-#include <Engine.Graphics/Pool/GlobalResourcePool.hpp>
 #include <Engine.Graphics.Loader/Cache/GlobalCacheCtrl.hpp>
 
 #include "__fwd.hpp"
@@ -8,6 +7,7 @@
 #include "EditorTextureTransformer.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Graphics;
 import Engine.Resource;
 #endif
 

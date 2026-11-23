@@ -4,6 +4,10 @@
 
 #include "RaytracingPipeline.hpp"
 
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Graphics;
+#endif
+
 namespace hg::engine::accel {
 	class VkRaytracingPipeline final :
 		public RaytracingPipeline {

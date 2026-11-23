@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Engine.Graphics/API/__vkFwd.hpp>
-#include <Engine.Graphics/Texture/__fwd.hpp>
 #include <Engine.Reflow/Children.hpp>
 #include <Engine.Reflow/Widget/Widget.hpp>
 #include <Engine.Reflow.Uikit/Atom/Atom.hpp>
@@ -9,6 +8,7 @@
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Graphics;
 #endif
 
 namespace hg {

@@ -1,11 +1,10 @@
 #include "PointLightModel.hpp"
 
 #include <cstring>
-#include <Engine.Graphics/Light/Light.hpp>
-#include <Engine.Graphics/Pool/SceneResourcePool.hpp>
 #include <Engine.Graphics.Components/Light/PointLightComponent.hpp>
 
 import Engine.Common;
+import Engine.Graphics;
 import Engine.Reflect;
 import Engine.Render.Scene;
 

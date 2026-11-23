@@ -1,9 +1,6 @@
 #include "WindowManager.hpp"
 
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Graphics/Surface/Surface.hpp>
-#include <Engine.Graphics/Surface/SurfaceManager.hpp>
-#include <Engine.Graphics/Swapchain/VkSurfaceSwapchain.hpp>
 #include <Engine.Graphics.Core/Graphics.hpp>
 #include <Engine.Graphics.Render/RenderTarget.hpp>
 #include <Heliogrim/Async/Future.hpp>
@@ -15,6 +12,7 @@
 
 import Engine.Common;
 import Engine.Core;
+import Engine.Graphics;
 import Engine.Graphics.Scene;
 import Engine.Input;
 import Engine.Logging;

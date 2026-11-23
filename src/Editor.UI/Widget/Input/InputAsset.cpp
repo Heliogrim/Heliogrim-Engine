@@ -1,7 +1,6 @@
 #include "InputAsset.hpp"
 
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Graphics/Texture/TextureResource.hpp>
 #include <Engine.Graphics.Loader/Texture/Traits.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/BoxLayout.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/HorizontalLayout.hpp>
@@ -16,6 +15,7 @@ import Engine.Assets.System;
 import Engine.Common;
 import Engine.Core;
 import Engine.Filesystem;
+import Engine.Graphics;
 import Engine.Logging;
 import Engine.Resource;
 

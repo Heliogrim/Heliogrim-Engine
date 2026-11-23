@@ -4,13 +4,12 @@
 
 /**/
 
-#include <Engine.Graphics/Device/Device.hpp>
-
 #include "HeadlessEngine.hpp"
 #include "ValidationCapture.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Graphics;
 #endif
 
 namespace hg::test::gpu {

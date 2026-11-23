@@ -10,11 +10,6 @@
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Math/Compat.inl>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
-#include <Engine.Graphics/Buffer/BufferFactory.hpp>
-#include <Engine.Graphics/Buffer/UniformBufferView.hpp>
-#include <Engine.Graphics/Texture/SparseTextureView.hpp>
-#include <Engine.Graphics/Texture/TextureFactory.hpp>
-#include <Engine.Graphics/Texture/TextureResource.hpp>
 #include <Engine.Graphics.Core/Graphics.hpp>
 #include <Engine.Graphics.Render.Command/RenderCommandBuffer.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/BrdfPrefilter.hpp>
@@ -25,6 +20,7 @@
 
 import Engine.Common;
 import Engine.Core;
+import Engine.Graphics;
 import Engine.Graphics.Scene;
 import Engine.Reflect;
 import Engine.Render.Scene;
@@ -581,7 +577,7 @@ EffectCompileResult build_test_pipeline(
 				.stencilDepthFailOp = StencilOp::eKeep,
 				.stencilCompareMask = 0ul,
 				.stencilWriteMask = 0ul,
-				.primitiveTopology = PrimitiveTopology::eTriangleList,
+				.primitiveTopology = hg::engine::accel::PrimitiveTopology::eTriangleList,
 				.pass = pass_.get()
 			}
 		)

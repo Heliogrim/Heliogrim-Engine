@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine.Graphics/Color/Color.hpp>
+#include <Engine.Reflow/ReflowPlacement.hpp>
 #include <Engine.Reflow/ReflowWrap.hpp>
 #include <Engine.Reflow/TextAlign.hpp>
 
@@ -9,6 +9,7 @@
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Assets.Type;
+import Engine.Graphics;
 #endif
 
 namespace hg::engine::reflow {

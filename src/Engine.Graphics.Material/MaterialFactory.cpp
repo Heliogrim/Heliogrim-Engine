@@ -1,13 +1,12 @@
 #include "MaterialFactory.hpp"
 
-#include <Engine.Graphics/Texture/TextureResource.hpp>
-
 #include "Material.hpp"
 #include "MaterialParameter.hpp"
 #include "MaterialPrototype.hpp"
 #include "MaterialPrototypeParameter.hpp"
 
 import Engine.Common;
+import Engine.Graphics;
 
 using namespace hg::engine::graphics::material;
 using namespace hg;

@@ -1,10 +1,11 @@
 #include "RenderSceneSystem.hpp"
 
-#include <Engine.Graphics/Pool/SceneResourcePool.hpp>
+#include <cassert>
 #include <Engine.Graphics.Core/Graphics.hpp>
 
 import Engine.ACS;
 import Engine.Core;
+import Engine.Graphics;
 
 using namespace hg::engine::render;
 using namespace hg;

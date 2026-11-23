@@ -2,7 +2,6 @@
 
 #include <Engine.Accel.Command/CommandBuffer.hpp>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
-#include <Engine.Graphics/Texture/TextureFactory.hpp>
 #include <Engine.Graphics.Core/Graphics.hpp>
 #include <Engine.Graphics.Render.Command/RenderCommandBuffer.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneColor.hpp>
@@ -12,6 +11,7 @@
 
 import Engine.Common;
 import Engine.Core;
+import Engine.Graphics;
 import Engine.Reflect;
 
 using namespace hg::engine::render;

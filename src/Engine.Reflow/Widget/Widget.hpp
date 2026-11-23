@@ -2,7 +2,6 @@
 
 #include <Engine.Common/Flag.hpp>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Graphics/Aabb.hpp>
 #include <Engine.Reflow/ReflowPhase.hpp>
 #include <Engine.Reflow.Theming/ThemeProvisioner.hpp>
 
@@ -25,6 +24,7 @@
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Graphics;
 #endif
 
 namespace hg::engine::reflow {

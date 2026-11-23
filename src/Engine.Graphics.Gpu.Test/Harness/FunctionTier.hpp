@@ -1,12 +1,11 @@
 #pragma once
 
-#include <Engine.Graphics/Device/Device.hpp>
-
 #include "Contract.hpp"
 #include "Report.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Graphics;
 #endif
 
 namespace hg::test::gpu {

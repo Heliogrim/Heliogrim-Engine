@@ -3,11 +3,7 @@
 #include <Engine.Accel.Pass/AccelerationPass.hpp>
 #include <Engine.Accel.Pass/VkGraphicsPass.hpp>
 
-#include "Engine.Graphics/Texture/SparseTexture.hpp"
-#include "Engine.Graphics/Texture/SparseTextureView.hpp"
-#include "Engine.Graphics/Texture/Texture.hpp"
-#include "Engine.Graphics/Texture/TextureView.hpp"
-
+import Engine.Graphics;
 import Engine.Reflect;
 import std;
 

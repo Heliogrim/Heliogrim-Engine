@@ -1,10 +1,10 @@
 #pragma once
-#include <Engine.Graphics/Camera/CameraFrustum.hpp>
 
 #include "Culling.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Graphics;
 import Engine.Graphics.Scene;
 import Engine.Reflect;
 #endif

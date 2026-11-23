@@ -1,6 +1,5 @@
 #include "RenderTickStage.hpp"
 
-#include <Engine.Graphics/RenderEnqueueResult.hpp>
 #include <Engine.Graphics.Core/Graphics.hpp>
 #include <Engine.Graphics.Render/RenderTarget.hpp>
 #include <Engine.Graphics.Schedule/RenderScenePipeline.hpp>
@@ -12,6 +11,7 @@
 
 import Engine.Common;
 import Engine.Core;
+import Engine.Graphics;
 import Engine.Graphics.Scene;
 import Engine.Logging;
 import Engine.Scene.Schedule;

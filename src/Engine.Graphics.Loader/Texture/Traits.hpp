@@ -1,12 +1,11 @@
 #pragma once
 
-#include <Engine.Graphics/Texture/TextureResource.hpp>
-
 #include "__fwd.hpp"
 #include "TextureLoadOptions.hpp"
 #include "TextureStreamOptions.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Graphics;
 import Engine.Resource;
 #endif
 

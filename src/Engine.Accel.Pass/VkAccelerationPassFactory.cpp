@@ -1,7 +1,6 @@
 #include "VkAccelerationPassFactory.hpp"
 
 #include <Engine.Accel.Pipeline/VkGraphicsPipeline.hpp>
-#include <Engine.Graphics/API/VkTranslate.hpp>
 #include <Engine.Graphics.Core/Graphics.hpp>
 #include <Engine.Graphics.RenderGraph/Relation/TextureDescription.hpp>
 
@@ -11,6 +10,7 @@
 
 import Engine.Common;
 import Engine.Core;
+import Engine.Graphics;
 import Engine.Reflect;
 
 using namespace hg::engine::accel;

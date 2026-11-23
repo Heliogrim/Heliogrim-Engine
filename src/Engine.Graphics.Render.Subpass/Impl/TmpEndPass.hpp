@@ -5,6 +5,10 @@
 #include <Engine.Graphics.RenderGraph/Symbol/Subscribed.hpp>
 #include <Engine.Graphics.RenderGraph/Symbol/SymbolizedResource.hpp>
 
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Graphics;
+#endif
+
 namespace hg::engine::render {
 	class TmpEndPass :
 		public SubPass {

@@ -8,8 +8,6 @@
 #include <Engine.Accel.Pipeline/Stage/StageDerivat.hpp>
 #include <Engine.Accel.Pipeline/Stage/StageModule.hpp>
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Graphics/Geometry/UIVertex.hpp>
-#include <Engine.Graphics/Geometry/Vertex.hpp>
 #include <Engine.Graphics.Core/Graphics.hpp>
 
 #include "VkVertexFormat.hpp"
@@ -20,6 +18,7 @@
 import Engine.Asserts;
 import Engine.Common;
 import Engine.Core;
+import Engine.Graphics;
 import Engine.Logging;
 import Engine.Reflect;
 

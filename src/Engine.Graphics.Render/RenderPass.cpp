@@ -1,10 +1,6 @@
 #include "RenderPass.hpp"
 
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Graphics/Texture/SparseTexture.hpp>
-#include <Engine.Graphics/Texture/SparseTextureView.hpp>
-#include <Engine.Graphics/Texture/Texture.hpp>
-#include <Engine.Graphics/Texture/TextureView.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneView.hpp>
 #include <Engine.Graphics.RenderGraph/RuntimeGraph.hpp>
 #include <Engine.Graphics.RenderGraph/Pass/ExecutionPass.hpp>
@@ -13,6 +9,7 @@
 
 import Engine.Common;
 import Engine.Core;
+import Engine.Graphics;
 import Engine.Logging;
 import Engine.Reflect;
 
@@ -243,7 +240,6 @@ smr<void> RenderPass::unbindTarget(mref<smr<const graph::Symbol>> target_) noexc
 
 /**/
 
-#include <Engine.Graphics/Device/Device.hpp>
 #include <Engine.Graphics.Core/Graphics.hpp>
 
 void RenderPass::clearSync() {

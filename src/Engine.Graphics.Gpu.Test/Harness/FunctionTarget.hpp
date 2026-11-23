@@ -1,12 +1,10 @@
 #pragma once
 
-#include <Engine.Graphics/Device/Device.hpp>
-#include <Engine.Graphics/Texture/Texture.hpp>
-
 #include "Raster.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Graphics;
 #endif
 
 namespace hg::test::gpu {

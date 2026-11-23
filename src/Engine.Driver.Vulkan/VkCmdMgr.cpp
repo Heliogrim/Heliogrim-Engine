@@ -1,8 +1,7 @@
 #include "VkCmdMgr.hpp"
 
-#include <Engine.Graphics/Command/CommandBatch.hpp>
-
 import Engine.Async;
+import Engine.Graphics;
 import std;
 
 using namespace hg::driver::vk;

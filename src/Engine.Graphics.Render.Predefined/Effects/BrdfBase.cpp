@@ -1,10 +1,10 @@
 #include "BrdfBase.hpp"
 
 #include <stddef.h>
-#include <Engine.Graphics/Geometry/Vertex.hpp>
 #include <Engine.Graphics.Render.Subpass/Impl/__tmp_helper.hpp>
 
 import Engine.Common;
+import Engine.Graphics;
 
 using namespace ::hg::engine::render;
 using namespace ::hg::engine::accel;

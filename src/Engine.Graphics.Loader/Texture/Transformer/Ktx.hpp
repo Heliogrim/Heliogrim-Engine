@@ -1,8 +1,10 @@
 #pragma once
 
-#include <Engine.Graphics/Texture/SparseTextureView.hpp>
-
 #include "../TextureTransformer.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Graphics;
+#endif
 
 namespace hg::engine::graphics {
 	class Device;

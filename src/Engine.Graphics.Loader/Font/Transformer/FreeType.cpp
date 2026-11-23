@@ -2,11 +2,7 @@
 
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Common/Math/Compat.inl>
-#include <Engine.Graphics/Buffer/Buffer.hpp>
-#include <Engine.Graphics/Command/CommandBuffer.hpp>
-#include <Engine.Graphics/Command/CommandPool.hpp>
-#include <Engine.Graphics/Command/CommandQueue.hpp>
-#include <Engine.Graphics/Texture/TextureFactory.hpp>
+#include <Engine.Graphics/vkinc.hpp>
 
 /**/
 #include <ft2build.h>
@@ -16,6 +12,7 @@
 
 import Engine.Asserts;
 import Engine.Common;
+import Engine.Graphics;
 import Engine.Logging;
 /**/
 

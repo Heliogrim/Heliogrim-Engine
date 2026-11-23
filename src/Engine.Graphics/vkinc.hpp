@@ -43,15 +43,19 @@
 #define VK_NULL_HANDLE nullptr
 #endif
 
-#if defined(HG_MODULE_INTERFACE_UNIT) || defined(VK_IMPL_PLATFORM)
-#if not defined(HG_MODULE_INTERFACE_UNIT)
+#if defined(VK_IMPL_PLATFORM)
 /* The platform TU follows `import std;` (from __vkFwd.hpp); vulkan.hpp's module mode imports std instead of including std headers. */
 #define VULKAN_HPP_CXX_MODULE 1
-#endif
 START_SUPPRESS_WARNINGS
 #include <vulkan/vulkan_hpp_macros.hpp>
 #include <vulkan/vulkan.hpp>
 STOP_SUPPRESS_WARNINGS
+#elif defined(HG_MODULE_INTERFACE_UNIT)
+// Module global fragments get C-level declarations only; the vulkan module lists vulkan.hpp in its own prelude.
+#include <assert.h>
+#include <string.h>
+#include <vulkan/vulkan_hpp_macros.hpp>
+#include <vulkan/vulkan_core.h>
 #else
 // As vulkan.hpp's own module mode: macros and C functions do not come through the import.
 #include <cassert>

@@ -5,7 +5,7 @@ import Engine.Common;
 #endif
 
 namespace hg::engine::graphics {
-	constexpr static u8 cascadeCount = 4u;
+	inline constexpr u8 cascadeCount = 4u;
 
 	struct alignas(alignof(float)) GlslDirectionalShadow {
 		math::mat4 shadowViewProj[cascadeCount];
