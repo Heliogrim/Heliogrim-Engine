@@ -23,6 +23,8 @@
 
 #include "Engine.Serialization/Archive/StructuredArchive.hpp"
 #include "Engine.Serialization/Scheme/DefaultScheme.hpp"
+#include <Engine.Serialization.Structures/Symbols.hpp>
+#include <Engine.Serialization.Structures/Common/Guid.hpp>
 
 using namespace hg::engine::resource;
 using namespace hg::engine::serialization;
@@ -472,6 +474,38 @@ namespace SerializationModule {
 
 			delete std::exchange(restored->nested, nullptr);
 			delete restored;
+		}
+	}
+}
+
+namespace SerializationModule {
+	TEST(FullStructuredTest, ShortGuidStringRejected) {
+
+		auto archive = BufferArchive {};
+		{
+			auto structured = StructuredArchive { archive };
+			auto record = structured.insertRootSlot().intoStruct();
+			record.insertSlot<String>(Symbols::Guid) << String { "abcd" };
+			record.insertSlot<String>("named") << String { "abcd" };
+		}
+
+		archive.seek(0);
+
+		{
+			auto structured = StructuredArchive { archive };
+			const auto record = structured.getRootSlot().asStruct();
+			EXPECT_EQ(get_guid_slot(record), Guid {});
+			EXPECT_TRUE(archive.hasError());
+		}
+
+		archive.clearError();
+		archive.seek(0);
+
+		{
+			auto structured = StructuredArchive { archive };
+			const auto record = structured.getRootSlot().asStruct();
+			EXPECT_EQ(get_named_guid_slot(record, "named"), Guid {});
+			EXPECT_TRUE(archive.hasError());
 		}
 	}
 }
