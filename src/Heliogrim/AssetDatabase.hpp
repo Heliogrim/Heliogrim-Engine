@@ -64,7 +64,10 @@ namespace hg {
 
 			auto& queryValue = queryResult.value;
 			auto result = queryValue.asTyped<typename HandleType_::asset_type>();
-			::hg::assertd(result != None);
+			// The guid may come from file data, so a type mismatch is a failure, not an invariant.
+			if (result == None) {
+				return AssetDatabaseResult<HandleType_> { AssetDatabaseResultType::eFailed, HandleType_ {} };
+			}
 
 			return AssetDatabaseResult<HandleType_> { AssetDatabaseResultType::eSuccess, *result };
 		}

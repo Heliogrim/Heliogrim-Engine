@@ -6,6 +6,8 @@
 #include <Engine.Resource.Archive/BufferArchive.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Archive/StructuredArchive.hpp>
+#include <Engine.Serialization.Structures/Common/Guid.hpp>
+#include <Engine.Serialization/Structure/SeqScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 #include <Heliogrim/Component/Scene/Geometry/StaticGeometryComponent.Layout.hpp>
 
@@ -68,4 +70,23 @@ TEST(StaticGeometrySerialization, LayoutOverCountRecovers) {
 	const auto target = make<StaticGeometryComponent>();
 	access::Layout<StaticGeometryComponent>::load(bytes, *target);
 	EXPECT_TRUE(target->getInstanceMaterials().empty());
+}
+
+TEST(StaticGeometrySerialization, MaterialIndexWithoutGeometryRejected) {
+	auto archive = BufferArchive {}; {
+		const auto source = make<StaticGeometryComponent>();
+		auto structured = StructuredArchive { archive };
+		auto record = structured.insertRootSlot().intoStruct();
+		access::Structure<Guid>::serialize(invalid_asset_guid, record.insertStructSlot("geometry"sv));
+		access::Structure<Guid>::serialize(invalid_asset_guid, record.insertRecordSlot("materials"sv).intoSeq().addRecordSlot().intoStruct());
+		access::Structure<HierarchyComponent>::serialize(*source, ::hg::move(record));
+	}
+	archive.seek(0);
+
+	const auto target = make<StaticGeometryComponent>(); {
+		auto structured = StructuredArchive { archive };
+		access::Structure<StaticGeometryComponent>::hydrate(structured.getRootSlot().asStruct(), *target);
+	}
+
+	EXPECT_TRUE(archive.hasError());
 }
