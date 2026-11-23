@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine.Graphics/Cache/__fwd.hpp>
+#include <Engine.Graphics.Loader/Cache/__fwd.hpp>
 
 #include "__fwd.hpp"
 #include "FontCache.hpp"

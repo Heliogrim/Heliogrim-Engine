@@ -7,7 +7,6 @@
 #include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
 #include <Engine.Graphics/Graphics.hpp>
-#include <Engine.Graphics/Scene/SkyboxModel.hpp>
 #include <Engine.Graphics/Texture/SparseTextureView.hpp>
 #include <Engine.Graphics/Texture/TextureFactory.hpp>
 #include <Engine.Graphics/Texture/TextureResource.hpp>
@@ -17,6 +16,7 @@
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneDepth.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneView.hpp>
 #include <Engine.Graphics.RenderGraph/Symbol/ScopedSymbolContext.hpp>
+#include <Engine.Graphics.Scene.Model/Scene/SkyboxModel.hpp>
 
 import Engine.Common;
 import Engine.Core;

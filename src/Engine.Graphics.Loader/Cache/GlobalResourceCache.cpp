@@ -6,7 +6,7 @@
 
 #include "Engine.Graphics/Geometry/Vertex.hpp"
 #include "Engine.Graphics/Memory/AllocationResult.hpp"
-#include "../Texture/TextureFactory.hpp"
+#include "Engine.Graphics/Texture/TextureFactory.hpp"
 
 using namespace hg::engine::graphics::cache;
 using namespace hg::engine::graphics;

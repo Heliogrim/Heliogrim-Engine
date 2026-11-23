@@ -1,7 +1,7 @@
 #include "FontCache.hpp"
 
-#include <Engine.Graphics/Cache/GlobalCacheCtrl.hpp>
-#include <Engine.Graphics/Cache/GlobalResourceCache.hpp>
+#include <Engine.Graphics.Loader/Cache/GlobalCacheCtrl.hpp>
+#include <Engine.Graphics.Loader/Cache/GlobalResourceCache.hpp>
 
 import Engine.Common;
 

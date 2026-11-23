@@ -1,6 +1,6 @@
 #include "UISceneModel.hpp"
 
-#include <Engine.Graphics/Cache/ModelBatch.hpp>
+#include <Engine.Graphics.Loader/Cache/ModelBatch.hpp>
 #include <Engine.Reflow.Components/UI/UIComponent.hpp>
 
 import Engine.Asserts;

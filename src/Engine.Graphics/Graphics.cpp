@@ -7,11 +7,11 @@
 
 #include <Engine.Common/Math/__default.inl>
 #include <Engine.Graphics.IO/Io.hpp>
+#include <Engine.Graphics.Loader/Cache/GlobalCacheCtrl.hpp>
+#include <Engine.Graphics.Loader/Cache/GlobalResourceCache.hpp>
 
 #include "RenderTarget.hpp"
 #include "Buffer/VkBufferFactory.hpp"
-#include "Cache/GlobalCacheCtrl.hpp"
-#include "Cache/GlobalResourceCache.hpp"
 #include "Importer/ImageImporter.hpp"
 #include "Importer/ModelImporter.hpp"
 #include "Pool/GlobalResourcePool.hpp"

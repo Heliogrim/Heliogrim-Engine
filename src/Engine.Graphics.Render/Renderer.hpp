@@ -1,8 +1,8 @@
 #pragma once
 
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Graphics/Cache/__fwd.hpp>
 #include <Engine.Graphics/Memory/__fwd.hpp>
+#include <Engine.Graphics.Loader/Cache/__fwd.hpp>
 #include <Engine.Graphics.RenderGraph/__fwd.hpp>
 
 #include "InjectGraphRegistry.hpp"

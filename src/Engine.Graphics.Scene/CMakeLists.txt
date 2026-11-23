@@ -8,4 +8,5 @@ make_library_project(
         ${PROJECT_NAME}::Engine.Platform ${PROJECT_NAME}::Engine.Scene ${PROJECT_NAME}::Engine.Render.Scene ${PROJECT_NAME}::Engine.Render.Scene.Model.Module ${PROJECT_NAME}::Engine.Graphics.Types ${PROJECT_NAME}::Engine.Storage.Registry ${PROJECT_NAME}::Engine.Assets ${PROJECT_NAME}::Engine.Assets.Type
 )
 # shortcut: RenderSceneManager.Inject.cpp uses Engine.Graphics.Components and Engine.Reflow.Components (component-to-model injection table), drop when model injection is registered by the component bundles
+# shortcut: RenderSceneManager.Inject.cpp uses Engine.Graphics.Scene.Model (SkyboxModel injection), not linked because the link closes a cycle, drop when model injection is registered by the component bundles
 # shortcut: RenderSceneManager.Inject.cpp uses Engine.Render.Scene.Model (CameraModel type mapping), drop when model injection is registered by Engine.Render.Scene.Model

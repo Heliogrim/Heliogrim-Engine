@@ -3,7 +3,7 @@
 #include <Engine.Accel.Compile/EffectCompileResult.hpp>
 #include <Engine.Accel.Effect/AccelerationEffect.hpp>
 #include <Engine.Accel.Pass/GraphicsPass.hpp>
-#include <Engine.Graphics/Framebuffer/Framebuffer.hpp>
+#include <Engine.Accel.Pass/Framebuffer/Framebuffer.hpp>
 #include <Engine.Graphics.RenderGraph/Symbol/Subscribed.hpp>
 #include <Engine.Graphics.RenderGraph/Symbol/SymbolizedResource.hpp>
 
