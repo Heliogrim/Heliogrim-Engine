@@ -1,5 +1,4 @@
 #pragma once
-#include <Engine.Accel.Lang/Rep/Symbol.hpp>
 #include <Engine.Common/Sal.hpp>
 
 #include "RenderCommandAllocator.hpp"
@@ -7,6 +6,7 @@
 #include "RenderResourceTable.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Accel.Lang;
 import Engine.Asserts;
 #endif
 

@@ -5,10 +5,6 @@
 #include <Engine.Accel.Compile/Profile/EffectProfile.hpp>
 #include <Engine.Accel.Compile/Spec/SimpleEffectSpecification.hpp>
 #include <Engine.Accel.Effect/AccelerationEffect.hpp>
-#include <Engine.Accel.Lang/Intermediate.hpp>
-#include <Engine.Accel.Lang/Ir/Interface.hpp>
-#include <Engine.Accel.Lang/Ir/Parser.hpp>
-#include <Engine.Accel.Lang/Rep/Variable.hpp>
 #include <Engine.Accel.Pass/VkAccelerationPassFactory.hpp>
 #include <Engine.Accel.Pass/Framebuffer/Framebuffer.hpp>
 #include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
@@ -20,6 +16,7 @@
 
 #include "FunctionTarget.hpp"
 
+import Engine.Accel.Lang;
 import Engine.Common;
 import Engine.Diagnostics;
 import Engine.Graphics;

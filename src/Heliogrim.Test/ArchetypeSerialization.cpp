@@ -3,8 +3,6 @@
 /**/
 
 #include <Engine.ACS/Archetype/ArchetypeDefinition.inl.hpp>
-#include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
-#include <Engine.Graphics.Components/Geometry/StaticGeometryComponent.Layout.hpp>
 #include <Heliogrim/Actor/Actor.hpp>
 #include <Heliogrim/Universe/Universe.hpp>
 #include <Heliogrim.Actors/Geometry/StaticGeometryActor.hpp>
@@ -14,9 +12,11 @@
 
 import Engine.ACS;
 import Engine.Common;
+import Engine.Graphics.Components;
 import Engine.Resource.Archive;
 import Engine.Serialization;
 import Engine.Serialization.Structures;
+import Engine.Assets.Type;
 
 using namespace hg::engine::serialization;
 using namespace hg::engine::resource;

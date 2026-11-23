@@ -1,9 +1,8 @@
 #pragma once
 
-#include <Engine.Graphics.Components/Geometry/BoxShapeGeometryComponent.hpp>
-
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.ACS;
+import Engine.Graphics.Components;
 import Engine.Physics.Components;
 #endif
 

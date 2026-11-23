@@ -1,8 +1,8 @@
 #pragma once
 #include <Engine.Accel.Effect/Stage/StageFlags.hpp>
-#include <Engine.Accel.Lang/Rep/Symbol.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Accel.Lang;
 import Engine.Common;
 #endif
 

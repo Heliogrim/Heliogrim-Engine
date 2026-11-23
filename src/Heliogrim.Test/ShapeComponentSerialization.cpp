@@ -2,15 +2,13 @@
 
 /**/
 
-#include <Engine.Serialization.Structures/Common/Guid.hpp>
-#include <Engine.Graphics.Components/Geometry/BoxShapeGeometryComponent.Layout.hpp>
-#include <Engine.Graphics.Components/Geometry/SphereShapeGeometryComponent.Layout.hpp>
 #include <Heliogrim/Actor/Archetype/ArchetypeLayout.inl.hpp>
-
 import Engine.Common;
+import Engine.Graphics.Components;
 import Engine.Physics.Components;
 import Engine.Resource.Archive;
 import Engine.Serialization;
+import Engine.Serialization.Structures;
 
 using namespace hg::engine::serialization;
 using namespace hg::engine::resource;

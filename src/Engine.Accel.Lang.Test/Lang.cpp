@@ -2,11 +2,7 @@
 
 /**/
 
-#include <Engine.Accel.Lang/Intermediate.hpp>
-#include <Engine.Accel.Lang/Representation.hpp>
-#include <Engine.Accel.Lang/Rep/Annotation.hpp>
-#include <Engine.Accel.Lang/Rep/Symbol.hpp>
-
+import Engine.Accel.Lang;
 import Engine.Common;
 
 using namespace hg::engine::accel::lang;

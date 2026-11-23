@@ -1,10 +1,10 @@
 #include "SpotLightModel.hpp"
 
 #include <cstring>
-#include <Engine.Graphics.Components/Light/SpotLightComponent.hpp>
 
 import Engine.Common;
 import Engine.Graphics;
+import Engine.Graphics.Components;
 import Engine.Reflect;
 import Engine.Render.Scene;
 

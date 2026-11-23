@@ -2,8 +2,7 @@
 
 /**/
 
-#include <Engine.Accel.Lang/Diagnostic/Codes.hpp>
-
+import Engine.Accel.Lang;
 import Engine.Common;
 
 using namespace hg::engine::accel::lang;

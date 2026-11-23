@@ -4,9 +4,8 @@
 
 /**/
 
-#include <Engine.Accel.Lang/Ir/Diagnostic.hpp>
-
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Accel.Lang;
 import Engine.Diagnostics;
 import std;
 #endif

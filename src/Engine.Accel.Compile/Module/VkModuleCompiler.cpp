@@ -1,11 +1,11 @@
 #include "VkModuleCompiler.hpp"
 
-#include <Engine.Accel.Lang/Ir/Diagnostic.hpp>
 #include <Engine.Graphics.Core/Graphics.hpp>
 
 #include "VkCompiledModule.hpp"
 #include "VkModuleSource.hpp"
 
+import Engine.Accel.Lang;
 import Engine.Common;
 import Engine.Core;
 import Engine.Graphics;

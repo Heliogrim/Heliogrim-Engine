@@ -6,12 +6,7 @@
 
 /**/
 
-#include <Engine.Accel.Lang/Ir/Interface.hpp>
-#include <Engine.Accel.Lang/Ir/Layout.hpp>
-#include <Engine.Accel.Lang/Ir/Parser.hpp>
-#include <Engine.Accel.Lang/Ir/References.hpp>
-#include <Engine.Accel.Lang/Ir/Tier.hpp>
-#include <Engine.Accel.Lang/Ir/Spirv/SpirvEmitter.hpp>
+import Engine.Accel.Lang;
 
 using namespace hg::engine::accel::lang::ir;
 using namespace hg::engine::accel::lang;

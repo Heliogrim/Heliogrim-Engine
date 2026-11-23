@@ -5,13 +5,8 @@
 
 /**/
 
-#include <Engine.Accel.Lang/Ir/Interface.hpp>
-#include <Engine.Accel.Lang/Ir/Layout.hpp>
-#include <Engine.Accel.Lang/Ir/References.hpp>
-#include <Engine.Accel.Lang/Ir/Tier.hpp>
-#include <Engine.Accel.Lang/Ir/Spirv/SpirvEmitter.hpp>
-
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Accel.Lang;
 import std;
 #endif
 

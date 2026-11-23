@@ -7,12 +7,9 @@
 #include <Engine.Accel.Compile/Profile/EffectProfile.hpp>
 #include <Engine.Accel.Compile/Spec/EffectSpecification.hpp>
 #include <Engine.Accel.Compile/Stage/StageIr.hpp>
-#include <Engine.Accel.Lang/Ir/Interface.hpp>
-#include <Engine.Accel.Lang/Ir/Parser.hpp>
-#include <Engine.Accel.Lang/Ir/Spirv/SpirvValidate.hpp>
-#include <Engine.Accel.Lang/Rep/Annotation.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Accel.Lang;
 import Engine.Common;
 import Engine.Diagnostics;
 import Engine.Logging;

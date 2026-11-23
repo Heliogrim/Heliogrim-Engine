@@ -1,4 +1,6 @@
-#include "MatTestPass.hpp"
+// Textual vulkan_core.h must precede any import reaching Engine.Graphics, or its C enums merge with the GMF copy and lose their enumerators.
+#include <Engine.Graphics/vkinc.hpp>
+/**/
 
 #include <Engine.Accel.Command/CommandBuffer.hpp>
 #include <Engine.Accel.Compile/VkEffectCompiler.hpp>
@@ -19,6 +21,8 @@
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneView.hpp>
 #include <Engine.Graphics.RenderGraph/Symbol/ScopedSymbolContext.hpp>
 #include <Engine.Graphics.Scene.Model/StaticGeometryModel.hpp>
+
+#include "MatTestPass.hpp"
 
 import Engine.ACS;
 import Engine.Assets.Type;

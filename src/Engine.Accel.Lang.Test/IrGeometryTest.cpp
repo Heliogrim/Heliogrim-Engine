@@ -2,11 +2,9 @@
 
 /**/
 
-#include <Engine.Accel.Lang/Ir/Layout.hpp>
-#include <Engine.Accel.Lang/Ir/Parser.hpp>
-#include <Engine.Accel.Lang/Ir/Variant.hpp>
-
 #include "IrSpirvText.hpp"
+
+import Engine.Accel.Lang;
 
 using namespace hg::engine::accel::lang::ir;
 using namespace hg::engine::accel::lang;

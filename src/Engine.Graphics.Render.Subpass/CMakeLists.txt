@@ -18,6 +18,6 @@ make_library_project(
 		${PROJECT_NAME}::Engine.Storage.System
 		${PROJECT_NAME}::vulkan.Module
 		${PROJECT_NAME}::Engine.Pedantic.Resource ${PROJECT_NAME}::Engine.Graphics.Types ${PROJECT_NAME}::Engine.Assets ${PROJECT_NAME}::Engine.Storage.Action ${PROJECT_NAME}::Engine.Assets.Type
-		${PROJECT_NAME}::Engine.Accel.Pass ${PROJECT_NAME}::Engine.Graphics.Loader ${PROJECT_NAME}::Engine.Graphics.Scene.Model
+		${PROJECT_NAME}::Engine.Accel.Pass ${PROJECT_NAME}::Engine.Graphics.Loader ${PROJECT_NAME}::Engine.Graphics.Scene.Model ${PROJECT_NAME}::Engine.Accel.Lang
 )
 # shortcut: Engine.Graphics.Render.Subpass .cpp files reach the graphics front via getEngine()->getGraphics(), drop when the service-locator design lands

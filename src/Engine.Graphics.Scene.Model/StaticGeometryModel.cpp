@@ -1,7 +1,6 @@
 #include "StaticGeometryModel.hpp"
 
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Graphics.Components/Geometry/StaticGeometryComponent.hpp>
 #include <Engine.Graphics.Loader/Geometry/Traits.hpp>
 #include <Engine.Graphics.Loader/Material/Traits.hpp>
 
@@ -9,6 +8,7 @@ import Engine.Assets.Type;
 import Engine.Common;
 import Engine.Core;
 import Engine.Graphics;
+import Engine.Graphics.Components;
 import Engine.Reflect;
 import Engine.Render.Scene;
 import Engine.Resource;

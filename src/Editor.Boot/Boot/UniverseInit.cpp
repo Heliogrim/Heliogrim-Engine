@@ -15,6 +15,7 @@ import Engine.Assets.Type;
 import Engine.Common;
 import Engine.Config;
 import Engine.Core;
+import Engine.Graphics.Components;
 import Engine.Level;
 import Engine.Storage.System;
 import Engine.Serialization;
@@ -113,9 +114,6 @@ void editor::boot::initPrimaryUniverse() {
 
 /**/
 
-#include <Engine.Graphics.Components/Geometry/StaticGeometryComponent.hpp>
-#include <Engine.Graphics.Components/Light/DirectionalLightComponent.hpp>
-#include <Engine.Graphics.Components/Sky/SkyboxComponent.hpp>
 #include <Heliogrim/Heliogrim.hpp>
 
 static void add_default_skybox(mref<Level> level_) {

@@ -2,11 +2,7 @@
 
 /**/
 
-#include <Engine.Accel.Lang/Intermediate.hpp>
-#include <Engine.Accel.Lang/Ir/Parser.hpp>
-#include <Engine.Accel.Lang/Ir/Variant.hpp>
-#include <Engine.Accel.Lang/Rep/Annotation.hpp>
-
+import Engine.Accel.Lang;
 import Engine.Common;
 
 using namespace hg::engine::accel::lang::ir;

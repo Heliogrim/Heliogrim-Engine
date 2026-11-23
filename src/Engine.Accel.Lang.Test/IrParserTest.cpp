@@ -2,13 +2,11 @@
 
 /**/
 
-#include <Engine.Accel.Lang/Ir/Lexer.hpp>
-#include <Engine.Accel.Lang/Ir/Parser.hpp>
-
 #include "IrSpan.hpp"
 #include "IrSpirvText.hpp"
 #include "IrWording.hpp"
 
+import Engine.Accel.Lang;
 import std;
 
 using namespace hg::engine::accel::lang::ir;
@@ -660,8 +658,6 @@ namespace AccelLang {
 }
 
 /**/
-
-#include <Engine.Accel.Lang/Ir/Analysis.hpp>
 
 namespace AccelLang {
 	namespace {

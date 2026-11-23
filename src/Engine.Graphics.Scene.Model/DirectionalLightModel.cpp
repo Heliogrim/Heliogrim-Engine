@@ -1,10 +1,10 @@
 #include "DirectionalLightModel.hpp"
 
 #include <cstring>
-#include <Engine.Graphics.Components/Light/DirectionalLightComponent.hpp>
 
 import Engine.Common;
 import Engine.Graphics;
+import Engine.Graphics.Components;
 import Engine.Reflect;
 import Engine.Render.Scene;
 

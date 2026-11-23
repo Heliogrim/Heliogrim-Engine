@@ -1,11 +1,10 @@
 #pragma once
 
-#include <Engine.Accel.Lang/Intermediate.hpp>
-
 #include "ProfileDefinition.hpp"
 #include "ProfileUsagePattern.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Accel.Lang;
 import Engine.Common;
 #endif
 

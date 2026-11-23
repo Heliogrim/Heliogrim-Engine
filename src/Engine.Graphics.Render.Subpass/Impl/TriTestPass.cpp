@@ -1,4 +1,6 @@
-#include "TriTestPass.hpp"
+// Textual vulkan_core.h must precede any import reaching Engine.Graphics, or its C enums merge with the GMF copy and lose their enumerators.
+#include <Engine.Graphics/vkinc.hpp>
+/**/
 
 #include <Engine.Accel.Compile/VkEffectCompiler.hpp>
 #include <Engine.Accel.Compile/Profile/EffectProfile.hpp>
@@ -15,6 +17,7 @@
 #include <Engine.Graphics.RenderGraph/Symbol/SymbolContext.hpp>
 
 #include "__tmp_helper.hpp"
+#include "TriTestPass.hpp"
 
 import Engine.Common;
 import Engine.Core;

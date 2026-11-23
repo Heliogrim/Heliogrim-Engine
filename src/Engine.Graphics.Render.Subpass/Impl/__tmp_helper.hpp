@@ -1,12 +1,10 @@
 #pragma once
 
 #include <cassert>
-#include <Engine.Accel.Lang/Intermediate.hpp>
-#include <Engine.Accel.Lang/Ir/Interface.hpp>
-#include <Engine.Accel.Lang/Ir/Parser.hpp>
-#include <Engine.Accel.Lang/Rep/Variable.hpp>
+#include <Engine.Graphics/vkinc.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Accel.Lang;
 import Engine.Asserts;
 import Engine.Common;
 import Engine.Config;

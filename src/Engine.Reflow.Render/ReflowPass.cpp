@@ -1,4 +1,6 @@
-#include "ReflowPass.hpp"
+// Textual vulkan_core.h must precede any import reaching Engine.Graphics, or its C enums merge with the GMF copy and lose their enumerators.
+#include <Engine.Graphics/vkinc.hpp>
+/**/
 
 #include <cassert>
 #include <cstring>
@@ -25,6 +27,8 @@
 #include <Engine.Reflow/Window/Window.hpp>
 #include <Heliogrim/Graphics/TextureFormat.hpp>
 #include <Heliogrim/Graphics/TextureType.hpp>
+
+#include "ReflowPass.hpp"
 
 import Engine.Asserts;
 import Engine.Assets;

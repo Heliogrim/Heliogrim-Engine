@@ -1,6 +1,3 @@
-#include "Engine.Graphics.Components/Light/PointLightComponent.hpp"
-#include "Engine.Graphics.Components/Light/SpotLightComponent.hpp"
-#include "Engine.Graphics.Components/Sky/SkyboxComponent.hpp"
 #include "Heliogrim.Actors/Camera/CameraActor.hpp"
 #include "Heliogrim.Actors/Geometry/BoxShapeGeometryActor.hpp"
 #include "Heliogrim.Actors/Geometry/SphereShapeGeometryActor.hpp"
@@ -16,6 +13,7 @@ import Editor.Boot;
 import Engine.ACS;
 import Engine.Common;
 import Engine.Config;
+import Engine.Graphics.Components;
 import Engine.Serialization;
 
 using namespace hg;

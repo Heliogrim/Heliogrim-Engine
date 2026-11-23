@@ -3,9 +3,6 @@
 /**/
 
 #include <Engine.ACS/Archetype/ArchetypeDefinition.inl.hpp>
-#include <Engine.Graphics.Components/Geometry/BoxShapeGeometryComponent.Layout.hpp>
-#include <Engine.Graphics.Components/Geometry/SphereShapeGeometryComponent.Layout.hpp>
-#include <Engine.Graphics.Components/Geometry/StaticGeometryComponent.Layout.hpp>
 #include <Heliogrim/Universe/Universe.hpp>
 #include <Heliogrim.Actors/Geometry/BoxShapeGeometryActor.hpp>
 #include <Heliogrim.Actors/Geometry/SphereShapeGeometryActor.hpp>
@@ -19,6 +16,7 @@ import Engine.Common;
 import Engine.Config;
 import Engine.Core;
 import Engine.Event;
+import Engine.Graphics.Components;
 import Engine.Level;
 import Engine.Physics.Components;
 import Engine.Scene;

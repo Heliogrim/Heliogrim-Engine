@@ -1,4 +1,6 @@
-#include "TmpBrdfIrradPass.hpp"
+// Textual vulkan_core.h must precede any import reaching Engine.Graphics, or its C enums merge with the GMF copy and lose their enumerators.
+#include <Engine.Graphics/vkinc.hpp>
+/**/
 
 #include <Engine.Accel.Command/CommandBuffer.hpp>
 #include <Engine.Accel.Compile/VkEffectCompiler.hpp>
@@ -17,6 +19,8 @@
 #include <Engine.Graphics.RenderGraph/Relation/TextureDescription.hpp>
 #include <Engine.Graphics.RenderGraph/Symbol/ScopedSymbolContext.hpp>
 #include <Engine.Graphics.Scene.Model/Scene/SkyboxModel.hpp>
+
+#include "TmpBrdfIrradPass.hpp"
 
 import Engine.Common;
 import Engine.Core;

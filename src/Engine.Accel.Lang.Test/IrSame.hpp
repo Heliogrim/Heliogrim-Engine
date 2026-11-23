@@ -1,8 +1,7 @@
 #pragma once
 
-#include <Engine.Accel.Lang/Ir/Module.hpp>
-
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Accel.Lang;
 import std;
 #endif
 

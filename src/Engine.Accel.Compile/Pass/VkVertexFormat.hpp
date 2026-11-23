@@ -1,7 +1,10 @@
 #pragma once
 
-#include <Engine.Accel.Lang/Rep/Type.hpp>
 #include <Engine.Graphics/vkinc.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Accel.Lang;
+#endif
 
 namespace hg::engine::accel {
 	/**
