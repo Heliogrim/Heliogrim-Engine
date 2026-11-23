@@ -3,10 +3,9 @@
 #include <Engine.Graphics.Render.Predefined/Buffer/ViewBuffer.hpp>
 #include <Engine.Graphics.RenderGraph/Relation/Description.hpp>
 
-#include "ParameterIdentifier.hpp"
-
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Graphics.Types;
 #endif
 
 namespace hg::engine::graphics::material {

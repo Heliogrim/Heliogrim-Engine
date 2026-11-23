@@ -4,12 +4,11 @@
 
 #include "__fwd.hpp"
 #include "TextureLikeObject.hpp"
-#include "TextureType.hpp"
-#include "../TextureFormat.hpp"
 #include "../API/__vkFwd.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Graphics.Types;
 #endif
 
 namespace hg::engine::graphics::loader {

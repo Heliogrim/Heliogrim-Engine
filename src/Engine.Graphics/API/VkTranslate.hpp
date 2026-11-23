@@ -6,8 +6,11 @@
 #include "../RasterPolyFront.hpp"
 #include "../RasterPolyMode.hpp"
 #include "../RasterSamples.hpp"
-#include "../TextureFormat.hpp"
 #include "../Memory/MemoryProperty.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Graphics.Types;
+#endif
 
 namespace hg::engine::graphics::api {
 	/**

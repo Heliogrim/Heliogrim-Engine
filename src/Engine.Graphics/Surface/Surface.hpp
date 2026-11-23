@@ -2,13 +2,13 @@
 
 #include <Engine.Common/Sal.hpp>
 
-#include "../TextureFormat.hpp"
 #include "../API/__vkFwd.hpp"
 #include "../Application/Application.hpp"
 #include "../Device/Device.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Graphics.Types;
 #endif
 
 namespace hg::engine::platform {

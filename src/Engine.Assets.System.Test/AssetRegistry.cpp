@@ -7,9 +7,9 @@
 #include <Engine.Assets.System/AssetRegistry.hpp>
 #include <Engine.Assets.System/Repository/InMemAssetRepository.hpp>
 #include <Engine.Assets.Type/Texture/TextureAsset.hpp>
-#include <Engine.Graphics/Texture/TextureType.hpp>
 
 import Engine.Common;
+import Engine.Graphics.Types;
 
 using namespace hg;
 using namespace hg::engine::assets;
