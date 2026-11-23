@@ -117,8 +117,7 @@ ptr<const ActorClass> Actor::getArchetype() const noexcept {
 void Actor::rejectSealed(const std::string_view message_) const {
 	// shortcut: sealed archetypes reject runtime component changes until de-optimization exists (spec 11).
 	if (_archetype != nullptr) [[unlikely]] {
-		::hg::panic_details::PanicErrorSink {} << std::string_view { message_ };
-		::hg::panic();
+		::hg::panic(message_);
 	}
 }
 

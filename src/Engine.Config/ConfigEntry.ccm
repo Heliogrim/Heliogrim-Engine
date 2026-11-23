@@ -1,0 +1,16 @@
+module;
+
+export module Engine.Config:ConfigEntry;
+
+import Engine.Common;
+
+import :ConfigKey;
+import :ConfigValue;
+
+export namespace hg::engine::cfg {
+	struct ConfigEntry {
+		type_id typeId;
+		InternalConfigKey hashId;
+		ConfigValue holder;
+	};
+}

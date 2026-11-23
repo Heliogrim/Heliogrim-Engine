@@ -1,12 +1,10 @@
-#pragma once
+module;
 
 #include <cstdlib>
 
-// Note: We can pay the price for the internal link chain
-//	(_MSC_VER => #<xstring>) as <format> will probably do the same
-#if not defined(HG_MODULE_INTERFACE_UNIT)
+export module Engine.Asserts:Panic;
+
 import std;
-#endif
 
 namespace hg::panic_details {
 	class PanicErrorSink final {
@@ -32,7 +30,7 @@ namespace hg::panic_details {
 	};
 }
 
-namespace hg {
+export namespace hg {
 	/**
 	 * Writes the current stack trace to the panic sink; a no-op where <stacktrace> is unsupported.
 	 */
@@ -42,4 +40,9 @@ namespace hg {
 		::hg::panic_stacktrace();
 		::std::abort();
 	}
+
+	/**
+	 * Writes `message_` to the panic sink, then panics.
+	 */
+	[[noreturn]] void panic(std::string_view message_) noexcept;
 }

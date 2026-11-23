@@ -1,12 +1,11 @@
-#pragma once
+module;
+export module Engine.Logging:Logger;
 
-#include "LogLevel.hpp"
-
-#if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
-#endif
 
-namespace hg {
+import :LogLevel;
+
+export namespace hg {
 	class Logger {
 	public:
 		using this_type = Logger;

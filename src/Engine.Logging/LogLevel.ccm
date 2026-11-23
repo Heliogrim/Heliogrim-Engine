@@ -1,0 +1,12 @@
+module;
+export module Engine.Logging:LogLevel;
+
+export namespace hg {
+	enum class LogLevel {
+		eInfo,
+		eWarn,
+		eError,
+		/**/
+		eDebug
+	};
+}

@@ -1,9 +1,13 @@
+module;
+
 #define CRCPP_USE_CPP11
 #include <crcpp/CRC.h>
 
 /**/
 
-import Engine.Crypto;
+module Engine.Crypto;
+
+import :Checksum.Crc32;
 
 using namespace hg::engine::crypto;
 using namespace hg;

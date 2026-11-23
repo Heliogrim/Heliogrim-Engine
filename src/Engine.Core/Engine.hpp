@@ -4,6 +4,7 @@
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Config;
 import Engine.Reflect;
 #endif
 
@@ -25,8 +26,6 @@ namespace hg::engine {
 	class Platform;
 	class SerializationModule;
 	class StorageModule;
-
-	class Config;
 }
 
 namespace hg::engine::core {

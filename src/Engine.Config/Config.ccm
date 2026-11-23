@@ -1,18 +1,18 @@
-#pragma once
+module;
 
 #include <Engine.Common/Sal.hpp>
 
-#include "ConfigEntry.hpp"
-#include "ConfigKey.hpp"
-#include "ConfigValue.hpp"
-#include "Provider.hpp"
+export module Engine.Config:Config;
 
-#if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Asserts;
 import Engine.Common;
-#endif
 
-namespace hg::engine::cfg {
+import :ConfigEntry;
+import :ConfigKey;
+import :Provider;
+import :ConfigValue;
+
+export namespace hg::engine::cfg {
 	class ConfigValueTypeMismatchError final : public std::runtime_error {
 	public:
 		using std::runtime_error::runtime_error;
@@ -29,7 +29,7 @@ namespace hg::engine::cfg {
 	};
 }
 
-namespace hg::engine {
+export namespace hg::engine {
 	class Config {
 	public:
 		using this_type = Config;

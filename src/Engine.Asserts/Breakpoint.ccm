@@ -1,8 +1,10 @@
-#pragma once
+module;
 
 #include <Engine.Common/__macro.hpp>
 
-namespace hg {
+export module Engine.Asserts:Breakpoint;
+
+export namespace hg {
 	#if defined(_DEBUG) && not defined(NDEBUG)
 
 	inline void breakpoint() {

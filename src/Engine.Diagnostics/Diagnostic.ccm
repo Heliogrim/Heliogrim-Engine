@@ -1,15 +1,14 @@
-#pragma once
+module;
+export module Engine.Diagnostics:Diagnostic;
 
-#include "Code.hpp"
-#include "Fix.hpp"
-#include "Location.hpp"
-#include "Severity.hpp"
-
-#if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
-#endif
 
-namespace hg::engine::diag {
+import :Code;
+import :Fix;
+import :Location;
+import :Severity;
+
+export namespace hg::engine::diag {
 	class DiagnosticBuilder;
 
 	struct Label {

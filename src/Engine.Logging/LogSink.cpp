@@ -1,5 +1,10 @@
+module;
+module Engine.Logging;
+
 import Engine.Diagnostics;
-import Engine.Logging;
+
+import :Logger;
+import :LogSink;
 
 using namespace hg::engine::diag;
 using namespace hg;

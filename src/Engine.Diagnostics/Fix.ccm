@@ -1,12 +1,11 @@
-#pragma once
+module;
+export module Engine.Diagnostics:Fix;
 
-#include "Location.hpp"
-
-#if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
-#endif
 
-namespace hg::engine::diag {
+import :Location;
+
+export namespace hg::engine::diag {
 	enum class Applicability : u8 {
 		eMachineApplicable,
 		eMaybeIncorrect,

@@ -1,10 +1,9 @@
-#pragma once
+module;
+export module Engine.Diagnostics:Code;
 
-#if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
-#endif
 
-namespace hg::engine::diag {
+export namespace hg::engine::diag {
 	struct DiagnosticCode {
 		/* 3 or 4 upper-case letters, zero padded */
 		std::array<char, 4> domain;

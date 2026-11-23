@@ -1,10 +1,10 @@
-#pragma once
+module;
 
-#if not defined(HG_MODULE_INTERFACE_UNIT)
+export module Engine.Config:ConfigValue;
+
 import Engine.Common;
-#endif
 
-namespace hg::engine::cfg {
+export namespace hg::engine::cfg {
 	template <typename Ty_>
 	concept IsConfigValue = IsAnyOf<Ty_, std::monostate, bool, u32, f32, StringView, String>;
 

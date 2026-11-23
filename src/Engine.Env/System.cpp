@@ -1,6 +1,10 @@
+module;
+
 #include <Engine.Common/stdafx.h>
 
-import Engine.Env;
+module Engine.Env;
+
+import :System;
 
 using namespace hg::env;
 
