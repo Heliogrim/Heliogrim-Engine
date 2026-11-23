@@ -3,6 +3,7 @@
 #include <bit>
 #include <Engine.Common/Guid.hpp>
 #include <Engine.Common/Move.hpp>
+#include <Engine.Resource.Archive/Archive.hpp>
 #include <Engine.Serialization/Structure/StringScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 
@@ -57,6 +58,11 @@ namespace hg::engine::serialization {
 	inline Guid get_guid_slot(_In_ ref<const StructScopedSlot> slot_) {
 		auto tmp = make_null_string(16uLL);
 		slot_.getSlot<String>(Symbols::Guid) >> tmp;
+		if (tmp.size() != 16uLL) {
+			// The string read takes the stored length, so a short guid would overrun the span below.
+			slot_.slot()->getState().root->archive->setError();
+			return Guid {};
+		}
 		return Guid::networkToHost(std::span<_::byte, 16uLL> { std::bit_cast<_::byte*>(tmp.data()), 16uLL });
 	}
 
@@ -76,6 +82,10 @@ namespace hg::engine::serialization {
 	inline Guid get_named_guid_slot(_In_ ref<const StructScopedSlot> structure_, _In_ const StringView name_) {
 		auto tmp = make_null_string(16uLL);
 		structure_.getSlot<String>(name_) >> tmp;
+		if (tmp.size() != 16uLL) {
+			structure_.slot()->getState().root->archive->setError();
+			return Guid {};
+		}
 		return Guid::networkToHost(std::span<_::byte, 16uLL> { std::bit_cast<_::byte*>(tmp.data()), 16uLL });
 	}
 }
