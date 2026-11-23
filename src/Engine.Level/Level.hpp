@@ -5,17 +5,22 @@
 #include <Engine.Common/Optional.hpp>
 #include <Engine.Common/Expected.hpp>
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Diagnostics/Diagnostic.hpp>
 #include <Engine.Common/Collection/DenseSet.hpp>
 #include <Engine.Common/Managed/AtomicRefCountedIntrusive.hpp>
 #include <Engine.Common/Managed/Rc.hpp>
 #include <Engine.Common/Math/Bounding.hpp>
 #include <Engine.Common/Memory/Pointer.hpp>
+#include <Engine.Diagnostics/Diagnostic.hpp>
+#include <Engine.Diagnostics/Sink.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 #include <Engine.Serialization/Layout/DataLayout.hpp>
 #include <Heliogrim/Actor/Actor.hpp>
 
 #include "LevelGuid.hpp"
+
+namespace hg::engine::resource {
+	class Archive;
+}
 
 namespace hg {
 	struct AssetGuid;
@@ -51,15 +56,13 @@ namespace hg::engine::core {
 		math::Bounding _bounding;
 		Opt<ref<engine::core::Universe>> _universe;
 
+		bool _unknownData = false;
+
 	public:
 		[[nodiscard]] bool isRootLike() const noexcept;
 
 		[[nodiscard]] ref<const LevelGuid> guid() const noexcept;
 
-	private:
-		bool _unknownData = false;
-
-	public:
 		[[nodiscard]] ref<const AssetGuid> assetGuid() const noexcept;
 
 		[[nodiscard]] cref<math::Bounding> getBounding() const noexcept;
@@ -110,4 +113,12 @@ namespace hg::engine::core {
 	 * Save boundary check: refuses (`save-refused`, one note per marked object) when the level or any of its actors carries unknown data.
 	 */
 	[[nodiscard]] extern Result<void, diag::Diagnostics> checkSaveAllowed(ref<const Level> level_);
+
+	/**
+	 * Engine load boundary: hydrates a level record root all-or-nothing; errors go to the sink and are returned.
+	 */
+	[[nodiscard]] extern Result<Arci<Level>, engine::diag::Diagnostics> loadLevel(
+		_Inout_ ref<engine::resource::Archive> archive_,
+		_Inout_ ref<engine::diag::DiagnosticSink> sink_
+	);
 }
