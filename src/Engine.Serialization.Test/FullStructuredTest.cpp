@@ -7,24 +7,12 @@
 #include <Engine.Assets.Type/Universe/LevelAsset.hpp>
 
 /**/
-#include <Engine.Serialization/Access/Structure.hpp>
-#include <Engine.Serialization/Structure/FloatScopedSlot.hpp>
-#include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>
-#include <Engine.Serialization/Structure/MapEntryScopedSlot.hpp>
-#include <Engine.Serialization/Structure/MapScopedSlot.hpp>
-#include <Engine.Serialization/Structure/ScopedStructureSlot.hpp>
-#include <Engine.Serialization/Structure/SeqScopedSlot.hpp>
-#include <Engine.Serialization/Structure/SliceScopedSlot.hpp>
-#include <Engine.Serialization/Structure/StringScopedSlot.hpp>
-#include <Engine.Serialization/Structure/StructScopedSlot.hpp>
-
-#include "Engine.Serialization/Archive/StructuredArchive.hpp"
-#include "Engine.Serialization/Scheme/DefaultScheme.hpp"
 #include <Engine.Serialization.Structures/Symbols.hpp>
 #include <Engine.Serialization.Structures/Common/Guid.hpp>
 
 import Engine.Common;
 import Engine.Resource.Archive;
+import Engine.Serialization;
 
 using namespace hg::engine::resource;
 using namespace hg::engine::serialization;

@@ -1,7 +1,7 @@
 #include <stddef.h>
-#include <Engine.Serialization/Layout/DataLayout.hpp>
 
 import Engine.Common;
+import Engine.Serialization;
 
 namespace hg::engine::serialization {
     template <>

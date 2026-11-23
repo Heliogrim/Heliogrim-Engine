@@ -1,13 +1,11 @@
 #include "SphereShapeGeometryComponent.hpp"
 
 #include <Engine.Assets.Database/AssetDatabase.hpp>
-#include <Engine.Serialization/Access/Structure.hpp>
-#include <Engine.Serialization/Structure/FloatScopedSlot.hpp>
-#include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 
 #include "AssetResolve.hpp"
 import Engine.Common;
 import Engine.Resource.Archive;
+import Engine.Serialization;
 
 using namespace hg::engine::serialization;
 using namespace hg;

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Common/StringLiterals.hpp>
-
 #include "StructureSlotType.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)

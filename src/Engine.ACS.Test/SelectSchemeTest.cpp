@@ -4,8 +4,8 @@
 
 #include <Engine.ACS/Actor/Actor.hpp>
 #include <Engine.ACS/Component/LogicComponent.hpp>
-#include <Engine.Serialization/Scheme/Selector.hpp>
 
+import Engine.Serialization;
 import std;
 
 using namespace hg::engine::serialization;

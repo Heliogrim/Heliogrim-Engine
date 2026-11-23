@@ -1,6 +1,6 @@
-#include <Engine.Serialization/Layout/DataLayout.hpp>
-
 #include "Url.hpp"
+
+import Engine.Serialization;
 
 namespace hg::engine::serialization {
     template <>

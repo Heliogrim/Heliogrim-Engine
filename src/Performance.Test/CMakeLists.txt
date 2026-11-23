@@ -5,6 +5,7 @@ make_test_project(
 		LIBRARIES
 		${PROJECT_NAME}::Engine.Async
 		${PROJECT_NAME}::Engine.Scheduler
+		${PROJECT_NAME}::Engine.Serialization
 		${PROJECT_NAME}::Engine.Common
 		${PROJECT_NAME}::Engine.Resource.Archive
 		${PROJECT_NAME}::Heliogrim

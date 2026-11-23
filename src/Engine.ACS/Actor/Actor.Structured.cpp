@@ -3,10 +3,6 @@
 #include "Actor.hpp"
 
 #include <Engine.ACS/Serialization/SerializationModule.hpp>
-#include <Engine.Serialization/Access/Structure.hpp>
-#include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>
-#include <Engine.Serialization/Structure/SeqScopedSlot.hpp>
-#include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 #include <Engine.Serialization.Structures/Symbols.hpp>
 #include <Engine.Serialization.Structures/Common/Guid.hpp>
 #include <Engine.Serialization.Structures/Common/TypeId.hpp>
@@ -17,6 +13,7 @@
 
 import Engine.Common;
 import Engine.Core;
+import Engine.Serialization;
 
 using namespace hg::engine::serialization;
 using namespace hg;

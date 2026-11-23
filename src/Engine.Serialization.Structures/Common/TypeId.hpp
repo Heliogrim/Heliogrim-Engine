@@ -1,12 +1,10 @@
 #pragma once
 
-#include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>
-#include <Engine.Serialization/Structure/StructScopedSlot.hpp>
-
 #include "../Symbols.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Serialization;
 #endif
 
 namespace hg::engine::serialization {

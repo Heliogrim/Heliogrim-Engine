@@ -2,8 +2,9 @@
 
 #include <Engine.Assets.Database/AssetDatabase.hpp>
 #include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
-#include <Engine.Serialization/Access/Structure.hpp>
-#include <Engine.Serialization/Structure/StructScopedSlot.hpp>
+#include <Engine.Serialization.Structures/Symbols.hpp>
+
+import Engine.Serialization;
 
 #include "../../../AssetResolve.hpp"
 using namespace hg::engine::serialization;

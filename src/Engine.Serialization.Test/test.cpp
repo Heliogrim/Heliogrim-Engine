@@ -3,26 +3,10 @@
 /**/
 #include <cstring>
 #include <Engine.Assets.Type/Asset.hpp>
-#include <Engine.Serialization/Archive/LayoutArchive.hpp>
-#include <Engine.Serialization/Archive/StructuredArchive.hpp>
-#include <Engine.Serialization/Layout/DataLayout.hpp>
-#include <Engine.Serialization/Layout/LayoutDefine.hpp>
-#include <Engine.Serialization/Layout/LayoutDefineSpan.hpp>
-#include <Engine.Serialization/Layout/LayoutDefineValue.hpp>
-
-#include "Engine.Serialization/Structure/FloatScopedSlot.hpp"
-#include "Engine.Serialization/Structure/IntegralScopedSlot.hpp"
-#include "Engine.Serialization/Structure/MapEntryScopedSlot.hpp"
-#include "Engine.Serialization/Structure/MapScopedSlot.hpp"
-#include "Engine.Serialization/Structure/ScopedStructureSlot.hpp"
-#include "Engine.Serialization/Structure/SeqScopedSlot.hpp"
-#include "Engine.Serialization/Structure/SliceScopedSlot.hpp"
-#include "Engine.Serialization/Structure/StringScopedSlot.hpp"
-#include "Engine.Serialization/Structure/StructScopedSlot.hpp"
-#include "Engine.Serialization/Structure/StructSlot.hpp"
 
 import Engine.Common;
 import Engine.Resource.Archive;
+import Engine.Serialization;
 
 using namespace hg::engine::resource;
 using namespace hg::engine::serialization;

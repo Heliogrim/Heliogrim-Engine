@@ -10,30 +10,21 @@
 #include <Engine.ACS/Component/ComponentRef.hpp>
 #include <Engine.ACS/Serialization/ArchetypeFnSet.hpp>
 #include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
-#include <Engine.Serialization/Access/Structure.hpp>
-#include <Engine.Serialization/Archive/StructuredArchive.hpp>
-#include <Engine.Serialization/Load/LoadContext.hpp>
-#include <Engine.Diagnostics/Sink.hpp>
-#include <Engine.Serialization/Structure/FloatScopedSlot.hpp>
-#include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>
-#include <Engine.Serialization/Structure/RecordScopedSlot.hpp>
-#include <Engine.Serialization/Structure/StructScopedSlot.hpp>
-#include <Engine.Serialization.Structures/Symbols.hpp>
-#include <Heliogrim.Actors/Geometry/StaticGeometryActor.hpp>
 #include <Engine.Graphics.Components/Geometry/StaticGeometryComponent.Layout.hpp>
+#include <Engine.Serialization.Structures/Symbols.hpp>
 #include <Engine.Serialization.Structures/Common/Guid.hpp>
 #include <Engine.Serialization.Structures/Common/TypeId.hpp>
 #include <Heliogrim/Actor/Actor.hpp>
-#include <Engine.Serialization/Scheme/ActorScheme.hpp>
-#include <Engine.Serialization/Scheme/ComponentScheme.hpp>
-#include <Engine.Serialization/Structure/SeqScopedSlot.hpp>
 #include <Heliogrim/Universe/Universe.hpp>
+#include <Heliogrim.Actors/Geometry/StaticGeometryActor.hpp>
 
 #include "SpawnEngine.hpp"
 #include "TestArchetypes.hpp"
 
 import Engine.Common;
 import Engine.Resource.Archive;
+import Engine.Serialization;
+import Engine.Diagnostics;
 
 using namespace hg::engine::serialization;
 using namespace hg::engine::resource;

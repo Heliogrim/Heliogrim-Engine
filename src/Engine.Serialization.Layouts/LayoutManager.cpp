@@ -2,8 +2,7 @@
 
 #include <Engine.Common/StringLiterals.hpp>
 
-#include "Engine.Serialization/Layout/DataLayout.hpp"
-#include "Engine.Serialization/Layout/DataLayoutBase.hpp"
+import Engine.Serialization;
 
 using namespace hg::engine::serialization;
 using namespace hg;

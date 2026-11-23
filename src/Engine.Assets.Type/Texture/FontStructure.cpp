@@ -1,9 +1,6 @@
-#include <Engine.Serialization/Access/Structure.hpp>
-#include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>
-#include <Engine.Serialization/Structure/SliceScopedSlot.hpp>
-#include <Engine.Serialization/Structure/StructScopedSlot.hpp>
-
 #include "FontAsset.hpp"
+
+import Engine.Serialization;
 
 using namespace hg::engine::assets;
 using namespace hg::engine::serialization;

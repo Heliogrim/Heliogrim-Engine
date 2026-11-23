@@ -2,21 +2,16 @@
 
 /**/
 
-#include <Engine.Serialization/Access/Structure.hpp>
-#include <Engine.Serialization/Archive/StructuredArchive.hpp>
-#include <Engine.Serialization/Load/LoadContext.hpp>
-#include <Engine.Serialization/Structure/RootScopedSlot.hpp>
 #include <Engine.Serialization.Structures/Common/Guid.hpp>
-#include <Engine.Serialization/Structure/StructScopedSlot.hpp>
-#include <Engine.Physics.Components/Collision/BoxShapeCollisionComponent.Layout.hpp>
-#include <Engine.Physics.Components/Collision/SphereShapeCollisionComponent.Layout.hpp>
 #include <Engine.Graphics.Components/Geometry/BoxShapeGeometryComponent.Layout.hpp>
 #include <Engine.Graphics.Components/Geometry/SphereShapeGeometryComponent.Layout.hpp>
+#include <Engine.Physics.Components/Collision/BoxShapeCollisionComponent.Layout.hpp>
+#include <Engine.Physics.Components/Collision/SphereShapeCollisionComponent.Layout.hpp>
 #include <Heliogrim/Actor/Archetype/ArchetypeLayout.inl.hpp>
 
 import Engine.Common;
 import Engine.Resource.Archive;
-import Engine.Diagnostics;
+import Engine.Serialization;
 
 using namespace hg::engine::serialization;
 using namespace hg::engine::resource;

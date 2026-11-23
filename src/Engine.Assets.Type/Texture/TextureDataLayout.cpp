@@ -1,7 +1,8 @@
 #include <stddef.h>
-#include <Engine.Serialization/Layout/DataLayout.hpp>
 
 #include "TextureAsset.hpp"
+
+import Engine.Serialization;
 
 using namespace hg::engine::assets;
 

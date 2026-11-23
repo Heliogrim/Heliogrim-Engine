@@ -1,4 +1,4 @@
-#include <Engine.Serialization/Layout/DataLayout.hpp>
+import Engine.Serialization;
 
 namespace hg::engine::serialization {
     template <>

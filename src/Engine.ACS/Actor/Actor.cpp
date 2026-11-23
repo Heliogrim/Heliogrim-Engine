@@ -6,8 +6,6 @@
 #include <Engine.Level/Level.hpp>
 #include <Engine.Scene/IComponentRegisterContext.hpp>
 #include <Engine.Scene/SceneBase.hpp>
-#include <Engine.Serialization/Access/Structure.hpp>
-#include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 #include <Engine.Serialization.Structures/Symbols.hpp>
 #include <Engine.Serialization.Structures/Common/TypeId.hpp>
 #include <Heliogrim/Core/Session.hpp>
@@ -23,6 +21,7 @@ import Engine.Common;
 import Engine.Core;
 import Engine.Logging;
 import Engine.Reflect;
+import Engine.Serialization;
 
 /**/
 

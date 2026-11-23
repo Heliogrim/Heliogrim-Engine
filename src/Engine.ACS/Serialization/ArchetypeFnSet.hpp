@@ -1,13 +1,13 @@
 #pragma once
 
-#include <Engine.Serialization/Access/Structure.hpp>
-#include <Engine.Serialization/Structure/RecordScopedSlot.hpp>
-#include <Engine.Serialization/Structure/StructScopedSlot.hpp>
-
 #include "FnSets.hpp"
 #include "../Actor/Actor.hpp"
 #include "../Actor/Class/ActorClass.hpp"
 #include "ArchetypeMigration.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Serialization;
+#endif
 
 namespace hg::engine::acs {
 	/* Level scheme of an archetype; the class is captured here because Engine.Level cannot resolve actor classes. */

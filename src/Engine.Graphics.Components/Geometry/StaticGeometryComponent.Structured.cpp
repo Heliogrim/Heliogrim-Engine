@@ -1,9 +1,8 @@
 #include "StaticGeometryComponent.hpp"
 
 #include <Engine.Assets.Database/AssetDatabase.hpp>
-#include <Engine.Serialization/Access/Structure.hpp>
-#include <Engine.Serialization/Structure/SeqScopedSlot.hpp>
-#include <Engine.Serialization/Structure/StructScopedSlot.hpp>
+
+import Engine.Serialization;
 
 #include "AssetResolve.hpp"
 #include "StaticGeometryComponent.Layout.hpp"

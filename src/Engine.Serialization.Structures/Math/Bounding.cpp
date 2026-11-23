@@ -1,12 +1,8 @@
-#include <Engine.Serialization/Access/Structure.hpp>
-#include <Engine.Serialization/Structure/FloatScopedSlot.hpp>
-#include <Engine.Serialization/Structure/RecordScopedSlot.hpp>
-#include <Engine.Serialization/Structure/StructScopedSlot.hpp>
-
 #include "fwd.hpp"
 
 import Engine.Common;
 import Engine.Resource.Archive;
+import Engine.Serialization;
 
 using namespace ::hg::engine::serialization;
 using namespace ::hg;

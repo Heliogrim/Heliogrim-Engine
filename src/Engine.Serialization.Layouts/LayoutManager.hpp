@@ -1,12 +1,11 @@
 #pragma once
 
-#include <Engine.Serialization/Layout/__fwd.hpp>
-
 #include "LayoutOptimizer.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
 import Engine.Reflect;
+import Engine.Serialization;
 #endif
 
 namespace hg::engine::serialization {

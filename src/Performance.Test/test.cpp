@@ -3,15 +3,10 @@
 /**/
 #include <cstring>
 #include <Engine.Assets.Type/Asset.hpp>
-#include <Engine.Serialization/Archive/LayoutArchive.hpp>
-#include <Engine.Serialization/Archive/StructuredArchive.hpp>
-#include <Engine.Serialization/Layout/DataLayout.hpp>
-#include <Engine.Serialization/Layout/LayoutDefine.hpp>
-#include <Engine.Serialization/Layout/LayoutDefineSpan.hpp>
-#include <Engine.Serialization/Layout/LayoutDefineValue.hpp>
 
 import Engine.Common;
 import Engine.Resource.Archive;
+import Engine.Serialization;
 
 using namespace hg::engine::resource;
 using namespace hg::engine::serialization;

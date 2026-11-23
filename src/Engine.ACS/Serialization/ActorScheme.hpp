@@ -5,12 +5,6 @@
 
 #include <Engine.ACS/Registry.hpp>
 #include <Engine.ACS/Actor/ActorGuid.hpp>
-#include <Engine.Serialization/Scheme/Scheme.hpp>
-#include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>
-#include <Engine.Serialization/Schema/Migration.hpp>
-#include <Engine.Serialization/Structure/RecordScopedSlot.hpp>
-#include <Engine.Serialization/Structure/SeqScopedSlot.hpp>
-#include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 #include <Engine.Serialization.Structures/Symbols.hpp>
 #include <Engine.Serialization.Structures/Common/Guid.hpp>
 #include <Engine.Serialization.Structures/Common/TypeId.hpp>
@@ -22,6 +16,7 @@
 import Engine.Common;
 import Engine.Core;
 import Engine.Reflect;
+import Engine.Serialization;
 #endif
 
 namespace hg::engine::serialization {
