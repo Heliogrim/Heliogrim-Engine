@@ -6,6 +6,7 @@
 #include <tuple>
 #include <utility>
 #include <Engine.Assets.Type/Asset.hpp>
+#include <Engine.Assets.Type/Texture/TextureAsset.hpp>
 #include <Engine.Assets.Type/Universe/LevelAsset.hpp>
 #include <Engine.Common/Collection/Array.hpp>
 #include <Engine.Resource.Archive/BufferArchive.hpp>
@@ -536,5 +537,37 @@ namespace SerializationModule {
 			ASSERT_TRUE(asset.getLevelData().is<engine::storage::ArchiveUrl>()) << bad;
 			EXPECT_EQ(asset.getLevelData().as<engine::storage::ArchiveUrl>().guid(), engine::resource::ArchiveGuid {}) << bad;
 		}
+	}
+}
+
+namespace SerializationModule {
+	TEST(FullStructuredTest, TextureAssetInvalidImageCountIgnored) {
+
+		auto archive = BufferArchive {};
+		{
+			auto source = engine::assets::TextureAsset {};
+			source.addSourceImage(AssetGuid { 1uL, 2u, 3u, 4uLL });
+			auto structured = StructuredArchive { archive };
+			access::Structure<engine::assets::TextureAsset>::serialize(source, structured.insertRootSlot().intoStruct());
+		}
+
+		// Layout after the key: seq type (1 byte), size (8 bytes), count (8 bytes); ~0 reads back as count -1.
+		constexpr auto key = "images"sv;
+		const auto text = std::string_view { reinterpret_cast<const char*>(archive.data()), archive.size() };
+		const auto at = text.find(key);
+		ASSERT_NE(at, std::string_view::npos);
+		const auto seqAt = at + key.size();
+		ASSERT_EQ(archive[seqAt], static_cast<_::byte>(StructureSlotType::eSeq));
+		constexpr auto invalidCount = ~0uLL;
+		std::memcpy(&archive[seqAt + 9uLL], &invalidCount, sizeof(invalidCount));
+
+		archive.seek(0);
+
+		engine::assets::TextureAsset target {};
+		{
+			auto structured = StructuredArchive { archive };
+			EXPECT_NO_THROW(access::Structure<engine::assets::TextureAsset>::hydrate(structured.getRootSlot().asStruct(), target));
+		}
+		EXPECT_FALSE(target.hasSourceImage(AssetGuid { 1uL, 2u, 3u, 4uLL }));
 	}
 }
