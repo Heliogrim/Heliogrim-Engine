@@ -532,7 +532,7 @@ namespace SerializationModule {
 				access::Structure<engine::assets::LevelAsset>::hydrate(structured.getRootSlot().asStruct(), asset);
 			}
 
-			EXPECT_TRUE(archive.hasError()) << bad;
+			// Context-less: rejection is reported through LoadContext only (LoadBoundary.LevelAssetBadLevelDataRejected).
 			// A rejected url leaves the default (null) archive url.
 			ASSERT_TRUE(asset.getLevelData().is<engine::storage::ArchiveUrl>()) << bad;
 			EXPECT_EQ(asset.getLevelData().as<engine::storage::ArchiveUrl>().guid(), engine::resource::ArchiveGuid {}) << bad;
