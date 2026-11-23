@@ -6,8 +6,8 @@
 #include <Editor.UI/Widget/Collapse.hpp>
 #include <Editor.UI/Widget/MenuItem.hpp>
 #include <Editor.UI/Widget/MenuSpacer.hpp>
+#include <Editor.UI/Widget/Viewport/Viewport.hpp>
 #include <Engine.Reflow/ReflowEngine.hpp>
-#include <Engine.Reflow/Widget/Viewport.hpp>
 #include <Engine.Reflow.Uikit/Atom/Text.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/BoxLayout.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/VerticalLayout.hpp>
@@ -75,6 +75,11 @@ namespace ReflowModule {
 		const auto& layout = subject->getLayoutState();
 		EXPECT_TRUE(layout.layoutOffset.allZero());
 		EXPECT_EQ(layout.layoutSize, expectedSize_);
+	}
+
+	TEST_F(LayoutingBoxFixture, EmptyUikitViewport) {
+		GTEST_SKIP_("Will break due to deep integration with render system.");
+		generic_test_empty<engine::reflow::Viewport>(*this);
 	}
 
 	TEST_F(LayoutingBoxFixture, EmptyUikitBreadcrumb) {

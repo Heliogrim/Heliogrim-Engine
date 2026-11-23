@@ -1,7 +1,6 @@
-
 # Setup
-make_library_project(
+make_library_sub_project(
 		LIB_NAME Engine.Reflow.Attributes
-		LIB_FOLDER "${IDE_FOLDER}/Engine/UI"
+		SUB_OF Engine.Reflow
 		LIBRARIES ${PROJECT_NAME}::Engine.Assets.Type ${PROJECT_NAME}::Engine.Common
 )
