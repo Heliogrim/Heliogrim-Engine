@@ -3,8 +3,10 @@
 
 #include <Engine.Assets.Type/Asset.hpp>
 #include <Engine.Common/Collection/Array.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Resource.Archive/ArchiveGuid.hpp>
 #include <Engine.Resource.Archive/BufferArchive.hpp>
+#include <Engine.Resource.Archive/MemoryReadonlyArchive.hpp>
 
 using namespace hg::engine::resource;
 using namespace hg;
@@ -184,5 +186,33 @@ namespace ResourceArchiveModule {
 
 	TEST(BufferArchive, ReadWriteEnumU64) {
 		simpleEnumTest<EnumValueU64>();
+	}
+}
+
+namespace ResourceArchiveModule {
+	TEST(Bounds, NegativeSeekThenReadFails) {
+		Vector<_::byte> bytes(16uLL);
+		std::span<_::byte> view { bytes };
+		MemoryReadonlyArchive archive { view };
+
+		archive.seek(-8LL);
+		u64 value = 42uLL;
+		archive >> value;
+
+		EXPECT_TRUE(archive.hasError());
+		EXPECT_EQ(value, 42uLL);
+	}
+
+	TEST(Bounds, ReadPastLimitFails) {
+		Vector<_::byte> bytes(16uLL);
+		std::span<_::byte> view { bytes };
+		MemoryReadonlyArchive archive { view, 8LL };
+
+		archive.seek(4LL);
+		u64 value = 42uLL;
+		archive >> value;
+
+		EXPECT_TRUE(archive.hasError());
+		EXPECT_EQ(value, 42uLL);
 	}
 }

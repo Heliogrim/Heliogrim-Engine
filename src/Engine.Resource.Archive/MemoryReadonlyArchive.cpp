@@ -39,7 +39,7 @@ void MemoryReadonlyArchive::serializeBytes(const ptr<void> value_, u64 size_, co
 		return;
 	}
 
-	if (_pos + size_ <= _bytes.size()) {
+	if (const auto total = static_cast<u64>(totalSize()); _pos >= 0 && size_ <= total && static_cast<u64>(_pos) <= total - size_) {
 
 		std::memcpy(value_, &_bytes[_pos], size_);
 		_pos += static_cast<s64>(size_);
