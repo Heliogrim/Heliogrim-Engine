@@ -90,3 +90,15 @@ namespace StorageModule {
 		}
 	}
 }
+
+namespace StorageModule {
+	TEST(WindowedBlobTest, OutOfRangeOffsetReadsNothing) {
+		auto bytes = makeBytes(64uz);
+		CountingBlob source { std::span { bytes } };
+		const WindowedBlob blob { source, 0, 32 };
+
+		std::array<_::byte, 8> dst {};
+		EXPECT_TRUE(blob.read(-1, std::span { dst }).empty());
+		EXPECT_TRUE(blob.read(33, std::span { dst }).empty());
+	}
+}
