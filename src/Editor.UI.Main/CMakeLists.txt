@@ -3,7 +3,7 @@
 make_library_project(
         LIB_NAME Editor.UI.Main
         LIB_FOLDER "${IDE_FOLDER}/Editor"
-        LIBRARIES ${PROJECT_NAME}::Engine.Level
+        LIBRARIES ${PROJECT_NAME}::Editor.Assets.Default ${PROJECT_NAME}::Engine.Assets.System ${PROJECT_NAME}::Engine.Resource ${PROJECT_NAME}::Engine.Level
        
         ${PROJECT_NAME}::Editor.Boot.Module
         ${PROJECT_NAME}::Engine.ACS

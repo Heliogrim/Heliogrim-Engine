@@ -1,11 +1,11 @@
 #include "Level.hpp"
 
-#include <Engine.Assets.Database/Asset/UniverseAssetHandles.hpp>
 #include <Heliogrim/Async/Future.hpp>
 
 #include "Universe.hpp"
 
 import Engine.Asserts;
+import Engine.Assets.Database;
 import Engine.Assets.Type;
 import Engine.Common;
 import Engine.Core;

@@ -21,15 +21,14 @@
 #include <Editor.UI/Widget/Input/InputSelect.hpp>
 #include <Editor.UI/Widget/Input/InputText.hpp>
 #include <Editor.UI/Widget/Input/InputToggle.hpp>
-#include <Engine.Assets.Database/AssetDatabase.hpp>
-#include <Engine.Assets.System/AssetRegistry.hpp>
-#include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/BoxLayout.hpp>
 #include <Heliogrim/Heliogrim.hpp>
 
 #include "PropertyService.hpp"
 
 import Engine.Assets;
+import Engine.Assets.Database;
+import Engine.Assets.System;
 import Engine.Assets.Type;
 import Engine.Common;
 import Engine.Core;

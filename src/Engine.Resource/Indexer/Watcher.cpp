@@ -1,7 +1,16 @@
-#include "Watcher.hpp"
-
 #include <cassert>
 #include <Engine.Common/__macro.hpp>
+
+#if defined(ENV_MSVC) && defined(WIN32)
+#define WIN32_LEAN_AND_MEAN
+/**/
+#include <Windows.h>
+/* Note: Order dependent `windows header -> fileapi header` */
+#include <fileapi.h>
+/**/
+#endif
+
+#include "Watcher.hpp"
 
 import Engine.Asserts;
 import std;

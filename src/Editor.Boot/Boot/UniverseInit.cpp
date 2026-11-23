@@ -4,10 +4,13 @@
 #include <Editor.Scene.Actions/LoadLevel.hpp>
 #include <Heliogrim/Universe/Level.hpp>
 
+import Editor.Assets.Default;
 import Editor.Boot;
 import Editor.Scene;
 import Engine.ACS;
 import Engine.Assets;
+import Engine.Assets.Database;
+import Engine.Assets.System;
 import Engine.Assets.Type;
 import Engine.Common;
 import Engine.Config;
@@ -110,10 +113,6 @@ void editor::boot::initPrimaryUniverse() {
 
 /**/
 
-#include <Editor.Assets.Default/GraphicsMaterials/Default.hpp>
-#include <Editor.Assets.Default/Meshes/Default.hpp>
-#include <Engine.Assets.Database/Asset/GeometryAssetHandles.hpp>
-#include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Graphics.Components/Geometry/StaticGeometryComponent.hpp>
 #include <Engine.Graphics.Components/Light/DirectionalLightComponent.hpp>
 #include <Engine.Graphics.Components/Sky/SkyboxComponent.hpp>

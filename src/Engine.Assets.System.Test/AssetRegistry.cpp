@@ -2,11 +2,8 @@
 
 /**/
 
-#include <Engine.Assets.System/AssetDescriptor.hpp>
-#include <Engine.Assets.System/AssetRegistry.hpp>
-#include <Engine.Assets.System/Repository/InMemAssetRepository.hpp>
-
 import Engine.Assets;
+import Engine.Assets.System;
 import Engine.Assets.Type;
 import Engine.Common;
 import Engine.Graphics.Types;

@@ -2,15 +2,6 @@
 
 #include <Engine.Common/__macro.hpp>
 
-#if defined(ENV_MSVC) && defined(WIN32)
-#define WIN32_LEAN_AND_MEAN
-/**/
-#include <Windows.h>
-/* Note: Order dependent `windows header -> fileapi header` */
-#include <fileapi.h>
-/**/
-#endif
-
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
 import Engine.Filesystem;
@@ -89,8 +80,9 @@ namespace hg::engine::res {
 		#ifdef _WIN32
 
 	private:
-		HANDLE _handle;
-		HANDLE _waitHandle;
+		// `HANDLE`; Windows.h stays in Watcher.cpp, out of the module interface
+		void* _handle;
+		void* _waitHandle;
 		#endif
 
 	private:

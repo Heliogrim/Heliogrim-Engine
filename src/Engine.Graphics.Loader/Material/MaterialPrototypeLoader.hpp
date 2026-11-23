@@ -1,13 +1,16 @@
 #pragma once
 
 #include <Engine.Graphics/Cache/__fwd.hpp>
-#include <Engine.Resource/Loader/LoaderChain.hpp>
 
 #include "__fwd.hpp"
 #include "MaterialPrototypeCache.hpp"
 #include "MaterialPrototypeFeedback.hpp"
 #include "MaterialPrototypeResource.hpp"
 #include "MaterialPrototypeTransformer.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Resource;
+#endif
 
 namespace hg::engine::graphics::loader {
     using MaterialPrototypeSourceLoader = ::hg::engine::resource::loader::SourceLoader;

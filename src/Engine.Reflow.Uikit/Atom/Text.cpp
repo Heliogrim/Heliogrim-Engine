@@ -7,8 +7,10 @@
 #include <Engine.Reflow/Widget/AttributeBatch.hpp>
 
 import Engine.Assets;
+import Engine.Assets.System;
 import Engine.Core;
 import Engine.Reflect;
+import Engine.Resource;
 import std;
 
 using namespace hg::engine::reflow::uikit;
@@ -500,11 +502,9 @@ math::fvec2 Text::getShrinkFactor() const noexcept {
 
 /**/
 
-#include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Graphics.Loader/Font/FontLoadOptions.hpp>
 #include <Engine.Graphics.Loader/Font/FontResource.hpp>
 #include <Engine.Graphics.Loader/Font/Traits.hpp>
-#include <Engine.Resource/ResourceManager.hpp>
 
 nmpt<Font> loadFont(cref<TypedAssetGuid<hg::engine::assets::FontAsset>> guid_) {
 

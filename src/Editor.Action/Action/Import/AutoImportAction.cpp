@@ -1,19 +1,18 @@
 #include "AutoImportAction.hpp"
 
-#include <Engine.Assets.System/AssetDescriptor.hpp>
-#include <Engine.Assets.System/IAssetRegistry.hpp>
-#include <Engine.Assets.Type/Asset.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Sal.hpp>
 
 import Engine.Asserts;
 import Engine.Assets;
+import Engine.Assets.System;
 import Engine.Assets.Type;
 import Engine.Async;
 import Engine.Common;
 import Engine.Core;
 import Engine.Logging;
 import Engine.Reflect;
+import Engine.Resource;
 import Engine.Resource.Archive;
 import Engine.Serialization;
 import Engine.Storage;
@@ -125,8 +124,6 @@ ref<Signal> AutoImportAction::finished() const noexcept {
 #include <Engine.Graphics/Importer/FontFileTypes.hpp>
 #include <Engine.Graphics/Importer/ImageFileTypes.hpp>
 #include <Engine.Graphics/Importer/ModelFileTypes.hpp>
-#include <Engine.Resource/FileTypeId.hpp>
-#include <Engine.Resource/ResourceManager.hpp>
 
 /**/
 

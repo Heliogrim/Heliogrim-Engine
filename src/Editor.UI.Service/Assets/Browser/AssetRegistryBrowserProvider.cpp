@@ -1,11 +1,11 @@
 #include "AssetRegistryBrowserProvider.hpp"
 
 #include <cassert>
-#include <Engine.Assets.System/AssetRegistry.hpp>
 
 #include "AssetBrowserFilter.hpp"
 #include "AssetBrowserFilterEntry.hpp"
 
+import Engine.Assets.System;
 import Engine.Assets.Type;
 import std;
 

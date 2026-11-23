@@ -1,8 +1,7 @@
 #include "EffectCache.hpp"
 
-#include <Engine.Resource/Manage/UniqueResource.hpp>
-
 import Engine.Common;
+import Engine.Resource;
 
 using namespace hg::engine::resource::loader;
 using namespace hg::engine::accel::loader;

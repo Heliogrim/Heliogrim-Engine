@@ -2,8 +2,10 @@
 
 #include <Engine.Accel.Storage/GlobalStorage.hpp>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Resource/ImporterManager.hpp>
-#include <Engine.Resource/LoaderManager.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Resource;
+#endif
 
 namespace hg::engine::accel {
 	extern void register_loader(

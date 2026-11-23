@@ -1,15 +1,13 @@
 #pragma once
 
-#include <Engine.Resource/Loader/CacheTraits.hpp>
-#include <Engine.Resource/Loader/FeedbackTraits.hpp>
-#include <Engine.Resource/Loader/LoaderTraits.hpp>
-#include <Engine.Resource/Loader/SourceLoaderTraits.hpp>
-#include <Engine.Resource/Loader/TransformerTraits.hpp>
-
 #include "__fwd.hpp"
 #include "StaticGeometryLoadOptions.hpp"
 #include "StaticGeometryResource.hpp"
 #include "StaticGeometryStreamOptions.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Resource;
+#endif
 
 namespace hg::engine::resource::loader {
 	using namespace ::hg::engine::graphics::loader;

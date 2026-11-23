@@ -1,6 +1,6 @@
 #include "EffectTransformer.hpp"
 
-#include <Engine.Resource/Manage/UniqueResource.hpp>
+import Engine.Resource;
 
 using namespace hg::engine::accel::loader;
 using namespace hg;

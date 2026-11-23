@@ -1,9 +1,8 @@
 #pragma once
 
-#include <Engine.Resource/Loader/__fwd.hpp>
-
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Assets.Type;
+import Engine.Resource;
 #endif
 
 namespace hg::engine::graphics {

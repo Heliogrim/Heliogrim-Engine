@@ -1,22 +1,22 @@
 #include "Png.hpp"
 
-#include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics/Buffer/BufferFactory.hpp>
 #include <Engine.Graphics/Pool/GlobalResourcePool.hpp>
 #include <Engine.Graphics/Texture/SparseTexturePage.hpp>
 #include <Engine.Graphics/Texture/SparseTextureView.hpp>
 #include <Engine.Graphics/Texture/TextureLikeObject.hpp>
-#include <Engine.Resource/Manage/UniqueResource.hpp>
 
 #define SPNG_STATIC TRUE
 #include <spng/spng.h>
 
 import Engine.Asserts;
 import Engine.Assets;
+import Engine.Assets.System;
 import Engine.Assets.Type;
 import Engine.Core;
 import Engine.Reflect;
+import Engine.Resource;
 import Engine.Storage.System;
 import vulkan;
 

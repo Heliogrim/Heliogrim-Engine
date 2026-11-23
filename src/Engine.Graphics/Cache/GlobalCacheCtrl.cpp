@@ -5,8 +5,6 @@
 #include <Engine.Graphics.Loader/Material/MaterialLoader.hpp>
 #include <Engine.Graphics.Loader/Texture/TextureLoader.hpp>
 #include <Engine.Graphics.Loader/Texture/Traits.hpp>
-#include <Engine.Resource/LoaderManager.hpp>
-#include <Engine.Resource/ResourceManager.hpp>
 
 #include "GlobalResourceCache.hpp"
 
@@ -15,6 +13,7 @@ import Engine.Assets.Type;
 import Engine.Common;
 import Engine.Core;
 import Engine.Logging;
+import Engine.Resource;
 
 using namespace hg::engine::graphics::cache;
 using namespace hg;

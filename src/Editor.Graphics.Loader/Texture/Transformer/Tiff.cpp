@@ -1,9 +1,8 @@
 #include "Tiff.hpp"
 
-#include <Engine.Assets.System/IAssetRegistry.hpp>
-
 import Engine.Asserts;
 import Engine.Assets;
+import Engine.Assets.System;
 import Engine.Assets.Type;
 import Engine.Core;
 import Engine.Reflect;

@@ -3,15 +3,13 @@
 
 #include <Editor.Action/ActionManager.hpp>
 #include <Editor.Action/Action/Import/AutoImportAction.hpp>
-#include <Editor.Assets.Default/DefaultAssetInit.hpp>
-#include <Engine.Assets.System/AssetDescriptor.hpp>
-#include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Resource/ResourceManager.hpp>
 
+import Editor.Assets.Default;
 import Editor.Boot;
 import Engine.Assets;
+import Engine.Assets.System;
 import Engine.Assets.Type;
 import Engine.Async;
 import Engine.Common;
@@ -19,6 +17,7 @@ import Engine.Config;
 import Engine.Core;
 import Engine.Logging;
 import Engine.Reflect;
+import Engine.Resource;
 import Engine.Resource.Archive;
 import Engine.Resource.Package;
 import Engine.Serialization;

@@ -3,9 +3,10 @@
 #include <Engine.Accel.Pipeline/ComputePipeline.hpp>
 #include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
 #include <Engine.Accel.Storage/Storage.hpp>
-#include <Engine.Resource/Manage/UniqueResource.hpp>
 
 #include "Commands/BindPipeline.hpp"
+
+import Engine.Resource;
 
 using namespace hg::engine::render::cmd;
 using namespace hg::engine::graphics;

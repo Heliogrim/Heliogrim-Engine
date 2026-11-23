@@ -1,13 +1,13 @@
 #pragma once
 
 #include <Engine.Accel.Storage/GlobalStorage.hpp>
-#include <Engine.Resource/Loader/Cache.hpp>
 
 #include "__fwd.hpp"
 #include "Traits.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Resource;
 #endif
 
 namespace hg::engine::accel::loader {

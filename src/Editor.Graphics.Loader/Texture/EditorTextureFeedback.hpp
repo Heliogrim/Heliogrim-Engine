@@ -1,11 +1,10 @@
 #pragma once
 
-#include <Engine.Resource/Loader/Feedback.hpp>
-
 #include "Traits.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Resource;
 #endif
 
 namespace hg::editor::graphics::loader {

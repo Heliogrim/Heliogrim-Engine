@@ -1,11 +1,10 @@
 #pragma once
 
-#include <Engine.Assets.System/IAssetRegistry.hpp>
-
 #include "AssetBrowserFilter.hpp"
 #include "AssetBrowserProvider.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Assets.System;
 import Engine.Common;
 #endif
 

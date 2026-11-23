@@ -8,7 +8,6 @@
 #include <Editor.Graphics.Loader/Texture/Transformer/Tiff.hpp>
 #include <Engine.Graphics/Graphics.hpp>
 #include <Engine.Graphics.Loader/Texture/TextureResource.hpp>
-#include <Engine.Resource/LoaderManager.hpp>
 
 import Editor.Graphics.Event;
 import Editor.Graphics.IO;
@@ -17,6 +16,7 @@ import Engine.Common;
 import Engine.Core;
 import Engine.Event;
 import Engine.Graphics.Event;
+import Engine.Resource;
 
 using namespace ::hg::editor;
 using namespace ::hg;

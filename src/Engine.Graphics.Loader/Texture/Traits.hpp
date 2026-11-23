@@ -1,15 +1,13 @@
 #pragma once
 
-#include <Engine.Resource/Loader/CacheTraits.hpp>
-#include <Engine.Resource/Loader/FeedbackTraits.hpp>
-#include <Engine.Resource/Loader/LoaderTraits.hpp>
-#include <Engine.Resource/Loader/SourceLoaderTraits.hpp>
-#include <Engine.Resource/Loader/TransformerTraits.hpp>
-
 #include "__fwd.hpp"
 #include "TextureLoadOptions.hpp"
 #include "TextureResource.hpp"
 #include "TextureStreamOptions.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Resource;
+#endif
 
 /* Loader Interface */
 

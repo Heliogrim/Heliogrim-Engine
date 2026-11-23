@@ -1,8 +1,11 @@
 #pragma once
-#include <Engine.Resource/Importer/Importer.hpp>
 
 #include "SoundImporterDescriptor.hpp"
 #include "SoundImportType.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Resource;
+#endif
 
 namespace hg::engine::audio {
     class SoundImporter :
