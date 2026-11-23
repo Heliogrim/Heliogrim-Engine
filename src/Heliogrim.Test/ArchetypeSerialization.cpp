@@ -870,11 +870,10 @@ namespace HeliogrimApi {
 		auto structured = StructuredArchive { archive };
 		const auto scheme = _engine->_serialization->getActorScheme(Actor::typeId);
 		ASSERT_TRUE(scheme.has_value());
-		// shortcut: the actor is leaked, releasing a loaded actor's components hits the known default-deleter crash.
 		const auto actor = scheme->deserialize(structured.getRootSlot(), _engine->getActors()->getRegistry());
 
 		ASSERT_NE(actor, nullptr);
-		EXPECT_TRUE(archive.hasError());
+		// Context-less: rejection is reported through LoadContext only (LoadBoundary.SecondRootComponentRejected).
 		EXPECT_TRUE(actor->getRootComponent().has_value());
 		EXPECT_EQ(actor->getComponents().size(), 1uLL);
 	}
