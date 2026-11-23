@@ -15,6 +15,7 @@ for b in B:
     if re.search(r'^\s*MODULE\s*$', t, re.M) or os.path.exists(f'src/{b}/CxxModule.ixx'): mod.add(b)
     m = re.search(r'SUB_OF\s+(\S+)', t)
     if m: merge.setdefault(b, m.group(1))
+mod |= {b for b in B if merge.get(b) in mod}
 def owner(rel):
     for k, v in moves.items():
         if rel == k or (k.endswith('*') and rel.startswith(k[:-1])): return v
