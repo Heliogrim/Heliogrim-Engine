@@ -5,6 +5,7 @@
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Reflect/Cast.hpp>
+#include <Engine.Resource.Archive/Archive.hpp>
 #include <Engine.Serialization/SerializationModule.hpp>
 #include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>
 #include <Engine.Serialization/Structure/RecordScopedSlot.hpp>
@@ -102,7 +103,10 @@ namespace hg::engine::serialization {
 
 				/**/
 
-				if (IsType<HierarchyComponent>(*next.get())) {
+				if (IsType<HierarchyComponent>(*next.get()) && parent == nullptr && target->getRootComponent().has_value()) {
+					// addComponent asserts a single root; a second parentless hierarchy component is bad data.
+					structured.slot()->getState().root->archive->setError();
+				} else if (IsType<HierarchyComponent>(*next.get())) {
 					// Keep back-reference for parent resolving with pure pointers
 					instanced[idx] = next.get();
 					target->addComponent(
