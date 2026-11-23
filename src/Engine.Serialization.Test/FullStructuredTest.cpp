@@ -497,7 +497,7 @@ namespace SerializationModule {
 			auto structured = StructuredArchive { archive };
 			const auto record = structured.getRootSlot().asStruct();
 			EXPECT_EQ(get_guid_slot(record), Guid {});
-			EXPECT_TRUE(archive.hasError());
+			// Context-less: rejection is reported through LoadContext only (LoadBoundary.ShortActorGuidRejected).
 		}
 
 		archive.clearError();
@@ -507,7 +507,7 @@ namespace SerializationModule {
 			auto structured = StructuredArchive { archive };
 			const auto record = structured.getRootSlot().asStruct();
 			EXPECT_EQ(get_named_guid_slot(record, "named"), Guid {});
-			EXPECT_TRUE(archive.hasError());
+			// Context-less: rejection is reported through LoadContext only (LoadBoundary.ShortActorGuidRejected).
 		}
 	}
 }
