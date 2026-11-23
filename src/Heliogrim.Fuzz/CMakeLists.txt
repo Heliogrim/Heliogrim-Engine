@@ -4,8 +4,10 @@ endif ()
 
 # One fuzz file per executable (duplicate LLVMFuzzerTestOneInput otherwise).
 get_src_path(__src_path)
-name_to_target(__target Heliogrim.LayoutFuzz)
-add_executable(${__target} EXCLUDE_FROM_ALL LayoutFuzz.cpp)
+foreach (__fuzz LayoutFuzz StructuredFuzz)
+name_to_target(__target Heliogrim.${__fuzz})
+add_executable(${__target} EXCLUDE_FROM_ALL ${__fuzz}.cpp)
+target_compile_definitions(${__target} PRIVATE HG_FIXTURE_DIR="${__src_path}/Heliogrim.Test/fixtures/serialization")
 target_include_directories(${__target} PRIVATE ${__src_path})
 target_include_directories(${__target} SYSTEM PUBLIC ${DEFAULT_INCLUDE_DIRECTORIES})
 target_link_libraries(
@@ -31,3 +33,4 @@ else ()
 endif ()
 get_shared_dist_path(__dist_path)
 set_batch_target_properties(${__target} ${__dist_path})
+endforeach ()
