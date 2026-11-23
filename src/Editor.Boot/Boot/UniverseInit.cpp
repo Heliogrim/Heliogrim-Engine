@@ -92,6 +92,7 @@ void editor::boot::initPrimaryUniverse() {
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets.Type/Universe/LevelAsset.hpp>
 #include <Engine.Config/Enums.hpp>
+#include <Engine.Logging/Logger.hpp>
 #include <Engine.Storage.System/StorageSystem.hpp>
 #include <Heliogrim/Heliogrim.hpp>
 #include <Heliogrim/Actor/Actor.hpp>
@@ -206,6 +207,11 @@ static decltype(auto) wantedSave(_In_ cref<core::Level> level_, _In_ cref<assets
 	/**/
 
 	const auto& dataUrl = levelAsset_.getLevelData();
+	if (not dataUrl.is<storage::ArchiveUrl>()) {
+		IM_CORE_ERROR("Failed to save the level: its level data is not an archive url.");
+		return;
+	}
+
 	auto dataArchive = ssys->findArchive(clone(dataUrl.as<storage::ArchiveUrl>()));
 	::hg::assertrt(dataArchive != None);
 
