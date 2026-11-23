@@ -49,6 +49,9 @@ namespace hg {
 	private:
 		AutoArray<Opt<GraphicsMaterialAssetHandle>> _instanceMaterials;
 
+		// Streamed slot count of _instanceMaterials (trailing empty slots included); kept equal to its size.
+		u64 _materialSlots;
+
 	public:
 		[[nodiscard]] ref<const AutoArray<Opt<GraphicsMaterialAssetHandle>>> getInstanceMaterials() const noexcept;
 

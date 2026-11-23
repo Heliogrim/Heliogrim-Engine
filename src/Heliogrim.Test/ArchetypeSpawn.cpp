@@ -86,13 +86,7 @@ namespace HeliogrimApi::spawn_fixture {
 template <>
 class hg::engine::serialization::access::Layout<HeliogrimApi::spawn_fixture::CountedStub> {
 public:
-	constexpr static ::hg::u64 version = 1uLL;
-	constexpr static ::hg::u64 size = 0uLL;
-
-public:
-	static void dump(::hg::ref<const HeliogrimApi::spawn_fixture::CountedStub>, ::hg::ref<::hg::Vector<std::byte>>) {}
-
-	static void load(std::span<const std::byte>, ::hg::ref<HeliogrimApi::spawn_fixture::CountedStub>) {}
+	constexpr static std::array<LayoutField, 0uLL> fields {};
 };
 
 template <>

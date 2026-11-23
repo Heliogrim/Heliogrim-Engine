@@ -62,14 +62,15 @@ namespace hg::archetype_detail {
 		);
 	}
 
-	/* False when the entry's record was refused by migration; the entry keeps its constructed defaults. */
+	/* False when the entry's record is missing or was refused by migration; the entry keeps its constructed defaults. */
 	template <typename Info_, u32 Entry_>
 	[[nodiscard]] bool hydrate_entry(const ptr<std::byte> slot_, ref<const engine::serialization::StructScopedSlot> components_) {
 		using type = slot_type_t<Info_, Info_::slot_of(Entry_)>;
 		const auto key = entry_key<Info_>(Entry_);
 		// Archives are untrusted input; a missing entry leaves the constructed defaults in place.
 		if (not components_.hasRecordSlot(key)) {
-			return true;
+			components_.warn(engine::serialization::ReadError::Kind::eMissingField, "archetype entry `" + key + "` is missing");
+			return false;
 		}
 
 		// The slot type is authoritative for archetype entries, so a stored `@type` is not consulted.
