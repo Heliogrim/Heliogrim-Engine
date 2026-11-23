@@ -26,6 +26,20 @@ function(_discover_sources name source out_dir out_headers out_sources)
 	set(${out_sources} ${source_files} PARENT_SCOPE)
 endfunction()
 
+# Module kind of a bundle: `HANDWRITTEN` (a `CxxModule.ixx` at its root), `GENERATED` (`MODULE`), else empty.
+function(_module_kind source_directory generate out)
+	if (EXISTS "${source_directory}/CxxModule.ixx")
+		if (generate)
+			message(FATAL_ERROR "`${source_directory}` has a hand-written `CxxModule.ixx`; drop `MODULE`, it would generate the same module again.")
+		endif ()
+		set(${out} HANDWRITTEN PARENT_SCOPE)
+	elseif (generate)
+		set(${out} GENERATED PARENT_SCOPE)
+	else ()
+		set(${out} "" PARENT_SCOPE)
+	endif ()
+endfunction()
+
 function(make_library_sub_project)
 
 	set(__single_var_options LIB_NAME SUB_OF)
@@ -60,6 +74,7 @@ endfunction()
 function(make_library_project)
 
 	# MODULE: generate a named module `LIB_NAME` from the bundle's headers (`MODULE_EXCLUDE`: headers kept textual).
+	#  A bundle with a hand-written `CxxModule.ixx` omits it.
 	set(__single_var_options LIB_NAME LIB_FOLDER SOURCE FORCE_TYPE_STATIC)
 	set(__multi_var_options LIBRARIES MODULE_EXCLUDE)
 	cmake_parse_arguments(args "MODULE" "${__single_var_options}" "${__multi_var_options}" ${ARGN})
@@ -110,7 +125,12 @@ function(make_library_project)
 
 	# Module Provider and Sub-Projects (generated once all bundles are known)
 	set_property(GLOBAL APPEND PROPERTY global_module_declared "${args_LIB_NAME}")
-	if (args_MODULE)
+	_module_kind("${source_directory}" "${args_MODULE}" module_kind)
+	if (module_kind STREQUAL "HANDWRITTEN")
+		# The bundle is its own provider: generated interfaces importing it link `<name>.Module`.
+		add_library(${PROJECT_NAME}::${args_LIB_NAME}.Module ALIAS ${target})
+		set_property(GLOBAL APPEND PROPERTY global_module_providers "${args_LIB_NAME}")
+	elseif (module_kind STREQUAL "GENERATED")
 		set_property(GLOBAL APPEND PROPERTY global_module_roots "${args_LIB_NAME}")
 		set_property(GLOBAL APPEND PROPERTY global_module_${args_LIB_NAME}_headers ${header_files})
 		set_property(GLOBAL APPEND PROPERTY global_module_${args_LIB_NAME}_prefixes "${args_LIB_NAME}")
