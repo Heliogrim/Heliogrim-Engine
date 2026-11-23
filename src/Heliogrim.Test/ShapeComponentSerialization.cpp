@@ -7,6 +7,7 @@
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Archive/StructuredArchive.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
+#include <Heliogrim/Actor/Archetype/ArchetypeLayout.inl.hpp>
 #include <Heliogrim/Component/Scene/Collision/BoxShapeCollisionComponent.Layout.hpp>
 #include <Heliogrim/Component/Scene/Collision/SphereShapeCollisionComponent.Layout.hpp>
 #include <Heliogrim/Component/Scene/Geometry/BoxShapeGeometryComponent.Layout.hpp>
@@ -36,9 +37,12 @@ namespace {
 	template <typename Type_>
 	void layoutRoundTrip(ref<const Type_> source_, ref<Type_> target_) {
 		Vector<std::byte> bytes {};
-		access::Layout<Type_>::dump(source_, bytes);
-		ASSERT_EQ(bytes.size(), access::Layout<Type_>::size);
-		access::Layout<Type_>::load(bytes, target_);
+		archetype_detail::dump_payload(source_, bytes);
+		ASSERT_EQ(bytes.size(), archetype_detail::payload_size<Type_>());
+		ASSERT_EQ(archetype_detail::check_payload<Type_>(bytes, 0uLL), ~0uLL);
+		archetype_detail::commit_payload(bytes, 0uLL, target_);
+		LoadContext ctx { bytes.size() };
+		archetype_detail::resolve_payload(bytes, 0uLL, target_, ctx);
 	}
 }
 

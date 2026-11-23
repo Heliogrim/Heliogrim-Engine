@@ -2,9 +2,12 @@
 
 #include <cstddef>
 #include <span>
+#include <Engine.Common/Expected.hpp>
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
+
+#include "LayoutError.hpp"
 
 namespace hg::engine::acs {
 	class Registry;
@@ -12,6 +15,7 @@ namespace hg::engine::acs {
 
 namespace hg::engine::serialization {
 	class StructScopedSlot;
+	class LoadContext;
 }
 
 namespace hg {
@@ -48,10 +52,19 @@ namespace hg {
 		// Reads the component records written by `serialize` into a constructed slot.
 		void (*hydrate)(ptr<std::byte> slot_, ref<const engine::serialization::StructScopedSlot> record_);
 
-		// Appends header {layoutHash, count, stride}, then per slot each component by memcpy or `access::Layout<T>`.
+		// Appends header {layoutHash, count, stride}, then per slot each component's `access::Layout<T>` copy plan payload.
 		void (*dumpLayout)(ptr<const std::byte> slots_, u32 count_, u32 stride_, ref<Vector<std::byte>> out_);
 
-		// Loads a dump into constructed slots; false on header (hash, count, stride) mismatch or truncated input.
-		bool (*loadLayout)(ptr<std::byte> slots_, u32 count_, u32 stride_, std::span<const std::byte> in_);
+		// Loads a dump into constructed slots; validates everything first, so an error leaves the slots untouched.
+		Result<void, LayoutError> (*loadLayout)(ptr<std::byte> slots_, u32 count_, u32 stride_, std::span<const std::byte> in_);
+
+		// Resolves the asset guids of a dump `loadLayout` accepted; unresolved ones warn and stay empty.
+		void (*resolveLayout)(
+			ptr<std::byte> slots_,
+			u32 count_,
+			u32 stride_,
+			std::span<const std::byte> in_,
+			ref<engine::serialization::LoadContext> ctx_
+		);
 	};
 }

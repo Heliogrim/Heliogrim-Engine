@@ -1,7 +1,10 @@
 #pragma once
 
+#include <array>
+#include <cstddef>
 #include <span>
-#include <Engine.Common/Collection/Vector.hpp>
+
+#include <Engine.Assets/AssetGuid.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 
 #include "StaticGeometryComponent.hpp"
@@ -12,12 +15,28 @@ namespace hg::engine::serialization::access {
 	public:
 		// shortcut: fixed material capacity, extend layout contract to variable size if exceeded
 		constexpr static u64 material_capacity = 16uLL;
-		constexpr static u64 version = 1uLL;
-		constexpr static u64 size = sizeof(AssetGuid) * (1uLL + material_capacity) + sizeof(u64);
+
+		inline constexpr static std::array fields {
+			HG_LAYOUT_RAW(::hg::StaticGeometryComponent, _materialSlots, ::hg::u64)
+		};
+
+		// The geometry, then one slot per instance material.
+		inline constexpr static u64 assets = 1uLL + material_capacity;
 
 	public:
-		static void dump(ref<const ::hg::StaticGeometryComponent> self_, ref<Vector<std::byte>> out_);
+		static void dumpAssets(ref<const ::hg::StaticGeometryComponent> self_, ref<std::array<AssetGuid, assets>> out_);
 
-		static void load(std::span<const std::byte> in_, ref<::hg::StaticGeometryComponent> target_);
+		// Takes the resolved geometry; false (slots cleared) if the file's material slots exceed its mesh materials.
+		[[nodiscard]] static bool acceptGeometry(
+			ref<::hg::StaticGeometryComponent> target_,
+			ref<const StaticGeometryAssetHandle> geometry_
+		);
+
+		// Index 0 resets the component; the material count pads trailing empty slots. False if the guid names no
+		// loaded asset.
+		[[nodiscard]] static bool resolveAsset(ref<::hg::StaticGeometryComponent> target_, u64 index_, ref<const AssetGuid> guid_);
+
+		// Stream offset of the first invalid byte (the count over capacity), else ~0.
+		[[nodiscard]] static u64 check(std::span<const std::byte> payload_) noexcept;
 	};
 }

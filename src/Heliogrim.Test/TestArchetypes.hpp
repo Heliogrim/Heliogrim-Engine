@@ -1,5 +1,7 @@
 #pragma once
 
+#include <array>
+
 #include <Engine.ACS/Archetype/Layout.hpp>
 #include <Engine.ACS/Archetype/Overridable.hpp>
 #include <Heliogrim/ActorInitializer.hpp>
@@ -148,7 +150,7 @@ namespace HeliogrimApi {
 
 /* Layout dumps of the stub payloads; complete in every TU that instantiates the archetypes. */
 
-#define HELIOGRIM_TEST_STUB_LAYOUT(Type_, Field_) 	template <> 	class hg::engine::serialization::access::Layout<HeliogrimApi::Type_> { 	public: 		constexpr static ::hg::u64 version = 1uLL; 		constexpr static ::hg::u64 size = sizeof(HeliogrimApi::Type_::Field_); 		public: 		static void dump(::hg::ref<const HeliogrimApi::Type_> self_, ::hg::ref<::hg::Vector<std::byte>> out_) { 			::hg::archetype_detail::put_bytes(out_, self_.Field_); 		} 			static void load(std::span<const std::byte> in_, ::hg::ref<HeliogrimApi::Type_> target_) { 			std::ignore = ::hg::archetype_detail::take_bytes(in_, target_.Field_); 		} 	};
+#define HELIOGRIM_TEST_STUB_LAYOUT(Type_, Field_) template <> class hg::engine::serialization::access::Layout<HeliogrimApi::Type_> { public: constexpr static std::array fields { HG_LAYOUT_RAW(HeliogrimApi::Type_, Field_, decltype(HeliogrimApi::Type_::Field_)) }; };
 
 HELIOGRIM_TEST_STUB_LAYOUT(BodyStub, mass)
 

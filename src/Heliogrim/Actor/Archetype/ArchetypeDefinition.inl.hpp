@@ -113,7 +113,7 @@ namespace hg::archetype_detail {
 		[&]<u32... Entries_>(std::integer_sequence<u32, Entries_...>) {
 			((
 				mix(slot_type_t<info, info::slot_of(Entries_)>::typeId.data),
-				mix(layout_version<slot_type_t<info, info::slot_of(Entries_)>>())
+				mix(field_hash<slot_type_t<info, info::slot_of(Entries_)>>())
 			), ...);
 		}(std::make_integer_sequence<u32, info::entry_count> {});
 		return hash;
@@ -244,10 +244,13 @@ namespace hg {
 
 		ops.hydrate = [](const ptr<std::byte> slot_, ref<const engine::serialization::StructScopedSlot> record_) {
 			const auto components = record_.getRecordSlot(engine::serialization::Symbols::Components).asStruct();
-			// `&` (not `&&`) so every entry hydrates even after a refused one.
-			const bool complete = [&]<u32... Entries_>(std::integer_sequence<u32, Entries_...>) {
-				return (true & ... & archetype_detail::hydrate_entry<info, Entries_>(slot_, components));
+			// Comma fold: left-to-right, and every entry hydrates even after a refused one.
+			bool complete = true;
+			[&]<u32... Entries_>(std::integer_sequence<u32, Entries_...>) {
+				((complete = archetype_detail::hydrate_entry<info, Entries_>(slot_, components) && complete), ...);
 			}(entry_sequence {});
+			// Keys no entry consumed are unknown data (e.g. a mistyped entry path).
+			complete = not components.reportUnreadKeys() && complete;
 			if (not complete) {
 				std::launder(reinterpret_cast<ptr<Type_>>(slot_ + info::actor_offset))->markUnknownData();
 			}
@@ -260,6 +263,16 @@ namespace hg {
 		ops.loadLayout = [](const ptr<std::byte> slots_, const u32 count_, const u32 stride_, std::span<const std::byte> in_) {
 			return archetype_detail::load_layout<info>(archetype_detail::layout_hash<Type_>(), slots_, count_, stride_, in_);
 		};
+
+		ops.resolveLayout = [](
+				const ptr<std::byte> slots_,
+				const u32 count_,
+				const u32 stride_,
+				std::span<const std::byte> in_,
+				ref<engine::serialization::LoadContext> ctx_
+			) {
+				archetype_detail::resolve_layout<info>(archetype_detail::layout_hash<Type_>(), slots_, count_, stride_, in_, ctx_);
+			};
 
 		if constexpr (has_tick_v<Type_>) {
 			ops.tick = [](std::byte* const slots_, const u32 count_, const u32 stride_) {
