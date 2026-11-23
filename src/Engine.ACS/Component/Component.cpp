@@ -1,10 +1,10 @@
 #include "Component.hpp"
 
-#include <Heliogrim/Actor/ActorGuid.hpp>
-#include <Heliogrim/Component/LogicComponent.hpp>
+#include <Engine.ACS/Actor/ActorGuid.hpp>
+#include <Engine.ACS/Component/LogicComponent.hpp>
 
-#include "ActorModule.hpp"
-#include "Registry.hpp"
+#include "../ActorModule.hpp"
+#include "../Registry.hpp"
 
 import Engine.Common;
 import Engine.Core;

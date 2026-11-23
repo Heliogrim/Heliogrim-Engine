@@ -2,7 +2,7 @@
 
 #include <Engine.ACS/Archetype/LayoutInfo.hpp>
 
-#include "TypedActorClass.hpp"
+#include "../Actor/Class/TypedActorClass.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Asserts;

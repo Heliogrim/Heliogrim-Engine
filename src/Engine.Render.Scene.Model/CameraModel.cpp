@@ -1,7 +1,7 @@
 #include "CameraModel.hpp"
 
+#include <Engine.ACS/Component/SceneComponent.hpp>
 #include <Engine.Scene/Scene.hpp>
-#include <Heliogrim/Component/SceneComponent.hpp>
 #include <Heliogrim/Component/Scene/Camera/CameraComponent.hpp>
 
 import Engine.Common;

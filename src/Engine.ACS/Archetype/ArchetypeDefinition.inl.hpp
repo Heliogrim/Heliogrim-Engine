@@ -5,16 +5,16 @@
  * `template class InheritArchetype<Derived, Base>;`.
  */
 
-#include <Engine.ACS/ComponentGuid.hpp>
+#include <Engine.ACS/Component/ComponentGuid.hpp>
 #include <Engine.Serialization.Structures/Symbols.hpp>
 
-#include "ActorClass.hpp"
-#include "ArchetypeConcept.hpp"
 #include "InheritArchetype.hpp"
-#include "TypedActorClass.hpp"
-#include "../Actor.hpp"
-#include "../../ActorInitializer.hpp"
-#include "../../Component/HierarchyComponent.hpp"
+#include "../Actor/Actor.hpp"
+#include "../Actor/ActorInitializer.hpp"
+#include "../Actor/Class/ActorClass.hpp"
+#include "../Actor/Class/ArchetypeConcept.hpp"
+#include "../Actor/Class/TypedActorClass.hpp"
+#include "../Component/HierarchyComponent.hpp"
 // After InheritArchetype.hpp: both use `slot_type_t`.
 
 #include "ArchetypeLayout.inl.hpp"

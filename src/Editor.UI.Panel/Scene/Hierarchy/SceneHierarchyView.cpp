@@ -8,9 +8,9 @@
 #include <Editor.UI/Widget/ContextMenuProvider.hpp>
 #include <Editor.UI.Main/EditorUI.hpp>
 #include <Editor.UI.Service/Scene/Hierarchy/SceneHierarchyEntry.hpp>
+#include <Engine.ACS/Actor/Actor.hpp>
 #include <Engine.Reflow.Uikit/Atom/Paint.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/HorizontalLayout.hpp>
-#include <Heliogrim/Actor/Actor.hpp>
 #include <Heliogrim/Component/Scene/Collision/BoxShapeCollisionComponent.hpp>
 #include <Heliogrim/Component/Scene/Collision/SphereShapeCollisionComponent.hpp>
 

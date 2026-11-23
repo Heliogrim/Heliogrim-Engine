@@ -1,6 +1,6 @@
 #include "PointLightActor.hpp"
 
-#include "../../ActorInitializer.hpp"
+#include <Engine.ACS/Actor/ActorInitializer.hpp>
 
 using namespace hg;
 

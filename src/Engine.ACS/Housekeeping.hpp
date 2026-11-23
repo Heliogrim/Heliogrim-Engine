@@ -1,9 +1,9 @@
 #pragma once
 
-#include <Heliogrim/Actor/ActorGuid.hpp>
+#include <Engine.ACS/Actor/ActorGuid.hpp>
 
-#include "Component.hpp"
-#include "ComponentTypeId.hpp"
+#include "Component/Component.hpp"
+#include "Component/ComponentTypeId.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

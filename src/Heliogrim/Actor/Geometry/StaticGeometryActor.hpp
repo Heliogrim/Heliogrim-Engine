@@ -1,10 +1,10 @@
 #pragma once
 
+#include <Engine.ACS/Actor/Actor.hpp>
+#include <Engine.ACS/Archetype/InheritArchetype.hpp>
 #include <Engine.ACS/Archetype/Layout.hpp>
 
-#include "../Actor.hpp"
 #include "../../Component/Scene/Geometry/StaticGeometryComponent.hpp"
-#include "../Archetype/InheritArchetype.hpp"
 
 namespace hg {
 	class StaticGeometryActor :

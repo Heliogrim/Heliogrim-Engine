@@ -5,9 +5,9 @@
 #include <Engine.Serialization/Structure/RecordScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 
-#include "ActorClass.hpp"
+#include "../Actor/Actor.hpp"
+#include "../Actor/Class/ActorClass.hpp"
 #include "ArchetypeMigration.hpp"
-#include "../Actor.hpp"
 
 namespace hg {
 	/* Level scheme of an archetype; the class is captured here because Engine.Level cannot resolve actor classes. */

@@ -13,7 +13,8 @@
 #include <Engine.Reflow.Uikit/Atom/Layout/VerticalLayout.hpp>
 #include <Engine.Reflow/Window/Window.hpp>
 #include <Engine.Reflow/Window/WindowManager.hpp>
-#include <Heliogrim/Actor/Actor.hpp>
+#include <Engine.ACS/Actor/ActorInitializer.hpp>
+#include <Engine.ACS/Actor/Actor.hpp>
 #include <Heliogrim/Component/Scene/UI/UIComponent.hpp>
 #include <Heliogrim/Universe/Universe.hpp>
 

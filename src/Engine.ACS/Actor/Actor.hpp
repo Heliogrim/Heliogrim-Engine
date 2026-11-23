@@ -5,11 +5,10 @@
 #include <Engine.Serialization/Access/__fwd.hpp>
 
 #include "ActorGuid.hpp"
+#include "ActorInitializer.hpp"
 #include "ActorLabel.hpp"
 #include "ComponentRange.hpp"
-#include "Archetype/ActorClass.hpp"
-#include "../ActorInitializer.hpp"
-#include "../Async/Future.hpp"
+#include "Class/ActorClass.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Async;

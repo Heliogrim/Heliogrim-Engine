@@ -1,6 +1,6 @@
 #pragma once
-#include "Component.hpp"
 #include "Pool.hpp"
+#include "Component/Component.hpp"
 
 namespace hg::engine::acs {
     /**

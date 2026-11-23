@@ -1,13 +1,13 @@
 #include <cstring>
 #include "StaticGeometryComponent.Layout.hpp"
 
-#include <Heliogrim/Actor/Archetype/ArchetypeLayout.inl.hpp>
+#include <Engine.ACS/Archetype/ArchetypeLayout.inl.hpp>
 #include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
-#include <Engine.Core/Engine.hpp>
 
 #include "AssetDatabase.hpp"
 
 import Engine.Asserts;
+import Engine.Core;
 
 using namespace hg::engine::serialization;
 using namespace hg;

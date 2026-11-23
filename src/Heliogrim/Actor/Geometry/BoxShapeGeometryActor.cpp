@@ -1,8 +1,9 @@
 #include "BoxShapeGeometryActor.hpp"
 
+#include <Engine.ACS/Archetype/ArchetypeDefinition.inl.hpp>
+
 #include "../../Component/Scene/Collision/BoxShapeCollisionComponent.Layout.hpp"
 #include "../../Component/Scene/Geometry/BoxShapeGeometryComponent.Layout.hpp"
-#include "../Archetype/ArchetypeDefinition.inl.hpp"
 
 using namespace hg;
 

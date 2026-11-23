@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../SceneComponent.hpp"
+#include "SceneComponent.hpp"
 
 namespace hg {
 	class ModelComponent :

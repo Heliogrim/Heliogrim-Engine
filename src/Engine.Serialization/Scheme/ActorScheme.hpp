@@ -4,6 +4,7 @@
 #include <tuple>
 
 #include <Engine.ACS/Registry.hpp>
+#include <Engine.ACS/Actor/ActorGuid.hpp>
 #include <Engine.Serialization/SerializationModule.hpp>
 #include <Engine.Serialization/Schema/Migration.hpp>
 #include <Engine.Serialization/Structure/RecordScopedSlot.hpp>
@@ -12,7 +13,6 @@
 #include <Engine.Serialization.Structures/Symbols.hpp>
 #include <Engine.Serialization.Structures/Common/Guid.hpp>
 #include <Engine.Serialization.Structures/Common/TypeId.hpp>
-#include <Heliogrim/Actor/ActorGuid.hpp>
 
 #include "__fwd.hpp"
 #include "Scheme.hpp"

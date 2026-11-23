@@ -8,8 +8,8 @@
 
 #include "BoxShapeCollisionModel.hpp"
 
+#include <Engine.ACS/Component/SceneComponent.hpp>
 #include <Engine.Common/__macro.hpp>
-#include <Heliogrim/Component/SceneComponent.hpp>
 
 #include "Engine.Physics.Scene/PhysicsSceneSystem.hpp"
 #include "Heliogrim/Component/Scene/Collision/BoxShapeCollisionComponent.hpp"

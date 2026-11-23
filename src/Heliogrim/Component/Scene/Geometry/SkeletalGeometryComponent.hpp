@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../ModelComponent.hpp"
+#include <Engine.ACS/Component/ModelComponent.hpp>
 
 namespace hg {
 	class SkeletalGeometryComponent :

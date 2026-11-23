@@ -1,6 +1,7 @@
 #pragma once
 
-#include "../Actor.hpp"
+#include <Engine.ACS/Actor/Actor.hpp>
+
 #include "../../Component/Scene/Camera/CameraComponent.hpp"
 
 namespace hg {

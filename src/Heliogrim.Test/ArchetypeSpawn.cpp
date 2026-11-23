@@ -4,14 +4,14 @@
 
 #include <Engine.ACS/ActorModule.hpp>
 #include <Engine.ACS/Registry.hpp>
+#include <Engine.ACS/Actor/ActorRef.hpp>
+#include <Engine.ACS/Actor/Class/ArchetypeConcept.hpp>
+#include <Engine.ACS/Archetype/ArchetypeDefinition.inl.hpp>
 #include <Engine.Level/Level.hpp>
 #include <Engine.Scene/IComponentRegisterContext.hpp>
 #include <Engine.Scene/SceneBase.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
-#include <Heliogrim/Actor/ActorRef.hpp>
-#include <Heliogrim/Actor/Archetype/ArchetypeConcept.hpp>
-#include <Heliogrim/Actor/Archetype/ArchetypeDefinition.inl.hpp>
 #include <Heliogrim/Actor/Geometry/BoxShapeGeometryActor.hpp>
 #include <Heliogrim/Actor/Geometry/SphereShapeGeometryActor.hpp>
 #include <Heliogrim/Actor/Geometry/StaticGeometryActor.hpp>
