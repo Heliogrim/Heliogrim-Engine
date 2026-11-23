@@ -3,10 +3,6 @@
 #include <Engine.Accel.Compile/EffectCompileResult.hpp>
 #include <Engine.Accel.Pass/GraphicsPass.hpp>
 #include <Engine.Accel.Pass/Framebuffer/Framebuffer.hpp>
-#include <Engine.Graphics/Buffer/Buffer.hpp>
-#include <Engine.Graphics/Buffer/StorageBufferView.hpp>
-#include <Engine.Graphics/Buffer/UniformBufferView.hpp>
-#include <Engine.Graphics/Texture/Texture.hpp>
 #include <Engine.Graphics.RenderGraph/Symbol/Observed.hpp>
 #include <Engine.Graphics.RenderGraph/Symbol/Subscribed.hpp>
 #include <Engine.Graphics.RenderGraph/Symbol/SymbolizedResource.hpp>
@@ -14,6 +10,10 @@
 #include <Engine.Graphics.Scene.Model/StaticGeometryModel.hpp>
 
 #include "../Mesh/MeshSubPass.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Graphics;
+#endif
 
 namespace hg::engine::render {
 	class TmpDirectionalShadowPass :

@@ -1,15 +1,9 @@
 #include "FunctionTarget.hpp"
 
 #include <Engine.Graphics/vkinc.hpp>
-#include <Engine.Graphics/Buffer/Buffer.hpp>
-#include <Engine.Graphics/Command/CommandBuffer.hpp>
-#include <Engine.Graphics/Command/CommandPool.hpp>
-#include <Engine.Graphics/Command/CommandQueue.hpp>
-#include <Engine.Graphics/Memory/AllocationResult.hpp>
-#include <Engine.Graphics/Memory/GlobalPooledAllocator.hpp>
-#include <Engine.Graphics/Texture/TextureFactory.hpp>
 
 import Engine.Common;
+import Engine.Graphics;
 
 using namespace hg::test::gpu;
 using namespace hg::engine::graphics;

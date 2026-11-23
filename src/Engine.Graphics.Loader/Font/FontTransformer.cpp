@@ -1,10 +1,9 @@
 #include "FontTransformer.hpp"
 
-#include <Engine.Graphics/Pool/GlobalResourcePool.hpp>
-
 #include "Transformer/FreeType.hpp"
 
 import Engine.Common;
+import Engine.Graphics;
 import Engine.Resource;
 
 using namespace hg::engine::graphics::loader;

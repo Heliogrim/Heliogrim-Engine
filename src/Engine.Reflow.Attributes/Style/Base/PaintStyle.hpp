@@ -1,9 +1,11 @@
 #pragma once
 
-#include <Engine.Graphics/Color/Color.hpp>
-
 #include "../StyleAttribute.hpp"
 #include "../StyleAttributes.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Graphics;
+#endif
 
 namespace hg::engine::reflow {
 	namespace attr {

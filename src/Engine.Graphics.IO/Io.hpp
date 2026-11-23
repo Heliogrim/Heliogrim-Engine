@@ -1,11 +1,11 @@
 #pragma once
 
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Graphics/Pool/__fwd.hpp>
 #include <Engine.Graphics.Core/Graphics.hpp>
 #include <Engine.Graphics.Loader/Cache/__fwd.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Graphics;
 import Engine.Resource;
 #endif
 

@@ -2,7 +2,6 @@
 
 #include <Engine.Accel.Command/CommandBuffer.hpp>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
-#include <Engine.Graphics/Texture/Texture.hpp>
 #include <Engine.Graphics.Core/Graphics.hpp>
 #include <Engine.Graphics.Render.Command/RenderCommandBuffer.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneColor.hpp>
@@ -10,6 +9,7 @@
 #include <Engine.Graphics.RenderGraph/Symbol/ScopedSymbolContext.hpp>
 
 import Engine.Core;
+import Engine.Graphics;
 import Engine.Reflect;
 import std;
 

@@ -3,14 +3,11 @@
 #include <Engine.Accel.Compile/EffectCompileResult.hpp>
 #include <Engine.Accel.Pass/Framebuffer/Framebuffer.hpp>
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Graphics/Buffer/BufferLikeObject.hpp>
-#include <Engine.Graphics/Geometry/UIVertex.hpp>
-#include <Engine.Graphics/Texture/TextureResource.hpp>
-#include <Engine.Graphics/Texture/TextureSampler.hpp>
 #include <Engine.Graphics.RenderGraph/SubPass.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Graphics;
 #endif
 
 namespace hg::engine::reflow {

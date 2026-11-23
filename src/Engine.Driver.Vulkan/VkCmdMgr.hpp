@@ -1,9 +1,9 @@
 #pragma once
 #include <Engine.Accel.Command/CommandBuffer.hpp>
-#include <Engine.Graphics/Device/Device.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Graphics;
 #endif
 
 namespace hg::driver::vk {

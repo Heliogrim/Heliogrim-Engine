@@ -1,11 +1,9 @@
 #include "ReflowCommandBuffer.hpp"
 
 #include <Engine.Common/Math/Compat.inl>
-#include <Engine.Graphics/Texture/Texture.hpp>
-#include <Engine.Graphics/Texture/TextureLikeObject.hpp>
-#include <Engine.Graphics/Texture/TextureView.hpp>
 
 import Engine.Asserts;
+import Engine.Graphics;
 import std;
 
 using namespace hg::engine::reflow;

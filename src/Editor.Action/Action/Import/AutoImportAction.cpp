@@ -10,6 +10,7 @@ import Engine.Assets.Type;
 import Engine.Async;
 import Engine.Common;
 import Engine.Core;
+import Engine.Graphics;
 import Engine.Logging;
 import Engine.Reflect;
 import Engine.Resource;
@@ -118,12 +119,6 @@ Result<void, std::runtime_error> AutoImportAction::undo() {
 ref<Signal> AutoImportAction::finished() const noexcept {
 	return _finished;
 }
-
-/**/
-
-#include <Engine.Graphics/Importer/FontFileTypes.hpp>
-#include <Engine.Graphics/Importer/ImageFileTypes.hpp>
-#include <Engine.Graphics/Importer/ModelFileTypes.hpp>
 
 /**/
 

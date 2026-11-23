@@ -1,9 +1,6 @@
 #include "Font.hpp"
 
-#include <Engine.Graphics/Texture/Texture.hpp>
-
-#include "Engine.Graphics/Command/CommandPool.hpp"
-#include "Engine.Graphics/Command/CommandQueue.hpp"
+import Engine.Graphics;
 
 using namespace hg::engine::reflow;
 using namespace hg;

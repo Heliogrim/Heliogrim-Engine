@@ -5,7 +5,6 @@
 #include <Editor.UI/Widget/Viewport/EditorSceneViewport.hpp>
 #include <Editor.UI/Widget/Viewport/Viewport.hpp>
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Graphics/Swapchain/VkSwapchain.hpp>
 #include <Engine.Graphics.Core/Graphics.hpp>
 #include <Engine.Graphics.Render/RenderTarget.hpp>
 #include <Engine.Reflow.Uikit/Atom/Text.hpp>
@@ -16,6 +15,7 @@
 
 import Engine.ACS;
 import Engine.Common;
+import Engine.Graphics;
 import Engine.Graphics.Scene;
 import Engine.Logging;
 

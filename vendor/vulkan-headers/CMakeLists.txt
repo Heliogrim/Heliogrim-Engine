@@ -45,6 +45,7 @@ function(library_vulkan_headers_init)
 			PRELUDE
 			Engine.Common/__macro.hpp
 			Engine.Graphics/vkinc.hpp
+			vulkan/vulkan.hpp
 			vulkan/vulkan_extension_inspection.hpp
 			vulkan/vulkan_format_traits.hpp
 			vulkan/vulkan_hash.hpp

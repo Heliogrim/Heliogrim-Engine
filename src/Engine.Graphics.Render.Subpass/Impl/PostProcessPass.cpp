@@ -8,8 +8,6 @@
 #include <Engine.Accel.Pass/VkAccelerationPassFactory.hpp>
 #include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
-#include <Engine.Graphics/Texture/Texture.hpp>
-#include <Engine.Graphics/Texture/TextureFactory.hpp>
 #include <Engine.Graphics.Core/Graphics.hpp>
 #include <Engine.Graphics.Render.Command/RenderCommandBuffer.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneColor.hpp>
@@ -19,6 +17,7 @@
 
 import Engine.Common;
 import Engine.Core;
+import Engine.Graphics;
 import Engine.Reflect;
 
 using namespace hg::engine::render;
@@ -387,7 +386,7 @@ EffectCompileResult build_test_pipeline(
 			StencilOp::eKeep,
 			0uL,
 			0uL,
-			PrimitiveTopology::eTriangleList,
+			hg::engine::accel::PrimitiveTopology::eTriangleList,
 			FaceCulling::eNone,
 			FaceMode::eFill,
 			FaceWinding::eCcw,

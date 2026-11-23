@@ -1,12 +1,12 @@
 #pragma once
 
-#include <Engine.Common/Math/__default.inl>
 
 #include "__fwd.hpp"
 #include "TextureBuffer.hpp"
 #include "TextureObject.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
 import Engine.Graphics.Types;
 #endif
 

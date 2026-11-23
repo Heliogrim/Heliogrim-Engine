@@ -1,12 +1,19 @@
 #pragma once
 
-#include <cstdint>
+#include <stdint.h>
+
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import std;
-#else
-// The vulkan module's global fragment includes this file ahead of any import.
-#include <concepts>
 #endif
+
+namespace hg::_ {
+	// No <concepts>: this header lands in module global fragments, where C++ std headers clash with `import std;`.
+	template <typename A, typename B>
+	inline constexpr bool vkSameType = false;
+
+	template <typename A>
+	inline constexpr bool vkSameType<A, A> = true;
+}
 
 /**
  * Vulkan forward declarations, cheap to parse in headers.
@@ -135,11 +142,11 @@ namespace hg {
 		constexpr VkFlagStore(BitType bit_) noexcept :
 			mask(static_cast<VkFlags>(bit_)) {}
 
-		template <std::same_as<::vk::Flags<BitType>> Flags_>
+		template <typename Flags_> requires ::hg::_::vkSameType<Flags_, ::vk::Flags<BitType>>
 		constexpr VkFlagStore(const Flags_& flags_) noexcept :
 			mask(static_cast<VkFlags>(flags_)) {}
 
-		template <std::same_as<::vk::Flags<BitType>> Flags_>
+		template <typename Flags_> requires ::hg::_::vkSameType<Flags_, ::vk::Flags<BitType>>
 		constexpr operator Flags_() const noexcept {
 			return Flags_ { mask };
 		}

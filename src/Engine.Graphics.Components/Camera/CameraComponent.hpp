@@ -1,10 +1,10 @@
 #pragma once
 
-#include <Engine.Graphics/Camera/CameraModes.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.ACS;
+import Engine.Graphics;
 #endif
 
 namespace hg {

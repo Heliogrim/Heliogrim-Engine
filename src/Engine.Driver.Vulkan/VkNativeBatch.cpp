@@ -1,12 +1,10 @@
 #include "VkNativeBatch.hpp"
 
 #include <Engine.Common/ThreadSafety.hpp>
-#include <Engine.Graphics/Command/CommandPool.hpp>
-#include <Engine.Graphics/Command/CommandQueue.hpp>
-#include <Engine.Graphics/Command/VkNativeQueue.hpp>
 
 #include "VkResourceTable.hpp"
 
+import Engine.Graphics;
 import std;
 
 using namespace hg::driver::vk;

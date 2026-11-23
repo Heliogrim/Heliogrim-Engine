@@ -3,14 +3,15 @@
 #include <Engine.Accel.Compile/EffectCompileResult.hpp>
 #include <Engine.Accel.Pass/GraphicsPass.hpp>
 #include <Engine.Accel.Pass/Framebuffer/Framebuffer.hpp>
-#include <Engine.Graphics/Buffer/Buffer.hpp>
-#include <Engine.Graphics/Buffer/UniformBufferView.hpp>
-#include <Engine.Graphics/Texture/TextureSampler.hpp>
 #include <Engine.Graphics.Loader/Material/MaterialResource.hpp>
 #include <Engine.Graphics.Material/MaterialEffect.hpp>
 #include <Engine.Graphics.RenderGraph/SubPass.hpp>
 #include <Engine.Graphics.RenderGraph/Symbol/Subscribed.hpp>
 #include <Engine.Graphics.RenderGraph/Symbol/SymbolizedResource.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Graphics;
+#endif
 
 namespace hg::engine::render {
     class SkyBoxPass :

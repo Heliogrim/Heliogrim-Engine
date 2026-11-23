@@ -1,16 +1,12 @@
 #include "RenderTarget.hpp"
 
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Graphics/Command/CommandBatch.hpp>
-#include <Engine.Graphics/Command/CommandQueue.hpp>
-#include <Engine.Graphics/Device/Device.hpp>
-#include <Engine.Graphics/Surface/Surface.hpp>
-#include <Engine.Graphics/Swapchain/Swapchain.hpp>
 #include <Engine.Graphics.Render/RenderPass.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneColor.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneView.hpp>
 
 import Engine.Common;
+import Engine.Graphics;
 import Engine.Graphics.Scene;
 import Engine.Logging;
 

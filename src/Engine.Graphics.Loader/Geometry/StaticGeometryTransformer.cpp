@@ -7,17 +7,10 @@
 #include "StaticGeometryTransformer.hpp"
 
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Graphics/Buffer/Buffer.hpp>
-#include <Engine.Graphics/Buffer/SparseBufferPage.hpp>
-#include <Engine.Graphics/Buffer/SparseBufferView.hpp>
-#include <Engine.Graphics/Command/CommandBuffer.hpp>
-#include <Engine.Graphics/Geometry/Vertex.hpp>
-#include <Engine.Graphics/Memory/AllocatedMemory.hpp>
-#include <Engine.Graphics/Memory/AllocationResult.hpp>
-#include <Engine.Graphics/Memory/VkAllocator.hpp>
-#include <Engine.Graphics/Pool/GlobalResourcePool.hpp>
+#include <Engine.Graphics/vkinc.hpp>
 
 import Engine.Common;
+import Engine.Graphics;
 import Engine.Logging;
 import Engine.Resource;
 import Engine.Storage.System;

@@ -1,12 +1,12 @@
 #pragma once
 
 #include <Engine.Graphics/vkinc.hpp>
-#include <Engine.Graphics/API/__vkFwd.hpp>
 
 #include "GraphicsPass.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Graphics;
 #endif
 
 namespace hg::engine::accel {

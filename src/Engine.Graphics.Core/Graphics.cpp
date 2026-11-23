@@ -6,13 +6,6 @@
 #endif
 
 #include <Engine.Common/Math/__default.inl>
-#include <Engine.Graphics/Buffer/VkBufferFactory.hpp>
-#include <Engine.Graphics/Importer/ImageImporter.hpp>
-#include <Engine.Graphics/Importer/ModelImporter.hpp>
-#include <Engine.Graphics/Pool/GlobalResourcePool.hpp>
-#include <Engine.Graphics/Surface/SurfaceManager.hpp>
-#include <Engine.Graphics/Swapchain/Swapchain.hpp>
-#include <Engine.Graphics/Texture/VkTextureFactory.hpp>
 #include <Engine.Graphics.IO/Io.hpp>
 #include <Engine.Graphics.Loader/Cache/GlobalCacheCtrl.hpp>
 #include <Engine.Graphics.Loader/Cache/GlobalResourceCache.hpp>
@@ -25,6 +18,7 @@
 import Engine.Common;
 import Engine.Core;
 import Engine.Event;
+import Engine.Graphics;
 import Engine.Graphics.Scene;
 import Engine.Graphics.Schedule;
 import Engine.Logging;

@@ -2,7 +2,6 @@
 
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Graphics/vkinc.hpp>
-#include <Engine.Graphics/Texture/__fwd.hpp>
 #include <Engine.Graphics.RenderGraph/__fwd.hpp>
 #include <Engine.Graphics.RenderGraph/Pass/ExecutionPass.hpp>
 
@@ -11,6 +10,7 @@
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Graphics;
 #endif
 
 namespace hg::engine::render {

@@ -263,7 +263,7 @@ EffectCompileResult build_test_pipeline(
 				.stencilDepthFailOp = StencilOp::eKeep,
 				.stencilCompareMask = 0ul,
 				.stencilWriteMask = 0ul,
-				.primitiveTopology = PrimitiveTopology::eTriangleList,
+				.primitiveTopology = hg::engine::accel::PrimitiveTopology::eTriangleList,
 				.pass = pass_.get()
 			}
 		)

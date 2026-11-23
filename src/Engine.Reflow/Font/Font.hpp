@@ -1,12 +1,11 @@
 #pragma once
 
-#include <Engine.Graphics/Texture/__fwd.hpp>
-
 #include "FontGlyph.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Assets.Type;
 import Engine.Common;
+import Engine.Graphics;
 #endif
 
 namespace hg::engine::reflow {

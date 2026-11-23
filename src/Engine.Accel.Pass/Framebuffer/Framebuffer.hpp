@@ -2,11 +2,10 @@
 
 #include <Engine.Accel.Pass/__fwd.hpp>
 #include <Engine.Graphics/vkinc.hpp>
-#include <Engine.Graphics/Device/Device.hpp>
-#include <Engine.Graphics/Texture/TextureLikeObject.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Graphics;
 #endif
 
 namespace hg::engine::graphics {

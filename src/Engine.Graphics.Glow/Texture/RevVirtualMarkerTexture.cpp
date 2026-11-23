@@ -1,9 +1,10 @@
 #include "RevVirtualMarkerTexture.hpp"
 
-#include <Engine.Graphics/Buffer/Buffer.hpp>
-#include <Engine.Graphics/Command/CommandBuffer.hpp>
-#include <Engine.Graphics/Command/CommandQueue.hpp>
-#include <Engine.Graphics/Texture/TextureFactory.hpp>
+#include <stdint.h>
+#include <Engine.Common/__macro.hpp>
+#include <Engine.Graphics/vkinc.hpp>
+
+import Engine.Graphics;
 
 using namespace hg::engine::graphics::glow;
 using namespace hg::engine::graphics;

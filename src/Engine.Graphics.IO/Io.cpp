@@ -1,12 +1,5 @@
 #include "Io.hpp"
 
-#include <Engine.Graphics/Importer/FontFileTypes.hpp>
-#include <Engine.Graphics/Importer/FontImporter.hpp>
-#include <Engine.Graphics/Importer/ImageFileTypes.hpp>
-#include <Engine.Graphics/Importer/ImageImporter.hpp>
-#include <Engine.Graphics/Importer/ModelFileTypes.hpp>
-#include <Engine.Graphics/Importer/ModelImporter.hpp>
-#include <Engine.Graphics/Texture/TextureResource.hpp>
 #include <Engine.Graphics.Loader/Font/FontLoader.hpp>
 #include <Engine.Graphics.Loader/Geometry/StaticGeometryLoader.hpp>
 #include <Engine.Graphics.Loader/Geometry/StaticGeometryResource.hpp>
@@ -19,6 +12,7 @@
 import Engine.Assets.Type;
 import Engine.Core;
 import Engine.Event;
+import Engine.Graphics;
 import Engine.Graphics.Event;
 
 using namespace ::hg::engine::graphics::loader;

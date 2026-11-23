@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Graphics/Texture/TextureResource.hpp>
 #include <Engine.Graphics.Loader/Cache/__fwd.hpp>
 
 #include "__fwd.hpp"
@@ -9,6 +8,7 @@
 #include "TextureTransformer.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Graphics;
 import Engine.Resource;
 #endif
 

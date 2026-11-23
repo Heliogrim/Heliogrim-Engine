@@ -1,13 +1,15 @@
 #pragma once
 #include <Engine.Accel.Compile/EffectCompileResult.hpp>
 #include <Engine.Accel.Pass/Framebuffer/Framebuffer.hpp>
-#include <Engine.Graphics/Texture/Texture.hpp>
-#include <Engine.Graphics/Texture/TextureSampler.hpp>
 #include <Engine.Graphics.RenderGraph/Symbol/Observed.hpp>
 #include <Engine.Graphics.RenderGraph/Symbol/Subscribed.hpp>
 #include <Engine.Graphics.RenderGraph/Symbol/SymbolizedResource.hpp>
 
 #include "../Mesh/MeshSubPass.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Graphics;
+#endif
 
 namespace hg::engine::render {
     class TmpBrdfPrefPass :

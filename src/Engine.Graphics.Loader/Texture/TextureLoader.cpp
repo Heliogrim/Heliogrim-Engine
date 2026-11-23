@@ -1,11 +1,12 @@
 #include "TextureLoader.hpp"
 
-#include <Engine.Graphics/Pool/GlobalResourcePool.hpp>
 #include <Engine.Graphics.Loader/Cache/GlobalCacheCtrl.hpp>
 
 #include "TextureCache.hpp"
 #include "TextureFeedback.hpp"
 #include "TextureTransformer.hpp"
+
+import Engine.Graphics;
 
 using namespace hg::engine::graphics::loader;
 using namespace hg;

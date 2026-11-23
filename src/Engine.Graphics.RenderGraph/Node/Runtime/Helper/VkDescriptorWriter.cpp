@@ -1,18 +1,7 @@
 #include "VkDescriptorWriter.hpp"
 
-#include <Engine.Graphics/Buffer/Buffer.hpp>
-#include <Engine.Graphics/Buffer/SparseBuffer.hpp>
-#include <Engine.Graphics/Buffer/SparseBufferView.hpp>
-#include <Engine.Graphics/Buffer/StorageBufferView.hpp>
-#include <Engine.Graphics/Buffer/UniformBufferView.hpp>
-#include <Engine.Graphics/Texture/SparseTexture.hpp>
-#include <Engine.Graphics/Texture/SparseTextureView.hpp>
-#include <Engine.Graphics/Texture/Texture.hpp>
-#include <Engine.Graphics/Texture/TextureLikeObject.hpp>
-#include <Engine.Graphics/Texture/TextureSampler.hpp>
-#include <Engine.Graphics/Texture/TextureView.hpp>
-
 import Engine.Common;
+import Engine.Graphics;
 import Engine.Reflect;
 
 using namespace hg::engine::render::graph;

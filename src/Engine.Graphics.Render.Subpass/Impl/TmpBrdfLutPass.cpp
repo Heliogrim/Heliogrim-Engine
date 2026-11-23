@@ -7,7 +7,6 @@
 #include <Engine.Accel.Pass/VkAccelerationPassFactory.hpp>
 #include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
-#include <Engine.Graphics/Texture/TextureFactory.hpp>
 #include <Engine.Graphics.Core/Graphics.hpp>
 #include <Engine.Graphics.Render.Command/RenderCommandBuffer.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/BrdfLut.hpp>
@@ -17,6 +16,7 @@
 
 import Engine.Common;
 import Engine.Core;
+import Engine.Graphics;
 import Engine.Reflect;
 
 using namespace hg::engine::render;
@@ -331,7 +331,7 @@ EffectCompileResult build_test_pipeline(
 				.stencilDepthFailOp = StencilOp::eKeep,
 				.stencilCompareMask = 0ul,
 				.stencilWriteMask = 0ul,
-				.primitiveTopology = PrimitiveTopology::eTriangleList,
+				.primitiveTopology = hg::engine::accel::PrimitiveTopology::eTriangleList,
 				.pass = pass_.get()
 			}
 		)

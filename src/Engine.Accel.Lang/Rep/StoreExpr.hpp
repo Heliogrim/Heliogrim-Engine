@@ -1,11 +1,11 @@
 #pragma once
-#include <Engine.Graphics/Memory/AllocatedMemory.hpp>
 
 #include "Expression.hpp"
 #include "Variable.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Graphics;
 #endif
 
 namespace hg::engine::accel::lang {

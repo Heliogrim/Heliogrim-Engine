@@ -1,12 +1,11 @@
 #include "TextureTransformer.hpp"
 
-#include <Engine.Graphics/Pool/GlobalResourcePool.hpp>
-#include <Engine.Graphics/Texture/SparseTextureView.hpp>
-#include <Engine.Graphics/Texture/TextureLikeObject.hpp>
+#include <cassert>
 
 #include "./Transformer/Ktx.hpp"
 
 import Engine.Common;
+import Engine.Graphics;
 import Engine.Reflect;
 import Engine.Resource;
 
