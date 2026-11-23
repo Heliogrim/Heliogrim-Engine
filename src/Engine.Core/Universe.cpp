@@ -1,7 +1,6 @@
-#include <Engine.Level/Level.hpp>
-#include <Engine.Scene/SceneBase.hpp>
-
 import Engine.Core;
+import Engine.Level;
+import Engine.Scene;
 
 using namespace hg::engine::core;
 using namespace hg;

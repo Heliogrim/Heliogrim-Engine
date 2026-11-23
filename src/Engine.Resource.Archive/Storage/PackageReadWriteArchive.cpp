@@ -1,9 +1,9 @@
 #include <cstring>
-#include <Engine.Resource.Package/ReadWritePackage.hpp>
 
 import Engine.Asserts;
 import Engine.Resource.Archive;
 import Engine.Resource.Blob;
+import Engine.Resource.Package;
 
 using namespace hg::engine::resource;
 using namespace hg;

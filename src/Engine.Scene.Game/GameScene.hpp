@@ -2,10 +2,12 @@
 
 #include <Engine.Physics.Scene/PhysicsSceneSystem.hpp>
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
-#include <Engine.Scene/IComponentRegisterContext.hpp>
-#include <Engine.Scene/Scene.hpp>
 
 #include "SceneComponentQueue.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Scene;
+#endif
 
 namespace hg::engine::scene {
 	class GameScene final :

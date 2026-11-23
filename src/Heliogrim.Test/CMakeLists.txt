@@ -2,6 +2,7 @@
 make_test_project(
 		TEST_NAME Heliogrim.Test
 		LIBRARIES
+		${PROJECT_NAME}::Engine.Level
 		${PROJECT_NAME}::Engine.ACS
 		${PROJECT_NAME}::Engine.Serialization.Structures
 		${PROJECT_NAME}::Engine.Asserts

@@ -1,11 +1,9 @@
 #include "Factory.hpp"
 
-#include <Engine.Resource.Package/Attribute/MagicBytes.hpp>
-#include <Engine.Resource.Package/Attribute/PackageGuid.hpp>
-
 #include "Load.hpp"
 
 import Engine.Asserts;
+import Engine.Resource.Package;
 
 using namespace hg::engine::storage::package;
 using namespace hg::engine::resource;

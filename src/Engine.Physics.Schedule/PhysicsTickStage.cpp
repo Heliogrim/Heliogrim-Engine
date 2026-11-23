@@ -10,12 +10,12 @@
 
 #include <Engine.Physics.Scene/PhysicsSceneSystem.hpp>
 #include <Engine.Physics.Schedule/PhysicsPipeline.hpp>
-#include <Engine.Scene/SceneBase.hpp>
 #include <Engine.Scene.Schedule/ScenePipeline.hpp>
 
 import Engine.Core;
 import Engine.Core.Schedule;
 import Engine.Physics;
+import Engine.Scene;
 
 using namespace hg::engine::physics::schedule;
 using namespace hg::engine::scheduler;

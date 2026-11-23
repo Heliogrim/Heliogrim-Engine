@@ -1,10 +1,10 @@
 #include "Heliogrim.Main.hpp"
 
-#include <Engine.Core.Game/GameEngine.hpp>
 #include <Heliogrim/Heliogrim.hpp>
 #include <Heliogrim/HeliogrimStatic.hpp>
 
 import Engine.Core;
+import Engine.Core.Game;
 import Engine.Event;
 
 using namespace hg;

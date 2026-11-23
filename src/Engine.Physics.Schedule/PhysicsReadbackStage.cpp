@@ -2,9 +2,9 @@
 
 #include <Engine.Physics.Scene/PhysicsSceneSystem.hpp>
 #include <Engine.Physics.Schedule/PhysicsPipeline.hpp>
-#include <Engine.Scene/SceneBase.hpp>
 
 import Engine.Core;
+import Engine.Scene;
 
 using namespace hg::engine::physics::schedule;
 using namespace hg::engine::scheduler;

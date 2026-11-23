@@ -15,13 +15,13 @@
 #include <Engine.Reflow/Layout/Style.hpp>
 #include <Engine.Render.Scene/RenderSceneSystem.hpp>
 #include <Engine.Render.Scene.Model/CameraModel.hpp>
-#include <Engine.Scene/SceneBase.hpp>
 
 import Engine.Asserts;
 import Engine.Common;
 import Engine.Core;
 import Engine.Graphics.Scene;
 import Engine.Logging;
+import Engine.Scene;
 
 using namespace hg::engine::reflow;
 using namespace hg;

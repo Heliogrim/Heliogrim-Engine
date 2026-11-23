@@ -18,7 +18,6 @@
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
-#include <Engine.Resource.Package/Attribute/MagicBytes.hpp>
 #include <Engine.Storage.Package/Pattern.hpp>
 #include <Engine.Storage.Registry/IStorage.hpp>
 #include <Engine.Storage.Registry/Options/StorageDescriptor.hpp>
@@ -33,6 +32,7 @@ import Engine.Core;
 import Engine.Logging;
 import Engine.Reflect;
 import Engine.Resource.Archive;
+import Engine.Resource.Package;
 import Engine.Serialization;
 import Engine.Serialization.Structures;
 import Engine.Storage;

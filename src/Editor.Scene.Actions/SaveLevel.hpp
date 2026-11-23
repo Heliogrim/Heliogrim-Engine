@@ -2,7 +2,10 @@
 
 #include <Editor.Action/Action/DelegateAction.hpp>
 #include <Engine.Assets.Type/Universe/LevelAsset.hpp>
-#include <Engine.Level/Level.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Level;
+#endif
 
 namespace hg::editor::scene::actions {
 	class SaveLevel :

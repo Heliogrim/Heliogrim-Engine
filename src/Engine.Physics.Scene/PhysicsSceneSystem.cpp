@@ -8,9 +8,13 @@
 
 #include "PhysicsSceneSystem.hpp"
 
+#include <Engine.Physics.Scene.Model/BoxShapeCollisionModel.hpp>
+#include <Engine.Physics.Scene.Model/SphereShapeCollisionModel.hpp>
+
 import Engine.ACS;
 import Engine.Core;
 import Engine.Physics;
+import Engine.Physics.Components;
 
 using namespace hg::engine::physics;
 using namespace hg;
@@ -137,11 +141,6 @@ void PhysicsSceneSystem::relocate(ref<const acs::RelocationTable> table_) {
 		storage->forEachMut([&table_](ref<PhysicsSceneSystemModel> model_) { model_.relocate(table_); });
 	}
 }
-
-#include <Engine.Physics.Components/Collision/BoxShapeCollisionComponent.hpp>
-#include <Engine.Physics.Components/Collision/SphereShapeCollisionComponent.hpp>
-#include <Engine.Physics.Scene.Model/BoxShapeCollisionModel.hpp>
-#include <Engine.Physics.Scene.Model/SphereShapeCollisionModel.hpp>
 
 void registerTypeMappings(ref<PhysicsSceneRegistry> registry_) {
 

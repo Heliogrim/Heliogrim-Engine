@@ -1,9 +1,9 @@
 #include "SceneUpdateStage.hpp"
 
-#include <Engine.Scene/Scene.hpp>
 #include <Engine.Scene.Schedule/ScenePipeline.hpp>
 
 import Engine.Core;
+import Engine.Scene;
 
 using namespace hg::engine::scene::schedule;
 using namespace hg::engine::scheduler;

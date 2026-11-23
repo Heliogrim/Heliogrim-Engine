@@ -2,9 +2,9 @@
 
 #include <Engine.ACS/Archetype/ArchetypeDefinition.inl.hpp>
 #include <Engine.Graphics.Components/Geometry/BoxShapeGeometryComponent.Layout.hpp>
-#include <Engine.Physics.Components/Collision/BoxShapeCollisionComponent.Layout.hpp>
 
 import Engine.ACS;
+import Engine.Physics.Components;
 
 using namespace hg;
 

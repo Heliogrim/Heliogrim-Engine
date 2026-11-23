@@ -1,8 +1,10 @@
 #pragma once
 
-#include <Engine.Scene.Support/SceneSystemTypeMappedRegistry.hpp>
-
 #include "PhysicsSceneSystemModel.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Scene.Support;
+#endif
 
 namespace hg::engine::physics {
 	class PhysicsSceneRegistry :

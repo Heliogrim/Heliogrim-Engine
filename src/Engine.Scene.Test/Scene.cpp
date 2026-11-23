@@ -1,8 +1,7 @@
 #include "pch.h"
 /**/
 
-#include <Engine.Scene/Scene.hpp>
-
+import Engine.Scene;
 import std;
 
 using namespace hg::engine::scene;

@@ -4,12 +4,8 @@
 #include <algorithm>
 #include "Load.hpp"
 
-#include <Engine.Resource.Package/Utils.hpp>
-#include <Engine.Resource.Package/Attribute/MagicBytes.hpp>
-#include <Engine.Resource.Package/Linker/Indexed.hpp>
-
 import Engine.Resource.Archive;
-import Engine.Crypto;
+import Engine.Resource.Package;
 
 using namespace hg::engine::storage::package;
 using namespace hg::engine::resource::package;

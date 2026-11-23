@@ -13,7 +13,6 @@
 #include "Cache/GlobalCacheCtrl.hpp"
 #include "Cache/GlobalResourceCache.hpp"
 #include "Engine.Resource/ResourceManager.hpp"
-#include "Engine.Scene/Scene.hpp"
 #include "Importer/ImageImporter.hpp"
 #include "Importer/ModelImporter.hpp"
 #include "Pool/GlobalResourcePool.hpp"
@@ -32,6 +31,7 @@ import Engine.Event;
 import Engine.Graphics.Scene;
 import Engine.Graphics.Schedule;
 import Engine.Logging;
+import Engine.Scene;
 import Engine.Scheduler;
 /**/
 
