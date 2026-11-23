@@ -25,7 +25,7 @@ import Engine.Asserts;
 import Engine.Common;
 #endif
 
-namespace hg::archetype_detail {
+namespace hg::engine::acs {
 	template <typename Type_>
 	using info_of = engine::acs::LayoutInfo<typename Type_::layout, Type_>;
 
@@ -146,8 +146,8 @@ namespace hg::archetype_detail {
 namespace hg {
 	template <typename Type_>
 	constexpr TypedActorClass<Type_> ActorClass::make() noexcept {
-		using info = archetype_detail::info_of<Type_>;
-		using tables = archetype_detail::ClassTables<Type_>;
+		using info = ::hg::engine::acs::info_of<Type_>;
+		using tables = ::hg::engine::acs::ClassTables<Type_>;
 		using entry_sequence = std::make_integer_sequence<u32, info::entry_count>;
 
 		static_assert(
@@ -155,9 +155,9 @@ namespace hg {
 			"Archetype actors are relocated by byte copy, with Actor's label and component set re-seated by move."
 		);
 
-		ArchetypeOps ops {};
+		engine::acs::ArchetypeOps ops {};
 
-		ops.construct = [](std::byte* const slots_, const u32 count_, const u32 stride_, cref<ArchetypeInit> init_) {
+		ops.construct = [](std::byte* const slots_, const u32 count_, const u32 stride_, cref<engine::acs::ArchetypeInit> init_) {
 			for (u32 index = 0u; index < count_; ++index) {
 				std::byte* const slot = slots_ + index * stride_;
 				auto* const storage = slot + info::actor_offset;
@@ -166,7 +166,7 @@ namespace hg {
 				const auto guid = generate_actor_guid();
 
 				[&]<u32... Entries_>(std::integer_sequence<u32, Entries_...>) {
-					(archetype_detail::construct_entry<info, Entries_>(slot, guid, actor), ...);
+					(::hg::engine::acs::construct_entry<info, Entries_>(slot, guid, actor), ...);
 				}(entry_sequence {});
 
 				auto initializer = ActorInitializer { init_.registry };
@@ -187,7 +187,7 @@ namespace hg {
 
 				// Children before parents.
 				[&]<u32... Entries_>(std::integer_sequence<u32, Entries_...>) {
-					(std::destroy_at(archetype_detail::component_at<info, info::entry_count - 1u - Entries_>(slot)), ...);
+					(std::destroy_at(::hg::engine::acs::component_at<info, info::entry_count - 1u - Entries_>(slot)), ...);
 				}(entry_sequence {});
 			}
 		};
@@ -197,7 +197,7 @@ namespace hg {
 				return std::launder(reinterpret_cast<Type_*>(slot_ + info::actor_offset));
 			};
 
-			if constexpr (archetype_detail::all_relocatable<info>(entry_sequence {})) {
+			if constexpr (::hg::engine::acs::all_relocatable<info>(entry_sequence {})) {
 				std::memcpy(dst_, src_, static_cast<size_t>(count_) * stride_);
 			}
 
@@ -205,9 +205,9 @@ namespace hg {
 				std::byte* const src = src_ + index * stride_;
 				std::byte* const dst = dst_ + index * stride_;
 
-				if constexpr (not archetype_detail::all_relocatable<info>(entry_sequence {})) {
+				if constexpr (not ::hg::engine::acs::all_relocatable<info>(entry_sequence {})) {
 					[&]<u32... Entries_>(std::integer_sequence<u32, Entries_...>) {
-						(archetype_detail::move_entry<info, Entries_>(src, dst), ...);
+						(::hg::engine::acs::move_entry<info, Entries_>(src, dst), ...);
 					}(entry_sequence {});
 					std::memcpy(dst + info::actor_offset, src + info::actor_offset, sizeof(Type_));
 				}
@@ -218,19 +218,19 @@ namespace hg {
 				// Links are fixed by the layout, so they are re-stamped instead of offset-adjusted.
 				[&]<u32... Entries_>(std::integer_sequence<u32, Entries_...>) {
 					(rebind(
-						*archetype_detail::component_at<info, Entries_>(dst),
+						*::hg::engine::acs::component_at<info, Entries_>(dst),
 						actor,
-						archetype_detail::parent_at<info, Entries_>(dst)
+						::hg::engine::acs::parent_at<info, Entries_>(dst)
 					), ...);
 				}(entry_sequence {});
-				rebindRoot(*actor, *archetype_detail::component_at<info, 0u>(dst));
+				rebindRoot(*actor, *::hg::engine::acs::component_at<info, 0u>(dst));
 			}
 		};
 
 		ops.serialize = [](const ptr<const std::byte> slot_, ref<engine::serialization::StructScopedSlot> record_) {
 			auto components = record_.insertRecordSlot(engine::serialization::Symbols::Components).intoStruct();
 			[&]<u32... Entries_>(std::integer_sequence<u32, Entries_...>) {
-				(archetype_detail::serialize_entry<info, Entries_>(slot_, components), ...);
+				(::hg::engine::acs::serialize_entry<info, Entries_>(slot_, components), ...);
 			}(entry_sequence {});
 		};
 
@@ -242,7 +242,7 @@ namespace hg {
 			const auto ctx = root != nullptr ? root->context : nullptr;
 			const auto warned = ctx != nullptr ? ctx->warningCount() : 0uz;
 			[&]<u32... Entries_>(std::integer_sequence<u32, Entries_...>) {
-				((complete = archetype_detail::hydrate_entry<info, Entries_>(slot_, components) && complete), ...);
+				((complete = ::hg::engine::acs::hydrate_entry<info, Entries_>(slot_, components) && complete), ...);
 			}(entry_sequence {});
 			// A warned (e.g. unresolved) value is dropped from the object, so a later save must be refused.
 			complete = (ctx == nullptr || ctx->warningCount() == warned) && complete;
@@ -254,11 +254,11 @@ namespace hg {
 		};
 
 		ops.dumpLayout = [](const ptr<const std::byte> slots_, const u32 count_, const u32 stride_, ref<Vector<std::byte>> out_) {
-			archetype_detail::dump_layout<info>(archetype_detail::layout_hash<Type_>(), slots_, count_, stride_, out_);
+			::hg::engine::acs::dump_layout<info>(::hg::engine::acs::layout_hash<Type_>(), slots_, count_, stride_, out_);
 		};
 
 		ops.loadLayout = [](const ptr<std::byte> slots_, const u32 count_, const u32 stride_, std::span<const std::byte> in_) {
-			return archetype_detail::load_layout<info>(archetype_detail::layout_hash<Type_>(), slots_, count_, stride_, in_);
+			return ::hg::engine::acs::load_layout<info>(::hg::engine::acs::layout_hash<Type_>(), slots_, count_, stride_, in_);
 		};
 
 		ops.resolveLayout = [](
@@ -268,7 +268,7 @@ namespace hg {
 				std::span<const std::byte> in_,
 				ref<engine::serialization::LoadContext> ctx_
 			) {
-				archetype_detail::resolve_layout<info>(archetype_detail::layout_hash<Type_>(), slots_, count_, stride_, in_, ctx_);
+				::hg::engine::acs::resolve_layout<info>(::hg::engine::acs::layout_hash<Type_>(), slots_, count_, stride_, in_, ctx_);
 			};
 
 		if constexpr (has_tick_v<Type_>) {
@@ -281,7 +281,7 @@ namespace hg {
 
 		return TypedActorClass<Type_> {
 			static_cast<ptr<const MetaClass>>(Type_::getStaticMetaClass()),
-			archetype_detail::layout_hash<Type_>(),
+			::hg::engine::acs::layout_hash<Type_>(),
 			engine::acs::ClusterDesc {
 				info::slot_stride,
 				std::max(info::block_align, static_cast<u32>(alignof(Type_))),

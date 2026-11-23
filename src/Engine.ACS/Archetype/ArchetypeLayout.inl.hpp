@@ -35,7 +35,7 @@ namespace hg {
 	struct ComponentRef;
 }
 
-namespace hg::archetype_detail {
+namespace hg::engine::acs {
 	template <typename>
 	inline constexpr bool is_actor_ref_v = false;
 

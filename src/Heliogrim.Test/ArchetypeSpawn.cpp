@@ -457,7 +457,7 @@ namespace HeliogrimApi {
 		EXPECT_EQ(registry().resolve(handle), nullptr);
 		// Fresh refs never resolved before, so they re-resolve and see the freed handles.
 		ActorRef<> fresh {};
-		archetype_detail::RefAccess::handle(fresh) = handle;
+		::hg::engine::acs::RefAccess::handle(fresh) = handle;
 		EXPECT_FALSE(fresh.get().has_value());
 
 		// Destructors ran exactly once.

@@ -10,7 +10,7 @@ import Engine.Common;
 import Engine.Core;
 #endif
 
-namespace hg::archetype_detail {
+namespace hg::engine::acs {
 	struct RefAccess;
 }
 
@@ -33,7 +33,7 @@ namespace hg {
 		friend struct ActorRef;
 		template <typename>
 		friend struct ComponentRef;
-		friend struct ::hg::archetype_detail::RefAccess;
+		friend struct ::hg::engine::acs::RefAccess;
 		friend class ::hg::Level;
 		friend class ::hg::Universe;
 

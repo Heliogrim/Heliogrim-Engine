@@ -15,7 +15,7 @@ namespace hg {
 	template <typename Type_>
 	struct ComponentRef {
 	private:
-		friend struct ::hg::archetype_detail::RefAccess;
+		friend struct ::hg::engine::acs::RefAccess;
 
 	public:
 		constexpr ComponentRef() noexcept = default;

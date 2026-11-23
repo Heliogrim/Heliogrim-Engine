@@ -15,7 +15,7 @@ namespace hg::engine::serialization {
 	class LoadContext;
 }
 
-namespace hg {
+namespace hg::engine::acs {
 	/**
 	 * Input to `ArchetypeOps::construct`; every actor of the span gets a new actor guid and component guids.
 	 */
