@@ -1,7 +1,6 @@
 #include "Input.hpp"
 
 #include <Engine.Common/SDL3.hpp>
-#include <Engine.Input.Schedule/InputPipeline.hpp>
 
 #include "DragDropEvent.hpp"
 #include "KeyboardEvent.hpp"
@@ -11,12 +10,13 @@
 
 #ifdef WIN32
 #include <Support.Input.Win32/DragDrop/Win32DragDropReceiver.hpp>
-#include <Support.Input.Win32/DragDrop/Win32DragDropSender.hpp>
-#include <Support.Platform.Win32/Win32Window.hpp>
+import Support.Input.Win32;
+import Support.Platform.Win32;
 #endif
 
 import Engine.Core;
 import Engine.Event;
+import Engine.Input.Schedule;
 import Engine.Scheduler;
 import std;
 

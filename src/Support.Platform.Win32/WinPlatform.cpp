@@ -5,17 +5,13 @@
 #include <Engine.Common/SDL3.hpp>
 #include <Engine.Common/stdafx.h>
 #include <Engine.Graphics/Graphics.hpp>
-#include <Engine.Input/Input.hpp>
-#include <Engine.Input/KeyboardEvent.hpp>
-#include <Engine.Input/MouseButtonEvent.hpp>
-#include <Engine.Input/MouseMoveEvent.hpp>
-#include <Engine.Input/MouseWheelEvent.hpp>
 
 #include "Win32Window.hpp"
 
 import Engine.Asserts;
 import Engine.Core;
 import Engine.Event;
+import Engine.Input;
 import Engine.Logging;
 import Engine.Scheduler;
 

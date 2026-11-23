@@ -2,13 +2,13 @@
 
 /**/
 #include <Engine.Serialization/SerializationModule.hpp>
-#include <Engine.Storage/StorageModule.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
 import Engine.Config;
 import Engine.Core;
 import Engine.Event;
+import Engine.Storage;
 #endif
 /**/
 

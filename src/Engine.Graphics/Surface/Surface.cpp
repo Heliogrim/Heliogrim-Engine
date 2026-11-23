@@ -14,7 +14,7 @@
 #include "../Swapchain/Swapchain.hpp"
 
 #if defined(WIN32)
-#include <Support.Platform.Win32/Win32Window.hpp>
+import Support.Platform.Win32;
 #else
 #endif
 

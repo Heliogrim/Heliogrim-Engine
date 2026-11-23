@@ -3,6 +3,10 @@
 if ("${CMAKE_SYSTEM_NAME}" MATCHES "Windows")
 	make_library_project(
 			LIB_NAME Support.Input.Win32
+			MODULE
+			MODULE_EXCLUDE
+			# Hoisted into the global fragment otherwise, where its Engine.Input import has no effect.
+			Support.Input.Win32/DragDrop/Win32DragDropReceiver.hpp
 			LIB_FOLDER "${IDE_FOLDER}/Support"
 			LIBRARIES
 			${PROJECT_NAME}::Engine.Async

@@ -1,13 +1,13 @@
 #pragma once
 
 #include <Engine.Common/stdafx.h>
-#include <Engine.Input/DragDrop/DragDropObject.hpp>
 
 /**/
 #include <objidl.h>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Input;
 #endif
 
 namespace hg::engine::input {

@@ -3,8 +3,10 @@
 if ("${CMAKE_SYSTEM_NAME}" MATCHES "Windows")
 	make_library_project(
 			LIB_NAME Support.Platform.Win32
+			MODULE
 			LIB_FOLDER "${IDE_FOLDER}/Support"
 			LIBRARIES
+				${PROJECT_NAME}::Engine.Input.Module
 			${PROJECT_NAME}::Engine.Scheduler
 			${PROJECT_NAME}::Engine.Asserts
 			${PROJECT_NAME}::Engine.Async

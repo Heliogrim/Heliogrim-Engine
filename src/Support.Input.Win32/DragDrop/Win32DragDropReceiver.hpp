@@ -8,7 +8,10 @@
 #include <Windows.h>
 /**/
 #include <ole2.h>
-#include <Engine.Input/DragDrop/DragDropReceiver.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Input;
+#endif
 
 namespace hg::engine::input {
 	class Win32DragDropReceiver :

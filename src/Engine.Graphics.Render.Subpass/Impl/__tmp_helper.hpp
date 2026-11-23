@@ -5,7 +5,6 @@
 #include <Engine.Accel.Lang/Ir/Interface.hpp>
 #include <Engine.Accel.Lang/Ir/Parser.hpp>
 #include <Engine.Accel.Lang/Rep/Variable.hpp>
-#include <Engine.Storage/StorageModule.hpp>
 #include <Engine.Storage.System/ReadText.hpp>
 #include <Engine.Storage.System/StorageSystem.hpp>
 
@@ -14,6 +13,7 @@ import Engine.Asserts;
 import Engine.Common;
 import Engine.Config;
 import Engine.Core;
+import Engine.Storage;
 #endif
 
 namespace hg::engine::render {

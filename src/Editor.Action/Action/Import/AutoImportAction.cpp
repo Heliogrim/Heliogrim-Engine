@@ -15,7 +15,7 @@ import Engine.Core;
 import Engine.Logging;
 import Engine.Reflect;
 import Engine.Resource.Archive;
-import Engine.Diagnostics;
+import Engine.Storage;
 
 using namespace hg::editor;
 using namespace hg;
@@ -134,7 +134,6 @@ ref<Signal> AutoImportAction::finished() const noexcept {
 #include <Engine.Serialization/Archive/StructuredArchive.hpp>
 #include <Engine.Serialization/Diagnostic/Codes.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
-#include <Engine.Storage/StorageModule.hpp>
 #include <Engine.Storage.Registry/IStorageRegistry.hpp>
 #include <Engine.Storage.Registry/Options/FileStorageDescriptor.hpp>
 #include <Engine.Storage.Registry/Options/PackageStorageDescriptor.hpp>

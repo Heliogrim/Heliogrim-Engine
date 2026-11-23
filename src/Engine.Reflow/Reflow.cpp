@@ -1,6 +1,5 @@
 #include "Reflow.hpp"
 
-#include <Engine.Reflow.Schedule/ReflowPipeline.hpp>
 #include <Engine.Reflow.Theming/Theming.hpp>
 
 #include "DataWatcher.hpp"
@@ -9,6 +8,7 @@
 
 import Engine.Common;
 import Engine.Core;
+import Engine.Reflow.Schedule;
 import Engine.Scheduler;
 
 using namespace hg::engine::core;

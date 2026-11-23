@@ -1,7 +1,6 @@
 #include "ReflowFlowStage.hpp"
 
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Graphics.Schedule/RenderScenePipeline.hpp>
 #include <Engine.Reflow/DataWatcher.hpp>
 #include <Engine.Reflow/Reflow.hpp>
 #include <Engine.Reflow/ReflowEngine.hpp>
@@ -13,6 +12,7 @@
 #include <Engine.Scene.Schedule/ScenePipeline.hpp>
 
 import Engine.Core;
+import Engine.Graphics.Schedule;
 import Engine.Logging;
 import std;
 

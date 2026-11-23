@@ -3,6 +3,12 @@
 make_test_project(
 		TEST_NAME Engine.Scheduler.Test
 		LIBRARIES
+			${PROJECT_NAME}::Engine.Reflow.Schedule
+			${PROJECT_NAME}::Engine.Physics.Schedule
+			${PROJECT_NAME}::Engine.Input.Schedule
+			${PROJECT_NAME}::Engine.Graphics.Schedule
+			${PROJECT_NAME}::Engine.Core.Schedule
+			${PROJECT_NAME}::Engine.ACS.Schedule
 		${PROJECT_NAME}::Engine.Asserts
 		${PROJECT_NAME}::Engine.Async
 		${PROJECT_NAME}::Engine.Common
