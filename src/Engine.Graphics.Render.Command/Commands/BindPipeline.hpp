@@ -1,8 +1,11 @@
 #pragma once
-#include <Engine.Accel.Pipeline/AccelerationPipeline.hpp>
 
 #include "Engine.Graphics.Render.Command/RenderCommand.hpp"
 #include "Engine.Graphics.Render.Command/RenderResource.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Accel.Pipeline;
+#endif
 
 namespace hg::engine::render::cmd {
     enum class BindPipelineFeatureSet {

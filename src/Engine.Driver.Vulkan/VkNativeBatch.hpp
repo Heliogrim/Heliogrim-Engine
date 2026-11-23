@@ -1,7 +1,12 @@
 #pragma once
-#include <Engine.Accel.Command/CommandBuffer.hpp>
+#include <Engine.Graphics/vkinc.hpp>
+/**/
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Graphics.Render.Command/NativeBatch.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Accel.Command;
+#endif
 
 namespace hg::driver::vk {
 	class VkResourceTable;

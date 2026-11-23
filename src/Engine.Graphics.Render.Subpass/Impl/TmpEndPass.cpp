@@ -2,7 +2,6 @@
 #include <Engine.Graphics/vkinc.hpp>
 /**/
 
-#include <Engine.Accel.Command/CommandBuffer.hpp>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
 #include <Engine.Graphics.Core/Graphics.hpp>
 #include <Engine.Graphics.Render.Command/RenderCommandBuffer.hpp>
@@ -11,6 +10,7 @@
 
 #include "TmpEndPass.hpp"
 
+import Engine.Accel.Command;
 import Engine.Core;
 import Engine.Graphics;
 import Engine.Graphics.RenderGraph;

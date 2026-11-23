@@ -1,5 +1,6 @@
 #include "VkNativeBatch.hpp"
 
+#include <cassert>
 #include <Engine.Common/ThreadSafety.hpp>
 
 #include "VkResourceTable.hpp"

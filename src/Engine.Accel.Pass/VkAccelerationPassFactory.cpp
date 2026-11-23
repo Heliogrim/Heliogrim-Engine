@@ -1,12 +1,12 @@
 #include "VkAccelerationPassFactory.hpp"
 
-#include <Engine.Accel.Pipeline/VkGraphicsPipeline.hpp>
 #include <Engine.Graphics.Core/Graphics.hpp>
 
 #include "MeshPass.hpp"
 #include "RaytracingPass.hpp"
 #include "VkGraphicsPass.hpp"
 
+import Engine.Accel.Pipeline;
 import Engine.Common;
 import Engine.Core;
 import Engine.Graphics;

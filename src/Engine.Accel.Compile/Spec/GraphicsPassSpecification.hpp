@@ -1,10 +1,10 @@
 #pragma once
 
-#include <Engine.Accel.Pipeline/AccelerationSpecification.hpp>
 #include <Engine.Graphics/vkinc.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Accel.Pass;
+import Engine.Accel.Pipeline;
 import Engine.Common;
 import vulkan;
 #endif

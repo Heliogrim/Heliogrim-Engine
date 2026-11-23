@@ -1,7 +1,7 @@
 #pragma once
-#include <Engine.Accel.Command/CommandBuffer.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Accel.Command;
 import Engine.Common;
 import Engine.Graphics;
 #endif

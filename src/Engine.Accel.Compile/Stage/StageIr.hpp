@@ -1,13 +1,11 @@
 #pragma once
 
-#include <Engine.Accel.Pipeline/Bind/BindLayout.hpp>
-#include <Engine.Accel.Pipeline/Stage/StageDerivat.hpp>
-
 #include "../Module/ModuleTargetStage.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Accel.Effect;
 import Engine.Accel.Lang;
+import Engine.Accel.Pipeline;
 import Engine.Common;
 #endif
 

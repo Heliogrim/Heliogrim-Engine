@@ -11,6 +11,7 @@ make_test_project(
 		${PROJECT_NAME}::Engine.Accel.Lang
 		${PROJECT_NAME}::Engine.Accel.Effect
 		${PROJECT_NAME}::Engine.Accel.Pass
+		${PROJECT_NAME}::Engine.Accel.Pipeline
 		${PROJECT_NAME}::Engine.Asserts
 		${PROJECT_NAME}::Engine.Common
 		${PROJECT_NAME}::Engine.Config

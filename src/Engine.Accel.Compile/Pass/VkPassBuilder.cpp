@@ -1,10 +1,9 @@
 #include "VkPassBuilder.hpp"
 
-#include <Engine.Accel.Pipeline/VkGraphicsPipeline.hpp>
-
 #include "../Profile/EffectProfile.hpp"
 #include "../Spec/EffectSpecification.hpp"
 
+import Engine.Accel.Pipeline;
 import Engine.Common;
 
 using namespace hg::engine::accel;

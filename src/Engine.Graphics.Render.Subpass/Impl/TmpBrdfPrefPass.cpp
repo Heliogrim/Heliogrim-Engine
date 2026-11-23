@@ -2,12 +2,9 @@
 #include <Engine.Graphics/vkinc.hpp>
 /**/
 
-#include <Engine.Accel.Command/CommandBuffer.hpp>
 #include <Engine.Accel.Compile/VkEffectCompiler.hpp>
 #include <Engine.Accel.Compile/Profile/EffectProfile.hpp>
 #include <Engine.Accel.Compile/Spec/SimpleEffectSpecification.hpp>
-#include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
-#include <Engine.Accel.Pipeline/VkGraphicsPipeline.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Math/Compat.inl>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
@@ -19,7 +16,9 @@
 
 #include "TmpBrdfPrefPass.hpp"
 
+import Engine.Accel.Command;
 import Engine.Accel.Pass;
+import Engine.Accel.Pipeline;
 import Engine.Common;
 import Engine.Core;
 import Engine.Graphics;

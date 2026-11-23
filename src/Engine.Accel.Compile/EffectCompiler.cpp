@@ -1,12 +1,12 @@
 #include "EffectCompiler.hpp"
 
-#include <Engine.Accel.Pipeline/Stage/StageModule.hpp>
 #include <Engine.Common/__macro.hpp>
 
 #include "Module/ModuleBuilder.hpp"
 #include "Module/ModuleCompiler.hpp"
 #include "Stage/StageComposer.hpp"
 
+import Engine.Accel.Pipeline;
 import Engine.Asserts;
 import Engine.Env;
 import Engine.Logging;

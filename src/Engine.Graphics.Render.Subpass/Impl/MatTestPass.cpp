@@ -2,11 +2,9 @@
 #include <Engine.Graphics/vkinc.hpp>
 /**/
 
-#include <Engine.Accel.Command/CommandBuffer.hpp>
 #include <Engine.Accel.Compile/VkEffectCompiler.hpp>
 #include <Engine.Accel.Compile/Profile/EffectProfile.hpp>
 #include <Engine.Accel.Compile/Spec/SimpleEffectSpecification.hpp>
-#include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
 #include <Engine.Graphics.Core/Graphics.hpp>
 #include <Engine.Graphics.Loader/Cache/GlobalCacheCtrl.hpp>
@@ -23,7 +21,9 @@
 #include "MatTestPass.hpp"
 
 import Engine.ACS;
+import Engine.Accel.Command;
 import Engine.Accel.Pass;
+import Engine.Accel.Pipeline;
 import Engine.Assets.Type;
 import Engine.Common;
 import Engine.Core;

@@ -1,8 +1,6 @@
 #include "RenderCommandBuffer.hpp"
 
-#include <Engine.Accel.Pipeline/AccelerationPipeline.hpp>
-#include <Engine.Accel.Pipeline/ComputePipeline.hpp>
-#include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
+#include <cassert>
 
 #include "RenderCommandIterator.hpp"
 #include "Commands/AttachResource.hpp"
@@ -28,6 +26,7 @@
 #include "Commands/Lambda.hpp"
 #include "Commands/NextSubpass.hpp"
 
+import Engine.Accel.Pipeline;
 import Engine.Graphics.Geometry;
 import std;
 
