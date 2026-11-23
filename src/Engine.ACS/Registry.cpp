@@ -16,6 +16,10 @@
 using namespace hg::engine::acs;
 using namespace hg;
 
+namespace {
+	[[nodiscard]] ptr<Actor> actorAt(const ptr<std::byte> slot_, ref<const ActorClass> class_) noexcept;
+}
+
 Registry::Registry() :
 	_pools(),
 	_actorPools(),
@@ -134,9 +138,39 @@ void Registry::destroyActor(mref<ptr<Actor>> actor_) {
 	pool->erase(actor_->guid());
 }
 
-bool Registry::contains(cref<ActorGuid> guid_) const noexcept {
-	return std::ranges::any_of(
+bool Registry::contains(ref<const ActorGuid> guid_) const noexcept {
+	const auto pooled = std::ranges::any_of(
 		_actorPools,
+		[&guid_](const auto& entry_) { return entry_.second != nullptr && entry_.second->get(guid_) != nullptr; }
+	);
+	if (pooled) {
+		return true;
+	}
+
+	// Archetype actors carry no guid index: scan the live slots of every space, detached included.
+	bool found = false;
+	for (const auto& [id, space] : _spaces) {
+		for (const auto& [class_, region] : space->regions) {
+			region->forEachChunk(
+				[&](const ptr<std::byte> base_, const u32 count_, const u32 stride_, const ptr<const u64> live_) {
+					for (u32 idx = 0; not found && idx < count_; ++idx) {
+						found = ((live_[idx / 64u] >> (idx % 64u)) & 1uLL) != 0uLL &&
+							actorAt(base_ + static_cast<size_t>(idx) * stride_, *class_)->guid() == guid_;
+					}
+				}
+			);
+
+			if (found) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+bool Registry::contains(ref<const ComponentGuid> guid_) const noexcept {
+	return std::ranges::any_of(
+		_pools,
 		[&guid_](const auto& entry_) { return entry_.second != nullptr && entry_.second->get(guid_) != nullptr; }
 	);
 }
@@ -184,10 +218,107 @@ namespace {
 		return const_cast<std::byte*>(reinterpret_cast<const std::byte*>(&actor_)) - class_.desc().actorOffset;
 	}
 
-	[[nodiscard]] ptr<Actor> actorAt(std::byte* const slot_, cref<ActorClass> class_) noexcept {
+	[[nodiscard]] ptr<Actor> actorAt(const ptr<std::byte> slot_, ref<const ActorClass> class_) noexcept {
 		// See the shortcut in ArchetypeDefinition: the Actor base sits at offset 0 of the archetype type.
 		return std::launder(reinterpret_cast<ptr<Actor>>(slot_ + class_.desc().actorOffset));
 	}
+}
+
+Registry::Location Registry::locate(cref<Actor> actor_) const {
+	const auto* const actorClass = actor_.getArchetype();
+	if (actorClass == nullptr) {
+		return Location { nullptr, nullptr, nullptr, Handle {} };
+	}
+
+	auto* const slot = slotOf(actor_, *actorClass);
+	// shortcut: scans every space for the actor's region, add a slot-to-space index if spaces grow past a few dozen
+	for (const auto& [id, space] : _spaces) {
+		const auto region = space->regions.find(actorClass);
+		if (region == space->regions.end()) {
+			continue;
+		}
+
+		const auto handle = region->second->handleOf(slot);
+		if (handle != Handle {}) {
+			return Location { space.get(), region->second.get(), slot, handle };
+		}
+	}
+
+	return Location { nullptr, nullptr, slot, Handle {} };
+}
+
+ref<ClusterRegion> Registry::regionFor(const SpaceId space_, const ptr<const ActorClass> class_) {
+	auto& space = _spaces[space_];
+	if (space == nullptr) {
+		space = make_uptr<Space>(space_);
+	}
+
+	auto& region = space->regions[class_];
+	if (region == nullptr) {
+		region = make_uptr<ClusterRegion>(class_->desc(), space->handles);
+	}
+
+	return *region;
+}
+
+void Registry::forEachSpan(
+	const ptr<const void> tag_,
+	const ptr<const MetaClass> meta_,
+	const FnRef<void(std::byte*, u32, u32)> fn_
+) const {
+	Vector<u32> offsets {};
+	for (const auto& [id, space] : _spaces) {
+		if (id == detachedSpace) {
+			continue;
+		}
+
+		for (const auto& [actorClass, region] : space->regions) {
+			offsets.clear();
+			const auto types = actorClass->entryTypes();
+			for (size_t entry = 0uLL; entry < types.size(); ++entry) {
+				if (types[entry].tag == tag_ || (meta_ != nullptr && types[entry].meta->is(meta_->typeId()))) {
+					// See the shortcut in ArchetypeDefinition: a base subobject sits at offset 0 of its component.
+					offsets.emplace_back(actorClass->entries()[entry].offset);
+				}
+			}
+			if (offsets.empty()) {
+				continue;
+			}
+
+			region->forEachChunk(
+				[&](std::byte* const base_, const u32 count_, const u32 stride_, const u64* const live_) {
+					const auto isLive = [live_](const u32 index_) {
+						return (live_[index_ / 64u] >> (index_ % 64u)) & 1uLL;
+					};
+					for (u32 first = 0u; first < count_;) {
+						if (not isLive(first)) {
+							++first;
+							continue;
+						}
+
+						auto last = first + 1u;
+						while (last < count_ && isLive(last)) {
+							++last;
+						}
+						for (const auto offset : offsets) {
+							fn_(base_ + static_cast<size_t>(first) * stride_ + offset, last - first, stride_);
+						}
+						first = last;
+					}
+				}
+			);
+		}
+	}
+}
+
+bool Registry::reclaimSlots() {
+	bool reclaimed = false;
+	for (const auto& [id, space] : _spaces) {
+		for (const auto& [actorClass, region] : space->regions) {
+			reclaimed = region->reclaim() || reclaimed;
+		}
+	}
+	return reclaimed;
 }
 
 bool Registry::registerActorClass(const ptr<const ActorClass> class_) noexcept {
@@ -246,43 +377,6 @@ ptr<const ClusterRegion> Registry::region(const SpaceId space_, const ptr<const 
 
 	const auto region = space->second->regions.find(class_);
 	return region != space->second->regions.end() ? region->second.get() : nullptr;
-}
-
-ref<ClusterRegion> Registry::regionFor(const SpaceId space_, const ptr<const ActorClass> class_) {
-	auto& space = _spaces[space_];
-	if (space == nullptr) {
-		space = make_uptr<Space>(space_);
-	}
-
-	auto& region = space->regions[class_];
-	if (region == nullptr) {
-		region = make_uptr<ClusterRegion>(class_->desc(), space->handles);
-	}
-
-	return *region;
-}
-
-Registry::Location Registry::locate(cref<Actor> actor_) const {
-	const auto* const actorClass = actor_.getArchetype();
-	if (actorClass == nullptr) {
-		return Location { nullptr, nullptr, nullptr, Handle {} };
-	}
-
-	auto* const slot = slotOf(actor_, *actorClass);
-	// shortcut: scans every space for the actor's region, add a slot-to-space index if spaces grow past a few dozen
-	for (const auto& [id, space] : _spaces) {
-		const auto region = space->regions.find(actorClass);
-		if (region == space->regions.end()) {
-			continue;
-		}
-
-		const auto handle = region->second->handleOf(slot);
-		if (handle != Handle {}) {
-			return Location { space.get(), region->second.get(), slot, handle };
-		}
-	}
-
-	return Location { nullptr, nullptr, slot, Handle {} };
 }
 
 Vector<ptr<Actor>> Registry::createActors(const ptr<const ActorClass> class_, const size_t count_, const SpaceId space_) {
@@ -362,6 +456,7 @@ std::byte* Registry::resolveComponent(const Handle handle_, const std::ptrdiff_t
 	if (actorClass == nullptr) {
 		return nullptr;
 	}
+
 	// Component offsets are slot-relative, ref offsets actor-relative.
 	const auto actorOffset = static_cast<std::ptrdiff_t>(actorClass->desc().actorOffset);
 	if (offset_ < 0 ? offset_ < -actorOffset : offset_ > std::numeric_limits<std::ptrdiff_t>::max() - actorOffset) {
@@ -381,63 +476,4 @@ std::byte* Registry::resolveComponent(const Handle handle_, const std::ptrdiff_t
 	}
 
 	return reinterpret_cast<std::byte*>(actor) + offset_;
-}
-
-void Registry::forEachSpan(
-	const ptr<const void> tag_,
-	const ptr<const MetaClass> meta_,
-	const FnRef<void(std::byte*, u32, u32)> fn_
-) const {
-	Vector<u32> offsets {};
-	for (const auto& [id, space] : _spaces) {
-		if (id == detachedSpace) {
-			continue;
-		}
-
-		for (const auto& [actorClass, region] : space->regions) {
-			offsets.clear();
-			const auto types = actorClass->entryTypes();
-			for (size_t entry = 0uLL; entry < types.size(); ++entry) {
-				if (types[entry].tag == tag_ || (meta_ != nullptr && types[entry].meta->is(meta_->typeId()))) {
-					// See the shortcut in ArchetypeDefinition: a base subobject sits at offset 0 of its component.
-					offsets.emplace_back(actorClass->entries()[entry].offset);
-				}
-			}
-			if (offsets.empty()) {
-				continue;
-			}
-
-			region->forEachChunk(
-				[&](std::byte* const base_, const u32 count_, const u32 stride_, const u64* const live_) {
-					const auto isLive = [live_](const u32 index_) {
-						return (live_[index_ / 64u] >> (index_ % 64u)) & 1uLL;
-					};
-					for (u32 first = 0u; first < count_;) {
-						if (not isLive(first)) {
-							++first;
-							continue;
-						}
-						auto last = first + 1u;
-						while (last < count_ && isLive(last)) {
-							++last;
-						}
-						for (const auto offset : offsets) {
-							fn_(base_ + static_cast<size_t>(first) * stride_ + offset, last - first, stride_);
-						}
-						first = last;
-					}
-				}
-			);
-		}
-	}
-}
-
-bool Registry::reclaimSlots() {
-	bool reclaimed = false;
-	for (const auto& [id, space] : _spaces) {
-		for (const auto& [actorClass, region] : space->regions) {
-			reclaimed = region->reclaim() || reclaimed;
-		}
-	}
-	return reclaimed;
 }
