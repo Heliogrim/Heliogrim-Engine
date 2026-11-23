@@ -80,7 +80,7 @@ struct RetryContext {
 // @formatter:off
 static void package_discover_assets(mref<Arci<storage::system::PackageStorage>> packStore_);
 static bool is_archived_asset(mref<serialization::RecordScopedSlot> record_);
-static bool try_load_archived_asset(ref<const storage::ArchiveUrl> assetStorageUrl_, mref<serialization::RecordScopedSlot> record_);
+static bool try_load_archived_asset(ref<const storage::ArchiveUrl> assetStorageUrl_, mref<serialization::RecordScopedSlot> record_, ref<serialization::LoadContext> ctx_);
 static bool auto_import(ref<const IndexBase> indexBase_, ref<Indexed> indexed_);
 static bool try_recover_vfs(ref<assets::Asset> asset_, ref<const storage::ArchiveUrl> archiveUrl_);
 static Opt<::hg::engine::fs::Path> find_best_match_relative(ref<const ::hg::engine::fs::Path> lfsStoragePath_);
@@ -486,12 +486,110 @@ void editor::boot::initDefaultAssets() {
 
 /**/
 
+#include <Engine.Assets.Type/AssetLoad.hpp>
+#include <Engine.Diagnostics/Sink.hpp>
+#include <Engine.Serialization/SerializationModule.hpp>
 #include <Engine.Serialization/Access/Structure.hpp>
-#include <Engine.Serialization/Archive/StructuredArchive.hpp>
+#include <Engine.Serialization/Load/LoadContext.hpp>
+#include <Engine.Serialization/Load/Validate.hpp>
 #include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>
 #include <Engine.Serialization/Structure/RootScopedSlot.hpp>
 #include <Engine.Serialization/Structure/SeqScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
+
+static void log_diagnostics(ref<const diag::Diagnostics> diagnostics_) {
+	for (const auto& diagnostic : diagnostics_) {
+		switch (diagnostic.severity()) {
+			case diag::Severity::eError: {
+				IM_CORE_ERRORF("{}", diag::render(diagnostic));
+				break;
+			}
+			case diag::Severity::eWarning: {
+				IM_CORE_WARNF("{}", diag::render(diagnostic));
+				break;
+			}
+			default: {
+				IM_CORE_INFOF("{}", diag::render(diagnostic));
+			}
+		}
+	}
+}
+
+/* Every asset load gets its own context; its warnings and errors go to the caller's sink. */
+static Result<void, diag::Diagnostics> load_one_asset(
+	ref<resource::StorageReadonlyArchive> archive_,
+	ref<const storage::ArchiveUrl> storageUrl_,
+	const s64 seqIndex_,
+	ref<diag::DiagnosticSink> sink_
+) {
+
+	auto ctx = serialization::LoadContext { static_cast<u64>(std::max(archive_.totalSize(), 0LL)), storageUrl_.encode() };
+	const auto valid = serialization::validate(archive_, 0LL, ctx).has_value();
+	archive_.seek(0LL);
+	if (valid) {
+		auto root = serialization::RootScopedSlot { archive_, serialization::ScopedSlotStateFlag::eClean, &ctx };
+		const auto loadedAsset = (seqIndex_ < 0) ?
+			try_load_archived_asset(storageUrl_, ::hg::move(root), ctx) :
+			try_load_archived_asset(storageUrl_, ::hg::move(root).intoSeq().getRecordSlot(seqIndex_), ctx);
+		if (not loadedAsset && not ctx.failed()) {
+			ctx.warn(serialization::ReadError { serialization::ReadError::Kind::eInvalidValue, 0LL, 0LL, "asset record was skipped" });
+		}
+	}
+
+	auto finished = ctx.finish(sink_, std::format("while loading asset '{}'", storageUrl_.encode()));
+	if (not finished.has_value()) {
+		// finish hands errors back without emitting them.
+		for (const auto& diagnostic : finished.error()) {
+			sink_.emit(diag::Diagnostic { diagnostic });
+		}
+	}
+	return finished;
+}
+
+/*
+ * The probe reads untrusted records too, so it runs under budgeted contexts; a failed probe means "not an asset".
+ * Returns -1 for a root asset, the record count for a sequence of assets, 0 otherwise.
+ */
+static s64 probe_archived_assets(ref<resource::StorageReadonlyArchive> archive_, ref<const storage::ArchiveUrl> storageUrl_) {
+
+	const auto size = static_cast<u64>(std::max(archive_.totalSize(), 0LL));
+
+	/**/
+
+	{
+		auto ctx = serialization::LoadContext { size, storageUrl_.encode() };
+		archive_.seek(0LL);
+		const auto isAsset = is_archived_asset(
+			serialization::RootScopedSlot { archive_, serialization::ScopedSlotStateFlag::eClean, &ctx }
+		);
+		if (isAsset && not ctx.failed()) {
+			return -1LL;
+		}
+	}
+
+	auto ctx = serialization::LoadContext { size, storageUrl_.encode() };
+	archive_.seek(0LL);
+	auto root = serialization::RootScopedSlot { archive_, serialization::ScopedSlotStateFlag::eClean, &ctx };
+
+	root.slot()->readHeader();
+	if (ctx.failed() || root.slot()->getSlotHeader().type != serialization::StructureSlotType::eSeq) {
+		return 0LL;
+	}
+
+	/* Check whether first element is asset, otherwise treat as unknown sequence */
+
+	const auto seq = std::move(root).intoSeq();
+	const auto count = seq.getRecordCount();
+	if (ctx.failed() || count <= 0) {
+		return 0LL;
+	}
+
+	if (not is_archived_asset(seq.getRecordSlot(0)) || ctx.failed()) {
+		return 0LL;
+	}
+
+	return count;
+}
 
 void package_discover_assets(mref<Arci<storage::system::PackageStorage>> packStore_) {
 
@@ -512,62 +610,35 @@ void package_discover_assets(mref<Arci<storage::system::PackageStorage>> packSto
 
 	/* Index / Load data from archives */
 
+	auto sink = diag::CollectingSink {};
 	for (auto&& archive : maybeEnumArchives.value()) {
 		// @formatter:off
 		const auto storageUrl = storage::ArchiveUrl { archive->getArchiveGuid() };
-		storeSys->query(::hg::move(archive), [&storageUrl](_In_ ref<resource::StorageReadonlyArchive> archive_) {
+		storeSys->query(::hg::move(archive), [&storageUrl, &sink](_In_ ref<resource::StorageReadonlyArchive> archive_) {
 			// @formatter:on
 
 			if (archive_.type() != resource::ArchiveType::eSerializedStructure) {
 				return;
 			}
 
-			auto structured = serialization::StructuredArchive { archive_ };
+			/* Load a root stored asset or every record of a sequence of stored assets; failures are in the sink. */
 
-			/* Check for root stored assets */
-
-			if (is_archived_asset(structured.getRootSlot())) {
-
-				archive_.seek(0LL);
-				try_load_archived_asset(storageUrl, structured.getRootSlot());
+			const auto probed = probe_archived_assets(archive_, storageUrl);
+			if (probed < 0) {
+				std::ignore = load_one_asset(archive_, storageUrl, -1LL, sink);
 				return;
 			}
 
-			/* Check for a sequence of stored assets */
-
-			{
-				archive_.seek(0);
-				auto root = structured.getRootSlot();
-
-				root.slot()->readHeader();
-				if (root.slot()->getSlotHeader().type != serialization::StructureSlotType::eSeq) {
-					return;
-				}
-
-				/* Check whether first element is asset, otherwise treat as unknown sequence */
-
-				const auto seq = std::move(root).intoSeq();
-				const auto count = seq.getRecordCount();
-
-				if (count <= 0) {
-					return;
-				}
-
-				if (not is_archived_asset(seq.getRecordSlot(0))) {
-					return;
-				}
-
-				/* Iterate over archives and try to load */
-
-				for (s64 idx = 0; idx < count; ++idx) {
-					try_load_archived_asset(storageUrl, seq.getRecordSlot(idx));
-				}
+			for (s64 idx = 0; idx < probed; ++idx) {
+				std::ignore = load_one_asset(archive_, storageUrl, idx, sink);
 			}
 
 			// @formatter:off
 		});
 		// @formatter:on
 	}
+
+	log_diagnostics(sink.items());
 }
 
 bool is_archived_asset(mref<serialization::RecordScopedSlot> record_) {
@@ -615,7 +686,11 @@ bool is_archived_asset(mref<serialization::RecordScopedSlot> record_) {
 	return true;
 }
 
-bool try_load_archived_asset(ref<const storage::ArchiveUrl> assetStorageUrl_, mref<serialization::RecordScopedSlot> record_) {
+bool try_load_archived_asset(
+	ref<const storage::ArchiveUrl> assetStorageUrl_,
+	mref<serialization::RecordScopedSlot> record_,
+	ref<serialization::LoadContext> ctx_
+) {
 
 	auto record = record_.asStruct();
 
@@ -638,7 +713,7 @@ bool try_load_archived_asset(ref<const storage::ArchiveUrl> assetStorageUrl_, mr
 
 	/**/
 
-	auto genericLoad = []<std::derived_from<assets::Asset> AssetType_>(
+	auto genericLoad = [&ctx_]<std::derived_from<assets::Asset> AssetType_>(
 		ref<const storage::ArchiveUrl> archiveStorageUrl_,
 		AssetGuid guid_,
 		mref<serialization::StructScopedSlot> record_
@@ -652,7 +727,11 @@ bool try_load_archived_asset(ref<const storage::ArchiveUrl> assetStorageUrl_, mr
 		/**/
 
 		auto nextAsset = Arci<AssetType_>::create();
-		serialization::access::Structure<AssetType_>::hydrate(std::move(record_), *nextAsset);
+		const auto& migrations = Engine::getEngine()->getSerialization()->migrations();
+		if (not assets::hydrateArchivedAsset(migrations, record_, ctx_, *nextAsset)) {
+			// Rejected records are reported by the caller; never register a half-read asset.
+			return None;
+		}
 
 		nextAsset->setAssetStorageUrl(clone(archiveStorageUrl_));
 
