@@ -1,10 +1,9 @@
 #pragma once
 
 #include <Engine.Graphics/API/__vkFwd.hpp>
+#include <Engine.Graphics.RenderGraph/SubPass.hpp>
 #include <Engine.Graphics.RenderGraph/Symbol/Subscribed.hpp>
 #include <Engine.Graphics.RenderGraph/Symbol/SymbolizedResource.hpp>
-
-#include "../SubPass.hpp"
 
 namespace hg::engine::render {
 	class TmpEndPass :

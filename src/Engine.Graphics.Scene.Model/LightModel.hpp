@@ -1,5 +1,5 @@
 #pragma once
-#include <Engine.Graphics.Render.Subpass/Light/LightCaptureInterface.hpp>
+#include "Capture/LightCaptureInterface.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

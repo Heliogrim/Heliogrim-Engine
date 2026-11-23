@@ -7,7 +7,7 @@
 #include <Editor.Graphics.Loader/Texture/Transformer/Tga.hpp>
 #include <Editor.Graphics.Loader/Texture/Transformer/Tiff.hpp>
 #include <Engine.Graphics/Graphics.hpp>
-#include <Engine.Graphics.Loader/Texture/TextureResource.hpp>
+#include <Engine.Graphics/Texture/TextureResource.hpp>
 
 import Editor.Graphics.Event;
 import Editor.Graphics.IO;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine.Accel.Compile/Module/CompiledModule.hpp>
+#include "../Module/CompiledModule.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

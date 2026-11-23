@@ -16,7 +16,7 @@
 #include <Engine.Graphics/Scene/SkyboxModel.hpp>
 #include <Engine.Graphics/Texture/SparseTextureView.hpp>
 #include <Engine.Graphics/Texture/TextureFactory.hpp>
-#include <Engine.Graphics.Loader/Texture/TextureResource.hpp>
+#include <Engine.Graphics/Texture/TextureResource.hpp>
 #include <Engine.Graphics.Render.Command/RenderCommandBuffer.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/BrdfIrradiance.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneView.hpp>

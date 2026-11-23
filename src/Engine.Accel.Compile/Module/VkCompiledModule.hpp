@@ -1,8 +1,8 @@
 #pragma once
 
+#include <Engine.Accel.Pipeline/Module/CompiledModule.hpp>
 #include <Engine.Graphics/API/__vkFwd.hpp>
 
-#include "CompiledModule.hpp"
 #include "VkModuleSource.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)

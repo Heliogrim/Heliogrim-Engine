@@ -1,8 +1,8 @@
 #pragma once
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Graphics.Render.Subpass/SubPass.hpp>
 
 #include "SLNode.hpp"
+#include "../../SubPass.hpp"
 #include "../../Symbol/ScopedSymbolContext.hpp"
 
 namespace hg::engine::render::graph {

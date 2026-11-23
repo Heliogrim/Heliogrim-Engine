@@ -3,10 +3,10 @@
 #include <Engine.Accel.Loader/Effect/EffectResource.hpp>
 #include <Engine.Accel.Loader/Effect/Traits.hpp>
 #include <Engine.Graphics/Pool/GlobalResourcePool.hpp>
+#include <Engine.Graphics/Texture/TextureResource.hpp>
 #include <Engine.Graphics.Material/MaterialFactory.hpp>
 #include <Engine.Graphics.Render.Predefined/Descriptions/SceneView.hpp>
 
-#include "../Texture/TextureResource.hpp"
 #include "../Texture/Traits.hpp"
 
 import Engine.Assets;

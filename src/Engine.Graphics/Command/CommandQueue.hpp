@@ -1,7 +1,6 @@
 #pragma once
 
-#include <Engine.Driver.Vulkan/VkNativeQueue.hpp>
-
+#include "VkNativeQueue.hpp"
 #include "../API/__vkFwd.hpp"
 #include "../Device/Device.hpp"
 
