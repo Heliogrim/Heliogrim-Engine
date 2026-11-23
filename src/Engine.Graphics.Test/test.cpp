@@ -1,10 +1,9 @@
 #include "pch.h"
 /**/
 
-#include <Engine.Render.Scene.Model/CameraModel.hpp>
-
 import Engine.Event;
 import Engine.Graphics.Scene;
+import Engine.Render.Scene.Model;
 
 using namespace hg;
 

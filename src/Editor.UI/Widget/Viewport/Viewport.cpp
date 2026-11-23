@@ -13,7 +13,6 @@
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Reflow/Algorithm/Flex.hpp>
 #include <Engine.Reflow/Layout/Style.hpp>
-#include <Engine.Render.Scene.Model/CameraModel.hpp>
 
 import Engine.Asserts;
 import Engine.Common;
@@ -21,6 +20,7 @@ import Engine.Core;
 import Engine.Graphics.Scene;
 import Engine.Logging;
 import Engine.Render.Scene;
+import Engine.Render.Scene.Model;
 import Engine.Scene;
 
 using namespace hg::engine::reflow;

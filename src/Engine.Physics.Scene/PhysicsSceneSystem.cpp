@@ -8,13 +8,11 @@
 
 #include "PhysicsSceneSystem.hpp"
 
-#include <Engine.Physics.Scene.Model/BoxShapeCollisionModel.hpp>
-#include <Engine.Physics.Scene.Model/SphereShapeCollisionModel.hpp>
-
 import Engine.ACS;
 import Engine.Core;
 import Engine.Physics;
 import Engine.Physics.Components;
+import Engine.Physics.Scene.Model;
 
 using namespace hg::engine::physics;
 using namespace hg;

@@ -2,5 +2,6 @@
 # Setup
 make_library_project(
         LIB_NAME Engine.Scene.Game
+        MODULE
         LIBRARIES ${PROJECT_NAME}::Engine.Common ${PROJECT_NAME}::Engine.Asserts ${PROJECT_NAME}::Engine.Reflect ${PROJECT_NAME}::Engine.Scene ${PROJECT_NAME}::Engine.ACS ${PROJECT_NAME}::Engine.Scene.Support ${PROJECT_NAME}::Engine.Physics.Scene ${PROJECT_NAME}::Engine.Render.Scene
 )

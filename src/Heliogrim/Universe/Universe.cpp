@@ -1,6 +1,5 @@
 #include "Universe.hpp"
 
-#include <Engine.Scene.Game/GameScene.hpp>
 #include <Heliogrim/Async/Future.hpp>
 
 #include "Level.hpp"
@@ -11,6 +10,7 @@ import Engine.Common;
 import Engine.Core;
 import Engine.Level;
 import Engine.Scene;
+import Engine.Scene.Game;
 
 using namespace hg;
 
