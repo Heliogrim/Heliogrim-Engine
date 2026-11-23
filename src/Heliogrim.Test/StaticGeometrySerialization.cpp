@@ -116,24 +116,50 @@ TEST(StaticGeometrySerialization, MaterialGuidPastCountRejected) {
 	EXPECT_EQ(archetype_detail::check_payload<StaticGeometryComponent>(inside, 0uLL), ~0uLL);
 }
 
+namespace {
+	[[nodiscard]] Opt<ReadError> hydrateWithMaterialSlots(cref<AssetGuid> geometry_, const u64 count_) {
+		auto archive = BufferArchive {}; {
+			const auto source = make<StaticGeometryComponent>();
+			auto structured = StructuredArchive { archive };
+			auto record = structured.insertRootSlot().intoStruct();
+			access::Structure<Guid>::serialize(geometry_, record.insertStructSlot("geometry"sv));
+			{
+				auto materials = record.insertRecordSlot("materials"sv).intoSeq();
+				for (u64 i = 0uLL; i < count_; ++i) {
+					access::Structure<Guid>::serialize(invalid_asset_guid, materials.addRecordSlot().intoStruct());
+				}
+			}
+			access::Structure<HierarchyComponent>::serialize(*source, ::hg::move(record));
+		}
+		archive.seek(0);
+
+		auto ctx = LoadContext { static_cast<u64>(archive.totalSize()) };
+		const auto target = make<StaticGeometryComponent>(); {
+			const auto root = RootScopedSlot { archive, ScopedSlotStateFlag::eClean, &ctx };
+			access::Structure<StaticGeometryComponent>::hydrate(root.asStruct(), *target);
+		}
+		EXPECT_TRUE(target->getInstanceMaterials().empty());
+		return ctx.firstError() != nullptr ? Opt<ReadError> { *ctx.firstError() } : Opt<ReadError> {};
+	}
+
+	// An unresolved geometry skips its materials without an error, so only the capacity check can reject a slot.
+	const AssetGuid unresolvedGeometry { 1uL, 2u, 3u, 4uLL };
+}
+
 TEST(StaticGeometrySerialization, MaterialIndexWithoutGeometryRejected) {
-	auto archive = BufferArchive {}; {
-		const auto source = make<StaticGeometryComponent>();
-		auto structured = StructuredArchive { archive };
-		auto record = structured.insertRootSlot().intoStruct();
-		access::Structure<Guid>::serialize(invalid_asset_guid, record.insertStructSlot("geometry"sv));
-		access::Structure<Guid>::serialize(invalid_asset_guid, record.insertRecordSlot("materials"sv).intoSeq().addRecordSlot().intoStruct());
-		access::Structure<HierarchyComponent>::serialize(*source, ::hg::move(record));
-	}
-	archive.seek(0);
+	const auto error = hydrateWithMaterialSlots(invalid_asset_guid, 1uLL);
+	ASSERT_TRUE(error.has_value());
+	EXPECT_EQ(error->kind, ReadError::Kind::eInvalidValue);
+	EXPECT_EQ(error->detail, "instance material index is out of range of the static geometry");
+}
 
-	auto ctx = LoadContext { static_cast<u64>(archive.totalSize()) };
-	const auto target = make<StaticGeometryComponent>(); {
-		const auto root = RootScopedSlot { archive, ScopedSlotStateFlag::eClean, &ctx };
-		access::Structure<StaticGeometryComponent>::hydrate(root.asStruct(), *target);
-	}
+TEST(StaticGeometrySerialization, MaterialSlotsUpToCapacityAccepted) {
+	EXPECT_FALSE(hydrateWithMaterialSlots(unresolvedGeometry, StaticGeometryLayout::material_capacity).has_value());
+}
 
-	EXPECT_TRUE(ctx.failed());
-	ASSERT_NE(ctx.firstError(), nullptr);
-	EXPECT_EQ(ctx.firstError()->kind, ReadError::Kind::eInvalidValue);
+TEST(StaticGeometrySerialization, MaterialIndexAtCapacityRejected) {
+	const auto error = hydrateWithMaterialSlots(unresolvedGeometry, StaticGeometryLayout::material_capacity + 1uLL);
+	ASSERT_TRUE(error.has_value());
+	EXPECT_EQ(error->kind, ReadError::Kind::eInvalidValue);
+	EXPECT_EQ(error->detail, "instance material index exceeds the material capacity");
 }

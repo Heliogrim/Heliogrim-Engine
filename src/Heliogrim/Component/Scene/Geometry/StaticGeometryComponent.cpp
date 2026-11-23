@@ -2,6 +2,7 @@
 /**/
 
 #include "StaticGeometryComponent.hpp"
+#include "StaticGeometryComponent.Layout.hpp"
 
 using namespace hg;
 
@@ -10,7 +11,7 @@ StaticGeometryComponent::StaticGeometryComponent(
 	mref<CachedActorPointer> owner_,
 	mref<ptr<HierarchyComponent>> parent_
 ) :
-	InheritMeta(std::move(guid_), ComponentTypeId { typeId }, std::move(owner_), std::move(parent_)),
+	InheritMeta(::hg::move(guid_), ComponentTypeId { typeId }, ::hg::move(owner_), ::hg::move(parent_)),
 	_staticGeometry(),
 	_instanceMaterials(),
 	_materialSlots(0uLL) {}
@@ -22,7 +23,7 @@ StaticGeometryComponent::StaticGeometryComponent(
 	ref<const StaticGeometryAssetHandle> geometry_,
 	ref<const AutoArray<ptr<const GraphicsMaterialAssetHandle>>> materials_
 ) :
-	InheritMeta(std::move(guid_), ComponentTypeId { typeId }, std::move(owner_), std::move(parent_)),
+	InheritMeta(::hg::move(guid_), ComponentTypeId { typeId }, ::hg::move(owner_), ::hg::move(parent_)),
 	_staticGeometry(::hg::move(geometry_)),
 	_instanceMaterials(),
 	_materialSlots(0uLL) {
@@ -53,6 +54,11 @@ ref<const AutoArray<Opt<GraphicsMaterialAssetHandle>>> StaticGeometryComponent::
 
 void StaticGeometryComponent::setInstanceMaterial(const u16 index_, ref<const GraphicsMaterialAssetHandle> material_) {
 	::hg::assertd(_staticGeometry.isValid() && _staticGeometry.getAssetRef()->getMeshMaterialCount() > index_);
+
+	// The layout holds a fixed number of material slots; a larger index cannot be persisted.
+	if (index_ >= engine::serialization::access::Layout<StaticGeometryComponent>::material_capacity) {
+		return;
+	}
 
 	while (_instanceMaterials.size() <= index_) {
 		_instanceMaterials.emplace_back(None);
