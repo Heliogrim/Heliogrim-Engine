@@ -48,12 +48,23 @@ static Arci<engine::assets::LevelAsset> save_level_in_asset(_In_ ref<const engin
 	/**/
 
 	auto asset = assets->getRegistry()->findAssetByGuid(level_.assetGuid());
-	::hg::assertrt(asset != None && IsType<engine::assets::LevelAsset>(**asset));
+	if (asset == None || not IsType<engine::assets::LevelAsset>(**asset)) {
+		IM_CORE_ERRORF("Failed to save level: no level asset is registered for it.");
+		return nullptr;
+	}
 
 	auto levelAsset = ::hg::move(asset).value().into<engine::assets::LevelAsset>();
 	const auto& dataUrl = levelAsset->getLevelData();
+	if (not dataUrl.is<engine::storage::ArchiveUrl>()) {
+		IM_CORE_ERRORF("Failed to save level `{}`: it has no level data archive.", levelAsset->getAssetName());
+		return nullptr;
+	}
+
 	auto dataArchive = ssys->findArchive(clone(dataUrl.as<engine::storage::ArchiveUrl>()));
-	::hg::assertrt(dataArchive != None);
+	if (dataArchive == None) {
+		IM_CORE_ERRORF("Failed to save level `{}`: its level data archive is missing.", levelAsset->getAssetName());
+		return nullptr;
+	}
 
 	ssys->mutate(
 		std::move(dataArchive).value(),

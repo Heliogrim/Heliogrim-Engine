@@ -2,8 +2,8 @@
 
 #include <span>
 #include <Engine.ACS/Handle/Handle.hpp>
-#include <Engine.Common/Optional.hpp>
 #include <Engine.Common/Expected.hpp>
+#include <Engine.Common/Optional.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/DenseSet.hpp>
 #include <Engine.Common/Managed/AtomicRefCountedIntrusive.hpp>
@@ -115,7 +115,7 @@ namespace hg::engine::core {
 	[[nodiscard]] extern Result<void, diag::Diagnostics> checkSaveAllowed(ref<const Level> level_);
 
 	/**
-	 * Engine load boundary: hydrates a level record root all-or-nothing; errors go to the sink and are returned.
+	 * Engine load boundary: hydrates a level record root all-or-nothing into `into_` (a fresh root-like level when null); errors go to the sink and are returned.
 	 */
 	[[nodiscard]] extern Result<Arci<Level>, engine::diag::Diagnostics> loadLevel(
 		_Inout_ ref<engine::resource::Archive> archive_,
