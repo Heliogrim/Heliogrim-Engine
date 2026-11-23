@@ -2,12 +2,11 @@
 
 #include <Engine.ACS/Component/ComponentGuid.hpp>
 #include <Engine.ACS/Component/ComponentTypeId.hpp>
-#include <Engine.Serialization/SerializationModule.hpp>
-#include <Engine.Serialization/Access/Structure.hpp>
-#include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 #include <Engine.Serialization.Structures/Common/Guid.hpp>
 #include <Engine.Serialization.Structures/Common/TypeId.hpp>
 import Engine.Core;
+
+import Engine.Serialization;
 
 namespace hg::engine::serialization {
 	template <>

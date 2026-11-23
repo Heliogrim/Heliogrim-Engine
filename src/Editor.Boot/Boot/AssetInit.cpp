@@ -35,7 +35,9 @@ import Engine.Core;
 import Engine.Logging;
 import Engine.Reflect;
 import Engine.Resource.Archive;
+import Engine.Serialization;
 import Engine.Storage;
+import Engine.Diagnostics;
 
 using namespace hg::editor::boot;
 using namespace hg::engine;
@@ -477,16 +479,6 @@ void editor::boot::initDefaultAssets() {
 /**/
 
 #include <Engine.Assets.Type/AssetLoad.hpp>
-#include <Engine.Diagnostics/Sink.hpp>
-#include <Engine.Serialization/SerializationModule.hpp>
-#include <Engine.Serialization/Access/Structure.hpp>
-#include <Engine.Serialization/Load/LoadContext.hpp>
-#include <Engine.Serialization/Load/Validate.hpp>
-#include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>
-#include <Engine.Serialization/Structure/RootScopedSlot.hpp>
-#include <Engine.Serialization/Structure/SeqScopedSlot.hpp>
-#include <Engine.Serialization/Structure/StructScopedSlot.hpp>
-
 /* Every asset load gets its own context; its warnings and errors go to the caller's sink. */
 static Result<void, diag::Diagnostics> load_one_asset(
 	ref<resource::StorageReadonlyArchive> archive_,
@@ -494,7 +486,6 @@ static Result<void, diag::Diagnostics> load_one_asset(
 	const s64 seqIndex_,
 	ref<diag::DiagnosticSink> sink_
 ) {
-
 	auto ctx = serialization::LoadContext { static_cast<u64>(std::max(archive_.totalSize(), 0LL)), storageUrl_.encode() };
 	const auto valid = serialization::validate(archive_, 0LL, ctx).has_value();
 	archive_.seek(0LL);
@@ -507,27 +498,20 @@ static Result<void, diag::Diagnostics> load_one_asset(
 			ctx.warn(serialization::ReadError { serialization::ReadError::Kind::eInvalidValue, 0LL, 0LL, "asset record was skipped" });
 		}
 	}
-
 	auto finished = ctx.finish(sink_, std::format("while loading asset '{}'", storageUrl_.encode()));
 	if (not finished.has_value()) {
-		// finish hands errors back without emitting them.
 		for (const auto& diagnostic : finished.error()) {
 			sink_.emit(diag::Diagnostic { diagnostic });
 		}
 	}
 	return finished;
 }
-
 /*
  * The probe reads untrusted records too, so it runs under budgeted contexts; a failed probe means "not an asset".
  * Returns -1 for a root asset, the record count for a sequence of assets, 0 otherwise.
  */
 static s64 probe_archived_assets(ref<resource::StorageReadonlyArchive> archive_, ref<const storage::ArchiveUrl> storageUrl_) {
-
 	const auto size = static_cast<u64>(std::max(archive_.totalSize(), 0LL));
-
-	/**/
-
 	{
 		auto ctx = serialization::LoadContext { size, storageUrl_.encode() };
 		archive_.seek(0LL);
@@ -538,31 +522,24 @@ static s64 probe_archived_assets(ref<resource::StorageReadonlyArchive> archive_,
 			return -1LL;
 		}
 	}
-
 	auto ctx = serialization::LoadContext { size, storageUrl_.encode() };
 	archive_.seek(0LL);
 	auto root = serialization::RootScopedSlot { archive_, serialization::ScopedSlotStateFlag::eClean, &ctx };
-
 	root.slot()->readHeader();
 	if (ctx.failed() || root.slot()->getSlotHeader().type != serialization::StructureSlotType::eSeq) {
 		return 0LL;
 	}
-
 	/* Check whether first element is asset, otherwise treat as unknown sequence */
-
 	const auto seq = std::move(root).intoSeq();
 	const auto count = seq.getRecordCount();
 	if (ctx.failed() || count <= 0) {
 		return 0LL;
 	}
-
 	if (not is_archived_asset(seq.getRecordSlot(0)) || ctx.failed()) {
 		return 0LL;
 	}
-
 	return count;
 }
-
 void package_discover_assets(mref<Arci<storage::system::PackageStorage>> packStore_) {
 
 	const auto engine = Engine::getEngine();

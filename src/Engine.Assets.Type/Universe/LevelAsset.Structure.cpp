@@ -1,11 +1,7 @@
 #include "LevelAsset.hpp"
 
-#include <Engine.Serialization/Access/Structure.hpp>
-#include <Engine.Serialization/Load/ReadError.hpp>
-#include <Engine.Serialization/Structure/StringScopedSlot.hpp>
-#include <Engine.Serialization/Structure/StructScopedSlot.hpp>
-
 import Engine.Common;
+import Engine.Serialization;
 
 using namespace ::hg::engine::serialization;
 using namespace ::hg::engine::assets;

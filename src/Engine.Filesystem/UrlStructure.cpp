@@ -1,8 +1,6 @@
-#include <Engine.Serialization/Access/Structure.hpp>
-#include <Engine.Serialization/Structure/StringScopedSlot.hpp>
-#include <Engine.Serialization/Structure/StructScopedSlot.hpp>
-
 #include "Url.hpp"
+
+import Engine.Serialization;
 
 using namespace hg::engine::serialization;
 using namespace hg::engine::fs;

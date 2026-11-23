@@ -1,15 +1,12 @@
 #pragma once
 
-#include <Engine.Serialization/Archive/LayoutArchive.hpp>
-#include <Engine.Serialization/Archive/StructuredArchive.hpp>
-#include <Engine.Serialization/Structure/StructScopedSlot.hpp>
-
 #include "FnSets.hpp"
 #include "Schema/Migration.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
 import Engine.Core;
+import Engine.Serialization;
 #endif
 
 namespace hg::engine {

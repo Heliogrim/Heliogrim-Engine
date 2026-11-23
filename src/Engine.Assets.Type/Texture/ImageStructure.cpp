@@ -1,10 +1,6 @@
-#include <Engine.Serialization/Access/Structure.hpp>
-#include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>
-#include <Engine.Serialization/Structure/SliceScopedSlot.hpp>
-#include <Engine.Serialization/Structure/StructScopedSlot.hpp>
-
 #include "ImageAsset.hpp"
 
+import Engine.Serialization;
 import std;
 
 using namespace hg::engine::assets;
