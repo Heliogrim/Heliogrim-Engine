@@ -1,7 +1,7 @@
 #include "InputAsset.hpp"
 
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Graphics.Loader/Texture/TextureResource.hpp>
+#include <Engine.Graphics/Texture/TextureResource.hpp>
 #include <Engine.Graphics.Loader/Texture/Traits.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/BoxLayout.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/HorizontalLayout.hpp>

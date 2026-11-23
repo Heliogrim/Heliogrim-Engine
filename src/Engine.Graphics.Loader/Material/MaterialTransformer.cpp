@@ -1,9 +1,9 @@
 #include "MaterialTransformer.hpp"
 
 #include <Engine.Graphics/Pool/GlobalResourcePool.hpp>
+#include <Engine.Graphics/Texture/TextureResource.hpp>
 #include <Engine.Graphics.Material/MaterialFactory.hpp>
 
-#include "../Texture/TextureResource.hpp"
 #include "../Texture/Traits.hpp"
 
 import Engine.Asserts;

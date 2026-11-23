@@ -1,11 +1,11 @@
 #pragma once
 
 #include <Engine.Graphics/Cache/__fwd.hpp>
+#include <Engine.Graphics/Texture/TextureResource.hpp>
 
 #include "__fwd.hpp"
 #include "TextureCache.hpp"
 #include "TextureFeedback.hpp"
-#include "TextureResource.hpp"
 #include "TextureTransformer.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)

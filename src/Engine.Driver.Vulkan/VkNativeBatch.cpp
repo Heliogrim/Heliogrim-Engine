@@ -3,8 +3,8 @@
 #include <Engine.Common/ThreadSafety.hpp>
 #include <Engine.Graphics/Command/CommandPool.hpp>
 #include <Engine.Graphics/Command/CommandQueue.hpp>
+#include <Engine.Graphics/Command/VkNativeQueue.hpp>
 
-#include "VkNativeQueue.hpp"
 #include "VkResourceTable.hpp"
 
 import std;

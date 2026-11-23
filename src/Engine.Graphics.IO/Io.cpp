@@ -6,6 +6,7 @@
 #include <Engine.Graphics/Importer/ImageImporter.hpp>
 #include <Engine.Graphics/Importer/ModelFileTypes.hpp>
 #include <Engine.Graphics/Importer/ModelImporter.hpp>
+#include <Engine.Graphics/Texture/TextureResource.hpp>
 #include <Engine.Graphics.Loader/Font/FontLoader.hpp>
 #include <Engine.Graphics.Loader/Geometry/StaticGeometryLoader.hpp>
 #include <Engine.Graphics.Loader/Geometry/StaticGeometryResource.hpp>
@@ -14,7 +15,6 @@
 #include <Engine.Graphics.Loader/Material/MaterialPrototypeResource.hpp>
 #include <Engine.Graphics.Loader/Material/MaterialResource.hpp>
 #include <Engine.Graphics.Loader/Texture/TextureLoader.hpp>
-#include <Engine.Graphics.Loader/Texture/TextureResource.hpp>
 
 import Engine.Assets.Type;
 import Engine.Core;

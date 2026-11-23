@@ -1,8 +1,9 @@
 #pragma once
 
+#include <Engine.Graphics/Texture/TextureResource.hpp>
+
 #include "__fwd.hpp"
 #include "TextureLoadOptions.hpp"
-#include "TextureResource.hpp"
 #include "TextureStreamOptions.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)

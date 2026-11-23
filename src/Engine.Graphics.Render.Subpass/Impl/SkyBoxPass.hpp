@@ -8,10 +8,9 @@
 #include <Engine.Graphics/Texture/TextureSampler.hpp>
 #include <Engine.Graphics.Loader/Material/MaterialResource.hpp>
 #include <Engine.Graphics.Material/MaterialEffect.hpp>
+#include <Engine.Graphics.RenderGraph/SubPass.hpp>
 #include <Engine.Graphics.RenderGraph/Symbol/Subscribed.hpp>
 #include <Engine.Graphics.RenderGraph/Symbol/SymbolizedResource.hpp>
-
-#include "../SubPass.hpp"
 
 namespace hg::engine::render {
     class SkyBoxPass :

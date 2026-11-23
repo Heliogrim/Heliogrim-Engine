@@ -15,9 +15,9 @@
 #include <Engine.Graphics/Texture/SparseTextureView.hpp>
 #include <Engine.Graphics/Texture/Texture.hpp>
 #include <Engine.Graphics/Texture/TextureFactory.hpp>
+#include <Engine.Graphics/Texture/TextureResource.hpp>
 #include <Engine.Graphics/Texture/TextureView.hpp>
 #include <Engine.Graphics.Loader/Texture/TextureLoader.hpp>
-#include <Engine.Graphics.Loader/Texture/TextureResource.hpp>
 #include <Engine.Graphics.Render.Command/RenderCommandBuffer.hpp>
 #include <Engine.Graphics.Render.Predefined/Effects/UIBase.hpp>
 #include <Engine.Graphics.Render.Predefined/Symbols/SceneColor.hpp>

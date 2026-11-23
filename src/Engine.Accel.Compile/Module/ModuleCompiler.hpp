@@ -1,9 +1,9 @@
 #pragma once
 
 #include <Engine.Accel.Pipeline/AccelerationPipeline.hpp>
+#include <Engine.Accel.Pipeline/Module/CompiledModule.hpp>
 #include <Engine.Common/__macro.hpp>
 
-#include "CompiledModule.hpp"
 #include "ModuleSource.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)

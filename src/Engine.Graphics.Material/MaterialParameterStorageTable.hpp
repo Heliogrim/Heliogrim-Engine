@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine.Graphics.Loader/Texture/TextureResource.hpp>
+#include <Engine.Graphics/Texture/TextureResource.hpp>
 
 #include "MaterialParameterStorage.hpp"
 

@@ -1,7 +1,8 @@
 #pragma once
 
 #include <Engine.Graphics.Loader/Material/MaterialResource.hpp>
-#include <Engine.Graphics.Render.Subpass/Mesh/MeshCaptureInterface.hpp>
+
+#include "Capture/MeshCaptureInterface.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

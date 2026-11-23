@@ -5,9 +5,9 @@
 #include <Engine.Graphics/Buffer/BufferLikeObject.hpp>
 #include <Engine.Graphics/Framebuffer/Framebuffer.hpp>
 #include <Engine.Graphics/Geometry/UIVertex.hpp>
+#include <Engine.Graphics/Texture/TextureResource.hpp>
 #include <Engine.Graphics/Texture/TextureSampler.hpp>
-#include <Engine.Graphics.Loader/Texture/TextureResource.hpp>
-#include <Engine.Graphics.Render.Subpass/SubPass.hpp>
+#include <Engine.Graphics.RenderGraph/SubPass.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;

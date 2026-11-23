@@ -8,7 +8,7 @@
 #include <Editor.UI.Service/Assets/Browser/AssetBrowserEntry.hpp>
 #include <Editor.UI.Service/Assets/Browser/AssetBrowserFilterEntry.hpp>
 #include <Editor.UI.Theme/EditorTheme.hpp>
-#include <Engine.Graphics.Loader/Texture/TextureResource.hpp>
+#include <Engine.Graphics/Texture/TextureResource.hpp>
 #include <Engine.Graphics.Loader/Texture/Traits.hpp>
 #include <Engine.Reflow.Uikit/Atom/Paint.hpp>
 #include <Engine.Reflow.Uikit/Atom/Layout/VerticalLayout.hpp>
