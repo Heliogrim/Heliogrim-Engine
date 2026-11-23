@@ -3,7 +3,6 @@
 #include <bit>
 #include <Engine.Common/Guid.hpp>
 #include <Engine.Common/Move.hpp>
-#include <Engine.Resource.Archive/Archive.hpp>
 #include <Engine.Serialization/Structure/StringScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 
@@ -46,8 +45,10 @@ namespace hg::engine::serialization {
 	GuidType_ get_guid_slot(_In_ ref<const StructScopedSlot> slot_) {
 		if constexpr (std::is_convertible_v<Guid, GuidType_>) {
 			return get_guid_slot<Guid>(slot_);
+
 		} else if constexpr (std::is_constructible_v<GuidType_, Guid&&>) {
 			return GuidType_ { get_guid_slot<Guid>(slot_) };
+
 		} else {
 			static_assert(not std::is_convertible_v<Guid, GuidType_> && not std::is_constructible_v<GuidType_, Guid&&>, "");
 			std::unreachable();
@@ -60,7 +61,7 @@ namespace hg::engine::serialization {
 		slot_.getSlot<String>(Symbols::Guid) >> tmp;
 		if (tmp.size() != 16uLL) {
 			// The string read takes the stored length, so a short guid would overrun the span below.
-			slot_.slot()->getState().root->archive->setError();
+			slot_.slot()->fail(ReadError::Kind::eMalformed, slot_.slot()->getState().offset, 0LL, "guid is not 16 bytes");
 			return Guid {};
 		}
 
@@ -86,7 +87,7 @@ namespace hg::engine::serialization {
 		auto tmp = make_null_string(16uLL);
 		structure_.getSlot<String>(name_) >> tmp;
 		if (tmp.size() != 16uLL) {
-			structure_.slot()->getState().root->archive->setError();
+			structure_.slot()->fail(ReadError::Kind::eMalformed, structure_.slot()->getState().offset, 0LL, "guid is not 16 bytes");
 			return Guid {};
 		}
 
