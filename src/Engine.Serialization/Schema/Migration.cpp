@@ -5,6 +5,7 @@
 #include "../Structure/RootScopedSlot.hpp"
 #include "../Structure/SlotCursor.hpp"
 #include "../Structure/StructSlot.hpp"
+#include "../Symbols.hpp"
 
 import Engine.Asserts;
 import Engine.Common;
@@ -14,8 +15,6 @@ using namespace hg::engine::serialization;
 using namespace hg;
 
 namespace {
-	constexpr StringView revisionKey = "@rev";
-
 	[[nodiscard]] s64 slotLength(const non_owning_rptr<StructureSlotBase> slot_) noexcept;
 
 	void report(const non_owning_rptr<StructureSlotBase> slot_, mref<ReadError> error_);
@@ -128,7 +127,7 @@ Opt<Migrated> MigrationRegistry::migrateToCurrent(
 		auto next = make_uptr<resource::BufferArchive>(); {
 			StructuredArchive writer { *next };
 			auto out = writer.insertRootSlot().intoStruct();
-			out.insertSlot<u16>(revisionKey) << static_cast<u16>(rev + 1u);
+			out.insertSlot<u16>(Symbols::Revision) << static_cast<u16>(rev + 1u);
 
 			const auto result = chain[rev](*cursor, out);
 			if (not result.has_value()) {
@@ -175,7 +174,7 @@ Opt<Migrated> MigrationRegistry::migrateToCurrent(
 
 void MigrationRegistry::writeRevision(ref<StructScopedSlot> slot_, const type_id type_) const {
 	if (const u16 rev = revision(type_); rev > 0) {
-		slot_.insertSlot<u16>(revisionKey) << rev;
+		slot_.insertSlot<u16>(Symbols::Revision) << rev;
 	}
 }
 
@@ -246,7 +245,7 @@ void engine::serialization::forwardEntries(
 		const s64 next = valueAt + StructureSlotBase::slotSpan(valueHeader);
 		offset = next;
 
-		if (key == revisionKey || std::ranges::find(except_, StringView { key }) != except_.end()) {
+		if (key == Symbols::Revision.str || std::ranges::find(except_, StringView { key }) != except_.end()) {
 			continue;
 		}
 

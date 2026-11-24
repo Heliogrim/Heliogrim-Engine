@@ -350,7 +350,7 @@ namespace BoundedReaderModule {
 	TEST(BoundedReader, EmptyStructTypeKeyKeepsDefault) {
 		Fixture fx { structOf({}) };
 		u64 type = 42uLL;
-		fx.root().getSlot<u64>("@type") >> type;
+		fx.root().getSlot<u64>(Symbols::Type) >> type;
 		EXPECT_FALSE(fx.ctx.failed());
 		EXPECT_EQ(type, 42uLL);
 	}

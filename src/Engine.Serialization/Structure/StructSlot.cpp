@@ -5,6 +5,7 @@
 #include "RecordSlot.hpp"
 #include "StringSlot.hpp"
 #include "../Load/LoadContext.hpp"
+#include "../Symbols.hpp"
 
 import Engine.Common;
 import Engine.Resource.Archive;
@@ -231,7 +232,7 @@ bool StructSlot::reportUnreadKeys() const {
 	}
 
 	auto present = keys();
-	std::erase_if(present, [](ref<const String> key_) { return key_ == "@type" || key_ == "@rev"; });
+	std::erase_if(present, [](ref<const String> key_) { return key_ == Symbols::Type.str || key_ == Symbols::Revision.str; });
 
 	const auto unread = _state.root->context->unreadKeys(&*_state.root->archive, _state.offset, present);
 	for (const auto& key : unread) {

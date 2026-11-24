@@ -19,7 +19,7 @@ namespace {
 
 	void writeHeroFields(ref<StructScopedSlot> slot_, const u16 rev_) {
 		if (rev_ > 0) {
-			slot_.insertSlot<u16>("@rev") << rev_;
+			slot_.insertSlot<u16>(Symbols::Revision) << rev_;
 		}
 		slot_.insertSlot<String>("name") << String { "abc" };
 		slot_.insertSlot<u32>("hp") << 7u;
@@ -103,7 +103,7 @@ namespace MigrationModule {
 		EXPECT_EQ(bytesOf(plain), bytesOf(tagged));
 
 		Loaded loaded { std::move(tagged) };
-		EXPECT_FALSE(loaded.root().hasRecordSlot("@rev"));
+		EXPECT_FALSE(loaded.root().hasRecordSlot(Symbols::Revision));
 		EXPECT_EQ(loaded.root().revision(), 0u);
 
 		const Migration steps[] { { heroType, 0, &renameName } };
@@ -143,7 +143,7 @@ namespace MigrationModule {
 		{
 			StructuredArchive writer { expected };
 			auto out = writer.insertRootSlot().intoStruct();
-			out.insertSlot<u16>("@rev") << u16 { 1 };
+			out.insertSlot<u16>(Symbols::Revision) << u16 { 1 };
 			out.insertSlot<u32>("hp") << 7u;
 			{
 				auto pos = out.insertStructSlot("pos");
@@ -373,7 +373,7 @@ namespace MigrationModule {
 		{
 			StructuredArchive writer { archive };
 			auto slot = writer.insertRootSlot().intoStruct();
-			slot.insertSlot<String>("@rev") << String { "one" };
+			slot.insertSlot<String>(Symbols::Revision) << String { "one" };
 			slot.insertSlot<u32>("hp") << 7u;
 		}
 		Loaded loaded { std::move(archive) };
@@ -472,7 +472,7 @@ namespace MigrationModule {
 		target.seek(0);
 		LoadContext ctx { static_cast<u64>(target.totalSize()) };
 		const auto copy = RootScopedSlot { target, ScopedSlotStateFlag::eClean, &ctx }.asStruct();
-		EXPECT_FALSE(copy.hasRecordSlot("@rev"));
+		EXPECT_FALSE(copy.hasRecordSlot(Symbols::Revision));
 		EXPECT_FALSE(copy.hasRecordSlot("hp"));
 		String name {};
 		copy.getSlot<String>("name") >> name;
