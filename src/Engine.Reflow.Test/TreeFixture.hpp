@@ -1,10 +1,16 @@
 #pragma once
 
-#include <utility>
-#include <Engine.Pedantic/Clone/Clone.hpp>
-#include <Engine.Reflow/ReflowEngine.hpp>
-#include <Engine.Reflow.Uikit/Atom/Paint.hpp>
 #include <gtest/gtest.h>
+
+/**/
+
+#include <Engine.Pedantic/Clone/Clone.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+import Engine.Reflow;
+import Engine.Reflow.Uikit;
+#endif
 
 namespace ReflowModule {
 	using namespace hg;
