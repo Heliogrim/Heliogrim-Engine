@@ -183,6 +183,11 @@ EventResponse VScrollBox::invokeOnWheel(ref<const WheelEvent> event_) {
 		return VerticalLayout::invokeOnWheel(event_);
 	}
 
+	if (_overflow <= 0.F || event_._value.y == 0.F) {
+		// Nothing to scroll; dividing by a zero overflow would turn the scroll value into inf or NaN.
+		return VerticalLayout::invokeOnWheel(event_);
+	}
+
 	constexpr float scrollInvSpeed = 32.F;
 	const auto diff { event_._value * (/* _overflow /  */scrollInvSpeed) };
 	const auto normalized { diff.y / _overflow };

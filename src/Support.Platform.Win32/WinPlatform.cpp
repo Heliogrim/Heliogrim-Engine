@@ -321,7 +321,7 @@ void WinPlatform::translateEvent(ref<const SDL_Event> event_) {
 			// Warning: Temporary solution
 
 			auto point = math::fvec2 { -1.f, -1.f };
-			const auto value = math::vec2 { event_.wheel.mouse_x, event_.wheel.mouse_y };
+			const auto value = math::vec2 { event_.wheel.x, event_.wheel.y };
 
 			SDL_GetMouseState(&point.x, &point.y);
 
