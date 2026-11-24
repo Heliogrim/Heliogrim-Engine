@@ -5,11 +5,11 @@
 #include <Engine.Graphics.Material/Material.hpp>
 #include <Engine.Graphics.Material/MaterialParameter.hpp>
 #include <Engine.Graphics.Material/MaterialPrototype.hpp>
-#include <Engine.Graphics.Render.Command/RenderCommandBufferBase.hpp>
-#include <Engine.Graphics.Render.Predefined/Symbols/SceneColor.hpp>
 
 import Engine.Accel.Pipeline;
 import Engine.Common;
+import Engine.Graphics.Render.Command;
+import Engine.Graphics.Render.Predefined;
 import Engine.Graphics.RenderGraph;
 import Engine.Graphics.RenderGraph.Compile;
 import Engine.Logging;

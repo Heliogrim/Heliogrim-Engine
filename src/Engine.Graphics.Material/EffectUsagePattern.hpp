@@ -1,9 +1,9 @@
 #pragma once
-#include <Engine.Graphics.Render.Predefined/Buffer/ViewBuffer.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Accel.Lang;
 import Engine.Common;
+import Engine.Graphics.Render.Predefined;
 import Engine.Graphics.RenderGraph;
 import Engine.Graphics.Types;
 #endif

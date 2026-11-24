@@ -4,23 +4,16 @@
 
 #include <cassert>
 #include <cstring>
-#include <Engine.Accel.Compile/VkEffectCompiler.hpp>
-#include <Engine.Accel.Compile/Profile/EffectProfile.hpp>
-#include <Engine.Accel.Compile/Spec/SimpleEffectSpecification.hpp>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
 #include <Engine.Graphics.Core/Graphics.hpp>
 #include <Engine.Graphics.Loader/Texture/TextureLoader.hpp>
-#include <Engine.Graphics.Render.Command/RenderCommandBuffer.hpp>
-#include <Engine.Graphics.Render.Predefined/Effects/UIBase.hpp>
-#include <Engine.Graphics.Render.Predefined/Symbols/SceneColor.hpp>
-#include <Engine.Graphics.Render.Predefined/Symbols/SceneDepth.hpp>
-#include <Engine.Graphics.Render.Predefined/Symbols/SceneView.hpp>
 #include <Heliogrim/Graphics/TextureFormat.hpp>
 #include <Heliogrim/Graphics/TextureType.hpp>
 
 #include "ReflowPass.hpp"
 
 import Engine.Accel.Command;
+import Engine.Accel.Compile;
 import Engine.Accel.Pass;
 import Engine.Accel.Pipeline;
 import Engine.Asserts;
@@ -30,6 +23,8 @@ import Engine.Assets.Type;
 import Engine.Common;
 import Engine.Core;
 import Engine.Graphics;
+import Engine.Graphics.Render.Command;
+import Engine.Graphics.Render.Predefined;
 import Engine.Graphics.RenderGraph;
 import Engine.Graphics.Scene;
 import Engine.Reflect;

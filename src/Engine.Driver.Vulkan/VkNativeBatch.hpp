@@ -2,10 +2,10 @@
 #include <Engine.Graphics/vkinc.hpp>
 /**/
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Graphics.Render.Command/NativeBatch.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Accel.Command;
+import Engine.Graphics.Render.Command;
 #endif
 
 namespace hg::driver::vk {

@@ -19,6 +19,8 @@ make_library_project(
 		${PROJECT_NAME}::vulkan.Module
 		${PROJECT_NAME}::Engine.Pedantic.Resource ${PROJECT_NAME}::Engine.Graphics.Types ${PROJECT_NAME}::Engine.Assets ${PROJECT_NAME}::Engine.Storage.Action ${PROJECT_NAME}::Engine.Assets.Type
 		${PROJECT_NAME}::Engine.Accel.Pass ${PROJECT_NAME}::Engine.Graphics.Loader ${PROJECT_NAME}::Engine.Graphics.Scene.Model ${PROJECT_NAME}::Engine.Accel.Lang ${PROJECT_NAME}::Engine.Accel.Effect ${PROJECT_NAME}::Engine.Accel.Pipeline.Module ${PROJECT_NAME}::Engine.Accel.Command.Module
+		${PROJECT_NAME}::Engine.Accel.Compile.Module ${PROJECT_NAME}::Engine.Graphics.Render.Command.Module ${PROJECT_NAME}::Engine.Graphics.Render.Predefined.Module
 )
 # shortcut: Impl/*Pass.cpp, Impl/DummyProvider.cpp and Impl/Visualize.cpp import Engine.Accel.Pipeline and Engine.Accel.Command, linked as .Module targets because Engine.Accel.Pipeline (and Engine.Accel.Command through it) transitively links Engine.Graphics.Render.Subpass, drop when Engine.Accel.Pipeline stops linking Engine.Graphics.Core
+# shortcut: Impl/*Pass.{hpp,cpp}, Impl/DummyProvider.cpp and Impl/Visualize.{hpp,cpp} import Engine.Accel.Compile, Engine.Graphics.Render.Command and Engine.Graphics.Render.Predefined, linked as .Module targets because each transitively links Engine.Graphics.Render.Subpass via Engine.Accel.Pipeline and Engine.Graphics.Core, drop when Engine.Accel.Pipeline stops linking Engine.Graphics.Core
 # shortcut: Engine.Graphics.Render.Subpass .cpp files reach the graphics front via getEngine()->getGraphics(), drop when the service-locator design lands

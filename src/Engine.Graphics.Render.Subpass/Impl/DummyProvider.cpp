@@ -4,9 +4,6 @@
 
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
 #include <Engine.Graphics.Core/Graphics.hpp>
-#include <Engine.Graphics.Render.Command/RenderCommandBuffer.hpp>
-#include <Engine.Graphics.Render.Predefined/Symbols/SceneColor.hpp>
-#include <Engine.Graphics.Render.Predefined/Symbols/SceneDepth.hpp>
 
 #include "DummyProvider.hpp"
 
@@ -14,6 +11,8 @@ import Engine.Accel.Command;
 import Engine.Common;
 import Engine.Core;
 import Engine.Graphics;
+import Engine.Graphics.Render.Command;
+import Engine.Graphics.Render.Predefined;
 import Engine.Graphics.RenderGraph;
 import Engine.Reflect;
 

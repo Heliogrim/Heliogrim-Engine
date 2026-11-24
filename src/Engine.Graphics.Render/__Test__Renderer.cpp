@@ -1,6 +1,5 @@
 #include "__Test__Renderer.hpp"
 
-#include <Engine.Graphics.Render.Predefined/Symbols/SceneColor.hpp>
 #include <Engine.Graphics.Render.Subpass/Impl/__tmp_helper.hpp>
 #include <Engine.Graphics.Render.Subpass/Impl/DepthPrePass.hpp>
 #include <Engine.Graphics.Render.Subpass/Impl/DummyProvider.hpp>
@@ -18,6 +17,7 @@
 
 import Engine.Accel.Effect;
 import Engine.Common;
+import Engine.Graphics.Render.Predefined;
 import Engine.Graphics.RenderGraph;
 
 using namespace hg::engine::render;

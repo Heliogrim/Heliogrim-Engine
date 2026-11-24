@@ -2,23 +2,20 @@
 #include <Engine.Graphics/vkinc.hpp>
 /**/
 
-#include <Engine.Accel.Compile/VkEffectCompiler.hpp>
-#include <Engine.Accel.Compile/Profile/EffectProfile.hpp>
-#include <Engine.Accel.Compile/Spec/SimpleEffectSpecification.hpp>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
 #include <Engine.Graphics.Core/Graphics.hpp>
-#include <Engine.Graphics.Render.Command/RenderCommandBuffer.hpp>
-#include <Engine.Graphics.Render.Predefined/Symbols/SceneColor.hpp>
-#include <Engine.Graphics.Render.Predefined/Symbols/SceneDepth.hpp>
 
 #include "__tmp_helper.hpp"
 #include "Visualize.hpp"
 
+import Engine.Accel.Compile;
 import Engine.Accel.Pass;
 import Engine.Accel.Pipeline;
 import Engine.Common;
 import Engine.Core;
 import Engine.Graphics;
+import Engine.Graphics.Render.Command;
+import Engine.Graphics.Render.Predefined;
 import Engine.Graphics.RenderGraph;
 import Engine.Reflect;
 

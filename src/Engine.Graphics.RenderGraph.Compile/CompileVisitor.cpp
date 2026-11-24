@@ -1,9 +1,10 @@
 #include "CompileVisitor.hpp"
 
-/**/
-#include <Engine.Accel.Compile/VkEffectCompiler.hpp>
-#include <Engine.Accel.Compile/Spec/SimpleEffectSpecification.hpp>
+#include <cassert>
 
+/**/
+
+import Engine.Accel.Compile;
 import Engine.Common;
 import Engine.Graphics.RenderGraph;
 import Engine.Reflect;

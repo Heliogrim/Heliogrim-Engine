@@ -4,11 +4,8 @@
 
 /**/
 
-#include <Engine.Accel.Compile/Profile/EffectProfile.hpp>
-#include <Engine.Accel.Compile/Spec/EffectSpecification.hpp>
-#include <Engine.Accel.Compile/Stage/StageIr.hpp>
-
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Accel.Compile;
 import Engine.Accel.Lang;
 import Engine.Common;
 import Engine.Diagnostics;

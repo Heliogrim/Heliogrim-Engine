@@ -6,14 +6,9 @@
 
 /**/
 
-#include <Engine.Accel.Compile/Pass/VkVertexFormat.hpp>
-#include <Engine.Accel.Compile/Profile/EffectProfile.hpp>
-#include <Engine.Accel.Compile/Spec/EffectSpecification.hpp>
-#include <Engine.Accel.Compile/Spec/SimpleEffectSpecification.hpp>
-#include <Engine.Accel.Compile/Stage/StageIr.hpp>
-
 #include "IrSpirvGate.hpp"
 
+import Engine.Accel.Compile;
 import Engine.Accel.Lang;
 import Engine.Common;
 import vulkan;

@@ -1,5 +1,4 @@
 #pragma once
-#include <Engine.Graphics.Render.Command/RenderCommandTranslator.hpp>
 
 #include "VkCmdMgr.hpp"
 #include "VkNativeBatch.hpp"
@@ -8,6 +7,7 @@
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Graphics.Render.Command;
 #endif
 
 namespace hg::driver::vk {

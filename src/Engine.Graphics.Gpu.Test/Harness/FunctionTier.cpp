@@ -1,15 +1,11 @@
 #include "FunctionTier.hpp"
 
-#include <Engine.Accel.Compile/EffectCompileResult.hpp>
-#include <Engine.Accel.Compile/VkEffectCompiler.hpp>
-#include <Engine.Accel.Compile/Profile/EffectProfile.hpp>
-#include <Engine.Accel.Compile/Spec/SimpleEffectSpecification.hpp>
 #include <Engine.Driver.Vulkan/VkNativeBatch.hpp>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
-#include <Engine.Graphics.Render.Command/RenderCommandBuffer.hpp>
 
 #include "FunctionTarget.hpp"
 
+import Engine.Accel.Compile;
 import Engine.Accel.Effect;
 import Engine.Accel.Lang;
 import Engine.Accel.Pass;
@@ -17,6 +13,7 @@ import Engine.Accel.Pipeline;
 import Engine.Common;
 import Engine.Diagnostics;
 import Engine.Graphics;
+import Engine.Graphics.Render.Command;
 import Engine.Graphics.RenderGraph;
 
 using namespace hg::test::gpu;
