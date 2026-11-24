@@ -1,8 +1,7 @@
 #pragma once
 
-#include <Editor.Action/Action/SimpleAction.hpp>
-
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Editor.Action;
 import Engine.Assets;
 import Engine.Common;
 import Engine.Storage.Registry;

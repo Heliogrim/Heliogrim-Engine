@@ -8,9 +8,7 @@
 #include <ShObjIdl_core.h>
 #endif
 
-#include <Editor.Action/ActionManager.hpp>
-#include <Editor.Action/Action/Import/AutoImportAction.hpp>
-
+import Editor.Action;
 import Engine.Asserts;
 import Engine.Async;
 import Engine.Common;

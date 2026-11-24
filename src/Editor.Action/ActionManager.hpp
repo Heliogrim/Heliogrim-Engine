@@ -14,7 +14,7 @@ namespace hg::editor {
 }
 
 namespace hg::editor {
-	constexpr static engine::core::DependencyKey ActionDepKey = { "::hg::editor::ActionManager"sv };
+	inline constexpr engine::core::DependencyKey ActionDepKey = { "::hg::editor::ActionManager"sv };
 
 	/**/
 

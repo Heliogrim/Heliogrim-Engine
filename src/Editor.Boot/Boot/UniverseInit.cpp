@@ -1,11 +1,11 @@
 /**/
 
-#include <Editor.Core/EditorEngine.hpp>
 #include <Editor.Scene.Actions/LoadLevel.hpp>
 #include <Heliogrim/Universe/Level.hpp>
 
 import Editor.Assets.Default;
 import Editor.Boot;
+import Editor.Core;
 import Editor.Scene;
 import Engine.ACS;
 import Engine.Assets;

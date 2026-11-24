@@ -1,14 +1,19 @@
 #pragma once
 
 #include <Engine.Common/__macro.hpp>
-#include <Heliogrim/Async/Waitable.hpp>
 
 #include "ActionTypeId.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
 import Engine.Reflect;
+import Engine.Scheduler;
 #endif
+
+namespace hg {
+	// Local alias instead of Heliogrim/Async/Waitable.hpp, which does not compile in the generated global module fragment.
+	using Signal = engine::scheduler::Signal;
+}
 
 namespace hg::editor {
 	class macro_novtable Action :

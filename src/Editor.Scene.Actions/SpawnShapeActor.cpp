@@ -1,6 +1,7 @@
 #include "SpawnShapeActor.hpp"
 
 import Editor.Assets.Default;
+import Editor.Core;
 import Engine.ACS;
 import Engine.Assets.Database;
 import Engine.Common;
@@ -36,7 +37,6 @@ SpawnShapeActor::~SpawnShapeActor() = default;
 
 /**/
 
-#include <Editor.Core/EditorEngine.hpp>
 #include <Editor.UI.Main/EditorUI.hpp>
 #include <Editor.UI.Main/Module/EditorUI.hpp>
 #include <Heliogrim/Heliogrim.hpp>

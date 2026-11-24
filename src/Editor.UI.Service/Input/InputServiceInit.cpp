@@ -1,11 +1,11 @@
 #include "InputServiceInit.hpp"
 
-#include <Editor.Core/EditorEngine.hpp>
 #include <Editor.Scene.Actions/SaveLevel.hpp>
 
 #include "InputBindingList.hpp"
 #include "InputService.hpp"
 
+import Editor.Core;
 import Engine.Assets;
 import Engine.Assets.System;
 import Engine.Assets.Type;

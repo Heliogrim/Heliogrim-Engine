@@ -1,6 +1,5 @@
 #include "SceneHierarchyView.hpp"
 
-#include <Editor.Action/ActionManager.hpp>
 #include <Editor.Scene.Actions/SpawnGeometryActor.hpp>
 #include <Editor.Scene.Actions/SpawnLightActor.hpp>
 #include <Editor.UI/Builder/MenuBuilder.hpp>
@@ -10,6 +9,7 @@
 
 #include "SceneHierarchyController.hpp"
 
+import Editor.Action;
 import Editor.Assets.Default;
 import Engine.ACS;
 import Engine.Core;

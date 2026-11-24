@@ -1,6 +1,5 @@
 #include "AssetBrowserView.hpp"
 
-#include <Editor.Action/ActionManager.hpp>
 #include <Editor.Assets.Actions/UnknownImport.hpp>
 #include <Editor.UI/Helper/AssetBrowserHelper.hpp>
 #include <Editor.UI/Widget/Breadcrumb.hpp>
@@ -10,6 +9,7 @@
 
 #include "AssetBrowserController.hpp"
 
+import Editor.Action;
 import Editor.UI.Theme;
 import Engine.Assets;
 import Engine.Assets.System;
