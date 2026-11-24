@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Engine.Graphics/API/__vkFwd.hpp>
-#include <Heliogrim/Universe/Universe.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
@@ -10,8 +9,14 @@ import Engine.Reflow;
 import Engine.Reflow.Uikit;
 #endif
 
+// fwd-decl: Heliogrim stays textual and its Universe.hpp breaks the Editor.UI GMF
 namespace hg {
 	class CameraActor;
+	class Universe;
+}
+
+namespace hg::engine::core {
+	class Universe;
 }
 
 namespace hg::engine::graphics {
@@ -54,7 +59,7 @@ namespace hg::engine::reflow {
 	protected:
 		StringView _renderer;
 		ptr<CameraActor> _cameraActor;
-		Universe _cameraUniverse;
+		SharedPtr<::hg::engine::core::Universe> _cameraUniverse;
 
 		struct CameraControls {
 			bool forward : 1 = false;

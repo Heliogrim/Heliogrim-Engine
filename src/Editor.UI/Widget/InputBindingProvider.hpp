@@ -1,8 +1,7 @@
 #pragma once
 
-#include <Editor.UI.Service/Input/InputBindingList.hpp>
-
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Editor.UI.Service;
 import Engine.Reflow;
 #endif
 

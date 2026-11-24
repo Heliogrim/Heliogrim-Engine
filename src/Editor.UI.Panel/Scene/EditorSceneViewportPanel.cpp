@@ -1,11 +1,11 @@
 #include "EditorSceneViewportPanel.hpp"
 
 #include <Editor.Core/HeliogrimEditor.hpp>
-#include <Editor.UI/Widget/Viewport/EditorSceneViewport.hpp>
-#include <Editor.UI/Widget/Viewport/Viewport.hpp>
 #include <Engine.Common/__macro.hpp>
+#include <Heliogrim/Universe/Universe.hpp>
 
 import Editor.Core;
+import Editor.UI;
 import Engine.ACS;
 import Engine.Common;
 import Engine.Graphics;

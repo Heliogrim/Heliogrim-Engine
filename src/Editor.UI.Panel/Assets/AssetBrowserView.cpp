@@ -1,13 +1,10 @@
 #include "AssetBrowserView.hpp"
 
-#include <Editor.UI/Helper/AssetBrowserHelper.hpp>
-#include <Editor.UI/Widget/Breadcrumb.hpp>
-#include <Editor.UI/Widget/ContextMenuProvider.hpp>
-
 #include "AssetBrowserController.hpp"
 
 import Editor.Action;
 import Editor.Assets.Actions;
+import Editor.UI;
 import Editor.UI.Service;
 import Editor.UI.Theme;
 import Engine.Assets;

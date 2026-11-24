@@ -1,12 +1,11 @@
 #include "EditorUI.hpp"
 
-#include <Editor.UI/Helper/AssetBrowserHelper.hpp>
-
 #include "Module/EditorUI.hpp"
 
 import Editor.Assets.Default;
 import Editor.Boot;
 import Editor.Core;
+import Editor.UI;
 import Editor.UI.Init;
 import Editor.UI.Service;
 import Editor.UI.Theme;

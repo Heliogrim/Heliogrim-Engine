@@ -1,9 +1,9 @@
 #pragma once
 
-#include <Editor.UI/Widget/Breadcrumb.hpp>
 #include <Engine.Common/Sal.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Editor.UI;
 import Engine.Common;
 import Engine.Reflow.Uikit;
 #endif

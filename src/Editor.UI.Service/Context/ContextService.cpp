@@ -1,10 +1,6 @@
 #include "ContextService.hpp"
 
-#include <Editor.UI/Builder/MenuBuilder.hpp>
-#include <Editor.UI/Event/ContextMenuEvent.hpp>
-#include <Editor.UI/Widget/ContextMenuProvider.hpp>
-#include <Editor.UI/Widget/Menu.hpp>
-
+import Editor.UI;
 import Engine.Reflow;
 import std;
 
