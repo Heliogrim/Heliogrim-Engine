@@ -1,22 +1,9 @@
 #include "__Test__Renderer.hpp"
 
-#include <Engine.Graphics.Render.Subpass/Impl/__tmp_helper.hpp>
-#include <Engine.Graphics.Render.Subpass/Impl/DepthPrePass.hpp>
-#include <Engine.Graphics.Render.Subpass/Impl/DummyProvider.hpp>
-#include <Engine.Graphics.Render.Subpass/Impl/MatTestPass.hpp>
-#include <Engine.Graphics.Render.Subpass/Impl/PostProcessPass.hpp>
-#include <Engine.Graphics.Render.Subpass/Impl/SkyBoxPass.hpp>
-#include <Engine.Graphics.Render.Subpass/Impl/TmpBrdfIrradPass.hpp>
-#include <Engine.Graphics.Render.Subpass/Impl/TmpBrdfLutPass.hpp>
-#include <Engine.Graphics.Render.Subpass/Impl/TmpBrdfPrefPass.hpp>
-#include <Engine.Graphics.Render.Subpass/Impl/TmpDirectionalShadowPass.hpp>
-#include <Engine.Graphics.Render.Subpass/Impl/TmpEndPass.hpp>
-#include <Engine.Graphics.Render.Subpass/Impl/TriTestPass.hpp>
-#include <Engine.Graphics.Render.Subpass/Impl/Visualize.hpp>
-
 import Engine.Accel.Effect;
 import Engine.Common;
 import Engine.Graphics.Render.Predefined;
+import Engine.Graphics.Render.Subpass;
 import Engine.Graphics.RenderGraph;
 import Engine.Reflow.Render;
 
