@@ -8,6 +8,9 @@ import Engine.Core;
 namespace hg::engine {
 	class Audio final :
 		public core::CoreModule {
+	private:
+		friend class ::hg::engine::core::ModuleSlotAccess;
+
 	public:
 		using value_type = Audio;
 		using reference_type = ref<value_type>;
@@ -17,6 +20,14 @@ namespace hg::engine {
 		Audio(ref<Engine> engine_) noexcept;
 
 		~Audio() noexcept override;
+
+	private:
+		static constinit std::atomic<ptr<Audio>> _moduleSlot;
+
+	public:
+		[[nodiscard]] static Opt<ref<Audio>> get() noexcept {
+			return engine::module<Audio>();
+		}
 
 	public:
 		void setup() override;

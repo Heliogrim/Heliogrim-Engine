@@ -22,6 +22,9 @@ namespace hg::engine::storage {
 namespace hg::engine {
 	class StorageModule final :
 		public core::RootModule {
+	private:
+		friend class ::hg::engine::core::ModuleSlotAccess;
+
 	public:
 		using this_type = StorageModule;
 
@@ -37,6 +40,14 @@ namespace hg::engine {
 		StorageModule(mref<this_type>) = delete;
 
 		~StorageModule();
+
+	private:
+		static constinit std::atomic<ptr<const StorageModule>> _moduleSlot;
+
+	public:
+		[[nodiscard]] static Opt<ref<const StorageModule>> get() noexcept {
+			return engine::module<StorageModule>();
+		}
 
 	public:
 		void setup(_In_ cref<Config> config_);

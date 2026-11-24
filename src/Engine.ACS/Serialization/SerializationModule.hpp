@@ -12,6 +12,16 @@ namespace hg::engine {
 	class SerializationModule final :
 		public core::RootModule,
 		public serialization::FnSets {
+		friend class ::hg::engine::core::ModuleSlotAccess;
+
+	private:
+		static constinit std::atomic<ptr<const SerializationModule>> _moduleSlot;
+
+	public:
+		[[nodiscard]] static Opt<ref<const SerializationModule>> get() noexcept {
+			return engine::module<SerializationModule>();
+		}
+
 	public:
 		using this_type = SerializationModule;
 

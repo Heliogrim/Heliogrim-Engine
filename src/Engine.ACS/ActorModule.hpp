@@ -12,6 +12,9 @@ namespace hg::engine::acs {
 namespace hg::engine {
 	class ActorModule final :
 		public core::CoreModule {
+	private:
+		friend class ::hg::engine::core::ModuleSlotAccess;
+
 	public:
 		using this_type = ActorModule;
 
@@ -25,6 +28,14 @@ namespace hg::engine {
 		ActorModule(mref<this_type>) = delete;
 
 		~ActorModule() override;
+
+	private:
+		static constinit std::atomic<ptr<ActorModule>> _moduleSlot;
+
+	public:
+		[[nodiscard]] static Opt<ref<ActorModule>> get() noexcept {
+			return engine::module<ActorModule>();
+		}
 
 	public:
 		void setup() override;

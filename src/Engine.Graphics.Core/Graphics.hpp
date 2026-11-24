@@ -35,6 +35,9 @@ namespace hg::engine::graphics::scene {
 namespace hg::engine {
 	class Graphics final :
 		public core::CoreModule {
+	private:
+		friend class ::hg::engine::core::ModuleSlotAccess;
+
 	public:
 		using this_type = Graphics;
 
@@ -63,6 +66,14 @@ namespace hg::engine {
 		 * @date 13.09.2021
 		 */
 		void tidy();
+
+	private:
+		static constinit std::atomic<ptr<Graphics>> _moduleSlot;
+
+	public:
+		[[nodiscard]] static Opt<ref<Graphics>> get() noexcept {
+			return engine::module<Graphics>();
+		}
 
 	private:
 		Vector<std::pair<u64, u64>> _hooks;

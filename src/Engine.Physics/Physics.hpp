@@ -16,10 +16,21 @@ namespace hg::engine::physics {
 namespace hg::engine {
 	class Physics :
 		public core::CoreModule {
+	private:
+		friend class ::hg::engine::core::ModuleSlotAccess;
+
 	public:
 		Physics(ref<Engine> engine_) noexcept;
 
 		~Physics() override;
+
+	private:
+		static constinit std::atomic<ptr<Physics>> _moduleSlot;
+
+	public:
+		[[nodiscard]] static Opt<ref<Physics>> get() noexcept {
+			return engine::module<Physics>();
+		}
 
 	public:
 		void setup() override;

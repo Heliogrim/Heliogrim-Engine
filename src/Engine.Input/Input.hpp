@@ -16,6 +16,9 @@ namespace hg::engine::input::schedule {
 namespace hg::engine {
 	class Input :
 		public core::CoreModule {
+	private:
+		friend class ::hg::engine::core::ModuleSlotAccess;
+
 	public:
 		friend class ::hg::engine::input::schedule::InputTickStage;
 
@@ -26,6 +29,14 @@ namespace hg::engine {
 		Input(ref<Engine> engine_) noexcept;
 
 		~Input() override;
+
+	private:
+		static constinit std::atomic<ptr<Input>> _moduleSlot;
+
+	public:
+		[[nodiscard]] static Opt<ref<Input>> get() noexcept {
+			return engine::module<Input>();
+		}
 
 	public:
 		void setup() override;

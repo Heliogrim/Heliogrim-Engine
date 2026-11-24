@@ -30,6 +30,9 @@ using namespace hg::engine::graphics;
 using namespace hg::engine;
 using namespace hg;
 
+constinit std::atomic<ptr<engine::Graphics>> engine::Graphics::_moduleSlot { nullptr };
+static_assert(engine::core::ModuleSlotAccess::published<engine::Graphics>);
+
 Graphics::Graphics(ref<Engine> engine_) noexcept :
 	CoreModule(engine_),
 	_computeQueue(nullptr),

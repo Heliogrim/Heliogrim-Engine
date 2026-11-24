@@ -8,6 +8,9 @@ using namespace hg::engine::acs;
 using namespace hg::engine;
 using namespace hg;
 
+constinit std::atomic<ptr<engine::ActorModule>> engine::ActorModule::_moduleSlot { nullptr };
+static_assert(engine::core::ModuleSlotAccess::published<engine::ActorModule>);
+
 ActorModule::ActorModule(ref<Engine> engine_) :
 	CoreModule(engine_),
 	_registry(nullptr) {}

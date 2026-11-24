@@ -13,6 +13,9 @@ using namespace hg::engine::resource;
 using namespace hg::engine;
 using namespace hg;
 
+constinit std::atomic<ptr<engine::ResourceManager>> engine::ResourceManager::_moduleSlot { nullptr };
+static_assert(engine::core::ModuleSlotAccess::published<engine::ResourceManager>);
+
 ResourceManager::ResourceManager() noexcept :
 	_importer(nullptr),
 	_loader(nullptr) {

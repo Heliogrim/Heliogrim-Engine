@@ -12,6 +12,9 @@ namespace hg::engine::assets {
 namespace hg::engine {
 	class Assets final :
 		public core::CoreModule {
+	private:
+		friend class ::hg::engine::core::ModuleSlotAccess;
+
 	public:
 		using this_type = Assets;
 
@@ -25,6 +28,14 @@ namespace hg::engine {
 		Assets(mref<this_type>) noexcept = delete;
 
 		~Assets() override;
+
+	private:
+		static constinit std::atomic<ptr<Assets>> _moduleSlot;
+
+	public:
+		[[nodiscard]] static Opt<ref<Assets>> get() noexcept {
+			return engine::module<Assets>();
+		}
 
 	public:
 		void setup() override;
