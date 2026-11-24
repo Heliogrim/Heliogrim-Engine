@@ -154,8 +154,8 @@ namespace StorageModule {
 
 		const auto before = _io.requestsIssued();
 		EXPECT_EQ(readArchive(_guidB), pattern(kSizeB, 'A'));
-		// Note: 10 MiB over 8 MiB windows.
-		EXPECT_EQ(_io.requestsIssued() - before, 2uLL);
+		// Note: 10 MiB over two 8 MiB windows, each split into 256 KiB requests.
+		EXPECT_EQ(_io.requestsIssued() - before, 40uLL);
 	}
 
 	TEST_F(AsyncStorageTest, MissingFileIsAccessError) {
