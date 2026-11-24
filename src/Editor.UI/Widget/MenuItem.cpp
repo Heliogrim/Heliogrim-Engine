@@ -49,7 +49,7 @@ void MenuItem::showSubMenu() {
 	);
 	_subMenu->setParent(_runtimeHost);
 
-	[[maybe_unused]] auto layer = window->requestLayer(_runtimeHost);
+	[[maybe_unused]] auto layer = window->requestLayer(LayerBand::ePopup, _runtimeHost);
 	_subMenu->markAsPending(true, true);
 }
 

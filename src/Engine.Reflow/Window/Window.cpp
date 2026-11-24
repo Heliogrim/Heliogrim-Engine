@@ -99,27 +99,31 @@ const ptr<const Children> Window::children() const {
 	return &_children;
 }
 
-nmpt<Layer> Window::requestLayer(cref<sptr<Host>> host_) {
+nmpt<Layer> Window::requestLayer(const LayerBand band_, cref<sptr<Host>> host_) {
 
-	auto nextLayer = make_uptr<Layer>(
-		std::static_pointer_cast<Window, Widget>(shared_from_this()),
-		host_
-	);
+	auto nextLayer = make_uptr<Layer>(host_, band_);
 	auto result = nextLayer.get();
 
-	_layers.emplace_back(::hg::move(nextLayer));
+	// Stable: a later request sits above earlier ones of the same band.
+	const auto at = std::ranges::upper_bound(_layers, band_, std::less<> {}, [](const auto& entry_) { return entry_->band; });
+	const auto idx = static_cast<std::ptrdiff_t>(at - _layers.begin());
+	_layers.insert(at, ::hg::move(nextLayer));
 
 	host_->setParent(shared_from_this());
-	_children.emplace_back(host_);
+	_children.insert(_children.begin() + 2 + idx, host_);
 
 	return result;
+}
+
+std::span<const uptr<Layer>> Window::layers() const noexcept {
+	return _layers;
 }
 
 void Window::dropLayer(nmpt<Host> host_) {
 	const auto remove = std::ranges::remove_if(
 		_layers,
 		[host_](const auto& entry_) {
-			return entry_.get() != nullptr ? entry_->second.lock().get() == host_.get() : true;
+			return entry_.get() != nullptr ? entry_->host.lock().get() == host_.get() : true;
 		}
 	);
 
@@ -130,9 +134,9 @@ void Window::dropLayer(nmpt<Host> host_) {
 	/**/
 
 	for (const auto& layer : remove) {
-		if (not layer || layer->second.expired())
+		if (not layer || layer->host.expired())
 			continue;
-		invalidateHostArea(*this, *layer->second.lock());
+		invalidateHostArea(*this, *layer->host.lock());
 	}
 
 	std::erase_if(
@@ -150,42 +154,21 @@ void Window::dropLayer(nmpt<Host> host_) {
 
 void Window::dropLayer(nmpt<Layer> layer_) {
 
-	const auto remove = std::ranges::remove_if(
-		_layers,
-		[layer_](const auto& entry_) {
-			return entry_.get() == layer_.get();
-		}
-	);
-
-	if (remove.empty()) {
+	const auto it = std::ranges::find_if(_layers, [layer_](const auto& entry_) { return entry_.get() == layer_.get(); });
+	if (it == _layers.end()) {
 		return;
 	}
 
 	/**/
 
-	for (const auto& layer : remove) {
-		if (not layer || layer->second.expired())
-			continue;
-		invalidateHostArea(*this, *layer->second.lock());
+	// Resolve the host before erasing: erasing destroys the layer entry.
+	if (const auto host = (*it)->host.lock()) {
+		invalidateHostArea(*this, *host);
+		host->setParent(nullptr);
+		std::erase(_children, host);
 	}
 
-	for (auto it = remove.begin(); it != remove.end(); ++it) {
-		auto maybeHost = (it->get() != nullptr) ? it->get()->second.lock() : nullptr;
-		if (maybeHost != nullptr) {
-			std::erase_if(
-				_children,
-				[host = maybeHost.get()](const auto& widget_) {
-					if (widget_.get() == host) {
-						widget_->setParent(nullptr);
-						return true;
-					}
-					return false;
-				}
-			);
-		}
-	}
-
-	_layers.erase(remove.begin(), remove.end());
+	_layers.erase(it);
 }
 
 cref<FocusPath> Window::getFocusPath() const noexcept {
