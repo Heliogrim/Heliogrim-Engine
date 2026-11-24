@@ -2,8 +2,8 @@
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Reflow;
 #endif
-#include <Engine.Reflow/Widget/Widget.hpp>
 
 namespace hg::engine::reflow::uikit {
 	template <typename DataAttributeType_>

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Common/Flag.hpp>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Reflow/ReflowPhase.hpp>
 #include <Engine.Reflow.Theming/ThemeProvisioner.hpp>

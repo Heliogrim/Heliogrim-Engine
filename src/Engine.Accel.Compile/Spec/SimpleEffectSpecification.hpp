@@ -1,9 +1,9 @@
 #pragma once
 
-#include <Engine.Accel.Lang/Ir/Contract.hpp>
 #include "EffectSpecification.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Accel.Lang;
 import Engine.Common;
 #endif
 

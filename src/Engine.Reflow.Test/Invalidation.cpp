@@ -2,16 +2,11 @@
 
 /**/
 
-#include <Engine.Reflow.Attributes/Style/Base/TextStyleAttributes.hpp>
-#include <Engine.Reflow.Uikit/Atom/Text.hpp>
-#include <Engine.Reflow.Uikit/Atom/ThemeProvider.hpp>
-#include <Engine.Reflow/Widget/AttributeBatch.hpp>
-#include <Engine.Reflow/Widget/NullWidget.hpp>
-#include <Engine.Reflow.Uikit/Atom/Layout/BoxLayout.hpp>
-#include <Engine.Reflow.Uikit/Atom/Layout/VerticalLayout.hpp>
-#include <Engine.Reflow.Uikit/Molecule/Layout/Stack.hpp>
-
 #include "TreeFixture.hpp"
+
+import Engine.Common;
+import Engine.Reflow;
+import Engine.Reflow.Uikit;
 
 using namespace hg::engine::reflow;
 using namespace hg;

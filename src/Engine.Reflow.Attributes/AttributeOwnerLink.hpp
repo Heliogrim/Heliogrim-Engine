@@ -1,9 +1,10 @@
 #pragma once
 
-#include <Engine.Common/Flag.hpp>
-#include <Engine.Common/Memory/MemoryPointer.hpp>
-#include <Engine.Common/Wrapper.hpp>
 #include <Engine.Reflow/ReflowPhase.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::reflow {
 	// shortcut: writes through a leaf (get<>().update(), DataWatcher) bypass the owner link and keep their hand-written markAsPending; step 2 bindings replace them.
