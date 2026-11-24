@@ -30,7 +30,7 @@ namespace hg::engine::io {
 		eFailed
 	};
 
-	// Flag bit: combined with eRead or eReadWrite.
+	// Flag bit: combined with eRead only; reads then bypass the OS cache and must be aligned (IoFile::alignment).
 	enum class IoOpenMode : u8 {
 		eRead,
 		eReadWrite,
