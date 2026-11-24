@@ -149,7 +149,7 @@ Widget::listen_handle_type InputIntegral::onInputChange(listen_fn_type<InputChan
 	return _emitter.on(ReflowEventNames::InputChangeEvent, hg::move(listenFn_));
 }
 
-EventResponse InputIntegral::invokeOnKeyDown(ref<const KeyboardEvent> event_) {
+EventReply InputIntegral::invokeOnKeyDown(ref<const KeyboardEvent> event_) {
 
 	if (not state().isFocus()) {
 		return EventResponse::eUnhandled;
@@ -228,7 +228,7 @@ EventResponse InputIntegral::invokeOnKeyDown(ref<const KeyboardEvent> event_) {
 	return EventResponse::eConsumed;
 }
 
-EventResponse InputIntegral::invokeOnBlur(cref<FocusEvent> event_) {
+EventReply InputIntegral::invokeOnBlur(cref<FocusEvent> event_) {
 	updateValueAndValidity(true, true);
 	return Input::invokeOnBlur(event_);
 }

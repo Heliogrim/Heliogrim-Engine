@@ -4,6 +4,7 @@
 
 #include "DragDropEvent.hpp"
 #include "EventResponse.hpp"
+#include "EventReply.hpp"
 #include "FocusEvent.hpp"
 #include "MouseMoveEvent.hpp"
 #include "WheelEvent.hpp"
@@ -72,7 +73,7 @@ namespace hg::engine::reflow {
 				}
 
 				const auto result { event_._down ? lck->invokeOnKeyDown(event_) : lck->invokeOnKeyUp(event_) };
-				state = MAX(state, result);
+				state = MAX(state, result.response);
 			}
 
 			return state;
@@ -128,7 +129,7 @@ namespace hg::engine::reflow {
 				const auto& next { backlog.top() };
 
 				const auto result = (event_._down) ? next->invokeOnMouseButtonDown(event_) : next->invokeOnMouseButtonUp(event_);
-				state = MAX(state, result);
+				state = MAX(state, result.response);
 
 				backlog.pop();
 			}
@@ -164,7 +165,7 @@ namespace hg::engine::reflow {
 
 				const auto result = next->invokeOnMouseMove(event_);
 
-				state = MAX(state, result);
+				state = MAX(state, result.response);
 				backlog.pop_back();
 
 				const auto* children { next->children() };
@@ -229,9 +230,9 @@ namespace hg::engine::reflow {
 				const auto& next { backlog.top() };
 
 				// TODO: Differ between, Drag, Drop, DragOver, DragEnter, DragLeave
-				auto result { EventResponse::eUnhandled };
+				EventReply result {};
 				result = next->invokeOnDrop(event_);
-				state = MAX(state, result);
+				state = MAX(state, result.response);
 
 				backlog.pop();
 			}
@@ -278,7 +279,7 @@ namespace hg::engine::reflow {
 				const auto& next { backlog.top() };
 
 				const auto result = next->invokeOnWheel(event_);
-				state = MAX(state, result);
+				state = MAX(state, result.response);
 
 				backlog.pop();
 			}
@@ -353,7 +354,7 @@ namespace hg::engine::reflow {
 
 			for (auto rsi = window_->_focus.size(); rsi > persistSize && state != EventResponse::eConsumed; --rsi) {
 				const auto& reversed = window_->_focus[rsi - 1];
-				state = std::max(state, reversed.lock()->invokeOnFocus(event_));
+				state = std::max(state, reversed.lock()->invokeOnFocus(event_).response);
 			}
 
 			return state;

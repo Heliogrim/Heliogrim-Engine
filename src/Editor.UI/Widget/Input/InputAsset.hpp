@@ -24,9 +24,9 @@ namespace hg::editor::ui {
 		[[nodiscard]] string getTag() const noexcept override;
 
 	public:
-		engine::reflow::EventResponse invokeOnDrop(ref<const engine::reflow::DragDropEvent> event_) override;
+		engine::reflow::EventReply invokeOnDrop(ref<const engine::reflow::DragDropEvent> event_) override;
 
-		engine::reflow::EventResponse invokeOnDragOver(ref<const engine::reflow::DragDropEvent> event_) override;
+		engine::reflow::EventReply invokeOnDragOver(ref<const engine::reflow::DragDropEvent> event_) override;
 
 	protected:
 		sptr<engine::reflow::uikit::Image> _preview;

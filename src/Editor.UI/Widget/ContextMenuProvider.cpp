@@ -45,7 +45,7 @@ bool ContextMenuProvider::dropOnContextMenu(listen_handle_type handle_) {
 	return _emitter.off<ContextMenuEvent>(EditorUiEventNames::ContextMenuEvent, ::hg::move(handle_));
 }
 
-EventResponse ContextMenuProvider::invokeOnFocus(cref<FocusEvent> event_) {
+EventReply ContextMenuProvider::invokeOnFocus(cref<FocusEvent> event_) {
 
 	const auto subModule = engine::Engine::getEngine()->getModules().getSubModule(EditorUIDepKey);
 	::hg::assertd(subModule != nullptr);
@@ -55,7 +55,7 @@ EventResponse ContextMenuProvider::invokeOnFocus(cref<FocusEvent> event_) {
 
 	return CompoundWidget::invokeOnFocus(event_);
 }
-EventResponse ContextMenuProvider::invokeOnBlur(cref<FocusEvent> event_) {
+EventReply ContextMenuProvider::invokeOnBlur(cref<FocusEvent> event_) {
 
 	const auto subModule = engine::Engine::getEngine()->getModules().getSubModule(EditorUIDepKey);
 	::hg::assertd(subModule != nullptr);
@@ -65,7 +65,7 @@ EventResponse ContextMenuProvider::invokeOnBlur(cref<FocusEvent> event_) {
 
 	return CompoundWidget::invokeOnBlur(event_);
 }
-EventResponse ContextMenuProvider::invokeOnMouseButtonUp(ref<const MouseEvent> event_) {
+EventReply ContextMenuProvider::invokeOnMouseButtonUp(ref<const MouseEvent> event_) {
 
 	if (event_._button != 3u) {
 		return CompoundWidget::invokeOnMouseButtonUp(event_);

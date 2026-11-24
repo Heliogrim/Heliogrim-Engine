@@ -123,11 +123,11 @@ math::vec2 Menu::computeContentPosition() {
 	return result;
 }
 
-EventResponse Menu::invokeOnFocus(cref<FocusEvent> event_) {
+EventReply Menu::invokeOnFocus(cref<FocusEvent> event_) {
 	return Widget::invokeOnFocus(event_);
 }
 
-EventResponse Menu::invokeOnBlur(cref<FocusEvent> event_) {
+EventReply Menu::invokeOnBlur(cref<FocusEvent> event_) {
 	closeMenu();
 	return Widget::invokeOnBlur(event_);
 }

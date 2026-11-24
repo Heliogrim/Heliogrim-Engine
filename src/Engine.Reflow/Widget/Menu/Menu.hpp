@@ -89,8 +89,8 @@ namespace hg::engine::reflow {
 		math::vec2 computeContentPosition();
 
 	public:
-		EventResponse invokeOnFocus(cref<FocusEvent> event_) override;
+		EventReply invokeOnFocus(cref<FocusEvent> event_) override;
 
-		EventResponse invokeOnBlur(cref<FocusEvent> event_) override;
+		EventReply invokeOnBlur(cref<FocusEvent> event_) override;
 	};
 }

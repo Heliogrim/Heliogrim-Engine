@@ -93,7 +93,7 @@ EventResponse InputSelect::invokeOnSelectMenu(ref<const SelectMenuEvent> event_)
 	return _emitter.emit(EditorUiEventNames::SelectMenuEvent, event_);
 }
 
-EventResponse InputSelect::invokeOnMouseButtonDown(ref<const MouseEvent> event_) {
+EventReply InputSelect::invokeOnMouseButtonDown(ref<const MouseEvent> event_) {
 
 	if (event_._button != 1u) {
 		return Input::invokeOnMouseButtonDown(event_);
@@ -108,12 +108,12 @@ EventResponse InputSelect::invokeOnMouseButtonDown(ref<const MouseEvent> event_)
 	discard = Input::invokeOnMouseButtonDown(event_);
 	return EventResponse::eConsumed;
 }
-EventResponse InputSelect::invokeOnFocus(cref<FocusEvent> event_) {
+EventReply InputSelect::invokeOnFocus(cref<FocusEvent> event_) {
 	// TODO: Check whether we still need this | Could replace mount button up
 	return Input::invokeOnFocus(event_);
 }
 
-EventResponse InputSelect::invokeOnBlur(cref<FocusEvent> event_) {
+EventReply InputSelect::invokeOnBlur(cref<FocusEvent> event_) {
 
 	if (_runtimeMenuHost == nullptr) {
 		return Input::invokeOnBlur(event_);

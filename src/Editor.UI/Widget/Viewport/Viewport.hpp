@@ -134,18 +134,18 @@ namespace hg::engine::reflow {
 		[[nodiscard]] math::fvec2 getGrowFactor() const noexcept override;
 
 	public:
-		EventResponse invokeOnFocus(cref<FocusEvent> event_) override;
+		EventReply invokeOnFocus(cref<FocusEvent> event_) override;
 
-		EventResponse invokeOnBlur(cref<FocusEvent> event_) override;
+		EventReply invokeOnBlur(cref<FocusEvent> event_) override;
 
-		EventResponse invokeOnKeyDown(ref<const KeyboardEvent> event_) override;
+		EventReply invokeOnKeyDown(ref<const KeyboardEvent> event_) override;
 
-		EventResponse invokeOnKeyUp(ref<const KeyboardEvent> event_) override;
+		EventReply invokeOnKeyUp(ref<const KeyboardEvent> event_) override;
 
-		EventResponse invokeOnMouseEnter(ref<const MouseMoveEvent> event_) override;
+		EventReply invokeOnMouseEnter(ref<const MouseMoveEvent> event_) override;
 
-		EventResponse invokeOnMouseMove(ref<const MouseMoveEvent> event_) override;
+		EventReply invokeOnMouseMove(ref<const MouseMoveEvent> event_) override;
 
-		EventResponse invokeOnMouseLeave(ref<const MouseMoveEvent> event_) override;
+		EventReply invokeOnMouseLeave(ref<const MouseMoveEvent> event_) override;
 	};
 }

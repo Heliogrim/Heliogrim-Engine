@@ -69,9 +69,9 @@ namespace hg::engine::reflow::uikit {
 	public:
 		[[nodiscard]] listen_handle_type onInputChange(listen_fn_type<engine::reflow::InputChangeEvent> listenFn_);
 
-		engine::reflow::EventResponse invokeOnKeyDown(ref<const engine::reflow::KeyboardEvent> event_) override;
+		engine::reflow::EventReply invokeOnKeyDown(ref<const engine::reflow::KeyboardEvent> event_) override;
 
-		engine::reflow::EventResponse invokeOnBlur(cref<engine::reflow::FocusEvent> event_) override;
+		engine::reflow::EventReply invokeOnBlur(cref<engine::reflow::FocusEvent> event_) override;
 
 	public:
 		void onAttachDataWatcher(ref<engine::reflow::DataWatcher> watcher_) override;

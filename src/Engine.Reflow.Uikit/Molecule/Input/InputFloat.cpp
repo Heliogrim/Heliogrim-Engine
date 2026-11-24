@@ -97,7 +97,7 @@ Widget::listen_handle_type InputFloat::onInputChange(listen_fn_type<InputChangeE
 	return _emitter.on(ReflowEventNames::InputChangeEvent, hg::move(listenFn_));
 }
 
-EventResponse InputFloat::invokeOnKeyDown(ref<const KeyboardEvent> event_) {
+EventReply InputFloat::invokeOnKeyDown(ref<const KeyboardEvent> event_) {
 
 	if (not state().isFocus()) {
 		return EventResponse::eUnhandled;
@@ -173,7 +173,7 @@ EventResponse InputFloat::invokeOnKeyDown(ref<const KeyboardEvent> event_) {
 	return EventResponse::eConsumed;
 }
 
-EventResponse InputFloat::invokeOnBlur(cref<FocusEvent> event_) {
+EventReply InputFloat::invokeOnBlur(cref<FocusEvent> event_) {
 	updateValueAndValidity(true, true);
 	return Input::invokeOnBlur(event_);
 }

@@ -475,13 +475,13 @@ math::fvec2 Viewport::getGrowFactor() const noexcept {
 	};
 }
 
-EventResponse Viewport::invokeOnFocus(cref<FocusEvent> event_) {
+EventReply Viewport::invokeOnFocus(cref<FocusEvent> event_) {
 	_state.set(WidgetStateFlagBits::eFocus);
 	markAsPending(false, true);
 	return EventResponse::eConsumed;
 }
 
-EventResponse Viewport::invokeOnBlur(cref<FocusEvent> event_) {
+EventReply Viewport::invokeOnBlur(cref<FocusEvent> event_) {
 
 	_cameraControls.forward = false;
 	_cameraControls.left = false;
@@ -498,7 +498,7 @@ EventResponse Viewport::invokeOnBlur(cref<FocusEvent> event_) {
 	return EventResponse::eConsumed;
 }
 
-EventResponse Viewport::invokeOnKeyDown(ref<const KeyboardEvent> event_) {
+EventReply Viewport::invokeOnKeyDown(ref<const KeyboardEvent> event_) {
 	// Early exit on ESC Key to drop focus and ctrl
 	if (event_._key == '\x1B') {
 		_state.unset(WidgetStateFlagBits::eFocus);
@@ -552,7 +552,7 @@ EventResponse Viewport::invokeOnKeyDown(ref<const KeyboardEvent> event_) {
 	return response;
 }
 
-EventResponse Viewport::invokeOnKeyUp(ref<const KeyboardEvent> event_) {
+EventReply Viewport::invokeOnKeyUp(ref<const KeyboardEvent> event_) {
 
 	// Early exit on ESC Key to drop focus and ctrl
 	if (event_._key == '\x1B') {
@@ -607,11 +607,11 @@ EventResponse Viewport::invokeOnKeyUp(ref<const KeyboardEvent> event_) {
 	return response;
 }
 
-EventResponse Viewport::invokeOnMouseEnter(ref<const MouseMoveEvent> event_) {
+EventReply Viewport::invokeOnMouseEnter(ref<const MouseMoveEvent> event_) {
 	return Widget::invokeOnMouseEnter(event_);
 }
 
-EventResponse Viewport::invokeOnMouseMove(ref<const MouseMoveEvent> event_) {
+EventReply Viewport::invokeOnMouseMove(ref<const MouseMoveEvent> event_) {
 	const auto isShift { (event_._modifier & 0x3) != 0x0 };
 	const auto rbtn { (event_._button & 0x4) != 0x0 };
 
@@ -644,6 +644,6 @@ EventResponse Viewport::invokeOnMouseMove(ref<const MouseMoveEvent> event_) {
 	return EventResponse::eConsumed;
 }
 
-EventResponse Viewport::invokeOnMouseLeave(ref<const MouseMoveEvent> event_) {
+EventReply Viewport::invokeOnMouseLeave(ref<const MouseMoveEvent> event_) {
 	return Widget::invokeOnMouseLeave(event_);
 }
