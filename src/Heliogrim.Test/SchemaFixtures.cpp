@@ -327,7 +327,8 @@ namespace HeliogrimApi::schema_fixtures {
 		out.emplace_back(componentCase<DirectionalLightComponent>("DirectionalLightComponent"));
 		out.emplace_back(componentCase<PointLightComponent>("PointLightComponent"));
 		out.emplace_back(componentCase<SpotLightComponent>("SpotLightComponent"));
-		// skipped: SkyboxComponent reload crashes (access violation) headless; CameraActor, DirectionalLightActor, PointLightActor serialize crashes when built via ActorScheme::instantiate without a universe.
+		out.emplace_back(componentCase<SkyboxComponent>("SkyboxComponent"));
+		// skipped: CameraActor, DirectionalLightActor, PointLightActor serialize crashes when built via ActorScheme::instantiate without a universe.
 
 		out.emplace_back(assetCase<FontAsset>("FontAsset", [] { return make_uptr<FontAsset>(); }));
 		out.emplace_back(assetCase<ImageAsset>("ImageAsset", [] { return make_uptr<ImageAsset>(); }));
