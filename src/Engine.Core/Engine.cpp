@@ -7,21 +7,21 @@ using namespace hg::engine::core;
 using namespace hg::engine;
 using namespace hg;
 
-non_owning_rptr<Engine> Engine::_cached = nullptr;
+constinit std::atomic<ptr<Engine>> Engine::_cached { nullptr };
 
 Engine::Engine() {
-	Engine::_cached = this;
+	Engine::_cached.store(this, std::memory_order_release);
 	Logger::setup();
 }
 
 Engine::~Engine() {
 	tidy();
 	Logger::destroy();
-	Engine::_cached = nullptr;
+	Engine::_cached.store(nullptr, std::memory_order_release);
 }
 
 nmpt<Engine> Engine::getEngine() noexcept {
-	return _cached;
+	return _cached.load(std::memory_order_acquire);
 }
 
 void Engine::tidy() {

@@ -59,7 +59,7 @@ namespace hg::engine {
 		 * The cached engine instance pointer
 		 *  This is used for easier access due to unknown or ambiguous entry points
 		 */
-		static ptr<Engine> _cached;
+		static constinit std::atomic<ptr<Engine>> _cached;
 
 	public:
 		/**

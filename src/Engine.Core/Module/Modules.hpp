@@ -5,6 +5,7 @@
 #include "CoreModule.hpp"
 #include "DependencyKey.hpp"
 #include "DependencyValidationResult.hpp"
+#include "ModuleSlotAccess.hpp"
 #include "RootModule.hpp"
 #include "SubModule.hpp"
 
@@ -28,15 +29,19 @@ namespace hg::engine::core {
 		~Modules();
 
 	private:
+		using retract_fn = void (*)() noexcept;
+
 		struct RootModuleEntry {
 			type_id baseTypeId;
 			nmpt<RootModule> module;
+			retract_fn retract;
 		};
 
 		struct CoreModuleEntry {
 			DependencyKey key;
 			type_id baseTypeId;
 			nmpt<CoreModule> module;
+			retract_fn retract;
 		};
 
 	private:
@@ -48,7 +53,7 @@ namespace hg::engine::core {
 		[[nodiscard]] bool validateDependency(cref<SubModuleDependency> dependency_) const noexcept;
 
 	private:
-		void addRootModule(_In_ mref<type_id> baseTypeId_, _In_ nmpt<RootModule> rootModule_);
+		void addRootModule(_In_ mref<type_id> baseTypeId_, _In_ nmpt<RootModule> rootModule_, _In_ retract_fn retract_);
 
 		[[nodiscard]] nmpt<RootModule> getRootModule(mref<type_id> baseTypeId_) const noexcept;
 
@@ -70,7 +75,8 @@ namespace hg::engine::core {
 		void addCoreModule(
 			_In_ cref<DependencyKey> key_,
 			_In_ mref<type_id> baseTypeId_,
-			_In_ nmpt<CoreModule> coreModule_
+			_In_ nmpt<CoreModule> coreModule_,
+			_In_ retract_fn retract_
 		);
 
 		[[nodiscard]] nmpt<CoreModule> getCoreModule(
@@ -126,7 +132,8 @@ namespace hg::engine::core {
 
 	template <IsRootModule ModuleType_>
 	void Modules::addRootModule(ref<ModuleType_> module_) {
-		addRootModule(::hg::refl::TypeId<ModuleType_>(), std::addressof(module_));
+		addRootModule(::hg::refl::TypeId<ModuleType_>(), std::addressof(module_), &ModuleSlotAccess::retract<ModuleType_>);
+		ModuleSlotAccess::publish<ModuleType_>(std::addressof(module_));
 	}
 
 	template <IsRootModule ModuleType_>
@@ -144,7 +151,8 @@ namespace hg::engine::core {
 
 	template <IsCoreModule ModuleType_>
 	void Modules::addCoreModule(ref<ModuleType_> module_, cref<DependencyKey> key_) {
-		addCoreModule(std::move(key_), ::hg::refl::TypeId<ModuleType_>(), std::addressof(module_));
+		addCoreModule(key_, ::hg::refl::TypeId<ModuleType_>(), std::addressof(module_), &ModuleSlotAccess::retract<ModuleType_>);
+		ModuleSlotAccess::publish<ModuleType_>(std::addressof(module_));
 	}
 
 	template <IsCoreModule ModuleType_>
