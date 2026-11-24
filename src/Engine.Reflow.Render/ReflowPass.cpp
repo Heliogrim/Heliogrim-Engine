@@ -4,8 +4,6 @@
 
 #include <cassert>
 #include <cstring>
-#include <Heliogrim/Graphics/TextureFormat.hpp>
-#include <Heliogrim/Graphics/TextureType.hpp>
 
 #include "ReflowPass.hpp"
 
@@ -31,6 +29,7 @@ import Engine.Reflect;
 import Engine.Reflow;
 import Engine.Render.Scene;
 import Engine.Resource;
+import Heliogrim;
 
 /**/
 

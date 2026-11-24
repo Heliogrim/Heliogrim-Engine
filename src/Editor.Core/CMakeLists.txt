@@ -19,7 +19,4 @@ make_library_project(
 			${PROJECT_NAME}::Engine.Storage
 			${PROJECT_NAME}::Engine.Input ${PROJECT_NAME}::Engine.Async ${PROJECT_NAME}::Engine.Scheduler ${PROJECT_NAME}::Heliogrim ${PROJECT_NAME}::Engine.Common ${PROJECT_NAME}::Engine.Event ${PROJECT_NAME}::Engine.Config ${PROJECT_NAME}::Engine.Config.Providers ${PROJECT_NAME}::Engine.Core ${PROJECT_NAME}::Engine.Logging ${PROJECT_NAME}::Editor.Boot.Module ${PROJECT_NAME}::Engine.Network ${PROJECT_NAME}::Engine.Physics ${PROJECT_NAME}::Engine.Platform ${PROJECT_NAME}::Engine.Assets ${PROJECT_NAME}::Engine.Resource ${PROJECT_NAME}::Engine.Audio
 			${PROJECT_NAME}::Engine.Graphics.Core
-		MODULE_EXCLUDE
-		# Derives from hg::Heliogrim, whose textual header does not compile in the generated global module fragment.
-		Editor.Core/HeliogrimEditor.hpp
 )

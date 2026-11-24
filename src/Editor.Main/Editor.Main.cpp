@@ -3,13 +3,12 @@
 #endif
 
 #include <Engine.Common/__macro.hpp>
-#include <Heliogrim/Heliogrim.hpp>
-#include <Heliogrim/HeliogrimStatic.hpp>
 
 import Editor.Core;
 import Engine.Common;
 import Engine.Core;
 import Engine.Event;
+import Heliogrim;
 
 using namespace hg;
 

@@ -12,6 +12,7 @@ endif ()
 # Setup
 make_library_project(
 		LIB_NAME Heliogrim
+		MODULE
 		LIB_FOLDER "${IDE_FOLDER}"
 		FORCE_TYPE_STATIC ON
 		LIBRARIES

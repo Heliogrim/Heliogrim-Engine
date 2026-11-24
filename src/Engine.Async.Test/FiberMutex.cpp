@@ -3,12 +3,12 @@
 /**/
 
 #include <Engine.Common/ThreadSafety.hpp>
-#include <Heliogrim/Async/Yield.hpp>
 
 #include "../Engine.Scheduler.Test/TestSchedulerEngine.hpp"
 
 import Engine.Async;
 import Engine.Scheduler;
+import Heliogrim;
 import std;
 
 using namespace hg;

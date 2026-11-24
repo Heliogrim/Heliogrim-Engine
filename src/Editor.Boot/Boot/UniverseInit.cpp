@@ -1,7 +1,4 @@
-/**/
-
-#include <Editor.Scene.Actions/LoadLevel.hpp>
-#include <Heliogrim/Universe/Level.hpp>
+#include <Engine.Common/Sal.hpp>
 
 import Editor.Assets.Default;
 import Editor.Boot;
@@ -18,7 +15,8 @@ import Engine.Core;
 import Engine.Graphics.Components;
 import Engine.Level;
 import Engine.Storage.System;
-import Engine.Serialization;
+import Heliogrim;
+import Editor.Scene.Actions;
 
 using namespace hg::editor::boot;
 using namespace hg::engine;
@@ -113,8 +111,6 @@ void editor::boot::initPrimaryUniverse() {
 }
 
 /**/
-
-#include <Heliogrim/Heliogrim.hpp>
 
 static void add_default_skybox(mref<Level> level_) {
 

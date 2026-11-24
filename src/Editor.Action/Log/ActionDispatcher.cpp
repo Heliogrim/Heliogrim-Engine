@@ -2,10 +2,9 @@
 
 /**/
 
-#include <Heliogrim/Async/Await.hpp>
-#include <Heliogrim/Async/Execute.hpp>
-
 #include "ActionDispatcher.hpp"
+
+import Heliogrim;
 
 using namespace hg::editor;
 using namespace hg;

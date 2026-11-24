@@ -8,4 +8,6 @@ make_library_project(
         ${PROJECT_NAME}::Engine.Pedantic.Resource ${PROJECT_NAME}::Engine.Graphics.Types ${PROJECT_NAME}::Engine.Storage.Registry ${PROJECT_NAME}::Engine.Assets ${PROJECT_NAME}::Engine.Assets.Type ${PROJECT_NAME}::Engine.Accel.Pass
         ${PROJECT_NAME}::Engine.Graphics.Core ${PROJECT_NAME}::Engine.Accel.Lang ${PROJECT_NAME}::Engine.Graphics.RenderGraph ${PROJECT_NAME}::Engine.Reflow ${PROJECT_NAME}::Engine.Accel.Pipeline ${PROJECT_NAME}::Engine.Accel.Command
         ${PROJECT_NAME}::Engine.Accel.Compile ${PROJECT_NAME}::Engine.Graphics.Render.Command ${PROJECT_NAME}::Engine.Graphics.Render.Predefined ${PROJECT_NAME}::Engine.Driver.Vulkan ${PROJECT_NAME}::Engine.Graphics.Loader
+        ${PROJECT_NAME}::Heliogrim.Module
 )
+# shortcut: ReflowPass.cpp imports Heliogrim (TextureFormat, TextureType), linked as Heliogrim.Module because Heliogrim links Engine.Reflow.Render, drop when the texture enums move below Heliogrim

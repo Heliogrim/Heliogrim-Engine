@@ -7,8 +7,6 @@
 #ifdef _PROFILING
 #endif
 
-#include <Heliogrim/Async/Future.hpp>
-
 #include "../__macro.hpp"
 #include "../API/VkTranslate.hpp"
 #include "../Swapchain/Swapchain.hpp"
