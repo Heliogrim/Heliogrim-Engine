@@ -10,11 +10,8 @@
 import Engine.Assets;
 import Engine.Assets.Type;
 import Engine.Common;
+import Engine.Storage;
 #endif
-
-namespace hg::engine {
-	class StorageModule;
-}
 
 namespace hg::engine::resource::loader {
 	class SourceLoader;

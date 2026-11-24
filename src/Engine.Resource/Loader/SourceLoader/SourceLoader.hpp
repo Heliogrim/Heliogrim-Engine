@@ -4,9 +4,9 @@
 
 #include "../SourceLoader.hpp"
 
-namespace hg::engine {
-	class StorageModule;
-}
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Storage;
+#endif
 
 namespace hg::engine::resource::loader {
 	class SourceLoader :
