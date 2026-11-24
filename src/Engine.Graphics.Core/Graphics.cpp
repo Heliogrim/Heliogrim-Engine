@@ -9,12 +9,12 @@
 
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Math/__default.inl>
-#include <Engine.Graphics.IO/Io.hpp>
 
 import Engine.Common;
 import Engine.Core;
 import Engine.Event;
 import Engine.Graphics;
+import Engine.Graphics.IO;
 import Engine.Graphics.Loader;
 import Engine.Graphics.Render;
 import Engine.Graphics.Scene;
