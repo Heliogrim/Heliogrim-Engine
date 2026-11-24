@@ -33,6 +33,7 @@ namespace hg::test {
 	public:
 		bool preInit() override {
 			_scheduler = make_uptr<engine::TestCompScheduler>();
+			_modules.addRootModule(*_scheduler);
 			return setEngineState(engine::core::EngineState::ePreInitialized);
 		}
 
@@ -58,6 +59,9 @@ namespace hg::test {
 		}
 
 		bool exit() override {
+			if (_scheduler != nullptr) {
+				_modules.removeRootModule(*_scheduler);
+			}
 			_scheduler.reset();
 			return setEngineState(engine::core::EngineState::eExited);
 		}

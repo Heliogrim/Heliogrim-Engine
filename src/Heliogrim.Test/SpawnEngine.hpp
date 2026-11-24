@@ -19,6 +19,8 @@ namespace HeliogrimApi::test_engine {
 		SpawnEngine() :
 			_actors(make_uptr<engine::ActorModule>(*this)) {
 			_actors->setup();
+			_modules.addCoreModule(*_actors, engine::core::ActorDepKey);
+			_modules.addRootModule(*_serialization);
 		}
 
 		~SpawnEngine() override = default;
