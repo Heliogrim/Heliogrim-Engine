@@ -15,3 +15,4 @@ make_library_project(
         	${PROJECT_NAME}::Engine.Input.Schedule.Module
         	${PROJECT_NAME}::Engine.Scheduler ${PROJECT_NAME}::Engine.Common ${PROJECT_NAME}::Engine.Event ${PROJECT_NAME}::Engine.Reflect ${PROJECT_NAME}::Engine.Core ${PROJECT_NAME}::Engine.Platform
 )
+# shortcut: Input.cpp imports Engine.Input.Schedule, Support.Input.Win32 and Support.Platform.Win32, and each of them links Engine.Input, drop when Input no longer names its schedule and Win32 backends

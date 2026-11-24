@@ -6,7 +6,7 @@ if ("${CMAKE_SYSTEM_NAME}" MATCHES "Windows")
 			MODULE
 			LIB_FOLDER "${IDE_FOLDER}/Support"
 			LIBRARIES
-				${PROJECT_NAME}::Engine.Input.Module
+				${PROJECT_NAME}::Engine.Input
 			${PROJECT_NAME}::Engine.Scheduler
 			${PROJECT_NAME}::Engine.Asserts
 			${PROJECT_NAME}::Engine.Async
@@ -18,4 +18,3 @@ if ("${CMAKE_SYSTEM_NAME}" MATCHES "Windows")
 			${PROJECT_NAME}::vulkan.Module
 	)
 endif ()
-# shortcut: Support.Platform.Win32 .cpp files reach the graphics front via getEngine()->getGraphics(), drop when the service-locator design lands
