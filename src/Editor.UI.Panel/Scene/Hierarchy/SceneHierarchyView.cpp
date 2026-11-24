@@ -1,16 +1,15 @@
 #include "SceneHierarchyView.hpp"
 
-#include <Editor.Scene.Actions/SpawnGeometryActor.hpp>
-#include <Editor.Scene.Actions/SpawnLightActor.hpp>
 #include <Editor.UI/Builder/MenuBuilder.hpp>
 #include <Editor.UI/Widget/ContextMenuProvider.hpp>
 #include <Editor.UI.Main/EditorUI.hpp>
-#include <Editor.UI.Service/Scene/Hierarchy/SceneHierarchyEntry.hpp>
 
 #include "SceneHierarchyController.hpp"
 
 import Editor.Action;
 import Editor.Assets.Default;
+import Editor.Scene.Actions;
+import Editor.UI.Service;
 import Engine.ACS;
 import Engine.Core;
 import Engine.Physics.Components;

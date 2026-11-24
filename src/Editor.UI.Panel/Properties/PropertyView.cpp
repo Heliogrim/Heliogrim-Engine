@@ -1,8 +1,8 @@
 #include "PropertyView.hpp"
 
 #include <Editor.UI/Widget/Collapse.hpp>
-#include <Editor.UI.Service/Property/Property.hpp>
 
+import Editor.UI.Service;
 import Engine.Reflow.Uikit;
 
 using namespace hg::editor::ui;

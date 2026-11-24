@@ -1,7 +1,8 @@
 #include "PropertyModel.hpp"
 
 #include "PropertyView.hpp"
-#include "Editor.UI.Service/Property/PropertyService.hpp"
+
+import Editor.UI.Service;
 
 using namespace hg::editor::ui;
 using namespace hg;
