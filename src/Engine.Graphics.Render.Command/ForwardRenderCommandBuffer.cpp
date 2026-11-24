@@ -1,10 +1,9 @@
 #include "ForwardRenderCommandBuffer.hpp"
 
-#include <Engine.Accel.Storage/Storage.hpp>
-
 #include "Commands/BindPipeline.hpp"
 
 import Engine.Accel.Pipeline;
+import Engine.Accel.Storage;
 import Engine.Resource;
 
 using namespace hg::engine::render::cmd;

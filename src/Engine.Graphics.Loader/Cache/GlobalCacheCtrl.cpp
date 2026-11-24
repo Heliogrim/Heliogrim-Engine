@@ -1,5 +1,6 @@
 #include "GlobalCacheCtrl.hpp"
 
+#include <cassert>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.Loader/Material/MaterialLoader.hpp>
 #include <Engine.Graphics.Loader/Texture/TextureLoader.hpp>

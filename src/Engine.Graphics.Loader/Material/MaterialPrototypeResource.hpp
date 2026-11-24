@@ -1,8 +1,7 @@
 #pragma once
 
-#include <Engine.Graphics.Material/Material.hpp>
-
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Graphics.Material;
 import Engine.Resource;
 #endif
 

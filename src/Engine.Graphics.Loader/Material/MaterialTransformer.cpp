@@ -1,6 +1,6 @@
 #include "MaterialTransformer.hpp"
 
-#include <Engine.Graphics.Material/MaterialFactory.hpp>
+#include <cassert>
 
 #include "../Texture/Traits.hpp"
 
@@ -11,6 +11,7 @@ import Engine.Assets.Type;
 import Engine.Common;
 import Engine.Core;
 import Engine.Graphics;
+import Engine.Graphics.Material;
 import Engine.Reflect;
 import Engine.Resource;
 

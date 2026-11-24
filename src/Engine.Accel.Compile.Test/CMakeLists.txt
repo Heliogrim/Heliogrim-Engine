@@ -8,6 +8,7 @@ make_test_project(
 		${PROJECT_NAME}::Engine.Accel.Compile
 		${PROJECT_NAME}::Engine.Accel.Effect
 		${PROJECT_NAME}::Engine.Accel.Lang
+		${PROJECT_NAME}::Engine.Accel.Storage
 		${PROJECT_NAME}::Engine.Asserts
 		${PROJECT_NAME}::Engine.Common
 		${PROJECT_NAME}::Engine.Diagnostics

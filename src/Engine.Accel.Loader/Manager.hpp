@@ -1,9 +1,9 @@
 #pragma once
 
-#include <Engine.Accel.Storage/GlobalStorage.hpp>
 #include <Engine.Common/Sal.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Accel.Storage;
 import Engine.Resource;
 #endif
 
