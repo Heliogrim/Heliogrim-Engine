@@ -58,7 +58,7 @@ void service::initPropertyService(ref<PropertyService> service_) {
 				posLabel->getStyleAttributes().update<attr::TextStyle::textAlign>(TextAlign::eMiddleLeft);
 				posLabel->setText("Position");
 
-				auto inputPosX = makeInputFloat();
+				auto inputPosX = uikit::makeInputFloat();
 				inputPosX->getContent()->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
 				inputPosX->getDataAttributes().setQuery<attr::InputData::value>(
 					[root]() {
@@ -67,13 +67,13 @@ void service::initPropertyService(ref<PropertyService> service_) {
 				);
 				discard = inputPosX->onInputChange(
 					[root](ref<const InputChangeEvent> event_) mutable {
-						const auto& target = *static_cast<const ptr<const InputFloat>>(event_.target.get());
+						const auto& target = *static_cast<const ptr<const uikit::InputFloat>>(event_.target.get());
 						root->getLocalTransform().location().setX(target.value());
 						return EventResponse::eConsumed;
 					}
 				);
 
-				auto inputPosY = makeInputFloat();
+				auto inputPosY = uikit::makeInputFloat();
 				inputPosY->getContent()->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
 				inputPosY->getDataAttributes().setQuery<attr::InputData::value>(
 					[root]() {
@@ -82,13 +82,13 @@ void service::initPropertyService(ref<PropertyService> service_) {
 				);
 				discard = inputPosY->onInputChange(
 					[root](ref<const InputChangeEvent> event_) mutable {
-						const auto& target = *static_cast<const ptr<const InputFloat>>(event_.target.get());
+						const auto& target = *static_cast<const ptr<const uikit::InputFloat>>(event_.target.get());
 						root->getLocalTransform().location().setY(target.value());
 						return EventResponse::eConsumed;
 					}
 				);
 
-				auto inputPosZ = makeInputFloat();
+				auto inputPosZ = uikit::makeInputFloat();
 				inputPosZ->getContent()->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
 				inputPosZ->getDataAttributes().setQuery<attr::InputData::value>(
 					[root]() {
@@ -97,7 +97,7 @@ void service::initPropertyService(ref<PropertyService> service_) {
 				);
 				discard = inputPosZ->onInputChange(
 					[root](ref<const InputChangeEvent> event_) mutable {
-						const auto& target = *static_cast<const ptr<const InputFloat>>(event_.target.get());
+						const auto& target = *static_cast<const ptr<const uikit::InputFloat>>(event_.target.get());
 						root->getLocalTransform().location().setZ(target.value());
 						return EventResponse::eConsumed;
 					}
@@ -114,15 +114,15 @@ void service::initPropertyService(ref<PropertyService> service_) {
 				rotLabel->getStyleAttributes().update<attr::TextStyle::textAlign>(TextAlign::eMiddleLeft);
 				rotLabel->setText("Rotation");
 
-				auto inputRotX = makeInputFloat();
+				auto inputRotX = uikit::makeInputFloat();
 				inputRotX->getContent()->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
 				inputRotX->setValue(root->getUniverseRotator().euler().x);
 
-				auto inputRotY = makeInputFloat();
+				auto inputRotY = uikit::makeInputFloat();
 				inputRotY->getContent()->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
 				inputRotY->setValue(root->getUniverseRotator().euler().y);
 
-				auto inputRotZ = makeInputFloat();
+				auto inputRotZ = uikit::makeInputFloat();
 				inputRotZ->getContent()->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
 				inputRotZ->setValue(root->getUniverseRotator().euler().z);
 
@@ -167,7 +167,7 @@ void service::initPropertyService(ref<PropertyService> service_) {
 				posLabel->getStyleAttributes().update<attr::TextStyle::textAlign>(TextAlign::eMiddleLeft);
 				posLabel->setText("Position");
 
-				auto inputPosX = makeInputFloat();
+				auto inputPosX = uikit::makeInputFloat();
 				inputPosX->getContent()->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
 				inputPosX->getDataAttributes().setQuery<attr::InputData::value>(
 					[component]() {
@@ -176,13 +176,13 @@ void service::initPropertyService(ref<PropertyService> service_) {
 				);
 				discard = inputPosX->onInputChange(
 					[component](ref<const InputChangeEvent> event_) {
-						const auto& target = *static_cast<const ptr<const InputFloat>>(event_.target.get());
+						const auto& target = *static_cast<const ptr<const uikit::InputFloat>>(event_.target.get());
 						component->getLocalTransform().location().setX(target.value());
 						return EventResponse::eConsumed;
 					}
 				);
 
-				auto inputPosY = makeInputFloat();
+				auto inputPosY = uikit::makeInputFloat();
 				inputPosY->getContent()->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
 				inputPosY->getDataAttributes().setQuery<attr::InputData::value>(
 					[component]() {
@@ -191,13 +191,13 @@ void service::initPropertyService(ref<PropertyService> service_) {
 				);
 				discard = inputPosY->onInputChange(
 					[component](ref<const InputChangeEvent> event_) {
-						const auto& target = *static_cast<const ptr<const InputFloat>>(event_.target.get());
+						const auto& target = *static_cast<const ptr<const uikit::InputFloat>>(event_.target.get());
 						component->getLocalTransform().location().setY(target.value());
 						return EventResponse::eConsumed;
 					}
 				);
 
-				auto inputPosZ = makeInputFloat();
+				auto inputPosZ = uikit::makeInputFloat();
 				inputPosZ->getContent()->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
 				inputPosZ->getDataAttributes().setQuery<attr::InputData::value>(
 					[component]() {
@@ -206,7 +206,7 @@ void service::initPropertyService(ref<PropertyService> service_) {
 				);
 				discard = inputPosZ->onInputChange(
 					[component](ref<const InputChangeEvent> event_) {
-						const auto& target = *static_cast<const ptr<const InputFloat>>(event_.target.get());
+						const auto& target = *static_cast<const ptr<const uikit::InputFloat>>(event_.target.get());
 						component->getLocalTransform().location().setZ(target.value());
 						return EventResponse::eConsumed;
 					}
@@ -223,7 +223,7 @@ void service::initPropertyService(ref<PropertyService> service_) {
 				rotLabel->getStyleAttributes().update<attr::TextStyle::textAlign>(TextAlign::eMiddleLeft);
 				rotLabel->setText("Rotation");
 
-				auto inputRotX = makeInputFloat();
+				auto inputRotX = uikit::makeInputFloat();
 				inputRotX->getContent()->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
 				inputRotX->getDataAttributes().setQuery<attr::InputData::value>(
 					[component]() {
@@ -232,13 +232,13 @@ void service::initPropertyService(ref<PropertyService> service_) {
 				);
 				discard = inputRotX->onInputChange(
 					[component](ref<const InputChangeEvent> event_) {
-						const auto& target = *static_cast<const ptr<const InputFloat>>(event_.target.get());
+						const auto& target = *static_cast<const ptr<const uikit::InputFloat>>(event_.target.get());
 						component->getLocalTransform().rotator().setPitch(target.value());
 						return EventResponse::eConsumed;
 					}
 				);
 
-				auto inputRotY = makeInputFloat();
+				auto inputRotY = uikit::makeInputFloat();
 				inputRotY->getContent()->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
 				inputRotY->getDataAttributes().setQuery<attr::InputData::value>(
 					[component]() {
@@ -247,13 +247,13 @@ void service::initPropertyService(ref<PropertyService> service_) {
 				);
 				discard = inputRotY->onInputChange(
 					[component](ref<const InputChangeEvent> event_) {
-						const auto target = std::static_pointer_cast<InputFloat>(event_.target);
+						const auto target = std::static_pointer_cast<uikit::InputFloat>(event_.target);
 						component->getLocalTransform().rotator().setYaw(target->value());
 						return EventResponse::eConsumed;
 					}
 				);
 
-				auto inputRotZ = makeInputFloat();
+				auto inputRotZ = uikit::makeInputFloat();
 				inputRotZ->getContent()->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
 				inputRotZ->getDataAttributes().setQuery<attr::InputData::value>(
 					[component]() {
@@ -262,7 +262,7 @@ void service::initPropertyService(ref<PropertyService> service_) {
 				);
 				discard = inputRotZ->onInputChange(
 					[component](ref<const InputChangeEvent> event_) {
-						const auto& target = *static_cast<const ptr<const InputFloat>>(event_.target.get());
+						const auto& target = *static_cast<const ptr<const uikit::InputFloat>>(event_.target.get());
 						component->getLocalTransform().rotator().setRoll(target.value());
 						return EventResponse::eConsumed;
 					}
@@ -279,7 +279,7 @@ void service::initPropertyService(ref<PropertyService> service_) {
 				scaleLabel->getStyleAttributes().update<attr::TextStyle::textAlign>(TextAlign::eMiddleLeft);
 				scaleLabel->setText("Scale");
 
-				auto inputScaleX = makeInputFloat();
+				auto inputScaleX = uikit::makeInputFloat();
 				inputScaleX->getContent()->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
 				inputScaleX->getDataAttributes().setQuery<attr::InputData::value>(
 					[component]() {
@@ -288,13 +288,13 @@ void service::initPropertyService(ref<PropertyService> service_) {
 				);
 				discard = inputScaleX->onInputChange(
 					[component](ref<const InputChangeEvent> event_) {
-						const auto& target = *static_cast<const ptr<const InputFloat>>(event_.target.get());
+						const auto& target = *static_cast<const ptr<const uikit::InputFloat>>(event_.target.get());
 						component->getLocalTransform().scale().setX(target.value());
 						return EventResponse::eConsumed;
 					}
 				);
 
-				auto inputScaleY = makeInputFloat();
+				auto inputScaleY = uikit::makeInputFloat();
 				inputScaleY->getContent()->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
 				inputScaleY->getDataAttributes().setQuery<attr::InputData::value>(
 					[component]() {
@@ -303,13 +303,13 @@ void service::initPropertyService(ref<PropertyService> service_) {
 				);
 				discard = inputScaleY->onInputChange(
 					[component](ref<const InputChangeEvent> event_) {
-						const auto& target = *static_cast<const ptr<const InputFloat>>(event_.target.get());
+						const auto& target = *static_cast<const ptr<const uikit::InputFloat>>(event_.target.get());
 						component->getLocalTransform().scale().setY(target.value());
 						return EventResponse::eConsumed;
 					}
 				);
 
-				auto inputScaleZ = makeInputFloat();
+				auto inputScaleZ = uikit::makeInputFloat();
 				inputScaleZ->getContent()->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
 				inputScaleZ->getDataAttributes().setQuery<attr::InputData::value>(
 					[component]() {
@@ -318,7 +318,7 @@ void service::initPropertyService(ref<PropertyService> service_) {
 				);
 				discard = inputScaleZ->onInputChange(
 					[component](ref<const InputChangeEvent> event_) {
-						const auto& target = *static_cast<const ptr<const InputFloat>>(event_.target.get());
+						const auto& target = *static_cast<const ptr<const uikit::InputFloat>>(event_.target.get());
 						component->getLocalTransform().scale().setZ(target.value());
 						return EventResponse::eConsumed;
 					}
@@ -363,7 +363,7 @@ void service::initPropertyService(ref<PropertyService> service_) {
 					label->getStyleAttributes().update<attr::TextStyle::textAlign>(TextAlign::eMiddleLeft);
 					label->setText("Aspect");
 
-					auto input = makeInputFloat();
+					auto input = uikit::makeInputFloat();
 					input->getContent()->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
 					input->setValue(component->getAspectRatio());
 
@@ -392,7 +392,7 @@ void service::initPropertyService(ref<PropertyService> service_) {
 					auto inactive = make_sptr<uikit::Text>();
 					inactive->setText("Free");
 
-					auto input = makeInputToggle(::hg::move(active), ::hg::move(inactive), false);
+					auto input = uikit::makeInputToggle(::hg::move(active), ::hg::move(inactive), false);
 					input->getDataAttributes().setQuery<attr::InputData::value>(
 						[component]() {
 							return component->isAspectLocked();
@@ -400,7 +400,7 @@ void service::initPropertyService(ref<PropertyService> service_) {
 					);
 					discard = input->onInputChange(
 						[component](ref<const InputChangeEvent> event_) {
-							const auto& target = *static_cast<const ptr<const InputToggle>>(event_.target.get());
+							const auto& target = *static_cast<const ptr<const uikit::InputToggle>>(event_.target.get());
 							component->lockAspectRatio(target.value());
 							return EventResponse::eConsumed;
 						}
@@ -439,15 +439,15 @@ void service::initPropertyService(ref<PropertyService> service_) {
 					label->getStyleAttributes().update<attr::TextStyle::textAlign>(TextAlign::eMiddleLeft);
 					label->setText("Offset");
 
-					auto inputX = makeInputFloat();
+					auto inputX = uikit::makeInputFloat();
 					inputX->getContent()->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
 					inputX->setValue(component->offset().x);
 
-					auto inputY = makeInputFloat();
+					auto inputY = uikit::makeInputFloat();
 					inputY->getContent()->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
 					inputY->setValue(component->offset().y);
 
-					auto inputZ = makeInputFloat();
+					auto inputZ = uikit::makeInputFloat();
 					inputZ->getContent()->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
 					inputZ->setValue(component->offset().z);
 
@@ -478,7 +478,7 @@ void service::initPropertyService(ref<PropertyService> service_) {
 					auto inactive = make_sptr<uikit::Text>();
 					inactive->setText("Perspective");
 
-					auto input = makeInputToggle(::hg::move(active), ::hg::move(inactive), false);
+					auto input = uikit::makeInputToggle(::hg::move(active), ::hg::move(inactive), false);
 					input->getDataAttributes().setQuery<attr::InputData::value>(
 						[component]() {
 							return component->getProjectMode() == graphics::CameraProjectionMode::eOrthographic;
@@ -486,7 +486,7 @@ void service::initPropertyService(ref<PropertyService> service_) {
 					);
 					discard = input->onInputChange(
 						[component](ref<const InputChangeEvent> event_) {
-							const auto& target = *static_cast<const ptr<const InputToggle>>(event_.target.get());
+							const auto& target = *static_cast<const ptr<const uikit::InputToggle>>(event_.target.get());
 							component->setProjectMode(
 								target.value() ?
 								graphics::CameraProjectionMode::eOrthographic :
@@ -525,7 +525,7 @@ void service::initPropertyService(ref<PropertyService> service_) {
 					auto inactive = make_sptr<uikit::Text>();
 					inactive->setText("First Person");
 
-					auto input = makeInputToggle(::hg::move(active), ::hg::move(inactive), false);
+					auto input = uikit::makeInputToggle(::hg::move(active), ::hg::move(inactive), false);
 					input->getDataAttributes().setQuery<attr::InputData::value>(
 						[component]() {
 							return component->getViewMode() == graphics::CameraViewMode::eLookAt;
@@ -533,7 +533,7 @@ void service::initPropertyService(ref<PropertyService> service_) {
 					);
 					discard = input->onInputChange(
 						[component](ref<const InputChangeEvent> event_) {
-							const auto& target = *static_cast<const ptr<const InputToggle>>(event_.target.get());
+							const auto& target = *static_cast<const ptr<const uikit::InputToggle>>(event_.target.get());
 							component->setViewMode(
 								target.value() ? graphics::CameraViewMode::eLookAt : graphics::CameraViewMode::eFirstPerson
 							);
@@ -595,7 +595,7 @@ void service::initPropertyService(ref<PropertyService> service_) {
 					label->getStyleAttributes().update<attr::TextStyle::textAlign>(TextAlign::eMiddleLeft);
 					label->setText("Luminance");
 
-					auto inputR = makeInputFloat();
+					auto inputR = uikit::makeInputFloat();
 					inputR->getContent()->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
 					inputR->getDataAttributes().update<attr::InputData::limits>(math::fvec2 { 0.F, 1.F });
 					inputR->getDataAttributes().setQuery<attr::InputData::value>(
@@ -605,13 +605,13 @@ void service::initPropertyService(ref<PropertyService> service_) {
 					);
 					::hg::discard = inputR->onInputChange(
 						[component](ref<const InputChangeEvent> event_) {
-							const auto& target = *static_cast<const ptr<const InputFloat>>(event_.target.get());
+							const auto& target = *static_cast<const ptr<const uikit::InputFloat>>(event_.target.get());
 							component->_luminance.setX(target.value());
 							return EventResponse::eConsumed;
 						}
 					);
 
-					auto inputG = makeInputFloat();
+					auto inputG = uikit::makeInputFloat();
 					inputG->getContent()->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
 					inputG->getDataAttributes().update<attr::InputData::limits>(math::fvec2 { 0.F, 1.F });
 					inputG->getDataAttributes().setQuery<attr::InputData::value>(
@@ -621,13 +621,13 @@ void service::initPropertyService(ref<PropertyService> service_) {
 					);
 					::hg::discard = inputG->onInputChange(
 						[component](ref<const InputChangeEvent> event_) {
-							const auto& target = *static_cast<const ptr<const InputFloat>>(event_.target.get());
+							const auto& target = *static_cast<const ptr<const uikit::InputFloat>>(event_.target.get());
 							component->_luminance.setY(target.value());
 							return EventResponse::eConsumed;
 						}
 					);
 
-					auto inputB = makeInputFloat();
+					auto inputB = uikit::makeInputFloat();
 					inputB->getContent()->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
 					inputB->getDataAttributes().update<attr::InputData::limits>(math::fvec2 { 0.F, 1.F });
 					inputB->getDataAttributes().setQuery<attr::InputData::value>(
@@ -637,7 +637,7 @@ void service::initPropertyService(ref<PropertyService> service_) {
 					);
 					::hg::discard = inputB->onInputChange(
 						[component](ref<const InputChangeEvent> event_) {
-							const auto& target = *static_cast<const ptr<const InputFloat>>(event_.target.get());
+							const auto& target = *static_cast<const ptr<const uikit::InputFloat>>(event_.target.get());
 							component->_luminance.setZ(target.value());
 							return EventResponse::eConsumed;
 						}
@@ -674,7 +674,7 @@ void service::initPropertyService(ref<PropertyService> service_) {
 					label->getStyleAttributes().update<attr::TextStyle::textAlign>(TextAlign::eMiddleLeft);
 					label->setText("Direction");
 
-					auto inputX = makeInputFloat();
+					auto inputX = uikit::makeInputFloat();
 					inputX->getContent()->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
 					inputX->getDataAttributes().setQuery<attr::InputData::value>(
 						[component]() {
@@ -683,13 +683,13 @@ void service::initPropertyService(ref<PropertyService> service_) {
 					);
 					::hg::discard = inputX->onInputChange(
 						[component](ref<const InputChangeEvent> event_) {
-							const auto& target = *static_cast<const ptr<const InputFloat>>(event_.target.get());
+							const auto& target = *static_cast<const ptr<const uikit::InputFloat>>(event_.target.get());
 							component->_direction.setPitch(target.value());
 							return EventResponse::eConsumed;
 						}
 					);
 
-					auto inputY = makeInputFloat();
+					auto inputY = uikit::makeInputFloat();
 					inputY->getContent()->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
 					inputY->getDataAttributes().setQuery<attr::InputData::value>(
 						[component]() {
@@ -698,13 +698,13 @@ void service::initPropertyService(ref<PropertyService> service_) {
 					);
 					::hg::discard = inputY->onInputChange(
 						[component](ref<const InputChangeEvent> event_) {
-							const auto& target = *static_cast<const ptr<const InputFloat>>(event_.target.get());
+							const auto& target = *static_cast<const ptr<const uikit::InputFloat>>(event_.target.get());
 							component->_direction.setYaw(target.value());
 							return EventResponse::eConsumed;
 						}
 					);
 
-					auto inputZ = makeInputFloat();
+					auto inputZ = uikit::makeInputFloat();
 					inputZ->getContent()->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
 					inputZ->getDataAttributes().setQuery<attr::InputData::value>(
 						[component]() {
@@ -713,7 +713,7 @@ void service::initPropertyService(ref<PropertyService> service_) {
 					);
 					::hg::discard = inputZ->onInputChange(
 						[component](ref<const InputChangeEvent> event_) {
-							const auto& target = *static_cast<const ptr<const InputFloat>>(event_.target.get());
+							const auto& target = *static_cast<const ptr<const uikit::InputFloat>>(event_.target.get());
 							component->_direction.setRoll(target.value());
 							return EventResponse::eConsumed;
 						}
@@ -771,7 +771,7 @@ void service::initPropertyService(ref<PropertyService> service_) {
 					label->getStyleAttributes().update<attr::TextStyle::textAlign>(TextAlign::eMiddleLeft);
 					label->setText("Luminance");
 
-					auto inputR = makeInputFloat();
+					auto inputR = uikit::makeInputFloat();
 					inputR->getContent()->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
 					inputR->getDataAttributes().update<attr::InputData::limits>(math::fvec2 { 0.F, 255.F });
 					inputR->getDataAttributes().setQuery<attr::InputData::value>(
@@ -780,7 +780,7 @@ void service::initPropertyService(ref<PropertyService> service_) {
 						}
 					);
 
-					auto inputG = makeInputFloat();
+					auto inputG = uikit::makeInputFloat();
 					inputG->getContent()->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
 					inputG->getDataAttributes().update<attr::InputData::limits>(math::fvec2 { 0.F, 255.F });
 					inputG->getDataAttributes().setQuery<attr::InputData::value>(
@@ -789,7 +789,7 @@ void service::initPropertyService(ref<PropertyService> service_) {
 						}
 					);
 
-					auto inputB = makeInputFloat();
+					auto inputB = uikit::makeInputFloat();
 					inputB->getContent()->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
 					inputB->getDataAttributes().update<attr::InputData::limits>(math::fvec2 { 0.F, 255.F });
 					inputB->getDataAttributes().setQuery<attr::InputData::value>(
@@ -819,7 +819,7 @@ void service::initPropertyService(ref<PropertyService> service_) {
 					label->getStyleAttributes().update<attr::TextStyle::textAlign>(TextAlign::eMiddleLeft);
 					label->setText("Distance");
 
-					auto input = makeInputFloat();
+					auto input = uikit::makeInputFloat();
 					input->getContent()->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
 					input->getDataAttributes().setQuery<attr::InputData::value>(
 						[component]() {
@@ -867,7 +867,7 @@ void service::initPropertyService(ref<PropertyService> service_) {
 					label->getStyleAttributes().update<attr::TextStyle::textAlign>(TextAlign::eMiddleLeft);
 					label->setText("Geometry Asset");
 
-					auto input = makeInputText();
+					auto input = uikit::makeInputText();
 					input->getDataAttributes().setQuery<attr::InputData::value>(
 						[component]() {
 							const auto& asset = component->getSkyboxGeometry();
@@ -908,7 +908,7 @@ void service::initPropertyService(ref<PropertyService> service_) {
 					slotLabel->getStyleAttributes().update<attr::TextStyle::textAlign>(TextAlign::eMiddleLeft);
 					slotLabel->setText("Slot #1");
 
-					auto input = makeInputText();
+					auto input = uikit::makeInputText();
 					input->getDataAttributes().setQuery<attr::InputData::value>(
 						[component]() {
 							const auto& asset = component->getSkyboxMaterial();
@@ -967,7 +967,7 @@ void service::initPropertyService(ref<PropertyService> service_) {
 					label->getStyleAttributes().update<attr::TextStyle::textAlign>(TextAlign::eMiddleLeft);
 					label->setText("Luminance");
 
-					auto inputR = makeInputFloat();
+					auto inputR = uikit::makeInputFloat();
 					inputR->getContent()->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
 					inputR->getDataAttributes().update<attr::InputData::limits>(math::fvec2 { 0.F, 255.F });
 					inputR->getDataAttributes().setQuery<attr::InputData::value>(
@@ -976,7 +976,7 @@ void service::initPropertyService(ref<PropertyService> service_) {
 						}
 					);
 
-					auto inputG = makeInputFloat();
+					auto inputG = uikit::makeInputFloat();
 					inputG->getContent()->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
 					inputG->getDataAttributes().update<attr::InputData::limits>(math::fvec2 { 0.F, 255.F });
 					inputG->getDataAttributes().setQuery<attr::InputData::value>(
@@ -985,7 +985,7 @@ void service::initPropertyService(ref<PropertyService> service_) {
 						}
 					);
 
-					auto inputB = makeInputFloat();
+					auto inputB = uikit::makeInputFloat();
 					inputB->getContent()->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
 					inputB->getDataAttributes().update<attr::InputData::limits>(math::fvec2 { 0.F, 255.F });
 					inputB->getDataAttributes().setQuery<attr::InputData::value>(
@@ -1015,7 +1015,7 @@ void service::initPropertyService(ref<PropertyService> service_) {
 					label->getStyleAttributes().update<attr::TextStyle::textAlign>(TextAlign::eMiddleLeft);
 					label->setText("Distance");
 
-					auto input = makeInputFloat();
+					auto input = uikit::makeInputFloat();
 					input->getContent()->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
 					input->getDataAttributes().setQuery<attr::InputData::value>(
 						[component]() {
@@ -1042,7 +1042,7 @@ void service::initPropertyService(ref<PropertyService> service_) {
 					label->getStyleAttributes().update<attr::TextStyle::textAlign>(TextAlign::eMiddleLeft);
 					label->setText("Inner Cone");
 
-					auto input = makeInputFloat();
+					auto input = uikit::makeInputFloat();
 					input->getContent()->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
 					input->getDataAttributes().setQuery<attr::InputData::value>(
 						[component]() {
@@ -1069,7 +1069,7 @@ void service::initPropertyService(ref<PropertyService> service_) {
 					label->getStyleAttributes().update<attr::TextStyle::textAlign>(TextAlign::eMiddleLeft);
 					label->setText("Outer Cone");
 
-					auto input = makeInputFloat();
+					auto input = uikit::makeInputFloat();
 					input->getContent()->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
 					input->getDataAttributes().setQuery<attr::InputData::value>(
 						[component]() {
@@ -1360,7 +1360,7 @@ void service::initPropertyService(ref<PropertyService> service_) {
 					label->getStyleAttributes().update<attr::TextStyle::textAlign>(TextAlign::eMiddleLeft);
 					label->setText("Extent");
 
-					auto inputX = makeInputFloat();
+					auto inputX = uikit::makeInputFloat();
 					inputX->getContent()->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
 					inputX->getDataAttributes().update<attr::InputData::limits>(math::fvec2 { 0.F, 255.F });
 					inputX->getDataAttributes().setQuery<attr::InputData::value>(
@@ -1369,7 +1369,7 @@ void service::initPropertyService(ref<PropertyService> service_) {
 						}
 					);
 
-					auto inputY = makeInputFloat();
+					auto inputY = uikit::makeInputFloat();
 					inputY->getContent()->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
 					inputY->getDataAttributes().update<attr::InputData::limits>(math::fvec2 { 0.F, 255.F });
 					inputY->getDataAttributes().setQuery<attr::InputData::value>(
@@ -1378,7 +1378,7 @@ void service::initPropertyService(ref<PropertyService> service_) {
 						}
 					);
 
-					auto inputZ = makeInputFloat();
+					auto inputZ = uikit::makeInputFloat();
 					inputZ->getContent()->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
 					inputZ->getDataAttributes().update<attr::InputData::limits>(math::fvec2 { 0.F, 255.F });
 					inputZ->getDataAttributes().setQuery<attr::InputData::value>(
@@ -1414,7 +1414,7 @@ void service::initPropertyService(ref<PropertyService> service_) {
 					auto inactive = make_sptr<uikit::Text>();
 					inactive->setText("Dynamic");
 
-					auto input = makeInputToggle(::hg::move(active), ::hg::move(inactive), component->settings.isStatic);
+					auto input = uikit::makeInputToggle(::hg::move(active), ::hg::move(inactive), component->settings.isStatic);
 					input->getDataAttributes().setQuery<attr::InputData::value>(
 						[component]() {
 							return component->settings.isStatic;
@@ -1422,7 +1422,7 @@ void service::initPropertyService(ref<PropertyService> service_) {
 					);
 					discard = input->onInputChange(
 						[component](ref<const InputChangeEvent> event_) {
-							const auto& target = *static_cast<const ptr<const InputToggle>>(event_.target.get());
+							const auto& target = *static_cast<const ptr<const uikit::InputToggle>>(event_.target.get());
 							component->settings.isStatic = target.value();
 							return EventResponse::eConsumed;
 						}
@@ -1457,7 +1457,7 @@ void service::initPropertyService(ref<PropertyService> service_) {
 					auto inactive = make_sptr<uikit::Text>();
 					inactive->setText("Inactive");
 
-					auto input = makeInputToggle(::hg::move(active), ::hg::move(inactive), component->settings.isTrigger);
+					auto input = uikit::makeInputToggle(::hg::move(active), ::hg::move(inactive), component->settings.isTrigger);
 					input->getDataAttributes().setQuery<attr::InputData::value>(
 						[component]() {
 							return component->settings.isTrigger;
@@ -1465,7 +1465,7 @@ void service::initPropertyService(ref<PropertyService> service_) {
 					);
 					discard = input->onInputChange(
 						[component](ref<const InputChangeEvent> event_) {
-							const auto& target = *static_cast<const ptr<const InputToggle>>(event_.target.get());
+							const auto& target = *static_cast<const ptr<const uikit::InputToggle>>(event_.target.get());
 							component->settings.isTrigger = target.value();
 							return EventResponse::eConsumed;
 						}

@@ -1,45 +1,52 @@
 #pragma once
 
+#include "../../Atom/Atom.hpp"
+#include "../../Atom/Text.hpp"
+#include "../Layout/Stack.hpp"
+
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Reflow;
-import Engine.Reflow.Uikit;
 #endif
 
-namespace hg::editor::ui {
-	enum class InputFloatPrecision {
-		eF64,
-		eDouble = eF64,
-		eF32,
-		eFloat = eF32,
-		eF16
+namespace hg::engine::reflow::uikit {
+	enum class InputIntegralPrecision {
+		eS64,
+		eU64,
+		eS32,
+		eU32,
+		eS16,
+		eU16,
+		eS8,
+		eU8
 	};
 
-	struct InputFloatDataAttributes final :
+	struct InputIntegralDataAttributes final :
 		public engine::reflow::DataAttributes<
-			engine::reflow::NamedAttribute<engine::reflow::attr::InputData::limits, engine::reflow::DataAttribute<math::vec2_t<::hg::f64>>>,
-			engine::reflow::NamedAttribute<engine::reflow::attr::InputData::precision, engine::reflow::DataAttribute<InputFloatPrecision>>,
-			engine::reflow::NamedAttribute<engine::reflow::attr::InputData::step, engine::reflow::DataAttribute<::hg::f64>>,
-			engine::reflow::NamedAttribute<engine::reflow::attr::InputData::value, engine::reflow::DataAttribute<::hg::f64>>
+			engine::reflow::NamedAttribute<engine::reflow::attr::InputData::limits, engine::reflow::DataAttribute<math::vec2_t<::hg::s64>>>,
+			engine::reflow::NamedAttribute<engine::reflow::attr::InputData::precision, engine::reflow::DataAttribute<
+				InputIntegralPrecision>>,
+			engine::reflow::NamedAttribute<engine::reflow::attr::InputData::step, engine::reflow::DataAttribute<::hg::s64>>,
+			engine::reflow::NamedAttribute<engine::reflow::attr::InputData::value, engine::reflow::DataAttribute<::hg::s64>>
 		> {
 		using DataAttributes::DataAttributes;
 	};
 }
 
-namespace hg::editor::ui {
-	class InputFloat :
-		public engine::reflow::Input<f64>,
-		public engine::reflow::uikit::Atom<InputFloatDataAttributes, void, void> {
+namespace hg::engine::reflow::uikit {
+	class InputIntegral :
+		public engine::reflow::Input<s64>,
+		public engine::reflow::uikit::Atom<InputIntegralDataAttributes, void, void> {
 	public:
-		using this_type = InputFloat;
-		using value_type = f64;
+		using this_type = InputIntegral;
+		using value_type = s64;
 
 	public:
-		InputFloat(
+		InputIntegral(
 			mref<SharedPtr<engine::reflow::uikit::Stack>> content_,
 			mref<SharedPtr<engine::reflow::uikit::Text>> text_
 		);
 
-		~InputFloat() override;
+		~InputIntegral() override;
 
 	public:
 		[[nodiscard]] string getTag() const noexcept override;
@@ -78,5 +85,5 @@ namespace hg::editor::ui {
 
 	/**/
 
-	[[nodiscard]] extern SharedPtr<InputFloat> makeInputFloat();
+	[[nodiscard]] extern SharedPtr<InputIntegral> makeInputIntegral();
 }

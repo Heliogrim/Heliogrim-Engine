@@ -3,7 +3,7 @@
 import Engine.Common;
 import Engine.Reflow;
 
-using namespace hg::editor::ui;
+using namespace hg::engine::reflow::uikit;
 using namespace hg::engine::reflow;
 using namespace hg;
 
@@ -130,7 +130,7 @@ void InputToggle::onDetachDataWatcher(ref<DataWatcher> watcher_) {
 
 /**/
 
-SharedPtr<InputToggle> editor::ui::makeInputToggle(
+SharedPtr<InputToggle> uikit::makeInputToggle(
 	mref<SharedPtr<Widget>> active_,
 	mref<SharedPtr<Widget>> inactive_,
 	bool value_

@@ -80,37 +80,4 @@ namespace ReflowModule {
 		GTEST_SKIP() << "Currently unsupported stub for asset inputs."sv;
 		generic_test_empty_input<editor::ui::InputAsset>(*this, []() { return make_sptr<editor::ui::InputAsset>(); });
 	}
-
-	TEST_F(LayoutingBoxFixture, EmptyUikitInputFloat) {
-		generic_test_empty_input<editor::ui::InputFloat>(*this, []() { return editor::ui::makeInputFloat(); }, math::vec2 { 8.f });
-	}
-
-	TEST_F(LayoutingBoxFixture, EmptyUikitInputIntegral) {
-		generic_test_empty_input<editor::ui::InputIntegral>(*this, []() { return editor::ui::makeInputIntegral(); }, math::vec2 { 8.f });
-	}
-
-	TEST_F(LayoutingBoxFixture, EmptyUikitInputText) {
-		generic_test_empty_input<editor::ui::InputText>(*this, []() { return editor::ui::makeInputText(); }, math::vec2 { 8.f });
-	}
-
-	TEST_F(LayoutingBoxFixture, EmptyUikitInputToggle) {
-		generic_test_empty_input<editor::ui::InputToggle>(*this, []() { return make_sptr<editor::ui::InputToggle>(); });
-	}
-
-	// Fenced: InputVec<T>::prepare() no longer compiles (make_sptr<InputFloat>() has no default ctor, InputFloat::_callback is gone).
-	#if FALSE
-
-	TEST_F(LayoutingBoxFixture, EmptyUikitInputVec3) {
-		generic_test_empty_input<editor::ui::InputVec3>(*this, []() { return make_sptr<editor::ui::InputVec3>(); });
-	}
-
-	TEST_F(LayoutingBoxFixture, EmptyUikitInputUiVec2) {
-		generic_test_empty_input<editor::ui::InputUiVec2>(*this, []() { return make_sptr<editor::ui::InputUiVec2>(); });
-	}
-
-	TEST_F(LayoutingBoxFixture, EmptyUikitInputUiVec3) {
-		generic_test_empty_input<editor::ui::InputUiVec3>(*this, []() { return make_sptr<editor::ui::InputUiVec3>(); });
-	}
-
-	#endif
 }

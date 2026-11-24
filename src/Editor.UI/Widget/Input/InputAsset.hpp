@@ -1,7 +1,5 @@
 #pragma once
 
-#include "InputText.hpp"
-
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Assets;
 import Engine.Reflow;
@@ -32,7 +30,7 @@ namespace hg::editor::ui {
 
 	protected:
 		sptr<engine::reflow::uikit::Image> _preview;
-		sptr<InputText> _input;
+		sptr<engine::reflow::uikit::InputText> _input;
 		sptr<engine::reflow::uikit::Button> _search;
 		sptr<engine::reflow::uikit::Button> _reset;
 		sptr<engine::reflow::uikit::VerticalLayout> _content;
