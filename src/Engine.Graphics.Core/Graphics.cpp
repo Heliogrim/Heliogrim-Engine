@@ -7,8 +7,6 @@
 
 #include <Engine.Common/Math/__default.inl>
 #include <Engine.Graphics.IO/Io.hpp>
-#include <Engine.Graphics.Loader/Cache/GlobalCacheCtrl.hpp>
-#include <Engine.Graphics.Loader/Cache/GlobalResourceCache.hpp>
 #include <Engine.Graphics.Render/RenderTarget.hpp>
 
 /* Development Testing */
@@ -19,6 +17,7 @@ import Engine.Common;
 import Engine.Core;
 import Engine.Event;
 import Engine.Graphics;
+import Engine.Graphics.Loader;
 import Engine.Graphics.Scene;
 import Engine.Graphics.Schedule;
 import Engine.Logging;

@@ -1,8 +1,7 @@
 #include "UISceneModel.hpp"
 
-#include <Engine.Graphics.Loader/Cache/ModelBatch.hpp>
-
 import Engine.Asserts;
+import Engine.Graphics.Loader;
 import Engine.Reflect;
 import Engine.Reflow.Components;
 

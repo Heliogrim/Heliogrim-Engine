@@ -5,7 +5,6 @@
 #include <cassert>
 #include <cstring>
 #include <Engine.Graphics.Core/Graphics.hpp>
-#include <Engine.Graphics.Loader/Texture/TextureLoader.hpp>
 #include <Heliogrim/Graphics/TextureFormat.hpp>
 #include <Heliogrim/Graphics/TextureType.hpp>
 
@@ -23,6 +22,7 @@ import Engine.Common;
 import Engine.Core;
 import Engine.Driver.Vulkan;
 import Engine.Graphics;
+import Engine.Graphics.Loader;
 import Engine.Graphics.Render.Command;
 import Engine.Graphics.Render.Predefined;
 import Engine.Graphics.RenderGraph;

@@ -7,7 +7,7 @@ import Engine.Core;
 #endif
 
 namespace hg::engine {
-	inline constexpr static core::DependencyKey AccelDepKey { "::hg::engine::accel::Accel"sv };
+	inline constexpr core::DependencyKey AccelDepKey { "::hg::engine::accel::Accel"sv };
 }
 
 namespace hg::engine {

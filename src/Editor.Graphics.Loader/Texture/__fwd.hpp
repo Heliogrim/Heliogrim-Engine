@@ -1,9 +1,8 @@
 #pragma once
 
-#include <Engine.Graphics.Loader/Texture/__fwd.hpp>
-
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Assets.Type;
+import Engine.Graphics.Loader;
 import Engine.Resource;
 #endif
 

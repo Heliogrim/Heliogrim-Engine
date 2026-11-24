@@ -46,6 +46,6 @@ make_library_project(
 		${PROJECT_NAME}::Engine.Storage.Action
 		${PROJECT_NAME}::Engine.Storage.Package
 		${PROJECT_NAME}::Engine.Assets.Type
-		${PROJECT_NAME}::Engine.Storage.System
+		${PROJECT_NAME}::Engine.Storage.System ${PROJECT_NAME}::Engine.Accel
 		${PROJECT_NAME}::Engine.Graphics.Core
 )

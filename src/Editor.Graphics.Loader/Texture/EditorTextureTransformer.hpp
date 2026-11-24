@@ -1,12 +1,12 @@
 #pragma once
 
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Graphics.Loader/Texture/TextureTransformer.hpp>
 
 #include "EditorTextureSubTransformer.hpp"
 #include "Traits.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Graphics.Loader;
 import Engine.Resource;
 #endif
 

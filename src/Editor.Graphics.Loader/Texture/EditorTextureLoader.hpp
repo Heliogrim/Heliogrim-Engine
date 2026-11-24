@@ -1,5 +1,4 @@
 #pragma once
-#include <Engine.Graphics.Loader/Cache/GlobalCacheCtrl.hpp>
 
 #include "__fwd.hpp"
 #include "EditorTextureCache.hpp"
@@ -8,6 +7,7 @@
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Graphics;
+import Engine.Graphics.Loader;
 import Engine.Resource;
 #endif
 

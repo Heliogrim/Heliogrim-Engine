@@ -1,10 +1,10 @@
 #include <Editor.Action/ActionManager.hpp>
 #include <Editor.Core/EditorEngine.hpp>
 #include <Editor.UI.Main/EditorUI.hpp>
-#include <Engine.Accel/Accel.hpp>
 
 import Editor.Boot;
 import Editor.Graphics.IO;
+import Engine.Accel;
 import Engine.Common;
 import Engine.Reflow;
 

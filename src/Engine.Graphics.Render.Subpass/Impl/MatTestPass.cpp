@@ -3,7 +3,6 @@
 /**/
 
 #include <Engine.Graphics.Core/Graphics.hpp>
-#include <Engine.Graphics.Loader/Cache/GlobalCacheCtrl.hpp>
 #include <Engine.Graphics.Scene.Model/StaticGeometryModel.hpp>
 
 #include "MatTestPass.hpp"
@@ -18,6 +17,7 @@ import Engine.Common;
 import Engine.Core;
 import Engine.Driver.Vulkan;
 import Engine.Graphics;
+import Engine.Graphics.Loader;
 import Engine.Graphics.Render.Command;
 import Engine.Graphics.Render.Predefined;
 import Engine.Graphics.RenderGraph;

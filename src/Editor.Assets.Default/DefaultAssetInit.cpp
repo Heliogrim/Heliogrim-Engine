@@ -3,13 +3,13 @@
 
 #include "DefaultAssetInit.hpp"
 
-#include "Engine.Accel/Accel.hpp"
 #include "Fonts/Default.hpp"
 #include "GraphicsMaterials/Default.hpp"
 #include "Images/Default.hpp"
 #include "Meshes/Default.hpp"
 #include "Textures/Default.hpp"
 
+import Engine.Accel;
 import Engine.Assets;
 import Engine.Assets.System;
 import Engine.Assets.Type;

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Graphics.Loader/Cache/__fwd.hpp>
-
 #include "__fwd.hpp"
 #include "EffectCache.hpp"
 #include "EffectFeedback.hpp"
@@ -9,6 +7,7 @@
 #include "EffectTransformer.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Graphics.Loader;
 import Engine.Resource;
 #endif
 

@@ -2,10 +2,10 @@
 
 #include <cassert>
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Graphics.Loader/Material/MaterialResource.hpp>
 
 import Engine.Accel.Pipeline;
 import Engine.Common;
+import Engine.Graphics.Loader;
 import Engine.Graphics.Material;
 import Engine.Graphics.Render.Command;
 import Engine.Graphics.Render.Predefined;

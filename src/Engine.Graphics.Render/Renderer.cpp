@@ -1,12 +1,10 @@
 #include "Renderer.hpp"
 
-#include <Engine.Graphics.Loader/Cache/GlobalCacheCtrl.hpp>
-#include <Engine.Graphics.Loader/Cache/LocalResourceCache.hpp>
-
 #include "RenderPass.hpp"
 
 import Engine.Common;
 import Engine.Graphics;
+import Engine.Graphics.Loader;
 import Engine.Graphics.RenderGraph;
 import Engine.Graphics.RenderGraph.Compile;
 
