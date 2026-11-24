@@ -63,6 +63,7 @@ namespace hg::engine::serialization {
 			slot_.slot()->getState().root->archive->setError();
 			return Guid {};
 		}
+
 		return Guid::networkToHost(std::span<_::byte, 16uLL> { std::bit_cast<_::byte*>(tmp.data()), 16uLL });
 	}
 
@@ -70,8 +71,10 @@ namespace hg::engine::serialization {
 	GuidType_ get_named_guid_slot(_In_ ref<const StructScopedSlot> structure_, _In_ const StringView name_) {
 		if constexpr (std::is_convertible_v<Guid, GuidType_>) {
 			return get_named_guid_slot<Guid>(structure_, name_);
+
 		} else if constexpr (std::is_constructible_v<GuidType_, Guid&&>) {
 			return GuidType_ { get_named_guid_slot<Guid>(structure_, name_) };
+
 		} else {
 			static_assert(not std::is_convertible_v<Guid, GuidType_> && not std::is_constructible_v<GuidType_, Guid&&>, "");
 			std::unreachable();
@@ -86,6 +89,7 @@ namespace hg::engine::serialization {
 			structure_.slot()->getState().root->archive->setError();
 			return Guid {};
 		}
+
 		return Guid::networkToHost(std::span<_::byte, 16uLL> { std::bit_cast<_::byte*>(tmp.data()), 16uLL });
 	}
 }

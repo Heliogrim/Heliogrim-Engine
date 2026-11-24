@@ -106,6 +106,7 @@ namespace hg::engine::serialization {
 				if (IsType<HierarchyComponent>(*next.get()) && parent == nullptr && target->getRootComponent().has_value()) {
 					// addComponent asserts a single root; a second parentless hierarchy component is bad data.
 					structured.slot()->getState().root->archive->setError();
+
 				} else if (IsType<HierarchyComponent>(*next.get())) {
 					// Keep back-reference for parent resolving with pure pointers
 					instanced[idx] = next.get();

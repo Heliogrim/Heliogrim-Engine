@@ -398,6 +398,7 @@ Opt<u32> computeCheckSum(cref<Blob> blob_, streamsize length_) {
 		if (blob_.read(it, clone(nextChunk)).size() != nextChunkSize) {
 			return None;
 		}
+
 		checksum.update(nextChunk);
 
 		it += nextChunkSize;
