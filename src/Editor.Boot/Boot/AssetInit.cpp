@@ -29,12 +29,12 @@
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Module/Modules.hpp>
 #include <Engine.Logging/Logger.hpp>
+#include <Engine.Logging/LogSink.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 #include <Engine.Reflect/IsType.hpp>
 #include <Engine.Resource.Archive/StorageReadonlyArchive.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 #include <Engine.Resource.Package/Attribute/MagicBytes.hpp>
-#include <Engine.Scheduler/Async.hpp>
 #include <Engine.Serialization.Layouts/LayoutManager.hpp>
 #include <Engine.Serialization.Structures/Common/Guid.hpp>
 #include <Engine.Serialization.Structures/Common/TypeId.hpp>
@@ -45,7 +45,6 @@
 #include <Engine.Storage.Registry/Options/StorageDescriptor.hpp>
 #include <Engine.Storage.Registry/Storage/LocalFileStorage.hpp>
 #include <Engine.Storage.System/StorageSystem.hpp>
-#include <Heliogrim/Async/Await.hpp>
 
 using namespace hg::editor::boot;
 using namespace hg::engine;
@@ -497,24 +496,6 @@ void editor::boot::initDefaultAssets() {
 #include <Engine.Serialization/Structure/SeqScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 
-static void log_diagnostics(ref<const diag::Diagnostics> diagnostics_) {
-	for (const auto& diagnostic : diagnostics_) {
-		switch (diagnostic.severity()) {
-			case diag::Severity::eError: {
-				IM_CORE_ERRORF("{}", diag::render(diagnostic));
-				break;
-			}
-			case diag::Severity::eWarning: {
-				IM_CORE_WARNF("{}", diag::render(diagnostic));
-				break;
-			}
-			default: {
-				IM_CORE_INFOF("{}", diag::render(diagnostic));
-			}
-		}
-	}
-}
-
 /* Every asset load gets its own context; its warnings and errors go to the caller's sink. */
 static Result<void, diag::Diagnostics> load_one_asset(
 	ref<resource::StorageReadonlyArchive> archive_,
@@ -638,7 +619,7 @@ void package_discover_assets(mref<Arci<storage::system::PackageStorage>> packSto
 		// @formatter:on
 	}
 
-	log_diagnostics(sink.items());
+	diag::logDiagnostics(sink.items());
 }
 
 bool is_archived_asset(mref<serialization::RecordScopedSlot> record_) {
