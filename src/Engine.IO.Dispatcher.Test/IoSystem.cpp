@@ -215,6 +215,68 @@ namespace IoModule {
 		sys.stop();
 	}
 
+	// Each request alone exceeds the byte budget; it must still issue once nothing else is in flight.
+	TEST_F(IoSystemTest, RequestsOverByteBudgetComplete) {
+		IoSystem sys { IoBackendKind::eIocp, IoLimits { .maxInFlight = 32u, .maxInFlightBytes = 4096u } };
+		sys.start();
+		Arci<IoFile> file {};
+		ASSERT_NO_FATAL_FAILURE(open(sys, makeFile("budget.bin"), IoOpenMode::eRead, file));
+		const auto queue = sys.createQueue(IoPriority::eNormal);
+
+		Vector<Vector<_::byte>> bufs(8, Vector<_::byte>(65536));
+		Vector<IoRequest> reqs {};
+		for (u32 k = 0; k < 8; ++k) {
+			reqs.push_back(
+				IoRequest {
+					.op = IoOp::eRead, .file = file, .offset = static_cast<u64>(k) * 65536uLL,
+					.buffer = { bufs[k].data(), bufs[k].size() }
+				}
+			);
+		}
+		auto fut = queue->submit(std::move(reqs));
+		ASSERT_TRUE(waitReady(fut));
+		auto res = await(std::move(fut));
+		ASSERT_TRUE(res.has_value());
+		for (const auto& completion : res.value()) {
+			EXPECT_EQ(completion.status, IoStatus::eDone);
+			EXPECT_EQ(completion.bytes, 65536u);
+		}
+		EXPECT_EQ(sys.requestsIssued(), 8uLL);
+		sys.stop();
+	}
+
+	// Limits set before start() are the ones the thread runs with: one in flight, four requests, all complete.
+	TEST_F(IoSystemTest, SetLimitsBeforeStartTakesEffect) {
+		IoSystem sys {};
+		sys.setLimits(IoLimits { .maxInFlight = 1u, .maxInFlightBytes = 4096u });
+		sys.start();
+		Arci<IoFile> file {};
+		ASSERT_NO_FATAL_FAILURE(open(sys, makeFile("limits.bin"), IoOpenMode::eRead, file));
+		const auto queue = sys.createQueue(IoPriority::eNormal);
+
+		Vector<Vector<_::byte>> bufs(4, Vector<_::byte>(4096));
+		Vector<IoRequest> reqs {};
+		for (u32 k = 0; k < 4; ++k) {
+			reqs.push_back(
+				IoRequest {
+					.op = IoOp::eRead, .file = file, .offset = static_cast<u64>(k) * 4096uLL,
+					.buffer = { bufs[k].data(), bufs[k].size() }
+				}
+			);
+		}
+		auto fut = queue->submit(std::move(reqs));
+		ASSERT_TRUE(waitReady(fut));
+		auto res = await(std::move(fut));
+		ASSERT_TRUE(res.has_value());
+		ASSERT_EQ(res.value().size(), 4uz);
+		for (const auto& completion : res.value()) {
+			EXPECT_EQ(completion.status, IoStatus::eDone);
+			EXPECT_EQ(completion.bytes, 4096u);
+		}
+		EXPECT_EQ(sys.requestsIssued(), 4uLL);
+		sys.stop();
+	}
+
 	TEST_F(IoSystemTest, BatchesResolveFifoPerQueue) {
 		IoSystem sys {};
 		sys.start();
@@ -413,7 +475,7 @@ namespace IoModule {
 
 	TEST_F(IoSystemTest, CancelledBufferUntouchedAfterResolve) {
 		constexpr size_t kBlock = 1024uz * 1024uz;
-		IoSystem sys { IoBackendKind::eIocp, 4u };
+		IoSystem sys { IoBackendKind::eIocp, IoLimits { .maxInFlight = 4u } };
 		sys.start();
 		Arci<IoFile> file {};
 		ASSERT_NO_FATAL_FAILURE(open(sys, makeFile("h.bin"), IoOpenMode::eRead, file));
@@ -558,7 +620,7 @@ namespace IoModule {
 		const auto path = makeFile("bench.bin", kFile);
 
 		const auto run = [&](const IoBackendKind kind_, const u32 maxInFlight_, const size_t block_, const size_t total_) {
-			IoSystem sys { kind_, maxInFlight_ };
+			IoSystem sys { kind_, IoLimits { .maxInFlight = maxInFlight_, .maxInFlightBytes = ~0u } };
 			sys.start();
 			Arci<IoFile> file {};
 			EXPECT_NO_FATAL_FAILURE(open(sys, path, IoOpenMode::eRead, file));
@@ -593,8 +655,8 @@ namespace IoModule {
 
 		constexpr size_t kTotal = 256uz * 1024uz * 1024uz;
 		for (const size_t block : { 64uz * 1024uz, 1024uz * 1024uz }) {
-			const auto iocp = run(IoBackendKind::eIocp, IoSystem::kMaxInFlight, block, kTotal);
-			const auto blocking = run(IoBackendKind::eBlocking, IoSystem::kMaxInFlight, block, kTotal);
+			const auto iocp = run(IoBackendKind::eIocp, 64u, block, kTotal);
+			const auto blocking = run(IoBackendKind::eBlocking, 64u, block, kTotal);
 			std::printf("backend block=%zuKiB iocp=%.0fMiB/s blocking=%.0fMiB/s\n", block / 1024uz, iocp, blocking);
 		}
 		for (const size_t block : { 4uz * 1024uz, 1024uz * 1024uz }) {

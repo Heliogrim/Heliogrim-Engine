@@ -17,10 +17,7 @@ namespace hg::engine::io {
 		friend class IoQueue;
 
 	public:
-		constexpr static u32 kMaxInFlight = 64;
-
-	public:
-		explicit IoSystem(const IoBackendKind kind_ = IoBackendKind::eIocp, const u32 maxInFlight_ = kMaxInFlight);
+		explicit IoSystem(const IoBackendKind kind_ = IoBackendKind::eIocp, const IoLimits limits_ = {});
 
 		IoSystem(const IoSystem&) = delete;
 
@@ -30,6 +27,9 @@ namespace hg::engine::io {
 		~IoSystem();
 
 	public:
+		// Only before start(); both limits must be non-zero.
+		void setLimits(const IoLimits limits_);
+
 		void start();
 
 		void stop();
@@ -51,8 +51,9 @@ namespace hg::engine::io {
 	private:
 		IoThread _thread;
 		uptr<IoBackend> _backend;
-		u32 _maxInFlight;
+		IoLimits _limits;
 		std::atomic_bool _running { false };
+		bool _started = false;
 		// Set by the io thread once stopping left nothing in flight.
 		std::atomic_bool _drained { false };
 		std::atomic<u64> _requestsIssued { 0 };
@@ -60,6 +61,7 @@ namespace hg::engine::io {
 		// Io thread only.
 		bool _stopping = false;
 		u32 _inFlight = 0;
+		u64 _inFlightBytes = 0;
 		std::array<Vector<Arci<IoQueue>>, 4> _active;
 		std::array<size_t, 4> _cursor {};
 
@@ -70,7 +72,10 @@ namespace hg::engine::io {
 
 		[[nodiscard]] ptr<void> pick();
 
-		// Issues while below the in-flight cap, at most one cap per call; true if it may issue more right away.
+		// Either in-flight limit reached.
+		[[nodiscard]] bool saturated() const noexcept;
+
+		// Issues while below both in-flight limits, at most one request cap per call; true if it may issue more right away.
 		[[nodiscard]] bool pump();
 	};
 }
