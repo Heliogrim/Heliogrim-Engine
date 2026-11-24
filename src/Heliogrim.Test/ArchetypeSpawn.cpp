@@ -301,6 +301,28 @@ namespace HeliogrimApi {
 		EXPECT_EQ(sphere->get<"geometry">().getParentComponent(), &sphere->get<"collision">());
 	}
 
+	TEST_F(Spawn, PrefabActorsAreArchetypes) {
+		static_assert(IsArchetype<CameraActor>);
+		static_assert(IsArchetype<DirectionalLightActor>);
+		static_assert(IsArchetype<PointLightActor>);
+
+		auto camera = CreateActor<CameraActor>();
+		ASSERT_NE(camera.get(), nullptr);
+		EXPECT_EQ(camera->getRootComponent().address(), &camera->get<"mount">());
+		EXPECT_EQ(camera->get<"camera">().getParentComponent(), &camera->get<"mount">());
+		EXPECT_EQ(camera->getCameraComponent(), &camera->get<"camera">());
+
+		auto light = CreateActor<DirectionalLightActor>();
+		ASSERT_NE(light.get(), nullptr);
+		EXPECT_EQ(light->getRootComponent().address(), &light->get<"directional">());
+		EXPECT_EQ(light->getDirectionalLightComponent(), &light->get<"directional">());
+
+		auto point = CreateActor<PointLightActor>();
+		ASSERT_NE(point.get(), nullptr);
+		EXPECT_EQ(point->getRootComponent().address(), &point->get<"point">());
+		EXPECT_EQ(point->getPointLightComponent(), &point->get<"point">());
+	}
+
 	TEST_F(Spawn, Batch10k) {
 		constexpr size_t count = 10'000uLL;
 		const auto entries = Body::actorClass().componentOffsets().size();
@@ -395,6 +417,22 @@ namespace HeliogrimApi {
 		// The moved label stays usable: write through it and rewrite it.
 		after->setLabel(ActorLabel { moved + "!" });
 		EXPECT_EQ(after->label().text, text + "!");
+	}
+
+	TEST_F(Spawn, CameraActorRefResolvesAfterMount) {
+		auto created = CreateActor<CameraActor>();
+		auto* const before = created.get();
+
+		const auto added = _universe.addActor(::hg::move(created));
+		ASSERT_TRUE(added.has_value());
+		auto resolved = added.value().get();
+		ASSERT_TRUE(resolved.has_value());
+		auto& camera = resolved.value();
+
+		// Archetype actors relocate on mount.
+		EXPECT_NE(&camera, before);
+		EXPECT_EQ(camera.getCameraComponent(), &camera.get<"camera">());
+		EXPECT_EQ(camera.getCameraComponent()->getParentComponent(), &camera.get<"mount">());
 	}
 
 	TEST_F(Spawn, DestroyReusesSlotStaleRefNone) {

@@ -141,6 +141,13 @@ namespace HeliogrimApi::schema_fixtures {
 		if constexpr (requires { ActorType_::actorClass(); }) {
 			auto actor = CreateActor<ActorType_>();
 			actor->unsafe_set_guid(sampleGuid(seed_));
+
+			if constexpr (std::is_same_v<ActorType_, CameraActor>) {
+				// Non-default modes, so the fixture round-trips the masked mode bytes at 1.
+				actor->getCameraComponent()->setProjectMode(CameraComponent::CameraProjectMode::eOrthographic);
+				actor->getCameraComponent()->setViewMode(CameraComponent::CameraViewMode::eLookAt);
+			}
+
 			return VolatileActor<> { ::hg::move(actor) };
 		} else {
 			// CreateActor by meta class aborts headless; the scheme path builds plain actors directly.
@@ -293,7 +300,9 @@ namespace HeliogrimApi::schema_fixtures {
 		out.emplace_back(componentCase<PointLightComponent>("PointLightComponent"));
 		out.emplace_back(componentCase<SpotLightComponent>("SpotLightComponent"));
 		out.emplace_back(componentCase<SkyboxComponent>("SkyboxComponent"));
-		// skipped: CameraActor, DirectionalLightActor, PointLightActor serialize crashes when built via ActorScheme::instantiate without a universe.
+		out.emplace_back(actorCase<CameraActor>("CameraActor", 0x06u));
+		out.emplace_back(actorCase<DirectionalLightActor>("DirectionalLightActor", 0x07u));
+		out.emplace_back(actorCase<PointLightActor>("PointLightActor", 0x08u));
 
 		out.emplace_back(assetCase<FontAsset>("FontAsset", [] { return make_uptr<FontAsset>(); }));
 		out.emplace_back(assetCase<ImageAsset>("ImageAsset", [] { return make_uptr<ImageAsset>(); }));
@@ -369,12 +378,12 @@ namespace HeliogrimApi::schema_fixtures {
 			auto& module = *_engine->_serialization;
 			activeSerial = _engine->_serialization.get();
 			module.addActorScheme<Actor>();
-			module.addActorScheme<CameraActor>();
+			module.addActorScheme(CameraActor::typeId, ::hg::engine::acs::MakeArchetypeFnSet(&CameraActor::actorClass()));
 			module.addActorScheme(StaticGeometryActor::typeId, ::hg::engine::acs::MakeArchetypeFnSet(&StaticGeometryActor::actorClass()));
 			module.addActorScheme(BoxShapeGeometryActor::typeId, ::hg::engine::acs::MakeArchetypeFnSet(&BoxShapeGeometryActor::actorClass()));
 			module.addActorScheme(SphereShapeGeometryActor::typeId, ::hg::engine::acs::MakeArchetypeFnSet(&SphereShapeGeometryActor::actorClass()));
-			module.addActorScheme<DirectionalLightActor>();
-			module.addActorScheme<PointLightActor>();
+			module.addActorScheme(DirectionalLightActor::typeId, ::hg::engine::acs::MakeArchetypeFnSet(&DirectionalLightActor::actorClass()));
+			module.addActorScheme(PointLightActor::typeId, ::hg::engine::acs::MakeArchetypeFnSet(&PointLightActor::actorClass()));
 			module.addComponentScheme<HierarchyComponent>();
 			module.addComponentScheme<CameraComponent>();
 			module.addComponentScheme<StaticGeometryComponent>();

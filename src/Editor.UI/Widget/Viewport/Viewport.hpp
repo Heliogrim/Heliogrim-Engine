@@ -3,6 +3,7 @@
 #include <Engine.Graphics/API/__vkFwd.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.ACS;
 import Engine.Common;
 import Engine.Graphics;
 import Engine.Reflow;
@@ -58,7 +59,8 @@ namespace hg::engine::reflow {
 
 	protected:
 		StringView _renderer;
-		ptr<CameraActor> _cameraActor;
+		// Archetype actor: relocates on mount, so it is held by ref and resolved on use.
+		ActorRef<CameraActor> _cameraActor;
 		SharedPtr<::hg::engine::core::Universe> _cameraUniverse;
 
 		struct CameraControls {
@@ -78,7 +80,7 @@ namespace hg::engine::reflow {
 
 		[[nodiscard]] const non_owning_rptr<CameraActor> getCameraActor() const noexcept;
 
-		void setViewportTarget(StringView renderer_, Universe universe_, ptr<CameraActor> camera_);
+		void setViewportTarget(StringView renderer_, Universe universe_, const ActorRef<CameraActor> camera_);
 
 		void updateCameraWithCtrl();
 

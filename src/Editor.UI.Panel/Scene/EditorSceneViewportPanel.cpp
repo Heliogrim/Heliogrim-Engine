@@ -5,6 +5,7 @@
 import Editor.Core;
 import Editor.UI;
 import Engine.ACS;
+import Engine.Asserts;
 import Engine.Common;
 import Engine.Graphics;
 import Engine.Graphics.Core;
@@ -90,8 +91,6 @@ static void configureViewport(cref<sptr<uikit::HorizontalLayout>> parent_) {
 
 	/**/
 
-	editor::EditorEngine::getEngine()->getActors()->getRegistry()->getOrCreateActorPool<CameraActor>();
-
 	auto session = HeliogrimEditor::getSession();
 	auto universe = GetUniverse(session);
 	auto camera = CreateActor<CameraActor>();
@@ -100,13 +99,12 @@ static void configureViewport(cref<sptr<uikit::HorizontalLayout>> parent_) {
 	/**/
 
 	camera->getRootComponent()->getLocalTransform().setLocation(math::Location { 0.F, 0.F, -5.F });
-	// Non-archetype actor: not relocated on add, so the pointer stays valid.
-	auto* const trackedActor = camera.get();
-	static_cast<void>(universe.addActor(::hg::move(camera)));
+	auto trackedActor = universe.addActor(::hg::move(camera));
+	::hg::assertrt(trackedActor.has_value());
 
 	/**/
 
-	viewport->setViewportTarget("Test-Renderer"sv, universe, trackedActor);
+	viewport->setViewportTarget("Test-Renderer"sv, universe, ::hg::move(trackedActor).value());
 	viewport->rebuildView();
 
 	/**/

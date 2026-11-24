@@ -1,20 +1,17 @@
 #include "CameraActor.hpp"
 
+#include <Engine.ACS/Archetype/ArchetypeDefinition.inl.hpp>
+
 import Engine.ACS;
+import Engine.Graphics.Components;
 
 using namespace hg;
 
 CameraActor::CameraActor(cref<ActorInitializer> initializer_) :
-	InheritMeta(initializer_),
-	_cameraComponent(nullptr),
-	_mountComponent(nullptr) {
+	InheritArchetype(initializer_) {}
 
-	if (initializer_.shouldAutoInitialize()) {
-		_mountComponent = initializer_.createComponent<HierarchyComponent>(*this, { .parent = None });
-		_cameraComponent = initializer_.createComponent<CameraComponent>(*this, { .parent = Some(*_mountComponent) });
-	}
+nmpt<CameraComponent> CameraActor::getCameraComponent() noexcept {
+	return &get<"camera">();
 }
 
-nmpt<CameraComponent> CameraActor::getCameraComponent() const noexcept {
-	return _cameraComponent;
-}
+template class hg::InheritArchetype<CameraActor, Actor>;

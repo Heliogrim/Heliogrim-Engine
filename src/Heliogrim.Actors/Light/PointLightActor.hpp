@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Serialization/Access/__fwd.hpp>
-
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.ACS;
 import Engine.Graphics.Components;
@@ -9,24 +7,18 @@ import Engine.Graphics.Components;
 
 namespace hg {
 	class PointLightActor :
-		public InheritMeta<PointLightActor, Actor> {
-	public:
-		ACCESS_LAYOUT
-		ACCESS_STRUCTURE
-
+		public InheritArchetype<PointLightActor, Actor> {
 	public:
 		using this_type = PointLightActor;
-		using underlying_type = Actor;
-
 		constexpr static type_id typeId { "PointLightActor"_typeId };
 
-	public:
-		PointLightActor(cref<ActorInitializer> initializer_);
-
-	private:
-		ptr<PointLightComponent> _pointLightComponent;
+		using layout = engine::acs::ActorLayout<
+			engine::acs::Slot<"point", PointLightComponent>>;
 
 	public:
-		[[nodiscard]] nmpt<PointLightComponent> getPointLightComponent() const noexcept;
+		explicit PointLightActor(cref<ActorInitializer> initializer_);
+
+	public:
+		[[nodiscard]] nmpt<PointLightComponent> getPointLightComponent() noexcept;
 	};
 }

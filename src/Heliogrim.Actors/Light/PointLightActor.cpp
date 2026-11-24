@@ -1,18 +1,17 @@
 #include "PointLightActor.hpp"
 
+#include <Engine.ACS/Archetype/ArchetypeDefinition.inl.hpp>
+
 import Engine.ACS;
+import Engine.Graphics.Components;
 
 using namespace hg;
 
 PointLightActor::PointLightActor(cref<ActorInitializer> initializer_) :
-	InheritMeta(initializer_),
-	_pointLightComponent(nullptr) {
+	InheritArchetype(initializer_) {}
 
-	if (initializer_.shouldAutoInitialize()) {
-		_pointLightComponent = initializer_.createComponent<PointLightComponent>(*this, { .parent = None });
-	}
+nmpt<PointLightComponent> PointLightActor::getPointLightComponent() noexcept {
+	return &get<"point">();
 }
 
-nmpt<PointLightComponent> PointLightActor::getPointLightComponent() const noexcept {
-	return _pointLightComponent;
-}
+template class hg::InheritArchetype<PointLightActor, Actor>;
