@@ -26,7 +26,7 @@ TmpEndPass::TmpEndPass(const vk::ImageLayout targetLayout_) :
 void TmpEndPass::destroy() noexcept {
 	SubPass::destroy();
 
-	auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
+	auto device = engine::Graphics::get()->getCurrentDevice();
 	device->vkDevice().destroySemaphore(static_cast<VkSemaphore>(std::exchange(_tmpSignal, nullptr)));
 }
 
@@ -44,7 +44,7 @@ void TmpEndPass::resolve() noexcept {}
 void TmpEndPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
 	if (_tmpSignal == nullptr) {
-		const auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
+		const auto device = engine::Graphics::get()->getCurrentDevice();
 		_tmpSignal = device->vkDevice().createSemaphore({});
 	}
 

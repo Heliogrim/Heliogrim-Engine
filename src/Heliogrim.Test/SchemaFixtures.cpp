@@ -10,11 +10,11 @@ import Engine.ACS;
 import Engine.Assets.Type;
 import Engine.Common;
 import Engine.Diagnostics;
+import Engine.Graphics.Components;
 import Engine.Level;
 import Engine.Resource.Archive;
 import Engine.Serialization;
 import Heliogrim.Actors;
-import Engine.Graphics.Components;
 
 using namespace hg::engine::serialization;
 using namespace hg::engine::resource;
@@ -152,7 +152,7 @@ namespace HeliogrimApi::schema_fixtures {
 		} else {
 			// CreateActor by meta class aborts headless; the scheme path builds plain actors directly.
 			ptr<Actor> actor = ActorScheme<ActorType_>::template instantiate<void>(
-				Engine::getEngine()->getActors()->getRegistry(),
+				engine::ActorModule::get()->getRegistry(),
 				sampleGuid(seed_)
 			);
 			return VolatileActor<> { ::hg::move(actor) };
@@ -184,7 +184,7 @@ namespace HeliogrimApi::schema_fixtures {
 						if (not scheme.has_value()) {
 							return false;
 						}
-						loaded.emplace(scheme->deserialize(root_, Engine::getEngine()->getActors()->getRegistry()));
+						loaded.emplace(scheme->deserialize(root_, engine::ActorModule::get()->getRegistry()));
 						return loaded->get() != nullptr;
 					}
 				);
@@ -339,7 +339,7 @@ namespace HeliogrimApi::schema_fixtures {
 				)
 			) {
 			std::memset(_memory, 0, static_cast<size_t>(count_) * class_.desc().stride);
-			_class.ops().construct(_memory, _count, stride(), ::hg::engine::acs::ArchetypeInit { *Engine::getEngine()->getActors()->getRegistry() });
+			_class.ops().construct(_memory, _count, stride(), ::hg::engine::acs::ArchetypeInit { *engine::ActorModule::get()->getRegistry() });
 		}
 
 		Slots(ref<const Slots>) = delete;
@@ -500,7 +500,7 @@ namespace HeliogrimApi::schema_fixtures {
 			file_,
 			[returned_](cref<RootScopedSlot> root_, ref<LoadContext>) {
 				const auto scheme = serial().getActorScheme(ActorType_::typeId);
-				const auto produced = scheme.has_value() && scheme->deserialize(root_, Engine::getEngine()->getActors()->getRegistry()) != nullptr;
+				const auto produced = scheme.has_value() && scheme->deserialize(root_, engine::ActorModule::get()->getRegistry()) != nullptr;
 				if (returned_ != nullptr) {
 					*returned_ = produced;
 				}
@@ -547,7 +547,7 @@ namespace HeliogrimApi::schema_fixtures {
 			"unresolved",
 			[&unknown, &reloaded](cref<RootScopedSlot> root_, ref<LoadContext>) {
 				const auto scheme = serial().getActorScheme(StaticGeometryActor::typeId);
-				auto* const actor = scheme->deserialize(root_, Engine::getEngine()->getActors()->getRegistry());
+				auto* const actor = scheme->deserialize(root_, engine::ActorModule::get()->getRegistry());
 				unknown = actor != nullptr && actor->carriesUnknownData();
 				reloaded = actor;
 				return actor != nullptr;

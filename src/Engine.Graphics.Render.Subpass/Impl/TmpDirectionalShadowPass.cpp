@@ -47,7 +47,7 @@ TmpDirectionalShadowPass::~TmpDirectionalShadowPass() = default;
 
 void TmpDirectionalShadowPass::setup(ref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
-	auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
+	auto device = engine::Graphics::get()->getCurrentDevice();
 	const auto* const textureFactory = TextureFactory::get();
 
 	/**/
@@ -112,7 +112,7 @@ void TmpDirectionalShadowPass::setup(ref<graph::ScopedSymbolContext> symCtx_) no
 void TmpDirectionalShadowPass::destroy() noexcept {
 	MeshSubPass::destroy();
 
-	auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
+	auto device = engine::Graphics::get()->getCurrentDevice();
 
 	device->vkDevice().destroySemaphore(std::exchange(_tmpSemaphore, nullptr));
 
@@ -356,7 +356,7 @@ void TmpDirectionalShadowPass::execute(cref<graph::ScopedSymbolContext> symCtx_)
 
 		for (auto i = 0u; i < cascadeCount; ++i) {
 
-			_framebuffer[i] = make_smr<Framebuffer>(Engine::getEngine()->getGraphics()->getCurrentDevice());
+			_framebuffer[i] = make_smr<Framebuffer>(engine::Graphics::get()->getCurrentDevice());
 			auto& fb = *_framebuffer[i];
 
 			fb.addAttachment(clone(_dirShadowCascades[i]).into<TextureLikeObject>());

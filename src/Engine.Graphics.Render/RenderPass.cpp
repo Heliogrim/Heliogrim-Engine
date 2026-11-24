@@ -246,7 +246,7 @@ void RenderPass::clearSync() {
 
 	auto* fence { reinterpret_cast<ptr<vk::Fence>>(_sync.load()) };
 
-	Engine::getEngine()->getGraphics()->getCurrentDevice()->vkDevice().destroyFence(*fence);
+	engine::Graphics::get()->getCurrentDevice()->vkDevice().destroyFence(*fence);
 	delete fence;
 
 	_sync.store(NULL);
@@ -278,7 +278,7 @@ bool RenderPass::storeSync(mref<vk::Fence> fence_) {
 	/**
 	 * Cleanup on fail
 	 */
-	Engine::getEngine()->getGraphics()->getCurrentDevice()->vkDevice().destroyFence(*fence);
+	engine::Graphics::get()->getCurrentDevice()->vkDevice().destroyFence(*fence);
 	delete fence;
 
 	return false;
@@ -302,7 +302,7 @@ bool RenderPass::await() const noexcept {
 	}
 
 	auto* fence { reinterpret_cast<ptr<vk::Fence>>(value) };
-	return Engine::getEngine()->getGraphics()->getCurrentDevice()->vkDevice().getFenceStatus(*fence) !=
+	return engine::Graphics::get()->getCurrentDevice()->vkDevice().getFenceStatus(*fence) !=
 		vk::Result::eNotReady;
 }
 

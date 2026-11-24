@@ -21,7 +21,7 @@ using namespace hg;
 
 GlobalCacheCtrl::GlobalCacheCtrl(mref<uptr<GlobalResourceCache>> cache_) :
 	_cache(std::move(cache_)),
-	_loader(Engine::getEngine()->getResources()->loader(traits::nothrow)) {}
+	_loader(engine::ResourceManager::get()->loader(traits::nothrow)) {}
 
 GlobalCacheCtrl::~GlobalCacheCtrl() = default;
 

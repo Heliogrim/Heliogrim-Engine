@@ -41,7 +41,7 @@ void SkyBoxPass::setup(ref<graph::ScopedSymbolContext> symCtx_) noexcept {
 void SkyBoxPass::destroy() noexcept {
 	SubPass::destroy();
 
-	auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
+	auto device = engine::Graphics::get()->getCurrentDevice();
 
 	device->vkDevice().destroySemaphore(std::exchange(_tmpSignal, nullptr));
 
@@ -143,7 +143,7 @@ void SkyBoxPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 	if (_framebuffer.empty()) {
 
 		const Vector<smr<const graph::Symbol>> outputSymbols { makeSceneColorSymbol() };
-		_framebuffer = make_smr<Framebuffer>(Engine::getEngine()->getGraphics()->getCurrentDevice());
+		_framebuffer = make_smr<Framebuffer>(engine::Graphics::get()->getCurrentDevice());
 
 		for (const auto& output : outputSymbols) {
 

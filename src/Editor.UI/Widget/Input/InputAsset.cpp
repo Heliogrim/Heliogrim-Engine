@@ -68,7 +68,7 @@ void InputAsset::setup() {
 
 	auto* previewAsset = AssetBrowserHelper::get()->getItemIconByAssetType(AssetTypeId {});
 
-	auto iconRes = Engine::getEngine()->getResources()->loader().loadImmediately<assets::TextureAsset,
+	auto iconRes = ResourceManager::get()->loader().loadImmediately<assets::TextureAsset,
 		graphics::TextureResource>(std::move(previewAsset));
 
 	auto previewGuard = iconRes->acquire(resource::ResourceUsageFlag::eRead);
@@ -162,7 +162,7 @@ EventResponse InputAsset::invokeOnDrop(ref<const DragDropEvent> event_) {
 
 	/**/
 
-	const auto asset = engine::Engine::getEngine()->getAssets()->getRegistry()->findAssetByGuid(guid);
+	const auto asset = Assets::get()->getRegistry()->findAssetByGuid(guid);
 
 	if (asset == None) {
 		IM_CORE_WARNF("Unknown asset guid `{}`.", static_cast<String>(parsed.path()));

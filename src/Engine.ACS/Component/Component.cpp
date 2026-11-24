@@ -13,6 +13,6 @@ using namespace hg;
 
 template <>
 void VolatileComponent<LogicComponent>::destroy(ptr<LogicComponent> obj_) {
-	auto registry = engine::Engine::getEngine()->getActors()->getRegistry();
+	auto registry = engine::ActorModule::get()->getRegistry();
 	registry->releaseActorComponent(VolatileComponent<> { ::hg::move(obj_) });
 }

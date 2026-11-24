@@ -41,7 +41,7 @@ void access::Structure<Actor>::serialize(
 
 	// Dynamic actors only: generic component sequence.
 
-	const auto serial = Engine::getEngine()->getSerialization();
+	const auto serial = engine::SerializationModule::get();
 	auto components = record_.insertRecordSlot(Symbols::Components).intoSeq();
 
 	u64 idx = 0;

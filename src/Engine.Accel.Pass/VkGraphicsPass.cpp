@@ -19,7 +19,7 @@ void VkGraphicsPass::tidy() {
 		return;
 	}
 
-	const auto* const device = Engine::getEngine()->getGraphics()->getCurrentDevice().get();
+	const auto* const device = engine::Graphics::get()->getCurrentDevice().get();
 	device->vkDevice().destroyRenderPass(reinterpret_cast<VkRenderPass>(std::exchange(_vkGraphicsPass, nullptr)));
 
 	// Will be done implicitly by destructor

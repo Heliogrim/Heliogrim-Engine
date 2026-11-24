@@ -22,7 +22,7 @@ void InputTickStage::staticDispatch(cref<StaticStageDispatcher> dispatcher_) {
 	dispatcher_.enqueue(
 		task::make_repetitive_task(
 			[]() {
-				Engine::getEngine()->getInput()->tick();
+				engine::Input::get()->tick();
 				return true;
 			}
 		)

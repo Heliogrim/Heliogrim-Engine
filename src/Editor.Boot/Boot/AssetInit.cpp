@@ -8,24 +8,24 @@ import Editor.Action;
 import Editor.Assets.Default;
 import Editor.Boot;
 import Engine.ACS;
+import Engine.Assets;
 import Engine.Assets.System;
 import Engine.Assets.Type;
-import Engine.Assets;
 import Engine.Async;
 import Engine.Common;
 import Engine.Config;
 import Engine.Core;
 import Engine.Logging;
 import Engine.Reflect;
+import Engine.Resource;
 import Engine.Resource.Archive;
 import Engine.Resource.Package;
-import Engine.Resource;
-import Engine.Serialization.Structures;
 import Engine.Serialization;
+import Engine.Serialization.Structures;
+import Engine.Storage;
 import Engine.Storage.Package;
 import Engine.Storage.Registry;
 import Engine.Storage.System;
-import Engine.Storage;
 
 using namespace hg::editor::boot;
 using namespace hg::engine;
@@ -655,7 +655,7 @@ bool try_load_archived_asset(
 		mref<serialization::StructScopedSlot> record_
 	) -> Opt<Arci<AssetType_>> {
 
-		const auto registry = Engine::getEngine()->getAssets()->getRegistry();
+		const auto registry = Assets::get()->getRegistry();
 		const auto asset = registry->findAssetByGuid(guid_);
 
 		if (asset != None) { return None; }
@@ -663,7 +663,7 @@ bool try_load_archived_asset(
 		/**/
 
 		auto nextAsset = Arci<AssetType_>::create();
-		const auto& migrations = Engine::getEngine()->getSerialization()->migrations();
+		const auto& migrations = SerializationModule::get()->migrations();
 		if (not assets::hydrateArchivedAsset(migrations, record_, ctx_, *nextAsset)) {
 			// Rejected records are reported by the caller; never register a half-read asset.
 			return None;
@@ -799,7 +799,7 @@ bool auto_import(ref<const IndexBase> indexBase_, ref<Indexed> indexed_) {
 
 bool try_recover_vfs(ref<assets::Asset> asset_, ref<const storage::ArchiveUrl> archiveUrl_) {
 
-	const auto& system = *Engine::getEngine()->getStorage()->getSystem();
+	const auto& system = *StorageModule::get()->getSystem();
 
 	const auto archiveStorage = system.findArchive(clone(archiveUrl_));
 	if (archiveStorage == None) {

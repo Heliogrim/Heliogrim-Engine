@@ -29,7 +29,7 @@ namespace hg::engine::render {
 			checks.emplace_back(storage::FileEditorScheme, std::filesystem::path { **editorPath }.append(R"(shader)").lexically_normal());
 		}
 
-		auto& system = *Engine::getEngine()->getStorage()->getSystem();
+		auto& system = *engine::StorageModule::get()->getSystem();
 		for (const auto& [scheme, base] : checks) {
 			// Note: Includes are module-controlled input; never resolve outside the shader base.
 			const auto candidate = (base / name_).lexically_normal();

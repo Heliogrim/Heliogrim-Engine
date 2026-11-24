@@ -43,7 +43,7 @@ using namespace hg;
 void TmpBrdfIrradPass::destroy() noexcept {
 	SubPass::destroy();
 
-	auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
+	auto device = engine::Graphics::get()->getCurrentDevice();
 	device->vkDevice().destroySemaphore(static_cast<VkSemaphore>(std::exchange(_tmpSignal, nullptr)));
 
 	_resources.outBrdfIrradTexture->destroy<smr<TextureLikeObject>, graph::TextureDescription>();
@@ -93,7 +93,7 @@ void TmpBrdfIrradPass::resolve() noexcept {
 void TmpBrdfIrradPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
 	if (_tmpSignal == nullptr) {
-		const auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
+		const auto device = engine::Graphics::get()->getCurrentDevice();
 		_tmpSignal = device->vkDevice().createSemaphore({});
 	}
 
@@ -218,7 +218,7 @@ void TmpBrdfIrradPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcep
 	);
 	textureFactory->buildView(*tmpIrradImage);
 
-	auto framebuffer = make_smr<Framebuffer>(Engine::getEngine()->getGraphics()->getCurrentDevice());
+	auto framebuffer = make_smr<Framebuffer>(engine::Graphics::get()->getCurrentDevice());
 
 	framebuffer->addAttachment(clone(tmpIrradImage));
 	framebuffer->setExtent(_brdfIrrad->extent());

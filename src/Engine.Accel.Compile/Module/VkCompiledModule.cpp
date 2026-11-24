@@ -24,7 +24,7 @@ VkCompiledModule::~VkCompiledModule() {
         reinterpret_cast<std::ptrdiff_t>(std::addressof(*this))
     );
 
-    Engine::getEngine()->getGraphics()->getCurrentDevice()->vkDevice().destroyShaderModule(
+    engine::Graphics::get()->getCurrentDevice()->vkDevice().destroyShaderModule(
         reinterpret_cast<VkShaderModule>(shaderModule)
     );
     shaderModule = nullptr;

@@ -22,7 +22,7 @@ using namespace hg;
 void DummyProvider::destroy() noexcept {
 	SubPass::destroy();
 
-	auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
+	auto device = engine::Graphics::get()->getCurrentDevice();
 	device->vkDevice().destroySemaphore(static_cast<VkSemaphore>(std::exchange(_tmpSignal, nullptr)));
 
 	_resources.outDepthTexture->destroy<smr<TextureLikeObject>, graph::TextureDescription>();
@@ -47,7 +47,7 @@ void DummyProvider::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 	assert(not sceneColor->empty() && not sceneColorTex.empty());
 
 	if (_tmpSignal == nullptr) {
-		const auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
+		const auto device = engine::Graphics::get()->getCurrentDevice();
 		_tmpSignal = device->vkDevice().createSemaphore({});
 	}
 

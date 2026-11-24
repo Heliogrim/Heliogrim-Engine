@@ -35,7 +35,7 @@ void StaticGeometryModel::create(const ptr<render::RenderSceneSystem> system_) {
 	 */
 	::hg::assertrt(origin->getStaticGeometry().isValid());
 	_staticGeometryAsset = std::addressof(*origin->getStaticGeometry().getAssetRef());
-	_staticGeometryResource = Engine::getEngine()->getResources()->loader().
+	_staticGeometryResource = engine::ResourceManager::get()->loader().
 		load(_staticGeometryAsset, nullptr).
 		into<StaticGeometryResource>();
 
@@ -46,7 +46,7 @@ void StaticGeometryModel::create(const ptr<render::RenderSceneSystem> system_) {
 		::hg::assertrt(material != None && material->isValid());
 
 		const auto& request = *material->getAssetRef();
-		auto resource = Engine::getEngine()->getResources()->loader().load<assets::GraphicsMaterial, MaterialResource>(
+		auto resource = engine::ResourceManager::get()->loader().load<assets::GraphicsMaterial, MaterialResource>(
 			std::addressof(request),
 			{}
 		);
@@ -92,7 +92,7 @@ void StaticGeometryModel::update(const ptr<render::RenderSceneSystem> system_) {
 			::hg::assertrt(outerHandle.isValid()/* TODO: */);
 
 			_staticGeometryAsset = std::addressof(*outerHandle.getAssetRef());
-			_staticGeometryResource = Engine::getEngine()->getResources()->loader().load(
+			_staticGeometryResource = engine::ResourceManager::get()->loader().load(
 				_staticGeometryAsset,
 				nullptr
 			).into<StaticGeometryResource>();
@@ -116,7 +116,7 @@ void StaticGeometryModel::update(const ptr<render::RenderSceneSystem> system_) {
 		const auto* outerAssetPtr = std::addressof(*outerHandle->getAssetRef());
 		if (inner->getAssociation() != outerAssetPtr) {
 
-			_materials[matIdx] = Engine::getEngine()->getResources()->loader().load<
+			_materials[matIdx] = engine::ResourceManager::get()->loader().load<
 				assets::GraphicsMaterial, MaterialResource
 			>(
 				std::move(outerAssetPtr),

@@ -82,7 +82,7 @@ engine::storage::FileUrl getLfsUrl(const non_owning_rptr<const engine::assets::A
 			const auto* const texture = static_cast<const ptr<const engine::assets::TextureAsset>>(asset_);
 			const auto baseImageGuid = texture->baseImage();
 
-			const auto registry = engine::Engine::getEngine()->getAssets()->getRegistry();
+			const auto registry = engine::Assets::get()->getRegistry();
 			const auto asset = registry->findAssetByGuid(baseImageGuid);
 
 			if (asset == None || asset.value() == nullptr) {

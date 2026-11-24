@@ -20,7 +20,7 @@ constexpr static auto level_root_bounding = ::hg::math::Bounding { math::vec3_ze
 
 namespace {
 	[[nodiscard]] ref<engine::acs::Registry> actorRegistry() noexcept {
-		return *engine::Engine::getEngine()->getActors()->getRegistry();
+		return *engine::ActorModule::get()->getRegistry();
 	}
 }
 

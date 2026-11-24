@@ -54,7 +54,7 @@ void TaskDelegate::delegate() const {
 					_ctrl->onComplete(this);
 				} else {
 					// Warning: This might break, and will hit performance pretty badly
-					Engine::getEngine()->getScheduler()->exec(this);
+					engine::Scheduler::get()->exec(this);
 				}
 
 			} else {

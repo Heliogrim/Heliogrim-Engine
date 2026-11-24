@@ -58,7 +58,7 @@ render::ReflowPass::~ReflowPass() = default;
 void render::ReflowPass::destroy() noexcept {
 	SubPass::destroy();
 
-	const auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
+	const auto device = engine::Graphics::get()->getCurrentDevice();
 	device->vkDevice().destroySemaphore(std::exchange(_tmpSignal, nullptr));
 
 	if (_framebuffer) {
@@ -105,7 +105,7 @@ void render::ReflowPass::resolve() noexcept {
 
 		if (_opaqueSubPass.imageSampler == nullptr) {
 			_opaqueSubPass.imageSampler = make_uptr<graphics::TextureSampler>();
-			_opaqueSubPass.imageSampler->setup(Engine::getEngine()->getGraphics()->getCurrentDevice());
+			_opaqueSubPass.imageSampler->setup(engine::Graphics::get()->getCurrentDevice());
 		}
 	}
 
@@ -114,7 +114,7 @@ void render::ReflowPass::resolve() noexcept {
 
 		if (_alphaSubPass.imageSampler == nullptr) {
 			_alphaSubPass.imageSampler = make_uptr<graphics::TextureSampler>();
-			_alphaSubPass.imageSampler->setup(Engine::getEngine()->getGraphics()->getCurrentDevice());
+			_alphaSubPass.imageSampler->setup(engine::Graphics::get()->getCurrentDevice());
 		}
 	}
 
@@ -123,7 +123,7 @@ void render::ReflowPass::resolve() noexcept {
 
 		if (_msdfSubPass.imageSampler == nullptr) {
 			_msdfSubPass.imageSampler = make_uptr<graphics::TextureSampler>();
-			_msdfSubPass.imageSampler->setup(Engine::getEngine()->getGraphics()->getCurrentDevice());
+			_msdfSubPass.imageSampler->setup(engine::Graphics::get()->getCurrentDevice());
 		}
 	}
 }
@@ -301,7 +301,7 @@ void render::ReflowPass::execute(cref<engine::render::graph::ScopedSymbolContext
 
 void render::ReflowPass::ensureDefaultImage() {
 
-	const auto registry = Engine::getEngine()->getAssets()->getRegistry();
+	const auto registry = engine::Assets::get()->getRegistry();
 
 	// TODO: Rework temporary solution
 	constexpr auto default_ui_asset = AssetGuid { 4199784551, 6723, 19881, 9898617085362983564uLL };
@@ -311,7 +311,7 @@ void render::ReflowPass::ensureDefaultImage() {
 	/**/
 
 	auto request = static_cast<ptr<assets::TextureAsset>>(asset->get());
-	auto resource = Engine::getEngine()->getResources()->loader().load<assets::TextureAsset, graphics::TextureResource>(
+	auto resource = engine::ResourceManager::get()->loader().load<assets::TextureAsset, graphics::TextureResource>(
 		std::move(request)
 	);
 
@@ -406,7 +406,7 @@ void render::ReflowPass::ensureFramebuffer(mref<smr<graphics::TextureLikeObject>
 		_framebuffer.reset();
 	}
 
-	_framebuffer = make_uptr<graphics::Framebuffer>(Engine::getEngine()->getGraphics()->getCurrentDevice());
+	_framebuffer = make_uptr<graphics::Framebuffer>(engine::Graphics::get()->getCurrentDevice());
 
 	const auto* const texture = Cast<graphics::Texture>(colorTarget_.get());
 	_framebuffer->addAttachment(clone(colorTarget_));
@@ -428,7 +428,7 @@ void render::ReflowPass::updateVertices(
 	const auto alphaVertexSize = alpha_.size() * sizeof(graphics::uivertex);
 	const auto opaqueVertexSize = opaque_.size() * sizeof(graphics::uivertex);
 
-	const auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
+	const auto device = engine::Graphics::get()->getCurrentDevice();
 	const auto vertexSize = alphaVertexSize + opaqueVertexSize;
 
 	if (_uiVertexBuffer == nullptr || Cast<graphics::Buffer>(_uiVertexBuffer.get())->size < vertexSize) {
@@ -506,7 +506,7 @@ void render::ReflowPass::updateIndices(
 	const auto alphaIndexSize = alpha_.size_bytes();
 	const auto msdfIndexSize = msdf_.size_bytes();
 
-	const auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
+	const auto device = engine::Graphics::get()->getCurrentDevice();
 	const auto indexSize = opaqueIndexSize + alphaIndexSize + msdfIndexSize;
 
 	if (_uiIndexBuffer == nullptr || Cast<graphics::Buffer>(_uiIndexBuffer.get())->size < indexSize) {

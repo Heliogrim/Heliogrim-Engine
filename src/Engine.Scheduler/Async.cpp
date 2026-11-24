@@ -10,30 +10,30 @@ using namespace hg::engine;
 using namespace hg;
 
 void scheduler::delay(mref<non_owning_rptr<const task::TaskDelegate>> task_, const u32 ticks_) {
-	Engine::getEngine()->getScheduler()->delay(std::move(task_), ticks_);
+	Scheduler::get()->delay(std::move(task_), ticks_);
 }
 
 void scheduler::delay(mref<task::Task::function_type> fnc_, const u32 ticks_) {
-	Engine::getEngine()->getScheduler()->delay(task::make_task(std::forward<task::Task::function_type>(fnc_)), ticks_);
+	Scheduler::get()->delay(task::make_task(std::forward<task::Task::function_type>(fnc_)), ticks_);
 }
 
 void scheduler::exec(mref<non_owning_rptr<const task::TaskDelegate>> task_) {
-	Engine::getEngine()->getScheduler()->exec(std::move(task_));
+	Scheduler::get()->exec(std::move(task_));
 }
 
 void scheduler::exec(mref<non_owning_rptr<const task::TaskDelegate>> task_, fiber::CancellationToken token_) {
-	Engine::getEngine()->getScheduler()->exec(std::move(task_), std::move(token_));
+	Scheduler::get()->exec(std::move(task_), std::move(token_));
 }
 
 void scheduler::exec(task::Task::function_type&& fnc_) {
-	Engine::getEngine()->getScheduler()->exec(task::make_task(std::forward<task::Task::function_type>(fnc_)));
+	Scheduler::get()->exec(task::make_task(std::forward<task::Task::function_type>(fnc_)));
 }
 
 void scheduler::execOnStage(
 	mref<non_owning_rptr<const task::TaskDelegate>> task_,
 	const non_owning_rptr<const Stage> stage_
 ) {
-	Engine::getEngine()->getScheduler()->execOnStage(std::move(task_), stage_);
+	Scheduler::get()->execOnStage(std::move(task_), stage_);
 }
 
 void scheduler::execOnStage(
@@ -41,7 +41,7 @@ void scheduler::execOnStage(
 	cref<StageIdentifier> stage_
 ) {
 
-	const auto scheduler = Engine::getEngine()->getScheduler();
+	auto scheduler = Scheduler::get();
 	const auto stage = scheduler->getCompositePipeline()->getStage(stage_);
 	::hg::assertrt(stage != None);
 
@@ -67,7 +67,7 @@ void scheduler::execOnStages(
 	const non_owning_rptr<const Stage> begin_,
 	const non_owning_rptr<const Stage> end_
 ) {
-	Engine::getEngine()->getScheduler()->execOnStages(std::move(task_), begin_, end_);
+	Scheduler::get()->execOnStages(std::move(task_), begin_, end_);
 }
 
 void scheduler::execOnStages(
@@ -76,7 +76,7 @@ void scheduler::execOnStages(
 	cref<StageIdentifier> end_
 ) {
 
-	const auto scheduler = Engine::getEngine()->getScheduler();
+	auto scheduler = Scheduler::get();
 
 	const auto beginStage = scheduler->getCompositePipeline()->getStage(begin_);
 	const auto endStage = scheduler->getCompositePipeline()->getStage(end_);
