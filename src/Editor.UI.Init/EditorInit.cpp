@@ -1,23 +1,16 @@
 #include "EditorInit.hpp"
 
-#include <Editor.Core/EditorEngine.hpp>
-#include <Editor.Core/HeliogrimEditor.hpp>
-#include <Editor.UI.Main/EditorUI.hpp>
+import Editor.Core;
+import Editor.UI.Main;
 import Editor.UI.View;
 import Engine.ACS;
-#include <Editor.UI.View/Scene/SceneEditorView.hpp>
-#include <Editor.UI/Widget/InputBindingProvider.hpp>
-#include <Engine.Core/Session.hpp>
-#include <Engine.Core/Universe.hpp>
-#include <Engine.Core/UniverseContext.hpp>
+import Engine.Core;
 import Engine.Graphics.Core;
-import Engine.Reflow.Uikit;
 import Engine.Reflow;
-#include <Engine.Reflow.Uikit/Atom/Layout/VerticalLayout.hpp>
-import Engine.ACS;
-import Engine.ACS;
 import Engine.Reflow.Components;
+import Engine.Reflow.Uikit;
 import Heliogrim;
+import Editor.UI;
 
 using namespace hg::editor::ui;
 using namespace hg::engine::reflow;

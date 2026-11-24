@@ -1,8 +1,7 @@
 #include "Utils.hpp"
 
-#include <Engine.Assets.Type/Asset.hpp>
-
 import Engine.Asserts;
+import Engine.Assets.Type;
 
 using namespace hg::engine::assets;
 using namespace hg;

@@ -1,10 +1,8 @@
 #include "ContextMenuProvider.hpp"
 
-#include <Editor.UI.Main/EditorUI.hpp>
-#include <Editor.UI.Main/Module/EditorUI.hpp>
-
 #include "../EditorUiEventNames.hpp"
 
+import Editor.UI.Main;
 import Editor.UI.Service;
 import Engine.Common;
 import Engine.Core;

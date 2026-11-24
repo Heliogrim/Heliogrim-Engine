@@ -1,9 +1,8 @@
 #include "SceneEditorView.hpp"
 
-#include <Editor.UI.Main/EditorUI.hpp>
-
 #include "SceneEditorController.hpp"
 
+import Editor.UI.Main;
 import Editor.UI.Panel;
 import Engine.Reflow.Uikit;
 

@@ -1,14 +1,7 @@
-#include <Editor.Graphics.Loader/Texture/EditorTextureLoader.hpp>
-#include <Editor.Graphics.Loader/Texture/Transformer/Bmp.hpp>
-#include <Editor.Graphics.Loader/Texture/Transformer/Exr.hpp>
-#include <Editor.Graphics.Loader/Texture/Transformer/Hdr.hpp>
-#include <Editor.Graphics.Loader/Texture/Transformer/Jpeg.hpp>
-#include <Editor.Graphics.Loader/Texture/Transformer/Png.hpp>
-#include <Editor.Graphics.Loader/Texture/Transformer/Tga.hpp>
-#include <Editor.Graphics.Loader/Texture/Transformer/Tiff.hpp>
 
 import Editor.Graphics.Event;
 import Editor.Graphics.IO;
+import Editor.Graphics.Loader;
 import Engine.Assets.Type;
 import Engine.Common;
 import Engine.Core;

@@ -1,8 +1,6 @@
 #include "EditorTheme.hpp"
 
-#include <Editor.UI.Main/EditorUI.hpp>
-#include <Editor.UI.Main/Module/EditorUI.hpp>
-
+import Editor.UI.Main;
 import Engine.Core;
 import Engine.Reflow;
 

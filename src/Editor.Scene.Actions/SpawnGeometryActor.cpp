@@ -2,6 +2,7 @@
 
 import Editor.Assets.Default;
 import Editor.Core;
+import Editor.UI.Main;
 import Engine.ACS;
 import Engine.Assets.Database;
 import Engine.Common;
@@ -36,8 +37,6 @@ SpawnGeometryActor::~SpawnGeometryActor() = default;
 
 /**/
 
-#include <Editor.UI.Main/EditorUI.hpp>
-#include <Editor.UI.Main/Module/EditorUI.hpp>
 
 Opt<ActorRef<>> spawnActorImpl(TypedAssetGuid<engine::assets::StaticGeometry> assetGuid_, ref<const math::Location> location_) {
 

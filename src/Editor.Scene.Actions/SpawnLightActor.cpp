@@ -1,9 +1,7 @@
 #include "SpawnLightActor.hpp"
 
-#include <Editor.UI.Main/EditorUI.hpp>
-#include <Editor.UI.Main/Module/EditorUI.hpp>
-
 import Editor.Core;
+import Editor.UI.Main;
 import Engine.ACS;
 import Engine.Common;
 import Engine.Core;
