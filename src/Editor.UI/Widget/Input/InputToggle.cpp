@@ -1,7 +1,5 @@
 #include "InputToggle.hpp"
 
-#include "EditorUiEventNames.hpp"
-
 import Engine.Common;
 import Engine.Reflow;
 
@@ -109,12 +107,12 @@ void InputToggle::setValue(bool enabled_) {
 }
 
 void InputToggle::updateValueAndValidity(bool propagate_, bool emit_) {
-	discard = _emitter.emit(EditorUiEventNames::InputChangeEvent, InputChangeEvent { shared_from_this() });
+	discard = _emitter.emit(ReflowEventNames::InputChangeEvent, InputChangeEvent { shared_from_this() });
 	markAsPristine();
 }
 
 Widget::listen_handle_type InputToggle::onInputChange(listen_fn_type<InputChangeEvent> listenFn_) {
-	return _emitter.on(EditorUiEventNames::InputChangeEvent, hg::move(listenFn_));
+	return _emitter.on(ReflowEventNames::InputChangeEvent, hg::move(listenFn_));
 }
 
 void InputToggle::onAttachDataWatcher(ref<DataWatcher> watcher_) {
