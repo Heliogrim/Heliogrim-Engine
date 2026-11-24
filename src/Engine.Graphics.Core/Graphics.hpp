@@ -59,15 +59,6 @@ namespace hg::engine {
 		~Graphics() override;
 
 	private:
-		/**
-		 * Tidy this up
-		 *
-		 * @author Julius
-		 * @date 13.09.2021
-		 */
-		void tidy();
-
-	private:
 		static constinit std::atomic<ptr<Graphics>> _moduleSlot;
 
 	public:

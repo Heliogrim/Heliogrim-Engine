@@ -42,13 +42,7 @@ Graphics::Graphics(ref<Engine> engine_) noexcept :
 	_sceneManager(nullptr),
 	_surfaceManager(nullptr) {}
 
-Graphics::~Graphics() {
-	tidy();
-}
-
-void Graphics::tidy() {
-	// __noop();
-}
+Graphics::~Graphics() = default;
 
 void Graphics::hookEngineState() {
 
