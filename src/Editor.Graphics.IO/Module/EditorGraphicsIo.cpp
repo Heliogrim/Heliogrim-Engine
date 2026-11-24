@@ -8,7 +8,6 @@ import Engine.Core;
 import Engine.Event;
 import Engine.Graphics;
 import Engine.Graphics.Core;
-import Engine.Graphics.Event;
 import Engine.Resource;
 
 using namespace ::hg::editor;
