@@ -8,7 +8,7 @@ import Engine.Async;
 using namespace hg::engine::io;
 using namespace hg;
 
-IoSystem::IoSystem(const IoBackendKind kind_, const u32 maxInFlight_) :
+IoSystem::IoSystem(const IoBackendKind kind_, const IoLimits limits_) :
 	_thread(),
 	_backend(
 		IoBackend::make(
@@ -16,19 +16,27 @@ IoSystem::IoSystem(const IoBackendKind kind_, const u32 maxInFlight_) :
 			_thread,
 			[this](const ptr<void> token_, const IoCompletion completion_) {
 				--_inFlight;
+				_inFlightBytes -= IoQueue::requestOf(token_).buffer.size();
 				IoQueue::complete(token_, completion_);
 			}
 		)
 	),
-	_maxInFlight(maxInFlight_) {
-	::hg::assertrt(maxInFlight_ > 0u);
+	_limits() {
+	setLimits(limits_);
 }
 
 IoSystem::~IoSystem() {
 	stop();
 }
 
+void IoSystem::setLimits(const IoLimits limits_) {
+	::hg::assertrt(not _started);
+	::hg::assertrt(limits_.maxInFlight > 0u && limits_.maxInFlightBytes > 0u);
+	_limits = limits_;
+}
+
 void IoSystem::start() {
+	_started = true;
 	_running = true;
 	_thread.start([this](ref<const IoPortEntry> entry_) { _backend->harvest(entry_); }, [this] { return pump(); });
 }
@@ -171,6 +179,10 @@ ptr<void> IoSystem::pick() {
 	return nullptr;
 }
 
+bool IoSystem::saturated() const noexcept {
+	return _inFlight >= _limits.maxInFlight || _inFlightBytes >= _limits.maxInFlightBytes;
+}
+
 bool IoSystem::pump() {
 	if (_stopping) {
 		if (_inFlight == 0u && not _drained) {
@@ -181,14 +193,16 @@ bool IoSystem::pump() {
 	}
 
 	// Bounded, so a synchronous backend returns to the inbox between rounds.
-	for (u32 issued = 0; issued < _maxInFlight && _inFlight < _maxInFlight; ++issued) {
+	for (u32 issued = 0; issued < _limits.maxInFlight && not saturated(); ++issued) {
 		const auto token = pick();
 		if (token == nullptr) {
 			return false;
 		}
+		const auto& request = IoQueue::requestOf(token);
 		++_inFlight;
+		_inFlightBytes += request.buffer.size();
 		_requestsIssued.fetch_add(1, std::memory_order_relaxed);
-		_backend->issue(IoQueue::requestOf(token), token);
+		_backend->issue(request, token);
 	}
-	return _inFlight < _maxInFlight;
+	return not saturated();
 }

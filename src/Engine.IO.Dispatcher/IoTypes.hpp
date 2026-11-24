@@ -59,6 +59,12 @@ namespace hg::engine::io {
 		Arci<IoKeepAlive> keepAlive = {};
 	};
 
+	// In-flight bounds of an io system; the byte budget is checked before each issue, so one request may overshoot it.
+	struct IoLimits {
+		u32 maxInFlight = 32u;
+		u32 maxInFlightBytes = 2u * 1024u * 1024u;
+	};
+
 	struct IoCompletion {
 		IoStatus status;
 		u32 bytes;
