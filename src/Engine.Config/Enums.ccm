@@ -38,6 +38,14 @@ export namespace hg::engine::cfg {
 
 	/**/
 
+	enum class StorageConfigProperty {
+		/**/
+		eIoMaxInFlight,
+		eIoMaxInFlightBytes
+	};
+
+	/**/
+
 	enum class RuntimeConfigProperty {
 		/**/
 		eLocalBasePath,
