@@ -4,6 +4,7 @@
  * Binary layout dump of archetype slots; included by `ArchetypeDefinition.inl.hpp`.
  *
  * Format: `LayoutHeader`, then per slot and entry the payload, then one `LayoutFixup` per ActorRef/ComponentRef field.
+ * Nothing in the stream depends on the in-memory layout (offsets, sizeof, stride), so it loads in every build config.
  *
  * Every slot type specializes `access::Layout<T>` with a constexpr `fields` array (HG_LAYOUT_RAW / HG_LAYOUT_MASK);
  * its copy plan streams the listed members only. Optional `assets` with `dumpAssets` / `resolveAsset` append asset
@@ -12,8 +13,6 @@
  */
 
 #include <array>
-#include <concepts>
-#include <cstring>
 #include <memory>
 #include <new>
 #include <span>
@@ -81,12 +80,14 @@ namespace hg::archetype_detail {
 	struct LayoutHeader {
 		u64 hash;
 		u64 count;
-		u64 stride;
+		// Stream bytes per slot (payloads only), not the in-memory stride.
+		u64 slotSize;
 	};
 
 	struct LayoutFixup {
 		u32 slot;
-		u32 offset;
+		// Ordinal of the ref field within its slot, in `visit_refs` order.
+		u32 field;
 		engine::acs::Handle handle;
 		s64 componentOffset;
 	};
@@ -102,6 +103,7 @@ namespace hg::archetype_detail {
 		if (in_.size() < sizeof(Type_)) {
 			return false;
 		}
+
 		std::memcpy(std::addressof(value_), in_.data(), sizeof(Type_));
 		in_ = in_.subspan(sizeof(Type_));
 		return true;
@@ -212,23 +214,31 @@ namespace hg::archetype_detail {
 	[[nodiscard]] consteval auto refs_of() noexcept {
 		if constexpr (requires { engine::serialization::access::Layout<Type_>::refs; }) {
 			return engine::serialization::access::Layout<Type_>::refs;
+
 		} else {
 			return std::tuple {};
 		}
 	}
 
-	// FNV-1a over the field list, asset and ref counts: a field change changes the archetype layout hash.
+	// FNV-1a over the field list (name, kind, size, mask), asset and ref counts: a field change changes the archetype
+	// layout hash; a member moving in memory does not.
 	template <typename Type_>
 	[[nodiscard]] consteval u64 field_hash() noexcept {
 		u64 hash = 14695981039346656037uLL;
+		const auto mixByte = [&](const u64 byte_) {
+			hash = (hash ^ (byte_ & 0xFFuLL)) * 1099511628211uLL;
+		};
 		const auto mix = [&](const u64 value_) {
 			for (u64 shift = 0uLL; shift < 64uLL; shift += 8uLL) {
-				hash = (hash ^ ((value_ >> shift) & 0xFFuLL)) * 1099511628211uLL;
+				mixByte(value_ >> shift);
 			}
 		};
 		for (const auto& field : engine::serialization::access::Layout<Type_>::fields) {
+			for (auto name = field.name; *name != '\0'; ++name) {
+				mixByte(static_cast<u8>(*name));
+			}
+			mixByte(0uLL);
 			mix(static_cast<u64>(field.kind));
-			mix(field.offset);
 			mix(field.size);
 			mix(field.mask);
 		}
@@ -308,19 +318,20 @@ namespace hg::archetype_detail {
 			return;
 
 		} else {
-		for (u64 index = 0uLL; index < asset_count<Type_>(); ++index) {
-			const u64 offset = at_ + copy_plan<Type_>::stream_size + index * sizeof(AssetGuid);
-			AssetGuid guid = invalid_asset_guid;
-			std::memcpy(std::addressof(guid), in_.data() + offset, sizeof(AssetGuid));
-			if (not engine::serialization::access::Layout<Type_>::resolveAsset(target_, index, guid)) {
-				ctx_.warn(
-					engine::serialization::ReadError {
-						engine::serialization::ReadError::Kind::eUnresolvedReference,
-						static_cast<s64>(offset),
-						static_cast<s64>(sizeof(AssetGuid)),
-						{}
-					}
-				);
+			for (u64 index = 0uLL; index < asset_count<Type_>(); ++index) {
+				const u64 offset = at_ + copy_plan<Type_>::stream_size + index * sizeof(AssetGuid);
+				AssetGuid guid = invalid_asset_guid;
+				std::memcpy(std::addressof(guid), in_.data() + offset, sizeof(AssetGuid));
+				if (not engine::serialization::access::Layout<Type_>::resolveAsset(target_, index, guid)) {
+					ctx_.warn(
+						engine::serialization::ReadError {
+							engine::serialization::ReadError::Kind::eUnresolvedReference,
+							static_cast<s64>(offset),
+							static_cast<s64>(sizeof(AssetGuid)),
+							{}
+						}
+					);
+				}
 			}
 		}
 	}
@@ -352,17 +363,17 @@ namespace hg::archetype_detail {
 		}(std::make_integer_sequence<u32, Info_::entry_count> {});
 	}
 
-	/* Visits every ref field of a slot in table order as `fn_(field, offsetInSlot)`; Byte_ carries the constness. */
+	/* Visits every ref field of a slot in table order as `fn_(field, ordinal)`; Byte_ carries the constness. */
 
 	template <typename Info_, u32 Entry_, typename Byte_, typename Fn_>
-	void visit_entry_refs(const ptr<Byte_> slot_, ref<Fn_> fn_) {
+	void visit_entry_refs(const ptr<Byte_> slot_, ref<u32> ordinal_, ref<Fn_> fn_) {
 		using type = slot_type_t<Info_, Info_::slot_of(Entry_)>;
 		using object = std::conditional_t<std::is_const_v<Byte_>, const type, type>;
 
 		auto& self = *std::launder(reinterpret_cast<ptr<object>>(slot_ + Info_::entries[Entry_].offset));
 		std::apply(
 			[&](const auto... members_) {
-				(fn_(self.*members_, static_cast<u32>(reinterpret_cast<ptr<Byte_>>(std::addressof(self.*members_)) - slot_)), ...);
+				(fn_(self.*members_, ordinal_++), ...);
 			},
 			refs_of<type>()
 		);
@@ -370,8 +381,9 @@ namespace hg::archetype_detail {
 
 	template <typename Info_, typename Byte_, typename Fn_>
 	void visit_refs(const ptr<Byte_> slot_, Fn_&& fn_) {
+		u32 ordinal = 0u;
 		[&]<u32... Entries_>(std::integer_sequence<u32, Entries_...>) {
-			(visit_entry_refs<Info_, Entries_>(slot_, fn_), ...);
+			(visit_entry_refs<Info_, Entries_>(slot_, ordinal, fn_), ...);
 		}(std::make_integer_sequence<u32, Info_::entry_count> {});
 	}
 
@@ -383,7 +395,8 @@ namespace hg::archetype_detail {
 		const u32 stride_,
 		ref<Vector<std::byte>> out_
 	) {
-		put_bytes(out_, LayoutHeader { hash_, count_, stride_ });
+		constexpr u64 slotPayload = slot_payload_size<Info_>(std::make_integer_sequence<u32, Info_::entry_count> {});
+		put_bytes(out_, LayoutHeader { hash_, count_, slotPayload });
 		for (u32 index = 0u; index < count_; ++index) {
 			u64 at = 0uLL;
 			visit_entries<Info_>(
@@ -398,8 +411,8 @@ namespace hg::archetype_detail {
 		for (u32 index = 0u; index < count_; ++index) {
 			visit_refs<Info_>(
 				slots_ + static_cast<size_t>(index) * stride_,
-				[&]<ref_field Ref_>(ref<const Ref_> field_, const u32 offset_) {
-					auto fixup = LayoutFixup { index, offset_, RefAccess::handle(field_), 0LL };
+				[&]<ref_field Ref_>(ref<const Ref_> field_, const u32 ordinal_) {
+					auto fixup = LayoutFixup { index, ordinal_, RefAccess::handle(field_), 0LL };
 					if constexpr (is_component_ref_v<std::remove_cvref_t<decltype(field_)>>) {
 						fixup.componentOffset = static_cast<s64>(RefAccess::offset(field_));
 					}
@@ -411,18 +424,13 @@ namespace hg::archetype_detail {
 
 	// Header and total size against the target; the slot payloads and fixups follow the header.
 	template <typename Info_>
-	[[nodiscard]] bool layout_fits(
-		const u64 hash_,
-		const u32 count_,
-		const u32 stride_,
-		std::span<const std::byte> in_
-	) noexcept {
+	[[nodiscard]] bool layout_fits(const u64 hash_, const u32 count_, std::span<const std::byte> in_) noexcept {
 		using entry_sequence = std::make_integer_sequence<u32, Info_::entry_count>;
-		constexpr u64 slotSize = slot_payload_size<Info_>(entry_sequence {}) +
-			slot_ref_count<Info_>(entry_sequence {}) * sizeof(LayoutFixup);
+		constexpr u64 slotPayload = slot_payload_size<Info_>(entry_sequence {});
+		constexpr u64 slotSize = slotPayload + slot_ref_count<Info_>(entry_sequence {}) * sizeof(LayoutFixup);
 
 		LayoutHeader header {};
-		if (not take_bytes(in_, header) || header.hash != hash_ || header.count != count_ || header.stride != stride_) {
+		if (not take_bytes(in_, header) || header.hash != hash_ || header.count != count_ || header.slotSize != slotPayload) {
 			return false;
 		}
 
@@ -439,8 +447,9 @@ namespace hg::archetype_detail {
 	 * untouched. Asset guids are left to `resolve_layout`. Component offsets are not checked here (no registry);
 	 * ComponentRef::get rejects one that is no component of the resolved actor's class.
 	 *
-	 * shortcut: fixup handles are restored verbatim, so refs only survive a load within the same registry session;
-	 * remap them through the actor guid once cross-session layout loads exist.
+	 * shortcut: fixup handles and component offsets are restored verbatim, so refs only survive a load within the same
+	 * registry session and build config; remap them through the actor guid and an entry index once cross-session
+	 * layout loads exist.
 	 */
 	template <typename Info_>
 	[[nodiscard]] Result<void, LayoutError> validate_layout(
@@ -462,11 +471,11 @@ namespace hg::archetype_detail {
 		{
 			LayoutHeader header {};
 			std::memcpy(std::addressof(header), in_.data(), sizeof(LayoutHeader));
-			if (header.hash != hash_ || header.count != count_ || header.stride != stride_) {
+			if (header.hash != hash_ || header.count != count_ || header.slotSize != slotPayload) {
 				return Unexpected<LayoutError> { LayoutError { LayoutError::Kind::eMismatch, 0uLL } };
 			}
 		}
-		if (not layout_fits<Info_>(hash_, count_, stride_, in_)) {
+		if (not layout_fits<Info_>(hash_, count_, in_)) {
 			return Unexpected<LayoutError> { LayoutError { LayoutError::Kind::eMismatch, sizeof(LayoutHeader) } };
 		}
 
@@ -476,10 +485,10 @@ namespace hg::archetype_detail {
 		for (u32 index = 0u; index < count_ && bad == ~0uLL; ++index) {
 			visit_refs<Info_>(
 				static_cast<ptr<const std::byte>>(slots_ + static_cast<size_t>(index) * stride_),
-				[&](const auto&, const u32 offset_) {
+				[&](const auto&, const u32 ordinal_) {
 					LayoutFixup fixup {};
 					std::memcpy(std::addressof(fixup), in_.data() + fixupAt, sizeof(LayoutFixup));
-					if (bad == ~0uLL && (fixup.slot != index || fixup.offset != offset_)) {
+					if (bad == ~0uLL && (fixup.slot != index || fixup.field != ordinal_)) {
 						bad = fixupAt;
 					}
 					fixupAt += sizeof(LayoutFixup);
