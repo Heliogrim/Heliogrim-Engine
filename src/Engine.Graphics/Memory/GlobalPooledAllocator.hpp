@@ -29,6 +29,8 @@ namespace hg::engine::graphics::memory {
 		sptr<Allocator> _alloc;
 
 	private:
+		/* Guards `_cache`; one allocator per device is shared by all threads. */
+		concurrent::SpinMutex _mtx;
 		MemoryCache _cache;
 
 	private:

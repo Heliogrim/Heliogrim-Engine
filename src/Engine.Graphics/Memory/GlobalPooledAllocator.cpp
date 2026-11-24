@@ -9,6 +9,7 @@
 #include "../vkinc.hpp"
 
 import Engine.Asserts;
+import Engine.Common;
 
 using namespace hg::engine::graphics::memory;
 using namespace hg;
@@ -22,6 +23,7 @@ GlobalPooledAllocator::~GlobalPooledAllocator() {
 }
 
 void GlobalPooledAllocator::tidy() {
+	concurrent::SpinLock guard { _mtx };
 	_cache.tidy();
 }
 
@@ -44,6 +46,7 @@ AllocationResult GlobalPooledAllocator::allocate(
 	ref<uptr<AllocatedMemory>> dst_
 ) {
 
+	concurrent::SpinLock guard { _mtx };
 	const auto cacheResult { _cache.allocate(layout_, size_, dst_) };
 	if (cacheResult == AllocationResult::eSuccess) {
 		dst_->allocator = this;
@@ -85,9 +88,7 @@ AllocationResult GlobalPooledAllocator::allocate(
 		return result;
 	}
 
-	/**
-	 *
-	 */
+	guard.unlock();
 	return _alloc->allocate(layout_, size_, dst_);
 }
 
@@ -118,8 +119,11 @@ void GlobalPooledAllocator::augmentPool(ptr<MemoryPool> pool_, const u64 size_) 
 
 void GlobalPooledAllocator::free(mref<uptr<AllocatedMemory>> mem_) {
 
-	if (_cache.free(mem_)) {
-		return;
+	{
+		concurrent::SpinLock guard { _mtx };
+		if (_cache.free(mem_)) {
+			return;
+		}
 	}
 
 	_alloc->free(std::move(mem_));
