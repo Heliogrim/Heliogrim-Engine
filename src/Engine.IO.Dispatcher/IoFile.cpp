@@ -5,8 +5,9 @@
 using namespace hg::engine::io;
 using namespace hg;
 
-IoFile::IoFile(const ptr<void> handle_) noexcept :
-	_handle(handle_) {}
+IoFile::IoFile(const ptr<void> handle_, const u32 alignment_) noexcept :
+	_handle(handle_),
+	_alignment(alignment_) {}
 
 IoFile::~IoFile() {
 	if (_handle != nullptr && _handle != INVALID_HANDLE_VALUE) {
@@ -16,4 +17,8 @@ IoFile::~IoFile() {
 
 ptr<void> IoFile::handle() const noexcept {
 	return _handle;
+}
+
+u32 IoFile::alignment() const noexcept {
+	return _alignment;
 }

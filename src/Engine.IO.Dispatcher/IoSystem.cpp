@@ -76,19 +76,22 @@ Future<Arci<IoFile>, IoError> IoSystem::open(ref<const std::filesystem::path> pa
 
 	_thread.thread().postDetached(
 		[this, path = path_, mode_, promise = std::move(promise)]() mutable {
-			if ((static_cast<u8>(mode_) & static_cast<u8>(IoOpenMode::eUnbuffered)) != 0u) {
+			const auto unbuffered = (static_cast<u8>(mode_) & static_cast<u8>(IoOpenMode::eUnbuffered)) != 0u;
+			const auto rw = (static_cast<u8>(mode_) & ~static_cast<u8>(IoOpenMode::eUnbuffered)) ==
+				static_cast<u8>(IoOpenMode::eReadWrite);
+			// Unbuffered writes would need aligned callers; mutations stay buffered.
+			if (unbuffered && rw) {
 				promise.reject(IoError { ERROR_NOT_SUPPORTED });
 				return;
 			}
 
-			const auto rw = mode_ == IoOpenMode::eReadWrite;
 			const auto handle = ::CreateFileW(
 				path.c_str(),
 				rw ? (GENERIC_READ | GENERIC_WRITE) : GENERIC_READ,
 				FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
 				nullptr,
 				rw ? OPEN_ALWAYS : OPEN_EXISTING,
-				_backend->openFlags(),
+				_backend->openFlags() | (unbuffered ? FILE_FLAG_NO_BUFFERING : 0u),
 				nullptr
 			);
 			if (handle == INVALID_HANDLE_VALUE) {
@@ -97,7 +100,8 @@ Future<Arci<IoFile>, IoError> IoSystem::open(ref<const std::filesystem::path> pa
 			}
 
 			// The file closes the handle on every path from here.
-			auto file = Arci<IoFile>::create(handle);
+			// shortcut: 4096 covers 512e and 4Kn sectors; query FileAlignmentInfo if a device ever needs more.
+			auto file = Arci<IoFile>::create(handle, unbuffered ? 4096u : 1u);
 			if (const auto error = _backend->associate(handle); error != 0u) {
 				promise.reject(IoError { error });
 				return;
