@@ -120,6 +120,88 @@ namespace IoModule {
 			}
 			return sum / static_cast<double>(values_.size());
 		}
+
+		// Incompressible data written unbuffered, so the drive and the OS cache add no tricks; kept if it exists.
+		[[nodiscard]] std::filesystem::path benchFile(ref<const std::filesystem::path> dir_, const u64 bytes_) {
+			const auto* const env = std::getenv("HG_IO_BENCH_FILE");
+			auto path = env != nullptr ? std::filesystem::path { env } : dir_ / "bench-unbuffered.bin";
+			if (std::filesystem::exists(path) && std::filesystem::file_size(path) >= bytes_) {
+				return path;
+			}
+
+			const auto handle = ::CreateFileW(
+				path.c_str(),
+				GENERIC_WRITE,
+				0,
+				nullptr,
+				CREATE_ALWAYS,
+				FILE_FLAG_NO_BUFFERING | FILE_FLAG_WRITE_THROUGH,
+				nullptr
+			);
+			if (handle == INVALID_HANDLE_VALUE) {
+				return {};
+			}
+			constexpr size_t block = 1024uz * 1024uz;
+			auto* const data = static_cast<ptr<u32>>(::VirtualAlloc(nullptr, block, MEM_COMMIT, PAGE_READWRITE));
+			if (data == nullptr) {
+				::CloseHandle(handle);
+				return {};
+			}
+			std::mt19937 rng { 1u };
+			for (u64 at = 0; at < bytes_; at += block) {
+				for (size_t i = 0; i < block / sizeof(u32); ++i) {
+					data[i] = rng();
+				}
+				DWORD written = 0;
+				if (not ::WriteFile(handle, data, static_cast<DWORD>(block), &written, nullptr) || written != block) {
+					::VirtualFree(data, 0, MEM_RELEASE);
+					::CloseHandle(handle);
+					return {};
+				}
+			}
+			::VirtualFree(data, 0, MEM_RELEASE);
+			::CloseHandle(handle);
+			return path;
+		}
+
+		// Page-aligned buffers for unbuffered reads, released with the pool.
+		class AlignedPool {
+		public:
+			AlignedPool(const size_t count_, const size_t block_) :
+				base(static_cast<ptr<_::byte>>(::VirtualAlloc(nullptr, count_ * block_, MEM_COMMIT, PAGE_READWRITE))),
+				block(block_) {}
+
+			AlignedPool(ref<const AlignedPool>) = delete;
+
+			AlignedPool(mref<AlignedPool>) = delete;
+
+			~AlignedPool() {
+				::VirtualFree(base, 0, MEM_RELEASE);
+			}
+
+			ref<AlignedPool> operator=(ref<const AlignedPool>) = delete;
+
+			ref<AlignedPool> operator=(mref<AlignedPool>) = delete;
+
+		public:
+			ptr<_::byte> base;
+			size_t block;
+
+		public:
+			[[nodiscard]] std::span<_::byte> at(const size_t index_) const noexcept {
+				return { base + index_ * block, block };
+			}
+		};
+
+		[[nodiscard]] double percentile(Vector<double>& values_, const double p_) {
+			if (values_.empty()) {
+				return 0.0;
+			}
+			std::ranges::sort(values_);
+			return values_[static_cast<size_t>(p_ * static_cast<double>(values_.size() - 1uz))];
+		}
+
+		constexpr u64 bench_file_size = 4uLL * 1024uLL * 1024uLL * 1024uLL;
 	}
 
 	TEST_F(IoSystemTest, ReadBatchReturnsBytes) {
@@ -663,6 +745,155 @@ namespace IoModule {
 			for (const u32 inFlight : { 8u, 16u, 32u, 64u, 128u }) {
 				const auto iocp = run(IoBackendKind::eIocp, inFlight, block, block == 4096uz ? kTotal / 4uz : kTotal);
 				std::printf("sweep block=%zuKiB maxInFlight=%u iocp=%.0fMiB/s\n", block / 1024uz, inFlight, iocp);
+			}
+		}
+	}
+
+	// W03.6 done-when: unbuffered random reads through the io system against the W03.5 drive spike (rio.csv).
+	TEST_F(IoSystemBench, DISABLED_UnbufferedThroughput) {
+		const auto path = benchFile(dir, bench_file_size);
+		ASSERT_FALSE(path.empty());
+
+		const auto run = [&](const size_t block_, const IoLimits limits_) {
+			IoSystem sys { IoBackendKind::eIocp, limits_ };
+			sys.start();
+			Arci<IoFile> file {};
+			EXPECT_NO_FATAL_FAILURE(open(sys, path, IoOpenMode::eUnbuffered, file));
+			if (HasFatalFailure()) {
+				sys.stop();
+				return 0.0;
+			}
+			const auto queue = sys.createQueue(IoPriority::eNormal);
+
+			constexpr size_t total = 2048uz * 1024uz * 1024uz;
+			const auto count = total / block_;
+			AlignedPool pool { 256uz, block_ };
+			std::mt19937_64 rng { 0xBE7CuLL };
+			std::uniform_int_distribution<u64> blocks { 0uLL, bench_file_size / block_ - 1uLL };
+			Vector<IoRequest> reqs {};
+			for (size_t i = 0; i < count; ++i) {
+				reqs.push_back(
+					IoRequest { .op = IoOp::eRead, .file = file, .offset = blocks(rng) * block_, .buffer = pool.at(i % 256uz) }
+				);
+			}
+
+			const auto start = std::chrono::steady_clock::now();
+			auto fut = queue->submit(std::move(reqs));
+			EXPECT_TRUE(waitReady(fut, std::chrono::seconds { 120 }));
+			const auto seconds = std::chrono::duration<double>(std::chrono::steady_clock::now() - start).count();
+			sys.stop();
+			return static_cast<double>(total) / (1024.0 * 1024.0) / seconds;
+		};
+
+		std::printf("block_kib,max_in_flight,budget_kib,mib_s\n");
+		for (const size_t block : { 64uz * 1024uz, 256uz * 1024uz }) {
+			for (const auto limits : {
+				IoLimits { .maxInFlight = 8u, .maxInFlightBytes = ~0u },
+				IoLimits { .maxInFlight = 32u, .maxInFlightBytes = ~0u },
+				IoLimits { .maxInFlight = 32u, .maxInFlightBytes = 1024u * 1024u },
+				IoLimits { .maxInFlight = 32u, .maxInFlightBytes = 2048u * 1024u }
+			}) {
+				const auto mib = run(block, limits);
+				std::printf(
+					"%zu,%u,%u,%.0f\n",
+					block / 1024uz,
+					limits.maxInFlight,
+					limits.maxInFlightBytes == ~0u ? 0u : limits.maxInFlightBytes / 1024u,
+					mib
+				);
+			}
+		}
+	}
+
+	// W03.6 burst check (Q03.9): bulk low-priority 256 KiB reads with high-priority 64 KiB reads arriving during
+	// the burst, per in-flight byte budget. Prints the burst makespan and the high-priority latency.
+	TEST_F(IoSystemBench, DISABLED_Burst) {
+		const auto path = benchFile(dir, bench_file_size);
+		ASSERT_FALSE(path.empty());
+
+		constexpr size_t bulkBlock = 256uz * 1024uz;
+		constexpr size_t bulkCount = 8192uz;
+		constexpr size_t hotBlock = 64uz * 1024uz;
+		constexpr auto hotGap = std::chrono::microseconds { 500 };
+
+		const auto run = [&](const u32 budget_, const bool burst_) {
+			IoSystem sys { IoBackendKind::eIocp, IoLimits { .maxInFlight = 32u, .maxInFlightBytes = budget_ } };
+			sys.start();
+			Arci<IoFile> file {};
+			EXPECT_NO_FATAL_FAILURE(open(sys, path, IoOpenMode::eUnbuffered, file));
+			if (HasFatalFailure()) {
+				sys.stop();
+				return;
+			}
+			const auto bulk = sys.createQueue(IoPriority::eLow);
+			const auto hot = sys.createQueue(IoPriority::eHigh);
+
+			AlignedPool bulkPool { 256uz, bulkBlock };
+			AlignedPool hotPool { 1uz, hotBlock };
+			std::mt19937_64 rng { 0xB0257uLL };
+			std::uniform_int_distribution<u64> bulkAt { 0uLL, bench_file_size / bulkBlock - 1uLL };
+			std::uniform_int_distribution<u64> hotAt { 0uLL, bench_file_size / hotBlock - 1uLL };
+
+			Vector<IoRequest> reqs {};
+			for (size_t i = 0; i < (burst_ ? bulkCount : 1uz); ++i) {
+				reqs.push_back(
+					IoRequest {
+						.op = IoOp::eRead, .file = file, .offset = bulkAt(rng) * bulkBlock, .buffer = bulkPool.at(i % 256uz)
+					}
+				);
+			}
+
+			const auto start = std::chrono::steady_clock::now();
+			auto bulkDone = bulk->submit(std::move(reqs));
+			auto makespan = 0.0;
+			Vector<double> latency {};
+
+			// Without a burst: a fixed number of hot reads as the idle reference.
+			while (burst_ ? not bulkDone.isReady() : latency.size() < 2000uz) {
+				const auto gapEnd = std::chrono::steady_clock::now() + hotGap;
+				while (std::chrono::steady_clock::now() < gapEnd) {}
+
+				Vector<IoRequest> one {};
+				one.push_back(
+					IoRequest { .op = IoOp::eRead, .file = file, .offset = hotAt(rng) * hotBlock, .buffer = hotPool.at(0uz) }
+				);
+				const auto t0 = std::chrono::steady_clock::now();
+				auto hotDone = hot->submit(std::move(one));
+				while (not hotDone.isReady()) {}
+				const auto t1 = std::chrono::steady_clock::now();
+				latency.push_back(std::chrono::duration<double, std::micro>(t1 - t0).count());
+				if (burst_ && makespan == 0.0 && bulkDone.isReady()) {
+					makespan = std::chrono::duration<double, std::milli>(t1 - start).count();
+				}
+			}
+			if (burst_ && makespan == 0.0) {
+				makespan = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - start).count();
+			}
+			EXPECT_TRUE(waitReady(bulkDone, std::chrono::seconds { 120 }));
+			sys.stop();
+
+			const auto mib = burst_ ? static_cast<double>(bulkCount * bulkBlock) / (1024.0 * 1024.0) / (makespan / 1000.0) : 0.0;
+			const auto count = latency.size();
+			const auto p50 = percentile(latency, 0.50);
+			const auto p99 = percentile(latency, 0.99);
+			std::printf(
+				"%s,%u,%.1f,%.0f,%zu,%.0f,%.0f,%.0f\n",
+				burst_ ? "burst" : "idle",
+				budget_ / 1024u,
+				makespan,
+				mib,
+				count,
+				p50,
+				p99,
+				latency.back()
+			);
+		};
+
+		std::printf("mode,budget_kib,makespan_ms,bulk_mib_s,hot_n,hot_p50_us,hot_p99_us,hot_max_us\n");
+		run(2048u * 1024u, false);
+		for (u32 rep = 0; rep < 3u; ++rep) {
+			for (const u32 budget : { 1u, 2u, 4u, 8u }) {
+				run(budget * 1024u * 1024u, true);
 			}
 		}
 	}
