@@ -47,6 +47,17 @@ void engine::storage::initActionResolver(ref<StorageSystem> system_, ref<Storage
 		}
 	});
 
+	using staticLfsVoid2LfsBlobPackQuery = decltype(system::StaticStage {
+		.storage = Arci<system::LocalFileStorage> {},
+		.acqFn = [](auto&&... args_) {
+			return resolveStaticLfsVoid2LfsBlobPackQuery(::hg::forward<decltype(args_)>(args_)...);
+		},
+		.access = IoResourceAccessor<const resource::Blob> {},
+		.relFn = [](auto&&... args_) {
+			return releaseStaticLfsBlobQuery(::hg::forward<decltype(args_)>(args_)...);
+		}
+	});
+
 	/**/
 
 	using staticMemVoid2MemBlobMut = decltype(system::StaticStage {
@@ -427,7 +438,7 @@ void engine::storage::initActionResolver(ref<StorageSystem> system_, ref<Storage
 	{
 		using query_type = system::QueryStaticGen<
 			staticPackLfsBlob2PackQuery,
-			staticLfsVoid2LfsBlobQuery
+			staticLfsVoid2LfsBlobPackQuery
 		>;
 
 		auto actionTypeInfo = ActionTypeInfo {
@@ -554,7 +565,7 @@ void engine::storage::initActionResolver(ref<StorageSystem> system_, ref<Storage
 		using query_type = system::QueryStaticGen<
 			staticArchPack2ArchQuery,
 			staticPackLfsBlob2PackQuery,
-			staticLfsVoid2LfsBlobQuery
+			staticLfsVoid2LfsBlobPackQuery
 		>;
 
 		auto actionTypeInfo = ActionTypeInfo {

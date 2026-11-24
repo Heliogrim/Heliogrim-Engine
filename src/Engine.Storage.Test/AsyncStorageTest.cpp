@@ -154,8 +154,9 @@ namespace StorageModule {
 
 		const auto before = _io.requestsIssued();
 		EXPECT_EQ(readArchive(_guidB), pattern(kSizeB, 'A'));
-		// Note: 10 MiB over two 8 MiB windows, each split into 256 KiB requests.
-		EXPECT_EQ(_io.requestsIssued() - before, 40uLL);
+		// Note: 10 MiB over two 8 MiB windows, each split into 256 KiB requests. The package file is read unbuffered (Q03.7),
+		// so each window's unaligned range rounds out to sectors and takes one request more; buffered reads would issue 40.
+		EXPECT_EQ(_io.requestsIssued() - before, 42uLL);
 	}
 
 	TEST_F(AsyncStorageTest, MissingFileIsAccessError) {
