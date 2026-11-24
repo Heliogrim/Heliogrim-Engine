@@ -3,13 +3,10 @@
 #include <Engine.Common/Sal.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.ACS;
 import Engine.Common;
 import Engine.Config;
 #endif
-
-namespace hg::engine {
-	class SerializationModule;
-}
 
 namespace hg::editor::boot {
 	extern void initSerialization(_In_ cref<engine::Config> cfg_, _In_ ref<engine::SerializationModule> module_);

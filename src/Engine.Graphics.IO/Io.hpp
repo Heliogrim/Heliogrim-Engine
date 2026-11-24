@@ -4,14 +4,10 @@
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Graphics;
+import Engine.Graphics.Core;
 import Engine.Graphics.Loader;
 import Engine.Resource;
 #endif
-
-/* Local forward declaration: Engine.Graphics.Core's Graphics.cpp includes this header next to its textual Graphics.hpp. */
-namespace hg::engine {
-	class Graphics;
-}
 
 namespace hg::engine::graphics::loader {
 	extern void register_loader(
