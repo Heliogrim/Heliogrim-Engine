@@ -1,6 +1,7 @@
 #include "StorageModule.hpp"
 
 import Engine.Common;
+import Engine.Config;
 import Engine.Storage.Boot;
 import Engine.Storage.Registry;
 import Engine.Storage.System;
@@ -20,6 +21,18 @@ void StorageModule::setup(cref<Config> config_) {
 	static_cast<ptr<storage::StorageRegistry>>(_registry.get())->setup(config_);
 	storage::initActionResolver(*_system, *_resolver);
 
+	// A missing, mistyped or zero entry keeps the default.
+	constexpr auto fallback = io::IoLimits {};
+	const auto limit = [&config_](const cfg::StorageConfigProperty key_, const u32 default_) {
+		const auto value = config_.getOrDefault<u32>(key_, default_).value_or(default_);
+		return value != 0u ? value : default_;
+	};
+	_io.setLimits(
+		io::IoLimits {
+			.maxInFlight = limit(cfg::StorageConfigProperty::eIoMaxInFlight, fallback.maxInFlight),
+			.maxInFlightBytes = limit(cfg::StorageConfigProperty::eIoMaxInFlightBytes, fallback.maxInFlightBytes)
+		}
+	);
 	_io.start();
 	_system->setIo(std::addressof(_io));
 }
