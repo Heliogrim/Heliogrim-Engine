@@ -2,9 +2,8 @@
 
 /**/
 
-#include <Editor.UI.Service/Input/InputBindingList.hpp>
-#include <Editor.UI.Service/Input/InputService.hpp>
-
+import Editor.Action;
+import Editor.UI.Service;
 import Engine.Common;
 
 using namespace hg;

@@ -1,12 +1,8 @@
 #include "AssetBrowserModel.hpp"
 
-#include <Editor.UI.Service/Assets/Browser/AssetBrowserEntry.hpp>
-#include <Editor.UI.Service/Assets/Browser/AssetBrowserFilter.hpp>
-#include <Editor.UI.Service/Assets/Browser/AssetBrowserFilterEntry.hpp>
-#include <Editor.UI.Service/Assets/Browser/AssetBrowserService.hpp>
-
 #include "AssetBrowserView.hpp"
 
+import Editor.UI.Service;
 import Engine.Assets.Type;
 import std;
 

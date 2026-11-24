@@ -7,7 +7,7 @@ make_library_project(
        
         ${PROJECT_NAME}::Editor.Boot.Module ${PROJECT_NAME}::Editor.Core
         ${PROJECT_NAME}::Engine.ACS
-        ${PROJECT_NAME}::Editor.UI
+        ${PROJECT_NAME}::Editor.UI ${PROJECT_NAME}::Editor.UI.Service
         ${PROJECT_NAME}::Editor.UI.Init ${PROJECT_NAME}::Editor.UI.Theme ${PROJECT_NAME}::Editor.UI.View
         ${PROJECT_NAME}::Editor.UI.Rx
         ${PROJECT_NAME}::Engine.Async

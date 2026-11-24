@@ -1,10 +1,13 @@
 #pragma once
 
-#include <Editor.Action/Action/Action.hpp>
-
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
 #endif
+
+// Forward declaration: Editor.Action/Action/Action.hpp does not compile in the generated global module fragment.
+namespace hg::editor {
+	class Action;
+}
 
 namespace hg::editor::ui::service {
 	struct InputBinding {

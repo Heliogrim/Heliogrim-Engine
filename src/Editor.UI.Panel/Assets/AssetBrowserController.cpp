@@ -1,10 +1,9 @@
 #include "AssetBrowserController.hpp"
 
-#include <Editor.UI.Service/Assets/Browser/AssetBrowserEntry.hpp>
-#include <Editor.UI.Service/Assets/Browser/AssetBrowserFilterEntry.hpp>
-
 #include "AssetBrowserModel.hpp"
 #include "AssetBrowserView.hpp"
+
+import Editor.UI.Service;
 
 using namespace hg::editor::ui;
 using namespace hg;

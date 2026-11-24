@@ -1,9 +1,9 @@
 #include "SceneHierarchyController.hpp"
 
-#include <Editor.UI.Service/Scene/Hierarchy/SceneHierarchyEntry.hpp>
-
 #include "SceneHierarchyModel.hpp"
 #include "SceneHierarchyView.hpp"
+
+import Editor.UI.Service;
 
 using namespace hg::editor::ui;
 using namespace hg;

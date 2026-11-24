@@ -1,9 +1,6 @@
 #include "EditorUI.hpp"
 
 #include <Editor.UI/Helper/AssetBrowserHelper.hpp>
-#include <Editor.UI.Service/Input/InputService.hpp>
-#include <Editor.UI.Service/Input/InputServiceInit.hpp>
-#include <Editor.UI.Service/Property/PropertyServiceInit.hpp>
 
 #include "Module/EditorUI.hpp"
 
@@ -11,6 +8,7 @@ import Editor.Assets.Default;
 import Editor.Boot;
 import Editor.Core;
 import Editor.UI.Init;
+import Editor.UI.Service;
 import Editor.UI.Theme;
 import Editor.UI.View;
 import Engine.Assets;
