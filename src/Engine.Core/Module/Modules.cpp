@@ -5,7 +5,14 @@ import std;
 using namespace hg::engine::core;
 using namespace hg;
 
-Modules::~Modules() = default;
+Modules::~Modules() {
+	for (const auto& entry : _coreModules) {
+		entry.retract();
+	}
+	for (const auto& entry : _rootModules) {
+		entry.retract();
+	}
+}
 
 bool Modules::validateDependency(cref<SubModuleDependency> dependency_) const noexcept {
 
@@ -16,11 +23,7 @@ bool Modules::validateDependency(cref<SubModuleDependency> dependency_) const no
 	return dependency_.order != SubModuleOrder::ePredecessor;
 }
 
-size_t Modules::getRootModuleCount() const noexcept {
-	return _rootModules.size();
-}
-
-void Modules::addRootModule(mref<type_id> baseTypeId_, nmpt<RootModule> rootModule_) {
+void Modules::addRootModule(mref<type_id> baseTypeId_, nmpt<RootModule> rootModule_, retract_fn retract_) {
 	::hg::assertrt(
 		std::ranges::find_if(
 			_rootModules,
@@ -29,7 +32,7 @@ void Modules::addRootModule(mref<type_id> baseTypeId_, nmpt<RootModule> rootModu
 			}
 		) == std::ranges::end(_rootModules)
 	);
-	_rootModules.emplace_back(std::move(baseTypeId_), std::move(rootModule_));
+	_rootModules.emplace_back(std::move(baseTypeId_), std::move(rootModule_), retract_);
 }
 
 nmpt<RootModule> Modules::getRootModule(mref<type_id> baseTypeId_) const noexcept {
@@ -54,14 +57,23 @@ void Modules::removeRootModule(mref<type_id> baseTypeId_, nmpt<RootModule> rootM
 			return entry_.baseTypeId == baseTypeId_ && entry_.module == rootModule_;
 		}
 	);
+	if (it == std::ranges::end(_rootModules)) {
+		return;
+	}
+	it->retract();
 	_rootModules.erase(it);
 }
 
-size_t Modules::getCoreModuleCount() const noexcept {
-	return _coreModules.size();
+size_t Modules::getRootModuleCount() const noexcept {
+	return _rootModules.size();
 }
 
-void Modules::addCoreModule(cref<DependencyKey> key_, mref<type_id> baseTypeId_, nmpt<CoreModule> coreModule_) {
+void Modules::addCoreModule(
+	cref<DependencyKey> key_,
+	mref<type_id> baseTypeId_,
+	nmpt<CoreModule> coreModule_,
+	retract_fn retract_
+) {
 	::hg::assertrt(
 		std::ranges::find_if(
 			_coreModules,
@@ -70,7 +82,7 @@ void Modules::addCoreModule(cref<DependencyKey> key_, mref<type_id> baseTypeId_,
 			}
 		) == std::ranges::end(_coreModules)
 	);
-	_coreModules.emplace_back(key_, std::move(baseTypeId_), std::move(coreModule_));
+	_coreModules.emplace_back(key_, std::move(baseTypeId_), std::move(coreModule_), retract_);
 }
 
 nmpt<CoreModule> Modules::getCoreModule(
@@ -108,15 +120,19 @@ void Modules::removeCoreModule(mref<type_id> baseTypeId_, nmpt<CoreModule> coreM
 			return entry_.baseTypeId == baseTypeId_ && entry_.module == coreModule_;
 		}
 	);
+	if (it == std::ranges::end(_coreModules)) {
+		return;
+	}
+	it->retract();
 	_coreModules.erase(it);
+}
+
+size_t Modules::getCoreModuleCount() const noexcept {
+	return _coreModules.size();
 }
 
 size_t Modules::getSubModuleCount() const noexcept {
 	return _subModules.size();
-}
-
-cref<Deque<uptr<SubModule>>> Modules::getSubModules() const noexcept {
-	return _subModules;
 }
 
 DependencyValidationResult Modules::addSubModule(mref<uptr<SubModule>> subModule_) {
@@ -250,6 +266,10 @@ nmpt<SubModule> Modules::getSubModule(cref<DependencyKey> moduleKey_) const noex
 	}
 
 	return nullptr;
+}
+
+cref<Deque<uptr<SubModule>>> Modules::getSubModules() const noexcept {
+	return _subModules;
 }
 
 bool Modules::removeSubModule(nmpt<SubModule> subModule_) {

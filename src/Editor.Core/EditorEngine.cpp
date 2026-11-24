@@ -41,7 +41,7 @@ EditorEngine::EditorEngine() :
 EditorEngine::~EditorEngine() = default;
 
 nmpt<EditorEngine> EditorEngine::getEngine() noexcept {
-	return static_cast<ptr<EditorEngine>>(_cached);
+	return static_cast<ptr<EditorEngine>>(_cached.load(std::memory_order_acquire));
 }
 
 bool EditorEngine::preInit() {
