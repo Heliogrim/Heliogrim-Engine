@@ -28,6 +28,7 @@ BatchState::BatchState(mref<BatchFn> fn_, const u16 count_) :
 	next(0uL),
 	remaining(count_),
 	done() {
+
 	if (count_ == 0u) {
 		done.set();
 	}
@@ -41,6 +42,7 @@ BatchState::BatchState(const BatchFnRef fn_, const u16 count_) :
 	next(0uL),
 	remaining(count_),
 	done() {
+
 	if (count_ == 0u) {
 		done.set();
 	}
@@ -108,6 +110,7 @@ namespace {
 		if (count_ != BatchCount::eAuto) {
 			return static_cast<u16>(count_);
 		}
+
 		const auto workers = scheduler_.getWorkerCount();
 		::hg::assertd(workers > 0uLL);
 		return static_cast<u16>(std::min<size_t>(workers, std::numeric_limits<u16>::max()));

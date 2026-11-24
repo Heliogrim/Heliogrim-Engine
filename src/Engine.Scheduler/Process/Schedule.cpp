@@ -211,6 +211,7 @@ bool Schedule::takeable(const time_point now_) const noexcept {
 		if (_depth[laneIdx].load(std::memory_order::relaxed) == 0uLL) {
 			continue;
 		}
+
 		lower = true;
 		const auto floor = ticksOf(laneIdx == interactiveIdx ? _config.interactiveFloorMicros : _config.backgroundFloorMicros);
 		if (now - _lastStart[laneIdx - interactiveIdx].load(std::memory_order::relaxed) >= floor) {
