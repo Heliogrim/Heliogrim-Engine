@@ -1,11 +1,10 @@
 #include "SceneEditorController.hpp"
 
 #include <Editor.UI.Main/EditorUiServices.hpp>
-#include <Editor.UI.Panel/Assets/AssetBrowserController.hpp>
-#include <Editor.UI.Panel/Properties/PropertyController.hpp>
-#include <Editor.UI.Panel/Scene/Hierarchy/SceneHierarchyController.hpp>
 
 #include "SceneEditorView.hpp"
+
+import Editor.UI.Panel;
 
 using namespace hg::editor::ui;
 using namespace hg;

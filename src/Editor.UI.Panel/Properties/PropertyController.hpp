@@ -1,6 +1,8 @@
 #pragma once
 
-#include <Editor.UI.Main/EditorUiModel.hpp>
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Editor.UI.Main;
+#endif
 
 namespace hg::editor::ui {
 	class PropertyModel;
