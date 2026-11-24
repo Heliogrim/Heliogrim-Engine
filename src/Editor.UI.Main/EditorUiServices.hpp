@@ -1,10 +1,17 @@
 #pragma once
 
-#include <Editor.UI.Service/Assets/Browser/AssetBrowserService.hpp>
-#include <Editor.UI.Service/Context/ContextService.hpp>
-#include <Editor.UI.Service/Input/InputService.hpp>
-#include <Editor.UI.Service/Property/PropertyService.hpp>
-#include <Editor.UI.Service/Scene/Hierarchy/SceneHierarchyService.hpp>
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
+
+// Forward declarations: lower bundles (Editor.UI.Theme/View, Editor.Scene.Actions) include this textually and cannot link Editor.UI.Service.
+namespace hg::editor::ui::service {
+	class AssetBrowserService;
+	class ContextService;
+	class InputService;
+	class PropertyService;
+	class SceneHierarchyService;
+}
 
 namespace hg::editor::ui {
 	struct EditorUiServices {

@@ -6,6 +6,7 @@
 #include <SDL3/SDL_keycode.h>
 
 import Editor.Action;
+import Editor.UI.Service;
 import Engine.Core;
 import Engine.Logging;
 import Engine.Reflow;
