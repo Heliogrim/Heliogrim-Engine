@@ -15,14 +15,14 @@
 #include <utility>
 #include <Heliogrim.Test/SpawnEngine.hpp>
 
+import Engine.ACS;
 import Engine.Assets.Type;
 import Engine.Diagnostics;
+import Engine.Graphics.Components;
 import Engine.Level;
 import Engine.Resource.Archive;
 import Engine.Serialization;
-import Engine.ACS;
 import Heliogrim.Actors;
-import Engine.Graphics.Components;
 
 using namespace hg;
 using namespace hg::engine::serialization;
@@ -65,7 +65,7 @@ namespace {
 			[](ref<const RootScopedSlot> root_, ref<LoadContext> ctx_) {
 				const auto scheme = spawned()._serialization->getActorScheme(ActorType_::typeId);
 				// shortcut: the pooled actor is never destroyed (known default-deleter crash), leak until fixed.
-				const ptr<Actor> actor = scheme->deserialize(root_, spawned().getActors()->getRegistry());
+				const ptr<Actor> actor = scheme->deserialize(root_, engine::ActorModule::get()->getRegistry());
 				return actor != nullptr && not ctx_.failed();
 			}
 		};

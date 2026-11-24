@@ -66,55 +66,6 @@ namespace hg::test {
 			return setEngineState(engine::core::EngineState::eExited);
 		}
 
-	public:
-		[[nodiscard]] nmpt<engine::ActorModule> getActors() const noexcept override {
-			return nullptr;
-		}
-
-		[[nodiscard]] nmpt<engine::Assets> getAssets() const noexcept override {
-			return nullptr;
-		}
-
-		[[nodiscard]] nmpt<engine::Audio> getAudio() const noexcept override {
-			return nullptr;
-		}
-
-		[[nodiscard]] nmpt<engine::Graphics> getGraphics() const noexcept override {
-			return nullptr;
-		}
-
-		[[nodiscard]] nmpt<engine::Input> getInput() const noexcept override {
-			return nullptr;
-		}
-
-		[[nodiscard]] nmpt<engine::Network> getNetwork() const noexcept override {
-			return nullptr;
-		}
-
-		[[nodiscard]] nmpt<engine::Physics> getPhysics() const noexcept override {
-			return nullptr;
-		}
-
-		[[nodiscard]] nmpt<engine::Platform> getPlatform() const noexcept override {
-			return nullptr;
-		}
-
-		[[nodiscard]] nmpt<engine::ResourceManager> getResources() const noexcept override {
-			return nullptr;
-		}
-
-		[[nodiscard]] nmpt<engine::Scheduler> getScheduler() const noexcept override {
-			return _scheduler.get();
-		}
-
-		nmpt<const engine::SerializationModule> getSerialization() const noexcept override {
-			return nullptr;
-		}
-
-		[[nodiscard]] nmpt<const engine::StorageModule> getStorage() const noexcept override {
-			return nullptr;
-		}
-
 	private:
 		mutable engine::Config _config;
 		mutable GlobalEventEmitter _emitter;
@@ -161,7 +112,7 @@ namespace SchedulerModule {
 		auto engine = hg::make_uptr<hg::test::TestSchedulerEngine>(workers_, lanes_);
 		engine->preInit();
 
-		const auto scheduler = engine->getScheduler();
+		const ::hg::nmpt<::hg::engine::Scheduler> scheduler = std::addressof(*::hg::engine::Scheduler::get());
 
 		//
 		EXPECT_EQ(scheduler->getWorkerCount(), 0uL);

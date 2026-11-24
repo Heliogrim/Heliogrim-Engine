@@ -61,7 +61,7 @@ namespace hg {
 			if (core == nullptr) {
 				return None;
 			}
-			const auto handle = core->getActors()->getRegistry()->handleOf(*actor_);
+			const auto handle = engine::ActorModule::get()->getRegistry()->handleOf(*actor_);
 			if (handle == engine::acs::Handle {}) {
 				return None;
 			}
@@ -81,7 +81,7 @@ namespace hg {
 				const auto core = engine::Engine::getEngine();
 				// The handle may come from a loaded file; a wrong class resolves to none.
 				_cached = core ?
-					static_cast<ptr<Type_>>(core->getActors()->getRegistry()->resolve(_handle, typename ::hg::refl::query_type_id<Type_>::result {}())) :
+					static_cast<ptr<Type_>>(engine::ActorModule::get()->getRegistry()->resolve(_handle, typename ::hg::refl::query_type_id<Type_>::result {}())) :
 					nullptr;
 				_epoch = engine::acs::Epoch::current();
 			}

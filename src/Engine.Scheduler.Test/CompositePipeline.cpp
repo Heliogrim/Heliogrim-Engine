@@ -32,7 +32,7 @@ namespace SchedulerModule {
 			engine->postInit();
 			engine->start();
 
-			auto* const scheduler = static_cast<ptr<hg::engine::TestCompScheduler>>(engine->getScheduler().get());
+			auto* const scheduler = static_cast<ptr<hg::engine::TestCompScheduler>>(std::addressof(*engine::Scheduler::get()));
 			CompositePipeline composite { scheduler->testGetSchedule() };
 
 			callback_(composite);

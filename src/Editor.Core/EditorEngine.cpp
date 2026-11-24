@@ -420,54 +420,6 @@ bool EditorEngine::exit() {
 	return setEngineState(EngineState::eExited);
 }
 
-nmpt<engine::ActorModule> EditorEngine::getActors() const noexcept {
-	return _actors.get();
-}
-
-nmpt<engine::Assets> EditorEngine::getAssets() const noexcept {
-	return _assets.get();
-}
-
-nmpt<engine::Audio> EditorEngine::getAudio() const noexcept {
-	return _audio.get();
-}
-
-nmpt<engine::Graphics> EditorEngine::getGraphics() const noexcept {
-	return _graphics.get();
-}
-
-nmpt<engine::Input> EditorEngine::getInput() const noexcept {
-	return _input.get();
-}
-
-nmpt<engine::Network> EditorEngine::getNetwork() const noexcept {
-	return _network.get();
-}
-
-nmpt<engine::Physics> EditorEngine::getPhysics() const noexcept {
-	return _physics.get();
-}
-
-nmpt<engine::Platform> EditorEngine::getPlatform() const noexcept {
-	return _platform.get();
-}
-
-nmpt<engine::ResourceManager> EditorEngine::getResources() const noexcept {
-	return _resources.get();
-}
-
-nmpt<engine::Scheduler> EditorEngine::getScheduler() const noexcept {
-	return _scheduler.get();
-}
-
-nmpt<const engine::SerializationModule> EditorEngine::getSerialization() const noexcept {
-	return std::addressof(_serialization);
-}
-
-nmpt<const engine::StorageModule> EditorEngine::getStorage() const noexcept {
-	return std::addressof(_storage);
-}
-
 ref<engine::Config> EditorEngine::getConfig() const noexcept {
 	return const_cast<ref<engine::Config>>(_config);
 }

@@ -45,7 +45,7 @@ void Physics::setup() {
 	 * Schedule Pipelines
 	 */
 	auto physicsPipeline = make_uptr<physics::schedule::PhysicsPipeline>();
-	_engine->getScheduler()->getCompositePipeline()->addPipeline(::hg::move(physicsPipeline));
+	Scheduler::get()->getCompositePipeline()->addPipeline(::hg::move(physicsPipeline));
 }
 
 void Physics::start() {}

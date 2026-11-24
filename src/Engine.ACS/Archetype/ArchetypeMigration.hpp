@@ -22,7 +22,7 @@ namespace hg {
 		}
 
 		const auto host = engine::Engine::getEngine();
-		if (host == nullptr || host->getSerialization() == nullptr) {
+		if (host == nullptr || not engine::SerializationModule::get().has_value()) {
 			ctx->fail(
 				engine::serialization::ReadError {
 					engine::serialization::ReadError::Kind::eMigrationFailed,
@@ -34,7 +34,7 @@ namespace hg {
 			return None;
 		}
 
-		return host->getSerialization()->migrations().migrateToCurrent(
+		return engine::SerializationModule::get()->migrations().migrateToCurrent(
 			type_,
 			record_,
 			*ctx

@@ -22,7 +22,7 @@ using namespace hg;
 
 void editor::boot::initDefaultFontAssets(ref<const engine::Engine> engine_) {
 
-	auto& registry = *engine_.getAssets()->getRegistry();
+	auto& registry = *Assets::get()->getRegistry();
 
 	/**/
 
@@ -32,7 +32,7 @@ void editor::boot::initDefaultGraphicsMaterialAssets(ref<const engine::Engine> e
 
 	auto accelSubmodule = engine_.getModules().getSubModule(AccelDepKey);
 
-	auto& registry = *engine_.getAssets()->getRegistry();
+	auto& registry = *Assets::get()->getRegistry();
 	auto& accelGlobalStorage = *static_cast<ptr<engine::Accel>>(accelSubmodule.get())->getGlobalStorage();
 
 	const auto materialDefaultBrdfPath = engine::assets::AssetPath { "materials/default-brdf"sv };

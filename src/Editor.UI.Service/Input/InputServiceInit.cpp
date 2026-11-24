@@ -22,7 +22,7 @@ void editor::ui::service::init_input_service(ref<InputService> service_) {
 			.label = "Save", .binding = { 0x40u | 0x80u, 115u }, .condition = nullptr, .invoke = [] -> Arci<Action> {
 
 				auto engine = EditorEngine::getEngine();
-				auto assets = engine->getAssets();
+				auto assets = ::hg::engine::Assets::get();
 				auto universe = engine->getPrimaryGameSession()->getUniverseContext().getCurrentUniverse();
 
 				auto level = universe->getRootLevel();

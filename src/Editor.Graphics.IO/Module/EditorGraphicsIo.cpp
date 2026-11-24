@@ -52,7 +52,7 @@ void EditorGraphicsIo::hookGraphicsEvents() noexcept {
 
 			using namespace ::hg::editor::graphics::loader;
 
-			auto& pool = *_engine->getGraphics()->pool();
+			auto& pool = *engine::Graphics::get()->pool();
 
 			event_.getProxy()
 				.put(make_uptr<EditorBmpTextureTransformer>(pool))

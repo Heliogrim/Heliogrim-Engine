@@ -65,6 +65,6 @@ Session Heliogrim::getSession(std::nothrow_t) noexcept {
 
 AssetDatabase Heliogrim::assets() noexcept {
 	return AssetDatabase {
-		_engine.get()->getAssets()->getRegistry().get()
+		engine::Assets::get()->getRegistry().get()
 	};
 }

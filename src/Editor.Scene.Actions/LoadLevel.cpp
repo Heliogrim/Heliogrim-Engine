@@ -4,8 +4,8 @@
 
 import Engine.ACS;
 import Engine.Logging;
-import Engine.Storage.System;
 import Engine.Storage;
+import Engine.Storage.System;
 
 using namespace hg::editor::scene::actions;
 using namespace hg;
@@ -44,7 +44,7 @@ Result<Arci<engine::core::Level>, engine::diag::Diagnostics> editor::scene::acti
 ) {
 
 	auto engine = engine::Engine::getEngine();
-	auto ssys = engine->getStorage()->getSystem();
+	auto ssys = ::hg::engine::StorageModule::get()->getSystem();
 
 	/**/
 

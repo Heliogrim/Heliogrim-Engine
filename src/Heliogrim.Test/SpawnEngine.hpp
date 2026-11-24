@@ -1,12 +1,12 @@
 #pragma once
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
-import Engine.Serialization;
 import Engine.ACS;
 import Engine.Common;
 import Engine.Config;
 import Engine.Core;
 import Engine.Event;
+import Engine.Serialization;
 #endif
 
 namespace HeliogrimApi::test_engine {
@@ -44,32 +44,8 @@ namespace HeliogrimApi::test_engine {
 		bool exit() override { return true; }
 
 	public:
-		[[nodiscard]] nmpt<engine::ActorModule> getActors() const noexcept override { return _actors.get(); }
-
-		[[nodiscard]] nmpt<engine::Assets> getAssets() const noexcept override { return nullptr; }
-
-		[[nodiscard]] nmpt<engine::Audio> getAudio() const noexcept override { return nullptr; }
-
-		[[nodiscard]] nmpt<engine::Graphics> getGraphics() const noexcept override { return nullptr; }
-
-		[[nodiscard]] nmpt<engine::Input> getInput() const noexcept override { return nullptr; }
-
-		[[nodiscard]] nmpt<engine::Network> getNetwork() const noexcept override { return nullptr; }
-
-		[[nodiscard]] nmpt<engine::Physics> getPhysics() const noexcept override { return nullptr; }
-
-		[[nodiscard]] nmpt<engine::Platform> getPlatform() const noexcept override { return nullptr; }
-
-		[[nodiscard]] nmpt<engine::ResourceManager> getResources() const noexcept override { return nullptr; }
-
-		[[nodiscard]] nmpt<engine::Scheduler> getScheduler() const noexcept override { return nullptr; }
-
-		[[nodiscard]] nmpt<const engine::SerializationModule> getSerialization() const noexcept override { return _serialization.get(); }
-
 		/* Empty scheme registry; tests register the schemes they load through. */
 		uptr<engine::SerializationModule> _serialization = make_uptr<engine::SerializationModule>();
-
-		[[nodiscard]] nmpt<const engine::StorageModule> getStorage() const noexcept override { return nullptr; }
 
 	private:
 		mutable engine::Config _config;

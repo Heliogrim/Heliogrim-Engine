@@ -14,7 +14,7 @@ using namespace hg;
 
 AssetBrowserService::AssetBrowserService() {
 	const auto engine = engine::Engine::getEngine();
-	_providers.emplace_back(make_uptr<AssetRegistryBrowserProvider>(engine->getAssets()->getRegistry()));
+	_providers.emplace_back(make_uptr<AssetRegistryBrowserProvider>(engine::Assets::get()->getRegistry()));
 }
 
 AssetBrowserService::~AssetBrowserService() = default;

@@ -76,7 +76,7 @@ namespace HeliogrimApi {
 			Vector<ptr<Actor>> _actors;
 
 			[[nodiscard]] ref<engine::acs::Registry> registry() const noexcept {
-				return *_engine->getActors()->getRegistry();
+				return *engine::ActorModule::get()->getRegistry();
 			}
 
 			// Empties chunk 0, the only chunk, so every actor lands in a fresh chunk.

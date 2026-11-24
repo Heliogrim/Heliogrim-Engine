@@ -5,8 +5,8 @@
 #include <Engine.ACS/Serialization/SerializationModule.hpp>
 
 import Engine.Core;
-import Engine.Serialization.Structures;
 import Engine.Serialization;
+import Engine.Serialization.Structures;
 
 namespace hg::engine::serialization {
 	template <>
@@ -16,7 +16,7 @@ namespace hg::engine::serialization {
 	) {
 		insert_typeId_slot<>(record_, self_._typeId);
 		if (const auto engine = Engine::getEngine(); engine != nullptr) {
-			engine->getSerialization()->migrations().writeRevision(record_, self_._typeId);
+			engine::SerializationModule::get()->migrations().writeRevision(record_, self_._typeId);
 		}
 		insert_guid_slot<>(record_, self_._guid);
 		record_.insertSlot<String>("label"sv) << self_._label.text;

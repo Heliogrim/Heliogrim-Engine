@@ -5,10 +5,10 @@
 
 #include "SpawnEngine.hpp"
 
-import Engine.Common;
 import Engine.ACS;
-import Heliogrim.Actors;
+import Engine.Common;
 import Engine.Graphics.Components;
+import Heliogrim.Actors;
 
 using namespace hg;
 
@@ -19,7 +19,7 @@ namespace HeliogrimApi {
 		auto engine = make_uptr<test_engine::SpawnEngine>();
 		auto actor = CreateActor<Actor>();
 		ASSERT_NE(actor.get(), nullptr);
-		EXPECT_TRUE(engine->getActors()->getRegistry()->getOrCreateActorPool<Actor>()->get(actor->guid()) != nullptr);
+		EXPECT_TRUE(::hg::engine::ActorModule::get()->getRegistry()->getOrCreateActorPool<Actor>()->get(actor->guid()) != nullptr);
 	}
 
 	TEST(TypedCreateActor, CameraActorIsAutoInitialized) {

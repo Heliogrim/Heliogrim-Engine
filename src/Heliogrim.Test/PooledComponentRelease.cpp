@@ -20,7 +20,7 @@ namespace HeliogrimApi {
 		void releaseThroughDefaultDeleter() {
 			auto& pool = engine::acs::Registry::ComponentPool<ComponentType_>::getOrCreate();
 			auto engine = make_uptr<SpawnEngine>();
-			auto& registry = *engine->getActors()->getRegistry();
+			auto& registry = *::hg::engine::ActorModule::get()->getRegistry();
 			const auto guid = ComponentGuid { generate_component_guid() };
 			{
 				auto component = registry.acquireActorComponent<ComponentType_>(

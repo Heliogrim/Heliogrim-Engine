@@ -182,10 +182,10 @@ void Graphics::setup() {
 	 */
 	hookEngineState();
 
-	auto& loader = _engine->getResources()->loader();
+	auto& loader = ResourceManager::get()->loader();
 	loader::register_loader(loader, *this, *_cacheCtrl, *_pool);
 
-	auto& importer = _engine->getResources()->importer();
+	auto& importer = ResourceManager::get()->importer();
 	loader::register_importer(importer, *this);
 
 	/**
@@ -200,7 +200,7 @@ void Graphics::setup() {
 	 * Scheduling Pipelines
 	 */
 	auto renderScenePipeline = make_uptr<graphics::schedule::RenderScenePipeline>();
-	_engine->getScheduler()->getCompositePipeline()->addPipeline(std::move(renderScenePipeline));
+	Scheduler::get()->getCompositePipeline()->addPipeline(std::move(renderScenePipeline));
 }
 
 void Graphics::start() {}
@@ -213,10 +213,10 @@ void Graphics::destroy() {
 	/**
 	 * Unregister Hooks and consume EngineState
 	 */
-	auto& importer = _engine->getResources()->importer();
+	auto& importer = ResourceManager::get()->importer();
 	loader::unregister_importer(importer, *this);
 
-	auto& loader = _engine->getResources()->loader();
+	auto& loader = ResourceManager::get()->loader();
 	loader::unregister_loader(loader, *this, *_cacheCtrl, *_pool);
 	unhookEngineState();
 

@@ -10,7 +10,7 @@ using namespace hg;
 void editor::boot::initRender() {
 
 	const auto engine = Engine::getEngine();
-	const auto graphics = engine->getGraphics();
+	auto graphics = Graphics::get();
 
 	::hg::assertrt(not graphics->hasRenderer("Editor-Renderer"));
 

@@ -203,8 +203,8 @@ static Result<Arci<core::Level>, diag::Diagnostics> reject_level(
 static decltype(auto) wantedSave(_In_ cref<core::Level> level_, _In_ cref<assets::LevelAsset> levelAsset_) {
 
 	auto engine = Engine::getEngine();
-	const auto serial = engine->getSerialization();
-	auto ssys = engine->getStorage()->getSystem();
+	const auto serial = SerializationModule::get();
+	auto ssys = StorageModule::get()->getSystem();
 
 	/**/
 
@@ -279,7 +279,7 @@ static storage::FileUrl experimentalResolveLevelFileUrl() {
 
 static Arci<assets::LevelAsset> experimentalResolveLevelAsset() {
 	const auto engine = Engine::getEngine();
-	const auto assets = engine->getAssets();
+	auto assets = Assets::get();
 
 	/**/
 
@@ -304,8 +304,8 @@ static Arci<assets::LevelAsset> experimentalResolveLevelAsset() {
 static Arci<assets::LevelAsset> experimentalResolveLevelAsset(ref<const engine::core::Level> level_) {
 
 	const auto engine = Engine::getEngine();
-	const auto assets = engine->getAssets();
-	const auto ssys = engine->getStorage()->getSystem();
+	auto assets = Assets::get();
+	const auto ssys = StorageModule::get()->getSystem();
 
 	/**/
 

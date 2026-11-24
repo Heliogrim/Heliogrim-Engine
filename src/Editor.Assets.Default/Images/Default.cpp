@@ -9,5 +9,5 @@ Opt<Arci<engine::assets::Asset>> editor::assets::image::resolveRuntimeAsset(
 	ref<engine::Engine> engine_,
 	cref<AssetGuid> guid_
 ) {
-	return engine_.getAssets()->getRegistry()->findAssetByGuid(guid_);
+	return engine::Assets::get()->getRegistry()->findAssetByGuid(guid_);
 }

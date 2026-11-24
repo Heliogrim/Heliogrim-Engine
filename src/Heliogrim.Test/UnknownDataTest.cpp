@@ -5,10 +5,10 @@
 
 #include "SpawnEngine.hpp"
 
+import Engine.ACS;
 import Engine.Diagnostics;
 import Engine.Level;
 import Engine.Resource.Archive;
-import Engine.ACS;
 import Engine.Serialization;
 
 using namespace hg::engine::serialization;
@@ -114,7 +114,7 @@ namespace UnknownDataModule {
 		}
 
 		[[nodiscard]] nmpt<engine::acs::Registry> registry() const {
-			return _engine->getActors()->getRegistry();
+			return engine::ActorModule::get()->getRegistry();
 		}
 
 		/* Level root with one actor record. */

@@ -363,54 +363,6 @@ bool GameEngine::exit() {
 	return setEngineState(EngineState::eExited);
 }
 
-nmpt<ActorModule> GameEngine::getActors() const noexcept {
-	return _actors.get();
-}
-
-nmpt<Assets> GameEngine::getAssets() const noexcept {
-	return _assets.get();
-}
-
-nmpt<Audio> GameEngine::getAudio() const noexcept {
-	return _audio.get();
-}
-
-nmpt<Graphics> GameEngine::getGraphics() const noexcept {
-	return _graphics.get();
-}
-
-nmpt<Input> GameEngine::getInput() const noexcept {
-	return _input.get();
-}
-
-nmpt<Network> GameEngine::getNetwork() const noexcept {
-	return _network.get();
-}
-
-nmpt<Physics> GameEngine::getPhysics() const noexcept {
-	return _physics.get();
-}
-
-nmpt<Platform> GameEngine::getPlatform() const noexcept {
-	return _platform.get();
-}
-
-nmpt<ResourceManager> GameEngine::getResources() const noexcept {
-	return _resources.get();
-}
-
-nmpt<Scheduler> GameEngine::getScheduler() const noexcept {
-	return _scheduler.get();
-}
-
-nmpt<const SerializationModule> GameEngine::getSerialization() const noexcept {
-	return std::addressof(_serialization);
-}
-
-nmpt<const StorageModule> GameEngine::getStorage() const noexcept {
-	return std::addressof(_storage);
-}
-
 ref<Config> GameEngine::getConfig() const noexcept {
 	return const_cast<ref<engine::Config>>(_config);
 }

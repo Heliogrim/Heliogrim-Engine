@@ -5,28 +5,9 @@
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
 import Engine.Config;
+import Engine.Event;
 import Engine.Reflect;
 #endif
-
-namespace hg {
-	class GlobalEventEmitter;
-}
-
-namespace hg::engine {
-	class ActorModule;
-	class Assets;
-	class Audio;
-	class Graphics;
-	class Input;
-	class Network;
-	class Physics;
-
-	class ResourceManager;
-	class Scheduler;
-	class Platform;
-	class SerializationModule;
-	class StorageModule;
-}
 
 namespace hg::engine::core {
 	enum class EngineState : u8;
@@ -233,34 +214,6 @@ namespace hg::engine {
 		 * @returns True if succeeded, otherwise false due to failure or invalid state change
 		 */
 		virtual bool exit() = 0;
-
-	public:
-		[[nodiscard]] virtual nmpt<ActorModule> getActors() const noexcept = 0;
-
-		[[nodiscard]] virtual nmpt<Assets> getAssets() const noexcept = 0;
-
-		[[nodiscard]] virtual nmpt<Audio> getAudio() const noexcept = 0;
-
-		[[nodiscard]] virtual nmpt<Graphics> getGraphics() const noexcept = 0;
-
-		[[nodiscard]] virtual nmpt<Input> getInput() const noexcept = 0;
-
-		[[nodiscard]] virtual nmpt<Network> getNetwork() const noexcept = 0;
-
-		[[nodiscard]] virtual nmpt<Physics> getPhysics() const noexcept = 0;
-
-	public:
-		// TODO: Check whether root modules should be accessible by reference, as they should bind tightly with the engine object lifecycle
-
-		[[nodiscard]] virtual nmpt<Platform> getPlatform() const noexcept = 0;
-
-		[[nodiscard]] virtual nmpt<ResourceManager> getResources() const noexcept = 0;
-
-		[[nodiscard]] virtual nmpt<Scheduler> getScheduler() const noexcept = 0;
-
-		[[nodiscard]] virtual nmpt<const SerializationModule> getSerialization() const noexcept = 0;
-
-		[[nodiscard]] virtual nmpt<const StorageModule> getStorage() const noexcept = 0;
 
 	public:
 		[[nodiscard]] virtual ref<Config> getConfig() const noexcept = 0;

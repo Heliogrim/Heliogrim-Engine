@@ -44,9 +44,9 @@ SaveLevel::~SaveLevel() = default;
 static Arci<engine::assets::LevelAsset> save_level_in_asset(_In_ ref<const engine::core::Level> level_) {
 
 	auto engine = engine::Engine::getEngine();
-	const auto assets = engine->getAssets();
-	const auto serial = engine->getSerialization();
-	auto ssys = engine->getStorage()->getSystem();
+	auto assets = ::hg::engine::Assets::get();
+	const auto serial = ::hg::engine::SerializationModule::get();
+	auto ssys = ::hg::engine::StorageModule::get()->getSystem();
 
 	/**/
 
