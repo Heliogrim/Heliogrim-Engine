@@ -37,7 +37,7 @@ using namespace hg;
 void TmpBrdfLutPass::destroy() noexcept {
 	SubPass::destroy();
 
-	auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
+	auto device = engine::Graphics::get()->getCurrentDevice();
 	device->vkDevice().destroySemaphore(static_cast<VkSemaphore>(std::exchange(_tmpSignal, nullptr)));
 
 	_resources.outBrdfLutTexture->destroy<smr<TextureLikeObject>, graph::TextureDescription>();
@@ -71,7 +71,7 @@ void TmpBrdfLutPass::resolve() noexcept {
 void TmpBrdfLutPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
 	if (_tmpSignal == nullptr) {
-		const auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
+		const auto device = engine::Graphics::get()->getCurrentDevice();
 		_tmpSignal = device->vkDevice().createSemaphore({});
 	}
 
@@ -137,7 +137,7 @@ void TmpBrdfLutPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept 
 
 	if (_framebuffer.empty()) {
 
-		_framebuffer = make_smr<Framebuffer>(Engine::getEngine()->getGraphics()->getCurrentDevice());
+		_framebuffer = make_smr<Framebuffer>(engine::Graphics::get()->getCurrentDevice());
 
 		_framebuffer->addAttachment(clone(_brdfLut));
 		_framebuffer->setExtent(_brdfLut->extent());

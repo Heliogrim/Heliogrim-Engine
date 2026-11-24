@@ -67,7 +67,7 @@ void Surface::destroy() {
 
 	/**/
 
-	(void)await(Engine::getEngine()->getPlatform()->destroyNativeWindow(std::move(_window)));
+	(void)await(engine::Platform::get()->destroyNativeWindow(std::move(_window)));
 }
 
 TextureFormat Surface::getImageFormat(const Device& device_) const {

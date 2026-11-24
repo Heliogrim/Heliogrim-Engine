@@ -125,7 +125,7 @@ void Actor::scheduleComponentRemoval(mref<ptr<HierarchyComponent>> component_) {
 }
 
 void Actor::scheduleComponentRelease(mref<ptr<LogicComponent>> component_) const {
-	engine::Engine::getEngine()->getActors()->getRegistry()->releaseActorComponent(VolatileComponent<> { ::hg::move(component_) });
+	engine::ActorModule::get()->getRegistry()->releaseActorComponent(VolatileComponent<> { ::hg::move(component_) });
 }
 
 void Actor::addComponent(mref<VolatileComponent<HierarchyComponent>> component_, Opt<ref<const AddComponentOptions>> options_) {
@@ -243,7 +243,7 @@ template <>
 void VolatileActor<Actor>::destroy(ptr<Actor> obj_) {
 
 	::hg::assertd(obj_->getUniverse().is_null());
-	auto registry = engine::Engine::getEngine()->getActors()->getRegistry();
+	auto registry = engine::ActorModule::get()->getRegistry();
 
 	// Archetype components live in the actor's slot; they go with it, never to the per-type pools.
 	if (obj_->getArchetype() != nullptr) {
@@ -267,17 +267,17 @@ Opt<ref<const ActorClass>> hg::FindActorClass(const type_id typeId_) noexcept {
 }
 
 VolatileActor<> hg::CreateActor() {
-	auto& registry = *engine::Engine::getEngine()->getActors()->getRegistry();
+	auto& registry = *engine::ActorModule::get()->getRegistry();
 	return VolatileActor<> { registry.createActor(ActorInitializer { registry }) };
 }
 
 Future<VolatileActor<>> hg::CreateActor(async_t) {
-	auto& registry = *engine::Engine::getEngine()->getActors()->getRegistry();
+	auto& registry = *engine::ActorModule::get()->getRegistry();
 	return Future<VolatileActor<>>::ready(VolatileActor<> { registry.createActor(ActorInitializer { registry }) });
 }
 
 VolatileActor<> hg::CreateActor(ptr<const MetaClass> class_) noexcept {
-	auto& registry = *engine::Engine::getEngine()->getActors()->getRegistry();
+	auto& registry = *engine::ActorModule::get()->getRegistry();
 	return VolatileActor<> { registry.createActor(class_, ActorInitializer { registry }) };
 }
 
@@ -340,7 +340,7 @@ bool hg::Destroy(mref<VolatileActor<>> actor_) noexcept {
 
 namespace {
 	[[nodiscard]] ref<engine::acs::Registry> actorRegistry() noexcept {
-		return *engine::Engine::getEngine()->getActors()->getRegistry();
+		return *engine::ActorModule::get()->getRegistry();
 	}
 
 	[[nodiscard]] Vector<ActorRef<>> spawnInto(

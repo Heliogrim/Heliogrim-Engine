@@ -14,7 +14,7 @@ void hg::execute(mref<execute_function_type> function_) {
 	/**
 	 * Schedule task
 	 */
-	::hg::engine::Engine::getEngine()->getScheduler()->exec(std::move(task));
+	::hg::engine::Scheduler::get()->exec(std::move(task));
 }
 
 void hg::execute(const execute_function_pointer_type function_) {
@@ -28,7 +28,7 @@ void hg::execute(const execute_function_pointer_type function_) {
 	/**
 	 * Schedule task
 	 */
-	::hg::engine::Engine::getEngine()->getScheduler()->exec(std::move(task));
+	::hg::engine::Scheduler::get()->exec(std::move(task));
 }
 
 void hg::execute(mref<Task> task_) {
@@ -42,7 +42,7 @@ void hg::execute(mref<Task> task_) {
 	/**
 	 * Schedule task
 	 */
-	::hg::engine::Engine::getEngine()->getScheduler()->exec(std::move(task));
+	::hg::engine::Scheduler::get()->exec(std::move(task));
 }
 
 void hg::execute(mref<RepetitiveTask> task_) {
@@ -56,7 +56,7 @@ void hg::execute(mref<RepetitiveTask> task_) {
 	/**
 	 * Schedule task
 	 */
-	::hg::engine::Engine::getEngine()->getScheduler()->exec(std::move(task));
+	::hg::engine::Scheduler::get()->exec(std::move(task));
 }
 
 void hg::execute(mref<TickTask> task_) {
@@ -70,5 +70,5 @@ void hg::execute(mref<TickTask> task_) {
 	/**
 	 * Schedule task
 	 */
-	::hg::engine::Engine::getEngine()->getScheduler()->exec(std::move(task));
+	::hg::engine::Scheduler::get()->exec(std::move(task));
 }

@@ -232,7 +232,7 @@ smr<engine::graphics::VkSwapchain> Viewport::buildNextView(cref<math::uivec2> ex
 	next->setFormat(graphics::TextureFormat::eB8G8R8A8Unorm);
 	next->setDesiredImages(2uL);
 
-	const auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
+	const auto device = engine::Graphics::get()->getCurrentDevice();
 	next->setup(device);
 
 	return next;
@@ -242,7 +242,7 @@ void Viewport::remountRenderTarget() {
 
 	// Warning: Temporary Internal Linking
 
-	const auto gfx = Engine::getEngine()->getGraphics();
+	auto gfx = engine::Graphics::get();
 	auto* const manager = gfx->getSceneManager();
 
 	const auto renderer = gfx->getRenderer(_renderer, std::nothrow);

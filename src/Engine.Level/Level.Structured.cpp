@@ -16,7 +16,7 @@ void access::Structure<engine::core::Level>::serialize(const engine::core::Level
 
 	/**/
 
-	const auto serial = Engine::getEngine()->getSerialization();
+	const auto serial = engine::SerializationModule::get();
 	auto sequence = record_.insertRecordSlot(Symbols::Components).intoSeq();
 
 	for (const auto actor : self_.getActors()) {
@@ -44,8 +44,8 @@ void access::Structure<engine::core::Level>::hydrate(cref<StructScopedSlot> reco
 
 	/**/
 
-	const auto serial = Engine::getEngine()->getSerialization();
-	auto& registry = *Engine::getEngine()->getActors()->getRegistry();
+	const auto serial = engine::SerializationModule::get();
+	auto& registry = *engine::ActorModule::get()->getRegistry();
 
 	const auto& root = record_.slot()->getState().root;
 	const auto ctx = root != nullptr ? root->context : nullptr;

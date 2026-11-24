@@ -49,12 +49,12 @@ AssetDatabaseResult<AssetHandle> AssetDatabase::operator[](ref<const AssetGuid> 
 
 bool hg::IsAssetsAvailable() noexcept {
 	return engine::Engine::getEngine() != nullptr
-		&& engine::Engine::getEngine()->getAssets() != nullptr
-		&& engine::Engine::getEngine()->getAssets()->getRegistry() != nullptr;
+		&& engine::Assets::get().has_value()
+		&& engine::Assets::get()->getRegistry() != nullptr;
 }
 
 AssetDatabase hg::GetAssets() {
 	return AssetDatabase {
-		engine::Engine::getEngine()->getAssets()->getRegistry().get()
+		engine::Assets::get()->getRegistry().get()
 	};
 }

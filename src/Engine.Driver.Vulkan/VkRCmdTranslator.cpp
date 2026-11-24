@@ -27,7 +27,7 @@ uptr<cmd::NativeBatch> VkRCmdTranslator::operator()(
 	/**/
 	auto batch = make_uptr<VkNativeBatch>();
 
-	const auto device = engine::Engine::getEngine()->getGraphics()->getCurrentDevice();
+	const auto device = engine::Graphics::get()->getCurrentDevice();
 	auto* const ecpool = device->graphicsQueue()->pool();
 
 	AccelCommandBuffer eccmd = ecpool->make();
@@ -74,7 +74,7 @@ uptr<engine::render::cmd::NativeBatch> VkRCmdTranslator::operator()(
 
 	/**/
 
-	const auto device = engine::Engine::getEngine()->getGraphics()->getCurrentDevice();
+	const auto device = engine::Graphics::get()->getCurrentDevice();
 	auto* const ecpool = device->graphicsQueue()->pool();
 
 	AccelCommandBuffer eccmd = ecpool->make();

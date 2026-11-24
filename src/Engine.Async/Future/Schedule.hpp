@@ -100,7 +100,7 @@ namespace hg::detail {
 		// The predecessor is done, so its link is stale; the producer links again when it waits.
 		boostable->setDependency(nullptr);
 		boostable->task.store(task, std::memory_order::seq_cst);
-		::hg::engine::Engine::getEngine()->getScheduler()->execBoostable(task, boostable);
+		engine::Scheduler::get()->execBoostable(task, boostable);
 	}
 
 	/**

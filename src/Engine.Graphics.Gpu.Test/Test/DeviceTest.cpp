@@ -27,7 +27,7 @@ namespace {
 TEST_F(GpuTest, DeviceComesUp) {
 	ASSERT_NE(device(), nullptr);
 	EXPECT_NE(device()->graphicsQueue(), nullptr);
-	EXPECT_EQ(engine::Engine::getEngine()->getGraphics()->getCurrentDevice(), device())
+	EXPECT_EQ(engine::Graphics::get()->getCurrentDevice(), device())
 		<< device()->vkPhysicalDevice().getProperties().deviceName.data();
 }
 

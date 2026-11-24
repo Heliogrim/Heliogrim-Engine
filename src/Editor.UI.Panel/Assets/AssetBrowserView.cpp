@@ -56,7 +56,7 @@ SharedPtr<Widget> AssetBrowserView::makeItem(ref<const service::AssetBrowserEntr
 	switch (data_.type) {
 		case service::AssetBrowserEntryType::eAsset: {
 
-			const auto asset = engine::Engine::getEngine()->getAssets()->getRegistry()->findAssetByGuid(data_.guid);
+			const auto asset = engine::Assets::get()->getRegistry()->findAssetByGuid(data_.guid);
 			::hg::assertrt(asset != None);
 
 			icon = helper->getItemIconByAssetType(asset.value()->getTypeId());
@@ -79,7 +79,7 @@ SharedPtr<Widget> AssetBrowserView::makeItem(ref<const service::AssetBrowserEntr
 		default: ;
 	}
 
-	auto loadIcon = engine::Engine::getEngine()->getResources()->loader().loadImmediately<
+	auto loadIcon = engine::ResourceManager::get()->loader().loadImmediately<
 		engine::assets::TextureAsset, engine::graphics::TextureResource
 	>(::hg::move(icon));
 

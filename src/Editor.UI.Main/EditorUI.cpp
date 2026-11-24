@@ -127,7 +127,7 @@ nmpt<engine::assets::FontAsset> editor::EditorUI::getDefaultFont() const noexcep
 	/**/
 
 	// Problem: We have to move the parametrized loading behaviour into the consumption position instead of preloading the stuff.
-	std::ignore = engine::Engine::getEngine()->getResources()->loader().load<
+	std::ignore = ResourceManager::get()->loader().load<
 		engine::assets::FontAsset, engine::graphics::FontResource
 	>(
 		Cast<engine::assets::FontAsset>(asset->get()),

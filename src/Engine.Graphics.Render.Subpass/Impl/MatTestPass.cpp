@@ -53,7 +53,7 @@ constexpr static Array<lang::SymbolId, 7uLL> possibleSampler = {
 void MatTestPass::destroy() noexcept {
 	MeshSubPass::destroy();
 
-	auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
+	auto device = engine::Graphics::get()->getCurrentDevice();
 	device->vkDevice().destroySemaphore(std::exchange(_tmpSignal, nullptr));
 
 	_cameraBufferView.reset();
@@ -201,7 +201,7 @@ void MatTestPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 	if (_framebuffer.empty()) {
 
 		const Vector<smr<const graph::Symbol>> outputSymbols { makeSceneColorSymbol(), makeSceneDepthSymbol() };
-		_framebuffer = make_smr<Framebuffer>(Engine::getEngine()->getGraphics()->getCurrentDevice());
+		_framebuffer = make_smr<Framebuffer>(engine::Graphics::get()->getCurrentDevice());
 
 		for (const auto& output : outputSymbols) {
 
@@ -398,7 +398,7 @@ void MatTestPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
 								textureGuard.release();
 
-								auto* cc = Engine::getEngine()->getGraphics()->cacheCtrl();
+								auto* cc = engine::Graphics::get()->cacheCtrl();
 								for (
 									u32 mipLevel = sparseTextureView->minMipLevel();
 									mipLevel < sparseTextureView->maxMipLevel();

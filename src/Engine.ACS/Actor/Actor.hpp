@@ -193,7 +193,7 @@ namespace hg {
 		Opt<ref<Component_>> addComponent(_In_ mref<AddComponentOptions> options_, Arg0_&& arg0_, Args_&&... args_) {
 
 			// TODO: Rework
-			auto initializer = ActorInitializer { *engine::Engine::getEngine()->getActors()->getRegistry() };
+			auto initializer = ActorInitializer { *engine::ActorModule::get()->getRegistry() };
 			return Some<ref<Component_>>(
 				*initializer.createComponent<Component_>(
 					*this,
@@ -208,7 +208,7 @@ namespace hg {
 		Opt<ref<Component_>> addComponent(_In_ mref<AddComponentOptions> options_) {
 
 			// TODO: Rework
-			auto initializer = ActorInitializer { *engine::Engine::getEngine()->getActors()->getRegistry() };
+			auto initializer = ActorInitializer { *engine::ActorModule::get()->getRegistry() };
 			return Some<ref<Component_>>(*initializer.createComponent<Component_>(*this, ::hg::move(options_)));
 		}
 
@@ -495,7 +495,7 @@ namespace hg {
 			return VolatileActor<ActorType_> { CreateActor(static_cast<ptr<const ActorClass>>(&ActorType_::actorClass())) };
 		} else {
 			// Typed path: the meta-class overload needs a pool registered beforehand; this one creates it on first use.
-			auto& registry = *engine::Engine::getEngine()->getActors()->getRegistry();
+			auto& registry = *engine::ActorModule::get()->getRegistry();
 			return VolatileActor<ActorType_> { registry.createActor<ActorType_>(ActorInitializer { registry }) };
 		}
 	}

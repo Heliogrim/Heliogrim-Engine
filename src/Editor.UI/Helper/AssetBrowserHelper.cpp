@@ -41,7 +41,7 @@ AssetBrowserHelper::~AssetBrowserHelper() noexcept = default;
 
 void AssetBrowserHelper::setup() {
 
-	_assetRegistry = engine::Engine::getEngine()->getAssets()->getRegistry();
+	_assetRegistry = engine::Assets::get()->getRegistry();
 
 	/**/
 

@@ -4,6 +4,7 @@ import Editor.Assets.Default;
 import Editor.Boot;
 import Editor.Core;
 import Editor.Scene;
+import Editor.Scene.Actions;
 import Engine.ACS;
 import Engine.Assets;
 import Engine.Assets.Database;
@@ -14,9 +15,9 @@ import Engine.Config;
 import Engine.Core;
 import Engine.Graphics.Components;
 import Engine.Level;
+import Engine.Storage;
 import Engine.Storage.System;
 import Heliogrim;
-import Editor.Scene.Actions;
 
 using namespace hg::editor::boot;
 using namespace hg::engine;
@@ -342,7 +343,7 @@ static Arci<assets::LevelAsset> experimentalResolveLevelAsset(ref<const engine::
 }
 
 bool experimentalHasLevel() {
-	return Engine::getEngine()->getStorage()->getSystem()->hasStorage(experimentalResolveLevelFileUrl());
+	return StorageModule::get()->getSystem()->hasStorage(experimentalResolveLevelFileUrl());
 }
 
 Result<Arci<core::Level>, diag::Diagnostics> experimentalLoadLevel(ref<diag::DiagnosticSink> sink_) {

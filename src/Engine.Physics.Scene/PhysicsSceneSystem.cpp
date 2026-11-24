@@ -41,7 +41,7 @@ Opt<ref<JPH::BodyInterface>> PhysicsSceneSystem::getJoltBodyInterface() noexcept
 
 void PhysicsSceneSystem::prepare() {
 
-	const auto physics = Engine::getEngine()->getPhysics();
+	auto physics = engine::Physics::get();
 	_physicsSystem = physics->acquireSystem();
 	_bodyInterface = Some(_physicsSystem->GetBodyInterface());
 

@@ -20,7 +20,7 @@ VkGraphicsPipeline::~VkGraphicsPipeline() {
 
 void VkGraphicsPipeline::tidy() {
 
-	const auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
+	const auto device = engine::Graphics::get()->getCurrentDevice();
 
 	if (_vkPipe) {
 		device->vkDevice().destroyPipeline(reinterpret_cast<VkPipeline>(_vkPipe));

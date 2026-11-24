@@ -49,8 +49,8 @@ MaterialPrototypeTransformer::response_type::type MaterialPrototypeTransformer::
 	// TODO: Consume source data to hydrate the instantiated resource object
 	//auto source = next_(next_type::next_request_type::type {}, next_type::next_request_type::options {});
 
-	const auto& loader = engine::Engine::getEngine()->getResources()->loader();
-	const auto registry = engine::Engine::getEngine()->getAssets()->getRegistry();
+	const auto& loader = engine::ResourceManager::get()->loader();
+	const auto registry = engine::Assets::get()->getRegistry();
 
 	/**/
 

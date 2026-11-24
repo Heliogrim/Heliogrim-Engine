@@ -50,7 +50,7 @@ namespace hg::engine::serialization {
 				return static_cast<result_type>(nullptr);
 			}
 
-			const auto serial = Engine::getEngine()->getSerialization();
+			const auto serial = engine::SerializationModule::get();
 			const auto& migrations = serial->migrations();
 			const auto& root = original.slot()->getState().root;
 			auto ctx = root != nullptr ? root->context : nullptr;

@@ -1148,7 +1148,7 @@ void service::initPropertyService(ref<PropertyService> service_) {
 
 							auto& builder = event_.builder;
 							const auto& assetRegistry = static_cast<ref<const assets::AssetRegistry>>(
-								*Engine::getEngine()->getAssets()->getRegistry()
+								*Assets::get()->getRegistry()
 							);
 
 							auto geometryAssets = Vector<nmpt<assets::Asset>> {};
@@ -1244,7 +1244,7 @@ void service::initPropertyService(ref<PropertyService> service_) {
 
 								auto& builder = event_.builder;
 								const auto& assetRegistry = static_cast<ref<const assets::AssetRegistry>>(
-									*Engine::getEngine()->getAssets()->getRegistry()
+									*Assets::get()->getRegistry()
 								);
 
 								auto materialAssets = Vector<nmpt<assets::Asset>> {};

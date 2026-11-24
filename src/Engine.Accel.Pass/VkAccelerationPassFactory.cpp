@@ -349,7 +349,7 @@ tl::expected<smr<const GraphicsPass>, AccelerationPassFactoryError> VkAccelerati
 
 	// Warning: Replace
 
-	const auto& device = Engine::getEngine()->getGraphics()->getCurrentDevice()->vkDevice();
+	const auto& device = engine::Graphics::get()->getCurrentDevice()->vkDevice();
 	result->_vkGraphicsPass = reinterpret_cast<_::VkGraphicsRenderPass>(
 		device.createRenderPass(rpci).operator VkRenderPass()
 	);

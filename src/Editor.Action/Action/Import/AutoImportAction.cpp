@@ -5,21 +5,21 @@
 
 import Engine.ACS;
 import Engine.Asserts;
+import Engine.Assets;
 import Engine.Assets.System;
 import Engine.Assets.Type;
-import Engine.Assets;
 import Engine.Async;
 import Engine.Common;
 import Engine.Core;
 import Engine.Graphics;
 import Engine.Logging;
 import Engine.Reflect;
-import Engine.Resource.Archive;
 import Engine.Resource;
+import Engine.Resource.Archive;
 import Engine.Serialization;
+import Engine.Storage;
 import Engine.Storage.Registry;
 import Engine.Storage.System;
-import Engine.Storage;
 
 using namespace hg::editor;
 using namespace hg;
@@ -287,7 +287,7 @@ Opt<AutoImportInternalResult> autoImportBundle(
 
 	/**/
 
-	const auto registry = engine::Engine::getEngine()->getAssets()->getRegistry();
+	const auto registry = engine::Assets::get()->getRegistry();
 	for (const auto& asset : *combinedResult) {
 		registry->insert(engine::assets::system::AssetDescriptor { asset });
 	}
@@ -340,7 +340,7 @@ Opt<AutoImportInternalResult> autoImportFile(
 
 	/**/
 
-	const auto registry = engine::Engine::getEngine()->getAssets()->getRegistry();
+	const auto registry = engine::Assets::get()->getRegistry();
 	for (const auto& asset : *result) {
 		registry->insert(engine::assets::system::AssetDescriptor { asset });
 	}
@@ -358,7 +358,7 @@ Opt<Vector<Arci<engine::assets::Asset>>> autoImportCombinedImageTexture(
 	mref<engine::res::ImportDestination> importDestination_
 ) {
 
-	const auto& importer = engine::Engine::getEngine()->getResources()->importer();
+	const auto& importer = engine::ResourceManager::get()->importer();
 	if (not importer.hasImporter(fileTypeId_)) {
 		return None;
 	}
@@ -394,7 +394,7 @@ Opt<Vector<Arci<engine::assets::Asset>>> autoImportFont(
 	mref<engine::res::ImportDestination> importDestination_
 ) {
 
-	const auto& importer = engine::Engine::getEngine()->getResources()->importer();
+	const auto& importer = engine::ResourceManager::get()->importer();
 	if (not importer.hasImporter(fileTypeId_)) {
 		return None;
 	}
@@ -422,7 +422,7 @@ Opt<Vector<Arci<engine::assets::Asset>>> autoImportStaticGeometry(
 	mref<engine::res::ImportDestination> importDestination_
 ) {
 
-	const auto& importer = engine::Engine::getEngine()->getResources()->importer();
+	const auto& importer = engine::ResourceManager::get()->importer();
 	if (not importer.hasImporter(fileTypeId_)) {
 		return None;
 	}
@@ -612,7 +612,7 @@ BufferArchive autoStoreFont(
 
 	auto structured = engine::serialization::StructuredArchive { archive };
 	auto record = structured.insertRootSlot().intoStruct();
-	engine::Engine::getEngine()->getSerialization()->migrations().writeRevision(record, engine::assets::FontAsset::typeId);
+	engine::SerializationModule::get()->migrations().writeRevision(record, engine::assets::FontAsset::typeId);
 	engine::serialization::access::Structure<engine::assets::FontAsset>::serialize(*fontAsset_, ::hg::move(record));
 
 	archive.setType(ArchiveType::eSerializedStructure);
@@ -627,7 +627,7 @@ BufferArchive autoStoreImage(
 
 	auto structured = engine::serialization::StructuredArchive { archive };
 	auto record = structured.insertRootSlot().intoStruct();
-	engine::Engine::getEngine()->getSerialization()->migrations().writeRevision(record, engine::assets::ImageAsset::typeId);
+	engine::SerializationModule::get()->migrations().writeRevision(record, engine::assets::ImageAsset::typeId);
 	engine::serialization::access::Structure<engine::assets::ImageAsset>::serialize(*imageAsset_, ::hg::move(record));
 
 	archive.setType(ArchiveType::eSerializedStructure);
@@ -642,7 +642,7 @@ BufferArchive autoStoreTexture(
 
 	auto structured = engine::serialization::StructuredArchive { archive };
 	auto record = structured.insertRootSlot().intoStruct();
-	engine::Engine::getEngine()->getSerialization()->migrations().writeRevision(record, engine::assets::TextureAsset::typeId);
+	engine::SerializationModule::get()->migrations().writeRevision(record, engine::assets::TextureAsset::typeId);
 	engine::serialization::access::Structure<engine::assets::TextureAsset>::serialize(*textureAsset_, ::hg::move(record));
 
 	archive.setType(ArchiveType::eSerializedStructure);
@@ -657,7 +657,7 @@ BufferArchive autoStoreStaticGeometry(
 
 	auto structured = engine::serialization::StructuredArchive { archive };
 	auto record = structured.insertRootSlot().intoStruct();
-	engine::Engine::getEngine()->getSerialization()->migrations().writeRevision(record, engine::assets::StaticGeometry::typeId);
+	engine::SerializationModule::get()->migrations().writeRevision(record, engine::assets::StaticGeometry::typeId);
 	engine::serialization::access::Structure<engine::assets::StaticGeometry>::serialize(*staticGeometryAsset_, ::hg::move(record));
 
 	archive.setType(ArchiveType::eSerializedStructure);

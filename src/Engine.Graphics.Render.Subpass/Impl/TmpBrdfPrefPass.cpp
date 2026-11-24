@@ -43,7 +43,7 @@ using namespace hg;
 void TmpBrdfPrefPass::destroy() noexcept {
 	SubPass::destroy();
 
-	auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
+	auto device = engine::Graphics::get()->getCurrentDevice();
 	device->vkDevice().destroySemaphore(static_cast<VkSemaphore>(std::exchange(_tmpSignal, nullptr)));
 
 	_resources.outBrdfPrefTexture->destroy<smr<TextureLikeObject>, graph::TextureDescription>();
@@ -93,7 +93,7 @@ void TmpBrdfPrefPass::resolve() noexcept {
 void TmpBrdfPrefPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
 	if (_tmpSignal == nullptr) {
-		const auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
+		const auto device = engine::Graphics::get()->getCurrentDevice();
 		_tmpSignal = device->vkDevice().createSemaphore({});
 	}
 
@@ -218,7 +218,7 @@ void TmpBrdfPrefPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept
 	);
 	textureFactory->buildView(*tmpPrefImage);
 
-	auto framebuffer = make_smr<Framebuffer>(Engine::getEngine()->getGraphics()->getCurrentDevice());
+	auto framebuffer = make_smr<Framebuffer>(engine::Graphics::get()->getCurrentDevice());
 
 	framebuffer->addAttachment(clone(tmpPrefImage));
 	framebuffer->setExtent(_brdfPref->extent());

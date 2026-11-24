@@ -164,7 +164,7 @@ hg::Future<uptr<NativeWindow>> WinPlatform::makeNativeWindow(
 
 			// Register before the SDL calls below so their synchronous move/resize events find the window.
 			// Events emitted inside SDL_CreateWindow itself still precede registration and are dropped (accepted).
-			Engine::getEngine()->getInput()->captureWindow(wnd.get());
+			Input::get()->captureWindow(wnd.get());
 			_windows.push_back(wnd.get());
 
 			SDL_SetWindowPosition(wnd->sdl(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
@@ -184,7 +184,7 @@ hg::Future<bool> WinPlatform::destroyNativeWindow(
 		[this, window = std::move(window_)]() {
 
 			/**/
-			Engine::getEngine()->getInput()->releaseWindow(window.get());
+			Input::get()->releaseWindow(window.get());
 			_windows.erase(std::remove(_windows.begin(), _windows.end(), window.get()));
 			/**/
 
@@ -253,7 +253,7 @@ void WinPlatform::translateEvent(ref<const SDL_Event> event_) {
 				break;
 			}
 
-			Engine::getEngine()->getInput()->bufferEvent(
+			Input::get()->bufferEvent(
 				PlatformResizeEvent::typeId,
 				make_uptr<PlatformResizeEvent>(*iter, math::ivec2 { event_.window.data1, event_.window.data2 })
 			);
@@ -271,7 +271,7 @@ void WinPlatform::translateEvent(ref<const SDL_Event> event_) {
 				break;
 			}
 
-			Engine::getEngine()->getInput()->bufferEvent(
+			Input::get()->bufferEvent(
 				input::event::KeyboardEvent::typeId,
 				make_uptr<input::event::KeyboardEvent>(
 					static_cast<char>(event_.key.key),
@@ -288,7 +288,7 @@ void WinPlatform::translateEvent(ref<const SDL_Event> event_) {
 			math::fvec2 delta { event_.motion.xrel, event_.motion.yrel };
 			const auto button { event_.motion.state };
 
-			Engine::getEngine()->getInput()->bufferEvent(
+			Input::get()->bufferEvent(
 				input::event::MouseMoveEvent::typeId,
 				make_uptr<input::event::MouseMoveEvent>(
 					point,
@@ -306,7 +306,7 @@ void WinPlatform::translateEvent(ref<const SDL_Event> event_) {
 			const auto point = math::fvec2 { event_.button.x, event_.button.y };
 			const auto button = event_.button.button;
 
-			Engine::getEngine()->getInput()->bufferEvent(
+			Input::get()->bufferEvent(
 				input::event::MouseButtonEvent::typeId,
 				make_uptr<input::event::MouseButtonEvent>(
 					point,
@@ -325,7 +325,7 @@ void WinPlatform::translateEvent(ref<const SDL_Event> event_) {
 
 			SDL_GetMouseState(&point.x, &point.y);
 
-			Engine::getEngine()->getInput()->bufferEvent(
+			Input::get()->bufferEvent(
 				input::event::MouseWheelEvent::typeId,
 				make_uptr<input::event::MouseWheelEvent>(
 					point,

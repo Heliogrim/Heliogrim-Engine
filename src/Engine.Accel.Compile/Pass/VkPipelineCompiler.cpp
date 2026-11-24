@@ -51,7 +51,7 @@ void VkPipelineCompiler::resolveBindLayouts(
 	const non_owning_rptr<const AccelerationPipeline> pass_,
 	ref<Vector<_::VkDescriptorSetLayout>> layouts_
 ) const {
-	const auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
+	const auto device = engine::Graphics::get()->getCurrentDevice();
 
 	u32 dsetIndex = 0;
 	u32 dsetLocation = 0;
@@ -325,7 +325,7 @@ smr<VkGraphicsPipeline> VkPipelineCompiler::linkVk(
 	mref<smr<VkGraphicsPipeline>> pass_
 ) const {
 
-	const auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
+	const auto device = engine::Graphics::get()->getCurrentDevice();
 
 	/**/
 

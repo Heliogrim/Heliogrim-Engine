@@ -20,13 +20,13 @@ driver::vk::VkDescriptorPool::~VkDescriptorPool() noexcept {
 		return;
 	}
 
-	const auto device = engine::Engine::getEngine()->getGraphics()->getCurrentDevice();
+	const auto device = engine::Graphics::get()->getCurrentDevice();
 	device->vkDevice().destroyDescriptorPool(reinterpret_cast<::VkDescriptorPool>(vkPool));
 	vkPool = nullptr;
 }
 
 void driver::vk::VkDescriptorPool::reset() noexcept {
 
-	const auto device = engine::Engine::getEngine()->getGraphics()->getCurrentDevice();
+	const auto device = engine::Graphics::get()->getCurrentDevice();
 	device->vkDevice().resetDescriptorPool(reinterpret_cast<::VkDescriptorPool>(vkPool));
 }

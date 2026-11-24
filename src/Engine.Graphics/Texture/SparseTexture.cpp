@@ -71,7 +71,7 @@ void SparseTexture::tidy() {
 	 * Destroy Image before backing memory or pages
 	 */
 	if (_vkImage) {
-		Engine::getEngine()->getGraphics()->getCurrentDevice()->vkDevice().destroyImage(_vkImage);
+		engine::Graphics::get()->getCurrentDevice()->vkDevice().destroyImage(_vkImage);
 	}
 
 	/**

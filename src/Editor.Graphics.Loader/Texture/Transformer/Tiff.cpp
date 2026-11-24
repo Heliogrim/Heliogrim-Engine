@@ -16,7 +16,7 @@ EditorTiffTextureTransformer::~EditorTiffTextureTransformer() noexcept = default
 
 bool EditorTiffTextureTransformer::canUse(nmpt<const engine::assets::TextureAsset> asset_) const noexcept {
 
-	const auto registry = engine::Engine::getEngine()->getAssets()->getRegistry();
+	const auto registry = engine::Assets::get()->getRegistry();
 	const auto asset = registry->findAssetByGuid(asset_->baseImage());
 
 	if (asset == None) {

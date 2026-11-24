@@ -180,7 +180,7 @@ bool driver::vk::VkScopedResourceTable::allocateAndCommit(
 	ref<Vector<_::VkDescriptorSet>> descriptorSets_
 ) noexcept {
 
-	const auto device = engine::Engine::getEngine()->getGraphics()->getCurrentDevice();
+	const auto device = engine::Graphics::get()->getCurrentDevice();
 
 	/* Aggregate binding groups contributing to one layout each */
 
@@ -300,7 +300,7 @@ void driver::vk::VkScopedResourceTable::updateSets(
 
 	using DescriptorWriter = engine::render::graph::VkDescriptorWriter;
 
-	const auto device = engine::Engine::getEngine()->getGraphics()->getCurrentDevice()->vkDevice();
+	const auto device = engine::Graphics::get()->getCurrentDevice()->vkDevice();
 	auto writer = DescriptorWriter { nullptr };
 
 	for (auto [group, set] : std::ranges::views::zip(layout_.groups, descriptorSets_)) {
@@ -375,7 +375,7 @@ bool driver::vk::VkScopedResourceTable::commit(
 	_dynamicCommitVersion = _dynamicBindVersion;
 	/**/
 
-	const auto device = engine::Engine::getEngine()->getGraphics()->getCurrentDevice();
+	const auto device = engine::Graphics::get()->getCurrentDevice();
 	const auto& layout = _activePipeline->getBindingLayout();
 
 	/* Assure descriptor requirement */

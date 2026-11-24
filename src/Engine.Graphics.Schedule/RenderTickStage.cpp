@@ -46,7 +46,7 @@ void RenderTickStage::dynamicDispatch(cref<DynamicStageDispatcher> dispatcher_) 
 
 void RenderTickStage::tickTargets() {
 	CompactSet<smr<RenderTarget>> targets {};
-	Engine::getEngine()->getGraphics()->getSceneManager()->selectInvokeTargets(targets);
+	engine::Graphics::get()->getSceneManager()->selectInvokeTargets(targets);
 
 	for (const auto& target : targets) {
 		invokeRenderTarget(target);

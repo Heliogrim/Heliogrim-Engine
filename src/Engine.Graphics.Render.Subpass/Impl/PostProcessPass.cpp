@@ -38,7 +38,7 @@ using namespace hg;
 void PostProcessPass::destroy() noexcept {
 	SubPass::destroy();
 
-	auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
+	auto device = engine::Graphics::get()->getCurrentDevice();
 	device->vkDevice().destroySemaphore(std::exchange(_tmpSignal, nullptr));
 
 	_colorView.reset();
@@ -128,7 +128,7 @@ void PostProcessPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept
 
 		/**/
 
-		_framebuffer = make_smr<Framebuffer>(Engine::getEngine()->getGraphics()->getCurrentDevice());
+		_framebuffer = make_smr<Framebuffer>(engine::Graphics::get()->getCurrentDevice());
 
 		_framebuffer->addAttachment(clone(sceneColorRes->load<smr<TextureLikeObject>>()));
 		_framebuffer->setExtent(Cast<Texture>(sceneColorTex.get())->extent());

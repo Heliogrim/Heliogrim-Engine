@@ -26,12 +26,12 @@ void SkyboxModel::create(const ptr<render::RenderSceneSystem> system_) {
 	//_boundary = origin->getBoundaries();
 	if (origin->getSkyboxGeometry().isValid()) {
 		_skyboxGeometryAsset = origin->getSkyboxGeometry().getAssetRef();
-		_skyboxGeometryResource = Engine::getEngine()->getResources()->loader().load(std::addressof(*_skyboxGeometryAsset), nullptr);
+		_skyboxGeometryResource = engine::ResourceManager::get()->loader().load(std::addressof(*_skyboxGeometryAsset), nullptr);
 	}
 
 	if (origin->getSkyboxMaterial().isValid()) {
 		const auto& materialAsset = *origin->getSkyboxMaterial().getAssetRef();
-		auto materialResource = Engine::getEngine()->getResources()->loader().load(std::addressof(materialAsset), nullptr);
+		auto materialResource = engine::ResourceManager::get()->loader().load(std::addressof(materialAsset), nullptr);
 
 		_materials.emplace_back(materialResource.into<MaterialResource>());
 	}

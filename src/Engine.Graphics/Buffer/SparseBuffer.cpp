@@ -72,7 +72,7 @@ void SparseBuffer::tidy() {
 	 */
 	if (_vkBuffer) {
 		// TODO: Check whether virtual buffer should get a reference to the device
-		Engine::getEngine()->getGraphics()->getCurrentDevice()->vkDevice().destroyBuffer(_vkBuffer);
+		engine::Graphics::get()->getCurrentDevice()->vkDevice().destroyBuffer(_vkBuffer);
 		_bufferSize = 0uLL;
 	}
 

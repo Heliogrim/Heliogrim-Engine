@@ -1,14 +1,13 @@
 #include "RootKind.hpp"
 
-
 #include "../Schema/Migration.hpp"
 #include "../Structure/IntegralScopedSlot.hpp"
 #include "../Structure/SlotCursor.hpp"
 
-import std;
+import Engine.ACS;
 import Engine.Core;
 import Engine.Serialization.Structures;
-import Engine.ACS;
+import std;
 
 using namespace ::hg::engine::serialization;
 using namespace ::hg;
@@ -59,7 +58,7 @@ std::optional<RootKind> engine::serialization::classifyRoot(cref<RootScopedSlot>
 void engine::serialization::insertSoaRoot(ref<StructScopedSlot> root_, const type_id type_, const u64 count_) {
 	root_.insertSlot<u64>(Symbols::Type) << type_.data;
 	root_.insertSlot<u64>(soaCountKey) << count_;
-	engine::Engine::getEngine()->getSerialization()->migrations().writeRevision(root_, type_);
+	engine::SerializationModule::get()->migrations().writeRevision(root_, type_);
 }
 
 /**/
@@ -75,7 +74,7 @@ namespace {
 		record_.getSlot<u64>(Symbols::Type) >> type.data;
 		const auto offset = record_.slot()->getState().offset;
 
-		const auto serial = engine::Engine::getEngine()->getSerialization();
+		const auto serial = engine::SerializationModule::get();
 		if (not serial->getActorScheme(type).has_value() && not serial->getComponentScheme(type).has_value()) {
 			ctx_.fail(
 				ReadError {

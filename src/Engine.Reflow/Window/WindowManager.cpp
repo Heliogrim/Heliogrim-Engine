@@ -48,7 +48,7 @@ WindowManager::~WindowManager() {
 
 void WindowManager::setup() {
 
-	const auto input = Engine::getEngine()->getInput();
+	auto input = engine::Input::get();
 	auto& emitter = input->emitter();
 
 	/**/
@@ -176,7 +176,7 @@ void WindowManager::handleWindowResize(const ptr<BoundWindow> wnd_, cref<math::i
 	/**/
 
 	// Attention: Vulkan requires that a single surface can only be bound by exactly one swapchain, so we need to cleanup before re-creating
-	const auto graphics = Engine::getEngine()->getGraphics();
+	auto graphics = engine::Graphics::get();
 	const auto transitioned = graphics->getSceneManager()->transitionToTarget(
 		*wnd_->surface,
 		clone(wnd_->surface->swapchain()),
@@ -196,7 +196,7 @@ void WindowManager::handleWindowResize(const ptr<BoundWindow> wnd_, cref<math::i
 	// The previous resize is still being picked up by the render passes: retry next input tick. The rebuilt swapchain takes the surface's
 	// current extent, so the retry converges on the final size even if this one is stale.
 	if (not transitioned) {
-		Engine::getEngine()->getInput()->bufferEvent(
+		engine::Input::get()->bufferEvent(
 			platform::PlatformResizeEvent::typeId,
 			make_uptr<platform::PlatformResizeEvent>(wnd_->surface->getNativeWindow().get(), nextSize_)
 		);
@@ -259,8 +259,8 @@ void WindowManager::destroyWindow(mref<sptr<Window>> window_) {
 
 	/**/
 
-	const auto platform = Engine::getEngine()->getPlatform();
-	const auto gfx = Engine::getEngine()->getGraphics();
+	auto platform = engine::Platform::get();
+	auto gfx = engine::Graphics::get();
 
 	#ifdef _DEBUG
 	if (wnd.use_count() > 2) {
@@ -310,8 +310,8 @@ sptr<Window> WindowManager::requestWindow(
 
 	/**/
 
-	const auto platform = Engine::getEngine()->getPlatform();
-	const auto gfx = Engine::getEngine()->getGraphics();
+	auto platform = engine::Platform::get();
+	auto gfx = engine::Graphics::get();
 	auto& reflow = *static_cast<Reflow* const>(Engine::getEngine()->getModules().getSubModule(ReflowDepKey).get());
 
 	auto window = await(platform->makeNativeWindow(title_, math::Extent2i32 { size_.x, size_.y }));

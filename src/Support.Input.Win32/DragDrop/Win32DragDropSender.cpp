@@ -28,7 +28,7 @@ void Win32DragDropSender::destroy() {}
 void Win32DragDropSender::dispatchDragDrop() {
 	// startDragDrop tidies on every path; the guard only releases `_cur` when a stopped thread destroys the item unrun.
 	using tidy_guard = std::unique_ptr<this_type, decltype([](ptr<this_type> self_) { self_->tidyDragDrop(); })>;
-	Engine::getEngine()->getPlatform()->platformThread().postDetached(
+	engine::Platform::get()->platformThread().postDetached(
 		[guard = tidy_guard { this }]() mutable {
 			// Disarm first: a later destruction must not tidy a `_cur` set by a newer send.
 			guard.release()->startDragDrop();
