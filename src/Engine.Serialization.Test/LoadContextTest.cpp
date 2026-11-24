@@ -119,6 +119,19 @@ namespace HgTestLoadContext {
 		EXPECT_EQ(ctx.unreadKeys(&present, 40, present).size(), 3uLL);
 	}
 
+	TEST(LoadContext, ForgetArchiveDropsOnlyItsReadSets) {
+		LoadContext ctx { 100 };
+		int other {};
+		ctx.markRead(&ctx, 40, "a");
+		ctx.markRead(&ctx, 8, "a");
+		ctx.markRead(&other, 40, "a");
+		ctx.forgetArchive(&ctx);
+		const Vector<String> present { "a" };
+		EXPECT_EQ(ctx.unreadKeys(&ctx, 40, present).size(), 1uLL);
+		EXPECT_EQ(ctx.unreadKeys(&ctx, 8, present).size(), 1uLL);
+		EXPECT_TRUE(ctx.unreadKeys(&other, 40, present).empty());
+	}
+
 	TEST(LoadContext, WarningsReachSinkAndFinishMapsMalformed) {
 		LoadContext ctx { 100 };
 		ctx.warn({ eUnknownField, 0, 0, "k" });

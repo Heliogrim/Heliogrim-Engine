@@ -82,6 +82,10 @@ void LoadContext::markRead(ptr<const void> archive_, const s64 structOffset_, co
 	_read[read_key { archive_, structOffset_ }].emplace(key_);
 }
 
+void LoadContext::forgetArchive(ptr<const void> archive_) {
+	std::erase_if(_read, [archive_](const auto& entry_) { return entry_.first.first == archive_; });
+}
+
 Vector<String> LoadContext::unreadKeys(ptr<const void> archive_, const s64 structOffset_, std::span<const String> present_) const {
 	const auto it = _read.find(read_key { archive_, structOffset_ });
 	Vector<String> out {};
