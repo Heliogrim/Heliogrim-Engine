@@ -1,11 +1,10 @@
 #include "MaterialPrototypeTransformer.hpp"
 
 #include <cassert>
-#include <Engine.Accel.Loader/Effect/EffectResource.hpp>
-#include <Engine.Accel.Loader/Effect/Traits.hpp>
 
 #include "../Texture/Traits.hpp"
 
+import Engine.Accel.Loader;
 import Engine.Assets;
 import Engine.Assets.System;
 import Engine.Assets.Type;
