@@ -1,11 +1,12 @@
 #pragma once
 
+#include "../../Atom/Atom.hpp"
+
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Reflow;
-import Engine.Reflow.Uikit;
 #endif
 
-namespace hg::editor::ui {
+namespace hg::engine::reflow::uikit {
 	struct InputToggleDataAttributes final :
 		public engine::reflow::DataAttributes<
 			engine::reflow::NamedAttribute<engine::reflow::attr::InputData::value, engine::reflow::DataAttribute<bool>>
@@ -14,7 +15,7 @@ namespace hg::editor::ui {
 	};
 }
 
-namespace hg::editor::ui {
+namespace hg::engine::reflow::uikit {
 	class InputToggle :
 		public engine::reflow::Input<bool>,
 		public engine::reflow::uikit::Atom<InputToggleDataAttributes, void, void> {

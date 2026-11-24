@@ -1,10 +1,10 @@
 #include "InputFloat.hpp"
+#include "../../Atom/Paint.hpp"
 
 import Engine.Common;
 import Engine.Reflow;
-import Engine.Reflow.Uikit;
 
-using namespace hg::editor::ui;
+using namespace hg::engine::reflow::uikit;
 using namespace hg::engine::reflow;
 using namespace hg;
 
@@ -193,7 +193,7 @@ void InputFloat::onDetachDataWatcher(ref<engine::reflow::DataWatcher> watcher_) 
 
 /**/
 
-SharedPtr<InputFloat> editor::ui::makeInputFloat() {
+SharedPtr<InputFloat> uikit::makeInputFloat() {
 
 	const auto content = make_sptr<uikit::Stack>();
 	content->getLayoutAttributes().update<engine::reflow::attr::BoxLayout::placement>(ReflowPlacement::eMiddleLeft);

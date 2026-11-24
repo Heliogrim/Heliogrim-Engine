@@ -1,49 +1,39 @@
 #pragma once
 
+#include "../../Atom/Atom.hpp"
+#include "../../Atom/Text.hpp"
+#include "../Layout/Stack.hpp"
+
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Reflow;
-import Engine.Reflow.Uikit;
 #endif
 
-namespace hg::editor::ui {
-	enum class InputIntegralPrecision {
-		eS64,
-		eU64,
-		eS32,
-		eU32,
-		eS16,
-		eU16,
-		eS8,
-		eU8
-	};
-
-	struct InputIntegralDataAttributes final :
+namespace hg::engine::reflow::uikit {
+	struct InputTextDataAttributes final :
 		public engine::reflow::DataAttributes<
-			engine::reflow::NamedAttribute<engine::reflow::attr::InputData::limits, engine::reflow::DataAttribute<math::vec2_t<::hg::s64>>>,
-			engine::reflow::NamedAttribute<engine::reflow::attr::InputData::precision, engine::reflow::DataAttribute<
-				InputIntegralPrecision>>,
-			engine::reflow::NamedAttribute<engine::reflow::attr::InputData::step, engine::reflow::DataAttribute<::hg::s64>>,
-			engine::reflow::NamedAttribute<engine::reflow::attr::InputData::value, engine::reflow::DataAttribute<::hg::s64>>
+			engine::reflow::NamedAttribute<engine::reflow::attr::InputData::limits, engine::reflow::DataAttribute<math::vec2_t<
+				String::size_type>>>,
+			engine::reflow::NamedAttribute<engine::reflow::attr::InputData::value, engine::reflow::DataAttribute<String>>
 		> {
 		using DataAttributes::DataAttributes;
 	};
 }
 
-namespace hg::editor::ui {
-	class InputIntegral :
-		public engine::reflow::Input<s64>,
-		public engine::reflow::uikit::Atom<InputIntegralDataAttributes, void, void> {
+namespace hg::engine::reflow::uikit {
+	class InputText :
+		public engine::reflow::Input<String>,
+		public engine::reflow::uikit::Atom<InputTextDataAttributes, void, void> {
 	public:
-		using this_type = InputIntegral;
-		using value_type = s64;
+		using this_type = InputText;
+		using value_type = String;
 
 	public:
-		InputIntegral(
+		InputText(
 			mref<SharedPtr<engine::reflow::uikit::Stack>> content_,
 			mref<SharedPtr<engine::reflow::uikit::Text>> text_
 		);
 
-		~InputIntegral() override;
+		~InputText() override;
 
 	public:
 		[[nodiscard]] string getTag() const noexcept override;
@@ -62,7 +52,7 @@ namespace hg::editor::ui {
 
 		[[nodiscard]] value_type value() const noexcept override;
 
-		void setValue(value_type next_);
+		void setValue(StringView next_);
 
 	public:
 		void updateValueAndValidity(bool propagate_, bool emit_) override;
@@ -82,5 +72,5 @@ namespace hg::editor::ui {
 
 	/**/
 
-	[[nodiscard]] extern SharedPtr<InputIntegral> makeInputIntegral();
+	[[nodiscard]] extern SharedPtr<InputText> makeInputText();
 }

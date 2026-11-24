@@ -111,7 +111,7 @@ void InputAsset::setup() {
 
 	_content->addChild(lower);
 
-	_input = makeInputText(); {
+	_input = uikit::makeInputText(); {
 		auto& attr = _input->getContent()->getLayoutAttributes();
 		attr.update<attr::BoxLayout::minWidth>({ ReflowUnitType::eRelative, 1.F });
 		attr.update<attr::BoxLayout::maxWidth>({ ReflowUnitType::eRelative, 1.F });

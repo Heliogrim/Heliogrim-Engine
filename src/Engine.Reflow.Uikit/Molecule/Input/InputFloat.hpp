@@ -1,36 +1,48 @@
 #pragma once
 
+#include "../../Atom/Atom.hpp"
+#include "../../Atom/Text.hpp"
+#include "../Layout/Stack.hpp"
+
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Reflow;
-import Engine.Reflow.Uikit;
 #endif
 
-namespace hg::editor::ui {
-	struct InputTextDataAttributes final :
+namespace hg::engine::reflow::uikit {
+	enum class InputFloatPrecision {
+		eF64,
+		eDouble = eF64,
+		eF32,
+		eFloat = eF32,
+		eF16
+	};
+
+	struct InputFloatDataAttributes final :
 		public engine::reflow::DataAttributes<
-			engine::reflow::NamedAttribute<engine::reflow::attr::InputData::limits, engine::reflow::DataAttribute<math::vec2_t<
-				String::size_type>>>,
-			engine::reflow::NamedAttribute<engine::reflow::attr::InputData::value, engine::reflow::DataAttribute<String>>
+			engine::reflow::NamedAttribute<engine::reflow::attr::InputData::limits, engine::reflow::DataAttribute<math::vec2_t<::hg::f64>>>,
+			engine::reflow::NamedAttribute<engine::reflow::attr::InputData::precision, engine::reflow::DataAttribute<InputFloatPrecision>>,
+			engine::reflow::NamedAttribute<engine::reflow::attr::InputData::step, engine::reflow::DataAttribute<::hg::f64>>,
+			engine::reflow::NamedAttribute<engine::reflow::attr::InputData::value, engine::reflow::DataAttribute<::hg::f64>>
 		> {
 		using DataAttributes::DataAttributes;
 	};
 }
 
-namespace hg::editor::ui {
-	class InputText :
-		public engine::reflow::Input<String>,
-		public engine::reflow::uikit::Atom<InputTextDataAttributes, void, void> {
+namespace hg::engine::reflow::uikit {
+	class InputFloat :
+		public engine::reflow::Input<f64>,
+		public engine::reflow::uikit::Atom<InputFloatDataAttributes, void, void> {
 	public:
-		using this_type = InputText;
-		using value_type = String;
+		using this_type = InputFloat;
+		using value_type = f64;
 
 	public:
-		InputText(
+		InputFloat(
 			mref<SharedPtr<engine::reflow::uikit::Stack>> content_,
 			mref<SharedPtr<engine::reflow::uikit::Text>> text_
 		);
 
-		~InputText() override;
+		~InputFloat() override;
 
 	public:
 		[[nodiscard]] string getTag() const noexcept override;
@@ -49,7 +61,7 @@ namespace hg::editor::ui {
 
 		[[nodiscard]] value_type value() const noexcept override;
 
-		void setValue(StringView next_);
+		void setValue(value_type next_);
 
 	public:
 		void updateValueAndValidity(bool propagate_, bool emit_) override;
@@ -69,5 +81,5 @@ namespace hg::editor::ui {
 
 	/**/
 
-	[[nodiscard]] extern SharedPtr<InputText> makeInputText();
+	[[nodiscard]] extern SharedPtr<InputFloat> makeInputFloat();
 }

@@ -1,10 +1,10 @@
 #include "InputText.hpp"
+#include "../../Atom/Paint.hpp"
 
 import Engine.Common;
 import Engine.Reflow;
-import Engine.Reflow.Uikit;
 
-using namespace hg::editor::ui;
+using namespace hg::engine::reflow::uikit;
 using namespace hg::engine::reflow;
 using namespace hg;
 
@@ -176,7 +176,7 @@ void InputText::onDetachDataWatcher(ref<engine::reflow::DataWatcher> watcher_) {
 
 /**/
 
-SharedPtr<InputText> editor::ui::makeInputText() {
+SharedPtr<InputText> uikit::makeInputText() {
 
 	const auto content = make_sptr<uikit::Stack>();
 	content->getLayoutAttributes().update<engine::reflow::attr::BoxLayout::placement>(ReflowPlacement::eMiddleLeft);

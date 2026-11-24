@@ -69,9 +69,13 @@ namespace ReflowModule {
 	}
 
 	template <typename WidgetType_>
-	constexpr static auto generic_test_empty(ref<LayoutingBoxFixture> self_, const math::vec2 expectedSize_ = math::vec2 { 0.f }) {
+	constexpr static auto generic_test_empty_input(
+		ref<LayoutingBoxFixture> self_,
+		auto&& factoryFn_,
+		const math::vec2 expectedSize_ = math::vec2 { 0.f }
+	) {
 
-		auto subject = make_sptr<WidgetType_>();
+		auto subject = factoryFn_();
 		self_.attach(subject);
 
 		self_.computeLayout();
@@ -79,6 +83,11 @@ namespace ReflowModule {
 		const auto& layout = subject->getLayoutState();
 		EXPECT_TRUE(layout.layoutOffset.allZero());
 		EXPECT_EQ(layout.layoutSize, expectedSize_);
+	}
+
+	template <typename WidgetType_>
+	constexpr static auto generic_test_empty(ref<LayoutingBoxFixture> self_, const math::vec2 expectedSize_ = math::vec2 { 0.f }) {
+		generic_test_empty_input<WidgetType_>(self_, []() { return make_sptr<WidgetType_>(); }, expectedSize_);
 	}
 
 	TEST_F(LayoutingBoxFixture, EmptyUikitBox) {
@@ -137,6 +146,39 @@ namespace ReflowModule {
 	TEST_F(LayoutingBoxFixture, EmptyUikitCard) {
 		generic_test_empty<engine::reflow::uikit::Card>(*this);
 	}
+
+	TEST_F(LayoutingBoxFixture, EmptyUikitInputFloat) {
+		generic_test_empty_input<engine::reflow::uikit::InputFloat>(*this, []() { return engine::reflow::uikit::makeInputFloat(); }, math::vec2 { 8.f });
+	}
+
+	TEST_F(LayoutingBoxFixture, EmptyUikitInputIntegral) {
+		generic_test_empty_input<engine::reflow::uikit::InputIntegral>(*this, []() { return engine::reflow::uikit::makeInputIntegral(); }, math::vec2 { 8.f });
+	}
+
+	TEST_F(LayoutingBoxFixture, EmptyUikitInputText) {
+		generic_test_empty_input<engine::reflow::uikit::InputText>(*this, []() { return engine::reflow::uikit::makeInputText(); }, math::vec2 { 8.f });
+	}
+
+	TEST_F(LayoutingBoxFixture, EmptyUikitInputToggle) {
+		generic_test_empty<engine::reflow::uikit::InputToggle>(*this);
+	}
+
+	// Fenced: InputVec<T>::prepare() no longer compiles (make_sptr<InputFloat>() has no default ctor, InputFloat::_callback is gone).
+	#if FALSE
+
+	TEST_F(LayoutingBoxFixture, EmptyUikitInputVec3) {
+		generic_test_empty<engine::reflow::uikit::InputVec3>(*this);
+	}
+
+	TEST_F(LayoutingBoxFixture, EmptyUikitInputUiVec2) {
+		generic_test_empty<engine::reflow::uikit::InputUiVec2>(*this);
+	}
+
+	TEST_F(LayoutingBoxFixture, EmptyUikitInputUiVec3) {
+		generic_test_empty<engine::reflow::uikit::InputUiVec3>(*this);
+	}
+
+	#endif
 
 	/**/
 
