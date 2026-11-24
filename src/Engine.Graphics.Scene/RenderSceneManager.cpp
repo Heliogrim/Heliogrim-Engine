@@ -1,8 +1,9 @@
-#include <Engine.Graphics.Render/RenderTarget.hpp>
+#include <cassert>
 #include <Engine.Utils/_CTRL.hpp>
 
 import Engine.Common;
 import Engine.Graphics;
+import Engine.Graphics.Render;
 import Engine.Graphics.Scene;
 
 using namespace hg::engine::graphics::scene;

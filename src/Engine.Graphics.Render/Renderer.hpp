@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Graphics.Loader/Cache/__fwd.hpp>
 
 #include "InjectGraphRegistry.hpp"
 
@@ -10,6 +9,11 @@ import Engine.Common;
 import Engine.Graphics;
 import Engine.Graphics.RenderGraph;
 #endif
+
+/* Local forward declaration: Engine.Graphics.Loader/Cache/__fwd.hpp cannot sit in the module's global fragment and lower bundles include this header textually. */
+namespace hg::engine::graphics::cache {
+	class GlobalCacheCtrl;
+}
 
 namespace hg::engine::render {
 	class Renderer {

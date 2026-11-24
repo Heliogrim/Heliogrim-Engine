@@ -2,8 +2,6 @@
 
 #if TRUE
 #include <Engine.Graphics.Core/Graphics.hpp>
-
-#include <Engine.Graphics.Render/RenderTarget.hpp>
 #endif
 
 #include <Engine.Common/__macro.hpp>
@@ -12,6 +10,7 @@ import Engine.Asserts;
 import Engine.Common;
 import Engine.Core;
 import Engine.Graphics;
+import Engine.Graphics.Render;
 import Engine.Graphics.Scene;
 import Engine.Logging;
 import Engine.Reflow;
