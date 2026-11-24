@@ -1,11 +1,11 @@
 #include "SpawnLightActor.hpp"
 
-#include <Editor.Core/EditorEngine.hpp>
 #include <Editor.UI.Main/EditorUI.hpp>
 #include <Editor.UI.Main/Module/EditorUI.hpp>
 #include <Heliogrim/Core/Session.hpp>
 #include <Heliogrim/Universe/Universe.hpp>
 
+import Editor.Core;
 import Engine.ACS;
 import Engine.Common;
 import Engine.Core;

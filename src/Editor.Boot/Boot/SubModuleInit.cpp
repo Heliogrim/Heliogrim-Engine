@@ -1,8 +1,8 @@
-#include <Editor.Action/ActionManager.hpp>
-#include <Editor.Core/EditorEngine.hpp>
 #include <Editor.UI.Main/EditorUI.hpp>
 
+import Editor.Action;
 import Editor.Boot;
+import Editor.Core;
 import Editor.Graphics.IO;
 import Engine.Accel;
 import Engine.Common;

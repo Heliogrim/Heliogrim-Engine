@@ -2,11 +2,11 @@
 #include <Engine.Common/Profiling/Profiler.hpp>
 #endif
 
-#include <Editor.Core/EditorEngine.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Heliogrim/Heliogrim.hpp>
 #include <Heliogrim/HeliogrimStatic.hpp>
 
+import Editor.Core;
 import Engine.Common;
 import Engine.Core;
 import Engine.Event;

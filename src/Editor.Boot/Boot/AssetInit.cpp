@@ -1,11 +1,10 @@
 /**/
 /**/
 
-#include <Editor.Action/ActionManager.hpp>
-#include <Editor.Action/Action/Import/AutoImportAction.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Sal.hpp>
 
+import Editor.Action;
 import Editor.Assets.Default;
 import Editor.Boot;
 import Engine.Assets;

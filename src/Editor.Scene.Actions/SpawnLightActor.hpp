@@ -1,8 +1,7 @@
 #pragma once
 
-#include <Editor.Action/Action/DelegateAction.hpp>
-
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Editor.Action;
 import Engine.ACS;
 import Engine.Common;
 #endif
