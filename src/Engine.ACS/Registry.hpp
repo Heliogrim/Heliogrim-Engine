@@ -233,6 +233,9 @@ namespace hg::engine::acs {
 
 		void destroyActor(mref<ptr<Actor>> actor_);
 
+		/* Checked lookup over the pooled actors; archetype actors carry no guid index. */
+		[[nodiscard]] bool contains(ref<const ActorGuid> guid_) const noexcept;
+
 	private:
 		void hackActorInit(cref<ActorInitializer> initializer_, cref<ActorGuid> guid_) const noexcept;
 
