@@ -20,12 +20,14 @@ StorageReadonlyArchive::~StorageReadonlyArchive() = default;
 
 void StorageReadonlyArchive::serializeBytes(const ptr<void> value_, u64 size_, const ArchiveStreamMode mode_) {
 
-	if (size_ <= 0 || hasError() || mode_ == ArchiveStreamMode::eStore) [[unlikely]]
-	{
+	if (size_ <= 0 || hasError() || mode_ == ArchiveStreamMode::eStore) [[unlikely]] {
 		return;
 	}
 
-	if (const auto total = totalSize(); _cursor < 0 || (total >= 0 && (size_ > static_cast<u64>(total) || _cursor > total - static_cast<s64>(size_)))) {
+	if (
+		const auto total = totalSize(); _cursor < 0 ||
+		(total >= 0 && (size_ > static_cast<u64>(total) || _cursor > total - static_cast<s64>(size_)))
+	) {
 		setError();
 		return;
 	}

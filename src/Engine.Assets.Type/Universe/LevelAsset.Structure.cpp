@@ -20,16 +20,20 @@ static Opt<Guid> try_decode_guid4228(StringView str_) {
 		if (end == StringView::npos || end == 0uLL) {
 			return false;
 		}
+
 		const auto [ptr, ec] = std::from_chars(str_.data(), str_.data() + end, out_);
 		if (ec != std::errc {} || ptr != str_.data() + end) {
 			return false;
 		}
+
 		str_.remove_prefix(last_ ? end : end + 1uLL);
 		return true;
 	};
+
 	if (part(guid.pre, false) && part(guid.c0, false) && part(guid.c1, false) && part(guid.post, true)) {
 		return Some(guid);
 	}
+
 	return None;
 }
 

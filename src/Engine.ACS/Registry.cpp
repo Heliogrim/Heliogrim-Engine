@@ -187,6 +187,7 @@ bool Registry::registerActorClass(const ptr<const ActorClass> class_) noexcept {
 	if (class_ == nullptr) {
 		return false;
 	}
+
 	const auto [where, inserted] = _classes.try_emplace(class_->metaClass()->typeId(), class_);
 	return inserted || where->second == class_;
 }
@@ -196,6 +197,7 @@ Opt<ref<const ActorClass>> Registry::findActorClass(const type_id typeId_) const
 	if (where == _classes.end()) {
 		return None;
 	}
+
 	return Some(*where->second);
 }
 
@@ -210,6 +212,7 @@ void Registry::releaseSpace(const SpaceId space_) {
 	if (space_ == detachedSpace) {
 		return;
 	}
+
 	const auto where = _spaces.find(space_);
 	if (where != _spaces.end()) {
 		// Pending moves would touch the freed regions; regions return their chunks, then the handle table goes.
@@ -233,6 +236,7 @@ ptr<const ClusterRegion> Registry::region(const SpaceId space_, const ptr<const 
 	if (space == _spaces.end()) {
 		return nullptr;
 	}
+
 	const auto region = space->second->regions.find(class_);
 	return region != space->second->regions.end() ? region->second.get() : nullptr;
 }
@@ -242,10 +246,12 @@ ref<ClusterRegion> Registry::regionFor(const SpaceId space_, const ptr<const Act
 	if (space == nullptr) {
 		space = make_uptr<Space>(space_);
 	}
+
 	auto& region = space->regions[class_];
 	if (region == nullptr) {
 		region = make_uptr<ClusterRegion>(class_->desc(), space->handles);
 	}
+
 	return *region;
 }
 
@@ -262,11 +268,13 @@ Registry::Location Registry::locate(cref<Actor> actor_) const {
 		if (region == space->regions.end()) {
 			continue;
 		}
+
 		const auto handle = region->second->handleOf(slot);
 		if (handle != Handle {}) {
 			return Location { space.get(), region->second.get(), slot, handle };
 		}
 	}
+
 	return Location { nullptr, nullptr, slot, Handle {} };
 }
 
@@ -284,6 +292,7 @@ Vector<ptr<Actor>> Registry::createActors(const ptr<const ActorClass> class_, co
 		while (last < count_ && slots[last] == slots[last - 1uLL] + stride) {
 			++last;
 		}
+
 		class_->ops().construct(slots[first], static_cast<u32>(last - first), stride, ArchetypeInit { *this });
 		for (; first < last; ++first) {
 			result.emplace_back(actorAt(slots[first], *class_));
@@ -351,16 +360,19 @@ std::byte* Registry::resolveComponent(const Handle handle_, const std::ptrdiff_t
 	if (offset_ < 0 ? offset_ < -actorOffset : offset_ > std::numeric_limits<std::ptrdiff_t>::max() - actorOffset) {
 		return nullptr;
 	}
+
 	const auto fromSlot = static_cast<uintptr_t>(offset_ + actorOffset);
 	const auto offsets = actorClass->componentOffsets();
 	const auto at = std::ranges::find(offsets, fromSlot);
 	if (at == offsets.end()) {
 		return nullptr;
 	}
+
 	const auto meta = actorClass->entryTypes()[static_cast<size_t>(at - offsets.begin())].meta;
 	if (meta == nullptr || not meta->is(expected_)) {
 		return nullptr;
 	}
+
 	return reinterpret_cast<std::byte*>(actor) + offset_;
 }
 
