@@ -150,7 +150,7 @@ namespace LoadBoundaryModule {
 			auto actor = actors.addRecordSlot().intoStruct();
 			actor.insertSlot<u64>(Symbols::Type) << actorType_;
 			if (actorRev_ > 0) {
-				actor.insertSlot<u16>("@rev") << actorRev_;
+				actor.insertSlot<u16>(Symbols::Revision) << actorRev_;
 			}
 			actor.insertSlot<string>(Symbols::Guid) << string(16uLL, static_cast<char>(++guidSeed));
 			auto seq = actor.insertRecordSlot(Symbols::Components).intoSeq();
@@ -160,7 +160,7 @@ namespace LoadBoundaryModule {
 					component.insertSlot<u64>(Symbols::Type) << spec.type;
 				}
 				if (spec.rev > 0) {
-					component.insertSlot<u16>("@rev") << spec.rev;
+					component.insertSlot<u16>(Symbols::Revision) << spec.rev;
 				}
 				component.insertSlot<s8>(Symbols::Parent) << spec.parent;
 			}
@@ -634,7 +634,7 @@ namespace LoadBoundaryModule {
 			auto structured = StructuredArchive { _archive };
 			auto root = structured.insertRootSlot().intoStruct();
 			insertSoaRoot(root, typeOf(testActorType), 1uLL);
-			root.insertSlot<u16>("@rev") << u16 { 1 };
+			root.insertSlot<u16>(Symbols::Revision) << u16 { 1 };
 		}
 		_archive.seek(0);
 		{
@@ -680,7 +680,7 @@ namespace LoadBoundaryModule {
 			auto components = actor.insertStructSlot(Symbols::Components);
 			auto turret = components.insertStructSlot("body/turret");
 			turret.insertSlot<u64>(Symbols::Type) << HeliogrimApi::TurretStub::typeId.data;
-			turret.insertSlot<u16>("@rev") << u16 { 1 };
+			turret.insertSlot<u16>(Symbols::Revision) << u16 { 1 };
 		}
 		const auto level = hydrateLevel();
 
@@ -735,7 +735,7 @@ namespace LoadBoundaryModule {
 		auto structured = StructuredArchive { archive_ };
 		auto root = structured.insertRootSlot().intoStruct();
 		if (rev_ > 0) {
-			root.insertSlot<u16>("@rev") << rev_;
+			root.insertSlot<u16>(Symbols::Revision) << rev_;
 		}
 		insert_guid_slot(root, AssetGuid {});
 		insert_typeId_slot(root, FontAsset::typeId);

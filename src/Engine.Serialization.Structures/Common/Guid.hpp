@@ -2,8 +2,6 @@
 
 #include <Engine.Common/Sal.hpp>
 
-#include "../Symbols.hpp"
-
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
 import Engine.Serialization;

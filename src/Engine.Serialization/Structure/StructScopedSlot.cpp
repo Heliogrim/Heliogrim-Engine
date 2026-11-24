@@ -3,6 +3,7 @@
 #include "IntegralScopedSlot.hpp"
 #include "StructSlot.hpp"
 #include "StructureSlotTypeTraits.hpp"
+#include "../Symbols.hpp"
 
 import Engine.Asserts;
 import Engine.Common;
@@ -42,7 +43,7 @@ StructScopedSlot::~StructScopedSlot() {
 u16 StructScopedSlot::revision() const noexcept {
 	u16 value = 0;
 	if (slot() && slot()->hasPayload()) {
-		getSlot<u16>("@rev") >> value;
+		getSlot<u16>(Symbols::Revision) >> value;
 	}
 	return value;
 }

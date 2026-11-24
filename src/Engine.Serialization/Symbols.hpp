@@ -28,6 +28,10 @@ namespace hg::engine::serialization {
 			.id = "@guid"_typeId,
 			.str = "@guid"sv
 		};
+		constexpr static Symbol Revision {
+			.id = "@rev"_typeId,
+			.str = "@rev"sv
+		};
 		/* Contextual */
 		constexpr static Symbol Parent {
 			.id = "@parent"_typeId,

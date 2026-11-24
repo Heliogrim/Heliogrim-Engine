@@ -1,7 +1,5 @@
 #pragma once
 
-#include "../Symbols.hpp"
-
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
 import Engine.Serialization;
