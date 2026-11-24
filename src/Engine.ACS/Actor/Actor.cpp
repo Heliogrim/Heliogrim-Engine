@@ -3,8 +3,6 @@
 #include <Engine.ACS/ActorModule.hpp>
 #include <Engine.ACS/Registry.hpp>
 #include <Engine.Common/__macro.hpp>
-#include <Heliogrim/Core/Session.hpp>
-#include <Heliogrim/Universe/Universe.hpp>
 
 #include "ActorInitializer.hpp"
 #include "ActorRef.hpp"
@@ -20,6 +18,7 @@ import Engine.Reflect;
 import Engine.Scene;
 import Engine.Serialization;
 import Engine.Serialization.Structures;
+import Heliogrim;
 
 /**/
 

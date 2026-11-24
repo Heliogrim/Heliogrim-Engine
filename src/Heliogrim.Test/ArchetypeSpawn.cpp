@@ -3,7 +3,6 @@
 /**/
 
 #include <Engine.ACS/Archetype/ArchetypeDefinition.inl.hpp>
-#include <Heliogrim/Universe/Universe.hpp>
 
 #include "SpawnEngine.hpp"
 #include "TestArchetypes.hpp"
@@ -18,6 +17,7 @@ import Engine.Level;
 import Engine.Physics.Components;
 import Engine.Scene;
 import Engine.Serialization;
+import Heliogrim;
 import Heliogrim.Actors;
 
 using namespace HeliogrimApi;

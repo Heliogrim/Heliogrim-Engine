@@ -9,14 +9,13 @@
 #include <unistd.h>
 #endif
 
-#include <Heliogrim/Async/Yield.hpp>
-
 #include "../Engine.Scheduler.Test/TestCompScheduler.hpp"
 #include "../Engine.Scheduler.Test/TestSchedulerEngine.hpp"
 
 import Engine.Async;
 import Engine.Common;
 import Engine.Scheduler;
+import Heliogrim;
 
 using namespace hg;
 using namespace hg::engine::scheduler;

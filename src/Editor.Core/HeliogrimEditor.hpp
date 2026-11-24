@@ -1,6 +1,8 @@
 #pragma once
 
-#include <Heliogrim/Heliogrim.hpp>
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Heliogrim;
+#endif
 
 namespace hg {
     class HeliogrimEditor :

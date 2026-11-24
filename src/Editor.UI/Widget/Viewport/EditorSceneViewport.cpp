@@ -30,11 +30,11 @@ EventResponse EditorSceneViewport::invokeOnKeyDown(ref<const KeyboardEvent> even
 #include <Editor.UI.Main/EditorUI.hpp>
 #include <Editor.UI.Main/Module/EditorUI.hpp>
 import Engine.ACS;
-#include <Heliogrim/Heliogrim.hpp>
+import Heliogrim;
 import Engine.ACS;
 import Heliogrim.Actors;
-#include <Heliogrim/Core/Session.hpp>
-#include <Heliogrim/Universe/Universe.hpp>
+import Heliogrim;
+import Heliogrim;
 
 void experimental_add_actor(math::Transform baseTransform_) {
 

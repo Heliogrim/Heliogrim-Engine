@@ -1,8 +1,6 @@
 #include "EditorSceneViewportPanel.hpp"
 
-#include <Editor.Core/HeliogrimEditor.hpp>
 #include <Engine.Common/__macro.hpp>
-#include <Heliogrim/Universe/Universe.hpp>
 
 import Editor.Core;
 import Editor.UI;
@@ -14,6 +12,7 @@ import Engine.Graphics.Render;
 import Engine.Graphics.Scene;
 import Engine.Logging;
 import Engine.Reflow.Uikit;
+import Heliogrim;
 import Heliogrim.Actors;
 
 using namespace hg::editor::ui;

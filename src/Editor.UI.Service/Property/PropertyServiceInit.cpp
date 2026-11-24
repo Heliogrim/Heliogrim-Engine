@@ -4,8 +4,6 @@
 
 /**/
 
-#include <Heliogrim/Heliogrim.hpp>
-
 #include "PropertyService.hpp"
 
 import Editor.UI;
@@ -19,6 +17,7 @@ import Engine.Graphics.Components;
 import Engine.Physics.Components;
 import Engine.Reflect;
 import Engine.Reflow.Uikit;
+import Heliogrim;
 
 using namespace hg::editor::ui::service;
 using namespace hg::editor::ui;

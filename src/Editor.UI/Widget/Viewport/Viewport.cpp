@@ -4,7 +4,6 @@
 #endif
 
 #include <Engine.Common/__macro.hpp>
-#include <Heliogrim/Universe/Universe.hpp>
 
 import Engine.Asserts;
 import Engine.Common;
@@ -18,6 +17,7 @@ import Engine.Reflow;
 import Engine.Render.Scene;
 import Engine.Render.Scene.Model;
 import Engine.Scene;
+import Heliogrim;
 import Heliogrim.Actors;
 
 using namespace hg::engine::reflow;
