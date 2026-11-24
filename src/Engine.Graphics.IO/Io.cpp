@@ -4,7 +4,7 @@ import Engine.Assets.Type;
 import Engine.Core;
 import Engine.Event;
 import Engine.Graphics;
-import Engine.Graphics.Event;
+import Engine.Graphics.Core;
 import Engine.Graphics.Loader;
 
 using namespace ::hg::engine::graphics::loader;
