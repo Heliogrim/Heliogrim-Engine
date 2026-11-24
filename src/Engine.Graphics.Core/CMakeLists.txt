@@ -19,4 +19,4 @@ make_library_project(
         ${PROJECT_NAME}::Engine.Graphics ${PROJECT_NAME}::Engine.Graphics.Render ${PROJECT_NAME}::Engine.Graphics.Loader ${PROJECT_NAME}::Engine.Graphics.Render.Subpass
         ${PROJECT_NAME}::Engine.Graphics.IO.Module
 )
-# shortcut: Graphics.cpp imports Engine.Graphics.IO, linked as Engine.Graphics.IO.Module because Engine.Graphics.IO links Engine.Graphics.Core, drop when the service-locator design lands
+# shortcut: Graphics.cpp imports Engine.Graphics.IO, linked as Engine.Graphics.IO.Module because Engine.Graphics.IO links Engine.Graphics.Core; it calls the loader/importer registration, drop when Engine.Graphics.IO registers them itself
