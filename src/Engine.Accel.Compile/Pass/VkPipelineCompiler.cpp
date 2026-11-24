@@ -1,7 +1,6 @@
 #include "VkPipelineCompiler.hpp"
 
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Graphics.Core/Graphics.hpp>
 
 #include "VkVertexFormat.hpp"
 #include "../VkApi.hpp"
@@ -14,6 +13,7 @@ import Engine.Asserts;
 import Engine.Common;
 import Engine.Core;
 import Engine.Graphics;
+import Engine.Graphics.Core;
 import Engine.Logging;
 import Engine.Reflect;
 

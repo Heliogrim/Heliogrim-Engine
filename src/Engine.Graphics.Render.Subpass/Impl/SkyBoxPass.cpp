@@ -2,8 +2,6 @@
 #include <Engine.Graphics/vkinc.hpp>
 /**/
 
-#include <Engine.Graphics.Core/Graphics.hpp>
-
 #include "SkyBoxPass.hpp"
 
 import Engine.Accel.Compile;
@@ -13,6 +11,7 @@ import Engine.Common;
 import Engine.Core;
 import Engine.Driver.Vulkan;
 import Engine.Graphics;
+import Engine.Graphics.Core;
 import Engine.Graphics.Render.Command;
 import Engine.Graphics.Render.Predefined;
 import Engine.Graphics.RenderGraph;

@@ -1,7 +1,5 @@
 #include "GameEngine.hpp"
 
-#include <Engine.Graphics.Core/Graphics.hpp>
-
 #ifdef WIN32
 import Support.Platform.Win32;
 #else
@@ -15,6 +13,7 @@ import Engine.Audio;
 import Engine.Config;
 import Engine.Core;
 import Engine.Core.Schedule;
+import Engine.Graphics.Core;
 import Engine.Input;
 import Engine.Network;
 import Engine.Physics;

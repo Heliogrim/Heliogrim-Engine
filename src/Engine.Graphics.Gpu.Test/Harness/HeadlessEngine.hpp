@@ -1,12 +1,11 @@
 #pragma once
 
-#include <Engine.Graphics.Core/Graphics.hpp>
-
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
 import Engine.Config;
 import Engine.Core;
 import Engine.Event;
+import Engine.Graphics.Core;
 #endif
 
 namespace hg::test::gpu {

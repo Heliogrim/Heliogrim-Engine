@@ -8,6 +8,7 @@ endif ()
 # Setup
 make_library_project(
         LIB_NAME Engine.Graphics.Core
+        MODULE
         LIB_FOLDER "${IDE_FOLDER}/Engine/Graphics"
         LIBRARIES
         ${__support_libraries} ${PROJECT_NAME}::Engine.Filesystem ${PROJECT_NAME}::Engine.Resource.Package ${PROJECT_NAME}::Engine.Scene ${PROJECT_NAME}::Engine.Render.Scene ${PROJECT_NAME}::Engine.Resource ${PROJECT_NAME}::Engine.Assets.Database

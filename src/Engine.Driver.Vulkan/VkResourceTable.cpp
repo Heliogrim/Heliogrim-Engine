@@ -1,12 +1,11 @@
 #include "VkResourceTable.hpp"
 
-#include <Engine.Graphics.Core/Graphics.hpp>
-
 #include "VkDescriptor.hpp"
 #include "VkScopedResourceTable.hpp"
 
 import Engine.Common;
 import Engine.Core;
+import Engine.Graphics.Core;
 
 using namespace hg::driver::vk;
 using namespace hg;

@@ -1,7 +1,6 @@
 #include "Viewport.hpp"
 
 #if TRUE
-#include <Engine.Graphics.Core/Graphics.hpp>
 #endif
 
 #include <Engine.Common/__macro.hpp>
@@ -10,6 +9,7 @@ import Engine.Asserts;
 import Engine.Common;
 import Engine.Core;
 import Engine.Graphics;
+import Engine.Graphics.Core;
 import Engine.Graphics.Render;
 import Engine.Graphics.Scene;
 import Engine.Logging;

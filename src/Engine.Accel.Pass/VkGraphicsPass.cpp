@@ -1,9 +1,8 @@
 #include "VkGraphicsPass.hpp"
 
-#include <Engine.Graphics.Core/Graphics.hpp>
-
 import Engine.Accel.Pipeline;
 import Engine.Core;
+import Engine.Graphics.Core;
 import Engine.Reflect;
 import std;
 

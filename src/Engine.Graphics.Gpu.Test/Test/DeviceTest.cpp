@@ -4,7 +4,6 @@
 
 #include <cstdlib>
 #include <Engine.Graphics/vkinc.hpp>
-#include <Engine.Graphics.Core/Graphics.hpp>
 
 #ifdef WIN32
 #include <Engine.Common/stdafx.h>
@@ -15,6 +14,7 @@
 
 import Engine.Common;
 import Engine.Core;
+import Engine.Graphics.Core;
 
 using namespace hg::test::gpu;
 using namespace hg;

@@ -1,13 +1,12 @@
 #include "Heliogrim.hpp"
 
-#include <Engine.Graphics.Core/Graphics.hpp>
-
 #include "HeliogrimStatic.hpp"
 
 import Engine.ACS;
 import Engine.Asserts;
 import Engine.Assets;
 import Engine.Core;
+import Engine.Graphics.Core;
 import Engine.Resource;
 import Engine.Scheduler;
 

@@ -10,7 +10,7 @@ import Engine.ACS;
 #include <Engine.Core/Session.hpp>
 #include <Engine.Core/Universe.hpp>
 #include <Engine.Core/UniverseContext.hpp>
-#include <Engine.Graphics.Core/Graphics.hpp>
+import Engine.Graphics.Core;
 import Engine.Reflow.Uikit;
 import Engine.Reflow;
 #include <Engine.Reflow.Uikit/Atom/Layout/VerticalLayout.hpp>
