@@ -37,26 +37,35 @@ namespace hg::engine::serialization::access {
 		unsigned long long offset;
 		unsigned long long size;
 		unsigned char mask;
+		// Member name; with kind, size and mask it identifies the field in the layout hash, the offset does not.
+		const char* name;
 	};
 
 	template <typename Leaf_>
-	[[nodiscard]] consteval LayoutField raw_field(const unsigned long long offset_, const unsigned long long memberSize_) {
+	[[nodiscard]] consteval LayoutField raw_field(
+		const unsigned long long offset_,
+		const unsigned long long memberSize_,
+		const char* const name_
+	) {
 		static_assert(raw_copyable_leaf<Leaf_>, "Raw layout fields are non-bool integers, float, double or arrays of these.");
 		if (sizeof(Leaf_) != memberSize_) {
 			throw "Raw layout field leaf does not match the member size.";
 		}
-		return LayoutField { LayoutFieldKind::eRaw, offset_, sizeof(Leaf_), 0u };
+
+		return LayoutField { LayoutFieldKind::eRaw, offset_, sizeof(Leaf_), 0u, name_ };
 	}
 
 	[[nodiscard]] consteval LayoutField mask_field(
 		const unsigned long long offset_,
 		const unsigned long long memberSize_,
-		const unsigned char mask_
+		const unsigned char mask_,
+		const char* const name_
 	) {
 		if (memberSize_ == 0uLL || mask_ == 0u) {
 			throw "Masked layout fields need a non-empty member and mask.";
 		}
-		return LayoutField { LayoutFieldKind::eMask, offset_, 1uLL, mask_ };
+
+		return LayoutField { LayoutFieldKind::eMask, offset_, 1uLL, mask_, name_ };
 	}
 
 	/* `Layout<T>::fields` lists the data a layout streams; the copy plan in ArchetypeLayout.inl.hpp derives from it. */
@@ -75,8 +84,8 @@ namespace hg::engine::serialization::access {
 	_Pragma("clang diagnostic pop")
 
 #define HG_LAYOUT_RAW(Type_, Member_, Leaf_) \
-	::hg::engine::serialization::access::raw_field<Leaf_>(HG_LAYOUT_OFFSETOF(Type_, Member_), sizeof(Type_::Member_))
+	::hg::engine::serialization::access::raw_field<Leaf_>(HG_LAYOUT_OFFSETOF(Type_, Member_), sizeof(Type_::Member_), #Member_)
 
 // Byte `Member_` (bool or a one-byte bitfield struct, low byte only) with the bits of `Mask_` in use.
 #define HG_LAYOUT_MASK(Type_, Member_, Mask_) \
-	::hg::engine::serialization::access::mask_field(HG_LAYOUT_OFFSETOF(Type_, Member_), sizeof(Type_::Member_), Mask_)
+	::hg::engine::serialization::access::mask_field(HG_LAYOUT_OFFSETOF(Type_, Member_), sizeof(Type_::Member_), Mask_, #Member_)

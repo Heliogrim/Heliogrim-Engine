@@ -98,6 +98,17 @@ namespace HeliogrimApi {
 		u32 a;
 		u32 b;
 	};
+
+	// Same streamed field as HashProbe, at another offset (as a larger Debug member before it would do).
+	struct HashProbeMoved {
+		u64 debugOnly;
+		u32 a;
+	};
+
+	// Same shape as HashProbe, other member name.
+	struct HashProbeRenamed {
+		u32 z;
+	};
 }
 
 template <>
@@ -116,6 +127,18 @@ template <>
 class hg::engine::serialization::access::Layout<HeliogrimApi::HashProbe> {
 public:
 	constexpr static std::array fields { HG_LAYOUT_RAW(HeliogrimApi::HashProbe, a, ::hg::u32) };
+};
+
+template <>
+class hg::engine::serialization::access::Layout<HeliogrimApi::HashProbeMoved> {
+public:
+	constexpr static std::array fields { HG_LAYOUT_RAW(HeliogrimApi::HashProbeMoved, a, ::hg::u32) };
+};
+
+template <>
+class hg::engine::serialization::access::Layout<HeliogrimApi::HashProbeRenamed> {
+public:
+	constexpr static std::array fields { HG_LAYOUT_RAW(HeliogrimApi::HashProbeRenamed, z, ::hg::u32) };
 };
 
 /* Structured schemes of the stub payloads. */
@@ -699,6 +722,12 @@ namespace HeliogrimApi {
 
 	TEST(ArchetypeSer, LayoutHashChangesWithFields) {
 		EXPECT_NE(archetype_detail::field_hash<PlanProbe>(), archetype_detail::field_hash<HashProbe>());
+		EXPECT_NE(archetype_detail::field_hash<HashProbe>(), archetype_detail::field_hash<HashProbeRenamed>());
+	}
+
+	TEST(ArchetypeSer, LayoutHashIgnoresMemberOffsets) {
+		static_assert(offsetof(HashProbe, a) != offsetof(HashProbeMoved, a));
+		EXPECT_EQ(archetype_detail::field_hash<HashProbe>(), archetype_detail::field_hash<HashProbeMoved>());
 	}
 
 	TEST(ArchetypeSer, BoolFieldTwoRejectedBeforeWrite) {

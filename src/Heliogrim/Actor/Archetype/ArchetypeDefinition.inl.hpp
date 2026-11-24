@@ -99,13 +99,9 @@ namespace hg::archetype_detail {
 			}
 		};
 
+		// Stream schema only: no offsets, sizeof or stride, so the hash is the same in every build config.
 		mix(Type_::typeId.data);
-		mix(info::slot_stride);
-		mix(info::actor_offset);
-		mix(sizeof(Type_));
 		for (const auto& entry : info::entries) {
-			mix(entry.offset);
-			mix(entry.size);
 			mix(entry.parentIndex);
 			mix(entry.arrayIndex);
 		}
