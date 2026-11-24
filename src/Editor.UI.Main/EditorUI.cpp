@@ -5,7 +5,6 @@
 #include <Editor.UI.Service/Input/InputService.hpp>
 #include <Editor.UI.Service/Input/InputServiceInit.hpp>
 #include <Editor.UI.Service/Property/PropertyServiceInit.hpp>
-#include <Engine.Graphics.Loader/Font/FontLoader.hpp>
 
 #include "Module/EditorUI.hpp"
 
@@ -18,6 +17,7 @@ import Engine.Assets;
 import Engine.Assets.System;
 import Engine.Assets.Type;
 import Engine.Common;
+import Engine.Graphics.Loader;
 import Engine.Reflow;
 import Engine.Resource;
 
@@ -116,9 +116,6 @@ ref<const EditorUiModel> editor::EditorUI::getEditorModel() const noexcept {
 ref<const EditorUiServices> editor::EditorUI::getEditorServices() const noexcept {
 	return _uiServices;
 }
-
-#include <Engine.Graphics.Loader/Font/FontLoadOptions.hpp>
-#include <Engine.Graphics.Loader/Font/FontResource.hpp>
 
 ref<const AssetGuid> editor::EditorUI::getDefaultFontGuid() const noexcept {
 	return assets::font::default_font_guid;

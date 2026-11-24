@@ -1,11 +1,11 @@
 #pragma once
 
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Graphics.Loader/Cache/CacheResult.hpp>
 
 #include "Traits.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Graphics.Loader;
 import Engine.Resource;
 #endif
 

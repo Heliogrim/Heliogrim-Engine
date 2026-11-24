@@ -7,7 +7,6 @@
 #include <Editor.UI/Widget/ContextMenuProvider.hpp>
 #include <Editor.UI.Service/Assets/Browser/AssetBrowserEntry.hpp>
 #include <Editor.UI.Service/Assets/Browser/AssetBrowserFilterEntry.hpp>
-#include <Engine.Graphics.Loader/Texture/Traits.hpp>
 
 #include "AssetBrowserController.hpp"
 
@@ -17,6 +16,7 @@ import Engine.Assets.System;
 import Engine.Common;
 import Engine.Core;
 import Engine.Graphics;
+import Engine.Graphics.Loader;
 import Engine.Reflow.Uikit;
 import Engine.Resource;
 import Engine.Scheduler;

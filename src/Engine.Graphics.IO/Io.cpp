@@ -1,19 +1,11 @@
 #include "Io.hpp"
 
-#include <Engine.Graphics.Loader/Font/FontLoader.hpp>
-#include <Engine.Graphics.Loader/Geometry/StaticGeometryLoader.hpp>
-#include <Engine.Graphics.Loader/Geometry/StaticGeometryResource.hpp>
-#include <Engine.Graphics.Loader/Material/MaterialLoader.hpp>
-#include <Engine.Graphics.Loader/Material/MaterialPrototypeLoader.hpp>
-#include <Engine.Graphics.Loader/Material/MaterialPrototypeResource.hpp>
-#include <Engine.Graphics.Loader/Material/MaterialResource.hpp>
-#include <Engine.Graphics.Loader/Texture/TextureLoader.hpp>
-
 import Engine.Assets.Type;
 import Engine.Core;
 import Engine.Event;
 import Engine.Graphics;
 import Engine.Graphics.Event;
+import Engine.Graphics.Loader;
 
 using namespace ::hg::engine::graphics::loader;
 using namespace ::hg;

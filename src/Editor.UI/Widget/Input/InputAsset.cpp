@@ -1,7 +1,6 @@
 #include "InputAsset.hpp"
 
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Graphics.Loader/Texture/Traits.hpp>
 #include <Heliogrim/Heliogrim.hpp>
 
 #include "../../Helper/AssetBrowserHelper.hpp"
@@ -14,6 +13,7 @@ import Engine.Common;
 import Engine.Core;
 import Engine.Filesystem;
 import Engine.Graphics;
+import Engine.Graphics.Loader;
 import Engine.Logging;
 import Engine.Reflow.Uikit;
 import Engine.Resource;

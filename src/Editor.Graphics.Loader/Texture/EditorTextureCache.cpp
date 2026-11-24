@@ -1,10 +1,7 @@
 #include "EditorTextureCache.hpp"
 
-#include <Engine.Graphics.Loader/Cache/CacheTextureSubject.hpp>
-#include <Engine.Graphics.Loader/Cache/GlobalCacheCtrl.hpp>
-#include <Engine.Graphics.Loader/Cache/GlobalResourceCache.hpp>
-
 import Engine.Common;
+import Engine.Graphics.Loader;
 
 using namespace ::hg::editor::graphics::loader;
 using namespace ::hg;

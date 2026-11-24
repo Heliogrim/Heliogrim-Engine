@@ -3,6 +3,7 @@
 import Engine.Assets;
 import Engine.Assets.System;
 import Engine.Core;
+import Engine.Graphics.Loader;
 import Engine.Reflect;
 import Engine.Reflow;
 import Engine.Resource;
@@ -496,10 +497,6 @@ math::fvec2 Text::getShrinkFactor() const noexcept {
 }
 
 /**/
-
-#include <Engine.Graphics.Loader/Font/FontLoadOptions.hpp>
-#include <Engine.Graphics.Loader/Font/FontResource.hpp>
-#include <Engine.Graphics.Loader/Font/Traits.hpp>
 
 nmpt<Font> loadFont(cref<TypedAssetGuid<hg::engine::assets::FontAsset>> guid_) {
 
