@@ -1,5 +1,7 @@
 #include "FunctionTier.hpp"
 
+#include <Engine.Graphics/vkinc.hpp>
+
 #include "FunctionTarget.hpp"
 
 import Engine.Accel.Compile;
