@@ -1,7 +1,5 @@
 #pragma once
 
-#include "../../Attributes/InputDataAttributes.hpp"
-#include "../../Event/InputChangeEvent.hpp"
 #include "../../Event/SelectMenuEvent.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)

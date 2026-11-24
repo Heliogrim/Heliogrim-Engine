@@ -78,7 +78,7 @@ void InputSelect::closeMenu() {
 }
 
 Widget::listen_handle_type InputSelect::onInputChange(listen_fn_type<InputChangeEvent> listenFn_) {
-	return _emitter.on(EditorUiEventNames::InputChangeEvent, hg::move(listenFn_));
+	return _emitter.on(ReflowEventNames::InputChangeEvent, hg::move(listenFn_));
 }
 
 Widget::listen_handle_type InputSelect::onSelectMenu(listen_fn_type<SelectMenuEvent> listenFn_) {

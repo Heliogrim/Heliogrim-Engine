@@ -1,8 +1,5 @@
 #include "InputText.hpp"
 
-#include "../../EditorUiEventNames.hpp"
-#include "../../Event/InputChangeEvent.hpp"
-
 import Engine.Common;
 import Engine.Reflow;
 import Engine.Reflow.Uikit;
@@ -79,13 +76,13 @@ void InputText::updateValueAndValidity(const bool propagate_, const bool emit_) 
 
 	_status = InputControlStatus::eValid;
 	setValue(next);
-	::hg::discard = _emitter.emit(EditorUiEventNames::InputChangeEvent, InputChangeEvent { shared_from_this() });
+	::hg::discard = _emitter.emit(ReflowEventNames::InputChangeEvent, InputChangeEvent { shared_from_this() });
 
 	markAsPristine();
 }
 
 Widget::listen_handle_type InputText::onInputChange(listen_fn_type<InputChangeEvent> listenFn_) {
-	return _emitter.on(EditorUiEventNames::InputChangeEvent, hg::move(listenFn_));
+	return _emitter.on(ReflowEventNames::InputChangeEvent, hg::move(listenFn_));
 }
 
 EventResponse InputText::invokeOnKeyDown(ref<const KeyboardEvent> event_) {

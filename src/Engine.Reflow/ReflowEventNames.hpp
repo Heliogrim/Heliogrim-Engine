@@ -11,5 +11,7 @@ namespace hg::engine::reflow {
 
 		constexpr static auto ClickEvent = "ClickEvent"sv;
 		constexpr static auto MouseEnterEvent = "MouseEnterEvent"sv;
+
+		constexpr static auto InputChangeEvent = "InputChangeEvent"sv;
 	};
 }
