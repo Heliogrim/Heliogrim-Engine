@@ -1,10 +1,8 @@
 #include "EditorRenderer.hpp"
 
-#include <Engine.Graphics.Render.Subpass/Impl/DummyProvider.hpp>
-#include <Engine.Graphics.Render.Subpass/Impl/TmpEndPass.hpp>
-
 import Engine.Common;
 import Engine.Graphics.Render.Predefined;
+import Engine.Graphics.Render.Subpass;
 import Engine.Graphics.RenderGraph;
 import Engine.Reflow.Render;
 

@@ -14,7 +14,7 @@ import Engine.Storage.System;
 #endif
 
 namespace hg::engine::render {
-	inline static string read_shader_file(std::filesystem::path name_) {
+	inline string read_shader_file(std::filesystem::path name_) {
 
 		const auto& cfg = Engine::getEngine()->getConfig();
 		auto checks = Vector<std::pair<storage::UrlScheme, std::filesystem::path>> {};
@@ -101,7 +101,8 @@ namespace hg::engine::render {
 		if (intermediate->ir != nullptr) {
 			auto& scope = intermediate->rep.globalScope;
 			for (auto& entry : ir::computeInterface(*intermediate->ir)) {
-				if (entry.implicit || std::ranges::contains(vertexOffsets_, entry.id, &std::pair<String, u32>::first)) {
+				/* lambda, not a member-pointer projection: clang crashes in codegen for the projection once this header sits in a module */
+				if (entry.implicit || std::ranges::any_of(vertexOffsets_, [&entry](const auto& offset_) { return offset_.first == entry.id; })) {
 					continue;
 				}
 				auto var = make_uptr<accel::lang::Variable>();
