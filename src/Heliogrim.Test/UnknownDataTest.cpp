@@ -2,19 +2,14 @@
 
 /**/
 
-#include <Engine.Diagnostics/Sink.hpp>
-#include <Engine.Level/Level.hpp>
-#include <Engine.Resource.Archive/BufferArchive.hpp>
-#include <Engine.Serialization/SerializationModule.hpp>
-#include <Engine.Serialization/Access/Structure.hpp>
-#include <Engine.Serialization/Archive/StructuredArchive.hpp>
-#include <Engine.Serialization/Load/LoadContext.hpp>
-#include <Engine.Serialization/Scheme/ActorScheme.hpp>
-#include <Engine.Serialization/Structure/RootScopedSlot.hpp>
-#include <Engine.Serialization/Structure/SeqScopedSlot.hpp>
-#include <Heliogrim/Actor/Actor.hpp>
 
 #include "SpawnEngine.hpp"
+
+import Engine.Diagnostics;
+import Engine.Level;
+import Engine.Resource.Archive;
+import Engine.ACS;
+import Engine.Serialization;
 
 using namespace hg::engine::serialization;
 using namespace hg::engine::resource;
@@ -132,11 +127,11 @@ namespace UnknownDataModule {
 			writeActor(actor, actorType_, componentType_, componentExtra_);
 		}
 
-		[[nodiscard]] Arci<Level> hydrateLevel() {
+		[[nodiscard]] Arci<engine::core::Level> hydrateLevel() {
 			_archive.seek(0);
 			const auto root = RootScopedSlot { _archive, ScopedSlotStateFlag::eClean, &_ctx };
 			auto level = make_root_like_level();
-			access::Structure<Level>::hydrate(root.asStruct(), *level);
+			access::Structure<engine::core::Level>::hydrate(root.asStruct(), *level);
 			EXPECT_TRUE(_ctx.finish(_sink, "level").has_value());
 			return level;
 		}

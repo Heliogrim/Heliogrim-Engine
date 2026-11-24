@@ -1,20 +1,13 @@
 #pragma once
 
-#include <initializer_list>
-#include <span>
-
-#include <Engine.Common/Expected.hpp>
-#include <Engine.Common/Optional.hpp>
-#include <Engine.Common/String.hpp>
-#include <Engine.Common/Types.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/DenseMap.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.Common/Meta/TypeId.hpp>
 
 #include "MigrateError.hpp"
 #include "../Load/LoadContext.hpp"
 #include "../Structure/StructScopedSlot.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::resource {
 	class BufferArchive;

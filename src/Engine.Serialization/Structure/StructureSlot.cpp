@@ -1,10 +1,10 @@
-#include <limits>
 #include "StructureSlot.hpp"
-
-import Engine.Resource.Archive;
 
 #include "SlotCursor.hpp"
 #include "../Load/LoadContext.hpp"
+
+import std;
+import Engine.Resource.Archive;
 
 using namespace hg::engine::serialization;
 using namespace hg;

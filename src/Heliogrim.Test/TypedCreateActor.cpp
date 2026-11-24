@@ -2,14 +2,13 @@
 
 /**/
 
-#include <Engine.Common/Make.hpp>
-#include <Heliogrim/Actor/Actor.hpp>
-#include <Heliogrim/Actor/Camera/CameraActor.hpp>
-#include <Heliogrim/Actor/Light/PointLightActor.hpp>
-#include <Heliogrim/Component/Scene/Camera/CameraComponent.hpp>
-#include <Heliogrim/Component/Scene/Light/PointLightComponent.hpp>
 
 #include "SpawnEngine.hpp"
+
+import Engine.Common;
+import Engine.ACS;
+import Heliogrim.Actors;
+import Engine.Graphics.Components;
 
 using namespace hg;
 

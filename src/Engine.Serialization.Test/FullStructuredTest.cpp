@@ -1,16 +1,14 @@
 #include "pch.h"
 
 /**/
-#include <cstring>
 
 /**/
-#include <Engine.Serialization.Structures/Symbols.hpp>
-#include <Engine.Serialization.Structures/Common/Guid.hpp>
 
 import Engine.Assets.Type;
 import Engine.Common;
 import Engine.Resource.Archive;
 import Engine.Serialization;
+import Engine.Serialization.Structures;
 
 using namespace hg::engine::resource;
 using namespace hg::engine::serialization;

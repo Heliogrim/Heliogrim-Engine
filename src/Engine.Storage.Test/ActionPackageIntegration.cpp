@@ -11,6 +11,7 @@ import Engine.Config;
 import Engine.Resource.Archive;
 import Engine.Resource.Blob;
 import Engine.Resource.Package;
+import Engine.Storage.Package;
 import Engine.Storage.Action;
 import Engine.Storage.Registry;
 import Engine.Storage.System;

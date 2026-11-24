@@ -2,9 +2,10 @@
 
 /**/
 
-#include <Engine.Diagnostics/Sink.hpp>
-#include <Engine.Serialization/Load/LoadContext.hpp>
 #include <variant>
+
+import Engine.Diagnostics;
+import Engine.Serialization;
 
 using namespace hg::engine::serialization;
 using namespace hg::engine::diag;

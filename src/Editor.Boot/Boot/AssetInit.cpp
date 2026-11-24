@@ -7,24 +7,25 @@
 import Editor.Action;
 import Editor.Assets.Default;
 import Editor.Boot;
-import Engine.Assets;
+import Engine.ACS;
 import Engine.Assets.System;
 import Engine.Assets.Type;
+import Engine.Assets;
 import Engine.Async;
 import Engine.Common;
 import Engine.Config;
 import Engine.Core;
 import Engine.Logging;
 import Engine.Reflect;
-import Engine.Resource;
 import Engine.Resource.Archive;
 import Engine.Resource.Package;
-import Engine.Serialization;
+import Engine.Resource;
 import Engine.Serialization.Structures;
-import Engine.Storage;
+import Engine.Serialization;
 import Engine.Storage.Package;
 import Engine.Storage.Registry;
 import Engine.Storage.System;
+import Engine.Storage;
 
 using namespace hg::editor::boot;
 using namespace hg::engine;
@@ -465,7 +466,6 @@ void editor::boot::initDefaultAssets() {
 
 /**/
 
-#include <Engine.Assets.Type/AssetLoad.hpp>
 /* Every asset load gets its own context; its warnings and errors go to the caller's sink. */
 static Result<void, diag::Diagnostics> load_one_asset(
 	ref<resource::StorageReadonlyArchive> archive_,

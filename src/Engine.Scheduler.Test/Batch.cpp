@@ -2,22 +2,10 @@
 
 /**/
 
-#include <atomic>
-#include <chrono>
-#include <mutex>
-#include <set>
-#include <thread>
-#include <vector>
-#include <Engine.Common/Algo/Search.hpp>
-#include <Engine.Common/Algo/Slice.hpp>
-#include <Engine.Scheduler/Lane.hpp>
-#include <Engine.Scheduler/Scheduler.hpp>
-#include <Engine.Scheduler/Fiber/Fiber.hpp>
-#include <Engine.Scheduler/Task/Batch.hpp>
-#include <Engine.Scheduler/Task/Task.hpp>
-#include <Engine.Scheduler/Thread/Thread.hpp>
-
 #include "TestSchedulerEngine.hpp"
+
+import Engine.Common;
+import Engine.Scheduler;
 
 using namespace hg::engine::scheduler;
 using namespace hg;

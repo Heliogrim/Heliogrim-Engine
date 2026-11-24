@@ -1,10 +1,12 @@
 #pragma once
 
-#include <Engine.Common/Types.hpp>
-#include <Engine.Scheduler/Lane.hpp>
-#include <Engine.Scheduler/Task/Batch.hpp>
 
 #include "Waitable.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+import Engine.Scheduler;
+#endif
 
 namespace hg {
 	using BatchCount = engine::scheduler::BatchCount;

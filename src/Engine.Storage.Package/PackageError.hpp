@@ -1,8 +1,10 @@
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+import Engine.Diagnostics;
+#endif
 #pragma once
 
-#include <Engine.Common/String.hpp>
-#include <Engine.Common/Types.hpp>
-#include <Engine.Diagnostics/Diagnostic.hpp>
 
 namespace hg::engine::storage::package {
 	/**

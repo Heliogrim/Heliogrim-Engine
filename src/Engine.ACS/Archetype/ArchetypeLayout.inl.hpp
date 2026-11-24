@@ -11,18 +11,15 @@
  * guids, resolved in a separate pass. The optional `refs` tuple of member pointers names the ActorRef and
  * ComponentRef fields; they travel through the fixup table.
  */
-
-#include <cstring>
-#include <Engine.Assets/AssetGuid.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
-#include <Engine.Serialization/Load/LoadContext.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.ACS;
 import Engine.Asserts;
+import Engine.Assets;
 import Engine.Common;
+import Engine.Serialization;
 #endif
-#include "LayoutError.hpp"
 
 namespace hg {
 	template <typename>

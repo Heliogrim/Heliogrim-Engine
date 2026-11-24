@@ -1,6 +1,9 @@
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Diagnostics;
+#endif
 #pragma once
 
-#include <Engine.Diagnostics/Code.hpp>
 
 namespace hg::engine::storage::package::codes {
 	// numbers are frozen once published

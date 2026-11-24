@@ -2,20 +2,12 @@
 
 /**/
 #include <vector>
-#include <Engine.Diagnostics/Sink.hpp>
-#include <Engine.Resource.Archive/Archive.hpp>
-#include <Engine.Resource.Archive/ArchiveStreamMode.hpp>
-#include <Engine.Resource.Archive/BufferArchive.hpp>
+
+import Engine.Diagnostics;
+import Engine.Resource.Archive;
+import Engine.Serialization;
 
 /**/
-#include <Engine.Serialization/Archive/StructuredArchive.hpp>
-#include <Engine.Serialization/Load/LoadContext.hpp>
-#include <Engine.Serialization/Schema/Migration.hpp>
-#include <Engine.Serialization/Structure/FloatScopedSlot.hpp>
-#include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>
-#include <Engine.Serialization/Structure/RootScopedSlot.hpp>
-#include <Engine.Serialization/Structure/StringScopedSlot.hpp>
-#include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 
 using namespace hg::engine::resource;
 using namespace hg::engine::serialization;

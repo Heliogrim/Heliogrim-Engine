@@ -1,14 +1,11 @@
 #pragma once
 
-#include <atomic>
-#include <functional>
-#include <Engine.Common/Types.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Functional/FnRef.hpp>
-#include <Engine.Common/Managed/Rc.hpp>
-
 #include "../Lane.hpp"
 #include "../Waitable/Signal.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine {
 	class Scheduler;

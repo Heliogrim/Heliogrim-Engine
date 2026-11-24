@@ -2,7 +2,7 @@
 
 /**/
 
-#include <Heliogrim/Actor/Archetype/ArchetypeLayout.inl.hpp>
+#include <Engine.ACS/Archetype/ArchetypeLayout.inl.hpp>
 import Engine.Common;
 import Engine.Graphics.Components;
 import Engine.Resource.Archive;

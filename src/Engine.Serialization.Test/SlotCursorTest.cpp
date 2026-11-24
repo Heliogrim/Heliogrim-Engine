@@ -2,12 +2,9 @@
 
 /**/
 
-#include <cstring>
-#include <limits>
-#include <span>
-#include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.Resource.Archive/MemoryReadonlyArchive.hpp>
-#include <Engine.Serialization/Structure/SlotCursor.hpp>
+import Engine.Common;
+import Engine.Resource.Archive;
+import Engine.Serialization;
 
 using namespace hg::engine::serialization;
 using namespace hg::engine::resource;

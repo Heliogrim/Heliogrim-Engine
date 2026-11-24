@@ -1,7 +1,8 @@
 #include "SlotCursor.hpp"
 
-#include <Engine.Common/Optional.hpp>
-#include <Engine.Resource.Archive/Archive.hpp>
+import Engine.Common;
+import Engine.Resource.Archive;
+
 
 using namespace hg::engine::serialization;
 using namespace hg;

@@ -1,14 +1,12 @@
 #pragma once
 
-#include <span>
-
-#include <Engine.Diagnostics/Diagnostic.hpp>
-#include <Engine.Serialization/Access/Structure.hpp>
-#include <Engine.Serialization/Load/LoadContext.hpp>
-#include <Engine.Serialization/Schema/Migration.hpp>
-#include <Engine.Serialization/Structure/StructScopedSlot.hpp>
-
 #include "Asset.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
+import Engine.Diagnostics;
+import Engine.Serialization;
+#endif
 
 namespace hg::engine::assets {
 	/**

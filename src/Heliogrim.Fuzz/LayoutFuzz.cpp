@@ -2,29 +2,13 @@
  * Feeds arbitrary bytes to the archetype layout loader. A rejected load must leave the target slots untouched.
  * Probe archetype mirrors `TestLinker` of Heliogrim.Test (plain fields, a mask field and both ref kinds).
  */
+#include <Engine.ACS/Archetype/ArchetypeDefinition.inl.hpp>
+#include <Engine.ACS/Archetype/ArchetypeLayout.inl.hpp>
 
-#include <array>
-#include <cstddef>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <new>
-#include <span>
-#include <Engine.ACS/Registry.hpp>
-#include <Engine.ACS/Archetype/LayoutInfo.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.Serialization/Access/Structure.hpp>
-#include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>
-#include <Engine.Serialization/Structure/StructScopedSlot.hpp>
-#include <Heliogrim/Actor/ActorRef.hpp>
-#include <Heliogrim/Actor/Archetype/ActorClass.hpp>
-#include <Heliogrim/Actor/Archetype/ArchetypeDefinition.inl.hpp>
-#include <Heliogrim/Actor/Archetype/ArchetypeFnSet.hpp>
-#include <Heliogrim/Actor/Archetype/ArchetypeLayout.inl.hpp>
-#include <Heliogrim/Actor/Archetype/InheritArchetype.hpp>
-#include <Heliogrim/Component/ComponentRef.hpp>
-#include <Heliogrim/Component/HierarchyComponent.hpp>
-#include <Heliogrim/Component/Scene/Geometry/StaticGeometryComponent.Layout.hpp>
+import Engine.ACS;
+import Engine.Common;
+import Engine.Serialization;
+import Engine.Graphics.Components;
 
 using namespace hg;
 using namespace hg::engine::acs;

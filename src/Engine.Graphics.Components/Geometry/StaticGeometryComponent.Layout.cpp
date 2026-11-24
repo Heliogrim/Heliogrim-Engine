@@ -1,8 +1,8 @@
-#include <cstring>
 #include "StaticGeometryComponent.Layout.hpp"
 
 #include <Engine.ACS/Archetype/ArchetypeLayout.inl.hpp>
 
+import std;
 import Engine.ACS;
 import Engine.Asserts;
 import Engine.Assets.Database;

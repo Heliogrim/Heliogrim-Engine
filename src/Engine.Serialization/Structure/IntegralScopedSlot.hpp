@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Engine.Common/Sal.hpp>
+
 #include "__fwd.hpp"
 #include "IntegralSlot.hpp"
 #include "ScopedSlotGuard.hpp"

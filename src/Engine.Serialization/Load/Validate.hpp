@@ -1,11 +1,13 @@
 #pragma once
 
-#include <Engine.Common/Expected.hpp>
-#include <Engine.Common/Types.hpp>
-#include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Sal.hpp>
 
 #include "LoadContext.hpp"
 #include "ReadError.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 
 namespace hg::engine::resource {
 	class Archive;

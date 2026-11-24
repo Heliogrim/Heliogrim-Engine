@@ -12,7 +12,6 @@ import Engine.Common;
 import Engine.Serialization;
 #endif
 
-#include "ArchetypeMigration.hpp"
 namespace hg::engine::acs {
 	template <typename Info_>
 	[[nodiscard]] constexpr bool slot_is_array(const u32 slot_) noexcept {
