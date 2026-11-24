@@ -1,7 +1,6 @@
 #include "PropertyView.hpp"
 
-#include <Editor.UI/Widget/Collapse.hpp>
-
+import Editor.UI;
 import Editor.UI.Service;
 import Engine.Reflow.Uikit;
 

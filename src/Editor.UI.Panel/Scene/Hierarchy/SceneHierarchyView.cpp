@@ -1,13 +1,11 @@
 #include "SceneHierarchyView.hpp"
 
-#include <Editor.UI/Builder/MenuBuilder.hpp>
-#include <Editor.UI/Widget/ContextMenuProvider.hpp>
-
 #include "SceneHierarchyController.hpp"
 
 import Editor.Action;
 import Editor.Assets.Default;
 import Editor.Scene.Actions;
+import Editor.UI;
 import Editor.UI.Main;
 import Editor.UI.Service;
 import Engine.ACS;

@@ -2,14 +2,9 @@
 
 /**/
 
-#include <Editor.UI/Widget/Input/InputAsset.hpp>
-#include <Editor.UI/Widget/Input/InputFloat.hpp>
-#include <Editor.UI/Widget/Input/InputIntegral.hpp>
-#include <Editor.UI/Widget/Input/InputToggle.hpp>
-#include <Editor.UI/Widget/Input/InputVec.hpp>
-#include <Editor.UI/Widget/Viewport/Viewport.hpp>
 #include <Engine.Common/__macro.hpp>
 
+import Editor.UI;
 import Engine.Common;
 import Engine.Reflow;
 import Engine.Reflow.Uikit;

@@ -4,6 +4,7 @@
 #endif
 
 #include <Engine.Common/__macro.hpp>
+#include <Heliogrim/Universe/Universe.hpp>
 
 import Engine.Asserts;
 import Engine.Common;
@@ -77,7 +78,7 @@ bool Viewport::shouldTick() const noexcept {
 void Viewport::tick() {
 	Widget::tick();
 
-	if (_cameraUniverse.valid() && _cameraActor != nullptr) {
+	if (_cameraUniverse != nullptr && _cameraActor != nullptr) {
 		updateCameraWithCtrl();
 	}
 
@@ -140,7 +141,7 @@ const non_owning_rptr<CameraActor> Viewport::getCameraActor() const noexcept {
 
 void Viewport::setViewportTarget(StringView renderer_, Universe universe_, ptr<CameraActor> camera_) {
 	_renderer = std::move(renderer_);
-	_cameraUniverse = std::move(universe_);
+	_cameraUniverse = universe_.unwrap();
 	_cameraActor = camera_;
 }
 
@@ -243,7 +244,7 @@ void Viewport::remountRenderTarget() {
 	auto* const manager = gfx->getSceneManager();
 
 	const auto renderer = gfx->getRenderer(_renderer, std::nothrow);
-	const auto* const coreUniverse = static_cast<::hg::engine::core::Universe*>(_cameraUniverse.unwrap().get());
+	const auto* const coreUniverse = _cameraUniverse.get();
 	const auto coreScene = coreUniverse->getScene();
 
 	auto view = smr<const hg::engine::graphics::scene::SceneView> { nullptr };

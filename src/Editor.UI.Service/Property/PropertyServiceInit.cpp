@@ -4,16 +4,11 @@
 
 /**/
 
-#include <Editor.UI/Event/SelectMenuEvent.hpp>
-#include <Editor.UI/Widget/Input/InputFloat.hpp>
-#include <Editor.UI/Widget/Input/InputIntegral.hpp>
-#include <Editor.UI/Widget/Input/InputSelect.hpp>
-#include <Editor.UI/Widget/Input/InputText.hpp>
-#include <Editor.UI/Widget/Input/InputToggle.hpp>
 #include <Heliogrim/Heliogrim.hpp>
 
 #include "PropertyService.hpp"
 
+import Editor.UI;
 import Engine.Assets;
 import Engine.Assets.Database;
 import Engine.Assets.System;

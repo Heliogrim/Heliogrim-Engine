@@ -2,12 +2,7 @@
 
 /**/
 
-#include <Editor.UI/Widget/Breadcrumb.hpp>
-#include <Editor.UI/Widget/Collapse.hpp>
-#include <Editor.UI/Widget/MenuItem.hpp>
-#include <Editor.UI/Widget/MenuSpacer.hpp>
-#include <Editor.UI/Widget/Viewport/Viewport.hpp>
-
+import Editor.UI;
 import Engine.Common;
 import Engine.Reflow;
 import Engine.Reflow.Uikit;
