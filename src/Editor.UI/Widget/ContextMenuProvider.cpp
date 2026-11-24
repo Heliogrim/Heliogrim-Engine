@@ -5,6 +5,7 @@
 
 #include "../EditorUiEventNames.hpp"
 
+import Editor.UI.Service;
 import Engine.Common;
 import Engine.Core;
 import Engine.Reflow;

@@ -1,9 +1,8 @@
-#include <Editor.UI.Main/EditorUI.hpp>
-
 import Editor.Action;
 import Editor.Boot;
 import Editor.Core;
 import Editor.Graphics.IO;
+import Editor.UI.Main;
 import Engine.Accel;
 import Engine.Common;
 import Engine.Reflow;
