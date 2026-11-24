@@ -1,6 +1,5 @@
-#include <Editor.Render/Renderer/EditorRenderer.hpp>
-
 import Editor.Boot;
+import Editor.Render;
 import Engine.Core;
 import Engine.Graphics.Core;
 

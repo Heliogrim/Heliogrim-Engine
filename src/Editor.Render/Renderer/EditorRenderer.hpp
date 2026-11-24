@@ -1,6 +1,8 @@
 #pragma once
 
-#include <Engine.Graphics.Render/Renderer.hpp>
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Graphics.Render;
+#endif
 
 namespace hg::editor::render {
 	class EditorRenderer :

@@ -17,5 +17,6 @@ make_library_project(
         ${PROJECT_NAME}::Engine.Async ${PROJECT_NAME}::Engine.Scheduler ${PROJECT_NAME}::Engine.Common ${PROJECT_NAME}::Engine.Asserts ${PROJECT_NAME}::vulkan.Module ${PROJECT_NAME}::Engine.Event ${PROJECT_NAME}::Engine.Reflect ${PROJECT_NAME}::Engine.Diagnostics ${PROJECT_NAME}::Engine.Core ${PROJECT_NAME}::Engine.Graphics.Scene ${PROJECT_NAME}::Engine.Logging ${PROJECT_NAME}::Engine.Resource.Archive ${PROJECT_NAME}::Engine.Platform
         ${PROJECT_NAME}::Engine.Pedantic.Resource ${PROJECT_NAME}::Engine.Graphics.Types ${PROJECT_NAME}::Engine.Storage.Registry ${PROJECT_NAME}::Engine.Assets ${PROJECT_NAME}::Engine.Assets.Type
         ${PROJECT_NAME}::Engine.Graphics ${PROJECT_NAME}::Engine.Graphics.Render ${PROJECT_NAME}::Engine.Graphics.Loader ${PROJECT_NAME}::Engine.Graphics.Render.Subpass
+        ${PROJECT_NAME}::Engine.Graphics.IO.Module
 )
-# shortcut: Graphics.cpp includes Engine.Graphics.IO/Io.hpp upward without a link (Engine.Graphics.IO links Engine.Graphics.Core), drop when the service-locator design lands
+# shortcut: Graphics.cpp imports Engine.Graphics.IO, linked as Engine.Graphics.IO.Module because Engine.Graphics.IO links Engine.Graphics.Core, drop when the service-locator design lands
