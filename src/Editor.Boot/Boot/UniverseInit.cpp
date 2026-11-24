@@ -5,8 +5,8 @@
 #include "UniverseInit.hpp"
 
 #include <Editor.Core/EditorEngine.hpp>
-#include <Editor.Scene/SceneFactory.hpp>
 #include <Editor.Scene.Actions/LoadLevel.hpp>
+#include <Editor.Scene/SceneFactory.hpp>
 #include <Engine.Assets.Type/Universe/LevelAsset.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Move.hpp>
@@ -16,6 +16,7 @@
 #include <Engine.Diagnostics/Render.hpp>
 #include <Engine.Diagnostics/Sink.hpp>
 #include <Engine.Logging/Logger.hpp>
+#include <Engine.Logging/LogSink.hpp>
 #include <Engine.Serialization/Diagnostic/Codes.hpp>
 #include <Heliogrim/Universe/Level.hpp>
 
@@ -31,15 +32,13 @@ static void add_default_light(mref<Level> level_);
 
 static void add_default_box(mref<Level> level_);
 
-static bool experimentalHasLevel();
-
-static void log_diagnostics(ref<const diag::Diagnostics> diagnostics_);
-
 static Result<Arci<core::Level>, diag::Diagnostics> reject_level(
 	ref<diag::DiagnosticSink> sink_,
 	ref<const diag::DiagnosticCodeInfo> code_,
 	mref<String> message_
 );
+
+static bool experimentalHasLevel();
 
 static Result<Arci<core::Level>, diag::Diagnostics> experimentalLoadLevel(ref<diag::DiagnosticSink> sink_);
 
@@ -86,7 +85,7 @@ void editor::boot::initPrimaryUniverse() {
 	if (experimentalHasLevel()) {
 		auto sink = diag::CollectingSink {};
 		auto loaded = experimentalLoadLevel(sink);
-		log_diagnostics(sink.items());
+		diag::logDiagnostics(sink.items());
 		if (loaded.has_value()) {
 			level = ::hg::move(loaded).value();
 
@@ -119,7 +118,6 @@ void editor::boot::initPrimaryUniverse() {
 #include <Editor.Assets.Default/Meshes/Default.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets/Assets.hpp>
-#include <Engine.Assets.Type/Universe/LevelAsset.hpp>
 #include <Engine.Config/Enums.hpp>
 #include <Engine.Storage.System/StorageSystem.hpp>
 #include <Heliogrim/Heliogrim.hpp>
@@ -214,24 +212,6 @@ static Result<Arci<core::Level>, diag::Diagnostics> reject_level(
 	diag::Diagnostics out {};
 	out.emplace_back(::hg::move(diagnostic));
 	return Unexpected<diag::Diagnostics> { ::hg::move(out) };
-}
-
-static void log_diagnostics(ref<const diag::Diagnostics> diagnostics_) {
-	for (const auto& diagnostic : diagnostics_) {
-		switch (diagnostic.severity()) {
-			case diag::Severity::eError: {
-				IM_CORE_ERRORF("{}", diag::render(diagnostic));
-				break;
-			}
-			case diag::Severity::eWarning: {
-				IM_CORE_WARNF("{}", diag::render(diagnostic));
-				break;
-			}
-			default: {
-				IM_CORE_INFOF("{}", diag::render(diagnostic));
-			}
-		}
-	}
 }
 
 static decltype(auto) wantedSave(_In_ cref<core::Level> level_, _In_ cref<assets::LevelAsset> levelAsset_) {

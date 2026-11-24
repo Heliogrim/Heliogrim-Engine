@@ -127,6 +127,7 @@ ref<Signal> AutoImportAction::finished() const noexcept {
 #include <Engine.Graphics/Importer/ImageFileTypes.hpp>
 #include <Engine.Graphics/Importer/ModelFileTypes.hpp>
 #include <Engine.Logging/Logger.hpp>
+#include <Engine.Logging/LogSink.hpp>
 #include <Engine.Reflect/TypeSwitch.hpp>
 #include <Engine.Resource.Archive/BufferArchive.hpp>
 #include <Engine.Resource/FileTypeId.hpp>
@@ -162,8 +163,6 @@ using namespace hg::engine::resource;
 	_In_ ref<const Vector<Arci<engine::assets::Asset>>> assets_,
 	_Inout_ ref<engine::diag::DiagnosticSink> sink_
 );
-
-static void log_diagnostics(ref<const engine::diag::Diagnostics> diagnostics_);
 
 [[nodiscard]] static BufferArchive autoStoreFont(_In_ nmpt<engine::assets::FontAsset> fontAsset_);
 [[nodiscard]] static BufferArchive autoStoreImage(_In_ nmpt<engine::assets::ImageAsset> imageAsset_);
@@ -305,7 +304,7 @@ Opt<AutoImportInternalResult> autoImportBundle(
 	associateBundle(combinedResult.value(), std::move(fileTypes));
 	auto sink = engine::diag::CollectingSink {};
 	auto package = autoStoreAssets(bundleUrl_, combinedResult.value(), sink);
-	log_diagnostics(sink.items());
+	engine::diag::logDiagnostics(sink.items());
 	if (not package.has_value()) {
 		return None;
 	}
@@ -358,7 +357,7 @@ Opt<AutoImportInternalResult> autoImportFile(
 
 	auto sink = engine::diag::CollectingSink {};
 	auto package = autoStoreAssets(fileUrl_, result.value(), sink);
-	log_diagnostics(sink.items());
+	engine::diag::logDiagnostics(sink.items());
 	if (not package.has_value()) {
 		return None;
 	}
@@ -476,24 +475,6 @@ constexpr static auto packed_extension = std::wstring_view { L".imp" };
 constexpr static auto prefix_extension = '.';
 constexpr static auto packed_extension = std::string_view { R"(.imp)" };
 #endif
-
-static void log_diagnostics(ref<const engine::diag::Diagnostics> diagnostics_) {
-	for (const auto& diagnostic : diagnostics_) {
-		switch (diagnostic.severity()) {
-			case engine::diag::Severity::eError: {
-				IM_CORE_ERRORF("{}", engine::diag::render(diagnostic));
-				break;
-			}
-			case engine::diag::Severity::eWarning: {
-				IM_CORE_WARNF("{}", engine::diag::render(diagnostic));
-				break;
-			}
-			default: {
-				IM_CORE_INFOF("{}", engine::diag::render(diagnostic));
-			}
-		}
-	}
-}
 
 Result<Arci<engine::storage::system::PackageStorage>, engine::diag::Diagnostics> autoStoreAssets(
 	cref<engine::storage::FileUrl> baseFileUrl_,

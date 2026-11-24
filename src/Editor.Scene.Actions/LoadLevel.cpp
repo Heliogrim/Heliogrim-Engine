@@ -3,6 +3,7 @@
 #include <Engine.Diagnostics/Render.hpp>
 #include <Engine.Diagnostics/Sink.hpp>
 #include <Engine.Logging/Logger.hpp>
+#include <Engine.Logging/LogSink.hpp>
 #include <Engine.Serialization/Diagnostic/Codes.hpp>
 #include <Engine.Storage.System/StorageSystem.hpp>
 #include <Engine.Storage/StorageModule.hpp>
@@ -18,8 +19,6 @@ static Result<Arci<engine::core::Level>, engine::diag::Diagnostics> reject_level
 	_In_ mref<String> message_
 );
 
-static void log_diagnostics(_In_ ref<const engine::diag::Diagnostics> diagnostics_);
-
 /**/
 
 LoadLevel::LoadLevel(mref<Arci<engine::assets::LevelAsset>> levelAsset_) :
@@ -30,7 +29,7 @@ LoadLevel::LoadLevel(mref<Arci<engine::assets::LevelAsset>> levelAsset_) :
 
 			auto sink = engine::diag::CollectingSink {};
 			auto loaded = loadLevelFromAsset(*this->_levelAsset, sink);
-			log_diagnostics(sink.items());
+			engine::diag::logDiagnostics(sink.items());
 			_level = loaded.has_value() ? ::hg::move(loaded).value() : nullptr;
 		},
 		[] { ::hg::todo_panic(); }
@@ -108,22 +107,4 @@ static Result<Arci<engine::core::Level>, engine::diag::Diagnostics> reject_level
 	engine::diag::Diagnostics out {};
 	out.emplace_back(::hg::move(diagnostic));
 	return Unexpected<engine::diag::Diagnostics> { ::hg::move(out) };
-}
-
-static void log_diagnostics(ref<const engine::diag::Diagnostics> diagnostics_) {
-	for (const auto& diagnostic : diagnostics_) {
-		switch (diagnostic.severity()) {
-			case engine::diag::Severity::eError: {
-				IM_CORE_ERRORF("{}", engine::diag::render(diagnostic));
-				break;
-			}
-			case engine::diag::Severity::eWarning: {
-				IM_CORE_WARNF("{}", engine::diag::render(diagnostic));
-				break;
-			}
-			default: {
-				IM_CORE_INFOF("{}", engine::diag::render(diagnostic));
-			}
-		}
-	}
 }
