@@ -82,6 +82,9 @@ namespace hg::engine::serialization {
 
 		[[nodiscard]] Vector<String> unreadKeys(ptr<const void> archive_, const s64 structOffset_, std::span<const String> present_) const;
 
+		/* Drops every read set of `archive_`; a dying scratch archive calls this so a reused address starts clean. */
+		void forgetArchive(ptr<const void> archive_);
+
 	public:
 		/* Emits warnings to the sink; on a latched failure returns it (with the later ones as notes). */
 		[[nodiscard]] Result<void, diag::Diagnostics> finish(

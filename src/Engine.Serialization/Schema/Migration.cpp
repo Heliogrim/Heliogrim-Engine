@@ -35,7 +35,14 @@ Migrated::Migrated(mref<uptr<resource::BufferArchive>> scratch_, mref<StructScop
 	_scratch(std::move(scratch_)),
 	_slot(slot_) {}
 
-Migrated::~Migrated() = default;
+Migrated::~Migrated() {
+	// A later scratch archive may reuse this address; its read sets must start empty.
+	if (_scratch != nullptr) {
+		if (const auto context = _slot.slot()->getState().root->context; context != nullptr) {
+			context->forgetArchive(static_cast<ptr<const resource::Archive>>(_scratch.get()));
+		}
+	}
+}
 
 ref<const StructScopedSlot> Migrated::slot() const noexcept {
 	return _slot;
@@ -160,6 +167,10 @@ Opt<Migrated> MigrationRegistry::migrateToCurrent(
 		cursor.emplace(RootScopedSlot { *next, ScopedSlotStateFlag::eClean, &context_ }.asStruct());
 		cursor->slot()->getState().root->originOffset = offset;
 		cursor->slot()->getState().root->originLength = length;
+		// The superseded intermediate is freed here; drop its read sets before its address can be reused.
+		if (scratch != nullptr) {
+			context_.forgetArchive(static_cast<ptr<const resource::Archive>>(scratch.get()));
+		}
 		scratch = std::move(next);
 	}
 
@@ -199,12 +210,22 @@ void engine::serialization::forwardEntries(
 		}
 
 		if (keyHeader.type != StructureSlotType::eString) {
-			report(source, ReadError { ReadError::Kind::eMalformed, offset, StructureSlotBase::slotSpan(keyHeader), "struct key is not a string" });
+			report(
+				source,
+				ReadError { ReadError::Kind::eMalformed, offset, StructureSlotBase::slotSpan(keyHeader), "struct key is not a string" }
+			);
 			return;
 		}
 
-		if (const auto context = source->getState().root->context; context != nullptr && not context->charge(static_cast<u64>(keyHeader.size))) {
-			report(source, ReadError { ReadError::Kind::eBudget, offset, StructureSlotBase::slotSpan(keyHeader), "struct key exceeds the allocation budget" });
+		if (const auto context = source->getState().root->context; context != nullptr && not context->charge(
+			static_cast<u64>(keyHeader.size)
+		)) {
+			report(
+				source,
+				ReadError {
+					ReadError::Kind::eBudget, offset, StructureSlotBase::slotSpan(keyHeader), "struct key exceeds the allocation budget"
+				}
+			);
 			return;
 		}
 
@@ -212,7 +233,10 @@ void engine::serialization::forwardEntries(
 		from.seek(offset + StructureSlotBase::slotSpan(keyHeader) - keyHeader.size);
 		from.serializeBytes(reinterpret_cast<ptr<u8>>(key.data()), key.size(), resource::ArchiveStreamMode::eLoad);
 		if (from.hasError()) {
-			report(source, ReadError { ReadError::Kind::eTruncated, offset, StructureSlotBase::slotSpan(keyHeader), "struct key unreadable" });
+			report(
+				source,
+				ReadError { ReadError::Kind::eTruncated, offset, StructureSlotBase::slotSpan(keyHeader), "struct key unreadable" }
+			);
 			return;
 		}
 
