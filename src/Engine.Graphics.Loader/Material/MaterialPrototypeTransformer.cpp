@@ -1,8 +1,8 @@
 #include "MaterialPrototypeTransformer.hpp"
 
+#include <cassert>
 #include <Engine.Accel.Loader/Effect/EffectResource.hpp>
 #include <Engine.Accel.Loader/Effect/Traits.hpp>
-#include <Engine.Graphics.Material/MaterialFactory.hpp>
 
 #include "../Texture/Traits.hpp"
 
@@ -12,6 +12,7 @@ import Engine.Assets.Type;
 import Engine.Common;
 import Engine.Core;
 import Engine.Graphics;
+import Engine.Graphics.Material;
 import Engine.Graphics.Render.Predefined;
 import Engine.Reflect;
 import Engine.Resource;

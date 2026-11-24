@@ -1,13 +1,12 @@
 #include "test.hpp"
 
+#include <cassert>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.Loader/Material/MaterialResource.hpp>
-#include <Engine.Graphics.Material/Material.hpp>
-#include <Engine.Graphics.Material/MaterialParameter.hpp>
-#include <Engine.Graphics.Material/MaterialPrototype.hpp>
 
 import Engine.Accel.Pipeline;
 import Engine.Common;
+import Engine.Graphics.Material;
 import Engine.Graphics.Render.Command;
 import Engine.Graphics.Render.Predefined;
 import Engine.Graphics.RenderGraph;

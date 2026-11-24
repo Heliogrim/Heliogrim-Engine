@@ -2,8 +2,7 @@
 
 /**/
 
-#include <Engine.Graphics.Material/MaterialParameterStorage.hpp>
-
+import Engine.Graphics.Material;
 import Engine.Graphics.Types;
 import std;
 

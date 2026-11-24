@@ -2,10 +2,9 @@
 
 /**/
 
-#include <Engine.Accel.Storage/HashedState.hpp>
-
 import Engine.Accel.Effect;
 import Engine.Accel.Lang;
+import Engine.Accel.Storage;
 import Engine.Common;
 
 using namespace hg::engine::accel;

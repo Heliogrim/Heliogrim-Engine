@@ -1,12 +1,12 @@
 #pragma once
 
 #include <Engine.Graphics.Loader/Material/MaterialResource.hpp>
-#include <Engine.Graphics.Material/MaterialEffect.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Accel.Compile;
 import Engine.Accel.Pass;
 import Engine.Graphics;
+import Engine.Graphics.Material;
 import Engine.Graphics.RenderGraph;
 #endif
 
