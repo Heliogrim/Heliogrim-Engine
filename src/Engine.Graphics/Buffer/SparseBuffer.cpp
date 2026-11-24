@@ -7,10 +7,9 @@
 
 // TODO: Remove
 
-#include <Engine.Graphics.Core/Graphics.hpp>
-
 import Engine.Common;
 import Engine.Core;
+import Engine.Graphics.Core;
 
 using namespace hg::engine::graphics;
 using namespace hg;

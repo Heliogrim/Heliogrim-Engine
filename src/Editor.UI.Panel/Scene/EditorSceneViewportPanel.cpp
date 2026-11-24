@@ -5,11 +5,11 @@
 #include <Editor.UI/Widget/Viewport/EditorSceneViewport.hpp>
 #include <Editor.UI/Widget/Viewport/Viewport.hpp>
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Graphics.Core/Graphics.hpp>
 
 import Engine.ACS;
 import Engine.Common;
 import Engine.Graphics;
+import Engine.Graphics.Core;
 import Engine.Graphics.Render;
 import Engine.Graphics.Scene;
 import Engine.Logging;

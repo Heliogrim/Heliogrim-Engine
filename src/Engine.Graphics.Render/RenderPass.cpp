@@ -5,6 +5,7 @@
 import Engine.Common;
 import Engine.Core;
 import Engine.Graphics;
+import Engine.Graphics.Core;
 import Engine.Graphics.Render.Predefined;
 import Engine.Graphics.RenderGraph;
 import Engine.Logging;
@@ -236,8 +237,6 @@ smr<void> RenderPass::unbindTarget(mref<smr<const graph::Symbol>> target_) noexc
 }
 
 /**/
-
-#include <Engine.Graphics.Core/Graphics.hpp>
 
 void RenderPass::clearSync() {
 

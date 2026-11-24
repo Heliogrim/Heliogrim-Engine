@@ -1,7 +1,6 @@
 #include "EditorEngine.hpp"
 
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Graphics.Core/Graphics.hpp>
 
 #ifdef WIN32
 import Support.Platform.Win32;
@@ -18,6 +17,7 @@ import Engine.Config;
 import Engine.Config.Providers;
 import Engine.Core;
 import Engine.Core.Schedule;
+import Engine.Graphics.Core;
 import Engine.Input;
 import Engine.Logging;
 import Engine.Network;

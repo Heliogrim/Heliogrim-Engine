@@ -1,7 +1,6 @@
 #include "VkRCmdTranslator.hpp"
 
 #include <cassert>
-#include <Engine.Graphics.Core/Graphics.hpp>
 
 #include "VkResourceTable.hpp"
 
@@ -10,6 +9,7 @@ import Engine.Accel.Pipeline;
 import Engine.Common;
 import Engine.Core;
 import Engine.Graphics;
+import Engine.Graphics.Core;
 import Engine.Graphics.Render.Command;
 import Engine.Reflect;
 

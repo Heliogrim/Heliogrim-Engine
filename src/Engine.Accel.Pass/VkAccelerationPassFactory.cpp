@@ -1,7 +1,5 @@
 #include "VkAccelerationPassFactory.hpp"
 
-#include <Engine.Graphics.Core/Graphics.hpp>
-
 #include "MeshPass.hpp"
 #include "RaytracingPass.hpp"
 #include "VkGraphicsPass.hpp"
@@ -10,6 +8,7 @@ import Engine.Accel.Pipeline;
 import Engine.Common;
 import Engine.Core;
 import Engine.Graphics;
+import Engine.Graphics.Core;
 import Engine.Graphics.RenderGraph;
 import Engine.Reflect;
 

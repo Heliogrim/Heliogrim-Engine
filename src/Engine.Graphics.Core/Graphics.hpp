@@ -1,8 +1,5 @@
 #pragma once
 
-#include <Engine.Graphics.Loader/Cache/__fwd.hpp>
-#include <Engine.Graphics.Render/Renderer.hpp>
-
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
 import Engine.Core;
@@ -19,6 +16,15 @@ namespace hg::engine::scene {
 namespace hg::engine::graphics {
 	class RenderTarget;
 	class SurfaceManager;
+}
+
+/* Local forward declarations instead of importing Engine.Graphics.Loader / Engine.Graphics.Render: both re-export Engine.Render.Scene (via Engine.Reflow), which textual includers such as RenderSceneSystem.cpp must not see twice. */
+namespace hg::engine::graphics::cache {
+	class GlobalCacheCtrl;
+}
+
+namespace hg::engine::render {
+	class Renderer;
 }
 
 namespace hg::engine::graphics::scene {

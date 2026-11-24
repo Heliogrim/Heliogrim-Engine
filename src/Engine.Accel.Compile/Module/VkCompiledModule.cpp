@@ -1,9 +1,8 @@
 #include "VkCompiledModule.hpp"
 
-#include <Engine.Graphics.Core/Graphics.hpp>
-
 import Engine.Core;
 import Engine.Graphics;
+import Engine.Graphics.Core;
 import Engine.Logging;
 
 using namespace hg::engine::accel;

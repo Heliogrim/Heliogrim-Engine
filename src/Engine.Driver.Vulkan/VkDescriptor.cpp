@@ -1,8 +1,7 @@
 #include "VkDescriptor.hpp"
 
-#include <Engine.Graphics.Core/Graphics.hpp>
-
 import Engine.Core;
+import Engine.Graphics.Core;
 import std;
 
 using namespace hg;

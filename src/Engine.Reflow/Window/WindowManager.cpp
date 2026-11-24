@@ -1,7 +1,6 @@
 #include "WindowManager.hpp"
 
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Graphics.Core/Graphics.hpp>
 #include <Heliogrim/Async/Future.hpp>
 
 #include "BoundWindow.hpp"
@@ -12,6 +11,7 @@
 import Engine.Common;
 import Engine.Core;
 import Engine.Graphics;
+import Engine.Graphics.Core;
 import Engine.Graphics.Render;
 import Engine.Graphics.Scene;
 import Engine.Input;

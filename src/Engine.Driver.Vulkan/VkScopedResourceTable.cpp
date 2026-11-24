@@ -2,11 +2,11 @@
 
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics/vkinc.hpp>
-#include <Engine.Graphics.Core/Graphics.hpp>
 
 import Engine.Accel.Pipeline;
 import Engine.Asserts;
 import Engine.Core;
+import Engine.Graphics.Core;
 import Engine.Graphics.RenderGraph;
 import Engine.Logging;
 import std;

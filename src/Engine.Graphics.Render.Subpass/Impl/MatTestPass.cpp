@@ -2,8 +2,6 @@
 #include <Engine.Graphics/vkinc.hpp>
 /**/
 
-#include <Engine.Graphics.Core/Graphics.hpp>
-
 #include "MatTestPass.hpp"
 
 import Engine.ACS;
@@ -16,6 +14,7 @@ import Engine.Common;
 import Engine.Core;
 import Engine.Driver.Vulkan;
 import Engine.Graphics;
+import Engine.Graphics.Core;
 import Engine.Graphics.Loader;
 import Engine.Graphics.Render.Command;
 import Engine.Graphics.Render.Predefined;
