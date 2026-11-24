@@ -15,9 +15,13 @@ namespace hg::test::gpu {
 	class HeadlessEngine final :
 		public engine::Engine {
 	public:
-		HeadlessEngine() = default;
+		HeadlessEngine() {
+			_modules.addCoreModule(_graphics, engine::core::GraphicsDepKey);
+		}
 
-		~HeadlessEngine() override = default;
+		~HeadlessEngine() override {
+			_modules.removeCoreModule(_graphics);
+		}
 
 	public:
 		std::function<void(vk::Instance)> onInstance;
