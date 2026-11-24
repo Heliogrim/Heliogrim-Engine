@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Engine.Common/Sal.hpp>
+
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Editor.Action;
 import Engine.Assets.Type;

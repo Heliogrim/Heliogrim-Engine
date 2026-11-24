@@ -1,10 +1,12 @@
 #pragma once
 
-#include <Engine.Common/Optional.hpp>
-#include <Engine.Core/Engine.hpp>
-#include <Engine.Serialization/SerializationModule.hpp>
-#include <Engine.Serialization/Schema/Migration.hpp>
-#include <Engine.Serialization/Structure/StructScopedSlot.hpp>
+#include <Engine.ACS/Serialization/SerializationModule.hpp>
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+import Engine.Core;
+import Engine.Serialization;
+#endif
 
 namespace hg {
 	/* Upgrades `record_` to the current revision of `type_`; nullopt when refused, the reason is already in the load context. */

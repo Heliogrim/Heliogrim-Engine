@@ -6,19 +6,11 @@
 #include <limits>
 #include <utility>
 #include <vector>
-#include <Engine.Resource.Archive/BufferArchive.hpp>
-#include <Engine.Resource.Archive/MemoryReadonlyArchive.hpp>
+
+import Engine.Resource.Archive;
+import Engine.Serialization;
 
 /**/
-#include <Engine.Serialization/Archive/StructuredArchive.hpp>
-#include <Engine.Serialization/Load/LoadContext.hpp>
-#include <Engine.Serialization/Load/Validate.hpp>
-#include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>
-#include <Engine.Serialization/Structure/RootScopedSlot.hpp>
-#include <Engine.Serialization/Structure/SeqScopedSlot.hpp>
-#include <Engine.Serialization/Structure/SliceScopedSlot.hpp>
-#include <Engine.Serialization/Structure/StringScopedSlot.hpp>
-#include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 
 using namespace hg::engine::resource;
 using namespace hg::engine::serialization;

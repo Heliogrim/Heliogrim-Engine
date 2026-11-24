@@ -1,9 +1,9 @@
 #pragma once
-#include <array>
 
 #include <Engine.ACS/Archetype/ArchetypeLayout.inl.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import std;
 import Engine.ACS;
 #endif
 

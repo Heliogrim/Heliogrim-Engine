@@ -2,10 +2,8 @@
 
 /**/
 
-#include <array>
-#include <span>
-#include <Engine.Common/Types.hpp>
-#include <Engine.Crypto/Checksum/Crc32.hpp>
+import Engine.Common;
+import Engine.Crypto;
 
 using namespace hg::engine::crypto;
 using namespace hg;

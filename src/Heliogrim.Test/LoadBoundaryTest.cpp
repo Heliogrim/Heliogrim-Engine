@@ -2,32 +2,17 @@
 
 /**/
 
-#include <Engine.ACS/Registry.hpp>
-#include <Engine.Assets.Type/AssetLoad.hpp>
-#include <Engine.Assets.Type/Texture/FontAsset.hpp>
-#include <Engine.Assets.Type/Universe/LevelAsset.hpp>
-#include <Engine.ACS/Traits.hpp>
-#include <Engine.Diagnostics/Render.hpp>
-#include <Engine.Diagnostics/Sink.hpp>
-#include <Engine.Level/Level.hpp>
-#include <Engine.Resource.Archive/ArchiveStreamMode.hpp>
-#include <Engine.Resource.Archive/BufferArchive.hpp>
-#include <Engine.Serialization/SerializationModule.hpp>
-#include <Engine.Serialization/Access/Structure.hpp>
-#include <Engine.Serialization/Archive/StructuredArchive.hpp>
-#include <Engine.Serialization/Load/LoadContext.hpp>
-#include <Engine.Serialization/Load/RootKind.hpp>
-#include <Engine.Serialization.Structures/Common/Guid.hpp>
-#include <Engine.Serialization/Scheme/ActorScheme.hpp>
-#include <Engine.Serialization/Scheme/ComponentScheme.hpp>
-#include <Engine.Serialization/Structure/RootScopedSlot.hpp>
-#include <Engine.Serialization/Structure/SeqScopedSlot.hpp>
-#include <Heliogrim/Actor/Actor.hpp>
-#include <Heliogrim/Actor/Archetype/ArchetypeFnSet.hpp>
-#include <Heliogrim/Component/LogicComponent.hpp>
 
 #include "SpawnEngine.hpp"
 #include "TestArchetypes.hpp"
+
+import Engine.ACS;
+import Engine.Assets.Type;
+import Engine.Diagnostics;
+import Engine.Level;
+import Engine.Resource.Archive;
+import Engine.Serialization;
+import Engine.Serialization.Structures;
 
 using namespace hg::engine::serialization;
 using namespace hg::engine::resource;
@@ -181,11 +166,11 @@ namespace LoadBoundaryModule {
 			}
 		}
 
-		[[nodiscard]] Arci<Level> hydrateLevel() {
+		[[nodiscard]] Arci<engine::core::Level> hydrateLevel() {
 			_archive.seek(0);
 			const auto root = RootScopedSlot { _archive, ScopedSlotStateFlag::eClean, &_ctx };
 			auto level = make_root_like_level();
-			access::Structure<Level>::hydrate(root.asStruct(), *level);
+			access::Structure<engine::core::Level>::hydrate(root.asStruct(), *level);
 			if (auto result = _ctx.finish(_sink, "level"); not result.has_value()) {
 				for (auto& diagnostic : result.error()) {
 					_sink.emit(::hg::move(diagnostic));
@@ -476,7 +461,7 @@ namespace LoadBoundaryModule {
 
 		const auto root = RootScopedSlot { _archive, ScopedSlotStateFlag::eClean, nullptr };
 		auto level = make_root_like_level();
-		access::Structure<Level>::hydrate(root.asStruct(), *level);
+		access::Structure<engine::core::Level>::hydrate(root.asStruct(), *level);
 
 		EXPECT_TRUE(level->getActors().empty());
 		EXPECT_FALSE(registry()->contains(guid));

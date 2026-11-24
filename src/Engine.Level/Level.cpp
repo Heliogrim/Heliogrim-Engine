@@ -168,7 +168,7 @@ Result<void, engine::diag::Diagnostics> engine::core::checkSaveAllowed(ref<const
 }
 
 template <>
-void access::Structure<Level>::hydrate(cref<StructScopedSlot> record_, Level& target_);
+void access::Structure<engine::core::Level>::hydrate(cref<StructScopedSlot> record_, engine::core::Level& target_);
 
 Result<Arci<engine::core::Level>, engine::diag::Diagnostics> engine::core::loadLevel(
 	ref<engine::resource::Archive> archive_,
@@ -185,7 +185,7 @@ Result<Arci<engine::core::Level>, engine::diag::Diagnostics> engine::core::loadL
 		const auto root = RootScopedSlot { archive_, ScopedSlotStateFlag::eClean, &ctx };
 		const auto kind = classifyRoot(root, ctx);
 		if (kind == RootKind::eRecord) {
-			access::Structure<Level>::hydrate(root.asStruct(), *level);
+			access::Structure<engine::core::Level>::hydrate(root.asStruct(), *level);
 
 		} else if (kind.has_value()) {
 			ctx.fail(ReadError { ReadError::Kind::eMalformed, root.slot()->getState().offset, 0LL, "level root must be a record" });

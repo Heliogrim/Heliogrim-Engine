@@ -6,13 +6,11 @@
 #include <chrono>
 #include <memory>
 #include <vector>
-#include <Engine.Scheduler/Scheduler.hpp>
-#include <Engine.Scheduler/Task/Task.hpp>
-#include <Engine.Scheduler/Thread/Thread.hpp>
-#include <Heliogrim/Async/Await.hpp>
-#include <Heliogrim/Async/Batch.hpp>
 
 #include "../Engine.Scheduler.Test/TestSchedulerEngine.hpp"
+
+import Engine.Scheduler;
+import Heliogrim;
 
 using namespace hg;
 

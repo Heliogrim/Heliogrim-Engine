@@ -2,13 +2,13 @@
 
 #include <Engine.Common/Sal.hpp>
 
+#include "PackageError.hpp"
+
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Diagnostics;
 import Engine.Common;
 import Engine.Resource.Package;
 #endif
-
-#include "PackageError.hpp"
 
 namespace hg::engine::storage::package {
 	/**/

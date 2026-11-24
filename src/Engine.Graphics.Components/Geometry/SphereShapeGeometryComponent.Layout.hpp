@@ -1,11 +1,11 @@
 #pragma once
 
-#include <Engine.Assets/AssetGuid.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 
 #include "SphereShapeGeometryComponent.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Assets;
 import Engine.Common;
 #endif
 

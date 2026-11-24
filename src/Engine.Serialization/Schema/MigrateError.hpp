@@ -1,6 +1,9 @@
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 #pragma once
 
-#include <Engine.Common/String.hpp>
 
 namespace hg::engine::serialization {
 	struct MigrateError {

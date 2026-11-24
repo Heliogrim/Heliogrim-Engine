@@ -4,11 +4,10 @@
 
 #include <string>
 #include <vector>
-#include <Engine.Resource.Archive/MemoryReadonlyArchive.hpp>
-#include <Engine.Serialization/Load/LoadContext.hpp>
-#include <Engine.Serialization/Scheme/ActorScheme.hpp>
-#include <Engine.Serialization/Structure/RootScopedSlot.hpp>
-#include <Heliogrim/Actor/Actor.hpp>
+
+import Engine.Resource.Archive;
+import Engine.Serialization;
+import Engine.ACS;
 
 using namespace hg::engine::serialization;
 using namespace hg::engine::resource;

@@ -1,11 +1,10 @@
 #include "Validate.hpp"
 
-#include <limits>
-#include <unordered_set>
-#include <Engine.Resource.Archive/Archive.hpp>
-#include <Engine.Resource.Archive/ArchiveStreamMode.hpp>
 
 #include "../Structure/SlotCursor.hpp"
+
+import std;
+import Engine.Resource.Archive;
 
 using namespace hg::engine::serialization;
 using namespace hg;

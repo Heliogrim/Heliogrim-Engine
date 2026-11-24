@@ -1,20 +1,12 @@
 #pragma once
 
-#include <span>
-#include <utility>
-
-#include <Engine.Common/Collection/DenseMap.hpp>
-#include <Engine.Common/Collection/DenseSet.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.Common/Expected.hpp>
-#include <Engine.Common/String.hpp>
-#include <Engine.Common/Types.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Math/Hash.hpp>
-#include <Engine.Diagnostics/Diagnostic.hpp>
-#include <Engine.Diagnostics/Sink.hpp>
 
 #include "ReadError.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+import Engine.Diagnostics;
+#endif
 
 namespace hg::engine::serialization {
 	class LoadContext {

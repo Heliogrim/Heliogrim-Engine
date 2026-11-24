@@ -1,15 +1,14 @@
 #include "RootKind.hpp"
 
-#include <format>
-#include <limits>
-#include <optional>
-#include <Engine.Core/Engine.hpp>
-#include <Engine.Serialization.Structures/Symbols.hpp>
 
-#include "../SerializationModule.hpp"
 #include "../Schema/Migration.hpp"
 #include "../Structure/IntegralScopedSlot.hpp"
 #include "../Structure/SlotCursor.hpp"
+
+import std;
+import Engine.Core;
+import Engine.Serialization.Structures;
+import Engine.ACS;
 
 using namespace ::hg::engine::serialization;
 using namespace ::hg;

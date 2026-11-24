@@ -5,8 +5,8 @@
 import Engine.Accel.Lang;
 import Engine.Common;
 import Engine.Diagnostics;
-#include <Engine.Serialization/Diagnostic/Codes.hpp>
-#include <Engine.Storage.Package/Diagnostic/Codes.hpp>
+import Engine.Serialization;
+import Engine.Storage.Package;
 
 using namespace hg::engine::diag;
 using namespace hg;

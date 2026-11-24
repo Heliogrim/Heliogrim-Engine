@@ -1,7 +1,8 @@
 #include "AssetLoad.hpp"
 
-#include <Engine.Common/GuidFormat.hpp>
-#include <Engine.Serialization/Diagnostic/Codes.hpp>
+import Engine.Common;
+import Engine.Serialization;
+
 
 using namespace hg::engine::assets;
 using namespace hg;

@@ -2,7 +2,9 @@
 
 #include "__fwd.hpp"
 #include "StructureSlot.hpp"
+#if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+#endif
 
 namespace hg::engine::serialization {
 	class StructSlot final :

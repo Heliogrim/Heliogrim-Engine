@@ -1,6 +1,9 @@
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+#endif
 #pragma once
 
-#include <Engine.Common/Types.hpp>
 
 namespace hg {
 	struct LayoutError {

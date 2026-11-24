@@ -1,11 +1,11 @@
 #pragma once
 
-#include <concepts>
-#include <utility>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Serialization/Load/ReadError.hpp>
-
 #include "AssetDatabase.hpp"
+
+#if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Common;
+import Engine.Serialization;
+#endif
 
 namespace hg {
 	/**

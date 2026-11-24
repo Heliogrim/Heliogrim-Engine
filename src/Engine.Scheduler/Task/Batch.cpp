@@ -1,11 +1,10 @@
 #include "Batch.hpp"
 
-#include <algorithm>
-#include <limits>
-#include <Engine.Asserts/Asserts.hpp>
-
 #include "Task.hpp"
 #include "../Scheduler.hpp"
+
+import std;
+import Engine.Asserts;
 
 using namespace hg::engine::scheduler;
 using namespace hg;

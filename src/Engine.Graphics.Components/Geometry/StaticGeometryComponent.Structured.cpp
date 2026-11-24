@@ -3,7 +3,6 @@
 import Engine.Assets.Database;
 import Engine.Serialization;
 
-#include "AssetResolve.hpp"
 #include "StaticGeometryComponent.Layout.hpp"
 using namespace hg::engine::serialization;
 using namespace hg;

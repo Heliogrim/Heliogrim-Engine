@@ -2,54 +2,19 @@
 
 /**/
 
-#include <cstdlib>
-#include <filesystem>
-#include <format>
-#include <fstream>
-#include <functional>
-#include <iterator>
-#include <new>
-
-#include <Engine.ACS/Registry.hpp>
-#include <Engine.Assets.Type/AssetLoad.hpp>
-#include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
-#include <Engine.Assets.Type/Material/GraphicsMaterial.hpp>
-#include <Engine.Assets.Type/Material/GraphicsMaterialPrototype.hpp>
-#include <Engine.Assets.Type/Texture/FontAsset.hpp>
-#include <Engine.Assets.Type/Texture/ImageAsset.hpp>
-#include <Engine.Assets.Type/Texture/TextureAsset.hpp>
-#include <Engine.Assets.Type/Universe/LevelAsset.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.Diagnostics/Sink.hpp>
-#include <Engine.Level/Level.hpp>
-#include <Engine.Resource.Archive/BufferArchive.hpp>
-#include <Engine.Serialization/SerializationModule.hpp>
-#include <Engine.Serialization/Access/Structure.hpp>
-#include <Engine.Serialization/Archive/StructuredArchive.hpp>
-#include <Engine.Serialization/Load/LoadContext.hpp>
-#include <Engine.Serialization/Scheme/ActorScheme.hpp>
-#include <Engine.Serialization/Scheme/ComponentScheme.hpp>
-#include <Engine.Serialization/Structure/RootScopedSlot.hpp>
-#include <Engine.Serialization/Structure/StructScopedSlot.hpp>
-#include <Heliogrim/Actor/Actor.hpp>
-#include <Heliogrim/Actor/Archetype/ActorClass.hpp>
-#include <Heliogrim/Actor/Archetype/ArchetypeFnSet.hpp>
-#include <Heliogrim/Actor/Camera/CameraActor.hpp>
-#include <Heliogrim/Actor/Geometry/BoxShapeGeometryActor.hpp>
-#include <Heliogrim/Actor/Geometry/SphereShapeGeometryActor.hpp>
-#include <Heliogrim/Actor/Geometry/StaticGeometryActor.hpp>
-#include <Heliogrim/Actor/Light/DirectionalLightActor.hpp>
-#include <Heliogrim/Actor/Light/PointLightActor.hpp>
-#include <Heliogrim/Component/HierarchyComponent.hpp>
-#include <Heliogrim/Component/Scene/Camera/CameraComponent.hpp>
-#include <Heliogrim/Component/Scene/Geometry/StaticGeometryComponent.hpp>
-#include <Heliogrim/Component/Scene/Light/DirectionalLightComponent.hpp>
-#include <Heliogrim/Component/Scene/Light/PointLightComponent.hpp>
-#include <Heliogrim/Component/Scene/Light/SpotLightComponent.hpp>
-#include <Heliogrim/Component/Scene/Sky/SkyboxComponent.hpp>
 
 #include "SpawnEngine.hpp"
 #include "TestArchetypes.hpp"
+
+import Engine.ACS;
+import Engine.Assets.Type;
+import Engine.Common;
+import Engine.Diagnostics;
+import Engine.Level;
+import Engine.Resource.Archive;
+import Engine.Serialization;
+import Heliogrim.Actors;
+import Engine.Graphics.Components;
 
 using namespace hg::engine::serialization;
 using namespace hg::engine::resource;
@@ -294,7 +259,7 @@ namespace HeliogrimApi::schema_fixtures {
 					std::ignore = level->addActor(sampleActor<StaticGeometryActor>(0x23u));
 				}
 				auto structured = StructuredArchive { archive_ };
-				access::Structure<Level>::serialize(*level, structured.insertRootSlot().intoStruct());
+				access::Structure<engine::core::Level>::serialize(*level, structured.insertRootSlot().intoStruct());
 			},
 			.reload = [name = String { name_ }](cref<Bytes> bytes_) {
 				auto archive = BufferArchive {};
@@ -306,7 +271,7 @@ namespace HeliogrimApi::schema_fixtures {
 					result.ok = level.value() != nullptr;
 				}
 				if (result.ok) {
-					result.resaved = saveWith([&](mref<StructScopedSlot> slot_) { access::Structure<Level>::serialize(**level, ::hg::move(slot_)); });
+					result.resaved = saveWith([&](mref<StructScopedSlot> slot_) { access::Structure<engine::core::Level>::serialize(**level, ::hg::move(slot_)); });
 				}
 				return result;
 			}

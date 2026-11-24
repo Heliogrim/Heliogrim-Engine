@@ -3,7 +3,7 @@
 #include "FnSets.hpp"
 #include "../Actor/Actor.hpp"
 #include "../Actor/Class/ActorClass.hpp"
-#include "ArchetypeMigration.hpp"
+#include "../Archetype/ArchetypeMigration.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Serialization;

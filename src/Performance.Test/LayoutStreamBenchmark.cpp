@@ -1,36 +1,16 @@
 #include "pch.h"
 
 /**/
-
-#include <algorithm>
-#include <array>
-#include <chrono>
-#include <cstddef>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <new>
-#include <string>
-#include <vector>
-#include <Engine.ACS/Registry.hpp>
-#include <Engine.ACS/Archetype/LayoutInfo.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.Serialization/Access/Structure.hpp>
-#include <Engine.Serialization/Structure/RecordScopedSlot.hpp>
-#include <Engine.Serialization/Structure/StructScopedSlot.hpp>
-#include <Heliogrim/Actor/Actor.hpp>
-#include <Heliogrim/Actor/Archetype/ActorClass.hpp>
-#include <Heliogrim/Actor/Archetype/ArchetypeDefinition.inl.hpp>
-#include <Heliogrim/Actor/Archetype/ArchetypeFnSet.hpp>
-#include <Heliogrim/Actor/Archetype/ArchetypeLayout.inl.hpp>
-#include <Heliogrim/Actor/Archetype/InheritArchetype.hpp>
-#include <Heliogrim/ActorInitializer.hpp>
-#include <Heliogrim/Component/HierarchyComponent.hpp>
+#include <Engine.ACS/Archetype/ArchetypeDefinition.inl.hpp>
+#include <Engine.ACS/Archetype/ArchetypeLayout.inl.hpp>
 #ifdef _WIN32
 #define NOMINMAX
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #endif
+import Engine.ACS;
+import Engine.Common;
+import Engine.Serialization;
 
 /**
  * Archetype layout stream (dumpLayout / loadLayout) against plain memcpy / memmove of the same bytes.

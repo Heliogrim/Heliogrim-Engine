@@ -1,8 +1,9 @@
 #include "LoadContext.hpp"
 
-#include <algorithm>
 
 #include "../Diagnostic/Codes.hpp"
+
+import std;
 
 using namespace hg::engine;
 using namespace hg::engine::serialization;

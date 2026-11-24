@@ -2,13 +2,12 @@
 
 /**/
 
-#include <Engine.ACS/ActorModule.hpp>
-#include <Engine.ACS/Registry.hpp>
-#include <Engine.Common/Make.hpp>
-#include <Heliogrim/Component/HierarchyComponent.hpp>
 
 #include "SpawnEngine.hpp"
 #include "TestArchetypes.hpp"
+
+import Engine.ACS;
+import Engine.Common;
 
 using namespace hg;
 

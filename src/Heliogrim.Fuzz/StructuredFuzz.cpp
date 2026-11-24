@@ -13,32 +13,16 @@
 #include <iterator>
 #include <string>
 #include <utility>
-#include <Engine.Assets.Type/AssetLoad.hpp>
-#include <Engine.Assets.Type/Geometry/StaticGeometry.hpp>
-#include <Engine.Assets.Type/Texture/FontAsset.hpp>
-#include <Engine.Assets.Type/Texture/ImageAsset.hpp>
-#include <Engine.Assets.Type/Texture/TextureAsset.hpp>
-#include <Engine.Assets.Type/Universe/LevelAsset.hpp>
-#include <Engine.Diagnostics/Sink.hpp>
-#include <Engine.Level/Level.hpp>
-#include <Engine.Resource.Archive/BufferArchive.hpp>
-#include <Engine.Serialization/Access/Structure.hpp>
-#include <Engine.Serialization/Load/LoadContext.hpp>
-#include <Engine.Serialization/Scheme/ActorScheme.hpp>
-#include <Engine.Serialization/Scheme/ComponentScheme.hpp>
-#include <Engine.Serialization/Structure/RootScopedSlot.hpp>
-#include <Heliogrim/Actor/Actor.hpp>
-#include <Heliogrim/Actor/Archetype/ArchetypeFnSet.hpp>
-#include <Heliogrim/Actor/Geometry/BoxShapeGeometryActor.hpp>
-#include <Heliogrim/Actor/Geometry/SphereShapeGeometryActor.hpp>
-#include <Heliogrim/Actor/Geometry/StaticGeometryActor.hpp>
-#include <Heliogrim/Component/HierarchyComponent.hpp>
-#include <Heliogrim/Component/Scene/Camera/CameraComponent.hpp>
-#include <Heliogrim/Component/Scene/Geometry/StaticGeometryComponent.hpp>
-#include <Heliogrim/Component/Scene/Light/DirectionalLightComponent.hpp>
-#include <Heliogrim/Component/Scene/Light/PointLightComponent.hpp>
-#include <Heliogrim/Component/Scene/Light/SpotLightComponent.hpp>
 #include <Heliogrim.Test/SpawnEngine.hpp>
+
+import Engine.Assets.Type;
+import Engine.Diagnostics;
+import Engine.Level;
+import Engine.Resource.Archive;
+import Engine.Serialization;
+import Engine.ACS;
+import Heliogrim.Actors;
+import Engine.Graphics.Components;
 
 using namespace hg;
 using namespace hg::engine::serialization;

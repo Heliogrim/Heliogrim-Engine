@@ -1,18 +1,14 @@
 #include "Migration.hpp"
 
-#include <algorithm>
-#include <array>
-#include <format>
-#include <Engine.Asserts/Asserts.hpp>
-#include <Engine.Common/Make.hpp>
-#include <Engine.Common/Optional.hpp>
-#include <Engine.Resource.Archive/BufferArchive.hpp>
-
 #include "../Archive/StructuredArchive.hpp"
 #include "../Structure/IntegralScopedSlot.hpp"
 #include "../Structure/RootScopedSlot.hpp"
 #include "../Structure/SlotCursor.hpp"
 #include "../Structure/StructSlot.hpp"
+
+import Engine.Asserts;
+import Engine.Common;
+import Engine.Resource.Archive;
 
 using namespace hg::engine::serialization;
 using namespace hg;

@@ -1,4 +1,3 @@
-#include <thread>
 #include "Schedule.hpp"
 
 #include "BoostCell.hpp"
