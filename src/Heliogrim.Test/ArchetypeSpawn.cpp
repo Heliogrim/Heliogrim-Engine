@@ -244,7 +244,7 @@ namespace HeliogrimApi {
 		Universe _universe;
 
 		[[nodiscard]] ref<engine::acs::Registry> registry() const noexcept {
-			return *_engine->getActors()->getRegistry();
+			return *::hg::engine::ActorModule::get()->getRegistry();
 		}
 
 		[[nodiscard]] ref<engine::core::Level> rootLevel() const noexcept {

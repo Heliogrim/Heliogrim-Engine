@@ -4,10 +4,19 @@
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.ACS;
+import Engine.Assets;
+import Engine.Audio;
 import Engine.Common;
 import Engine.Config;
 import Engine.Core;
 import Engine.Event;
+import Engine.Graphics.Core;
+import Engine.Input;
+import Engine.Network;
+import Engine.Physics;
+import Engine.Platform;
+import Engine.Resource;
+import Engine.Scheduler;
 import Engine.Storage;
 #endif
 /**/
@@ -61,32 +70,6 @@ namespace hg::editor {
 
 		engine::core::Modules _modules;
 		engine::core::Timing _timing;
-
-	public:
-		[[nodiscard]] nmpt<engine::ActorModule> getActors() const noexcept override;
-
-		[[nodiscard]] nmpt<engine::Assets> getAssets() const noexcept override;
-
-		[[nodiscard]] nmpt<engine::Audio> getAudio() const noexcept override;
-
-		[[nodiscard]] nmpt<engine::Graphics> getGraphics() const noexcept override;
-
-		[[nodiscard]] nmpt<engine::Input> getInput() const noexcept override;
-
-		[[nodiscard]] nmpt<engine::Network> getNetwork() const noexcept override;
-
-		[[nodiscard]] nmpt<engine::Physics> getPhysics() const noexcept override;
-
-	public:
-		[[nodiscard]] nmpt<engine::Platform> getPlatform() const noexcept override;
-
-		[[nodiscard]] nmpt<engine::ResourceManager> getResources() const noexcept override;
-
-		[[nodiscard]] nmpt<engine::Scheduler> getScheduler() const noexcept override;
-
-		[[nodiscard]] nmpt<const engine::SerializationModule> getSerialization() const noexcept override;
-
-		[[nodiscard]] nmpt<const engine::StorageModule> getStorage() const noexcept override;
 
 	public:
 		[[nodiscard]] ref<engine::Config> getConfig() const noexcept override;

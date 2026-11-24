@@ -24,7 +24,7 @@ void ActorHousekeepingStage::staticDispatch(ref<const scheduler::StaticStageDisp
 		task::make_repetitive_task(
 			[]() {
 				const auto engine = Engine::getEngine();
-				const auto registry = engine->getActors()->getRegistry();
+				const auto registry = ::hg::engine::ActorModule::get()->getRegistry();
 				registry->housekeep(
 					[&engine](ref<const engine::acs::RelocationTable> table_) {
 						for (const auto& ctx : engine->getUniverseContexts()) {

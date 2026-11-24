@@ -41,7 +41,7 @@ void Audio::destroy() {
 
 void Audio::registerImporter() {
 
-	const auto manager { _engine->getResources() };
+	auto manager { ResourceManager::get() };
 
 	//
 	manager->importer().registerImporter(audio::AudioFileType::Flac, make_sptr<audio::FlacImporter>());
@@ -51,7 +51,7 @@ void Audio::registerImporter() {
 
 void Audio::unregisterImporter() {
 
-	const auto manager { _engine->getResources() };
+	auto manager { ResourceManager::get() };
 
 	/**/
 	manager->importer().unregisterImporter(audio::AudioFileType::Flac);

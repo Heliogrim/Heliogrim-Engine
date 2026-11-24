@@ -8,6 +8,7 @@
 import Engine.Common;
 import Engine.Core;
 import Engine.Serialization.Layouts;
+import Engine.Storage;
 
 using namespace hg::engine::resource;
 using namespace hg::engine;
@@ -45,7 +46,7 @@ void ResourceManager::setup() {
 
 	if (!_loader) {
 		auto engine = Engine::getEngine();
-		_loader = make_uptr<LoaderManager>(*engine->getStorage());
+		_loader = make_uptr<LoaderManager>(*StorageModule::get());
 	}
 }
 

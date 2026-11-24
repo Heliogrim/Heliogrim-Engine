@@ -120,7 +120,7 @@ ref<const AssetGuid> editor::EditorUI::getDefaultFontGuid() const noexcept {
 
 nmpt<engine::assets::FontAsset> editor::EditorUI::getDefaultFont() const noexcept {
 
-	auto registry = _engine->getAssets()->getRegistry();
+	auto registry = Assets::get()->getRegistry();
 	auto asset = registry->findAssetByGuid(assets::font::default_font_guid);
 	::hg::assertrt(asset != None);
 

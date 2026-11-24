@@ -216,7 +216,7 @@ Opt<Indexed> buildIndexedFrom(cref<path> lfs_) {
 Opt<LoadAwait> enqueueIndexedLoad(cref<Indexed> indexed_) {
 
 	const auto engine = Engine::getEngine();
-	const auto storeSys = engine->getStorage()->getSystem();
+	const auto storeSys = StorageModule::get()->getSystem();
 
 	/**/
 
@@ -530,7 +530,7 @@ static s64 probe_archived_assets(ref<resource::StorageReadonlyArchive> archive_,
 void package_discover_assets(mref<Arci<storage::system::PackageStorage>> packStore_) {
 
 	const auto engine = Engine::getEngine();
-	const auto storeSys = engine->getStorage()->getSystem();
+	const auto storeSys = StorageModule::get()->getSystem();
 
 	// TODO: We need some iterator over the storages by a certain filter ( package storages in this case )
 	// Question: Do we need a global lock to iterate the stored storage objects?

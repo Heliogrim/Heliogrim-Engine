@@ -492,8 +492,8 @@ Result<Arci<engine::storage::system::PackageStorage>, engine::diag::Diagnostics>
 	/**/
 
 	const auto engine = engine::Engine::getEngine();
-	const auto storeReg = engine->getStorage()->getRegistry();
-	const auto storeSys = engine->getStorage()->getSystem();
+	const auto storeReg = ::hg::engine::StorageModule::get()->getRegistry();
+	const auto storeSys = ::hg::engine::StorageModule::get()->getSystem();
 
 	/* Generate the package storage unit */
 

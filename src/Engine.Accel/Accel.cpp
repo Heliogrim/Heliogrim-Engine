@@ -38,7 +38,7 @@ void Accel::setup() {
 	/**
 	 * Register Hooks and Loader
 	 */
-	auto& loader = _engine->getResources()->loader();
+	auto& loader = ResourceManager::get()->loader();
 	accel::register_loader(loader, clone(_globalStorage));
 	// accel::register_importer(...);
 }
@@ -52,7 +52,7 @@ void Accel::destroy() {
 	/**
 	 * Unregister Hooks and Loader
 	 */
-	auto& loader = _engine->getResources()->loader();
+	auto& loader = ResourceManager::get()->loader();
 	accel::unregister_loader(loader, _globalStorage);
 
 	/**/

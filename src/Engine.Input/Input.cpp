@@ -46,7 +46,7 @@ void Input::setup() {
 	 * Scheduling Pipelines
 	 */
 	auto inputPipeline = make_uptr<schedule::InputPipeline>();
-	_engine->getScheduler()->getCompositePipeline()->addPipeline(std::move(inputPipeline));
+	Scheduler::get()->getCompositePipeline()->addPipeline(std::move(inputPipeline));
 }
 
 void Input::start() {}

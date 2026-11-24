@@ -255,7 +255,7 @@ Future<FileUrl, std::runtime_error> requestPlatformSelect(mref<Vector<SelectFile
 	/**/
 
 	const auto engine = engine::Engine::getEngine();
-	const auto platform = engine->getPlatform();
+	auto platform = engine::Platform::get();
 
 	// A closed platform inbox surfaces as Broken, which the caller treats as a cancelled selection.
 	return platform->platformThread().post([filters = ::hg::move(filter_), select] { return select(filters); }).then(

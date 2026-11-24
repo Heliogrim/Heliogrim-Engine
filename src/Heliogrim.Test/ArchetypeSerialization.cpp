@@ -430,7 +430,7 @@ namespace HeliogrimApi {
 	}
 
 	TEST_F(ArchetypeSerPublic, ComponentOffsetMaxRejected) {
-		auto &registry = *_engine->getActors()->getRegistry();
+		auto &registry = *engine::ActorModule::get()->getRegistry();
 		auto created = CreateActor<TestTank>();
 		const auto handle = registry.handleOf(*created.get());
 		constexpr auto componentId = refl::TypeId<HierarchyComponent>();
@@ -446,7 +446,7 @@ namespace HeliogrimApi {
 	}
 
 	TEST_F(ArchetypeSerPublic, ActorRefWrongClassResolvesNull) {
-		auto &registry = *_engine->getActors()->getRegistry();
+		auto &registry = *engine::ActorModule::get()->getRegistry();
 		auto created = CreateActor<TestTank>();
 		const auto handle = registry.handleOf(*created.get());
 
@@ -905,7 +905,7 @@ namespace HeliogrimApi {
 		auto structured = StructuredArchive { archive };
 		const auto scheme = _engine->_serialization->getActorScheme(Actor::typeId);
 		ASSERT_TRUE(scheme.has_value());
-		const auto actor = scheme->deserialize(structured.getRootSlot(), _engine->getActors()->getRegistry());
+		const auto actor = scheme->deserialize(structured.getRootSlot(), engine::ActorModule::get()->getRegistry());
 
 		ASSERT_NE(actor, nullptr);
 		// Context-less: rejection is reported through LoadContext only (LoadBoundary.SecondRootComponentRejected).

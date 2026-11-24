@@ -19,7 +19,7 @@ namespace HeliogrimApi {
 
 		const auto actors = engine::ActorModule::get();
 		ASSERT_TRUE(actors.has_value());
-		EXPECT_EQ(std::addressof(actors.value()), engine->getActors().get());
+		EXPECT_EQ(std::addressof(actors.value()), std::addressof(engine->getModules().getCoreModule<engine::ActorModule>().value()));
 
 		EXPECT_TRUE(engine::SerializationModule::get().has_value());
 		EXPECT_FALSE(engine::Assets::get().has_value());
@@ -37,6 +37,6 @@ namespace HeliogrimApi {
 		const auto second = make_uptr<SpawnEngine>();
 		const auto actors = engine::ActorModule::get();
 		ASSERT_TRUE(actors.has_value());
-		EXPECT_EQ(std::addressof(actors.value()), second->getActors().get());
+		EXPECT_EQ(std::addressof(actors.value()), std::addressof(second->getModules().getCoreModule<engine::ActorModule>().value()));
 	}
 }

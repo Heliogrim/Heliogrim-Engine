@@ -69,55 +69,6 @@ namespace hg::test::gpu {
 		}
 
 	public:
-		[[nodiscard]] nmpt<engine::ActorModule> getActors() const noexcept override {
-			return nullptr;
-		}
-
-		[[nodiscard]] nmpt<engine::Assets> getAssets() const noexcept override {
-			return nullptr;
-		}
-
-		[[nodiscard]] nmpt<engine::Audio> getAudio() const noexcept override {
-			return nullptr;
-		}
-
-		[[nodiscard]] nmpt<engine::Graphics> getGraphics() const noexcept override {
-			return &_graphics;
-		}
-
-		[[nodiscard]] nmpt<engine::Input> getInput() const noexcept override {
-			return nullptr;
-		}
-
-		[[nodiscard]] nmpt<engine::Network> getNetwork() const noexcept override {
-			return nullptr;
-		}
-
-		[[nodiscard]] nmpt<engine::Physics> getPhysics() const noexcept override {
-			return nullptr;
-		}
-
-		[[nodiscard]] nmpt<engine::Platform> getPlatform() const noexcept override {
-			return nullptr;
-		}
-
-		[[nodiscard]] nmpt<engine::ResourceManager> getResources() const noexcept override {
-			return nullptr;
-		}
-
-		[[nodiscard]] nmpt<engine::Scheduler> getScheduler() const noexcept override {
-			return nullptr;
-		}
-
-		nmpt<const engine::SerializationModule> getSerialization() const noexcept override {
-			return nullptr;
-		}
-
-		[[nodiscard]] nmpt<const engine::StorageModule> getStorage() const noexcept override {
-			return nullptr;
-		}
-
-	public:
 		[[nodiscard]] ref<engine::Config> getConfig() const noexcept override {
 			return _config;
 		}

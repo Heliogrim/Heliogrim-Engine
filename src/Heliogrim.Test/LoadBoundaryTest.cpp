@@ -139,7 +139,7 @@ namespace LoadBoundaryModule {
 		}
 
 		[[nodiscard]] nmpt<engine::acs::Registry> registry() const {
-			return _engine->getActors()->getRegistry();
+			return engine::ActorModule::get()->getRegistry();
 		}
 
 		void writeLevel(const u16 actorRev_, std::span<const ComponentSpec> components_, const u64 actorType_ = testActorType) {

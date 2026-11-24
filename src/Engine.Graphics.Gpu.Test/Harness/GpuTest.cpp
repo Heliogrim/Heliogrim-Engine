@@ -1,6 +1,7 @@
 #include "GpuTest.hpp"
 
 import Engine.Common;
+import Engine.Graphics.Core;
 
 using namespace hg::test::gpu;
 using namespace hg;
@@ -49,7 +50,7 @@ void GpuTest::TearDown() {
 }
 
 sptr<engine::graphics::Device> GpuTest::device() const {
-	return _engine ? _engine->getGraphics()->getCurrentDevice() : nullptr;
+	return _engine ? engine::Graphics::get()->getCurrentDevice() : nullptr;
 }
 
 ref<ValidationCapture> GpuTest::validation() {
