@@ -93,7 +93,9 @@ namespace hg::engine::reflow {
 		Vector<uptr<Layer>> _layers;
 
 	public:
-		[[nodiscard]] nmpt<Layer> requestLayer(cref<sptr<Host>> host_);
+		[[nodiscard]] nmpt<Layer> requestLayer(const LayerBand band_, cref<sptr<Host>> host_);
+
+		[[nodiscard]] std::span<const uptr<Layer>> layers() const noexcept;
 
 		void dropLayer(nmpt<Host> host_);
 

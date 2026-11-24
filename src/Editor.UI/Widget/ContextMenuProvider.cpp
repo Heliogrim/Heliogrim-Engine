@@ -88,7 +88,7 @@ EventReply ContextMenuProvider::invokeOnMouseButtonUp(ref<const MouseEvent> even
 		event_._pointer,
 		math::fvec2 { std::numeric_limits<f32>::infinity() }
 	);
-	[[maybe_unused]] auto layer = window->requestLayer(_runtimeMenuHost);
+	[[maybe_unused]] auto layer = window->requestLayer(LayerBand::ePopup, _runtimeMenuHost);
 	menu->setParent(_runtimeMenuHost);
 
 	/**/

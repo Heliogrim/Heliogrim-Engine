@@ -64,7 +64,7 @@ void InputSelect::openMenu() {
 	};
 	_runtimeMenuHost = make_sptr<Host>(menu, screenMenuOffset, math::fvec2 { std::numeric_limits<f32>::infinity() });
 
-	discard = window->requestLayer(_runtimeMenuHost);
+	discard = window->requestLayer(LayerBand::ePopup, _runtimeMenuHost);
 	menu->setParent(_runtimeMenuHost);
 	menu->markAsPending(true, true);
 }
