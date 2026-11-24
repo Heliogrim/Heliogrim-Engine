@@ -134,6 +134,13 @@ void Registry::destroyActor(mref<ptr<Actor>> actor_) {
 	pool->erase(actor_->guid());
 }
 
+bool Registry::contains(cref<ActorGuid> guid_) const noexcept {
+	return std::ranges::any_of(
+		_actorPools,
+		[&guid_](const auto& entry_) { return entry_.second != nullptr && entry_.second->get(guid_) != nullptr; }
+	);
+}
+
 void Registry::hackActorInit(cref<ActorInitializer> initializer_, cref<ActorGuid> guid_) const noexcept {
 	// Warning: Hotfix - Hack
 	const_cast<ref<ActorInitializer>>(initializer_)._guid = guid_;
