@@ -18,6 +18,12 @@ namespace {
 		ref<const Arci<system::LocalFileStorage>> storage_,
 		const engine::io::IoOpenMode mode_
 	);
+
+	[[nodiscard]] Result<IoResourceAccessor<const Blob>, Query::acq_error_type> resolveQuery(
+		ref<Context> ctx_,
+		ref<const Arci<system::LocalFileStorage>> storage_,
+		const engine::io::IoOpenMode mode_
+	);
 }
 
 Result<IoResourceAccessor<Blob>, Mutation::acq_error_type> engine::storage::resolveStaticLfsVoid2LfsBlobMutation(
@@ -74,18 +80,14 @@ Result<IoResourceAccessor<const Blob>, Query::acq_error_type> engine::storage::r
 	ref<Context> ctx_,
 	cref<Arci<system::LocalFileStorage>> storage_
 ) {
-	auto value = openBlob(ctx_, storage_, engine::io::IoOpenMode::eRead);
-	if (value == nullptr) {
-		return Unexpected<Query::acq_error_type> { AccessError { "Failed to open file for query." } };
-	}
+	return resolveQuery(ctx_, storage_, engine::io::IoOpenMode::eRead);
+}
 
-	return Expected(
-		acquireSharedReadonly(
-			[_obj = move(value)](ResourceAccessMode) -> ref<const Blob> {
-				return *_obj;
-			}
-		)
-	);
+Result<IoResourceAccessor<const Blob>, Query::acq_error_type> engine::storage::resolveStaticLfsVoid2LfsBlobPackQuery(
+	ref<Context> ctx_,
+	ref<const Arci<system::LocalFileStorage>> storage_
+) {
+	return resolveQuery(ctx_, storage_, engine::io::IoOpenMode::eUnbuffered);
 }
 
 void engine::storage::releaseStaticLfsBlobQuery(
@@ -122,5 +124,24 @@ namespace {
 			return nullptr;
 		}
 		return blob;
+	}
+
+	Result<IoResourceAccessor<const Blob>, Query::acq_error_type> resolveQuery(
+		ref<Context> ctx_,
+		ref<const Arci<system::LocalFileStorage>> storage_,
+		const engine::io::IoOpenMode mode_
+	) {
+		auto value = openBlob(ctx_, storage_, mode_);
+		if (value == nullptr) {
+			return Unexpected<Query::acq_error_type> { AccessError { "Failed to open file for query." } };
+		}
+
+		return Expected(
+			acquireSharedReadonly(
+				[_obj = move(value)](ResourceAccessMode) -> ref<const Blob> {
+					return *_obj;
+				}
+			)
+		);
 	}
 }

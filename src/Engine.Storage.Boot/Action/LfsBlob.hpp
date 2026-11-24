@@ -34,6 +34,15 @@ namespace hg::engine::storage {
 		_In_ cref<Arci<system::LocalFileStorage>> storage_
 	);
 
+	// The query above, opened unbuffered (Q03.7): the file stage under a package.
+	[[nodiscard]] Result<
+		IoResourceAccessor<const engine::resource::Blob>,
+		Query::acq_error_type
+	> resolveStaticLfsVoid2LfsBlobPackQuery(
+		_Inout_ ref<Context> ctx_,
+		_In_ ref<const Arci<system::LocalFileStorage>> storage_
+	);
+
 	void releaseStaticLfsBlobQuery(
 		_Inout_ ref<Context> ctx_,
 		_In_ cref<Arci<system::LocalFileStorage>> storage_,
