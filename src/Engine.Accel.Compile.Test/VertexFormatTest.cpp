@@ -2,7 +2,7 @@
 
 /**/
 
-#include <Engine.Accel.Compile/Pass/VkVertexFormat.hpp>
+import Engine.Accel.Compile;
 
 using namespace hg::engine::accel;
 using namespace hg;

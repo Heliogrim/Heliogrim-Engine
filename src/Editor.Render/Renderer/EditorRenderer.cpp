@@ -1,11 +1,11 @@
 #include "EditorRenderer.hpp"
 
-#include <Engine.Graphics.Render.Predefined/Symbols/SceneColor.hpp>
 #include <Engine.Graphics.Render.Subpass/Impl/DummyProvider.hpp>
 #include <Engine.Graphics.Render.Subpass/Impl/TmpEndPass.hpp>
 #include <Engine.Reflow.Render/ReflowPass.hpp>
 
 import Engine.Common;
+import Engine.Graphics.Render.Predefined;
 import Engine.Graphics.RenderGraph;
 
 using namespace hg::editor::render;

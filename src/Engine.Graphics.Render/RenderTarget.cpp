@@ -2,11 +2,10 @@
 
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Graphics.Render/RenderPass.hpp>
-#include <Engine.Graphics.Render.Predefined/Symbols/SceneColor.hpp>
-#include <Engine.Graphics.Render.Predefined/Symbols/SceneView.hpp>
 
 import Engine.Common;
 import Engine.Graphics;
+import Engine.Graphics.Render.Predefined;
 import Engine.Graphics.Scene;
 import Engine.Logging;
 

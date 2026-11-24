@@ -2,21 +2,6 @@
 
 #include <cassert>
 #include <Engine.Graphics.Core/Graphics.hpp>
-#include <Engine.Graphics.Render.Command/RenderCommandBuffer.hpp>
-#include <Engine.Graphics.Render.Command/RenderCommandIterator.hpp>
-#include <Engine.Graphics.Render.Command/Commands/AttachResource.hpp>
-#include <Engine.Graphics.Render.Command/Commands/BeginAccelerationPass.hpp>
-#include <Engine.Graphics.Render.Command/Commands/BindIndexBuffer.hpp>
-#include <Engine.Graphics.Render.Command/Commands/BindPipeline.hpp>
-#include <Engine.Graphics.Render.Command/Commands/BindStorageBuffer.hpp>
-#include <Engine.Graphics.Render.Command/Commands/BindTexture.hpp>
-#include <Engine.Graphics.Render.Command/Commands/BindTextureSampler.hpp>
-#include <Engine.Graphics.Render.Command/Commands/BindUniformBuffer.hpp>
-#include <Engine.Graphics.Render.Command/Commands/BindVertexBuffer.hpp>
-#include <Engine.Graphics.Render.Command/Commands/DrawDispatch.hpp>
-#include <Engine.Graphics.Render.Command/Commands/DrawDispatchIndirect.hpp>
-#include <Engine.Graphics.Render.Command/Commands/DrawMesh.hpp>
-#include <Engine.Graphics.Render.Command/Commands/Lambda.hpp>
 
 #include "VkResourceTable.hpp"
 
@@ -25,6 +10,7 @@ import Engine.Accel.Pipeline;
 import Engine.Common;
 import Engine.Core;
 import Engine.Graphics;
+import Engine.Graphics.Render.Command;
 import Engine.Reflect;
 
 using namespace hg::driver::vk;

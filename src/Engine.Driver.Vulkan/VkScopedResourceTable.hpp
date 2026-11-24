@@ -3,7 +3,6 @@
 #include <cstdint>
 #include <Engine.Common/Sal.hpp>
 #include <Engine.Graphics/API/__vkFwd.hpp>
-#include <Engine.Graphics.Render.Command/Resource/ResourceTable.hpp>
 
 #include "VkDescriptor.hpp"
 
@@ -11,6 +10,7 @@
 import Engine.Accel.Pipeline;
 import Engine.Common;
 import Engine.Graphics;
+import Engine.Graphics.Render.Command;
 #endif
 
 namespace hg::driver::vk {

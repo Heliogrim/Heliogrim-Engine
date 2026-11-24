@@ -4,8 +4,6 @@
 #include "DefaultAssetInit.hpp"
 
 #include "Engine.Accel/Accel.hpp"
-#include "Engine.Graphics.Render.Predefined/Effects/BrdfBase.hpp"
-#include "Engine.Graphics.Render.Predefined/Effects/Skybox.hpp"
 #include "Fonts/Default.hpp"
 #include "GraphicsMaterials/Default.hpp"
 #include "Images/Default.hpp"
@@ -16,6 +14,7 @@ import Engine.Assets;
 import Engine.Assets.System;
 import Engine.Assets.Type;
 import Engine.Core;
+import Engine.Graphics.Render.Predefined;
 
 using namespace hg::editor::boot;
 using namespace hg::engine;
