@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Serialization/Access/__fwd.hpp>
-
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.ACS;
 import Engine.Graphics.Components;
@@ -9,25 +7,19 @@ import Engine.Graphics.Components;
 
 namespace hg {
 	class CameraActor :
-		public InheritMeta<CameraActor, Actor> {
-	public:
-		ACCESS_LAYOUT
-		ACCESS_STRUCTURE
-
+		public InheritArchetype<CameraActor, Actor> {
 	public:
 		using this_type = CameraActor;
-		using underlying_type = Actor;
-
 		constexpr static type_id typeId { "CameraActor"_typeId };
 
-	public:
-		CameraActor(cref<ActorInitializer> initializer_);
-
-	private:
-		ptr<CameraComponent> _cameraComponent;
-		ptr<HierarchyComponent> _mountComponent;
+		using layout = engine::acs::ActorLayout<
+			engine::acs::Slot<"mount", HierarchyComponent, engine::acs::Children<
+				engine::acs::Slot<"camera", CameraComponent>>>>;
 
 	public:
-		[[nodiscard]] nmpt<CameraComponent> getCameraComponent() const noexcept;
+		explicit CameraActor(cref<ActorInitializer> initializer_);
+
+	public:
+		[[nodiscard]] nmpt<CameraComponent> getCameraComponent() noexcept;
 	};
 }

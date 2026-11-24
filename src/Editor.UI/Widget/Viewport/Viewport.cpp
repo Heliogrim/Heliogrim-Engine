@@ -49,7 +49,7 @@ Viewport::Viewport() :
 	_currentImageSignal(nullptr),
 	_currentImageWaits(),
 	_renderer(),
-	_cameraActor(nullptr),
+	_cameraActor(),
 	_uvs(
 		{
 			math::vec2 { 0.F, 0.F },
@@ -78,7 +78,7 @@ bool Viewport::shouldTick() const noexcept {
 void Viewport::tick() {
 	Widget::tick();
 
-	if (_cameraUniverse != nullptr && _cameraActor != nullptr) {
+	if (_cameraUniverse != nullptr && getCameraActor() != nullptr) {
 		updateCameraWithCtrl();
 	}
 
@@ -136,10 +136,11 @@ bool Viewport::hasMountedRenderTarget() const noexcept {
 }
 
 const non_owning_rptr<CameraActor> Viewport::getCameraActor() const noexcept {
-	return _cameraActor;
+	auto camera = _cameraActor.get();
+	return camera.has_value() ? std::addressof(camera.value()) : nullptr;
 }
 
-void Viewport::setViewportTarget(StringView renderer_, Universe universe_, ptr<CameraActor> camera_) {
+void Viewport::setViewportTarget(StringView renderer_, Universe universe_, const ActorRef<CameraActor> camera_) {
 	_renderer = std::move(renderer_);
 	_cameraUniverse = universe_.unwrap();
 	_cameraActor = camera_;
@@ -147,8 +148,9 @@ void Viewport::setViewportTarget(StringView renderer_, Universe universe_, ptr<C
 
 void Viewport::updateCameraWithCtrl() {
 
-	ref<Transform> rtf { _cameraActor->getRootComponent()->getLocalTransform() };
-	ref<const Transform> ctf = _cameraActor->getCameraComponent()->getLocalTransform();
+	auto* const camera = getCameraActor();
+	ref<Transform> rtf { camera->getRootComponent()->getLocalTransform() };
+	ref<const Transform> ctf = camera->getCameraComponent()->getLocalTransform();
 	const auto factor = (_cameraControls.boost ? 20.F : 5.F) * core::Timing::getDeltaTime();
 
 	auto delta = math::fvec3 { 0.F };
@@ -249,9 +251,14 @@ void Viewport::remountRenderTarget() {
 
 	auto view = smr<const hg::engine::graphics::scene::SceneView> { nullptr };
 
+	auto* const camera = getCameraActor();
+	if (camera == nullptr) {
+		return;
+	}
+
 	const auto renderSystem = coreScene->getSceneSystem<render::RenderSceneSystem>();
 	renderSystem->getRegistry().forEach<render::CameraModel>(
-		[owner = _cameraActor->getCameraComponent(), &view](const auto& model_) {
+		[owner = camera->getCameraComponent(), &view](const auto& model_) {
 			if (model_.owner() == owner) {
 				view = model_.getSceneView();
 			}
@@ -296,8 +303,8 @@ void Viewport::rebuildView() {
 
 	/**/
 
-	if (_cameraActor) {
-		const auto cc { _cameraActor->getCameraComponent() };
+	if (auto* const camera = getCameraActor(); camera != nullptr) {
+		const auto cc { camera->getCameraComponent() };
 		cc->setAspectRatio(
 			static_cast<float>(extent.x) / static_cast<float>(extent.y)
 		);
@@ -499,7 +506,7 @@ EventResponse Viewport::invokeOnKeyDown(ref<const KeyboardEvent> event_) {
 		return EventResponse::eConsumed;
 	}
 
-	if (not _cameraActor) {
+	if (getCameraActor() == nullptr) {
 		return EventResponse::eHandled;
 	}
 
@@ -554,7 +561,7 @@ EventResponse Viewport::invokeOnKeyUp(ref<const KeyboardEvent> event_) {
 		return EventResponse::eConsumed;
 	}
 
-	if (not _cameraActor) {
+	if (getCameraActor() == nullptr) {
 		return EventResponse::eHandled;
 	}
 
@@ -608,7 +615,8 @@ EventResponse Viewport::invokeOnMouseMove(ref<const MouseMoveEvent> event_) {
 	const auto isShift { (event_._modifier & 0x3) != 0x0 };
 	const auto rbtn { (event_._button & 0x4) != 0x0 };
 
-	if (!rbtn || not _cameraActor) {
+	auto* const camera = getCameraActor();
+	if (!rbtn || camera == nullptr) {
 		return EventResponse::eConsumed;
 	}
 
@@ -627,8 +635,8 @@ EventResponse Viewport::invokeOnMouseMove(ref<const MouseMoveEvent> event_) {
 	dxdy.x = glm::radians(dxdy.x);
 	dxdy.y = glm::radians(dxdy.y);
 
-	ref<Transform> rtf { _cameraActor->getRootComponent()->getLocalTransform() };
-	ref<Transform> ctf { _cameraActor->getCameraComponent()->getLocalTransform() };
+	ref<Transform> rtf { camera->getRootComponent()->getLocalTransform() };
+	ref<Transform> ctf { camera->getCameraComponent()->getLocalTransform() };
 
 	rtf.rotator() += math::Rotator { 0.F, dxdy.x, 0.F };
 	ctf.rotator() += math::Rotator { dxdy.y, 0.F, 0.F };

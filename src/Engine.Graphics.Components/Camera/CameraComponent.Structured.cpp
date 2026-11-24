@@ -15,8 +15,9 @@ void access::Structure<CameraComponent>::serialize(cref<CameraComponent> self_, 
 	record_.insertSlot<bool>("lockedAspect") << self_._lockedAspect;
 	record_.insertSlot<bool>("visibleFrustum") << self_._visibleFrustum;
 	Structure<math::fvec3>::serialize(*std::addressof(self_._offset), record_.insertStructSlot("offset"));
-	record_.insertSlot<std::underlying_type_t<graphics::CameraProjectionMode>>("projectMode") << self_._projectMode;
-	record_.insertSlot<std::underlying_type_t<graphics::CameraViewMode>>("viewMode") << self_._viewMode;
+	// The slots stay s32 so records saved before the enums became one byte still load.
+	record_.insertSlot<s32>("projectMode") << static_cast<s32>(self_._projectMode);
+	record_.insertSlot<s32>("viewMode") << static_cast<s32>(self_._viewMode);
 
 	/**/
 
@@ -35,6 +36,32 @@ void access::Structure<CameraComponent>::hydrate(cref<StructScopedSlot> record_,
 	record_.getSlot<bool>("lockedAspect") >> target_._lockedAspect;
 	record_.getSlot<bool>("visibleFrustum") >> target_._visibleFrustum;
 	Structure<math::fvec3>::hydrate(record_.getStructSlot("offset"), target_._offset);
-	record_.getSlot<std::underlying_type_t<graphics::CameraProjectionMode>>("projectMode") >> target_._projectMode;
-	record_.getSlot<std::underlying_type_t<graphics::CameraViewMode>>("viewMode") >> target_._viewMode;
+	{
+		auto value = s32 {};
+		record_.getSlot<s32>("projectMode") >> value;
+		if (value != 0 && value != 1) {
+			record_.slot()->fail(
+				ReadError::Kind::eInvalidValue,
+				record_.slot()->getState().offset,
+				0LL,
+				"camera projection mode is out of range"
+			);
+			return;
+		}
+		target_._projectMode = static_cast<graphics::CameraProjectionMode>(value);
+	}
+	{
+		auto value = s32 {};
+		record_.getSlot<s32>("viewMode") >> value;
+		if (value != 0 && value != 1) {
+			record_.slot()->fail(
+				ReadError::Kind::eInvalidValue,
+				record_.slot()->getState().offset,
+				0LL,
+				"camera view mode is out of range"
+			);
+			return;
+		}
+		target_._viewMode = static_cast<graphics::CameraViewMode>(value);
+	}
 }

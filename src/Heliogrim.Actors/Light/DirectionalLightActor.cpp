@@ -1,18 +1,17 @@
 #include "DirectionalLightActor.hpp"
 
+#include <Engine.ACS/Archetype/ArchetypeDefinition.inl.hpp>
+
 import Engine.ACS;
+import Engine.Graphics.Components;
 
 using namespace hg;
 
 DirectionalLightActor::DirectionalLightActor(cref<ActorInitializer> initializer_) :
-	InheritMeta(initializer_),
-	_directionalLightComponent(nullptr) {
+	InheritArchetype(initializer_) {}
 
-	if (initializer_.shouldAutoInitialize()) {
-		_directionalLightComponent = initializer_.createComponent<DirectionalLightComponent>(*this, { .parent = None });
-	}
+nmpt<DirectionalLightComponent> DirectionalLightActor::getDirectionalLightComponent() noexcept {
+	return &get<"directional">();
 }
 
-nmpt<DirectionalLightComponent> DirectionalLightActor::getDirectionalLightComponent() const noexcept {
-	return _directionalLightComponent;
-}
+template class hg::InheritArchetype<DirectionalLightActor, Actor>;

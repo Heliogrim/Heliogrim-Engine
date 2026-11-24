@@ -10,4 +10,7 @@ void editor::boot::initActorClasses(_In_ [[maybe_unused]] ref<engine::ActorModul
 	std::ignore = RegisterActorClass<StaticGeometryActor>();
 	std::ignore = RegisterActorClass<BoxShapeGeometryActor>();
 	std::ignore = RegisterActorClass<SphereShapeGeometryActor>();
+	std::ignore = RegisterActorClass<CameraActor>();
+	std::ignore = RegisterActorClass<DirectionalLightActor>();
+	std::ignore = RegisterActorClass<PointLightActor>();
 }
