@@ -29,10 +29,10 @@ namespace hg::editor::ui {
 		void setContent(mref<SharedPtr<Widget>> content_);
 
 	public:
-		engine::reflow::EventResponse invokeOnBlur(cref<engine::reflow::FocusEvent> event_) override;
+		engine::reflow::EventReply invokeOnBlur(cref<engine::reflow::FocusEvent> event_) override;
 
-		engine::reflow::EventResponse invokeOnFocus(cref<engine::reflow::FocusEvent> event_) override;
+		engine::reflow::EventReply invokeOnFocus(cref<engine::reflow::FocusEvent> event_) override;
 
-		engine::reflow::EventResponse invokeOnKeyDown(ref<const engine::reflow::KeyboardEvent> event_) override;
+		engine::reflow::EventReply invokeOnKeyDown(ref<const engine::reflow::KeyboardEvent> event_) override;
 	};
 }

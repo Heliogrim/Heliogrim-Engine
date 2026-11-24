@@ -55,9 +55,9 @@ namespace hg::engine::reflow {
 		virtual void updateValueAndValidity(const bool propagate_ = false, const bool emit_ = true);
 
 	public:
-		EventResponse invokeOnFocus(cref<FocusEvent> event_) override;
+		EventReply invokeOnFocus(cref<FocusEvent> event_) override;
 
-		EventResponse invokeOnBlur(cref<FocusEvent> event_) override;
+		EventReply invokeOnBlur(cref<FocusEvent> event_) override;
 	};
 
 	template <typename InputType_>

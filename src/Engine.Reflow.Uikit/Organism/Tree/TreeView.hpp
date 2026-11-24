@@ -88,9 +88,9 @@ namespace hg::engine::reflow {
 		void changeStateSelection(cref<sptr<Widget>> item_, const bool selected_);
 
 	public:
-		EventResponse invokeOnFocus(cref<FocusEvent> event_) override;
+		EventReply invokeOnFocus(cref<FocusEvent> event_) override;
 
-		EventResponse invokeOnBlur(cref<FocusEvent> event_) override;
+		EventReply invokeOnBlur(cref<FocusEvent> event_) override;
 	};
 
 	template <typename DataItemType_, template <typename> typename WrapType_ = sptr>
@@ -727,7 +727,7 @@ namespace hg::engine::reflow {
 		}
 
 	public:
-		EventResponse invokeOnMouseButtonDown(ref<const MouseEvent> event_) override {
+		EventReply invokeOnMouseButtonDown(ref<const MouseEvent> event_) override {
 
 			if (event_._button != 0x1) {
 				return EventResponse::eHandled;
@@ -748,7 +748,7 @@ namespace hg::engine::reflow {
 			return EventResponse::eConsumed;
 		}
 
-		EventResponse invokeOnKeyDown(ref<const KeyboardEvent> event_) override {
+		EventReply invokeOnKeyDown(ref<const KeyboardEvent> event_) override {
 
 			// 79 :: Right
 			// 80 :: Left

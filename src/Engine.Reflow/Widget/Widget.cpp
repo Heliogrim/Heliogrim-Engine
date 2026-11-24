@@ -77,7 +77,7 @@ void Widget::focus() {
 	WindowManager::get()->dispatch(root, FocusEvent { shared_from_this() });
 }
 
-EventResponse Widget::invokeOnFocus(cref<FocusEvent> event_) {
+EventReply Widget::invokeOnFocus(cref<FocusEvent> event_) {
 	return _emitter.emit(ReflowEventNames::FocusEvent, event_);
 }
 
@@ -85,7 +85,7 @@ ReflowEventEmitter::handle_type Widget::onFocus(ReflowEventEmitter::listener_typ
 	return _emitter.on(ReflowEventNames::FocusEvent, ::hg::move(listenFn_));
 }
 
-EventResponse Widget::invokeOnBlur(cref<FocusEvent> event_) {
+EventReply Widget::invokeOnBlur(cref<FocusEvent> event_) {
 	return _emitter.emit(ReflowEventNames::BlurEvent, event_);
 }
 
@@ -101,19 +101,19 @@ bool Widget::dropOnClick(listen_handle_type handle_) {
 	return _emitter.off<MouseEvent>(ReflowEventNames::ClickEvent, ::hg::move(handle_));
 }
 
-EventResponse Widget::invokeOnMouseButtonDown(ref<const MouseEvent> event_) {
+EventReply Widget::invokeOnMouseButtonDown(ref<const MouseEvent> event_) {
 	return EventResponse::eUnhandled;
 }
 
-EventResponse Widget::invokeOnMouseButtonUp(ref<const MouseEvent> event_) {
+EventReply Widget::invokeOnMouseButtonUp(ref<const MouseEvent> event_) {
 	return _emitter.emit(ReflowEventNames::ClickEvent, event_);
 }
 
-EventResponse Widget::invokeOnMouseMove(ref<const MouseMoveEvent> event_) {
+EventReply Widget::invokeOnMouseMove(ref<const MouseMoveEvent> event_) {
 	return EventResponse::eUnhandled;
 }
 
-EventResponse Widget::invokeOnMouseEnter(ref<const MouseMoveEvent> event_) {
+EventReply Widget::invokeOnMouseEnter(ref<const MouseMoveEvent> event_) {
 
 	if (not _state.isHover()) {
 		_state |= WidgetStateFlagBits::eHover;
@@ -128,7 +128,7 @@ Widget::listen_handle_type Widget::onMouseEnter(listen_fn_type<MouseMoveEvent> l
 	return _emitter.on<MouseMoveEvent>(ReflowEventNames::MouseEnterEvent, ::hg::move(listenFn_));
 }
 
-EventResponse Widget::invokeOnMouseLeave(ref<const MouseMoveEvent> event_) {
+EventReply Widget::invokeOnMouseLeave(ref<const MouseMoveEvent> event_) {
 
 	if (_state.isHover()) {
 		_state.unwrap &= (~static_cast<WidgetState::value_type>(WidgetStateFlagBits::eHover));
@@ -139,47 +139,47 @@ EventResponse Widget::invokeOnMouseLeave(ref<const MouseMoveEvent> event_) {
 	return EventResponse::eUnhandled;
 }
 
-EventResponse Widget::invokeOnWheel(ref<const WheelEvent> event_) {
+EventReply Widget::invokeOnWheel(ref<const WheelEvent> event_) {
 	return EventResponse::eUnhandled;
 }
 
-EventResponse Widget::invokeOnDrag(ref<const DragDropEvent> event_) {
+EventReply Widget::invokeOnDrag(ref<const DragDropEvent> event_) {
 	return EventResponse::eUnhandled;
 }
 
-EventResponse Widget::invokeOnDrop(ref<const DragDropEvent> event_) {
+EventReply Widget::invokeOnDrop(ref<const DragDropEvent> event_) {
 	return EventResponse::eUnhandled;
 }
 
-EventResponse Widget::invokeOnDragEnter(ref<const DragDropEvent> event_) {
+EventReply Widget::invokeOnDragEnter(ref<const DragDropEvent> event_) {
 	return EventResponse::eUnhandled;
 }
 
-EventResponse Widget::invokeOnDragLeave(ref<const DragDropEvent> event_) {
+EventReply Widget::invokeOnDragLeave(ref<const DragDropEvent> event_) {
 	return EventResponse::eUnhandled;
 }
 
-EventResponse Widget::invokeOnDragOver(ref<const DragDropEvent> event_) {
+EventReply Widget::invokeOnDragOver(ref<const DragDropEvent> event_) {
 	return EventResponse::eUnhandled;
 }
 
-EventResponse Widget::invokeOnTouchStart(ref<const TouchEvent> event_) {
+EventReply Widget::invokeOnTouchStart(ref<const TouchEvent> event_) {
 	return EventResponse::eUnhandled;
 }
 
-EventResponse Widget::invokeOnTouchEnd(ref<const TouchEvent> event_) {
+EventReply Widget::invokeOnTouchEnd(ref<const TouchEvent> event_) {
 	return EventResponse::eUnhandled;
 }
 
-EventResponse Widget::invokeOnTouchMove(ref<const TouchEvent> event_) {
+EventReply Widget::invokeOnTouchMove(ref<const TouchEvent> event_) {
 	return EventResponse::eUnhandled;
 }
 
-EventResponse Widget::invokeOnKeyDown(ref<const KeyboardEvent> event_) {
+EventReply Widget::invokeOnKeyDown(ref<const KeyboardEvent> event_) {
 	return EventResponse::eUnhandled;
 }
 
-EventResponse Widget::invokeOnKeyUp(ref<const KeyboardEvent> event_) {
+EventReply Widget::invokeOnKeyUp(ref<const KeyboardEvent> event_) {
 	return EventResponse::eUnhandled;
 }
 

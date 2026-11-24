@@ -176,7 +176,7 @@ void VScrollBox::applyLayout(ref<ReflowState> state_) {
 	getLayoutState().layoutOffset = preserveOffset;
 }
 
-EventResponse VScrollBox::invokeOnWheel(ref<const WheelEvent> event_) {
+EventReply VScrollBox::invokeOnWheel(ref<const WheelEvent> event_) {
 
 	if (_children.empty()) {
 		_scrollValue = 0.F;

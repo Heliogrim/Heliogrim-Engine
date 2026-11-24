@@ -41,10 +41,10 @@ namespace hg::editor::ui {
 		bool dropOnContextMenu(listen_handle_type handle_);
 
 	public:
-		engine::reflow::EventResponse invokeOnFocus(cref<engine::reflow::FocusEvent> event_) override;
+		engine::reflow::EventReply invokeOnFocus(cref<engine::reflow::FocusEvent> event_) override;
 
-		engine::reflow::EventResponse invokeOnBlur(cref<engine::reflow::FocusEvent> event_) override;
+		engine::reflow::EventReply invokeOnBlur(cref<engine::reflow::FocusEvent> event_) override;
 
-		engine::reflow::EventResponse invokeOnMouseButtonUp(ref<const engine::reflow::MouseEvent> event_) override;
+		engine::reflow::EventReply invokeOnMouseButtonUp(ref<const engine::reflow::MouseEvent> event_) override;
 	};
 }

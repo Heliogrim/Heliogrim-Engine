@@ -42,18 +42,18 @@ void InputBindingProvider::setContent(mref<SharedPtr<Widget>> content_) {
 	markAsPending(true, true);
 }
 
-engine::reflow::EventResponse InputBindingProvider::invokeOnBlur(cref<engine::reflow::FocusEvent> event_) {
+engine::reflow::EventReply InputBindingProvider::invokeOnBlur(cref<engine::reflow::FocusEvent> event_) {
 	_state.unset(WidgetStateFlagBits::eFocus);
 	// Note: markAsPending(false, false);
 	return CompoundWidget::invokeOnBlur(event_);
 }
-engine::reflow::EventResponse InputBindingProvider::invokeOnFocus(cref<engine::reflow::FocusEvent> event_) {
+engine::reflow::EventReply InputBindingProvider::invokeOnFocus(cref<engine::reflow::FocusEvent> event_) {
 	_state.set(WidgetStateFlagBits::eFocus);
 	// Note: markAsPending(false, false);
 	return CompoundWidget::invokeOnFocus(event_);
 }
 
-engine::reflow::EventResponse InputBindingProvider::invokeOnKeyDown(ref<const engine::reflow::KeyboardEvent> event_) {
+engine::reflow::EventReply InputBindingProvider::invokeOnKeyDown(ref<const engine::reflow::KeyboardEvent> event_) {
 
 	if (_input_bindings == None) {
 		return CompoundWidget::invokeOnKeyDown(event_);

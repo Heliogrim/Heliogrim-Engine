@@ -127,7 +127,7 @@ string InputAsset::getTag() const noexcept {
 	return std::format(R"(InputAsset <{:#x}>)", reinterpret_cast<u64>(this));
 }
 
-EventResponse InputAsset::invokeOnDrop(ref<const DragDropEvent> event_) {
+EventReply InputAsset::invokeOnDrop(ref<const DragDropEvent> event_) {
 
 	if (not event_._payload.is<engine::input::event::DragDropEventTextPayload>()) {
 		return Input<AssetGuid>::invokeOnDrop(event_);
@@ -188,7 +188,7 @@ EventResponse InputAsset::invokeOnDrop(ref<const DragDropEvent> event_) {
 	return EventResponse::eConsumed;
 }
 
-EventResponse InputAsset::invokeOnDragOver(ref<const DragDropEvent> event_) {
+EventReply InputAsset::invokeOnDragOver(ref<const DragDropEvent> event_) {
 	return Input<AssetGuid>::invokeOnDragOver(event_);
 }
 

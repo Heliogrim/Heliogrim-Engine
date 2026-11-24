@@ -1,8 +1,8 @@
 #pragma once
 
 #include <Engine.Common/Sal.hpp>
-#include <Engine.Reflow/ReflowPhase.hpp>
 #include <Engine.Reflow.Theming/ThemeProvisioner.hpp>
+#include <Engine.Reflow/ReflowPhase.hpp>
 
 #include "WidgetState.hpp"
 #include "../ReflowAxis.hpp"
@@ -12,6 +12,7 @@
 #include "../ReflowPosition.hpp"
 #include "../ReflowState.hpp"
 #include "../Event/DragDropEvent.hpp"
+#include "../Event/EventReply.hpp"
 #include "../Event/EventResponse.hpp"
 #include "../Event/FocusEvent.hpp"
 #include "../Event/KeyboardEvent.hpp"
@@ -119,11 +120,11 @@ namespace hg::engine::reflow {
 
 		void focus();
 
-		virtual EventResponse invokeOnFocus(cref<FocusEvent> event_);
+		virtual EventReply invokeOnFocus(cref<FocusEvent> event_);
 
 		[[nodiscard]] listen_handle_type onFocus(listen_fn_type<FocusEvent> listenFn_);
 
-		virtual EventResponse invokeOnBlur(cref<FocusEvent> event_);
+		virtual EventReply invokeOnBlur(cref<FocusEvent> event_);
 
 		[[nodiscard]] listen_handle_type onBlur(listen_fn_type<FocusEvent> listenFn_);
 
@@ -132,43 +133,43 @@ namespace hg::engine::reflow {
 
 		bool dropOnClick(listen_handle_type handle_);
 
-		virtual EventResponse invokeOnMouseButtonDown(ref<const MouseEvent> event_);
+		virtual EventReply invokeOnMouseButtonDown(ref<const MouseEvent> event_);
 
-		virtual EventResponse invokeOnMouseButtonUp(ref<const MouseEvent> event_);
+		virtual EventReply invokeOnMouseButtonUp(ref<const MouseEvent> event_);
 
-		virtual EventResponse invokeOnMouseMove(ref<const MouseMoveEvent> event_);
+		virtual EventReply invokeOnMouseMove(ref<const MouseMoveEvent> event_);
 
-		virtual EventResponse invokeOnMouseEnter(ref<const MouseMoveEvent> event_);
+		virtual EventReply invokeOnMouseEnter(ref<const MouseMoveEvent> event_);
 
 		listen_handle_type onMouseEnter(listen_fn_type<MouseMoveEvent> listenFn_);
 
-		virtual EventResponse invokeOnMouseLeave(ref<const MouseMoveEvent> event_);
+		virtual EventReply invokeOnMouseLeave(ref<const MouseMoveEvent> event_);
 
 	public:
-		virtual EventResponse invokeOnWheel(ref<const WheelEvent> event_);
+		virtual EventReply invokeOnWheel(ref<const WheelEvent> event_);
 
 	public:
-		virtual EventResponse invokeOnDrag(ref<const DragDropEvent> event_);
+		virtual EventReply invokeOnDrag(ref<const DragDropEvent> event_);
 
-		virtual EventResponse invokeOnDrop(ref<const DragDropEvent> event_);
+		virtual EventReply invokeOnDrop(ref<const DragDropEvent> event_);
 
-		virtual EventResponse invokeOnDragEnter(ref<const DragDropEvent> event_);
+		virtual EventReply invokeOnDragEnter(ref<const DragDropEvent> event_);
 
-		virtual EventResponse invokeOnDragLeave(ref<const DragDropEvent> event_);
+		virtual EventReply invokeOnDragLeave(ref<const DragDropEvent> event_);
 
-		virtual EventResponse invokeOnDragOver(ref<const DragDropEvent> event_);
-
-	public:
-		virtual EventResponse invokeOnTouchStart(ref<const TouchEvent> event_);
-
-		virtual EventResponse invokeOnTouchEnd(ref<const TouchEvent> event_);
-
-		virtual EventResponse invokeOnTouchMove(ref<const TouchEvent> event_);
+		virtual EventReply invokeOnDragOver(ref<const DragDropEvent> event_);
 
 	public:
-		virtual EventResponse invokeOnKeyDown(ref<const KeyboardEvent> event_);
+		virtual EventReply invokeOnTouchStart(ref<const TouchEvent> event_);
 
-		virtual EventResponse invokeOnKeyUp(ref<const KeyboardEvent> event_);
+		virtual EventReply invokeOnTouchEnd(ref<const TouchEvent> event_);
+
+		virtual EventReply invokeOnTouchMove(ref<const TouchEvent> event_);
+
+	public:
+		virtual EventReply invokeOnKeyDown(ref<const KeyboardEvent> event_);
+
+		virtual EventReply invokeOnKeyUp(ref<const KeyboardEvent> event_);
 
 		/**
 		 * Widget Relations

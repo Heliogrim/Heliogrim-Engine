@@ -202,7 +202,7 @@ void uikit::Button::notifyContextChange() {
 	Widget::cascadeContextChange(false);
 }
 
-EventResponse uikit::Button::invokeOnFocus(cref<FocusEvent> event_) {
+EventReply uikit::Button::invokeOnFocus(cref<FocusEvent> event_) {
 	auto response = uikit::Stack::invokeOnFocus(event_);
 
 	if (_themeStateMap.focus.has_value()) {
@@ -214,7 +214,7 @@ EventResponse uikit::Button::invokeOnFocus(cref<FocusEvent> event_) {
 	return response;
 }
 
-EventResponse uikit::Button::invokeOnBlur(cref<FocusEvent> event_) {
+EventReply uikit::Button::invokeOnBlur(cref<FocusEvent> event_) {
 	auto response = uikit::Stack::invokeOnBlur(event_);
 
 	if (_themeStateMap.focus.has_value()) {
@@ -226,7 +226,7 @@ EventResponse uikit::Button::invokeOnBlur(cref<FocusEvent> event_) {
 	return response;
 }
 
-EventResponse uikit::Button::invokeOnMouseButtonDown(ref<const MouseEvent> event_) {
+EventReply uikit::Button::invokeOnMouseButtonDown(ref<const MouseEvent> event_) {
 	auto response = uikit::Stack::invokeOnMouseButtonDown(event_);
 
 	if (_themeStateMap.pressed.has_value()) {
@@ -238,7 +238,7 @@ EventResponse uikit::Button::invokeOnMouseButtonDown(ref<const MouseEvent> event
 	return response;
 }
 
-EventResponse uikit::Button::invokeOnMouseButtonUp(ref<const MouseEvent> event_) {
+EventReply uikit::Button::invokeOnMouseButtonUp(ref<const MouseEvent> event_) {
 	auto response = uikit::Stack::invokeOnMouseButtonUp(event_);
 
 	if (_themeStateMap.pressed.has_value()) {
@@ -250,7 +250,7 @@ EventResponse uikit::Button::invokeOnMouseButtonUp(ref<const MouseEvent> event_)
 	return response;
 }
 
-EventResponse uikit::Button::invokeOnMouseEnter(ref<const MouseMoveEvent> event_) {
+EventReply uikit::Button::invokeOnMouseEnter(ref<const MouseMoveEvent> event_) {
 	auto response = uikit::Stack::invokeOnMouseEnter(event_);
 
 	if (_themeStateMap.hover.has_value()) {
@@ -262,7 +262,7 @@ EventResponse uikit::Button::invokeOnMouseEnter(ref<const MouseMoveEvent> event_
 	return response;
 }
 
-EventResponse uikit::Button::invokeOnMouseLeave(ref<const MouseMoveEvent> event_) {
+EventReply uikit::Button::invokeOnMouseLeave(ref<const MouseMoveEvent> event_) {
 	auto response = uikit::Stack::invokeOnMouseLeave(event_);
 
 	if (_themeStateMap.hover.has_value()) {
