@@ -19,6 +19,9 @@ namespace hg::engine::scheduler {
 namespace hg::engine {
 	class macro_novtable Scheduler :
 		public core::RootModule {
+	private:
+		friend class ::hg::engine::core::ModuleSlotAccess;
+
 	public:
 		using task_type = ::hg::engine::scheduler::task::TaskDelegate;
 		using task_handle_type = non_owning_rptr<const task_type>;
@@ -31,6 +34,14 @@ namespace hg::engine {
 
 	public:
 		virtual ~Scheduler() = default;
+
+	private:
+		static constinit std::atomic<ptr<Scheduler>> _moduleSlot;
+
+	public:
+		[[nodiscard]] static Opt<ref<Scheduler>> get() noexcept {
+			return engine::module<Scheduler>();
+		}
 
 	public:
 		/**

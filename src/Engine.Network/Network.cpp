@@ -9,6 +9,9 @@ import Engine.Network;
 using namespace hg::engine;
 using namespace hg;
 
+constinit std::atomic<ptr<engine::Network>> engine::Network::_moduleSlot { nullptr };
+static_assert(engine::core::ModuleSlotAccess::published<engine::Network>);
+
 Network::Network(ref<Engine> engine_) noexcept :
 	CoreModule(engine_) {}
 

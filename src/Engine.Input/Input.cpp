@@ -24,6 +24,9 @@ using namespace hg::engine::input;
 using namespace hg::engine;
 using namespace hg;
 
+constinit std::atomic<ptr<engine::Input>> engine::Input::_moduleSlot { nullptr };
+static_assert(engine::core::ModuleSlotAccess::published<engine::Input>);
+
 Input::Input(ref<Engine> engine_) noexcept :
 	CoreModule(engine_),
 	_dragDropReceiver(nullptr),

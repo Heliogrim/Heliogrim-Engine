@@ -22,6 +22,9 @@ namespace hg::engine::platform {
 namespace hg::engine {
 	class macro_novtable Platform :
 		public core::RootModule {
+	private:
+		friend class ::hg::engine::core::ModuleSlotAccess;
+
 	public:
 		using this_type = Platform;
 
@@ -38,6 +41,14 @@ namespace hg::engine {
 		ref<this_type> operator=(cref<this_type>) = delete;
 
 		ref<this_type> operator=(mref<this_type>) noexcept = delete;
+
+	private:
+		static constinit std::atomic<ptr<Platform>> _moduleSlot;
+
+	public:
+		[[nodiscard]] static Opt<ref<Platform>> get() noexcept {
+			return engine::module<Platform>();
+		}
 
 	public:
 		virtual void tidy() = 0;

@@ -8,6 +8,10 @@ import Engine.Storage.System;
 using namespace hg::engine;
 using namespace hg;
 
+constinit std::atomic<ptr<const engine::StorageModule>> engine::StorageModule::_moduleSlot { nullptr };
+static_assert(engine::core::ModuleSlotAccess::published<engine::StorageModule>);
+static_assert(std::is_same_v<decltype(engine::StorageModule::get()), Opt<ref<const engine::StorageModule>>>);
+
 StorageModule::StorageModule(ref<Engine> engine_) :
 	_io(),
 	_registry(make_uptr<storage::StorageRegistry>()),

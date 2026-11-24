@@ -21,6 +21,9 @@ namespace hg::engine::resource {
 namespace hg::engine {
 	class ResourceManager :
 		public core::RootModule {
+	private:
+		friend class ::hg::engine::core::ModuleSlotAccess;
+
 	public:
 		using value_type = ResourceManager;
 		using reference_type = ref<value_type>;
@@ -42,6 +45,14 @@ namespace hg::engine {
 		 * @date 30.08.2021
 		 */
 		~ResourceManager() noexcept;
+
+	private:
+		static constinit std::atomic<ptr<ResourceManager>> _moduleSlot;
+
+	public:
+		[[nodiscard]] static Opt<ref<ResourceManager>> get() noexcept {
+			return engine::module<ResourceManager>();
+		}
 
 	public:
 		/**

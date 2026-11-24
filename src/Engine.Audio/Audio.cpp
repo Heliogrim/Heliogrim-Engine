@@ -17,6 +17,9 @@ import Engine.Resource;
 using namespace hg::engine;
 using namespace hg;
 
+constinit std::atomic<ptr<engine::Audio>> engine::Audio::_moduleSlot { nullptr };
+static_assert(engine::core::ModuleSlotAccess::published<engine::Audio>);
+
 Audio::Audio(ref<Engine> engine_) noexcept :
 	CoreModule(engine_) {}
 

@@ -19,6 +19,9 @@ import Engine.Scheduler;
 using namespace hg::engine;
 using namespace hg;
 
+constinit std::atomic<ptr<engine::Physics>> engine::Physics::_moduleSlot { nullptr };
+static_assert(engine::core::ModuleSlotAccess::published<engine::Physics>);
+
 /**/
 
 Physics::Physics(ref<Engine> engine_) noexcept :

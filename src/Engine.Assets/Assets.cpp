@@ -7,6 +7,9 @@ using namespace hg::engine::assets;
 using namespace hg::engine;
 using namespace hg;
 
+constinit std::atomic<ptr<engine::Assets>> engine::Assets::_moduleSlot { nullptr };
+static_assert(engine::core::ModuleSlotAccess::published<engine::Assets>);
+
 Assets::Assets(ref<Engine> engine_) :
 	CoreModule(engine_),
 	_registry(nullptr) {}
