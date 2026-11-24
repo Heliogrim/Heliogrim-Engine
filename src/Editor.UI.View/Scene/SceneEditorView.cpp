@@ -1,16 +1,10 @@
 #include "SceneEditorView.hpp"
 
 #include <Editor.UI.Main/EditorUI.hpp>
-#include <Editor.UI.Panel/Assets/AssetBrowserController.hpp>
-#include <Editor.UI.Panel/Assets/AssetBrowserView.hpp>
-#include <Editor.UI.Panel/Properties/PropertyController.hpp>
-#include <Editor.UI.Panel/Properties/PropertyView.hpp>
-#include <Editor.UI.Panel/Scene/EditorSceneViewportPanel.hpp>
-#include <Editor.UI.Panel/Scene/Hierarchy/SceneHierarchyController.hpp>
-#include <Editor.UI.Panel/Scene/Hierarchy/SceneHierarchyView.hpp>
 
 #include "SceneEditorController.hpp"
 
+import Editor.UI.Panel;
 import Engine.Reflow.Uikit;
 
 using namespace hg::editor::ui;
