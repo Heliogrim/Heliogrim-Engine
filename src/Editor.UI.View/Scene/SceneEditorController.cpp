@@ -1,9 +1,8 @@
 #include "SceneEditorController.hpp"
 
-#include <Editor.UI.Main/EditorUiServices.hpp>
-
 #include "SceneEditorView.hpp"
 
+import Editor.UI.Main;
 import Editor.UI.Panel;
 
 using namespace hg::editor::ui;

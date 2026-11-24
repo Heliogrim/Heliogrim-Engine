@@ -2,6 +2,7 @@
 
 import Editor.Assets.Default;
 import Editor.Core;
+import Editor.UI.Main;
 import Engine.ACS;
 import Engine.Assets.Database;
 import Engine.Common;
@@ -38,8 +39,6 @@ SpawnShapeActor::~SpawnShapeActor() = default;
 
 /**/
 
-#include <Editor.UI.Main/EditorUI.hpp>
-#include <Editor.UI.Main/Module/EditorUI.hpp>
 
 Opt<ActorRef<>> spawnActorImpl(SpawnShapeActor::ShapeType shapeType_, ref<const math::Location> location_) {
 

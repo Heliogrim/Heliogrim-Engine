@@ -1,11 +1,10 @@
 #include "InputBindingProvider.hpp"
 
-#include <Editor.UI.Main/EditorUI.hpp>
-#include <Editor.UI.Main/Module/EditorUI.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <SDL3/SDL_keycode.h>
 
 import Editor.Action;
+import Editor.UI.Main;
 import Editor.UI.Service;
 import Engine.Core;
 import Engine.Logging;

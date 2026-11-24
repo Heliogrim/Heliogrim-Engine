@@ -8,3 +8,5 @@ make_library_project(
 )
 # shortcut: Assets.cpp imports Engine.Assets.System (owns the asset registry) and Engine.Assets.System links Engine.Assets, drop when the registry ownership moves out of Engine.Assets
 target_link_libraries(${PROJECT_NAME}-Engine.Assets PRIVATE ${PROJECT_NAME}::Engine.Assets.System.Module)
+# shortcut: Utils.cpp imports Engine.Assets.Type (asset base class) and Engine.Assets.Type links Engine.Assets, drop when the utils move into Engine.Assets.Type
+target_link_libraries(${PROJECT_NAME}-Engine.Assets PRIVATE ${PROJECT_NAME}::Engine.Assets.Type.Module)

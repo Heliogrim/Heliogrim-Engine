@@ -1,6 +1,5 @@
 #include "EditorSceneViewport.hpp"
 
-#include <Editor.Assets.Default/GraphicsMaterials/Default.hpp>
 
 using namespace hg::editor::ui;
 using namespace hg::engine::reflow;
@@ -25,16 +24,12 @@ EventResponse EditorSceneViewport::invokeOnKeyDown(ref<const KeyboardEvent> even
 
 /**/
 
-#include <Editor.Assets.Default/Meshes/Default.hpp>
-#include <Editor.Core/EditorEngine.hpp>
-#include <Editor.UI.Main/EditorUI.hpp>
-#include <Editor.UI.Main/Module/EditorUI.hpp>
+import Editor.Assets.Default;
+import Editor.Core;
+import Editor.UI.Main;
 import Engine.ACS;
 import Heliogrim;
-import Engine.ACS;
 import Heliogrim.Actors;
-import Heliogrim;
-import Heliogrim;
 
 void experimental_add_actor(math::Transform baseTransform_) {
 

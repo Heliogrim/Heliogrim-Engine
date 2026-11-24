@@ -1,9 +1,8 @@
 #include "Level.hpp"
 
-#include <Engine.Assets.Type/Universe/LevelAsset.hpp>
-
 import Engine.ACS;
 import Engine.Assets;
+import Engine.Assets.Type;
 import Engine.Common;
 import Engine.Core;
 import Engine.Scene;
