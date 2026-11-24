@@ -1,11 +1,10 @@
 #pragma once
 
-#include <Engine.Graphics.Loader/Material/MaterialResource.hpp>
-
 #include "Capture/MeshCaptureInterface.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.Graphics.Loader;
 import Engine.Render.Scene;
 #endif
 

@@ -1,7 +1,6 @@
 #include "Accel.hpp"
 
-#include <Engine.Accel.Loader/Manager.hpp>
-
+import Engine.Accel.Loader;
 import Engine.Common;
 import Engine.Core;
 import Engine.Resource;

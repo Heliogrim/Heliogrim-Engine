@@ -3,7 +3,6 @@
 /**/
 
 #include <Engine.Graphics.Core/Graphics.hpp>
-#include <Engine.Graphics.Scene.Model/Scene/SkyboxModel.hpp>
 
 #include "SkyBoxPass.hpp"
 
@@ -18,6 +17,7 @@ import Engine.Graphics.Render.Command;
 import Engine.Graphics.Render.Predefined;
 import Engine.Graphics.RenderGraph;
 import Engine.Graphics.Scene;
+import Engine.Graphics.Scene.Model;
 import Engine.Reflect;
 import Engine.Render.Scene;
 

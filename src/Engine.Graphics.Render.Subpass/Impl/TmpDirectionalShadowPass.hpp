@@ -1,8 +1,5 @@
 #pragma once
 
-#include <Engine.Graphics.Scene.Model/DirectionalLightModel.hpp>
-#include <Engine.Graphics.Scene.Model/StaticGeometryModel.hpp>
-
 #include "../Mesh/MeshSubPass.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
@@ -10,6 +7,7 @@ import Engine.Accel.Compile;
 import Engine.Accel.Pass;
 import Engine.Graphics;
 import Engine.Graphics.RenderGraph;
+import Engine.Graphics.Scene.Model;
 #endif
 
 namespace hg::engine::render {

@@ -1,11 +1,11 @@
 #pragma once
-#include <Engine.Graphics.Loader/Geometry/StaticGeometryResource.hpp>
 
 #include "GeometryModel.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Assets.Type;
 import Engine.Common;
+import Engine.Graphics.Loader;
 import Engine.Resource;
 #endif
 

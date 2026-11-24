@@ -1,10 +1,10 @@
 #pragma once
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Graphics.Scene.Model/Capture/LightCaptureInterface.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
 import Engine.Graphics.RenderGraph;
+import Engine.Graphics.Scene.Model;
 #endif
 
 namespace hg::engine::graphics {
