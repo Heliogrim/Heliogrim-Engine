@@ -1,23 +1,22 @@
-#include "Graphics.hpp"
-
+#include <Engine.Graphics/vkinc.hpp>
+/**/
 #include <cassert>
+
+#include "Graphics.hpp"
 
 #ifdef _PROFILING
 #endif
 
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Math/__default.inl>
 #include <Engine.Graphics.IO/Io.hpp>
-#include <Engine.Graphics.Render/RenderTarget.hpp>
-
-/* Development Testing */
-#include <Engine.Common/__macro.hpp>
-#include <Engine.Graphics.Render/__Test__Renderer.hpp>
 
 import Engine.Common;
 import Engine.Core;
 import Engine.Event;
 import Engine.Graphics;
 import Engine.Graphics.Loader;
+import Engine.Graphics.Render;
 import Engine.Graphics.Scene;
 import Engine.Graphics.Schedule;
 import Engine.Logging;

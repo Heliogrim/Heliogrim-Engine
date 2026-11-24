@@ -1,7 +1,7 @@
 #include "RenderTickStage.hpp"
 
+#include <cassert>
 #include <Engine.Graphics.Core/Graphics.hpp>
-#include <Engine.Graphics.Render/RenderTarget.hpp>
 #include <Engine.Graphics.Schedule/RenderScenePipeline.hpp>
 
 #ifdef _PROFILING
@@ -12,6 +12,7 @@
 import Engine.Common;
 import Engine.Core;
 import Engine.Graphics;
+import Engine.Graphics.Render;
 import Engine.Graphics.Scene;
 import Engine.Logging;
 import Engine.Scene.Schedule;
