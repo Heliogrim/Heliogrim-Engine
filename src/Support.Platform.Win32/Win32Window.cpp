@@ -64,3 +64,7 @@ void Win32Window::setTitle(const string_view title_) {
 	_title = title_;
 	SDL_SetWindowTitle(_sdlWnd, _title.data());
 }
+
+void Win32Window::raise() {
+	SDL_RaiseWindow(_sdlWnd);
+}

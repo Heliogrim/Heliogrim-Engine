@@ -38,6 +38,12 @@ namespace hg::engine::platform {
 
 		virtual void setTitle(const string_view title_) = 0;
 
+	public:
+		/**
+		 * Brings the window to the front and gives it the input focus.
+		 */
+		virtual void raise() = 0;
+
 	private:
 		StatelessEventEmitter<PlatformResizeEvent> _resizeEmitter;
 
